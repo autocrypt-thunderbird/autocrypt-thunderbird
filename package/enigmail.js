@@ -31,7 +31,7 @@
  */
 
 // Maximum size of message directly processed by Enigmail
-const MSG_BUFFER_SIZE = 32000;
+const MSG_BUFFER_SIZE = 96000;
 
 const ERROR_BUFFER_SIZE = 16000;
 
