@@ -1,5 +1,5 @@
-<!ENTITY enigmail.version                "0.17.2.0">
-<!ENTITY ipc.version                     "0.97.0.0">
+<!ENTITY enigmail.version                "0.17.3.0">
+<!ENTITY ipc.version                     "0.97.2.0">
 
 <!ENTITY enigmail.label	                 "Enigmail">
 
@@ -18,8 +18,9 @@
 <!ENTITY enigmail.defaultSignMsg.label    "Sign messages by default">
 <!ENTITY enigmail.defaultEncryptMsg.label "Encrypt messages by default">
 <!ENTITY enigmail.multipleId.label        "Enable multiple user IDs">
+<!ENTITY enigmail.encryptToSelf.label     "Encrypt to self when sending">
 <!ENTITY enigmail.alwaysTrustSend.label   "Always trust user ID when sending">
-<!ENTITY enigmail.autoDecrypt.label       "Automatically decrypt/verify messages (SLOW)">
+<!ENTITY enigmail.autoDecrypt.label       "Automatically decrypt/verify messages (slow?)">
 <!ENTITY enigmail.captureWebMail.label	  "Capture webmail">
 
 <!ENTITY enigmail.prefsHelp.label	  "Enigmail Help">

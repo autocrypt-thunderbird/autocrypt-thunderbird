@@ -58,6 +58,7 @@
     var _elementIDs = ["enigmail_defaultSignMsg",
                        "enigmail_defaultEncryptMsg",
                        "enigmail_multipleId",
+                       "enigmail_encryptToSelf",
                        "enigmail_alwaysTrustSend",
                        "enigmail_autoDecrypt",
                        "enigmail_captureWebMail" ];
@@ -87,12 +88,23 @@
               prefattribute="checked"/>
     </hbox>
 
+    <separator/>
+
     <hbox autostretch="never">
       <checkbox id="enigmail_multipleId"
               label="&enigmail.multipleId.label;"
               pref="true"
               preftype="bool"
               prefstring="extensions.enigmail.multipleId"
+              prefattribute="checked"/>
+    </hbox>
+
+    <hbox autostretch="never">
+      <checkbox id="enigmail_encryptToSelf"
+              label="&enigmail.encryptToSelf.label;"
+              pref="true"
+              preftype="bool"
+              prefstring="extensions.enigmail.encryptToSelf"
               prefattribute="checked"/>
     </hbox>
 
@@ -104,6 +116,8 @@
               prefstring="extensions.enigmail.alwaysTrustSend"
               prefattribute="checked"/>
     </hbox>
+
+    <separator/>
 
     <hbox autostretch="never">
       <checkbox id="enigmail_autoDecrypt"
@@ -122,6 +136,8 @@
               prefstring="extensions.enigmail.captureWebMail"
               prefattribute="checked"/>
     </hbox>
+
+    <separator/>
 
     <hbox autostretch="never" halign="right">
       <!--

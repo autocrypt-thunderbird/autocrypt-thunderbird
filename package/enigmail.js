@@ -61,9 +61,10 @@ const NS_HTTPPROTOCOLHANDLER_CID_STR= "{4f47e42e-4d23-4dd3-bfda-eb29255e9ea3}";
 const NS_IOSERVICE_CID_STR          = "{9ac9e770-18bc-11d3-9337-00104ba0fd40}";
 
 // Encryption flags
-const SIGN_MESSAGE      = 0x1;
-const ENCRYPT_MESSAGE   = 0x2;
-const ALWAYS_TRUST_SEND = 0x4;
+const SIGN_MESSAGE      = 0x01;
+const ENCRYPT_MESSAGE   = 0x02;
+const ALWAYS_TRUST_SEND = 0x04;
+const ENCRYPT_TO_SELF   = 0x08;
 
 /* Interfaces */
 const nsISupports            = Components.interfaces.nsISupports;
@@ -928,6 +929,9 @@ function (plainText, fromMailAddr, toMailAddr, encryptFlags, passphrase,
 
     if (encryptFlags & ALWAYS_TRUST_SEND)
       encryptCommand += " --always-trust";
+
+    if ((encryptFlags & ENCRYPT_TO_SELF) && fromMailAddr)
+      encryptCommand += " --encrypt-to " + fromMailAddr;
 
     if (encryptFlags & ENCRYPT_MESSAGE) {
       encryptCommand += " -a -e";

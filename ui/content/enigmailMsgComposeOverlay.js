@@ -30,7 +30,7 @@ function enigUpdateOptionsDisplay() {
   if (!InitEnigmailSvc())
      return "";
 
-   var optList = ["defaultEncryptMsg", "defaultSignMsg"];
+   var optList = ["defaultEncryptMsg", "defaultSignMsg", "multipleId"];
 
    var signOrEncrypt = false;
 
@@ -38,7 +38,8 @@ function enigUpdateOptionsDisplay() {
      var optName = optList[j];
      var optValue = EnigGetPref(optName);
 
-     if (optValue)
+     if (optValue && ((optName == "defaultEncryptMsg") ||
+                      (optName == "defaultSignMsg")) )
        signOrEncrypt = true;
 
      var menuElement = document.getElementById("enigmail_"+optName);
@@ -139,6 +140,11 @@ function enigSend(encryptFlags) {
 
        if (EnigGetPref("alwaysTrustSend"))
          encryptFlags |= ALWAYS_TRUST_SEND;
+
+       if (EnigGetPref("encryptToSelf")) {
+         encryptFlags |= ENCRYPT_TO_SELF;
+         fromAddr = currentId.email;
+       }
 
        cipherText = EnigEncryptMessage(plainText, fromAddr, toAddr,
                                        encryptFlags,

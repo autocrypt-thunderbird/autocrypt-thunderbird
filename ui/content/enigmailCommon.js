@@ -9,13 +9,15 @@ var gEnigmailPrefDefaults = {"defaultSignMsg":false,
                              "defaultEncryptMsg":false,
                              "multipleId":false,
                              "alwaysTrustSend":true,
+                             "encryptToSelf":false,
                              "autoDecrypt":true,
                              "captureWebMail":false};
 
 // Encryption flags
-const SIGN_MESSAGE      = 0x1;
-const ENCRYPT_MESSAGE   = 0x2;
-const ALWAYS_TRUST_SEND = 0x4;
+const SIGN_MESSAGE      = 0x01;
+const ENCRYPT_MESSAGE   = 0x02;
+const ALWAYS_TRUST_SEND = 0x04;
+const ENCRYPT_TO_SELF   = 0x08;
 
 var gLogLevel = 3;     // Output only errors/warnings by default
 var gLogFileStream = null;
@@ -23,6 +25,17 @@ var gLogFileStream = null;
 var gIPCService;
 var gProcessInfo;
 var gPromptService;
+
+var gPrefSvc, gPrefEnigmail;
+try {
+  var gPrefSvc = Components.classes["@mozilla.org/preferences-service;1"]
+                             .getService(Components.interfaces.nsIPrefService);
+  gPrefEnigmail = gPrefSvc.getBranch(ENIGMAIL_PREFS_ROOT);
+
+} catch (ex) {
+  ERROR_LOG("enigmailCommon.js: Error in instantiating PrefService\n");
+  throw("enigmailCommon.js: Error in instantiating PrefService\n");
+}
 
 function GetEnv(name) {
   DEBUG_LOG("enigmailCommon.js: GetEnv: "+name+"\n")
@@ -304,61 +317,38 @@ function EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj) {
   return plainText;
 }
 
-var gPrefSvc, gPrefEnigmail;
-try {
-  var gPrefSvc = Components.classes["@mozilla.org/preferences-service;1"]
-                             .getService(Components.interfaces.nsIPrefService);
-  gPrefEnigmail = gPrefSvc.getBranch(ENIGMAIL_PREFS_ROOT);
-
-} catch (ex) {
-  ERROR_LOG("enigmailCommon.js: Error in instantiating PrefService\n");
-  throw("enigmailCommon.js: Error in instantiating PrefService\n");
-}
-
 function EnigGetPref(prefName) {
-   //DEBUG_LOG("enigmailCommon.js: EnigGetPref: "+prefName+"\n");
-
    var defaultValue = gEnigmailPrefDefaults[prefName];
-   var valueType = typeof defaultValue;
 
-   switch (typeof defaultValue) {
+   var prefValue = defaultValue;
+   try {
+      switch (typeof defaultValue) {
       case "string":
-         try {
-             var prefValue = gPrefEnigmail.getCharPref(prefName);
-             return prefValue;
-         } catch (ex) {
-             return defaultValue;
-         }
+         prefValue = gPrefEnigmail.getCharPref(prefName);
          break;
 
       case "boolean":
-         try {
-             var prefValue = gPrefEnigmail.getBoolPref(prefName);
-             return prefValue;
-         } catch (ex) {
-             return defaultValue;
-         }
+         prefValue = gPrefEnigmail.getBoolPref(prefName);
          break;
 
       case "number":
-         try {
-             var prefValue = gPrefEnigmail.getIntPref(prefName);
-             return prefValue;
-         } catch (ex) {
-             return defaultValue;
-         }
+         prefValue = gPrefEnigmail.getIntPref(prefName);
          break;
 
       default:
-         return undefined;
+         prefValue = undefined;
    }
+   } catch (ex) {
+   }
+
+   //DEBUG_LOG("enigmailCommon.js: EnigGetPref: "+prefName+"="+prefValue+"\n");
+   return prefValue;
 }
 
 function EnigSetPref(prefName, value) {
    DEBUG_LOG("enigmailCommon.js: EnigSetPref: "+prefName+", "+value+"\n");
 
    var defaultValue = gEnigmailPrefDefaults[prefName];
-   var valueType = typeof defaultValue;
 
    var retVal = false;
 
