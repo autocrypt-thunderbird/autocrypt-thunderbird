@@ -3,11 +3,24 @@
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail-adv");
 
-var gPrefList = {"autoDecrypt":"", "captureWebMail":""};
-
+var gSendFlowedElement, gSendFlowedValue;
 function AdvStartup() {
    DEBUG_LOG("pref-enigmail-adv.js: AdvStartup\n");
    DisplayPrefs(false, true, false);
+
+   gSendFlowedElement = document.getElementById("send_plaintext_flowed");
+
+   try {
+     gSendFlowedValue = gEnigPrefRoot.getBoolPref("mailnews.send_plaintext_flowed");
+   } catch (ex) {
+     gSendFlowedValue = true;
+   }
+
+   if (gSendFlowedValue) {
+     gSendFlowedElement.setAttribute("checked", "true");
+   } else {
+     gSendFlowedElement.removeAttribute("checked");
+   }
 
    var testEmailElement = document.getElementById("enigmail_test_email");
    var userIdValue = EnigGetPref("userIdValue");
@@ -28,6 +41,18 @@ function AdvOnAccept() {
    DEBUG_LOG("pref-enigmail-adv.js: AdvOnAccept\n");
 
    DisplayPrefs(false, false, true);
+
+   dump("gSendFlowedElement.checked="+gSendFlowedElement.checked+"\n");
+
+   if (gSendFlowedElement &&
+       (gSendFlowedElement.checked != gSendFlowedValue) ) {
+
+     if (gSendFlowedElement.checked) {
+       gEnigPrefRoot.setBoolPref("mailnews.send_plaintext_flowed", true);
+     } else {
+       gEnigPrefRoot.setBoolPref("mailnews.send_plaintext_flowed", false);
+     }
+   }
 
    return true;
 }

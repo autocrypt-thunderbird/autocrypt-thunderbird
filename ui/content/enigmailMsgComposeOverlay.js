@@ -74,35 +74,60 @@ function enigMsgComposeClose() {
 function enigMsgComposeReset() {
    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeReset\n");
 
-   enigUpdateOptionsDisplay();
-
    gEnigDirty = false;
    gEnigProcessed = null;
    gEnigTimeoutID = null;
 }
 
-function enigUpdateOptionsDisplay() {
-  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigUpdateOptionsDisplay: \n");
-   var optList = ["defaultEncryptSignMsg", "defaultSignMsg",
-                  "confirmBeforeSend"];
+function enigInitDefaultOptionsMenu() {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigInitDefaultOptionsMenu\n");
 
-   for (var j=0; j<optList.length; j++) {
-     var optName = optList[j];
-     var optValue = EnigGetPref(optName);
+  var encryptId;
 
-     var menuElement = document.getElementById("enigmail_"+optName);
+  var defaultEncryptionOption = EnigGetPref("defaultEncryptionOption");
 
-     menuElement.setAttribute("checked", optValue ? "true" : "false");
-   }
+  switch (defaultEncryptionOption) {
+  case 2:
+    encryptId = "enigmail_defaultEncryptionSign";
+    break;
+  case 1:	
+    encryptId = "enigmail_defaultEncryptionOnly";
+    break;
+  default:
+    encryptId = "enigmail_defaultEncryptionNone";
+    break;
+  }
 
-   if (EnigGetPref("defaultEncryptSignMsg")) {
-      gEnigSendButton.removeAttribute("collapsed");
-      gEnigOrigSendButton.setAttribute("collapsed", "true");
+  var encryptItem = document.getElementById(encryptId);
+  if (encryptItem)
+    encryptItem.setAttribute("checked", "true");
 
-   } else {
-      gEnigOrigSendButton.removeAttribute("collapsed");
-      gEnigSendButton.setAttribute("collapsed", "true");
-   }
+  if (!defaultEncryptionOption) {
+     gEnigSendButton.removeAttribute("collapsed");
+     gEnigOrigSendButton.setAttribute("collapsed", "true");
+
+  } else {
+     gEnigOrigSendButton.removeAttribute("collapsed");
+     gEnigSendButton.setAttribute("collapsed", "true");
+  }
+
+  var optList = ["defaultSignMsg", "confirmBeforeSend"];
+
+  for (var j=0; j<optList.length; j++) {
+    var optName = optList[j];
+    var optValue = EnigGetPref(optName);
+
+    var menuElement = document.getElementById("enigmail_"+optName);
+
+    menuElement.setAttribute("checked", optValue ? "true" : "false");
+  }
+}
+
+function enigDefaultEncryption(value) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigDefaultEncryption: "+value+"\n");
+
+  EnigSetPref("defaultEncryptionOption", value);
+  return true;
 }
 
 function enigInsertKey() {
@@ -208,6 +233,10 @@ function enigSendCommand(elementId) {
     sendFlags = nsIEnigmail.SEND_SIGNED;
     break;
 
+  case "enigmail_encrypted_send":
+    sendFlags = nsIEnigmail.SEND_ENCRYPTED;
+    break;
+
   case "enigmail_encrypt_sign_send":
     sendFlags = nsIEnigmail.SEND_SIGNED | nsIEnigmail.SEND_ENCRYPTED;
     break;
@@ -246,14 +275,24 @@ function enigSend(sendFlags) {
      DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: currentId="+currentId+
                ", "+currentId.email+"\n");
 
+     var defaultEncryptionOption = EnigGetPref("defaultEncryptionOption");
+
      var defaultSend = sendFlags & nsIEnigmail.SEND_DEFAULT;
      if (defaultSend) {
 
        if (EnigGetPref("defaultSignMsg"))
          sendFlags |= SIGN_MSG;
 
-       if (EnigGetPref("defaultEncryptSignMsg"))
+       switch (defaultEncryptionOption) {
+       case 2:
          sendFlags |= ENCRYPT_OR_SIGN_MSG;
+         break;
+       case 1:	
+         sendFlags |= ENCRYPT_MSG;
+         break;
+       default:
+        break;
+       }
      }
 
      var msgCompFields = gMsgCompose.compFields;
@@ -413,7 +452,8 @@ function enigSend(sendFlags) {
            // Default send error; turn off encryption
            sendFlags &= ~ENCRYPT_MSG;
 
-           if (!EnigGetPref("defaultSignMsg")) {
+           if (!EnigGetPref("defaultSignMsg") &&
+               (defaultEncryptionOption < 2) ) {
              // Turn off signing
              sendFlags &= ~SIGN_MSG;
            }
@@ -636,8 +676,6 @@ function enigToggleAttribute(attrName)
 
   var oldValue = EnigGetPref(attrName);
   EnigSetPref(attrName, !oldValue);
-
-  enigUpdateOptionsDisplay();
 }
 
 function enigDecryptQuote(interactive) {

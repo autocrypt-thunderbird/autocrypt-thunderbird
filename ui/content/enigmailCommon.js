@@ -52,8 +52,8 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "userIdSource":USER_ID_DEFAULT,
                              "userIdValue":"",
                              "noPassphrase":false,
+                             "defaultEncryptionOption":1,
                              "defaultSignMsg":false,
-                             "defaultEncryptSignMsg":false,
                              "defaultSignNewsMsg":false,
                              "alwaysTrustSend":true,
                              "encryptToSelf":true,
@@ -179,20 +179,29 @@ function GetEnigmailSvc() {
 function EnigUpdate_0_50() {
   DEBUG_LOG("enigmailCommon.js: EnigUpdate_0_50: \n");
 
+  var savePrefs = false;
+
   try {
     var defaultEncryptMsg = gPrefEnigmail.getBoolPref("defaultEncryptMsg");
 
-    try {
-      var defaultEncryptSignMsg = gPrefEnigmail.getBoolPref("defaultEncryptSignMsg");
+    gPrefEnigmail.deleteBranch("defaultEncryptMsg");
+    savePrefs = true;
+  } catch (ex) {}
 
-    } catch (ex) {
-      DEBUG_LOG("enigmailCommon.js: EnigUpdate_0_50: deleting defaultEncryptMsg\n");
-      gPrefEnigmail.setBoolPref("defaultEncryptSignMsg", defaultEncryptMsg);
-      gPrefEnigmail.deleteBranch("defaultEncryptMsg");
-      EnigSavePrefs();
-    }
+  try {
+    var defaultEncryptSignMsg = gPrefEnigmail.getBoolPref("defaultEncryptSignMsg");
+    gPrefEnigmail.deleteBranch("defaultEncryptSignMsg");
+    savePrefs = true;
+
+    if (defaultEncryptSignMsg)
+        gPrefEnigmail.setIntPref("defaultEncryptionOption", 2);
 
   } catch (ex) {}
+
+  if (savePrefs) {
+    DEBUG_LOG("enigmailCommon.js: EnigUpdate_0_50: Updating prefs\n");
+    EnigSavePrefs();
+  }
 }
 
 function EnigConfigure() {

@@ -61,9 +61,7 @@
                        "userIdSource",
                        "userIdValue",
                        "noPassphrase",
-                       "enigmail_defaultSignMsg",
-                       "enigmail_defaultEncryptSignMsg",
-                       "send_plaintext_flowed",
+                       "defaultEncryptionOption",
                        "enigmail_maxIdleMinutes"
                        ];
   ]]>
@@ -119,28 +117,26 @@
     </groupbox>
 
     <groupbox orient="vertical">
-      <caption label="&enigmail.whenSending.label;"/>
+      <caption label="&enigmail.defaultEncryptionOptions.label;"/>
 
-      <checkbox id="enigmail_defaultSignMsg"
-              label="&enigmail.defaultSignMsg.label;"
-              pref="true"
-              preftype="bool"
-              prefstring="extensions.enigmail.defaultSignMsg"
-              prefattribute="checked"/>
+      <radiogroup id="defaultEncryptionOption"
+                  prefstring="extensions.enigmail.defaultEncryptionOption">
 
-      <checkbox id="enigmail_defaultEncryptSignMsg"
-              label="&enigmail.defaultEncryptSignMsg.label;"
-              pref="true"
-              preftype="bool"
-              prefstring="extensions.enigmail.defaultEncryptSignMsg"
-              prefattribute="checked"/>
+        <radio id="defaultEncryptionNone"
+               value="0"
+               label="&enigmail.defaultEncryptionNone.label;"
+               oncommand="setDisables(false);"/>
 
-      <checkbox id="send_plaintext_flowed"
-              label="&enigmail.send_plaintext_flowed.label;"
-              pref="true"
-              preftype="bool"
-              prefstring="mailnews.send_plaintext_flowed"
-              prefattribute="checked"/>
+        <radio id="defaultEncryptionOnly"
+               value="1"
+               label="&enigmail.defaultEncryptionOnly.label;" 
+               oncommand="setDisables(false);"/>
+
+        <radio id="defaultEncryptionSign"
+               value="2"
+               label="&enigmail.defaultEncryptionSign.label;" 
+               oncommand="setDisables(false);"/>
+       </radiogroup>
     </groupbox>
 
     <hbox autostretch="never">

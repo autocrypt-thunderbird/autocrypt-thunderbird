@@ -55,6 +55,11 @@
              accesskey="&enigmail.signedsend.accesskey;"
              oncommand="enigSend(1);" />
 
+        <menuitem id="enigmail_encrypted_send"
+             label="&enigmail.encryptedsend.label;"
+             accesskey="&enigmail.encryptedsend.accesskey;"
+             oncommand="enigSend(2);" />
+
         <menuitem id="enigmail_encrypt_sign_send"
              label="&enigmail.encryptsignsend.label;"
              accesskey="&enigmail.encryptsignsend.accesskey;"
@@ -67,26 +72,54 @@
 
         <menuseparator/>
 
-        <menuitem id="enigmail_defaultSignMsg"
-             type="checkbox"
-             checked="false"
-             label="&enigmail.defaultSignMsg.label;"
-             accesskey="&enigmail.defaultSignMsg.accesskey;"
-             oncommand="enigToggleAttribute('defaultSignMsg');" />
+        <menu id="enigmail_default_options_menu"
+              label="&enigmail.defaultOptionsMenu.label;"
+              accesskey="&enigmail.defaultOptionsMenu.accesskey;">
 
-        <menuitem id="enigmail_defaultEncryptSignMsg"
-             type="checkbox"
-             checked="false"
-             label="&enigmail.defaultEncryptSignMsg.label;"
-             accesskey="&enigmail.defaultEncryptSignMsg.accesskey;"
-             oncommand="enigToggleAttribute('defaultEncryptSignMsg');" />
+          <menupopup onpopupshowing="enigInitDefaultOptionsMenu();">
 
-        <menuitem id="enigmail_confirmBeforeSend"
-             type="checkbox"
-             checked="false"
-             label="&enigmail.confirmBeforeSend.label;"
-             accesskey="&enigmail.confirmBeforeSend.accesskey;"
-             oncommand="enigToggleAttribute('confirmBeforeSend');" />
+            <menuitem id="enigmail_defaultEncryptionSign"
+              type="radio"
+              name="defaultEncryptionGroup"
+              label="&enigmail.defaultEncryptionSign.label;"
+              accesskey="&enigmail.defaultEncryptionSign.accesskey;"
+              oncommand="enigDefaultEncryption(2);"/>
+
+
+            <menuitem id="enigmail_defaultEncryptionOnly"
+              type="radio"
+              checked="true"
+              name="defaultEncryptionGroup"
+              label="&enigmail.defaultEncryptionOnly.label;"
+              accesskey="&enigmail.defaultEncryptionOnly.accesskey;"
+              oncommand="enigDefaultEncryption(1);"/>
+
+
+            <menuitem id="enigmail_defaultEncryptionNone"
+              type="radio"
+              name="defaultEncryptionGroup"
+              label="&enigmail.defaultEncryptionNone.label;"
+              accesskey="&enigmail.defaultEncryptionNone.accesskey;"
+              oncommand="enigDefaultEncryption(0);"/>
+
+            <menuseparator/>
+
+            <menuitem id="enigmail_defaultSignMsg"
+              type="checkbox"
+              checked="false"
+              label="&enigmail.defaultSignMsg.label;"
+              accesskey="&enigmail.defaultSignMsg.accesskey;"
+              oncommand="enigToggleAttribute('defaultSignMsg');" />
+
+            <menuitem id="enigmail_confirmBeforeSend"
+              type="checkbox"
+              checked="false"
+              label="&enigmail.confirmBeforeSend.label;"
+              accesskey="&enigmail.confirmBeforeSend.accesskey;"
+              oncommand="enigToggleAttribute('confirmBeforeSend');" />
+
+          </menupopup>
+        </menu>
 
         <menuseparator/>
 
