@@ -106,7 +106,7 @@ function enigViewSecurityInfo() {
 
       var pubKeyId = "0x" + gEnigSecurityInfo.keyId.substr(8, 8);
 
-      var mesg =  gEnigSecurityInfo.statusInfo + "\n\nClick OK button to import public key "+pubKeyId+" from keyserver.";
+      var mesg =  gEnigSecurityInfo.statusInfo + EnigGetString("keyImportPrefix")+" "+pubKeyId+" "+EnigGetString("keyImportSuffix");
 
       if (EnigConfirm(mesg)) {
         var recvErrorMsgObj = new Object();
@@ -119,12 +119,12 @@ function enigViewSecurityInfo() {
         if (exitStatus == 0) {
           enigMessageReload(false);
         } else {
-          EnigAlert("Unable to receive public key\n\n"+recvErrorMsgObj.value);
+          EnigAlert(EnigGetString("keyImportError")+recvErrorMsgObj.value);
         }
       }
 
     } else {
-      EnigAlert("OpenPGP Security Info\n\n"+gEnigSecurityInfo.statusInfo);
+      EnigAlert(EnigGetString("securityInfo")+gEnigSecurityInfo.statusInfo);
     }
 
   } else {
@@ -665,7 +665,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
         bodyElement.removeChild(bodyElement.childNodes[0]);
 
     if (hasAttachments) {
-      var newTextNode = msgFrame.document.createTextNode("Note from Enigmail: Attachments to this message have not been signed or encrypted.");
+      var newTextNode = msgFrame.document.createTextNode(EnigGetString("enigNote"));
 
       var newEmElement = msgFrame.document.createElement("em");
       newEmElement.appendChild(newTextNode);
@@ -798,7 +798,7 @@ function enigGetDecryptedMessage(contentType) {
     contentData += "\r\n\r\n";
 
     if (gEnigDecryptedMessage.hasAttachments) {
-      contentData += "Enigmail: *Attachments to this message have not been signed or encrypted*\r\n\r\n";
+      contentData += EnigGetString("enigContentNote");
     }
 
     contentData += gEnigDecryptedMessage.plainText;
@@ -811,10 +811,10 @@ function enigGetDecryptedMessage(contentType) {
 
     if (statusLine) {
       if (contentType == "text/html") {
-        contentData += "<b>Enigmail:</b> " +
+        contentData += "<b>"+EnigGetString("enigHeader")+"</b> " +
                        enigEscapeTextForHTML(statusLine, false) + "<br>\r\n<hr>\r\n";
       } else{
-        contentData += "Enigmail: " + statusLine + "\r\n\r\n";
+        contentData += EnigGetString("enigHeader")+" " + statusLine + "\r\n\r\n";
       }
     }
 
@@ -936,24 +936,24 @@ function enigMessageSave() {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageSave: \n");
 
   if (!gEnigDecryptedMessage) {
-    EnigAlert("No decrypted message to save!\nUse Save command from File menu");
+    EnigAlert(EnigGetString("noDecrypted"));
     return;
   }
 
   var mailNewsUrl = enigGetCurrentMsgUrl();
 
   if (!mailNewsUrl) {
-    EnigAlert("No message to save!");
+    EnigAlert(EnigGetString("noMessage"));
     return;
   }
 
   if (gEnigDecryptedMessage.url != mailNewsUrl.spec) {
     gEnigDecryptedMessage = null;
-    EnigAlert("Please click Decypt button to decrypt message");
+    EnigAlert(EnigGetString("useButton"));
     return;
   }
 
-  var saveFile = EnigFilePicker("Enigmail: Save decrypted message",
+  var saveFile = EnigFilePicker(EnigGetString("saveHeader"),
                                 gEnigLastSaveDir, true, "txt",
                                 ["Text files", "*.txt"]);
   if (!saveFile) return;
