@@ -80,10 +80,15 @@ function EnigUninstall() {
 
   var confirm;
 
-  confirm = EnigConfirm("Do you wish to delete all EnigMail-related files in the Mozilla component and chrome directories?");
+  confirm = EnigConfirm(EnigGetString("uninstallConfirm"));
 
   if (!confirm)
     return;
+
+  var failedStr=EnigGetString("uninstallFailOverlay");
+  var uninstallFailDelete=EnigGetString("uninstallFailDelete");
+  var uninstallSuccess=EnigGetString("uninstallSuccess");
+  var uninstallFail=EnigGetString("uninstallFail");
 
   // Reset mail.show_headers pref to "original" value
   EnigShowHeadersAll(false);
@@ -103,7 +108,7 @@ function EnigUninstall() {
                  "chrome://enigmail/content/enigmailMsgPrintOverlay.xul"]);
 
   if (!overlay1Removed || !overlay2Removed) {
-    EnigAlert("Failed to uninstall EnigMail communicator overlay RDF; not deleting chrome jar file");
+    EnigAlert(failedStr);
 
   }
 
@@ -136,15 +141,15 @@ function EnigUninstall() {
         try {
             delFile.remove(true);
         } catch (ex) {
-            EnigError("Error in deleting file "+delFile.path)
+            EnigError(uninstallFailDelete+" "+delFile.path)
         }
       }
     }
 
-    EnigAlert("Uninstalled EnigMail");
+    EnigAlert(uninstallSuccess);
 
   } catch(ex) {
-    EnigAlert("Failed to uninstall EnigMail");
+    EnigAlert(uninstallFail);
   }
 
   // Close window
