@@ -184,14 +184,14 @@ function enigYahooCompose() {
     fromAddr = EnigGetPref("userIdValue");
   }
 
-  var encryptFlags = SIGN_MESSAGE | ENCRYPT_MESSAGE;
+  var encryptFlags = nsIEnigmail.SIGN_MESSAGE | nsIEnigmail.ENCRYPT_MESSAGE;
 
   if (EnigGetPref("alwaysTrustSend"))
-     encryptFlags |= ALWAYS_TRUST_SEND;
+     encryptFlags |= nsIEnigmail.ALWAYS_TRUST_SEND;
 
   var exitCodeObj = new Object();
   var errorMsgObj = new Object();
-  var uiFlags = UI_INTERACTIVE;
+  var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
   var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
                                               fromAddr, toAddr,
@@ -232,7 +232,7 @@ function enigYahooShowLetter() {
   var errorMsgObj  = new Object();
   var signatureObj = new Object();
 
-  var uiFlags = UI_INTERACTIVE;
+  var uiFlags = nsIEnigmail.UI_INTERACTIVE;
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
                                        exitCodeObj, errorMsgObj, signatureObj);
 
@@ -312,14 +312,14 @@ function enigHotmailCompose() {
     fromAddr = EnigGetPref("userIdValue");
   }
 
-  var encryptFlags = SIGN_MESSAGE | ENCRYPT_MESSAGE;
+  var encryptFlags = nsIEnigmail.SIGN_MESSAGE | nsIEnigmail.ENCRYPT_MESSAGE;
 
   if (EnigGetPref("alwaysTrustSend"))
-     encryptFlags |= ALWAYS_TRUST_SEND;
+     encryptFlags |= nsIEnigmail.ALWAYS_TRUST_SEND;
 
   var exitCodeObj = new Object();
   var errorMsgObj = new Object();
-  var uiFlags = UI_INTERACTIVE;
+  var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
   var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
                                               fromAddr, toAddr,
@@ -360,7 +360,7 @@ function enigHotmailShowLetter() {
   var errorMsgObj  = new Object();
   var signatureObj = new Object();
 
-  var uiFlags = UI_INTERACTIVE;
+  var uiFlags = nsIEnigmail.UI_INTERACTIVE;
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
                                        exitCodeObj, errorMsgObj, signatureObj);
 

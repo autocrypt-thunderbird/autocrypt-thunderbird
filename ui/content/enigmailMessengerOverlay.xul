@@ -19,25 +19,13 @@
 
     <menu id="menu_Enigmail"
           label="Enigmail"
-          position="3">
+          position="5">
 
       <menupopup id="menu_EnigmailPopup">
 
         <menuitem id="enigmail_viewconsole"
              label="&enigmail.viewconsole.label;"
              oncommand="EnigViewConsole();" />
-
-        <menuitem id="enigmail_generatekey"
-             label="&enigmail.generatekey.label;"
-             oncommand="window.open('enigmail:keygen');" />
-
-        <menuitem id="enigmail_upgrade"
-             label="&enigmail.upgrade.label;"
-             oncommand="EnigUpgrade();" />
-
-        <menuitem id="enigmail_about"
-             label="&enigmail.about.label;"
-             oncommand="window.openDialog('enigmail:about', 'dialog');" />
 
       </menupopup>
     </menu>
@@ -47,7 +35,7 @@
 
   <toolbox id="mailToolbarToolbox">
     <toolbar id="msgToolbar" persist="collapsed">
-      <box id="toolbar_button_box">
+      <hbox id="toolbar_button_box">
 
          <toolbarbutton class="toolbarbutton-1"
                  id="button-enigmail-decrypt"
@@ -55,10 +43,8 @@
                  tooltip="aTooltip" tooltiptext="&enigmail.decryptbutton.tip;" 
                  oncommand="enigMessageDecrypt();"
                  />
-
-         <toolbarseparator class="toolbarseparator-primary"
-                           />
-       </box>
+         <toolbarseparator class="toolbarseparator-primary" />
+       </hbox>
     </toolbar>
   </toolbox>
 

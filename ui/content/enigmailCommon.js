@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible IPC version
-var gEnigmailVersion = "0.28.1.0";
-var gIPCVersion      = "0.98.2.0";
+var gEnigmailVersion = "0.39.0.0";
+var gIPCVersion      = "0.99.0.0";
 
 const MESSAGE_BUFFER_SIZE = 16000;
 
@@ -11,6 +11,9 @@ const NS_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1"
 const NS_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
 const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
 const MAILNEWS_PREFS_ROOT       = "mailnews.";
+
+// Interfaces
+const nsIEnigmail               = Components.interfaces.nsIEnigmail;
 
 // UserIdSource values
 const USER_ID_SPECIFIED = 0;
@@ -45,16 +48,6 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "autoDecrypt":true,
                              "captureWebMail":false
                             };
-
-// User interaction flags
-const UI_INTERACTIVE    = 0x01;
-const IMPORT_KEY        = 0x02;
-
-// Encryption flags
-const SIGN_MESSAGE      = 0x01;
-const ENCRYPT_MESSAGE   = 0x02;
-const ALWAYS_TRUST_SEND = 0x04;
-const ENCRYPT_TO_SELF   = 0x08;
 
 var gLogLevel = 3;     // Output only errors/warnings by default
 var gLogFileStream = null;
@@ -350,7 +343,7 @@ function EnigPrefWindow() {
 
 function EnigAdvPrefWindow() {
   window.openDialog("chrome://enigmail/content/pref-enigmail-adv.xul",
-                    "_blank", "modal=yes,chrome,resizable=yes");
+                    "_blank", "chrome,resizable=yes");
 }
 
 function EnigHelpWindow() {

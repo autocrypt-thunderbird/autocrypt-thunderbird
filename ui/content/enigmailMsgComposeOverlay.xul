@@ -30,7 +30,7 @@
                id="button-enigmail-send"
                label="&enigmail.sendbutton.label;"
                tooltip="aTooltip" tooltiptext="&enigmail.sendbutton.tip;" 
-               oncommand="enigSend(null);"
+               oncommand="enigSend(4);"
                position="1"
                />
 
@@ -46,27 +46,25 @@
 
       <menupopup id="menu_EnigmailPopup">
 
-        <menuitem id="enigmail_send_plain"
-             label="&enigmail.sendplain.label;"
-             accesskey="&enigmail.sendplain.accesskey;"
-             oncommand="enigSend(0);" />
+        <menuitem id="enigmail_default_send"
+             label="&enigmail.defaultsend.label;"
+             accesskey="&enigmail.defaultsend.accesskey;"
+             oncommand="enigSend(4);" />
 
-        <menuitem id="enigmail_send_signed"
-             label="&enigmail.sendsigned.label;"
-             accesskey="&enigmail.sendsigned.accesskey;"
+        <menuitem id="enigmail_signed_send"
+             label="&enigmail.signedsend.label;"
+             accesskey="&enigmail.signedsend.accesskey;"
              oncommand="enigSend(1);" />
 
-        <menuitem id="enigmail_send_signed_encrypted"
-             label="&enigmail.sendsignedenc.label;"
-             accesskey="&enigmail.sendsignedenc.accesskey;"
+        <menuitem id="enigmail_encrypt_sign_send"
+             label="&enigmail.encryptsignsend.label;"
+             accesskey="&enigmail.encryptsignsend.accesskey;"
              oncommand="enigSend(3);" />
 
-        <menuseparator/>
-
-        <menuitem id="enigmail_undo_encryption"
-             label="&enigmail.undoencryption.label;"
-             accesskey="&enigmail.undoencryption.accesskey;"
-             oncommand="enigUndoEncryption();" />
+        <menuitem id="enigmail_plain_send"
+             label="&enigmail.plainsend.label;"
+             accesskey="&enigmail.plainsend.accesskey;"
+             oncommand="enigSend(0);" />
 
         <menuseparator/>
 
@@ -86,8 +84,21 @@
 
         <menuseparator/>
 
+        <menuitem id="enigmail_undo_encryption"
+             label="&enigmail.undoencryption.label;"
+             accesskey="&enigmail.undoencryption.accesskey;"
+             oncommand="enigUndoEncryption();" />
+
+        <menuitem id="enigmail_insert_key"
+             label="&enigmail.insertkey.label;"
+             accesskey="&enigmail.insertkey.accesskey;"
+             oncommand="enigInsertKey();" />
+
+        <menuseparator/>
+
         <menuitem id="enigmail_prefs"
              label="&enigmail.prefs.label;"
+             accesskey="&enigmail.prefs.accesskey;"
              oncommand="EnigPrefWindow();" />
 
         <menuseparator/>
@@ -100,18 +111,22 @@
 
         <menuitem id="enigmail_keygen"
              label="&enigmail.generatekey.label;"
+             accesskey="&enigmail.generatekey.accesskey;"
              oncommand="EnigKeygen();" />
 
         <menuitem id="enigmail_upgrade"
              label="&enigmail.upgrade.label;"
+             accesskey="&enigmail.upgrade.accesskey;"
              oncommand="EnigUpgrade();" />
 
         <menuitem id="enigmail_help"
              label="&enigmail.help.label;"
+             accesskey="&enigmail.help.accesskey;"
              oncommand="EnigHelpWindow();" />
 
         <menuitem id="enigmail_about"
              label="&enigmail.about.label;"
+             accesskey="&enigmail.about.accesskey;"
              oncommand="window.open('enigmail:about');" />
 
       </menupopup>

@@ -90,8 +90,8 @@ function enigMessageDecrypt(event) {
 }
 
 
-function enigMessageDecryptCallback(msgText, interactive, signature) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCallback: "+interactive+", "+"signature='"+signature+"'\n");
+function enigMessageDecryptCallback(msgText, interactive, signStatus) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCallback: "+interactive+", "+"signStatus='"+signStatus+"'\n");
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
@@ -99,16 +99,17 @@ function enigMessageDecryptCallback(msgText, interactive, signature) {
 
   var exitCodeObj = new Object();
   var errorMsgObj = new Object();
-  var signatureObj = new Object();
-  signatureObj.value = signature;
+  var signStatusObj = new Object();
+  signStatusObj.value = signStatus;
 
-  var uiFlags = interactive ? (UI_INTERACTIVE | IMPORT_KEY) : 0;
+  var uiFlags = interactive ? (nsIEnigmail.UI_INTERACTIVE |
+                               nsIEnigmail.ALLOW_KEY_IMPORT) : 0;
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, msgText,
-                                     exitCodeObj, errorMsgObj, signatureObj);
+                                     exitCodeObj, errorMsgObj, signStatusObj);
   //DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCallback: plainText='"+plainText+"'\n");
 
-  var newSignature = signatureObj.value;
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCallback: newSignature='"+newSignature+"'\n");
+  var newSignStatus = signStatusObj.value;
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCallback: newSignStatus='"+newSignStatus+"'\n");
 
   var exitCode = exitCodeObj.value;
   var errorMsg = errorMsgObj.value;
@@ -130,8 +131,13 @@ function enigMessageDecryptCallback(msgText, interactive, signature) {
     displayMsg = statusLines.join("\n");
   }
 
-  if (!signature && newSignature) {
-    return enigMsgDirect(interactive, newSignature);
+  if (newSignStatus.indexOf("BADSIG_ARMOR ") == 0) {
+    // Bad signature
+    if (!signStatus) {
+      // Try to verify signature by accessing raw message text directly
+      // (avoid recursion by checking if we already have a signStatus)
+      return enigMsgDirect(interactive, newSignStatus);
+    }
   }
 
   if (!plainText) {
@@ -159,14 +165,14 @@ function enigMessageDecryptCallback(msgText, interactive, signature) {
   return;
 }
 
-function enigMsgDirect(interactive, signature) {
-  WRITE_LOG("enigmailMessengerOverlay.js: enigMsgDirect: signature="+signature+"\n");
+function enigMsgDirect(interactive, signStatus) {
+  WRITE_LOG("enigmailMessengerOverlay.js: enigMsgDirect: signStatus="+signStatus+"\n");
   var mailNewsUrl = enigGetCurrentMsgUrl();
 
   var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
 
   var callbackArg = { interactive:interactive,
-                      signature:signature,
+                      signStatus:signStatus,
                       messageUrl:mailNewsUrl.spec,
                       pipeConsole:pipeConsole };
 
@@ -193,5 +199,5 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
   //DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgDirectCallback: msgText='"+msgText+"'\n");
 
   enigMessageDecryptCallback(msgText, callbackArg.interactive,
-                             callbackArg.signature);
+                             callbackArg.signStatus);
 }

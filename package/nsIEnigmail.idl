@@ -67,15 +67,31 @@ interface nsIEnigmail : nsISupports
 
   boolean stillActive();
 
+  string locateArmoredBlock(in string text,
+                            in long offset,
+                            in string indentStr,
+                            out long beginIndex,
+                            out long endIndex);
+
+  /* Cleartext signature parts */
+  const long SIGNATURE_TEXT    = 1;
+  const long SIGNATURE_HEADERS = 2;
+  const long SIGNATURE_ARMOR   = 3;
+
+  string extractSignaturePart(in string signatureBlock,
+                              in long part);
+
   /* User interaction flags */
   const long UI_INTERACTIVE    = 0x01;
-  const long IMPORT_KEY        = 0x02;
+  const long ALLOW_KEY_IMPORT  = 0x02;
+  const long IMPORT_PUBLIC_KEY = 0x04;
 
   /* Encryption flags */
   const long SIGN_MESSAGE      = 0x01;
   const long ENCRYPT_MESSAGE   = 0x02;
-  const long ALWAYS_TRUST_SEND = 0x04;
-  const long ENCRYPT_TO_SELF   = 0x08;
+  const long DEFAULT_SEND      = 0x04;
+  const long ALWAYS_TRUST_SEND = 0x08;
+  const long ENCRYPT_TO_SELF   = 0x10;
 
   string encryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,
@@ -91,7 +107,13 @@ interface nsIEnigmail : nsISupports
                         in string  cipherText,
                         out long   exitCode,
                         out string errorMsg,
-                        inout string signature);
+                        inout string signStatus);
+
+  string extractKey(in nsIDOMWindow parent,
+                    in unsigned long uiFlags,
+                    in string userId,
+                    out long   exitCode,
+                    out string errorMsg);
 
   long receiveKey(in nsIDOMWindow parent,
                   in unsigned long uiFlags,

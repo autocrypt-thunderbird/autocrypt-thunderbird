@@ -31,7 +31,7 @@
 <!ENTITY enigmail.agentPath.label         "GPG/PGP executable path:">
 
 <!ENTITY enigmail.defaultSignMsg.label    "Sign messages by default">
-<!ENTITY enigmail.defaultEncryptMsg.label "Encrypt messages by default">
+<!ENTITY enigmail.defaultEncryptMsg.label "Encrypt messages if possible">
 <!ENTITY enigmail.send_plaintext_flowed.label "Allow flowed text (RFC 2646)">
 
 <!ENTITY enigmail.whenSending.label       "When sending mail">
@@ -57,13 +57,15 @@
 
 <!ENTITY enigmail.advancedPrefs.label	  "Enigmail Advanced Preferences">
 
-<!ENTITY enigmail.sendplain.label	  "Send plain">
-<!ENTITY enigmail.sendsigned.label	  "Send signed">
-<!ENTITY enigmail.sendsignedenc.label	  "Send signed+encrypted">
+<!ENTITY enigmail.defaultsend.label	  "Default send">
+<!ENTITY enigmail.plainsend.label	  "Plaintext send">
+<!ENTITY enigmail.signedsend.label	  "Signed send">
+<!ENTITY enigmail.encryptsignsend.label	  "Encrypt+sign send">
 
 <!ENTITY enigmail.undoencryption.label	  "Undo encryption">
+<!ENTITY enigmail.insertkey.label	  "Insert public key">
 
-<!ENTITY enigmail.prefs.label	          "Enigmail Preferences">
+<!ENTITY enigmail.prefs.label	          "Preferences">
 
 <!ENTITY enigmail.viewconsole.label	  "View Enigmail console">
 <!ENTITY enigmail.generatekey.label	  "Generate key">
@@ -71,10 +73,20 @@
 <!ENTITY enigmail.help.label	          "Help">
 <!ENTITY enigmail.about.label	          "About Enigmail">
 
-<!ENTITY enigmail.viewconsole.commandkey  "7">
-<!ENTITY enigmail.sendplain.accesskey	  "p">
-<!ENTITY enigmail.sendsigned.accesskey	  "s">
-<!ENTITY enigmail.sendsignedenc.accesskey "e">
-<!ENTITY enigmail.undoencryption.accesskey "u">
-<!ENTITY enigmail.viewconsole.accesskey	  "v">
+<!ENTITY enigmail.defaultsend.accesskey	    "D">
+<!ENTITY enigmail.signedsend.accesskey	    "S">
+<!ENTITY enigmail.encryptsignsend.accesskey "E">
+<!ENTITY enigmail.plainsend.accesskey	    "P">
 
+<!ENTITY enigmail.undoencryption.accesskey  "U">
+<!ENTITY enigmail.insertkey.accesskey       "I">
+
+<!ENTITY enigmail.prefs.accesskey           "r">
+
+<!ENTITY enigmail.viewconsole.accesskey	    "V">
+<!ENTITY enigmail.generatekey.accesskey     "k">
+<!ENTITY enigmail.upgrade.accesskey         "g">
+<!ENTITY enigmail.help.accesskey            "H">
+<!ENTITY enigmail.about.accesskey           "A">
+
+<!ENTITY enigmail.viewconsole.commandkey    "7">
