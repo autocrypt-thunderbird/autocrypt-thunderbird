@@ -175,13 +175,13 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       gSignedUINode.setAttribute("signed", "ok");
       //gStatusBar.setAttribute("signed", "ok");
 
-    } else if (statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
+    } else if (statusFlags & (nsIEnigmail.UNVERIFIED_SIGNATURE | 
+                              nsIEnigmail.GOOD_SIGNATURE)) {
       // Display unverified signature icon
       gSignedUINode.setAttribute("signed", "unknown");
       //gStatusBar.setAttribute("signed", "unknown");
 
-    } else if (statusFlags & (nsIEnigmail.GOOD_SIGNATURE |
-                              nsIEnigmail.BAD_SIGNATURE |
+    } else if (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
                               nsIEnigmail.EXPIRED_SIGNATURE) ) {
       // Display untrusted/bad signature icon
       gSignedUINode.setAttribute("signed", "notok");
