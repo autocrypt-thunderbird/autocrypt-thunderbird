@@ -216,7 +216,9 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
     statusInfo += "\n\n" + errorMsg;
   }
 
-  if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
+
+  if (statusFlags & nsIEnigmail.DECRYPTION_OKAY ||
+      (gEnigStatusBar.getAttribute("encrypted")=="ok")) {
     if (!statusInfo) {
       statusInfo = EnigGetString("decryptedMsg");
     }
@@ -302,8 +304,8 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       gEnigStatusBar.setAttribute("signed", "unknown");
     }
     else {
-      gEnigStatusBar.removeAttribute("signed");
-      statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureOk");
+    //  gEnigStatusBar.removeAttribute("signed");
+    //  statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureOk");
     }
 
     if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
@@ -324,7 +326,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       gEnigStatusBar.setAttribute("encrypted", "notok");
     }
     else {
-      gEnigStatusBar.removeAttribute("encrypted");
+      // gEnigStatusBar.removeAttribute("encrypted");
     }
 
   } catch (ex) {}
@@ -432,6 +434,14 @@ function enigMsgHdrViewHide() {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigMsgHdrViewHide\n");
   var enigmailBox = document.getElementById("expandedEnigmailBox");
   enigmailBox.collapsed=true;
+  gEnigSecurityInfo = { statusFlags: 0,
+                      keyId: "",
+                      userId: "",
+                      statusLine: "",
+                      statusInfo: "",
+                      fullStatusInfo: "" };
+
+
 }
 
 function enigMsgHdrViewUnhide() {
