@@ -1267,5 +1267,8 @@ function EnigUninstall() {
   if (!EnigConfirm(EnigGetString("uninstallConfirm")))
     return;
 
+  window.openDialog("chrome://enigmail/content/enigmailUninstall.xul",
+          "", "dialog,modal,centerscreen", {performUninst: true});
+
   return;
 }
