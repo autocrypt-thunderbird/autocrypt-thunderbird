@@ -30,7 +30,7 @@ window.addEventListener("unload", enigMessengerFinish,  false);
 function enigMessengerStartup() {
   DEBUG_LOG("enigmailMessengerOverlay.js: Startup\n");
 
-  enigUpdateOptionsDisplay();
+  // enigUpdateOptionsDisplay();
 
   // Override SMIME ui
   var smimeStatusElement = document.getElementById("cmd_viewSecurityStatus");
@@ -890,18 +890,34 @@ function enigGetDecryptedMessage(contentType, includeHeaders) {
 
   var contentData = "";
 
-  var headerName, headerValue;
+  var headerName;
 
   if (contentType == "message/rfc822") {
     // message/rfc822
 
     if (includeHeaders) {
-      for (headerName in headerList) {
-        headerValue = headerList[headerName];
+      try {
+        var uriSpec = enigGetCurrentMsgUriSpec();
 
-        if (headerValue)
-          contentData += headerName + ": " + headerValue + "\r\n";
-      }
+        if (uriSpec) {
+          var msgService = messenger.messageServiceFromURI(uriSpec);
+
+          var urlObj = new Object();
+          msgService.GetUrlForUri(uriSpec, urlObj, msgWindow);
+
+          var msgData = urlObj.value.QueryInterface(Components.interfaces.nsIMailboxUrl);
+          var msgHdr = { "From":    msgData.messageHeader.author,
+                         "Subject": msgData.messageHeader.subject,
+                         "Cc":      msgData.messageHeader.ccList,
+                         "To":      msgData.messageHeader.recipients,
+                         "Date":    headerList.date };
+
+          for (headerName in msgHdr) {
+            if (msgHdr[headerName])
+              contentData += headerName + ": " + msgHdr[headerName] + "\r\n";
+          }
+        }
+      } catch (ex) {}
     }
 
     contentData += "Content-Type: text/plain";
@@ -969,18 +985,6 @@ function enigGetDecryptedMessage(contentType, includeHeaders) {
   return contentData;
 }
 
-function enigMsgDefaultPrint(contextMenu, elementId) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgDefaultPrint: "+contextMenu+"\n");
-
-  // Reset mail.show_headers pref to "original" value
-  EnigShowHeadersAll(false);
-
-  if (contextMenu)
-    PrintEnginePrint();
-  else
-    goDoCommand(elementId == "cmd_printpreview" ? "cmd_printpreview" : "cmd_print");
-}
-
 function enigMsgForward(elementId, event) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgForward: "+elementId+", "+event+"\n");
 
@@ -997,6 +1001,18 @@ function enigMsgForward(elementId, event) {
   } else {
     MsgForwardMessage(event);
   }
+}
+
+function enigMsgDefaultPrint(contextMenu, elementId) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgDefaultPrint: "+contextMenu+"\n");
+
+  // Reset mail.show_headers pref to "original" value
+  EnigShowHeadersAll(false);
+
+  if (contextMenu)
+    PrintEnginePrint();
+  else
+    goDoCommand(elementId == "cmd_printpreview" ? "cmd_printpreview" : "cmd_print");
 }
 
 function enigMsgPrint(elementId) {

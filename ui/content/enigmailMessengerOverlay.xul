@@ -24,7 +24,8 @@
           accesskey="&enigmail.messengermenu.accesskey;"
           insertbefore="tasksMenu">
 
-      <menupopup id="menu_EnigmailPopup">
+      <menupopup id="menu_EnigmailPopup"
+        onpopupshowing="enigUpdateOptionsDisplay();">
 
         <menuitem id="enigmail_decryptverify"
              label="&enigmail.decryptverify.label;"
