@@ -353,7 +353,7 @@
 
 <!ENTITY enigmail.keyMan.title                     "OpenPGP Key Management">
 <!ENTITY enigmail.keyMan.close.label               "Close Window">
-<!ENTITY enigmail.keyMan.generate.label            "Key Pair">
+<!ENTITY enigmail.keyMan.generate.label            "New Key Pair">
 <!ENTITY enigmail.keyMan.sign.label                "Sign Key">
 <!ENTITY enigmail.keyMan.setTrust.label            "Set Key Trust">
 <!ENTITY enigmail.keyMan.genRevoke.label           "Revocation Certificate">
@@ -371,16 +371,17 @@
 <!ENTITY enigmail.keyMan.keyserverMenu.accesskey   "K">
 <!ENTITY enigmail.keyMan.generateMenu.accesskey    "G">
 
-<!ENTITY enigmail.keyMan.importFromFile.label      "Import Key from File">
-<!ENTITY enigmail.keyMan.importFromServer.label    "Search for a Key (on a Keyserver)">
-<!ENTITY enigmail.keyMan.importFromClipbrd.label   "Import Key from Clipboard">
-<!ENTITY enigmail.keyMan.exportToFile.label        "Export Key To File">
-<!ENTITY enigmail.keyMan.uploadToServer.label      "Upload Public Key To Keyserver">
-<!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copy Public Key To Clipboard">
-<!ENTITY enigmail.keyMan.ctxExportToFile.label     "Export Key To File">
-<!ENTITY enigmail.keyMan.ctxUploadToServer.label   "Upload Public Key To Keyserver">
-<!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label    "Copy Public Key To Clipboard">
-<!ENTITY enigmail.keyMan.refreshKey.label          "Refresh Public Key From Keyserver">
+<!ENTITY enigmail.keyMan.importFromFile.label      "Import Key(s) from File">
+<!ENTITY enigmail.keyMan.importFromServer.label    "Search for Key(s)">
+<!ENTITY enigmail.keyMan.importFromClipbrd.label   "Import Key(s) from Clipboard">
+<!ENTITY enigmail.keyMan.exportToFile.label        "Export Key(s) to File">
+<!ENTITY enigmail.keyMan.uploadToServer.label      "Upload Public Key(s)">
+<!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copy Public Key(s) to Clipboard">
+<!ENTITY enigmail.keyMan.ctxExportToFile.label     "Export Key(s) to File">
+<!ENTITY enigmail.keyMan.ctxUploadToServer.label   "Upload Public Key(s) to Keyserver">
+<!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label    "Copy Public Key(s) to Clipboard">
+<!ENTITY enigmail.keyMan.refreshKey.label          "Refresh Public Key(s)">
+<!ENTITY enigmail.keyMan.ctxRefreshKey.label       "Refresh Public Key(s) From Keyserver">
 
 <!ENTITY enigmail.keyMan.reload.label              "Reload Key Cache">
 <!ENTITY enigmail.keyMan.addUid.label              "Add User ID">

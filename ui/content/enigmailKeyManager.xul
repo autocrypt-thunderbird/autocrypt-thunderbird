@@ -189,19 +189,21 @@
   <popupset>
     <popup id="ctxmenu"
            onpopupshowing="enigmailKeyMenu();">
-      <menuitem id="ctxViewSig" observes="bcViewSig" label="&enigmail.keyMan.ctxViewSig.label;" oncommand="enigmailListSig()"/>
-      <menuitem id="ctxViewPhoto" observes="bcViewPhoto" label="&enigmail.keyMan.ctxViewPhoto.label;" oncommand="enigShowPhoto()"/>
+			<menuitem label="&enigmail.keyMan.ctxCopyToClipbrd.label;"
+								id="ctxCopyToClipbrd"
+								oncommand="enigmailCopyToClipbrd()"/>
+			<menuitem label="&enigmail.keyMan.ctxExportToFile.label;"
+								id="ctxExport"
+								oncommand="enigmailExportKeys()"/>
 
       <menuseparator/>
 
-      <menuitem id="ctxManageUid" observes="bcManageUid" label="&enigmail.keyMan.manageUid.label;" oncommand="enigmailManageUids()"/>
-      <menuitem id="ctxRevokationCert" observes="bcRevoke" label="&enigmail.keyMan.ctxGenRevoke.label;" oncommand="enigCreateRevokeCert()"/>
-
-      <menuseparator/>
-
-			<menuitem id="ctxEnableKey" observes="bcEnableKey" oncommand="enigmailEnableKey()"/>
-			<menuitem id="ctxRevokeKey" observes="bcRevoke" label="&enigmail.keyMan.revokeKey.label;" oncommand="enigmailRevokeKey()"/>
-			<menuitem id="ctxDeleteKey" observes="bcDeleteKey" label="&enigmail.keyMan.delKey.label;" oncommand="enigmailDeleteKey()"/>
+			<menuitem label="&enigmail.keyMan.ctxUploadToServer.label;"
+								id="ctxUpload"
+								oncommand="enigmailUploadKeys()"/>
+      <menuitem label="&enigmail.keyMan.ctxRefreshKey.label;"
+			          id="ctxRefreshKey"
+                oncommand="enigmailReceiveKey()"/>
 
       <menuseparator/>
 
@@ -210,24 +212,20 @@
 
 			<menuseparator/>
 
-      <menuitem label="&enigmail.keyMan.refreshKey.label;"
-			          id="ctxRefreshKey"
-                oncommand="enigmailReceiveKey()"/>
+
+			<menuitem id="ctxEnableKey" observes="bcEnableKey" oncommand="enigmailEnableKey()"/>
+			<menuitem id="ctxRevokeKey" observes="bcRevoke" label="&enigmail.keyMan.revokeKey.label;" oncommand="enigmailRevokeKey()"/>
+			<menuitem id="ctxDeleteKey" observes="bcDeleteKey" label="&enigmail.keyMan.delKey.label;" oncommand="enigmailDeleteKey()"/>
+
+      <menuseparator/>
+
+      <menuitem id="ctxManageUid" observes="bcManageUid" label="&enigmail.keyMan.manageUid.label;" oncommand="enigmailManageUids()"/>
+      <menuitem id="ctxRevokationCert" observes="bcRevoke" label="&enigmail.keyMan.ctxGenRevoke.label;" oncommand="enigCreateRevokeCert()"/>
 
 			<menuseparator/>
 
-			<menuitem label="&enigmail.keyMan.ctxExportToFile.label;"
-								id="ctxExport"
-								oncommand="enigmailExportKeys()"/>
-			<menuitem label="&enigmail.keyMan.ctxUploadToServer.label;"
-								id="ctxUpload"
-								oncommand="enigmailUploadKeys()"/>
-			<menuitem label="&enigmail.keyMan.ctxCopyToClipbrd.label;"
-								id="ctxCopyToClipbrd"
-								oncommand="enigmailCopyToClipbrd()"/>
-
-			<menuseparator/>
-
+      <menuitem id="ctxViewSig" observes="bcViewSig" label="&enigmail.keyMan.ctxViewSig.label;" oncommand="enigmailListSig()"/>
+      <menuitem id="ctxViewPhoto" observes="bcViewPhoto" label="&enigmail.keyMan.ctxViewPhoto.label;" oncommand="enigShowPhoto()"/>
       <menuitem id="ctxDetails" observes="bcViewSig" label="&enigmail.keyMan.keyProps.label;"
 								oncommand="enigmailKeyDetails()"/>
     </popup>
