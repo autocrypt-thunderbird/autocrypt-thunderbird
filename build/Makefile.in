@@ -93,6 +93,13 @@ LOCAL_INCLUDES	= \
 		-I$(srcdir)/../../ipc/src \
 		$(NULL)
 
+# hack to build non standard library dependent build on unix
+ifeq ($(ENIGMAIL_STATIC),1)
+BUILD_STATIC       = -static -static-libgcc -nostdlib
+else
+BUILD_STATIC       =
+endif
+
 # separate libraries linked in.
 SHARED_LIBRARY_LIBS = \
 		$(DIST)/lib/$(LIB_PREFIX)enigmime_s.$(LIB_SUFFIX) \
@@ -106,6 +113,7 @@ EXTRA_DSO_LDOPTS = \
 		$(DIST)/lib/$(LIB_PREFIX)string_obsolete_s.$(LIB_SUFFIX) \
 		$(XPCOM_LIBS) \
 		$(NSPR_LIBS) \
+		$(BUILD_STATIC) \
 		$(NULL)
 else
 EXTRA_DSO_LDOPTS = \
@@ -114,6 +122,7 @@ EXTRA_DSO_LDOPTS = \
 		$(XPCOM_LIBS) \
 		$(MOZ_XPCOM_OBSOLETE_LIBS) \
 		$(NSPR_LIBS) \
+		$(BUILD_STATIC) \
 		$(NULL)
 endif
 
