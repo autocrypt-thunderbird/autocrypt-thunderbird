@@ -1,13 +1,16 @@
 <!ENTITY enigmail.label                    "Enigmail">
 
-<!ENTITY enigmail.keyUserId.label         "User Id">
-<!ENTITY enigmail.useForSigning.label     "Use key for signing">
+<!ENTITY enigmail.keyUserId.label         "Account / User Id">
+<!ENTITY enigmail.keygenTitle.label       "Enigmail - Generate PGP Key">
+<!ENTITY enigmail.useForSigning.label     "Use generated key for the selected account">
 <!ENTITY enigmail.keyComment.label        "Comment">
 <!ENTITY enigmail.keyNoPassphrase.label   "No passphrase">
 <!ENTITY enigmail.keyPassphrase.label     "Passphrase">
 <!ENTITY enigmail.keyPassphraseRepeat.label "Passphrase (repeat)">
 <!ENTITY enigmail.generateKey.label       "Generate key">
+<!ENTITY enigmail.generateKey.tooltip     "Generates key">
 <!ENTITY enigmail.cancelKey.label         "Cancel">
+<!ENTITY enigmail.cancelKey.tooltip       "Cancel Key Generation">
 
 <!ENTITY enigmail.preferences.label    "Enigmail Preferences">
 
@@ -205,3 +208,16 @@
 <!ENTITY enigmail.amPrefSelectKey.label     "Select Key ...">
 <!ENTITY enigmail.amPrefSignDefault.label     "Sign messages sent from this account by default">
 <!ENTITY enigmail.amPrefEncryptOptions.label   "Select default encryption option">
+
+<!ENTITY enigmail.encryptionDlg.label   "Enigmail Encryption &amp; Signing Settings">
+<!ENTITY enigmail.encDlgEncrypt.label   "Encrypt Message">
+<!ENTITY enigmail.msgNo.label           "No">
+<!ENTITY enigmail.msgNo.accesskey       "N">
+<!ENTITY enigmail.msgYes.label          "Yes">
+<!ENTITY enigmail.msgYes.accesskey      "Y">
+<!ENTITY enigmail.encDlgEncryptIfPossible.label     "If Possible">
+<!ENTITY enigmail.encDlgEncryptIfPossible.accesskey "I">
+<!ENTITY enigmail.encDlgSign.label      "Sign Message">
+<!ENTITY enigmail.encDlgSign.accesskey  "S">
+<!ENTITY enigmail.encDlgPgpMime.label   "Use PGP/MIME">
+<!ENTITY enigmail.encDlgPgpMime.accesskey  "U">
