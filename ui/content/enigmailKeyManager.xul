@@ -80,7 +80,7 @@
         <menuitem label="&enigmail.keyMan.delKey.label;"
 									id="deleteKey"
 									accesskey="&enigmail.keyMan.delKey.accesskey;"
-									disabled="true"/>            
+									collapsed="true"/>            
         <menuseparator/>
         
 				<menu id="importMenu"
@@ -143,7 +143,7 @@
       <menuitem id="ctxAddUid" label="&enigmail.keyMan.addUid.label;" oncommand="enigmailAddUid()"/>
       <menuitem id="ctxSetPrimaryUid" label="&enigmail.keyMan.setPrimaryUid.label;" oncommand="enigmailSetPrimaryUid()"/>
       <menuitem id="ctxRevokationCert" label="&enigmail.keyMan.genRevoke.label;" oncommand="enigCreateRevokeCert()"/>
-			<menuitem id="ctxDeleteKey" label="&enigmail.keyMan.delKey.label;" disabled="true"/>
+			<menuitem id="ctxDeleteKey" label="&enigmail.keyMan.delKey.label;" collapsed="true"/>
 			<menu id="ctxExportMenu"
 						label="&enigmail.keyMan.exportMenu.label;"
 						accesskey="&enigmail.keyMan.exportMenu.accesskey;">
@@ -162,9 +162,11 @@
 										oncommand="enigmailCopyToClipbrd()"/>
 				</menupopup>
 			</menu>
+			<!--
       <menuseparator/>
       <menuitem id="ctxDetails" label="&enigmail.keyMan.keyProps.label;" 
-								disabled="true"/>
+								collapsed="true"/>
+			-->
     </popup>
   </popupset>
   
