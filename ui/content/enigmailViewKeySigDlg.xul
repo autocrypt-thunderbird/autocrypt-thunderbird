@@ -143,44 +143,50 @@
       for (var i=0; i<aSigList.length; i++) {
         var listRow=aSigList[i].split(/:/);
         if (listRow.length>=0) {
-          if (listRow[0] == "uid" || listRow[0] == "pub") {
+          if ((listRow[0] == "uid" || listRow[0] == "pub" || listRow[0] == "uat") && (listRow[USER_ID].length>0)) {
             var userRow=document.createElement("treerow");
             if (typeof(listRow[KEY_USE_FOR])!="string") {
               listRow[KEY_USE_FOR]="";
             }
             var keyValid = (KEY_NOT_VALID.indexOf(listRow[KEY_TRUST])<0 &&
                             listRow[KEY_USE_FOR].indexOf("D")<0);
+            if (listRow[0] == "uat") {
+              listRow[USER_ID]=EnigGetString("userAtt.photo");
+            }
             addCell(userRow, listRow[USER_ID], true, keyValid);
             var treeItem=document.createElement("treeitem");
             treeItem.appendChild(userRow);
             treeChildren.appendChild(treeItem);
           }
           else if (listRow[0] == "sig") {
-            userRow=document.createElement("treerow");
-            if (typeof(keyListArr[listRow[KEY_ID]]) == "object") {
-              addCell(userRow, "   "+listRow[USER_ID]);
+            if (listRow[SIG_TYPE].substr(0,2).toLowerCase()!="1f") {
+              // ignore "revoker" signatures
+              userRow=document.createElement("treerow");
+              if (typeof(keyListArr[listRow[KEY_ID]]) == "object") {
+                addCell(userRow, "   "+listRow[USER_ID]);
+              }
+              else {
+                addCell(userRow, "   "+EnigGetString("userIdNotFound"));
+              }
+              addCell(userRow, listRow[KEY_ID].substr(-8,8));
+              if (listRow[SIG_TYPE].substr(2,1) == "x") {
+                addCell(userRow, EnigGetString("keySignatureExportable"));
+              }
+              else {
+                addCell(userRow, EnigGetString("keySignatureLocal"));
+              }
+              if (typeof(keyListArr[listRow[KEY_ID]]) == "object") {
+                addCell(userRow, EnigGetString("dlgYes"));
+              }
+              else {
+                addCell(userRow, EnigGetString("keySignatureNoKey"));
+              }
+
+              addCell(userRow, listRow[CREATED]);
+              treeItem=document.createElement("treeitem");
+              treeItem.appendChild(userRow);
+              treeChildren.appendChild(treeItem);
             }
-            else {
-              addCell(userRow, "   "+EnigGetString("userIdNotFound"));
-            }
-            addCell(userRow, listRow[KEY_ID].substr(-8,8));
-            if (listRow[SIG_TYPE].substr(2,1) == "x") {
-              addCell(userRow, EnigGetString("keySignatureExportable"));
-            }
-            else {
-              addCell(userRow, EnigGetString("keySignatureLocal"));
-            }
-            if (typeof(keyListArr[listRow[KEY_ID]]) == "object") {
-              addCell(userRow, EnigGetString("dlgYes"));
-            }
-            else {
-              addCell(userRow, EnigGetString("keySignatureNoKey"));
-            }
-            
-            addCell(userRow, listRow[CREATED]);
-            treeItem=document.createElement("treeitem");
-            treeItem.appendChild(userRow);
-            treeChildren.appendChild(treeItem);
           }
           else if (listRow[0] == "sub") {
             break;
