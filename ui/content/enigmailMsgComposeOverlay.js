@@ -985,6 +985,15 @@ function enigToggleAttribute(attrName)
   EnigSetPref(attrName, !oldValue);
 }
 
+function max(a, b) {
+   if (a>b) {
+       return a;
+   }
+   else {
+       return b;
+   }
+}
+
 function enigDecryptQuote(interactive) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: "+interactive+"\n");
 
@@ -1118,7 +1127,7 @@ function enigDecryptQuote(interactive) {
                                                   nsIEnigmail.SIGNATURE_TEXT);
   }
 
-  var signOffset = plainText.indexOf("\n-- ");
+  var signOffset = max(plainText.indexOf("\n-- \n"), plainText.indexOf("\n-- \r"));
 
   if (signOffset >= 0) {
     // Strip signature portion of quoted message
