@@ -34,7 +34,10 @@ var gSendFlagsObj = {
   "enigmail_default_send":   nsIEnigmail.SEND_DEFAULT,
   "enigmail_signed_send":    nsIEnigmail.SEND_SIGNED,
   "enigmail_encrypted_send": nsIEnigmail.SEND_ENCRYPTED,
-  "enigmail_encrypt_sign_send": nsIEnigmail.SEND_SIGNED | nsIEnigmail.SEND_ENCRYPTED
+  "enigmail_encrypt_sign_send": nsIEnigmail.SEND_SIGNED | nsIEnigmail.SEND_ENCRYPTED,
+  "cmd_saveAsDraft":         nsIEnigmail.SEND_DEFAULT,
+  "cmd_saveDefault":         nsIEnigmail.SEND_DEFAULT,
+  "cmd_saveAsTemplate":         nsIEnigmail.SEND_DEFAULT,
   };
 
 var gEnigSendModeItems = ["plain_send",
@@ -67,10 +70,15 @@ function enigMsgComposeStartup() {
 
   // Override send command
   var sendElementIds = ["cmd_sendButton", "cmd_sendNow", "cmd_sendWithCheck",
-                        "cmd_sendLater"];
+                        "cmd_sendLater", "cmd_saveAsDraft", "cmd_saveDefault",
+                        "cmd_saveAsTemplate"];
 
   EnigOverrideAttribute( sendElementIds, "oncommand",
                          "enigSendCommand('", "');");
+
+
+  EnigOverrideAttribute( ["msgcomposeWindow"], "onclose",
+                        "return enigDoCommandClose('", "')");
 
   // Get editor shell
   gEnigEditorElement = document.getElementById("content-frame");
@@ -448,6 +456,15 @@ function enigSend(gotSendFlags, elementId) {
     sendFlags |= ENIG_ENCRYPT;
   }
   var encryptIfPossible = (gotSendFlags & EnigEncryptIfPossible);
+  if (elementId.indexOf("cmd_save")==0) {
+    if ((sendFlags & ENIG_ENCRYPT) && EnigConfirm(EnigGetString("savingMessage"))) {
+      sendFlags |= nsIEnigmail.SAVE_MESSAGE;
+    }
+    else {
+      goDoCommand(elementId);
+      return;
+    }
+  }
 
   if (gWindowLocked) {
     EnigAlert(EnigGetString("windowLocked"));
@@ -726,6 +743,11 @@ function enigSend(gotSendFlags, elementId) {
 
      DEBUG_LOG("enigmailMsgComposeOverlay.js: hasAttachments = "+hasAttachments+"\n");
 
+     // enable PGP/MIME if message is saved and contains attachments
+     if ( hasAttachments && (sendFlags & nsIEnigmail.SAVE_MESSAGE)) {
+        sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+     }
+
      if ( hasAttachments &&
         (sendFlags & ENIG_ENCRYPT_OR_SIGN) &&
         !(sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
@@ -888,7 +910,7 @@ function enigSend(gotSendFlags, elementId) {
           // otherwise the message isn't signed correctly
           var wrapWidth = gEnigPrefRoot.getIntPref("editor.htmlWrapColumn");
           var editor = gMsgCompose.editor.QueryInterface(nsIPlaintextEditorMail);
-          editor.wrapWidth=wrapWidth;
+          editor.wrapWidth=wrapWidth-2; // prepare for the worst case: a 72 char's long line starting with '-'
           editor.rewrap(true);
        }
 
@@ -1027,7 +1049,14 @@ function enigSend(gotSendFlags, elementId) {
        return;
      }
 
-     enigGenericSendMessage(nsIMsgCompDeliverMode.Now);
+     if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
+       goDoCommand(elementId);
+       if (! (sendFlags & nsIEnigmail.SEND_PGP_MIME))
+          enigUndoEncryption(bucketList, gEnigModifiedAttach);
+     }
+     else {
+       enigGenericSendMessage(nsIMsgCompDeliverMode.Now);
+     }
 
   } catch (ex) {
      if (EnigConfirm(EnigGetString("signFailed")))
@@ -1234,6 +1263,101 @@ function enigGenericSendMessage( msgType )
   else
     dump("###SendMessage Error: composeAppCore is null!\n");
 }
+
+// Modified version of DoCommandClose() function from MsgComposeCommands.js
+function enigDoCommandClose() {
+  var retVal;
+
+// MODIFICATION
+  if ((retVal = enigComposeCanClose())) {
+
+    // Notify the SendListener that Send has been aborted and Stopped
+    if (gMsgCompose)
+    {
+      var externalListener = gMsgCompose.getExternalSendListener();
+      if (externalListener)
+      {
+        externalListener.onSendNotPerformed(null, Components.results.NS_ERROR_ABORT);
+      }
+    }
+
+    MsgComposeCloseWindow(true);
+
+    // at this point, we might be caching this window.
+    // in which case, we don't want to close it
+    if (sMsgComposeService.isCachedWindow(window)) {
+      retVal = false;
+    }
+  }
+
+  return retVal;
+}
+
+// modified version of ComposeCanClose from MsgComposeCommands.js
+function enigComposeCanClose()
+{
+  if (gSendOrSaveOperationInProgress)
+  {
+    var result;
+
+    if (gPromptService)
+    {
+      var promptTitle = sComposeMsgsBundle.getString("quitComposeWindowTitle");
+      var promptMsg = sComposeMsgsBundle.getString("quitComposeWindowMessage");
+      var quitButtonLabel = sComposeMsgsBundle.getString("quitComposeWindowQuitButtonLabel");
+      var waitButtonLabel = sComposeMsgsBundle.getString("quitComposeWindowWaitButtonLabel");
+
+      result = gPromptService.confirmEx(window, promptTitle, promptMsg,
+          (gPromptService.BUTTON_TITLE_IS_STRING*gPromptService.BUTTON_POS_0) +
+          (gPromptService.BUTTON_TITLE_IS_STRING*gPromptService.BUTTON_POS_1),
+          waitButtonLabel, quitButtonLabel, null, null, {value:0});
+
+      if (result == 1)
+      {
+        gMsgCompose.abort();
+        return true;
+      }
+      return false;
+    }
+  }
+
+  dump("XXX changed? " + gContentChanged + "," + gMsgCompose.bodyModified + "\n");
+  // Returns FALSE only if user cancels save action
+  if (gContentChanged || gMsgCompose.bodyModified)
+  {
+    // call window.focus, since we need to pop up a dialog
+    // and therefore need to be visible (to prevent user confusion)
+    window.focus();
+    if (gPromptService)
+    {
+      result = gPromptService.confirmEx(window,
+                              sComposeMsgsBundle.getString("saveDlogTitle"),
+                              sComposeMsgsBundle.getString("saveDlogMessage"),
+                              (gPromptService.BUTTON_TITLE_SAVE * gPromptService.BUTTON_POS_0) +
+                              (gPromptService.BUTTON_TITLE_CANCEL * gPromptService.BUTTON_POS_1) +
+                              (gPromptService.BUTTON_TITLE_DONT_SAVE * gPromptService.BUTTON_POS_2),
+                              null, null, null,
+                              null, {value:0});
+      switch (result)
+      {
+        case 0: //Save
+          gCloseWindowAfterSave = true;
+/// MODIFICATION
+          enigSend(gEnigSendMode, "cmd_saveAsDraft");
+          return false;
+        case 1: //Cancel
+          return false;
+        case 2: //Don't Save
+          break;
+      }
+    }
+
+    SetContentAndBodyAsUnmodified();
+  }
+
+  return true;
+}
+
 
 // encrypt attachments when sending inline PGP mails
 // It's quite a hack: the attachments are stored locally

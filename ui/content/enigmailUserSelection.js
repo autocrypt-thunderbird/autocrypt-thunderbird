@@ -107,6 +107,8 @@ function enigmailUserSelLoad() {
       document.getElementById("expCol").setAttribute("label",EnigGetString("createdHeader"));
    }
    gUserList = document.getElementById("enigmailUserIdSelection");
+   gUserList.currentItem=null;
+
    var descNotFound=document.getElementById("usersNotFoundDesc");
    var treeChildren=gUserList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
 
@@ -136,10 +138,10 @@ function enigmailUserSelLoad() {
        userObj.SubUserIds=new Array();
        aUserList.push(userObj);
      }
-     else if (aGpgUserList[i][0] == "sub") {
+     /*else if (aGpgUserList[i][0] == "sub") {
        // this might override the key above (which is correct)
        userObj.keyId=aGpgUserList[i][KEY_ID];
-     }
+     } */
      else if (aGpgUserList[i][0] == "uid") {
        var userId=aGpgUserList[i][USER_ID];
        userObj.SubUserIds.push(userId);
@@ -183,16 +185,16 @@ function enigmailUserSelLoad() {
         // do not show if expired keys are hidden
         var treeItem=null;
         if (secretOnly) {
-          treeItem=enigUserSelCreateRow(activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].created, false)
+          treeItem=enigUserSelCreateRow(aUserList[i].keyId,activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].created, false)
         }
         else {
-          treeItem=enigUserSelCreateRow(activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry, expired)
+          treeItem=enigUserSelCreateRow(aUserList[i].keyId, activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry, expired)
         }
         if (aUserList[i].SubUserIds.length) {
           treeItem.setAttribute("container", "true");
           var subChildren=document.createElement("treechildren");
           for (var user=0; user<aUserList[i].SubUserIds.length; user++) {
-            var subItem=enigUserSelCreateRow(-1, aUserList[i].SubUserIds[user], "", "")
+            var subItem=enigUserSelCreateRow(aUserList[i].keyId, -1, aUserList[i].SubUserIds[user], "", "")
             subChildren.appendChild(subItem);
             if (activeState<2 || allowExpired) {
               // add uid's for valid keys
@@ -269,7 +271,7 @@ function enigGetUserList(window, secretOnly, exitCodeObj, statusFlagsObj, errorM
 
 
 // create a (sub) row for the user tree
-function enigUserSelCreateRow (activeState, userId, keyId, dateField, expired) {
+function enigUserSelCreateRow (keyId, activeState, userId, keyValue, dateField, expired) {
     var selectCol=document.createElement("treecell");
     selectCol.setAttribute("id", "indicator");
     enigSetActive(selectCol, activeState);
@@ -285,7 +287,7 @@ function enigUserSelCreateRow (activeState, userId, keyId, dateField, expired) {
     }
     expCol.setAttribute("id", "expiry");
     var keyCol=document.createElement("treecell");
-    keyCol.setAttribute("label", keyId.substring(8,16));
+    keyCol.setAttribute("label", keyValue.substring(8,16));
     keyCol.setAttribute("id", "keyid");
     var userRow=document.createElement("treerow");
     userRow.appendChild(selectCol);
@@ -308,16 +310,13 @@ function enigmailUserSelAccept() {
   gUserList = document.getElementById("enigmailUserIdSelection");
   var treeChildren=gUserList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
 
-  var singleSel = (window.arguments[0].options.indexOf("multisel")<0);
-  var rowCount = 0;
-  var item=treeChildren.firstChild;
-  while (item) {
-    if (singleSel) {
-      if (gUserList.currentIndex == rowCount) {
-        resultObj.userList.push(item.getAttribute("id"));
-      }
-    }
-    else {
+  if (window.arguments[0].options.indexOf("multisel")<0) {
+    if (gUserList.currentItem)
+      resultObj.userList.push(gUserList.currentItem.getAttribute("id"));
+  }
+  else {
+    var item=treeChildren.firstChild;
+    while (item) {
       var aRows = item.getElementsByAttribute("id","indicator")
       if (aRows.length) {
         var elem=aRows[0];
@@ -325,9 +324,8 @@ function enigmailUserSelAccept() {
           resultObj.userList.push(item.getAttribute("id"));
         }
       }
+      item = item.nextSibling;
     }
-    item = item.nextSibling;
-    ++rowCount;
   }
 
   var encrypt = document.getElementById("enigmailUserSelPlainText");
@@ -344,13 +342,13 @@ function enigmailUserSelCallback(event) {
   if (row.value == -1)
     return;
 
+
+  var treeItem = Tree.contentView.getItemAtIndex(row.value);
+  Tree.currentItem=treeItem;
   if (col.value != "selectionCol")
     return;
 
-  var treeItem = Tree.contentView.getItemAtIndex(row.value);
-
   var aRows = treeItem.getElementsByAttribute("id","indicator")
-  
 
   if (aRows.length) {
     var elem=aRows[0];

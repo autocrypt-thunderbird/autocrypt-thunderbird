@@ -244,5 +244,4 @@ function enigSelectKeyId()
     // cancel pressed -> don't send mail
     return;
   }
-
 }

@@ -11,6 +11,7 @@ var gEnigLastSaveDir = "";
 
 var gEnigMessagePane = null;
 var gEnigNoShowReload = false;
+var gEnigLastEncryptedURI = null;
 
 var gEnigRemoveListener = false;
 
@@ -385,6 +386,7 @@ function enigMessageImport(event) {
 function enigMessageDecrypt(event) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecrypt: "+event+"\n");
 
+  gEnigLastEncryptedURI = GetLoadedMessage();
   if (EnigGetPref("parseAllHeaders")) {
     var showHeaders = 1;
     try {
@@ -977,7 +979,7 @@ function enigMsgDefaultPrint(contextMenu, elementId) {
   if (contextMenu)
     PrintEnginePrint();
   else
-    goDoCommand(elementId == "cmd_printpreview" ? cmd_printpreview : "cmd_print");
+    goDoCommand(elementId == "cmd_printpreview" ? "cmd_printpreview" : "cmd_print");
 }
 
 function enigMsgForward(elementId, event) {
@@ -1035,7 +1037,6 @@ function enigMsgPrint(elementId) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgPrint: uri="+uri+"\n");
 
   var messageList = [uri];
-  var numMessages = messageList.length;
 
   if (gPrintSettings == null) {
     gPrintSettings = GetPrintSettings();
@@ -1044,11 +1045,13 @@ function enigMsgPrint(elementId) {
   var printPreview = (elementId == "cmd_printpreview");
   var printEngineWindow = window.openDialog("chrome://messenger/content/msgPrintEngine.xul",
                                         "",
-                                        "chrome,dialog=no,all",
-                                        numMessages, messageList, statusFeedback, gPrintSettings,
-                                        printPreview);
+                                        "chrome,dialog=no,all,centerscreen",
+                                        1, messageList, statusFeedback, gPrintSettings,
+                                        printPreview, Components.interfaces.nsIMsgPrintEngine.MNAB_PRINTPREVIEW_MSG,
+                                        window);
 
   return true;
+
 }
 
 function enigMessageSave() {

@@ -9,7 +9,6 @@ addEventListener('messagepane-unloaded', enigHdrViewUnload, true);
 var gEnigEncryptedPanel = null;
 var gEnigSignedPanel = null;
 var gEnigStatusBar;
-var gEnigLastEncryptedURI = null;
 
 function enigHdrViewLoad()
 {
@@ -45,7 +44,7 @@ function enigStartHeaders()
     var statusText = document.getElementById("expandedEnigmailStatusText");
 
     if (statusText)
-      statusText.fistChild.data="*";
+      statusText.firstChild.data="*";
   }
 
   var msgFrame = EnigGetFrame(window, "messagepane");
@@ -72,6 +71,13 @@ function enigEndHeaders()
 
 function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateHdrIcons: exitCode="+exitCode+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+errorMsg+"\n");
+
+  if (gEnigLastEncryptedURI != GetLoadedMessage()) {
+     if (gEnigLastEncryptedURI) {
+       enigForgetEncryptedURI(enigForgetEncryptedURI);
+     }
+     return;
+  }
 
   var errorLines = errorMsg.split(/\r?\n/);
 
@@ -216,7 +222,6 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
       if (enigMimeService)
       {
-        gEnigLastEncryptedURI = GetLoadedMessage();
         enigMimeService.rememberEncrypted(gEnigLastEncryptedURI);
       }
 
