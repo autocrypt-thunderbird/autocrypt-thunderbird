@@ -24,22 +24,6 @@ function init_pref_enigmail() {
 function setDisables(initializing) {
   DEBUG_LOG("pref-enigmail.js: setDisables: "+initializing+"\n");
 
-  var defaultEncryptionOptionElement = document.getElementById("enigmail_defaultEncryptionOption");
-  var defaultEncryptionOption = initializing ? EnigGetPref("defaultEncryptionOption")
-                                  : defaultEncryptionOptionElement.value;
-
-  var autoCrypto = false;
-  var autoCryptoElement = document.getElementById("autoCrypto");
-
-  if (autoCryptoElement) {
-    autoCrypto = initializing ? EnigGetPref("autoCrypto")
-                              : autoCryptoElement.checked;
-
-  }
-
-  EnigDisplayRadioPref("defaultEncryptionOption", defaultEncryptionOption,
-                        gEnigDefaultEncryptionOptions);
-
   var noPassphraseElement = document.getElementById("noPassphrase");
   var noPassphrase = initializing ? EnigGetPref("noPassphrase")
                               : noPassphraseElement.checked;
