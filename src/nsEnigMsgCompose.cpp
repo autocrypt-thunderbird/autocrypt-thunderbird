@@ -19,9 +19,10 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ * Patrick Brunschwig <patrick.brunschwig@gmx.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or 
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
  * in which case the provisions of the GPL or the LGPL are applicable instead
  * of those above. If you wish to allow use of your version of this file only
@@ -245,7 +246,7 @@ nsEnigMsgCompose::GetRandomTime(PRUint32 *_retval)
   return NS_OK;
 }
 
-nsresult   
+nsresult
 nsEnigMsgCompose::MakeBoundary(const char *prefix)
 {
   DEBUG_LOG(("nsEnigMsgCompose::MakeBoundary:\n"));
@@ -279,7 +280,7 @@ nsEnigMsgCompose::MakeBoundary(const char *prefix)
 
   if (!boundary)
     return NS_ERROR_OUT_OF_MEMORY;
-    
+
   DEBUG_LOG(("nsEnigMsgCompose::MakeBoundary: boundary='%s'\n",
          boundary));
 
@@ -309,11 +310,14 @@ nsEnigMsgCompose::WriteEncryptedHeaders()
  "This is an OpenPGP/MIME encrypted message (RFC 2440 and 3156)\r\n"
  "--%s\r\n"
  "Content-Type: application/pgp-encrypted\r\n"
+ "Content-Description: PGP/MIME version identification\r\n"
  "\r\n"
  "Version: 1\r\n"
  "\r\n"
  "--%s\r\n"
- "Content-Type: application/octet-stream\r\n"
+ "Content-Type: application/octet-stream; name=\"encrypted.asc\"\r\n"
+ "Content-Description: OpenPGP encrypted message\r\n"
+ "Content-Disposition: attachment; filename=\"encrypted.asc\"\r\n"
  "\r\n",
  mBoundary.get(), mBoundary.get(), mBoundary.get());
 
@@ -366,7 +370,9 @@ nsEnigMsgCompose::WriteSignedHeaders2()
 
   char* headers = PR_smprintf(
  "\r\n--%s\r\n"
- "Content-Type: application/pgp-signature\r\n"
+ "Content-Type: application/pgp-signature; name=\"signature.asc\"\r\n"
+ "Content-Description: OpenPGP digital signature\r\n"
+ "Content-Disposition: attachment; filename=\"signature.asc\"\r\n"
  "\r\n",
  mBoundary.get());
 
