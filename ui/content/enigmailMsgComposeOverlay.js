@@ -294,7 +294,7 @@ function enigSend(encryptFlags) {
          var charset = gEditorShell.GetDocumentCharacterSet();
          DEBUG_LOG("enigmailMsgComposeOverlay.js: charset="+charset+"\n");
 
-         // Encode plaintext
+         // Encode plaintext to charset from unicode
          var plainText = EnigConvertFromUnicode(docText, charset);
 
          var fromAddr = EnigGetPref("userIdValue");
@@ -345,11 +345,10 @@ function enigSend(encryptFlags) {
          if (cipherText && (exitCode == 0)) {
            // Encryption/signing succeeded; overwrite plaintext
 
-           // Decode ciphertext
-           cipherText = EnigConvertToUnicode(cipherText, charset);
+           // Decode ciphertext from charset to unicode and overwrite
+           ReplaceEditorText( EnigConvertToUnicode(cipherText, charset) );
 
-           ReplaceEditorText(cipherText);
-
+           // Save original text (for undo)
            gEnigProcessed = {"docText":docText};
 
          } else if (signMsg || encryptMsg) {
@@ -631,7 +630,7 @@ function enigDecryptQuote(interactive) {
   var charset = gEditorShell.GetDocumentCharacterSet();
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: charset="+charset+"\n");
 
-  // Encode ciphertext
+  // Encode ciphertext from unicode to charset
   var cipherText = EnigConvertFromUnicode(pgpBlock, charset);
 
   // Decrypt message
@@ -644,6 +643,10 @@ function enigDecryptQuote(interactive) {
 
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
                                      exitCodeObj, errorMsgObj, signStatusObj);
+
+  // Decode plaintext from charset to unicode
+  plainText = EnigConvertToUnicode(plainText, charset);
+
   var exitCode = exitCodeObj.value;
 
   if (exitCode != 0) {
@@ -672,9 +675,6 @@ function enigDecryptQuote(interactive) {
     // Extract text portion of clearsign block
     plainText = enigmailSvc.extractSignaturePart(pgpBlock,
                                                   nsIEnigmail.SIGNATURE_TEXT);
-  } else {
-    // Decode ciphertext
-    plainText = EnigConvertToUnicode(plainText, charset);
   }
 
   // Replace encrypted quote with decrypted quote

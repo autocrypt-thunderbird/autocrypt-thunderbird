@@ -884,9 +884,9 @@ function () {
 }
 
 
-Enigmail.prototype.expireCachedPassphrase =
+Enigmail.prototype.clearCachedPassphrase =
 function () {
-  DEBUG_LOG("enigmail.js: Enigmail.expireCachedPassphrase: \n");
+  DEBUG_LOG("enigmail.js: Enigmail.clearCachedPassphrase: \n");
 
   gCachedPassphrase = null;
 }
@@ -1463,7 +1463,7 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
     // "Unremember" passphrase on signing failure
     // NOTE: May need to be more selective in unremembering,
     //       depending upon the details of the error
-    this.setCachedPassphrase(null);
+    this.clearCachedPassphrase();
   }
 
   errorMsgObj.value = "Error - encryption command failed";
@@ -1800,7 +1800,7 @@ function (parent, uiFlags, cipherText,
     // "Unremember" passphrase on decryption failure
     // NOTE: May need to be more selective in unremembering,
     //       depending upon the details of the error
-    this.setCachedPassphrase(null);
+    this.clearCachedPassphrase();
   }
 
   errorMsgObj.value = "";

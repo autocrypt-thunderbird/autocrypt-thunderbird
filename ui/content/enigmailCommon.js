@@ -532,7 +532,7 @@ RequestObserver.prototype = {
 function EnigConvertFromUnicode(text, charset) {
   DEBUG_LOG("enigmailCommon.js: EnigConvertFromUnicode: "+charset+"\n");
 
-  if (!charset || (charset.toLowerCase() == "iso-8859-1"))
+  if (!text || !charset || (charset.toLowerCase() == "iso-8859-1"))
     return text;
 
   // Encode plaintext
@@ -551,7 +551,7 @@ function EnigConvertFromUnicode(text, charset) {
 function EnigConvertToUnicode(text, charset) {
   DEBUG_LOG("enigmailCommon.js: EnigConvertToUnicode: "+charset+"\n");
 
-  if (!charset || (charset.toLowerCase() == "iso-8859-1"))
+  if (!text || !charset || (charset.toLowerCase() == "iso-8859-1"))
     return text;
 
   // Encode plaintext
@@ -656,14 +656,14 @@ function EnigDumpHTML(node)
 const WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
 const nsIWindowMediator    = Components.interfaces.nsIWindowMediator;
 
-function EnigExpireCache() {
-  DEBUG_LOG("enigmailCommon.js: EnigExpireCache: \n");
+function EnigClearPassphrase() {
+  DEBUG_LOG("enigmailCommon.js: EnigClearPassphrase: \n");
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return;
 
-  enigmailSvc.expireCachedPassphrase();
+  enigmailSvc.clearCachedPassphrase();
 }
 
 function EnigViewConsole() {

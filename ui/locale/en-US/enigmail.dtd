@@ -63,7 +63,7 @@
 <!ENTITY enigmail.decryptverify.label	  "Decrypt/verify">
 <!ENTITY enigmail.savedecrypted.label	  "Save decrypted message">
 
-<!ENTITY enigmail.expireCache.label	  "Expire cached passphrase">
+<!ENTITY enigmail.clearPassphrase.label	  "Clear saved passphrase">
 
 <!ENTITY enigmail.prefs.label	          "Preferences">
 <!ENTITY enigmail.viewconsole.label	  "View console">
@@ -79,11 +79,11 @@
 
 <!ENTITY enigmail.autoDecrypt.accesskey     "A">
 
-<!ENTITY enigmail.expireCache.accesskey     "x">
+<!ENTITY enigmail.clearPassphrase.accesskey "l">
 
 <!ENTITY enigmail.prefs.accesskey           "P">
 <!ENTITY enigmail.viewconsole.accesskey	    "c">
-<!ENTITY enigmail.viewdebuglog.accesskey    "l">
+<!ENTITY enigmail.viewdebuglog.accesskey    "g">
 
 <!ENTITY enigmail.generatekey.accesskey     "k">
 <!ENTITY enigmail.upgrade.accesskey         "U">

@@ -153,7 +153,7 @@ function enigMessageDecrypt(event) {
 
   var charset = msgWindow ? msgWindow.mailCharacterSet : "";
 
-  // Encode ciphertext
+  // Encode ciphertext to charset from unicode
   msgText = EnigConvertFromUnicode(msgText, charset);
 
   //DEBUG_LOG("enigmailMessengerOverlay.js: msgText='"+msgText+"'\n");
@@ -185,6 +185,9 @@ function enigMessageDecryptCallback(msgText, charset, interactive,
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, msgText,
                                      exitCodeObj, errorMsgObj, signStatusObj);
   //DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCallback: plainText='"+plainText+"'\n");
+
+  // Decode plaintext to unicode
+  plainText = EnigConvertToUnicode(plainText, charset);
 
   var newSignStatus = signStatusObj.value;
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCallback: newSignStatus='"+newSignStatus+"'\n");
@@ -225,9 +228,6 @@ function enigMessageDecryptCallback(msgText, charset, interactive,
        EnigAlert(displayMsg);
      return;
   }
-
-  // Decode plaintext
-  plainText = EnigConvertToUnicode(plainText, charset);
 
   var msgFrame = window.frames["messagepane"];
   var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
