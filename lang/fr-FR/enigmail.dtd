@@ -12,16 +12,16 @@
 <!ENTITY enigmail.preferences.label    "Préférences">
 
 <!ENTITY enigmail.autoCrypto.label        "Activer le chiffrement automatique">
-<!ENTITY enigmail.userIdValue.label       "Adresse pour le chiffrement">
+<!ENTITY enigmail.userIdValue.label       "Adresse courriel ou identifiant de clef">
 <!ENTITY enigmail.userNoPassphrase.label  "Sans phrase de passe">
 
-<!ENTITY enigmail.userIdFromAddr.label    "Utiliser l'adresse d'expéditeur pour signer">
+<!ENTITY enigmail.userIdFromAddr.label    "Utiliser l'adresse d'expéditeur afin de déterminer la clef GPG pour signer">
 
 <!ENTITY enigmail.defaultEncryptionOption.label "Options de chiffrement par défaut">
 <!ENTITY enigmail.usePGPMimeOption.label  "Options PGP/MIME">
 <!ENTITY enigmail.mimeHashAlgorithm.label "Algorithme de hachage">
 
-<!ENTITY enigmail.agentPath.label         "Chemin d'accès de l'exécutable GPG/PGP">
+<!ENTITY enigmail.agentPath.label         "Chemin d'accès de l'exécutable GPG">
 
 <!ENTITY enigmail.send_plaintext_flowed.label "Autoriser le format texte coulé (RFC 2646)">
 
@@ -177,3 +177,15 @@
 
 <!ENTITY enigmail.experimental.label                "Utiliser la signature et le chiffrement à la volée (expérimental)">
 
+<!ENTITY enigmail.sendnow.label                     "Envoyer immédiatement>
+<!ENTITY enigmail.sendlater.label                   "Envoyer en différé">
+<!ENTITY enigmail.sendnow.accesskey                 "Y">
+<!ENTITY enigmail.sendlater.accesskey               "R">
+<!ENTITY enigmail.enigmailAttachDesc.label          "Ce message contient des pièces jointes. Comment souhaitez-vous les chiffrer/signer ?">
+<!ENTITY enigmail.enigEncryptAttachNone.label       "Chiffrer uniquement le texte du message mais pas les pièces jointes">
+<!ENTITY enigmail.enigEncryptAttachInline.label     "Chiffrer chaque pièce jointe séparément et envoyer le message en utilisant PGP à la volée">
+<!ENTITY enigmail.enigEncryptAttachPgpMime.label    "Chiffer/signer le message en entier et l'envoyer en utilisant PGP/MIME">
+<!ENTITY enigmail.ctxDecryptOpen.label              "Déchiffrer et ouvrir">
+<!ENTITY enigmail.ctxDecryptSave.label              "Déchiffrer et enregistrer sous...">
+<!ENTITY enigmail.ctxDecryptOpen.accesskey          "D">
+<!ENTITY enigmail.ctxDecryptSave.accesskey          "S">

@@ -32,7 +32,7 @@
 <!ENTITY enigmail.sendbutton.label "EnigSend">
 <!ENTITY enigmail.usePGPMimeAlways.label "Usar siempre PGP/MIME">
 <!ENTITY enigmail.advancedPrefsButton.label "Avanzadas">
-<!ENTITY enigmail.userIdFromAddr.label "Usar campo DE para firmar">
+<!ENTITY enigmail.userIdFromAddr.label "Usar el DE de la dirección para firmar y determinar la clave GPG">
 <!ENTITY enigmail.disableSMIMEui.label "Ocultar botones/menús SMIME">
 <!ENTITY enigmail.keyPassphraseRepeat.label "Frase clave (repetir)">
 <!ENTITY enigmail.prefsHelpButton.label "Ayuda">
@@ -72,7 +72,7 @@
 <!ENTITY enigmail.defaultEncryptionNone.label "No cifrar por defecto">
 <!ENTITY enigmail.about.label "Acerca de Enigmail">
 <!ENTITY enigmail.viewdebuglog.label "Ver fichero log">
-<!ENTITY enigmail.userIdValue.label "Dirección de correo del usuario">
+<!ENTITY enigmail.userIdValue.label "Dirección de correo del usuario (o Id de la clave)">
 <!ENTITY enigmail.uninstallButton.label "Desinstalar Enigmail">
 <!ENTITY enigmail.usePGPMimePossible.accesskey "U">
 <!ENTITY enigmail.upgrade.accesskey "U">
@@ -104,7 +104,7 @@
 <!ENTITY enigmail.mimeHashAlgorithm.label "Algoritmo hash">
 <!ENTITY enigmail.advprefs.accesskey "v">
 <!ENTITY enigmail.autoDecrypt.label "Descifrar/verficar automáticamente">
-<!ENTITY enigmail.agentPath.label "Ruta al ejecutable GPG/PGP">
+<!ENTITY enigmail.agentPath.label "Ruta al ejecutable GPG">
 <!ENTITY enigmail.advancedPrefs.label "Preferencias avanzadas de Enigmail">
 <!ENTITY enigmail.console.tooltip "Ver consola de Enigmail">
 <!ENTITY enigmail.uninstall.tooltip "Desinstalar Enigmail">
@@ -128,3 +128,15 @@
 <!ENTITY enigmail.askRecipientsNever.label "Nunca mostrar la selección">
 <!ENTITY enigmail.keySelection.label "Selección">
 <!ENTITY enigmail.userSelectionList.label "Seleccionar usuarios para cifrar correo">
+<!ENTITY enigmail.ctxDecryptSave.accesskey "C">
+<!ENTITY enigmail.enigEncryptAttachNone.label "Cifrar/firmar sólo el texto de mensaje, no los adjuntos">
+<!ENTITY enigmail.ctxDecryptOpen.accesskey "D">
+<!ENTITY enigmail.enigEncryptAttachInline.label "Cifrar cada adjunto por separado y enviar el mensaje usando PGP inline">
+<!ENTITY enigmail.sendlater.label "Enviar después">
+<!ENTITY enigmail.sendlater.accesskey "A">
+<!ENTITY enigmail.sendnow.accesskey "r">
+<!ENTITY enigmail.sendnow.label "Enviar ahora">
+<!ENTITY enigmail.ctxDecryptSave.label "Descifrar y guardar como...">
+<!ENTITY enigmail.ctxDecryptOpen.label "Descifrar y abrir">
+<!ENTITY enigmail.enigEncryptAttachPgpMime.label "Cifrar/firmar el mensaje conjuntamente y enviarlo usando PGP/MIME">
+<!ENTITY enigmail.enigmailAttachDesc.label "Este mensaje contiene adjuntos ¿Cómo desea cifrarlos o firmarlos?">
