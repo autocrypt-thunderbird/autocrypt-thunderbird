@@ -41,6 +41,10 @@ include $(DEPTH)/config/autoconf.mk
 MODULE		= enigmime
 LIBRARY_NAME	= enigmime_s
 
+# Ensure that the xpcom classes that we build
+# do not export themselves
+DEFINES		+= -D_IMPL_NS_COM_OFF 
+
 REQUIRES	= xpcom \
 		  string \
 		  msgbase \
