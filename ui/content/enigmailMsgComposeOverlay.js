@@ -14,10 +14,6 @@ const EnigOutputCRLineBreak   = 512;
 const EnigOutputLFLineBreak   = 1024;
 
 
-const EnigEncryptIfPossible = 1;
-const EnigEncrypt           = 2;
-const EnigSigned            = 4;
-
 const ENIG_ENIGMSGCOMPFIELDS_CONTRACTID = "@mozdev.org/enigmail/composefields;1";
 
 // List of hash algorithms for PGP/MIME signatures
@@ -264,7 +260,10 @@ function enigTogglePGPMime() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigTogglePGPMime: \n");
 
   gEnigSendPGPMime = !gEnigSendPGPMime;
+  enigDisplayPGPMime();
+}
 
+function enigDisplayPGPMime() {
   var menuElement = document.getElementById("enigmail_sendPGPMime");
   if (menuElement)
     menuElement.setAttribute("checked", gEnigSendPGPMime ? "true" : "false");
@@ -424,23 +423,14 @@ function enigSetMenuSettings(postfix) {
 }
 
 function enigDisplaySecuritySettings() {
-  var txt="";
-  if (gEnigSendMode & EnigSigned) {
-        txt="- signed\n";
-  }
-  var sign= gEnigSendMode &~ EnigSigned;
-  switch (sign) {
-    case EnigEncrypt:
-      txt+="- encrypted";
-      break;
-    case EnigEncryptIfPossible:
-      txt+="- encrypted if possible";
-      break;
-    default:
-      txt+="- sent as plaintext";
-      break;
-  }
-  EnigAlert("This message will be:\n"+txt);
+
+  var inputObj = { sendFlags: gEnigSendMode,
+                   usePgpMime: gEnigSendPGPMime};
+  window.openDialog("chrome://enigmail/content/enigmailEncryptionDlg.xul","", "dialog,modal,centerscreen", inputObj);
+  gEnigSendMode = inputObj.sendFlags;
+  gEnigSendPGPMime = inputObj.usePgpMime;
+  enigDisplayUi();
+  enigDisplayPGPMime();
 }
 
 function enigSendCommand(elementId) {
