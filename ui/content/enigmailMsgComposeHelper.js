@@ -11,24 +11,28 @@
  *
  * The Original Code is Enigmail.
  *
- * The Initial Developer of the Original Code is Patrick Brunschwig.
- * Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net> are
- * Copyright (C) 2004 Ramalingam Saravanan. All Rights Reserved.
+ * The Initial Developer of this code is Patrick Brunschwig.
+ * Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+ * are Copyright (C) 2004 Patrick Brunschwig.
+ * All Rights Reserved.
  *
  * Contributor(s):
  *
  * Alternatively, the contents of this file may be used under the
- * terms of the GNU General Public License (the "GPL"), in which case
- * the provisions of the GPL are applicable instead of
+ * terms of the GNU General Public License (the "GPL") or the GNU 
+ * Lesser General Public License (the "LGPL"), in which case
+ * the provisions of the GPL or the LGPL are applicable instead of
  * those above. If you wish to allow use of your version of this
- * file only under the terms of the GPL and not to allow
+ * file only under the terms of the GPL or the LGPL and not to allow
  * others to use your version of this file under the MPL, indicate
  * your decision by deleting the provisions above and replace them
- * with the notice and other provisions required by the GPL.
+ * with the notice and other provisions required by the GPL or the 
+ * LGPL respectively.
  * If you do not delete the provisions above, a recipient
- * may use your version of this file under either the MPL or the
- * GPL.
+ * may use your version of this file under either the MPL, the
+ * GPL or the LGPL.
  */
+
 
 // helper functions for message composition
 
@@ -116,9 +120,11 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
     var resultObj=new Object;
     for (i=0; i<addrList.length; i++) {
       if (addrList[i].length>0) {
-        if (foundAddresses.indexOf("{"+EnigStripEmail(addrList[i]).toLowerCase()+"}")==-1) {
-          inputObj.toAddress="{"+addrList[i]+"}";
+        var theAddr=EnigStripEmail(addrList[i]).toLowerCase();
+        if (foundAddresses.indexOf("{"+theAddr+"}")==-1) {
+          inputObj.toAddress="{"+theAddr+"}";
           inputObj.options="";
+          inputObj.command = "add";
           window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
           if (resultObj.cancelled==true) return false;
           sign   =getFlagVal(sign,    resultObj.sign);
