@@ -8,7 +8,7 @@
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the MPL for the specific language governing
  * rights and limitations under the MPL.
- * 
+ *
  * The Original Code is Enigmail.
  * 
  * The Initial Developer of the Original Code is Ramalingam Saravanan.
@@ -17,7 +17,7 @@
  * 
  * Contributor(s):
  * Patrick Brunschwig <patrick.brunschwig@gmx.net>
- * 
+ *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
  * the provisions of the GPL are applicable instead of
@@ -1285,7 +1285,7 @@ function (domWindow, version, prefBranch) {
                   "NLSPATH", "PATH", "PATHEXT", "PROGRAMFILES", "PWD",
                   "SHELL", "SYSTEMDRIVE", "SYSTEMROOT",
                   "TEMP", "TMP", "TMPDIR", "TZ", "TZDIR",
-                  "USER", "USERPROFILE",
+                  "USER", "USERPROFILE", "GPG_AGENT_INFO",
                   "WINDIR" ];
 
   var passList = this.processInfo.getEnv("ENIGMAIL_PASS_ENV");
@@ -1396,7 +1396,7 @@ function (domWindow, version, prefBranch) {
     }
 
     if (!agentPath) {
-      this.initializationError = "Unable to locate GPG or PGP executable in the path";
+      this.initializationError = "Unable to locate GPG executable in the path";
       ERROR_LOG("enigmail.js: Enigmail: Error - "+this.initializationError+"\n");
       throw Components.results.NS_ERROR_FAILURE;
     }
@@ -1450,7 +1450,7 @@ function (domWindow, version, prefBranch) {
 }
 
 
-Enigmail.prototype.execCmd = 
+Enigmail.prototype.execCmd =
 function (command, passphrase, input, exitCodeObj, statusFlagsObj,
           statusMsgObj, errorMsgObj) {
   WRITE_LOG("enigmail.js: Enigmail.execCmd: command = "+command+"\n");
@@ -1565,6 +1565,17 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
     }
   }
 
+  if ((this.agentType == "gpg") && (exitCodeObj.value == 256)) {
+    WARNING_LOG("enigmail.js: Enigmail.execCmd: Using gpg and exit code is 256. You seem to use cygwin-gpg, activating countermeasures.\n");
+    if (statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
+      WARNING_LOG("enigmail.js: Enigmail.execCmd: Changing exitCode 256->2\n");
+      exitCodeObj.value = 2;
+    } else {
+      WARNING_LOG("enigmail.js: Enigmail.execCmd: Changing exitCode 256->0\n");
+      exitCodeObj.value = 0;
+    }
+  }
+
   statusFlagsObj.value = statusFlags;
   statusMsgObj.value   = statusArray.join("\n");
   errorMsgObj.value    = errArray.join("\n");
@@ -1580,9 +1591,9 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
 }
 
 
-Enigmail.prototype.execStart = 
-function (command, needPassphrase, domWindow, prompter, listener, noProxy,
-          statusFlagsObj) {
+Enigmail.prototype.execStart =
+function (command, needPassphrase, domWindow, prompter, listener,
+          noProxy, statusFlagsObj) {
   WRITE_LOG("enigmail.js: Enigmail.execStart: command = "+command+", needPassphrase="+needPassphrase+", domWindow="+domWindow+", prompter="+prompter+", listener="+listener+", noProxy="+noProxy+"\n");
 
   statusFlagsObj.value = 0;
@@ -1713,7 +1724,7 @@ function (errOutput, statusFlagsObj, statusMsgObj) {
   return errorMsg;
 }
 
-Enigmail.prototype.execEnd = 
+Enigmail.prototype.execEnd =
 function (pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj) {
 
   WRITE_LOG("enigmail.js: Enigmail.execEnd: \n");
@@ -1816,7 +1827,7 @@ function EnigStripEmail(mailAddrs) {
   
      mailAddrs = mailAddrs.substring(0,qStart) + mailAddrs.substring(qEnd+1);
   }
-  
+
   // Eliminate all whitespace, just to be safe
   mailAddrs = mailAddrs.replace(/\s+/g,"");
   
@@ -1827,7 +1838,7 @@ function EnigStripEmail(mailAddrs) {
 }
     
 
-Enigmail.prototype.encryptMessage = 
+Enigmail.prototype.encryptMessage =
 function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
           sendFlags, exitCodeObj, statusFlagsObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.encryptMessage: "+plainText.length+" bytes from "+fromMailAddr+" to "+toMailAddr+" ("+sendFlags+")\n");
@@ -1856,10 +1867,10 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
     plainText = plainText.replace(/\r\n/g, "\n");
     plainText = plainText.replace(/\r/g,   "\n");
 
-    // Use platform-specific linebreaks when encrypting
-    // if (!this.isUnix) {
+    // Using platform-specific linebreaks confuses some windows mail clients,
+    // so we convert everything to windows like good old PGP worked anyway.
     plainText = plainText.replace(/\n/g, "\r\n");
-    //}
+
   }
 
   var noProxy = true;
@@ -1912,7 +1923,7 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
 }
 
 
-Enigmail.prototype.encryptMessageEnd = 
+Enigmail.prototype.encryptMessageEnd =
 function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
           statusFlagsObj, errorMsgObj)
 {
@@ -1936,6 +1947,17 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
   var exitCode = this.execEnd(pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, cmdErrorMsgObj);
 
   var statusMsg = statusMsgObj.value;
+
+  if ((this.agentType == "gpg") && (exitCode == 256)) {
+    WARNING_LOG("enigmail.js: Enigmail.encryptMessageEnd: Using gpg and exit code is 256. You seem to use cygwin-gpg, activating countermeasures.\n");
+    if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
+      WARNING_LOG("enigmail.js: Enigmail.encryptMessageEnd: Changing exitCode 256->2\n");
+      exitCode = 2;
+    } else {
+      WARNING_LOG("enigmail.js: Enigmail.encryptMessageEnd: Changing exitCode 256->0\n");
+      exitCode = 0;
+    }
+  }
 
   if ((exitCode == 0) && !outputLen) {
     exitCode = -1;
@@ -1984,31 +2006,8 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
 
 var gPGPHashNum = {md5:1, sha1:2, ripemd160:3};
 
-Enigmail.prototype.encryptMessageStart = 
-function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
-          hashAlgorithm, sendFlags, listener, noProxy, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: prompter="+prompter+", uiFlags="+uiFlags+", from "+fromMailAddr+" to "+toMailAddr+", hashAlgorithm="+hashAlgorithm+" ("+bytesToHex(pack(sendFlags,4))+")\n");
-
-  var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
-
-  errorMsgObj.value = "";
-
-  if (!sendFlags) {
-    DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: NO ENCRYPTION!\n");
-    errorMsgObj.value = EnigGetString("notRequired");
-    return null;
-  }
-
-  if (!this.initialized) {
-    errorMsgObj.value = EnigGetString("notInit");
-    return null;
-  }
-
-  if (this.keygenProcess) {
-    errorMsgObj.value = EnigGetString("notComplete");
-    return null;
-  }
-
+Enigmail.prototype.getEncryptCommand =
+function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgObj) {
   try {
     fromMailAddr = EnigStripEmail(fromMailAddr);
     toMailAddr = EnigStripEmail(toMailAddr);
@@ -2032,7 +2031,7 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
   try {
      hushMailSupport = this.prefBranch.getBoolPref("hushMailSupport")
   } catch(ex) { }
-  
+
   var detachedSig = usePgpMime && signMsg && !encryptMsg;
 
   var toAddrList = toMailAddr.split(/\s*,\s*/);
@@ -2078,12 +2077,16 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
     if (!useDefaultComment)
       encryptCommand += GPG_COMMENT_OPT + this.vendor + COMMENT_SUFFIX;
 
-    
-    var angledFromMailAddr = ((fromMailAddr.search(/^0x/) == 0) || hushMailSupport) 
+
+    var angledFromMailAddr = ((fromMailAddr.search(/^0x/) == 0) || hushMailSupport)
 	                         ? fromMailAddr : "<" + fromMailAddr + ">";
+    angledFromMailAddr = angledFromMailAddr.replace(/([\'\`])/g, "\\$1");
 
     if (encryptMsg) {
-      encryptCommand += " -a -e";
+      if (isAscii)
+        encryptCommand += " -a";
+
+      encryptCommand +=  " -e";
 
       if (signMsg)
         encryptCommand += " -s";
@@ -2094,12 +2097,16 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
       if ((sendFlags & nsIEnigmail.SEND_ENCRYPT_TO_SELF) && fromMailAddr)
         encryptCommand += " --encrypt-to " + angledFromMailAddr;
 
-      for (k=0; k<toAddrList.length; k++)
-         encryptCommand += (hushMailSupport || (toAddrList[k].search(/^0x/) == 0)) ? " -r "+ toAddrList[k] 
+      for (k=0; k<toAddrList.length; k++) {
+         toAddrList[k] = toAddrList[k].replace(/\'/g, "\\'");
+         encryptCommand += (hushMailSupport || (toAddrList[k].search(/^0x/) == 0)) ? " -r "+ toAddrList[k]
                             :" -r <" + toAddrList[k] + ">";
+      }
 
     } else if (detachedSig) {
-      encryptCommand += " -s -b -t -a";
+      encryptCommand += " -s -b -t";
+      if (isAscii)
+        encryptCommand += " -a";
 
       if (hashAlgorithm) {
         encryptCommand += " --digest-algo "+hashAlgorithm;
@@ -2109,13 +2116,48 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
       encryptCommand += " --clearsign";
       if (hashAlgorithm) {
         encryptCommand += " --digest-algo "+hashAlgorithm;
-      }      
+      }
     }
 
     if (fromMailAddr) {
       encryptCommand += " -u " + angledFromMailAddr;
     }
   }
+
+  return encryptCommand;
+}
+
+
+Enigmail.prototype.encryptMessageStart =
+function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
+          hashAlgorithm, sendFlags, listener, noProxy, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: prompter="+prompter+", uiFlags="+uiFlags+", from "+fromMailAddr+" to "+toMailAddr+", hashAlgorithm="+hashAlgorithm+" ("+bytesToHex(pack(sendFlags,4))+")\n");
+
+  var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
+
+  errorMsgObj.value = "";
+
+  if (!sendFlags) {
+    DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: NO ENCRYPTION!\n");
+    errorMsgObj.value = EnigGetString("notRequired");
+    return null;
+  }
+
+  if (!this.initialized) {
+    errorMsgObj.value = EnigGetString("notInit");
+    return null;
+  }
+
+  if (this.keygenProcess) {
+    errorMsgObj.value = EnigGetString("notComplete");
+    return null;
+  }
+
+  var encryptCommand = this.getEncryptCommand(fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, true, errorMsgObj);
+  if (! encryptCommand)
+    return null;
+
+  var signMsg     = sendFlags & nsIEnigmail.SEND_SIGNED;
 
   var statusFlagsObj = new Object();
   var pipetrans = this.execStart(encryptCommand, signMsg, parent, prompter,
@@ -2916,7 +2958,7 @@ function (parent, uiFlags, userId, exitCodeObj, errorMsgObj) {
 
   command += userId;
 
-  var statusFlagsObj = new Object();    
+  var statusFlagsObj = new Object();
   var statusMsgObj   = new Object();
   var cmdErrorMsgObj = new Object();
 
@@ -3366,38 +3408,102 @@ function EnigGetString(aStr) {
 }
 
 
-Enigmail.prototype.getUserIdList = 
+Enigmail.prototype.getUserIdList =
 function  (parent, inputFlags, exitCodeObj, statusFlagsObj, errorMsgObj) {
-  
-  var gpgCommand = this.agentPath + " --list-keys --with-colons --status-fd 2";
-  
-  var statusFlagsObj = new Object();
-  var noProxy = true;
-  
-  var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
-  ipcBuffer.open(MSG_BUFFER_SIZE, false);
-  
-  var pipeTrans = this.execStart(gpgCommand, false, parent, inputFlags,
-                                 ipcBuffer, noProxy, statusFlagsObj);
 
+  var gpgCommand = this.agentPath + " --list-keys --with-colons";
 
-  if (!pipeTrans) {
-    return errorMsgObj.value;
+  if (!this.initialized) {
+    errorMsgObj.value = EnigGetString("notInit");
+    return "";
   }
 
-  // Wait for child STDOUT to close
-  pipeTrans.join();
-  
+  statusFlagsObj.value = 0;
 
-  var userList = ipcBuffer.getData();
-  ipcBuffer.shutdown();
+  var statusMsgObj   = new Object();
+  var cmdErrorMsgObj = new Object();
 
-  var statusMsgObj = new Object();
-  var cmdLineObj     = new Object();
-  
-  this.execEnd(pipeTrans, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
+  var userList = gEnigmailSvc.execCmd(gpgCommand, null, "",
+                    exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
 
- 
+  if (exitCodeObj.value != 0) {
+    errorMsgObj.value = EnigGetString("badCommand");
+    if (cmdErrorMsgObj.value) {
+      errorMsgObj.value += "\n" + gpgCommand;
+      errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
+    }
+
+    return "";
+  }
+
   return userList;
 
+
+}
+
+
+Enigmail.prototype.encryptAttachment =
+function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
+          exitCodeObj, statusFlagsObj, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.encryptAttachment\n");
+
+  if (!this.initialized) {
+    errorMsgObj.value = EnigGetString("notInit");
+    return "";
+  }
+
+  statusFlagsObj.value = 0;
+  var asciiArmor = false;
+  try {
+    asciiArmor = this.prefBranch.getBoolPref("inlineAttachAsciiArmor");
+  } catch (ex) {}
+  var gpgCommand = this.getEncryptCommand(fromMailAddr, toMailAddr, "", sendFlags, asciiArmor, errorMsgObj);
+
+  if (! gpgCommand)
+      return null;
+
+  var passphrase = null;
+  var signMessage = (sendFlags & nsIEnigmail.SEND_SIGNED);
+  if (signMessage) {
+    gpgCommand += " --passphrase-fd 0"
+
+    var passwdObj = new Object();
+
+    if (!GetPassphrase(parent, sendFlags, passwdObj)) {
+       ERROR_LOG("enigmail.js: Enigmail.encryptAttachment: Error - no passphrase supplied\n");
+
+       statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
+       return null;
+    }
+
+    passphrase = passwdObj.value;
+  }
+
+  // escape the backslashes (mainly for Windows)
+  inFile = inFile.replace(/\\/g, "\\\\");
+  outFile = outFile.replace(/\\/g, "\\\\");
+
+  gpgCommand += " --yes -o '" + outFile + "' '" + inFile + "'";
+
+
+  var statusMsgObj   = new Object();
+  var cmdErrorMsgObj = new Object();
+
+  var msg = gEnigmailSvc.execCmd(gpgCommand, passphrase, "",
+                    exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
+
+  if (exitCodeObj.value != 0) {
+
+    if (cmdErrorMsgObj.value) {
+      errorMsgObj.value = gpgCommand;
+      errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
+    }
+    else {
+      errorMsgObj.value = "An unknown error has occurred";
+    }
+
+    return "";
+  }
+
+  return msg;
 }

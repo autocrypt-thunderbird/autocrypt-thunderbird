@@ -230,7 +230,17 @@ interface nsIEnigmail : nsISupports
   
   string getUserIdList (in nsIDOMWindow parent,
                       in unsigned long sendFlags,
-                      out long exitCode, 
+                      out long exitCode,
+                      out unsigned long statusFlags,
+                      out wstring errorMsg);
+
+  string encryptAttachment (in nsIDOMWindow parent,
+                      in string fromMailAddr,
+                      in string toMailAddr,
+                      in unsigned long sendFlags,
+                      in wstring inFile,
+                      in wstring outFile,
+                      out long exitCode,
                       out unsigned long statusFlags,
                       out wstring errorMsg);
 
