@@ -97,6 +97,18 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       statusFlags |= nsIEnigmail.DECRYPTION_INCOMPLETE;
   }
 
+   var msgSigned = (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
+            nsIEnigmail.GOOD_SIGNATURE |
+            nsIEnigmail.EXPIRED_KEY_SIGNATURE |
+            nsIEnigmail.EXPIRED_SIGNATURE |
+            nsIEnigmail.UNVERIFIED_SIGNATURE |
+            nsIEnigmail.REVOKED_KEY |
+            nsIEnigmail.EXPIRED_KEY_SIGNATURE |
+            nsIEnigmail.EXPIRED_SIGNATURE));
+  var msgEncrypted = (statusFlags & (nsIEnigmail.DECRYPTION_OKAY |
+            nsIEnigmail.DECRYPTION_INCOMPLETE |
+            nsIEnigmail.DECRYPTION_FAILED));
+
   if ((exitCode == 0 &&
         !(statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE)) ||
        (statusFlags & nsIEnigmail.DISPLAY_MESSAGE)) {
@@ -156,8 +168,35 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
     statusInfo += "\n\n" + errorMsg;
   }
 
-  if (!statusInfo && (statusFlags & nsIEnigmail.DECRYPTION_OKAY)) {
-    statusInfo = EnigGetString("decryptedMsg");
+  if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
+    if (!statusInfo) {
+      statusInfo = EnigGetString("decryptedMsg");
+    }
+    else {
+      statusInfo = EnigGetString("decryptedMsg")+"\n"+statusInfo;
+    }
+    if (!statusLine) {
+      statusLine=statusInfo;
+    }
+    else {
+      statusLine=EnigGetString("decryptedMsg")+"; "+statusLine;
+    }
+  }
+
+  var PARTIALLY_PGP = nsIEnigmail.INLINE_KEY << 1;
+  if (statusFlags & PARTIALLY_PGP) {
+    if  (msgSigned && msgEncrypted) {
+      statusLine = EnigGetString("msgPart", EnigGetString("msgSignedAndEnc"));
+      statusLine += EnigGetString("clickPenKeyDetails");
+     }
+    else if (msgEncrypted) {
+      statusLine = EnigGetString("msgPart", EnigGetString("msgEncrypted"));
+      statusLine += EnigGetString("clickQueryKeyDetails");
+    }
+    else if (msgSigned) {
+      statusLine = EnigGetString("msgPart", EnigGetString("msgSigned"));
+      statusLine += EnigGetString("clickQueryPenDetails");
+    }
   }
 
   gEnigSecurityInfo = { statusFlags: statusFlags,

@@ -554,7 +554,7 @@ PGPModule.prototype = {
     return aMsgBody.body;
   },
 
-  //  void EncryptSign(in long aFlags, in nsISupports aMsgHeader, 
+  //  void EncryptSign(in long aFlags, in nsISupports aMsgHeader,
   //                   in nsISupports aOrigBody,
   //                   [retval] out nsISupports aNewBody);
   EncryptSign: function (aFlags, aMsgHeader, aOrigBody, aNewBody) {
@@ -2451,19 +2451,6 @@ function (parent, uiFlags, cipherText, signatureObj,
     return "";
   }
 
-  /*
-   // not needed anymore. Nicer solution is to display the text anyway and mark the
-   // verified text accordingly!
-  if (!interactive && verifyOnly && !oldSignature && (head.search(/\S/) >= 0)) {
-    errorMsgObj.value = EnigGetString("extraText");
-    if (verifyOnly)
-      errorMsgObj.value += " "+EnigGetString("toVerify");
-
-    statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
-    return "";
-  }
-  */
-
   var newSignature = "";
 
   if (verifyOnly) {
@@ -2514,6 +2501,13 @@ function (parent, uiFlags, cipherText, signatureObj,
                                         errorMsgObj);
 
   exitCodeObj.value = exitCode;
+  var PARTIALLY_PGP = nsIEnigmail.INLINE_KEY << 1;
+
+  if ((head.search(/\S/) >= 0) ||
+      (tail.search(/\S/) >= 0)) {
+    statusFlagsObj.value |= nsIEnigmail.PARTIALLY_PGP;
+  }
+
 
   if (exitCodeObj.value == 0) {
     // Normal return
