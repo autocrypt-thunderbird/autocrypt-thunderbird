@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
+                 type="text/css"?> 
+
+<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+
+<overlay id="enigmailAbCardViewOverlay"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailAbOverlay.js"/>
+    
+  <window id="addressbookWindow">
+    <popup id="enigmailContext" popupanchor="bottomleft">
+      <menuitem id="enigmailCreateCardRule"
+                label="&enigmail.createRuleFromAddr.label;"
+                oncommand="enigCreateRuleFromAddress(document.popupNode);"/>
+    </popup>
+    
+  </window>
+
+  <popup id="abResultsTreeContext">
+      <menuitem id="enigmailCreateTreeRule"
+                label="&enigmail.createRuleFromAddr.label;"
+                oncommand="enigCreateRuleFromCard();"/>
+  </popup>
+  <description id="cvEmail1Box" context="enigmailContext"/>
+  <description id="cvEmail2Box" context="enigmailContext"/>
+  <vbox id="cvAddresses" context="enigmailContext"/>
+
+</overlay>
