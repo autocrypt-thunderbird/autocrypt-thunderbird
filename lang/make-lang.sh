@@ -9,7 +9,7 @@ if [ $# -ne 2 ]; then
   echo "Usage: $0 xx-YY version"
   echo "       where: xx-YY   is the language and country code representing the"
   echo "                      translated language"
-  echo "              version is the Enigmail version, e.g. 0.76.1"
+  echo "              version is the Enigmail version, e.g. 0.81.3"
   exit 1
 fi
 
@@ -244,6 +244,8 @@ EOT
 
 cp enigmail.dtd  ${LANGDIR}
 cp enigmail.properties ${LANGDIR}
+cp am-enigprefs.properties ${LANGDIR}
+cp upgrade_080.html ${LANGDIR}
 
 cd ${ENIGLANG}
 zip -r -D enigmail-${ENIGLANG}.jar locale
