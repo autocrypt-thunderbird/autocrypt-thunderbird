@@ -14,9 +14,9 @@
  * The Initial Developer of this code is Patrick Brunschwig.
  * Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net> are
  * Copyright (C) 2003 Patrick Brunschwig. All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
  * the provisions of the GPL are applicable instead of
@@ -42,7 +42,6 @@ const EXPIRY = 6;
 const USER_ID = 9;
 
 var gUserList;
-var gArguments=arguments;
 var gResult;
 var gImg0="chrome://enigmail/skin/check0.png";
 var gImg1="chrome://enigmail/skin/check1.png";
@@ -50,7 +49,7 @@ var gImg2="chrome://enigmail/skin/check2.png";
 
 // set the "active" flag and the corresponding image
 function enigSetActive(element, status) {
-      
+
   if (status==0) {
     element.setAttribute("active","0");
     element.setAttribute("src",gImg0);
@@ -150,22 +149,24 @@ function enigmailUserSelLoad() {
 
    var toAddr = "";
    try {
-     toAddr=enigStripEmail(gArguments[0].toAddr);
+     toAddr=enigStripEmail(window.arguments[0].toAddr);
    }
    catch (ex) {}
 
 
    aUserList.sort(sortUsers);
    var d = new Date();
-   // create an ANSI date string (YYYYMMDD)
+   // create an ANSI date string (YYYYMMDD) for "now"
    var now=(d.getDate()+100*(d.getMonth()+1)+10000*(d.getYear()+1900)).toString();
    var aValidUsers = new Array();
 
 
    var mailAddr, escapedMailAddr;
    var s1, s2;
-   var escapeRegExp = new RegExp("([\\(\\$\\)\\/\\[\\]\\^])","g");
+   // Replace any non-text character c with \\c
+   var escapeRegExp = new RegExp("([^a-zA-Z0-9])","g");
 
+   // Activate found keys
    for (i=0; i<aUserList.length; i++) {
 
       var activeState= (allowExpired ? 0 : 2);
@@ -175,8 +176,8 @@ function enigmailUserSelLoad() {
           mailAddr = enigStripEmail(aUserList[i].userId);
           aValidUsers.push(mailAddr);
           escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
-          s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]");
-          s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?");
+          s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
+          s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
           activeState=(toAddr.search(s1)>=0 || toAddr.search(s2)>=0) ? 1 : 0;
           expired=false;
       }
@@ -201,8 +202,8 @@ function enigmailUserSelLoad() {
               mailAddr = enigStripEmail(aUserList[i].SubUserIds[user]);
               aValidUsers.push(mailAddr);
               escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
-              s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]");
-              s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?");
+              s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
+              s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
               if (toAddr.search(s1)>=0 || toAddr.search(s2)>=0) {
                 enigSetActive(treeItem.getElementsByAttribute("id","indicator")[0], 1);
               }
@@ -218,12 +219,13 @@ function enigmailUserSelLoad() {
    }
    gUserList.appendChild(treeChildren);
 
+   // Build up list of not found recipients
    var aNotFound=new Array();
    var toAddrList = toAddr.split(/,/);
    var j;
    for (i=0; i<toAddrList.length; i++) {
       for (j=0; j<aValidUsers.length; j++) {
-         if (aValidUsers[j] == toAddrList[i]) {
+         if (aValidUsers[j].toLowerCase() == toAddrList[i].toLowerCase()) {
             j=aValidUsers.length + 3;
          }
       }
@@ -232,6 +234,7 @@ function enigmailUserSelLoad() {
       }
    }
    descNotFound.firstChild.data = aNotFound.join(", ");
+   window.arguments[0].notFoundList=aNotFound;
 }
 
 
@@ -356,6 +359,27 @@ function enigmailUserSelCallback(event) {
       enigSetActive(elem, 0);
     } else if (elem.getAttribute("active") == "0") {
       enigSetActive(elem, 1);
+    }
+  }
+}
+
+function enigmailImportMissingKeys () {
+
+  var keyserver = EnigGetPref("keyserver");
+
+  var pubKeyId = "'<"+window.arguments[0].notFoundList.join(">' '<")+">'";
+  if (EnigConfirm("Try to download the following keys?\n"+window.arguments[0].notFoundList.join(", "))) {
+    var recvErrorMsgObj = new Object();
+    var recvFlags = nsIEnigmail.UI_INTERACTIVE;
+
+    var enigmailSvc = GetEnigmailSvc();
+    var exitStatus = enigmailSvc.receiveKey(window, recvFlags, pubKeyId,
+                                            recvErrorMsgObj);
+
+    if (exitStatus == 0) {
+      enigmailUserSelLoad;
+    } else {
+      EnigAlert(EnigGetString("keyImportError")+recvErrorMsgObj.value);
     }
   }
 }

@@ -47,16 +47,26 @@
         <splitter class="tree-splitter"/>
         <treecol id="keyCol" style="width:90px" label="&enigmail.keyId.label;"/>
       </treecols>
-      
+
       <treechildren id="enigmailUserIdSelectionChildren"/>
 
     </tree>
-    
+
 
   </groupbox>
-  
-  <checkbox id="enigmailUserSelPlainText"
-              label="&enigmail.userSelPlainText.label;"
-              accesskey="&enigmail.userSelPlainText.accesskey;"/>
 
+  <hbox autostretch="always">
+    <checkbox id="enigmailUserSelPlainText"
+                label="&enigmail.userSelPlainText.label;"
+                accesskey="&enigmail.userSelPlainText.accesskey;"/>
+<!--
+    <button class="dialog"
+            halign="right"
+            id="resetPrefs"
+            label="&enigmail.importMissingKeys.label;"
+            tooltip="&enigmail.importMissingKeys.tooltip;"
+            oncommand="enigmailImportMissingKeys();"
+            />
+-->
+  </hbox>
 </dialog>
