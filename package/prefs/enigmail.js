@@ -25,7 +25,7 @@ pref("extensions.enigmail.inlineAttachAsciiArmor",false);
 pref("extensions.enigmail.inlineAttachExt",".pgp");
 pref("extensions.enigmail.logDirectory","");
 pref("extensions.enigmail.keepSettingsForReply",true);
-pref("extensions.enigmail.keyserver","random.sks.keyserver.penguin.de, pgp.dtype.org, keyserver.kjsl.com, ldap,//certserver.pgp.com");
+pref("extensions.enigmail.keyserver","random.sks.keyserver.penguin.de, pgp.dtype.org, keyserver.kjsl.com, ldap://certserver.pgp.com");
 pref("extensions.enigmail.maxIdleMinutes",5);
 pref("extensions.enigmail.mimeHashAlgorithm",1);
 pref("extensions.enigmail.noPassphrase",false);

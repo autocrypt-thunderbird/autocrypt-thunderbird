@@ -1781,7 +1781,7 @@ function enigHandleUnknownKey() {
 
   if (EnigConfirm(mesg)) {
     var recvErrorMsgObj = new Object();
-    var recvFlags = nsIEnigmail.UI_INTERACTIVE;
+    var recvFlags = nsIEnigmail.DOWNLOAD_KEY;
     var progressBar=Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
     var requestObserver = new EnigRequestObserver(enigReceiveKeyTerminate, {'progressBar': progressBar, 'callType': 1});
 

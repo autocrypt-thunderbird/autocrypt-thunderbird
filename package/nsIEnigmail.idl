@@ -220,7 +220,12 @@ interface nsIEnigmail : nsISupports
                  in string keyId,
                  out wstring errorMsg);
 
-  nsIIPCRequest receiveKey(in string keyServer,
+  /* Receive flags */
+  const long SEARCH_KEY       = 0x01;
+  const long DOWNLOAD_KEY     = 0x02;
+
+  nsIIPCRequest receiveKey(in unsigned long recvFlags,
+                  in string keyServer,
                   in string keyId,
                   in nsIRequestObserver requestObserver,
                   out wstring errorMsg);

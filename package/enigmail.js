@@ -90,7 +90,7 @@ const NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableu
 const NS_SCRIPTABLEINPUTSTREAM_CONTRACTID = "@mozilla.org/scriptableinputstream;1"
 const ENIG_STRINGBUNDLE_CONTRACTID = "@mozilla.org/intl/stringbundle;1";
 const NS_PREFS_SERVICE_CID = "@mozilla.org/preferences-service;1";
-const NS_DOMPARSER_CONTRACTID = "@mozilla.org/xmlextras/domparser;1"
+const NS_DOMPARSER_CONTRACTID = "@mozilla.org/xmlextras/domparser;1";
 const NS_DOMSERIALIZER_CONTRACTID="@mozilla.org/xmlextras/xmlserializer;1";
 
 // Interfaces
@@ -2994,7 +2994,7 @@ function (email, secret, exitCodeObj, errorMsgObj) {
 // ExitCode > 0   => error
 // ExitCode == -1 => Cancelled by user
 Enigmail.prototype.receiveKey =
-function (keyserver, keyId, requestObserver, errorMsgObj) {
+function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.receiveKey: "+keyId+"\n");
 
   if (!this.initialized) {
@@ -3045,13 +3045,22 @@ function (keyserver, keyId, requestObserver, errorMsgObj) {
     }
   }
   catch (ex) {}
-  var command = this.agentPath + GPG_BATCH_OPTS;
+  var command = this.agentPath 
 
+  if (recvFlags & nsIEnigmail.DOWNLOAD_KEY) command += GPG_BATCH_OPTS;
+  
   if (proxyHost) {
     command += " --keyserver-options honor-http-proxy";
     envList.push("http_proxy="+proxyHost);
   }
-  command += " --keyserver " + keyserver + " --recv-keys " + keyId;
+  command += " --keyserver " + keyserver;
+  
+  if (recvFlags & nsIEnigmail.DOWNLOAD_KEY) {
+    command += " --recv-keys " + keyId;
+  }
+  else if (recvFlags & nsIEnigmail.SEARCH_KEY) {
+    command += " --search-keys " + keyId;
+  }
 
   var exitCodeObj    = new Object();
   var statusFlagsObj = new Object();

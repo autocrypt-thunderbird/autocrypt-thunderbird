@@ -22,6 +22,8 @@ enigmail.jar:
 	content/enigmail/enigmailPanel.js              (content/enigmailPanel.js)
 	content/enigmail/enigmailRulesEditor.xul       (content/enigmailRulesEditor.xul)
 	content/enigmail/enigmailRulesEditor.js        (content/enigmailRulesEditor.js)
+	content/enigmail/enigmailSearchKey.js          (content/enigmailSearchKey.js)
+	content/enigmail/enigmailSearchKey.xul         (content/enigmailSearchKey.xul)
 	content/enigmail/enigmailSelectPanel.xul       (content/enigmailSelectPanel.xul)
 	content/enigmail/enigmailSingleRcptSettings.js  (content/enigmailSingleRcptSettings.js)
 	content/enigmail/enigmailSingleRcptSettings.xul (content/enigmailSingleRcptSettings.xul)
@@ -81,6 +83,7 @@ enigmail-en-US.jar:
 enigmail-skin-tbird.jar:
 	skin/classic/enigmail/contents.rdf        (skin/classic/contents.rdf)
 	skin/classic/enigmail/enigmail.css        (skin/classic/enigmail.css)
+	skin/classic/enigmail/enigmail-about.png  (skin/classic/images/enigmail-about.png)
 	skin/classic/enigmail/enigmail-toolbar.png (skin/classic/images/enigmail-toolbar.png)
 	skin/classic/enigmail/enigmail-toolbar-small.png (skin/classic/images/enigmail-toolbar-small.png)
 	skin/classic/enigmail/enigmail-settings.png (skin/classic/images/enigmail-settings.png)

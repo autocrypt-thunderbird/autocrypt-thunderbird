@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.84.1.0";
-var gEnigmimeVersion = "0.84.1.0";
+var gEnigmailVersion = "0.84.10001.0";
+var gEnigmimeVersion = "0.84.10001.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -61,6 +61,7 @@ const ENIG_ASS_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
 const ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID =
                               "@mozilla.org/network/file-output-stream;1";
 const ENIG_STANDARD_URL_CONTRACTID = "@mozilla.org/network/standard-url;1";
+const ENIG_SCRIPTABLEINPUTSTREAM_CONTRACTID = "@mozilla.org/scriptableinputstream;1"
 
 const ENIG_STREAMCONVERTERSERVICE_CID_STR =
       "{892FFEB0-3F80-11d3-A16C-0050041CAF44}";
@@ -371,7 +372,6 @@ const ENIG_CREATE_FILE = 0x08;
 const ENIG_TRUNCATE    = 0x20;
 const ENIG_DEFAULT_FILE_PERMS = 0600;
 
-const EnigInputStream = new Components.Constructor( "@mozilla.org/scriptableinputstream;1", "nsIScriptableInputStream" );
 
 function EnigCreateFileStream(filePath, permissions) {
   //DEBUG_LOG("enigmailCommon.js: EnigCreateFileStream: file="+filePath+"\n");
@@ -443,7 +443,7 @@ function EnigReadURLContents(url, maxBytes) {
 
   var rawInStream = fileChannel.open();
 
-  var scriptableInStream = new EnigInputStream();
+  var scriptableInStream = Components.classes[ENIG_SCRIPTABLEINPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIScriptableInputStream);
   scriptableInStream.init(rawInStream);
 
   var available = scriptableInStream.available()
@@ -1335,12 +1335,12 @@ function EnigReceiveKey(parent, msgParentWindow, recvFlags, keyId,
   if (progressBar) {
     // wait one second before displaying the progress bar
     var progressParam=Components.classes["@mozilla.org/messengercompose/composeprogressparameters;1"].createInstance(Components.interfaces.nsIMsgComposeProgressParams);
-    parent.setTimeout(progressBar.openProgressDialog, 1000, parent, msgWindow, "chrome://enigmail/content/enigRetrieveProgress.xul", progressParam);
+    parent.setTimeout(progressBar.openProgressDialog, 1000, parent, msgParentWindow, "chrome://enigmail/content/enigRetrieveProgress.xul", progressParam);
     //progressBar.openProgressDialog(parent, msgWindow, "chrome://enigmail/content/enigRetrieveProgress.xul", progressParam);
     progressBar.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_START, 0);
   }
 
-  return enigmailSvc.receiveKey(keyserver, keyId, requestObserver, errorMsgObj);
+  return enigmailSvc.receiveKey(recvFlags, keyserver, keyId, requestObserver, errorMsgObj);
 }
 
 

@@ -283,3 +283,8 @@
 <!ENTITY enigmail.moveUp.accesskey                  "U">
 <!ENTITY enigmail.moveDown.label                    "Move Down">
 <!ENTITY enigmail.moveDown.accesskey                "D">
+
+<!ENTITY enigmail.searchKeyDlg.label               "Download OpenPGP Keys">
+<!ENTITY enigmail.searchKeyDlgCapt.label           "Found Keys - Select to Import">
+<!ENTITY enigmail.created.label                    "Created">
+<!ENTITY enigmail.progress.label                   "Progress">

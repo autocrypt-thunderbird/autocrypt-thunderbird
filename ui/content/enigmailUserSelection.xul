@@ -92,14 +92,13 @@
             accesskey="&enigmail.refreshKeys.accesskey;"
             oncommand="enigmailRefreshKeys();"/>
 
-<!--
     <button class="dialog"
             halign="right"
-            id="resetPrefs"
+            id="importMissingKeys"
             label="&enigmail.importMissingKeys.label;"
             tooltip="&enigmail.importMissingKeys.tooltip;"
-            oncommand="enigmailImportMissingKeys();"/>
--->
+            oncommand="enigmailSearchMissingKeys();"/>
+            
   </hbox>
   <vbox align="end">
     <hbox>
