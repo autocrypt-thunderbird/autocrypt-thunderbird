@@ -83,45 +83,47 @@ function prefOnLoad() {
 }
 
 function resetPrefs() {
-   DEBUG_LOG("pref-enigmail.js: resetPrefs\n");
+  DEBUG_LOG("pref-enigmail.js: resetPrefs\n");
 
-   EnigDisplayRadioPref("usePGPMimeOption", gEnigmailPrefDefaults["usePGPMimeOption"],
-                        gUsePGPMimeOptionList);
-   EnigDisplayRadioPref("recipientsSelectionOption", gEnigmailPrefDefaults["recipientsSelectionOption"],
-                        gEnigRecipientsSelectionOptions);
+  EnigDisplayPrefs(true, true, false);
 
-   gMimeHashElement.selectedIndex = gEnigmailPrefDefaults["mimeHashAlgorithm"];
+  EnigSetPref("configuredVersion", gEnigmailVersion);
 
-   EnigDisplayPrefs(true, true, false);
+  EnigDisplayRadioPref("usePGPMimeOption", EnigGetDefaultPref("usePGPMimeOption"),
+                      gUsePGPMimeOptionList);
+  EnigDisplayRadioPref("recipientsSelectionOption", EnigGetDefaultPref("recipientsSelectionOption"),
+                      gEnigRecipientsSelectionOptions);
+
+  gMimeHashElement.selectedIndex = EnigGetDefaultPref("mimeHashAlgorithm");
 }
 
 
 function prefOnAccept() {
 
-   DEBUG_LOG("pref-enigmail.js: prefOnAccept\n");
+  DEBUG_LOG("pref-enigmail.js: prefOnAccept\n");
 
-   EnigDisplayPrefs(false, false, true);
+  EnigDisplayPrefs(false, false, true);
 
-   EnigSetRadioPref("usePGPMimeOption", gUsePGPMimeOptionList);
+  EnigSetRadioPref("usePGPMimeOption", gUsePGPMimeOptionList);
 
-   EnigSetPref("mimeHashAlgorithm", gMimeHashElement.selectedIndex);
+  EnigSetPref("mimeHashAlgorithm", gMimeHashElement.selectedIndex);
 
-   EnigSetRadioPref("recipientsSelectionOption", gEnigRecipientsSelectionOptions);
+  EnigSetRadioPref("recipientsSelectionOption", gEnigRecipientsSelectionOptions);
 
 
-   if (gSendFlowedElement &&
-       (gSendFlowedElement.checked != gSendFlowedValue) ) {
+  if (gSendFlowedElement &&
+      (gSendFlowedElement.checked != gSendFlowedValue) ) {
 
-     gEnigPrefRoot.setBoolPref("mailnews.send_plaintext_flowed", (gSendFlowedElement.checked ? true : false));
-   }
+    gEnigPrefRoot.setBoolPref("mailnews.send_plaintext_flowed", (gSendFlowedElement.checked ? true : false));
+  }
 
-   if (gMimePartsElement &&
-       (gMimePartsElement.checked != gMimePartsValue) ) {
+  if (gMimePartsElement &&
+      (gMimePartsElement.checked != gMimePartsValue) ) {
 
-     gEnigPrefRoot.setBoolPref("mail.server.default.mime_parts_on_demand", (gMimePartsElement.checked ? true : false));
-   }
+    gEnigPrefRoot.setBoolPref("mail.server.default.mime_parts_on_demand", (gMimePartsElement.checked ? true : false));
+  }
 
-   EnigSetPref("configuredVersion", gEnigmailVersion);
+  EnigSetPref("configuredVersion", gEnigmailVersion);
 
   EnigSavePrefs();
 
