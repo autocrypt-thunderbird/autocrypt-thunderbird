@@ -680,7 +680,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
   var attachmentsEncrypted = true;
 
   for (index in currentAttachments) {
-    if (! currentAttachments[index].displayName.match(/\.(gpg|pgp|asc)$/))
+    if (! enigCheckEncryptedAttach(currentAttachments[index]))
       attachmentsEncrypted=false;
   }
 
@@ -784,6 +784,11 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
   return;
 }
 
+// check if the attachment could be encrypted
+function enigCheckEncryptedAttach(attachment) {
+  return (attachment.displayName.match(/\.(gpg|pgp|asc)$/) ||
+      attachment.contentType.match(/^application\/pgp(\-.*)?$/));
+}
 
 function enigEscapeTextForHTML(text, hyperlink) {
   // Escape special characters
@@ -1306,9 +1311,12 @@ function enigOnShowAttachmentContextMenu() {
     openMenu.removeAttribute('disabled');
     saveMenu.removeAttribute('disabled');
 
-    if (selectedAttachments[0].attachment.displayName.match(/\.(gpg|pgp|asc)$/)) {
+    if (enigCheckEncryptedAttach(selectedAttachments[0].attachment)) {
       decryptOpenMenu.removeAttribute('disabled');
       decryptSaveMenu.removeAttribute('disabled');
+      if (! selectedAttachments[0].attachment.displayName) {
+        selectedAttachments[0].attachment.displayName="message.pgp"
+      }
     }
     else {
       decryptOpenMenu.setAttribute('disabled', true);
@@ -1476,15 +1484,28 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
     }
   }
 
-  var r=enigmailSvc.decryptAttachment(window, outFile.path, callbackArg.ipcBuffer,
+  var exitStatus=enigmailSvc.decryptAttachment(window, outFile.path, callbackArg.ipcBuffer,
                                 exitCodeObj, statusFlagsObj,
                                 errorMsgObj);
 
   callbackArg.ipcBuffer.shutdown();
-  if (exitCodeObj.value != 0) {
-    EnigAlert(EnigGetString("failedDecrypt")+"\n\n"+errorMsgObj.value);
+  if ((! exitStatus) || exitCodeObj.value != 0) {
+    exitStatus=false;
+    if (statusFlagsObj.value &
+        (nsIEnigmail.DECRYPTION_OKAY | nsIEnigmail.UNVERIFIED_SIGNATURE)) {
+      if (callbackArg.actionType == "openAttachment") {
+        exitStatus = EnigConfirm(EnigGetString("decryptOkNoSig")+"\n\n"+EnigGetString("contAnyway"));
+      }
+      else {
+        EnigAlert(EnigGetString("decryptOkNoSig"));
+      }
+    }
+    else {
+      EnigAlert(EnigGetString("failedDecrypt")+"\n\n"+errorMsgObj.value);
+      exiStatus=false;
+    }
   }
-  else if (callbackArg.actionType == "openAttachment") {
+  if (exitStatus && callbackArg.actionType == "openAttachment") {
     var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
     var outFileUri = ioServ.newFileURI(outFile);
     var fileExt = outFile.leafName.replace(/(.*\.)(\w+)$/, "$2")
@@ -1492,10 +1513,13 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
       try {
         var extAppLauncher = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsPIExternalAppLauncher);
         extAppLauncher.deleteTemporaryFileOnExit(outFile);
+
         var mimeService = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsIMIMEService);
-        var fileMimeInfo = mimeService.GetFromExtension(fileExt);
-        if (fileMimeInfo.preferredAction == fileMimeInfo.useHelperApp ||
-            fileMimeInfo.preferredAction == fileMimeInfo.useSystemDefault) {
+        var fileMimeType = mimeService.GetTypeFromFile(outFile);
+        var fileMimeInfo = mimeService.GetFromMIMEType(fileMimeType);
+        if ((fileMimeInfo.preferredAction == fileMimeInfo.useHelperApp ||
+            fileMimeInfo.preferredAction == fileMimeInfo.useSystemDefault) &&
+            (! fileMimeType.indexOf("text/")==0)) {
           // open attachment with a helper application
           window.OpenURL(outFileUri.asciiSpec);
           return;
@@ -1503,8 +1527,8 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
       }
       catch (ex) {
         // if the attachment file type is unknown, an exception is thrown,
-        // so it's clear it will not be opened in a browser window
-        window.OpenURL(outFileUri.asciiSpec);
+        // so let it be handled by a browser window
+        EnigLoadURLInNavigatorWindow(outFileUri.asciiSpec, true)
         return;
       }
     }
@@ -1578,7 +1602,7 @@ function enigAttachmentListClick (elementId, event) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigAttachmentListClick: event="+event+"\n");
 
   var attachment=event.target.attachment;
-  if (attachment.displayName.match(/\.(gpg|pgp|asc)$/)) {
+  if (enigCheckEncryptedAttach(attachment)) {
     if (event.button != 0) return;
 
     if (event.detail == 2) // double click

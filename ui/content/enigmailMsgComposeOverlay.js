@@ -369,6 +369,23 @@ function enigSend(sendFlags, elementId) {
     return;
   }
 
+  if (gEnigDirty) {
+    // make sure the sendFlags are reset before the message is processed
+    // (it may have been set by a previously aborted send operation!)
+    try {
+      gMsgCompose.compFields.securityInfo.sendFlags=0;
+    }
+    catch (ex){
+      try {
+        var newSecurityInfo = Components.classes[ENIG_ENIGMSGCOMPFIELDS_CONTRACTID].createInstance(Components.interfaces.nsIEnigMsgCompFields);
+        if (newSecurityInfo) {
+          newSecurityInfo.sendFlags=0;
+          gMsgCompose.compFields.securityInfo = newSecurityInfo;
+        }
+      }
+      catch (ex) {}
+    }
+  }
   gEnigDirty = true;
 
   var enigmailSvc = GetEnigmailSvc();
@@ -915,7 +932,7 @@ function enigSend(sendFlags, elementId) {
 
        return;
      }
-    
+
      if (isOffline || (sendFlags & nsIEnigmail.SEND_LATER)) {
        // Send message later
        DEBUG_LOG("enigmailMsgComposeOverlay.js: Sending message later ...\n");
