@@ -114,4 +114,17 @@
 <!ENTITY enigmail.console.label "Ver consola de Enigmail">
 <!ENTITY enigmail.experimental.label "Usar firma/cifrado integrado (experimental)">
 <!ENTITY enigmail.keygen.desc "NOTA: Generar la clave puede tardar varios minutos. No salga del navegador mientras se esté generando la clave. Realizar acciones diversas activamente con el navegador o que requieran un uso intensivo del disco durante el proceso, repercutirán en la aleatoridad del proceso. Cuando las claves se hayan generado, se le avisará.">
-<!ENTITY enigmail.hushMailSupport.label "Soporte para Hushmail (desactivar a menos que se necesite)">
+<!ENTITY enigmail.hushMailSupport.label "Soporte para Hushmail (desactivar si es posible)">
+<!ENTITY enigmail.recipientsSelectionOption.label "Seleccionar el comportamiento para seleccionar claves de destinatarios">
+<!ENTITY enigmail.usersNotFound.label "No se encontraron los destinatarios">
+<!ENTITY enigmail.askRecipientsAlways.label "Mostrar siempre la selección">
+<!ENTITY enigmail.keyExpiry.label "Expiración">
+<!ENTITY enigmail.usersSelectRecipients.label "Seleccionar destinatarios para cifrar">
+<!ENTITY enigmail.doubleDashSeparator.label "Tratar '--' como separador de firma">
+<!ENTITY enigmail.userSelPlainText.accesskey "S">
+<!ENTITY enigmail.keyId.label "Id de la clave">
+<!ENTITY enigmail.askRecipientsClever.label "Mostrar la selección cuando sea necesario">
+<!ENTITY enigmail.userSelPlainText.label "Enviar correo sin cifrar">
+<!ENTITY enigmail.askRecipientsNever.label "Nunca mostrar la selección">
+<!ENTITY enigmail.keySelection.label "Selección">
+<!ENTITY enigmail.userSelectionList.label "Seleccionar usuarios para cifrar correo">
