@@ -996,6 +996,14 @@ function enigSend(gotSendFlags, elementId) {
      // EnigSend: Handle both plain and encrypted messages below
      var isOffline = (gIOService && gIOService.offline);
 
+     if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
+       goDoCommand(elementId);
+       if (! (sendFlags & nsIEnigmail.SEND_PGP_MIME))
+          enigUndoEncryption(bucketList, gEnigModifiedAttach);
+
+       return;
+     }
+
      if (EnigGetPref("confirmBeforeSend")) {
        var msgStatus = "";
 
@@ -1049,14 +1057,7 @@ function enigSend(gotSendFlags, elementId) {
        return;
      }
 
-     if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
-       goDoCommand(elementId);
-       if (! (sendFlags & nsIEnigmail.SEND_PGP_MIME))
-          enigUndoEncryption(bucketList, gEnigModifiedAttach);
-     }
-     else {
-       enigGenericSendMessage(nsIMsgCompDeliverMode.Now);
-     }
+     enigGenericSendMessage(nsIMsgCompDeliverMode.Now);
 
   } catch (ex) {
      if (EnigConfirm(EnigGetString("signFailed")))
