@@ -104,7 +104,7 @@ function enigmailUserSelLoad() {
      }
    }
    var toAddr = enigStripEmail(gArguments[0].toAddr);
-   
+
    aUserList.sort(sortUsers);
    var d = new Date();
    // create an ANSI date string (YYYYMMDD)
@@ -112,10 +112,10 @@ function enigmailUserSelLoad() {
    var aValidUsers = new Array();
    
    
-   var mailAddr;
-   var s1;
-   var s2;
-   
+   var mailAddr, escapedMailAddr;
+   var s1, s2;
+   var escapeRegExp = new RegExp("([\\(\\$\\)\\/\\[\\]\\^])","g");
+
    for (i=0; i<aUserList.length; i++) {
 
       var activeState=2; // key expired
@@ -123,11 +123,12 @@ function enigmailUserSelLoad() {
           // key still valid
           mailAddr = enigStripEmail(aUserList[i].userId);
           aValidUsers.push(mailAddr);
-          s1=eval("RegExp(/[, ]?"+mailAddr+"[, ]/)");
-          s2=eval("RegExp(/[, ]"+mailAddr+"[, ]?/)");
-          activeState=(toAddr.search(s1)>=0 || toAddr.search(s2)>=0) ? 1 : 0;          
+          escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
+          s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]");
+          s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?");
+          activeState=(toAddr.search(s1)>=0 || toAddr.search(s2)>=0) ? 1 : 0;
       }
-      
+
       var treeItem=enigUserSelCreateRow(activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry)
       if (aUserList[i].SubUserIds.length) {
         treeItem.setAttribute("container", "true");
@@ -139,8 +140,9 @@ function enigmailUserSelLoad() {
             // add uid's for valid keys
             mailAddr = enigStripEmail(aUserList[i].SubUserIds[user]);
             aValidUsers.push(mailAddr);
-            s1=eval("RegExp(/[, ]?"+mailAddr+"[, ]/)");
-            s2=eval("RegExp(/[, ]"+mailAddr+"[, ]?/)");
+            escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
+            s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]");
+            s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?");
             if (toAddr.search(s1)>=0 || toAddr.search(s2)>=0) {
                enigSetActive(treeItem.getElementsByAttribute("id","indicator")[0], 1);
             }
@@ -181,7 +183,7 @@ function enigUserSelCreateRow (activeState, userId, keyId, expiry) {
     userCol.setAttribute("label", userId);
     var expCol=document.createElement("treecell");
     if (activeState==2) {
-      expCol.setAttribute("label", EnigGetString("prefExpired").toLowerCase()+" "+expiry);
+      expCol.setAttribute("label", EnigGetString("selKeyExpired", expiry));
     }
     else {
       expCol.setAttribute("label", expiry);
