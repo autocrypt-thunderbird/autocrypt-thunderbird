@@ -32,9 +32,9 @@
  */
 
 // Maximum size of message directly processed by Enigmail
-const MSG_BUFFER_SIZE = 96000;
+const MSG_BUFFER_SIZE = 98304;   // 96 kB
 
-const ERROR_BUFFER_SIZE = 16000;
+const ERROR_BUFFER_SIZE = 16384; // 16 kB
 
 const PGP_BATCH_OPTS  = " +batchmode +force";
 const GPG_BATCH_OPTS  = " --batch --no-tty --status-fd 2";
@@ -1263,7 +1263,7 @@ function (domWindow, version, prefBranch) {
     processInfo = Components.classes[NS_PROCESSINFO_CONTRACTID].getService(nsIProcessInfo);
 
   } catch (ex) {
-    this.initializationError = "IPCService/ProcessInfo not available";
+    this.initializationError = EnigGetString("enigmimeNotAvail");
     ERROR_LOG("enigmail.js: Enigmail.initialize: Error - "+this.initializationError+"\n");
     throw Components.results.NS_ERROR_FAILURE;
   }
@@ -1335,7 +1335,7 @@ function (domWindow, version, prefBranch) {
     pipeConsole.write("Initializing Enigmail service ...\n");
 
   } catch (ex) {
-    this.initializationError = "IPCService not available";
+    this.initializationError = EnigGetString("enigmimeNotAvail");
     ERROR_LOG("enigmail.js: Enigmail.initialize: Error - "+this.initializationError+"\n");
     throw Components.results.NS_ERROR_FAILURE;
   }
@@ -1346,7 +1346,7 @@ function (domWindow, version, prefBranch) {
   } catch (ex) {
   }
 
-  var agentList = ["gpg", "pgp"];
+  var agentList = ["gpg"];
   var agentType = "";
 
   if (agentPath) {
@@ -1365,7 +1365,7 @@ function (domWindow, version, prefBranch) {
         throw Components.results.NS_ERROR_FAILURE;
 
     } catch (ex) {
-      this.initializationError = "Unable to locate GPG/PGP agent "+agentPath;
+      this.initializationError = EnigGetString("gpgNotFound", agentPath);
       ERROR_LOG("enigmail.js: Enigmail.initialize: Error - "+this.initializationError+"\n");
       throw Components.results.NS_ERROR_FAILURE;
     }
@@ -1408,7 +1408,7 @@ function (domWindow, version, prefBranch) {
     }
 
     if (!agentPath) {
-      this.initializationError = "Unable to locate GPG executable in the path";
+      this.initializationError = EnigGetString("gpgNotInPath");
       ERROR_LOG("enigmail.js: Enigmail: Error - "+this.initializationError+"\n");
       throw Components.results.NS_ERROR_FAILURE;
     }
@@ -1705,9 +1705,10 @@ function (command, needPassphrase, domWindow, prompter, listener,
       // Write to child STDIN
       // (ignore errors, because child may have exited already, closing STDIN)
       try {
-        if (passphrase)
+        if (passphrase) {
            pipetrans.writeSync(passphrase, passphrase.length);
-         pipetrans.writeSync("\n", 1);
+           pipetrans.writeSync("\n", 1);
+        }
       } catch (ex) {}
     }
 
@@ -1930,7 +1931,11 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
   var startErrorMsgObj = new Object();
 
   var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
-  ipcBuffer.open(MSG_BUFFER_SIZE, false);
+  var bufferSize = ((plainText.length + 20000)/1024).toFixed(0)*1024;
+  if (MSG_BUFFER_SIZE > bufferSize)
+    bufferSize=MSG_BUFFER_SIZE;
+
+  ipcBuffer.open(bufferSize, false);
 
   var pipeTrans = this.encryptMessageStart(parent, null, uiFlags,
                                            fromMailAddr, toMailAddr,
@@ -2474,37 +2479,56 @@ function (parent, uiFlags, cipherText, signatureObj,
   var noProxy = true;
   var startErrorMsgObj = new Object();
 
-  var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
-  ipcBuffer.open(MSG_BUFFER_SIZE, false);
+  var readBytes = MSG_BUFFER_SIZE;
+  if (verifyOnly && pgpBlock.length > MSG_BUFFER_SIZE)
+    readBytes = ((pgpBlock.length+1500)/1024).toFixed(0)*1024;
 
-  var pipeTrans = this.decryptMessageStart(parent, null, verifyOnly, noOutput,
-                                         ipcBuffer, noProxy, startErrorMsgObj);
+  const maxTries = 2;
+  var tryCount = 0;
+  while (tryCount < maxTries) {
+    tryCount++;
 
-  if (!pipeTrans) {
-    errorMsgObj.value = startErrorMsgObj.value;
-    statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
+    var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+    ipcBuffer.open(readBytes, false);
 
-    return "";
-  }
+    var pipeTrans = this.decryptMessageStart(parent, null, verifyOnly, noOutput,
+                                          ipcBuffer, noProxy, startErrorMsgObj);
 
-  // Write to child STDIN
-  // (ignore errors, because child may have exited already, closing STDIN)
-  try {
-    pipeTrans.writeSync(pgpBlock, pgpBlock.length);
-  } catch (ex) {}
+    if (!pipeTrans) {
+      errorMsgObj.value = startErrorMsgObj.value;
+      statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
 
-  // Wait for child STDOUT to close
-  pipeTrans.join();
+      return "";
+    }
 
-  var plainText = ipcBuffer.getData();
-  ipcBuffer.shutdown();
+    // Write to child STDIN
+    // (ignore errors, because child may have exited already, closing STDIN)
+    try {
+      pipeTrans.writeSync(pgpBlock, pgpBlock.length);
+    } catch (ex) {}
 
-  var exitCode = this.decryptMessageEnd(uiFlags, plainText.length, pipeTrans,
+    // Wait for child STDOUT to close
+    pipeTrans.join();
+
+    var overflowed = ipcBuffer.overflowed;
+    var plainText = ipcBuffer.getData();
+    if (ipcBuffer.overflowed && plainText.length < ipcBuffer.totalBytes) {
+      readBytes = ((ipcBuffer.totalBytes+1500)/1024).toFixed(0)*1024;
+      WRITE_LOG("enigmail.js: Enigmail.decryptMessage: decrypted text too big for standard buffer, retrying with buffer size="+readBytes+"\n");
+    }
+    else {
+      tryCount = maxTries;
+    }
+
+    ipcBuffer.shutdown();
+    ipcBuffer = null; // make sure the object gets freed
+
+    var exitCode = this.decryptMessageEnd(uiFlags, plainText.length, pipeTrans,
                                         verifyOnly, noOutput,
                                         statusFlagsObj, keyIdObj, userIdObj,
                                         errorMsgObj);
-
-  exitCodeObj.value = exitCode;
+    exitCodeObj.value = exitCode;
+  }
 
   if ((head.search(/\S/) >= 0) ||
       (tail.search(/\S/) >= 0)) {
@@ -3672,11 +3696,12 @@ function (parent, outFileName, inputBuffer,
 
   var inStream;
   try {
-    pipeTrans.writeSync(passphrase, passphrase.length);
-    pipeTrans.writeSync("\n", 1);
+    if (passphrase.length > 0) {
+      pipeTrans.writeSync(passphrase, passphrase.length);
+      pipeTrans.writeSync("\n", 1);
+    }
     var dataLength = inputBuffer.totalBytes;
 
-    //pipeTrans.writeSync(inputBuffer.getByteData(wroteLength), dataLength);
     inStream=inputBuffer.openInputStream();
     pipeTrans.writeAsync(inStream, dataLength, true);
   }
