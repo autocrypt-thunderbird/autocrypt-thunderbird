@@ -61,11 +61,16 @@
 			if (typeof(window.arguments[0].keyId) == "string") {
 				var keyId = window.arguments[0].keyId;
 				if (window.arguments[0].upload) {
-					keyIdText.firstChild.data = EnigGetString("uploadKey",keyId);
+          var keyText = EnigGetString("uploadKey",keyId);
 				}
 				else {
-					keyIdText.firstChild.data = EnigGetString("importKey",keyId);
+          keyText = EnigGetString("importKey",keyId);
 				}
+				
+        if (keyText.length > 400) {
+          keyText = keyText.substr(0,400)+" ...";
+        }
+				keyIdText.firstChild.data = keyText;
 				emailRow.setAttribute("collapsed", "true");
 			}
 			else {

@@ -82,20 +82,20 @@
 
 <!ENTITY enigmail.messengermenu.accesskey "n">
 
-<!ENTITY enigmail.decryptverify.label    "Decrypt/verify">
-<!ENTITY enigmail.importpublickey.label  "Import public key">
-<!ENTITY enigmail.savedecrypted.label    "Save decrypted message">
+<!ENTITY enigmail.decryptverify.label    "Decrypt/Verify">
+<!ENTITY enigmail.importpublickey.label  "Import Public Key">
+<!ENTITY enigmail.savedecrypted.label    "Save Decrypted Message">
 
-<!ENTITY enigmail.autoDecrypt.label      "Automatically decrypt/verify messages">
-<!ENTITY enigmail.clearPassphrase.label  "Clear saved passphrase">
+<!ENTITY enigmail.autoDecrypt.label      "Automatically Decrypt/Verify Messages">
+<!ENTITY enigmail.clearPassphrase.label  "Clear Saved Passphrase">
 <!ENTITY enigmail.editRules.label        "Edit Per-Recipient Rules">
 
 <!ENTITY enigmail.prefs.label            "Preferences">
 <!ENTITY enigmail.advprefs.label         "Advanced preferences">
 
 <!ENTITY enigmail.debugMenu.label        "Debugging Enigmail">
-<!ENTITY enigmail.viewconsole.label      "View console">
-<!ENTITY enigmail.viewdebuglog.label     "View logfile">
+<!ENTITY enigmail.viewconsole.label      "View Console">
+<!ENTITY enigmail.viewdebuglog.label     "View Logfile">
 
 <!ENTITY enigmail.generatekey.label        "Generate key">
 <!ENTITY enigmail.upgrade.label            "Upgrade">
@@ -130,20 +130,20 @@
 <!ENTITY enigmail.securitybutton.label       "OpenPGP">
 <!ENTITY enigmail.securitybutton.tip         "OpenPGP (Enigmail) security settings">
 
-<!ENTITY enigmail.signedsend.label            "Sign message">
-<!ENTITY enigmail.encryptedsend.label         "Encrypt message">
+<!ENTITY enigmail.signedsend.label            "Sign Message">
+<!ENTITY enigmail.encryptedsend.label         "Encrypt Message">
 <!ENTITY enigmail.disableRules.label          "Ignore Per-Recipient Rules">
 
-<!ENTITY enigmail.composeOptionsMenu.label     "Default composition options">
+<!ENTITY enigmail.composeOptionsMenu.label     "Default Composition Options">
 
-<!ENTITY enigmail.pgpAccountSettings.label     "Signing/encryption options...">
-<!ENTITY enigmail.mimeOptionsMenu.label        "PGP/MIME options...">
-<!ENTITY enigmail.sendOptionsMenu.label        "Send options...">
-<!ENTITY enigmail.defaultKeySelOpts.label      "Key selection options...">
-<!ENTITY enigmail.sendPGPMime.label            "Use PGP/MIME for this message">
+<!ENTITY enigmail.pgpAccountSettings.label     "Signing/Encryption Options...">
+<!ENTITY enigmail.mimeOptionsMenu.label        "PGP/MIME Options...">
+<!ENTITY enigmail.sendOptionsMenu.label        "Send Options...">
+<!ENTITY enigmail.defaultKeySelOpts.label      "Key Selection Options...">
+<!ENTITY enigmail.sendPGPMime.label            "Use PGP/MIME for This Message">
 
-<!ENTITY enigmail.undoencryption.label         "Undo encryption">
-<!ENTITY enigmail.insertkey.label              "Insert public key">
+<!ENTITY enigmail.undoencryption.label         "Undo Encryption">
+<!ENTITY enigmail.insertkey.label              "Insert Public Key">
 
 <!ENTITY enigmail.composemenu.accesskey        "n">
 
@@ -201,7 +201,7 @@
 <!ENTITY enigmail.defaultNotSignedsend.accesskey  "G">
 <!ENTITY enigmail.confirmBeforeSend.accesskey     "A">
 
-<!ENTITY enigmail.keygen.desc "NOTE: Key generation may take up to several minutes to complete. Do not exit the browser while key generation is in progress. Actively browsing or performing disk-intensive operations during key generation will replenish the 'randomness pool' and speed-up the process. You will be alerted when key generation is completed.">
+<!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>NOTE: Key generation may take up to several minutes to complete.</a> Do not exit the application while key generation is in progress. Actively browsing or performing disk-intensive operations during key generation will replenish the 'randomness pool' and speed-up the process. You will be alerted when key generation is completed.">
 
 <!ENTITY enigmail.console.label                     "View Enigmail console">
 <!ENTITY enigmail.console.tooltip                   "View Enigmail console">
@@ -267,11 +267,11 @@
 <!ENTITY  enigmail.showPhoto.label                  "View OpenPGP Photo ID">
 <!ENTITY  enigmail.signSenderKey.label              "Sign Key ...">
 <!ENTITY  enigmail.trustSenderKey.label             "Set Key Trust ...">
-<!ENTITY  enigmail.signSenderKeyPopup.label         "Sign sender's key ...">
-<!ENTITY  enigmail.trustSenderKeyPopup.label        "Set senderr's key trust ...">
+<!ENTITY  enigmail.signSenderKeyPopup.label         "Sign Sender's Key ...">
+<!ENTITY  enigmail.trustSenderKeyPopup.label        "Set Sender's Key Trust ...">
 <!ENTITY  enigmail.smimeSecurityInfo.label          "S/MIME Security Info ...">
 <!ENTITY  enigmail.createRuleFromAddr.label         "Create OpenPGP Rule from Address...">
-<!ENTITY  enigmail.keyManWindow.label               "OpenPGP key management ">
+<!ENTITY  enigmail.keyManWindow.label               "OpenPGP Key Management">
 <!ENTITY  enigmail.keyManWindow.accesskey           "O">
 
 <!ENTITY enigmail.singleRcptSettings.label          "Enigmail - Recipient Settings">

@@ -397,6 +397,9 @@ function enigmailKeyMenu() {
 }
 
 function enigmailDblClick(event) {
+  if (event) {
+    if (event.button != 0) return;
+  }
   var keyList = enigmailGetSelectedKeys();
   var keyType="";
   if (keyList.length == 1) {
@@ -740,7 +743,7 @@ function enigmailUploadKeys() {
 function enigmailUploadKeysCb(exitCode, errorMsg, msgBox) {
   if (msgBox) {
     if (exitCode!=0) {
-      EnigAlert(EnigGetString("sendKeysFailed")+"\n"+errorMsg);
+      EnigLongAlert(EnigGetString("sendKeysFailed")+"\n"+errorMsg);
     }
   }
   else {
@@ -756,11 +759,11 @@ function enigmailReceiveKey() {
 function enigmailReceiveKeyCb(exitCode, errorMsg, msgBox) {
   if (msgBox) {
     if (exitCode==0) {
-      EnigAlert(EnigGetString("receiveKeysOk") + "\n"+ errorMsg);
+      EnigLongAlert(EnigGetString("receiveKeysOk") + "\n"+ errorMsg);
       enigmailRefreshKeys();
     }
     else {
-      EnigAlert(EnigGetString("receiveKeysFailed")+"\n"+errorMsg);
+      EnigLongAlert(EnigGetString("receiveKeysFailed")+"\n"+errorMsg);
     }
   }
   else {

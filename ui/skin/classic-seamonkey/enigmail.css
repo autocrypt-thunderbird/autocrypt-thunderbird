@@ -80,6 +80,10 @@
   cursor: pointer;
 }
 
+.enigmailStrong {
+  font-weight: bold;
+}
+
 .enigmailUidInactive {
   color: gray;
   font-style: italic;

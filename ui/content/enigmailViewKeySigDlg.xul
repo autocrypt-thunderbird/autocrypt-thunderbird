@@ -64,7 +64,7 @@
       hidecolumnpicker="true">
       
       <treecols>
-        <treecol id="enigUserNameCol" flex="1" primary="true"
+        <treecol id="enigUserNameCol" flex="1"
             label="&enigmail.keyUserId.label;"/>
         <splitter class="tree-splitter"/>
         <treecol id="keyCol" style="width:90px"
