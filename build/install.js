@@ -19,6 +19,7 @@ if (!verifyDiskSpace(fProgram, srDest)) {
 } else {
 
   var fComponents = getFolder("Components");
+  var fChrome = getFolder("Chrome");
 
   var delComps = [ "libipc.so", "ipc.dll"]; // Old DLLs
 
@@ -29,6 +30,7 @@ if (!verifyDiskSpace(fProgram, srDest)) {
   }
 
   // addDirectory: blank, archive_dir, install_dir, install_subdir
+  addDirectory("", "chrome", fChrome, "");
   addDirectory("", "components", fComponents, "");
 
   err = getLastError();
@@ -42,6 +44,8 @@ if (!verifyDiskSpace(fProgram, srDest)) {
     cancelInstall(err);
 
   } else {
+    // register Chrome
+    registerChrome(PACKAGE | DELAYED_CHROME, getFolder("Chrome","enigmime.jar"), "content/enigmime/");
     performInstall();
   }
 }
