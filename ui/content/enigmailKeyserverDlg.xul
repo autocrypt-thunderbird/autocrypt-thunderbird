@@ -1,0 +1,110 @@
+<!--
+  The contents of this file are subject to the Mozilla Public
+  License Version 1.1 (the "MPL"); you may not use this file
+  except in compliance with the MPL. You may obtain a copy of
+  the MPL at http://www.mozilla.org/MPL/
+
+  Software distributed under the MPL is distributed on an "AS
+  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  implied. See the MPL for the specific language governing
+  rights and limitations under the MPL.
+
+  The Original Code is Enigmail.
+
+  The Initial Developer of this code is Patrick Brunschwig.
+  Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+  are Copyright (C) 2004 Patrick Brunschwig.
+  All Rights Reserved.
+
+  Contributor(s):
+
+  Alternatively, the contents of this file may be used under the
+  terms of the GNU General Public License (the "GPL"), in which case
+  the provisions of the GPL are applicable instead of
+  those above. If you wish to allow use of your version of this
+  file only under the terms of the GPL and not to allow
+  others to use your version of this file under the MPL, indicate
+  your decision by deleting the provisions above and replace them
+  with the notice and other provisions required by the GPL.
+  If you do not delete the provisions above, a recipient
+  may use your version of this file under either the MPL or the
+  GPL.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="enigmailKeyserverDlg"
+        title="&enigmail.keyserverDlg.label;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="onLoad();"
+        ondialogaccept="onAccept();"
+        >
+
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+
+  <script type="application/x-javascript">
+  <![CDATA[
+
+    function onLoad() {
+      window.arguments[1].value="";
+      var keyId = window.arguments[0].keyId;
+      var keyIdText = document.getElementById("keyIdText");
+      keyIdText.firstChild.data = EnigGetString("importKey",keyId);
+      var keyservers = EnigGetPref("keyserver").split(/[ ,;]/g);
+      var menulist=document.getElementById("selectedServer")
+      for (var i=0; i < keyservers.length; i++) {
+        if (keyservers[i].length>0) {
+          menulist.appendItem(keyservers[i]);
+        }
+      }
+      document.getElementById("selectedServer").value=keyservers[0];
+
+    }
+
+    function onAccept() {
+      var menulist=document.getElementById("selectedServer");
+      window.arguments[1].value = menulist.value;
+      var selected = menulist.selectedIndex;
+
+      if (selected != 0) {
+        if (selected == -1) {
+          var newItem=menulist.value;
+          menulist.insertItemAt(0, newItem);
+        }
+        else {
+          var item=menulist.removeItemAt(selected);
+          menulist.insertItemAt(0, item.label);
+        }
+
+        var keyServers="";
+        var server = menulist.removeItemAt(0);
+        while (server) {
+          keyServers+=", "+server.label;
+          server = menulist.removeItemAt(0);
+        }
+        EnigSetPref("keyserver", keyServers.substring(2));
+      }
+    }
+  ]]>
+  </script>
+
+  <vbox orient="vertical">
+    <description id="keyIdText" width="300px">...</description>
+    <separator/>
+    <hbox>
+    <label value="&enigmail.keyserver.label;:"/>
+    <menulist id="selectedServer" editable="true"/>
+    </hbox>
+    <separator/>
+  </vbox>
+</dialog>
+
