@@ -92,6 +92,11 @@
              accesskey="&enigmail.insertkey.accesskey;"
              oncommand="enigInsertKey();" />
 
+        <menuitem id="enigmail_expireCache"
+             label="&enigmail.expireCache.label;"
+             accesskey="&enigmail.expireCache.accesskey;"
+             oncommand="EnigExpireCache();" />
+
         <menuseparator/>
 
         <menuitem id="enigmail_help"

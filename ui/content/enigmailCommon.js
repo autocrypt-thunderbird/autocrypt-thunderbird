@@ -13,6 +13,8 @@ const NS_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
 const NS_STREAMCONVERTERSERVICE_CID_STR =
       "{892FFEB0-3F80-11d3-A16C-0050041CAF44}";
 
+const NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
+
 const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
 const MAILNEWS_PREFS_ROOT       = "mailnews.";
 
@@ -526,6 +528,45 @@ RequestObserver.prototype = {
   }
 }
 
+
+function EnigConvertFromUnicode(text, charset) {
+  DEBUG_LOG("enigmailCommon.js: EnigConvertFromUnicode: "+charset+"\n");
+
+  if (!charset || (charset.toLowerCase() == "iso-8859-1"))
+    return text;
+
+  // Encode plaintext
+  try {
+    var unicodeConv = Components.classes[NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(Components.interfaces.nsIScriptableUnicodeConverter);
+
+    unicodeConv.charset = charset;
+    return unicodeConv.ConvertFromUnicode(text);
+
+  } catch (ex) {
+    return text;
+  }
+}
+
+
+function EnigConvertToUnicode(text, charset) {
+  DEBUG_LOG("enigmailCommon.js: EnigConvertToUnicode: "+charset+"\n");
+
+  if (!charset || (charset.toLowerCase() == "iso-8859-1"))
+    return text;
+
+  // Encode plaintext
+  try {
+    var unicodeConv = Components.classes[NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(Components.interfaces.nsIScriptableUnicodeConverter);
+
+    unicodeConv.charset = charset;
+    return unicodeConv.ConvertToUnicode(text);
+
+  } catch (ex) {
+    return text;
+  }
+}
+
+
 function EnigGetDeepText(node) {
 
   DEBUG_LOG("enigmailCommon.js: EnigDeepText: <" + node.tagName + ">\n");
@@ -614,6 +655,16 @@ function EnigDumpHTML(node)
 
 const WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
 const nsIWindowMediator    = Components.interfaces.nsIWindowMediator;
+
+function EnigExpireCache() {
+  DEBUG_LOG("enigmailCommon.js: EnigExpireCache: \n");
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
+  enigmailSvc.expireCachedPassphrase();
+}
 
 function EnigViewConsole() {
   DEBUG_LOG("enigmailCommon.js: EnigViewConsole\n");

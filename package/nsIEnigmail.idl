@@ -68,6 +68,7 @@ interface nsIEnigmail : nsISupports
   void finalize();
 
   void stillActive();
+  void expireCachedPassphrase();
 
   string locateArmoredBlock(in string text,
                             in long offset,

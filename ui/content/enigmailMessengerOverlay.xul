@@ -34,6 +34,22 @@
 
         <menuseparator/>
 
+        <menuitem id="enigmail_autoDecrypt"
+             type="checkbox"
+             checked="false"
+             label="&enigmail.autoDecrypt.label;"
+             accesskey="&enigmail.autoDecrypt.accesskey;"
+             oncommand="enigToggleAttribute('autoDecrypt');" />
+
+        <menuseparator/>
+
+        <menuitem id="enigmail_expireCache"
+             label="&enigmail.expireCache.label;"
+             accesskey="&enigmail.expireCache.accesskey;"
+             oncommand="EnigExpireCache();" />
+
+        <menuseparator/>
+
         <menuitem id="enigmail_prefs"
              label="&enigmail.prefs.label;"
              accesskey="&enigmail.prefs.accesskey;"
@@ -41,7 +57,6 @@
 
         <menuitem id="enigmail_console"
              label="&enigmail.viewconsole.label;"
-             key="key_enigConsole"
              accesskey="&enigmail.viewconsole.accesskey;"
              oncommand="EnigViewConsole();" />
 

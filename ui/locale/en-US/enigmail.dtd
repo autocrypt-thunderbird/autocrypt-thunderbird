@@ -47,7 +47,7 @@
 
 <!ENTITY enigmail.keyserver.label         "Keyserver:">
 
-<!ENTITY enigmail.autoDecrypt.label       "Automatically decrypt/verify messages (slow?)">
+<!ENTITY enigmail.autoDecrypt.label       "Automatically decrypt/verify messages">
 <!ENTITY enigmail.captureWebMail.label	  "Capture webmail (experimental)">
 
 <!ENTITY enigmail.debugging.label	  "Debugging Enigmail">
@@ -63,10 +63,12 @@
 <!ENTITY enigmail.decryptverify.label	  "Decrypt/verify">
 <!ENTITY enigmail.savedecrypted.label	  "Save decrypted message">
 
-<!ENTITY enigmail.prefs.label	          "Preferences">
+<!ENTITY enigmail.expireCache.label	  "Expire cached passphrase">
 
+<!ENTITY enigmail.prefs.label	          "Preferences">
 <!ENTITY enigmail.viewconsole.label	  "View console">
 <!ENTITY enigmail.viewdebuglog.label	  "View logfile">
+
 <!ENTITY enigmail.generatekey.label	  "Generate key">
 <!ENTITY enigmail.upgrade.label	          "Upgrade">
 <!ENTITY enigmail.help.label	          "Help">
@@ -75,14 +77,18 @@
 <!ENTITY enigmail.decryptverify.accesskey   "D">
 <!ENTITY enigmail.savedecrypted.accesskey   "S">
 
-<!ENTITY enigmail.prefs.accesskey           "P">
+<!ENTITY enigmail.autoDecrypt.accesskey     "A">
 
+<!ENTITY enigmail.expireCache.accesskey     "x">
+
+<!ENTITY enigmail.prefs.accesskey           "P">
 <!ENTITY enigmail.viewconsole.accesskey	    "c">
 <!ENTITY enigmail.viewdebuglog.accesskey    "l">
+
 <!ENTITY enigmail.generatekey.accesskey     "k">
 <!ENTITY enigmail.upgrade.accesskey         "U">
 <!ENTITY enigmail.help.accesskey            "H">
-<!ENTITY enigmail.about.accesskey           "A">
+<!ENTITY enigmail.about.accesskey           "b">
 
 <!ENTITY enigmail.composemenu.accesskey   "n">
 

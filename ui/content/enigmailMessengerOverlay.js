@@ -25,6 +25,8 @@ function enigMessengerStartup() {
         element.setAttribute("oncommand", "enigMsgPrint('"+elementId+"');");
     }
 
+    enigUpdateOptionsDisplay();
+
     // Commented out; clean-up now handled by HdrView and Unload
     ///var outliner = GetThreadOutliner();
     ///outliner.addEventListener("click", enigThreadPaneOnClick, true);
@@ -85,6 +87,32 @@ function enigGetCurrentMsgUrl() {
 
 }
 
+function enigUpdateOptionsDisplay() {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigUpdateOptionsDisplay: \n");
+   var optList = ["autoDecrypt"];
+
+   for (var j=0; j<optList.length; j++) {
+     var menuElement = document.getElementById("enigmail_"+optList[j]);
+     menuElement.setAttribute("checked", EnigGetPref(optList[j]) ? "true" : "false");
+   }
+}
+
+
+function enigToggleAttribute(attrName)
+{
+  DEBUG_LOG("enigmailMsgessengerOverlay.js: enigToggleAttribute('"+attrName+"')\n");
+
+  var menuElement = document.getElementById("enigmail_"+attrName);
+
+  var oldValue = EnigGetPref(attrName);
+  EnigSetPref(attrName, !oldValue);
+
+  enigUpdateOptionsDisplay();
+
+  if (attrName == "autoDecrypt")
+    ReloadMessage();
+}
+
 function enigMessageDecrypt(event) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecrypt: "+event+"\n");
 
@@ -123,19 +151,24 @@ function enigMessageDecrypt(event) {
     DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecrypt: replaced non-breaking spaces\n");
   }
 
+  var charset = msgWindow ? msgWindow.mailCharacterSet : "";
+
+  // Encode ciphertext
+  msgText = EnigConvertFromUnicode(msgText, charset);
+
   //DEBUG_LOG("enigmailMessengerOverlay.js: msgText='"+msgText+"'\n");
 
   var mailNewsUrl = enigGetCurrentMsgUrl();
 
   var urlSpec = mailNewsUrl ? mailNewsUrl.spec : "";
 
-  enigMessageDecryptCallback(msgText, interactive, urlSpec, "");
+  enigMessageDecryptCallback(msgText, charset, interactive, urlSpec, "");
 }
 
 
-function enigMessageDecryptCallback(msgText, interactive,
+function enigMessageDecryptCallback(msgText, charset, interactive,
                                     messageUrl, signStatus) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCallback: "+interactive+", msgUrl="+messageUrl+", signStatus='"+signStatus+"'\n");
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCallback: "+interactive+", charset="+charset+", msgUrl="+messageUrl+", signStatus='"+signStatus+"'\n");
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
@@ -183,7 +216,7 @@ function enigMessageDecryptCallback(msgText, interactive,
     if (!signStatus) {
       // Try to verify signature by accessing raw message text directly
       // (avoid recursion by checking if we already have a signStatus)
-      return enigMsgDirect(interactive, newSignStatus);
+      return enigMsgDirect(interactive, charset, newSignStatus);
     }
   }
 
@@ -193,9 +226,11 @@ function enigMessageDecryptCallback(msgText, interactive,
      return;
   }
 
+  // Decode plaintext
+  plainText = EnigConvertToUnicode(plainText, charset);
+
   var msgFrame = window.frames["messagepane"];
   var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
-
 
   try {
     // Display plain text with hyperlinks
@@ -557,7 +592,7 @@ function EnigFilePicker(title, displayDir, save, defaultExtension, filterPairs) 
 }
 
 
-function enigMsgDirect(interactive, signStatus) {
+function enigMsgDirect(interactive, charset, signStatus) {
   WRITE_LOG("enigmailMessengerOverlay.js: enigMsgDirect: signStatus="+signStatus+"\n");
   var mailNewsUrl = enigGetCurrentMsgUrl();
   if (!mailNewsUrl)
@@ -566,6 +601,7 @@ function enigMsgDirect(interactive, signStatus) {
   var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
 
   var callbackArg = { interactive:interactive,
+                      charset:charset,
                       messageUrl:mailNewsUrl.spec,
                       signStatus:signStatus,
                       pipeConsole:pipeConsole };
@@ -599,6 +635,7 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
 
   //DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgDirectCallback: msgText='"+msgText+"'\n");
 
-  enigMessageDecryptCallback(msgText, callbackArg.interactive,
+  enigMessageDecryptCallback(msgText, callbackArg.charset,
+                             callbackArg.interactive,
                              callbackArg.messageUrl, callbackArg.signStatus);
 }

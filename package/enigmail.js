@@ -874,6 +874,24 @@ function () {
   return dirPrefix;
 }
 
+Enigmail.prototype.stillActive =
+function () {
+  DEBUG_LOG("enigmail.js: Enigmail.stillActive: \n");
+
+  // Update last active time
+  var curDate = new Date();
+  this._lastActiveTime = curDate.getTime();
+}
+
+
+Enigmail.prototype.expireCachedPassphrase =
+function () {
+  DEBUG_LOG("enigmail.js: Enigmail.expireCachedPassphrase: \n");
+
+  gCachedPassphrase = null;
+}
+
+
 Enigmail.prototype.setCachedPassphrase = 
 function (passphrase) {
   DEBUG_LOG("enigmail.js: Enigmail.setCachedPassphrase: \n");
@@ -931,16 +949,6 @@ function () {
   }
 
   return havePassphrase;
-}
-
-
-Enigmail.prototype.stillActive =
-function () {
-  DEBUG_LOG("enigmail.js: Enigmail.stillActive: \n");
-
-  // Update last active time
-  var curDate = new Date();
-  this._lastActiveTime = curDate.getTime();
 }
 
 
