@@ -39,7 +39,7 @@
 function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj) {
 
   function getFlagVal(oldVal, node, type, conflictObj) {
-    var newVal = node.getAttribute(type);
+    var newVal = Number(node.getAttribute(type));
 
     if ((oldVal==2 && newVal==0) || (oldVal==0 && newVal==2)) {
       conflictObj[type] = 1;
