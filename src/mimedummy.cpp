@@ -92,34 +92,34 @@ MimeDummy_parse_begin(MimeObject *obj)
     
   }
 
-  return -1;
+  return 0;
 }
 
 
 static int
 MimeDummy_parse_buffer(char *buffer, PRInt32 size, MimeObject *obj)
 {
-  return -1;
+  return 0;
 }
 
 
 static int
 MimeDummy_parse_line(char *line, PRInt32 length, MimeObject *obj)
 {
-  return -1;
+  return 0;
 }
 
 static int
 MimeDummy_parse_eof(MimeObject *obj, PRBool abort_p)
 {
-  return -1;
+  return 0;
 }
 
 
 static int
 MimeDummy_parse_end(MimeObject *obj, PRBool abort_p)
 {
-  return -1;
+  return 0;
 }
 
 
