@@ -45,34 +45,26 @@
 <!ENTITY enigmail.decryptbutton.tip "Nachricht entschlüsseln/überprüfen">
 <!ENTITY enigmail.decryptverify.label "Entschlüsseln/Überprüfen">
 <!ENTITY enigmail.savedecrypted.label "Entschlüsselte Nachricht speichern">
-
 <!ENTITY enigmail.clearPassphrase.label "zwischengespeichertes Mantra löschen">
-
 <!ENTITY enigmail.prefs.label "Einstellungen">
 <!ENTITY enigmail.viewconsole.label "Konsole zeigen">
 <!ENTITY enigmail.viewdebuglog.label "Log-Datei zeigen">
-
 <!ENTITY enigmail.generatekey.label "Schlüsselpaar erzeugen">
 <!ENTITY enigmail.upgrade.label "Aktualisieren">
 <!ENTITY enigmail.help.label "Hilfe">
 <!ENTITY enigmail.about.label "Über Enigmail">
-
-<!ENTITY enigmail.decryptverify.accesskey   "E">
-<!ENTITY enigmail.savedecrypted.accesskey   "s">
-<!ENTITY enigmail.autoDecrypt.accesskey     "a">
-
+<!ENTITY enigmail.decryptverify.accesskey "E">
+<!ENTITY enigmail.savedecrypted.accesskey "s">
+<!ENTITY enigmail.autoDecrypt.accesskey "a">
 <!ENTITY enigmail.clearPassphrase.accesskey "z">
-
-<!ENTITY enigmail.prefs.accesskey           "i">
-<!ENTITY enigmail.viewconsole.accesskey     "K">
-<!ENTITY enigmail.viewdebuglog.accesskey    "L">
-
-<!ENTITY enigmail.generatekey.accesskey     "c">
-<!ENTITY enigmail.upgrade.accesskey         "t">
-<!ENTITY enigmail.help.accesskey            "H">
-<!ENTITY enigmail.about.accesskey           "b">
-<!ENTITY enigmail.composemenu.accesskey     "n">
-
+<!ENTITY enigmail.prefs.accesskey "i">
+<!ENTITY enigmail.viewconsole.accesskey "K">
+<!ENTITY enigmail.viewdebuglog.accesskey "L">
+<!ENTITY enigmail.generatekey.accesskey "c">
+<!ENTITY enigmail.upgrade.accesskey "t">
+<!ENTITY enigmail.help.accesskey "H">
+<!ENTITY enigmail.about.accesskey "b">
+<!ENTITY enigmail.composemenu.accesskey "n">
 <!ENTITY enigmail.sendbutton.label "EnigSend">
 <!ENTITY enigmail.sendbutton.tip "Enigmail send (encrypt/sign)">
 <!ENTITY enigmail.defaultsend.label "Normal versenden">

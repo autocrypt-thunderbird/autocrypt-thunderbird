@@ -43,6 +43,8 @@ enigmail.jar:
 	skin/classic/enigmail/enigsend.gif        (skin/classic/images/enigsend.gif)
 	locale/en-US/enigmail/contents.rdf         (locale/en-US/contents.rdf)
 	locale/en-US/enigmail/enigmail.dtd         (locale/en-US/enigmail.dtd)
+	locale/fr-FR/enigmail/contents.rdf         (locale/fr-FR/contents.rdf)
+	locale/fr-FR/enigmail/enigmail.dtd         (locale/fr-FR/enigmail.dtd)
 	locale/de-DE/enigmail/contents.rdf         (locale/de-DE/contents.rdf)
 	locale/de-DE/enigmail/enigmail.dtd         (locale/de-DE/enigmail.dtd)
 	locale/de-AT/enigmail/contents.rdf         (locale/de-DE/contents.rdf)

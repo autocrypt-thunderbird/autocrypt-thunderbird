@@ -26,7 +26,7 @@
      var enigmailSvc = GetEnigmailSvc();
 
      if (enigmailSvc) {
-       document.writeln("Using "+enigmailSvc.agentType+" executable <tt>"+enigmailSvc.agentPath+"</tt> to encrypt and decrypt<p>\n");
+       document.writeln("Using "+enigmailSvc.agentType+" executable <tt>"+enigmailSvc.agentPath.replace(/\\\\/g, "\\")+"</tt> to encrypt and decrypt<p>\n");
      } else {
        document.writeln("<em>Failed to access enigmail service!</em><p>\n");
        if (gEnigmailSvc && gEnigmailSvc.initializationError)
@@ -43,7 +43,7 @@
   <ul>
     <li>Code: <em>R. Saravanan</em>
     <li>Icons: <em>Jochen Eisinger (Modern), Jan Gerber (Classic), Frank Gerhardt</em>
-    <li>Translations: <em>Alexander Papaspyrou (German)</em>
+    <li>Translations: <em>Alexander Papaspyrou (German), Jean-Philippe Gaulier (French)</em>
     <li>Website: <em>mozdev.org</em>
   </ul>
 

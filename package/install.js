@@ -34,6 +34,8 @@ registerChrome(   SKIN | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "sk
 
 registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "locale/en-US/enigmail/");
 
+registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "locale/fr-FR/enigmail/");
+
 registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "locale/de-DE/enigmail/");
 
 registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "locale/de-AT/enigmail/");

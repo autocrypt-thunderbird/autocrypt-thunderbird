@@ -66,6 +66,8 @@ const NS_HTTPPROTOCOLHANDLER_CID_STR= "{4f47e42e-4d23-4dd3-bfda-eb29255e9ea3}";
 
 const NS_IOSERVICE_CID_STR          = "{9ac9e770-18bc-11d3-9337-00104ba0fd40}";
 
+const NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
+
 // Interfaces
 const nsISupports            = Components.interfaces.nsISupports;
 const nsIObserver            = Components.interfaces.nsIObserver;
@@ -557,6 +559,24 @@ function ResolvePath(filePath, envPath, isWin32) {
   }
 
   return null;
+}
+
+function EnigConvertToUnicode(text, charset) {
+  DEBUG_LOG("enigmail.js: EnigConvertToUnicode: "+charset+"\n");
+
+  if (!text || !charset || (charset.toLowerCase() == "iso-8859-1"))
+    return text;
+
+  // Encode plaintext
+  try {
+    var unicodeConv = Components.classes[NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(Components.interfaces.nsIScriptableUnicodeConverter);
+
+    unicodeConv.charset = charset;
+    return unicodeConv.ConvertToUnicode(text);
+
+  } catch (ex) {
+    return text;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1153,10 +1173,10 @@ function (version, prefBranch) {
     }
   }
 
+  CONSOLE_LOG("EnigmailAgentPath="+agentPath+"\n\n");
+
   // Escape any backslashes in agent path
   agentPath = agentPath.replace(/\\/g, "\\\\");
-
-  CONSOLE_LOG("EnigmailAgentPath="+agentPath+"\n\n");
 
   this.agentType = agentType;
   this.agentPath = agentPath;
@@ -1179,7 +1199,7 @@ function (version, prefBranch) {
   var exitCode = this.ipcService.execPipe(command, false, "", 0, [], 0,
                                 outStrObj, outLenObj, errStrObj, errLenObj);
 
-  CONSOLE_LOG("enigmail> "+command+"\n");
+  CONSOLE_LOG("enigmail> "+command.replace(/\\\\/g, "\\")+"\n");
 
   var version = outStrObj.value;
   if (errStrObj.value)
@@ -1217,7 +1237,7 @@ function (command, input, passFD, exitCodeObj, errorMsgObj, statusMsgObj) {
       inputCopy = inputCopy.replace(/^.*\n/, "<passphrase>\n");
     }
 
-    WriteFileContents(prefix+"enigcmd.txt", command+"\n");
+    WriteFileContents(prefix+"enigcmd.txt", command.replace(/\\\\/g, "\\")+"\n");
     WriteFileContents(prefix+"enigenv.txt", envList.join(",")+"\n");
     WriteFileContents(prefix+"eniginp.txt", inputCopy);
     DEBUG_LOG("enigmail.js: Enigmail.execCmd: copied command line/env/input to files "+prefix+"enigcmd.txt/enigenv.txt/eniginp.txt\n");
@@ -1228,7 +1248,7 @@ function (command, input, passFD, exitCodeObj, errorMsgObj, statusMsgObj) {
   var outLenObj = new Object();
   var errLenObj = new Object();
 
-  CONSOLE_LOG("\nenigmail> "+command+"\n");
+  CONSOLE_LOG("\nenigmail> "+command.replace(/\\\\/g, "\\")+"\n");
   
   try {
     var useShell = false;
@@ -1777,6 +1797,9 @@ function (parent, uiFlags, cipherText,
       }
     }
 
+    if (errorMsgObj.value && statusMsg)
+      errorMsgObj.value = EnigConvertToUnicode(errorMsgObj.value, "UTF-8");
+
     var trustPrefix = "";
 
     if (statusMsg && (statusMsg.search("TRUST_") > -1)) {
@@ -2136,8 +2159,8 @@ function (parent, name, comment, email, expiryDate, passphrase,
 
   var command = this.agentPath + " --batch --no-tty --gen-key";
 
-  pipeConsole.write(command+"\n");
-  CONSOLE_LOG(command+"\n");
+  pipeConsole.write(command.replace(/\\\\/g, "\\")+"\n");
+  CONSOLE_LOG(command.replace(/\\\\/g, "\\")+"\n");
 
   var inputData =
 "%echo Generating a standard key\nKey-Type: DSA\nKey-Length: 1024\nSubkey-Type: ELG-E\nSubkey-Length: 1024\n";
