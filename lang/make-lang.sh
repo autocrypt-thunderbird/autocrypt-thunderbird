@@ -21,6 +21,7 @@ export ENIGVERSION
 
 LANGDIR=${ENIGLANG}/locale/${ENIGLANG}/enigmail
 HELPDIR=${LANGDIR}/help
+cwd=`pwd`
 rm -rf ${LANGDIR} >/dev/null 2>&1
 mkdir -p ${LANGDIR} 
 mkdir -p ${HELPDIR}
@@ -256,7 +257,7 @@ for f in compose.html messenger.html rulesEditor.html editRcptRule.html ; do
   cp ${f} ${HELPDIR} >/dev/null 2>&1
 done
 
-cd ${ENIGLANG}
+cd ${cwd}/${ENIGLANG}
 zip -r -D enigmail-${ENIGLANG}.jar locale
 zip ../enigmail-${ENIGLANG}-${ENIGVERSION}.xpi install.js enigmail-${ENIGLANG}.spec enigmail-${ENIGLANG}.jar
 cd ..
