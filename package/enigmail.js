@@ -1362,7 +1362,7 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
       encryptCommand += " --passphrase-fd 0";
   }
 
-  if (fromMailAddr) {
+  if (!(encryptFlags & nsIEnigmail.DEFAULT_USER_ID) && fromMailAddr) {
     encryptCommand += " -u " + fromMailAddr;
   }
 

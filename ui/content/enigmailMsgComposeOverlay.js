@@ -223,25 +223,6 @@ function enigSend(encryptFlags) {
 
      if (!gEnigProcessed && (signMsg || encryptMsg)) {
 
-       var fromAddr = currentId.email;
-
-       var userIdSource = EnigGetPref("userIdSource");
-       DEBUG_LOG("enigmailMsgComposeOverlay.js: userIdSource = "+userIdSource+"\n");
-
-       if (userIdSource == USER_ID_DEFAULT) {
-         fromAddr = "";
-
-       } else if (userIdSource == USER_ID_SPECIFIED) {
-         fromAddr = EnigGetPref("userIdValue");
-       }
-
-       if (EnigGetPref("alwaysTrustSend"))
-         encryptFlags |= nsIEnigmail.ALWAYS_TRUST_SEND;
-
-       if (EnigGetPref("encryptToSelf")) {
-         encryptFlags |= nsIEnigmail.ENCRYPT_TO_SELF;
-       }
-
        ///var editorDoc = gEditorShell.editorDocument;
        ///DEBUG_LOG("enigmailMsgComposeOverlay.js: Doc = "+editorDoc+"\n");
        ///EnigDumpHTML(editorDoc.documentElement);
@@ -291,7 +272,6 @@ function enigSend(encryptFlags) {
          ReplaceEditorText(docText);
        }
     
-
        // Get plain text
 
        var encoderFlags = OutputFormatted | OutputLFLineBreak;
@@ -312,6 +292,26 @@ function enigSend(encryptFlags) {
 
        } else {
          // Encrypt plaintext
+         var fromAddr = EnigGetPref("userIdValue");
+
+         var userIdSource = EnigGetPref("userIdSource");
+         DEBUG_LOG("enigmailMsgComposeOverlay.js: userIdSource = "+userIdSource+"\n");
+
+         if (!fromAddr || (userIdSource == USER_ID_FROMADDR)) {
+           fromAddr = currentId.email;
+         }
+
+         if (userIdSource == USER_ID_DEFAULT) {
+           encryptFlags |= nsIEnigmail.DEFAULT_USER_ID;
+         }
+
+         if (EnigGetPref("alwaysTrustSend"))
+           encryptFlags |= nsIEnigmail.ALWAYS_TRUST_SEND;
+
+         if (EnigGetPref("encryptToSelf")) {
+           encryptFlags |= nsIEnigmail.ENCRYPT_TO_SELF;
+         }
+
          var exitCodeObj = new Object();
          var errorMsgObj = new Object();
          var uiFlags = nsIEnigmail.UI_INTERACTIVE;
