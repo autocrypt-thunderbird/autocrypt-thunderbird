@@ -14,7 +14,7 @@
  * The Initial Developer of the Original Code is Ramalingam Saravanan.
  * Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
  * Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
- * 
+ *
  * Contributor(s):
  * Patrick Brunschwig <patrick.brunschwig@gmx.net>
  *
@@ -3409,9 +3409,15 @@ function EnigGetString(aStr) {
 
 
 Enigmail.prototype.getUserIdList =
-function  (parent, inputFlags, exitCodeObj, statusFlagsObj, errorMsgObj) {
+function  (parent, secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
 
-  var gpgCommand = this.agentPath + GPG_BATCH_OPTS + " --list-keys --with-colons";
+  var gpgCommand = this.agentPath + GPG_BATCH_OPTS
+
+  if (secretOnly) {
+    gpgCommand += " --list-secret-keys --with-colons";  }
+  else {
+    gpgCommand += " --list-keys --with-colons";
+  }
 
   if (!this.initialized) {
     errorMsgObj.value = EnigGetString("notInit");

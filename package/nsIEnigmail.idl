@@ -231,7 +231,7 @@ interface nsIEnigmail : nsISupports
   boolean selectPanel(in string url);
   
   string getUserIdList (in nsIDOMWindow parent,
-                      in unsigned long sendFlags,
+                      in boolean secretOnly,
                       out long exitCode,
                       out unsigned long statusFlags,
                       out wstring errorMsg);
