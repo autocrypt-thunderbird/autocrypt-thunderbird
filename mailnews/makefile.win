@@ -41,9 +41,10 @@ MAKE_OBJ_TYPE=DLL
 DLLNAME=$(MODULE)
 DLL=.\$(OBJDIR)\$(DLLNAME).dll
 
-XPIDLSRCS=  .\nsIPGPModule.idl \
-            .\nsIPGPMsgHeader.idl
-            .\nsIPGPMsgBody.idl
+XPIDLSRCS=  .\nsIEnigmail.idl     \
+            .\nsIPGPModule.idl    \
+            .\nsIPGPMsgHeader.idl \
+            .\nsIPGPMsgBody.idl   \
             $(NULL)
 
 

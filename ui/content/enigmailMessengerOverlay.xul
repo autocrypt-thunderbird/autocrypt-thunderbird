@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<!-- This is the overlay that adds a menu to messenger compose window -->
+
+<?xml-stylesheet href="chrome://enigmail/content/enigmail.css"
+                 type="text/css"?> 
+
+<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmailOverlay.dtd" >
+
+<overlay id="enigmailMessengerOverlay"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script language="JavaScript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script language="JavaScript" src="chrome://enigmail/content/enigmailMessengerOverlay.js"/>
+
+  <toolbox id="mailToolbarToolbox">
+    <toolbar id="msgToolbar" persist="collapsed">
+      <box id="toolbar_button_box">
+
+         <button class="button-toolbar-2 top" 
+                 id="button-enigmail-decrypt"
+                 label="Decrypt"
+                 tooltip="aTooltip" tooltiptext="Enigmail decrypt/verify" 
+                 oncommand="enigDecryptMessage();"
+                 />
+
+         <toolbarseparator class="toolbarseparator-primary"
+                           />
+       </box>
+    </toolbar>
+  </toolbox>
+
+</overlay>

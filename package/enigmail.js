@@ -31,10 +31,13 @@
  */
 
 /* Implementations supplied by this module */
+const NS_ENIGMAIL_CONTRACTID   = "@mozdev.org/enigmail/enigmail;1";
 const NS_PGP_MODULE_CONTRACTID = "@mozilla.org/mimecth/pgp;1";
 
+const NS_ENIGMAIL_CID =
+  Components.ID("{847b3a01-7ab1-11d4-8f02-006008948af5}");
 const NS_PGP_MODULE_CID =
-Components.ID("{847b3ab1-7ab1-11d4-8f02-006008948af5}");
+  Components.ID("{847b3af1-7ab1-11d4-8f02-006008948af5}");
 
 /* Contract IDs and CIDs used by this module */
 const NS_IPCSERVICE_CONTRACTID = "@mozilla.org/protozilla/ipc-service;1";
@@ -48,6 +51,7 @@ const nsISupports            = Components.interfaces.nsISupports;
 const nsIHTTPProtocolHandler = Components.interfaces.nsIHTTPProtocolHandler
 const nsIIPCService          = Components.interfaces.nsIIPCService;
 const nsISystemEnvironment   = Components.interfaces.nsISystemEnvironment;
+const nsIEnigmail            = Components.interfaces.nsIEnigmail;
 const nsIPGPModule           = Components.interfaces.nsIPGPModule;
 const nsIPGPMsgBody          = Components.interfaces.nsIPGPMsgBody;
 const nsIPGPMsgHeader        = Components.interfaces.nsIPGPMsgHeader;
@@ -55,9 +59,9 @@ const nsIPGPMsgHeader        = Components.interfaces.nsIPGPMsgHeader;
 ///////////////////////////////////////////////////////////////////////////////
 // Global variables
 
-var gLogLevel = 4;             // Output only errors/warnings by default
+var gLogLevel = 3;         // Output only errors/warnings by default
 
-var gEnigMailSvc = null;   // Global Enigmail Service
+var gEnigmailSvc = null;   // Global Enigmail Service
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -80,7 +84,7 @@ function CONSOLE_LOG(str) {
   if (gLogLevel >= 3)
     dump(str);
 
-  gEnigMailSvc.console.write(str);
+  gEnigmailSvc.console.write(str);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -90,18 +94,22 @@ var EnigModuleObj = {
   {
     dump("enigmail.js: Registering components\n");
 
-    if (gEnigMailSvc == null) {
-      // Create EnigMail Service
-      gEnigMailSvc = new EnigMail(true);
+    if (gEnigmailSvc == null) {
+      // Create Enigmail Service
+      gEnigmailSvc = new Enigmail(true);
     }
 
-    componentManager.registerComponentWithType(
-                                               NS_PGP_MODULE_CID,
+    componentManager.registerComponentWithType(NS_ENIGMAIL_CID,
+                                               "Enigmail",
+                                               NS_ENIGMAIL_CONTRACTID,
+                                               moduleFile, registryLocation,
+                                               true, true, componentType);
+
+    componentManager.registerComponentWithType(NS_PGP_MODULE_CID,
                                                "PGP Module",
                                                NS_PGP_MODULE_CONTRACTID,
                                                moduleFile, registryLocation,
                                                true, true, componentType);
-
   },
 
   unregisterSelf: function(componentManager, moduleFile, registryLocation)
@@ -116,9 +124,13 @@ var EnigModuleObj = {
     if (!iid.equals(Components.interfaces.nsIFactory))
     throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
 
-    if (gEnigMailSvc == null) {
-      // Create Global EnigMail Service
-      gEnigMailSvc = new EnigMail(false);
+    if (gEnigmailSvc == null) {
+      // Create Global Enigmail Service
+      gEnigmailSvc = new Enigmail(false);
+    }
+
+    if (cid.equals(NS_ENIGMAIL_CID)) {
+      return new EnigmailFactory();
     }
 
     if (cid.equals(NS_PGP_MODULE_CID)) {
@@ -141,6 +153,27 @@ function NSGetModule(componentManager, moduleFile) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+function EnigmailFactory()
+{
+}
+
+EnigmailFactory.prototype = {
+  QueryInterface: function (iid) {
+
+    //DEBUG_LOG("EnigmailFactory.QueryInterface:"+iid+"\n");
+    if (!iid.equals(Components.interfaces.nsIFactory) &&
+        !iid.equals(nsISupports))
+    throw Components.results.NS_ERROR_NO_INTERFACE;
+
+    return this;
+  },
+
+  createInstance: function (outer, iid) {
+    //DEBUG_LOG("EnigmailFactory.createInstance:\n");
+    return gEnigmailSvc;
+  }
+}
 
 function PGPModuleFactory()
 {
@@ -276,7 +309,7 @@ PGPModule.prototype = {
     dump("PGPModule.EncryptSign: aOrigBody.body="+aOrigBody.body+"\n");
     dump("PGPModule.EncryptSign: aNewBody="+aNewBody+"\n");
 
-    var cipherText = gEnigMailSvc.encryptMessage(aOrigBody.body,
+    var cipherText = gEnigmailSvc.encryptMessage(aOrigBody.body,
                                                  aMsgHeader.to)
 
     return new PGPMsgBody(cipherText);
@@ -291,7 +324,7 @@ PGPModule.prototype = {
 
     dump("PGPModule.DecrypotVerify: aOrigBody.body="+aOrigBody.body+"\n");
 
-    var plainText = gEnigMailSvc.decryptMessage(aOrigBody.body);
+    var plainText = gEnigmailSvc.decryptMessage(aOrigBody.body);
 
     return new PGPMsgBody(plainText);
   },
@@ -381,19 +414,19 @@ function ResolvePath(filePath, envPath) {
 // Enigmail encryption/decryption service
 ///////////////////////////////////////////////////////////////////////////////
 
-function EnigMail(registeringModule)
+function Enigmail(registeringModule)
 {
-  DEBUG_LOG("enigmail.js: EnigMail: START "+registeringModule+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail: START "+registeringModule+"\n");
   this.registeringModule = registeringModule;
 
   var httpHandler = Components.classesByID[NS_IHTTPHANDLER_CID_STR].createInstance();
   httpHandler = httpHandler.QueryInterface(nsIHTTPProtocolHandler);
 
   this.oscpu = httpHandler.oscpu;
-  DEBUG_LOG("enigmail.js: EnigMail: oscpu="+this.oscpu+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail: oscpu="+this.oscpu+"\n");
 
   this.platform = httpHandler.platform;
-  DEBUG_LOG("enigmail.js: EnigMail: platform="+this.platform+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail: platform="+this.platform+"\n");
 
   this.unix = (this.platform == "X11");
 
@@ -411,60 +444,63 @@ function EnigMail(registeringModule)
 
     if (matches && (matches.length > 1)) {
       gLogLevel = matches[1];
-      WARNING_LOG("enigmail.js: EnigMail: gLogLevel="+gLogLevel+"\n");
+      WARNING_LOG("enigmail.js: Enigmail: gLogLevel="+gLogLevel+"\n");
     }
 
     this.ipcService = ipcService;
     this.console    = ipcService.console;
 
   } catch (ex) {
-    ERROR_LOG("enigmail.js: EnigMail: Error - IPCService not available\n");
+    ERROR_LOG("enigmail.js: Enigmail: Error - IPCService not available\n");
     throw Components.results.NS_ERROR_FAILURE;
   }
 
-  DEBUG_LOG("enigmail.js: EnigMail: END\n");
+  DEBUG_LOG("enigmail.js: Enigmail: END\n");
 }
 
-EnigMail.prototype.registeringModule = false;
-EnigMail.prototype.ipcService = null;
-EnigMail.prototype.console = null;
+Enigmail.prototype.registeringModule = false;
+Enigmail.prototype.ipcService = null;
+Enigmail.prototype.console = null;
 
-EnigMail.prototype.getPassPhrase = 
-function () {
+Enigmail.prototype.haveDefaultPassphrase = false;
+Enigmail.prototype._passphrase = null;
 
-  return "passphrase"; // TEMPORARY HACK
+Enigmail.prototype.QueryInterface =
+function (iid) {
 
-  var passwdObj = new Object();
+  //DEBUG_LOG("Enigmail.QueryInterface:\n");
+  if (!iid.equals(nsIEnigmail) && !iid.equals(nsISupports))
+  throw Components.results.NS_ERROR_NO_INTERFACE;
 
-  var success = window.prompter.promptPassword("Enigmail",
-                               "Please type in your passphrase",
-                               "",
-                               0,
-                               passwdObj);
-  if (!success)
-    return "";
-
-  dump("enigmail.js: EnigMail.getPassPhrase: "+passwdObj.value+"\n");
-
-  return passwdObj.value;
+  return this;
 }
 
+Enigmail.prototype.setDefaultPassphrase = 
+function (passphrase) {
+  if (passphrase == null)
+    throw Components.results.NS_ERROR_FAILURE;
 
-EnigMail.prototype.execCmd = 
-function (command, input, errMessages, status) {
-  dump("enigmail.js: EnigMail.execCmd: command = "+command+"\n");
+  this._passphrase = passphrase;
+  this.haveDefaultPassphrase = true;
+}
+
+Enigmail.prototype.execCmd = 
+function (command, input, errMessagesObj, statusObj, exitCodeObj) {
+  dump("enigmail.js: Enigmail.execCmd: command = "+command+"\n");
 
   if ((typeof input) != "string") input = "";
   var outObj = new Object();
   var errObj = new Object();
 
-  var exitCode = gEnigMailSvc.ipcService.execPipe(command, input, input.length,
-                                                  [], 0, outObj, errObj);
+  exitCodeObj.value = gEnigmailSvc.ipcService.execPipe(command,
+                                                       input, input.length,
+                                                       [], 0,
+                                                       outObj, errObj);
   var outputData = outObj.value;
   var errOutput  = errObj.value;
 
-  dump("enigmail.js: EnigMail.execCmd: exitCode = "+exitCode+"\n");
-  dump("enigmail.js: EnigMail.execCmd: errOutput = "+errOutput+"\n");
+  dump("enigmail.js: Enigmail.execCmd: exitCode = "+exitCodeObj.value+"\n");
+  dump("enigmail.js: Enigmail.execCmd: errOutput = "+errOutput+"\n");
 
   var errLines = errOutput.split(/\r?\n/);
 
@@ -486,46 +522,76 @@ function (command, input, errMessages, status) {
     }
   }
 
-  errMessages = errArray.join("\n");
-  status      = statusArray.join("\n");
+  errMessagesObj.value = errArray.join("\n");
+  statusObj.value      = statusArray.join("\n");
 
-  dump("enigmail.js: EnigMail.execCmd: status = "+status+"\n");
+  dump("enigmail.js: Enigmail.execCmd: status = "+statusObj.value+"\n");
   return outputData;
 }
 
 
-EnigMail.prototype.encryptMessage = 
-function (plainText, toMailAddr) {
-  dump("enigmail.js: EnigMail.encryptMessage: To "+toMailAddr+"\n");
+Enigmail.prototype.encryptMessage = 
+function (plainText, toMailAddr, passphrase) {
+  dump("enigmail.js: Enigmail.encryptMessage: To "+toMailAddr+"\n");
 
   var encryptCommand = "gpg --batch --no-tty --encrypt --armor --sign --passphrase-fd 0 --status-fd 2 --recipient "+toMailAddr;
 
-  var passphrase = gEnigMailSvc.getPassPhrase();
+  if (passphrase == null) {
+     if (!this.haveDefaultPassphrase)
+       throw Components.results.NS_ERROR_FAILURE;
 
-  if (!passphrase)
-    return;
+      passphrase = this._passphrase;
+  }
 
-  var errMessages, status;
-  var cipherText = gEnigMailSvc.execCmd(encryptCommand,
-                               passphrase+"\n"+plainText, errMessages, status);
+  var errMessagesObj = new Object();
+  var statusObj      = new Object();
+  var exitCodeObj    = new Object();
+
+  var cipherText = gEnigmailSvc.execCmd(encryptCommand,
+                                  passphrase+"\n"+plainText,
+                                  errMessagesObj, statusObj, exitCodeObj);
+
+  if (exitCodeObj.value != 0) {
+    // "Unremember" passphrase on error exit
+    this.haveDefaultPassphrase = false;
+    this._passphrase = null;
+
+    throw Components.results.NS_ERROR_FAILURE;
+  }
 
   return cipherText;
 }
 
-EnigMail.prototype.decryptMessage = 
-function (cipherText) {
+Enigmail.prototype.decryptMessage = 
+function (cipherText, passphrase) {
   dump("enigmail.js: Enigmail.decryptMessage: \n");
 
   var decryptCommand = "gpg --batch --no-tty --decrypt --passphrase-fd 0 --status-fd 2";
 
-  var passphrase = gEnigMailSvc.getPassPhrase();
+  if (passphrase == null) {
+     if (!this.haveDefaultPassphrase)
+       throw Components.results.NS_ERROR_FAILURE;
 
-  if (!passphrase)
-    return;
+      passphrase = this._passphrase;
+  }
 
-  var errMessages, status;
-  var plainText = gEnigMailSvc.execCmd(decryptCommand,
-                               passphrase+"\n"+cipherText, errMessages,status);
+  var errMessagesObj = new Object();
+  var statusObj      = new Object();
+  var exitCodeObj    = new Object();
+
+  var plainText = gEnigmailSvc.execCmd(decryptCommand,
+                                 passphrase+"\n"+cipherText,
+                                 errMessagesObj, statusObj, exitCodeObj);
+
+  if (exitCodeObj.value != 0) {
+    // "Unremember" passphrase on error exit
+    // NOTE: May need to be more selective in unremembering,
+    //       depending upon the details of the error
+    this.haveDefaultPassphrase = false;
+    this._passphrase = null;
+
+    throw Components.results.NS_ERROR_FAILURE;
+  }
 
   return plainText;
 }

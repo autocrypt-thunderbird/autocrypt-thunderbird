@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<!-- This is the overlay that adds a menu to messenger compose window -->
+
+<?xml-stylesheet href="chrome://enigmail/content/enigmail.css"
+                 type="text/css"?> 
+
+<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmailOverlay.dtd" >
+
+<overlay id="enigMsgComposeOverlay"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script language="JavaScript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script language="JavaScript" src="chrome://enigmail/content/enigmailMsgComposeOverlay.js"/>
+
+    <toolbar id="composeToolbar">
+      <box id="toolbar_button_box">
+       <toolbarseparator class="toolbarseparator-primary"
+                         position="8" />
+       <button class="button-toolbar-2 top" 
+               id="button-enigmail-send"
+               label="EnigSend"
+               tooltip="aTooltip" tooltiptext="Enigmail send (encrypt/sign)" 
+               command="cmd_sendButton"
+               position="9"
+               />
+       </box>
+    </toolbar>
+
+</overlay>

@@ -4,11 +4,12 @@
 
 <!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmailOverlay.dtd" >
 
-<overlay id="enigmailToolbarButton"
+<overlay id="enigNavigatorToolbarButton"
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script language="JavaScript" src="chrome://enigmail/content/enigmailOverlay.js"/>
+  <script language="JavaScript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script language="JavaScript" src="chrome://enigmail/content/enigmailNavigatorOverlay.js"/>
 
   <toolbar id="nav-bar">
     <box id="enig-nav-box" autostretch="never">

@@ -31,18 +31,31 @@
 # GPL.
 #
 
+# Makefile for package directory
+
 # Specify these as parameters to the make command
 ENIGMAIL_VERS = 0.1
-
-# Makefile for package directory
 
 DEPTH=..\..\..
 
 MODULE=enigmail
 
-include <$(DEPTH)\config\rules.mak>
+MAKE_OBJ_TYPE=DLL
+DLLNAME=$(MODULE)
+DLL=.\$(OBJDIR)\$(DLLNAME).dll
+
+XPIDLSRCS=  .\nsIEnigmail.idl     \
+            .\nsIPGPModule.idl    \
+            .\nsIPGPMsgHeader.idl \
+            .\nsIPGPMsgBody.idl   \
+            $(NULL)
 
 XPIFILE = enigmail-$(ENIGMAIL_VERS).xpi
+
+include <$(DEPTH)\config\rules.mak>
+
+install::
+	$(MAKE_INSTALL) enigmail.js $(DIST)\bin\components
 
 xpi::
 	zip -r $(DIST)\bin\$(XPIFILE) install.js \

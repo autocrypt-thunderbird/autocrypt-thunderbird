@@ -1,25 +1,14 @@
-const NS_IPCSERVICE_CONTRACTID =
-    "@mozilla.org/protozilla/ipc-service;1";
+// enigmailNavigatorOverlay.js
 
-var ipcService;
-try {
-  ipcService = Components.classes[NS_IPCSERVICE_CONTRACTID].createInstance();
-  ipcService = ipcService.QueryInterface(Components.interfaces.nsIIPCService);
-
-} catch (ex) {
-}
-
-dump("enigmailOverlay.js: ipcService = "+ipcService+"\n");
-
-window.addEventListener("load", enigStartup, false);
+window.addEventListener("load", enigNavigatorStartup, false);
 
 var gEnigCurrentSite;
 var gEnigNavButton1;
 var gEnigCurrentHandlerNavButton1;
 var gEnigTest = true;
 
-function enigStartup() {
-  dump("enigmailOverlay.js: enigStartup:\n");
+function enigNavigatorStartup() {
+  dump("enigmailNavigatorOverlay.js: enigNavigatorStartup:\n");
   var contentArea = document.getElementById("appcontent");
   //contentArea.addEventListener("load",   enigDocLoadHandler, true);
   contentArea.addEventListener("unload", enigDocUnloadHandler, true);
@@ -31,51 +20,49 @@ function enigStartup() {
 
 function enigHandlerNavButton1()
 {
-  dump("enigmailOverlay.js: enigHandlerNavButton1:\n");
+  dump("enigmailNavigatorOverlay.js: enigHandlerNavButton1:\n");
 
   if (gEnigCurrentHandlerNavButton1) {
     gEnigCurrentHandlerNavButton1();
 
   } else {
-    dump("enigmailOverlay.js: enigHandlerNavButton1: No button handler!\n");
+    dump("enigmailNavigatorOverlay.js: enigHandlerNavButton1: No button handler!\n");
   }
-
-  //toOpenWindowByType("tools:enigmail", "chrome://enigmail/content/enigmail.xul");
 }
 
 function enigDocLoadHandler(event) {
-  dump("enigmailOverlay.js: enigDocLoadHandler:\n");
+  dump("enigmailNavigatorOverlay.js: enigDocLoadHandler:\n");
 
   enigUpdateUI(_content.location);
 }
 
 function enigFrameLoadHandler(event) {
- dump("enigmailOverlay.js: enigFrameLoadHandler: "+event.target.location.href+"\n");
+ dump("enigmailNavigatorOverlay.js: enigFrameLoadHandler: "+event.target.location.href+"\n");
 }
 
 function enigFrameUnloadHandler(event) {
- dump("enigmailOverlay.js: enigFrameUnloadHandler: "+event.target.location.href+"\n");
+ dump("enigmailNavigatorOverlay.js: enigFrameUnloadHandler: "+event.target.location.href+"\n");
 }
 
 function enigDocUnloadHandler(event) {
-  dump("enigmailOverlay.js: enigDocUnloadHandler: Next URL="+event.target.location.href+"\n");
+  dump("enigmailNavigatorOverlay.js: enigDocUnloadHandler: Next URL="+event.target.location.href+"\n");
 
   enigUpdateUI(_content.location);
 
   if (event.target == _content.document) {
       // Handle events for content document only
-    dump("enigmailOverlay.js: enigDocUnloadHandler: Main doc\n");
+    dump("enigmailNavigatorOverlay.js: enigDocUnloadHandler: Main doc\n");
   }
 }
 
 function enigConfigWindow() {
-  dump("enigmailOverlay.js: enigConfigWIndow:\n");
+  dump("enigmailNavigatorOverlay.js: enigConfigWIndow:\n");
   toOpenWindowByType("tools:enigmail", "chrome://enigmail/content/enigmail.xul");
 }
 
 function enigUpdateUI(loc) {
 
-  dump("enigmailOverlay.js: enigUpdateUI: "+loc.href+"\n");
+  dump("enigmailNavigatorOverlay.js: enigUpdateUI: "+loc.href+"\n");
 
   // Extract hostname from URL (lower case)
   var host = loc.host.toLowerCase();
@@ -102,151 +89,6 @@ function enigUpdateUI(loc) {
     gEnigNavButton1.setAttribute("hidden", "true");
   }
 }
-
-function enigTest() {
-  var plainText = "TEST MESSAGE 123\n";
-  var toMailAddr = "r_sarava@yahoo.com";
-
-  var cipherText = enigEncryptMessage(plainText, toMailAddr);
-  dump("enigmailOverlay.js: enigTest: cipherText = "+cipherText+"\n");
-
-  var decryptedText = enigDecryptMessage(cipherText);
-  dump("enigmailOverlay.js: enigTest: decryptedText = "+decryptedText+"\n");
-}
-
-function enigAlert(mesg) {
-  return window.prompter.alert("Enigmail Alert", mesg);
-}
-
-function enigConfirm(mesg) {
-  return window.prompter.confirm("Enigmail Confirm", mesg);
-}
-
-function enigSignClearText(plainText) {
-  dump("enigmailOverlay.js: enigSignClearText: \n");
-
-  var signedText;
-
-  signedText = "*** SIGNED ***\n"+plainText;
-
-  return signedText;
-}
-
-function enigGetPassPhrase() {
-  var passwdObj = new Object();
-  var checkObj = new Object();
-
-  passwdObj.value = "";
-  checkObj.value = true;
-  var success = window.prompter.promptPassword("Enigmail",
-                               "Please type in your GPG passphrase",
-                               passwdObj,
-                               "Check msg",
-                               checkObj);
-  if (!success)
-    return "";
-
-  dump("enigmailOverlay.js: enigGetPassPhrase: "+passwdObj.value+"\n");
-
-  return passwdObj.value;
-}
-
-
-function enigExecGPG(command, input, errMessages, status) {
-  dump("enigmailOverlay.js: enigExecGPG: command = "+command+"\n");
-
-  if ((typeof input) != "string") input = "";
-  var outObj = new Object();
-  var errObj = new Object();
-
-  var exitCode = ipcService.execPipe(command, input, input.length,
-                                     [], 0, outObj, errObj);
-  var outputData = outObj.value;
-  var errOutput  = errObj.value;
-
-  dump("enigmailOverlay.js: enigExecGPG: exitCode = "+exitCode+"\n");
-  dump("enigmailOverlay.js: enigExecGPG: errOutput = "+errOutput+"\n");
-
-  var errLines = errOutput.split(/\r?\n/);
-
-  // Discard last null string, if any
-  if ((errLines.length > 1) && !errLines[errLines.length-1])
-    errLines.pop();
-
-  var errArray    = new Array();
-  var statusArray = new Array();
-
-  var statusPat = /^\[GNUPG:\] /;
-
-  for (var j=0; j<errLines.length; j++) {
-    if (errLines[j].search(statusPat) == 0) {
-      statusArray.push(errLines[j].replace(statusPat,""));
-
-    } else {
-      errArray.push(errLines[j]);
-    }
-  }
-
-  errMessages = errArray.join("\n");
-  status      = statusArray.join("\n");
-
-  dump("enigmailOverlay.js: enigExecGPG: status = "+status+"\n");
-  return outputData;
-}
-
-
-function enigEncryptMessage(plainText, toMailAddr) {
-  dump("enigmailOverlay.js: enigEncryptMessage: To "+toMailAddr+"\n");
-
-  var encryptCommand = "gpg --batch --no-tty --encrypt --armor --sign --passphrase-fd 0 --status-fd 2 --recipient "+toMailAddr;
-
-  var passphrase = enigGetPassPhrase();
-
-  if (!passphrase)
-    return;
-
-  var errMessages, status;
-  var cipherText = enigExecGPG(encryptCommand,
-                               passphrase+"\n"+plainText, errMessages, status);
-
-  return cipherText;
-}
-
-function enigDecryptMessage(cipherText) {
-  dump("enigmailOverlay.js: enigDecryptMessage: \n");
-
-  var decryptCommand = "gpg --batch --no-tty --decrypt --passphrase-fd 0 --status-fd 2";
-
-  var passphrase = enigGetPassPhrase();
-
-  if (!passphrase)
-    return;
-
-  var errMessages, status;
-  var plainText = enigExecGPG(decryptCommand,
-                               passphrase+"\n"+cipherText, errMessages,status);
-
-  return plainText;
-}
-
-function enigGetDeepText(node) {
-  if (node.nodeType == Node.TEXT_NODE)
-    return node.data;
-
-  var text = "";
-
-  if (node.hasChildNodes()) {
-    // Loop over the children
-    var children = node.childNodes;
-    for (var count = 0; count < children.length; count++) {
-      dump("loop: "+node.tagName+"\n");
-      text += enigGetDeepText(children[count]);
-    }
-  }
-
-  return text;
-}
-
 
 // *** YAHOO SPECIFIC STUFF ***
 
@@ -306,7 +148,7 @@ function enigYahooCompose() {
   var toAddr = msgFrame.document.Compose.To.value;
   dump("enigYahooCompose: To="+toAddr+"\n");
 
-  var cipherText = enigEncryptMessage(plainText, toAddr); 
+  var cipherText = EnigEncryptMessage(plainText, toAddr); 
 
   msgFrame.document.Compose.Body.value = cipherText;
 
@@ -322,11 +164,11 @@ function enigYahooShowLetter() {
 
   //dump("enigYahooShowLetter: "+preElement+"\n");
 
-  var cipherText = enigGetDeepText(preElement);
+  var cipherText = EnigGetDeepText(preElement);
 
   dump("enigYahooShowLetter: cipherText='"+cipherText+"'\n");
 
-  var plainText = enigDecryptMessage(cipherText);
+  var plainText = EnigDecryptMessage(cipherText);
 
   while (preElement.hasChildNodes())
       preElement.removeChild(preElement.childNodes[0]);
@@ -382,7 +224,7 @@ function enigHotmailCompose() {
   var toAddr = msgFrame.document.composeform.to.value;
   dump("enigHotmailCompose: To="+toAddr+"\n");
 
-  var cipherText = enigEncryptMessage(plainText, toAddr); 
+  var cipherText = EnigEncryptMessage(plainText, toAddr); 
 
   msgFrame.document.composeform.body.value = cipherText;
 
@@ -398,11 +240,11 @@ function enigHotmailShowLetter() {
 
   //dump("enigHotmailShowLetter: "+preElement+"\n");
 
-  var cipherText = enigGetDeepText(preElement);
+  var cipherText = EnigGetDeepText(preElement);
 
   dump("enigHotmailShowLetter: cipherText='"+cipherText+"'\n");
 
-  var plainText = enigDecryptMessage(cipherText);
+  var plainText = EnigDecryptMessage(cipherText);
 
   while (preElement.hasChildNodes())
       preElement.removeChild(preElement.childNodes[0]);

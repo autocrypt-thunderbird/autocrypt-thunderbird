@@ -41,7 +41,9 @@ VPATH		= @srcdir@
 include $(DEPTH)/config/autoconf.mk
 
 XPIDL_MODULE  = enigmail
-XPIDLSRCS     = nsIPGPModule.idl \
+
+XPIDLSRCS     = nsIEnigmail.idl     \
+	        nsIPGPModule.idl    \
 	        nsIPGPMsgHeader.idl \
 	        nsIPGPMsgBody.idl
 

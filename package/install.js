@@ -1,3 +1,5 @@
+// Install script for Enigmail
+
 var err;
 
 err = initInstall("Enigmail v0.1",  // name for install UI
