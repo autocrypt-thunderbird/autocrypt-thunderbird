@@ -248,6 +248,11 @@ interface nsIEnigmail : nsISupports
                 in boolean deleteSecretKey, 
                 out wstring errorMsg);
 
+  long enableDisableKey(in nsIDOMWindow parent, 
+                        in string keyId, 
+                        in boolean disableKey, 
+                        out wstring errorMsgObj);
+
   long setPrimaryUid (in nsIDOMWindow parent,
                       in string keyId, 
                       in string idNumber, 

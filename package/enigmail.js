@@ -4433,12 +4433,18 @@ KeyEditor.prototype = {
       }
   
       if (! r.quitNow) {
-        callbackFunc(inputData, this, r);
-        if (r.exitCode == 0) {
-          this.writeLine(r.writeTxt);
+        if (callbackFunc) {
+          callbackFunc(inputData, this, r);
+          if (r.exitCode == 0) {
+            this.writeLine(r.writeTxt);
+          }
+          else {
+            errorMsgObj.value = r.errorMsg;
+          }
         }
         else {
-          errorMsgObj.value = r.errorMsg;
+          r.quitNow=true;
+          r.exitCode = 0;
         }
       }
       if (! r.quitNow) {
@@ -4533,6 +4539,20 @@ function (parent, keyId, deleteSecretKey, errorMsgObj) {
   var r= this.editKey(parent, false, null, keyId, cmd,
                       {}, 
                       deleteKeyCallback, 
+                      errorMsgObj);
+  this.stillActive();
+  
+  return r;
+}
+
+Enigmail.prototype.enableDisableKey = 
+function (parent, keyId, disableKey, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.addUid: keyId="+keyId+", disableKey="+disableKey+"\n");
+  
+  var cmd = (disableKey ? "disable" : "enable");
+  var r= this.editKey(parent, false, null, keyId, cmd,
+                      {}, 
+                      null, 
                       errorMsgObj);
   this.stillActive();
   

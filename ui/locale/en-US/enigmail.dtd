@@ -373,6 +373,7 @@
 <!ENTITY enigmail.keyMan.ownerTrust.label          "Owner Trust">
 <!ENTITY enigmail.keyMan.stopTransfer.label        "Stop transfer">
 <!ENTITY enigmail.keyMan.fingerprint.label         "Fingerprint">
+<!ENTITY enigmail.keyMan.refreshKey.label          "Refresh Key">
 
 <!ENTITY enigmail.keyMan.window.accesskey            "W">
 <!ENTITY enigmail.keyMan.close.accesskey             "C">
@@ -397,6 +398,8 @@
 <!ENTITY enigmail.keyMan.importFromClipbrd.accesskey "C">
 <!ENTITY enigmail.keyMan.copyToClipbrd.accesskey     "C">
 <!ENTITY enigmail.keyMan.keyDetails.accesskey        "K">
+<!ENTITY enigmail.keyMan.enableKey.accesskey         "B">
+<!ENTITY enigmail.keyMan.refreshKey.accesskey        "R">
 
 <!ENTITY enigmail.viewKeySigDlg.title                "Signature List">
 <!ENTITY enigmail.viewKeySigDlg.sigForKey.label      "Signatures for Key:">

@@ -58,7 +58,9 @@
     <separator/>
     <label value="&enigmail.manageUidDlg.availableUid.label;"/>
     <listbox flex="1" id="uidList" style="height:100px"
-              onselect="uidSelectCb()"/>
+             seltype="single"
+             onselect="uidSelectCb()"
+             ondblclick="handleDblClick()"/>
     <hbox>
       <button id="addUid"
               label="&enigmail.manageUidDlg.addUid.label;"
@@ -85,11 +87,10 @@
     function onLoad() {
       reloadUidList();
       var keyId = window.enigmailUid +" - 0x"+ window.arguments[0].keyId.substr(-8,8);
-      document.getElementById("keyId").value = keyId
-
+      document.getElementById("keyId").value = keyId;
       return;
     }
-
+    
     function reloadUidList() {
       var uidList=document.getElementById("uidList");
       while (uidList.getRowCount()>0) {
@@ -110,7 +111,7 @@
         case "pub":
           ++uidNum;
           var uidTxt=EnigConvertGpgToUnicode(uidStr[9].replace(/\\e3A/g, ":"));
-          uidList.appendItem(uidTxt, "uid:"+String(uidNum));
+          var item=uidList.appendItem(uidTxt, "uid:"+String(uidNum));
           if (!window.enigmailUid) {
             window.enigmailUid = uidTxt;
           }
@@ -133,39 +134,53 @@
             uidTxt += " - "+EnigGetString("keyValid.revoked");
             uidStr[0]=uidStr[0].replace(/^./,"r");
           }
-          var item=uidList.appendItem(uidTxt, uidStr[0]+":"+String(uidNum));
+          item=uidList.appendItem(uidTxt, uidStr[0]+":"+String(uidNum));
           if (uidStr[1]=="r") {
             item.setAttribute("class", "enigmailUidInactive");
           }
-
           break;
         }
       }
-      uidList.selectedIndex=0;
+      uidSelectCb();
+    }
+    
+    function handleDblClick() {
+      var uidList = document.getElementById("uidList")
+      if (uidList.selectedCount > 0) {
+        var selValue=uidList.selectedItem.value;
+        var uidType = selValue.substr(0,3);
+        if (uidType=="uat" || uidType=="rat") {
+          EnigShowPhoto(window.arguments[0].keyId, window.enigmailUid);
+        }
+      }
     }
     
     function uidSelectCb() {
       var uidList = document.getElementById("uidList")
-      if (typeof(uidList.selectedItem.value)=="string") {
-        var uidType = uidList.selectedItem.value.substr(0,3);
-        if (uidType=="uat" || uidType=="rat" || uidType=="rid") {
-          document.getElementById("setPrimary").setAttribute("disabled", "true");
-        }
-        else {
-          document.getElementById("setPrimary").removeAttribute("disabled");
-        }
-        if (uidList.selectedItem.value.substr(4)=="1") {
-          document.getElementById("deleteUid").setAttribute("disabled", "true");
+      if (uidList.selectedCount > 0) {
+        var selValue=uidList.selectedItem.value;
+      }
+      else {
+        selValue="uid:1";
+      }
+      var uidType = selValue.substr(0,3);
+      if (uidType=="uat" || uidType=="rat" || uidType=="rid" || selValue.substr(4)=="1") {
+        document.getElementById("setPrimary").setAttribute("disabled", "true");
+      }
+      else {
+        document.getElementById("setPrimary").removeAttribute("disabled");
+      }
+      if (selValue.substr(4)=="1") {
+        document.getElementById("deleteUid").setAttribute("disabled", "true");
+        document.getElementById("revokeUid").setAttribute("disabled", "true");
+      }
+      else {
+        document.getElementById("deleteUid").removeAttribute("disabled");
+        if (uidType=="rid" || uidType=="rat") {
           document.getElementById("revokeUid").setAttribute("disabled", "true");
         }
         else {
-          document.getElementById("deleteUid").removeAttribute("disabled");
-          if (uidType=="rid" || uidType=="rat") {
-            document.getElementById("revokeUid").setAttribute("disabled", "true");
-          }
-          else {
-            document.getElementById("revokeUid").removeAttribute("disabled");
-          }
+          document.getElementById("revokeUid").removeAttribute("disabled");
         }
       }
     }
@@ -206,8 +221,9 @@
       var enigmailSvc = GetEnigmailSvc();
       if (!enigmailSvc)
         return;
-      var errorMsgObj = new Object();
       var uidList = document.getElementById("uidList");
+      if (! EnigConfirm(EnigGetString("revokeUidQuestion", uidList.selectedItem.label))) return;
+      var errorMsgObj = new Object();
       if (uidList.selectedItem.value.substr(4)!="1"){
         var r=enigmailSvc.revokeUid(window,
                                     "0x"+window.arguments[0].keyId,
@@ -227,8 +243,9 @@
       var enigmailSvc = GetEnigmailSvc();
       if (!enigmailSvc)
         return;
-      var errorMsgObj = new Object();
       var uidList = document.getElementById("uidList");
+      if (! EnigConfirm(EnigGetString("deleteUidQuestion", uidList.selectedItem.label))) return;
+      var errorMsgObj = new Object();
       if (uidList.selectedItem.value.substr(4) != "1") {
         var r=enigmailSvc.deleteUid(window,
                                     "0x"+window.arguments[0].keyId,

@@ -35,6 +35,7 @@
     <broadcaster id="bcRevocationCertificate" disabled="false"/>
     <broadcaster id="bcKeyDetails" disabled="false"/>
     <broadcaster id="bcDeleteKey" disabled="false"/>
+    <broadcaster id="bcEnableKey" disabled="false" label=""/>
   </broadcasterset>
   
   <menubar id="mainmenu" grippyhidden="true">
@@ -95,6 +96,10 @@
 									observes="bcDeleteKey"
 									accesskey="&enigmail.keyMan.delKey.accesskey;"
 									oncommand="enigmailDeleteKey()"/>            
+        <menuitem id="enableKey"
+									observes="bcEnableKey"
+									accesskey="&enigmail.keyMan.enableKey.accesskey;"
+									oncommand="enigmailEnableKey()"/>            
         <menuseparator/>
         
 				<menu id="importMenu"
@@ -113,6 +118,10 @@
 											id="importFromClipbrd"
 											accesskey="&enigmail.keyMan.importFromClipbrd.accesskey;"
 											oncommand="enigmailImportFromClipbrd()"/>
+						<menuitem label="&enigmail.keyMan.refreshKey.label;"
+											id="refreshKey"
+											accesskey="&enigmail.keyMan.refreshKey.accesskey;"
+											oncommand="enigmailReceiveKey()"/>
 					</menupopup>
 				</menu>
 
@@ -163,7 +172,11 @@
       <menuitem id="ctxManageUid" observes="bcManageUid" label="&enigmail.keyMan.manageUid.label;" oncommand="enigmailManageUids()"/>
       <menuitem id="ctxRevokationCert" observes="bcRevocationCertificate" label="&enigmail.keyMan.genRevoke.label;" oncommand="enigCreateRevokeCert()"/>
 			<menuitem id="ctxDeleteKey" observes="bcDeleteKey" label="&enigmail.keyMan.delKey.label;" oncommand="enigmailDeleteKey()"/>
-			<menu id="ctxExportMenu"
+			<menuitem id="ctxEnableKey" observes="bcEnableKey" oncommand="enigmailEnableKey()"/>
+      <menuitem label="&enigmail.keyMan.refreshKey.label;"
+			          id="ctxRefreshKey"
+                oncommand="enigmailReceiveKey()"/>
+      <menu id="ctxExportMenu"
 						label="&enigmail.keyMan.exportMenu.label;"
 						accesskey="&enigmail.keyMan.exportMenu.accesskey;">
 				<menupopup> <!-- export menu -->
@@ -227,7 +240,9 @@
                    persist="width,hidden"/>
         </treecols>
   
-        <treechildren id="pgpKeyListChildren" context="ctxmenu"/>
+        <treechildren id="pgpKeyListChildren"
+                      context="ctxmenu"
+                      ondblclick="enigmailKeyDetails()"/>
   
       </tree>
   </hbox>

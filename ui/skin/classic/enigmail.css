@@ -157,6 +157,10 @@ treechildren::-moz-tree-cell-text(enigmailSubkeyTitle) {
   font-weight: bold;
 }
 
+treechildren::-moz-tree-cell-text(enigmailOwnKey) {
+  font-weight: bold;
+}
+
 treechildren::-moz-tree-cell-text(enigKeyInactive) {
   color: gray;
   font-style: italic;
