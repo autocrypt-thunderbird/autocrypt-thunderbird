@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.62.0.0";
-var gEnigmimeVersion = "0.62.0.0";
+var gEnigmailVersion = "0.62.1.0";
+var gEnigmimeVersion = "0.62.1.0";
 
 // Maximum size of message directly processed by Enigmail
 const MESSAGE_BUFFER_SIZE = 32000;
