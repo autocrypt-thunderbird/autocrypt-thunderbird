@@ -645,6 +645,9 @@ function enigmailCopyToClipbrd() {
   try {
     clipBoardHlp = Components.classes[ENIG_CLIPBOARD_HELPER_CONTRACTID].getService(Components.interfaces.nsIClipboardHelper);
     clipBoardHlp.copyStringToClipboard(keyData, clipBoard.kGlobalClipboard);
+    if (clipBoard.supportsSelectionClipboard()) {
+      clipBoardHlp.copyStringToClipboard(keyData, clipBoard.kSelectionClipboard);
+    }
     DEBUG_LOG("enigmailKeyManager.js: enigmailImportFromClipbrd: got data from clipboard");
     EnigAlert(EnigGetString("copyToClipbrdOK"));  
   }
