@@ -931,7 +931,7 @@ function GetPassphrase(domWindow, prompter, passwdObj, useAgentObj) {
                                          passwdObj,
                                          checkMsg,
                                          checkObj);
-  
+
   if (!success)
     return false;
 
@@ -973,6 +973,7 @@ Enigmail.prototype.keygenConsole = null;
 Enigmail.prototype.agentType = "";
 Enigmail.prototype.agentPath = "";
 Enigmail.prototype.agentVersion = "";
+Enigmail.prototype.userList = null;
 
 Enigmail.prototype._lastActiveTime = 0;
 
@@ -1095,7 +1096,7 @@ function () {
 }
 
 
-Enigmail.prototype.setCachedPassphrase = 
+Enigmail.prototype.setCachedPassphrase =
 function (passphrase) {
   DEBUG_LOG("enigmail.js: Enigmail.setCachedPassphrase: \n");
 
@@ -1224,7 +1225,7 @@ function (domWindow, version, prefBranch) {
 
     var msgComposeSecureCID = compMgr.contractIDToCID(NS_MSGCOMPOSESECURE_CONTRACTID);
 
-    this.composeSecure = (msgComposeSecureCID.toString() == 
+    this.composeSecure = (msgComposeSecureCID.toString() ==
                           NS_ENIGMSGCOMPOSE_CID);
   } catch (ex) {}
 
@@ -1549,7 +1550,7 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
   var errLenObj = new Object();
 
   CONSOLE_LOG("\nenigmail> "+command.replace(/\\\\/g, "\\")+"\n");
-  
+
   try {
     var useShell = false;
     exitCodeObj.value = gEnigmailSvc.ipcService.execPipe(command,
@@ -1880,19 +1881,19 @@ function EnigStripEmail(mailAddrs) {
        ERROR_LOG("enigmail.js: EnigStripEmail: Unmatched quote in mail address: "+mailAddrs+"\n");
        throw Components.results.NS_ERROR_FAILURE;
      }
-  
+
      mailAddrs = mailAddrs.substring(0,qStart) + mailAddrs.substring(qEnd+1);
   }
 
   // Eliminate all whitespace, just to be safe
   mailAddrs = mailAddrs.replace(/\s+/g,"");
-  
+
   // Extract pure e-mail address list (stripping out angle brackets)
   mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*/g,"$1$2");
 
   return mailAddrs;
 }
-    
+
 
 Enigmail.prototype.encryptMessage =
 function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
@@ -2423,7 +2424,7 @@ function (parent, uiFlags, cipherText, signatureObj,
   var blockType = this.locateArmoredBlock(cipherText, 0, "",
                                           beginIndexObj, endIndexObj, indentStrObj);
 
-  if (!blockType) {
+  if (!blockType || blockType == "SIGNATURE") {
     errorMsgObj.value = EnigGetString("noPGPblock");
     statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
     return "";
@@ -3175,7 +3176,7 @@ function (parent, uiFlags, msgText, keyId, errorMsgObj) {
   }
 
   var exitCodeObj    = new Object();
-  var statusFlagsObj = new Object();    
+  var statusFlagsObj = new Object();
   var statusMsgObj   = new Object();
 
   var output = gEnigmailSvc.execCmd(command, null, pgpBlock,
@@ -3275,7 +3276,7 @@ function (originalUrl, contentType, contentCharset, contentData, persist) {
                                     contentCharset:contentCharset,
                                     contentData:contentData,
                                     persist:persist};
-                                
+
   return "enigmail:message?id="+messageId;
 }
 
@@ -3327,7 +3328,7 @@ IPCContext.prototype = {
 
 const ENIGMAIL_PANEL_URL = "chrome://enigmail/content/enigmailPanel.xul";
 
-Enigmail.prototype.selectPanel = 
+Enigmail.prototype.selectPanel =
 function (url) {
   WRITE_LOG("enigmail.js: Enigmail.selectPanel: "+url+"\n");
 
@@ -3339,7 +3340,7 @@ function (url) {
 
     var navWindow =navWindowList.getNext();
     DEBUG_LOG("enigmail.js: navWindow="+navWindow+"\n");
- 
+
     var href = navWindow._content.location.href;
     DEBUG_LOG("enigmail.js: href="+href+"\n");
 
@@ -3408,11 +3409,11 @@ function sidebarURLSecurityCheck(url)
 chromeSidebar.prototype.isPanel =
 function (aContentURL)
 {
-    var container = 
+    var container =
         Components.classes[CONTAINER_CONTRACTID].createInstance(nsIRDFContainer);
 
     /* Create a resource for the new panel and add it to the list */
-    var panel_resource = 
+    var panel_resource =
         this.rdf.GetResource("urn:sidebar:3rdparty-panel:" + aContentURL);
 
     return (container.IndexOf(panel_resource) != -1);
@@ -3441,7 +3442,7 @@ function (aTitle, aContentURL, aCustomizeURL)
     container.Init(this.datasource, panel_list);
 
     /* Create a resource for the new panel and add it to the list */
-    var panel_resource = 
+    var panel_resource =
         this.rdf.GetResource("urn:sidebar:3rdparty-panel:" + aContentURL);
     var panel_index = container.IndexOf(panel_resource);
     if (panel_index != -1)
@@ -3449,7 +3450,7 @@ function (aTitle, aContentURL, aCustomizeURL)
         DEBUG_LOG("enigmail.js: addPanel(): panel already in list"+"\n");
         return;
     }
-    
+
     /* Now make some sidebar-ish assertions about it... */
     this.datasource.Assert(panel_resource,
                            this.rdf.GetResource(this.nc + "title"),
@@ -3464,7 +3465,7 @@ function (aTitle, aContentURL, aCustomizeURL)
                                this.rdf.GetResource(this.nc + "customize"),
                                this.rdf.GetLiteral(aCustomizeURL),
                                true);
-        
+
     container.AppendElement(panel_resource);
 
     // Use an assertion to pass a "refresh" event to all the sidebars.
@@ -3485,9 +3486,9 @@ function (aTitle, aContentURL, aCustomizeURL)
 
 function getSidebarDatasourceURI(panels_file_id)
 {
-    try 
+    try
     {
-        /* use the fileLocator to look in the profile directory 
+        /* use the fileLocator to look in the profile directory
          * to find 'panels.rdf', which is the
          * database of the user's currently selected panels. */
         var directory_service = Components.classes[DIR_SERV_CONTRACTID].getService();
@@ -3704,7 +3705,7 @@ function (parent, outFileName, inputBuffer,
       if (passphrase.length > 0) {
         pipeTrans.writeSync(passphrase, passphrase.length);
       }
-    
+
       pipeTrans.writeSync("\n", 1);
     }
     var dataLength = inputBuffer.totalBytes;
@@ -3805,4 +3806,38 @@ function(keyId, exitCodeObj, errorMsgObj) {
     }
   }
   return picFile.path;
+}
+
+Enigmail.prototype.getUserFile = function () {
+
+  var ds = Components.classes[DIR_SERV_CONTRACTID].getService();
+  var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
+  var userFile = dsprops.get("ProfD", Components.interfaces.nsILocalFile);
+  userFile.append("enigmail.xml");
+  return userFile;
+}
+
+Enigmail.prototype.loadUserList = function () {
+  var flags = NS_RDONLY;
+  var userFile = this.getUserFile();
+
+  if (userFile.exists()) {
+
+    var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+    if (!ioServ)
+      throw Components.results.NS_ERROR_FAILURE;
+
+    var fileChannel = ioServ.newChannel(url, null, null)
+
+    var rawInStream = fileChannel.open();
+
+    var scriptableInStream = new Components.Constructor( "@mozilla.org/scriptableinputstream;1", "nsIScriptableInputStream" );
+    scriptableInStream.init(rawInStream);
+    var available = scriptableInStream.available()
+    var fileContents = scriptableInStream.read(available);
+    scriptableInStream.close();
+
+    var p=Components.classes["@mozilla.org/xmlextras/domparser;1"].createInstance(Components.interfaces.nsIDOMParser);
+    this.userList = p.parseFromString(fileContents, "text/xml");
+  }
 }
