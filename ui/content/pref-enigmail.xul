@@ -141,20 +141,41 @@
 
       <vbox id="keySel" flex="1">
           <description class="enigmailPrefsTitle">&enigmail.recipientsSelectionOption.label;</description>
-          <radiogroup id="enigmail_recipientsSelectionOption">
-
-            <radio id="askRecipientsNever"
-                  value="0"
-                  label="&enigmail.askRecipientsNever.label;"/>
-
-            <radio id="askRecipientsClever"
-                  value="1"
-                  label="&enigmail.askRecipientsClever.label;"/>
-
-            <radio id="askRecipientsAlways"
-                  value="2"
-                  label="&enigmail.askRecipientsAlways.label;"/>
-          </radiogroup>
+          <groupbox>
+            <caption label="&enigmail.normalKeySelection.label;"/>
+            <radiogroup id="enigmail_recipientsSelectionOption">
+              <radio id="askRecipientsNever"
+                    value="0"
+                    label="&enigmail.askRecipientsNever.label;"/>
+  
+              <radio id="askRecipientsClever"
+                    value="1"
+                    label="&enigmail.askRecipientsClever.label;"/>
+  
+              <radio id="askRecipientsAlways"
+                    value="2"
+                    label="&enigmail.askRecipientsAlways.label;"/>
+            </radiogroup>
+          </groupbox>
+          
+          <separator/>
+          
+          <groupbox>
+            <caption label="&enigmail.perRecipientRules.label;"/>
+            <radiogroup id="enigmail_perRecipientRules">
+                <radio id="perRecipientRulesNo"
+                    value="0"
+                    label="&enigmail.disabled.label;"/>
+  
+              <radio id="perRecipientRulesManual"
+                    value="1"
+                    label="&enigmail.perRecipientRulesManual.label;"/>
+  
+              <radio id="perRecipientRulesAlways"
+                    value="2"
+                    label="&enigmail.perRecipientRulesAlways.label;"/>
+            </radiogroup>
+          </groupbox>
       </vbox>
 
       <vbox id="pgpMime" flex="1">

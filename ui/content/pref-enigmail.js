@@ -35,7 +35,10 @@ function prefOnLoad() {
 
 
    EnigDisplayRadioPref("recipientsSelectionOption", EnigGetPref("recipientsSelectionOption"),
-                          gEnigRecipientsSelectionOptions);
+                        gEnigRecipientsSelectionOptions);
+
+   EnigDisplayRadioPref("perRecipientRules", EnigGetPref("perRecipientRules"),
+                        gEnigPerRecipientRules);
 
    gMimeHashElement = document.getElementById("mimeHashList");
    gMimeHashElement.selectedIndex = EnigGetPref("mimeHashAlgorithm");
@@ -93,6 +96,9 @@ function resetPrefs() {
                       gUsePGPMimeOptionList);
   EnigDisplayRadioPref("recipientsSelectionOption", EnigGetDefaultPref("recipientsSelectionOption"),
                       gEnigRecipientsSelectionOptions);
+  EnigDisplayRadioPref("perRecipientRules", EnigGetPref("perRecipientRules"),
+                      gEnigPerRecipientRules);
+                      
 
   gMimeHashElement.selectedIndex = EnigGetDefaultPref("mimeHashAlgorithm");
 }
@@ -110,6 +116,7 @@ function prefOnAccept() {
 
   EnigSetRadioPref("recipientsSelectionOption", gEnigRecipientsSelectionOptions);
 
+  EnigSetRadioPref("perRecipientRules", gEnigPerRecipientRules);
 
   if (gSendFlowedElement &&
       (gSendFlowedElement.checked != gSendFlowedValue) ) {
