@@ -106,6 +106,9 @@
 <!ENTITY enigmail.encryptsignsend.label         "Encrypt+sign send">
 <!ENTITY enigmail.plainsend.label         "Plaintext send">
 
+<!ENTITY enigmail.sendnow.label           "Send immediately">
+<!ENTITY enigmail.sendlater.label         "Send later">
+
 <!ENTITY enigmail.sendOptionsMenu.label        "Default send options">
 <!ENTITY enigmail.mimeOptionsMenu.label        "Default MIME options">
 <!ENTITY enigmail.sendPGPMime.label            "Use PGP/MIME for this message">
@@ -120,6 +123,8 @@
 <!ENTITY enigmail.encryptedsend.accesskey      "c">
 <!ENTITY enigmail.encryptsignsend.accesskey    "E">
 <!ENTITY enigmail.plainsend.accesskey         "P">
+<!ENTITY enigmail.sendnow.accesskey           "Y">
+<!ENTITY enigmail.sendlater.accesskey         "A">
 
 <!ENTITY enigmail.sendOptionsMenu.accesskey    "o">
 <!ENTITY enigmail.mimeOptionsMenu.accesskey    "M">
@@ -172,8 +177,14 @@
 <!ENTITY enigmail.keyExpiry.label                   "Expiry">
 <!ENTITY enigmail.keySelection.label                "Selection">
 <!ENTITY enigmail.keyId.label                       "Key Id">
-<!ENTITY enigmail.userSelPlainText.label            "Send mail unecrypted">
+<!ENTITY enigmail.userSelPlainText.label            "Send mail unencrypted">
 <!ENTITY enigmail.userSelPlainText.accesskey        "S">
 
 <!ENTITY enigmail.experimental.label                "Use experimental inline signing/encryption">
+
+<!ENTITY enigmail.enigmailAttachDesc.label          "This message contains attachments. How would you like encrypt/sign them?">
+<!ENTITY enigmail.enigEncryptAttachNone.label       "Just encrypt/sign the message text, but not the attachments">
+<!ENTITY enigmail.enigEncryptAttachInline.label     "Encrypt each attachment separately and send the message as inline PGP">
+<!ENTITY enigmail.enigEncryptAttachPgpMime.label    "Encrypt/sign the message as a whole and send it as PGP/MIME">
+<!ENTITY enigmail.enigPgpMimeDetails.label          "NOTE: PGP/MIME is not supported by all mail clients. Most popular mail clients on Linux/UNIX and Mac OS X support this standard. On Windows only Enigmail, Pegasus and Mulberry are known to support it. If you don't know what to choose, select the second option.">
 
