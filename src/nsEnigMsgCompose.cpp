@@ -115,6 +115,7 @@ NS_IMETHODIMP nsEnigMsgComposeFactory::LockFactory(PRBool lock)
 
 // nsEnigMsgCompose implementation
 
+const char* nsEnigMsgCompose::FromStr = "From ";
 PRBool nsEnigMsgCompose::mRandomSeeded = PR_FALSE;
 
 // nsISupports implementation
@@ -129,6 +130,9 @@ nsEnigMsgCompose::nsEnigMsgCompose()
     mUseSMIME(PR_FALSE),
     mIsDraft(PR_FALSE),
     mRequestStopped(PR_FALSE),
+
+    mLinebreak(PR_TRUE),
+    mMatchFrom(0),
 
     mInputLen(0),
     mOutputLen(0),
@@ -594,6 +598,12 @@ nsEnigMsgCompose::FinishAux(PRBool aAbort,
 {
   nsresult rv;
 
+  if (mMatchFrom > 0) {
+    // Flush "buffer" for detecting lines beginning with "From "
+    rv = WriteCopy(FromStr, mMatchFrom);
+    if (NS_FAILED(rv)) return rv;
+  }
+
   DEBUG_LOG(("nsEnigMsgCompose::FinishAux: \n"));
 
   if (mMultipartSigned) {
@@ -694,15 +704,82 @@ nsEnigMsgCompose::MimeCryptoWriteBlock(const char *aBuf, PRInt32 aLen)
   DEBUG_LOG(("nsEnigMsgCompose::MimeCryptoWriteBlock: aBuf='%s'\n",
              temStr.get()));
 
+  if (!mMultipartSigned) {
+    return WriteCopy(aBuf, aLen);
+  }
+
+  // Mangle lines beginning with "From " prior to signing
+  PRUint32 offset = 0;
+
+  for (PRUint32 j=0; j<((PRUint32) aLen); j++) {
+
+    if (mLinebreak || (mMatchFrom > 0)) {
+
+      if (aBuf[j] != FromStr[mMatchFrom]) {
+        // No match; reset count
+        mMatchFrom = 0;
+
+      } else {
+        // Increment match count
+        mMatchFrom++;
+
+        if (mMatchFrom >= nsCRT::strlen(FromStr)) {
+          // Complete match found
+          // Write out characters preceding match
+          PRUint32 writeCount = j+1-offset-mMatchFrom;
+
+          if (writeCount > 0) {
+            rv = WriteCopy(&aBuf[offset], writeCount);
+            if (NS_FAILED(rv)) return rv;
+          }
+
+          mMatchFrom = 0;
+          offset = j+1;
+
+          // Write out mangled string
+          rv = WriteCopy(">", 1);
+          if (NS_FAILED(rv)) return rv;
+
+          rv = WriteCopy(FromStr, nsCRT::strlen(FromStr));
+          if (NS_FAILED(rv)) return rv;
+
+          DEBUG_LOG(("nsEnigMsgCompose::MimeCryptoWriteBlock: >From\n"));
+        }
+
+      }
+    }
+
+    mLinebreak = (aBuf[j] == '\r') || (aBuf[j] == '\n');
+  }
+
+  if ((offset+mMatchFrom) < (PRUint32) aLen) {
+    // Write out characters preceding any match
+    rv = WriteCopy(&aBuf[offset], aLen-offset-mMatchFrom);
+    if (NS_FAILED(rv)) return rv;
+  }
+
+  return NS_OK;
+}
+
+
+nsresult
+nsEnigMsgCompose::WriteCopy(const char *aBuf, PRInt32 aLen)
+{
+  nsresult rv;
+
+  DEBUG_LOG(("nsEnigMsgCompose::WriteCopy: %d\n", aLen));
+
   if (aLen <= 0)
     return NS_OK;
 
   mInputLen += aLen;
 
   if (mMimeListener) {
+    // Write to listener
     mMimeListener->Write(aBuf, aLen, nsnull, nsnull);
 
   } else if (mPipeTrans) {
+    // Write to process and copy if multipart/signed
     mPipeTrans->WriteSync(aBuf, aLen);
 
     if (mMultipartSigned) {

@@ -86,12 +86,19 @@ protected:
 
     nsresult WriteFinalSeparator();
 
+    nsresult WriteCopy(const char *aBuf, PRInt32 aLen);
+
     nsresult FinishAux(PRBool aAbort, nsIMsgSendReport* sendReport);
+
+    static const char*                  FromStr;
 
     PRBool                        mInitialized;
     PRBool                        mUseSMIME;
     PRBool                        mIsDraft;
     PRBool                        mRequestStopped;
+
+    PRBool                        mLinebreak;
+    PRUint32                      mMatchFrom;
 
     PRUint32                      mInputLen;
     PRUint32                      mOutputLen;
