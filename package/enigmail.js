@@ -3,7 +3,7 @@
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
  * the MPL at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the MPL is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the MPL for the specific language governing
@@ -137,6 +137,7 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     BADSIG:          nsIEnigmail.BAD_SIGNATURE,
                     ERRSIG:          nsIEnigmail.UNVERIFIED_SIGNATURE,
                     EXPSIG:          nsIEnigmail.EXPIRED_SIGNATURE,
+                    REVKEYSIG:       nsIEnigmail.GOOD_SIGNATURE,
                     EXPKEYSIG:       nsIEnigmail.EXPIRED_KEY_SIGNATURE,
                     KEYEXPIRED:      nsIEnigmail.EXPIRED_KEY,
                     KEYREVOKED:      nsIEnigmail.REVOKED_KEY,
@@ -2234,14 +2235,25 @@ function IndexOfArmorDelimiter(text, str, offset) {
 // endIndex = offset of last character of block (newline)
 // If block is not found, the null string is returned;
 
-Enigmail.prototype.locateArmoredBlock = 
-function (text, offset, indentStr, beginIndexObj, endIndexObj) {
+Enigmail.prototype.locateArmoredBlock =
+function (text, offset, indentStr, beginIndexObj, endIndexObj,
+          indentStrObj) {
   DEBUG_LOG("enigmail.js: Enigmail.locateArmoredBlock: "+offset+", '"+indentStr+"'\n");
 
   beginIndexObj.value = -1;
   endIndexObj.value = -1;
 
   var beginIndex = IndexOfArmorDelimiter(text, indentStr+"-----BEGIN PGP ", offset);
+
+  if (beginIndex == -1) {
+    var blockStart=text.indexOf("-----BEGIN PGP ")
+    if (blockStart>=0) {
+      var indentStart=text.search(/\n.*\-\-\-\-\-BEGIN PGP /)+1;
+      indentStrObj.value=text.substring(indentStart, blockStart);
+      indentStr=indentStrObj.value;
+      beginIndex = IndexOfArmorDelimiter(text, indentStr+"-----BEGIN PGP ", offset);
+    }
+  }
 
   if (beginIndex == -1)
     return "";
@@ -2281,7 +2293,7 @@ function (text, offset, indentStr, beginIndexObj, endIndexObj) {
   if (blockType == "UNVERIFIED MESSAGE") {
     // Skip any unverified message block
     return this.locateArmoredBlock(text, endIndex+1, indentStr,
-                                   beginIndexObj, endIndexObj);
+                                   beginIndexObj, endIndexObj, indentStrObj);
   }
 
   beginIndexObj.value = beginIndex;
@@ -2291,7 +2303,7 @@ function (text, offset, indentStr, beginIndexObj, endIndexObj) {
 }
 
 
-Enigmail.prototype.extractSignaturePart = 
+Enigmail.prototype.extractSignaturePart =
 function (signatureBlock, part) {
   DEBUG_LOG("enigmail.js: Enigmail.extractSignaturePart: part="+part+"\n");
 
@@ -2360,6 +2372,9 @@ function (parent, uiFlags, cipherText, signatureObj,
           exitCodeObj, statusFlagsObj, keyIdObj, userIdObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.decryptMessage: "+cipherText.length+" bytes, "+uiFlags+"\n");
 
+  if (! cipherText)
+    return "";
+
   var interactive = uiFlags & nsIEnigmail.UI_INTERACTIVE;
   var allowImport = uiFlags & nsIEnigmail.UI_ALLOW_KEY_IMPORT;
   var unverifiedEncryptedOK = uiFlags & nsIEnigmail.UI_UNVERIFIED_ENC_OK;
@@ -2376,8 +2391,9 @@ function (parent, uiFlags, cipherText, signatureObj,
 
   var beginIndexObj = new Object();
   var endIndexObj = new Object();
+  var indentStrObj = new Object();
   var blockType = this.locateArmoredBlock(cipherText, 0, "",
-                                          beginIndexObj, endIndexObj);
+                                          beginIndexObj, endIndexObj, indentStrObj);
 
   if (!blockType) {
     errorMsgObj.value = EnigGetString("noPGPblock");
@@ -2391,6 +2407,13 @@ function (parent, uiFlags, cipherText, signatureObj,
 
   var pgpBlock = cipherText.substr(beginIndexObj.value,
                           endIndexObj.value - beginIndexObj.value + 1);
+
+  if (indentStrObj.value) {
+    RegExp.multiline = true;
+    var indentRegexp = new RegExp("^"+indentStrObj.value, "g");
+    pgpBlock = pgpBlock.replace(indentRegexp, "");
+    RegExp.multiline = false;
+  }
 
   var head = cipherText.substr(0, beginIndexObj.value);
   var tail = cipherText.substr(endIndexObj.value+1,
@@ -2412,8 +2435,8 @@ function (parent, uiFlags, cipherText, signatureObj,
   }
 
   /*
-   // not needed anymore. Nicer solution is to display the text anyway and mark the 
-   // verified text accordingly!   
+   // not needed anymore. Nicer solution is to display the text anyway and mark the
+   // verified text accordingly!
   if (!interactive && verifyOnly && !oldSignature && (head.search(/\S/) >= 0)) {
     errorMsgObj.value = EnigGetString("extraText");
     if (verifyOnly)
@@ -2490,12 +2513,23 @@ function (parent, uiFlags, cipherText, signatureObj,
 
     statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
 
+    if (verifyOnly && indentStrObj.value) {
+      RegExp.multiline = true;
+      plainText = plainText.replace(/^/g, indentStrObj.value)
+      RegExp.multiline = false;
+    }
     return plainText;
   }
 
   var pubKeyId = keyIdObj.value;
 
   if (statusFlagsObj.value & nsIEnigmail.BAD_SIGNATURE) {
+    if (verifyOnly && indentStrObj.value) {
+      // Probably replied message that could not be verified
+      errorMsgObj.value = EnigGetString("unverifiedReply")+"\n\n"+errorMsgObj.value;
+      return "";
+    }
+
     // Return bad signature (for checking later)
     signatureObj.value = newSignature;
 
@@ -2506,7 +2540,8 @@ function (parent, uiFlags, cipherText, signatureObj,
     if (verifyOnly) {
       // Search for indented public key block in signed message
       var innerBlockType = this.locateArmoredBlock(pgpBlock, 0, "- ",
-                                                   beginIndexObj, endIndexObj);
+                                                   beginIndexObj, endIndexObj,
+                                                   indentStrObj);
 
       if (innerBlockType == "PUBLIC KEY BLOCK") {
 
@@ -2577,9 +2612,9 @@ function (parent, uiFlags, cipherText, signatureObj,
 
   return verifyOnly ? "" : plainText;
 }
-  
 
-Enigmail.prototype.decryptMessageStart = 
+
+Enigmail.prototype.decryptMessageStart =
 function (parent, prompter, verifyOnly, noOutput,
           listener, noProxy, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.decryptMessageStart: prompter="+prompter+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
@@ -2678,14 +2713,15 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
         goodSignPat =   /GOODSIG (\w{16}) (.*)$/i;
         badSignPat  =    /BADSIG (\w{16}) (.*)$/i;
         keyExpPat   = /EXPKEYSIG (\w{16}) (.*)$/i
-        
+        revKeyPat   = /REVKEYSIG (\w{16}) (.*)$/i;
 
-    } else { 
+    } else {
         errLines = cmdErrorMsgObj.value.split(/\r?\n/);
 
         goodSignPat = /Good signature from (user )?"(.*)"\.?/i;
         badSignPat  =  /BAD signature from (user )?"(.*)"\.?/i;
         keyExpPat   = /This key has expired/i;
+        revKeyPat   = /This key has been revoked/i;
     }
 
     errorMsgObj.value = "";
@@ -2708,6 +2744,16 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
         break;
       }
 
+      matches = errLines[j].match(revKeyPat);
+
+      if (matches && (matches.length > 2)) {
+        signed = true;
+        goodSignature = true;
+        userId = matches[2];
+        keyId = matches[1];
+        break;
+      }
+
       matches = errLines[j].match(goodSignPat);
 
       if (matches && (matches.length > 2)) {
@@ -2717,7 +2763,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
         keyId = matches[1];
         break;
       }
-      
+
       matches = errLines[j].match(keyExpPat);
 
       if (matches && (matches.length > 2)) {
@@ -2725,9 +2771,10 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
         goodSignature = true;
         userId = matches[2];
         keyId = matches[1];
-        
+
         break;
       }
+
     }
 
     if (userId) {
@@ -2755,7 +2802,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
       }
 
       if (goodSignature) {
-        errorMsgObj.value = trustPrefix + EnigGetString("prefGood",userId) + ", " + 
+        errorMsgObj.value = trustPrefix + EnigGetString("prefGood",userId) + ", " +
               EnigGetString("keyId") + " 0x" + keyId.substring(8,16);
 
         if (this.agentType != "gpg") {
@@ -2764,7 +2811,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
         }
 
       } else {
-        errorMsgObj.value = trustPrefix + EnigGetString("prefBad",userId) + ", " + 
+        errorMsgObj.value = trustPrefix + EnigGetString("prefBad",userId) + ", " +
               EnigGetString("keyId") + " 0x" + keyId.substring(8,16);
         if (!exitCode)
           exitCode = 1;
@@ -2827,7 +2874,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
 }
 
 
-Enigmail.prototype.extractFingerprint = 
+Enigmail.prototype.extractFingerprint =
 function (email, secret, exitCodeObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.extractFingerprint: "+email+"\n");
 
@@ -3028,8 +3075,10 @@ function (parent, uiFlags, msgText, keyId, errorMsgObj) {
 
   var beginIndexObj = new Object();
   var endIndexObj   = new Object();
+  var indentStrObj   = new Object();
   var blockType = this.locateArmoredBlock(msgText, 0, "",
-                                          beginIndexObj, endIndexObj);
+                                          beginIndexObj, endIndexObj,
+                                          indentStrObj);
 
   if (!blockType) {
     errorMsgObj.value = EnigGetString("noPGPblock");
