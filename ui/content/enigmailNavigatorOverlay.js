@@ -179,14 +179,10 @@ function enigYahooCompose() {
   var fromAddr = msgFrame.document.Compose.From.value;
   DEBUG_LOG("enigYahooCompose: From="+fromAddr+"\n");
 
-  var userIdSource = EnigGetPref("userIdSource");
+  var userIdValue = EnigGetPref("userIdValue");
 
-  if (userIdSource == USER_ID_DEFAULT) {
-    fromAddr = "";
-
-  } else if (userIdSource == USER_ID_SPECIFIED) {
-    fromAddr = EnigGetPref("userIdValue");
-  }
+  if (!EnigGetPref("userIdFromAddr") && userIdValue)
+    fromAddr = userIdValue;
 
   var encryptFlags = nsIEnigmail.SEND_SIGNED | nsIEnigmail.SEND_ENCRYPTED;
 
@@ -316,12 +312,10 @@ function enigHotmailCompose() {
   var fromAddr = msgFrame.document.composeform.from.value;
   DEBUG_LOG("enigHotmailCompose: From="+fromAddr+"\n");
 
-  if (userIdSource == USER_ID_DEFAULT) {
-    fromAddr = "";
+  var userIdValue = EnigGetPref("userIdValue");
 
-  } else if (userIdSource == USER_ID_SPECIFIED) {
-    fromAddr = EnigGetPref("userIdValue");
-  }
+  if (!EnigGetPref("userIdFromAddr") && userIdValue)
+    fromAddr = userIdValue;
 
   var encryptFlags = nsIEnigmail.SEND_SIGNED | nsIEnigmail.SEND_ENCRYPTED;
 

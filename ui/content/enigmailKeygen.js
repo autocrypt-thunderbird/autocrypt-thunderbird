@@ -7,7 +7,7 @@ const ENIG_ACCOUNT_MANAGER_CONTRACTID = "@mozilla.org/messenger/account-manager;
 
 var gAccountManager = Components.classes[ENIG_ACCOUNT_MANAGER_CONTRACTID].getService(Components.interfaces.nsIMsgAccountManager);
 
-var gPassivePrivacy = EnigGetPref("passivePrivacy");
+var gAutoCrypto;
 
 var gIdentityList;
 var gIdentityListPopup;
@@ -17,6 +17,8 @@ var gKeygenRequest;
 
 function enigmailKeygenLoad() {
   DEBUG_LOG("enigmailKeygen.js: Load\n");
+
+  gAutoCrypto = EnigGetPref("autoCrypto");
 
   gIdentityList      = document.getElementById("userIdentity");
   gIdentityListPopup = document.getElementById("userIdentityPopup");
@@ -63,9 +65,9 @@ function enigmailKeygenUpdate(getPrefs, setPrefs) {
   passphrase1.disabled = noPassphraseChecked;
   passphrase2.disabled = noPassphraseChecked;
 
-  if (gPassivePrivacy) {
+  if (gAutoCrypto) {
     var commentElement = document.getElementById("keyComment");
-    commentElement.value = "Enigmail passive privacy";
+    commentElement.value = "Enigmail auto crypto";
     commentElement.disabled = true;
   }
 }
@@ -92,8 +94,8 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
       var identityItem = gIdentityList.selectedItem;
       var email = identityItem.getAttribute("email");
 
-      EnigSetPref( "userIdValue", email);
-      EnigSetPref( "userIdSource", USER_ID_SPECIFIED);
+      EnigSetPref("userIdValue", email);
+      EnigSetPref("userIdFromAddr", false);
 
       enigmailKeygenUpdate(false, true);
 
