@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.89.5.0";
-var gEnigmimeVersion = "0.89.5.0";
+var gEnigmailVersion = "0.89.6.0";
+var gEnigmimeVersion = "0.89.6.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -493,6 +493,11 @@ function EnigAlert(mesg) {
   gEnigPromptSvc.alert(window, EnigGetString("enigAlert"), mesg);
 }
 
+function EnigLongAlert(mesg) {
+  window.openDialog("chrome://enigmail/content/enigmailAlertDlg.xul",
+            "", "chrome,modal,centerscreen", {msgtext: mesg});
+}
+
 function EnigAlertCount(countPrefName, mesg) {
   var alertCount = EnigGetPref(countPrefName);
 
@@ -920,6 +925,21 @@ function EnigConvertGpgToUnicode(text) {
 } 
 
 
+function EnigFormatFpr(fingerprint) {
+  // format key fingerprint
+  DEBUG_LOG("enigmailCommon.js: EnigFormatFpr: fingerprint="+fingerprint+"\n");
+  
+  var r="";
+  var fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
+  if (fpr && fpr.length > 2) {
+    fpr.shift();
+    r=fpr.join(" ");
+  }
+
+  return r;
+}
+
+
 function EnigGetDeepText(node, findStr) {
 
   DEBUG_LOG("enigmailCommon.js: EnigDeepText: <" + node.tagName + ">, '"+findStr+"'\n");
@@ -1052,7 +1072,7 @@ function EnigClearPassphrase() {
 function EnigOpenWin (winName, spec, winOptions, optList) {
   var windowManager = ENIG_C.classes[ENIG_APPSHELL_MEDIATOR_CONTRACTID].getService(ENIG_C.interfaces.nsIWindowMediator);
 
-  /* although accordign to the docs, this doesn't seem to work ...
+  /* according to the docs, this doesn't seem to work ...
     var recentWin = windowManager.getMostRecentWindow(winName);
   */
   var winEnum=windowManager.getEnumerator(null);
@@ -1086,9 +1106,10 @@ function EnigGetWindowOptions() {
   }
   return winOptions;
 }
+
 function EnigViewAbout() {
   DEBUG_LOG("enigmailCommon.js: EnigViewAbout\n");
-
+  
   EnigOpenWin ("about:enigmail",
                "chrome://enigmail/content/enigmailAbout.xul",
                "resizable,centerscreen");
@@ -1170,14 +1191,7 @@ function EnigLoadURLInNavigatorWindow(url, aOpenFlag)
   // if not, get the most recently used browser window
   if (!navWindow) {
     var wm;
-    try {
-      // Mozilla up to 1.0
-      wm = ENIG_C.classes[ENIG_WMEDIATOR_CONTRACTID].getService(ENIG_C.interfaces.nsIWindowMediator);
-    }
-    catch (ex) {
-      // Mozilla 1.1 and newer
-      wm = ENIG_C.classes[ENIG_APPSHELL_MEDIATOR_CONTRACTID].getService(ENIG_C.interfaces.nsIWindowMediator);
-    }
+    wm = ENIG_C.classes[ENIG_APPSHELL_MEDIATOR_CONTRACTID].getService(ENIG_C.interfaces.nsIWindowMediator);
     navWindow = wm.getMostRecentWindow("navigator:browser");
   }
 

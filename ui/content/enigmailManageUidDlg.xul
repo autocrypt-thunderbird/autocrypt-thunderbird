@@ -1,0 +1,250 @@
+<!--
+  The contents of this file are subject to the Mozilla Public
+  License Version 1.1 (the "MPL"); you may not use this file
+  except in compliance with the MPL. You may obtain a copy of
+  the MPL at http://www.mozilla.org/MPL/
+
+  Software distributed under the MPL is distributed on an "AS
+  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  implied. See the MPL for the specific language governing
+  rights and limitations under the MPL.
+
+  The Original Code is Enigmail.
+
+  The Initial Developer of this code is Patrick Brunschwig.
+  Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+  are Copyright (C) 2004 Patrick Brunschwig.
+  All Rights Reserved.
+
+  Contributor(s):
+
+  Alternatively, the contents of this file may be used under the
+  terms of the GNU General Public License (the "GPL"), in which case
+  the provisions of the GPL are applicable instead of
+  those above. If you wish to allow use of your version of this
+  file only under the terms of the GPL and not to allow
+  others to use your version of this file under the MPL, indicate
+  your decision by deleting the provisions above and replace them
+  with the notice and other provisions required by the GPL.
+  If you do not delete the provisions above, a recipient
+  may use your version of this file under either the MPL or the
+  GPL.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="enigmailManageUidDlg"
+        title="&enigmail.manageUidDlg.title;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        buttons="accept"
+        onload="onLoad();">
+
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+
+  <vbox orient="vertical" flex="1">
+    <hbox align="center">
+      <label value="&enigmail.manageUidDlg.affectedKey.label;"/>
+      <label id="keyId" value="?"/>
+    </hbox>
+    <separator/>
+    <label value="&enigmail.manageUidDlg.availableUid.label;"/>
+    <listbox flex="1" id="uidList" style="height:100px"
+              onselect="uidSelectCb()"/>
+    <hbox>
+      <button id="addUid"
+              label="&enigmail.manageUidDlg.addUid.label;"
+              oncommand="addUid()"/>
+      <button id="setPrimary"
+              label="&enigmail.manageUidDlg.setPrimary.label;"
+              oncommand="setPrimaryUid()"/>
+      <button id="deleteUid"
+              label="&enigmail.manageUidDlg.deleteUid.label;"
+              oncommand="deleteUid()"/>
+      <button id="revokeUid"
+              label="&enigmail.manageUidDlg.revokeUid.label;"
+              oncommand="revokeUid()"/>
+    </hbox>
+    <vbox align="end">
+      <button dlgtype="accept" label="&enigmail.keyMan.close.label;"/>
+    </vbox>
+  </vbox>
+  
+  <script type="application/x-javascript">
+  <![CDATA[
+    EnigInitCommon("enigmailManageUidDlg");
+    
+    function onLoad() {
+      reloadUidList();
+      var keyId = window.enigmailUid +" - 0x"+ window.arguments[0].keyId.substr(-8,8);
+      document.getElementById("keyId").value = keyId
+
+      return;
+    }
+
+    function reloadUidList() {
+      var uidList=document.getElementById("uidList");
+      while (uidList.getRowCount()>0) {
+        uidList.removeItemAt(0);
+      }
+      
+      var enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc)
+        return;
+
+      var keyData = enigmailSvc.getUidsForKey("0x"+window.arguments[0].keyId, false);
+
+      var keyList=keyData.split(/[\n\r]+/);
+      var uidNum=0;
+      for (var i=0; i < keyList.length; i++) {
+        var uidStr = keyList[i].split(/:/);
+        switch(uidStr[0]) {
+        case "pub":
+          ++uidNum;
+          var uidTxt=EnigConvertGpgToUnicode(uidStr[9].replace(/\\e3A/g, ":"));
+          uidList.appendItem(uidTxt, "uid:"+String(uidNum));
+          if (!window.enigmailUid) {
+            window.enigmailUid = uidTxt;
+          }
+          break;
+        case "uid":
+        case "uat":
+          ++uidNum;
+          if (uidStr[0]=="uid") {
+            uidTxt=EnigConvertGpgToUnicode(uidStr[9].replace(/\\e3A/g, ":"));
+            if (!window.enigmailUid) {
+              window.enigmailUid = uidTxt;
+            }
+          }
+          else{
+            if (uidStr[9].indexOf("1 ")==0) {
+              uidTxt=EnigGetString("userAtt.photo");
+            }
+          }
+          if (uidStr[1]=="r") {
+            uidTxt += " - "+EnigGetString("keyValid.revoked");
+            uidStr[0]=uidStr[0].replace(/^./,"r");
+          }
+          var item=uidList.appendItem(uidTxt, uidStr[0]+":"+String(uidNum));
+          if (uidStr[1]=="r") {
+            item.setAttribute("class", "enigmailUidInactive");
+          }
+
+          break;
+        }
+      }
+      uidList.selectedIndex=0;
+    }
+    
+    function uidSelectCb() {
+      var uidList = document.getElementById("uidList")
+      if (typeof(uidList.selectedItem.value)=="string") {
+        var uidType = uidList.selectedItem.value.substr(0,3);
+        if (uidType=="uat" || uidType=="rat" || uidType=="rid") {
+          document.getElementById("setPrimary").setAttribute("disabled", "true");
+        }
+        else {
+          document.getElementById("setPrimary").removeAttribute("disabled");
+        }
+        if (uidList.selectedItem.value.substr(4)=="1") {
+          document.getElementById("deleteUid").setAttribute("disabled", "true");
+          document.getElementById("revokeUid").setAttribute("disabled", "true");
+        }
+        else {
+          document.getElementById("deleteUid").removeAttribute("disabled");
+          if (uidType=="rid" || uidType=="rat") {
+            document.getElementById("revokeUid").setAttribute("disabled", "true");
+          }
+          else {
+            document.getElementById("revokeUid").removeAttribute("disabled");
+          }
+        }
+      }
+    }
+    
+    function addUid() {
+      var inputObj = {
+        keyId: "0x"+window.arguments[0].keyId,
+        userId: window.enigmailUid
+      };
+
+      window.openDialog("chrome://enigmail/content/enigmailAddUidDlg.xul",
+            "", "dialog,modal,centerscreen", inputObj);
+      reloadUidList();
+    }
+    
+    function setPrimaryUid() {
+      var enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc)
+        return;
+      var errorMsgObj = new Object();
+      var uidList = document.getElementById("uidList");
+      if (uidList.selectedItem.value.substr(0,3)=="uid"){
+        var r=enigmailSvc.setPrimaryUid(window,
+                                        "0x"+window.arguments[0].keyId,
+                                        uidList.selectedItem.value.substr(4),
+                                        errorMsgObj);
+
+        if (r != 0) {
+          EnigAlert(EnigGetString("changePrimUidFailed")+"\n\n"+errorMsgObj.value);
+          return;
+        }
+        EnigAlert(EnigGetString("changePrimUidOK"));
+        reloadUidList();
+      }
+    }
+
+    function revokeUid() {
+      var enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc)
+        return;
+      var errorMsgObj = new Object();
+      var uidList = document.getElementById("uidList");
+      if (uidList.selectedItem.value.substr(4)!="1"){
+        var r=enigmailSvc.revokeUid(window,
+                                    "0x"+window.arguments[0].keyId,
+                                    uidList.selectedItem.value.substr(4),
+                                    errorMsgObj);
+
+        if (r != 0) {
+          EnigAlert(EnigGetString("revokeUidFailed", uidList.selectedItem.label)+"\n\n"+errorMsgObj.value);
+          return;
+        }
+        EnigAlert(EnigGetString("revokeUidOK", uidList.selectedItem.label));
+        reloadUidList();
+      }
+    }
+
+    function deleteUid() {
+      var enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc)
+        return;
+      var errorMsgObj = new Object();
+      var uidList = document.getElementById("uidList");
+      if (uidList.selectedItem.value.substr(4) != "1") {
+        var r=enigmailSvc.deleteUid(window,
+                                    "0x"+window.arguments[0].keyId,
+                                    uidList.selectedItem.value.substr(4),
+                                    errorMsgObj);
+
+        if (r != 0) {
+          EnigAlert(EnigGetString("deleteUidFailed", uidList.selectedItem.label)+"\n\n"+errorMsgObj.value);
+          return;
+        }
+        EnigAlert(EnigGetString("deleteUidOK", uidList.selectedItem.label));
+        reloadUidList();
+      }
+    }
+  ]]>
+  </script>
+
+</dialog>
+

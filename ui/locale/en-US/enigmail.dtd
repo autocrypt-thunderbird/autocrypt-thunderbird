@@ -364,7 +364,7 @@
 
 <!ENTITY enigmail.keyMan.reload.label              "Reload key cache">
 <!ENTITY enigmail.keyMan.addUid.label              "Add user ID">
-<!ENTITY enigmail.keyMan.setPrimaryUid.label       "Change primary user ID">
+<!ENTITY enigmail.keyMan.manageUid.label           "Manage user IDs">
 <!ENTITY enigmail.keyMan.delKey.label              "Delete key">
 <!ENTITY enigmail.keyMan.keyProps.label            "Key Properties">
 <!ENTITY enigmail.keyMan.viewSig.label             "View signatures">
@@ -372,6 +372,7 @@
 <!ENTITY enigmail.keyMan.calcTrust.label           "Calculated Trust">
 <!ENTITY enigmail.keyMan.ownerTrust.label          "Owner Trust">
 <!ENTITY enigmail.keyMan.stopTransfer.label        "Stop transfer">
+<!ENTITY enigmail.keyMan.fingerprint.label         "Fingerprint">
 
 <!ENTITY enigmail.keyMan.window.accesskey            "W">
 <!ENTITY enigmail.keyMan.close.accesskey             "C">
@@ -387,7 +388,7 @@
 <!ENTITY enigmail.keyMan.uploadToServer.accesskey    "U">
 <!ENTITY enigmail.keyMan.reload.accesskey            "R">
 <!ENTITY enigmail.keyMan.addUid.accesskey            "A">
-<!ENTITY enigmail.keyMan.setPrimaryUid.accesskey     "H">
+<!ENTITY enigmail.keyMan.manageUid.accesskey         "M">
 <!ENTITY enigmail.keyMan.viewSig.accesskey           "V">
 <!ENTITY enigmail.keyMan.showPhoto.accesskey         "P">
 <!ENTITY enigmail.keyMan.closeWin.key                "W">
@@ -401,14 +402,20 @@
 <!ENTITY enigmail.viewKeySigDlg.sigForKey.label      "Signatures for Key:">
 <!ENTITY enigmail.viewKeySigDlg.sigType.label        "Sig. Type">
 
-<!ENTITY enigmail.setPrimUidDlg.title                "Change Primary User ID">
-<!ENTITY enigmail.setPrimUidDlg.affectedKey.label    "Key to change:">
-<!ENTITY enigmail.setPrimUidDlg.newPrimUid.label     "New Primary User ID:">
+<!ENTITY enigmail.manageUidDlg.title                 "Change Primary User ID">
+<!ENTITY enigmail.manageUidDlg.affectedKey.label     "Key to change:">
+<!ENTITY enigmail.manageUidDlg.availableUid.label    "Available user IDs:">
+<!ENTITY enigmail.manageUidDlg.addUid.label          "Add">
+<!ENTITY enigmail.manageUidDlg.deleteUid.label       "Delete">
+<!ENTITY enigmail.manageUidDlg.revokeUid.label       "Revoke">
+<!ENTITY enigmail.manageUidDlg.setPrimary.label      "Set primary">
 
 <!ENTITY enigmail.keyDetails.title                   "Key Properties">
 <!ENTITY enigmail.keyDetails.userId.label            "Primary User ID">
 <!ENTITY enigmail.keyDetails.keyId.label             "Key ID">
+<!ENTITY enigmail.keyDetails.ID.label                "ID">
 <!ENTITY enigmail.keyDetails.keyType.label           "Type">
+<!ENTITY enigmail.keyDetails.subType.label           "Subkey">
 <!ENTITY enigmail.keyDetails.algorithm.label         "Algorithm">
 <!ENTITY enigmail.keyDetails.size.label              "Size">
 <!ENTITY enigmail.keyDetails.created.label           "Created">
@@ -416,5 +423,4 @@
 <!ENTITY enigmail.keyDetails.calcTrust.label         "Calculated trust">
 <!ENTITY enigmail.keyDetails.ownerTrust.label        "Owner trust">
 <!ENTITY enigmail.keyDetails.fingerprint.label       "Fingerprint">
-
 

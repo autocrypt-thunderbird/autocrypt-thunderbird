@@ -269,7 +269,7 @@ function enigSetKeys(keyList) {
       var keyEnd=userListTxt.substring(keyStart).indexOf("\n");
       var userDescList=userListTxt.substr(keyStart,keyEnd).split(/:/);
      
-      encryptionList.appendItem("0x"+keyList[i].substr(10,8)+" ("+userDescList[6]+")",
+      encryptionList.appendItem("0x"+keyList[i].substr(10,8)+" ("+EnigConvertGpgToUnicode(userDescList[6].replace(/\\e3A/g, ":"))+")",
                                 keyList[i]);
     }
   }

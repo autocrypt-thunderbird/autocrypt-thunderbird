@@ -139,7 +139,7 @@
         if (listRow.length>=0) {
           if (listRow[0] == "uid" || listRow[0] == "pub") {
             var userRow=document.createElement("treerow");
-            addCell(userRow, listRow[USER_ID]);
+            addCell(userRow, listRow[USER_ID], true);
             var treeItem=document.createElement("treeitem");
             treeItem.appendChild(userRow);
             treeChildren.appendChild(treeItem);
@@ -181,9 +181,12 @@
       return;
     }
     
-    function addCell(row, label) {
+    function addCell(row, label, subkeyRow) {
       var cell = document.createElement("treecell");
       cell.setAttribute("label", label);
+      if (subkeyRow) {
+        cell.setAttribute("properties", "enigmailSubkeyTitle");
+      }
       row.appendChild(cell);
       return cell;
     }

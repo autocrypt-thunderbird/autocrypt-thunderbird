@@ -211,6 +211,10 @@ interface nsIEnigmail : nsISupports
                         out wstring sigDetails,
                         out wstring errorMsg);
 
+  boolean deleteMessageURI(in string uri);
+
+  boolean selectPanel(in string url);
+
 
 /*** key handling functions ***/
   long setKeyTrust(in nsIDOMWindow parent, 
@@ -249,27 +253,29 @@ interface nsIEnigmail : nsISupports
                       in string idNumber, 
                       out wstring errorMsg);
 
-  /* Receive flags */
-  const long SEARCH_KEY       = 0x01;
-  const long DOWNLOAD_KEY     = 0x02;
-  const long UPLOAD_KEY       = 0x04;
+  long deleteUid (in nsIDOMWindow parent,
+                  in string keyId,
+                  in string idNumber,
+                  out wstring errorMsg);
 
-  nsIIPCRequest searchKey(in unsigned long recvFlags,
-                          in string protocol,
-                          in string keyServer,
-                          in string port,
-                          in string keyValue,
-                          in nsIRequestObserver requestObserver,
-                          out wstring errorMsg);
+  long revokeUid (in nsIDOMWindow parent,
+                  in string keyId,
+                  in string idNumber,
+                  out wstring errorMsg);
 
-  nsIIPCRequest receiveKey(in unsigned long recvFlags,
-                           in string keyServer,
-                           in string keyId,
-                           in nsIRequestObserver requestObserver,
-                           out wstring errorMsg);
+  string getKeySig (in string keyId,
+                    out long exitCode,
+                    out wstring errorMsg);
+
+  string getUidsForKey (in string keyId,
+                        in boolean shortOutput);
+
+  string showKeyPhoto (in string keyId,
+                       out long exitCode,
+                       out wstring errorMsg);
 
   const long EXTRACT_SECRET_KEY = 0x01;
-  
+
   string extractKey(in nsIDOMWindow parent,
                     in unsigned long exportFlags,
                     in string userId,
@@ -296,17 +302,33 @@ interface nsIEnigmail : nsISupports
                             in string passphrase,
                             in nsIRequestObserver requestObserver);
 
+  /* Receive flags */
+  const long SEARCH_KEY       = 0x01;
+  const long DOWNLOAD_KEY     = 0x02;
+  const long UPLOAD_KEY       = 0x04;
+
+  nsIIPCRequest searchKey(in unsigned long recvFlags,
+                          in string protocol,
+                          in string keyServer,
+                          in string port,
+                          in string keyValue,
+                          in nsIRequestObserver requestObserver,
+                          out wstring errorMsg);
+
+  nsIIPCRequest receiveKey(in unsigned long recvFlags,
+                           in string keyServer,
+                           in string keyId,
+                           in nsIRequestObserver requestObserver,
+                           out wstring errorMsg);
+
   string createMessageURI(in string originalUrl,
                           in string contentType,
                           in string contentCharset,
                           in string contentData,
                           in boolean persist);
 
-  boolean deleteMessageURI(in string uri);
-
-  boolean selectPanel(in string url);
-
-  /* manage GPG key list */
+  /* manage GPG key list cache */
+  
   string getUserIdList (in boolean secretOnly,
                         in boolean refresh,
                         out long exitCode,
@@ -315,9 +337,8 @@ interface nsIEnigmail : nsISupports
 
   void invalidateUserIdList();
 
-  string getKeySig (in string keyId,
-                    out long exitCode,
-                    out wstring errorMsg);
+
+  /* attachment handling */
 
   string encryptAttachment (in nsIDOMWindow parent,
                             in string fromMailAddr,
@@ -337,10 +358,8 @@ interface nsIEnigmail : nsISupports
                              out unsigned long statusFlags,
                              out wstring errorMsg);
 
-  string showKeyPhoto (in string keyId,
-                       out long exitCode,
-                       out wstring errorMsg);
-
+  /* per-recipient rules */
+  
   boolean getRulesData(out nsIDOMDocument rulesList);
   
   void addRule(in boolean appendToEnd,

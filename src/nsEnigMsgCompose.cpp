@@ -736,15 +736,17 @@ nsEnigMsgCompose::MimeCryptoWriteBlock(const char *aBuf, PRInt32 aLen)
     return WriteCopy(aBuf, aLen);
   }
 
-  // Mangle lines beginning with "From " or ending with a space prior to signing
+  // Mangle lines beginning with "From "
+  // strip trailing whitespaces prior to signing
   PRUint32 offset = 0;
   PRUint32 writeCount = 0;
 
   for (PRUint32 j=0; j<((PRUint32) aLen); j++) {
     if ((mSpace > 0) && ((aBuf[j] == '\r') || (aBuf[j] == '\n'))) {
-      // strip trailing spaces
+      // strip trailing spaces and tabs
       writeCount = j-offset-mSpace;
       WriteCopy(&aBuf[offset], writeCount);
+      DEBUG_LOG(("nsEnigMsgCompose::MimeCryptoWriteBlock: stripped trailing whitespaces\n"));
       offset = j;
     }
     if (mLinebreak || (mMatchFrom > 0)) {
@@ -784,7 +786,7 @@ nsEnigMsgCompose::MimeCryptoWriteBlock(const char *aBuf, PRInt32 aLen)
     }
 
     mLinebreak = (aBuf[j] == '\r') || (aBuf[j] == '\n');
-    if (aBuf[j] == ' ') {
+    if ((aBuf[j] == ' ') || (aBuf[j] == '\t')) {
       ++mSpace;
     }
     else {

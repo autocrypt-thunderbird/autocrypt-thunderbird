@@ -41,23 +41,11 @@
 %enigMailDTD;
 ]>
 
-<!--
-Type: Key Pair / public key
-Key ID: 0xCCEC227B
-Algorithm: DSA/ELG
-Size: 1024/4096
-Created: 2001-07-08
-Expires: never
-Validity: Ultimate
-Fingerprint: 933D 9948 DC0F A861 471B 10A9 D8A8 07C7 CCEC 227B 
-Ownertrust: I trust ultimately
--->
-
 <dialog id="enigmailKeyDetailsDlg"
         title="&enigmail.keyDetails.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         buttons="accept"
-        minwidth="400px"
+        minwidth="450px"
         onload="onLoad();">
 
 
@@ -83,22 +71,6 @@ Ownertrust: I trust ultimately
           <textbox readonly="true" id="keyType" value="?"/>
         </row>
         <row>
-          <label value="&enigmail.keyDetails.algorithm.label;"/>
-          <textbox readonly="true" id="algorithm" value="?"/>
-        </row>
-        <row>
-          <label value="&enigmail.keyDetails.size.label;"/>
-          <textbox readonly="true" id="size" value="?"/>
-        </row>
-        <row>
-          <label value="&enigmail.keyDetails.created.label;"/>
-          <textbox readonly="true" id="created" value="?"/>
-        </row>
-        <row>
-          <label value="&enigmail.keyDetails.expiry.label;"/>
-          <textbox readonly="true" id="expiry" value="?"/>
-        </row>
-        <row>
           <label value="&enigmail.keyDetails.calcTrust.label;"/>
           <textbox readonly="true" id="calcTrust" value="?"/>
         </row>
@@ -112,6 +84,42 @@ Ownertrust: I trust ultimately
         </row>
       </rows>
     </grid>
+
+    <tree id="subkeyList" flex="1"
+      enableColumnDrag="true"
+      style="height:100px"
+      hidecolumnpicker="true">
+
+      <treecols>
+        <treecol id="subkeyCol" primary="true"
+            label="&enigmail.keyDetails.subType.label;"
+            style="width:71px"
+            persist="width"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="keyTypeCol" style="width:77px"
+                 label="&enigmail.keyDetails.ID.label;"
+                 persist="width"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="algoCol" style="width:60px"
+                 label="&enigmail.keyDetails.algorithm.label;"
+                 persist="width"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="sizeCol" style="width:37px"
+                 label="&enigmail.keyDetails.size.label;"
+                 persist="width"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="createdCol" style="width:70px"
+                 label="&enigmail.keyDetails.created.label;"
+                 persist="width"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="expiryCol"
+                 label="&enigmail.keyDetails.expiry.label;"
+                 flex="1"/>
+      </treecols>
+
+      <treechildren id="keyListChildren"/>
+
+    </tree>
 	</vbox>
 		
   <script type="application/x-javascript">
@@ -132,6 +140,7 @@ Ownertrust: I trust ultimately
 			var fingerprint = "";
       var subKeyLen="";
       var subAlgo="";
+      var treeChildren=document.getElementById("keyListChildren");
 			var sigListStr = enigmailSvc.getKeySig("0x"+window.arguments[0].keyId, exitCodeObj, errorMsgObj);
 			if (exitCodeObj.value == 0) {
 				var sigList = sigListStr.split(/[\n\r]+/);
@@ -144,15 +153,8 @@ Ownertrust: I trust ultimately
             if (aLine[11].indexOf("D")>=0) calcTrust="d"; 
             calcTrust=getTrustLabel(calcTrust);
             var ownerTrust=getTrustLabel(aLine[8]);
-            var pubKeyLen = aLine[2];
-            var created = aLine[5];
-            var pubAlgo = EnigGetString("keyAlgorithm_"+aLine[3]);
-            var expiry = aLine[6];
-            if (expiry.length==0) expiry=EnigGetString("keyExpiryNever");
-						break;
           case "sub":
-            subKeyLen = "/"+aLine[2]; 
-            subAlgo = "/"+EnigGetString("keyAlgorithm_"+aLine[3]);
+            addRow(treeChildren, aLine);
             break;
 					case "fpr":
 						fingerprint = aLine[9];
@@ -163,20 +165,33 @@ Ownertrust: I trust ultimately
       
       setAttr("userId", userId);
       setAttr("keyId", "0x"+ window.arguments[0].keyId.substr(-8,8));
-      setAttr("created", created);
-      setAttr("expiry", expiry);
       setAttr("calcTrust", calcTrust);
       setAttr("ownerTrust", ownerTrust);
-      setAttr("algorithm", pubAlgo+subAlgo);
-      setAttr("size", pubKeyLen+subKeyLen);
       setAttr("keyType", EnigGetString(window.arguments[0].secKey ? "keyTypePair" : "keyTypePublic"));
       if (fingerprint) {
-        var fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
-        if (fpr && fpr.length > 2) {
-          fpr.shift();
-          setAttr("fingerprint", fpr.join(" "));
-        }
+        setAttr("fingerprint", EnigFormatFpr(fingerprint));
       }
+    }
+
+    function addRow(treeChildren, aLine) {
+      var aRow=document.createElement("treerow");
+      var treeItem=document.createElement("treeitem");
+      var subkey=EnigGetString(aLine[0]=="sub" ? "keyTypeSubkey" : "keyTypePublic")
+      aRow.appendChild(createCell(subkey)); // subkey type
+      aRow.appendChild(createCell("0x"+aLine[4].substr(-8,8))); // key id
+      aRow.appendChild(createCell(EnigGetString("keyAlgorithm_"+aLine[3]))); // algorithm
+      aRow.appendChild(createCell(aLine[2])); // size
+      aRow.appendChild(createCell(aLine[5])); // created
+      var expire=(aLine[6].length==0 ? EnigGetString("keyExpiryNever") : aLine[6]);
+      aRow.appendChild(createCell(expire)); // expiry
+      treeItem.appendChild(aRow);
+      treeChildren.appendChild(treeItem);
+    }
+
+    function createCell(label) {
+      var cell = document.createElement("treecell");
+      cell.setAttribute("label", label);
+      return cell;
     }
 
     function getTrustLabel(trustCode) {

@@ -167,7 +167,7 @@ function enigViewSecurityInfo(event, displaySmimeMsg) {
       }
 
     } else {
-      EnigAlert(EnigGetString("securityInfo")+gEnigSecurityInfo.statusInfo);
+      EnigLongAlert(EnigGetString("securityInfo")+gEnigSecurityInfo.statusInfo);
     }
 
   } else {
@@ -766,7 +766,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
 
   if (importOnly) {
      if (interactive && errorMsg)
-       EnigAlert(errorMsg);
+       EnigLongAlert(errorMsg);
      return;
   }
 
@@ -784,7 +784,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
 
   if (!plainText) {
      if (interactive && gEnigSecurityInfo && gEnigSecurityInfo.statusInfo)
-       EnigAlert(gEnigSecurityInfo.statusInfo);
+       EnigLongAlert(gEnigSecurityInfo.statusInfo);
      return;
   }
 
@@ -1609,7 +1609,7 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
   }
   if (exitStatus) {
     if (statusFlagsObj.value & nsIEnigmail.IMPORTED_KEY) {
-      EnigAlert(EnigGetString("successKeyImport")+"\n\n"+errorMsgObj.value);
+      EnigLongAlert(EnigGetString("successKeyImport")+"\n\n"+errorMsgObj.value);
     }
     else if (statusFlagsObj.value & nsIEnigmail.DISPLAY_MESSAGE) {
       EnigLoadURLInNavigatorWindow(callbackArg.attachment.url, true)

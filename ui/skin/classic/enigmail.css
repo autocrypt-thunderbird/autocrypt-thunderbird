@@ -98,6 +98,11 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
   cursor: pointer;
 }
 
+.enigmailUidInactive {
+  color: gray;
+  font-style: italic;
+}
+
 #enigmail-status-bar #enigmail-signed-status {
   list-style-image: none;
   visibility: collapse;
@@ -146,6 +151,10 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
 .enigmailPrefsTitle {
   font-weight: bold;
   height: 25px;
+}
+
+treechildren::-moz-tree-cell-text(enigmailSubkeyTitle) {
+  font-weight: bold;
 }
 
 treechildren::-moz-tree-cell-text(enigKeyInactive) {

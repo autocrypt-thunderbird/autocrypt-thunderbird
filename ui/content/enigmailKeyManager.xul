@@ -25,7 +25,18 @@
     <key id="key_closeWin" key="&enigmail.keyMan.closeWin.key;"
          oncommand="window.close()" modifiers="accel"/>
   </keyset>
-
+  
+  <broadcasterset>
+    <broadcaster id="bcSignKey" disabled="false"/>
+    <broadcaster id="bcSetTrust" disabled="false"/>
+    <broadcaster id="bcViewSig" disabled="false"/>
+    <broadcaster id="bcViewPhoto" disabled="false"/>
+    <broadcaster id="bcManageUid" disabled="false"/>
+    <broadcaster id="bcRevocationCertificate" disabled="false"/>
+    <broadcaster id="bcKeyDetails" disabled="false"/>
+    <broadcaster id="bcDeleteKey" disabled="false"/>
+  </broadcasterset>
+  
   <menubar id="mainmenu" grippyhidden="true">
     <menu label="&enigmail.keyMan.window.label;"
           accesskey="&enigmail.keyMan.window.accesskey;">
@@ -48,37 +59,40 @@
         
         <menuitem label="&enigmail.keyMan.sign.label;"
                   id="signKey"
+                  observes="bcSignKey"
                   accesskey="&enigmail.keyMan.sign.accesskey;"
                   oncommand="enigSignKey()"/>
         <menuitem label="&enigmail.keyMan.setTrust.label;"
                   id="setTrust"
+                  observes="bcSetTrust"
                   accesskey="&enigmail.keyMan.setTrust.accesskey;"
                   oncommand="enigEditKeyTrust()"/>
         <menuitem label="&enigmail.keyMan.viewSig.label;"
                   id="viewSig"
+                  observes="bcViewSig"
                   accesskey="&enigmail.keyMan.viewSig.accesskey;"
                   oncommand="enigmailListSig()"/>
         <menuitem label="&enigmail.showPhoto.label;"
                   id="viewPhoto"
+                  observes="bcViewPhoto"
                   accesskey="&enigmail.keyMan.showPhoto.accesskey;"
                   oncommand="enigShowPhoto()"/>
 
         <menuseparator/>
         
-        <menuitem id="addUid" 
-                  label="&enigmail.keyMan.addUid.label;" 
-                  accesskey="&enigmail.keyMan.addUid.accesskey;"
-                  oncommand="enigmailAddUid()"/>
-        <menuitem id="setPrimaryUid" 
-                  label="&enigmail.keyMan.setPrimaryUid.label;" 
-                  accesskey="&enigmail.keyMan.setPrimaryUid.accesskey;"
-                  oncommand="enigmailSetPrimaryUid()"/>
+        <menuitem id="manageUid"
+                  label="&enigmail.keyMan.manageUid.label;"
+                  observes="bcManageUid"
+                  accesskey="&enigmail.keyMan.manageUid.accesskey;"
+                  oncommand="enigmailManageUids()"/>
         <menuitem label="&enigmail.keyMan.genRevoke.label;"
                   id="revokationCertificate"
+                  observes="bcRevocationCertificate"
                   accesskey="&enigmail.keyMan.genRevoke.accesskey;"
                   oncommand="enigCreateRevokeCert()"/>
         <menuitem label="&enigmail.keyMan.delKey.label;"
 									id="deleteKey"
+									observes="bcDeleteKey"
 									accesskey="&enigmail.keyMan.delKey.accesskey;"
 									oncommand="enigmailDeleteKey()"/>            
         <menuseparator/>
@@ -123,6 +137,7 @@
                   
 				<menuitem label="&enigmail.keyMan.keyProps.label;"
 									id="keyDetails"
+									observes="bcKeyDetails"
 									accesskey="&enigmail.keyMan.keyDetails.accesskey;"
 								  oncommand="enigmailKeyDetails()"/>
 
@@ -139,16 +154,15 @@
   
   <popupset>
     <popup id="ctxmenu"
-           onpopupshowing="enigmailCtxMenu();">
-      <menuitem id="ctxViewSig" label="&enigmail.keyMan.viewSig.label;" oncommand="enigmailListSig()"/>
-      <menuitem id="ctxViewPhoto" label="&enigmail.showPhoto.label;" oncommand="enigShowPhoto()"/>
-      <menuitem id="ctxSign" label="&enigmail.keyMan.sign.label;" oncommand="enigSignKey()"/>
+           onpopupshowing="enigmailKeyMenu();">
+      <menuitem id="ctxViewSig" observes="bcViewSig" label="&enigmail.keyMan.viewSig.label;" oncommand="enigmailListSig()"/>
+      <menuitem id="ctxViewPhoto" observes="bcViewPhoto" label="&enigmail.showPhoto.label;" oncommand="enigShowPhoto()"/>
+      <menuitem id="ctxSign" observes="bcSignKey" label="&enigmail.keyMan.sign.label;" oncommand="enigSignKey()"/>
       <menuitem id="ctxTrust" label="&enigmail.keyMan.setTrust.label;" oncommand="enigEditKeyTrust()"/>
       <menuseparator/>
-      <menuitem id="ctxAddUid" label="&enigmail.keyMan.addUid.label;" oncommand="enigmailAddUid()"/>
-      <menuitem id="ctxSetPrimaryUid" label="&enigmail.keyMan.setPrimaryUid.label;" oncommand="enigmailSetPrimaryUid()"/>
-      <menuitem id="ctxRevokationCert" label="&enigmail.keyMan.genRevoke.label;" oncommand="enigCreateRevokeCert()"/>
-			<menuitem id="ctxDeleteKey" label="&enigmail.keyMan.delKey.label;" oncommand="enigmailDeleteKey()"/>
+      <menuitem id="ctxManageUid" observes="bcManageUid" label="&enigmail.keyMan.manageUid.label;" oncommand="enigmailManageUids()"/>
+      <menuitem id="ctxRevokationCert" observes="bcRevocationCertificate" label="&enigmail.keyMan.genRevoke.label;" oncommand="enigCreateRevokeCert()"/>
+			<menuitem id="ctxDeleteKey" observes="bcDeleteKey" label="&enigmail.keyMan.delKey.label;" oncommand="enigmailDeleteKey()"/>
 			<menu id="ctxExportMenu"
 						label="&enigmail.keyMan.exportMenu.label;"
 						accesskey="&enigmail.keyMan.exportMenu.accesskey;">
@@ -169,7 +183,7 @@
 			</menu>
 
       <menuseparator/>
-      <menuitem id="ctxDetails" label="&enigmail.keyMan.keyProps.label;" 
+      <menuitem id="ctxDetails" observes="bcViewSig" label="&enigmail.keyMan.keyProps.label;"
 								oncommand="enigmailKeyDetails()"/>
 
     </popup>
@@ -189,23 +203,28 @@
           <splitter class="tree-splitter"/>
           <treecol id="keyCol" style="width:90px"
                    label="&enigmail.keyId.label;"
-                   persist="width"/>
+                   persist="width,hidden"/>
           <splitter class="tree-splitter"/>
           <treecol id="typeCol" style="width:70px"
                    label="&enigmail.keyMan.keyType.label;"
-                   persist="width"/>    
+                   persist="width,hidden"/>
           <splitter class="tree-splitter"/>
           <treecol id="validityCol" style="width:70px"
                    label="&enigmail.keyMan.calcTrust.label;"
-                   persist="width"/>
+                   persist="width,hidden"/>
           <splitter class="tree-splitter"/>
           <treecol id="trustCol" style="width:70px"
                    label="&enigmail.keyMan.ownerTrust.label;"
-                   persist="width"/>
+                   persist="width,hidden"/>
           <splitter class="tree-splitter"/>
           <treecol id="expCol" style="width:70px"
                    label="&enigmail.keyExpiry.label;"
-                   persist="width"/>
+                   persist="width,hidden"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="fprCol" style="width:70px"
+                   label="&enigmail.keyMan.fingerprint.label;"
+                   hidden="true"
+                   persist="width,hidden"/>
         </treecols>
   
         <treechildren id="pgpKeyListChildren" context="ctxmenu"/>

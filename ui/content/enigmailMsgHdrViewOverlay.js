@@ -161,17 +161,20 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
     userId=EnigConvertGpgToUnicode(replaceUid);
   }
 
+  var errorLines="";
+  var fullStatusInfo="";
+
   if (exitCode == ENIG_POSSIBLE_PGPMIME) {
     exitCode = 0;
   }
   else {
-    errorMsg=EnigConvertGpgToUnicode(errorMsg);
+    if (errorMsg) {
+      errorMsg=EnigConvertGpgToUnicode(errorMsg);
+      errorLines = errorMsg.split(/\r?\n/);
+      fullStatusInfo=errorMsg;
+    }
   }
   
-  var errorLines="";
-  var fullStatusInfo=errorMsg;
-  if (errorMsg)
-     errorLines = errorMsg.split(/\r?\n/);
 
   if (errorLines && (errorLines.length > 22) ) {
     // Retain only first twenty lines and last two lines of error message
@@ -233,12 +236,9 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
       var txt = EnigGetString("keyAndSigDate", keyId.substr(-8, 8), dateTime);
       statusArr.push(txt);
       statusInfo += "\n" + txt;
-      // 933D 9948 DC0F A861 471B 10A9 D8A8 07C7 CCEC 227B
-      // 4628 4358 0136 4A06 B9EA FE9D 3C5D F224
-      var fpr = detailArr[0].match(/^(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?$/);
-      if (fpr && fpr.length > 2) {
-        fpr.shift();
-        statusInfo += "\n"+EnigGetString("keyFpr",fpr.join(" "));
+      var fpr = EnigFormatFpr(detailArr[0]);
+      if (fpr) {
+        statusInfo += "\n"+EnigGetString("keyFpr", fpr);
       }
     }
     fullStatusInfo = statusInfo;
