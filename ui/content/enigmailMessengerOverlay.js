@@ -555,7 +555,7 @@ function enigMessageDecrypt(event, isAuto) {
       if (
           (!enigmailSvc.mimeInitialized() && encrypedMsg) || signedMsg ||
           ((!encrypedMsg) && (embeddedSigned || embeddedEncrypted))) {
-        enigUpdateHdrIcons(ENIG_POSSIBLE_PGPMIME, 0, "", "", EnigGetString("possiblyPgpMime"));
+        enigUpdateHdrIcons(ENIG_POSSIBLE_PGPMIME, 0, "", "", "", EnigGetString("possiblyPgpMime"));
       }
     }
     return;
@@ -738,6 +738,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     var exitCodeObj    = new Object();
     var statusFlagsObj = new Object();
     var userIdObj      = new Object();
+    var sigDetailsObj  = new Object();
 
     var signatureObj = new Object();
     signatureObj.value = signature;
@@ -749,7 +750,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
 
     plainText = enigmailSvc.decryptMessage(window, uiFlags, msgText,
                                  signatureObj, exitCodeObj, statusFlagsObj,
-                                 keyIdObj, userIdObj, errorMsgObj);
+                                 keyIdObj, userIdObj, sigDetailsObj, errorMsgObj);
 
     //DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: plainText='"+plainText+"'\n");
 
@@ -769,7 +770,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
      return;
   }
 
-  enigUpdateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value, errorMsg);
+  enigUpdateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsg);
 
   if (statusFlags & (nsIEnigmail.BAD_SIGNATURE | nsIEnigmail.BAD_ARMOR)) {
     // Bad signature/armor

@@ -67,13 +67,21 @@ function enigStartHeaders()
   gEnigStatusBar.removeAttribute("encrypted");
 
   var enigmailBox = document.getElementById("expandedEnigmailBox");
-  var statusText = document.getElementById("expandedEnigmailStatusText");
+  var statusText = document.getElementById("enigmailStatusText");
 
   if (enigmailBox && !enigmailBox.collapsed) {
     enigmailBox.setAttribute("collapsed", "true");
 
-    if (statusText)
-      statusText.firstChild.data="*";
+    if (statusText) statusText.value="";
+  }
+  
+  if (statusText)
+    statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureOk");
+
+  statusText = document.getElementById("collapsedEnigmailStatusText");
+
+  if (enigmailBox && !enigmailBox.collapsed) {
+    if (statusText) tatusText.value="";
   }
   
   if (statusText)
@@ -103,7 +111,12 @@ function enigEndHeaders()
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigEndHeaders\n");
   gEnigStatusBar.removeAttribute("signed");
   gEnigStatusBar.removeAttribute("encrypted");
-  var statusText = document.getElementById("expandedEnigmailStatusText");
+  var statusText = document.getElementById("enigmailStatusText");
+  if (statusText) {
+    statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureOk");
+  }
+  
+  statusText = document.getElementById("collapsedEnigmailStatusText");
   if (statusText) {
     statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureOk");
   }
@@ -137,7 +150,7 @@ function enigMatchUidToSender(userId) {
   return userId;
 }
 
-function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
+function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, errorMsg) {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateHdrIcons: exitCode="+exitCode+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+errorMsg+"\n");
 
   gEnigLastEncryptedURI = GetLoadedMessage();
@@ -173,6 +186,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
 
   var statusInfo = "";
   var statusLine = "";
+  var statusArr = [];
 
   if (statusFlags & nsIEnigmail.NODATA) {
     if (statusFlags & nsIEnigmail.PGP_MIME_SIGNED)
@@ -199,64 +213,95 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
         !(statusFlags & (nsIEnigmail.UNVERIFIED_SIGNATURE |
           nsIEnigmail.IMPORTED_KEY))) {
     // Normal exit / display message
-    statusInfo = errorMsg;
     statusLine = errorMsg;
-
-  } else if (keyId) {
-    statusInfo = EnigGetString("keyNeeded",keyId);
-
-    if (statusFlags & nsIEnigmail.INLINE_KEY) {
-      statusLine = statusInfo + EnigGetString("clickDecrypt");
-    } else {
-      statusLine = statusInfo + EnigGetString("clickPen");
+    statusInfo = statusLine;
+    
+    if (sigDetails) {
+      var detailArr=sigDetails.split(/ /);
+      var dat=new Date(detailArr[2]*1000);
+      var appLocale = Components.classes[ENIG_LOCALE_SVC_CONTRACTID].getService(Components.interfaces.nsILocaleService).getApplicationLocale();
+      var dateFormat = Components.classes[ENIG_DATE_FORMAT_CONTRACTID].getService(Components.interfaces.nsIScriptableDateFormat);
+      var now = new Date();
+      if (now.getFullYear() == dat.getFullYear() &&
+          now.getMonth() == dat.getMonth() &&
+          now.getDate() == dat.getDate()) {
+        var dateTime = dateFormat.FormatTime(appLocale.getCategory("NSILOCALE_TIME"), 
+                            dateFormat.timeFormatNoSeconds,
+                            dat.getHours(), dat.getMinutes(), 0);
+      }
+      else {
+        dateTime = dateFormat.FormatDateTime(appLocale.getCategory("NSILOCALE_TIME"), 
+                            dateFormat.dateFormatShort,
+                            dateFormat.timeFormatNoSeconds,
+                            dat.getFullYear(), dat.getMonth()+1, dat.getDate(),
+                            dat.getHours(), dat.getMinutes(), 0);
+      }
+      var txt = EnigGetString("keyAndSigDate", detailArr[0].substr(-8, 8), dateTime);
+      statusArr.push(txt);
+      statusInfo += "\n" + txt;
+      // 933D 9948 DC0F A861 471B 10A9 D8A8 07C7 CCEC 227B
+      var fpr = detailArr[0].match(/^(....)(....)(....)(....)(....)(....)(....)(....)(....)(....)$/);
+      fpr.shift()
+      statusInfo += "\n"+EnigGetString("keyFpr",fpr.join(" "));
     }
-
-    statusInfo = EnigGetString("unverifiedSig");
-    statusLine = statusInfo + EnigGetString("clickPen");
-    statusInfo += "\n\n" + errorMsg;
-
-  } else if (statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
-    statusInfo = EnigGetString("unverifiedSig");
-    statusLine = statusInfo + EnigGetString("clickQueryPenDetails");
-    statusInfo += "\n\n" + errorMsg;
-
-  } else if (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
-                            nsIEnigmail.UNVERIFIED_SIGNATURE |
-                            nsIEnigmail.EXPIRED_SIGNATURE |
-                            nsIEnigmail.EXPIRED_KEY_SIGNATURE)) {
-    statusInfo = EnigGetString("failedSig");
-    statusLine = statusInfo + EnigGetString("clickPenDetails");
-    statusInfo += "\n\n" + errorMsg;
-
-  } else if (statusFlags & nsIEnigmail.DECRYPTION_INCOMPLETE) {
-    statusInfo = EnigGetString("incompleteDecrypt");
-    statusLine = statusInfo + EnigGetString("clickKey");
-    statusInfo += "\n\n" + errorMsg;
-
-  } else if (statusFlags & nsIEnigmail.DECRYPTION_FAILED) {
-    if (statusFlags & nsIEnigmail.NO_SECKEY) {
-      statusInfo = EnigGetString("needKey");
-    } else {
-      statusInfo = EnigGetString("failedDecrypt");
-    }
-
-    statusLine = statusInfo + EnigGetString("clickKeyDetails");
-    statusInfo += "\n\n" + errorMsg;
-
-  } else if (statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
-    statusInfo = EnigGetString("badPhrase");
-    statusLine = statusInfo + EnigGetString("clickDecryptRetry");
-    statusInfo += "\n\n" + errorMsg;
-
-  } else if (statusFlags & nsIEnigmail.IMPORTED_KEY) {
-    EnigAlert(errorMsg);
+    fullStatusInfo = statusInfo;
 
   } else {
-    statusInfo = EnigGetString("failedDecryptVerify");
-    statusLine = statusInfo + EnigGetString("viewInfo");
-    statusInfo += "\n\n" + errorMsg;
+    if (keyId) {
+      statusInfo = EnigGetString("keyNeeded",keyId);
+  
+      if (statusFlags & nsIEnigmail.INLINE_KEY) {
+        statusLine = statusInfo + EnigGetString("clickDecrypt");
+      } else {
+        statusLine = statusInfo + EnigGetString("clickPen");
+      }
+  
+      statusInfo = EnigGetString("unverifiedSig");
+      statusLine = statusInfo + EnigGetString("clickPen");
+      statusInfo += "\n\n" + errorMsg;
+  
+    } else if (statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
+      statusInfo = EnigGetString("unverifiedSig");
+      statusLine = statusInfo + EnigGetString("clickQueryPenDetails");
+      statusInfo += "\n\n" + errorMsg;
+      
+    } else if (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
+                              nsIEnigmail.UNVERIFIED_SIGNATURE |
+                              nsIEnigmail.EXPIRED_SIGNATURE |
+                              nsIEnigmail.EXPIRED_KEY_SIGNATURE)) {
+      statusInfo = EnigGetString("failedSig");
+      statusLine = statusInfo + EnigGetString("clickPenDetails");
+      statusInfo += "\n\n" + errorMsg;
+  
+    } else if (statusFlags & nsIEnigmail.DECRYPTION_INCOMPLETE) {
+      statusInfo = EnigGetString("incompleteDecrypt");
+      statusLine = statusInfo + EnigGetString("clickKey");
+      statusInfo += "\n\n" + errorMsg;
+  
+    } else if (statusFlags & nsIEnigmail.DECRYPTION_FAILED) {
+      if (statusFlags & nsIEnigmail.NO_SECKEY) {
+        statusInfo = EnigGetString("needKey");
+      } else {
+        statusInfo = EnigGetString("failedDecrypt");
+      }
+  
+      statusLine = statusInfo + EnigGetString("clickKeyDetails");
+      statusInfo += "\n\n" + errorMsg;
+  
+    } else if (statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
+      statusInfo = EnigGetString("badPhrase");
+      statusLine = statusInfo + EnigGetString("clickDecryptRetry");
+      statusInfo += "\n\n" + errorMsg;
+  
+    } else if (statusFlags & nsIEnigmail.IMPORTED_KEY) {
+      EnigAlert(errorMsg);
+  
+    } else {
+      statusInfo = EnigGetString("failedDecryptVerify");
+      statusLine = statusInfo + EnigGetString("viewInfo");
+      statusInfo += "\n\n" + errorMsg;
+    }
   }
-
 
   if (statusFlags & nsIEnigmail.DECRYPTION_OKAY ||
       (gEnigStatusBar.getAttribute("encrypted")=="ok")) {
@@ -295,21 +340,33 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
                         keyId: keyId,
                         userId: userId,
                         statusLine: statusLine,
+                        statusArr: statusArr,
                         statusInfo: statusInfo,
                         fullStatusInfo: fullStatusInfo };
 
   var enigmailBox = document.getElementById("expandedEnigmailBox");
-  var statusText  = document.getElementById("expandedEnigmailStatusText");
+  var statusText  = document.getElementById("enigmailStatusText");
+  var expStatusText  = document.getElementById("expandedEnigmailStatusText");
 
-  if (statusLine) {
-    statusText.firstChild.data= statusLine +" ";
-    enigmailBox.removeAttribute("collapsed");
-
-  } else {
-    statusText.firstChild.data= "*";
-    enigmailBox.setAttribute("collapsed", "true");
+  if (statusArr.length>0) {
+    expStatusText.firstChild.data = statusArr[0];
+    expStatusText.setAttribute("state", "true");
   }
-
+  else {
+    expStatusText.firstChild.data = "*";
+    expStatusText.setAttribute("state", "false");
+  }
+  
+  if (statusLine) {
+    statusText.value = statusLine +" ";
+    enigmailBox.removeAttribute("collapsed");
+    enigDisplayExtendedStatus(true);
+  } else {
+    statusText.value = "";
+    enigmailBox.setAttribute("collapsed", "true");
+    enigDisplayExtendedStatus(false);
+  }
+  
   if (!gSMIMEContainer)
     return;
 
@@ -323,6 +380,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       // Display untrusted/bad signature icon
       gSignedUINode.setAttribute("signed", "notok");
       statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureNotOk");
+      expStatusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureNotOk");
       gEnigStatusBar.setAttribute("signed", "notok");
     }
     else if ((statusFlags & nsIEnigmail.GOOD_SIGNATURE) &&
@@ -333,6 +391,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       // Display trusted good signature icon
       gSignedUINode.setAttribute("signed", "ok");
       statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureOk");
+      expStatusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureOk");
       gEnigStatusBar.setAttribute("signed", "ok");
     }
     else if (statusFlags & (nsIEnigmail.UNVERIFIED_SIGNATURE |
@@ -343,6 +402,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       // Display unverified signature icon
       gSignedUINode.setAttribute("signed", "unknown");
       statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureUnknown");
+      expStatusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureUnknown");
       gEnigStatusBar.setAttribute("signed", "unknown");
     }
 
@@ -495,6 +555,40 @@ function enigMsgHdrViewUnhide() {
   }
 }
 
+function enigDisplayExtendedStatus(displayMe) {
+  var expStatusText  = document.getElementById("expandedEnigmailStatusText");
+  if (displayMe && expStatusText.getAttribute("state") == "true") {
+    if (expStatusText.getAttribute("display") == "true") {
+      expStatusText.removeAttribute("collapsed");
+    }
+    else {
+      expStatusText.setAttribute("collapsed", "true");
+    }
+  }
+  else {
+    expStatusText.setAttribute("collapsed", "true");
+  }
+}
+
+function enigToggleHeaderView() {
+  var viewToggle = document.getElementById("enigToggleHeaderView");
+  var expandedText = document.getElementById("expandedEnigmailStatusText");
+  var state = viewToggle.getAttribute("state");
+  
+  if (state=="true") {
+    viewToggle.setAttribute("state", "false");
+    viewToggle.setAttribute("class", "collapsedHeaderViewButton");
+    expandedText.setAttribute("display", "false");
+    enigDisplayExtendedStatus(false);
+  }
+  else {
+    viewToggle.setAttribute("state", "true");
+    viewToggle.setAttribute("class", "expandHeaderViewButton");
+    expandedText.setAttribute("display", "true");
+    enigDisplayExtendedStatus(true);
+  }
+}
+
 
 addEventListener('messagepane-loaded', enigMsgHdrViewLoad, true);
 addEventListener('messagepane-hide', enigMsgHdrViewHide, true);
@@ -642,7 +736,7 @@ EnigMimeHeaderSink.prototype =
     throw Components.results.NS_NOINTERFACE;
   },
 
-  updateSecurityStatus: function(uriSpec, exitCode, statusFlags, keyId, userId, errorMsg)
+  updateSecurityStatus: function(uriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg)
   {
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: uriSpec="+uriSpec+"\n");
 
@@ -651,7 +745,7 @@ EnigMimeHeaderSink.prototype =
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: msgUriSpec="+msgUriSpec+"\n");
 
     if (!uriSpec || (uriSpec == msgUriSpec)) {
-      enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg);
+      enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, errorMsg);
     }
 
     return;

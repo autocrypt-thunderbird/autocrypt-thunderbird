@@ -51,6 +51,7 @@ interface nsIEnigMimeHeaderSink : nsISupports
                             in unsigned long statusFlags,
                             in wstring keyId,
                             in wstring userId,
+                            in wstring sigDetails,
                             in wstring errorMsg);
 };
 

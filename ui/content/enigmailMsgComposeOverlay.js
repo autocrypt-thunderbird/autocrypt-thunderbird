@@ -23,7 +23,7 @@ var gEnigDirty, gEnigProcessed, gEnigTimeoutID;
 var gEnigSendPGPMime, gEnigModifiedAttach, gEnigSendMode;
 var gEnigSendModeDirty = 0;
 var gEnigNextCommand;
-var gEnigAccountId = null;
+var gEnigIdentity = null;
 
 if (typeof(GenericSendMessage)=="function") {
   // replace GenericSendMessage with our own version
@@ -97,17 +97,17 @@ function enigSetIdentityCallback(elementId) {
 
 function enigGetAccDefault(value) {
 
-  var enabled = gEnigAccountId.getBoolAttribute("enablePgp");
+  var enabled = gEnigIdentity.getBoolAttribute("enablePgp");
   if (value == "enabled")
     return enabled;
   if (enabled) {
     switch (value) {
     case 'encrypt':
-      return gEnigAccountId.getIntAttribute("defaultEncryptionPolicy");
+      return gEnigIdentity.getIntAttribute("defaultEncryptionPolicy");
     case 'signPlain':
-      return gEnigAccountId.getBoolAttribute("pgpSignPlain");
+      return gEnigIdentity.getBoolAttribute("pgpSignPlain");
     case 'signEnc':
-      return gEnigAccountId.getBoolAttribute("pgpSignEncrypted");
+      return gEnigIdentity.getBoolAttribute("pgpSignEncrypted");
     }
   }
   else {
@@ -123,10 +123,10 @@ function enigGetAccDefault(value) {
 }
 
 function enigSetIdentityDefaults() {
-  gEnigAccountId = getCurrentIdentity();
-  gEnigAccountId.getBoolAttribute("enablePgp");
+  gEnigIdentity = getCurrentIdentity();
+  gEnigIdentity.getBoolAttribute("enablePgp");
   if (enigGetAccDefault("enabled")) {
-    EnigGetSignMsg(gEnigAccountId);
+    EnigGetSignMsg(gEnigIdentity);
   }
 
   if (! gEnigSendModeDirty) {
@@ -196,7 +196,7 @@ function enigMsgComposeReset() {
   gEnigModifiedAttach=null;
   gEnigSendModeDirty = 0;
   gEnigSendMode = 0;
-  gEnigAccountId = null;
+  gEnigIdentity = null;
 
   EnigShowHeadersAll(true);
 
@@ -361,9 +361,12 @@ function enigDoPgpButton(what) {
   try {
     if (!enigGetAccDefault("enabled")) {
       if (EnigConfirm(EnigGetString("configureNow"))) {
-          enigGoAccountManager();
+        enigGoAccountManager();
+        if (! gEnigIdentity.getBoolAttribute("enablePgp")) return;
       }
-      return;
+      else {
+        return;
+      }
     }
   }
   catch (ex) {}
@@ -626,9 +629,9 @@ function enigEncryptMsg(msgSendType) {
      var errorMsgObj    = new Object();
      gEnigModifiedAttach = null;
 
-     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: currentId="+gEnigAccountId+
-              ", "+gEnigAccountId.email+"\n");
-     var fromAddr = gEnigAccountId.email;
+     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: currentId="+gEnigIdentity+
+              ", "+gEnigIdentity.email+"\n");
+     var fromAddr = gEnigIdentity.email;
 
      var pgpEnabled = enigGetAccDefault("enabled");
 
@@ -655,8 +658,8 @@ function enigEncryptMsg(msgSendType) {
 
      sendFlags |= optSendFlags;
 
-     if (gEnigAccountId.getIntAttribute("pgpKeyMode")>0) {
-       var userIdValue = gEnigAccountId.getCharAttribute("pgpkeyId");
+     if (gEnigIdentity.getIntAttribute("pgpKeyMode")>0) {
+       var userIdValue = gEnigIdentity.getCharAttribute("pgpkeyId");
 
        if (!userIdValue) {
 
@@ -672,10 +675,10 @@ function enigEncryptMsg(msgSendType) {
 
        if (userIdValue) {
          fromAddr = userIdValue;
-         gEnigAccountId.setCharAttribute("pgpkeyId", userIdValue);
+         gEnigIdentity.setCharAttribute("pgpkeyId", userIdValue);
 
        } else {
-         gEnigAccountId.setIntAttribute("pgpKeyMode", 0);
+         gEnigIdentity.setIntAttribute("pgpKeyMode", 0);
        }
      }
 
@@ -704,7 +707,7 @@ function enigEncryptMsg(msgSendType) {
        var bccLC = EnigStripEmail(msgCompFields.bcc).toLowerCase()
        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: BCC: "+bccLC+"\n");
 
-       var selfBCC = gEnigAccountId.email && (gEnigAccountId.email.toLowerCase() == bccLC);
+       var selfBCC = gEnigIdentity.email && (gEnigIdentity.email.toLowerCase() == bccLC);
 
        if (selfBCC) {
          DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: Self BCC\n");
@@ -1191,16 +1194,6 @@ function enigEncryptMsg(msgSendType) {
          return;
        }
      } 
-     else if (isOffline &&
-                !EnigConfirm(EnigGetString("offlineNote")) ) {
-       // Abort send
-       if (gEnigProcessed)
-         enigUndoEncryption();
-         
-       window.cancelSendMessage=true;
-       return;
-
-     }
      else if ( (sendFlags & nsIEnigmail.SEND_WITH_CHECK) &&
                  !enigMessageSendCheck() ) {
        // Abort send
@@ -1272,7 +1265,7 @@ function enigGenericSendMessage( msgType )
 {
   dump("enigGenericSendMessage from XUL\n");
 
-  dump("Identity = " + gEnigAccountId + "\n");
+  dump("Identity = " + gEnigIdentity + "\n");
 
   if (gMsgCompose != null)
   {
@@ -1604,8 +1597,8 @@ function enigToggleAccountAttr(attrName)
 {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigToggleAccountAttr('"+attrName+"')\n");
 
-  var oldValue = gEnigAccountId.getBoolAttribute(attrName);
-  gEnigAccountId.setBoolAttribute(attrName, !oldValue)
+  var oldValue = gEnigIdentity.getBoolAttribute(attrName);
+  gEnigIdentity.setBoolAttribute(attrName, !oldValue)
 
 }
 
@@ -1717,13 +1710,14 @@ function enigDecryptQuote(interactive) {
   var statusFlagsObj = new Object();
   var userIdObj      = new Object();
   var keyIdObj       = new Object();
+  var sigDateObj     = new Object();
   var errorMsgObj    = new Object();
 
   var uiFlags = nsIEnigmail.UI_UNVERIFIED_ENC_OK;
 
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
                                  signatureObj, exitCodeObj, statusFlagsObj,
-                                 keyIdObj, userIdObj, errorMsgObj);
+                                 keyIdObj, userIdObj, sigDateObj, errorMsgObj);
 
   // Decode plaintext from charset to unicode
   plainText = EnigConvertToUnicode(plainText, charset);
@@ -1825,7 +1819,7 @@ function enigDecryptQuote(interactive) {
   // Position cursor
   var replyOnTop = 1;
   try {
-    replyOnTop = gEnigAccountId.replyOnTop;
+    replyOnTop = gEnigIdentity.replyOnTop;
   } catch (ex) {}
 
   if (!indentStr || !quoteElement)

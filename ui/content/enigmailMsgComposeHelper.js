@@ -37,6 +37,7 @@
 // helper functions for message composition
 
 function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj) {
+  DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys: emailAddrs="+emailAddrs+"\n");
 
   function getFlagVal(oldVal, node, type, conflictObj) {
     var newVal = Number(node.getAttribute(type));

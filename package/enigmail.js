@@ -2417,8 +2417,8 @@ function (signatureBlock, part) {
 
 
 Enigmail.prototype.decryptMessage =
-function (parent, uiFlags, cipherText, signatureObj,
-          exitCodeObj, statusFlagsObj, keyIdObj, userIdObj, errorMsgObj) {
+function (parent, uiFlags, cipherText, signatureObj, exitCodeObj, 
+          statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.decryptMessage: "+cipherText.length+" bytes, "+uiFlags+"\n");
 
   if (! cipherText)
@@ -2545,10 +2545,10 @@ function (parent, uiFlags, cipherText, signatureObj,
 
     ipcBuffer.shutdown();
     ipcBuffer = null; // make sure the object gets freed
-
+    
     var exitCode = this.decryptMessageEnd(uiFlags, plainText.length, pipeTrans,
                                         verifyOnly, noOutput,
-                                        statusFlagsObj, keyIdObj, userIdObj,
+                                        statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj,
                                         errorMsgObj);
     exitCodeObj.value = exitCode;
   }
@@ -2640,7 +2640,7 @@ function (parent, uiFlags, cipherText, signatureObj,
         signatureObj.value = "";
         return this.decryptMessage(parent, uiFlagsDeep, pgpBlock,
                                     signatureObj, exitCodeObj, statusFlagsObj,
-                                    keyIdObj, userIdObj, errorMsgObj);
+                                    keyIdObj, userIdObj, sigDetailsObj, errorMsgObj);
       }
 
     }
@@ -2701,7 +2701,7 @@ function (parent, prompter, verifyOnly, noOutput,
 
 Enigmail.prototype.decryptMessageEnd =
 function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
-          statusFlagsObj, keyIdObj, userIdObj, errorMsgObj) {
+          statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.decryptMessageEnd: uiFlags="+uiFlags+", outputLen="+outputLen+", pipeTransport="+pipeTransport+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
 
   var interactive = uiFlags & nsIEnigmail.UI_INTERACTIVE;
@@ -2757,6 +2757,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
         badSignPat  =    /BADSIG (\w{16}) (.*)$/i;
         keyExpPat   = /EXPKEYSIG (\w{16}) (.*)$/i
         revKeyPat   = /REVKEYSIG (\w{16}) (.*)$/i;
+        validSigPat =  /VALIDSIG (\w+) (.*) (\d+) (.*) (.*) (.*) (.*) (.*) (.*) (.*)$/i;
 
     } else {
         errLines = cmdErrorMsgObj.value.split(/\r?\n/);
@@ -2765,6 +2766,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
         badSignPat  =  /BAD signature from (user )?"(.*)"\.?/i;
         keyExpPat   = /This key has expired/i;
         revKeyPat   = /This key has been revoked/i;
+        validSigPat = /dummy-not-used/i;
     }
 
     errorMsgObj.value = "";
@@ -2776,7 +2778,9 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
 
     var userId = "";
     var keyId = "";
-    for (var j=0; j<errLines.length; j++) {
+    var sigDetails = "";
+
+    for (j=0; j<errLines.length; j++) {
       matches = errLines[j].match(badSignPat);
 
       if (matches && (matches.length > 2)) {
@@ -2817,9 +2821,19 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
 
         break;
       }
-
     }
-
+    
+    if (goodSignature) {
+      for (var j=0; j<errLines.length; j++) {
+        matches = errLines[j].match(validSigPat);
+  
+        if (matches && (matches.length > 2)) {
+          sigDetails = errLines[j].substr(9);
+          break;
+        }
+      }
+    }
+    
     try {
       if (userId && keyId && this.prefBranch.getBoolPref("displaySecondaryUid")) {
         uids = this.getUidsForKey(keyId);
@@ -2836,6 +2850,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
     
     userIdObj.value = userId;
     keyIdObj.value = keyId;
+    sigDetailsObj.value = sigDetails;
 
     if (signed) {
       var trustPrefix = "";
@@ -2856,8 +2871,8 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
       }
 
       if (goodSignature) {
-        errorMsgObj.value = trustPrefix + EnigGetString("prefGood",userId) + ", " +
-              EnigGetString("keyId") + " 0x" + keyId.substring(8,16);
+        errorMsgObj.value = trustPrefix + EnigGetString("prefGood",userId) /* + ", " +
+              EnigGetString("keyId") + " 0x" + keyId.substring(8,16); */
 
         if (this.agentType != "gpg") {
           // Trust all good signatures, if not GPG
@@ -2865,8 +2880,8 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
         }
 
       } else {
-        errorMsgObj.value = trustPrefix + EnigGetString("prefBad",userId) + ", " +
-              EnigGetString("keyId") + " 0x" + keyId.substring(8,16);
+        errorMsgObj.value = trustPrefix + EnigGetString("prefBad",userId) /*+ ", " +
+              EnigGetString("keyId") + " 0x" + keyId.substring(8,16); */
         if (!exitCode)
           exitCode = 1;
 
@@ -4153,9 +4168,20 @@ Enigmail.prototype.saveRulesFile = function () {
   var domSerializer=Components.classes[NS_DOMSERIALIZER_CONTRACTID].createInstance(Components.interfaces.nsIDOMSerializer);
   var rulesFile = this.getRulesFile();
   if (rulesFile) {
-    return WriteFileContents(rulesFile.path, 
+    if (this.rulesList) {
+      // the rule list is not empty -> write into file
+      return WriteFileContents(rulesFile.path, 
                              domSerializer.serializeToString(this.rulesList.firstChild),
                              DEFAULT_FILE_PERMS);
+    }
+    else {
+      // empty rule list -> delete rules file
+      try {
+        rulesFile.remove(false);
+      }
+      catch (ex) {}
+      return true;
+    }
   }
   else
     return false;

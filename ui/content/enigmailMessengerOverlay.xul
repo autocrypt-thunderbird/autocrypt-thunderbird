@@ -294,15 +294,28 @@
   </toolbar>
 
   <vbox id="messagepanebox">
-    <box id="expandedEnigmailBox" class="headerBox"
+    <hbox id="expandedEnigmailBox" class="headerBox"
           position="1"
           collapsed="true">
-       <hbox id="expandedEnigmailStatusBox" class="headerNameBox" align="start">
-         <label class="headerName" value="Enigmail: " flex="1"/>
-       </hbox>
-       <label id="expandedEnigmailStatusText" class="enigmailHeaderBoxLabelSignatureOk" flex="1">*</label>
-    </box>
+      <hbox id="expandedEnigmailStatusBox" class="headerNameBox" align="start">
+         <vbox align="start">
+            <image id="enigToggleHeaderView" class="collapsedHeaderViewButton"
+              state="false" persist="state class"
+              onclick="enigToggleHeaderView();"/>
+         </vbox>
+         <vbox align="start">
+           <label class="headerName" value="Enigmail: " flex="1"/>
+         </vbox>
+         <vbox pack="start">
+           <label id="enigmailStatusText" class="enigmailHeaderBoxLabelSignatureOk" value=""/>
+           <label id="expandedEnigmailStatusText" class="enigmailHeaderBoxLabelSignatureOk" flex="1" 
+                  collapsed="true" display="false" state="false" persist="display">*</label>
+         </vbox>
+      </hbox>
+    </hbox>
   </vbox>
+  
+
 
   <popup id="attachmentListContext" onpopupshowing="return enigOnShowAttachmentContextMenu();">
     <menuseparator/>

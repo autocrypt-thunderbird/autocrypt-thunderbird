@@ -118,6 +118,7 @@ interface nsIEnigmail : nsISupports
                          out unsigned long statusFlags,
                          out wstring keyId,
                          out wstring userId,
+                         out wstring sigDetails,
                          out wstring errorMsg);
 
   string parseErrorOutput(in string errOutput,
@@ -206,6 +207,7 @@ interface nsIEnigmail : nsISupports
                         out unsigned long statusFlags,
                         out wstring keyId,
                         out wstring userId,
+                        out wstring sigDetails,
                         out wstring errorMsg);
 
   string extractKey(in nsIDOMWindow parent,
