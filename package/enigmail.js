@@ -51,8 +51,8 @@ const NS_IPCSERVICE_CONTRACTID  =
 const NS_PIPECONSOLE_CONTRACTID =
        "@mozilla.org/process/pipe-console;1";
 
-const NS_SYSTEMENVIRONMENT_CONTRACTID =
-       "@mozilla.org/xpcom/system-environment;1";
+const NS_PROCESSINFO_CONTRACTID =
+       "@mozilla.org/xpcom/process-info;1";
 
 const NS_SIMPLEURI_CONTRACTID = "@mozilla.org/network/simple-uri;1";
 
@@ -67,7 +67,7 @@ const nsIHttpProtocolHandler = Components.interfaces.nsIHttpProtocolHandler;
 const nsIProtocolHandler     = Components.interfaces.nsIProtocolHandler;
 const nsIIPCService          = Components.interfaces.nsIIPCService;
 const nsIPipeConsole         = Components.interfaces.nsIPipeConsole;
-const nsISystemEnvironment   = Components.interfaces.nsISystemEnvironment;
+const nsIProcessInfo         = Components.interfaces.nsIProcessInfo;
 const nsIEnigmail            = Components.interfaces.nsIEnigmail;
 const nsIPGPModule           = Components.interfaces.nsIPGPModule;
 const nsIPGPMsgBody          = Components.interfaces.nsIPGPMsgBody;
@@ -460,12 +460,12 @@ PGPModule.prototype = {
 // Utility functions
 ///////////////////////////////////////////////////////////////////////////////
 
-var gSysEnv = Components.classes[NS_SYSTEMENVIRONMENT_CONTRACTID].getService();
-gSysEnv = gSysEnv.QueryInterface(nsISystemEnvironment);
+var gProcessInfo = Components.classes[NS_PROCESSINFO_CONTRACTID].getService();
+gProcessInfo = gProcessInfo.QueryInterface(nsIProcessInfo);
 
-function GetSysEnv(name) {
-  DEBUG_LOG("enigmail.js: GetSysEnv: "+name+"\n")
-  return gSysEnv.getEnv(name);
+function GetEnv(name) {
+  DEBUG_LOG("enigmail.js: GetEnv: "+name+"\n")
+  return gProcessInfo.getEnv(name);
 }
 
 function isAbsolutePath(filePath, isUnix) {
@@ -636,7 +636,7 @@ function Enigmail(registeringModule)
     var ipcService = Components.classes[NS_IPCSERVICE_CONTRACTID].createInstance();
     ipcService = ipcService.QueryInterface(nsIIPCService);
 
-    var nspr_log_modules = GetSysEnv("NSPR_LOG_MODULES");
+    var nspr_log_modules = GetEnv("NSPR_LOG_MODULES");
 
     var matches = nspr_log_modules.match(/enigmail:(\d+)/);
 
@@ -728,7 +728,7 @@ function () {
   var agentPath = "";
 
   // Resolve relative path using PATH environment variable
-  var envPath = GetSysEnv("PATH");
+  var envPath = GetEnv("PATH");
 
   for (j=0; j<agentList.length; j++) {
     agentType = agentList[j];
@@ -776,7 +776,7 @@ function (command, input, errMessagesObj, statusObj, exitCodeObj) {
 
   for (var j=0; j<passEnv.length; j++) {
     var envName = passEnv[j];
-    var envValue = GetSysEnv(envName);
+    var envValue = GetEnv(envName);
     if (envValue)
        envList.push(envName+"="+envValue);
   }

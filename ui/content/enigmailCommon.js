@@ -2,6 +2,7 @@
 
 const NS_IPCSERVICE_CONTRACTID = "@mozilla.org/process/ipc-service;1";
 const NS_ENIGMAIL_CONTRACTID   = "@mozdev.org/enigmail/enigmail;1";
+const ENIGMAIL_PREFS_ROOT      = "extensions.enigmail.";
 
 var gIPCService;
 try {
@@ -22,7 +23,7 @@ try {
 dump("enigmailCommon.js: gIPCService = "+gIPCService+"\n");
 dump("enigmailCommon.js: gEnigmailSvc = "+gEnigmailSvc+"\n");
 
-var gLogLevel = 3;     // Output only errors/warnings by default
+var gLogLevel = 5;     // Output only errors/warnings by default
 var gLogFileStream = null;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -38,6 +39,10 @@ const NS_WRONLY      = 0x02;
 const NS_CREATE_FILE = 0x08;
 const NS_TRUNCATE    = 0x20;
 const DEFAULT_FILE_PERMS = 0600;
+
+const FileChannel = new Components.Constructor( "@mozilla.org/network/local-file-channel;1", "nsIFileChannel" );
+
+const InputStream = new Components.Constructor( "@mozilla.org/scriptableinputstream;1", "nsIScriptableInputStream" );
 
 function CreateFileStream(filePath, permissions) {
 
@@ -61,6 +66,33 @@ function CreateFileStream(filePath, permissions) {
   fileStream.init(localFile, flags, permissions);
 
   return fileStream;
+}
+
+// maxBytes == -1 => read whole file
+function ReadFileContents(localFile, maxBytes) {
+  DEBUG_LOG("enigmailCommon.js: ReadFileContents: file="+localFile.leafName+
+            ", "+maxBytes+"\n");
+
+  var fileChannel = new FileChannel();
+
+  if (!localFile.exists() || !localFile.isReadable())
+    throw Components.results.NS_ERROR_FAILURE;
+
+  fileChannel.init(localFile, NS_RDONLY, 0);
+
+  var rawInStream = fileChannel.open();
+
+  var scriptableInStream = new InputStream();    
+  scriptableInStream.init(rawInStream);
+
+  if ((maxBytes < 0) || (maxBytes > localFile.fileSize))
+    maxBytes = localFile.fileSize;
+
+  var fileContents = scriptableInStream.read(maxBytes);
+
+  rawInStream.close();
+
+  return fileContents;
 }
 
 function WriteFileContents(filePath, data, permissions) {

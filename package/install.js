@@ -2,9 +2,9 @@
 
 var err;
 
-err = initInstall("Enigmail v0.12",  // name for install UI
+err = initInstall("Enigmail v0.13",  // name for install UI
                   "/enigmail",       // registered name
-                  "0.12.0.0");       // package version
+                  "0.13.0.0");       // package version
 
 logComment("initInstall: " + err);
 

@@ -1,3 +1,8 @@
+<!ENTITY enigmail.label	                 "Enigmail">
+<!ENTITY enigmailUserEmail.label	 "User email">
+<!ENTITY enigmailCaptureWebMail.label	 "Capture webmail">
+<!ENTITY enigmailUninstall.label	 "Uninstall Enigmail">
+
 <!ENTITY enigCmd.label	     "Enigmail">
 <!ENTITY enigCmd.accesskey   "E">
 <!ENTITY enigCmd.commandkey  "6">
