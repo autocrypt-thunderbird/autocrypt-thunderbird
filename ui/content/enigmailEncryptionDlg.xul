@@ -19,47 +19,18 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailEncryptionDlg.js"/>
 
-  <hbox orient="horizontal">
-    <groupbox orient="vertical">
-       <caption label="&enigmail.encDlgEncrypt.label;"/>
-       <radiogroup id="encryptionGroup">
-
-          <radio id="encryptNo"
-                 value="0"
-                 accesskey="&enigmail.msgNo.accesskey;"
-                 label="&enigmail.msgNo.label;"/>
-          <radio id="encryptIfPossible"
-                 value="1"
-                 accesskey="&enigmail.encDlgEncryptIfPossible.accesskey;"
-                 label="&enigmail.encDlgEncryptIfPossible.label;"/>
-
-          <radio id="encryptYes"
-                 value="2"
-                 accesskey="&enigmail.msgYes.accesskey;"
-                 label="&enigmail.msgYes.label;"/>
-       </radiogroup>
-    </groupbox>
-
-    <groupbox orient="vertical">
-      <caption label="&enigmail.encDlgSign.label;"/>
-      <radiogroup id="signingGroup">
-        <radio id="signNo"
-               value="0"
-               label="&enigmail.msgNo.label;"/>
-        <radio id="signYes"
-               value="1"
-               label="&enigmail.msgYes.label;"/>
-        <radio id="signIfEncrypted"
-               value="2"
-               label="&enigmail.signedIfEncSend.label;"/>
-      </radiogroup>
-    </groupbox>
-  </hbox>
-
-  <hbox>
-      <checkbox id="usePgpMime"
-                accesskey="&enigmail.encDlgPgpMime.accesskey;"
-                label="&enigmail.encDlgPgpMime.label;"/>
-  </hbox>
+  <vbox orient="vertical">
+   <checkbox id="signMsg"
+             label="&enigmail.encDlgSign.label;"
+             accesskey="&enigmail.encDlgSign.accesskey;"/>
+   <checkbox id="encryptMsg"
+             label="&enigmail.encDlgEncrypt.label;"
+             accesskey="&enigmail.encDlgEncrypt.accesskey;"/>
+   <separator/>
+   <checkbox id="usePgpMime"
+             accesskey="&enigmail.encDlgPgpMime.accesskey;"
+             label="&enigmail.encDlgPgpMime.label;"/>
+   <separator/>
+  </vbox>
 </dialog>
 
