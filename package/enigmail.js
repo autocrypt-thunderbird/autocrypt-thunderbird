@@ -63,6 +63,9 @@ const NS_ENIGMSGCOMPOSE_CID =
 const NS_ENIGMSGCOMPOSEFACTORY_CID =
   Components.ID("{847b3a22-7ab1-11d4-8f02-006008948af5}");
 
+const NS_ENIGCLINE_SERVICE_CID =
+  Components.ID("{847b3ab1-7ab1-11d4-8f02-006008948af5}");
+
 // Contract IDs and CIDs used by this module
 const NS_IPCSERVICE_CONTRACTID  = "@mozilla.org/process/ipc-service;1";
 const NS_IPCBUFFER_CONTRACTID   = "@mozilla.org/process/ipc-buffer;1";
@@ -85,9 +88,9 @@ const NS_SCRIPTABLEINPUTSTREAM_CONTRACTID = "@mozilla.org/scriptableinputstream;
 const ENIG_STRINGBUNDLE_CONTRACTID = "@mozilla.org/intl/stringbundle;1";
 const NS_PREFS_SERVICE_CID = "@mozilla.org/preferences-service;1";
 const NS_DOMPARSER_CONTRACTID = "@mozilla.org/xmlextras/domparser;1";
-const NS_DOMSERIALIZER_CONTRACTID="@mozilla.org/xmlextras/xmlserializer;1";
+const NS_DOMSERIALIZER_CONTRACTID = "@mozilla.org/xmlextras/xmlserializer;1";
+const NS_CATMAN_CONTRACTID = "@mozilla.org/categorymanager;1";
 const NS_CLINE_SERVICE_CONTRACTID = "@mozilla.org/commandlinehandler/general-startup;1?type=pgpkeyman";
-const NS_CLINE_SERVICE_CID = Components.ID("{65ef4b0b-d116-4b93-bf8a-84525992bf27}");
 
 // Interfaces
 const nsISupports            = Components.interfaces.nsISupports;
@@ -359,12 +362,18 @@ var EnigModuleObj = {
                                           moduleFile, registryLocation,
                                           componentType);
 
-    compRegistrar.registerFactoryLocation(NS_CLINE_SERVICE_CID,
-                                          "Enigmail Keymanagement CommandLine Service",
+    compRegistrar.registerFactoryLocation(NS_ENIGCLINE_SERVICE_CID,
+                                          "Enigmail Key Management CommandLine Service",
                                           NS_CLINE_SERVICE_CONTRACTID,
                                           moduleFile,
                                           registryLocation,
                                           componentType);
+                                          
+  	var catman = Components.classes[NS_CATMAN_CONTRACTID].getService(nsICategoryManager);
+  	catman.addCategoryEntry("command-line-argument-handlers",
+                            "Enigmail Key Management command line handler",
+                            NS_CLINE_SERVICE_CONTRACTID, true, true);
+
     WRITE_LOG("enigmail.js: Registered components\n");
   },
 
@@ -373,9 +382,9 @@ var EnigModuleObj = {
     DEBUG_LOG("enigmail.js: unregisterSelf\n");
     compRegistrar = compRegistrar.QueryInterface(Components.interfaces.nsIComponentRegistrar);
 
-    compRegistrar.unregisterFactoryLocation(NS_CLINE_SERVICE_CID,
+    compRegistrar.unregisterFactoryLocation(NS_ENIGCLINE_SERVICE_CID,
                                             moduleFile);
-    var catman = Components.classes["@mozilla.org/categorymanager;1"]
+    var catman = Components.classes[NS_CATMAN_CONTRACTID]
                            .getService(nsICategoryManager);
     catman.deleteCategoryEntry("command-line-argument-handlers",
                                NS_CLINE_SERVICE_CONTRACTID, true);
@@ -393,7 +402,7 @@ var EnigModuleObj = {
       gEnigmailSvc = new Enigmail(false);
     }
     
-    if (cid.equals(NS_CLINE_SERVICE_CID))
+    if (cid.equals(NS_ENIGCLINE_SERVICE_CID))
         return EnigCLineFactory;
 
     if (cid.equals(NS_ENIGMAIL_CID)) {
@@ -5049,6 +5058,7 @@ function EnigCLineService()
 {}
 
 EnigCLineService.prototype.commandLineArgument = "-pgpkeyman";
+EnigCLineService.prototype.prefNameForStartup = "general.startup.pgpkeyman";
 EnigCLineService.prototype.chromeUrlForTask = "chrome://enigmail/content/enigmailKeyManager.xul";
 EnigCLineService.prototype.helpText = "Start with OpenPGP key manager";
 EnigCLineService.prototype.handlesArgs = false;

@@ -44,4 +44,5 @@ nsIEnigMimeWriter         IID    "847b3aa0-7ab1-11d4-8f02-006008948af5"
 nsEnigMimeWriter          CID    "847b3aa1-7ab1-11d4-8f02-006008948af5"
 
 EnigmailPrefsService      CID    "847b3ab0-7ab1-11d4-8f02-006008948af5"
+EnigmailCmdLineService    CID    "847b3ab1-7ab1-11d4-8f02-006008948af5"
 
