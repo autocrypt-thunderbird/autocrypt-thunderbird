@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.86.0.0";
-var gEnigmimeVersion = "0.86.0.0";
+var gEnigmailVersion = "0.86.1.0";
+var gEnigmimeVersion = "0.86.1.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -840,6 +840,8 @@ function EnigConvertFromUnicode(text, charset) {
     return unicodeConv.ConvertFromUnicode(text);
 
   } catch (ex) {
+    DEBUG_LOG("enigmailCommon.js: EnigConvertFromUnicode: caught an exception\n");
+  
     return text;
   }
 }
@@ -859,6 +861,7 @@ function EnigConvertToUnicode(text, charset) {
     return unicodeConv.ConvertToUnicode(text);
 
   } catch (ex) {
+    DEBUG_LOG("enigmailCommon.js: EnigConvertToUnicode: caught an exception\n");
     return text;
   }
 }
@@ -1095,7 +1098,7 @@ function EnigKeygen() {
   DEBUG_LOG("enigmailCommon.js: EnigKeygen\n");
 
   window.openDialog('chrome://enigmail/content/enigmailKeygen.xul',
-                    'Enigmail Key Generation',
+                    EnigGetString('keyGeneration'),
                     'chrome,dialog,modal,close=no,resizable=yes,width=600');
 
 }
@@ -1420,3 +1423,11 @@ function EnigNewRule(emailAddress) {
   return true;
 }
 
+function EnigSetKeyTrust(parent, userId, keyId, trustLevel, exitCodeObj, errorMsgObj) {
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return false;
+  var r = enigmailSvc.setKeyTrust(parent, userId, keyId, trustLevel, exitCodeObj, errorMsgObj);
+  return r;
+}
