@@ -388,6 +388,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   // First start request
   nsCAutoString contentType;
   rv = mOuterMimeListener->GetContentType(contentType);
+  if (NS_FAILED(rv)) return rv;
 
   if (!contentType.EqualsIgnoreCase("multipart/signed")) {
     ERROR_LOG(("nsEnigMimeVerify::OnStartRequest: ERROR contentType=%s\n", contentType.get()));
@@ -395,7 +396,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   }
 
   nsCAutoString contentProtocol;
-  mOuterMimeListener->GetContentProtocol(contentProtocol);
+  rv = mOuterMimeListener->GetContentProtocol(contentProtocol);
   if (NS_FAILED(rv)) return rv;
 
   if (!contentProtocol.EqualsIgnoreCase("application/pgp-signature")) {
@@ -404,11 +405,8 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   }
 
   nsCAutoString contentMicalg;
-  mOuterMimeListener->GetContentMicalg(contentMicalg);
+  rv = mOuterMimeListener->GetContentMicalg(contentMicalg);
   if (NS_FAILED(rv)) return rv;
-
-  if (contentMicalg.IsEmpty()) {
-  }
 
   nsCAutoString hashSymbol;
   if (contentMicalg.EqualsIgnoreCase("pgp-md5")) {
@@ -429,7 +427,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   rv = mOuterMimeListener->GetLinebreak(linebreak);
   if (NS_FAILED(rv)) return rv;
 
-  mOuterMimeListener->GetContentBoundary(mContentBoundary);
+  rv = mOuterMimeListener->GetContentBoundary(mContentBoundary);
   if (NS_FAILED(rv)) return rv;
 
   if (mContentBoundary.IsEmpty()) {
@@ -441,7 +439,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   mimeSeparator += mContentBoundary;
 
   nsCAutoString startDelimiter;
-  mFirstPartListener->GetStartDelimiter(startDelimiter);
+  rv = mFirstPartListener->GetStartDelimiter(startDelimiter);
   if (NS_FAILED(rv)) return rv;
 
   if (!startDelimiter.Equals(mimeSeparator)) {
@@ -450,7 +448,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   }
 
   nsCAutoString endBoundary;
-  mFirstPartListener->GetStartDelimiter(endBoundary);
+  rv = mFirstPartListener->GetEndDelimiter(endBoundary);
   if (NS_FAILED(rv)) return rv;
 
   endBoundary.Trim(" \t\r\n", PR_TRUE, PR_TRUE);
