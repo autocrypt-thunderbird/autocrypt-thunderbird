@@ -74,7 +74,8 @@ interface nsIEnigmail : nsISupports
                                in string comment,
                                in string email,
                                in long   expiryDate,
-                               in string passphrase);
+                               in string passphrase,
+                               in nsIPipeConsole pipeConsole);
 };
 
 %{C++

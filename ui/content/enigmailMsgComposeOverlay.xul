@@ -58,7 +58,7 @@
 
         <menuitem id="enigmail_keygen"
              label="Generate key"
-             oncommand="EnigGenerateKey();" />
+             oncommand="window.open('enigmail:keygen');" />
 
         <menuitem id="enigmail_about"
              label="About Enigmail"

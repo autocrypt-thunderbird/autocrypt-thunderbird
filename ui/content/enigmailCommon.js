@@ -1,6 +1,6 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
-const NS_IPCSERVICE_CONTRACTID = "@mozilla.org/protozilla/ipc-service;1";
+const NS_IPCSERVICE_CONTRACTID = "@mozilla.org/process/ipc-service;1";
 const NS_ENIGMAIL_CONTRACTID   = "@mozdev.org/enigmail/enigmail;1";
 
 var gIPCService;
@@ -172,22 +172,34 @@ function EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj) {
   return plainText;
 }
 
-function EnigGenerateKey() {
-  WRITE_LOG("enigmailCommon.js: EnigGenerateKey: \n");
+function RequestObserver(terminateFunc, terminateArg)
+{
+  this._terminateFunc = terminateFunc;
+  this._terminateArg = terminateArg;
+}
 
-  var passphrase = null;
+RequestObserver.prototype = {
 
-  passphrase = EnigPassphrase();
+  _terminateFunc: null,
+  _terminateArg: null,
 
-  var keygenProcess = gEnigmailSvc.generateKey("First M. Last",
-                                               "comment",
-                                               "user@example.com",
-                                               0,
-                                               passphrase);
+  QueryInterface: function (iid) {
+    if (!iid.equals(Components.interfaces.nsIRequestObserver) &&
+        !iid.equals(Components.interfaces.nsISupports))
+      throw Components.results.NS_ERROR_NO_INTERFACE;
+    return this;
+  },
 
-  window.open("enigmail:keygen");
+  onStartRequest: function (channel, ctxt)
+  {
+    WRITE_LOG("enigmailCommon.js: RequestObserver.onStartRequest\n");
+  },
 
-  return;
+  onStopRequest: function (channel, ctxt, status)
+  {
+    WRITE_LOG("enigmailCommon.js: RequestObserver.onStopRequest\n");
+    this._terminateFunc(this._terminateArg);
+  }
 }
 
 function EnigGetDeepText(node) {

@@ -45,9 +45,14 @@ const NS_PGP_MODULE_CID =
   Components.ID("{847b3af1-7ab1-11d4-8f02-006008948af5}");
 
 /* Contract IDs and CIDs used by this module */
-const NS_IPCSERVICE_CONTRACTID = "@mozilla.org/protozilla/ipc-service;1";
-const NS_PIPECONSOLE_CONTRACTID = "@mozilla.org/network/pipe-console;1"
-const NS_SYSTEMENVIRONMENT_CONTRACTID = "@mozilla.org/system-environment;1";
+const NS_IPCSERVICE_CONTRACTID  =
+       "@mozilla.org/process/ipc-service;1";
+
+const NS_PIPECONSOLE_CONTRACTID =
+       "@mozilla.org/process/pipe-console;1"
+
+const NS_SYSTEMENVIRONMENT_CONTRACTID =
+       "@mozilla.org/xpcom/system-environment;1";
 
 const NS_SIMPLEURI_CONTRACTID = "@mozilla.org/network/simple-uri;1";
 const NS_IHTTPHANDLER_CID_STR = "{52A30880-DD95-11d3-A1A7-0050041CAF44}";
@@ -952,8 +957,43 @@ function (cipherText, passphrase, statusCodeObj, statusMsgObj) {
   return plainText;
 }
 
+Enigmail.prototype.extractFingerprint = 
+function (email, secret, statusCodeObj, statusMsgObj) {
+  WRITE_LOG("enigmail.js: Enigmail.extractFingerprint: "+email+"\n");
+
+  var email_addr = "<"+email+">";
+
+  var command;
+
+  if (this.agentType == "pgp") {
+    command = "pgp +batchmode -kvc "+email_addr;
+    if (secret)
+      command += " secring.pkr";
+
+  } else {
+    command = "gpg --batch --no-tty --fingerprint ";
+    command += secret ? " --list-secret-keys" : " --list-keys";
+    command += " "+email_addr;
+  }
+
+  var errMessagesObj = new Object();
+  var statusObj      = new Object();
+
+  var keyText = gEnigmailSvc.execCmd(decryptCommand, "",
+                                 errMessagesObj, statusObj, statusCodeObj);
+
+  if (statusCodeObj.value != 0) {
+    statusMsgObj.value = "Error in command execution";
+    return "";
+  }
+
+  if (this.agentType == "pgp") {
+  // matching keys? found
+  }
+}
+
 Enigmail.prototype.generateKey = 
-function (name, comment, email, expiryDate, passphrase) {
+function (name, comment, email, expiryDate, passphrase, pipeConsole) {
   WRITE_LOG("enigmail.js: Enigmail.generateKey: \n");
 
   if (this.keygenProcess || (this.agentType != "gpg"))
@@ -973,12 +1013,6 @@ function (name, comment, email, expiryDate, passphrase) {
   inputData += "%commit\n%echo done\n";
 
   WRITE_LOG("enigmail.js: Enigmail.generateKey: inputData="+inputData+"\n");
-
-  var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(nsIPipeConsole);
-
-  WRITE_LOG("enigmail.js: Enigmail.generateKey: pipeConsole = "+pipeConsole+"\n");
-
-  pipeConsole.open(100, 80);
 
   var keygenProcess = gEnigmailSvc.ipcService.execAsync(command,
                                                        inputData,

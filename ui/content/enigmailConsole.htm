@@ -2,16 +2,12 @@
 <head>
   <title>Enigmail Console</title>
 
+  <script language="JavaScript" src="chrome://enigmail/content/enigmailCommon.js">
+  </script>
+
   <script language="JavaScript">
 
     //netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-
-    const NS_ENIGMAIL_CONTRACTID   = "@mozdev.org/enigmail/enigmail;1";
-
-    var gEnigmailSvc = Components.classes[NS_ENIGMAIL_CONTRACTID].createInstance();
-    gEnigmailSvc = gEnigmailSvc.QueryInterface(Components.interfaces.nsIEnigmail);
-
-    dump("enigmailConsole.htm: gEnigmailSvc = "+gEnigmailSvc+"\n");
 
     window.mouseDownState = false;
 
