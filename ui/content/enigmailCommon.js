@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.75.0.0";
-var gEnigmimeVersion = "0.75.0.0";
+var gEnigmailVersion = "0.75.92.0";
+var gEnigmimeVersion = "0.75.92.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -18,6 +18,12 @@ const ENIG_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
 const ENIG_ENIGMIMELISTENER_CONTRACTID = "@mozilla.org/enigmail/mime-listener;1";
 const ENIG_ENIGMIMESERVICE_CONTRACTID = "@mozdev.org/enigmail/enigmimeservice;1";
 const ENIG_STRINGBUNDLE_CONTRACTID = "@mozilla.org/intl/stringbundle;1";
+const ENIG_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
+const ENIG_DIRSERVICE_CONTRACTID = "@mozilla.org/file/directory_service;1"
+
+const ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID =
+                              "@mozilla.org/network/file-output-stream;1";
+const ENIG_STANDARD_URL_CONTRACTID = "@mozilla.org/network/standard-url;1";
 
 const ENIG_STREAMCONVERTERSERVICE_CID_STR =
       "{892FFEB0-3F80-11d3-A16C-0050041CAF44}";
@@ -44,6 +50,9 @@ const PGP_MIME_NEVER    = 0;
 const PGP_MIME_POSSIBLE = 1;
 const PGP_MIME_ALWAYS   = 2;
 
+// property name for temporary directory service
+const ENIG_TEMPDIR_PROP = "TmpD";
+
 var gUsePGPMimeOptionList = ["usePGPMimeNever", "usePGPMimePossible",
                              "usePGPMimeAlways"];
 
@@ -55,11 +64,14 @@ var gEnigRecipientsSelectionOptions = ["askRecipientsNever",
                                        "askRecipientsClever",
                                        "askRecipientsAlways"];
 
+var gEnigImmediateSendOptions = ["sendLater",
+                                 "sendNow"];
+
 const ENIG_BUTTON_POS_0           = 1;
 const ENIG_BUTTON_POS_1           = 1 << 8;
 const ENIG_BUTTON_POS_2           = 1 << 16;
 const ENIG_BUTTON_TITLE_IS_STRING = 127;
-  
+
 const ENIG_THREE_BUTTON_STRINGS   = (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_0) +
                                (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_1) +
                                (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_2);
@@ -93,6 +105,10 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "parseAllHeaders":true,
                              "show_headers":1,
                              "hushMailSupport":false,
+                             "encryptAttachments":1,
+                             "inlineAttachAsciiArmor":false,
+                             "inlineAttachExt":".pgp",
+                             "sendImmediately":true,
                              "recipientsSelectionOption":1
                             };
 
@@ -343,10 +359,6 @@ function EnigConfigure() {
 ///////////////////////////////////////////////////////////////////////////////
 // File read/write operations
 
-const ENIG_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
-
-const ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID =
-                              "@mozilla.org/network/file-output-stream;1";
 
 const ENIG_RDONLY      = 0x01;
 const ENIG_WRONLY      = 0x02;
@@ -421,12 +433,12 @@ function EnigReadURLContents(url, maxBytes) {
   var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
   if (!ioServ)
     throw Components.results.NS_ERROR_FAILURE;
-    
+
   var fileChannel = ioServ.newChannel(url, null, null)
 
   var rawInStream = fileChannel.open();
 
-  var scriptableInStream = new EnigInputStream();    
+  var scriptableInStream = new EnigInputStream();
   scriptableInStream.init(rawInStream);
 
   var available = scriptableInStream.available()

@@ -74,6 +74,22 @@
 
         <menuseparator/>
 
+        <menuitem id="enigmail_sendNow"
+             type="radio"
+             name="enigImmediateSend"
+             label="&enigmail.sendnow.label;"
+             accesskey="&enigmail.sendnow.accesskey;"
+             oncommand="engiSendImmediately(true);" />
+
+        <menuitem id="enigmail_sendLater"
+             type="radio"
+             name="enigImmediateSend"
+             label="&enigmail.sendlater.label;"
+             accesskey="&enigmail.sendlater.accesskey;"
+             oncommand="engiSendImmediately(false);" />
+
+        <menuseparator/>
+
         <menu id="enigmail_send_options_menu"
               label="&enigmail.sendOptionsMenu.label;"
               accesskey="&enigmail.sendOptionsMenu.accesskey;">

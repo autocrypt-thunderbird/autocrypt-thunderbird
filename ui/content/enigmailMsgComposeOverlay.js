@@ -13,6 +13,7 @@ const EnigOutputFormatFlowed  = 64;
 const EnigOutputCRLineBreak   = 512;
 const EnigOutputLFLineBreak   = 1024;
 
+
 const ENIG_ENIGMSGCOMPFIELDS_CONTRACTID = "@mozdev.org/enigmail/composefields;1";
 
 // List of hash algorithms for PGP/MIME signatures
@@ -36,12 +37,14 @@ var gEnigOrigSendButton, gEnigSendButton;
 var gEnigEditorElement, gEnigEditorShell, gEnigEditor;
 var gEnigDirty, gEnigProcessed, gEnigTimeoutID;
 var gEnigSendPGPMime;
+var gEnigModifiedAttach;
 
 window.addEventListener("load", enigMsgComposeStartup, false);
 
 // Handle recycled windows
 window.addEventListener('compose-window-close', enigMsgComposeClose, true);
 window.addEventListener('compose-window-reopen', enigMsgComposeReopen, true);
+
 
 function enigMsgComposeStartup() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
@@ -57,6 +60,8 @@ function enigMsgComposeStartup() {
     if (EnigGetPref("disableSMIMEui"))
         smimeButton.setAttribute("collapsed", "true");
   }
+
+  enigSetImmediateSendMenu();
 
   // Override send command
   var sendElementIds = ["cmd_sendButton", "cmd_sendNow", "cmd_sendWithCheck",
@@ -142,6 +147,15 @@ function enigInitRadioMenu(prefName, optionIds) {
 }
 
 
+function enigSetImmediateSendMenu() {
+  // initialize send now/later
+  var immediate = (EnigGetPref("sendImmediately") ? 1 : 0);
+
+  var menuItem = document.getElementById("enigmail_"+gEnigImmediateSendOptions[immediate]);
+  if (menuItem)
+    menuItem.setAttribute("checked", "true");
+}
+
 function enigInitSendOptionsMenu() {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigInitSendOptionsMenu\n");
 
@@ -157,6 +171,7 @@ function enigInitSendOptionsMenu() {
 
     menuElement.setAttribute("checked", optValue ? "true" : "false");
   }
+
 }
 
 
@@ -174,6 +189,14 @@ function enigUsePGPMimeOption(value) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigUsePGPMimeOption: "+value+"\n");
 
   EnigSetPref("usePGPMimeOption", value);
+
+  return true;
+}
+
+function engiSendImmediately(value) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: engiSendImmediately: "+value+"\n");
+
+  EnigSetPref("sendImmediately", value);
 
   return true;
 }
@@ -241,7 +264,7 @@ function enigInsertKey() {
   EnigEditorInsertText(EnigGetString("pubKey",userIdValue) + keyBlock);
 }
 
-function enigUndoEncryption() {
+function enigUndoEncryption( bucketList, modifiedAttachments ) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigUndoEncryption: \n");
 
   if (gEnigProcessed) {
@@ -252,16 +275,40 @@ function enigUndoEncryption() {
   } else {
     enigDecryptQuote(true);
   }
+
+  if ( modifiedAttachments && bucketList && bucketList.hasChildNodes() ) {
+    // undo inline encryption of attachments
+    var node = bucketList.firstChild;
+    while (node) {
+      for (var i in modifiedAttachments) {
+        if (node.attachment.url == modifiedAttachments[i].newUrl) {
+          node.attachment.url = modifiedAttachments[i].origUrl;
+          node.attachment.name = modifiedAttachments[i].origName;
+          node.attachment.temporary = modifiedAttachments[i].origTemp;
+          node.attachment.contentType = modifiedAttachments[i].origCType;
+
+          // delete encrypted file
+          try {
+            modifiedAttachments[i].newFile.remove(false);
+          }
+          catch (ex) {}
+        }
+      }
+      node=node.nextSibling;
+    }
+
+    modifiedAttachments = null;
+  }
 }
 
 function enigReplaceEditorText(text) {
   EnigEditorSelectAll();
-    
+
   // Overwrite text in clipboard for security
   // (Otherwise plaintext will be available in the clipbaord)
   EnigEditorInsertText("Enigmail");
   EnigEditorSelectAll();
-    
+
   EnigEditorInsertText(text);
 }
 
@@ -306,11 +353,11 @@ function enigSendCommand(elementId) {
     }
   }
 
-  enigSend(sendFlags);
+  enigSend(sendFlags, elementId);
 }
 
-    
-function enigSend(sendFlags) {
+
+function enigSend(sendFlags, elementId) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: "+sendFlags+"\n");
 
   if (gWindowLocked) {
@@ -329,6 +376,11 @@ function enigSend(sendFlags) {
   }
 
   try {
+     var exitCodeObj    = new Object();
+     var statusFlagsObj = new Object();
+     var errorMsgObj    = new Object();
+     gEnigModifiedAttach = null;
+
      var defaultEncryptionOption = EnigGetPref("defaultEncryptionOption");
      var recipientsSelectionOption = EnigGetPref("recipientsSelectionOption");
 
@@ -342,7 +394,7 @@ function enigSend(sendFlags) {
        case 2:
          sendFlags |= ENIG_ENCRYPT_OR_SIGN;
          break;
-       case 1:	
+       case 1:
          sendFlags |= ENIG_ENCRYPT;
          break;
        default:
@@ -351,6 +403,7 @@ function enigSend(sendFlags) {
      }
 
      var optSendFlags = 0;
+     var inlineEncAttach=false;
 
      if (EnigGetPref("alwaysTrustSend")) {
        optSendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
@@ -362,6 +415,15 @@ function enigSend(sendFlags) {
 
      sendFlags |= optSendFlags;
 
+     if (elementId && (elementId=="cmd_sendNow" || elementId=="cmd_sendLater")) {
+       // sending was triggered by standard send now / later menu
+       if (elementId=="cmd_sendLater")
+            sendFlags |= nsIEnigmail.SEND_LATER;
+     }
+     else {
+       if (!EnigGetPref("sendImmediately"))
+           sendFlags |= nsIEnigmail.SEND_LATER;
+     }
      var currentId = getCurrentIdentity();
      DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: currentId="+currentId+
                ", "+currentId.email+"\n");
@@ -528,7 +590,7 @@ function enigSend(sendFlags) {
           sendFlags &= ~ENIG_SIGN;
         }
      }
-     
+
      if (!gEnigProcessed) {
 /////////////////////////////////////////////////////////////////////////
 // The following spellcheck logic is from the function
@@ -570,13 +632,43 @@ function enigSend(sendFlags) {
      if ( hasAttachments &&
         (sendFlags & ENIG_ENCRYPT_OR_SIGN) &&
         !(sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
-        (usePGPMimeOption >= PGP_MIME_POSSIBLE) &&
-        enigmailSvc.composeSecure ) {
+        enigmailSvc.composeSecure) {
 
-       if (EnigConfirm(EnigGetString("sendingPGPMIME"))) {
-       // Use PGP/MIME
-       sendFlags |= nsIEnigmail.SEND_PGP_MIME;
-       }
+        var inputObj = new Object();
+        inputObj.pgpMimePossible = (usePGPMimeOption >= PGP_MIME_POSSIBLE);
+        inputObj.inlinePossible = (sendFlags & ENIG_ENCRYPT); // makes no sense for sign only!
+
+        // determine if attachments are all local (currently the only
+        // supported kind of attachments)
+        var node = bucketList.firstChild;
+        while (node) {
+          if (node.attachment.url.substring(0,7) != "file://") {
+             inputObj.inlinePossible = false;
+          }
+          node = node.nextSibling;
+        }
+
+        if (inputObj.pgpMimePossible || inputObj.inlinePossible) {
+          var resultObj = new Object();
+          resultObj.selected = -1;
+          window.openDialog("chrome://enigmail/content/enigmailAttachmentsDialog.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
+          if (resultObj.selected < 0) {
+            // dialog cancelled
+            return;
+          }
+          else if (resultObj.selected == 1) {
+            // encrypt attachments
+            inlineEncAttach=true;
+          }
+          else if (resultObj.selected == 2) {
+            // send as PGP/MIME
+            sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+          }
+        }
+        else {
+          if (!EnigConfirm(EnigGetString("attachWarning")))
+            return;
+        }
      }
 
      var usingPGPMime = (sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
@@ -585,9 +677,9 @@ function enigSend(sendFlags) {
      if (usingPGPMime && !enigmailSvc.composeSecure) {
        if (!EnigConfirm(EnigGetString("noPGPMIME"))) {
           throw Components.results.NS_ERROR_FAILURE;
-          
+
        }
- 
+
        usingPGPMime = false;
      }
 
@@ -639,7 +731,7 @@ function enigSend(sendFlags) {
          EnigAlertCount("composeHtmlAlertCount", errMsg);
        }
 
-       try {    
+       try {
          var convert = DetermineConvertibility();
          if (convert == nsIMsgCompConvertible.No) {
            if (!EnigConfirm(EnigGetString("strippingHTML")))
@@ -709,9 +801,9 @@ function enigSend(sendFlags) {
                          ? EnigConvertFromUnicode(origText, charset)
                          : EnigConvertFromUnicode(escText, charset);
 
-         var exitCodeObj    = new Object();
-         var statusFlagsObj = new Object();    
-         var errorMsgObj    = new Object();
+         exitCodeObj    = new Object();
+         statusFlagsObj = new Object();
+         errorMsgObj    = new Object();
 
          var cipherText = enigmailSvc.encryptMessage(window,uiFlags, plainText,
                                                 fromAddr, toAddr, sendFlags,
@@ -719,7 +811,7 @@ function enigSend(sendFlags) {
                                                 errorMsgObj);
 
          var exitCode = exitCodeObj.value;
-    
+
          //DEBUG_LOG("enigmailMsgComposeOverlay.js: cipherText = '"+cipherText+"'\n");
          if (cipherText && (exitCode == 0)) {
            // Encryption/signing succeeded; overwrite plaintext
@@ -746,6 +838,26 @@ function enigSend(sendFlags) {
              EnigAlert(EnigGetString("sendAborted")+errorMsgObj.value);
              return;
            }
+         }
+
+         if (inlineEncAttach) {
+            // encrypt attachments
+            gEnigModifiedAttach = new Array();
+            var exitCode = enigEncryptAttachments(bucketList, gEnigModifiedAttach,
+                                    window, uiFlags, fromAddr, toAddr, sendFlags,
+                                    errorMsgObj);
+            if (exitCode != 0) {
+              gEnigModifiedAttach = null;
+              if (errorMsgObj.value) {
+                EnigAlert(EnigGetString("sendAborted")+errorMsgObj.value);
+              }
+              else {
+                EnigAlert(EnigGetString("sendAborted")+"an internal error has occurred");
+              }
+              if (gEnigProcessed)
+                enigUndoEncryption(bucketList, gEnigModifiedAttach);
+              return;
+            }
          }
        }
      }
@@ -775,7 +887,7 @@ function enigSend(sendFlags) {
 
        if (!EnigConfirm(msgConfirm)) {
          if (gEnigProcessed)
-           enigUndoEncryption();
+           enigUndoEncryption(bucketList, gEnigModifiedAttach);
 
          return;
        }
@@ -784,7 +896,7 @@ function enigSend(sendFlags) {
                 !EnigConfirm(EnigGetString("offlineNote")) ) {
        // Abort send
        if (gEnigProcessed)
-         enigUndoEncryption();
+         enigUndoEncryption(bucketList, gEnigModifiedAttach);
 
        return;
 
@@ -792,7 +904,7 @@ function enigSend(sendFlags) {
                  !enigMessageSendCheck() ) {
        // Abort send
        if (gEnigProcessed)
-         enigUndoEncryption();
+         enigUndoEncryption(bucketList, gEnigModifiedAttach);
 
        return;
      }
@@ -821,8 +933,8 @@ function enigMessageSendCheck() {
 
     if (warn) {
         var checkValue = {value:false};
-        var buttonPressed = gEnigPromptSvc.confirmEx(window, 
-              sComposeMsgsBundle.getString('sendMessageCheckWindowTitle'), 
+        var buttonPressed = gEnigPromptSvc.confirmEx(window,
+              sComposeMsgsBundle.getString('sendMessageCheckWindowTitle'),
               sComposeMsgsBundle.getString('sendMessageCheckLabel'),
               (gEnigPromptSvc.BUTTON_TITLE_IS_STRING * gEnigPromptSvc.BUTTON_POS_0) +
               (gEnigPromptSvc.BUTTON_TITLE_CANCEL * gEnigPromptSvc.BUTTON_POS_1),
@@ -868,9 +980,9 @@ function enigGenericSendMessage( msgType )
 
   if (gMsgCompose != null)
   {
-      var msgCompFields = gMsgCompose.compFields;
-      if (msgCompFields)
-      {
+    var msgCompFields = gMsgCompose.compFields;
+    if (msgCompFields)
+    {
       Recipients2CompFields(msgCompFields);
       var subject = document.getElementById("msgSubject").value;
       msgCompFields.subject = subject;
@@ -1013,6 +1125,133 @@ function enigGenericSendMessage( msgType )
     dump("###SendMessage Error: composeAppCore is null!\n");
 }
 
+// encrypt attachments when sending inline PGP mails
+// It's quite a hack: the attachments are stored locally
+// and the attachments list is modified to pick up the
+// encrypted file(s) instead of the original ones.
+function enigEncryptAttachments(bucketList, newAttachments, window, uiFlags,
+                                fromAddr, toAddr, sendFlags,
+                                errorMsgObj) {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptAttachments\n");
+  var processInfo;
+  var ioServ;
+  var fileTemplate;
+  var tmpDir;
+  errorMsgObj.value="";
+
+  try {
+    processInfo = Components.classes[ENIG_PROCESSINFO_CONTRACTID].getService(Components.interfaces.nsIProcessInfo);
+    if (!processInfo)
+        return -1;
+
+    ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+    if (!ioServ)
+        return -1;
+
+  } catch (ex) {
+    return -1;
+  }
+
+  //get path for TempDir
+
+  try {
+    var ds = Components.classes[ENIG_DIRSERVICE_CONTRACTID].getService();
+    var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
+    var tmpDirComp = dsprops.get(ENIG_TEMPDIR_PROP, Components.interfaces.nsILocalFile);
+    tmpDir=tmpDirComp.path;
+  }
+  catch (ex) {
+    // let's guess ...
+    var httpHandler = ioServ.getProtocolHandler("http");
+    httpHandler = httpHandler.QueryInterface(Components.interfaces.nsIHttpProtocolHandler);
+    isWin = (httpHandler.platform.search(/Win/i) == 0);
+    if (isWin) {
+      tmpDir="C:\\TEMP";
+    } else {
+      tmpDir="/tmp";
+    }
+  }
+
+  try {
+    fileTemplate = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+    fileTemplate.initWithPath(tmpDir);
+    if (!(fileTemplate.isDirectory() && fileTemplate.isWritable())) {
+      errorMsgObj.value="Could not find a temporary directory to write to\nPlease set the TEMP environment variable accordingly";
+      return -1;
+    }
+    fileTemplate.append("encfile");
+  }
+  catch (ex) {
+    errorMsgObj.value="Could not find a temporary directory to write to\nPlease set the TEMP environment variable";
+    return -1;
+  }
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptAttachments tmpDir=" + tmpDir+"\n");
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return null;
+
+  var exitCodeObj = new Object();
+  var statusFlagsObj = new Object();
+
+  var node = bucketList.firstChild;
+  while (node) {
+    var origUrl = node.attachment.url;
+    if (origUrl.substring(0,7) != "file://") {
+      // this should actually never happen since it is checked earlier!
+      errorMsgObj.value="The attachment '"+node.attachment.name+"' is not a local file";
+      return -1;
+    }
+
+    // transform attachment URL to platform-specific file name
+    var origUri = ioServ.newURI(origUrl, null, null);
+    var origFile=origUri.QueryInterface(Components.interfaces.nsIFileURL);
+
+    var newFile = fileTemplate.clone();
+    var txtMessgae;
+    try {
+      newFile.createUnique(Components.interfaces.NORMAL_FILE_TYPE, 0600);
+      txtMessage = enigmailSvc.encryptAttachment(window, fromAddr, toAddr, sendFlags,
+                                origFile.file.path, newFile.path,
+                                exitCodeObj, statusFlagsObj,
+                                errorMsgObj);
+    } catch (ex) {}
+
+    if (exitCodeObj.value != 0 || statusFlagsObj.value != 0) {
+      return -1;
+    }
+
+    var fileInfo = new Object();
+    fileInfo.origFile  = origFile;
+    fileInfo.origUrl   = node.attachment.url;
+    fileInfo.origName  = node.attachment.name;
+    fileInfo.origTemp  = node.attachment.temporary;
+    fileInfo.origCType = node.attachment.contentType;
+
+    // transform platform specific new file name to file:// URL
+    var newUri = ioServ.newFileURI(newFile);
+    fileInfo.newUrl  = newUri.asciiSpec;
+    fileInfo.newFile = newFile;
+
+    newAttachments.push(fileInfo);
+    node = node.nextSibling;
+  }
+
+  // if we got here, all attachments were encrpted successfully,
+  // so we replace their names & urls
+  node = bucketList.firstChild;
+  var i=0;
+  while (node) {
+    node.attachment.url = newAttachments[i].newUrl;
+    node.attachment.name += EnigGetPref("inlineAttachExt");
+    node.attachment.contentType="application/octet-stream";
+    node.attachment.temporary=true;
+
+    ++i; node = node.nextSibling;
+  }
+
+  return 0;
+
+}
 
 function enigToggleAttribute(attrName)
 {
@@ -1378,6 +1617,26 @@ EnigDocStateListener.prototype = {
   NotifyDocumentWillBeDestroyed: function ()
   {
     //DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentWillBeDestroyed\n");
+
+    var ioServ;
+    try {
+      // we should delete the original temporary files of the encrypted
+      // inline PGP attachments (the rest is done automatically)
+      if (this.modifiedAttachments) {
+        ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+        if (!ioServ)
+          return;
+
+        for (var i in modifiedAttachments) {
+          if (modifiedAttachments[i].origTemp) {
+            var fileUri = ioServ.newURI(modifiedAttachments[i].origUrl, null, null);
+            var fileHandle=fileUri.QueryInterface(Components.interfaces.nsIFileURL);
+            fileHandle.remove(false);
+          }
+        }
+      }
+
+    } catch (ex) {}
   },
 
   NotifyDocumentStateChanged: function (nowDirty)
@@ -1395,6 +1654,10 @@ EnigDocStateListener.prototype = {
       // Mozilla 1.3a and later: gMsgCompose.editor => nsIEditor
       isEmpty    = gEnigEditor.documentIsEmpty;
       isEditable = gEnigEditor.isDocumentEditable;
+    }
+
+    if (gEnigModifiedAttach) {
+      this.modifiedAttachments = gEnigModifiedAttach;
     }
       
     DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentStateChanged: isEmpty="+isEmpty+", isEditable="+isEditable+"\n");
