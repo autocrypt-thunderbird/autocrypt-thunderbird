@@ -40,11 +40,16 @@ function enigmailEncryptionDlgLoad() {
    DEBUG_LOG("enigmailEncryptionDlgLoad.js: Load\n");
 
    var sendFlags = window.arguments[0].sendFlags;
+   var selectedItemId="signNo";
    if (sendFlags & EnigSigned) {
-     document.getElementById("signMessage").setAttribute("checked", true);
+     selectedItemId="signYes";
    }
+   else if (sendFlags & EnigSignIfEncrypted) {
+     selectedItemId="signIfEncrypted";
+   }
+   document.getElementById("signingGroup").selectedItem = document.getElementById(selectedItemId);
 
-   var selectedItemId="encryptNo";
+   selectedItemId="encryptNo";
    if (sendFlags & EnigEncryptIfPossible) {
      selectedItemId="encryptIfPossible";
    }
@@ -62,8 +67,14 @@ function enigmailEncryptionDlgAccept () {
   var resultObj = window.arguments[0];
   resultObj.sendFlags = document.getElementById("encryptionGroup").selectedItem.value;
 
-  if (document.getElementById("signMessage").getAttribute("checked")) {
+  switch (Number(document.getElementById("signingGroup").selectedItem.value)) {
+  case 1:
     resultObj.sendFlags |= EnigSigned;
+    break;
+  case 2:
+    resultObj.sendFlags |= EnigSignIfEncrypted;
+    break;
   }
+
   resultObj.usePgpMime = document.getElementById("usePgpMime").getAttribute("checked");
 }

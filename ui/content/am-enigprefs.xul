@@ -56,43 +56,56 @@ GPL.
             prefstring="mail.identity.%identitykey%.enablePgp"
             preftype="bool" prefattribute="value"
             label="&enigmail.amPrefEnablePgp.label;"
-            onclick="enigToggleEnable();"/>
+            oncommand="enigToggleEnable();"/>
   <vbox>
     <groupbox id="encryption.titleBox">
       <radiogroup id="pgpKeyMode">
         <radio id="keymode_useFromAddress"
                label="&enigmail.amPrefUseFromAddr.label;"
                value="0"
-               onclick="enigEnableKeySel(false);"/>
+               oncommand="enigEnableKeySel(false);"/>
         <vbox>
           <radio id="keymode_usePgpkeyId"
                  label="&enigmail.amPrefUseKeyId.label;"
                  value="1"
-                 onclick="enigEnableKeySel(true);"/>
+                 oncommand="enigEnableKeySel(true);"/>
           <hbox>
             <textbox id="identity.pgpkeyId"
                      prefstring="mail.identity.%identitykey%.pgpkeyId"
                      preftype="wstring" prefattribute="value"/>
             <button id="selectPgpKey" label="&enigmail.amPrefSelectKey.label;"
-                    oncommand="enigSelectKeyId()"
-                    />
+                    oncommand="enigSelectKeyId()"/>
           </hbox>
         </vbox>
       </radiogroup>
-      <separator/>
-      <checkbox id="pgpAlwaysSign"
-                prefstring="mail.identity.%identitykey%.pgpAlwaysSign"
-                preftype="bool" prefattribute="value"
-                label="&enigmail.amPrefSignDefault.label;"/>
+
       <groupbox>
         <caption label="&enigmail.amPrefEncryptOptions.label;"/>
-        <radiogroup id="defaultEncryptionPolicy" value="0">
+        <radiogroup id="defaultEncryptionPolicy"
+             value="0">
           <radio id="encrypt_never" label="&enigmail.defaultEncryptionNone.label;"
                  selected="true" value="0"/>
           <radio id="encrypt_ifPossible" value="1"
-                 label="&enigmail.defaultEncryptionOnly.label;"/>
+                label="&enigmail.defaultEncryptionOnly.label;"/>
         </radiogroup>
       </groupbox>
+
+      <groupbox>
+        <caption label="&enigmail.amPrefSignOptions.label;"/>
+        <radiogroup id="defaultSignPolicy"
+             value="0">
+          <radio id="dontSign"
+                 value="0"
+                 label="&enigmail.defaultNotSignedsend.label;"/>
+          <radio id="pgpAlwaysSign"
+                 value="2"
+                 label="&enigmail.defaultSignMsg.label;"/>
+          <radio id="sign_ifEncrypted"
+                 value="1"
+                 label="&enigmail.signIfEncrypted.label;"/>
+        </radiogroup>
+      </groupbox>
+
       <hbox autostretch="never">
         <spacer flex="1"/>
         <button class="dialog"

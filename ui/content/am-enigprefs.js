@@ -38,7 +38,7 @@ var gPgpKeyMode;
 var gPgpkeyId;
 var gEnigPrefbranch;
 var gEncryptionChoicesEnabled;
-var gPgpAlwaysSign;
+var gPgpSigningPolicy;
 var gEncryptionPolicy;
 
 var gAccount;
@@ -69,8 +69,20 @@ function onInit()
   gPgpKeyMode.selectedItem = document.getElementById(selectedItemId);
   gPgpkeyId = document.getElementById("identity.pgpkeyId");
   gPgpkeyId.value = gIdentity.getCharAttribute("pgpkeyId");
-  gPgpAlwaysSign = document.getElementById("pgpAlwaysSign");
-  gPgpAlwaysSign.checked = gIdentity.getBoolAttribute("pgpAlwaysSign");
+  gPgpSigningPolicy = document.getElementById("defaultSignPolicy");
+  var signingPolicy = EnigGetSignMsg(gIdentity);
+  switch(signingPolicy) {
+    case 2:
+      selectedItemId = 'pgpAlwaysSign';
+      break;
+    case 1:
+      selectedItemId = 'sign_ifEncrypted';
+      break;
+    default:
+      selectedItemId = 'dontSign';
+      break;
+  }
+  gPgpSigningPolicy.selectedItem = document.getElementById(selectedItemId);
 
   gEncryptionPolicy = document.getElementById("defaultEncryptionPolicy");
   var encryptionPolicy = gIdentity.getIntAttribute("defaultEncryptionPolicy");
@@ -106,40 +118,13 @@ function onSave()
     // PGP is enabled
     gIdentity.setIntAttribute("pgpKeyMode", gPgpKeyMode.selectedItem.value);
     gIdentity.setCharAttribute("pgpkeyId", gPgpkeyId.value);
-    gIdentity.setBoolAttribute("pgpAlwaysSign", gPgpAlwaysSign.checked);
+    gIdentity.setIntAttribute("pgpSignMsg", gPgpSigningPolicy.selectedItem.value);
     gIdentity.setIntAttribute("defaultEncryptionPolicy", gEncryptionPolicy.selectedItem.value)
-
-    /*
-    if (gIdentity.getBoolAttribute("compose_html")) {
-      var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
-      var finalPrefString = "mail.identity." + gIdentity.key + ".";
-      var prefBranch = prefService.getBranch(finalPrefString);
-
-      if (EnigConfirm(EnigGetString("turnOffHtml")))
-        prefBranch.setBoolPref("compose_html", false);
-    } */
   }
 }
 
 function onLockPreference()
 {
-/*
-  var initPrefString = "mail.identity";
-  var finalPrefString;
-
-  var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
-
-  var allPrefElements = [
-    { prefstring:"enablePgp", id:"enablePgp"} /*,
-    { prefstring:"encryptionCertSelectButton", id:"encryptionCertSelectButton"},
-    { prefstring:"sign_mail", id:"identity.sign_mail"},
-    { prefstring:"keyPolicy", id:"encryptionChoices"}
-  ];
-
-  finalPrefString = initPrefString + "." + gIdentity.key + ".";
-  gEnigPrefbranch = prefService.getBranch(finalPrefString);
-
-  disableIfLocked( allPrefElements ); */
   var i=0;
 }
 
@@ -149,37 +134,6 @@ function onLockPreference()
 // stomping on the disabled state indiscriminately.
 function disableIfLocked( prefstrArray )
 {
-/*  var i;
-  for (i=0; i<prefstrArray.length; i++) {
-    var id = prefstrArray[i].id;
-    var element = document.getElementById(id);
-    if (gEnigPrefbranch.prefIsLocked(prefstrArray[i].prefstring)) {
-      // If encryption choices radio group is locked, make sure the individual
-      // choices in the group are locked. Set a global (gEncryptionChoicesEnabled)
-      // indicating the status so that locking can be maintained further.
-      if (id == "enablePgp") {
-        document.getElementById("noPgpPassphrase").setAttribute("disabled", "true");
-        gEncryptionChoicesEnabled = true;
-      }
-      // If option to sign mail is locked (with true/false set in config file), disable
-      // the corresponding checkbox and set a global (gSigningChoicesLocked) in order to
-      // honor the locking as user changes other elements on the panel.
-      /*
-      if (id == "identity.sign_mail") {
-        document.getElementById("identity.sign_mail").setAttribute("disabled", "true");
-        gSigningChoicesLocked = true;
-      }
-      else {
-        element.setAttribute("disabled", "true");
-        if (id == "signingCertSelectButton") {
-          document.getElementById("signingCertClearButton").setAttribute("disabled", "true");
-        }
-        else if (id == "encryptionCertSelectButton") {
-          document.getElementById("encryptionCertClearButton").setAttribute("disabled", "true");
-        }
-      }
-    }
-  } */
 
   var i=1;
 }
@@ -194,10 +148,13 @@ function enigEnableAllPrefs()
   var allItems = ["pgpKeyMode",
                   "keymode_useFromAddress",
                   "keymode_usePgpkeyId",
-                  "pgpAlwaysSign",
                   "defaultEncryptionPolicy",
                   "encrypt_never",
                   "encrypt_ifPossible",
+                  "defaultSignPolicy",
+                  "dontSign",
+                  "sign_ifEncrypted",
+                  "pgpAlwaysSign",
                   "enigmailPrefs"];
 
   var enable = gEncryptionChoicesEnabled;
@@ -213,6 +170,7 @@ function enigEnableAllPrefs()
   }
 
   enigEnableKeySel(enable && (gPgpKeyMode.value == 1));
+
 }
 
 function enigEnableKeySel(enable)
@@ -246,3 +204,4 @@ function enigSelectKeyId()
     return;
   }
 }
+

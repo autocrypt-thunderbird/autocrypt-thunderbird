@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.82.4.0";
-var gEnigmimeVersion = "0.82.4.0";
+var gEnigmailVersion = "0.82.5.0";
+var gEnigmimeVersion = "0.82.5.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -57,6 +57,7 @@ const PGP_MIME_ALWAYS   = 2;
 const EnigEncryptIfPossible = 1;
 const EnigEncrypt           = 2;
 const EnigSigned            = 4;
+const EnigSignIfEncrypted   = 8;
 
 // property name for temporary directory service
 const ENIG_TEMPDIR_PROP = "TmpD";
@@ -749,6 +750,18 @@ function EnigSetPref(prefName, value) {
    return retVal;
 }
 
+function EnigGetSignMsg(identity) {
+  var sign = null;
+
+  if (gEnigPrefRoot.getPrefType("mail.identity."+identity.key+".pgpSignMsg")==0) {
+    sign=(identity.getBoolAttribute("pgpAlwaysSign")? 2 : 0);
+    identity.setIntAttribute("pgpSignMsg", sign);
+  }
+  else {
+    sign = identity.getIntAttribute("pgpSignMsg");
+  }
+  return sign;
+}
 
 function EnigRequestObserver(terminateFunc, terminateArg)
 {
@@ -1078,22 +1091,22 @@ function EnigGetString(aStr) {
 
 // Remove all quoted strings (and angle brackets) from a list of email
 // addresses, returning a list of pure email addresses
-function enigStripEmail(mailAddrs) {
+function EnigStripEmail(mailAddrs) {
 
   var qStart, qEnd;
   while ((qStart = mailAddrs.indexOf('"')) != -1) {
      qEnd = mailAddrs.indexOf('"', qStart+1);
      if (qEnd == -1) {
-       ERROR_LOG("enigmailMsgComposeOverlay.js: enigStripEmail: Unmatched quote in mail address: "+mailAddrs+"\n");
+       ERROR_LOG("enigmailMsgComposeOverlay.js: EnigStripEmail: Unmatched quote in mail address: "+mailAddrs+"\n");
        throw Components.results.NS_ERROR_FAILURE;
      }
-  
+
      mailAddrs = mailAddrs.substring(0,qStart) + mailAddrs.substring(qEnd+1);
   }
-  
+
   // Eliminate all whitespace, just to be safe
   mailAddrs = mailAddrs.replace(/\s+/g,"");
-  
+
   // Extract pure e-mail address list (stripping out angle brackets)
   mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*/g,"$1$2");
 

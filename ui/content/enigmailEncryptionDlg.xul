@@ -41,16 +41,25 @@
     </groupbox>
 
     <groupbox orient="vertical">
-      <checkbox id="signMessage"
-                  label="&enigmail.encDlgSign.label;"
-                  accesskey="&enigmail.encDlgSign.accesskey;"/>
-      <checkbox id="usePgpMime"
-                accesskey="&enigmail.encDlgPgpMime.accesskey;"
-                label="&enigmail.encDlgPgpMime.label;"/>
+      <caption label="&enigmail.encDlgSign.label;"/>
+      <radiogroup id="signingGroup">
+        <radio id="signNo"
+               value="0"
+               label="&enigmail.msgNo.label;"/>
+        <radio id="signYes"
+               value="1"
+               label="&enigmail.msgYes.label;"/>
+        <radio id="signIfEncrypted"
+               value="2"
+               label="&enigmail.signedIfEncSend.label;"/>
+      </radiogroup>
     </groupbox>
   </hbox>
 
   <hbox>
+      <checkbox id="usePgpMime"
+                accesskey="&enigmail.encDlgPgpMime.accesskey;"
+                label="&enigmail.encDlgPgpMime.label;"/>
   </hbox>
 </dialog>
 
