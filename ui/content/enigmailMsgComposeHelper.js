@@ -135,9 +135,14 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
           inputObj.command = "add";
           window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
           if (resultObj.cancelled==true) return false;
-          sign   =getFlagVal(sign,    resultObj.sign);
-          encrypt=getFlagVal(encrypt, resultObj.encrypt);
-          pgpMime=getFlagVal(pgpMime, resultObj.pgpMime);
+          
+          // create a getAttribute() function for getFlagVal to work normally
+          resultObj.getAttribute = function(attrName) {
+            return this[attrName]; 
+          }
+          sign   =getFlagVal(sign,    resultObj, "sign",    conflicts);
+          encrypt=getFlagVal(encrypt, resultObj, "encrypt", conflicts);
+          pgpMime=getFlagVal(pgpMime, resultObj, "pgpMime", conflicts);
           if (resultObj.keyId.length>0) {
             keyList.push(resultObj.keyId);
             var replaceAddr=new RegExp("{"+addrList[i]+"}", "g");

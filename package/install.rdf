@@ -29,10 +29,11 @@
     <em:description>OpenPGP message encryption and authentication</em:description>
     <em:creator>Enigmail Team</em:creator>
     <em:homepageURL>http://enigmail.mozdev.org/</em:homepageURL>
-<!--
-    <em:updateURL>http://localhost:8080/enigmail/getupdate.php?appVer=%APP_VERSION%</em:updateURL>
--->
 
+<!--
+    <em:updateURL>http://enigmail.mozdev.org/getupdate.php</em:updateURL>
+-->
+		
     <!-- Front End Integration Hooks (used by Extension Manager)-->
     <em:optionsURL>chrome://enigmail/content/pref-enigmail.xul</em:optionsURL>
     <em:aboutURL>chrome://enigmail/content/enigmailAbout.xul</em:aboutURL>

@@ -32,6 +32,7 @@ if (!verifyDiskSpace(fProgram, srDest)) {
      if (File.exists(delFile))
         File.remove(delFile);
   }
+
   // addDirectory: blank, archive_dir, install_dir, install_subdir
   addDirectory("", "components",    fComponents, "");
   addDirectory("", "chrome",        fChrome,     "");

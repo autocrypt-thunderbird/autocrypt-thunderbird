@@ -457,7 +457,8 @@ function EnigReadFileContents(localFile, maxBytes) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function WRITE_LOG(str) {
-  dump(str);
+  if (gEnigLogLevel >= 4)
+    dump(str);
 
   if (gEnigDebugLog && gEnigmailSvc && gEnigmailSvc.logFileStream) {
     gEnigmailSvc.logFileStream.write(str, str.length);

@@ -284,7 +284,9 @@ function hexToBytes(hex) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function WRITE_LOG(str) {
-  dump(str);
+  
+  if (gLogLevel >= 4)
+    dump(str);
 
   if (gEnigmailSvc && gEnigmailSvc.logFileStream) {
     gEnigmailSvc.logFileStream.write(str, str.length);
