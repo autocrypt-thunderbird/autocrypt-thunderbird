@@ -4488,6 +4488,20 @@ function (parent, keyId, name, email, comment, errorMsgObj) {
   return r;
 }
 
+Enigmail.prototype.deleteKey = 
+function (parent, keyId, deleteSecretKey, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.addUid: keyId="+keyId+", deleteSecretKey="+deleteSecretKey+"\n");
+  
+  var cmd = (deleteSecretKey ? "--delete-secret-and-public-key" : "--delete-key");
+  var r= this.editKey(parent, false, null, keyId, cmd,
+                      {}, 
+                      deleteKeyCallback, 
+                      errorMsgObj);
+  this.stillActive();
+  
+  return r;
+}
+
 Enigmail.prototype.setPrimaryUid = 
 function (parent, keyId, idNumber, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.addUid: keyId="+keyId+", idNumber="+idNumber+"\n");
@@ -4549,10 +4563,13 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
     command += " -a -o "+this.quoteSign;
     command += inputData.outFile.replace(/([\\\"\'\`])/g, "\\$1");
     //replace(/\\/g, "\\\\").replace(/'/g, "\\'");
-    command += this.quoteSign+" --gen-revoke " + keyId
+    command += this.quoteSign+" --gen-revoke " + keyId;
+  }
+  else if (editCmd.indexOf("--")==0) {
+    command += " "+editCmd + " " + keyId;
   }
   else {
-    command += " --edit-key " + keyId + " " + editCmd
+    command += " --edit-key " + keyId + " " + editCmd;
   }
   var pipeTrans = this.execStart(command, false, parent, null, null,
                                  true, statusFlags);
@@ -4763,6 +4780,25 @@ function setPrimaryUidCallback(inputData, keyEdit, ret) {
       ret.quitNow=true;
     }
       
+  } 
+  else {
+    ret.quitNow=true;
+    ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
+    ret.exitCode=-1;
+  }
+}
+
+function deleteKeyCallback(inputData, keyEdit, ret) {
+  ret.writeTxt = "";
+  ret.errorMsg = "";
+
+  if (keyEdit.doCheck(GET_BOOL, "delete_key.secret.okay")) {
+    ret.exitCode = 0;
+    ret.writeTxt = "Y";
+  } 
+  else if (keyEdit.doCheck(GET_BOOL, "delete_key.okay" )) {
+    ret.exitCode = 0;
+    ret.writeTxt = "Y";
   } 
   else {
     ret.quitNow=true;

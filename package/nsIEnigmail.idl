@@ -239,6 +239,11 @@ interface nsIEnigmail : nsISupports
                 in string comment, 
                 out wstring errorMsg);
 
+  long deleteKey(in nsIDOMWindow parent, 
+                in string keyId, 
+                in boolean deleteSecretKey, 
+                out wstring errorMsg);
+
   long setPrimaryUid (in nsIDOMWindow parent,
                       in string keyId, 
                       in string idNumber, 

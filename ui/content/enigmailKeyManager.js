@@ -79,7 +79,6 @@ function enigmailRefreshKeys() {
   enigmailBuildList(true);
 }
 
-
 function enigLoadKeyList(secretOnly, refresh) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigLoadKeyList\n");
 
@@ -336,11 +335,13 @@ function enigmailKeyMenu() {
     document.getElementById("signKey").removeAttribute("disabled");
     document.getElementById("viewSig").removeAttribute("disabled");
     document.getElementById("keyDetails").removeAttribute("disabled");
+    document.getElementById("deleteKey").removeAttribute("disabled");
   }
   else {
     document.getElementById("signKey").setAttribute("disabled", "true");
     document.getElementById("viewSig").setAttribute("disabled", "true");
     document.getElementById("keyDetails").setAttribute("disabled", "true");
+    document.getElementById("deleteKey").setAttribute("disabled", "true");
   }
 }
 
@@ -369,11 +370,13 @@ function enigmailCtxMenu() {
     document.getElementById("ctxSign").removeAttribute("disabled");
     document.getElementById("ctxViewSig").removeAttribute("disabled");
     document.getElementById("ctxDetails").removeAttribute("disabled");
+    document.getElementById("ctxDeleteKey").removeAttribute("disabled");
   }
   else {
     document.getElementById("ctxSign").setAttribute("disabled", "true");
     document.getElementById("ctxViewSig").setAttribute("disabled", "true");
     document.getElementById("ctxDetails").setAttribute("disabled", "true");
+    document.getElementById("ctxDeleteKey").setAttribute("disabled", "true");
   }
 }
 
@@ -389,6 +392,34 @@ function enigmailKeyDetails() {
         "", "dialog,modal,centerscreen", inputObj);
 }
 
+
+function enigmailDeleteKey() {
+  var keyList = enigmailGetSelectedKeys();
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
+  var userId="0x"+keyList[0].substr(-8,8)+" - "+gKeyList[keyList[0]].userId;
+  var deleteSecret=false;
+  if(gKeyList[keyList[0]].secretAvailable) {
+    if (!EnigConfirm(EnigGetString("deleteSecretKey", userId))) return;
+    deleteSecret=true;
+  }
+  else {
+    if (!EnigConfirm(EnigGetString("deletePubKey", userId))) return;
+  }
+  
+  var errorMsgObj = {};
+  var r=enigmailSvc.deleteKey(window, "0x"+keyList[0], deleteSecret, errorMsgObj);
+  if (r != 0) {
+    EnigAlert(EnigGetString("deleteKeyFailed")+"\n\n"+errorMsgObj.value);
+  }
+  else {
+    EnigAlert(EnigGetString("deleteKeyOk"));
+  }
+  enigmailRefreshKeys();
+}
 
 function enigShowPhoto() {
   var keyList = enigmailGetSelectedKeys();

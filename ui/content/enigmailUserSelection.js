@@ -313,7 +313,6 @@ function enigmailBuildList(refresh) {
               treeItem=enigUserSelCreateRow(aUserList[i], activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry, aUserList[i].keyTrust)
             }
             if (aUserList[i].SubUserIds.length) {
-              treeItem.setAttribute("container", "true");
               var subChildren=document.createElement("treechildren");
               for (var user=0; user<aUserList[i].SubUserIds.length; user++) {
                 if (KEY_NOT_VALID.indexOf(aUserList[i].SubUserIds[user].trustLevel)<0) {
@@ -337,7 +336,9 @@ function enigmailBuildList(refresh) {
                     }
                   }
                 }
-  
+              }
+              if (subChildren.hasChildNodes()) {
+                treeItem.setAttribute("container", "true");
                 treeItem.appendChild(subChildren);
               }
             }
