@@ -56,15 +56,43 @@
 
     EnigInitCommon("enigmailEditKeyTrustDlg");
     function onLoad() {
+      if (window.arguments[0].keyId.length == 1) {
+        // set current key trust if only one key is changed
+        var enigmailSvc = GetEnigmailSvc();
+        if (!enigmailSvc)
+          return;
+        
+        var errorMsgObj = new Object();
+        var exitCodeObj = new Object();
+        try {
+          var currTrust = -1;
+          var sigListStr = enigmailSvc.getKeySig("0x"+window.arguments[0].keyId[0], exitCodeObj, errorMsgObj);
+          if (exitCodeObj.value == 0) {
+            var sigList = sigListStr.split(/[\n\r]+/);
+            for (var i=0; i < sigList.length; i++) {
+              var aLine=sigList[i].split(/:/);
+              if (aLine[0] == "pub") {
+                currTrust=("-nmfu").indexOf(aLine[8])+1;
+                break;
+              }
+            }
+            if (currTrust > 1) {
+              var t=document.getElementById("trustLevel"+currTrust.toString());
+              document.getElementById("trustLevelGroup").selectedItem=t;
+            }
+          }
+        } catch (ex) {}
+      }
+      
       var keyIdList = document.getElementById("keyIdList");
-      for (var i=0; i<window.arguments[0].userId.length; i++) {
+      for (i=0; i<window.arguments[0].userId.length; i++) {
         var keyId = window.arguments[0].userId[i]+" - 0x"+ window.arguments[0].keyId[i].substr(-8,8);
         keyIdList.appendItem(keyId);
       }
     }
 
     function onAccept() {
-      var t=document.getElementById("trustLevel");
+      var t=document.getElementById("trustLevelGroup");
       var enigmailSvc = GetEnigmailSvc();
       if (!enigmailSvc)
         return;
@@ -95,17 +123,17 @@
     <vbox>
       <groupbox>
         <caption label="&enigmail.keyTrust.trustLevel.label;"/>
-          <radiogroup id="trustLevel">
-            <radio value="1"
+          <radiogroup id="trustLevelGroup">
+            <radio value="1" id="trustLevel1"
                    selected="true"
                    label="&enigmail.keyTrust.dontKnow.label;"/>
-            <radio value="2"
+            <radio value="2" id="trustLevel2"
                    label="&enigmail.keyTrust.noTrust.label;"/>
-            <radio value="3"
+            <radio value="3" id="trustLevel3"
                    label="&enigmail.keyTrust.marginalTrust.label;"/>
-            <radio value="4"
+            <radio value="4" id="trustLevel4"
                    label="&enigmail.keyTrust.fullTrust.label;"/>
-            <radio value="5"
+            <radio value="5" id="trustLevel5"
                    label="&enigmail.keyTrust.ultimateTrust.label;"/>
           </radiogroup>
        </groupbox>
