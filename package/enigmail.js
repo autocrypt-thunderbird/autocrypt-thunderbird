@@ -826,21 +826,21 @@ function (plainText, toMailAddr, passphrase, statusCodeObj, statusMsgObj) {
     return "";
   }
 
-  var encryptCommand;
+  var encryptCommand, recipientPrefix;
 
   if (this.agentType == "pgp") {
-    encryptCommand = "pgp +batchmode +force -fat "
-
-    if (gEnigmailSvc.encryptMsg)
-      encryptCommand += " -e";
+    encryptCommand  = "pgp +batchmode +force -fat "
+    recipientPrefix = " ";
 
     if (gEnigmailSvc.signMsg)
       encryptCommand += " -s";
 
-    encryptCommand += " "+toMailAddr;
+    if (gEnigmailSvc.encryptMsg)
+      encryptCommand += " -e";
 
   } else {
-    encryptCommand = "gpg --batch --no-tty --passphrase-fd 0 --status-fd 2";
+    encryptCommand  = "gpg --batch --no-tty --passphrase-fd 0 --status-fd 2";
+    recipientPrefix = " --recipient ";
 
     if (gEnigmailSvc.encryptMsg) {
       encryptCommand += " --armor --encrypt";
@@ -851,8 +851,13 @@ function (plainText, toMailAddr, passphrase, statusCodeObj, statusMsgObj) {
     } else if (gEnigmailSvc.signMsg) {
       encryptCommand += " --clearsign";
     }
+  }
 
-    encryptCommand += " --recipient "+toMailAddr;
+
+  if (gEnigmailSvc.encryptMsg) {
+    var addrList = toMailAddr.split(/\s*,\s*/);
+    for (var k=0; k<addrList.length; k++)
+       encryptCommand += recipientPrefix+addrList[k];
   }
 
   if (passphrase == null) {
