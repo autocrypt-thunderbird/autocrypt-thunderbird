@@ -79,7 +79,7 @@ GPL.
       </radiogroup>
 
       <groupbox>
-        <caption label="Message Composition Default Options"/>
+        <caption label="&enigmail.amPrefDefaultEncrypt.label;"/>
         <checkbox id="sign_notEncrypted"
                  checked="false"
                  label="&enigmail.defaultSignPlainMsg.label;"/>
