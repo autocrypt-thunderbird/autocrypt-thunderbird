@@ -22,6 +22,10 @@ enigmail-it-IT.jar:
 	locale/it-IT/enigmail/contents.rdf         (it-IT/contents.rdf)
 	locale/it-IT/enigmail/enigmail.dtd         (it-IT/enigmail.dtd)
 	locale/it-IT/enigmail/enigmail.properties  (it-IT/enigmail.properties)
+enigmail-pl-PL.jar:
+	locale/pl-PL/enigmail/contents.rdf         (pl-PL/contents.rdf)
+	locale/pl-PL/enigmail/enigmail.dtd         (pl-PL/enigmail.dtd)
+	locale/pl-PL/enigmail/enigmail.properties  (pl-PL/enigmail.properties)
 enigmail-xx-YY.jar:
 	locale/xx-YY/enigmail/contents.rdf         (xx-YY/contents.rdf)
 	locale/xx-YY/enigmail/enigmail.dtd         (xx-YY/enigmail.dtd)
