@@ -1,0 +1,56 @@
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="enigmailEncryptionDlg"
+        title="&enigmail.encryptionDlg.label;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="enigmailEncryptionDlgLoad();"
+        ondialogaccept="enigmailEncryptionDlgAccept();"
+        >
+
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailEncryptionDlg.js"/>
+
+  <hbox orient="horizontal">
+    <groupbox orient="vertical">
+       <caption label="&enigmail.encDlgEncrypt.label;"/>
+       <radiogroup id="encryptionGroup">
+
+          <radio id="encryptNo"
+                 value="0"
+                 accesskey="&enigmail.msgNo.accesskey;"
+                 label="&enigmail.msgNo.label;"/>
+          <radio id="encryptIfPossible"
+                 value="1"
+                 accesskey="&enigmail.encDlgEncryptIfPossible.accesskey;"
+                 label="&enigmail.encDlgEncryptIfPossible.label;"/>
+
+          <radio id="encryptYes"
+                 value="2"
+                 accesskey="&enigmail.msgYes.accesskey;"
+                 label="&enigmail.msgYes.label;"/>
+       </radiogroup>
+    </groupbox>
+
+    <groupbox orient="vertical">
+      <checkbox id="signMessage"
+                  label="&enigmail.encDlgSign.label;"
+                  accesskey="&enigmail.encDlgSign.accesskey;"/>
+      <checkbox id="usePgpMime"
+                accesskey="&enigmail.encDlgPgpMime.accesskey;"
+                label="&enigmail.encDlgPgpMime.label;"/>
+    </groupbox>
+  </hbox>
+
+  <hbox>
+  </hbox>
+</dialog>
+
