@@ -93,6 +93,12 @@
     <checkbox id="enigmail_alwaysTrustSend"
               label="&enigmail.alwaysTrustSend.label;" />
 
+    <checkbox id="enigmail_confirmBeforeSend"
+              label="&enigmail.confirmBeforeSend.label;" />
+
+    <checkbox id="enigmail_wrapHtmlBeforeSend"
+              label="&enigmail.wrapHtmlBeforeSend.label;" />
+
     <checkbox id="send_plaintext_flowed"
               label="&enigmail.send_plaintext_flowed.label;" />
 
@@ -103,9 +109,6 @@
 
     <checkbox id="enigmail_keepSettingsForReply"
               label="&enigmail.keepSettingsForReply.label;" />
-
-    <checkbox id="enigmail_confirmBeforeSend"
-              label="&enigmail.confirmBeforeSend.label;" />
 
     <checkbox id="enigmail_useDefaultComment"
               label="&enigmail.useDefaultComment.label;" />

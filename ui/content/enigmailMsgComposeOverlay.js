@@ -882,6 +882,16 @@ function enigSend(gotSendFlags, elementId) {
        // Replace plain text and get it again (to avoid linewrapping problems)
        enigReplaceEditorText(escText);
 
+       if (gMsgCompose.composeHTML && !(sendFlags & ENIG_ENCRYPT)
+           && EnigGetPref("wrapHtmlBeforeSend")) {
+          // enforce line wrapping here
+          // otherwise the message isn't signed correctly
+          var wrapWidth = gEnigPrefRoot.getIntPref("editor.htmlWrapColumn");
+          var editor = gMsgCompose.editor.QueryInterface(nsIPlaintextEditorMail);
+          editor.wrapWidth=wrapWidth;
+          editor.rewrap(true);
+       }
+
        escText = EnigEditorGetContentsAs("text/plain", encoderFlags);
 
        //DEBUG_LOG("enigmailMsgComposeOverlay.js: escText["+encoderFlags+"] = '"+escText+"'\n");
@@ -1491,7 +1501,7 @@ function enigDecryptQuote(interactive) {
                                                   nsIEnigmail.SIGNATURE_TEXT);
   }
 
-  var doubleDashSeparator = EnigGetPref("doubleDashSeparator")
+  var doubleDashSeparator = ("doubleDashSeparator")
   if (doubleDashSeparator) {
     var signOffset = plainText.search(/[\r\n]-- +[\r\n]/);
 

@@ -2,7 +2,7 @@
 
 // This Enigmail version and compatible Enigmime version
 var gEnigmailVersion = "0.81.1.0";
-var gEnigmimeVersion = "0.81.1.0";
+var gEnigmimeVersion = "0.81.0.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -87,8 +87,6 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "agentPath":"",
                              "autoCrypto":false,
                              "useDefaultComment":false,
-                             "userIdValue":"",
-                             "userIdFromAddr":false,
                              "noPassphrase":false,
                              "usePGPMimeOption":PGP_MIME_POSSIBLE,
                              "mimeHashAlgorithm":1,
@@ -108,7 +106,7 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "inlineAttachAsciiArmor":false,
                              "inlineAttachExt":".pgp",
                              "handleDoubleClick":false,
-                             "sendImmediately":true,
+                             "wrapHtmlBeforeSend":true,
                              "keepSettingsForReply":false,
                              "recipientsSelectionOption":1
                             };
