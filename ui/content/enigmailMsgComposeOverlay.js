@@ -1140,7 +1140,7 @@ function enigEncryptMsg(msgSendType) {
        } else {
          // Encrypt plaintext
          var charset = EnigEditorGetCharset();
-         DEBUG_LOG("enigmailMsgComposeOverlay.js: charset="+charset+"\n");
+         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: charset="+charset+"\n");
 
          // Encode plaintext to charset from unicode
          var plainText = (sendFlags & ENIG_ENCRYPT)
@@ -1245,11 +1245,13 @@ function enigEncryptMsg(msgSendType) {
           if (! gEnigPrefRoot.getBoolPref("mail.strictly_mime")) {
             gEnigPrefRoot.setBoolPref("mail.strictly_mime", true);
             newSecurityInfo.UIFlags |= nsIEnigmail.UI_RESTORE_STRICTLY_MIME;
+            DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: enabled quoted-printable\n");
           }
 
           // make sure plaintext is not changed to 7bit
           if (typeof(msgCompFields.forceCharSetEncoding) == "boolean") {
             msgCompFields.forceCharSetEncoding = true;
+            DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: enabled forceCharSetEncoding\n");
           }
        }
        catch (ex) {}
@@ -1258,6 +1260,7 @@ function enigEncryptMsg(msgSendType) {
       if (typeof(msgCompFields.forceCharSetEncoding) == "boolean") {
         // force keeping the charset (i.e. don't convert to us-ascii)
         msgCompFields.forceCharSetEncoding = true;
+        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: enabled forceCharSetEncoding\n");
       }
     }
 

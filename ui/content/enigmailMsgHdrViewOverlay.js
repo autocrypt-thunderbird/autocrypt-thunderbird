@@ -646,6 +646,8 @@ if (messageHeaderSink) {
   {
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: messageHeaderSink.onStartHeaders: START\n");
 
+    mSaveHdr = null;
+    
     // clear out any pending collected address timers...
     if (gCollectAddressTimer)
     {
@@ -653,7 +655,8 @@ if (messageHeaderSink) {
       clearTimeout(gCollectAddressTimer);
       gCollectAddressTimer = null;
     }
-
+    mSaveHdr = null;
+    
     if (this.enigDetermineHeadersPref())
     {
       gViewAllHeaders = true;
