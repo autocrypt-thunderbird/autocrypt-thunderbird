@@ -163,6 +163,9 @@ endif
 XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS)-$(PLATFORM_STR).xpi
 
 xpi::
+	$(error To create an Enigmail XPI type "make xpi" from the enigmail root directory)
+
+old-xpi::
 	zip -r $(DIST)/bin/$(XPIFILE) install.js $(XPI_MODULE).spec
 	cd $(DIST)/bin; zip -g $(XPIFILE) \
                components/ipc.xpt \
