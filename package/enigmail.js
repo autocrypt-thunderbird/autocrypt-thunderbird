@@ -16,6 +16,7 @@
  * Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
  * 
  * Contributor(s):
+ * Patrick Brunschwig <patrick.brunschwig@gmx.net>
  * 
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
@@ -918,22 +919,14 @@ function GetPassphrase(domWindow, prompter, passwdObj) {
 
   var success;
 
-  if (prompter) { 
-    success = prompter.promptPassword(EnigGetString("Enigmail"),
-                                      promptMsg,
-                                      passwdObj,
-                                      checkMsg,
-                                      checkObj);
-  } else {
-    var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
-    success = promptService.promptPassword(domWindow,
-                                           EnigGetString("Enigmail"),
-                                           promptMsg,
-                                           passwdObj,
-                                           checkMsg,
-                                           checkObj);
-  }
-
+  var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
+  success = promptService.promptPassword(domWindow,
+                                         EnigGetString("Enigmail"),
+                                         promptMsg,
+                                         passwdObj,
+                                         checkMsg,
+                                         checkObj);
+  
   if (!success)
     return false;
 
@@ -1720,7 +1713,6 @@ function (errOutput, statusFlagsObj, statusMsgObj) {
   return errorMsg;
 }
 
-
 Enigmail.prototype.execEnd = 
 function (pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj) {
 
@@ -2103,8 +2095,8 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
         encryptCommand += " --encrypt-to " + angledFromMailAddr;
 
       for (k=0; k<toAddrList.length; k++)
-         encryptCommand += (! hushMailSupport) ? " -r <" + toAddrList[k] + ">"
-                            : " -r "+ toAddrList[k];
+         encryptCommand += (hushMailSupport || (toAddrList[k].search(/^0x/) == 0)) ? " -r "+ toAddrList[k] 
+                            :" -r <" + toAddrList[k] + ">";
 
     } else if (detachedSig) {
       encryptCommand += " -s -b -t -a --textmode";
@@ -2115,6 +2107,9 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
 
     } else if (signMsg) {
       encryptCommand += " --clearsign";
+      if (hashAlgorithm) {
+        encryptCommand += " --digest-algo "+hashAlgorithm;
+      }      
     }
 
     if (fromMailAddr) {
@@ -2581,25 +2576,39 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
 
   var statusMsg = statusMsgObj.value;
 
+  if ((this.agentType == "gpg") && (exitCode == 256)) {
+    WARNING_LOG("enigmail.js: Enigmail.decryptMessageEnd: Using gpg and exit code is 256. You seem to use cygwin-gpg, activating countermeasures.\n");
+    if ((statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) || (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE)) {
+      WARNING_LOG("enigmail.js: Enigmail.decryptMessageEnd: Changing exitCode 256->2\n");
+      exitCode = 2;
+    } else {
+      WARNING_LOG("enigmail.js: Enigmail.decryptMessageEnd: Changing exitCode 256->0\n");
+      exitCode = 0;
+    }
+  }
+
   if ((exitCode == 0) && !noOutput && !outputLen) {
     exitCode = -1;
   }
 
   if (exitCode == 0) {
     // Normal return
-    var errLines, goodSignPat, badSignPat;
+    var errLines, goodSignPat, badSignPat, keyExpPat;
 
     if (statusMsg) {
         errLines = statusMsg.split(/\r?\n/);
 
-        goodSignPat = /GOODSIG (\w{16}) (.*)$/i;
-        badSignPat  =  /BADSIG (\w{16}) (.*)$/i;
+        goodSignPat =   /GOODSIG (\w{16}) (.*)$/i;
+        badSignPat  =    /BADSIG (\w{16}) (.*)$/i;
+        keyExpPat   = /EXPKEYSIG (\w{16}) (.*)$/i
+        
 
     } else { 
         errLines = cmdErrorMsgObj.value.split(/\r?\n/);
 
         goodSignPat = /Good signature from (user )?"(.*)"\.?/i;
         badSignPat  =  /BAD signature from (user )?"(.*)"\.?/i;
+        keyExpPat   = /This key has expired/i;
     }
 
     errorMsgObj.value = "";
@@ -2626,6 +2635,16 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
         signed = true;
         goodSignature = true;
         userId = matches[2];
+        break;
+      }
+      
+      matches = errLines[j].match(keyExpPat);
+
+      if (matches && (matches.length > 2)) {
+        signed = true;
+        goodSignature = true;
+        userId = matches[2];
+        
         break;
       }
     }
@@ -3333,4 +3352,41 @@ function EnigGetString(aStr) {
     }
   }
   return null;
+}
+
+
+Enigmail.prototype.getUserIdList = 
+function  (parent, inputFlags, exitCodeObj, statusFlagsObj, errorMsgObj) {
+  
+  var gpgCommand = this.agentPath + " --list-keys --with-colons --status-fd 2";
+  
+  var statusFlagsObj = new Object();
+  var noProxy = true;
+  
+  var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+  ipcBuffer.open(MSG_BUFFER_SIZE, false);
+  
+  var pipeTrans = this.execStart(gpgCommand, false, parent, inputFlags,
+                                 ipcBuffer, noProxy, statusFlagsObj);
+
+
+  if (!pipeTrans) {
+    return errorMsgObj.value;
+  }
+
+  // Wait for child STDOUT to close
+  pipeTrans.join();
+  
+
+  var userList = ipcBuffer.getData();
+  ipcBuffer.shutdown();
+
+  var statusMsgObj = new Object();
+  var cmdLineObj     = new Object();
+  
+  this.execEnd(pipeTrans, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
+
+ 
+  return userList;
+
 }

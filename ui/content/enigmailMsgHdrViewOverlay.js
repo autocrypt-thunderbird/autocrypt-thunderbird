@@ -107,7 +107,8 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
 
   } else if (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
                             nsIEnigmail.UNVERIFIED_SIGNATURE |
-                            nsIEnigmail.EXPIRED_SIGNATURE) ) {
+                            nsIEnigmail.EXPIRED_SIGNATURE |
+                            nsIEnigmail.EXPIRED_KEY_SIGNATURE)) {
     statusInfo = EnigGetString("failedSig");
     statusLine = statusInfo + EnigGetString("clickPenDetails");
     statusInfo += "\n\n" + errorMsg;
@@ -182,6 +183,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       //gStatusBar.setAttribute("signed", "unknown");
 
     } else if (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
+                              nsIEnigmail.EXPIRED_KEY_SIGNATURE |
                               nsIEnigmail.EXPIRED_SIGNATURE) ) {
       // Display untrusted/bad signature icon
       gSignedUINode.setAttribute("signed", "notok");

@@ -265,6 +265,34 @@ function enigReplaceEditorText(text) {
   EnigEditorInsertText(text);
 }
 
+function enigGetUserList(window, testSendFlags, testExitCodeObj, testStatusFlagsObj, testErrorMsgObj) {
+
+  var aUserList = new Array();
+  try {
+    var enigmailSvc = GetEnigmailSvc();
+    var userText = enigmailSvc.getUserIdList(window, testSendFlags,
+                                            testExitCodeObj,
+                                            testStatusFlagsObj,
+                                            testErrorMsgObj);
+
+    userText.replace(/\r\n/g, "\n");
+    userText.replace(/\r/g, "\n");
+    var removeIndex=userText.indexOf("----\n");
+    userText = userText.substring(removeIndex + 5);
+
+    while (userText.length >0) {
+        var theLine=userText.substring(0,userText.indexOf("\n"));
+        theLine.replace(/\n/, "");
+        if (theLine.length>0) {
+          aUserList.push(theLine.split(/\:/)); ///
+        }
+        userText=userText.substring(theLine.length+1);
+    }
+  } catch (ex) {}
+   
+  return aUserList;
+}
+
 function enigSendCommand(elementId) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: id="+elementId+"\n");
 
@@ -281,29 +309,6 @@ function enigSendCommand(elementId) {
   enigSend(sendFlags);
 }
 
-// Remove all quoted strings (and angle brackets) from a list of email
-// addresses, returning a list of pure email addresses
-function enigStripEmail(mailAddrs) {
-
-  var qStart, qEnd;
-  while ((qStart = mailAddrs.indexOf('"')) != -1) {
-     qEnd = mailAddrs.indexOf('"', qStart+1);
-     if (qEnd == -1) {
-       ERROR_LOG("enigmailMsgComposeOverlay.js: enigStripEmail: Unmatched quote in mail address: "+mailAddrs+"\n");
-       throw Components.results.NS_ERROR_FAILURE;
-     }
-  
-     mailAddrs = mailAddrs.substring(0,qStart) + mailAddrs.substring(qEnd+1);
-  }
-  
-  // Eliminate all whitespace, just to be safe
-  mailAddrs = mailAddrs.replace(/\s+/g,"");
-  
-  // Extract pure e-mail address list (stripping out angle brackets)
-  mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*/g,"$1$2");
-
-  return mailAddrs;
-}
     
 function enigSend(sendFlags) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: "+sendFlags+"\n");
@@ -325,6 +330,7 @@ function enigSend(sendFlags) {
 
   try {
      var defaultEncryptionOption = EnigGetPref("defaultEncryptionOption");
+     var recipientsSelectionOption = EnigGetPref("recipientsSelectionOption");
 
      var defaultSend = sendFlags & nsIEnigmail.SEND_DEFAULT;
      if (defaultSend) {
@@ -454,42 +460,75 @@ function enigSend(sendFlags) {
 
      var toAddr = toAddrList.join(", ");
 
-     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: toAddr="+toAddr+"\n");
+     if (toAddr.length>=1) {
+    
+        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: toAddr="+toAddr+"\n");
 
-     if (defaultSend && (sendFlags & ENIG_ENCRYPT) ) {
-       // Encrypt test message for default encryption
-       var testExitCodeObj    = new Object();
-       var testStatusFlagsObj = new Object();    
-       var testErrorMsgObj    = new Object();
+        if ((defaultSend || recipientsSelectionOption>0) && (sendFlags & ENIG_ENCRYPT) ) {
+          // Encrypt test message for default encryption
+          var testExitCodeObj    = new Object();
+          var testStatusFlagsObj = new Object();    
+          var testErrorMsgObj    = new Object();
 
-       var testPlain = "Test Message";
-       var testUiFlags   = nsIEnigmail.UI_TEST;
-       var testSendFlags = nsIEnigmail.SEND_ENCRYPTED |
-                           nsIEnigmail.SEND_TEST |
-                           optSendFlags;
+          var testPlain = "Test Message";
+          var testUiFlags   = nsIEnigmail.UI_TEST;
+          var testSendFlags = nsIEnigmail.SEND_ENCRYPTED |
+                              nsIEnigmail.SEND_TEST |
+                              optSendFlags;
 
-       var testCipher = enigmailSvc.encryptMessage(window, testUiFlags,
-                                                   testPlain,
-                                                   fromAddr, toAddr,
-                                                   testSendFlags,
-                                                   testExitCodeObj,
-                                                   testStatusFlagsObj,
-                                                   testErrorMsgObj);
+          if (defaultSend  || recipientsSelectionOption==1) {
+            // test recipients
+            var testCipher = enigmailSvc.encryptMessage(window, testUiFlags,
+                                                          testPlain,
+                                                          fromAddr, toAddr,
+                                                          testSendFlags,
+                                                          testExitCodeObj,
+                                                          testStatusFlagsObj,
+                                                          testErrorMsgObj);
 
-       if (!testCipher || (testExitCodeObj.value != 0)) {
-         // Test encryption failed; turn off default encryption
-         sendFlags &= ~ENIG_ENCRYPT;
-         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: No default encryption because test failed\n");
-       }
+          }
+
+          if ((recipientsSelectionOption==2 ) || ((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT) && (recipientsSelectionOption>0))) {
+
+              var aUserList = enigGetUserList(window, testSendFlags,
+                                                        testExitCodeObj,
+                                                        testStatusFlagsObj,
+                                                        testErrorMsgObj);
+
+              var resultObj = new Object();
+              var inputObj = new Object();
+              inputObj.userList = aUserList;
+              inputObj.toAddr = toAddr;
+
+              window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
+              try {
+                toAddr = resultObj.userList.join(", ");
+                testCipher="ok";
+                testExitCodeObj.value = 0;
+                if (! resultObj.encrypt) {
+                  // encryption explicitely turned off
+                  sendFlags &= ~ENIG_ENCRYPT;
+                }
+              } catch (ex) {
+                // cancel pressed -> don't send mail
+                return;
+              }
+          }
+          if ((!testCipher || (testExitCodeObj.value != 0)) && recipientsSelectionOption==0) {
+              // Test encryption failed; turn off default encryption
+              sendFlags &= ~ENIG_ENCRYPT;
+              DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: No default encryption because test failed\n");
+          }
+        }
+
+        if (defaultSend && (sendFlags & ENIG_SIGN) &&
+                            !(sendFlags & ENIG_ENCRYPT) &&
+                            !EnigGetPref("defaultSignMsg") ) {
+          // Default encryption turned off; turn off signing as well
+          sendFlags &= ~ENIG_SIGN;
+        }
      }
-
-     if (defaultSend && (sendFlags & ENIG_SIGN) &&
-                        !(sendFlags & ENIG_ENCRYPT) &&
-                        !EnigGetPref("defaultSignMsg") ) {
-       // Default encryption turned off; turn off signing as well
-       sendFlags &= ~ENIG_SIGN;
-     }
-
+     
      if (!gEnigProcessed) {
 /////////////////////////////////////////////////////////////////////////
 // The following spellcheck logic is from the function
@@ -985,15 +1024,6 @@ function enigToggleAttribute(attrName)
   EnigSetPref(attrName, !oldValue);
 }
 
-function max(a, b) {
-   if (a>b) {
-       return a;
-   }
-   else {
-       return b;
-   }
-}
-
 function enigDecryptQuote(interactive) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: "+interactive+"\n");
 
@@ -1127,11 +1157,14 @@ function enigDecryptQuote(interactive) {
                                                   nsIEnigmail.SIGNATURE_TEXT);
   }
 
-  var signOffset = max(plainText.indexOf("\n-- \n"), plainText.indexOf("\n-- \r"));
+  var doubleDashSeparator = EnigGetPref("doubleDashSeparator")
+  if (doubleDashSeparator) {
+    var signOffset = plainText.search(/[\r\n]-- +[\r\n]/);
 
-  if (signOffset >= 0) {
-    // Strip signature portion of quoted message
-    plainText = plainText.substr(0, signOffset+1);
+    if (signOffset > 0) {
+      // Strip signature portion of quoted message
+      plainText = plainText.substr(0, signOffset+1);
+    }
   }
 
   // Replace encrypted quote with decrypted quote

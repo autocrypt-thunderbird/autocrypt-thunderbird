@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.74.1.0";
-var gEnigmimeVersion = "0.74.1.0";
+var gEnigmailVersion = "0.75.0.0";
+var gEnigmimeVersion = "0.75.0.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -51,6 +51,10 @@ var gEnigDefaultEncryptionOptions = ["defaultEncryptionNone",
                                      "defaultEncryptionOnly",
                                      "defaultEncryptionSign"];
 
+var gEnigRecipientsSelectionOptions = ["askRecipientsNever",
+                                       "askRecipientsClever",
+                                       "askRecipientsAlways"];
+
 const ENIG_BUTTON_POS_0           = 1;
 const ENIG_BUTTON_POS_1           = 1 << 8;
 const ENIG_BUTTON_POS_2           = 1 << 16;
@@ -88,7 +92,8 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "disableSMIMEui":true,
                              "parseAllHeaders":true,
                              "show_headers":1,
-                             "hushMailSupport":false
+                             "hushMailSupport":false,
+                             "recipientsSelectionOption":1
                             };
 
 var gEnigLogLevel = 2;     // Output only errors/warnings by default
@@ -786,48 +791,68 @@ function EnigGetDeepText(node, findStr) {
     DEBUG_LOG("enigmailCommon.js: EnigDeepText: Failed to access EnigMimeService\n");
   }
   */
-
-  var depth = 0;
-  var textArr = [""];
-
-  while (node) {
-
-    while (node.hasChildNodes()) {
-       depth++;
-       node = node.firstChild;
-    }
-
-    if (node.nodeType == Node.TEXT_NODE) {
-      textArr.push(node.data);
-    }
-
-    // get the "alt" part of graphical smileys to ensure correct 
-    // verification of signed messages
-    if (node.nodeType == Node.ELEMENT_NODE && node.className=="moz-txt-smily") {
-       if (node.getAttribute("alt")) {
-          textArr.push(node.getAttribute("alt"));
-       }
-    }
-    while (!node.nextSibling && (depth > 0)) {
-      depth--;
-      node = node.parentNode;
-    }
-
-    if (depth > 0) {
-      node = node.nextSibling;
-    } else {
-      node = null;
+  
+  if (findStr) {
+    if (node.innerHTML.replace(/&nbsp;/g, " ").indexOf(findStr) < 0) {
+      // exit immediately if findStr is not found at all
+      return "";
     }
   }
-
-  var plainText = textArr.join("");
+  
+  // EnigDumpHTML(node);
+  
+  var plainText = EnigParseChildNodes(node);
+  // Replace non-breaking spaces with plain spaces
+  plainText = plainText.replace(/\xA0/g," ");
+  
   if (findStr) {
      if (plainText.indexOf(findStr) < 0) {
         return "";
      }
-  }  
+  }
+  
+
+  return plainText;
+
+}
+
+// extract the plain text by iterating recursively through all nodes
+function EnigParseChildNodes(node) {
+
+  var plainText="";
+  
+  if (node.nodeType == Node.TEXT_NODE) {
+    // text node
+    plainText = plainText.concat(node.data);
+  }
+  else {
+  
+    if (node.nodeType == Node.ELEMENT_NODE) {
+      if (node.tagName=="IMG" && node.className=="moz-txt-smily") {
+        // get the "alt" part of graphical smileys to ensure correct 
+        // verification of signed messages
+        if (node.getAttribute("alt")) {
+            plainText = plainText.concat(node.getAttribute("alt"));
+        }
+      }
+    }
+
+    var child = node.firstChild;
+    // iterate over child nodes
+    while (child) {
+      if (! (child.nodeType == Node.ELEMENT_NODE &&
+            child.tagName == "BR" && 
+            ! child.hasChildNodes())) {
+        // optimization: don't do an extra loop for the very frequent <BR> elements
+        plainText = plainText.concat(EnigParseChildNodes(child));
+      }
+      child = child.nextSibling;
+    }
+  }
+  
   return plainText;
 }
+
 
 // Dump HTML content as plain text
 function EnigDumpHTML(node)
@@ -1014,4 +1039,28 @@ function EnigGetString(aStr) {
     }
   }
   return null;
+}
+
+// Remove all quoted strings (and angle brackets) from a list of email
+// addresses, returning a list of pure email addresses
+function enigStripEmail(mailAddrs) {
+
+  var qStart, qEnd;
+  while ((qStart = mailAddrs.indexOf('"')) != -1) {
+     qEnd = mailAddrs.indexOf('"', qStart+1);
+     if (qEnd == -1) {
+       ERROR_LOG("enigmailMsgComposeOverlay.js: enigStripEmail: Unmatched quote in mail address: "+mailAddrs+"\n");
+       throw Components.results.NS_ERROR_FAILURE;
+     }
+  
+     mailAddrs = mailAddrs.substring(0,qStart) + mailAddrs.substring(qEnd+1);
+  }
+  
+  // Eliminate all whitespace, just to be safe
+  mailAddrs = mailAddrs.replace(/\s+/g,"");
+  
+  // Extract pure e-mail address list (stripping out angle brackets)
+  mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*/g,"$1$2");
+
+  return mailAddrs;
 }

@@ -155,8 +155,8 @@ interface nsIEnigmail : nsISupports
                         in unsigned long sendFlags,
                         out long exitCode,
                         out unsigned long statusFlags,
-                        out wstring errorMsg);
-
+                        out wstring errorMsg);                       
+  
   /* Status flags */
   const long GOOD_SIGNATURE       = 0x000001;
   const long BAD_SIGNATURE        = 0x000002;
@@ -227,6 +227,13 @@ interface nsIEnigmail : nsISupports
   boolean deleteMessageURI(in string uri);
 
   boolean selectPanel(in string url);
+  
+  string getUserIdList (in nsIDOMWindow parent,
+                      in unsigned long sendFlags,
+                      out long exitCode, 
+                      out unsigned long statusFlags,
+                      out wstring errorMsg);
+
 };
 
 %{C++

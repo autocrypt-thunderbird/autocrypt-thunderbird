@@ -35,8 +35,15 @@ function setDisables(initializing) {
                         gEnigDefaultEncryptionOptions);
 
 
+  var recipientsSelectionOptionElement = document.getElementById("enigmail_recipientsSelectionOption");
+  var recipientsSelectionOption = initializing ? EnigGetPref("recipientsSelectionOption")
+                                  : recipientsSelectionOptionElement.value;
+
+  EnigDisplayRadioPref("recipientsSelectionOption", recipientsSelectionOption,
+                        gEnigRecipientsSelectionOptions);
+  
   var noPassphraseElement = document.getElementById("noPassphrase");
-  var noPassphrase = getPrefs ? EnigGetPref("noPassphrase")
+  var noPassphrase = initializing ? EnigGetPref("noPassphrase")
                               : noPassphraseElement.checked;
 
   var maxIdleMinutesElement = document.getElementById("enigmail_MaxIdleMinutes");

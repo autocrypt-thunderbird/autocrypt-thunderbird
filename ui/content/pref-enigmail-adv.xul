@@ -90,7 +90,7 @@
               label="&enigmail.disableSMIMEui.label;" />
 
     <checkbox id="enigmail_doubleDashSeparator"
-              label="Treat '--' as signature separator" />
+              label="&enigmail.doubleDashSeparator.label;" />
 
     <checkbox id="enigmail_hushMailSupport"
               label="&enigmail.hushMailSupport.label;" />
