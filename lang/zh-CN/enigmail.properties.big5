@@ -1,0 +1,180 @@
+Enigmail=Enigmail
+
+# Strings used within enigmailCommon.js
+
+enigAlert=Enigmail 通知
+enigConfirm=Enigmail 确认
+enigError=Enigmail 错误
+enigPrompt=Enigmail 提示
+
+dlgYes=确定
+dlgNo=否
+dlgNever=下次不须再问我
+
+specifyEmail=请指定您的主要邮址以用於签证寄出邮件时使用。\n 如果您要用“寄出”的邮址作为签证请把此栏置空。\n\n注意：Enigmail 0.60 以上已把 default signing key 这含糊的选项去除.
+usingFrom=“寄出”邮址将会用於签证寄出的邮件
+usingId=使用者 %S 将会用於签证寄出的邮件
+
+configNow=您要为 enigmail %S 进行设定吗？
+configEnigmail=设定 Enigmail？
+
+turnOffFlowed=Mozilla 中的 Allow flowed text (RFC 2646) 是预置选项。\n但却会在进行生纯文字的邮件进行签名认证时发生问题。\n所以我们建议把此撰项关上。\n\n您要 Enigmail 为您执行关闭　Allow flowed text (RFC 2646) 这个选项吗?
+
+repeatPrefix=\n\n此提示将会再出现%S
+repeatSuffixSingular=次。
+repeatSuffixPlural=次。
+noRepeat=\n\n此提示将不会再出现致到你下次更新 Enigmail。
+
+noLogDir=请为进阶偏好设定中的日志路径进行设定以便新增日志档
+noLogFile=日志档案不存在！
+restartForLog=请重新启动 Mozilla 以便新增日志档
+
+# Strings in enigmailAbout.js
+usingVersion=Enigmail %S 在执行中
+versionWarning=警告：EnigMime 版本 %S 不协调
+enigmimeWarning=警告： EnigMime 模组不存在
+
+usingAgent=使用 %S 执行档 %S 以加密或解密
+agentError=错误：不能存取 enigmail 失败！
+
+# Strings in enigmailKeygen.js
+accessError=存取 enigmail 失败
+onlyGPG=产生新的钥匙只能在GPG中使用（PGP 将不能使用）！
+
+genComplete=产生新的钥匙完成！\n使用者钥匙 <%S> 将会在未来用於加密或签证
+genCompleteNoSign=产生新的钥匙完成！
+genGoing=产生新的钥匙正在进行中！
+
+passNoMatch=输入的密码不相同，请重输入
+passCheckBox=不用密码请选择此项
+passUserName=此认证的使用者名称为
+
+keyConfirm=要为'%S'产生的公开和隐密的钥匙吗？
+keyAbort=中止钥匙产生吗？
+
+# Strings in enigmailMessengerOverlay.js
+keyImport=\n\n按下确定以从钥匙伺服器中汇入钥匙编号 %S。
+keyImportError=钥匙伺服器中搜寻不到公开钥匙\n\n
+securityInfo=OpenPGP 安全资讯\n\n
+
+enigHeader=Enigmail:
+enigNote=Note from Enigmail: Attachments to this message have not been signed or encrypted.
+enigContentNote=Enigmail: *Attachments to this message have not been signed or encrypted*\r\n\r\n
+# Make Comment due to this translation will not display right.
+# enigNote=Enigmail:此邮件中的附件并没有经过加密或签证。
+# enigContentNote=Enigmail: *此邮件中的附件并没有经过加密或签证*\r\n\r\n
+
+noDecrypted=没有可解码的信息可以储存！\n请在档案目录选用储存
+noMessage=没有信息可以储存！
+useButton=请在目录中选择解码与签名认证以解码
+saveHeader=Enigmail：储存解码後的信息
+
+# Strings in enigmailMsgComposeOverlay.js
+keysToExport=汇出使用者的公开钥匙的邮址
+exportPrompt=Enigmail 钥匙汇出
+pubKey=%S使用者公开钥匙\n
+
+windowLocked=编写邮件已被销定，寄出被取消
+sendUnencrypted=Enigmail启动失常。\n寄出未加密的邮件吗？
+composeSpecifyEmail=请指定您的主要邮址以用於签证寄出邮件时使用。\n 如果您要用“寄出”的邮址作为签证请把此栏置空。
+sendingBCC=此邮件有隐密收信者BCC。如果加密此邮件所有的收信者都可以通过检察加密钥匙名单得知谁是隐密收信者致使隐密保安失效。\n\n按确定以继绩加密或取消中止寄出。
+sendingNews=加密寄出中止.\n\n由於有新闻组的存在此邮件不能加密。请用不加密的方法重新寄出。
+sendingPGPMIME=邮件中的附件也会一起的被加密或签证，只有能支援PGP/MIME格式的电邮程式可以读取此类邮件。已知的支援电邮程式有 Enigmail, Evolution, and Mutt。\n 按确定以继绩使用PGP/MIME格式或取消使用嵌入格式寄出。
+noPGPMIME=PGP/MIME不存在！\n 用嵌入格式加密或签证？
+hasHTML=HTML 邮件警告：\n此邮件带有HTML格式这可能会使到加密或签证失败。为了避免此类问题的发生您可以在寄出或回覆邮件时按下SHIFT键以寄出签证的邮件。\n如果您是预置加密或签证寄出邮件您应该在取消选择编写HTML格式邮件选项以取消HTML格式的邮件。
+strippingHTML="邮件中含有的格式HTML将会在转换成纯文字格式加密或签证时失效。您要继绩吗？
+
+sendAborted=寄出中止。\n\n
+
+statPGPMIME=PGP/MIME
+statSigned=已签证
+statEncrypted=已加密
+statPlain=纯文字
+
+offlineSave=储存 %S 邮件 %S 到未寄出的邮件吗？
+
+onlineSend=寄出 %S 邮件到 %S吗？
+offlineNote=你现在正使用离线模式。要储存此邮件到未寄出的邮件吗？
+
+signFailed=Enigmail发生错误，加密或签证失败要寄出未加密的邮件吗？
+
+# Strings in enigmailMsgHdrViewOverlay.js
+keyNeeded=需要公开钥匙编号 %S 以作签名认证
+clickDecrypt=；按下「解密」键
+clickDecryptRetry=；按下「解密」键重试
+clickPen=；按下笔图？
+clickPenDetails=；按下断笔图取得详细的资料？
+clickQueryPenDetails=；按下笔图取得详细的资料？
+clickKey=；按下断钥匙图？
+clickKeyDetails=；按下断钥匙图取得详细的资料？
+
+reloadImapMessage=重新载入完整的IMAP邮件以进行解码与签名认证？
+reloadImapError=错误－IMAP邮件过大无法进行解码与签名认证
+
+unverifiedSig=未认证的签名
+incompleteDecrypt=解密不完整
+failedSig=错误－签名认证失败
+needKey=错误－需要隐密的钥匙以进行邮件解码
+failedDecrypt=错误－解码失败
+badPhrase=错误－密码错误
+failedDecryptVerify=错误－解码与签名认证失败
+viewInfo=; View > Message security info for details
+
+decryptedMsg=已解码  邮件
+
+# Strings in enigmailNavigatorOverlay.js
+navEncryptError=加密或签证时失败。\n
+navDecryptError=解码时失败。\n
+
+# Strings in pref-enigmail-adv.js
+testNoSvc=EnigTest：Enigmail 存取失败
+testNoEmail=EnigTest：请输入邮址以便测试
+
+# Strings in pref-enigmail.js
+uninstallConfirm=您真的要删除所有在Mozilla component 和 chrome 目录内与 EnigMail 有关的档案吗？
+uninstallFailOverlay=由於覆盖的RDF移除 EnigMail 失败；不删除 chrome jar 档案
+uninstallFailDelete=删除档案时发生问题
+uninstallFail=移除 EnigMail 失败
+uninstallSuccess=EnigMail 已被移除
+
+# Strings used in components/enigmail.js
+# (said file also re-uses some strings given above)
+
+enterPass=请输入您 %S 的密码
+rememberPass=记忆 %S 分钟
+
+notInit=错误－Enigmail 还未初始化
+badCommand=错误－加解指令失败
+cmdLine=指令模式和输出：
+notRequired=错误－不须加密
+notComplete=错误－产生钥匙未完成
+invalidEmail=错误－不正确的邮址
+noPassphrase=错误－无密码提供
+noPGPblock=错误－没有文字式的 PGP 资料
+decryptToImport=按下解码以汇入邮件内的公开钥匙
+extraText=附加文字中含有更多的 PGP 资料。按下解密键
+toVerify=以签名认证。
+sigMismatch=错误－签名认证失配
+cantImport=汇入公开钥匙失败\n\n
+
+prefUntrusted=不被信任的
+prefRevoked=已废除的
+prefExpiredKey=逾期的钥匙
+prefExpired=逾期的
+prefGood=成功认证%S的签名
+prefBad=失败认证%S的签名
+
+failFingerprint=错误－采指纹指令失败
+failMultiple=错误－%S有多个公开钥匙
+failNoKey=错误－找不到的%S公开钥匙
+failOnlyGPG=错误－只有GPG钥匙可以从钥匙伺服器中取得
+failCancel=错误－从钥匙伺服器中取得钥匙被使用者取消
+failNoServer=错误－没有指定的钥匙伺服器以取得钥匙
+failNoID=错误－没有指定的钥匙编号
+failKeyExtract=错误－钥匙取得指令失败
+notFirstBlock=错误－第一 PGP资料非公开钥匙资料
+importKeyConfirm=在的嵌入的邮件中汇入公开钥匙
+
+
+importKey=从汇入钥匙伺服器公开钥匙编号%S
+

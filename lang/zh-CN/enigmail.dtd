@@ -1,0 +1,164 @@
+<!ENTITY enigmail.label	                  "Enigmail">
+
+<!ENTITY enigmail.keyUserId.label         "使用者电邮">
+<!ENTITY enigmail.useForSigning.label     "使用钥匙签证">
+<!ENTITY enigmail.keyComment.label        "简介">
+<!ENTITY enigmail.keyNoPassphrase.label   "不用密码">
+<!ENTITY enigmail.keyPassphrase.label     "密码">
+<!ENTITY enigmail.keyPassphraseRepeat.label "重复密码">
+<!ENTITY enigmail.generateKey.label       "产生新的钥匙">
+<!ENTITY enigmail.cancelKey.label         "取消">
+
+<!ENTITY enigmail.preferences.label	  "偏好设定">
+
+<!ENTITY enigmail.autoCrypto.label        "自动加密">
+<!ENTITY enigmail.userIdValue.label       "使用者的电邮">
+<!ENTITY enigmail.userNoPassphrase.label  "使用者没有设定使用密码">
+
+<!ENTITY enigmail.userIdFromAddr.label    "使用此电邮签证">
+
+<!ENTITY enigmail.defaultEncryptionOption.label "请选用加密的方式">
+<!ENTITY enigmail.usePGPMimeOption.label  "请选用PGP/MIME的方式">
+<!ENTITY enigmail.mimeHashAlgorithm.label "Hash 加密法">
+
+<!ENTITY enigmail.agentPath.label         "GPG/PGP 程式所在路径">
+
+<!ENTITY enigmail.send_plaintext_flowed.label "允许 flowed text (RFC 2646)">
+
+<!ENTITY enigmail.maxIdleMinutesHead.label "记忆密码">
+<!ENTITY enigmail.maxIdleMinutesTail.label "分钟">
+
+<!ENTITY enigmail.advancedPrefsButton.label "进阶">
+<!ENTITY enigmail.resetPrefsButton.label  "重设">
+<!ENTITY enigmail.prefsHelpButton.label	  "说明">
+
+<!ENTITY enigmail.upgradeButton.label	  "更新 Enigmail">
+<!ENTITY enigmail.uninstallButton.label	  "删除 Enigmail">
+
+<!ENTITY enigmail.advancedPrefs.label	  "Enigmail 进阶偏好设定">
+
+<!ENTITY enigmail.whenSending.label       "每当寄出电邮时">
+<!ENTITY enigmail.moreOptions.label       "其它选项">
+
+<!ENTITY enigmail.encryptToSelf.label     "Encrypt to self">
+<!ENTITY enigmail.alwaysTrustSend.label   "默认使用者编号 ID">
+<!ENTITY enigmail.defaultSignNewsMsg.label "为新闻电邮签证">
+<!ENTITY enigmail.useDefaultComment.label "在签证时使用预置简介">
+
+<!ENTITY enigmail.keyserver.label         "钥匙伺服器">
+
+<!ENTITY enigmail.disableSMIMEui.label	  "隐藏 SMIME 图案与选项">
+<!ENTITY enigmail.captureWebMail.label	  "Capture webmail (experimental)">
+<!ENTITY enigmail.hushMailSupport.label   "Support for Hushmail (turn off unless needed)">
+
+<!ENTITY enigmail.debugging.label	  "为 Enigmail 进行除虫">
+<!ENTITY enigmail.logdirectory.label	  "日志路径">
+<!ENTITY enigmail.testemail.label	  "测试电邮">
+<!ENTITY enigmail.test.label    	  "测试">
+
+<!ENTITY enigmail.decryptbutton.label	  "解码">
+<!ENTITY enigmail.decryptbutton.tip	  "Enigmail 解码与签名认证">
+
+<!ENTITY enigmail.messengermenu.accesskey   "n">
+
+<!ENTITY enigmail.decryptverify.label	    "解码与签名认证">
+<!ENTITY enigmail.importpublickey.label	    "汇入公匙">
+<!ENTITY enigmail.savedecrypted.label	    "储存解码的讯息">
+
+<!ENTITY enigmail.autoDecrypt.label         "自动进行解码与签名认证">
+<!ENTITY enigmail.clearPassphrase.label	    "清除记亿中的密码">
+
+<!ENTITY enigmail.prefs.label	            "偏好设定">
+<!ENTITY enigmail.advprefs.label	    "进阶偏好设定">
+<!ENTITY enigmail.viewconsole.label	    "观看 console">
+<!ENTITY enigmail.viewdebuglog.label	    "观看日志">
+
+<!ENTITY enigmail.generatekey.label	    "产生新的钥匙">
+<!ENTITY enigmail.upgrade.label	            "更新">
+<!ENTITY enigmail.help.label	            "说明">
+<!ENTITY enigmail.about.label	            "有关 Enigmail">
+
+<!ENTITY enigmail.decryptverify.accesskey   "D">
+<!ENTITY enigmail.importpublickey.accesskey "I">
+<!ENTITY enigmail.savedecrypted.accesskey   "S">
+
+<!ENTITY enigmail.autoDecrypt.accesskey     "A">
+
+<!ENTITY enigmail.clearPassphrase.accesskey "l">
+
+<!ENTITY enigmail.prefs.accesskey           "P">
+<!ENTITY enigmail.advprefs.accesskey        "v">
+<!ENTITY enigmail.viewconsole.accesskey	    "c">
+<!ENTITY enigmail.viewdebuglog.accesskey    "g">
+
+<!ENTITY enigmail.generatekey.accesskey     "k">
+<!ENTITY enigmail.upgrade.accesskey         "U">
+<!ENTITY enigmail.help.accesskey            "H">
+<!ENTITY enigmail.about.accesskey           "b">
+
+<!ENTITY enigmail.sendbutton.label	  "加密或签证寄出">
+<!ENTITY enigmail.sendbutton.tip	  "加密或签证寄出">
+
+<!ENTITY enigmail.defaultsend.label	       "预置寄出">
+<!ENTITY enigmail.signedsend.label	       "签证寄出">
+<!ENTITY enigmail.encryptedsend.label	       "加密寄出">
+<!ENTITY enigmail.encryptsignsend.label	       "加密和签证寄出">
+<!ENTITY enigmail.plainsend.label	       "纯文字寄出">
+
+<!ENTITY enigmail.sendOptionsMenu.label        "预置的寄出方式">
+<!ENTITY enigmail.mimeOptionsMenu.label        "预置的MIME选项">
+<!ENTITY enigmail.sendPGPMime.label            "在此电邮中使用 PGP/MIME">
+
+<!ENTITY enigmail.undoencryption.label	       "取消加密">
+<!ENTITY enigmail.insertkey.label	       "附上公匙">
+
+<!ENTITY enigmail.composemenu.accesskey        "n">
+
+<!ENTITY enigmail.defaultsend.accesskey	       "D">
+<!ENTITY enigmail.signedsend.accesskey	       "S">
+<!ENTITY enigmail.encryptedsend.accesskey      "c">
+<!ENTITY enigmail.encryptsignsend.accesskey    "E">
+<!ENTITY enigmail.plainsend.accesskey	       "P">
+
+<!ENTITY enigmail.sendOptionsMenu.accesskey    "o">
+<!ENTITY enigmail.mimeOptionsMenu.accesskey    "M">
+<!ENTITY enigmail.sendPGPMime.accesskey        "g">
+
+<!ENTITY enigmail.undoencryption.accesskey     "U">
+<!ENTITY enigmail.insertkey.accesskey          "I">
+
+<!ENTITY enigmail.defaultEncryptionSign.label     "如有可能则加密和签证">
+<!ENTITY enigmail.defaultEncryptionOnly.label     "如有可能则加密">
+<!ENTITY enigmail.defaultEncryptionNone.label     "不用加密和签证">
+
+<!ENTITY enigmail.usePGPMimeAlways.label          "总是使用 PGP/MIME">
+<!ENTITY enigmail.usePGPMimePossible.label        "如有可能则使用 PGP/MIME">
+<!ENTITY enigmail.usePGPMimeNever.label           "不用 PGP/MIME">
+
+<!ENTITY enigmail.defaultSignMsg.label            "为电邮签证">
+<!ENTITY enigmail.confirmBeforeSend.label         "确认後才寄出">
+
+<!ENTITY enigmail.defaultEncryptionSign.accesskey "E">
+<!ENTITY enigmail.defaultEncryptionOnly.accesskey "c">
+<!ENTITY enigmail.defaultEncryptionNone.accesskey "N">
+
+<!ENTITY enigmail.usePGPMimeAlways.accesskey      "A">
+<!ENTITY enigmail.usePGPMimePossible.accesskey    "U">
+<!ENTITY enigmail.usePGPMimeNever.accesskey       "v">
+
+<!ENTITY enigmail.defaultSignMsg.accesskey        "S">
+<!ENTITY enigmail.confirmBeforeSend.accesskey     "A">
+
+<!ENTITY enigmail.keygen.desc "注意：您可能会花费数分钟的时间才能完整的产生新的钥匙，请不要离开您的浏览器。在产生新的钥匙的过程中浏览网页或使用电脑可能会增加乱数的生产从而减少所须的时间。当产生完成後您会收到通知。">
+
+<!ENTITY enigmail.console.label                     "观看 Enigmail console">
+<!ENTITY enigmail.console.tooltip                   "观看 Enigmail console">
+
+<!ENTITY enigmail.uninstall.label                   "删除 Enigmail">
+<!ENTITY enigmail.uninstall.tooltip                 "删除 Enigmail">
+
+<!ENTITY enigmail.selectpanel.label                 "选择 Enigmail 板面">
+<!ENTITY enigmail.selectpanel.tooltip               "选择 Enigmail 板面">
+
+<!ENTITY enigmail.experimental.label                "使用实验性的嵌入加密与签证">
+
