@@ -511,7 +511,7 @@ function enigMessageParse(interactive, importOnly, contentEncoding) {
     // No PGP content
     return;
   }
-  
+
   var charset = msgWindow ? msgWindow.mailCharacterSet : "";
 
   // Encode ciphertext to charset from unicode
@@ -674,14 +674,22 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
   
   var msgRfc822Text = "";
   if (head || tail) {
-    if (head) msgRfc822Text=head+"\n\n";
+    if (head) {
+      // print a warning if the signed or encrypted part doesn't start
+      // quite early in the message
+      var matches=head.match(/(\n)/g);
+      if (matches.length >10) {
+        msgRfc822Text=EnigGetString("notePartEncrypted")+"\n\n";
+      }
+      msgRfc822Text+=head+"\n\n";
+    }
     msgRfc822Text += EnigGetString("beginPgpPart")+"\n\n";
   }
   msgRfc822Text+=plainText;
   if (head || tail) {
     msgRfc822Text+="\n\n"+EnigGetString("endPgpPart")+"\n\n"+tail;
   }
-  
+
   gEnigDecryptedMessage = {url:messageUrl,
                            headerList:headerList,
                            hasAttachments:hasAttachments,
