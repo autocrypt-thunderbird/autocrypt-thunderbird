@@ -45,7 +45,7 @@ function enigStartHeaders()
     var statusText = document.getElementById("expandedEnigmailStatusText");
 
     if (statusText)
-      statusText.setAttribute("value", "");
+      statusText.fistChild.data="*";
   }
 
   var msgFrame = EnigGetFrame(window, "messagepane");
@@ -169,11 +169,11 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
   var statusText  = document.getElementById("expandedEnigmailStatusText");
 
   if (statusLine) {
-    statusText.setAttribute("value", statusLine);
+    statusText.firstChild.data= statusLine;
     enigmailBox.removeAttribute("collapsed");
 
   } else {
-    statusText.setAttribute("value", "");
+    statusText.firstChild.data= "*";
     enigmailBox.setAttribute("collapsed", "true");
   }
 

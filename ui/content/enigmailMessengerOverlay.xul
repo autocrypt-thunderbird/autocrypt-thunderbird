@@ -125,7 +125,7 @@
        <hbox id="expandedEnigmailStatusBox" class="headerNameBox" align="start">
          <label class="headerName" value="Enigmail: " flex="1"/>
        </hbox>
-       <label id="expandedEnigmailStatusText" class="headerValue" flex="1">*</label>
+       <label id="expandedEnigmailStatusText" class="enigmailHeaderBoxLabelSignatureOk" flex="1">*</label>
     </box>
   </vbox>
 
