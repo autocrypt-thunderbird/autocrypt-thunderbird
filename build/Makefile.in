@@ -35,7 +35,7 @@
 
 # Specify these as parameters to the make command
 XPI_MODULE	= enigmime
-XPI_MODULE_VERS = 0.65.0
+XPI_MODULE_VERS = 0.66.0
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
@@ -50,9 +50,11 @@ SHORT_LIBNAME	= enigmime
 
 IS_COMPONENT	= 1
 
+ifdef USE_XPCOM_GLUE
 # Ensure that the xpcom classes that we build
 # do not export themselves
-DEFINES		+= -D_IMPL_NS_COM_OFF 
+DEFINES		+= -D_IMPL_NS_COM_OFF -DXPCOM_GLUE
+endif
 
 REQUIRES	= xpcom \
 		  string \
@@ -96,6 +98,7 @@ SHARED_LIBRARY_LIBS = \
 		$(DIST)/lib/$(LIB_PREFIX)ipc_s.$(LIB_SUFFIX) \
 		$(NULL)
 
+ifdef USE_XPCOM_GLUE
 EXTRA_DSO_LDOPTS = \
 		$(DIST)/lib/$(LIB_PREFIX)xpcomglue.$(LIB_SUFFIX) \
 		$(DIST)/lib/$(LIB_PREFIX)string_s.$(LIB_SUFFIX) \
@@ -103,6 +106,14 @@ EXTRA_DSO_LDOPTS = \
 		$(XPCOM_LIBS) \
 		$(NSPR_LIBS) \
 		$(NULL)
+else
+EXTRA_DSO_LDOPTS = \
+		$(DIST)/lib/$(LIB_PREFIX)string_s.$(LIB_SUFFIX) \
+		$(DIST)/lib/$(LIB_PREFIX)string_obsolete_s.$(LIB_SUFFIX) \
+		$(XPCOM_LIBS) \
+		$(NSPR_LIBS) \
+		$(NULL)
+endif
 
 include $(topsrcdir)/config/rules.mk
 

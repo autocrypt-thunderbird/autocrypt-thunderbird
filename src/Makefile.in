@@ -41,9 +41,11 @@ include $(DEPTH)/config/autoconf.mk
 MODULE		= enigmime
 LIBRARY_NAME	= enigmime_s
 
+ifdef USE_XPCOM_GLUE
 # Ensure that the xpcom classes that we build
 # do not export themselves
-DEFINES		+= -D_IMPL_NS_COM_OFF 
+DEFINES		+= -D_IMPL_NS_COM_OFF -DXPCOM_GLUE
+endif
 
 REQUIRES	= xpcom \
 		  string \
