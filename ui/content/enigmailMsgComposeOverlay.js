@@ -190,14 +190,14 @@ function enigInsertKey() {
     }
   }
 
-  var text = "User Ids (email addresses) of keys to export";
+  var text = EnigGetString("keysToExport");
   var retObj = new Object();
   var checkObj = new Object();
 
   if (userIdValue)
     retObj.value = userIdValue;
 
-  var proceed = gPromptService.prompt(window, "Enigmail Key Export",
+  var proceed = gPromptService.prompt(window, EnigGetString("exportPrompt"),
                                       text, retObj, "", checkObj);
 
   userIdValue = retObj.value;
@@ -227,7 +227,7 @@ function enigInsertKey() {
     return;
   }
 
-  gEnigEditorShell.InsertText("Public key for "+userIdValue+"\n" + keyBlock);
+  gEnigEditorShell.InsertText(EnigGetString("pubKeyPrefix")+" "+userIdValue+" "+EnigGetString("pubKeySuffix") + keyBlock);
 }
 
 function enigUndoEncryption() {
@@ -296,7 +296,7 @@ function enigSend(sendFlags) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: "+sendFlags+"\n");
 
   if (gWindowLocked) {
-    EnigAlert("Compose window is locked; send cancelled\n");
+    EnigAlert(EnigGetString("windowLocked"));
     return;
   }
 
@@ -304,7 +304,7 @@ function enigSend(sendFlags) {
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {
-     if (EnigConfirm("Failed to initialize Enigmail.\nSend unencrypted email?"))
+     if (EnigConfirm(EnigGetString("sendUnencrypted")))
         goDoCommand('cmd_sendButton');
 
      return;
@@ -354,7 +354,7 @@ function enigSend(sendFlags) {
 
        if (!userIdValue) {
 
-         var mesg = "Please specify your primary email address, which will be used to choose the signing key for outgoing messages.\n If you leave it blank, the FROM address of the message will be used to choose the signing key.";
+         var mesg = EnigGetString("composeSpecifyEmail");
 
          var valueObj = new Object();
          valueObj.value = userIdValue;
@@ -416,7 +416,7 @@ function enigSend(sendFlags) {
            DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: No default encryption because of BCC\n");
 
          } else {
-           if (!EnigConfirm("This message has BCC (blind copy) recipients. If this message is encrypted, all recipients will be able to determine the identity of the BCC recipients by examining the encryption key list, leading to loss of confidentiality. \n\nClick OK to proceed with encryption anyway, or Cancel to abort the send operation.")) {
+           if (!EnigConfirm(EnigGetString("sendingBCC"))) {
              return;
            }
          }
@@ -429,7 +429,7 @@ function enigSend(sendFlags) {
        if (sendFlags & ENIG_ENCRYPT) {
 
          if (!defaultSend) {
-           EnigAlert("Encrypted send operation aborted.\n\nThis message cannot be encrypted because there are newsgroup recipients. Please re-send the message without encryption.");
+           EnigAlert(EnigGetString("sendingNews"));
            return;
          }
 
@@ -508,7 +508,7 @@ function enigSend(sendFlags) {
         (usePGPMimeOption >= PGP_MIME_POSSIBLE) &&
         enigmailSvc.composeSecure ) {
 
-       if (EnigConfirm("Attachments to this message will be signed/encrypted only if the recipient's mail reader supports the PGP/MIME format. Enigmail, Evolution, and Mutt are known to support this format.\n Click OK to use PGP/MIME format for this message, or Cancel to use inline PGP.")) {
+       if (EnigConfirm(EnigGetString("sendingPGPMIME"))) {
        // Use PGP/MIME
        sendFlags |= nsIEnigmail.SEND_PGP_MIME;
        }
@@ -518,7 +518,7 @@ function enigSend(sendFlags) {
                         (sendFlags & ENIG_ENCRYPT_OR_SIGN);
 
      if (usingPGPMime && !enigmailSvc.composeSecure) {
-       if (!EnigConfirm("PGP/MIME not available!\nUse inline PGP for signing/encryption?")) {
+       if (!EnigConfirm(EnigGetString("noPGPMIME"))) {
           throw Components.results.NS_ERROR_FAILURE;
           
        }
@@ -573,7 +573,7 @@ function enigSend(sendFlags) {
        ///EnigDumpHTML(editorDoc.documentElement);
 
        if (gMsgCompose.composeHTML) {
-         var errMsg = "HTML mail warning:\nThis message may contain HTML, which could cause signing/encryption to fail. To avoid this in the future, you should press the SHIFT key when clicking on the Compose/Reply button to send signed mail.\nIf you sign mail by default, you should uncheck the 'Compose Messages in HTML' preference box to permanently disable HTML mail for this mail account."
+         var errMsg = EnigGetString("hasHTML");
 
          EnigAlertCount("composeHtmlAlertCount", errMsg);
        }
@@ -581,7 +581,7 @@ function enigSend(sendFlags) {
        try {    
          var convert = DetermineConvertibility();
          if (convert == nsIMsgCompConvertible.No) {
-           if (!EnigConfirm("Message contains HTML formatting information that will be lost when converting to plain text for signing/encryption. Do you wish to proceed?\n"))
+           if (!EnigConfirm(EnigGetString("strippingHTML")))
              return;
          }
        } catch (ex) {
@@ -674,7 +674,7 @@ function enigSend(sendFlags) {
 
            if (sendFlags & ENIG_ENCRYPT_OR_SIGN) {
              // Encryption/signing failed
-             EnigAlert("Send operation aborted.\n\n"+errorMsgObj.value);
+             EnigAlert(EnigGetString("sendAborted")+errorMsgObj.value);
              return;
            }
          }
@@ -689,20 +689,20 @@ function enigSend(sendFlags) {
 
        if (sendFlags & ENIG_ENCRYPT_OR_SIGN) {
          if (sendFlags & nsIEnigmail.SEND_PGP_MIME)
-           msgStatus += "PGP/MIME ";
+           msgStatus += EnigGetString("statPGPMIME")+" ";
 
          if (sendFlags & ENIG_SIGN)
-           msgStatus += "SIGNED ";
+           msgStatus += EnigGetString("statSigned")+" ";
 
          if (sendFlags & ENIG_ENCRYPT)
-           msgStatus += "ENCRYPTED ";
+           msgStatus += EnigGetString("statEncrypted")+" ";
 
        } else {
-         msgStatus += "PLAINTEXT ";
+         msgStatus += EnigGetString("statPlain")+" ";
        }
 
-       var msgConfirm = isOffline ? "Save "+msgStatus+"message to "+toAddr+" in Unsent Messages folder?\n"
-                                  :"Send "+msgStatus+"message to "+toAddr+"?\n";
+       var msgConfirm = isOffline ? EnigGetString("offlineSavePrefix")+" "+msgStatus+" "+EnigGetString("offlineSaveInfix")+" "+toAddr+" "+EnigGetString("offlineSaveSuffix")
+                                  :EnigGetString("sendPrefix")+" "+msgStatus+" "+EnigGetString("sendInfix")+" "+toAddr+" "+EnigGetString("sendSuffix");
 
        if (!EnigConfirm(msgConfirm)) {
          if (gEnigProcessed)
@@ -712,7 +712,7 @@ function enigSend(sendFlags) {
        }
 
      } else if (isOffline &&
-                !EnigConfirm("You are currently offline. Do you wish to save the message in the Unsent Messages folder?\n") ) {
+                !EnigConfirm(EnigGetString("offlineNote")) ) {
        // Abort send
        if (gEnigProcessed)
          enigUndoEncryption();
@@ -739,7 +739,7 @@ function enigSend(sendFlags) {
      enigGenericSendMessage(nsIMsgCompDeliverMode.Now);
 
   } catch (ex) {
-     if (EnigConfirm("Error in Enigmail; Encryption/signing failed; send unencrypted email?\n"))
+     if (EnigConfirm(EnigGetString("signFailed")))
        goDoCommand('cmd_sendButton');
   }
 }
