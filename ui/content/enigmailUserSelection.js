@@ -37,6 +37,7 @@ EnigInitCommon("enigmailUserSelection");
 
 // field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
 const KEY_ID = 4;
+const CREATED = 5;
 const EXPIRY = 6;
 const USER_ID = 9;
 
@@ -101,6 +102,10 @@ function enigmailUserSelLoad() {
      }
    } catch (ex) {}
 
+   if (secretOnly) {
+      // rename expired row to created
+      document.getElementById("expCol").setAttribute("label",EnigGetString("createdHeader"));
+   }
    gUserList = document.getElementById("enigmailUserIdSelection");
    var descNotFound=document.getElementById("usersNotFoundDesc");
    var treeChildren=gUserList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
@@ -125,6 +130,7 @@ function enigmailUserSelLoad() {
      if (aGpgUserList[i][0] == "pub" || aGpgUserList[i][0] == "sec") {
        userObj = new Object();
        userObj.expiry=aGpgUserList[i][EXPIRY];
+       userObj.created=aGpgUserList[i][CREATED];
        userObj.userId=aGpgUserList[i][USER_ID];
        userObj.keyId=aGpgUserList[i][KEY_ID];
        userObj.SubUserIds=new Array();
@@ -175,7 +181,13 @@ function enigmailUserSelLoad() {
 
       if (! hideExpired || activeState<2) {
         // do not show if expired keys are hidden
-        var treeItem=enigUserSelCreateRow(activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry, expired)
+        var treeItem=null;
+        if (secretOnly) {
+          treeItem=enigUserSelCreateRow(activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].created, false)
+        }
+        else {
+          treeItem=enigUserSelCreateRow(activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry, expired)
+        }
         if (aUserList[i].SubUserIds.length) {
           treeItem.setAttribute("container", "true");
           var subChildren=document.createElement("treechildren");
@@ -257,7 +269,7 @@ function enigGetUserList(window, secretOnly, exitCodeObj, statusFlagsObj, errorM
 
 
 // create a (sub) row for the user tree
-function enigUserSelCreateRow (activeState, userId, keyId, expiry, expired) {
+function enigUserSelCreateRow (activeState, userId, keyId, dateField, expired) {
     var selectCol=document.createElement("treecell");
     selectCol.setAttribute("id", "indicator");
     enigSetActive(selectCol, activeState);
@@ -266,10 +278,10 @@ function enigUserSelCreateRow (activeState, userId, keyId, expiry, expired) {
     userCol.setAttribute("label", userId);
     var expCol=document.createElement("treecell");
     if (expired) {
-      expCol.setAttribute("label", EnigGetString("selKeyExpired", expiry));
+      expCol.setAttribute("label", EnigGetString("selKeyExpired", dateField));
     }
     else {
-      expCol.setAttribute("label", expiry);
+      expCol.setAttribute("label", dateField);
     }
     expCol.setAttribute("id", "expiry");
     var keyCol=document.createElement("treecell");
