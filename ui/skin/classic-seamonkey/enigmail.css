@@ -1,0 +1,131 @@
+/* Enigmail styles */
+
+#button-enigmail-decrypt
+  {
+    list-style-image      : url("chrome://enigmail/skin/enigdecrypt.gif");
+  }
+
+#button-enigmail-decrypt[disabled="true"],
+#button-enigmail-decrypt[disabled="true"]:hover,
+#button-enigmail-decrypt[disabled="true"]:hover:active
+  {
+    list-style-image      : url("chrome://enigmail/skin/enigdecrypt-dis.gif");
+  }
+
+#button-enigmail-decrypt:hover
+  {
+    list-style-image      : url("chrome://enigmail/skin/enigdecrypt-hov.gif");
+  }
+
+#button-enigmail-decrypt:hover:active
+  {
+    list-style-image      : url("chrome://enigmail/skin/enigdecrypt-act.gif");
+  }
+
+#button-enigmail-send
+  {
+    list-style-image      : url("chrome://enigmail/skin/enigsend.gif");
+  }
+
+#button-enigmail-send[disabled="true"],
+#button-enigmail-send[disabled="true"]:hover,
+#button-enigmail-send[disabled="true"]:hover:active
+  {
+    list-style-image      : url("chrome://enigmail/skin/enigsend-dis.gif");
+  }
+
+#button-enigmail-send:hover
+  {
+    list-style-image      : url("chrome://enigmail/skin/enigsend-hov.gif");
+  }
+
+#button-enigmail-send:hover:active
+  {
+    list-style-image      : url("chrome://enigmail/skin/enigsend-act.gif");
+  }
+
+.action-box { width: 100px }
+
+#expandedEnigmailBox {
+ background-color:#d8e0e8 !important;
+}
+
+.enigmailHeaderBoxLabelSignatureOk {
+}
+
+.enigmailHeaderBoxLabelSignatureNotOk {
+ color: #ff0000;
+}
+
+.enigmailHeaderBoxLabelSignatureUnknown {
+ color: #E800FF;
+}
+
+#msgcomposeWindow #enigmail-signed-status {
+  list-style-image: none;
+  visibility: collapse;
+}
+
+#msgcomposeWindow[signed="ok"] #enigmail-signed-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbSignOk.gif");
+  visibility: visible;
+}
+
+#msgcomposeWindow[signed="notok"] #enigmail-signed-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbSignNotOk.gif");
+  visibility: visible;
+}
+
+
+#msgcomposeWindow #enigmail-encrypted-status {
+  list-style-image: none;
+  visibility: collapse;
+}
+
+#msgcomposeWindow[encrypted="ok"] #enigmail-encrypted-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbCryptoOk.gif");
+  visibility: visible;
+}
+
+#msgcomposeWindow[encrypted="notok"] #enigmail-encrypted-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbCryptoNotOk.gif");
+  visibility: visible;
+}
+
+
+#status-bar #enigmail-signed-status {
+  list-style-image: none;
+  visibility: collapse;
+}
+
+#status-bar[signed="ok"] #enigmail-signed-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbSignOk.gif");
+  visibility: visible;
+}
+
+#status-bar[signed="notok"] #enigmail-signed-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbSignNotOk.gif");
+  visibility: visible;
+}
+
+
+#status-bar #enigmail-encrypted-status {
+  list-style-image: none;
+  visibility: collapse;
+}
+
+#status-bar[encrypted="ok"] #enigmail-encrypted-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbCryptoOk.gif");
+  visibility: visible;
+}
+
+#status-bar[encrypted="notok"] #enigmail-encrypted-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbCryptoNotOk.gif");
+  visibility: visible;
+}
+
+
+.enigmailPrefsTitle {
+  font-weight: bold;
+  height: 25px;
+}
