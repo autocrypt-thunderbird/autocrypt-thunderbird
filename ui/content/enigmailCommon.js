@@ -636,6 +636,11 @@ function EnigHelpWindow(source) {
 }
 
 function EnigUpgrade() {
+  var ioService = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+  if (ioService && ioService.offline) {
+    EnigAlert(EnigGetString("needOnline"));
+    return;
+  }
   window.openDialog("http://enigmail.mozdev.org/no_wrap/update.html?upgrade=yes&enigmail="+gEnigmailVersion+"&enigmime="+gEnigmimeVersion, "dialog");
 }
 
