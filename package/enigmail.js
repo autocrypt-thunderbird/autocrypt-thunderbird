@@ -1592,6 +1592,35 @@ function () {
   return command;
 }
 
+Enigmail.prototype.fixExitCode =
+function (exitCode, statusFlags) {
+  if ((this.agentType == "gpg") && (exitCode == 256)) {
+    WARNING_LOG("enigmail.js: Enigmail.fixExitCode: Using gpg and exit code is 256. You seem to use cygwin-gpg, activating countermeasures.\n");
+    if (statusFlags & (nsIEnigmail.BAD_PASSPHRASE | nsIEnigmail.UNVERIFIED_SIGNATURE)) {
+      WARNING_LOG("enigmail.js: Enigmail.fixExitCode: Changing exitCode 256->2\n");
+      exitCode = 2;
+    } else {
+      WARNING_LOG("enigmail.js: Enigmail.fixExitCode: Changing exitCode 256->0\n");
+      exitCode = 0;
+    }
+  }
+  if ((this.agentVersion >= "1.3") && (this.isDosLike)) {
+      if ((exitCode == 2) && (!(statusFlags & (nsIEnigmail.BAD_PASSPHRASE |
+                              nsIEnigmail.UNVERIFIED_SIGNATURE |
+                              nsIEnigmail.MISSING_PASSPHRASE |
+                              nsIEnigmail.BAD_ARMOR |
+                              nsIEnigmail.DECRYPTION_INCOMPLETE |
+                              nsIEnigmail.DECRYPTION_FAILED |
+                              nsIEnigmail.NO_PUBKEY |
+                              nsIEnigmail.NO_SECKEY)))) {
+      WARNING_LOG("enigmail.js: Enigmail.fixExitCode: Using gpg version "+this.agentVersion+", activating countermeasures for file renaming bug.\n");
+      exitCode = 0;
+    }
+  }
+  return exitCode;
+}
+
+
 Enigmail.prototype.execCmd =
 function (command, passphrase, input, exitCodeObj, statusFlagsObj,
           statusMsgObj, errorMsgObj) {
@@ -1707,22 +1736,7 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
     }
   }
 
-  if ((this.agentType == "gpg") && (exitCodeObj.value == 256)) {
-    WARNING_LOG("enigmail.js: Enigmail.execCmd: Using gpg and exit code is 256. You seem to use cygwin-gpg, activating countermeasures.\n");
-    if (statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
-      WARNING_LOG("enigmail.js: Enigmail.execCmd: Changing exitCode 256->2\n");
-      exitCodeObj.value = 2;
-    } else {
-      WARNING_LOG("enigmail.js: Enigmail.execCmd: Changing exitCode 256->0\n");
-      exitCodeObj.value = 0;
-    }
-  }
-  if ((this.agentVersion >= "1.3") && (this.isDosLike)) {
-    if ((exitCodeObj.value == 2) && (!((statusFlags & nsIEnigmail.BAD_PASSPHRASE)))) {
-      WARNING_LOG("enigmail.js: Enigmail.execCmd: Using gpg version "+this.agentVersion+", activating countermeasures for file renaming bug.\n");
-      exitCodeObj.value = 0;
-    }
-  }
+  exitCodeObj.value = this.fixExitCode(exitCodeObj.value, statusFlags);
 
   statusFlagsObj.value = statusFlags;
   statusMsgObj.value   = statusArray.join("\n");
@@ -2099,31 +2113,8 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
   var cmdErrorMsgObj = new Object();
 
   var exitCode = this.execEnd(pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, cmdErrorMsgObj);
-
   var statusMsg = statusMsgObj.value;
-
-  if ((this.agentType == "gpg") && (exitCode == 256)) {
-    WARNING_LOG("enigmail.js: Enigmail.encryptMessageEnd: Using gpg and exit code is 256. You seem to use cygwin-gpg, activating countermeasures.\n");
-    if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
-      WARNING_LOG("enigmail.js: Enigmail.encryptMessageEnd: Changing exitCode 256->2\n");
-      exitCode = 2;
-    } else {
-      WARNING_LOG("enigmail.js: Enigmail.encryptMessageEnd: Changing exitCode 256->0\n");
-      exitCode = 0;
-    }
-  }
-  if ((this.agentVersion >= "1.3") && (this.isDosLike)) {
-    if ((exitCode == 2) && (!(statusFlagsObj.value & (nsIEnigmail.BAD_PASSPHRASE |
-              nsIEnigmail.NO_SECKEY |
-              nsIEnigmail.NO_PUBKEY |
-              nsIEnigmail.REVOKED_KEY |
-              nsIEnigmail.MISSING_PASSPHRASE |
-              nsIEnigmail.NODATA)))) {
-      WARNING_LOG("enigmail.js: Enigmail.execCmd: Using gpg version "+this.agentVersion+", activating countermeasures for file renaming bug.\n");
-      exitCode = 0;
-    }
-  }
-
+  exitCode = this.fixExitCode(exitCode, statusFlagsObj.value);
   if ((exitCode == 0) && !outputLen) {
     exitCode = -1;
   }
@@ -2811,31 +2802,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
   }
 
   var statusMsg = statusMsgObj.value;
-
-  if ((this.agentType == "gpg") && (exitCode == 256)) {
-    WARNING_LOG("enigmail.js: Enigmail.decryptMessageEnd: Using gpg and exit code is 256. You seem to use cygwin-gpg, activating countermeasures.\n");
-    if ((statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) || (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE)) {
-      WARNING_LOG("enigmail.js: Enigmail.decryptMessageEnd: Changing exitCode 256->2\n");
-      exitCode = 2;
-    } else {
-      WARNING_LOG("enigmail.js: Enigmail.decryptMessageEnd: Changing exitCode 256->0\n");
-      exitCode = 0;
-    }
-  }
-  if ((this.agentVersion >= "1.3") && (this.isDosLike)) {
-    if ((exitCode == 2) && (!(statusFlagsObj.value & (nsIEnigmail.BAD_PASSPHRASE |
-                              nsIEnigmail.UNVERIFIED_SIGNATURE |
-                              nsIEnigmail.MISSING_PASSPHRASE |
-                              nsIEnigmail.BAD_ARMOR |
-                              nsIEnigmail.DECRYPTION_INCOMPLETE |
-                              nsIEnigmail.DECRYPTION_FAILED |
-                              nsIEnigmail.NO_PUBKEY |
-                              nsIEnigmail.NO_SECKEY)))) {
-      WARNING_LOG("enigmail.js: Enigmail.execCmd: Using gpg version "+this.agentVersion+", activating countermeasures for file renaming bug.\n");
-      exitCode = 0;
-    }
-  }
-
+  exitCode = this.fixExitCode(exitCode, statusFlagsObj.value);
   if ((exitCode == 0) && !noOutput && !outputLen) {
     exitCode = -1;
   }
@@ -3569,7 +3536,7 @@ function (parent, name, comment, email, expiryDate, keyLength, passphrase,
   if (comment)
     inputData += "Name-Comment: "+comment+"\n";
   inputData += "Name-Email: "+email+"\n";
-  inputData += "Expire-Date: "+expiryDate+"\n";
+  inputData += "Expire-Date: "+String(expiryDate)+"\n";
 
   pipeConsole.write(inputData+"\n");
   CONSOLE_LOG(inputData+"\n");

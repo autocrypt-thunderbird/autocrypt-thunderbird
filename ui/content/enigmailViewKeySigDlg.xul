@@ -103,6 +103,12 @@
     const USER_ID = 9;
     const SIG_TYPE = 10;
     const KEY_USE_FOR = 11;
+    
+    const KEY_EXPIRED="e";
+    const KEY_REVOKED="r";
+    const KEY_INVALID="i";
+    const KEY_DISABLED="d";
+    const KEY_NOT_VALID=KEY_EXPIRED+KEY_REVOKED+KEY_INVALID+KEY_DISABLED;
 
     function onLoad() {
       var enigmailSvc = GetEnigmailSvc();
@@ -139,7 +145,12 @@
         if (listRow.length>=0) {
           if (listRow[0] == "uid" || listRow[0] == "pub") {
             var userRow=document.createElement("treerow");
-            addCell(userRow, listRow[USER_ID], true);
+            if (typeof(listRow[KEY_USE_FOR])!="string") {
+              listRow[KEY_USE_FOR]="";
+            }
+            var keyValid = (KEY_NOT_VALID.indexOf(listRow[KEY_TRUST])<0 &&
+                            listRow[KEY_USE_FOR].indexOf("D")<0);
+            addCell(userRow, listRow[USER_ID], true, keyValid);
             var treeItem=document.createElement("treeitem");
             treeItem.appendChild(userRow);
             treeChildren.appendChild(treeItem);
@@ -181,11 +192,16 @@
       return;
     }
     
-    function addCell(row, label, subkeyRow) {
+    function addCell(row, label, subkeyRow, keyActive) {
       var cell = document.createElement("treecell");
       cell.setAttribute("label", label);
       if (subkeyRow) {
-        cell.setAttribute("properties", "enigmailSubkeyTitle");
+        if (keyActive) {
+          cell.setAttribute("properties", "enigmailSubkeyTitle");
+        }
+        else {
+          cell.setAttribute("properties", "enigmailSubkeyTitle enigKeyInactive");
+        }
       }
       row.appendChild(cell);
       return cell;

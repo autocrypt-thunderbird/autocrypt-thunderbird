@@ -1761,15 +1761,18 @@ function enigReceiveKeyTerminate (terminateArg, ipcRequest) {
   }
 
   var keyRetrProcess = gEnigIpcRequest.pipeTransport;
+  var enigmailSvc = GetEnigmailSvc();
   var exitCode;
 
   if (keyRetrProcess && !keyRetrProcess.isAttached()) {
     keyRetrProcess.terminate();
     exitCode = keyRetrProcess.exitCode();
     DEBUG_LOG("enigmailMessengerOverlay.js: enigReceiveKeyTerminate: exitCode = "+exitCode+"\n");
+    if (enigmailSvc) {
+      exitCode = enigmailSvc.fixExitCode(exitCode, 0);
+    }
   }
 
-  var enigmailSvc = GetEnigmailSvc();
   if (exitCode==0) {
     enigMessageReload(false);
     if (enigmailSvc) {

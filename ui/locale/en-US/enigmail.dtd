@@ -11,6 +11,12 @@
 <!ENTITY enigmail.generateKey.tooltip     "Generates a new OpenPGP compliant key for encryption and/or signing">
 <!ENTITY enigmail.cancelKey.label         "Cancel">
 <!ENTITY enigmail.cancelKey.tooltip       "Cancel Key Generation">
+<!ENTITY enigmail.keyGen.expire.label     "Key expires in">
+<!ENTITY enigmail.keyGen.days.label       "days">
+<!ENTITY enigmail.keyGen.months.label     "months">
+<!ENTITY enigmail.keyGen.years.label      "years">
+<!ENTITY enigmail.keyGen.noExpiry.label   "Key does not expire">
+<!ENTITY enigmail.keyGen.keySize.label    "Key size">
 
 <!ENTITY enigmail.preferences.label       "Enigmail Preferences">
 
@@ -348,8 +354,8 @@
 <!ENTITY enigmail.keyMan.close.label               "Close">
 <!ENTITY enigmail.keyMan.key.label                 "Key">
 <!ENTITY enigmail.keyMan.generate.label            "Generate">
-<!ENTITY enigmail.keyMan.sign.label                "Sign">
-<!ENTITY enigmail.keyMan.setTrust.label            "Set trust">
+<!ENTITY enigmail.keyMan.sign.label                "Sign key">
+<!ENTITY enigmail.keyMan.setTrust.label            "Set key trust">
 <!ENTITY enigmail.keyMan.genRevoke.label           "Create &amp; save revocation certificate">
 
 <!ENTITY enigmail.keyMan.importMenu.label          "Import key">
@@ -361,6 +367,7 @@
 <!ENTITY enigmail.keyMan.uploadToServer.label      "Upload to keyserver">
 <!ENTITY enigmail.keyMan.importFromClipbrd.label   "From clipboard">
 <!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copy to clipboard">
+<!ENTITY enigmail.keyMan.refreshKey.label          "Refresh key from keyserver">
 
 <!ENTITY enigmail.keyMan.reload.label              "Reload key cache">
 <!ENTITY enigmail.keyMan.addUid.label              "Add user ID">
@@ -373,7 +380,10 @@
 <!ENTITY enigmail.keyMan.ownerTrust.label          "Owner Trust">
 <!ENTITY enigmail.keyMan.stopTransfer.label        "Stop transfer">
 <!ENTITY enigmail.keyMan.fingerprint.label         "Fingerprint">
-<!ENTITY enigmail.keyMan.refreshKey.label          "Refresh Key">
+
+<!ENTITY enigmail.keyMan.filter.label              "Filter for user ID's or key ID's containing:">
+<!ENTITY enigmail.keyMan.clearFilter.label         "Clear">
+<!ENTITY enigmail.keyMan.clearFilter.accesskey     "C">
 
 <!ENTITY enigmail.keyMan.window.accesskey            "W">
 <!ENTITY enigmail.keyMan.close.accesskey             "C">

@@ -24,6 +24,9 @@
   <keyset id="winKeys">
     <key id="key_closeWin" key="&enigmail.keyMan.closeWin.key;"
          oncommand="window.close()" modifiers="accel"/>
+    <key id="key_delete"
+         keycode="VK_DELETE"
+         oncommand="enigmailDeleteKey()"/>
   </keyset>
   
   <broadcasterset>
@@ -93,6 +96,7 @@
                   oncommand="enigCreateRevokeCert()"/>
         <menuitem label="&enigmail.keyMan.delKey.label;"
 									id="deleteKey"
+									key="key_delete"
 									observes="bcDeleteKey"
 									accesskey="&enigmail.keyMan.delKey.accesskey;"
 									oncommand="enigmailDeleteKey()"/>            
@@ -202,6 +206,19 @@
     </popup>
   </popupset>
   
+  <hbox flex="0" align="center">
+    <label value="&enigmail.keyMan.filter.label;"/>
+    <textbox id="filterKey" type="text" size="30"
+             onfocus="this.select();"
+             onclick="this.select();"
+             oninput="onSearchInput(false);"
+             onkeypress="onSearchKeyPress(event);"/>
+    <button label="&enigmail.keyMan.clearFilter.label;"
+            id="clearFilter" disabled="true"
+            accesskey="&enigmail.keyMan.clearFilter.accesskey;"
+            oncommand="onResetFilter();"/>
+  </hbox>
+
   <groupbox width="700px" flex="1">
     <hbox flex="1">    
      <tree id="pgpKeyList" flex="1"
@@ -242,7 +259,7 @@
   
         <treechildren id="pgpKeyListChildren"
                       context="ctxmenu"
-                      ondblclick="enigmailKeyDetails()"/>
+                      ondblclick="enigmailDblClick()"/>
   
       </tree>
   </hbox>

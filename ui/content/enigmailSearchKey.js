@@ -567,11 +567,14 @@ function enigmailGpgkeysTerminate(terminateArg, ipcRequest) {
    DEBUG_LOG("enigmailSearchkey.js: Terminate: "+ipcRequest+"\n");
 
    var GpgkeysProcess = ipcRequest.pipeTransport;
-
+   var enigmailSvc = GetEnigmailSvc();
    if (GpgkeysProcess && !GpgkeysProcess.isAttached) {
      GpgkeysProcess.terminate();
      var exitCode = GpgkeysProcess.exitCode();
      DEBUG_LOG("enigmailGpgkeysConsole: exitCode = "+exitCode+"\n");
+     if (enigmailSvc) {
+        exitCode = enigmailSvc.fixExitCode(exitCode, 0);
+     }
    }
 
   var console = window.enigRequest.gpgkeysRequest.stdoutConsole;

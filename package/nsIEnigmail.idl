@@ -121,6 +121,9 @@ interface nsIEnigmail : nsISupports
                          out wstring userId,
                          out wstring sigDetails,
                          out wstring errorMsg);
+                         
+  long fixExitCode(in long exitCode,
+                   in long statusFlags);
 
   string parseErrorOutput(in string errOutput,
                           out unsigned long statusFlags,

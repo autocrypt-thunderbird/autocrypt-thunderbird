@@ -1162,7 +1162,7 @@ function EnigKeygen() {
 
   window.openDialog('chrome://enigmail/content/enigmailKeygen.xul',
                     "enigmail:generateKey",
-                    'chrome,dialog,modal,close=no,resizable=yes,width=600');
+                    'chrome,dialog,modal,resizable=yes,width=600');
 
 }
 

@@ -41,6 +41,10 @@ function enigmailKeygenLoad() {
   }  
 }
 
+function enigmailOnClose() {
+  enigmailKeygenCancel();
+}
+
 function enigmailKeygenUnload() {
    DEBUG_LOG("enigmailKeygen.js: Unload\n");
 
@@ -79,11 +83,17 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
    window.focus();
 
    var keygenProcess = ipcRequest.pipeTransport;
-
+   var enigmailSvc = GetEnigmailSvc();
+   if (!enigmailSvc) {
+     EnigAlert(EnigGetString("accessError"));
+   }
    if (keygenProcess && !keygenProcess.isAttached) {
      keygenProcess.terminate();
      var exitCode = keygenProcess.exitCode();
      DEBUG_LOG("enigmailKeygenConsole.htm: exitCode = "+exitCode+"\n");
+     if (enigmailSvc) {
+        exitCode = enigmailSvc.fixExitCode(exitCode, 0);
+     }
    }
 
    enigRefreshConsole();
@@ -110,10 +120,6 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
 
    enigmailKeygenCloseRequest();
 
-   var enigmailSvc = GetEnigmailSvc();
-   if (!enigmailSvc) {
-     EnigAlert(EnigGetString("accessError"));
-   }
    enigmailSvc.invalidateUserIdList();
    window.close();
 }
@@ -186,11 +192,25 @@ function enigmailKeygenStart() {
       comment += "no password";
    }
 
+   var noExpiry = document.getElementById("noExpiry");
+   var expireInput = document.getElementById("expireInput");
+   var timeScale = document.getElementById("timeScale");
+
+   var expiryTime = 0;
+   if (! noExpiry.checked) {
+      expiryTime = Number(expireInput.value) * Number(timeScale.value);
+      if (expiryTime > 36500) {
+        EnigAlert(EnigGetString("expiryTooLong"));
+        return;
+      }
+   }
+   var keySize = Number(document.getElementById("keySize").value);
+
    var curId = getCurrentIdentity();
 
    var userName = curId.fullName;
    var userEmail = curId.email;
-
+   
    if (!userName) {
       EnigAlert(EnigGetString("passUserName"));
       return;
@@ -206,7 +226,6 @@ function enigmailKeygenStart() {
    var confirmMsg = EnigGetString("keyConfirm",idString);
 
    if (!EnigConfirm(confirmMsg)) {
-     window.close();
      return;
    }
 
@@ -218,8 +237,8 @@ function enigmailKeygenStart() {
                                            userName,
                                            comment,
                                            userEmail,
-                                           0,
-                                           2048,
+                                           expiryTime,
+                                           keySize,
                                            passphrase,
                                            requestObserver);
    } catch (ex) {
@@ -268,13 +287,27 @@ function enigRefreshConsole() {
 function enigmailKeygenCancel() {
    DEBUG_LOG("enigmailKeygen.js: Cancel\n");
 
-   var confirmMsg = EnigGetString("keyAbort");
-
-   if (EnigConfirm(confirmMsg)) {
+   if (gKeygenRequest) {
+      var closeWin = EnigConfirm(EnigGetString("keyAbort"));
+   }
+   else {
+      closeWin=true;
+   }
+   if (closeWin) {
      enigmailKeygenCloseRequest();
      window.close();
    }
 }
+
+function onNoExpiry() {
+  var noExpiry = document.getElementById("noExpiry");
+  var expireInput = document.getElementById("expireInput");
+  var timeScale = document.getElementById("timeScale");
+  
+  expireInput.disabled=noExpiry.checked;
+  timeScale.disabled=noExpiry.checked;
+}
+
 
 function queryISupportsArray(supportsArray, iid) {
     var result = new Array;

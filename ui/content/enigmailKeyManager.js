@@ -62,12 +62,20 @@ var gKeyList;
 var gEnigRemoveListener = false;
 var gEnigLastSelectedKeys = null;
 var gKeySortList = null;
-var gEnigIpcRequest=null;
-var gEnigCallbackFunc=null;
+var gEnigIpcRequest = null;
+var gEnigCallbackFunc = null;
+var gClearButton = null;
+var gFilterBox = null;
+var gSearchTimer = null;
+var gSearchInput = null;
+
 
 function enigmailKeyManagerLoad() {
    DEBUG_LOG("enigmailKeyManager.js: Load\n");
    gUserList = document.getElementById("pgpKeyList");
+   gFilterBox = document.getElementById("filterKey");
+   gClearButton = document.getElementById("clearFilter");
+   gSearchInput = document.getElementById("filterKey");
    window.enigIpcRequest = null;
    enigmailBuildList(false);
 }
@@ -79,12 +87,12 @@ function enigmailRefreshKeys() {
   for (var i=0; i<keyList.length; i++) {
     gEnigLastSelectedKeys[keyList[i]] = 1;
   }
-  var userTreeList = document.getElementById("pgpKeyList");
-  var treeChildren = userTreeList.getElementsByAttribute("id", "pgpKeyListChildren")[0]
+  var treeChildren = document.getElementById("pgpKeyListChildren");
   while (treeChildren.firstChild) {
     treeChildren.removeChild(treeChildren.firstChild);
   }
   enigmailBuildList(true);
+  enigApplyFilter();
 }
 
 function enigLoadKeyList(secretOnly, refresh) {
@@ -142,7 +150,7 @@ function enigmailBuildList(refresh) {
 
   gUserList.currentItem=null;
   
-  var treeChildren=gUserList.getElementsByAttribute("id", "pgpKeyListChildren")[0];
+  var treeChildren=document.getElementById("pgpKeyListChildren");
   
   gKeyList = new Array();
   var gKeySortList = new Array();
@@ -264,12 +272,14 @@ function enigUserSelCreateRow (keyObj, subKeyNum) {
         typeCol.setAttribute("label", EnigGetString("keyType.public"));
       }
       var keyTrust = keyObj.keyTrust;
+      treeItem.setAttribute("keytype", "pub");
       fprCol.setAttribute("label",EnigFormatFpr(keyObj.fpr));
     }
     else {
       // secondary user id
       keyObj.SubUserIds[subKeyNum].userId = EnigConvertGpgToUnicode(keyObj.SubUserIds[subKeyNum].userId);
       userCol.setAttribute("label", keyObj.SubUserIds[subKeyNum].userId);
+      treeItem.setAttribute("keytype", keyObj.SubUserIds[subKeyNum].type);
       keyCol.setAttribute("label", "");
       typeCol.setAttribute("label", "");
       keyTrust = keyObj.SubUserIds[subKeyNum].keyTrust;
@@ -307,7 +317,7 @@ function enigUserSelCreateRow (keyObj, subKeyNum) {
       }
     }
     if (keyObj.secretAvailable && subKeyNum <0) {
-      for (var node=userRow.firstChild; node; node=node.nextSibling) {
+      for (node=userRow.firstChild; node; node=node.nextSibling) {
         var attr=node.getAttribute("properties");
         if (typeof(attr)=="string") {
           node.setAttribute("properties", attr+" enigmailOwnKey");
@@ -386,6 +396,26 @@ function enigmailKeyMenu() {
   }
 }
 
+function enigmailDblClick() {
+  var keyList = enigmailGetSelectedKeys();
+  var keyType="";
+  if (keyList.length == 1) {
+    var rangeCount = gUserList.view.selection.getRangeCount();
+    var start = {};
+    var end = {};
+    gUserList.view.selection.getRangeAt(0,start,end);
+    try {
+      keyType = gUserList.view.getItemAtIndex(start.value).getAttribute("keytype");
+    }
+    catch(ex) {}
+  }
+  if (keyType=="uat") {
+    enigShowPhoto();
+  }
+  else {
+   enigmailKeyDetails();
+  }
+}
 
 function enigmailKeyDetails() {
   var keyList = enigmailGetSelectedKeys();
@@ -679,22 +709,6 @@ function enigmailSearchKey() {
 }
 
 
-function enigmailReceiveKey() {
-  var keyList = enigmailGetSelectedKeys();
-
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return;
-
-  var errorMsgObj = {};
-  var r=enigmailSvc.enableDisableKey(window, "0x"+keyList[0], disableKey, errorMsgObj);
-  if (r != 0) {
-    EnigAlert(EnigGetString("enableKeyFailed")+"\n\n"+errorMsgObj.value);
-  }
-  enigmailRefreshKeys();
-}
-
-
 function enigmailUploadKeys() {
   enigmailKeyServerAcess(nsIEnigmail.UPLOAD_KEY, enigmailUploadKeysCb);
 }
@@ -708,6 +722,7 @@ function enigmailUploadKeysCb(exitCode, errorMsg, msgBox) {
   else {
     return (EnigGetString(exitCode==0 ? "sendKeysOK" : "sendKeysFailed"));
   }
+  return "";
 }
 
 function enigmailReceiveKey() {
@@ -727,10 +742,90 @@ function enigmailReceiveKeyCb(exitCode, errorMsg, msgBox) {
   else {
     return (EnigGetString(exitCode==0 ? "receiveKeysOk" : "receiveKeysFailed"));
   }
+  return "";
 }
 
-// ----- keyserver related functionality ----
+//
+// ----- key filtering functionality  -----
+//
 
+function onSearchInput(returnKeyHit)
+{
+  if (gSearchTimer) {
+    clearTimeout(gSearchTimer);
+    gSearchTimer = null;
+  }
+
+  // only select the text when the return key was hit
+  if (returnKeyHit) {
+    gSearchInput.select();
+    onEnterInSearchBar();
+  }
+  else {
+    gSearchTimer = setTimeout("onEnterInSearchBar();", 800);
+  }
+}
+
+function onSearchKeyPress(event)
+{
+  // 13 == return
+  if (event && event.keyCode == 13) {
+    event.stopPropagation(); // make sure the dialog is not closed...
+    onSearchInput(true);
+  }
+}
+
+function onEnterInSearchBar() {
+   if (gSearchInput.value == "")
+   {
+     onResetFilter();
+     return;
+   }
+   gClearButton.setAttribute("disabled", false);
+   enigApplyFilter();
+}
+
+function getFirstNode() {
+  return document.getElementById("pgpKeyListChildren").firstChild;
+}
+
+function onResetFilter() {
+  gFilterBox.value="";
+  var node=getFirstNode();
+  while (node) {
+    node.hidden=false;
+    node = node.nextSibling;
+  }
+  gClearButton.setAttribute("disabled", true);
+}
+
+function enigApplyFilter() {
+  var searchTxt=gSearchInput.value;
+  if (!searchTxt || searchTxt.length==0) return;
+  searchTxt = searchTxt.toLowerCase();
+  var node=getFirstNode();
+  while (node) {
+    var uid = gKeyList[node.id].userId;
+    var hideNode = true;
+    if ((uid.toLowerCase().indexOf(searchTxt) >= 0) ||
+        (node.id.toLowerCase().indexOf(searchTxt) >= 0)) {
+      hideNode = false;
+    }
+    for (var subUid=0; subUid < gKeyList[node.id].SubUserIds.length; subUid++) {
+      uid = gKeyList[node.id].SubUserIds[subUid].userId;
+      if (uid.toLowerCase().indexOf(searchTxt) >= 0) {
+        hideNode = false;
+      }
+    }
+    node.hidden=hideNode;
+    node = node.nextSibling;
+  }
+}
+
+
+//
+// ----- keyserver related functionality ----
+//
 function enigmailKeyServerAcess(accessType, callbackFunc) {
 
   var enigmailSvc = GetEnigmailSvc();
@@ -835,13 +930,16 @@ function enigSendKeyTerminate (terminateArg, ipcRequest) {
     document.getElementById("progressBar").setAttribute("collapsed", "true");
     document.getElementById("cancelBox").setAttribute("collapsed", "true");
     
+    var enigmailSvc = GetEnigmailSvc();
     if (keyRetrProcess && !keyRetrProcess.isAttached()) {
       keyRetrProcess.terminate();
       exitCode = keyRetrProcess.exitCode();
       DEBUG_LOG("enigmailKeyManager.js: enigSendKeyTerminate: exitCode = "+exitCode+"\n");
+      if (enigmailSvc) {
+        exitCode = enigmailSvc.fixExitCode(exitCode, 0);
+      }
     }
   
-    var enigmailSvc = GetEnigmailSvc();
     statusText.value=cbFunc(exitCode, "", false);
     
     var errorMsg="";

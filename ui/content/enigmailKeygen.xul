@@ -14,6 +14,7 @@
      width="600" height="480"
      orient="vertical"
      onload="enigmailKeygenLoad()"
+     onclose="enigmailOnClose()"
      onunload="enigmailKeygenUnload()"
      xmlns:html="http://www.w3.org/1999/xhtml"
      xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -27,7 +28,7 @@
 
 <groupbox id="userIdBox" orient="vertical">
 
-  <hbox orient="horizontal">
+  <hbox orient="horizontal" align="center">
     <text class="label" value="&enigmail.keyUserId.label;"/>
     <menulist id="userIdentity" label="..." flex="1">
       <menupopup id="userIdentityPopup"/>
@@ -44,16 +45,65 @@
           label="&enigmail.keyNoPassphrase.label;"
           oncommand="enigmailKeygenUpdate(false, false);" />
 
-<hbox id="passphraseBox">
-  <label control="passphrase" value="&enigmail.keyPassphrase.label;" />
-  <textbox id="passphrase" type="password" />
+<grid>
+  <columns>
+    <column />
+    <column flex="1"/>
+  </columns>
 
-  <label control="passphraseRepeat" value="&enigmail.keyPassphraseRepeat.label;" />
-  <textbox id="passphraseRepeat" type="password" />
-</hbox>
+  <rows>
+    <row>
+      <hbox id="passphraseBox" align="center">
+        <label control="passphrase" value="&enigmail.keyPassphrase.label;" />
+      </hbox>
+      <hbox>
+        <textbox id="passphrase" type="password" />
+        <label control="passphraseRepeat" value="&enigmail.keyPassphraseRepeat.label;" />
+        <textbox id="passphraseRepeat" type="password" />
+      </hbox>
+    </row>
 
-<label control="keyComment" value="&enigmail.keyComment.label;" />
-<textbox id="keyComment" />
+    <row>
+      <hbox align="center">
+        <label control="keyComment" value="&enigmail.keyComment.label;" />
+      </hbox>
+      <textbox id="keyComment" />
+    </row>
+
+    <row>
+      <hbox align="center">
+        <label value="&enigmail.keyGen.expire.label;"/>
+      </hbox>
+      <hbox align="center">
+        <textbox id="expireInput" size="5" maxlength="5" value="5"/>
+        <menulist id="timeScale" label="&enigmail.keyGen.years.label;" value="365">
+          <menupopup id="timeScalePopup">
+            <menuitem id="years" value="365" label="&enigmail.keyGen.years.label;" selected="true"/>
+            <menuitem id="months" value="30" label="&enigmail.keyGen.months.label;"/>
+            <menuitem id="days" value="1" label="&enigmail.keyGen.days.label;"/>
+          </menupopup>
+        </menulist>
+        <checkbox label="&enigmail.keyGen.noExpiry.label;"
+                  id="noExpiry" oncommand="onNoExpiry()"/>
+      </hbox>
+    </row>
+    
+    <row>
+      <hbox align="center">
+        <label value="&enigmail.keyGen.keySize.label;"/>
+      </hbox>
+      <hbox flex="0">
+        <menulist id="keySize" label="2048" value="2048" >
+          <menupopup id="keySizePopup">
+            <menuitem id="keySize_1024" value="1024" label="1024"/>
+            <menuitem id="keySize_2048" value="2048" label="2048" selected="true"/>
+            <menuitem id="keySize_4096" value="4096" label="4096"/>
+          </menupopup>
+        </menulist>
+      </hbox>
+    </row>
+  </rows>
+</grid>
 
 <separator/>
 
@@ -73,7 +123,7 @@
 
 <separator/>
 
-<groupbox id="keygenConsoleBox" orient="vertical">
+<groupbox id="keygenConsoleBox" orient="vertical" flex="1">
 
   <caption label="Keygen Console"/>
 
