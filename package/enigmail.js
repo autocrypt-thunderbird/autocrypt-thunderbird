@@ -2027,7 +2027,7 @@ Enigmail.prototype.stripWhitespace = function(sendFlags) {
   var stripThem=false;
   if ((sendFlags & nsIEnigmail.SEND_SIGNED) &&
       (!(sendFlags & nsIEnigmail.SEND_ENCRYPTED))) {
-    if (this.agentVersion >= "1.40" && this.agentVersion < "1.4.1") {
+    if (this.agentVersion >= "1.4.0" && this.agentVersion < "1.4.1") {
       stripThem = true;
     }
   }
