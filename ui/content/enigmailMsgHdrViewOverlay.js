@@ -368,6 +368,5 @@ EnigMimeHeaderSink.prototype =
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.encryptionStatus:\n");
     return this._smimeHeaderSink.encryptionStatus(aNestingLevel, aEncryptionStatus, aRecipientCert);
   }
-  */
 
 };
