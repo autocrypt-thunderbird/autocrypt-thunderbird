@@ -765,6 +765,7 @@ function EnigGetDeepText(node, findStr) {
 
   DEBUG_LOG("enigmailCommon.js: EnigDeepText: <" + node.tagName + ">, '"+findStr+"'\n");
 
+  /*
   try {
     var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
 
@@ -774,6 +775,7 @@ function EnigGetDeepText(node, findStr) {
   } catch (ex) {
     DEBUG_LOG("enigmailCommon.js: EnigDeepText: Failed to access EnigMimeService\n");
   }
+  */
 
   var depth = 0;
   var textArr = [""];
@@ -789,6 +791,13 @@ function EnigGetDeepText(node, findStr) {
       textArr.push(node.data);
     }
 
+    // get the "alt" part of graphical smileys to ensure correct 
+    // verification of signed messages
+    if (node.nodeType == Node.ELEMENT_NODE && node.className=="moz-txt-smily") {
+       if (node.getAttribute("alt")) {
+          textArr.push(node.getAttribute("alt"));
+       }
+    }
     while (!node.nextSibling && (depth > 0)) {
       depth--;
       node = node.parentNode;
@@ -801,7 +810,13 @@ function EnigGetDeepText(node, findStr) {
     }
   }
 
-  return textArr.join("");
+  var plainText = textArr.join("");
+  if (findStr) {
+     if (plainText.indexOf(findStr) < 0) {
+        return "";
+     }
+  }  
+  return plainText;
 }
 
 // Dump HTML content as plain text
