@@ -681,8 +681,16 @@ function enigSend(sendFlags) {
 
          var exitCode = exitCodeObj.value;
     
+         //DEBUG_LOG("enigmailMsgComposeOverlay.js: cipherText = '"+cipherText+"'\n");
          if (cipherText && (exitCode == 0)) {
            // Encryption/signing succeeded; overwrite plaintext
+
+           if ( (sendFlags & ENIG_ENCRYPT) && charset &&
+                (charset.search(/^us-ascii$/i) != 0) ) {
+             // Add Charset armor header for encrypted blocks
+             cipherText = cipherText.replace(/(-----BEGIN PGP MESSAGE----- *)(\r?\n)/, "$1$2Charset: "+charset+"$2");
+
+           }
 
            // Decode ciphertext from charset to unicode and overwrite
            enigReplaceEditorText( EnigConvertToUnicode(cipherText, charset) );

@@ -550,6 +550,31 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
                                      errorMsgObj);
 
   } else {
+
+    if (msgText.indexOf("\nCharset:") > 0) {
+      // Check if character set needs to be overridden
+      var startOffset = msgText.indexOf("-----BEGIN PGP ");
+
+      if (startOffset >= 0) {
+        var subText = msgText.substr(startOffset);
+
+        subText = subText.replace(/\r\n/g, "\n");
+        subText = subText.replace(/\r/g,   "\n");
+
+        var endOffset = subText.search(/\n\n/);
+        if (endOffset > 0) {
+          subText = subText.substr(0,endOffset) + "\n";
+
+          var matches = subText.match(/\nCharset: *(.*) *\n/i)
+          if (matches && (matches.length > 1)) {
+            // Override character set
+            charset = matches[1];
+            DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: OVERRIDING charset="+charset+"\n");
+          }
+        }
+      }
+    }
+
     var exitCodeObj    = new Object();
     var statusFlagsObj = new Object();
     var userIdObj      = new Object();
