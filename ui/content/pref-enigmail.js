@@ -32,7 +32,7 @@ function setDisables(initializing) {
   }
 
   EnigDisplayRadioPref("defaultEncryptionOption", defaultEncryptionOption,
-                        gDefaultEncryptionOptionList);
+                        gEnigDefaultEncryptionOptions);
 
 
   var noPassphraseElement = document.getElementById("noPassphrase");

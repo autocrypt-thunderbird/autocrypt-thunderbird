@@ -238,7 +238,7 @@ function enigRefreshConsole() {
     if (keygenConsole && keygenConsole.hasNewData()) {
       DEBUG_LOG("enigmailKeygen.js: enigRefreshConsole(): hasNewData\n");
 
-      var contentFrame = EnigGetFrame("keygenConsole");
+      var contentFrame = EnigGetFrame(window, "keygenConsole");
       if (contentFrame) {
 
         var consoleElement = contentFrame.document.getElementById('console');

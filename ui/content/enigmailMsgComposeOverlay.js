@@ -134,7 +134,7 @@ function enigInitRadioMenu(prefName, optionIds) {
 function enigInitSendOptionsMenu() {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigInitSendOptionsMenu\n");
 
-  enigInitRadioMenu('defaultEncryptionOption', gDefaultEncryptionOptionList);
+  enigInitRadioMenu('defaultEncryptionOption', gEnigDefaultEncryptionOptions);
 
   var optList = ["defaultSignMsg", "confirmBeforeSend"];
 
@@ -197,7 +197,7 @@ function enigInsertKey() {
   if (userIdValue)
     retObj.value = userIdValue;
 
-  var proceed = gPromptService.prompt(window, EnigGetString("exportPrompt"),
+  var proceed = gEnigPromptSvc.prompt(window, EnigGetString("exportPrompt"),
                                       text, retObj, "", checkObj);
 
   userIdValue = retObj.value;
@@ -752,11 +752,11 @@ function enigMessageSendCheck() {
 
     if (warn) {
         var checkValue = {value:false};
-        var buttonPressed = gPromptService.confirmEx(window, 
+        var buttonPressed = gEnigPromptSvc.confirmEx(window, 
               sComposeMsgsBundle.getString('sendMessageCheckWindowTitle'), 
               sComposeMsgsBundle.getString('sendMessageCheckLabel'),
-              (gPromptService.BUTTON_TITLE_IS_STRING * gPromptService.BUTTON_POS_0) +
-              (gPromptService.BUTTON_TITLE_CANCEL * gPromptService.BUTTON_POS_1),
+              (gEnigPromptSvc.BUTTON_TITLE_IS_STRING * gEnigPromptSvc.BUTTON_POS_0) +
+              (gEnigPromptSvc.BUTTON_TITLE_CANCEL * gEnigPromptSvc.BUTTON_POS_1),
               sComposeMsgsBundle.getString('sendMessageCheckSendButtonLabel'),
               null, null,
               sComposeMsgsBundle.getString('CheckMsg'), 
@@ -827,10 +827,10 @@ function enigGenericSendMessage( msgType )
         //Check if we have a subject, else ask user for confirmation
         if (subject == "")
         {
-          if (gPromptService)
+          if (gEnigPromptSvc)
           {
             var result = {value:sComposeMsgsBundle.getString("defaultSubject")};
-            if (gPromptService.prompt(
+            if (gEnigPromptSvc.prompt(
               window,
               sComposeMsgsBundle.getString("subjectDlogTitle"),
               sComposeMsgsBundle.getString("subjectDlogMessage"),

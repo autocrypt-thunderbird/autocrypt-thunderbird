@@ -47,9 +47,9 @@ const PGP_MIME_ALWAYS   = 2;
 var gUsePGPMimeOptionList = ["usePGPMimeNever", "usePGPMimePossible",
                              "usePGPMimeAlways"];
 
-var gDefaultEncryptionOptionList = ["defaultEncryptionNone",
-                                    "defaultEncryptionOnly",
-                                    "defaultEncryptionSign"];
+var gEnigDefaultEncryptionOptions = ["defaultEncryptionNone",
+                                     "defaultEncryptionOnly",
+                                     "defaultEncryptionSign"];
 
 const ENIG_BUTTON_POS_0           = 1;
 const ENIG_BUTTON_POS_1           = 1 << 8;
@@ -90,8 +90,8 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "show_headers":1
                             };
 
-var gLogLevel = 2;     // Output only errors/warnings by default
-var gDebugLog;
+var gEnigLogLevel = 2;     // Output only errors/warnings by default
+var gEnigDebugLog;
 
 var gEnigPrefSvc, gEnigPrefRoot, gPrefEnigmail;
 try {
@@ -102,7 +102,7 @@ try {
   gPrefEnigmail = gEnigPrefSvc.getBranch(ENIGMAIL_PREFS_ROOT);
 
   if (EnigGetPref("logDirectory"))
-    gLogLevel = 5;
+    gEnigLogLevel = 5;
 
 } catch (ex) {
   ERROR_LOG("enigmailCommon.js: Error in instantiating PrefService\n");
@@ -121,7 +121,7 @@ function EnigGetFrame(win, frameName) {
   return null;
 }
 
-var gPromptService;
+var gEnigPromptSvc;
 
 var gEnigStrBundle;
 
@@ -129,7 +129,7 @@ var gEnigStrBundle;
 function EnigInitCommon(id) {
    DEBUG_LOG("enigmailCommon.js: EnigInitCommon: id="+id+"\n");
 
-   gPromptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
+   gEnigPromptSvc = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
 
    // Do not instantiate ProcessInfo for Prefs
    if (id && (id.indexOf("pref-") == 0))
@@ -143,8 +143,8 @@ function EnigInitCommon(id) {
      var matches = nspr_log_modules.match(/enigmailCommon:(\d+)/);
 
      if (matches && (matches.length > 1)) {
-       gLogLevel = matches[1];
-       WARNING_LOG("enigmailCommon.js: gLogLevel="+gLogLevel+"\n");
+       gEnigLogLevel = matches[1];
+       WARNING_LOG("enigmailCommon.js: gEnigLogLevel="+gEnigLogLevel+"\n");
      }
 
    } catch (ex) {
@@ -211,8 +211,8 @@ function GetEnigmailSvc() {
   }
 
   if (gEnigmailSvc.logFileStream) {
-    gDebugLog = true;
-    gLogLevel = 5;
+    gEnigDebugLog = true;
+    gEnigLogLevel = 5;
   }
 
   return gEnigmailSvc.initialized ? gEnigmailSvc : null;
@@ -298,7 +298,7 @@ function EnigConfigure() {
   var checkValueObj = new Object();
   checkValueObj.value = false;
 
-  var buttonPressed = gPromptService.confirmEx(window,
+  var buttonPressed = gEnigPromptSvc.confirmEx(window,
                                            EnigGetString("configEnigmail"),
                                             msg,
                                             ENIG_THREE_BUTTON_STRINGS,
@@ -441,28 +441,28 @@ function EnigReadFileContents(localFile, maxBytes) {
 function WRITE_LOG(str) {
   dump(str);
 
-  if (gDebugLog && gEnigmailSvc && gEnigmailSvc.logFileStream) {
+  if (gEnigDebugLog && gEnigmailSvc && gEnigmailSvc.logFileStream) {
     gEnigmailSvc.logFileStream.write(str, str.length);
   }
 }
 
 function DEBUG_LOG(str) {
-  if (gLogLevel >= 4)
+  if (gEnigLogLevel >= 4)
     WRITE_LOG(str);
 }
 
 function WARNING_LOG(str) {
-  if (gLogLevel >= 3)
+  if (gEnigLogLevel >= 3)
     WRITE_LOG(str);
 }
 
 function ERROR_LOG(str) {
-  if (gLogLevel >= 2)
+  if (gEnigLogLevel >= 2)
     WRITE_LOG(str);
 }
 
 function CONSOLE_LOG(str) {
-  if (gLogLevel >= 3)
+  if (gEnigLogLevel >= 3)
     WRITE_LOG(str);
 
   if (gEnigmailSvc && gEnigmailSvc.console)
@@ -472,7 +472,7 @@ function CONSOLE_LOG(str) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function EnigAlert(mesg) {
-  gPromptService.alert(window, EnigGetString("enigAlert"), mesg);
+  gEnigPromptSvc.alert(window, EnigGetString("enigAlert"), mesg);
 }
 
 function EnigAlertCount(countPrefName, mesg) {
@@ -495,17 +495,17 @@ function EnigAlertCount(countPrefName, mesg) {
 }
 
 function EnigConfirm(mesg) {
-  return gPromptService.confirm(window, EnigGetString("enigConfirm"), mesg);
+  return gEnigPromptSvc.confirm(window, EnigGetString("enigConfirm"), mesg);
 }
 
 function EnigError(mesg) {
-  return gPromptService.alert(window, EnigGetString("enigError"), mesg);
+  return gEnigPromptSvc.alert(window, EnigGetString("enigError"), mesg);
 }
 
 
 function EnigPromptValue(mesg, valueObj) {
   var checkObj = new Object();
-  return gPromptService.prompt(window, EnigGetString("enigPrompt"),
+  return gEnigPromptSvc.prompt(window, EnigGetString("enigPrompt"),
                                mesg, valueObj, "", checkObj);
 }
 
