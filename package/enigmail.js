@@ -1339,7 +1339,7 @@ function (domWindow, version, prefBranch) {
                   "LOCPATH", "LOGNAME", "LD_LIBRARY_PATH", "MOZILLA_FIVE_HOME",
                   "NLSPATH", "PATH", "PATHEXT", "PROGRAMFILES", "PWD",
                   "SHELL", "SYSTEMDRIVE", "SYSTEMROOT",
-                  "TEMP", "TMP", "TMPDIR", "TZ", "TZDIR",
+                  "TEMP", "TMP", "TMPDIR", "TZ", "TZDIR", "UNIXROOT",
                   "USER", "USERPROFILE",
                   "WINDIR" ];
 
