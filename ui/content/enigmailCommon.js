@@ -1,18 +1,43 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
+dump("enigmailCommon.js:\n");
+
+var gEnigmailVersion = "0.18.0.0";
+var gIPCVersion = "0.98.0.0";
+
 const NS_IPCSERVICE_CONTRACTID  = "@mozilla.org/process/ipc-service;1";
 const NS_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
 const NS_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
 const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
 
-var gEnigmailPrefDefaults = {"defaultSignMsg":false,
+// UserIdSource values
+const USER_ID_SPECIFIED = 0;
+const USER_ID_DEFAULT   = 1;
+const USER_ID_FROMADDR  = 2;
+
+const BUTTON_POS_0           = 1;
+const BUTTON_POS_1           = 1 << 8;
+const BUTTON_POS_2           = 1 << 16;
+const BUTTON_TITLE_IS_STRING = 127;
+  
+const THREE_BUTTON_STRINGS   = (BUTTON_TITLE_IS_STRING * BUTTON_POS_0) +
+                               (BUTTON_TITLE_IS_STRING * BUTTON_POS_1) +
+                               (BUTTON_TITLE_IS_STRING * BUTTON_POS_2);
+
+
+var gEnigmailPrefDefaults = {"configuredVersion":"",
+                             "passivePrivacy":false,
+                             "userIdSource":USER_ID_DEFAULT,
+                             "userIdValue":"",
+                             "defaultSignMsg":false,
                              "defaultEncryptMsg":false,
-                             "multipleId":false,
                              "alwaysTrustSend":true,
                              "encryptToSelf":false,
+                             "timeoutEnabled":true,
+                             "maxIdleMinutes":5,
                              "autoDecrypt":true,
-                             "captureWebMail":false,
-                             "replaceNonBreakingSpace":true
+                             "replaceNonBreakingSpace":true,
+                             "captureWebMail":false
                             };
 
 // Encryption flags
@@ -23,10 +48,6 @@ const ENCRYPT_TO_SELF   = 0x08;
 
 var gLogLevel = 3;     // Output only errors/warnings by default
 var gLogFileStream = null;
-
-var gIPCService;
-var gProcessInfo;
-var gPromptService;
 
 var gPrefSvc, gPrefEnigmail;
 try {
@@ -39,18 +60,12 @@ try {
   throw("enigmailCommon.js: Error in instantiating PrefService\n");
 }
 
-function GetEnv(name) {
-  DEBUG_LOG("enigmailCommon.js: GetEnv: "+name+"\n")
-  return gProcessInfo.getEnv(name);
-}
+var gProcessInfo;
+var gPromptService;
 
 // Initializes enigmailCommon
 function EnigInitCommon(id) {
-   DEBUG_LOG("enigmailCommon.js:EnigInitCommon: id="+id+"\n");
-
    try {
-     gIPCService = Components.classes[NS_IPCSERVICE_CONTRACTID].getService(Components.interfaces.nsIIPCService);
-
      gProcessInfo = Components.classes[NS_PROCESSINFO_CONTRACTID].getService(Components.interfaces.nsIProcessInfo);
 
      var nspr_log_modules = GetEnv("NSPR_LOG_MODULES");
@@ -65,7 +80,9 @@ function EnigInitCommon(id) {
    } catch (ex) {
    }
 
-   DEBUG_LOG("enigmailCommon.js: EnigInitCommon: gIPCService = "+gIPCService+"\n");
+   DEBUG_LOG("enigmailCommon.js: EnigInitCommon: id="+id+"\n");
+
+   DEBUG_LOG("enigmailCommon.js: EnigInitCommon: gProcessInfo = "+gProcessInfo+"\n");
 
    gPromptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
 
@@ -73,21 +90,72 @@ function EnigInitCommon(id) {
 
 
 var gEnigmailSvc;
-function InitEnigmailSvc() {
-   // Lazy loading of enigmail JS component (for efficiency)
+function GetEnigmailSvc() {
+  // Lazy initialization of enigmail JS component (for efficiency)
 
-   if (gEnigmailSvc)
-      return gEnigmailSvc;
+  if (gEnigmailSvc) {
+     gEnigmailSvc.updateActiveTime();
+     return gEnigmailSvc;
+  }
 
-   try {
-     gEnigmailSvc = Components.classes[NS_ENIGMAIL_CONTRACTID].createInstance(Components.interfaces.nsIEnigmail);
+  try {
+    gEnigmailSvc = Components.classes[NS_ENIGMAIL_CONTRACTID].createInstance(Components.interfaces.nsIEnigmail);
 
-   } catch (ex) {
-     ERROR_LOG("enigmailCommon.js: Error in instantiating EnigmailService\n");
-   }
+    gEnigmailSvc.timeoutEnabled = EnigGetPref("timeoutEnabled");
+    gEnigmailSvc.maxIdleMinutes = EnigGetPref("maxIdleMinutes");
 
-   DEBUG_LOG("enigmailCommon.js: gEnigmailSvc = "+gEnigmailSvc+"\n");
-   return gEnigmailSvc;
+  } catch (ex) {
+    ERROR_LOG("enigmailCommon.js: Error in instantiating EnigmailService\n");
+  }
+
+  DEBUG_LOG("enigmailCommon.js: gEnigmailSvc = "+gEnigmailSvc+"\n");
+
+  if (!gEnigmailSvc.configured) {
+    var configuredVersion = EnigGetPref("configuredVersion");
+
+    WRITE_LOG("enigmailCommon.js: EnigConfigure: "+configuredVersion+"\n");
+
+    if (gEnigmailVersion != configuredVersion) {
+      var msg = "Do you wish to configure enigmail for version "+
+                gEnigmailVersion+" now?";
+
+      var checkValueObj = new Object();
+      checkValueObj.value = false;
+      var buttonPressedObj = new Object();
+
+      var confirmed = gPromptService.confirmEx(window,
+                                               "Configure Enigmail?",
+                                                msg,
+                                                THREE_BUTTON_STRINGS,
+                                                "Yes",
+                                                "No",
+                                                "Do not ask me again",
+                                                "",
+                                                checkValueObj,
+                                                buttonPressedObj);
+
+      var buttonPressed = buttonPressedObj.value;
+
+      gEnigmailSvc.configured = true;
+
+      if (buttonPressed == 0) {
+        EnigPrefWindow();
+
+      } else if (buttonPressed == 2) {
+        // "Do not ask me again"
+        EnigSetPref("configuredVersion", gEnigmailVersion);
+        EnigSavePrefs();
+      }
+    }
+  }
+
+  return gEnigmailSvc;
+}
+
+
+function GetEnv(name) {
+  DEBUG_LOG("enigmailCommon.js: GetEnv: "+name+"\n")
+  return gProcessInfo.getEnv(name);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -220,28 +288,44 @@ function EnigError(mesg) {
   return gPromptService.alert(window, "Enigmail Error", mesg);
 }
 
+function EnigPrefWindow() {
+  goPreferences("securityItem",
+                "chrome://enigmail/content/pref-enigmail.xul",
+                "enigmail");
+}
+
+function EnigUpgrade() {
+  window.openDialog("http://enigmail.mozdev.org/update.html?upgrade=yes&enigmail="+gEnigmailVersion+"&ipc="+gIPCVersion, "dialog");
+}
+
 function EnigPassphrase() {
-  if (!InitEnigmailSvc())
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
      return "";
-    
+
+  var maxIdleMinutes = enigmailSvc.maxIdleMinutes;
+
   var passwdObj = new Object();
   var checkObj = new Object();
 
-  var promptMsg = "Please type in your "+gEnigmailSvc.agentType.toUpperCase()+" passphrase";
+  var promptMsg = "Please type in your "+enigmailSvc.agentType.toUpperCase()+" passphrase";
   passwdObj.value = "";
-  checkObj.value = false;
+  checkObj.value = true;
+  var checkMsg = maxIdleMinutes ? "Remember for "+maxIdleMinutes+" minutes"
+                                : "";
+
   var success = gPromptService.promptPassword(window,
                                "Enigmail",
                                promptMsg,
                                passwdObj,
-                               "Check box to remember passphrase for this session (INSECURE)",
+                               checkMsg,
                                checkObj);
   if (!success)
     return "";
 
   // Null string password is always remembered
   if (checkObj.value || (passwdObj.value.length == 0))
-    gEnigmailSvc.setDefaultPassphrase(passwdObj.value);
+    enigmailSvc.setDefaultPassphrase(passwdObj.value);
 
   DEBUG_LOG("enigmailCommon.js: EnigPassphrase: "+passwdObj.value+"\n");
 
@@ -273,47 +357,68 @@ function EnigStripEmail(mailAddrs) {
 }
     
 function EnigEncryptMessage(plainText, fromMailAddr, toMailAddr, encryptFlags,
-                            statusCodeObj, statusMsgObj) {
+                            exitCodeObj, errorMsgObj) {
   WRITE_LOG("enigmailCommon.js: EnigEncryptMessage: To "+toMailAddr+"\n");
 
-  if (!InitEnigmailSvc())
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
      return "";
 
   var passphrase = null;
 
-  if ((encryptFlags & SIGN_MESSAGE) && !gEnigmailSvc.haveDefaultPassphrase) {
+  if ((encryptFlags & SIGN_MESSAGE) && !enigmailSvc.haveDefaultPassphrase()) {
     passphrase = EnigPassphrase();
   }
 
-  var cipherText = gEnigmailSvc.encryptMessage(plainText,
-                                               EnigStripEmail(fromMailAddr),
-                                               EnigStripEmail(toMailAddr),
-                                               encryptFlags,
-	                                       passphrase,
-                                               statusCodeObj, statusMsgObj);
+  var statusMsgObj = new Object();    
+  var cipherText = enigmailSvc.encryptMessage(plainText,
+                                              EnigStripEmail(fromMailAddr),
+                                              EnigStripEmail(toMailAddr),
+                                              encryptFlags,
+	                                      passphrase,
+                                              exitCodeObj, errorMsgObj,
+                                              statusMsgObj);
 
   return cipherText;
 }
 
-function EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj) {
+
+function IndexOfPGPString(text, str) {
+  var offset = 0;
+
+  while (offset < text.length) {
+
+    var loc = text.indexOf(str, offset);
+
+    if ((loc < 1) || (text.charAt(loc-1) == "\n"))
+      return loc;
+
+    offset = loc + str.length;
+  }
+
+  return -1;
+}
+
+function EnigDecryptMessage(cipherText, exitCodeObj, errorMsgObj) {
   WRITE_LOG("enigmailCommon.js: EnigDecryptMessage: \n");
 
-  if (!InitEnigmailSvc()) {
-     statusCodeObj.value = -1;
-     statusMsgObj.value = "Error in initializing Enigmail service";
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc) {
+     exitCodeObj.value = -1;
+     errorMsgObj.value = "Error in accessing Enigmail service";
      return "";
   }
 
-  var beginIndex = cipherText.indexOf("-----BEGIN PGP ");
-  var endIndex   = cipherText.indexOf("-----END PGP ");
+  var beginIndex = IndexOfPGPString(cipherText, "-----BEGIN PGP ");
+  var endIndex   = IndexOfPGPString(cipherText, "-----END PGP ");
 
   // Locate newline at end of PGP block
   if (endIndex > -1)
     endIndex = cipherText.indexOf("\n", endIndex);
 
   if ((beginIndex == -1) || (endIndex == -1) || (beginIndex > endIndex)) {
-     statusCodeObj.value = -1;
-     statusMsgObj.value = "No valid armored PGP data block found";
+     exitCodeObj.value = -1;
+     errorMsgObj.value = "No valid armored PGP data block found";
      return "";
   }
 
@@ -335,7 +440,7 @@ function EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj) {
 
   var passphrase = null;
 
-  if (!verifyOnly && !gEnigmailSvc.haveDefaultPassphrase) {
+  if (!verifyOnly && !enigmailSvc.haveDefaultPassphrase()) {
     passphrase = EnigPassphrase();
   }
 
@@ -347,12 +452,35 @@ function EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj) {
     pgpBlock = pgpBlock.replace(/\xA0/g, " ");
     DEBUG_LOG("enigmailCommon.js: replaced non-breaking spaces\n");
   }
-    
-  var plainText = gEnigmailSvc.decryptMessage(pgpBlock, verifyOnly,
-                                              passphrase,
-                                              statusCodeObj, statusMsgObj);
+
+  if (gLogLevel >= 4) {
+    WriteFileContents("enigdata.txt", pgpBlock);
+    DEBUG_LOG("enigmailCommon.js: copied pgpBlock to file enigdata.txt\n");
+  }
+
+  var statusMsgObj = new Object();    
+  var plainText = enigmailSvc.decryptMessage(pgpBlock, verifyOnly,
+                                             passphrase,
+                                             exitCodeObj, errorMsgObj,
+                                             statusMsgObj);
 
   return headBlock + plainText + tailBlock;
+}
+
+function EnigSetDefaultPrefs() {
+  DEBUG_LOG("enigmailCommon.js: EnigSetDefaultPrefs\n");
+  for (var prefName in gEnigmailPrefDefaults) {
+    var prefValue = EnigGetPref(prefName);
+    WRITE_LOG("enigmailCommon.js: EnigSetDefaultPrefs: "+prefName+"="+prefValue+"\n");
+  }
+}
+
+function EnigSavePrefs() {
+  DEBUG_LOG("enigmailCommon.js: EnigSavePrefs\n");
+  try {
+    gPrefSvc.savePrefFile(null);
+  } catch (ex) {
+  }
 }
 
 function EnigGetPref(prefName) {
@@ -360,6 +488,7 @@ function EnigGetPref(prefName) {
 
    var prefValue = defaultValue;
    try {
+      // Get pref value
       switch (typeof defaultValue) {
       case "string":
          prefValue = gPrefEnigmail.getCharPref(prefName);
@@ -375,8 +504,25 @@ function EnigGetPref(prefName) {
 
       default:
          prefValue = undefined;
-   }
+     }
+
    } catch (ex) {
+      // Failed to get pref value; set pref to default value
+      switch (typeof defaultValue) {
+      case "string":
+         gPrefEnigmail.setCharPref(prefName, defaultValue);
+         break;
+
+      case "boolean":
+         gPrefEnigmail.setBoolPref(prefName, defaultValue);
+         break;
+
+      case "number":
+         gPrefEnigmail.setIntPref(prefName, defaultValue);
+         break;
+
+      default:
+     }
    }
 
    //DEBUG_LOG("enigmailCommon.js: EnigGetPref: "+prefName+"="+prefValue+"\n");
@@ -523,8 +669,6 @@ function EnigDumpHTML(node)
     else if (type == Node.TEXT_NODE) {
         DEBUG_LOG(node.data)
     }
-
-    DEBUG_LOG("\n\n")
 }
 
 
@@ -532,23 +676,23 @@ function EnigTest() {
   var plainText = "TEST MESSAGE 123\n";
   var toMailAddr = "r_sarava@yahoo.com";
 
-  var statusCodeObj = new Object();
-  var statusMsgObj = new Object();
+  var exitCodeObj = new Object();
+  var errorMsgObj = new Object();
 
   var cipherText = EnigEncryptMessage(plainText, "", toMailAddr, 3,
-                                      statusCodeObj, statusMsgObj);
+                                      exitCodeObj, errorMsgObj);
   DEBUG_LOG("enigmailCommon.js: enigTest: cipherText = "+cipherText+"\n");
-  DEBUG_LOG("enigmailCommon.js: enigTest: statusCode = "+statusCodeObj.value+"\n");
-  DEBUG_LOG("enigmailCommon.js: enigTest: statusMsg = "+statusMsgObj.value+"\n");
+  DEBUG_LOG("enigmailCommon.js: enigTest: exitCode = "+exitCodeObj.value+"\n");
+  DEBUG_LOG("enigmailCommon.js: enigTest: errorMsg = "+errorMsgObj.value+"\n");
 
-  var statusCodeObj = new Object();
-  var statusMsgObj = new Object();
+  var exitCodeObj = new Object();
+  var errorMsgObj = new Object();
 
   var decryptedText = EnigDecryptMessage(cipherText,
-                                         statusCodeObj, statusMsgObj);
+                                         exitCodeObj, errorMsgObj);
   DEBUG_LOG("enigmailCommon.js: enigTest: decryptedText = "+decryptedText+"\n");
-  DEBUG_LOG("enigmailCommon.js: enigTest: statusCode = "+statusCodeObj.value+"\n");
-  DEBUG_LOG("enigmailCommon.js: enigTest: statusMsg = "+statusMsgObj.value+"\n");
+  DEBUG_LOG("enigmailCommon.js: enigTest: exitCode = "+exitCodeObj.value+"\n");
+  DEBUG_LOG("enigmailCommon.js: enigTest: errorMsg = "+errorMsgObj.value+"\n");
 }
 
 /////////////////////////
@@ -561,14 +705,15 @@ const nsIWindowMediator    = Components.interfaces.nsIWindowMediator;
 
 function EnigViewConsole() {
   DEBUG_LOG("enigmailCommon.js: EnigViewConsole\n");
-  var navWindow = LoadURLInNavigatorWindow("enigmail:console", true);
+  window.open('enigmail:console', 'Enigmail Console');
 
-  if (navWindow)
-    navWindow.focus();
+  //var navWindow = LoadURLInNavigatorWindow("enigmail:console", true);
+  //if (navWindow) navWindow.focus();
 }
 
 function EnigKeygen() {
   DEBUG_LOG("enigmailCommon.js: EnigKeygen\n");
+
   window.openDialog('chrome://enigmail/content/enigmailKeygen.xul',
                     'Enigmail Key Generation',
                     'chrome,dialog,close=no');

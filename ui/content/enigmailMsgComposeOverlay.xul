@@ -5,7 +5,7 @@
 <?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
                  type="text/css"?> 
 
-<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmailOverlay.dtd" >
+<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
 
 <overlay id="enigMsgComposeOverlay"
     xmlns:html="http://www.w3.org/1999/xhtml"
@@ -13,6 +13,15 @@
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript"  src="chrome://enigmail/content/enigmailMsgComposeOverlay.js"/>
+
+  <keyset id="tasksKeys">
+    <key id="key_enigConsole"  key="&enigmail.viewconsole.commandkey;"
+         command="Tasks:EnigConsole" modifiers="accel"/>
+  </keyset>
+
+  <commandset id="tasksCommands">
+    <command id="Tasks:EnigConsole" oncommand="EnigViewConsole();"/>
+  </commandset>
 
     <toolbar id="composeToolbar">
       <box id="toolbar_button_box">
@@ -32,20 +41,24 @@
 
     <menu id="menu_Enigmail"
           label="Enigmail"
+          accesskey="&enigmail.composemenu.accesskey;"
           position="7">
 
       <menupopup id="menu_EnigmailPopup">
 
         <menuitem id="enigmail_send_plain"
              label="&enigmail.sendplain.label;"
+             accesskey="&enigmail.sendplain.accesskey;"
              oncommand="enigSend(0);" />
 
         <menuitem id="enigmail_send_signed"
              label="&enigmail.sendsigned.label;"
+             accesskey="&enigmail.sendsigned.accesskey;"
              oncommand="enigSend(1);" />
 
         <menuitem id="enigmail_send_signed_encrypted"
              label="&enigmail.sendsignedenc.label;"
+             accesskey="&enigmail.sendsignedenc.accesskey;"
              oncommand="enigSend(3);" />
 
         <menuseparator/>
@@ -64,18 +77,19 @@
              name="enigmail_MessageOptions"
              oncommand="enigToggleAttribute('defaultEncryptMsg');" />
 
-        <menuitem id="enigmail_multipleId"
-             type="checkbox"
-             checked="false"
-             label="&enigmail.multipleId.label;"
-             name="enigmail_MessageOptions"
-             oncommand="enigToggleAttribute('multipleId');" />
+        <menuseparator/>
+
+        <menuitem id="enigmail_prefs"
+             label="&enigmail.prefs.label;"
+             oncommand="EnigPrefWindow();" />
 
         <menuseparator/>
 
         <menuitem id="enigmail_console"
              label="&enigmail.viewconsole.label;"
-             oncommand="EnigViewConsole();" />
+             key="key_enigConsole"
+             accesskey="&enigmail.viewconsole.accesskey;"
+             command="Tasks:EnigConsole" />
 
         <menuitem id="enigmail_keygen"
              label="&enigmail.generatekey.label;"
@@ -83,11 +97,12 @@
 
         <menuitem id="enigmail_upgrade"
              label="&enigmail.upgrade.label;"
-             oncommand="window.openDialog('file:///data/svn/enigwww/update.html?upgrade=yes&amp;enigmail=&enigmail.version;&amp;ipc=&ipc.version;', 'dialog');" />
+             oncommand="EnigUpgrade();" />
 
         <menuitem id="enigmail_about"
              label="&enigmail.about.label;"
              oncommand="window.open('enigmail:about');" />
+
       </menupopup>
     </menu>
 

@@ -27,26 +27,30 @@
 <groupbox id="urlBox" class="url-box" orient="horizontal">
 
   <hbox autostretch="never">
-    <text class="label" value="User Id"/>
+    <text class="label" value="&enigmail.keyUserId.label;"/>
     <menulist id="userIdentity" label="..." flex="1">
       <menupopup id="userIdentityPopup"/>
     </menulist>
   </hbox> 
 
+  <checkbox id="useForSigning"
+            label="&enigmail.useForSigning.label;"
+            checked="true" />
+
   <spring flex="1"/>
 
-  <button label="Generate Key"
+  <button label="&enigmail.generateKey.label;"
           class="dialog"
           tooltip="aTooltip"
           tooltiptext="Generates Key"
-          oncommand="enigmailKeygenStart();"/>
+          oncommand="enigmailKeygenStart();" />
   <spring flex="1"/>
 
-  <button label="Cancel"
+  <button label="&enigmail.cancelKey.label;"
           class="dialog"
           tooltip="aTooltip"
           tooltiptext="Cancel Key Generation"
-          oncommand="enigmailKeygenCancel();"/>
+          oncommand="enigmailKeygenCancel();" />
   <spring flex="1"/>
 </groupbox>
 

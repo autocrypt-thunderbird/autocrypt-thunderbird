@@ -18,16 +18,16 @@ function OnUnloadEnigmailSelectPanel() {
 
 function SelectPanel() {
 
-  var gEnigmailSvc;
+  var enigmailSvc;
 
   try {
-    gEnigmailSvc = Components.classes[NS_ENIGMAIL_CONTRACTID].createInstance(Components.interfaces.nsIEnigmail);
+    enigmailSvc = Components.classes[NS_ENIGMAIL_CONTRACTID].createInstance(Components.interfaces.nsIEnigmail);
 
   } catch (ex) {
     debug("enigmailSelectPanel.js: Error in instantiating EnigmailService\n");
   }
 
-  debug("enigmailSelectPanel.js: gEnigmailSvc = " + gEnigmailSvc + "\n");
+  debug("enigmailSelectPanel.js: enigmailSvc = " + enigmailSvc + "\n");
 
-  gEnigmailSvc.selectPanel(document.location.href);
+  enigmailSvc.selectPanel(document.location.href);
 }

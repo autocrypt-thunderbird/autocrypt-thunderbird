@@ -23,7 +23,6 @@ enigmail.jar:
 	content/enigmail/enigmailPrefsOverlay.xul      (content/enigmailPrefsOverlay.xul)
 	locale/en-US/enigmail/contents.rdf         (locale/en-US/contents.rdf)
 	locale/en-US/enigmail/enigmail.dtd         (locale/en-US/enigmail.dtd)
-	locale/en-US/enigmail/enigmailOverlay.dtd  (locale/en-US/enigmailOverlay.dtd)
 	skin/modern/enigmail/contents.rdf        (skin/contents.rdf)
 	skin/modern/enigmail/enigmail.css        (skin/enigmail.css)
 	skin/modern/enigmail/enigdecrypt-act.gif (skin/images/enigdecrypt-act.gif)

@@ -1,1 +1,59 @@
-<!ENTITY enigCmd.label   "Enigmail">
+<!ENTITY enigmail.label	                  "Enigmail">
+
+<!ENTITY enigmail.composemenu.accesskey   "n">
+
+<!ENTITY enigmail.decryptbutton.label	  "Decrypt">
+<!ENTITY enigmail.decryptbutton.tip	  "Enigmail decrypt/verify">
+
+<!ENTITY enigmail.sendbutton.label	  "EnigSend">
+<!ENTITY enigmail.sendbutton.tip	  "Enigmail send (encrypt/sign)">
+
+<!ENTITY enigmail.keyUserId.label         "User Id">
+<!ENTITY enigmail.useForSigning.label     "Use key for signing">
+<!ENTITY enigmail.generateKey.label       "Generate key">
+<!ENTITY enigmail.cancelKey.label         "Cancel">
+
+<!ENTITY enigmail.preferences.label	  "Preferences">
+
+<!ENTITY enigmail.passivePrivacy.label    "Enable Passive Privacy">
+<!ENTITY enigmail.userIdValue.label       "User email address">
+
+<!ENTITY enigmail.userIdSource.label      "Choosing secret key for signing">
+<!ENTITY enigmail.userIdDefault.label     "Use default key">
+<!ENTITY enigmail.userIdSpecified.label   "Use specified email address">
+<!ENTITY enigmail.userIdFromAddr.label    "Use FROM email address">
+
+<!ENTITY enigmail.defaultSignMsg.label    "Sign messages by default">
+<!ENTITY enigmail.defaultEncryptMsg.label "Encrypt messages by default">
+
+<!ENTITY enigmail.encryptToSelf.label     "Encrypt to self when sending">
+<!ENTITY enigmail.alwaysTrustSend.label   "Always trust user ID when sending">
+
+<!ENTITY enigmail.timeoutEnabled.label    "Forget passphrase after">
+<!ENTITY enigmail.maxIdleMinutes.label    "of minutes of idle time">
+
+<!ENTITY enigmail.autoDecrypt.label       "Automatically decrypt/verify messages (slow?)">
+<!ENTITY enigmail.replaceNonBreakingSpace.label "Replace non-breaking space with white space (workaround)">
+<!ENTITY enigmail.captureWebMail.label	  "Capture webmail">
+
+<!ENTITY enigmail.prefsHelp.label	  "Help">
+<!ENTITY enigmail.resetPrefs.label	  "Reset Preferences">
+<!ENTITY enigmail.prefs.label	          "Enigmail Preferences">
+
+<!ENTITY enigmail.upgrade.label	          "Upgrade">
+<!ENTITY enigmail.uninstall.label	  "Uninstall">
+
+<!ENTITY enigmail.sendplain.label	  "Send plain">
+<!ENTITY enigmail.sendsigned.label	  "Send signed">
+<!ENTITY enigmail.sendsignedenc.label	  "Send signed+encrypted">
+
+<!ENTITY enigmail.viewconsole.label	  "View Enigmail console">
+<!ENTITY enigmail.generatekey.label	  "Generate key">
+<!ENTITY enigmail.about.label	          "About Enigmail">
+
+<!ENTITY enigmail.viewconsole.commandkey  "7">
+<!ENTITY enigmail.sendplain.accesskey	  "p">
+<!ENTITY enigmail.sendsigned.accesskey	  "s">
+<!ENTITY enigmail.sendsignedenc.accesskey "e">
+<!ENTITY enigmail.viewconsole.accesskey	  "v">
+

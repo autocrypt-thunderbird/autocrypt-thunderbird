@@ -171,25 +171,31 @@ function enigYahooCompose() {
   var fromAddr = msgFrame.document.Compose.From.value;
   DEBUG_LOG("enigYahooCompose: From="+fromAddr+"\n");
 
-  if (!EnigGetPref("multipleId"))
+  var userIdSource = EnigGetPref("userIdSource");
+
+  if (userIdSource == USER_ID_DEFAULT) {
     fromAddr = "";
+
+  } else if (userIdSource == USER_ID_SPECIFIED) {
+    fromAddr = EnigGetPref("userIdValue");
+  }
 
   var encryptFlags = SIGN_MESSAGE | ENCRYPT_MESSAGE;
 
   if (EnigGetPref("alwaysTrustSend"))
      encryptFlags |= ALWAYS_TRUST_SEND;
 
-  var statusCodeObj = new Object();
-  var statusMsgObj = new Object();
+  var exitCodeObj = new Object();
+  var errorMsgObj = new Object();
   var cipherText = EnigEncryptMessage(plainText, fromAddr, toAddr,
                                       encryptFlags,
-                                      statusCodeObj, statusMsgObj);
+                                      exitCodeObj, errorMsgObj);
 
-  var statusCode = statusCodeObj.value;
-  var statusMsg  = statusMsgObj.value;
+  var exitCode = exitCodeObj.value;
+  var errorMsg  = errorMsgObj.value;
 
-  if (statusCode != 0) {
-    EnigAlert("Error in encrypting and/or signing message.\n"+statusMsg);
+  if (exitCode != 0) {
+    EnigAlert("Error in encrypting and/or signing message.\n"+errorMsg);
     return;
   }
 
@@ -211,15 +217,15 @@ function enigYahooShowLetter() {
 
   DEBUG_LOG("enigYahooShowLetter: cipherText='"+cipherText+"'\n");
 
-  var statusCodeObj = new Object();
-  var statusMsgObj = new Object();
-  var plainText = EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj);
+  var exitCodeObj = new Object();
+  var errorMsgObj = new Object();
+  var plainText = EnigDecryptMessage(cipherText, exitCodeObj, errorMsgObj);
 
-  var statusCode = statusCodeObj.value;
-  var statusMsg  = statusMsgObj.value;
+  var exitCode = exitCodeObj.value;
+  var errorMsg  = errorMsgObj.value;
 
-  if (statusCode != 0) {
-    EnigAlert("Error in decrypting message.\n"+statusMsg);
+  if (exitCode != 0) {
+    EnigAlert("Error in decrypting message.\n"+errorMsg);
     return;
   }
 
@@ -280,25 +286,29 @@ function enigHotmailCompose() {
   var fromAddr = msgFrame.document.composeform.from.value;
   DEBUG_LOG("enigHotmailCompose: From="+fromAddr+"\n");
 
-  if (!EnigGetPref("multipleId"))
+  if (userIdSource == USER_ID_DEFAULT) {
     fromAddr = "";
+
+  } else if (userIdSource == USER_ID_SPECIFIED) {
+    fromAddr = EnigGetPref("userIdValue");
+  }
 
   var encryptFlags = SIGN_MESSAGE | ENCRYPT_MESSAGE;
 
   if (EnigGetPref("alwaysTrustSend"))
      encryptFlags |= ALWAYS_TRUST_SEND;
 
-  var statusCodeObj = new Object();
-  var statusMsgObj = new Object();
+  var exitCodeObj = new Object();
+  var errorMsgObj = new Object();
   var cipherText = EnigEncryptMessage(plainText, fromAddr, toAddr,
                                       encryptFlags,
-                                      statusCodeObj, statusMsgObj);
+                                      exitCodeObj, errorMsgObj);
 
-  var statusCode = statusCodeObj.value;
-  var statusMsg  = statusMsgObj.value;
+  var exitCode = exitCodeObj.value;
+  var errorMsg  = errorMsgObj.value;
 
-  if (statusCode != 0) {
-    EnigAlert("Error in encrypting and/or signing message.\n"+statusMsg);
+  if (exitCode != 0) {
+    EnigAlert("Error in encrypting and/or signing message.\n"+errorMsg);
     return;
   }
 
@@ -320,15 +330,15 @@ function enigHotmailShowLetter() {
 
   DEBUG_LOG("enigHotmailShowLetter: cipherText='"+cipherText+"'\n");
 
-  var statusCodeObj = new Object();
-  var statusMsgObj = new Object();
-  var plainText = EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj);
+  var exitCodeObj = new Object();
+  var errorMsgObj = new Object();
+  var plainText = EnigDecryptMessage(cipherText, exitCodeObj, errorMsgObj);
 
-  var statusCode = statusCodeObj.value;
-  var statusMsg  = statusMsgObj.value;
+  var exitCode = exitCodeObj.value;
+  var errorMsg  = errorMsgObj.value;
 
-  if (statusCode != 0) {
-    EnigAlert("Error in decrypting message.\n"+statusMsg);
+  if (exitCode != 0) {
+    EnigAlert("Error in decrypting message.\n"+errorMsg);
     return;
   }
 

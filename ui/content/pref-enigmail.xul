@@ -39,67 +39,78 @@
 <!DOCTYPE window [
 <!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
 %brandDTD;
-<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmailOverlay.dtd" >
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
 %enigMailDTD;
 ]>
-<window id="enigmailPrefs"
+<page id="enigmailPrefs"
+        headertitle="&enigmail.label;"
         xmlns:html="http://www.w3.org/1999/xhtml"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         class="color-dialog"
         orient="vertical"
-        onload="parent.initPanel('chrome://enigmail/content/pref-enigmail.xul');">
+        onload="init_pref_enigmail();">
 
-   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-   <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail.js"/>
 
   <script type="application/x-javascript">
   <![CDATA[
     // List of persisted elements (required to save prefs)
-    var _elementIDs = ["enigmail_defaultSignMsg",
-                       "enigmail_defaultEncryptMsg",
-                       "enigmail_multipleId",
+    var _elementIDs = [
+                       ///"passivePrivacy",
+                       "userIdSource",
+                       "userIdValue",
                        "enigmail_encryptToSelf",
                        "enigmail_alwaysTrustSend",
+                       "timeoutEnabled",
+                       "maxIdleMinutes",
                        "enigmail_autoDecrypt",
                        "enigmail_captureWebMail",
                        "enigmail_replaceNonBreakingSpace"
                        ];
   ]]>
   </script>
-          
-  <box class="box-smallheader" title="&enigmail.label;"/>
 
-  <groupbox orient="vertical">
-    <caption label="&enigmail.preferences.label;"/>
+<!--
+    <checkbox id="passivePrivacy"
+            label="&enigmail.passivePrivacy.label;"
+            pref="true"
+            preftype="bool"
+            prefstring="extensions.enigmail.passivePrivacy"
+            prefattribute="checked"
+            oncommand="setDisables();"/>
+-->
 
-    <hbox autostretch="never">
-      <checkbox id="enigmail_defaultSignMsg"
-              label="&enigmail.defaultSignMsg.label;"
-              pref="true"
-              preftype="bool"
-              prefstring="extensions.enigmail.defaultSignMsg"
-              prefattribute="checked"/>
+    <hbox>
+      <description>&enigmail.userIdValue.label;</description>
+      <textbox id="userIdValue"
+               pref="true"
+               preftype="string"
+               prefstring="extensions.enigmail.userIdValue"/>
     </hbox>
 
-    <hbox autostretch="never">
-      <checkbox id="enigmail_defaultEncryptMsg"
-              label="&enigmail.defaultEncryptMsg.label;"
-              pref="true"
-              preftype="bool"
-              prefstring="extensions.enigmail.defaultEncryptMsg"
-              prefattribute="checked"/>
-    </hbox>
+    <groupbox>
+      <caption label="&enigmail.userIdSource.label;"/>
 
-    <separator/>
+      <radiogroup id="userIdSource"
+                  prefstring="extensions.enigmail.userIdSource">
 
-    <hbox autostretch="never">
-      <checkbox id="enigmail_multipleId"
-              label="&enigmail.multipleId.label;"
-              pref="true"
-              preftype="bool"
-              prefstring="extensions.enigmail.multipleId"
-              prefattribute="checked"/>
-    </hbox>
+        <radio id="userIdSpecified"
+               value="0"
+               label="&enigmail.userIdSpecified.label;"
+               oncommand="setDisables();"/>
+
+        <radio id="userIdDefault"
+               value="1"
+               label="&enigmail.userIdDefault.label;" 
+               oncommand="setDisables();"/>
+
+        <radio id="userIdFromAddr"
+               value="2"
+               label="&enigmail.userIdFromAddr.label;" 
+               oncommand="setDisables();"/>
+       </radiogroup>
+    </groupbox>
 
     <hbox autostretch="never">
       <checkbox id="enigmail_encryptToSelf"
@@ -122,20 +133,30 @@
     <separator/>
 
     <hbox autostretch="never">
+      <checkbox id="timeoutEnabled"
+              label="&enigmail.timeoutEnabled.label;"
+              pref="true"
+              preftype="bool"
+              prefstring="extensions.enigmail.timeoutEnabled"
+              prefattribute="checked"
+              oncommand="setDisables();"/>
+
+      <textbox id="maxIdleMinutes"
+              size="4"
+              pref="true"
+              preftype="int"
+              prefstring="extensions.enigmail.maxIdleMinutes"/>
+
+      <description>&enigmail.maxIdleMinutes.label;</description>
+
+    </hbox>
+
+    <hbox autostretch="never">
       <checkbox id="enigmail_autoDecrypt"
               label="&enigmail.autoDecrypt.label;"
               pref="true"
               preftype="bool"
               prefstring="extensions.enigmail.autoDecrypt"
-              prefattribute="checked"/>
-    </hbox>
-
-    <hbox autostretch="never">
-      <checkbox id="enigmail_captureWebMail"
-              label="&enigmail.captureWebMail.label;"
-              pref="true"
-              preftype="bool"
-              prefstring="extensions.enigmail.captureWebMail"
               prefattribute="checked"/>
     </hbox>
 
@@ -148,16 +169,24 @@
               prefattribute="checked"/>
     </hbox>
 
+    <hbox autostretch="never">
+      <checkbox id="enigmail_captureWebMail"
+              label="&enigmail.captureWebMail.label;"
+              pref="true"
+              preftype="bool"
+              prefstring="extensions.enigmail.captureWebMail"
+              prefattribute="checked"/>
+    </hbox>
+
     <separator/>
 
     <hbox autostretch="never" halign="right">
-      <!--
       <button class="dialog"
               id="prefsHelp"
               label="&enigmail.prefsHelp.label;"
+              oncommand="window.open('http://enigmail.mozdev.org/usage.html');" />
               oncommand="enigmailPrefsHelp();"
               />
-      -->
 
       <button class="dialog"
               id="resetPrefs"
@@ -168,7 +197,8 @@
       <button class="dialog"
               id="upgrade"
               label="&enigmail.upgrade.label;"
-              oncommand="window.openDialog('file:///data/svn/enigwww/update.html?upgrade=yes&amp;enigmail=&enigmail.version;&amp;ipc=&ipc.version;', 'dialog');"             />
+              oncommand="EnigUpgrade();"
+              />
 
       <button class="dialog"
               id="uninstall"
@@ -177,6 +207,4 @@
               />
     </hbox>
 
-  </groupbox>
-
-</window>
+</page>

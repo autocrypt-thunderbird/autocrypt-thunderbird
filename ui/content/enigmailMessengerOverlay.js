@@ -6,8 +6,7 @@ EnigInitCommon("enigmailMessengerOverlay");
 window.addEventListener("load", enigMessengerStartup, false);
 
 function enigMessengerStartup() {
-    DEBUG_LOG("enigmailMessengerOverlay.js: enigMessengerStartup\n");
-
+    DEBUG_LOG("enigmailMessengerOverlay.js: Startup\n");
     // Commented out; clean-up now handled by HdrView
     ///var outliner = GetThreadOutliner();
     ///outliner.addEventListener("click", enigThreadPaneOnClick, true);
@@ -41,28 +40,28 @@ function enigMessageDecrypt(event) {
       return;
     }
 
-    var statusCodeObj = new Object();
-    var statusMsgObj  = new Object();
+    var exitCodeObj = new Object();
+    var errorMsgObj  = new Object();
     var plainText = EnigDecryptMessage(cipherText,
-                                       statusCodeObj, statusMsgObj);
+                                       exitCodeObj, errorMsgObj);
     DEBUG_LOG("enigmailMessengerOverlay.js: plainText='"+plainText+"'\n");
 
-    var statusCode = statusCodeObj.value;
-    var statusMsg  = statusMsgObj.value;
+    var exitCode = exitCodeObj.value;
+    var errorMsg  = errorMsgObj.value;
 
     var statusBox = document.getElementById("expandedEnigmailBox");
     var statusText = document.getElementById("expandedEnigmailText");
 
-    var statusLines = statusMsg.split(/\r?\n/);
+    var statusLines = errorMsg.split(/\r?\n/);
 
     if (statusLines && statusLines.length) {
       statusText.setAttribute("value", statusLines[0]);
       statusBox.removeAttribute("collapsed");
     }
 
-    if (statusCode != 0) {
+    if (exitCode != 0) {
        if (!event)
-         EnigAlert(statusMsg);
+         EnigAlert(errorMsg);
        return;
     }
 
@@ -81,5 +80,3 @@ function enigMessageDecrypt(event) {
 
     return;
 }
-
-addEventListener('messagepane-loaded', enigMessageLoad, true);

@@ -5,7 +5,7 @@
 <?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
                  type="text/css"?> 
 
-<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmailOverlay.dtd" >
+<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
 
 <overlay id="enigmailMsgHdrViewOverlay"
     xmlns:html="http://www.w3.org/1999/xhtml"

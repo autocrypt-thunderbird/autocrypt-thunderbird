@@ -27,10 +27,7 @@ function enigMsgComposeStartup() {
 }
 
 function enigUpdateOptionsDisplay() {
-  if (!InitEnigmailSvc())
-     return "";
-
-   var optList = ["defaultEncryptMsg", "defaultSignMsg", "multipleId"];
+   var optList = ["defaultEncryptMsg", "defaultSignMsg"];
 
    var signOrEncrypt = false;
 
@@ -60,7 +57,8 @@ function enigUpdateOptionsDisplay() {
 function enigSend(encryptFlags) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: "+encryptFlags+"\n");
 
-  if (!InitEnigmailSvc()) {
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc) {
      if (EnigConfirm("Failed to initialize Enigmail; send unencrypted email?\n"))
         goDoCommand('cmd_sendButton');
 
@@ -99,7 +97,8 @@ function enigSend(encryptFlags) {
 
        editorDoc = gEditorShell.editorDocument;
        DEBUG_LOG("enigmailMsgComposeOverlay.js: editorDoc = "+editorDoc+"\n");
-       EnigDumpHTML(editorDoc.documentElement);
+
+       ///EnigDumpHTML(editorDoc.documentElement);
     
        // Get plain text
        // (Do we need to set nsIDocumentEncoder::* flags?)
@@ -127,16 +126,19 @@ function enigSend(encryptFlags) {
        var plainText = gEditorShell.GetContentsAs("text/plain", encoderFlags)
        DEBUG_LOG("enigmailMsgComposeOverlay.js: plainText["+encoderFlags+"] = '"+plainText+"'\n");
     
-       var statusCodeObj = new Object();
-       var statusMsgObj = new Object();
        var cipherText;
 
-       var fromAddr = "";
+       var fromAddr = currentId.email;
 
-       var multipleId = EnigGetPref("multipleId");
-       DEBUG_LOG("enigmailMsgComposeOverlay.js: multipleId = "+multipleId+"\n");
+       var userIdSource = EnigGetPref("userIdSource");
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: userIdSource = "+userIdSource+"\n");
 
-       if (multipleId) fromAddr = currentId.email;
+       if (userIdSource == USER_ID_DEFAULT) {
+         fromAddr = "";
+
+       } else if (userIdSource == USER_ID_SPECIFIED) {
+         fromAddr = EnigGetPref("userIdValue");
+       }
 
        if (EnigGetPref("alwaysTrustSend"))
          encryptFlags |= ALWAYS_TRUST_SEND;
@@ -146,15 +148,17 @@ function enigSend(encryptFlags) {
          fromAddr = currentId.email;
        }
 
+       var exitCodeObj = new Object();
+       var errorMsgObj = new Object();
        cipherText = EnigEncryptMessage(plainText, fromAddr, toAddr,
                                        encryptFlags,
-                                       statusCodeObj, statusMsgObj);
+                                       exitCodeObj, errorMsgObj);
 
-       var statusCode = statusCodeObj.value;
-       var statusMsg  = statusMsgObj.value;
+       var exitCode = exitCodeObj.value;
+       var errorMsg  = errorMsgObj.value;
     
-       if (statusCode != 0) {
-         EnigAlert("Error in encrypting and/or signing message. Send operation aborted.\n"+statusMsg);
+       if (exitCode != 0) {
+         EnigAlert("Error in encrypting and/or signing message. Send operation aborted.\n"+errorMsg);
          return;
        }
     
@@ -182,16 +186,12 @@ function enigToggleAttribute(attrName)
 {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigToggleAttribute('"+attrName+"')\n");
 
-  if (!InitEnigmailSvc())
-     return "";
-
   var menuElement = document.getElementById("enigmail_"+attrName);
 
   var oldValue = EnigGetPref(attrName);
   EnigSetPref(attrName, !oldValue);
 
   enigUpdateOptionsDisplay();
-
 }
 
 function DocumentStateListener()

@@ -16,7 +16,11 @@
 
       //dump("enigmailKeygenConsole.htm: RefreshConsole\n");
 
-      var keygenConsole = gEnigmailSvc.keygenConsole;
+      var enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc)
+        return;
+
+      var keygenConsole = enigmailSvc.keygenConsole;
 
       if (keygenConsole && keygenConsole.hasNewData) {
 
@@ -28,7 +32,7 @@
            window.scrollTo(0,9999);
       }
 
-      var keygenProcess = gEnigmailSvc.keygenProcess;
+      var keygenProcess = enigmailSvc.keygenProcess;
       if (keygenProcess && !keygenProcess.isAttached) {
         dump("enigmailKeygenConsole.htm: KeygenProcess terminated\n");
         UnloadHandler();
@@ -38,11 +42,11 @@
         
         keygenProcess.terminate();
         keygenProcess = null;
-        gEnigmailSvc.keygenProcess = null;
+        enigmailSvc.keygenProcess = null;
 
         keygenConsole.close();
         keygenConsole = null;
-        gEnigmailSvc.keygenConsole = null;
+        enigmailSvc.keygenConsole = null;
 
         // Give focus to this window
         window.focus();
@@ -55,10 +59,11 @@
       // Refresh console every second
       //dump("enigmailKeygenConsole.htm: LoadHandler\n");
 
-      InitEnigmailSvc();
+      var enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc)
+        return;
 
-      if (gEnigmailSvc)
-         window.consoleIntervalId = window.setInterval(RefreshConsole, 1000);
+       window.consoleIntervalId = window.setInterval(RefreshConsole, 1000);
     }
 
     function UnloadHandler() {

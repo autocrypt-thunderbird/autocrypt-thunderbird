@@ -10,17 +10,18 @@ var gAccountManager = Components.classes[ACCOUNT_MANAGER_CONTRACTID].getService(
 
 var gIdentityList;
 var gIdentityListPopup;
+var gUseForSigning;
 
 function enigmailKeygenLoad() {
   DEBUG_LOG("enigmailKeygen.js: Load\n");
 
-  gIdentityList = document.getElementById("userIdentity");
+  gIdentityList      = document.getElementById("userIdentity");
   gIdentityListPopup = document.getElementById("userIdentityPopup");
+  gUseForSigning     = document.getElementById("useForSigning");
 
   if (gIdentityListPopup) {
     fillIdentityListPopup();
   }
-
 }
 
 function enigmailKeygenUnload() {
@@ -28,7 +29,20 @@ function enigmailKeygenUnload() {
 }
 
 function enigmailKeygenTerminate() {
-   EnigAlert("Key generation completed!");
+   if (gUseForSigning.checked) {
+      var identityItem = gIdentityList.selectedItem;
+      var email = identityItem.getAttribute("email");
+
+      EnigSetPref( "userIdValue", email);
+      EnigSetPref( "userIdSource", USER_ID_SPECIFIED);
+
+      EnigSavePrefs();
+
+      EnigAlert("Key generation completed!\nIdentity <"+email+"> will be used for signing");
+
+   } else {
+      EnigAlert("Key generation completed!");
+   }
 }
 
 var gKeygenConsole;
@@ -47,7 +61,9 @@ function enigmailKeygenStart() {
    var userName = curId.fullName;
    var userEmail = curId.email;
 
-   if (!EnigConfirm("Generate public and private keys for user \""+userName+" <"+userEmail+">\"?")) {
+   var confirmMsg = "Generate public and private keys for user \""+userName+" <"+userEmail+">\"?\n(NOTE: Do not exit the browser while key generation is in progress)";
+
+   if (!EnigConfirm(confirmMsg)) {
      window.close();
      return;
    }
@@ -69,13 +85,19 @@ function enigmailKeygenStart() {
    if (!passphrase)
       comment = "no password";
 
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc) {
+     EnigAlert("Error in accessing Enigmail service");
+     return;
+  }
+
    try {
-      gKeygenProcess = gEnigmailSvc.generateKey(userName,
-                                                comment,
-                                                userEmail,
-                                                0,
-                                                passphrase,
-                                                gKeygenConsole);
+      gKeygenProcess = enigmailSvc.generateKey(userName,
+                                               comment,
+                                               userEmail,
+                                               0,
+                                               passphrase,
+                                               gKeygenConsole);
    } catch (ex) {
    }
 
@@ -83,7 +105,7 @@ function enigmailKeygenStart() {
       EnigAlert("Key generation failed!");
    }
 
-   dump("enigmailKeygen.js: Start: gKeygenProcess = "+gKeygenProcess+"\n");
+   WRITE_LOG("enigmailKeygen.js: Start: gKeygenProcess = "+gKeygenProcess+"\n");
 }
 
 function enigmailKeygenCancel() {
@@ -145,12 +167,15 @@ function fillIdentityListPopup()
       var accountName = " - "+inServer.prettyName;
   
       DEBUG_LOG("enigmailKeygen.js: accountName="+accountName+"\n");
+      DEBUG_LOG("enigmailKeygen.js: email="+identity.email+"\n");
 
       var item = document.createElement('menuitem');
       item.setAttribute('label', identity.identityName);
       item.setAttribute('class', 'identity-popup-item');
       item.setAttribute('accountname', accountName);
       item.setAttribute('id', identity.key);
+      item.setAttribute('email', identity.email);
+
       gIdentityListPopup.appendChild(item);
 
       if (identity.key == defIdentity.key)

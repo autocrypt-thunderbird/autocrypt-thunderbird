@@ -12,13 +12,16 @@
     window.mouseDownState = false;
 
     function RefreshConsole() {
+      var enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc)
+        return;
 
-      if (gEnigmailSvc.console.hasNewData) {
+      if (enigmailSvc.console.hasNewData) {
          //DEBUG_LOG("enigmailConsole.htm: RefreshConsole()\n");
 
-         gEnigmailSvc.console.hasNewData = true;
+         enigmailSvc.console.hasNewData = true;
          var console = document.getElementById('console');
-         console.firstChild.data = gEnigmailSvc.console.data;
+         console.firstChild.data = enigmailSvc.console.data;
 
          if (!window.mouseDownState)
             window.scrollTo(0,9999);
@@ -27,14 +30,15 @@
     }
 
     function LoadHandler() {
-      InitEnigmailSvc();
-      DEBUG_LOG("enigmailConsole.htm: LoadHandler: "+gEnigmailSvc+"\n");
+      var enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc)
+        return;
+
+      WRITE_LOG("enigmailConsole.htm: LoadHandler: "+enigmailSvc+"\n");
 
       // Refresh console every 2 seconds
-      if (gEnigmailSvc) {
-         RefreshConsole();
-         window.consoleIntervalId = window.setInterval(RefreshConsole, 2000);
-      }
+      RefreshConsole();
+      window.consoleIntervalId = window.setInterval(RefreshConsole, 2000);
     }
 
     function UnloadHandler() {

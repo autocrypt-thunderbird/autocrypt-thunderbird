@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmailOverlay.dtd" >
+<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
 
 <!-- This is the overlay that adds "Enigmail" to the prefs. -->
 
@@ -8,7 +8,7 @@
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <outlinerchildren id="securityChildren">
-    <outlineritem position="1">
+    <outlineritem id="enigmail" position="1">
       <outlinerrow>
         <outlinercell url="chrome://enigmail/content/pref-enigmail.xul"
                       label="&enigmail.label;"
