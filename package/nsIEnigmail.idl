@@ -151,6 +151,7 @@ interface nsIEnigmail : nsISupports
   const long UI_UNVERIFIED_ENC_OK = 0x04;
   const long UI_PGP_MIME          = 0x08;
   const long UI_TEST              = 0x10;
+  const long UI_MOD_STRICTLY_MIME = 0x20;
 
   /* Send message flags */
   const long SEND_SIGNED          = 0x001;
@@ -163,7 +164,7 @@ interface nsIEnigmail : nsISupports
   const long SEND_PGP_MIME        = 0x080;
   const long SEND_TEST            = 0x100;
   const long SAVE_MESSAGE         = 0x200;
-
+ 
   wstring encryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,
                         in string  plainText,

@@ -2307,6 +2307,19 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
   DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: prompter="+prompter+", uiFlags="+uiFlags+", from "+fromMailAddr+" to "+toMailAddr+", hashAlgorithm="+hashAlgorithm+" ("+bytesToHex(pack(sendFlags,4))+")\n");
 
   var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
+  
+  if (pgpMime) {
+    try {
+      if (uiFlags & nsIEnigmail.UI_MOD_STRICTLY_MIME) {
+
+        var prefSvc = Components.classes[NS_PREFS_SERVICE_CID]
+                              .getService(Components.interfaces.nsIPrefService);
+
+        var prefRoot = prefSvc.getBranch(null);
+        prefRoot.setBoolPref("mail.strictly_mime", false);
+      }
+    } catch (ex) {}
+  }
 
   errorMsgObj.value = "";
 
