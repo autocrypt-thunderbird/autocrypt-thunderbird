@@ -890,20 +890,22 @@ function GetXULOwner () {
 }
 
 
-function GetPassphrase(domWindow, prompter, passwdObj) {
+function GetPassphrase(domWindow, prompter, passwdObj, useAgentObj) {
   DEBUG_LOG("enigmail.js: GetPassphrase: \n");
 
+  useAgentObj.value = false;
   try {
     var noPassphrase = gEnigmailSvc.prefBranch.getBoolPref("noPassphrase");
     var useAgent = gEnigmailSvc.prefBranch.getBoolPref("useGpgAgent");
+    useAgentObj.value = useAgent;
 
     if (noPassphrase || useAgent) {
       passwdObj.value = "";
       return true;
     }
 
-  } catch(ex) {
   }
+  catch(ex) {}
 
   if (gEnigmailSvc.haveCachedPassphrase()) {
     passwdObj.value = gCachedPassphrase;
@@ -1655,14 +1657,14 @@ function (command, needPassphrase, domWindow, prompter, listener,
   envList = envList.concat(gEnvList);
 
   var passphrase = null;
-
+  var useAgentObj = {value: false};
 
   if (needPassphrase) {
     command += this.passwdCommand();
 
     var passwdObj = new Object();
 
-    if (!GetPassphrase(domWindow, prompter, passwdObj)) {
+    if (!GetPassphrase(domWindow, prompter, passwdObj, useAgentObj)) {
        ERROR_LOG("enigmail.js: Enigmail.execStart: Error - no passphrase supplied\n");
 
        statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
@@ -1701,14 +1703,14 @@ function (command, needPassphrase, domWindow, prompter, listener,
       pipetrans.asyncRead(listener, null, 0, -1, 0);
     }
 
-    if (needPassphrase) {
+    if (needPassphrase && ! useAgentObj.value) {
       // Write to child STDIN
       // (ignore errors, because child may have exited already, closing STDIN)
       try {
         if (passphrase) {
            pipetrans.writeSync(passphrase, passphrase.length);
-           pipetrans.writeSync("\n", 1);
         }
+        pipetrans.writeSync("\n", 1);
       } catch (ex) {}
     }
 
@@ -3614,8 +3616,9 @@ function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
     gpgCommand += this.passwdCommand();
 
     var passwdObj = new Object();
+    var useAgentObj = new Object();
 
-    if (!GetPassphrase(parent, sendFlags, passwdObj)) {
+    if (!GetPassphrase(parent, sendFlags, passwdObj, useAgentObj)) {
        ERROR_LOG("enigmail.js: Enigmail.encryptAttachment: Error - no passphrase supplied\n");
 
        statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
@@ -3671,8 +3674,9 @@ function (parent, outFileName, inputBuffer,
 
   var passphrase = null;
   var passwdObj = new Object();
+  var useAgentObj = new Object();
 
-  if (!GetPassphrase(parent, 0, passwdObj)) {
+  if (!GetPassphrase(parent, 0, passwdObj, useAgentObj)) {
     ERROR_LOG("enigmail.js: Enigmail.decryptAttachment: Error - no passphrase supplied\n");
 
     statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
@@ -3696,8 +3700,11 @@ function (parent, outFileName, inputBuffer,
 
   var inStream;
   try {
-    if (passphrase.length > 0) {
-      pipeTrans.writeSync(passphrase, passphrase.length);
+    if (! useAgentObj.value) {
+      if (passphrase.length > 0) {
+        pipeTrans.writeSync(passphrase, passphrase.length);
+      }
+    
       pipeTrans.writeSync("\n", 1);
     }
     var dataLength = inputBuffer.totalBytes;
