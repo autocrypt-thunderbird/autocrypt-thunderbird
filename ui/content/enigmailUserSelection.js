@@ -289,10 +289,10 @@ function enigmailBuildList(refresh) {
                 if (activeState<2 || allowExpired) {
                   // add uid's for valid keys
                   try {
-                    mailAddr = EnigStripEmail(aUserList[i].userId);
+                    mailAddr = EnigStripEmail(aUserList[i].SubUserIds[user]);
                   }
                   catch (ex) {
-                    mailAddr = EnigStripEmail(aUserList[i].userId.replace(/\"]/g,""));
+                    mailAddr = EnigStripEmail(aUserList[i].SubUserIds[user].replace(/\"]/g,""));
                   }
                   aValidUsers.push(mailAddr);
                   escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
