@@ -160,7 +160,7 @@ function enigmailUserSelLoad() {
    var toAddr = "";
    try {
      if ((typeof window.arguments[0].toAddr)=="string")
-       toAddr=enigStripEmail(window.arguments[0].toAddr);
+       toAddr=enigStripEmail(window.arguments[0].toAddr)+",";
    }
    catch (ex) {}
 
