@@ -4263,6 +4263,58 @@ KeyEditor.prototype = {
     return ((a[1] == inputType) && (a[2] == promptVal))
   },
 
+  keyEditorMainLoop: function (callbackFunc, inputData, errorMsgObj) {
+    // main method that loops over the requests & responses of the 
+    // GnuPG key editor
+    var txt="";
+    var r = { quitNow: false,
+              exitCode: -1 };
+    errorMsgObj.value=EnigGetString("undefinedError");
+    
+    while (! r.quitNow) {
+      while (txt.indexOf("[GNUPG:] GET_") < 0) {
+        txt = this.nextLine();
+        DEBUG_LOG(txt+"\n");
+        DEBUG_LOG(txt+"\n");
+        if (txt.indexOf("KEYEXPIRED") > 0) {
+          errorMsgObj.value=EnigGetString("noSignKeyExpired");
+          r.exitCode=-1;
+        }
+        if (txt.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
+          errorMsgObj.value=EnigGetString("badPhrase");
+          r.exitCode=-2;
+        }
+        if (txt.indexOf("[GNUPG:] ALREADY_SIGNED")>=0) {
+          errorMsgObj.value=EnigGetString("keyAlreadySigned");
+          r.exitCode=-1;
+        }
+      }
+  
+      if (this.doCheck(GET_LINE, "keyedit.prompt" )) {
+        r.quitNow=true;
+      }
+      else {
+        r=callbackFunc(inputData, this);
+        if (r.exitCode == 0) {
+          this.writeLine(r.writeTxt);
+        }
+        else {
+          errorMsgObj.value = r.errorMsg;
+        }
+      }
+      if (! r.quitNow) {
+        txt = this.nextLine();
+        DEBUG_LOG(txt+"\n");
+      }
+    }
+  
+    this.writeLine("save");
+    txt = this.nextLine();
+    DEBUG_LOG(txt+"\n");
+    
+    return r.exitCode;
+  },
+  
   QueryInterface: function (iid) {
     if (!iid.equals(Components.interfaces.nsISupports))
          throw Components.results.NS_ERROR_NO_INTERFACE;
@@ -4273,26 +4325,28 @@ KeyEditor.prototype = {
 
 Enigmail.prototype.signKey = 
 function (parent, userId, keyId, signLocally, trustLevel, errorMsgObj) {
-  
+  DEBUG_LOG("enigmail.js: Enigmail.signKey: trustLevel="+trustLevel+", userId="+userId+", keyId="+keyId+"\n");
   return this.editKey(parent, true, userId, keyId, 
                       (signLocally ? "lsign" : "sign"),
-                      trustLevel, 
+                      { trustLevel: trustLevel}, 
                       signKeyCallback, 
                       errorMsgObj);
 }
 
 Enigmail.prototype.setKeyTrust = 
 function (parent, keyId, trustLevel, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.setKeyTrust: parent="+parent+", keyId="+keyId+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail.setKeyTrust: trustLevel="+trustLevel+", keyId="+keyId+"\n");
   
   return this.editKey(parent, false, null, keyId, "trust", 
-                      trustLevel, keyTrustCallback, errorMsgObj);
+                      { trustLevel: trustLevel},
+                      keyTrustCallback,
+                      errorMsgObj);
 }
 
 
 Enigmail.prototype.editKey = 
-function (parent, needPassphrase, userId, keyId, editCmd, trustLevel, callbackFunc, errorMsgObj) {
-  WRITE_LOG("enigmail.js: Enigmail.editKey: parent="+parent+", editCmd="+editCmd+"\n");
+function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFunc, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.editKey: parent="+parent+", editCmd="+editCmd+"\n");
   
   if (!this.initialized) {
     errorMsgObj.value = EnigGetString("notInit");
@@ -4348,123 +4402,95 @@ function (parent, needPassphrase, userId, keyId, editCmd, trustLevel, callbackFu
     } catch (ex) {}
   }
 
-  
+
+  var exitCode=-1;  
   try {
-    var exitCode = callbackFunc(pipeTrans, trustLevel, errorMsgObj);
-    switch(exitCode) {
-    case 0:
+    var keyEdit = new KeyEditor(pipeTrans);
+    exitCode = keyEdit.keyEditorMainLoop(callbackFunc, inputData, errorMsgObj);
+  } catch (ex) {
+    DEBUG_LOG("enigmail.js: Enigmail.editKey: caught exception from writing to pipeTrans\n");
+  } 
+  
+  switch(exitCode) {
+  case 0:
+    try {
       exitCode = pipeTrans.exitCode();
-      break;
-    case -2:
-      this.clearCachedPassphrase();
+    } catch (ex) {
+      DEBUG_LOG("enigmail.js: Enigmail.editKey: caught exception from pipeTrans\n");
     }
-    
-    
-  } catch (ex) {}
+    break;
+  case -2:
+    this.clearCachedPassphrase();
+  }
   
+  DEBUG_LOG("enigmail.js: Enigmail.editKey: GnuPG terminated with code="+exitCode+"\n");
+
   return exitCode;
 }
 
 
-function signKeyCallback(pipeTrans, trustLevel, errorMsgObj) {
-  var inputData="";
-  var quitNow=false;
-  var txt="";
-  var exitCode = -1;
-  errorMsgObj.value=EnigGetString("undefinedError");
+function signKeyCallback(inputData, keyEdit) {
 
-  var keyEdit = new KeyEditor(pipeTrans);
+  var ret = {
+    exitCode: -1,
+    quitNow: false,
+    writeTxt: "",
+    errorMsg: ""
+  };
 
-  while (! quitNow) {
-    while (txt.indexOf("[GNUPG:] GET_") < 0) {
-      txt = keyEdit.nextLine();
-      DEBUG_LOG(txt+"\n");
-      if (txt.indexOf("KEYEXPIRED") > 0) {
-        errorMsgObj.value=EnigGetString("noSignKeyExpired");
-        exitCode=-1;
-      }
-      if (txt.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
-        errorMsgObj.value=EnigGetString("badPhrase");
-        exitCode=-2;
-      }
-      if (txt.indexOf("[GNUPG:] ALREADY_SIGNED")>=0) {
-        errorMsgObj.value=EnigGetString("keyAlreadySigned");
-        exitCode=-1;
-      }
-    }
-        
-    if (keyEdit.doCheck(GET_BOOL, "sign_uid.okay" )) {
-      keyEdit.writeLine("Y");
-    }
-    else if (keyEdit.doCheck(GET_BOOL, "keyedit.sign_all.okay" )) {
-      keyEdit.writeLine("Y");
-    }
-    else if (keyEdit.doCheck(GET_BOOL, "sign_uid.local_promote_okay" )) {
-      keyEdit.writeLine("Y");
-    }
-    else if (keyEdit.doCheck(GET_LINE, "sign_uid.class" )) {
-      exitCode = 0;
-      keyEdit.writeLine(trustLevel);
-    }
-    else if (keyEdit.doCheck(GET_BOOL, "sign_uid.okay" )) {
-      keyEdit.writeLine("Y");
-    }
-    else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt" ))
-      quitNow=true;
-    else {
-      quitNow=true;
-      ERROR_LOG("Unknown command prompt: "+txt+"n");
-    }
-    if (! quitNow) {
-      txt = keyEdit.nextLine();
-      DEBUG_LOG(txt+"\n");
-    }
+
+  if (keyEdit.doCheck(GET_BOOL, "sign_uid.okay" )) {
+    ret.exitCode = 0;
+    ret.writeTxt = "Y";
+  }
+  else if (keyEdit.doCheck(GET_BOOL, "keyedit.sign_all.okay" )) {
+    ret.exitCode = 0;
+    ret.writeTxt = "Y";
+  }
+  else if (keyEdit.doCheck(GET_LINE, "sign_uid.expire" )) {
+    ret.exitCode = 0;
+    ret.writeTxt = "0";
+  }
+  else if (keyEdit.doCheck(GET_BOOL, "sign_uid.local_promote_okay" )) {
+    ret.exitCode = 0;
+    ret.writeTxt = "Y";
+  }
+  else if (keyEdit.doCheck(GET_LINE, "sign_uid.class" )) {
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.trustLevel;
+  }
+  else {
+    ret.quitNow=true;
+    ERROR_LOG("Unknown command prompt: "+txt+"\n");
+    ret.exitCode=-1;
   }
 
-  keyEdit.writeLine("save");
-  txt = keyEdit.nextLine();
-
-  return exitCode;
+  return ret;
 }
 
-function keyTrustCallback(pipeTrans, trustLevel, errorMsgObj) {
-  var quitNow=false;
-  var txt="";
-  var exitCode = -1;
-  errorMsgObj.value=EnigGetString("undefinedError");
-  
-  var keyEdit = new KeyEditor(pipeTrans);
-
-  while (! quitNow) {
-    while (txt.indexOf("[GNUPG:] GET_") < 0) {
-      txt = keyEdit.nextLine();
-      DEBUG_LOG(txt+"\n");
-    }
+function keyTrustCallback(inputData, keyEdit) {
+  var ret = {
+    exitCode: -1,
+    quitNow: false,
+    writeTxt: "",
+    errorMsg: ""
+  };
         
-    if (keyEdit.doCheck(GET_LINE, "edit_ownertrust.value" )) {
-      exitCode = 0;
-      keyEdit.writeLine(trustLevel);
-    } 
-    else if (keyEdit.doCheck(GET_BOOL, "edit_ownertrust.set_ultimate.okay")) {
-      exitCode = 0;
-      keyEdit.writeLine("Y");
-    } 
-    else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt" ))
-      quitNow=true;
-    else {
-      quitNow=true;
-      ERROR_LOG("Unknown command prompt: "+txt+"n");
-      exitCode=-1;
-    }
-    if (! quitNow) {
-      txt = keyEdit.nextLine();
-      DEBUG_LOG(txt+"\n");
-    }
+  if (keyEdit.doCheck(GET_LINE, "edit_ownertrust.value" )) {
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.trustLevel;
+  } 
+  else if (keyEdit.doCheck(GET_BOOL, "edit_ownertrust.set_ultimate.okay")) {
+    ret.exitCode = 0;
+    ret.writeTxt = "Y";
+  } 
+  else {
+    ret.quitNow=true;
+    ERROR_LOG("Unknown command prompt: "+txt+"\n");
+    ret.exitCode=-1;
   }
 
-  keyEdit.writeLine("save");
-  txt = keyEdit.nextLine();
-
-  return exitCode;
+  return ret;
 }
+
 

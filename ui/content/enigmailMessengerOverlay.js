@@ -250,7 +250,7 @@ function enigMessageCleanup() {
     var statusText = document.getElementById("expandedEnigmailStatusText");
 
     if (statusText)
-      statusText.firstChild.data="";
+      statusText.value="";
   }
 
   if (gEnigCreatedURIs.length) {

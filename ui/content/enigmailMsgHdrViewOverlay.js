@@ -422,7 +422,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
 }
 
 function enigDispSecurityContext() {
-  var optList = ["pgpSecurityInfo", "copySecurityInfo", "showPhoto", "signKey", "editKeyTrust"];
+  var optList = ["pgpSecurityInfo", "copySecurityInfo"];
   for (var j=0; j<optList.length; j++) {
     var menuElement = document.getElementById("enigmail_"+optList[j]);
     if (gEnigSecurityInfo) {
@@ -432,20 +432,42 @@ function enigDispSecurityContext() {
       menuElement.setAttribute("disabled", "true");
     }
   }
+  
+  enigSetSenderStatus("signSenderKey", "editSenderKeyTrust" , "showPhoto");
+}
 
+
+function enigUpdateKeyMgmtDisplay() {
+  enigSetSenderStatus("keyMgmtSignKey", "keyMgmtKeyTrust", "keyMgmtShowPhoto")
+}
+
+
+function enigSetSenderStatus(elemSign, elemTrust, elemPhoto) {
+  var photo=false;
+  var sign=false;
+  var trust=false;
   if (gEnigSecurityInfo) {
-    if (! (gEnigSecurityInfo.statusFlags & nsIEnigmail.PHOTO_AVAILABLE)) {
-      document.getElementById("enigmail_showPhoto").setAttribute("disabled", "true");
+    if (gEnigSecurityInfo.statusFlags & nsIEnigmail.PHOTO_AVAILABLE) {
+      photo=true;
     }
-    if (! (gEnigSecurityInfo.msgSigned && 
-      !(gEnigSecurityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE))) {
+    if (gEnigSecurityInfo.msgSigned ) {
       if (!(gEnigSecurityInfo.statusFlags & 
-            (nsIEnigmail.REVOKED_KEY | nsIEnigmail.EXPIRED_KEY_SIGNATURE))) {
-        document.getElementById("enigmail_signKey").setAttribute("disabled", "true");
+           (nsIEnigmail.REVOKED_KEY | nsIEnigmail.EXPIRED_KEY_SIGNATURE | nsIEnigmail.UNVERIFIED_SIGNATURE))) {
+        sign=true;
       }
-      document.getElementById("enigmail_editKeyTrust").setAttribute("disabled", "true");
+      if (!(gEnigSecurityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE)) {
+        trust=true;
+      }
     }
   }
+
+  if (elemTrust)
+    document.getElementById("enigmail_"+elemTrust).setAttribute("disabled", !trust);
+  if (elemSign)
+    document.getElementById("enigmail_"+elemSign).setAttribute("disabled", !sign);
+  if (elemPhoto)
+    document.getElementById("enigmail_"+elemPhoto).setAttribute("disabled", !photo);
+  
 }
 
 function enigEditKeyTrust() {
@@ -454,6 +476,7 @@ function enigEditKeyTrust() {
     userId: gEnigSecurityInfo.userId
   }
   window.openDialog("chrome://enigmail/content/enigmailEditKeyTrustDlg.xul","", "dialog,modal,centerscreen", inputObj);
+  ReloadWithAllParts();
 }
 
 function enigSignKey() {
@@ -462,8 +485,9 @@ function enigSignKey() {
     userId: gEnigSecurityInfo.userId
   }
   window.openDialog("chrome://enigmail/content/enigmailSignKeyDlg.xul","", "dialog,modal,centerscreen", inputObj);
-
+  ReloadWithAllParts();
 }
+
 
 function enigMsgHdrViewLoad(event)
 {
@@ -554,7 +578,7 @@ function enigForgetEncryptedURI()
 function enigMsgHdrViewHide() {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigMsgHdrViewHide\n");
   var enigmailBox = document.getElementById("enigmailBox");
-  enigmailBox.collapsed=true;
+  enigmailBox.setAttribute("collapsed", true);
 
   gEnigSecurityInfo = { statusFlags: 0,
                       keyId: "",
@@ -570,7 +594,7 @@ function enigMsgHdrViewUnhide() {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigMsgHdrViewUnhide\n");
   if (gEnigSecurityInfo.statusFlags != 0) {
     var enigmailBox = document.getElementById("enigmailBox");
-    enigmailBox.collapsed=false;
+    enigmailBox.removeAttribute("collapsed");
   }
 }
 

@@ -62,7 +62,9 @@
           <label id="keyIdValue" value="?"/>
         </row>
         <row>
-          <label value="&enigmail.sKeyDlg.signWithKey.label;"/>
+          <hbox align="center">
+            <label value="&enigmail.sKeyDlg.signWithKey.label;"/>
+          </hbox>
           <menulist id="signWithKey"/>
         </row>
       </rows>

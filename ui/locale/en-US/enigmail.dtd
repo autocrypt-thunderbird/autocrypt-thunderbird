@@ -89,8 +89,10 @@
 <!ENTITY enigmail.upgrade.label            "Upgrade">
 <!ENTITY enigmail.help.label               "Help">
 <!ENTITY enigmail.about.label              "About Enigmail">
-<!ENTITY enigmail.reload.label             "Reload Message">
+<!ENTITY enigmail.reload.label             "Reload IMAP Message">
 <!ENTITY enigmail.browse.label             "Browse...">
+<!ENTITY enigmail.openpgpKeyMgmt.label     "OpenPGP Key Management">
+
 
 <!ENTITY enigmail.decryptverify.accesskey   "D">
 <!ENTITY enigmail.importpublickey.accesskey "I">
@@ -110,6 +112,7 @@
 <!ENTITY enigmail.upgrade.accesskey         "U">
 <!ENTITY enigmail.help.accesskey            "H">
 <!ENTITY enigmail.about.accesskey           "b">
+<!ENTITY enigmail.openpgpKeyMgmt.accesskey  "O">
 
 <!ENTITY enigmail.securitybutton.label       "OpenPGP">
 <!ENTITY enigmail.securitybutton.tip         "OpenPGP (Enigmail) security settings">
@@ -244,6 +247,8 @@
 <!ENTITY  enigmail.pgpSecurityInfo.label            "OpenPGP Security Info ...">
 <!ENTITY  enigmail.copySecurityInfo.label           "Copy OpenPGP Security Info">
 <!ENTITY  enigmail.showPhoto.label                  "View OpenPGP Photo ID">
+<!ENTITY  enigmail.signSenderKey.label              "Sign Sender's Key ...">
+<!ENTITY  enigmail.trustSenderKey.label             "Set Sender's Key Trust ...">
 <!ENTITY  enigmail.smimeSecurityInfo.label          "S/MIME Security Info ...">
 <!ENTITY  enigmail.createRuleFromAddr.label         "Create OpenPGP Rule from Address...">
 

@@ -1050,14 +1050,14 @@ function EnigViewAbout() {
 
   EnigOpenWin ("about:enigmail",
                "chrome://enigmail/content/enigmailAbout.xul",
-               "resizable,chrome");
+               "dialog,resizable,chrome");
 }
 
 function EnigViewConsole() {
   DEBUG_LOG("enigmailCommon.js: EnigViewConsole\n");
 
   EnigOpenWin("enigmail:console",
-              "chrome://enigmail/content/enigmailConsole.xul", "chrome,resizable");
+              "chrome://enigmail/content/enigmailConsole.xul", "dialog,chrome,resizable");
 }
 
 function EnigViewDebugLog() {
@@ -1088,7 +1088,7 @@ function EnigViewDebugLog() {
 
   EnigOpenWin("enigmail:logFile",
               "chrome://enigmail/content/enigmailViewFile.xul",
-              "chrome,resizable",
+              "dialog,chrome,resizable",
               [ logFileURL, "Enigmail Debug Log"]);
 
 //  window.open(logFileURL, 'Enigmail Debug Log');
