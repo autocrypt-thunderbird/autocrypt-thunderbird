@@ -424,7 +424,7 @@ function enigCreateRevokeCert() {
   var outFile = EnigFilePicker(EnigGetString("saveRevokeCertAs"),
                                "", true, "asc",
                                defaultFileName, 
-                               ["*.asc"]);
+                               ["*.asc", EnigGetString("asciiArmorFile")]);
   if (! outFile) return;
   
   var enigmailSvc = GetEnigmailSvc();
@@ -476,7 +476,7 @@ function enigmailExportKeys() {
 
   var outFile = EnigFilePicker(EnigGetString("exportToFile"),
                                "", true, "asc",
-                               defaultFileName, ["*.asc"]);
+                               defaultFileName, ["*.asc", EnigGetString("asciiArmorFile")]);
   if (! outFile) return;
   
   var keyListStr = "0x"+keyList.join(" 0x");
@@ -499,7 +499,7 @@ function enigmailImportKeysFromFile() {
 
   var inFile = EnigFilePicker(EnigGetString("importFile"),
                                "", false, "asc",
-                               "", ["*.asc"]);
+                               "", ["*.asc", EnigGetString("asciiArmorFile")]);
   if (! inFile) return;
   
   var errorMsgObj = {};
