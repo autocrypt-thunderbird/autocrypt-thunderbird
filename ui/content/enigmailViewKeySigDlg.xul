@@ -171,6 +171,9 @@
             treeItem.appendChild(userRow);
             treeChildren.appendChild(treeItem);
           }
+          else if (listRow[0] == "sub") {
+            break;
+          }
         }
       }
       

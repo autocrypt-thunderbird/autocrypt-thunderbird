@@ -48,7 +48,7 @@ XPIDL_MODULE  = enigmail
 
 XPIDLSRCS     = nsIEnigmail.idl
 
-PREF_JS_EXPORTS = prefs/enigmail.js
+PREF_JS_EXPORTS = $(srcdir)/prefs/enigmail.js
 
 include $(topsrcdir)/config/rules.mk
 

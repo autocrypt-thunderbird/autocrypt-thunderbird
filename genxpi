@@ -36,21 +36,22 @@
 
 echo "genxpi: Generating $1 in $2"
 
-if [ $# -lt 4 ]; then
+if [ $# -lt 5 ]; then
   echo "Wrong number of parameters"
   exit 1
 fi
 
 xpiFile=$1
-xpiModule=$3
-libPrefix=$5
-dllSuffix=$4
-cwd=`/bin/pwd`
+srcDir=$3
+xpiModule=$4
+libPrefix=$6
+dllSuffix=$5
+cwd=`pwd`
 cd "$2"
-targetDir=`/bin/pwd`
+targetDir=`pwd`
 cd "$cwd"
 
-cd package
+cd ${srcDir}/package
 zip -r ${targetDir}/${xpiFile} install.js \
                install.rdf \
                ${xpiModule}.spec

@@ -320,7 +320,7 @@ function EnigConfigure() {
   var prefList = gPrefEnigmail.getChildList("",obj);
 
   for (var prefItem in prefList) {
-    var prefName=prefList[prefItem];
+    var prefNCCEC227Bame=prefList[prefItem];
     if (prefName.search(/AlertCount$/) >= 0) {
        // Reset alert count to default value
       try {
@@ -333,7 +333,7 @@ function EnigConfigure() {
   if (buttonPressed == 0) {
     // Configure now
     EnigPrefWindow(true,(navigator.vendor=="Thunderbird" ? "thunderbird" : "seamonkey"));
-
+                             
   } else {
     // "Do not ask me again" => "already configured"
     EnigSetPref("configuredVersion", gEnigmailVersion);

@@ -39,12 +39,6 @@ const ERROR_BUFFER_SIZE = 16384; // 16 kB
 const PGP_BATCH_OPTS  = " +batchmode +force";
 const GPG_BATCH_OPTS  = " --batch --no-tty --status-fd 2";
 
-const GPG_COMMENT_OPT = " --comment 'Using GnuPG with ";
-const PGP_COMMENT_OPT = " +comment='Using PGP with ";
-
-const COMMENT_SUFFIX = " - http://enigmail.mozdev.org'";
-
-
 const gDummyPKCS7 = 'Content-Type: multipart/mixed;\r\n boundary="------------060503030402050102040303\r\n\r\nThis is a multi-part message in MIME format.\r\n--------------060503030402050102040303\r\nContent-Type: application/x-pkcs7-mime\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303\r\nContent-Type: application/x-enigmail-dummy\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303--\r\n';
 
 /* Implementations supplied by this module */
@@ -108,8 +102,11 @@ const nsIEnigmail            = Components.interfaces.nsIEnigmail;
 const nsIEnigStrBundle       = Components.interfaces.nsIStringBundleService;
 
 const NS_XPCOM_SHUTDOWN_OBSERVER_ID = "xpcom-shutdown";
+
 ///////////////////////////////////////////////////////////////////////////////
 // Global variables
+
+const GPG_COMMENT_OPT = "Using GnuPG with %s - http://enigmail.mozdev.org";
 
 var gLogLevel = 3;            // Output only errors/warnings by default
 
@@ -649,25 +646,25 @@ PGPModule.prototype = {
 // Utility functions
 ///////////////////////////////////////////////////////////////////////////////
 
-function isAbsolutePath(filePath, isWin32) {
+function isAbsolutePath(filePath, isDosLike) {
   // Check if absolute path
-  if (isWin32) {
+  if (isDosLike) {
     return (filePath.search(/^\w+:\\/) == 0);
   } else {
     return (filePath.search(/^\//) == 0)
   }
 }
 
-function ResolvePath(filePath, envPath, isWin32) {
+function ResolvePath(filePath, envPath, isDosLike) {
   DEBUG_LOG("enigmail.js: ResolvePath: filePath="+filePath+"\n");
 
-  if (isAbsolutePath(filePath, isWin32))
+  if (isAbsolutePath(filePath, isDosLike))
     return filePath;
 
   if (!envPath)
      return null;
 
-  var pathDirs = envPath.split(isWin32 ? ";" : ":");
+  var pathDirs = envPath.split(isDosLike ? ";" : ":");
 
   for (var j=0; j<pathDirs.length; j++) {
      try {
@@ -999,8 +996,10 @@ Enigmail.prototype.composeSecure = false;
 
 Enigmail.prototype.logFileStream = null;
 
-Enigmail.prototype.isUnix  = false;
-Enigmail.prototype.isWin32 = false;
+Enigmail.prototype.isUnix    = false;
+Enigmail.prototype.isWin32   = false;
+Enigmail.prototype.isOs2     = false;
+Enigmail.prototype.isDosLike = false;
 
 Enigmail.prototype.ipcService = null;
 Enigmail.prototype.prefBranch = null;
@@ -1008,6 +1007,7 @@ Enigmail.prototype.console = null;
 Enigmail.prototype.keygenProcess = null;
 Enigmail.prototype.keygenConsole = null;
 
+Enigmail.prototype.quoteSign = "";
 Enigmail.prototype.agentType = "";
 Enigmail.prototype.agentPath = "";
 Enigmail.prototype.agentVersion = "";
@@ -1112,7 +1112,7 @@ function () {
   if (!logDirectory)
     return "";
 
-  var dirPrefix = logDirectory + (this.isWin32 ? "\\" : "/");
+  var dirPrefix = logDirectory + (this.isDosLike ? "\\" : "/");
 
   return dirPrefix;
 }
@@ -1294,6 +1294,16 @@ function (domWindow, version, prefBranch) {
 
   this.isUnix  = (this.platform.search(/X11/i) == 0);
   this.isWin32 = (this.platform.search(/Win/i) == 0);
+  this.isOs2   = (this.platform.search(/OS\/2/i) == 0);
+  
+  if (this.isOs2) {
+    this.quoteSign="\\\"";
+  }
+  else {
+    this.quoteSign="'";
+  }
+  
+  this.isDosLike = (this.isWin32 || this.isOs2);
 
   var prefix = this.getLogDirectoryPrefix();
   if (prefix) {
@@ -1331,17 +1341,17 @@ function (domWindow, version, prefBranch) {
 
   // Initialize global environment variables list
   var passEnv = [ "PGPPATH", "GNUPGHOME",
-                  "ALLUSERSPROFILE", "APPDATA",
+                  "ALLUSERSPROFILE", "APPDATA", "BEGINLIBPATH",
                   "COMMONPROGRAMFILES", "COMSPEC", "DISPLAY",
-                  "ENIGMAIL_PASS_ENV", "HOME", "HOMEDRIVE", "HOMEPATH",
+                  "ENIGMAIL_PASS_ENV", "ENDLIBPATH",
+                  "HOME", "HOMEDRIVE", "HOMEPATH",
                   "LANG", "LANGUAGE", "LC_ALL", "LC_COLLATE",  "LC_CTYPE",
                   "LC_MESSAGES",  "LC_MONETARY", "LC_NUMERIC", "LC_TIME",
                   "LOCPATH", "LOGNAME", "LD_LIBRARY_PATH", "MOZILLA_FIVE_HOME",
                   "NLSPATH", "PATH", "PATHEXT", "PROGRAMFILES", "PWD",
                   "SHELL", "SYSTEMDRIVE", "SYSTEMROOT",
                   "TEMP", "TMP", "TMPDIR", "TZ", "TZDIR", "UNIXROOT",
-                  "USER", "USERPROFILE",
-                  "WINDIR" ];
+                  "USER", "USERPROFILE", "WINDIR" ];
 
   try {
     var useAgent=this.prefBranch.getBoolPref("useGpgAgent");
@@ -1403,8 +1413,8 @@ function (domWindow, version, prefBranch) {
   if (agentPath) {
     // Locate GPG/PGP executable
 
-    // Append default .exe extension for Win32, if needed
-    if (this.isWin32 && (agentPath.search(/\.\w+$/) < 0))
+    // Append default .exe extension for DOS-Like systems, if needed
+    if (this.isDosLike && (agentPath.search(/\.\w+$/) < 0))
       agentPath += ".exe";
 
     try {
@@ -1439,23 +1449,23 @@ function (domWindow, version, prefBranch) {
 
     for (var index=0; index<agentList.length; index++) {
       agentType = agentList[index];
-      var agentName = this.isWin32 ? agentType+".exe" : agentType;
+      var agentName = this.isDosLike ? agentType+".exe" : agentType;
 
-      agentPath = ResolvePath(agentName, envPath, this.isWin32);
+      agentPath = ResolvePath(agentName, envPath, this.isDosLike);
       if (agentPath) {
-        // Discard path info for win32
-        /* if (this.isWin32)
+        // Discard path info for DOS-like systems
+        /* if (this.isDosLike)
           agentPath = agentType; */
         break;
       }
     }
 
-    if (!agentPath && this.isWin32) {
-      // Win32: search for GPG in c:\gnupg, c:\gnupg\bin, d:\gnupg, d:\gnupg\bin
+    if (!agentPath && this.isDosLike) {
+      // DOS-like systems: search for GPG in c:\gnupg, c:\gnupg\bin, d:\gnupg, d:\gnupg\bin
       var gpgPath = "c:\\gnupg;c:\\gnupg\\bin;d:\\gnupg;d:\\gnupg\\bin";
 
       agentType = "gpg";
-      agentPath = ResolvePath("gpg.exe", gpgPath, this.isWin32);
+      agentPath = ResolvePath("gpg.exe", gpgPath, this.isDosLike);
     }
 
     if (!agentPath) {
@@ -2152,9 +2162,6 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
   if (this.agentType == "pgp") {
     encryptCommand += PGP_BATCH_OPTS + " -fta "
 
-    if (!useDefaultComment)
-      encryptCommand += PGP_COMMENT_OPT + this.vendor + COMMENT_SUFFIX;
-
     if (encryptMsg) {
       encryptCommand += " -e";
 
@@ -2185,12 +2192,12 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
     encryptCommand += GPG_BATCH_OPTS;
 
     if (!useDefaultComment)
-      encryptCommand += GPG_COMMENT_OPT + this.vendor + COMMENT_SUFFIX;
+      encryptCommand += " --comment "+this.quoteSign+GPG_COMMENT_OPT.replace(/\%s/, this.vendor)+this.quoteSign;
 
 
     var angledFromMailAddr = ((fromMailAddr.search(/^0x/) == 0) || hushMailSupport)
 	                         ? fromMailAddr : "<" + fromMailAddr + ">";
-    angledFromMailAddr = angledFromMailAddr.replace(/([\'\`])/g, "\\$1");
+    angledFromMailAddr = angledFromMailAddr.replace(/([\"\'\`])/g, "\\$1");
 
     if (encryptMsg) {
       if (isAscii)
@@ -3142,7 +3149,7 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
     catch (ex) {}
   }
   var baseCommand = "gpgkeys_" + protocol;
-  if (this.isWin32) {
+  if (this.isDosLike) {
     baseCommand+=".exe";
   }
 
@@ -3977,11 +3984,12 @@ function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
   }
 
   // escape the backslashes (mainly for Windows) and the ' character
-  inFile = inFile.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
-  outFile = outFile.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+  inFile = inFile.replace(/([\\\"\'\`])/g, "\\$1");
+  //replace(/\\/g, "\\\\").replace(/\'/g, "\\'");
+  outFile = outFile.replace(/([\\\"\'\`])/g, "\\$1");
 
-  gpgCommand += " --yes -o '" + outFile + "' '" + inFile + "'";
-
+  gpgCommand += " --yes -o " + this.quoteSign + outFile + this.quoteSign;
+  gpgCommand += " "+this.quoteSign + inFile + this.quoteSign;
 
   var statusMsgObj   = new Object();
   var cmdErrorMsgObj = new Object();
@@ -4030,9 +4038,11 @@ function (parent, outFileName, displayName, inputBuffer,
 
   var command = this.agentPath;
 
-  outFileName = outFileName.replace(/\\/g, "\\\\").replace(/'/g, "\\'");;
+  outFileName = outFileName.replace(/([\\\"\'\`])/g, "\\$1");
+  //replace(/\\/g, "\\\\").replace(/'/g, "\\'");;
 
-  command += GPG_BATCH_OPTS + " -o '"+outFileName+"' --yes " + this.passwdCommand() + " -d ";
+  command += GPG_BATCH_OPTS + " -o " + this.quoteSign + outFileName + this.quoteSign;
+  command+= " --yes " + this.passwdCommand() + " -d ";
 
 
   statusFlagsObj.value = 0;
@@ -4114,7 +4124,7 @@ function(keyId, exitCodeObj, errorMsgObj) {
     return "";
   }
 
-  if (this.agentVersion<"1.5" && this.isWin32) {
+  if (this.agentVersion<"1.5" && this.isDosLike) {
     // workaround for error in gpg
     outputTxt=outputTxt.replace(/\r\n/g, "\n");
   }
@@ -4274,11 +4284,11 @@ Enigmail.prototype.addRule = function (appendToEnd, toAddress, keyList, sign, en
   
   if (origFirstChild && (! appendToEnd)) {
     this.rulesList.firstChild.insertBefore(rule, origFirstChild);
-    this.rulesList.firstChild.insertBefore(this.rulesList.createTextNode(this.isWin32 ? "\r\n" : "\n"), origFirstChild);
+    this.rulesList.firstChild.insertBefore(this.rulesList.createTextNode(this.isDosLike ? "\r\n" : "\n"), origFirstChild);
   }
   else {
     this.rulesList.firstChild.appendChild(rule);
-    this.rulesList.firstChild.appendChild(this.rulesList.createTextNode(this.isWin32 ? "\r\n" : "\n"));
+    this.rulesList.firstChild.appendChild(this.rulesList.createTextNode(this.isDosLike ? "\r\n" : "\n"));
   }
   
 }
@@ -4505,9 +4515,10 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
   if (userId) command += " -u " + userId;
   if (editCmd == "revoke") {
     // escape backslashes and ' characters
-    command += " -a -o '";
-    command += inputData.outFile.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
-    command += "' --gen-revoke " + keyId
+    command += " -a -o "+this.quoteSign;
+    command += inputData.outFile.replace(/([\\\"\'\`])/g, "\\$1");
+    //replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    command += this.quoteSign+" --gen-revoke " + keyId
   }
   else {
     command += " --edit-key " + keyId + " " + editCmd

@@ -78,7 +78,11 @@ ifeq ($(OS_ARCH),OpenBSD)
 PLATFORM_STR = openbsd
 endif
 
+ifeq ($(OS_ARCH),OS2)
+PLATFORM_STR = os2
+endif
+
 XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS)-$(PLATFORM_STR).xpi
 
 xpi::
-	./genxpi $(XPIFILE) $(DIST)/bin $(XPI_MODULE) $(DLL_SUFFIX) $(LIB_PREFIX)
+	$(srcdir)/genxpi $(XPIFILE) $(DIST)/bin $(srcdir) $(XPI_MODULE) $(DLL_SUFFIX) $(LIB_PREFIX)

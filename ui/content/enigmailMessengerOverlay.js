@@ -1151,7 +1151,7 @@ function enigGetDecryptedMessage(contentType, includeHeaders) {
       contentData += "\r\n"+gEnigDecryptedMessage.plainText;
     }
 
-    if (!(enigmailSvc.isWin32)) {
+    if (!(enigmailSvc.isDosLike)) {
       contentData = contentData.replace(/\r\n/g, "\n");
     }
   }
