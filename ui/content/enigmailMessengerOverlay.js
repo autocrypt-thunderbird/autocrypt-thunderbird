@@ -1,7 +1,7 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
 // Initialize enigmailCommon
-EnigInitCommon();
+EnigInitCommon("enigmailMessengerOverlay");
 
 window.addEventListener("load", enigMessengerStartup, false);
 

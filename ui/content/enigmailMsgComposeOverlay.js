@@ -1,7 +1,7 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
 // Initialize enigmailCommon
-EnigInitCommon();
+EnigInitCommon("enigmailMsgComposeOverlay");
 
 window.addEventListener("load", enigMsgComposeStartup, false);
 
@@ -14,8 +14,6 @@ var gOrigSendButton, gEnigSendButton;
 function enigMsgComposeStartup() {
    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
    gOrigSendButton = document.getElementById("button-send");
-   gOrigSendButton.setAttribute("collapsed", "true");
-
    gEnigSendButton = document.getElementById("button-enigmail-send");
 
    // Get editor shell
@@ -44,6 +42,16 @@ function enigUpdateOptionsDisplay() {
        menuElement.setAttribute("checked", "false");
      }
    }
+
+   if (gEnigmailSvc.encryptMsg || gEnigmailSvc.signMsg) {
+      gEnigSendButton.removeAttribute("collapsed");
+      gOrigSendButton.setAttribute("collapsed", "true");
+
+   } else {
+      gOrigSendButton.removeAttribute("collapsed");
+      gEnigSendButton.setAttribute("collapsed", "true");
+   }
+
 }
 
 function enigSend() {
@@ -160,15 +168,6 @@ function enigToggleAttribute(attrName)
   gEnigmailSvc[attrName] = !gEnigmailSvc[attrName];
 
   enigUpdateOptionsDisplay();
-
-  if (gEnigmailSvc.encryptMsg || gEnigmailSvc.signMsg) {
-    gEnigSendButton.removeAttribute("collapsed");
-    gOrigSendButton.setAttribute("collapsed", "true");
-
-  } else {
-    gOrigSendButton.removeAttribute("collapsed");
-    gEnigSendButton.setAttribute("collapsed", "true");
-  }
 
 }
 

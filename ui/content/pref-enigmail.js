@@ -1,7 +1,7 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
 // Initialize enigmailCommon
-EnigInitCommon();
+EnigInitCommon("pref-enigmail");
 
 const ePrefString = 32;
 const ePrefInt = 64;

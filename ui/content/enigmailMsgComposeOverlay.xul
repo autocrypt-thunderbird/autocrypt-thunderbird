@@ -58,12 +58,11 @@
 
         <menuitem id="enigmail_keygen"
              label="Generate key"
-             oncommand="window.open('enigmail:keygen');" />
+             oncommand="EnigKeygen();" />
 
         <menuitem id="enigmail_about"
              label="About Enigmail"
              oncommand="window.open('enigmail:about');" />
-
       </menupopup>
     </menu>
 

@@ -9,9 +9,12 @@ var gLogFileStream = null;
 
 var gIPCService;
 var gProcessInfo;
+var gPromptService;
 
 // Initializes enigmailCommon
-function EnigInitCommon() {
+function EnigInitCommon(id) {
+   DEBUG_LOG("enigmailCommon.js:EnigInitCommon: id="+id+"\n");
+
    try {
      gIPCService = Components.classes[NS_IPCSERVICE_CONTRACTID].getService(Components.interfaces.nsIIPCService);
 
@@ -27,7 +30,10 @@ function EnigInitCommon() {
    } catch (ex) {
    }
 
-   dump("enigmailCommon.js: EnigInitCommon: gIPCService = "+gIPCService+"\n");
+   DEBUG_LOG("enigmailCommon.js: EnigInitCommon: gIPCService = "+gIPCService+"\n");
+
+   gPromptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
+
 }
 
 
@@ -45,7 +51,7 @@ function InitEnigmailSvc() {
      ERROR_LOG("enigmailCommon.js: Error in instantiating EnigmailService\n");
    }
 
-   dump("enigmailCommon.js: gEnigmailSvc = "+gEnigmailSvc+"\n");
+   DEBUG_LOG("enigmailCommon.js: gEnigmailSvc = "+gEnigmailSvc+"\n");
    return gEnigmailSvc;
 }
 
@@ -168,15 +174,15 @@ function ERROR_LOG(str) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function EnigAlert(mesg) {
-  return window.prompter.alert("Enigmail Alert", mesg);
+  return gPromptService.alert(window, "Enigmail Alert", mesg);
 }
 
 function EnigConfirm(mesg) {
-  return window.prompter.confirm("Enigmail Confirm", mesg);
+  return gPromptService.confirm(window, "Enigmail Confirm", mesg);
 }
 
 function EnigError(mesg) {
-  return window.prompter.alert("Enigmail Error", mesg);
+  return gPromptService.alert(window, "Enigmail Error", mesg);
 }
 
 function EnigPassphrase() {
@@ -189,7 +195,8 @@ function EnigPassphrase() {
   var promptMsg = "Please type in your "+gEnigmailSvc.agentType.toUpperCase()+" passphrase";
   passwdObj.value = "";
   checkObj.value = false;
-  var success = window.prompter.promptPassword("Enigmail",
+  var success = gPromptService.promptPassword(window,
+                               "Enigmail",
                                promptMsg,
                                passwdObj,
                                "Check box to remember passphrase for this session (INSECURE)",
@@ -402,6 +409,14 @@ function EnigViewConsole() {
     navWindow.focus();
 }
 
+function EnigKeygen() {
+  DEBUG_LOG("enigmailCommon.js: EnigKeygen\n");
+  window.openDialog('chrome://enigmail/content/enigmailKeygen.xul',
+                    'Enigmail Key Generation',
+                    'chrome,dialog,close=no');
+
+}
+
 // retrieves the most recent navigator window (opens one if need be)
 function LoadURLInNavigatorWindow(url, aOpenFlag)
 {
@@ -435,7 +450,7 @@ function LoadURLInNavigatorWindow(url, aOpenFlag)
     navWindow = window.open(url, "EnigmailConsole");
   }
 
-  dump(navWindow+"\n");
+  DEBUG_LOG("enigmailCommon.js: LoadURLInNavigatorWindow: navWindow="+navWindow+"\n");
 
   return navWindow;
 }

@@ -124,12 +124,12 @@ function WRITE_LOG(str) {
 
 function DEBUG_LOG(str) {
   if (gLogLevel >= 4)
-    DEBUG_LOG(str);
+    WRITE_LOG(str);
 }
 
 function WARNING_LOG(str) {
   if (gLogLevel >= 3)
-    DEBUG_LOG(str);
+    WRITE_LOG(str);
 
   if (gEnigmailSvc && gEnigmailSvc.console)
     gEnigmailSvc.console.write(str);
@@ -137,7 +137,7 @@ function WARNING_LOG(str) {
 
 function ERROR_LOG(str) {
   if (gLogLevel >= 2)
-    DEBUG_LOG(str);
+    WRITE_LOG(str);
 
   if (gEnigmailSvc && gEnigmailSvc.console)
     gEnigmailSvc.console.write(str);
@@ -145,7 +145,7 @@ function ERROR_LOG(str) {
 
 function CONSOLE_LOG(str) {
   if (gLogLevel >= 3)
-    DEBUG_LOG(str);
+    WRITE_LOG(str);
 
   if (gEnigmailSvc && gEnigmailSvc.console)
     gEnigmailSvc.console.write(str);
@@ -566,9 +566,9 @@ function (aURI)
     // Display enigmail console messages
     spec = "chrome://enigmail/content/enigmailConsole.htm";
 
-  } else if (aURI.spec == aURI.scheme+":keygen") {
-    // Display enigmail key generation status
-    spec = "chrome://enigmail/content/enigmailKeygen.htm";
+  } else if (aURI.spec == aURI.scheme+":keygenConsole") {
+    // Display enigmail key generation console
+    spec = "chrome://enigmail/content/enigmailKeygenConsole.htm";
 
   } else {
     // Display Enigmail config page
@@ -1129,7 +1129,7 @@ function (name, comment, email, expiryDate, passphrase, pipeConsole) {
   if (this.keygenProcess || (this.agentType != "gpg"))
     throw Components.results.NS_ERROR_FAILURE;
 
-  var  command = this.agentPath+" --batch --no-tty --gen-key"
+  var command = this.agentPath+" --batch --no-tty --gen-key"
 
   var inputData =
 "%echo Generating a standard key\nKey-Type: DSA\nKey-Length: 1024\nSubkey-Type: ELG-E\nSubkey-Length: 1024\n";
@@ -1141,6 +1141,9 @@ function (name, comment, email, expiryDate, passphrase, pipeConsole) {
   if (passphrase.length)
     inputData += "Passphrase: "+passphrase+"\n";
   inputData += "%commit\n%echo done\n";
+
+  pipeConsole.write(command+"\n");
+  pipeConsole.write(inputData);
 
   DEBUG_LOG("enigmail.js: Enigmail.generateKey: inputData="+inputData+"\n");
 

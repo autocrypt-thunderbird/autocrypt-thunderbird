@@ -1,7 +1,7 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
 // Initialize enigmailCommon
-EnigInitCommon();
+EnigInitCommon("enigmailPanel");
 
 function OnLoadEnigPanel() {
   DEBUG_LOG("enigmailPanel.js: OnLoadEnigPanel\n");

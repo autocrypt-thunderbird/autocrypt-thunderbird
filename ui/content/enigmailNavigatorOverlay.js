@@ -7,7 +7,7 @@ dump("enigmailNavigatorOverlay.js: gCaptureWebMail="+gCaptureWebMail+"\n");
 
 if (gCaptureWebMail) {
    // Initialize enigmailCommon etc.
-   EnigInitCommon();
+   EnigInitCommon("enigmailNavigatorOverlay");
    window.addEventListener("load", enigNavigatorStartup, true);
 }
 
