@@ -308,7 +308,7 @@
 <!ENTITY enigmail.progress.label                   "Progress">
 
 <!ENTITY enigmail.sKeyDlg.title                    "Enigmail - Sign Key">
-<!ENTITY enigmail.sKeyDlg.signKey.label            "Sign Key Id:">
+<!ENTITY enigmail.sKeyDlg.signKey.label            "Sign Key:">
 <!ENTITY enigmail.sKeyDlg.signWithKey.label        "Key for signing:">
 <!ENTITY enigmail.sKeyDlg.checked.label            "How carefully have you verified the key you are about to sign actually belongs to the person named above?">
 <!ENTITY enigmail.sKeyDlg.noAnswer.label           "I will not answer">
@@ -325,7 +325,7 @@
 <!ENTITY enigmail.addUidDlg.comment.label            "Comment (optional)">
 
 <!ENTITY enigmail.keyTrust.title                   "Enigmail - Set Key Trust">
-<!ENTITY enigmail.keyTrust.trustKey.label          "Key Id To Trust:">
+<!ENTITY enigmail.keyTrust.trustKey.label          "Key To Trust:">
 <!ENTITY enigmail.keyTrust.trustLevel.label        "How much do you trust the key?">
 <!ENTITY enigmail.keyTrust.dontKnow.label          "I don't know">
 <!ENTITY enigmail.keyTrust.noTrust.label           "I do NOT trust">
