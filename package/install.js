@@ -1,7 +1,7 @@
 // Install script for Enigmail
 
 var err;
-const APP_VERSION="0.82.2";
+const APP_VERSION="0.82.3";
 
 err = initInstall("Enigmail v"+APP_VERSION,  // name for install UI
                   "/enigmail",         // registered name
@@ -38,12 +38,18 @@ if (!verifyDiskSpace(fProgram, srDest)) {
 
   } else {
     // Register chrome
+    var isTbird = !confirm("Which Theme do you want to install?\nClick OK if you want to install the Enigmail Theme for Mozilla, or Cancel for the Theme for Thunderbird\n\n(Click OK if you don't know what Thunderbird is)");
+
     registerChrome(PACKAGE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "content/enigmail/");
 
-    registerChrome(   SKIN | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "skin/modern/enigmail/");
+    if (! isTbird) {
+      registerChrome(   SKIN | DELAYED_CHROME, getFolder("Chrome","enigmail-skin.jar"), "skin/modern/enigmail/");
 
-    registerChrome(   SKIN | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "skin/classic/enigmail/");
-
+      registerChrome(   SKIN | DELAYED_CHROME, getFolder("Chrome","enigmail-skin.jar"), "skin/classic/enigmail/");
+    }
+    else {
+      registerChrome(   SKIN | DELAYED_CHROME, getFolder("Chrome","enigmail-skin-tbird.jar"), "skin/classic/enigmail/");
+    }
     registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "locale/en-US/enigmail/");
 
     err = getLastError();
@@ -53,7 +59,9 @@ if (!verifyDiskSpace(fProgram, srDest)) {
 
     } else {
       performInstall();
-      alert("Enigmail v"+APP_VERSION+" has been successfully installed. Restart after EingMime has been installed as well.");
+      if (isTbird) {
+        alert("Enigmail v"+APP_VERSION+" has been successfully installed. Restart after EingMime has been installed as well.");
+      }
     }
   }
 }
