@@ -740,11 +740,6 @@ function (aSpec, originCharset, aBaseURI)
 {
   DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.newURI: aSpec='"+aSpec+"'\n");
 
-  if (aBaseURI) {
-    ERROR_LOG("enigmail.js: Enigmail: Error - BaseURI for enigmail: protocol!");
-    throw Components.results.NS_ERROR_FAILURE;
-  }
-    
   var uri = Components.classes[NS_SIMPLEURI_CONTRACTID].createInstance(Components.interfaces.nsIURI);
   uri.spec = aSpec;
     
