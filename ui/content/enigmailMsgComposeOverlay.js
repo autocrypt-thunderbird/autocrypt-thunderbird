@@ -585,7 +585,7 @@ function enigSendCommand(elementId) {
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {
      if (EnigConfirm(EnigGetString("sendUnencrypted")))
-        goDoCommand('cmd_sendButton');
+        goDoCommand(elementId);
 
      return;
   }
@@ -605,10 +605,10 @@ function enigSendCommand(elementId) {
      if (! pgpEnabled) {
         if (sendFlags & ENIG_ENCRYPT_OR_SIGN) {
           if (EnigConfirm(EnigGetString("acctNotConfigured")))
-              goDoCommand('cmd_sendButton');
+              goDoCommand(elementId);
         }
         else {
-          goDoCommand('cmd_sendButton');
+          goDoCommand(elementId);
         }
         return;
      }
@@ -1174,7 +1174,7 @@ function enigSendCommand(elementId) {
 
   } catch (ex) {
      if (EnigConfirm(EnigGetString("signFailed")))
-       goDoCommand('cmd_sendButton');
+       goDoCommand(elementId);
   }
 }
 
@@ -1336,7 +1336,7 @@ function enigGenericSendMessage( msgType )
           msgType == nsIMsgCompDeliverMode.Later ||
           msgType == nsIMsgCompDeliverMode.Save || 
           msgType == nsIMsgCompDeliverMode.SaveAsDraft || 
-          msgType == nsIMsgCompDeliverMode.SaveAsTemplate) 
+          msgType == nsIMsgCompDeliverMode.SaveAsTemplate)
         {
           var fallbackCharset = new Object;
           if (gPromptService && 
@@ -1365,11 +1365,19 @@ function enigGenericSendMessage( msgType )
           gSendOrSaveOperationInProgress = true;
         }
         try {
+          // Mozilla <= 1.5
           gMsgCompose.SendMsg(msgType, gEnigAccountId, progress);
         }
         catch (ex) {
           msgWindow.SetDOMWindow(window);
-          gMsgCompose.SendMsg(msgType, getCurrentIdentity(), msgWindow, progress);
+          if (typeof(getCurrentAccountKey)=="function") {
+            // Mozilla >= 1.7a
+            gMsgCompose.SendMsg(msgType, getCurrentIdentity(), getCurrentAccountKey(), msgWindow, progress);
+          }
+          else {
+            //Mozilla 1.6
+            gMsgCompose.SendMsg(msgType, getCurrentIdentity(), msgWindow, progress);
+          }
         }
       }
       catch (ex) {
