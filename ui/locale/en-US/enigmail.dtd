@@ -12,7 +12,7 @@
 <!ENTITY enigmail.preferences.label    "Preferences">
 
 <!ENTITY enigmail.autoCrypto.label        "Enable Auto Crypto">
-<!ENTITY enigmail.userIdValue.label       "User email address (or Key Id)">
+<!ENTITY enigmail.userIdValue.label       "User email address or Key Id (0xABCD1234)">
 <!ENTITY enigmail.userNoPassphrase.label  "No passphrase for user">
 
 <!ENTITY enigmail.userIdFromAddr.label    "Use FROM email address for signing to determine GPG key">
@@ -143,7 +143,7 @@
 <!ENTITY enigmail.askRecipientsNever.label        "Never display selection">
 
 <!ENTITY enigmail.usePGPMimeAlways.label          "Always use PGP/MIME">
-<!ENTITY enigmail.usePGPMimePossible.label        "Use PGP/MIME if possible">
+<!ENTITY enigmail.usePGPMimePossible.label        "Allow to use PGP/MIME">
 <!ENTITY enigmail.usePGPMimeNever.label           "Never use PGP/MIME">
 
 <!ENTITY enigmail.defaultSignMsg.label            "Sign mail by default">
