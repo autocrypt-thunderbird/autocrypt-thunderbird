@@ -1902,7 +1902,7 @@ function enigGetChildOffset(parentNode, childNode) {
 
 function EnigEditorInsertText(plainText) {
   if (gEnigEditor) {
-    gEnigEditor.insertText(plainText);
+    gEnigEditor.insertTextWithQuotations(plainText);
   }
 }
 
