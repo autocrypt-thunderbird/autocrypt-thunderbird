@@ -376,6 +376,7 @@
 <!ENTITY enigmail.keyMan.closeWin.key                "W">
 
 <!ENTITY enigmail.viewKeySigDlg.title                "Signature List">
+<!ENTITY enigmail.viewKeySigDlg.sigForKey.label      "Signatures for Key:">
 <!ENTITY enigmail.viewKeySigDlg.sigType.label        "Sig. Type">
 
 <!ENTITY enigmail.setPrimUidDlg.title                "Change Primary User Id">

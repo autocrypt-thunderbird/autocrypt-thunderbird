@@ -54,7 +54,7 @@
 
   <vbox flex="1">
     <hbox>
-      <label value="Signatures for Key"/>
+      <label value="&enigmail.viewKeySigDlg.sigForKey.label;"/>
       <label id="keyIdValue" value="?"/>
     </hbox>
     <separator/>
