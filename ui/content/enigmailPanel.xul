@@ -8,24 +8,41 @@
 <?xul-overlay href="chrome://global/content/globalOverlay.xul"?>
 
 <window
-     id="enigmail"
-     title="Enigmail XUL Page"
+     id="enigmailPanel"
+     title="Enigmail Panel Page"
      orient="vertical"
-     onload="OnLoadEnigmail()"
-     onunload="OnUnloadEnigmail()"
+     onload="OnLoadEnigPanel()"
+     onunload="OnUnloadEnigPanel()"
      xmlns:html="http://www.w3.org/1999/xhtml"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
 <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
 
-<script type="application/x-javascript" src="chrome://enigmail/content/enigmail.js"/>
+<script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+<script type="application/x-javascript" src="chrome://enigmail/content/enigmailPanel.js"/>
 
 <popupset id="aTooltipSet"/>
 
-<groupbox id="enigmailBox" class="enigmail-box" orient="vertical"
+<groupbox id="urlBox" class="url-box" orient="horizontal">
+  <label><text value="Restricted URLs"/></label>
+
+  <spring flex="1"/>
+
+  <textbox id="urlText" class="url-text" value="cgi+:/testcgi.pl?aaa=bbb"
+          onkeypress="if( event.keyCode == 13 ) {LoadRestrictedURLFromBar();}"/>
+
+  <button label="Load"
+          class="dialog"
+          tooltip="aTooltip"
+          tooltiptext="Loads restricted URLs not accessible from unprivileged documents"
+          oncommand="LoadRestrictedURLFromBar();"/>
+  <spring flex="1"/>
+</groupbox>
+
+<groupbox id="enigmailPanelBox" class="enigmail-panel-box" orient="vertical"
            flex="1">
-   <label><text value="Protocols"/></label>
+   <label><text value="Actions"/></label>
 
   <box id="actionBox" class="action-box" orient="horizontal"
        copyPath="" exportPath="" persist="copyPath exportPath">

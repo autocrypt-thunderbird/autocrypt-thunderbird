@@ -55,7 +55,7 @@
   <script type="application/x-javascript">
   <![CDATA[
     // List of persisted elements (required to save prefs)
-    var _elementIDs = ["enigmailCaptureWebMail", "enigmailUser"];
+    var _elementIDs = ["enigmailCaptureWebMail", "enigmailUserEmail"];
   ]]>
   </script>
           
@@ -90,7 +90,7 @@
 
     <hbox autostretch="never" halign="right">
       <button class="dialog"
-              id="resetPrefs"
+              id="prefsHelp"
               label="&enigmailPrefsHelp.label;"
               oncommand="enigmailPrefsHelp();"
               />
