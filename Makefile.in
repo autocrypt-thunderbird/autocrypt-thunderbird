@@ -31,6 +31,9 @@
 # GPL.
 #
 
+XPI_MODULE	= enigmail
+XPI_MODULE_VERS = 0.86.1
+
 DEPTH		= ../..
 topsrcdir	= @top_srcdir@
 srcdir		= @srcdir@
@@ -43,3 +46,39 @@ DIRS = public src build ui package
 include $(topsrcdir)/config/config.mk
 
 include $(topsrcdir)/config/rules.mk
+
+PLATFORM_STR = unknown
+
+# Edit the lines below as needed, depending upon your platform(s)
+ifeq ($(OS_ARCH),Linux)
+PLATFORM_STR = linux
+endif
+
+ifeq ($(OS_ARCH),WIN95)
+PLATFORM_STR = win32
+endif
+
+ifeq ($(OS_ARCH),WINNT)
+PLATFORM_STR = win32
+endif
+
+ifeq ($(OS_CONFIG),SunOS5)
+PLATFORM_STR = sunos5
+endif
+
+ifeq ($(OS_ARCH),Darwin)
+PLATFORM_STR = darwin
+endif
+
+ifeq ($(OS_ARCH),FreeBSD)
+PLATFORM_STR = freebsd
+endif
+
+ifeq ($(OS_ARCH),OpenBSD)
+PLATFORM_STR = openbsd
+endif
+
+XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS)-$(PLATFORM_STR).xpi
+
+xpi::
+	genxpi $(XPIFILE) $(DIST)/bin $(XPI_MODULE) $(DLL_SUFFIX) $(LIB_PREFIX)
