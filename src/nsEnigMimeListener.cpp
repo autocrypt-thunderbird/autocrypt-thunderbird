@@ -19,6 +19,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ * Patrick Brunschwig <patrick.brunschwig@gmx.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or 
@@ -102,6 +103,7 @@ nsEnigMimeListener::nsEnigMimeListener()
     mLinebreak(""),
     mHeaders(""),
     mDataStr(""),
+    mHeaderSearchCounter(0),
 
     mHeadersFinalCR(PR_FALSE),
     mHeadersLinebreak(2),
@@ -112,6 +114,7 @@ nsEnigMimeListener::nsEnigMimeListener()
     mStreamBuf(nsnull),
     mStreamOffset(0),
     mStreamLength(0),
+    mSubPartTreatment(PR_FALSE),
 
     mListener(nsnull),
     mContext(nsnull)
@@ -523,6 +526,8 @@ nsEnigMimeListener::HeaderSearch(const char* buf, PRUint32 count)
 {
   DEBUG_LOG(("nsEnigMimeListener::HeaderSearch: (%x) count=%d\n", (int) this, count));
 
+  mHeaderSearchCounter++;
+
   if (mMaxHeaderBytes <= 0) {
     // Not looking for MIME headers; start request immediately
     return PR_TRUE;
@@ -540,8 +545,52 @@ nsEnigMimeListener::HeaderSearch(const char* buf, PRUint32 count)
 
   PRBool headersFound = PR_FALSE;
   PRUint32 offset = 0;
+  PRUint32 startOffset = 0;
   PRUint32 j = 0;
   char ch;
+  if (mSubPartTreatment) {
+    // FIXME:
+    // this is a HACK necessary because Mozilla does not deliver
+    // a subpart starting with its headers (so we get the
+    // part on a higher level and sort out things manually!)
+    // there is (so far) no way to get the headers of an
+    // arbitrary message mime part
+    DEBUG_LOG(("nsEnigMimeListener::HeaderSearch: subparts treatment\n"));
+    ch='\n';
+    while(j<scanLen-3) {
+      if (((ch=='\n') || (ch=='\r')) &&
+          (buf[j]=='-') &&
+          (buf[j+1]=='-') &&
+          (buf[j+2]!='\n') &&
+          (buf[j+2]!='\r'))
+      {
+          startOffset = j;
+          DEBUG_LOG(("nsEnigMimeListener::HeaderSearch: startOffset=%d\n",startOffset));
+          break;
+      }
+      ch=buf[j];
+      j++;
+    }
+    
+    // set j=startOffset needed if startOffset == 0!
+    j=startOffset;
+/*
+    // Solution for how to do it, if the content-type info
+    // would be available
+    nsCAutoString cType("Content-Type: multipart/signed; micalg=pgp-sha1; protocol=\"application/pgp-signature\"; boundary=\"J2SCkAp4GZ/dPZZf\"\n\n");
+    mDataStr.Append(cType.get(), cType.Length());
+    mHeaders = cType;
+    if (mSkipHeaders)
+      mDataStr = "";
+    if (!mSkipBody)
+      mDataStr.Append(buf, count);
+
+    mHeadersLinebreak = 0;
+    mLinebreak = "\n";
+*/
+    mSubPartTreatment = PR_FALSE;
+    // return PR_TRUE;
+  }
 
   while (j<scanLen) {
     ch = buf[j];
@@ -601,7 +650,7 @@ nsEnigMimeListener::HeaderSearch(const char* buf, PRUint32 count)
   if (headersFound) {
     // Copy headers out of stream buffer
     if (offset > 0)
-      mDataStr.Append(buf, offset);
+      mDataStr.Append(buf+startOffset, offset-startOffset);
 
     mHeaders = mDataStr;
 
@@ -755,7 +804,7 @@ nsEnigMimeListener::ParseHeader(const char* header, PRUint32 count)
       
       if (boundary)
         mContentBoundary = boundary;
-      
+
       if (protocol)
         mContentProtocol = protocol;
       
@@ -887,7 +936,7 @@ nsEnigMimeListener::ReadSegments(nsWriteSegmentFun writer,
   return NS_OK;
 }
 
-NS_IMETHODIMP 
+NS_IMETHODIMP
 nsEnigMimeListener::IsNonBlocking(PRBool *aNonBlocking)
 {
   DEBUG_LOG(("nsEnigMimeListener::IsNonBlocking: \n"));
@@ -896,7 +945,23 @@ nsEnigMimeListener::IsNonBlocking(PRBool *aNonBlocking)
   return NS_OK;
 }
 
-NS_IMETHODIMP 
+NS_IMETHODIMP
+nsEnigMimeListener::GetSubPartTreatment(PRBool* aSubPartTreatment)
+{
+  *aSubPartTreatment = mSubPartTreatment;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsEnigMimeListener::SetSubPartTreatment(PRBool aSubPartTreatment)
+{
+  DEBUG_LOG(("nsEnigMimeListener::SetSubPartTreatment: %d\n", aSubPartTreatment));
+
+  mSubPartTreatment = aSubPartTreatment;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
 nsEnigMimeListener::Close()
 {
   DEBUG_LOG(("nsEnigMimeListener::Close: (%x)\n", (int) this));

@@ -19,6 +19,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ * Patrick Brunschwig <patrick.brunschwig@gmx.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or 
@@ -57,7 +58,9 @@ interface nsIMsgWindow;
 interface nsIEnigMimeVerify : nsISupports
 {
   void init(in nsIURI uri, in nsIMsgWindow msgWindow,
-            in AUTF8String msgUriSpec, in boolean rfc2015);
+            in AUTF8String msgUriSpec,
+            in boolean rfc2015,
+            in boolean isSubPart);
 };
 
 

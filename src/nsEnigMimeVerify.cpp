@@ -19,9 +19,10 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ * Patrick Brunschwig <patrick.brunschwig@gmx.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or 
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
  * in which case the provisions of the GPL or the LGPL are applicable instead
  * of those above. If you wish to allow use of your version of this file only
@@ -138,7 +139,9 @@ nsEnigMimeVerify::~nsEnigMimeVerify()
 
 NS_IMETHODIMP
 nsEnigMimeVerify::Init(nsIURI* aURI, nsIMsgWindow* msgWindow,
-                       const nsACString& msgUriSpec, PRBool rfc2015)
+                       const nsACString& msgUriSpec,
+                       PRBool rfc2015,
+                       PRBool isSubPart)
 {
   nsresult rv;
 
@@ -187,7 +190,7 @@ nsEnigMimeVerify::Init(nsIURI* aURI, nsIMsgWindow* msgWindow,
   if (NS_FAILED(rv)) return rv;
 
   rv = mFirstPartListener->Init((nsIStreamListener*) this,
-                               nsnull, "", "", 0, PR_FALSE, PR_TRUE, 
+                               nsnull, "", "", 0, PR_FALSE, PR_TRUE,
                                mSecondPartListener);
   if (NS_FAILED(rv)) return rv;
 
@@ -199,6 +202,8 @@ nsEnigMimeVerify::Init(nsIURI* aURI, nsIMsgWindow* msgWindow,
                                 MAX_HEADER_BYTES, PR_TRUE, PR_FALSE, PR_FALSE);
   if (NS_FAILED(rv)) return rv;
 
+  if (isSubPart)
+    mOuterMimeListener->SetSubPartTreatment(PR_TRUE);
   // Initiate asynchronous loading of URI
   rv = channel->AsyncOpen( mOuterMimeListener, nsnull );
   if (NS_FAILED(rv))

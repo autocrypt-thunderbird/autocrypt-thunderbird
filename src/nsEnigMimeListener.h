@@ -19,6 +19,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ * Patrick Brunschwig <patrick.brunschwig@gmx.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or 
@@ -98,6 +99,7 @@ protected:
     nsCString                           mLinebreak;
     nsCString                           mHeaders;
     nsCString                           mDataStr;
+    PRUint32                            mHeaderSearchCounter;
 
     PRBool                              mHeadersFinalCR;
     PRUint32                            mHeadersLinebreak;
@@ -108,6 +110,7 @@ protected:
     const char*                         mStreamBuf;
     PRUint32                            mStreamOffset;
     PRUint32                            mStreamLength;
+    PRBool                              mSubPartTreatment;
 
     // Owning refs
     nsCOMPtr<nsIStreamListener>         mListener;
