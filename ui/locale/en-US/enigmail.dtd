@@ -51,7 +51,7 @@
 <!ENTITY enigmail.disableSMIMEui.label    "Hide SMIME buttons/menus">
 <!ENTITY enigmail.doubleDashSeparator.label  "Treat '--' as signature separator">
 <!ENTITY enigmail.captureWebMail.label    "Capture webmail (experimental)">
-<!ENTITY enigmail.useGpgAgent.label       "Allow to use gpg-agent">
+<!ENTITY enigmail.useGpgAgent.label       "Use gpg-agent for passphrase handling">
 <!ENTITY enigmail.hushMailSupport.label   "Support for Hushmail">
 
 <!ENTITY enigmail.debugging.label    "Debugging Enigmail">
@@ -181,6 +181,9 @@
 <!ENTITY enigmail.keyId.label                       "Key Id">
 <!ENTITY enigmail.userSelPlainText.label            "Send mail unencrypted">
 <!ENTITY enigmail.userSelPlainText.accesskey        "S">
+<!ENTITY enigmail.importMissingKeys.label           "Download missing keys">
+<!ENTITY enigmail.importMissingKeys.tooltip         "Try to import the missing keys from a key server">
+<!ENTITY enigmail.importMissingKeys.accesskey       "I">
 
 <!ENTITY enigmail.experimental.label                "Use experimental inline signing/encryption for PGP/MIME">
 
