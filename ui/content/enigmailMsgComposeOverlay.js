@@ -593,7 +593,9 @@ function enigSendCommand(elementId) {
     // make sure the sendFlags are reset before the message is processed
     // (it may have been set by a previously aborted send operation!)
     try {
-      gMsgCompose.compFields.securityInfo.sendFlags=0;
+      if (typeof(gMsgCompose.compFields.securityInfo.sendFlags) != "undefined") {
+        gMsgCompose.compFields.securityInfo.sendFlags=0;
+      }
     }
     catch (ex){
       try {
@@ -697,7 +699,7 @@ function enigSendCommand(elementId) {
        gMsgCompose.CheckAndPopulateRecipients(true, false, dummy);
      }
      catch (ex) {}
-     
+
      var toAddrList = [];
 
      if (msgCompFields.to)  toAddrList.push(msgCompFields.to);
@@ -923,8 +925,7 @@ function enigSendCommand(elementId) {
      if (usingPGPMime)
        uiFlags |= nsIEnigmail.UI_PGP_MIME;
 
-     if ((sendFlags & ENIG_ENCRYPT_OR_SIGN) && (usingPGPMime ||
-          (!hasAttachments && EnigGetPref("useMimeExperimental")))) {
+     if ((sendFlags & ENIG_ENCRYPT_OR_SIGN) && usingPGPMime) {
        // Use EnigMime
        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: Using EnigMime, flags="+sendFlags+"\n");
 
@@ -1347,14 +1348,14 @@ function enigGenericSendMessage( msgType )
 
       } else {
         // Check if the headers of composing mail can be converted to a mail charset.
-        if (msgType == nsIMsgCompDeliverMode.Now || 
+        if (msgType == nsIMsgCompDeliverMode.Now ||
           msgType == nsIMsgCompDeliverMode.Later ||
-          msgType == nsIMsgCompDeliverMode.Save || 
-          msgType == nsIMsgCompDeliverMode.SaveAsDraft || 
+          msgType == nsIMsgCompDeliverMode.Save ||
+          msgType == nsIMsgCompDeliverMode.SaveAsDraft ||
           msgType == nsIMsgCompDeliverMode.SaveAsTemplate)
         {
           var fallbackCharset = new Object;
-          if (gPromptService && 
+          if (gPromptService &&
               !gMsgCompose.checkCharsetConversion(gEnigAccountId, fallbackCharset))
           {
             var dlgTitle = sComposeMsgsBundle.getString("initErrorDlogTitle");
@@ -1899,7 +1900,7 @@ function EnigEditorInsertAsQuotation(plainText) {
     DEBUG_LOG("enigmailMsgComposeOverlay.js: EnigEditorInsertAsQuotation: mailEditor="+mailEditor+"\n");
 
     return mailEditor.insertAsQuotation(plainText);
-    
+
   }
 }
 
@@ -1945,7 +1946,7 @@ EnigComposeStateListener.prototype = {
 
     if (aResult== Components.results.NS_OK) {
     }
-   
+
   },
 
   SaveInFolderDone: function(folderURI) {
