@@ -158,5 +158,5 @@
 <!ENTITY enigmail.selectpanel.tooltip               "Enigmail Panel selektieren">
 
 <!ENTITY enigmail.experimental.label                "Experimentelles inline signieren/verschlüsseln verwenden">
-<!ENTITY enigmail.hushMailSupport.label             "Hushmail Unterstützung (nur wenn nötig!)">
+<!ENTITY enigmail.hushMailSupport.label             "Hushmail Unterstützung (nur wenn nötig)">
 
