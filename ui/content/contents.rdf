@@ -9,7 +9,7 @@
 
   <!-- enigmail package information -->
   <RDF:Description about="urn:mozilla:package:enigmail"
-        chrome:displayName="Enigmail v0.82.0"
+        chrome:displayName="Enigmail v0.82.1"
         chrome:author="Enigmail Team"
         chrome:authorURL="http://enigmail.mozdev.org/"
         chrome:name="enigmail"
@@ -28,6 +28,7 @@
     <RDF:li resource="chrome://messenger/content/msgHdrViewOverlay.xul"/>
     <RDF:li resource="chrome://messenger/content/msgPrintEngine.xul"/>
     <RDF:li resource="chrome://global/content/customizeToolbar.xul"/>
+    <RDF:li resource="chrome://communicator/content/pref/preftree.xul"/>
   </RDF:Seq>
 
   <RDF:Seq about="chrome://messenger/content/messengercompose/messengercompose.xul">
@@ -48,6 +49,10 @@
 
   <RDF:Seq about="chrome://global/content/customizeToolbar.xul">
     <RDF:li>chrome://enigmail/content/enigmailCustToolOverlay.xul</RDF:li>
+  </RDF:Seq>
+
+  <RDF:Seq about="chrome://communicator/content/pref/preftree.xul">
+    <RDF:li>chrome://enigmail/content/enigmailPrefsOverlay.xul</RDF:li>
   </RDF:Seq>
 
 

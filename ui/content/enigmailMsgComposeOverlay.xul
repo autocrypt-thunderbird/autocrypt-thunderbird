@@ -32,6 +32,169 @@
          oncommand="enigSetSendMode('enc-ifpossible')" modifiers="accel, shift"/>
   </keyset>
 
+<!-- Seamonkey -->
+  <menubar id="compose-menubar">
+
+      <menu id="menu_Enigmail"
+            label="Enigmail"
+            accesskey="&enigmail.composemenu.accesskey;"
+            insertbefore="tasksMenu">
+
+        <menupopup id="menu_EnigmailPopup" onpopupshowing="enigSetMenuSettings('')">
+
+          <menuitem id="enigmail_plain_send"
+              type="radio"
+              name="enigEncryptMode"
+              label="&enigmail.plainsend.label;"
+              accesskey="&enigmail.plainsend.accesskey;"
+              key="key_enigPlain"
+              oncommand="enigDoPgpButton('plain');" />
+
+          <menuitem id="enigmail_encrypt_if_possible"
+              type="radio"
+              name="enigEncryptMode"
+              label="&enigmail.encryptIfPossible.label;"
+              accesskey="&enigmail.encryptIfPossible.accesskey;"
+              key="key_enigEncryptIfPossible"
+              oncommand="enigDoPgpButton('enc-ifpossible');" />
+
+          <menuitem id="enigmail_encrypted_send"
+              type="radio"
+              name="enigEncryptMode"
+              label="&enigmail.encryptedsend.label;"
+              accesskey="&enigmail.encryptedsend.accesskey;"
+              key="key_enigEncrypt"
+              oncommand="enigDoPgpButton('encrypt');" />
+
+          <menuseparator/>
+
+          <menuitem id="enigmail_signed_send"
+              type="checkbox"
+              label="&enigmail.signedsend.label;"
+              accesskey="&enigmail.signedsend.accesskey;"
+              key="key_enigSign"
+              oncommand="enigDoPgpButton('sign');" />
+
+          <menuseparator/>
+
+          <menu id="enigmail_send_options_menu"
+                label="&enigmail.sendOptionsMenu.label;"
+                accesskey="&enigmail.sendOptionsMenu.accesskey;">
+
+            <menupopup onpopupshowing="enigInitSendOptionsMenu();">
+
+              <menuitem id="enigmail_pgpAlwaysSign"
+                type="checkbox"
+                checked="false"
+                label="&enigmail.defaultSignMsg.label;"
+                accesskey="&enigmail.defaultSignMsg.accesskey;"
+                oncommand="enigToggleAccountAttr('pgpAlwaysSign');" />
+
+              <menuitem id="enigmail_confirmBeforeSend"
+                type="checkbox"
+                checked="false"
+                label="&enigmail.confirmBeforeSend.label;"
+                accesskey="&enigmail.confirmBeforeSend.accesskey;"
+                oncommand="enigToggleAttribute('confirmBeforeSend');" />
+
+              <menuseparator/>
+
+              <menuitem id="enigmail_defaultEncryptionSign"
+                type="radio"
+                name="defaultEncryptionGroup"
+                label="&enigmail.defaultEncryptionSign.label;"
+                accesskey="&enigmail.defaultEncryptionSign.accesskey;"
+                oncommand="enigSetAccountOption('defaultEncryptionPolicy',2);"/>
+
+              <menuitem id="enigmail_defaultEncryptionOnly"
+                type="radio"
+                checked="true"
+                name="defaultEncryptionGroup"
+                label="&enigmail.defaultEncryptionOnly.label;"
+                accesskey="&enigmail.defaultEncryptionOnly.accesskey;"
+                oncommand="enigSetAccountOption('defaultEncryptionPolicy',1);"/>
+
+
+              <menuitem id="enigmail_defaultEncryptionNone"
+                type="radio"
+                name="defaultEncryptionGroup"
+                label="&enigmail.defaultEncryptionNone.label;"
+                accesskey="&enigmail.defaultEncryptionNone.accesskey;"
+                oncommand="enigSetAccountOption('defaultEncryptionPolicy',0);"/>
+
+            </menupopup>
+          </menu>
+
+          <menu id="enigmail_mime_options_menu"
+                label="&enigmail.mimeOptionsMenu.label;"
+                accesskey="&enigmail.mimeOptionsMenu.accesskey;">
+
+            <menupopup onpopupshowing="enigInitRadioMenu('usePGPMimeOption', gUsePGPMimeOptionList);">
+
+              <menuitem id="enigmail_usePGPMimeAlways"
+                type="radio"
+                name="usePGPMimeGroup"
+                label="&enigmail.usePGPMimeAlways.label;"
+                accesskey="&enigmail.usePGPMimeAlways.accesskey;"
+                oncommand="enigUsePGPMimeOption(2);"/>
+
+              <menuitem id="enigmail_usePGPMimePossible"
+                type="radio"
+                checked="true"
+                name="usePGPMimeGroup"
+                label="&enigmail.usePGPMimePossible.label;"
+                accesskey="&enigmail.usePGPMimePossible.accesskey;"
+                oncommand="enigUsePGPMimeOption(1);"/>
+
+              <menuitem id="enigmail_usePGPMimeNever"
+                type="radio"
+                name="usePGPMimeGroup"
+                label="&enigmail.usePGPMimeNever.label;"
+                accesskey="&enigmail.usePGPMimeNever.accesskey;"
+                oncommand="enigUsePGPMimeOption(0);"/>
+
+            </menupopup>
+          </menu>
+
+          <menuitem id="enigmail_sendPGPMime"
+              type="checkbox"
+              checked="false"
+              label="&enigmail.sendPGPMime.label;"
+              accesskey="&enigmail.sendPGPMime.accesskey;"
+              oncommand="enigDoPgpButton('togglePGPMime');" />
+
+          <menuseparator/>
+
+          <menuitem id="enigmail_undo_encryption"
+              label="&enigmail.undoencryption.label;"
+              accesskey="&enigmail.undoencryption.accesskey;"
+              oncommand="enigUndoEncryption();" />
+
+          <menuitem id="enigmail_insert_key"
+              label="&enigmail.insertkey.label;"
+              accesskey="&enigmail.insertkey.accesskey;"
+              oncommand="enigInsertKey();" />
+
+          <menuitem id="enigmail_clearPassphrase"
+              label="&enigmail.clearPassphrase.label;"
+              accesskey="&enigmail.clearPassphrase.accesskey;"
+              oncommand="EnigClearPassphrase();" />
+
+          <menuseparator/>
+
+          <menuitem id="enigmail_help"
+              label="&enigmail.help.label;"
+              accesskey="&enigmail.help.accesskey;"
+              oncommand="EnigHelpWindow('compose');" />
+
+        </menupopup>
+      </menu>
+
+  </menubar>
+
+
+
+<!-- Thunderbird -->
   <menubar id="mail-menubar">
 
       <menu id="menu_Enigmail"
@@ -191,13 +354,71 @@
 
   </menubar>
 
+<!-- Seamonkey -->
+    <hbox id="toolbar_button_box">
+   <!-- for compatibility reasons (themes) the button name is unchanged
+          and doesn't match the action anymore ... -->
+       <toolbarbutton class="toolbarbutton-1"
+               id="button-enigmail-send"
+               label="&enigmail.securitybutton.label;"
+               tooltiptext="&enigmail.securitybutton.tip;"
+               insertbefore="saveSeparator"
+               buttontype="seamonkey"
+               type="menu-button"
+               oncommand="enigDoPgpButton();">
+
+          <menupopup onpopupshowing="enigSetMenuSettings('2')">
+            <menuitem id="enigmail_plain_send2"
+                type="radio"
+                name="enigEncryptMode2"
+                label="&enigmail.plainsend.label;"
+                accesskey="&enigmail.plainsend.accesskey;"
+                oncommand="enigNextCommand('plain');" />
+
+            <menuitem id="enigmail_encrypt_if_possible2"
+                type="radio"
+                name="enigEncryptMode2"
+                label="&enigmail.encryptIfPossible.label;"
+                accesskey="&enigmail.encryptIfPossible.accesskey;"
+                oncommand="enigNextCommand('enc-ifpossible');" />
+
+            <menuitem id="enigmail_encrypted_send2"
+                type="radio"
+                name="enigEncryptMode2"
+                label="&enigmail.encryptedsend.label;"
+                accesskey="&enigmail.encryptedsend.accesskey;"
+                oncommand="enigNextCommand('encrypt');" />
+
+            <menuseparator/>
+
+            <menuitem id="enigmail_signed_send2"
+                type="checkbox"
+                label="&enigmail.signedsend.label;"
+                accesskey="&enigmail.signedsend.accesskey;"
+                oncommand="enigNextCommand('sign');" />
+
+            <menuseparator/>
+
+            <menuitem id="enigmail_sendPGPMime2"
+                type="checkbox"
+                checked="false"
+                label="&enigmail.sendPGPMime.label;"
+                accesskey="&enigmail.sendPGPMime.accesskey;"
+                oncommand="enigNextCommand('togglePGPMime');" />
+
+          </menupopup>
+       </toolbarbutton>
+    </hbox>
+
+<!-- Thunderbird -->
   <toolbarpalette id="MsgComposeToolbarPalette">
-    <!-- for compatibility reasons the button name is unchanged
+    <!-- for compatibility reasons (themes) the button name is unchanged
           and doesn't match the action anymore ... -->
     <toolbarbutton class="toolbarbutton-1"
             id="button-enigmail-send"
             type="menu-button"
             label="&enigmail.securitybutton.label;"
+            buttontype="thunderbird"
             tooltip="aTooltipSet"
             tooltiptext="&enigmail.securitybutton.tip;"
             oncommand="enigDoPgpButton();">

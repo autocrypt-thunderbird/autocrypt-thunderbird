@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.82.0.0";
-var gEnigmimeVersion = "0.82.0.0";
+var gEnigmailVersion = "0.82.1.0";
+var gEnigmimeVersion = "0.82.1.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -36,6 +36,7 @@ const ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptabl
 const ENIG_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
 const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
+
 
 // Interfaces
 const nsIEnigmail               = Components.interfaces.nsIEnigmail;
@@ -110,6 +111,7 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "inlineAttachAsciiArmor":false,
                              "inlineAttachExt":".pgp",
                              "handleDoubleClick":false,
+                             "disableSMIMEui":true,
                              "useGpgAgent":false,
                              "wrapHtmlBeforeSend":true,
                              "keepSettingsForReply":false,
@@ -369,7 +371,7 @@ function EnigConfigure() {
 
   if (buttonPressed == 0) {
     // Configure now
-    EnigPrefWindow();
+    EnigPrefWindow(true,(navigator.vendor=="Thunderbird" ? "thunderbird" : "seamonkey"));
 
   } else {
     // "Do not ask me again" => "already configured"
@@ -581,9 +583,11 @@ function EnigOverrideAttribute(elementIdList, attrName, prefix, suffix) {
 }
 
 
-function EnigPrefWindow() {
+function EnigPrefWindow(showBasic, clientType) {
   window.openDialog("chrome://enigmail/content/pref-enigmail.xul",
-                    "_blank", "chrome,resizable=yes");
+                    "_blank", "chrome,resizable=yes",
+                    {'showBasic': showBasic,
+                     'clientType': clientType});
 }
 
 

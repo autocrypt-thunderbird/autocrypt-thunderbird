@@ -196,6 +196,18 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       gEnigStatusBar.setAttribute("signed", "notok");
       gEnigSignedPanel.collapsed=false;
     }
+    else if ((statusFlags & nsIEnigmail.GOOD_SIGNATURE) &&
+        (statusFlags & nsIEnigmail.TRUSTED_IDENTITY) &&
+        !(statusFlags & (nsIEnigmail.REVOKED_KEY |
+                       nsIEnigmail.EXPIRED_KEY_SIGNATURE |
+                       nsIEnigmail.EXPIRED_SIGNATURE))) {
+      // Display trusted good signature icon
+      gSignedUINode.setAttribute("signed", "ok");
+      statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureOk");
+      gEnigStatusBar.setAttribute("signed", "ok");
+      gEnigSignedPanel.collapsed=false;
+
+    }
     else if (statusFlags & (nsIEnigmail.UNVERIFIED_SIGNATURE |
                        nsIEnigmail.REVOKED_KEY |
                        nsIEnigmail.EXPIRED_KEY_SIGNATURE |
@@ -206,15 +218,6 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureUnknown");
       gEnigStatusBar.setAttribute("signed", "unknown");
       gEnigSignedPanel.collapsed=false;
-    }
-    else if ((statusFlags & nsIEnigmail.GOOD_SIGNATURE) &&
-        (statusFlags & nsIEnigmail.TRUSTED_IDENTITY)) {
-      // Display trusted good signature icon
-      gSignedUINode.setAttribute("signed", "ok");
-      statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureOk");
-      gEnigStatusBar.setAttribute("signed", "ok");
-      gEnigSignedPanel.collapsed=false;
-
     }
 
     if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
@@ -275,11 +278,13 @@ addEventListener('messagepane-loaded', enigMsgHdrViewLoad, true);
 
 // THE FOLLOWING OVERRIDES CODE IN msgHdrViewOverlay.js
 
+
 var fEnigOpenAttachment;
-if (openAttachment) {
-  fEnigOpenAttachment = openAttachment;
-  openAttachment = function (msg)
-    {
+try {
+  // Mozilla <= 1.5
+  if (openAttachment) {
+    fEnigOpenAttachment = openAttachment;
+    openAttachment = function (msg) {
       DEBUG_LOG("enigmailMsgHdrViewOverlay.js: openAttachment: "+msg.contentType+"\n");
 
       if (msg.contentType.search(/^message\/rfc822/i) == 0) {
@@ -289,7 +294,23 @@ if (openAttachment) {
 
       fEnigOpenAttachment(msg);
     }
+  }
+} catch (ex) {
+  // Mozilla >= 1.6a
+  if (createNewAttachmentInfo.prototype.openAttachment) {
+    createNewAttachmentInfo.prototype.origOpenAttachment = createNewAttachmentInfo.prototype.openAttachment;
+    createNewAttachmentInfo.prototype.openAttachment = function () {
+      if (this.contentType.search(/^message\/rfc822/i) == 0) {
+        // Reset mail.show_headers pref to "original" value
+        EnigShowHeadersAll(false);
+      }
+      
+      this.origOpenAttachment();
+    }
+
+  }
 }
+
 
 if (messageHeaderSink) {
     // Modify the methods onStartHeaders, getSecurityinfo, setSecurityInfo

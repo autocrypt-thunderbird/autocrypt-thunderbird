@@ -18,6 +18,92 @@
     <command id="button_enigmail_decrypt"/>
   </commandset>
 
+<!-- Seamonkey -->
+  <menubar id="mailMenubar">
+    <menu id="menu_Enigmail"
+          label="Enigmail"
+          accesskey="&enigmail.messengermenu.accesskey;"
+          insertbefore="tasksMenu">
+
+      <menupopup id="menu_EnigmailPopup">
+
+        <menuitem id="enigmail_decryptverify"
+             label="&enigmail.decryptverify.label;"
+             accesskey="&enigmail.decryptverify.accesskey;"
+             oncommand="enigMessageDecrypt();" />
+
+        <menuitem id="enigmail_importpublickey"
+             label="&enigmail.importpublickey.label;"
+             accesskey="&enigmail.importpublickey.accesskey;"
+             oncommand="enigMessageImport();" />
+
+        <menuitem id="enigmail_savedecrypted"
+             label="&enigmail.savedecrypted.label;"
+             accesskey="&enigmail.savedecrypted.accesskey;"
+             oncommand="enigMessageSave();" />
+
+        <menuseparator/>
+
+        <menuitem id="enigmail_autoDecrypt"
+             type="checkbox"
+             checked="false"
+             label="&enigmail.autoDecrypt.label;"
+             accesskey="&enigmail.autoDecrypt.accesskey;"
+             oncommand="enigToggleAttribute('autoDecrypt');" />
+
+        <menuseparator/>
+
+        <menuitem id="enigmail_clearPassphrase"
+             label="&enigmail.clearPassphrase.label;"
+             accesskey="&enigmail.clearPassphrase.accesskey;"
+             oncommand="EnigClearPassphrase();" />
+
+        <menuseparator/>
+
+        <menuitem id="enigmail_prefs"
+             label="&enigmail.prefs.label;"
+             accesskey="&enigmail.prefs.accesskey;"
+             oncommand="EnigPrefWindow(true,'seamonkey');" />
+
+        <menuitem id="enigmail_console"
+             label="&enigmail.viewconsole.label;"
+             accesskey="&enigmail.viewconsole.accesskey;"
+             oncommand="EnigViewConsole();" />
+
+        <menuitem id="enigmail_debug_log"
+             label="&enigmail.viewdebuglog.label;"
+             accesskey="&enigmail.viewdebuglog.accesskey;"
+             oncommand="EnigViewDebugLog();" />
+
+        <menuseparator/>
+
+        <menuitem id="enigmail_keygen"
+             label="&enigmail.generatekey.label;"
+             accesskey="&enigmail.generatekey.accesskey;"
+             oncommand="EnigKeygen();" />
+
+        <menuitem id="enigmail_upgrade"
+             label="&enigmail.upgrade.label;"
+             accesskey="&enigmail.upgrade.accesskey;"
+             oncommand="EnigUpgrade();" />
+
+        <menuitem id="enigmail_help"
+             label="&enigmail.help.label;"
+             accesskey="&enigmail.help.accesskey;"
+             oncommand="EnigHelpWindow('messenger');" />
+
+        <menuitem id="enigmail_about"
+             label="&enigmail.about.label;"
+             accesskey="&enigmail.about.accesskey;"
+             oncommand="EnigViewAbout();" />
+
+      </menupopup>
+    </menu>
+
+  </menubar>
+
+
+<!-- Thunderbird -->
   <menubar id="mail-menubar">
     <menu id="menu_Enigmail"
           label="Enigmail"
@@ -63,7 +149,7 @@
         <menuitem id="enigmail_prefs"
              label="&enigmail.prefs.label;"
              accesskey="&enigmail.prefs.accesskey;"
-             oncommand="EnigPrefWindow();" />
+             oncommand="EnigPrefWindow(true,'thunderbird');" />
 
         <menuitem id="enigmail_console"
              label="&enigmail.viewconsole.label;"
@@ -104,12 +190,35 @@
 
   </menubar>
 
+<!-- Seamonkey part -->
+ <toolbox id="mailToolbarToolbox">
+   <toolbar id="msgToolbar" persist="collapsed">
+     <hbox id="toolbar_button_box">
+
+        <toolbarbutton class="toolbarbutton-1"
+                id="button-enigmail-decrypt"
+                label="&enigmail.decryptbutton.label;"
+                tooltip="aTooltip" tooltiptext="&enigmail.decryptbutton.tip;"
+                oncommand="enigMessageDecrypt();"
+                buttontype="seamonkey"
+                insertafter="button-newmsg"
+                />
+
+        <toolbarseparator class="toolbarseparator-primary"
+              insertafter="button-newmsg"
+                />
+      </hbox>
+   </toolbar>
+ </toolbox>
+
+<!-- Thunderbird part -->
   <toolbarpalette id="MailToolbarPalette">
       <toolbarbutton class="toolbarbutton-1"
               id="button-enigmail-decrypt"
               label="&enigmail.decryptbutton.label;"
               tooltiptext="&enigmail.decryptbutton.tip;"
               oncommand="enigMessageDecrypt();"
+              buttontype="thunderbird"
               insertafter="button-newmsg"
               />
   </toolbarpalette>

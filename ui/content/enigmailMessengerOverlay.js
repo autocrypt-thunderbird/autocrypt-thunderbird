@@ -1588,35 +1588,56 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
         var mimeService = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsIMIMEService);
         var fileMimeType = mimeService.GetTypeFromFile(outFile);
         var fileMimeInfo = mimeService.GetFromTypeAndExtension(fileMimeType, fileExt);
-        if (fileMimeType.indexOf("text/")==0 || fileMimeType.indexOf("image/")==0) {
-          // open attachment using a browser window
-          var w = window.open(outFileUri.asciiSpec,
-                      "_blank",
-                      "chrome,extrachrome,menubar,resizable,scrollbars,status,toolbar,width=600,height=400");
-          w.title=outFile.leafName;
-          if (fileMimeType.indexOf("text/")==0)
-              w.document.designMode="on";
-          return;
+        if (document.getElementById("button-enigmail-decrypt").getAttribute("buttontype")=="seamonkey") {
+          // Seamonkey variant
+          if ((fileMimeInfo.preferredAction == fileMimeInfo.useHelperApp ||
+              fileMimeInfo.preferredAction == fileMimeInfo.useSystemDefault) &&
+              (! fileMimeType.indexOf("text/")==0)) {
+            // open attachment with a helper application
+            window.OpenURL(outFileUri.asciiSpec);
+            return;
+          }
         }
         else {
-          // open attachment with a helper application
-          messenger.OpenURL(outFileUri.asciiSpec);
-          return;
+          // Thunderbird variant
+          if (fileMimeType.indexOf("text/")==0 || fileMimeType.indexOf("image/")==0) {
+            // open attachment using a browser window
+            var w = window.open(outFileUri.asciiSpec,
+                        "_blank",
+                        "chrome,extrachrome,menubar,resizable,scrollbars,status,toolbar,width=600,height=400");
+            w.title=outFile.leafName;
+            if (fileMimeType.indexOf("text/")==0)
+                w.document.designMode="on";
+            return;
+          }
+          else {
+            // open attachment with a helper application
+            messenger.OpenURL(outFileUri.asciiSpec);
+            return;
+          }
         }
       }
       catch (ex) {
         // if the attachment file type is unknown, an exception is thrown,
         // so let it be handled by a browser window
-        messenger.launchExternalURL(outFileUri.asciiSpec);
+        enigLoadExternalURL(outFileUri.asciiSpec);
         return;
       }
     }
 
     // open the attachment using an external application
-    messenger.OpenURL(outFileUri.asciiSpec);
+    enigLoadExternalURL(outFileUri.asciiSpec);
   }
 }
 
+function enigLoadExternalURL(url) {
+  if (document.getElementById("button-enigmail-decrypt").getAttribute("buttontype")=="seamonkey") {
+    EnigLoadURLInNavigatorWindow(url, true);
+  }
+  else {
+    messenger.launchExternalURL(url);
+  }
+}
 
 // try to import the PGP keys contained in an attachment
 function enigImportAttachment(argumentsObj) {

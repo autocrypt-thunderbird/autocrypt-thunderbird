@@ -98,7 +98,7 @@ GPL.
         <button class="dialog"
                 id="enigmailPrefs"
                 label="&enigmail.advancedPrefsButton.label; ..."
-                oncommand="EnigPrefWindow()"/>
+                oncommand="EnigPrefWindow(true,'thunderbird')"/>
       </hbox>
     </groupbox>
   </vbox>

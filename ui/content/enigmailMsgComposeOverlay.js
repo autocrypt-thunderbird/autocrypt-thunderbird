@@ -63,6 +63,11 @@ function enigMsgComposeStartup() {
     smimeButton.setAttribute("label", "S/MIME");
   }
 
+  if (document.getElementById("button-enigmail-send").getAttribute("buttontype")=="seamonkey") {
+     if (EnigGetPref("disableSMIMEui"))
+        smimeButton.setAttribute("collapsed", "true");
+  }
+
   // Override send command
   var sendElementIds = ["cmd_sendButton", "cmd_sendNow", "cmd_sendWithCheck",
                         "cmd_sendLater", "cmd_saveAsDraft", "cmd_saveDefault",
