@@ -4166,17 +4166,18 @@ function(keyId, exitCodeObj, errorMsgObj) {
       break;
     }
     startIndex=nextIndex+1;
-    nextIndex=listText.indexOf("[GNUPG:]",startIndex);
+    nextIndex=outputTxt.indexOf("[GNUPG:]",startIndex);
   }
 
   if (imgSize>=0) {
-    var cr = outputTxt.substring(nextIndex).search(/[\r\n]/);
+    startIndex = outputTxt.substring(nextIndex).search(/[\n\r]\[GNUPG:\] ATTRIBUTE /)+nextIndex+5;
+    var cr = outputTxt.substring(startIndex).search(/[\r\n]/);
     // increase cr by 1 if CRLF
-    if (outputTxt.charAt(nextIndex+cr)=="\r" &&
-        outputTxt.charAt(nextIndex+cr+1)=="\n")
+    if (outputTxt.charAt(startIndex+cr)=="\r" &&
+        outputTxt.charAt(startIndex+cr+1)=="\n")
         cr++;
 
-    var pictureData = outputTxt.substring(nextIndex+cr+1+16, nextIndex+cr+1+imgSize);
+    var pictureData = outputTxt.substring(startIndex+cr+1+16, startIndex+cr+1+imgSize);
 
     if (! pictureData.length)
       return "";
