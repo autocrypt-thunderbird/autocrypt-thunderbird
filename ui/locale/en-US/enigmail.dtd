@@ -346,6 +346,7 @@
 <!ENTITY enigmail.keyMan.reload.label              "Reload key cache">
 <!ENTITY enigmail.keyMan.addUid.label              "Add user ID">
 <!ENTITY enigmail.keyMan.keyProps.label            "Key Properties">
+<!ENTITY enigmail.keyMan.viewSig.label             "View signatures">
 
 <!ENTITY enigmail.keyMan.window.accesskey            "W">
 <!ENTITY enigmail.keyMan.close.accesskey             "C">
@@ -360,3 +361,4 @@
 <!ENTITY enigmail.keyMan.uploadToServer.accesskey    "U">
 <!ENTITY enigmail.keyMan.reload.accesskey            "R">
 <!ENTITY enigmail.keyMan.addUid.accesskey            "A">
+<!ENTITY enigmail.keyMan.viewSig.accesskey           "V">
