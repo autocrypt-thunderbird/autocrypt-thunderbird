@@ -49,6 +49,7 @@
 
 <!ENTITY enigmail.disableSMIMEui.label	  "Hide SMIME buttons/menus">
 <!ENTITY enigmail.captureWebMail.label	  "Capture webmail (experimental)">
+<!ENTITY enigmail.hushMailSupport.label   "Support for Hushmail (turn off unless needed)">
 
 <!ENTITY enigmail.debugging.label	  "Debugging Enigmail">
 <!ENTITY enigmail.logdirectory.label	  "Log directory">
