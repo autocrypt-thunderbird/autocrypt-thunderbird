@@ -294,17 +294,24 @@ function enigMimeInit() {
 
 function enigMessageFrameLoad() {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageFrameLoad\n");
-  var setDisable=false;
-  try {
-    if (gDBView) {
-      setDisable=(gDBView.numSelected != 1);
+  if (gEnigDecryptButton) {
+    var setDisable=false;
+    try {
+      if (gDBView) {
+        var uriType="none";
+        try {
+          uriType=typeof gDBView.URIForFirstSelectedMessage;
+        }
+        catch (ex) {}
+        setDisable=((gDBView.numSelected > 1) || (uriType!="string"));
+      }
+      else {
+        setDisable=true;
+      }
     }
-    else {
-      setDisable=true;
-    }
+    catch (ex) {}
+    gEnigDecryptButton.disabled=setDisable;
   }
-  catch (ex) {}
-  gEnigDecryptButton.disabled=setDisable;
 }
 
 function enigMessageFrameUnload() {
@@ -378,7 +385,7 @@ function enigUpdateOptionsDisplay() {
   optList = ["decryptverify", "importpublickey","savedecrypted"];
   for (j=0; j<optList.length; j++) {
     var menuElement = document.getElementById("enigmail_"+optList[j]);
-    if (gEnigDecryptButton.disabled) {
+    if (gEnigDecryptButton && gEnigDecryptButton.disabled) {
        menuElement.setAttribute("disabled", "true");
     }
     else {
@@ -1588,7 +1595,7 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
         var mimeService = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsIMIMEService);
         var fileMimeType = mimeService.GetTypeFromFile(outFile);
         var fileMimeInfo = mimeService.GetFromTypeAndExtension(fileMimeType, fileExt);
-        if (document.getElementById("button-enigmail-decrypt").getAttribute("buttontype")=="seamonkey") {
+        if (gEnigDecryptButton && gEnigDecryptButton.getAttribute("buttontype")=="seamonkey") {
           // Seamonkey variant
           if ((fileMimeInfo.preferredAction == fileMimeInfo.useHelperApp ||
               fileMimeInfo.preferredAction == fileMimeInfo.useSystemDefault) &&
@@ -1631,7 +1638,7 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
 }
 
 function enigLoadExternalURL(url) {
-  if (document.getElementById("button-enigmail-decrypt").getAttribute("buttontype")=="seamonkey") {
+  if (gEnigDecryptButton && gEnigDecryptButton.getAttribute("buttontype")=="seamonkey") {
     EnigLoadURLInNavigatorWindow(url, true);
   }
   else {
