@@ -1521,19 +1521,11 @@ function enigDecryptQuote(interactive) {
 
   var docText = EnigEditorGetContentsAs("text/plain", encoderFlags);
 
-  // START TEMPORARY DEBUG CODE
-  var matchb = docText.match(/(^|\n).*-----BEGIN.*\n/);
-
-  if (matchb && matchb.length) {
-    WRITE_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: TEMPORARY matchb[0]='"+matchb[0]+"'\n");
-  }
-  // END TEMPORARY DEBUG CODE
-
   if (docText.indexOf("-----BEGIN PGP ") < 0)
     return;
 
   // Determine indentation string
-  var matches = docText.match(/(^|\n)([ \t]*>?[ \t]*)-----BEGIN PGP /);
+  var matches = docText.match(/(^|\n)([ \t]*>*[ \t]*)-----BEGIN PGP /);
 
   var indentStr= "";
   if (matches && (matches.length > 2)) {
@@ -1570,9 +1562,17 @@ function enigDecryptQuote(interactive) {
     pgpBlock = pgpBlock.replace(indentRegexp, "");
     tail     =     tail.replace(indentRegexp, "");
 
+    if (indentStr.match(/[ \t]*$/)) {
+      indentStr = indentStr.replace(/[ \t]*$/g, "");
+      indentRegexp = new RegExp("^"+indentStr+"$", "g");
+
+      pgpBlock = pgpBlock.replace(indentRegexp, "");
+    }
+
+
     // Handle blank indented lines
-    pgpBlock = pgpBlock.replace(/^[ \t]*>[ \t]*)$/g, "");
-    tail     =     tail.replace(/^[ \t]*>[ \t]*)$/g, "");
+    pgpBlock = pgpBlock.replace(/^[ \t]*>[ \t]*$/g, "");
+    tail     =     tail.replace(/^[ \t]*>[ \t]*$/g, "");
 
     // Trim leading space in tail
     tail = tail.replace(/^\s*\n/, "\n");

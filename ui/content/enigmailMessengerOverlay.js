@@ -712,7 +712,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
       // print a warning if the signed or encrypted part doesn't start
       // quite early in the message
       var matches=head.match(/(\n)/g);
-      if (matches.length >10) {
+      if (matches && matches.length >10) {
         msgRfc822Text=EnigGetString("notePartEncrypted")+"\n\n";
       }
       msgRfc822Text+=head+"\n\n";

@@ -74,7 +74,9 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
 
   gEnigLastEncryptedURI = GetLoadedMessage();
 
-  var errorLines = errorMsg.split(/\r?\n/);
+  var errorLines="";
+  if (errorMsg)
+     errorLines = errorMsg.split(/\r?\n/);
 
   if (errorLines && (errorLines.length > 22) ) {
     // Retain only first twenty lines and last two lines of error message

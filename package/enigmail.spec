@@ -1,7 +1,7 @@
 Name:      mozilla-enigmail
-Version:   0.81.7
+Version:   0.82.0
 Release:   1
-Requires:  mozilla = 1.0.1, mozilla-mail = 1.0.1, mozilla-enigmime = 0.81.7
+Requires:  mozilla = 1.0.1, mozilla-mail = 1.0.1, mozilla-enigmime = 0.82.0
 Summary:   Enigmail: GPG/PGP integration in Mozilla
 Copyright: Mozilla Public License 1.1/GPL
 Group:     Applications/Internet
