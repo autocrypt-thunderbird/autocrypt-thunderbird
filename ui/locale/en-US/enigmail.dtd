@@ -277,7 +277,7 @@
 <!ENTITY enigmail.pgpKeys.label                     "OpenPGP Key(s)">
 <!ENTITY enigmail.sign.label                        "Sign">
 <!ENTITY enigmail.encrypt.label                     "Encrypt">
-<!ENTITY enigmail.edit.label                        "Edit">
+<!ENTITY enigmail.edit.label                        "Modify">
 <!ENTITY enigmail.add.label                         "Add">
 <!ENTITY enigmail.delete.label                      "Delete">
 <!ENTITY enigmail.moveUp.label                      "Move Up">
