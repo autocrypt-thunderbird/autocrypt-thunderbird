@@ -275,14 +275,14 @@
                 label="&enigmail.signedsend.label;"
                 accesskey="&enigmail.signedsend.accesskey;"
                 key="key_enigSign"
-                oncommand="enigDoPgpButton('toggle-sign');" />
+                oncommand="enigNextCommand('toggle-sign');" />
 
             <menuitem id="enigmail_encrypted_send2"
                 type="checkbox"
                 label="&enigmail.encryptedsend.label;"
                 accesskey="&enigmail.encryptedsend.accesskey;"
                 key="key_enigEncrypt"
-                oncommand="enigDoPgpButton('toggle-encrypt');" />
+                oncommand="enigNextCommand('toggle-encrypt');" />
 
             <menuseparator/>
 
@@ -310,24 +310,24 @@
             tooltiptext="&enigmail.securitybutton.tip;"
             oncommand="enigDoPgpButton();">
 
-        <menupopup onpopupshowing="enigSetMenuSettings('2')">
-          <menuitem id="enigmail_signed_send2"
+        <menupopup onpopupshowing="enigSetMenuSettings('3')">
+          <menuitem id="enigmail_signed_send3"
               type="checkbox"
               label="&enigmail.signedsend.label;"
               accesskey="&enigmail.signedsend.accesskey;"
               key="key_enigSign"
-              oncommand="enigDoPgpButton('toggle-sign');" />
+              oncommand="enigNextCommand('toggle-sign');" />
 
-          <menuitem id="enigmail_encrypted_send2"
+          <menuitem id="enigmail_encrypted_send3"
               type="checkbox"
               label="&enigmail.encryptedsend.label;"
               accesskey="&enigmail.encryptedsend.accesskey;"
               key="key_enigEncrypt"
-              oncommand="enigDoPgpButton('toggle-encrypt');" />
+              oncommand="enigNextCommand('toggle-encrypt');" />
 
           <menuseparator/>
 
-          <menuitem id="enigmail_sendPGPMime2"
+          <menuitem id="enigmail_sendPGPMime3"
               type="checkbox"
               checked="false"
               label="&enigmail.sendPGPMime.label;"
