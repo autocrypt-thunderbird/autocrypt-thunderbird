@@ -99,13 +99,6 @@
 
               <menuseparator/>
 
-              <menuitem id="enigmail_defaultEncryptionSign"
-                type="radio"
-                name="defaultEncryptionGroup"
-                label="&enigmail.defaultEncryptionSign.label;"
-                accesskey="&enigmail.defaultEncryptionSign.accesskey;"
-                oncommand="enigSetAccountOption('defaultEncryptionPolicy',2);"/>
-
               <menuitem id="enigmail_defaultEncryptionOnly"
                 type="radio"
                 checked="true"
@@ -260,13 +253,6 @@
                 oncommand="enigToggleAttribute('confirmBeforeSend');" />
 
               <menuseparator/>
-
-              <menuitem id="enigmail_defaultEncryptionSign"
-                type="radio"
-                name="defaultEncryptionGroup"
-                label="&enigmail.defaultEncryptionSign.label;"
-                accesskey="&enigmail.defaultEncryptionSign.accesskey;"
-                oncommand="enigSetAccountOption('defaultEncryptionPolicy',2);"/>
 
               <menuitem id="enigmail_defaultEncryptionOnly"
                 type="radio"
