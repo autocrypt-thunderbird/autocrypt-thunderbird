@@ -728,7 +728,6 @@ function EnigConvertGpgToUnicode(text) {
       }
     }
 
-    //special treatment for \x3a (=":") for list-keys
     a=text.search(/\\x3a/i);
     if (a>0) {
       text = text.replace(/\\x3a/ig, "\\e3A");
@@ -3958,6 +3957,37 @@ function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
   
   return this.userIdList;
 }
+
+// returns the output of -with-colons --list-sig
+Enigmail.prototype.getKeySig =
+function  (keyId, exitCodeObj, errorMsgObj) {
+
+  var gpgCommand = this.agentPath + GPG_BATCH_OPTS + " --with-colons --list-sig "+keyId;
+
+  if (!this.initialized) {
+    errorMsgObj.value = EnigGetString("notInit");
+    return "";
+  }
+
+  var statusFlagsObj = new Object();
+  var statusMsgObj   = new Object();
+  var cmdErrorMsgObj = new Object();
+
+  var listText = this.execCmd(gpgCommand, null, "",
+                    exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
+
+  if (exitCodeObj.value != 0) {
+    errorMsgObj.value = EnigGetString("badCommand");
+    if (cmdErrorMsgObj.value) {
+      errorMsgObj.value += "\n" + gpgCommand;
+      errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
+    }
+
+    return "";
+  }
+  return listText;
+}
+
 
 Enigmail.prototype.getUidsForKey = function (keyId) {
   var gpgCommand = this.agentPath + GPG_BATCH_OPTS 

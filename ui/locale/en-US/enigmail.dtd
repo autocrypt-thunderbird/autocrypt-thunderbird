@@ -303,6 +303,8 @@
 <!ENTITY enigmail.searchKeyDlg.label               "Download OpenPGP Keys">
 <!ENTITY enigmail.searchKeyDlgCapt.label           "Found Keys - Select to Import">
 <!ENTITY enigmail.created.label                    "Created">
+<!ENTITY enigmail.valid.label                      "Valid">
+
 <!ENTITY enigmail.progress.label                   "Progress">
 
 <!ENTITY enigmail.sKeyDlg.title                    "Enigmail - Sign Key">
@@ -329,7 +331,7 @@
 <!ENTITY enigmail.keyTrust.noTrust.label           "I do NOT trust">
 <!ENTITY enigmail.keyTrust.marginalTrust.label     "I trust marginally">
 <!ENTITY enigmail.keyTrust.fullTrust.label         "I trust fully">
-<!ENTITY enigmail.keyTrust.ultimateTrust.label     "I trust ultimatelty">
+<!ENTITY enigmail.keyTrust.ultimateTrust.label     "I trust ultimately">
 
 <!ENTITY enigmail.keyMan.title                     "OpenPGP Key Management">
 <!ENTITY enigmail.keyMan.window.label              "Window">
@@ -347,6 +349,10 @@
 <!ENTITY enigmail.keyMan.addUid.label              "Add user ID">
 <!ENTITY enigmail.keyMan.keyProps.label            "Key Properties">
 <!ENTITY enigmail.keyMan.viewSig.label             "View signatures">
+<!ENTITY enigmail.keyMan.keyType.label             "Type">
+<!ENTITY enigmail.keyMan.calcTrust.label           "Calc. Trust">
+<!ENTITY enigmail.keyMan.ownerTrust.label          "Owner-Trust">
+
 
 <!ENTITY enigmail.keyMan.window.accesskey            "W">
 <!ENTITY enigmail.keyMan.close.accesskey             "C">
@@ -362,3 +368,7 @@
 <!ENTITY enigmail.keyMan.reload.accesskey            "R">
 <!ENTITY enigmail.keyMan.addUid.accesskey            "A">
 <!ENTITY enigmail.keyMan.viewSig.accesskey           "V">
+<!ENTITY enigmail.keyMan.showPhoto.accesskey         "P">
+
+<!ENTITY enigmail.viewKeySigDlg.title                "Signature List">
+<!ENTITY enigmail.viewKeySigDlg.sigType.label        "Sig. Type">

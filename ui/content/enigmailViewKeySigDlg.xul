@@ -1,0 +1,191 @@
+<!--
+  The contents of this file are subject to the Mozilla Public
+  License Version 1.1 (the "MPL"); you may not use this file
+  except in compliance with the MPL. You may obtain a copy of
+  the MPL at http://www.mozilla.org/MPL/
+
+  Software distributed under the MPL is distributed on an "AS
+  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  implied. See the MPL for the specific language governing
+  rights and limitations under the MPL.
+
+  The Original Code is Enigmail.
+
+  The Initial Developer of this code is Patrick Brunschwig.
+  Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+  are Copyright (C) 2004 Patrick Brunschwig.
+  All Rights Reserved.
+
+  Contributor(s):
+
+  Alternatively, the contents of this file may be used under the
+  terms of the GNU General Public License (the "GPL"), in which case
+  the provisions of the GPL are applicable instead of
+  those above. If you wish to allow use of your version of this
+  file only under the terms of the GPL and not to allow
+  others to use your version of this file under the MPL, indicate
+  your decision by deleting the provisions above and replace them
+  with the notice and other provisions required by the GPL.
+  If you do not delete the provisions above, a recipient
+  may use your version of this file under either the MPL or the
+  GPL.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="enigmailViewKeySigDlg"
+        title="&enigmail.viewKeySigDlg.title;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="onLoad();"
+        style="width:600px"
+        persist="width height"
+        buttons="accept">
+
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+
+  <vbox flex="1">
+    <hbox>
+      <label value="Signatures for Key"/>
+      <label id="keyIdValue" value="?"/>
+    </hbox>
+    <separator/>
+    <tree id="keySigList" flex="1"
+      enableColumnDrag="true"
+      style="height:200px"
+      hidecolumnpicker="true">
+      
+      <treecols>
+        <treecol id="enigUserNameCol" flex="1" primary="true"
+            label="&enigmail.keyUserId.label;"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="keyCol" style="width:90px"
+                 label="&enigmail.keyId.label;"
+                 persist="width"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="typeCol" style="width:70px"
+                 label="&enigmail.viewKeySigDlg.sigType.label;"
+                 persist="width"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="validityCol" style="width:70px"
+                 label="&enigmail.valid.label;"
+                 persist="width"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="createdCol" style="width:70px"
+                 label="&enigmail.created.label;"
+                 persist="width"/>
+      </treecols>
+
+      <treechildren id="keySigListChildren"/>
+
+    </tree>
+  </vbox>
+  
+  <script type="application/x-javascript">
+  <![CDATA[
+
+    EnigInitCommon("enigmailViewKeySigDlg");
+    
+    // field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
+    const KEY_TRUST=1;
+    const KEY_ID = 4;
+    const CREATED = 5;
+    const EXPIRY = 6;
+    const OWNERTRUST = 8;
+    const USER_ID = 9;
+    const SIG_TYPE = 10;
+    const KEY_USE_FOR = 11;
+
+    function onLoad() {
+      var enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc) {
+        EnigAlert(EnigGetString("accessError"));
+        window.close();
+        return;
+      }
+      
+      var keyListArr = window.arguments[0].keyListArr;
+      var keyId = window.arguments[0].keyId;
+      var keyIdValue = document.getElementById("keyIdValue");
+      
+      keyIdValue.value = keyListArr[keyId].userId+" - 0x"+ window.arguments[0].keyId.substr(-8,8);
+    
+      var exitCodeObj = {};
+      var errorMsgObj = {};
+    
+      var sigList = enigmailSvc.getKeySig("0x"+keyId, exitCodeObj, errorMsgObj);
+      
+      if (exitCodeObj.value != 0) {
+        EnigAlert(errorMsgObj.value);
+        window.close();
+        return;
+      }
+      
+      
+      var keySigList=document.getElementById("keySigList");
+      var treeChildren=keySigList.getElementsByAttribute("id", "keySigListChildren")[0];
+      aSigList = sigList.split(/\n/);
+      
+      for (var i=0; i<aSigList.length; i++) {
+        var listRow=aSigList[i].split(/:/);
+        if (listRow.length>=0) {
+          if (listRow[0] == "uid" || listRow[0] == "pub") {
+            var userRow=document.createElement("treerow");
+            addCell(userRow, listRow[USER_ID]);
+            var treeItem=document.createElement("treeitem");
+            treeItem.appendChild(userRow);
+            treeChildren.appendChild(treeItem);
+          }
+          else if (listRow[0] == "sig") {
+            var userRow=document.createElement("treerow");
+            if (typeof(keyListArr[listRow[KEY_ID]]) == "object") {
+              addCell(userRow, "   "+listRow[USER_ID]);
+            }
+            else {
+              addCell(userRow, "   "+EnigGetString("userIdNotFound"));
+            }
+            addCell(userRow, listRow[KEY_ID].substr(-8,8));
+            if (listRow[SIG_TYPE].substr(2,1) == "x") {
+              addCell(userRow, EnigGetString("keySignatureExportable"));
+            }
+            else {
+              addCell(userRow, EnigGetString("keySignatureLocal"));
+            }
+            if (typeof(keyListArr[listRow[KEY_ID]]) == "object") {
+              addCell(userRow, EnigGetString("dlgYes"));
+            }
+            else {
+              addCell(userRow, EnigGetString("keySignatureNoKey"));
+            }
+            
+            addCell(userRow, listRow[CREATED]);
+            var treeItem=document.createElement("treeitem");
+            treeItem.appendChild(userRow);
+            treeChildren.appendChild(treeItem);
+          }
+        }
+      }
+      
+      keySigList.appendChild(treeChildren);
+      return;
+    }
+    
+    function addCell(row, label) {
+      var cell = document.createElement("treecell");
+      cell.setAttribute("label", label);
+      row.appendChild(cell);
+      return cell;
+    }
+  ]]>
+  </script>
+
+</dialog>
+

@@ -141,6 +141,7 @@ function enigmailBuildList(refresh) {
         keyObj.ownerTrust=listRow[OWNERTRUST];
         keyObj.SubUserIds=new Array();
         keyObj.fpr="";
+        keyObj.photoAvailable=false;
         keyObj.secretAvailable=false;
         gKeyList[listRow[KEY_ID]] = keyObj;
         keySortList.push({userId: keyObj.userId, keyId: keyObj.keyId});
@@ -154,8 +155,9 @@ function enigmailBuildList(refresh) {
       }
       else if (listRow[0] == "uat") {
         if (listRow[USER_ID].indexOf("1 ")==0) {
-          userId="User attribute (JPEG image)";
+          userId=EnigGetString("userAtt.photo");
           keyObj.SubUserIds.push(userId);
+          keyObj.photoAvailable=true;
         }
       }
     }
@@ -196,8 +198,37 @@ function enigmailBuildList(refresh) {
 }
 
 function enigGetTrustLabel(trustCode) {
-  var keyTrust="";
-
+  switch (trustCode) {
+  case 'q':
+    keyTrust=EnigGetString("keyValid.unknown");
+    break;
+  case 'i':
+    keyTrust=EnigGetString("keyValid.invalid");
+    break;
+  case 'd':
+    keyTrust=EnigGetString("keyValid.disabled");
+    break;
+  case 'r':
+    keyTrust=EnigGetString("keyValid.revoked");
+    break;
+  case 'e':
+    keyTrust=EnigGetString("keyValid.expired");
+    break;
+  case 'n':
+    keyTrust=EnigGetString("keyTrust.untrusted");
+    break;
+  case 'm':
+    keyTrust=EnigGetString("keyTrust.marginal");
+    break;
+  case 'f':
+    keyTrust=EnigGetString("keyTrust.full");
+    break;
+  case 'u':
+    keyTrust=EnigGetString("keyTrust.ultimate");
+    break;
+  default:
+    keyTrust="";
+  }
   return keyTrust;
 }
 
@@ -234,49 +265,13 @@ function enigUserSelCreateRow (keyObj, subKeyNum) {
     expCol.setAttribute("label", keyObj.expiry);
     expCol.setAttribute("id", "expiry");
 
-    var keyTrust = "";
-    switch (keyObj.keyTrust) {
-    case 'q':
-      keyTrust=EnigGetString("keyValid.unknown");
-      break;
-    case 'i':
-      keyTrust=EnigGetString("keyValid.invalid");
-      break;
-    case 'd':
-      keyTrust=EnigGetString("keyValid.disabled");
-      break;
-    case 'r':
-      keyTrust=EnigGetString("keyValid.revoked");
-      break;
-    case 'e':
-      keyTrust=EnigGetString("keyValid.expired");
-      break;
-    default:
-      keyTrust="";
-    }
+    var keyTrust = enigGetTrustLabel(keyObj.keyTrust);
     if (keyObj.keyUseFor.indexOf("D")>=0) {
       keyTrust=EnigGetString("keyValid.disabled");
     }
     validCol.setAttribute("label", keyTrust);
 
-    var ownerTrust = "";
-    switch (keyObj.ownerTrust) {
-    case 'n':
-      ownerTrust=EnigGetString("keyTrust.untrusted");
-      break;
-    case 'm':
-      ownerTrust=EnigGetString("keyTrust.marginal");
-      break;
-    case 'f':
-      ownerTrust=EnigGetString("keyTrust.full");
-      break;
-    case 'u':
-      ownerTrust=EnigGetString("keyTrust.ultimate");
-      break;
-    default:
-      ownerTrust="";
-    }
-    trustCol.setAttribute("label", ownerTrust);
+    trustCol.setAttribute("label", enigGetTrustLabel(keyObj.ownerTrust));
     
     keyCol.setAttribute("id", "keyid");
     typeCol.setAttribute("id", "keyType");
@@ -322,7 +317,15 @@ function enigmailKeyMenu() {
     document.getElementById("addUid").setAttribute("disabled", "true");
     document.getElementById("revokationCertificate").setAttribute("disabled", "true");
   }
+  
+  if (keyList.length == 1 && gKeyList[keyList[0]].photoAvailable) {
+    document.getElementById("viewPhoto").removeAttribute("disabled");
+  }
+  else {
+    document.getElementById("viewPhoto").setAttribute("disabled", "true");
+  }
 }
+
 
 function enigmailCtxMenu() {
   var keyList = enigmailGetSelectedKeys();
@@ -332,13 +335,20 @@ function enigmailCtxMenu() {
   else {
     document.getElementById("ctxAddUid").setAttribute("disabled", "true");
   }
-/*  
-  if (keyList.length == 1) {
-    document.getElementById("ctxDetails").removeAttribute("disabled");
+
+  if (keyList.length == 1 && gKeyList[keyList[0]].photoAvailable) {
+    document.getElementById("ctxViewPhoto").removeAttribute("disabled");
   }
   else {
-    document.getElementById("ctxDetails").setAttribute("disabled", "true");
-  }*/
+    document.getElementById("ctxViewPhoto").setAttribute("disabled", "true");
+  }
+}
+
+
+function enigShowPhoto() {
+  var keyList = enigmailGetSelectedKeys();
+
+  EnigShowPhoto(keyList[0], gKeyList[keyList[0]].userId);
 }
 
 
@@ -396,7 +406,8 @@ function enigCreateRevokeCert() {
 function enigmailAddUid () {
   var keyList = enigmailGetSelectedKeys();
   var inputObj = {
-    keyId: "0x"+keyList[0]
+    keyId: "0x"+keyList[0],
+    userId: gKeyList[keyList[0]].userId
   };
   
   window.openDialog("chrome://enigmail/content/enigmailAddUidDlg.xul",
@@ -470,5 +481,17 @@ function enigmailSearchKeys () {
   if (resultObj.importedKeys > 0) {
     enigmailRefreshKeys();
   }
+        
+}
+
+function enigmailListSig() {
+  var keyList = enigmailGetSelectedKeys();
+  var inputObj = {
+    keyId: keyList[0],
+    keyListArr: gKeyList
+  };
+  
+  window.openDialog("chrome://enigmail/content/enigmailViewKeySigDlg.xul",
+        "", "dialog,modal,centerscreen,resizable=yes", inputObj);
         
 }

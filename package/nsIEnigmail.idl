@@ -303,6 +303,10 @@ interface nsIEnigmail : nsISupports
 
   void invalidateUserIdList();
 
+  string getKeySig (in string keyId,
+                    out long exitCode,
+                    out wstring errorMsg);
+
   string encryptAttachment (in nsIDOMWindow parent,
                             in string fromMailAddr,
                             in string toMailAddr,

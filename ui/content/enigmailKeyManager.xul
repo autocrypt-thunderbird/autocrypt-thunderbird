@@ -50,9 +50,12 @@
                   oncommand="enigEditKeyTrust()"/>
         <menuitem label="&enigmail.keyMan.viewSig.label;"
                   id="viewSig"
-                  disabled="true"
                   accesskey="&enigmail.keyMan.viewSig.accesskey;"
-                  oncommand=""/>
+                  oncommand="enigmailListSig()"/>
+        <menuitem label="&enigmail.showPhoto.label;"
+                  id="viewPhoto"
+                  accesskey="&enigmail.keyMan.showPhoto.accesskey;"
+                  oncommand="enigShowPhoto()"/>
 
         <menuseparator/>
         
@@ -103,7 +106,8 @@
   <popupset>
     <popup id="ctxmenu"
            onpopupshowing="enigmailCtxMenu();">
-      <menuitem id="ctxViewSig" label="&enigmail.keyMan.viewSig.label;" disabled="true"/>
+      <menuitem id="ctxViewSig" label="&enigmail.keyMan.viewSig.label;" oncommand="enigmailListSig()"/>
+      <menuitem id="ctxViewPhoto" label="&enigmail.showPhoto.label;" oncommand="enigShowPhoto()"/>
       <menuitem id="ctxSign" label="&enigmail.keyMan.sign.label;" oncommand="enigSignKey()"/>
       <menuitem id="ctxTrust" label="&enigmail.keyMan.setTrust.label;" oncommand="enigEditKeyTrust()"/>
       <menuitem id="ctxAddUid" label="&enigmail.keyMan.addUid.label;" oncommand="enigmailAddUid()"/>
@@ -130,15 +134,15 @@
                    persist="width"/>
           <splitter class="tree-splitter"/>
           <treecol id="typeCol" style="width:70px"
-                   label="Type"
+                   label="&enigmail.keyMan.keyType.label;"
                    persist="width"/>
           <splitter class="tree-splitter"/>
           <treecol id="validityCol" style="width:70px"
-                   label="Validity"
+                   label="&enigmail.keyMan.calcTrust.label;"
                    persist="width"/>
           <splitter class="tree-splitter"/>
           <treecol id="trustCol" style="width:70px"
-                   label="Owner-Trust"
+                   label="&enigmail.keyMan.ownerTrust.label;"
                    persist="width"/>
           <splitter class="tree-splitter"/>
           <treecol id="expCol" style="width:70px"

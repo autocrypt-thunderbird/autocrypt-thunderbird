@@ -1451,6 +1451,40 @@ function EnigSignKey(userId, keyId, signingKeyHint) {
 }
 
 
+function EnigShowPhoto(keyId, userId) {
+  var enigmailSvc = GetEnigmailSvc();
+  if (enigmailSvc) {
+    var exitCodeObj = new Object();
+    var errorMsgObj = new Object();
+    var photoPath = enigmailSvc.showKeyPhoto("0x"+keyId, exitCodeObj, errorMsgObj);
+    if (photoPath && exitCodeObj.value==0) {
+      var photoFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+      photoFile.initWithPath(photoPath);
+      if (! (photoFile.isFile() && photoFile.isReadable())) {
+        EnigAlert("Photo path '"+photoPath+"' is not readable");
+      }
+      else {
+        var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+        var photoUri = ioServ.newFileURI(photoFile).spec;
+        var argsObj = {
+          photoUri: photoUri,
+          userId: userId,
+          keyId: keyId
+        };
+        window.openDialog("chrome://enigmail/content/enigmailDispPhoto.xul",photoUri, "chrome,modal=1,resizable=1,dialog=1,centerscreen", argsObj);
+        try {
+          // delete the photo file
+          photoFile.remove(false);
+        }
+        catch (ex) {}
+     }
+    }
+    else {
+      EnigAlert("No Photo available");
+    }
+  }
+}
+
 function enigCreateInstance (aURL, aInterface) 
 {
   return C.classes[aURL].createInstance(C.interfaces[aInterface]);
