@@ -164,7 +164,7 @@
     </hbox>
 
     <checkbox id="enigmail_useMimeExperimental"
-              label="Use experimental inline signing/encryption" />
+              label="&enigmail.experimental.label;" />
 
   </groupbox>
 

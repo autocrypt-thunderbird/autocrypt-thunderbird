@@ -182,7 +182,7 @@ function EnigTest() {
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {
-    EnigAlert("EnigTest: Failed to access Enigmail service");
+    EnigAlert(EnigGetString("testNoSvc"));
     return;
   }
 
@@ -192,7 +192,7 @@ function EnigTest() {
       EnigMimeTest();
     } catch (ex) {}
 
-    EnigAlert("EnigTest: Please specify mail address for testing");
+    EnigAlert(EnigGetString("testNoEmail"));
     return;
   }
 
