@@ -294,24 +294,28 @@
   </toolbar>
 
   <vbox id="messagepanebox">
-    <hbox id="expandedEnigmailBox" class="headerBox"
+    <hbox id="enigmailBox" class="expandedEnigmailBox"
           position="1"
           collapsed="true">
-      <hbox id="expandedEnigmailStatusBox" class="headerNameBox" align="start">
-         <vbox align="start">
-            <image id="enigToggleHeaderView" class="collapsedHeaderViewButton"
-              state="false" persist="state class"
-              onclick="enigToggleHeaderView();"/>
-         </vbox>
-         <vbox align="start">
-           <label class="headerName" value="Enigmail: " flex="1"/>
-         </vbox>
-         <vbox pack="start">
-           <label id="enigmailStatusText" class="enigmailHeaderBoxLabelSignatureOk" value=""/>
-           <label id="expandedEnigmailStatusText" class="enigmailHeaderBoxLabelSignatureOk" flex="1" 
-                  collapsed="true" display="false" state="false" persist="display">*</label>
-         </vbox>
+      <hbox class="enigmailHeaderNameBox" align="start" id="enigmailStatusTextBox">
+        <image id="enigToggleHeaderView"
+               class="collapsedHeaderViewButton" onclick="enigToggleHeaderView();"
+               state="false" persist="state class"/>
+        <spacer flex="1"/>
+        <label class="headerName" 
+            id="enigmailStatusHdr"
+            value="Enigmail: "/>
       </hbox>
+      <vbox flex="1" pack="start">
+        <textbox flex="1" readonly="true" 
+            id="enigmailStatusText"
+               class="plain enigmailHeaderValue"/>
+        <textbox flex="1" readonly="true" 
+                 id="expandedEnigmailStatusText"
+                 class="plain enigmailHeaderValue"
+                 collapsed="true" display="false" state="false" 
+                 persist="display"/>
+      </vbox>
     </hbox>
   </vbox>
   
