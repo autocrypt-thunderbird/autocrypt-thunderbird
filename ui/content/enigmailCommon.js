@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.83.3.0";
-var gEnigmimeVersion = "0.83.3.0";
+var gEnigmailVersion = "0.83.5.0";
+var gEnigmimeVersion = "0.83.5.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -106,7 +106,7 @@ const ENIG_THREE_BUTTON_STRINGS   = (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_P
                                (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_1) +
                                (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_2);
 
-
+/* moved to enigprefs.js!
 var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "agentPath":"",
                              "alwaysTrustSend":true,
@@ -146,6 +146,7 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "usePGPMimeOption":PGP_MIME_POSSIBLE,
                              "wrapHtmlBeforeSend":true
                             };
+*/
 
 var gEnigLogLevel = 2;     // Output only errors/warnings by default
 var gEnigDebugLog;
@@ -279,7 +280,6 @@ function GetEnigmailSvc() {
   return gEnigmailSvc.initialized ? gEnigmailSvc : null;
 }
 
-
 function EnigUpdate_0_80() {
   try {
     var oldVer=EnigGetPref("configuredVersion");
@@ -288,9 +288,12 @@ function EnigUpdate_0_80() {
       if (oldVer.substring(0,4)<"0.83") {
         var keySrv = EnigGetPref("keyserver");
         if (keySrv.indexOf(",") == -1) {
-          var newKeySrv = gEnigmailPrefDefaults.keyserver.replace(keySrv, "");
-          newKeySrv = newKeySrv.replace(/(^, |, $)/, "").replace(/, , /,", ");
-          EnigSetPref("keyserver", keySrv+", "+newKeySrv);
+          try {
+            var newKeySrv = EnigGetDefaultPref("keyserver").replace(keySrv, "");
+            newKeySrv = newKeySrv.replace(/(^, |, $)/, "").replace(/, , /,", ");
+            EnigSetPref("keyserver", keySrv+", "+newKeySrv);
+          }
+          catch (ex) {}
         }
       }
       if (oldVer.substring(0,4)<"0.81") {
@@ -328,7 +331,11 @@ function EnigConfigure() {
   if (buttonPressed == 1)  // Configure later
     return;
 
-  for (var prefName in gEnigmailPrefDefaults) {
+  var obj = new Object;
+  var prefList = gPrefEnigmail.getChildList("",obj);
+
+  for (var prefItem in prefList) {
+    prefName=prefList[prefItem];
     if (prefName.search(/AlertCount$/) >= 0) {
        // Reset alert count to default value
       try {
@@ -454,8 +461,12 @@ function EnigReadFileContents(localFile, maxBytes) {
   if (!localFile.exists() || !localFile.isReadable())
     throw Components.results.NS_ERROR_FAILURE;
 
+  var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+  if (!ioServ)
+    throw Components.results.NS_ERROR_FAILURE;
 
-  return EnigReadURLContents("file://"+localFile.path, maxBytes);
+  var fileURI = ioServ.newFileURI(localFile)
+  return EnigReadURLContents(fileURI.asciiSpec, maxBytes);
 
 }
 
@@ -666,9 +677,7 @@ function EnigSetRadioPref(prefName, optionElementIds) {
 
 function EnigSetDefaultPrefs() {
   DEBUG_LOG("enigmailCommon.js: EnigSetDefaultPrefs\n");
-  for (var prefName in gEnigmailPrefDefaults) {
-    var prefValue = EnigGetPref(prefName);
-  }
+  // has become obsolete
 }
 
 function EnigSavePrefs() {
@@ -680,21 +689,20 @@ function EnigSavePrefs() {
 }
 
 function EnigGetPref(prefName) {
-   var defaultValue = gEnigmailPrefDefaults[prefName];
-
-   var prefValue = defaultValue;
+   var prefValue = null;
    try {
+      var prefType = gPrefEnigmail.getPrefType(prefName);
       // Get pref value
-      switch (typeof defaultValue) {
-      case "boolean":
+      switch (prefType) {
+      case gPrefEnigmail.PREF_BOOL:
          prefValue = gPrefEnigmail.getBoolPref(prefName);
          break;
 
-      case "number":
+      case gPrefEnigmail.PREF_INT:
          prefValue = gPrefEnigmail.getIntPref(prefName);
          break;
 
-      case "string":
+      case gPrefEnigmail.PREF_STRING:
          prefValue = gPrefEnigmail.getCharPref(prefName);
          break;
 
@@ -704,48 +712,62 @@ function EnigGetPref(prefName) {
      }
 
    } catch (ex) {
-      // Failed to get pref value; set pref to default value
-      switch (typeof defaultValue) {
-      case "boolean":
-         gPrefEnigmail.setBoolPref(prefName, defaultValue);
-         break;
-
-      case "number":
-         gPrefEnigmail.setIntPref(prefName, defaultValue);
-         break;
-
-      case "string":
-         gPrefEnigmail.setCharPref(prefName, defaultValue);
-         break;
-
-      default:
-         break;
-     }
+      // Failed to get pref value
+      ERROR_LOG("enigmailCommon.js: EnigGetPref: unknown prefName:"+prefName+" \n");
    }
 
-   //DEBUG_LOG("enigmailCommon.js: EnigGetPref: "+prefName+"="+prefValue+"\n");
    return prefValue;
+}
+
+function EnigGetDefaultPref(prefName) {
+  DEBUG_LOG("enigmailCommon.js: EnigGetDefaultPref: prefName="+prefName+"\n");
+  var prefValue=null;
+  try {
+    gPrefEnigmail.lockPref(prefName);
+    var prefValue = EnigGetPref(prefName);
+    gPrefEnigmail.unlockPref(prefName);
+  }
+  catch (ex) {}
+
+  return prefValue;
 }
 
 function EnigSetPref(prefName, value) {
    DEBUG_LOG("enigmailCommon.js: EnigSetPref: "+prefName+", "+value+"\n");
-
-   var defaultValue = gEnigmailPrefDefaults[prefName];
-
+   var prefType;
+   try {
+     prefType = gPrefEnigmail.getPrefType(prefName);
+   }
+   catch (ex) {
+     switch (typeof value) {
+       case "boolean":
+         prefType = gPrefEnigmail.PREF_BOOL;
+         break;
+       case "integer":
+         prefType = gPrefEnigmail.PREF_INT;
+         break;
+       case "string":
+         prefType = gPrefEnigmail.PREF_STRING;
+         break;
+       default:
+         prefType = 0;
+         break;
+     }
+   }
    var retVal = false;
 
-   switch (typeof defaultValue) {
-      case "boolean":
+   switch (prefType) {
+      case gPrefEnigmail.PREF_BOOL:
          gPrefEnigmail.setBoolPref(prefName, value);
          retVal = true;
          break;
 
-      case "number":
+      case gPrefEnigmail.PREF_INT:
          gPrefEnigmail.setIntPref(prefName, value);
          retVal = true;
          break;
 
-      case "string":
+      case gPrefEnigmail.PREF_STRING:
          gPrefEnigmail.setCharPref(prefName, value);
          retVal = true;
          break;
@@ -856,13 +878,13 @@ function EnigGetDeepText(node, findStr) {
       return "";
     }
   }
-  
+
   // EnigDumpHTML(node);
-  
+
   var plainText = EnigParseChildNodes(node);
   // Replace non-breaking spaces with plain spaces
   plainText = plainText.replace(/\xA0/g," ");
-  
+
   if (findStr) {
      if (plainText.indexOf(findStr) < 0) {
         return "";
@@ -877,16 +899,16 @@ function EnigGetDeepText(node, findStr) {
 function EnigParseChildNodes(node) {
 
   var plainText="";
-  
+
   if (node.nodeType == Node.TEXT_NODE) {
     // text node
     plainText = plainText.concat(node.data);
   }
   else {
-  
+
     if (node.nodeType == Node.ELEMENT_NODE) {
       if (node.tagName=="IMG" && node.className=="moz-txt-smily") {
-        // get the "alt" part of graphical smileys to ensure correct 
+        // get the "alt" part of graphical smileys to ensure correct
         // verification of signed messages
         if (node.getAttribute("alt")) {
             plainText = plainText.concat(node.getAttribute("alt"));
@@ -898,7 +920,7 @@ function EnigParseChildNodes(node) {
     // iterate over child nodes
     while (child) {
       if (! (child.nodeType == Node.ELEMENT_NODE &&
-            child.tagName == "BR" && 
+            child.tagName == "BR" &&
             ! child.hasChildNodes())) {
         // optimization: don't do an extra loop for the very frequent <BR> elements
         plainText = plainText.concat(EnigParseChildNodes(child));
@@ -906,7 +928,7 @@ function EnigParseChildNodes(node) {
       child = child.nextSibling;
     }
   }
-  
+
   return plainText;
 }
 
@@ -1154,60 +1176,70 @@ function EnigGetTempDir() {
 
 
 function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
-   DEBUG_LOG("enigmailCommon.js: EnigDisplayPrefs\n");
+  DEBUG_LOG("enigmailCommon.js: EnigDisplayPrefs\n");
 
-   for (var prefName in gEnigmailPrefDefaults) {
-      var prefElement = document.getElementById("enigmail_"+prefName);
+  var obj = new Object;
+  var prefList = gPrefEnigmail.getChildList("",obj);
 
-      if (prefElement) {
-         var defaultValue = gEnigmailPrefDefaults[prefName];
-         var prefValue = showDefault ? defaultValue : EnigGetPref(prefName);
+  for (var prefItem in prefList) {
+    var prefName=prefList[prefItem];
+    var prefElement = document.getElementById("enigmail_"+prefName);
 
-         DEBUG_LOG("enigmailCommon.js: EnigDisplayPrefs: "+prefName+"="+prefValue+"\n");
-
-         switch (typeof defaultValue) {
-         case "boolean":
-            if (showPrefs) {
-               if (prefValue) {
-                  prefElement.setAttribute("checked", "true");
-               } else {
-                  prefElement.removeAttribute("checked");
-               }
-            }
-
-            if (setPrefs) {
-               if (prefElement.checked) {
-                  EnigSetPref(prefName, true);
-               } else {
-                  EnigSetPref(prefName, false);
-               }
-            }
-
-         break;
-
-         case "number":
-            if (showPrefs)
-              prefElement.value = prefValue;
-
-            if (setPrefs) {
-               try {
-                 EnigSetPref(prefName, 0+prefElement.value);
-               } catch (ex) {
-               }
-            }
-         break;
-
-         case "string":
-            if (showPrefs)
-              prefElement.value = prefValue;
-            if (setPrefs)
-              EnigSetPref(prefName, prefElement.value);
-            break;
-
-         default:
-         }
+    if (prefElement) {
+      var prefType = gPrefEnigmail.getPrefType(prefName);
+      var prefValue;
+      if (showDefault) {
+        prefValue = EnigGetDefaultPref(prefName);
       }
-   }
+      else {
+        prefValue = EnigGetPref(prefName);
+      }
+
+      DEBUG_LOG("enigmailCommon.js: EnigDisplayPrefs: "+prefName+"="+prefValue+"\n");
+
+      switch (prefType) {
+      case gPrefEnigmail.PREF_BOOL:
+        if (showPrefs) {
+          if (prefValue) {
+            prefElement.setAttribute("checked", "true");
+          } else {
+            prefElement.removeAttribute("checked");
+          }
+        }
+
+        if (setPrefs) {
+          if (prefElement.checked) {
+            EnigSetPref(prefName, true);
+          } else {
+            EnigSetPref(prefName, false);
+          }
+        }
+
+        break;
+
+      case gPrefEnigmail.PREF_INT:
+        if (showPrefs)
+          prefElement.value = prefValue;
+
+        if (setPrefs) {
+          try {
+            EnigSetPref(prefName, 0+prefElement.value);
+          } catch (ex) {}
+        }
+        break;
+
+      case gPrefEnigmail.PREF_STRING:
+        if (showPrefs)
+          prefElement.value = prefValue;
+        if (setPrefs)
+          EnigSetPref(prefName, prefElement.value);
+        break;
+
+      default:
+        DEBUG_LOG("enigmailCommon.js: EnigDisplayPrefs: "+prefName+" does not have a type?!\n");
+      }
+    }
+  }
 }
 
 
