@@ -35,8 +35,11 @@ const ERROR_BUFFER_SIZE = 16000;
 const PGP_BATCH_OPTS  = " +batchmode +force";
 const GPG_BATCH_OPTS  = " --batch --no-tty --status-fd 2";
 
-const GPG_COMMENT_OPT = " --comment 'Using GnuPG with Mozilla - http://enigmail.mozdev.org'";
-const PGP_COMMENT_OPT = " +comment='Using PGP with Mozilla - http://enigmail.mozdev.org'";
+const GPG_COMMENT_OPT = " --comment 'Using GnuPG with ";
+const PGP_COMMENT_OPT = " +comment='Using PGP with ";
+
+const COMMENT_SUFFIX = " - http://enigmail.mozdev.org'";
+
 
 const gDummyPKCS7 = 'Content-Type: multipart/mixed;\r\n boundary="------------060503030402050102040303\r\n\r\nThis is a multi-part message in MIME format.\r\n--------------060503030402050102040303\r\nContent-Type: application/x-pkcs7-mime\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303\r\nContent-Type: application/x-enigmail-dummy\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303--\r\n';
 
@@ -1217,6 +1220,12 @@ function (domWindow, version, prefBranch) {
 
   this.platform = httpHandler.platform;
 
+  if (httpHandler.vendor) {
+    this.vendor = httpHandler.vendor;
+  } else {
+    this.vendor = "Mozilla";
+  }
+
   this.isUnix  = (this.platform.search(/X11/i) == 0);
   this.isWin32 = (this.platform.search(/Win/i) == 0);
 
@@ -1763,7 +1772,7 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
     encryptCommand += PGP_BATCH_OPTS + " -fta "
 
     if (!useDefaultComment)
-      encryptCommand += PGP_COMMENT_OPT;
+      encryptCommand += PGP_COMMENT_OPT + this.vendor + COMMENT_SUFFIX;
 
     recipientPrefix = " ";
 
@@ -1777,7 +1786,7 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
     encryptCommand += GPG_BATCH_OPTS;
 
     if (!useDefaultComment)
-      encryptCommand += GPG_COMMENT_OPT;
+      encryptCommand += GPG_COMMENT_OPT + this.vendor + COMMENT_SUFFIX;
 
     recipientPrefix = " -r ";
 
@@ -1990,7 +1999,7 @@ function (prompter, uiFlags, fromMailAddr, toMailAddr,
     encryptCommand += PGP_BATCH_OPTS + " -fta "
 
     if (!useDefaultComment)
-      encryptCommand += PGP_COMMENT_OPT;
+      encryptCommand += PGP_COMMENT_OPT + this.vendor + COMMENT_SUFFIX;
 
     recipientPrefix = " ";
 
@@ -2011,7 +2020,7 @@ function (prompter, uiFlags, fromMailAddr, toMailAddr,
     encryptCommand += GPG_BATCH_OPTS;
 
     if (!useDefaultComment)
-      encryptCommand += GPG_COMMENT_OPT;
+      encryptCommand += GPG_COMMENT_OPT + this.vendor + COMMENT_SUFFIX;
 
     recipientPrefix = " -r ";
 
