@@ -1628,9 +1628,13 @@ function (command, needPassphrase, domWindow, prompter, listener, noProxy,
     }
 
     if (needPassphrase) {
-      if (passphrase)
-         pipetrans.writeSync(passphrase, passphrase.length);
-       pipetrans.writeSync("\n", 1);
+      // Write to child STDIN
+      // (ignore errors, because child may have exited already, closing STDIN)
+      try {
+        if (passphrase)
+           pipetrans.writeSync(passphrase, passphrase.length);
+         pipetrans.writeSync("\n", 1);
+      } catch (ex) {}
     }
 
     return pipetrans;
@@ -1848,8 +1852,13 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
     return "";
   }
 
-  // Write to child STDIN and wait for child STDOUT to close
-  pipeTrans.writeSync(plainText, plainText.length);
+  // Write to child STDIN
+  // (ignore errors, because child may have exited already, closing STDIN)
+  try {
+    pipeTrans.writeSync(plainText, plainText.length);
+  } catch (ex) {}
+
+  // Wait for child STDOUT to close
   pipeTrans.join();
 
   var cipherText = ipcBuffer.getData();
@@ -2333,8 +2342,13 @@ function (parent, uiFlags, cipherText, signatureObj,
     return "";
   }
 
-  // Write to child STDIN and wait for child STDOUT to close
-  pipeTrans.writeSync(pgpBlock, pgpBlock.length);
+  // Write to child STDIN
+  // (ignore errors, because child may have exited already, closing STDIN)
+  try {
+    pipeTrans.writeSync(pgpBlock, pgpBlock.length);
+  } catch (ex) {}
+
+  // Wait for child STDOUT to close
   pipeTrans.join();
 
   var plainText = ipcBuffer.getData();
