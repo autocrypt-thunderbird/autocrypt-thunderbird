@@ -1311,7 +1311,7 @@ function EnigStripEmail(mailAddrs) {
   mailAddrs = mailAddrs.replace(/\s+/g,"");
   
   // Extract pure e-mail address list (stripping out angle brackets)
-  mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*(,|$)/g,"$1$2$3");
+  mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*/g,"$1$2");
 
   return mailAddrs;
 }
