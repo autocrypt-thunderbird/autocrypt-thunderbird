@@ -110,24 +110,52 @@ function enigMsgComposeStartup() {
 }
 
 function enigDisplayUi() {
-  var  statusBar = document.getElementById("enigmail-status-bar");
+
+  var statusBar = document.getElementById("enigmail-status-bar");
+
+  if (!getCurrentIdentity().getBoolAttribute("enablePgp")) {
+    // hide icons if enigmail not enabled
+    statusBar.removeAttribute("signed");
+    statusBar.removeAttribute("encrypted");
+    return;
+  }
+
+  var signedIcon = document.getElementById("enigmail-signed-status");
+  var encryptedIcon = document.getElementById("enigmail-encrypted-status");
 
   if (gEnigSendMode & EnigSigned) {
     statusBar.setAttribute("signed", "ok");
+    signedIcon.setAttribute("tooltiptext", EnigGetString("signYes"));
   }
   else {
-    statusBar.setAttribute("signed", "");
+    statusBar.setAttribute("signed", "inactive");
+    signedIcon.setAttribute("tooltiptext", EnigGetString("signNo"));
   }
   if (gEnigSendMode & EnigEncrypt) {
     statusBar.setAttribute("encrypted", "ok");
+    encryptedIcon.setAttribute("tooltiptext", EnigGetString("encryptYes"));
   }
   else if (gEnigSendMode & EnigEncryptIfPossible) {
-    statusBar.setAttribute("encrypted", "notok");
+    statusBar.setAttribute("encrypted", "unknown");
+    encryptedIcon.setAttribute("tooltiptext", EnigGetString("encryptMaybe"));
   }
   else {
-    statusBar.setAttribute("encrypted", "");
+    statusBar.setAttribute("encrypted", "inactive");
+    encryptedIcon.setAttribute("tooltiptext", EnigGetString("encryptNo"));
   }
 }
+
+function enigHandleClick(event, modifyType) {
+  switch (event.button) {
+  case 2:
+    enigDoPgpButton();
+    break;
+  case 0:
+    enigDoPgpButton(modifyType);
+    break;
+  }
+}
+
 
 function enigSetIdentityCallback(elementId) {
   if (! gEnigSendModeDirty) {
@@ -381,6 +409,7 @@ function enigDoPgpButton(what) {
     case 'plain':
     case 'sign':
     case 'encrypt':
+    case 'toggle-encrypt':
     case 'enc-ifpossible':
       enigSetSendMode(what);
       break;
@@ -416,6 +445,17 @@ function enigSetSendMode(sendMode) {
     case 'enc-ifpossible':
       gEnigSendMode = gEnigSendMode &~ EnigEncrypt;
       gEnigSendMode |= EnigEncryptIfPossible;
+      break;
+    case 'toggle-encrypt':
+      if (gEnigSendMode & EnigEncryptIfPossible) {
+        enigSetSendMode('encrypt');
+      }
+      else if (gEnigSendMode & EnigEncrypt) {
+        enigSetSendMode('plain');
+      }
+      else {
+        enigSetSendMode('enc-ifpossible');
+      }
       break;
     default:
       break;
@@ -1291,7 +1331,13 @@ function enigGenericSendMessage( msgType )
           progress.registerListener(progressListener);
           gSendOrSaveOperationInProgress = true;
         }
-        gMsgCompose.SendMsg(msgType, getCurrentIdentity(), progress);
+        try {
+          gMsgCompose.SendMsg(msgType, getCurrentIdentity(), progress);
+        }
+        catch (ex) {
+          msgWindow.SetDOMWindow(window);
+          gMsgCompose.SendMsg(msgType, getCurrentIdentity(), msgWindow, progress);
+        }
       }
       catch (ex) {
         dump("failed to SendMsg: " + ex + "\n");

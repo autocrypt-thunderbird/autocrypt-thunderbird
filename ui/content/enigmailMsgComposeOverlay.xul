@@ -456,16 +456,15 @@
           defaultset="button-send,spacer,button-address,spacer,spellingButton,spacer,button-attach,button-enigmail-send,spacer,button-security,spacer,button-save,spring,throbber-box">
   </toolbar>
 
-
   <statusbar id="status-bar">
     <hbox id="enigmail-status-bar"
           insertafter="totalMessageCount">
       <statusbarpanel id="enigmail-signed-status"
         class="statusbarpanel-iconic"
-        collapsed="true" oncommand="enigDoPgpButton();"/>
+        collapsed="true" onclick="enigHandleClick(event,'sign');"/>
       <statusbarpanel id="enigmail-encrypted-status"
         class="statusbarpanel-iconic"
-        collapsed="true" oncommand="enigDoPgpButton();"/>
+        collapsed="true" onclick="enigHandleClick(event, 'toggle-encrypt');"/>
     </hbox>
   </statusbar>
 
