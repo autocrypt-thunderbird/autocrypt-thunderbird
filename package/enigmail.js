@@ -1410,8 +1410,8 @@ function (domWindow, version, prefBranch) {
       agentPath = ResolvePath(agentName, envPath, this.isWin32);
       if (agentPath) {
         // Discard path info for win32
-        if (this.isWin32)
-          agentPath = agentType;
+        /* if (this.isWin32)
+          agentPath = agentType; */
         break;
       }
     }
@@ -3156,22 +3156,61 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
     }
     catch (ex) {}
   }
-  var m=this.agentPath.match(/^(.*[\\\/])([^\\\/]+)$/);
-  var command="";
-  if (m && m.length == 3) {
-    command = m[1];
-  }
-  if (! this.isWin32) {
-    command = command.replace(/\/bin\/$/, "/lib/gnupg/");
-  }
-  command += "gpgkeys_" + protocol;
+  var baseCommand = "gpgkeys_" + protocol;
   if (this.isWin32) {
-    command+=".exe";
+    baseCommand+=".exe";
   }
 
+  var baseDir = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
+  baseDir.initWithPath(this.agentPath);
+  var command = null;
+  
+  // try to locate gpgkeys_*
+  if (baseDir)
+    baseDir = baseDir.parent;
+  if (baseDir) {
+    var theCommand=baseDir.clone();
+    
+    // first the same dir as gpg executable
+    theCommand.append(baseCommand);
+    if (theCommand.exists() && theCommand.isExecutable())
+      command = theCommand.path;
 
-  // call gpgkeys to check if it's there (execAsync doesn't
-  // return error codes)
+    if (! command) {
+      // then lib
+      theCommand.append("lib");
+      theCommand.append(baseCommand);
+      if (theCommand.exists() && theCommand.isExecutable())
+        command = theCommand.path;
+    }
+    
+    if (!command) {
+      if (baseDir.parent) {
+        baseDir=baseDir.parent;
+        theCommand=baseDir.clone();
+        // then ..\lib\gnupg or ../lib/gnupg
+        theCommand.append("lib");
+        theCommand.append("gnupg");
+        theCommand.append(baseCommand);
+        if (theCommand.exists() && theCommand.isExecutable()) {
+          command = theCommand.path;
+        }
+        else {
+          theCommand=baseDir.clone();
+          // then ..\libexec\gnupg or ../libexec/gnupg
+          theCommand.append("libexec");
+          theCommand.append("gnupg");
+          theCommand.append(baseCommand);
+          if (theCommand.exists() && theCommand.isExecutable())
+            command = theCommand.path;
+        }
+      }
+    }
+  }
+    
+  command=command.replace(/\\\\/g, "\\").replace(/\\/g, "\\\\");
+   
+  // call gpgkeys to check the version number
 
   var outObj     = new Object();
   var outLenObj  = new Object();
@@ -3199,11 +3238,16 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
     CONSOLE_LOG(testCmd.replace(/\\\\/g, "\\")+" not found\n");
     return null;
   }
-
+  
   CONSOLE_LOG(outObj.value+"\n");
 
-  var inputData="VERSION 0\nHOST "+keyserver+"\nPORT "+port+"\n";
-
+  var ver = outObj.value.split(/[\n\r]+/);
+  if (Number(ver[0])==0 || Number(ver[0])==1) {
+    var inputData="VERSION "+ver[0]+"\nHOST "+keyserver+"\nPORT "+port+"\n";
+  }
+  else {
+    return null;
+  }
   if (proxyHost) {
     inputData+="OPTION honor-http-proxy\n";
     envList.push("http_proxy="+proxyHost);

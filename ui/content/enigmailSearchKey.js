@@ -207,8 +207,10 @@ function enigStatusLoaded (event) {
     // de-HTMLize the result
     var htmlTxt = this.responseText.replace(/<([^<>]+)>/g, "");
     
-    if (!this.requestCallbackFunc(ENIG_CONN_TYPE_HTTP, htmlTxt)) 
-      return;
+    this.requestCallbackFunc(ENIG_CONN_TYPE_HTTP, htmlTxt);
+  }
+  else if (this.status == 500 && this.statusText=="OK") {
+    this.requestCallbackFunc(ENIG_CONN_TYPE_HTTP, "no keys found");
   }
   else if (this.statusText!="OK") {
     EnigAlert(EnigGetString("keyDownloadFailed", this.statusText));
@@ -405,14 +407,18 @@ function enigScanGpgKeys(txt) {
   DEBUG_LOG("enigmailSearchKey.js: enigScanGpgKeys\n");
   
   var lines=txt.split(/(\r\n|\n|\r)/);
-  var inputPart=0;
+  var outputType=0;
   var key;
   for (i=0; i<lines.length; i++) {
-    if (lines[i].search(/^COUNT \d+\s*$/)==0) {
-      inputPart=1;
+    if (outputType == 0 && lines[i].search(/^COUNT \d+\s*$/)==0) {
+      outputType=1;
       continue;
     }
-    if (inputPart==1 && (lines[i].search(/^([a-fA-F0-9]{8}){1,2}:/))==0) {
+    if (outputType == 0 && lines[i].search(/^pub:[\da-fA-F]{8}/)==0) {
+      outputType=2;
+    }
+    if (outputType==1 && (lines[i].search(/^([a-fA-F0-9]{8}){1,2}:/))==0) {
+      // output from gpgkeys_* protocol version 0
       // new key
       var m=lines[i].split(/:/);
       if (m && m.length>0 ) {
@@ -437,6 +443,34 @@ function enigScanGpgKeys(txt) {
         }
       }
     }
+    if (outputType==2 && (lines[i].search(/^pub:/))==0) {
+      // output from gpgkeys_* protocol version 1
+      // new key
+      var m=lines[i].split(/:/);
+      if (m && m.length>1 ) {
+        if (key) {
+          window.enigRequest.keyList.push(key);
+          key=null;
+        }
+        var dat=new Date(m[4]*1000);
+        var month=String(dat.getMonth()+101).substr(1);
+        var day=String(dat.getDate()+100).substr(1);
+        key={
+          keyId: m[1],
+          created: dat.getFullYear()+"-"+month+"-"+day,
+          uid: []
+        };
+      }
+    }
+    if (outputType==2 && (lines[i].search(/^uid:.*:.*:.*:.*$/))==0) {
+      // output from gpgkeys_* protocol version 1
+      // uid for key
+      var m=lines[i].split(/:/);
+      if (m && m.length>1 ) {
+        if (key)
+          key.uid.push(trim(m[1]));
+      }
+    }
   }
   
   // append prev. key to keylist
@@ -448,7 +482,7 @@ function enigScanGpgKeys(txt) {
 // interaction with gpgkeys_xxx
 
 function enigNewGpgKeysRequest(requestType, callbackFunction) {
-  DEBUG_LOG("enigmailGpgkeys.js: enigNewGpgKeysRequest\n");
+  DEBUG_LOG("enigmailSearchkey.js: enigNewGpgKeysRequest\n");
   
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {
@@ -498,19 +532,19 @@ function enigNewGpgKeysRequest(requestType, callbackFunction) {
   
   window.enigRequest.gpgkeysRequest = ipcRequest;
   
-  WRITE_LOG("enigmailGpgkeys.js: Start: window.enigRequest.gpgkeysRequest = "+window.enigRequest.gpgkeysRequest+"\n");
+  WRITE_LOG("enigmailSearchkey.js: Start: window.enigRequest.gpgkeysRequest = "+window.enigRequest.gpgkeysRequest+"\n");
 }
 
 
 
 function enigGpgkeysCloseRequest() {
-  DEBUG_LOG("enigmailKeygen.js: CloseRequest\n");
+  DEBUG_LOG("enigmailSearchkey.js: CloseRequest\n");
 
   if (window.enigRequest.gpgkeysRequest) {
     try {
-      var keygenProcess = window.enigRequest.gpgkeysRequest.pipeTransport;
-      if (keygenProcess)
-        keygenProcess.terminate();
+      var searchkeyProcess = window.enigRequest.gpgkeysRequest.pipeTransport;
+      if (searchkeyProcess)
+        searchkeyProcess.terminate();
     } catch(ex) {}
 
     window.enigRequest.gpgkeysRequest.close(true);
@@ -519,7 +553,7 @@ function enigGpgkeysCloseRequest() {
 }
 
 function enigmailGpgkeysTerminate(terminateArg, ipcRequest) {
-   DEBUG_LOG("enigmailGpgkeys.js: Terminate: "+ipcRequest+"\n");
+   DEBUG_LOG("enigmailSearchkey.js: Terminate: "+ipcRequest+"\n");
 
    var GpgkeysProcess = ipcRequest.pipeTransport;
 
@@ -536,7 +570,7 @@ function enigmailGpgkeysTerminate(terminateArg, ipcRequest) {
     var txt = null;
 
     if (console && console.hasNewData()) {
-      DEBUG_LOG("enigmailGpgkeys.js: enigRefreshConsole(): hasNewData\n");
+      DEBUG_LOG("enigmailSearchkey.js: enigRefreshConsole(): hasNewData\n");
       txt = console.getData();
     }
     
