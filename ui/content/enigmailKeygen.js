@@ -164,8 +164,7 @@ function enigmailKeygenStart() {
 
    idString += " <" + userEmail + ">";
 
-   var confirmMsg = "Generate public and private keys for \""+idString+
-                    "\"?\n(NOTE: Do not exit the browser while key generation is in progress)";
+   var confirmMsg = "Generate public and private keys for '"+idString+"'?";
 
    if (!EnigConfirm(confirmMsg)) {
      window.close();

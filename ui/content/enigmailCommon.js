@@ -22,8 +22,8 @@ const nsIEnigmail               = Components.interfaces.nsIEnigmail;
 
 // Encryption flags
 if (nsIEnigmail) {
-  const SIGN_MSG    = nsIEnigmail.SIGN_MESSAGE;
-  const ENCRYPT_MSG = nsIEnigmail.ENCRYPT_MESSAGE;
+  const SIGN_MSG    = nsIEnigmail.SEND_SIGNED;
+  const ENCRYPT_MSG = nsIEnigmail.SEND_ENCRYPTED;
   const ENCRYPT_OR_SIGN_MSG = ENCRYPT_MSG | SIGN_MSG;
 }
 
@@ -157,7 +157,7 @@ function GetEnigmailSvc() {
 
     var configuredVersion = EnigGetPref("configuredVersion");
 
-    DEBUG_LOG("enigmailCommon.js: EnigConfigure: "+configuredVersion+"\n");
+    DEBUG_LOG("enigmailCommon.js: GetEnigmailSvc: "+configuredVersion+"\n");
 
     if (gEnigmailSvc.initialized && (gEnigmailVersion != configuredVersion)) {
       EnigConfigure();
@@ -173,7 +173,31 @@ function GetEnigmailSvc() {
 }
 
 
+function EnigUpdate_0_50() {
+  DEBUG_LOG("enigmailCommon.js: EnigUpdate_0_50: \n");
+
+  try {
+    var defaultEncryptMsg = gPrefEnigmail.getBoolPref("defaultEncryptMsg");
+
+    try {
+      var defaultEncryptSignMsg = gPrefEnigmail.getBoolPref("defaultEncryptSignMsg");
+
+    } catch (ex) {
+      DEBUG_LOG("enigmailCommon.js: EnigUpdate_0_50: deleting defaultEncryptMsg\n");
+      gPrefEnigmail.setBoolPref("defaultEncryptSignMsg", defaultEncryptMsg);
+      gPrefEnigmail.deleteBranch("defaultEncryptMsg");
+      EnigSavePrefs();
+    }
+
+  } catch (ex) {}
+}
+
 function EnigConfigure() {
+  try {
+    // Updates for specific versions (to be cleaned-up periodically)
+    EnigUpdate_0_50();
+  } catch (ex) {}
+
   var msg = "Do you wish to configure enigmail for version "+
             gEnigmailVersion+" now?";
 
@@ -193,6 +217,8 @@ function EnigConfigure() {
                                             buttonPressedObj);
 
   var buttonPressed = buttonPressedObj.value;
+
+  DEBUG_LOG("enigmailCommon.js: EnigConfigure: "+buttonPressed+" \n");
 
   if (buttonPressed == 1)  // Configure later
     return;

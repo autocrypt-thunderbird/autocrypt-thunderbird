@@ -166,8 +166,8 @@ function ReplaceEditorText(text) {
   gEditorShell.InsertText(text);
 }
 
-function enigSend(encryptFlags) {
-  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: "+encryptFlags+"\n");
+function enigSend(sendFlags) {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: "+sendFlags+"\n");
 
   if (gWindowLocked) {
     EnigAlert("Compose window is locked; send cancelled\n");
@@ -187,14 +187,14 @@ function enigSend(encryptFlags) {
      DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: currentId="+currentId+
                ", "+currentId.email+"\n");
 
-     var defaultSend = encryptFlags & nsIEnigmail.DEFAULT_SEND;
+     var defaultSend = sendFlags & nsIEnigmail.SEND_DEFAULT;
      if (defaultSend) {
 
        if (EnigGetPref("defaultSignMsg"))
-         encryptFlags |= SIGN_MSG;
+         sendFlags |= SIGN_MSG;
 
        if (EnigGetPref("defaultEncryptSignMsg"))
-         encryptFlags |= ENCRYPT_OR_SIGN_MSG;
+         sendFlags |= ENCRYPT_OR_SIGN_MSG;
      }
 
      var msgCompFields = gMsgCompose.compFields;
@@ -205,11 +205,11 @@ function enigSend(encryptFlags) {
 
      if (newsgroups && defaultSend) {
        // Do not encrypt by default if sending to newsgroups
-       encryptFlags &= ~ENCRYPT_MSG;
+       sendFlags &= ~ENCRYPT_MSG;
 
        if (!EnigGetPref("defaultSignNewsMsg")) {
          // Do not sign by default if sending to any newsgroup
-         encryptFlags &= ~SIGN_MSG;
+         sendFlags &= ~SIGN_MSG;
        }
      }
 
@@ -243,7 +243,7 @@ function enigSend(encryptFlags) {
        }
      }
 
-     if (!gEnigProcessed && (encryptFlags & ENCRYPT_OR_SIGN_MSG)) {
+     if (!gEnigProcessed && (sendFlags & ENCRYPT_OR_SIGN_MSG)) {
 
        ///var editorDoc = gEditorShell.editorDocument;
        ///DEBUG_LOG("enigmailMsgComposeOverlay.js: Doc = "+editorDoc+"\n");
@@ -307,7 +307,7 @@ function enigSend(encryptFlags) {
        //DEBUG_LOG("enigmailMsgComposeOverlay.js: docText["+encoderFlags+"] = '"+docText+"'\n");
 
        if (!docText) {
-         encryptFlags = 0;
+         sendFlags = 0;
 
        } else {
          // Encrypt plaintext
@@ -327,40 +327,44 @@ function enigSend(encryptFlags) {
          }
 
          if (userIdSource == USER_ID_DEFAULT) {
-           encryptFlags |= nsIEnigmail.DEFAULT_USER_ID;
+           sendFlags |= nsIEnigmail.SEND_USER_ID_DEFAULT;
          }
 
          if (EnigGetPref("alwaysTrustSend"))
-           encryptFlags |= nsIEnigmail.ALWAYS_TRUST_SEND;
+           sendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
 
          if (EnigGetPref("encryptToSelf")) {
-           encryptFlags |= nsIEnigmail.ENCRYPT_TO_SELF;
+           sendFlags |= nsIEnigmail.SEND_ENCRYPT_TO_SELF;
          }
 
-         var exitCodeObj = new Object();
-         var errorMsgObj = new Object();
+         var exitCodeObj    = new Object();
+         var statusFlagsObj = new Object();    
+         var errorMsgObj    = new Object();
          var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
          var cipherText = enigmailSvc.encryptMessage(window,uiFlags, plainText,
-                                                fromAddr, toAddr, encryptFlags,
-                                                exitCodeObj, errorMsgObj);
+                                                fromAddr, toAddr, sendFlags,
+                                                exitCodeObj, statusFlagsObj,
+                                                errorMsgObj);
 
          var exitCode = exitCodeObj.value;
     
-         if ((exitCode != 0) && defaultSend && (encryptFlags & ENCRYPT_MSG)) {
+         if ((exitCode != 0) && defaultSend && (sendFlags & ENCRYPT_MSG) &&
+             !(statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) ) {
            // Default send error; turn off encryption
-           encryptFlags &= ~ENCRYPT_MSG;
+           sendFlags &= ~ENCRYPT_MSG;
 
            if (!EnigGetPref("defaultSignMsg")) {
              // Turn off signing
-             encryptFlags &= ~SIGN_MSG;
+             sendFlags &= ~SIGN_MSG;
            }
 
-           if (encryptFlags & SIGN_MSG) {
+           if (sendFlags & SIGN_MSG) {
              // Try signing only, to see if it removes the error condition
              cipherText = enigmailSvc.encryptMessage(window,uiFlags, plainText,
-                                                fromAddr, toAddr, encryptFlags,
-                                                exitCodeObj, errorMsgObj);
+                                                fromAddr, toAddr, sendFlags,
+                                                exitCodeObj, statusFlagsObj,
+                                                errorMsgObj);
 
              exitCode = exitCodeObj.value;
            }
@@ -375,10 +379,9 @@ function enigSend(encryptFlags) {
            // Save original text (for undo)
            gEnigProcessed = {"docText":docText};
 
-         } else if (encryptFlags & ENCRYPT_OR_SIGN_MSG) {
+         } else if (sendFlags & ENCRYPT_OR_SIGN_MSG) {
            // Encryption/signing failed
-           var errorMsg = errorMsgObj.value;
-           EnigAlert("Error in encrypting and/or signing message. Send operation aborted.\n"+errorMsg);
+           EnigAlert("Send operation aborted.\n\n"+errorMsgObj.value);
            return;
          }
        }
@@ -401,10 +404,10 @@ function enigSend(encryptFlags) {
      if (EnigGetPref("confirmBeforeSend")) {
        var msgStatus = "";
 
-       if (encryptFlags & SIGN_MSG)
+       if (sendFlags & SIGN_MSG)
          msgStatus += "SIGNED ";
 
-       if (encryptFlags & ENCRYPT_MSG)
+       if (sendFlags & ENCRYPT_MSG)
          msgStatus += "ENCRYPTED ";
 
        if (!msgStatus)
@@ -657,15 +660,19 @@ function enigDecryptQuote(interactive) {
   var cipherText = EnigConvertFromUnicode(pgpBlock, charset);
 
   // Decrypt message
-  var exitCodeObj = new Object();
-  var errorMsgObj = new Object();
-  var signStatusObj = new Object();
-  signStatusObj.value = "";
+  var signatureObj   = new Object();
+  signatureObj.value = "";
+  var exitCodeObj    = new Object();
+  var statusFlagsObj = new Object();
+  var userIdObj      = new Object();
+  var keyIdObj       = new Object();
+  var errorMsgObj    = new Object();
 
-  var uiFlags = nsIEnigmail.UNVERIFIED_ENC_OK;
+  var uiFlags = nsIEnigmail.UI_UNVERIFIED_ENC_OK;
 
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
-                                     exitCodeObj, errorMsgObj, signStatusObj);
+                                 signatureObj, exitCodeObj, statusFlagsObj,
+                                 keyIdObj, userIdObj, errorMsgObj);
 
   // Decode plaintext from charset to unicode
   plainText = EnigConvertToUnicode(plainText, charset);

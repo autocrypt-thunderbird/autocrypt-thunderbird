@@ -188,19 +188,21 @@ function enigYahooCompose() {
     fromAddr = EnigGetPref("userIdValue");
   }
 
-  var encryptFlags = nsIEnigmail.SIGN_MESSAGE | nsIEnigmail.ENCRYPT_MESSAGE;
+  var encryptFlags = nsIEnigmail.SEND_SIGNED | nsIEnigmail.SEND_ENCRYPTED;
 
   if (EnigGetPref("alwaysTrustSend"))
-     encryptFlags |= nsIEnigmail.ALWAYS_TRUST_SEND;
+     encryptFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
 
-  var exitCodeObj = new Object();
-  var errorMsgObj = new Object();
+  var exitCodeObj    = new Object();
+  var statusFlagsObj = new Object();
+  var errorMsgObj    = new Object();
   var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
   var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
                                               fromAddr, toAddr,
                                               encryptFlags,
-                                              exitCodeObj, errorMsgObj);
+                                              exitCodeObj, statusFlagsObj,
+                                              errorMsgObj);
 
   var exitCode = exitCodeObj.value;
   var errorMsg  = errorMsgObj.value;
@@ -232,16 +234,21 @@ function enigYahooShowLetter() {
 
   DEBUG_LOG("enigYahooShowLetter: cipherText='"+cipherText+"'\n");
 
-  var exitCodeObj  = new Object();
-  var errorMsgObj  = new Object();
-  var signatureObj = new Object();
+  var exitCodeObj    = new Object();
+  var errorMsgObj    = new Object();
+  var signatureObj   = new Object();
+  var statusFlagsObj = new Object();
+  var keyIdObj       = new Object();
+  var userIdObj      = new Object();
 
   var uiFlags = nsIEnigmail.UI_INTERACTIVE;
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
-                                       exitCodeObj, errorMsgObj, signatureObj);
+                                          signatureObj, exitCodeObj,
+                                          statusFlagsObj, keyIdObj, userIdObj,
+                                          errorMsgObj);
 
   var exitCode = exitCodeObj.value;
-  var errorMsg  = errorMsgObj.value;
+  var errorMsg = errorMsgObj.value;
 
   if (exitCode != 0) {
     EnigAlert("Error in decrypting message.\n"+errorMsg);
@@ -316,19 +323,21 @@ function enigHotmailCompose() {
     fromAddr = EnigGetPref("userIdValue");
   }
 
-  var encryptFlags = nsIEnigmail.SIGN_MESSAGE | nsIEnigmail.ENCRYPT_MESSAGE;
+  var encryptFlags = nsIEnigmail.SEND_SIGNED | nsIEnigmail.SEND_ENCRYPTED;
 
   if (EnigGetPref("alwaysTrustSend"))
-     encryptFlags |= nsIEnigmail.ALWAYS_TRUST_SEND;
+     encryptFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
 
-  var exitCodeObj = new Object();
-  var errorMsgObj = new Object();
+  var exitCodeObj    = new Object();
+  var statusFlagsObj = new Object();
+  var errorMsgObj    = new Object();
   var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
   var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
                                               fromAddr, toAddr,
                                               encryptFlags,
-                                              exitCodeObj, errorMsgObj);
+                                              exitCodeObj, statusFlagsObj,
+                                              errorMsgObj);
 
   var exitCode = exitCodeObj.value;
   var errorMsg  = errorMsgObj.value;
@@ -360,16 +369,20 @@ function enigHotmailShowLetter() {
 
   DEBUG_LOG("enigHotmailShowLetter: cipherText='"+cipherText+"'\n");
 
-  var exitCodeObj  = new Object();
-  var errorMsgObj  = new Object();
-  var signatureObj = new Object();
+  var exitCodeObj    = new Object();
+  var errorMsgObj    = new Object();
+  var signatureObj   = new Object();
+  var statusFlagsObj = new Object();
+  var keyIdObj       = new Object();
+  var userIdObj      = new Object();
 
   var uiFlags = nsIEnigmail.UI_INTERACTIVE;
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
-                                       exitCodeObj, errorMsgObj, signatureObj);
-
+                                          signatureObj, exitCodeObj,
+                                          statusFlagsObj, keyIdObj, userIdObj,
+                                          errorMsgObj);
   var exitCode = exitCodeObj.value;
-  var errorMsg  = errorMsgObj.value;
+  var errorMsg = errorMsgObj.value;
 
   if (exitCode != 0) {
     EnigAlert("Error in decrypting message.\n"+errorMsg);

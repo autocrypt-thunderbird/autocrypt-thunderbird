@@ -35,6 +35,47 @@ function enigEndHeaders()
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigEndHeaders\n");
 }
 
+function enigUpdateHdrIcons(statusFlags) {
+  DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateHdrIcons\n");
+
+  if (!gSMIMEContainer)
+    return;
+
+  try {
+    gSMIMEContainer.collapsed = false;
+
+    if ((statusFlags & nsIEnigmail.GOOD_SIGNATURE) &&
+        (statusFlags & nsIEnigmail.TRUSTED_IDENTITY) ) {
+      // Display trusted good signature icon
+      gSignedUINode.collapsed = false;
+      gSignedUINode.setAttribute("signed", "ok");
+      //gStatusBar.setAttribute("signed", "ok");
+
+    } else if (statusFlags & (nsIEnigmail.GOOD_SIGNATURE |
+                              nsIEnigmail.BAD_SIGNATURE |
+                              nsIEnigmail.UNVERIFIED_SIGNATURE) ) {
+      // Display untrusted/bad signature icon
+      gSignedUINode.collapsed = false;
+      gSignedUINode.setAttribute("signed", "notok");
+      //gStatusBar.setAttribute("signed", "notok");
+    }
+
+    if (statusFlags & nsIEnigmail.DECRYPTED_MESSAGE) {
+      // Display encrypted icon
+      gEncryptedUINode.collapsed = false;
+      gEncryptedUINode.setAttribute("encrypted", "ok");
+      //gStatusBar.setAttribute("encrypted", "ok");
+
+    } else {
+      // Display un-encrypted icon
+      //gEncryptedUINode.collapsed = false;
+      //gEncryptedUINode.setAttribute("encrypted", "notok");
+      //gStatusBar.setAttribute("encrypted", "notok");
+    }
+
+  } catch (ex) {}
+}
+
 function enigMsgHdrViewLoad(event)
 {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigMsgHdrViewLoad\n");

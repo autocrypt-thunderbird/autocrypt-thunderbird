@@ -180,8 +180,8 @@ function enigMessageParse(interactive, importOnly) {
 
 
 function enigMessageParseCallback(msgText, charset, interactive, importOnly,
-                                  messageUrl, signStatus) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: "+interactive+", "+importOnly+", charset="+charset+", msgUrl="+messageUrl+", signStatus='"+signStatus+"'\n");
+                                  messageUrl, signature) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: "+interactive+", "+importOnly+", charset="+charset+", msgUrl="+messageUrl+", signature='"+signature+"'\n");
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
@@ -189,8 +189,10 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
 
   var plainText;
   var exitCode;
-  var newSignStatus = "";
+  var newSignature = "";
+  var statusFlags = 0;
   var errorMsgObj = new Object();
+  var keyIdObj    = new Object();
 
   if (importOnly) {
     // Import public key
@@ -199,24 +201,30 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
                                      errorMsgObj);
 
   } else {
-    var exitCodeObj = new Object();
-    var signStatusObj = new Object();
-    signStatusObj.value = signStatus;
+    var exitCodeObj    = new Object();
+    var statusFlagsObj = new Object();
+    var userIdObj      = new Object();
+
+    var signatureObj = new Object();
+    signatureObj.value = signature;
 
     var uiFlags = interactive ? (nsIEnigmail.UI_INTERACTIVE |
-                                 nsIEnigmail.ALLOW_KEY_IMPORT |
-                                 nsIEnigmail.UNVERIFIED_ENC_OK) : 0;
+                                 nsIEnigmail.UI_ALLOW_KEY_IMPORT |
+                                 nsIEnigmail.UI_UNVERIFIED_ENC_OK) : 0;
 
 
     plainText = enigmailSvc.decryptMessage(window, uiFlags, msgText,
-                                     exitCodeObj, errorMsgObj, signStatusObj);
+                                 signatureObj, exitCodeObj, statusFlagsObj,
+                                 keyIdObj, userIdObj, errorMsgObj);
 
     //DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: plainText='"+plainText+"'\n");
 
     exitCode = exitCodeObj.value;
-    newSignStatus = signStatusObj.value;
+    newSignature = signatureObj.value;
 
-    DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: newSignStatus='"+newSignStatus+"'\n");
+    statusFlags = statusFlagsObj.value;
+
+    DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: newSignature='"+newSignature+"'\n");
 
     // Decode plaintext to unicode
     plainText = EnigConvertToUnicode(plainText, charset);
@@ -224,27 +232,29 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
 
   var errorMsg = errorMsgObj.value;
 
-  var statusLines = errorMsg.split(/\r?\n/);
-
   var statusLine = "";
-  var displayMsg = "";
 
-  if (statusLines && statusLines.length) {
-    statusLine = statusLines[0];
+  var errLines = errorMsg.split(/\r?\n/);
+
+  var displayMsg = "";
+  if (errLines && errLines.length) {
+    if (statusLine) statusLine += ": ";
+    statusLine += errLines[0];
 
     // Display only first ten lines of error message
-    while (statusLines.length > 10)
-      statusLines.pop();
+    while (errLines.length > 10)
+      errLines.pop();
 
-    displayMsg = statusLines.join("\n");
+    displayMsg = errLines.join("\n");
   }
 
   if (importOnly) {
      if (interactive && displayMsg)
        EnigAlert(displayMsg);
      return;
+  }
 
-  } else if (statusLine) {
+  if (statusLine) {
     var enigmailBox = document.getElementById("expandedEnigmailBox");
     var statusText  = document.getElementById("expandedEnigmailStatusText");
 
@@ -252,12 +262,14 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
     enigmailBox.removeAttribute("collapsed");
   }
 
-  if (newSignStatus.indexOf("BADSIG_ARMOR ") == 0) {
+  enigUpdateHdrIcons(statusFlags);
+
+  if (statusFlags & nsIEnigmail.BAD_SIGNATURE) {
     // Bad signature
-    if (!signStatus) {
+    if (!signature) {
       // Try to verify signature by accessing raw message text directly
-      // (avoid recursion by checking if we already have a signStatus)
-      return enigMsgDirect(interactive, importOnly, charset, newSignStatus);
+      // (avoid recursion by checking if we already have a signature)
+      return enigMsgDirect(interactive, importOnly, charset, newSignature);
     }
   }
 
@@ -632,8 +644,8 @@ function EnigFilePicker(title, displayDir, save, defaultExtension, filterPairs) 
 }
 
 
-function enigMsgDirect(interactive, importOnly, charset, signStatus) {
-  WRITE_LOG("enigmailMessengerOverlay.js: enigMsgDirect: signStatus="+signStatus+"\n");
+function enigMsgDirect(interactive, importOnly, charset, signature) {
+  WRITE_LOG("enigmailMessengerOverlay.js: enigMsgDirect: signature="+signature+"\n");
   var mailNewsUrl = enigGetCurrentMsgUrl();
   if (!mailNewsUrl)
     return;
@@ -644,7 +656,7 @@ function enigMsgDirect(interactive, importOnly, charset, signStatus) {
                       importOnly:importOnly,
                       charset:charset,
                       messageUrl:mailNewsUrl.spec,
-                      signStatus:signStatus,
+                      signature:signature,
                       pipeConsole:pipeConsole };
 
   var requestObserver = new RequestObserver(enigMsgDirectCallback,
@@ -679,5 +691,5 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
   enigMessageParseCallback(msgText, callbackArg.charset,
                            callbackArg.interactive,
                            callbackArg.importOnly,
-                           callbackArg.messageUrl, callbackArg.signStatus);
+                           callbackArg.messageUrl, callbackArg.signature);
 }

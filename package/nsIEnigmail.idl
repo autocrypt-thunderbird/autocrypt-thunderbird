@@ -85,33 +85,50 @@ interface nsIEnigmail : nsISupports
                               in long part);
 
   /* User interaction flags */
-  const long UI_INTERACTIVE    = 0x01;
-  const long ALLOW_KEY_IMPORT  = 0x02;
-  const long UNVERIFIED_ENC_OK = 0x04;
+  const long UI_INTERACTIVE       = 0x01;
+  const long UI_ALLOW_KEY_IMPORT  = 0x02;
+  const long UI_UNVERIFIED_ENC_OK = 0x04;
 
-  /* Encryption flags */
-  const long SIGN_MESSAGE      = 0x01;
-  const long ENCRYPT_MESSAGE   = 0x02;
-  const long DEFAULT_SEND      = 0x04;
-  const long DEFAULT_USER_ID   = 0x08;
-  const long ALWAYS_TRUST_SEND = 0x10;
-  const long ENCRYPT_TO_SELF   = 0x20;
+  /* Send message flags */
+  const long SEND_SIGNED          = 0x01;
+  const long SEND_ENCRYPTED       = 0x02;
+  const long SEND_DEFAULT         = 0x04;
+  const long SEND_USER_ID_DEFAULT = 0x08;
+  const long SEND_ALWAYS_TRUST    = 0x10;
+  const long SEND_ENCRYPT_TO_SELF = 0x20;
 
   string encryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,
                         in string  plainText,
                         in string  fromMailAddr,
                         in string  toMailAddr,
-                        in unsigned long encryptFlags,
-                        out long   exitCode,
+                        in unsigned long sendFlags,
+                        out long exitCode,
+                        out long statusFlags,
                         out string errorMsg);
+
+  /* Status flags */
+  const long GOOD_SIGNATURE       = 0x0001;
+  const long BAD_SIGNATURE        = 0x0002;
+  const long UNVERIFIED_SIGNATURE = 0x0004;
+  const long EXPIRED_SIGNATURE    = 0x0008;
+  const long REVOKED_KEY          = 0x0010;
+  const long NO_PUBKEY            = 0x0020;
+  const long IMPORTED_KEY         = 0x0040;
+  const long BAD_PASSPHRASE       = 0x0080;
+  const long DECRYPTED_MESSAGE    = 0x0100;
+  const long UNTRUSTED_IDENTITY   = 0x0200;
+  const long TRUSTED_IDENTITY     = 0x0400;
 
   string decryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,
                         in string  cipherText,
-                        out long   exitCode,
-                        out string errorMsg,
-                        inout string signStatus);
+                        inout string signature,
+                        out long exitCode,
+                        out long statusFlags,
+                        out string keyId,
+                        out string userId,
+                        out string errorMsg);
 
   string extractKey(in nsIDOMWindow parent,
                     in unsigned long uiFlags,
