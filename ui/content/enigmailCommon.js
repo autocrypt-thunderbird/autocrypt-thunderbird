@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.51.0.0";
-var gEnigmimeVersion = "0.99.10.0";
+var gEnigmailVersion = "0.60.0.0";
+var gEnigmimeVersion = "0.60.0.0";
 
 // Maximum size of message directly processed by Enigmail
 const MESSAGE_BUFFER_SIZE = 32000;
@@ -12,6 +12,7 @@ const NS_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1";
 const NS_IPCBUFFER_CONTRACTID   = "@mozilla.org/process/ipc-buffer;1";
 const NS_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
 const NS_ENIGMIMELISTENER_CONTRACTID = "@mozilla.org/enigmail/mime-listener;1";
+const NS_ENIGMIMESERVICE_CONTRACTID = "@mozdev.org/enigmail/enigmimeservice;1";
 
 const NS_STREAMCONVERTERSERVICE_CID_STR =
       "{892FFEB0-3F80-11d3-A16C-0050041CAF44}";
@@ -482,7 +483,7 @@ function EnigHelpWindow(source) {
 }
 
 function EnigUpgrade() {
-  window.openDialog("http://enigmail.mozdev.org/update.html?upgrade=yes&enigmail="+gEnigmailVersion+"&ipc="+gEnigmimeVersion, "dialog");
+  window.openDialog("http://enigmail.mozdev.org/update.html?upgrade=yes&enigmail="+gEnigmailVersion+"&enigmime="+gEnigmimeVersion, "dialog");
 }
 
 function EnigShowHeadersAll(status) {
@@ -692,9 +693,19 @@ function EnigConvertToUnicode(text, charset) {
 }
 
 
-function EnigGetDeepText(node) {
+function EnigGetDeepText(node, findStr) {
 
-  DEBUG_LOG("enigmailCommon.js: EnigDeepText: <" + node.tagName + ">\n");
+  DEBUG_LOG("enigmailCommon.js: EnigDeepText: <" + node.tagName + ">, '"+findStr+"'\n");
+
+  try {
+    var enigMimeService = Components.classes[NS_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
+
+    var plainText = enigMimeService.getPlainText(node, findStr);
+    return plainText;
+
+  } catch (ex) {
+    DEBUG_LOG("enigmailCommon.js: EnigDeepText: Failed to access EnigMimeService\n");
+  }
 
   var depth = 0;
   var textArr = [""];

@@ -34,15 +34,18 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
 // Logging of debug output 
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
 #include "mimeenig.h"
+#include "nsEnigModule.h"
 #include "nsEnigMimeService.h"
 #include "nspr.h"
+#include "nsString.h"
 #include "nsCOMPtr.h"
+#include "nsIDOMNode.h"
+#include "nsIDOMText.h"
 #include "nsIThread.h"
 #include "nsIComponentManager.h"
 #include "nsIGenericFactory.h"
@@ -134,7 +137,7 @@ nsEnigMimeService::Init()
                                            info.mContractID, factory, PR_TRUE);
   if (NS_FAILED(rv)) return rv;
 
-  DEBUG_LOG(("nsEnigContenthandler::Init: registered %s\n", info.mContractID));
+  DEBUG_LOG(("nsEnigMimeService::Init: registered %s\n", info.mContractID));
 
   mInitialized = PR_TRUE;
 
@@ -149,7 +152,76 @@ nsEnigMimeService::GetInitialized(PRBool *_retval)
 
   *_retval = mInitialized;
 
-  DEBUG_LOG(("nsEnigContenthandler::GetInitialized: %d\n", (int) mInitialized));
+  DEBUG_LOG(("nsEnigMimeService::GetInitialized: %d\n", (int) mInitialized));
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsEnigMimeService::GetVersion(char **_retval)
+{
+  *_retval = nsCRT::strdup(ENIGMIME_VERSION);
+  if (!*_retval)
+    return NS_ERROR_OUT_OF_MEMORY;
+
+  DEBUG_LOG(("nsEnigMimeService::GetVersion: %s\n", *_retval));
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsEnigMimeService::GetPlainText(nsIDOMNode* domNode,
+                                const PRUnichar* findStr,
+                                nsAString& text)
+{
+  nsresult rv;
+  nsAutoString outStr;
+
+  //DEBUG_LOG(("nsEnigMimeService::GetPlainText:\n"));
+
+  PRUint16 nodeType;
+  rv = domNode->GetNodeType(&nodeType);
+  if (NS_FAILED(rv)) return rv;
+
+  if (nodeType == nsIDOMNode::TEXT_NODE) {
+    // Text node
+    nsCOMPtr<nsIDOMText> domText( do_QueryInterface(domNode) );
+    rv = domText->GetData(outStr);
+    if (NS_FAILED(rv)) return rv;
+
+  } else {
+    // Iterate over all child nodes
+    nsCOMPtr<nsIDOMNode> child;
+    rv = domNode->GetFirstChild(getter_AddRefs(child));
+    if (NS_FAILED(rv))
+      return NS_OK;
+
+    while (child) {
+      nsAutoString temStr;
+      rv = GetPlainText(child, nsnull, temStr);
+      if (NS_FAILED(rv)) return rv;
+
+      outStr.Append(temStr);
+
+      nsCOMPtr<nsIDOMNode> temp = child;
+      rv = temp->GetNextSibling(getter_AddRefs(child));
+      if (NS_FAILED(rv))
+        break;
+    }
+  }
+
+  if (outStr.FindChar('\xA0') >= 0) {
+    // Replace non-breaking spaces with plain spaces
+    outStr.ReplaceChar('\xA0', ' ');
+  }
+
+  if (findStr &&
+      nsCharTraits<PRUnichar>::length(findStr) &&
+      (outStr.Find(findStr) < 0) ) {
+    // Substring not found; return empty string
+    outStr.Truncate(0);
+  }
+
+  text = outStr;
 
   return NS_OK;
 }

@@ -230,7 +230,7 @@ function enigYahooShowLetter() {
 
   //DEBUG_LOG("enigYahooShowLetter: "+preElement+"\n");
 
-  var cipherText = EnigGetDeepText(preElement);
+  var cipherText = EnigGetDeepText(preElement, "");
 
   DEBUG_LOG("enigYahooShowLetter: cipherText='"+cipherText+"'\n");
 
@@ -365,7 +365,7 @@ function enigHotmailShowLetter() {
 
   //DEBUG_LOG("enigHotmailShowLetter: "+preElement+"\n");
 
-  var cipherText = EnigGetDeepText(preElement);
+  var cipherText = EnigGetDeepText(preElement, "");
 
   DEBUG_LOG("enigHotmailShowLetter: cipherText='"+cipherText+"'\n");
 

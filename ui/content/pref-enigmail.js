@@ -102,6 +102,9 @@ function EnigUninstall() {
   EnigShowHeadersAll(false);
   EnigSavePrefs();
 
+  // Remove installed chrome entries
+  var chromeEntryRemoved = RemoveInstalledChrome("enigmail");
+
   // Remove overlays
   var overlay1Removed = RemoveOverlay("communicator",
                 ["chrome://enigmail/content/enigmailPrefsOverlay.xul"]);
@@ -198,4 +201,36 @@ function RemoveOverlay(module, urls) {
    }
 
    return overlayRemoved;
+}
+
+
+function RemoveInstalledChrome(module) {
+   DEBUG_LOG("pref-enigmail.js: RemoveInstalledChrome: module="+module+"\n");
+
+   var chromeEntryRemoved = false;
+
+   try {
+     var chromeListFile = GetFileOfProperty("AChrom");
+     chromeListFile.append("installed-chrome.txt");
+
+      var fileContents = EnigReadFileContents(chromeListFile, -1);
+
+      var chromeEntryPat = new RegExp("(content|skin|locale),install,url,jar:resource:/chrome/"+module+".*\\r?\\n?");
+
+      while (fileContents.search(chromeEntryPat) != -1) {
+
+         fileContents = fileContents.replace(chromeEntryPat, "");
+
+         chromeEntryRemoved = true;
+
+         DEBUG_LOG("pref-enigmail.js: RemoveInstalledChrome: removed "+module+" entry from installed-chrome.txt\n");
+      }
+
+      if (chromeEntryRemoved)
+         EnigWriteFileContents(chromeListFile.path, fileContents, 0);
+
+   } catch (ex) {
+   }
+
+   return chromeEntryRemoved;
 }

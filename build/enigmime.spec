@@ -1,7 +1,7 @@
 Name:      mozilla-enigmime
-Version:   0.99.10
+Version:   0.60.0
 Release:   1
-Requires:  mozilla = 1.0
+Requires:  mozilla = 1.0, mozilla-mail = 1.0
 Summary:   MIME and Inter-Process Communication for Enigmail/Mozilla
 Copyright: Mozilla Public License 1.1/GPL
 Group:     Applications/Internet
@@ -33,7 +33,6 @@ chmod -R a+rX,g-w,o-w .
 %install
 cd ${RPM_PACKAGE_NAME}-${RPM_PACKAGE_VERSION}
 install -m 755 components/ipc.xpt   /usr/lib/mozilla/components
-install -m 755 components/libipc.so /usr/lib/mozilla/components
 install -m 755 components/enigmime.xpt   /usr/lib/mozilla/components
 install -m 755 components/libenigmime.so /usr/lib/mozilla/components
 
@@ -59,7 +58,6 @@ fi
 
 %files
 
-/usr/lib/mozilla/components/libipc.so
 /usr/lib/mozilla/components/ipc.xpt
 /usr/lib/mozilla/components/libenigmime.so
 /usr/lib/mozilla/components/enigmime.xpt

@@ -75,6 +75,7 @@ EXPORTS		=		    \
 		$(NULL)
 
 LOCAL_INCLUDES	= \
+		-I$(srcdir)/../build \
 		-I$(srcdir)/../../../mailnews/mime/src \
 		$(NULL)
 

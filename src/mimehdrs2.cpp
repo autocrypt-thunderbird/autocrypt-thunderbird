@@ -43,6 +43,10 @@
 #include "msgCore.h"
 #include "mimehdrs2.h"
 
+PRBool MimeHeaders_IsAsciiSpace(PRUnichar aChar) {
+  return ((aChar == ' ') || (aChar == '\r') ||
+          (aChar == '\n') || (aChar == '\t'));
+}
 
 char *
 MimeHeaders_get_parameter (const char *header_value, const char *parm_name, 
@@ -70,7 +74,7 @@ MimeHeaders_get_parameter (const char *header_value, const char *parm_name,
   if (*str)
 	str++;
   /* Skip over following whitespace */
-  for (; *str && nsCRT::IsAsciiSpace(*str); str++)
+  for (; *str && MimeHeaders_IsAsciiSpace(*str); str++)
 	;
   if (!*str)
 	return 0;
@@ -82,24 +86,24 @@ MimeHeaders_get_parameter (const char *header_value, const char *parm_name,
 	  const char *value_start = str;
 	  const char *value_end = 0;
 
-	  PR_ASSERT(!nsCRT::IsAsciiSpace(*str)); /* should be after whitespace already */
+	  PR_ASSERT(!MimeHeaders_IsAsciiSpace(*str)); /* should be after whitespace already */
 
 	  /* Skip forward to the end of this token. */
-	  for (; *str && !nsCRT::IsAsciiSpace(*str) && *str != '=' && *str != ';'; str++)
+	  for (; *str && !MimeHeaders_IsAsciiSpace(*str) && *str != '=' && *str != ';'; str++)
 		;
 	  token_end = str;
 
 	  /* Skip over whitespace, '=', and whitespace */
-	  while (nsCRT::IsAsciiSpace (*str)) str++;
+	  while (MimeHeaders_IsAsciiSpace (*str)) str++;
 	  if (*str == '=') str++;
-	  while (nsCRT::IsAsciiSpace (*str)) str++;
+	  while (MimeHeaders_IsAsciiSpace (*str)) str++;
 
 	  if (*str != '"')
 		{
 		  /* The value is a token, not a quoted string. */
 		  value_start = str;
 		  for (value_end = str;
-			   *value_end && !nsCRT::IsAsciiSpace (*value_end) && *value_end != ';';
+			   *value_end && !MimeHeaders_IsAsciiSpace (*value_end) && *value_end != ';';
 			   value_end++)
 			;
 		  str = value_end;
@@ -225,9 +229,9 @@ MimeHeaders_get_parameter (const char *header_value, const char *parm_name,
 
 	  /* str now points after the end of the value.
 		 skip over whitespace, ';', whitespace. */
-	  while (nsCRT::IsAsciiSpace (*str)) str++;
+	  while (MimeHeaders_IsAsciiSpace (*str)) str++;
 	  if (*str == ';') str++;
-	  while (nsCRT::IsAsciiSpace (*str)) str++;
+	  while (MimeHeaders_IsAsciiSpace (*str)) str++;
 	}
   return s;
 }

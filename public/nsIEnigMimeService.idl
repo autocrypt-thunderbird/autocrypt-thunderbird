@@ -37,6 +37,8 @@
 
 #include "nsISupports.idl"
 
+interface nsIDOMNode;
+
 /**
  * EnigMime service
  */
@@ -45,6 +47,10 @@ interface nsIEnigMimeService : nsISupports
 {
   void init();
   readonly attribute boolean initialized;
+
+  readonly attribute string version;
+
+  AString getPlainText(in nsIDOMNode domNode, in wstring findStr);
 };
 
 %{C++

@@ -35,7 +35,7 @@
 
 # Specify these as parameters to the make command
 XPI_MODULE	= enigmime
-XPI_MODULE_VERS = 0.99.10
+XPI_MODULE_VERS = 0.60.0
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
@@ -46,10 +46,13 @@ include $(DEPTH)/config/autoconf.mk
 
 MODULE		= enigmime
 LIBRARY_NAME	= enigmime
-
-EXPORT_LIBRARY  = 1
 SHORT_LIBNAME	= enigmime
+
 IS_COMPONENT	= 1
+
+# Ensure that the xpcom classes that we build
+# do not export themselves
+DEFINES		+= -D_IMPL_NS_COM_OFF 
 
 REQUIRES	= xpcom \
 		  string \
@@ -82,16 +85,22 @@ MODULE_NAME	= EnigModule
 
 CPPSRCS		= nsEnigModule.cpp
 
-SHARED_LIBRARY_LIBS = \
-		$(DIST)/lib/$(LIB_PREFIX)enigmime_s.$(LIB_SUFFIX) \
-		$(NULL)
-
 LOCAL_INCLUDES	= \
 		-I$(srcdir)/../src \
+		-I$(srcdir)/../../ipc/src \
+		$(NULL)
+
+# separate libraries linked in.
+SHARED_LIBRARY_LIBS = \
+		$(DIST)/lib/$(LIB_PREFIX)enigmime_s.$(LIB_SUFFIX) \
+		$(DIST)/lib/$(LIB_PREFIX)ipc_s.$(LIB_SUFFIX) \
 		$(NULL)
 
 EXTRA_DSO_LDOPTS = \
-		$(MOZ_COMPONENT_LIBS) \
+		$(DIST)/lib/$(LIB_PREFIX)string_s.$(LIB_SUFFIX) \
+		$(DIST)/lib/$(LIB_PREFIX)string_obsolete_s.$(LIB_SUFFIX) \
+		$(XPCOM_LIBS) \
+		$(NSPR_LIBS) \
 		$(NULL)
 
 include $(topsrcdir)/config/rules.mk
@@ -125,7 +134,6 @@ xpi::
 	zip -r $(DIST)/bin/$(XPIFILE) install.js $(XPI_MODULE).spec
 	cd $(DIST)/bin; zip -g $(XPIFILE) \
                components/ipc.xpt \
-               components/$(LIB_PREFIX)ipc$(DLL_SUFFIX) \
                components/$(XPI_MODULE).xpt \
                components/$(LIB_PREFIX)$(XPI_MODULE)$(DLL_SUFFIX)
 	echo Created $(DIST)/bin/$(XPIFILE)

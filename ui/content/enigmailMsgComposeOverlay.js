@@ -374,25 +374,27 @@ function enigSend(sendFlags) {
 
      var usePGPMimeOption = EnigGetPref("usePGPMimeOption");
 
-     var sendPGPMime = document.getElementById("enigmail_sendPGPMime");
+     if ( !(defaultSend && (sendFlags & ENCRYPT_MSG)) ) {
+       var sendPGPMime = document.getElementById("enigmail_sendPGPMime");
 
-     if (sendPGPMime && (sendPGPMime.getAttribute("checked") == "true")) {
-       sendFlags |= nsIEnigmail.SEND_PGP_MIME;
-     }
+       if (sendPGPMime && (sendPGPMime.getAttribute("checked") == "true")) {
+         sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+       }
 
-     var bucketList = document.getElementById("attachmentBucket");
-     var hasAttachments = bucketList && bucketList.hasChildNodes();
+       var bucketList = document.getElementById("attachmentBucket");
+       var hasAttachments = bucketList && bucketList.hasChildNodes();
 
-     DEBUG_LOG("enigmailMsgComposeOverlay.js: hasAttachments = "+hasAttachments+"\n");
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: hasAttachments = "+hasAttachments+"\n");
 
-     if ( hasAttachments &&
+       if ( hasAttachments &&
           (sendFlags & ENCRYPT_OR_SIGN_MSG) &&
           !(sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
           (usePGPMimeOption >= PGP_MIME_POSSIBLE) &&
           enigmailSvc.composeSecure ) {
 
-       if (EnigConfirm("Attachments to this message will be signed/encrypted only if the recipient's mail reader supports the PGP/MIME format. Enigmail and Mutt are known to support this format.\n Do you wish to use PGP/MIME format for this message?")) {
+         if (EnigConfirm("Attachments to this message will be signed/encrypted only if the recipient's mail reader supports the PGP/MIME format. Enigmail and Mutt are known to support this format.\n Do you wish to use PGP/MIME format for this message?")) {
          sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+         }
        }
      }
 

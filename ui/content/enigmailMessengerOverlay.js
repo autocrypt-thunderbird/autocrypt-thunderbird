@@ -442,18 +442,12 @@ function enigMessageParse(interactive, importOnly) {
   var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
   DEBUG_LOG("enigmailMessengerOverlay.js: bodyElement="+bodyElement+"\n");
 
-  var msgText = EnigGetDeepText(bodyElement);
+  var findStr = interactive ? "" : "-----BEGIN PGP";
+  var msgText = EnigGetDeepText(bodyElement, findStr);
 
-  if (!interactive && (msgText.indexOf("-----BEGIN PGP") == -1)
-                   && (msgText.indexOf("-----BEGIN\xA0PGP") == -1) ) {
+  if (!msgText) {
     // No PGP content
     return;
-  }
-
-  if (msgText.indexOf("\xA0") != -1) {
-    // Replace non-breaking spaces with plain spaces
-    msgText = msgText.replace(/\xA0/g, " ");
-    DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParse: replaced non-breaking spaces\n");
   }
 
   var charset = msgWindow ? msgWindow.mailCharacterSet : "";

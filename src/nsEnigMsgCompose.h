@@ -71,8 +71,6 @@ public:
     static NS_METHOD
     Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
 
-    static NS_EXPORT nsresult RandomSeedTime(PRUint32 *_retval);
-
 protected:
     static PRBool mRandomSeeded;
 

@@ -42,6 +42,7 @@
 #include "nsIMsgCompFields.h"
 #include "nsMsgBaseCID.h"
 #include "nsIMsgMailSession.h"
+#include "nsIIPCService.h"
 #include "nsIEnigMsgCompFields.h"
 #include "nsEnigMsgCompose.h"
 #include "nspr.h"
@@ -206,39 +207,21 @@ nsEnigMsgCompose::Finalize()
   return NS_OK;
 }
 
-NS_IMETHODIMP nsEnigMsgCompose::RandomSeedTime(PRUint32 *_retval)
-{
-  if (!*_retval)
-    return NS_ERROR_NULL_POINTER;
-
-  // Current local time (microsecond resolution)
-  PRExplodedTime localTime;
-  PR_ExplodeTime(PR_Now(), PR_LocalTimeParameters, &localTime);
-
-  PRUint32       randomNumberA = localTime.tm_sec*1000000+localTime.tm_usec;
-
-  // Elapsed time (1 millisecond to 10 microsecond resolution)
-  PRIntervalTime randomNumberB = PR_IntervalNow();
-
-  DEBUG_LOG(("nsEnigMsgCompose::RandomSeedTime: ranA=0x%x, ranB=0x%x\n",
-                                               randomNumberA, randomNumberB));
-
-  *_retval = ((randomNumberA & 0xFFFFF) << 12) | (randomNumberB & 0xFFF);
-
-  return NS_OK;
-}
-
 nsresult   
 nsEnigMsgCompose::MakeBoundary(const char *prefix)
 {
   nsresult rv;
 
   if (!mRandomSeeded) {
-    mRandomSeeded = PR_TRUE;
-    PRUint32 ranTime;
-    rv = RandomSeedTime(&ranTime);
+    nsCOMPtr<nsIIPCService> ipcService = do_GetService(NS_IPCSERVICE_CONTRACTID, &rv);
     if (NS_FAILED(rv)) return nsnull;
+
+    PRUint32 ranTime;
+    rv = ipcService->GetRandomTime(&ranTime);
+    if (NS_FAILED(rv)) return nsnull;
+
     srand( ranTime );
+    mRandomSeeded = PR_TRUE;
   }
 
   unsigned char ch[13]; 
@@ -279,6 +262,8 @@ nsEnigMsgCompose::WriteEncryptedHeaders()
  " protocol=\"application/pgp-encrypted\";\r\n"
  " boundary=\"%s\"\r\n"
  "\r\n"
+ "The following is an OpenPGP/MIME encrypted message\r\n"
+ "created by Enigmail/Mozilla, following RFC 2440 and RFC 2015\r\n"
  "--%s\r\n"
  "Content-Type: application/pgp-encrypted\r\n"
  "\r\n"
@@ -314,6 +299,8 @@ nsEnigMsgCompose::WriteSignedHeaders1()
  " protocol=\"application/pgp-signature\";\r\n"
  " boundary=\"%s\"\r\n"
  "\r\n"
+ "The following is an OpenPGP/MIME signed message\r\n"
+ "created by Enigmail/Mozilla, following RFC 2440 and RFC 2015\r\n"
  "--%s\r\n",
  mBoundary.get(), mBoundary.get());
 
