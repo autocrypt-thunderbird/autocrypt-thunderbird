@@ -35,6 +35,8 @@ const GPG_BATCH_OPTS  = " --batch --no-tty --status-fd 2";
 
 const GPG_COMMENT_OPT = " --comment 'Using GnuPG with Mozilla - http://enigmail.mozdev.org'";
 
+const gDummyPKCS7 = 'Subject: Enigmail dummy message (not for end-user view!)\r\nContent-Type: multipart/mixed;\r\n boundary="------------060503030402050102040303\r\n\r\nThis is a multi-part message in MIME format.\r\n--------------060503030402050102040303\r\nContent-Type: application/x-pkcs7-mime\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303\r\nContent-Type: application/x-enigmail-dummy\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303--\r\n';
+
 /* Implementations supplied by this module */
 const NS_ENIGMAIL_CONTRACTID   = "@mozdev.org/enigmail/enigmail;1";
 const NS_PGP_MODULE_CONTRACTID = "@mozilla.org/mimecth/pgp;1";
@@ -762,6 +764,15 @@ function (aURI)
                                                     contentType,
                                                     contentCharset,
                                                     contentData);
+    return channel;
+  }
+
+  if (aURI.spec == aURI.scheme+":dummy") {
+    // Dummy PKCS7 content (to access mimeEncryptedClass)
+    channel = gEnigmailSvc.ipcService.newStringChannel(aURI,
+                                                       "message/rfc822",
+                                                        "",
+                                                        gDummyPKCS7);
     return channel;
   }
 

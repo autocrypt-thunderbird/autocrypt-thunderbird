@@ -428,12 +428,6 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
 
   if (0) {
     // Testing URL display in message pane
-    var uri2 = enigmailSvc.createMessageURI("OLD URL",
-                                         "text/html",
-                                         "",
-                                         "<html><body>BODY</body></html>",
-                                         false);
-
     var browser = document.getElementById("messagepane");
     dump("**browser"+browser+"\n");
 
@@ -442,7 +436,7 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
     browser.addEventListener("load",   enigMessageFrameLoad, true);
     browser.addEventListener("unload", enigMessageFrameUnload, true);
 
-    msgFrame.location = uri2;
+    msgFrame.location = "enigmail:dummy";
     return;
   }
 
