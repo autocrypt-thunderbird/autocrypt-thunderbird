@@ -121,7 +121,8 @@ interface nsIEnigmail : nsISupports
                             in long offset,
                             in string indentStr,
                             out long beginIndex,
-                            out long endIndex);
+                            out long endIndex,
+                            out string foundIndentStr);
 
   /* Cleartext signature parts */
   const long SIGNATURE_TEXT    = 1;
