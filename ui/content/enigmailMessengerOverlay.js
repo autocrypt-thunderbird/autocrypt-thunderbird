@@ -643,7 +643,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
 
   try {
     // Create and load one-time message URI
-    var messageContent = enigGetDecryptedMessage("message/rfc822");
+    var messageContent = enigGetDecryptedMessage("message/rfc822", false);
 
     gEnigNoShowReload = true;
 
@@ -785,8 +785,8 @@ function enigEscapeTextForHTML(text, hyperlink) {
   return text;
 }
 
-function enigGetDecryptedMessage(contentType) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigGetDecryptedMessage: "+contentType+"\n");
+function enigGetDecryptedMessage(contentType, includeHeaders) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigGetDecryptedMessage: "+contentType+", "+includeHeaders+"\n");
 
   if (!gEnigDecryptedMessage)
     return "No decrypted message found!\n";
@@ -801,8 +801,19 @@ function enigGetDecryptedMessage(contentType) {
 
   var contentData = "";
 
+  var headerName, headerValue;
+
   if (contentType == "message/rfc822") {
     // message/rfc822
+
+    if (includeHeaders) {
+      for (headerName in headerList) {
+        headerValue = headerList[headerName];
+
+        if (headerValue)
+          contentData += headerName + ": " + headerValue + "\r\n";
+      }
+    }
 
     contentData += "Content-Type: text/plain";
 
@@ -821,8 +832,11 @@ function enigGetDecryptedMessage(contentType) {
   } else {
     // text/html or text/plain
 
-    if (contentType == "text/html")
+    if (contentType == "text/html") {
+      contentData += "<meta http-equiv=\"Content-Type\" content=\"text/html; charset="+gEnigDecryptedMessage.charset+"\">\r\n";
+
       contentData += "<html><head></head><body>\r\n";
+    }
 
     if (statusLine) {
       if (contentType == "text/html") {
@@ -833,31 +847,29 @@ function enigGetDecryptedMessage(contentType) {
       }
     }
 
-    for (var headerName in headerList) {
-      var headerValue = headerList[headerName];
+    if (includeHeaders) {
+      for (headerName in headerList) {
+        headerValue = headerList[headerName];
 
-      if (headerValue) {
-        if (contentType == "text/html") {
-          contentData += "<b>"+enigEscapeTextForHTML(headerName, false)+":</b> "+
-                               enigEscapeTextForHTML(headerValue, false)+"<br>\r\n";
-        } else {
-          contentData += headerName + ": " + headerValue + "\r\n";
+        if (headerValue) {
+          if (contentType == "text/html") {
+            contentData += "<b>"+enigEscapeTextForHTML(headerName, false)+":</b> "+
+                                 enigEscapeTextForHTML(headerValue, false)+"<br>\r\n";
+          } else {
+            contentData += headerName + ": " + headerValue + "\r\n";
+          }
         }
       }
     }
 
-    // Decode plaintext to unicode
-    var uniText = EnigConvertToUnicode(gEnigDecryptedMessage.plainText,
-                                       gEnigDecryptedMessage.charset);
-
     if (contentType == "text/html") {
-      contentData += "<pre>"+enigEscapeTextForHTML(uniText, false)+"</pre>\r\n";
+      contentData += "<pre>"+enigEscapeTextForHTML(gEnigDecryptedMessage.plainText, false)+"</pre>\r\n";
 
       contentData += "</body></html>\r\n";
 
     } else {
 
-      contentData += "\r\n"+uniText;
+      contentData += "\r\n"+gEnigDecryptedMessage.plainText;
     }
 
     if (!(enigmailSvc.isWin32)) {
@@ -920,12 +932,14 @@ function enigMsgPrint(elementId) {
   if (!enigmailSvc)
     enigMsgDefaultPrint(contextMenu);
 
-  var htmlContent = enigGetDecryptedMessage("text/html");
+  // Note: Trying to print text/html content does not seem to work with
+  //       non-ASCII chars
+  var msgContent = enigGetDecryptedMessage("message/rfc822", true);
 
   var uri = enigmailSvc.createMessageURI(gEnigDecryptedMessage.url,
-                                         "text/html",
-                                         gEnigDecryptedMessage.charset,
-                                         htmlContent,
+                                         "message/rfc822",
+                                         "",
+                                         msgContent,
                                          false);
 
   gEnigCreatedURIs.push(uri);
@@ -978,7 +992,7 @@ function enigMessageSave() {
   if (saveFile.parent)
     gEnigLastSaveDir = saveFile.parent.path;
 
-  var textContent = enigGetDecryptedMessage("text/plain");
+  var textContent = enigGetDecryptedMessage("text/plain", true);
 
   if (!EnigWriteFileContents(saveFile.path, textContent, null)) {
     EnigAlert("Error in saving to file "+saveFile.path);

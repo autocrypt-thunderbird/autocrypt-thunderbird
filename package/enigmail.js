@@ -766,7 +766,7 @@ function (aURI)
       contentCharset = messageUriObj.contentCharset;
       contentData    = messageUriObj.contentData;
 
-      DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.newChannel: messageURL="+messageUriObj.originalUrl+"\n");
+      DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.newChannel: messageURL="+messageUriObj.originalUrl+", "+contentType+", "+contentCharset+"\n");
 
       if (!messageUriObj.persist)
         delete gEnigmailSvc._messageIdList[messageId];
