@@ -1236,14 +1236,7 @@ function enigEncryptMsg(msgSendType) {
        window.cancelSendMessage=true;
        return;
      }
-     
-     try {
-       if (typeof(msgCompFields.forceCharSetEncoding) == "boolean") {
-          msgCompFields.forceCharSetEncoding = true;
-       }
-     }
-     catch (ex) {}
-     
+
      if (usingPGPMime &&
          ((sendFlags & ENIG_ENCRYPT_OR_SIGN) &&
           (! (sendFlags & ENIG_ENCRYPT)))) {
@@ -1253,8 +1246,21 @@ function enigEncryptMsg(msgSendType) {
             gEnigPrefRoot.setBoolPref("mail.strictly_mime", true);
             newSecurityInfo.UIFlags |= nsIEnigmail.UI_RESTORE_STRICTLY_MIME;
           }
-       } catch (ex) {}
+
+          // make sure plaintext is not changed to 7bit
+          if (typeof(msgCompFields.forceCharSetEncoding) == "boolean") {
+            msgCompFields.forceCharSetEncoding = true;
+          }
+       }
+       catch (ex) {}
     }
+    else if ((! usingPGPMime) && (sendFlags & ENIG_ENCRYPT)) {
+      if (typeof(msgCompFields.forceCharSetEncoding) == "boolean") {
+        // force keeping the charset (i.e. don't convert to us-ascii)
+        msgCompFields.forceCharSetEncoding = true;
+      }
+    }
+
   } catch (ex) {
      msg=EnigGetString("signFailed");
      if (gEnigmailSvc && gEnigmailSvc.initializationError) {
