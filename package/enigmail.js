@@ -71,42 +71,27 @@ const NS_ENIGMSGCOMPOSEFACTORY_CID =
 
 // Contract IDs and CIDs used by this module
 const NS_IPCSERVICE_CONTRACTID  = "@mozilla.org/process/ipc-service;1";
-
 const NS_IPCBUFFER_CONTRACTID   = "@mozilla.org/process/ipc-buffer;1";
-
 const NS_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1";
-
 const NS_PIPETRANSPORT_CONTRACTID="@mozilla.org/process/pipe-transport;1";
-
 const NS_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
-
 const NS_MSGCOMPOSESECURE_CONTRACTID = "@mozilla.org/messengercompose/composesecure;1";
-
 const NS_ENIGMSGCOMPOSE_CONTRACTID   = "@mozilla.org/enigmail/composesecure;1";
 const NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID   = "@mozilla.org/enigmail/composesecure-factory;1";
-
 const NS_ENIGMIMESERVICE_CONTRACTID = "@mozdev.org/enigmail/enigmimeservice;1";
-
 const NS_SIMPLEURI_CONTRACTID   = "@mozilla.org/network/simple-uri;1";
-
 const NS_TIMER_CONTRACTID       = "@mozilla.org/timer;1";
-
 const NS_OBSERVERSERVICE_CONTRACTID = "@mozilla.org/observer-service;1";
-
 const NS_PROMPTSERVICE_CONTRACTID = "@mozilla.org/embedcomp/prompt-service;1";
-
 const ASS_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
-
 const WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
-
 const NS_IOSERVICE_CONTRACTID       = "@mozilla.org/network/io-service;1";
-
 const NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
-
 const NS_SCRIPTABLEINPUTSTREAM_CONTRACTID = "@mozilla.org/scriptableinputstream;1"
-
 const ENIG_STRINGBUNDLE_CONTRACTID = "@mozilla.org/intl/stringbundle;1";
-const NS_PREFS_SERVICE_CID ="@mozilla.org/preferences-service;1";
+const NS_PREFS_SERVICE_CID = "@mozilla.org/preferences-service;1";
+const NS_DOMPARSER_CONTRACTID = "@mozilla.org/xmlextras/domparser;1"
+const NS_DOMSERIALIZER_CONTRACTID="@mozilla.org/xmlextras/xmlserializer;1";
 
 // Interfaces
 const nsISupports            = Components.interfaces.nsISupports;
@@ -715,6 +700,30 @@ function EnigConvertToUnicode(text, charset) {
   }
 }
 
+
+function EnigConvertGpgToUnicode(text) {
+  var a=text.search(/[\x80-\xFF]{2}/);
+  var b=0;
+  
+  while (a>=0) {
+    var ch=text.substr(a,2).toSource().substr(13,8).replace(/\\x/g, "\\u00");
+    var newCh=EnigConvertToUnicode(EnigConvertToUnicode(ch, "x-u-escaped"), "utf-8");
+    if (newCh != ch) {
+      //dump(ch+"\n");
+      var r=new RegExp(text.substr(a, 2), "g");
+      text=text.replace(r, newCh);
+    }
+    b=a+2;
+    a=text.substr(b+2).search(/[\x80-\xFF]{2}/);
+    if (a>=0) {
+      a += b+2;
+    }
+  }
+  
+  return text;
+} 
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // Enigmail protocol handler
 ///////////////////////////////////////////////////////////////////////////////
@@ -799,9 +808,9 @@ function (aURI)
   }
 
   var winName, spec;
-  if (aURI.spec == aURI.scheme+":about") {
+  if (aURI.spec == "about:"+aURI.scheme) {
     // About Enigmail
-    winName = "enigmail:about";
+    winName = "about:"+enigmail;
     spec = "chrome://enigmail/content/enigmailAbout.xul";
 
   } else if (aURI.spec == aURI.scheme+":console") {
@@ -816,7 +825,7 @@ function (aURI)
 
   } else {
     // Display Enigmail about page
-    winName = "enigmail:about";
+    winName = "about:enigmail";
     spec = "chrome://enigmail/content/enigmailAbout.xul";
   }
 
@@ -936,7 +945,7 @@ function GetPassphrase(domWindow, prompter, passwdObj, useAgentObj) {
 
   if (!success)
     return false;
-
+    
   DEBUG_LOG("enigmail.js: GetPassphrase: got passphrase\n");
 
   // Remember passphrase only if necessary
@@ -975,7 +984,8 @@ Enigmail.prototype.keygenConsole = null;
 Enigmail.prototype.agentType = "";
 Enigmail.prototype.agentPath = "";
 Enigmail.prototype.agentVersion = "";
-Enigmail.prototype.userList = null;
+Enigmail.prototype.userIdList = null;
+Enigmail.prototype.rulesList = null;
 
 Enigmail.prototype._lastActiveTime = 0;
 
@@ -1881,7 +1891,8 @@ function EnigStripEmail(mailAddrs) {
      qEnd = mailAddrs.indexOf('"', qStart+1);
      if (qEnd == -1) {
        ERROR_LOG("enigmail.js: EnigStripEmail: Unmatched quote in mail address: "+mailAddrs+"\n");
-       throw Components.results.NS_ERROR_FAILURE;
+       mailAddrs=mailAddrs.replace(/\"/g, "");
+       break; 
      }
 
      mailAddrs = mailAddrs.substring(0,qStart) + mailAddrs.substring(qEnd+1);
@@ -3553,42 +3564,53 @@ function EnigGetString(aStr) {
 
 
 Enigmail.prototype.getUserIdList =
-function  (parent, secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
+function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
 
-  var gpgCommand = this.agentPath + GPG_BATCH_OPTS
-
-  if (secretOnly) {
-    gpgCommand += " --list-secret-keys --with-colons";  }
-  else {
-    gpgCommand += " --list-keys --with-colons";
-  }
-
-  if (!this.initialized) {
-    errorMsgObj.value = EnigGetString("notInit");
-    return "";
-  }
-
-  statusFlagsObj.value = 0;
-
-  var statusMsgObj   = new Object();
-  var cmdErrorMsgObj = new Object();
-
-  var userList = gEnigmailSvc.execCmd(gpgCommand, null, "",
-                    exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
-
-  if (exitCodeObj.value != 0) {
-    errorMsgObj.value = EnigGetString("badCommand");
-    if (cmdErrorMsgObj.value) {
-      errorMsgObj.value += "\n" + gpgCommand;
-      errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
+  if (secretOnly || refresh || this.userIdList == null) {
+    var gpgCommand = this.agentPath + GPG_BATCH_OPTS
+  
+    if (secretOnly) {
+      gpgCommand += " --list-secret-keys --with-colons";  }
+    else {
+      gpgCommand += " --list-keys --with-colons";
     }
-
-    return "";
+  
+    if (!this.initialized) {
+      errorMsgObj.value = EnigGetString("notInit");
+      return "";
+    }
+  
+    statusFlagsObj.value = 0;
+  
+    var statusMsgObj   = new Object();
+    var cmdErrorMsgObj = new Object();
+  
+    var listText = gEnigmailSvc.execCmd(gpgCommand, null, "",
+                      exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
+  
+    if (exitCodeObj.value != 0) {
+      errorMsgObj.value = EnigGetString("badCommand");
+      if (cmdErrorMsgObj.value) {
+        errorMsgObj.value += "\n" + gpgCommand;
+        errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
+      }
+  
+      return "";
+    }
+  
+    listText=EnigConvertGpgToUnicode(listText).replace(/(\r\n|\r)/g, "\n");
+    if (secretOnly) {
+      return listText;
+    }
+    this.userIdList = listText;
   }
-
-  return userList;
-
-
+  else {
+    exitCodeObj.value=0;
+    statusFlagsObj.value=0;
+    errorMsgObj.value="";
+  }
+  
+  return this.userIdList;
 }
 
 
@@ -3811,27 +3833,29 @@ function(keyId, exitCodeObj, errorMsgObj) {
 }
 
 
-Enigmail.prototype.getUserFile = function () {
+// Methods for handling Per-Recipient Rules
 
+Enigmail.prototype.getRulesFile = function () {
+  DEBUG_LOG("enigmail.js: getRulesFile\n");
   var ds = Components.classes[DIR_SERV_CONTRACTID].getService();
   var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
-  var userFile = dsprops.get("ProfD", Components.interfaces.nsILocalFile);
-  userFile.append("pgprules.xml");
-  return userFile;
+  var rulesFile = dsprops.get("ProfD", Components.interfaces.nsILocalFile);
+  rulesFile.append("pgprules.xml");
+  return rulesFile;
 }
 
-Enigmail.prototype.loadUserList = function () {
-  DEBUG_LOG("enigmail.js: loadUserList\n");
+Enigmail.prototype.loadRulesFile = function () {
+  DEBUG_LOG("enigmail.js: loadRulesFile\n");
   var flags = NS_RDONLY;
-  var userFile = this.getUserFile();
+  var rulesFile = this.getRulesFile();
 
-  if (userFile.exists()) {
+  if (rulesFile.exists()) {
 
     var ioServ = Components.classes[NS_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
     if (!ioServ)
       throw Components.results.NS_ERROR_FAILURE;
 
-    var fileURI = ioServ.newFileURI(userFile);
+    var fileURI = ioServ.newFileURI(rulesFile);
     var fileChannel = ioServ.newChannel(fileURI.asciiSpec, null, null);
 
     var rawInStream = fileChannel.open();
@@ -3841,106 +3865,67 @@ Enigmail.prototype.loadUserList = function () {
     var available = scriptableInStream.available()
     var fileContents = scriptableInStream.read(available);
     scriptableInStream.close();
+    
+    if (fileContents.length==0 || fileContents.search(/^\s*$/)==0) {
+      return false;
+    }
 
-    var domParser=Components.classes["@mozilla.org/xmlextras/domparser;1"].createInstance(Components.interfaces.nsIDOMParser);
-    this.userList = domParser.parseFromString(fileContents, "text/xml");
+    var domParser=Components.classes[NS_DOMPARSER_CONTRACTID].createInstance(Components.interfaces.nsIDOMParser);
+    this.rulesList = domParser.parseFromString(fileContents, "text/xml");
 
     return true;
   }
   return false;
 }
 
-Enigmail.prototype.getUserList = function (userListObj) {
+Enigmail.prototype.saveRulesFile = function () {
+  DEBUG_LOG("enigmail.js: saveRulesFile\n");
+
+  var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
+  var domSerializer=Components.classes[NS_DOMSERIALIZER_CONTRACTID].createInstance(Components.interfaces.nsIDOMSerializer);
+  var rulesFile = this.getRulesFile();
+  if (rulesFile) {
+    return WriteFileContents(rulesFile.path, 
+                             domSerializer.serializeToString(this.rulesList.firstChild),
+                             DEFAULT_FILE_PERMS);
+  }
+  else
+    return false;
+}
+
+Enigmail.prototype.getRulesData = function (rulesListObj) {
+  DEBUG_LOG("enigmail.js: getRulesData\n");
   var ret=true;
-  // if (! this.userList) {
-     ret=this.loadUserList();
-  // }
-  if (this.userList) {
-    userListObj.value = this.userList;
+  if (! this.rulesList) {
+     ret=this.loadRulesFile();
+  }
+  if (this.rulesList) {
+    rulesListObj.value = this.rulesList;
     return ret;
   }
 
-  userListObj.value = null;
+  rulesListObj.value = null;
   return false;
 }
 
-/*
-Enigmail.prototype.getRecipientsKeys =
-function(parent, emailAddrs, matchedKeysObj, flagsObj) {
-
-  function getFlagVal(oldVal, newVal, valType) {
-    if (oldVal==0 || newVal==0) {
-      return 0;
-    }
-    else {
-      return (oldVal < newVal ? newVal: oldVal);
-    }
+Enigmail.prototype.addRule = function (toAddress, keyList, sign, encrypt, pgpMime) {
+  DEBUG_LOG("enigmail.js: addRule\n");
+  if (! this.rulesList) {
+    var domParser=Components.classes[NS_DOMPARSER_CONTRACTID].createInstance(Components.interfaces.nsIDOMParser);
+    this.rulesList = domParser.parseFromString("<pgpRuleList/>", "text/xml");
   }
-
-  flagsObj.value = -1;
-  matchedKeysObj.value = "";
-  var encrypt=1;
-  var sign   =1;
-  var pgpMime=1;
-  var addresses="{"+EnigStripEmail(emailAddrs.toLowerCase()).replace(/[, ]+/g, "}{")+"}";
-  var keyList=new Array;
-
-//  if (this.userList == null) {
-    if (!this.loadUserList()) return 0;
-//  }
-
-  if (this.userList.firstChild.nodeName=="parsererror") {
-    this.alertMsg(parent, "Invalid enigmail.xml file:\n"+ this.userList.firstChild.textContent);
-    return 0;
-  }
-  DEBUG_LOG("enigmail.js: getRecipientsKeys: keys loaded\n");
-  var node=this.userList.firstChild.firstChild;
-  while (node) {
-    if (node.tagName=="pgpRule") {
-      try {
-        var nodeText=node.getAttribute("email");
-        if (! nodeText) continue;
-        addrList=nodeText.toLowerCase().split(/[ ,;]+/);
-        for(var addrIndex=0; addrIndex < addrList.length; addrIndex++) {
-          var email=addrList[addrIndex];
-          var i=addresses.indexOf(email);
-          while (i>=0) {
-            sign   =getFlagVal(sign,    node.getAttribute("sign"), 0);
-            encrypt=getFlagVal(encrypt, node.getAttribute("encrypt"), 1);
-            pgpMime=getFlagVal(pgpMime, node.getAttribute("pgpMime"), 2);
-
-            // extract found address
-            var keyIds=node.getAttribute("keyId");
-            if (keyIds) {
-              keyList.push(keyIds.replace(/[ ,;]/g, ", "));
-              var start=addresses.substring(0,i+email.length).lastIndexOf("{");
-              var end=start+addresses.substring(start).indexOf("}")+1;
-              // this.alertMsg(parent, "Found: ("+email+"): "+addresses.substring(start,end));
-              addresses=addresses.substring(0,start-1)+addresses.substring(end);
-              i=addresses.indexOf(email);
-            }
-            else {
-              var oldMatch=i;
-              i=addresses.substring(oldMatch+email.length).indexOf(email);
-              if (i>=0) i+=oldMatch+email.length;
-            }
-          }
-        }
-     }
-     catch (ex) {}
-    }
-    node = node.nextSibling;
-  }
-
-  if (keyList.length>0) {
-    // sort key list and make it unique?
-    matchedKeysObj.value = keyList.join(", ");
-    addresses.replace(/\{/g, ", ").replace(/\}/g, "");
-    matchedKeysObj.value += addresses.replace(/\{/g, ", ").replace(/\}/g, "");
-  }
-  flagsObj.value = sign | (encrypt << 2) | (pgpMime << 4);
-//  this.alertMsg(parent, "List: \n"+matchedKeysObj.value+"\nFlags:"+flagsObj.value);
-
-  return 0;
+  var rule=this.rulesList.createElement("pgpRule");
+  rule.setAttribute("email", toAddress);
+  rule.setAttribute("keyId", keyList);
+  rule.setAttribute("sign", sign);
+  rule.setAttribute("encrypt", encrypt);
+  rule.setAttribute("pgpMime", pgpMime);
+  this.rulesList.firstChild.appendChild(rule);
+  
+  this.rulesList.firstChild.appendChild(this.rulesList.createTextNode(this.isWin32 ? "\r\n" : "\n"));
+  
 }
-*/
+
+Enigmail.prototype.clearRules = function () {
+  this.rulesList = null;
+}

@@ -243,8 +243,8 @@ interface nsIEnigmail : nsISupports
 
   boolean selectPanel(in string url);
 
-  string getUserIdList (in nsIDOMWindow parent,
-                      in boolean secretOnly,
+  string getUserIdList (in boolean secretOnly,
+                      in boolean refresh,
                       out long exitCode,
                       out unsigned long statusFlags,
                       out wstring errorMsg);
@@ -270,9 +270,16 @@ interface nsIEnigmail : nsISupports
                        out long exitCode,
                        out wstring errorMsg);
 
-  boolean getUserList(out nsIDOMDocument userList);
+  boolean getRulesData(out nsIDOMDocument rulesList);
+  
+  void addRule(in string toAddress,
+                  in string keyList,
+                  in long sign,
+                  in long encrypt,
+                  in long pgpMime);
 
-
+  boolean saveRulesFile();
+  void clearRules();
 };
 
 %{C++
