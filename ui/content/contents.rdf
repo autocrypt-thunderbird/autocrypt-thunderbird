@@ -34,8 +34,10 @@
     <RDF:li resource="chrome://messenger/content/mailWindowOverlay.xul"/>
     <RDF:li resource="chrome://messenger/content/msgHdrViewOverlay.xul"/>
     <RDF:li resource="chrome://messenger/content/msgPrintEngine.xul"/>
+    <RDF:li resource="chrome://messenger/content/addressbook/addressbook.xul"/>
+    <RDF:li resource="chrome://messenger/content/addressbook/abContactsPanel.xul"/>
     <RDF:li resource="chrome://global/content/customizeToolbar.xul"/>
-    <RDF:li resource="chrome://communicator/content/pref/preftree.xul"/>
+    <RDF:li resource="chrome://communicator/content/pref/preftree.xul"/>    
   </RDF:Seq>
 
   <RDF:Seq about="chrome://messenger/content/messengercompose/messengercompose.xul">
@@ -52,6 +54,14 @@
 
   <RDF:Seq about="chrome://messenger/content/msgPrintEngine.xul">
     <RDF:li>chrome://enigmail/content/enigmailMsgPrintOverlay.xul</RDF:li>
+  </RDF:Seq>
+
+  <RDF:Seq about="chrome://messenger/content/addressbook/addressbook.xul">
+    <RDF:li>chrome://enigmail/content/enigmailAbCardViewOverlay.xul</RDF:li>
+  </RDF:Seq>
+
+  <RDF:Seq about="chrome://messenger/content/addressbook/abContactsPanel.xul">
+    <RDF:li>chrome://enigmail/content/enigmailAbContactsPanel.xul</RDF:li>
   </RDF:Seq>
 
   <RDF:Seq about="chrome://global/content/customizeToolbar.xul">

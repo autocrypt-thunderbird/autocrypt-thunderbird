@@ -1,6 +1,9 @@
 enigmail.jar:
 	content/enigmail/contents.rdf                  (content/contents.rdf)
 	content/enigmail/enigmailCommon.js             (content/enigmailCommon.js)
+	content/enigmail/enigmailAbCardViewOverlay.xul (content/enigmailAbCardViewOverlay.xul)
+	content/enigmail/enigmailAbContactsPanel.xul   (content/enigmailAbContactsPanel.xul)
+	content/enigmail/enigmailAbOverlay.js          (content/enigmailAbOverlay.js)
 	content/enigmail/enigmailAbout.xul             (content/enigmailAbout.xul)
 	content/enigmail/enigmailAbout.js              (content/enigmailAbout.js)
 	content/enigmail/enigmailAbout.htm             (content/enigmailAbout.htm)
@@ -49,6 +52,7 @@ enigmail.jar:
 	content/enigmail/enigmailMsgPrintOverlay.xul   (content/enigmailMsgPrintOverlay.xul)
 	content/enigmail/enigmailMsgPrintOverlay.js    (content/enigmailMsgPrintOverlay.js)
 	content/enigmail/enigmailPrefsOverlay.xul      (content/enigmailPrefsOverlay.xul)
+	content/enigmail/enigmailViewFile.xul          (content/enigmailViewFile.xul)
 	content/enigmail/enigRetrieveProgress.xul      (content/enigRetrieveProgress.xul)
 	content/enigmail/enigRetrieveProgress.js       (content/enigRetrieveProgress.js)
 	content/enigmail/check0.png                    (skin/images/check0.png)
