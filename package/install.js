@@ -8,41 +8,105 @@ err = initInstall("Enigmail v0.60.0",  // name for install UI
 
 logComment("initInstall: " + err);
 
-var fChrome     = getFolder("Chrome");
-var fComponents = getFolder("Components");
-var fProfile    = getFolder("Profile");
+var srDest = 500;       // Disk space required for installation (KB)
 
-// addDirectory: blank, archive_dir, install_dir, install_subdir
-err = addDirectory("", "chrome",     fChrome,     "");
-if (err != SUCCESS)
-   cancelInstall(err);
+var fProgram    = getFolder("Program");
+logComment("fProgram: " + fProgram);
 
-err = addDirectory("", "components", fComponents, "");
-if (err != SUCCESS)
-   cancelInstall(err);
+if (!verifyDiskSpace(fProgram, srDest)) {
+  cancelInstall(INSUFFICIENT_DISK_SPACE);
 
-///err = addDirectory("", "enigmail",   fProfile,    "enigmail");
-///if (err != SUCCESS)
-///   cancelInstall(err);
+} else {
 
-// Register chrome
-registerChrome(PACKAGE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "content/enigmail/");
+  var fChrome     = getFolder("Chrome");
+  var fComponents = getFolder("Components");
+  var fProfile    = getFolder("Profile");
 
-registerChrome(   SKIN | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "skin/modern/enigmail/");
+  // addDirectory: blank, archive_dir, install_dir, install_subdir
+  addDirectory("", "components", fComponents, "");
+  addDirectory("", "chrome",     fChrome,     "");
 
-registerChrome(   SKIN | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "skin/classic/enigmail/");
+  err = getLastError();
+  if (err == ACCESS_DENIED) {
+    alert("Unable to write to components directory "+fComponents+".\n You will need to restart the browser with administrator/root privileges to install this software. After installing as root (or administrator), you will need to restart the browser one more time to register the installed software.\n After the second restart, you can go back to running the browser without privileges!");
 
-registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "locale/en-US/enigmail/");
+    cancelInstall(ACCESS_DENIED);
 
-registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "locale/fr-FR/enigmail/");
+  } else if (err != SUCCESS) {
+    cancelInstall(err);
 
-registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "locale/de-DE/enigmail/");
+  } else {
+    // Register chrome
+    registerChrome(PACKAGE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "content/enigmail/");
 
-registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "locale/de-AT/enigmail/");
+    registerChrome(   SKIN | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "skin/modern/enigmail/");
 
-if (getLastError() == SUCCESS)
-    performInstall();
-else {
-   alert("Error detected during installation setup: "+getLastError());
-   cancelInstall();
+    registerChrome(   SKIN | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "skin/classic/enigmail/");
+
+    registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "locale/en-US/enigmail/");
+
+    err = getLastError();
+
+    if (err != SUCCESS) {
+      cancelInstall(err);
+
+    } else {
+      performInstall();
+    }
+  }
+}
+
+// this function verifies disk space in kilobytes
+function verifyDiskSpace(dirPath, spaceRequired) {
+  var spaceAvailable;
+
+  // Get the available disk space on the given path
+  spaceAvailable = fileGetDiskSpaceAvailable(dirPath);
+
+  // Convert the available disk space into kilobytes
+  spaceAvailable = parseInt(spaceAvailable / 1024);
+
+  // do the verification
+  if(spaceAvailable < spaceRequired) {
+    logComment("Insufficient disk space: " + dirPath);
+    logComment("  required : " + spaceRequired + " K");
+    logComment("  available: " + spaceAvailable + " K");
+    return false;
+  }
+
+  return true;
+}
+
+// OS type detection
+// which platform?
+function getPlatform() {
+  var platformStr;
+  var platformNode;
+
+  if('platform' in Install) {
+    platformStr = new String(Install.platform);
+
+    if (!platformStr.search(/^Macintosh/))
+      platformNode = 'mac';
+    else if (!platformStr.search(/^Win/))
+      platformNode = 'win';
+    else
+      platformNode = 'unix';
+  }
+  else {
+    var fOSMac  = getFolder("Mac System");
+    var fOSWin  = getFolder("Win System");
+
+    logComment("fOSMac: "  + fOSMac);
+    logComment("fOSWin: "  + fOSWin);
+
+    if(fOSMac != null)
+      platformNode = 'mac';
+    else if(fOSWin != null)
+      platformNode = 'win';
+    else
+      platformNode = 'unix';
+  }
+
+  return platformNode;
 }

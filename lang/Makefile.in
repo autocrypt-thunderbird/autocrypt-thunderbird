@@ -31,11 +31,11 @@
 # GPL.
 #
 
-# Makefile for package directory
+# Makefile for lang directory
 
 # Specify these as parameters to the make command
 XPI_MODULE	= enigmail
-XPI_MODULE_VERS = 0.60.0
+XPI_VERS        = 0.60.0
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
@@ -44,29 +44,13 @@ VPATH		= @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
-XPIDL_MODULE  = enigmail
-
-XPIDLSRCS     = nsIEnigmail.idl
-
 include $(topsrcdir)/config/rules.mk
 
-XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS).xpi
-LANGXPIFILE = $(XPI_MODULE)-en-US-$(XPI_MODULE_VERS).xpi
+xpi-de-DE::
+	./make-lang-xpi.pl de-DE $(XPI_VERS) $(DIST)/bin
 
-libs::
-	$(INSTALL) $(srcdir)/enigmail.js $(DIST)/bin/components
+xpi-de-AT::
+	./make-lang-xpi.pl de-AT $(XPI_VERS) $(DIST)/bin
 
-xpi::
-	zip -r $(DIST)/bin/$(XPIFILE) install.js $(XPI_MODULE).spec
-	cd $(DIST)/bin; zip -g $(XPIFILE) \
-               components/$(XPI_MODULE).xpt \
-               components/$(XPI_MODULE).js \
-               chrome/$(XPI_MODULE).jar
-	echo Created $(DIST)/bin/$(XPIFILE)
-
-xpi-en-US::
-	cd ../ui; zip -r $(DIST)/bin/$(LANGXPIFILE) \
-               install.js enigmail-en-US.spec
-	cd $(DIST)/bin/chrome; zip -g ../$(LANGXPIFILE) \
-               $(XPI_MODULE)-en-US.jar
-	echo Created $(DIST)/bin/$(LANGXPIFILE)
+xpi-fr-FR::
+	./make-lang-xpi.pl fr-FR $(XPI_VERS) $(DIST)/bin

@@ -67,7 +67,8 @@ interface nsIEnigmail : nsISupports
   readonly attribute boolean composeSecure;
   readonly attribute nsIFileOutputStream logFileStream;
 
-  void initialize(in string version, in nsIPrefBranch enigmailPrefs);
+  void initialize(in nsIDOMWindow domWindow, in string version,
+                  in nsIPrefBranch enigmailPrefs);
   void finalize();
   boolean mimeInitialized();
 
@@ -135,10 +136,9 @@ interface nsIEnigmail : nsISupports
   const long SEND_DEFAULT         = 0x004;
   const long SEND_LATER           = 0x008;
   const long SEND_WITH_CHECK      = 0x010;
-  const long SEND_USER_ID_DEFAULT = 0x020;
-  const long SEND_ALWAYS_TRUST    = 0x040;
-  const long SEND_ENCRYPT_TO_SELF = 0x080;
-  const long SEND_PGP_MIME        = 0x100;
+  const long SEND_ALWAYS_TRUST    = 0x020;
+  const long SEND_ENCRYPT_TO_SELF = 0x040;
+  const long SEND_PGP_MIME        = 0x080;
 
   string encryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,

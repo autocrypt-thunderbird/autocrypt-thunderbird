@@ -15,10 +15,7 @@
 <!ENTITY enigmail.userIdValue.label       "User email address:">
 <!ENTITY enigmail.userNoPassphrase.label  "No passphrase for user">
 
-<!ENTITY enigmail.userIdSource.label      "Choose secret key for signing">
-<!ENTITY enigmail.userIdDefault.label     "Use default key">
-<!ENTITY enigmail.userIdSpecified.label   "Use specified email address">
-<!ENTITY enigmail.userIdFromAddr.label    "Use FROM email address">
+<!ENTITY enigmail.userIdFromAddr.label    "Use FROM email address for signing">
 
 <!ENTITY enigmail.defaultEncryptionOption.label "Choose default encryption options">
 <!ENTITY enigmail.usePGPMimeOption.label  "Choose PGP/MIME option">
@@ -108,7 +105,7 @@
 
 <!ENTITY enigmail.sendOptionsMenu.label        "Default send options">
 <!ENTITY enigmail.mimeOptionsMenu.label        "Default MIME options">
-<!ENTITY enigmail.sendPGPMime.label            "Use PGP/MIME for message">
+<!ENTITY enigmail.sendPGPMime.label            "Use PGP/MIME for this message">
 
 <!ENTITY enigmail.undoencryption.label	       "Undo encryption">
 <!ENTITY enigmail.insertkey.label	       "Insert public key">

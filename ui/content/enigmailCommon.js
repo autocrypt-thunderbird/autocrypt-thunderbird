@@ -31,17 +31,10 @@ if (nsIEnigmail) {
   const ENCRYPT_OR_SIGN_MSG = ENCRYPT_MSG | SIGN_MSG;
 }
 
-// UserIdSource values
-const USER_ID_SPECIFIED = 0;
-const USER_ID_DEFAULT   = 1;
-const USER_ID_FROMADDR  = 2;
-
 // UsePGPMimeOption values
 const PGP_MIME_NEVER    = 0;
 const PGP_MIME_POSSIBLE = 1;
 const PGP_MIME_ALWAYS   = 2;
-
-var gUserIdSourceList = ["userIdSpecified", "userIdDefault", "userIdFromAddr"];
 
 var gUsePGPMimeOptionList = ["usePGPMimeNever", "usePGPMimePossible",
                              "usePGPMimeAlways"];
@@ -67,8 +60,8 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "agentPath":"",
                              "autoCrypto":false,
                              "useDefaultComment":false,
-                             "userIdSource":USER_ID_DEFAULT,
                              "userIdValue":"",
+                             "userIdFromAddr":false,
                              "noPassphrase":false,
                              "usePGPMimeOption":PGP_MIME_POSSIBLE,
                              "defaultEncryptionOption":1,
@@ -156,7 +149,7 @@ function GetEnigmailSvc() {
 
     try {
       // Initialize enigmail
-      gEnigmailSvc.initialize(gEnigmailVersion, gPrefEnigmail);
+      gEnigmailSvc.initialize(window, gEnigmailVersion, gPrefEnigmail);
 
       try {
         // Reset alert count to default value
@@ -196,10 +189,50 @@ function GetEnigmailSvc() {
 }
 
 
-function EnigUpdate_0_50() {
-  DEBUG_LOG("enigmailCommon.js: EnigUpdate_0_50: \n");
+function EnigUpdate_0_60() {
+  DEBUG_LOG("enigmailCommon.js: EnigUpdate_0_60: \n");
 
   var savePrefs = false;
+
+  try {
+    var userIdSource = gPrefEnigmail.getIntPref("userIdSource");
+
+    gPrefEnigmail.deleteBranch("userIdSource");
+    savePrefs = true;
+
+    if (!EnigGetPref("userIdFromAddr")) {
+
+      var userIdFromAddr = false;
+
+      if (userIdSource > 1) {
+        userIdFromAddr = true;
+
+      } else {
+        var userIdValue = EnigGetPref("userIdValue");
+
+        var mesg = "Please specify your primary email address, which will be used to choose the signing key for outgoing messages.\n If you leave it blank, the FROM address of the message will be used to choose the signing key.\n\nNOTE: Enigmail 0.60 no longer allows the `default signing key' option due to ambiguities.";
+
+        var valueObj = new Object();
+        valueObj.value = userIdValue;
+
+        if (EnigPromptValue(mesg, valueObj)) {
+          userIdValue = valueObj.value;
+          EnigSetPref("userIdValue", userIdValue);
+        }
+
+        userIdFromAddr = !userIdValue;
+
+        if (userIdFromAddr)
+          EnigAlert("The FROM address will be used to choose the signing key for outgoing messages\n");
+        else
+          EnigAlert("The user ID "+userIdValue+" will be used to choose the signing key for outgoing messages\n");
+
+      }
+
+      EnigSetPref("userIdFromAddr", userIdFromAddr);
+    }
+
+  } catch (ex) {}
 
   try {
     var defaultEncryptMsg = gPrefEnigmail.getBoolPref("defaultEncryptMsg");
@@ -219,7 +252,7 @@ function EnigUpdate_0_50() {
   } catch (ex) {}
 
   if (savePrefs) {
-    DEBUG_LOG("enigmailCommon.js: EnigUpdate_0_50: Updating prefs\n");
+    DEBUG_LOG("enigmailCommon.js: EnigUpdate_0_60: Updating prefs\n");
     EnigSavePrefs();
   }
 }
@@ -227,7 +260,7 @@ function EnigUpdate_0_50() {
 function EnigConfigure() {
   try {
     // Updates for specific versions (to be cleaned-up periodically)
-    EnigUpdate_0_50();
+    EnigUpdate_0_60();
   } catch (ex) {}
 
   var msg = "Do you wish to configure enigmail for version "+
@@ -314,7 +347,7 @@ function EnigCreateFileStream(filePath, permissions) {
 
     var fileStream = Components.classes[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIFileOutputStream);
 
-    fileStream.init(localFile, flags, permissions);
+    fileStream.init(localFile, flags, permissions, 0);
 
     return fileStream;
 
@@ -440,6 +473,12 @@ function EnigError(mesg) {
   return gPromptService.alert(window, "Enigmail Error", mesg);
 }
 
+
+function EnigPromptValue(mesg, valueObj) {
+  var checkObj = new Object();
+  return gPromptService.prompt(window, "Enigmail Prompt",
+                               mesg, valueObj, "", checkObj);
+}
 
 function EnigOverrideAttribute(elementIdList, attrName, prefix, suffix) {
   for (var index = 0; index < elementIdList.length; index++) {

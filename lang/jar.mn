@@ -1,0 +1,9 @@
+enigmail-de-DE.jar:
+	locale/de-DE/enigmail/contents.rdf         (de-DE/contents.rdf)
+	locale/de-DE/enigmail/enigmail.dtd         (de-DE/enigmail.dtd)
+enigmail-de-AT.jar:
+	locale/de-AT/enigmail/contents.rdf         (de-AT/contents.rdf)
+	locale/de-AT/enigmail/enigmail.dtd         (de-DE/enigmail.dtd)
+enigmail-fr-FR.jar:
+	locale/fr-FR/enigmail/contents.rdf         (fr-FR/contents.rdf)
+	locale/fr-FR/enigmail/enigmail.dtd         (fr-FR/enigmail.dtd)

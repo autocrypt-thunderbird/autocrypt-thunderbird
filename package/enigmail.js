@@ -185,7 +185,7 @@ function CreateFileStream(filePath, permissions) {
 
     var fileStream = Components.classes[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIFileOutputStream);
 
-    fileStream.init(localFile, flags, permissions);
+    fileStream.init(localFile, flags, permissions, 0);
 
     return fileStream;
 
@@ -1184,7 +1184,7 @@ function () {
 }
 
 Enigmail.prototype.initialize =
-function (version, prefBranch) {
+function (domWindow, version, prefBranch) {
   this.initializationAttempted = true;
 
   this.prefBranch = prefBranch;
@@ -1792,7 +1792,7 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
     }
   }
 
-  if (!(sendFlags & nsIEnigmail.SEND_USER_ID_DEFAULT) && fromMailAddr) {
+  if (fromMailAddr) {
     encryptCommand += " -u " + fromMailAddr;
   }
 
@@ -2013,7 +2013,7 @@ function (prompter, uiFlags, fromMailAddr, toMailAddr,
     }
   }
 
-  if (!(sendFlags & nsIEnigmail.SEND_USER_ID_DEFAULT) && fromMailAddr) {
+  if (fromMailAddr) {
     encryptCommand += " -u " + fromMailAddr;
   }
 

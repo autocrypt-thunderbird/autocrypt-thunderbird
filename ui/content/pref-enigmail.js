@@ -22,11 +22,6 @@ function init_pref_enigmail() {
 function setDisables(initializing) {
   DEBUG_LOG("pref-enigmail.js: setDisables: "+initializing+"\n");
 
-  var userIdSourceElement = document.getElementById("userIdSource");
-
-  var userIdSource = initializing ? EnigGetPref("userIdSource")
-                                  : userIdSourceElement.value;
-
   var defaultEncryptionOptionElement = document.getElementById("enigmail_defaultEncryptionOption");
   var defaultEncryptionOption = initializing ? EnigGetPref("defaultEncryptionOption")
                                   : defaultEncryptionOptionElement.value;
@@ -40,11 +35,6 @@ function setDisables(initializing) {
 
   }
 
-  if (autoCrypto) {
-    userIdSource = 0;
-  }
-
-  EnigDisplayRadioPref("userIdSource", userIdSource, gUserIdSourceList);
   EnigDisplayRadioPref("defaultEncryptionOption", defaultEncryptionOption,
                         gDefaultEncryptionOptionList);
 

@@ -15,9 +15,6 @@
 <!ENTITY enigmail.userIdValue.label       "Adresse email de l'utilisateur:">
 <!ENTITY enigmail.userNoPassphrase.label  "Pas de passphrase pour l'utilisateur">
 
-<!ENTITY enigmail.userIdSource.label      "Choisir la clef secrète pour signer">
-<!ENTITY enigmail.userIdDefault.label     "Utiliser la clef par défaut">
-<!ENTITY enigmail.userIdSpecified.label   "Utiliser l'adresse email spécifiée">
 <!ENTITY enigmail.userIdFromAddr.label    "Utiliser l'adresse email FROM">
 
 <!ENTITY enigmail.defaultEncryptionOption.label "Choose default encryption options">
@@ -111,7 +108,7 @@
 
 <!ENTITY enigmail.sendOptionsMenu.label     "Default send options">
 <!ENTITY enigmail.mimeOptionsMenu.label     "Default MIME options">
-<!ENTITY enigmail.sendPGPMime.label         "Use PGP/MIME for message">
+<!ENTITY enigmail.sendPGPMime.label         "Use PGP/MIME for this message">
 
 <!ENTITY enigmail.undoencryption.label	    "Défaire le chiffrage">
 <!ENTITY enigmail.insertkey.label	    "Insérer une clef publique">

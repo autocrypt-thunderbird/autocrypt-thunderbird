@@ -160,7 +160,7 @@ function enigInsertKey() {
 
   var userIdValue = EnigGetPref("userIdValue");
 
-  if (EnigGetPref("userIdSource") == USER_ID_FROMADDR) {
+  if (EnigGetPref("userIdFromAddr")) {
     try {
        var currentId = getCurrentIdentity();
        userIdValue = currentId.email;
@@ -299,13 +299,6 @@ function enigSend(sendFlags) {
        }
      }
 
-     var userIdSource = EnigGetPref("userIdSource");
-     DEBUG_LOG("enigmailMsgComposeOverlay.js: userIdSource = "+userIdSource+"\n");
-
-     if (userIdSource == USER_ID_DEFAULT) {
-       sendFlags |= nsIEnigmail.SEND_USER_ID_DEFAULT;
-     }
-
      if (EnigGetPref("alwaysTrustSend")) {
        sendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
      }
@@ -318,10 +311,30 @@ function enigSend(sendFlags) {
      DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: currentId="+currentId+
                ", "+currentId.email+"\n");
 
-     var fromAddr = EnigGetPref("userIdValue");
+     var fromAddr = currentId.email;
 
-     if (!fromAddr || (userIdSource == USER_ID_FROMADDR)) {
-       fromAddr = currentId.email;
+     if (!EnigGetPref("userIdFromAddr")) {
+       var userIdValue = EnigGetPref("userIdValue");
+
+       if (!userIdValue) {
+
+         var mesg = "Please specify your primary email address, which will be used to choose the signing key for outgoing messages.\n If you leave it blank, the FROM address of the message will be used to choose the signing key.";
+
+         var valueObj = new Object();
+         valueObj.value = userIdValue;
+
+         if (EnigPromptValue(mesg, valueObj)) {
+           userIdValue = valueObj.value;
+         }
+       }
+
+       if (userIdValue) {
+         fromAddr = userIdValue;
+         EnigSetPref("userIdValue", userIdValue);
+
+       } else {
+         EnigSetPref("userIdFromAddr", true);
+       }
      }
 
      var msgCompFields = gMsgCompose.compFields;
@@ -630,7 +643,10 @@ function enigSend(sendFlags) {
 // (after the calls to Recipients2CompFields and Attachements2CompFields)
 /////////////////////////////////////////////////////////////////////////
 function enigModifyCompFields(msgCompFields) {
-  var enigmailHeaders = "X-Enigmail-Version: "+gEnigmailVersion+"\r\n";
+
+  var enigmailHeaders = "X-Enigmail-Version: "+gEnigmailVersion+"\r\n"+
+                        "X-Enigmail-Supports: pgp-inline, pgp-mime\r\n";
+
   msgCompFields.otherRandomHeaders += enigmailHeaders;
 
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigModifyCompFields: otherRandomHeaders = "+

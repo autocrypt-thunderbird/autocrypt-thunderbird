@@ -7,26 +7,12 @@
     <RDF:li resource="urn:mozilla:locale:de-DE"/>
   </RDF:Seq>
 
-  <RDF:Seq about="urn:mozilla:locale:root">
-    <RDF:li resource="urn:mozilla:locale:de-AT"/>
-  </RDF:Seq>
-
   <!-- locale information -->
   <RDF:Description about="urn:mozilla:locale:de-DE">
 
     <chrome:packages>
       <RDF:Seq about="urn:mozilla:locale:de-DE:packages">
         <RDF:li resource="urn:mozilla:locale:de-DE:enigmail"/>
-      </RDF:Seq>
-    </chrome:packages>
-
-  </RDF:Description>
-
-  <RDF:Description about="urn:mozilla:locale:de-AT">
-
-    <chrome:packages>
-      <RDF:Seq about="urn:mozilla:locale:de-AT:packages">
-        <RDF:li resource="urn:mozilla:locale:de-AT:enigmail"/>
       </RDF:Seq>
     </chrome:packages>
 

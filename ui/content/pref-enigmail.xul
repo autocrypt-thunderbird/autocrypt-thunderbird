@@ -58,8 +58,8 @@
     // List of persisted elements (required to save prefs)
     var _elementIDs = [
                        ///"autoCrypto",
-                       "userIdSource",
                        "userIdValue",
+                       "userIdFromAddr",
                        "noPassphrase",
                        "enigmail_defaultEncryptionOption",
                        "enigmail_maxIdleMinutes"
@@ -80,10 +80,11 @@
     <hbox>
       <label control="userIdValue"
              value="&enigmail.userIdValue.label;" />
+
       <textbox id="userIdValue"
                pref="true"
                preftype="string"
-               prefstring="extensions.enigmail.userIdValue"/>
+               prefstring="extensions.enigmail.userIdValue" />
 
       <checkbox id="noPassphrase"
               label="&enigmail.userNoPassphrase.label;"
@@ -93,30 +94,14 @@
               prefattribute="checked"/>
     </hbox>
 
-    <groupbox>
-      <caption label="&enigmail.userIdSource.label;"/>
-
-      <radiogroup id="userIdSource"
-                  value="0"
-                  prefstring="extensions.enigmail.userIdSource">
-
-        <radio id="userIdSpecified"
-               value="0"
-               label="&enigmail.userIdSpecified.label;"
-               oncommand="setDisables(false);"/>
-
-        <radio id="userIdDefault"
-               value="1"
-               label="&enigmail.userIdDefault.label;" 
-               oncommand="setDisables(false);"/>
-
-        <radio id="userIdFromAddr"
-               value="2"
-               label="&enigmail.userIdFromAddr.label;" 
-               oncommand="setDisables(false);"/>
-
-       </radiogroup>
-    </groupbox>
+    <hbox>
+      <checkbox id="userIdFromAddr"
+              label="&enigmail.userIdFromAddr.label;"
+              pref="true"
+              preftype="bool"
+              prefstring="extensions.enigmail.userIdFromAddr"
+              prefattribute="checked"/>
+    </hbox>
 
     <groupbox orient="vertical">
       <caption label="&enigmail.defaultEncryptionOption.label;"/>
