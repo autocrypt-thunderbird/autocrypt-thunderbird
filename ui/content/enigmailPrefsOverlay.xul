@@ -7,14 +7,14 @@
 <overlay id="enigmailPrefsOverlay"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <outlinerchildren id="securityChildren">
-    <outlineritem id="enigmail" position="1">
-      <outlinerrow>
-        <outlinercell url="chrome://enigmail/content/pref-enigmail.xul"
+  <treechildren id="securityChildren">
+    <treeitem id="enigmail" position="1">
+      <treerow>
+        <treecell url="chrome://enigmail/content/pref-enigmail.xul"
                       label="&enigmail.label;"
                       id="enigmailCell"/> 
-      </outlinerrow>
-    </outlineritem>
-  </outlinerchildren>
+      </treerow>
+    </treeitem>
+  </treechildren>
 
 </overlay>
