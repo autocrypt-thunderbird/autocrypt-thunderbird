@@ -1,0 +1,112 @@
+<!--
+  The contents of this file are subject to the Mozilla Public
+  License Version 1.1 (the "MPL"); you may not use this file
+  except in compliance with the MPL. You may obtain a copy of
+  the MPL at http://www.mozilla.org/MPL/
+
+  Software distributed under the MPL is distributed on an "AS
+  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  implied. See the MPL for the specific language governing
+  rights and limitations under the MPL.
+
+  The Original Code is Enigmail.
+
+  The Initial Developer of this code is Patrick Brunschwig.
+  Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+  are Copyright (C) 2004 Patrick Brunschwig.
+  All Rights Reserved.
+
+  Contributor(s):
+
+  Alternatively, the contents of this file may be used under the
+  terms of the GNU General Public License (the "GPL"), in which case
+  the provisions of the GPL are applicable instead of
+  those above. If you wish to allow use of your version of this
+  file only under the terms of the GPL and not to allow
+  others to use your version of this file under the MPL, indicate
+  your decision by deleting the provisions above and replace them
+  with the notice and other provisions required by the GPL.
+  If you do not delete the provisions above, a recipient
+  may use your version of this file under either the MPL or the
+  GPL.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="enigmailEditKeyTrustDlg"
+        title="&enigmail.keyTrust.title;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="onLoad();"
+        ondialogaccept="onAccept();"
+        >
+
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+
+  <script type="application/x-javascript">
+  <![CDATA[
+
+    EnigInitCommon("enigmailEditKeyTrustDlg");
+    function onLoad() {
+      var keyId = window.arguments[0].userId+" - 0x"+ window.arguments[0].keyId.substr(-8,8);
+      document.getElementById("keyIdValue").value=keyId;
+    }
+
+    function onAccept() {
+      var t=document.getElementById("trustLevel");
+      var enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc)
+        return;
+      
+      var exitCodeObj = new Object();
+      var errorMsgObj = new Object();
+        
+      var r = enigmailSvc.setKeyTrust(window, 
+                                      window.arguments[0].keyId, 
+                                      Number(t.selectedItem.value),
+                                      errorMsgObj);
+      if (r) {
+        EnigAlert(EnigGetString("setKeyTrustFailed")+"\n\n"+errorMsgObj.value);
+      }
+      else {
+        EnigAlert(EnigGetString("setKeyTrustOK"));
+      }
+    }
+  ]]>
+  </script>
+
+  <vbox orient="vertical">
+    <hbox>
+      <label value="&enigmail.keyTrust.trustKey.label;"/>
+      <label id="keyIdValue" value="?"/>
+    </hbox>
+    <separator/>
+    <vbox>
+      <groupbox>
+        <caption label="&enigmail.keyTrust.trustLevel.label;"/>
+          <radiogroup id="trustLevel">
+            <radio value="1"
+                   selected="true"
+                   label="&enigmail.keyTrust.dontKnow.label;"/>
+            <radio value="2"
+                   label="&enigmail.keyTrust.noTrust.label;"/>
+            <radio value="3"
+                   label="&enigmail.keyTrust.marginalTrust.label;"/>
+            <radio value="4"
+                   label="&enigmail.keyTrust.fullTrust.label;"/>
+            <radio value="5"
+                   label="&enigmail.keyTrust.ultimateTrust.label;"/>
+          </radiogroup>
+       </groupbox>
+    </vbox>
+  </vbox>
+</dialog>
+

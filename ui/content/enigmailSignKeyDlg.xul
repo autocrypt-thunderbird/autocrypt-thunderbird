@@ -1,0 +1,173 @@
+<!--
+  The contents of this file are subject to the Mozilla Public
+  License Version 1.1 (the "MPL"); you may not use this file
+  except in compliance with the MPL. You may obtain a copy of
+  the MPL at http://www.mozilla.org/MPL/
+
+  Software distributed under the MPL is distributed on an "AS
+  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  implied. See the MPL for the specific language governing
+  rights and limitations under the MPL.
+
+  The Original Code is Enigmail.
+
+  The Initial Developer of this code is Patrick Brunschwig.
+  Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+  are Copyright (C) 2004 Patrick Brunschwig.
+  All Rights Reserved.
+
+  Contributor(s):
+
+  Alternatively, the contents of this file may be used under the
+  terms of the GNU General Public License (the "GPL"), in which case
+  the provisions of the GPL are applicable instead of
+  those above. If you wish to allow use of your version of this
+  file only under the terms of the GPL and not to allow
+  others to use your version of this file under the MPL, indicate
+  your decision by deleting the provisions above and replace them
+  with the notice and other provisions required by the GPL.
+  If you do not delete the provisions above, a recipient
+  may use your version of this file under either the MPL or the
+  GPL.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="enigmailSignKeyDlg"
+        title="&enigmail.sKeyDlg.title;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="onLoad();"
+        ondialogaccept="return onAccept();">
+
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+
+  <vbox orient="vertical">
+    <grid>
+      <columns>
+        <column/>
+        <column flex="1"/>
+      </columns>
+      <rows autostretch="never">
+        <row>
+          <label value="&enigmail.sKeyDlg.signKey.label;"/>
+          <label id="keyIdValue" value="?"/>
+        </row>
+        <row>
+          <label value="&enigmail.sKeyDlg.signWithKey.label;"/>
+          <menulist id="signWithKey"/>
+        </row>
+      </rows>
+    </grid>
+    <separator/>
+    <vbox>
+      <groupbox>
+        <caption label="&enigmail.sKeyDlg.checked.label;"/>
+          <radiogroup id="trustLevel">
+            <radio value="0"
+                   selected="true" 
+                   label="&enigmail.sKeyDlg.noAnswer.label;"/>
+           <radio value="1"
+                   label="&enigmail.sKeyDlg.notChecked.label;"/>
+            <radio value="2"
+                   label="&enigmail.sKeyDlg.casualCheck.label;"/>
+            <radio value="3"
+                   label="&enigmail.sKeyDlg.carefulCheck.label;"/>
+          </radiogroup>
+       </groupbox>
+    </vbox>
+    <vbox>
+      <groupbox>
+        <caption label="&enigmail.sKeyDlg.createSig.label;"/>
+          <radiogroup id="sigType">
+           <radio value="1"
+                   selected="true"
+                   label="&enigmail.sKeyDlg.createExport.label;"/>
+            <radio value="0"
+                   label="&enigmail.sKeyDlg.createLocal.label;"/>
+         </radiogroup>
+       </groupbox>
+    </vbox>      
+  </vbox>
+  
+  <script type="application/x-javascript">
+  <![CDATA[
+    EnigInitCommon("enigmailSignKeyDlg");
+    
+    function onLoad() {
+      var enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc) {
+        EnigAlert(EnigGetString("accessError"));
+        window.close();
+        return;
+      }
+      var keyId = window.arguments[0].userId+" - 0x"+ window.arguments[0].keyId.substr(-8,8);
+      document.getElementById("keyIdValue").value=keyId;
+    
+      var exitCodeObj = new Object();
+      var statusFlagsObj = new Object();
+      var errorMsgObj = new Object();
+      var keyList=enigmailSvc.getUserIdList(true, false, exitCodeObj, statusFlagsObj, errorMsgObj);
+      
+      if (exitCodeObj.value != 0) {
+        EnigAlert(errorMsgObj.value);
+        window.close();
+        return;
+      }
+    
+      var userList=keyList.split(/\n/);
+      
+      var menulist=document.getElementById("signWithKey");
+      for (var i=0; i < userList.length; i++) {
+        if (userList[i].indexOf("sec:")==0) {
+          var aKey = userList[i].split(/:/);
+          menulist.appendItem(aKey[9]+" - 0x"+aKey[4].substr(-8,8), aKey[4]);
+          if (menulist.selectedIndex == -1)
+            menulist.selectedIndex=0;
+        }
+      }
+      
+      return;
+    }
+    
+    function onAccept() {
+      var trustLevel = document.getElementById("trustLevel");
+      var sigType = document.getElementById("sigType");
+      var signWithKey = document.getElementById("signWithKey");
+      
+      var enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc) {
+        EnigAlert(EnigGetString("accessError"));
+        return true;
+      }
+      
+      var errorMsgObj = new Object();
+      var r = enigmailSvc.signKey(window,
+                                  "0x"+signWithKey.selectedItem.value, 
+                                  window.arguments[0].keyId,
+                                  sigType.selectedItem.value == "0",
+                                  trustLevel.selectedItem.value,
+                                  errorMsgObj);
+    
+     if (r != 0) {
+        EnigAlert(EnigGetString("signKeyFailed")+"\n\n"+errorMsgObj.value);
+        return false;
+      }
+      else {
+        EnigAlert(EnigGetString("signKeyOK"));
+      }
+      return true;
+    }
+  ]]>
+  </script>
+
+</dialog>
+
