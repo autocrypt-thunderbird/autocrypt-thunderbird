@@ -3,6 +3,25 @@
 // Initialize enigmailCommon
 EnigInitCommon("enigmailMsgHdrViewOverlay");
 
+window.addEventListener("load", enigHdrViewLoad, false);
+
+function enigHdrViewLoad()
+{
+  DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigHdrViewLoad\n");
+
+  // Override SMIME ui
+  var signedHdrElement = document.getElementById("signedHdrIcon");
+  if (signedHdrElement) {
+    signedHdrElement.setAttribute("onclick", "enigViewSecurityInfo();");
+  }
+
+  var encryptedHdrElement = document.getElementById("encryptedHdrIcon");
+  if (encryptedHdrElement) {
+    encryptedHdrElement.setAttribute("onclick", "enigViewSecurityInfo();");
+  }
+
+}
+
 function enigStartHeaders()
 {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigStartHeaders\n");
