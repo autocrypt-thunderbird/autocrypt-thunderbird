@@ -113,7 +113,9 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateHdrIcons: exitCode="+exitCode+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+errorMsg+"\n");
 
   gEnigLastEncryptedURI = GetLoadedMessage();
-
+  userId=EnigConvertGpgToUnicode(userId);
+  errorMsg=EnigConvertGpgToUnicode(errorMsg);
+  
   var errorLines="";
   var fullStatusInfo=errorMsg;
   if (errorMsg)
@@ -249,6 +251,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       }
     }
   }
+  
   gEnigSecurityInfo = { statusFlags: statusFlags,
                         keyId: keyId,
                         userId: userId,
