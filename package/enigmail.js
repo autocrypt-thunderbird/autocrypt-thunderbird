@@ -3495,6 +3495,7 @@ function (parent, uiFlags, msgText, keyId, errorMsgObj) {
 
   if (exitCodeObj.value == 0) {
     // Normal return
+    this.invalidateUserIdList();
     if (statusMsg && (statusMsg.search("IMPORTED ") > -1)) {
       var matches = statusMsg.match(/(^|\n)IMPORTED (\w{8})(\w{8})/);
 
@@ -3503,7 +3504,6 @@ function (parent, uiFlags, msgText, keyId, errorMsgObj) {
         DEBUG_LOG("enigmail.js: Enigmail.importKey: IMPORTED "+pubKeyId+"\n");
       }
     }
-    this.invalidateUserIdList();
   }
 
   return exitCodeObj.value;
@@ -3537,6 +3537,7 @@ function (parent, fileName, errorMsgObj) {
 
   if (exitCodeObj.value == 0) {
     // Normal return
+    this.invalidateUserIdList();
     if (statusMsg && (statusMsg.search("IMPORTED ") > -1)) {
       var matches = statusMsg.match(/(^|\n)IMPORTED (\w{8})(\w{8})/);
 
@@ -3545,7 +3546,6 @@ function (parent, fileName, errorMsgObj) {
         DEBUG_LOG("enigmail.js: Enigmail.importKey: IMPORTED "+pubKeyId+"\n");
       }
     }
-    this.invalidateUserIdList();
     errorMsgObj.value = EnigConvertGpgToUnicode(errorMsgObj.value);
   }
 
@@ -4053,9 +4053,9 @@ function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
     passphrase = passwdObj.value;
   }
 
-  // escape the backslashes (mainly for Windows)
-  inFile = inFile.replace(/\\/g, "\\\\");
-  outFile = outFile.replace(/\\/g, "\\\\");
+  // escape the backslashes (mainly for Windows) and the ' character
+  inFile = inFile.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+  outFile = outFile.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 
   gpgCommand += " --yes -o '" + outFile + "' '" + inFile + "'";
 
@@ -4107,7 +4107,7 @@ function (parent, outFileName, displayName, inputBuffer,
 
   var command = this.agentPath;
 
-  outFileName = outFileName.replace(/\\/g, "\\\\");
+  outFileName = outFileName.replace(/\\/g, "\\\\").replace(/'/g, "\\'");;
 
   command += GPG_BATCH_OPTS + " -o '"+outFileName+"' --yes " + this.passwdCommand() + " -d ";
 
@@ -4182,6 +4182,7 @@ function(keyId, exitCodeObj, errorMsgObj) {
 
   var statusMsgObj = new Object();
   var statusFlagsObj = new Object();
+
   var outputTxt = this.execCmd(command, null, "",
                 exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
 
@@ -4417,7 +4418,6 @@ KeyEditor.prototype = {
             r.exitCode=-1;
           }
           if (txt.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
-            errorMsgObj.value=EnigGetString("badPhrase");
             r.exitCode=-2;
           }
           if (txt.indexOf("[GNUPG:] ALREADY_SIGNED")>=0) {
@@ -4473,57 +4473,68 @@ KeyEditor.prototype = {
 Enigmail.prototype.signKey = 
 function (parent, userId, keyId, signLocally, trustLevel, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.signKey: trustLevel="+trustLevel+", userId="+userId+", keyId="+keyId+"\n");
-  return this.editKey(parent, true, userId, keyId, 
+  var r = this.editKey(parent, true, userId, keyId, 
                       (signLocally ? "lsign" : "sign"),
                       { trustLevel: trustLevel}, 
                       signKeyCallback, 
                       errorMsgObj);
+  this.stillActive();
+  
+  return r;
 }
 
 Enigmail.prototype.setKeyTrust = 
 function (parent, keyId, trustLevel, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.setKeyTrust: trustLevel="+trustLevel+", keyId="+keyId+"\n");
   
-  var r = this.editKey(parent, false, null, keyId, "trust", 
+  return this.editKey(parent, false, null, keyId, "trust", 
                       { trustLevel: trustLevel},
                       keyTrustCallback,
                       errorMsgObj);
-  this.stillActive();
 }
 
 Enigmail.prototype.genRevokeCert = 
 function (parent, keyId, outFile, reasonCode, reasonText, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.genRevokeCert: keyId="+keyId+"\n");
 
-  outFile = outFile.replace(/\\/g, "\\\\");
-  var r = this.editKey(parent, true, null, keyId, "revoke", 
+  var r= this.editKey(parent, true, null, keyId, "revoke", 
                       { outFile: outFile,
                         reasonCode: reasonCode,
                         reasonText: reasonText },
                       revokeCertCallback,
                       errorMsgObj);
   this.stillActive();
+
+  return r;
 }
 
 Enigmail.prototype.addUid = 
 function (parent, keyId, name, email, comment, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.addUid: keyId="+keyId+", name="+name+", email="+email+"\n");
-  return this.editKey(parent, true, null, keyId, "adduid",
+  var r= this.editKey(parent, true, null, keyId, "adduid",
                       { email: email,
                         name: name,
-                        comment: comment }, 
+                        comment: comment,
+                        nameAsked: 0,
+                        emailAsked: 0 }, 
                       addUidCallback, 
                       errorMsgObj);
+  this.stillActive();
+  
+  return r;
 }
 
 Enigmail.prototype.setPrimaryUid = 
 function (parent, keyId, idNumber, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.addUid: keyId="+keyId+", idNumber="+idNumber+"\n");
-  return this.editKey(parent, true, null, keyId, "",
+  var r = this.editKey(parent, true, null, keyId, "",
                       { idNumber: idNumber,
                         step: 0 }, 
                       setPrimaryUidCallback, 
                       errorMsgObj);
+  this.stillActive();
+  
+  return r;
 }
 
 Enigmail.prototype.editKey = 
@@ -4570,7 +4581,10 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
   command += " --no-tty --status-fd 1 --command-fd 0"
   if (userId) command += " -u " + userId;
   if (editCmd == "revoke") {
-    command += " -a -o '"+inputData.outFile+"' --gen-revoke " + keyId
+    // escape backslashes and ' characters
+    command += " -a -o '";
+    command += inputData.outFile.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    command += "' --gen-revoke " + keyId
   }
   else {
     command += " --edit-key " + keyId + " " + editCmd
@@ -4606,6 +4620,7 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
     }
     break;
   case -2:
+    errorMsgObj.value=EnigGetString("badPhrase");
     this.clearCachedPassphrase();
   }
   
@@ -4678,12 +4693,28 @@ function addUidCallback(inputData, keyEdit, ret) {
   ret.errorMsg = "";
 
   if (keyEdit.doCheck(GET_LINE, "keygen.name" )) {
-    ret.exitCode = 0;
-    ret.writeTxt = inputData.name;
+    ++inputData.nameAsked;
+    if (inputData.nameAsked==1) {
+      ret.exitCode = 0;
+      ret.writeTxt = inputData.name;
+    }
+    else {
+      ret.exitCode=-1;
+      ret.quitNow=true;
+      ret.errorMsg="Invalid name (too short)";
+    }
   } 
   else if (keyEdit.doCheck(GET_LINE, "keygen.email")) {
-    ret.exitCode = 0;
-    ret.writeTxt = inputData.email;
+    ++inputData.emailAsked;
+    if (inputData.emailAsked==1) {
+      ret.exitCode = 0;
+      ret.writeTxt = inputData.email;
+    }
+    else {
+      ret.exitCode=-1;
+      ret.quitNow=true;
+      ret.errorMsg="Invalid email";
+    }
   } 
   else if (keyEdit.doCheck(GET_LINE, "keygen.comment")) {
     ret.exitCode = 0;

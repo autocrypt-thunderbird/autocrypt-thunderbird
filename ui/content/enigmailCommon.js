@@ -1487,7 +1487,7 @@ function EnigEditKeyTrust(userId, keyId) {
     keyId: keyId,
     userId: userId
   }
-  window.openDialog("chrome://enigmail/content/enigmailEditKeyTrustDlg.xul","", "dialog,modal,centerscreen", inputObj);
+  window.openDialog("chrome://enigmail/content/enigmailEditKeyTrustDlg.xul","", "dialog,modal,centerscreen,resizable", inputObj);
 }
 
 
@@ -1497,7 +1497,7 @@ function EnigSignKey(userId, keyId, signingKeyHint) {
     userId: userId,
     signingKeyHint: signingKeyHint
   }
-  window.openDialog("chrome://enigmail/content/enigmailSignKeyDlg.xul","", "dialog,modal,centerscreen", inputObj);
+  window.openDialog("chrome://enigmail/content/enigmailSignKeyDlg.xul","", "dialog,modal,centerscreen,resizable", inputObj);
 }
 
 

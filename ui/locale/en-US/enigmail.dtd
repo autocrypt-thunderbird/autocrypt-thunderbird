@@ -318,6 +318,7 @@
 <!ENTITY enigmail.sKeyDlg.createSig.label          "Create signature">
 <!ENTITY enigmail.sKeyDlg.createExport.label       "Exportable">
 <!ENTITY enigmail.sKeyDlg.createLocal.label        "Locally (non-exportable)">
+<!ENTITY enigmail.sKeyDlg.alreadySigned.label      "Note: some keys already signed with the key selected for signing!">
 
 <!ENTITY enigmail.addUidDlg.title                    "Enigmail - Add Uid">
 <!ENTITY enigmail.addUidDlg.name.label               "Name">

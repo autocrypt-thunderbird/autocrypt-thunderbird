@@ -132,7 +132,7 @@
       
       var keySigList=document.getElementById("keySigList");
       var treeChildren=keySigList.getElementsByAttribute("id", "keySigListChildren")[0];
-      aSigList = sigList.split(/\n/);
+      var aSigList = sigList.split(/\n/);
       
       for (var i=0; i<aSigList.length; i++) {
         var listRow=aSigList[i].split(/:/);
@@ -145,7 +145,7 @@
             treeChildren.appendChild(treeItem);
           }
           else if (listRow[0] == "sig") {
-            var userRow=document.createElement("treerow");
+            userRow=document.createElement("treerow");
             if (typeof(keyListArr[listRow[KEY_ID]]) == "object") {
               addCell(userRow, "   "+listRow[USER_ID]);
             }
@@ -167,7 +167,7 @@
             }
             
             addCell(userRow, listRow[CREATED]);
-            var treeItem=document.createElement("treeitem");
+            treeItem=document.createElement("treeitem");
             treeItem.appendChild(userRow);
             treeChildren.appendChild(treeItem);
           }

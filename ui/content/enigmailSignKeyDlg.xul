@@ -65,11 +65,15 @@
           <hbox align="center">
             <label value="&enigmail.sKeyDlg.signWithKey.label;"/>
           </hbox>
-          <menulist id="signWithKey"/>
+          <menulist id="signWithKey" oncommand="enigKeySelCb()"/>
         </row>
+        <row>
+          <label value=" "/>
+          <label id="alreadySigned" value="&enigmail.sKeyDlg.alreadySigned.label;" collapsed="true"/>
+        </row>    
       </rows>
     </grid>
-    <separator/>
+<!--    <separator/> -->
     <vbox>
       <groupbox>
         <caption label="&enigmail.sKeyDlg.checked.label;"/>
@@ -99,10 +103,18 @@
        </groupbox>
     </vbox>      
   </vbox>
-  
+  <vbox align="end">
+    <hbox>
+      <button id="acceptButton" dlgtype="accept"/>
+      <button dlgtype="cancel"/>
+    </hbox>
+  </vbox>
+ 
   <script type="application/x-javascript">
   <![CDATA[
     EnigInitCommon("enigmailSignKeyDlg");
+    
+    var gEnigSigList = null;
     
     function onLoad() {
       var enigmailSvc = GetEnigmailSvc();
@@ -131,7 +143,7 @@
       var userList=keyList.split(/\n/);
       
       var menulist=document.getElementById("signWithKey");
-      for (var i=0; i < userList.length; i++) {
+      for (i=0; i < userList.length; i++) {
         if (userList[i].indexOf("sec:")==0) {
           var aKey = userList[i].split(/:/);
           menulist.appendItem(aKey[9].replace(/\\e3A/g, ":")+" - 0x"+aKey[4].substr(-8,8), aKey[4]);
@@ -139,7 +151,24 @@
             menulist.selectedIndex=0;
         }
       }
-      
+
+      // determine keys that have already signed the key
+      try {
+        gEnigSigList = [];
+        var sigListStr = enigmailSvc.getKeySig("0x"+window.arguments[0].keyId.join(" 0x"), exitCodeObj, errorMsgObj);
+        if (exitCodeObj.value == 0) {
+          var sigList = sigListStr.split(/[\n\r]+/);
+          for (i=0; i < sigList.length; i++) {
+            var aLine=sigList[i].split(/:/);
+            DEBUG_LOG("sig:"+aLine[0]+" -> "+aLine[4]+"\n");
+            if (aLine[0] == "sig") {
+              gEnigSigList[aLine[4]] = 1;
+            }
+          }
+        }
+        enigKeySelCb();
+      } catch (ex) {}
+
       return;
     }
     
@@ -170,6 +199,20 @@
         }
       }
       EnigAlert(EnigGetString("signKeyOK"));
+    }
+    
+    function enigKeySelCb() {
+      var signWithKey = document.getElementById("signWithKey");
+      var alreadySigned = document.getElementById("alreadySigned");
+      var acceptButton = document.getElementById("acceptButton");
+      if (gEnigSigList[signWithKey.selectedItem.value]) {
+        alreadySigned.removeAttribute("collapsed");
+        acceptButton.disabled = true;
+      }
+      else {
+        alreadySigned.setAttribute("collapsed", "true");
+        acceptButton.disabled = false;
+      }
     }
   ]]>
   </script>
