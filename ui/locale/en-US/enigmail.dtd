@@ -253,6 +253,9 @@
 <!ENTITY  enigmail.retrieveKey.label                "Retrieving Keys">
 <!ENTITY  enigmail.progressText.label               "Progress:">
 
+<!ENTITY  enigmail.editPgpSecurity.label            "OpenPGP Security ...">
+<!ENTITY  enigmail.editPgpSecurity.accesskey        "O">
+
 <!ENTITY  enigmail.pgpSecurityInfo.label            "OpenPGP Security Info ...">
 <!ENTITY  enigmail.copySecurityInfo.label           "Copy OpenPGP Security Info">
 <!ENTITY  enigmail.showPhoto.label                  "View OpenPGP Photo ID">
@@ -392,7 +395,7 @@
 <!ENTITY enigmail.keyMan.exportMenu.accesskey        "E">
 <!ENTITY enigmail.keyMan.importFromClipbrd.accesskey "C">
 <!ENTITY enigmail.keyMan.copyToClipbrd.accesskey     "C">
-
+<!ENTITY enigmail.keyMan.keyDetails.accesskey        "K">
 
 <!ENTITY enigmail.viewKeySigDlg.title                "Signature List">
 <!ENTITY enigmail.viewKeySigDlg.sigForKey.label      "Signatures for Key:">
@@ -401,4 +404,17 @@
 <!ENTITY enigmail.setPrimUidDlg.title                "Change Primary User ID">
 <!ENTITY enigmail.setPrimUidDlg.affectedKey.label    "Key to change:">
 <!ENTITY enigmail.setPrimUidDlg.newPrimUid.label     "New Primary User ID:">
+
+<!ENTITY enigmail.keyDetails.title                   "Key Properties">
+<!ENTITY enigmail.keyDetails.userId.label            "Primary User ID">
+<!ENTITY enigmail.keyDetails.keyId.label             "Key ID">
+<!ENTITY enigmail.keyDetails.keyType.label           "Type">
+<!ENTITY enigmail.keyDetails.algorithm.label         "Algorithm">
+<!ENTITY enigmail.keyDetails.size.label              "Size">
+<!ENTITY enigmail.keyDetails.created.label           "Created">
+<!ENTITY enigmail.keyDetails.expiry.label            "Expiry">
+<!ENTITY enigmail.keyDetails.calcTrust.label         "Calculated trust">
+<!ENTITY enigmail.keyDetails.ownerTrust.label        "Owner trust">
+<!ENTITY enigmail.keyDetails.fingerprint.label       "Fingerprint">
+
 

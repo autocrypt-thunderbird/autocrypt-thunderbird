@@ -121,7 +121,12 @@
 					</menupopup>
 				</menu>
                   
-        <menuseparator/>
+				<menuitem label="&enigmail.keyMan.keyProps.label;"
+									id="keyDetails"
+									accesskey="&enigmail.keyMan.keyDetails.accesskey;"
+								  oncommand="enigmailKeyDetails()"/>
+
+				<menuseparator/>
        
         <menuitem label="&enigmail.keyMan.reload.label;"
                   id="refreshKeys"
@@ -162,11 +167,11 @@
 										oncommand="enigmailCopyToClipbrd()"/>
 				</menupopup>
 			</menu>
-			<!--
+
       <menuseparator/>
       <menuitem id="ctxDetails" label="&enigmail.keyMan.keyProps.label;" 
-								collapsed="true"/>
-			-->
+								oncommand="enigmailKeyDetails()"/>
+
     </popup>
   </popupset>
   

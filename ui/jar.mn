@@ -21,6 +21,7 @@ enigmail.jar:
 	content/enigmail/enigmailEncryptionDlg.js      (content/enigmailEncryptionDlg.js)
 	content/enigmail/enigmailHelp.xul              (content/enigmailHelp.xul)
 	content/enigmail/enigmailHelp.js               (content/enigmailHelp.js)
+	content/enigmail/enigmailKeyDetailsDlg.xul     (content/enigmailKeyDetailsDlg.xul)
 	content/enigmail/enigmailKeyManager.xul        (content/enigmailKeyManager.xul)
 	content/enigmail/enigmailKeyManager.js         (content/enigmailKeyManager.js)
 	content/enigmail/enigmailPanel.xul             (content/enigmailPanel.xul)

@@ -1,0 +1,200 @@
+<!--
+  The contents of this file are subject to the Mozilla Public
+  License Version 1.1 (the "MPL"); you may not use this file
+  except in compliance with the MPL. You may obtain a copy of
+  the MPL at http://www.mozilla.org/MPL/
+
+  Software distributed under the MPL is distributed on an "AS
+  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  implied. See the MPL for the specific language governing
+  rights and limitations under the MPL.
+
+  The Original Code is Enigmail.
+
+  The Initial Developer of this code is Patrick Brunschwig.
+  Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+  are Copyright (C) 2004 Patrick Brunschwig.
+  All Rights Reserved.
+
+  Contributor(s):
+
+  Alternatively, the contents of this file may be used under the
+  terms of the GNU General Public License (the "GPL"), in which case
+  the provisions of the GPL are applicable instead of
+  those above. If you wish to allow use of your version of this
+  file only under the terms of the GPL and not to allow
+  others to use your version of this file under the MPL, indicate
+  your decision by deleting the provisions above and replace them
+  with the notice and other provisions required by the GPL.
+  If you do not delete the provisions above, a recipient
+  may use your version of this file under either the MPL or the
+  GPL.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<!--
+Type: Key Pair / public key
+Key ID: 0xCCEC227B
+Algorithm: DSA/ELG
+Size: 1024/4096
+Created: 2001-07-08
+Expires: never
+Validity: Ultimate
+Fingerprint: 933D 9948 DC0F A861 471B 10A9 D8A8 07C7 CCEC 227B 
+Ownertrust: I trust ultimately
+-->
+
+<dialog id="enigmailKeyDetailsDlg"
+        title="&enigmail.keyDetails.title;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        buttons="accept"
+        minwidth="400px"
+        onload="onLoad();">
+
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+
+  <vbox orient="vertical">
+    <grid>
+      <columns>
+        <column/>
+        <column flex="1"/>
+      </columns>
+      <rows>
+        <row>
+          <label value="&enigmail.keyDetails.userId.label;"/>
+          <textbox readonly="true" id="userId" value="?"/>
+        </row>
+        <row>
+          <label value="&enigmail.keyDetails.keyId.label;"/>
+          <textbox readonly="true" id="keyId" value="?"/>
+        </row>
+        <row>
+          <label value="&enigmail.keyDetails.keyType.label;"/>
+          <textbox readonly="true" id="keyType" value="?"/>
+        </row>
+        <row>
+          <label value="&enigmail.keyDetails.algorithm.label;"/>
+          <textbox readonly="true" id="algorithm" value="?"/>
+        </row>
+        <row>
+          <label value="&enigmail.keyDetails.size.label;"/>
+          <textbox readonly="true" id="size" value="?"/>
+        </row>
+        <row>
+          <label value="&enigmail.keyDetails.created.label;"/>
+          <textbox readonly="true" id="created" value="?"/>
+        </row>
+        <row>
+          <label value="&enigmail.keyDetails.expiry.label;"/>
+          <textbox readonly="true" id="expiry" value="?"/>
+        </row>
+        <row>
+          <label value="&enigmail.keyDetails.calcTrust.label;"/>
+          <textbox readonly="true" id="calcTrust" value="?"/>
+        </row>
+        <row>
+          <label value="&enigmail.keyDetails.ownerTrust.label;"/>
+          <textbox readonly="true" id="ownerTrust" value="?"/>
+        </row>
+        <row>
+          <label value="&enigmail.keyDetails.fingerprint.label;"/>
+          <textbox readonly="true" id="fingerprint" value="?"/>
+        </row>
+      </rows>
+    </grid>
+	</vbox>
+		
+  <script type="application/x-javascript">
+  <![CDATA[
+    EnigInitCommon("enigmailSignKeyDlg");
+
+    function onLoad() {
+      var enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc) {
+        EnigAlert(EnigGetString("accessError"));
+        window.close();
+        return;
+      }
+      var exitCodeObj = new Object();
+      var statusFlagsObj = new Object();
+      var errorMsgObj = new Object();
+
+			var fingerprint = "";
+      var subKeyLen="";
+      var subAlgo="";
+			var sigListStr = enigmailSvc.getKeySig("0x"+window.arguments[0].keyId, exitCodeObj, errorMsgObj);
+			if (exitCodeObj.value == 0) {
+				var sigList = sigListStr.split(/[\n\r]+/);
+				for (var i=0; i < sigList.length; i++) {
+					var aLine=sigList[i].split(/:/);
+					switch (aLine[0]) {
+					case "pub":
+            var userId=aLine[9];
+						var calcTrust=aLine[1];
+            if (aLine[11].indexOf("D")>=0) calcTrust="d"; 
+            calcTrust=getTrustLabel(calcTrust);
+            var ownerTrust=getTrustLabel(aLine[8]);
+            var pubKeyLen = aLine[2];
+            var created = aLine[5];
+            var pubAlgo = EnigGetString("keyAlgorithm_"+aLine[3]);
+            var expiry = aLine[6];
+            if (expiry.length==0) expiry=EnigGetString("keyExpiryNever");
+						break;
+          case "sub":
+            subKeyLen = "/"+aLine[2]; 
+            subAlgo = "/"+EnigGetString("keyAlgorithm_"+aLine[3]);
+            break;
+					case "fpr":
+						fingerprint = aLine[9];
+						break;
+					}
+				}
+			}
+      
+      setAttr("userId", userId);
+      setAttr("keyId", "0x"+ window.arguments[0].keyId.substr(-8,8));
+      setAttr("created", created);
+      setAttr("expiry", expiry);
+      setAttr("calcTrust", calcTrust);
+      setAttr("ownerTrust", ownerTrust);
+      setAttr("algorithm", pubAlgo+subAlgo);
+      setAttr("size", pubKeyLen+subKeyLen);
+      setAttr("keyType", EnigGetString(window.arguments[0].secKey ? "keyTypePair" : "keyTypePublic"));
+      if (fingerprint) {
+        var fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
+        if (fpr && fpr.length > 2) {
+          fpr.shift();
+          setAttr("fingerprint", fpr.join(" "));
+        }
+      }
+    }
+
+    function getTrustLabel(trustCode) {
+      var trustTxt=EnigGetTrustLabel(trustCode);
+      if (trustTxt=="-" || trustTxt.length==0) {
+        trustTxt=EnigGetString("keyValid.unknown");
+      }
+      return trustTxt;
+    }
+    
+    function setAttr(attribute, value) {
+      var elem = document.getElementById(attribute);
+      if (elem) {
+        elem.value = value;
+      }
+    }
+  ]]>
+  </script>
+
+</dialog>
+

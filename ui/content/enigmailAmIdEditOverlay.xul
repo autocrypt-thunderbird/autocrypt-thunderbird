@@ -64,8 +64,8 @@
   
   <vbox>
     <hbox>
-    <button label="OpenPGP Security ..." 
-          accesskey="O"
+    <button label="&enigmail.editPgpSecurity.label;" 
+          accesskey="&enigmail.editPgpSecurity.accesskey;"
           oncommand="enigmailEditAccount();"/>
     </hbox>
   </vbox>

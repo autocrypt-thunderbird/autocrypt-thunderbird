@@ -230,44 +230,6 @@ function enigmailBuildList(refresh) {
   }
 }
 
-function enigGetTrustLabel(trustCode) {
-  var keyTrust;
-  switch (trustCode) {
-  case 'q':
-    keyTrust=EnigGetString("keyValid.unknown");
-    break;
-  case 'i':
-    keyTrust=EnigGetString("keyValid.invalid");
-    break;
-  case 'd':
-    keyTrust=EnigGetString("keyValid.disabled");
-    break;
-  case 'r':
-    keyTrust=EnigGetString("keyValid.revoked");
-    break;
-  case 'e':
-    keyTrust=EnigGetString("keyValid.expired");
-    break;
-  case 'n':
-    keyTrust=EnigGetString("keyTrust.untrusted");
-    break;
-  case 'm':
-    keyTrust=EnigGetString("keyTrust.marginal");
-    break;
-  case 'f':
-    keyTrust=EnigGetString("keyTrust.full");
-    break;
-  case 'u':
-    keyTrust=EnigGetString("keyTrust.ultimate");
-    break;
-  case '-':
-    keyTrust="-";
-    break;
-  default:
-    keyTrust="";
-  }
-  return keyTrust;
-}
 
 // create a (sub) row for the user tree
 function enigUserSelCreateRow (keyObj, subKeyNum) {
@@ -291,14 +253,14 @@ function enigUserSelCreateRow (keyObj, subKeyNum) {
       else {
         typeCol.setAttribute("label", EnigGetString("keyType.public"));
       }
-      var keyTrust = enigGetTrustLabel(keyObj.keyTrust);
+      var keyTrust = EnigGetTrustLabel(keyObj.keyTrust);
     }
     else {
       // secondary user id
       userCol.setAttribute("label", keyObj.SubUserIds[subKeyNum].userId);
       keyCol.setAttribute("label", "");
       typeCol.setAttribute("label", "");
-      keyTrust = enigGetTrustLabel(keyObj.SubUserIds[subKeyNum].keyTrust);
+      keyTrust = EnigGetTrustLabel(keyObj.SubUserIds[subKeyNum].keyTrust);
     }
 
     expCol.setAttribute("label", keyObj.expiry);
@@ -309,7 +271,7 @@ function enigUserSelCreateRow (keyObj, subKeyNum) {
     }
     validCol.setAttribute("label", keyTrust);
 
-    trustCol.setAttribute("label", enigGetTrustLabel(keyObj.ownerTrust));
+    trustCol.setAttribute("label", EnigGetTrustLabel(keyObj.ownerTrust));
     
     keyCol.setAttribute("id", "keyid");
     typeCol.setAttribute("id", "keyType");
@@ -373,10 +335,12 @@ function enigmailKeyMenu() {
   if (keyList.length == 1) {
     document.getElementById("signKey").removeAttribute("disabled");
     document.getElementById("viewSig").removeAttribute("disabled");
+    document.getElementById("keyDetails").removeAttribute("disabled");
   }
   else {
     document.getElementById("signKey").setAttribute("disabled", "true");
     document.getElementById("viewSig").setAttribute("disabled", "true");
+    document.getElementById("keyDetails").setAttribute("disabled", "true");
   }
 }
 
@@ -404,11 +368,25 @@ function enigmailCtxMenu() {
   if (keyList.length == 1) {
     document.getElementById("ctxSign").removeAttribute("disabled");
     document.getElementById("ctxViewSig").removeAttribute("disabled");
+    document.getElementById("ctxDetails").removeAttribute("disabled");
   }
   else {
     document.getElementById("ctxSign").setAttribute("disabled", "true");
     document.getElementById("ctxViewSig").setAttribute("disabled", "true");
+    document.getElementById("ctxDetails").setAttribute("disabled", "true");
   }
+}
+
+
+function enigmailKeyDetails() {
+  var keyList = enigmailGetSelectedKeys();
+
+  var inputObj = {
+    keyId:  keyList[0],
+    secKey: gKeyList[ keyList[0]].secretAvailable
+  };
+  window.openDialog("chrome://enigmail/content/enigmailKeyDetailsDlg.xul",
+        "", "dialog,modal,centerscreen", inputObj);
 }
 
 
@@ -656,7 +634,6 @@ function enigmailCopyToClipbrd() {
   }
 
 }
-
 
 function enigmailSearchKey() {
   var inputObj = {

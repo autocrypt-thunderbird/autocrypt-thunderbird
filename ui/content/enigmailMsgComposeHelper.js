@@ -168,8 +168,10 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
   flagsObj.value = 1;
 
   if ((!EnigGetPref("confirmBeforeSend")) && (conflicts.encrypt ||conflicts.sign)) {
-    var msg = "\n"+"- " + EnigGetString(sign ? "signYes" : "signNo");
-    msg += "\n"+"- " + EnigGetString(encrypt ? "encryptYes" : "encryptNo");
+    if (sign<2) sign = (sign & (gEnigSendMode & ENIG_SIGN));
+    if (encrypt<2) encrypt = (encrypt & (gEnigSendMode & ENIG_ENCRYPT ? 1 : 0));
+    var msg = "\n"+"- " + EnigGetString(sign>0 ? "signYes" : "signNo");
+    msg += "\n"+"- " + EnigGetString(encrypt>0 ? "encryptYes" : "encryptNo");
     if (EnigGetPref("warnOnRulesConflict")==2) {
       EnigSetPref("warnOnRulesConflict", 0);
     }

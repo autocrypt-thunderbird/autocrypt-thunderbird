@@ -1511,6 +1511,46 @@ function EnigShowPhoto(keyId, userId) {
   }
 }
 
+// return the label of trust for a given trust code  
+function EnigGetTrustLabel(trustCode) {
+  var keyTrust;
+  switch (trustCode) {
+  case 'q':
+    keyTrust=EnigGetString("keyValid.unknown");
+    break;
+  case 'i':
+    keyTrust=EnigGetString("keyValid.invalid");
+    break;
+  case 'd':
+    keyTrust=EnigGetString("keyValid.disabled");
+    break;
+  case 'r':
+    keyTrust=EnigGetString("keyValid.revoked");
+    break;
+  case 'e':
+    keyTrust=EnigGetString("keyValid.expired");
+    break;
+  case 'n':
+    keyTrust=EnigGetString("keyTrust.untrusted");
+    break;
+  case 'm':
+    keyTrust=EnigGetString("keyTrust.marginal");
+    break;
+  case 'f':
+    keyTrust=EnigGetString("keyTrust.full");
+    break;
+  case 'u':
+    keyTrust=EnigGetString("keyTrust.ultimate");
+    break;
+  case '-':
+    keyTrust="-";
+    break;
+  default:
+    keyTrust="";
+  }
+  return keyTrust;
+}
+
 function enigCreateInstance (aURL, aInterface) 
 {
   return ENIG_C.classes[aURL].createInstance(ENIG_C.interfaces[aInterface]);
