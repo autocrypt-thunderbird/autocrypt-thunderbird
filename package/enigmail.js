@@ -892,9 +892,10 @@ function GetPassphrase(domWindow, prompter, passwdObj) {
   DEBUG_LOG("enigmail.js: GetPassphrase: \n");
 
   try {
-    var noPassphrase = gEnigmailSvc.prefBranch.getBoolPref("noPassphrase")
+    var noPassphrase = gEnigmailSvc.prefBranch.getBoolPref("noPassphrase");
+    var useAgent = gEnigmailSvc.prefBranch.getBoolPref("useGpgAgent");
 
-    if (noPassphrase) {
+    if (noPassphrase || useAgent) {
       passwdObj.value = "";
       return true;
     }
@@ -1463,16 +1464,20 @@ function (domWindow, version, prefBranch) {
   DEBUG_LOG("enigmail.js: Enigmail.initialize: END\n");
 }
 
-Enigmail.prototype.useAgentString =
+Enigmail.prototype.passwdCommand =
 function () {
 
-  var command = "";
+  var command;
 
   try {
     var  gpgVersion = this.agentVersion.match(/^\d+\.\d+/);
-    if (gpgVersion && gpgVersion[0] >= "1.2") {
-      if (! this.prefBranch.getBoolPref("useGpgAgent")) {
-        command = " --no-use-agent ";
+    if (this.prefBranch.getBoolPref("useGpgAgent")) {
+       command = " --use-agent ";
+    }
+    else {
+      command = " --passphrase-fd 0";
+      if (gpgVersion && gpgVersion[0] >= "1.1") {
+        command += " --no-use-agent ";
       }
     }
   } catch (ex) {}
@@ -1633,14 +1638,9 @@ function (command, needPassphrase, domWindow, prompter, listener,
 
   var passphrase = null;
 
+
   if (needPassphrase) {
-
-    if (this.agentType == "gpg") {
-      command += " --passphrase-fd 0" + this.useAgentString();
-
-    } else {
-      envList.push("PGPPASSFD=0");
-    }
+    command += this.passwdCommand();
 
     var passwdObj = new Object();
 
@@ -3501,8 +3501,9 @@ function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
 
   var passphrase = null;
   var signMessage = (sendFlags & nsIEnigmail.SEND_SIGNED);
-  if (signMessage) {
-    gpgCommand += " --passphrase-fd 0" + this.useAgentString();
+
+  if (signMessage ) {
+    gpgCommand += this.passwdCommand();
 
     var passwdObj = new Object();
 
@@ -3554,7 +3555,8 @@ function (parent, outFileName, inputBuffer,
   var command = this.agentPath;
 
   outFileName = outFileName.replace(/\\/g, "\\\\");
-  command += GPG_BATCH_OPTS + " -o '"+outFileName+"' --yes --passphrase-fd 0" + this.useAgentString() + " -d ";
+
+  command += GPG_BATCH_OPTS + " -o '"+outFileName+"' --yes " + this.passwdCommand() + " -d ";
 
 
   statusFlagsObj.value = 0;
