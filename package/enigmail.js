@@ -3158,11 +3158,11 @@ function (parent, name, comment, email, expiryDate, passphrase,
   pipeConsole.write(command.replace(/\\\\/g, "\\")+"\n");
   CONSOLE_LOG(command.replace(/\\\\/g, "\\")+"\n");
 
-  var inputData =
-"%echo Generating a standard key\nKey-Type: DSA\nKey-Length: 1024\nSubkey-Type: ELG-E\nSubkey-Length: 1024\n";
+  var inputData = "%echo Generating a standard key\nKey-Type: DSA\nKey-Length: 1024\nSubkey-Type: ELG-E\nSubkey-Length: 1024\n";
 
   inputData += "Name-Real: "+name+"\n";
-  inputData += "Name-Comment: "+comment+"\n";
+  if (comment)
+    inputData += "Name-Comment: "+comment+"\n";
   inputData += "Name-Email: "+email+"\n";
   inputData += "Expire-Date: "+expiryDate+"\n";
 
