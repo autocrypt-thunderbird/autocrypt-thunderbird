@@ -55,3 +55,6 @@ enigmail.jar:
 	locale/de-DE/enigmail/enigmail.dtd         (locale/de-DE/enigmail.dtd)
 	locale/de-AT/enigmail/contents.rdf         (locale/de-DE/contents.rdf)
 	locale/de-AT/enigmail/enigmail.dtd         (locale/de-DE/enigmail.dtd)
+enigmail-en-US.jar:
+	locale/en-US/enigmail/contents.rdf         (locale/en-US/contents.rdf)
+	locale/en-US/enigmail/enigmail.dtd         (locale/en-US/enigmail.dtd)
