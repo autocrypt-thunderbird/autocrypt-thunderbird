@@ -1,10 +1,10 @@
 // Install script for Enigmail
 
 var err;
-const APP_VERSION="0.83.4";
+const APP_VERSION="0.83.5";
 
 err = initInstall("Enigmail v"+APP_VERSION,  // name for install UI
-                  "/enigmail",         // registered name
+                  "/enigmail",               // registered name
                   APP_VERSION+".0");         // package version
 
 logComment("initInstall: " + err);
@@ -21,11 +21,12 @@ if (!verifyDiskSpace(fProgram, srDest)) {
 
   var fChrome     = getFolder("Chrome");
   var fComponents = getFolder("Components");
-  var fProfile    = getFolder("Profile");
+  var fDefaults   = getFolder("Program", "defaults/pref");
 
   // addDirectory: blank, archive_dir, install_dir, install_subdir
-  addDirectory("", "components", fComponents, "");
-  addDirectory("", "chrome",     fChrome,     "");
+  addDirectory("", "components",    fComponents, "");
+  addDirectory("", "chrome",        fChrome,     "");
+  addDirectory("", "defaults/pref", fDefaults,   "");
 
   err = getLastError();
   if (err == ACCESS_DENIED) {
@@ -38,19 +39,18 @@ if (!verifyDiskSpace(fProgram, srDest)) {
 
   } else {
     // Register chrome
-    
+
     var isTbird = false;
     var execFile = 'thunderbird' + (getPlatform() == "win" ? '.exe' : '-bin');
     if (File.exists(getFolder(getFolder('Program'), execFile))) {
-      isTbird = confirm("Dectected installation on Thunderbird. Is this correct?");
+      isTbird = confirm("Detected installation on Thunderbird. Is this correct?");
     }
     else {
-      isTbird = !confirm("Dectected installation on Mozilla or Netscape. Is this correct?");
+      isTbird = !confirm("Detected installation on Mozilla or Netscape. Is this correct?");
     }
-
-//  old way:    
+//  old way:
 //  var isTbird = !confirm("Which Theme do you want to install for Enigmail? Click:\n[ OK ] for Mozilla\n[ Cancel ] for Thunderbird");
-    
+
     registerChrome(PACKAGE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "content/enigmail/");
 
     if (! isTbird) {
