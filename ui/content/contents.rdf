@@ -9,7 +9,7 @@
 
   <!-- enigmail package information -->
   <RDF:Description about="urn:mozilla:package:enigmail"
-        chrome:displayName="Enigmail v0.84.10002"
+        chrome:displayName="Enigmail v0.84.2"
         chrome:author="Team Enigmail"
         chrome:authorURL="http://enigmail.mozdev.org/"
         chrome:name="enigmail"

@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.84.1.0";
-var gEnigmimeVersion = "0.84.1.0";
+var gEnigmailVersion = "0.84.2.0";
+var gEnigmimeVersion = "0.84.2.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -57,6 +57,9 @@ const ENIG_MIME_CONTRACTID = "@mozilla.org/mime;1";
 const ENIG_WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
 const ENIG_APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1"
 const ENIG_ASS_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
+const ENIG_CLIPBOARD_CONTRACTID = "@mozilla.org/widget/clipboard;1";
+const ENIG_CLIPBOARD_HELPER_CONTRACTID = "@mozilla.org/widget/clipboardhelper;1"
+const ENIG_TRANSFERABLE_CONTRACTID = "@mozilla.org/widget/transferable;1"
 
 const ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID =
                               "@mozilla.org/network/file-output-stream;1";
@@ -341,7 +344,7 @@ function EnigConfigure() {
   var prefList = gPrefEnigmail.getChildList("",obj);
 
   for (var prefItem in prefList) {
-    prefName=prefList[prefItem];
+    var prefName=prefList[prefItem];
     if (prefName.search(/AlertCount$/) >= 0) {
        // Reset alert count to default value
       try {
