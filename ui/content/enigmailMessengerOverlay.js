@@ -243,11 +243,6 @@ function enigMessageCleanup() {
   gEnigSecurityInfo = null;
 }
 
-function enigMessageUnload() {
-  DEBUG_LOG("enigmailMessengerOverlay.js: MessageUnload\n");
-}
-
-
 function enigMimeInit() {
   DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit\n");
 

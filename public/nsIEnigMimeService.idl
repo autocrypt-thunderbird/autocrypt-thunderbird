@@ -51,6 +51,12 @@ interface nsIEnigMimeService : nsISupports
   readonly attribute string version;
 
   AString getPlainText(in nsIDOMNode domNode, in wstring findStr);
+
+  void rememberEncrypted(in AUTF8String uri);
+
+  void forgetEncrypted(in AUTF8String uri);
+
+  boolean isEncrypted(in AUTF8String uri);
 };
 
 %{C++

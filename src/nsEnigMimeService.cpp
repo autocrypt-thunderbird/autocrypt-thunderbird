@@ -19,6 +19,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ * Patrick Brunschwig <patrick.brunschwig@gmx.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or 
@@ -50,6 +51,7 @@
 #include "nsIComponentManager.h"
 #include "nsIGenericFactory.h"
 #include "nsEnigContentHandler.h"
+#include "nsReadableUtils.h"
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigContentHandler)
 
@@ -249,5 +251,29 @@ nsEnigMimeService::GetPlainText(nsIDOMNode* domNode,
 
   text = outStr;
 
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsEnigMimeService::RememberEncrypted(const nsACString & uri)
+{
+  // Assuming duplicates are allowed.
+  mEncryptedURIs.AppendCString(nsCString(uri));
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsEnigMimeService::ForgetEncrypted(const nsACString & uri)
+{
+  // Assuming, this will only remove one copy of the string, if the array
+  // contains multiple copies of the same string.
+  mEncryptedURIs.RemoveCString(nsCString(uri));
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsEnigMimeService::IsEncrypted(const nsACString & uri, PRBool *_retval)
+{
+  *_retval = (mEncryptedURIs.IndexOf(nsCString(uri)) != -1);
   return NS_OK;
 }

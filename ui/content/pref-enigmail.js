@@ -1,246 +1,212 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
-// Uses: chrome://enigmail/content/pref-enigmail-adv.js
 
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail");
 
-function init_pref_enigmail() {
-  DEBUG_LOG("pref-enigmail.js: init_pref_enigmail\n");
-  // parent.initPanel('chrome://enigmail/content/pref-enigmail.xul');
+var gMimeHashElement, gSendFlowedElement, gSendFlowedValue;
 
-  EnigSetDefaultPrefs();
+function AdvStartup() {
+   DEBUG_LOG("pref-enigmail.js: AdvStartup\n");
+   EnigDisplayPrefs(false, true, false);
 
-  EnigSetPref("configuredVersion", gEnigmailVersion);
-  EnigDisplayPrefs(false, true, false);
+   EnigDisplayRadioPref("usePGPMimeOption", EnigGetPref("usePGPMimeOption"),
+                        gUsePGPMimeOptionList);
 
-  setDisables(true);
+
+   EnigDisplayRadioPref("recipientsSelectionOption", EnigGetPref("recipientsSelectionOption"),
+                          gEnigRecipientsSelectionOptions);
+
+   gMimeHashElement = document.getElementById("mimeHashList");
+   gMimeHashElement.selectedIndex = EnigGetPref("mimeHashAlgorithm");
+
+   gSendFlowedElement = document.getElementById("send_plaintext_flowed");
+
+   try {
+     gSendFlowedValue = gEnigPrefRoot.getBoolPref("mailnews.send_plaintext_flowed");
+   } catch (ex) {
+     gSendFlowedValue = true;
+   }
+
+   if (gSendFlowedValue) {
+     gSendFlowedElement.setAttribute("checked", "true");
+   } else {
+     gSendFlowedElement.removeAttribute("checked");
+   }
+
+   var testEmailElement = document.getElementById("enigmail_test_email");
+   var userIdValue = EnigGetPref("userIdValue");
+
+   if (testEmailElement && userIdValue)
+     testEmailElement.value = userIdValue;
+
 }
 
-function save_pref_enigmail()
-{
-  var pref = gEnigPrefRoot;
+function AdvResetPrefs() {
+   DEBUG_LOG("pref-enigmail.js: AdvReset\n");
 
-  for( var i = 0; i < _elementIDs.length; i++ )
-  {
-    var elementID = _elementIDs[i];
+   EnigDisplayRadioPref("usePGPMimeOption", gEnigmailPrefDefaults["usePGPMimeOption"],
+                        gUsePGPMimeOptionList);
+   EnigDisplayRadioPref("recipientsSelectionOption", gEnigmailPrefDefaults["recipientsSelectionOption"],
+                        gEnigRecipientsSelectionOptions);
 
-    var element = document.getElementById(elementID);
-    if (!element) break;
-    var eltType = element.localName;
+   gMimeHashElement.selectedIndex = gEnigmailPrefDefaults["mimeHashAlgorithm"];
 
-    if (eltType == "radiogroup" || (eltType == "textbox" &&element.getAttribute("preftype")=="int")) {
-       pref.setIntPref(element.getAttribute("prefstring"), parseInt(element.value));
-    }
-    else if (eltType == "checkbox")  {
-      pref.setBoolPref(element.getAttribute("prefstring"), element.checked);
-    }
-    else if (eltType == "textbox" && element.getAttribute("preftype")=="string") {
-      pref.setCharPref(element.getAttribute("prefstring"), element.value);
-    }
-  }
-}
-
-function setDisables(initializing) {
-  DEBUG_LOG("pref-enigmail.js: setDisables: "+initializing+"\n");
-
-  var defaultEncryptionOptionElement = document.getElementById("enigmail_defaultEncryptionOption");
-  var defaultEncryptionOption = initializing ? EnigGetPref("defaultEncryptionOption")
-                                  : defaultEncryptionOptionElement.value;
-
-  var autoCrypto = false;
-  var autoCryptoElement = document.getElementById("enigmail_autoCrypto");
-
-  if (autoCryptoElement) {
-    autoCrypto = initializing ? EnigGetPref("autoCrypto")
-                              : autoCryptoElement.checked;
-
-  }
-
-  EnigDisplayRadioPref("defaultEncryptionOption", defaultEncryptionOption,
-                        gEnigDefaultEncryptionOptions);
-
-  var noPassphraseElement = document.getElementById("enigmail_noPassphrase");
-  var noPassphrase = initializing ? EnigGetPref("noPassphrase")
-                              : noPassphraseElement.checked;
-
-  var maxIdleMinutesElement = document.getElementById("enigmail_maxIdleMinutes");
-  if (noPassphrase)
-    maxIdleMinutesElement.disabled = true;
+   EnigDisplayPrefs(true, true, false);
 }
 
 
-function enigmailPrefsHelp() {
-   DEBUG_LOG("pref-enigmail.js: enigmailPrefsHelp:\n");
-}
+function AdvOnAccept() {
 
-function enigmailResetPrefs() {
-   DEBUG_LOG("pref-enigmail.js: enigmailResetPrefs\n");
+   DEBUG_LOG("pref-enigmail.js: AdvOnAccept\n");
 
-   DisplayPrefs(true, true, false);
+   EnigDisplayPrefs(false, false, true);
 
-   setDisables(false);
-}
+   EnigSetRadioPref("usePGPMimeOption", gUsePGPMimeOptionList);
 
+   EnigSetPref("mimeHashAlgorithm", gMimeHashElement.selectedIndex);
 
-/////////////////////////
-// Uninstallation stuff
-/////////////////////////
-
-function GetFileOfProperty(prop) {
-  var dscontractid = "@mozilla.org/file/directory_service;1";
-  var ds = Components.classes[dscontractid].getService();
-
-  var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
-  DEBUG_LOG("pref-enigmail.js: GetFileOfProperty: prop="+prop+"\n");
-  var file = dsprops.get(prop, Components.interfaces.nsIFile);
-  DEBUG_LOG("pref-enigmail.js: GetFileOfProperty: file="+file+"\n");
-  return file;
-}
+   EnigSetRadioPref("recipientsSelectionOption", gEnigRecipientsSelectionOptions);
 
 
-function EnigUninstall() {
-  var delFiles = [];
+   if (gSendFlowedElement &&
+       (gSendFlowedElement.checked != gSendFlowedValue) ) {
 
-  var confirm;
+     if (gSendFlowedElement.checked) {
+       gEnigPrefRoot.setBoolPref("mailnews.send_plaintext_flowed", true);
+     } else {
+       gEnigPrefRoot.setBoolPref("mailnews.send_plaintext_flowed", false);
+     }
+   }
 
-  confirm = EnigConfirm("Do you wish to delete all EnigMail-related files in the Mozilla component and chrome directories?");
+   EnigSetPref("configuredVersion", gEnigmailVersion);
 
-  if (!confirm)
-    return;
-
-  // Reset mail.show_headers pref to "original" value
-  EnigShowHeadersAll(false);
   EnigSavePrefs();
 
-  // Remove installed chrome entries
-  var chromeEntryRemoved = RemoveInstalledChrome("enigmail");
-
-  // Remove overlays
-  var overlay1Removed = RemoveOverlay("communicator",
-                ["chrome://enigmail/content/enigmailPrefsOverlay.xul"]);
-
-  var overlay2Removed = RemoveOverlay("messenger",
-                ["chrome://enigmail/content/enigmailMsgComposeOverlay.xul",
-                 "chrome://enigmail/content/enigmailMessengerOverlay.xul",
-                 "chrome://enigmail/content/enigmailMsgHdrViewOverlay.xul",
-                 "chrome://enigmail/content/enigmailMsgPrintOverlay.xul"]);
-
-  if (!overlay1Removed || !overlay2Removed) {
-    EnigAlert("Failed to uninstall EnigMail communicator overlay RDF; not deleting chrome jar file");
-
-  }
-
-  try {
-    if (overlay1Removed && overlay2Removed) {
-      var chromeFile = GetFileOfProperty("AChrom");
-      chromeFile.append("enigmail.jar");
-
-      delFiles.push(chromeFile);
-    }
-
-    var compDir = GetFileOfProperty("ComsD");
-    var compFilenames = ["enigmail.js", "enigmail.xpt",
-                         "enigmime.xpt", "enigmime.dll", "libenigmime.so",
-                         "ipc.xpt", "ipc.dll", "libipc.so"];
-
-    for (var k=0; k<compFilenames.length; k++) {
-      var compFile = compDir.clone();
-      compFile.append(compFilenames[k]);
-      delFiles.push(compFile);
-    }
-
-    // Need to unregister chrome: how???
-
-    // Delete files
-    for (var j=0; j<delFiles.length; j++) {
-      var delFile = delFiles[j];
-      if (delFile.exists()) {
-        WRITE_LOG("pref-enigmail.js: UninstallPackage: Deleting "+delFile.path+"\n")
-        try {
-            delFile.remove(true);
-        } catch (ex) {
-            EnigError("Error in deleting file "+delFile.path)
-        }
-      }
-    }
-
-    EnigAlert("Uninstalled EnigMail");
-
-  } catch(ex) {
-    EnigAlert("Failed to uninstall EnigMail");
-  }
-
-  // Close window
-  window.close();
+  return true;
 }
 
 
-function RemoveOverlay(module, urls) {
-   DEBUG_LOG("pref-enigmail.js: RemoveOverlay: module="+module+", urls="+urls.join(",")+"\n");
 
-   var overlayRemoved = false;
+function EnigMimeTest() {
+  CONSOLE_LOG("\n\nEnigMimeTest: START ********************************\n");
+  var lines = ["--Boundary",
+               "\r\nPart 1\r\n",
+               " --Boundary\r\n\r\n",
+               "--Boundary\r",
+               "\nPart 2\r\nPL2\r\nx\r\n--Boundary--\r\n"];
 
-   try {
-     var overlayFile = GetFileOfProperty("AChrom");
-     overlayFile.append("overlayinfo");
-     overlayFile.append(module);
-     overlayFile.append("content");
-     overlayFile.append("overlays.rdf");
+  var lines = ["content-type: multipart/mixed;\r",
+               "\n boundary=\"ABCD\"",
+               "\r\n\r\nmultipart\r\n--ABCD\r",
+               "\ncontent-type: text/html \r\n",
+               "\r\n<html><body><b>TEST CONTENT1<b></body></html>\r\n\r",
+               "\n--ABCD\r\ncontent-type: text/plain\r\ncontent-disposition:",
+               " attachment; filename=\"abcd.txt\"\r\n",
+               "\r\nFILE CONTENTS\r\n--ABCD--\r\n"];
 
-     DEBUG_LOG("pref-enigmail.js: RemoveOverlay: overlayFile="+overlayFile.path+"\n");
+  var linebreak = ["CRLF", "LF", "CR"];
 
-      var fileContents = EnigReadFileContents(overlayFile, -1);
+  for (var j=0; j<linebreak.length; j++) {
+    var listener = Components.classes[ENIG_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
 
-      for (var j=0; j<urls.length; j++) {
-         var overlayPat=new RegExp("\\s*<RDF:li>\\s*"+urls[j]+"\\s*</RDF:li>");
+    listener.open(2000, false);
 
-         while (fileContents.search(overlayPat) != -1) {
+    var mimeFilter = Components.classes[ENIG_ENIGMIMELISTENER_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeListener);
 
-            fileContents = fileContents.replace(overlayPat, "");
+    mimeFilter.init(listener, null, 4000, j != 1, j == 1, false);
 
-            overlayRemoved = true;
+    for (var k=0; k<lines.length; k++) {
+      var line = lines[k];
+      if (j == 1) line = line.replace(/\r/g, "");
+      if (j == 2) line = line.replace(/\n/g, "");
+      mimeFilter.write(line, line.length, null, null);
+    }
 
-            DEBUG_LOG("pref-enigmail.js: RemoveOverlay: removed overlay "+urls[j]+"\n");
-         }
-      }
+    mimeFilter.onStopRequest(null, null, 0);
 
-      if (overlayRemoved)
-         EnigWriteFileContents(overlayFile.path, fileContents, 0);
+    CONSOLE_LOG(linebreak[j]+" mimeFilter.contentType='"+mimeFilter.contentType+"'\n");
+    CONSOLE_LOG(linebreak[j]+" listener.getData()='"+listener.getData().replace(/\r/g, "\\r")+"'\n");
+  }
 
-   } catch (ex) {
-   }
-
-   return overlayRemoved;
+  CONSOLE_LOG("************************************************\n");
 }
 
+function EnigTest() {
+  var plainText = "TEST MESSAGE 123\nTEST MESSAGE 345\n";
+  var testEmailElement = document.getElementById("enigmail_test_email");
+  var toMailAddr = testEmailElement.value;
 
-function RemoveInstalledChrome(module) {
-   DEBUG_LOG("pref-enigmail.js: RemoveInstalledChrome: module="+module+"\n");
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc) {
+    EnigAlert(EnigGetString("testNoSvc"));
+    return;
+  }
 
-   var chromeEntryRemoved = false;
+  if (!toMailAddr) {
 
-   try {
-     var chromeListFile = GetFileOfProperty("AChrom");
-     chromeListFile.append("installed-chrome.txt");
+    try {
+      EnigMimeTest();
+    } catch (ex) {}
 
-      var fileContents = EnigReadFileContents(chromeListFile, -1);
+    EnigAlert(EnigGetString("testNoEmail"));
+    return;
+  }
 
-      var chromeEntryPat = new RegExp("(content|skin|locale),install,url,jar:resource:/chrome/"+module+".*\\r?\\n?");
+  CONSOLE_LOG("\n\nEnigTest: START ********************************\n");
+  CONSOLE_LOG("EnigTest: To: "+toMailAddr+"\n"+plainText+"\n");
 
-      while (fileContents.search(chromeEntryPat) != -1) {
+  var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
-         fileContents = fileContents.replace(chromeEntryPat, "");
+  var exitCodeObj    = new Object();
+  var statusFlagsObj = new Object();
+  var errorMsgObj    = new Object();
 
-         chromeEntryRemoved = true;
+  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
+                                              "", toMailAddr,
+                                              nsIEnigmail.SEND_SIGNED,
+                                              exitCodeObj, statusFlagsObj,
+                                              errorMsgObj);
+  CONSOLE_LOG("************************************************\n");
+  CONSOLE_LOG("EnigTest: SIGNING ONLY\n");
+  CONSOLE_LOG("EnigTest: cipherText = "+cipherText+"\n");
+  CONSOLE_LOG("EnigTest: exitCode = "+exitCodeObj.value+"\n");
+  CONSOLE_LOG("************************************************\n");
 
-         DEBUG_LOG("pref-enigmail.js: RemoveInstalledChrome: removed "+module+" entry from installed-chrome.txt\n");
-      }
+  var signatureObj   = new Object();
+  var keyIdObj       = new Object();
+  var userIdObj      = new Object();
 
-      if (chromeEntryRemoved)
-         EnigWriteFileContents(chromeListFile.path, fileContents, 0);
+  var decryptedText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
+                                      signatureObj, exitCodeObj,
+                                      statusFlagsObj, keyIdObj, userIdObj,
+                                      errorMsgObj);
+  CONSOLE_LOG("\n************************************************\n");
+  CONSOLE_LOG("EnigTest: VERIFICATION\n");
+  CONSOLE_LOG("EnigTest: decryptedText = "+decryptedText+"\n");
+  CONSOLE_LOG("EnigTest: exitCode  = "+exitCodeObj.value+"\n");
+  CONSOLE_LOG("EnigTest: signature = "+signatureObj.value+"\n");
+  CONSOLE_LOG("************************************************\n");
 
-   } catch (ex) {
-   }
+  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
+                                              "", toMailAddr,
+                                              nsIEnigmail.SEND_SIGNED|
+                                              nsIEnigmail.SEND_ENCRYPTED,
+                                              exitCodeObj, statusFlagsObj,
+                                              errorMsgObj);
+  CONSOLE_LOG("************************************************\n");
+  CONSOLE_LOG("EnigTest: SIGNING + ENCRYPTION\n");
+  CONSOLE_LOG("EnigTest: cipherText = "+cipherText+"\n");
+  CONSOLE_LOG("EnigTest: exitCode = "+exitCodeObj.value+"\n");
+  CONSOLE_LOG("************************************************\n");
 
-   return chromeEntryRemoved;
+  var decryptedText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
+                                      signatureObj, exitCodeObj,
+                                      statusFlagsObj, keyIdObj, userIdObj,
+                                      errorMsgObj);
+  CONSOLE_LOG("\n************************************************\n");
+  CONSOLE_LOG("EnigTest: DECRYPTION\n");
+  CONSOLE_LOG("EnigTest: decryptedText = "+decryptedText+"\n");
+  CONSOLE_LOG("EnigTest: exitCode  = "+exitCodeObj.value+"\n");
+  CONSOLE_LOG("EnigTest: signature = "+signatureObj.value+"\n");
+  CONSOLE_LOG("************************************************\n");
 }

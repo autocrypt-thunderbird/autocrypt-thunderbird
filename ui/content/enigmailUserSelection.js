@@ -78,6 +78,7 @@ function enigmailUserSelLoad() {
 
    }
 
+   window.arguments[1].cancelled=true;
    gUserList = document.getElementById("enigmailUserIdSelection");
    var descNotFound=document.getElementById("usersNotFoundDesc");
    var treeChildren=gUserList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
@@ -155,7 +156,7 @@ function enigmailUserSelLoad() {
 
    }
    gUserList.appendChild(treeChildren);
-   
+
    var aNotFound=new Array();
    var toAddrList = toAddr.split(/,/);
    var j;
@@ -207,6 +208,7 @@ function enigmailUserSelAccept() {
   DEBUG_LOG("enigmailUserSelection.js: Accept\n");
 
   var resultObj=window.arguments[1];
+  resultObj.cancelled=false;
   resultObj.userList = new Array();
   var t = new String();
   gUserList = document.getElementById("enigmailUserIdSelection");
@@ -223,13 +225,13 @@ function enigmailUserSelAccept() {
     }
     item = item.nextSibling;
   }
-  
+
   var encrypt = document.getElementById("enigmailUserSelPlainText");
   resultObj.encrypt = !(encrypt && encrypt.checked==true);
-  
+
 }
 
-function enigmailUserSelCallback(event) {	
+function enigmailUserSelCallback(event) {
   var Tree = document.getElementById("enigmailUserIdSelection");
   var row = {};
   var col = {};

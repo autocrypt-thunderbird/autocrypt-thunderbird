@@ -41,60 +41,37 @@
 <!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
 %enigMailDTD;
 ]>
-<dialog id="enigmailPrefs"
-        title="&enigmail.label;"
-        xmlns:html="http://www.w3.org/1999/xhtml"
+<dialog id="enigmailPrefsAdv"
+        title="&enigmail.preferences.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-         buttons="accept, cancel"
-        orient="vertical"
-        ondialogaccept="save_pref_enigmail();"
-        onload="init_pref_enigmail();">
+        onload="AdvStartup();"
+        ondialogaccept="AdvOnAccept();">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail-adv.js"/>
 
-  <script type="application/x-javascript">
-  <![CDATA[
-    // List of persisted elements (required to save prefs)
-    var _elementIDs = [
-                       ///"enigmail_autoCrypto",
-                       "enigmail_userIdValue",
-                       "enigmail_userIdFromAddr",
-                       "enigmail_noPassphrase",
-                       "enigmail_defaultEncryptionOption",
-                       "enigmail_maxIdleMinutes"
-                       ];
-  ]]>
-  </script>
+  <hbox>
+    <label control="enigmail_agentPath"
+           value="&enigmail.agentPath.label;" />
+    <textbox id="enigmail_agentPath"/>
+  </hbox>
 
-<!--
-    <checkbox id="enigmail_autoCrypto"
-            label="&enigmail.autoCrypto.label;"
-            pref="true"
-            preftype="bool"
-            prefstring="extensions.enigmail.autoCrypto"
-            prefattribute="checked"
-            oncommand="setDisables(false);"/>
--->
+  <hbox>
+  <groupbox orient="vertical">
+    <caption label="&enigmail.passwordSettings.label;"/>
+      <hbox autostretch="never">
+        <label control="enigmail_maxIdleMinutes"
+              value="&enigmail.maxIdleMinutesHead.label;" />
 
-    <hbox>
-      <label control="enigmail_userIdValue"
-             value="&enigmail.userIdValue.label;:" />
+        <textbox id="enigmail_maxIdleMinutes"
+                size="4"
+                pref="true"
+                preftype="int"
+                prefstring="extensions.enigmail.maxIdleMinutes"/>
 
-      <textbox id="enigmail_userIdValue"
-               pref="true"
-               preftype="string"
-               prefstring="extensions.enigmail.userIdValue" />
-    </hbox>
+        <description>&enigmail.maxIdleMinutesTail.label;</description>
 
-    <vbox>
-      <checkbox id="enigmail_userIdFromAddr"
-              label="&enigmail.userIdFromAddr.label;"
-              pref="true"
-              preftype="bool"
-              prefstring="extensions.enigmail.userIdFromAddr"
-              prefattribute="checked"/>
+      </hbox>
 
       <checkbox id="enigmail_noPassphrase"
               label="&enigmail.userNoPassphrase.label;"
@@ -102,79 +79,153 @@
               preftype="bool"
               prefstring="extensions.enigmail.noPassphrase"
               prefattribute="checked"/>
-    </vbox>
 
-    <groupbox orient="vertical">
-      <caption label="&enigmail.defaultEncryptionOption.label;"/>
+    </groupbox>
+  </hbox>
 
-      <radiogroup id="enigmail_defaultEncryptionOption"
-                  value="1"
-                  prefstring="extensions.enigmail.defaultEncryptionOption">
+  <hbox>
+  <groupbox width="300" orient="vertical">
+    <caption label="&enigmail.whenSending.label;"/>
 
-        <radio id="defaultEncryptionNone"
+    <checkbox id="enigmail_encryptToSelf"
+              label="&enigmail.encryptToSelf.label;" />
+
+    <checkbox id="enigmail_alwaysTrustSend"
+              label="&enigmail.alwaysTrustSend.label;" />
+
+    <checkbox id="send_plaintext_flowed"
+              label="&enigmail.send_plaintext_flowed.label;" />
+
+  </groupbox>
+
+  <groupbox width="300" orient="vertical">
+    <caption label="&enigmail.moreOptions.label;"/>
+
+    <checkbox id="enigmail_keepSettingsForReply"
+              label="&enigmail.keepSettingsForReply.label;" />
+
+    <checkbox id="enigmail_confirmBeforeSend"
+              label="&enigmail.confirmBeforeSend.label;" />
+
+    <checkbox id="enigmail_useDefaultComment"
+              label="&enigmail.useDefaultComment.label;" />
+
+<!-- doesn't make much sense with Thunderbird being able to modify buttons
+    <checkbox id="enigmail_disableSMIMEui"
+              label="&enigmail.disableSMIMEui.label;" />
+-->
+
+    <checkbox id="enigmail_doubleDashSeparator"
+              label="&enigmail.doubleDashSeparator.label;" />
+
+    <checkbox id="enigmail_hushMailSupport"
+              label="&enigmail.hushMailSupport.label;" />
+
+<!-- doesn't make sense with Thunderbird ...
+    <checkbox id="enigmail_captureWebMail"
+              label="&enigmail.captureWebMail.label;" />
+-->
+  </groupbox>
+
+
+  </hbox>
+
+  <hbox >
+    <groupbox  width="300" orient="vertical">
+       <caption label="&enigmail.recipientsSelectionOption.label;"/>
+       <radiogroup id="enigmail_recipientsSelectionOption">
+
+        <radio id="askRecipientsNever"
                value="0"
-               label="&enigmail.defaultEncryptionNone.label;"
-               oncommand="setDisables(false);"/>
+               label="&enigmail.askRecipientsNever.label;"/>
 
-        <radio id="defaultEncryptionOnly"
+        <radio id="askRecipientsClever"
                value="1"
-               label="&enigmail.defaultEncryptionOnly.label;" 
-               oncommand="setDisables(false);"/>
+               label="&enigmail.askRecipientsClever.label;"/>
 
-        <radio id="defaultEncryptionSign"
+        <radio id="askRecipientsAlways"
                value="2"
-               label="&enigmail.defaultEncryptionSign.label;" 
-               oncommand="setDisables(false);"/>
+               label="&enigmail.askRecipientsAlways.label;"/>
        </radiogroup>
     </groupbox>
-    
-    <hbox autostretch="never">
-      <label control="enigmail_maxIdleMinutes"
-             value="&enigmail.maxIdleMinutesHead.label;" />
 
-      <textbox id="enigmail_maxIdleMinutes"
-              size="4"
-              pref="true"
-              preftype="int"
-              prefstring="extensions.enigmail.maxIdleMinutes"/>
+    <groupbox width="300" orient="vertical">
+      <caption label="&enigmail.usePGPMimeOption.label;"/>
 
-      <description>&enigmail.maxIdleMinutesTail.label;</description>
+      <radiogroup id="enigmail_usePGPMimeOption">
 
-    </hbox>
+        <radio id="usePGPMimeNever"
+               value="0"
+               label="&enigmail.usePGPMimeNever.label;" />
 
-    <separator/>
+        <radio id="usePGPMimePossible"
+               value="1"
+               label="&enigmail.usePGPMimePossible.label;" />
 
-    <hbox autostretch="never" halign="right">
-      <button class="dialog"
-              id="advancedPrefs"
-              label="&enigmail.advancedPrefsButton.label;"
-              oncommand="EnigAdvPrefWindow();" />
+        <radio id="usePGPMimeAlways"
+               value="2"
+               label="&enigmail.usePGPMimeAlways.label;" />
 
-      <button class="dialog"
-              id="resetPrefs"
-              label="&enigmail.resetPrefsButton.label;"
-              oncommand="enigmailResetPrefs();"
-              />
+       </radiogroup>
 
-      <button class="dialog"
-              id="prefsHelp"
-              label="&enigmail.prefsHelpButton.label;"
-              oncommand="EnigHelpWindow();" />
+      <hbox>
+        <label control="mimeHashList"
+             value="&enigmail.mimeHashAlgorithm.label;:" />
 
-    </hbox>
+        <menulist id="mimeHashList" label="SHA1" flex="1">
 
-    <groupbox orient="horizontal">
-      <button class="dialog"
-              id="uninstall"
-              label="&enigmail.uninstallButton.label;"
-              oncommand="EnigUninstall();"
-              />
+          <menupopup id="mimeHashPopup">
+            <menuitem id="mimeHashMD5"       label="MD5"/>
+            <menuitem id="mimeHashSHA1"      label="SHA1" selected="true"/>
+            <menuitem id="mimeHashRIPEMD160" label="RIPEMD160"/>
+          </menupopup>
+        </menulist>
+      </hbox>
 
-      <!-- <button class="dialog"
-              id="upgrade"
-              label="&enigmail.upgradeButton.label;"
-              oncommand="EnigUpgrade();"
-              /> -->
     </groupbox>
+  </hbox>
+
+  <hbox autostretch="never">
+    <label control="enigmail_keyserver"
+           value="&enigmail.keyserver.label;:" />
+
+    <textbox id="enigmail_keyserver" />
+
+  </hbox>
+
+  <groupbox orient="vertical">
+    <caption label="&enigmail.debugging.label;"/>
+
+    <hbox autostretch="never">
+      <label control="enigmail_logDirectory"
+             value="&enigmail.logdirectory.label;" />
+
+      <textbox id="enigmail_logDirectory" />
+    </hbox>
+    <hbox autostretch="never">
+      <label control="enigmail_test_email"
+             value="&enigmail.testemail.label;" />
+
+      <textbox id="enigmail_test_email" />
+
+      <button class="dialog"
+              id="enigmail_test"
+              label="&enigmail.test.label;"
+              oncommand="EnigTest();"
+              />
+    </hbox>
+
+    <checkbox id="enigmail_useMimeExperimental"
+              label="&enigmail.experimental.label;" />
+
+  </groupbox>
+
+  <hbox autostretch="never" halign="right">
+    <button class="dialog"
+            id="resetPrefs"
+            label="&enigmail.resetPrefsButton.label;"
+            oncommand="AdvResetPrefs();"
+            />
+  </hbox>
 
 </dialog>

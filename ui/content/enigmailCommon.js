@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.80.0.0";
-var gEnigmimeVersion = "0.80.0.0";
+var gEnigmailVersion = "0.81.0.0";
+var gEnigmimeVersion = "0.81.0.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -92,9 +92,6 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "noPassphrase":false,
                              "usePGPMimeOption":PGP_MIME_POSSIBLE,
                              "mimeHashAlgorithm":1,
-                             "defaultEncryptionOption":0,
-                             "defaultSignMsg":false,
-                             "defaultSignNewsMsg":false,
                              "alwaysTrustSend":true,
                              "encryptToSelf":true,
                              "confirmBeforeSend":false,
@@ -104,7 +101,6 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "autoDecrypt":true,
                              "captureWebMail":false,
                              "useMimeExperimental":false,
-                             "disableSMIMEui":false,
                              "parseAllHeaders":true,
                              "show_headers":1,
                              "hushMailSupport":false,
@@ -113,6 +109,7 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "inlineAttachExt":".pgp",
                              "handleDoubleClick":false,
                              "sendImmediately":true,
+                             "keepSettingsForReply":false,
                              "recipientsSelectionOption":1
                             };
 
@@ -318,10 +315,23 @@ function EnigUpdate_0_60() {
   }
 }
 
+function EnigUpdate_0_80() {
+  try {
+    var oldVer=EnigGetPref("configuredVersion");
+
+    if (oldVer.substring(0,4)<"0.81") {
+      window.openDialog("chrome://enigmail/content/enigmailUpgrade.xul",
+          "", "dialog,modal,centerscreen");
+    }
+  }
+  catch (ex) {}
+}
+
 function EnigConfigure() {
   try {
     // Updates for specific versions (to be cleaned-up periodically)
     EnigUpdate_0_60();
+    EnigUpdate_0_80();
   } catch (ex) {}
 
   var msg = EnigGetString("configNow",gEnigmailVersion);
@@ -573,13 +583,13 @@ function EnigPrefWindow() {
                     "_blank", "chrome,resizable=yes");
 }
 
+
 function EnigAdvPrefWindow() {
-  window.openDialog("chrome://enigmail/content/pref-enigmail-adv.xul",
-                    "_blank", "chrome,resizable=yes");
+  EnigAlert("This function doesn't exist anymore!");
 }
 
 function EnigHelpWindow(source) {
-   
+
    var helpUrl = "http://enigmail.mozdev.org/help.html";
 
    if (source)

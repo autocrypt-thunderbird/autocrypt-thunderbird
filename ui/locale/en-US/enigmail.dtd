@@ -9,9 +9,10 @@
 <!ENTITY enigmail.generateKey.label       "Generate key">
 <!ENTITY enigmail.cancelKey.label         "Cancel">
 
-<!ENTITY enigmail.preferences.label    "Preferences">
+<!ENTITY enigmail.preferences.label    "Enigmail Preferences">
 
 <!ENTITY enigmail.autoCrypto.label        "Enable Auto Crypto">
+<!ENTITY enigmail.passwordSettings.label  "Password settings">
 <!ENTITY enigmail.userIdValue.label       "User email address or Key Id (0xABCD1234)">
 <!ENTITY enigmail.userNoPassphrase.label  "No passphrase for user">
 
@@ -50,7 +51,7 @@
 <!ENTITY enigmail.disableSMIMEui.label    "Hide SMIME buttons/menus">
 <!ENTITY enigmail.doubleDashSeparator.label  "Treat '--' as signature separator">
 <!ENTITY enigmail.captureWebMail.label    "Capture webmail (experimental)">
-<!ENTITY enigmail.hushMailSupport.label   "Support for Hushmail (turn off if you can)">
+<!ENTITY enigmail.hushMailSupport.label   "Support for Hushmail">
 
 <!ENTITY enigmail.debugging.label    "Debugging Enigmail">
 <!ENTITY enigmail.logdirectory.label    "Log directory">
@@ -97,17 +98,14 @@
 <!ENTITY enigmail.help.accesskey            "H">
 <!ENTITY enigmail.about.accesskey           "b">
 
-<!ENTITY enigmail.sendbutton.label    "EnigSend">
-<!ENTITY enigmail.sendbutton.tip    "Enigmail send (encrypt/sign)">
+<!ENTITY enigmail.securitybutton.label    "OpenPGP">
+<!ENTITY enigmail.securitybutton.tip    "OpenPGP (Enigmail) security settings">
 
 <!ENTITY enigmail.defaultsend.label         "Default send">
-<!ENTITY enigmail.signedsend.label         "Signed send">
-<!ENTITY enigmail.encryptedsend.label         "Encrypted send">
-<!ENTITY enigmail.encryptsignsend.label         "Encrypt+sign send">
-<!ENTITY enigmail.plainsend.label         "Plaintext send">
-
-<!ENTITY enigmail.sendnow.label           "Send immediately">
-<!ENTITY enigmail.sendlater.label         "Send later">
+<!ENTITY enigmail.signedsend.label         "Sign message">
+<!ENTITY enigmail.encryptedsend.label         "Encrypt message">
+<!ENTITY enigmail.encryptIfPossible.label      "Encrypt message if possible">
+<!ENTITY enigmail.plainsend.label         "Do not encrypt message">
 
 <!ENTITY enigmail.sendOptionsMenu.label        "Default send options">
 <!ENTITY enigmail.mimeOptionsMenu.label        "Default MIME options">
@@ -118,13 +116,15 @@
 
 <!ENTITY enigmail.composemenu.accesskey        "n">
 
-<!ENTITY enigmail.defaultsend.accesskey         "D">
 <!ENTITY enigmail.signedsend.accesskey         "S">
-<!ENTITY enigmail.encryptedsend.accesskey      "c">
-<!ENTITY enigmail.encryptsignsend.accesskey    "E">
-<!ENTITY enigmail.plainsend.accesskey         "P">
-<!ENTITY enigmail.sendnow.accesskey           "Y">
-<!ENTITY enigmail.sendlater.accesskey         "A">
+<!ENTITY enigmail.signedsend.key               "S">
+<!ENTITY enigmail.encryptedsend.accesskey      "E">
+<!ENTITY enigmail.encryptedsend.key           "P">
+<!ENTITY enigmail.encryptIfPossible.accesskey "I">
+<!ENTITY enigmail.encryptIfPossible.key       "I">
+<!ENTITY enigmail.plainsend.accesskey         "N">
+<!ENTITY enigmail.plainsend.key               "N">
+
 
 <!ENTITY enigmail.sendOptionsMenu.accesskey    "o">
 <!ENTITY enigmail.mimeOptionsMenu.accesskey    "M">
@@ -133,11 +133,11 @@
 <!ENTITY enigmail.undoencryption.accesskey     "U">
 <!ENTITY enigmail.insertkey.accesskey          "I">
 
-<!ENTITY enigmail.defaultEncryptionSign.label     "Encrypt+sign if possible">
+<!ENTITY enigmail.defaultEncryptionSign.label     "Encrypt &amp; sign if possible">
 <!ENTITY enigmail.defaultEncryptionOnly.label     "Encrypt if possible">
 <!ENTITY enigmail.defaultEncryptionNone.label     "No default encryption">
 
-<!ENTITY enigmail.recipientsSelectionOption.label "Select Behavior for Selecting Keys of Recipients">
+<!ENTITY enigmail.recipientsSelectionOption.label "Behavior for Selecting Keys of Recipients">
 <!ENTITY enigmail.askRecipientsAlways.label       "Always display selection">
 <!ENTITY enigmail.askRecipientsClever.label       "Display selection when necessary">
 <!ENTITY enigmail.askRecipientsNever.label        "Never display selection">
@@ -147,6 +147,7 @@
 <!ENTITY enigmail.usePGPMimeNever.label           "Never use PGP/MIME">
 
 <!ENTITY enigmail.defaultSignMsg.label            "Sign mail by default">
+<!ENTITY enigmail.keepSettingsForReply.label      "Encrypt if replying to encrypted message">
 <!ENTITY enigmail.confirmBeforeSend.label         "Always confirm before sending">
 
 <!ENTITY enigmail.defaultEncryptionSign.accesskey "E">
@@ -180,7 +181,7 @@
 <!ENTITY enigmail.userSelPlainText.label            "Send mail unencrypted">
 <!ENTITY enigmail.userSelPlainText.accesskey        "S">
 
-<!ENTITY enigmail.experimental.label                "Use experimental inline signing/encryption">
+<!ENTITY enigmail.experimental.label                "Use experimental inline signing/encryption for PGP/MIME">
 
 <!ENTITY enigmail.enigmailAttachDesc.label          "This message contains attachments. How would you like encrypt/sign them?">
 <!ENTITY enigmail.enigEncryptAttachNone.label       "Just encrypt/sign the message text, but not the attachments">
@@ -191,3 +192,12 @@
 <!ENTITY enigmail.ctxDecryptSave.label              "Decrypt and Save As...">
 <!ENTITY enigmail.ctxDecryptOpen.accesskey          "D">
 <!ENTITY enigmail.ctxDecryptSave.accesskey          "C">
+
+<!ENTITY enigmail.amPrefTitle.label     "OpenPGP Options (Enigmail)">
+<!ENTITY enigmail.amPrefDesc.label     "Support for OpenPGP encryption and signing messages is provided by Enigmail. You need to have GnuPG (gpg) installed in order to use this feature.">
+<!ENTITY enigmail.amPrefEnablePgp.label     "Enable OpenPGP support (Enigmail) for this account">
+<!ENTITY enigmail.amPrefUseFromAddr.label     "Use Email address of this account to identify PGP key">
+<!ENTITY enigmail.amPrefUseKeyId.label     "Use specific PGP Key Id (0x1234ABCD):">
+<!ENTITY enigmail.amPrefSelectKey.label     "Select Key ...">
+<!ENTITY enigmail.amPrefSignDefault.label     "Sign messages sent from this account by default">
+<!ENTITY enigmail.amPrefEncryptOptions.label   "Select default encryption option">

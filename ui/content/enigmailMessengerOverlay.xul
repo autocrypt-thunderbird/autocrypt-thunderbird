@@ -14,6 +14,10 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript"  src="chrome://enigmail/content/enigmailMessengerOverlay.js"/>
 
+  <commandset id="mailToolbarItems">
+    <command id="button_enigmail_decrypt"/>
+  </commandset>
+
   <menubar id="mail-menubar">
     <menu id="menu_Enigmail"
           label="Enigmail"
@@ -60,11 +64,6 @@
              accesskey="&enigmail.prefs.accesskey;"
              oncommand="EnigPrefWindow();" />
 
-        <menuitem id="enigmail_advprefs"
-             label="&enigmail.advprefs.label;"
-             accesskey="&enigmail.advprefs.accesskey;"
-             oncommand="EnigAdvPrefWindow();" />
-
         <menuitem id="enigmail_console"
              label="&enigmail.viewconsole.label;"
              accesskey="&enigmail.viewconsole.accesskey;"
@@ -82,10 +81,12 @@
              accesskey="&enigmail.generatekey.accesskey;"
              oncommand="EnigKeygen();" />
 
+<!--
         <menuitem id="enigmail_upgrade"
              label="&enigmail.upgrade.label;"
              accesskey="&enigmail.upgrade.accesskey;"
              oncommand="EnigUpgrade();" />
+-->
 
         <menuitem id="enigmail_help"
              label="&enigmail.help.label;"
@@ -103,24 +104,19 @@
   </menubar>
 
   <toolbarpalette id="MailToolbarPalette">
-    <!-- <toolbar id="msgToolbar" persist="collapsed">
-      <hbox id="toolbar_button_box"> -->
-
-         <toolbarbutton class="toolbarbutton-1"
-                 id="button-enigmail-decrypt"
-                 label="&enigmail.decryptbutton.label;"
-                 tooltip="aTooltip" tooltiptext="&enigmail.decryptbutton.tip;"
-                 oncommand="enigMessageDecrypt();"
-                 insertafter="button-newmsg"
-                 />
-
-     <!--    <toolbarseparator class="toolbarseparator-primary"
-                 insertafter="button-newmsg"
-                 />
-
-      </hbox>
-    </toolbar> -->
+      <toolbarbutton class="toolbarbutton-1"
+              id="button-enigmail-decrypt"
+              label="&enigmail.decryptbutton.label;"
+              tooltiptext="&enigmail.decryptbutton.tip;"
+              oncommand="enigMessageDecrypt();"
+              insertafter="button-newmsg"
+              />
   </toolbarpalette>
+
+  <!-- override default set to include enigmail decrypt icon -->
+  <toolbar id="mail-bar"
+           defaultset="button-getmsg,button-newmsg,button-address,spacer,button-enigmail-decrypt,spacer,spacer,button-reply,button-replyall,button-forward,spacer,spacer,spacer,button-delete,button-junk,button-print,button-stop,spring,throbber-box">
+  </toolbar>
 
   <vbox id="messagepanebox">
     <box id="expandedEnigmailBox" class="headerBox"
@@ -145,4 +141,15 @@
       oncommand="enigHandleAttachmentSel('saveAttachment');"/>
   </popup>
 
+
+  <statusbar id="status-bar">
+    <hbox insertafter="totalMessageCount">
+      <statusbarpanel id="enigmail-signed-status"
+        class="statusbarpanel-iconic"
+        collapsed="true" oncommand="enigViewSecurityInfo();"/>
+      <statusbarpanel id="enigmail-encrypted-status"
+        class="statusbarpanel-iconic"
+        collapsed="true" oncommand="enigViewSecurityInfo();"/>
+    </hbox>
+  </statusbar>
 </overlay>
