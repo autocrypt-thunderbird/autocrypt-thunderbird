@@ -104,7 +104,12 @@ function enigLoadKeyList(secretOnly, refresh) {
     ERROR_LOG("ERROR in enigmailUserSelection: enigLoadKeyList\n");
   }
 
-  return userList.split(/\n/);
+  if (typeof(userList) == "string") {
+    return userList.split(/\n/);
+  }
+  else {
+    return [];
+  }
 }
 
 
@@ -334,7 +339,12 @@ function enigmailGetSelectedKeys() {
     gUserList.view.selection.getRangeAt(i,start,end);
     for(var c=start.value; c<=end.value; c++)
     {
-       idList.push(gUserList.view.getItemAtIndex(c).id);
+      try {
+        idList.push(gUserList.view.getItemAtIndex(c).id);
+      }
+      catch(ex) {
+        return [];
+      }
     }
   }
   return idList;
@@ -737,7 +747,7 @@ function enigSendKeyCancel() {
     keyRetrProcess.terminate();
   }
   gEnigIpcRequest.close(true);
-  var statusText.value="aborted";
+  document.getElementById("statusText").value="aborted";
   document.getElementById("progressBar").setAttribute("collapsed", "true");
   window.setTimeout(enigHideStatus, 5000);
   gEnigIpcRequest=null;
