@@ -51,6 +51,7 @@
 <!ENTITY enigmail.disableSMIMEui.label    "Hide SMIME buttons/menus">
 <!ENTITY enigmail.doubleDashSeparator.label  "Treat '--' as signature separator">
 <!ENTITY enigmail.captureWebMail.label    "Capture webmail (experimental)">
+<!ENTITY enigmail.useGpgAgent.label       "Allow to use gpg-agent">
 <!ENTITY enigmail.hushMailSupport.label   "Support for Hushmail">
 
 <!ENTITY enigmail.debugging.label    "Debugging Enigmail">
