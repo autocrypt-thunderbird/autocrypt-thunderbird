@@ -84,6 +84,16 @@ function onInit()
   enigEnableAllPrefs();
 }
 
+function onLoadEditor() {
+  gAccount  = window.arguments[0].account;
+  gIdentity = window.arguments[0].identity;
+  onInit();
+}
+
+function onAcceptEditor() {
+  onSave();
+}
+
 function onPreInit(account, accountValues)
 {
   gIdentity = account.defaultIdentity;

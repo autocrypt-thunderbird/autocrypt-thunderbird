@@ -9,7 +9,7 @@
 
   <!-- enigmail package information -->
   <RDF:Description about="urn:mozilla:package:enigmail"
-        chrome:displayName="Enigmail v0.84.10001"
+        chrome:displayName="Enigmail v0.84.10002"
         chrome:author="Team Enigmail"
         chrome:authorURL="http://enigmail.mozdev.org/"
         chrome:name="enigmail"
@@ -34,10 +34,11 @@
     <RDF:li resource="chrome://messenger/content/mailWindowOverlay.xul"/>
     <RDF:li resource="chrome://messenger/content/msgHdrViewOverlay.xul"/>
     <RDF:li resource="chrome://messenger/content/msgPrintEngine.xul"/>
+    <RDF:li resource="chrome://messenger/content/am-identity-edit.xul"/>
     <RDF:li resource="chrome://messenger/content/addressbook/addressbook.xul"/>
     <RDF:li resource="chrome://messenger/content/addressbook/abContactsPanel.xul"/>
     <RDF:li resource="chrome://global/content/customizeToolbar.xul"/>
-    <RDF:li resource="chrome://communicator/content/pref/preftree.xul"/>    
+    <RDF:li resource="chrome://communicator/content/pref/preftree.xul"/>
   </RDF:Seq>
 
   <RDF:Seq about="chrome://messenger/content/messengercompose/messengercompose.xul">
@@ -54,6 +55,10 @@
 
   <RDF:Seq about="chrome://messenger/content/msgPrintEngine.xul">
     <RDF:li>chrome://enigmail/content/enigmailMsgPrintOverlay.xul</RDF:li>
+  </RDF:Seq>
+
+  <RDF:Seq about="chrome://messenger/content/am-identity-edit.xul">
+    <RDF:li>chrome://enigmail/content/enigmailAmIdEditOverlay.xul</RDF:li>
   </RDF:Seq>
 
   <RDF:Seq about="chrome://messenger/content/addressbook/addressbook.xul">

@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+
+<!--
+The contents of this file are subject to the Mozilla Public
+License Version 1.1 (the "MPL"); you may not use this file
+except in compliance with the MPL. You may obtain a copy of
+the MPL at http://www.mozilla.org/MPL/
+
+Software distributed under the MPL is distributed on an "AS
+IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+implied. See the MPL for the specific language governing
+rights and limitations under the MPL.
+
+The Original Code is Enigmail.
+
+The Initial Developer of the Original Code is Patrick Brunschwig.
+Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+are Copyright (C) 2003 Patrick Brunschwig.
+All Rights Reserved.
+
+Contributors:
+
+Alternatively, the contents of this file may be used under the
+terms of the GNU General Public License (the "GPL"), in which case
+the provisions of the GPL are applicable instead of
+those above. If you wish to allow use of your version of this
+file only under the terms of the GPL and not to allow
+others to use your version of this file under the MPL, indicate
+your decision by deleting the provisions above and replace them
+with the notice and other provisions required by the GPL.
+If you do not delete the provisions above, a recipient
+may use your version of this file under either the MPL or the
+GPL.
+
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="enigmailEditPgpSettings"
+        title="&enigmail.amPrefTitle.label;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="onLoadEditor();"
+        ondialogaccept="onAcceptEditor();"
+        >
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/am-enigprefs.js"/>
+
+  <checkbox id="enablePgp"
+            prefstring="mail.identity.%identitykey%.enablePgp"
+            preftype="bool" prefattribute="value"
+            label="&enigmail.amPrefEnablePgp.label;"
+            oncommand="enigToggleEnable();"/>
+  <vbox>
+    <groupbox id="encryption.titleBox">
+      <radiogroup id="pgpKeyMode">
+        <radio id="keymode_useFromAddress"
+               label="&enigmail.amPrefUseFromAddr.label;"
+               value="0"
+               oncommand="enigEnableKeySel(false);"/>
+        <vbox>
+          <radio id="keymode_usePgpkeyId"
+                 label="&enigmail.amPrefUseKeyId.label;"
+                 value="1"
+                 oncommand="enigEnableKeySel(true);"/>
+          <hbox>
+            <textbox id="identity.pgpkeyId"
+                     prefstring="mail.identity.%identitykey%.pgpkeyId"
+                     preftype="wstring" prefattribute="value"/>
+            <button id="selectPgpKey" label="&enigmail.amPrefSelectKey.label;"
+                    oncommand="enigSelectKeyId()"/>
+          </hbox>
+        </vbox>
+      </radiogroup>
+
+      <groupbox>
+        <caption label="&enigmail.amPrefDefaultEncrypt.label;"/>
+        <checkbox id="sign_notEncrypted"
+                 checked="false"
+                 label="&enigmail.defaultSignPlainMsg.label;"/>
+        <checkbox id="sign_encrypted"
+                 checked="false"
+                 label="&enigmail.defaultEncryptionSign.label;"/>
+
+        <separator/>
+
+        <checkbox id="encrypt_ifPossible" checked="false"
+                label="&enigmail.defaultEncryption.label;"/>
+      </groupbox>
+    </groupbox>
+  </vbox>
+</dialog>
