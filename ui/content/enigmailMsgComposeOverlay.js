@@ -407,6 +407,10 @@ function enigDoPgpButton(what) {
       enigTogglePGPMime();
       break;
 
+    case 'toggleRules':
+      enigToggleRules();
+      break;
+
     default:
       enigDisplaySecuritySettings();
   }

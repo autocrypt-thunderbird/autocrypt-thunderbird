@@ -2,7 +2,7 @@
 
 <!ENTITY enigmail.keyUserId.label         "Account / User ID">
 <!ENTITY enigmail.keygenTitle.label       "Enigmail - Generate OpenPGP Key">
-<!ENTITY enigmail.useForSigning.label     "Use generated key for the selected account">
+<!ENTITY enigmail.useForSigning.label     "Use generated key for the selected identity">
 <!ENTITY enigmail.keyComment.label        "Comment">
 <!ENTITY enigmail.keyNoPassphrase.label   "No passphrase">
 <!ENTITY enigmail.keyPassphrase.label     "Passphrase">
@@ -244,8 +244,8 @@
 <!ENTITY enigmail.amPrefTitle.label                 "OpenPGP Options (Enigmail)">
 <!ENTITY enigmail.amPrefDesc.label                  "Support for OpenPGP encryption and signing messages is provided by Enigmail. You need to have GnuPG (gpg) installed in order to use this feature.">
 <!ENTITY enigmail.amPrefEnablePgp.label             "Enable OpenPGP support (Enigmail) for this identity">
-<!ENTITY enigmail.amPrefUseFromAddr.label           "Use Email address of this account to identify OpenPGP key">
-<!ENTITY enigmail.amPrefUseKeyId.label              "Use specific OpenPGP Key ID (0x1234ABCD):">
+<!ENTITY enigmail.amPrefUseFromAddr.label           "Use email address of this identity to identify OpenPGP key">
+<!ENTITY enigmail.amPrefUseKeyId.label              "Use specific OpenPGP key ID (0x1234ABCD):">
 <!ENTITY enigmail.amPrefSelectKey.label             "Select Key ...">
 <!ENTITY enigmail.amPrefDefaultEncrypt.label        "Message Composition Default Options">
 <!ENTITY enigmail.encryptionDlg.label               "Enigmail Encryption &amp; Signing Settings">
@@ -256,7 +256,7 @@
 <!ENTITY enigmail.encDlgPgpMime.label               "Use PGP/MIME">
 <!ENTITY enigmail.encDlgPgpMime.accesskey           "U">
 
-<!ENTITY  enigmail.retrieveKey.label                "Retrieving Keys">
+<!ENTITY  enigmail.retrieveKey.label                "Retrieving keys">
 <!ENTITY  enigmail.progressText.label               "Progress:">
 
 <!ENTITY  enigmail.editPgpSecurity.label            "OpenPGP Security ...">

@@ -103,7 +103,7 @@
               label="&enigmail.disableRules.label;"
               accesskey="&enigmail.disableRules.accesskey;"
               key="key_enigDisableRules"
-              oncommand="enigToggleRules();" />
+              oncommand="enigDoPgpButton('toggleRules');" />
 
           <menuseparator/>
 
@@ -214,7 +214,7 @@
               label="&enigmail.disableRules.label;"
               accesskey="&enigmail.disableRules.accesskey;"
               key="key_enigDisableRules"
-              oncommand="enigToggleRules();" />
+              oncommand="enigDoPgpButton('toggleRules');" />
 
           <menuseparator/>
 
@@ -324,7 +324,7 @@
                 label="&enigmail.disableRules.label;"
                 accesskey="&enigmail.disableRules.accesskey;"
                 key="key_enigDisableRules"
-                oncommand="enigToggleRules();" />
+                oncommand="enigNextCommand('toggleRules');" />
 
           </menupopup>
        </toolbarbutton>
@@ -372,7 +372,7 @@
               label="&enigmail.disableRules.label;"
               accesskey="&enigmail.disableRules.accesskey;"
               key="key_enigDisableRules"
-              oncommand="enigToggleRules();" />
+              oncommand="enigNextCommand('toggleRules');" />
         </menupopup>
     </toolbarbutton>
   </toolbarpalette>

@@ -1530,6 +1530,13 @@ function (domWindow, version, prefBranch) {
 
   this.agentVersion = gpgVersion;
 
+  // check GnuPG version number
+  var evalVersion = this.agentVersion.match(/^\d+\.\d+/)
+  if (evalVersion && evalVersion[0]<"1.2") {
+    this.alertMsg(domWindow, EnigGetString("oldGpgVersion", gpgVersion));
+    throw Components.results.NS_ERROR_FAILURE;
+  }
+
   // Register to observe XPCOM shutdown
   var obsServ = Components.classes[NS_OBSERVERSERVICE_CONTRACTID].getService();
   obsServ = obsServ.QueryInterface(Components.interfaces.nsIObserverService);
@@ -1538,24 +1545,6 @@ function (domWindow, version, prefBranch) {
 
   this.stillActive();
   this.initialized = true;
-
-  // check GnuPG version number
-  var evalVersion = this.agentVersion.match(/^\d+\.\d+/)
-  if (evalVersion && evalVersion[0]<"1.2") {
-    var count=1;
-    try {
-      count=this.prefBranch.getIntPref("gpgVersionWarnCount");
-    }
-    catch (ex) {}
-    try {
-      if (count>0) {
-        this.alertMsg(domWindow, EnigGetString("oldGpgVersion", gpgVersion));
-        this.prefBranch.setIntPref("gpgVersionWarnCount",0);
-      }
-    }
-    catch (ex)
-    {}
-  }
 
   DEBUG_LOG("enigmail.js: Enigmail.initialize: END\n");
 }
@@ -3524,8 +3513,6 @@ function (parent, name, comment, email, expiryDate, keyLength, passphrase,
   // Create joinable console
   pipeConsole.open(100, 80, true);
 
-
-  // var command = this.getAgentPath() + " --batch --no-tty --gen-key";
   var command = this.getAgentPath() + GPG_BATCH_OPTS + " --gen-key";
 
   pipeConsole.write(command.replace(/\\\\/g, "\\")+"\n");
