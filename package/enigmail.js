@@ -3177,7 +3177,7 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
   }
 
   if (recvFlags & nsIEnigmail.SEARCH_KEY) {
-    inputData+="COMMAND search\n\n+"+keyValue+"\n\n";
+    inputData+="COMMAND search\n\n"+keyValue+"\n\n";
   }
   else if (recvFlags & nsIEnigmail.DOWNLOAD_KEY) {
     inputData+="COMMAND get\n\n+"+keyValue+"\n\n";
@@ -3190,7 +3190,7 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
 
   var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
   // Create joinable console
-  pipeConsole.open(5000, 80, true);
+  pipeConsole.open(5000, 0, true);
 
   var ipcRequest = null;
   try {
