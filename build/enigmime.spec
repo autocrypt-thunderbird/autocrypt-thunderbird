@@ -1,7 +1,7 @@
 Name:      mozilla-enigmime
 Version:   0.62.1
 Release:   1
-Requires:  mozilla = 1.0.0, mozilla-mail = 1.0.0
+Requires:  mozilla = 1.0.0, mozilla-mail = 1.0.0, mozilla-psm = 1.0.0
 Summary:   MIME and Inter-Process Communication for Enigmail/Mozilla
 Copyright: Mozilla Public License 1.1/GPL
 Group:     Applications/Internet
