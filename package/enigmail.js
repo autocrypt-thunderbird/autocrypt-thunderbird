@@ -1254,7 +1254,7 @@ function (version, prefBranch) {
   try {
     // Access IPC Service
 
-    var ipcService = Components.classes[NS_IPCSERVICE_CONTRACTID].createInstance();
+    var ipcService = Components.classes[NS_IPCSERVICE_CONTRACTID].getService();
     ipcService = ipcService.QueryInterface(nsIIPCService);
 
     this.ipcService = ipcService;
@@ -1319,7 +1319,7 @@ function (version, prefBranch) {
     // Resolve relative path using PATH environment variable
     var envPath = this.processInfo.getEnv("PATH");
 
-    for (var index=0; index<agentList.length; k++) {
+    for (var index=0; index<agentList.length; index++) {
       agentType = agentList[index];
       var agentName = this.isWin32 ? agentType+".exe" : agentType;
 
