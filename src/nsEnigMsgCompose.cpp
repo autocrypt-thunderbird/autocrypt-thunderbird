@@ -41,6 +41,7 @@
 #include "nsXPIDLString.h"
 #include "nsIMsgCompFields.h"
 #include "nsMsgBaseCID.h"
+#include "nsMsgCompCID.h"
 #include "nsIMsgMailSession.h"
 #include "nsIIPCService.h"
 #include "nsIEnigMsgCompFields.h"
@@ -67,13 +68,12 @@ PRLogModuleInfo* gEnigMsgComposeLog = NULL;
    0xdd753201, 0x9a23, 0x4e08,                     \
   {0x95, 0x7f, 0xb3, 0x61, 0x6b, 0xf7, 0xe0, 0x12 }}
 
+static NS_DEFINE_CID(kMsgComposeSecureCID, NS_MSGCOMPOSESECURE_CID);
+
 #define MAX_HEADER_BYTES 16000
 #define MAX_SIGNATURE_BYTES 16000
 
 static const PRUint32 kCharMax = 1024;
-
-static NS_DEFINE_CID(kMsgMailSessionCID, NS_MSGMAILSESSION_CID);
-static NS_DEFINE_CID(kMsgComposeSecureCID, NS_MSGCOMPOSESECURE_CID);
 
 // nsEnigMsgComposeFactory implementation
 
@@ -166,6 +166,7 @@ nsEnigMsgCompose::nsEnigMsgCompose()
   }
 #endif
 
+  // Remember to use original CID, not CONTRACTID, to avoid infinite looping!
   mMsgComposeSecure = do_CreateInstance(kMsgComposeSecureCID, &rv);
 
 #ifdef FORCE_PR_LOG
@@ -385,7 +386,7 @@ nsEnigMsgCompose::Init()
   if (NS_FAILED(rv)) return rv;
 
   nsCOMPtr<nsIPrompt> prompter;
-  nsCOMPtr <nsIMsgMailSession> mailSession (do_GetService(kMsgMailSessionCID));
+  nsCOMPtr <nsIMsgMailSession> mailSession (do_GetService(NS_MSGMAILSESSION_CONTRACTID));
   if (mailSession) {
     nsCOMPtr<nsIMsgWindow> msgWindow;
     mailSession->GetTopmostMsgWindow(getter_AddRefs(msgWindow));
@@ -399,6 +400,7 @@ nsEnigMsgCompose::Init()
   nsXPIDLString errorMsg;
   PRBool noProxy = PR_TRUE;
   rv = enigmailSvc->EncryptMessageStart(prompter,
+                                        mUIFlags,
                                         mSenderEmailAddr.get(),
                                         mRecipients.get(),
                                         mHashAlgorithm.get(),
@@ -443,8 +445,10 @@ nsEnigMsgCompose::RequiresCryptoEncapsulation(
   nsresult rv;
   DEBUG_LOG(("nsEnigMsgCompose::RequiresCryptoEncapsulation: \n"));
 
-  if (!mMsgComposeSecure)
+  if (!mMsgComposeSecure) {
+    ERROR_LOG(("nsEnigMsgCompose::RequiresCryptoEncapsulation: ERROR MsgComposeSecure not instantiated\n"));
     return NS_ERROR_FAILURE;
+  }
 
   rv = mMsgComposeSecure->RequiresCryptoEncapsulation(aIdentity,
                                                       aCompFields,
@@ -502,6 +506,12 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
   nsresult rv;
 
   DEBUG_LOG(("nsEnigMsgCompose::BeginCryptoEncapsulation: %s\n", aRecipients));
+
+  if (!mMsgComposeSecure) {
+    ERROR_LOG(("nsEnigMsgCompose::RequiresCryptoEncapsulation: ERROR MsgComposeSecure not instantiated\n"));
+    return NS_ERROR_FAILURE;
+  }
+
   if (mUseSMIME) {
     return mMsgComposeSecure->BeginCryptoEncapsulation(aStream, aRecipients,
                                                        aCompFields, aIdentity,
@@ -575,6 +585,10 @@ nsEnigMsgCompose::FinishCryptoEncapsulation(PRBool aAbort,
   nsresult rv;
 
   DEBUG_LOG(("nsEnigMsgCompose::FinishCryptoEncapsulation: \n"));
+
+  if (!mMsgComposeSecure)
+    return NS_ERROR_FAILURE;
+
   if (mUseSMIME) {
     return mMsgComposeSecure->FinishCryptoEncapsulation(aAbort, sendReport);
   }
@@ -663,13 +677,23 @@ nsEnigMsgCompose::FinishAux(PRBool aAbort,
   mPipeTrans->Terminate();
   mPipeTrans = nsnull;
 
+  nsCOMPtr<nsIPrompt> prompter;
+  nsCOMPtr <nsIMsgMailSession> mailSession (do_GetService(NS_MSGMAILSESSION_CONTRACTID));
+  if (mailSession) {
+    nsCOMPtr<nsIMsgWindow> msgWindow;
+    mailSession->GetTopmostMsgWindow(getter_AddRefs(msgWindow));
+    if (msgWindow)
+      msgWindow->GetPromptDialog(getter_AddRefs(prompter));
+  }
+
   nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
 
   PRInt32 newExitCode;
   PRUint32 statusFlags;
   nsXPIDLString errorMsg;
-  rv = enigmailSvc->EncryptMessageEnd(mUIFlags,
+  rv = enigmailSvc->EncryptMessageEnd(prompter,
+                                      mUIFlags,
                                       mSendFlags,
                                       exitCode,
                                       mOutputLen,
@@ -694,6 +718,9 @@ nsEnigMsgCompose::MimeCryptoWriteBlock(const char *aBuf, PRInt32 aLen)
   nsresult rv;
 
   DEBUG_LOG(("nsEnigMsgCompose::MimeCryptoWriteBlock: \n"));
+
+  if (!mMsgComposeSecure)
+    return NS_ERROR_FAILURE;
 
   if (mUseSMIME) {
     return mMsgComposeSecure->MimeCryptoWriteBlock(aBuf, aLen);

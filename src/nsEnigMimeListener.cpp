@@ -65,8 +65,6 @@ PRLogModuleInfo* gEnigMimeListenerLog = NULL;
 
 static const PRUint32 kCharMax = 1024;
 
-static NS_DEFINE_CID(kIOServiceCID, NS_IOSERVICE_CID);
-
 #define MK_MIME_ERROR_WRITING_FILE -1
 
 ///////////////////////////////////////////////////////////////////////////////

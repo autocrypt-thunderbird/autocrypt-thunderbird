@@ -43,6 +43,7 @@
 #include "nsString.h"
 #include "nsXPIDLString.h"
 #include "nsNetUtil.h"
+#include "nsNetCID.h"
 #include "nsIPrompt.h"
 #include "nsIMsgWindow.h"
 #include "nsIMimeMiscStatus.h"
@@ -65,8 +66,6 @@ PRLogModuleInfo* gEnigMimeVerifyLog = NULL;
 #define MAX_HEADER_BYTES 16000
 
 static const PRUint32 kCharMax = 1024;
-
-static NS_DEFINE_CID(kIOServiceCID, NS_IOSERVICE_CID);
 
 // nsEnigMimeVerify implementation
 
@@ -152,7 +151,7 @@ nsEnigMimeVerify::Init(nsIURI* aURI, nsIMsgWindow* msgWindow,
   mURISpec = msgUriSpec;
   mRfc2015 = rfc2015;
 
-  nsCOMPtr<nsIIOService> ioService(do_GetService(kIOServiceCID, &rv));
+  nsCOMPtr<nsIIOService> ioService(do_GetService(NS_IOSERVICE_CONTRACTID, &rv));
   if (NS_FAILED(rv)) return rv;
 
   nsCOMPtr<nsIChannel> channel;

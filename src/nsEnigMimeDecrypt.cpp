@@ -66,8 +66,6 @@ PRLogModuleInfo* gEnigMimeDecryptLog = NULL;
 #define MAX_BUFFER_BYTES 32000
 static const PRUint32 kCharMax = 1024;
 
-static NS_DEFINE_CID(kMsgMailSessionCID, NS_MSGMAILSESSION_CID);
-
 // nsEnigMimeDecrypt implementation
 
 // nsISupports implementation
@@ -272,7 +270,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   }
 
   if (!prompter) {
-    nsCOMPtr <nsIMsgMailSession> mailSession (do_GetService(kMsgMailSessionCID));
+    nsCOMPtr <nsIMsgMailSession> mailSession (do_GetService(NS_MSGMAILSESSION_CONTRACTID));
     if (mailSession) {
       nsCOMPtr<nsIMsgWindow> msgwin;
       mailSession->GetTopmostMsgWindow(getter_AddRefs(msgwin));
