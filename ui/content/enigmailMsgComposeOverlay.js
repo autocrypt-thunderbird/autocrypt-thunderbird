@@ -268,6 +268,30 @@ function enigSendCommand(elementId) {
   enigSend(sendFlags);
 }
 
+// Remove all quoted strings (and angle brackets) from a list of email
+// addresses, returning a list of pure email addresses
+function enigStripEmail(mailAddrs) {
+
+  var qStart, qEnd;
+  while ((qStart = mailAddrs.indexOf('"')) != -1) {
+     qEnd = mailAddrs.indexOf('"', qStart+1);
+     if (qEnd == -1) {
+       ERROR_LOG("enigmailMsgComposeOverlay.js: enigStripEmail: Unmatched quote in mail address: "+mailAddrs+"\n");
+       throw Components.results.NS_ERROR_FAILURE;
+     }
+  
+     mailAddrs = mailAddrs.substring(0,qStart) + mailAddrs.substring(qEnd+1);
+  }
+  
+  // Eliminate all whitespace, just to be safe
+  mailAddrs = mailAddrs.replace(/\s+/g,"");
+  
+  // Extract pure e-mail address list (stripping out angle brackets)
+  mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*/g,"$1$2");
+
+  return mailAddrs;
+}
+    
 function enigSend(sendFlags) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: "+sendFlags+"\n");
 
@@ -374,18 +398,28 @@ function enigSend(sendFlags) {
      if (msgCompFields.cc)  toAddrList.push(msgCompFields.cc);
 
      if (msgCompFields.bcc) {
-        toAddrList.push(msgCompFields.bcc);
+       toAddrList.push(msgCompFields.bcc);
 
-       if (sendFlags & ENIG_ENCRYPT) {
+       var bccLC = enigStripEmail(msgCompFields.bcc).toLowerCase()
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: BCC: "+bccLC+"\n");
 
-         if (!defaultSend) {
-           EnigAlert("Encrypted send operation aborted.\n\nThis message cannot be encrypted because there are BCC (blind copy) recipients. Please move the BCC recipients to the CC list or re-send the message without encryption.");
-           return;
+       var selfBCC = fromAddr && (fromAddr.toLowerCase() == bccLC);
+
+       if (selfBCC) {
+         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: Self BCC\n");
+
+       } else if (sendFlags & ENIG_ENCRYPT) {
+         // BCC and encryption
+
+         if (defaultSend) {
+           sendFlags &= ~ENIG_ENCRYPT;
+           DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: No default encryption because of BCC\n");
+
+         } else {
+           if (!EnigConfirm("This message has BCC (blind copy) recipients. If this message is encrypted, all recipients will be able to determine the identity of the BCC recipients by examining the encryption key list, leading to loss of confidentiality. \n\nClick OK to proceed with encryption anyway, or Cancel to abort the send operation.")) {
+             return;
+           }
          }
-
-         sendFlags &= ~ENIG_ENCRYPT;
-         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: No default encryption because of BCC\n");
-
        }
      }
 
