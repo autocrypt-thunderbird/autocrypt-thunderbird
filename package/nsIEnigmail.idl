@@ -67,7 +67,7 @@ interface nsIEnigmail : nsISupports
   void initialize(in string version, in nsIPrefBranch enigmailPrefs);
   void finalize();
 
-  boolean stillActive();
+  void stillActive();
 
   string locateArmoredBlock(in string text,
                             in long offset,

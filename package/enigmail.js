@@ -58,6 +58,8 @@ const NS_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
 
 const NS_SIMPLEURI_CONTRACTID   = "@mozilla.org/network/simple-uri;1";
 
+const NS_TIMER_CONTRACTID       = "@mozilla.org/timer;1";
+
 const NS_PROMPTSERVICE_CONTRACTID = "@mozilla.org/embedcomp/prompt-service;1";
 
 const NS_HTTPPROTOCOLHANDLER_CID_STR= "{4f47e42e-4d23-4dd3-bfda-eb29255e9ea3}";
@@ -66,9 +68,11 @@ const NS_IOSERVICE_CID_STR          = "{9ac9e770-18bc-11d3-9337-00104ba0fd40}";
 
 // Interfaces
 const nsISupports            = Components.interfaces.nsISupports;
+const nsIObserver            = Components.interfaces.nsIObserver;
 const nsILocalFile           = Components.interfaces.nsILocalFile;
 const nsIHttpProtocolHandler = Components.interfaces.nsIHttpProtocolHandler;
 const nsIProtocolHandler     = Components.interfaces.nsIProtocolHandler;
+const nsIScriptableTimer     = Components.interfaces.nsIScriptableTimer;
 const nsIIPCService          = Components.interfaces.nsIIPCService;
 const nsIPipeConsole         = Components.interfaces.nsIPipeConsole;
 const nsIProcessInfo         = Components.interfaces.nsIProcessInfo;
@@ -80,11 +84,13 @@ const nsIPGPMsgHeader        = Components.interfaces.nsIPGPMsgHeader;
 ///////////////////////////////////////////////////////////////////////////////
 // Global variables
 
-var gLogLevel = 3;         // Output only errors/warnings by default
+var gLogLevel = 3;            // Output only errors/warnings by default
 
-var gEnigmailSvc = null;   // Global Enigmail Service
-var gXULOwner = null;      // Global XUL owner
-var gEnvList = [];         // Global environment list
+var gEnigmailSvc = null;      // Global Enigmail Service
+var gCachedPassphrase = null; // Cached passphrase
+var gCacheTimer = null;       // Cache timer
+var gXULOwner = null;         // Global XUL owner
+var gEnvList = [];            // Global environment list
 
 ///////////////////////////////////////////////////////////////////////////////
 // File read/write operations
@@ -715,6 +721,57 @@ function GetXULOwner () {
   return gXULOwner;
 }
 
+
+function GetPassphrase(domWindow, passwdObj) {
+  DEBUG_LOG("enigmail.js: GetPassphrase: \n");
+
+  try {
+    var noPassphrase = gEnigmailSvc.prefBranch.getBoolPref("noPassphrase")
+
+    if (noPassphrase) {
+      passwdObj.value = "";
+      return true;
+    }
+
+  } catch(ex) {
+  }
+
+  if (gEnigmailSvc.haveCachedPassphrase()) {
+    passwdObj.value = gCachedPassphrase;
+    return true;
+  }
+
+  // Obtain password interactively
+  var checkObj = new Object();
+
+  var promptMsg = "Please type in your "+gEnigmailSvc.agentType.toUpperCase()+" passphrase";
+  passwdObj.value = "";
+  checkObj.value = true;
+
+  var maxIdleMinutes = gEnigmailSvc.getMaxIdleMinutes();
+  var checkMsg = (maxIdleMinutes>0) ? "Remember for "+maxIdleMinutes+" idle minutes"
+                                : "";
+
+  var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
+  var success = promptService.promptPassword(domWindow,
+                                             "Enigmail",
+                                             promptMsg,
+                                             passwdObj,
+                                             checkMsg,
+                                             checkObj);
+  if (!success)
+    return false;
+
+  DEBUG_LOG("enigmail.js: GetPassphrase: got passphrase\n");
+
+  // Remember passphrase only if necessary
+  if (checkObj.value && (maxIdleMinutes > 0))
+    gEnigmailSvc.setCachedPassphrase(passwdObj.value);
+
+  return true;
+}
+
+
 function Enigmail(registeringModule)
 {
   DEBUG_LOG("enigmail.js: Enigmail: START "+registeringModule+"\n");
@@ -743,7 +800,6 @@ Enigmail.prototype.agentType = "";
 Enigmail.prototype.agentPath = "";
 
 Enigmail.prototype._lastActiveTime = 0;
-Enigmail.prototype._passphrase = null;
 
 Enigmail.prototype._messageIdList = {};
 
@@ -751,10 +807,26 @@ Enigmail.prototype.QueryInterface =
 function (iid) {
 
   //DEBUG_LOG("Enigmail.QueryInterface:\n");
-  if (!iid.equals(nsIEnigmail) && !iid.equals(nsISupports))
+  if (!iid.equals(nsIEnigmail) &&
+      !iid.equals(nsIObserver) &&
+      !iid.equals(nsISupports))
   throw Components.results.NS_ERROR_NO_INTERFACE;
 
   return this;
+}
+
+Enigmail.prototype.observe =
+function (aSubject, aTopic, aData) {
+  DEBUG_LOG("enigmail.js: Enigmail.observe: topic='"+aTopic+"' \n");
+
+  if (aTopic == "timer-callback") {
+    // Cause cached password to expire, if need be
+    if (!this.haveCachedPassphrase()) {
+      // No cached password; cancel repeating timer
+      if (gCacheTimer)
+        gCacheTimer.cancel();
+    }
+  }
 }
 
 Enigmail.prototype.alertMsg =
@@ -802,89 +874,73 @@ function () {
   return dirPrefix;
 }
 
-Enigmail.prototype.stillActive =
-function () {
+Enigmail.prototype.setCachedPassphrase = 
+function (passphrase) {
+  DEBUG_LOG("enigmail.js: Enigmail.setCachedPassphrase: \n");
+
+  gCachedPassphrase = passphrase;
+  this.stillActive();
 
   var maxIdleMinutes = this.getMaxIdleMinutes();
+
+  if (this.haveCachedPassphrase() && (maxIdleMinutes > 0)) {
+    // Start timer
+    if (gCacheTimer)
+      gCacheTimer.cancel();
+
+    gCacheTimer = Components.classes[NS_TIMER_CONTRACTID].createInstance(nsIScriptableTimer);
+
+    if (!gCacheTimer) {
+      ERROR_LOG("enigmail.js: Enigmail.setCachedPassphrase: Error - failed to create times\n");
+      throw Components.results.NS_ERROR_FAILURE;
+    }
+
+    var delayMillisec = maxIdleMinutes*60*1000;
+
+    gCacheTimer.init(this, delayMillisec,
+                     nsIScriptableTimer.PRIORITY_NORMAL,
+                     nsIScriptableTimer.TYPE_REPEATING_SLACK);
+
+  }
+}
+
+
+Enigmail.prototype.haveCachedPassphrase =
+function () {
+  DEBUG_LOG("enigmail.js: Enigmail.haveCachedPassphrase: \n");
+
+  var havePassphrase = ((typeof gCachedPassphrase) == "string");
+
+  if (!havePassphrase)
+    return false;
+
   var curDate = new Date();
   var currentTime = curDate.getTime();
 
-  // Update last active time
-  var lastActiveTime = this._lastActiveTime;
-  this._lastActiveTime = currentTime;
-
-  return ((currentTime - lastActiveTime) < (maxIdleMinutes*60*1000));
-}
-
-
-Enigmail.prototype.setDefaultPassphrase = 
-function (passphrase) {
-  DEBUG_LOG("enigmail.js: Enigmail.setDefaultPassphrase: \n");
-
-  this._passphrase = passphrase;
-  this.stillActive();
-}
-
-
-// This method should not be accessible outside this scope for security
-// (It should not be exposed via IDL)
-Enigmail.prototype.getPassphrase =
-function (domWindow, passwdObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.getPassphrase: \n");
-
-  try {
-    var noPassphrase = this.prefBranch.getBoolPref("noPassphrase")
-
-    if (noPassphrase) {
-      passwdObj.value = "";
-      return true;
-    }
-
-  } catch(ex) {
-  }
-
-  var havePassphrase = ((typeof this._passphrase) == "string");
-
-  if (havePassphrase && !this.stillActive()) {
-    // Too much idle time; forget default password
-    WRITE_LOG("enigmail.js: Enigmail.getPassphrase: IDLED OUT\n");
-
-    this._passphrase = null;
-    havePassphrase = false;
-  }
-
-  if (havePassphrase) {
-    passwdObj.value = this._passphrase;
-    return true;
-  }
-
-  // Obtain password interactively
-  var checkObj = new Object();
-
-  var promptMsg = "Please type in your "+this.agentType.toUpperCase()+" passphrase";
-  passwdObj.value = "";
-  checkObj.value = true;
   var maxIdleMinutes = this.getMaxIdleMinutes();
-  var checkMsg = (maxIdleMinutes>0) ? "Remember for "+maxIdleMinutes+" idle minutes"
-                                : "";
+  var delayMillisec = maxIdleMinutes*60*1000;
 
-  var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
-  var success = promptService.promptPassword(domWindow,
-                                             "Enigmail",
-                                             promptMsg,
-                                             passwdObj,
-                                             checkMsg,
-                                             checkObj);
-  if (!success)
-    return false;
+  var expired = ((currentTime - this._lastActiveTime) >= delayMillisec);
 
-  DEBUG_LOG("enigmail.js: getPassphrase: "+passwdObj.value.length+"\n");
+  if (expired) {
+    // Too much idle time; forget cached password
+    gCachedPassphrase = null;
+    havePassphrase = false;
 
-  // Remember passphrase only if necessary
-  if (checkObj.value && (maxIdleMinutes > 0))
-    this.setDefaultPassphrase(passwdObj.value);
+    WRITE_LOG("enigmail.js: Enigmail.haveCachedPassphrase: CACHE IDLED OUT\n");
+  }
 
-  return true;
+  return havePassphrase;
+}
+
+
+Enigmail.prototype.stillActive =
+function () {
+  DEBUG_LOG("enigmail.js: Enigmail.stillActive: \n");
+
+  // Update last active time
+  var curDate = new Date();
+  this._lastActiveTime = curDate.getTime();
 }
 
 
@@ -1348,7 +1404,7 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
   } else {
     var passwdObj = new Object();
 
-    if (!this.getPassphrase(parent, passwdObj)) {
+    if (!GetPassphrase(parent, passwdObj)) {
         ERROR_LOG("enigmail.js: Enigmail: Error - no passphrase supplied\n");
 
         errorMsgObj.value = "Error - no passphrase supplied";
@@ -1399,7 +1455,7 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
     // "Unremember" passphrase on signing failure
     // NOTE: May need to be more selective in unremembering,
     //       depending upon the details of the error
-    this.setDefaultPassphrase(null);
+    this.setCachedPassphrase(null);
   }
 
   errorMsgObj.value = "Error - encryption command failed";
@@ -1652,7 +1708,7 @@ function (parent, uiFlags, cipherText,
 
     var passwdObj = new Object();
 
-    if (!this.getPassphrase(parent, passwdObj)) {
+    if (!GetPassphrase(parent, passwdObj)) {
         ERROR_LOG("enigmail.js: Enigmail: Error - no passphrase supplied\n");
 
         errorMsgObj.value = "Error - no passphrase supplied";
@@ -1736,7 +1792,7 @@ function (parent, uiFlags, cipherText,
     // "Unremember" passphrase on decryption failure
     // NOTE: May need to be more selective in unremembering,
     //       depending upon the details of the error
-    this.setDefaultPassphrase(null);
+    this.setCachedPassphrase(null);
   }
 
   errorMsgObj.value = "";
