@@ -560,12 +560,18 @@ function enigConfirmBeforeSend(toAddr, gpgKeys, sendFlags, isOffline, msgSendTyp
   }
 
   var msgConfirm = (isOffline || sendFlags & nsIEnigmail.SEND_LATER)
-          ? EnigGetString("offlineSave",msgStatus,EnigStripEmail(toAddr))
-          : EnigGetString("onlineSend",msgStatus,EnigStripEmail(toAddr));
+          ? EnigGetString("offlineSave",msgStatus,EnigStripEmail(toAddr).replace(/,/g, ", "))
+          : EnigGetString("onlineSend",msgStatus,EnigStripEmail(toAddr).replace(/,/g, ", "));
   if (sendFlags & ENIG_ENCRYPT)
     msgConfirm += "\n\n"+EnigGetString("encryptKeysNote", gpgKeys);
 
   return EnigConfirm(msgConfirm);
+}
+
+function enigAddRecipients(toAddrList, recList) {
+  for (var i=0; i<recList.count; i++) {
+    toAddrList.push(EnigStripEmail(recList.StringAt(i).replace(/[\",]/g, "")));
+  }
 }
 
 function enigEncryptMsg(msgSendType) {
@@ -712,11 +718,19 @@ function enigEncryptMsg(msgSendType) {
      DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg:gMsgCompose="+gMsgCompose+"\n");
 
      var toAddrList = [];
-     if (msgCompFields.to)  toAddrList.push(msgCompFields.to);
-     if (msgCompFields.cc)  toAddrList.push(msgCompFields.cc);
+     if (msgCompFields.to) {
+       var recList = msgCompFields.SplitRecipients(msgCompFields.to, true)
+       enigAddRecipients(toAddrList, recList);
+     }
+
+     if (msgCompFields.cc) {
+       recList = msgCompFields.SplitRecipients(msgCompFields.cc, true)
+       enigAddRecipients(toAddrList, recList);
+     }
 
      if (msgCompFields.bcc) {
-       toAddrList.push(msgCompFields.bcc);
+       recList = msgCompFields.SplitRecipients(msgCompFields.bcc, true)
+       enigAddRecipients(toAddrList, recList);
 
        var bccLC = EnigStripEmail(msgCompFields.bcc).toLowerCase()
        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: BCC: "+bccLC+"\n");
@@ -1399,28 +1413,10 @@ function enigGenericSendMessage( msgType )
         }
       }
 
-/////////////////////////////////////////////////////////////////////////
-// MODIFICATION
-// Call the following function from our version of the function
-// GenericSendMessage from the file MsgComposeCommands.js
-// (after having determined HTML convertibility)
-/////////////////////////////////////////////////////////////////////////
-          try {
-            window.cancelSendMessage=false;
-            enigEncryptMsg(msgType);
-            if(window.cancelSendMessage)
-              return;
-          }
-          catch(ex){}
-/////////////////////////////////////////////////////////////////////////
-// END OF MODIFICATION
-/////////////////////////////////////////////////////////////////////////
-      
-      
       // hook for extra compose pre-processing
       var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
       observerService.notifyObservers(window, "mail:composeOnSend", null);
-
+/*
 /////////////////////////////////////////////////////////////////////////
 // MODIFICATION
 // Set the charset from the original text
@@ -1434,6 +1430,7 @@ function enigGenericSendMessage( msgType )
 /////////////////////////////////////////////////////////////////////////
 // END OF MODIFICATION
 /////////////////////////////////////////////////////////////////////////
+*/
          // Check if the headers of composing mail can be converted to a mail charset.
         if (msgType == nsIMsgCompDeliverMode.Now ||
             msgType == nsIMsgCompDeliverMode.Later ||
@@ -1455,7 +1452,24 @@ function enigGenericSendMessage( msgType )
               fallbackCharset.value && fallbackCharset.value != "")
             gMsgCompose.SetDocumentCharset(fallbackCharset.value);
         }
-      }
+//      }
+
+/////////////////////////////////////////////////////////////////////////
+// MODIFICATION
+// Call the following function from our version of the function
+// GenericSendMessage from the file MsgComposeCommands.js
+// (after having determined HTML convertibility)
+/////////////////////////////////////////////////////////////////////////
+          try {
+            window.cancelSendMessage=false;
+            enigEncryptMsg(msgType);
+            if(window.cancelSendMessage)
+              return;
+          }
+          catch(ex){}
+/////////////////////////////////////////////////////////////////////////
+// END OF MODIFICATION
+/////////////////////////////////////////////////////////////////////////
 
       try {
         gWindowLocked = true;
@@ -1714,7 +1728,7 @@ function enigDecryptQuote(interactive) {
 
   if (tail.search(/\S/) < 0) {
     // No non-space characters in tail; delete it
-    tail = ""
+    tail = "";
   }
 
   //DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: pgpBlock='"+pgpBlock+"'\n");
@@ -1724,7 +1738,21 @@ function enigDecryptQuote(interactive) {
 
   // Encode ciphertext from unicode to charset
   var cipherText = EnigConvertFromUnicode(pgpBlock, charset);
-
+  
+  if ((! gEnigPrefRoot.getBoolPref("mailnews.reply_in_default_charset")) && (blockType == "MESSAGE")) {
+    // set charset according to PGP block, if available (encrypted messages only)
+    cipherText = cipherText.replace(/\r\n/g, "\n");
+    cipherText = cipherText.replace(/\r/g,   "\n");
+    var cPos = cipherText.search(/\nCharset: .+\n/i);
+    if (cPos < cipherText.search(/\n\n/)) {
+      var charMatch = cipherText.match(/\n(Charset: )(.+)\n/i);
+      if (charMatch && charMatch.length > 2) {
+        charset = charMatch[2];
+        gMsgCompose.SetDocumentCharset(charset);
+      }
+    }
+  }
+  
   // Decrypt message
   var signatureObj   = new Object();
   signatureObj.value = "";
@@ -1777,7 +1805,7 @@ function enigDecryptQuote(interactive) {
                                                   nsIEnigmail.SIGNATURE_TEXT);
   }
 
-  var doubleDashSeparator = ("doubleDashSeparator")
+  var doubleDashSeparator = EnigGetPref("doubleDashSeparator")
   if (doubleDashSeparator) {
     var signOffset = plainText.search(/[\r\n]-- +[\r\n]/);
 
@@ -1787,7 +1815,22 @@ function enigDecryptQuote(interactive) {
     }
   }
   
-  // Replace encrypted quote with decrypted quote
+  var clipBoard = Components.classes[ENIG_CLIPBOARD_CONTRACTID].getService(Components.interfaces.nsIClipboard);
+  if (clipBoard.supportsSelectionClipboard()) {
+    // get the clipboard contents for selected text (X11)
+    try {
+      var transferable = Components.classes[ENIG_TRANSFERABLE_CONTRACTID].createInstance(Components.interfaces.nsITransferable);
+      transferable.addDataFlavor("text/unicode");
+      clipBoard.getData(transferable, clipBoard.kSelectionClipboard);
+      var flavour = {};
+      var data = {};
+      var length = {};
+      transferable.getAnyTransferData(flavour, data, length);
+    }
+    catch(ex) {}
+  }
+  
+  // Replace encrypted quote with decrypted quote (destroys selection clipboard on X11)
   EnigEditorSelectAll();
 
   //DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: plainText='"+plainText+"'\n");
@@ -1806,6 +1849,16 @@ function enigDecryptQuote(interactive) {
 
   if (tail)
     EnigEditorInsertText(tail);
+    
+  if (clipBoard.supportsSelectionClipboard()) {
+    try {
+      // restore the clipboard contents for selected text (X11)
+      var pasteClipboard = Components.classes[ENIG_CLIPBOARD_HELPER_CONTRACTID].getService(Components.interfaces.nsIClipboardHelper);
+      data = data.value.QueryInterface(Components.interfaces.nsISupportsString).data;
+      pasteClipboard.copyStringToClipboard(data, clipBoard.kSelectionClipboard);
+    }
+    catch (ex) {}
+  }
 
   if (interactive)
     return;
