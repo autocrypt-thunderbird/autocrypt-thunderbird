@@ -690,8 +690,14 @@ function enigSendCommand(elementId) {
      // Check if sending to any newsgroups
      var newsgroups = msgCompFields.newsgroups;
 
-     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: gMsgCompose="+gMsgCompose+"\n");
+     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand:gMsgCompose="+gMsgCompose+"\n");
 
+     try {
+       var dummy = new Object();
+       gMsgCompose.CheckAndPopulateRecipients(true, false, dummy);
+     }
+     catch (ex) {}
+     
      var toAddrList = [];
 
      if (msgCompFields.to)  toAddrList.push(msgCompFields.to);

@@ -249,7 +249,7 @@
  </toolbox>
 
 <!-- Thunderbird part -->
-  <toolbarpalette id="MailToolbarPalette">
+   <toolbarpalette id="MailToolbarPalette">
       <toolbarbutton class="toolbarbutton-1"
               id="button-enigmail-decrypt"
               label="&enigmail.decryptbutton.label;"
