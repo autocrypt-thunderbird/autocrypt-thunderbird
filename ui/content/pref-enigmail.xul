@@ -34,7 +34,7 @@
 
 <?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://communicator/skin/dialogOverlay.css" type="text/css"?>
-<?xml-stylesheet href="chrome://enigmail/content/enigmail.css" type="text/css"?> 
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?> 
 
 <!DOCTYPE window [
 <!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
@@ -104,7 +104,7 @@
       <button class="dialog"
               id="uninstall"
               label="&enigmailUninstall.label;"
-              oncommand="enigmailUninstall();"
+              oncommand="EnigUninstall();"
               />
     </hbox>
 

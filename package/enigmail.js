@@ -786,6 +786,9 @@ function (command, input, errMessagesObj, statusObj, exitCodeObj) {
   var errObj = new Object();
   var outLenObj = new Object();
   var errLenObj = new Object();
+
+  CONSOLE_LOG(command+"\n");
+  
   exitCodeObj.value = gEnigmailSvc.ipcService.execPipe(command,
                                                        input, input.length,
                                                        envList, envList.length,
@@ -819,6 +822,8 @@ function (command, input, errMessagesObj, statusObj, exitCodeObj) {
 
   errMessagesObj.value = errArray.join("\n");
   statusObj.value      = statusArray.join("\n");
+
+  CONSOLE_LOG(errMessagesObj.value+"\n");
 
   WRITE_LOG("enigmail.js: Enigmail.execCmd: status = "+statusObj.value+"\n");
   return outputData;
@@ -962,16 +967,18 @@ function (cipherText, passphrase, statusCodeObj, statusMsgObj) {
     return "";
   }
 
+  WRITE_LOG("enigmail.js: Enigmail.decryptMessage: errMessages: "+errMessagesObj.value+"\n");
+
   var errLines = errMessagesObj.value.split(/\r?\n/);
 
-  var goodSignPat = /Good signature from (user)? "(.*)"\.?/i;
+  var goodSignPat = /Good signature from (user )?"(.*)"\.?/i;
 
   statusMsgObj.value = "";
 
   var fingerprint;
   for (var j=0; j<errLines.length; j++) {
     if (errLines[j].search(goodSignPat) != -1) {
-      statusMsgObj.value = (errLines[j].match(goodSignPat))(0);
+      statusMsgObj.value = (errLines[j].match(goodSignPat))[0];
     }
   }
 
@@ -1033,6 +1040,7 @@ function (email, secret, statusCodeObj, statusMsgObj) {
   fingerprint = fingerprint.replace(/\s+/g, "");
   fingerprint = fingerprint.toLowerCase();
 
+  WRITE_LOG("enigmail.js: Enigmail.extractFingerprint: fprint="+fingerprint+"\n");
   return fingerprint;
 }
 

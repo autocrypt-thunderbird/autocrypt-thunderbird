@@ -46,8 +46,14 @@ function enigUpdateOptionsDisplay() {
 function enigSend() {
   WRITE_LOG("enigmailMsgComposeOverlay.js: enigSend\n");
 
-  if (!InitEnigmailSvc())
-     return "";
+  if (!InitEnigmailSvc()) {
+     if (EnigConfirm("Failed to initialize Enigmail; send unencrypted email?\n"))
+        goDoCommand('cmd_sendButton');
+
+     EnigAlert("Please uninstall Enigmail using the Edit->Preferences->Privacy&Security->Enigmail menu to avoid this alert in the future");
+
+     return;
+  }
 
   var currentId = getCurrentIdentity();
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: currentId="+currentId+

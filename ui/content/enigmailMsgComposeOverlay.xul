@@ -2,7 +2,7 @@
 
 <!-- This is the overlay that adds a menu to messenger compose window -->
 
-<?xml-stylesheet href="chrome://enigmail/content/enigmail.css"
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
                  type="text/css"?> 
 
 <!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmailOverlay.dtd" >
@@ -17,7 +17,7 @@
     <toolbar id="composeToolbar">
       <box id="toolbar_button_box">
 
-       <button class="button-toolbar-2 top" 
+       <toolbarbutton class="toolbarbutton-1"
                id="button-enigmail-send"
                label="EnigSend"
                tooltip="aTooltip" tooltiptext="Enigmail send (encrypt/sign)" 
@@ -54,7 +54,7 @@
 
         <menuitem id="enigmail_console"
              label="Enigmail console"
-             oncommand="window.open('enigmail:console');" />
+             oncommand="EnigViewConsole();" />
 
         <menuitem id="enigmail_keygen"
              label="Generate key"

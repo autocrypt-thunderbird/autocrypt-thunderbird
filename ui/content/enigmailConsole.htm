@@ -14,7 +14,7 @@
     function RefreshConsole() {
 
       if (gEnigmailSvc.console.hasNewData) {
-         //dump("enigmailConsole.htm: RefreshConsole()\n");
+         //DEBUG_LOG("enigmailConsole.htm: RefreshConsole()\n");
 
          gEnigmailSvc.console.hasNewData = true;
          var console = document.getElementById('console');
@@ -27,9 +27,14 @@
     }
 
     function LoadHandler() {
+      InitEnigmailSvc();
+      DEBUG_LOG("enigmailConsole.htm: LoadHandler: "+gEnigmailSvc+"\n");
+
       // Refresh console every 2 seconds
-      if (gEnigmailSvc)
+      if (gEnigmailSvc) {
+         RefreshConsole();
          window.consoleIntervalId = window.setInterval(RefreshConsole, 2000);
+      }
     }
 
     function UnloadHandler() {

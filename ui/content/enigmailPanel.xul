@@ -2,7 +2,7 @@
 
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?> 
 <?xml-stylesheet href="chrome://communicator/skin/button.css" type="text/css"?> 
-<?xml-stylesheet href="chrome://enigmail/content/enigmail.css"
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
                  type="text/css"?> 
 
 <?xul-overlay href="chrome://global/content/globalOverlay.xul"?>
@@ -17,49 +17,28 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-<script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
+<script type="application/x-javascript" src="chrome://global/content/nsUserSettings.js"/>
+<script type="application/x-javascript" src="chrome://global/content/nsJSComponentManager.js"/>
+<script type="application/x-javascript" src="chrome://global/content/strres.js"/>
 
 <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
 <script type="application/x-javascript" src="chrome://enigmail/content/enigmailPanel.js"/>
 
 <popupset id="aTooltipSet"/>
 
-<groupbox id="urlBox" class="url-box" orient="horizontal">
-  <label><text value="Restricted URLs"/></label>
+  <box id="actionBox" class="action-box" orient="vertical">
 
-  <spring flex="1"/>
-
-  <textbox id="urlText" class="url-text" value="cgi+:/testcgi.pl?aaa=bbb"
-          onkeypress="if( event.keyCode == 13 ) {LoadRestrictedURLFromBar();}"/>
-
-  <button label="Load"
-          class="dialog"
-          tooltip="aTooltip"
-          tooltiptext="Loads restricted URLs not accessible from unprivileged documents"
-          oncommand="LoadRestrictedURLFromBar();"/>
-  <spring flex="1"/>
-</groupbox>
-
-<groupbox id="enigmailPanelBox" class="enigmail-panel-box" orient="vertical"
-           flex="1">
-   <label><text value="Actions"/></label>
-
-  <box id="actionBox" class="action-box" orient="horizontal"
-       copyPath="" exportPath="" persist="copyPath exportPath">
-    <button label="Create"
+    <button label="View Enigmail console"
             class="dialog"
             tooltip="aTooltip"
-            tooltiptext="Create a new protocol handler in protocols directory"
-            oncommand="CreateProtocol();"/>
+            tooltiptext="View Enigmail Console"
+            oncommand="EnigViewConsole();"/>
 
-    <button label="Copy"
+    <button label="Uninstall Enigmail"
             class="dialog"
             tooltip="aTooltip"
-            tooltiptext="Copy new protocol handler to protocols directory"
-            oncommand="CopyProtocol();"/>
-
+            tooltiptext="Uninstall Enigmail"
+            oncommand="EnigUninstall();"/>
   </box>
-
-</groupbox>
 
 </window>

@@ -2,11 +2,6 @@
 <RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
          xmlns:chrome="http://www.mozilla.org/rdf/chrome#">
 
-<!--
- NOTE: Put all the skin stuff in the content directory for the moment
-       (Otherwise every Mozilla skin will need to provide a enigmail skin!)
--->
-
   <!-- list all the packages being supplied by this jar -->
   <RDF:Seq about="urn:mozilla:skin:root">
     <RDF:li resource="urn:mozilla:skin:modern/1.0" />

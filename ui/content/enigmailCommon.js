@@ -220,8 +220,11 @@ function EnigEncryptMessage(plainText, toMailAddr, statusCodeObj, statusMsgObj) 
 function EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj) {
   WRITE_LOG("enigmailCommon.js: EnigDecryptMessage: \n");
 
-  if (!InitEnigmailSvc())
+  if (!InitEnigmailSvc()) {
+     statusCodeObj.value = -1;
+     statusMsgObj.value = "Error in initializing Enigmail service";
      return "";
+  }
 
   var passphrase = null;
   if (!gEnigmailSvc.haveDefaultPassphrase)
@@ -356,4 +359,174 @@ function EnigTest() {
   WRITE_LOG("enigmailCommon.js: enigTest: decryptedText = "+decryptedText+"\n");
   WRITE_LOG("enigmailCommon.js: enigTest: statusCode = "+statusCodeObj.value+"\n");
   WRITE_LOG("enigmailCommon.js: enigTest: statusMsg = "+statusMsgObj.value+"\n");
+}
+
+/////////////////////////
+// Console stuff
+/////////////////////////
+
+
+const WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
+const nsIWindowMediator    = Components.interfaces.nsIWindowMediator;
+
+function EnigViewConsole() {
+  DEBUG_LOG("enigmailCommon.js: EnigViewConsole\n");
+  var navWindow = LoadURLInNavigatorWindow("enigmail:console", true);
+
+  if (navWindow)
+    navWindow.focus();
+}
+
+// retrieves the most recent navigator window (opens one if need be)
+function LoadURLInNavigatorWindow(url, aOpenFlag)
+{
+  WRITE_LOG("enigmailCommon.js: LoadURLInNavigatorWindow: "+url+", "+aOpenFlag+"\n");
+
+  var navWindow;
+
+  // if this is a browser window, just use it
+  if ("document" in top) {
+    var possibleNavigator = top.document.getElementById("main-window");
+    if (possibleNavigator &&
+        possibleNavigator.getAttribute("windowtype") == "navigator:browser")
+      navWindow = top;
+  }
+
+  // if not, get the most recently used browser window
+  if (!navWindow) {
+    var wm = Components.classes[WMEDIATOR_CONTRACTID].getService(nsIWindowMediator);
+    navWindow = wm.getMostRecentWindow("navigator:browser");
+  }
+
+  if (navWindow) {
+
+    if ("loadURI" in navWindow)
+      navWindow.loadURI(url);
+    else
+      navWindow._content.location.href = url;
+
+  } else if (aOpenFlag) {
+    // if no browser window available and it's ok to open a new one, do so
+    navWindow = window.open(url, "EnigmailConsole");
+  }
+
+  dump(navWindow+"\n");
+
+  return navWindow;
+}
+
+/////////////////////////
+// Uninstallation stuff
+/////////////////////////
+
+function GetFileOfProperty(prop) {
+  var dscontractid = "@mozilla.org/file/directory_service;1";
+  var ds = Components.classes[dscontractid].getService();
+
+  var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
+  DEBUG_LOG("enigmailCommon.js: GetFileOfProperty: prop="+prop+"\n");
+  var file = dsprops.get(prop, Components.interfaces.nsIFile);
+  DEBUG_LOG("enigmailCommon.js: GetFileOfProperty: file="+file+"\n");
+  return file;
+}
+
+
+function EnigUninstall() {
+  var delFiles = [];
+
+  var confirm;
+
+  confirm = EnigConfirm("Do you wish to delete all EnigMail-related files in the Mozilla component and chrome directories?");
+
+  if (confirm) {
+    var overlay1Removed = RemoveOverlay("communicator",
+                          ["chrome://enigmail/content/enigmailPrefsOverlay.xul"]);
+
+    var overlay2Removed = RemoveOverlay("messenger",
+                          ["chrome://enigmail/content/enigmailMsgComposeOverlay.xul",
+                           "chrome://enigmail/content/enigmailMessengerOverlay.xul"]);
+
+    if (!overlay1Removed || !overlay2Removed) {
+      EnigAlert("Failed to uninstall EnigMail communicator overlay RDF; not deleting chrome jar file");
+
+    } else {
+      var chromeFile = GetFileOfProperty("AChrom");
+      chromeFile.append("enigmail.jar");
+
+      delFiles.push(chromeFile);
+    }
+
+    var compDir = GetFileOfProperty("ComsD");
+    var compFiles = ["enigmail.js", "enigmail.xpt", "ipc.xpt"];
+    if (gPlatform.search(/^win/i)==0) {
+      compFiles.push("ipc.dll");
+    } else {
+      compFiles.push("libipc.so");
+    }
+
+    for (var k=0; k<compFiles.length; k++) {
+      var compFile = compDir.clone();
+      compFile.append(compFiles[k]);
+      delFiles.push(compFile);
+    }
+  }
+
+  // Need to unregister chrome: how???
+
+  // Delete files
+  for (var j=0; j<delFiles.length; j++) {
+    var delFile = delFiles[j];
+    if (delFile.exists()) {
+      WRITE_LOG("enigmailCommon.js: UninstallPackage: Deleting "+delFile.path+"\n")
+      try {
+          delFile.remove(true);
+      } catch (ex) {
+          EnigError("Error in deleting file "+delFile.path)
+      }
+    }
+  }
+
+  EnigAlert("Uninstalled EnigMail");
+
+  // Close window
+  window.close();
+}
+
+
+function RemoveOverlay(module, urls) {
+   DEBUG_LOG("enigmailCommon.js: RemoveOverlay: module="+module+", urls="+urls.join(",")+"\n");
+
+   var overlayFile = GetFileOfProperty("AChrom");
+   overlayFile.append("overlayinfo");
+   overlayFile.append(module);
+   overlayFile.append("content");
+   overlayFile.append("overlays.rdf");
+
+   DEBUG_LOG("enigmailCommon.js: RemoveOverlay: overlayFile="+overlayFile.path+"\n");
+
+   var overlayRemoved = false;
+
+   try {
+      var fileContents = ReadFileContents(overlayFile, -1);
+
+      for (var j=0; j<urls.length; j++) {
+         var overlayPat=new RegExp("\\s*<RDF:li>\\s*"+urls[j]+"\\s*</RDF:li>");
+
+         while (fileContents.search(overlayPat) != -1) {
+
+            fileContents = fileContents.replace(overlayPat, "");
+
+            overlayRemoved = true;
+
+            DEBUG_LOG("enigmailCommon.js: RemoveOverlay: removed overlay "+urls[j]+"\n");
+         }
+      }
+
+      if (overlayRemoved)
+         WriteFileContents(overlayFile.path, fileContents, 0);
+
+   } catch (ex) {
+   }
+
+   return overlayRemoved;
 }

@@ -44,6 +44,11 @@ function enigDecryptMessage() {
     statusText.setAttribute("value", statusMsg);
     statusBox.removeAttribute("collapsed");
 
+    if (statusCode != 0) {
+       EnigAlert(statusMsg);
+       return;
+    }
+
     // Clear HTML body
     while (bodyElement.hasChildNodes())
         bodyElement.removeChild(bodyElement.childNodes[0]);
@@ -57,5 +62,6 @@ function enigDecryptMessage() {
 
     bodyElement.appendChild(newDivElement);
 
+    return;
 }
 
