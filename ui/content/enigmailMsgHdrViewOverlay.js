@@ -681,9 +681,16 @@ if (messageHeaderSink) {
     ClearAttachmentList();
     ClearEditMessageButton();
     
-    // TB 0.8 and newer
-    if (typeof(SetUpRemoteContentBar) == "function")
+    
+    if (typeof(gMessageNotificationBar) == "object") {
+      // TB > 1.0
+      gMessageNotificationBar.clearMsgNotifications();
+    }
+    else if (typeof(SetUpRemoteContentBar) == "function") {
+      // TB >= 0.8
       SetUpRemoteContentBar(null);
+    }
+
       
     for (index in gMessageListeners)
       gMessageListeners[index].onStartHeaders();
