@@ -1,7 +1,7 @@
 // Install script for Enigmail
 
 var err;
-const APP_VERSION="0.83.2";
+const APP_VERSION="0.83.3";
 
 err = initInstall("Enigmail v"+APP_VERSION,  // name for install UI
                   "/enigmail",         // registered name
@@ -38,8 +38,19 @@ if (!verifyDiskSpace(fProgram, srDest)) {
 
   } else {
     // Register chrome
-    var isTbird = !confirm("Which Theme do you want to install for Enigmail? Click:\n[ OK ] for Mozilla\n[ Cancel ] for Thunderbird");
+    
+    var isTbird = false;
+    var execFile = 'thunderbird' + (getPlatform() == "win" ? '.exe' : '-bin');
+    if (File.exists(getFolder(getFolder('Program'), execFile))) {
+      isTbird = confirm("Installing on Thunderbird. Is this correct?");
+    }
+    else {
+      isTbird = !confirm("Installing on Mozilla or Netscape. Is this correct?");
+    }
 
+//  old way:    
+//  var isTbird = !confirm("Which Theme do you want to install for Enigmail? Click:\n[ OK ] for Mozilla\n[ Cancel ] for Thunderbird");
+    
     registerChrome(PACKAGE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "content/enigmail/");
 
     if (! isTbird) {
