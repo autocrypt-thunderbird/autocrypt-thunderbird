@@ -52,7 +52,7 @@
 
 <groupbox id="keygenConsoleBox" orient="vertical">
 
-  <label><text value="Keygen Console"/></label>
+  <caption label="Keygen Console"/>
 
   <iframe id="keygenConsole" type="content" name="keygenConsole"
           src="enigmail:keygenConsole" flex="100%"/>

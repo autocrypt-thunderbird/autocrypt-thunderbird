@@ -25,7 +25,7 @@
 
 <groupbox id="enigmailBox" class="enigmail-box" orient="vertical"
            flex="1">
-   <label><text value="Box"/></label>
+  <caption label="Box"/>
 
   <box id="actionBox" class="action-box" orient="horizontal"
        copyPath="" exportPath="" persist="copyPath exportPath">

@@ -66,93 +66,103 @@ function enigSend() {
      return;
   }
 
-  var currentId = getCurrentIdentity();
-  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: currentId="+currentId+
-            ", "+currentId.email+"\n");
+  try {
+     var currentId = getCurrentIdentity();
+     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: currentId="+currentId+
+               ", "+currentId.email+"\n");
 
-  if (!gEnigProcessed && (gEnigmailSvc.encryptMsg || gEnigmailSvc.signMsg)) {
-    var msgCompFields = msgCompose.compFields;
-    Recipients2CompFields(msgCompFields);
+     if (!gEnigProcessed && (gEnigmailSvc.encryptMsg||gEnigmailSvc.signMsg)) {
+    
+       var msgCompFields = gMsgCompose.compFields;
+       Recipients2CompFields(msgCompFields);
 
-    var toAddr = msgCompFields.to;
-    if (msgCompFields.cc)  toAddr += ", "+msgCompFields.cc;
-    if (msgCompFields.bcc) toAddr += ", "+msgCompFields.bcc;
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: gMsgCompose="+gMsgCompose+"\n");
+       var toAddr = msgCompFields.to;
+       if (msgCompFields.cc)  toAddr += ", "+msgCompFields.cc;
+       if (msgCompFields.bcc) toAddr += ", "+msgCompFields.bcc;
+    
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: toAddr="+toAddr+"\n");
 
-    // Remove all quoted strings from to addresses
-    var qStart, qEnd;
-    while ((qStart = toAddr.indexOf('"')) != -1) {
-       qEnd = toAddr.indexOf('"', qStart+1);
-       if (qEnd == -1) {
-         ERROR_LOG("enigmailMsgComposeOverlay.js: Unmatched quote in To address\n");
-       throw Components.results.NS_ERROR_FAILURE;
+       // Remove all quoted strings from to addresses
+       var qStart, qEnd;
+       while ((qStart = toAddr.indexOf('"')) != -1) {
+          qEnd = toAddr.indexOf('"', qStart+1);
+          if (qEnd == -1) {
+            ERROR_LOG("enigmailMsgComposeOverlay.js: Unmatched quote in To address\n");
+          throw Components.results.NS_ERROR_FAILURE;
+          }
+    
+          toAddr = toAddr.substring(0,qStart) + toAddr.substring(qEnd+1);
        }
+    
+       // Eliminate all whitespace, just to be safe
+       toAddr = toAddr.replace(/\s+/g,"");
+    
+       // Extract pure e-mail address list (stripping out angle brackets)
+       toAddr = toAddr.replace(/(^|,)[^,]*<([^>]+)>[^,]*(,|$)/g,"$1$2$3");
+    
+       editorDoc = gEditorShell.editorDocument;
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: editorDoc = "+editorDoc+"\n");
+       EnigDumpHTML(editorDoc.documentElement);
+    
+       // Get plain text
+       // (Do we need to set nsIDocumentEncoder::* flags?)
+       var encoderFlags = 16;   // OutputPreformatted
+       var docText = gEditorShell.GetContentsAs("text/plain", encoderFlags)
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: docText["+encoderFlags+"] = '"+docText+"'\n");
+    
+       // Prevent space stuffing a la RFC 2646 (format=flowed).
+       RegExp.multiline = true;
+       docText = docText.replace(/^>/g, "|");
+       docText = docText.replace(/^ /g, "~ ");
+       docText = docText.replace(/^From /g, "~From ");
+       RegExp.multiline = false;
+    
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: docText = '"+docText+"'\n");
+       var directionFlags = 0;   // see nsIEditor.h
+    
+       gEditorShell.SelectAll();
+    
+       gEditorShell.DeleteSelection(directionFlags);
+    
+       gEditorShell.InsertText(docText);
+    
+       encoderFlags = 32;   // OutputWrap
+       var plainText = gEditorShell.GetContentsAs("text/plain", encoderFlags)
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: plainText["+encoderFlags+"] = '"+plainText+"'\n");
+    
+       var statusCodeObj = new Object();
+       var statusMsgObj = new Object();
+       var cipherText;
+    
+       cipherText = EnigEncryptMessage(plainText, toAddr,
+                                       statusCodeObj, statusMsgObj);
+    
+       var statusCode = statusCodeObj.value;
+       var statusMsg  = statusMsgObj.value;
+    
+       if (statusCode != 0) {
+         EnigAlert("Error in encrypting and/or signing message. Send operation aborted.\n"+statusMsg);
+         return;
+       }
+    
+       gEditorShell.SelectAll();
+    
+       gEditorShell.DeleteSelection(directionFlags);
+    
+       gEditorShell.InsertText(cipherText);
+    
+       //if (!EnigConfirm("enigmailMsgComposeOverlay.js: Sending encrypted/signed message to "+toAddr+"\n")) return;
+    
+       gEnigProcessed = true;
+     }
+    
+     goDoCommand('cmd_sendButton');
 
-       toAddr = toAddr.substring(0,qStart) + toAddr.substring(qEnd+1);
-    }
-
-    // Eliminate all whitespace, just to be safe
-    toAddr = toAddr.replace(/\s+/g,"");
-
-    // Extract pure e-mail address list (stripping out angle brackets)
-    toAddr = toAddr.replace(/(^|,)[^,]*<([^>]+)>[^,]*(,|$)/g,"$1$2$3");
-
-    editorDoc = gEditorShell.editorDocument;
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: editorDoc = "+editorDoc+"\n");
-    EnigDumpHTML(editorDoc.documentElement);
-
-    // Get plain text
-    // (Do we need to set nsIDocumentEncoder::* flags?)
-    var encoderFlags = 16;   // OutputPreformatted
-    var docText = gEditorShell.GetContentsAs("text/plain", encoderFlags)
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: docText["+encoderFlags+"] = '"+docText+"'\n");
-
-    // Prevent space stuffing a la RFC 2646 (format=flowed).
-    RegExp.multiline = true;
-    docText = docText.replace(/^>/g, "|");
-    docText = docText.replace(/^ /g, "~ ");
-    docText = docText.replace(/^From /g, "~From ");
-    RegExp.multiline = false;
-
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: docText = '"+docText+"'\n");
-    var directionFlags = 0;   // see nsIEditor.h
-
-    gEditorShell.SelectAll();
-
-    gEditorShell.DeleteSelection(directionFlags);
-
-    gEditorShell.InsertText(docText);
-
-    encoderFlags = 32;   // OutputWrap
-    var plainText = gEditorShell.GetContentsAs("text/plain", encoderFlags)
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: plainText["+encoderFlags+"] = '"+plainText+"'\n");
-
-    var statusCodeObj = new Object();
-    var statusMsgObj = new Object();
-    var cipherText;
-
-    cipherText = EnigEncryptMessage(plainText, toAddr,
-                                    statusCodeObj, statusMsgObj);
-
-    var statusCode = statusCodeObj.value;
-    var statusMsg  = statusMsgObj.value;
-
-    if (statusCode != 0) {
-      EnigAlert("Error in encrypting and/or signing message. Send operation aborted.\n"+statusMsg);
-      return;
-    }
-
-    gEditorShell.SelectAll();
-
-    gEditorShell.DeleteSelection(directionFlags);
-
-    gEditorShell.InsertText(cipherText);
-
-    //if (!EnigConfirm("enigmailMsgComposeOverlay.js: Sending encrypted/signed message to "+toAddr+"\n")) return;
-
-    gEnigProcessed = true;
+  } catch (ex) {
+     if (EnigConfirm("Error in Enigmail; Encryption/signing failed; send unencrypted email?\n"))
+        goDoCommand('cmd_sendButton');
   }
-
-  goDoCommand('cmd_sendButton');
 }
 
 

@@ -1,8 +1,9 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
-const NS_IPCSERVICE_CONTRACTID = "@mozilla.org/process/ipc-service;1";
-const NS_ENIGMAIL_CONTRACTID   = "@mozdev.org/enigmail/enigmail;1";
-const ENIGMAIL_PREFS_ROOT      = "extensions.enigmail.";
+const NS_IPCSERVICE_CONTRACTID  = "@mozilla.org/process/ipc-service;1";
+const NS_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
+const NS_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
+const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
 
 var gLogLevel = 3;     // Output only errors/warnings by default
 var gLogFileStream = null;
@@ -10,6 +11,11 @@ var gLogFileStream = null;
 var gIPCService;
 var gProcessInfo;
 var gPromptService;
+
+function GetEnv(name) {
+  DEBUG_LOG("enigmailCommon.js: GetEnv: "+name+"\n")
+  return gProcessInfo.getEnv(name);
+}
 
 // Initializes enigmailCommon
 function EnigInitCommon(id) {
@@ -20,7 +26,9 @@ function EnigInitCommon(id) {
 
      gProcessInfo = Components.classes[NS_PROCESSINFO_CONTRACTID].getService(Components.interfaces.nsIProcessInfo);
 
-     var matches = nspr_log_modules.match(/enigCommon:(\d+)/);
+     var nspr_log_modules = GetEnv("NSPR_LOG_MODULES");
+
+     var matches = nspr_log_modules.match(/enigmailCommon:(\d+)/);
 
      if (matches && (matches.length > 1)) {
        gLogLevel = matches[1];

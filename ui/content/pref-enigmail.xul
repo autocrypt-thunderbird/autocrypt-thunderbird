@@ -62,7 +62,7 @@
   <box class="box-smallheader" title="&enigmail.label;"/>
 
   <groupbox orient="vertical">
-    <label value="&enigmail.label;"/>
+    <caption label="&enigmail.label;"/>
 
     <box autostretch="never">
       <text class="label"
