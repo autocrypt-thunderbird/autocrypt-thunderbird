@@ -1,7 +1,7 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.62.3.0";
+var gEnigmailVersion = "0.62.4.0";
 var gEnigmimeVersion = "0.62.1.0";
 
 // Maximum size of message directly processed by Enigmail
@@ -71,6 +71,7 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "alwaysTrustSend":true,
                              "encryptToSelf":true,
                              "confirmBeforeSend":false,
+                             "doubleDashSeparator":false,
                              "maxIdleMinutes":5,
                              "keyserver":"www.keyserver.net",
                              "autoDecrypt":true,

@@ -234,7 +234,7 @@ function enigUndoEncryption() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigUndoEncryption: \n");
 
   if (gEnigProcessed) {
-    enigReplaceEditorText(gEnigProcessed.docText);
+    enigReplaceEditorText(gEnigProcessed.origText);
 
     gEnigProcessed = null;
 
@@ -440,7 +440,7 @@ function enigSend(sendFlags) {
 
        var oldSecurityInfo = gMsgCompose.compFields.securityInfo;
 
-       dump("oldSecurityInfo = "+oldSecurityInfo+"\n");
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: oldSecurityInfo = "+oldSecurityInfo+"\n");
 
        var newSecurityInfo;
 
@@ -466,7 +466,7 @@ function enigSend(sendFlags) {
        newSecurityInfo.recipients = toAddr;
        newSecurityInfo.hashAlgorithm = gMimeHashAlgorithms[EnigGetPref("mimeHashAlgorithm")];
 
-       dump("securityInfo = "+newSecurityInfo+"\n");
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: securityInfo = "+newSecurityInfo+"\n");
 
      } else if (!gEnigProcessed && (sendFlags & ENIG_ENCRYPT_OR_SIGN)) {
 
@@ -497,41 +497,46 @@ function enigSend(sendFlags) {
        }
 
        var encoderFlags = EnigOutputFormatted | EnigOutputLFLineBreak;
-       var docText;
+
+       // Get plain text
+       // (Do we need to set the nsIDocumentEncoder::* flags?)
+       var origText = gEnigEditorShell.GetContentsAs("text/plain",
+                                                     encoderFlags);
+
+       // Copy plain text for possible escaping
+       var escText = origText;
 
        if (sendFlowed) {
          // Prevent space stuffing a la RFC 2646 (format=flowed).
 
-         // (Do we need to set nsIDocumentEncoder::* flags?)
-         docText = gEnigEditorShell.GetContentsAs("text/plain", encoderFlags);
-         //DEBUG_LOG("enigmailMsgComposeOverlay.js: docText["+encoderFlags+"] = '"+docText+"'\n");
+         //DEBUG_LOG("enigmailMsgComposeOverlay.js: escText["+encoderFlags+"] = '"+escText+"'\n");
 
          // MULTILINE MATCHING ON
          RegExp.multiline = true;
 
-         docText = docText.replace(/^From /g, "~From ");
-         docText = docText.replace(/^>/g, "|");
-         docText = docText.replace(/^[ \t]+$/g, "");
-         docText = docText.replace(/^ /g, "~ ");
+         escText = escText.replace(/^From /g, "~From ");
+         escText = escText.replace(/^>/g, "|");
+         escText = escText.replace(/^[ \t]+$/g, "");
+         escText = escText.replace(/^ /g, "~ ");
 
          // MULTILINE MATCHING OFF
          RegExp.multiline = false;
 
-         //DEBUG_LOG("enigmailMsgComposeOverlay.js: docText = '"+docText+"'\n");
-         enigReplaceEditorText(docText);
+         //DEBUG_LOG("enigmailMsgComposeOverlay.js: escText = '"+escText+"'\n");
+         // Replace plain text and get it again
+         enigReplaceEditorText(escText);
+
+         escText = gEnigEditorShell.GetContentsAs("text/plain", encoderFlags);
        }
-    
-       // Get plain text
-       docText = gEnigEditorShell.GetContentsAs("text/plain", encoderFlags);
 
        // Replace plain text and get it again (to avoid linewrapping problems)
-       enigReplaceEditorText(docText);
+       enigReplaceEditorText(escText);
 
-       docText = gEnigEditorShell.GetContentsAs("text/plain", encoderFlags);
+       escText = gEnigEditorShell.GetContentsAs("text/plain", encoderFlags);
 
-       //DEBUG_LOG("enigmailMsgComposeOverlay.js: docText["+encoderFlags+"] = '"+docText+"'\n");
+       //DEBUG_LOG("enigmailMsgComposeOverlay.js: escText["+encoderFlags+"] = '"+escText+"'\n");
 
-       if (!docText) {
+       if (!escText) {
          // No encryption or signing for null text
          sendFlags &= ~ENIG_ENCRYPT_OR_SIGN;
 
@@ -541,7 +546,9 @@ function enigSend(sendFlags) {
          DEBUG_LOG("enigmailMsgComposeOverlay.js: charset="+charset+"\n");
 
          // Encode plaintext to charset from unicode
-         var plainText = EnigConvertFromUnicode(docText, charset);
+         var plainText = (sendFlags & ENIG_ENCRYPT)
+                         ? EnigConvertFromUnicode(origText, charset)
+                         : EnigConvertFromUnicode(escText, charset);
 
          var exitCodeObj    = new Object();
          var statusFlagsObj = new Object();    
@@ -567,6 +574,8 @@ function enigSend(sendFlags) {
 
            if (sendFlags & ENIG_SIGN) {
              // Try signing only, to see if it removes the error condition
+             plainText = EnigConvertFromUnicode(escText, charset);
+
              cipherText = enigmailSvc.encryptMessage(window,uiFlags, plainText,
                                                 fromAddr, toAddr, sendFlags,
                                                 exitCodeObj, statusFlagsObj,
@@ -583,12 +592,17 @@ function enigSend(sendFlags) {
            enigReplaceEditorText( EnigConvertToUnicode(cipherText, charset) );
 
            // Save original text (for undo)
-           gEnigProcessed = {"docText":docText};
+           gEnigProcessed = {"origText":origText};
 
-         } else if (sendFlags & ENIG_ENCRYPT_OR_SIGN) {
-           // Encryption/signing failed
-           EnigAlert("Send operation aborted.\n\n"+errorMsgObj.value);
-           return;
+         } else {
+           // Restore original text
+           enigReplaceEditorText(origText);
+
+           if (sendFlags & ENIG_ENCRYPT_OR_SIGN) {
+             // Encryption/signing failed
+             EnigAlert("Send operation aborted.\n\n"+errorMsgObj.value);
+             return;
+           }
          }
        }
      }
@@ -925,6 +939,13 @@ function enigDecryptQuote(interactive) {
     // Extract text portion of clearsign block
     plainText = enigmailSvc.extractSignaturePart(pgpBlock,
                                                   nsIEnigmail.SIGNATURE_TEXT);
+  }
+
+  var signOffset = plainText.indexOf("\n-- ");
+
+  if (signOffset >= 0) {
+    // Strip signature portion of quoted message
+    plainText = plainText.substr(0, signOffset+1);
   }
 
   // Replace encrypted quote with decrypted quote

@@ -2164,7 +2164,14 @@ function (signatureBlock, part) {
     return "";
 
   if (part == nsIEnigmail.SIGNATURE_TEXT) {
-    return signatureBlock.substr(offset+1, beginIndex-offset-1);
+    var signedText = signatureBlock.substr(offset+1, beginIndex-offset-1);
+
+    // Unescape leading dashes
+    signedText = signedText.replace(/^- -/, "-");
+    signedText = signedText.replace(/\n- -/g, "\n-");
+    signedText = signedText.replace(/\r- -/g, "\r-");
+
+    return signedText;
   }
 
   // Locate newline at end of armor header
@@ -2297,6 +2304,7 @@ function (parent, uiFlags, cipherText, signatureObj,
   var passphrase = null;
 
   if (!verifyOnly) {
+    // Decrypting ...
     var passwdObj = new Object();
 
     if (!GetPassphrase(parent, null, passwdObj)) {
@@ -2399,6 +2407,16 @@ function (parent, uiFlags, cipherText, signatureObj,
         if (!exitCodeObj.value)
           exitCodeObj.value = 1;
       }
+    }
+
+    var doubleDashSeparator = false;
+    try {
+       doubleDashSeparator = this.prefBranch.getBoolPref("doubleDashSeparator")
+    } catch(ex) { }
+
+    if (doubleDashSeparator) {
+      // Workaround for MsgCompose stripping trailing spaces from sig separator
+      plainText = plainText.replace(/(\r|\n)--(\r|\n)/, "$1-- $2");
     }
 
     return plainText;

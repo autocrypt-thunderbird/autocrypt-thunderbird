@@ -86,11 +86,11 @@
     <checkbox id="enigmail_useDefaultComment"
               label="&enigmail.useDefaultComment.label;" />
 
-    <checkbox id="enigmail_autoDecrypt"
-              label="&enigmail.autoDecrypt.label;" />
-
     <checkbox id="enigmail_disableSMIMEui"
               label="&enigmail.disableSMIMEui.label;" />
+
+    <checkbox id="enigmail_doubleDashSeparator"
+              label="Treat '--' as signature separator" />
 
     <checkbox id="enigmail_captureWebMail"
               label="&enigmail.captureWebMail.label;" />
@@ -164,7 +164,7 @@
     </hbox>
 
     <checkbox id="enigmail_useMimeExperimental"
-              label="Use experimental MIME signing/encryption" />
+              label="Use experimental inline signing/encryption" />
 
   </groupbox>
 
