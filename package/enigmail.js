@@ -3042,7 +3042,7 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
 
   var proxyHost = null;
   try {
-    if (this.prefBranch.getCharPref("respectHttpProxy")) {
+    if (this.prefBranch.getBoolPref("respectHttpProxy")) {
       // determine proxy host
       var prefsSvc = Components.classes[NS_PREFS_SERVICE_CID].getService(Components.interfaces.nsIPrefService);
       var prefRoot = prefsSvc.getBranch(null);
@@ -3150,7 +3150,7 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
   var proxyHost = null;
   if (protocol=="hkp") {
     try {
-      if (this.prefBranch.getCharPref("respectHttpProxy")) {
+      if (this.prefBranch.getBoolPref("respectHttpProxy")) {
         // determine proxy host
         var prefsSvc = Components.classes[NS_PREFS_SERVICE_CID].getService(Components.interfaces.nsIPrefService);
         var prefRoot = prefsSvc.getBranch(null);
