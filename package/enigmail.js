@@ -49,19 +49,21 @@ const NS_IPCSERVICE_CONTRACTID  =
        "@mozilla.org/process/ipc-service;1";
 
 const NS_PIPECONSOLE_CONTRACTID =
-       "@mozilla.org/process/pipe-console;1"
+       "@mozilla.org/process/pipe-console;1";
 
 const NS_SYSTEMENVIRONMENT_CONTRACTID =
        "@mozilla.org/xpcom/system-environment;1";
 
 const NS_SIMPLEURI_CONTRACTID = "@mozilla.org/network/simple-uri;1";
-const NS_IHTTPHANDLER_CID_STR = "{52A30880-DD95-11d3-A1A7-0050041CAF44}";
-const NS_IOSERVICE_CID_STR    = "{9ac9e770-18bc-11d3-9337-00104ba0fd40}";
+
+const NS_HTTPPROTOCOLHANDLER_CID_STR= "{4f47e42e-4d23-4dd3-bfda-eb29255e9ea3}";
+
+const NS_IOSERVICE_CID_STR          = "{9ac9e770-18bc-11d3-9337-00104ba0fd40}";
 
 /* Interfaces */
 const nsISupports            = Components.interfaces.nsISupports;
 const nsILocalFile           = Components.interfaces.nsILocalFile;
-const nsIHTTPProtocolHandler = Components.interfaces.nsIHTTPProtocolHandler;
+const nsIHttpProtocolHandler = Components.interfaces.nsIHttpProtocolHandler;
 const nsIProtocolHandler     = Components.interfaces.nsIProtocolHandler;
 const nsIIPCService          = Components.interfaces.nsIIPCService;
 const nsIPipeConsole         = Components.interfaces.nsIPipeConsole;
@@ -129,21 +131,24 @@ function WARNING_LOG(str) {
   if (gLogLevel >= 3)
     WRITE_LOG(str);
 
-  gEnigmailSvc.console.write(str);
+  if (gEnigmailSvc && gEnigmailSvc.console)
+    gEnigmailSvc.console.write(str);
 }
 
 function ERROR_LOG(str) {
   if (gLogLevel >= 2)
     WRITE_LOG(str);
 
-  gEnigmailSvc.console.write(str);
+  if (gEnigmailSvc && gEnigmailSvc.console)
+    gEnigmailSvc.console.write(str);
 }
 
 function CONSOLE_LOG(str) {
   if (gLogLevel >= 3)
     WRITE_LOG(str);
 
-  gEnigmailSvc.console.write(str);
+  if (gEnigmailSvc && gEnigmailSvc.console)
+    gEnigmailSvc.console.write(str);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -175,6 +180,7 @@ var EnigModuleObj = {
                                                NS_PGP_MODULE_CONTRACTID,
                                                moduleFile, registryLocation,
                                                true, true, componentType);
+    DEBUG_LOG("enigmail.js: Registered components\n");
   },
 
   unregisterSelf: function(componentManager, moduleFile, registryLocation)
@@ -611,8 +617,8 @@ function Enigmail(registeringModule)
   DEBUG_LOG("enigmail.js: Enigmail: START "+registeringModule+"\n");
   this.registeringModule = registeringModule;
 
-  var httpHandler = Components.classesByID[NS_IHTTPHANDLER_CID_STR].createInstance();
-  httpHandler = httpHandler.QueryInterface(nsIHTTPProtocolHandler);
+  var httpHandler = Components.classesByID[NS_HTTPPROTOCOLHANDLER_CID_STR].createInstance();
+  httpHandler = httpHandler.QueryInterface(nsIHttpProtocolHandler);
 
   this.oscpu = httpHandler.oscpu;
   DEBUG_LOG("enigmail.js: Enigmail: oscpu="+this.oscpu+"\n");

@@ -37,7 +37,7 @@ DEPTH		= ..\..\..
 
 include <$(DEPTH)\config\rules.mak>
 
-chrome::
+install::
         $(REGCHROME) content enigmail enigmail.jar
         $(REGCHROME) skin modern/enigmail enigmail.jar
         $(REGCHROME) locale en-US/enigmail enigmail.jar
