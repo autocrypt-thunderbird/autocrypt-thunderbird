@@ -298,8 +298,13 @@ function fillIdentityListPopup()
 
   DEBUG_LOG("enigmailKeygen.js: fillIdentityListPopup: default="+defIdentity.key+"\n");
 
+  var selected = false;
   for (var i=0; i<identities.length; i++) {
     var identity = identities[i];
+
+    dump("id.valid="+identity.valid+"\n");
+    if (!identity.valid || !identity.email)
+      continue;
   
     var serverSupports = gAccountManager.GetServersForIdentity(identity);
   
@@ -320,8 +325,13 @@ function fillIdentityListPopup()
 
       gIdentityListPopup.appendChild(item);
 
-      if (identity.key == defIdentity.key)
+      if (!selected)
         gIdentityList.selectedItem = item;
+
+      if (identity.key == defIdentity.key) {
+        gIdentityList.selectedItem = item;
+        selected = true;
+      }
     }
   }
 
