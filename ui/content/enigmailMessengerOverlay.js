@@ -391,6 +391,10 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
     gEnigSecurityInfo = errLines.join("\n");
   }
 
+  if (!gEnigSecurityInfo && (statusFlags & nsIEnigmail.DECRYPTED_MESSAGE)) {
+    gEnigSecurityInfo = "Decrypted message";
+  }
+
   if (importOnly) {
      if (interactive && gEnigSecurityInfo)
        EnigAlert(gEnigSecurityInfo);
