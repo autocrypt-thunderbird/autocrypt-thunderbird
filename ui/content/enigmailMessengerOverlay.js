@@ -3,9 +3,6 @@
 // Initialize enigmailCommon
 EnigInitCommon("enigmailMessengerOverlay");
 
-window.addEventListener("load",   enigMessengerStartup, false);
-window.addEventListener("unload", enigMessengerFinish,  false);
-
 var gEnigCreatedURIs = [];
 
 var gEnigDecryptedMessage;
@@ -17,6 +14,13 @@ var gEnigNoShowReload = false;
 
 var gEnigHeadersList = ["content-type", "x-enigmail-version"];
 var gEnigSavedHeaders = null;
+
+var gShowHeadersObj = {"viewallheaders":2,
+                       "viewnormalheaders":1,
+                       "viewbriefheaders":0};
+
+window.addEventListener("load",   enigMessengerStartup, false);
+window.addEventListener("unload", enigMessengerFinish,  false);
 
 function enigMessengerStartup() {
   DEBUG_LOG("enigmailMessengerOverlay.js: Startup\n");
@@ -147,10 +151,6 @@ function enigInitViewHeadersMenu() {
     menuitem.setAttribute("checked", "true"); 
 }
 
-var gShowHeadersObj = {"viewallheaders":2,
-                       "viewnormalheaders":1,
-                       "viewbriefheaders":0};
-
 function enigMsgViewHeaders(elementId) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgViewHeaders:"+elementId+"\n");
 
@@ -223,17 +223,17 @@ function enigMimeInit() {
   DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit\n");
 
   try {
-    const NS_ENIGCONTENTHANDLER_CID =
+    const ENIG_ENIGCONTENTHANDLER_CID =
       Components.ID("{847b3a51-7ab1-11d4-8f02-006008948af5}");
 
-    const NS_ENIGENCRYPTEDHANDLER_CONTRACTID = "@mozilla.org/mimecth;1?type=multipart/encrypted";
+    const ENIG_ENIGENCRYPTEDHANDLER_CONTRACTID = "@mozilla.org/mimecth;1?type=multipart/encrypted";
 
     var compMgr = Components.manager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
 
-    var enigContentHandlerCID = compMgr.contractIDToCID(NS_ENIGENCRYPTEDHANDLER_CONTRACTID);
+    var enigContentHandlerCID = compMgr.contractIDToCID(ENIG_ENIGENCRYPTEDHANDLER_CONTRACTID);
 
     var handlePGPMime = (enigContentHandlerCID.toString() == 
-                     NS_ENIGCONTENTHANDLER_CID);
+                     ENIG_ENIGCONTENTHANDLER_CID);
 
     DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit: handlePGPMime="+handlePGPMime+"\n");
 
@@ -449,8 +449,8 @@ function enigMessageDecrypt(event) {
     if (mailNewsUrl) {
       dump("mailNewsUrl.spec="+mailNewsUrl.spec+"\n");
 
-      const NS_ENIGMIMEVERIFY_CONTRACTID = "@mozilla.org/enigmail/mime-verify;1";
-      var verifier = Components.classes[NS_ENIGMIMEVERIFY_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeVerify);
+      const ENIG_ENIGMIMEVERIFY_CONTRACTID = "@mozilla.org/enigmail/mime-verify;1";
+      var verifier = Components.classes[ENIG_ENIGMIMEVERIFY_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeVerify);
       dump("verifier="+verifier+"\n");
 
       verifier.init(mailNewsUrl, msgWindow, msgUriSpec, true);
@@ -947,7 +947,7 @@ function EnigFilePicker(title, displayDir, save, defaultExtension, filterPairs) 
   filePicker.init(window, title, mode);
 
   if (displayDir) {
-    var localFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+    var localFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
 
     try {
       localFile.initWithPath(displayDir);
@@ -984,7 +984,7 @@ function enigMsgDirect(interactive, importOnly, charset, signature) {
   if (!mailNewsUrl)
     return;
 
-  var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+  var ipcBuffer = Components.classes[ENIG_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
 
   var callbackArg = { interactive:interactive,
                       importOnly:importOnly,
@@ -996,7 +996,7 @@ function enigMsgDirect(interactive, importOnly, charset, signature) {
   var requestObserver = new EnigRequestObserver(enigMsgDirectCallback,
                                                 callbackArg);
 
-  ipcBuffer.openURI(mailNewsUrl, MESSAGE_BUFFER_SIZE,
+  ipcBuffer.openURI(mailNewsUrl, ENIG_MSG_BUFFER_SIZE,
                     false, requestObserver, mailNewsUrl);
 }
 

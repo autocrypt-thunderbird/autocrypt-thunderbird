@@ -153,11 +153,11 @@ function EnigMimeTest() {
   var linebreak = ["CRLF", "LF", "CR"];
 
   for (var j=0; j<linebreak.length; j++) {
-    var listener = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+    var listener = Components.classes[ENIG_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
 
     listener.open(2000, false);
 
-    var mimeFilter = Components.classes[NS_ENIGMIMELISTENER_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeListener);
+    var mimeFilter = Components.classes[ENIG_ENIGMIMELISTENER_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeListener);
 
     mimeFilter.init(listener, null, 4000, j != 1, j == 1);
 

@@ -1,19 +1,19 @@
 // enigmailSelectPanel.js
 
-const DEBUG = true; /* set to false to suppress debug messages */
-const NS_ENIGMAIL_CONTRACTID   = "@mozdev.org/enigmail/enigmail;1";
+const ENIG_DEBUG = true; /* set to false to suppress debug messages */
+const ENIG_ENIGMAIL_CONTRACTID   = "@mozdev.org/enigmail/enigmail;1";
 
-if (DEBUG)
-    debug = function (s) { dump(s); }
+if (ENIG_DEBUG)
+    EnigDebug = function (s) { dump(s); }
 else
-    debug = function (s) {}
+    EnigDebug = function (s) {}
 
 function OnLoadEnigmailSelectPanel() {
-  debug("enigmailSelectPanel.js: OnLoadEnigmailSelectPanel\n");
+  EnigDebug("enigmailSelectPanel.js: OnLoadEnigmailSelectPanel\n");
 }
 
 function OnUnloadEnigmailSelectPanel() {
-  debug("enigmailSelectPanel.js: OnUnloadEnigmailSelectPanel\n");
+  EnigDebug("enigmailSelectPanel.js: OnUnloadEnigmailSelectPanel\n");
 }
 
 function SelectPanel() {
@@ -21,13 +21,13 @@ function SelectPanel() {
   var enigmailSvc;
 
   try {
-    enigmailSvc = Components.classes[NS_ENIGMAIL_CONTRACTID].createInstance(Components.interfaces.nsIEnigmail);
+    enigmailSvc = Components.classes[ENIG_ENIGMAIL_CONTRACTID].createInstance(Components.interfaces.nsIEnigmail);
 
   } catch (ex) {
-    debug("enigmailSelectPanel.js: Error in instantiating EnigmailService\n");
+    EnigDebug("enigmailSelectPanel.js: Error in instantiating EnigmailService\n");
   }
 
-  debug("enigmailSelectPanel.js: enigmailSvc = " + enigmailSvc + "\n");
+  EnigDebug("enigmailSelectPanel.js: enigmailSvc = " + enigmailSvc + "\n");
 
   enigmailSvc.selectPanel(document.location.href);
 }

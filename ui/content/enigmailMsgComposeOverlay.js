@@ -1,33 +1,47 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
+// Initialize enigmailCommon
+EnigInitCommon("enigmailMsgComposeOverlay");
+
 // nsIDocumentEncoder.h:
-const OutputSelectionOnly = 1;
-const OutputFormatted     = 2;
-const OutputRaw           = 4;
-const OutputPreformatted  = 16;
-const OutputWrap          = 32;
-const OutputFormatFlowed  = 64;
-const OutputCRLineBreak   = 512;
-const OutputLFLineBreak   = 1024;
+const EnigOutputSelectionOnly = 1;
+const EnigOutputFormatted     = 2;
+const EnigOutputRaw           = 4;
+const EnigOutputPreformatted  = 16;
+const EnigOutputWrap          = 32;
+const EnigOutputFormatFlowed  = 64;
+const EnigOutputCRLineBreak   = 512;
+const EnigOutputLFLineBreak   = 1024;
+
+const ENIG_ENIGMSGCOMPFIELDS_CONTRACTID = "@mozdev.org/enigmail/composefields;1";
 
 // List of hash algorithms for PGP/MIME signatures
 var gMimeHashAlgorithms = ["md5", "sha1", "ripemd160"];
 
-const NS_ENIGMSGCOMPFIELDS_CONTRACTID = "@mozdev.org/enigmail/composefields;1";
+var gSendFlagsObj = {
+  "cmd_sendButton":          nsIEnigmail.SEND_DEFAULT,
+  "cmd_send":                nsIEnigmail.SEND_DEFAULT,
+  "cmd_sendNow":             nsIEnigmail.SEND_DEFAULT,
 
-// Initialize enigmailCommon
-EnigInitCommon("enigmailMsgComposeOverlay");
+  "cmd_sendWithCheck":  nsIEnigmail.SEND_DEFAULT | nsIEnigmail.SEND_WITH_CHECK,
+
+  "cmd_sendLater":           nsIEnigmail.SEND_DEFAULT | nsIEnigmail.SEND_LATER,
+  "enigmail_default_send":   nsIEnigmail.SEND_DEFAULT,
+  "enigmail_signed_send":    nsIEnigmail.SEND_SIGNED,
+  "enigmail_encrypted_send": nsIEnigmail.SEND_ENCRYPTED,
+  "enigmail_encrypt_sign_send": nsIEnigmail.SEND_SIGNED | nsIEnigmail.SEND_ENCRYPTED
+  };
+
+var gEnigOrigSendButton, gEnigSendButton;
+var gEnigEditorElement, gEnigEditorShell;
+var gEnigDirty, gEnigProcessed, gEnigTimeoutID;
+var gEnigSendPGPMime;
 
 window.addEventListener("load", enigMsgComposeStartup, false);
 
 // Handle recycled windows
 window.addEventListener('compose-window-close', enigMsgComposeClose, true);
 window.addEventListener('compose-window-reopen', enigMsgComposeReopen, true);
-
-var gEnigOrigSendButton, gEnigSendButton;
-var gEnigEditorElement, gEnigEditorShell;
-var gEnigDirty, gEnigProcessed, gEnigTimeoutID;
-var gEnigSendPGPMime;
 
 function enigMsgComposeStartup() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
@@ -238,20 +252,6 @@ function enigReplaceEditorText(text) {
   gEnigEditorShell.InsertText(text);
 }
 
-var gSendFlagsObj = {
-  "cmd_sendButton":          nsIEnigmail.SEND_DEFAULT,
-  "cmd_send":                nsIEnigmail.SEND_DEFAULT,
-  "cmd_sendNow":             nsIEnigmail.SEND_DEFAULT,
-
-  "cmd_sendWithCheck":  nsIEnigmail.SEND_DEFAULT | nsIEnigmail.SEND_WITH_CHECK,
-
-  "cmd_sendLater":           nsIEnigmail.SEND_DEFAULT | nsIEnigmail.SEND_LATER,
-  "enigmail_default_send":   nsIEnigmail.SEND_DEFAULT,
-  "enigmail_signed_send":    nsIEnigmail.SEND_SIGNED,
-  "enigmail_encrypted_send": nsIEnigmail.SEND_ENCRYPTED,
-  "enigmail_encrypt_sign_send": nsIEnigmail.SEND_SIGNED | nsIEnigmail.SEND_ENCRYPTED
-  };
-
 function enigSendCommand(elementId) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: id="+elementId+"\n");
 
@@ -293,14 +293,14 @@ function enigSend(sendFlags) {
      if (defaultSend) {
 
        if (EnigGetPref("defaultSignMsg"))
-         sendFlags |= SIGN_MSG;
+         sendFlags |= ENIG_SIGN;
 
        switch (defaultEncryptionOption) {
        case 2:
-         sendFlags |= ENCRYPT_OR_SIGN_MSG;
+         sendFlags |= ENIG_ENCRYPT_OR_SIGN;
          break;
        case 1:	
-         sendFlags |= ENCRYPT_MSG;
+         sendFlags |= ENIG_ENCRYPT;
          break;
        default:
         break;
@@ -353,11 +353,11 @@ function enigSend(sendFlags) {
 
      if (newsgroups && defaultSend) {
        // Do not encrypt by default if sending to newsgroups
-       sendFlags &= ~ENCRYPT_MSG;
+       sendFlags &= ~ENIG_ENCRYPT;
 
        if (!EnigGetPref("defaultSignNewsMsg")) {
          // Do not sign by default if sending to any newsgroup
-         sendFlags &= ~SIGN_MSG;
+         sendFlags &= ~ENIG_SIGN;
        }
      }
 
@@ -395,7 +395,7 @@ function enigSend(sendFlags) {
 
      var usePGPMimeOption = EnigGetPref("usePGPMimeOption");
 
-     if ( !(defaultSend && (sendFlags & ENCRYPT_MSG)) ) {
+     if ( !(defaultSend && (sendFlags & ENIG_ENCRYPT)) ) {
 
        if (gEnigSendPGPMime) {
          sendFlags |= nsIEnigmail.SEND_PGP_MIME;
@@ -407,19 +407,19 @@ function enigSend(sendFlags) {
        DEBUG_LOG("enigmailMsgComposeOverlay.js: hasAttachments = "+hasAttachments+"\n");
 
        if ( hasAttachments &&
-          (sendFlags & ENCRYPT_OR_SIGN_MSG) &&
+          (sendFlags & ENIG_ENCRYPT_OR_SIGN) &&
           !(sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
           (usePGPMimeOption >= PGP_MIME_POSSIBLE) &&
           enigmailSvc.composeSecure ) {
 
-         if (EnigConfirm("Attachments to this message will be signed/encrypted only if the recipient's mail reader supports the PGP/MIME format. Enigmail and Mutt are known to support this format.\n Do you wish to use PGP/MIME format for this message?")) {
+         if (EnigConfirm("Attachments to this message will be signed/encrypted only if the recipient's mail reader supports the PGP/MIME format. Enigmail, Evolution, and Mutt are known to support this format.\n Click OK to use PGP/MIME format for this message, or Cancel to use inline PGP.")) {
          sendFlags |= nsIEnigmail.SEND_PGP_MIME;
          }
        }
      }
 
      var usingPGPMime = (sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
-                        (sendFlags & ENCRYPT_OR_SIGN_MSG);
+                        (sendFlags & ENIG_ENCRYPT_OR_SIGN);
 
      if (usingPGPMime && !enigmailSvc.composeSecure) {
        if (!EnigConfirm("PGP/MIME not available!\nUse inline PGP for signing/encryption?")) {
@@ -451,7 +451,7 @@ function enigSend(sendFlags) {
        }
 
        if (!newSecurityInfo) {
-         newSecurityInfo = Components.classes[NS_ENIGMSGCOMPFIELDS_CONTRACTID].createInstance(Components.interfaces.nsIEnigMsgCompFields);
+         newSecurityInfo = Components.classes[ENIG_ENIGMSGCOMPFIELDS_CONTRACTID].createInstance(Components.interfaces.nsIEnigMsgCompFields);
 
          if (!newSecurityInfo)
            throw Components.results.NS_ERROR_FAILURE;
@@ -468,7 +468,7 @@ function enigSend(sendFlags) {
 
        dump("securityInfo = "+newSecurityInfo+"\n");
 
-     } else if (!gEnigProcessed && (sendFlags & ENCRYPT_OR_SIGN_MSG)) {
+     } else if (!gEnigProcessed && (sendFlags & ENIG_ENCRYPT_OR_SIGN)) {
 
        ///var editorDoc = gEnigEditorShell.editorDocument;
        ///DEBUG_LOG("enigmailMsgComposeOverlay.js: Doc = "+editorDoc+"\n");
@@ -496,7 +496,7 @@ function enigSend(sendFlags) {
          sendFlowed = true;
        }
 
-       var encoderFlags = OutputFormatted | OutputLFLineBreak;
+       var encoderFlags = EnigOutputFormatted | EnigOutputLFLineBreak;
        var docText;
 
        if (sendFlowed) {
@@ -533,7 +533,7 @@ function enigSend(sendFlags) {
 
        if (!docText) {
          // No encryption or signing for null text
-         sendFlags &= ~ENCRYPT_OR_SIGN_MSG;
+         sendFlags &= ~ENIG_ENCRYPT_OR_SIGN;
 
        } else {
          // Encrypt plaintext
@@ -554,18 +554,18 @@ function enigSend(sendFlags) {
 
          var exitCode = exitCodeObj.value;
     
-         if ((exitCode != 0) && defaultSend && (sendFlags & ENCRYPT_MSG) &&
+         if ((exitCode != 0) && defaultSend && (sendFlags & ENIG_ENCRYPT) &&
              !(statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) ) {
            // Default send error; turn off encryption
-           sendFlags &= ~ENCRYPT_MSG;
+           sendFlags &= ~ENIG_ENCRYPT;
 
            if (!EnigGetPref("defaultSignMsg") &&
                (defaultEncryptionOption < 2) ) {
              // Turn off signing
-             sendFlags &= ~SIGN_MSG;
+             sendFlags &= ~ENIG_SIGN;
            }
 
-           if (sendFlags & SIGN_MSG) {
+           if (sendFlags & ENIG_SIGN) {
              // Try signing only, to see if it removes the error condition
              cipherText = enigmailSvc.encryptMessage(window,uiFlags, plainText,
                                                 fromAddr, toAddr, sendFlags,
@@ -585,7 +585,7 @@ function enigSend(sendFlags) {
            // Save original text (for undo)
            gEnigProcessed = {"docText":docText};
 
-         } else if (sendFlags & ENCRYPT_OR_SIGN_MSG) {
+         } else if (sendFlags & ENIG_ENCRYPT_OR_SIGN) {
            // Encryption/signing failed
            EnigAlert("Send operation aborted.\n\n"+errorMsgObj.value);
            return;
@@ -603,10 +603,10 @@ function enigSend(sendFlags) {
        if (sendFlags & nsIEnigmail.SEND_PGP_MIME)
          msgStatus += "PGP/MIME ";
 
-       if (sendFlags & SIGN_MSG)
+       if (sendFlags & ENIG_SIGN)
          msgStatus += "SIGNED ";
 
-       if (sendFlags & ENCRYPT_MSG)
+       if (sendFlags & ENIG_ENCRYPT)
          msgStatus += "ENCRYPTED ";
 
        if (!msgStatus)
@@ -804,7 +804,7 @@ function enigDecryptQuote(interactive) {
   if (!enigmailSvc)
     return;
 
-  var encoderFlags = OutputFormatted | OutputLFLineBreak;
+  var encoderFlags = EnigOutputFormatted | EnigOutputLFLineBreak;
 
   var docText = gEnigEditorShell.GetContentsAs("text/plain", encoderFlags);
 

@@ -4,10 +4,6 @@
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail");
 
-const ePrefString = 32;
-const ePrefInt = 64;
-const ePrefBool = 128;
-
 function init_pref_enigmail() {
   DEBUG_LOG("pref-enigmail.js: init_pref_enigmail\n");
   parent.initPanel('chrome://enigmail/content/pref-enigmail.xul');

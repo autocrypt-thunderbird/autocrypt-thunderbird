@@ -1,23 +1,23 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.62.2.0";
+var gEnigmailVersion = "0.62.3.0";
 var gEnigmimeVersion = "0.62.1.0";
 
 // Maximum size of message directly processed by Enigmail
-const MESSAGE_BUFFER_SIZE = 32000;
+const ENIG_MSG_BUFFER_SIZE = 32000;
 
-const NS_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
-const NS_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1";
-const NS_IPCBUFFER_CONTRACTID   = "@mozilla.org/process/ipc-buffer;1";
-const NS_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
-const NS_ENIGMIMELISTENER_CONTRACTID = "@mozilla.org/enigmail/mime-listener;1";
-const NS_ENIGMIMESERVICE_CONTRACTID = "@mozdev.org/enigmail/enigmimeservice;1";
+const ENIG_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
+const ENIG_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1";
+const ENIG_IPCBUFFER_CONTRACTID   = "@mozilla.org/process/ipc-buffer;1";
+const ENIG_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
+const ENIG_ENIGMIMELISTENER_CONTRACTID = "@mozilla.org/enigmail/mime-listener;1";
+const ENIG_ENIGMIMESERVICE_CONTRACTID = "@mozdev.org/enigmail/enigmimeservice;1";
 
-const NS_STREAMCONVERTERSERVICE_CID_STR =
+const ENIG_STREAMCONVERTERSERVICE_CID_STR =
       "{892FFEB0-3F80-11d3-A16C-0050041CAF44}";
 
-const NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
+const ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
 
 const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
 
@@ -26,9 +26,9 @@ const nsIEnigmail               = Components.interfaces.nsIEnigmail;
 
 // Encryption flags
 if (nsIEnigmail) {
-  const SIGN_MSG    = nsIEnigmail.SEND_SIGNED;
-  const ENCRYPT_MSG = nsIEnigmail.SEND_ENCRYPTED;
-  const ENCRYPT_OR_SIGN_MSG = ENCRYPT_MSG | SIGN_MSG;
+  const ENIG_SIGN    = nsIEnigmail.SEND_SIGNED;
+  const ENIG_ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
+  const ENIG_ENCRYPT_OR_SIGN = ENIG_ENCRYPT | ENIG_SIGN;
 }
 
 // UsePGPMimeOption values
@@ -43,14 +43,14 @@ var gDefaultEncryptionOptionList = ["defaultEncryptionNone",
                                     "defaultEncryptionOnly",
                                     "defaultEncryptionSign"];
 
-const BUTTON_POS_0           = 1;
-const BUTTON_POS_1           = 1 << 8;
-const BUTTON_POS_2           = 1 << 16;
-const BUTTON_TITLE_IS_STRING = 127;
+const ENIG_BUTTON_POS_0           = 1;
+const ENIG_BUTTON_POS_1           = 1 << 8;
+const ENIG_BUTTON_POS_2           = 1 << 16;
+const ENIG_BUTTON_TITLE_IS_STRING = 127;
   
-const THREE_BUTTON_STRINGS   = (BUTTON_TITLE_IS_STRING * BUTTON_POS_0) +
-                               (BUTTON_TITLE_IS_STRING * BUTTON_POS_1) +
-                               (BUTTON_TITLE_IS_STRING * BUTTON_POS_2);
+const ENIG_THREE_BUTTON_STRINGS   = (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_0) +
+                               (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_1) +
+                               (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_2);
 
 
 var gEnigmailPrefDefaults = {"configuredVersion":"",
@@ -112,7 +112,7 @@ function EnigInitCommon(id) {
      return;
 
    try {
-     var processInfo = Components.classes[NS_PROCESSINFO_CONTRACTID].getService(Components.interfaces.nsIProcessInfo);
+     var processInfo = Components.classes[ENIG_PROCESSINFO_CONTRACTID].getService(Components.interfaces.nsIProcessInfo);
 
      var nspr_log_modules = processInfo.getEnv("NSPR_LOG_MODULES");
 
@@ -139,7 +139,7 @@ function GetEnigmailSvc() {
   }
 
   try {
-    gEnigmailSvc = Components.classes[NS_ENIGMAIL_CONTRACTID].createInstance(Components.interfaces.nsIEnigmail);
+    gEnigmailSvc = Components.classes[ENIG_ENIGMAIL_CONTRACTID].createInstance(Components.interfaces.nsIEnigmail);
 
   } catch (ex) {
     ERROR_LOG("enigmailCommon.js: Error in instantiating EnigmailService\n");
@@ -278,7 +278,7 @@ function EnigConfigure() {
   var buttonPressed = gPromptService.confirmEx(window,
                                            "Configure Enigmail?",
                                             msg,
-                                            THREE_BUTTON_STRINGS,
+                                            ENIG_THREE_BUTTON_STRINGS,
                                             "Yes",
                                             "No",
                                             "Do not ask me again",
@@ -314,26 +314,26 @@ function EnigConfigure() {
 ///////////////////////////////////////////////////////////////////////////////
 // File read/write operations
 
-const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
+const ENIG_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 
-const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID =
+const ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID =
                               "@mozilla.org/network/file-output-stream;1";
 
-const NS_RDONLY      = 0x01;
-const NS_WRONLY      = 0x02;
-const NS_CREATE_FILE = 0x08;
-const NS_TRUNCATE    = 0x20;
-const DEFAULT_FILE_PERMS = 0600;
+const ENIG_RDONLY      = 0x01;
+const ENIG_WRONLY      = 0x02;
+const ENIG_CREATE_FILE = 0x08;
+const ENIG_TRUNCATE    = 0x20;
+const ENIG_DEFAULT_FILE_PERMS = 0600;
 
-const FileChannel = new Components.Constructor( "@mozilla.org/network/local-file-channel;1", "nsIFileChannel" );
+const EnigFileChannel = new Components.Constructor( "@mozilla.org/network/local-file-channel;1", "nsIFileChannel" );
 
-const InputStream = new Components.Constructor( "@mozilla.org/scriptableinputstream;1", "nsIScriptableInputStream" );
+const EnigInputStream = new Components.Constructor( "@mozilla.org/scriptableinputstream;1", "nsIScriptableInputStream" );
 
 function EnigCreateFileStream(filePath, permissions) {
   //DEBUG_LOG("enigmailCommon.js: EnigCreateFileStream: file="+filePath+"\n");
 
   try {
-    var localFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+    var localFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
 
     localFile.initWithPath(filePath);
 
@@ -347,11 +347,11 @@ function EnigCreateFileStream(filePath, permissions) {
     }
 
     if (!permissions)
-      permissions = DEFAULT_FILE_PERMS;
+      permissions = ENIG_DEFAULT_FILE_PERMS;
 
-    var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
+    var flags = ENIG_WRONLY | ENIG_CREATE_FILE | ENIG_TRUNCATE;
 
-    var fileStream = Components.classes[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIFileOutputStream);
+    var fileStream = Components.classes[ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIFileOutputStream);
 
     fileStream.init(localFile, flags, permissions, 0);
 
@@ -391,16 +391,16 @@ function EnigReadFileContents(localFile, maxBytes) {
   DEBUG_LOG("enigmailCommon.js: EnigReadFileContents: file="+localFile.leafName+
             ", "+maxBytes+"\n");
 
-  var fileChannel = new FileChannel();
+  var fileChannel = new EnigFileChannel();
 
   if (!localFile.exists() || !localFile.isReadable())
     throw Components.results.NS_ERROR_FAILURE;
 
-  fileChannel.init(localFile, NS_RDONLY, 0);
+  fileChannel.init(localFile, ENIG_RDONLY, 0);
 
   var rawInStream = fileChannel.open();
 
-  var scriptableInStream = new InputStream();    
+  var scriptableInStream = new EnigInputStream();    
   scriptableInStream.init(rawInStream);
 
   if ((maxBytes < 0) || (maxBytes > localFile.fileSize))
@@ -708,7 +708,7 @@ function EnigConvertFromUnicode(text, charset) {
 
   // Encode plaintext
   try {
-    var unicodeConv = Components.classes[NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(Components.interfaces.nsIScriptableUnicodeConverter);
+    var unicodeConv = Components.classes[ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(Components.interfaces.nsIScriptableUnicodeConverter);
 
     unicodeConv.charset = charset;
     return unicodeConv.ConvertFromUnicode(text);
@@ -727,7 +727,7 @@ function EnigConvertToUnicode(text, charset) {
 
   // Encode plaintext
   try {
-    var unicodeConv = Components.classes[NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(Components.interfaces.nsIScriptableUnicodeConverter);
+    var unicodeConv = Components.classes[ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(Components.interfaces.nsIScriptableUnicodeConverter);
 
     unicodeConv.charset = charset;
     return unicodeConv.ConvertToUnicode(text);
@@ -743,7 +743,7 @@ function EnigGetDeepText(node, findStr) {
   DEBUG_LOG("enigmailCommon.js: EnigDeepText: <" + node.tagName + ">, '"+findStr+"'\n");
 
   try {
-    var enigMimeService = Components.classes[NS_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
+    var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
 
     var plainText = enigMimeService.getPlainText(node, findStr);
     return plainText;
@@ -834,8 +834,8 @@ function EnigDumpHTML(node)
 /////////////////////////
 
 
-const WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
-const nsIWindowMediator    = Components.interfaces.nsIWindowMediator;
+const ENIG_WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
+
 
 function EnigClearPassphrase() {
   DEBUG_LOG("enigmailCommon.js: EnigClearPassphrase: \n");
@@ -916,7 +916,7 @@ function EnigLoadURLInNavigatorWindow(url, aOpenFlag)
 
   // if not, get the most recently used browser window
   if (!navWindow) {
-    var wm = Components.classes[WMEDIATOR_CONTRACTID].getService(nsIWindowMediator);
+    var wm = Components.classes[ENIG_WMEDIATOR_CONTRACTID].getService(Components.interfaces.nsIWindowMediator);
     navWindow = wm.getMostRecentWindow("navigator:browser");
   }
 

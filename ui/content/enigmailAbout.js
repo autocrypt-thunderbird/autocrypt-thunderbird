@@ -17,7 +17,7 @@ function enigAboutLoad() {
   var enigmimeElement = contentFrame.document.getElementById('enigmime');
 
   try {
-    var enigMimeService = Components.classes[NS_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
+    var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
 
     var binaryVersion = enigMimeService.version.replace(/\.\d+\.\d+$/, "");
     var textVersion = gEnigmimeVersion.replace(/\.\d+\.\d+$/, "");

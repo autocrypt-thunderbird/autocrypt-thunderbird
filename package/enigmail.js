@@ -36,6 +36,7 @@ const PGP_BATCH_OPTS  = " +batchmode +force";
 const GPG_BATCH_OPTS  = " --batch --no-tty --status-fd 2";
 
 const GPG_COMMENT_OPT = " --comment 'Using GnuPG with Mozilla - http://enigmail.mozdev.org'";
+const PGP_COMMENT_OPT = " +comment='Using PGP with Mozilla - http://enigmail.mozdev.org'";
 
 const gDummyPKCS7 = 'Content-Type: multipart/mixed;\r\n boundary="------------060503030402050102040303\r\n\r\nThis is a multi-part message in MIME format.\r\n--------------060503030402050102040303\r\nContent-Type: application/x-pkcs7-mime\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303\r\nContent-Type: application/x-enigmail-dummy\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303--\r\n';
 
@@ -1760,6 +1761,10 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
 
   if (this.agentType == "pgp") {
     encryptCommand += PGP_BATCH_OPTS + " -fta "
+
+    if (!useDefaultComment)
+      encryptCommand += PGP_COMMENT_OPT;
+
     recipientPrefix = " ";
 
     if (signMsg)
@@ -1983,6 +1988,10 @@ function (prompter, uiFlags, fromMailAddr, toMailAddr,
 
   if (this.agentType == "pgp") {
     encryptCommand += PGP_BATCH_OPTS + " -fta "
+
+    if (!useDefaultComment)
+      encryptCommand += PGP_COMMENT_OPT;
+
     recipientPrefix = " ";
 
     if (detachedSig) {

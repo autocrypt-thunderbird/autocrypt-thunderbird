@@ -3,15 +3,17 @@
 // Initialize enigmailCommon
 EnigInitCommon("enigmailKeygen");
 
-const ACCOUNT_MANAGER_CONTRACTID = "@mozilla.org/messenger/account-manager;1";
+const ENIG_ACCOUNT_MANAGER_CONTRACTID = "@mozilla.org/messenger/account-manager;1";
 
-var gAccountManager = Components.classes[ACCOUNT_MANAGER_CONTRACTID].getService(Components.interfaces.nsIMsgAccountManager);
+var gAccountManager = Components.classes[ENIG_ACCOUNT_MANAGER_CONTRACTID].getService(Components.interfaces.nsIMsgAccountManager);
 
 var gPassivePrivacy = EnigGetPref("passivePrivacy");
 
 var gIdentityList;
 var gIdentityListPopup;
 var gUseForSigning;
+
+var gKeygenRequest;
 
 function enigmailKeygenLoad() {
   DEBUG_LOG("enigmailKeygen.js: Load\n");
@@ -67,8 +69,6 @@ function enigmailKeygenUpdate(getPrefs, setPrefs) {
     commentElement.disabled = true;
   }
 }
-
-var gKeygenRequest;
 
 function enigmailKeygenTerminate(terminateArg, ipcRequest) {
    DEBUG_LOG("enigmailKeygen.js: Terminate: "+ipcRequest+"\n");
