@@ -108,6 +108,19 @@ try {
   ERROR_LOG("enigmailCommon.js: Error in instantiating PrefService\n");
 }
 
+function EnigGetFrame(win, frameName) {
+  DEBUG_LOG("enigmailCommon.js: EnigGetFrame: name="+frameName+"\n");
+  dump("direct="+win.frames[frameName]+"\n");
+  for (var j=0; j<win.frames.length; j++) {
+    dump(win.frames[j].name+"\n");
+    if (win.frames[j].name == frameName) {
+      return win.frames[j];
+    }
+  }
+
+  return null;
+}
+
 var gPromptService;
 
 var gEnigStrBundle;

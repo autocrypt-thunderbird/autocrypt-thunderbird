@@ -6,7 +6,7 @@ EnigInitCommon("enigmailAbout");
 function enigAboutLoad() {
   DEBUG_LOG("enigmailAbout.js: enigAboutLoad\n");
 
-  var contentFrame = window.frames["contentFrame"];
+  var contentFrame = EnigGetFrame("contentFrame");
   if (!contentFrame)
     return;
 

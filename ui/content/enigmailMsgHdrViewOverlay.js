@@ -37,7 +37,7 @@ function enigStartHeaders()
       statusText.setAttribute("value", "");
   }
 
-  var msgFrame = window.frames["messagepane"];
+  var msgFrame = EnigGetFrame("messagepane");
 
   if (msgFrame) {
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: msgFrame="+msgFrame+"\n");

@@ -40,7 +40,7 @@ function enigRefreshConsole() {
   if (enigmailSvc.console.hasNewData()) {
     DEBUG_LOG("enigmailConsole.js: enigRefreshConsole(): hasNewData\n");
 
-    var contentFrame = window.frames["contentFrame"];
+    var contentFrame = EnigGetFrame("contentFrame");
     if (!contentFrame)
       return;
 
@@ -73,7 +73,7 @@ function enigConsoleCopy()
 function enigConsoleGetSelectionStr()
 {
   try {
-    var contentFrame = window.frames["contentFrame"];
+    var contentFrame = EnigGetFrame("contentFrame");
 
     var sel = contentFrame.getSelection();
     return sel.toString();
