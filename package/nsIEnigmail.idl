@@ -148,6 +148,7 @@ interface nsIEnigmail : nsISupports
   const long SEND_ENCRYPT_TO_SELF = 0x040;
   const long SEND_PGP_MIME        = 0x080;
   const long SEND_TEST            = 0x100;
+  const long SAVE_MESSAGE         = 0x200;
 
   string encryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,
