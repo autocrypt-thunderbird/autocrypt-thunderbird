@@ -9,7 +9,7 @@
 
   <!-- enigmail package information -->
   <RDF:Description about="urn:mozilla:package:enigmime"
-        chrome:displayName="Enigmime v0.90.2"
+        chrome:displayName="Enigmime v0.91.0"
         chrome:author="Team Enigmail"
         chrome:authorURL="http://enigmail.mozdev.org/"
         chrome:name="enigmime"

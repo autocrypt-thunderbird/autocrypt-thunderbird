@@ -2,7 +2,7 @@
 
 var chromeNode = "en-US";
 
-var vers = "0.90.2.0";
+var vers = "0.91.0.0";
 var srDest = 10;       // Disk space required for installation (KB)
 
 var prettyName = chromeNode + " language pack for Enigmail";
