@@ -424,6 +424,8 @@ function enigMessageDecrypt(event) {
       dump("verifier="+verifier+"\n");
 
       verifier.init(mailNewsUrl, msgWindow, msgUriSpec, true);
+
+      return;
     }
   }
 

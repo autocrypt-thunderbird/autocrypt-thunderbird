@@ -81,6 +81,8 @@ nsEnigMimeVerify::nsEnigMimeVerify()
   : mInitialized(PR_FALSE),
     mRfc2015(PR_FALSE),
     mRequestStopped(PR_FALSE),
+    mLastLinebreak(PR_TRUE),
+
     mStartCount(0),
 
     mContentBoundary(""),
@@ -91,7 +93,6 @@ nsEnigMimeVerify::nsEnigMimeVerify()
 
     mOutBuffer(nsnull),
     mPipeTrans(nsnull),
-    mPipeTransListener(nsnull),
 
     mArmorListener(nsnull),
     mSecondPartListener(nsnull),
@@ -217,7 +218,6 @@ nsEnigMimeVerify::Finalize()
   if (mPipeTrans) {
     mPipeTrans->Terminate();
     mPipeTrans = nsnull;
-    mPipeTransListener = nsnull;
   }
 
   if (mOutBuffer) {
@@ -247,37 +247,6 @@ nsEnigMimeVerify::Finish()
 
   if (!mRequestStopped)
     return NS_ERROR_FAILURE;
-
-  // Check input data consistency
-  if (mStartCount < 2) {
-    ERROR_LOG(("nsEnigMimeVerify::Finish: ERROR mStartCount=%d\n", mStartCount));
-    return NS_ERROR_FAILURE;
-  }
-
-  nsCAutoString armorTail;
-  rv = mArmorListener->GetEndLine(armorTail);
-  if (NS_FAILED(rv)) return rv;
-
-  if (armorTail.IsEmpty()) {
-    ERROR_LOG(("nsEnigMimeVerify::Finish: ERROR No armor tail found\n"));
-    return NS_ERROR_FAILURE;
-  }
-
-  nsCAutoString endBoundary;
-  rv = mSecondPartListener->GetEndLine(endBoundary);
-  if (NS_FAILED(rv)) return rv;
-
-  // Trim leading/trailing whitespace
-  endBoundary.Trim(" \t\r\n", PR_TRUE, PR_TRUE);
-
-  nsCAutoString temBoundary("--");
-  temBoundary += mContentBoundary;
-temBoundary += "--";
-
-  if (!endBoundary.Equals(temBoundary)) {
-    ERROR_LOG(("nsEnigMimeVerify::Finish: ERROR endBoundary=%s\n", endBoundary.get()));
-    return NS_ERROR_FAILURE;
-  }
 
   // Wait for STDOUT to close
   rv = mPipeTrans->Join();
@@ -314,6 +283,41 @@ temBoundary += "--";
   // Terminate process
   mPipeTrans->Terminate();
   mPipeTrans = nsnull;
+
+  if (exitCode != 0) {
+    DEBUG_LOG(("nsEnigMimeVerify::Finish: errOutput=%s\n", (const char*) errorOutput));
+  }
+
+  // Check input data consistency
+  if (mStartCount < 2) {
+    ERROR_LOG(("nsEnigMimeVerify::Finish: ERROR mStartCount=%d\n", mStartCount));
+    return NS_ERROR_FAILURE;
+  }
+
+  nsCAutoString armorTail;
+  rv = mArmorListener->GetEndLine(armorTail);
+  if (NS_FAILED(rv)) return rv;
+
+  if (armorTail.IsEmpty()) {
+    ERROR_LOG(("nsEnigMimeVerify::Finish: ERROR No armor tail found\n"));
+    return NS_ERROR_FAILURE;
+  }
+
+  nsCAutoString endBoundary;
+  rv = mSecondPartListener->GetEndLine(endBoundary);
+  if (NS_FAILED(rv)) return rv;
+
+  // Trim leading/trailing whitespace
+  endBoundary.Trim(" \t\r\n", PR_TRUE, PR_TRUE);
+
+  nsCAutoString temBoundary("--");
+  temBoundary += mContentBoundary;
+temBoundary += "--";
+
+  if (!endBoundary.Equals(temBoundary)) {
+    ERROR_LOG(("nsEnigMimeVerify::Finish: ERROR endBoundary=%s\n", endBoundary.get()));
+    return NS_ERROR_FAILURE;
+  }
 
   PRInt32 newExitCode;
   PRUint32 statusFlags;
@@ -393,7 +397,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
     if (NS_FAILED(rv)) return rv;
 
     if (!innerContentType.EqualsIgnoreCase("application/pgp-signature")) {
-      ERROR_LOG(("nsEnigMimeVerify::OnStartRequest: ERROR innerContentType=%s\n", innerContentType.get()));
+      DEBUG_LOG(("nsEnigMimeVerify::OnStartRequest: ERROR innerContentType=%s\n", innerContentType.get()));
       return NS_ERROR_FAILURE;
     }
 
@@ -546,9 +550,8 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   rv = mPipeTrans->WriteSync(linebreak.get(), linebreak.Length());
   if (NS_FAILED(rv)) return rv;
 
-  // Get StreamListener to write synchronously to pipeTransport
-  rv = mPipeTrans->GetListener(getter_AddRefs(mPipeTransListener));
-  if (NS_FAILED(rv)) return rv;
+  // Initialize for dash-escaping
+  mLastLinebreak = PR_TRUE;
 
   return NS_OK;
 }
@@ -564,12 +567,12 @@ nsEnigMimeVerify::OnStopRequest(nsIRequest* aRequest,
   if (mRequestStopped)
     return NS_OK;
 
-  if (!mInitialized || !mPipeTransListener)
+  if (!mInitialized || !mPipeTrans)
     return NS_ERROR_NOT_INITIALIZED;
 
   mRequestStopped = PR_TRUE;
 
-  rv = mPipeTransListener->OnStopRequest(aRequest, aContext, aStatus);
+  rv = mPipeTrans->CloseStdin();
   if (NS_FAILED(rv)) {
     Finalize();
     return rv;
@@ -597,14 +600,56 @@ nsEnigMimeVerify::OnDataAvailable(nsIRequest* aRequest,
 {
   nsresult rv = NS_OK;
 
-  DEBUG_LOG(("nsEnigMimeVerify::OnDataAVailable: %d\n", aLength));
+  DEBUG_LOG(("nsEnigMimeVerify::OnDataAvailable: %d\n", aLength));
 
-  if (!mInitialized || !mPipeTransListener)
+  if (!mInitialized || !mPipeTrans)
     return NS_ERROR_NOT_INITIALIZED;
 
-  rv = mPipeTransListener->OnDataAvailable(aRequest, aContext, aInputStream,
-                                           aSourceOffset, aLength);
-  if (NS_FAILED(rv)) return rv;
+  const char* dashEscape = " -";
+  char buf[kCharMax];
+  PRUint32 readCount, readMax;
+
+  while (aLength > 0) {
+    readMax = (aLength < kCharMax) ? aLength : kCharMax;
+    rv = aInputStream->Read((char *) buf, readMax, &readCount);
+    if (NS_FAILED(rv)){
+      DEBUG_LOG(("nsPipeTransport::OnDataAvailable: Error in reading from input stream, %x\n", rv));
+      return rv;
+    }
+
+    if (readCount <= 0) return NS_OK;
+
+    if (mStartCount == 1) {
+      // Dash escaping for first part only (RFC 2440)
+
+      PRUint32 offset = 0;
+      for (PRUint32 j=0; j < readCount; j++) {
+        char ch = buf[j];
+        if ((ch == '-') && mLastLinebreak) {
+          rv = mPipeTrans->WriteSync(buf+offset, j-offset+1);
+          if (NS_FAILED(rv)) return rv;
+          offset = j+1;
+
+          rv = mPipeTrans->WriteSync(dashEscape, nsCRT::strlen(dashEscape));
+          if (NS_FAILED(rv)) return rv;
+        }
+
+        mLastLinebreak = (ch == '\r') || (ch == '\n');
+      }
+
+      if (offset < readCount) {
+        rv = mPipeTrans->WriteSync(buf+offset, readCount-offset);
+        if (NS_FAILED(rv)) return rv;
+      }
+
+    } else {
+      // No dash escaping
+      rv = mPipeTrans->WriteSync(buf, readCount);
+      if (NS_FAILED(rv)) return rv;
+    }
+
+    aLength -= readCount;
+  }
 
   return NS_OK;
 }

@@ -71,6 +71,7 @@ protected:
     PRBool                          mInitialized;
     PRBool                          mRfc2015;
     PRBool                          mRequestStopped;
+    PRBool                          mLastLinebreak;
 
     PRUint32                        mStartCount;
 
@@ -82,7 +83,6 @@ protected:
 
     nsCOMPtr<nsIIPCBuffer>          mOutBuffer;
     nsCOMPtr<nsIPipeTransport>      mPipeTrans;
-    nsCOMPtr<nsIStreamListener>     mPipeTransListener;
 
     nsCOMPtr<nsIPipeFilterListener> mArmorListener;
     nsCOMPtr<nsIPipeFilterListener> mSecondPartListener;
