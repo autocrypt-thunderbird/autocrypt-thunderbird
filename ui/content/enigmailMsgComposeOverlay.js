@@ -53,7 +53,7 @@ function enigMsgComposeStartup() {
 
    gEnigEditorShell = gEnigEditorElement.editorShell;
    DEBUG_LOG("enigmailMsgComposeOverlay.js: gEnigEditorShell = "+gEnigEditorShell+"\n");
-   var docStateListener = new DocumentStateListener();
+   var docStateListener = new EnigDocStateListener();
    gEnigEditorShell.RegisterDocumentStateListener(docStateListener);
 
    enigMsgComposeReset();
@@ -959,11 +959,11 @@ function GetChildOffset(parentNode, childNode) {
   return 0;
 }
 
-function DocumentStateListener()
+function EnigDocStateListener()
 {
 }
 
-DocumentStateListener.prototype = {
+EnigDocStateListener.prototype = {
 
   QueryInterface: function (iid) {
 
