@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/st
+rict.dtd">
+<html>
+<head>
+</head>
+<body>
+<h1>Upgrade Information for Enigmail 0.8x</h1>
+
+<p>Enigmail v0.8x for Thunderbird has received a new user interface!
+<b>If you are familiar with Enigmail versions prior to 0.81.0, please
+read this information before proceeding</b>.
+</p>
+<h2>Configuring Enigmail</h2>
+<p>Enigmail configuration is now split into two parts:</p>
+<ul>
+<li>Account specific settings for PGP key ID, default encryption
+/ signing
+</li>
+<li>Common global preferences
+</li>
+</ul>
+<h3>Account Specific Settings</h3>
+<p>The account specific settings are available through the menu <em>Tools
+-&gt; Account Settings</em>. For each account there is now an
+<em>OpenPGP Security</em> list item which holds the options specific
+for each account.
+</p>
+<p>The PGP key settings from Enigmail v0.80.0 and earlier version are
+<b>not</b> converted into the new per-account settings.
+Enigmail is by default <b>disabled</b> for all accounts!
+</p>
+<h3>Common Global Preferences</h3>
+<p>The common global settings have been cleaned up and merged into one dialog.
+The preferences are either available through the Enigmail menu, or by clicking
+the <em>Advanced</em> button in the Account Manager's OpenPGP Security Preferences.
+</p>
+<p>A new option has been added that enables you to turn on encryption
+automatically if replying to an encrypted message. Note that this
+doesn't influence the settings for message signing.
+</p>
+<h2>Composing Messages</h2>
+<p>The behavior of Enigmail has been adapted to be more similar
+to the behavior of S/MIME. A new OpenPGP button has been added
+from where the encryption / signature settings can be selected.
+The Enigmail menu does no longer serve for sending encrypted or
+signed mails, sending isdone uniquely from the normal
+<em>Send</em> button or the File -&gt; Send menu. <b>It is
+suggested that you try the new settings by sending a couple of
+mails to yourself before you use it actively</b>, so that you
+understand the new behavior.
+</p>
+<p>The settings for encrypting or signing a message are now visible
+in the lower right corner of the compose window, with small icons
+being displayed if signing or encryption is turned on.
+</p>
+
+<h2>Known Issues</h2>
+
+<ul>
+<li>Enigmail is not yet capable of remembering several passwords for
+different PGP keys. Either type in the password each time, or
+set the same password for all keys you're using.
+</li>
+<li>The current version is a snapshot of work in progress. It has been
+basically tested, but it is not considered to be as bug-free as a
+released version!
+</li>
+</ul>
+</body>
+</html>
