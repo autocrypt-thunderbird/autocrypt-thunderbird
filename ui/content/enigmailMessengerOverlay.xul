@@ -47,7 +47,7 @@
                  id="button-enigmail-decrypt"
                  label="Decrypt"
                  tooltip="aTooltip" tooltiptext="Enigmail decrypt/verify" 
-                 oncommand="enigDecryptMessage();"
+                 oncommand="enigMessageDecrypt();"
                  />
 
          <toolbarseparator class="toolbarseparator-primary"

@@ -1,10 +1,13 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
+// Initialize enigmailCommon
+EnigInitCommon();
+
 const ePrefString = 32;
 const ePrefInt = 64;
 const ePrefBool = 128;
 
-var gEnigmailPrefDefaults = {"useremail":"",
+var gEnigmailPrefDefaults = {"userEmail":"",
                              "captureWebMail":false};
 
 const NS_HTTPPROTOCOLHANDLER_CID_STR= "{4f47e42e-4d23-4dd3-bfda-eb29255e9ea3}";
@@ -17,12 +20,13 @@ gPlatform = httpHandler.platform;
 
 DEBUG_LOG("pref-enigmail.js: oscpu="+gOScpu+", platform="+gPlatform+"\n");
 
-var gPrefObj =
-   Components.classes["@mozilla.org/preferences;1"].createInstance();
-if(!gPrefObj)
-   throw ("Unable to create prefs object.");
-
-gPrefObj = gPrefObj.QueryInterface(Components.interfaces.nsIPref);
+var gPrefObj;
+try {
+   gPrefObj = Components.classes["@mozilla.org/preferences;1"].createInstance(Components.interfaces.nsIPref);
+} catch (ex) {
+  ERROR_LOG("enigmailCommon.js: Error in instantiating PrefService\n");
+  throw("enigmailCommon.js: Error in instantiating PrefService\n");
+}
 
 function enigmailGetPref(prefName) {
    DEBUG_LOG("pref-enigmail.js: enigmailGetPref: "+prefName+"\n");

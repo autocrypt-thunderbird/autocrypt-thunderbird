@@ -1,5 +1,8 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
+// Initialize enigmailCommon
+EnigInitCommon();
+
 window.addEventListener("load", enigMsgComposeStartup, false);
 
 var gEditorElement, gEditorShell;
@@ -9,7 +12,7 @@ var gEnigProcessed = false;
 var gOrigSendButton, gEnigSendButton;
 
 function enigMsgComposeStartup() {
-   WRITE_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
+   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
    gOrigSendButton = document.getElementById("button-send");
    gOrigSendButton.setAttribute("collapsed", "true");
 
@@ -17,10 +20,10 @@ function enigMsgComposeStartup() {
 
    // Get editor shell
    gEditorElement = document.getElementById("content-frame");
-   WRITE_LOG("enigmailMsgComposeOverlay.js: gEditorElement = "+gEditorElement+"\n");
+   DEBUG_LOG("enigmailMsgComposeOverlay.js: gEditorElement = "+gEditorElement+"\n");
 
    gEditorShell = gEditorElement.editorShell;
-   WRITE_LOG("enigmailMsgComposeOverlay.js: gEditorShell = "+gEditorShell+"\n");
+   DEBUG_LOG("enigmailMsgComposeOverlay.js: gEditorShell = "+gEditorShell+"\n");
 
    enigUpdateOptionsDisplay();
 }
@@ -44,7 +47,7 @@ function enigUpdateOptionsDisplay() {
 }
 
 function enigSend() {
-  WRITE_LOG("enigmailMsgComposeOverlay.js: enigSend\n");
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend\n");
 
   if (!InitEnigmailSvc()) {
      if (EnigConfirm("Failed to initialize Enigmail; send unencrypted email?\n"))
@@ -86,14 +89,14 @@ function enigSend() {
     toAddr = toAddr.replace(/(^|,)[^,]*<([^>]+)>[^,]*(,|$)/g,"$1$2$3");
 
     editorDoc = gEditorShell.editorDocument;
-    WRITE_LOG("enigmailMsgComposeOverlay.js: editorDoc = "+editorDoc+"\n");
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: editorDoc = "+editorDoc+"\n");
     EnigDumpHTML(editorDoc.documentElement);
 
     // Get plain text
     // (Do we need to set nsIDocumentEncoder::* flags?)
     var encoderFlags = 16;   // OutputPreformatted
     var docText = gEditorShell.GetContentsAs("text/plain", encoderFlags)
-    WRITE_LOG("enigmailMsgComposeOverlay.js: docText["+encoderFlags+"] = '"+docText+"'\n");
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: docText["+encoderFlags+"] = '"+docText+"'\n");
 
     // Prevent space stuffing a la RFC 2646 (format=flowed).
     RegExp.multiline = true;
@@ -102,7 +105,7 @@ function enigSend() {
     docText = docText.replace(/^From /g, "~From ");
     RegExp.multiline = false;
 
-    WRITE_LOG("enigmailMsgComposeOverlay.js: docText = '"+docText+"'\n");
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: docText = '"+docText+"'\n");
     var directionFlags = 0;   // see nsIEditor.h
 
     gEditorShell.SelectAll();
@@ -113,7 +116,7 @@ function enigSend() {
 
     encoderFlags = 32;   // OutputWrap
     var plainText = gEditorShell.GetContentsAs("text/plain", encoderFlags)
-    WRITE_LOG("enigmailMsgComposeOverlay.js: plainText["+encoderFlags+"] = '"+plainText+"'\n");
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: plainText["+encoderFlags+"] = '"+plainText+"'\n");
 
     var statusCodeObj = new Object();
     var statusMsgObj = new Object();
@@ -136,8 +139,7 @@ function enigSend() {
 
     gEditorShell.InsertText(cipherText);
 
-    if (!EnigConfirm("enigmailMsgComposeOverlay.js: Sending encrypted/signed message to "+toAddr+"\n"))
-      return;
+    //if (!EnigConfirm("enigmailMsgComposeOverlay.js: Sending encrypted/signed message to "+toAddr+"\n")) return;
 
     gEnigProcessed = true;
   }
@@ -148,7 +150,7 @@ function enigSend() {
 
 function enigToggleAttribute(attrName)
 {
-  WRITE_LOG("enigmailMsgComposeOverlay.js: enigToggleAttribute('"+attrName+"')\n");
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigToggleAttribute('"+attrName+"')\n");
 
   if (!InitEnigmailSvc())
      return "";
@@ -177,7 +179,7 @@ function DocumentStateListener()
 DocumentStateListener.prototype = {
 
   QueryInterface: function (iid) {
-    WRITE_LOG("enigmailMsgComposeOverlay.js: QI\n");
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: QI\n");
 
     if (!iid.equals(Components.interfaces.nsIDocumentStateListener) &&
         !iid.equals(Components.interfaces.nsISupports))
@@ -188,7 +190,7 @@ DocumentStateListener.prototype = {
 
   NotifyDocumentCreated: function ()
   {
-    WRITE_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentCreated\n");
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentCreated\n");
   },
 
   NotifyDocumentWillBeDestroyed: function ()
@@ -197,6 +199,6 @@ DocumentStateListener.prototype = {
 
   NotifyDocumentStateChanged: function (nowDirty)
   {
-    WRITE_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentStateChanged\n");
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentStateChanged\n");
   }
 }

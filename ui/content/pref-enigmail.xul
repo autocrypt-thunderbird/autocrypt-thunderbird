@@ -74,7 +74,7 @@
                  flex="1"
                  pref="true"
                  preftype="string"
-                 prefstring="extensions.enigmail.useremail"
+                 prefstring="extensions.enigmail.userEmail"
                  prefattribute="value"/>
 
     </box>

@@ -59,15 +59,16 @@ interface nsIEnigmail : nsISupports
 
   void setDefaultPassphrase(in string passphrase);
 
-  string encryptMessage(in string plainText,
-                        in string toMailAddr,
-                        in string passphrase,
-                        out long  statusCode,
+  string encryptMessage(in string  plainText,
+                        in string  toMailAddr,
+                        in string  passphrase,
+                        out long   statusCode,
                         out string statusMsg);
 
-  string decryptMessage(in string cipherText,
-                        in string passphrase,
-                        out long statusCode,
+  string decryptMessage(in string  cipherText,
+                        in boolean verifyOnly,
+                        in string  passphrase,
+                        out long   statusCode,
                         out string statusMsg);
 
   nsIPipeTransport generateKey(in string name,

@@ -1,6 +1,15 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
+// Uses: chrome://global/content/nsUserSettings.js
 
-window.addEventListener("load", enigNavigatorStartup, false);
+var gCaptureWebMail = nsPreferences.getBoolPref(ENIGMAIL_PREFS_ROOT+"captureWebMail");
+
+dump("enigmailNavigatorOverlay.js: gCaptureWebMail="+gCaptureWebMail+"\n");
+
+if (gCaptureWebMail) {
+   // Initialize enigmailCommon etc.
+   EnigInitCommon();
+   window.addEventListener("load", enigNavigatorStartup, true);
+}
 
 var gEnigCurrentSite;
 var gEnigNavButton1;
@@ -8,9 +17,9 @@ var gEnigCurrentHandlerNavButton1;
 var gEnigTest = true;
 
 function enigNavigatorStartup() {
-  WRITE_LOG("enigmailNavigatorOverlay.js: enigNavigatorStartup:\n");
+  DEBUG_LOG("enigmailNavigatorOverlay.js: enigNavigatorStartup:\n");
   var contentArea = document.getElementById("appcontent");
-  //contentArea.addEventListener("load",   enigDocLoadHandler, true);
+  contentArea.addEventListener("load",   enigDocLoadHandler, true);
   contentArea.addEventListener("unload", enigDocUnloadHandler, true);
 
   gEnigCurrentSite = null;
@@ -20,43 +29,43 @@ function enigNavigatorStartup() {
 
 function enigHandlerNavButton1()
 {
-  WRITE_LOG("enigmailNavigatorOverlay.js: enigHandlerNavButton1:\n");
+  DEBUG_LOG("enigmailNavigatorOverlay.js: enigHandlerNavButton1:\n");
 
   if (gEnigCurrentHandlerNavButton1) {
     gEnigCurrentHandlerNavButton1();
 
   } else {
-    WRITE_LOG("enigmailNavigatorOverlay.js: enigHandlerNavButton1: No button handler!\n");
+    DEBUG_LOG("enigmailNavigatorOverlay.js: enigHandlerNavButton1: No button handler!\n");
   }
 }
 
 function enigDocLoadHandler(event) {
-  WRITE_LOG("enigmailNavigatorOverlay.js: enigDocLoadHandler:\n");
+  DEBUG_LOG("enigmailNavigatorOverlay.js: enigDocLoadHandler:\n");
 
   enigUpdateUI(_content.location);
 }
 
 function enigFrameLoadHandler(event) {
- WRITE_LOG("enigmailNavigatorOverlay.js: enigFrameLoadHandler: "+event.target.location.href+"\n");
+ DEBUG_LOG("enigmailNavigatorOverlay.js: enigFrameLoadHandler: "+event.target.location.href+"\n");
 }
 
 function enigFrameUnloadHandler(event) {
- WRITE_LOG("enigmailNavigatorOverlay.js: enigFrameUnloadHandler: "+event.target.location.href+"\n");
+ DEBUG_LOG("enigmailNavigatorOverlay.js: enigFrameUnloadHandler: "+event.target.location.href+"\n");
 }
 
 function enigDocUnloadHandler(event) {
-  WRITE_LOG("enigmailNavigatorOverlay.js: enigDocUnloadHandler: Next URL="+event.target.location.href+"\n");
+  DEBUG_LOG("enigmailNavigatorOverlay.js: enigDocUnloadHandler: Next URL="+event.target.location.href+"\n");
 
   enigUpdateUI(_content.location);
 
   if (event.target == _content.document) {
       // Handle events for content document only
-    WRITE_LOG("enigmailNavigatorOverlay.js: enigDocUnloadHandler: Main doc\n");
+    DEBUG_LOG("enigmailNavigatorOverlay.js: enigDocUnloadHandler: Main doc\n");
   }
 }
 
 function enigConfigWindow() {
-  WRITE_LOG("enigmailNavigatorOverlay.js: enigConfigWIndow:\n");
+  DEBUG_LOG("enigmailNavigatorOverlay.js: enigConfigWindow:\n");
   toOpenWindowByType("tools:enigmail", "chrome://enigmail/content/enigmail.xul");
 }
 
@@ -67,7 +76,7 @@ function enigResetUI() {
 
 function enigUpdateUI(loc) {
 
-  WRITE_LOG("enigmailNavigatorOverlay.js: enigUpdateUI: "+loc.href+"\n");
+  DEBUG_LOG("enigmailNavigatorOverlay.js: enigUpdateUI: "+loc.href+"\n");
 
   var host;
   try {
@@ -105,15 +114,15 @@ function enigUpdateUI(loc) {
 
 function enigYahooUpdateUI() {
 
-  WRITE_LOG("enigmailYahoo.js: enigYahooUpdateUI:\n");
+  DEBUG_LOG("enigmailYahoo.js: enigYahooUpdateUI:\n");
 
   var msgFrame = enigYahooLocateMessageFrame();
-  WRITE_LOG("msgFrame.name = "+msgFrame.name+"\n")
+  DEBUG_LOG("msgFrame.name = "+msgFrame.name+"\n")
 
   // Extract pathname from message frame URL
   var pathname = msgFrame.location.pathname;
 
-  WRITE_LOG("pathname = "+pathname+"\n");
+  DEBUG_LOG("pathname = "+pathname+"\n");
 
   if (pathname.search(/ShowLetter$/) != -1) {
     gEnigCurrentHandlerNavButton1 = enigYahooShowLetter;
@@ -130,14 +139,14 @@ function enigYahooUpdateUI() {
 }
 
 function enigYahooLocateMessageFrame() {
-  WRITE_LOG("enigmailYahoo.js: enigYahooLocateMessageFrame:\n");
+  DEBUG_LOG("enigmailYahoo.js: enigYahooLocateMessageFrame:\n");
 
   var msgFrame;
 
   if (_content.frames.length) {
     // Locate message frame
     for (var j=0; j<_content.frames.length; j++) {
-      WRITE_LOG("frame "+j+" = "+_content.frames[j].name+"\n");
+      DEBUG_LOG("frame "+j+" = "+_content.frames[j].name+"\n");
       if (_content.frames[j].name == "wmailmain")
         msgFrame = _content.frames[j];
     }
@@ -149,18 +158,28 @@ function enigYahooLocateMessageFrame() {
 }
 
 function enigYahooCompose() {
-  WRITE_LOG("enigmailYahoo.js: enigYahooCompose:\n");
+  DEBUG_LOG("enigmailYahoo.js: enigYahooCompose:\n");
 
   var msgFrame = enigYahooLocateMessageFrame();
 
   var plainText = msgFrame.document.Compose.Body.value;
-  WRITE_LOG("enigYahooCompose: plainText="+plainText+"\n");
+  DEBUG_LOG("enigYahooCompose: plainText="+plainText+"\n");
 
   var toAddr = msgFrame.document.Compose.To.value;
-  WRITE_LOG("enigYahooCompose: To="+toAddr+"\n");
+  DEBUG_LOG("enigYahooCompose: To="+toAddr+"\n");
 
-  var statusLineObj = new Object();
-  var cipherText = EnigEncryptMessage(plainText, toAddr, statusLineObj); 
+  var statusCodeObj = new Object();
+  var statusMsgObj = new Object();
+  var cipherText = EnigEncryptMessage(plainText, toAddr,
+                                      statusCodeObj, statusMsgObj);
+
+  var statusCode = statusCodeObj.value;
+  var statusMsg  = statusMsgObj.value;
+
+  if (statusCode != 0) {
+    EnigAlert("Error in encrypting and/or signing message.\n"+statusMsg);
+    return;
+  }
 
   msgFrame.document.Compose.Body.value = cipherText;
 
@@ -168,20 +187,29 @@ function enigYahooCompose() {
 
 
 function enigYahooShowLetter() {
-  WRITE_LOG("enigmailYahoo.js: enigYahooShowLetter:\n");
+  DEBUG_LOG("enigmailYahoo.js: enigYahooShowLetter:\n");
 
   var msgFrame = enigYahooLocateMessageFrame();
 
   var preElement = msgFrame.document.getElementsByTagName("pre")[0];
 
-  //WRITE_LOG("enigYahooShowLetter: "+preElement+"\n");
+  //DEBUG_LOG("enigYahooShowLetter: "+preElement+"\n");
 
   var cipherText = EnigGetDeepText(preElement);
 
-  WRITE_LOG("enigYahooShowLetter: cipherText='"+cipherText+"'\n");
+  DEBUG_LOG("enigYahooShowLetter: cipherText='"+cipherText+"'\n");
 
-  var statusLineObj = new Object();
-  var plainText = EnigDecryptMessage(cipherText, statusLineObj);
+  var statusCodeObj = new Object();
+  var statusMsgObj = new Object();
+  var plainText = EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj);
+
+  var statusCode = statusCodeObj.value;
+  var statusMsg  = statusMsgObj.value;
+
+  if (statusCode != 0) {
+    EnigAlert("Error in decrypting message.\n"+statusMsg);
+    return;
+  }
 
   while (preElement.hasChildNodes())
       preElement.removeChild(preElement.childNodes[0]);
@@ -195,15 +223,15 @@ function enigYahooShowLetter() {
 
 function enigHotmailUpdateUI() {
 
-  WRITE_LOG("enigmailHotmail.js: enigHotmailUpdateUI:\n");
+  DEBUG_LOG("enigmailHotmail.js: enigHotmailUpdateUI:\n");
 
   var msgFrame = enigHotmailLocateMessageFrame();
-  WRITE_LOG("msgFrame.name = "+msgFrame.name+"\n")
+  DEBUG_LOG("msgFrame.name = "+msgFrame.name+"\n")
 
   // Extract pathname from message frame URL
   var pathname = msgFrame.location.pathname;
 
-  WRITE_LOG("pathname = "+pathname+"\n");
+  DEBUG_LOG("pathname = "+pathname+"\n");
 
   if (pathname.search(/getmsg$/) != -1) {
     gEnigCurrentHandlerNavButton1 = enigHotmailShowLetter;
@@ -220,25 +248,35 @@ function enigHotmailUpdateUI() {
 }
 
 function enigHotmailLocateMessageFrame() {
-  WRITE_LOG("enigmailHotmail.js: enigHotmailLocateMessageFrame:\n");
+  DEBUG_LOG("enigmailHotmail.js: enigHotmailLocateMessageFrame:\n");
 
   return _content;
 }
 
 
 function enigHotmailCompose() {
-  WRITE_LOG("enigmailHotmail.js: enigHotmailCompose:\n");
+  DEBUG_LOG("enigmailHotmail.js: enigHotmailCompose:\n");
 
   var msgFrame = enigHotmailLocateMessageFrame();
 
   var plainText = msgFrame.document.composeform.body.value;
-  WRITE_LOG("enigHotmailCompose: plainText="+plainText+"\n");
+  DEBUG_LOG("enigHotmailCompose: plainText="+plainText+"\n");
 
   var toAddr = msgFrame.document.composeform.to.value;
-  WRITE_LOG("enigHotmailCompose: To="+toAddr+"\n");
+  DEBUG_LOG("enigHotmailCompose: To="+toAddr+"\n");
 
-  var statusLineObj = new Object();
-  var cipherText = EnigEncryptMessage(plainText, toAddr, statusLineObj); 
+  var statusCodeObj = new Object();
+  var statusMsgObj = new Object();
+  var cipherText = EnigEncryptMessage(plainText, toAddr,
+                                      statusCodeObj, statusMsgObj);
+
+  var statusCode = statusCodeObj.value;
+  var statusMsg  = statusMsgObj.value;
+
+  if (statusCode != 0) {
+    EnigAlert("Error in encrypting and/or signing message.\n"+statusMsg);
+    return;
+  }
 
   msgFrame.document.composeform.body.value = cipherText;
 
@@ -246,20 +284,29 @@ function enigHotmailCompose() {
 
 
 function enigHotmailShowLetter() {
-  WRITE_LOG("enigmailHotmail.js: enigHotmailShowLetter:\n");
+  DEBUG_LOG("enigmailHotmail.js: enigHotmailShowLetter:\n");
 
   var msgFrame = enigHotmailLocateMessageFrame();
 
   var preElement = msgFrame.document.getElementsByTagName("pre")[0];
 
-  //WRITE_LOG("enigHotmailShowLetter: "+preElement+"\n");
+  //DEBUG_LOG("enigHotmailShowLetter: "+preElement+"\n");
 
   var cipherText = EnigGetDeepText(preElement);
 
-  WRITE_LOG("enigHotmailShowLetter: cipherText='"+cipherText+"'\n");
+  DEBUG_LOG("enigHotmailShowLetter: cipherText='"+cipherText+"'\n");
 
-  var statusLineObj = new Object();
-  var plainText = EnigDecryptMessage(cipherText, statusLineObj);
+  var statusCodeObj = new Object();
+  var statusMsgObj = new Object();
+  var plainText = EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj);
+
+  var statusCode = statusCodeObj.value;
+  var statusMsg  = statusMsgObj.value;
+
+  if (statusCode != 0) {
+    EnigAlert("Error in decrypting message.\n"+statusMsg);
+    return;
+  }
 
   while (preElement.hasChildNodes())
       preElement.removeChild(preElement.childNodes[0]);

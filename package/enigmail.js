@@ -124,12 +124,12 @@ function WRITE_LOG(str) {
 
 function DEBUG_LOG(str) {
   if (gLogLevel >= 4)
-    WRITE_LOG(str);
+    DEBUG_LOG(str);
 }
 
 function WARNING_LOG(str) {
   if (gLogLevel >= 3)
-    WRITE_LOG(str);
+    DEBUG_LOG(str);
 
   if (gEnigmailSvc && gEnigmailSvc.console)
     gEnigmailSvc.console.write(str);
@@ -137,7 +137,7 @@ function WARNING_LOG(str) {
 
 function ERROR_LOG(str) {
   if (gLogLevel >= 2)
-    WRITE_LOG(str);
+    DEBUG_LOG(str);
 
   if (gEnigmailSvc && gEnigmailSvc.console)
     gEnigmailSvc.console.write(str);
@@ -145,7 +145,7 @@ function ERROR_LOG(str) {
 
 function CONSOLE_LOG(str) {
   if (gLogLevel >= 3)
-    WRITE_LOG(str);
+    DEBUG_LOG(str);
 
   if (gEnigmailSvc && gEnigmailSvc.console)
     gEnigmailSvc.console.write(str);
@@ -392,9 +392,9 @@ PGPModule.prototype = {
     aMsgHeader = aMsgHeader.QueryInterface(nsIPGPMsgHeader);
     aOrigBody = aOrigBody.QueryInterface(nsIPGPMsgBody);
 
-    WRITE_LOG("PGPModule.EncryptSign: aMsgHeader.to="+aMsgHeader.to+"\n");
-    WRITE_LOG("PGPModule.EncryptSign: aOrigBody.body="+aOrigBody.body+"\n");
-    WRITE_LOG("PGPModule.EncryptSign: aNewBody="+aNewBody+"\n");
+    DEBUG_LOG("PGPModule.EncryptSign: aMsgHeader.to="+aMsgHeader.to+"\n");
+    DEBUG_LOG("PGPModule.EncryptSign: aOrigBody.body="+aOrigBody.body+"\n");
+    DEBUG_LOG("PGPModule.EncryptSign: aNewBody="+aNewBody+"\n");
 
     var statusCodeObj = new Object();
     var statusMsgObj = new Object();
@@ -413,7 +413,7 @@ PGPModule.prototype = {
 
     aOrigBody = aOrigBody.QueryInterface(nsIPGPMsgBody);
 
-    WRITE_LOG("PGPModule.DecrypotVerify: aOrigBody.body="+aOrigBody.body+"\n");
+    DEBUG_LOG("PGPModule.DecrypotVerify: aOrigBody.body="+aOrigBody.body+"\n");
 
     var statusCodeObj = new Object();
     var statusMsgObj = new Object();
@@ -441,14 +441,14 @@ PGPModule.prototype = {
                         aHeaderStartOffset, aHeaderLength, aBufferEndOffset) {
    DEBUG_LOG("PGPModule.FindHeader:\n");
 
-   WRITE_LOG("PGPModule.EncryptSign: aHeaderBuffer="+aHeaderBuffer+"\n");
+   DEBUG_LOG("PGPModule.EncryptSign: aHeaderBuffer="+aHeaderBuffer+"\n");
 
    for (var k in aHeaderStartOffset)
-      WRITE_LOG("PGPModule.EncryptSign: k="+k+"\n");
+      DEBUG_LOG("PGPModule.EncryptSign: k="+k+"\n");
 
-   WRITE_LOG("PGPModule.EncryptSign: aHeaderStartOffset="+aHeaderStartOffset+"\n");
-   WRITE_LOG("PGPModule.EncryptSign: aHeaderLength="+aHeaderLength+"\n");
-   WRITE_LOG("PGPModule.EncryptSign: aBufferEndOffset="+aBufferEndOffset+"\n");
+   DEBUG_LOG("PGPModule.EncryptSign: aHeaderStartOffset="+aHeaderStartOffset+"\n");
+   DEBUG_LOG("PGPModule.EncryptSign: aHeaderLength="+aHeaderLength+"\n");
+   DEBUG_LOG("PGPModule.EncryptSign: aBufferEndOffset="+aBufferEndOffset+"\n");
 
    aHeaderStartOffset.value = 0;
    aHeaderLength.value = 0;
@@ -528,7 +528,7 @@ EnigmailProtocolHandler.prototype.defaultPort = -1;
 EnigmailProtocolHandler.prototype.QueryInterface =
 function (iid)
 {
-  WRITE_LOG("enigmail.js: EnigmailProtocolHandler.QueryInterface\n");
+  DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.QueryInterface\n");
 
   if (!iid.equals(nsIProtocolHandler) && !iid.equals(nsISupports))
     throw Components.results.NS_ERROR_NO_INTERFACE;
@@ -539,7 +539,7 @@ function (iid)
 EnigmailProtocolHandler.prototype.newURI =
 function (aSpec, aBaseURI)
 {
-  WRITE_LOG("enigmail.js: EnigmailProtocolHandler.newURI: aSpec='"+aSpec+"'\n");
+  DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.newURI: aSpec='"+aSpec+"'\n");
 
   if (aBaseURI) {
     ERROR_LOG("enigmail.js: Enigmail: Error - BaseURI for enigmail: protocol!");
@@ -555,7 +555,7 @@ function (aSpec, aBaseURI)
 EnigmailProtocolHandler.prototype.newChannel =
 function (aURI)
 {
-  WRITE_LOG("enigmail.js: EnigmailProtocolHandler.newChannel: URI='"+aURI.spec+"'\n");
+  DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.newChannel: URI='"+aURI.spec+"'\n");
 
   var spec;
   if (aURI.spec == aURI.scheme+":about") {
@@ -603,7 +603,7 @@ EnigmailProtocolHandlerFactory.prototype = {
   },
 
   createInstance: function (outer, iid) {
-    WRITE_LOG("enigmail.js: EnigmailProtocolHandlerFactory.createInstance\n");
+    DEBUG_LOG("enigmail.js: EnigmailProtocolHandlerFactory.createInstance\n");
 
     if (outer != null)
         throw Components.results.NS_ERROR_NO_AGGREGATION;
@@ -657,7 +657,7 @@ function Enigmail(registeringModule)
 
     var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(nsIPipeConsole);
 
-    WRITE_LOG("enigmail.js: Enigmail: pipeConsole = "+pipeConsole+"\n");
+    DEBUG_LOG("enigmail.js: Enigmail: pipeConsole = "+pipeConsole+"\n");
 
     pipeConsole.open(500, 80);
 
@@ -795,12 +795,15 @@ function (passphrase) {
 }
 
 Enigmail.prototype.execCmd = 
-function (command, input, errMessagesObj, statusObj, exitCodeObj) {
+function (command, input, passFD, errMessagesObj, statusObj, exitCodeObj) {
   WRITE_LOG("enigmail.js: Enigmail.execCmd: command = "+command+"\n");
 
   if ((typeof input) != "string") input = "";
 
-  var envList = ["PGPPASSFD=0"];
+  var envList = [];
+  if (passFD)
+    envList.push("PGPPASSFD=0");
+
   var passEnv = ["HOME", "GNUPGHOME", "PGPPATH"];
 
   for (var j=0; j<passEnv.length; j++) {
@@ -810,7 +813,7 @@ function (command, input, errMessagesObj, statusObj, exitCodeObj) {
        envList.push(envName+"="+envValue);
   }
 
-  WRITE_LOG("enigmail.js: Enigmail.execCmd: envList = "+envList+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail.execCmd: envList = "+envList+"\n");
 
   var outObj = new Object();
   var errObj = new Object();
@@ -940,10 +943,13 @@ function (plainText, toMailAddr, passphrase, statusCodeObj, statusMsgObj) {
   var statusObj      = new Object();
 
   var cipherText = gEnigmailSvc.execCmd(encryptCommand,
-                                  passphrase+"\n"+plainText,
+                                  passphrase+"\n"+plainText, true,
                                   errMessagesObj, statusObj, statusCodeObj);
 
   CONSOLE_LOG(errMessagesObj.value+"\n");
+
+  if ((statusCodeObj.value == 0) && !cipherText)
+    statusCodeObj.value = -1;
 
   if (statusCodeObj.value != 0) {
     // "Unremember" passphrase on error exit
@@ -963,7 +969,7 @@ function (plainText, toMailAddr, passphrase, statusCodeObj, statusMsgObj) {
 
 
 Enigmail.prototype.decryptMessage = 
-function (cipherText, passphrase, statusCodeObj, statusMsgObj) {
+function (cipherText, verifyOnly, passphrase, statusCodeObj, statusMsgObj) {
   WRITE_LOG("enigmail.js: Enigmail.decryptMessage: \n");
 
   if (this.keygenProcess) {
@@ -978,27 +984,43 @@ function (cipherText, passphrase, statusCodeObj, statusMsgObj) {
     decryptCommand += " +batchmode +force -ft";
 
   } else {
-    decryptCommand += " --batch --no-tty --passphrase-fd 0 --status-fd 2 -d";
+    decryptCommand += " --batch --no-tty --status-fd 2 -d";
+
+    if (!verifyOnly)
+      decryptCommand += " --passphrase-fd 0";
   }
 
-  if (passphrase == null) {
-     if (!this.haveDefaultPassphrase) {
-       ERROR_LOG("enigmail.js: Enigmail: Error - no passphrase supplied\n");
+  var inputText;
 
-       statusCodeObj.value = -1;
-       statusMsgObj.value = "Error - no passphrase supplied";
-       return "";
+  if (verifyOnly) {
+    inputText = cipherText;
+
+  } else {
+     if (passphrase == null) {
+        if (!this.haveDefaultPassphrase) {
+          ERROR_LOG("enigmail.js: Enigmail: Error - no passphrase supplied\n");
+
+          statusCodeObj.value = -1;
+          statusMsgObj.value = "Error - no passphrase supplied";
+          return "";
+        }
+
+        passphrase = this._passphrase;
      }
 
-     passphrase = this._passphrase;
+     inputText = passphrase+"\n"+cipherText;
   }
+
 
   var errMessagesObj = new Object();
   var statusObj      = new Object();
 
   var plainText = gEnigmailSvc.execCmd(decryptCommand,
-                                 passphrase+"\n"+cipherText,
-                                 errMessagesObj, statusObj, statusCodeObj);
+                                       inputText, !verifyOnly,
+                                     errMessagesObj, statusObj, statusCodeObj);
+
+  if ((statusCodeObj.value == 0) && !plainText)
+    statusCodeObj.value = -1;
 
   if (statusCodeObj.value != 0) {
     // "Unremember" passphrase on error exit
@@ -1018,11 +1040,17 @@ function (cipherText, passphrase, statusCodeObj, statusMsgObj) {
   var errLines = errMessagesObj.value.split(/\r?\n/);
 
   var goodSignPat = /Good signature from (user )?"(.*)"\.?/i;
+  var badSignPat = /BAD signature from (user )?"(.*)"\.?/i;
 
   statusMsgObj.value = "";
 
-  var fingerprint;
   for (var j=0; j<errLines.length; j++) {
+    if (errLines[j].search(badSignPat) != -1) {
+      statusMsgObj.value = (errLines[j].match(badSignPat))[0];
+      statusCodeObj.value = -1;
+      break;
+    }
+
     if (errLines[j].search(goodSignPat) != -1) {
       statusMsgObj.value = (errLines[j].match(goodSignPat))[0];
     }
@@ -1053,8 +1081,11 @@ function (email, secret, statusCodeObj, statusMsgObj) {
   var errMessagesObj = new Object();
   var statusObj      = new Object();
 
-  var keyText = gEnigmailSvc.execCmd(decryptCommand, "",
+  var keyText = gEnigmailSvc.execCmd(decryptCommand, "", false,
                                  errMessagesObj, statusObj, statusCodeObj);
+
+  if ((statusCodeObj.value == 0) && !keyText)
+    statusCodeObj.value = -1;
 
   if (statusCodeObj.value != 0) {
     statusMsgObj.value = "Error - fingerprint extraction command failed";
@@ -1111,7 +1142,7 @@ function (name, comment, email, expiryDate, passphrase, pipeConsole) {
     inputData += "Passphrase: "+passphrase+"\n";
   inputData += "%commit\n%echo done\n";
 
-  WRITE_LOG("enigmail.js: Enigmail.generateKey: inputData="+inputData+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail.generateKey: inputData="+inputData+"\n");
 
   var keygenProcess = null;
   try {
@@ -1134,7 +1165,7 @@ function (name, comment, email, expiryDate, passphrase, pipeConsole) {
   this.keygenProcess = keygenProcess;
   this.keygenConsole = pipeConsole;
 
-  WRITE_LOG("enigmail.js: Enigmail.generateKey: keygenProcess = "+keygenProcess+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail.generateKey: keygenProcess = "+keygenProcess+"\n");
 
   // Null string password is always remembered
   if (passphrase.length == 0)
