@@ -630,13 +630,14 @@ function (aURI)
     if (!gEnigmailSvc)
       throw Components.results.NS_ERROR_FAILURE;
 
-    var contentType, contentData;
+    var contentType, contentCharset, contentData;
 
     if (gEnigmailSvc._messageIdList[messageId]) {
       var messageUriObj = gEnigmailSvc._messageIdList[messageId];
 
-      contentType = messageUriObj.contentType;
-      contentData = messageUriObj.contentData;
+      contentType    = messageUriObj.contentType;
+      contentCharset = messageUriObj.contentCharset;
+      contentData    = messageUriObj.contentData;
 
       DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.newChannel: messageURL="+messageUriObj.originalUrl+"\n");
 
@@ -646,12 +647,15 @@ function (aURI)
     } else {
 
       contentType = "text/plain";
+      contentCharset = "";
       contentData = "Enigmail error: invalid URI "+aURI.spec;
     }
 
-    return gEnigmailSvc.ipcService.newStringChannel(aURI,
+    var channel = gEnigmailSvc.ipcService.newStringChannel(aURI,
                                                     contentType,
+                                                    contentCharset,
                                                     contentData);
+    return channel;
   }
 
   var spec;
@@ -1196,7 +1200,7 @@ function (version, prefBranch) {
   var errStrObj = new Object();
   var errLenObj = new Object();
 
-  var exitCode = this.ipcService.execPipe(command, false, "", 0, [], 0,
+  var exitCode = this.ipcService.execPipe(command, false, "", "", 0, [], 0,
                                 outStrObj, outLenObj, errStrObj, errLenObj);
 
   CONSOLE_LOG("enigmail> "+command.replace(/\\\\/g, "\\")+"\n");
@@ -1254,6 +1258,7 @@ function (command, input, passFD, exitCodeObj, errorMsgObj, statusMsgObj) {
     var useShell = false;
     exitCodeObj.value = gEnigmailSvc.ipcService.execPipe(command,
                                                        useShell,
+                                                       "",
                                                        input, input.length,
                                                        envList, envList.length,
                                                        outObj, outLenObj,
@@ -2187,6 +2192,7 @@ function (parent, name, comment, email, expiryDate, passphrase,
     var useShell = this.isWin32;
     ipcRequest = gEnigmailSvc.ipcService.execAsync(command,
                                                    useShell,
+                                                   "",
                                                    inputData,
                                                    inputData.length,
                                                    [], 0,
@@ -2211,14 +2217,15 @@ function (parent, name, comment, email, expiryDate, passphrase,
 
 
 Enigmail.prototype.createMessageURI =
-function (originalUrl, contentType, contentData, persist) {
+function (originalUrl, contentType, contentCharset, contentData, persist) {
   DEBUG_LOG("enigmail.js: Enigmail.createMessageURI: "+originalUrl+
-            ", "+contentType+"\n");
+            ", "+contentType+", "+contentCharset+"\n");
 
   var messageId = "msg" + Math.floor(Math.random()*1.0e9);
 
   this._messageIdList[messageId] = {originalUrl:originalUrl,
                                     contentType:contentType,
+                                    contentCharset:contentCharset,
                                     contentData:contentData,
                                     persist:persist};
                                 

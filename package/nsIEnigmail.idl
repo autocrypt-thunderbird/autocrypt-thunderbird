@@ -136,6 +136,7 @@ interface nsIEnigmail : nsISupports
 
   string createMessageURI(in string originalUrl,
                           in string contentType,
+                          in string contentCharset,
                           in string contentData,
                           in boolean persist);
 

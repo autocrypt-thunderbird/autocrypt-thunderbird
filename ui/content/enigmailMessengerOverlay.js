@@ -303,6 +303,7 @@ function enigMessageDecryptCallback(msgText, charset, interactive,
   gDecryptedMessage = {url:messageUrl,
                        statusLine:statusLine,
                        headerList:headerList,
+                       charset:charset,
                        plainText:plainText};
   return;
 }
@@ -487,6 +488,7 @@ function enigMsgPrint(elementId) {
 
   var uri = enigmailSvc.createMessageURI(gDecryptedMessage.url,
                                          "text/html",
+                                         gDecryptedMessage.charset,
                                          htmlContent,
                                          false);
 
