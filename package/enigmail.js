@@ -2091,7 +2091,7 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
 	                         ? fromMailAddr : "<" + fromMailAddr + ">";
 
     if (encryptMsg) {
-      encryptCommand += " -a -e";
+      encryptCommand += " -a --textmode -e";
 
       if (signMsg)
         encryptCommand += " -s";
@@ -2107,7 +2107,7 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
                             : " -r "+ toAddrList[k];
 
     } else if (detachedSig) {
-      encryptCommand += " -s -b -t -a";
+      encryptCommand += " -s -b -t -a --textmode";
 
       if (hashAlgorithm) {
         encryptCommand += " --digest-algo "+hashAlgorithm;
