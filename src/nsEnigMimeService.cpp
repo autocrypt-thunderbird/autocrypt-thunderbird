@@ -68,7 +68,7 @@ PRLogModuleInfo* gEnigMimeServiceLog = NULL;
 
 // nsISupports implementation
 NS_IMPL_THREADSAFE_ISUPPORTS1(nsEnigMimeService,
-                              nsIEnigMimeService);
+                              nsIEnigMimeService)
 
 
 // nsEnigMimeService implementation

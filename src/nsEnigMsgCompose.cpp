@@ -123,7 +123,7 @@ PRBool nsEnigMsgCompose::mRandomSeeded = PR_FALSE;
 NS_IMPL_THREADSAFE_ISUPPORTS3(nsEnigMsgCompose,
                               nsIMsgComposeSecure,
                               nsIRequestObserver,
-                              nsIStreamListener);
+                              nsIStreamListener)
 
 // nsEnigMsgCompose implementation
 nsEnigMsgCompose::nsEnigMsgCompose()

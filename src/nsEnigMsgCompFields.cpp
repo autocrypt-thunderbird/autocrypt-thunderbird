@@ -62,7 +62,7 @@ PRLogModuleInfo* gEnigMsgCompFieldsLog = NULL;
 // nsISupports implementation
 NS_IMPL_THREADSAFE_ISUPPORTS2(nsEnigMsgCompFields,
                               nsIEnigMsgCompFields,
-                              nsIMsgSMIMECompFields);
+                              nsIMsgSMIMECompFields)
 
 
 // nsEnigMsgCompFields implementation

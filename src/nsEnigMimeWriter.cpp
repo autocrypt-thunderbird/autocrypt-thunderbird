@@ -64,7 +64,7 @@ static const PRUint32 kCharMax = 1024;
 NS_IMPL_THREADSAFE_ISUPPORTS3(nsEnigMimeWriter,
                               nsIEnigMimeWriter,
                               nsIRequestObserver,
-                              nsIStreamListener);
+                              nsIStreamListener)
 
 
 // nsEnigMimeWriter implementation

@@ -70,7 +70,7 @@ static const PRUint32 kCharMax = 1024;
 
 // nsISupports implementation
 NS_IMPL_THREADSAFE_ISUPPORTS1(nsEnigMimeDecrypt,
-                              nsIEnigMimeDecrypt);
+                              nsIEnigMimeDecrypt)
 
 // nsEnigMimeDecrypt implementation
 nsEnigMimeDecrypt::nsEnigMimeDecrypt()

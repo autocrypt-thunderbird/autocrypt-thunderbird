@@ -68,7 +68,7 @@ static NS_DEFINE_CID(kMimeObjectClassAccessCID, NS_MIME_OBJECT_CLASS_ACCESS_CID)
 
 // nsISupports implementation
 NS_IMPL_THREADSAFE_ISUPPORTS1(nsEnigContentHandler,
-                              nsIMimeContentTypeHandler);
+                              nsIMimeContentTypeHandler)
 
 
 // nsEnigContentHandler implementation

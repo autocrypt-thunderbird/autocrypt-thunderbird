@@ -77,7 +77,7 @@ NS_IMPL_THREADSAFE_ISUPPORTS4(nsEnigMimeListener,
                               nsIEnigMimeListener,
                               nsIRequestObserver,
                               nsIStreamListener,
-                              nsIInputStream);
+                              nsIInputStream)
 
 
 // nsEnigMimeListener implementation
