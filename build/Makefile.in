@@ -35,7 +35,7 @@
 
 # Specify these as parameters to the make command
 XPI_MODULE	= enigmime
-XPI_MODULE_VERS = 0.74.0
+XPI_MODULE_VERS = 0.74.1
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
