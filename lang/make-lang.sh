@@ -260,4 +260,4 @@ cd ..
 zip ../enigmail-${ENIGLANG}-${ENIGVERSION}.xpi install.js install.rdf enigmail-${ENIGLANG}.spec chrome/enigmail-${ENIGLANG}.jar
 cd ..
 
-test $DEBUG -eq 0 && rm -rf chrome
+test $DEBUG -eq 0 && rm -rf ${ENIGLANG}
