@@ -9,7 +9,7 @@ if [ $# -ne 2 ]; then
   echo "Usage: $0 xx-YY version"
   echo "       where: xx-YY   is the language and country code representing the"
   echo "                      translated language"
-  echo "              version is the Enigmail version, e.g. 0.75.1"
+  echo "              version is the Enigmail version, e.g. 0.76.1"
   exit 1
 fi
 

@@ -35,7 +35,7 @@
 
 # Specify these as parameters to the make command
 XPI_MODULE	= enigmail
-XPI_VERS        = 0.76.0
+XPI_VERS        = 0.76.1
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
@@ -63,9 +63,6 @@ xpi-es-ES::
 
 xpi-it-IT::
 	./make-lang-xpi.pl it-IT $(XPI_VERS) $(DIST)/bin
-
-xpi-ja-JP::
-	./make-lang-xpi.pl ja-JP $(XPI_VERS) $(DIST)/bin
 
 xpi-pl-PL::
 	./make-lang-xpi.pl pl-PL $(XPI_VERS) $(DIST)/bin
