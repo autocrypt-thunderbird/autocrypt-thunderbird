@@ -10,7 +10,11 @@ MimeDefClass(MimeDummy, MimeDummyClass, mimeDummyClass,
 static int MimeDummy_initialize (MimeObject *);
 static void MimeDummy_finalize (MimeObject *);
 static int MimeDummy_parse_begin (MimeObject *);
+#ifndef MOZ_16
 static int MimeDummy_parse_buffer (const char *, PRInt32, MimeObject *);
+#else
+static int MimeDummy_parse_buffer (char *, PRInt32, MimeObject *);
+#endif
 static int MimeDummy_parse_line (char *, PRInt32, MimeObject *);
 static int MimeDummy_parse_eof (MimeObject *, PRBool);
 static int MimeDummy_parse_end (MimeObject *, PRBool);
@@ -89,15 +93,20 @@ MimeDummy_parse_begin(MimeObject *obj)
       }
 
     }
-    
+
   }
 
   return 0;
 }
 
 
+#ifndef MOZ_16
 static int
 MimeDummy_parse_buffer(const char *buffer, PRInt32 size, MimeObject *obj)
+#else
+static int
+MimeDummy_parse_buffer(char *buffer, PRInt32 size, MimeObject *obj)
+#endif
 {
   return 0;
 }
