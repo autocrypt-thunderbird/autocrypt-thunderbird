@@ -24,10 +24,10 @@
                 id="enigmail_showPhoto"
                 oncommand="enigShowPhoto();"/>
       <menuseparator/>
-      <menuitem label="&enigmail.signSenderKey.label;"
+      <menuitem label="&enigmail.signSenderKeyPopup.label;"
                 id="enigmail_signSenderKey"
                 oncommand="enigSignKey();"/>
-      <menuitem label="&enigmail.trustSenderKey.label;"
+      <menuitem label="&enigmail.trustSenderKeyPopup.label;"
                 id="enigmail_editSenderKeyTrust"
                 oncommand="enigEditKeyTrust();"/>
       <menuseparator/>

@@ -14,6 +14,9 @@ var gIdentityListPopup;
 var gUseForSigning;
 
 var gKeygenRequest;
+var gAllData = "";
+var gGeneratedKey="";
+var gUsedId;
 
 function enigmailKeygenLoad() {
   DEBUG_LOG("enigmailKeygen.js: Load\n");
@@ -101,18 +104,24 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
    ipcRequest.close(true);
 
    if (gUseForSigning.checked) {
-      var identityItem = gIdentityList.selectedItem;
-      var email = identityItem.getAttribute("email");
-      var curId = getCurrentIdentity();
+      var curId = gUsedId;
       curId.setBoolAttribute("enablePgp", true);
       curId.setIntAttribute("pgpKeyMode", 1);
-      curId.setCharAttribute("pgpkeyId", email);
+      if (gGeneratedKey) {
+        curId.setCharAttribute("pgpkeyId", "0x"+gGeneratedKey.substr(-8,8));
+      }
+      else {
+        curId.setCharAttribute("pgpkeyId", curId.email);
+      }
 
       enigmailKeygenUpdate(false, true);
 
       EnigSavePrefs();
 
-      EnigAlert(EnigGetString("genComplete",email));
+      if (EnigConfirm(EnigGetString("genComplete", curId.email))) {
+        EnigCreateRevokeCert(gGeneratedKey, curId.email);
+      }
+      
 
    } else {
       EnigAlert(EnigGetString("genCompleteNoSign"));
@@ -207,6 +216,7 @@ function enigmailKeygenStart() {
    var keySize = Number(document.getElementById("keySize").value);
 
    var curId = getCurrentIdentity();
+   gUsedId = curId;
 
    var userName = curId.fullName;
    var userEmail = curId.email;
@@ -275,10 +285,17 @@ function enigRefreshConsole() {
 
         var consoleElement = contentFrame.document.getElementById('console');
 
-        consoleElement.firstChild.data = keygenConsole.getData();
-
+        gAllData += keygenConsole.getNewData();
+        var keyCreatedIndex = gAllData.indexOf("[GNUPG:] KEY_CREATED");
+        if (keyCreatedIndex >0) {
+          gGeneratedKey = gAllData.substr(keyCreatedIndex);
+          gGeneratedKey = gGeneratedKey.replace(/(.*\[GNUPG:\] KEY_CREATED . )([a-fA-F0-9]+)([\n\r].*)*/, "$2");
+          gAllData = gAllData.replace(/\[GNUPG:\] KEY_CREATED . [a-fA-F0-9]+[\n\r]/, "");
+        }
+        gAllData = gAllData.replace(/[\r\n]*\[GNUPG:\] GOOD_PASSPHRASE/g, "").replace(/([\r\n]*\[GNUPG:\] PROGRESS primegen )(.)( \d+ \d+)/g, "$2")
+        consoleElement.firstChild.data = gAllData.replace(/(.{70})/g, "$1\n");
         if (!contentFrame.mouseDownState)
-         contentFrame.scrollTo(0,9999);
+          contentFrame.scrollTo(0,9999);
       }
     }
   } catch (ex) {}

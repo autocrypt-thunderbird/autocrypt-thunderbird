@@ -239,7 +239,14 @@ interface nsIEnigmail : nsISupports
                 in string reasonText, 
                 out wstring errorMsg);
 
-  long addUid(in nsIDOMWindow parent, 
+  long revokeSubey (in nsIDOMWindow parent,
+                    in string keyId,
+                    in string subkeys,
+                    in string reasonCode,
+                    in string reasonText,
+                    out wstring errorMsgObj);
+
+  long addUid(in nsIDOMWindow parent,
                 in string keyId, 
                 in string name, 
                 in string email, 
@@ -247,9 +254,9 @@ interface nsIEnigmail : nsISupports
                 out wstring errorMsg);
 
   long deleteKey(in nsIDOMWindow parent, 
-                in string keyId, 
-                in boolean deleteSecretKey, 
-                out wstring errorMsg);
+                 in string keyId,
+                 in boolean deleteSecretKey,
+                 out wstring errorMsg);
 
   long enableDisableKey(in nsIDOMWindow parent, 
                         in string keyId, 
@@ -275,8 +282,8 @@ interface nsIEnigmail : nsISupports
                     out long exitCode,
                     out wstring errorMsg);
 
-  string getUidsForKey (in string keyId,
-                        in boolean shortOutput);
+  string getKeyDetails (in string keyId,
+                        in boolean uidOnly);
 
   string showKeyPhoto (in string keyId,
                        out long exitCode,

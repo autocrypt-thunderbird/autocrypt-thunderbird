@@ -35,7 +35,7 @@
     <broadcaster id="bcViewSig" disabled="false"/>
     <broadcaster id="bcViewPhoto" disabled="false"/>
     <broadcaster id="bcManageUid" disabled="false"/>
-    <broadcaster id="bcRevocationCertificate" disabled="false"/>
+    <broadcaster id="bcRevoke" disabled="false"/>
     <broadcaster id="bcKeyDetails" disabled="false"/>
     <broadcaster id="bcDeleteKey" disabled="false"/>
     <broadcaster id="bcEnableKey" disabled="false" label=""/>
@@ -91,7 +91,7 @@
                   oncommand="enigmailManageUids()"/>
         <menuitem label="&enigmail.keyMan.genRevoke.label;"
                   id="revokationCertificate"
-                  observes="bcRevocationCertificate"
+                  observes="bcRevoke"
                   accesskey="&enigmail.keyMan.genRevoke.accesskey;"
                   oncommand="enigCreateRevokeCert()"/>
         <menuitem label="&enigmail.keyMan.delKey.label;"
@@ -100,6 +100,11 @@
 									observes="bcDeleteKey"
 									accesskey="&enigmail.keyMan.delKey.accesskey;"
 									oncommand="enigmailDeleteKey()"/>            
+        <menuitem label="&enigmail.keyMan.revokeKey.label;"
+									id="revokeKey"
+									observes="bcRevoke"
+									accesskey="&enigmail.keyMan.revokeKey.accesskey;"
+									oncommand="enigmailRevokeKey()"/>
         <menuitem id="enableKey"
 									observes="bcEnableKey"
 									accesskey="&enigmail.keyMan.enableKey.accesskey;"
@@ -114,14 +119,14 @@
 											id="importFromFile"
 											accesskey="&enigmail.keyMan.importFromFile.accesskey;"
 											oncommand="enigmailImportKeysFromFile()"/>
-						<menuitem label="&enigmail.keyMan.importFromServer.label;"
-											id="importFromServer"
-											accesskey="&enigmail.keyMan.importFromServer.accesskey;"
-											oncommand="enigmailSearchKey()"/>
 						<menuitem label="&enigmail.keyMan.importFromClipbrd.label;"
 											id="importFromClipbrd"
 											accesskey="&enigmail.keyMan.importFromClipbrd.accesskey;"
 											oncommand="enigmailImportFromClipbrd()"/>
+						<menuitem label="&enigmail.keyMan.importFromServer.label;"
+											id="importFromServer"
+											accesskey="&enigmail.keyMan.importFromServer.accesskey;"
+											oncommand="enigmailSearchKey()"/>
 						<menuitem label="&enigmail.keyMan.refreshKey.label;"
 											id="refreshKey"
 											accesskey="&enigmail.keyMan.refreshKey.accesskey;"
@@ -174,31 +179,32 @@
       <menuitem id="ctxTrust" label="&enigmail.keyMan.setTrust.label;" oncommand="enigEditKeyTrust()"/>
       <menuseparator/>
       <menuitem id="ctxManageUid" observes="bcManageUid" label="&enigmail.keyMan.manageUid.label;" oncommand="enigmailManageUids()"/>
-      <menuitem id="ctxRevokationCert" observes="bcRevocationCertificate" label="&enigmail.keyMan.genRevoke.label;" oncommand="enigCreateRevokeCert()"/>
+      <menuitem id="ctxRevokationCert" observes="bcRevoke" label="&enigmail.keyMan.genRevoke.label;" oncommand="enigCreateRevokeCert()"/>
 			<menuitem id="ctxDeleteKey" observes="bcDeleteKey" label="&enigmail.keyMan.delKey.label;" oncommand="enigmailDeleteKey()"/>
+			<menuitem id="ctxRevokeKey" observes="bcRevoke" label="&enigmail.keyMan.revokeKey.label;" oncommand="enigmailRevokeKey()"/>
 			<menuitem id="ctxEnableKey" observes="bcEnableKey" oncommand="enigmailEnableKey()"/>
       <menuitem label="&enigmail.keyMan.refreshKey.label;"
 			          id="ctxRefreshKey"
                 oncommand="enigmailReceiveKey()"/>
+<!--
       <menu id="ctxExportMenu"
 						label="&enigmail.keyMan.exportMenu.label;"
 						accesskey="&enigmail.keyMan.exportMenu.accesskey;">
-				<menupopup> <!-- export menu -->
-					<menuitem label="&enigmail.keyMan.exportToFile.label;"
+				<menupopup> <!- - export menu -->
+				<menuseparator/>
+					<menuitem label="&enigmail.keyMan.ctxExportToFile.label;"
 										id="ctxExport"
-										accesskey="&enigmail.keyMan.exportToFile.accesskey;"
 										oncommand="enigmailExportKeys()"/>
-					<menuitem label="&enigmail.keyMan.uploadToServer.label;"
+					<menuitem label="&enigmail.keyMan.ctxUploadToServer.label;"
 										id="ctxUpload"
-										accesskey="&enigmail.keyMan.uploadToServer.accesskey;"
 										oncommand="enigmailUploadKeys()"/>
-					<menuitem label="&enigmail.keyMan.copyToClipbrd.label;"
+					<menuitem label="&enigmail.keyMan.ctxCopyToClipbrd.label;"
 										id="ctxCopyToClipbrd"
-										accesskey="&enigmail.keyMan.copyToClipbrd.accesskey;"
 										oncommand="enigmailCopyToClipbrd()"/>
+<!--
 				</menupopup>
 			</menu>
-
+-->
       <menuseparator/>
       <menuitem id="ctxDetails" observes="bcViewSig" label="&enigmail.keyMan.keyProps.label;"
 								oncommand="enigmailKeyDetails()"/>
@@ -259,7 +265,7 @@
   
         <treechildren id="pgpKeyListChildren"
                       context="ctxmenu"
-                      ondblclick="enigmailDblClick()"/>
+                      ondblclick="enigmailDblClick(event)"/>
   
       </tree>
   </hbox>

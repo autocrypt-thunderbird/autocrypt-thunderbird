@@ -34,6 +34,7 @@ GPL.
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
 // Initialize enigmailCommon
+
 EnigInitCommon("enigmailMessengerOverlay");
 
 var gEnigCreatedURIs = [];

@@ -358,11 +358,11 @@ function enigmailGetSelectedKeys() {
 function enigmailKeyMenu() {
   var keyList = enigmailGetSelectedKeys();
   if (keyList.length == 1 && gKeyList[keyList[0]].secretAvailable) {
-    document.getElementById("bcRevocationCertificate").removeAttribute("disabled");
+    document.getElementById("bcRevoke").removeAttribute("disabled");
     document.getElementById("bcManageUid").removeAttribute("disabled");
   }
   else {
-    document.getElementById("bcRevocationCertificate").setAttribute("disabled", "true");
+    document.getElementById("bcRevoke").setAttribute("disabled", "true");
     document.getElementById("bcManageUid").setAttribute("disabled", "true");
   }
   
@@ -396,7 +396,7 @@ function enigmailKeyMenu() {
   }
 }
 
-function enigmailDblClick() {
+function enigmailDblClick(event) {
   var keyList = enigmailGetSelectedKeys();
   var keyType="";
   if (keyList.length == 1) {
@@ -457,6 +457,7 @@ function enigmailDeleteKey() {
   enigmailRefreshKeys();
 }
 
+
 function enigmailEnableKey() {
   var keyList = enigmailGetSelectedKeys();
   var disableKey = (gKeyList[keyList[0]].keyUseFor.indexOf("D")<0 && 
@@ -507,30 +508,53 @@ function enigSignKey() {
   enigmailRefreshKeys();
 }
 
-function enigCreateRevokeCert() {
+function enigmailRevokeKey() {
   var keyList = enigmailGetSelectedKeys();
-  var defaultFileName = gKeyList[keyList[0]].userId.replace(/[\<\>]/g, "");
-  defaultFileName += " (0x"+keyList[0].substr(-8,8)+") rev.asc"
-  var outFile = EnigFilePicker(EnigGetString("saveRevokeCertAs"),
-                               "", true, "*.asc",
-                               defaultFileName, 
-                               [EnigGetString("asciiArmorFile"), "*.asc"]);
-  if (! outFile) return;
-  
+
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return;
+
+  var userId="0x"+keyList[0].substr(-8,8)+" - "+gKeyList[keyList[0]].userId;
+  if (!EnigConfirm(EnigGetString("revokeKeyAsk", userId))) return;
+
+  var tmpDir=EnigGetTempDir();
+
+  try {
+    var revFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+    revFile.initWithPath(tmpDir);
+    if (!(revFile.isDirectory() && revFile.isWritable())) {
+      EnigAlert(EnigGetString("noTempDir"));
+      return;
+    }
+  }
+  catch (ex) {}
+  revFile.append("revkey.asc");
+  revFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
   
   var errorMsgObj = {};
-  var r=enigmailSvc.genRevokeCert(window, "0x"+keyList[0], outFile.path, "1", "", errorMsgObj);
+  var r=enigmailSvc.genRevokeCert(window, "0x"+keyList[0], revFile.path, "0", "", errorMsgObj);
   if (r != 0) {
-    EnigAlert(EnigGetString("revokeCertFailed")+"\n\n"+errorMsgObj.value);
+    revFile.remove(false);
+    EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+errorMsgObj.value);
+    return;
+  }
+  r = enigmailSvc.importKeyFromFile(window, revFile.path, errorMsgObj);
+  revFile.remove(false);
+  if (r != 0) {
+    EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+errorMsgObj.value);
   }
   else {
-    EnigAlert(EnigGetString("revokeCertOK"));
+    EnigAlert(EnigGetString("revokeKeyOk"));
   }
+  enigmailRefreshKeys();
 }
 
+function enigCreateRevokeCert() {
+  var keyList = enigmailGetSelectedKeys();
+  
+  EnigCreateRevokeCert(keyList[0], gKeyList[keyList[0]].userId);
+}
 
 function enigmailExportKeys() {
   var keyList = enigmailGetSelectedKeys();

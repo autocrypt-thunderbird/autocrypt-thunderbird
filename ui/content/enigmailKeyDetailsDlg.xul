@@ -183,6 +183,9 @@
       aRow.appendChild(createCell(aLine[2])); // size
       aRow.appendChild(createCell(aLine[5])); // created
       var expire=(aLine[6].length==0 ? EnigGetString("keyExpiryNever") : aLine[6]);
+      if (aLine[1]=="r") {
+        expire = EnigGetString("keyValid.revoked");
+      }
       aRow.appendChild(createCell(expire)); // expiry
       treeItem.appendChild(aRow);
       treeChildren.appendChild(treeItem);

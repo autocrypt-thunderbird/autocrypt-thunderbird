@@ -82,7 +82,7 @@
       var textbox=document.getElementById("msgtext");
       textbox.setAttribute("height", String(lines*15)+"px");
       textbox.setAttribute("value", msgtext);
-      ocument.getElementById("acceptButton").focus();
+      document.getElementById("acceptButton").focus();
     }
   ]]>
   </script>

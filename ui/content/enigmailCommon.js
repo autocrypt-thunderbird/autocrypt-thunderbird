@@ -1490,7 +1490,6 @@ function EnigSignKey(userId, keyId, signingKeyHint) {
   window.openDialog("chrome://enigmail/content/enigmailSignKeyDlg.xul","", "dialog,modal,centerscreen,resizable", inputObj);
 }
 
-
 function EnigShowPhoto(keyId, userId) {
   var enigmailSvc = GetEnigmailSvc();
   if (enigmailSvc) {
@@ -1520,12 +1519,37 @@ function EnigShowPhoto(keyId, userId) {
      }
     }
     else {
-      EnigAlert("No Photo available");
+      EnigAlert(EnigGetString("noPhotoAvailable"));
     }
   }
 }
 
-// return the label of trust for a given trust code  
+function EnigCreateRevokeCert(keyId, userId) {
+  var defaultFileName = userId.replace(/[\<\>]/g, "");
+  defaultFileName += " (0x"+keyId.substr(-8,8)+") rev.asc"
+  var outFile = EnigFilePicker(EnigGetString("saveRevokeCertAs"),
+                               "", true, "*.asc",
+                               defaultFileName,
+                               [EnigGetString("asciiArmorFile"), "*.asc"]);
+  if (! outFile) return -1;
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return -1;
+
+  var errorMsgObj = {};
+  var r=enigmailSvc.genRevokeCert(window, "0x"+keyId, outFile.path, "1", "", errorMsgObj);
+  if (r != 0) {
+    EnigAlert(EnigGetString("revokeCertFailed")+"\n\n"+errorMsgObj.value);
+  }
+  else {
+    EnigAlert(EnigGetString("revokeCertOK"));
+  }
+  return r;
+}
+
+
+// return the label of trust for a given trust code
 function EnigGetTrustLabel(trustCode) {
   var keyTrust;
   switch (trustCode) {

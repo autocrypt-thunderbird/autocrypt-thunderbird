@@ -267,6 +267,8 @@
 <!ENTITY  enigmail.showPhoto.label                  "View OpenPGP Photo ID">
 <!ENTITY  enigmail.signSenderKey.label              "Sign Key ...">
 <!ENTITY  enigmail.trustSenderKey.label             "Set Key Trust ...">
+<!ENTITY  enigmail.signSenderKeyPopup.label         "Sign sender's key ...">
+<!ENTITY  enigmail.trustSenderKeyPopup.label        "Set senderr's key trust ...">
 <!ENTITY  enigmail.smimeSecurityInfo.label          "S/MIME Security Info ...">
 <!ENTITY  enigmail.createRuleFromAddr.label         "Create OpenPGP Rule from Address...">
 <!ENTITY  enigmail.keyManWindow.label               "OpenPGP key management ">
@@ -354,27 +356,31 @@
 <!ENTITY enigmail.keyMan.close.label               "Close">
 <!ENTITY enigmail.keyMan.key.label                 "Key">
 <!ENTITY enigmail.keyMan.generate.label            "Generate">
-<!ENTITY enigmail.keyMan.sign.label                "Sign key">
-<!ENTITY enigmail.keyMan.setTrust.label            "Set key trust">
-<!ENTITY enigmail.keyMan.genRevoke.label           "Create &amp; save revocation certificate">
+<!ENTITY enigmail.keyMan.sign.label                "Sign Key">
+<!ENTITY enigmail.keyMan.setTrust.label            "Set Key Trust">
+<!ENTITY enigmail.keyMan.genRevoke.label           "Create &amp; Save Revocation Certificate">
 
-<!ENTITY enigmail.keyMan.importMenu.label          "Import key">
-<!ENTITY enigmail.keyMan.exportMenu.label          "Export public key">
+<!ENTITY enigmail.keyMan.importMenu.label          "Import Key">
+<!ENTITY enigmail.keyMan.exportMenu.label          "Export Public Key">
 
-<!ENTITY enigmail.keyMan.importFromFile.label      "From file">
-<!ENTITY enigmail.keyMan.exportToFile.label        "To file">
-<!ENTITY enigmail.keyMan.importFromServer.label    "From keyserver">
-<!ENTITY enigmail.keyMan.uploadToServer.label      "Upload to keyserver">
-<!ENTITY enigmail.keyMan.importFromClipbrd.label   "From clipboard">
-<!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copy to clipboard">
-<!ENTITY enigmail.keyMan.refreshKey.label          "Refresh key from keyserver">
+<!ENTITY enigmail.keyMan.importFromFile.label      "From File">
+<!ENTITY enigmail.keyMan.importFromServer.label    "Search On Keyserver">
+<!ENTITY enigmail.keyMan.importFromClipbrd.label   "From Clipboard">
+<!ENTITY enigmail.keyMan.exportToFile.label        "To File">
+<!ENTITY enigmail.keyMan.uploadToServer.label      "Upload To Keyserver">
+<!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copy To Clipboard">
+<!ENTITY enigmail.keyMan.ctxExportToFile.label     "Export Key To File">
+<!ENTITY enigmail.keyMan.ctxUploadToServer.label   "Upload Key To Keyserver">
+<!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label    "Copy Key To Clipboard">
+<!ENTITY enigmail.keyMan.refreshKey.label          "Refresh Key From Keyserver">
 
-<!ENTITY enigmail.keyMan.reload.label              "Reload key cache">
-<!ENTITY enigmail.keyMan.addUid.label              "Add user ID">
-<!ENTITY enigmail.keyMan.manageUid.label           "Manage user IDs">
-<!ENTITY enigmail.keyMan.delKey.label              "Delete key">
+<!ENTITY enigmail.keyMan.reload.label              "Reload Key Cache">
+<!ENTITY enigmail.keyMan.addUid.label              "Add User ID">
+<!ENTITY enigmail.keyMan.manageUid.label           "Manage User IDs">
+<!ENTITY enigmail.keyMan.delKey.label              "Delete Key">
+<!ENTITY enigmail.keyMan.revokeKey.label           "Revoke Key">
 <!ENTITY enigmail.keyMan.keyProps.label            "Key Properties">
-<!ENTITY enigmail.keyMan.viewSig.label             "View signatures">
+<!ENTITY enigmail.keyMan.viewSig.label             "View Signatures">
 <!ENTITY enigmail.keyMan.keyType.label             "Type">
 <!ENTITY enigmail.keyMan.calcTrust.label           "Calculated Trust">
 <!ENTITY enigmail.keyMan.ownerTrust.label          "Owner Trust">
@@ -393,9 +399,10 @@
 <!ENTITY enigmail.keyMan.setTrust.accesskey          "T">
 <!ENTITY enigmail.keyMan.genRevoke.accesskey         "C">
 <!ENTITY enigmail.keyMan.delKey.accesskey            "D">
+<!ENTITY enigmail.keyMan.revokeKey.accesskey         "E">
 <!ENTITY enigmail.keyMan.importFromFile.accesskey    "F">
 <!ENTITY enigmail.keyMan.exportToFile.accesskey      "T">
-<!ENTITY enigmail.keyMan.importFromServer.accesskey  "K">
+<!ENTITY enigmail.keyMan.importFromServer.accesskey  "S">
 <!ENTITY enigmail.keyMan.uploadToServer.accesskey    "U">
 <!ENTITY enigmail.keyMan.reload.accesskey            "R">
 <!ENTITY enigmail.keyMan.addUid.accesskey            "A">
@@ -404,7 +411,7 @@
 <!ENTITY enigmail.keyMan.showPhoto.accesskey         "P">
 <!ENTITY enigmail.keyMan.closeWin.key                "W">
 <!ENTITY enigmail.keyMan.importMenu.accesskey        "I">
-<!ENTITY enigmail.keyMan.exportMenu.accesskey        "E">
+<!ENTITY enigmail.keyMan.exportMenu.accesskey        "X">
 <!ENTITY enigmail.keyMan.importFromClipbrd.accesskey "C">
 <!ENTITY enigmail.keyMan.copyToClipbrd.accesskey     "C">
 <!ENTITY enigmail.keyMan.keyDetails.accesskey        "K">

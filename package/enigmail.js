@@ -2897,7 +2897,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
     
     try {
       if (userId && keyId && this.prefBranch.getBoolPref("displaySecondaryUid")) {
-        uids = this.getUidsForKey(keyId, true);
+        uids = this.getKeyDetails(keyId, true);
         if (uids) {
           userId = uids;
         }
@@ -3524,7 +3524,9 @@ function (parent, name, comment, email, expiryDate, keyLength, passphrase,
   // Create joinable console
   pipeConsole.open(100, 80, true);
 
-  var command = this.getAgentPath() + " --batch --no-tty --gen-key";
+
+  // var command = this.getAgentPath() + " --batch --no-tty --gen-key";
+  var command = this.getAgentPath() + GPG_BATCH_OPTS + " --gen-key";
 
   pipeConsole.write(command.replace(/\\\\/g, "\\")+"\n");
   CONSOLE_LOG(command.replace(/\\\\/g, "\\")+"\n");
@@ -3539,7 +3541,7 @@ function (parent, name, comment, email, expiryDate, keyLength, passphrase,
   inputData += "Expire-Date: "+String(expiryDate)+"\n";
 
   pipeConsole.write(inputData+"\n");
-  CONSOLE_LOG(inputData+"\n");
+  CONSOLE_LOG(inputData+" \n");
 
   if (passphrase.length)
     inputData += "Passphrase: "+passphrase+"\n";
@@ -3946,8 +3948,9 @@ function  (keyId, exitCodeObj, errorMsgObj) {
   return listText;
 }
 
-
-Enigmail.prototype.getUidsForKey = function (keyId, shortOutput) {
+// get key details.
+// if uidOnly is true, returns just a list of uid's
+Enigmail.prototype.getKeyDetails = function (keyId, uidOnly) {
   var gpgCommand = this.getAgentPath() + GPG_BATCH_OPTS 
   gpgCommand += " --with-colons --list-keys " + keyId;
   var statusMsgObj   = new Object();
@@ -3962,7 +3965,7 @@ Enigmail.prototype.getUidsForKey = function (keyId, shortOutput) {
   }
   listText=EnigConvertGpgToUnicode(listText).replace(/(\r\n|\r)/g, "\n");
 
-  if (shortOutput) {
+  if (uidOnly) {
     var userList="";
     var keyArr=listText.split(/\n/);
     for (var i=0; i<keyArr.length; i++) {
@@ -4512,6 +4515,23 @@ function (parent, keyId, deleteSecretKey, errorMsgObj) {
   return r;
 }
 
+Enigmail.prototype.revokeSubkey =
+function (parent, keyId, subkeys, reasonCode, reasonText, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.revokeSubkey: keyId="+keyId+"\n");
+
+  var r= this.editKey(parent, true, null, keyId, "",
+                      { step: 0,
+                        subkeys: subkeys.split(/,/),
+                        reasonCode: reasonCode,
+                        reasonText: reasonText },
+                      revokeSubkeyCallback,
+                      errorMsgObj);
+  this.stillActive();
+
+  return r;
+}
+
+
 Enigmail.prototype.enableDisableKey = 
 function (parent, keyId, disableKey, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.addUid: keyId="+keyId+", disableKey="+disableKey+"\n");
@@ -4819,12 +4839,61 @@ function revokeCertCallback(inputData, keyEdit, ret) {
   }
 }
 
+function revokeSubkeyCallback(inputData, keyEdit, ret) {
+  ret.writeTxt = "";
+  ret.errorMsg = "";
+
+  if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
+    if (inputData.step < inputData.subkeys.length) {
+      ret.exitCode = 0;
+      ret.writeTxt = "key "+inputData.subkeys[inputData.step];
+      ++inputData.step;
+    }
+    else if (inputData.step == inputData.subkeys.length) {
+      ret.exitCode = 0;
+      ret.writeTxt = "revkey";
+      ++inputData.step;
+    }
+    else {
+      if (inputData.step == (inputData.subkeys.length+1)) {
+        ret.exitCode = 0;
+      }
+      else {
+        ret.exitCode = -1;
+      }
+      ret.quitNow = true;
+    }
+  }
+  else if (keyEdit.doCheck(GET_BOOL, "keyedit.revoke.subkey.okay")) {
+    ret.exitCode = 0;
+    ret.writeTxt = "Y";
+  }
+  else if (keyEdit.doCheck(GET_LINE, "ask_revocation_reason.code" )) {
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.reasonCode;
+  }
+  else if (keyEdit.doCheck(GET_LINE, "ask_revocation_reason.text" )) {
+    ret.exitCode = 0;
+    ret.writeTxt = "";
+  }
+  else if (keyEdit.doCheck(GET_BOOL, "ask_revocation_reason.okay" )) {
+    ++inputData.step;
+    ret.exitCode = 0;
+    ret.writeTxt = "Y";
+  }
+  else {
+    ret.quitNow=true;
+    ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
+    ret.exitCode=-1;
+  }
+}
+
 function setPrimaryUidCallback(inputData, keyEdit, ret) {
   ret.writeTxt = "";
   ret.errorMsg = "";
 
   if (keyEdit.doCheck(GET_LINE, "keyedit.prompt" )) {
-    ++inputData.step
+    ++inputData.step;
     switch (inputData.step) {
     case 1:
       ret.exitCode = 0;

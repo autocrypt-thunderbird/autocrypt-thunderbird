@@ -101,7 +101,7 @@
       if (!enigmailSvc)
         return;
 
-      var keyData = enigmailSvc.getUidsForKey("0x"+window.arguments[0].keyId, false);
+      var keyData = enigmailSvc.getKeyDetails("0x"+window.arguments[0].keyId, false);
 
       var keyList=keyData.split(/[\n\r]+/);
       var uidNum=0;
