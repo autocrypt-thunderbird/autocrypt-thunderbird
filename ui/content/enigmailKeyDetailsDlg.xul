@@ -148,13 +148,13 @@
 					var aLine=sigList[i].split(/:/);
 					switch (aLine[0]) {
 					case "pub":
-            var userId=aLine[9];
+            var userId=EnigConvertGpgToUnicode(aLine[9]);
 						var calcTrust=aLine[1];
             if (aLine[11].indexOf("D")>=0) calcTrust="d"; 
             calcTrust=getTrustLabel(calcTrust);
             var ownerTrust=getTrustLabel(aLine[8]);
           case "uid":
-            if (! userId) userId=aLine[9];
+            if (! userId) userId=EnigConvertGpgToUnicode(aLine[9]);
             break;
           case "sub":
             addRow(treeChildren, aLine);
