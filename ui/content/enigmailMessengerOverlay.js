@@ -28,16 +28,26 @@ function enigMessengerStartup() {
                          "threadPaneContext-print",
                          "messagePaneContext-print"];
 
-  var index, elementId, element;
-  for (index = 0; index < printElementIds.length; index++) {
-    elementId = printElementIds[index];
-    element = document.getElementById(elementId);
-    if (element)
-      element.setAttribute("oncommand", "enigMsgPrint('"+elementId+"');");
-  }
+  EnigOverrideAttribute( printElementIds, "oncommand",
+                         "enigMsgPrint('", "');");
+
+  // Override forward command
+  var forwardCmdElementIds = ["cmd_forward", "cmd_forwardInline",
+                              "cmd_forwardAttachment", "key_forward"];
+
+  EnigOverrideAttribute( forwardCmdElementIds, "oncommand",
+                         "enigMsgForward('", "', null);");
+
+  var forwardEventElementIds = [ "button-forward",
+                                 "threadPaneContext-forward",
+                                 "threadPaneContext-forwardAsAttachment",
+                                 "messagePaneContext-forward"];
+
+  EnigOverrideAttribute( forwardEventElementIds, "oncommand",
+                         "enigMsgForward('", "', event);");
 
   // Override message headers view
-  element = document.getElementById("viewallheaders");
+  var element = document.getElementById("viewallheaders");
   if (element) {
     var parentElement = element.parentNode;
     if (parentElement) {
@@ -45,15 +55,11 @@ function enigMessengerStartup() {
     }
   }
 
-  var viewElementIds = {"viewallheaders":"enigMsgViewAllHeaders();",
-                        "viewnormalheaders":"enigMsgViewNormalHeaders();",
-                        "viewbriefheaders":"enigMsgViewBriefHeaders();"};
+  var viewElementIds = ["viewallheaders", "viewnormalheaders",
+                        "viewbriefheaders"];
 
-  for (elementId in viewElementIds) {
-    element = document.getElementById(elementId);
-    if (element)
-      element.setAttribute("oncommand", viewElementIds[elementId]);
-  }
+  EnigOverrideAttribute( viewElementIds, "oncommand",
+                         "enigMsgViewHeaders('", "');");
 
   if (EnigGetPref("parseAllHeaders")) {
     gEnigPrefRoot.setIntPref("mail.show_headers", 2);
@@ -111,39 +117,22 @@ function enigInitViewHeadersMenu() {
     menuitem.setAttribute("checked", "true"); 
 }
 
-function enigMsgViewAllHeaders() {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgViewAllHeaders\n");
+var gShowHeadersObj = {"viewallheaders":2,
+                       "viewnormalheaders":1,
+                       "viewbriefheaders":0};
 
-  EnigSetPref("show_headers", 2);
+function enigMsgViewHeaders(elementId) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgViewHeaders:"+elementId+"\n");
 
-  if (!EnigGetPref("parseAllHeaders")) {
-    gEnigPrefRoot.setIntPref("mail.show_headers", 2);
-  }
+  var value = gShowHeadersObj[elementId];
+  if (!value) value = 0;
 
-  MsgReload();
-  return true;
-}
-
-function enigMsgViewNormalHeaders() {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgViewNormalHeaders\n");
-
-  EnigSetPref("show_headers", 1);
+  EnigSetPref("show_headers", value);
 
   if (!EnigGetPref("parseAllHeaders")) {
-    gEnigPrefRoot.setIntPref("mail.show_headers", 1);
+    gEnigPrefRoot.setIntPref("mail.show_headers", value);
   }
-  MsgReload();
-  return true;
-}
 
-function enigMsgViewBriefHeaders() {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgViewBriefHeaders\n");
-
-  EnigSetPref("show_headers", 0);
-
-  if (!EnigGetPref("parseAllHeaders")) {
-    gEnigPrefRoot.setIntPref("mail.show_headers", 0);
-  }
   MsgReload();
   return true;
 }
@@ -679,6 +668,27 @@ function enigMsgDefaultPrint(contextMenu) {
     PrintEnginePrint();
   else
     goDoCommand('cmd_print');
+}
+
+function enigMsgForward(elementId, event) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgForward: "+elementId+", "+event+"\n");
+
+  if (EnigGetPref("parseAllHeaders")) {
+    gEnigPrefRoot.setIntPref("mail.show_headers", EnigGetPref("show_headers"));
+
+    DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgForward: mail.show_headers="+gEnigPrefRoot.getIntPref("mail.show_headers")+"\n");
+  }
+
+  if ((elementId == "cmd_forwardAttachment") ||
+      (elementId == "threadPaneContext-forwardAsAttachment")) {
+    MsgForwardAsAttachment(event);
+
+  } else if (elementId == "cmd_forwardInline") {
+    MsgForwardAsInline(event);
+
+  } else {
+    MsgForwardMessage(event);
+  }
 }
 
 function enigMsgPrint(elementId) {

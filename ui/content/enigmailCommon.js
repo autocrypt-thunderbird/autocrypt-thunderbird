@@ -420,6 +420,27 @@ function EnigError(mesg) {
   return gPromptService.alert(window, "Enigmail Error", mesg);
 }
 
+
+function EnigOverrideAttribute(elementIdList, attrName, prefix, suffix) {
+  for (var index = 0; index < elementIdList.length; index++) {
+    var elementId = elementIdList[index];
+    var element = document.getElementById(elementId);
+    if (element) {
+      try {
+        var oldValue = element.getAttribute(attrName);
+        var newValue = prefix+elementId+suffix;
+
+        //DEBUG_LOG("enigmailCommon.js: *** overriding id="+ elementId+" "+attrName+"="+oldValue+" with "+newValue+"\n");
+
+        element.setAttribute(attrName, newValue);
+      } catch (ex) {}
+    } else {
+      DEBUG_LOG("enigmailCommon.js: *** UNABLE to override id="+ elementId+"\n");
+    }
+  }
+}
+
+
 function EnigPrefWindow() {
   goPreferences("securityItem",
                 "chrome://enigmail/content/pref-enigmail.xul",
