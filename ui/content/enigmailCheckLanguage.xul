@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+
+<!--
+   The contents of this file are subject to the Mozilla Public
+   License Version 1.1 (the "MPL"); you may not use this file
+   except in compliance with the MPL. You may obtain a copy of
+   the MPL at http://www.mozilla.org/MPL/
+
+   Software distributed under the MPL is distributed on an "AS
+   IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+   implied. See the MPL for the specific language governing
+   rights and limitations under the MPL.
+
+   The Original Code is Enigmail.
+
+   The Initial Developer of the Original Code is Ramalingam Saravanan.
+   Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
+   Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
+
+   Contributor(s):
+   Patrick Brunschwig <patrick.brunschwig@gmx.net>
+
+   Alternatively, the contents of this file may be used under the
+   terms of the GNU General Public License (the "GPL"), in which case
+   the provisions of the GPL are applicable instead of
+   those above. If you wish to allow use of your version of this
+   file only under the terms of the GPL and not to allow
+   others to use your version of this file under the MPL, indicate
+   your decision by deleting the provisions above and replace them
+   with the notice and other provisions required by the GPL.
+   If you do not delete the provisions above, a recipient
+   may use your version of this file under either the MPL or the
+   GPL.
+-->
+
+<overlay id="enigmailCheckLanguage"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  
+  <script type="application/x-javascript">
+  <![CDATA[
+    window.addEventListener("load", enigLanguageCheck, false);
+    
+    function enigLanguageCheck() {
+      var e = null;
+      try {
+        var strBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService();
+        strBundleService = strBundleService.QueryInterface(Components.interfaces.nsIStringBundleService);
+        var strBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
+        var e = strBundle.GetStringFromName("Enigmail");
+      }
+      catch (ex) {}
+      try {
+        if (typeof(e) != "string") {
+          var promptServ = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
+          promptServ.alert(window, "Enigmail Alert", "The language of Enigmail does not correspond to the language of your application! Please install a language pack for Enigmail, available from http://enigmail.mozdev.org/langpack.html");
+        }
+      } catch (ex) {
+        // whatever happens, mozilla must continue to start up...
+      }
+
+    }
+  ]]>
+  </script>
+</overlay>
