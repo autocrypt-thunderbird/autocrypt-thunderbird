@@ -44,6 +44,7 @@ const RESULT=1;
 var gSearchTimer = null;
 var gSearchInput = null;
 var gClearButton = null;
+var gNumRows = null;
 
 function enigmailDlgOnLoad() {
   var enigmailSvc = GetEnigmailSvc();
@@ -59,6 +60,7 @@ function enigmailDlgOnLoad() {
       return;
     }
     DEBUG_LOG("enigmailRulesEditor.js: dlgOnLoad: keys loaded\n");
+    gNumRows=0;
     var node=rulesList.firstChild.firstChild;
     while (node) {
       if (node.tagName=="pgpRule") {
@@ -147,6 +149,7 @@ function createRow(treeItem, userObj) {
   treeRow.appendChild(sign);
   treeRow.appendChild(encrypt);
   treeRow.appendChild(pgpMime);
+  treeRow.setAttribute("rowId", ++gNumRows);
   
   if (treeItem.firstChild) {
     treeItem.replaceChild(treeRow, treeItem.firstChild);
@@ -162,12 +165,7 @@ function getFirstNode() {
   
 function getCurrentNode() {
   var rulesTree=document.getElementById("rulesTree");
-  if (rulesTree.currentIndex <0) return null;
-  var node=getFirstNode();
-  for (var i=0; i<rulesTree.currentIndex && node; i++) {
-    node = node.nextSibling;
-  }
-  return node;
+  return rulesTree.contentView.getItemAtIndex(rulesTree.currentIndex)
 }
 
 
