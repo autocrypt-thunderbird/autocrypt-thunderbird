@@ -1895,8 +1895,16 @@ function enigGetChildOffset(parentNode, childNode) {
 }
 
 function EnigEditorInsertText(plainText) {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: EnigEditorInsertText\n");
   if (gEnigEditor) {
-    gEnigEditor.insertTextWithQuotations(plainText);
+    var mailEditor;
+    try {
+      mailEditor = gEnigEditor.QueryInterface(Components.interfaces.nsIEditorMailSupport);
+      mailEditor.insertTextWithQuotations(plainText);
+    } catch (ex) {
+      DEBUG_LOG("enigmailMsgComposeOverlay.js: EnigEditorInsertText: no mail editor\n");
+      gEnigEditor.insertText(plainText);
+    }
   }
 }
 
@@ -1905,7 +1913,7 @@ function EnigEditorInsertAsQuotation(plainText) {
     var mailEditor;
     try {
       mailEditor = gEnigEditor.QueryInterface(Components.interfaces.nsIEditorMailSupport);
-    } catch (ex) {};
+    } catch (ex) {}
 
     if (!mailEditor)
       return null;
