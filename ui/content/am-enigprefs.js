@@ -225,3 +225,24 @@ function enigEnableKeySel(enable)
     document.getElementById("selectPgpKey").setAttribute("disabled", "true");
   }
 }
+
+function enigSelectKeyId()
+{
+  var resultObj = new Object();
+  var inputObj = new Object();
+  inputObj.dialogHeader = EnigGetString("encryptKeyHeader");
+  inputObj.options = "single,hidexpired,private,nosending";
+
+
+  window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
+  try {
+    if (resultObj.cancelled) return;
+    var selKey = resultObj.userList[0];
+    selKey = "0x"+selKey.substring(10,18)
+    gPgpkeyId.value = selKey;
+  } catch (ex) {
+    // cancel pressed -> don't send mail
+    return;
+  }
+
+}

@@ -74,7 +74,8 @@ GPL.
                      prefstring="mail.identity.%identitykey%.pgpkeyId"
                      preftype="wstring" prefattribute="value"/>
             <button id="selectPgpKey" label="&enigmail.amPrefSelectKey.label;"
-                    collapsed="true"/>
+                    oncommand="enigSelectKeyId()"
+                    />
           </hbox>
         </vbox>
       </radiogroup>
