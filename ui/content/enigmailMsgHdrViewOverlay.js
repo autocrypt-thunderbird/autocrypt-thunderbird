@@ -587,7 +587,6 @@ function enigMsgHdrViewHide() {
                       statusInfo: "",
                       fullStatusInfo: "" };
 
-
 }
 
 function enigMsgHdrViewUnhide() {
@@ -715,7 +714,11 @@ if (messageHeaderSink) {
     gBuildAttachmentPopupForCurrentMsg = true;
     ClearAttachmentList();
     ClearEditMessageButton();
-
+    
+    // TB 0.8 and newer
+    if (typeof(SetUpRemoteContentBar) == "function")
+      SetUpRemoteContentBar(null);
+      
     for (index in gMessageListeners)
       gMessageListeners[index].onStartHeaders();
 
