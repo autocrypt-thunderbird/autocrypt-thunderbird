@@ -1,7 +1,7 @@
 <!ENTITY enigmail.label                    "Enigmail">
 
 <!ENTITY enigmail.keyUserId.label         "User Id">
-<!ENTITY enigmail.userIdValue.label       "Indirizzo email o ID chiave dell'utente (0xABCD1234)">
+<!ENTITY enigmail.userIdValue.label       "Indirizzo email o ID chiave (0xABCD1234) dell'utente">
 <!ENTITY enigmail.keyComment.label        "Commento">
 <!ENTITY enigmail.keyNoPassphrase.label   "No passphrase">
 <!ENTITY enigmail.keyPassphrase.label     "Passphrase">
@@ -12,18 +12,17 @@
 <!ENTITY enigmail.preferences.label    "Preferenze">
 
 <!ENTITY enigmail.autoCrypto.label        "Abilita Auto Cifratura">
-<!ENTITY enigmail.userIdValue.label       "User indirizzo email">
 <!ENTITY enigmail.userNoPassphrase.label  "No passphrase">
 
-<!ENTITY enigmail.userId.label    "Scegli in base all'indirizzo email del mittente la chiave GPG per firmare">
+<!ENTITY enigmail.userIdFromAddr.label    "Scegli in base all'indirizzo email del mittente la chiave GPG per firmare">
 
 <!ENTITY enigmail.defaultEncryptionOption.label "Scegli cifratura di default">
-<!ENTITY enigmail.usePGPMimeOption.label  "Scegli opzione PGP/MIME">
-<!ENTITY enigmail.mimeHashAlgorithm.label "Algoritmo di Firma">
+<!ENTITY enigmail.usePGPMimeOption.label  "Scegli se usare PGP/MIME">
+<!ENTITY enigmail.mimeHashAlgorithm.label "Algoritmo di firma">
 
-<!ENTITY enigmail.agentPath.label         "Percorso eseguibile di GPG">
+<!ENTITY enigmail.agentPath.label         "Percorso dell'eseguibile di GPG">
 
-<!ENTITY enigmail.send_plaintext_flowed.label "Permetti flowed tex (RFC 2646)">
+<!ENTITY enigmail.send_plaintext_flowed.label "Permetti testo 'flowed' (RFC 2646)">
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Ricorda password per">
 <!ENTITY enigmail.maxIdleMinutesTail.label "minuti o tempo di inattivita">
@@ -35,19 +34,19 @@
 <!ENTITY enigmail.upgradeButton.label    "Aggiorna Enigmail">
 <!ENTITY enigmail.uninstallButton.label    "Disinstalla Enigmail">
 
-<!ENTITY enigmail.advancedPrefs.label    "Enigmail Preferenze avanzate">
+<!ENTITY enigmail.advancedPrefs.label    "Preferenze avanzate di Enigmail">
 
 <!ENTITY enigmail.whenSending.label       "Quando spedisci email">
 <!ENTITY enigmail.moreOptions.label       "Altre opzioni">
 
 <!ENTITY enigmail.encryptToSelf.label     "Cifra per il mittente">
-<!ENTITY enigmail.alwaysTrustSend.label   "User ID sempre affidabile">
+<!ENTITY enigmail.alwaysTrustSend.label   "ID utente sempre affidabile">
 <!ENTITY enigmail.defaultSignNewsMsg.label "Firma di default i post delle News">
 <!ENTITY enigmail.useDefaultComment.label "Usa il commento di default per la firma">
 
 <!ENTITY enigmail.keyserver.label         "Keyserver">
 
-<!ENTITY enigmail.disableSMIMEui.label    "Nascondi bottone/menu SMIME">
+<!ENTITY enigmail.disableSMIMEui.label    "Nascondi bottoni/menu SMIME">
 <!ENTITY enigmail.doubleDashSeparator.label  "Trattino '--' come separatore firma">
 <!ENTITY enigmail.captureWebMail.label    "Cattura webmail (sperimentale)">
 <!ENTITY enigmail.hushMailSupport.label   "Supporto per Hushmail (disabilita se non necessario)">
@@ -104,10 +103,10 @@
 <!ENTITY enigmail.signedsend.label         "Invio firmato">
 <!ENTITY enigmail.encryptedsend.label         "Invio cifrato">
 <!ENTITY enigmail.encryptsignsend.label         "Invio cifrato e firmato">
-<!ENTITY enigmail.plainsend.label         "Invio in formato testo">
+<!ENTITY enigmail.plainsend.label         "Invio come testo in chiaro">
 
-<!ENTITY enigmail.sendOptionsMenu.label        "Opzioni invio di Default">
-<!ENTITY enigmail.mimeOptionsMenu.label        "Default opzioni MIME">
+<!ENTITY enigmail.sendOptionsMenu.label        "Modalità di invio di Default">
+<!ENTITY enigmail.mimeOptionsMenu.label        "Uso del formato PGP/MIME di default">
 <!ENTITY enigmail.sendPGPMime.label            "Usa PGP/MIME per questo messaggio">
 
 <!ENTITY enigmail.undoencryption.label         "Annulla cifratura">
@@ -139,7 +138,7 @@
 
 <!ENTITY enigmail.usePGPMimeAlways.label          "Usa sempre PGP/MIME">
 <!ENTITY enigmail.usePGPMimePossible.label        "Usa PGP/MIME se possibile">
-<!ENTITY enigmail.usePGPMimeNever.label           "Non usare maiPGP/MIME">
+<!ENTITY enigmail.usePGPMimeNever.label           "Non usare mai PGP/MIME">
 
 <!ENTITY enigmail.defaultSignMsg.label            "Firma email di Default">
 <!ENTITY enigmail.confirmBeforeSend.label         "Chiedi conferma prima di spedire">
@@ -155,10 +154,10 @@
 <!ENTITY enigmail.defaultSignMsg.accesskey        "F">
 <!ENTITY enigmail.confirmBeforeSend.accesskey     "A">
 
-<!ENTITY enigmail.keygen.desc "NOTA: La generazione delle chiavi puo richiedere anche parecchi minuti. Non chiudere questa finestra durante la generazione della chiave. Uso di disco rigido del mouse e della tastiera durante la generazione delle chiavi facilitera la generazione di dati casuali e velocizzera il processo. Sarai avvisato quando la generazione delle chiavi sara completata.">
+<!ENTITY enigmail.keygen.desc "NOTA: La generazione della chiave puo richiedere anche parecchi minuti. Non chiudere questa finestra fino al termine dell'operazione. Usare nel frattempo il computer (accedendo al disco rigido, muovendo il mouse o usando la tastiera) faciliterà la generazione dei dati casuali e velocizzerà il processo. Sarai avvisato quando la generazione della chiave sarà completata.">
 
-<!ENTITY enigmail.console.label                     "Vedi console Enigmail">
-<!ENTITY enigmail.console.tooltip                   "Vedi console Enigmail">
+<!ENTITY enigmail.console.label                     "Visualizza console Enigmail">
+<!ENTITY enigmail.console.tooltip                   "Visualizza console Enigmail">
 
 <!ENTITY enigmail.uninstall.label                   "Disinstalla Enigmail">
 <!ENTITY enigmail.uninstall.tooltip                 "Disinstalla  Enigmail">
@@ -166,19 +165,19 @@
 <!ENTITY enigmail.selectpanel.label                 "Seleziona Pannello Enigmail">
 <!ENTITY enigmail.selectpanel.tooltip               "Seleziona Pannello Enigmail">
 
-<!ENTITY enigmail.userSelectionList.label           "Seleziona Users per cifratura email">
-<!ENTITY enigmail.usersNotFound.label               "Destinatarii non trovati">
+<!ENTITY enigmail.userSelectionList.label           "Seleziona utenti per cifratura email">
+<!ENTITY enigmail.usersNotFound.label               "Destinatari non trovati">
 <!ENTITY enigmail.usersSelectRecipients.label       "Seleziona destinatari per cifratura">
-<!ENTITY enigmail.keyExpiry.label                   "Espirata">
+<!ENTITY enigmail.keyExpiry.label                   "Scaduta">
 <!ENTITY enigmail.keySelection.label                "Selezione">
-<!ENTITY enigmail.keyId.label                       "Key Id">
+<!ENTITY enigmail.keyId.label                       "ID Chiave">
 <!ENTITY enigmail.userSelPlainText.label            "Invia email non cifrata">
 <!ENTITY enigmail.userSelPlainText.accesskey        "S">
 
 <!ENTITY enigmail.experimental.label                "Usa firma/cifratura 'inline' sperimentale">
 
 <!ENTITY enigmail.sendnow.label           "Spedisci immediatamente">
-<!ENTITY enigmail.sendlater.label         "Spedisci piu' tardi">
+<!ENTITY enigmail.sendlater.label         "Spedisci più tardi">
 <!ENTITY enigmail.sendnow.accesskey           "a">
 <!ENTITY enigmail.sendlater.accesskey         "t">
 <!ENTITY enigmail.userSelPlainText.label            "Spedisci in chiaro">
