@@ -1113,7 +1113,7 @@ function (passphrase) {
     var delayMillisec = maxIdleMinutes*60*1000;
 
     if (Components.interfaces.nsITimer) {
-
+      // Use nsITimer: Post 1.2a mozilla trunk
       const nsITimer = Components.interfaces.nsITimer;
       gCacheTimer = Components.classes[NS_TIMER_CONTRACTID].createInstance(nsITimer);
 
@@ -1125,7 +1125,7 @@ function (passphrase) {
       gCacheTimer.init(this, delayMillisec,
                        nsITimer.TYPE_REPEATING_SLACK);
     } else {
-
+      // Use nsIScriptableTimer: Stable Mozilla 1.0 branch
       const nsIScriptableTimer = Components.interfaces.nsIScriptableTimer;
       gCacheTimer = Components.classes[NS_TIMER_CONTRACTID].createInstance(nsIScriptableTimer);
 

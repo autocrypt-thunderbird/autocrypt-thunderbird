@@ -293,7 +293,7 @@ function EnigConfigure() {
     EnigUpdate_0_60();
   } catch (ex) {}
 
-  var msg = EnigGetString("configNowPrefix",gEnigmailVersion);
+  var msg = EnigGetString("configNow",gEnigmailVersion);
 
   var checkValueObj = new Object();
   checkValueObj.value = false;
