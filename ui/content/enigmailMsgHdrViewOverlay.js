@@ -8,16 +8,25 @@ function enigStartHeaders()
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigStartHeaders\n");
 
   var enigmailBox = document.getElementById("expandedEnigmailBox");
-  var statusText  = document.getElementById("expandedEnigmailStatusText");
 
-  statusText.setAttribute("value", "");
-  enigmailBox.setAttribute("collapsed", "true");
+  if (enigmailBox && !enigmailBox.collapsed) {
+    enigmailBox.setAttribute("collapsed", "true");
 
-  if (EnigGetPref("autoDecrypt")) {
-    var msgFrame = window.frames["messagepane"];
+    var statusText = document.getElementById("expandedEnigmailStatusText");
+
+    if (statusText)
+      statusText.setAttribute("value", "");
+  }
+
+  var msgFrame = window.frames["messagepane"];
+
+  if (msgFrame) {
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: msgFrame="+msgFrame+"\n");
-    msgFrame.addEventListener("load", enigMessageDecrypt, false);
+
     msgFrame.addEventListener("unload", enigMessengerUnload, false);
+
+    if (EnigGetPref("autoDecrypt"))
+      msgFrame.addEventListener("load", enigMessageDecrypt, false);
   }
 }
 

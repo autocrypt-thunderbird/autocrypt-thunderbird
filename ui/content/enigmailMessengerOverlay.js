@@ -11,50 +11,52 @@ var gDecryptedMessage;
 var gLastSaveDir = "";
 
 function enigMessengerStartup() {
-    DEBUG_LOG("enigmailMessengerOverlay.js: Startup\n");
+  DEBUG_LOG("enigmailMessengerOverlay.js: Startup\n");
 
-    // Override print command
-    var printElementIds = ["cmd_print", "key_print", "button-print",
-                           "threadPaneContext-print",
-                           "messagePaneContext-print"];
+  // Override print command
+  var printElementIds = ["cmd_print", "key_print", "button-print",
+                         "threadPaneContext-print",
+                         "messagePaneContext-print"];
 
-    for (var index = 0; index < printElementIds.length; index++) {
-      var elementId = printElementIds[index];
-      var element = document.getElementById(elementId);
-      if (element)
-        element.setAttribute("oncommand", "enigMsgPrint('"+elementId+"');");
-    }
+  for (var index = 0; index < printElementIds.length; index++) {
+    var elementId = printElementIds[index];
+    var element = document.getElementById(elementId);
+    if (element)
+      element.setAttribute("oncommand", "enigMsgPrint('"+elementId+"');");
+  }
 
-    enigUpdateOptionsDisplay();
+  enigUpdateOptionsDisplay();
 
-    // Commented out; clean-up now handled by HdrView and Unload
-    ///var outliner = GetThreadOutliner();
-    ///outliner.addEventListener("click", enigThreadPaneOnClick, true);
+  // Commented out; clean-up now handled by HdrView and Unload
+  ///var outliner = GetThreadOutliner();
+  ///outliner.addEventListener("click", enigThreadPaneOnClick, true);
 }
 
 function enigMessengerUnload() {
-    DEBUG_LOG("enigmailMessengerOverlay.js: Unload\n");
+  DEBUG_LOG("enigmailMessengerOverlay.js: Unload\n");
 
-    var enigmailBox = document.getElementById("expandedEnigmailBox");
+  var enigmailBox = document.getElementById("expandedEnigmailBox");
+
+  if (enigmailBox && !enigmailBox.collapsed) {
+    enigmailBox.setAttribute("collapsed", "true");
+
     var statusText = document.getElementById("expandedEnigmailStatusText");
 
     if (statusText)
       statusText.setAttribute("value", "");
+  }
 
-    if (enigmailBox)
-      enigmailBox.setAttribute("collapsed", "true");
-
-    if (gCreatedURIs.length) {
-      // Cleanup messages belonging to this window (just in case)
-      var enigmailSvc = GetEnigmailSvc();
-      if (enigmailSvc) {
-        DEBUG_LOG("enigmailMessengerOverlay.js: Unload: Deleting messages\n");
-        for (var index=0; index < gCreatedURIs.length; index++) {
-          enigmailSvc.deleteMessageURI(gCreatedURIs[index]);
-        }
-        gCreatedURIs = [];
+  if (gCreatedURIs.length) {
+    // Cleanup messages belonging to this window (just in case)
+    var enigmailSvc = GetEnigmailSvc();
+    if (enigmailSvc) {
+      DEBUG_LOG("enigmailMessengerOverlay.js: Unload: Deleting messages\n");
+      for (var index=0; index < gCreatedURIs.length; index++) {
+        enigmailSvc.deleteMessageURI(gCreatedURIs[index]);
       }
+      gCreatedURIs = [];
     }
+  }
 }
 
 function enigThreadPaneOnClick() {
