@@ -12,7 +12,7 @@ const EnigOutputWrap          = 32;
 const EnigOutputFormatFlowed  = 64;
 const EnigOutputCRLineBreak   = 512;
 const EnigOutputLFLineBreak   = 1024;
-
+const EnigDummyFile = "application/enigmail-dummy-file";
 
 const ENIG_ENIGMSGCOMPFIELDS_CONTRACTID = "@mozdev.org/enigmail/composefields;1";
 
@@ -319,23 +319,31 @@ function enigUndoEncryption( bucketList, modifiedAttachments ) {
 
   if ( modifiedAttachments && bucketList && bucketList.hasChildNodes() ) {
     // undo inline encryption of attachments
-    var node = bucketList.firstChild;
-    while (node) {
-      for (var i in modifiedAttachments) {
+    for (var i=0; i<modifiedAttachments.length; i++) {
+      var node = bucketList.firstChild;
+      while (node) {
         if (node.attachment.url == modifiedAttachments[i].newUrl) {
-          node.attachment.url = modifiedAttachments[i].origUrl;
-          node.attachment.name = modifiedAttachments[i].origName;
-          node.attachment.temporary = modifiedAttachments[i].origTemp;
-          node.attachment.contentType = modifiedAttachments[i].origCType;
-
+          if (modifiedAttachments[i].dummyFile) {
+            node.attachment=null;
+            var delNode=node;
+            node=node.nextSibling;
+            bucketList.removeChild(delNode);
+            continue;
+          }
+          else {
+            node.attachment.url = modifiedAttachments[i].origUrl;
+            node.attachment.name = modifiedAttachments[i].origName;
+            node.attachment.temporary = modifiedAttachments[i].origTemp;
+            node.attachment.contentType = modifiedAttachments[i].origCType;
+          }
           // delete encrypted file
           try {
             modifiedAttachments[i].newFile.remove(false);
           }
           catch (ex) {}
         }
+        node=node.nextSibling;
       }
-      node=node.nextSibling;
     }
 
     modifiedAttachments = null;
@@ -928,11 +936,14 @@ function enigSendCommand(elementId) {
 
      DEBUG_LOG("enigmailMsgComposeOverlay.js: hasAttachments = "+hasAttachments+"\n");
 
-     // enable PGP/MIME if message is saved and contains attachments
-     if ( hasAttachments && (sendFlags & nsIEnigmail.SAVE_MESSAGE)) {
-        sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+     if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
+       // always enable PGP/MIME if message is saved
+       sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+       if (! hasAttachments) {
+         hasAttachments = enigCreateDummyAttachment();
+       }
      }
-
+     
      if ( hasAttachments &&
         (sendFlags & ENIG_ENCRYPT_OR_SIGN) &&
         !(sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
@@ -1212,8 +1223,9 @@ function enigSendCommand(elementId) {
 
      if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
        goDoCommand(elementId);
-       if (! (sendFlags & nsIEnigmail.SEND_PGP_MIME))
+       //if (! (sendFlags & nsIEnigmail.SEND_PGP_MIME)) {
           enigUndoEncryption(bucketList, gEnigModifiedAttach);
+       //}
 
        return;
      }
@@ -1663,6 +1675,8 @@ function enigEncryptAttachments(bucketList, newAttachments, window, uiFlags,
     var newUri = ioServ.newFileURI(newFile);
     fileInfo.newUrl  = newUri.asciiSpec;
     fileInfo.newFile = newFile;
+    fileInfo.dummyFile = false;
+
 
     newAttachments.push(fileInfo);
     node = node.nextSibling;
@@ -1713,6 +1727,8 @@ function enigDecryptQuote(interactive) {
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return;
+
+  enigmailRemoveDummyAttachment();
 
   var encoderFlags = EnigOutputFormatted | EnigOutputLFLineBreak;
 
@@ -2093,3 +2109,48 @@ EnigDocStateListener.prototype = {
       gEnigTimeoutID = window.setTimeout(enigDecryptQuote, 10, false);
   }
 }
+  
+function enigCreateDummyAttachment() {
+  try {
+    // create dummy file
+    var fileAttach = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+    fileAttach.initWithPath(EnigGetTempDir());
+    fileAttach.append("sig.asc")
+    fileAttach.createUnique(Components.interfaces.NORMAL_FILE_TYPE, 0600);
+    
+    // attach file 
+    var ioService = Components.classes["@mozilla.org/network/io-service;1"]
+    ioService = ioService.getService(Components.interfaces.nsIIOService);
+    var fileHandler = ioService.getProtocolHandler("file").QueryInterface(Components.interfaces.nsIFileProtocolHandler);
+    var attachUrl = fileHandler.getURLSpecFromFile(fileAttach);
+    var attachment = Components.classes["@mozilla.org/messengercompose/attachment;1"].createInstance(Components.interfaces.nsIMsgAttachment);
+    attachment.url = attachUrl;
+    attachment.contentType=EnigDummyFile;
+    attachment.temporary = true;
+    AddAttachment(attachment);
+    
+    // make dummy file is deleted before exit
+    var extAppLauncher = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsPIExternalAppLauncher);
+    extAppLauncher.deleteTemporaryFileOnExit(fileAttach);
+    gEnigModifiedAttach = new Array();
+    gEnigModifiedAttach.push({'newUrl': attachUrl, 'dummyFile': true});
+  }
+  catch (ex) {
+    return false;
+  }
+  
+  return true;
+}
+
+function enigmailRemoveDummyAttachment() {
+  var bucketList = document.getElementById("attachmentBucket");
+  var hasAttachments = bucketList && bucketList.hasChildNodes();
+  
+  if (hasAttachments && bucketList.childNodes.length==1) {
+    if (bucketList.firstChild.attachment.contentType==EnigDummyFile) {
+      bucketList.firstChild.attachment=null;
+      bucketList.removeChild(bucketList.firstChild);
+    }
+  }
+}
+
