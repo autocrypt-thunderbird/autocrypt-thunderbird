@@ -218,6 +218,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
     
     if (sigDetails) {
       var detailArr=sigDetails.split(/ /);
+
       var dat=new Date(detailArr[2]*1000);
       var appLocale = Components.classes[ENIG_LOCALE_SVC_CONTRACTID].getService(Components.interfaces.nsILocaleService).getApplicationLocale();
       var dateFormat = Components.classes[ENIG_DATE_FORMAT_CONTRACTID].getService(Components.interfaces.nsIScriptableDateFormat);
@@ -226,7 +227,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
                           dateFormat.timeFormatNoSeconds,
                           dat.getFullYear(), dat.getMonth()+1, dat.getDate(),
                           dat.getHours(), dat.getMinutes(), 0);
-      var txt = EnigGetString("keyAndSigDate", detailArr[0].substr(-8, 8), dateTime);
+      var txt = EnigGetString("keyAndSigDate", keyId.substr(-8, 8), dateTime);
       statusArr.push(txt);
       statusInfo += "\n" + txt;
       // 933D 9948 DC0F A861 471B 10A9 D8A8 07C7 CCEC 227B
@@ -240,8 +241,8 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
     fullStatusInfo = statusInfo;
 
   } else {
-    if (keyId) {
-      statusInfo = EnigGetString("keyNeeded",keyId);
+      if (keyId) {
+        statusInfo = EnigGetString("keyNeeded",keyId);
   
       if (statusFlags & nsIEnigmail.INLINE_KEY) {
         statusLine = statusInfo + EnigGetString("clickDecrypt");
