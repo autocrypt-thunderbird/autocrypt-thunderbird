@@ -360,19 +360,19 @@
 <!ENTITY enigmail.keyMan.setTrust.label            "Set Key Trust">
 <!ENTITY enigmail.keyMan.genRevoke.label           "Create &amp; Save Revocation Certificate">
 
-<!ENTITY enigmail.keyMan.importMenu.label          "Import Key">
-<!ENTITY enigmail.keyMan.exportMenu.label          "Export Public Key">
+<!ENTITY enigmail.keyMan.importMenu.label          "Import">
+<!ENTITY enigmail.keyMan.exportMenu.label          "Export Key">
 
-<!ENTITY enigmail.keyMan.importFromFile.label      "From File">
-<!ENTITY enigmail.keyMan.importFromServer.label    "Search On Keyserver">
-<!ENTITY enigmail.keyMan.importFromClipbrd.label   "From Clipboard">
-<!ENTITY enigmail.keyMan.exportToFile.label        "To File">
-<!ENTITY enigmail.keyMan.uploadToServer.label      "Upload To Keyserver">
-<!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copy To Clipboard">
+<!ENTITY enigmail.keyMan.importFromFile.label      "Key from File">
+<!ENTITY enigmail.keyMan.importFromServer.label    "Search for a Key (on a Keyserver)">
+<!ENTITY enigmail.keyMan.importFromClipbrd.label   "Key from Clipboard">
+<!ENTITY enigmail.keyMan.exportToFile.label        "Save To File">
+<!ENTITY enigmail.keyMan.uploadToServer.label      "Upload Public Key To Keyserver">
+<!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copy Public Key To Clipboard">
 <!ENTITY enigmail.keyMan.ctxExportToFile.label     "Export Key To File">
-<!ENTITY enigmail.keyMan.ctxUploadToServer.label   "Upload Key To Keyserver">
-<!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label    "Copy Key To Clipboard">
-<!ENTITY enigmail.keyMan.refreshKey.label          "Refresh Key From Keyserver">
+<!ENTITY enigmail.keyMan.ctxUploadToServer.label   "Upload Public Key To Keyserver">
+<!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label    "Copy Public Key To Clipboard">
+<!ENTITY enigmail.keyMan.refreshKey.label          "Refresh Public Key From Keyserver">
 
 <!ENTITY enigmail.keyMan.reload.label              "Reload Key Cache">
 <!ENTITY enigmail.keyMan.addUid.label              "Add User ID">

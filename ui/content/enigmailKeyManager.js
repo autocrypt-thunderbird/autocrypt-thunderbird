@@ -566,16 +566,35 @@ function enigmailExportKeys() {
     return;
   }
 
+  var exportFlags = 0;
+  if (gKeyList[keyList[0]].secretAvailable) {
+    if (EnigConfirm(EnigGetString("exportSecretKey"))) {
+      exportFlags |= nsIEnigmail.EXTRACT_SECRET_KEY;
+    }
+  }
+
+
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return;
 
   if (keyList.length==1) {
+  
     var defaultFileName = gKeyList[keyList[0]].userId.replace(/[\<\>]/g, "");
-    defaultFileName += " (0x"+keyList[0].substr(-8,8)+") pub.asc"
+    if (exportFlags & nsIEnigmail.EXTRACT_SECRET_KEY) {
+      defaultFileName = EnigGetString("specificPubSecKeyFilename", defaultFileName, keyList[0].substr(-8,8))+".asc";
+    }
+    else {
+      defaultFileName = EnigGetString("specificPubKeyFilename", defaultFileName, keyList[0].substr(-8,8))+".asc";
+    }
   }
   else {
-    defaultFileName = EnigGetString("defaultPubKeyFilename")+".asc"
+    if (exportFlags & nsIEnigmail.EXTRACT_SECRET_KEY) {
+      defaultFileName = EnigGetString("defaultPubSecKeyFilename")+".asc"
+    }
+    else {
+      defaultFileName = EnigGetString("defaultPubKeyFilename")+".asc"
+    }
   }
 
   var outFile = EnigFilePicker(EnigGetString("exportToFile"),
@@ -587,7 +606,7 @@ function enigmailExportKeys() {
   var keyListStr = "0x"+keyList.join(" 0x");
   var exitCodeObj = {};
   var errorMsgObj = {};
-  enigmailSvc.extractKey(window, 0, keyListStr, outFile.path, exitCodeObj, errorMsgObj);
+  enigmailSvc.extractKey(window, exportFlags, keyListStr, outFile.path, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value != 0) {
     EnigAlert(EnigGetString("saveKeysFailed")+"\n\n"+errorMsgObj.value);
   }
