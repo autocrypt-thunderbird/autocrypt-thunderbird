@@ -100,7 +100,7 @@
 <!ENTITY enigmail.defaultEncryptionOnly.label "Verschlüsselt, falls möglich">
 <!ENTITY enigmail.doubleDashSeparator.label "'--' als Unterschrift-Trenner behandeln">
 <!ENTITY enigmail.defaultEncryptionOnly.accesskey "V">
-<!ENTITY enigmail.useGpgAgent.label "Allow to use gpg-agent">
+<!ENTITY enigmail.useGpgAgent.label "Gpg-agent verwenden für Mantra Eingabe">
 <!ENTITY enigmail.signedsend.label "Unterschrieben versenden">
 <!ENTITY enigmail.advprefs.label "Erweiterte Einstellungen">
 <!ENTITY enigmail.keyPassphraseRepeat.label "Mantra wiederholen">
