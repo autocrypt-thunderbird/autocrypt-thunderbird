@@ -202,6 +202,7 @@ function enigmailBuildList(refresh) {
          userObj.userId=listRow[USER_ID];
          userObj.keyId=listRow[KEY_ID];
          userObj.keyTrust=listRow[KEY_TRUST];
+         userObj.valid=false;
          userObj.SubUserIds=new Array();
          aUserList.push(userObj);
        }
@@ -219,7 +220,7 @@ function enigmailBuildList(refresh) {
    var toAddr = "";
    try {
      if (typeof(window.arguments[INPUT].toAddr)=="string")
-       toAddr=EnigStripEmail(window.arguments[INPUT].toAddr)+" ";
+       toAddr=EnigStripEmail(window.arguments[INPUT].toAddr);
    }
    catch (ex) {}
    
@@ -230,6 +231,17 @@ function enigmailBuildList(refresh) {
      }
    }
    catch (ex) {}
+   
+   // sort out PGP keys in toAddr
+   var toAddrList = toAddr.split(/[ ,]+/);
+   for (i=0; i<toAddrList.length; i++) {
+    if (toAddrList[i].search(/^0x([0-9A-Fa-f]{8}|[0-9A-Fa-f]{16})$/)>=0) {
+      var newKey=toAddrList.splice(i,1);
+      toKeys += " "+newKey
+      i--;
+    }
+   }
+   toAddr=toAddrList.join(",")+" ";
 
    aUserList.sort(sortUsers);
 
@@ -262,6 +274,7 @@ function enigmailBuildList(refresh) {
                 mailAddr = EnigStripEmail(aUserList[i].userId.replace(/\"/g,""));
               }
               aValidUsers.push(mailAddr);
+              aUserList[i].valid=true;
               escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
               s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
               s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
@@ -295,6 +308,7 @@ function enigmailBuildList(refresh) {
                     mailAddr = EnigStripEmail(aUserList[i].SubUserIds[user].replace(/\"]/g,""));
                   }
                   aValidUsers.push(mailAddr);
+                  aUserList[i].valid=true;
                   escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
                   s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
                   s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
@@ -325,16 +339,31 @@ function enigmailBuildList(refresh) {
    if (window.arguments[INPUT].options.indexOf("forUser")<0) {
      // Build up list of not found recipients
      var aNotFound=new Array();
-     var toAddrList = toAddr.split(/,/);
+     toAddrList = toAddr.split(/,/);
      var j;
      for (i=0; i<toAddrList.length; i++) {
-        for (j=0; j<aValidUsers.length; j++) {
-           if (aValidUsers[j].toLowerCase() == toAddrList[i].toLowerCase()) {
-              j=aValidUsers.length + 3;
-           }
-        }
-        if (j==aValidUsers.length) {
-           aNotFound.push(toAddrList[i]);
+       if (toAddrList[i].replace(/\s*/, "").length>0) {
+          for (j=0; j<aValidUsers.length; j++) {
+             if (aValidUsers[j].toLowerCase() == toAddrList[i].toLowerCase()) {
+                j=aValidUsers.length + 3;
+             }
+          }
+          if (j==aValidUsers.length) {
+             aNotFound.push(toAddrList[i]);
+          }
+       }
+     }
+     var toKeyList=toKeys.split(/[, ]+/);
+     for (i=0; i<toKeyList.length; i++) {
+        if (toKeyList[i].length>0) {
+          for (j=0; j<aUserList.length; j++) {
+             if (aUserList[j].valid && "0x"+aUserList[j].keyId == toKeyList[i]) {
+                j=aValidUsers.length + 3;
+             }
+          }
+          if (j==aUserList.length) {
+             aNotFound.push("Key Id '"+toKeyList[i]+"'");
+          }
         }
      }
      descNotFound.firstChild.data = aNotFound.join(", ");
@@ -448,9 +477,16 @@ function enigmailUserSelCallback(event) {
 
   var treeItem = Tree.contentView.getItemAtIndex(row.value);
   Tree.currentItem=treeItem;
-  if (col.value != "selectionCol")
-    return;
-
+  if (typeof(col.value) == "string") {
+    // mozilla <= 1.7
+    if (col.value != "selectionCol")
+      return;
+  }
+  else {
+    // mozilla >= 1.8a1
+    if (col.value.id != "selectionCol")
+      return;
+  }
   var aRows = treeItem.getElementsByAttribute("id","indicator")
 
   if (aRows.length) {
