@@ -90,7 +90,19 @@
 
     <hbox autostretch="never" halign="right">
       <button class="dialog"
-              id="viewFormButton"
+              id="resetPrefs"
+              label="&enigmailPrefsHelp.label;"
+              oncommand="enigmailPrefsHelp();"
+              />
+
+      <button class="dialog"
+              id="resetPrefs"
+              label="&enigmailResetPrefs.label;"
+              oncommand="enigmailResetPrefs();"
+              />
+
+      <button class="dialog"
+              id="uninstall"
               label="&enigmailUninstall.label;"
               oncommand="enigmailUninstall();"
               />

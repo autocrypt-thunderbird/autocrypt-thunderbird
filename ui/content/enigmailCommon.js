@@ -4,27 +4,46 @@ const NS_IPCSERVICE_CONTRACTID = "@mozilla.org/process/ipc-service;1";
 const NS_ENIGMAIL_CONTRACTID   = "@mozdev.org/enigmail/enigmail;1";
 const ENIGMAIL_PREFS_ROOT      = "extensions.enigmail.";
 
-var gIPCService;
-try {
-  gIPCService = Components.classes[NS_IPCSERVICE_CONTRACTID].getService();
-  gIPCService = gIPCService.QueryInterface(Components.interfaces.nsIIPCService);
-
-} catch (ex) {
-}
+var gLogLevel = 5;     // Output only errors/warnings by default
+var gLogFileStream = null;
 
 var gEnigmailSvc;
+function InitEnigmailSvc() {
+   // Lazy loading of enigmail JS component (for efficiency)
+
+   if (gEnigmailSvc)
+      return gEnigmailSvc;
+
+   try {
+     gEnigmailSvc = Components.classes[NS_ENIGMAIL_CONTRACTID].createInstance(Components.interfaces.nsIEnigmail);
+
+   } catch (ex) {
+     ERROR_LOG("enigmailCommon.js: Error in instantiating EnigmailService\n");
+   }
+
+   dump("enigmailCommon.js: gEnigmailSvc = "+gEnigmailSvc+"\n");
+   return gEnigmailSvc;
+}
+
+var gIPCService;
+var gProcessInfo;
+
 try {
-  gEnigmailSvc = Components.classes[NS_ENIGMAIL_CONTRACTID].createInstance();
-  gEnigmailSvc = gEnigmailSvc.QueryInterface(Components.interfaces.nsIEnigmail);
+  gIPCService = Components.classes[NS_IPCSERVICE_CONTRACTID].getService(Components.interfaces.nsIIPCService);
+
+  gProcessInfo = Components.classes[NS_PROCESSINFO_CONTRACTID].getService(Components.interfaces.nsIProcessInfo);
+
+  var matches = nspr_log_modules.match(/enigCommon:(\d+)/);
+
+  if (matches && (matches.length > 1)) {
+    gLogLevel = matches[1];
+    WARNING_LOG("enigmailCommon.js: gLogLevel="+gLogLevel+"\n");
+  }
 
 } catch (ex) {
 }
 
 dump("enigmailCommon.js: gIPCService = "+gIPCService+"\n");
-dump("enigmailCommon.js: gEnigmailSvc = "+gEnigmailSvc+"\n");
-
-var gLogLevel = 5;     // Output only errors/warnings by default
-var gLogFileStream = null;
 
 ///////////////////////////////////////////////////////////////////////////////
 // File read/write operations
@@ -154,6 +173,9 @@ function EnigError(mesg) {
 }
 
 function EnigPassphrase() {
+  if (!InitEnigmailSvc())
+     return "";
+    
   var passwdObj = new Object();
   var checkObj = new Object();
 
@@ -177,8 +199,12 @@ function EnigPassphrase() {
   return passwdObj.value;
 }
 
+
 function EnigEncryptMessage(plainText, toMailAddr, statusCodeObj, statusMsgObj) {
   WRITE_LOG("enigmailCommon.js: EnigEncryptMessage: To "+toMailAddr+"\n");
+
+  if (!InitEnigmailSvc())
+     return "";
 
   var passphrase = null;
   if (!gEnigmailSvc.haveDefaultPassphrase)
@@ -193,6 +219,9 @@ function EnigEncryptMessage(plainText, toMailAddr, statusCodeObj, statusMsgObj) 
 
 function EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj) {
   WRITE_LOG("enigmailCommon.js: EnigDecryptMessage: \n");
+
+  if (!InitEnigmailSvc())
+     return "";
 
   var passphrase = null;
   if (!gEnigmailSvc.haveDefaultPassphrase)

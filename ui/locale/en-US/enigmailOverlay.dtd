@@ -1,6 +1,8 @@
 <!ENTITY enigmail.label	                 "Enigmail">
 <!ENTITY enigmailUserEmail.label	 "User email">
 <!ENTITY enigmailCaptureWebMail.label	 "Capture webmail">
+<!ENTITY enigmailPrefsHelp.label	 "Enigmail Help">
+<!ENTITY enigmailResetPrefs.label	 "Reset Preferences">
 <!ENTITY enigmailUninstall.label	 "Uninstall Enigmail">
 
 <!ENTITY enigCmd.label	     "Enigmail">

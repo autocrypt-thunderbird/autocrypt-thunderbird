@@ -1,11 +1,11 @@
-// enigmailPrefs.js
+// Uses: chrome://enigmail/content/enigmailCommon.js
 
 const ePrefString = 32;
 const ePrefInt = 64;
 const ePrefBool = 128;
 
-var gEnigmailPrefDefaults = {"useremail":""
-                             "captureWebMail":false];
+var gEnigmailPrefDefaults = {"useremail":"",
+                             "captureWebMail":false};
 
 const NS_HTTPPROTOCOLHANDLER_CID_STR= "{4f47e42e-4d23-4dd3-bfda-eb29255e9ea3}";
 
@@ -15,41 +15,105 @@ httpHandler = httpHandler.QueryInterface(Components.interfaces.nsIHttpProtocolHa
 gOScpu = httpHandler.oscpu;
 gPlatform = httpHandler.platform;
 
-DEBUG_LOG("enigmailPrefs.js: oscpu="+gOScpu+", platform="+gPlatform+"\n");
+DEBUG_LOG("pref-enigmail.js: oscpu="+gOScpu+", platform="+gPlatform+"\n");
 
-function resetPrefs() {
-  dump("resetPrefs\n");
+var gPrefObj =
+   Components.classes["@mozilla.org/preferences;1"].createInstance();
+if(!gPrefObj)
+   throw ("Unable to create prefs object.");
 
-  var prefObj =
-     Components.classes["@mozilla.org/preferences;1"].createInstance();
-  if(!prefObj)
-     throw ("Unable to create prefs object.");
+gPrefObj = gPrefObj.QueryInterface(Components.interfaces.nsIPref);
 
-  prefObj = prefObj.QueryInterface(Components.interfaces.nsIPref);
+function enigmailGetPref(prefName) {
+   DEBUG_LOG("pref-enigmail.js: enigmailGetPref: "+prefName+"\n");
 
-  for var prefName in gEnigmailPrefDefaults {
-  }
+   var defaultValue = gEnigmailPrefDefaults[prefName];
+   var valueType = typeof defaultValue;
 
-  try {
-     var enigmailCaptureWM = prefObj.GetBoolPref(ENIGMAIL_PREFS_ROOT+"captureWebMail");
-     var enigmailUser = prefObj.GetCharPref(ENIGMAIL_PREFS_ROOT+"user");
-     dump("enigmailCaptureWM="+enigmailCaptureWM+"\n");
-     dump("enigmailUser="+enigmailUser+"\n");
+   switch (typeof defaultValue) {
+      case "string":
+         try {
+             var prefValue = gPrefObj.GetCharPref(ENIGMAIL_PREFS_ROOT+prefName);
+             return prefValue;
+         } catch (ex) {
+             return defaultValue;
+         }
+         break;
 
-  } catch (ex) {
-     prefObj.SetBoolPref(ENIGMAIL_PREFS_ROOT+"captureWebMail", 0);
-     prefObj.SetCharPref(ENIGMAIL_PREFS_ROOT+"user", "user");
-  }
+      case "boolean":
+         try {
+             var prefValue = gPrefObj.GetBoolPref(ENIGMAIL_PREFS_ROOT+prefName);
+             return prefValue;
+         } catch (ex) {
+             return defaultValue;
+         }
+         break;
+
+      case "number":
+         try {
+             var prefValue = gPrefObj.GetIntPref(ENIGMAIL_PREFS_ROOT+prefName);
+             return prefValue;
+         } catch (ex) {
+             return defaultValue;
+         }
+         break;
+
+      default:
+         return undefined;
+   }
 }
+
+function enigmailSetPref(prefName, value) {
+   DEBUG_LOG("pref-enigmail.js: enigmailSetPref: "+prefName+", "+value+"\n");
+
+   var defaultValue = gEnigmailPrefDefaults[prefName];
+   var valueType = typeof defaultValue;
+
+   switch (typeof defaultValue) {
+      case "string":
+         gPrefObj.SetCharPref(ENIGMAIL_PREFS_ROOT+prefName, value);
+         return true;
+         break;
+
+      case "boolean":
+         gPrefObj.SetBoolPref(ENIGMAIL_PREFS_ROOT+prefName, value);
+         return true;
+         break;
+
+      case "number":
+         gPrefObj.SetIntPref(ENIGMAIL_PREFS_ROOT+prefName, value);
+         return true;
+         break;
+
+      default:
+         return false;
+   }
+}
+
+
+function enigmailPrefsHelp() {
+   DEBUG_LOG("pref-enigmail.js: enigmailPrefsHelp:\n");
+}
+
+function enigmailResetPrefs() {
+   DEBUG_LOG("pref-enigmail.js: enigmailResetPrefs:\n");
+
+   for (var prefName in gEnigmailPrefDefaults) {
+      enigmailSetPref(prefName, gEnigmailPrefDefaults[prefName]);
+   }
+
+   parent.doCancelButton();
+}
+
 
 function GetFileOfProperty(prop) {
   var dscontractid = "@mozilla.org/file/directory_service;1";
   var ds = Components.classes[dscontractid].getService();
 
   var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
-  DEBUG_LOG("enigmailPrefs.js: GetFileOfProperty: prop="+prop+"\n");
+  DEBUG_LOG("pref-enigmail.js: GetFileOfProperty: prop="+prop+"\n");
   var file = dsprops.get(prop, Components.interfaces.nsIFile);
-  DEBUG_LOG("enigmailPrefs.js: GetFileOfProperty: file="+file+"\n");
+  DEBUG_LOG("pref-enigmail.js: GetFileOfProperty: file="+file+"\n");
   return file;
 }
 
@@ -63,7 +127,7 @@ function enigmailUninstall() {
 
   if (confirm) {
     var overlay1Removed = RemoveOverlay("communicator",
-                          ["chrome://enigmail/content/enigmailPrefsOverlay.xul"]);
+                          ["chrome://enigmail/content/pref-enigmailOverlay.xul"]);
 
     var overlay2Removed = RemoveOverlay("messenger",
                           ["chrome://enigmail/content/enigmailMsgComposeOverlay.xul",
@@ -100,7 +164,7 @@ function enigmailUninstall() {
   for (var j=0; j<delFiles.length; j++) {
     var delFile = delFiles[j];
     if (delFile.exists()) {
-      WRITE_LOG("enigmailPrefs.js: UninstallPackage: Deleting "+delFile.path+"\n")
+      WRITE_LOG("pref-enigmail.js: UninstallPackage: Deleting "+delFile.path+"\n")
       try {
           delFile.remove(true);
       } catch (ex) {
@@ -115,7 +179,7 @@ function enigmailUninstall() {
 
 
 function RemoveOverlay(module, urls) {
-   DEBUG_LOG("enigmailPrefs.js: RemoveOverlay: module="+module+", urls="+urls.join(",")+"\n");
+   DEBUG_LOG("pref-enigmail.js: RemoveOverlay: module="+module+", urls="+urls.join(",")+"\n");
 
    var overlayFile = GetFileOfProperty("AChrom");
    overlayFile.append("overlayinfo");
@@ -123,7 +187,7 @@ function RemoveOverlay(module, urls) {
    overlayFile.append("content");
    overlayFile.append("overlays.rdf");
 
-   DEBUG_LOG("enigmailPrefs.js: RemoveOverlay: overlayFile="+overlayFile.path+"\n");
+   DEBUG_LOG("pref-enigmail.js: RemoveOverlay: overlayFile="+overlayFile.path+"\n");
 
    var overlayRemoved = false;
 
@@ -139,7 +203,7 @@ function RemoveOverlay(module, urls) {
 
             overlayRemoved = true;
 
-            DEBUG_LOG("enigmailPrefs.js: RemoveOverlay: removed overlay "+urls[j]+"\n");
+            DEBUG_LOG("pref-enigmail.js: RemoveOverlay: removed overlay "+urls[j]+"\n");
          }
       }
 

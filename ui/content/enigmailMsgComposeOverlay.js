@@ -26,6 +26,9 @@ function enigMsgComposeStartup() {
 }
 
 function enigUpdateOptionsDisplay() {
+  if (!InitEnigmailSvc())
+     return "";
+
    var optList = ["encryptMsg", "signMsg"];
 
    for (var j=0; j<optList.length; j++) {
@@ -42,6 +45,13 @@ function enigUpdateOptionsDisplay() {
 
 function enigSend() {
   WRITE_LOG("enigmailMsgComposeOverlay.js: enigSend\n");
+
+  if (!InitEnigmailSvc())
+     return "";
+
+  var currentId = getCurrentIdentity();
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: currentId="+currentId+
+            ", "+currentId.email+"\n");
 
   if (!gEnigProcessed && (gEnigmailSvc.encryptMsg || gEnigmailSvc.signMsg)) {
     var msgCompFields = msgCompose.compFields;
@@ -135,6 +145,9 @@ function enigSend() {
 function enigToggleAttribute(attrName)
 {
   WRITE_LOG("enigmailMsgComposeOverlay.js: enigToggleAttribute('"+attrName+"')\n");
+
+  if (!InitEnigmailSvc())
+     return "";
 
   var menuElement = document.getElementById("enigmail_"+attrName);
 
