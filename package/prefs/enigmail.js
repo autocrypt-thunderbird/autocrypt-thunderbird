@@ -23,7 +23,7 @@ pref("extensions.enigmail.autoCrypto",false);
 // enable automatically decrypt/verify
 pref("extensions.enigmail.autoDecrypt",true);
 
-// enable automatically decrypt/verify
+// enable X-Enigmail-xxx headers
 pref("extensions.enigmail.addHeaders",true);
 
 // countdown for alerts when composing inline PGP HTML msgs
@@ -146,4 +146,9 @@ pref("mail.identity.default.pgpSignPlain", false);
 pref("mail.identity.default.pgpSignEncrypted", false);
 pref("mail.identity.default.defaultEncryptionPolicy", 0);
 
+/*
+   Other settings (change Mozilla behaviour)
+*/
 
+// disable flowed text by default
+pref("mailnews.send_plaintext_flowed", false);

@@ -343,15 +343,15 @@ nsEnigMsgCompose::WriteSignedHeaders1(PRBool isEightBit)
     return rv;
 
   char* headers = PR_smprintf(
- "Content-Type: multipart/signed; micalg=pgp-%s;\r\n"
- " protocol=\"application/pgp-signature\";\r\n"
- " boundary=\"%s\"\r\n"
- "%s"
- "This is an OpenPGP/MIME signed message (RFC 2440 and 3156)\r\n"
- "--%s\r\n",
- mHashAlgorithm.get(), mBoundary.get(),
- isEightBit ? "Content-Transfer-Encoding: 8bit\r\n\r\n" : "\r\n",
- mBoundary.get());
+       "Content-Type: multipart/signed; micalg=pgp-%s;\r\n"
+       " protocol=\"application/pgp-signature\";\r\n"
+       " boundary=\"%s\"\r\n"
+       "%s"
+       "This is an OpenPGP/MIME signed message (RFC 2440 and 3156)\r\n"
+       "--%s\r\n",
+       mHashAlgorithm.get(), mBoundary.get(),
+       isEightBit ? "Content-Transfer-Encoding: 8bit\r\n\r\n" : "\r\n",
+       mBoundary.get());
 
   if (!headers)
     return NS_ERROR_OUT_OF_MEMORY;
