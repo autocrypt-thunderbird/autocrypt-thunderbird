@@ -158,3 +158,6 @@
 
 <!ENTITY enigmail.selectpanel.label                 "Select Enigmail Panel">
 <!ENTITY enigmail.selectpanel.tooltip               "Select Enigmail Panel">
+
+<!ENTITY enigmail.experimental.label                "Use experimental inline signing/encryption">
+
