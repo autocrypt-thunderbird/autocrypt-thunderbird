@@ -35,7 +35,7 @@
 
 # Specify these as parameters to the make command
 XPI_MODULE	= enigmail
-XPI_VERS        = 0.60.0
+XPI_VERS        = 0.61.0
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@

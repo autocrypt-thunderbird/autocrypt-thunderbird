@@ -1,7 +1,7 @@
 Name:      mozilla-enigmail
-Version:   0.61.0
+Version:   0.61.1
 Release:   1
-Requires:  mozilla = 1.0, mozilla-mail = 1.0, mozilla-enigmime = 0.61.0
+Requires:  mozilla = 1.0.0, mozilla-mail = 1.0.0, mozilla-enigmime = 0.61.0
 Summary:   Enigmail: GPG/PGP integration in Mozilla
 Copyright: Mozilla Public License 1.1/GPL
 Group:     Applications/Internet
@@ -32,17 +32,17 @@ chmod -R a+rX,g-w,o-w .
 
 %install
 cd ${RPM_PACKAGE_NAME}-${RPM_PACKAGE_VERSION}
-install -m 755 components/enigmail.xpt /usr/lib/mozilla/components
-install -m 755 components/enigmail.js  /usr/lib/mozilla/components
-install -m 755 chrome/enigmail.jar     /usr/lib/mozilla/chrome
+install -m 755 components/enigmail.xpt /usr/lib/mozilla-1.0.0/components
+install -m 755 components/enigmail.js  /usr/lib/mozilla-1.0.0/components
+install -m 755 chrome/enigmail.jar     /usr/lib/mozilla-1.0.0/chrome
 
 %pre
 
 %post
 
-if [ -f /usr/lib/mozilla/chrome/installed-chrome.txt ]; then
+if [ -f /usr/lib/mozilla-1.0.0/chrome/installed-chrome.txt ]; then
 
-  cat << EOF >> /usr/lib/mozilla/chrome/installed-chrome.txt
+  cat << EOF >> /usr/lib/mozilla-1.0.0/chrome/installed-chrome.txt
 content,install,url,jar:resource:/chrome/enigmail.jar!/content/enigmail/
 skin,install,url,jar:resource:/chrome/enigmail.jar!/skin/modern/enigmail/
 skin,install,url,jar:resource:/chrome/enigmail.jar!/skin/classic/enigmail/
@@ -51,20 +51,20 @@ EOF
 
 fi
 
-if [ -f /usr/lib/mozilla/rebuild-databases.sh ]; then
-    /usr/lib/mozilla/rebuild-databases.sh
+if [ -f /usr/lib/mozilla-1.0.0/mozilla-rebuild-databases.pl ]; then
+    /usr/lib/mozilla-1.0.0/mozilla-rebuild-databases.pl
 fi
 
 %postun
 
-if [ -f /usr/lib/mozilla/rebuild-databases.sh ]; then
-    /usr/lib/mozilla/rebuild-databases.sh
+if [ -f /usr/lib/mozilla-1.0.0/mozilla-rebuild-databases.pl ]; then
+    /usr/lib/mozilla-1.0.0/mozilla-rebuild-databases.pl
 fi
 
 %files
 
-/usr/lib/mozilla/components/enigmail.xpt
-/usr/lib/mozilla/components/enigmail.js
-/usr/lib/mozilla/chrome/enigmail.jar
+/usr/lib/mozilla-1.0.0/components/enigmail.xpt
+/usr/lib/mozilla-1.0.0/components/enigmail.js
+/usr/lib/mozilla-1.0.0/chrome/enigmail.jar
 
 %changelog

@@ -46,14 +46,14 @@ EOF
 
 fi
 
-if [ -f /usr/lib/mozilla/rebuild-databases.sh ]; then
-    /usr/lib/mozilla/rebuild-databases.sh
+if [ -f /usr/lib/mozilla/mozilla-rebuild-databases.pl ]; then
+    /usr/lib/mozilla/mozilla-rebuild-databases.pl
 fi
 
 %postun
 
-if [ -f /usr/lib/mozilla/rebuild-databases.sh ]; then
-    /usr/lib/mozilla/rebuild-databases.sh
+if [ -f /usr/lib/mozilla/mozilla-rebuild-databases.pl ]; then
+    /usr/lib/mozilla/mozilla-rebuild-databases.pl
 fi
 
 %files

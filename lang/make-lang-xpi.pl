@@ -7,8 +7,8 @@ if (@ARGV != 3) {
 
 my ($lang, $vers, $bindir) = @ARGV;
 
-my $pkg = enigmail;
-my $xpifile = $pkg-$lang-$vers.xpi;
+my $pkg = "enigmail";
+my $xpifile = "$pkg-$lang-$vers.xpi";
 
 my ($dir, $cmd);
 
@@ -16,9 +16,9 @@ open INFILE, "../ui/$pkg-en-US.spec";
 open OUTFILE, ">$lang/$pkg-$lang.spec";
 
 while ($_ = <INFILE>) {
-    print STDERR $_;
+    #print STDERR $_;
     $_ =~ s/en-US/$lang/g;
-    print STDERR $_;
+    #print STDERR $_;
     print OUTFILE $_;
 }
 
@@ -29,9 +29,9 @@ open INFILE, "../ui/install.js";
 open OUTFILE, ">$lang/install.js";
 
 while ($_ = <INFILE>) {
-    print STDERR $_;
+    #print STDERR $_;
     $_ =~ s/en-US/$lang/g;
-    print STDERR $_;
+    #print STDERR $_;
     print OUTFILE $_;
 }
 
