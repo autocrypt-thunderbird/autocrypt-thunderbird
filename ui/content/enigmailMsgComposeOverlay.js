@@ -263,33 +263,20 @@ function enigTogglePGPMime() {
 function enigInsertKey() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigInsertKey: \n");
 
-  var userIdValue = EnigGetPref("userIdValue");
+  var resultObj = new Object();
+  var inputObj = new Object();
+  inputObj.dialogHeader = EnigGetString("keysToExport");
+  inputObj.options = "multisel,allowexpired,nosending";
+  var userIdValue="";
 
-  if (EnigGetPref("userIdFromAddr")) {
-    try {
-       var currentId = getCurrentIdentity();
-       userIdValue = currentId.email;
-    } catch (ex) {
-    }
-  }
-
-  var text = EnigGetString("keysToExport");
-  var retObj = new Object();
-  var checkObj = new Object();
-
-  if (userIdValue)
-    retObj.value = userIdValue;
-
-  var proceed = gEnigPromptSvc.prompt(window, EnigGetString("exportPrompt"),
-                                      text, retObj, "", checkObj);
-
-  userIdValue = retObj.value;
-
-  if (!proceed || !userIdValue)
+  window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
+  try {
+    if (resultObj.cancelled) return;
+    var userIdValue = resultObj.userList.join(" ");
+  } catch (ex) {
+    // cancel pressed -> do nothing
     return;
-
-  // Replace commas with spaces
-  userIdValue = userIdValue.replace(/,/g, " ");
+  }
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
@@ -361,38 +348,6 @@ function enigReplaceEditorText(text) {
   EnigEditorInsertText(text);
 }
 
-function enigGetUserList(window, sendFlags, exitCodeObj, statusFlagsObj, errorMsgObj) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigGetUserList\n");
-
-  var aUserList = new Array();
-  try {
-    var enigmailSvc = GetEnigmailSvc();
-    var userText = enigmailSvc.getUserIdList(window, sendFlags,
-                                            exitCodeObj,
-                                            statusFlagsObj,
-                                            errorMsgObj);
-    if (exitCodeObj.value != 0) {
-      EnigAlert(errorMsgObj.value);
-      return null;
-    }
-
-    userText.replace(/\r\n/g, "\n");
-    userText.replace(/\r/g, "\n");
-    var removeIndex=userText.indexOf("----\n");
-    userText = userText.substring(removeIndex + 5);
-
-    while (userText.length >0) {
-        var theLine=userText.substring(0,userText.indexOf("\n"));
-        theLine.replace(/\n/, "");
-        if (theLine.length>0) {
-          aUserList.push(theLine.split(/\:/)); ///
-        }
-        userText=userText.substring(theLine.length+1);
-    }
-  } catch (ex) {}
-
-  return aUserList;
-}
 
 function enigDoPgpButton() {
   var what = gEnigNextCommand;
@@ -695,16 +650,11 @@ function enigSend(gotSendFlags, elementId) {
               ((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT) &&
                ((recipientsSelectionOption>0) || (! encryptIfPossible)))) {
 
-              var aUserList = enigGetUserList(window, testSendFlags,
-                                                        testExitCodeObj,
-                                                        testStatusFlagsObj,
-                                                        testErrorMsgObj);
-
-              if (!aUserList) return;
               var resultObj = new Object();
               var inputObj = new Object();
-              inputObj.userList = aUserList;
               inputObj.toAddr = toAddr;
+              inputObj.options = "multisel";
+              inputObj.dialogHeader = EnigGetString("recipientsSelectionHdr");
 
               window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
               try {
@@ -1031,8 +981,9 @@ function enigSend(gotSendFlags, elementId) {
          msgStatus += EnigGetString("statPlain")+" ";
        }
 
-       var msgConfirm = isOffline ? EnigGetString("offlineSave",msgStatus,toAddr)
-                                  :EnigGetString("onlineSend",msgStatus,toAddr);
+       var msgConfirm = (isOffline || sendFlags & nsIEnigmail.SEND_LATER)
+              ? EnigGetString("offlineSave",msgStatus,toAddr)
+              : EnigGetString("onlineSend",msgStatus,toAddr);
 
        if (!EnigConfirm(msgConfirm)) {
          if (gEnigProcessed)
