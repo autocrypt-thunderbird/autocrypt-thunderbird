@@ -623,9 +623,7 @@ function enigmailImportKeysFromFile() {
 
   var inFile = EnigFilePicker(EnigGetString("importFile"),
                                "", false, "*.asc", "",
-                               [EnigGetString("asciiArmorFile"), "*.asc",
-                                EnigGetString("gnupgFile"), "*.gpg",
-                                EnigGetString("pgpFile"), "*.pgp"]);
+                               [EnigGetString("gnupgFile"), "*.asc;*.gpg;*.pgp"]);
   if (! inFile) return;
   
   var errorMsgObj = {};

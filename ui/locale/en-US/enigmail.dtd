@@ -371,17 +371,17 @@
 <!ENTITY enigmail.keyMan.keyserverMenu.accesskey   "K">
 <!ENTITY enigmail.keyMan.generateMenu.accesskey    "G">
 
-<!ENTITY enigmail.keyMan.importFromFile.label      "Import Key(s) from File">
-<!ENTITY enigmail.keyMan.importFromServer.label    "Search for Key(s)">
-<!ENTITY enigmail.keyMan.importFromClipbrd.label   "Import Key(s) from Clipboard">
-<!ENTITY enigmail.keyMan.exportToFile.label        "Export Key(s) to File">
-<!ENTITY enigmail.keyMan.uploadToServer.label      "Upload Public Key(s)">
-<!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copy Public Key(s) to Clipboard">
-<!ENTITY enigmail.keyMan.ctxExportToFile.label     "Export Key(s) to File">
-<!ENTITY enigmail.keyMan.ctxUploadToServer.label   "Upload Public Key(s) to Keyserver">
-<!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label    "Copy Public Key(s) to Clipboard">
-<!ENTITY enigmail.keyMan.refreshKey.label          "Refresh Public Key(s)">
-<!ENTITY enigmail.keyMan.ctxRefreshKey.label       "Refresh Public Key(s) From Keyserver">
+<!ENTITY enigmail.keyMan.importFromFile.label      "Import Keys from File">
+<!ENTITY enigmail.keyMan.importFromServer.label    "Search for Keys">
+<!ENTITY enigmail.keyMan.importFromClipbrd.label   "Import Keys from Clipboard">
+<!ENTITY enigmail.keyMan.exportToFile.label        "Export Keys to File">
+<!ENTITY enigmail.keyMan.uploadToServer.label      "Upload Public Keys">
+<!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copy Public Keys to Clipboard">
+<!ENTITY enigmail.keyMan.ctxExportToFile.label     "Export Keys to File">
+<!ENTITY enigmail.keyMan.ctxUploadToServer.label   "Upload Public Keys to Keyserver">
+<!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label    "Copy Public Keys to Clipboard">
+<!ENTITY enigmail.keyMan.refreshKey.label          "Refresh Public Keys">
+<!ENTITY enigmail.keyMan.ctxRefreshKey.label       "Refresh Public Keys From Keyserver">
 
 <!ENTITY enigmail.keyMan.reload.label              "Reload Key Cache">
 <!ENTITY enigmail.keyMan.addUid.label              "Add User ID">

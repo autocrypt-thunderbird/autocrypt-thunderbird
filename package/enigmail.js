@@ -3078,10 +3078,7 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
   var statusMsgObj   = new Object();
   var cmdLineObj   = new Object();
 
-/*
-  var output = gEnigmailSvc.execCmd(command, null, "",
-                       exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
-*/
+  CONSOLE_LOG("enigmail> "+command.replace(/\\\\/g, "\\")+"\n");
 
   var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
   // Create joinable console
@@ -3281,6 +3278,9 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
 
   var errorConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
   errorConsole.open(20, 0, true);
+
+  CONSOLE_LOG("enigmail> "+command.replace(/\\\\/g, "\\")+"\n");
+
 
   var ipcRequest = null;
   try {
