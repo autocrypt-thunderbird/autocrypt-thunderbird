@@ -1096,3 +1096,70 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
                            callbackArg.messageUrl,
                            callbackArg.signature, false);
 }
+
+
+function enigKeyRequest(interactive, keyId, urlSpec) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigKeyRequest: keyId="+keyId+", urlSpec="+urlSpec+"\n");
+
+  var ipcBuffer = Components.classes[ENIG_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+
+  ipcBuffer.open(ENIG_KEY_BUFFER_SIZE, false);
+
+  var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+
+  try {
+    var uri = ioServ.newURI(urlSpec, "", null);
+
+    var channel = ioServ.newChannelFromURI(uri);
+
+    var httpChannel = channel.QueryInterface(Components.interfaces.nsIHttpChannel);
+
+    // Disable HTTP redirection
+    httpChannel.redirectionLimit = 0;
+
+    var callbackArg = { interactive:interactive,
+                        keyId:keyId,
+                        urlSpec:urlSpec,
+                        httpChannel:httpChannel,
+                        ipcBuffer:ipcBuffer };
+
+    var requestObserver = new EnigRequestObserver(enigKeyRequestCallback,
+                                                  callbackArg);
+
+    ipcBuffer.observe(requestObserver, null);
+
+    DEBUG_LOG("enigmailMessengerOverlay.js: enigKeyRequest: httpChannel="+httpChannel+", asyncOpen ...\n");
+
+    httpChannel.asyncOpen(ipcBuffer, null);
+
+  } catch (ex) {
+    ERROR_LOG("enigmailMessengerOverlay.js: enigKeyRequest: Error - failed to create channel\n");
+  }
+
+}
+
+
+function enigKeyRequestCallback(callbackArg, ctxt) {
+  var urlSpec = callbackArg.urlSpec;
+  var httpChannel = callbackArg.httpChannel;
+
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigKeyRequestCallback: urlSpec="+urlSpec+"\n");
+
+  if (callbackArg.ipcBuffer.overflowed) {
+    WARNING_LOG("enigmailMessengerOverlay.js: enigKeyRequestCallback: KEY BUFFER OVERFLOW\n");
+  }
+
+  var eTag = httpChannel.getResponseHeader("ETag");
+
+  var keyText = callbackArg.ipcBuffer.getData();
+
+  callbackArg.ipcBuffer.shutdown();
+
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigKeyRequestCallback: keyText='"+keyText+"'\n");
+
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigKeyRequestCallback: NoCache='"+httpChannel.isNoCacheResponse()+"'\n");
+
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigKeyRequestCallback: ETag: "+eTag+"\n");
+
+  // NEED TO EXTRACT KEY ETC.
+}

@@ -8,6 +8,8 @@ var gEnigmimeVersion = "0.66.0.0";
 const ENIG_MSG_BUFFER_SIZE = 32000;
 const ENIG_MSG_HEADER_SIZE = 16000;
 
+const ENIG_KEY_BUFFER_SIZE = 64000;
+
 const ENIG_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
 const ENIG_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1";
 const ENIG_IPCBUFFER_CONTRACTID   = "@mozilla.org/process/ipc-buffer;1";
