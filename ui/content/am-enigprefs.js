@@ -32,88 +32,25 @@
  */
 
 var gPref = null;
-var gIdentity;
-var gEnablePgp;
-var gPgpKeyMode;
-var gPgpkeyId;
-var gEnigPrefbranch;
-var gEncryptionChoicesEnabled;
-var gPgpSignPlainPolicy;
-var gPgpSignEncPolicy;
-var gEncryptionPolicy;
-
-var gAccount;
-
-EnigInitCommon("pref-enigmail");
 
 function onInit()
 {
-  // initialize all of our elements based on the current identity values....
-  gEnablePgp          = document.getElementById("enablePgp");
-  gPgpKeyMode         = document.getElementById("pgpKeyMode");
-
-  gEnablePgp.checked = gIdentity.getBoolAttribute("enablePgp");
-  gEncryptionChoicesEnabled = gEnablePgp.checked;
-
-  var selectedItemId = null;
-  var keyPolicy = gIdentity.getIntAttribute("pgpKeyMode");
-  switch (keyPolicy)
-  {
-    case 1:
-      selectedItemId = 'keymode_usePgpkeyId';
-      break;
-    default:
-      selectedItemId = 'keymode_useFromAddress';
-      break;
-  }
-
-  gPgpKeyMode.selectedItem = document.getElementById(selectedItemId);
-  gPgpkeyId = document.getElementById("identity.pgpkeyId");
-  gPgpkeyId.value = gIdentity.getCharAttribute("pgpkeyId");
-  EnigGetSignMsg(gIdentity);
-  gPgpSignEncPolicy = document.getElementById("sign_encrypted");
-  gPgpSignEncPolicy.checked = gIdentity.getBoolAttribute("pgpSignEncrypted");
-  gPgpSignPlainPolicy = document.getElementById("sign_notEncrypted");
-  gPgpSignPlainPolicy.checked = gIdentity.getBoolAttribute("pgpSignPlain");
-
-  gEncryptionPolicy = document.getElementById("encrypt_ifPossible");
-  gEncryptionPolicy.checked = (gIdentity.getIntAttribute("defaultEncryptionPolicy")>0);
-
-  // Disable all locked elements on the panel
-  //onLockPreference();
-  enigEnableAllPrefs();
-}
-
-function onLoadEditor() {
-  gAccount  = window.arguments[0].account;
-  gIdentity = window.arguments[0].identity;
-  var idLabel = EnigGetString("identityName", gIdentity.identityName);
-  document.getElementById("identityName").value = idLabel;
-  onInit();
+  enigOnInit();
 }
 
 function onAcceptEditor() {
-  onSave();
+  enigOnSave();
 }
 
 function onPreInit(account, accountValues)
 {
-  gIdentity = account.defaultIdentity;
-  gAccount = account;
+  gEnigIdentity = account.defaultIdentity;
+  gEnigAccount = account;
 }
 
 function onSave()
 {
-  gIdentity.setBoolAttribute("enablePgp", gEnablePgp.checked);
-
-  if (gEnablePgp.checked) {
-    // PGP is enabled
-    gIdentity.setIntAttribute("pgpKeyMode", gPgpKeyMode.selectedItem.value);
-    gIdentity.setCharAttribute("pgpkeyId", gPgpkeyId.value);
-    gIdentity.setBoolAttribute("pgpSignEncrypted", gPgpSignEncPolicy.checked);
-    gIdentity.setBoolAttribute("pgpSignPlain", gPgpSignPlainPolicy.checked);
-    gIdentity.setIntAttribute("defaultEncryptionPolicy", (gEncryptionPolicy.checked ? 1 : 0));
-  }
+  enigOnSave();
 }
 
 function onLockPreference()
@@ -127,71 +64,6 @@ function onLockPreference()
 // stomping on the disabled state indiscriminately.
 function disableIfLocked( prefstrArray )
 {
-
   var i=1;
-}
-
-function enigToggleEnable() {
-  gEncryptionChoicesEnabled = (! gEncryptionChoicesEnabled);
-  enigEnableAllPrefs();
-}
-
-function enigEnableAllPrefs()
-{
-  var allItems = ["pgpKeyMode",
-                  "keymode_useFromAddress",
-                  "keymode_usePgpkeyId",
-                  "encrypt_ifPossible",
-                  "sign_encrypted",
-                  "sign_notEncrypted",
-                  "enigmailPrefs"];
-
-  var enable = gEncryptionChoicesEnabled;
-
-  var i;
-  for (i=0; i<allItems.length; i++) {
-    var elem = document.getElementById(allItems[i]);
-    if (enable) {
-      if (elem) elem.removeAttribute("disabled");
-    }
-    else {
-      if (elem) elem.setAttribute("disabled", "true");
-    }
-  }
-
-  enigEnableKeySel(enable && (gPgpKeyMode.value == 1));
-
-}
-
-function enigEnableKeySel(enable)
-{
-  if (enable) {
-    document.getElementById("identity.pgpkeyId").removeAttribute("disabled");
-    document.getElementById("selectPgpKey").removeAttribute("disabled");
-  }
-  else {
-    document.getElementById("identity.pgpkeyId").setAttribute("disabled", "true");
-    document.getElementById("selectPgpKey").setAttribute("disabled", "true");
-  }
-}
-
-function enigSelectKeyId()
-{
-  var resultObj = new Object();
-  var inputObj = new Object();
-  inputObj.dialogHeader = EnigGetString("encryptKeyHeader");
-  inputObj.options = "single,hidexpired,private,nosending";
-
-
-  window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
-  try {
-    if (resultObj.cancelled) return;
-    var selKey = resultObj.userList[0];
-    selKey = "0x"+selKey.substring(10,18)
-    gPgpkeyId.value = selKey;
-  } catch (ex) {
-    // cancel pressed -> don't send mail
-    return;
-  }
 }
 

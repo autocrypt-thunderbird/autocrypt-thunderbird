@@ -53,15 +53,121 @@
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailEditIdentity.js"/>
   <script type="application/x-javascript">
 <![CDATA[
-    function enigmailEditAccount() {
-      window.openDialog("chrome://enigmail/content/am-enigprefs-edit.xul", "", "dialog,modal,centerscreen", {identity: gIdentity, account: gAccount});
-    }
-  
+    window.addEventListener("load", enigOnLoadEditor, false);
 ]]>
   </script>
+
+  <tabs id="identitySettings" onselect="enigTabSelect(event)">
+    <tab label="&enigmail.openPgpSecurity.label;" id="enigmailSecurity"/>
+  </tabs>
   
+  <tabpanels id="identityTabsPanels">
+    <vbox>
+      <broadcasterset>
+        <broadcaster id="bcEnablePgp" disabled="false"/>
+        <broadcaster id="bcUseKeyId" disabled="false"/>
+        <broadcaster id="bcUseUrl" disabled="true"/>
+      </broadcasterset>
+
+      <label id="identityName" value="(unknown ID)"/>
+
+      <separator/>
+
+      <checkbox id="enablePgp"
+                prefstring="mail.identity.%identitykey%.enablePgp"
+                preftype="bool" prefattribute="value"
+                label="&enigmail.amPrefEnablePgp.label;"
+                oncommand="enigToggleEnable();"/>
+      <vbox>
+        <groupbox id="encryption.titleBox">
+          <radiogroup id="pgpKeyMode">
+            <radio id="keymode_useFromAddress"
+                   label="&enigmail.amPrefUseFromAddr.label;"
+                   value="0"
+                   observes="bcEnablePgp"
+                   oncommand="enigEnableKeySel(false);"/>
+            <vbox>
+              <radio id="keymode_usePgpkeyId"
+                     label="&enigmail.amPrefUseKeyId.label;"
+                     observes="bcEnablePgp"
+                     value="1"
+                     oncommand="enigEnableKeySel(true);"/>
+              <hbox>
+                <textbox id="identity.pgpkeyId"
+                         prefstring="mail.identity.%identitykey%.pgpkeyId"
+                         observes="bcUseKeyId"
+                         preftype="wstring" prefattribute="value"/>
+                <button id="selectPgpKey" label="&enigmail.amPrefSelectKey.label;"
+                        observes="bcUseKeyId"
+                        oncommand="enigSelectKeyId()"/>
+              </hbox>
+            </vbox>
+          </radiogroup>
+
+          <groupbox>
+            <caption label="&enigmail.amPrefPgpHeader.label;"/>
+            <hbox>
+              <vbox>
+                <radiogroup id="openpgpHeaderMode">
+                  <radio id="openpgpHeaderMode.none"
+                         label="&enigmail.amPrefPgpHeader.none.label;"
+                         observes="bcEnablePgp"
+                         oncommand="enigEnableUrlName(false);"
+                         value="0"/>
+                  <radio id="openpgpHeaderMode.keyId"
+                         label="&enigmail.amPrefPgpHeader.id.label;"
+                         observes="bcUseKeyId"
+                         oncommand="enigEnableUrlName(false);"
+                         value="1"/>
+                  <hbox>
+                    <radio id="openpgpHeaderMode.url"
+                           label="&enigmail.amPrefPgpHeader.url.label;"
+                           observes="bcEnablePgp"
+                           oncommand="enigEnableUrlName(true);"
+                           value="2"/>
+                    <textbox id="openpgpHeaderMode.url.name"
+                         observes="bcUseUrl"
+                         size="30"/>
+                  </hbox>
+                </radiogroup>
+              </vbox>
+            </hbox>
+          </groupbox>
+
+          <groupbox>
+            <caption label="&enigmail.amPrefDefaultEncrypt.label;"/>
+            <checkbox id="sign_notEncrypted"
+                     checked="false"
+                     observes="bcEnablePgp"
+                     label="&enigmail.defaultSignPlainMsg.label;"/>
+            <checkbox id="sign_encrypted"
+                     checked="false"
+                     observes="bcEnablePgp"
+                     label="&enigmail.defaultEncryptionSign.label;"/>
+
+            <separator/>
+
+            <checkbox id="encrypt_ifPossible" checked="false"
+                      observes="bcEnablePgp"
+                      label="&enigmail.defaultEncryption.label;"/>
+          </groupbox>
+
+          <hbox autostretch="never">
+            <spacer flex="1"/>
+            <button class="dialog"
+                    id="enigmailPrefs"
+                    observes="bcEnablePgp"
+                    label="&enigmail.advancedPrefsButton.label; ..."
+                    oncommand="EnigPrefWindow(true,'thunderbird')"/>
+          </hbox>
+        </groupbox>
+      </vbox>
+    </vbox>
+  </tabpanels>
+<!--
   <vbox>
     <hbox>
     <button label="&enigmail.editPgpSecurity.label;" 
@@ -69,4 +175,5 @@
           oncommand="enigmailEditAccount();"/>
     </hbox>
   </vbox>
+-->
 </overlay>

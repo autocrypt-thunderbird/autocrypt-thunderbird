@@ -366,7 +366,7 @@ function enigmailBuildList(refresh) {
   // Build up key treeView
   for (i=0; i<aUserList.length; i++) {
       var treeItem=null;
-      if (! hideExpired || activeState<2) {
+      if (! hideExpired || aUserList[i].activeState<2) {
         // do not show if expired keys are hidden
         if (secretOnly) {
           treeItem=enigUserSelCreateRow(aUserList[i], aUserList[i].activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].created, "")

@@ -1310,18 +1310,29 @@ function enigMessageSendCheck() {
 /////////////////////////////////////////////////////////////////////////
 function enigModifyCompFields(msgCompFields) {
 
+  var enigmailHeaders = "";
   if (EnigGetPref("addHeaders")) {
-    var enigmailHeaders = "X-Enigmail-Version: "+gEnigmailVersion+"\r\n"+
-                          "X-Enigmail-Supports: pgp-inline, pgp-mime\r\n";
-
-    msgCompFields.otherRandomHeaders += enigmailHeaders;
-
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigModifyCompFields: otherRandomHeaders = "+
-             msgCompFields.otherRandomHeaders+"\n");
+    enigmailHeaders += "X-Enigmail-Version: "+gEnigmailVersion+"\r\n";
   }
-  else {
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigModifyCompFields: no headers added\n");
+  try {
+    var pgpHeader="";
+    switch(gEnigIdentity.getIntAttribute("openPgpHeaderMode")) {
+      case 1:
+        pgpHeader = gEnigIdentity.getCharAttribute("pgpkeyId");
+        if (pgpHeader.substr(0,2).toLowerCase() == "0x") {
+          enigmailHeaders += "OpenPGP: id="+pgpHeader.substr(2)+"\r\n";
+        }
+        break;
+      case 2:
+        enigmailHeaders += "OpenPGP: url="+gEnigIdentity.getCharAttribute("openPgpUrlName")+"\r\n";
+        break;
+    }
   }
+  catch (ex) {}
+  msgCompFields.otherRandomHeaders += enigmailHeaders;
+
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigModifyCompFields: otherRandomHeaders = "+
+           msgCompFields.otherRandomHeaders+"\n");
 }
 
 

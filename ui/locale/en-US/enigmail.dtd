@@ -256,12 +256,18 @@
 <!ENTITY enigmail.encDlgSign.accesskey              "S">
 <!ENTITY enigmail.encDlgPgpMime.label               "Use PGP/MIME">
 <!ENTITY enigmail.encDlgPgpMime.accesskey           "U">
+<!ENTITY enigmail.amPrefPgpHeader.label             "Send 'OpenPGP' Header">
+<!ENTITY enigmail.amPrefPgpHeader.none.label        "Do not send any 'OpenPGP' header">
+<!ENTITY enigmail.amPrefPgpHeader.id.label          "Send OpenPGP Key ID">
+<!ENTITY enigmail.amPrefPgpHeader.url.label         "Send URL for key retrieval:">
 
 <!ENTITY  enigmail.retrieveKey.label                "Retrieving keys">
 <!ENTITY  enigmail.progressText.label               "Progress:">
 
 <!ENTITY  enigmail.editPgpSecurity.label            "OpenPGP Security ...">
 <!ENTITY  enigmail.editPgpSecurity.accesskey        "O">
+
+<!ENTITY  enigmail.openPgpSecurity.label            "OpenPGP Security">
 
 <!ENTITY  enigmail.pgpSecurityInfo.label            "OpenPGP Security Info ...">
 <!ENTITY  enigmail.copySecurityInfo.label           "Copy OpenPGP Security Info">
