@@ -13,7 +13,7 @@
         chrome:author="Team Enigmail"
         chrome:authorURL="http://enigmail.mozdev.org/"
         chrome:name="enigmail"
-        chrome:extension="false"
+        chrome:extension="true"
         chrome:description="This extension adds support for OpenPGP message encryption."
         chrome:settingsURL="chrome://enigmail/content/pref-enigmail.xul">
      <chrome:uninstallInfo>
