@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
+                 type="text/css"?> 
+
+<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+
+<overlay id="enigmailAbCardViewOverlay"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailAbOverlay.js"/>
+    
+  <popup id="cardProperties">
+    <menuseparator/>
+    <menuitem id="enigmailCreateContactsRule"
+              label="&enigmail.createRuleFromAddr.label;"
+              oncommand="enigCreateRuleFromCard();"/>
+  </popup>
+
+</overlay>
