@@ -4612,6 +4612,10 @@ function signKeyCallback(inputData, keyEdit, ret) {
     ret.exitCode = 0;
     ret.writeTxt = "0";
   }
+  else if (keyEdit.doCheck(GET_LINE, "siggen.valid" )) {
+    ret.exitCode = 0;
+    ret.writeTxt = "0";
+  }
   else if (keyEdit.doCheck(GET_BOOL, "sign_uid.local_promote_okay" )) {
     ret.exitCode = 0;
     ret.writeTxt = "Y";

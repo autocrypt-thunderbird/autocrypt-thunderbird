@@ -350,7 +350,7 @@
 <!ENTITY enigmail.keyMan.generate.label            "Generate">
 <!ENTITY enigmail.keyMan.sign.label                "Sign">
 <!ENTITY enigmail.keyMan.setTrust.label            "Set trust">
-<!ENTITY enigmail.keyMan.genRevoke.label           "Create &amp; save revocation ceritficate">
+<!ENTITY enigmail.keyMan.genRevoke.label           "Create &amp; save revocation certificate">
 
 <!ENTITY enigmail.keyMan.importMenu.label          "Import key">
 <!ENTITY enigmail.keyMan.exportMenu.label          "Export public key">

@@ -30,9 +30,9 @@
     <em:creator>Enigmail Team</em:creator>
     <em:homepageURL>http://enigmail.mozdev.org/</em:homepageURL>
 
-<!--
-    <em:updateURL>http://enigmail.mozdev.org/getupdate.php</em:updateURL>
--->
+<!--   - ->
+    <em:updateURL>http://localhost:8080/update.rdf</em:updateURL>
+<!- -   -->
 		
     <!-- Front End Integration Hooks (used by Extension Manager)-->
     <em:optionsURL>chrome://enigmail/content/pref-enigmail.xul</em:optionsURL>

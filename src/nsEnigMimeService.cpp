@@ -107,18 +107,12 @@ nsEnigMimeService::nsEnigMimeService()
 
   if (NS_SUCCEEDED(rv)) {
     // Register factory for dummy handler
-#if MOZILLA_MAJOR_VERSION==1 && MOZILLA_MINOR_VERSION<7
-    rv = nsComponentManager::RegisterFactory(info.mCID, info.mDescription,
-                                             info.mContractID, factory, PR_TRUE);
-#else
-    // Mozilla >= 1.7
     nsCOMPtr<nsIComponentRegistrar> registrar;
     rv = NS_GetComponentRegistrar(getter_AddRefs(registrar));
     if (NS_FAILED(rv)) return;
         
     rv = registrar->RegisterFactory(info.mCID, info.mDescription,
                                              info.mContractID, factory);
-#endif
     if (NS_SUCCEEDED(rv)) {
       mDummyHandler = PR_TRUE;
     }
@@ -171,12 +165,6 @@ nsEnigMimeService::Init()
   rv = NS_NewGenericFactory(getter_AddRefs(factory), &info);
   if (NS_FAILED(rv)) return rv;
   
-#if MOZILLA_MAJOR_VERSION==1 && MOZILLA_MINOR_VERSION<7  
-  // Register factory
-  rv = nsComponentManager::RegisterFactory(info.mCID, info.mDescription,
-                                           info.mContractID, factory, PR_TRUE);
-#else
-  // Mozilla >= 1.7
   nsCOMPtr<nsIComponentRegistrar> registrar;
   rv = NS_GetComponentRegistrar(getter_AddRefs(registrar));
   if (NS_FAILED(rv)) return rv;
@@ -184,7 +172,6 @@ nsEnigMimeService::Init()
   // Register factory
   rv = registrar->RegisterFactory(info.mCID, info.mDescription,
                                            info.mContractID, factory);
-#endif
 
   if (NS_FAILED(rv)) return rv;
 
