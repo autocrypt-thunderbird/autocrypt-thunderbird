@@ -199,7 +199,7 @@ function enigInitViewHeadersMenu() {
   case 2:
     id = "viewallheaders";
     break;
-  case 1:	
+  case 1:
   default:
     id = "viewnormalheaders";
     break;
@@ -555,8 +555,8 @@ function enigMessageDecrypt(event) {
       var msgFrame = EnigGetFrame(window, "messagepane");
       msgFrame.location = "enigmail:dummy";
 
-      return;
     }
+    return;
   }
 
   var tryVerify = false;
@@ -640,7 +640,7 @@ function enigMessageParse(interactive, importOnly, contentEncoding) {
       tail=msgText.substring(endStart+nextLine).replace(/^[\n\r\s]*/,"");
     }
   }
-  
+
   //DEBUG_LOG("enigmailMessengerOverlay.js: msgText='"+msgText+"'\n");
 
   var mailNewsUrl = enigGetCurrentMsgUrl();
@@ -668,6 +668,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
   var exitCode;
   var newSignature = "";
   var statusFlags = 0;
+
   var errorMsgObj = new Object();
   var keyIdObj    = new Object();
 
@@ -744,7 +745,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     if (retry) {
       // Try to verify signature by accessing raw message text directly
       // (avoid recursion by setting retry parameter to false on callback)
-      enigMsgDirect(interactive, importOnly, contentEncoding, charset, newSignature, head, tail);
+      enigMsgDirect(interactive, importOnly, contentEncoding, charset, newSignature, 0, head, tail);
       return;
     }
   }
@@ -1250,54 +1251,7 @@ function enigMessageSave() {
   return;
 }
 
-
-function EnigFilePicker(title, displayDir, save, defaultExtension, defaultName, filterPairs) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: EnigFilePicker: "+save+"\n");
-
-  const nsIFilePicker = Components.interfaces.nsIFilePicker;
-  var filePicker = Components.classes["@mozilla.org/filepicker;1"].createInstance();
-  filePicker = filePicker.QueryInterface(nsIFilePicker);
-
-  var mode = save ? nsIFilePicker.modeSave : nsIFilePicker.modeOpen;
-
-  filePicker.init(window, title, mode);
-
-  if (displayDir) {
-    var localFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
-
-    try {
-      localFile.initWithPath(displayDir);
-      filePicker.displayDirectory = localFile;
-    } catch (ex) {
-    }
-  }
-
-  if (defaultExtension)
-    filePicker.defaultExtension = defaultExtension;
-
-  if (defaultName)
-    filePicker.defaultString=defaultName;
-
-  var nfilters = 0;
-  if (filterPairs && filterPairs.length)
-    nfilters = filterPairs.length / 2;
-
-  for (var index=0; index < nfilters; index++) {
-    filePicker.appendFilter(filterPairs[2*index], filterPairs[2*index+1]);
-  }
-
-  filePicker.appendFilters(nsIFilePicker.filterAll);
-
-  if (filePicker.show() == nsIFilePicker.returnCancel)
-    return null;
-
-  var file = filePicker.file.QueryInterface(Components.interfaces.nsILocalFile);
-
-  return file;
-}
-
-
-function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signature, head, tail) {
+function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signature, bufferSize, head, tail) {
   WRITE_LOG("enigmailMessengerOverlay.js: enigMsgDirect: contentEncoding="+contentEncoding+", signature="+signature+"\n");
   var mailNewsUrl = enigGetCurrentMsgUrl();
   if (!mailNewsUrl)
@@ -1305,7 +1259,12 @@ function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signat
 
   var ipcBuffer = Components.classes[ENIG_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
 
-  ipcBuffer.open(ENIG_MSG_BUFFER_SIZE, false);
+  if (bufferSize > 0) {
+    ipcBuffer.open(bufferSize, false);
+  }
+  else {
+    ipcBuffer.open(ENIG_MSG_BUFFER_SIZE, false);
+  }
 
   var callbackArg = { interactive:interactive,
                       importOnly:importOnly,
@@ -1314,6 +1273,7 @@ function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signat
                       messageUrl:mailNewsUrl.spec,
                       signature:signature,
                       ipcBuffer:ipcBuffer,
+                      expectedBufferSize: bufferSize,
                       head:head,
                       tail:tail };
 
@@ -1355,6 +1315,7 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
 
   var mailNewsUrl = enigGetCurrentMsgUrl();
   var urlSpec = mailNewsUrl ? mailNewsUrl.spec : "";
+  var newBufferSize = 0;
 
   if (urlSpec != callbackArg.messageUrl) {
     ERROR_LOG("enigmailMessengerOverlay.js: enigMsgDirectCallback: Message URL mismatch "+mailNewsUrl.spec+" vs. "+callbackArg.messageUrl+"\n");
@@ -1363,12 +1324,28 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
 
   if (callbackArg.ipcBuffer.overflowed) {
     WARNING_LOG("enigmailMessengerOverlay.js: enigMsgDirectCallback: MESSAGE BUFFER OVERFLOW\n");
+    if (! callbackArg.expectedBufferSize) {
+      // set correct buffer size
+      newBufferSize=((callbackArg.ipcBuffer.totalBytes+1500)/1024).toFixed(0)*1024;
+    }
   }
 
   var msgText = callbackArg.ipcBuffer.getData();
 
   callbackArg.ipcBuffer.shutdown();
 
+  if (newBufferSize > 0) {
+    // retry with correct buffer size
+    enigMsgDirect(callbackArg.interactive,
+                  callbackArg.importOnly,
+                  callbackArg.contentEncoding,
+                  callbackArg.charset,
+                  callbackArg.signature,
+                  newBufferSize,
+                  callbackArg.head,
+                  callbackArg.tail);
+
+  }
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgDirectCallback: msgText='"+msgText+"'\n");
 
   enigMessageParseCallback(msgText, callbackArg.contentEncoding,
