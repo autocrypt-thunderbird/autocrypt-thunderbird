@@ -3937,9 +3937,26 @@ function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
 
 
 Enigmail.prototype.decryptAttachment =
-function (parent, outFileName, inputBuffer,
+function (parent, outFileName, displayName, inputBuffer,
           exitCodeObj, statusFlagsObj, errorMsgObj) {
   WRITE_LOG("enigmail.js: Enigmail.decryptAttachment: parent="+parent+", outFileName="+outFileName+"\n");
+  
+  var dataLength = new Object();
+  var byteData = inputBuffer.getByteData(dataLength);
+  var attachmentHead = byteData.substr(0,200);
+  if (attachmentHead.match(/\-\-\-\-\-BEGIN PGP \w+ KEY BLOCK\-\-\-\-\-/)) {
+    // attachment appears to be a PGP key file
+
+    if (this.confirmMsg(parent, EnigGetString("attachmentPgpKey", displayName))) {
+      exitCodeObj.value = this.importKey(parent, 0, byteData, "", errorMsgObj);
+      statusFlagsObj.value = gStatusFlags.IMPORTED;
+    }
+    else {
+      exitCodeObj.value = 0;
+      statusFlagsObj.value = nsIEnigmail.DISPLAY_MESSAGE;
+    }
+    return true;
+  }
 
   var command = this.agentPath;
 
@@ -3985,10 +4002,8 @@ function (parent, outFileName, inputBuffer,
 
       pipeTrans.writeSync("\n", 1);
     }
-    var dataLength = inputBuffer.totalBytes;
+    pipeTrans.writeSync(byteData, dataLength.value);
 
-    inStream=inputBuffer.openInputStream();
-    pipeTrans.writeAsync(inStream, dataLength, true);
   }
   catch (ex) {
     return false;

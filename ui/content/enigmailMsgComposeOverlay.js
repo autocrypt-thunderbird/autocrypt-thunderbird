@@ -506,25 +506,7 @@ function enigDisplaySignClickWarn() {
   if ((gEnigSendModeDirty<2) &&
       (enigGetAccDefault("signPlain") ||
        enigGetAccDefault("signEnc"))) {
-    try {
-      var warn=EnigGetPref("displaySignWarn");
-      if (warn) {
-          var checkValue = {value:false};
-          var buttonPressed = gEnigPromptSvc.confirmEx(window,
-                EnigGetString("warning"),
-                EnigGetString("signIconClicked"),
-                (gEnigPromptSvc.BUTTON_TITLE_OK * gEnigPromptSvc.BUTTON_POS_0),
-                null,null, null,
-                sComposeMsgsBundle.getString('CheckMsg'),
-                checkValue);
-          if (buttonPressed != 0) {
-            return;
-          }
-          if (checkValue.value) {
-            EnigSetPref("displaySignWarn", false);
-          }
-      }
-    } catch (ex) {}
+    EnigAlertPref(EnigGetString("signIconClicked"), "displaySignWarn");
   }
 }
 

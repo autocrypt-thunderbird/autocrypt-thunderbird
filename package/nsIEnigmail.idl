@@ -277,6 +277,7 @@ interface nsIEnigmail : nsISupports
 
   boolean decryptAttachment (in nsIDOMWindow parent,
                       in string outFileName,
+                      in string displayName,
                       in nsIIPCBuffer ipcBuffer,
                       out long exitCode,
                       out unsigned long statusFlags,
