@@ -160,8 +160,8 @@ interface nsIEnigmail : nsISupports
                         in unsigned long sendFlags,
                         out long exitCode,
                         out unsigned long statusFlags,
-                        out wstring errorMsg);                       
-  
+                        out wstring errorMsg);
+
   /* Status flags */
   const long GOOD_SIGNATURE       = 0x000001;
   const long BAD_SIGNATURE        = 0x000002;
@@ -187,6 +187,7 @@ interface nsIEnigmail : nsISupports
   const long PGP_MIME_ENCRYPTED   = 0x200000;
   const long DISPLAY_MESSAGE      = 0x400000;
   const long INLINE_KEY           = 0x800000;
+  const long PARTIALLY_PGP        = 0x1000000;
 
   string decryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,
