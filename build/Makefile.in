@@ -10,7 +10,7 @@
 # implied. See the MPL for the specific language governing
 # rights and limitations under the MPL.
 # 
-# The Original Code is protoZilla.
+# The Original Code is Enigmail.
 # 
 # The Initial Developer of the Original Code is Ramalingam Saravanan.
 # Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
@@ -31,6 +31,12 @@
 # GPL.
 #
 
+# Makefile for build directory
+
+# Specify these as parameters to the make command
+XPI_MODULE	= enigmime
+XPI_MODULE_VERS = 0.99.9
+
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
 srcdir		= @srcdir@
@@ -39,7 +45,11 @@ VPATH		= @srcdir@
 include $(DEPTH)/config/autoconf.mk
 
 MODULE		= enigmime
-LIBRARY_NAME	= enigmime_s
+LIBRARY_NAME	= enigmime
+
+EXPORT_LIBRARY  = 1
+SHORT_LIBNAME	= enigmime
+IS_COMPONENT	= 1
 
 REQUIRES	= xpcom \
 		  string \
@@ -51,17 +61,55 @@ REQUIRES	= xpcom \
 		  xpconnect \
 		  $(NULL)
 
-EXPORTS		=		    \
+MODULE_NAME	= EnigModule
+
+CPPSRCS		= nsEnigModule.cpp
+
+SHARED_LIBRARY_LIBS = \
+		$(DIST)/lib/$(LIB_PREFIX)enigmime_s.$(LIB_SUFFIX) \
 		$(NULL)
 
 LOCAL_INCLUDES	= \
+		-I$(srcdir)/../src \
 		-I$(srcdir)/../../../mailnews/compose/public/_xpidlgen \
 		$(NULL)
 
-CPPSRCS		=		    \
-	        nsEnigMsgCompose.cpp \
+EXTRA_DSO_LDOPTS = \
+		$(MOZ_COMPONENT_LIBS) \
 		$(NULL)
 
-FORCE_STATIC_LIB = 1
-
 include $(topsrcdir)/config/rules.mk
+
+PLATFORM_STR = unknown
+
+# Edit the lines below as needed, depending upon your platform(s)
+ifeq ($(OS_ARCH),Linux)
+PLATFORM_STR = linux
+endif
+
+ifeq ($(OS_ARCH),WIN95)
+PLATFORM_STR = win32
+endif
+
+ifeq ($(OS_ARCH),WINNT)
+PLATFORM_STR = win32
+endif
+
+ifeq ($(OS_CONFIG),SunOS5)
+PLATFORM_STR = sunos5
+endif
+
+ifeq ($(OS_ARCH),FreeBSD)
+PLATFORM_STR = freebsd
+endif
+
+XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS)-$(PLATFORM_STR).xpi
+
+xpi::
+	zip -r $(DIST)/bin/$(XPIFILE) install.js $(XPI_MODULE).spec
+	cd $(DIST)/bin; zip -g $(XPIFILE) \
+               components/ipc.xpt \
+               components/$(LIB_PREFIX)ipc$(DLL_SUFFIX) \
+               components/$(XPI_MODULE).xpt \
+               components/$(LIB_PREFIX)$(XPI_MODULE)$(DLL_SUFFIX)
+	echo Created $(DIST)/bin/$(XPIFILE)

@@ -5,35 +5,19 @@
     <link title="defaultstyle" rel="stylesheet" type="text/css"
           href="chrome://enigmail/content/enigmail.css">
 
-    <script language="JavaScript"
-            src="chrome://enigmail/content/enigmailCommon.js">
-    </script>
-
   </head>
 
   <body>
 
-    <b><a href="http://enigmail.mozdev.org">Enigmail Home Page</a></b>
+    <b><a target="_new" href="http://enigmail.mozdev.org">Enigmail Home Page</a></b>
     <p>
 
-    <script language="JavaScript">
 
-     document.writeln("<b>Running Enigmail version "+gEnigmailVersion+"</b><p>\n");
+    <b><span id="version"> </span></b>
+    <p>
 
-     // Initialize enigmailCommon
-     EnigInitCommon("enigmailAbout");
-
-     var enigmailSvc = GetEnigmailSvc();
-
-     if (enigmailSvc) {
-       document.writeln("Using "+enigmailSvc.agentType+" executable <tt>"+enigmailSvc.agentPath.replace(/\\\\/g, "\\")+"</tt> to encrypt and decrypt<p>\n");
-     } else {
-       document.writeln("<em>Failed to access enigmail service!</em><p>\n");
-       if (gEnigmailSvc && gEnigmailSvc.initializationError)
-         document.writeln(gEnigmailSvc.initializationError+"\n");
-     }
-
-    </script>
+    <pre id="agent">
+    </pre>
 
   <p>
   <hr>

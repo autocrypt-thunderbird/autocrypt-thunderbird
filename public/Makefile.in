@@ -40,9 +40,9 @@ VPATH		= @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
-MODULE        = enigmail
-XPIDL_MODULE  = enigmail
+MODULE        = enigmime
+XPIDL_MODULE  = enigmime
 
-XPIDLSRCS     = nsIEnigmail.idl
+XPIDLSRCS     = nsIEnigMsgCompFields.idl
 
 include $(topsrcdir)/config/rules.mk

@@ -60,8 +60,8 @@ function enigMessengerStartup() {
   }
 
   // Commented out; clean-up now handled by HdrView and Unload
-  ///var outliner = GetThreadOutliner();
-  ///outliner.addEventListener("click", enigThreadPaneOnClick, true);
+  //var tree = GetThreadTree();
+  //tree.addEventListener("click", enigThreadPaneOnClick, true);
 }
 
 
@@ -182,8 +182,16 @@ function enigMessageUnload() {
   }
 }
 
+function enigMessageFrameLoad() {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageFrameLoad\n");
+}
+
+function enigMessageFrameUnload() {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageFrameUnload\n");
+}
+
 function enigThreadPaneOnClick() {
-    //DEBUG_LOG("enigmailMessengerOverlay.js: enigThreadPaneOnClick\n");
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigThreadPaneOnClick\n");
 }
 
 function enigGetCurrentMsgUrl() {
@@ -420,7 +428,6 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
 
   if (0) {
     // Testing URL display in message pane
-    dump("AAA\n");
     var uri2 = enigmailSvc.createMessageURI("OLD URL",
                                          "text/html",
                                          "",
@@ -428,12 +435,12 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
                                          false);
 
     var browser = document.getElementById("messagepane");
-    dump("browser"+browser+"\n");
-    dump("browser.docshell"+browser.docShell+"\n");
+    dump("**browser"+browser+"\n");
 
     // Need to add event listener to browser to make it work
     // Adding to msgFrame doesn't seem to work
-    browser.addEventListener("unload", enigMessageUnload, true);
+    browser.addEventListener("load",   enigMessageFrameLoad, true);
+    browser.addEventListener("unload", enigMessageFrameUnload, true);
 
     msgFrame.location = uri2;
     return;

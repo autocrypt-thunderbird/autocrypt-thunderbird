@@ -35,10 +35,10 @@
 
 DEPTH=..\..\..
 
-MODULE       = enigmail
-XPIDL_MODULE = enigmail
+MODULE       = enigmime
+XPIDL_MODULE = enigmime
 
-XPIDLSRCS=  .\nsIEnigmail.idl     \
+XPIDLSRCS=  nsIEnigMsgCompFields.idl \
             $(NULL)
 
 include <$(DEPTH)\config\rules.mak>

@@ -133,8 +133,9 @@ function EnigUninstall() {
     }
 
     var compDir = GetFileOfProperty("ComsD");
-    var compFilenames = ["enigmail.js", "enigmail.xpt", "ipc.xpt",
-                         "ipc.dll", "libipc.so"];
+    var compFilenames = ["enigmail.js", "enigmail.xpt",
+                         "enigmime.xpt", "enigmime.dll", "libenigmime.so",
+                         "ipc.xpt", "ipc.dll", "libipc.so"];
 
     for (var k=0; k<compFilenames.length; k++) {
       var compFile = compDir.clone();

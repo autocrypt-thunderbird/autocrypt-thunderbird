@@ -17,6 +17,7 @@
 
   <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailAbout.js"/>
 
 <iframe id="contentFrame" type="content" name="contentFrame"
         src="chrome://enigmail/content/enigmailAbout.htm" flex="100%"/>

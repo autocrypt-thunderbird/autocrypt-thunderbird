@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
-// This Enigmail version and compatible IPC version
-var gEnigmailVersion = "0.49.1.0";
-var gIPCVersion      = "0.99.9.0";
+// This Enigmail version and compatible Enigmime version
+var gEnigmailVersion = "0.49.3.0";
+var gEnigmimeVersion = "0.99.9.0";
 
 // Maximum size of message directly processed by Enigmail
 const MESSAGE_BUFFER_SIZE = 32000;
@@ -433,7 +433,7 @@ function EnigHelpWindow(source) {
 }
 
 function EnigUpgrade() {
-  window.openDialog("http://enigmail.mozdev.org/update.html?upgrade=yes&enigmail="+gEnigmailVersion+"&ipc="+gIPCVersion, "dialog");
+  window.openDialog("http://enigmail.mozdev.org/update.html?upgrade=yes&enigmail="+gEnigmailVersion+"&ipc="+gEnigmimeVersion, "dialog");
 }
 
 function EnigSetDefaultPrefs() {

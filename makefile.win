@@ -35,6 +35,6 @@ DEPTH=..\..
 
 MODULE=enigmail
 
-DIRS = public src ui package
+DIRS = public src build ui package
 
 include <$(DEPTH)\config\rules.mak>

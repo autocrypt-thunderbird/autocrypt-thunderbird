@@ -34,8 +34,8 @@
 # Makefile for package directory
 
 # Specify these as parameters to the make command
-XPI_MODULE_VERS = 0.99.9
 XPI_MODULE	= enigmail
+XPI_MODULE_VERS = 0.49.3
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
@@ -44,66 +44,13 @@ VPATH		= @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
-MODULE		= enigmod
-LIBRARY_NAME	= enigmod
+XPIDL_MODULE  = enigmail
 
-EXPORT_LIBRARY  = 1
-SHORT_LIBNAME	= enigmod
-IS_COMPONENT	= 1
-
-REQUIRES	= xpcom \
-		  string \
-		  js \
-		  caps \
-		  uconv \
-		  necko \
-		  mimetype \
-		  xpconnect \
-		  $(NULL)
-
-MODULE_NAME	= EnigModule
-
-CPPSRCS		= nsEnigModule.cpp
-
-SHARED_LIBRARY_LIBS = \
-		$(DIST)/lib/$(LIB_PREFIX)enigmod_s.$(LIB_SUFFIX) \
-		$(NULL)
-
-LOCAL_INCLUDES	= \
-		-I$(srcdir)/../src \
-		-I$(srcdir)/../../../mailnews/compose/public/_xpidlgen \
-		$(NULL)
-
-EXTRA_DSO_LDOPTS = \
-		$(MOZ_COMPONENT_LIBS) \
-		$(NULL)
+XPIDLSRCS     = nsIEnigmail.idl
 
 include $(topsrcdir)/config/rules.mk
 
-PLATFORM_STR = unknown
-
-# Edit the lines below as needed, depending upon your platform(s)
-ifeq ($(OS_ARCH),Linux)
-PLATFORM_STR = linux
-endif
-
-ifeq ($(OS_ARCH),WIN95)
-PLATFORM_STR = win32
-endif
-
-ifeq ($(OS_ARCH),WINNT)
-PLATFORM_STR = win32
-endif
-
-ifeq ($(OS_CONFIG),SunOS5)
-PLATFORM_STR = sunos5
-endif
-
-ifeq ($(OS_ARCH),FreeBSD)
-PLATFORM_STR = freebsd
-endif
-
-XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS)-$(PLATFORM_STR).xpi
+XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS).xpi
 
 libs::
 	$(INSTALL) $(srcdir)/enigmail.js $(DIST)/bin/components
@@ -111,7 +58,6 @@ libs::
 xpi::
 	zip -r $(DIST)/bin/$(XPIFILE) install.js $(XPI_MODULE).spec
 	cd $(DIST)/bin; zip -g $(XPIFILE) \
-               components/$(LIB_PREFIX)$(MODULE)$(DLL_SUFFIX) \
                components/$(XPI_MODULE).xpt \
                components/$(XPI_MODULE).js \
                chrome/$(XPI_MODULE).jar
