@@ -553,6 +553,9 @@ function enigmailSetPrimaryUid() {
     if (gKeyList[keyList[0]].SubUserIds[i].keyTrust != "r") {
       inputObj.uidList.push(gKeyList[keyList[0]].SubUserIds[i].userId);
     }
+    else {
+      inputObj.uidList.push("");
+    }
   }
 
   var enigmailSvc = GetEnigmailSvc();

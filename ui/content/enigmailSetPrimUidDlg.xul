@@ -74,9 +74,11 @@
     
       var menulist=document.getElementById("uidList");
       for (var i=0; i < uidList.length; i++) {
-        menulist.appendItem(uidList[i]);
-        if (menulist.selectedIndex == -1)
-          menulist.selectedIndex=0;
+        if (uidList[i].length>0) {
+          menulist.appendItem(uidList[i], i+1);
+          if (menulist.selectedIndex == -1)
+            menulist.selectedIndex=0;
+        }
       }
       
       return;
@@ -91,7 +93,7 @@
       var menulist = document.getElementById("uidList");
       var r=enigmailSvc.setPrimaryUid(window, 
                                       "0x"+window.arguments[0].keyId,
-                                      (menulist.selectedIndex+1).toString(), 
+                                      menulist.selectedItem.value.toString(), 
                                       errorMsgObj);
     
       if (r != 0) {
