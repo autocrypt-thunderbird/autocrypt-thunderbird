@@ -76,11 +76,11 @@ const ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptabl
 const ENIG_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
 const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
-const C = Components;
+const ENIG_C = Components;
 
 // Interfaces
-const nsIEnigmail               = C.interfaces.nsIEnigmail;
-const nsIEnigStrBundle          = C.interfaces.nsIStringBundleService;
+const nsIEnigmail               = ENIG_C.interfaces.nsIEnigmail;
+const nsIEnigStrBundle          = ENIG_C.interfaces.nsIStringBundleService;
 
 // Encryption flags
 if (nsIEnigmail) {
@@ -190,7 +190,7 @@ function GetEnigmailSvc() {
   }
 
   try {
-    gEnigmailSvc = C.classes[ENIG_ENIGMAIL_CONTRACTID].createInstance(C.interfaces.nsIEnigmail);
+    gEnigmailSvc = ENIG_C.classes[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_C.interfaces.nsIEnigmail);
 
   } catch (ex) {
     ERROR_LOG("enigmailCommon.js: Error in instantiating EnigmailService\n");
@@ -259,7 +259,7 @@ function EnigUpdate_0_80() {
       if ((oldVer.substring(0,4)<"0.89") && (navigator.vendor=="Thunderbird")) {
         // uninstall globally installed enigmime on Thunderbird
         var ioService = enigGetService("@mozilla.org/network/io-service;1", "nsIIOService");
-        var sysCompDir = this.gDirService.get("ComsD", C.interfaces.nsIFile);
+        var sysCompDir = this.gDirService.get("ComsD", ENIG_C.interfaces.nsIFile);
         
         for (var f in [ "enigmime.xpt", "libenigmime.so", "enigmail.dll", "libenigmime.dylib" ]) {
           var compFile = sysCompDir.clone();
@@ -356,14 +356,14 @@ function EnigCreateFileStream(filePath, permissions) {
   //DEBUG_LOG("enigmailCommon.js: EnigCreateFileStream: file="+filePath+"\n");
 
   try {
-    var localFile = C.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(C.interfaces.nsILocalFile);
+    var localFile = ENIG_C.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(ENIG_C.interfaces.nsILocalFile);
 
     localFile.initWithPath(filePath);
 
     if (localFile.exists()) {
 
       if (localFile.isDirectory() || !localFile.isWritable())
-         throw C.results.NS_ERROR_FAILURE;
+         throw ENIG_C.results.NS_ERROR_FAILURE;
 
       if (!permissions)
         permissions = localFile.permissions;
@@ -374,7 +374,7 @@ function EnigCreateFileStream(filePath, permissions) {
 
     var flags = ENIG_WRONLY | ENIG_CREATE_FILE | ENIG_TRUNCATE;
 
-    var fileStream = C.classes[ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(C.interfaces.nsIFileOutputStream);
+    var fileStream = ENIG_C.classes[ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(ENIG_C.interfaces.nsIFileOutputStream);
 
     fileStream.init(localFile, flags, permissions, 0);
 
@@ -395,7 +395,7 @@ function EnigWriteFileContents(filePath, data, permissions) {
 
     if (data.length) {
       if (fileOutStream.write(data, data.length) != data.length)
-        throw C.results.NS_ERROR_FAILURE;
+        throw ENIG_C.results.NS_ERROR_FAILURE;
 
       fileOutStream.flush();
     }
@@ -416,13 +416,13 @@ function EnigReadURLContents(url, maxBytes) {
 
   var ioServ = enigGetService(ENIG_IOSERVICE_CONTRACTID, "nsIIOService");
   if (!ioServ)
-    throw C.results.NS_ERROR_FAILURE;
+    throw ENIG_C.results.NS_ERROR_FAILURE;
 
   var fileChannel = ioServ.newChannel(url, null, null)
 
   var rawInStream = fileChannel.open();
 
-  var scriptableInStream = C.classes[ENIG_SCRIPTABLEINPUTSTREAM_CONTRACTID].createInstance(C.interfaces.nsIScriptableInputStream);
+  var scriptableInStream = ENIG_C.classes[ENIG_SCRIPTABLEINPUTSTREAM_CONTRACTID].createInstance(ENIG_C.interfaces.nsIScriptableInputStream);
   scriptableInStream.init(rawInStream);
 
   var available = scriptableInStream.available()
@@ -443,11 +443,11 @@ function EnigReadFileContents(localFile, maxBytes) {
             ", "+maxBytes+"\n");
 
   if (!localFile.exists() || !localFile.isReadable())
-    throw C.results.NS_ERROR_FAILURE;
+    throw ENIG_C.results.NS_ERROR_FAILURE;
 
   var ioServ = enigGetService(ENIG_IOSERVICE_CONTRACTID, "nsIIOService");
   if (!ioServ)
-    throw C.results.NS_ERROR_FAILURE;
+    throw ENIG_C.results.NS_ERROR_FAILURE;
 
   var fileURI = ioServ.newFileURI(localFile);
   return EnigReadURLContents(fileURI.asciiSpec, maxBytes);
@@ -629,7 +629,7 @@ function EnigHelpWindow(source) {
 }
 
 function EnigUpgrade() {
-  var ioService = C.classes[ENIG_IOSERVICE_CONTRACTID].getService(C.interfaces.nsIIOService);
+  var ioService = ENIG_C.classes[ENIG_IOSERVICE_CONTRACTID].getService(ENIG_C.interfaces.nsIIOService);
   if (ioService && ioService.offline) {
     EnigAlert(EnigGetString("needOnline"));
     return;
@@ -819,9 +819,9 @@ EnigRequestObserver.prototype = {
   _terminateArg: null,
 
   QueryInterface: function (iid) {
-    if (!iid.equals(C.interfaces.nsIRequestObserver) &&
-        !iid.equals(C.interfaces.nsISupports))
-      throw C.results.NS_ERROR_NO_INTERFACE;
+    if (!iid.equals(ENIG_C.interfaces.nsIRequestObserver) &&
+        !iid.equals(ENIG_C.interfaces.nsISupports))
+      throw ENIG_C.results.NS_ERROR_NO_INTERFACE;
     return this;
   },
 
@@ -846,7 +846,7 @@ function EnigConvertFromUnicode(text, charset) {
 
   // Encode plaintext
   try {
-    var unicodeConv = C.classes[ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(C.interfaces.nsIScriptableUnicodeConverter);
+    var unicodeConv = ENIG_C.classes[ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(ENIG_C.interfaces.nsIScriptableUnicodeConverter);
 
     unicodeConv.charset = charset;
     return unicodeConv.ConvertFromUnicode(text);
@@ -867,7 +867,7 @@ function EnigConvertToUnicode(text, charset) {
 
   // Encode plaintext
   try {
-    var unicodeConv = C.classes[ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(C.interfaces.nsIScriptableUnicodeConverter);
+    var unicodeConv = ENIG_C.classes[ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(ENIG_C.interfaces.nsIScriptableUnicodeConverter);
 
     unicodeConv.charset = charset;
     return unicodeConv.ConvertToUnicode(text);
@@ -1050,7 +1050,7 @@ function EnigClearPassphrase() {
 }
 
 function EnigOpenWin (winName, spec, winOptions, optList) {
-  var windowManager = C.classes[ENIG_APPSHELL_MEDIATOR_CONTRACTID].getService(C.interfaces.nsIWindowMediator);
+  var windowManager = ENIG_C.classes[ENIG_APPSHELL_MEDIATOR_CONTRACTID].getService(ENIG_C.interfaces.nsIWindowMediator);
 
   /* although accordign to the docs, this doesn't seem to work ...
     var recentWin = windowManager.getMostRecentWindow(winName);
@@ -1067,7 +1067,7 @@ function EnigOpenWin (winName, spec, winOptions, optList) {
   if (recentWin) {
     recentWin.focus();
   } else {
-    var appShellSvc = C.classes[ENIG_ASS_CONTRACTID].getService(C.interfaces.nsIAppShellService);
+    var appShellSvc = ENIG_C.classes[ENIG_ASS_CONTRACTID].getService(ENIG_C.interfaces.nsIAppShellService);
     var domWin = appShellSvc.hiddenDOMWindow;
     //nsIDOMJSWindow
     domWin.open(spec, winName, "chrome,"+winOptions, optList);
@@ -1172,11 +1172,11 @@ function EnigLoadURLInNavigatorWindow(url, aOpenFlag)
     var wm;
     try {
       // Mozilla up to 1.0
-      wm = C.classes[ENIG_WMEDIATOR_CONTRACTID].getService(C.interfaces.nsIWindowMediator);
+      wm = ENIG_C.classes[ENIG_WMEDIATOR_CONTRACTID].getService(ENIG_C.interfaces.nsIWindowMediator);
     }
     catch (ex) {
       // Mozilla 1.1 and newer
-      wm = C.classes[ENIG_APPSHELL_MEDIATOR_CONTRACTID].getService(C.interfaces.nsIWindowMediator);
+      wm = ENIG_C.classes[ENIG_APPSHELL_MEDIATOR_CONTRACTID].getService(ENIG_C.interfaces.nsIWindowMediator);
     }
     navWindow = wm.getMostRecentWindow("navigator:browser");
   }
@@ -1203,7 +1203,7 @@ function EnigGetString(aStr) {
   var restCount = arguments.length - 1;
   if(!gEnigStrBundle) {
     try {
-      var strBundleService = C.classes[ENIG_STRINGBUNDLE_CONTRACTID].getService();
+      var strBundleService = ENIG_C.classes[ENIG_STRINGBUNDLE_CONTRACTID].getService();
       strBundleService = strBundleService.QueryInterface(nsIEnigStrBundle);
       gEnigStrBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
     } catch (ex) {
@@ -1238,7 +1238,7 @@ function EnigStripEmail(mailAddrs) {
      qEnd = mailAddrs.indexOf('"', qStart+1);
      if (qEnd == -1) {
        ERROR_LOG("enigmailMsgComposeOverlay.js: EnigStripEmail: Unmatched quote in mail address: "+mailAddrs+"\n");
-       throw C.results.NS_ERROR_FAILURE;
+       throw ENIG_C.results.NS_ERROR_FAILURE;
      }
 
      mailAddrs = mailAddrs.substring(0,qStart) + mailAddrs.substring(qEnd+1);
@@ -1259,15 +1259,15 @@ function EnigGetTempDir() {
   var tmpDir;
 
   try {
-    var ds = C.classes[ENIG_DIRSERVICE_CONTRACTID].getService();
-    var dsprops = ds.QueryInterface(C.interfaces.nsIProperties);
-    var tmpDirComp = dsprops.get(ENIG_TEMPDIR_PROP, C.interfaces.nsILocalFile);
+    var ds = ENIG_C.classes[ENIG_DIRSERVICE_CONTRACTID].getService();
+    var dsprops = ds.QueryInterface(ENIG_C.interfaces.nsIProperties);
+    var tmpDirComp = dsprops.get(ENIG_TEMPDIR_PROP, ENIG_C.interfaces.nsILocalFile);
     tmpDir=tmpDirComp.path;
   }
   catch (ex) {
     // let's guess ...
     var httpHandler = ioServ.getProtocolHandler("http");
-    httpHandler = httpHandler.QueryInterface(C.interfaces.nsIHttpProtocolHandler);
+    httpHandler = httpHandler.QueryInterface(ENIG_C.interfaces.nsIHttpProtocolHandler);
     isWin = (httpHandler.platform.search(/Win/i) == 0);
     if (isWin) {
       tmpDir="C:\\TEMP";
@@ -1376,10 +1376,10 @@ function EnigReceiveKey(parent, msgParentWindow, recvFlags, keyId,
 
   if (progressBar) {
     // wait one second before displaying the progress bar
-    var progressParam=C.classes["@mozilla.org/messengercompose/composeprogressparameters;1"].createInstance(C.interfaces.nsIMsgComposeProgressParams);
+    var progressParam=ENIG_C.classes["@mozilla.org/messengercompose/composeprogressparameters;1"].createInstance(ENIG_C.interfaces.nsIMsgComposeProgressParams);
     parent.setTimeout(progressBar.openProgressDialog, 1000, parent, msgParentWindow, "chrome://enigmail/content/enigRetrieveProgress.xul", progressParam);
     //progressBar.openProgressDialog(parent, msgWindow, "chrome://enigmail/content/enigRetrieveProgress.xul", progressParam);
-    progressBar.onStateChange(null, null, C.interfaces.nsIWebProgressListener.STATE_START, 0);
+    progressBar.onStateChange(null, null, ENIG_C.interfaces.nsIWebProgressListener.STATE_START, 0);
   }
 
   return enigmailSvc.receiveKey(recvFlags, keyserver, keyId, requestObserver, errorMsgObj);
@@ -1389,8 +1389,8 @@ function EnigReceiveKey(parent, msgParentWindow, recvFlags, keyId,
 function EnigFilePicker(title, displayDir, save, defaultExtension, defaultName, filterPairs) {
   DEBUG_LOG("enigmailCommon.js: EnigFilePicker: "+save+"\n");
 
-  const nsIFilePicker = C.interfaces.nsIFilePicker;
-  var filePicker = C.classes["@mozilla.org/filepicker;1"].createInstance();
+  const nsIFilePicker = ENIG_C.interfaces.nsIFilePicker;
+  var filePicker = ENIG_C.classes["@mozilla.org/filepicker;1"].createInstance();
   filePicker = filePicker.QueryInterface(nsIFilePicker);
 
   var mode = save ? nsIFilePicker.modeSave : nsIFilePicker.modeOpen;
@@ -1398,7 +1398,7 @@ function EnigFilePicker(title, displayDir, save, defaultExtension, defaultName, 
   filePicker.init(window, title, mode);
 
   if (displayDir) {
-    var localFile = C.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(C.interfaces.nsILocalFile);
+    var localFile = ENIG_C.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(ENIG_C.interfaces.nsILocalFile);
 
     try {
       localFile.initWithPath(displayDir);
@@ -1426,7 +1426,7 @@ function EnigFilePicker(title, displayDir, save, defaultExtension, defaultName, 
   if (filePicker.show() == nsIFilePicker.returnCancel)
     return null;
 
-  var file = filePicker.file.QueryInterface(C.interfaces.nsILocalFile);
+  var file = filePicker.file.QueryInterface(ENIG_C.interfaces.nsILocalFile);
 
   return file;
 }
@@ -1512,11 +1512,11 @@ function EnigShowPhoto(keyId, userId) {
 
 function enigCreateInstance (aURL, aInterface) 
 {
-  return C.classes[aURL].createInstance(C.interfaces[aInterface]);
+  return ENIG_C.classes[aURL].createInstance(ENIG_C.interfaces[aInterface]);
 }
 
 function enigGetInterface (aInterface) {
-  return rv = C.interfaces[aInterface];
+  return rv = ENIG_C.interfaces[aInterface];
 }
 
 function enigGetService (aURL, aInterface) 
@@ -1525,15 +1525,15 @@ function enigGetService (aURL, aInterface)
   switch (typeof(aInterface))
   {
     case "object":
-      return C.classes[aURL].getService(aInterface);
+      return ENIG_C.classes[aURL].getService(aInterface);
       break;
 
     case "string":
-      return C.classes[aURL].getService(C.interfaces[aInterface]);
+      return ENIG_C.classes[aURL].getService(ENIG_C.interfaces[aInterface]);
       break;
  
     default:
-      return C.classes[aURL].getService();
+      return ENIG_C.classes[aURL].getService();
   }
   
   return null;

@@ -393,8 +393,8 @@ enigUninstaller.prototype =
       var displayPred = uninstallObj.gRDF.GetResource(uninstallObj.CHROME_NS + "displayName")
       var displayName = chromeDS.GetTarget(packres, displayPred, true);
   
-      if (childName instanceof C.interfaces.nsIRDFLiteral){
-        if (displayName instanceof C.interfaces.nsIRDFLiteral){
+      if (childName instanceof ENIG_C.interfaces.nsIRDFLiteral){
+        if (displayName instanceof ENIG_C.interfaces.nsIRDFLiteral){
           displayName = displayName.Value;
         }
         else {
@@ -417,7 +417,7 @@ enigUninstaller.prototype =
     var ioService = enigGetService("@mozilla.org/network/io-service;1", "nsIIOService");
   
     // scan through chrome.rdf and find all references to the package and remove them.
-    var appChromeDir = this.gDirService.get("AChrom", C.interfaces.nsIFile);
+    var appChromeDir = this.gDirService.get("AChrom", ENIG_C.interfaces.nsIFile);
     var chromeRdfFile = appChromeDir.clone();
     chromeRdfFile.append("chrome.rdf");
     var chromeUrl = ioService.newFileURI(chromeRdfFile).spec;
@@ -428,7 +428,7 @@ enigUninstaller.prototype =
     }
   
     // scan through chrome.rdf and find all references to the package and remove them.
-    var userChromeDir = this.gDirService.get("UChrm", C.interfaces.nsIFile);
+    var userChromeDir = this.gDirService.get("UChrm", ENIG_C.interfaces.nsIFile);
     chromeRdfFile = userChromeDir.clone();
     chromeRdfFile.append("chrome.rdf");
     chromeUrl = ioService.newFileURI(chromeRdfFile).spec;
@@ -439,9 +439,9 @@ enigUninstaller.prototype =
     }
   
     if (makeChanges){
-      if (appChromeDS instanceof C.interfaces.nsIRDFRemoteDataSource)
+      if (appChromeDS instanceof ENIG_C.interfaces.nsIRDFRemoteDataSource)
           appChromeDS.Flush();
-      if (userChromeDS instanceof C.interfaces.nsIRDFRemoteDataSource)
+      if (userChromeDS instanceof ENIG_C.interfaces.nsIRDFRemoteDataSource)
           userChromeDS.Flush();
   
       for (t=0; t<this.overlaysToDelete.length; t++){
@@ -477,7 +477,7 @@ enigUninstaller.prototype =
       if (ext == "jar") {
         var IOService = enigGetService("@mozilla.org/network/io-service;1", "nsIIOService");
         var handler = IOService.getProtocolHandler("jar");
-        if (handler instanceof C.interfaces.nsIJARProtocolHandler) {
+        if (handler instanceof ENIG_C.interfaces.nsIJARProtocolHandler) {
           var zrc = handler.JARCache;
           var nsIZipReader = zrc.getZip(file);
           nsIZipReader.close();
@@ -529,12 +529,12 @@ enigUninstaller.prototype =
     {
       var rootseq = chromeDS.GetTarget(skinLocale,
                       uninstallObj.gRDF.GetResource(uninstallObj.CHROME_NS + "packages"),true);
-      rootseq.QueryInterface(C.interfaces.nsIRDFResource);
+      rootseq.QueryInterface(ENIG_C.interfaces.nsIRDFResource);
   
       var skinLocaleName = chromeDS.GetTarget(skinLocale,
             uninstallObj.gRDF.GetResource(uninstallObj.CHROME_NS + "name"),true);
   
-      if (skinLocaleName instanceof C.interfaces.nsIRDFLiteral){
+      if (skinLocaleName instanceof ENIG_C.interfaces.nsIRDFLiteral){
         var skinLocaleRes = uninstallObj.gRDF.GetResource("urn:mozilla:" + provider + ":" +
                               skinLocaleName.Value + ":" + packagename);
   
@@ -596,7 +596,7 @@ enigUninstaller.prototype =
    */
   makeFileForDeletion : function(container, filename, uninstallObj)
   {
-    if (!(filename instanceof C.interfaces.nsIRDFLiteral)) return;
+    if (!(filename instanceof ENIG_C.interfaces.nsIRDFLiteral)) return;
     filename = filename.Value;
   
     var filekey;
@@ -611,7 +611,7 @@ enigUninstaller.prototype =
   
     var file;
     try {
-       file = uninstallObj.gDirService.get(filekey, C.interfaces.nsIFile);
+       file = uninstallObj.gDirService.get(filekey, ENIG_C.interfaces.nsIFile);
     } catch (ex) { return; }
   
     var fileparts = filename.split("/");
@@ -645,7 +645,7 @@ enigUninstaller.prototype =
       if (url.indexOf("resource:/") == 0){
         url = url.substring(10);
   
-        jarfile = this.gDirService.get("CurProcD", C.interfaces.nsIFile);
+        jarfile = this.gDirService.get("CurProcD", ENIG_C.interfaces.nsIFile);
   
         var fileparts = url.split("/");
         for (var t=0; t<fileparts.length; t++){
@@ -655,7 +655,7 @@ enigUninstaller.prototype =
       else if (url.indexOf("file://") == 0){
         var ioService = enigGetService("@mozilla.org/network/io-service;1", "nsIIOService");
         var fileuri = ioService.newURI(url,"",null);
-        if (fileuri instanceof C.interfaces.nsIFileURL){
+        if (fileuri instanceof ENIG_C.interfaces.nsIFileURL){
           jarfile = fileuri.file;
         }
       }
@@ -674,8 +674,8 @@ enigUninstaller.prototype =
   {
     var iterateOverlays = function(container, overlayFile, uninstallObj)
     {
-      if ((container instanceof C.interfaces.nsIRDFResource) &&
-          (overlayFile instanceof C.interfaces.nsIRDFLiteral)){
+      if ((container instanceof ENIG_C.interfaces.nsIRDFResource) &&
+          (overlayFile instanceof ENIG_C.interfaces.nsIRDFLiteral)){
         uninstallObj.overlaysToDelete.push(
           { overlaidFile: container,
             overlayFile: overlayFile,
@@ -720,7 +720,7 @@ enigUninstaller.prototype =
     }
     catch (ex) { DEBUG_LOG(ex); }
   
-    if (dsource instanceof C.interfaces.nsIRDFRemoteDataSource)
+    if (dsource instanceof ENIG_C.interfaces.nsIRDFRemoteDataSource)
       dsource.Flush();
   },
   
@@ -756,8 +756,8 @@ enigUninstaller.prototype =
    */
   RDFGetValue : function(node)
   {
-    return ((node instanceof C.interfaces.nsIRDFResource) ? node.Value :
-            ((node instanceof C.interfaces.nsIRDFLiteral) ? node.Value : ""));
+    return ((node instanceof ENIG_C.interfaces.nsIRDFResource) ? node.Value :
+            ((node instanceof ENIG_C.interfaces.nsIRDFLiteral) ? node.Value : ""));
   },
   
   /**
@@ -766,7 +766,7 @@ enigUninstaller.prototype =
   removeFromChrome : function (dsource, rootseq, packres) 
   {
     DEBUG_LOG("pref-enigmail: removeFromChrome\n");
-    var packresnode = packres.QueryInterface(C.interfaces.nsIRDFNode);
+    var packresnode = packres.QueryInterface(ENIG_C.interfaces.nsIRDFNode);
   
     try {
       DEBUG_LOG("pref-enigmail: removeFromChrome: Uncontain " + packres.Value + " from " +
@@ -782,14 +782,14 @@ enigUninstaller.prototype =
     while(arcs.hasMoreElements()) {
       var arc = arcs.getNext();
       
-      var prop = arc.QueryInterface(C.interfaces.nsIRDFResource);
+      var prop = arc.QueryInterface(ENIG_C.interfaces.nsIRDFResource);
   
       var targets = dsource.GetTargets(packres, prop, true);
   
       while (targets.hasMoreElements()) {
         var target = targets.getNext();
   
-        var targetNode = target.QueryInterface(C.interfaces.nsIRDFNode);
+        var targetNode = target.QueryInterface(ENIG_C.interfaces.nsIRDFNode);
         DEBUG_LOG("pref-enigmail: removeFromChrome: Unassert [" + packres.Value + " , " +
               prop.Value + " , " + this.RDFGetValue(target) + "]\n");
         dsource.Unassert(packres, prop, targetNode);
