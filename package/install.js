@@ -1,7 +1,7 @@
 // Install script for Enigmail
 
 var err;
-const APP_VERSION="0.82.5";
+const APP_VERSION="0.82.6";
 
 err = initInstall("Enigmail v"+APP_VERSION,  // name for install UI
                   "/enigmail",         // registered name
@@ -38,7 +38,7 @@ if (!verifyDiskSpace(fProgram, srDest)) {
 
   } else {
     // Register chrome
-    var isTbird = !confirm("Which Theme do you want to install?\nClick OK if you want to install the Enigmail Theme for Mozilla, or Cancel for the Theme for Thunderbird\n\n(Click OK if you don't know what Thunderbird is)");
+    var isTbird = !confirm("Which Theme do you want to install for Enigmail? Click:\n[ OK ] for Mozilla\n[ Cancel ] for Thunderbird");
 
     registerChrome(PACKAGE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "content/enigmail/");
 
