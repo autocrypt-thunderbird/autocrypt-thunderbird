@@ -4190,8 +4190,8 @@ function(keyId, exitCodeObj, errorMsgObj) {
     return "";
   }
 
-  if (this.agentVersion<"1.3" && this.isWin32) {
-    // workaround for error in gpg up to v1.2.4
+  if (this.agentVersion<"1.5" && this.isWin32) {
+    // workaround for error in gpg
     outputTxt=outputTxt.replace(/\r\n/g, "\n");
   }
   var startIndex=0;
