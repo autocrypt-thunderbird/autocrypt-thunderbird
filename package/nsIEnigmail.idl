@@ -158,7 +158,7 @@ interface nsIEnigmail : nsISupports
   const long SEND_TEST            = 0x100;
   const long SAVE_MESSAGE         = 0x200;
 
-  string encryptMessage(in nsIDOMWindow parent,
+  wstring encryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,
                         in string  plainText,
                         in string  fromMailAddr,
@@ -195,8 +195,9 @@ interface nsIEnigmail : nsISupports
   const long INLINE_KEY           = 0x800000;
   const long PARTIALLY_PGP        = 0x1000000;
   const long PHOTO_AVAILABLE      = 0x2000000;
+  const long OVERFLOWED           = 0x4000000;
 
-  string decryptMessage(in nsIDOMWindow parent,
+  wstring decryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,
                         in string  cipherText,
                         inout string signature,
