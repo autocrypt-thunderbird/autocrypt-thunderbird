@@ -34,39 +34,42 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+#ifndef nsEnigMimeWriter_h__
+#define nsEnigMimeWriter_h__
 
-#include "nsISupports.idl"
-#include "nsIMsgSMIMECompFields.idl"
+#include "nspr.h"
 
-/**
- * MsgCompose security info for Enigmail
- */
-[scriptable, uuid(847b3a30-7ab1-11d4-8f02-006008948af5)]
-interface nsIEnigMsgCompFields : nsISupports
+#include "nsIEnigMimeWriter.h"
+#include "nsCOMPtr.h"
+#include "nsString.h"
+
+// Implementation class for nsIEnigMimeWriter
+class nsEnigMimeWriter : public nsIEnigMimeWriter
 {
-  /**
-   * See nsIEnigmail.idl for valid uiFlags and sendFlags
-   */
+public:
+    NS_DECL_ISUPPORTS
+    NS_DECL_NSIREQUESTOBSERVER
+    NS_DECL_NSISTREAMLISTENER
+    NS_DECL_NSIENIGMIMEWRITER
 
-  void init(in nsIMsgSMIMECompFields smimeCompFields);
+    nsEnigMimeWriter();
+    virtual ~nsEnigMimeWriter();
 
-  attribute unsigned long UIFlags;
+    // Define a Create method to be used with a factory:
+    static NS_METHOD
+    Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
 
-  attribute unsigned long sendFlags;
+protected:
 
-  attribute ACString senderEmailAddr;
+    nsresult WriteStream(const char* buf, PRUint32 count);
+
+    nsOutputFileStream*                 mStream;
+    PRBool                              mForceCRLF;
+
+    PRBool                              mClosed;
+    PRBool                              mLastCR;
+
+    PRUint32                            mByteCount;
 };
-
-%{C++
-
-#define NS_ENIGMSGCOMPFIELDS_CLASSNAME  "Enigmail Msg Compose Fields"
-#define NS_ENIGMSGCOMPFIELDS_CONTRACTID "@mozdev.org/enigmail/composefields;1"
-     
-#define NS_ENIGMSGCOMPFIELDS_CID                          \
-{ /* 847b3a31-7ab1-11d4-8f02-006008948af5 */     \
-   0x847b3a31, 0x7ab1, 0x11d4,                   \
-{0x8f, 0x02, 0x00, 0x60, 0x08, 0x94, 0x8a, 0xf5} }
-
-%}
-
-//////////////////////////////////////////////////////////////////////////////
+ 
+#endif // nsEnigMimeWriter_h__

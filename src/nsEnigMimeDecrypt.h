@@ -42,6 +42,8 @@
 #include "nsIPipeFilterListener.h"
 #include "nsIPipeTransport.h"
 #include "nsIIPCBuffer.h"
+#include "nsIMsgWindow.h"
+#include "nsIURI.h"
 
 // Implementation class for nsIEnigMimeDecrypt
 class nsEnigMimeDecrypt : public nsIEnigMimeDecrypt
@@ -59,7 +61,7 @@ public:
 
 protected:
     nsresult Finalize();
-    nsresult FinishAux(nsIMsgWindow* msgWindow);
+    nsresult FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri);
 
     PRBool                          mInitialized;
     PRBool                          mVerifyOnly;;

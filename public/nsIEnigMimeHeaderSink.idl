@@ -37,6 +37,7 @@
 #include "nsISupports.idl"
 
 interface nsIChannel;
+interface nsIURI;
 
 /* nsIEnigMimeHeaderSink is an OpenPGP header sink analagous to
  * nsIMsgSMIMEHeaderSink
@@ -45,7 +46,8 @@ interface nsIChannel;
 [scriptable, uuid(847b3a80-7ab1-11d4-8f02-006008948af5)]
 interface nsIEnigMimeHeaderSink : nsISupports
 {
-  void updateSecurityStatus(in unsigned long statusFlags,
+  void updateSecurityStatus(in AUTF8String uriSpec,
+                            in unsigned long statusFlags,
                             in string briefStatusMsg,
                             in string expandedStatusMsg);
 };

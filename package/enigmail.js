@@ -1552,8 +1552,9 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
 
 
 Enigmail.prototype.execStart = 
-function (command, passphrasePrompter, listener, noProxy, statusFlagsObj) {
-  WRITE_LOG("enigmail.js: Enigmail.execStart: command = "+command+", passphrasePrompter="+passphrasePrompter+", listener="+listener+", noProxy="+noProxy+"\n");
+function (command, needPassphrase, prompter, listener, noProxy,
+          statusFlagsObj) {
+  WRITE_LOG("enigmail.js: Enigmail.execStart: command = "+command+", needPassphrase="+needPassphrase+", prompter="+prompter+", listener="+listener+", noProxy="+noProxy+"\n");
 
   statusFlagsObj.value = 0;
 
@@ -1562,7 +1563,7 @@ function (command, passphrasePrompter, listener, noProxy, statusFlagsObj) {
 
   var passphrase = null;
 
-  if (passphrasePrompter) {
+  if (needPassphrase) {
 
     if (this.agentType == "gpg") {
       command += " --passphrase-fd 0";
@@ -1572,7 +1573,7 @@ function (command, passphrasePrompter, listener, noProxy, statusFlagsObj) {
 
     var passwdObj = new Object();
 
-    if (!GetPassphrase(null, passphrasePrompter, passwdObj)) {
+    if (!GetPassphrase(null, prompter, passwdObj)) {
        ERROR_LOG("enigmail.js: Enigmail.execStart: Error - no passphrase supplied\n");
 
        statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
@@ -1611,7 +1612,7 @@ function (command, passphrasePrompter, listener, noProxy, statusFlagsObj) {
       pipetrans.asyncRead(listener, null, 0, -1, 0);
     }
 
-    if (passphrasePrompter) {
+    if (needPassphrase) {
       if (passphrase)
          pipetrans.writeSync(passphrase, passphrase.length);
        pipetrans.writeSync("\n", 1);
@@ -1953,11 +1954,14 @@ function (prompter, uiFlags, fromMailAddr, toMailAddr,
   var defaultSend = sendFlags & nsIEnigmail.SEND_DEFAULT;
   var signMsg     = sendFlags & nsIEnigmail.SEND_SIGNED;
   var encryptMsg  = sendFlags & nsIEnigmail.SEND_ENCRYPTED;
+  var usePgpMime =  sendFlags & nsIEnigmail.SEND_PGP_MIME;
 
   var useDefaultComment = false;
   try {
      useDefaultComment = this.prefBranch.getBoolPref("useDefaultComment")
   } catch(ex) { }
+
+  var detachedSig = usePgpMime && signMsg && !encryptMsg;
 
   var recipientPrefix;
   var encryptCommand = this.agentPath;
@@ -1966,8 +1970,12 @@ function (prompter, uiFlags, fromMailAddr, toMailAddr,
     encryptCommand += PGP_BATCH_OPTS + " -fta "
     recipientPrefix = " ";
 
-    if (signMsg)
+    if (detachedSig) {
+      encryptCommand += " -sb";
+
+    } else if (signMsg) {
       encryptCommand += " -s";
+    }
 
     if (encryptMsg)
       encryptCommand += " -e";
@@ -1992,6 +2000,9 @@ function (prompter, uiFlags, fromMailAddr, toMailAddr,
       if (signMsg)
         encryptCommand += " -s";
 
+    } else if (detachedSig) {
+      encryptCommand += " -s -b -t -a";
+
     } else if (signMsg) {
       encryptCommand += " --clearsign";
     }
@@ -2007,21 +2018,8 @@ function (prompter, uiFlags, fromMailAddr, toMailAddr,
        encryptCommand += recipientPrefix+addrList[k];
   }
 
-  var passphrasePrompter = null;
-
-  if (signMsg) {
-    passphrasePrompter = prompter;
-
-    if (!prompter) {
-      ERROR_LOG("enigmail.js: Enigmail.encryptMessageStart: No prompter to read passphrase\n");
-
-      errorMsgObj.value = "Error - no prompter to read passphrase";
-      return null;
-    }
-  }
-
   var statusFlagsObj = new Object();
-  var pipetrans = this.execStart(encryptCommand, passphrasePrompter,
+  var pipetrans = this.execStart(encryptCommand, signMsg, prompter,
                                  listener, noProxy, statusFlagsObj);
 
   if (statusFlagsObj.value & nsIEnigmail.MISSING_PASSPHRASE) {
@@ -2505,8 +2503,8 @@ function (parent, uiFlags, cipherText, signatureObj,
 
 
 Enigmail.prototype.decryptMessageStart = 
-function (prompter, uiFlags, verifyOnly, listener, noProxy, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.decryptMessageStart: "+uiFlags+", verifyOnly="+verifyOnly+"\n");
+function (prompter, uiFlags, verifyOnly, noOutput, listener, noProxy, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.decryptMessageStart: "+uiFlags+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
 
   if (!this.initialized) {
     errorMsgObj.value = "Error - Enigmail service not yet initialized";
@@ -2523,25 +2521,15 @@ function (prompter, uiFlags, verifyOnly, listener, noProxy, errorMsgObj) {
   if (this.agentType == "pgp") {
     decryptCommand += PGP_BATCH_OPTS + " -ft";
 
+  } else if (noOutput) {
+    decryptCommand += GPG_BATCH_OPTS + " --verify";
+
   } else {
     decryptCommand += GPG_BATCH_OPTS + " -d";
   }
 
-  var passphrasePrompter = null;
-
-  if (!verifyOnly) {
-    passphrasePrompter = prompter;
-
-    if (!prompter) {
-      ERROR_LOG("enigmail.js: Enigmail.decryptMessageStart: No prompter to read passphrase\n");
-
-      errorMsgObj.value = "Error - no prompter to read passphrase";
-      return null;
-    }
-  }
-
   var statusFlagsObj = new Object();
-  var pipetrans = this.execStart(decryptCommand, passphrasePrompter,
+  var pipetrans = this.execStart(decryptCommand, !verifyOnly, prompter,
                                  listener, noProxy, statusFlagsObj);
 
   if (statusFlagsObj.value & nsIEnigmail.MISSING_PASSPHRASE) {
@@ -2556,9 +2544,9 @@ function (prompter, uiFlags, verifyOnly, listener, noProxy, errorMsgObj) {
 
 
 Enigmail.prototype.decryptMessageEnd = 
-function (exitCode, outputLen, errOutput,
+function (exitCode, outputLen, errOutput, verifyOnly, noOutput,
           statusFlagsObj, keyIdObj, userIdObj, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.decryptMessageEnd: exitCode="+exitCode+", outputLen="+outputLen+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail.decryptMessageEnd: exitCode="+exitCode+", outputLen="+outputLen+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
 
   statusFlagsObj.value = 0;
   errorMsgObj.value    = "";
@@ -2575,7 +2563,7 @@ function (exitCode, outputLen, errOutput,
 
   var statusMsg = statusMsgObj.value;
 
-  if ((exitCode == 0) && !outputLen) {
+  if ((exitCode == 0) && !noOutput && !outputLen) {
     exitCode = -1;
   }
 

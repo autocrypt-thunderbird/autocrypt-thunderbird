@@ -72,7 +72,7 @@ NS_IMPL_THREADSAFE_ISUPPORTS2(nsEnigMsgCompFields,
 
 // nsEnigMsgCompFields implementation
 nsEnigMsgCompFields::nsEnigMsgCompFields()
-  : mUiFlags(0),
+  : mUIFlags(0),
     mSendFlags(0),
     mMsgSMIMECompFields(nsnull)
 {
@@ -115,7 +115,6 @@ nsEnigMsgCompFields::~nsEnigMsgCompFields()
 NS_IMETHODIMP
 nsEnigMsgCompFields::Init(nsIMsgSMIMECompFields* smimeCompFields)
 {
-  nsresult rv;
   DEBUG_LOG(("nsEnigMsgCompFields::Init: \n"));
 
   mMsgSMIMECompFields = smimeCompFields;
@@ -124,16 +123,16 @@ nsEnigMsgCompFields::Init(nsIMsgSMIMECompFields* smimeCompFields)
 }
 
 NS_IMETHODIMP
-nsEnigMsgCompFields::GetUiFlags(PRUint32* _retval)
+nsEnigMsgCompFields::GetUIFlags(PRUint32* _retval)
 {
-  *_retval = mUiFlags;
+  *_retval = mUIFlags;
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsEnigMsgCompFields::SetUiFlags(PRUint32 uiFlags)
+nsEnigMsgCompFields::SetUIFlags(PRUint32 uiFlags)
 {
-  mUiFlags = uiFlags;
+  mUIFlags = uiFlags;
   return NS_OK;
 }
 

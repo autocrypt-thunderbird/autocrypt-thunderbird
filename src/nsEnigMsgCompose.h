@@ -43,7 +43,7 @@
 #include "nsIStreamListener.h"
 #include "nsIPipeTransport.h"
 #include "nsIEnigMimeListener.h"
-#include "nsIIPCBuffer.h"
+#include "nsIEnigMimeWriter.h"
 #include "nsIEnigmail.h"
 
 #define NS_ENIGMSGCOMPOSE_CLASSNAME "Enigmail Msg Compose"
@@ -76,10 +76,18 @@ public:
 protected:
     static PRBool mRandomSeeded;
 
+    nsresult Init();
     nsresult Finalize();
-    nsresult EncryptedHeaders(const char* prefix,
-                              nsACString& headers, nsACString& finalSeparator);
-    char* MakeBoundary(const char *prefix);
+
+    nsresult MakeBoundary(const char *prefix);
+
+    nsresult WriteEncryptedHeaders();
+
+    nsresult WriteSignedHeaders1();
+    nsresult WriteSignedHeaders2();
+
+    nsresult WriteFinalSeparator();
+
     nsresult FinishAux(PRBool aAbort, nsIMsgSendReport* sendReport);
 
     PRBool                        mInitialized;
@@ -93,19 +101,20 @@ protected:
     PRUint32                      mSendFlags;
     PRUint32                      mUIFlags;
 
+    PRBool                        mMultipartSigned;
+
     nsCString                     mSenderEmailAddr;
     nsCString                     mRecipients;
 
-    nsCString                     mFinalSeparator;
+    nsCString                     mBoundary;
 
     nsOutputFileStream*           mStream;
 
     nsCOMPtr<nsIMsgComposeSecure> mMsgComposeSecure;
     nsCOMPtr<nsIEnigMimeListener> mMimeListener;
 
-    nsCOMPtr<nsIIPCBuffer>        mOutBuffer;
+    nsCOMPtr<nsIEnigMimeWriter>   mWriter;
     nsCOMPtr<nsIPipeTransport>    mPipeTrans;
-    nsCOMPtr<nsIStreamListener>   mPipeTransListener;
 };
 
 #define NS_ENIGMSGCOMPOSEFACTORY_CLASSNAME "Enigmail Msg Compose Factory"

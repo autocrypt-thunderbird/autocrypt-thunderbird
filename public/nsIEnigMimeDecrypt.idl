@@ -37,6 +37,7 @@
 #include "nsISupports.idl"
 
 interface nsIMsgWindow;
+interface nsIURI;
 
 %{C++
 #include "nsString.h"
@@ -68,7 +69,7 @@ interface nsIEnigMimeDecrypt : nsISupports
 
   void write(in string buf, in unsigned long count);
 
-  void finish(in nsIMsgWindow msgWindow);
+  void finish(in nsIMsgWindow msgWindow, in nsIURI uri);
 };
 
 

@@ -43,6 +43,8 @@
 #include "nsIPipeFilterListener.h"
 #include "nsIPipeTransport.h"
 #include "nsIIPCBuffer.h"
+#include "nsIMsgWindow.h"
+#include "nsIURI.h"
 
 // Implementation class for nsIEnigMimeVerify
 class nsEnigMimeVerify : public nsIEnigMimeVerify,
@@ -73,7 +75,9 @@ protected:
     PRUint32                        mStartCount;
 
     nsCString                       mContentBoundary;
+    nsCString                       mLinebreak;
 
+    nsCString                       mURISpec;
     nsCOMPtr<nsIMsgWindow>          mMsgWindow;
 
     nsCOMPtr<nsIIPCBuffer>          mOutBuffer;

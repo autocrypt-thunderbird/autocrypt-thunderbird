@@ -95,6 +95,7 @@ interface nsIEnigmail : nsISupports
   nsIPipeTransport decryptMessageStart(in nsIPrompt prompter,
                                        in unsigned long uiFlags,
                                        in boolean verifyOnly,
+                                       in boolean noOutput,
                                        in nsIStreamListener listener,
                                        in boolean noProxy,
                                        out string errorMsg);
@@ -102,6 +103,8 @@ interface nsIEnigmail : nsISupports
   long decryptMessageEnd(in long exitCode,
                          in unsigned long outputLen,
                          in string errOutput,
+                         in boolean verifyOnly,
+                         in boolean noOutput,
                          out unsigned long statusFlags,
                          out string keyId,
                          out string userId,

@@ -45,6 +45,8 @@
 #include "nsNetUtil.h"
 #include "nsIPrompt.h"
 #include "nsIMsgWindow.h"
+#include "nsMsgBaseCID.h"
+#include "nsIMsgMailSession.h"
 #include "nsIMimeMiscStatus.h"
 #include "nsIEnigMimeHeaderSink.h"
 #include "nsIThread.h"
@@ -63,6 +65,8 @@ PRLogModuleInfo* gEnigMimeDecryptLog = NULL;
 
 #define MAX_BUFFER_BYTES 32000
 static const PRUint32 kCharMax = 1024;
+
+static NS_DEFINE_CID(kMsgMailSessionCID, NS_MSGMAILSESSION_CID);
 
 // nsEnigMimeDecrypt implementation
 
@@ -204,7 +208,7 @@ nsEnigMimeDecrypt::Write(const char *buf, PRUint32 buf_size)
 
 
 NS_IMETHODIMP
-nsEnigMimeDecrypt::Finish(nsIMsgWindow* msgWindow)
+nsEnigMimeDecrypt::Finish(nsIMsgWindow* msgWindow, nsIURI* uri)
 {
   // Enigmail stuff
   nsresult rv;
@@ -214,7 +218,7 @@ nsEnigMimeDecrypt::Finish(nsIMsgWindow* msgWindow)
   if (!mInitialized)
     return NS_ERROR_NOT_INITIALIZED;
 
-  rv = FinishAux(msgWindow);
+  rv = FinishAux(msgWindow, uri);
   if (NS_FAILED(rv)) {
     Finalize();
     return rv;
@@ -225,10 +229,12 @@ nsEnigMimeDecrypt::Finish(nsIMsgWindow* msgWindow)
 
 
 nsresult
-nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow)
+nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
 {
   // Enigmail stuff
   nsresult rv;
+
+  nsCAutoString uriSpec("");
 
   if (mListener) {
     mListener->OnStopRequest(nsnull, nsnull, 0);
@@ -265,6 +271,16 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow)
     msgWindow->GetPromptDialog(getter_AddRefs(prompter));
   }
 
+  if (!prompter) {
+    nsCOMPtr <nsIMsgMailSession> mailSession (do_GetService(kMsgMailSessionCID));
+    if (mailSession) {
+      nsCOMPtr<nsIMsgWindow> msgwin;
+      mailSession->GetTopmostMsgWindow(getter_AddRefs(msgwin));
+      if (msgwin)
+        msgwin->GetPromptDialog(getter_AddRefs(prompter));
+    }
+  }
+
   DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: prompter=%x\n", prompter.get()));
 
   nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
@@ -272,10 +288,13 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow)
     return rv;
 
   nsXPIDLCString errorMsg;
+  PRBool noOutput = PR_FALSE;
   PRBool noProxy = PR_FALSE;
+
   rv = enigmailSvc->DecryptMessageStart(prompter,
                                         (PRUint32) 0,
                                         mVerifyOnly,
+                                        noOutput,
                                         nsnull,
                                         noProxy,
                                         getter_Copies(errorMsg),
@@ -284,9 +303,9 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow)
 
   if (!mPipeTrans) {
     if (securityInfo) {
-      nsCOMPtr<nsIEnigMimeHeaderSink> headerSink = do_QueryInterface(securityInfo);
-      if (headerSink) {
-        rv = headerSink->UpdateSecurityStatus(0, errorMsg, "");
+      nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
+      if (enigHeaderSink) {
+        rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, 0, errorMsg, "");
       }
     }
 
@@ -375,6 +394,8 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow)
   rv = enigmailSvc->DecryptMessageEnd(exitCode,
                                       mOutputLen,
                                       errorOutput,
+                                      mVerifyOnly,
+                                      noOutput,
                                       &statusFlags,
                                       getter_Copies(keyId),
                                       getter_Copies(userId),
@@ -383,9 +404,9 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow)
   if (NS_FAILED(rv)) return rv;
 
   if (securityInfo) {
-    nsCOMPtr<nsIEnigMimeHeaderSink> headerSink = do_QueryInterface(securityInfo);
-    if (headerSink) {
-      rv = headerSink->UpdateSecurityStatus(statusFlags, errorMsg, errorMsg);
+    nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
+    if (enigHeaderSink) {
+      rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, statusFlags, errorMsg, errorMsg);
     }
   }
 

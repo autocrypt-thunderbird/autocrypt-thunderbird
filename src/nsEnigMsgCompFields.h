@@ -60,7 +60,7 @@ public:
     Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
 
 protected:
-    PRUint32                        mUiFlags;
+    PRUint32                        mUIFlags;
     PRUint32                        mSendFlags;
 
     nsCString                       mSenderEmailAddr;

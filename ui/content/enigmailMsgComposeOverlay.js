@@ -401,7 +401,7 @@ function enigSend(sendFlags) {
        }
 
        newSecurityInfo.sendFlags = sendFlags;
-       newSecurityInfo.uiFlags = uiFlags;
+       newSecurityInfo.UIFlags = uiFlags;
        newSecurityInfo.senderEmailAddr = fromAddr;
 
        dump("securityInfo = "+newSecurityInfo+"\n");

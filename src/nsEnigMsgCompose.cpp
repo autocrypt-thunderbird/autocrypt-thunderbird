@@ -39,8 +39,9 @@
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
 #include "nsXPIDLString.h"
-#include "nsIIPCBuffer.h"
 #include "nsIMsgCompFields.h"
+#include "nsMsgBaseCID.h"
+#include "nsIMsgMailSession.h"
 #include "nsIEnigMsgCompFields.h"
 #include "nsEnigMsgCompose.h"
 #include "nspr.h"
@@ -66,9 +67,11 @@ PRLogModuleInfo* gEnigMsgComposeLog = NULL;
   {0x95, 0x7f, 0xb3, 0x61, 0x6b, 0xf7, 0xe0, 0x12 }}
 
 #define MAX_HEADER_BYTES 16000
+#define MAX_SIGNATURE_BYTES 16000
 
 static const PRUint32 kCharMax = 1024;
 
+static NS_DEFINE_CID(kMsgMailSessionCID, NS_MSGMAILSESSION_CID);
 static NS_DEFINE_CID(kMsgComposeSecureCID, NS_MSGCOMPOSESECURE_CID);
 
 // nsEnigMsgComposeFactory implementation
@@ -132,19 +135,20 @@ nsEnigMsgCompose::nsEnigMsgCompose()
     mSendFlags(0),
     mUIFlags(0),
 
+    mMultipartSigned(PR_FALSE),
+
     mSenderEmailAddr(""),
     mRecipients(""),
 
-    mFinalSeparator(""),
+    mBoundary(""),
 
     mStream(0),
 
     mMsgComposeSecure(nsnull),
     mMimeListener(nsnull),
 
-    mOutBuffer(nsnull),
-    mPipeTrans(nsnull),
-    mPipeTransListener(nsnull)
+    mWriter(nsnull),
+    mPipeTrans(nsnull)
 {
   nsresult rv;
 
@@ -192,12 +196,11 @@ nsEnigMsgCompose::Finalize()
   if (mPipeTrans) {
     mPipeTrans->Terminate();
     mPipeTrans = nsnull;
-    mPipeTransListener = nsnull;
   }
 
-  if (mOutBuffer) {
-    mOutBuffer->Shutdown();
-    mOutBuffer = nsnull;
+  if (mWriter) {
+    mWriter->Close();
+    mWriter = nsnull;
   }
 
   return NS_OK;
@@ -220,13 +223,13 @@ NS_IMETHODIMP nsEnigMsgCompose::RandomSeedTime(PRUint32 *_retval)
   DEBUG_LOG(("nsEnigMsgCompose::RandomSeedTime: ranA=0x%x, ranB=0x%x\n",
                                                randomNumberA, randomNumberB));
 
-  *_retval = ((randomNumberA & 0x3FFFFF) << 10) | (randomNumberB & 0x3FF);
+  *_retval = ((randomNumberA & 0xFFFFF) << 12) | (randomNumberB & 0xFFF);
 
   return NS_OK;
 }
 
-   
-char* nsEnigMsgCompose::MakeBoundary(const char *prefix)
+nsresult   
+nsEnigMsgCompose::MakeBoundary(const char *prefix)
 {
   nsresult rv;
 
@@ -242,7 +245,7 @@ char* nsEnigMsgCompose::MakeBoundary(const char *prefix)
   for( PRUint32 j = 0; j < 12; j++)
     ch[j] = rand() % 256;
 
-  return PR_smprintf("------------%s"
+  char* boundary = PR_smprintf("------------%s"
            "%02X%02X%02X%02X"
            "%02X%02X%02X%02X"
            "%02X%02X%02X%02X",
@@ -250,19 +253,28 @@ char* nsEnigMsgCompose::MakeBoundary(const char *prefix)
            ch[0], ch[1], ch[2], ch[3],
            ch[4], ch[5], ch[6], ch[7],
            ch[8], ch[9], ch[10], ch[11]);
-}
 
-nsresult
-nsEnigMsgCompose::EncryptedHeaders(const char* prefix,
-                               nsACString& headers, nsACString& finalSeparator)
-{
-  DEBUG_LOG(("nsEnigMsgCompose::EncryptedHeader:\n"));
-
-  char* boundary = MakeBoundary(prefix);
   if (!boundary)
     return NS_ERROR_OUT_OF_MEMORY;
 
-  char* hdr = PR_smprintf(
+  mBoundary = boundary;
+
+  PR_Free(boundary);
+
+  return NS_OK;
+}
+
+nsresult
+nsEnigMsgCompose::WriteEncryptedHeaders()
+{
+  nsresult rv;
+  DEBUG_LOG(("nsEnigMsgCompose::WriteEncryptedHeaders:\n"));
+
+  rv = MakeBoundary("enig");
+  if (NS_FAILED(rv))
+    return rv;
+
+  char* headers = PR_smprintf(
  "Content-Type: multipart/encrypted;\r\n"
  " protocol=\"application/pgp-encrypted\";\r\n"
  " boundary=\"%s\"\r\n"
@@ -275,20 +287,153 @@ nsEnigMsgCompose::EncryptedHeaders(const char* prefix,
  "--%s\r\n"
  "Content-Type: application/octet-stream\r\n"
  "\r\n",
- boundary, boundary, boundary);
+ mBoundary.get(), mBoundary.get(), mBoundary.get());
 
-  if (!hdr) {
-    PR_Free(boundary);
+  if (!headers)
     return NS_ERROR_OUT_OF_MEMORY;
+
+  rv = mWriter->Write(headers, nsCRT::strlen(headers));
+
+  PR_Free(headers);
+
+  return rv;
+}
+
+nsresult
+nsEnigMsgCompose::WriteSignedHeaders1()
+{
+  nsresult rv;
+  DEBUG_LOG(("nsEnigMsgCompose::WriteSignedHeaders1:\n"));
+
+  rv = MakeBoundary("enig");
+  if (NS_FAILED(rv))
+    return rv;
+
+  char* headers = PR_smprintf(
+ "Content-Type: multipart/signed; micalg=pgp-sha1;\r\n"
+ " protocol=\"application/pgp-signature\";\r\n"
+ " boundary=\"%s\"\r\n"
+ "\r\n"
+ "--%s\r\n",
+ mBoundary.get(), mBoundary.get());
+
+  if (!headers)
+    return NS_ERROR_OUT_OF_MEMORY;
+
+  rv = mWriter->Write(headers, nsCRT::strlen(headers));
+
+  PR_Free(headers);
+
+  return rv;
+}
+
+nsresult
+nsEnigMsgCompose::WriteSignedHeaders2()
+{
+  nsresult rv;
+  DEBUG_LOG(("nsEnigMsgCompose::WriteSignedHeaders2:\n"));
+
+  char* headers = PR_smprintf(
+ "\r\n--%s\r\n"
+ "Content-Type: application/pgp-signature\r\n"
+ "\r\n",
+ mBoundary.get());
+
+  if (!headers)
+    return NS_ERROR_OUT_OF_MEMORY;
+
+  rv = mWriter->Write(headers, nsCRT::strlen(headers));
+
+  PR_Free(headers);
+
+  return rv;
+}
+
+nsresult
+nsEnigMsgCompose::WriteFinalSeparator()
+{
+  nsresult rv;
+  DEBUG_LOG(("nsEnigMsgCompose::WriteSeparator:\n"));
+
+  if (mBoundary.IsEmpty())
+    return NS_OK;
+
+  // Write out final MIME multipart separator
+  char* separator = PR_smprintf(
+ "\r\n--%s--\r\n",
+ mBoundary.get());
+
+  if (!separator)
+    return NS_ERROR_OUT_OF_MEMORY;
+
+  rv = mWriter->Write(separator, nsCRT::strlen(separator));
+
+  PR_Free(separator);
+
+  return rv;
+}
+
+nsresult
+nsEnigMsgCompose::Init()
+{
+  nsresult rv;
+
+  DEBUG_LOG(("nsEnigMsgCompose::Init: sendFlags=%x\n", mSendFlags));
+
+  PRBool signMsg    = mSendFlags & nsIEnigmail::SEND_SIGNED;
+  PRBool encryptMsg = mSendFlags & nsIEnigmail::SEND_ENCRYPTED;
+  PRBool usePgpMime = mSendFlags & nsIEnigmail::SEND_PGP_MIME;
+
+  mMultipartSigned = usePgpMime && signMsg && !encryptMsg;
+
+  mWriter = do_CreateInstance(NS_ENIGMIMEWRITER_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) return rv;
+
+  rv = mWriter->Init(mStream, PR_TRUE);
+  if (NS_FAILED(rv)) return rv;
+
+  nsCOMPtr<nsIPrompt> prompter;
+  nsCOMPtr <nsIMsgMailSession> mailSession (do_GetService(kMsgMailSessionCID));
+  if (mailSession) {
+    nsCOMPtr<nsIMsgWindow> msgWindow;
+    mailSession->GetTopmostMsgWindow(getter_AddRefs(msgWindow));
+    if (msgWindow)
+      msgWindow->GetPromptDialog(getter_AddRefs(prompter));
   }
 
-  headers = hdr;
-  finalSeparator += "--";
-  finalSeparator += boundary;
-  finalSeparator += "--";
+  nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) return rv;
 
-  PR_Free(boundary);
-  PR_Free(hdr);
+  nsXPIDLCString errorMsg;
+  PRBool noProxy = PR_TRUE;
+  rv = enigmailSvc->EncryptMessageStart(prompter,
+                                        mUIFlags,
+                                        mSenderEmailAddr.get(),
+                                        mRecipients.get(),
+                                        mSendFlags,
+                NS_STATIC_CAST(nsIStreamListener*, mWriter),
+                                        noProxy,
+                                        getter_Copies(errorMsg),
+                                        getter_AddRefs(mPipeTrans) );
+  if (NS_FAILED(rv))
+    return rv;
+
+  if (!mPipeTrans)
+    return NS_ERROR_FAILURE;
+
+  if (usePgpMime) {
+    // Emit RFC 2015 headers
+    if (mMultipartSigned) {
+      rv = WriteSignedHeaders1();
+      if (NS_FAILED(rv)) return rv;
+
+    } else {
+      rv = WriteEncryptedHeaders();
+      if (NS_FAILED(rv)) return rv;
+    }
+  }
+
+  mInitialized = PR_TRUE;
 
   return NS_OK;
 }
@@ -396,7 +541,7 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
   if (NS_FAILED(rv))
       return rv;
 
-  rv = enigSecurityInfo->GetSendFlags(&mUIFlags);
+  rv = enigSecurityInfo->GetUIFlags(&mUIFlags);
   if (NS_FAILED(rv))
       return rv;
 
@@ -411,39 +556,12 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
 
   mRecipients.AssignWithConversion(toField);
 
-  DEBUG_LOG(("nsEnigMsgCompose::BeginCryptoEncapsulation: sendFlags=%x\n", mSendFlags));
+  if (mSendFlags & nsIEnigmail::SEND_PGP_MIME) {
+    // RFC2015 crypto encapsulation
+    rv = Init();
+    if (NS_FAILED(rv)) return rv;
 
-  mOutBuffer = do_CreateInstance(NS_IPCBUFFER_CONTRACTID, &rv);
-  if (NS_FAILED(rv)) return rv;
-
-  // Prepare to copy data via IPCBuffer to output file stream
-  rv = mOutBuffer->Open(0, PR_FALSE);
-  if (NS_FAILED(rv)) return rv;
-
-  rv = mOutBuffer->SetOutputFileStream(mStream);
-  if (NS_FAILED(rv)) return rv;
-
-  nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
-  if (NS_FAILED(rv)) return rv;
-
-  nsXPIDLCString errorMsg;
-  PRBool noProxy = PR_TRUE;
-  rv = enigmailSvc->EncryptMessageStart((nsIPrompt*) nsnull,
-                                        mUIFlags,
-                                        mSenderEmailAddr.get(),
-                                        mRecipients.get(),
-                                        mSendFlags,
-                NS_STATIC_CAST(nsIStreamListener*, mOutBuffer),
-                                        noProxy,
-                                        getter_Copies(errorMsg),
-                                        getter_AddRefs(mPipeTrans) );
-  if (NS_FAILED(rv))
-    return rv;
-
-  if (!mPipeTrans)
-    return NS_ERROR_FAILURE;
-
-  if (!(mSendFlags & nsIEnigmail::SEND_PGP_MIME)) {
+  } else {
     // Create listener to intercept MIME headers
     mMimeListener = do_CreateInstance(NS_ENIGMIMELISTENER_CONTRACTID, &rv);
     if (NS_FAILED(rv)) return rv;
@@ -451,24 +569,11 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
     rv = mMimeListener->Init((nsIStreamListener*) this, nsnull,
                              MAX_HEADER_BYTES, PR_TRUE, PR_FALSE);
     if (NS_FAILED(rv)) return rv;
-
-    // Get StreamListener to write synchronously to pipeTransport
-    rv = mPipeTrans->GetListener(getter_AddRefs(mPipeTransListener));
-    if (NS_FAILED(rv)) return rv;
-
-  } else {
-    // Emit RFC 2015 headers
-    nsCAutoString outerHeaders;
-    rv = EncryptedHeaders("enig", outerHeaders, mFinalSeparator);
-    if (NS_FAILED(rv)) return rv;
-
-    mStream->write(outerHeaders.get(), outerHeaders.Length());
   }
-
-  mInitialized = PR_TRUE;
 
   return NS_OK;
 }
+
 
 NS_IMETHODIMP
 nsEnigMsgCompose::FinishCryptoEncapsulation(PRBool aAbort,
@@ -502,6 +607,16 @@ nsEnigMsgCompose::FinishAux(PRBool aAbort,
 
   DEBUG_LOG(("nsEnigMsgCompose::FinishAux: \n"));
 
+  if (mMultipartSigned) {
+    rv = WriteSignedHeaders2();
+    if (NS_FAILED(rv)) return rv;
+  }
+
+  // Count STDOUT bytes
+  PRUint32 preBytes;
+  rv = mWriter->GetBytesWritten(&preBytes);
+  if (NS_FAILED(rv)) return rv;
+
   // Wait for STDOUT to close
   rv = mPipeTrans->Join();
   if (NS_FAILED(rv)) return rv;
@@ -516,12 +631,16 @@ nsEnigMsgCompose::FinishAux(PRBool aAbort,
   DEBUG_LOG(("nsEnigMsgCompose::FinishAux: exitCode=%d\n", exitCode));
 
   // Count STDOUT bytes
-  rv = mOutBuffer->GetTotalBytes(&mOutputLen);
+  rv = mWriter->GetBytesWritten(&mOutputLen);
+  if (NS_FAILED(rv)) return rv;
+  mOutputLen -= preBytes;
+
+  rv = WriteFinalSeparator();
   if (NS_FAILED(rv)) return rv;
 
-  // Shutdown STDOUT buffer
-  mOutBuffer->Shutdown();
-  mOutBuffer = nsnull;
+  // Close STDOUT writer
+  mWriter->Close();
+  mWriter = nsnull;
 
   // Extract STDERR output
   nsCOMPtr<nsIPipeListener> errListener;
@@ -565,10 +684,6 @@ nsEnigMsgCompose::FinishAux(PRBool aAbort,
     return NS_ERROR_FAILURE;
   }
 
-  if (!mFinalSeparator.IsEmpty()) {
-    mStream->write(mFinalSeparator.get(), mFinalSeparator.Length());
-  }
-
   return NS_OK;
 }
 
@@ -576,6 +691,8 @@ nsEnigMsgCompose::FinishAux(PRBool aAbort,
 NS_IMETHODIMP
 nsEnigMsgCompose::MimeCryptoWriteBlock(const char *aBuf, PRInt32 aLen)
 {
+  nsresult rv;
+
   DEBUG_LOG(("nsEnigMsgCompose::MimeCryptoWriteBlock: \n"));
 
   if (mUseSMIME) {
@@ -587,9 +704,6 @@ nsEnigMsgCompose::MimeCryptoWriteBlock(const char *aBuf, PRInt32 aLen)
   DEBUG_LOG(("nsEnigMsgCompose::MimeCryptoWriteBlock: aBuf='%s'\n",
              temStr.get()));
 
-  if (!mInitialized)
-    return NS_ERROR_NOT_INITIALIZED;
-
   if (aLen <= 0)
     return NS_OK;
 
@@ -600,6 +714,11 @@ nsEnigMsgCompose::MimeCryptoWriteBlock(const char *aBuf, PRInt32 aLen)
 
   } else if (mPipeTrans) {
     mPipeTrans->WriteSync(aBuf, aLen);
+
+    if (mMultipartSigned) {
+      rv = mWriter->Write(aBuf, aLen);
+      if (NS_FAILED(rv)) return rv;
+    }
   }
 
   return NS_OK;
@@ -616,12 +735,6 @@ nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
   nsresult rv;
   DEBUG_LOG(("nsEnigMsgCompose::OnStartRequest:\n"));
 
-  if (!mInitialized || !mPipeTransListener)
-    return NS_ERROR_NOT_INITIALIZED;
-
-  rv = mPipeTransListener->OnStartRequest(aRequest, aContext);
-  if (NS_FAILED(rv)) return rv;
-
   nsCAutoString contentType;
   rv = mMimeListener->GetContentType(contentType);
   if (NS_FAILED(rv)) return rv;
@@ -635,21 +748,32 @@ nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
 
   DEBUG_LOG(("nsEnigMsgCompose::OnStartRequest: Content-Type: %s\n", headers.get()));
 
-  if (contentType.Equals("text/plain")) {
-    // No crypto encapsulation for headers
-    DEBUG_LOG(("nsEnigMsgCompose::OnStartRequest: NO CRYPTO ENCAPSULATION\n"));
-    PRInt32 status = mStream->write(headers.get(), headers.Length());
-    if (status < int(headers.Length()))
-      return NS_ERROR_FAILURE;
+  PRBool encapsulate = !contentType.EqualsIgnoreCase("text/plain");
 
-  } else {
-    // RFC2 015 crypto encapsulation for headers
-    nsCAutoString outerHeaders;
-    rv = EncryptedHeaders("enig", outerHeaders, mFinalSeparator);
+  if (encapsulate) {
+    // RFC2015 crypto encapsulation for headers
+    mSendFlags |= nsIEnigmail::SEND_PGP_MIME;
+  }
+
+  rv = Init();
+  if (NS_FAILED(rv)) return rv;
+
+  if (encapsulate) {
+    // RFC2015 crypto encapsulation for headers
+    rv = mPipeTrans->WriteSync(headers.get(), headers.Length());
     if (NS_FAILED(rv)) return rv;
 
-    mStream->write(outerHeaders.get(), outerHeaders.Length());
-    mPipeTrans->WriteSync(headers.get(), headers.Length());
+    if (mMultipartSigned) {
+      rv = mWriter->Write(headers.get(), headers.Length());
+      if (NS_FAILED(rv)) return rv;
+    }
+
+  } else {
+    // No crypto encapsulation for headers
+    DEBUG_LOG(("nsEnigMsgCompose::OnStartRequest: NO CRYPTO ENCAPSULATION\n"));
+
+    rv = mWriter->Write(headers.get(), headers.Length());
+    if (NS_FAILED(rv)) return rv;
   }
 
   return NS_OK;
@@ -660,16 +784,9 @@ nsEnigMsgCompose::OnStopRequest(nsIRequest* aRequest,
                                   nsISupports* aContext,
                                   nsresult aStatus)
 {
-  nsresult rv;
   DEBUG_LOG(("nsEnigMsgCompose::OnStopRequest:\n"));
 
-  if (!mInitialized || !mPipeTransListener)
-    return NS_ERROR_NOT_INITIALIZED;
-
   mRequestStopped = PR_TRUE;
-
-  rv = mPipeTransListener->OnStopRequest(aRequest, aContext, aStatus);
-  if (NS_FAILED(rv)) return rv;
 
   return NS_OK;
 }
@@ -689,13 +806,33 @@ nsEnigMsgCompose::OnDataAvailable(nsIRequest* aRequest,
 
   DEBUG_LOG(("nsEnigMsgCompose::OnDataAVailable: %d\n", aLength));
 
-  if (!mInitialized || !mPipeTransListener)
+  if (!mPipeTrans)
     return NS_ERROR_NOT_INITIALIZED;
 
-  rv = mPipeTransListener->OnDataAvailable(aRequest, aContext, aInputStream,
-                                           aSourceOffset, aLength);
+  char buf[kCharMax];
+  PRUint32 readCount, readMax;
 
-  if (NS_FAILED(rv)) return rv;
+  while (aLength > 0) {
+    readMax = (aLength < kCharMax) ? aLength : kCharMax;
+    rv = aInputStream->Read((char *) buf, readMax, &readCount);
+
+    if (NS_FAILED(rv)){
+      DEBUG_LOG(("nsEnigMsgCompose::OnDataAvailable: Error in reading from input stream, %x\n", rv));
+      return rv;
+    }
+
+    if (readCount <= 0) return NS_OK;
+
+    rv = mPipeTrans->WriteSync(buf, readCount);
+    if (NS_FAILED(rv)) return rv;
+
+    if (mMultipartSigned) {
+      rv = mWriter->Write(buf, readCount);
+      if (NS_FAILED(rv)) return rv;
+    }
+
+    aLength -= readCount;
+  }
 
   return NS_OK;
 }

@@ -9,7 +9,7 @@ window.addEventListener("unload", enigMessengerFinish,  false);
 var gEnigCreatedURIs = [];
 
 var gEnigDecryptedMessage;
-var gEnigSecurityInfo = "";
+var gEnigSecurityInfo = null;
 var gEnigLastSaveDir = "";
 
 var gEnigMessagePane = null;
@@ -85,7 +85,7 @@ function enigViewSecurityInfo() {
 
   if (gEnigSecurityInfo) {
     // Display OpenPGP security info
-    EnigAlert("OpenPGP Security Info\n"+gEnigSecurityInfo);
+    EnigAlert("OpenPGP Security Info\n\n"+gEnigSecurityInfo.statusInfo);
 
   } else {
     // Display SMIME security info
@@ -182,7 +182,7 @@ function enigMessageUnload() {
   }
 
   gEnigDecryptedMessage = null;
-  gEnigSecurityInfo = "";
+  gEnigSecurityInfo = null;
 
   if (gEnigNoShowReload) {
     EnigShowHeadersAll(false);
@@ -245,13 +245,27 @@ function enigThreadPaneOnClick() {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigThreadPaneOnClick\n");
 }
 
-function enigGetCurrentMsgUrl() {
+function enigGetCurrentMsgUriSpec() {
   try {
     if (GetNumSelectedMessages() != 1)
-      return null;
+      return "";
 
     var uriSpec = GetFirstSelectedMessage();
     //DEBUG_LOG("enigmailMessengerOverlay.js: enigGetCurrentMsgUrl: uriSpec="+uriSpec+"\n");
+
+    return uriSpec;
+
+  } catch (ex) {
+    return "";
+  }
+}
+
+function enigGetCurrentMsgUrl() {
+  try {
+    var uriSpec = enigGetCurrentMsgUriSpec();
+
+    if (!uriSpec)
+      return null;
 
     var msgService = messenger.messageServiceFromURI(uriSpec);
 
@@ -363,7 +377,7 @@ function enigMessageDecrypt(event) {
     xEnigmailVersion = gEnigSavedHeaders["x-enigmail-version"];
   }
 
-  if (contentType.search(/^multipart\/encrypted(;|$)/i)  == 0) {
+  if (contentType.search(/^multipart\/encrypted(;|$)/i) == 0) {
     // multipart/encrypted
     DEBUG_LOG("enigmailMessengerOverlay.js: multipart/encrypted\n");
 
@@ -387,6 +401,29 @@ function enigMessageDecrypt(event) {
       msgFrame.location = "enigmail:dummy";
 
       return;
+    }
+  }
+
+  if ( (contentType.search(/^multipart\/signed(;|$)/i) == 0) &&
+       (contentType.search(/application\/pgp-signature/i) >= 0) ) {
+    // multipart/signed
+    DEBUG_LOG("enigmailMessengerOverlay.js: multipart/signed\n");
+
+    var enigmailSvc = GetEnigmailSvc();
+    if (!enigmailSvc)
+      return;
+
+    var msgUriSpec = enigGetCurrentMsgUriSpec();
+    var mailNewsUrl = enigGetCurrentMsgUrl();
+
+    if (mailNewsUrl) {
+      dump("mailNewsUrl.spec="+mailNewsUrl.spec+"\n");
+
+      const NS_ENIGMIMEVERIFY_CONTRACTID = "@mozilla.org/enigmail/mime-verify;1";
+      var verifier = Components.classes[NS_ENIGMIMEVERIFY_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeVerify);
+      dump("verifier="+verifier+"\n");
+
+      verifier.init(mailNewsUrl, msgWindow, msgUriSpec, true);
     }
   }
 
@@ -486,41 +523,13 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
 
   var errorMsg = errorMsgObj.value;
 
-  var statusLine = "";
-
-  var errLines = errorMsg.split(/\r?\n/);
-
-  gEnigSecurityInfo = "";
-  if (errLines && errLines.length) {
-    if (statusLine) statusLine += ": ";
-    statusLine += errLines[0];
-
-    // Display only first ten lines of error message
-    while (errLines.length > 10)
-      errLines.pop();
-
-    gEnigSecurityInfo = errLines.join("\n");
-  }
-
-  if (!gEnigSecurityInfo && (statusFlags & nsIEnigmail.DECRYPTED_MESSAGE)) {
-    gEnigSecurityInfo = "Decrypted message";
-  }
-
   if (importOnly) {
-     if (interactive && gEnigSecurityInfo)
-       EnigAlert(gEnigSecurityInfo);
+     if (interactive && errorMsg)
+       EnigAlert(errorMsg);
      return;
   }
 
-  if (statusLine) {
-    var enigmailBox = document.getElementById("expandedEnigmailBox");
-    var statusText  = document.getElementById("expandedEnigmailStatusText");
-
-    statusText.setAttribute("value", statusLine);
-    enigmailBox.removeAttribute("collapsed");
-  }
-
-  enigUpdateHdrIcons(statusFlags);
+  enigUpdateHdrIcons(statusFlags, "", errorMsg);
 
   if (statusFlags & (nsIEnigmail.BAD_SIGNATURE | nsIEnigmail.BAD_ARMOR)) {
     // Bad signature/armor
@@ -533,8 +542,8 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
   }
 
   if (!plainText) {
-     if (interactive && gEnigSecurityInfo)
-       EnigAlert(gEnigSecurityInfo);
+     if (interactive && gEnigSecurityInfo && gEnigSecurityInfo.statusInfo)
+       EnigAlert(gEnigSecurityInfo.statusInfo);
      return;
   }
 
@@ -609,7 +618,6 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
     headerList["cc"] = "";
 
   gEnigDecryptedMessage = {url:messageUrl,
-                           statusLine:statusLine,
                            headerList:headerList,
                            charset:charset,
                            plainText:plainText};
@@ -715,14 +723,14 @@ function enigGetDecryptedMessage(contentType) {
   if (!enigmailSvc)
     return "";
 
-  var statusLine = gEnigDecryptedMessage.statusLine;
   var headerList = gEnigDecryptedMessage.headerList;
+
+  var statusLine = gEnigSecurityInfo ? gEnigSecurityInfo.statusLine : "";
 
   var contentData = "";
 
   if (contentType == "text/html")
     contentData += "<html><head></head><body>\r\n";
-
 
   if (statusLine) {
     if (contentType == "text/html") {

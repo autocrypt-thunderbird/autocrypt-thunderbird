@@ -46,7 +46,7 @@
 #include "nsIPrompt.h"
 #include "nsIMsgWindow.h"
 #include "nsIMimeMiscStatus.h"
-#include "nsIMsgSMIMEHeaderSink.h"
+#include "nsIEnigMimeHeaderSink.h"
 #include "nsIThread.h"
 #include "nsEnigMimeVerify.h"
 #include "nsIPipeTransport.h"
@@ -84,7 +84,9 @@ nsEnigMimeVerify::nsEnigMimeVerify()
     mStartCount(0),
 
     mContentBoundary(""),
+    mLinebreak(""),
 
+    mURISpec(""),
     mMsgWindow(nsnull),
 
     mOutBuffer(nsnull),
@@ -136,23 +138,25 @@ nsEnigMimeVerify::~nsEnigMimeVerify()
 
 NS_IMETHODIMP
 nsEnigMimeVerify::Init(nsIURI* aURI, nsIMsgWindow* msgWindow,
-                       PRBool rfc2015)
+                       const nsACString& msgUriSpec, PRBool rfc2015)
 {
   nsresult rv;
 
   DEBUG_LOG(("nsEnigMimeVerify::Init: rfc2015=%d\n", (int) rfc2015));
 
+  if (!aURI)
+    return NS_ERROR_NULL_POINTER;
+
   mMsgWindow = msgWindow;
+  mURISpec = msgUriSpec;
   mRfc2015 = rfc2015;
 
   nsCOMPtr<nsIIOService> ioService(do_GetService(kIOServiceCID, &rv));
-  if (NS_FAILED(rv))
-    return rv;
+  if (NS_FAILED(rv)) return rv;
 
   nsCOMPtr<nsIChannel> channel;
   rv = ioService->NewChannelFromURI(aURI, getter_AddRefs(channel));
-  if (NS_FAILED(rv))
-    return rv;
+  if (NS_FAILED(rv)) return rv;
 
   // Listener to parse PGP block armor
   mArmorListener = do_CreateInstance(NS_PIPEFILTERLISTENER_CONTRACTID, &rv);
@@ -167,7 +171,7 @@ nsEnigMimeVerify::Init(nsIURI* aURI, nsIMsgWindow* msgWindow,
   if (NS_FAILED(rv)) return rv;
 
   // Inner mime listener to parse second part
-  nsCOMPtr<nsIEnigMimeListener> mInnerMimeListener = do_CreateInstance(NS_ENIGMIMELISTENER_CONTRACTID, &rv);
+  mInnerMimeListener = do_CreateInstance(NS_ENIGMIMELISTENER_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
 
   rv = mInnerMimeListener->Init(mArmorListener, nsnull,
@@ -183,12 +187,12 @@ nsEnigMimeVerify::Init(nsIURI* aURI, nsIMsgWindow* msgWindow,
   if (NS_FAILED(rv)) return rv;
 
   rv = mFirstPartListener->Init((nsIStreamListener*) this,
-                               nsnull, "", "", 1, PR_FALSE, PR_TRUE, 
+                               nsnull, "", "", 0, PR_FALSE, PR_TRUE, 
                                mSecondPartListener);
   if (NS_FAILED(rv)) return rv;
 
   // Outer mime listener to capture URI content
-  nsCOMPtr<nsIEnigMimeListener> mOuterMimeListener = do_CreateInstance(NS_ENIGMIMELISTENER_CONTRACTID, &rv);
+  mOuterMimeListener = do_CreateInstance(NS_ENIGMIMELISTENER_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
 
   rv = mOuterMimeListener->Init(mFirstPartListener, nsnull,
@@ -285,6 +289,11 @@ temBoundary += "--";
 
   DEBUG_LOG(("nsEnigMimeVerify::Finish: exitCode=%d\n", exitCode));
 
+  // Count of STDOUT bytes
+  PRUint32 outputLen;
+  rv = mOutBuffer->GetTotalBytes(&outputLen);
+  if (NS_FAILED(rv)) return rv;
+
   // Extract STDERR output
   nsCOMPtr<nsIPipeListener> errListener;
   rv = mPipeTrans->GetConsole(getter_AddRefs(errListener));
@@ -313,10 +322,17 @@ temBoundary += "--";
   nsXPIDLCString userId;
   nsXPIDLCString errorMsg;
 
-  nsCOMPtr<nsIEnigmail> enigmailSvc;
+  nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) return rv;
+
+  PRBool verifyOnly = PR_TRUE;
+  PRBool noOutput = PR_TRUE;
+
   rv = enigmailSvc->DecryptMessageEnd(exitCode,
-                                      0,
+                                      outputLen,
                                       errorOutput,
+                                      verifyOnly,
+                                      noOutput,
                                       &statusFlags,
                                       getter_Copies(keyId),
                                       getter_Copies(userId),
@@ -335,12 +351,11 @@ temBoundary += "--";
   DEBUG_LOG(("nsEnigMimeVerify::Finish: securityInfo=%x\n", securityInfo.get()));
 
   if (securityInfo) {
-    nsCOMPtr<nsIMsgSMIMEHeaderSink> sink = do_QueryInterface(securityInfo);
-    PRInt32 nesting;
-    rv = sink->MaxWantedNesting(&nesting);
-    DEBUG_LOG(("nsEnigMimeVerify::Finish: nesting=%d\n", nesting));
+    nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
+    if (enigHeaderSink) {
+      rv = enigHeaderSink->UpdateSecurityStatus(mURISpec, statusFlags, errorMsg, errorMsg);
+    }
   }
-
 
   if (newExitCode != 0) {
     DEBUG_LOG(("nsEnigMimeVerify::Finish: ERROR EXIT %d\n", newExitCode));
@@ -383,17 +398,16 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
     }
 
     // Output Linebreak after signed content (IMPORTANT)
-    nsCAutoString innerLinebreak;
-    rv = mInnerMimeListener->GetContentType(innerLinebreak);
+    rv = mInnerMimeListener->GetLinebreak(mLinebreak);
     if (NS_FAILED(rv)) return rv;
 
-    if (innerLinebreak.IsEmpty())
+    if (mLinebreak.IsEmpty())
       return NS_ERROR_FAILURE;
 
-    mPipeTrans->WriteSync(innerLinebreak.get(), innerLinebreak.Length());
+    mPipeTrans->WriteSync(mLinebreak.get(), mLinebreak.Length());
 
     return NS_OK;
-}
+  }
 
   // First start request
   nsCAutoString contentType;
@@ -422,10 +436,10 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
 
   nsCAutoString hashSymbol;
   if (contentMicalg.EqualsIgnoreCase("pgp-md5")) {
-    hashSymbol = "SHA1";
+    hashSymbol = "MD5";
 
   } else if (contentMicalg.EqualsIgnoreCase("pgp-sha1")) {
-    hashSymbol = "MD5";
+    hashSymbol = "SHA1";
 
   } else {
     ERROR_LOG(("nsEnigMimeVerify::OnStartRequest: ERROR contentMicalg='%s'\n", contentMicalg.get()));
@@ -433,7 +447,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   }
 
   nsCAutoString linebreak;
-  rv = mOuterMimeListener->GetContentType(linebreak);
+  rv = mOuterMimeListener->GetLinebreak(linebreak);
   if (NS_FAILED(rv)) return rv;
 
   mOuterMimeListener->GetContentBoundary(mContentBoundary);
@@ -444,14 +458,14 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
     return NS_ERROR_FAILURE;
   }
 
-  nsCAutoString temBoundary("--");
-  temBoundary += mContentBoundary;
+  nsCAutoString mimeSeparator("--");
+  mimeSeparator += mContentBoundary;
 
   nsCAutoString startDelimiter;
   mFirstPartListener->GetStartDelimiter(startDelimiter);
   if (NS_FAILED(rv)) return rv;
 
-  if (!startDelimiter.Equals(temBoundary)) {
+  if (!startDelimiter.Equals(mimeSeparator)) {
     ERROR_LOG(("nsEnigMimeVerify::OnStartRequest: ERROR startDelimiter=%s\n", startDelimiter.get()));
     return NS_ERROR_FAILURE;
   }
@@ -462,14 +476,14 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
 
   endBoundary.Trim(" \t\r\n", PR_TRUE, PR_TRUE);
 
-  if (!endBoundary.Equals(temBoundary)) {
+  if (!endBoundary.Equals(mimeSeparator)) {
     ERROR_LOG(("nsEnigMimeVerify::OnStartRequest: ERROR endBoundary=%s\n", endBoundary.get()));
     return NS_ERROR_FAILURE;
   }
 
   // Initialize second part listener with content boundary
   rv = mSecondPartListener->Init(mInnerMimeListener,
-                                 nsnull, "", mContentBoundary.get(),
+                                 nsnull, "", mimeSeparator.get(),
                                  0, PR_FALSE, PR_FALSE, nsnull);
   if (NS_FAILED(rv)) return rv;
 
@@ -486,17 +500,19 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
     mMsgWindow->GetPromptDialog(getter_AddRefs(prompter));
   }
 
-  DEBUG_LOG(("nsEnigMimeVerify::Finish: prompter=%x\n", prompter.get()));
+  DEBUG_LOG(("nsEnigMimeVerify::OnStartRequest: prompter=%x\n", prompter.get()));
 
   nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
 
   nsXPIDLCString errorMsg;
   PRBool verifyOnly = PR_TRUE;
+  PRBool noOutput = PR_TRUE;
   PRBool noProxy = PR_TRUE;
   rv = enigmailSvc->DecryptMessageStart(prompter,
                                         (PRUint32) 0,
                                         verifyOnly,
+                                        noOutput,
                                         mOutBuffer,
                                         noProxy,
                                         getter_Copies(errorMsg),
@@ -539,11 +555,14 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
 
 NS_IMETHODIMP
 nsEnigMimeVerify::OnStopRequest(nsIRequest* aRequest,
-                                  nsISupports* aContext,
-                                  nsresult aStatus)
+                                nsISupports* aContext,
+                                nsresult aStatus)
 {
   nsresult rv;
   DEBUG_LOG(("nsEnigMimeVerify::OnStopRequest:\n"));
+
+  if (mRequestStopped)
+    return NS_OK;
 
   if (!mInitialized || !mPipeTransListener)
     return NS_ERROR_NOT_INITIALIZED;

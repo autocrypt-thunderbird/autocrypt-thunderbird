@@ -159,11 +159,12 @@ MimeEnig_eof(void* output_closure, PRBool abort_p)
 
   mime_stream_data *msd = (mime_stream_data *) (data->self->options->stream_closure);
 
+  nsCOMPtr<nsIURI> uri;
   nsCOMPtr<nsIMsgWindow> msgWindow;
+
   if (msd && msd->channel) {
     nsIChannel *channel = msd->channel;
 
-    nsCOMPtr<nsIURI> uri;
     if (channel)
       channel->GetURI(getter_AddRefs(uri));
 
@@ -176,7 +177,7 @@ MimeEnig_eof(void* output_closure, PRBool abort_p)
   }
 
   nsresult rv;
-  rv = data->mimeDecrypt->Finish(msgWindow);
+  rv = data->mimeDecrypt->Finish(msgWindow, uri);
   if (NS_FAILED(rv))
     return -1;
 

@@ -54,12 +54,45 @@ function enigEndHeaders()
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigEndHeaders\n");
 }
 
-function enigUpdateHdrIcons(statusFlags) {
+function enigUpdateHdrIcons(statusFlags, briefStatusMsg, expandedStatusMsg) {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateHdrIcons\n");
+
+  var statusInfo = "";
+  var statusLine = briefStatusMsg;
+
+  var statusLines = expandedStatusMsg.split(/\r?\n/);
+
+  if (statusLines && statusLines.length) {
+
+     if (!statusLine)
+       statusLine += statusLines[0];
+
+    // Display only first twenty lines of status message
+    while (statusLines.length > 20)
+      statusLines.pop();
+
+    statusInfo = statusLines.join("\n");
+  }
+
+  if (!statusInfo && (statusFlags & nsIEnigmail.DECRYPTED_MESSAGE)) {
+    statusInfo = "Decrypted message";
+  }
+
+  gEnigSecurityInfo = { statusLine: statusLine,
+                        statusInfo: statusInfo };
+
+  if (statusLine) {
+    var enigmailBox = document.getElementById("expandedEnigmailBox");
+    var statusText  = document.getElementById("expandedEnigmailStatusText");
+
+    statusText.setAttribute("value", statusLine);
+    enigmailBox.removeAttribute("collapsed");
+  }
 
   if (!gSMIMEContainer)
     return;
 
+  // Update icons
   try {
     gSMIMEContainer.collapsed = false;
     gSignedUINode.collapsed = false;
@@ -231,11 +264,17 @@ EnigMimeHeaderSink.prototype =
     throw Components.results.NS_NOINTERFACE;
   },
 
-  updateSecurityStatus: function(statusFlags, briefStatusMsg, expandedStatusMsg)
+  updateSecurityStatus: function(uriSpec, statusFlags, briefStatusMsg, expandedStatusMsg)
   {
-    DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: statusFlags="+statusFlags+", "+briefStatusMsg+"\n");
+    DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: uriSpec="+uriSpec+", statusFlags="+statusFlags+", "+briefStatusMsg+"\n");
 
-    enigUpdateHdrIcons(statusFlags);
+    var msgUriSpec = enigGetCurrentMsgUriSpec();
+
+    DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: msgUriSpec="+msgUriSpec+"\n");
+
+    if (!uriSpec || (uriSpec == msgUriSpec)) {
+      enigUpdateHdrIcons(statusFlags, briefStatusMsg, expandedStatusMsg);
+    }
 
     return;
   },

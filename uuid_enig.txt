@@ -40,4 +40,7 @@ nsIEnigMimeHeaderSink     IID    "847b3a80-7ab1-11d4-8f02-006008948af5"
 nsIEnigMimeVerify         IID    "847b3a90-7ab1-11d4-8f02-006008948af5"
 ns EnigMimeVerify         CID    "847b3a91-7ab1-11d4-8f02-006008948af5"
 
+nsIEnigMimeWriter         IID    "847b3aa0-7ab1-11d4-8f02-006008948af5"
+nsEnigMimeWriter          CID    "847b3aa1-7ab1-11d4-8f02-006008948af5"
+
 

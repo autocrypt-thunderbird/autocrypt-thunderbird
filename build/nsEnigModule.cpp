@@ -38,7 +38,11 @@
 
 #include "nsEnigMimeDecrypt.h"
 
+#include "nsEnigMimeVerify.h"
+
 #include "nsEnigMimeListener.h"
+
+#include "nsEnigMimeWriter.h"
 
 #include "nsEnigMimeService.h"
 
@@ -52,7 +56,11 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgCompFields)
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeDecrypt)
 
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeVerify)
+
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeListener)
+
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeWriter)
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeService)
 
@@ -86,10 +94,22 @@ static const nsModuleComponentInfo components[] =
       nsEnigMimeListenerConstructor,
     },
 
+    { NS_ENIGMIMEWRITER_CLASSNAME,
+      NS_ENIGMIMEWRITER_CID,
+      NS_ENIGMIMEWRITER_CONTRACTID,
+      nsEnigMimeWriterConstructor,
+    },
+
     { NS_ENIGMIMEDECRYPT_CLASSNAME,
       NS_ENIGMIMEDECRYPT_CID,
       NS_ENIGMIMEDECRYPT_CONTRACTID,
       nsEnigMimeDecryptConstructor,
+    },
+
+    { NS_ENIGMIMEVERIFY_CLASSNAME,
+      NS_ENIGMIMEVERIFY_CID,
+      NS_ENIGMIMEVERIFY_CONTRACTID,
+      nsEnigMimeVerifyConstructor,
     },
 
     { NS_ENIGMIMESERVICE_CLASSNAME,
