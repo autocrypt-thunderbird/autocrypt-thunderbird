@@ -4,7 +4,8 @@
 var gEnigmailVersion = "0.39.0.0";
 var gIPCVersion      = "0.99.0.0";
 
-const MESSAGE_BUFFER_SIZE = 16000;
+// Maximum size of message directly processed by Enigmail
+const MESSAGE_BUFFER_SIZE = 32000;
 
 const NS_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
 const NS_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1"
@@ -52,7 +53,7 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                             };
 
 var gLogLevel = 3;     // Output only errors/warnings by default
-var gLogFileStream;
+var gDebugLog;
 
 var gPrefSvc, gPrefEnigmail;
 try {
@@ -112,20 +113,14 @@ function GetEnigmailSvc() {
 
   DEBUG_LOG("enigmailCommon.js: gEnigmailSvc = "+gEnigmailSvc+"\n");
 
-  if (gEnigmailSvc.initialized) {
-    gLogFileStream = gEnigmailSvc.logFileStream;
-    if (gLogFileStream)
-      gLogLevel = 5;
-
-  } else {
+  if (!gEnigmailSvc.initialized) {
     // Initialize enigmail
 
     var firstInitialization = !gEnigmailSvc.initializationAttempted;
 
     try {
       // Initialize enigmail
-      gEnigmailSvc.initialize(gPrefEnigmail);
-      gLogFileStream = gEnigmailSvc.logFileStream;
+      gEnigmailSvc.initialize(gEnigmailVersion, gPrefEnigmail);
 
       try {
         // Reset alert count to default value
@@ -145,6 +140,11 @@ function GetEnigmailSvc() {
       }
 
       return null;
+    }
+
+    if (gEnigmailSvc.logFileStream) {
+      gDebugLog = true;
+      gLogLevel = 5;
     }
 
     var configuredVersion = EnigGetPref("configuredVersion");
@@ -311,9 +311,8 @@ function ReadFileContents(localFile, maxBytes) {
 function WRITE_LOG(str) {
   dump(str);
 
-  if (gLogFileStream) {
-    gLogFileStream.write(str, str.length);
-    //gLogFileStream.flush();
+  if (gDebugLog && gEnigmailSvc && gEnigmailSvc.logFileStream) {
+    gEnigmailSvc.logFileStream.write(str, str.length);
   }
 }
 
@@ -624,12 +623,17 @@ function EnigViewDebugLog() {
     return;
   }
 
-  if (!gLogFileStream) {
+  if (!gEnigmailSvc) {
+    EnigAlert("Log file has not been created yet!");
+    return;
+  }
+
+  if (!gEnigmailSvc.logFileStream) {
     EnigAlert("Please restart Mozilla to create log file");
     return;
   }
 
-  gLogFileStream.flush();
+  gEnigmailSvc.logFileStream.flush();
 
   logDirectory = logDirectory.replace(/\\/g, "/");
 

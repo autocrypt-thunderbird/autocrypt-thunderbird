@@ -353,7 +353,12 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
     return;
   }
 
+  if (callbackArg.pipeConsole.overflow) {
+    WARNING_LOG("enigmailMessengerOverlay.js: enigMsgDirectCallback: MESSAGE BUFFER OVERFLOW\n");
+  }
+
   var msgText = callbackArg.pipeConsole.data;
+
   callbackArg.pipeConsole.close();
 
   //DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgDirectCallback: msgText='"+msgText+"'\n");

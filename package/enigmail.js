@@ -917,7 +917,7 @@ function () {
 
 
 Enigmail.prototype.initialize =
-function (prefBranch) {
+function (version, prefBranch) {
   this.initializationAttempted = true;
   this.prefBranch = prefBranch;
 
@@ -928,8 +928,23 @@ function (prefBranch) {
   if (prefix) {
     gLogLevel = 5;
     this.logFileStream = CreateFileStream(prefix+"enigdbug.txt");
-    DEBUG_LOG("enigmail.js: Enigmail.initialize: Logging debug output to "+prefix+"enigdbug.txt\n");
+    DEBUG_LOG("enigmail.js: Logging debug output to "+prefix+"enigdbug.txt\n");
   }
+
+  this.version = version;
+  DEBUG_LOG("enigmail.js: Enigmail version "+this.version+"\n");
+
+  var httpHandler = Components.classesByID[NS_HTTPPROTOCOLHANDLER_CID_STR].createInstance();
+  httpHandler = httpHandler.QueryInterface(nsIHttpProtocolHandler);
+
+  this.oscpu = httpHandler.oscpu;
+  DEBUG_LOG("enigmail.js: OS/CPU="+this.oscpu+"\n");
+
+  this.platform = httpHandler.platform;
+  DEBUG_LOG("enigmail.js: Platform="+this.platform+"\n");
+
+  this.isUnix  = (this.platform.search(/X11/i) == 0);
+  this.isWin32 = (this.platform.search(/Win/i) == 0);
 
   var processInfo;
   try {
@@ -982,20 +997,6 @@ function (prefBranch) {
 
   DEBUG_LOG("enigmail.js: Enigmail.initialize: gEnvList = "+gEnvList+"\n");
 
-  var httpHandler = Components.classesByID[NS_HTTPPROTOCOLHANDLER_CID_STR].createInstance();
-  httpHandler = httpHandler.QueryInterface(nsIHttpProtocolHandler);
-
-  this.oscpu = httpHandler.oscpu;
-  DEBUG_LOG("enigmail.js: Enigmail.initialize: oscpu="+this.oscpu+"\n");
-
-  this.platform = httpHandler.platform;
-  DEBUG_LOG("enigmail.js: Enigmail.initialize: platform="+this.platform+"\n");
-
-  this.isUnix  = (this.platform.search(/X11/i) == 0);
-  this.isWin32 = (this.platform.search(/Win/i) == 0);
-
-  this.passEnv = new Array();
-
   try {
     // Access IPC Service
 
@@ -1005,8 +1006,6 @@ function (prefBranch) {
     this.ipcService = ipcService;
 
     var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(nsIPipeConsole);
-
-    DEBUG_LOG("enigmail.js: Enigmail.initialize: pipeConsole = "+pipeConsole+"\n");
 
     pipeConsole.open(500, 80, false);
 

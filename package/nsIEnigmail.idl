@@ -64,7 +64,7 @@ interface nsIEnigmail : nsISupports
 
   readonly attribute nsIFileOutputStream logFileStream;
 
-  void initialize(in nsIPrefBranch enigmailPrefs);
+  void initialize(in string version, in nsIPrefBranch enigmailPrefs);
   void finalize();
 
   boolean stillActive();
