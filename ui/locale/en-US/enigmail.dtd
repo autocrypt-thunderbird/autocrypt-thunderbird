@@ -215,6 +215,7 @@
 <!ENTITY enigmail.userSelectionList.label           "OpenPGP Key Selection">
 <!ENTITY enigmail.usersNotFound.label               "Recipients not found">
 <!ENTITY enigmail.keyExpiry.label                   "Expiry">
+<!ENTITY enigmail.keyTrust.label                    "Trust">
 <!ENTITY enigmail.keySelection.label                "Selection">
 <!ENTITY enigmail.keyId.label                       "Key ID">
 <!ENTITY enigmail.userSelPlainText.label            "Send mail unencrypted">
@@ -294,10 +295,12 @@
 <!ENTITY enigmail.sepratationDesc.label             "(Separate several email addresses with spaces)">
 <!ENTITY enigmail.matchDescStart.label              "Apply rule if recipient">
 <!ENTITY enigmail.matchDescEnd.label                "one of the above addresses">
+<!ENTITY enigmail.notDescEnd.label                  "NOT one of the above addresses">
 <!ENTITY enigmail.matchExact.label                  "Is exactly">
 <!ENTITY enigmail.matchContains.label               "Contains">
 <!ENTITY enigmail.matchBegin.label                  "Starts with">
 <!ENTITY enigmail.matchEnd.label                    "Ends with">
+<!ENTITY enigmail.not.label                         "Not">
 
 <!ENTITY enigmail.rulesEditor.label                 "Enigmail - Per-Recipient Rules Editor">
 <!ENTITY enigmail.email.label                       "Email">

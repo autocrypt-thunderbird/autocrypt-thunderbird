@@ -49,6 +49,10 @@
                  ignoreincolumnpicker="true"
                  label="&enigmail.keyUserId.label;"/>
         <splitter class="tree-splitter"/>
+        <treecol id="trustCol" style="width:85px"
+                 label="&enigmail.keyTrust.label;"
+                 persist="width,hidden"/>
+        <splitter class="tree-splitter"/>
         <treecol id="expCol" style="width:70px"
                  label="&enigmail.keyExpiry.label;"
                  persist="width,hidden"/>

@@ -68,6 +68,7 @@ function enigStartHeaders()
 
   var enigmailBox = document.getElementById("enigmailBox");
   var statusText = document.getElementById("enigmailStatusText");
+  var statusTextBox = document.getElementById("enigmailStatusTextBox");
 
   if (enigmailBox && !enigmailBox.collapsed) {
     enigmailBox.setAttribute("collapsed", "true");
@@ -78,6 +79,9 @@ function enigStartHeaders()
   if (statusText)
     statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureOk");
 
+  if (statusTextBox)
+    statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureOk");
+    
   statusText = document.getElementById("collapsedEnigmailStatusText");
 
   if (enigmailBox && !enigmailBox.collapsed) {
@@ -154,7 +158,14 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateHdrIcons: exitCode="+exitCode+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+errorMsg+"\n");
 
   gEnigLastEncryptedURI = GetLoadedMessage();
-  
+  var bodyElement = document.getElementById("messagepanebox");
+/*
+  var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
+  if (! bodyElement) {
+    bodyElement = msgFrame.frames.document.body;
+  }
+*/
+
   if (userId && (userId.indexOf("\n")>=0)) {
     var replaceUid=enigMatchUidToSender(userId);
     errorMsg = errorMsg.replace(userId, replaceUid);
@@ -199,7 +210,18 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
       statusFlags |= nsIEnigmail.DECRYPTION_INCOMPLETE;
   }
 
-   var msgSigned = (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
+  if (! EnigGetPref("displayPartiallySigned")) {
+    if ((statusFlags & (nsIEnigmail.PARTIALLY_PGP))
+        && (statusFlags & (nsIEnigmail.BAD_SIGNATURE))) {
+      statusFlags &= ~(nsIEnigmail.BAD_SIGNATURE | nsIEnigmail.PARTIALLY_PGP);
+      if (statusFlags == 0) {
+        errorMsg="";
+        fullStatusInfo="";
+      }
+    }
+  }
+
+  var msgSigned = (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
             nsIEnigmail.GOOD_SIGNATURE |
             nsIEnigmail.EXPIRED_KEY_SIGNATURE |
             nsIEnigmail.EXPIRED_SIGNATURE |
@@ -318,7 +340,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
 
   if (EnigGetPref("displayPartiallySigned")) {
     if (statusFlags & nsIEnigmail.PARTIALLY_PGP) {
-      if  (msgSigned && msgEncrypted) {
+      if (msgSigned && msgEncrypted) {
         statusLine = EnigGetString("msgPart", EnigGetString("msgSignedAndEnc"));
         statusLine += EnigGetString("clickPenKeyDetails");
       }
@@ -344,6 +366,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
 
   var enigmailBox = document.getElementById("enigmailBox");
   var statusText  = document.getElementById("enigmailStatusText");
+  var statusTextBox = document.getElementById("enigmailStatusTextBox");
   var expStatusText  = document.getElementById("expandedEnigmailStatusText");
 
   if (statusArr.length>0) {
@@ -379,6 +402,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
       gSignedUINode.setAttribute("signed", "notok");
       statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureNotOk");
       expStatusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureNotOk");
+      statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureNotOk");
       gEnigStatusBar.setAttribute("signed", "notok");
     }
     else if ((statusFlags & nsIEnigmail.GOOD_SIGNATURE) &&
@@ -390,18 +414,36 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
       gSignedUINode.setAttribute("signed", "ok");
       statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureOk");
       expStatusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureOk");
+      statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureOk");
       gEnigStatusBar.setAttribute("signed", "ok");
+      bodyElement.setAttribute("enigSigned", "ok");
     }
-    else if (statusFlags & (nsIEnigmail.UNVERIFIED_SIGNATURE |
-                       nsIEnigmail.REVOKED_KEY |
+    else if (statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
+      // Display unverified signature icon
+      gSignedUINode.setAttribute("signed", "unknown");
+      statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureUnknown");
+      expStatusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureUnknown");
+      statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureUnknown");
+      gEnigStatusBar.setAttribute("signed", "unknown");
+    }
+    else if (statusFlags & (nsIEnigmail.REVOKED_KEY |
                        nsIEnigmail.EXPIRED_KEY_SIGNATURE |
                        nsIEnigmail.EXPIRED_SIGNATURE |
                        nsIEnigmail.GOOD_SIGNATURE)) {
       // Display unverified signature icon
       gSignedUINode.setAttribute("signed", "unknown");
-      statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureUnknown");
-      expStatusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureUnknown");
+      statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureVerified");
+      expStatusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureVerified");
+      statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureVerified");
       gEnigStatusBar.setAttribute("signed", "unknown");
+    }
+    else if (statusFlags & nsIEnigmail.INLINE_KEY) {
+      statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureUnknown");
+      statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureUnknown");
+    }
+    else {
+      statusText.setAttribute("class", "plain enigmailHeaderNameBox enigmailHeaderBoxLabelNoSignature");
+      statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelNoSignature");
     }
 
     if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
@@ -420,6 +462,8 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
       // Display un-encrypted icon
       gEncryptedUINode.setAttribute("encrypted", "notok");
       gEnigStatusBar.setAttribute("encrypted", "notok");
+      statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureNotOk");
+      statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureNotOk");
     }
 
   } catch (ex) {}
@@ -681,9 +725,8 @@ if (messageHeaderSink) {
     ClearAttachmentList();
     ClearEditMessageButton();
     
-    
     if (typeof(gMessageNotificationBar) == "object") {
-      // TB > 1.0
+      // TB >= 1.0+
       gMessageNotificationBar.clearMsgNotifications();
     }
     else if (typeof(SetUpRemoteContentBar) == "function") {
@@ -691,7 +734,6 @@ if (messageHeaderSink) {
       SetUpRemoteContentBar(null);
     }
 
-      
     for (index in gMessageListeners)
       gMessageListeners[index].onStartHeaders();
 

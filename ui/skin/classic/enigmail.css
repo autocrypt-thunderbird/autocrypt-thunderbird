@@ -80,16 +80,26 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
   background-color: #d8e0e8;
 }
 
+.enigmailHeaderBoxLabelNoSignature {
+  background-color:#d8e0e8;
+}
+
 .enigmailHeaderBoxLabelSignatureOk {
+  background-color:#99ff99;
+}
+
+.enigmailHeaderBoxLabelSignatureVerified {
+  background-color:#ccffff;
 }
 
 .enigmailHeaderBoxLabelSignatureNotOk {
- color: #ff0000;
+ background-color:#FFD8FE;
 }
 
 .enigmailHeaderBoxLabelSignatureUnknown {
- color: #E800FF;
+ background-color:#FFFFC9;
 }
+
 
 .enigmailLink {
   margin-left: 5px;

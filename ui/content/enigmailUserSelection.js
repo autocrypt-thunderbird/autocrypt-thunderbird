@@ -13,7 +13,7 @@
  *
  * The Initial Developer of this code is Patrick Brunschwig.
  * Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
- * are Copyright (C) 2003 Patrick Brunschwig.
+ * are Copyright (C) 2003-2005 Patrick Brunschwig.
  * All Rights Reserved.
  *
  * Contributor(s):
@@ -63,7 +63,9 @@ const ENIG_IMG_DISABLED     ="chrome://enigmail/content/check2.png";
 
 var gUserList;
 var gResult;
+var gAlwaysTrust=false;
 var gSendEncrypted=true;
+var gAllowExpired=false;
 
 var gEnigRemoveListener = false;
 
@@ -138,19 +140,30 @@ function enigmailBuildList(refresh) {
    DEBUG_LOG("enigmailUserSelection.js: enigmailBuildList\n");
    
    var sortUsers = function (a,b) {
-
-     if (a.userId<b.userId) { return -1;} else {return 1; }
-
+     var r = 0;
+     if ((a.activeState == 1 || b.activeState == 1) && (a.activeState != b.activeState)) {
+       r = (a.activeState == 1 ? -1 : 1);
+     }
+     else if (a.userId.toLowerCase()<b.userId.toLowerCase()) {
+       r = -1;
+     }
+     else {
+       r = 1;
+     }
+     
+     return r;
    }
 
    window.arguments[RESULT].cancelled=true;
 
    var secretOnly = (window.arguments[INPUT].options.indexOf("private")>= 0);
    var hideExpired = (window.arguments[INPUT].options.indexOf("hidexpired")>= 0);
-   var allowExpired = (window.arguments[INPUT].options.indexOf("allowexpired")>= 0);
+   gAllowExpired = (window.arguments[INPUT].options.indexOf("allowexpired")>= 0);
    var aGpgUserList = enigGetUserList(secretOnly, refresh);
 
    if (!aGpgUserList) return;
+
+   gAlwaysTrust = EnigGetPref("alwaysTrustSend");
 
    try {
      if (window.arguments[INPUT].dialogHeader) {
@@ -212,7 +225,9 @@ function enigmailBuildList(refresh) {
    for (i=0; i<aGpgUserList.length; i++) {
      var listRow=aGpgUserList[i].split(/:/);
      if (listRow.length>=0) {
-       if (listRow[0] == "pub" || listRow[0] == "sec") {
+       switch(listRow[0]) {
+       case "pub":
+       case "sec":
          userObj = new Object();
          userObj.expiry=listRow[EXPIRY];
          userObj.created=listRow[CREATED];
@@ -223,15 +238,27 @@ function enigmailBuildList(refresh) {
            userObj.keyTrust=KEY_DISABLED;
          }
          userObj.valid=false;
+         userObj.subkeyOK=(listRow[KEY_USE_FOR].indexOf("e") >= 0 || secretOnly);
          userObj.SubUserIds=new Array();
          aUserList.push(userObj);
-       }
-       else if (listRow[0] == "uid") {
+         break;
+       case "uid":
          var userId = {
            userId: EnigConvertGpgToUnicode(listRow[USER_ID].replace(/\\e3A/g, ":")),
            trustLevel: listRow[KEY_TRUST]
          };
          userObj.SubUserIds.push(userId);
+         break;
+       case "sub":
+         if ((listRow[KEY_USE_FOR].indexOf("e")>=0) &&
+             (KEY_NOT_VALID.indexOf(listRow[KEY_TRUST])<0)) {
+           userObj.subkeyOK=true;
+         }
+         break;
+       case "tru":
+         if (listRow[1].indexOf("t") >=0) {
+            gAlwaysTrust=true;
+         }
        }
      }
    }
@@ -262,13 +289,10 @@ function enigmailBuildList(refresh) {
    }
    toAddr=toAddrList.join(",")+" ";
 
-   aUserList.sort(sortUsers);
-
    var d = new Date();
    // create an ANSI date string (YYYYMMDD) for "now"
    var now=(d.getDate()+100*(d.getMonth()+1)+10000*(d.getYear()+1900)).toString();
    var aValidUsers = new Array();
-
 
    var mailAddr, escapedMailAddr;
    var s1, s2;
@@ -276,77 +300,57 @@ function enigmailBuildList(refresh) {
    var escapeRegExp = new RegExp("([^a-zA-Z0-9])","g");
 
    try {
-      // Activate found keys
+      // find and activate keys
       for (i=0; i<aUserList.length; i++) {
-
-          var activeState= (allowExpired ? 0 : 2);
-
-          if (((!aUserList[i].keyTrust) ||
+        aUserList[i].activeState = (gAllowExpired ? 0 : 2);
+        if (((!aUserList[i].keyTrust) ||
               KEY_NOT_VALID.indexOf(aUserList[i].keyTrust)<0) &&
+              aUserList[i].subkeyOK &&
               ((!aUserList[i].expiry.length) ||
               (aUserList[i].expiry.length && aUserList[i].expiry.replace(/\-/g, "") >= now))) {
-              // key still valid
-              try {
-                mailAddr = EnigStripEmail(aUserList[i].userId);
-              }
-              catch (ex) {
-                mailAddr = EnigStripEmail(aUserList[i].userId.replace(/\"/g,""));
-              }
-              aValidUsers.push(mailAddr);
-              aUserList[i].valid=true;
-              escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
-              s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
-              s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
-              activeState=(toAddr.search(s1)>=0 || toAddr.search(s2)>=0) ? 1 : 0;
-              if (activeState==0 && toKeys.length>0) {
-                activeState=(toKeys.indexOf("0x"+aUserList[i].keyId)>=0 ? 1 : 0)
-              }
-          }
+            // key still valid
+            try {
+              mailAddr = EnigStripEmail(aUserList[i].userId);
+            }
+            catch (ex) {
+              mailAddr = EnigStripEmail(aUserList[i].userId.replace(/\"/g,""));
+            }
+            aValidUsers.push(mailAddr);
+            aUserList[i].valid=true;
+            escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
+            s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
+            s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
+            aUserList[i].activeState =(toAddr.search(s1)>=0 || toAddr.search(s2)>=0) ? 1 : 0;
+            if (aUserList[i].activeState==0 && toKeys.length>0) {
+              aUserList[i].activeState=(toKeys.indexOf("0x"+aUserList[i].keyId)>=0 ? 1 : 0)
+            }
+        }
 
-          var treeItem=null;
-          if (! hideExpired || activeState<2) {
-            // do not show if expired keys are hidden
-            if (secretOnly) {
-              treeItem=enigUserSelCreateRow(aUserList[i], activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].created, "")
-            }
-            else {
-              treeItem=enigUserSelCreateRow(aUserList[i], activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry, aUserList[i].keyTrust)
-            }
-            if (aUserList[i].SubUserIds.length) {
-              var subChildren=document.createElement("treechildren");
-              for (var user=0; user<aUserList[i].SubUserIds.length; user++) {
-                if (KEY_NOT_VALID.indexOf(aUserList[i].SubUserIds[user].trustLevel)<0) {
-                  var subItem=enigUserSelCreateRow(aUserList[i], -1, aUserList[i].SubUserIds[user].userId, "", "", "");
-                  subChildren.appendChild(subItem);
-                  if (activeState<2 || allowExpired) {
-                    // add uid's for valid keys
-                    try {
-                      mailAddr = EnigStripEmail(aUserList[i].SubUserIds[user].userId);
-                    }
-                    catch (ex) {
-                      mailAddr = EnigStripEmail(aUserList[i].SubUserIds[user].userId.replace(/\"]/g,""));
-                    }
-                    aValidUsers.push(mailAddr);
-                    aUserList[i].valid=true;
-                    escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
-                    s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
-                    s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
-                    if (toAddr.search(s1)>=0 || toAddr.search(s2)>=0) {
-                      enigSetActive(treeItem.getElementsByAttribute("id","indicator")[0], 1);
-                    }
+        if (! hideExpired || aUserList[i].activeState < 2) {
+          if (aUserList[i].SubUserIds.length) {
+            for (var user=0; user<aUserList[i].SubUserIds.length; user++) {
+              if (KEY_NOT_VALID.indexOf(aUserList[i].SubUserIds[user].trustLevel)<0) {
+                if (aUserList[i].activeState < 2 || gAllowExpired) {
+                  // add uid's for valid keys
+                  try {
+                    mailAddr = EnigStripEmail(aUserList[i].SubUserIds[user].userId);
+                  }
+                  catch (ex) {
+                    mailAddr = EnigStripEmail(aUserList[i].SubUserIds[user].userId.replace(/\"]/g,""));
+                  }
+                  aValidUsers.push(mailAddr);
+                  aUserList[i].valid=true;
+                  escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
+                  s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
+                  s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
+                  if (toAddr.search(s1)>=0 || toAddr.search(s2)>=0) {
+                    aUserList[i].activeState = 1;
                   }
                 }
               }
-              if (subChildren.hasChildNodes()) {
-                treeItem.setAttribute("container", "true");
-                treeItem.appendChild(subChildren);
-              }
             }
           }
-
-          if (treeItem)
-            treeChildren.appendChild(treeItem);
-
+        }
       }
    }
    catch (ex) {
@@ -356,6 +360,38 @@ function enigmailBuildList(refresh) {
         ERROR_LOG("  subUserId="+aUserList[i].SubUserIds[user].userId+"\n");
       }
    }
+
+   aUserList.sort(sortUsers);
+
+  // Build up key treeView
+  for (i=0; i<aUserList.length; i++) {
+      var treeItem=null;
+      if (! hideExpired || activeState<2) {
+        // do not show if expired keys are hidden
+        if (secretOnly) {
+          treeItem=enigUserSelCreateRow(aUserList[i], aUserList[i].activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].created, "")
+        }
+        else {
+          treeItem=enigUserSelCreateRow(aUserList[i], aUserList[i].activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry, aUserList[i].keyTrust)
+        }
+        if (aUserList[i].SubUserIds.length) {
+          var subChildren=document.createElement("treechildren");
+          for (user=0; user<aUserList[i].SubUserIds.length; user++) {
+            if (KEY_NOT_VALID.indexOf(aUserList[i].SubUserIds[user].trustLevel)<0) {
+              var subItem=enigUserSelCreateRow(aUserList[i], -1, aUserList[i].SubUserIds[user].userId, "", "", "");
+              subChildren.appendChild(subItem);
+            }
+          }
+          if (subChildren.hasChildNodes()) {
+            treeItem.setAttribute("container", "true");
+            treeItem.appendChild(subChildren);
+          }
+        }
+      }
+      if (treeItem)
+        treeChildren.appendChild(treeItem);
+   }
+
    gUserList.appendChild(treeChildren);
 
    // Build up list of not found recipients
@@ -399,43 +435,42 @@ function enigmailBuildList(refresh) {
 function enigUserSelCreateRow (userObj, activeState, userId, keyValue, dateField, trustStatus) {
     var selectCol=document.createElement("treecell");
     selectCol.setAttribute("id", "indicator");
-    enigSetActive(selectCol, activeState);
+    var trustCol=document.createElement("treecell");
     var expCol=document.createElement("treecell");
     var userCol=document.createElement("treecell");
+    
     userCol.setAttribute("id", "name");
-    if (trustStatus.charAt(0)==KEY_EXPIRED) {
-      expCol.setAttribute("label", EnigGetString("selKeyExpired", dateField));
-    }
-    else {
-      expCol.setAttribute("label", dateField);
-    }
-
-    switch (trustStatus.charAt(0)) {
-      case KEY_REVOKED:
-        userId+= " - "+EnigGetString("prefRevoked");
-        break;
-      case KEY_INVALID:
-        userId+= " - "+EnigGetString("keyInvalid");
-        break;
-      case KEY_DISABLED:
-        userId+= " - "+EnigGetString("keyDisabled");
-        break;
-    }
     expCol.setAttribute("id", "expiry");
+    trustCol.setAttribute("id", "trust");
+
     userCol.setAttribute("label", userId);
+    expCol.setAttribute("label", dateField);
+
     var keyCol=document.createElement("treecell");
     keyCol.setAttribute("label", keyValue.substring(8,16));
     keyCol.setAttribute("id", "keyid");
-    if ((userObj.keyTrust.length>0) &&
-        (KEY_NOT_VALID.indexOf(userObj.keyTrust.charAt(0))>=0)) {
+    
+    var trust=EnigGetTrustLabel(trustStatus.charAt(0));
+    if (!userObj.subkeyOK && KEY_NOT_VALID.indexOf(trustStatus.charAt(0))<0) {
+      trust=EnigGetString("keyValid.noSubkey");
+    }
+    if (((userObj.keyTrust.length>0) &&
+        (KEY_NOT_VALID.indexOf(userObj.keyTrust.charAt(0))>=0)) ||
+        (!userObj.subkeyOK) ||
+        ((!gAlwaysTrust) && ("mfu".indexOf(userObj.keyTrust.charAt(0))<0))) {
       userCol.setAttribute("properties", "enigKeyInactive");
+      trustCol.setAttribute("properties", "enigKeyInactive");
       expCol.setAttribute("properties", "enigKeyInactive");
       keyCol.setAttribute("properties", "enigKeyInactive");
-    }
+      if (!gAllowExpired && activeState>=0) activeState=2;
 
+    }
+    enigSetActive(selectCol, activeState);
+    trustCol.setAttribute("label", trust);
     var userRow=document.createElement("treerow");
     userRow.appendChild(selectCol);
     userRow.appendChild(userCol);
+    userRow.appendChild(trustCol);
     userRow.appendChild(expCol);
     userRow.appendChild(keyCol);
     var treeItem=document.createElement("treeitem");

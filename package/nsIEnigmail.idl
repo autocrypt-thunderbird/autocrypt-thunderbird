@@ -75,6 +75,7 @@ interface nsIEnigmail : nsISupports
 
   void initialize(in nsIDOMWindow domWindow, in string version,
                   in nsIPrefBranch enigmailPrefs);
+  void reinitialize();
   void finalize();
   boolean mimeInitialized();
 
@@ -386,7 +387,8 @@ interface nsIEnigmail : nsISupports
                in string keyList,
                in long sign,
                in long encrypt,
-               in long pgpMime);
+               in long pgpMime,
+               in long flags);
 
   boolean saveRulesFile();
   void clearRules();

@@ -13,7 +13,7 @@
  *
  * The Initial Developer of this code is Patrick Brunschwig.
  * Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
- * are Copyright (C) 2004 Patrick Brunschwig.
+ * are Copyright (C) 2004-2005 Patrick Brunschwig.
  * All Rights Reserved.
  *
  * Contributor(s):
@@ -65,6 +65,11 @@ function enigmailDlgOnLoad() {
   }
   else {
     matchingRule.selectedIndex=1;
+  }
+  
+  var negateRule=document.getElementById("negateRule");
+  if (typeof(window.arguments[INPUT].negate)=="number") {
+    negateRule.selectedIndex = (window.arguments[INPUT].negate ? 1 : 0);
   }
   
   ruleEmail.value = window.arguments[INPUT].toAddress.replace(/[{}]/g, "");
@@ -171,6 +176,7 @@ function enigmailDlgOnAccept() {
   window.arguments[RESULT].sign    = document.getElementById("sign").value;
   window.arguments[RESULT].encrypt = document.getElementById("encrypt").value;
   window.arguments[RESULT].pgpMime = document.getElementById("pgpmime").value;
+  window.arguments[RESULT].negate = Number(document.getElementById("negateRule").value);
   
   var actionType = document.getElementById("actionType");
   switch(Number(actionType.selectedItem.value)) {
@@ -195,7 +201,8 @@ function enigmailDlgOnAccept() {
                         window.arguments[RESULT].keyId,
                         window.arguments[RESULT].sign,
                         window.arguments[RESULT].encrypt,
-                        window.arguments[RESULT].pgpMime);
+                        window.arguments[RESULT].pgpMime,
+                        window.arguments[RESULT].negate);
    enigmailSvc.saveRulesFile();
   }
   return true;

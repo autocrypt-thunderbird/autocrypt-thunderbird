@@ -49,7 +49,12 @@
                 <menuitem value="3" label="&enigmail.matchEnd.label;"/>
               </menupopup>
             </menulist>
-            <label value="&enigmail.matchDescEnd.label;"/>
+            <menulist id="negateRule">
+              <menupopup>
+                <menuitem value="0" label="&enigmail.matchDescEnd.label;"/>
+                <menuitem value="1" label="&enigmail.notDescEnd.label;"/>
+              </menupopup>
+            </menulist>
           </hbox>
         </row>
       </rows>

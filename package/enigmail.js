@@ -1447,11 +1447,36 @@ function (domWindow, version, prefBranch) {
     throw Components.results.NS_ERROR_FAILURE;
   }
 
+  this.setAgentPath();
+
+  // Register to observe XPCOM shutdown
+  var obsServ = Components.classes[NS_OBSERVERSERVICE_CONTRACTID].getService();
+  obsServ = obsServ.QueryInterface(Components.interfaces.nsIObserverService);
+
+  obsServ.addObserver(this, NS_XPCOM_SHUTDOWN_OBSERVER_ID, false);
+
+  this.stillActive();
+  this.initialized = true;
+
+  DEBUG_LOG("enigmail.js: Enigmail.initialize: END\n");
+}
+
+Enigmail.prototype.reinitialize =
+function () {
+  this.initialized = false;
+  this.initializationAttempted = true;
+  
+  this.console.write("Reinitializing Enigmail service ...\n");
+  this.setAgentPath();
+  this.initialized = true;
+}
+
+Enigmail.prototype.setAgentPath =
+function () {
   var agentPath = "";
   try {
     agentPath = this.prefBranch.getCharPref("agentPath");
-  } catch (ex) {
-  }
+  } catch (ex) {}
 
   var agentList = ["gpg"];
   var agentType = "";
@@ -1466,8 +1491,21 @@ function (domWindow, version, prefBranch) {
     try {
       var pathDir = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
 
-      pathDir.initWithPath(agentPath);
+      if (agentPath.substr(0,1) == ".") {
+        // path relative to Mozilla installation dir
+        var ds = Components.classes[DIR_SERV_CONTRACTID].getService();
+        var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
+        pathDir = dsprops.get("CurProcD", Components.interfaces.nsILocalFile);
 
+        var dirs=agentPath.split(RegExp(this.isDosLike ? "\\\\" : "/"));
+        for (var i=0; i< dirs.length; i++) {
+          pathDir.append(dirs[i]);
+        }
+      }
+      else {
+        // absolute path
+        pathDir.initWithPath(agentPath);
+      }
       if (!pathDir.exists())
         throw Components.results.NS_ERROR_FAILURE;
 
@@ -1528,8 +1566,6 @@ function (domWindow, version, prefBranch) {
 
   this.agentType = agentType;
   this.agentPath = agentPath;
-  
-  
 
   var command = this.getAgentPath();
   if (agentType == "gpg") {
@@ -1568,17 +1604,6 @@ function (domWindow, version, prefBranch) {
     this.alertMsg(domWindow, EnigGetString("oldGpgVersion", gpgVersion));
     throw Components.results.NS_ERROR_FAILURE;
   }
-
-  // Register to observe XPCOM shutdown
-  var obsServ = Components.classes[NS_OBSERVERSERVICE_CONTRACTID].getService();
-  obsServ = obsServ.QueryInterface(Components.interfaces.nsIObserverService);
-
-  obsServ.addObserver(this, NS_XPCOM_SHUTDOWN_OBSERVER_ID, false);
-
-  this.stillActive();
-  this.initialized = true;
-
-  DEBUG_LOG("enigmail.js: Enigmail.initialize: END\n");
 }
 
 Enigmail.prototype.getAgentPath = 
@@ -2173,7 +2198,12 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
 
   if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
     errorMsgObj.value = EnigGetString("badPhrase");
-  } else {
+  }
+  else if (statusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT) {
+   errorMsgObj.value = statusMsg;
+   
+  }
+  else {
     errorMsgObj.value = EnigGetString("badCommand");
   }
 
@@ -2193,7 +2223,7 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
   return exitCode;
 }
 
-var gPGPHashNum = {md5:1, sha1:2, ripemd160:3};
+var gPGPHashNum = {md5:1, sha1:2, ripemd160:3, sha256:4, sha384:5, sha512:6};
 
 Enigmail.prototype.getEncryptCommand =
 function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgObj) {
@@ -2594,6 +2624,7 @@ function (parent, uiFlags, cipherText, signatureObj, exitCodeObj,
     if (!allowImport) {
       errorMsgObj.value = EnigGetString("decryptToImport");
       statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
+      statusFlagsObj.value |= nsIEnigmail.INLINE_KEY;
 
       return "";
     }
@@ -4362,18 +4393,20 @@ Enigmail.prototype.getRulesData = function (rulesListObj) {
   return false;
 }
 
-Enigmail.prototype.addRule = function (appendToEnd, toAddress, keyList, sign, encrypt, pgpMime) {
+Enigmail.prototype.addRule = function (appendToEnd, toAddress, keyList, sign, encrypt, pgpMime, flags) {
   DEBUG_LOG("enigmail.js: addRule\n");
   if (! this.rulesList) {
     var domParser=Components.classes[NS_DOMPARSER_CONTRACTID].createInstance(Components.interfaces.nsIDOMParser);
     this.rulesList = domParser.parseFromString("<pgpRuleList/>", "text/xml");
   }
+  var negate = (flags & 1);
   var rule=this.rulesList.createElement("pgpRule");
   rule.setAttribute("email", toAddress);
   rule.setAttribute("keyId", keyList);
   rule.setAttribute("sign", sign);
   rule.setAttribute("encrypt", encrypt);
   rule.setAttribute("pgpMime", pgpMime);
+  rule.setAttribute("negateRule", flags);
   var origFirstChild = this.rulesList.firstChild.firstChild;
   
   if (origFirstChild && (! appendToEnd)) {

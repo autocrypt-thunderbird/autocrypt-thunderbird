@@ -79,38 +79,70 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
       return true;
     }
     DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys: keys loaded\n");
+    
+    // go through all rules to find match with email addresses
     var node=rulesList.firstChild.firstChild;
     while (node) {
       if (node.tagName=="pgpRule") {
         try {
           var nodeText=node.getAttribute("email");
           if (nodeText) {
-            addrList=nodeText.toLowerCase().split(/[ ,;]+/);
-            for(var addrIndex=0; addrIndex < addrList.length; addrIndex++) {
-              var email=addrList[addrIndex];
-              var i=addresses.indexOf(email);
-              while (i>=0) {
-                sign   =getFlagVal(sign,    node, "sign", conflicts);
-                encrypt=getFlagVal(encrypt, node, "encrypt", conflicts);
-                pgpMime=getFlagVal(pgpMime, node, "pgpMime", conflicts);
-    
-                // extract found address
-                var keyIds=node.getAttribute("keyId");
-                // EnigAlert("Found match with: "+email);
-                var start=addresses.substring(0,i+email.length).lastIndexOf("{");
-                var end=start+addresses.substring(start).indexOf("}")+1;
-                foundAddresses+=addresses.substring(start,end);
+            var negateRule = false;
+            if (node.getAttribute("negateRule")) {
+              negateRule = Number(node.getAttribute("negateRule"));
+            }
+            if (! negateRule) {
+              // normal rule
+              addrList=nodeText.toLowerCase().split(/[ ,;]+/);
+              for(var addrIndex=0; addrIndex < addrList.length; addrIndex++) {
+                var email=addrList[addrIndex];
+                var i=addresses.indexOf(email);
+                while (i>=0) {
+                  sign    = getFlagVal(sign,    node, "sign", conflicts);
+                  encrypt = getFlagVal(encrypt, node, "encrypt", conflicts);
+                  pgpMime = getFlagVal(pgpMime, node, "pgpMime", conflicts);
+
+                  // extract found address
+                  var keyIds=node.getAttribute("keyId");
+                  // EnigAlert("Found match with: "+email);
+
+                  var start=addresses.substring(0,i+email.length).lastIndexOf("{");
+                  var end=start+addresses.substring(start).indexOf("}")+1;
+                  foundAddresses+=addresses.substring(start,end);
+                  if (keyIds) {
+                    if (keyIds != ".") {
+                      keyList.push(keyIds.replace(/[ ,;]+/g, ", "));
+                    }
+                    addresses=addresses.substring(0,start)+addresses.substring(end);
+                    i=addresses.indexOf(email);
+                  }
+                  else {
+                    var oldMatch=i;
+                    i=addresses.substring(oldMatch+email.length).indexOf(email);
+                    if (i>=0) i+=oldMatch+email.length;
+                  }
+                }
+              }
+            }
+            else {
+              // "not" rule
+              addrList = addresses.replace(/\}\{/g, "},{").split(/,/);
+              for (i=0; i<addrList.length; i++) {
+                if (nodeText.toLowerCase().indexOf(addrList[i])>=0) {
+                  i=addrList.length+2;
+                  break;
+                }
+              }
+              if (i==addrList.length) {
+                // no matching address; apply rule
+                sign    = getFlagVal(sign,    node, "sign", conflicts);
+                encrypt = getFlagVal(encrypt, node, "encrypt", conflicts);
+                pgpMime = getFlagVal(pgpMime, node, "pgpMime", conflicts);
+                keyIds=node.getAttribute("keyId");
                 if (keyIds) {
                   if (keyIds != ".") {
                     keyList.push(keyIds.replace(/[ ,;]+/g, ", "));
                   }
-                  addresses=addresses.substring(0,start)+addresses.substring(end);
-                  i=addresses.indexOf(email);
-                }
-                else {
-                  var oldMatch=i;
-                  i=addresses.substring(oldMatch+email.length).indexOf(email);
-                  if (i>=0) i+=oldMatch+email.length;
                 }
               }
             }
@@ -129,7 +161,8 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
     for (i=0; i<addrList.length; i++) {
       if (addrList[i].length>0) {
         var theAddr=EnigStripEmail(addrList[i]).toLowerCase();
-        if (foundAddresses.indexOf("{"+theAddr+"}")==-1) {
+        if ((foundAddresses.indexOf("{"+theAddr+"}")==-1) &&
+            (! (theAddr.indexOf("0x")==0 && theAddr.indexOf("@")==-1))) {
           inputObj.toAddress="{"+theAddr+"}";
           inputObj.options="";
           inputObj.command = "add";
@@ -140,17 +173,19 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
           resultObj.getAttribute = function(attrName) {
             return this[attrName]; 
           }
-          sign   =getFlagVal(sign,    resultObj, "sign",    conflicts);
-          encrypt=getFlagVal(encrypt, resultObj, "encrypt", conflicts);
-          pgpMime=getFlagVal(pgpMime, resultObj, "pgpMime", conflicts);
-          if (resultObj.keyId.length>0) {
-            keyList.push(resultObj.keyId);
-            var replaceAddr=new RegExp("{"+addrList[i]+"}", "g");
-            addresses=addresses.replace(replaceAddr, "");
-          }
-          else {
-            // no key -> no encryption
-            encrypt=0;
+          if (!resultObj.negate) {
+            sign   =getFlagVal(sign,    resultObj, "sign",    conflicts);
+            encrypt=getFlagVal(encrypt, resultObj, "encrypt", conflicts);
+            pgpMime=getFlagVal(pgpMime, resultObj, "pgpMime", conflicts);
+            if (resultObj.keyId.length>0) {
+              keyList.push(resultObj.keyId);
+              var replaceAddr=new RegExp("{"+addrList[i]+"}", "g");
+              addresses=addresses.replace(replaceAddr, "");
+            }
+            else {
+              // no key -> no encryption
+              encrypt=0;
+            }
           }
         }
       }

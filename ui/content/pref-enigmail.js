@@ -106,7 +106,10 @@ function resetPrefs() {
 function prefOnAccept() {
 
   DEBUG_LOG("pref-enigmail.js: prefOnAccept\n");
-
+  
+  var oldAgentPath = EnigGetPref("agentPath");
+  var newAgentPath = document.getElementById("enigmail_agentPath").value;
+  
   EnigDisplayPrefs(false, false, true);
 
   EnigSetRadioPref("usePGPMimeOption", gUsePGPMimeOptionList);
@@ -133,6 +136,27 @@ function prefOnAccept() {
 
   EnigSavePrefs();
 
+  if (oldAgentPath != newAgentPath) {
+    if (! gEnigmailSvc) {
+      try {
+        gEnigmailSvc = ENIG_C.classes[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_C.interfaces.nsIEnigmail);
+      } catch (ex) {}
+    }
+
+    if (gEnigmailSvc.initialized) {
+      try {
+        gEnigmailSvc.reinitialize();
+      }
+      catch (ex) {
+        EnigError(EnigGetString("invalidGpgPath"));
+      }
+    }
+    else {
+      gEnigmailSvc = null;
+      GetEnigmailSvc();
+    }
+  }
+  
   return true;
 }
 
@@ -654,7 +678,7 @@ enigUninstaller.prototype =
           jarfile.append(fileparts[t]);
         }
       }
-      else if (url.indexOf("file://") == 0){
+      else if (url.indexOf("file://") == 0) {
         var ioService = enigGetService("@mozilla.org/network/io-service;1", "nsIIOService");
         var fileuri = ioService.newURI(url,"",null);
         if (fileuri instanceof ENIG_C.interfaces.nsIFileURL){

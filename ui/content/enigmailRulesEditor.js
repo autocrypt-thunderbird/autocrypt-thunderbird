@@ -70,8 +70,13 @@ function enigmailDlgOnLoad() {
                 keyId: node.getAttribute("keyId"),
                 sign: node.getAttribute("sign"),
                 encrypt: node.getAttribute("encrypt"),
-                pgpMime: node.getAttribute("pgpMime")
+                pgpMime: node.getAttribute("pgpMime"),
+                negate: "0"
               };
+          if (node.getAttribute("negateRule")) {
+            userObj.negate=node.getAttribute("negateRule");
+          }
+          
           var treeItem=document.createElement("treeitem");
           createRow(treeItem, userObj);
           treeChildren.appendChild(treeItem);
@@ -101,7 +106,9 @@ function enigmailDlgOnAccept() {
                         node.getAttribute("keyId"),
                         node.getAttribute("sign"),
                         node.getAttribute("encrypt"),
-                        node.getAttribute("pgpMime"));
+                        node.getAttribute("pgpMime"),
+                        node.getAttribute("negateRule")
+                        );
     node = node.nextSibling;
   }
   enigmailSvc.saveRulesFile();
@@ -133,18 +140,28 @@ function createCol(value, label, treeItem, translate) {
     if (label==".") {
       label=EnigGetString("nextRcpt");
     }
+    break;
+  case "negateRule":
+    if (Number(label) == 1) {
+      label=EnigGetString("negateRule");
+    }
+    else {
+      label = "";
+    }
   }
   column.setAttribute("label", label);
   return column;
 }
 
 function createRow(treeItem, userObj) {
+  var negate=createCol("negateRule", userObj.negate, treeItem);
   var email=createCol("email", userObj.email, treeItem);
   var keyId=createCol("keyId", userObj.keyId, treeItem);
   var sign=createCol("sign", userObj.sign, treeItem);
   var encrypt=createCol("encrypt", userObj.encrypt, treeItem);
   var pgpMime=createCol("pgpMime", userObj.pgpMime, treeItem);
   var treeRow=document.createElement("treerow");
+  treeRow.appendChild(negate);
   treeRow.appendChild(email);
   treeRow.appendChild(keyId);
   treeRow.appendChild(sign);
@@ -182,6 +199,7 @@ function enigDoEdit() {
     inputObj.sign      = Number(node.getAttribute("sign"));
     inputObj.encrypt   = Number(node.getAttribute("encrypt"));
     inputObj.pgpmime   = Number(node.getAttribute("pgpMime"));
+    inputObj.negate    = Number(node.getAttribute("negateRule"));
     
     window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     if (resultObj.cancelled==false) {
