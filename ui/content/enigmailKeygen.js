@@ -219,6 +219,7 @@ function enigmailKeygenStart() {
                                            comment,
                                            userEmail,
                                            0,
+                                           2048,
                                            passphrase,
                                            requestObserver);
    } catch (ex) {
