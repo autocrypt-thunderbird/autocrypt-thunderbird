@@ -23,6 +23,15 @@ if (!verifyDiskSpace(fProgram, srDest)) {
   var fComponents = getFolder("Components");
   var fDefaults   = getFolder("Program", "defaults/pref");
 
+  // workaround for Mozilla 1.8a3 and newer, failing to register enigmime correctly
+  
+  var delComps = [ "compreg.dat" ]; // Components registry
+
+  for (var j=0; j<delComps.length; j++) {
+     var delFile = getFolder(fComponents, delComps[j]);
+     if (File.exists(delFile))
+        File.remove(delFile);
+  }
   // addDirectory: blank, archive_dir, install_dir, install_subdir
   addDirectory("", "components",    fComponents, "");
   addDirectory("", "chrome",        fChrome,     "");
@@ -46,7 +55,7 @@ if (!verifyDiskSpace(fProgram, srDest)) {
       isTbird = confirm("Detected installation on Thunderbird. Is this correct?");
     }
     else {
-      isTbird = !confirm("Detected installation on Mozilla or Netscape. Is this correct?");
+      isTbird = false;
     }
 //  old way:
 //  var isTbird = !confirm("Which Theme do you want to install for Enigmail? Click:\n[ OK ] for Mozilla\n[ Cancel ] for Thunderbird");
@@ -70,10 +79,6 @@ if (!verifyDiskSpace(fProgram, srDest)) {
 
     } else {
       performInstall();
-      if (isTbird) {
-        var xulFile="XUL."+(getPlatform() == "win" ? 'mfl' : 'mfasl');
-        alert("Enigmail v"+APP_VERSION+" has been successfully installed. Install the EnigMime module and then restart Thunderbird.\n\n ********** IMPORTANT **********\nIf you upgraded from a previous version of Thunderbird, you *must* delete "+xulFile+" and the chrome folder in your profile directory, or Thunderbird/Enigmail may not work properly and may even *crash* !");
-      }
     }
   }
 }
