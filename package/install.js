@@ -2,9 +2,9 @@
 
 var err;
 
-err = initInstall("Enigmail v0.62.4",  // name for install UI
+err = initInstall("Enigmail v0.63.0",  // name for install UI
                   "/enigmail",         // registered name
-                  "0.62.4.0");         // package version
+                  "0.63.0.0");         // package version
 
 logComment("initInstall: " + err);
 
@@ -28,7 +28,7 @@ if (!verifyDiskSpace(fProgram, srDest)) {
 
   err = getLastError();
   if (err == ACCESS_DENIED) {
-    alert("Unable to write to components directory "+fComponents+".\n You will need to restart the browser with administrator/root privileges to install this software. After installing as root (or administrator), you will need to restart the browser one more time to register the installed software.\n After the second restart, you can go back to running the browser without privileges!");
+    alert("Unable to write to components directory "+fComponents+".\n You will need to restart the browser with administrator/root privileges to install this software. After installing as root (or administrator), you will need to restart the browser one more time, as a privileged user, to register the installed software.\n After the second restart, you can go back to running the browser without privileges!");
 
     cancelInstall(ACCESS_DENIED);
 

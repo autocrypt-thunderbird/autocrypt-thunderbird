@@ -88,6 +88,7 @@ CPPSRCS		=		         \
 	        nsEnigMimeDecrypt.cpp    \
 	        nsEnigMimeVerify.cpp     \
 	        nsEnigContentHandler.cpp \
+	        mimeenc2.cpp \
 	        mimehdrs2.cpp \
 	        mimedummy.cpp \
 	        mimeenig.cpp  \

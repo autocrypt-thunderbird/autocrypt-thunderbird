@@ -47,11 +47,11 @@ interface nsIURI;
 interface nsIEnigMimeHeaderSink : nsISupports
 {
   void updateSecurityStatus(in AUTF8String uriSpec,
+                            in long exitCode,
                             in unsigned long statusFlags,
                             in wstring keyId,
                             in wstring userId,
-                            in wstring fullStatusMsg,
-                            in wstring briefStatusMsg);
+                            in wstring errorMsg);
 };
 
 

@@ -566,8 +566,7 @@ function enigSend(sendFlags) {
            // Default send error; turn off encryption
            sendFlags &= ~ENIG_ENCRYPT;
 
-           if (!EnigGetPref("defaultSignMsg") &&
-               (defaultEncryptionOption < 2) ) {
+           if (!EnigGetPref("defaultSignMsg")) {
              // Turn off signing
              sendFlags &= ~ENIG_SIGN;
            }

@@ -14,7 +14,8 @@ var gEnigNoShowReload = false;
 
 var gEnigRemoveListener = false;
 
-var gEnigHeadersList = ["content-type", "x-enigmail-version"];
+var gEnigHeadersList = ["content-type", "content-transfer-encoding",
+                        "x-enigmail-version"];
 var gEnigSavedHeaders = null;
 
 var gShowHeadersObj = {"viewallheaders":2,
@@ -101,12 +102,11 @@ function enigViewSecurityInfo() {
     var keyserver = EnigGetPref("keyserver");
 
     if (keyserver && gEnigSecurityInfo.keyId &&
-        (gEnigSecurityInfo.statusFlags & nsIEnigmail.RECEIVED_PGP_MIME) &&
         (gEnigSecurityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) ) {
 
       var pubKeyId = "0x" + gEnigSecurityInfo.keyId.substr(8, 8);
 
-      var mesg = "Click OK button to import public key "+pubKeyId+" from keyserver.\n\n" + gEnigSecurityInfo.statusInfo;
+      var mesg =  gEnigSecurityInfo.statusInfo + "\n\nClick OK button to import public key "+pubKeyId+" from keyserver.";
 
       if (EnigConfirm(mesg)) {
         var recvErrorMsgObj = new Object();
@@ -116,8 +116,11 @@ function enigViewSecurityInfo() {
         var exitStatus = enigmailSvc.receiveKey(window, recvFlags, pubKeyId,
                                                 recvErrorMsgObj);
 
-        if (exitStatus == 0)
+        if (exitStatus == 0) {
           enigMessageReload(false);
+        } else {
+          EnigAlert("Unable to receive public key\n\n"+recvErrorMsgObj.value);
+        }
       }
 
     } else {
@@ -359,7 +362,7 @@ function enigToggleAttribute(attrName)
 function enigMessageImport(event) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageImport: "+event+"\n");
 
-  return enigMessageParse(!event, true);
+  return enigMessageParse(!event, true, "");
 }
 
 function enigMessageDecrypt(event) {
@@ -415,10 +418,12 @@ function enigMessageDecrypt(event) {
   EnigShowHeadersAll(false);
 
   var contentType = "";
+  var contentEncoding = "";
   var xEnigmailVersion = "";
 
   if (gEnigSavedHeaders) {
-    contentType = gEnigSavedHeaders["content-type"];
+    contentType      = gEnigSavedHeaders["content-type"];
+    contentEncoding  = gEnigSavedHeaders["content-transfer-encoding"];
     xEnigmailVersion = gEnigSavedHeaders["x-enigmail-version"];
   }
 
@@ -470,10 +475,11 @@ function enigMessageDecrypt(event) {
     }
   }
 
-  return enigMessageParse(!event, false);
+  return enigMessageParse(!event, false, contentEncoding);
 }
 
-function enigMessageParse(interactive, importOnly) {
+
+function enigMessageParse(interactive, importOnly, contentEncoding) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParse: "+interactive+"\n");
   var msgFrame = window.frames["messagepane"];
   DEBUG_LOG("enigmailMessengerOverlay.js: msgFrame="+msgFrame+"\n");
@@ -502,13 +508,13 @@ function enigMessageParse(interactive, importOnly) {
 
   var urlSpec = mailNewsUrl ? mailNewsUrl.spec : "";
 
-  enigMessageParseCallback(msgText, charset, interactive, importOnly,
-                           urlSpec, "", true);
+  enigMessageParseCallback(msgText, contentEncoding, charset, interactive,
+                           importOnly, urlSpec, "", true);
 }
 
 
-function enigMessageParseCallback(msgText, charset, interactive, importOnly,
-                                  messageUrl, signature, retry) {
+function enigMessageParseCallback(msgText, contentEncoding, charset, interactive,
+                                  importOnly, messageUrl, signature, retry) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: "+interactive+", "+interactive+", importOnly="+importOnly+", charset="+charset+", msgUrl="+messageUrl+", retry="+retry+", signature='"+signature+"'\n");
 
   var enigmailSvc = GetEnigmailSvc();
@@ -563,14 +569,14 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
      return;
   }
 
-  enigUpdateHdrIcons(statusFlags, keyIdObj.value, userIdObj.value, errorMsg, "");
+  enigUpdateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value, errorMsg);
 
   if (statusFlags & (nsIEnigmail.BAD_SIGNATURE | nsIEnigmail.BAD_ARMOR)) {
     // Bad signature/armor
     if (retry) {
       // Try to verify signature by accessing raw message text directly
       // (avoid recursion by setting retry parameter to false on callback)
-      enigMsgDirect(interactive, importOnly, charset, newSignature);
+      enigMsgDirect(interactive, importOnly, contentEncoding, charset, newSignature);
       return;
     }
   }
@@ -1011,16 +1017,19 @@ function EnigFilePicker(title, displayDir, save, defaultExtension, filterPairs) 
 }
 
 
-function enigMsgDirect(interactive, importOnly, charset, signature) {
-  WRITE_LOG("enigmailMessengerOverlay.js: enigMsgDirect: signature="+signature+"\n");
+function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signature) {
+  WRITE_LOG("enigmailMessengerOverlay.js: enigMsgDirect: contentEncoding="+contentEncoding+", signature="+signature+"\n");
   var mailNewsUrl = enigGetCurrentMsgUrl();
   if (!mailNewsUrl)
     return;
 
   var ipcBuffer = Components.classes[ENIG_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
 
+  ipcBuffer.open(ENIG_MSG_BUFFER_SIZE, false);
+
   var callbackArg = { interactive:interactive,
                       importOnly:importOnly,
+                      contentEncoding:contentEncoding,
                       charset:charset,
                       messageUrl:mailNewsUrl.spec,
                       signature:signature,
@@ -1029,8 +1038,33 @@ function enigMsgDirect(interactive, importOnly, charset, signature) {
   var requestObserver = new EnigRequestObserver(enigMsgDirectCallback,
                                                 callbackArg);
 
-  ipcBuffer.openURI(mailNewsUrl, ENIG_MSG_BUFFER_SIZE,
-                    false, requestObserver, mailNewsUrl);
+  ipcBuffer.observe(requestObserver, mailNewsUrl);
+
+  var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+
+  var channel = ioServ.newChannelFromURI(mailNewsUrl);
+
+  var pipeFilter = Components.classes[ENIG_PIPEFILTERLISTENER_CONTRACTID].createInstance(Components.interfaces.nsIPipeFilterListener);
+
+  pipeFilter.init(ipcBuffer, null,
+                "-----BEGIN PGP",
+                "-----END PGP",
+                0, true, false, null);
+
+  var listener;
+
+  try {
+    var mimeListener = Components.classes[ENIG_ENIGMIMELISTENER_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeListener);
+
+    mimeListener.init(pipeFilter, null, ENIG_MSG_HEADER_SIZE, true, false, true);
+
+    listener = mimeListener;
+
+  } catch (ex) {
+    listener = pipeFilter;
+  }
+
+  channel.asyncOpen(listener, mailNewsUrl);
 }
 
 
@@ -1053,9 +1087,10 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
 
   callbackArg.ipcBuffer.shutdown();
 
-  //DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgDirectCallback: msgText='"+msgText+"'\n");
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgDirectCallback: msgText='"+msgText+"'\n");
 
-  enigMessageParseCallback(msgText, callbackArg.charset,
+  enigMessageParseCallback(msgText, callbackArg.contentEncoding,
+                           callbackArg.charset,
                            callbackArg.interactive,
                            callbackArg.importOnly,
                            callbackArg.messageUrl,

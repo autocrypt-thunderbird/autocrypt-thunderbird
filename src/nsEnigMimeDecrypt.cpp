@@ -289,7 +289,8 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   PRBool noOutput = PR_FALSE;
   PRBool noProxy = PR_FALSE;
 
-  rv = enigmailSvc->DecryptMessageStart(prompter,
+  rv = enigmailSvc->DecryptMessageStart(nsnull,
+                                        prompter,
                                         mVerifyOnly,
                                         noOutput,
                                         nsnull,
@@ -303,7 +304,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
       nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
       if (enigHeaderSink) {
         NS_NAMED_LITERAL_STRING(nullString, "");
-        rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, 0, nullString.get(), nullString.get(), errorMsg, nullString.get());
+        rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, -1, 0, nullString.get(), nullString.get(), errorMsg);
       }
     }
 
@@ -359,32 +360,6 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   mBuffer->Shutdown();
 
   PRInt32 exitCode;
-  rv = mPipeTrans->ExitCode(&exitCode);
-  if (NS_FAILED(rv)) return rv;
-
-  DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: exitCode=%d\n", exitCode));
-
-  // Extract STDERR output
-  nsCOMPtr<nsIPipeListener> errListener;
-  rv = mPipeTrans->GetConsole(getter_AddRefs(errListener));
-  if (NS_FAILED(rv)) return rv;
-
-  if (!errListener)
-    return NS_ERROR_FAILURE;
-
-  PRUint32 errorCount;
-  nsXPIDLCString errorOutput;
-  rv = errListener->GetByteData(&errorCount, getter_Copies(errorOutput));
-  if (NS_FAILED(rv)) return rv;
-
-  // Shutdown STDERR console
-  errListener->Shutdown();
-
-  // Terminate process
-  mPipeTrans->Terminate();
-  mPipeTrans = nsnull;
-
-  PRInt32 newExitCode;
   PRUint32 statusFlags;
   nsXPIDLString keyId;
   nsXPIDLString userId;
@@ -392,27 +367,26 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   PRUint32 uiFlags = nsIEnigmail::UI_PGP_MIME;
 
   rv = enigmailSvc->DecryptMessageEnd(uiFlags,
-                                      exitCode,
                                       mOutputLen,
-                                      errorOutput,
+                                      mPipeTrans,
                                       mVerifyOnly,
                                       noOutput,
                                       &statusFlags,
                                       getter_Copies(keyId),
                                       getter_Copies(userId),
                                       getter_Copies(errorMsg),
-                                      &newExitCode);
+                                      &exitCode);
   if (NS_FAILED(rv)) return rv;
 
   if (securityInfo) {
     nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
     if (enigHeaderSink) {
-      rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, statusFlags, keyId, userId, errorMsg, NS_LITERAL_STRING("").get());
+      rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, exitCode, statusFlags, keyId, userId, errorMsg);
     }
   }
 
-  if (newExitCode != 0) {
-    DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: ERROR EXIT %d\n", newExitCode));
+  if (exitCode != 0) {
+    DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: ERROR EXIT %d\n", exitCode));
     return NS_ERROR_FAILURE;
   }
 

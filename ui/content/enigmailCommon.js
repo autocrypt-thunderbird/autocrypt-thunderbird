@@ -1,15 +1,17 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.62.4.0";
-var gEnigmimeVersion = "0.62.1.0";
+var gEnigmailVersion = "0.63.0.0";
+var gEnigmimeVersion = "0.63.0.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 32000;
+const ENIG_MSG_HEADER_SIZE = 16000;
 
 const ENIG_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
 const ENIG_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1";
 const ENIG_IPCBUFFER_CONTRACTID   = "@mozilla.org/process/ipc-buffer;1";
+const ENIG_PIPEFILTERLISTENER_CONTRACTID = "@mozilla.org/process/pipe-filter-listener;1";
 const ENIG_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
 const ENIG_ENIGMIMELISTENER_CONTRACTID = "@mozilla.org/enigmail/mime-listener;1";
 const ENIG_ENIGMIMESERVICE_CONTRACTID = "@mozdev.org/enigmail/enigmimeservice;1";
@@ -18,6 +20,8 @@ const ENIG_STREAMCONVERTERSERVICE_CID_STR =
       "{892FFEB0-3F80-11d3-A16C-0050041CAF44}";
 
 const ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
+
+const ENIG_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
 const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
 

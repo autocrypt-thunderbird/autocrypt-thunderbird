@@ -45,6 +45,7 @@
 #include "nsIEnigMimeListener.h"
 #include "nsIEnigMimeWriter.h"
 #include "nsIEnigmail.h"
+#include "modmimee2.h"
 
 #define NS_ENIGMSGCOMPOSE_CLASSNAME "Enigmail Msg Compose"
 
@@ -86,6 +87,8 @@ protected:
 
     nsresult WriteFinalSeparator();
 
+    nsresult WriteOut(const char *aBuf, PRInt32 aLen);
+
     nsresult WriteCopy(const char *aBuf, PRInt32 aLen);
 
     nsresult FinishAux(PRBool aAbort, nsIMsgSendReport* sendReport);
@@ -115,6 +118,8 @@ protected:
     nsCString                     mBoundary;
 
     nsOutputFileStream*           mStream;
+
+    MimeEncoderData*              mEncoderData;
 
     nsCOMPtr<nsIMsgComposeSecure> mMsgComposeSecure;
     nsCOMPtr<nsIEnigMimeListener> mMimeListener;

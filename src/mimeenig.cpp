@@ -143,7 +143,7 @@ MimeEnig_eof(void* output_closure, PRBool abort_p)
     const char content[] = "content-type: multipart/mixed; boundary=\"ABCD\"\r\n\r\nmultipart\r\n--ABCD\r\ncontent-type: text/html \r\n\r\n<html><body><b>TEST CONTENT1<b></body></html>\r\n\r\n--ABCD\r\ncontent-type: text/plain\r\ncontent-disposition: attachment; filename=\"abcd.txt\"\r\n\r\nFILE CONTENTS\r\n--ABCD--\r\n";
 
     PR_SetError(0,0);
-    int status = data->output_fn(content, nsCRT::strlen(content),
+    int status = data->output_fn(content, strlen(content),
                                  data->output_closure);
     if (status < 0) {
       PR_SetError(status, 0);
@@ -192,7 +192,7 @@ MimeEnig_generate(void *output_closure)
   fprintf(stderr, "MimeEnig_generate:\n");
 
   const char htmlMsg[] = "<html><body><b>GEN MSG<b></body></html>";
-  char* msg = (char *) PR_MALLOC(nsCRT::strlen(htmlMsg) + 1);
+  char* msg = (char *) PR_MALLOC(strlen(htmlMsg) + 1);
   if (msg) {
     PL_strcpy(msg, htmlMsg);
   }

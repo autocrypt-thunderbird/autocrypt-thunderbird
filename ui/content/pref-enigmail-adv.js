@@ -58,8 +58,6 @@ function AdvOnAccept() {
 
    EnigSetPref("mimeHashAlgorithm", gMimeHashElement.selectedIndex);
 
-   dump("gSendFlowedElement.checked="+gSendFlowedElement.checked+"\n");
-
    if (gSendFlowedElement &&
        (gSendFlowedElement.checked != gSendFlowedValue) ) {
 
@@ -159,7 +157,7 @@ function EnigMimeTest() {
 
     var mimeFilter = Components.classes[ENIG_ENIGMIMELISTENER_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeListener);
 
-    mimeFilter.init(listener, null, 4000, j != 1, j == 1);
+    mimeFilter.init(listener, null, 4000, j != 1, j == 1, false);
 
     for (var k=0; k<lines.length; k++) {
       var line = lines[k];

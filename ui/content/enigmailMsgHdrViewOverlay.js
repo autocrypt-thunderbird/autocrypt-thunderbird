@@ -54,24 +54,61 @@ function enigEndHeaders()
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigEndHeaders\n");
 }
 
-function enigUpdateHdrIcons(statusFlags, keyId, userId, fullStatusMsg, briefStatusMsg) {
-  DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateHdrIcons\n");
+function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
+  DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateHdrIcons: exitCode="+exitCode+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+errorMsg+"\n");
+
+  var errorLines = errorMsg.split(/\r?\n/);
+
+  if (errorLines && (errorLines.length > 22) ) {
+    // Retain only first twenty lines and last two lines of error message
+    var lastLines = errorLines[errorLines.length-2] + "\n" +
+                    errorLines[errorLines.length-1] + "\n";
+
+    while (errorLines.length > 20)
+      errorLines.pop();
+
+    errorMsg = errorLines.join("\n") + "\n...\n" + lastLines;
+  }
 
   var statusInfo = "";
-  var statusLine = briefStatusMsg;
+  var statusLine = "";
 
-  var statusLines = fullStatusMsg.split(/\r?\n/);
+  if ( (exitCode == 0) ||
+       (statusFlags & nsIEnigmail.DISPLAY_MESSAGE) ) {
+    // Normal exit / display message
+    statusInfo = errorMsg;
+    statusLine = errorMsg;
 
-  if (statusLines && statusLines.length) {
+  } else if (keyId) {
+    statusInfo = "Public key "+keyId+" needed to verify signature";
+    statusLine = statusInfo + "; click Broken Pen icon";
 
-     if (!statusLine)
-       statusLine += statusLines[0];
+  } else if (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
+                            nsIEnigmail.UNVERIFIED_SIGNATURE |
+                            nsIEnigmail.EXPIRED_SIGNATURE) ) {
+    statusInfo = "Error - signature verification failed";
+    statusLine = statusInfo + "; click Broken Pen icon for details";
+    statusInfo += "\n\n" + errorMsg;
 
-    // Display only first twenty lines of status message
-    while (statusLines.length > 20)
-      statusLines.pop();
+  } else if (statusFlags & nsIEnigmail.DECRYPTION_FAILED) {
+    if (statusFlags & nsIEnigmail.NO_SECKEY) {
+      statusInfo = "Error - secret key needed to decrypt message";
+    } else {
+      statusInfo = "Error - decryption failed";
+    }
 
-    statusInfo = statusLines.join("\n");
+    statusLine = statusInfo + "; click Broken Key icon for details";
+    statusInfo += "\n\n" + errorMsg;
+
+  } else if (statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
+    statusInfo = "Error - bad passphrase";
+    statusLine = statusInfo + "; click Decrypt button to retry";
+    statusInfo += "\n\n" + errorMsg;
+
+  } else {
+    statusInfo = "Error - decryption/verification failed";
+    statusLine = statusInfo + "; View > Message security info for details";
+    statusInfo += "\n\n" + errorMsg;
   }
 
   if (!statusInfo && (statusFlags & nsIEnigmail.DECRYPTION_OKAY)) {
@@ -84,12 +121,16 @@ function enigUpdateHdrIcons(statusFlags, keyId, userId, fullStatusMsg, briefStat
                         statusLine: statusLine,
                         statusInfo: statusInfo };
 
-  if (statusLine) {
-    var enigmailBox = document.getElementById("expandedEnigmailBox");
-    var statusText  = document.getElementById("expandedEnigmailStatusText");
+  var enigmailBox = document.getElementById("expandedEnigmailBox");
+  var statusText  = document.getElementById("expandedEnigmailStatusText");
 
+  if (statusLine) {
     statusText.setAttribute("value", statusLine);
     enigmailBox.removeAttribute("collapsed");
+
+  } else {
+    statusText.setAttribute("value", "");
+    enigmailBox.setAttribute("collapsed", "true");
   }
 
   if (!gSMIMEContainer)
@@ -109,7 +150,8 @@ function enigUpdateHdrIcons(statusFlags, keyId, userId, fullStatusMsg, briefStat
 
     } else if (statusFlags & (nsIEnigmail.GOOD_SIGNATURE |
                               nsIEnigmail.BAD_SIGNATURE |
-                              nsIEnigmail.UNVERIFIED_SIGNATURE) ) {
+                              nsIEnigmail.UNVERIFIED_SIGNATURE |
+                              nsIEnigmail.EXPIRED_SIGNATURE) ) {
       // Display untrusted/bad signature icon
       gSignedUINode.setAttribute("signed", "notok");
       //gStatusBar.setAttribute("signed", "notok");
@@ -218,26 +260,21 @@ if (messageHeaderSink) {
         gMessageListeners[index].onStartHeaders();
 
       var securityInfo = this.securityInfo;
-      dump("securityInfo="+this.securityInfo+"\n");
 
       var innerSMIMEHeaderSink = null;
       var enigMimeHeaderSink = null;
 
       try {
         innerSMIMEHeaderSink = securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMEHeaderSink);
-        dump("innerSMIMEHeaderSink="+innerSMIMEHeaderSink+"\n");
 
         try {
           enigMimeHeaderSink = innerSMIMEHeaderSink.QueryInterface(Components.interfaces.nsIEnigMimeHeaderSink);
-          dump("enigMimeHeaderSink="+enigMimeHeaderSink+"\n");
         } catch (ex) {}
       } catch (ex) {}
 
       if (!enigMimeHeaderSink) {
         this.securityInfo = new EnigMimeHeaderSink(innerSMIMEHeaderSink);
       }
-
-      dump("securityInfo="+this.securityInfo+"\n");
 
       DEBUG_LOG("enigmailMsgHdrViewOverlay.js: messageHeaderSink.onStartHeaders: END\n");
     }
@@ -267,16 +304,16 @@ EnigMimeHeaderSink.prototype =
     throw Components.results.NS_NOINTERFACE;
   },
 
-  updateSecurityStatus: function(uriSpec, statusFlags, keyId, userId, fullStatusMsg, briefStatusMsg)
+  updateSecurityStatus: function(uriSpec, exitCode, statusFlags, keyId, userId, errorMsg)
   {
-    DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: uriSpec="+uriSpec+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+briefStatusMsg+"\n");
+    DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: uriSpec="+uriSpec+"\n");
 
     var msgUriSpec = enigGetCurrentMsgUriSpec();
 
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: msgUriSpec="+msgUriSpec+"\n");
 
     if (!uriSpec || (uriSpec == msgUriSpec)) {
-      enigUpdateHdrIcons(statusFlags, keyId, userId, fullStatusMsg, briefStatusMsg);
+      enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg);
     }
 
     return;

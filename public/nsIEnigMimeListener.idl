@@ -95,7 +95,8 @@ interface nsIEnigMimeListener : nsIStreamListener
 
   void init(in nsIStreamListener listener, in nsISupports ctxt,
             in unsigned long maxHeaderBytes,
-            in boolean skipHeaders, in boolean skipBody);
+            in boolean skipHeaders, in boolean skipBody,
+            in boolean decodeContent);
 
   void write(in string buf, in unsigned long count,
              in nsIRequest request, in nsISupports ctxt);

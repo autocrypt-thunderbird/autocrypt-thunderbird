@@ -175,7 +175,7 @@ nsEnigMimeVerify::Init(nsIURI* aURI, nsIMsgWindow* msgWindow,
   if (NS_FAILED(rv)) return rv;
 
   rv = mInnerMimeListener->Init(mArmorListener, nsnull,
-                                MAX_HEADER_BYTES, PR_TRUE, PR_FALSE);
+                                MAX_HEADER_BYTES, PR_TRUE, PR_FALSE, PR_FALSE);
   if (NS_FAILED(rv)) return rv;
 
   // Create PipeFilterListener to extract second MIME part
@@ -196,7 +196,7 @@ nsEnigMimeVerify::Init(nsIURI* aURI, nsIMsgWindow* msgWindow,
   if (NS_FAILED(rv)) return rv;
 
   rv = mOuterMimeListener->Init(mFirstPartListener, nsnull,
-                                MAX_HEADER_BYTES, PR_TRUE, PR_FALSE);
+                                MAX_HEADER_BYTES, PR_TRUE, PR_FALSE, PR_FALSE);
   if (NS_FAILED(rv)) return rv;
 
   // Initiate asynchronous loading of URI
@@ -251,41 +251,13 @@ nsEnigMimeVerify::Finish()
   rv = mPipeTrans->Join();
   if (NS_FAILED(rv)) return rv;
 
-  PRInt32 exitCode;
-  rv = mPipeTrans->ExitCode(&exitCode);
-  if (NS_FAILED(rv)) return rv;
-
-  DEBUG_LOG(("nsEnigMimeVerify::Finish: exitCode=%d\n", exitCode));
-
   // Count of STDOUT bytes
   PRUint32 outputLen;
   rv = mOutBuffer->GetTotalBytes(&outputLen);
   if (NS_FAILED(rv)) return rv;
 
-  // Extract STDERR output
-  nsCOMPtr<nsIPipeListener> errListener;
-  rv = mPipeTrans->GetConsole(getter_AddRefs(errListener));
-  if (NS_FAILED(rv)) return rv;
-
-  if (!errListener)
-    return NS_ERROR_FAILURE;
-
-  PRUint32 errorCount;
-  nsXPIDLCString errorOutput;
-  rv = errListener->GetByteData(&errorCount, getter_Copies(errorOutput));
-  if (NS_FAILED(rv)) return rv;
-
-  // Shutdown STDOUT & STDERR consoles
+  // Shutdown STDOUT console
   mOutBuffer->Shutdown();
-  errListener->Shutdown();
-
-  // Terminate process
-  mPipeTrans->Terminate();
-  mPipeTrans = nsnull;
-
-  if (exitCode != 0) {
-    DEBUG_LOG(("nsEnigMimeVerify::Finish: errOutput=%s\n", (const char*) errorOutput));
-  }
 
   // Check input data consistency
   if (mStartCount < 2) {
@@ -318,7 +290,7 @@ temBoundary += "--";
     return NS_ERROR_FAILURE;
   }
 
-  PRInt32 newExitCode;
+  PRInt32 exitCode;
   PRUint32 statusFlags;
 
   nsXPIDLString keyId;
@@ -333,16 +305,15 @@ temBoundary += "--";
   PRBool noOutput = PR_TRUE;
 
   rv = enigmailSvc->DecryptMessageEnd(uiFlags,
-                                      exitCode,
                                       outputLen,
-                                      errorOutput,
+                                      mPipeTrans,
                                       verifyOnly,
                                       noOutput,
                                       &statusFlags,
                                       getter_Copies(keyId),
                                       getter_Copies(userId),
                                       getter_Copies(errorMsg),
-                                      &newExitCode);
+                                      &exitCode);
   if (NS_FAILED(rv)) return rv;
 
   nsCOMPtr<nsISupports> securityInfo;
@@ -358,12 +329,12 @@ temBoundary += "--";
   if (securityInfo) {
     nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
     if (enigHeaderSink) {
-      rv = enigHeaderSink->UpdateSecurityStatus(mURISpec, statusFlags, keyId, userId, errorMsg, NS_LITERAL_STRING("").get());
+      rv = enigHeaderSink->UpdateSecurityStatus(mURISpec, exitCode, statusFlags, keyId, userId, errorMsg);
     }
   }
 
-  if (newExitCode != 0) {
-    DEBUG_LOG(("nsEnigMimeVerify::Finish: ERROR EXIT %d\n", newExitCode));
+  if (exitCode != 0) {
+    DEBUG_LOG(("nsEnigMimeVerify::Finish: ERROR EXIT %d\n", exitCode));
     return NS_ERROR_FAILURE;
   }
 
@@ -517,7 +488,8 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   PRBool verifyOnly = PR_TRUE;
   PRBool noOutput = PR_TRUE;
   PRBool noProxy = PR_TRUE;
-  rv = enigmailSvc->DecryptMessageStart(prompter,
+  rv = enigmailSvc->DecryptMessageStart(nsnull,
+                                        prompter,
                                         verifyOnly,
                                         noOutput,
                                         mOutBuffer,
@@ -532,7 +504,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   // Write clearsigned message header
   const char* clearsignHeader = "-----BEGIN PGP SIGNED MESSAGE-----";
 
-  rv = mPipeTrans->WriteSync(clearsignHeader, nsCRT::strlen(clearsignHeader));
+  rv = mPipeTrans->WriteSync(clearsignHeader, strlen(clearsignHeader));
   if (NS_FAILED(rv)) return rv;
 
   rv = mPipeTrans->WriteSync(linebreak.get(), linebreak.Length());
@@ -541,7 +513,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   // Write out hash symbol
   const char* hashHeader = "Hash: ";
 
-  rv = mPipeTrans->WriteSync(hashHeader, nsCRT::strlen(hashHeader));
+  rv = mPipeTrans->WriteSync(hashHeader, strlen(hashHeader));
   if (NS_FAILED(rv)) return rv;
 
   rv = mPipeTrans->WriteSync(hashSymbol.get(), hashSymbol.Length());
@@ -616,7 +588,7 @@ nsEnigMimeVerify::OnDataAvailable(nsIRequest* aRequest,
     readMax = (aLength < kCharMax) ? aLength : kCharMax;
     rv = aInputStream->Read((char *) buf, readMax, &readCount);
     if (NS_FAILED(rv)){
-      DEBUG_LOG(("nsPipeTransport::OnDataAvailable: Error in reading from input stream, %x\n", rv));
+      DEBUG_LOG(("nsEnigMimeVerify::OnDataAvailable: Error in reading from input stream, %x\n", rv));
       return rv;
     }
 
@@ -633,8 +605,10 @@ nsEnigMimeVerify::OnDataAvailable(nsIRequest* aRequest,
           if (NS_FAILED(rv)) return rv;
           offset = j+1;
 
-          rv = mPipeTrans->WriteSync(dashEscape, nsCRT::strlen(dashEscape));
+          rv = mPipeTrans->WriteSync(dashEscape, strlen(dashEscape));
           if (NS_FAILED(rv)) return rv;
+
+          DEBUG_LOG(("nsEnigMimeVerify::OnDataAvailable: DASH ESCAPED\n"));
         }
 
         mLastLinebreak = (ch == '\r') || (ch == '\n');

@@ -96,6 +96,9 @@ nsEnigMimeListener::nsEnigMimeListener()
     mContentDisposition(""),
     mContentLength(-1),
 
+    mDecodeContent(PR_FALSE),
+    mDecoderData(nsnull),
+
     mLinebreak(""),
     mHeaders(""),
     mDataStr(""),
@@ -141,6 +144,12 @@ nsEnigMimeListener::~nsEnigMimeListener()
          (int) this, (int) myThread.get()));
 #endif
 
+  if (mDecoderData) {
+    // Clear decoder buffer
+    MimeDecoderDestroy(mDecoderData, PR_FALSE);
+    mDecoderData = nsnull;
+  }
+
   // Release owning refs
   mListener = nsnull;
   mContext = nsnull;
@@ -154,10 +163,10 @@ nsEnigMimeListener::~nsEnigMimeListener()
 NS_IMETHODIMP
 nsEnigMimeListener::Init(nsIStreamListener* listener, nsISupports* ctxt,
                          PRUint32 maxHeaderBytes, PRBool skipHeaders,
-                         PRBool skipBody)
+                         PRBool skipBody, PRBool decodeContent)
 {
-  DEBUG_LOG(("nsEnigMimeListener::Init: (%x) %d, %d, %d\n", (int) this,
-             maxHeaderBytes, skipHeaders, skipBody));
+  DEBUG_LOG(("nsEnigMimeListener::Init: (%x) %d, %d, %d, %d\n", (int) this,
+             maxHeaderBytes, skipHeaders, skipBody, decodeContent));
 
   if (!listener)
     return NS_ERROR_NULL_POINTER;
@@ -169,6 +178,7 @@ nsEnigMimeListener::Init(nsIStreamListener* listener, nsISupports* ctxt,
 
   mSkipHeaders = skipHeaders;
   mSkipBody = skipBody;
+  mDecodeContent = decodeContent;
 
   // There is implicitly a newline preceding the first character
   mHeadersLinebreak = 2;
@@ -188,19 +198,77 @@ nsEnigMimeListener::Write(const char* buf, PRUint32 count,
 
   DEBUG_LOG(("nsEnigMimeListener::Write: (%x) %d\n", (int) this, count));
 
+  if (mRequestStarted)
+    return Transmit(buf, count, aRequest, aContext);
+
+  // Search for headers
+  PRBool startingRequest = HeaderSearch(buf, count);
+  if (!startingRequest)
+    return NS_OK;
+
+  rv = StartRequest(aRequest, aContext);
+  if (NS_FAILED(rv))
+    return rv;
+
+  return NS_OK;
+}
+
+static nsresult
+EnigMimeListener_write(const char *buf, PRInt32 size, void *closure)
+{
+  DEBUG_LOG(("nsEnigMimeListener::EnigMimeListener_write: (%x) %d\n", (int) closure, size));
+
+  if (!closure)
+    return NS_ERROR_FAILURE;
+
+  nsEnigMimeListener* enigMimeListener = (nsEnigMimeListener *) closure;
+
+  return enigMimeListener->SendStream(buf, size, nsnull, nsnull);
+}
+
+
+NS_METHOD
+nsEnigMimeListener::Transmit(const char* buf, PRUint32 count,
+                             nsIRequest* aRequest, nsISupports* aContext)
+{
+  DEBUG_LOG(("nsEnigMimeListener::Transmit: (%x) %d\n", (int) this, count));
+
+  if (!mDecoderData) {
+    return SendStream(buf, count, aRequest, aContext);
+  }
+
+  // Decode data before transmitting to listener
+  int status = MimeDecoderWrite(mDecoderData, buf, count);
+
+  return (status == 0) ? NS_OK : NS_ERROR_FAILURE;
+}
+
+
+NS_METHOD
+nsEnigMimeListener::SendStream(const char* buf, PRUint32 count,
+                               nsIRequest* aRequest, nsISupports* aContext)
+{
+  nsresult rv;
+
+  DEBUG_LOG(("nsEnigMimeListener::SendStream: (%x) %d\n", (int) this, count));
+
+  if (!mListener)
+    return NS_OK;
+
+  // Transmit data to listener
   mStreamBuf = buf;
   mStreamOffset = 0;
   mStreamLength = count;
 
-  rv = OnDataAvailable(aRequest,
-                       mContext ? mContext.get() : aContext,
-                       NS_STATIC_CAST(nsIInputStream*, this),
-                       0, count);
-
+  rv = mListener->OnDataAvailable(aRequest,
+                                  mContext ? mContext.get() : aContext,
+                                  NS_STATIC_CAST(nsIInputStream*, this),
+                                  0, count);
   Close();
 
   return rv;
 }
+
 
 NS_IMETHODIMP
 nsEnigMimeListener::GetHeaders(nsACString &aHeaders)
@@ -329,6 +397,12 @@ nsEnigMimeListener::OnStopRequest(nsIRequest* aRequest,
       aStatus = NS_BINDING_ABORTED;
   }
 
+  if (mDecoderData) {
+    // Clear decoder buffer
+    MimeDecoderDestroy(mDecoderData, PR_FALSE);
+    mDecoderData = nsnull;
+  }
+
   if (mListener) {
     rv = mListener->OnStopRequest(aRequest,
                                   mContext ? mContext.get() : aContext,
@@ -362,37 +436,31 @@ nsEnigMimeListener::OnDataAvailable(nsIRequest* aRequest,
   if (!mInitialized)
     return NS_ERROR_NOT_INITIALIZED;
 
-  if (!mRequestStarted) {
-    PRBool startingRequest = PR_FALSE;
+  char buf[kCharMax];
+  PRUint32 readCount, readMax;
 
-    char buf[kCharMax];
-    PRUint32 readCount, readMax;
+  while ((aLength > 0) && (!mRequestStarted || mDecoderData) ) {
+    // Searching for headers or decoding content
 
-    while ((aLength > 0) && !startingRequest) {
-      readMax = (aLength < kCharMax) ? aLength : kCharMax;
-      rv = aInputStream->Read((char *) buf, readMax, &readCount);
-      if (NS_FAILED(rv)){
-        ERROR_LOG(("nsEnigMimeListener::OnDataAvailable: Error in reading from input stream, %x\n", rv));
-        return rv;
-      }
-
-      if (readCount <= 0)
-        break;
-
-      aLength -= readCount;
-      aSourceOffset += readCount;
-
-      startingRequest = HeaderSearch(buf, readCount);
+    readMax = (aLength < kCharMax) ? aLength : kCharMax;
+    rv = aInputStream->Read((char *) buf, readMax, &readCount);
+    if (NS_FAILED(rv)){
+      ERROR_LOG(("nsEnigMimeListener::OnDataAvailable: Error in reading from input stream, %x\n", rv));
+      return rv;
     }
 
-    if (!startingRequest)
-      return NS_OK;
+    if (readCount <= 0)
+      break;
 
-    rv = StartRequest(aRequest, aContext);
+    aLength -= readCount;
+    aSourceOffset += readCount;
+
+    rv = Write(buf, readCount, aRequest, aContext);
     if (NS_FAILED(rv))
       return rv;
   }
 
+  // Not searching for headers and not decoding content
   if (!mSkipBody && (aLength > 0) && mListener) {
     // Transmit body data unread
     rv = mListener->OnDataAvailable(aRequest,
@@ -436,21 +504,14 @@ nsEnigMimeListener::StartRequest(nsIRequest* aRequest, nsISupports* aContext)
 
   if (!mDataStr.IsEmpty()) {
     // Transmit header/body data already in buffer
-    nsCOMPtr<nsIInputStream> inStream;
-    rv = NS_NewCStringInputStream(getter_AddRefs(inStream), mDataStr);
-    if (NS_FAILED(rv))
-        return rv;
-
-    if (mListener) {
-      rv = mListener->OnDataAvailable(aRequest,
-                                      mContext ? mContext.get() : aContext,
-                                      inStream, 0, mDataStr.Length());
-      if (NS_FAILED(rv))
-        return rv;
-    }
+    nsCAutoString temStr( mDataStr );
 
     mDataOffset += mDataStr.Length();
     mDataStr = "";
+
+    rv = Transmit(temStr.get(), temStr.Length(), aRequest, aContext);
+    if (NS_FAILED(rv))
+      return rv;
   }
 
   return NS_OK;
@@ -611,6 +672,17 @@ nsEnigMimeListener::ParseMimeHeaders(const char* mimeHeaders, PRUint32 count)
     offset = lineEnd+1;
   }
 
+  if (mDecodeContent) {
+    // Decode data
+    if (mContentEncoding.EqualsIgnoreCase("base64")) {
+
+      mDecoderData = MimeB64DecoderInit(EnigMimeListener_write, (void*) this);
+
+    } else if (mContentEncoding.EqualsIgnoreCase("quoted-printable")) {
+
+      mDecoderData = MimeQPDecoderInit(EnigMimeListener_write, (void*) this);
+    }
+  }
   return;
 }
 
@@ -618,7 +690,7 @@ void
 nsEnigMimeListener::ParseHeader(const char* header, PRUint32 count)
 {
 
-  //DEBUG_LOG(("nsEnigMimeListener::ParseHeade: header='%s'\n", header));
+  //DEBUG_LOG(("nsEnigMimeListener::ParseHeader: header='%s'\n", header));
 
   if (!header || (count <= 0) )
     return;
@@ -734,6 +806,7 @@ nsEnigMimeListener::ParseHeader(const char* header, PRUint32 count)
 
   return;
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // nsIInputStream methods

@@ -42,6 +42,7 @@
 #include "nsIEnigMimeListener.h"
 #include "nsCOMPtr.h"
 #include "nsString.h"
+#include "modmimee2.h"
 
 // Implementation class for nsIEnigMimeListener
 class nsEnigMimeListener : public nsIEnigMimeListener,
@@ -61,8 +62,14 @@ public:
     static NS_METHOD
     Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
 
+    NS_METHOD SendStream(const char* buf, PRUint32 count,
+                         nsIRequest* aRequest, nsISupports* aContext);
+
 protected:
     NS_METHOD StartRequest(nsIRequest* aRequest, nsISupports* aContext);
+
+    NS_METHOD Transmit(const char* buf, PRUint32 count,
+                       nsIRequest* aRequest, nsISupports* aContext);
 
     PRBool HeaderSearch(const char* buf, PRUint32 count);
 
@@ -84,6 +91,9 @@ protected:
     nsCString                           mContentEncoding;
     nsCString                           mContentDisposition;
     PRInt32                             mContentLength;
+
+    PRBool                              mDecodeContent;
+    MimeDecoderData*                    mDecoderData;
 
     nsCString                           mLinebreak;
     nsCString                           mHeaders;

@@ -17,7 +17,7 @@ listener.open(2000, false);
 
 var mimeListener = Components.classes[NS_ENIGMIMELISTENER_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeListener);
 
-mimeListener.init(listener, null, 10000, true, false);
+mimeListener.init(listener, null, 10000, true, false, false);
 
 var lines = ["Content-Type: multipart/signed; micalg=pgp-sha1;\r\n",
              "	protocol=\"application/pgp-signature\"; boundary=\"9jxsPFA5p3P2qPhR\"\r\n",
@@ -48,7 +48,7 @@ for (var j=0; j<linebreak.length; j++) {
 
   mimeListener = Components.classes[NS_ENIGMIMELISTENER_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeListener);
 
-  mimeListener.init(listener, null, 10000, true, true);
+  mimeListener.init(listener, null, 10000, true, true, false);
 
   for (var k=0; k<lines.length; k++) {
     var line = lines[k];
