@@ -12,8 +12,9 @@
  * The Original Code is Enigmail.
  * 
  * The Initial Developer of this code is Patrick Brunschwig.
- * Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net> are
- * Copyright (C) 2003 Patrick Brunschwig. All Rights Reserved.
+ * Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+ * are Copyright (C) 2003 Patrick Brunschwig.
+ * All Rights Reserved.
  *
  * Contributor(s):
  *
@@ -40,6 +41,13 @@ const KEY_ID = 4;
 const CREATED = 5;
 const EXPIRY = 6;
 const USER_ID = 9;
+const KEY_TRUST=1;
+
+const KEY_EXPIRED="e";
+const KEY_REVOKED="r";
+const KEY_INVALID="i";
+const KEY_DISABLED="d";
+const KEY_NOT_VALID=KEY_EXPIRED+KEY_REVOKED+KEY_INVALID+KEY_DISABLED;
 
 var gUserList;
 var gResult;
@@ -134,6 +142,7 @@ function enigmailUserSelLoad() {
        userObj.created=aGpgUserList[i][CREATED];
        userObj.userId=aGpgUserList[i][USER_ID];
        userObj.keyId=aGpgUserList[i][KEY_ID];
+       userObj.keyTrust=aGpgUserList[i][KEY_TRUST];
        userObj.SubUserIds=new Array();
        aUserList.push(userObj);
      }
@@ -166,57 +175,68 @@ function enigmailUserSelLoad() {
    // Replace any non-text character c with \\c
    var escapeRegExp = new RegExp("([^a-zA-Z0-9])","g");
 
-   // Activate found keys
-   for (i=0; i<aUserList.length; i++) {
+   try {
+      // Activate found keys
+      for (i=0; i<aUserList.length; i++) {
 
-      var activeState= (allowExpired ? 0 : 2);
-      var expired=true;
-      if ((!aUserList[i].expiry.length) || (aUserList[i].expiry.length && aUserList[i].expiry.replace(/\-/g, "") >= now)) {
-          // key still valid
-          mailAddr = enigStripEmail(aUserList[i].userId);
-          aValidUsers.push(mailAddr);
-          escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
-          s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
-          s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
-          activeState=(toAddr.search(s1)>=0 || toAddr.search(s2)>=0) ? 1 : 0;
-          expired=false;
-      }
+          var activeState= (allowExpired ? 0 : 2);
 
-      var treeItem=null;
-      if (! hideExpired || activeState<2) {
-        // do not show if expired keys are hidden
-        if (secretOnly) {
-          treeItem=enigUserSelCreateRow(aUserList[i].keyId,activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].created, false)
-        }
-        else {
-          treeItem=enigUserSelCreateRow(aUserList[i].keyId, activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry, expired)
-        }
-        if (aUserList[i].SubUserIds.length) {
-          treeItem.setAttribute("container", "true");
-          var subChildren=document.createElement("treechildren");
-          for (var user=0; user<aUserList[i].SubUserIds.length; user++) {
-            var subItem=enigUserSelCreateRow(aUserList[i].keyId, -1, aUserList[i].SubUserIds[user], "", "")
-            subChildren.appendChild(subItem);
-            if (activeState<2 || allowExpired) {
-              // add uid's for valid keys
-              mailAddr = enigStripEmail(aUserList[i].SubUserIds[user]);
+          if (((!aUserList[i].keyTrust) ||
+              KEY_NOT_VALID.indexOf(aUserList[i].keyTrust)<0) &&
+              ((!aUserList[i].expiry.length) ||
+              (aUserList[i].expiry.length && aUserList[i].expiry.replace(/\-/g, "") >= now))) {
+              // key still valid
+              mailAddr = enigStripEmail(aUserList[i].userId);
               aValidUsers.push(mailAddr);
               escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
               s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
               s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
-              if (toAddr.search(s1)>=0 || toAddr.search(s2)>=0) {
-                enigSetActive(treeItem.getElementsByAttribute("id","indicator")[0], 1);
+              activeState=(toAddr.search(s1)>=0 || toAddr.search(s2)>=0) ? 1 : 0;
+          }
+
+          var treeItem=null;
+          if (! hideExpired || activeState<2) {
+            // do not show if expired keys are hidden
+            if (secretOnly) {
+              treeItem=enigUserSelCreateRow(aUserList[i].keyId, activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].created, "")
+            }
+            else {
+              treeItem=enigUserSelCreateRow(aUserList[i].keyId, activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry, aUserList[i].keyTrust)
+            }
+            if (aUserList[i].SubUserIds.length) {
+              treeItem.setAttribute("container", "true");
+              var subChildren=document.createElement("treechildren");
+              for (var user=0; user<aUserList[i].SubUserIds.length; user++) {
+                var subItem=enigUserSelCreateRow(aUserList[i].keyId, -1, aUserList[i].SubUserIds[user], "", "", "");
+                subChildren.appendChild(subItem);
+                if (activeState<2 || allowExpired) {
+                  // add uid's for valid keys
+                  mailAddr = enigStripEmail(aUserList[i].SubUserIds[user]);
+                  aValidUsers.push(mailAddr);
+                  escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
+                  s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
+                  s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
+                  if (toAddr.search(s1)>=0 || toAddr.search(s2)>=0) {
+                    enigSetActive(treeItem.getElementsByAttribute("id","indicator")[0], 1);
+                  }
+                }
               }
+
+              treeItem.appendChild(subChildren);
             }
           }
 
-          treeItem.appendChild(subChildren);
-        }
+          if (treeItem)
+            treeChildren.appendChild(treeItem);
+
       }
-
-      if (treeItem)
-        treeChildren.appendChild(treeItem);
-
+   }
+   catch (ex) {
+      ERROR_LOG("ERROR in enigmailUserSelection: enigmailUserSelLoad:\n");
+      ERROR_LOG("  userId="+aUserList[i].userId+" expiry="+ aUserList[i].expiry+"\n");
+      if ((typeof user)=="number" && (typeof aUserList[i].SubUserIds[user])=="string") {
+        ERROR_LOG("  subUserId="+aUserList[i].SubUserIds[user]+"\n");
+      }
    }
    gUserList.appendChild(treeChildren);
 
@@ -243,9 +263,10 @@ function enigGetUserList(window, secretOnly, exitCodeObj, statusFlagsObj, errorM
   DEBUG_LOG("enigmailMessengerOverlay.js: enigGetUserList\n");
 
   var aUserList = new Array();
+  var startIndex, listText;
   try {
     var enigmailSvc = GetEnigmailSvc();
-    var listText = enigmailSvc.getUserIdList(window,
+    listText = enigmailSvc.getUserIdList(window,
                                             secretOnly,
                                             exitCodeObj,
                                             statusFlagsObj,
@@ -255,9 +276,11 @@ function enigGetUserList(window, secretOnly, exitCodeObj, statusFlagsObj, errorM
       return null;
     }
 
-    listText.replace(/\r\n/g, "\n");
-    listText.replace(/\r/g, "\n");
-    var startIndex=listText.indexOf("----\n")+5;
+    listText=listText.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    startIndex=listText.indexOf("----\n")+4;
+    if (startIndex<4) {
+      startIndex=0;
+    }
     var nextIndex=listText.indexOf("\n",startIndex+1);
 
     while (startIndex < listText.length && startIndex>=0) {
@@ -268,14 +291,17 @@ function enigGetUserList(window, secretOnly, exitCodeObj, statusFlagsObj, errorM
         startIndex=nextIndex;
         nextIndex=listText.indexOf("\n",startIndex+1);
     }
-  } catch (ex) {}
+  } catch (ex) {
+    ERROR_LOG("ERROR in enigmailUserSelection: enigGetUserList:\n");
+    ERROR_LOG("  listLength="+listText.length+" theLine="+theLine+" next line: "+ listText.substring(nextIndex+1,listText.indexOf("\n",nextIndex+1))+"\n");
+  }
 
   return aUserList;
 }
 
 
 // create a (sub) row for the user tree
-function enigUserSelCreateRow (keyId, activeState, userId, keyValue, dateField, expired) {
+function enigUserSelCreateRow (keyId, activeState, userId, keyValue, dateField, trustStatus) {
     var selectCol=document.createElement("treecell");
     selectCol.setAttribute("id", "indicator");
     enigSetActive(selectCol, activeState);
@@ -283,7 +309,7 @@ function enigUserSelCreateRow (keyId, activeState, userId, keyValue, dateField, 
     userCol.setAttribute("id", "name");
     userCol.setAttribute("label", userId);
     var expCol=document.createElement("treecell");
-    if (expired) {
+    if (trustStatus==KEY_EXPIRED) {
       expCol.setAttribute("label", EnigGetString("selKeyExpired", dateField));
     }
     else {
