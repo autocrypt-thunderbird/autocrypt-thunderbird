@@ -4,6 +4,8 @@ enigmail.jar:
 	content/enigmail/enigmailAbout.xul         (content/enigmailAbout.xul)
 	content/enigmail/enigmailAbout.js          (content/enigmailAbout.js)
 	content/enigmail/enigmailAbout.htm         (content/enigmailAbout.htm)
+	content/enigmail/enigmailAttachmentsDialog.xul  (content/enigmailAttachmentsDialog.xul)
+	content/enigmail/enigmailAttachmentsDialog.js  (content/enigmailAttachmentsDialog.js)
 	content/enigmail/enigmailConsole.xul       (content/enigmailConsole.xul)
 	content/enigmail/enigmailConsole.js        (content/enigmailConsole.js)
 	content/enigmail/enigmailConsole.htm       (content/enigmailConsole.htm)
