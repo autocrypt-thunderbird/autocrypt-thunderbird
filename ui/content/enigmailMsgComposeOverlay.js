@@ -1798,7 +1798,9 @@ function enigDecryptQuote(interactive) {
   }
 
   var doubleDashSeparator = EnigGetPref("doubleDashSeparator")
-  if (doubleDashSeparator) {
+  if (gMsgCompose.type != nsIMsgCompType.Template && 
+      gMsgCompose.type != nsIMsgCompType.Draft &&
+      doubleDashSeparator) {
     var signOffset = plainText.search(/[\r\n]-- +[\r\n]/);
 
     if (signOffset > 0) {
