@@ -14,7 +14,7 @@
 
 <!ENTITY enigmail.preferences.label       "Enigmail Preferences">
 
-<!ENTITY enigmail.passwordSettings.label  "Password settings">
+<!ENTITY enigmail.passwordSettings.label  "Passphrase settings">
 <!ENTITY enigmail.userNoPassphrase.label  "No passphrase for user">
 
 <!ENTITY enigmail.defaultEncryptionOption.label "Choose default encryption options">
@@ -27,7 +27,7 @@
 <!ENTITY enigmail.mime_parts_on_demand.label  "Load MIME parts on demand (IMAP folders)">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "You should turn this OFF if you are receiving PGP/MIME messages on IMAP folders">
 
-<!ENTITY enigmail.maxIdleMinutesHead.label "Remember password for">
+<!ENTITY enigmail.maxIdleMinutesHead.label "Remember passphrase for">
 <!ENTITY enigmail.maxIdleMinutesTail.label "minutes of idle time">
 
 <!ENTITY enigmail.resetPrefsButton.label "Reset">
@@ -50,7 +50,7 @@
 
 <!ENTITY enigmail.encryptToSelf.label     "Encrypt to self">
 <!ENTITY enigmail.alwaysTrustSend.label   "Always trust user ID">
-<!ENTITY enigmail.useDefaultComment.label "Use default comment in signature">
+<!ENTITY enigmail.useDefaultComment.label "Do not add Enigmail comment in OpenPGP signature">
 
 <!ENTITY enigmail.keyserver.label         "Keyserver">
 <!ENTITY enigmail.keyserverDlg.label      "Select Keyserver">
@@ -60,7 +60,7 @@
 <!ENTITY enigmail.disableSMIMEui.label    "Hide SMIME buttons/menus">
 <!ENTITY enigmail.doubleDashSeparator.label  "Treat '--' as signature separator">
 <!ENTITY enigmail.useGpgAgent.label       "Use gpg-agent for passphrase handling">
-<!ENTITY enigmail.hushMailSupport.label   "Support for Hushmail">
+<!ENTITY enigmail.hushMailSupport.label   "Do not use '&lt;' and '&gt;' to specify email addresses (for Hushmail keys)">
 
 <!ENTITY enigmail.debugging.label         "Debugging Enigmail">
 <!ENTITY enigmail.logdirectory.label      "Log directory">
