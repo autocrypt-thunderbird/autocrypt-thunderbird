@@ -88,6 +88,7 @@
 <!ENTITY enigmail.upgrade.label              "Upgrade">
 <!ENTITY enigmail.help.label              "Help">
 <!ENTITY enigmail.about.label              "About Enigmail">
+<!ENTITY enigmail.browse.label             "Browse...">
 
 <!ENTITY enigmail.decryptverify.accesskey   "D">
 <!ENTITY enigmail.importpublickey.accesskey "I">
