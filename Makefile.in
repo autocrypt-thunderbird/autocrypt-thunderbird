@@ -81,4 +81,4 @@ endif
 XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS)-$(PLATFORM_STR).xpi
 
 xpi::
-	genxpi $(XPIFILE) $(DIST)/bin $(XPI_MODULE) $(DLL_SUFFIX) $(LIB_PREFIX)
+	./genxpi $(XPIFILE) $(DIST)/bin $(XPI_MODULE) $(DLL_SUFFIX) $(LIB_PREFIX)
