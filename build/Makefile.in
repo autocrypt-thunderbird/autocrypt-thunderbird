@@ -38,7 +38,7 @@ DIRS = package
 
 # Specify these as parameters to the make command
 XPI_MODULE	= enigmime
-XPI_MODULE_VERS = 0.86.1
+XPI_MODULE_VERS = 0.89.0
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
@@ -166,7 +166,7 @@ xpi::
 	$(error To create an Enigmail XPI type "make xpi" from the enigmail root directory)
 
 old-xpi::
-	zip -r $(DIST)/bin/$(XPIFILE) install.js $(XPI_MODULE).spec
+	zip -r $(DIST)/bin/$(XPIFILE) install.js $(XPI_MODULE).spec install.rdf
 	cd $(DIST)/bin; zip -g $(XPIFILE) \
                components/ipc.xpt \
                components/$(XPI_MODULE).xpt \

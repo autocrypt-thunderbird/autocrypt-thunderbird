@@ -122,7 +122,7 @@ function enigmailBuildList(refresh) {
   var treeChildren=gUserList.getElementsByAttribute("id", "pgpKeyListChildren")[0];
   
   gKeyList = new Array();
-  keySortList = new Array();
+  var keySortList = new Array();
   
   var keyObj = new Object();
   var i;
@@ -165,7 +165,7 @@ function enigmailBuildList(refresh) {
   
   // search and mark keys that have secret keys
   for (i=0; i<aGpgSecretsList.length; i++) {
-     var listRow=aGpgSecretsList[i].split(/:/);
+     listRow=aGpgSecretsList[i].split(/:/);
      if (listRow.length>=0) {
        if (listRow[0] == "sec") {
          if (typeof(gKeyList[listRow[KEY_ID]]) == "object") {
@@ -198,6 +198,7 @@ function enigmailBuildList(refresh) {
 }
 
 function enigGetTrustLabel(trustCode) {
+  var keyTrust;
   switch (trustCode) {
   case 'q':
     keyTrust=EnigGetString("keyValid.unknown");
@@ -312,10 +313,12 @@ function enigmailKeyMenu() {
   if (keyList.length == 1 && gKeyList[keyList[0]].secretAvailable) {
     document.getElementById("addUid").removeAttribute("disabled");
     document.getElementById("revokationCertificate").removeAttribute("disabled");
+    document.getElementById("setPrimaryUid").removeAttribute("disabled");
   }
   else {
     document.getElementById("addUid").setAttribute("disabled", "true");
     document.getElementById("revokationCertificate").setAttribute("disabled", "true");
+    document.getElementById("setPrimaryUid").setAttribute("disabled", "true");
   }
   
   if (keyList.length == 1 && gKeyList[keyList[0]].photoAvailable) {
@@ -331,9 +334,13 @@ function enigmailCtxMenu() {
   var keyList = enigmailGetSelectedKeys();
   if (keyList.length == 1 && gKeyList[keyList[0]].secretAvailable) {
     document.getElementById("ctxAddUid").removeAttribute("disabled");
+    document.getElementById("ctxSetPrimaryUid").removeAttribute("disabled");
+    document.getElementById("ctxRevokationCert").removeAttribute("disabled");
   }
   else {
     document.getElementById("ctxAddUid").setAttribute("disabled", "true");
+    document.getElementById("ctxSetPrimaryUid").setAttribute("disabled", "true");
+    document.getElementById("ctxRevokationCert").setAttribute("disabled", "true");
   }
 
   if (keyList.length == 1 && gKeyList[keyList[0]].photoAvailable) {
@@ -494,4 +501,25 @@ function enigmailListSig() {
   window.openDialog("chrome://enigmail/content/enigmailViewKeySigDlg.xul",
         "", "dialog,modal,centerscreen,resizable=yes", inputObj);
         
+}
+
+function enigmailSetPrimaryUid() {
+  var keyList = enigmailGetSelectedKeys();
+  var inputObj = {
+    keyId: keyList[0],
+    uidList: [ gKeyList[keyList[0]].userId ]
+  };
+
+  for (var i=0; i < gKeyList[keyList[0]].SubUserIds.length; i++) {
+    inputObj.uidList.push(gKeyList[keyList[0]].SubUserIds[i]);
+  }
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
+  
+  window.openDialog("chrome://enigmail/content/enigmailSetPrimUidDlg.xul",
+        "", "dialog,modal,centerscreen", inputObj);
+  enigmailRefreshKeys();
 }

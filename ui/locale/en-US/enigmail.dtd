@@ -347,12 +347,12 @@
 <!ENTITY enigmail.keyMan.uploadToServer.label      "Upload to keyserver">
 <!ENTITY enigmail.keyMan.reload.label              "Reload key cache">
 <!ENTITY enigmail.keyMan.addUid.label              "Add user ID">
+<!ENTITY enigmail.keyMan.setPrimaryUid.label       "Change primary user ID">
 <!ENTITY enigmail.keyMan.keyProps.label            "Key Properties">
 <!ENTITY enigmail.keyMan.viewSig.label             "View signatures">
 <!ENTITY enigmail.keyMan.keyType.label             "Type">
 <!ENTITY enigmail.keyMan.calcTrust.label           "Calc. Trust">
 <!ENTITY enigmail.keyMan.ownerTrust.label          "Owner-Trust">
-
 
 <!ENTITY enigmail.keyMan.window.accesskey            "W">
 <!ENTITY enigmail.keyMan.close.accesskey             "C">
@@ -367,8 +367,15 @@
 <!ENTITY enigmail.keyMan.uploadToServer.accesskey    "U">
 <!ENTITY enigmail.keyMan.reload.accesskey            "R">
 <!ENTITY enigmail.keyMan.addUid.accesskey            "A">
+<!ENTITY enigmail.keyMan.setPrimaryUid.accesskey     "H">
 <!ENTITY enigmail.keyMan.viewSig.accesskey           "V">
 <!ENTITY enigmail.keyMan.showPhoto.accesskey         "P">
+<!ENTITY enigmail.keyMan.closeWin.key                "W">
 
 <!ENTITY enigmail.viewKeySigDlg.title                "Signature List">
 <!ENTITY enigmail.viewKeySigDlg.sigType.label        "Sig. Type">
+
+<!ENTITY enigmail.setPrimUidDlg.title                "Change Primary User Id">
+<!ENTITY enigmail.setPrimUidDlg.affectedKey.label    "Key to change:">
+<!ENTITY enigmail.setPrimUidDlg.newPrimUid.label     "New Primary User Id:">
+

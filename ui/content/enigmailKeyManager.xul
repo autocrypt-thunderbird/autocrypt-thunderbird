@@ -21,12 +21,18 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyManager.js"/>
 
+  <keyset id="winKeys">
+    <key id="key_closeWin" key="&enigmail.keyMan.closeWin.key;"
+         oncommand="window.close()" modifiers="accel"/>
+  </keyset>
+
   <menubar id="mainmenu" grippyhidden="true">
     <menu label="&enigmail.keyMan.window.label;"
           accesskey="&enigmail.keyMan.window.accesskey;">
       <menupopup>
         <menuitem label="&enigmail.keyMan.close.label;"
                   accesskey="&enigmail.keyMan.close.accesskey;"
+                  key="key_closeWin"
                   oncommand="window.close()"/>
       </menupopup>
     </menu>
@@ -63,6 +69,10 @@
                   label="&enigmail.keyMan.addUid.label;" 
                   accesskey="&enigmail.keyMan.addUid.accesskey;"
                   oncommand="enigmailAddUid()"/>
+        <menuitem id="setPrimaryUid" 
+                  label="&enigmail.keyMan.setPrimaryUid.label;" 
+                  accesskey="&enigmail.keyMan.setPrimaryUid.accesskey;"
+                  oncommand="enigmailSetPrimaryUid()"/>
         <menuitem label="&enigmail.keyMan.genRevoke.label;"
                   id="revokationCertificate"
                   accesskey="&enigmail.keyMan.genRevoke.accesskey;"
@@ -83,16 +93,16 @@
         
         <menuitem label="&enigmail.keyMan.importFromServer.label;"
                   id="importFromServer"
-                  disabled="true"
+                  collapsed="true"
                   accesskey="&enigmail.keyMan.importFromServer.accesskey;"
                   oncommand=""/>
         <menuitem label="&enigmail.keyMan.uploadToServer.label;"
                   id="uploadToServer"
-                  disabled="true"
+                  collapsed="true"
                   accesskey="&enigmail.keyMan.uploadToServer.accesskey;"
                   oncommand=""/>
                   
-        <menuseparator/>
+        <menuseparator collapsed="true"/>
         
         <menuitem label="&enigmail.keyMan.reload.label;"
                   id="refreshKeys"
@@ -110,10 +120,14 @@
       <menuitem id="ctxViewPhoto" label="&enigmail.showPhoto.label;" oncommand="enigShowPhoto()"/>
       <menuitem id="ctxSign" label="&enigmail.keyMan.sign.label;" oncommand="enigSignKey()"/>
       <menuitem id="ctxTrust" label="&enigmail.keyMan.setTrust.label;" oncommand="enigEditKeyTrust()"/>
+      <menuseparator/>
       <menuitem id="ctxAddUid" label="&enigmail.keyMan.addUid.label;" oncommand="enigmailAddUid()"/>
+      <menuitem id="ctxSetPrimaryUid" label="&enigmail.keyMan.setPrimaryUid.label;" oncommand="enigmailSetPrimaryUid()"/>
+      <menuitem id="ctxRevokationCert" label="&enigmail.keyMan.genRevoke.label;" oncommand="enigCreateRevokeCert()"/>
+      <menuseparator/>
       <menuitem id="ctxExport" label="&enigmail.keyMan.exportToFile.label;" oncommand="enigmailExportKeys()"/>
-      <menuitem id="ctxUpload" label="&enigmail.keyMan.uploadToServer.label;" disabled="true"/>
-      <menuitem id="ctxDetails" label="&enigmail.keyMan.keyProps.label;" disabled="true"/>
+      <menuitem id="ctxUpload" label="&enigmail.keyMan.uploadToServer.label;" collapsed="true"/>
+      <menuitem id="ctxDetails" label="&enigmail.keyMan.keyProps.label;" collapsed="true"/>
     </popup>
   </popupset>
   

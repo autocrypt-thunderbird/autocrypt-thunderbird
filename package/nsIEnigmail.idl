@@ -238,6 +238,11 @@ interface nsIEnigmail : nsISupports
                 in string comment, 
                 out wstring errorMsg);
 
+  long setPrimaryUid (in nsIDOMWindow parent,
+                      in string keyId, 
+                      in string idNumber, 
+                      out wstring errorMsg);
+
   /* Receive flags */
   const long SEARCH_KEY       = 0x01;
   const long DOWNLOAD_KEY     = 0x02;

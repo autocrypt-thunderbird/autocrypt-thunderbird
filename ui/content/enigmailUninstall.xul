@@ -23,6 +23,8 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://jslib/content/jslib.js"/>
 
+  <description>Close this window!</description>
+
   <script type="application/x-javascript">
   <![CDATA[
 
@@ -32,7 +34,7 @@
           jslibUninstall('enigmail');
         }
         else {
-          window.close();
+          window.close()
         }
       }
       else {

@@ -30,6 +30,7 @@ enigmail.jar:
 	content/enigmail/enigmailSearchKey.js          (content/enigmailSearchKey.js)
 	content/enigmail/enigmailSearchKey.xul         (content/enigmailSearchKey.xul)
 	content/enigmail/enigmailSelectPanel.xul       (content/enigmailSelectPanel.xul)
+	content/enigmail/enigmailSetPrimUidDlg.xul     (content/enigmailSetPrimUidDlg.xul)
 	content/enigmail/enigmailSingleRcptSettings.js (content/enigmailSingleRcptSettings.js)
 	content/enigmail/enigmailSingleRcptSettings.xul (content/enigmailSingleRcptSettings.xul)
 	content/enigmail/enigmailSelectPanel.js        (content/enigmailSelectPanel.js)

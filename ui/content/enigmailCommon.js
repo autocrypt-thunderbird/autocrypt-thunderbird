@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.86.1.0";
-var gEnigmimeVersion = "0.86.1.0";
+var gEnigmailVersion = "0.89.0.0";
+var gEnigmimeVersion = "0.89.0.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -135,6 +135,10 @@ try {
 } catch (ex) {
   ERROR_LOG("enigmailCommon.js: Error in instantiating PrefService\n");
 }
+
+try {
+  EnigUpdate_TB0_8();
+} catch (ex) {}
 
 function EnigGetFrame(win, frameName) {
   DEBUG_LOG("enigmailCommon.js: EnigGetFrame: name="+frameName+"\n");
@@ -250,11 +254,57 @@ function GetEnigmailSvc() {
   return gEnigmailSvc.initialized ? gEnigmailSvc : null;
 }
 
+function EnigUpdate_TB0_8() {
+  var oldVer=EnigGetPref("configuredVersion");
+
+  if (oldVer.substring(0,1)=="0"){
+    var a=(navigator.userAgent+".1"); 
+    if ((oldVer.substring(0,4)<"0.89") && (a.substr(-17).indexOf("Thunderbird/0.8")>=0)) {
+      var removedFile = false;
+      gEnigPromptSvc = enigGetService("@mozilla.org/embedcomp/prompt-service;1", "nsIPromptService");
+
+      // uninstall globally installed enigmime on Thunderbird
+      var dirServ = enigGetService("@mozilla.org/file/directory_service;1", "nsIProperties");
+      var sysCompDir = dirServ.get("ComsD", C.interfaces.nsIFile);
+      
+      var files = [ "ipc.xpt", "enigmime.xpt", "libenigmime.so", "enigmime.dll", "libenigmime.dylib" ];
+      for (var f = 0; f< files.length; f++) {
+        var compFile = sysCompDir.clone();
+        compFile.append(files[f]);
+        try {
+          if (compFile.exists()) {
+            compFile.remove(false);
+            removedFile = true;
+          }
+        } catch (ex) {}
+      }
+      if (removedFile) {
+        EnigConfigure();
+        EnigAlert(EnigGetString("restartTB"));
+      }        
+    }
+  }
+}
+
 function EnigUpdate_0_80() {
   try {
     var oldVer=EnigGetPref("configuredVersion");
 
     if (oldVer.substring(0,1)=="0"){
+      if ((oldVer.substring(0,4)<"0.89") && (navigator.vendor=="Thunderbird")) {
+        // uninstall globally installed enigmime on Thunderbird
+        var ioService = enigGetService("@mozilla.org/network/io-service;1", "nsIIOService");
+        var sysCompDir = this.gDirService.get("ComsD", C.interfaces.nsIFile);
+        
+        for (var f in [ "enigmime.xpt", "libenigmime.so", "enigmail.dll", "libenigmime.dylib" ]) {
+          var compFile = sysCompDir.clone();
+          compFile.append(f);
+          try {
+            if (compFile.exists()) compFile.remove(false);
+          }
+          catch (ex) {}
+        }
+      }        
       if (oldVer.substring(0,4)<"0.83") {
         var keySrv = EnigGetPref("keyserver");
         if (keySrv.indexOf(",") == -1) {
@@ -1510,4 +1560,6 @@ function enigGetService (aURL, aInterface)
     default:
       return C.classes[aURL].getService();
   }
+  
+  return null;
 }

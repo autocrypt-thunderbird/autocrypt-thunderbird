@@ -238,7 +238,7 @@ function enigmailKeygenStart() {
 }
 
 function enigRefreshConsole() {
-  //DEBUG_LOG("enigmailKeygen.js: enigRefreshConsole():\n");
+  //DEBUG_LOG("enigmailKeygen.js: enigRefreshConsole:\n");
 
   if (!gKeygenRequest)
     return;

@@ -3416,7 +3416,7 @@ function (parent, exportFlags, userId, outputFile, exitCodeObj, errorMsgObj) {
     }
     
     if (keyBlock.substr(-1,1).search(/[\r\n]/)<0) keyBlock += "\n"
-    keyBlock+secKeyBlock;
+    keyBlock+=secKeyBlock;
   }
   
   if (outputFile) {
@@ -4431,11 +4431,8 @@ KeyEditor.prototype = {
         }
       }
   
-      if (this.doCheck(GET_LINE, "keyedit.prompt" ) || r.quitNow) {
-        r.quitNow=true;
-      }
-      else {
-        r=callbackFunc(inputData, this);
+      if (! r.quitNow) {
+        callbackFunc(inputData, this, r);
         if (r.exitCode == 0) {
           this.writeLine(r.writeTxt);
         }
@@ -4472,7 +4469,6 @@ KeyEditor.prototype = {
     return this;
   }
 }
-
 
 Enigmail.prototype.signKey = 
 function (parent, userId, keyId, signLocally, trustLevel, errorMsgObj) {
@@ -4517,6 +4513,16 @@ function (parent, keyId, name, email, comment, errorMsgObj) {
                         name: name,
                         comment: comment }, 
                       addUidCallback, 
+                      errorMsgObj);
+}
+
+Enigmail.prototype.setPrimaryUid = 
+function (parent, keyId, idNumber, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.addUid: keyId="+keyId+", idNumber="+idNumber+"\n");
+  return this.editKey(parent, true, null, keyId, "",
+                      { idNumber: idNumber,
+                        step: 0 }, 
+                      setPrimaryUidCallback, 
                       errorMsgObj);
 }
 
@@ -4609,15 +4615,10 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
 }
 
 
-function signKeyCallback(inputData, keyEdit) {
+function signKeyCallback(inputData, keyEdit, ret) {
 
-  var ret = {
-    exitCode: -1,
-    quitNow: false,
-    writeTxt: "",
-    errorMsg: ""
-  };
-
+  ret.writeTxt = "";
+  ret.errorMsg = "";
 
   if (keyEdit.doCheck(GET_BOOL, "sign_uid.okay" )) {
     ret.exitCode = 0;
@@ -4639,22 +4640,19 @@ function signKeyCallback(inputData, keyEdit) {
     ret.exitCode = 0;
     ret.writeTxt = inputData.trustLevel;
   }
+  else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
+    ret.quitNow = true;
+  }
   else {
     ret.quitNow=true;
     ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
     ret.exitCode=-1;
   }
-
-  return ret;
 }
 
-function keyTrustCallback(inputData, keyEdit) {
-  var ret = {
-    exitCode: -1,
-    quitNow: false,
-    writeTxt: "",
-    errorMsg: ""
-  };
+function keyTrustCallback(inputData, keyEdit, ret) {
+  ret.writeTxt = "";
+  ret.errorMsg = "";
         
   if (keyEdit.doCheck(GET_LINE, "edit_ownertrust.value" )) {
     ret.exitCode = 0;
@@ -4664,23 +4662,20 @@ function keyTrustCallback(inputData, keyEdit) {
     ret.exitCode = 0;
     ret.writeTxt = "Y";
   } 
+  else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
+    ret.quitNow = true;
+  }
   else {
     ret.quitNow=true;
     ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
     ret.exitCode=-1;
   }
-
-  return ret;
 }
 
 
-function addUidCallback(inputData, keyEdit) {
-  var ret = {
-    exitCode: -1,
-    quitNow: false,
-    writeTxt: "",
-    errorMsg: ""
-  };
+function addUidCallback(inputData, keyEdit, ret) {
+  ret.writeTxt = "";
+  ret.errorMsg = "";
 
   if (keyEdit.doCheck(GET_LINE, "keygen.name" )) {
     ret.exitCode = 0;
@@ -4699,23 +4694,20 @@ function addUidCallback(inputData, keyEdit) {
       ret.writeTxt="";
     }
   } 
+  else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
+    ret.quitNow = true;
+  }
   else {
     ret.quitNow=true;
     ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
     ret.exitCode=-1;
   }
-
-  return ret;
 }
 
 
-function revokeCertCallback(inputData, keyEdit) {
-  var ret = {
-    exitCode: -1,
-    quitNow: false,
-    writeTxt: "",
-    errorMsg: ""
-  };
+function revokeCertCallback(inputData, keyEdit, ret) {
+  ret.writeTxt = "";
+  ret.errorMsg = "";
 
   if (keyEdit.doCheck(GET_LINE, "ask_revocation_reason.code" )) {
     ret.exitCode = 0;
@@ -4736,13 +4728,47 @@ function revokeCertCallback(inputData, keyEdit) {
   else if (keyEdit.doCheck(GET_BOOL, "openfile.overwrite.okay" )) {
     ret.exitCode = 0;
     ret.writeTxt = "Y";
+  }
+  else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
+    ret.quitNow = true;
+  }
+  else {
+    ret.quitNow=true;
+    ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
+    ret.exitCode=-1;
+  }
+}
+
+function setPrimaryUidCallback(inputData, keyEdit, ret) {
+  ret.writeTxt = "";
+  ret.errorMsg = "";
+
+  if (keyEdit.doCheck(GET_LINE, "keyedit.prompt" )) {
+    ++inputData.step
+    switch (inputData.step) {
+    case 1:
+      ret.exitCode = 0;
+      ret.writeTxt = inputData.idNumber;
+      break;
+    case 2:
+      ret.exitCode = 0;
+      ret.writeTxt = "primary";
+      break;
+    case 3:
+      ret.exitCode = 0;
+      ret.quitNow=true;
+      break;
+    default:
+      ret.exitCode = -1;
+      ret.quitNow=true;
+    }
+      
   } 
   else {
     ret.quitNow=true;
     ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
     ret.exitCode=-1;
   }
-
-  return ret;
 }
+
 
