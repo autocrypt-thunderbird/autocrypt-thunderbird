@@ -41,6 +41,10 @@ EnigInitCommon("enigmailRulesEditor");
 const INPUT=0;
 const RESULT=1;
  
+var gSearchTimer = null;
+var gSearchInput = null;
+var gClearButton = null;
+
 function enigmailDlgOnLoad() {
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
@@ -76,6 +80,9 @@ function enigmailDlgOnLoad() {
     }
   }
   var rulesTree=document.getElementById("rulesTree");
+  gSearchInput = document.getElementById("filterEmail");
+  gClearButton = document.getElementById("clearButton");
+
 }
 
 function enigmailDlgOnAccept() {
@@ -85,7 +92,7 @@ function enigmailDlgOnAccept() {
     return false;
   enigmailSvc.clearRules();
   
-  var node=document.getElementById("rulesTreeChildren").firstChild;
+  var node=getFirstNode();
   while(node) {
     enigmailSvc.addRule(node.getAttribute("email"),
                         node.getAttribute("keyId"),
@@ -149,10 +156,14 @@ function createRow(treeItem, userObj) {
   }
 }
 
+function getFirstNode() {
+  return document.getElementById("rulesTreeChildren").firstChild;
+}
+  
 function getCurrentNode() {
   var rulesTree=document.getElementById("rulesTree");
   if (rulesTree.currentIndex <0) return null;
-  var node=document.getElementById("rulesTreeChildren").firstChild;
+  var node=getFirstNode();
   for (var i=0; i<rulesTree.currentIndex && node; i++) {
     node = node.nextSibling;
   }
@@ -236,3 +247,79 @@ function enigDoMoveDown() {
     rulesTree.currentIndex = currentIndex + 1;
   }
 }
+
+function enigDoSearch() {
+  var searchTxt=document.getElementById("filterEmail").value;
+  if (!searchTxt) return;
+  searchTxt = searchTxt.toLowerCase();
+  var node=getFirstNode();
+  while (node) {
+    if (node.getAttribute("email").toLowerCase().indexOf(searchTxt) <0) {
+      node.hidden=true;
+    }
+    else {
+      node.hidden=false;
+    }
+    node = node.nextSibling;
+  }
+}
+
+function enigDoResetFilter() {
+  document.getElementById("filterEmail").value="";
+  var node=getFirstNode();
+  while (node) {
+    node.hidden=false;
+    node = node.nextSibling;
+  }
+  gClearButton.setAttribute("disabled", true);
+}
+
+function onEnterInSearchBar()
+{
+   if (gSearchInput.value == "") 
+   {
+     enigDoResetFilter();
+     return;
+   }
+
+   gClearButton.setAttribute("disabled", false);
+
+   enigDoSearch();
+}
+
+
+
+function onSearchKeyPress(event)
+{
+  // 13 == return
+  if (event && event.keyCode == 13) {
+    event.stopPropagation(); // make sure the dialog is not closed...
+    onSearchInput(true);
+  }
+}
+
+
+function onSearchInput(returnKeyHit)
+{
+  if (gSearchTimer) {
+    clearTimeout(gSearchTimer); 
+    gSearchTimer = null;
+  }
+
+  // only select the text when the return key was hit
+  if (returnKeyHit) {
+    gSearchInput.select();
+    onEnterInSearchBar();
+  }
+  else {
+    gSearchTimer = setTimeout("onEnterInSearchBar();", 800);
+  }
+}
+
+
+function disableQuickSearchClearButton()
+{
+ if (gClearButton)
+   gClearButton.setAttribute("disabled", true); 
+}
+

@@ -22,36 +22,49 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailRulesEditor.js"/>
 
   <groupbox width="700px" flex="1">
-    <hbox flex="1">
-      <tree id="rulesTree" flex="1" hidecolumnpicker="false">
-        <treecols>
-          <treecol style="width:150px" id="email" flex="1" label="&enigmail.email.label;" persist="width"/>
-          <splitter class="tree-splitter"/>
-          <treecol style="width:140px" id="keys" flex="1" label="&enigmail.pgpKeys.label;" persist="width"/>
-          <splitter class="tree-splitter"/>
-          <treecol style="width:70px" id="sign" flex="0" label="&enigmail.sign.label;" persist="width"/>
-          <splitter class="tree-splitter"/>
-          <treecol style="width:70px" id="encrypt" flex="0" label="&enigmail.encrypt.label;" persist="width"/>
-          <splitter class="tree-splitter"/>
-          <treecol style="width:70px" id="pgpMime" flex="0" label="&enigmail.pgpMime.label;" persist="width"/>
-        </treecols>
-        <treechildren id="rulesTreeChildren" properties=""/>
-      </tree>
-      <vbox>
-        <button label="&enigmail.edit.label;"
-                oncommand="enigDoEdit();"/>
-        <button label="&enigmail.add.label;"
-                oncommand="enigDoAdd();"/>
-        <button label="&enigmail.delete.label;"
-                oncommand="enigDoDelete();"/>
-        <separator/>
-        <button label="&enigmail.moveUp.label;" 
-                accesskey="&enigmail.moveUp.accesskey;"
-                oncommand="enigDoMoveUp();"/>
-        <button label="&enigmail.moveDown.label;"
-                accesskey="&enigmail.moveDown.accesskey;"
-                oncommand="enigDoMoveDown();"/>
-      </vbox>
-    </hbox>
+    <vbox flex="1" align="stretch">
+      <hbox flex="0" align="center">
+        <label value="&enigmail.searchRule.label;"/>
+        <textbox id="filterEmail" type="text" size="30" onfocus="this.select();"
+          onclick="this.select();" oninput="onSearchInput(false);" onkeypress="onSearchKeyPress(event);"/>
+        <button label="&enigmail.clearSearch.label;" id="clearButton" disabled="true"
+                accesskey="&enigmail.clearSearch.accesskey;"
+                oncommand="enigDoResetFilter();"/>
+      </hbox>
+      <hbox flex="1" >
+        <tree id="rulesTree" flex="1" hidecolumnpicker="false">
+          <treecols>
+            <treecol style="width:150px" id="email" flex="1" label="&enigmail.email.label;" persist="width"/>
+            <splitter class="tree-splitter"/>
+            <treecol style="width:140px" id="keys" flex="1" label="&enigmail.pgpKeys.label;" persist="width"/>
+            <splitter class="tree-splitter"/>
+            <treecol style="width:70px" id="sign" flex="0" label="&enigmail.sign.label;" persist="width"/>
+            <splitter class="tree-splitter"/>
+            <treecol style="width:70px" id="encrypt" flex="0" label="&enigmail.encrypt.label;" persist="width"/>
+            <splitter class="tree-splitter"/>
+            <treecol style="width:70px" id="pgpMime" flex="0" label="&enigmail.pgpMime.label;" persist="width"/>
+          </treecols>
+          <treechildren id="rulesTreeChildren" properties=""/>
+        </tree>
+        <vbox>
+          <button label="&enigmail.edit.label;"
+                  accesskey="&enigmail.edit.accesskey;"
+                  oncommand="enigDoEdit();"/>
+          <button label="&enigmail.add.label;"
+                  accesskey="&enigmail.add.accesskey;"
+                  oncommand="enigDoAdd();"/>
+          <button label="&enigmail.delete.label;"
+                  accesskey="&enigmail.delete.accesskey;"
+                  oncommand="enigDoDelete();"/>
+          <separator/>
+          <button label="&enigmail.moveUp.label;" 
+                  accesskey="&enigmail.moveUp.accesskey;"
+                  oncommand="enigDoMoveUp();"/>
+          <button label="&enigmail.moveDown.label;"
+                  accesskey="&enigmail.moveDown.accesskey;"
+                  oncommand="enigDoMoveDown();"/>
+        </vbox>
+      </hbox>
+    </vbox>
   </groupbox>
 </dialog>

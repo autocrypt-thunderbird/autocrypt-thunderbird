@@ -278,12 +278,18 @@
 <!ENTITY enigmail.sign.label                        "Sign">
 <!ENTITY enigmail.encrypt.label                     "Encrypt">
 <!ENTITY enigmail.edit.label                        "Modify">
+<!ENTITY enigmail.edit.accesskey                    "M">
 <!ENTITY enigmail.add.label                         "Add">
+<!ENTITY enigmail.add.accesskey                     "A">
 <!ENTITY enigmail.delete.label                      "Delete">
+<!ENTITY enigmail.delete.accesskey                  "E">
 <!ENTITY enigmail.moveUp.label                      "Move Up">
 <!ENTITY enigmail.moveUp.accesskey                  "U">
 <!ENTITY enigmail.moveDown.label                    "Move Down">
 <!ENTITY enigmail.moveDown.accesskey                "D">
+<!ENTITY enigmail.searchRule.label                  "View rules with email addresses containing:">
+<!ENTITY enigmail.clearSearch.label                 "Clear">
+<!ENTITY enigmail.clearSearch.accesskey             "C">
 
 <!ENTITY enigmail.searchKeyDlg.label               "Download OpenPGP Keys">
 <!ENTITY enigmail.searchKeyDlgCapt.label           "Found Keys - Select to Import">
