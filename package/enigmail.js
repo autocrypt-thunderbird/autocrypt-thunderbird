@@ -2598,8 +2598,10 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
       if (goodSignature) {
         errorMsgObj.value = trustPrefix + "Good signature from " + userId;
 
-        if (this.agentType != "gpg")
-          statusFlagsObj.value |= nsIEnigmail.GOOD_SIGNATURE;
+        if (this.agentType != "gpg") {
+          // Trust all good signatures, if not GPG
+          statusFlagsObj.value |= nsIEnigmail.GOOD_SIGNATURE | nsIEnigmail.TRUSTED_IDENTITY;
+        }
 
       } else {
         errorMsgObj.value = trustPrefix + "BAD signature from " + userId;
