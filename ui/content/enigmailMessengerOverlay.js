@@ -25,6 +25,7 @@ var gShowHeadersObj = {"viewallheaders":2,
 window.addEventListener("load",   enigMessengerStartup, false);
 window.addEventListener("unload", enigMessengerFinish,  false);
 
+
 function enigMessengerStartup() {
   DEBUG_LOG("enigmailMessengerOverlay.js: Startup\n");
 
@@ -86,6 +87,12 @@ function enigMessengerStartup() {
   // Commented out; clean-up now handled by HdrView and Unload
   //var tree = GetThreadTree();
   //tree.addEventListener("click", enigThreadPaneOnClick, true);
+
+  if (EnigGetPref("handleDoubleClick")) {
+    // ovveride function for double clicking an attachment
+    EnigOverrideAttribute(["attachmentList"], "onclick",
+                         "enigAttachmentListClick('", "', event);");
+  }
 }
 
 
@@ -254,7 +261,7 @@ function enigMimeInit() {
 
     var enigContentHandlerCID = compMgr.contractIDToCID(ENIG_ENIGENCRYPTEDHANDLER_CONTRACTID);
 
-    var handlePGPMime = (enigContentHandlerCID.toString() == 
+    var handlePGPMime = (enigContentHandlerCID.toString() ==
                      ENIG_ENIGCONTENTHANDLER_CID);
 
     DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit: handlePGPMime="+handlePGPMime+"\n");
@@ -670,8 +677,13 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     headerList["cc"] = "";
 
   var hasAttachments = currentAttachments && currentAttachments.length;
-  
-  
+  var attachmentsEncrypted = true;
+
+  for (index in currentAttachments) {
+    if (! currentAttachments[index].displayName.match(/\.(gpg|pgp|asc)$/))
+      attachmentsEncrypted=false;
+  }
+
   var msgRfc822Text = "";
   if (head || tail) {
     if (head) {
@@ -693,6 +705,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
   gEnigDecryptedMessage = {url:messageUrl,
                            headerList:headerList,
                            hasAttachments:hasAttachments,
+                           attachmentsEncrypted:attachmentsEncrypted,
                            charset:charset,
                            plainText:msgRfc822Text};
 
@@ -754,7 +767,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     while (bodyElement.hasChildNodes())
         bodyElement.removeChild(bodyElement.childNodes[0]);
 
-    if (hasAttachments) {
+    if (hasAttachments && (! attachmentsEncrypted)) {
       var newTextNode = msgFrame.document.createTextNode(EnigGetString("enigNote"));
 
       var newEmElement = msgFrame.document.createElement("em");
@@ -898,7 +911,7 @@ function enigGetDecryptedMessage(contentType, includeHeaders) {
 
     contentData += "\r\n\r\n";
 
-    if (gEnigDecryptedMessage.hasAttachments) {
+    if (gEnigDecryptedMessage.hasAttachments && (! gEnigDecryptedMessage.attachmentsEncrypted)) {
       contentData += EnigGetString("enigContentNote");
     }
 
@@ -1061,7 +1074,7 @@ function enigMessageSave() {
 
   var saveFile = EnigFilePicker(EnigGetString("saveHeader"),
                                 gEnigLastSaveDir, true, "txt",
-                                ["Text files", "*.txt"]);
+                                null, ["Text files", "*.txt"]);
   if (!saveFile) return;
 
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageSave: path="+saveFile.path+"\n");
@@ -1080,7 +1093,7 @@ function enigMessageSave() {
 }
 
 
-function EnigFilePicker(title, displayDir, save, defaultExtension, filterPairs) {
+function EnigFilePicker(title, displayDir, save, defaultExtension, defaultName, filterPairs) {
   DEBUG_LOG("enigmailMessengerOverlay.js: EnigFilePicker: "+save+"\n");
 
   const nsIFilePicker = Components.interfaces.nsIFilePicker;
@@ -1103,6 +1116,9 @@ function EnigFilePicker(title, displayDir, save, defaultExtension, filterPairs) 
 
   if (defaultExtension)
     filePicker.defaultExtension = defaultExtension;
+
+  if (defaultName)
+    filePicker.defaultString=defaultName;
 
   var nfilters = 0;
   if (filterPairs && filterPairs.length)
@@ -1273,4 +1289,302 @@ function enigKeyRequestCallback(callbackArg, ctxt) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigKeyRequestCallback: ETag: "+eTag+"\n");
 
   // NEED TO EXTRACT KEY ETC.
+}
+
+function enigOnShowAttachmentContextMenu() {
+  // if no attachments are selected, disable the Open and Save...
+  // this is Messenger's onShowAttachmentContextMenu, extended by
+  // Enigmail specific stuff!
+  var attachmentList = document.getElementById('attachmentList');
+  var selectedAttachments = attachmentList.selectedItems;
+  var openMenu = document.getElementById('context-openAttachment');
+  var saveMenu = document.getElementById('context-saveAttachment');
+  var decryptOpenMenu = document.getElementById('enigmail_ctxDecryptOpen');
+  var decryptSaveMenu = document.getElementById('enigmail_ctxDecryptSave');
+  if (selectedAttachments.length > 0)
+  {
+    openMenu.removeAttribute('disabled');
+    saveMenu.removeAttribute('disabled');
+
+    if (selectedAttachments[0].attachment.displayName.match(/\.(gpg|pgp|asc)$/)) {
+      decryptOpenMenu.removeAttribute('disabled');
+      decryptSaveMenu.removeAttribute('disabled');
+    }
+    else {
+      decryptOpenMenu.setAttribute('disabled', true);
+      decryptSaveMenu.setAttribute('disabled', true);
+    }
+  }
+  else
+  {
+    openMenu.setAttribute('disabled', true);
+    saveMenu.setAttribute('disabled', true);
+    decryptOpenMenu.setAttribute('disabled', true);
+    decryptSaveMenu.setAttribute('disabled', true);
+  }
+}
+
+// handle a selected attachment (decrypt & open or save)
+function enigHandleAttachmentSel(actionType) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigHandleAttachmentSel: actionType="+actionType+"\n");
+
+  var attachmentList = document.getElementById('attachmentList');
+  var selectedAttachments = attachmentList.selectedItems;
+  var anAttachment = selectedAttachments[0].attachment;
+
+  if (actionType=="saveAttachment" || actionType=="openAttachment") {
+    enigHandleAttachment(actionType, anAttachment);
+  }
+}
+
+
+function enigHandleAttachment(actionType, anAttachment) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigHandleAttachment: actionType="+actionType+", anAttachment(url)="+anAttachment.url+"\n");
+
+  var ipcBuffer = Components.classes[ENIG_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+
+
+  var callbackArg = { actionType:actionType,
+                      attachment:anAttachment,
+                      forceBrowser:false,
+                      ipcBuffer:ipcBuffer
+                    };
+
+  var requestObserver = new EnigRequestObserver(enigHandleAttachmentCallback,
+                                                callbackArg);
+
+  var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+
+  ipcBuffer.open(100, false); // get just the first bit
+  var msgUri = ioServ.newURI(anAttachment.url, null, null);
+
+  ipcBuffer.observe(requestObserver, msgUri);
+
+  var channel = ioServ.newChannelFromURI(msgUri);
+
+  var pipeFilter = Components.classes[ENIG_PIPEFILTERLISTENER_CONTRACTID].createInstance(Components.interfaces.nsIPipeFilterListener);
+
+  pipeFilter.init(ipcBuffer, null,
+                "",
+                "",
+                0, false, false, null);
+
+  var listener;
+  listener = pipeFilter;
+
+  channel.asyncOpen(listener, msgUri);
+}
+
+function enigHandleAttachmentCallback(callbackArg, ctxt) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigHandleAttachmentCallback: "+ctxt+"\n");
+
+  if (callbackArg.ipcBuffer.overflowed) {
+    WARNING_LOG("enigmailMessengerOverlay.js: enigHandleAttachmentCallback: MESSAGE BUFFER OVERFLOW\n");
+  }
+
+  var dataLengthObj = new Object();
+  var attachmentHead = callbackArg.ipcBuffer.getByteData(dataLengthObj);
+  callbackArg.ipcBuffer.shutdown();
+
+
+  if (attachmentHead.match(/\-\-\-\-\-BEGIN PGP \w+ KEY BLOCK\-\-\-\-\-/)) {
+    // attachment appears to be a PGP key file
+
+    if (EnigConfirm(EnigGetString("attachmentPgpKey", callbackArg.attachment.displayName))) {
+      enigImportAttachment(callbackArg);
+    }
+    else {
+      EnigLoadURLInNavigatorWindow(callbackArg.attachment.url, true)
+    }
+  }
+  else {
+    // attachment is probably encrypted
+    enigDecryptAttachment(callbackArg);
+  }
+}
+
+// try to decrypt an attachment
+function enigDecryptAttachment(argumentsObj) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigDecryptAttachment: url"+argumentsObj.attachment.url+"\n");
+
+  var ipcBuffer = Components.classes[ENIG_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+
+  argumentsObj.ipcBuffer=ipcBuffer;
+
+  var requestObserver = new EnigRequestObserver(enigDecryptAttachmentCallback,
+                                                argumentsObj);
+
+  var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+
+  ipcBuffer.open(99999999999, false); // -1 doesn't work, so I set it to a _big_ number ...
+  var msgUri = ioServ.newURI(argumentsObj.attachment.url, null, null);
+
+  ipcBuffer.observe(requestObserver, msgUri);
+
+  var channel = ioServ.newChannelFromURI(msgUri);
+
+  var pipeFilter = Components.classes[ENIG_PIPEFILTERLISTENER_CONTRACTID].createInstance(Components.interfaces.nsIPipeFilterListener);
+
+  pipeFilter.init(ipcBuffer, null,
+                "",
+                "",
+                0, false, false, null);
+
+  var listener;
+  listener = pipeFilter;
+
+  channel.asyncOpen(listener, msgUri);
+}
+
+
+function enigDecryptAttachmentCallback(callbackArg, ctxt) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigDecryptAttachmentCallback: "+ctxt+"\n");
+
+  if (callbackArg.ipcBuffer.overflowed) {
+    WARNING_LOG("enigmailMessengerOverlay.js: enigDecryptAttachmentCallback: MESSAGE BUFFER OVERFLOW\n");
+  }
+
+  var exitCodeObj = new Object();
+  var statusFlagsObj = new Object();
+  var errorMsgObj= new Object();
+  var enigmailSvc =  GetEnigmailSvc();
+  var outFile;
+  var rawFileName=callbackArg.attachment.displayName.replace(/\.(asc|pgp|gpg)$/,"");
+
+  if (callbackArg.actionType == "saveAttachment") {
+    outFile = EnigFilePicker(EnigGetString("saveAttachmentHeader"),
+                                gEnigLastSaveDir, true, "",
+                                rawFileName, null);
+    if (! outFile) return;
+  }
+  else {
+    // open
+    var tmpDir = EnigGetTempDir();
+    try {
+      outFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+      outFile.initWithPath(tmpDir);
+      if (!(outFile.isDirectory() && outFile.isWritable())) {
+        errorMsgObj.value=EnigGetString("noTempDir");
+        return -1;
+      }
+      outFile.append(rawFileName);
+      outFile.createUnique(Components.interfaces.NORMAL_FILE_TYPE, 0600);
+    }
+    catch (ex) {
+      errorMsgObj.value=EnigGetString("noTempDir");
+      return -1;
+    }
+  }
+
+  var r=enigmailSvc.decryptAttachment(window, outFile.path, callbackArg.ipcBuffer,
+                                exitCodeObj, statusFlagsObj,
+                                errorMsgObj);
+
+  callbackArg.ipcBuffer.shutdown();
+  if (exitCodeObj.value != 0) {
+    EnigAlert(EnigGetString("failedDecrypt")+"\n\n"+errorMsgObj.value);
+  }
+  else if (callbackArg.actionType == "openAttachment") {
+    var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+    var outFileUri = ioServ.newFileURI(outFile);
+    var fileExt = outFile.leafName.replace(/(.*\.)(\w+)$/, "$2")
+    if (fileExt && ! callbackArg.forceBrowser) {
+      try {
+        var extAppLauncher = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsPIExternalAppLauncher);
+        extAppLauncher.deleteTemporaryFileOnExit(outFile);
+        var mimeService = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsIMIMEService);
+        var fileMimeInfo = mimeService.GetFromExtension(fileExt);
+        if (fileMimeInfo.preferredAction == fileMimeInfo.useHelperApp ||
+            fileMimeInfo.preferredAction == fileMimeInfo.useSystemDefault) {
+          // open attachment with a helper application
+          window.OpenURL(outFileUri.asciiSpec);
+          return;
+        }
+      }
+      catch (ex) {
+        // if the attachment file type is unknown, an exception is thrown,
+        // so it's clear it will not be opened in a browser window
+        window.OpenURL(outFileUri.asciiSpec);
+        return;
+      }
+    }
+
+    // open the attachment in a browser window
+    EnigLoadURLInNavigatorWindow(outFileUri.asciiSpec, true)
+  }
+}
+
+
+// try to import the PGP keys contained in an attachment
+function enigImportAttachment(argumentsObj) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigImportAttachment: url"+argumentsObj.attachment.url+"\n");
+
+  var ipcBuffer = Components.classes[ENIG_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+
+  argumentsObj.ipcBuffer=ipcBuffer;
+
+  var requestObserver = new EnigRequestObserver(enigImportAttachmentCallback,
+                                                argumentsObj);
+
+  var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+
+  ipcBuffer.open(99999999999, false); // -1 doesn't work, so I set it to a _big_ number ...
+  var msgUri = ioServ.newURI(argumentsObj.attachment.url, null, null);
+
+  ipcBuffer.observe(requestObserver, msgUri);
+
+  var channel = ioServ.newChannelFromURI(msgUri);
+
+  var pipeFilter = Components.classes[ENIG_PIPEFILTERLISTENER_CONTRACTID].createInstance(Components.interfaces.nsIPipeFilterListener);
+
+  pipeFilter.init(ipcBuffer, null,
+                "",
+                "",
+                0, false, false, null);
+
+  var listener;
+  listener = pipeFilter;
+
+  channel.asyncOpen(listener, msgUri);
+}
+
+
+function enigImportAttachmentCallback(callbackArg, ctxt) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigImportAttachmentCallback: "+ctxt+"\n");
+
+  if (callbackArg.ipcBuffer.overflowed) {
+    WARNING_LOG("enigmailMessengerOverlay.js: enigImportAttachmentCallback: MESSAGE BUFFER OVERFLOW\n");
+  }
+
+  var dataLengthObj = new Object();
+  var dataText = callbackArg.ipcBuffer.getByteData(dataLengthObj);
+  callbackArg.ipcBuffer.shutdown();
+
+  var errorMsgObj= new Object();
+  var enigmailSvc =  GetEnigmailSvc();
+  var exitCode = enigmailSvc.importKey (window, 0, dataText, "", errorMsgObj);
+
+  if (exitCode == 0) {
+    EnigAlert(EnigGetString("successKeyImport")+"\n\n"+errorMsgObj.value);
+  }
+  else {
+    EnigError(EnigGetString("failKeyImport")+"\n\n"+errorMsgObj.value);
+  }
+
+}
+
+// handle double click events on Attachments
+function enigAttachmentListClick (elementId, event) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigAttachmentListClick: event="+event+"\n");
+
+  var attachment=event.target.attachment;
+  if (attachment.displayName.match(/\.(gpg|pgp|asc)$/)) {
+    if (event.button != 0) return;
+
+    if (event.detail == 2) // double click
+      enigHandleAttachment("openAttachment", attachment);
+  }
+  else {
+    attachmentListClick(event);
+  }
 }

@@ -312,15 +312,19 @@ function enigReplaceEditorText(text) {
   EnigEditorInsertText(text);
 }
 
-function enigGetUserList(window, testSendFlags, testExitCodeObj, testStatusFlagsObj, testErrorMsgObj) {
+function enigGetUserList(window, sendFlags, exitCodeObj, statusFlagsObj, errorMsgObj) {
 
   var aUserList = new Array();
   try {
     var enigmailSvc = GetEnigmailSvc();
-    var userText = enigmailSvc.getUserIdList(window, testSendFlags,
-                                            testExitCodeObj,
-                                            testStatusFlagsObj,
-                                            testErrorMsgObj);
+    var userText = enigmailSvc.getUserIdList(window, sendFlags,
+                                            exitCodeObj,
+                                            statusFlagsObj,
+                                            errorMsgObj);
+    if (exitCodeObj.value != 0) {
+      EnigAlert(errorMsgObj.value);
+      return null;
+    }
 
     userText.replace(/\r\n/g, "\n");
     userText.replace(/\r/g, "\n");
@@ -557,6 +561,7 @@ function enigSend(sendFlags, elementId) {
                                                         testStatusFlagsObj,
                                                         testErrorMsgObj);
 
+              if (!aUserList) return;
               var resultObj = new Object();
               var inputObj = new Object();
               inputObj.userList = aUserList;
@@ -1133,17 +1138,11 @@ function enigEncryptAttachments(bucketList, newAttachments, window, uiFlags,
                                 fromAddr, toAddr, sendFlags,
                                 errorMsgObj) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptAttachments\n");
-  var processInfo;
   var ioServ;
   var fileTemplate;
-  var tmpDir;
   errorMsgObj.value="";
 
   try {
-    processInfo = Components.classes[ENIG_PROCESSINFO_CONTRACTID].getService(Components.interfaces.nsIProcessInfo);
-    if (!processInfo)
-        return -1;
-
     ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
     if (!ioServ)
         return -1;
@@ -1152,37 +1151,20 @@ function enigEncryptAttachments(bucketList, newAttachments, window, uiFlags,
     return -1;
   }
 
-  //get path for TempDir
-
-  try {
-    var ds = Components.classes[ENIG_DIRSERVICE_CONTRACTID].getService();
-    var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
-    var tmpDirComp = dsprops.get(ENIG_TEMPDIR_PROP, Components.interfaces.nsILocalFile);
-    tmpDir=tmpDirComp.path;
-  }
-  catch (ex) {
-    // let's guess ...
-    var httpHandler = ioServ.getProtocolHandler("http");
-    httpHandler = httpHandler.QueryInterface(Components.interfaces.nsIHttpProtocolHandler);
-    isWin = (httpHandler.platform.search(/Win/i) == 0);
-    if (isWin) {
-      tmpDir="C:\\TEMP";
-    } else {
-      tmpDir="/tmp";
-    }
-  }
+  var tmpDir=EnigGetTempDir();
+  var extAppLauncher = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsPIExternalAppLauncher);
 
   try {
     fileTemplate = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
     fileTemplate.initWithPath(tmpDir);
     if (!(fileTemplate.isDirectory() && fileTemplate.isWritable())) {
-      errorMsgObj.value="Could not find a temporary directory to write to\nPlease set the TEMP environment variable accordingly";
+      errorMsgObj.value=EnigGetString("noTempDir");
       return -1;
     }
     fileTemplate.append("encfile");
   }
   catch (ex) {
-    errorMsgObj.value="Could not find a temporary directory to write to\nPlease set the TEMP environment variable";
+    errorMsgObj.value=EnigGetString("noTempDir");
     return -1;
   }
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptAttachments tmpDir=" + tmpDir+"\n");
@@ -1197,7 +1179,7 @@ function enigEncryptAttachments(bucketList, newAttachments, window, uiFlags,
   while (node) {
     var origUrl = node.attachment.url;
     if (origUrl.substring(0,7) != "file://") {
-      // this should actually never happen since it is checked earlier!
+      // this should actually never happen since it is pre-checked!
       errorMsgObj.value="The attachment '"+node.attachment.name+"' is not a local file";
       return -1;
     }
@@ -1205,6 +1187,14 @@ function enigEncryptAttachments(bucketList, newAttachments, window, uiFlags,
     // transform attachment URL to platform-specific file name
     var origUri = ioServ.newURI(origUrl, null, null);
     var origFile=origUri.QueryInterface(Components.interfaces.nsIFileURL);
+    if (node.attachment.temporary) {
+      try {
+        var origLocalFile=Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+        origLocalFile.initWithPath(origFile.file.path);
+        extAppLauncher.deleteTemporaryFileOnExit(origLocalFile);
+      }
+      catch (ex) {}
+    }
 
     var newFile = fileTemplate.clone();
     var txtMessgae;

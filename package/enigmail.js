@@ -10,7 +10,7 @@
  * rights and limitations under the MPL.
  *
  * The Original Code is Enigmail.
- * 
+ *
  * The Initial Developer of the Original Code is Ramalingam Saravanan.
  * Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
  * Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
@@ -621,7 +621,7 @@ PGPModule.prototype = {
   },
 
   //  void FindHeader(in string aHeaderBuffer, in string aHeaderStr,
-  //          out long aHeaderStartOffset, out long aHeaderLength, 
+  //          out long aHeaderStartOffset, out long aHeaderLength,
   //          [retval] out long aBufferEndOffset);
   FindHeader: function (aHeaderBuffer, aHeaderStr,
                         aHeaderStartOffset, aHeaderLength, aBufferEndOffset) {
@@ -740,7 +740,7 @@ function (aSpec, originCharset, aBaseURI)
 
   var uri = Components.classes[NS_SIMPLEURI_CONTRACTID].createInstance(Components.interfaces.nsIURI);
   uri.spec = aSpec;
-    
+
   return uri;
 }
 
@@ -1633,7 +1633,7 @@ function (command, needPassphrase, domWindow, prompter, listener,
   }
 
   CONSOLE_LOG("\nenigmail> "+command.replace(/\\\\/g, "\\")+"\n");
-  
+
   var pipetrans = Components.classes[NS_PIPETRANSPORT_CONTRACTID].createInstance();
 
   pipetrans = pipetrans.QueryInterface(Components.interfaces.nsIPipeTransport);
@@ -1671,7 +1671,7 @@ function (command, needPassphrase, domWindow, prompter, listener,
 }
 
 
-Enigmail.prototype.parseErrorOutput = 
+Enigmail.prototype.parseErrorOutput =
 function (errOutput, statusFlagsObj, statusMsgObj) {
 
   WRITE_LOG("enigmail.js: Enigmail.parseErrorOutput: \n");
@@ -2324,7 +2324,7 @@ function (signatureBlock, part) {
 }
 
 
-Enigmail.prototype.decryptMessage = 
+Enigmail.prototype.decryptMessage =
 function (parent, uiFlags, cipherText, signatureObj,
           exitCodeObj, statusFlagsObj, keyIdObj, userIdObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.decryptMessage: "+cipherText.length+" bytes, "+uiFlags+"\n");
@@ -3411,7 +3411,7 @@ function EnigGetString(aStr) {
 Enigmail.prototype.getUserIdList =
 function  (parent, inputFlags, exitCodeObj, statusFlagsObj, errorMsgObj) {
 
-  var gpgCommand = this.agentPath + " --list-keys --with-colons";
+  var gpgCommand = this.agentPath + GPG_BATCH_OPTS + " --list-keys --with-colons";
 
   if (!this.initialized) {
     errorMsgObj.value = EnigGetString("notInit");
@@ -3506,4 +3506,72 @@ function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
   }
 
   return msg;
+}
+
+
+Enigmail.prototype.decryptAttachment =
+function (parent, outFileName, inputBuffer,
+          exitCodeObj, statusFlagsObj, errorMsgObj) {
+  WRITE_LOG("enigmail.js: Enigmail.decryptAttachment: parent="+parent+", outFileName="+outFileName+"\n");
+
+  var command = this.agentPath;
+
+  outFileName = outFileName.replace(/\\/g, "\\\\");
+  command += GPG_BATCH_OPTS + " -o '"+outFileName+"' --yes --passphrase-fd 0 -d ";
+
+
+  statusFlagsObj.value = 0;
+
+  var passphrase = null;
+  var passwdObj = new Object();
+
+  if (!GetPassphrase(parent, 0, passwdObj)) {
+    ERROR_LOG("enigmail.js: Enigmail.execStart: Error - no passphrase supplied\n");
+
+    statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
+    return null;
+  }
+
+  passphrase = passwdObj.value;
+
+  var statusFlagsObj = new Object();
+  var noProxy = true;
+
+  var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+  ipcBuffer.open(MSG_BUFFER_SIZE, false);
+
+  var pipeTrans = this.execStart(command, false, parent, 0,
+                                 ipcBuffer, noProxy, statusFlagsObj);
+
+
+  if (!pipeTrans) {
+    return false;
+  }
+
+  var inStream;
+  try {
+    pipeTrans.writeSync(passphrase, passphrase.length);
+    pipeTrans.writeSync("\n", 1);
+    var dataLength = inputBuffer.totalBytes;
+
+    //pipeTrans.writeSync(inputBuffer.getByteData(wroteLength), dataLength);
+    inStream=inputBuffer.openInputStream();
+    pipeTrans.writeAsync(inStream, dataLength, true);
+  }
+  catch (ex) {
+    return false;
+  }
+  // Wait for child STDOUT to close
+  pipeTrans.join();
+
+  exitCodeObj.value = pipeTrans.exitCode();
+
+  var statusMsgObj = new Object();
+  var cmdLineObj     = new Object();
+
+  this.execEnd(pipeTrans, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
+
+
+  return true;
+
 }

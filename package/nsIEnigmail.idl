@@ -31,6 +31,7 @@
  */
 
 #include "nsISupports.idl"
+#include "nsIIPCBuffer.idl"
 
 interface nsIDOMWindow;
 interface nsIPrompt;
@@ -41,6 +42,7 @@ interface nsIPipeTransport;
 interface nsIIPCRequest;
 interface nsIRequestObserver;
 interface nsIFileOutputStream;
+interface nsIIPCBuffer;
 
 /**
  * The nsIEnigmail provides an openPGP-based encryption/decryption service
@@ -240,6 +242,13 @@ interface nsIEnigmail : nsISupports
                       in unsigned long sendFlags,
                       in wstring inFile,
                       in wstring outFile,
+                      out long exitCode,
+                      out unsigned long statusFlags,
+                      out wstring errorMsg);
+
+  boolean decryptAttachment (in nsIDOMWindow parent,
+                      in string outFileName,
+                      in nsIIPCBuffer ipcBuffer,
                       out long exitCode,
                       out unsigned long statusFlags,
                       out wstring errorMsg);

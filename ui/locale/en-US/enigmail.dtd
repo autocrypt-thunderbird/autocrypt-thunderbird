@@ -12,16 +12,16 @@
 <!ENTITY enigmail.preferences.label    "Preferences">
 
 <!ENTITY enigmail.autoCrypto.label        "Enable Auto Crypto">
-<!ENTITY enigmail.userIdValue.label       "User email address">
+<!ENTITY enigmail.userIdValue.label       "User email address (or Key Id)">
 <!ENTITY enigmail.userNoPassphrase.label  "No passphrase for user">
 
-<!ENTITY enigmail.userIdFromAddr.label    "Use FROM email address for signing">
+<!ENTITY enigmail.userIdFromAddr.label    "Use FROM email address for signing to determine GPG key">
 
 <!ENTITY enigmail.defaultEncryptionOption.label "Choose default encryption options">
 <!ENTITY enigmail.usePGPMimeOption.label  "Choose PGP/MIME option">
 <!ENTITY enigmail.mimeHashAlgorithm.label "Hash algorithm">
 
-<!ENTITY enigmail.agentPath.label         "GPG/PGP executable path">
+<!ENTITY enigmail.agentPath.label         "GPG executable path">
 
 <!ENTITY enigmail.send_plaintext_flowed.label "Allow flowed text (RFC 2646)">
 
@@ -184,7 +184,10 @@
 
 <!ENTITY enigmail.enigmailAttachDesc.label          "This message contains attachments. How would you like encrypt/sign them?">
 <!ENTITY enigmail.enigEncryptAttachNone.label       "Just encrypt/sign the message text, but not the attachments">
-<!ENTITY enigmail.enigEncryptAttachInline.label     "Encrypt each attachment separately and send the message as inline PGP">
-<!ENTITY enigmail.enigEncryptAttachPgpMime.label    "Encrypt/sign the message as a whole and send it as PGP/MIME">
-<!ENTITY enigmail.enigPgpMimeDetails.label          "NOTE: PGP/MIME is not supported by all mail clients. Most popular mail clients on Linux/UNIX and Mac OS X support this standard. On Windows only Enigmail, Pegasus and Mulberry are known to support it. If you don't know what to choose, select the second option.">
+<!ENTITY enigmail.enigEncryptAttachInline.label     "Encrypt each attachment separately and send the message using inline PGP">
+<!ENTITY enigmail.enigEncryptAttachPgpMime.label    "Encrypt/sign the message as a whole and send it using PGP/MIME">
 
+<!ENTITY enigmail.ctxDecryptOpen.label              "Decrypt and Open">
+<!ENTITY enigmail.ctxDecryptSave.label              "Decrypt and Save As...">
+<!ENTITY enigmail.ctxDecryptOpen.accesskey          "D">
+<!ENTITY enigmail.ctxDecryptSave.accesskey          "C">

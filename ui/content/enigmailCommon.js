@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.75.92.0";
-var gEnigmimeVersion = "0.75.92.0";
+var gEnigmailVersion = "0.75.93.0";
+var gEnigmimeVersion = "0.75.93.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -19,7 +19,10 @@ const ENIG_ENIGMIMELISTENER_CONTRACTID = "@mozilla.org/enigmail/mime-listener;1"
 const ENIG_ENIGMIMESERVICE_CONTRACTID = "@mozdev.org/enigmail/enigmimeservice;1";
 const ENIG_STRINGBUNDLE_CONTRACTID = "@mozilla.org/intl/stringbundle;1";
 const ENIG_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
-const ENIG_DIRSERVICE_CONTRACTID = "@mozilla.org/file/directory_service;1"
+const ENIG_DIRSERVICE_CONTRACTID = "@mozilla.org/file/directory_service;1";
+const ENIG_MIME_CONTRACTID = "@mozilla.org/mime;1";
+const ENIG_WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
+const ENIG_APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1"
 
 const ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID =
                               "@mozilla.org/network/file-output-stream;1";
@@ -108,6 +111,7 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "encryptAttachments":1,
                              "inlineAttachAsciiArmor":false,
                              "inlineAttachExt":".pgp",
+                             "handleDoubleClick":false,
                              "sendImmediately":true,
                              "recipientsSelectionOption":1
                             };
@@ -226,6 +230,11 @@ function GetEnigmailSvc() {
     var configuredVersion = EnigGetPref("configuredVersion");
 
     DEBUG_LOG("enigmailCommon.js: GetEnigmailSvc: "+configuredVersion+"\n");
+
+    if (firstInitialization && gEnigmailSvc.initialized &&
+        gEnigmailSvc.agentType && gEnigmailSvc.agentType == "pgp") {
+      EnigAlert(EnigGetString("pgpNotSupported"));
+    }
 
     if (gEnigmailSvc.initialized && (gEnigmailVersion != configuredVersion)) {
       EnigConfigure();
@@ -448,7 +457,7 @@ function EnigReadURLContents(url, maxBytes) {
   var urlContents = scriptableInStream.read(maxBytes);
 
   scriptableInStream.close();
-  
+
   return urlContents;
 }
 
@@ -922,9 +931,6 @@ function EnigDumpHTML(node)
 /////////////////////////
 
 
-const ENIG_WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
-
-
 function EnigClearPassphrase() {
   DEBUG_LOG("enigmailCommon.js: EnigClearPassphrase: \n");
 
@@ -1004,7 +1010,15 @@ function EnigLoadURLInNavigatorWindow(url, aOpenFlag)
 
   // if not, get the most recently used browser window
   if (!navWindow) {
-    var wm = Components.classes[ENIG_WMEDIATOR_CONTRACTID].getService(Components.interfaces.nsIWindowMediator);
+    var wm;
+    try {
+      // Mozilla up to 1.0
+      wm = Components.classes[ENIG_WMEDIATOR_CONTRACTID].getService(Components.interfaces.nsIWindowMediator);
+    }
+    catch (ex) {
+      // Mozilla 1.1 and newer
+      wm = Components.classes[ENIG_APPSHELL_MEDIATOR_CONTRACTID].getService(Components.interfaces.nsIWindowMediator);
+    }
     navWindow = wm.getMostRecentWindow("navigator:browser");
   }
 
@@ -1080,3 +1094,27 @@ function enigStripEmail(mailAddrs) {
   return mailAddrs;
 }
 
+
+//get path for temporary directory (e.g. /tmp, C:\TEMP)
+function EnigGetTempDir() {
+  var tmpDir;
+
+  try {
+    var ds = Components.classes[ENIG_DIRSERVICE_CONTRACTID].getService();
+    var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
+    var tmpDirComp = dsprops.get(ENIG_TEMPDIR_PROP, Components.interfaces.nsILocalFile);
+    tmpDir=tmpDirComp.path;
+  }
+  catch (ex) {
+    // let's guess ...
+    var httpHandler = ioServ.getProtocolHandler("http");
+    httpHandler = httpHandler.QueryInterface(Components.interfaces.nsIHttpProtocolHandler);
+    isWin = (httpHandler.platform.search(/Win/i) == 0);
+    if (isWin) {
+      tmpDir="C:\\TEMP";
+    } else {
+      tmpDir="/tmp";
+    }
+  }
+  return tmpDir;
+}
