@@ -20,8 +20,8 @@
   <!-- script type="application/x-javascript" src="chrome://enigmail/content/enigmailUserSelection.js"/> -->
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailUserSelection.js"/>
-  <groupbox id="keygenConsoleBox" orient="vertical">
-     <caption label="&enigmail.usersNotFound.label;"/>
+  <groupbox id="dialogHeadline" orient="vertical">
+     <caption id="usersNotFoundCapt" label="&enigmail.usersNotFound.label;"/>
      <description id="usersNotFoundDesc" width="700px">...</description>
   </groupbox>
 
@@ -37,15 +37,21 @@
       onclick="enigmailUserSelCallback(event);">
 
       <treecols>
-        <treecol id="selectionCol" style="width:25px" label="&enigmail.keySelection.label;"/>
+        <treecol id="selectionCol" style="width:25px"
+                 label="&enigmail.keySelection.label;"
+                 persist="width"/>
         <splitter class="tree-splitter"/>
         <treecol id="enigUserNameCol" primary="true"
             flex="1"
             label="&enigmail.keyUserId.label;"/>
         <splitter class="tree-splitter"/>
-        <treecol id="expCol" style="width:70px" label="&enigmail.keyExpiry.label;"/>
+        <treecol id="expCol" style="width:70px"
+                 label="&enigmail.keyExpiry.label;"
+                 persist="width"/>
         <splitter class="tree-splitter"/>
-        <treecol id="keyCol" style="width:90px" label="&enigmail.keyId.label;"/>
+        <treecol id="keyCol" style="width:90px"
+                 label="&enigmail.keyId.label;"
+                 persist="width"/>
       </treecols>
 
       <treechildren id="enigmailUserIdSelectionChildren"
@@ -78,13 +84,31 @@
       </row>
     </rows>
   </grid>
+  
+  <hbox>    
+    <button class="dialog"
+            id="refreshKeys"
+            label="&enigmail.refreshKeys.label;"
+            accesskey="&enigmail.refreshKeys.accesskey;"
+            oncommand="enigmailRefreshKeys();"/>
+
 <!--
     <button class="dialog"
             halign="right"
             id="resetPrefs"
             label="&enigmail.importMissingKeys.label;"
             tooltip="&enigmail.importMissingKeys.tooltip;"
-            oncommand="enigmailImportMissingKeys();"
-            />
+            oncommand="enigmailImportMissingKeys();"/>
 -->
+  </hbox>
+  <vbox align="end">
+    <hbox>
+      <button dlgtype="accept"/>
+      <button dlgtype="cancel"/>
+      <button id="perRecipientsOption"
+               label="&enigmail.perRecipientsOption.label;"
+               oncommand="enigmailNewRecipientRule();"
+               collapsed="true"/>
+    </hbox>
+  </vbox>
 </dialog>

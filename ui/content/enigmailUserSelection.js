@@ -3,14 +3,14 @@
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
  * the MPL at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the MPL is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the MPL for the specific language governing
  * rights and limitations under the MPL.
- * 
+ *
  * The Original Code is Enigmail.
- * 
+ *
  * The Initial Developer of this code is Patrick Brunschwig.
  * Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
  * are Copyright (C) 2003 Patrick Brunschwig.
@@ -35,6 +35,9 @@
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailUserSelection");
+
+const INPUT = 0;
+const RESULT = 1;
 
 // field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
 const KEY_TRUST=1;
@@ -79,35 +82,69 @@ function enigSetActive(element, status) {
 
 function enigmailUserSelLoad() {
    DEBUG_LOG("enigmailUserSelection.js: Load\n");
+   enigmailBuildList(false);
+}
 
+
+function enigmailRefreshKeys() {
+  var userTreeList = document.getElementById("enigmailUserIdSelection");
+  var treeChildren = userTreeList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0]
+  while (treeChildren.firstChild) {
+    treeChildren.removeChild(treeChildren.firstChild);
+  }
+  enigmailBuildList(true);
+}
+
+
+function enigGetUserList(secretOnly, refresh) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigGetUserList\n");
+
+  try {
+    var exitCodeObj = new Object();
+    var statusFlagsObj = new Object();
+    var errorMsgObj = new Object();
+    
+    var enigmailSvc = GetEnigmailSvc();
+    var userList = enigmailSvc.getUserIdList(secretOnly,
+                                             refresh,
+                                             exitCodeObj,
+                                             statusFlagsObj,
+                                             errorMsgObj);
+    if (exitCodeObj.value != 0) {
+      EnigAlert(errorMsgObj.value);
+      return null;
+    }
+  } catch (ex) {
+    ERROR_LOG("ERROR in enigmailUserSelection: enigGetUserList\n");
+  }
+
+  return userList.split(/\n/);
+}
+
+
+function enigmailBuildList(refresh) {
+   DEBUG_LOG("enigmailUserSelection.js: enigmailBuildList\n");
+   
    var sortUsers = function (a,b) {
 
      if (a.userId<b.userId) { return -1;} else {return 1; }
 
    }
 
-   window.arguments[1].cancelled=true;
-   var exitCodeObj = new Object();
-   var statusFlagsObj = new Object();
-   var errorMsgObj = new Object();
+   window.arguments[RESULT].cancelled=true;
 
-   var secretOnly = (window.arguments[0].options.indexOf("private")>= 0);
-   var hideExpired = (window.arguments[0].options.indexOf("hidexpired")>= 0);
-   var allowExpired = (window.arguments[0].options.indexOf("allowexpired")>= 0);
-
-   var aGpgUserList = enigGetUserList(window,
-                                   secretOnly,
-                                   exitCodeObj,
-                                   statusFlagsObj,
-                                   errorMsgObj);
+   var secretOnly = (window.arguments[INPUT].options.indexOf("private")>= 0);
+   var hideExpired = (window.arguments[INPUT].options.indexOf("hidexpired")>= 0);
+   var allowExpired = (window.arguments[INPUT].options.indexOf("allowexpired")>= 0);
+   var aGpgUserList = enigGetUserList(secretOnly, refresh);
 
    if (!aGpgUserList) return;
 
    try {
-     if (window.arguments[0].dialogHeader) {
+     if (window.arguments[INPUT].dialogHeader) {
        var dialogHeader = document.getElementById("dialogHeader");
-       dialogHeader.setAttribute("label", window.arguments[0].dialogHeader);
-       dialogHeader.setAttribute("collapsed", "false");
+       dialogHeader.setAttribute("label", window.arguments[INPUT].dialogHeader);
+       dialogHeader.removeAttribute("collapsed");
      }
    } catch (ex) {}
 
@@ -118,58 +155,79 @@ function enigmailUserSelLoad() {
    gUserList = document.getElementById("enigmailUserIdSelection");
    gUserList.currentItem=null;
 
-   if (window.arguments[0].options.indexOf("notsigned")>= 0) {
+   if (window.arguments[INPUT].options.indexOf("notsigned")>= 0) {
       var plainText = document.getElementById("enigmailUserSelPlainText");
       plainText.setAttribute("label", plainText.getAttribute("noSignLabel"));
    }
-
-   var descNotFound=document.getElementById("usersNotFoundDesc");
+   if ((window.arguments[INPUT].options.indexOf("rulesOption")>= 0)) {
+      var rulesOption = document.getElementById("perRecipientsOption");
+      rulesOption.removeAttribute("collapsed");
+   }
+   
+   var descNotFound = document.getElementById("usersNotFoundDesc");
+   var notFoundCapt = document.getElementById("usersNotFoundCapt");
    var treeChildren=gUserList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
 
-   if (window.arguments[0].options.indexOf("multisel")< 0) {
+   if (window.arguments[INPUT].options.indexOf("multisel")< 0) {
      // single key selection -> hide selection col
      var selColumn=document.getElementById("selectionCol");
      selColumn.setAttribute("collapsed", "true");
      gUserList.setAttribute("hidecolumnpicker", "true");
    }
 
-   if (window.arguments[0].options.indexOf("nosending")>= 0) {
+   if (window.arguments[INPUT].options.indexOf("nosending")>= 0) {
       // hide not found recipients, hide "send unencrypted"
-      document.getElementById("keygenConsoleBox").setAttribute("collapsed", "true");
+      document.getElementById("dialogHeadline").setAttribute("collapsed", "true");
       document.getElementById("enigmailUserSelPlainText").setAttribute("collapsed", "true");
    }
-   else if (window.arguments[0].options.indexOf("noforcedisp")>=0) {
+   else if (window.arguments[INPUT].options.indexOf("noforcedisp")>=0) {
       document.getElementById("displayNoLonger").removeAttribute("collapsed");
    }
 
+
+   if (window.arguments[INPUT].options.indexOf("forUser")>=0) {
+      descNotFound.firstChild.data=EnigGetString("keysToUse", window.arguments[INPUT].forUser);      
+      notFoundCapt.setAttribute("collapsed", "true");
+   }
    var aUserList = new Array();
    var userObj = new Object();
    var i;
    for (i=0; i<aGpgUserList.length; i++) {
-     if (aGpgUserList[i][0] == "pub" || aGpgUserList[i][0] == "sec") {
-       userObj = new Object();
-       userObj.expiry=aGpgUserList[i][EXPIRY];
-       userObj.created=aGpgUserList[i][CREATED];
-       userObj.userId=aGpgUserList[i][USER_ID];
-       userObj.keyId=aGpgUserList[i][KEY_ID];
-       userObj.keyTrust=aGpgUserList[i][KEY_TRUST];
-       userObj.SubUserIds=new Array();
-       aUserList.push(userObj);
-     }
-     /*else if (aGpgUserList[i][0] == "sub") {
-       // this might override the key above (which is correct)
-       userObj.keyId=aGpgUserList[i][KEY_ID];
-     } */
-     else if (aGpgUserList[i][0] == "uid") {
-       var userId=aGpgUserList[i][USER_ID];
-       userObj.SubUserIds.push(userId);
+     var listRow=aGpgUserList[i].split(/:/);
+     if (listRow.length>=0) {
+       if (listRow[0] == "pub" || listRow[0] == "sec") {
+         userObj = new Object();
+         userObj.expiry=listRow[EXPIRY];
+         userObj.created=listRow[CREATED];
+         userObj.userId=listRow[USER_ID];
+         userObj.keyId=listRow[KEY_ID];
+         userObj.keyTrust=listRow[KEY_TRUST];
+         userObj.SubUserIds=new Array();
+         aUserList.push(userObj);
+       }
+       /*else if (listRow[0] == "sub") {
+         // this might override the key above (which is correct)
+         userObj.keyId=listRow[KEY_ID];
+       } */
+       else if (listRow[0] == "uid") {
+         var userId=listRow[USER_ID];
+         userObj.SubUserIds.push(userId);
+       }
      }
    }
 
    var toAddr = "";
    try {
-     if ((typeof window.arguments[0].toAddr)=="string")
-       toAddr=EnigStripEmail(window.arguments[0].toAddr)+" ";
+     if (typeof(window.arguments[INPUT].toAddr)=="string")
+       toAddr=EnigStripEmail(window.arguments[INPUT].toAddr)+" ";
+   }
+   catch (ex) {}
+   
+   var toKeys = "";
+   try{
+     if (typeof(window.arguments[INPUT].toKeys)=="string") {
+        toKeys=window.arguments[INPUT].toKeys;
+     }
    }
    catch (ex) {}
 
@@ -208,6 +266,9 @@ function enigmailUserSelLoad() {
               s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
               s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
               activeState=(toAddr.search(s1)>=0 || toAddr.search(s2)>=0) ? 1 : 0;
+              if (activeState==0 && toKeys.length>0) {
+                activeState=(toKeys.indexOf("0x"+aUserList[i].keyId)>=0 ? 1 : 0)
+              }
           }
 
           var treeItem=null;
@@ -261,63 +322,24 @@ function enigmailUserSelLoad() {
    }
    gUserList.appendChild(treeChildren);
 
-   // Build up list of not found recipients
-   var aNotFound=new Array();
-   var toAddrList = toAddr.split(/,/);
-   var j;
-   for (i=0; i<toAddrList.length; i++) {
-      for (j=0; j<aValidUsers.length; j++) {
-         if (aValidUsers[j].toLowerCase() == toAddrList[i].toLowerCase()) {
-            j=aValidUsers.length + 3;
-         }
-      }
-      if (j==aValidUsers.length) {
-         aNotFound.push(toAddrList[i]);
-      }
-   }
-   descNotFound.firstChild.data = aNotFound.join(", ");
-   window.arguments[0].notFoundList=aNotFound;
-}
-
-
-function enigGetUserList(window, secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigGetUserList\n");
-
-  var aUserList = new Array();
-  var startIndex, listText;
-  try {
-    var enigmailSvc = GetEnigmailSvc();
-    listText = enigmailSvc.getUserIdList(window,
-                                            secretOnly,
-                                            exitCodeObj,
-                                            statusFlagsObj,
-                                            errorMsgObj);
-    if (exitCodeObj.value != 0) {
-      EnigAlert(errorMsgObj.value);
-      return null;
-    }
-
-    listText=listText.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-    startIndex=listText.indexOf("----\n")+5;
-    if (startIndex<5) {
-      startIndex=0;
-    }
-    var nextIndex=listText.indexOf("\n",startIndex);
-
-    while (nextIndex>=0 && startIndex < listText.length && startIndex>=0) {
-        var theLine=listText.substring(startIndex,nextIndex);
-        if (theLine.length>0) {
-          aUserList.push(theLine.split(/\:/)); ///
+   if (window.arguments[INPUT].options.indexOf("forUser")<0) {
+     // Build up list of not found recipients
+     var aNotFound=new Array();
+     var toAddrList = toAddr.split(/,/);
+     var j;
+     for (i=0; i<toAddrList.length; i++) {
+        for (j=0; j<aValidUsers.length; j++) {
+           if (aValidUsers[j].toLowerCase() == toAddrList[i].toLowerCase()) {
+              j=aValidUsers.length + 3;
+           }
         }
-        startIndex=nextIndex+1;
-        nextIndex=listText.indexOf("\n",startIndex);
-    }
-  } catch (ex) {
-    ERROR_LOG("ERROR in enigmailUserSelection: enigGetUserList:\n");
-    ERROR_LOG("  listLength="+listText.length+" theLine="+theLine+" next line: "+ listText.substring(nextIndex+1,listText.indexOf("\n",nextIndex+1))+"\n");
-  }
-
-  return aUserList;
+        if (j==aValidUsers.length) {
+           aNotFound.push(toAddrList[i]);
+        }
+     }
+     descNotFound.firstChild.data = aNotFound.join(", ");
+     window.arguments[INPUT].notFoundList=aNotFound;
+   }
 }
 
 
@@ -373,13 +395,14 @@ function enigUserSelCreateRow (userObj, activeState, userId, keyValue, dateField
 function enigmailUserSelAccept() {
   DEBUG_LOG("enigmailUserSelection.js: Accept\n");
 
-  var resultObj=window.arguments[1];
+  var resultObj=window.arguments[RESULT];
   resultObj.userList = new Array();
+  resultObj.perRecipientRules=false;
   var t = new String();
   gUserList = document.getElementById("enigmailUserIdSelection");
   var treeChildren=gUserList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
 
-  if (window.arguments[0].options.indexOf("multisel")<0) {
+  if (window.arguments[INPUT].options.indexOf("multisel")<0) {
     if (gUserList.currentItem)
       resultObj.userList.push(gUserList.currentItem.getAttribute("id"));
   }
@@ -400,7 +423,6 @@ function enigmailUserSelAccept() {
   if (document.getElementById("displayNoLonger").checked) {
     EnigSetPref("recipientsSelectionOption", 0);
   }
-
   if (resultObj.userList.length == 0 && gSendEncrypted) {
     EnigAlert(EnigGetString("atLeastOneKey"));
     return false;
@@ -475,12 +497,26 @@ function disableList() {
   }
 }
 
+function enigmailNewRecipientRule () {
+  if (EnigGetPref("perRecipientRules")==0) {
+    EnigSetPref("perRecipientRules", 1);
+  }
+
+  var resultObj=window.arguments[RESULT];
+  resultObj.userList = new Array();
+  resultObj.perRecipientRules=true;
+  resultObj.cancelled=false;
+  resultObj.encrypt = "";
+  window.close();
+  return true;
+}
+
 function enigmailImportMissingKeys () {
 /*
   var keyserver = EnigGetPref("keyserver");
 
-  var pubKeyId = "'<"+window.arguments[0].notFoundList.join(">' '<")+">'";
-  if (EnigConfirm("Try to download the following keys?\n"+window.arguments[0].notFoundList.join(", "))) {
+  var pubKeyId = "'<"+window.arguments[INPUT].notFoundList.join(">' '<")+">'";
+  if (EnigConfirm("Try to download the following keys?\n"+window.arguments[INPUT].notFoundList.join(", "))) {
     var recvErrorMsgObj = new Object();
     var recvFlags = nsIEnigmail.UI_INTERACTIVE;
 
@@ -494,5 +530,6 @@ function enigmailImportMissingKeys () {
       EnigAlert(EnigGetString("keyImportError")+recvErrorMsgObj.value);
     }
   }
-*/  
+*/
 }
+
