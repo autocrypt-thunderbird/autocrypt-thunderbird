@@ -21,7 +21,9 @@ if (!verifyDiskSpace(fProgram, srDest)) {
   var fComponents = getFolder("Components");
   var fChrome = getFolder("Chrome");
 
-  var delComps = [ "libipc.so", "ipc.dll"]; // Old DLLs
+  // workaround for Mozilla 1.8a3 and newer, failing to register enigmime correctly
+  
+  var delComps = [ "compreg.dat" ]; // Components registry
 
   for (var j=0; j<delComps.length; j++) {
      var delFile = getFolder(fComponents, delComps[j]);
