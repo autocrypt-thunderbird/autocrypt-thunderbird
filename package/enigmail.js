@@ -161,6 +161,10 @@ const GET_BOOL = "GET_BOOL";
 const GET_LINE = "GET_LINE";
 const GET_HIDDEN = "GET_HIDDEN";
 
+const BUTTON_POS_0           = 1;
+const BUTTON_POS_1           = 1 << 8;
+const BUTTON_POS_2           = 1 << 16;
+
 
 function CreateFileStream(filePath, permissions) {
 
@@ -1074,8 +1078,16 @@ function (domWindow, mesg) {
 
 Enigmail.prototype.confirmMsg =
 function (domWindow, mesg) {
+  var dummy={};
   var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
-  return promptService.confirm(domWindow, EnigGetString("enigConfirm"), mesg);
+  var buttonPressed = promptService.confirmEx(domWindow,
+                        EnigGetString("enigConfirm"),
+                        mesg,
+                        (promptService.BUTTON_TITLE_YES * BUTTON_POS_0) +
+                        (promptService.BUTTON_TITLE_NO * BUTTON_POS_1),
+                        null, null, null,
+                        null, dummy);
+  return (buttonPressed==0); // promptService.confirm(domWindow, EnigGetString("enigConfirm"), mesg);
 }
 
 Enigmail.prototype.promptValue =
