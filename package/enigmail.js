@@ -3813,6 +3813,7 @@ function () {
   this.userIdList= null;
 }
 
+// returns the output of -with-colons --list[-secret]-keys
 Enigmail.prototype.getUserIdList =
 function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
 
@@ -4349,21 +4350,29 @@ function (parent, needPassphrase, userId, keyId, editCmd, trustLevel, callbackFu
 
   
   try {
-    var exitCode = callbackFunc(pipeTrans, trustLevel);
-    if (exitCode == 0)
+    var exitCode = callbackFunc(pipeTrans, trustLevel, errorMsgObj);
+    switch(exitCode) {
+    case 0:
       exitCode = pipeTrans.exitCode();
+      break;
+    case -2:
+      this.clearCachedPassphrase();
+    }
+    
+    
   } catch (ex) {}
   
   return exitCode;
 }
 
 
-function signKeyCallback(pipeTrans, trustLevel) {
+function signKeyCallback(pipeTrans, trustLevel, errorMsgObj) {
   var inputData="";
   var quitNow=false;
   var txt="";
-  var exitCode = 0;
-  
+  var exitCode = -1;
+  errorMsgObj.value=EnigGetString("undefinedError");
+
   var keyEdit = new KeyEditor(pipeTrans);
 
   while (! quitNow) {
@@ -4371,29 +4380,26 @@ function signKeyCallback(pipeTrans, trustLevel) {
       txt = keyEdit.nextLine();
       DEBUG_LOG(txt+"\n");
       if (txt.indexOf("KEYEXPIRED") > 0) {
-        errorMsgObj.value="key expired";
+        errorMsgObj.value=EnigGetString("noSignKeyExpired");
         exitCode=-1;
       }
       if (txt.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
-        errorMsgObj.value="bad passphrase";
-        exitCode=-1;
+        errorMsgObj.value=EnigGetString("badPhrase");
+        exitCode=-2;
       }
       if (txt.indexOf("[GNUPG:] ALREADY_SIGNED")>=0) {
-        errorMsgObj.value="already signed";
+        errorMsgObj.value=EnigGetString("keyAlreadySigned");
         exitCode=-1;
       }
     }
         
     if (keyEdit.doCheck(GET_BOOL, "sign_uid.okay" )) {
-      exitCode = 0;
       keyEdit.writeLine("Y");
     }
     else if (keyEdit.doCheck(GET_BOOL, "keyedit.sign_all.okay" )) {
-      exitCode = 0;
       keyEdit.writeLine("Y");
     }
     else if (keyEdit.doCheck(GET_BOOL, "sign_uid.local_promote_okay" )) {
-      exitCode = 0;
       keyEdit.writeLine("Y");
     }
     else if (keyEdit.doCheck(GET_LINE, "sign_uid.class" )) {
@@ -4401,14 +4407,13 @@ function signKeyCallback(pipeTrans, trustLevel) {
       keyEdit.writeLine(trustLevel);
     }
     else if (keyEdit.doCheck(GET_BOOL, "sign_uid.okay" )) {
-      exitCode = 0;
       keyEdit.writeLine("Y");
     }
     else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt" ))
       quitNow=true;
     else {
       quitNow=true;
-      errorMsgObj.value="Unknown command prompt:\n"+txt;
+      ERROR_LOG("Unknown command prompt: "+txt+"n");
     }
     if (! quitNow) {
       txt = keyEdit.nextLine();
@@ -4422,10 +4427,11 @@ function signKeyCallback(pipeTrans, trustLevel) {
   return exitCode;
 }
 
-function keyTrustCallback(pipeTrans, trustLevel) {
+function keyTrustCallback(pipeTrans, trustLevel, errorMsgObj) {
   var quitNow=false;
   var txt="";
-  var exitCode = 0;
+  var exitCode = -1;
+  errorMsgObj.value=EnigGetString("undefinedError");
   
   var keyEdit = new KeyEditor(pipeTrans);
 
@@ -4447,7 +4453,8 @@ function keyTrustCallback(pipeTrans, trustLevel) {
       quitNow=true;
     else {
       quitNow=true;
-      errorMsgObj.value="Unknown command prompt:\n"+txt;
+      ERROR_LOG("Unknown command prompt: "+txt+"n");
+      exitCode=-1;
     }
     if (! quitNow) {
       txt = keyEdit.nextLine();
