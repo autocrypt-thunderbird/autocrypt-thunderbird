@@ -865,6 +865,14 @@ function (domWindow, mesg) {
   return promptService.confirm(domWindow, "Enigmail Confirm", mesg);
 }
 
+Enigmail.prototype.promptValue =
+function (domWindow, mesg, valueObj) {
+  var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
+  var checkObj = new Object();
+  return promptService.prompt(domWindow, "Enigmail Prompt",
+                               mesg, valueObj, "", checkObj);
+}
+
 Enigmail.prototype.errorMsg =
 function (domWindow, mesg) {
   var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
@@ -1909,13 +1917,16 @@ function (parent, uiFlags, cipherText,
   }
 
   if (pubKeyId && allowImport && keyserver && (this.agentType == "gpg")) {
-    var confirmMsg = "Import public key "+pubKeyId+" from keyserver "+keyserver+"?";
+    var prompt = "Import public key "+pubKeyId+" from keyserver: ";
 
-    if (this.confirmMsg(parent, confirmMsg)) {
+    var valueObj = new Object();
+    valueObj.value = keyserver;
+
+    if (this.promptValue(parent, prompt, valueObj)) {
       var recvErrorMsgObj = new Object();
       var recvFlags = interactive ? nsIEnigmail.UI_INTERACTIVE : 0;
       var exitStatus = this.receiveKey(parent, recvFlags, pubKeyId,
-                                       keyserver, recvErrorMsgObj);
+                                       valueObj.value, recvErrorMsgObj);
 
       if (exitStatus != 0) {
         this.alertMsg(parent, "Unable to receive public key\n\n"+recvErrorMsgObj.value);
