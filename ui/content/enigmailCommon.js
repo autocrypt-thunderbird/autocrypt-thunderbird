@@ -23,20 +23,62 @@ dump("enigmailCommon.js: gIPCService = "+gIPCService+"\n");
 dump("enigmailCommon.js: gEnigmailSvc = "+gEnigmailSvc+"\n");
 
 var gLogLevel = 3;     // Output only errors/warnings by default
+var gLogFileStream = null;
+
+///////////////////////////////////////////////////////////////////////////////
+// File read/write operations
+
+const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
+
+const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID =
+                              "@mozilla.org/network/file-output-stream;1";
+
+const NS_RDONLY      = 0x01;
+const NS_WRONLY      = 0x02;
+const NS_CREATE_FILE = 0x08;
+const NS_TRUNCATE    = 0x20;
+const DEFAULT_FILE_PERMS = 0600;
+
+function CreateFileStream(filePath, permissions) {
+
+  var localFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+  localFile.initWithPath(filePath);
+
+  var fileStream = Components.classes[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIFileOutputStream);
+
+  if (!permissions)
+    permissions = DEFAULT_FILE_PERMS;
+  var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
+
+  fileStream.init(localFile, flags, permissions);
+
+  return fileStream;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function WRITE_LOG(str) {
+  dump(str);
+
+  if (gLogFileStream) {
+    gLogFileStream.write(str, str.length);
+    gLogFileStream.flush();
+  }
+}
 
 function DEBUG_LOG(str) {
   if (gLogLevel >= 4)
-    dump(str);
+    WRITE_LOG(str);
 }
 
 function WARNING_LOG(str) {
   if (gLogLevel >= 3)
-    dump(str);
+    WRITE_LOG(str);
 }
 
 function ERROR_LOG(str) {
   if (gLogLevel >= 2)
-    dump(str);
+    WRITE_LOG(str);
 }
 
 function EnigAlert(mesg) {
@@ -69,13 +111,13 @@ function EnigPassphrase() {
   if (checkObj.value || (passwdObj.value.length == 0))
     gEnigmailSvc.setDefaultPassphrase(passwdObj.value);
 
-  dump("enigmailCommon.js: EnigPassphrase: "+passwdObj.value+"\n");
+  WRITE_LOG("enigmailCommon.js: EnigPassphrase: "+passwdObj.value+"\n");
 
   return passwdObj.value;
 }
 
 function EnigEncryptMessage(plainText, toMailAddr, statusLineObj) {
-  dump("enigmailCommon.js: EnigEncryptMessage: To "+toMailAddr+"\n");
+  WRITE_LOG("enigmailCommon.js: EnigEncryptMessage: To "+toMailAddr+"\n");
 
   var passphrase = null;
   if (!gEnigmailSvc.haveDefaultPassphrase)
@@ -88,11 +130,11 @@ function EnigEncryptMessage(plainText, toMailAddr, statusLineObj) {
 }
 
 function EnigDecryptMessage(cipherText, statusLineObj) {
-  dump("enigmailCommon.js: EnigDecryptMessage: \n");
+  WRITE_LOG("enigmailCommon.js: EnigDecryptMessage: \n");
 
   var passphrase = null;
 
-  dump("enigmailCommon.js: EnigDecryptMessage: "+gEnigmailSvc.haveDefaultPassphrase+"\n");
+  WRITE_LOG("enigmailCommon.js: EnigDecryptMessage: "+gEnigmailSvc.haveDefaultPassphrase+"\n");
   if (!gEnigmailSvc.haveDefaultPassphrase)
     passphrase = EnigPassphrase();
 
@@ -104,7 +146,7 @@ function EnigDecryptMessage(cipherText, statusLineObj) {
 }
 
 function EnigSignClearText(plainText) {
-  dump("enigmailCommon.js: EnigSignClearText: \n");
+  WRITE_LOG("enigmailCommon.js: EnigSignClearText: \n");
 
   var signedText;
 
@@ -115,7 +157,7 @@ function EnigSignClearText(plainText) {
 
 function EnigGetDeepText(node) {
   if (node.nodeType == Node.TEXT_NODE) {
-    //dump(node.data);
+    //WRITE_LOG(node.data);
     return node.data;
   }
 
@@ -125,9 +167,9 @@ function EnigGetDeepText(node) {
     // Loop over the children
     var children = node.childNodes;
     for (var count = 0; count < children.length; count++) {
-      dump("<"+node.tagName+">\n");
+      WRITE_LOG("<"+node.tagName+">\n");
       text += EnigGetDeepText(children[count]);
-      //dump("</"+node.tagName+">\n");
+      //WRITE_LOG("</"+node.tagName+">\n");
     }
   }
 
@@ -141,7 +183,7 @@ function EnigDumpHTML(node)
     if (type == Node.ELEMENT_NODE) {
 
         // open tag
-        dump("<" + node.tagName)
+        WRITE_LOG("<" + node.tagName)
 
         // dump the attributes if any
         attributes = node.attributes;
@@ -151,14 +193,14 @@ function EnigDumpHTML(node)
             while(index < countAttrs) {
                 att = attributes[index];
                 if (null != att) {
-                    dump(" "+att.name+"='"+att.value+"'")
+                    WRITE_LOG(" "+att.name+"='"+att.value+"'")
                 }
                 index++
             }
         }
 
         // close tag
-        dump(">")
+        WRITE_LOG(">")
 
         // recursively dump the children
         if (node.hasChildNodes()) {
@@ -171,17 +213,17 @@ function EnigDumpHTML(node)
                 EnigDumpHTML(child)
                 count++
             }
-            dump("</" + node.tagName + ">");
+            WRITE_LOG("</" + node.tagName + ">");
         }
 
 
     }
     // if it's a piece of text just dump the text
     else if (type == Node.TEXT_NODE) {
-        dump(node.data)
+        WRITE_LOG(node.data)
     }
 
-    dump("\n\n")
+    WRITE_LOG("\n\n")
 }
 
 
@@ -191,11 +233,11 @@ function EnigTest() {
 
   var statusLineObj = new Object();
   var cipherText = EnigEncryptMessage(plainText, toMailAddr, statusLineObj);
-  dump("enigmailCommon.js: enigTest: cipherText = "+cipherText+"\n");
-  dump("enigmailCommon.js: enigTest: statusLine = "+statusLineObj.value+"\n");
+  WRITE_LOG("enigmailCommon.js: enigTest: cipherText = "+cipherText+"\n");
+  WRITE_LOG("enigmailCommon.js: enigTest: statusLine = "+statusLineObj.value+"\n");
 
   var statusLineObj = new Object();
   var decryptedText = EnigDecryptMessage(cipherText, statusLineObj);
-  dump("enigmailCommon.js: enigTest: decryptedText = "+decryptedText+"\n");
-  dump("enigmailCommon.js: enigTest: statusLine = "+statusLineObj.value+"\n");
+  WRITE_LOG("enigmailCommon.js: enigTest: decryptedText = "+decryptedText+"\n");
+  WRITE_LOG("enigmailCommon.js: enigTest: statusLine = "+statusLineObj.value+"\n");
 }

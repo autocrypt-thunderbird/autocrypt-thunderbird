@@ -8,7 +8,7 @@ var gEnigCurrentHandlerNavButton1;
 var gEnigTest = true;
 
 function enigNavigatorStartup() {
-  dump("enigmailNavigatorOverlay.js: enigNavigatorStartup:\n");
+  WRITE_LOG("enigmailNavigatorOverlay.js: enigNavigatorStartup:\n");
   var contentArea = document.getElementById("appcontent");
   //contentArea.addEventListener("load",   enigDocLoadHandler, true);
   contentArea.addEventListener("unload", enigDocUnloadHandler, true);
@@ -20,49 +20,59 @@ function enigNavigatorStartup() {
 
 function enigHandlerNavButton1()
 {
-  dump("enigmailNavigatorOverlay.js: enigHandlerNavButton1:\n");
+  WRITE_LOG("enigmailNavigatorOverlay.js: enigHandlerNavButton1:\n");
 
   if (gEnigCurrentHandlerNavButton1) {
     gEnigCurrentHandlerNavButton1();
 
   } else {
-    dump("enigmailNavigatorOverlay.js: enigHandlerNavButton1: No button handler!\n");
+    WRITE_LOG("enigmailNavigatorOverlay.js: enigHandlerNavButton1: No button handler!\n");
   }
 }
 
 function enigDocLoadHandler(event) {
-  dump("enigmailNavigatorOverlay.js: enigDocLoadHandler:\n");
+  WRITE_LOG("enigmailNavigatorOverlay.js: enigDocLoadHandler:\n");
 
   enigUpdateUI(_content.location);
 }
 
 function enigFrameLoadHandler(event) {
- dump("enigmailNavigatorOverlay.js: enigFrameLoadHandler: "+event.target.location.href+"\n");
+ WRITE_LOG("enigmailNavigatorOverlay.js: enigFrameLoadHandler: "+event.target.location.href+"\n");
 }
 
 function enigFrameUnloadHandler(event) {
- dump("enigmailNavigatorOverlay.js: enigFrameUnloadHandler: "+event.target.location.href+"\n");
+ WRITE_LOG("enigmailNavigatorOverlay.js: enigFrameUnloadHandler: "+event.target.location.href+"\n");
 }
 
 function enigDocUnloadHandler(event) {
-  dump("enigmailNavigatorOverlay.js: enigDocUnloadHandler: Next URL="+event.target.location.href+"\n");
+  WRITE_LOG("enigmailNavigatorOverlay.js: enigDocUnloadHandler: Next URL="+event.target.location.href+"\n");
 
   enigUpdateUI(_content.location);
 
   if (event.target == _content.document) {
       // Handle events for content document only
-    dump("enigmailNavigatorOverlay.js: enigDocUnloadHandler: Main doc\n");
+    WRITE_LOG("enigmailNavigatorOverlay.js: enigDocUnloadHandler: Main doc\n");
   }
 }
 
 function enigConfigWindow() {
-  dump("enigmailNavigatorOverlay.js: enigConfigWIndow:\n");
+  WRITE_LOG("enigmailNavigatorOverlay.js: enigConfigWIndow:\n");
   toOpenWindowByType("tools:enigmail", "chrome://enigmail/content/enigmail.xul");
+}
+
+function enigResetUI() {
+  gEnigCurrentSite = null;
+  gEnigNavButton1.setAttribute("hidden", "true");
 }
 
 function enigUpdateUI(loc) {
 
-  dump("enigmailNavigatorOverlay.js: enigUpdateUI: "+loc.href+"\n");
+  WRITE_LOG("enigmailNavigatorOverlay.js: enigUpdateUI: "+loc.href+"\n");
+
+  if (!loc.host) {
+    enigResetUI();
+    return;
+  }
 
   // Extract hostname from URL (lower case)
   var host = loc.host.toLowerCase();
@@ -85,8 +95,7 @@ function enigUpdateUI(loc) {
     }
 
   } else {
-    gEnigCurrentSite = null;
-    gEnigNavButton1.setAttribute("hidden", "true");
+    enigResetUI();
   }
 }
 
@@ -94,15 +103,15 @@ function enigUpdateUI(loc) {
 
 function enigYahooUpdateUI() {
 
-  dump("enigmailYahoo.js: enigYahooUpdateUI:\n");
+  WRITE_LOG("enigmailYahoo.js: enigYahooUpdateUI:\n");
 
   var msgFrame = enigYahooLocateMessageFrame();
-  dump("msgFrame.name = "+msgFrame.name+"\n")
+  WRITE_LOG("msgFrame.name = "+msgFrame.name+"\n")
 
   // Extract pathname from message frame URL
   var pathname = msgFrame.location.pathname;
 
-  dump("pathname = "+pathname+"\n");
+  WRITE_LOG("pathname = "+pathname+"\n");
 
   if (pathname.search(/ShowLetter$/) != -1) {
     gEnigCurrentHandlerNavButton1 = enigYahooShowLetter;
@@ -119,14 +128,14 @@ function enigYahooUpdateUI() {
 }
 
 function enigYahooLocateMessageFrame() {
-  dump("enigmailYahoo.js: enigYahooLocateMessageFrame:\n");
+  WRITE_LOG("enigmailYahoo.js: enigYahooLocateMessageFrame:\n");
 
   var msgFrame;
 
   if (_content.frames.length) {
     // Locate message frame
     for (var j=0; j<_content.frames.length; j++) {
-      dump("frame "+j+" = "+_content.frames[j].name+"\n");
+      WRITE_LOG("frame "+j+" = "+_content.frames[j].name+"\n");
       if (_content.frames[j].name == "wmailmain")
         msgFrame = _content.frames[j];
     }
@@ -138,15 +147,15 @@ function enigYahooLocateMessageFrame() {
 }
 
 function enigYahooCompose() {
-  dump("enigmailYahoo.js: enigYahooCompose:\n");
+  WRITE_LOG("enigmailYahoo.js: enigYahooCompose:\n");
 
   var msgFrame = enigYahooLocateMessageFrame();
 
   var plainText = msgFrame.document.Compose.Body.value;
-  dump("enigYahooCompose: plainText="+plainText+"\n");
+  WRITE_LOG("enigYahooCompose: plainText="+plainText+"\n");
 
   var toAddr = msgFrame.document.Compose.To.value;
-  dump("enigYahooCompose: To="+toAddr+"\n");
+  WRITE_LOG("enigYahooCompose: To="+toAddr+"\n");
 
   var statusLineObj = new Object();
   var cipherText = EnigEncryptMessage(plainText, toAddr, statusLineObj); 
@@ -157,17 +166,17 @@ function enigYahooCompose() {
 
 
 function enigYahooShowLetter() {
-  dump("enigmailYahoo.js: enigYahooShowLetter:\n");
+  WRITE_LOG("enigmailYahoo.js: enigYahooShowLetter:\n");
 
   var msgFrame = enigYahooLocateMessageFrame();
 
   var preElement = msgFrame.document.getElementsByTagName("pre")[0];
 
-  //dump("enigYahooShowLetter: "+preElement+"\n");
+  //WRITE_LOG("enigYahooShowLetter: "+preElement+"\n");
 
   var cipherText = EnigGetDeepText(preElement);
 
-  dump("enigYahooShowLetter: cipherText='"+cipherText+"'\n");
+  WRITE_LOG("enigYahooShowLetter: cipherText='"+cipherText+"'\n");
 
   var statusLineObj = new Object();
   var plainText = EnigDecryptMessage(cipherText, statusLineObj);
@@ -184,15 +193,15 @@ function enigYahooShowLetter() {
 
 function enigHotmailUpdateUI() {
 
-  dump("enigmailHotmail.js: enigHotmailUpdateUI:\n");
+  WRITE_LOG("enigmailHotmail.js: enigHotmailUpdateUI:\n");
 
   var msgFrame = enigHotmailLocateMessageFrame();
-  dump("msgFrame.name = "+msgFrame.name+"\n")
+  WRITE_LOG("msgFrame.name = "+msgFrame.name+"\n")
 
   // Extract pathname from message frame URL
   var pathname = msgFrame.location.pathname;
 
-  dump("pathname = "+pathname+"\n");
+  WRITE_LOG("pathname = "+pathname+"\n");
 
   if (pathname.search(/getmsg$/) != -1) {
     gEnigCurrentHandlerNavButton1 = enigHotmailShowLetter;
@@ -209,22 +218,22 @@ function enigHotmailUpdateUI() {
 }
 
 function enigHotmailLocateMessageFrame() {
-  dump("enigmailHotmail.js: enigHotmailLocateMessageFrame:\n");
+  WRITE_LOG("enigmailHotmail.js: enigHotmailLocateMessageFrame:\n");
 
   return _content;
 }
 
 
 function enigHotmailCompose() {
-  dump("enigmailHotmail.js: enigHotmailCompose:\n");
+  WRITE_LOG("enigmailHotmail.js: enigHotmailCompose:\n");
 
   var msgFrame = enigHotmailLocateMessageFrame();
 
   var plainText = msgFrame.document.composeform.body.value;
-  dump("enigHotmailCompose: plainText="+plainText+"\n");
+  WRITE_LOG("enigHotmailCompose: plainText="+plainText+"\n");
 
   var toAddr = msgFrame.document.composeform.to.value;
-  dump("enigHotmailCompose: To="+toAddr+"\n");
+  WRITE_LOG("enigHotmailCompose: To="+toAddr+"\n");
 
   var statusLineObj = new Object();
   var cipherText = EnigEncryptMessage(plainText, toAddr, statusLineObj); 
@@ -235,17 +244,17 @@ function enigHotmailCompose() {
 
 
 function enigHotmailShowLetter() {
-  dump("enigmailHotmail.js: enigHotmailShowLetter:\n");
+  WRITE_LOG("enigmailHotmail.js: enigHotmailShowLetter:\n");
 
   var msgFrame = enigHotmailLocateMessageFrame();
 
   var preElement = msgFrame.document.getElementsByTagName("pre")[0];
 
-  //dump("enigHotmailShowLetter: "+preElement+"\n");
+  //WRITE_LOG("enigHotmailShowLetter: "+preElement+"\n");
 
   var cipherText = EnigGetDeepText(preElement);
 
-  dump("enigHotmailShowLetter: cipherText='"+cipherText+"'\n");
+  WRITE_LOG("enigHotmailShowLetter: cipherText='"+cipherText+"'\n");
 
   var statusLineObj = new Object();
   var plainText = EnigDecryptMessage(cipherText, statusLineObj);

@@ -43,7 +43,6 @@ const NS_PGP_MODULE_CID =
 const NS_IPCSERVICE_CONTRACTID = "@mozilla.org/protozilla/ipc-service;1";
 const NS_SYSTEMENVIRONMENT_CONTRACTID = "@mozilla.org/system-environment;1";
 
-const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const NS_IHTTPHANDLER_CID_STR  = "{52A30880-DD95-11d3-A1A7-0050041CAF44}";
 
 /* Interfaces */
@@ -60,29 +59,69 @@ const nsIPGPMsgHeader        = Components.interfaces.nsIPGPMsgHeader;
 // Global variables
 
 var gLogLevel = 3;         // Output only errors/warnings by default
+var gLogFileStream = null;
 
 var gEnigmailSvc = null;   // Global Enigmail Service
 
 ///////////////////////////////////////////////////////////////////////////////
+// File read/write operations
+
+const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
+
+const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID =
+                              "@mozilla.org/network/file-output-stream;1";
+
+const NS_RDONLY      = 0x01;
+const NS_WRONLY      = 0x02;
+const NS_CREATE_FILE = 0x08;
+const NS_TRUNCATE    = 0x20;
+const DEFAULT_FILE_PERMS = 0600;
+
+function CreateFileStream(filePath, permissions) {
+
+  var localFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+  localFile.initWithPath(filePath);
+
+  var fileStream = Components.classes[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIFileOutputStream);
+
+  if (!permissions)
+    permissions = DEFAULT_FILE_PERMS;
+  var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
+
+  fileStream.init(localFile, flags, permissions);
+
+  return fileStream;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function WRITE_LOG(str) {
+  dump(str);
+
+  if (gLogFileStream) {
+    gLogFileStream.write(str, str.length);
+    gLogFileStream.flush();
+  }
+}
 
 function DEBUG_LOG(str) {
   if (gLogLevel >= 4)
-    dump(str);
+    WRITE_LOG(str);
 }
 
 function WARNING_LOG(str) {
   if (gLogLevel >= 3)
-    dump(str);
+    WRITE_LOG(str);
 }
 
 function ERROR_LOG(str) {
   if (gLogLevel >= 2)
-    dump(str);
+    WRITE_LOG(str);
 }
 
 function CONSOLE_LOG(str) {
   if (gLogLevel >= 3)
-    dump(str);
+    WRITE_LOG(str);
 
   gEnigmailSvc.console.write(str);
 }
@@ -92,7 +131,7 @@ function CONSOLE_LOG(str) {
 var EnigModuleObj = {
   registerSelf: function (componentManager, moduleFile, registryLocation, componentType)
   {
-    dump("enigmail.js: Registering components\n");
+    WRITE_LOG("enigmail.js: Registering components\n");
 
     if (gEnigmailSvc == null) {
       // Create Enigmail Service
@@ -305,9 +344,9 @@ PGPModule.prototype = {
     aMsgHeader = aMsgHeader.QueryInterface(nsIPGPMsgHeader);
     aOrigBody = aOrigBody.QueryInterface(nsIPGPMsgBody);
 
-    dump("PGPModule.EncryptSign: aMsgHeader.to="+aMsgHeader.to+"\n");
-    dump("PGPModule.EncryptSign: aOrigBody.body="+aOrigBody.body+"\n");
-    dump("PGPModule.EncryptSign: aNewBody="+aNewBody+"\n");
+    WRITE_LOG("PGPModule.EncryptSign: aMsgHeader.to="+aMsgHeader.to+"\n");
+    WRITE_LOG("PGPModule.EncryptSign: aOrigBody.body="+aOrigBody.body+"\n");
+    WRITE_LOG("PGPModule.EncryptSign: aNewBody="+aNewBody+"\n");
 
     var cipherText = gEnigmailSvc.encryptMessage(aOrigBody.body,
                                                  aMsgHeader.to)
@@ -322,7 +361,7 @@ PGPModule.prototype = {
 
     aOrigBody = aOrigBody.QueryInterface(nsIPGPMsgBody);
 
-    dump("PGPModule.DecrypotVerify: aOrigBody.body="+aOrigBody.body+"\n");
+    WRITE_LOG("PGPModule.DecrypotVerify: aOrigBody.body="+aOrigBody.body+"\n");
 
     var plainText = gEnigmailSvc.decryptMessage(aOrigBody.body);
 
@@ -346,14 +385,14 @@ PGPModule.prototype = {
                         aHeaderStartOffset, aHeaderLength, aBufferEndOffset) {
    DEBUG_LOG("PGPModule.FindHeader:\n");
 
-   dump("PGPModule.EncryptSign: aHeaderBuffer="+aHeaderBuffer+"\n");
+   WRITE_LOG("PGPModule.EncryptSign: aHeaderBuffer="+aHeaderBuffer+"\n");
 
    for (var k in aHeaderStartOffset)
-      dump("PGPModule.EncryptSign: k="+k+"\n");
+      WRITE_LOG("PGPModule.EncryptSign: k="+k+"\n");
 
-   dump("PGPModule.EncryptSign: aHeaderStartOffset="+aHeaderStartOffset+"\n");
-   dump("PGPModule.EncryptSign: aHeaderLength="+aHeaderLength+"\n");
-   dump("PGPModule.EncryptSign: aBufferEndOffset="+aBufferEndOffset+"\n");
+   WRITE_LOG("PGPModule.EncryptSign: aHeaderStartOffset="+aHeaderStartOffset+"\n");
+   WRITE_LOG("PGPModule.EncryptSign: aHeaderLength="+aHeaderLength+"\n");
+   WRITE_LOG("PGPModule.EncryptSign: aBufferEndOffset="+aBufferEndOffset+"\n");
 
    aHeaderStartOffset.value = 0;
    aHeaderLength.value = 0;
@@ -458,6 +497,9 @@ function Enigmail(registeringModule)
   DEBUG_LOG("enigmail.js: Enigmail: END\n");
 }
 
+if (gLogLevel >= 4)
+  gLogFileStream = CreateFileStream("enigdbg1.txt");
+
 Enigmail.prototype.registeringModule = false;
 Enigmail.prototype.ipcService = null;
 Enigmail.prototype.console = null;
@@ -486,7 +528,7 @@ function (passphrase) {
 
 Enigmail.prototype.execCmd = 
 function (command, input, errMessagesObj, statusObj, exitCodeObj) {
-  dump("enigmail.js: Enigmail.execCmd: command = "+command+"\n");
+  WRITE_LOG("enigmail.js: Enigmail.execCmd: command = "+command+"\n");
 
   if ((typeof input) != "string") input = "";
   var outObj = new Object();
@@ -499,8 +541,8 @@ function (command, input, errMessagesObj, statusObj, exitCodeObj) {
   var outputData = outObj.value;
   var errOutput  = errObj.value;
 
-  dump("enigmail.js: Enigmail.execCmd: exitCode = "+exitCodeObj.value+"\n");
-  dump("enigmail.js: Enigmail.execCmd: errOutput = "+errOutput+"\n");
+  WRITE_LOG("enigmail.js: Enigmail.execCmd: exitCode = "+exitCodeObj.value+"\n");
+  WRITE_LOG("enigmail.js: Enigmail.execCmd: errOutput = "+errOutput+"\n");
 
   var errLines = errOutput.split(/\r?\n/);
 
@@ -525,14 +567,14 @@ function (command, input, errMessagesObj, statusObj, exitCodeObj) {
   errMessagesObj.value = errArray.join("\n");
   statusObj.value      = statusArray.join("\n");
 
-  dump("enigmail.js: Enigmail.execCmd: status = "+statusObj.value+"\n");
+  WRITE_LOG("enigmail.js: Enigmail.execCmd: status = "+statusObj.value+"\n");
   return outputData;
 }
 
 
 Enigmail.prototype.encryptMessage = 
 function (plainText, toMailAddr, passphrase, statusLineObj) {
-  dump("enigmail.js: Enigmail.encryptMessage: To "+toMailAddr+"\n");
+  WRITE_LOG("enigmail.js: Enigmail.encryptMessage: To "+toMailAddr+"\n");
 
   var encryptCommand = "gpg --batch --no-tty --encrypt --armor --sign --passphrase-fd 0 --status-fd 2 --recipient "+toMailAddr;
 
@@ -567,7 +609,7 @@ function (plainText, toMailAddr, passphrase, statusLineObj) {
 
 Enigmail.prototype.decryptMessage = 
 function (cipherText, passphrase, statusLineObj) {
-  dump("enigmail.js: Enigmail.decryptMessage: \n");
+  WRITE_LOG("enigmail.js: Enigmail.decryptMessage: \n");
 
   var decryptCommand = "gpg --batch --no-tty --decrypt --passphrase-fd 0 --status-fd 2";
 
