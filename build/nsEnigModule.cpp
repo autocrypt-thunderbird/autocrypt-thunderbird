@@ -44,7 +44,6 @@
 #include "nsEnigMimeListener.h"
 #include "nsEnigMimeWriter.h"
 #include "nsEnigMimeService.h"
-#include "nsEnigContentHandler.h"
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgCompose)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgComposeFactory)
@@ -54,7 +53,6 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeVerify)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeListener)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeWriter)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeService)
-NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigContentHandler)
 
 #ifndef NO_IPC
 #include "nsProcessInfo.h"
@@ -128,12 +126,6 @@ static const nsModuleComponentInfo components[] =
       NS_ENIGMIMESERVICE_CID,
       NS_ENIGMIMESERVICE_CONTRACTID,
       nsEnigMimeServiceConstructor,
-    },
-
-    { NS_ENIGCONTENTHANDLER_CLASSNAME,
-      NS_ENIGCONTENTHANDLER_CID,
-      NS_ENIGDUMMYHANDLER_CONTRACTID,
-      nsEnigContentHandlerConstructor,
     },
 
 #ifndef NO_IPC

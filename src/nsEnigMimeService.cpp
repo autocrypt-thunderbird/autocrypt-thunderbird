@@ -71,7 +71,8 @@ NS_IMPL_THREADSAFE_ISUPPORTS1(nsEnigMimeService,
 
 // nsEnigMimeService implementation
 nsEnigMimeService::nsEnigMimeService()
-  : mInitialized(PR_FALSE)
+  : mDummyHandler(PR_FALSE),
+    mInitialized(PR_FALSE)
 {
   nsresult rv;
 
@@ -89,6 +90,26 @@ nsEnigMimeService::nsEnigMimeService()
   DEBUG_LOG(("nsEnigMimeService:: <<<<<<<<< CTOR(%x): myThread=%x\n",
          (int) this, (int) myThread.get()));
 #endif
+
+  static const nsModuleComponentInfo info =
+  { NS_ENIGCONTENTHANDLER_CLASSNAME,
+    NS_ENIGCONTENTHANDLER_CID,
+    NS_ENIGDUMMYHANDLER_CONTRACTID,
+    nsEnigContentHandlerConstructor,
+  };
+
+  // Create a generic factory for the dummy content handler
+  nsCOMPtr<nsIGenericFactory> factory;
+  rv = NS_NewGenericFactory(getter_AddRefs(factory), &info);
+
+  if (NS_SUCCEEDED(rv)) {
+    // Register factory for dummy handler
+    rv = nsComponentManager::RegisterFactory(info.mCID, info.mDescription,
+                                             info.mContractID, factory, PR_TRUE);
+    if (NS_SUCCEEDED(rv)) {
+      mDummyHandler = PR_TRUE;
+    }
+  }
 }
 
 
@@ -117,6 +138,11 @@ nsEnigMimeService::Init()
 
   if (!mimeEncryptedClassP) {
     ERROR_LOG(("nsEnigContenthandler::Init: ERROR mimeEncryptedClassPis null\n"));
+    return NS_ERROR_FAILURE;
+  }
+
+  if (!mDummyHandler) {
+    ERROR_LOG(("nsEnigContenthandler::Init: ERROR content handler for %s not initialized\n", APPLICATION_XENIGMAIL_DUMMY));
     return NS_ERROR_FAILURE;
   }
 

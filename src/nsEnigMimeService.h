@@ -55,6 +55,7 @@ public:
     Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
 
 protected:
+    PRBool             mDummyHandler;
     PRBool             mInitialized;
 };
 
