@@ -18,7 +18,7 @@
 
     <menu id="menu_Enigmail"
           label="Enigmail"
-          position="6">
+          position="3">
 
       <menupopup id="menu_EnigmailPopup">
 

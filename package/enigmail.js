@@ -570,6 +570,10 @@ function (aURI)
     // Display enigmail key generation console
     spec = "chrome://enigmail/content/enigmailKeygenConsole.htm";
 
+  } else if (aURI.spec == aURI.scheme+":keygen") {
+    // Display enigmail key generation console
+    spec = "chrome://enigmail/content/enigmailKeygen.xul";
+
   } else {
     // Display Enigmail config page
     spec = "chrome://enigmail/content/enigmail.xul";
