@@ -67,15 +67,17 @@ function enigStartHeaders()
   gEnigStatusBar.removeAttribute("encrypted");
 
   var enigmailBox = document.getElementById("expandedEnigmailBox");
+  var statusText = document.getElementById("expandedEnigmailStatusText");
 
   if (enigmailBox && !enigmailBox.collapsed) {
     enigmailBox.setAttribute("collapsed", "true");
 
-    var statusText = document.getElementById("expandedEnigmailStatusText");
-
     if (statusText)
       statusText.firstChild.data="*";
   }
+  
+  if (statusText)
+    statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureOk");
 
   var msgFrame = EnigGetFrame(window, "messagepane");
 
@@ -101,6 +103,10 @@ function enigEndHeaders()
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigEndHeaders\n");
   gEnigStatusBar.removeAttribute("signed");
   gEnigStatusBar.removeAttribute("encrypted");
+  var statusText = document.getElementById("expandedEnigmailStatusText");
+  if (statusText) {
+    statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureOk");
+  }
 }
 
 function enigBeforeStartHeaders() {
@@ -470,6 +476,7 @@ function enigMsgHdrViewHide() {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigMsgHdrViewHide\n");
   var enigmailBox = document.getElementById("expandedEnigmailBox");
   enigmailBox.collapsed=true;
+
   gEnigSecurityInfo = { statusFlags: 0,
                       keyId: "",
                       userId: "",
