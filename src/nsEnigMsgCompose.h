@@ -78,6 +78,7 @@ protected:
     nsresult Init();
     nsresult Finalize();
 
+    nsresult GetRandomTime(PRUint32 *_retval);
     nsresult MakeBoundary(const char *prefix);
 
     nsresult WriteEncryptedHeaders();

@@ -11,15 +11,15 @@
 
 <!ENTITY enigmail.preferences.label "Einstellungen">
 
-<!ENTITY enigmail.autoCrypto.label        "Auto Crypto aktivieren">
+<!ENTITY enigmail.autoCrypto.label "Auto Crypto aktivieren">
 <!ENTITY enigmail.userIdValue.label "E-Mailadresse des Benutzers">
 <!ENTITY enigmail.userNoPassphrase.label "Schlüssel ohne Mantra">
 
 <!ENTITY enigmail.userIdFromAddr.label "Schlüssel des Absenders verwenden">
 
 <!ENTITY enigmail.defaultEncryptionOption.label "Standard Verschlüsselungsoptionen wählen">
-<!ENTITY enigmail.usePGPMimeOption.label        "PGP/MIME Verhalten wählen">
-<!ENTITY enigmail.mimeHashAlgorithm.label       "Hash Algorithmus">
+<!ENTITY enigmail.usePGPMimeOption.label "PGP/MIME Verhalten wählen">
+<!ENTITY enigmail.mimeHashAlgorithm.label "Hash Algorithmus">
 
 <!ENTITY enigmail.agentPath.label "Pfad zur GPG/PGP-Anwendung">
 
@@ -47,21 +47,22 @@
 
 <!ENTITY enigmail.keyserver.label "Schlüsselserver">
 
-<!ENTITY enigmail.disableSMIMEui.label "S/MIME Knöpfe/Menüs verstecken">
+<!ENTITY enigmail.disableSMIMEui.label "S/MIME Knöpfe/Menus verstecken">
+<!ENTITY enigmail.doubleDashSeparator.label "'--' als Signaturtrenner behandeln">
 <!ENTITY enigmail.captureWebMail.label "webmail überwachen (experimentell)">
 
 <!ENTITY enigmail.debugging.label "Enigmail-Fehlersuche">
 <!ENTITY enigmail.logdirectory.label "Ordner für Log-Dateien">
-<!ENTITY enigmail.testemail.label "Testnachricht">
+<!ENTITY enigmail.testemail.label "Testadresse">
 <!ENTITY enigmail.test.label "Test">
 
 <!ENTITY enigmail.decryptbutton.label       "Entschlüsseln">
 <!ENTITY enigmail.decryptbutton.tip         "Nachricht entschlüsseln/überprüfen">
 
-<!ENTITY enigmail.messengermenu.accesskey "n">
+<!ENTITY enigmail.messengermenu.accesskey "E">
 
 <!ENTITY enigmail.decryptverify.label       "Entschlüsseln/Überprüfen">
-<!ENTITY enigmail.importpublickey.label	    "Oeffentlicher Schlüssel importieren">
+<!ENTITY enigmail.importpublickey.label	    "Öffentlichen Schlüssel importieren">
 <!ENTITY enigmail.savedecrypted.label       "Entschlüsselte Nachricht speichern">
 
 <!ENTITY enigmail.autoDecrypt.label         "Nachrichten automatisch entschlüsseln/überprüfen">
@@ -69,8 +70,8 @@
 
 <!ENTITY enigmail.prefs.label               "Einstellungen">
 <!ENTITY enigmail.advprefs.label            "Erweiterte Einstellungen">
-<!ENTITY enigmail.viewconsole.label         "Konsole zeigen">
-<!ENTITY enigmail.viewdebuglog.label        "Log-Datei zeigen">
+<!ENTITY enigmail.viewconsole.label         "Konsole anzeigen">
+<!ENTITY enigmail.viewdebuglog.label        "Log-Datei anzeigen">
 
 <!ENTITY enigmail.generatekey.label         "Schlüsselpaar erzeugen">
 <!ENTITY enigmail.upgrade.label             "Aktualisieren">
@@ -86,7 +87,7 @@
 <!ENTITY enigmail.clearPassphrase.accesskey "z">
 
 <!ENTITY enigmail.prefs.accesskey           "i">
-<!ENTITY enigmail.advprefs.accesskey        "v">
+<!ENTITY enigmail.advprefs.accesskey        "w">
 <!ENTITY enigmail.viewconsole.accesskey     "K">
 <!ENTITY enigmail.viewdebuglog.accesskey    "L">
 
@@ -104,7 +105,7 @@
 <!ENTITY enigmail.signedsend.label             "Signiert versenden">
 <!ENTITY enigmail.encryptedsend.label          "Verschlüsselt versenden">
 <!ENTITY enigmail.encryptsignsend.label        "Verschlüsselt und signiert versenden">
-<!ENTITY enigmail.plainsend.label              "Unverschlüsselt versenden">
+<!ENTITY enigmail.plainsend.label              "Nur versenden">
 
 <!ENTITY enigmail.sendOptionsMenu.label        "Standard Einstellungen zum Versenden">
 <!ENTITY enigmail.mimeOptionsMenu.label        "Standard MIME Einstellungen">
@@ -115,20 +116,25 @@
 
 <!ENTITY enigmail.defaultsend.accesskey        "N">
 <!ENTITY enigmail.signedsend.accesskey         "S">
-<!ENTITY enigmail.encryptedsend.accesskey      "e">
-<!ENTITY enigmail.encryptsignsend.accesskey    "V">
-<!ENTITY enigmail.plainsend.accesskey          "U">
+<!ENTITY enigmail.encryptedsend.accesskey      "V">
+<!ENTITY enigmail.encryptsignsend.accesskey    "U">
+<!ENTITY enigmail.plainsend.accesskey          "d">
 
-<!ENTITY enigmail.sendOptionsMenu.accesskey    "o">
+<!ENTITY enigmail.sendOptionsMenu.accesskey    "E">
 <!ENTITY enigmail.mimeOptionsMenu.accesskey    "M">
 <!ENTITY enigmail.sendPGPMime.accesskey        "g">
 
 <!ENTITY enigmail.undoencryption.accesskey     "r">
-<!ENTITY enigmail.insertkey.accesskey          "Ö">
+<!ENTITY enigmail.insertkey.accesskey          "f">
 
 <!ENTITY enigmail.defaultEncryptionSign.label "Verschlüsselt und signiert, falls möglich">
-<!ENTITY enigmail.defaultEncryptionOnly.label "Verschlüsselt, falls möglic">
+<!ENTITY enigmail.defaultEncryptionOnly.label "Verschlüsselt, falls möglich">
 <!ENTITY enigmail.defaultEncryptionNone.label "Keine automatische Verschlüsselung">
+
+<!ENTITY enigmail.recipientsSelectionOption.label "Verhalten zur Wahl der Schlüssel von Nachrichten-Emfpängern">
+<!ENTITY enigmail.askRecipientsAlways.label       "Auswahlfenster immer anzeigen">
+<!ENTITY enigmail.askRecipientsClever.label       "Auswahlfenster anzeigen, falls nötig">
+<!ENTITY enigmail.askRecipientsNever.label        "Auswahlfenster nie anzeigen">
 
 <!ENTITY enigmail.usePGPMimeAlways.label          "Immer PGP/MIME verwenden">
 <!ENTITY enigmail.usePGPMimePossible.label        "PGP/MIME verwenden, falls möglich">
@@ -137,16 +143,16 @@
 <!ENTITY enigmail.defaultSignMsg.label        "Nachrichten immer signieren">
 <!ENTITY enigmail.confirmBeforeSend.label     "Versenden immer bestätigen">
 
-<!ENTITY enigmail.defaultEncryptionSign.accesskey "V">
-<!ENTITY enigmail.defaultEncryptionOnly.accesskey "e">
+<!ENTITY enigmail.defaultEncryptionSign.accesskey "U">
+<!ENTITY enigmail.defaultEncryptionOnly.accesskey "V">
 <!ENTITY enigmail.defaultEncryptionNone.accesskey "N">
 
-<!ENTITY enigmail.usePGPMimeAlways.accesskey      "w">
-<!ENTITY enigmail.usePGPMimePossible.accesskey    "U">
-<!ENTITY enigmail.usePGPMimeNever.accesskey       "v">
+<!ENTITY enigmail.usePGPMimeAlways.accesskey      "I">
+<!ENTITY enigmail.usePGPMimePossible.accesskey    "m">
+<!ENTITY enigmail.usePGPMimeNever.accesskey       "n">
 
 <!ENTITY enigmail.defaultSignMsg.accesskey        "s">
-<!ENTITY enigmail.confirmBeforeSend.accesskey     "r">
+<!ENTITY enigmail.confirmBeforeSend.accesskey     "b">
 
 <!ENTITY enigmail.console.label                     "Enigmail Konsole anzeigen">
 <!ENTITY enigmail.console.tooltip                   "Enigmail Konsole anzeigen">
@@ -160,3 +166,13 @@
 <!ENTITY enigmail.experimental.label                "Experimentelles inline signieren/verschlüsseln verwenden">
 <!ENTITY enigmail.hushMailSupport.label             "Hushmail Unterstützung (nur wenn nötig)">
 
+<!ENTITY enigmail.userSelectionList.label           "Nachrichten Empfänger Wählen">
+<!ENTITY enigmail.usersNotFound.label               "Nicht gefundene Empfänger">
+<!ENTITY enigmail.usersSelectRecipients.label       "Auswahl der Empfänger zur Verschlüsselung">
+<!ENTITY enigmail.keyExpiry.label                   "Abgelaufen">
+<!ENTITY enigmail.keySelection.label                "Auswahl">
+<!ENTITY enigmail.keyId.label                       "Schlüssel">
+<!ENTITY enigmail.userSelPlainText.label            "Nachricht unverschlüsselt senden">
+<!ENTITY enigmail.userSelPlainText.accesskey        "N">
+
+<!ENTITY enigmail.keygen.desc "ACHTUNG: Die Erzeugung eines Schlüssels kann mehrere Minuten dauern. Beenden Sie den Browser während dieser Zeit nicht. Da der Zufallsgenerator von Aktivität auf dem Rechner abhängt, wird empfohlen z.B. aktiv zu surfen um die Geschwindigkeit der Schlüsselerzeugung zu beschleunnigen. Sie werden informiert, sobald der Schlüssel fertig erzeugt ist"> 

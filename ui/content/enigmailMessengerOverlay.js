@@ -37,7 +37,7 @@ function enigMessengerStartup() {
   }
 
   // Override print command
-  var printElementIds = ["cmd_print", "key_print", "button-print",
+  var printElementIds = ["cmd_print", "cmd_printpreview", "key_print", "button-print",
                          "threadPaneContext-print",
                          "messagePaneContext-print"];
 
@@ -511,12 +511,25 @@ function enigMessageParse(interactive, importOnly, contentEncoding) {
     // No PGP content
     return;
   }
-
+  
   var charset = msgWindow ? msgWindow.mailCharacterSet : "";
 
   // Encode ciphertext to charset from unicode
   msgText = EnigConvertFromUnicode(msgText, charset);
 
+  // extract text preceeding and/or following armored block
+  var head="";
+  var tail="";
+  if (findStr) {
+    head=msgText.substring(0,msgText.indexOf(findStr)).replace(/^[\n\r\s]*/,"");
+    head=head.replace(/[\n\r\s]*$/,"");
+    var endStart=msgText.indexOf("-----END PGP");
+    var nextLine=msgText.substring(endStart).search(/[\n\r]/);
+    if (nextLine>0) {
+      tail=msgText.substring(endStart+nextLine).replace(/^[\n\r\s]*/,"");
+    }
+  }
+  
   //DEBUG_LOG("enigmailMessengerOverlay.js: msgText='"+msgText+"'\n");
 
   var mailNewsUrl = enigGetCurrentMsgUrl();
@@ -524,12 +537,13 @@ function enigMessageParse(interactive, importOnly, contentEncoding) {
   var urlSpec = mailNewsUrl ? mailNewsUrl.spec : "";
 
   enigMessageParseCallback(msgText, contentEncoding, charset, interactive,
-                           importOnly, urlSpec, "", true);
+                           importOnly, urlSpec, "", true, head, tail);
 }
 
 
 function enigMessageParseCallback(msgText, contentEncoding, charset, interactive,
-                                  importOnly, messageUrl, signature, retry) {
+                                  importOnly, messageUrl, signature, retry,
+                                  head, tail) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: "+interactive+", "+interactive+", importOnly="+importOnly+", charset="+charset+", msgUrl="+messageUrl+", retry="+retry+", signature='"+signature+"'\n");
 
   var enigmailSvc = GetEnigmailSvc();
@@ -616,7 +630,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     if (retry) {
       // Try to verify signature by accessing raw message text directly
       // (avoid recursion by setting retry parameter to false on callback)
-      enigMsgDirect(interactive, importOnly, contentEncoding, charset, newSignature);
+      enigMsgDirect(interactive, importOnly, contentEncoding, charset, newSignature, head, tail);
       return;
     }
   }
@@ -656,12 +670,23 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     headerList["cc"] = "";
 
   var hasAttachments = currentAttachments && currentAttachments.length;
-
+  
+  
+  var msgRfc822Text = "";
+  if (head || tail) {
+    if (head) msgRfc822Text=head+"\n\n";
+    msgRfc822Text += EnigGetString("beginPgpPart")+"\n\n";
+  }
+  msgRfc822Text+=plainText;
+  if (head || tail) {
+    msgRfc822Text+="\n\n"+EnigGetString("endPgpPart")+"\n\n"+tail;
+  }
+  
   gEnigDecryptedMessage = {url:messageUrl,
                            headerList:headerList,
                            hasAttachments:hasAttachments,
                            charset:charset,
-                           plainText:plainText};
+                           plainText:msgRfc822Text};
 
   var msgFrame = EnigGetFrame(window, "messagepane");
   var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
@@ -694,9 +719,26 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     var selRange = selection.getRangeAt(0);
 
     // Decode plaintext to unicode
+    tail = EnigConvertToUnicode(tail, charset);
     var uniText = EnigConvertToUnicode(plainText, charset);
 
-    var htmlText = "<pre>"+enigEscapeTextForHTML(uniText, true)+"</pre>";
+    var htmlText="";
+    if (head) {
+       htmlText += "<pre>"+enigEscapeTextForHTML(EnigConvertToUnicode(head, charset),true)+"</pre><p/>\n";
+    }
+    htmlText += '<table border="0" cellspacing="0" width="100%"><tbody><tr><td bgcolor="#9490FF" width="10"></td>' +
+      '<td bgcolor="#9490FF" width="10"><pre>Begin Signed or Encrypted Text</pre></td></tr>\n'+
+      '<tr><td bgcolor="#9490FF"></td>'+
+      '<td><pre>' +
+      enigEscapeTextForHTML(uniText, true) +
+      '</pre></td></tr>\n' +
+      '<tr><td bgcolor="#9490FF" width="10"></td>' +
+      '<td bgcolor="#9490FF" width="10"><pre>End Signed or Encrypted Text</pre></td></tr>' +
+      '</tbody></table>\n'
+
+    if (tail) {
+       htmlText += "<p/><pre>"+enigEscapeTextForHTML(EnigConvertToUnicode(tail, charset),true)+"</pre>";
+    }
 
     var docFrag = selRange.createContextualFragment(htmlText);
 
@@ -905,7 +947,7 @@ function enigGetDecryptedMessage(contentType, includeHeaders) {
   return contentData;
 }
 
-function enigMsgDefaultPrint(contextMenu) {
+function enigMsgDefaultPrint(contextMenu, elementId) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgDefaultPrint: "+contextMenu+"\n");
 
   // Reset mail.show_headers pref to "original" value
@@ -914,7 +956,7 @@ function enigMsgDefaultPrint(contextMenu) {
   if (contextMenu)
     PrintEnginePrint();
   else
-    goDoCommand('cmd_print');
+    goDoCommand(elementId == "cmd_printpreview" ? cmd_printpreview : "cmd_print");
 }
 
 function enigMsgForward(elementId, event) {
@@ -941,12 +983,12 @@ function enigMsgPrint(elementId) {
   var contextMenu = (elementId.search("Context") > -1);
 
   if (!gEnigDecryptedMessage)
-    enigMsgDefaultPrint(contextMenu);
+    enigMsgDefaultPrint(contextMenu, elementId);
 
   var mailNewsUrl = enigGetCurrentMsgUrl();
 
   if (!mailNewsUrl)
-    enigMsgDefaultPrint(contextMenu);
+    enigMsgDefaultPrint(contextMenu, elementId);
 
   if (gEnigDecryptedMessage.url != mailNewsUrl.spec) {
     gEnigDecryptedMessage = null;
@@ -955,7 +997,7 @@ function enigMsgPrint(elementId) {
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
-    enigMsgDefaultPrint(contextMenu);
+    enigMsgDefaultPrint(contextMenu, elementId);
 
   // Note: Trying to print text/html content does not seem to work with
   //       non-ASCII chars
@@ -978,10 +1020,12 @@ function enigMsgPrint(elementId) {
     gPrintSettings = GetPrintSettings();
   }
 
+  var printPreview = (elementId == "cmd_printpreview");
   var printEngineWindow = window.openDialog("chrome://messenger/content/msgPrintEngine.xul",
                                         "",
                                         "chrome,dialog=no,all",
-                                        numMessages, messageList, statusFeedback, gPrintSettings);
+                                        numMessages, messageList, statusFeedback, gPrintSettings,
+                                        printPreview);
 
   return true;
 }
@@ -1071,7 +1115,7 @@ function EnigFilePicker(title, displayDir, save, defaultExtension, filterPairs) 
 }
 
 
-function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signature) {
+function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signature, head, tail) {
   WRITE_LOG("enigmailMessengerOverlay.js: enigMsgDirect: contentEncoding="+contentEncoding+", signature="+signature+"\n");
   var mailNewsUrl = enigGetCurrentMsgUrl();
   if (!mailNewsUrl)
@@ -1087,7 +1131,9 @@ function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signat
                       charset:charset,
                       messageUrl:mailNewsUrl.spec,
                       signature:signature,
-                      ipcBuffer:ipcBuffer };
+                      ipcBuffer:ipcBuffer,
+                      head:head,
+                      tail:tail };
 
   var requestObserver = new EnigRequestObserver(enigMsgDirectCallback,
                                                 callbackArg);
@@ -1148,7 +1194,10 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
                            callbackArg.interactive,
                            callbackArg.importOnly,
                            callbackArg.messageUrl,
-                           callbackArg.signature, false);
+                           callbackArg.signature,
+                           false,
+                           callbackArg.head,
+                           callbackArg.tail);
 }
 
 

@@ -85,7 +85,7 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "confirmBeforeSend":false,
                              "doubleDashSeparator":false,
                              "maxIdleMinutes":5,
-                             "keyserver":"www.keyserver.net",
+                             "keyserver":"wwwkeys.pgp.net",
                              "autoDecrypt":true,
                              "captureWebMail":false,
                              "useMimeExperimental":false,
@@ -329,15 +329,6 @@ function EnigConfigure() {
     }
   }
 
-  // if "now" or "later" is pressed, offer the user to deactivate format=flowed
-  try {
-    if (gEnigPrefRoot.getBoolPref("mailnews.send_plaintext_flowed")) {
-      if (confirm(EnigGetString("turnOffFlowed"))) {
-          gEnigPrefRoot.setBoolPref("mailnews.send_plaintext_flowed", false);
-      }
-    }
-  } catch (ex) { }
-
   if (buttonPressed == 0) {
     // Configure now
     EnigPrefWindow();
@@ -362,8 +353,6 @@ const ENIG_WRONLY      = 0x02;
 const ENIG_CREATE_FILE = 0x08;
 const ENIG_TRUNCATE    = 0x20;
 const ENIG_DEFAULT_FILE_PERMS = 0600;
-
-const EnigFileChannel = new Components.Constructor( "@mozilla.org/network/local-file-channel;1", "nsIFileChannel" );
 
 const EnigInputStream = new Components.Constructor( "@mozilla.org/scriptableinputstream;1", "nsIScriptableInputStream" );
 
@@ -424,31 +413,45 @@ function EnigWriteFileContents(filePath, data, permissions) {
   return true;
 }
 
-// maxBytes == -1 => read whole file
-function EnigReadFileContents(localFile, maxBytes) {
-  DEBUG_LOG("enigmailCommon.js: EnigReadFileContents: file="+localFile.leafName+
+// maxBytes == -1 => read everything
+function EnigReadURLContents(url, maxBytes) {
+  DEBUG_LOG("enigmailCommon.js: EnigReadURLContents: url="+url+
             ", "+maxBytes+"\n");
 
-  var fileChannel = new EnigFileChannel();
-
-  if (!localFile.exists() || !localFile.isReadable())
+  var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+  if (!ioServ)
     throw Components.results.NS_ERROR_FAILURE;
-
-  fileChannel.init(localFile, ENIG_RDONLY, 0);
+    
+  var fileChannel = ioServ.newChannel(url, null, null)
 
   var rawInStream = fileChannel.open();
 
   var scriptableInStream = new EnigInputStream();    
   scriptableInStream.init(rawInStream);
 
-  if ((maxBytes < 0) || (maxBytes > localFile.fileSize))
-    maxBytes = localFile.fileSize;
+  var available = scriptableInStream.available()
+  if ((maxBytes < 0) || (maxBytes > available))
+    maxBytes = available;
 
-  var fileContents = scriptableInStream.read(maxBytes);
+  var urlContents = scriptableInStream.read(maxBytes);
 
   scriptableInStream.close();
+  
+  return urlContents;
+}
 
-  return fileContents;
+// maxBytes == -1 => read whole file
+function EnigReadFileContents(localFile, maxBytes) {
+
+  DEBUG_LOG("enigmailCommon.js: EnigReadFileContents: file="+localFile.leafName+
+            ", "+maxBytes+"\n");
+
+  if (!localFile.exists() || !localFile.isReadable())
+    throw Components.results.NS_ERROR_FAILURE;
+
+
+  return EnigReadURLContents("file://"+localFile.path, maxBytes);
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1064,3 +1067,4 @@ function enigStripEmail(mailAddrs) {
 
   return mailAddrs;
 }
+

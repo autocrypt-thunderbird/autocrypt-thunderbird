@@ -1857,9 +1857,9 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
     plainText = plainText.replace(/\r/g,   "\n");
 
     // Use platform-specific linebreaks when encrypting
-    if (!this.isUnix) {
-      plainText = plainText.replace(/\n/g, "\r\n");
-    }
+    // if (!this.isUnix) {
+    plainText = plainText.replace(/\n/g, "\r\n");
+    //}
   }
 
   var noProxy = true;
@@ -2083,7 +2083,7 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
 	                         ? fromMailAddr : "<" + fromMailAddr + ">";
 
     if (encryptMsg) {
-      encryptCommand += " -a --textmode -e";
+      encryptCommand += " -a -e";
 
       if (signMsg)
         encryptCommand += " -s";
@@ -2099,7 +2099,7 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
                             :" -r <" + toAddrList[k] + ">";
 
     } else if (detachedSig) {
-      encryptCommand += " -s -b -t -a --textmode";
+      encryptCommand += " -s -b -t -a";
 
       if (hashAlgorithm) {
         encryptCommand += " --digest-algo "+hashAlgorithm;
@@ -2338,6 +2338,9 @@ function (parent, uiFlags, cipherText, signatureObj,
     return "";
   }
 
+  /*
+   // not needed anymore. Nicer solution is to display the text anyway and mark the 
+   // verified text accordingly!   
   if (!interactive && verifyOnly && !oldSignature && (head.search(/\S/) >= 0)) {
     errorMsgObj.value = EnigGetString("extraText");
     if (verifyOnly)
@@ -2346,6 +2349,7 @@ function (parent, uiFlags, cipherText, signatureObj,
     statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
     return "";
   }
+  */
 
   var newSignature = "";
 
@@ -2619,6 +2623,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
     var goodSignature;
 
     var userId = "";
+    var keyId = "";
     for (var j=0; j<errLines.length; j++) {
       matches = errLines[j].match(badSignPat);
 
@@ -2626,6 +2631,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
         signed = true;
         goodSignature = false;
         userId = matches[2];
+        keyId = matches[1];
         break;
       }
 
@@ -2635,6 +2641,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
         signed = true;
         goodSignature = true;
         userId = matches[2];
+        keyId = matches[1];
         break;
       }
       
@@ -2644,15 +2651,17 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
         signed = true;
         goodSignature = true;
         userId = matches[2];
+        keyId = matches[1];
         
         break;
       }
     }
 
-    if (userId)
+    if (userId) {
       userId = EnigConvertToUnicode(userId, "UTF-8");
-
+    }
     userIdObj.value = userId;
+    keyIdObj.value = keyId;
 
     if (signed) {
       var trustPrefix = "";
@@ -2673,7 +2682,8 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
       }
 
       if (goodSignature) {
-        errorMsgObj.value = trustPrefix + EnigGetString("prefGood",userId);
+        errorMsgObj.value = trustPrefix + EnigGetString("prefGood",userId) + ", " + 
+              EnigGetString("keyId") + " 0x" + keyId.substring(8,16);
 
         if (this.agentType != "gpg") {
           // Trust all good signatures, if not GPG
@@ -2681,7 +2691,8 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
         }
 
       } else {
-        errorMsgObj.value = trustPrefix + EnigGetString("prefBad",userId);
+        errorMsgObj.value = trustPrefix + EnigGetString("prefBad",userId) + ", " + 
+              EnigGetString("keyId") + " 0x" + keyId.substring(8,16);
         if (!exitCode)
           exitCode = 1;
 

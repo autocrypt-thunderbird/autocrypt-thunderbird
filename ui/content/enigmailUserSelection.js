@@ -181,7 +181,7 @@ function enigUserSelCreateRow (activeState, userId, keyId, expiry) {
     userCol.setAttribute("label", userId);
     var expCol=document.createElement("treecell");
     if (activeState==2) {
-      expCol.setAttribute("label", "expired "+expiry);
+      expCol.setAttribute("label", EnigGetString("prefExpired").toLowerCase()+" "+expiry);
     }
     else {
       expCol.setAttribute("label", expiry);

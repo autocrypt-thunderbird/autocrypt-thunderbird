@@ -221,22 +221,48 @@ nsEnigMsgCompose::Finalize()
   return NS_OK;
 }
 
+
+nsresult
+nsEnigMsgCompose::GetRandomTime(PRUint32 *_retval)
+{
+  if (!*_retval)
+    return NS_ERROR_NULL_POINTER; 
+ 
+  // Current local time (microsecond resolution)
+  PRExplodedTime localTime;
+  PR_ExplodeTime(PR_Now(), PR_LocalTimeParameters, &localTime);
+ 
+  PRUint32       randomNumberA = localTime.tm_sec*1000000+localTime.tm_usec;
+ 
+  // Elapsed time (1 millisecond to 10 microsecond resolution)
+  PRIntervalTime randomNumberB = PR_IntervalNow();
+
+  DEBUG_LOG(("nsEnigMsgCompose::GetRandomTime: ranA=0x%x, ranB=0x%x\n",
+                                           randomNumberA, randomNumberB));
+
+  *_retval = ((randomNumberA & 0xFFFFF) << 12) | (randomNumberB & 0xFFF);
+
+  return NS_OK;
+}
+
 nsresult   
 nsEnigMsgCompose::MakeBoundary(const char *prefix)
 {
+  DEBUG_LOG(("nsEnigMsgCompose::MakeBoundary:\n"));
+  
   nsresult rv;
 
   if (!mRandomSeeded) {
-    nsCOMPtr<nsIIPCService> ipcService = do_GetService(NS_IPCSERVICE_CONTRACTID, &rv);
-    if (NS_FAILED(rv)) return nsnull;
-
     PRUint32 ranTime;
-    rv = ipcService->GetRandomTime(&ranTime);
-    if (NS_FAILED(rv)) return nsnull;
-
+    
+    rv = GetRandomTime(&ranTime);
+    if (NS_FAILED(rv))
+      return rv;
+    
     srand( ranTime );
     mRandomSeeded = PR_TRUE;
   }
+  
 
   unsigned char ch[13]; 
   for( PRUint32 j = 0; j < 12; j++)
@@ -253,6 +279,10 @@ nsEnigMsgCompose::MakeBoundary(const char *prefix)
 
   if (!boundary)
     return NS_ERROR_OUT_OF_MEMORY;
+    
+  DEBUG_LOG(("nsEnigMsgCompose::MakeBoundary: boundary='%s'\n",
+         boundary));
+
 
   mBoundary = boundary;
 
