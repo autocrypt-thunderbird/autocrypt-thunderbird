@@ -2,19 +2,19 @@
 
 <!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmailOverlay.dtd" >
 
-<!-- This is the overlay that adds "MailHash" to the prefs. -->
+<!-- This is the overlay that adds "Enigmail" to the prefs. -->
 
 <overlay id="enigmailPrefsOverlay"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <treechildren id="securityChildren">
-    <treeitem position="1">
-      <treerow>
-        <treecell class="treecell-indent"
-                  url="chrome://enigmail/content/pref-enigmail.xul"
-                  label="&enigmail.label;"/> 
-      </treerow>
-    </treeitem>
-  </treechildren>
+  <outlinerchildren id="securityChildren">
+    <outlineritem position="1">
+      <outlinerrow>
+        <outlinercell url="chrome://enigmail/content/pref-enigmail.xul"
+                      label="&enigmail.label;"
+                      id="enigmailCell"/> 
+      </outlinerrow>
+    </outlineritem>
+  </outlinerchildren>
 
 </overlay>

@@ -1,5 +1,5 @@
-<!ENTITY enigmail.version                "0.17.3.0">
-<!ENTITY ipc.version                     "0.97.2.0">
+<!ENTITY enigmail.version                "0.18.0.0">
+<!ENTITY ipc.version                     "0.98.0.0">
 
 <!ENTITY enigmail.label	                 "Enigmail">
 
@@ -21,6 +21,7 @@
 <!ENTITY enigmail.encryptToSelf.label     "Encrypt to self when sending">
 <!ENTITY enigmail.alwaysTrustSend.label   "Always trust user ID when sending">
 <!ENTITY enigmail.autoDecrypt.label       "Automatically decrypt/verify messages (slow?)">
+<!ENTITY enigmail.replaceNonBreakingSpace.label "Replace non-breaking space with white space (WORKAROUND)">
 <!ENTITY enigmail.captureWebMail.label	  "Capture webmail">
 
 <!ENTITY enigmail.prefsHelp.label	  "Enigmail Help">

@@ -34,7 +34,7 @@
 # Makefile for package directory
 
 # Specify these as parameters to the make command
-ENIGMAIL_VERS = 0.17.3
+ENIGMAIL_VERS = 0.18.0
 
 DEPTH=..\..\..
 

@@ -61,7 +61,9 @@
                        "enigmail_encryptToSelf",
                        "enigmail_alwaysTrustSend",
                        "enigmail_autoDecrypt",
-                       "enigmail_captureWebMail" ];
+                       "enigmail_captureWebMail",
+                       "enigmail_replaceNonBreakingSpace"
+                       ];
   ]]>
   </script>
           
@@ -134,6 +136,15 @@
               pref="true"
               preftype="bool"
               prefstring="extensions.enigmail.captureWebMail"
+              prefattribute="checked"/>
+    </hbox>
+
+    <hbox autostretch="never">
+      <checkbox id="enigmail_replaceNonBreakingSpace"
+              label="&enigmail.replaceNonBreakingSpace.label;"
+              pref="true"
+              preftype="bool"
+              prefstring="extensions.enigmail.replaceNonBreakingSpace"
               prefattribute="checked"/>
     </hbox>
 

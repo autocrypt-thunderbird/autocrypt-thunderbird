@@ -173,6 +173,8 @@ var EnigModuleObj = {
       gEnigmailSvc = new Enigmail(true);
     }
 
+    componentManager = componentManager.QueryInterface(Components.interfaces.nsIComponentManagerObsolete);
+
     componentManager.registerComponentWithType(NS_ENIGMAIL_CID,
                                                "Enigmail",
                                                NS_ENIGMAIL_CONTRACTID,
@@ -901,7 +903,7 @@ function (command, input, passFD, errMessagesObj, statusObj, exitCodeObj) {
 Enigmail.prototype.encryptMessage = 
 function (plainText, fromMailAddr, toMailAddr, encryptFlags, passphrase,
           statusCodeObj, statusMsgObj) {
-  WRITE_LOG("enigmail.js: Enigmail.encryptMessage: "+fromMailAddr+" To "+toMailAddr+"("+encryptFlags+")\n");
+  WRITE_LOG("enigmail.js: Enigmail.encryptMessage: "+plainText.length+" bytes from "+fromMailAddr+" to "+toMailAddr+"("+encryptFlags+")\n");
 
   if (!encryptFlags) {
     statusMsgObj.value = "No encryption or signing requested";
@@ -1017,7 +1019,7 @@ function (plainText, fromMailAddr, toMailAddr, encryptFlags, passphrase,
 
 Enigmail.prototype.decryptMessage = 
 function (cipherText, verifyOnly, passphrase, statusCodeObj, statusMsgObj) {
-  WRITE_LOG("enigmail.js: Enigmail.decryptMessage: \n");
+  WRITE_LOG("enigmail.js: Enigmail.decryptMessage: "+cipherText.length+" bytes\n");
 
   if (this.keygenProcess) {
     statusCodeObj.value = -1;

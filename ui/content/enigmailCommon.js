@@ -11,7 +11,9 @@ var gEnigmailPrefDefaults = {"defaultSignMsg":false,
                              "alwaysTrustSend":true,
                              "encryptToSelf":false,
                              "autoDecrypt":true,
-                             "captureWebMail":false};
+                             "captureWebMail":false,
+                             "replaceNonBreakingSpace":true
+                            };
 
 // Encryption flags
 const SIGN_MESSAGE      = 0x01;
@@ -302,7 +304,34 @@ function EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj) {
      return "";
   }
 
-  var verifyOnly = (cipherText.indexOf("----BEGIN PGP SIGNED MESSAGE-----") != -1);
+  var beginIndex = cipherText.indexOf("-----BEGIN PGP ");
+  var endIndex   = cipherText.indexOf("-----END PGP ");
+
+  // Locate newline at end of PGP block
+  if (endIndex > -1)
+    endIndex = cipherText.indexOf("\n", endIndex);
+
+  if ((beginIndex == -1) || (endIndex == -1) || (beginIndex > endIndex)) {
+     statusCodeObj.value = -1;
+     statusMsgObj.value = "No valid armored PGP data block found";
+     return "";
+  }
+
+  var headBlock = cipherText.substr(0,beginIndex);
+  var pgpBlock  = cipherText.substr(beginIndex, endIndex-beginIndex+1);
+  var tailBlock = cipherText.substr(endIndex+1, cipherText.length-endIndex-1);
+
+  // Eliminate leading/trailing whitespace around the PGP block
+  headBlock = headBlock.replace(/\s+$/, "");
+  tailBlock = tailBlock.replace(/^\s+/, "");
+
+  if (headBlock)
+    headBlock = "-----UNSIGNED TEXT BELOW-----\n" + headBlock + "\n-----BEGIN SIGNED TEXT-----\n";
+
+  if (tailBlock)
+    tailBlock = "-----END SIGNED TEXT-----\n" + tailBlock + "\n-----UNSIGNED TEXT ABOVE-----\n";
+
+  var verifyOnly = (pgpBlock.indexOf("-----BEGIN PGP SIGNED MESSAGE-----") == 0);
 
   var passphrase = null;
 
@@ -310,11 +339,20 @@ function EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj) {
     passphrase = EnigPassphrase();
   }
 
-  var plainText = gEnigmailSvc.decryptMessage(cipherText, verifyOnly,
+  if ( (pgpBlock.indexOf("\xA0") != -1) &&
+        EnigGetPref("replaceNonBreakingSpace") ) {
+    // TEMPORARY WORKAROUND?
+    // Replace non-breaking spaces with plain spaces, if preferred
+
+    pgpBlock = pgpBlock.replace(/\xA0/g, " ");
+    DEBUG_LOG("enigmailCommon.js: replaced non-breaking spaces\n");
+  }
+    
+  var plainText = gEnigmailSvc.decryptMessage(pgpBlock, verifyOnly,
                                               passphrase,
                                               statusCodeObj, statusMsgObj);
 
-  return plainText;
+  return headBlock + plainText + tailBlock;
 }
 
 function EnigGetPref(prefName) {
