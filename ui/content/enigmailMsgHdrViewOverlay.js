@@ -152,7 +152,7 @@ if (openAttachment) {
 
       if (contentType.search(/^message\/rfc822/i) == 0) {
         // Reset mail.show_headers pref to "original" value
-        EnigShowHeadersAll(true);
+        EnigShowHeadersAll(false);
       }
 
       fEnigOpenAttachment(contentType, url, displayName, messageUri);
