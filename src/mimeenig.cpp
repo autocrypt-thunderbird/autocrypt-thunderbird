@@ -5,8 +5,8 @@
 #include "nspr.h"
 #include "nsCOMPtr.h"
 #include "nsIURI.h"
-#include "nsIMsgWindow.h"
 #include "nsIMsgMailNewsUrl.h"
+#include "nsIMsgWindow.h"
 #include "nsIEnigMimeDecrypt.h"
 
 /* Set superclass to NULL and initialize by hand later */
@@ -58,6 +58,7 @@ typedef struct MimeEnigData
   
   ~MimeEnigData()
   {
+    mimeDecrypt = nsnull;
   }
 } MimeEnigData;
 
@@ -91,26 +92,10 @@ MimeEnig_init(MimeObject *obj,
   if (NS_FAILED(rv))
     return NULL;
 
-  rv = data->mimeDecrypt->Init(PR_FALSE, output_fn, output_closure);
+  rv = data->mimeDecrypt->Init(PR_FALSE, PR_FALSE,
+                               output_fn, output_closure);
   if (NS_FAILED(rv))
     return NULL;
-
-  mime_stream_data *msd = (mime_stream_data *) (data->self->options->stream_closure);
-  if (msd) {
-    nsIChannel *channel = msd->channel;  // note the lack of ref counting...
-    if (channel) {
-      nsCOMPtr<nsIURI> uri;
-      nsCOMPtr<nsIMsgWindow> msgWindow;
-      nsCOMPtr<nsIMsgMailNewsUrl> msgurl;
-      channel->GetURI(getter_AddRefs(uri));
-      if (uri)
-        msgurl = do_QueryInterface(uri);
-      if (msgurl)
-        msgurl->GetMsgWindow(getter_AddRefs(msgWindow));
-
-      fprintf(stderr, "msgWindow=%x\n", msgWindow.get());
-    }
-  }
 
   return data;
 }
@@ -170,8 +155,26 @@ MimeEnig_eof(void* output_closure, PRBool abort_p)
   if (!data->mimeDecrypt)
     return -1;
 
+  mime_stream_data *msd = (mime_stream_data *) (data->self->options->stream_closure);
+
+  nsCOMPtr<nsIMsgWindow> msgWindow;
+  if (msd && msd->channel) {
+    nsIChannel *channel = msd->channel;
+
+    nsCOMPtr<nsIURI> uri;
+    if (channel)
+      channel->GetURI(getter_AddRefs(uri));
+
+    nsCOMPtr<nsIMsgMailNewsUrl> msgUrl;
+    if (uri)
+      msgUrl = do_QueryInterface(uri);
+
+    if (msgUrl)
+      msgUrl->GetMsgWindow(getter_AddRefs(msgWindow));
+  }
+
   nsresult rv;
-  rv = data->mimeDecrypt->Finish();
+  rv = data->mimeDecrypt->Finish(msgWindow);
   if (NS_FAILED(rv))
     return -1;
 

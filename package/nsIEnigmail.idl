@@ -33,6 +33,7 @@
 #include "nsISupports.idl"
 
 interface nsIDOMWindow;
+interface nsIPrompt;
 interface nsIPrefBranch;
 interface nsIStreamListener;
 interface nsIPipeConsole;
@@ -74,7 +75,7 @@ interface nsIEnigmail : nsISupports
 
   string getLogDirectoryPrefix();
 
-  nsIPipeTransport encryptMessageStart(in nsIDOMWindow parent,
+  nsIPipeTransport encryptMessageStart(in nsIPrompt prompter,
                                        in unsigned long uiFlags,
                                        in string  fromMailAddr,
                                        in string  toMailAddr,
@@ -90,8 +91,9 @@ interface nsIEnigmail : nsISupports
                          out unsigned long statusFlags,
                          out string errorMsg);
 
-  nsIPipeTransport decryptMessageStart(in nsIDOMWindow parent,
+  nsIPipeTransport decryptMessageStart(in nsIPrompt prompter,
                                        in unsigned long uiFlags,
+                                       in boolean verifyOnly,
                                        in nsIStreamListener listener,
                                        in boolean noProxy,
                                        out string errorMsg);
@@ -149,14 +151,18 @@ interface nsIEnigmail : nsISupports
   const long BAD_SIGNATURE        = 0x0002;
   const long UNVERIFIED_SIGNATURE = 0x0004;
   const long EXPIRED_SIGNATURE    = 0x0008;
-  const long REVOKED_KEY          = 0x0010;
-  const long NO_PUBKEY            = 0x0020;
-  const long IMPORTED_KEY         = 0x0040;
-  const long BAD_PASSPHRASE       = 0x0080;
-  const long BAD_ARMOR            = 0x0100;
-  const long DECRYPTED_MESSAGE    = 0x0200;
-  const long UNTRUSTED_IDENTITY   = 0x0400;
-  const long TRUSTED_IDENTITY     = 0x0800;
+  const long EXPIRED_KEY_SIGNATURE= 0x0010;
+  const long EXPIRED_KEY          = 0x0020;
+  const long REVOKED_KEY          = 0x0040;
+  const long NO_PUBKEY            = 0x0080;
+  const long IMPORTED_KEY         = 0x0100;
+  const long INVALID_RECPIENT     = 0x0200;
+  const long MISSING_PASSPHRASE   = 0x0400;
+  const long BAD_PASSPHRASE       = 0x0800;
+  const long BAD_ARMOR            = 0x1000;
+  const long DECRYPTED_MESSAGE    = 0x2000;
+  const long UNTRUSTED_IDENTITY   = 0x4000;
+  const long TRUSTED_IDENTITY     = 0x8000;
 
   string decryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,

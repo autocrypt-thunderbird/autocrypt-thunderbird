@@ -35,4 +35,9 @@ nsEnigMimeListener        CID    "847b3a61-7ab1-11d4-8f02-006008948af5"
 nsIEnigMimeDecrypt        IID    "847b3a70-7ab1-11d4-8f02-006008948af5"
 nsEnigMimeDecrypt         CID    "847b3a71-7ab1-11d4-8f02-006008948af5"
 
+nsIEnigMimeHeaderSink     IID    "847b3a80-7ab1-11d4-8f02-006008948af5"
+
+nsIEnigMimeVerify         IID    "847b3a90-7ab1-11d4-8f02-006008948af5"
+ns EnigMimeVerify         CID    "847b3a91-7ab1-11d4-8f02-006008948af5"
+
 

@@ -34,24 +34,28 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef _nsEnigMimeDecrypt_h_
-#define _nsEnigMimeDecrypt_h_
+#ifndef _nsEnigMimeVerify_h_
+#define _nsEnigMimeVerify_h_
 
 #include "nsCOMPtr.h"
-#include "nsIEnigMimeDecrypt.h"
+#include "nsIEnigMimeVerify.h"
+#include "nsIEnigMimeListener.h"
 #include "nsIPipeFilterListener.h"
 #include "nsIPipeTransport.h"
 #include "nsIIPCBuffer.h"
 
-// Implementation class for nsIEnigMimeDecrypt
-class nsEnigMimeDecrypt : public nsIEnigMimeDecrypt
+// Implementation class for nsIEnigMimeVerify
+class nsEnigMimeVerify : public nsIEnigMimeVerify,
+                         public nsIStreamListener
 {
 public:
     NS_DECL_ISUPPORTS
-    NS_DECL_NSIENIGMIMEDECRYPT
+    NS_DECL_NSIENIGMIMEVERIFY
+    NS_DECL_NSIREQUESTOBSERVER
+    NS_DECL_NSISTREAMLISTENER
 
-    nsEnigMimeDecrypt();
-    virtual ~nsEnigMimeDecrypt();
+    nsEnigMimeVerify();
+    virtual ~nsEnigMimeVerify();
 
     // Define a Create method to be used with a factory:
     static NS_METHOD
@@ -59,21 +63,28 @@ public:
 
 protected:
     nsresult Finalize();
-    nsresult FinishAux(nsIMsgWindow* msgWindow);
+
+    NS_METHOD Finish();
 
     PRBool                          mInitialized;
-    PRBool                          mVerifyOnly;;
     PRBool                          mRfc2015;
+    PRBool                          mRequestStopped;
 
-    EnigDecryptCallbackFun          mOutputFun;
-    void*                           mOutputClosure;
+    PRUint32                        mStartCount;
 
-    PRUint32                        mInputLen;
-    PRUint32                        mOutputLen;
+    nsCString                       mContentBoundary;
 
-    nsCOMPtr<nsIIPCBuffer>          mBuffer;
-    nsCOMPtr<nsIPipeFilterListener> mListener;
+    nsCOMPtr<nsIMsgWindow>          mMsgWindow;
+
+    nsCOMPtr<nsIIPCBuffer>          mOutBuffer;
     nsCOMPtr<nsIPipeTransport>      mPipeTrans;
+    nsCOMPtr<nsIStreamListener>     mPipeTransListener;
+
+    nsCOMPtr<nsIPipeFilterListener> mArmorListener;
+    nsCOMPtr<nsIPipeFilterListener> mSecondPartListener;
+    nsCOMPtr<nsIPipeFilterListener> mFirstPartListener;
+    nsCOMPtr<nsIEnigMimeListener>   mOuterMimeListener;
+    nsCOMPtr<nsIEnigMimeListener>   mInnerMimeListener;
 };
 
-#endif // nsEnigMimeDecrypt_h__
+#endif // nsEnigMimeVerify_h__

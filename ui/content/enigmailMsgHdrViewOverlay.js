@@ -106,9 +106,10 @@ function enigMsgHdrViewLoad(event)
 addEventListener('messagepane-loaded', enigMsgHdrViewLoad, true);
 
 if (messageHeaderSink) {
-    // Modify the onStartHeaders method of the object
-    // messageHeaderSink in msgHdrViewOverlay.js to use the pref
-    // "extensions.enigmail.show_headers" instead of "mail.show_headers"
+    // Modify the methods onStartHeaders, getSecurityinfo, setSecurityInfo
+    // of the object messageHeaderSink in msgHdrViewOverlay.js.
+    // Use the pref "extensions.enigmail.show_headers"
+    // instead of "mail.show_headers"
 
     //dump("messageHeaderSink="+messageHeaderSink+"\n");
 
@@ -161,7 +162,81 @@ if (messageHeaderSink) {
       for (index in gMessageListeners)
         gMessageListeners[index].onStartHeaders();
 
+      var securityInfo = this.securityInfo;
+      dump("securityInfo="+this.securityInfo+"\n");
+
+      var innerSMIMEHeaderSink = null;
+      var enigMimeHeaderSink = null;
+
+      try {
+        innerSMIMEHeaderSink = securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMEHeaderSink);
+        dump("innerSMIMEHeaderSink="+innerSMIMEHeaderSink+"\n");
+
+        try {
+          enigMimeHeaderSink = innerSMIMEHeaderSink.QueryInterface(Components.interfaces.nsIEnigMimeHeaderSink);
+          dump("enigMimeHeaderSink="+enigMimeHeaderSink+"\n");
+        } catch (ex) {}
+      } catch (ex) {}
+
+      if (!enigMimeHeaderSink) {
+        this.securityInfo = new EnigMimeHeaderSink(innerSMIMEHeaderSink);
+      }
+
+      dump("securityInfo="+this.securityInfo+"\n");
+
       DEBUG_LOG("enigmailMsgHdrViewOverlay.js: messageHeaderSink.onStartHeaders: END\n");
     }
-
 }
+
+
+function EnigMimeHeaderSink(innerSMIMEHeaderSink) {
+    DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.innerSMIMEHeaderSink="+innerSMIMEHeaderSink+"\n");
+  this._smimeHeaderSink = innerSMIMEHeaderSink;
+}
+
+EnigMimeHeaderSink.prototype = 
+{ 
+  _smimeHeaderSink: null,
+
+  QueryInterface : function(iid)
+  { 
+    //DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.QI\n");
+    if (iid.equals(Components.interfaces.nsIMsgSMIMEHeaderSink) &&
+        this._smimeHeaderSink)
+      return this;
+
+    if (iid.equals(Components.interfaces.nsIEnigMimeHeaderSink) ||
+        iid.equals(Components.interfaces.nsISupports) )
+      return this;
+
+    throw Components.results.NS_NOINTERFACE;
+  },
+
+  updateSecurityStatus: function(statusFlags, briefStatusMsg, expandedStatusMsg)
+  {
+    DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: statusFlags="+statusFlags+", "+briefStatusMsg+"\n");
+
+    enigUpdateHdrIcons(statusFlags);
+
+    return;
+  },
+
+  maxWantedNesting: function()
+  {
+    DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.maxWantedNesting:\n");
+    return _smimeHeaderSink.maxWantedNesting();
+  },
+
+  signedStatus: function(aNestingLevel, aSignatureStatus, aSignerCert)
+  {
+    DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.signedStatus:\n");
+    return _smimeHeaderSink.signedStatus(aNestingLevel, aSignatureStatus, aSignerCert);
+  },
+
+  encryptionStatus: function(aNestingLevel, aEncryptionStatus, aRecipientCert)
+  {
+    DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.encryptionStatus:\n");
+    return _smimeHeaderSink.encryptionStatus(aNestingLevel, aEncryptionStatus, aRecipientCert);
+  }
+
+};

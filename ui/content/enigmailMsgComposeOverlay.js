@@ -359,7 +359,7 @@ function enigSend(sendFlags) {
 
      var sendPGPMime = document.getElementById("enigmail_sendPGPMime");
 
-     if (sendPGPMime && sendPGPMime.getAttribute("checked")) {
+     if (sendPGPMime && (sendPGPMime.getAttribute("checked") == "true")) {
        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: using PGP/MIME\n");
        sendFlags |= nsIEnigmail.SEND_PGP_MIME;
      }

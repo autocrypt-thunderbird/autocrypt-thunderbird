@@ -36,6 +36,8 @@
 
 #include "nsISupports.idl"
 
+interface nsIMsgWindow;
+
 %{C++
 #include "nsString.h"
 
@@ -59,13 +61,14 @@ native EnigDecryptCallbackFun(EnigDecryptCallbackFun);
 [scriptable, uuid(847b3a70-7ab1-11d4-8f02-006008948af5)]
 interface nsIEnigMimeDecrypt : nsISupports
 {
-  [noscript] void init(in boolean rfc2015,
+  [noscript] void init(in boolean verifyOnly,
+                       in boolean rfc2015,
                        in EnigDecryptCallbackFun outputFun,
                        in voidPtr outputClosure);
 
   void write(in string buf, in unsigned long count);
 
-  void finish();
+  void finish(in nsIMsgWindow msgWindow);
 };
 
 

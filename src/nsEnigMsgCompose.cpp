@@ -46,6 +46,7 @@
 #include "nspr.h"
 #include "nsCOMPtr.h"
 #include "nsString.h"
+#include "nsIPrompt.h"
 #include "nsNetUtil.h"
 #include "nsFileStream.h"
 #include "nsIThread.h"
@@ -63,6 +64,8 @@ PRLogModuleInfo* gEnigMsgComposeLog = NULL;
 { /* dd753201-9a23-4e08-957f-b3616bf7e012 */       \
    0xdd753201, 0x9a23, 0x4e08,                     \
   {0x95, 0x7f, 0xb3, 0x61, 0x6b, 0xf7, 0xe0, 0x12 }}
+
+#define MAX_HEADER_BYTES 16000
 
 static const PRUint32 kCharMax = 1024;
 
@@ -120,7 +123,8 @@ NS_IMPL_THREADSAFE_ISUPPORTS3(nsEnigMsgCompose,
 
 // nsEnigMsgCompose implementation
 nsEnigMsgCompose::nsEnigMsgCompose()
-  : mUseSMIME(PR_FALSE),
+  : mInitialized(PR_FALSE),
+    mUseSMIME(PR_FALSE),
     mIsDraft(PR_FALSE),
     mRequestStopped(PR_FALSE),
 
@@ -136,8 +140,11 @@ nsEnigMsgCompose::nsEnigMsgCompose()
     mStream(0),
 
     mMsgComposeSecure(nsnull),
+    mMimeListener(nsnull),
+
     mOutBuffer(nsnull),
-    mPipeTrans(nsnull)
+    mPipeTrans(nsnull),
+    mPipeTransListener(nsnull)
 {
   nsresult rv;
 
@@ -170,9 +177,22 @@ nsEnigMsgCompose::~nsEnigMsgCompose()
          (int) this, (int) myThread.get()));
 #endif
 
+  Finalize();
+
+}
+
+nsresult
+nsEnigMsgCompose::Finalize()
+{
+  DEBUG_LOG(("nsEnigMsgCompose::Finalize:\n"));
+
+  mMsgComposeSecure = nsnull;
+  mMimeListener = nsnull;
+
   if (mPipeTrans) {
     mPipeTrans->Terminate();
     mPipeTrans = nsnull;
+    mPipeTransListener = nsnull;
   }
 
   if (mOutBuffer) {
@@ -180,6 +200,7 @@ nsEnigMsgCompose::~nsEnigMsgCompose()
     mOutBuffer = nsnull;
   }
 
+  return NS_OK;
 }
 
 
@@ -261,6 +282,9 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
                                                        sendReport, aIsDraft);
   }
 
+  if (!aStream)
+    return NS_ERROR_NULL_POINTER;
+
   // Enigmail stuff
   mStream = aStream;
   mIsDraft = aIsDraft;
@@ -314,13 +338,14 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
   if (NS_FAILED(rv)) return rv;
 
   nsXPIDLCString errorMsg;
-  rv = enigmailSvc->EncryptMessageStart((nsIDOMWindow*) nsnull,
+  PRBool noProxy = PR_TRUE;
+  rv = enigmailSvc->EncryptMessageStart((nsIPrompt*) nsnull,
                                         mUIFlags,
                                         mSenderEmailAddr.get(),
                                         mRecipients.get(),
                                         mSendFlags,
                 NS_STATIC_CAST(nsIStreamListener*, mOutBuffer),
-                                        PR_TRUE,
+                                        noProxy,
                                         getter_Copies(errorMsg),
                                         getter_AddRefs(mPipeTrans) );
   if (NS_FAILED(rv))
@@ -329,12 +354,28 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
   if (!mPipeTrans)
     return NS_ERROR_FAILURE;
 
+  if (!(mSendFlags & nsIEnigmail::SEND_PGP_MIME)) {
+    // Create listener to intercept MIME headers
+    mMimeListener = do_CreateInstance(NS_ENIGMIMELISTENER_CONTRACTID, &rv);
+    if (NS_FAILED(rv)) return rv;
+
+    rv = mMimeListener->Init((nsIStreamListener*) this, nsnull,
+                             MAX_HEADER_BYTES, PR_TRUE, PR_FALSE);
+    if (NS_FAILED(rv)) return rv;
+
+    // Get StreamListener to write synchronously to pipeTransport
+    rv = mPipeTrans->GetListener(getter_AddRefs(mPipeTransListener));
+    if (NS_FAILED(rv)) return rv;
+  }
+
+  mInitialized = PR_TRUE;
+
   return NS_OK;
 }
 
 NS_IMETHODIMP
 nsEnigMsgCompose::FinishCryptoEncapsulation(PRBool aAbort,
-                                                nsIMsgSendReport* sendReport)
+                                            nsIMsgSendReport* sendReport)
 {
   nsresult rv;
 
@@ -344,18 +385,38 @@ nsEnigMsgCompose::FinishCryptoEncapsulation(PRBool aAbort,
   }
 
   // Enigmail stuff
-  if (!mPipeTrans)
+  if (!mInitialized || !mPipeTrans)
     return NS_ERROR_NOT_INITIALIZED;
+
+  rv = FinishAux(aAbort, sendReport);
+  if (NS_FAILED(rv)) {
+    Finalize();
+    return rv;
+  }
+
+  return NS_OK;
+}
+
+nsresult
+nsEnigMsgCompose::FinishAux(PRBool aAbort,
+                            nsIMsgSendReport* sendReport)
+{
+  nsresult rv;
+
+  DEBUG_LOG(("nsEnigMsgCompose::FinishAux: \n"));
 
   // Wait for STDOUT to close
   rv = mPipeTrans->Join();
   if (NS_FAILED(rv)) return rv;
 
+  if (aAbort)
+    return NS_ERROR_FAILURE;
+
   PRInt32 exitCode;
   rv = mPipeTrans->ExitCode(&exitCode);
   if (NS_FAILED(rv)) return rv;
 
-  DEBUG_LOG(("nsEnigMsgCompose::FinishCryptoEncapsulation: exitCode=%d\n", exitCode));
+  DEBUG_LOG(("nsEnigMsgCompose::FinishAux: exitCode=%d\n", exitCode));
 
   // Count STDOUT bytes
   rv = mOutBuffer->GetTotalBytes(&mOutputLen);
@@ -401,17 +462,19 @@ nsEnigMsgCompose::FinishCryptoEncapsulation(PRBool aAbort,
   if (NS_FAILED(rv)) return rv;
 
   if (newExitCode != 0) {
-    DEBUG_LOG(("nsEnigMsgCompose::FinishCryptoEncapsulation: ERROR EXIT %d\n", newExitCode));
+    DEBUG_LOG(("nsEnigMsgCompose::FinishAux: ERROR EXIT %d\n", newExitCode));
     return NS_ERROR_FAILURE;
   }
 
   return NS_OK;
 }
 
+
 NS_IMETHODIMP
 nsEnigMsgCompose::MimeCryptoWriteBlock(const char *aBuf, PRInt32 aLen)
 {
   DEBUG_LOG(("nsEnigMsgCompose::MimeCryptoWriteBlock: \n"));
+
   if (mUseSMIME) {
     return mMsgComposeSecure->MimeCryptoWriteBlock(aBuf, aLen);
   }
@@ -421,7 +484,7 @@ nsEnigMsgCompose::MimeCryptoWriteBlock(const char *aBuf, PRInt32 aLen)
   DEBUG_LOG(("nsEnigMsgCompose::MimeCryptoWriteBlock: aBuf='%s'\n",
              temStr.get()));
 
-  if (!mPipeTrans)
+  if (!mInitialized)
     return NS_ERROR_NOT_INITIALIZED;
 
   if (aLen <= 0)
@@ -429,7 +492,12 @@ nsEnigMsgCompose::MimeCryptoWriteBlock(const char *aBuf, PRInt32 aLen)
 
   mInputLen += aLen;
 
-  mPipeTrans->WriteSync(aBuf, aLen);
+  if (mMimeListener) {
+    mMimeListener->Write(aBuf, aLen, nsnull, nsnull);
+
+  } else if (mPipeTrans) {
+    mPipeTrans->WriteSync(aBuf, aLen);
+  }
 
   return NS_OK;
 }
@@ -442,7 +510,46 @@ NS_IMETHODIMP
 nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
                                    nsISupports *aContext)
 {
+  nsresult rv;
   DEBUG_LOG(("nsEnigMsgCompose::OnStartRequest:\n"));
+
+  if (!mInitialized || !mPipeTransListener)
+    return NS_ERROR_NOT_INITIALIZED;
+
+  rv = mPipeTransListener->OnStartRequest(aRequest, aContext);
+  if (NS_FAILED(rv)) return rv;
+
+  if (mMimeListener) {
+    nsCAutoString contentType;
+    rv = mMimeListener->GetContentType(contentType);
+    if (NS_FAILED(rv)) return rv;
+
+    nsCAutoString headers;
+    rv = mMimeListener->GetHeaders(headers);
+    if (NS_FAILED(rv)) return rv;
+
+    if (headers.IsEmpty())
+        return NS_ERROR_FAILURE;
+
+    DEBUG_LOG(("nsEnigMsgCompose::OnStartRequest: Content-Type: %s\n", headers.get()));
+
+    if (contentType.Equals("text/plain")) {
+      // No crypto encapsulation for headers
+      DEBUG_LOG(("nsEnigMsgCompose::OnStartRequest: NO CRYPTO ENCAPSULATION\n"));
+      PRInt32 status = mStream->write(headers.get(), headers.Length());
+      if (status < int(headers.Length()))
+        return NS_ERROR_FAILURE;
+
+    } else {
+      // Crypto encapsulation for headers
+      mStream->write(EncryptionHeaders, nsCRT::strlen(EncryptionHeaders));
+      mPipeTrans->WriteSync(headers.get(), headers.Length());
+    }
+
+  } else {
+    // Emit RFC 2015 headers
+    mStream->write(EncryptionHeaders, nsCRT::strlen(EncryptionHeaders));
+  }
 
   return NS_OK;
 }
@@ -452,9 +559,16 @@ nsEnigMsgCompose::OnStopRequest(nsIRequest* aRequest,
                                   nsISupports* aContext,
                                   nsresult aStatus)
 {
+  nsresult rv;
   DEBUG_LOG(("nsEnigMsgCompose::OnStopRequest:\n"));
 
+  if (!mInitialized || !mPipeTransListener)
+    return NS_ERROR_NOT_INITIALIZED;
+
   mRequestStopped = PR_TRUE;
+
+  rv = mPipeTransListener->OnStopRequest(aRequest, aContext, aStatus);
+  if (NS_FAILED(rv)) return rv;
 
   return NS_OK;
 }
@@ -470,46 +584,17 @@ nsEnigMsgCompose::OnDataAvailable(nsIRequest* aRequest,
                                   PRUint32 aSourceOffset,
                                   PRUint32 aLength)
 {
-  nsresult rv = NS_OK;
+  nsresult rv;
 
   DEBUG_LOG(("nsEnigMsgCompose::OnDataAVailable: %d\n", aLength));
 
-  if (!mStream)
+  if (!mInitialized || !mPipeTransListener)
     return NS_ERROR_NOT_INITIALIZED;
 
-  if (!aLength)
-    return NS_OK;
+  rv = mPipeTransListener->OnDataAvailable(aRequest, aContext, aInputStream,
+                                           aSourceOffset, aLength);
 
-  if (mOutputLen == 0) {
-    // Emit RFC 2015 headers
-    mStream->write(EncryptionHeaders, nsCRT::strlen(EncryptionHeaders));
-  }
-
-  mOutputLen += aLength;
-
-  char buf[kCharMax];
-  PRUint32 readCount, readMax;
-
-  while (aLength > 0) {
-    readMax = (aLength < kCharMax) ? aLength : kCharMax;
-    rv = aInputStream->Read((char *) buf, readMax, &readCount);
-    if (NS_FAILED(rv)){
-      ERROR_LOG(("nsEnigMsgCompose::OnDataAvailable: Error in reading from input stream, %x\n", rv));
-      return rv;
-    }
-
-    if (readCount <= 0)
-      break;
-
-    aLength -= readCount;
-    aSourceOffset += readCount;
-
-    PRInt32 writeCount = mStream->write(buf, readCount);
-    if (writeCount < (int) readCount) {
-      ERROR_LOG(("nsEnigMsgCompose::OnDataAvailable: Error in writing to output stream, %x\n"));
-      return NS_ERROR_FAILURE;
-    }
-  }
+  if (NS_FAILED(rv)) return rv;
 
   return NS_OK;
 }

@@ -34,46 +34,21 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef _nsEnigMimeDecrypt_h_
-#define _nsEnigMimeDecrypt_h_
+#include "nsISupports.idl"
 
-#include "nsCOMPtr.h"
-#include "nsIEnigMimeDecrypt.h"
-#include "nsIPipeFilterListener.h"
-#include "nsIPipeTransport.h"
-#include "nsIIPCBuffer.h"
+interface nsIChannel;
 
-// Implementation class for nsIEnigMimeDecrypt
-class nsEnigMimeDecrypt : public nsIEnigMimeDecrypt
+/* nsIEnigMimeHeaderSink is an OpenPGP header sink analagous to
+ * nsIMsgSMIMEHeaderSink
+ */
+
+[scriptable, uuid(847b3a80-7ab1-11d4-8f02-006008948af5)]
+interface nsIEnigMimeHeaderSink : nsISupports
 {
-public:
-    NS_DECL_ISUPPORTS
-    NS_DECL_NSIENIGMIMEDECRYPT
-
-    nsEnigMimeDecrypt();
-    virtual ~nsEnigMimeDecrypt();
-
-    // Define a Create method to be used with a factory:
-    static NS_METHOD
-    Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
-
-protected:
-    nsresult Finalize();
-    nsresult FinishAux(nsIMsgWindow* msgWindow);
-
-    PRBool                          mInitialized;
-    PRBool                          mVerifyOnly;;
-    PRBool                          mRfc2015;
-
-    EnigDecryptCallbackFun          mOutputFun;
-    void*                           mOutputClosure;
-
-    PRUint32                        mInputLen;
-    PRUint32                        mOutputLen;
-
-    nsCOMPtr<nsIIPCBuffer>          mBuffer;
-    nsCOMPtr<nsIPipeFilterListener> mListener;
-    nsCOMPtr<nsIPipeTransport>      mPipeTrans;
+  void updateSecurityStatus(in unsigned long statusFlags,
+                            in string briefStatusMsg,
+                            in string expandedStatusMsg);
 };
 
-#endif // nsEnigMimeDecrypt_h__
+
+///////////////////////////////////////////////////////////////////////////////

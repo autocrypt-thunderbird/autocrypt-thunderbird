@@ -42,6 +42,7 @@
 #include "nsIMsgComposeSecure.h"
 #include "nsIStreamListener.h"
 #include "nsIPipeTransport.h"
+#include "nsIEnigMimeListener.h"
 #include "nsIIPCBuffer.h"
 #include "nsIEnigmail.h"
 
@@ -73,6 +74,10 @@ public:
 protected:
     static const char* EncryptionHeaders;
 
+    nsresult Finalize();
+    nsresult FinishAux(PRBool aAbort, nsIMsgSendReport* sendReport);
+
+    PRBool                        mInitialized;
     PRBool                        mUseSMIME;
     PRBool                        mIsDraft;
     PRBool                        mRequestStopped;
@@ -89,9 +94,11 @@ protected:
     nsOutputFileStream*           mStream;
 
     nsCOMPtr<nsIMsgComposeSecure> mMsgComposeSecure;
+    nsCOMPtr<nsIEnigMimeListener> mMimeListener;
+
     nsCOMPtr<nsIIPCBuffer>        mOutBuffer;
     nsCOMPtr<nsIPipeTransport>    mPipeTrans;
-
+    nsCOMPtr<nsIStreamListener>   mPipeTransListener;
 };
 
 #define NS_ENIGMSGCOMPOSEFACTORY_CLASSNAME "Enigmail Msg Compose Factory"

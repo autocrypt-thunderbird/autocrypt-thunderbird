@@ -43,6 +43,10 @@
 #include "nsString.h"
 #include "nsXPIDLString.h"
 #include "nsNetUtil.h"
+#include "nsIPrompt.h"
+#include "nsIMsgWindow.h"
+#include "nsIMimeMiscStatus.h"
+#include "nsIEnigMimeHeaderSink.h"
 #include "nsIThread.h"
 #include "nsEnigMimeDecrypt.h"
 #include "nsIPipeTransport.h"
@@ -69,13 +73,15 @@ NS_IMPL_THREADSAFE_ISUPPORTS1(nsEnigMimeDecrypt,
 // nsEnigMimeDecrypt implementation
 nsEnigMimeDecrypt::nsEnigMimeDecrypt()
   : mInitialized(PR_FALSE),
+    mVerifyOnly(PR_FALSE),
     mRfc2015(PR_FALSE),
 
     mInputLen(0),
     mOutputLen(0),
 
     mBuffer(nsnull),
-    mListener(nsnull)
+    mListener(nsnull),
+    mPipeTrans(nsnull)
 {
   nsresult rv;
 
@@ -106,29 +112,30 @@ nsEnigMimeDecrypt::~nsEnigMimeDecrypt()
          (int) this, (int) myThread.get()));
 #endif
 
-  mOutputFun = NULL;
-  mOutputClosure = NULL;
-
-  if (mListener) {
-    mListener = nsnull;
-  }
-
-  if (mBuffer) {
-    mBuffer->Shutdown();
-    mBuffer = nsnull;
-  }
+  Finalize();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// nsIMimeDecryptSecure methods:
+// nsIEnigMimeDecrypt methods:
 ///////////////////////////////////////////////////////////////////////////////
 
 NS_IMETHODIMP
-nsEnigMimeDecrypt::Init(PRBool rfc2015, EnigDecryptCallbackFun outputFun,
+nsEnigMimeDecrypt::Init(PRBool verifyOnly,
+                        PRBool rfc2015,
+                        EnigDecryptCallbackFun outputFun,
                         void* outputClosure)
 {
   nsresult rv;
+
+  if (!outputFun || !outputClosure)
+    return NS_ERROR_NULL_POINTER;
+
+  mVerifyOnly = verifyOnly;
+  mRfc2015 = rfc2015;
+
+  mOutputFun     = outputFun;
+  mOutputClosure = outputClosure;
 
   mBuffer = do_CreateInstance(NS_IPCBUFFER_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
@@ -136,11 +143,6 @@ nsEnigMimeDecrypt::Init(PRBool rfc2015, EnigDecryptCallbackFun outputFun,
   // Prepare to copy data to buffer, with temp file overflow
   rv = mBuffer->Open(MAX_BUFFER_BYTES, PR_TRUE);
   if (NS_FAILED(rv)) return rv;
-
-  mOutputFun     = outputFun;
-  mOutputClosure = outputClosure;
-
-  mRfc2015 = rfc2015;
 
   if (mRfc2015) {
     // RFC 2015: Create PipeFilterListener to extract second MIME part
@@ -157,6 +159,31 @@ nsEnigMimeDecrypt::Init(PRBool rfc2015, EnigDecryptCallbackFun outputFun,
   return NS_OK;
 }
 
+
+nsresult
+nsEnigMimeDecrypt::Finalize()
+{
+  DEBUG_LOG(("nsEnigMimeDecrypt::Finalize:\n"));
+
+  mOutputFun = NULL;
+  mOutputClosure = NULL;
+
+  if (mPipeTrans) {
+    mPipeTrans->Terminate();
+    mPipeTrans = nsnull;
+  }
+
+  if (mListener) {
+    mListener = nsnull;
+  }
+
+  if (mBuffer) {
+    mBuffer->Shutdown();
+    mBuffer = nsnull;
+  }
+
+  return NS_OK;
+}
 
 NS_IMETHODIMP
 nsEnigMimeDecrypt::Write(const char *buf, PRUint32 buf_size)
@@ -177,18 +204,46 @@ nsEnigMimeDecrypt::Write(const char *buf, PRUint32 buf_size)
 
 
 NS_IMETHODIMP
-nsEnigMimeDecrypt::Finish()
+nsEnigMimeDecrypt::Finish(nsIMsgWindow* msgWindow)
 {
   // Enigmail stuff
   nsresult rv;
 
+  DEBUG_LOG(("nsEnigMimeDecrypt::Finish:\n"));
+
   if (!mInitialized)
     return NS_ERROR_NOT_INITIALIZED;
+
+  rv = FinishAux(msgWindow);
+  if (NS_FAILED(rv)) {
+    Finalize();
+    return rv;
+  }
+
+  return NS_OK;
+}
+
+
+nsresult
+nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow)
+{
+  // Enigmail stuff
+  nsresult rv;
 
   if (mListener) {
     mListener->OnStopRequest(nsnull, nsnull, 0);
     if (NS_FAILED(rv))
       return rv;
+
+    nsCAutoString endLine;
+    rv = mListener->GetEndLine(endLine);
+    if (NS_FAILED(rv)) return rv;
+
+    if (endLine.IsEmpty()) {
+      ERROR_LOG(("nsEnigMimeDecrypt::FinishAux: ERROR MIME part nor terminated\n"));
+      return NS_ERROR_FAILURE;
+    }
+
     mListener = nsnull;
   }
 
@@ -196,25 +251,50 @@ nsEnigMimeDecrypt::Finish()
   if (NS_FAILED(rv))
     return rv;
 
+  nsCOMPtr<nsISupports> securityInfo;
+  if (msgWindow) {
+    nsCOMPtr<nsIMsgHeaderSink> headerSink;
+    msgWindow->GetMsgHeaderSink(getter_AddRefs(headerSink));
+    if (headerSink)
+        headerSink->GetSecurityInfo(getter_AddRefs(securityInfo));
+  }
+  DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: securityInfo=%x\n", securityInfo.get()));
+
+  nsCOMPtr<nsIPrompt> prompter;
+  if (msgWindow) {
+    msgWindow->GetPromptDialog(getter_AddRefs(prompter));
+  }
+
+  DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: prompter=%x\n", prompter.get()));
+
   nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
   if (NS_FAILED(rv))
     return rv;
 
   nsXPIDLCString errorMsg;
-  nsCOMPtr<nsIPipeTransport> pipeTrans;
-  rv = enigmailSvc->DecryptMessageStart((nsIDOMWindow*) nsnull,
+  PRBool noProxy = PR_FALSE;
+  rv = enigmailSvc->DecryptMessageStart(prompter,
                                         (PRUint32) 0,
+                                        mVerifyOnly,
                                         nsnull,
-                                        PR_FALSE,
+                                        noProxy,
                                         getter_Copies(errorMsg),
-                                        getter_AddRefs(pipeTrans) );
+                                        getter_AddRefs(mPipeTrans) );
   if (NS_FAILED(rv)) return rv;
 
-  if (!pipeTrans)
-    return NS_ERROR_FAILURE;;
+  if (!mPipeTrans) {
+    if (securityInfo) {
+      nsCOMPtr<nsIEnigMimeHeaderSink> headerSink = do_QueryInterface(securityInfo);
+      if (headerSink) {
+        rv = headerSink->UpdateSecurityStatus(0, errorMsg, "");
+      }
+    }
+
+    return NS_ERROR_FAILURE;
+  }
 
   nsCOMPtr<nsIInputStream> plainStream;
-  rv = pipeTrans->OpenInputStream(0, PRUint32(-1), 0,
+  rv = mPipeTrans->OpenInputStream(0, PRUint32(-1), 0,
                                   getter_AddRefs(plainStream));
   if (NS_FAILED(rv)) return rv;
 
@@ -227,9 +307,9 @@ nsEnigMimeDecrypt::Finish()
   rv = bufStream->Available(&available);
   if (NS_FAILED(rv)) return rv;
 
-  DEBUG_LOG(("nsEnigMimeDecrypt::Finish: available=%d\n", available));
+  DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: available=%d\n", available));
 
-  rv = pipeTrans->WriteAsync(bufStream, available, PR_TRUE);
+  rv = mPipeTrans->WriteAsync(bufStream, available, PR_TRUE);
   if (NS_FAILED(rv)) return rv;
 
   PRUint32 readCount;
@@ -262,14 +342,14 @@ nsEnigMimeDecrypt::Finish()
   mBuffer->Shutdown();
 
   PRInt32 exitCode;
-  rv = pipeTrans->ExitCode(&exitCode);
+  rv = mPipeTrans->ExitCode(&exitCode);
   if (NS_FAILED(rv)) return rv;
 
-  DEBUG_LOG(("nsEnigMimeDecrypt::Finish: exitCode=%d\n", exitCode));
+  DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: exitCode=%d\n", exitCode));
 
   // Extract STDERR output
   nsCOMPtr<nsIPipeListener> errListener;
-  rv = pipeTrans->GetConsole(getter_AddRefs(errListener));
+  rv = mPipeTrans->GetConsole(getter_AddRefs(errListener));
   if (NS_FAILED(rv)) return rv;
 
   if (!errListener)
@@ -284,8 +364,8 @@ nsEnigMimeDecrypt::Finish()
   errListener->Shutdown();
 
   // Terminate process
-  pipeTrans->Terminate();
-  pipeTrans = nsnull;
+  mPipeTrans->Terminate();
+  mPipeTrans = nsnull;
 
   PRInt32 newExitCode;
   PRUint32 statusFlags;
@@ -302,8 +382,15 @@ nsEnigMimeDecrypt::Finish()
                                       &newExitCode);
   if (NS_FAILED(rv)) return rv;
 
+  if (securityInfo) {
+    nsCOMPtr<nsIEnigMimeHeaderSink> headerSink = do_QueryInterface(securityInfo);
+    if (headerSink) {
+      rv = headerSink->UpdateSecurityStatus(statusFlags, errorMsg, errorMsg);
+    }
+  }
+
   if (newExitCode != 0) {
-    DEBUG_LOG(("nsEnigMimeDecrypt::Finish: ERROR EXIT %d\n", newExitCode));
+    DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: ERROR EXIT %d\n", newExitCode));
     return NS_ERROR_FAILURE;
   }
 

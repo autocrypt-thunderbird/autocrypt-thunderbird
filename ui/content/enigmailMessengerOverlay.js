@@ -12,6 +12,8 @@ var gEnigDecryptedMessage;
 var gEnigSecurityInfo = "";
 var gEnigLastSaveDir = "";
 
+var gEnigMessagePane = null;
+
 function enigMessengerStartup() {
   DEBUG_LOG("enigmailMessengerOverlay.js: Startup\n");
 
@@ -169,6 +171,45 @@ function enigMessageUnload() {
   if (EnigGetPref("parseAllHeaders")) {
     gEnigPrefRoot.setIntPref("mail.show_headers", 2);
   }
+}
+
+const NS_ENIGMIMESERVICE_CONTRACTID = "@mozdev.org/enigmail/enigmimeservice;1";
+const NS_ENIGCONTENTHANDLERFACTORY_CONTRACTID = "@mozilla.org/enigmail/contenthandler-factory;1";
+const NS_ENIGCONTENTHANDLER_CID =
+  Components.ID("{847b3a51-7ab1-11d4-8f02-006008948af5}");
+
+const NS_ENIGPGPHANDLER_CONTRACTID = "@mozilla.org/mimecth;1?type=application/pgp";
+
+function enigMimeInit() {
+  DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit\n");
+
+  if (gEnigMessagePane) {
+    gEnigMessagePane.removeEventListener("load", enigMimeInit, true);
+    gEnigMessagePane = null;
+  }
+
+    dump(":\n");
+  try {
+    var enigContentHandlerFactory = Components.classes[NS_ENIGCONTENTHANDLERFACTORY_CONTRACTID].createInstance(Components.interfaces.nsIFactory);
+
+    dump("AA:"+enigContentHandlerFactory+"\n");
+    var compMgr = Components.manager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
+
+    dump("BB:"+compMgr+"\n");
+    compMgr.registerFactory(NS_ENIGCONTENTHANDLER_CID,
+                            "Enig Content Handler",
+                            NS_ENIGPGPHANDLER_CONTRACTID,
+                            enigContentHandlerFactory);
+
+    DEBUG_LOG("enigmailMessengerOverlay.js: registered "+NS_ENIGPGPHANDLER_CONTRACTID+"\n");
+
+    var enigContentHandlerCID = compMgr.contractIDToCID(NS_ENIGPGPHANDLER_CONTRACTID);
+
+    var handlePGP = (enigContentHandlerCID.toString() == 
+                     NS_ENIGCONTENTHANDLER_CID);
+
+    dump("***handlePGP="+handlePGP+"\n");
+  } catch (ex) {}
 }
 
 function enigMessageFrameLoad() {
@@ -421,13 +462,14 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
 
   if (0) {
     // Testing URL display in message pane
-    var browser = document.getElementById("messagepane");
-    dump("**browser"+browser+"\n");
+    gEnigMessagePane = document.getElementById("messagepane");
+    dump("**gEnigMessagePane"+gEnigMessagePane+"\n");
 
-    // Need to add event listener to browser to make it work
+    // Need to add event listener to gEnigMessagePane to make it work
     // Adding to msgFrame doesn't seem to work
-    browser.addEventListener("load",   enigMessageFrameLoad, true);
-    browser.addEventListener("unload", enigMessageFrameUnload, true);
+    //gEnigMessagePane.addEventListener("load",   enigMessageFrameLoad, true);
+    gEnigMessagePane.addEventListener("load",   enigMimeInit, true);
+    gEnigMessagePane.addEventListener("unload", enigMessageFrameUnload, true);
 
     msgFrame.location = "enigmail:dummy";
     return;
