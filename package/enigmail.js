@@ -2971,49 +2971,31 @@ function (email, secret, exitCodeObj, errorMsgObj) {
 // ExitCode > 0   => error
 // ExitCode == -1 => Cancelled by user
 Enigmail.prototype.receiveKey =
-function (parent, uiFlags, keyId, errorMsgObj) {
+function (keyserver, keyId, requestObserver, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.receiveKey: "+keyId+"\n");
 
   if (!this.initialized) {
     errorMsgObj.value = EnigGetString("notInit");
-    return 1;
+    return null;
   }
 
   if (this.agentType != "gpg") {
     errorMsgObj.value = EnigGetString("failOnlyGPG");
-    return 1;
-  }
-
-  var interactive  = uiFlags & nsIEnigmail.UI_INTERACTIVE;
-
-  var keyserver;
-  try {
-    keyserver = this.prefBranch.getCharPref("keyserver");
-  } catch (ex) {}
-
-  if (keyId && keyserver && (this.agentType == "gpg")) {
-    var prompt = EnigGetString("importKey",keyId);
-
-    var valueObj = new Object();
-    valueObj.value = keyserver;
-
-    if (!this.promptValue(parent, prompt, valueObj)) {
-      errorMsgObj.value = EnigGetString("failCancel");
-      return -1;
-    }
-
-    keyserver = valueObj.value;
+    return null;
   }
 
   if (!keyserver) {
     errorMsgObj.value = EnigGetString("failNoServer");
-    return 1;
+    return null;
   }
 
   if (!keyId) {
     errorMsgObj.value = EnigGetString("failNoID");
-    return 1;
+    return null;
   }
+
+  var envList = [];
+  envList = envList.concat(gEnvList);
 
   var proxyHost = null;
   try {
@@ -3044,25 +3026,50 @@ function (parent, uiFlags, keyId, errorMsgObj) {
 
   if (proxyHost) {
     command += " --keyserver-options honor-http-proxy";
-    gEnvList.push("http_proxy="+proxyHost);
+    envList.push("http_proxy="+proxyHost);
   }
   command += " --keyserver " + keyserver + " --recv-keys " + keyId;
 
   var exitCodeObj    = new Object();
   var statusFlagsObj = new Object();
   var statusMsgObj   = new Object();
+  var cmdLineObj   = new Object();
+  var errorMsgObj  = new Object();
 
+/*
   var output = gEnigmailSvc.execCmd(command, null, "",
                        exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
+*/
 
-  if (proxyHost) {
-    gEnvList.pop(); // remove http_proxy from env. list
+  var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
+  // Create joinable console
+  pipeConsole.open(20, 80, true);
+
+  var ipcRequest = null;
+  try {
+    ipcRequest = gEnigmailSvc.ipcService.execAsync(command,
+                                                   false,
+                                                   "",
+                                                   "",
+                                                   0,
+                                                   envList, envList.length,
+                                                   pipeConsole,
+                                                   pipeConsole,
+                                                   requestObserver);
+  } catch (ex) {
+    ERROR_LOG("enigmail.js: Enigmail.receiveKey: execAsync failed\n");
   }
-  return exitCodeObj.value;
+
+  if (!ipcRequest) {
+    ERROR_LOG("enigmail.js: Enigmail.receiveKey: execAsync failed somehow\n");
+    return null;
+  }
+
+  return ipcRequest;
 }
 
 
-Enigmail.prototype.extractKey = 
+Enigmail.prototype.extractKey =
 function (parent, uiFlags, userId, exitCodeObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.extractKey: "+userId+"\n");
 
@@ -3186,7 +3193,7 @@ function (parent, uiFlags, msgText, keyId, errorMsgObj) {
 }
 
 
-Enigmail.prototype.generateKey = 
+Enigmail.prototype.generateKey =
 function (parent, name, comment, email, expiryDate, passphrase,
           requestObserver) {
   WRITE_LOG("enigmail.js: Enigmail.generateKey: \n");

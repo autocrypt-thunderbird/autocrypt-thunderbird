@@ -13,6 +13,7 @@ var gEnigMessagePane = null;
 var gEnigNoShowReload = false;
 var gEnigLastEncryptedURI = null;
 var gEnigDecryptButton = null;
+var gEnigIpcRequest = null;
 
 var gEnigRemoveListener = false;
 
@@ -105,6 +106,7 @@ function enigMessengerFinish() {
   DEBUG_LOG("enigmailMessengerOverlay.js: Finish\n");
 }
 
+
 function enigViewSecurityInfo() {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigViewSecurityInfo\n");
 
@@ -116,24 +118,7 @@ function enigViewSecurityInfo() {
     if (keyserver && gEnigSecurityInfo.keyId &&
         (gEnigSecurityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) ) {
 
-      var pubKeyId = "0x" + gEnigSecurityInfo.keyId.substr(8, 8);
-
-      var mesg =  gEnigSecurityInfo.statusInfo + EnigGetString("keyImport",pubKeyId);
-
-      if (EnigConfirm(mesg)) {
-        var recvErrorMsgObj = new Object();
-        var recvFlags = nsIEnigmail.UI_INTERACTIVE;
-
-        var enigmailSvc = GetEnigmailSvc();
-        var exitStatus = enigmailSvc.receiveKey(window, recvFlags, pubKeyId,
-                                                recvErrorMsgObj);
-
-        if (exitStatus == 0) {
-          enigMessageReload(false);
-        } else {
-          EnigAlert(EnigGetString("keyImportError")+recvErrorMsgObj.value);
-        }
-      }
+        enigHandleUnknownKey();
 
     } else if ( (gEnigSecurityInfo.statusFlags & nsIEnigmail.NODATA) &&
          (gEnigSecurityInfo.statusFlags &
@@ -1718,4 +1703,110 @@ function enigAttachmentListClick (elementId, event) {
   else {
     attachmentListClick(event);
   }
+}
+
+// download keys
+function enigHandleUnknownKey() {
+  var pubKeyId = "0x" + gEnigSecurityInfo.keyId.substr(8, 8);
+
+  var mesg =  gEnigSecurityInfo.statusInfo + EnigGetString("keyImport",pubKeyId);
+
+  if (EnigConfirm(mesg)) {
+    var recvErrorMsgObj = new Object();
+    var recvFlags = nsIEnigmail.UI_INTERACTIVE;
+    var progressBar=Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
+    var requestObserver = new EnigRequestObserver(enigReceiveKeyTerminate, {'progressBar': progressBar, 'callType': 1});
+
+    var progressListener = {
+        onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus)
+        {
+          if (aStateFlags & Components.interfaces.nsIWebProgressListener.STATE_STOP) {
+            if (progressBar.processCanceledByUser)
+              enigReceiveKeyCancel(progressBar);
+          }
+        },
+
+        onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress)
+        {},
+
+        onLocationChange: function(aWebProgress, aRequest, aLocation)
+        {},
+
+        onStatusChange: function(aWebProgress, aRequest, aStatus, aMessage)
+        {},
+
+        onSecurityChange: function(aWebProgress, aRequest, state)
+        {},
+
+        QueryInterface : function(iid)
+        {
+          if (iid.equals(Components.interfaces.nsIWebProgressListener) ||
+              iid.equals(Components.interfaces.nsISupportsWeakReference) ||
+              iid.equals(Components.interfaces.nsISupports))
+            return this;
+
+          throw Components.results.NS_NOINTERFACE;
+        }
+    };
+    progressBar.registerListener(progressListener);
+
+    var ipcRequest = EnigReceiveKey(window, msgWindow,
+                      recvFlags, pubKeyId,
+                      progressBar,
+                      requestObserver,
+                      recvErrorMsgObj);
+
+    if (ipcRequest == null) {
+      EnigAlert(EnigGetString("keyImportError")+recvErrorMsgObj.value);
+    }
+    gEnigIpcRequest = ipcRequest;
+  }
+}
+
+function enigReceiveKeyTerminate (terminateArg, ipcRequest) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: receiveKeyTerminate\n");
+
+  if (terminateArg && terminateArg.progressBar) {
+    terminateArg.progressBar.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_STOP, 0);
+  }
+
+  var keyRetrProcess = gEnigIpcRequest.pipeTransport;
+  var exitCode;
+
+  if (keyRetrProcess && !keyRetrProcess.isAttached()) {
+    keyRetrProcess.terminate();
+    exitCode = keyRetrProcess.exitCode();
+    DEBUG_LOG("enigmailMessengerOverlay.js: enigReceiveKeyTerminate: exitCode = "+exitCode+"\n");
+  }
+
+  if (exitCode==0) {
+    enigMessageReload(false);
+  }
+  else {
+    var errorMsg="";
+    try {
+      var keygenConsole = gEnigIpcRequest.stderrConsole.QueryInterface(Components.interfaces.nsIPipeConsole);
+
+      if (keygenConsole && keygenConsole.hasNewData()) {
+        errorMsg = keygenConsole.getData();
+      }
+    } catch (ex) {}
+    EnigAlert(EnigGetString("keyImportError")+ errorMsg);
+  }
+  gEnigIpcRequest.close(true);
+
+}
+
+function enigReceiveKeyCancel(progressBar) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigReceiveKeyCancel\n");
+
+  var keyRetrProcess = gEnigIpcRequest.pipeTransport;
+
+  if (keyRetrProcess && !keyRetrProcess.isAttached()) {
+    keyRetrProcess.terminate();
+  }
+  gEnigIpcRequest.close(true);
+
+  EnigAlert(EnigGetString("keyImportError")+ EnigGetString("failCancel"));
+
 }
