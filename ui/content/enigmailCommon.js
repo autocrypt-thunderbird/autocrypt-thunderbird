@@ -17,6 +17,7 @@ const ENIG_PIPEFILTERLISTENER_CONTRACTID = "@mozilla.org/process/pipe-filter-lis
 const ENIG_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
 const ENIG_ENIGMIMELISTENER_CONTRACTID = "@mozilla.org/enigmail/mime-listener;1";
 const ENIG_ENIGMIMESERVICE_CONTRACTID = "@mozdev.org/enigmail/enigmimeservice;1";
+const ENIG_STRINGBUNDLE_CONTRACTID = "@mozilla.org/intl/stringbundle;1";
 
 const ENIG_STREAMCONVERTERSERVICE_CID_STR =
       "{892FFEB0-3F80-11d3-A16C-0050041CAF44}";
@@ -29,6 +30,7 @@ const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
 
 // Interfaces
 const nsIEnigmail               = Components.interfaces.nsIEnigmail;
+const nsIStrBundle              = Components.interfaces.nsIStringBundleService;
 
 // Encryption flags
 if (nsIEnigmail) {
@@ -107,6 +109,8 @@ try {
 }
 
 var gPromptService;
+
+var gStrBundle;
 
 // Initializes enigmailCommon
 function EnigInitCommon(id) {
@@ -223,7 +227,7 @@ function EnigUpdate_0_60() {
       } else {
         var userIdValue = EnigGetPref("userIdValue");
 
-        var mesg = "Please specify your primary email address, which will be used to choose the signing key for outgoing messages.\n If you leave it blank, the FROM address of the message will be used to choose the signing key.\n\nNOTE: Enigmail 0.60 no longer allows the `default signing key' option due to ambiguities.";
+        var mesg = EnigGetString("specifyEmail");
 
         var valueObj = new Object();
         valueObj.value = userIdValue;
@@ -236,9 +240,9 @@ function EnigUpdate_0_60() {
         userIdFromAddr = !userIdValue;
 
         if (userIdFromAddr)
-          EnigAlert("The FROM address will be used to choose the signing key for outgoing messages\n");
+          EnigAlert(EnigGetString("usingFrom"));
         else
-          EnigAlert("The user ID "+userIdValue+" will be used to choose the signing key for outgoing messages\n");
+          EnigAlert(EnigGetString("usingIdPrefix")+" "+userIdValue+" "+EnigGetString("usingIdSuffix"));
 
       }
 
@@ -276,19 +280,18 @@ function EnigConfigure() {
     EnigUpdate_0_60();
   } catch (ex) {}
 
-  var msg = "Do you wish to configure enigmail for version "+
-            gEnigmailVersion+" now?";
+  var msg = EnigGetString("configNowPrefix")+" "+gEnigmailVersion+" "+EnigGetString("configNowSuffix");
 
   var checkValueObj = new Object();
   checkValueObj.value = false;
 
   var buttonPressed = gPromptService.confirmEx(window,
-                                           "Configure Enigmail?",
+                                           EnigGetString("configEnigmail"),
                                             msg,
                                             ENIG_THREE_BUTTON_STRINGS,
-                                            "Yes",
-                                            "No",
-                                            "Do not ask me again",
+                                            EnigGetString("dlgYes"),
+                                            EnigGetString("dlgNo"),
+                                            EnigGetString("dlgNever"),
                                             "",
                                             checkValueObj);
 
@@ -456,7 +459,7 @@ function CONSOLE_LOG(str) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function EnigAlert(mesg) {
-  gPromptService.alert(window, "Enigmail Alert", mesg);
+  gPromptService.alert(window, EnigGetString("enigAlert"), mesg);
 }
 
 function EnigAlertCount(countPrefName, mesg) {
@@ -469,27 +472,27 @@ function EnigAlertCount(countPrefName, mesg) {
   EnigSetPref(countPrefName, alertCount);
 
   if (alertCount > 0) {
-    mesg += "\n\nThis alert will repeat "+alertCount+" more time";
-    mesg += (alertCount == 1) ? "." : "s.";
+    mesg += EnigGetString("repeatPrefix")+" "+alertCount+" ";
+    mesg += (alertCount == 1) ? EnigGetString("repeatSuffixSingular") : EnigGetString("repeatSuffixPlural");
   } else {
-    mesg += "\n\nThis alert will not repeat until you upgrade Enigmail.";
+    mesg += EnigGetString("noRepeat");
   }
 
   EnigAlert(mesg);
 }
 
 function EnigConfirm(mesg) {
-  return gPromptService.confirm(window, "Enigmail Confirm", mesg);
+  return gPromptService.confirm(window, EnigGetString("enigConfirm"), mesg);
 }
 
 function EnigError(mesg) {
-  return gPromptService.alert(window, "Enigmail Error", mesg);
+  return gPromptService.alert(window, EnigGetString("enigError"), mesg);
 }
 
 
 function EnigPromptValue(mesg, valueObj) {
   var checkObj = new Object();
-  return gPromptService.prompt(window, "Enigmail Prompt",
+  return gPromptService.prompt(window, EnigGetString("enigPrompt"),
                                mesg, valueObj, "", checkObj);
 }
 
@@ -874,17 +877,17 @@ function EnigViewDebugLog() {
   var logDirectory = EnigGetPref("logDirectory");
 
   if (!logDirectory) {
-    EnigAlert("Please set advanced preference 'Log directory' to create log file");
+    EnigAlert(EnigGetString("noLogDir"));
     return;
   }
 
   if (!gEnigmailSvc) {
-    EnigAlert("Log file has not been created yet!");
+    EnigAlert(EnigGetString("noLogFile"));
     return;
   }
 
   if (!gEnigmailSvc.logFileStream) {
-    EnigAlert("Please restart Mozilla to create log file");
+    EnigAlert(EnigGetString("restartForLog"));
     return;
   }
 
@@ -942,4 +945,25 @@ function EnigLoadURLInNavigatorWindow(url, aOpenFlag)
   DEBUG_LOG("enigmailCommon.js: EnigLoadURLInNavigatorWindow: navWindow="+navWindow+"\n");
 
   return navWindow;
+}
+
+// retrieves a localized string from the enigmail.properties stringbundle
+function EnigGetString(aStr) {
+  if(!gStrBundle) {
+    try {
+      var strBundleService = Components.classes[ENIG_STRINGBUNDLE_CONTRACTID].getService();
+      strBundleService = strBundleService.QueryInterface(nsIStrBundle);
+      gStrBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
+    } catch (ex) {
+      ERROR_LOG("enigmailCommon.js: Error in instantiating stringBundleService\n");
+    }
+  }
+  if(gStrBundle) {
+    try {
+      return gStrBundle.GetStringFromName(aStr);
+    } catch (ex) {
+      ERROR_LOG("enigmailCommon.js: Error in querying stringBundleService for string '"+aStr+"'\n");
+    }
+  }
+  return null;
 }
