@@ -82,7 +82,7 @@ protected:
 
     nsresult WriteEncryptedHeaders();
 
-    nsresult WriteSignedHeaders1();
+    nsresult WriteSignedHeaders1(PRBool isEightBit);
     nsresult WriteSignedHeaders2();
 
     nsresult WriteFinalSeparator();

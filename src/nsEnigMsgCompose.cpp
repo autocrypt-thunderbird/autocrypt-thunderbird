@@ -298,10 +298,10 @@ nsEnigMsgCompose::WriteEncryptedHeaders()
 }
 
 nsresult
-nsEnigMsgCompose::WriteSignedHeaders1()
+nsEnigMsgCompose::WriteSignedHeaders1(PRBool isEightBit)
 {
   nsresult rv;
-  DEBUG_LOG(("nsEnigMsgCompose::WriteSignedHeaders1:\n"));
+  DEBUG_LOG(("nsEnigMsgCompose::WriteSignedHeaders1: %d\n", (int) isEightBit));
 
   rv = MakeBoundary("enig");
   if (NS_FAILED(rv))
@@ -311,10 +311,12 @@ nsEnigMsgCompose::WriteSignedHeaders1()
  "Content-Type: multipart/signed; micalg=pgp-%s;\r\n"
  " protocol=\"application/pgp-signature\";\r\n"
  " boundary=\"%s\"\r\n"
- "\r\n"
+ "%s"
  "This is an OpenPGP/MIME signed message (RFC 2440 and 3156)\r\n"
  "--%s\r\n",
- mHashAlgorithm.get(), mBoundary.get(), mBoundary.get());
+ mHashAlgorithm.get(), mBoundary.get(),
+ isEightBit ? "Content-Transfer-Encoding: 8bit\r\n\r\n" : "\r\n",
+ mBoundary.get());
 
   if (!headers)
     return NS_ERROR_OUT_OF_MEMORY;
@@ -420,18 +422,6 @@ nsEnigMsgCompose::Init()
 
   if (!mPipeTrans)
     return NS_ERROR_FAILURE;
-
-  if (usePgpMime) {
-    // Emit RFC 2015 headers
-    if (mMultipartSigned) {
-      rv = WriteSignedHeaders1();
-      if (NS_FAILED(rv)) return rv;
-
-    } else {
-      rv = WriteEncryptedHeaders();
-      if (NS_FAILED(rv)) return rv;
-    }
-  }
 
   mInitialized = PR_TRUE;
 
@@ -565,20 +555,13 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
   if (NS_FAILED(rv))
       return rv;
 
-  if (mSendFlags & nsIEnigmail::SEND_PGP_MIME) {
-    // RFC2015 crypto encapsulation
-    rv = Init();
-    if (NS_FAILED(rv)) return rv;
+  // Create listener to intercept MIME headers
+  mMimeListener = do_CreateInstance(NS_ENIGMIMELISTENER_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) return rv;
 
-  } else {
-    // Create listener to intercept MIME headers
-    mMimeListener = do_CreateInstance(NS_ENIGMIMELISTENER_CONTRACTID, &rv);
-    if (NS_FAILED(rv)) return rv;
-
-    rv = mMimeListener->Init((nsIStreamListener*) this, nsnull,
-                             MAX_HEADER_BYTES, PR_TRUE, PR_FALSE, PR_FALSE);
-    if (NS_FAILED(rv)) return rv;
-  }
+  rv = mMimeListener->Init((nsIStreamListener*) this, nsnull,
+                           MAX_HEADER_BYTES, PR_TRUE, PR_FALSE, PR_FALSE);
+  if (NS_FAILED(rv)) return rv;
 
   return NS_OK;
 }
@@ -864,10 +847,14 @@ nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
 
   DEBUG_LOG(("nsEnigMsgCompose::OnStartRequest: Content-Type: %s\n", headers.get()));
 
-  PRBool encapsulate = !contentType.EqualsIgnoreCase("text/plain");
+  PRBool encapsulate = PR_FALSE;
+  if (mSendFlags & nsIEnigmail::SEND_PGP_MIME) {
+    // RFC2015 crypto encapsulation
+    encapsulate = PR_TRUE;
 
-  if (encapsulate) {
-    // RFC2015 crypto encapsulation for headers
+  } else if (!contentType.EqualsIgnoreCase("text/plain")) {
+    // Force RFC2015 crypto encapsulation for non-plaintext messages
+    encapsulate = PR_TRUE;
     mSendFlags |= nsIEnigmail::SEND_PGP_MIME;
   }
 
@@ -876,11 +863,21 @@ nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
 
   if (encapsulate) {
     // RFC2015 crypto encapsulation for headers
+
+    // Send headers to crypto processor
     rv = mPipeTrans->WriteSync(headers.get(), headers.Length());
     if (NS_FAILED(rv)) return rv;
 
     if (mMultipartSigned) {
+      rv = WriteSignedHeaders1( contentEncoding.EqualsIgnoreCase("8bit") );
+      if (NS_FAILED(rv)) return rv;
+
+      // Copy original headers to output
       rv = WriteOut(headers.get(), headers.Length());
+      if (NS_FAILED(rv)) return rv;
+
+    } else {
+      rv = WriteEncryptedHeaders();
       if (NS_FAILED(rv)) return rv;
     }
 
