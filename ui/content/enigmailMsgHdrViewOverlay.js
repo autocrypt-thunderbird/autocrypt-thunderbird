@@ -255,7 +255,7 @@ EnigMimeHeaderSink.prototype =
 
   QueryInterface : function(iid)
   { 
-    //DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.QI\n");
+    //DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.QI: "+iid+"\n");
     if (iid.equals(Components.interfaces.nsIMsgSMIMEHeaderSink) &&
         this._smimeHeaderSink)
       return this;
@@ -285,19 +285,19 @@ EnigMimeHeaderSink.prototype =
   maxWantedNesting: function()
   {
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.maxWantedNesting:\n");
-    return _smimeHeaderSink.maxWantedNesting();
+    return this._smimeHeaderSink.maxWantedNesting();
   },
 
   signedStatus: function(aNestingLevel, aSignatureStatus, aSignerCert)
   {
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.signedStatus:\n");
-    return _smimeHeaderSink.signedStatus(aNestingLevel, aSignatureStatus, aSignerCert);
+    return this._smimeHeaderSink.signedStatus(aNestingLevel, aSignatureStatus, aSignerCert);
   },
 
   encryptionStatus: function(aNestingLevel, aEncryptionStatus, aRecipientCert)
   {
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.encryptionStatus:\n");
-    return _smimeHeaderSink.encryptionStatus(aNestingLevel, aEncryptionStatus, aRecipientCert);
+    return this._smimeHeaderSink.encryptionStatus(aNestingLevel, aEncryptionStatus, aRecipientCert);
   }
 
 };
