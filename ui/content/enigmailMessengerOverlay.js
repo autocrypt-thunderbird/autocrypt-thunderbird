@@ -904,14 +904,24 @@ function enigGetDecryptedMessage(contentType, includeHeaders) {
 
           var urlObj = new Object();
           msgService.GetUrlForUri(uriSpec, urlObj, msgWindow);
-
-          var msgData = urlObj.value.QueryInterface(Components.interfaces.nsIMailboxUrl);
-          var msgHdr = { "From":    msgData.messageHeader.author,
-                         "Subject": msgData.messageHeader.subject,
-                         "Cc":      msgData.messageHeader.ccList,
-                         "To":      msgData.messageHeader.recipients,
-                         "Date":    headerList.date };
-
+          var msgData, msgHdr
+          if(urlObj.value.scheme=="news") {
+            msgData = urlObj.value.QueryInterface(Components.interfaces.nsINntpUrl);
+            msgHdr = { "From":    msgData.messageHeader.author,
+                        "Subject": msgData.messageHeader.subject,
+                        "Cc":      msgData.messageHeader.ccList,
+                        "To":      msgData.messageHeader.recipients,
+                        "Date":    headerList.date,
+                        "Newsgroups": msgData.messageHeader.folder.name };
+          }
+          else {
+            msgData = urlObj.value.QueryInterface(Components.interfaces.nsIMailboxUrl);
+            msgHdr = { "From":    msgData.messageHeader.author,
+                        "Subject": msgData.messageHeader.subject,
+                        "Cc":      msgData.messageHeader.ccList,
+                        "To":      msgData.messageHeader.recipients,
+                        "Date":    headerList.date };
+          }
           for (headerName in msgHdr) {
             if (msgHdr[headerName])
               contentData += headerName + ": " + msgHdr[headerName] + "\r\n";
