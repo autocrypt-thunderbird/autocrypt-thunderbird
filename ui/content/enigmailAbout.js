@@ -12,7 +12,7 @@ function enigAboutLoad() {
 
   var versionElement = contentFrame.document.getElementById('version');
   if (versionElement)
-    versionElement.firstChild.data = "Running Enigmail version "+gEnigmailVersion;
+    versionElement.firstChild.data = EnigGetString("usingVersion")+" "+gEnigmailVersion;
 
   var enigmimeElement = contentFrame.document.getElementById('enigmime');
 
@@ -24,24 +24,24 @@ function enigAboutLoad() {
 
     if (binaryVersion != textVersion) {
       if (enigmimeElement)
-        enigmimeElement.firstChild.data = "Warning: Incompatible EnigMime version "+enigMimeService.version;
+        enigmimeElement.firstChild.data = EnigGetString("versionWarning")+" "+enigMimeService.version;
     }
 
     DEBUG_LOG("enigmailAbout.js: enigAboutLoad: EnigMime: "+binaryVersion+", "+textVersion+"\n");
 
   } catch (ex) {
     if (enigmimeElement)
-      enigmimeElement.firstChild.data = "Warning: EnigMime module not available";
+      enigmimeElement.firstChild.data = EnigGetString("enigmimeWarning");
   }
 
   var enigmailSvc = GetEnigmailSvc();
 
   var agentStr;
   if (enigmailSvc) {
-    agentStr = "Using "+enigmailSvc.agentType+" executable "+enigmailSvc.agentPath.replace(/\\\\/g, "\\")+" to encrypt and decrypt";
+    agentStr = EnigGetString("agentPrefix")+" "+enigmailSvc.agentType+" "+EnigGetString("agentExec")+" "+enigmailSvc.agentPath.replace(/\\\\/g, "\\")+" "+EnigGetString("agentSuffix");
 
   } else {
-    agentStr = "ERROR: Failed to access enigmail service!";
+    agentStr = EnigGetString("agentError");
 
     if (gEnigmailSvc && gEnigmailSvc.initializationError)
       agentStr += "\n" + gEnigmailSvc.initializationError;
