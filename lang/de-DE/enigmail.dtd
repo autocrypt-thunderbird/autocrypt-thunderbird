@@ -108,7 +108,7 @@
 
 <!ENTITY enigmail.sendOptionsMenu.label        "Standard Einstellungen zum Versenden">
 <!ENTITY enigmail.mimeOptionsMenu.label        "Standard MIME Einstellungen">
-<!ENTITY enigmail.sendPGPMime.label            "PGP/MIME f�r diese Nachricht verwenden">
+<!ENTITY enigmail.sendPGPMime.label            "PGP/MIME für diese Nachricht verwenden">
 
 <!ENTITY enigmail.undoencryption.label         "Verschlüsselung rückgängig machen">
 <!ENTITY enigmail.insertkey.label              "Öffentlichen Schlüssel einfügen">
