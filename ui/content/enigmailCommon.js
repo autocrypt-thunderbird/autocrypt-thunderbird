@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.83.0.0";
-var gEnigmimeVersion = "0.83.0.0";
+var gEnigmailVersion = "0.83.1.0";
+var gEnigmimeVersion = "0.83.1.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -93,16 +93,9 @@ const ENIG_TEMPDIR_PROP = "TmpD";
 var gUsePGPMimeOptionList = ["usePGPMimeNever", "usePGPMimePossible",
                              "usePGPMimeAlways"];
 
-var gEnigDefaultEncryptionOptions = ["defaultEncryptionNone",
-                                     "defaultEncryptionOnly",
-                                     "defaultEncryptionSign"];
-
 var gEnigRecipientsSelectionOptions = ["askRecipientsNever",
                                        "askRecipientsClever",
                                        "askRecipientsAlways"];
-
-var gEnigImmediateSendOptions = ["sendLater",
-                                 "sendNow"];
 
 const ENIG_BUTTON_POS_0           = 1;
 const ENIG_BUTTON_POS_1           = 1 << 8;
@@ -135,7 +128,7 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "inlineAttachAsciiArmor":false,
                              "inlineAttachExt":".pgp",
                              "logDirectory":"",
-                             "keepSettingsForReply":false,
+                             "keepSettingsForReply":true,
                              "keyserver":"random.sks.keyserver.penguin.de, pgp.dtype.org, keyserver.kjsl.com, ldap://certserver.pgp.com",
                              "maxIdleMinutes":5,
                              "mimeHashAlgorithm":1,
