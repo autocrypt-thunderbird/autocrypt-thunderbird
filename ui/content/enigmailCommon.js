@@ -138,8 +138,6 @@ function EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj) {
   WRITE_LOG("enigmailCommon.js: EnigDecryptMessage: \n");
 
   var passphrase = null;
-
-  WRITE_LOG("enigmailCommon.js: EnigDecryptMessage: "+gEnigmailSvc.haveDefaultPassphrase+"\n");
   if (!gEnigmailSvc.haveDefaultPassphrase)
     passphrase = EnigPassphrase();
 
