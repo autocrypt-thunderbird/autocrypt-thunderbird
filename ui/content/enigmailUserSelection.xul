@@ -1,5 +1,5 @@
 <?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?> 
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
 
 <!DOCTYPE window [
 <!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
@@ -12,7 +12,7 @@
         title="&enigmail.userSelectionList.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="enigmailUserSelLoad();"
-        ondialogaccept="enigmailUserSelAccept();"
+        ondialogaccept="return enigmailUserSelAccept();"
         minheight="450">
 
 
@@ -56,11 +56,28 @@
 
   </groupbox>
 
-  <hbox autostretch="always">
-    <checkbox id="enigmailUserSelPlainText"
-                label="&enigmail.userSelPlainText.label;"
-                accesskey="&enigmail.userSelPlainText.accesskey;"
-                oncommand="disableList();"/>
+  <grid flex="1">
+      <columns>
+        <column flex="1"/>
+      </columns>
+
+    <rows>
+      <row>
+        <checkbox id="enigmailUserSelPlainText"
+                  label="&enigmail.userSelPlainText.label;"
+                  noSignLabel="&enigmail.userSelPlainTextNotSigned.label;"
+                  accesskey="&enigmail.userSelPlainText.accesskey;"
+                  oncommand="plainTextCallback();"/>
+      </row>
+      <row>
+        <checkbox id="displayNoLonger"
+                  label="&enigmail.displayNoLonger.label;"
+                  checked="false"
+                  disabled="true"
+                  collapsed="true"/>
+      </row>
+    </rows>
+  </grid>
 <!--
     <button class="dialog"
             halign="right"
@@ -70,5 +87,4 @@
             oncommand="enigmailImportMissingKeys();"
             />
 -->
-  </hbox>
 </dialog>
