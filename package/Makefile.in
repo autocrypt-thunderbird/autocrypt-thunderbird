@@ -35,7 +35,7 @@
 
 # Specify these as parameters to the make command
 XPI_MODULE	= enigmail
-XPI_MODULE_VERS = 0.82.2
+XPI_MODULE_VERS = 0.82.3
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
@@ -63,7 +63,9 @@ xpi::
                components/$(XPI_MODULE).xpt \
                components/$(XPI_MODULE).js \
                components/enigprefs-service.js \
-               chrome/$(XPI_MODULE).jar
+               chrome/$(XPI_MODULE).jar \
+               chrome/$(XPI_MODULE)-skin.jar \
+               chrome/$(XPI_MODULE)-skin-tbird.jar
 	echo Created $(DIST)/bin/$(XPIFILE)
 
 xpi-en-US::
