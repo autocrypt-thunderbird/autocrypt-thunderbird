@@ -57,7 +57,6 @@ window.addEventListener("load", enigMsgComposeStartup, false);
 window.addEventListener('compose-window-close', enigMsgComposeClose, true);
 window.addEventListener('compose-window-reopen', enigMsgComposeReopen, true);
 
-
 function enigMsgComposeStartup() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
 
@@ -103,27 +102,10 @@ function enigMsgComposeStartup() {
   var msgId = document.getElementById("msgIdentityPopup");
   if (msgId) msgId.setAttribute("oncommand", "enigSetIdentityCallback();");
 
-  enigGetSendDefaultOptions();
 
-  enigInitSendOptionsMenu();
   enigMsgComposeReset();
 
-  if (EnigGetPref("keepSettingsForReply") && (!(gEnigSendMode & EnigEncrypt))) {
-    var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
-    if (enigMimeService)
-    {
-      if (enigMimeService.isEncrypted(gMsgCompose.originalMsgURI)) {
-        enigSetSendMode('encrypt');
-      }
-    }
-
-  }
-
-  enigDisplayUi();
-
-  var mnu=document.getElementById("mail-menubar");
-
-  dump(mnu);
+  enigComposeOpen();
 }
 
 function enigDisplayUi() {
@@ -176,9 +158,28 @@ function enigGetSendDefaultOptions() {
     gEnigSendMode |= EnigSigned;
 }
 
+
+function enigComposeOpen() {
+  if (EnigGetPref("keepSettingsForReply") && (!(gEnigSendMode & EnigEncrypt))) {
+    var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
+    if (enigMimeService)
+    {
+      if (enigMimeService.isEncrypted(gMsgCompose.originalMsgURI)) {
+        enigSetSendMode('encrypt');
+      }
+    }
+
+  }
+
+  enigDisplayUi();
+}
+
+
 function enigMsgComposeReopen() {
    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeReopen\n");
    enigMsgComposeReset();
+   enigComposeOpen();
+
 }
 
 function enigMsgComposeClose() {
@@ -193,11 +194,16 @@ function enigMsgComposeReset() {
   gEnigProcessed = null;
   gEnigTimeoutID = null;
 
+  gEnigModifiedAttach=null;
+  gEnigSendModeDirty=false;
+
   EnigShowHeadersAll(true);
 
   gEnigSendPGPMime = !(EnigGetPref("usePGPMimeOption") == PGP_MIME_ALWAYS);
-
   enigTogglePGPMime();
+
+  enigGetSendDefaultOptions();
+  enigInitSendOptionsMenu();
 }
 
 
@@ -870,6 +876,19 @@ function enigSend(gotSendFlags, elementId) {
 
        var encoderFlags = EnigOutputFormatted | EnigOutputLFLineBreak;
 
+       if (gMsgCompose.composeHTML && !(sendFlags & ENIG_ENCRYPT)
+           && EnigGetPref("wrapHtmlBeforeSend")) {
+          // enforce line wrapping here
+          // otherwise the message isn't signed correctly
+          try {
+            var wrapWidth = gEnigPrefRoot.getIntPref("editor.htmlWrapColumn");
+            var editor = gMsgCompose.editor.QueryInterface(nsIPlaintextEditorMail);
+            editor.wrapWidth=wrapWidth-2; // prepare for the worst case: a 72 char's long line starting with '-'
+            editor.rewrap(false);
+          }
+          catch (ex) {}
+       }
+
        // Get plain text
        // (Do we need to set the nsIDocumentEncoder::* flags?)
        var origText = EnigEditorGetContentsAs("text/plain",
@@ -903,16 +922,6 @@ function enigSend(gotSendFlags, elementId) {
 
        // Replace plain text and get it again (to avoid linewrapping problems)
        enigReplaceEditorText(escText);
-
-       if (gMsgCompose.composeHTML && !(sendFlags & ENIG_ENCRYPT)
-           && EnigGetPref("wrapHtmlBeforeSend")) {
-          // enforce line wrapping here
-          // otherwise the message isn't signed correctly
-          var wrapWidth = gEnigPrefRoot.getIntPref("editor.htmlWrapColumn");
-          var editor = gMsgCompose.editor.QueryInterface(nsIPlaintextEditorMail);
-          editor.wrapWidth=wrapWidth-2; // prepare for the worst case: a 72 char's long line starting with '-'
-          editor.rewrap(true);
-       }
 
        escText = EnigEditorGetContentsAs("text/plain", encoderFlags);
 
