@@ -6,13 +6,38 @@ EnigInitCommon("pref-enigmail");
 
 function init_pref_enigmail() {
   DEBUG_LOG("pref-enigmail.js: init_pref_enigmail\n");
-  parent.initPanel('chrome://enigmail/content/pref-enigmail.xul');
+  // parent.initPanel('chrome://enigmail/content/pref-enigmail.xul');
 
   EnigSetDefaultPrefs();
 
   EnigSetPref("configuredVersion", gEnigmailVersion);
+  EnigDisplayPrefs(false, true, false);
 
   setDisables(true);
+}
+
+function save_pref_enigmail()
+{
+  var pref = gEnigPrefRoot;
+
+  for( var i = 0; i < _elementIDs.length; i++ )
+  {
+    var elementID = _elementIDs[i];
+
+    var element = document.getElementById(elementID);
+    if (!element) break;
+    var eltType = element.localName;
+
+    if (eltType == "radiogroup" || (eltType == "textbox" &&element.getAttribute("preftype")=="int")) {
+       pref.setIntPref(element.getAttribute("prefstring"), parseInt(element.value));
+    }
+    else if (eltType == "checkbox")  {
+      pref.setBoolPref(element.getAttribute("prefstring"), element.checked);
+    }
+    else if (eltType == "textbox" && element.getAttribute("preftype")=="string") {
+      pref.setCharPref(element.getAttribute("prefstring"), element.value);
+    }
+  }
 }
 
 function setDisables(initializing) {
@@ -23,7 +48,7 @@ function setDisables(initializing) {
                                   : defaultEncryptionOptionElement.value;
 
   var autoCrypto = false;
-  var autoCryptoElement = document.getElementById("autoCrypto");
+  var autoCryptoElement = document.getElementById("enigmail_autoCrypto");
 
   if (autoCryptoElement) {
     autoCrypto = initializing ? EnigGetPref("autoCrypto")
@@ -34,11 +59,11 @@ function setDisables(initializing) {
   EnigDisplayRadioPref("defaultEncryptionOption", defaultEncryptionOption,
                         gEnigDefaultEncryptionOptions);
 
-  var noPassphraseElement = document.getElementById("noPassphrase");
+  var noPassphraseElement = document.getElementById("enigmail_noPassphrase");
   var noPassphrase = initializing ? EnigGetPref("noPassphrase")
                               : noPassphraseElement.checked;
 
-  var maxIdleMinutesElement = document.getElementById("enigmail_MaxIdleMinutes");
+  var maxIdleMinutesElement = document.getElementById("enigmail_maxIdleMinutes");
   if (noPassphrase)
     maxIdleMinutesElement.disabled = true;
 }

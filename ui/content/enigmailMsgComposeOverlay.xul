@@ -19,13 +19,13 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript"  src="chrome://enigmail/content/enigmailMsgComposeOverlay.js"/>
 
-    <toolbar id="composeToolbar">
-      <hbox id="toolbar_button_box">
+    <toolbarpalette id="MsgComposeToolbarPalette">
+      <!-- hbox id="toolbar_button_box" -->
 
        <toolbarbutton class="toolbarbutton-1"
                id="button-enigmail-send"
                label="&enigmail.sendbutton.label;"
-               tooltiptext="&enigmail.sendbutton.tip;" 
+               tooltiptext="&enigmail.sendbutton.tip;"
                command="cmd_sendButton"
                now_label="&enigmail.sendbutton.label;"
                now_tooltiptext="&enigmail.sendbutton.tip;"
@@ -33,10 +33,10 @@
                later_tooltiptext="&enigmail.sendbutton.tip;"
                insertbefore="button-send"/>
 
-       </hbox>
-    </toolbar>
+       <!-- /hbox -->
+    </toolbarpalette>
 
-  <menubar id="compose-menubar">
+  <menubar id="mail-menubar">
 
     <menu id="menu_Enigmail"
           label="Enigmail"

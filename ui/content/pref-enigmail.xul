@@ -41,12 +41,13 @@
 <!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
 %enigMailDTD;
 ]>
-<page id="enigmailPrefs"
-        headertitle="&enigmail.label;"
+<dialog id="enigmailPrefs"
+        title="&enigmail.label;"
         xmlns:html="http://www.w3.org/1999/xhtml"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        class="color-dialog"
+         buttons="accept, cancel"
         orient="vertical"
+        ondialogaccept="save_pref_enigmail();"
         onload="init_pref_enigmail();">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
@@ -57,10 +58,10 @@
   <![CDATA[
     // List of persisted elements (required to save prefs)
     var _elementIDs = [
-                       ///"autoCrypto",
-                       "userIdValue",
-                       "userIdFromAddr",
-                       "noPassphrase",
+                       ///"enigmail_autoCrypto",
+                       "enigmail_userIdValue",
+                       "enigmail_userIdFromAddr",
+                       "enigmail_noPassphrase",
                        "enigmail_defaultEncryptionOption",
                        "enigmail_maxIdleMinutes"
                        ];
@@ -68,7 +69,7 @@
   </script>
 
 <!--
-    <checkbox id="autoCrypto"
+    <checkbox id="enigmail_autoCrypto"
             label="&enigmail.autoCrypto.label;"
             pref="true"
             preftype="bool"
@@ -78,24 +79,24 @@
 -->
 
     <hbox>
-      <label control="userIdValue"
+      <label control="enigmail_userIdValue"
              value="&enigmail.userIdValue.label;:" />
 
-      <textbox id="userIdValue"
+      <textbox id="enigmail_userIdValue"
                pref="true"
                preftype="string"
                prefstring="extensions.enigmail.userIdValue" />
     </hbox>
 
     <vbox>
-      <checkbox id="userIdFromAddr"
+      <checkbox id="enigmail_userIdFromAddr"
               label="&enigmail.userIdFromAddr.label;"
               pref="true"
               preftype="bool"
               prefstring="extensions.enigmail.userIdFromAddr"
               prefattribute="checked"/>
 
-      <checkbox id="noPassphrase"
+      <checkbox id="enigmail_noPassphrase"
               label="&enigmail.userNoPassphrase.label;"
               pref="true"
               preftype="bool"
@@ -169,11 +170,11 @@
               oncommand="EnigUninstall();"
               />
 
-      <button class="dialog"
+      <!-- <button class="dialog"
               id="upgrade"
               label="&enigmail.upgradeButton.label;"
               oncommand="EnigUpgrade();"
-              />
+              /> -->
     </groupbox>
 
-</page>
+</dialog>

@@ -57,8 +57,10 @@ function enigMsgComposeStartup() {
 
   if (smimeButton) {
     smimeButton.setAttribute("label", "S/MIME");
+/*  Doesn't make sense with Thunderbird
     if (EnigGetPref("disableSMIMEui"))
         smimeButton.setAttribute("collapsed", "true");
+*/
   }
 
   enigSetImmediateSendMenu();
@@ -120,7 +122,7 @@ function enigMsgComposeReset() {
 }
 
 function enigDisplaySendButton() {
-
+/* doesn't work with Thunderbird...
   if (EnigGetPref("defaultEncryptionOption")) {
      gEnigSendButton.removeAttribute("collapsed");
      gEnigOrigSendButton.setAttribute("collapsed", "true");
@@ -128,7 +130,7 @@ function enigDisplaySendButton() {
   } else {
      gEnigOrigSendButton.removeAttribute("collapsed");
      gEnigSendButton.setAttribute("collapsed", "true");
-  }
+  }*/
 }
 
 function enigInitRadioMenu(prefName, optionIds) {

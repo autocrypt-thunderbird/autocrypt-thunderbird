@@ -7,7 +7,7 @@ var gMimeHashElement, gSendFlowedElement, gSendFlowedValue;
 
 function AdvStartup() {
    DEBUG_LOG("pref-enigmail-adv.js: AdvStartup\n");
-   DisplayPrefs(false, true, false);
+   EnigDisplayPrefs(false, true, false);
 
    EnigDisplayRadioPref("usePGPMimeOption", EnigGetPref("usePGPMimeOption"),
                         gUsePGPMimeOptionList);
@@ -51,7 +51,7 @@ function AdvResetPrefs() {
 
    gMimeHashElement.selectedIndex = gEnigmailPrefDefaults["mimeHashAlgorithm"];
 
-   DisplayPrefs(true, true, false);
+   EnigDisplayPrefs(true, true, false);
 }
 
 
@@ -59,7 +59,7 @@ function AdvOnAccept() {
 
    DEBUG_LOG("pref-enigmail-adv.js: AdvOnAccept\n");
 
-   DisplayPrefs(false, false, true);
+   EnigDisplayPrefs(false, false, true);
 
    EnigSetRadioPref("usePGPMimeOption", gUsePGPMimeOptionList);
 
@@ -83,62 +83,6 @@ function AdvOnAccept() {
   return true;
 }
 
-function DisplayPrefs(showDefault, showPrefs, setPrefs) {
-   DEBUG_LOG("pref-enigmail-adv.js: DisplayPrefs\n");
-
-   for (var prefName in gEnigmailPrefDefaults) {
-      var prefElement = document.getElementById("enigmail_"+prefName);
-
-      if (prefElement) {
-         var defaultValue = gEnigmailPrefDefaults[prefName];
-         var prefValue = showDefault ? defaultValue : EnigGetPref(prefName);
-
-         DEBUG_LOG("pref-enigmail-adv.js: DisplayPrefs: "+prefName+"="+prefValue+"\n");
-
-         switch (typeof defaultValue) {
-         case "boolean":
-            if (showPrefs) {
-               if (prefValue) {
-                  prefElement.setAttribute("checked", "true");
-               } else {
-                  prefElement.removeAttribute("checked");
-               }
-            }
-
-            if (setPrefs) {
-               if (prefElement.checked) {
-                  EnigSetPref(prefName, true);
-               } else {
-                  EnigSetPref(prefName, false);
-               }
-            }
-
-         break;
-
-         case "number":
-            if (showPrefs)
-              prefElement.value = prefValue;
-
-            if (setPrefs) {
-               try {
-                 EnigSetPref(prefName, 0+prefElement.value);
-               } catch (ex) {
-               }
-            }
-         break;
-
-         case "string":
-            if (showPrefs)
-              prefElement.value = prefValue;
-            if (setPrefs)
-              EnigSetPref(prefName, prefElement.value);
-            break;
-
-         default:
-         }
-      }
-   }
-}
 
 
 function EnigMimeTest() {

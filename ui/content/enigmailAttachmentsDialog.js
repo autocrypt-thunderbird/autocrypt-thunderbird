@@ -56,6 +56,8 @@ function enigmailAttachDlgLoad() {
    }
 
    var selected=EnigGetPref("encryptAttachments");
+   if (! selected)
+      selected=0;
 
    var node = optionSel.firstChild;
    var nodeCount=0;
@@ -69,7 +71,8 @@ function enigmailAttachDlgLoad() {
         node.disabled=true;
       }
       else if (nodeCount == selected) {
-        optionSel.selectedIndex = selected;
+        optionSel.selectedItem=node;
+        optionSel.value=selected;
       }
 
       ++nodeCount;
@@ -85,8 +88,8 @@ function enigmailAttachDlgAccept() {
   var optionSel=document.getElementById("enigmailAttachOptions");
 
   if (optionSel) {
-     gArguments[ENIG_RESULT].selected = optionSel.selectedIndex;
-     EnigSetPref("encryptAttachments", optionSel.selectedIndex);
+     gArguments[ENIG_RESULT].selected = optionSel.value;
+     EnigSetPref("encryptAttachments", optionSel.value);
   }
 
 }

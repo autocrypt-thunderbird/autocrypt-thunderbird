@@ -253,7 +253,7 @@ nsEnigMsgCompose::MakeBoundary(const char *prefix)
   nsresult rv;
 
   if (!mRandomSeeded) {
-    PRUint32 ranTime;
+    PRUint32 ranTime = 1;
     
     rv = GetRandomTime(&ranTime);
     if (NS_FAILED(rv))

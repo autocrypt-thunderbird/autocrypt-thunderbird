@@ -45,9 +45,9 @@ const USER_ID = 9;
 var gUserList;
 var gArguments=arguments;
 var gResult;
-var gImg0="chrome://enigmail/skin/check0.bmp";
-var gImg1="chrome://enigmail/skin/check1.bmp";
-var gImg2="chrome://enigmail/skin/check2.bmp";
+var gImg0="chrome://enigmail/skin/check0.png";
+var gImg1="chrome://enigmail/skin/check1.png";
+var gImg2="chrome://enigmail/skin/check2.png";
 
 // set the "active" flag and the corresponding image
 function enigSetActive(element, status) {

@@ -12,7 +12,7 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="enigmailAttachDlgLoad();"
         ondialogaccept="enigmailAttachDlgAccept();"
-        minheight="150">
+        minheight="250">
 
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
@@ -33,6 +33,7 @@
     <radio id="enigEncryptAttachPgpMime"
           value="2"
           label="&enigmail.enigEncryptAttachPgpMime.label;"/>
+
   </radiogroup>
 
   <spacer flex="1"/>

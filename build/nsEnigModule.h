@@ -38,6 +38,6 @@
 #ifndef _nsEnigModule_h_
 #define _nsEnigModule_h_
 
-#define ENIGMIME_VERSION "0.76.1.0"
+#define ENIGMIME_VERSION "0.80.0.0"
 
 #endif

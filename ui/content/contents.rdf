@@ -9,10 +9,17 @@
 
   <!-- enigmail package information -->
   <RDF:Description about="urn:mozilla:package:enigmail"
-        chrome:displayName="protoZilla"
-        chrome:author="xmlterm.org"
-        chrome:name="enigmail">
+        chrome:displayName="Enigmail v0.80.0"
+        chrome:author="Enigmail Team"
+        chrome:authorURL="http://enigmail.mozdev.org/"
+        chrome:name="enigmail"
+        chrome:extension="true"
+        chrome:description="This extension adds support for OpenPGP messages to Mozilla Thunderbird."
+        chrome:settingsURL="chrome://enigmail/content/pref-enigmail.xul">
   </RDF:Description>
+  <!-- to be added (once I know what they are for ...
+        chrome:localeVersion=""
+        chrome:skinVersion="" -->
 
   <!-- enigmail overlay information -->
   <RDF:Seq about="urn:mozilla:overlays">

@@ -86,15 +86,17 @@
     <checkbox id="enigmail_useDefaultComment"
               label="&enigmail.useDefaultComment.label;" />
 
+<!-- doesn't make sense with Thunderbird ...
     <checkbox id="enigmail_disableSMIMEui"
               label="&enigmail.disableSMIMEui.label;" />
+-->
 
     <checkbox id="enigmail_doubleDashSeparator"
               label="&enigmail.doubleDashSeparator.label;" />
 
     <checkbox id="enigmail_hushMailSupport"
               label="&enigmail.hushMailSupport.label;" />
-			  
+
     <checkbox id="enigmail_captureWebMail"
               label="&enigmail.captureWebMail.label;" />
   </groupbox>

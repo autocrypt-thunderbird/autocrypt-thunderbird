@@ -14,7 +14,7 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript"  src="chrome://enigmail/content/enigmailMessengerOverlay.js"/>
 
-  <menubar id="mailMenubar">
+  <menubar id="mail-menubar">
     <menu id="menu_Enigmail"
           label="Enigmail"
           accesskey="&enigmail.messengermenu.accesskey;"
@@ -102,25 +102,25 @@
 
   </menubar>
 
-  <toolbox id="mailToolbarToolbox">
-    <toolbar id="msgToolbar" persist="collapsed">
-      <hbox id="toolbar_button_box">
+  <toolbarpalette id="MailToolbarPalette">
+    <!-- <toolbar id="msgToolbar" persist="collapsed">
+      <hbox id="toolbar_button_box"> -->
 
          <toolbarbutton class="toolbarbutton-1"
                  id="button-enigmail-decrypt"
                  label="&enigmail.decryptbutton.label;"
-                 tooltip="aTooltip" tooltiptext="&enigmail.decryptbutton.tip;" 
+                 tooltip="aTooltip" tooltiptext="&enigmail.decryptbutton.tip;"
                  oncommand="enigMessageDecrypt();"
                  insertafter="button-newmsg"
                  />
 
-         <toolbarseparator class="toolbarseparator-primary"
+     <!--    <toolbarseparator class="toolbarseparator-primary"
                  insertafter="button-newmsg"
                  />
 
-       </hbox>
-    </toolbar>
-  </toolbox>
+      </hbox>
+    </toolbar> -->
+  </toolbarpalette>
 
   <vbox id="messagepanebox">
     <box id="expandedEnigmailBox" class="headerBox"
