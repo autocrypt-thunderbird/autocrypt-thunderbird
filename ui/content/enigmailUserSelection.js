@@ -158,7 +158,8 @@ function enigmailUserSelLoad() {
 
    var toAddr = "";
    try {
-     toAddr=enigStripEmail(window.arguments[0].toAddr);
+     if ((typeof window.arguments[0].toAddr)=="string")
+       toAddr=enigStripEmail(window.arguments[0].toAddr);
    }
    catch (ex) {}
 
@@ -277,19 +278,19 @@ function enigGetUserList(window, secretOnly, exitCodeObj, statusFlagsObj, errorM
     }
 
     listText=listText.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-    startIndex=listText.indexOf("----\n")+4;
-    if (startIndex<4) {
+    startIndex=listText.indexOf("----\n")+5;
+    if (startIndex<5) {
       startIndex=0;
     }
-    var nextIndex=listText.indexOf("\n",startIndex+1);
+    var nextIndex=listText.indexOf("\n",startIndex);
 
-    while (startIndex < listText.length && startIndex>=0) {
-        var theLine=listText.substring(startIndex+1,nextIndex);
+    while (nextIndex>=0 && startIndex < listText.length && startIndex>=0) {
+        var theLine=listText.substring(startIndex,nextIndex);
         if (theLine.length>0) {
           aUserList.push(theLine.split(/\:/)); ///
         }
-        startIndex=nextIndex;
-        nextIndex=listText.indexOf("\n",startIndex+1);
+        startIndex=nextIndex+1;
+        nextIndex=listText.indexOf("\n",startIndex);
     }
   } catch (ex) {
     ERROR_LOG("ERROR in enigmailUserSelection: enigGetUserList:\n");
