@@ -48,6 +48,8 @@ XPIDL_MODULE  = enigmail
 
 XPIDLSRCS     = nsIEnigmail.idl
 
+PREF_JS_EXPORTS = prefs/enigmail.js
+
 include $(topsrcdir)/config/rules.mk
 
 XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS).xpi
@@ -55,15 +57,18 @@ LANGXPIFILE = $(XPI_MODULE)-en-US-$(XPI_MODULE_VERS).xpi
 
 libs::
 	$(INSTALL) $(srcdir)/enigmail.js $(DIST)/bin/components
-	$(INSTALL) $(srcdir)/prefs/enigmail.js $(DIST)/bin/defaults/pref
+	$(INSTALL) $(srcdir)/prefs/enigmail.js $(DIST)/bin/defaults/preferences
 	$(INSTALL) $(srcdir)/enigprefs-service.js $(DIST)/bin/components
 
 xpi::
-	zip -r $(DIST)/bin/$(XPIFILE) install.js $(XPI_MODULE).spec
+	zip -r $(DIST)/bin/$(XPIFILE) install.js \
+               install.rdf \
+               $(XPI_MODULE).spec
 	cd $(DIST)/bin; zip -g $(XPIFILE) \
                components/$(XPI_MODULE).xpt \
                components/$(XPI_MODULE).js \
                components/enigprefs-service.js \
+               defaults/preferences/enigmail.js \
                defaults/pref/enigmail.js \
                chrome/$(XPI_MODULE).jar \
                chrome/$(XPI_MODULE)-skin.jar \
@@ -72,7 +77,9 @@ xpi::
 
 xpi-en-US::
 	cd ../ui; zip -r $(DIST)/bin/$(LANGXPIFILE) \
-               install.js enigmail-en-US.spec
+               install.js \
+               enigmail-en-US.spec \
+               install.rdf
 	cd $(DIST)/bin/chrome; zip -g ../$(LANGXPIFILE) \
                $(XPI_MODULE)-en-US.jar
 	echo Created $(DIST)/bin/$(LANGXPIFILE)
