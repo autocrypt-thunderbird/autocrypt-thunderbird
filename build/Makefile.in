@@ -38,7 +38,7 @@ DIRS = package
 
 # Specify these as parameters to the make command
 XPI_MODULE	= enigmime
-XPI_MODULE_VERS = 0.85.0
+XPI_MODULE_VERS = 0.86.0
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@

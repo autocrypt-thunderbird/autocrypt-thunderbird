@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.85.0.0";
-var gEnigmimeVersion = "0.85.0.0";
+var gEnigmailVersion = "0.86.0.0";
+var gEnigmimeVersion = "0.86.0.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -60,6 +60,8 @@ const ENIG_ASS_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
 const ENIG_CLIPBOARD_CONTRACTID = "@mozilla.org/widget/clipboard;1";
 const ENIG_CLIPBOARD_HELPER_CONTRACTID = "@mozilla.org/widget/clipboardhelper;1"
 const ENIG_TRANSFERABLE_CONTRACTID = "@mozilla.org/widget/transferable;1"
+const ENIG_LOCALE_SVC_CONTRACTID = "@mozilla.org/intl/nslocaleservice;1";
+const ENIG_DATE_FORMAT_CONTRACTID = "@mozilla.org/intl/scriptabledateformat;1"
 
 const ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID =
                               "@mozilla.org/network/file-output-stream;1";

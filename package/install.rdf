@@ -5,18 +5,17 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>{847b3a00-7ab1-11d4-8f02-006008948af5}</em:id>
-    <em:version>0.85.0</em:version>
+    <em:version>0.86.0</em:version>
     
     <!-- Target Application (Thunderbird) this extension can install into, 
          with minimum and maximum supported versions. --> 
     <em:targetApplication>
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>0.6</em:minVersion>
-        <em:maxVersion>0.8</em:maxVersion>
+        <em:minVersion>0.7</em:minVersion>
+        <em:maxVersion>0.9</em:maxVersion>
       </Description>
     </em:targetApplication>
-    
     
     <!-- Front End MetaData -->
     <em:name>Enigmail</em:name>
@@ -24,8 +23,8 @@
     <em:creator>Enigmail Team</em:creator>
     <em:homepageURL>http://enigmail.mozdev.org/</em:homepageURL>
 <!--
-    <em:updateURL>http://downloads.mozdev.org/enigmail/getupdate.php?appVer=%APP_VERSION%&ext=enigmail</em:updateURL>
--->    
+    <em:updateURL>http://localhost:8080/enigmail/getupdate.php?appVer=%APP_VERSION%</em:updateURL>
+-->
 
     <!-- Front End Integration Hooks (used by Extension Manager)-->
     <em:optionsURL>chrome://enigmail/content/pref-enigmail.xul</em:optionsURL>
