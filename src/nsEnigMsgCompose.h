@@ -102,6 +102,7 @@ protected:
     PRBool                        mRequestStopped;
 
     PRBool                        mLinebreak;
+    PRUint32                      mSpace;
     PRUint32                      mMatchFrom;
 
     PRUint32                      mInputLen;
