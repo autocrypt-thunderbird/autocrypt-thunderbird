@@ -330,15 +330,51 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   rv = mPipeTrans->WriteAsync(bufStream, available, PR_TRUE);
   if (NS_FAILED(rv)) return rv;
 
-  PRUint32 readCount;
+  PRUint32 readCount, iterations, ctFound;
   char buf[kCharMax];
+  iterations = 0;
+  ctFound = -1;
+  int status;
   while (1) {
+    ++iterations;
     // Read synchronously
 
     rv = plainStream->Read((char *) buf, kCharMax, &readCount);
     if (NS_FAILED(rv)) return rv;
 
     if (!readCount) break;
+    
+    if (iterations==1 && readCount > 25) {
+      // add mime boundaries around text/plain message (bug 6627)
+      ctFound=nsCRT::strncasecmp("content-type:", buf, 13);
+      if (ctFound==0) {
+        ctFound = -1;
+        PRUint32 whitespace=13;
+        while((whitespace<readCount) && buf[whitespace] && 
+              ((buf[whitespace]==' ') || (buf[whitespace]=='\t'))) { whitespace++; }
+        if (buf[whitespace] && (whitespace<readCount)) {
+          ctFound=nsCRT::strncasecmp(buf + whitespace, "text/plain", 10);
+          if (ctFound != 0) {
+            ctFound=nsCRT::strncasecmp(buf + whitespace, "text/html", 9);
+          }
+        }
+        if (ctFound==0) {
+          char* header = PR_smprintf(
+          "Content-Type: multipart/mixed; boundary=\"enigDummy\""
+          "\n\n--enigDummy\n");
+          PR_SetError(0,0);
+          status = mOutputFun(header, strlen(header), mOutputClosure);
+          if (status < 0) {
+            PR_SetError(status, 0);
+            mOutputFun = NULL;
+            mOutputClosure = NULL;
+      
+            return NS_ERROR_FAILURE;
+          }
+          mOutputLen += strlen(header);
+        }
+      }
+    }
 
     if (readCount < kCharMax) {
       // make sure we can continue to write later
@@ -346,7 +382,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
     }
 
     PR_SetError(0,0);
-    int status = mOutputFun(buf, readCount, mOutputClosure);
+    status = mOutputFun(buf, readCount, mOutputClosure);
     if (status < 0) {
       PR_SetError(status, 0);
       mOutputFun = NULL;
@@ -358,14 +394,33 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
     mOutputLen += readCount;
   }
 
-  // add final \n to make sure last line is always displayed (bug 5952)
-  buf[0]='\n';
-  PR_SetError(0,0);
-  int status = mOutputFun(buf, 1, mOutputClosure);
-  if (status >= 0) {
-    // ignore any errors here
-    mOutputLen++;
+  
+  if (ctFound==0) {
+    // add mime boundaries around text/plain message (bug 6627)
+    PR_SetError(0,0);
+    strcpy(buf, "\n\n--enigDummy--\n");
+    
+    int status = mOutputFun(buf, strlen(buf), mOutputClosure);
+    if (status < 0) {
+      PR_SetError(status, 0);
+      mOutputFun = NULL;
+      mOutputClosure = NULL;
+
+      return NS_ERROR_FAILURE;
+    }
+    mOutputLen+=strlen(buf);
   }
+  else {
+    // add final \n to make sure last line is always displayed (bug 5952)
+    buf[0]='\n';
+    PR_SetError(0,0);
+    int status = mOutputFun(buf, 1, mOutputClosure);
+    if (status >= 0) {
+      // ignore any errors here
+      mOutputLen++;
+    }
+  }
+  
   PR_SetError(0,0);
 
   // Close input stream
