@@ -496,6 +496,25 @@ function EnigAlertCount(countPrefName, mesg) {
   EnigAlert(mesg);
 }
 
+function EnigAlertPref(mesg, prefText) {
+  const display = true;
+  const dontDisplay = false;
+
+  var prefValue = EnigGetPref(prefText);
+  if (prefValue == display) {
+    var checkBoxObj = { value: false } ;
+    var buttonPressed = gEnigPromptSvc.confirmEx(window,
+                          EnigGetString("enigAlert"),
+                          mesg,
+                          (gEnigPromptSvc.BUTTON_TITLE_OK * ENIG_BUTTON_POS_0),
+                          null, null, null,
+                          EnigGetString("dlgNoPrompt"), checkBoxObj);
+    if (checkBoxObj.value && buttonPressed==0) {
+      EnigSetPref(prefText, dontDisplay);
+    }
+  }
+}
+
 function EnigConfirm(mesg) {
   var dummy=new Object();
 
@@ -993,6 +1012,7 @@ function EnigClearPassphrase() {
     return;
 
   enigmailSvc.clearCachedPassphrase();
+  EnigAlertPref(EnigGetString("passphraseCleared"), "warnClearPassphrase");
 }
 
 function EnigOpenWin (winName, spec, winOptions, optList) {
