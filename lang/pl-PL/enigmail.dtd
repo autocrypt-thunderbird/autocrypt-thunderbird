@@ -12,15 +12,15 @@
 <!ENTITY enigmail.preferences.label       "Preferencje">
 
 <!ENTITY enigmail.autoCrypto.label        "Aktywna opcja automatycznej kryptografii">
-<!ENTITY enigmail.userIdValue.label       "Adres email użytkownika">
+<!ENTITY enigmail.userIdValue.label       "Adres email użytkownika (lub ID Klucza)">
 <!ENTITY enigmail.userNoPassphrase.label  "Brak hasła dla użytkownika">
 
-<!ENTITY enigmail.userIdFromAddr.label    "Użyj adresu email nadawcy">
+<!ENTITY enigmail.userIdFromAddr.label    "Użyj adresu nadawcy do ustalenia klucza GPG przy podpisywaniu">
 <!ENTITY enigmail.defaultEncryptionOption.label "Wybór domyślnych ustawień szyfrowania">
 <!ENTITY enigmail.usePGPMimeOption.label  "Wybór opcji PGP/MIME">
 <!ENTITY enigmail.mimeHashAlgorithm.label "Algorytm haszujący">
 
-<!ENTITY enigmail.agentPath.label         "Ścieżka do programu GPG/PGP:">
+<!ENTITY enigmail.agentPath.label         "Ścieżka do programu GPG:">
 
 <!ENTITY enigmail.send_plaintext_flowed.label "Dopuszczaj miękkie zawijanie wierszy (RFC 2646)">
 
@@ -45,7 +45,7 @@
 <!ENTITY enigmail.defaultSignNewsMsg.label "Domyślnie podpisuj artykuły news">
 <!ENTITY enigmail.useDefaultComment.label "Stosuj domyślny komentarz w podpisie">
 
-<!ENTITY enigmail.keyserver.label         "Serwer kluczy:">
+<!ENTITY enigmail.keyserver.label         "Serwer kluczy">
 
 <!ENTITY enigmail.disableSMIMEui.label    "Ukrywanie przycisków/menu SMIME">
 <!ENTITY enigmail.doubleDashSeparator.label  "Traktuj '--' jako separator podpisu">
@@ -106,6 +106,9 @@
 <!ENTITY enigmail.encryptsignsend.label         "Wyślij z szyfrowaniem i podpisem">
 <!ENTITY enigmail.plainsend.label         "Wyślij zwykłym tekstem">
 
+<!ENTITY enigmail.sendnow.label           "Wyślij teraz">
+<!ENTITY enigmail.sendlater.label         "Wyślij później">
+
 <!ENTITY enigmail.sendOptionsMenu.label        "Domyślne ustawienia wysyłki">
 <!ENTITY enigmail.mimeOptionsMenu.label        "Domyślne ustawienia MIME">
 <!ENTITY enigmail.sendPGPMime.label            "Użyj PGP/MIME dla tego listu">
@@ -120,6 +123,9 @@
 <!ENTITY enigmail.encryptedsend.accesskey      "z">
 <!ENTITY enigmail.encryptsignsend.accesskey    "W">
 <!ENTITY enigmail.plainsend.accesskey         "t">
+
+<!ENTITY enigmail.sendnow.accesskey           "y">
+<!ENTITY enigmail.sendlater.accesskey         "e">
 
 <!ENTITY enigmail.sendOptionsMenu.accesskey    "o">
 <!ENTITY enigmail.mimeOptionsMenu.accesskey    "M">
@@ -176,3 +182,13 @@
 <!ENTITY enigmail.userSelPlainText.accesskey        "S">
 
 <!ENTITY enigmail.experimental.label                "Użyj eksperymentalnego szyfrowania/podpisu 'inline'">
+
+<!ENTITY enigmail.enigmailAttachDesc.label          "Ta wiadomość zawiera załączniki. W jaki sposób zaszyfrować/podpisać załączone pliki?">
+<!ENTITY enigmail.enigEncryptAttachNone.label       "Szyfruj/podpisz tylko tekst wiadomości, załączniki pozostaw bez zmian">
+<!ENTITY enigmail.enigEncryptAttachInline.label     "Szyfruj każdy załącznik oddzielnie i wyślij wiadomość używając 'inline PGP'">
+<!ENTITY enigmail.enigEncryptAttachPgpMime.label    "Szyfruj/podpisz wiadomość jako całość i wyślij używając PGP/MIME">
+<!ENTITY enigmail.ctxDecryptOpen.label              "Odszyfruj i otwórz">
+<!ENTITY enigmail.ctxDecryptSave.label              "Odszyfruj i zapisz jako...">
+<!ENTITY enigmail.ctxDecryptOpen.accesskey          "d">
+<!ENTITY enigmail.ctxDecryptSave.accesskey          "s">
+
