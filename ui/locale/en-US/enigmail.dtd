@@ -78,6 +78,7 @@
 
 <!ENTITY enigmail.autoDecrypt.label      "Automatically decrypt/verify messages">
 <!ENTITY enigmail.clearPassphrase.label  "Clear saved passphrase">
+<!ENTITY enigmail.editRules.label        "Edit Per-Recipient Rules">
 
 <!ENTITY enigmail.prefs.label            "Preferences">
 <!ENTITY enigmail.advprefs.label         "Advanced preferences">
@@ -94,11 +95,12 @@
 <!ENTITY enigmail.decryptverify.accesskey   "D">
 <!ENTITY enigmail.importpublickey.accesskey "I">
 <!ENTITY enigmail.savedecrypted.accesskey   "S">
-<!ENTITY enigmail.reload.accesskey          "R">
+<!ENTITY enigmail.reload.accesskey          "M">
 
 <!ENTITY enigmail.autoDecrypt.accesskey     "A">
 
 <!ENTITY enigmail.clearPassphrase.accesskey "l">
+<!ENTITY enigmail.editRules.accesskey       "R">
 
 <!ENTITY enigmail.prefs.accesskey           "P">
 <!ENTITY enigmail.viewconsole.accesskey      "c">
@@ -154,6 +156,12 @@
 <!ENTITY enigmail.askRecipientsAlways.label       "Always display selection">
 <!ENTITY enigmail.askRecipientsClever.label       "Display selection when necessary">
 <!ENTITY enigmail.askRecipientsNever.label        "Never display PGP key selection dialog">
+<!ENTITY enigmail.normalKeySelection.label        "Normal Key Selection">
+<!ENTITY enigmail.perRecipientRules.label         "Per-Recipient Rules">
+<!ENTITY enigmail.disabled.label                  "Disabled">
+<!ENTITY enigmail.perRecipientRulesManual.label   "Define rules manually">
+<!ENTITY enigmail.perRecipientRulesAlways.label   "Prompt for every unknown recipient">
+
 
 <!ENTITY enigmail.usePGPMimeAlways.label          "Always use PGP/MIME">
 <!ENTITY enigmail.usePGPMimePossible.label        "Allow to use PGP/MIME">
@@ -198,6 +206,9 @@
 <!ENTITY enigmail.importMissingKeys.label           "Download missing keys">
 <!ENTITY enigmail.importMissingKeys.tooltip         "Try to import the missing keys from a key server">
 <!ENTITY enigmail.importMissingKeys.accesskey       "I">
+<!ENTITY enigmail.refreshKeys.label                 "Refresh Key List">
+<!ENTITY enigmail.refreshKeys.accesskey             "R">
+<!ENTITY enigmail.perRecipientsOption.label         "Create per-recipient rule(s)">
 
 <!ENTITY enigmail.experimental.label                "Use experimental inline signing/encryption for PGP/MIME">
 
@@ -233,3 +244,35 @@
 <!ENTITY  enigmail.copySecurityInfo.label           "Copy OpenPGP Security Info">
 <!ENTITY  enigmail.showPhoto.label                  "View PGP Photo ID">
 <!ENTITY  enigmail.smimeSecurityInfo.label          "S/MIME Security Info ...">
+
+<!ENTITY enigmail.singleRcptSettings.label          "Enigmail - Recipient Settings">
+<!ENTITY enigmail.keysToUse.label                   "Key(s) to use:">
+<!ENTITY enigmail.selKeysButton.label               "Select Key(s)...">
+<!ENTITY enigmail.selKeysButton.accesskey           "S">
+<!ENTITY enigmail.setDefaultsFor.label              "Defaults for ...">
+<!ENTITY enigmail.encryption.label                  "Encryption">
+<!ENTITY enigmail.signing.label                     "Signing">
+<!ENTITY enigmail.never.label                       "Never">
+<!ENTITY enigmail.always.label                      "Always">
+<!ENTITY enigmail.maybe.label                       "Yes, if selected in Message Composition">
+<!ENTITY enigmail.singleRcptSettings.desc           "(Note: in case of conflicts, 'Never' overrules 'Always')">
+<!ENTITY enigmail.ruleEmail.label                   "Set PGP Rules for">
+<!ENTITY enigmail.ruleEmail.tooltip                 "Only fill in email addresses, do NOT set the names of the recipients\nE.g. 'Some Name &lt;some.name@address.net&gt;' is invalid">
+<!ENTITY enigmail.matchBegin.label                  "Match begin">
+<!ENTITY enigmail.matchBegin.tooltip                "When set, only matches addresses that start with the exact address entered\ni.e. no additional leading characters">
+<!ENTITY enigmail.matchEnd.label                    "Match end">
+<!ENTITY enigmail.matchEnd.tooltip                  "When set, only matches addresses that end with the exact address entered\ni.e. no additional trailing characters">
+<!ENTITY enigmail.sepratationDesc.label             "(Separate several email addresses with spaces)">
+
+<!ENTITY enigmail.rulesEditor.label                 "Enigmail - Per-Recipient Rules Editor">
+<!ENTITY enigmail.email.label                       "Email">
+<!ENTITY enigmail.pgpKeys.label                     "PGP Key(s)">
+<!ENTITY enigmail.sign.label                        "Sign">
+<!ENTITY enigmail.encrypt.label                     "Encrypt">
+<!ENTITY enigmail.edit.label                        "Edit">
+<!ENTITY enigmail.add.label                         "Add">
+<!ENTITY enigmail.delete.label                      "Delete">
+<!ENTITY enigmail.moveUp.label                      "Move Up">
+<!ENTITY enigmail.moveUp.accesskey                  "U">
+<!ENTITY enigmail.moveDown.label                    "Move Down">
+<!ENTITY enigmail.moveDown.accesskey                "D">
