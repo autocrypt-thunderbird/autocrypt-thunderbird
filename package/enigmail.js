@@ -2820,9 +2820,20 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
 
     }
 
+    try {
+      if (userId && keyId && this.prefBranch.getBoolPref("displaySecondaryUid")) {
+        uids = this.getUidsForKey(keyId);
+        if (uids) {
+          userId += uids;
+        }
+      }
+    }
+    catch (ex) {}
+    
     if (userId) {
       userId = EnigConvertToUnicode(userId, "UTF-8");
     }
+    
     userIdObj.value = userId;
     keyIdObj.value = keyId;
 
@@ -2871,9 +2882,6 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
     return exitCode;
   }
 
-  // Error processing
-  ERROR_LOG("enigmail.js: Enigmail.decryptMessageEnd: Error in command execution\n");
-
   if ( (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) ||
        ((this.agentType == "pgp") && !verifyOnly && (exitCode != 30)) ) {
     // "Unremember" passphrase on decryption failure
@@ -2910,6 +2918,11 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
     }
   }
 
+  if (exitCode != 0) {
+    // Error processing
+    ERROR_LOG("enigmail.js: Enigmail.decryptMessageEnd: Error in command execution\n");
+  }
+  
   if (cmdErrorMsgObj.value) {
     errorMsgObj.value = this.agentType + " " + EnigGetString("cmdLine");
     errorMsgObj.value += "\n" + cmdLineObj.value;
@@ -2951,7 +2964,7 @@ function (email, secret, exitCodeObj, errorMsgObj) {
   var statusMsgObj   = new Object();
   var cmdErrorMsgObj = new Object();
 
-  var keyText = gEnigmailSvc.execCmd(command, null, "",
+  var keyText = this.execCmd(command, null, "",
                     exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
 
   if ((exitCodeObj.value == 0) && !keyText)
@@ -3212,7 +3225,12 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
       }
     }
   }
-    
+  
+  if (! command) {
+    // no gpgkeys_* found
+    return null;
+  }
+  
   command=command.replace(/\\\\/g, "\\").replace(/\\/g, "\\\\");
    
   // call gpgkeys to check the version number
@@ -3235,7 +3253,7 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
                                           errObj, errLenObj);
   }
   catch (ex) {
-    CONSOLE_LOG(testCmd.replace(/\\\\/g, "\\")+" not found\n");
+    CONSOLE_LOG(testCmd.replace(/\\\\/g, "\\")+" failed\n");
     return null;
   }
 
@@ -3321,7 +3339,7 @@ function (parent, uiFlags, userId, exitCodeObj, errorMsgObj) {
   var statusMsgObj   = new Object();
   var cmdErrorMsgObj = new Object();
 
-  var keyBlock = gEnigmailSvc.execCmd(command, null, "",
+  var keyBlock = this.execCmd(command, null, "",
                     exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
 
   if ((exitCodeObj.value == 0) && !keyBlock)
@@ -3398,7 +3416,7 @@ function (parent, uiFlags, msgText, keyId, errorMsgObj) {
   var statusFlagsObj = new Object();
   var statusMsgObj   = new Object();
 
-  var output = gEnigmailSvc.execCmd(command, null, pgpBlock,
+  var output = this.execCmd(command, null, pgpBlock,
                       exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
 
   var statusMsg = statusMsgObj.value;
@@ -3778,12 +3796,12 @@ Enigmail.prototype.getUserIdList =
 function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
 
   if (secretOnly || refresh || this.userIdList == null) {
-    var gpgCommand = this.agentPath + GPG_BATCH_OPTS
+    var gpgCommand = this.agentPath + GPG_BATCH_OPTS;
   
     if (secretOnly) {
-      gpgCommand += " --list-secret-keys --with-colons";  }
+      gpgCommand += " --with-colons --list-secret-keys";  }
     else {
-      gpgCommand += " --list-keys --with-colons";
+      gpgCommand += " --with-colons --list-keys";
     }
   
     if (!this.initialized) {
@@ -3796,7 +3814,7 @@ function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
     var statusMsgObj   = new Object();
     var cmdErrorMsgObj = new Object();
   
-    var listText = gEnigmailSvc.execCmd(gpgCommand, null, "",
+    var listText = this.execCmd(gpgCommand, null, "",
                       exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
   
     if (exitCodeObj.value != 0) {
@@ -3824,6 +3842,30 @@ function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
   return this.userIdList;
 }
 
+Enigmail.prototype.getUidsForKey = function (keyId) {
+  var gpgCommand = this.agentPath + GPG_BATCH_OPTS 
+  gpgCommand += " --with-colons --list-keys " + keyId;
+  var statusMsgObj   = new Object();
+  var cmdErrorMsgObj = new Object();
+  var statusFlagsObj = new Object();
+  var exitCodeObj = new Object();
+
+  var listText = this.execCmd(gpgCommand, null, "",
+                    exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
+  listText=EnigConvertGpgToUnicode(listText).replace(/(\r\n|\r)/g, "\n");
+  if (exitCodeObj.value != 0) {
+    return "";
+  }
+
+  var userList="";
+  var keyArr=listText.split(/\n/);
+  for (var i=0; i<keyArr.length; i++) {
+    if (keyArr[i].indexOf("uid:")==0) {
+      userList += "\n" + keyArr[i].split(/:/)[9];
+    }
+  }
+  return userList;
+}
 
 Enigmail.prototype.encryptAttachment =
 function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
@@ -3874,7 +3916,7 @@ function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
   var statusMsgObj   = new Object();
   var cmdErrorMsgObj = new Object();
 
-  var msg = gEnigmailSvc.execCmd(gpgCommand, passphrase, "",
+  var msg = this.execCmd(gpgCommand, passphrase, "",
                     exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
 
   if (exitCodeObj.value != 0) {

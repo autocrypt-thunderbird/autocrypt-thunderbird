@@ -14,6 +14,7 @@ pref("extensions.enigmail.confirmBeforeSend",false);
 pref("extensions.enigmail.disableSMIMEui",false);
 pref("extensions.enigmail.displaySignWarn",true);
 pref("extensions.enigmail.displayPartiallySigned",true);
+pref("extensions.enigmail.displaySecondaryUid",true);
 pref("extensions.enigmail.doubleDashSeparator",true);
 pref("extensions.enigmail.encryptAttachments",1);
 pref("extensions.enigmail.encryptToSelf",true);

@@ -107,11 +107,41 @@ function enigBeforeStartHeaders() {
   return true;
 }
 
+// Match the userId from gpg to the sender's from address
+function enigMatchUidToSender(userId) {
+  var fromAddr = currentHeaderData["from"].headerValue;
+  try {
+    fromAddr=EnigStripEmail(fromAddr);
+  }
+  catch(ex) {}
+  
+  var userIdList=userId.split(/\n/);
+  try {
+    for (var i=0; i<userIdList.length; i++) {
+      if (fromAddr.toLowerCase() == EnigStripEmail(userIdList[i]).toLowerCase()) {
+        userId = userIdList[i];
+        break;
+      }
+    }
+    if (i>=userIdList.length) userId=userIdList[0];
+  }
+  catch (ex) {
+    userId=userIdList[0];
+  }
+  return userId;
+}
+
 function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateHdrIcons: exitCode="+exitCode+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+errorMsg+"\n");
 
   gEnigLastEncryptedURI = GetLoadedMessage();
-  userId=EnigConvertGpgToUnicode(userId);
+  
+  if (userId && (userId.indexOf("\n")>=0)) {
+    var replaceUid=enigMatchUidToSender(userId);
+    errorMsg = errorMsg.replace(userId, replaceUid);
+    userId=EnigConvertGpgToUnicode(replaceUid);
+  }
+
   if (exitCode == ENIG_POSSIBLE_PGPMIME) {
     exitCode = 0;
   }
