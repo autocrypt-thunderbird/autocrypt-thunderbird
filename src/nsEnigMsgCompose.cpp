@@ -317,7 +317,7 @@ nsEnigMsgCompose::WriteEncryptedHeaders()
  "--%s\r\n"
  "Content-Type: application/octet-stream; name=\"encrypted.asc\"\r\n"
  "Content-Description: OpenPGP encrypted message\r\n"
- "Content-Disposition: attachment; filename=\"encrypted.asc\"\r\n"
+ "Content-Disposition: inline; filename=\"encrypted.asc\"\r\n"
  "\r\n",
  mBoundary.get(), mBoundary.get(), mBoundary.get());
 
