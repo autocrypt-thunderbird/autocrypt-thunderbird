@@ -10,19 +10,20 @@ function AdvStartup() {
    DEBUG_LOG("pref-enigmail.js: AdvStartup\n");
    EnigDisplayPrefs(false, true, false);
 
-   if (! window.arguments[0].showBasic) {
-      // hide basic tab
-      document.getElementById("basic").setAttribute("collapsed", true);
-      document.getElementById("basicTab").setAttribute("collapsed", true);
-      var sendTab=document.getElementById("sendTab");
-      sendTab.click();
-      sendTab.setAttribute("selected", true);
-   }
+   if (window.arguments) {
+      if (! window.arguments[0].showBasic) {
+          // hide basic tab
+          document.getElementById("basic").setAttribute("collapsed", true);
+          document.getElementById("basicTab").setAttribute("collapsed", true);
+          var sendTab=document.getElementById("sendTab");
+          sendTab.click();
+          sendTab.setAttribute("selected", true);
+      }
 
-   if (window.arguments[0].clientType!="seamonkey") {
-      document.getElementById("enigmail_disableSMIMEui").setAttribute("collapsed", true);
+      if (window.arguments[0].clientType!="seamonkey") {
+          document.getElementById("enigmail_disableSMIMEui").setAttribute("collapsed", true);
+      }
    }
-
    EnigDisplayRadioPref("usePGPMimeOption", EnigGetPref("usePGPMimeOption"),
                         gUsePGPMimeOptionList);
 
