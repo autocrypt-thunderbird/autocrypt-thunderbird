@@ -5,7 +5,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>{847b3a00-7ab1-11d4-8f02-006008948af5}</em:id>
-    <em:version>0.89.6</em:version>
+    <em:version>0.89.9</em:version>
     
     <!-- Target Applications this extension can install into, 
          with minimum and maximum supported versions. --> 
@@ -29,11 +29,8 @@
     <em:description>OpenPGP message encryption and authentication</em:description>
     <em:creator>Enigmail Team</em:creator>
     <em:homepageURL>http://enigmail.mozdev.org/</em:homepageURL>
-
-<!--   - ->
-    <em:updateURL>http://localhost:8080/update.rdf</em:updateURL>
-<!- -   -->
-		
+    <em:updateURL>http://www.mozilla-enigmail.org/php/checkupdate.php</em:updateURL>
+    
     <!-- Front End Integration Hooks (used by Extension Manager)-->
     <em:optionsURL>chrome://enigmail/content/pref-enigmail.xul</em:optionsURL>
     <em:aboutURL>chrome://enigmail/content/enigmailAbout.xul</em:aboutURL>
