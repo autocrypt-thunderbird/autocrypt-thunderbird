@@ -688,7 +688,7 @@ function enigSend(sendFlags) {
            enigReplaceEditorText( EnigConvertToUnicode(cipherText, charset) );
 
            // Save original text (for undo)
-           gEnigProcessed = {"origText":origText};
+           gEnigProcessed = {"origText":origText, "charset":charset};
 
          } else {
            // Restore original text
@@ -914,25 +914,31 @@ function enigGenericSendMessage( msgType )
       var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
       observerService.notifyObservers(window, "mail:composeOnSend", null);
 
-      // Check if the headers of composing mail can be converted to a mail charset.
-      if (msgType == nsIMsgCompDeliverMode.Now || 
-        msgType == nsIMsgCompDeliverMode.Later ||
-        msgType == nsIMsgCompDeliverMode.Save || 
-        msgType == nsIMsgCompDeliverMode.SaveAsDraft || 
-        msgType == nsIMsgCompDeliverMode.SaveAsTemplate) 
-      {
-        var fallbackCharset = new Object;
-        if (gPromptService && 
-            !gMsgCompose.checkCharsetConversion(getCurrentIdentity(), fallbackCharset)) 
+      if (gEnigProcessed) {
+        // Ensure that original charset is preserved for encrypted messages
+        gMsgCompose.SetDocumentCharset(gEnigProcessed.charset);
+
+      } else {
+        // Check if the headers of composing mail can be converted to a mail charset.
+        if (msgType == nsIMsgCompDeliverMode.Now || 
+          msgType == nsIMsgCompDeliverMode.Later ||
+          msgType == nsIMsgCompDeliverMode.Save || 
+          msgType == nsIMsgCompDeliverMode.SaveAsDraft || 
+          msgType == nsIMsgCompDeliverMode.SaveAsTemplate) 
         {
-          var dlgTitle = sComposeMsgsBundle.getString("initErrorDlogTitle");
-          var dlgText = sComposeMsgsBundle.getString("12553");  // NS_ERROR_MSG_MULTILINGUAL_SEND
-          if (!gPromptService.confirm(window, dlgTitle, dlgText))
-            return;
+          var fallbackCharset = new Object;
+          if (gPromptService && 
+              !gMsgCompose.checkCharsetConversion(getCurrentIdentity(), fallbackCharset)) 
+          {
+            var dlgTitle = sComposeMsgsBundle.getString("initErrorDlogTitle");
+            var dlgText = sComposeMsgsBundle.getString("12553");  // NS_ERROR_MSG_MULTILINGUAL_SEND
+            if (!gPromptService.confirm(window, dlgTitle, dlgText))
+              return;
+          }
+          if (fallbackCharset &&
+              fallbackCharset.value && fallbackCharset.value != "")
+            gMsgCompose.SetDocumentCharset(fallbackCharset.value);
         }
-        if (fallbackCharset &&
-            fallbackCharset.value && fallbackCharset.value != "")
-          gMsgCompose.SetDocumentCharset(fallbackCharset.value);
       }
 
       try {
