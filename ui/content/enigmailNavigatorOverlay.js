@@ -1,20 +1,24 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
 // Uses: chrome://global/content/nsUserSettings.js
 
-var gCaptureWebMail = nsPreferences.getBoolPref(ENIGMAIL_PREFS_ROOT+"captureWebMail");
+var gEnigCurrentSite;
+var gEnigNavButton1;
+var gEnigCurrentHandlerNavButton1;
+var gEnigTest = true;
+var gCaptureWebMail = false;
 
-dump("enigmailNavigatorOverlay.js: gCaptureWebMail="+gCaptureWebMail+"\n");
+if (nsPreferences)
+ gCaptureWebMail = nsPreferences.getBoolPref(ENIGMAIL_PREFS_ROOT+"captureWebMail");
+
+//dump("enigmailNavigatorOverlay.js: gCaptureWebMail="+gCaptureWebMail+"\n");
+
+// Do nothing below if !gCaptureWebMail
 
 if (gCaptureWebMail) {
    // Initialize enigmailCommon etc.
    EnigInitCommon("enigmailNavigatorOverlay");
    window.addEventListener("load", enigNavigatorStartup, true);
 }
-
-var gEnigCurrentSite;
-var gEnigNavButton1;
-var gEnigCurrentHandlerNavButton1;
-var gEnigTest = true;
 
 function enigNavigatorStartup() {
   DEBUG_LOG("enigmailNavigatorOverlay.js: enigNavigatorStartup:\n");
@@ -24,7 +28,7 @@ function enigNavigatorStartup() {
 
   gEnigCurrentSite = null;
   gEnigCurrentHandlerNavButton1 = enigConfigWindow;
-  gEnigNavButton1 = document.getElementById("enig-nav-button1");
+  gEnigNavButton1 = document.getElementById("button-enigmail-decrypt");
 }
 
 function enigHandlerNavButton1()
@@ -126,11 +130,11 @@ function enigYahooUpdateUI() {
 
   if (pathname.search(/ShowLetter$/) != -1) {
     gEnigCurrentHandlerNavButton1 = enigYahooShowLetter;
-    gEnigNavButton1.label = "Decrypt/Verify";
+    gEnigNavButton1.label = "Decrypt/verify";
 
   } else if (pathname.search(/Compose$/) != -1) {
     gEnigCurrentHandlerNavButton1 = enigYahooCompose;
-    gEnigNavButton1.label = "Sign & Encrypt";
+    gEnigNavButton1.label = "Sign/encrypt";
 
   } else {
     gEnigCurrentHandlerNavButton1 = enigConfigWindow;

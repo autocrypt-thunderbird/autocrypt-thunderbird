@@ -353,7 +353,7 @@ function enigSend(encryptFlags) {
      }
 
      // EnigSend: Handle both plain and encrypted messages below
-     if (gIsOffline) {
+     if (gIOService && gIOService.offline) {
        if (!EnigConfirm("You are currently offline. Do you wish to save the message in the Unsent Messages folder?\n")) {
 
          if (gEnigProcessed)
@@ -625,7 +625,8 @@ function enigDecryptQuote(interactive) {
   var signStatusObj = new Object();
   signStatusObj.value = "";
 
-  var uiFlags = nsIEnigmail.UI_INTERACTIVE | nsIEnigmail.UNVERIFIED_ENC_OK;
+  var uiFlags = nsIEnigmail.UNVERIFIED_ENC_OK;
+
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, pgpBlock,
                                      exitCodeObj, errorMsgObj, signStatusObj);
   var exitCode = exitCodeObj.value;

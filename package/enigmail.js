@@ -1591,6 +1591,9 @@ function (parent, uiFlags, cipherText,
   var pgpBlock = cipherText.substr(beginIndexObj.value,
                           endIndexObj.value - beginIndexObj.value + 1);
 
+  var head = cipherText.substr(0, beginIndexObj.value);
+  var tail = cipherText.substr(endIndexObj.value+1,
+                               cipherText.length - endIndexObj.value - 1);
 
   if (publicKey) {
     if (!allowImport) {
@@ -1607,6 +1610,15 @@ function (parent, uiFlags, cipherText,
     var importFlags = interactive ? nsIEnigmail.UI_INTERACTIVE : 0;
     exitCodeObj.value = this.importKey(parent, importFlags, pgpBlock,
                                        errorMsgObj);
+    return "";
+  }
+
+  if (!interactive && !oldSignStatus &&
+      ((head.search(/\S/) >= 0) || (tail.search(/\S/) >= 0))) {
+    errorMsgObj.value = "Extra text surrounding PGP block. Click Decrypt button";
+    if (verifyOnly)
+      errorMsgObj.value += " to verify signature";
+
     return "";
   }
 

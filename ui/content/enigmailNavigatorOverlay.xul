@@ -2,6 +2,9 @@
 
 <!-- This is the overlay that adds a enigmail button to primary toolbar -->
 
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
+                 type="text/css"?> 
+
 <!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
 
 <overlay id="enigNavigatorToolbarButton"
@@ -12,12 +15,14 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailNavigatorOverlay.js"/>
 
   <toolbar id="nav-bar">
-    <box id="enig-nav-box" autostretch="never">
-      <button id="enig-nav-button1"
-              label="Enigmail"
+      <toolbarbutton id="button-enigmail-decrypt"
+              class="toolbarbutton-1"
+              label="&enigmail.decryptbutton.label;"
+              tooltip="aTooltip" tooltiptext="&enigmail.decryptbutton.tip;" 
               oncommand="enigHandlerNavButton1();"
-              tooltip="aTooltip" tooltiptext="enigNavButton1"/>
-    </box>
+              insertbefore="throbber-box"
+              hidden="true"
+              />
   </toolbar>
 
 </overlay>
