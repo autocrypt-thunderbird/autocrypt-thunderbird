@@ -32,12 +32,29 @@
 
 #include "nsISupports.idl"
 
+interface nsIPipeConsole;
+interface nsIPipeTransport;
+
 /**
  * The nsIEnigmail provides an openPGP-based encryption/decryption service
  */
 [scriptable, uuid(847b3a00-7ab1-11d4-8f02-006008948af5)]
 interface nsIEnigmail : nsISupports
 {
+  readonly attribute string agentType;  /* "gpg" or "pgp" */
+
+  readonly attribute string agentPath;  /* executable path */
+
+  readonly attribute nsIPipeConsole console;  /* Enigmail console */
+
+  attribute nsIPipeConsole keygenConsole;
+
+  attribute nsIPipeTransport keygenProcess;
+
+  attribute boolean encryptMsg;
+
+  attribute boolean signMsg;
+
   readonly attribute boolean haveDefaultPassphrase;
 
   void setDefaultPassphrase(in string passphrase);
@@ -45,11 +62,19 @@ interface nsIEnigmail : nsISupports
   string encryptMessage(in string plainText,
                         in string toMailAddr,
                         in string passphrase,
-                        out string statusLine);
+                        out long  statusCode,
+                        out string statusMsg);
 
   string decryptMessage(in string cipherText,
                         in string passphrase,
-                        out string statusLine);
+                        out long statusCode,
+                        out string statusMsg);
+
+  nsIPipeTransport generateKey(in string name,
+                               in string comment,
+                               in string email,
+                               in long   expiryDate,
+                               in string passphrase);
 };
 
 %{C++

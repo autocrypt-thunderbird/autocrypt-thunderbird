@@ -1,4 +1,4 @@
-// enigmailNavigatorOverlay.js
+// Uses: chrome://enigmail/content/enigmailCommon.js
 
 window.addEventListener("load", enigNavigatorStartup, false);
 
@@ -69,13 +69,15 @@ function enigUpdateUI(loc) {
 
   WRITE_LOG("enigmailNavigatorOverlay.js: enigUpdateUI: "+loc.href+"\n");
 
-  if (!loc.host) {
+  var host;
+  try {
+    // Extract hostname from URL (lower case)
+    host = loc.host.toLowerCase();
+
+  } catch(ex) {
     enigResetUI();
     return;
   }
-
-  // Extract hostname from URL (lower case)
-  var host = loc.host.toLowerCase();
 
   if (host.search(/mail.yahoo.com$/) != -1) {
     gEnigNavButton1.setAttribute("hidden", "false");

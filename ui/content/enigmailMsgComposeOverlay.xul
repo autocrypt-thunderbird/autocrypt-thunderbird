@@ -28,4 +28,45 @@
        </box>
     </toolbar>
 
+  <menubar id="compose-menubar">
+
+    <menu id="menu_Enigmail"
+          label="Enigmail"
+          position="7">
+
+      <menupopup id="menu_EnigmailPopup">
+
+        <menuitem id="enigmail_encryptMsg"
+             type="checkbox"
+             checked="false"
+             label="Encrypt Message"
+             name="enigmail_MessageOptions"
+             oncommand="enigToggleAttribute('encryptMsg');" />
+
+        <menuitem id="enigmail_signMsg"
+             type="checkbox"
+             checked="true"
+             label="Sign Message"
+             name="enigmail_MessageOptions"
+             oncommand="enigToggleAttribute('signMsg');" />
+
+        <menuseparator/>
+
+        <menuitem id="enigmail_console"
+             label="Enigmail console"
+             oncommand="window.open('enigmail:console');" />
+
+        <menuitem id="enigmail_about"
+             label="About Enigmail"
+             oncommand="window.open('enigmail:about');" />
+
+        <menuitem id="enigmail_keygen"
+             label="Generate Key"
+             oncommand="EnigGenerateKey();" />
+
+      </menupopup>
+    </menu>
+
+  </menubar>
+
 </overlay>

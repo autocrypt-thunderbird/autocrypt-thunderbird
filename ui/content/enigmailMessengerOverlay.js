@@ -1,4 +1,4 @@
-// enigmailMessengerOverlay.js
+// Uses: chrome://enigmail/content/enigmailCommon.js
 
 window.addEventListener("load", enigMessengerStartup, false);
 
@@ -29,14 +29,19 @@ function enigDecryptMessage() {
     var cipherText = EnigGetDeepText(bodyElement);
     WRITE_LOG("enigmailMessengerOverlay.js: cipherText='"+cipherText+"'\n");
 
-    var statusLineObj = new Object();
-    var plainText = EnigDecryptMessage(cipherText, statusLineObj);
+    var statusCodeObj = new Object();
+    var statusMsgObj  = new Object();
+    var plainText = EnigDecryptMessage(cipherText,
+                                       statusCodeObj, statusMsgObj);
     WRITE_LOG("enigmailMessengerOverlay.js: plainText='"+plainText+"'\n");
+
+    var statusCode = statusCodeObj.value;
+    var statusMsg  = statusMsgObj.value;
 
     var statusBox = document.getElementById("expandedEnigmailBox");
     var statusText = document.getElementById("expandedEnigmailText");
 
-    statusText.setAttribute("value", statusLineObj.value);
+    statusText.setAttribute("value", statusMsg);
     statusBox.removeAttribute("collapsed");
 
     // Clear HTML body

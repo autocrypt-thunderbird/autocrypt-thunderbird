@@ -1,4 +1,4 @@
-// enigmailMsgComposeOverlay.js
+// Uses: chrome://enigmail/content/enigmailCommon.js
 
 window.addEventListener("load", enigMsgComposeStartup, false);
 
@@ -6,10 +6,14 @@ var gEditorElement, gEditorShell;
 
 var gEnigProcessed = false;
 
+var gOrigSendButton, gEnigSendButton;
+
 function enigMsgComposeStartup() {
    WRITE_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
-   var origSendButton = document.getElementById("button-send");
-   origSendButton.setAttribute("collapsed", "true");
+   gOrigSendButton = document.getElementById("button-send");
+   gOrigSendButton.setAttribute("collapsed", "true");
+
+   gEnigSendButton = document.getElementById("button-enigmail-send");
 
    // Get editor shell
    gEditorElement = document.getElementById("content-frame");
@@ -22,7 +26,7 @@ function enigMsgComposeStartup() {
 function enigSend() {
   WRITE_LOG("enigmailMsgComposeOverlay.js: enigSend\n");
 
-  if (!gEnigProcessed) {
+  if (!gEnigProcessed && (gEnigmailSvc.encryptMsg || gEnigmailSvc.signMsg)) {
     var msgCompFields = msgCompose.compFields;
     Recipients2CompFields(msgCompFields);
 
@@ -58,8 +62,20 @@ function enigSend() {
     var plainText = gEditorShell.GetContentsAs("text/plain", encoderFlags)
     WRITE_LOG("enigmailMsgComposeOverlay.js: plainText = '"+plainText+"'\n");
 
-    var statusLineObj = new Object();
-    var cipherText = EnigEncryptMessage(plainText, toAddr, statusLineObj);
+    var statusCodeObj = new Object();
+    var statusMsgObj = new Object();
+    var cipherText;
+
+    cipherText = EnigEncryptMessage(plainText, toAddr,
+                                    statusCodeObj, statusMsgObj);
+
+    var statusCode = statusCodeObj.value;
+    var statusMsg  = statusMsgObj.value;
+
+    if (statusCode != 0) {
+      EnigAlert("Error in encrypting and/or signing message. Send operation aborted.\n"+statusMsg);
+      return;
+    }
 
     gEditorShell.SelectAll();
 
@@ -75,6 +91,31 @@ function enigSend() {
   goDoCommand('cmd_sendButton');
 }
 
+
+function enigToggleAttribute(attrName)
+{
+  WRITE_LOG("enigmailMsgComposeOverlay.js: enigToggleAttribute('"+attrName+"')\n");
+
+  var menuElement = document.getElementById("enigmail_"+attrName);
+
+  if (gEnigmailSvc[attrName]) {
+    gEnigmailSvc[attrName] = false;
+    menuElement.setAttribute("checked", "false");
+  } else {
+    gEnigmailSvc[attrName] = true;
+    menuElement.setAttribute("checked", "true");
+  }
+
+  if (gEnigmailSvc.encryptMsg || gEnigmailSvc.signMsg) {
+    gEnigSendButton.removeAttribute("collapsed");
+    gOrigSendButton.setAttribute("collapsed", "true");
+
+  } else {
+    gOrigSendButton.removeAttribute("collapsed");
+    gEnigSendButton.setAttribute("collapsed", "true");
+  }
+
+}
 
 function DocumentStateListener()
 {

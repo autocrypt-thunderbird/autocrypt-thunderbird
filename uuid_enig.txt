@@ -15,5 +15,7 @@ Of these, the following UUIDs are being used as IIDs and CIDs:
 nsIEnigMail               IID    "847b3a00-7ab1-11d4-8f02-006008948af5"
 nsEnigMail                CID    "847b3a01-7ab1-11d4-8f02-006008948af5"
 
+EnigMailProtocolHandler   CID    "847b3a11-7ab1-11d4-8f02-006008948af5"
+
 PGPModule                 CID    "847b3af1-7ab1-11d4-8f02-006008948af5"
 

@@ -1,11 +1,11 @@
-// Uses: chrome://enigmail/content/enigCommon.js
+// Uses: chrome://enigmail/content/enigmailCommon.js
 
 function OnLoadEnigConfig() {
-  DEBUG_LOG("enigmail.js: OnLoadEnigConfig\n");
+  DEBUG_LOG("enigmailConfig.js: OnLoadEnigConfig\n");
 }
 
 function OnUnloadEnigConfig() {
-  DEBUG_LOG("enigmail.js: OnUnloadEnigConfig\n");
+  DEBUG_LOG("enigmailConfig.js: OnUnloadEnigConfig\n");
 }
 
 function RemoveOverlay(urlSpec) {

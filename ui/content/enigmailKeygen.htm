@@ -1,0 +1,92 @@
+<html>
+<head>
+  <title>Enigmail Keygen</title>
+
+  <script language="JavaScript">
+
+    //netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+
+    const NS_ENIGMAIL_CONTRACTID = "@mozdev.org/enigmail/enigmail;1";
+
+    var gEnigmailSvc = Components.classes[NS_ENIGMAIL_CONTRACTID].createInstance();
+    gEnigmailSvc = gEnigmailSvc.QueryInterface(Components.interfaces.nsIEnigmail);
+
+    dump("enigmailKeygen.htm: gEnigmailSvc = "+gEnigmailSvc+"\n");
+
+    var gKeygenProcess = gEnigmailSvc.keygenProcess;
+    var gKeygenConsole = gEnigmailSvc.keygenConsole;
+
+    dump("enigmailKeygen.htm: gKeygenProcess = "+gKeygenProcess+"\n");
+    dump("enigmailKeygen.htm: gKeygenConsole = "+gKeygenConsole+"\n");
+
+    window.mouseDownState = false;
+
+    function RefreshConsole() {
+
+      //dump("enigmailKeygen.htm: RefreshConsole\n");
+      if (gKeygenConsole && gKeygenConsole.hasNewData) {
+
+       gKeygenConsole.hasNewData = true;
+       var console = document.getElementById('console');
+       console.firstChild.data = gKeygenConsole.data;
+
+       if (!window.mouseDownState)
+          window.scrollTo(0,9999);
+      }
+
+      if (!gKeygenProcess.isAttached) {
+        dump("enigmailKeygen.htm: KeygenProcess terminated\n");
+        UnloadHandler();
+
+        var exitCode = gKeygenProcess.exitCode();
+        dump("enigmailKeygen.htm: exitCode = "+exitCode+"\n");
+        
+        gKeygenProcess.terminate();
+        gKeygenProcess = null;
+        gEnigmailSvc.keygenProcess = null;
+
+        gKeygenConsole.close();
+        gKeygenConsole = null;
+        gEnigmailSvc.keygenConsole = null;
+
+        // Give focus to this window
+        window.focus();
+      }
+
+      return false;
+    }
+
+    function LoadHandler() {
+      // Refresh console every half second
+      if (gEnigmailSvc)
+         window.consoleIntervalId = window.setInterval(RefreshConsole, 500);
+    }
+
+    function UnloadHandler() {
+       // Cancel console refresh
+       if (window.consoleIntervalId)
+          window.clearInterval(window.consoleIntervalId);
+    }
+
+    function MouseDown(val) {
+      // Tracks mouse down state
+      window.mouseDownState = val;
+      return true;
+    }
+
+  </script>
+
+</head>
+
+<body onLoad="LoadHandler();"
+      onMouseDown="MouseDown(true);"
+      onMouseUp="MouseDown(false);"
+      onUnload="UnloadHandler();">
+
+  <pre id="console">
+   KEYGEN
+  </pre>
+
+</body>
+
+</html>

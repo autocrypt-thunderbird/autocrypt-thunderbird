@@ -5,7 +5,7 @@ const NS_ENIGMAIL_CONTRACTID   = "@mozdev.org/enigmail/enigmail;1";
 
 var gIPCService;
 try {
-  gIPCService = Components.classes[NS_IPCSERVICE_CONTRACTID].createInstance();
+  gIPCService = Components.classes[NS_IPCSERVICE_CONTRACTID].getService();
   gIPCService = gIPCService.QueryInterface(Components.interfaces.nsIIPCService);
 
 } catch (ex) {
@@ -81,6 +81,9 @@ function ERROR_LOG(str) {
     WRITE_LOG(str);
 }
 
+if (gLogLevel >= 4)
+  gLogFileStream = CreateFileStream("enigdbg2.txt");
+
 function EnigAlert(mesg) {
   return window.prompter.alert("Enigmail Alert", mesg);
 }
@@ -97,17 +100,18 @@ function EnigPassphrase() {
   var passwdObj = new Object();
   var checkObj = new Object();
 
+  var promptMsg = "Please type in your "+gEnigmailSvc.agentType.toUpperCase()+" passphrase";
   passwdObj.value = "";
   checkObj.value = false;
   var success = window.prompter.promptPassword("Enigmail",
-                               "Please type in your PGP/GPG passphrase",
+                               promptMsg,
                                passwdObj,
-                               "Check box to remember password for this session (INSECURE)",
+                               "Check box to remember passphrase for this session (INSECURE)",
                                checkObj);
   if (!success)
     return "";
 
-  // Null password is always remembered
+  // Null string password is always remembered
   if (checkObj.value || (passwdObj.value.length == 0))
     gEnigmailSvc.setDefaultPassphrase(passwdObj.value);
 
@@ -116,7 +120,7 @@ function EnigPassphrase() {
   return passwdObj.value;
 }
 
-function EnigEncryptMessage(plainText, toMailAddr, statusLineObj) {
+function EnigEncryptMessage(plainText, toMailAddr, statusCodeObj, statusMsgObj) {
   WRITE_LOG("enigmailCommon.js: EnigEncryptMessage: To "+toMailAddr+"\n");
 
   var passphrase = null;
@@ -124,12 +128,13 @@ function EnigEncryptMessage(plainText, toMailAddr, statusLineObj) {
     passphrase = EnigPassphrase();
 
   var cipherText = gEnigmailSvc.encryptMessage(plainText, toMailAddr,
-	                                       passphrase, statusLineObj);
+	                                       passphrase,
+                                               statusCodeObj, statusMsgObj);
 
   return cipherText;
 }
 
-function EnigDecryptMessage(cipherText, statusLineObj) {
+function EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj) {
   WRITE_LOG("enigmailCommon.js: EnigDecryptMessage: \n");
 
   var passphrase = null;
@@ -138,21 +143,28 @@ function EnigDecryptMessage(cipherText, statusLineObj) {
   if (!gEnigmailSvc.haveDefaultPassphrase)
     passphrase = EnigPassphrase();
 
-  var plainText = gEnigmailSvc.decryptMessage(cipherText,
-                                              passphrase,
-                                              statusLineObj);
+  var plainText = gEnigmailSvc.decryptMessage(cipherText, passphrase,
+                                              statusCodeObj, statusMsgObj);
 
   return plainText;
 }
 
-function EnigSignClearText(plainText) {
-  WRITE_LOG("enigmailCommon.js: EnigSignClearText: \n");
+function EnigGenerateKey() {
+  WRITE_LOG("enigmailCommon.js: EnigGenerateKey: \n");
 
-  var signedText;
+  var passphrase = null;
 
-  signedText = "*** SIGNED ***\n"+plainText;
+  passphrase = EnigPassphrase();
 
-  return signedText;
+  var keygenProcess = gEnigmailSvc.generateKey("First M. Last",
+                                               "comment",
+                                               "user@example.com",
+                                               0,
+                                               passphrase);
+
+  window.open("enigmail:keygen");
+
+  return;
 }
 
 function EnigGetDeepText(node) {
@@ -231,13 +243,21 @@ function EnigTest() {
   var plainText = "TEST MESSAGE 123\n";
   var toMailAddr = "r_sarava@yahoo.com";
 
-  var statusLineObj = new Object();
-  var cipherText = EnigEncryptMessage(plainText, toMailAddr, statusLineObj);
-  WRITE_LOG("enigmailCommon.js: enigTest: cipherText = "+cipherText+"\n");
-  WRITE_LOG("enigmailCommon.js: enigTest: statusLine = "+statusLineObj.value+"\n");
+  var statusCodeObj = new Object();
+  var statusMsgObj = new Object();
 
-  var statusLineObj = new Object();
-  var decryptedText = EnigDecryptMessage(cipherText, statusLineObj);
+  var cipherText = EnigEncryptMessage(plainText, toMailAddr,
+                                      statusCodeObj, statusMsgObj);
+  WRITE_LOG("enigmailCommon.js: enigTest: cipherText = "+cipherText+"\n");
+  WRITE_LOG("enigmailCommon.js: enigTest: statusCode = "+statusCodeObj.value+"\n");
+  WRITE_LOG("enigmailCommon.js: enigTest: statusMsg = "+statusMsgObj.value+"\n");
+
+  var statusCodeObj = new Object();
+  var statusMsgObj = new Object();
+
+  var decryptedText = EnigDecryptMessage(cipherText,
+                                         statusCodeObj, statusMsgObj);
   WRITE_LOG("enigmailCommon.js: enigTest: decryptedText = "+decryptedText+"\n");
-  WRITE_LOG("enigmailCommon.js: enigTest: statusLine = "+statusLineObj.value+"\n");
+  WRITE_LOG("enigmailCommon.js: enigTest: statusCode = "+statusCodeObj.value+"\n");
+  WRITE_LOG("enigmailCommon.js: enigTest: statusMsg = "+statusMsgObj.value+"\n");
 }

@@ -1,0 +1,66 @@
+<html>
+<head>
+  <title>Enigmail Console</title>
+
+  <script language="JavaScript">
+
+    //netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+
+    const NS_ENIGMAIL_CONTRACTID   = "@mozdev.org/enigmail/enigmail;1";
+
+    var gEnigmailSvc = Components.classes[NS_ENIGMAIL_CONTRACTID].createInstance();
+    gEnigmailSvc = gEnigmailSvc.QueryInterface(Components.interfaces.nsIEnigmail);
+
+    dump("enigmailConsole.htm: gEnigmailSvc = "+gEnigmailSvc+"\n");
+
+    window.mouseDownState = false;
+
+    function RefreshConsole() {
+
+      if (gEnigmailSvc.console.hasNewData) {
+         //dump("enigmailConsole.htm: RefreshConsole()\n");
+
+         gEnigmailSvc.console.hasNewData = true;
+         var console = document.getElementById('console');
+         console.firstChild.data = gEnigmailSvc.console.data;
+
+         if (!window.mouseDownState)
+            window.scrollTo(0,9999);
+      }
+      return false;
+    }
+
+    function LoadHandler() {
+      // Refresh console every 2 seconds
+      if (gEnigmailSvc)
+         window.consoleIntervalId = window.setInterval(RefreshConsole, 2000);
+    }
+
+    function UnloadHandler() {
+       // Cancel console refresh
+       if (window.consoleIntervalId)
+          window.clearInterval(window.consoleIntervalId);
+    }
+
+    function MouseDown(val) {
+      // Tracks mouse down state
+      window.mouseDownState = val;
+      return true;
+    }
+
+  </script>
+
+</head>
+
+<body onLoad="LoadHandler();"
+      onMouseDown="MouseDown(true);"
+      onMouseUp="MouseDown(false);"
+      onUnload="UnloadHandler();">
+
+  <pre id="console">
+   CONSOLE
+  </pre>
+
+</body>
+
+</html>
