@@ -2333,6 +2333,7 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
                      .getService(Components.interfaces.nsIPrefService);
       var prefRoot = prefSvc.getBranch(null);
       prefRoot.setBoolPref("mail.strictly_mime", false);
+      DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: disabled quoted-printable\n");
     }
     catch (ex) {}
   }
