@@ -7,7 +7,7 @@
 <h3>Using the Enigmail Rules Editor</h3>
 <p>In the Rules Editor, you can specify defaults per recipient for enabling 
 encryption, signing and PGP/MIME, and to
-define what PGP key(s) to use. Each rule consists of 5 fields and is represented
+define what OpenPGP key(s) to use. Each rule consists of 5 fields and is represented
 on a single line:
 </p>
 <ul>
@@ -16,7 +16,7 @@ on a single line:
     style="font-style: italic;">substrings</span> (Further details can be
     found in the Edit Rule dialog)
   </li>
-  <li><span style="font-weight: bold;">PGP Key(s)</span>: a list of PGP
+  <li><span style="font-weight: bold;">OpenPGP Key(s)</span>: a list of OpenPGP
 Key ID's to use for the recipient</li>
   <li><span style="font-weight: bold;">Sign</span>: enable or disable
     message signing. This either uses or overrides what you have specified
@@ -50,7 +50,7 @@ will not be signed, regardless of other rules that specify <i>Always</i>.<br>
   </li>
 </ul>
 <p>The rules are processed in the order displayed in the list. Whenever a rule 
-matches a recipient and contains a PGP Key ID, in addition to using the 
+matches a recipient and contains a OpenPGP Key ID, in addition to using the 
 specified Key ID, the recipient is not considered anymore when processing 
 further rules.</p>
 <p><i>Note:</i> The rule editor is not yet complete. It is possible to write

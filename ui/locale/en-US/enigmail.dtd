@@ -1,7 +1,7 @@
 <!ENTITY enigmail.label                   "Enigmail">
 
 <!ENTITY enigmail.keyUserId.label         "Account / User Id">
-<!ENTITY enigmail.keygenTitle.label       "Enigmail - Generate PGP Key">
+<!ENTITY enigmail.keygenTitle.label       "Enigmail - Generate OpenPGP Key">
 <!ENTITY enigmail.useForSigning.label     "Use generated key for the selected account">
 <!ENTITY enigmail.keyComment.label        "Comment">
 <!ENTITY enigmail.keyNoPassphrase.label   "No passphrase">
@@ -21,7 +21,7 @@
 <!ENTITY enigmail.usePGPMimeOption.label  "Choose PGP/MIME option">
 <!ENTITY enigmail.mimeHashAlgorithm.label "Hash algorithm">
 
-<!ENTITY enigmail.agentPath.label         "GPG executable path">
+<!ENTITY enigmail.agentPath.label         "GnuPG executable path">
 
 <!ENTITY enigmail.send_plaintext_flowed.label "Allow flowed text (RFC 2646)">
 <!ENTITY enigmail.mime_parts_on_demand.label  "Load MIME parts on demand (IMAP folders)">
@@ -155,7 +155,7 @@
 <!ENTITY enigmail.recipientsSelectionOption.label "Behavior for Selecting Keys of Recipients When Sending Messages">
 <!ENTITY enigmail.askRecipientsAlways.label       "Always display selection">
 <!ENTITY enigmail.askRecipientsClever.label       "Display selection when necessary">
-<!ENTITY enigmail.askRecipientsNever.label        "Never display PGP key selection dialog">
+<!ENTITY enigmail.askRecipientsNever.label        "Never display OpenPGP key selection dialog">
 <!ENTITY enigmail.normalKeySelection.label        "Normal Key Selection">
 <!ENTITY enigmail.perRecipientRules.label         "Use Key Selection Rules">
 <!ENTITY enigmail.disabled.label                  "Disabled">
@@ -194,7 +194,7 @@
 <!ENTITY enigmail.selectpanel.label                 "Select Enigmail Panel">
 <!ENTITY enigmail.selectpanel.tooltip               "Select Enigmail Panel">
 
-<!ENTITY enigmail.userSelectionList.label           "PGP Key Selection">
+<!ENTITY enigmail.userSelectionList.label           "OpenPGP Key Selection">
 <!ENTITY enigmail.usersNotFound.label               "Recipients not found">
 <!ENTITY enigmail.keyExpiry.label                   "Expiry">
 <!ENTITY enigmail.keySelection.label                "Selection">
@@ -225,8 +225,8 @@
 <!ENTITY enigmail.amPrefTitle.label                 "OpenPGP Options (Enigmail)">
 <!ENTITY enigmail.amPrefDesc.label                  "Support for OpenPGP encryption and signing messages is provided by Enigmail. You need to have GnuPG (gpg) installed in order to use this feature.">
 <!ENTITY enigmail.amPrefEnablePgp.label             "Enable OpenPGP support (Enigmail) for this account">
-<!ENTITY enigmail.amPrefUseFromAddr.label           "Use Email address of this account to identify PGP key">
-<!ENTITY enigmail.amPrefUseKeyId.label              "Use specific PGP Key Id (0x1234ABCD):">
+<!ENTITY enigmail.amPrefUseFromAddr.label           "Use Email address of this account to identify OpenPGP key">
+<!ENTITY enigmail.amPrefUseKeyId.label              "Use specific OpenPGP Key Id (0x1234ABCD):">
 <!ENTITY enigmail.amPrefSelectKey.label             "Select Key ...">
 <!ENTITY enigmail.amPrefDefaultEncrypt.label        "Message Composition Default Options">
 <!ENTITY enigmail.encryptionDlg.label               "Enigmail Encryption &amp; Signing Settings">
@@ -242,9 +242,9 @@
 
 <!ENTITY  enigmail.pgpSecurityInfo.label            "OpenPGP Security Info ...">
 <!ENTITY  enigmail.copySecurityInfo.label           "Copy OpenPGP Security Info">
-<!ENTITY  enigmail.showPhoto.label                  "View PGP Photo ID">
+<!ENTITY  enigmail.showPhoto.label                  "View OpenPGP Photo ID">
 <!ENTITY  enigmail.smimeSecurityInfo.label          "S/MIME Security Info ...">
-<!ENTITY  enigmail.createRuleFromAddr.label         "Create PGP Rule from Address...">
+<!ENTITY  enigmail.createRuleFromAddr.label         "Create OpenPGP Rule from Address...">
 
 <!ENTITY enigmail.singleRcptSettings.label          "Enigmail - Recipient Settings">
 <!ENTITY enigmail.keysToUse.label                   "Key(s) to use:">
@@ -252,7 +252,7 @@
 <!ENTITY enigmail.action.label                      "Action">
 <!ENTITY enigmail.nextRule.label                    "Continue with next rule for the matching address">
 <!ENTITY enigmail.nextAddress.label                 "Do not check further rules for the matching address">
-<!ENTITY enigmail.useKeys.label                     "Use the following keys:">
+<!ENTITY enigmail.useKeys.label                     "Use the following OpenPGP keys:">
 <!ENTITY enigmail.selKeysButton.accesskey           "S">
 <!ENTITY enigmail.setDefaultsFor.label              "Defaults for ...">
 <!ENTITY enigmail.encryption.label                  "Encryption">
@@ -261,7 +261,7 @@
 <!ENTITY enigmail.always.label                      "Always">
 <!ENTITY enigmail.maybe.label                       "Yes, if selected in Message Composition">
 <!ENTITY enigmail.singleRcptSettings.desc           "(Note: in case of conflicts, 'Never' overrules 'Always')">
-<!ENTITY enigmail.ruleEmail.label                   "Set PGP Rules for">
+<!ENTITY enigmail.ruleEmail.label                   "Set OpenPGP Rules for">
 <!ENTITY enigmail.ruleEmail.tooltip                 "Only fill in email addresses, do NOT set the names of the recipients\nE.g. 'Some Name &lt;some.name@address.net&gt;' is invalid">
 <!ENTITY enigmail.sepratationDesc.label             "(Separate several email addresses with spaces)">
 <!ENTITY enigmail.matchDescStart.label              "Apply rule if recipient">
@@ -273,7 +273,7 @@
 
 <!ENTITY enigmail.rulesEditor.label                 "Enigmail - Per-Recipient Rules Editor">
 <!ENTITY enigmail.email.label                       "Email">
-<!ENTITY enigmail.pgpKeys.label                     "PGP Key(s)">
+<!ENTITY enigmail.pgpKeys.label                     "OpenPGP Key(s)">
 <!ENTITY enigmail.sign.label                        "Sign">
 <!ENTITY enigmail.encrypt.label                     "Encrypt">
 <!ENTITY enigmail.edit.label                        "Edit">
