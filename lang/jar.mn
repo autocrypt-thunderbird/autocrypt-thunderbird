@@ -1,15 +1,22 @@
 enigmail-de-DE.jar:
 	locale/de-DE/enigmail/contents.rdf         (de-DE/contents.rdf)
 	locale/de-DE/enigmail/enigmail.dtd         (de-DE/enigmail.dtd)
+	locale/de-DE/enigmail/enigmail.properties  (de-DE/enigmail.properties)
 enigmail-de-AT.jar:
 	locale/de-AT/enigmail/contents.rdf         (de-AT/contents.rdf)
 	locale/de-AT/enigmail/enigmail.dtd         (de-DE/enigmail.dtd)
+	locale/de-AT/enigmail/enigmail.properties  (de-DE/enigmail.properties)
 enigmail-fr-FR.jar:
 	locale/fr-FR/enigmail/contents.rdf         (fr-FR/contents.rdf)
 	locale/fr-FR/enigmail/enigmail.dtd         (fr-FR/enigmail.dtd)
 enigmail-es-AR.jar:
 	locale/es-AR/enigmail/contents.rdf         (es-AR/contents.rdf)
 	locale/es-AR/enigmail/enigmail.dtd         (es-AR/enigmail.dtd)
+	locale/es-ES/enigmail/enigmail.properties  (es-AR/enigmail.properties)
+enigmail-es-ES.jar:
+	locale/es-ES/enigmail/contents.rdf         (es-ES/contents.rdf)
+	locale/es-ES/enigmail/enigmail.dtd         (es-ES/enigmail.dtd)
+	locale/es-ES/enigmail/enigmail.properties  (es-ES/enigmail.properties)
 enigmail-zh-CN.jar:
 	locale/zh-CN/enigmail/contents.rdf         (zh-CN/contents.rdf)
 	locale/zh-CN/enigmail/enigmail.dtd         (zh-CN/enigmail.dtd)
