@@ -60,6 +60,8 @@ const NS_SIMPLEURI_CONTRACTID   = "@mozilla.org/network/simple-uri;1";
 
 const NS_TIMER_CONTRACTID       = "@mozilla.org/timer;1";
 
+const NS_OBSERVERSERVICE_CONTRACTID = "@mozilla.org/observer-service;1";
+
 const NS_PROMPTSERVICE_CONTRACTID = "@mozilla.org/embedcomp/prompt-service;1";
 
 const NS_HTTPPROTOCOLHANDLER_CID_STR= "{4f47e42e-4d23-4dd3-bfda-eb29255e9ea3}";
@@ -83,6 +85,7 @@ const nsIPGPModule           = Components.interfaces.nsIPGPModule;
 const nsIPGPMsgBody          = Components.interfaces.nsIPGPMsgBody;
 const nsIPGPMsgHeader        = Components.interfaces.nsIPGPMsgHeader;
 
+const NS_XPCOM_SHUTDOWN_OBSERVER_ID = "xpcom-shutdown";
 ///////////////////////////////////////////////////////////////////////////////
 // Global variables
 
@@ -101,8 +104,9 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     SIGEXPIRED:      nsIEnigmail.EXPIRED_SIGNATURE,
                     KEYREVOKED:      nsIEnigmail.REVOKED_KEY,
                     NO_PUBKEY:       nsIEnigmail.NO_PUBKEY,
-                    IMPORTED:        nsIEnigmail.IMPORTED_PUBKEY,
+                    IMPORTED:        nsIEnigmail.IMPORTED_KEY,
                     BAD_PASSPHRASE:  nsIEnigmail.BAD_PASSPHRASE,
+                    BADARMOR:        nsIEnigmail.BAD_ARMOR,
                     DECRYPTION_OKAY: nsIEnigmail.DECRYPTED_MESSAGE,
                     TRUST_UNDEFINED: nsIEnigmail.UNTRUSTED_IDENTITY,
                     TRUST_NEVER:     nsIEnigmail.UNTRUSTED_IDENTITY,
@@ -343,6 +347,7 @@ var EnigModuleObj = {
       return new PGPModuleFactory();
     }
 
+    return null;
   },
 
   canUnload: function(compRegistrar)
@@ -935,6 +940,26 @@ function (aSubject, aTopic, aData) {
       if (gCacheTimer)
         gCacheTimer.cancel();
     }
+
+  } else if (aTopic == NS_XPCOM_SHUTDOWN_OBSERVER_ID) {
+    // XPCOM shutdown
+    this.finalize();
+
+    // Reset mail.show_headers pref
+    try {
+      var prefSvc = Components.classes["@mozilla.org/preferences-service;1"]
+                            .getService(Components.interfaces.nsIPrefService);
+
+      var prefRoot = prefSvc.getBranch(null);
+
+      var prefValue = 1;
+      try {
+        prefValue = this.prefBranch.getIntPref("show_headers");
+      } catch (ex) {}
+
+      prefRoot.setIntPref("mail.show_headers", prefValue);
+      prefSvc.savePrefFile(null);
+    } catch (ex) {}
   }
 }
 
@@ -1241,9 +1266,8 @@ function (version, prefBranch) {
     // Resolve relative path using PATH environment variable
     var envPath = this.processInfo.getEnv("PATH");
 
-    var j;
-    for (j=0; j<agentList.length; j++) {
-      agentType = agentList[j];
+    for (var index=0; index<agentList.length; k++) {
+      agentType = agentList[index];
       var agentName = this.isWin32 ? agentType+".exe" : agentType;
 
       agentPath = ResolvePath(agentName, envPath, this.isWin32);
@@ -1298,11 +1322,17 @@ function (version, prefBranch) {
 
   CONSOLE_LOG("enigmail> "+command.replace(/\\\\/g, "\\")+"\n");
 
-  var version = outStrObj.value;
+  var outStr = outStrObj.value;
   if (errStrObj.value)
-    version += errStrObj.value;
+    outStr += errStrObj.value;
 
-  CONSOLE_LOG(version+"\n");
+  CONSOLE_LOG(outStr+"\n");
+
+  // Register to observe XPCOM shutdown
+  var obsServ = Components.classes[NS_OBSERVERSERVICE_CONTRACTID].getService();
+  obsServ = obsServ.QueryInterface(Components.interfaces.nsIObserverService);
+
+  obsServ.addObserver(this, NS_XPCOM_SHUTDOWN_OBSERVER_ID, false);
 
   this.stillActive();
 
@@ -1968,12 +1998,12 @@ function (parent, uiFlags, cipherText, signatureObj,
 
   if (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE) {
     // Unverified signature
-    var matches = statusMsg.match(/(^|\n)NO_PUBKEY (\w{8})(\w{8})/);
+    var matchb = statusMsg.match(/(^|\n)NO_PUBKEY (\w{8})(\w{8})/);
 
-    if (matches && (matches.length > 3)) {
-      pubKeyId = "0x" + matches[3];
+    if (matchb && (matchb.length > 3)) {
+      pubKeyId = "0x" + matchb[3];
       DEBUG_LOG("enigmail.js: Enigmail.decryptMessage: NO_PUBKEY "+pubKeyId+"\n");
-      keyIdObj.value = matches[2]+matches[3];
+      keyIdObj.value = matchb[2]+matchb[3];
     }
 
   } else if (statusFlagsObj.value & nsIEnigmail.BAD_SIGNATURE) {
@@ -2014,8 +2044,8 @@ function (parent, uiFlags, cipherText, signatureObj,
 
     if (innerKeyBlock) {
       var importErrorMsgObj = new Object();
-      var importFlags = nsIEnigmail.UI_INTERACTIVE;
-      var exitStatus = this.importKey(parent, importFlags, innerKeyBlock,
+      var importFlags2 = nsIEnigmail.UI_INTERACTIVE;
+      var exitStatus = this.importKey(parent, importFlags2, innerKeyBlock,
                                       pubKeyId, importErrorMsgObj);
 
       importedKey = (exitStatus == 0);
@@ -2028,12 +2058,12 @@ function (parent, uiFlags, cipherText, signatureObj,
     if (!importedKey && keyserver && (this.agentType == "gpg")) {
       var recvErrorMsgObj = new Object();
       var recvFlags = nsIEnigmail.UI_INTERACTIVE;
-      var exitStatus = this.receiveKey(parent, recvFlags, pubKeyId,
+      var exitStatus2 = this.receiveKey(parent, recvFlags, pubKeyId,
                                        recvErrorMsgObj);
 
-      importedKey = (exitStatus == 0);
+      importedKey = (exitStatus2 == 0);
 
-      if (exitStatus > 0) {
+      if (exitStatus2 > 0) {
         this.alertMsg(parent, "Unable to receive public key\n\n"+recvErrorMsgObj.value);
       }
     }

@@ -102,13 +102,22 @@ function EnigUninstall() {
   if (!confirm)
     return;
 
+  // Reset mail.show_headers pref
+  try {
+    gEnigPrefRoot.setIntPref("mail.show_headers",
+                             EnigGetPref("show_headers"));
+    EnigSavePrefs();
+  } catch (ex) {}
+
+  // Remove overlays
   var overlay1Removed = RemoveOverlay("communicator",
                 ["chrome://enigmail/content/enigmailPrefsOverlay.xul"]);
 
   var overlay2Removed = RemoveOverlay("messenger",
                 ["chrome://enigmail/content/enigmailMsgComposeOverlay.xul",
                  "chrome://enigmail/content/enigmailMessengerOverlay.xul",
-                 "chrome://enigmail/content/enigmailMsgHdrViewOverlay.xul"]);
+                 "chrome://enigmail/content/enigmailMsgHdrViewOverlay.xul",
+                 "chrome://enigmail/content/enigmailMsgPrintOverlay.xul"]);
 
   if (!overlay1Removed || !overlay2Removed) {
     EnigAlert("Failed to uninstall EnigMail communicator overlay RDF; not deleting chrome jar file");

@@ -22,6 +22,8 @@ enigmail.jar:
 	content/enigmail/enigmailMessengerOverlay.js   (content/enigmailMessengerOverlay.js)
 	content/enigmail/enigmailMsgHdrViewOverlay.xul (content/enigmailMsgHdrViewOverlay.xul)
 	content/enigmail/enigmailMsgHdrViewOverlay.js  (content/enigmailMsgHdrViewOverlay.js)
+	content/enigmail/enigmailMsgPrintOverlay.xul (content/enigmailMsgPrintOverlay.xul)
+	content/enigmail/enigmailMsgPrintOverlay.js  (content/enigmailMsgPrintOverlay.js)
 	content/enigmail/enigmailPrefsOverlay.xul      (content/enigmailPrefsOverlay.xul)
 	skin/modern/enigmail/contents.rdf        (skin/contents.rdf)
 	skin/modern/enigmail/enigmail.css        (skin/enigmail.css)

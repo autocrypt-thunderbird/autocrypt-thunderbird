@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible IPC version
-var gEnigmailVersion = "0.50.0.0";
-var gIPCVersion      = "1.0.0.0";
+var gEnigmailVersion = "0.49.1.0";
+var gIPCVersion      = "0.99.9.0";
 
 // Maximum size of message directly processed by Enigmail
 const MESSAGE_BUFFER_SIZE = 32000;
@@ -61,19 +61,22 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "maxIdleMinutes":5,
                              "keyserver":"www.keyserver.net",
                              "autoDecrypt":true,
-                             "captureWebMail":false
+                             "captureWebMail":false,
+                             "disableSMIMEui":true,
+                             "parseAllHeaders":true,
+                             "show_headers":1
                             };
 
 var gLogLevel = 3;     // Output only errors/warnings by default
 var gDebugLog;
 
-var gPrefSvc, gPrefs, gPrefEnigmail;
+var gEnigPrefSvc, gEnigPrefRoot, gPrefEnigmail;
 try {
-  var gPrefSvc = Components.classes["@mozilla.org/preferences-service;1"]
+  gEnigPrefSvc = Components.classes["@mozilla.org/preferences-service;1"]
                              .getService(Components.interfaces.nsIPrefService);
 
-  gPrefs        = gPrefSvc.getBranch(null);
-  gPrefEnigmail = gPrefSvc.getBranch(ENIGMAIL_PREFS_ROOT);
+  gEnigPrefRoot        = gEnigPrefSvc.getBranch(null);
+  gPrefEnigmail = gEnigPrefSvc.getBranch(ENIGMAIL_PREFS_ROOT);
 
   if (EnigGetPref("logDirectory"))
     gLogLevel = 5;
@@ -203,9 +206,8 @@ function EnigConfigure() {
 
   var checkValueObj = new Object();
   checkValueObj.value = false;
-  var buttonPressedObj = new Object();
 
-  var confirmed = gPromptService.confirmEx(window,
+  var buttonPressed = gPromptService.confirmEx(window,
                                            "Configure Enigmail?",
                                             msg,
                                             THREE_BUTTON_STRINGS,
@@ -213,10 +215,7 @@ function EnigConfigure() {
                                             "No",
                                             "Do not ask me again",
                                             "",
-                                            checkValueObj,
-                                            buttonPressedObj);
-
-  var buttonPressed = buttonPressedObj.value;
+                                            checkValueObj);
 
   DEBUG_LOG("enigmailCommon.js: EnigConfigure: "+buttonPressed+" \n");
 
@@ -447,7 +446,7 @@ function EnigSetDefaultPrefs() {
 function EnigSavePrefs() {
   DEBUG_LOG("enigmailCommon.js: EnigSavePrefs\n");
   try {
-    gPrefSvc.savePrefFile(null);
+    gEnigPrefSvc.savePrefFile(null);
   } catch (ex) {
   }
 }

@@ -1,6 +1,6 @@
 Name:      mozilla-enigmail
-Version:   0.50
-Release:   0
+Version:   0.49.1
+Release:   1
 Requires:  mozilla = 1.0, mozilla-mail = 1.0, mozilla-ipc = 1.0
 Summary:   Enigmail: GPG/PGP integration in Mozilla
 Copyright: Mozilla Public License 1.1/GPL
@@ -20,7 +20,7 @@ rm -rf ${RPM_PACKAGE_NAME}-${RPM_PACKAGE_VERSION}
 mkdir ${RPM_PACKAGE_NAME}-${RPM_PACKAGE_VERSION}
 cd ${RPM_PACKAGE_NAME}-${RPM_PACKAGE_VERSION}
 
-unzip ${RPM_SOURCE_DIR}/enigmail-${RPM_PACKAGE_VERSION}.${RPM_PACKAGE_RELEASE}.xpi
+unzip ${RPM_SOURCE_DIR}/enigmail-${RPM_PACKAGE_VERSION}.xpi
 if [ $? -ne 0 ]; then
   exit $?
 fi

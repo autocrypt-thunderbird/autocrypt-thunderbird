@@ -111,13 +111,15 @@ function EnigTest() {
 
   var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
-  var exitCodeObj = new Object();
-  var errorMsgObj = new Object();
+  var exitCodeObj    = new Object();
+  var statusFlagsObj = new Object();
+  var errorMsgObj    = new Object();
 
   var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
                                               "", toMailAddr,
                                               nsIEnigmail.SEND_SIGNED,
-                                              exitCodeObj, errorMsgObj);
+                                              exitCodeObj, statusFlagsObj,
+                                              errorMsgObj);
   CONSOLE_LOG("************************************************\n");
   CONSOLE_LOG("EnigTest: SIGNING ONLY\n");
   CONSOLE_LOG("EnigTest: cipherText = "+cipherText+"\n");
@@ -125,8 +127,7 @@ function EnigTest() {
   CONSOLE_LOG("************************************************\n");
 
   var signatureObj   = new Object();
-  var statusFlagsObj = new Object();
-  var keyIdObj        = new Object();
+  var keyIdObj       = new Object();
   var userIdObj      = new Object();
 
   var decryptedText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
@@ -144,7 +145,8 @@ function EnigTest() {
                                               "", toMailAddr,
                                               nsIEnigmail.SEND_SIGNED|
                                               nsIEnigmail.SEND_ENCRYPTED,
-                                              exitCodeObj, errorMsgObj);
+                                              exitCodeObj, statusFlagsObj,
+                                              errorMsgObj);
   CONSOLE_LOG("************************************************\n");
   CONSOLE_LOG("EnigTest: SIGNING + ENCRYPTION\n");
   CONSOLE_LOG("EnigTest: cipherText = "+cipherText+"\n");

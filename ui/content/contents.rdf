@@ -20,6 +20,7 @@
     <RDF:li resource="chrome://messenger/content/messengercompose/messengercompose.xul"/>
     <RDF:li resource="chrome://messenger/content/mailWindowOverlay.xul"/>
     <RDF:li resource="chrome://messenger/content/msgHdrViewOverlay.xul"/>
+    <RDF:li resource="chrome://messenger/content/msgPrintEngine.xul"/>
     <!--
     <RDF:li resource="chrome://navigator/content/navigator.xul"/>
     -->
@@ -39,6 +40,10 @@
 
   <RDF:Seq about="chrome://messenger/content/msgHdrViewOverlay.xul">
     <RDF:li>chrome://enigmail/content/enigmailMsgHdrViewOverlay.xul</RDF:li>
+  </RDF:Seq>
+
+  <RDF:Seq about="chrome://messenger/content/msgPrintEngine.xul">
+    <RDF:li>chrome://enigmail/content/enigmailMsgPrintOverlay.xul</RDF:li>
   </RDF:Seq>
 
   <!--

@@ -48,6 +48,7 @@
 <!ENTITY enigmail.keyserver.label         "Keyserver:">
 
 <!ENTITY enigmail.autoDecrypt.label       "Automatically decrypt/verify messages">
+<!ENTITY enigmail.disableSMIMEui.label	  "Hide SMIME buttons/menus">
 <!ENTITY enigmail.captureWebMail.label	  "Capture webmail (experimental)">
 
 <!ENTITY enigmail.debugging.label	  "Debugging Enigmail">

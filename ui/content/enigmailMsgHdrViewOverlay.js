@@ -23,7 +23,7 @@ function enigStartHeaders()
   if (msgFrame) {
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: msgFrame="+msgFrame+"\n");
 
-    msgFrame.addEventListener("unload", enigMessengerUnload, false);
+    msgFrame.addEventListener("unload", enigMessageUnload, false);
 
     if (EnigGetPref("autoDecrypt"))
       msgFrame.addEventListener("load", enigMessageDecrypt, false);
@@ -43,11 +43,12 @@ function enigUpdateHdrIcons(statusFlags) {
 
   try {
     gSMIMEContainer.collapsed = false;
+    gSignedUINode.collapsed = false;
+    gEncryptedUINode.collapsed = false;
 
     if ((statusFlags & nsIEnigmail.GOOD_SIGNATURE) &&
         (statusFlags & nsIEnigmail.TRUSTED_IDENTITY) ) {
       // Display trusted good signature icon
-      gSignedUINode.collapsed = false;
       gSignedUINode.setAttribute("signed", "ok");
       //gStatusBar.setAttribute("signed", "ok");
 
@@ -55,20 +56,17 @@ function enigUpdateHdrIcons(statusFlags) {
                               nsIEnigmail.BAD_SIGNATURE |
                               nsIEnigmail.UNVERIFIED_SIGNATURE) ) {
       // Display untrusted/bad signature icon
-      gSignedUINode.collapsed = false;
       gSignedUINode.setAttribute("signed", "notok");
       //gStatusBar.setAttribute("signed", "notok");
     }
 
     if (statusFlags & nsIEnigmail.DECRYPTED_MESSAGE) {
       // Display encrypted icon
-      gEncryptedUINode.collapsed = false;
       gEncryptedUINode.setAttribute("encrypted", "ok");
       //gStatusBar.setAttribute("encrypted", "ok");
 
     } else {
       // Display un-encrypted icon
-      //gEncryptedUINode.collapsed = false;
       //gEncryptedUINode.setAttribute("encrypted", "notok");
       //gStatusBar.setAttribute("encrypted", "notok");
     }
@@ -88,8 +86,7 @@ function enigMsgHdrViewLoad(event)
 
 addEventListener('messagepane-loaded', enigMsgHdrViewLoad, true);
 
-// "Commented out" for future use
-if (0 && messageHeaderSink) {
+if (messageHeaderSink) {
     // Modify the onStartHeaders method of the object
     // messageHeaderSink in msgHdrViewOverlay.js to use the pref
     // "extensions.enigmail.show_headers" instead of "mail.show_headers"
@@ -98,7 +95,7 @@ if (0 && messageHeaderSink) {
 
     messageHeaderSink.onStartHeaders = function()
     {
-      DEBUG_LOG("enigmailMsgHdrViewOverlay.js: messageHeaderSink.onStartHeaders\n");
+      DEBUG_LOG("enigmailMsgHdrViewOverlay.js: messageHeaderSink.onStartHeaders: START\n");
 
       // clear out any pending collected address timers...
       if (gCollectAddressTimer)
@@ -109,7 +106,15 @@ if (0 && messageHeaderSink) {
       }
 
       // every time we start to redisplay a message, check the view all headers pref....
-      var showAllHeadersPref = pref.getIntPref("mail.show_headers");
+      // MODIFIED CODE FOR ENIGMAIL
+      var showAllHeadersPref = 1;
+      if (EnigGetPref("parseAllHeaders")) {
+         showAllHeadersPref = EnigGetPref("show_headers");
+      } else try {
+         showAllHeadersPref = gEnigPrefRoot.getIntPref("mail.show_headers");
+      } catch (ex) {}
+      // END OF MODIFIED CODE FOR ENIGMAIL
+
       if (showAllHeadersPref == 2)
       {
         gViewAllHeaders = true;
@@ -131,11 +136,13 @@ if (0 && messageHeaderSink) {
       gBuiltCollapsedView = false;
       gBuildAttachmentsForCurrentMsg = false;
       gBuildAttachmentPopupForCurrentMsg = true;
-      ClearAttachmentTreeList();
+      ClearAttachmentList();
       ClearEditMessageButton();
 
       for (index in gMessageListeners)
         gMessageListeners[index].onStartHeaders();
+
+      DEBUG_LOG("enigmailMsgHdrViewOverlay.js: messageHeaderSink.onStartHeaders: END\n");
     }
 
 }

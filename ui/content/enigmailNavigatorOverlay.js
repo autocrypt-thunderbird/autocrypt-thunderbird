@@ -5,16 +5,16 @@ var gEnigCurrentSite;
 var gEnigNavButton1;
 var gEnigCurrentHandlerNavButton1;
 var gEnigTest = true;
-var gCaptureWebMail = false;
+var gEnigCaptureWebMail = false;
 
 if (nsPreferences)
- gCaptureWebMail = nsPreferences.getBoolPref(ENIGMAIL_PREFS_ROOT+"captureWebMail");
+ gEnigCaptureWebMail = nsPreferences.getBoolPref(ENIGMAIL_PREFS_ROOT+"captureWebMail");
 
-//dump("enigmailNavigatorOverlay.js: gCaptureWebMail="+gCaptureWebMail+"\n");
+//dump("enigmailNavigatorOverlay.js: gEnigCaptureWebMail="+gEnigCaptureWebMail+"\n");
 
-// Do nothing below if !gCaptureWebMail
+// Do nothing below if !gEnigCaptureWebMail
 
-if (gCaptureWebMail) {
+if (gEnigCaptureWebMail) {
    // Initialize enigmailCommon etc.
    EnigInitCommon("enigmailNavigatorOverlay");
    window.addEventListener("load", enigNavigatorStartup, true);

@@ -5,7 +5,12 @@
 <?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
                  type="text/css"?> 
 
-<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+<!DOCTYPE window [
+<!ENTITY % enigmailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigmailDTD;
+<!ENTITY % messengercomposeDTD SYSTEM "chrome://messenger/locale/messengercompose/messengercompose.dtd" >
+%messengercomposeDTD;
+]>
 
 <overlay id="enigMsgComposeOverlay"
     xmlns:html="http://www.w3.org/1999/xhtml"
@@ -15,17 +20,20 @@
   <script type="application/x-javascript"  src="chrome://enigmail/content/enigmailMsgComposeOverlay.js"/>
 
     <toolbar id="composeToolbar">
-      <box id="toolbar_button_box">
+      <hbox id="toolbar_button_box">
 
        <toolbarbutton class="toolbarbutton-1"
                id="button-enigmail-send"
                label="&enigmail.sendbutton.label;"
-               tooltip="aTooltip" tooltiptext="&enigmail.sendbutton.tip;" 
-               oncommand="enigSend(4);"
-               insertbefore="button-send"
-               />
+               tooltiptext="&enigmail.sendbutton.tip;" 
+               command="cmd_sendButton"
+               now_label="&enigmail.sendbutton.label;"
+               now_tooltiptext="&enigmail.sendbutton.tip;"
+               later_label="&enigmail.sendbutton.label;"
+               later_tooltiptext="&enigmail.sendbutton.tip;"
+               insertbefore="button-send"/>
 
-       </box>
+       </hbox>
     </toolbar>
 
   <menubar id="compose-menubar">

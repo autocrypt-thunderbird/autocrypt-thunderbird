@@ -15,28 +15,48 @@ EnigInitCommon("enigmailMsgComposeOverlay");
 
 window.addEventListener("load", enigMsgComposeStartup, false);
 
-// The following event listeners seem to hang Mozilla on recycled windows
-//window.addEventListener('compose-window-close', enigMsgComposeClose, true);
-//window.addEventListener('compose-window-reopen', enigMsgComposeReopen, true);
+// Handle recycled windows
+window.addEventListener('compose-window-close', enigMsgComposeClose, true);
+window.addEventListener('compose-window-reopen', enigMsgComposeReopen, true);
 
-var gOrigSendButton, gEnigSendButton;
-var gEditorElement, gEditorShell;
-var gEnigReset, gEnigProcessed, gDecryptTimeoutID;
+var gEnigOrigSendButton, gEnigSendButton;
+var gEnigEditorElement, gEnigEditorShell;
+var gEnigDirty, gEnigProcessed, gEnigTimeoutID;
 
 function enigMsgComposeStartup() {
-   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
 
-   gOrigSendButton = document.getElementById("button-send");
-   gEnigSendButton = document.getElementById("button-enigmail-send");
+  gEnigOrigSendButton = document.getElementById("button-send");
+  gEnigSendButton = document.getElementById("button-enigmail-send");
+
+  // Relabel/hide SMIME button and menu item
+  var smimeButton = document.getElementById("button-security");
+
+  if (smimeButton) {
+    smimeButton.setAttribute("label", "S/MIME");
+    if (EnigGetPref("disableSMIMEui"))
+        smimeButton.setAttribute("collapsed", "true");
+  }
+
+  // Override send command
+  var sendElementIds = ["cmd_sendButton", "cmd_sendNow", "cmd_sendWithCheck",
+                        "cmd_sendLater"];
+
+  for (var index = 0; index < sendElementIds.length; index++) {
+    var elementId = sendElementIds[index];
+    var element = document.getElementById(elementId);
+    if (element)
+      element.setAttribute("oncommand", "enigSendCommand('"+elementId+"');");
+  }
 
    // Get editor shell
-   gEditorElement = document.getElementById("content-frame");
-   DEBUG_LOG("enigmailMsgComposeOverlay.js: gEditorElement = "+gEditorElement+"\n");
+   gEnigEditorElement = document.getElementById("content-frame");
+   DEBUG_LOG("enigmailMsgComposeOverlay.js: gEnigEditorElement = "+gEnigEditorElement+"\n");
 
-   gEditorShell = gEditorElement.editorShell;
-   DEBUG_LOG("enigmailMsgComposeOverlay.js: gEditorShell = "+gEditorShell+"\n");
+   gEnigEditorShell = gEnigEditorElement.editorShell;
+   DEBUG_LOG("enigmailMsgComposeOverlay.js: gEnigEditorShell = "+gEnigEditorShell+"\n");
    var docStateListener = new DocumentStateListener();
-   gEditorShell.RegisterDocumentStateListener(docStateListener);
+   gEnigEditorShell.RegisterDocumentStateListener(docStateListener);
 
    enigMsgComposeReset();
 }
@@ -56,9 +76,9 @@ function enigMsgComposeReset() {
 
    enigUpdateOptionsDisplay();
 
+   gEnigDirty = false;
    gEnigProcessed = null;
-   gDecryptTimeoutID = null;
-   gEnigReset = true;
+   gEnigTimeoutID = null;
 }
 
 function enigUpdateOptionsDisplay() {
@@ -66,27 +86,21 @@ function enigUpdateOptionsDisplay() {
    var optList = ["defaultEncryptSignMsg", "defaultSignMsg",
                   "confirmBeforeSend"];
 
-   var signOrEncrypt = false;
-
    for (var j=0; j<optList.length; j++) {
      var optName = optList[j];
      var optValue = EnigGetPref(optName);
-
-     if (optValue && ((optName == "defaultEncryptSignMsg") ||
-                      (optName == "defaultSignMsg")) )
-       signOrEncrypt = true;
 
      var menuElement = document.getElementById("enigmail_"+optName);
 
      menuElement.setAttribute("checked", optValue ? "true" : "false");
    }
 
-   if (signOrEncrypt) {
+   if (EnigGetPref("defaultEncryptSignMsg")) {
       gEnigSendButton.removeAttribute("collapsed");
-      gOrigSendButton.setAttribute("collapsed", "true");
+      gEnigOrigSendButton.setAttribute("collapsed", "true");
 
    } else {
-      gOrigSendButton.removeAttribute("collapsed");
+      gEnigOrigSendButton.removeAttribute("collapsed");
       gEnigSendButton.setAttribute("collapsed", "true");
    }
 }
@@ -141,7 +155,7 @@ function enigInsertKey() {
     return;
   }
 
-  gEditorShell.InsertText("Public key for "+userIdValue+"\n" + keyBlock);
+  gEnigEditorShell.InsertText("Public key for "+userIdValue+"\n" + keyBlock);
 }
 
 function enigUndoEncryption() {
@@ -158,12 +172,55 @@ function enigUndoEncryption() {
 }
 
 function ReplaceEditorText(text) {
-  gEditorShell.SelectAll();
+  gEnigEditorShell.SelectAll();
     
   //var directionFlags = 0;   // see nsIEditor.h
-  //gEditorShell.DeleteSelection(directionFlags);
+  //gEnigEditorShell.DeleteSelection(directionFlags);
     
-  gEditorShell.InsertText(text);
+  gEnigEditorShell.InsertText(text);
+}
+
+function enigSendCommand(elementId) {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: id="+elementId+"\n");
+
+  switch (elementId) {
+  case "cmd_send":
+    sendFlags = nsIEnigmail.SEND_DEFAULT;
+    break;
+
+  case "cmd_sendNow":
+    sendFlags = nsIEnigmail.SEND_DEFAULT;
+    break;
+
+  case "cmd_sendWithCheck":
+    sendFlags = nsIEnigmail.SEND_DEFAULT | nsIEnigmail.SEND_WITH_CHECK;
+    break;
+
+  case "cmd_sendLater":
+    sendFlags = nsIEnigmail.SEND_DEFAULT | nsIEnigmail.SEND_LATER;
+    break;
+
+  case "enigmail_default_send":
+    sendFlags = nsIEnigmail.SEND_DEFAULT;
+    break;
+
+  case "enigmail_signed_send":
+    sendFlags = nsIEnigmail.SEND_SIGNED;
+    break;
+
+  case "enigmail_encrypt_sign_send":
+    sendFlags = nsIEnigmail.SEND_SIGNED | nsIEnigmail.SEND_ENCRYPTED;
+    break;
+
+  case "enigmail_plain_send":
+    sendFlags = 0;
+    break;
+
+  default:
+    sendFlags = nsIEnigmail.SEND_DEFAULT;
+  }
+
+  enigSend(sendFlags);
 }
 
 function enigSend(sendFlags) {
@@ -173,6 +230,8 @@ function enigSend(sendFlags) {
     EnigAlert("Compose window is locked; send cancelled\n");
     return;
   }
+
+  gEnigDirty = true;
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {
@@ -235,17 +294,17 @@ function enigSend(sendFlags) {
 // The following spellcheck logic is from the function
 // GenericSendMessage from the file MsgComposeCommands.js
 /////////////////////////////////////////////////////////////////////////
-       if (gPrefs.getBoolPref("mail.SpellCheckBeforeSend")) {
+       if (gEnigPrefRoot.getBoolPref("mail.SpellCheckBeforeSend")) {
         // We disable spellcheck for the following -subject line, attachment pane, identity and addressing widget
         // therefore we need to explicitly focus on the mail body when we have to do a spellcheck.
-         gEditorShell.contentWindow.focus();
+         gEnigEditorShell.contentWindow.focus();
          goDoCommand('cmd_spelling');
        }
      }
 
      if (!gEnigProcessed && (sendFlags & ENCRYPT_OR_SIGN_MSG)) {
 
-       ///var editorDoc = gEditorShell.editorDocument;
+       ///var editorDoc = gEnigEditorShell.editorDocument;
        ///DEBUG_LOG("enigmailMsgComposeOverlay.js: Doc = "+editorDoc+"\n");
        ///EnigDumpHTML(editorDoc.documentElement);
 
@@ -266,7 +325,7 @@ function enigSend(sendFlags) {
 
        var sendFlowed;
        try {
-         sendFlowed = gPrefs.getBoolPref("mailnews.send_plaintext_flowed");
+         sendFlowed = gEnigPrefRoot.getBoolPref("mailnews.send_plaintext_flowed");
        } catch (ex) {
          sendFlowed = true;
        }
@@ -278,7 +337,7 @@ function enigSend(sendFlags) {
          // Prevent space stuffing a la RFC 2646 (format=flowed).
 
          // (Do we need to set nsIDocumentEncoder::* flags?)
-         docText = gEditorShell.GetContentsAs("text/plain", encoderFlags);
+         docText = gEnigEditorShell.GetContentsAs("text/plain", encoderFlags);
          //DEBUG_LOG("enigmailMsgComposeOverlay.js: docText["+encoderFlags+"] = '"+docText+"'\n");
 
          // MULTILINE MATCHING ON
@@ -297,12 +356,12 @@ function enigSend(sendFlags) {
        }
     
        // Get plain text
-       docText = gEditorShell.GetContentsAs("text/plain", encoderFlags);
+       docText = gEnigEditorShell.GetContentsAs("text/plain", encoderFlags);
 
        // Replace plain text and get it again (to avoid linewrapping problems)
        ReplaceEditorText(docText);
 
-       docText = gEditorShell.GetContentsAs("text/plain", encoderFlags);
+       docText = gEnigEditorShell.GetContentsAs("text/plain", encoderFlags);
 
        //DEBUG_LOG("enigmailMsgComposeOverlay.js: docText["+encoderFlags+"] = '"+docText+"'\n");
 
@@ -311,7 +370,7 @@ function enigSend(sendFlags) {
 
        } else {
          // Encrypt plaintext
-         var charset = gEditorShell.GetDocumentCharacterSet();
+         var charset = gEnigEditorShell.GetDocumentCharacterSet();
          DEBUG_LOG("enigmailMsgComposeOverlay.js: charset="+charset+"\n");
 
          // Encode plaintext to charset from unicode
@@ -388,20 +447,27 @@ function enigSend(sendFlags) {
      }
 
      // EnigSend: Handle both plain and encrypted messages below
-     if (gIOService && gIOService.offline) {
-       if (!EnigConfirm("You are currently offline. Do you wish to save the message in the Unsent Messages folder?\n")) {
+     var isOffline = (gIOService && gIOService.offline);
 
-         if (gEnigProcessed)
-           enigUndoEncryption();
+     if (isOffline &&
+         !EnigConfirm("You are currently offline. Do you wish to save the message in the Unsent Messages folder?\n") ) {
 
-         return;
-       }
+       if (gEnigProcessed)
+         enigUndoEncryption();
+
+       return;
+     }
+
+     if (isOffline || (sendFlags & nsIEnigmail.SEND_LATER)) {
+       // Send message later
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: Sending message later ...\n");
 
        enigGenericSendMessage(nsIMsgCompDeliverMode.Later);
        return;
      }
 
-     if (EnigGetPref("confirmBeforeSend")) {
+     if (EnigGetPref("confirmBeforeSend") ||
+         (sendFlags & nsIEnigmail.SEND_WITH_CHECK) ) {
        var msgStatus = "";
 
        if (sendFlags & SIGN_MSG)
@@ -586,13 +652,13 @@ function enigDecryptQuote(interactive) {
 
   var encoderFlags = OutputFormatted | OutputLFLineBreak;
 
-  var docText = gEditorShell.GetContentsAs("text/plain", encoderFlags);
+  var docText = gEnigEditorShell.GetContentsAs("text/plain", encoderFlags);
 
   // START TEMPORARY DEBUG CODE
-  var matches = docText.match(/(^|\n).*-----BEGIN.*\n/);
+  var matchb = docText.match(/(^|\n).*-----BEGIN.*\n/);
 
-  if (matches) {
-    WRITE_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: TEMPORARY matches[0]='"+matches[0]+"'\n");
+  if (matchb && matchb.length) {
+    WRITE_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: TEMPORARY matchb[0]='"+matchb[0]+"'\n");
   }
   // END TEMPORARY DEBUG CODE
 
@@ -653,7 +719,7 @@ function enigDecryptQuote(interactive) {
 
   //DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: pgpBlock='"+pgpBlock+"'\n");
 
-  var charset = gEditorShell.GetDocumentCharacterSet();
+  var charset = gEnigEditorShell.GetDocumentCharacterSet();
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: charset="+charset+"\n");
 
   // Encode ciphertext from unicode to charset
@@ -708,30 +774,30 @@ function enigDecryptQuote(interactive) {
   }
 
   // Replace encrypted quote with decrypted quote
-  gEditorShell.SelectAll();
+  gEnigEditorShell.SelectAll();
   //var directionFlags = 0;   // see nsIEditor.h
-  //gEditorShell.DeleteSelection(directionFlags);
+  //gEnigEditorShell.DeleteSelection(directionFlags);
 
   //DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: plainText='"+plainText+"'\n");
 
   if (head)
-    gEditorShell.InsertText(head);
+    gEnigEditorShell.InsertText(head);
 
   var quoteElement;
 
   if (indentStr) {
     var nodeObj = new Object();
-    gEditorShell.InsertAsQuotation(plainText, nodeObj);
+    gEnigEditorShell.InsertAsQuotation(plainText, nodeObj);
     if (nodeObj.value) {
       quoteElement = nodeObj.value;
     }
 
   } else {
-    gEditorShell.InsertText(plainText);
+    gEnigEditorShell.InsertText(plainText);
   }
 
   if (tail)
-    gEditorShell.InsertText(tail);
+    gEnigEditorShell.InsertText(tail);
 
   if (interactive)
     return;
@@ -739,7 +805,7 @@ function enigDecryptQuote(interactive) {
   // Position cursor
   var replyOnTop = 1;
   try {
-    replyOnTop = gPrefs.getIntPref("mailnews.reply_on_top");
+    replyOnTop = gEnigPrefRoot.getIntPref("mailnews.reply_on_top");
   } catch (ex) {}
 
   if (!indentStr || !quoteElement)
@@ -749,7 +815,7 @@ function enigDecryptQuote(interactive) {
 
   var nsISelectionController = Components.interfaces.nsISelectionController;
 
-  var selCon = gEditorShell.selectionController;
+  var selCon = gEnigEditorShell.selectionController;
 
   var selection;
   if (selCon)
@@ -778,14 +844,14 @@ function enigDecryptQuote(interactive) {
         selection.extend(quoteElement.parentNode, quoteOffset);
 
       } else {
-        gEditorShell.SelectAll();
+        gEnigEditorShell.SelectAll();
       }
       break;
 
     default:
     // Position at beginning of document
-    if (gEditorShell.editor)
-      gEditorShell.editor.BeginningOfDocument();
+    if (gEnigEditorShell.editor)
+      gEnigEditorShell.editor.BeginningOfDocument();
 
     }
   } catch (ex) {}
@@ -843,10 +909,6 @@ DocumentStateListener.prototype = {
 
     if (!gMsgCompose.editor.documentEditable ||
         !gMsgCompose.editor.documentLength) {
-
-      if (!gEnigReset)
-        enigMsgComposeReset();
-
       return;
     }
 
@@ -854,10 +916,8 @@ DocumentStateListener.prototype = {
 
     DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentStateChanged: docLength="+gMsgCompose.editor.documentLength+"\n");
 
-    gEnigReset = false;
-
-    if (!gDecryptTimeoutID)
-      gDecryptTimeoutID = window.setTimeout(enigDecryptQuote, 10, false);
+    if (!gEnigTimeoutID && !gEnigDirty)
+      gEnigTimeoutID = window.setTimeout(enigDecryptQuote, 10, false);
   }
 
 }

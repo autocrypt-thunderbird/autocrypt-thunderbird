@@ -90,6 +90,11 @@
     </hbox>
 
     <hbox autostretch="never">
+       <checkbox id="enigmail_disableSMIMEui"
+                 label="&enigmail.disableSMIMEui.label;" />
+    </hbox>
+
+    <hbox autostretch="never">
        <checkbox id="enigmail_captureWebMail"
                  label="&enigmail.captureWebMail.label;" />
     </hbox>
