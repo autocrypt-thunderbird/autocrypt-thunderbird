@@ -152,9 +152,10 @@ function WriteFileContents(filePath, data, permissions) {
 
   } catch (ex) {
     ERROR_LOG("enigmail.js: WriteFileContents: Failed to write to "+filePath+"\n");
+    return false;
   }
 
-  return;
+  return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -575,7 +576,7 @@ function (iid)
 }
 
 EnigmailProtocolHandler.prototype.newURI =
-function (aSpec, aBaseURI)
+function (aSpec, originCharset, aBaseURI)
 {
   DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.newURI: aSpec='"+aSpec+"'\n");
 
@@ -644,23 +645,15 @@ function (aURI)
     // Display enigmail key generation console
     spec = "chrome://enigmail/content/enigmailKeygen.xul";
 
-  } else if (aURI.spec == aURI.scheme+":message") {
-    // Display enigmail key generation console
-   DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.newChannel: contentData='"+gEnigmailSvc._contentData+"'\n");
-    if (gEnigmailSvc && gEnigmailSvc._contentData) {
-    } else {
-      throw Components.results.NS_ERROR_FAILURE;
-    }
-
   } else {
-    // Display Enigmail config page
-    spec = "chrome://enigmail/content/enigmail.xul";
+    // Display Enigmail about page
+    spec = "chrome://enigmail/content/enigmailAbout.htm";
   }
 
   // ***NOTE*** Creating privileged channel
   var ioServ = Components.classesByID[NS_IOSERVICE_CID_STR].getService(Components.interfaces.nsIIOService);
 
-  var privChannel = ioServ.newChannel(spec, null);
+  var privChannel = ioServ.newChannel(spec, "", null);
 
   privChannel.originalURI = aURI;
 
@@ -709,6 +702,7 @@ function GetXULOwner () {
   var ioServ = Components.classesByID[NS_IOSERVICE_CID_STR].getService(Components.interfaces.nsIIOService);
 
   var temChannel = ioServ.newChannel("chrome://enigmail/content/dummy.xul",
+                                     "",
                                      null);
   // Get owner of XUL channel
   gXULOwner = temChannel.owner;
@@ -924,6 +918,16 @@ function (version, prefBranch) {
   DEBUG_LOG("enigmail.js: Enigmail.initialize: START\n");
   if (this.initialized) return;
 
+  var httpHandler = Components.classesByID[NS_HTTPPROTOCOLHANDLER_CID_STR].createInstance();
+  httpHandler = httpHandler.QueryInterface(nsIHttpProtocolHandler);
+
+  this.oscpu = httpHandler.oscpu;
+
+  this.platform = httpHandler.platform;
+
+  this.isUnix  = (this.platform.search(/X11/i) == 0);
+  this.isWin32 = (this.platform.search(/Win/i) == 0);
+
   var prefix = this.getLogDirectoryPrefix();
   if (prefix) {
     gLogLevel = 5;
@@ -932,19 +936,10 @@ function (version, prefBranch) {
   }
 
   this.version = version;
+
   DEBUG_LOG("enigmail.js: Enigmail version "+this.version+"\n");
-
-  var httpHandler = Components.classesByID[NS_HTTPPROTOCOLHANDLER_CID_STR].createInstance();
-  httpHandler = httpHandler.QueryInterface(nsIHttpProtocolHandler);
-
-  this.oscpu = httpHandler.oscpu;
   DEBUG_LOG("enigmail.js: OS/CPU="+this.oscpu+"\n");
-
-  this.platform = httpHandler.platform;
   DEBUG_LOG("enigmail.js: Platform="+this.platform+"\n");
-
-  this.isUnix  = (this.platform.search(/X11/i) == 0);
-  this.isWin32 = (this.platform.search(/Win/i) == 0);
 
   var processInfo;
   try {

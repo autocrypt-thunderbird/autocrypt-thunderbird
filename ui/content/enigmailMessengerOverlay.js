@@ -8,6 +8,7 @@ window.addEventListener("load", enigMessengerStartup, false);
 var gCreatedURIs = [];
 
 var gDecryptedMessage;
+var gLastSaveDir = "";
 
 function enigMessengerStartup() {
     DEBUG_LOG("enigmailMessengerOverlay.js: Startup\n");
@@ -163,7 +164,8 @@ function enigMessageDecryptCallback(msgText, interactive,
 
   var statusLines = errorMsg.split(/\r?\n/);
 
-  var statusLine, displayMsg;
+  var statusLine = "";
+  var displayMsg = "";
   if (statusLines && statusLines.length) {
     statusLine = statusLines[0];
     statusText.setAttribute("value", statusLine);
@@ -194,68 +196,83 @@ function enigMessageDecryptCallback(msgText, interactive,
   var msgFrame = window.frames["messagepane"];
   var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
 
-  // Clear HTML body
-  while (bodyElement.hasChildNodes())
-      bodyElement.removeChild(bodyElement.childNodes[0]);
 
-  var newPlainTextNode  = msgFrame.document.createTextNode(plainText);
-  var newPreElement     = msgFrame.document.createElement("pre");
-  newPreElement.appendChild(newPlainTextNode);
+  try {
+    // Display plain text with hyperlinks
 
-  var newDivElement     = msgFrame.document.createElement("div");
-  newDivElement.appendChild(newPreElement);
+    // Get selection range for inserting HTML
+    var domSelection = msgFrame._content.getSelection();
 
-  bodyElement.appendChild(newDivElement);
+    var privateSelection = domSelection.QueryInterface(Components.interfaces.nsISelectionPrivate);
+    var selection = privateSelection.QueryInterface(Components.interfaces.nsISelection);
 
-  // Create MIME content
+    selection.collapse(bodyElement, 0);
+    var selRange = selection.getRangeAt(0);
 
-  var headerList = {"subject":1, "from":1, "date":1, "to":1};
+    var htmlText = enigEscapeTextForHTML(plainText, true);
+
+    var docFrag = selRange.createContextualFragment("<pre>"+htmlText+"</pre>");
+
+    // Clear HTML body
+    while (bodyElement.hasChildNodes())
+        bodyElement.removeChild(bodyElement.childNodes[0]);
+
+    bodyElement.appendChild(docFrag.firstChild);
+
+   } catch (ex) {
+    // Display raw text
+
+    // Clear HTML body
+    while (bodyElement.hasChildNodes())
+        bodyElement.removeChild(bodyElement.childNodes[0]);
+
+    var newPlainTextNode  = msgFrame.document.createTextNode(plainText);
+    var newPreElement     = msgFrame.document.createElement("pre");
+    newPreElement.appendChild(newPlainTextNode);
+
+    var newDivElement     = msgFrame.document.createElement("div");
+    newDivElement.appendChild(newPreElement);
+
+    bodyElement.appendChild(newDivElement);
+  }
+
+  // Save decrypted message status, headers, and content
+  var headerList = {"subject":"", "from":"", "date":"", "to":"", "cc":""};
 
   if (!gViewAllHeaders) {
     for (var index = 0; index < gCollapsedHeaderList.length; index++) {
-      headerList[gCollapsedHeaderList[index].name] = 1;
+      headerList[gCollapsedHeaderList[index].name] = "";
     }
 
   } else {
     for (index = 0; index < gExpandedHeaderList.length; index++) {
-      headerList[gExpandedHeaderList[index].name] = 1;
+      headerList[gExpandedHeaderList[index].name] = "";
     }
 
     for (var headerName in currentHeaderData) {
-      headerList[headerName] = 1;
+      headerList[headerName] = "";
     }
-  }
-
-  var contentData = "";
-
-  if (statusLine) {
-    contentData += "<b>Enigmail:</b> " +
-                   enigEscapeTextForHTML(statusLine) + "<br>\n<hr>\n";
   }
 
   for (var headerName in headerList) {
-    var headerValue;
-
     if (currentHeaderData[headerName])
-      headerValue = currentHeaderData[headerName].headerValue;
-
-    if (headerValue) {
-      contentData += "<b>"+enigEscapeTextForHTML(headerName)+":</b> "+
-                           enigEscapeTextForHTML(headerValue)+"<br>\n";
-    }
+      headerList[headerName] = currentHeaderData[headerName].headerValue;
   }
 
-  contentData += "<pre>"+enigEscapeTextForHTML(plainText)+"</pre>\n";
+  // WORKAROUND
+  if (headerList["cc"] == headerList["to"])
+    headerList["cc"] = "";
 
   gDecryptedMessage = {url:messageUrl,
-                       contentType: "text/html",
-                       contentData: contentData};
-
+                       statusLine:statusLine,
+                       headerList:headerList,
+                       plainText:plainText};
   return;
 }
 
 
-function enigEscapeTextForHTML(text) {
+function enigEscapeTextForHTML(text, hyperlink) {
+  // Escape special characters
   if (text.indexOf("&") > -1)
     text = text.replace(/&/g, "&amp;")
 
@@ -268,7 +285,134 @@ function enigEscapeTextForHTML(text) {
   if (text.indexOf("\"") > -1)
     text = text.replace(/"/g, "&quot;")
 
+  if (!hyperlink)
+    return text;
+
+  // Hyperlink email addresses
+  var addrs = text.match(/\b[A-Za-z0-9_+\-\.]+@[A-Za-z0-9\-\.]+\b/g);
+
+  if (addrs && addrs.length) {
+    var newText = "";
+    var offset = 0;
+
+    for (var j=0; j < addrs.length; j++) {
+      var addr = addrs[j];
+
+      var loc = text.indexOf(addr, offset);
+      if (loc < offset)
+        break;
+
+      if (loc > offset)
+        newText += text.substr(offset, loc-offset);
+
+      // Strip any period off the end of address
+      addr = addr.replace(/[\.]$/, "");
+
+      if (!addr.length)
+        continue;
+
+      newText += "<a href=\"mailto:"+addr+"\">" + addr + "</a>";
+
+      offset = loc + addr.length;
+    }
+
+    newText += text.substr(offset, text.length-offset);
+
+    text = newText;
+  }
+
+  // Hyperlink URLs
+  var urls = text.match(/\b(http|https|ftp):\S+\s/g);
+
+  if (urls && urls.length) {
+    var newText = "";
+    var offset = 0;
+
+    for (var j=0; j < urls.length; j++) {
+      var url = urls[j];
+
+      var loc = text.indexOf(url, offset);
+      if (loc < offset)
+        break;
+
+      if (loc > offset)
+        newText += text.substr(offset, loc-offset);
+
+      // Strip delimiters off the end of URL
+      url = url.replace(/\s$/, "");
+      url = url.replace(/([\),\.']|&gt;|&quot;)$/, "");
+
+      if (!url.length)
+        continue;
+
+      newText += "<a href=\""+url+"\">" + url + "</a>";
+
+      offset = loc + url.length;
+    }
+
+    newText += text.substr(offset, text.length-offset);
+
+    text = newText;
+  }
+
   return text;
+}
+
+function GetDecryptedMessage(contentType) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: GetDecryptedMessage: "+contentType+"\n");
+
+  if (!gDecryptedMessage)
+    return "No decrypted message found!\n";
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return "";
+
+  var statusLine = gDecryptedMessage.statusLine;
+  var headerList = gDecryptedMessage.headerList;
+
+  var contentData = "";
+
+  if (contentType == "text/html")
+    contentData += "<html><head></head><body>\r\n";
+
+
+  if (statusLine) {
+    if (contentType == "text/html") {
+      contentData += "<b>Enigmail:</b> " +
+                     enigEscapeTextForHTML(statusLine, false) + "<br>\r\n<hr>\r\n";
+    } else {
+      contentData += "Enigmail: " + statusLine + "\r\n\r\n";
+    }
+  }
+
+  for (var headerName in headerList) {
+    var headerValue = headerList[headerName];
+
+    if (headerValue) {
+      if (contentType == "text/html") {
+        contentData += "<b>"+enigEscapeTextForHTML(headerName, false)+":</b> "+
+                             enigEscapeTextForHTML(headerValue, false)+"<br>\r\n";
+      } else {
+        contentData += headerName + ": " + headerValue + "\r\n";
+      }
+    }
+  }
+
+  if (contentType == "text/html") {
+    contentData += "<pre>"+enigEscapeTextForHTML(gDecryptedMessage.plainText, false)+"</pre>\r\n";
+  } else {
+    contentData += "\r\n"+gDecryptedMessage.plainText;
+  }
+
+  if (contentType == "text/html")
+    contentData += "</body></html>\r\n";
+
+  if (!(enigmailSvc.isWin32)) {
+    contentData = contentData.replace(/\r\n/g, "\n");
+  }
+
+  return contentData;
 }
 
 function enigMsgDefaultPrint(contextMenu) {
@@ -302,9 +446,11 @@ function enigMsgPrint(elementId) {
   if (!enigmailSvc)
     enigMsgDefaultPrint(contextMenu);
 
+  var htmlContent = GetDecryptedMessage("text/html");
+
   var uri = enigmailSvc.createMessageURI(gDecryptedMessage.url,
-                                         gDecryptedMessage.contentType,
-                                         gDecryptedMessage.contentData,
+                                         "text/html",
+                                         htmlContent,
                                          false);
 
   gCreatedURIs.push(uri);
@@ -314,12 +460,102 @@ function enigMsgPrint(elementId) {
   var messageList = [uri];
   var numMessages = messageList.length;
 
+  if (gPrintSettings == null) {
+    gPrintSettings = GetPrintSettings();
+  }
+
   var printEngineWindow = window.openDialog("chrome://messenger/content/msgPrintEngine.xul",
                                         "",
                                         "chrome,dialog=no,all",
-                                        numMessages, messageList, statusFeedback);
-    return true;
+                                        numMessages, messageList, statusFeedback, gPrintSettings);
+
+  return true;
 }
+
+function enigMessageSave() {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageSave: \n");
+
+  if (!gDecryptedMessage) {
+    EnigAlert("No decrypted message to save!\nUse Save command from File menu");
+    return;
+  }
+
+  var mailNewsUrl = enigGetCurrentMsgUrl();
+
+  if (!mailNewsUrl) {
+    EnigAlert("No message to save!");
+    return;
+  }
+
+  if (gDecryptedMessage.url != mailNewsUrl.spec) {
+    gDecryptedMessage = null;
+    EnigAlert("Please click Decypt button to decrypt message");
+    return;
+  }
+
+  var saveFile = EnigFilePicker("Enigmail: Save decrypted message",
+                                gLastSaveDir, true, "txt",
+                                ["Text files", "*.txt"]);
+  if (!saveFile) return;
+
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageSave: path="+saveFile.path+"\n");
+
+  if (saveFile.parent)
+    gLastSaveDir = saveFile.parent.path;
+
+  var textContent = GetDecryptedMessage("text/plain");
+
+  if (!WriteFileContents(saveFile.path, textContent, null)) {
+    EnigAlert("Error in saving to file "+saveFile.path);
+    return;
+  }
+
+  return true;
+}
+
+
+function EnigFilePicker(title, displayDir, save, defaultExtension, filterPairs) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: EnigFilePicker: "+save+"\n");
+
+  const nsIFilePicker = Components.interfaces.nsIFilePicker;
+  var filePicker = Components.classes["@mozilla.org/filepicker;1"].createInstance();
+  filePicker = filePicker.QueryInterface(nsIFilePicker);
+
+  var mode = save ? nsIFilePicker.modeSave : nsIFilePicker.modeOpen;
+
+  filePicker.init(window, title, mode);
+
+  if (displayDir) {
+    var localFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+
+    try {
+      localFile.initWithPath(displayDir);
+      filePicker.displayDirectory = localFile;
+    } catch (ex) {
+    }
+  }
+
+  if (defaultExtension)
+    filePicker.defaultExtension = defaultExtension;
+
+  var nfilters = 0;
+  if (filterPairs && filterPairs.length)
+    nfilters = filterPairs.length / 2;
+
+  for (var index=0; index < nfilters; index++) {
+    filePicker.appendFilter(filterPairs[2*index], filterPairs[2*index+1]);
+  }
+
+  filePicker.appendFilters(nsIFilePicker.filterAll);
+
+  if (filePicker.show() == nsIFilePicker.returnCancel)
+    return null;
+
+  var file = filePicker.file.QueryInterface(Components.interfaces.nsILocalFile);
+
+  return file;
+}
+
 
 function enigMsgDirect(interactive, signStatus) {
   WRITE_LOG("enigmailMessengerOverlay.js: enigMsgDirect: signStatus="+signStatus+"\n");

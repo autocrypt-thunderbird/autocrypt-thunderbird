@@ -10,6 +10,9 @@ const MESSAGE_BUFFER_SIZE = 32000;
 const NS_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
 const NS_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1"
 const NS_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
+const NS_STREAMCONVERTERSERVICE_CID_STR =
+      "{892FFEB0-3F80-11d3-A16C-0050041CAF44}";
+
 const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
 const MAILNEWS_PREFS_ROOT       = "mailnews.";
 
@@ -142,11 +145,6 @@ function GetEnigmailSvc() {
       return null;
     }
 
-    if (gEnigmailSvc.logFileStream) {
-      gDebugLog = true;
-      gLogLevel = 5;
-    }
-
     var configuredVersion = EnigGetPref("configuredVersion");
 
     DEBUG_LOG("enigmailCommon.js: EnigConfigure: "+configuredVersion+"\n");
@@ -154,6 +152,11 @@ function GetEnigmailSvc() {
     if (gEnigmailSvc.initialized && (gEnigmailVersion != configuredVersion)) {
       EnigConfigure();
     }
+  }
+
+  if (gEnigmailSvc.logFileStream) {
+    gDebugLog = true;
+    gLogLevel = 5;
   }
 
   return gEnigmailSvc.initialized ? gEnigmailSvc : null;
@@ -274,9 +277,10 @@ function WriteFileContents(filePath, data, permissions) {
 
   } catch (ex) {
     ERROR_LOG("enigmailCommon.js: WriteFileContents: Failed to write to "+filePath+"\n");
+    return false;
   }
 
-  return;
+  return true;
 }
 
 // maxBytes == -1 => read whole file
@@ -301,7 +305,7 @@ function ReadFileContents(localFile, maxBytes) {
 
   var fileContents = scriptableInStream.read(maxBytes);
 
-  rawInStream.close();
+  scriptableInStream.close();
 
   return fileContents;
 }
@@ -384,8 +388,13 @@ function EnigAdvPrefWindow() {
 }
 
 function EnigHelpWindow(source) {
-   if (!source) source = "";
-   window.open("http://enigmail.mozdev.org/"+source+"help.html");
+   
+   var helpUrl = "http://enigmail.mozdev.org/help.html";
+
+   if (source)
+     helpUrl += "#" + source
+
+   window.open(helpUrl);
 }
 
 function EnigUpgrade() {
@@ -582,7 +591,7 @@ function EnigDumpHTML(node)
             var length = children.length;
             var count = 0;
             while(count < length) {
-                child = children[count]
+                var child = children[count]
                 EnigDumpHTML(child)
                 count++
             }

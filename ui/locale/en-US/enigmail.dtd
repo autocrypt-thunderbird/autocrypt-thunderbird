@@ -60,6 +60,7 @@
 <!ENTITY enigmail.decryptbutton.tip	  "Enigmail decrypt/verify">
 
 <!ENTITY enigmail.decryptverify.label	  "Decrypt/verify">
+<!ENTITY enigmail.savedecrypted.label	  "Save decrypted message">
 
 <!ENTITY enigmail.prefs.label	          "Preferences">
 
@@ -71,6 +72,7 @@
 <!ENTITY enigmail.about.label	          "About Enigmail">
 
 <!ENTITY enigmail.decryptverify.accesskey   "D">
+<!ENTITY enigmail.savedecrypted.accesskey   "S">
 
 <!ENTITY enigmail.prefs.accesskey           "P">
 
