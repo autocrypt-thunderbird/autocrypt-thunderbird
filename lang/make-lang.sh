@@ -228,7 +228,7 @@ cat >${LANGDIR}/contents.rdf <<EOT
   </RDF:Seq>
 
   <!-- locale information -->
-  <RDF:Description about="urn:mozilla:locale:${ENIGLANG}">
+  <RDF:Description about="urn:mozilla:locale:${ENIGLANG}"  chrome:name="${ENIGLANG}">
 
     <chrome:packages>
       <RDF:Seq about="urn:mozilla:locale:${ENIGLANG}:packages">
