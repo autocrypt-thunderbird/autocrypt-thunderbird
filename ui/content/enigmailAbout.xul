@@ -3,26 +3,22 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?> 
 <?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?> 
 
-<?xul-overlay href="chrome://global/content/charsetOverlay.xul"?>
-<?xul-overlay href="chrome://communicator/content/tasksOverlay.xul"?>
-<?xul-overlay href="chrome://communicator/content/communicatorOverlay.xul"?>
-
-<?xul-overlay href="chrome://messenger/content/messengercompose/addressingWidgetOverlay.xul"?>
 <?xul-overlay href="chrome://global/content/globalOverlay.xul"?>
 <?xul-overlay href="chrome://communicator/content/utilityOverlay.xul"?>
-<?xul-overlay href="chrome://editor/content/editorOverlay.xul"?>
 
-<?xul-overlay href="chrome://global/content/dialogOverlay.xul"?> 
-
-<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+<!DOCTYPE window [
+  <!ENTITY % enigmailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd">
+   %enigmailDTD;
+  <!ENTITY % utilDTD SYSTEM "chrome://communicator/locale/utilityOverlay.dtd">
+   %utilDTD;
+]>
 
 <window id="EnigmailAbout"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         title="Enigmail About"
-        windowtype="enigmail:about"
-        width="480" height="240"
+        width="540" height="280"
         screenX="10" screenY="10"
-        persist="screenX screenY width height"> 
+        persist="screenX screenY"> 
 
   <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
