@@ -575,6 +575,9 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
                                   head, tail) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: "+interactive+", "+interactive+", importOnly="+importOnly+", charset="+charset+", msgUrl="+messageUrl+", retry="+retry+", signature='"+signature+"'\n");
 
+  if (!msgText)
+    return;
+
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return;
