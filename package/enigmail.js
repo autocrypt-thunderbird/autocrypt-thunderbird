@@ -3569,8 +3569,10 @@ function (parent, outFileName, inputBuffer,
   var statusMsgObj = new Object();
   var cmdLineObj     = new Object();
 
-  this.execEnd(pipeTrans, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
-
+  try {
+    this.execEnd(pipeTrans, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
+  }
+  catch (ex) {};
 
   return true;
 
