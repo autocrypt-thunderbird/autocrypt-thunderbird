@@ -78,8 +78,8 @@ REQUIRES	= xpcom \
 		  imglib2 \
 		  $(NULL)
 
-EXPORTS		=		    \
-		$(NULL)
+# EXPORTS		=		    \
+# 		$(NULL)
 
 LOCAL_INCLUDES	= \
 		-I$(srcdir)/../build \
