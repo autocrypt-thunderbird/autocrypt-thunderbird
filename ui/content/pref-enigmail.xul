@@ -51,7 +51,6 @@
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail.js"/>
-  <script type="application/x-javascript" src="chrome://jslib/content/jslib.js"/>
 
   <tabbox flex="1" style="margin:5px">
     <tabs id="prefTabBox">
@@ -111,7 +110,7 @@
               <button id="uninstall"
                       class="dialog"
                       label="&enigmail.uninstallButton.label;"
-                      oncommand="EnigUninstall()"/>
+                      oncommand="enigUninstall()"/>
               <button id="resetPrefs"
                       label="&enigmail.resetPrefsButton.label;"
                       oncommand="resetPrefs();"/>
