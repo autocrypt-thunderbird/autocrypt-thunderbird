@@ -477,12 +477,12 @@ function enigMessageDecrypt(event, isAuto) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecrypt: "+event+"\n");
 
   if (EnigGetPref("parseAllHeaders")) {
-    var showHeaders = 2;
-    /*
+    var showHeaders = 0;
+    
     try {
       showHeaders = gEnigPrefRoot.getIntPref("mail.show_headers");
     } catch (ex) {
-    } */
+    }
 
     DEBUG_LOG("enigmailMessengerOverlay.js: mail.show_headers="+showHeaders+"\n");
 
