@@ -597,8 +597,8 @@ function enigEscapeTextForHTML(text, hyperlink) {
   return text;
 }
 
-function GetDecryptedMessage(contentType) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: GetDecryptedMessage: "+contentType+"\n");
+function enigGetDecryptedMessage(contentType) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigGetDecryptedMessage: "+contentType+"\n");
 
   if (!gEnigDecryptedMessage)
     return "No decrypted message found!\n";
@@ -713,7 +713,7 @@ function enigMsgPrint(elementId) {
   if (!enigmailSvc)
     enigMsgDefaultPrint(contextMenu);
 
-  var htmlContent = GetDecryptedMessage("text/html");
+  var htmlContent = enigGetDecryptedMessage("text/html");
 
   var uri = enigmailSvc.createMessageURI(gEnigDecryptedMessage.url,
                                          "text/html",
@@ -771,9 +771,9 @@ function enigMessageSave() {
   if (saveFile.parent)
     gEnigLastSaveDir = saveFile.parent.path;
 
-  var textContent = GetDecryptedMessage("text/plain");
+  var textContent = enigGetDecryptedMessage("text/plain");
 
-  if (!WriteFileContents(saveFile.path, textContent, null)) {
+  if (!EnigWriteFileContents(saveFile.path, textContent, null)) {
     EnigAlert("Error in saving to file "+saveFile.path);
     return;
   }
@@ -840,8 +840,8 @@ function enigMsgDirect(interactive, importOnly, charset, signature) {
                       signature:signature,
                       pipeConsole:pipeConsole };
 
-  var requestObserver = new RequestObserver(enigMsgDirectCallback,
-                                            callbackArg);
+  var requestObserver = new EnigRequestObserver(enigMsgDirectCallback,
+                                                callbackArg);
 
   pipeConsole.openURI(mailNewsUrl, MESSAGE_BUFFER_SIZE,
                       false, requestObserver, mailNewsUrl);

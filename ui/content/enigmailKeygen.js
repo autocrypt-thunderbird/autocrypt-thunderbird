@@ -195,7 +195,7 @@ function enigmailKeygenStart() {
      return;
    }
 
-   var requestObserver = new RequestObserver(enigmailKeygenTerminate, null);
+   var requestObserver = new EnigRequestObserver(enigmailKeygenTerminate,null);
 
    try {
       ipcRequest = enigmailSvc.generateKey(window,

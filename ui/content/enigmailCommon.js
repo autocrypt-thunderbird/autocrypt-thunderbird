@@ -1,7 +1,7 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.49.3.0";
+var gEnigmailVersion = "0.49.9.0";
 var gEnigmimeVersion = "0.99.9.0";
 
 // Maximum size of message directly processed by Enigmail
@@ -270,8 +270,8 @@ const FileChannel = new Components.Constructor( "@mozilla.org/network/local-file
 
 const InputStream = new Components.Constructor( "@mozilla.org/scriptableinputstream;1", "nsIScriptableInputStream" );
 
-function CreateFileStream(filePath, permissions) {
-  //DEBUG_LOG("enigmailCommon.js: CreateFileStream: file="+filePath+"\n");
+function EnigCreateFileStream(filePath, permissions) {
+  //DEBUG_LOG("enigmailCommon.js: EnigCreateFileStream: file="+filePath+"\n");
 
   try {
     var localFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
@@ -299,17 +299,17 @@ function CreateFileStream(filePath, permissions) {
     return fileStream;
 
   } catch (ex) {
-    ERROR_LOG("enigmailCommon.js: CreateFileStream: Failed to create "+filePath+"\n");
+    ERROR_LOG("enigmailCommon.js: EnigCreateFileStream: Failed to create "+filePath+"\n");
     return null;
   }
 }
 
-function WriteFileContents(filePath, data, permissions) {
+function EnigWriteFileContents(filePath, data, permissions) {
 
-  //DEBUG_LOG("enigmailCommon.js: WriteFileContents: file="+filePath+"\n");
+  //DEBUG_LOG("enigmailCommon.js: EnigWriteFileContents: file="+filePath+"\n");
 
   try {
-    var fileOutStream = CreateFileStream(filePath, permissions);
+    var fileOutStream = EnigCreateFileStream(filePath, permissions);
 
     if (data.length) {
       if (fileOutStream.write(data, data.length) != data.length)
@@ -320,7 +320,7 @@ function WriteFileContents(filePath, data, permissions) {
     fileOutStream.close();
 
   } catch (ex) {
-    ERROR_LOG("enigmailCommon.js: WriteFileContents: Failed to write to "+filePath+"\n");
+    ERROR_LOG("enigmailCommon.js: EnigWriteFileContents: Failed to write to "+filePath+"\n");
     return false;
   }
 
@@ -328,8 +328,8 @@ function WriteFileContents(filePath, data, permissions) {
 }
 
 // maxBytes == -1 => read whole file
-function ReadFileContents(localFile, maxBytes) {
-  DEBUG_LOG("enigmailCommon.js: ReadFileContents: file="+localFile.leafName+
+function EnigReadFileContents(localFile, maxBytes) {
+  DEBUG_LOG("enigmailCommon.js: EnigReadFileContents: file="+localFile.leafName+
             ", "+maxBytes+"\n");
 
   var fileChannel = new FileChannel();
@@ -560,13 +560,13 @@ function EnigSetPref(prefName, value) {
 }
 
 
-function RequestObserver(terminateFunc, terminateArg)
+function EnigRequestObserver(terminateFunc, terminateArg)
 {
   this._terminateFunc = terminateFunc;
   this._terminateArg = terminateArg;
 }
 
-RequestObserver.prototype = {
+EnigRequestObserver.prototype = {
 
   _terminateFunc: null,
   _terminateArg: null,
@@ -580,12 +580,12 @@ RequestObserver.prototype = {
 
   onStartRequest: function (channel, ctxt)
   {
-    DEBUG_LOG("enigmailCommon.js: RequestObserver.onStartRequest\n");
+    DEBUG_LOG("enigmailCommon.js: EnigRequestObserver.onStartRequest\n");
   },
 
   onStopRequest: function (channel, ctxt, status)
   {
-    DEBUG_LOG("enigmailCommon.js: RequestObserver.onStopRequest: "+ctxt+"\n");
+    DEBUG_LOG("enigmailCommon.js: EnigRequestObserver.onStopRequest: "+ctxt+"\n");
     this._terminateFunc(this._terminateArg, ctxt);
   }
 }
@@ -781,9 +781,9 @@ function EnigKeygen() {
 }
 
 // retrieves the most recent navigator window (opens one if need be)
-function LoadURLInNavigatorWindow(url, aOpenFlag)
+function EnigLoadURLInNavigatorWindow(url, aOpenFlag)
 {
-  DEBUG_LOG("enigmailCommon.js: LoadURLInNavigatorWindow: "+url+", "+aOpenFlag+"\n");
+  DEBUG_LOG("enigmailCommon.js: EnigLoadURLInNavigatorWindow: "+url+", "+aOpenFlag+"\n");
 
   var navWindow;
 
@@ -813,7 +813,7 @@ function LoadURLInNavigatorWindow(url, aOpenFlag)
     navWindow = window.open(url, "Enigmail");
   }
 
-  DEBUG_LOG("enigmailCommon.js: LoadURLInNavigatorWindow: navWindow="+navWindow+"\n");
+  DEBUG_LOG("enigmailCommon.js: EnigLoadURLInNavigatorWindow: navWindow="+navWindow+"\n");
 
   return navWindow;
 }

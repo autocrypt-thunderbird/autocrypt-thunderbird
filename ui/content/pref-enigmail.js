@@ -183,7 +183,7 @@ function RemoveOverlay(module, urls) {
 
      DEBUG_LOG("pref-enigmail.js: RemoveOverlay: overlayFile="+overlayFile.path+"\n");
 
-      var fileContents = ReadFileContents(overlayFile, -1);
+      var fileContents = EnigReadFileContents(overlayFile, -1);
 
       for (var j=0; j<urls.length; j++) {
          var overlayPat=new RegExp("\\s*<RDF:li>\\s*"+urls[j]+"\\s*</RDF:li>");
@@ -199,7 +199,7 @@ function RemoveOverlay(module, urls) {
       }
 
       if (overlayRemoved)
-         WriteFileContents(overlayFile.path, fileContents, 0);
+         EnigWriteFileContents(overlayFile.path, fileContents, 0);
 
    } catch (ex) {
    }

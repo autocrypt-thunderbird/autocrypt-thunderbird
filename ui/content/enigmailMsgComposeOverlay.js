@@ -197,7 +197,7 @@ function enigUndoEncryption() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigUndoEncryption: \n");
 
   if (gEnigProcessed) {
-    ReplaceEditorText(gEnigProcessed.docText);
+    enigReplaceEditorText(gEnigProcessed.docText);
 
     gEnigProcessed = null;
 
@@ -206,7 +206,7 @@ function enigUndoEncryption() {
   }
 }
 
-function ReplaceEditorText(text) {
+function enigReplaceEditorText(text) {
   gEnigEditorShell.SelectAll();
     
   //var directionFlags = 0;   // see nsIEditor.h
@@ -454,14 +454,14 @@ function enigSend(sendFlags) {
          RegExp.multiline = false;
 
          //DEBUG_LOG("enigmailMsgComposeOverlay.js: docText = '"+docText+"'\n");
-         ReplaceEditorText(docText);
+         enigReplaceEditorText(docText);
        }
     
        // Get plain text
        docText = gEnigEditorShell.GetContentsAs("text/plain", encoderFlags);
 
        // Replace plain text and get it again (to avoid linewrapping problems)
-       ReplaceEditorText(docText);
+       enigReplaceEditorText(docText);
 
        docText = gEnigEditorShell.GetContentsAs("text/plain", encoderFlags);
 
@@ -516,7 +516,7 @@ function enigSend(sendFlags) {
            // Encryption/signing succeeded; overwrite plaintext
 
            // Decode ciphertext from charset to unicode and overwrite
-           ReplaceEditorText( EnigConvertToUnicode(cipherText, charset) );
+           enigReplaceEditorText( EnigConvertToUnicode(cipherText, charset) );
 
            // Save original text (for undo)
            gEnigProcessed = {"docText":docText};
@@ -905,7 +905,7 @@ function enigDecryptQuote(interactive) {
   try {
     var quoteOffset = 0;
     if (quoteElement)
-      quoteOffset = GetChildOffset(quoteElement.parentNode, quoteElement);
+      quoteOffset = enigGetChildOffset(quoteElement.parentNode, quoteElement);
 
     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: quoteOffset="+quoteOffset+", selection="+selection+"\n");
 
@@ -943,7 +943,7 @@ function enigDecryptQuote(interactive) {
 }
 
 // Returns offset of child (> 0), or 0, if child not found
-function GetChildOffset(parentNode, childNode) {
+function enigGetChildOffset(parentNode, childNode) {
   if (!parentNode || !childNode)
     return 0;
 
