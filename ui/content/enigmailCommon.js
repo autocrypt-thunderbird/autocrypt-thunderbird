@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.83.1.0";
-var gEnigmimeVersion = "0.83.1.0";
+var gEnigmailVersion = "0.83.2.0";
+var gEnigmimeVersion = "0.83.2.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -249,7 +249,7 @@ function GetEnigmailSvc() {
         // Display initialization error alert
         var errMsg = gEnigmailSvc.initializationError ? gEnigmailSvc.initializationError : "Error in initializing Enigmail service";
 
-        errMsg += "\n\nTo avoid this alert, either fix the problem or uninstall Enigmail using the Edit->Preferences->Privacy&Security->Enigmail menu"
+        errMsg += "\n\n"+EnigGetString("avoidInitErr");
 
         EnigAlertCount("initAlertCount", "Enigmail: "+errMsg);
       }
@@ -1264,4 +1264,49 @@ function EnigUninstall() {
           "", "dialog,modal,centerscreen", {performUninst: true});
 
   return;
+}
+
+function EnigFilePicker(title, displayDir, save, defaultExtension, defaultName, filterPairs) {
+  DEBUG_LOG("enigmailCommon.js: EnigFilePicker: "+save+"\n");
+
+  const nsIFilePicker = Components.interfaces.nsIFilePicker;
+  var filePicker = Components.classes["@mozilla.org/filepicker;1"].createInstance();
+  filePicker = filePicker.QueryInterface(nsIFilePicker);
+
+  var mode = save ? nsIFilePicker.modeSave : nsIFilePicker.modeOpen;
+
+  filePicker.init(window, title, mode);
+
+  if (displayDir) {
+    var localFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+
+    try {
+      localFile.initWithPath(displayDir);
+      filePicker.displayDirectory = localFile;
+    } catch (ex) {
+    }
+  }
+
+  if (defaultExtension)
+    filePicker.defaultExtension = defaultExtension;
+
+  if (defaultName)
+    filePicker.defaultString=defaultName;
+
+  var nfilters = 0;
+  if (filterPairs && filterPairs.length)
+    nfilters = filterPairs.length / 2;
+
+  for (var index=0; index < nfilters; index++) {
+    filePicker.appendFilter(filterPairs[2*index], filterPairs[2*index+1]);
+  }
+
+  filePicker.appendFilters(nsIFilePicker.filterAll);
+
+  if (filePicker.show() == nsIFilePicker.returnCancel)
+    return null;
+
+  var file = filePicker.file.QueryInterface(Components.interfaces.nsILocalFile);
+
+  return file;
 }
