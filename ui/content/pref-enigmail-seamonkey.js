@@ -4,8 +4,8 @@
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail-seamonkey");
 
-function init_pref_enigmail() {
-  DEBUG_LOG("pref-enigmail.js: init_pref_enigmail\n");
+function initPrefSeamonkey() {
+  DEBUG_LOG("pref-enigmail-seamonkey.js: initPrefSeamonkey\n");
   parent.initPanel('chrome://enigmail/content/pref-enigmail-seamonkey.xul');
 
   EnigSetDefaultPrefs();
@@ -22,23 +22,10 @@ function init_pref_enigmail() {
 }
 
 function setDisables(initializing) {
-  DEBUG_LOG("pref-enigmail.js: setDisables: "+initializing+"\n");
+  DEBUG_LOG("pref-enigmail-seamonkey.js: setDisables: "+initializing+"\n");
 
   var noPassphraseElement = document.getElementById("noPassphrase");
   var noPassphrase = initializing ? EnigGetPref("noPassphrase")
                               : noPassphraseElement.checked;
 
-}
-
-
-function enigmailPrefsHelp() {
-   DEBUG_LOG("pref-enigmail.js: enigmailPrefsHelp:\n");
-}
-
-function enigmailResetPrefs() {
-   DEBUG_LOG("pref-enigmail.js: enigmailResetPrefs\n");
-
-   DisplayPrefs(true, true, false);
-
-   setDisables(false);
 }

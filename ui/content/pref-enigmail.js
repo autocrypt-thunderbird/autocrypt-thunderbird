@@ -6,8 +6,8 @@ EnigInitCommon("pref-enigmail");
 var gMimeHashElement, gSendFlowedElement, gSendFlowedValue;
 var gMimePartsElement, gMimePartsValue;
 
-function AdvStartup() {
-   DEBUG_LOG("pref-enigmail.js: AdvStartup\n");
+function prefOnLoad() {
+   DEBUG_LOG("pref-enigmail.js: prefOnLoad\n");
    EnigDisplayPrefs(false, true, false);
 
    if (window.arguments) {
@@ -82,8 +82,8 @@ function AdvStartup() {
 
 }
 
-function AdvResetPrefs() {
-   DEBUG_LOG("pref-enigmail.js: AdvReset\n");
+function resetPrefs() {
+   DEBUG_LOG("pref-enigmail.js: resetPrefs\n");
 
    EnigDisplayRadioPref("usePGPMimeOption", gEnigmailPrefDefaults["usePGPMimeOption"],
                         gUsePGPMimeOptionList);
@@ -96,9 +96,9 @@ function AdvResetPrefs() {
 }
 
 
-function AdvOnAccept() {
+function prefOnAccept() {
 
-   DEBUG_LOG("pref-enigmail.js: AdvOnAccept\n");
+   DEBUG_LOG("pref-enigmail.js: prefOnAccept\n");
 
    EnigDisplayPrefs(false, false, true);
 
@@ -258,5 +258,19 @@ function EnigTest() {
   }
   catch (ex) {
     EnigAlert("error");
+  }
+}
+
+function enigLocateGpg() {
+  var fileName="gpg";
+  var ext="";
+  if (navigator.platform.search(/Win/i) == 0) {
+    ext=".exe";
+  }
+  var filePath = EnigFilePicker(EnigGetString("locateGpg"),
+                           "", false, ext,
+                           fileName+ext, null);
+  if (filePath) {
+    document.getElementById("enigmail_agentPath").value = filePath.path;
   }
 }

@@ -48,10 +48,11 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         class="color-dialog"
         orient="vertical"
-        onload="init_pref_enigmail();">
+        onload="initPrefSeamonkey();">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail-seamonkey.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail.js"/>
   <script type="application/x-javascript" src="chrome://jslib/content/jslib.js"/>
 
   <script type="application/x-javascript">
@@ -73,6 +74,8 @@
               pref="true"
               preftype="string"
               prefstring="extensions.enigmail.agentPath"/>
+      <button id="browse" label="&enigmail.browse.label;"
+              oncommand="enigLocateGpg();"/>
     </hbox>
 
     <hbox>

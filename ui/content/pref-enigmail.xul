@@ -46,8 +46,8 @@
 <dialog id="enigmailPrefsAdv"
         title="&enigmail.preferences.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        onload="AdvStartup();"
-        ondialogaccept="AdvOnAccept();">
+        onload="prefOnLoad();"
+        ondialogaccept="prefOnAccept();">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail.js"/>
@@ -70,6 +70,8 @@
             <label control="enigmail_agentPath"
                   value="&enigmail.agentPath.label;" />
             <textbox id="enigmail_agentPath"/>
+            <button id="browse" label="&enigmail.browse.label;"
+                    oncommand="enigLocateGpg();"/>
           </hbox>
 
           <hbox>
@@ -112,7 +114,7 @@
                       oncommand="EnigUninstall()"/>
               <button id="resetPrefs"
                       label="&enigmail.resetPrefsButton.label;"
-                      oncommand="AdvResetPrefs();"/>
+                      oncommand="resetPrefs();"/>
             </hbox>
           </vbox>
 
