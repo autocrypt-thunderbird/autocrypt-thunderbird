@@ -220,7 +220,7 @@ function enigStatusLoaded (event) {
 
 
 function enigImportKeys (connType, txt) {
-  DEBUG_LOG("enigmailSearchKey.js: enigScanKeys\n");
+  DEBUG_LOG("enigmailSearchKey.js: enigImportKeys\n");
   
   window.enigRequest.keyNum++;
   window.enigRequest.progressMeter.mode = "determined";
@@ -330,7 +330,7 @@ function enigScanKeys(connType, htmlTxt) {
       enigScanHtmlKeys(htmlNode.firstChild.firstChild.data);
       break;
     case ENIG_CONN_TYPE_GPGKEYS:
-      enigScanGpgKeys(htmlTxt);
+      enigScanGpgKeys(EnigConvertGpgToUnicode(htmlTxt));
       break;
     default:
       ERROR_LOG("bizarre connType: "+connType+"\n");
