@@ -38,7 +38,13 @@
 
 function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj) {
 
-  function getFlagVal(oldVal, newVal) {
+  function getFlagVal(oldVal, node, type, conflictObj) {
+    var newVal = node.getAttribute(type);
+
+    if ((oldVal==2 && newVal==0) || (oldVal==0 && newVal==2)) {
+      conflictObj[type] = 1;
+    }
+    
     if (oldVal==0 || newVal==0) {
       return 0;
     }
@@ -51,11 +57,12 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
   if (!enigmailSvc)
     return false;
     
-  flagsObj.value = -1;
+  flagsObj.value = 0;
   matchedKeysObj.value = "";
   var encrypt=1;
   var sign   =1;
   var pgpMime=1;
+  var conflicts = { sign: 0, encrypt: 0, pgpMime: 0};
   var addresses="{"+EnigStripEmail(emailAddrs.toLowerCase()).replace(/[, ]+/g, "}{")+"}";
   var keyList=new Array;
 
@@ -82,9 +89,9 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
               var email=addrList[addrIndex];
               var i=addresses.indexOf(email);
               while (i>=0) {
-                sign   =getFlagVal(sign,    node.getAttribute("sign"));
-                encrypt=getFlagVal(encrypt, node.getAttribute("encrypt"));
-                pgpMime=getFlagVal(pgpMime, node.getAttribute("pgpMime"));
+                sign   =getFlagVal(sign,    node, "sign", conflicts);
+                encrypt=getFlagVal(encrypt, node, "encrypt", conflicts);
+                pgpMime=getFlagVal(pgpMime, node, "pgpMime", conflicts);
     
                 // extract found address
                 var keyIds=node.getAttribute("keyId");
@@ -149,8 +156,20 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
     matchedKeysObj.value = keyList.join(", ");
     matchedKeysObj.value += addresses.replace(/\{/g, ", ").replace(/\}/g, "");
   }
-  flagsObj.value = sign | (encrypt << 2) | (pgpMime << 4);
+  flagsObj.sign = sign;
+  flagsObj.encrypt = encrypt;
+  flagsObj.pgpMime = pgpMime;
+  flagsObj.value = 1;
 
+  if ((!EnigGetPref("confirmBeforeSend")) && (conflicts.encrypt ||conflicts.sign)) {
+    var msg = "\n"+"- " + EnigGetString(sign ? "signYes" : "signNo");
+    msg += "\n"+"- " + EnigGetString(encrypt ? "encryptYes" : "encryptNo");
+    if (EnigGetPref("warnOnRulesConflict")==2) {
+      EnigSetPref("warnOnRulesConflict", 0);
+    }
+    if (!EnigConfirmPref(EnigGetString("rulesConflict", msg), "warnOnRulesConflict"))
+      return false;
+  }
   return true;
 }
 

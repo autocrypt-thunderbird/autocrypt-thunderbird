@@ -40,6 +40,8 @@ pref("extensions.enigmail.supportMultiPass",false);
 pref("extensions.enigmail.useDefaultComment",false);
 pref("extensions.enigmail.useGpgAgent",false);
 pref("extensions.enigmail.usePGPMimeOption",1);
+pref("extensions.enigmail.useGpgKeysTool",true);
+pref("extensions.enigmail.warnOnRulesConflict",0);
 pref("extensions.enigmail.wrapHtmlBeforeSend",true);
 
 /*

@@ -792,7 +792,7 @@ function enigEncryptMsg(msgSendType) {
         var repeatSelection=0;
         while (repeatSelection<2) {
           if (perRecipientRules>0) {
-            var matchedKeysObj  =new Object;
+            var matchedKeysObj = new Object;
             var flagsObj=new Object;
             if (!getRecipientsKeys(toAddr, 
                                   (repeatSelection==1),
@@ -803,12 +803,8 @@ function enigEncryptMsg(msgSendType) {
             }
            
             if (matchedKeysObj.value) toAddr=matchedKeysObj.value;
-            if (flagsObj.value != -1) {
-              // sign:    0x0001 | 0x0002 => 3
-              // encrypt: 0x0004 | 0x0008 => 12
-              // pgpMime: 0x0010 | 0x0020 => 48
-              switch (flagsObj.value & 3) {
-               // sign
+            if (flagsObj.value) {
+              switch (flagsObj.sign) {
                case 0:
                  sendFlags &= ~ENIG_SIGN;
                  break;
@@ -817,8 +813,7 @@ function enigEncryptMsg(msgSendType) {
                  break;
               }
     
-              switch ((flagsObj.value & 12)>>2) {
-               // encrypt
+              switch (flagsObj.encrypt) {
                case 0:
                  sendFlags &= ~ENIG_ENCRYPT;
                  break;
@@ -827,8 +822,7 @@ function enigEncryptMsg(msgSendType) {
                  break;
               }
     
-              switch ((flagsObj.value & 48)>>4) {
-               // pgpMime
+              switch (flagsObj.pgpMime) {
                case 0:
                  sendFlags &= ~nsIEnigmail.SEND_PGP_MIME;
                  break;
