@@ -46,7 +46,7 @@
         var strBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService();
         strBundleService = strBundleService.QueryInterface(Components.interfaces.nsIStringBundleService);
         var strBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
-        var e = strBundle.GetStringFromName("Enigmail");
+        e = strBundle.GetStringFromName("Enigmail");
       }
       catch (ex) {}
       try {
