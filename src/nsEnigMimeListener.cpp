@@ -143,6 +143,9 @@ nsEnigMimeListener::~nsEnigMimeListener()
          (int) this, (int) myThread.get()));
 #endif
 
+  // Release owning refs
+  mListener = nsnull;
+  mContext = nsnull;
 }
 
 
@@ -302,9 +305,11 @@ nsEnigMimeListener::OnStopRequest(nsIRequest* aRequest,
                                   nsISupports* aContext,
                                   nsresult aStatus)
 {
-  nsresult rv;
+  nsresult rv = NS_OK;
 
   DEBUG_LOG(("nsEnigMimeListener::OnStopRequest:\n"));
+
+  // Ensure that OnStopRequest call chain does not break by failing softly
 
   if (!mRequestStarted) {
 
@@ -323,12 +328,22 @@ nsEnigMimeListener::OnStopRequest(nsIRequest* aRequest,
 
     rv = StartRequest(aRequest, aContext);
     if (NS_FAILED(rv))
-      return rv;
+      aStatus = NS_BINDING_ABORTED;
   }
 
-  return mListener->OnStopRequest(aRequest,
+  if (mListener) {
+    rv = mListener->OnStopRequest(aRequest,
                                   mContext ? mContext.get() : aContext,
                                   aStatus);
+    if (NS_FAILED(rv))
+      aStatus = NS_BINDING_ABORTED;
+  }
+
+  // Release owning refs
+  mListener = nsnull;
+  mContext = nsnull;
+
+  return (aStatus == NS_BINDING_ABORTED) ? NS_ERROR_FAILURE : NS_OK;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -380,7 +395,7 @@ nsEnigMimeListener::OnDataAvailable(nsIRequest* aRequest,
       return rv;
   }
 
-  if (!mSkipBody && (aLength > 0)) {
+  if (!mSkipBody && (aLength > 0) && mListener) {
     // Transmit body data unread
     rv = mListener->OnDataAvailable(aRequest,
                                     mContext ? mContext.get() : aContext,
@@ -407,10 +422,12 @@ nsEnigMimeListener::StartRequest(nsIRequest* aRequest, nsISupports* aContext)
     ParseMimeHeaders(mHeaders.get(), mHeaders.Length());
   }
 
-  rv = mListener->OnStartRequest(aRequest,
-                                 mContext ? mContext.get() : aContext);
-  if (NS_FAILED(rv))
-    return rv;
+  if (mListener) {
+    rv = mListener->OnStartRequest(aRequest,
+                                   mContext ? mContext.get() : aContext);
+    if (NS_FAILED(rv))
+      return rv;
+  }
 
   mRequestStarted = PR_TRUE;
 
@@ -426,14 +443,16 @@ nsEnigMimeListener::StartRequest(nsIRequest* aRequest, nsISupports* aContext)
     if (NS_FAILED(rv))
         return rv;
 
-    rv = mListener->OnDataAvailable(aRequest,
-                                    mContext ? mContext.get() : aContext,
-                                    inStream, 0, mDataStr.Length());
+    if (mListener) {
+      rv = mListener->OnDataAvailable(aRequest,
+                                      mContext ? mContext.get() : aContext,
+                                      inStream, 0, mDataStr.Length());
+      if (NS_FAILED(rv))
+        return rv;
+    }
 
     mDataOffset += mDataStr.Length();
     mDataStr = "";
-    if (NS_FAILED(rv))
-      return rv;
   }
 
   return NS_OK;
@@ -639,6 +658,9 @@ nsEnigMimeListener::ParseHeader(const char* header, PRUint32 count)
     // Extract value to left of parameters
     buf.Left(headerValue, semicolonOffset);
   }
+
+  // Trim leading and trailing spaces in header value
+  headerValue.Trim(" ");
 
   if (headerKey.Equals("content-type")) {
     mContentType = headerValue;

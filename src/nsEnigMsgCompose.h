@@ -89,7 +89,7 @@ protected:
     nsOutputFileStream*           mStream;
 
     nsCOMPtr<nsIMsgComposeSecure> mMsgComposeSecure;
-    nsCOMPtr<nsIIPCBuffer>        mErrBuffer;
+    nsCOMPtr<nsIIPCBuffer>        mOutBuffer;
     nsCOMPtr<nsIPipeTransport>    mPipeTrans;
 
 };

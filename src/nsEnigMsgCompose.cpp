@@ -39,6 +39,7 @@
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
 #include "nsXPIDLString.h"
+#include "nsIIPCBuffer.h"
 #include "nsIMsgCompFields.h"
 #include "nsIEnigMsgCompFields.h"
 #include "nsEnigMsgCompose.h"
@@ -135,7 +136,7 @@ nsEnigMsgCompose::nsEnigMsgCompose()
     mStream(0),
 
     mMsgComposeSecure(nsnull),
-    mErrBuffer(nsnull),
+    mOutBuffer(nsnull),
     mPipeTrans(nsnull)
 {
   nsresult rv;
@@ -174,10 +175,11 @@ nsEnigMsgCompose::~nsEnigMsgCompose()
     mPipeTrans = nsnull;
   }
 
-  if (mErrBuffer) {
-    mErrBuffer->Shutdown();
-    mErrBuffer = nsnull;
+  if (mOutBuffer) {
+    mOutBuffer->Shutdown();
+    mOutBuffer = nsnull;
   }
+
 }
 
 
@@ -298,6 +300,16 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
 
   DEBUG_LOG(("nsEnigMsgCompose::BeginCryptoEncapsulation: sendFlags=%x\n", mSendFlags));
 
+  mOutBuffer = do_CreateInstance(NS_IPCBUFFER_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) return rv;
+
+  // Prepare to copy data via IPCBuffer to output file stream
+  rv = mOutBuffer->Open(0, PR_FALSE);
+  if (NS_FAILED(rv)) return rv;
+
+  rv = mOutBuffer->SetOutputFileStream(mStream);
+  if (NS_FAILED(rv)) return rv;
+
   nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
 
@@ -307,7 +319,7 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
                                         mSenderEmailAddr.get(),
                                         mRecipients.get(),
                                         mSendFlags,
-                                        (nsIStreamListener*) this,
+                NS_STATIC_CAST(nsIStreamListener*, mOutBuffer),
                                         PR_TRUE,
                                         getter_Copies(errorMsg),
                                         getter_AddRefs(mPipeTrans) );
@@ -344,6 +356,14 @@ nsEnigMsgCompose::FinishCryptoEncapsulation(PRBool aAbort,
   if (NS_FAILED(rv)) return rv;
 
   DEBUG_LOG(("nsEnigMsgCompose::FinishCryptoEncapsulation: exitCode=%d\n", exitCode));
+
+  // Count STDOUT bytes
+  rv = mOutBuffer->GetTotalBytes(&mOutputLen);
+  if (NS_FAILED(rv)) return rv;
+
+  // Shutdown STDOUT buffer
+  mOutBuffer->Shutdown();
+  mOutBuffer = nsnull;
 
   // Extract STDERR output
   nsCOMPtr<nsIPipeListener> errListener;
