@@ -256,11 +256,14 @@ interface nsIEnigmail : nsISupports
 
   boolean selectPanel(in string url);
 
+  /* manage GPG key list */
   string getUserIdList (in boolean secretOnly,
                       in boolean refresh,
                       out long exitCode,
                       out unsigned long statusFlags,
                       out wstring errorMsg);
+
+  void invalidateUserIdList();
 
   string encryptAttachment (in nsIDOMWindow parent,
                       in string fromMailAddr,

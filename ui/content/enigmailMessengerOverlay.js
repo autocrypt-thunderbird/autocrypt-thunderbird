@@ -1852,8 +1852,12 @@ function enigReceiveKeyTerminate (terminateArg, ipcRequest) {
     DEBUG_LOG("enigmailMessengerOverlay.js: enigReceiveKeyTerminate: exitCode = "+exitCode+"\n");
   }
 
+  var enigmailSvc = GetEnigmailSvc();
   if (exitCode==0) {
     enigMessageReload(false);
+    if (enigmailSvc) {
+      enigmailSvc.invalidateUserIdList();
+    }    
   }
   else {
     var errorMsg="";
@@ -1862,7 +1866,6 @@ function enigReceiveKeyTerminate (terminateArg, ipcRequest) {
 
       if (keygenConsole && keygenConsole.hasNewData()) {
         errorMsg = keygenConsole.getData();
-        var enigmailSvc = GetEnigmailSvc();
         if (enigmailSvc) {
           var statusFlagsObj=new Object();
           var statusMsgObj=new Object();

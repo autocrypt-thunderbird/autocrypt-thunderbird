@@ -3337,85 +3337,7 @@ function (parent, uiFlags, msgText, keyId, errorMsgObj) {
         DEBUG_LOG("enigmail.js: Enigmail.importKey: IMPORTED "+pubKeyId+"\n");
       }
     }
-  }
-
-  return exitCodeObj.value;
-}
-
-
-// ExitCode == 0  => success
-// ExitCode > 0   => error
-// ExitCode == -1 => Cancelled by user
-Enigmail.prototype.importKey =
-function (parent, uiFlags, msgText, keyId, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.importKey: id="+keyId+", "+uiFlags+"\n");
-
-  if (!this.initialized) {
-    errorMsgObj.value = EnigGetString("notInit");
-    return 1;
-  }
-
-  var beginIndexObj = new Object();
-  var endIndexObj   = new Object();
-  var indentStrObj   = new Object();
-  var blockType = this.locateArmoredBlock(msgText, 0, "",
-                                          beginIndexObj, endIndexObj,
-                                          indentStrObj);
-
-  if (!blockType) {
-    errorMsgObj.value = EnigGetString("noPGPblock");
-    return 1;
-  }
-
-  if (blockType != "PUBLIC KEY BLOCK") {
-    errorMsgObj.value = EnigGetString("notFirstBlock");
-    return 1;
-  }
-
-  var pgpBlock = msgText.substr(beginIndexObj.value,
-                                endIndexObj.value - beginIndexObj.value + 1);
-
-  var interactive = uiFlags & nsIEnigmail.UI_INTERACTIVE;
-
-  if (interactive) {
-    var confirmMsg = EnigGetString("importKeyConfirm");
-
-    if (!this.confirmMsg(parent, confirmMsg)) {
-      errorMsgObj.value = EnigGetString("failCancel");
-      return -1;
-    }
-  }
-
-  var command = this.agentPath;
-
-  if (this.agentType == "pgp") {
-    command += PGP_BATCH_OPTS + " -ft -ka";
-
-  } else {
-    command += GPG_BATCH_OPTS + " --import";
-  }
-
-  var exitCodeObj    = new Object();
-  var statusFlagsObj = new Object();
-  var statusMsgObj   = new Object();
-
-  var output = gEnigmailSvc.execCmd(command, null, pgpBlock,
-                      exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
-
-  var statusMsg = statusMsgObj.value;
-
-  var pubKeyId;
-
-  if (exitCodeObj.value == 0) {
-    // Normal return
-    if (statusMsg && (statusMsg.search("IMPORTED ") > -1)) {
-      var matches = statusMsg.match(/(^|\n)IMPORTED (\w{8})(\w{8})/);
-
-      if (matches && (matches.length > 3)) {
-        pubKeyId = "0x" + matches[3];
-        DEBUG_LOG("enigmail.js: Enigmail.importKey: IMPORTED "+pubKeyId+"\n");
-      }
-    }
+    this.invalidateUserIdList();
   }
 
   return exitCodeObj.value;
@@ -3768,6 +3690,11 @@ function EnigGetString(aStr) {
   return null;
 }
 
+Enigmail.prototype.invalidateUserIdList = 
+function () {
+  // clean the userIdList to force reloading the list at next usage
+  this.userIdList= null;
+}
 
 Enigmail.prototype.getUserIdList =
 function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {

@@ -110,6 +110,11 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
 
    enigmailKeygenCloseRequest();
 
+   var enigmailSvc = GetEnigmailSvc();
+   if (!enigmailSvc) {
+     EnigAlert(EnigGetString("accessError"));
+   }
+   enigmailSvc.invalidateUserIdList();
    window.close();
 }
 
