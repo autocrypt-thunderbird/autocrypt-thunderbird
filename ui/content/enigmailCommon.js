@@ -1093,7 +1093,12 @@ function EnigViewDebugLog() {
 
   var logFileURL = "file:///" + logDirectory + "/enigdbug.txt";
 
-  window.open(logFileURL, 'Enigmail Debug Log');
+  EnigOpenWin("enigmail:logFile",
+              "chrome://enigmail/content/enigmailViewFile.xul",
+              "chrome,resizable",
+              [ logFileURL, "Enigmail Debug Log"]);
+
+//  window.open(logFileURL, 'Enigmail Debug Log');
 }
 
 function EnigKeygen() {
@@ -1404,5 +1409,23 @@ function EnigRulesEditor() {
   EnigOpenWin("enigmail:rulesEditor",
               "chrome://enigmail/content/enigmailRulesEditor.xul",
               "dialog,centerscreen,resizable");
+}
+
+// create new PGP Rule
+function EnigNewRule(emailAddress) {    
+  // make sure the rules database is loaded
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return false;
+   var rulesListObj= new Object;
+
+  // open rule dialog
+  enigmailSvc.getRulesData(rulesListObj);
+  var inputObj=new Object;
+  var resultObj=new Object;
+  inputObj.toAddress="{"+emailAddress+"}";
+  inputObj.options="";
+  inputObj.command = "add";
+  window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
 }
 
