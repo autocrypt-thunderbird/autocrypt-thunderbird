@@ -62,11 +62,9 @@
                        "userIdValue",
                        "enigmail_encryptToSelf",
                        "enigmail_alwaysTrustSend",
-                       "timeoutEnabled",
                        "maxIdleMinutes",
                        "enigmail_autoDecrypt",
-                       "enigmail_captureWebMail",
-                       "enigmail_replaceNonBreakingSpace"
+                       "enigmail_captureWebMail"
                        ];
   ]]>
   </script>
@@ -133,13 +131,7 @@
     <separator/>
 
     <hbox autostretch="never">
-      <checkbox id="timeoutEnabled"
-              label="&enigmail.timeoutEnabled.label;"
-              pref="true"
-              preftype="bool"
-              prefstring="extensions.enigmail.timeoutEnabled"
-              prefattribute="checked"
-              oncommand="setDisables();"/>
+      <description>&enigmail.maxIdleMinutesHead.label;</description>
 
       <textbox id="maxIdleMinutes"
               size="4"
@@ -147,7 +139,7 @@
               preftype="int"
               prefstring="extensions.enigmail.maxIdleMinutes"/>
 
-      <description>&enigmail.maxIdleMinutes.label;</description>
+      <description>&enigmail.maxIdleMinutesTail.label;</description>
 
     </hbox>
 
@@ -157,15 +149,6 @@
               pref="true"
               preftype="bool"
               prefstring="extensions.enigmail.autoDecrypt"
-              prefattribute="checked"/>
-    </hbox>
-
-    <hbox autostretch="never">
-      <checkbox id="enigmail_replaceNonBreakingSpace"
-              label="&enigmail.replaceNonBreakingSpace.label;"
-              pref="true"
-              preftype="bool"
-              prefstring="extensions.enigmail.replaceNonBreakingSpace"
               prefattribute="checked"/>
     </hbox>
 

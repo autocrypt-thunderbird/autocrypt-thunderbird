@@ -18,20 +18,18 @@ gPlatform = httpHandler.platform;
 DEBUG_LOG("pref-enigmail.js: oscpu="+gOScpu+", platform="+gPlatform+"\n");
 
 function init_pref_enigmail() {
-  dump("pref-enigmail.js: init_pref_enigmail\n");
+  DEBUG_LOG("pref-enigmail.js: init_pref_enigmail\n");
   parent.initPanel('chrome://enigmail/content/pref-enigmail.xul');
 
-  dump("pref-enigmail.js: init_pref_enigmail\n");
   EnigSetDefaultPrefs();
 
   EnigSetPref("configuredVersion", gEnigmailVersion);
 
-  dump("pref-enigmail.js: init_pref_enigmail\n");
   setDisables(true);
 }
 
 function setDisables(initializing) {
-  dump("pref-enigmail.js: setDisables: "+initializing+"\n");
+  DEBUG_LOG("pref-enigmail.js: setDisables: "+initializing+"\n");
 
   var passivePrivacy  = document.getElementById("passivePrivacy");
   var userIdSource    = document.getElementById("userIdSource");
@@ -61,18 +59,6 @@ function setDisables(initializing) {
   element.setAttribute("selected", "true");
 
   userIdSource.value = userIdSourceValue;
-
-  var timeoutEnabled = document.getElementById("timeoutEnabled");
-  var maxIdleMinutes = document.getElementById("maxIdleMinutes");
-
-  var timeoutEnabledChecked = initializing ? EnigGetPref("timeoutEnabled")
-                                           : timeoutEnabled.checked;
-
-  dump("pref-enigmail.js: timeoutEnabledChecked="+timeoutEnabledChecked+"\n");
-  maxIdleMinutes.disabled = !timeoutEnabledChecked;
-
-  if (parent.hPrefWindow.getPrefIsLocked(maxIdleMinutes.getAttribute("prefstring")) )
-    maxIdleMinutes.disabled = true;
 }
 
 

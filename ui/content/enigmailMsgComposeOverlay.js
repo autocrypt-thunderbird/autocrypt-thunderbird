@@ -62,8 +62,6 @@ function enigSend(encryptFlags) {
      if (EnigConfirm("Failed to initialize Enigmail; send unencrypted email?\n"))
         goDoCommand('cmd_sendButton');
 
-     EnigAlert("Please uninstall Enigmail using the Edit->Preferences->Privacy&Security->Enigmail menu to avoid this alert in the future");
-
      return;
   }
 
@@ -155,7 +153,7 @@ function enigSend(encryptFlags) {
                                        exitCodeObj, errorMsgObj);
 
        var exitCode = exitCodeObj.value;
-       var errorMsg  = errorMsgObj.value;
+       var errorMsg = errorMsgObj.value;
     
        if (exitCode != 0) {
          EnigAlert("Error in encrypting and/or signing message. Send operation aborted.\n"+errorMsg);

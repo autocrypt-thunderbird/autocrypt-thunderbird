@@ -27,7 +27,7 @@ function enigMessageDecrypt(event) {
     var msgFrame = window.frames["messagepane"];
     DEBUG_LOG("enigmailMessengerOverlay.js: msgFrame="+msgFrame+"\n");
 
-    EnigDumpHTML(msgFrame.document.documentElement);
+    ///EnigDumpHTML(msgFrame.document.documentElement);
 
     var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
     DEBUG_LOG("enigmailMessengerOverlay.js: bodyElement="+bodyElement+"\n");

@@ -32,6 +32,7 @@
 
 #include "nsISupports.idl"
 
+interface nsIPrefBranch;
 interface nsIPipeConsole;
 interface nsIPipeTransport;
 
@@ -51,7 +52,17 @@ interface nsIEnigmail : nsISupports
 
   attribute nsIPipeTransport keygenProcess;
 
-  readonly attribute boolean haveDefaultPassphrase;
+  attribute long maxIdleMinutes;
+
+  attribute boolean initialized;
+  attribute boolean initializationAttempted;
+  attribute  string initializationError;
+
+  void initialize(in nsIPrefBranch enigmailPrefs);
+
+  boolean stillActive();
+
+  boolean haveDefaultPassphrase();
 
   void setDefaultPassphrase(in string passphrase);
 
@@ -66,13 +77,15 @@ interface nsIEnigmail : nsISupports
                         in string  toMailAddr,
                         in unsigned long encryptFlags,
                         in string  passphrase,
-                        out long   statusCode,
+                        out long   exitCode,
+                        out string errorMsg,
                         out string statusMsg);
 
   string decryptMessage(in string  cipherText,
                         in boolean verifyOnly,
                         in string  passphrase,
-                        out long   statusCode,
+                        out long   exitCode,
+                        out string errorMsg,
                         out string statusMsg);
 
   nsIPipeTransport generateKey(in string name,

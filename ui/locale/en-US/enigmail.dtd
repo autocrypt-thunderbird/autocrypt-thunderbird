@@ -29,12 +29,12 @@
 <!ENTITY enigmail.encryptToSelf.label     "Encrypt to self when sending">
 <!ENTITY enigmail.alwaysTrustSend.label   "Always trust user ID when sending">
 
-<!ENTITY enigmail.timeoutEnabled.label    "Forget passphrase after">
-<!ENTITY enigmail.maxIdleMinutes.label    "of minutes of idle time">
+<!ENTITY enigmail.maxIdleMinutesHead.label "Remember password for">
+<!ENTITY enigmail.maxIdleMinutesTail.label "minutes of idle time">
 
 <!ENTITY enigmail.autoDecrypt.label       "Automatically decrypt/verify messages (slow?)">
 <!ENTITY enigmail.replaceNonBreakingSpace.label "Replace non-breaking space with white space (workaround)">
-<!ENTITY enigmail.captureWebMail.label	  "Capture webmail">
+<!ENTITY enigmail.captureWebMail.label	  "Capture webmail (experimental)">
 
 <!ENTITY enigmail.prefsHelp.label	  "Help">
 <!ENTITY enigmail.resetPrefs.label	  "Reset Preferences">
