@@ -17,7 +17,7 @@
 
 #button-enigmail-decrypt[disabled]
   {
-    -moz-image-region: rect(60px 30px 90px 0px) !important;
+    -moz-image-region: rect(60px 30px 90px 0px);
   }
 
 toolbar[iconsize="small"]  #button-enigmail-decrypt
@@ -33,7 +33,7 @@ toolbar[iconsize="small"] #button-enigmail-decrypt:hover
 
 toolbar[iconsize="small"] #button-enigmail-decrypt[disabled]
   {
-    -moz-image-region: rect(40px 20px 60px 0px) !important;
+    -moz-image-region: rect(40px 20px 60px 0px);
   }
 
 #button-enigmail-send {
@@ -46,7 +46,7 @@ toolbar[iconsize="small"] #button-enigmail-decrypt[disabled]
 }
 
 #button-enigmail-send[disabled] {
-  -moz-image-region: rect(60px 30px 90px 0px) !important;
+  -moz-image-region: rect(60px 30px 90px 0px);
 }
 
 toolbar[iconsize="small"] #button-enigmail-send {
@@ -59,13 +59,13 @@ toolbar[iconsize="small"] #button-enigmail-send:hover {
 }
 
 toolbar[iconsize="small"] #button-enigmail-send[disabled] {
-  -moz-image-region: rect(40px 20px 60px 0px) !important;
+  -moz-image-region: rect(40px 20px 60px 0px);
 }
 
 .action-box { width: 100px }
 
 #expandedEnigmailBox {
- background-color:#d8e0e8 !important;
+ background-color:#d8e0e8;
 }
 
 .enigmailHeaderBoxLabelSignatureOk {
