@@ -104,11 +104,6 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
   visibility: visible;
 }
 
-#enigmail-status-bar[signed="ifencrypted"] #enigmail-signed-status {
-  list-style-image: url("chrome://enigmail/skin/enigSignIfEncrypted.png");
-  visibility: visible;
-}
-
 #enigmail-status-bar #enigmail-encrypted-status {
   list-style-image: none;
   visibility: collapse;
@@ -126,11 +121,6 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
 
 #enigmail-status-bar[encrypted="inactive"] #enigmail-encrypted-status {
   list-style-image: url("chrome://enigmail/skin/enigEncInactive.png");
-  visibility: visible;
-}
-
-#enigmail-status-bar[encrypted="unknown"] #enigmail-encrypted-status {
-  list-style-image: url("chrome://enigmail/skin/enigEncIfPossible.png");
   visibility: visible;
 }
 
