@@ -1,0 +1,123 @@
+<!--
+  The contents of this file are subject to the Mozilla Public
+  License Version 1.1 (the "MPL"); you may not use this file
+  except in compliance with the MPL. You may obtain a copy of
+  the MPL at http://www.mozilla.org/MPL/
+
+  Software distributed under the MPL is distributed on an "AS
+  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  implied. See the MPL for the specific language governing
+  rights and limitations under the MPL.
+
+  The Original Code is Enigmail.
+
+  The Initial Developer of this code is Patrick Brunschwig.
+  Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+  are Copyright (C) 2004 Patrick Brunschwig.
+  All Rights Reserved.
+
+  Contributor(s):
+
+  Alternatively, the contents of this file may be used under the
+  terms of the GNU General Public License (the "GPL"), in which case
+  the provisions of the GPL are applicable instead of
+  those above. If you wish to allow use of your version of this
+  file only under the terms of the GPL and not to allow
+  others to use your version of this file under the MPL, indicate
+  your decision by deleting the provisions above and replace them
+  with the notice and other provisions required by the GPL.
+  If you do not delete the provisions above, a recipient
+  may use your version of this file under either the MPL or the
+  GPL.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="enigmailSignKeyDlg"
+        title="&enigmail.addUidDlg.title;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        ondialogaccept="return onAccept();">
+
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+
+  <vbox>
+    <grid>
+      <columns>
+        <column/>
+        <column/>
+      </columns>
+      <rows autostretch="never">
+        <row>
+          <label value="&enigmail.addUidDlg.name.label;"/>
+          <textbox id="addUid_name" size="30"/>
+        </row>
+        <row>
+          <label value="&enigmail.addUidDlg.email.label;"/>
+          <textbox id="addUid_email" size="30"/>
+        </row>
+        <row>
+          <label value="&enigmail.addUidDlg.comment.label;"/>
+          <textbox id="addUid_comment" size="30"/>
+        </row>
+      </rows>
+    </grid>
+  </vbox>
+  <script type="application/x-javascript">
+  <![CDATA[
+    EnigInitCommon("enigmailAddUidDlg");
+    
+   
+    function onAccept() {
+      var name = document.getElementById("addUid_name");
+      var email = document.getElementById("addUid_email");
+      var comment = document.getElementById("addUid_comment");
+      
+      if ((email.value.search(/^ *$/) == 0) || (name.value.search(/^ *$/) == 0)) {
+        EnigAlert("You have to fill in a name and an email address");
+        return false;
+      }
+      if (name.value.replace(/ *$/, "").length <5) {
+        EnigAlert("The name must at least have 5 characters");
+        return false;
+      }
+      if (email.value.search(/.@./)<0) {
+        EnigAlert("You must specify a valid email address");
+        return false;
+      }
+      var enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc) {
+        EnigAlert(EnigGetString("accessError"));
+        return true;
+      }
+      
+      var errorMsgObj = new Object();
+      var r = enigmailSvc.addUid(window,
+                                  window.arguments[0].keyId,
+                                  name.value,
+                                  email.value,
+                                  comment.value,
+                                  errorMsgObj);
+    
+     if (r != 0) {
+        EnigAlert(EnigGetString("addUidFailed")+"\n\n"+errorMsgObj.value);
+        return false;
+      }
+      else {
+        EnigAlert(EnigGetString("addUidOK"));
+      }
+      return true;
+    }
+  ]]>
+  </script>
+
+</dialog>
+
