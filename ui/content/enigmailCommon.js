@@ -44,15 +44,40 @@ function CreateFileStream(filePath, permissions) {
   var localFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
   localFile.initWithPath(filePath);
 
-  var fileStream = Components.classes[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIFileOutputStream);
+  if (localFile.exists()) {
+    if (localFile.isDirectory() || !localFile.isWritable())
+      throw Components.results.NS_ERROR_FAILURE;
+    if (!permissions)
+      permissions = localFile.permissions;
+  }
 
   if (!permissions)
     permissions = DEFAULT_FILE_PERMS;
+
   var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
+
+  var fileStream = Components.classes[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIFileOutputStream);
 
   fileStream.init(localFile, flags, permissions);
 
   return fileStream;
+}
+
+function WriteFileContents(filePath, data, permissions) {
+
+  WRITE_LOG("enigmailCommon.js: WriteFileContents: file="+filePath+"\n");
+
+  var fileOutStream = CreateFileStream(filePath, permissions);
+
+  if (data.length) {
+    if (fileOutStream.write(data, data.length) != data.length)
+      throw Components.results.NS_ERROR_FAILURE;
+
+    fileOutStream.flush();
+  }
+  fileOutStream.close();
+
+  return;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

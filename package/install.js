@@ -21,9 +21,9 @@ err = addDirectory("", "components", fComponents, "");
 if (err != SUCCESS)
    cancelInstall(err);
 
-err = addDirectory("", "enigmail",   fProfile,    "enigmail");
-if (err != SUCCESS)
-   cancelInstall(err);
+///err = addDirectory("", "enigmail",   fProfile,    "enigmail");
+///if (err != SUCCESS)
+///   cancelInstall(err);
 
 // Register chrome
 registerChrome(PACKAGE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "content/enigmail/");

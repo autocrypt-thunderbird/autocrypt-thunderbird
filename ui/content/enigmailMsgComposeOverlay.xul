@@ -56,13 +56,13 @@
              label="Enigmail console"
              oncommand="window.open('enigmail:console');" />
 
+        <menuitem id="enigmail_keygen"
+             label="Generate key"
+             oncommand="EnigGenerateKey();" />
+
         <menuitem id="enigmail_about"
              label="About Enigmail"
              oncommand="window.open('enigmail:about');" />
-
-        <menuitem id="enigmail_keygen"
-             label="Generate Key"
-             oncommand="EnigGenerateKey();" />
 
       </menupopup>
     </menu>
