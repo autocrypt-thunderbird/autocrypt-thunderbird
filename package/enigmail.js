@@ -1459,8 +1459,24 @@ function (domWindow, version, prefBranch) {
   obsServ.addObserver(this, NS_XPCOM_SHUTDOWN_OBSERVER_ID, false);
 
   this.stillActive();
-
   this.initialized = true;
+
+  var evalVersion = this.agentVersion.match(/^\d+\.\d+/)
+  if (evalVersion && evalVersion[0]<"1.2") {
+    var count=1;
+    try {
+      count=this.prefBranch.getIntPref("gpgVersionWarnCount");
+    }
+    catch (ex) {}
+    try {
+      if (count>0) {
+        this.alertMsg(domWindow, EnigGetString("oldGpgVersion", gpgVersion));
+        this.prefBranch.setIntPref("gpgVersionWarnCount",0);
+      }
+    }
+    catch (ex)
+    {}
+  }
 
   DEBUG_LOG("enigmail.js: Enigmail.initialize: END\n");
 }
