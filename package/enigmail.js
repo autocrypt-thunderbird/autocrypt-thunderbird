@@ -1499,7 +1499,9 @@ function () {
 
         var dirs=agentPath.split(RegExp(this.isDosLike ? "\\\\" : "/"));
         for (var i=0; i< dirs.length; i++) {
-          pathDir.append(dirs[i]);
+          if (dirs[i]!=".") {
+            pathDir.append(dirs[i]);
+          }
         }
       }
       else {
