@@ -44,10 +44,12 @@ interface nsIEnigmail : nsISupports
 
   string encryptMessage(in string plainText,
                         in string toMailAddr,
-                        in string passphrase);
+                        in string passphrase,
+                        out string statusLine);
 
   string decryptMessage(in string cipherText,
-                        in string passphrase);
+                        in string passphrase,
+                        out string statusLine);
 };
 
 %{C++

@@ -531,7 +531,7 @@ function (command, input, errMessagesObj, statusObj, exitCodeObj) {
 
 
 Enigmail.prototype.encryptMessage = 
-function (plainText, toMailAddr, passphrase) {
+function (plainText, toMailAddr, passphrase, statusLineObj) {
   dump("enigmail.js: Enigmail.encryptMessage: To "+toMailAddr+"\n");
 
   var encryptCommand = "gpg --batch --no-tty --encrypt --armor --sign --passphrase-fd 0 --status-fd 2 --recipient "+toMailAddr;
@@ -559,11 +559,14 @@ function (plainText, toMailAddr, passphrase) {
     throw Components.results.NS_ERROR_FAILURE;
   }
 
+  statusLineObj.value = "** status line **";
+
   return cipherText;
 }
 
+
 Enigmail.prototype.decryptMessage = 
-function (cipherText, passphrase) {
+function (cipherText, passphrase, statusLineObj) {
   dump("enigmail.js: Enigmail.decryptMessage: \n");
 
   var decryptCommand = "gpg --batch --no-tty --decrypt --passphrase-fd 0 --status-fd 2";
@@ -592,6 +595,8 @@ function (cipherText, passphrase) {
 
     throw Components.results.NS_ERROR_FAILURE;
   }
+
+  statusLineObj.value = "** status line **";
 
   return plainText;
 }

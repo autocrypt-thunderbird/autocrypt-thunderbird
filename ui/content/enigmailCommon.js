@@ -74,7 +74,7 @@ function EnigPassphrase() {
   return passwdObj.value;
 }
 
-function EnigEncryptMessage(plainText, toMailAddr) {
+function EnigEncryptMessage(plainText, toMailAddr, statusLineObj) {
   dump("enigmailCommon.js: EnigEncryptMessage: To "+toMailAddr+"\n");
 
   var passphrase = null;
@@ -82,12 +82,12 @@ function EnigEncryptMessage(plainText, toMailAddr) {
     passphrase = EnigPassphrase();
 
   var cipherText = gEnigmailSvc.encryptMessage(plainText, toMailAddr,
-	                                       passphrase);
+	                                       passphrase, statusLineObj);
 
   return cipherText;
 }
 
-function EnigDecryptMessage(cipherText) {
+function EnigDecryptMessage(cipherText, statusLineObj) {
   dump("enigmailCommon.js: EnigDecryptMessage: \n");
 
   var passphrase = null;
@@ -97,7 +97,8 @@ function EnigDecryptMessage(cipherText) {
     passphrase = EnigPassphrase();
 
   var plainText = gEnigmailSvc.decryptMessage(cipherText,
-                                              passphrase);
+                                              passphrase,
+                                              statusLineObj);
 
   return plainText;
 }
@@ -150,7 +151,7 @@ function EnigDumpHTML(node)
             while(index < countAttrs) {
                 att = attributes[index];
                 if (null != att) {
-                    dump(" " + att.value)
+                    dump(" "+att.name+"='"+att.value+"'")
                 }
                 index++
             }
@@ -188,9 +189,13 @@ function EnigTest() {
   var plainText = "TEST MESSAGE 123\n";
   var toMailAddr = "r_sarava@yahoo.com";
 
-  var cipherText = EnigEncryptMessage(plainText, toMailAddr);
+  var statusLineObj = new Object();
+  var cipherText = EnigEncryptMessage(plainText, toMailAddr, statusLineObj);
   dump("enigmailCommon.js: enigTest: cipherText = "+cipherText+"\n");
+  dump("enigmailCommon.js: enigTest: statusLine = "+statusLineObj.value+"\n");
 
-  var decryptedText = EnigDecryptMessage(cipherText);
+  var statusLineObj = new Object();
+  var decryptedText = EnigDecryptMessage(cipherText, statusLineObj);
   dump("enigmailCommon.js: enigTest: decryptedText = "+decryptedText+"\n");
+  dump("enigmailCommon.js: enigTest: statusLine = "+statusLineObj.value+"\n");
 }

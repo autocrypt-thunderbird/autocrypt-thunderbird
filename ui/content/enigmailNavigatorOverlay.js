@@ -148,7 +148,8 @@ function enigYahooCompose() {
   var toAddr = msgFrame.document.Compose.To.value;
   dump("enigYahooCompose: To="+toAddr+"\n");
 
-  var cipherText = EnigEncryptMessage(plainText, toAddr); 
+  var statusLineObj = new Object();
+  var cipherText = EnigEncryptMessage(plainText, toAddr, statusLineObj); 
 
   msgFrame.document.Compose.Body.value = cipherText;
 
@@ -168,7 +169,8 @@ function enigYahooShowLetter() {
 
   dump("enigYahooShowLetter: cipherText='"+cipherText+"'\n");
 
-  var plainText = EnigDecryptMessage(cipherText);
+  var statusLineObj = new Object();
+  var plainText = EnigDecryptMessage(cipherText, statusLineObj);
 
   while (preElement.hasChildNodes())
       preElement.removeChild(preElement.childNodes[0]);
@@ -224,7 +226,8 @@ function enigHotmailCompose() {
   var toAddr = msgFrame.document.composeform.to.value;
   dump("enigHotmailCompose: To="+toAddr+"\n");
 
-  var cipherText = EnigEncryptMessage(plainText, toAddr); 
+  var statusLineObj = new Object();
+  var cipherText = EnigEncryptMessage(plainText, toAddr, statusLineObj); 
 
   msgFrame.document.composeform.body.value = cipherText;
 
@@ -244,7 +247,8 @@ function enigHotmailShowLetter() {
 
   dump("enigHotmailShowLetter: cipherText='"+cipherText+"'\n");
 
-  var plainText = EnigDecryptMessage(cipherText);
+  var statusLineObj = new Object();
+  var plainText = EnigDecryptMessage(cipherText, statusLineObj);
 
   while (preElement.hasChildNodes())
       preElement.removeChild(preElement.childNodes[0]);

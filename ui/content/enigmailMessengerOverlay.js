@@ -29,9 +29,28 @@ function enigDecryptMessage() {
     var cipherText = EnigGetDeepText(bodyElement);
     dump("enigmailMessengerOverlay.js: cipherText='"+cipherText+"'\n");
 
-    var plainText = EnigDecryptMessage(cipherText);
+    var statusLineObj = new Object();
+    var plainText = EnigDecryptMessage(cipherText, statusLineObj);
     dump("enigmailMessengerOverlay.js: plainText='"+plainText+"'\n");
+
+    var statusBox = document.getElementById("expandedEnigmailBox");
+    var statusText = document.getElementById("expandedEnigmailText");
+
+    statusText.setAttribute("value", statusLineObj.value);
+    statusBox.removeAttribute("collapsed");
+
+    // Clear HTML body
+    while (bodyElement.hasChildNodes())
+        bodyElement.removeChild(bodyElement.childNodes[0]);
+
+    var newPlainTextNode  = msgFrame.document.createTextNode(plainText);
+    var newPreElement     = msgFrame.document.createElement("pre");
+    newPreElement.appendChild(newPlainTextNode);
+
+    var newDivElement     = msgFrame.document.createElement("div");
+    newDivElement.appendChild(newPreElement);
+
+    bodyElement.appendChild(newDivElement);
+
 }
-
-
 

@@ -16,15 +16,15 @@
 
     <toolbar id="composeToolbar">
       <box id="toolbar_button_box">
-       <toolbarseparator class="toolbarseparator-primary"
-                         position="8" />
+
        <button class="button-toolbar-2 top" 
                id="button-enigmail-send"
                label="EnigSend"
                tooltip="aTooltip" tooltiptext="Enigmail send (encrypt/sign)" 
-               command="cmd_sendButton"
-               position="9"
+               oncommand="enigSend();"
+               position="1"
                />
+
        </box>
     </toolbar>
 

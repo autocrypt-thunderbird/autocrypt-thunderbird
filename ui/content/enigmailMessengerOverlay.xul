@@ -31,4 +31,15 @@
     </toolbar>
   </toolbox>
 
+  <box id="messagepanebox">
+    <box id="expandedEnigmailBox" class="headerBox"
+          position="1"
+          collapsed="true">
+       <hbox class="headerValueBox">
+         <text class="headerdisplayname" value="Enigmail:"/>
+       </hbox>
+       <text id="expandedEnigmailText" value=""/>
+    </box>
+  </box>
+
 </overlay>
