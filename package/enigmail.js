@@ -822,7 +822,11 @@ function (command, input, passFD, errMessagesObj, statusObj, exitCodeObj) {
   if (passFD)
     envList.push("PGPPASSFD=0");
 
-  var passEnv = ["HOME", "GNUPGHOME", "PGPPATH"];
+  var passEnv = [ "PGPPATH", "GNUPGHOME",
+                  "COMSPEC", "DISPLAY", "HOME", "HOMEPATH",
+                  "LD_LIBRARY_PATH", "MOZILLA_FIVE_HOME",
+                  "PATH", "PATHEXT", "SHELL", "SYSTEMDRIVE", "SYSTEMROOT",
+                  "TEMP", "TMPDIR", "WINDIR" ];
 
   for (var j=0; j<passEnv.length; j++) {
     var envName = passEnv[j];
