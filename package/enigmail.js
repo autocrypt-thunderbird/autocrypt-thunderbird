@@ -1799,6 +1799,10 @@ function EnigStripEmail(mailAddrs) {
 Enigmail.prototype.encryptMessage = 
 function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
           sendFlags, exitCodeObj, statusFlagsObj, errorMsgObj) {
+
+  return this.encryptMessage2(parent, uiFlags, plainText, fromMailAddr, toMailAddr,
+                      sendFlags, exitCodeObj, statusFlagsObj, errorMsgObj);
+
   DEBUG_LOG("enigmail.js: Enigmail.encryptMessage: "+plainText.length+" bytes from "+fromMailAddr+" to "+toMailAddr+" ("+sendFlags+")\n");
 
   if (!sendFlags || !plainText) {
@@ -1965,6 +1969,86 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
 }
 
 
+Enigmail.prototype.encryptMessage2 = 
+function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
+          sendFlags, exitCodeObj, statusFlagsObj, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.encryptMessage2: "+plainText.length+" bytes from "+fromMailAddr+" to "+toMailAddr+" ("+sendFlags+")\n");
+
+  exitCodeObj.value    = -1;
+  statusFlagsObj.value = 0;
+  errorMsgObj.value    = "";
+
+  if (!plainText) {
+    DEBUG_LOG("enigmail.js: Enigmail.encryptMessage2: NO ENCRYPTION!\n");
+    exitCodeObj.value = 0;
+    return plainText;
+  }
+
+  if (!this.initialized) {
+    errorMsgObj.value = "Error - Enigmail service not yet initialized";
+    return "";
+  }
+
+  var defaultSend = sendFlags & nsIEnigmail.SEND_DEFAULT;
+  var signMsg     = sendFlags & nsIEnigmail.SEND_SIGNED;
+  var encryptMsg  = sendFlags & nsIEnigmail.SEND_ENCRYPTED;
+
+  if (encryptMsg) {
+    // First convert all linebreaks to newlines
+    plainText = plainText.replace(/\r\n/g, "\n");
+    plainText = plainText.replace(/\r/g,   "\n");
+
+    // Use platform-specific linebreaks when encrypting
+    if (!this.isUnix) {
+      plainText = plainText.replace(/\n/g, "\r\n");
+    }
+  }
+
+  var noProxy = true;
+  var startErrorMsgObj = new Object();
+
+  var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+  ipcBuffer.open(MSG_BUFFER_SIZE, false);
+
+  var pipeTrans = this.encryptMessageStart(parent, null, uiFlags,
+                                           fromMailAddr, toMailAddr,
+                                           "", sendFlags, ipcBuffer,
+                                           noProxy, startErrorMsgObj);
+
+  if (!pipeTrans) {
+    errorMsgObj.value = startErrorMsgObj.value;
+
+    return "";
+  }
+
+  // Write to child STDIN and wait for child STDOUT to close
+  pipeTrans.writeSync(plainText, plainText.length);
+  pipeTrans.join();
+
+  var cipherText = ipcBuffer.getData();
+  ipcBuffer.shutdown();
+
+  var exitCode = this.encryptMessageEnd(parent, null, uiFlags, sendFlags,
+                                        plainText.length, pipeTrans,
+                                        statusFlagsObj, errorMsgObj);
+
+  exitCodeObj.value = exitCode;
+
+  if ((exitCodeObj.value == 0) && !cipherText)
+    exitCodeObj.value = -1;
+
+  if (exitCodeObj.value == 0) {
+    // Normal return
+    return cipherText;
+  }
+
+  // Error processing
+  ERROR_LOG("enigmail.js: Enigmail.encryptMessage2: Error in command execution\n");
+
+  return "";
+}
+
+
 Enigmail.prototype.encryptMessageEnd = 
 function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
           statusFlagsObj, errorMsgObj)
@@ -2037,7 +2121,7 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
   return exitCode;
 }
 
-var gPGPHashNums = {md5:1, sha1:2, ripemd160:3};
+var gPGPHashNum = {md5:1, sha1:2, ripemd160:3};
 
 Enigmail.prototype.encryptMessageStart = 
 function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
@@ -2099,7 +2183,7 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
     if (detachedSig) {
       encryptCommand += " -sb";
 
-      if (hashAlgorithm && gPGPHashNum[hashAlgorithm])
+      if (hashAlgorithm && gPGPHashNum[hashAlgorithm.toLowerCase()])
         encryptCommand += " +hashnum=" + gPGPHashNum[hashAlgorithm];
 
     } else if (signMsg) {
@@ -2755,11 +2839,16 @@ function (parent, uiFlags, cipherText, signatureObj,
   var pipeTrans = this.decryptMessageStart(parent, null, verifyOnly, noOutput,
                                          ipcBuffer, noProxy, startErrorMsgObj);
 
+  if (!pipeTrans) {
+    errorMsgObj.value = startErrorMsgObj.value;
+    statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
+
+    return "";
+  }
+
   // Write to child STDIN and wait for child STDOUT to close
   pipeTrans.writeSync(pgpBlock, pgpBlock.length);
-  dump("AAA\n");
   pipeTrans.join();
-  dump("AAA2\n");
 
   var plainText = ipcBuffer.getData();
   ipcBuffer.shutdown();
@@ -2783,6 +2872,8 @@ function (parent, uiFlags, cipherText, signatureObj,
       // Workaround for MsgCompose stripping trailing spaces from sig separator
       plainText = plainText.replace(/(\r|\n)--(\r|\n)/, "$1-- $2");
     }
+
+    statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
 
     return plainText;
   }
