@@ -671,8 +671,10 @@ function enigSend(sendFlags, elementId) {
           }
         }
         else {
-          if (!EnigConfirm(EnigGetString("attachWarning")))
-            return;
+          if (sendFlags & ENIG_ENCRYPT) {
+            if (!EnigConfirm(EnigGetString("attachWarning")))
+              return;
+          }
         }
      }
 
