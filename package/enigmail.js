@@ -1293,7 +1293,7 @@ function (domWindow, version, prefBranch) {
                   "WINDIR" ];
 
   try {
-    useAgent = this.prefBranch.getBoolPref("useGpgAgent");
+    var useAgent=this.prefBranch.getBoolPref("useGpgAgent");
     if (useAgent) {
        passEnv.push("GPG_AGENT_INFO");
     }
@@ -1448,7 +1448,7 @@ function (domWindow, version, prefBranch) {
 
   CONSOLE_LOG(outStr+"\n");
 
-  var versionParts = outStr.replace(/\n.*/g,"").split(/ /);
+  var versionParts = outStr.replace(/[\r\n].*/g,"").split(/ /);
   var gpgVersion = versionParts[versionParts.length-1]
 
   this.agentVersion = gpgVersion;
@@ -1845,6 +1845,10 @@ function (pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj) 
     } else {
       errArray.push(errLines[j]);
     }
+  }
+  if (errOutput.search(/jpeg image of size \d+/)>-1) {
+    statusFlags |= nsIEnigmail.PHOTO_AVAILABLE;
+
   }
 
   statusFlagsObj.value = statusFlags;
@@ -2501,7 +2505,6 @@ function (parent, uiFlags, cipherText, signatureObj,
                                         errorMsgObj);
 
   exitCodeObj.value = exitCode;
-  var PARTIALLY_PGP = nsIEnigmail.INLINE_KEY << 1;
 
   if ((head.search(/\S/) >= 0) ||
       (tail.search(/\S/) >= 0)) {
@@ -2566,12 +2569,6 @@ function (parent, uiFlags, cipherText, signatureObj,
       }
     }
 
-    var keyserver;
-    try {
-      keyserver = this.prefBranch.getCharPref("keyserver");
-    } catch (ex) {
-    }
-
     if (allowImport) {
 
       var importedKey = false;
@@ -2586,19 +2583,6 @@ function (parent, uiFlags, cipherText, signatureObj,
 
         if (exitStatus > 0) {
           this.alertMsg(parent, EnigGetString("cantImport")+importErrorMsgObj.value);
-        }
-      }
-
-      if (!importedKey && keyserver && (this.agentType == "gpg")) {
-        var recvErrorMsgObj = new Object();
-        var recvFlags = nsIEnigmail.UI_INTERACTIVE;
-        var exitStatus2 = this.receiveKey(parent, recvFlags, pubKeyId,
-                                       recvErrorMsgObj);
-
-        importedKey = (exitStatus2 == 0);
-
-        if (exitStatus2 > 0) {
-          this.alertMsg(parent, EnigGetString("keyImportError")+recvErrorMsgObj.value);
         }
       }
 
@@ -2687,7 +2671,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
   }
 
   // Terminate job and parse error output
-  var statusMsgObj   = new Object();    
+  var statusMsgObj   = new Object();
   var cmdLineObj     = new Object();
   var cmdErrorMsgObj = new Object();
 
@@ -2916,7 +2900,7 @@ function (email, secret, exitCodeObj, errorMsgObj) {
     command += " "+email_addr;
   }
 
-  var statusFlagsObj = new Object();    
+  var statusFlagsObj = new Object();
   var statusMsgObj   = new Object();
   var cmdErrorMsgObj = new Object();
 
@@ -2937,7 +2921,7 @@ function (email, secret, exitCodeObj, errorMsgObj) {
     return "";
   }
 
-  var outputLines = keyText.split(/\r?\n/);
+  var outputLines = keyText.split(/[\r\n]+/);
 
   var fingerprintPat = /^\s*Key\s+fingerprint\s*=\s*/i;
 
@@ -2965,7 +2949,6 @@ function (email, secret, exitCodeObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.extractFingerprint: fprint="+fingerprint+"\n");
   return fingerprint;
 }
-
 
 // ExitCode == 0  => success
 // ExitCode > 0   => error
@@ -3034,7 +3017,6 @@ function (keyserver, keyId, requestObserver, errorMsgObj) {
   var statusFlagsObj = new Object();
   var statusMsgObj   = new Object();
   var cmdLineObj   = new Object();
-  var errorMsgObj  = new Object();
 
 /*
   var output = gEnigmailSvc.execCmd(command, null, "",
@@ -3675,7 +3657,6 @@ function (parent, outFileName, inputBuffer,
 
   passphrase = passwdObj.value;
 
-  var statusFlagsObj = new Object();
   var noProxy = true;
 
   var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
@@ -3717,4 +3698,79 @@ function (parent, outFileName, inputBuffer,
 
   return true;
 
+}
+
+Enigmail.prototype.showKeyPhoto =
+function(keyId, exitCodeObj, errorMsgObj) {
+
+  var command = this.agentPath;
+
+  command += " --batch --no-tty --status-fd 1 --attribute-fd 1";
+  command += " --list-keys "+keyId;
+
+  var statusMsgObj = new Object();
+  var statusFlagsObj = new Object();
+  var outputTxt = this.execCmd(command, null, "",
+                exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
+
+  if ((exitCodeObj.value == 0) && !outputTxt) {
+    exitCodeObj.value = -1;
+    return "";
+  }
+
+  if (this.agentVersion<"1.2.5" && this.isWin32) {
+    // workaround for error in gpg up to v1.2.4
+    outputTxt=outputTxt.replace(/\r\n/g, "\n");
+  }
+  var startIndex=0;
+  var nextIndex=outputTxt.indexOf("[GNUPG:]",startIndex);
+  var imgSize=-1;
+
+  while (nextIndex>=0 && startIndex < outputTxt.length && startIndex>=0) {
+    var matches = outputTxt.substring(startIndex).match(/ATTRIBUTE ([A-F\d]+) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+)/);
+
+    if (matches && matches[3]=="1") {
+      // attribute is an image
+      imgSize=Number(matches[2])
+      break;
+    }
+    startIndex=nextIndex+1;
+    nextIndex=listText.indexOf("[GNUPG:]",startIndex);
+  }
+
+  if (imgSize>=0) {
+    var cr = outputTxt.substring(nextIndex).search(/[\r\n]/);
+    // increase cr by 1 if CRLF
+    if (outputTxt.charAt(nextIndex+cr)=="\r" &&
+        outputTxt.charAt(nextIndex+cr+1)=="\n")
+        cr++;
+
+    var pictureData = outputTxt.substring(nextIndex+cr+1+16, nextIndex+cr+1+imgSize);
+
+    if (! pictureData.length)
+      return "";
+    try {
+      var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
+
+      var ds = Components.classes[DIR_SERV_CONTRACTID].getService();
+      var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
+      var picFile = dsprops.get("TmpD", Components.interfaces.nsIFile);
+
+      picFile.append(keyId+".jpg");
+      picFile.createUnique(picFile.NORMAL_FILE_TYPE, DEFAULT_FILE_PERMS);
+
+      var fileStream = Components.classes[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIFileOutputStream);
+      fileStream.init(picFile, flags, DEFAULT_FILE_PERMS, 0);
+      if (fileStream.write(pictureData, pictureData.length) != pictureData.length)
+          throw Components.results.NS_ERROR_FAILURE;
+
+      fileStream.flush();
+      fileStream.close();
+    }
+    catch (ex) {
+      exitCodeObj.value = -1;
+      return "";
+    }
+  }
+  return picFile.path;
 }
