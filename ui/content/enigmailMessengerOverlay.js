@@ -61,7 +61,8 @@ function enigMessageDecrypt(event) {
     }
 
     if (statusCode != 0) {
-       EnigAlert(statusMsg);
+       if (!event)
+         EnigAlert(statusMsg);
        return;
     }
 
