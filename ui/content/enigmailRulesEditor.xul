@@ -1,0 +1,57 @@
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="enigmailRulesEditor"
+        title="&enigmail.rulesEditor.label;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="enigmailDlgOnLoad();"
+        minheight="300"
+        buttons="accept,cancel,help"
+        persist="screenX screenY width height"
+        ondialogaccept="return enigmailDlgOnAccept();"
+        ondialoghelp="EnigHelpWindow('rulesEditor');">
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailRulesEditor.js"/>
+
+  <groupbox width="500px" flex="1">
+    <hbox flex="1">
+      <tree id="rulesTree" flex="1" hidecolumnpicker="false">
+        <treecols>
+          <treecol style="width:80px" id="email" flex="1" label="&enigmail.email.label;" persist="width"/>
+          <splitter class="tree-splitter"/>
+          <treecol style="width:50px" id="keys" flex="1" label="&enigmail.pgpKeys.label;" persist="width"/>
+          <splitter class="tree-splitter"/>
+          <treecol style="width:40px" id="sign" flex="0" label="&enigmail.sign.label;" persist="width"/>
+          <splitter class="tree-splitter"/>
+          <treecol style="width:40px" id="encrypt" flex="0" label="&enigmail.encrypt.label;" persist="width"/>
+          <splitter class="tree-splitter"/>
+          <treecol style="width:40px" id="pgpMime" flex="0" label="&enigmail.pgpMime.label;" persist="width"/>
+        </treecols>
+        <treechildren id="rulesTreeChildren" properties=""/>
+      </tree>
+      <vbox>
+        <button label="&enigmail.edit.label;"
+                oncommand="enigDoEdit();"/>
+        <button label="&enigmail.add.label;"
+                oncommand="enigDoAdd();"/>
+        <button label="&enigmail.delete.label;"
+                oncommand="enigDoDelete();"/>
+        <separator/>
+        <button label="&enigmail.moveUp.label;" 
+                accesskey="&enigmail.moveUp.accesskey;"
+                oncommand="enigDoMoveUp();"/>
+        <button label="&enigmail.moveDown.label;"
+                accesskey="&enigmail.moveDown.accesskey;"
+                oncommand="enigDoMoveDown();"/>
+      </vbox>
+    </hbox>
+  </groupbox>
+</dialog>

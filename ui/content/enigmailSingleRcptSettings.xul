@@ -1,0 +1,108 @@
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="enigmailSingleRcptSettings"
+        title="&enigmail.singleRcptSettings.label;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="enigmailDlgOnLoad();"
+        minheight="200"
+        buttons="accept,cancel,help"
+        ondialogaccept="return enigmailDlgOnAccept();"
+        ondialoghelp="EnigHelpWindow('editRcptRule');">
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailSingleRcptSettings.js"/>
+
+  <groupbox>
+    <hbox>
+      <label value="&enigmail.ruleEmail.label;"/>
+      <hbox align="center">
+        <vbox>
+          <textbox id="ruleEmail" tooltip="&enigmail.ruleEmail.tooltip;" size="30"/>
+          <hbox>
+            <checkbox id="matchBegin" checked="false"
+                      label="&enigmail.matchBegin.label;"
+                      tooltip="&enigmail.matchBegin.tooltip;"/>
+            <checkbox id="matchEnd" checked="false"
+                       label="&enigmail.matchEnd.label;"
+                       tooltip="&enigmail.matchEnd.tooltip;"/>
+          </hbox>
+        </vbox>
+      </hbox>
+      <description width="130px">&enigmail.sepratationDesc.label;</description>
+    </hbox>
+    <separator/>
+    <hbox align="start">
+      <label value="&enigmail.keysToUse.label;"/>
+      <listbox flex="1" id="encryptionList" style="height:50px"/>
+      <button label="&enigmail.selKeysButton.label;"
+              accesskey="&enigmail.selKeysButton.accesskey;"
+              oncommand="enigmailDlgKeySelection();"/>
+    </hbox>
+    <separator/>
+   
+    <groupbox>
+      <caption label="&enigmail.setDefaultsFor.label;"/> 
+      <grid>
+        <columns>
+          <column flex="0"/>
+          <column flex="1"/>
+        </columns>
+        <rows>
+          <row>
+            <hbox align="center">
+              <label value="&enigmail.signing.label;"/>
+            </hbox>
+            <hbox>
+              <menulist id="sign">
+                <menupopup>
+                  <menuitem value="0" label="&enigmail.never.label;"/>
+                  <menuitem value="1" label="&enigmail.maybe.label;"/>
+                  <menuitem value="2" label="&enigmail.always.label;"/>
+                </menupopup>
+              </menulist>
+            </hbox>
+          </row>
+          <row>
+            <hbox align="center">
+              <label value="&enigmail.encryption.label;"/>
+            </hbox>
+            <hbox>
+              <menulist id="encrypt">
+                <menupopup>
+                  <menuitem value="0" label="&enigmail.never.label;"/>
+                  <menuitem value="1" label="&enigmail.maybe.label;"/>
+                  <menuitem value="2" label="&enigmail.always.label;"/>
+                </menupopup>
+              </menulist>
+            </hbox>
+          </row>
+          <row>
+            <hbox align="center">
+              <label value="&enigmail.pgpMime.label;"/>
+            </hbox>
+            <hbox>
+              <menulist id="pgpmime">
+                <menupopup>
+                  <menuitem value="0" label="&enigmail.never.label;"/>
+                  <menuitem value="1" label="&enigmail.maybe.label;"/>
+                  <menuitem value="2" label="&enigmail.always.label;"/>
+                </menupopup>
+              </menulist>
+            </hbox>
+          </row>
+        </rows>
+      </grid>
+      <description>&enigmail.singleRcptSettings.desc;
+      </description>
+    </groupbox>
+  </groupbox>
+  
+</dialog>
