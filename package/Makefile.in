@@ -35,7 +35,7 @@
 
 # Specify these as parameters to the make command
 XPI_MODULE	= enigmail
-XPI_MODULE_VERS = 0.83.3
+XPI_MODULE_VERS = 0.83.5
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
@@ -55,6 +55,7 @@ LANGXPIFILE = $(XPI_MODULE)-en-US-$(XPI_MODULE_VERS).xpi
 
 libs::
 	$(INSTALL) $(srcdir)/enigmail.js $(DIST)/bin/components
+	$(INSTALL) $(srcdir)/prefs/enigmail.js $(DIST)/bin/defaults/pref
 	$(INSTALL) $(srcdir)/enigprefs-service.js $(DIST)/bin/components
 
 xpi::
@@ -63,6 +64,7 @@ xpi::
                components/$(XPI_MODULE).xpt \
                components/$(XPI_MODULE).js \
                components/enigprefs-service.js \
+               defaults/pref/enigmail.js \
                chrome/$(XPI_MODULE).jar \
                chrome/$(XPI_MODULE)-skin.jar \
                chrome/$(XPI_MODULE)-skin-tbird.jar
