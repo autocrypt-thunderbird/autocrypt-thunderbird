@@ -225,7 +225,7 @@
 
 <!ENTITY enigmail.amPrefTitle.label                 "OpenPGP Options (Enigmail)">
 <!ENTITY enigmail.amPrefDesc.label                  "Support for OpenPGP encryption and signing messages is provided by Enigmail. You need to have GnuPG (gpg) installed in order to use this feature.">
-<!ENTITY enigmail.amPrefEnablePgp.label             "Enable OpenPGP support (Enigmail) for this account">
+<!ENTITY enigmail.amPrefEnablePgp.label             "Enable OpenPGP support (Enigmail) for this identity">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "Use Email address of this account to identify OpenPGP key">
 <!ENTITY enigmail.amPrefUseKeyId.label              "Use specific OpenPGP Key Id (0x1234ABCD):">
 <!ENTITY enigmail.amPrefSelectKey.label             "Select Key ...">

@@ -353,18 +353,15 @@ function enigReplaceEditorText(text) {
 
 function enigGoAccountManager()
 {
-    var server=null;
-    try {
-        var currentId=getCurrentIdentity();
-        var amService=Components.classes["@mozilla.org/messenger/account-manager;1"].getService();
-        var servers=amService.GetServersForIdentity(currentId);
-        var folderURI=servers.GetElementAt(0).QueryInterface(Components.interfaces.nsIMsgIncomingServer).serverURI;
-        server=GetMsgFolderFromUri(folderURI, true).server
-    } catch (ex) {}
-
-    window.openDialog("chrome://messenger/content/AccountManager.xul",
-                      "AccountManager", "chrome,modal,titlebar,resizable",
-                      { server: server, selectPage: 'am-enigprefs.xul' });
+  var server=null;
+  try {
+      var currentId=getCurrentIdentity();
+      var amService=Components.classes["@mozilla.org/messenger/account-manager;1"].getService();
+      var servers=amService.GetServersForIdentity(currentId);
+      var folderURI=servers.GetElementAt(0).QueryInterface(Components.interfaces.nsIMsgIncomingServer).serverURI;
+      server=GetMsgFolderFromUri(folderURI, true).server
+  } catch (ex) {}
+  window.openDialog("chrome://enigmail/content/am-enigprefs-edit.xul", "", "dialog,modal,centerscreen", {identity: currentId, account: server});
 }
 
 function enigDoPgpButton(what) {

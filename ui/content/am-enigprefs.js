@@ -87,6 +87,8 @@ function onInit()
 function onLoadEditor() {
   gAccount  = window.arguments[0].account;
   gIdentity = window.arguments[0].identity;
+  var idLabel = EnigGetString("identityName", gIdentity.identityName);
+  document.getElementById("identityName").value = idLabel;
   onInit();
 }
 
@@ -148,11 +150,12 @@ function enigEnableAllPrefs()
 
   var i;
   for (i=0; i<allItems.length; i++) {
+    var elem = document.getElementById(allItems[i]);
     if (enable) {
-      document.getElementById(allItems[i]).removeAttribute("disabled");
+      if (elem) elem.removeAttribute("disabled");
     }
     else {
-      document.getElementById(allItems[i]).setAttribute("disabled", "true");
+      if (elem) elem.setAttribute("disabled", "true");
     }
   }
 

@@ -53,6 +53,10 @@ GPL.
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/am-enigprefs.js"/>
+  
+  <label id="identityName" value="(unknown ID)"/>
+
+  <separator/>
 
   <checkbox id="enablePgp"
             prefstring="mail.identity.%identitykey%.enablePgp"
