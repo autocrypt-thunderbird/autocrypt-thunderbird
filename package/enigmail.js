@@ -712,7 +712,7 @@ function EnigConvertGpgToUnicode(text) {
   if (typeof(text)=="string") {
     var a=text.search(/[\x80-\xFF]{2}/);
     var b=0;
-    
+
     while (a>=0) {
       var ch=text.substr(a,2).toSource().substr(13,8).replace(/\\x/g, "\\u00");
       var newCh=EnigConvertToUnicode(EnigConvertToUnicode(ch, "x-u-escaped"), "utf-8");
@@ -2977,83 +2977,6 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
 }
 
 
-Enigmail.prototype.extractFingerprint =
-function (email, secret, exitCodeObj, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.extractFingerprint: "+email+"\n");
-
-  exitCodeObj.value = -1;
-  statusMsgObj.value = "";
-
-  if (!this.initialized) {
-    errorMsgObj.value = EnigGetString("notInit");
-    return "";
-  }
-
-  var email_addr = "<"+email+">";
-
-  var command = this.agentPath;
-
-  if (this.agentType == "pgp") {
-    command += PGP_BATCH_OPTS + " -kvc "+email_addr;
-    if (secret)
-      command += " secring.pkr";
-
-  } else {
-    command += GPG_BATCH_OPTS + " --fingerprint ";
-    command += secret ? " --list-secret-keys" : " --list-keys";
-    command += " "+email_addr;
-  }
-
-  var statusFlagsObj = new Object();
-  var statusMsgObj   = new Object();
-  var cmdErrorMsgObj = new Object();
-
-  var keyText = this.execCmd(command, null, "",
-                    exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
-
-  if ((exitCodeObj.value == 0) && !keyText)
-    exitCodeObj.value = -1;
-
-  if (exitCodeObj.value != 0) {
-    errorMsgObj.value = EnigGetString("failFingerprint");
-
-    if (cmdErrorMsgObj.value) {
-      errorMsgObj.value += "\n" + command;
-      errorMsgObj.value += "\n"+cmdErrorMsgObj.value;
-    }
-
-    return "";
-  }
-
-  var outputLines = keyText.split(/[\r\n]+/);
-
-  var fingerprintPat = /^\s*Key\s+fingerprint\s*=\s*/i;
-
-  var fingerprint;
-  for (var j=0; j<outputLines.length; j++) {
-    if (outputLines[j].search(fingerprintPat) == 0) {
-      if (fingerprint) {
-        errorMsgObj.value = EnigGetString("failMultiple",email_addr);
-        return "";
-      }
-
-      fingerprint = outputLines[j].replace(fingerprintPat,"");
-    }
-  }
-
-  if (!fingerprint) {
-    errorMsgObj.value = EnigGetString("failNoKey",email_addr);
-    return "";
-  }
-
-  // Canonicalize fingerprint (remove spaces, lowercase)
-  fingerprint = fingerprint.replace(/\s+/g, "");
-  fingerprint = fingerprint.toLowerCase();
-
-  DEBUG_LOG("enigmail.js: Enigmail.extractFingerprint: fprint="+fingerprint+"\n");
-  return fingerprint;
-}
-
 // ExitCode == 0  => success
 // ExitCode > 0   => error
 // ExitCode == -1 => Cancelled by user
@@ -3118,7 +3041,7 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
     envList.push("http_proxy="+proxyHost);
   }
   command += " --keyserver " + keyserver;
-  
+
   if (recvFlags & nsIEnigmail.DOWNLOAD_KEY) {
     command += " --recv-keys " + keyId;
   }
@@ -3962,7 +3885,7 @@ function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
 Enigmail.prototype.getKeySig =
 function  (keyId, exitCodeObj, errorMsgObj) {
 
-  var gpgCommand = this.agentPath + GPG_BATCH_OPTS + " --with-colons --list-sig "+keyId;
+  var gpgCommand = this.agentPath + GPG_BATCH_OPTS + " --with-colons --with-fingerprint --list-sig "+keyId;
 
   if (!this.initialized) {
     errorMsgObj.value = EnigGetString("notInit");
@@ -4008,7 +3931,7 @@ Enigmail.prototype.getUidsForKey = function (keyId) {
   var keyArr=listText.split(/\n/);
   for (var i=0; i<keyArr.length; i++) {
     if (keyArr[i].indexOf("uid:")==0) {
-      userList += "\n" + keyArr[i].split(/:/)[9];
+      userList += "\n" + keyArr[i].split(/:/)[9]; //
     }
   }
   return userList;

@@ -355,6 +355,15 @@ function enigmailKeyMenu() {
   else {
     document.getElementById("viewPhoto").setAttribute("disabled", "true");
   }
+
+  if (keyList.length == 1) {
+    document.getElementById("signKey").removeAttribute("disabled");
+    document.getElementById("viewSig").removeAttribute("disabled");
+  }
+  else {
+    document.getElementById("signKey").setAttribute("disabled", "true");
+    document.getElementById("viewSig").setAttribute("disabled", "true");
+  }
 }
 
 
@@ -376,6 +385,15 @@ function enigmailCtxMenu() {
   }
   else {
     document.getElementById("ctxViewPhoto").setAttribute("disabled", "true");
+  }
+
+  if (keyList.length == 1) {
+    document.getElementById("ctxSign").removeAttribute("disabled");
+    document.getElementById("ctxViewSig").removeAttribute("disabled");
+  }
+  else {
+    document.getElementById("ctxSign").setAttribute("disabled", "true");
+    document.getElementById("ctxViewSig").setAttribute("disabled", "true");
   }
 }
 
@@ -409,11 +427,7 @@ function enigSignKey() {
     EnigAlert(EnigGetString("noKeySelected"));
     return;
   }
-  var userIdList = [];
-  for (var i=0; i < keyList.length; i++) {
-    userIdList.push(gKeyList[keyList[i]].userId);
-  }
-  EnigSignKey(userIdList, keyList, null);
+  EnigSignKey(gKeyList[keyList[0]].userId, keyList[0], null);
   enigmailRefreshKeys();
 }
 

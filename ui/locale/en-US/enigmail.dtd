@@ -310,16 +310,15 @@
 <!ENTITY enigmail.progress.label                   "Progress">
 
 <!ENTITY enigmail.sKeyDlg.title                    "Enigmail - Sign Key">
-<!ENTITY enigmail.sKeyDlg.signKey.label            "Sign Key:">
+<!ENTITY enigmail.sKeyDlg.signKey.label            "Key to sign:">
+<!ENTITY enigmail.sKeyDlg.fingerprint.label        "Fingerprint:">
 <!ENTITY enigmail.sKeyDlg.signWithKey.label        "Key for signing:">
 <!ENTITY enigmail.sKeyDlg.checked.label            "How carefully have you verified the key you are about to sign actually belongs to the person named above?">
 <!ENTITY enigmail.sKeyDlg.noAnswer.label           "I will not answer">
 <!ENTITY enigmail.sKeyDlg.notChecked.label         "I have not checked at all">
 <!ENTITY enigmail.sKeyDlg.casualCheck.label        "I have done casual checking">
 <!ENTITY enigmail.sKeyDlg.carefulCheck.label       "I have done very careful checking">
-<!ENTITY enigmail.sKeyDlg.createSig.label          "Create signature">
-<!ENTITY enigmail.sKeyDlg.createExport.label       "Exportable">
-<!ENTITY enigmail.sKeyDlg.createLocal.label        "Locally (non-exportable)">
+<!ENTITY enigmail.sKeyDlg.createLocal.label        "Local signature (cannot be exported)">
 <!ENTITY enigmail.sKeyDlg.alreadySigned.label      "Note: some keys already signed with the key selected for signing!">
 
 <!ENTITY enigmail.addUidDlg.title                    "Enigmail - Add Uid">

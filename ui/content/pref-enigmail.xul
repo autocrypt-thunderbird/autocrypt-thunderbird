@@ -82,6 +82,7 @@
 
                   <textbox id="enigmail_maxIdleMinutes"
                           size="4"
+                          maxlength="4"
                           pref="true"
                           preftype="int"
                           prefstring="extensions.enigmail.maxIdleMinutes"/>

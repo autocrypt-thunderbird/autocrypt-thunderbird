@@ -59,8 +59,13 @@
       <rows autostretch="never">
         <row>
           <label value="&enigmail.sKeyDlg.signKey.label;"/>
-          <listbox flex="1" id="keyIdList" style="height:60px"/>
+          <label id="keyId" value="?"/>
         </row>
+        <row>
+          <label value="&enigmail.sKeyDlg.fingerprint.label;"/>
+          <label id="fingerprint" value="?"/>
+        </row>
+        <separator/>
         <row>
           <hbox align="center">
             <label value="&enigmail.sKeyDlg.signWithKey.label;"/>
@@ -70,10 +75,9 @@
         <row>
           <label value=" "/>
           <label id="alreadySigned" value="&enigmail.sKeyDlg.alreadySigned.label;" collapsed="true"/>
-        </row>    
+        </row>
       </rows>
     </grid>
-<!--    <separator/> -->
     <vbox>
       <groupbox>
         <caption label="&enigmail.sKeyDlg.checked.label;"/>
@@ -91,17 +95,10 @@
        </groupbox>
     </vbox>
     <vbox>
-      <groupbox>
-        <caption label="&enigmail.sKeyDlg.createSig.label;"/>
-          <radiogroup id="sigType">
-           <radio value="1"
-                   selected="true"
-                   label="&enigmail.sKeyDlg.createExport.label;"/>
-            <radio value="0"
-                   label="&enigmail.sKeyDlg.createLocal.label;"/>
-         </radiogroup>
-       </groupbox>
-    </vbox>      
+      <checkbox checked="false"
+            id="localSig"
+            label="&enigmail.sKeyDlg.createLocal.label;"/>
+    </vbox>
   </vbox>
   <vbox align="end">
     <hbox>
@@ -113,9 +110,8 @@
   <script type="application/x-javascript">
   <![CDATA[
     EnigInitCommon("enigmailSignKeyDlg");
-    
+
     var gEnigSigList = null;
-    
     function onLoad() {
       var enigmailSvc = GetEnigmailSvc();
       if (!enigmailSvc) {
@@ -123,25 +119,19 @@
         window.close();
         return;
       }
-      var keyIdList = document.getElementById("keyIdList");
-      for (var i=0; i<window.arguments[0].userId.length; i++) {
-        var keyId = window.arguments[0].userId[i]+" - 0x"+ window.arguments[0].keyId[i].substr(-8,8);
-        keyIdList.appendItem(keyId);
-      }
-    
       var exitCodeObj = new Object();
       var statusFlagsObj = new Object();
       var errorMsgObj = new Object();
       var keyList=enigmailSvc.getUserIdList(true, false, exitCodeObj, statusFlagsObj, errorMsgObj);
-      
+
       if (exitCodeObj.value != 0) {
         EnigAlert(errorMsgObj.value);
         window.close();
         return;
       }
-    
+
       var userList=keyList.split(/\n/);
-      
+
       var menulist=document.getElementById("signWithKey");
       for (i=0; i < userList.length; i++) {
         if (userList[i].indexOf("sec:")==0) {
@@ -155,52 +145,67 @@
       // determine keys that have already signed the key
       try {
         gEnigSigList = [];
-        var sigListStr = enigmailSvc.getKeySig("0x"+window.arguments[0].keyId.join(" 0x"), exitCodeObj, errorMsgObj);
+        var fingerprint = "";
+        var sigListStr = enigmailSvc.getKeySig("0x"+window.arguments[0].keyId, exitCodeObj, errorMsgObj);
         if (exitCodeObj.value == 0) {
           var sigList = sigListStr.split(/[\n\r]+/);
           for (i=0; i < sigList.length; i++) {
             var aLine=sigList[i].split(/:/);
-            DEBUG_LOG("sig:"+aLine[0]+" -> "+aLine[4]+"\n");
-            if (aLine[0] == "sig") {
+            var currKey;
+            switch (aLine[0]) {
+            case "pub":
+              currKey = aLine[4];
+              break;
+            case "sig":
               gEnigSigList[aLine[4]] = 1;
+              break;
+            case "fpr":
+              DEBUG_LOG("fpr:"+currKey+" -> "+aLine[9]+"\n");
+              fingerprint = aLine[9];
+              break;
             }
           }
         }
         enigKeySelCb();
       } catch (ex) {}
 
-      return;
+      var keyDesc = window.arguments[0].userId+" - 0x"+ window.arguments[0].keyId.substr(-8,8);
+      document.getElementById("keyId").value=keyDesc;
+      if (fingerprint) {
+        var fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
+        if (fpr && fpr.length > 2) {
+          fpr.shift();
+          document.getElementById("fingerprint").value=fpr.join(" ");
+        }
+      }
     }
-    
+
     function onAccept() {
       var trustLevel = document.getElementById("trustLevel");
-      var sigType = document.getElementById("sigType");
+      var localSig = document.getElementById("localSig");
       var signWithKey = document.getElementById("signWithKey");
-      
+
       var enigmailSvc = GetEnigmailSvc();
       if (!enigmailSvc) {
         EnigAlert(EnigGetString("accessError"));
         return;
       }
-      
+
       var errorMsgObj = new Object();
-      
-      for (var i=0; i<window.arguments[0].keyId.length; i++) {
-        var r = enigmailSvc.signKey(window,
-                                  "0x"+signWithKey.selectedItem.value, 
-                                  window.arguments[0].keyId[i],
-                                  sigType.selectedItem.value == "0",
-                                  trustLevel.selectedItem.value,
-                                  errorMsgObj);
-    
-        if (r != 0) {
-          EnigAlert(EnigGetString("signKeyFailed")+"\n\n"+errorMsgObj.value);
-          return;
-        }
+
+      var r = enigmailSvc.signKey(window,
+                                "0x"+signWithKey.selectedItem.value,
+                                window.arguments[0].keyId,
+                                localSig.checked,
+                                trustLevel.selectedItem.value,
+                                errorMsgObj);
+
+      if (r != 0) {
+        EnigAlert(EnigGetString("signKeyFailed")+"\n\n"+errorMsgObj.value);
+        return;
       }
-      EnigAlert(EnigGetString("signKeyOK"));
     }
-    
+
     function enigKeySelCb() {
       var signWithKey = document.getElementById("signWithKey");
       var alreadySigned = document.getElementById("alreadySigned");

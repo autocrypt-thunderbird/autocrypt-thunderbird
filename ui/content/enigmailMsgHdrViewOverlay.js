@@ -234,7 +234,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
       // 4628 4358 0136 4A06 B9EA FE9D 3C5D F224
       var fpr = detailArr[0].match(/^(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?$/);
       if (fpr && fpr.length > 2) {
-        fpr.shift()
+        fpr.shift();
         statusInfo += "\n"+EnigGetString("keyFpr",fpr.join(" "));
       }
     }
@@ -477,7 +477,7 @@ function enigEditKeyTrust() {
 }
 
 function enigSignKey() {
-  EnigSignKey([gEnigSecurityInfo.userId], [gEnigSecurityInfo.keyId], null)
+  EnigSignKey(gEnigSecurityInfo.userId, gEnigSecurityInfo.keyId, null)
   ReloadWithAllParts();
 }
 
