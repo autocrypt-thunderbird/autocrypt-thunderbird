@@ -127,11 +127,18 @@
 
           <menupopup onpopupshowing="enigUpdateKeyMgmtDisplay();">
 
+            <menuitem id="enigmail_keymgmt"
+                 label="&enigmail.keyManWindow.label;"
+                 accesskey="&enigmail.keyManWindow.accesskey;"
+                 oncommand="EnigKeyManager();" />
+                 
+            <menuseparator/>
+            
             <menuitem id="enigmail_keygen"
                  label="&enigmail.generatekey.label;"
                  accesskey="&enigmail.generatekey.accesskey;"
                  oncommand="EnigKeygen();" />
-            <menuseparator/>
+                 
             <menuitem label="&enigmail.signSenderKey.label;"
                       id="enigmail_keyMgmtSignKey"
                       oncommand="enigSignKey();"
@@ -246,12 +253,18 @@
              accesskey="&enigmail.openpgpKeyMgmt.accesskey;">
 
           <menupopup onpopupshowing="enigUpdateKeyMgmtDisplay();">
+          
+            <menuitem id="enigmail_keymgmt"
+                 label="&enigmail.keyManWindow.label;"
+                 accesskey="&enigmail.keyManWindow.accesskey;"
+                 oncommand="EnigKeyManager();" />
+                 
+            <menuseparator/>
 
             <menuitem id="enigmail_keygen"
                  label="&enigmail.generatekey.label;"
                  accesskey="&enigmail.generatekey.accesskey;"
                  oncommand="EnigKeygen();" />
-            <menuseparator/>
             <menuitem label="&enigmail.signSenderKey.label;"
                       id="enigmail_keyMgmtSignKey"
                       oncommand="enigSignKey();"

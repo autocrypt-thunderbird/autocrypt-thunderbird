@@ -24,6 +24,7 @@ var gEnigSendPGPMime, gEnigModifiedAttach, gEnigSendMode;
 var gEnigSendModeDirty = 0;
 var gEnigNextCommand;
 var gEnigIdentity = null;
+var gEnigEnableRules = null;
 
 if (typeof(GenericSendMessage)=="function") {
   // replace GenericSendMessage with our own version
@@ -196,6 +197,7 @@ function enigMsgComposeReset() {
   gEnigModifiedAttach=null;
   gEnigSendModeDirty = 0;
   gEnigSendMode = 0;
+  gEnigEnableRules = true;
   gEnigIdentity = null;
 
   EnigShowHeadersAll(true);
@@ -279,8 +281,7 @@ function enigInsertKey() {
   var exitCodeObj = new Object();
   var errorMsgObj = new Object();
 
-  var uiFlags = nsIEnigmail.UI_INTERACTIVE;
-  var keyBlock = enigmailSvc.extractKey(window, uiFlags, userIdValue,
+  var keyBlock = enigmailSvc.extractKey(window, 0, userIdValue, null,
                                         exitCodeObj, errorMsgObj);
   var exitCode = exitCodeObj.value;
 
@@ -490,12 +491,17 @@ function enigSetMenuSettings(postfix) {
   if (menuElement)
     menuElement.setAttribute("checked", gEnigSendPGPMime ? "true" : "false");
 
+  menuElement = document.getElementById("enigmail_disable_rules"+postfix);
+  if (menuElement)
+    menuElement.setAttribute("checked", gEnigEnableRules ? "false" : "true");
+
 }
 
 function enigDisplaySecuritySettings() {
 
   var inputObj = { sendFlags: gEnigSendMode,
-                   usePgpMime: gEnigSendPGPMime};
+                   usePgpMime: gEnigSendPGPMime,
+                   disableRules: gEnigEnableRules};
   window.openDialog("chrome://enigmail/content/enigmailEncryptionDlg.xul","", "dialog,modal,centerscreen", inputObj);
   if (gEnigSendMode != inputObj.sendFlags) {
     gEnigDirty = 2;
@@ -763,7 +769,7 @@ function enigEncryptMsg(msgSendType) {
         var perRecipientRules=EnigGetPref("perRecipientRules");
         var repeatSelection=0;
         while (repeatSelection<2) {
-          if (perRecipientRules>0) {
+          if (perRecipientRules>0 && gEnigEnableRules) {
             var matchedKeysObj = new Object;
             var flagsObj=new Object;
             if (!getRecipientsKeys(toAddr, 
@@ -850,7 +856,7 @@ function enigEncryptMsg(msgSendType) {
                     window.cancelSendMessage=true;
                     return;
                   }
-                  if (resultObj.perRecipientRules) {
+                  if (resultObj.perRecipientRules && gEnigEnableRules) {
                     // do an extra round because the user want to set a PGP rule
                     continue;
                   }
@@ -865,7 +871,6 @@ function enigEncryptMsg(msgSendType) {
                   testExitCodeObj.value = 0;
                 } catch (ex) {
                   // cancel pressed -> don't send mail
-                  EnigAlert("Something went wrong 1"); // REMOVE
                   window.cancelSendMessage=true;
                   return;
                 }
@@ -1600,6 +1605,10 @@ function enigToggleAccountAttr(attrName)
   var oldValue = gEnigIdentity.getBoolAttribute(attrName);
   gEnigIdentity.setBoolAttribute(attrName, !oldValue)
 
+}
+
+function enigToggleRules() {
+  gEnigEnableRules = !gEnigEnableRules;
 }
 
 function enigDecryptQuote(interactive) {

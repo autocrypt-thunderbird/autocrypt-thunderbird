@@ -211,7 +211,7 @@ function enigmailBuildList(refresh) {
          userObj = new Object();
          userObj.expiry=listRow[EXPIRY];
          userObj.created=listRow[CREATED];
-         userObj.userId=listRow[USER_ID];
+         userObj.userId=listRow[USER_ID].replace(/\\e3A/g, ":");
          userObj.keyId=listRow[KEY_ID];
          userObj.keyTrust=listRow[KEY_TRUST];
          userObj.valid=false;
@@ -223,7 +223,7 @@ function enigmailBuildList(refresh) {
          userObj.keyId=listRow[KEY_ID];
        } */
        else if (listRow[0] == "uid") {
-         var userId=listRow[USER_ID];
+         var userId=listRow[USER_ID].replace(/\\e3A/g, ":");
          userObj.SubUserIds.push(userId);
        }
      }

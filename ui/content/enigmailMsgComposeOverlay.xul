@@ -98,6 +98,13 @@
               accesskey="&enigmail.sendPGPMime.accesskey;"
               oncommand="enigDoPgpButton('togglePGPMime');" />
 
+          <menuitem id="enigmail_disable_rules"
+              type="checkbox"
+              label="&enigmail.disableRules.label;"
+              accesskey="&enigmail.disableRules.accesskey;"
+              key="key_enigDisableRules"
+              oncommand="enigToggleRules();" />
+
           <menuseparator/>
 
           <menu id="enigmail_compose_options_menu"
@@ -202,6 +209,13 @@
               accesskey="&enigmail.sendPGPMime.accesskey;"
               oncommand="enigDoPgpButton('togglePGPMime');" />
 
+          <menuitem id="enigmail_disable_rules"
+              type="checkbox"
+              label="&enigmail.disableRules.label;"
+              accesskey="&enigmail.disableRules.accesskey;"
+              key="key_enigDisableRules"
+              oncommand="enigToggleRules();" />
+
           <menuseparator/>
 
           <menu id="enigmail_compose_options_menu"
@@ -305,6 +319,13 @@
                 accesskey="&enigmail.sendPGPMime.accesskey;"
                 oncommand="enigNextCommand('togglePGPMime');" />
 
+            <menuitem id="enigmail_disable_rules2"
+                type="checkbox"
+                label="&enigmail.disableRules.label;"
+                accesskey="&enigmail.disableRules.accesskey;"
+                key="key_enigDisableRules"
+                oncommand="enigToggleRules();" />
+
           </menupopup>
        </toolbarbutton>
     </hbox>
@@ -346,6 +367,12 @@
               accesskey="&enigmail.sendPGPMime.accesskey;"
               oncommand="enigNextCommand('togglePGPMime');" />
 
+          <menuitem id="enigmail_disable_rules3"
+              type="checkbox"
+              label="&enigmail.disableRules.label;"
+              accesskey="&enigmail.disableRules.accesskey;"
+              key="key_enigDisableRules"
+              oncommand="enigToggleRules();" />
         </menupopup>
     </toolbarbutton>
   </toolbarpalette>

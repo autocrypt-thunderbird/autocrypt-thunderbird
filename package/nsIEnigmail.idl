@@ -210,17 +210,33 @@ interface nsIEnigmail : nsISupports
                         out wstring sigDetails,
                         out wstring errorMsg);
 
-  string extractKey(in nsIDOMWindow parent,
-                    in unsigned long uiFlags,
-                    in string userId,
-                    out long   exitCode,
-                    out wstring errorMsg);
 
-  long importKey(in nsIDOMWindow parent,
-                 in unsigned long uiFlags,
-                 in string msgText,
-                 in string keyId,
-                 out wstring errorMsg);
+/*** key handling functions ***/
+  long setKeyTrust(in nsIDOMWindow parent, 
+                      in string keyId, 
+                      in string trustLevel, 
+                      out wstring errorMsg);
+
+  long signKey(in nsIDOMWindow parent, 
+                in string userId, 
+                in string keyId, 
+                in boolean signLocally, 
+                in string trustLevel, 
+                out wstring errorMsg);
+
+  long genRevokeCert(in nsIDOMWindow parent, 
+                in string keyId, 
+                in string outFile,
+                in string reasonCode, 
+                in string reasonText, 
+                out wstring errorMsg);
+
+  long addUid(in nsIDOMWindow parent, 
+                in string keyId, 
+                in string name, 
+                in string email, 
+                in string comment, 
+                out wstring errorMsg);
 
   /* Receive flags */
   const long SEARCH_KEY       = 0x01;
@@ -240,23 +256,31 @@ interface nsIEnigmail : nsISupports
                            in nsIRequestObserver requestObserver,
                            out wstring errorMsg);
 
-  long setKeyTrust(in nsIDOMWindow parent, 
-                      in string keyId, 
-                      in string trustLevel, 
-                      out wstring errorMsg);
+  const long EXTRACT_SECRET_KEY = 0x01;
+  
+  string extractKey(in nsIDOMWindow parent,
+                    in unsigned long exportFlags,
+                    in string userId,
+                    in string outputFile,
+                    out long   exitCode,
+                    out wstring errorMsg);
 
-  long signKey(in nsIDOMWindow parent, 
-                in string userId, 
-                in string keyId, 
-                in boolean signLocally, 
-                in string trustLevel, 
-                out wstring errorMsg);
+  long importKey(in nsIDOMWindow parent,
+                 in unsigned long uiFlags,
+                 in string msgText,
+                 in string keyId,
+                 out wstring errorMsg);
+
+  long importKeyFromFile(in nsIDOMWindow parent,
+                 in string fileName,
+                 out string errorMsg);
 
   nsIIPCRequest generateKey(in nsIDOMWindow parent,
                             in string name,
                             in string comment,
                             in string email,
                             in long   expiryDate,
+                            in long   keyLength,
                             in string passphrase,
                             in nsIRequestObserver requestObserver);
 
@@ -303,7 +327,8 @@ interface nsIEnigmail : nsISupports
 
   boolean getRulesData(out nsIDOMDocument rulesList);
   
-  void addRule(in string toAddress,
+  void addRule(in boolean appendToEnd,
+               in string toAddress,
                in string keyList,
                in long sign,
                in long encrypt,

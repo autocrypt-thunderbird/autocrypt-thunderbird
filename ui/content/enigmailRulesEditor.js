@@ -96,7 +96,8 @@ function enigmailDlgOnAccept() {
   
   var node=getFirstNode();
   while(node) {
-    enigmailSvc.addRule(node.getAttribute("email"),
+    enigmailSvc.addRule(true,
+                        node.getAttribute("email"),
                         node.getAttribute("keyId"),
                         node.getAttribute("sign"),
                         node.getAttribute("encrypt"),
@@ -201,7 +202,12 @@ function enigDoAdd() {
     var treeItem=document.createElement("treeitem");
     createRow(treeItem, resultObj);
     var treeChildren=document.getElementById("rulesTreeChildren");
-    treeChildren.appendChild(treeItem);
+    if (treeChildren.firstChild) {
+      treeChildren.insertBefore(treeItem, treeChildren.firstChild);
+    }
+    else {
+      treeChildren.appendChild(treeItem);
+    }
   }
 }
 

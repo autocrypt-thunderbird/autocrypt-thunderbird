@@ -190,7 +190,8 @@ function enigmailDlgOnAccept() {
 
   window.arguments[RESULT].cancelled=false;
   if (window.arguments[INPUT].options.indexOf("nosave")<0) {
-    enigmailSvc.addRule(window.arguments[RESULT].email,
+    enigmailSvc.addRule(false,
+                        window.arguments[RESULT].email,
                         window.arguments[RESULT].keyId,
                         window.arguments[RESULT].sign,
                         window.arguments[RESULT].encrypt,

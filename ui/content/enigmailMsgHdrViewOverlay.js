@@ -471,20 +471,12 @@ function enigSetSenderStatus(elemSign, elemTrust, elemPhoto) {
 }
 
 function enigEditKeyTrust() {
-  var inputObj = {
-    keyId: gEnigSecurityInfo.keyId,
-    userId: gEnigSecurityInfo.userId
-  }
-  window.openDialog("chrome://enigmail/content/enigmailEditKeyTrustDlg.xul","", "dialog,modal,centerscreen", inputObj);
+  EnigEditKeyTrust(gEnigSecurityInfo.userId, gEnigSecurityInfo.keyId);
   ReloadWithAllParts();
 }
 
 function enigSignKey() {
-  var inputObj = {
-    keyId: gEnigSecurityInfo.keyId,
-    userId: gEnigSecurityInfo.userId
-  }
-  window.openDialog("chrome://enigmail/content/enigmailSignKeyDlg.xul","", "dialog,modal,centerscreen", inputObj);
+  EnigSignKey(gEnigSecurityInfo.userId, gEnigSecurityInfo.keyId, null)
   ReloadWithAllParts();
 }
 

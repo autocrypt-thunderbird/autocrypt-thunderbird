@@ -886,7 +886,24 @@ function EnigConvertGpgToUnicode(text) {
         a += b+2;
       }
     }
-  }  
+    
+    a=text.search(/\\x3a/i);
+    if (a>0) {
+      text = text.replace(/\\x3a/ig, "\\e3A");
+    }
+
+    a=text.search(/\\x/);
+    while (a>=0) {
+      ch=text.substr(a,4).replace(/\\x/g, "\\u00");
+      newCh=EnigConvertToUnicode(ch, "x-u-escaped");
+      if (newCh != ch) {
+        r=new RegExp("\\"+text.substr(a, 4), "g");
+        text=text.replace(r, newCh);
+      }
+      a=text.search(/\\x/);
+    }
+  }
+
   return text;
 } 
 
@@ -1101,6 +1118,13 @@ function EnigKeygen() {
                     EnigGetString('keyGeneration'),
                     'chrome,dialog,modal,close=no,resizable=yes,width=600');
 
+}
+
+function EnigKeyManager() {
+  DEBUG_LOG("enigmailCommon.js: EnigKeygen\n");
+  EnigOpenWin("enigmail:KeyManager",
+              "chrome://enigmail/content/enigmailKeyManager.xul",
+              "dialog,chrome,resizable=yes");
 }
 
 // retrieves the most recent navigator window (opens one if need be)
@@ -1407,14 +1431,25 @@ function EnigNewRule(emailAddress) {
   return true;
 }
 
-function EnigSetKeyTrust(parent, userId, keyId, trustLevel, exitCodeObj, errorMsgObj) {
 
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return false;
-  var r = enigmailSvc.setKeyTrust(parent, userId, keyId, trustLevel, exitCodeObj, errorMsgObj);
-  return r;
+function EnigEditKeyTrust(userId, keyId) {
+  var inputObj = {
+    keyId: keyId,
+    userId: userId
+  }
+  window.openDialog("chrome://enigmail/content/enigmailEditKeyTrustDlg.xul","", "dialog,modal,centerscreen", inputObj);
 }
+
+
+function EnigSignKey(userId, keyId, signingKeyHint) {
+  var inputObj = {
+    keyId: keyId,
+    userId: userId,
+    signingKeyHint: signingKeyHint
+  }
+  window.openDialog("chrome://enigmail/content/enigmailSignKeyDlg.xul","", "dialog,modal,centerscreen", inputObj);
+}
+
 
 function enigCreateInstance (aURL, aInterface) 
 {

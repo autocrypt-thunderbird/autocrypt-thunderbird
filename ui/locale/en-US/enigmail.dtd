@@ -108,7 +108,7 @@
 <!ENTITY enigmail.viewconsole.accesskey      "c">
 <!ENTITY enigmail.viewdebuglog.accesskey    "g">
 
-<!ENTITY enigmail.generatekey.accesskey     "k">
+<!ENTITY enigmail.generatekey.accesskey     "G">
 <!ENTITY enigmail.upgrade.accesskey         "U">
 <!ENTITY enigmail.help.accesskey            "H">
 <!ENTITY enigmail.about.accesskey           "b">
@@ -119,6 +119,7 @@
 
 <!ENTITY enigmail.signedsend.label            "Sign message">
 <!ENTITY enigmail.encryptedsend.label         "Encrypt message">
+<!ENTITY enigmail.disableRules.label          "Ignore Per-Recipient Rules">
 
 <!ENTITY enigmail.composeOptionsMenu.label     "Default composition options">
 
@@ -137,6 +138,7 @@
 <!ENTITY enigmail.signedsend.key               "S">
 <!ENTITY enigmail.encryptedsend.accesskey      "E">
 <!ENTITY enigmail.encryptedsend.key            "P">
+<!ENTITY enigmail.disableRules.accesskey       "I">
 
 <!ENTITY enigmail.composeOptionsMenu.accesskey "D">
 <!ENTITY enigmail.sendOptionsMenu.accesskey    "S">
@@ -251,6 +253,8 @@
 <!ENTITY  enigmail.trustSenderKey.label             "Set Sender's Key Trust ...">
 <!ENTITY  enigmail.smimeSecurityInfo.label          "S/MIME Security Info ...">
 <!ENTITY  enigmail.createRuleFromAddr.label         "Create OpenPGP Rule from Address...">
+<!ENTITY  enigmail.keyManWindow.label               "OpenPGP Key Management Window">
+<!ENTITY  enigmail.keyManWindow.accesskey           "O">
 
 <!ENTITY enigmail.singleRcptSettings.label          "Enigmail - Recipient Settings">
 <!ENTITY enigmail.keysToUse.label                   "Key(s) to use:">
@@ -313,6 +317,11 @@
 <!ENTITY enigmail.sKeyDlg.createExport.label       "Exportable">
 <!ENTITY enigmail.sKeyDlg.createLocal.label        "Locally (non-exportable)">
 
+<!ENTITY enigmail.addUidDlg.title                    "Enigmail - Add Uid">
+<!ENTITY enigmail.addUidDlg.name.label               "Name">
+<!ENTITY enigmail.addUidDlg.email.label              "Email">
+<!ENTITY enigmail.addUidDlg.comment.label            "Comment (optional)">
+
 <!ENTITY enigmail.keyTrust.title                   "Enigmail - Set Key Trust">
 <!ENTITY enigmail.keyTrust.trustKey.label          "Key Id To Trust:">
 <!ENTITY enigmail.keyTrust.trustLevel.label        "How much do you trust the key?">
@@ -322,3 +331,32 @@
 <!ENTITY enigmail.keyTrust.fullTrust.label         "I trust fully">
 <!ENTITY enigmail.keyTrust.ultimateTrust.label     "I trust ultimatelty">
 
+<!ENTITY enigmail.keyMan.title                     "OpenPGP Key Management">
+<!ENTITY enigmail.keyMan.window.label              "Window">
+<!ENTITY enigmail.keyMan.close.label               "Close">
+<!ENTITY enigmail.keyMan.key.label                 "Key">
+<!ENTITY enigmail.keyMan.generate.label            "Generate">
+<!ENTITY enigmail.keyMan.sign.label                "Sign">
+<!ENTITY enigmail.keyMan.setTrust.label            "Set Trust">
+<!ENTITY enigmail.keyMan.genRevoke.label           "Create Revokation Ceritficate">
+<!ENTITY enigmail.keyMan.importFromFile.label      "Import from file">
+<!ENTITY enigmail.keyMan.exportToFile.label        "Export to file">
+<!ENTITY enigmail.keyMan.importFromServer.label    "Import from keyserver">
+<!ENTITY enigmail.keyMan.uploadToServer.label      "Upload to keyserver">
+<!ENTITY enigmail.keyMan.reload.label              "Reload key cache">
+<!ENTITY enigmail.keyMan.addUid.label              "Add user ID">
+<!ENTITY enigmail.keyMan.keyProps.label            "Key Properties">
+
+<!ENTITY enigmail.keyMan.window.accesskey            "W">
+<!ENTITY enigmail.keyMan.close.accesskey             "C">
+<!ENTITY enigmail.keyMan.key.accesskey               "K">
+<!ENTITY enigmail.keyMan.generate.accesskey          "G">
+<!ENTITY enigmail.keyMan.sign.accesskey              "S">
+<!ENTITY enigmail.keyMan.setTrust.accesskey          "T">
+<!ENTITY enigmail.keyMan.genRevoke.accesskey         "C">
+<!ENTITY enigmail.keyMan.importFromFile.accesskey    "F">
+<!ENTITY enigmail.keyMan.exportToFile.accesskey      "E">
+<!ENTITY enigmail.keyMan.importFromServer.accesskey  "I">
+<!ENTITY enigmail.keyMan.uploadToServer.accesskey    "U">
+<!ENTITY enigmail.keyMan.reload.accesskey            "R">
+<!ENTITY enigmail.keyMan.addUid.accesskey            "A">
