@@ -293,7 +293,7 @@
 <!ENTITY enigmail.ruleEmail.tooltip                 "Only fill in email addresses, do NOT set the names of the recipients\nE.g. 'Some Name &lt;some.name@address.net&gt;' is invalid">
 <!ENTITY enigmail.sepratationDesc.label             "(Separate several email addresses with spaces)">
 <!ENTITY enigmail.matchDescStart.label              "Apply rule if recipient">
-<!ENTITY enigmail.matchDescEnd.label                "one of the above adresses">
+<!ENTITY enigmail.matchDescEnd.label                "one of the above addresses">
 <!ENTITY enigmail.matchExact.label                  "Is exactly">
 <!ENTITY enigmail.matchContains.label               "Contains">
 <!ENTITY enigmail.matchBegin.label                  "Starts with">
