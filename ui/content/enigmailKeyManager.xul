@@ -77,31 +77,52 @@
                   id="revokationCertificate"
                   accesskey="&enigmail.keyMan.genRevoke.accesskey;"
                   oncommand="enigCreateRevokeCert()"/>
-                  
+        <menuitem label="&enigmail.keyMan.delKey.label;"
+									id="deleteKey"
+									accesskey="&enigmail.keyMan.delKey.accesskey;"
+									disabled="true"/>            
         <menuseparator/>
         
-        <menuitem label="&enigmail.keyMan.importFromFile.label;"
-                  id="importFromFile"
-                  accesskey="&enigmail.keyMan.importFromFile.accesskey;"
-                  oncommand="enigmailImportKeysFromFile()"/>
-        <menuitem label="&enigmail.keyMan.exportToFile.label;"
-                  id="exportKey"
-                  accesskey="&enigmail.keyMan.exportToFile.accesskey;"
-                  oncommand="enigmailExportKeys()"/>
+				<menu id="importMenu"
+							label="&enigmail.keyMan.importMenu.label;"
+							accesskey="&enigmail.keyMan.importMenu.accesskey;">
+					<menupopup> <!-- import menu -->
+						<menuitem label="&enigmail.keyMan.importFromFile.label;"
+											id="importFromFile"
+											accesskey="&enigmail.keyMan.importFromFile.accesskey;"
+											oncommand="enigmailImportKeysFromFile()"/>
+						<menuitem label="&enigmail.keyMan.importFromServer.label;"
+											id="importFromServer"
+											accesskey="&enigmail.keyMan.importFromServer.accesskey;"
+											oncommand="enigmailSearchKey()"/>
+						<menuitem label="&enigmail.keyMan.importFromClipbrd.label;"
+											id="importFromClipbrd"
+											accesskey="&enigmail.keyMan.importFromClipbrd.accesskey;"
+											oncommand="enigmailImportFromClipbrd()"/>
+					</menupopup>
+				</menu>
+
+				<menu id="exportMenu"
+							label="&enigmail.keyMan.exportMenu.label;"
+							accesskey="&enigmail.keyMan.exportMenu.accesskey;">
+					<menupopup> <!-- export menu -->
+						<menuitem label="&enigmail.keyMan.exportToFile.label;"
+											id="exportKey"
+											accesskey="&enigmail.keyMan.exportToFile.accesskey;"
+											oncommand="enigmailExportKeys()"/>
+						<menuitem label="&enigmail.keyMan.uploadToServer.label;"
+											id="uploadToServer"
+											accesskey="&enigmail.keyMan.uploadToServer.accesskey;"
+											oncommand="enigmailUploadKeys()"/>
+						<menuitem label="&enigmail.keyMan.copyToClipbrd.label;"
+											id="copyToClipbrd"
+											accesskey="&enigmail.keyMan.copyToClipbrd.accesskey;"
+											oncommand="enigmailCopyToClipbrd()"/>
+					</menupopup>
+				</menu>
                   
         <menuseparator/>
-        
-        <menuitem label="&enigmail.keyMan.importFromServer.label;"
-                  id="importFromServer"
-                  accesskey="&enigmail.keyMan.importFromServer.accesskey;"
-                  oncommand="enigmailSearchKey()"/>
-        <menuitem label="&enigmail.keyMan.uploadToServer.label;"
-                  id="uploadToServer"
-                  accesskey="&enigmail.keyMan.uploadToServer.accesskey;"
-                  oncommand="enigmailUploadKeys()"/>
-                  
-        <menuseparator collapsed="true"/>
-        
+       
         <menuitem label="&enigmail.keyMan.reload.label;"
                   id="refreshKeys"
                   accesskey="&enigmail.keyMan.reload.accesskey;"
@@ -122,10 +143,28 @@
       <menuitem id="ctxAddUid" label="&enigmail.keyMan.addUid.label;" oncommand="enigmailAddUid()"/>
       <menuitem id="ctxSetPrimaryUid" label="&enigmail.keyMan.setPrimaryUid.label;" oncommand="enigmailSetPrimaryUid()"/>
       <menuitem id="ctxRevokationCert" label="&enigmail.keyMan.genRevoke.label;" oncommand="enigCreateRevokeCert()"/>
+			<menuitem id="ctxDeleteKey" label="&enigmail.keyMan.delKey.label;" disabled="true"/>
+			<menu id="ctxExportMenu"
+						label="&enigmail.keyMan.exportMenu.label;"
+						accesskey="&enigmail.keyMan.exportMenu.accesskey;">
+				<menupopup> <!-- export menu -->
+					<menuitem label="&enigmail.keyMan.exportToFile.label;"
+										id="ctxExport"
+										accesskey="&enigmail.keyMan.exportToFile.accesskey;"
+										oncommand="enigmailExportKeys()"/>
+					<menuitem label="&enigmail.keyMan.uploadToServer.label;"
+										id="ctxUpload"
+										accesskey="&enigmail.keyMan.uploadToServer.accesskey;"
+										oncommand="enigmailUploadKeys()"/>
+					<menuitem label="&enigmail.keyMan.copyToClipbrd.label;"
+										id="ctxCopyToClipbrd"
+										accesskey="&enigmail.keyMan.copyToClipbrd.accesskey;"
+										oncommand="enigmailCopyToClipbrd()"/>
+				</menupopup>
+			</menu>
       <menuseparator/>
-      <menuitem id="ctxExport" label="&enigmail.keyMan.exportToFile.label;" oncommand="enigmailExportKeys()"/>
-      <menuitem id="ctxUpload" label="&enigmail.keyMan.uploadToServer.label;" oncommand="enigmailUploadKeys()"/>
-      <menuitem id="ctxDetails" label="&enigmail.keyMan.keyProps.label;" collapsed="true"/>
+      <menuitem id="ctxDetails" label="&enigmail.keyMan.keyProps.label;" 
+								disabled="true"/>
     </popup>
   </popupset>
   

@@ -45,6 +45,7 @@ const KEY_ID = 4;
 const CREATED = 5;
 const EXPIRY = 6;
 const USER_ID = 9;
+const KEY_USE_FOR = 11;
 
 // key trust values for field 1 (as described in the doc/DETAILS file in the GnuPG distribution)
 const KEY_EXPIRED="e";
@@ -214,16 +215,18 @@ function enigmailBuildList(refresh) {
          userObj.userId=listRow[USER_ID].replace(/\\e3A/g, ":");
          userObj.keyId=listRow[KEY_ID];
          userObj.keyTrust=listRow[KEY_TRUST];
+         if (listRow[KEY_USE_FOR].indexOf("D")>=0) {
+           userObj.keyTrust=KEY_DISABLED;
+         }
          userObj.valid=false;
          userObj.SubUserIds=new Array();
          aUserList.push(userObj);
        }
-       /*else if (listRow[0] == "sub") {
-         // this might override the key above (which is correct)
-         userObj.keyId=listRow[KEY_ID];
-       } */
        else if (listRow[0] == "uid") {
-         var userId=listRow[USER_ID].replace(/\\e3A/g, ":");
+         var userId = {
+           userId: listRow[USER_ID].replace(/\\e3A/g, ":"),
+           trustLevel: listRow[KEY_TRUST]
+         };
          userObj.SubUserIds.push(userId);
        }
      }
@@ -309,28 +312,30 @@ function enigmailBuildList(refresh) {
               treeItem.setAttribute("container", "true");
               var subChildren=document.createElement("treechildren");
               for (var user=0; user<aUserList[i].SubUserIds.length; user++) {
-                var subItem=enigUserSelCreateRow(aUserList[i], -1, aUserList[i].SubUserIds[user], "", "", "");
-                subChildren.appendChild(subItem);
-                if (activeState<2 || allowExpired) {
-                  // add uid's for valid keys
-                  try {
-                    mailAddr = EnigStripEmail(aUserList[i].SubUserIds[user]);
-                  }
-                  catch (ex) {
-                    mailAddr = EnigStripEmail(aUserList[i].SubUserIds[user].replace(/\"]/g,""));
-                  }
-                  aValidUsers.push(mailAddr);
-                  aUserList[i].valid=true;
-                  escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
-                  s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
-                  s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
-                  if (toAddr.search(s1)>=0 || toAddr.search(s2)>=0) {
-                    enigSetActive(treeItem.getElementsByAttribute("id","indicator")[0], 1);
+                if (KEY_NOT_VALID.indexOf(aUserList[i].SubUserIds[user].trustLevel)<0) {
+                  var subItem=enigUserSelCreateRow(aUserList[i], -1, aUserList[i].SubUserIds[user].userId, "", "", "");
+                  subChildren.appendChild(subItem);
+                  if (activeState<2 || allowExpired) {
+                    // add uid's for valid keys
+                    try {
+                      mailAddr = EnigStripEmail(aUserList[i].SubUserIds[user].userId);
+                    }
+                    catch (ex) {
+                      mailAddr = EnigStripEmail(aUserList[i].SubUserIds[user].userId.replace(/\"]/g,""));
+                    }
+                    aValidUsers.push(mailAddr);
+                    aUserList[i].valid=true;
+                    escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
+                    s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
+                    s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
+                    if (toAddr.search(s1)>=0 || toAddr.search(s2)>=0) {
+                      enigSetActive(treeItem.getElementsByAttribute("id","indicator")[0], 1);
+                    }
                   }
                 }
+  
+                treeItem.appendChild(subChildren);
               }
-
-              treeItem.appendChild(subChildren);
             }
           }
 
@@ -342,8 +347,8 @@ function enigmailBuildList(refresh) {
    catch (ex) {
       ERROR_LOG("ERROR in enigmailUserSelection: enigmailUserSelLoad:\n");
       ERROR_LOG("  userId="+aUserList[i].userId+" expiry="+ aUserList[i].expiry+"\n");
-      if ((typeof user)=="number" && (typeof aUserList[i].SubUserIds[user])=="string") {
-        ERROR_LOG("  subUserId="+aUserList[i].SubUserIds[user]+"\n");
+      if ((typeof user)=="number" && (typeof aUserList[i].SubUserIds[user].userId)=="string") {
+        ERROR_LOG("  subUserId="+aUserList[i].SubUserIds[user].userId+"\n");
       }
    }
    gUserList.appendChild(treeChildren);

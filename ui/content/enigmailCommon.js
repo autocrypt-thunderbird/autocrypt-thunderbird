@@ -319,7 +319,7 @@ function EnigConfigure() {
   var prefList = gPrefEnigmail.getChildList("",obj);
 
   for (var prefItem in prefList) {
-    var prefNCCEC227Bame=prefList[prefItem];
+    var prefName=prefList[prefItem];
     if (prefName.search(/AlertCount$/) >= 0) {
        // Reset alert count to default value
       try {

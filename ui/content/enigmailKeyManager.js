@@ -469,7 +469,7 @@ function enigCreateRevokeCert() {
   }
 }
 
-function enigmailAddUid () {
+function enigmailAddUid() {
   var keyList = enigmailGetSelectedKeys();
   var inputObj = {
     keyId: "0x"+keyList[0],
@@ -596,6 +596,65 @@ function enigmailSetPrimaryUid() {
   enigmailRefreshKeys();
 }
 
+function enigmailImportFromClipbrd() {
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
+  if (!EnigConfirm(EnigGetString("importFromClip"))) {
+    return;
+  }
+  var clipBoard = Components.classes[ENIG_CLIPBOARD_CONTRACTID].getService(Components.interfaces.nsIClipboard);
+  try {
+    var transferable = Components.classes[ENIG_TRANSFERABLE_CONTRACTID].createInstance(Components.interfaces.nsITransferable);
+    transferable.addDataFlavor("text/unicode");
+    clipBoard.getData(transferable, clipBoard.kGlobalClipboard);
+    var flavour = {};
+    var data = {};
+    var length = {};
+    transferable.getAnyTransferData(flavour, data, length);
+    var cBoardContent=data.value.QueryInterface(Components.interfaces.nsISupportsString).data;
+    DEBUG_LOG("enigmailKeyManager.js: enigmailImportFromClipbrd: got data from clipboard");
+  }
+  catch(ex) {}
+
+  var errorMsgObj = {};
+  var r=enigmailSvc.importKey(window, 0, cBoardContent, "", errorMsgObj);
+  EnigAlert(errorMsgObj.value);
+  enigmailRefreshKeys();  
+}
+
+function enigmailCopyToClipbrd() {
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
+  var keyList = enigmailGetSelectedKeys();
+  if (keyList.length==0) {
+    EnigAlert(EnigGetString("noKeySelected"));
+    return;
+  }
+  var exitCodeObj={};
+  var errorMsgObj={};
+  var keyData = enigmailSvc.extractKey(window, 0, "0x"+keyList.join(" 0x"), null, exitCodeObj, errorMsgObj);
+  if (exitCodeObj.value != 0) {
+    EnigAlert(EnigGetString("copyToClipbrdFailed")+"\n\n"+errorMsgObj.value);
+    return;
+  }
+  var clipBoard = Components.classes[ENIG_CLIPBOARD_CONTRACTID].getService(Components.interfaces.nsIClipboard);
+  try {
+    clipBoardHlp = Components.classes[ENIG_CLIPBOARD_HELPER_CONTRACTID].getService(Components.interfaces.nsIClipboardHelper);
+    clipBoardHlp.copyStringToClipboard(keyData, clipBoard.kGlobalClipboard);
+    DEBUG_LOG("enigmailKeyManager.js: enigmailImportFromClipbrd: got data from clipboard");
+    EnigAlert(EnigGetString("copyToClipbrdOK"));  
+  }
+  catch(ex) {
+    EnigAlert(EnigGetString("copyToClipbrdFailed"));
+  }
+
+}
+
+
 function enigmailSearchKey() {
   var inputObj = {
     searchList : null
@@ -609,6 +668,9 @@ function enigmailSearchKey() {
     enigmailRefreshKeys();
   }
 }
+
+
+// ----- upload key functionality ----
 
 function enigmailUploadKeys() {
 
