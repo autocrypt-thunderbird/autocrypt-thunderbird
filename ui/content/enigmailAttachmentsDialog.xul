@@ -1,0 +1,42 @@
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?> 
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="attachmentsDialog"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="enigmailAttachDlgLoad();"
+        ondialogaccept="enigmailAttachDlgAccept();"
+        minheight="150">
+
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailAttachmentsDialog.js"/>
+
+  <description id="enigmailAttachDesc">&enigmail.enigmailAttachDesc.label;</description>
+
+  <radiogroup id="enigmailAttachOptions">
+
+    <radio id="enigEncryptAttachNone"
+          value="0"
+          label="&enigmail.enigEncryptAttachNone.label;"/>
+
+    <radio id="enigEncryptAttachInline"
+          value="1"
+          label="&enigmail.enigEncryptAttachInline.label;"/>
+
+    <radio id="enigEncryptAttachPgpMime"
+          value="2"
+          label="&enigmail.enigEncryptAttachPgpMime.label;"/>
+  </radiogroup>
+
+  <spacer flex="1"/>
+  <groupbox>
+    <description id="enigPgpMimeDetails" maxwidth="500px">&enigmail.enigPgpMimeDetails.label;</description>
+  </groupbox>
+</dialog>
