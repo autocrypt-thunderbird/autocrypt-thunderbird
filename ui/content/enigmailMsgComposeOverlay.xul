@@ -19,9 +19,9 @@
 
        <toolbarbutton class="toolbarbutton-1"
                id="button-enigmail-send"
-               label="EnigSend"
-               tooltip="aTooltip" tooltiptext="Enigmail send (encrypt/sign)" 
-               oncommand="enigSend();"
+               label="&enigmail.sendbutton.label;"
+               tooltip="aTooltip" tooltiptext="&enigmail.sendbutton.tip;" 
+               oncommand="enigSend(null);"
                position="1"
                />
 
@@ -36,32 +36,57 @@
 
       <menupopup id="menu_EnigmailPopup">
 
-        <menuitem id="enigmail_encryptMsg"
+        <menuitem id="enigmail_send_plain"
+             label="&enigmail.sendplain.label;"
+             oncommand="enigSend(0);" />
+
+        <menuitem id="enigmail_send_signed"
+             label="&enigmail.sendsigned.label;"
+             oncommand="enigSend(1);" />
+
+        <menuitem id="enigmail_send_signed_encrypted"
+             label="&enigmail.sendsignedenc.label;"
+             oncommand="enigSend(3);" />
+
+        <menuseparator/>
+
+        <menuitem id="enigmail_defaultSignMsg"
              type="checkbox"
              checked="false"
-             label="Encrypt Message"
+             label="&enigmail.defaultSignMsg.label;"
              name="enigmail_MessageOptions"
-             oncommand="enigToggleAttribute('encryptMsg');" />
+             oncommand="enigToggleAttribute('defaultSignMsg');" />
 
-        <menuitem id="enigmail_signMsg"
+        <menuitem id="enigmail_defaultEncryptMsg"
              type="checkbox"
-             checked="true"
-             label="Sign Message"
+             checked="false"
+             label="&enigmail.defaultEncryptMsg.label;"
              name="enigmail_MessageOptions"
-             oncommand="enigToggleAttribute('signMsg');" />
+             oncommand="enigToggleAttribute('defaultEncryptMsg');" />
+
+        <menuitem id="enigmail_multipleId"
+             type="checkbox"
+             checked="false"
+             label="&enigmail.multipleId.label;"
+             name="enigmail_MessageOptions"
+             oncommand="enigToggleAttribute('multipleId');" />
 
         <menuseparator/>
 
         <menuitem id="enigmail_console"
-             label="Enigmail console"
+             label="&enigmail.viewconsole.label;"
              oncommand="EnigViewConsole();" />
 
         <menuitem id="enigmail_keygen"
-             label="Generate key"
+             label="&enigmail.generatekey.label;"
              oncommand="EnigKeygen();" />
 
+        <menuitem id="enigmail_upgrade"
+             label="&enigmail.upgrade.label;"
+             oncommand="window.openDialog('file:///data/svn/enigwww/update.html?upgrade=yes&amp;enigmail=&enigmail.version;&amp;ipc=&ipc.version;', 'dialog');" />
+
         <menuitem id="enigmail_about"
-             label="About Enigmail"
+             label="&enigmail.about.label;"
              oncommand="window.open('enigmail:about');" />
       </menupopup>
     </menu>

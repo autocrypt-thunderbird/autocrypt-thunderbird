@@ -30,20 +30,23 @@ function enigUpdateOptionsDisplay() {
   if (!InitEnigmailSvc())
      return "";
 
-   var optList = ["encryptMsg", "signMsg"];
+   var optList = ["defaultEncryptMsg", "defaultSignMsg"];
+
+   var signOrEncrypt = false;
 
    for (var j=0; j<optList.length; j++) {
      var optName = optList[j];
+     var optValue = EnigGetPref(optName);
+
+     if (optValue)
+       signOrEncrypt = true;
+
      var menuElement = document.getElementById("enigmail_"+optName);
 
-     if (gEnigmailSvc[optName]) {
-       menuElement.setAttribute("checked", "true");
-     } else {
-       menuElement.setAttribute("checked", "false");
-     }
+     menuElement.setAttribute("checked", optValue ? "true" : "false");
    }
 
-   if (gEnigmailSvc.encryptMsg || gEnigmailSvc.signMsg) {
+   if (signOrEncrypt) {
       gEnigSendButton.removeAttribute("collapsed");
       gOrigSendButton.setAttribute("collapsed", "true");
 
@@ -51,11 +54,10 @@ function enigUpdateOptionsDisplay() {
       gOrigSendButton.removeAttribute("collapsed");
       gEnigSendButton.setAttribute("collapsed", "true");
    }
-
 }
 
-function enigSend() {
-  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend\n");
+function enigSend(encryptFlags) {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: "+encryptFlags+"\n");
 
   if (!InitEnigmailSvc()) {
      if (EnigConfirm("Failed to initialize Enigmail; send unencrypted email?\n"))
@@ -71,7 +73,18 @@ function enigSend() {
      DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: currentId="+currentId+
                ", "+currentId.email+"\n");
 
-     if (!gEnigProcessed && (gEnigmailSvc.encryptMsg||gEnigmailSvc.signMsg)) {
+     if (encryptFlags == null) {
+
+       encryptFlags = 0;
+
+       if (EnigGetPref("defaultSignMsg"))
+         encryptFlags |= SIGN_MESSAGE;
+
+       if (EnigGetPref("defaultEncryptMsg"))
+         encryptFlags |= ENCRYPT_MESSAGE;
+     }
+
+     if (!gEnigProcessed && encryptFlags) {
     
        var msgCompFields = gMsgCompose.compFields;
        Recipients2CompFields(msgCompFields);
@@ -83,24 +96,6 @@ function enigSend() {
     
        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: toAddr="+toAddr+"\n");
 
-       // Remove all quoted strings from to addresses
-       var qStart, qEnd;
-       while ((qStart = toAddr.indexOf('"')) != -1) {
-          qEnd = toAddr.indexOf('"', qStart+1);
-          if (qEnd == -1) {
-            ERROR_LOG("enigmailMsgComposeOverlay.js: Unmatched quote in To address\n");
-          throw Components.results.NS_ERROR_FAILURE;
-          }
-    
-          toAddr = toAddr.substring(0,qStart) + toAddr.substring(qEnd+1);
-       }
-    
-       // Eliminate all whitespace, just to be safe
-       toAddr = toAddr.replace(/\s+/g,"");
-    
-       // Extract pure e-mail address list (stripping out angle brackets)
-       toAddr = toAddr.replace(/(^|,)[^,]*<([^>]+)>[^,]*(,|$)/g,"$1$2$3");
-    
        editorDoc = gEditorShell.editorDocument;
        DEBUG_LOG("enigmailMsgComposeOverlay.js: editorDoc = "+editorDoc+"\n");
        EnigDumpHTML(editorDoc.documentElement);
@@ -134,10 +129,21 @@ function enigSend() {
        var statusCodeObj = new Object();
        var statusMsgObj = new Object();
        var cipherText;
-    
-       cipherText = EnigEncryptMessage(plainText, toAddr,
+
+       var fromAddr = "";
+
+       var multipleId = EnigGetPref("multipleId");
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: multipleId = "+multipleId+"\n");
+
+       if (multipleId) fromAddr = currentId.email;
+
+       if (EnigGetPref("alwaysTrustSend"))
+         encryptFlags |= ALWAYS_TRUST_SEND;
+
+       cipherText = EnigEncryptMessage(plainText, fromAddr, toAddr,
+                                       encryptFlags,
                                        statusCodeObj, statusMsgObj);
-    
+
        var statusCode = statusCodeObj.value;
        var statusMsg  = statusMsgObj.value;
     
@@ -175,7 +181,8 @@ function enigToggleAttribute(attrName)
 
   var menuElement = document.getElementById("enigmail_"+attrName);
 
-  gEnigmailSvc[attrName] = !gEnigmailSvc[attrName];
+  var oldValue = EnigGetPref(attrName);
+  EnigSetPref(attrName, !oldValue);
 
   enigUpdateOptionsDisplay();
 

@@ -55,33 +55,68 @@
   <script type="application/x-javascript">
   <![CDATA[
     // List of persisted elements (required to save prefs)
-    var _elementIDs = ["enigmailCaptureWebMail", "enigmailUserEmail"];
+    var _elementIDs = ["enigmail_defaultSignMsg",
+                       "enigmail_defaultEncryptMsg",
+                       "enigmail_multipleId",
+                       "enigmail_alwaysTrustSend",
+                       "enigmail_autoDecrypt",
+                       "enigmail_captureWebMail" ];
   ]]>
   </script>
           
   <box class="box-smallheader" title="&enigmail.label;"/>
 
   <groupbox orient="vertical">
-    <caption label="&enigmail.label;"/>
-
-    <box autostretch="never">
-      <text class="label"
-            for="enigmailUserEmail"
-            value="&enigmailUserEmail.label;"
-            accesskey=""/>
-
-      <textbox id="enigmailUserEmail"
-                 flex="1"
-                 pref="true"
-                 preftype="string"
-                 prefstring="extensions.enigmail.userEmail"
-                 prefattribute="value"/>
-
-    </box>
+    <caption label="&enigmail.preferences.label;"/>
 
     <hbox autostretch="never">
-      <checkbox id="enigmailCaptureWebMail"
-              label="&enigmailCaptureWebMail.label;"
+      <checkbox id="enigmail_defaultSignMsg"
+              label="&enigmail.defaultSignMsg.label;"
+              pref="true"
+              preftype="bool"
+              prefstring="extensions.enigmail.defaultSignMsg"
+              prefattribute="checked"/>
+    </hbox>
+
+    <hbox autostretch="never">
+      <checkbox id="enigmail_defaultEncryptMsg"
+              label="&enigmail.defaultEncryptMsg.label;"
+              pref="true"
+              preftype="bool"
+              prefstring="extensions.enigmail.defaultEncryptMsg"
+              prefattribute="checked"/>
+    </hbox>
+
+    <hbox autostretch="never">
+      <checkbox id="enigmail_multipleId"
+              label="&enigmail.multipleId.label;"
+              pref="true"
+              preftype="bool"
+              prefstring="extensions.enigmail.multipleId"
+              prefattribute="checked"/>
+    </hbox>
+
+    <hbox autostretch="never">
+      <checkbox id="enigmail_alwaysTrustSend"
+              label="&enigmail.alwaysTrustSend.label;"
+              pref="true"
+              preftype="bool"
+              prefstring="extensions.enigmail.alwaysTrustSend"
+              prefattribute="checked"/>
+    </hbox>
+
+    <hbox autostretch="never">
+      <checkbox id="enigmail_autoDecrypt"
+              label="&enigmail.autoDecrypt.label;"
+              pref="true"
+              preftype="bool"
+              prefstring="extensions.enigmail.autoDecrypt"
+              prefattribute="checked"/>
+    </hbox>
+
+    <hbox autostretch="never">
+      <checkbox id="enigmail_captureWebMail"
+              label="&enigmail.captureWebMail.label;"
               pref="true"
               preftype="bool"
               prefstring="extensions.enigmail.captureWebMail"
@@ -89,21 +124,28 @@
     </hbox>
 
     <hbox autostretch="never" halign="right">
+      <!--
       <button class="dialog"
               id="prefsHelp"
-              label="&enigmailPrefsHelp.label;"
+              label="&enigmail.prefsHelp.label;"
               oncommand="enigmailPrefsHelp();"
               />
+      -->
 
       <button class="dialog"
               id="resetPrefs"
-              label="&enigmailResetPrefs.label;"
+              label="&enigmail.resetPrefs.label;"
               oncommand="enigmailResetPrefs();"
               />
 
       <button class="dialog"
+              id="upgrade"
+              label="&enigmail.upgrade.label;"
+              oncommand="window.openDialog('file:///data/svn/enigwww/update.html?upgrade=yes&amp;enigmail=&enigmail.version;&amp;ipc=&ipc.version;', 'dialog');"             />
+
+      <button class="dialog"
               id="uninstall"
-              label="&enigmailUninstall.label;"
+              label="&enigmail.uninstall.label;"
               oncommand="EnigUninstall();"
               />
     </hbox>

@@ -168,9 +168,21 @@ function enigYahooCompose() {
   var toAddr = msgFrame.document.Compose.To.value;
   DEBUG_LOG("enigYahooCompose: To="+toAddr+"\n");
 
+  var fromAddr = msgFrame.document.Compose.From.value;
+  DEBUG_LOG("enigYahooCompose: From="+fromAddr+"\n");
+
+  if (!EnigGetPref("multipleId"))
+    fromAddr = "";
+
+  var encryptFlags = SIGN_MESSAGE | ENCRYPT_MESSAGE;
+
+  if (EnigGetPref("alwaysTrustSend"))
+     encryptFlags |= ALWAYS_TRUST_SEND;
+
   var statusCodeObj = new Object();
   var statusMsgObj = new Object();
-  var cipherText = EnigEncryptMessage(plainText, toAddr,
+  var cipherText = EnigEncryptMessage(plainText, fromAddr, toAddr,
+                                      encryptFlags,
                                       statusCodeObj, statusMsgObj);
 
   var statusCode = statusCodeObj.value;
@@ -265,9 +277,21 @@ function enigHotmailCompose() {
   var toAddr = msgFrame.document.composeform.to.value;
   DEBUG_LOG("enigHotmailCompose: To="+toAddr+"\n");
 
+  var fromAddr = msgFrame.document.composeform.from.value;
+  DEBUG_LOG("enigHotmailCompose: From="+fromAddr+"\n");
+
+  if (!EnigGetPref("multipleId"))
+    fromAddr = "";
+
+  var encryptFlags = SIGN_MESSAGE | ENCRYPT_MESSAGE;
+
+  if (EnigGetPref("alwaysTrustSend"))
+     encryptFlags |= ALWAYS_TRUST_SEND;
+
   var statusCodeObj = new Object();
   var statusMsgObj = new Object();
-  var cipherText = EnigEncryptMessage(plainText, toAddr,
+  var cipherText = EnigEncryptMessage(plainText, fromAddr, toAddr,
+                                      encryptFlags,
                                       statusCodeObj, statusMsgObj);
 
   var statusCode = statusCodeObj.value;

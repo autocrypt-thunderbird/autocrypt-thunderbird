@@ -5,6 +5,18 @@ const NS_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
 const NS_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
 const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
 
+var gEnigmailPrefDefaults = {"defaultSignMsg":false,
+                             "defaultEncryptMsg":false,
+                             "multipleId":false,
+                             "alwaysTrustSend":true,
+                             "autoDecrypt":true,
+                             "captureWebMail":false};
+
+// Encryption flags
+const SIGN_MESSAGE      = 0x1;
+const ENCRYPT_MESSAGE   = 0x2;
+const ALWAYS_TRUST_SEND = 0x4;
+
 var gLogLevel = 3;     // Output only errors/warnings by default
 var gLogFileStream = null;
 
@@ -221,18 +233,47 @@ function EnigPassphrase() {
   return passwdObj.value;
 }
 
+// Remove all quoted strings (and angle brackets) from a list of email
+// addresses, returning a list of pure email address
+function EnigStripEmail(mailAddrs) {
 
-function EnigEncryptMessage(plainText, toMailAddr, statusCodeObj, statusMsgObj) {
+  var qStart, qEnd;
+  while ((qStart = mailAddrs.indexOf('"')) != -1) {
+     qEnd = mailAddrs.indexOf('"', qStart+1);
+     if (qEnd == -1) {
+       ERROR_LOG("enigmailCommon.js: EnigStripEmail: Unmatched quote in mail address: "+mailAddrs+"\n");
+     throw Components.results.NS_ERROR_FAILURE;
+     }
+  
+     mailAddrs = mailAddrs.substring(0,qStart) + mailAddrs.substring(qEnd+1);
+  }
+  
+  // Eliminate all whitespace, just to be safe
+  mailAddrs = mailAddrs.replace(/\s+/g,"");
+  
+  // Extract pure e-mail address list (stripping out angle brackets)
+  mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*(,|$)/g,"$1$2$3");
+
+  return mailAddrs;
+}
+    
+function EnigEncryptMessage(plainText, fromMailAddr, toMailAddr, encryptFlags,
+                            statusCodeObj, statusMsgObj) {
   WRITE_LOG("enigmailCommon.js: EnigEncryptMessage: To "+toMailAddr+"\n");
 
   if (!InitEnigmailSvc())
      return "";
 
   var passphrase = null;
-  if (!gEnigmailSvc.haveDefaultPassphrase)
-    passphrase = EnigPassphrase();
 
-  var cipherText = gEnigmailSvc.encryptMessage(plainText, toMailAddr,
+  if ((encryptFlags & SIGN_MESSAGE) && !gEnigmailSvc.haveDefaultPassphrase) {
+    passphrase = EnigPassphrase();
+  }
+
+  var cipherText = gEnigmailSvc.encryptMessage(plainText,
+                                               EnigStripEmail(fromMailAddr),
+                                               EnigStripEmail(toMailAddr),
+                                               encryptFlags,
 	                                       passphrase,
                                                statusCodeObj, statusMsgObj);
 
@@ -248,13 +289,12 @@ function EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj) {
      return "";
   }
 
-  var verifyOnly = (cipherText.search(/----BEGIN PGP SIGNED MESSAGE-----/) != -1);
+  var verifyOnly = (cipherText.indexOf("----BEGIN PGP SIGNED MESSAGE-----") != -1);
 
   var passphrase = null;
 
-  if (!verifyOnly) {
-     if (!gEnigmailSvc.haveDefaultPassphrase)
-       passphrase = EnigPassphrase();
+  if (!verifyOnly && !gEnigmailSvc.haveDefaultPassphrase) {
+    passphrase = EnigPassphrase();
   }
 
   var plainText = gEnigmailSvc.decryptMessage(cipherText, verifyOnly,
@@ -263,6 +303,88 @@ function EnigDecryptMessage(cipherText, statusCodeObj, statusMsgObj) {
 
   return plainText;
 }
+
+var gPrefSvc, gPrefEnigmail;
+try {
+  var gPrefSvc = Components.classes["@mozilla.org/preferences-service;1"]
+                             .getService(Components.interfaces.nsIPrefService);
+  gPrefEnigmail = gPrefSvc.getBranch(ENIGMAIL_PREFS_ROOT);
+
+} catch (ex) {
+  ERROR_LOG("enigmailCommon.js: Error in instantiating PrefService\n");
+  throw("enigmailCommon.js: Error in instantiating PrefService\n");
+}
+
+function EnigGetPref(prefName) {
+   //DEBUG_LOG("enigmailCommon.js: EnigGetPref: "+prefName+"\n");
+
+   var defaultValue = gEnigmailPrefDefaults[prefName];
+   var valueType = typeof defaultValue;
+
+   switch (typeof defaultValue) {
+      case "string":
+         try {
+             var prefValue = gPrefEnigmail.getCharPref(prefName);
+             return prefValue;
+         } catch (ex) {
+             return defaultValue;
+         }
+         break;
+
+      case "boolean":
+         try {
+             var prefValue = gPrefEnigmail.getBoolPref(prefName);
+             return prefValue;
+         } catch (ex) {
+             return defaultValue;
+         }
+         break;
+
+      case "number":
+         try {
+             var prefValue = gPrefEnigmail.getIntPref(prefName);
+             return prefValue;
+         } catch (ex) {
+             return defaultValue;
+         }
+         break;
+
+      default:
+         return undefined;
+   }
+}
+
+function EnigSetPref(prefName, value) {
+   DEBUG_LOG("enigmailCommon.js: EnigSetPref: "+prefName+", "+value+"\n");
+
+   var defaultValue = gEnigmailPrefDefaults[prefName];
+   var valueType = typeof defaultValue;
+
+   var retVal = false;
+
+   switch (typeof defaultValue) {
+      case "string":
+         gPrefEnigmail.setCharPref(prefName, value);
+         retVal = true;
+         break;
+
+      case "boolean":
+         gPrefEnigmail.setBoolPref(prefName, value);
+         retVal = true;
+         break;
+
+      case "number":
+         gPrefEnigmail.setIntPref(prefName, value);
+         retVal = true;
+         break;
+
+      default:
+         break;
+   }
+
+   return retVal;
+}
+
 
 function RequestObserver(terminateFunc, terminateArg)
 {
@@ -385,7 +507,7 @@ function EnigTest() {
   var statusCodeObj = new Object();
   var statusMsgObj = new Object();
 
-  var cipherText = EnigEncryptMessage(plainText, toMailAddr,
+  var cipherText = EnigEncryptMessage(plainText, "", toMailAddr, 3,
                                       statusCodeObj, statusMsgObj);
   DEBUG_LOG("enigmailCommon.js: enigTest: cipherText = "+cipherText+"\n");
   DEBUG_LOG("enigmailCommon.js: enigTest: statusCode = "+statusCodeObj.value+"\n");

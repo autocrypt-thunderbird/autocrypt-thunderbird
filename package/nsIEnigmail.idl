@@ -51,16 +51,19 @@ interface nsIEnigmail : nsISupports
 
   attribute nsIPipeTransport keygenProcess;
 
-  attribute boolean encryptMsg;
-
-  attribute boolean signMsg;
-
   readonly attribute boolean haveDefaultPassphrase;
 
   void setDefaultPassphrase(in string passphrase);
 
+  /* Encryption flags */
+  const long SIGN_MESSAGE      = 0x1;
+  const long ENCRYPT_MESSAGE   = 0x2;
+  const long ALWAYS_TRUST_SEND = 0x4;
+
   string encryptMessage(in string  plainText,
+                        in string  fromMailAddr,
                         in string  toMailAddr,
+                        in unsigned long encryptFlags,
                         in string  passphrase,
                         out long   statusCode,
                         out string statusMsg);

@@ -8,17 +8,9 @@ window.addEventListener("load", enigMessengerStartup, false);
 function enigMessengerStartup() {
     DEBUG_LOG("enigmailMessengerOverlay.js: enigMessengerStartup\n");
 
-    var messagePaneWindow = top.frames['messagepane'];
-    DEBUG_LOG("enigmailMessengerOverlay.js: messagePaneWindow = "+messagePaneWindow+"\n");
-
-    messagePaneWindow.addEventListener("load", enigMessageLoad, false);
-
-    var outliner = GetThreadOutliner();
-    outliner.addEventListener("click", enigThreadPaneOnClick, true);
-}
-
-function enigMessageLoad() {
-    DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageLoad\n");
+    // Commented out; clean-up now handled by HdrView
+    ///var outliner = GetThreadOutliner();
+    ///outliner.addEventListener("click", enigThreadPaneOnClick, true);
 }
 
 function enigThreadPaneOnClick() {
@@ -30,8 +22,8 @@ function enigThreadPaneOnClick() {
     statusBox.setAttribute("collapsed", "true");
 }
 
-function enigMessageDecrypt() {
-    DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecrypt\n");
+function enigMessageDecrypt(event) {
+    DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecrypt: "+event+"\n");
 
     var msgFrame = window.frames["messagepane"];
     DEBUG_LOG("enigmailMessengerOverlay.js: msgFrame="+msgFrame+"\n");
@@ -43,6 +35,11 @@ function enigMessageDecrypt() {
 
     var cipherText = EnigGetDeepText(bodyElement);
     DEBUG_LOG("enigmailMessengerOverlay.js: cipherText='"+cipherText+"'\n");
+
+    if (event && (cipherText.indexOf("----BEGIN PGP ") == -1)) {
+      // No PGP content
+      return;
+    }
 
     var statusCodeObj = new Object();
     var statusMsgObj  = new Object();
@@ -56,8 +53,12 @@ function enigMessageDecrypt() {
     var statusBox = document.getElementById("expandedEnigmailBox");
     var statusText = document.getElementById("expandedEnigmailText");
 
-    statusText.setAttribute("value", statusMsg);
-    statusBox.removeAttribute("collapsed");
+    var statusLines = statusMsg.split(/\r?\n/);
+
+    if (statusLines && statusLines.length) {
+      statusText.setAttribute("value", statusLines[0]);
+      statusBox.removeAttribute("collapsed");
+    }
 
     if (statusCode != 0) {
        EnigAlert(statusMsg);
@@ -80,3 +81,4 @@ function enigMessageDecrypt() {
     return;
 }
 
+addEventListener('messagepane-loaded', enigMessageLoad, true);

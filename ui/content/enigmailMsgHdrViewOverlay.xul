@@ -1,0 +1,27 @@
+<?xml version="1.0"?> 
+
+<!-- This is the overlay that adds a menu to messenger compose window -->
+
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
+                 type="text/css"?> 
+
+<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmailOverlay.dtd" >
+
+<overlay id="enigmailMsgHdrViewOverlay"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailMsgHdrViewOverlay.js"/>
+
+  <hbox id="attachmentGrouping">
+    <vbox id="enigmailBox" insertafter="attachmentText">
+      <spacer flex="1"/>
+      <label id="encryptedText2" value="Encryptedgt"/>
+      <label id="signedText2"    value="Signed"/>     
+      <spacer flex="1"/>
+    </vbox>
+  </hbox>
+
+</overlay>
+

@@ -1,10 +1,37 @@
+<!ENTITY enigmail.version                "0.17.2.0">
+<!ENTITY ipc.version                     "0.97.0.0">
+
 <!ENTITY enigmail.label	                 "Enigmail">
-<!ENTITY enigmailUserEmail.label	 "User email">
-<!ENTITY enigmailCaptureWebMail.label	 "Capture webmail">
-<!ENTITY enigmailPrefsHelp.label	 "Enigmail Help">
-<!ENTITY enigmailResetPrefs.label	 "Reset Preferences">
-<!ENTITY enigmailUninstall.label	 "Uninstall Enigmail">
+
+<!ENTITY enigmail.decryptbutton.label	  "Decrypt">
+<!ENTITY enigmail.decryptbutton.tip	  "Enigmail decrypt/verify">
+
+<!ENTITY enigmail.sendbutton.label	  "EnigSend">
+<!ENTITY enigmail.sendbutton.tip	  "Enigmail send (encrypt/sign)">
 
 <!ENTITY enigCmd.label	     "Enigmail">
 <!ENTITY enigCmd.accesskey   "E">
 <!ENTITY enigCmd.commandkey  "6">
+
+<!ENTITY enigmail.preferences.label	  "Preferences">
+
+<!ENTITY enigmail.defaultSignMsg.label    "Sign messages by default">
+<!ENTITY enigmail.defaultEncryptMsg.label "Encrypt messages by default">
+<!ENTITY enigmail.multipleId.label        "Enable multiple user IDs">
+<!ENTITY enigmail.alwaysTrustSend.label   "Always trust user ID when sending">
+<!ENTITY enigmail.autoDecrypt.label       "Automatically decrypt/verify messages (SLOW)">
+<!ENTITY enigmail.captureWebMail.label	  "Capture webmail">
+
+<!ENTITY enigmail.prefsHelp.label	  "Enigmail Help">
+<!ENTITY enigmail.resetPrefs.label	  "Reset Preferences">
+
+<!ENTITY enigmail.upgrade.label	          "Upgrade Enigmail">
+<!ENTITY enigmail.uninstall.label	  "Uninstall Enigmail">
+
+<!ENTITY enigmail.sendplain.label	  "Send plain">
+<!ENTITY enigmail.sendsigned.label	  "Send signed">
+<!ENTITY enigmail.sendsignedenc.label	  "Send signed+encrypted">
+
+<!ENTITY enigmail.viewconsole.label	  "View Enigmail console">
+<!ENTITY enigmail.generatekey.label	  "Generate key">
+<!ENTITY enigmail.about.label	          "About Enigmail">

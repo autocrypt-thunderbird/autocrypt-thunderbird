@@ -18,6 +18,8 @@ enigmail.jar:
 	content/enigmail/enigmailMsgComposeOverlay.js  (content/enigmailMsgComposeOverlay.js)
 	content/enigmail/enigmailMessengerOverlay.xul  (content/enigmailMessengerOverlay.xul)
 	content/enigmail/enigmailMessengerOverlay.js   (content/enigmailMessengerOverlay.js)
+	content/enigmail/enigmailMsgHdrViewOverlay.xul (content/enigmailMsgHdrViewOverlay.xul)
+	content/enigmail/enigmailMsgHdrViewOverlay.js  (content/enigmailMsgHdrViewOverlay.js)
 	content/enigmail/enigmailPrefsOverlay.xul      (content/enigmailPrefsOverlay.xul)
 	locale/en-US/enigmail/contents.rdf         (locale/en-US/contents.rdf)
 	locale/en-US/enigmail/enigmail.dtd         (locale/en-US/enigmail.dtd)

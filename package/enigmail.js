@@ -60,6 +60,11 @@ const NS_HTTPPROTOCOLHANDLER_CID_STR= "{4f47e42e-4d23-4dd3-bfda-eb29255e9ea3}";
 
 const NS_IOSERVICE_CID_STR          = "{9ac9e770-18bc-11d3-9337-00104ba0fd40}";
 
+// Encryption flags
+const SIGN_MESSAGE      = 0x1;
+const ENCRYPT_MESSAGE   = 0x2;
+const ALWAYS_TRUST_SEND = 0x4;
+
 /* Interfaces */
 const nsISupports            = Components.interfaces.nsISupports;
 const nsILocalFile           = Components.interfaces.nsILocalFile;
@@ -398,8 +403,12 @@ PGPModule.prototype = {
 
     var statusCodeObj = new Object();
     var statusMsgObj = new Object();
+    var encryptFlags = SIGN_MESSAGE|ENCRYPT_MESSAGE;
     var cipherText = gEnigmailSvc.encryptMessage(aOrigBody.body,
+                                                 "",
                                                  aMsgHeader.to,
+                                                 encryptFlags,
+                                                 "",
                                                  statusCodeObj,
                                                  statusMsgObj);
 
@@ -418,6 +427,7 @@ PGPModule.prototype = {
     var statusCodeObj = new Object();
     var statusMsgObj = new Object();
     var plainText = gEnigmailSvc.decryptMessage(aOrigBody.body,
+                                                false, "",
                                                 statusCodeObj,
                                                 statusMsgObj);
 
@@ -689,9 +699,6 @@ Enigmail.prototype.keygenConsole = null;
 Enigmail.prototype.agentType = "";
 Enigmail.prototype.agentPath = "";
 
-Enigmail.prototype.encryptMsg = false;
-Enigmail.prototype.signMsg = true;
-
 Enigmail.prototype.haveDefaultPassphrase = false;
 Enigmail.prototype._passphrase = null;
 
@@ -745,14 +752,20 @@ function () {
     var agentName = this.win32 ? agentType+".exe" : agentType;
 
     agentPath = ResolvePath(agentName, envPath, this.win32);
-    if (agentPath)
+    if (agentPath) {
+      // Discard path info for win32
+      if (this.win32)
+        agentPath = agentType;
       break;
+    }
   }
 
   if (!agentPath && this.win32) {
-    // Win32: search for GPG in c:\gnupg and c:\gnupg\bin
+    // Win32: search for GPG in c:\gnupg, c:\gnupg\bin, d:\gnupg, d:\gnupg\bin
+    var gpgPath = "c:\\gnupg;c:\\gnupg\\bin;d:\\gnupg;d:\\gnupg\\bin";
+
     agentType = "gpg";
-    agentPath = ResolvePath("gpg.exe", "c:\\gnupg;c:\\gnupg\\bin", this.win32);
+    agentPath = ResolvePath("gpg.exe", gpgPath, this.win32);
   }
 
   if (!agentPath) {
@@ -827,7 +840,7 @@ function (command, input, passFD, errMessagesObj, statusObj, exitCodeObj) {
   CONSOLE_LOG("\nenigmail> "+command+"\n");
   
   try {
-    var useShell = this.win32;
+    var useShell = false;
     exitCodeObj.value = gEnigmailSvc.ipcService.execPipe(command,
                                                        useShell,
                                                        input, input.length,
@@ -881,11 +894,11 @@ function (command, input, passFD, errMessagesObj, statusObj, exitCodeObj) {
 
 
 Enigmail.prototype.encryptMessage = 
-function (plainText, toMailAddr, passphrase, statusCodeObj, statusMsgObj) {
-  WRITE_LOG("enigmail.js: Enigmail.encryptMessage: To "+toMailAddr+"\n");
+function (plainText, fromMailAddr, toMailAddr, encryptFlags, passphrase,
+          statusCodeObj, statusMsgObj) {
+  WRITE_LOG("enigmail.js: Enigmail.encryptMessage: "+fromMailAddr+" To "+toMailAddr+"("+encryptFlags+")\n");
 
-  if (!gEnigmailSvc.encryptMessage && !gEnigmailSvc.signMessage) {
-    statusCodeObj.value = 0;
+  if (!encryptFlags) {
     statusMsgObj.value = "No encryption or signing requested";
     return plainText;
   }
@@ -903,51 +916,65 @@ function (plainText, toMailAddr, passphrase, statusCodeObj, statusMsgObj) {
     encryptCommand += " +batchmode +force -fat "
     recipientPrefix = " ";
 
-    if (gEnigmailSvc.signMsg)
+    if (encryptFlags & SIGN_MESSAGE)
       encryptCommand += " -s";
 
-    if (gEnigmailSvc.encryptMsg)
+    if (encryptFlags & ENCRYPT_MESSAGE)
       encryptCommand += " -e";
 
   } else {
-    encryptCommand += " --batch --no-tty --passphrase-fd 0 --status-fd 2";
+    encryptCommand += " --batch --no-tty --status-fd 2";
     recipientPrefix = " -r ";
 
-    if (gEnigmailSvc.encryptMsg) {
+    if (encryptFlags & ALWAYS_TRUST_SEND)
+      encryptCommand += " --always-trust";
+
+    if (encryptFlags & ENCRYPT_MESSAGE) {
       encryptCommand += " -a -e";
 
-      if (gEnigmailSvc.signMsg)
+      if (encryptFlags & SIGN_MESSAGE)
         encryptCommand += " -s";
 
-    } else if (gEnigmailSvc.signMsg) {
+    } else if (encryptFlags & SIGN_MESSAGE) {
       encryptCommand += " --clearsign";
     }
   }
 
+  var inputText = plainText;
 
-  if (gEnigmailSvc.encryptMsg) {
+  if (encryptFlags & SIGN_MESSAGE) {
+    if (passphrase == null) {
+      if (!this.haveDefaultPassphrase) {
+        ERROR_LOG("enigmail.js: Enigmail: Error - no passphrase supplied\n");
+
+        statusCodeObj.value = -1;
+        statusMsgObj.value = "Error - no passphrase supplied";
+          return "";
+      }
+
+      passphrase = this._passphrase;
+    }
+
+    if (this.agentType == "gpg")
+      encryptCommand += " --passphrase-fd 0";
+
+    inputText = passphrase+"\n"+plainText;
+  }
+
+  if (fromMailAddr) {
+    encryptCommand += " -u " + fromMailAddr;
+  }
+
+  if (encryptFlags & ENCRYPT_MESSAGE) {
     var addrList = toMailAddr.split(/\s*,\s*/);
     for (var k=0; k<addrList.length; k++)
        encryptCommand += recipientPrefix+addrList[k];
   }
 
-  if (passphrase == null) {
-     if (!this.haveDefaultPassphrase) {
-       ERROR_LOG("enigmail.js: Enigmail: Error - no passphrase supplied\n");
-
-       statusCodeObj.value = -1;
-       statusMsgObj.value = "Error - no passphrase supplied";
-       return "";
-     }
-
-     passphrase = this._passphrase;
-  }
-
   var errMessagesObj = new Object();
   var statusObj      = new Object();
 
-  var cipherText = gEnigmailSvc.execCmd(encryptCommand,
-                                  passphrase+"\n"+plainText, true,
+  var cipherText = gEnigmailSvc.execCmd(encryptCommand, inputText, true,
                                   errMessagesObj, statusObj, statusCodeObj);
 
   CONSOLE_LOG(errMessagesObj.value+"\n");
@@ -963,6 +990,12 @@ function (plainText, toMailAddr, passphrase, statusCodeObj, statusMsgObj) {
     ERROR_LOG("enigmail.js: Enigmail.encryptMessage: Error in command execution\n");
 
     statusMsgObj.value = "Error - encryption command failed";
+
+    if (errMessagesObj.value) {
+      statusMsgObj.value += "\n" + encryptCommand;
+      statusMsgObj.value += "\n" + errMessagesObj.value;
+    }
+
     return "";
   }
 
@@ -989,9 +1022,6 @@ function (cipherText, verifyOnly, passphrase, statusCodeObj, statusMsgObj) {
 
   } else {
     decryptCommand += " --batch --no-tty --status-fd 2 -d";
-
-    if (!verifyOnly)
-      decryptCommand += " --passphrase-fd 0";
   }
 
   var inputText;
@@ -1011,6 +1041,9 @@ function (cipherText, verifyOnly, passphrase, statusCodeObj, statusMsgObj) {
 
         passphrase = this._passphrase;
      }
+
+     if (this.agentType == "gpg")
+       decryptCommand += " --passphrase-fd 0";
 
      inputText = passphrase+"\n"+cipherText;
   }
@@ -1036,6 +1069,12 @@ function (cipherText, verifyOnly, passphrase, statusCodeObj, statusMsgObj) {
     ERROR_LOG("enigmail.js: Enigmail.decryptMessage: Error in command execution\n");
 
     statusMsgObj.value = "Error - decryption/verification command failed";
+
+    if (errMessagesObj.value) {
+      statusMsgObj.value += "\n" + decryptCommand;
+      statusMsgObj.value += "\n" + errMessagesObj.value;
+    }
+
     return "";
   }
 
