@@ -69,6 +69,7 @@ enigmail-skin-tbird.jar:
 	skin/classic/enigmail/enigSignNotOk.png  (skin/images/enigSignNotOk.png)
 	skin/classic/enigmail/enigSignOk.png  (skin/images/enigSignOk.png)
 	skin/classic/enigmail/enigSignUnkown.png  (skin/images/enigSignUnkown.png)
+	skin/classic/enigmail/enigSignIfEncrypted.png  (skin/images/enigSignIfEncrypted.png)
 
 enigmail-skin.jar:
 	skin/modern/enigmail/contents.rdf        (skin/contents.rdf)
@@ -92,6 +93,7 @@ enigmail-skin.jar:
 	skin/modern/enigmail/enigSignNotOk.png  (skin/images/enigSignNotOk.png)
 	skin/modern/enigmail/enigSignOk.png  (skin/images/enigSignOk.png)
 	skin/modern/enigmail/enigSignUnkown.png  (skin/images/enigSignUnkown.png)
+	skin/modern/enigmail/enigSignIfEncrypted.png  (skin/images/enigSignIfEncrypted.png)
 	skin/classic/enigmail/contents.rdf        (skin/classic-seamonkey/contents.rdf)
 	skin/classic/enigmail/enigmail.css        (skin/classic-seamonkey/enigmail.css)
 	skin/classic/enigmail/enigdecrypt-act.gif (skin/classic-seamonkey/images/enigdecrypt-act.gif)
@@ -113,3 +115,4 @@ enigmail-skin.jar:
 	skin/classic/enigmail/enigSignNotOk.png  (skin/images/enigSignNotOk.png)
 	skin/classic/enigmail/enigSignOk.png  (skin/images/enigSignOk.png)
 	skin/classic/enigmail/enigSignUnkown.png  (skin/images/enigSignUnkown.png)
+	skin/classic/enigmail/enigSignIfEncrypted.png  (skin/images/enigSignIfEncrypted.png)
