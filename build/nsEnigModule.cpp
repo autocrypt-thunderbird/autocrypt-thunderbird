@@ -58,8 +58,6 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeService)
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigContentHandler)
 
-NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigContentHandlerFactory)
-
 // CIDs implemented by module
 static const nsModuleComponentInfo components[] =
 {
@@ -105,25 +103,6 @@ static const nsModuleComponentInfo components[] =
       NS_ENIGDUMMYHANDLER_CONTRACTID,
       nsEnigContentHandlerConstructor,
     },
-
-    { NS_ENIGCONTENTHANDLER_CLASSNAME,
-      NS_ENIGCONTENTHANDLER_CID,
-      NS_ENIGENCRYPTEDHANDLER_CONTRACTID,
-      nsEnigContentHandlerConstructor,
-    },
-
-    { NS_ENIGCONTENTHANDLER_CLASSNAME,
-      NS_ENIGCONTENTHANDLER_CID,
-      NS_ENIGPGPHANDLER_CONTRACTID,
-      nsEnigContentHandlerConstructor,
-    },
-
-    { NS_ENIGCONTENTHANDLERFACTORY_CLASSNAME,
-      NS_ENIGCONTENTHANDLERFACTORY_CID,
-      NS_ENIGCONTENTHANDLERFACTORY_CONTRACTID,
-      nsEnigContentHandlerFactoryConstructor,
-    },
-
 };
 
 // Module entry point

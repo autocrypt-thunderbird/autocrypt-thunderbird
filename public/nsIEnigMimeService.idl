@@ -43,7 +43,8 @@
 [scriptable, uuid(847b3a40-7ab1-11d4-8f02-006008948af5)]
 interface nsIEnigMimeService : nsISupports
 {
-  readonly attribute boolean mimeInitialized;
+  void init();
+  readonly attribute boolean initialized;
 };
 
 %{C++

@@ -69,6 +69,7 @@ interface nsIEnigmail : nsISupports
 
   void initialize(in string version, in nsIPrefBranch enigmailPrefs);
   void finalize();
+  boolean mimeInitialized();
 
   void stillActive();
   void clearCachedPassphrase();

@@ -41,7 +41,6 @@
 #include "mimecth.h"
 #include "nsIMimeContentTypeHandler.h"
 #include "nsIEnigMimeService.h"
-#include "nsIFactory.h"
 #include "nsCOMPtr.h"
 
 class nsEnigContentHandler : public nsIMimeContentTypeHandler
@@ -63,15 +62,6 @@ public:
 
 protected:
     nsCString             mContentType;
-};
-
-class nsEnigContentHandlerFactory : public nsIFactory {
-public:
-  NS_DECL_ISUPPORTS
-  NS_DECL_NSIFACTORY
-
-  nsEnigContentHandlerFactory();
-  virtual ~nsEnigContentHandlerFactory();
 };
 
 #endif

@@ -70,17 +70,15 @@ function enigMsgComposeClose() {
 }
 
 function enigMsgComposeReset() {
-   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeReset\n");
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeReset\n");
 
-   gEnigDirty = false;
-   gEnigProcessed = null;
-   gEnigTimeoutID = null;
+  gEnigDirty = false;
+  gEnigProcessed = null;
+  gEnigTimeoutID = null;
 
-   if (EnigGetPref("parseAllHeaders")) {
-     gEnigPrefRoot.setIntPref("mail.show_headers", 2);
-   }
+  EnigShowHeadersAll(true);
 
-   enigDisplaySendButton();
+  enigDisplaySendButton();
 }
 
 function enigDisplaySendButton() {

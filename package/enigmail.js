@@ -37,7 +37,7 @@ const GPG_BATCH_OPTS  = " --batch --no-tty --status-fd 2";
 
 const GPG_COMMENT_OPT = " --comment 'Using GnuPG with Mozilla - http://enigmail.mozdev.org'";
 
-const gDummyPKCS7 = 'Subject: Enigmail dummy message (not for end-user view!)\r\nContent-Type: multipart/mixed;\r\n boundary="------------060503030402050102040303\r\n\r\nThis is a multi-part message in MIME format.\r\n--------------060503030402050102040303\r\nContent-Type: application/x-pkcs7-mime\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303\r\nContent-Type: application/x-enigmail-dummy\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303--\r\n';
+const gDummyPKCS7 = 'Content-Type: multipart/mixed;\r\n boundary="------------060503030402050102040303\r\n\r\nThis is a multi-part message in MIME format.\r\n--------------060503030402050102040303\r\nContent-Type: application/x-pkcs7-mime\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303\r\nContent-Type: application/x-enigmail-dummy\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303--\r\n';
 
 /* Implementations supplied by this module */
 const NS_ENIGMAIL_CONTRACTID   = "@mozdev.org/enigmail/enigmail;1";
@@ -76,6 +76,8 @@ const NS_MSGCOMPOSESECURE_CONTRACTID = "@mozilla.org/messengercompose/composesec
 
 const NS_ENIGMSGCOMPOSE_CONTRACTID   = "@mozilla.org/enigmail/composesecure;1";
 const NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID   = "@mozilla.org/enigmail/composesecure-factory;1";
+
+const NS_ENIGMIMESERVICE_CONTRACTID = "@mozdev.org/enigmail/enigmimeservice;1";
 
 const NS_SIMPLEURI_CONTRACTID   = "@mozilla.org/network/simple-uri;1";
 
@@ -1171,6 +1173,15 @@ function () {
   this.initialized = false;
 }
 
+
+Enigmail.prototype.mimeInitialized =
+function () {
+  var enigMimeService = Components.classes[NS_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
+
+  var value = enigMimeService.initialized;
+  DEBUG_LOG("enigmail.js: Enigmail.mimeInitialized: "+value+"\n");
+  return value;
+}
 
 Enigmail.prototype.initialize =
 function (version, prefBranch) {

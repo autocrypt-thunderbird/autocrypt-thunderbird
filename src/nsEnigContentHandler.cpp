@@ -64,44 +64,6 @@ PRLogModuleInfo* gEnigContentHandlerLog = NULL;
 static NS_DEFINE_CID(kMimeObjectClassAccessCID, NS_MIME_OBJECT_CLASS_ACCESS_CID);
 
 
-// nsEnigContentHandlerFactory implementation
-
-NS_IMPL_ISUPPORTS1(nsEnigContentHandlerFactory, nsIFactory)
-
-nsEnigContentHandlerFactory::nsEnigContentHandlerFactory() {
-
-  NS_INIT_ISUPPORTS();
-}
-
-nsEnigContentHandlerFactory::~nsEnigContentHandlerFactory() {
-}
-
-NS_IMETHODIMP
-nsEnigContentHandlerFactory::CreateInstance(nsISupports *aOuter,
-                                        const nsIID & aIID,
-                                        void **aResult)
-{
-  NS_ENSURE_ARG_POINTER(aResult);
-  
-  *aResult = NULL;  
-  nsEnigContentHandler *instance = new nsEnigContentHandler;    
-  if (!instance)
-    return NS_ERROR_OUT_OF_MEMORY;
-    
-  nsresult rv = instance->QueryInterface(aIID, aResult);
-  if (rv != NS_OK) {  
-    delete instance;  
-  }  
-    
-  return rv;
-}
-
-NS_IMETHODIMP nsEnigContentHandlerFactory::LockFactory(PRBool lock)
-{
-  return NS_OK;
-}
-
-
 // nsEnigContentHandler implementation
 
 // nsISupports implementation

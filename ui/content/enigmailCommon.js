@@ -469,6 +469,20 @@ function EnigUpgrade() {
   window.openDialog("http://enigmail.mozdev.org/update.html?upgrade=yes&enigmail="+gEnigmailVersion+"&ipc="+gEnigmimeVersion, "dialog");
 }
 
+function EnigShowHeadersAll(status) {
+  DEBUG_LOG("enigmailCommon.js: EnigShowHeadersAll: "+status+"\n");
+
+  if (status && EnigGetPref("parseAllHeaders")) {
+    // Show all mail headers
+    gEnigPrefRoot.setIntPref("mail.show_headers", 2);
+
+  } else {
+    // Reset mail.show_headers pref to "original" value
+    gEnigPrefRoot.setIntPref("mail.show_headers",
+                             EnigGetPref("show_headers"));
+  }
+}
+
 function EnigSetDefaultPrefs() {
   DEBUG_LOG("enigmailCommon.js: EnigSetDefaultPrefs\n");
   for (var prefName in gEnigmailPrefDefaults) {

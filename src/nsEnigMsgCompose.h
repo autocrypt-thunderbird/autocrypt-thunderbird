@@ -71,10 +71,15 @@ public:
     static NS_METHOD
     Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
 
+    static NS_EXPORT nsresult RandomSeedTime(PRUint32 *_retval);
+
 protected:
-    static const char* EncryptionHeaders;
+    static PRBool mRandomSeeded;
 
     nsresult Finalize();
+    nsresult EncryptedHeaders(const char* prefix,
+                              nsACString& headers, nsACString& finalSeparator);
+    char* MakeBoundary(const char *prefix);
     nsresult FinishAux(PRBool aAbort, nsIMsgSendReport* sendReport);
 
     PRBool                        mInitialized;
@@ -90,6 +95,8 @@ protected:
 
     nsCString                     mSenderEmailAddr;
     nsCString                     mRecipients;
+
+    nsCString                     mFinalSeparator;
 
     nsOutputFileStream*           mStream;
 

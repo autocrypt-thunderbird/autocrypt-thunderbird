@@ -105,6 +105,24 @@ function enigMsgHdrViewLoad(event)
 
 addEventListener('messagepane-loaded', enigMsgHdrViewLoad, true);
 
+// THE FOLLOWING OVERRIDES CODE IN msgHdrViewOverlay.js
+
+var fEnigOpenAttachment;
+if (openAttachment) {
+  fEnigOpenAttachment = openAttachment;
+  openAttachment = function (contentType, url, displayName, messageUri)
+    {
+      DEBUG_LOG("enigmailMsgHdrViewOverlay.js: openAttachment: "+contentType+"\n");
+
+      if (contentType.search(/^message\/rfc822/i) == 0) {
+        // Reset mail.show_headers pref to "original" value
+        EnigShowHeadersAll(true);
+      }
+
+      fEnigOpenAttachment(contentType, url, displayName, messageUri);
+    }
+}
+
 if (messageHeaderSink) {
     // Modify the methods onStartHeaders, getSecurityinfo, setSecurityInfo
     // of the object messageHeaderSink in msgHdrViewOverlay.js.
@@ -133,6 +151,7 @@ if (messageHeaderSink) {
       } else try {
          showAllHeadersPref = gEnigPrefRoot.getIntPref("mail.show_headers");
       } catch (ex) {}
+
       // END OF MODIFIED CODE FOR ENIGMAIL
 
       if (showAllHeadersPref == 2)

@@ -13,6 +13,10 @@ var gEnigSecurityInfo = "";
 var gEnigLastSaveDir = "";
 
 var gEnigMessagePane = null;
+var gEnigNoShowReload = false;
+
+var gEnigHeadersList = ["content-type", "x-enigmail-version"];
+var gEnigSavedHeaders = null;
 
 function enigMessengerStartup() {
   DEBUG_LOG("enigmailMessengerOverlay.js: Startup\n");
@@ -63,9 +67,8 @@ function enigMessengerStartup() {
   EnigOverrideAttribute( viewElementIds, "oncommand",
                          "enigMsgViewHeaders('", "');");
 
-  if (EnigGetPref("parseAllHeaders")) {
-    gEnigPrefRoot.setIntPref("mail.show_headers", 2);
-  }
+  EnigShowHeadersAll(true);
+  gEnigSavedHeaders = null;
 
   // Commented out; clean-up now handled by HdrView and Unload
   //var tree = GetThreadTree();
@@ -135,8 +138,21 @@ function enigMsgViewHeaders(elementId) {
     gEnigPrefRoot.setIntPref("mail.show_headers", value);
   }
 
-  MsgReload();
+  enigMessageReload(false);
+
   return true;
+}
+
+function enigMessageReload(noShowReload) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: MessageReload: "+noShowReload+"\n");
+
+  gEnigNoShowReload = noShowReload;
+
+  if (noShowReload) {
+    EnigShowHeadersAll(false);
+  }
+
+  MsgReload();
 }
 
 function enigMessageUnload() {
@@ -168,48 +184,53 @@ function enigMessageUnload() {
   gEnigDecryptedMessage = null;
   gEnigSecurityInfo = "";
 
-  if (EnigGetPref("parseAllHeaders")) {
-    gEnigPrefRoot.setIntPref("mail.show_headers", 2);
+  if (gEnigNoShowReload) {
+    EnigShowHeadersAll(false);
+    gEnigNoShowReload = false;
+
+  } else {
+    EnigShowHeadersAll(true);
+    gEnigSavedHeaders = null;
   }
 }
 
-const NS_ENIGMIMESERVICE_CONTRACTID = "@mozdev.org/enigmail/enigmimeservice;1";
-const NS_ENIGCONTENTHANDLERFACTORY_CONTRACTID = "@mozilla.org/enigmail/contenthandler-factory;1";
-const NS_ENIGCONTENTHANDLER_CID =
-  Components.ID("{847b3a51-7ab1-11d4-8f02-006008948af5}");
-
-const NS_ENIGPGPHANDLER_CONTRACTID = "@mozilla.org/mimecth;1?type=application/pgp";
-
 function enigMimeInit() {
   DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit\n");
+
+  try {
+    const NS_ENIGCONTENTHANDLER_CID =
+      Components.ID("{847b3a51-7ab1-11d4-8f02-006008948af5}");
+
+    const NS_ENIGENCRYPTEDHANDLER_CONTRACTID = "@mozilla.org/mimecth;1?type=multipart/encrypted";
+
+    var compMgr = Components.manager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
+
+    var enigContentHandlerCID = compMgr.contractIDToCID(NS_ENIGENCRYPTEDHANDLER_CONTRACTID);
+
+    var handlePGPMime = (enigContentHandlerCID.toString() == 
+                     NS_ENIGCONTENTHANDLER_CID);
+
+    DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit: handlePGPMime="+handlePGPMime+"\n");
+
+  } catch (ex) {}
 
   if (gEnigMessagePane) {
     gEnigMessagePane.removeEventListener("load", enigMimeInit, true);
     gEnigMessagePane = null;
   }
 
-    dump(":\n");
-  try {
-    var enigContentHandlerFactory = Components.classes[NS_ENIGCONTENTHANDLERFACTORY_CONTRACTID].createInstance(Components.interfaces.nsIFactory);
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+     return;
 
-    dump("AA:"+enigContentHandlerFactory+"\n");
-    var compMgr = Components.manager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
+  if (enigmailSvc.mimeInitialized()) {
+    // Reload message ONLY if enigMimeService has been initialized;
+    // enigMimeInit is only called if enigMimeService was not initialized;
+    // this prevents looping.
+    DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit: RELOADING MESSAGE\n");
 
-    dump("BB:"+compMgr+"\n");
-    compMgr.registerFactory(NS_ENIGCONTENTHANDLER_CID,
-                            "Enig Content Handler",
-                            NS_ENIGPGPHANDLER_CONTRACTID,
-                            enigContentHandlerFactory);
-
-    DEBUG_LOG("enigmailMessengerOverlay.js: registered "+NS_ENIGPGPHANDLER_CONTRACTID+"\n");
-
-    var enigContentHandlerCID = compMgr.contractIDToCID(NS_ENIGPGPHANDLER_CONTRACTID);
-
-    var handlePGP = (enigContentHandlerCID.toString() == 
-                     NS_ENIGCONTENTHANDLER_CID);
-
-    dump("***handlePGP="+handlePGP+"\n");
-  } catch (ex) {}
+    enigMessageReload(false);
+  }
 }
 
 function enigMessageFrameLoad() {
@@ -273,7 +294,7 @@ function enigToggleAttribute(attrName)
   enigUpdateOptionsDisplay();
 
   if (attrName == "autoDecrypt")
-    ReloadMessage();
+    enigMessageReload(false);
 }
 
 function enigMessageImport(event) {
@@ -285,35 +306,95 @@ function enigMessageImport(event) {
 function enigMessageDecrypt(event) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecrypt: "+event+"\n");
 
-  return enigMessageParse(!event, false);
-}
-
-function enigMessageParse(interactive, importOnly) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParse: "+interactive+"\n");
   if (EnigGetPref("parseAllHeaders")) {
-    // Check consistency of mail.show_headers pref with parseAllHeaders pref
     var showHeaders = 1;
     try {
       showHeaders = gEnigPrefRoot.getIntPref("mail.show_headers");
     } catch (ex) {
     }
 
-    if (showHeaders != 2) {
-      ERROR_LOG("enigmailMessengerOverlay.js: enigMessageParse: Error - mail.show_headers="+showHeaders+" while parseAllHeaders is true\n");
+    DEBUG_LOG("enigmailMessengerOverlay.js: mail.show_headers="+showHeaders+"\n");
+
+    if (showHeaders == 2) {
+      // Copy selected headers
+      gEnigSavedHeaders = {};
+
+      for (var index=0; index < gEnigHeadersList.length; index++) {
+        var headerName = gEnigHeadersList[index];
+        var headerValue = "";
+
+        if (currentHeaderData[headerName]) {
+          headerValue = currentHeaderData[headerName].headerValue;
+        }
+
+        gEnigSavedHeaders[headerName] = headerValue;
+        DEBUG_LOG("enigmailMessengerOverlay.js: "+headerName+": "+headerValue+"\n");
+      }
+
+      var emailAttachment = false;
+      for (var indexb in currentAttachments) {
+        var attachment = currentAttachments[indexb];
+        if (attachment.contentType.search(/^message\/rfc822(;|$)/i)  == 0) {
+          emailAttachment = true;
+        }
+        DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.contentType+"\n");
+        //DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.url+"\n");
+      }
+
+      if (emailAttachment && (EnigGetPref("show_headers") != 2)) {
+        DEBUG_LOG("enigmailMessengerOverlay.js: Email attachment; reloading to hide headers\n");
+        enigMessageReload(true);
+        return;
+      }
+
+    } else if (!gEnigSavedHeaders) {
+      ERROR_LOG("enigmailMessengerOverlay.js: enigMessageDecrypt: ERROR mail.show_headers="+showHeaders+" while parseAllHeaders is true\n");
     }
 
-    for (var index in currentHeaderData) {
-      var currentHeader = currentHeaderData[index];
-      //DEBUG_LOG("enigmailMessengerOverlay.js: "+index+": "+currentHeader.headerValue+"\n");
+  }
+
+  EnigShowHeadersAll(false);
+
+  var contentType = "";
+  var xEnigmailVersion = "";
+
+  if (gEnigSavedHeaders) {
+    contentType = gEnigSavedHeaders["content-type"];
+    xEnigmailVersion = gEnigSavedHeaders["x-enigmail-version"];
+  }
+
+  if (contentType.search(/^multipart\/encrypted(;|$)/i)  == 0) {
+    // multipart/encrypted
+    DEBUG_LOG("enigmailMessengerOverlay.js: multipart/encrypted\n");
+
+    var enigmailSvc = GetEnigmailSvc();
+    if (!enigmailSvc)
+      return;
+
+    if (!enigmailSvc.mimeInitialized()) {
+      // Display enigmail:dummy URL in message pane to initialize
+      gEnigMessagePane = document.getElementById("messagepane");
+
+      // Need to add event listener to gEnigMessagePane to make it work
+      // Adding to msgFrame doesn't seem to work
+      gEnigMessagePane.addEventListener("load",   enigMimeInit, true);
+      //gEnigMessagePane.addEventListener("unload", enigMessageFrameUnload, true);
+
+      DEBUG_LOG("enigmailMessengerOverlay.js: loading enigmail:dummy ...\n");
+      gEnigNoShowReload = true;
+
+      var msgFrame = window.frames["messagepane"];
+      msgFrame.location = "enigmail:dummy";
+
+      return;
     }
   }
 
-  for (var indexb in currentAttachments) {
-    var attachment = currentAttachments[indexb];
-    DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.contentType+"\n");
-    DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.url+"\n");
-  }
+  return enigMessageParse(!event, false);
+}
 
+function enigMessageParse(interactive, importOnly) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParse: "+interactive+"\n");
   var msgFrame = window.frames["messagepane"];
   DEBUG_LOG("enigmailMessengerOverlay.js: msgFrame="+msgFrame+"\n");
 
@@ -459,21 +540,6 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
 
   var msgFrame = window.frames["messagepane"];
   var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
-
-  if (0) {
-    // Testing URL display in message pane
-    gEnigMessagePane = document.getElementById("messagepane");
-    dump("**gEnigMessagePane"+gEnigMessagePane+"\n");
-
-    // Need to add event listener to gEnigMessagePane to make it work
-    // Adding to msgFrame doesn't seem to work
-    //gEnigMessagePane.addEventListener("load",   enigMessageFrameLoad, true);
-    gEnigMessagePane.addEventListener("load",   enigMimeInit, true);
-    gEnigMessagePane.addEventListener("unload", enigMessageFrameUnload, true);
-
-    msgFrame.location = "enigmail:dummy";
-    return;
-  }
 
   try {
     // Display plain text with hyperlinks
@@ -699,12 +765,8 @@ function enigGetDecryptedMessage(contentType) {
 function enigMsgDefaultPrint(contextMenu) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgDefaultPrint: "+contextMenu+"\n");
 
-  if (EnigGetPref("parseAllHeaders")) {
-    gEnigPrefRoot.setIntPref("mail.show_headers",
-                              EnigGetPref("show_headers"));
-
-    DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgDefaultPrint: mail.show_headers="+gEnigPrefRoot.getIntPref("mail.show_headers")+"\n");
-  }
+  // Reset mail.show_headers pref to "original" value
+  EnigShowHeadersAll(false);
 
   if (contextMenu)
     PrintEnginePrint();
@@ -715,11 +777,8 @@ function enigMsgDefaultPrint(contextMenu) {
 function enigMsgForward(elementId, event) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgForward: "+elementId+", "+event+"\n");
 
-  if (EnigGetPref("parseAllHeaders")) {
-    gEnigPrefRoot.setIntPref("mail.show_headers", EnigGetPref("show_headers"));
-
-    DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgForward: mail.show_headers="+gEnigPrefRoot.getIntPref("mail.show_headers")+"\n");
-  }
+  // Reset mail.show_headers pref to "original" value
+  EnigShowHeadersAll(false);
 
   if ((elementId == "cmd_forwardAttachment") ||
       (elementId == "threadPaneContext-forwardAsAttachment")) {

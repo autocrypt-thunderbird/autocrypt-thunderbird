@@ -92,7 +92,9 @@ MimeEnig_init(MimeObject *obj,
   if (NS_FAILED(rv))
     return NULL;
 
-  rv = data->mimeDecrypt->Init(PR_FALSE, PR_FALSE,
+  PRBool verifyOnly = PR_FALSE;
+  PRBool rfc2015 = PR_TRUE;
+  rv = data->mimeDecrypt->Init(verifyOnly, rfc2015,
                                output_fn, output_closure);
   if (NS_FAILED(rv))
     return NULL;

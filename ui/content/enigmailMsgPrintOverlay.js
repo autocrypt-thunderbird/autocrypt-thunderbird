@@ -14,8 +14,4 @@ function enigMsgPrintLoad()
 function enigMsgPrintUnload()
 {
   DEBUG_LOG("enigmailMsgPrintOverlay.js: enigMsgPrintUnload\n");
-
-  if (EnigGetPref("parseAllHeaders")) {
-    gEnigPrefRoot.setIntPref("mail.show_headers", 2);
-  }
 }

@@ -39,10 +39,16 @@
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
+#include "mimeenig.h"
 #include "nsEnigMimeService.h"
 #include "nspr.h"
 #include "nsCOMPtr.h"
 #include "nsIThread.h"
+#include "nsIComponentManager.h"
+#include "nsIGenericFactory.h"
+#include "nsEnigContentHandler.h"
+
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigContentHandler)
 
 #ifdef PR_LOGGING
 PRLogModuleInfo* gEnigMimeServiceLog = NULL;
@@ -62,7 +68,7 @@ NS_IMPL_THREADSAFE_ISUPPORTS1(nsEnigMimeService,
 
 // nsEnigMimeService implementation
 nsEnigMimeService::nsEnigMimeService()
-  : mMimeInitialized(PR_FALSE)
+  : mInitialized(PR_FALSE)
 {
   nsresult rv;
 
@@ -101,10 +107,49 @@ nsEnigMimeService::~nsEnigMimeService()
 ///////////////////////////////////////////////////////////////////////////////
 
 NS_IMETHODIMP
-nsEnigMimeService::GetMimeInitialized(PRBool *mimeInitialized)
+nsEnigMimeService::Init()
 {
-  DEBUG_LOG(("nsEnigContenthandler::GetMimeInitialized: \n"));
+  nsresult rv;
+  DEBUG_LOG(("nsEnigContenthandler::Init:\n"));
 
-  *mimeInitialized = mMimeInitialized;
+  if (!mimeEncryptedClassP) {
+    ERROR_LOG(("nsEnigContenthandler::Init: ERROR mimeEncryptedClassPis null\n"));
+    return NS_ERROR_FAILURE;
+  }
+
+  static const nsModuleComponentInfo info =
+  { NS_ENIGCONTENTHANDLER_CLASSNAME,
+    NS_ENIGCONTENTHANDLER_CID,
+    NS_ENIGENCRYPTEDHANDLER_CONTRACTID,
+    nsEnigContentHandlerConstructor,
+  };
+
+  // Create a generic factory for the content handler
+  nsCOMPtr<nsIGenericFactory> factory;
+  rv = NS_NewGenericFactory(getter_AddRefs(factory), &info);
+  if (NS_FAILED(rv)) return rv;
+
+  // Register factory
+  rv = nsComponentManager::RegisterFactory(info.mCID, info.mDescription,
+                                           info.mContractID, factory, PR_TRUE);
+  if (NS_FAILED(rv)) return rv;
+
+  DEBUG_LOG(("nsEnigContenthandler::Init: registered %s\n", info.mContractID));
+
+  mInitialized = PR_TRUE;
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsEnigMimeService::GetInitialized(PRBool *_retval)
+{
+  if (!_retval)
+    return NS_ERROR_NULL_POINTER;
+
+  *_retval = mInitialized;
+
+  DEBUG_LOG(("nsEnigContenthandler::GetInitialized: %d\n", (int) mInitialized));
+
   return NS_OK;
 }

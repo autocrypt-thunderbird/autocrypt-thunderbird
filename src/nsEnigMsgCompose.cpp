@@ -111,9 +111,7 @@ NS_IMETHODIMP nsEnigMsgComposeFactory::LockFactory(PRBool lock)
 
 // nsEnigMsgCompose implementation
 
-const char* nsEnigMsgCompose::EncryptionHeaders =
- "Content-Type: application/pgp\r\n"
- "\r\n";
+PRBool nsEnigMsgCompose::mRandomSeeded = PR_FALSE;
 
 // nsISupports implementation
 NS_IMPL_THREADSAFE_ISUPPORTS3(nsEnigMsgCompose,
@@ -136,6 +134,8 @@ nsEnigMsgCompose::nsEnigMsgCompose()
 
     mSenderEmailAddr(""),
     mRecipients(""),
+
+    mFinalSeparator(""),
 
     mStream(0),
 
@@ -203,6 +203,95 @@ nsEnigMsgCompose::Finalize()
   return NS_OK;
 }
 
+NS_IMETHODIMP nsEnigMsgCompose::RandomSeedTime(PRUint32 *_retval)
+{
+  if (!*_retval)
+    return NS_ERROR_NULL_POINTER;
+
+  // Current local time (microsecond resolution)
+  PRExplodedTime localTime;
+  PR_ExplodeTime(PR_Now(), PR_LocalTimeParameters, &localTime);
+
+  PRUint32       randomNumberA = localTime.tm_sec*1000000+localTime.tm_usec;
+
+  // Elapsed time (1 millisecond to 10 microsecond resolution)
+  PRIntervalTime randomNumberB = PR_IntervalNow();
+
+  DEBUG_LOG(("nsEnigMsgCompose::RandomSeedTime: ranA=0x%x, ranB=0x%x\n",
+                                               randomNumberA, randomNumberB));
+
+  *_retval = ((randomNumberA & 0x3FFFFF) << 10) | (randomNumberB & 0x3FF);
+
+  return NS_OK;
+}
+
+   
+char* nsEnigMsgCompose::MakeBoundary(const char *prefix)
+{
+  nsresult rv;
+
+  if (!mRandomSeeded) {
+    mRandomSeeded = PR_TRUE;
+    PRUint32 ranTime;
+    rv = RandomSeedTime(&ranTime);
+    if (NS_FAILED(rv)) return nsnull;
+    srand( ranTime );
+  }
+
+  unsigned char ch[13]; 
+  for( PRUint32 j = 0; j < 12; j++)
+    ch[j] = rand() % 256;
+
+  return PR_smprintf("------------%s"
+           "%02X%02X%02X%02X"
+           "%02X%02X%02X%02X"
+           "%02X%02X%02X%02X",
+           prefix,
+           ch[0], ch[1], ch[2], ch[3],
+           ch[4], ch[5], ch[6], ch[7],
+           ch[8], ch[9], ch[10], ch[11]);
+}
+
+nsresult
+nsEnigMsgCompose::EncryptedHeaders(const char* prefix,
+                               nsACString& headers, nsACString& finalSeparator)
+{
+  DEBUG_LOG(("nsEnigMsgCompose::EncryptedHeader:\n"));
+
+  char* boundary = MakeBoundary(prefix);
+  if (!boundary)
+    return NS_ERROR_OUT_OF_MEMORY;
+
+  char* hdr = PR_smprintf(
+ "Content-Type: multipart/encrypted;\r\n"
+ " protocol=\"application/pgp-encrypted\";\r\n"
+ " boundary=\"%s\"\r\n"
+ "\r\n"
+ "--%s\r\n"
+ "Content-Type: application/pgp-encrypted\r\n"
+ "\r\n"
+ "Version: 1\r\n"
+ "\r\n"
+ "--%s\r\n"
+ "Content-Type: application/octet-stream\r\n"
+ "\r\n",
+ boundary, boundary, boundary);
+
+  if (!hdr) {
+    PR_Free(boundary);
+    return NS_ERROR_OUT_OF_MEMORY;
+  }
+
+  headers = hdr;
+  finalSeparator += "--";
+  finalSeparator += boundary;
+  finalSeparator += "--";
+
+  PR_Free(boundary);
+  PR_Free(hdr);
+
+  return NS_OK;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // nsIMsgComposeSecure methods:
@@ -366,6 +455,14 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
     // Get StreamListener to write synchronously to pipeTransport
     rv = mPipeTrans->GetListener(getter_AddRefs(mPipeTransListener));
     if (NS_FAILED(rv)) return rv;
+
+  } else {
+    // Emit RFC 2015 headers
+    nsCAutoString outerHeaders;
+    rv = EncryptedHeaders("enig", outerHeaders, mFinalSeparator);
+    if (NS_FAILED(rv)) return rv;
+
+    mStream->write(outerHeaders.get(), outerHeaders.Length());
   }
 
   mInitialized = PR_TRUE;
@@ -439,6 +536,8 @@ nsEnigMsgCompose::FinishAux(PRBool aAbort,
   rv = errListener->GetByteData(&errorCount, getter_Copies(errorOutput));
   if (NS_FAILED(rv)) return rv;
 
+  DEBUG_LOG(("nsEnigMsgCompose::FinishAux: errorOutput=%s\n", (const char*) errorOutput));
+
   // Shutdown STDERR console
   errListener->Shutdown();
 
@@ -464,6 +563,10 @@ nsEnigMsgCompose::FinishAux(PRBool aAbort,
   if (newExitCode != 0) {
     DEBUG_LOG(("nsEnigMsgCompose::FinishAux: ERROR EXIT %d\n", newExitCode));
     return NS_ERROR_FAILURE;
+  }
+
+  if (!mFinalSeparator.IsEmpty()) {
+    mStream->write(mFinalSeparator.get(), mFinalSeparator.Length());
   }
 
   return NS_OK;
@@ -519,36 +622,34 @@ nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
   rv = mPipeTransListener->OnStartRequest(aRequest, aContext);
   if (NS_FAILED(rv)) return rv;
 
-  if (mMimeListener) {
-    nsCAutoString contentType;
-    rv = mMimeListener->GetContentType(contentType);
-    if (NS_FAILED(rv)) return rv;
+  nsCAutoString contentType;
+  rv = mMimeListener->GetContentType(contentType);
+  if (NS_FAILED(rv)) return rv;
 
-    nsCAutoString headers;
-    rv = mMimeListener->GetHeaders(headers);
-    if (NS_FAILED(rv)) return rv;
+  nsCAutoString headers;
+  rv = mMimeListener->GetHeaders(headers);
+  if (NS_FAILED(rv)) return rv;
 
-    if (headers.IsEmpty())
-        return NS_ERROR_FAILURE;
+  if (headers.IsEmpty())
+    return NS_ERROR_FAILURE;
 
-    DEBUG_LOG(("nsEnigMsgCompose::OnStartRequest: Content-Type: %s\n", headers.get()));
+  DEBUG_LOG(("nsEnigMsgCompose::OnStartRequest: Content-Type: %s\n", headers.get()));
 
-    if (contentType.Equals("text/plain")) {
-      // No crypto encapsulation for headers
-      DEBUG_LOG(("nsEnigMsgCompose::OnStartRequest: NO CRYPTO ENCAPSULATION\n"));
-      PRInt32 status = mStream->write(headers.get(), headers.Length());
-      if (status < int(headers.Length()))
-        return NS_ERROR_FAILURE;
-
-    } else {
-      // Crypto encapsulation for headers
-      mStream->write(EncryptionHeaders, nsCRT::strlen(EncryptionHeaders));
-      mPipeTrans->WriteSync(headers.get(), headers.Length());
-    }
+  if (contentType.Equals("text/plain")) {
+    // No crypto encapsulation for headers
+    DEBUG_LOG(("nsEnigMsgCompose::OnStartRequest: NO CRYPTO ENCAPSULATION\n"));
+    PRInt32 status = mStream->write(headers.get(), headers.Length());
+    if (status < int(headers.Length()))
+      return NS_ERROR_FAILURE;
 
   } else {
-    // Emit RFC 2015 headers
-    mStream->write(EncryptionHeaders, nsCRT::strlen(EncryptionHeaders));
+    // RFC2 015 crypto encapsulation for headers
+    nsCAutoString outerHeaders;
+    rv = EncryptedHeaders("enig", outerHeaders, mFinalSeparator);
+    if (NS_FAILED(rv)) return rv;
+
+    mStream->write(outerHeaders.get(), outerHeaders.Length());
+    mPipeTrans->WriteSync(headers.get(), headers.Length());
   }
 
   return NS_OK;

@@ -102,12 +102,9 @@ function EnigUninstall() {
   if (!confirm)
     return;
 
-  // Reset mail.show_headers pref
-  try {
-    gEnigPrefRoot.setIntPref("mail.show_headers",
-                             EnigGetPref("show_headers"));
-    EnigSavePrefs();
-  } catch (ex) {}
+  // Reset mail.show_headers pref to "original" value
+  EnigShowHeadersAll(false);
+  EnigSavePrefs();
 
   // Remove overlays
   var overlay1Removed = RemoveOverlay("communicator",

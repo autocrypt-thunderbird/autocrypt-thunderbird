@@ -1,4 +1,5 @@
 #include "mimedummy.h"
+#include "nsEnigMimeService.h"
 
 MimeEncryptedClass* mimeEncryptedClassP = NULL;
 
@@ -73,9 +74,17 @@ MimeDummy_parse_begin(MimeObject *obj)
         if (!nsCRT::strcasecmp(superclazz->class_name, "MimeEncrypted")) {
           // mimeEncryptedClass
           fprintf(stderr, "MimeDummy_parse_begin: found MimeEncrypted\n");
+
           mimeEncryptedClassP = (MimeEncryptedClass *) superclazz;
           MimeObjectClass* objClass = (MimeObjectClass*) &mimeEncryptedEnigClass;
           objClass->superclass = (MimeObjectClass *) superclazz;
+
+          nsresult rv;
+          nsCOMPtr<nsIEnigMimeService> enigMimeService = do_GetService(NS_ENIGMIMESERVICE_CONTRACTID, &rv);
+          if (NS_SUCCEEDED(rv)) {
+            enigMimeService->Init();
+          }
+
         }
       }
 
