@@ -16,7 +16,7 @@
    The Initial Developer of the Original Code is Ramalingam Saravanan.
    Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
    Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
-   
+
    Contributor(s):
    Patrick Brunschwig <patrick.brunschwig@gmx.net>
 
@@ -197,6 +197,13 @@
              label="&enigmail.viewdebuglog.label;"
              accesskey="&enigmail.viewdebuglog.accesskey;"
              oncommand="EnigViewDebugLog();" />
+
+        <menuseparator/>
+
+        <menuitem id="enigmail_reload_msg"
+             label="Reload Message"
+             accesskey="R"
+             oncommand="ReloadWithAllParts();" />
 
         <menuseparator/>
 
