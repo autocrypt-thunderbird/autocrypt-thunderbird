@@ -32,7 +32,10 @@
                 oncommand="enigDoResetFilter();"/>
       </hbox>
       <hbox flex="1" >
-        <tree id="rulesTree" flex="1" hidecolumnpicker="false">
+        <tree id="rulesTree" flex="1"
+              hidecolumnpicker="false"
+              seltype="single"
+              ondblclick="enigDoEdit()">
           <treecols>
             <treecol style="width:40px" id="negateRule" flex="0" label="&enigmail.not.label;" persist="width"
                      hidden="true" ignoreincolumnpicker="true"/>
