@@ -66,10 +66,12 @@
     <box id="expandedEnigmailBox" class="headerBox"
           position="1"
           collapsed="true">
-       <hbox class="headerValueBox">
+       <hbox id="expandedEnigmailStatusBox" class="headerValueBox">
          <text class="headerdisplayname" value="Enigmail:"/>
        </hbox>
-       <text id="expandedEnigmailText" value=""/>
+       <text id="expandedEnigmailStatusText" value=""/>
+             tooltip="aTooltip"
+             tooltiptext="Enigmail decryption/verification status" />
     </box>
   </box>
 

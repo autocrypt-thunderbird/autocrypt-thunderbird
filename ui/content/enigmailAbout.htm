@@ -4,11 +4,37 @@
 
     <link title="defaultstyle" rel="stylesheet" type="text/css"
           href="chrome://enigmail/content/enigmail.css">
+
+    <script language="JavaScript"
+            src="chrome://enigmail/content/enigmailCommon.js">
+    </script>
+
   </head>
 
   <body>
 
-  About Enigmail ...
-  
+    <b><a href="http://enigmail.mozdev.org">Enigmail Home Page</a></b>
+    <p>
+
+    <script language="JavaScript">
+
+     document.writeln("<b>Running Enigmail version "+gEnigmailVersion+"</b><p>\n");
+
+     // Initialize enigmailCommon
+     EnigInitCommon("enigmailAbout");
+
+     var enigmailSvc = GetEnigmailSvc();
+
+     if (enigmailSvc) {
+       document.writeln("Using executable <tt>"+enigmailSvc.agentPath+"</tt> to encrypt and decrypt<p>\n");
+     } else {
+       document.writeln("<em>Failed to access enigmail service!</em><p>\n");
+       if (gEnigmailSvc && gEnigmailSvc.initializationError)
+         document.writeln(gEnigmailSvc.initializationError+"\n");
+     }
+
+    </script>
+
   </body>
+
 </html>

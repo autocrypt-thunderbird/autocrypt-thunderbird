@@ -32,9 +32,12 @@
 
 #include "nsISupports.idl"
 
+interface nsIDOMWindow;
 interface nsIPrefBranch;
 interface nsIPipeConsole;
 interface nsIPipeTransport;
+interface nsIIPCRequest;
+interface nsIRequestObserver;
 
 /**
  * The nsIEnigmail provides an openPGP-based encryption/decryption service
@@ -42,15 +45,15 @@ interface nsIPipeTransport;
 [scriptable, uuid(847b3a00-7ab1-11d4-8f02-006008948af5)]
 interface nsIEnigmail : nsISupports
 {
-  readonly attribute string agentType;  /* "gpg" or "pgp" */
+  readonly attribute string agentType;        /* "gpg" or "pgp" */
 
-  readonly attribute string agentPath;  /* executable path */
+  readonly attribute string agentPath;        /* executable path */
 
   readonly attribute nsIPipeConsole console;  /* Enigmail console */
 
-  attribute nsIPipeConsole keygenConsole;
+  readonly attribute boolean isWin32;         /* Platform type */
 
-  attribute nsIPipeTransport keygenProcess;
+  attribute nsIIPCRequest keygenRequest;
 
   attribute long maxIdleMinutes;
 
@@ -58,13 +61,11 @@ interface nsIEnigmail : nsISupports
   attribute boolean initializationAttempted;
   attribute  string initializationError;
 
+  attribute boolean debug;
+
   void initialize(in nsIPrefBranch enigmailPrefs);
 
   boolean stillActive();
-
-  boolean haveDefaultPassphrase();
-
-  void setDefaultPassphrase(in string passphrase);
 
   /* Encryption flags */
   const long SIGN_MESSAGE      = 0x01;
@@ -72,28 +73,35 @@ interface nsIEnigmail : nsISupports
   const long ALWAYS_TRUST_SEND = 0x04;
   const long ENCRYPT_TO_SELF   = 0x08;
 
-  string encryptMessage(in string  plainText,
+  string encryptMessage(in nsIDOMWindow parent,
+                        in boolean interactive,
+                        in string  plainText,
                         in string  fromMailAddr,
                         in string  toMailAddr,
                         in unsigned long encryptFlags,
-                        in string  passphrase,
+                        out long   exitCode,
+                        out string errorMsg);
+
+  string decryptMessage(in nsIDOMWindow parent,
+                        in boolean interactive,
+                        in string  cipherText,
                         out long   exitCode,
                         out string errorMsg,
-                        out string statusMsg);
+                        inout string signature);
 
-  string decryptMessage(in string  cipherText,
-                        in boolean verifyOnly,
-                        in string  passphrase,
-                        out long   exitCode,
-                        out string errorMsg,
-                        out string statusMsg);
+  long receiveKey(in nsIDOMWindow parent,
+                  in boolean interactive,
+                  in string keyId,
+                  in string keyserver,
+                  out string errorMsg);
 
-  nsIPipeTransport generateKey(in string name,
-                               in string comment,
-                               in string email,
-                               in long   expiryDate,
-                               in string passphrase,
-                               in nsIPipeConsole pipeConsole);
+  nsIIPCRequest generateKey(in nsIDOMWindow parent,
+                            in string name,
+                            in string comment,
+                            in string email,
+                            in long   expiryDate,
+                            in string passphrase,
+                            in nsIRequestObserver requestObserver);
 
   boolean selectPanel(in string url);
 };

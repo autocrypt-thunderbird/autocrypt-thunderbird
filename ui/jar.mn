@@ -9,6 +9,8 @@ enigmail.jar:
 	content/enigmail/enigmailSelectPanel.js    (content/enigmailSelectPanel.js)
 	content/enigmail/pref-enigmail.xul         (content/pref-enigmail.xul)
 	content/enigmail/pref-enigmail.js          (content/pref-enigmail.js)
+	content/enigmail/pref-enigmail-adv.xul     (content/pref-enigmail-adv.xul)
+	content/enigmail/pref-enigmail-adv.js      (content/pref-enigmail-adv.js)
 	content/enigmail/enigmailKeygen.xul        (content/enigmailKeygen.xul)
 	content/enigmail/enigmailKeygen.js         (content/enigmailKeygen.js)
 	content/enigmail/enigmailKeygenConsole.htm (content/enigmailKeygenConsole.htm)

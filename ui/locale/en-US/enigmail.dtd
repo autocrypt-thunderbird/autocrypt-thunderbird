@@ -10,6 +10,10 @@
 
 <!ENTITY enigmail.keyUserId.label         "User Id">
 <!ENTITY enigmail.useForSigning.label     "Use key for signing">
+<!ENTITY enigmail.keyComment.label        "Comment">
+<!ENTITY enigmail.keyNoPassphrase.label   "No passphrase">
+<!ENTITY enigmail.keyPassphrase.label     "Passphrase">
+<!ENTITY enigmail.keyPassphraseRepeat.label "Passphrase (repeat)">
 <!ENTITY enigmail.generateKey.label       "Generate key">
 <!ENTITY enigmail.cancelKey.label         "Cancel">
 
@@ -17,43 +21,57 @@
 
 <!ENTITY enigmail.passivePrivacy.label    "Enable Passive Privacy">
 <!ENTITY enigmail.userIdValue.label       "User email address">
+<!ENTITY enigmail.userNoPassphrase.label  "No passphrase for user">
 
-<!ENTITY enigmail.userIdSource.label      "Choosing secret key for signing">
+<!ENTITY enigmail.userIdSource.label      "Choose secret key for signing">
 <!ENTITY enigmail.userIdDefault.label     "Use default key">
 <!ENTITY enigmail.userIdSpecified.label   "Use specified email address">
 <!ENTITY enigmail.userIdFromAddr.label    "Use FROM email address">
 
 <!ENTITY enigmail.defaultSignMsg.label    "Sign messages by default">
 <!ENTITY enigmail.defaultEncryptMsg.label "Encrypt messages by default">
+<!ENTITY enigmail.send_plaintext_flowed.label "Allow flowed text (RFC 2646)">
 
-<!ENTITY enigmail.encryptToSelf.label     "Encrypt to self when sending">
-<!ENTITY enigmail.alwaysTrustSend.label   "Always trust user ID when sending">
+<!ENTITY enigmail.whenSending.label       "When sending mail">
+<!ENTITY enigmail.encryptToSelf.label     "Encrypt to self">
+<!ENTITY enigmail.alwaysTrustSend.label   "Always trust user ID">
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Remember password for">
 <!ENTITY enigmail.maxIdleMinutesTail.label "minutes of idle time">
+
+<!ENTITY enigmail.keyserver.label         "Keyserver">
 
 <!ENTITY enigmail.autoDecrypt.label       "Automatically decrypt/verify messages (slow?)">
 <!ENTITY enigmail.replaceNonBreakingSpace.label "Replace non-breaking space with white space (workaround)">
 <!ENTITY enigmail.captureWebMail.label	  "Capture webmail (experimental)">
 
-<!ENTITY enigmail.prefsHelp.label	  "Help">
-<!ENTITY enigmail.resetPrefs.label	  "Reset Preferences">
-<!ENTITY enigmail.prefs.label	          "Enigmail Preferences">
+<!ENTITY enigmail.advancedPrefsButton.label "Advanced">
+<!ENTITY enigmail.resetPrefsButton.label  "Reset">
+<!ENTITY enigmail.prefsHelpButton.label	  "Help">
 
-<!ENTITY enigmail.upgrade.label	          "Upgrade">
-<!ENTITY enigmail.uninstall.label	  "Uninstall">
+<!ENTITY enigmail.upgradeButton.label	  "Upgrade Enigmail">
+<!ENTITY enigmail.uninstallButton.label	  "Uninstall Enigmail">
+
+<!ENTITY enigmail.advancedPrefs.label	  "Enigmail Advanced Preferences">
 
 <!ENTITY enigmail.sendplain.label	  "Send plain">
 <!ENTITY enigmail.sendsigned.label	  "Send signed">
 <!ENTITY enigmail.sendsignedenc.label	  "Send signed+encrypted">
 
+<!ENTITY enigmail.undoencryption.label	  "Undo encryption">
+
+<!ENTITY enigmail.prefs.label	          "Enigmail Preferences">
+
 <!ENTITY enigmail.viewconsole.label	  "View Enigmail console">
 <!ENTITY enigmail.generatekey.label	  "Generate key">
+<!ENTITY enigmail.upgrade.label	          "Upgrade">
+<!ENTITY enigmail.help.label	          "Help">
 <!ENTITY enigmail.about.label	          "About Enigmail">
 
 <!ENTITY enigmail.viewconsole.commandkey  "7">
 <!ENTITY enigmail.sendplain.accesskey	  "p">
 <!ENTITY enigmail.sendsigned.accesskey	  "s">
 <!ENTITY enigmail.sendsignedenc.accesskey "e">
+<!ENTITY enigmail.undoencryption.accesskey "u">
 <!ENTITY enigmail.viewconsole.accesskey	  "v">
 

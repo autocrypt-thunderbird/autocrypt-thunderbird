@@ -7,11 +7,11 @@ function enigStartHeaders()
 {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigStartHeaders\n");
 
-  var statusBox = document.getElementById("expandedEnigmailBox");
-  var statusText = document.getElementById("expandedEnigmailText");
+  var enigmailBox = document.getElementById("expandedEnigmailBox");
+  var statusText  = document.getElementById("expandedEnigmailStatusText");
 
   statusText.setAttribute("value", "");
-  statusBox.setAttribute("collapsed", "true");
+  enigmailBox.setAttribute("collapsed", "true");
 
   if (EnigGetPref("autoDecrypt")) {
     var msgFrame = window.frames["messagepane"];

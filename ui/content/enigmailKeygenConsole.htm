@@ -20,7 +20,11 @@
       if (!enigmailSvc)
         return;
 
-      var keygenConsole = enigmailSvc.keygenConsole;
+      var ipcRequest = enigmailSvc.keygenRequest;
+      if (!ipcRequest)
+        return;
+
+      var keygenConsole = ipcRequest.stdoutConsole;
 
       if (keygenConsole && keygenConsole.hasNewData) {
 
@@ -32,7 +36,8 @@
            window.scrollTo(0,9999);
       }
 
-      var keygenProcess = enigmailSvc.keygenProcess;
+      var keygenProcess = ipcRequest.pipeTransport;
+
       if (keygenProcess && !keygenProcess.isAttached) {
         dump("enigmailKeygenConsole.htm: KeygenProcess terminated\n");
         UnloadHandler();

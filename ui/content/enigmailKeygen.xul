@@ -11,7 +11,6 @@
      id="enigmailKeygen"
      title="Enigmail Keygen Page"
      orient="vertical"
-     width="640" height="250"
      onload="enigmailKeygenLoad()"
      onunload="enigmailKeygenUnload()"
      xmlns:html="http://www.w3.org/1999/xhtml"
@@ -24,7 +23,7 @@
 
 <popupset id="aTooltipSet"/>
 
-<groupbox id="urlBox" class="url-box" orient="horizontal">
+<groupbox id="userIdBox" orient="horizontal">
 
   <hbox autostretch="never">
     <text class="label" value="&enigmail.keyUserId.label;"/>
@@ -37,22 +36,40 @@
             label="&enigmail.useForSigning.label;"
             checked="true" />
 
-  <spring flex="1"/>
+</groupbox>
 
+<checkbox id="noPassphrase"
+          label="&enigmail.keyNoPassphrase.label;"
+          oncommand="enigmailKeygenUpdate(false, false);" />
+
+<hbox id="passphraseBox">
+  <label control="passphrase" value="&enigmail.keyPassphrase.label;" />
+  <textbox id="passphrase" type="password" />
+
+  <label control="passphraseRepeat" value="&enigmail.keyPassphraseRepeat.label;" />
+  <textbox id="passphraseRepeat" type="password" />
+</hbox>
+
+<label control="keyComment" value="&enigmail.keyComment.label;" />
+<textbox id="keyComment" />
+
+<separator/>
+
+<hbox autostretch="never">
   <button label="&enigmail.generateKey.label;"
           class="dialog"
           tooltip="aTooltip"
           tooltiptext="Generates Key"
           oncommand="enigmailKeygenStart();" />
-  <spring flex="1"/>
 
   <button label="&enigmail.cancelKey.label;"
           class="dialog"
           tooltip="aTooltip"
           tooltiptext="Cancel Key Generation"
           oncommand="enigmailKeygenCancel();" />
-  <spring flex="1"/>
-</groupbox>
+</hbox>
+
+<separator/>
 
 <groupbox id="keygenConsoleBox" orient="vertical">
 

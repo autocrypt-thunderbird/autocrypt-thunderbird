@@ -160,6 +160,10 @@ function enigYahooLocateMessageFrame() {
 function enigYahooCompose() {
   DEBUG_LOG("enigmailYahoo.js: enigYahooCompose:\n");
 
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
   var msgFrame = enigYahooLocateMessageFrame();
 
   var plainText = msgFrame.document.Compose.Body.value;
@@ -187,9 +191,10 @@ function enigYahooCompose() {
 
   var exitCodeObj = new Object();
   var errorMsgObj = new Object();
-  var cipherText = EnigEncryptMessage(plainText, fromAddr, toAddr,
-                                      encryptFlags,
-                                      exitCodeObj, errorMsgObj);
+  var cipherText = enigmailSvc.encryptMessage(window, true, plainText,
+                                              fromAddr, toAddr,
+                                              encryptFlags,
+                                              exitCodeObj, errorMsgObj);
 
   var exitCode = exitCodeObj.value;
   var errorMsg  = errorMsgObj.value;
@@ -207,6 +212,10 @@ function enigYahooCompose() {
 function enigYahooShowLetter() {
   DEBUG_LOG("enigmailYahoo.js: enigYahooShowLetter:\n");
 
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
   var msgFrame = enigYahooLocateMessageFrame();
 
   var preElement = msgFrame.document.getElementsByTagName("pre")[0];
@@ -217,9 +226,12 @@ function enigYahooShowLetter() {
 
   DEBUG_LOG("enigYahooShowLetter: cipherText='"+cipherText+"'\n");
 
-  var exitCodeObj = new Object();
-  var errorMsgObj = new Object();
-  var plainText = EnigDecryptMessage(cipherText, exitCodeObj, errorMsgObj);
+  var exitCodeObj  = new Object();
+  var errorMsgObj  = new Object();
+  var signatureObj = new Object();
+
+  var plainText = enigmailSvc.decryptMessage(window, true, cipherText,
+                                       exitCodeObj, errorMsgObj, signatureObj);
 
   var exitCode = exitCodeObj.value;
   var errorMsg  = errorMsgObj.value;
@@ -275,6 +287,10 @@ function enigHotmailLocateMessageFrame() {
 function enigHotmailCompose() {
   DEBUG_LOG("enigmailHotmail.js: enigHotmailCompose:\n");
 
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
   var msgFrame = enigHotmailLocateMessageFrame();
 
   var plainText = msgFrame.document.composeform.body.value;
@@ -300,9 +316,10 @@ function enigHotmailCompose() {
 
   var exitCodeObj = new Object();
   var errorMsgObj = new Object();
-  var cipherText = EnigEncryptMessage(plainText, fromAddr, toAddr,
-                                      encryptFlags,
-                                      exitCodeObj, errorMsgObj);
+  var cipherText = enigmailSvc.encryptMessage(window, true, plainText,
+                                              fromAddr, toAddr,
+                                              encryptFlags,
+                                              exitCodeObj, errorMsgObj);
 
   var exitCode = exitCodeObj.value;
   var errorMsg  = errorMsgObj.value;
@@ -320,6 +337,10 @@ function enigHotmailCompose() {
 function enigHotmailShowLetter() {
   DEBUG_LOG("enigmailHotmail.js: enigHotmailShowLetter:\n");
 
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
   var msgFrame = enigHotmailLocateMessageFrame();
 
   var preElement = msgFrame.document.getElementsByTagName("pre")[0];
@@ -330,9 +351,12 @@ function enigHotmailShowLetter() {
 
   DEBUG_LOG("enigHotmailShowLetter: cipherText='"+cipherText+"'\n");
 
-  var exitCodeObj = new Object();
-  var errorMsgObj = new Object();
-  var plainText = EnigDecryptMessage(cipherText, exitCodeObj, errorMsgObj);
+  var exitCodeObj  = new Object();
+  var errorMsgObj  = new Object();
+  var signatureObj = new Object();
+
+  var plainText = enigmailSvc.decryptMessage(window, true, cipherText,
+                                       exitCodeObj, errorMsgObj, signatureObj);
 
   var exitCode = exitCodeObj.value;
   var errorMsg  = errorMsgObj.value;

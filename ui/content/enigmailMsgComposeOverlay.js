@@ -7,14 +7,17 @@ window.addEventListener("load", enigMsgComposeStartup, false);
 
 var gEditorElement, gEditorShell;
 
-var gEnigProcessed = false;
+var gEnigProcessed = null;
 
-var gOrigSendButton, gEnigSendButton;
+var gOrigSendButton, gEnigSendButton, gUndoMenuItem;
 
 function enigMsgComposeStartup() {
    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
    gOrigSendButton = document.getElementById("button-send");
    gEnigSendButton = document.getElementById("button-enigmail-send");
+
+   gUndoMenuItem = document.getElementById("enigmail_undo_encryption");
+   gUndoMenuItem.setAttribute("disabled", "true");
 
    // Get editor shell
    gEditorElement = document.getElementById("content-frame");
@@ -54,12 +57,39 @@ function enigUpdateOptionsDisplay() {
    }
 }
 
+function enigUndoEncryption() {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigUndoEncryption: \n");
+
+  if (gEnigProcessed) {
+    
+    gEditorShell.SelectAll();
+  
+    var directionFlags = 0;   // see nsIEditor.h
+    gEditorShell.DeleteSelection(directionFlags);
+  
+    gEditorShell.InsertText(gEnigProcessed.plainText);
+
+    gEnigProcessed = null;
+
+    gUndoMenuItem.setAttribute("disabled", "true");
+  }
+}
+
 function enigSend(encryptFlags) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: "+encryptFlags+"\n");
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {
-     if (EnigConfirm("Failed to initialize Enigmail; send unencrypted email?\n"))
+     if (EnigConfirm("Failed to initialize Enigmail.\nSend unencrypted email?"))
+        goDoCommand('cmd_sendButton');
+
+     return;
+  }
+
+  if (gWindowLocked || gIsOffline) {
+     // We perform this check because we are overriding the default
+     // GenericSendMessage function in MsgComposeCommands.js
+     if (EnigConfirm("Window is locked or computer is offline.\nEmulate default (unencrypted) send behaviour?"))
         goDoCommand('cmd_sendButton');
 
      return;
@@ -82,7 +112,7 @@ function enigSend(encryptFlags) {
      }
 
      if (!gEnigProcessed && encryptFlags) {
-    
+
        var msgCompFields = gMsgCompose.compFields;
        Recipients2CompFields(msgCompFields);
 
@@ -103,13 +133,27 @@ function enigSend(encryptFlags) {
        var encoderFlags = 16;   // OutputPreformatted
        var docText = gEditorShell.GetContentsAs("text/plain", encoderFlags)
        DEBUG_LOG("enigmailMsgComposeOverlay.js: docText["+encoderFlags+"] = '"+docText+"'\n");
-    
-       // Prevent space stuffing a la RFC 2646 (format=flowed).
-       RegExp.multiline = true;
-       docText = docText.replace(/^>/g, "|");
-       docText = docText.replace(/^ /g, "~ ");
-       docText = docText.replace(/^From /g, "~From ");
-       RegExp.multiline = false;
+
+       var sendFlowed;
+       try {
+         sendFlowed = gPrefMailNews.getBoolPref("send_plaintext_flowed");
+       } catch (ex) {
+         sendFlowed = true;
+       }
+
+       if (sendFlowed) {
+         // Prevent space stuffing a la RFC 2646 (format=flowed).
+
+         // MULTILINE MATCHING ON
+         RegExp.multiline = true;
+
+         docText = docText.replace(/^>/g, "|");
+         docText = docText.replace(/^ /g, "~ ");
+         docText = docText.replace(/^From /g, "~From ");
+
+         // MULTILINE MATCHING OFF
+         RegExp.multiline = false;
+       }
     
        DEBUG_LOG("enigmailMsgComposeOverlay.js: docText = '"+docText+"'\n");
        var directionFlags = 0;   // see nsIEditor.h
@@ -148,9 +192,9 @@ function enigSend(encryptFlags) {
 
        var exitCodeObj = new Object();
        var errorMsgObj = new Object();
-       cipherText = EnigEncryptMessage(plainText, fromAddr, toAddr,
-                                       encryptFlags,
-                                       exitCodeObj, errorMsgObj);
+       cipherText = enigmailSvc.encryptMessage(window, true, plainText,
+                                               fromAddr, toAddr, encryptFlags,
+                                               exitCodeObj, errorMsgObj);
 
        var exitCode = exitCodeObj.value;
        var errorMsg = errorMsgObj.value;
@@ -168,15 +212,145 @@ function enigSend(encryptFlags) {
     
        //if (!EnigConfirm("enigmailMsgComposeOverlay.js: Sending encrypted/signed message to "+toAddr+"\n")) return;
     
-       gEnigProcessed = true;
+       gEnigProcessed = {"plainText":plainText};
+
+       gUndoMenuItem.removeAttribute("disabled");
      }
     
-     goDoCommand('cmd_sendButton');
+     enigGenericSendMessage(nsIMsgCompDeliverMode.Now);
 
   } catch (ex) {
      if (EnigConfirm("Error in Enigmail; Encryption/signing failed; send unencrypted email?\n"))
-        goDoCommand('cmd_sendButton');
+       goDoCommand('cmd_sendButton');
   }
+}
+
+/////////////////////////////////////////////////////////////////////////
+// Call the following function from our version of the function
+// GenericSendMessage from the file MsgComposeCommands.js
+// (after the calls to Recipients2CompFields and Attachements2CompFields)
+/////////////////////////////////////////////////////////////////////////
+function enigModifyCompFields(msgCompFields) {
+  var enigmailHeaders = "X-Enigmail-Version: "+gEnigmailVersion+"\n";
+  msgCompFields.otherRandomHeaders += enigmailHeaders;
+
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigModifyCompFields: otherRandomHeaders = "+
+           msgCompFields.otherRandomHeaders+"\n");
+}
+
+
+function enigGenericSendMessage( msgType )
+{
+  dump("enigGenericSendMessage from XUL\n");
+
+  dump("Identity = " + getCurrentIdentity() + "\n");
+
+  if (gMsgCompose != null)
+  {
+      var msgCompFields = gMsgCompose.compFields;
+      if (msgCompFields)
+      {
+      Recipients2CompFields(msgCompFields);
+      var subject = document.getElementById("msgSubject").value;
+      msgCompFields.subject = subject;
+      Attachments2CompFields(msgCompFields);
+
+/////////////////////////////////////////////////////////////////////////
+// Call the following function from our version of the function
+// GenericSendMessage from the file MsgComposeCommands.js
+// (after the calls to Recipients2CompFields and Attachements2CompFields)
+/////////////////////////////////////////////////////////////////////////
+      enigModifyCompFields(msgCompFields);
+/////////////////////////////////////////////////////////////////////////
+
+      if (msgType == nsIMsgCompDeliverMode.Now || msgType == nsIMsgCompDeliverMode.Later)
+      {
+        //Do we need to check the spelling?
+        if (sPrefs.getBoolPref("mail.SpellCheckBeforeSend"))
+          goDoCommand('cmd_spelling');
+
+        //Check if we have a subject, else ask user for confirmation
+        if (subject == "")
+        {
+          if (gPromptService)
+          {
+            var result = {value:sComposeMsgsBundle.getString("defaultSubject")};
+            if (gPromptService.prompt(
+              window,
+              sComposeMsgsBundle.getString("subjectDlogTitle"),
+              sComposeMsgsBundle.getString("subjectDlogMessage"),
+                        result,
+              null,
+              {value:0}
+              ))
+              {
+                msgCompFields.subject = result.value;
+                var subjectInputElem = document.getElementById("msgSubject");
+                subjectInputElem.value = result.value;
+              }
+              else
+                return;
+            }
+          }
+
+        // Before sending the message, check what to do with HTML message, eventually abort.
+        var convert = DetermineConvertibility();
+        var action = DetermineHTMLAction(convert);
+        if (action == nsIMsgCompSendFormat.AskUser)
+        {
+                    var recommAction = convert == nsIMsgCompConvertible.No
+                                   ? nsIMsgCompSendFormat.AskUser
+                                   : nsIMsgCompSendFormat.PlainText;
+                    var result2 = {action:recommAction,
+                                  convertible:convert,
+                                  abort:false};
+                    window.openDialog("chrome://messenger/content/messengercompose/askSendFormat.xul",
+                                      "askSendFormatDialog", "chrome,modal,titlebar,centerscreen",
+                                      result2);
+          if (result2.abort)
+            return;
+          action = result2.action;
+        }
+        switch (action)
+        {
+          case nsIMsgCompSendFormat.PlainText:
+            msgCompFields.forcePlainText = true;
+            msgCompFields.useMultipartAlternative = false;
+            break;
+          case nsIMsgCompSendFormat.HTML:
+            msgCompFields.forcePlainText = false;
+            msgCompFields.useMultipartAlternative = false;
+            break;
+          case nsIMsgCompSendFormat.Both:
+            msgCompFields.forcePlainText = false;
+            msgCompFields.useMultipartAlternative = true;
+            break;
+           default: dump("\###SendMessage Error: invalid action value\n"); return;
+        }
+      }
+      try {
+        gWindowLocked = true;
+        CommandUpdate_MsgCompose();
+        disableEditableFields();
+
+        var progress = Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
+        if (progress)
+        {
+          progress.registerListener(progressListener);
+          gSendOrSaveOperationInProgress = true;
+        }
+        gMsgCompose.SendMsg(msgType, getCurrentIdentity(), progress);
+      }
+      catch (ex) {
+        dump("failed to SendMsg: " + ex + "\n");
+        gWindowLocked = false;
+        enableEditableFields();
+        CommandUpdate_MsgCompose();
+      }
+    }
+  }
+  else
+    dump("###SendMessage Error: composeAppCore is null!\n");
 }
 
 

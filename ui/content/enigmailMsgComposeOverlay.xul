@@ -63,6 +63,13 @@
 
         <menuseparator/>
 
+        <menuitem id="enigmail_undo_encryption"
+             label="&enigmail.undoencryption.label;"
+             accesskey="&enigmail.undoencryption.accesskey;"
+             oncommand="enigUndoEncryption();" />
+
+        <menuseparator/>
+
         <menuitem id="enigmail_defaultSignMsg"
              type="checkbox"
              checked="false"
@@ -98,6 +105,10 @@
         <menuitem id="enigmail_upgrade"
              label="&enigmail.upgrade.label;"
              oncommand="EnigUpgrade();" />
+
+        <menuitem id="enigmail_help"
+             label="&enigmail.help.label;"
+             oncommand="EnigHelpWindow();" />
 
         <menuitem id="enigmail_about"
              label="&enigmail.about.label;"

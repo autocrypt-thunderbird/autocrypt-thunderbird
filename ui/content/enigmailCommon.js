@@ -1,11 +1,16 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
-var gEnigmailVersion = "0.18.0.0";
-var gIPCVersion = "0.98.0.0";
+// This Enigmail version and compatible IPC version
+var gEnigmailVersion = "0.28.0.0";
+var gIPCVersion      = "0.98.1.0";
+
+const MESSAGE_BUFFER_SIZE = 16000;
 
 const NS_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
+const NS_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1"
 const NS_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
 const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
+const MAILNEWS_PREFS_ROOT       = "mailnews.";
 
 // UserIdSource values
 const USER_ID_SPECIFIED = 0;
@@ -23,16 +28,19 @@ const THREE_BUTTON_STRINGS   = (BUTTON_TITLE_IS_STRING * BUTTON_POS_0) +
 
 
 var gEnigmailPrefDefaults = {"configuredVersion":"",
+                             "debug":false,
+                             "initAlertCount":0,
                              "passivePrivacy":false,
                              "userIdSource":USER_ID_DEFAULT,
                              "userIdValue":"",
+                             "noPassphrase":false,
                              "defaultSignMsg":false,
                              "defaultEncryptMsg":false,
                              "alwaysTrustSend":true,
                              "encryptToSelf":false,
                              "maxIdleMinutes":5,
+                             "keyserver":"www.keyserver.net",
                              "autoDecrypt":true,
-                             "replaceNonBreakingSpace":true,
                              "captureWebMail":false
                             };
 
@@ -50,10 +58,13 @@ try {
   var gPrefSvc = Components.classes["@mozilla.org/preferences-service;1"]
                              .getService(Components.interfaces.nsIPrefService);
   gPrefEnigmail = gPrefSvc.getBranch(ENIGMAIL_PREFS_ROOT);
+  gPrefMailNews = gPrefSvc.getBranch(MAILNEWS_PREFS_ROOT);
+
+  if (EnigGetPref("debug"))
+    gLogLevel = 5;
 
 } catch (ex) {
   ERROR_LOG("enigmailCommon.js: Error in instantiating PrefService\n");
-  throw ("enigmailCommon.js: Error in instantiating PrefService\n");
 }
 
 var gPromptService;
@@ -107,14 +118,22 @@ function GetEnigmailSvc() {
       // Initialize enigmail
       gEnigmailSvc.initialize(gPrefEnigmail);
 
+      EnigSetPref("initAlertCount", 0);
+
     } catch (ex) {
 
-      if (firstInitialization) {
+      var initAlertCount = EnigGetPref("initAlertCount");
+
+      if (firstInitialization && (initAlertCount < 2)) {
+        // Display initialization error alert
         var errMsg = gEnigmailSvc.initializationError ? gEnigmailSvc.initializationError : "Error in initializing Enigmail service";
 
-        errMsg += "\n\nTo avoid this alert, uninstall Enigmail using the Edit->Preferences->Privacy&Security->Enigmail menu"
+        errMsg += "\n\nTo avoid this alert, either fix the problem or uninstall Enigmail using the Edit->Preferences->Privacy&Security->Enigmail menu"
 
-        EnigAlert(errMsg);
+        EnigAlert("Enigmail: "+errMsg);
+
+        initAlertCount++;
+        EnigSetPref("initAlertCount", initAlertCount);
       }
 
       return null;
@@ -183,27 +202,59 @@ const FileChannel = new Components.Constructor( "@mozilla.org/network/local-file
 const InputStream = new Components.Constructor( "@mozilla.org/scriptableinputstream;1", "nsIScriptableInputStream" );
 
 function CreateFileStream(filePath, permissions) {
+  //DEBUG_LOG("enigmailCommon.js: CreateFileStream: file="+filePath+"\n");
 
-  var localFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
-  localFile.initWithPath(filePath);
+  try {
+    var localFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
 
-  if (localFile.exists()) {
-    if (localFile.isDirectory() || !localFile.isWritable())
-      throw Components.results.NS_ERROR_FAILURE;
+    localFile.initWithPath(filePath);
+
+    if (localFile.exists()) {
+
+      if (localFile.isDirectory() || !localFile.isWritable())
+         throw Components.results.NS_ERROR_FAILURE;
+
+      if (!permissions)
+        permissions = localFile.permissions;
+    }
+
     if (!permissions)
-      permissions = localFile.permissions;
+      permissions = DEFAULT_FILE_PERMS;
+
+    var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
+
+    var fileStream = Components.classes[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIFileOutputStream);
+
+    fileStream.init(localFile, flags, permissions);
+
+    return fileStream;
+
+  } catch (ex) {
+    ERROR_LOG("enigmailCommon.js: CreateFileStream: Failed to create "+filePath+"\n");
+    return null;
+  }
+}
+
+function WriteFileContents(filePath, data, permissions) {
+
+  //DEBUG_LOG("enigmailCommon.js: WriteFileContents: file="+filePath+"\n");
+
+  try {
+    var fileOutStream = CreateFileStream(filePath, permissions);
+
+    if (data.length) {
+      if (fileOutStream.write(data, data.length) != data.length)
+        throw Components.results.NS_ERROR_FAILURE;
+
+      fileOutStream.flush();
+    }
+    fileOutStream.close();
+
+  } catch (ex) {
+    ERROR_LOG("enigmailCommon.js: WriteFileContents: Failed to write to "+filePath+"\n");
   }
 
-  if (!permissions)
-    permissions = DEFAULT_FILE_PERMS;
-
-  var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
-
-  var fileStream = Components.classes[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIFileOutputStream);
-
-  fileStream.init(localFile, flags, permissions);
-
-  return fileStream;
+  return;
 }
 
 // maxBytes == -1 => read whole file
@@ -233,23 +284,6 @@ function ReadFileContents(localFile, maxBytes) {
   return fileContents;
 }
 
-function WriteFileContents(filePath, data, permissions) {
-
-  DEBUG_LOG("enigmailCommon.js: WriteFileContents: file="+filePath+"\n");
-
-  var fileOutStream = CreateFileStream(filePath, permissions);
-
-  if (data.length) {
-    if (fileOutStream.write(data, data.length) != data.length)
-      throw Components.results.NS_ERROR_FAILURE;
-
-    fileOutStream.flush();
-  }
-  fileOutStream.close();
-
-  return;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 function WRITE_LOG(str) {
@@ -276,6 +310,14 @@ function ERROR_LOG(str) {
     WRITE_LOG(str);
 }
 
+function CONSOLE_LOG(str) {
+  if (gLogLevel >= 3)
+    WRITE_LOG(str);
+
+  if (gEnigmailSvc && gEnigmailSvc.console)
+    gEnigmailSvc.console.write(str);
+}
+
 // Uncomment following two lines for debugging (use full path name on Win32)
 ///if (gLogLevel >= 4)
 ///  gLogFileStream = CreateFileStream("c:\\enigdbg2.txt");
@@ -300,191 +342,17 @@ function EnigPrefWindow() {
                 "enigmail");
 }
 
+function EnigAdvPrefWindow() {
+  window.openDialog("chrome://enigmail/content/pref-enigmail-adv.xul",
+                    "_blank", "modal=yes,chrome,resizable=yes");
+}
+
+function EnigHelpWindow() {
+   window.open("http://enigmail.mozdev.org/usage.html");
+}
+
 function EnigUpgrade() {
   window.openDialog("http://enigmail.mozdev.org/update.html?upgrade=yes&enigmail="+gEnigmailVersion+"&ipc="+gIPCVersion, "dialog");
-}
-
-function EnigPassphrase() {
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-     return null;
-
-  var maxIdleMinutes = EnigGetPref("maxIdleMinutes");
-
-  var passwdObj = new Object();
-  var checkObj = new Object();
-
-  var promptMsg = "Please type in your "+enigmailSvc.agentType.toUpperCase()+" passphrase";
-  passwdObj.value = "";
-  checkObj.value = true;
-  var checkMsg = maxIdleMinutes ? "Remember for "+maxIdleMinutes+" idle minutes"
-                                : "";
-
-  var success = gPromptService.promptPassword(window,
-                               "Enigmail",
-                               promptMsg,
-                               passwdObj,
-                               checkMsg,
-                               checkObj);
-  if (!success)
-    return null;
-
-  // Null string password is always remembered
-  if (checkObj.value || (passwdObj.value.length == 0))
-    enigmailSvc.setDefaultPassphrase(passwdObj.value);
-
-  DEBUG_LOG("enigmailCommon.js: EnigPassphrase: "+passwdObj.value+"\n");
-
-  return passwdObj.value;
-}
-
-// Remove all quoted strings (and angle brackets) from a list of email
-// addresses, returning a list of pure email address
-function EnigStripEmail(mailAddrs) {
-
-  var qStart, qEnd;
-  while ((qStart = mailAddrs.indexOf('"')) != -1) {
-     qEnd = mailAddrs.indexOf('"', qStart+1);
-     if (qEnd == -1) {
-       ERROR_LOG("enigmailCommon.js: EnigStripEmail: Unmatched quote in mail address: "+mailAddrs+"\n");
-       throw Components.results.NS_ERROR_FAILURE;
-     }
-  
-     mailAddrs = mailAddrs.substring(0,qStart) + mailAddrs.substring(qEnd+1);
-  }
-  
-  // Eliminate all whitespace, just to be safe
-  mailAddrs = mailAddrs.replace(/\s+/g,"");
-  
-  // Extract pure e-mail address list (stripping out angle brackets)
-  mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*(,|$)/g,"$1$2$3");
-
-  return mailAddrs;
-}
-    
-function EnigEncryptMessage(plainText, fromMailAddr, toMailAddr, encryptFlags,
-                            exitCodeObj, errorMsgObj) {
-  DEBUG_LOG("enigmailCommon.js: EnigEncryptMessage: To "+toMailAddr+"\n");
-
-  exitCodeObj.value = -1;
-
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc) {
-     errorMsgObj.value = "Error in accessing Enigmail service";
-     return "";
-  }
-
-  var passphrase = null;
-
-  if ((encryptFlags & SIGN_MESSAGE) && !enigmailSvc.haveDefaultPassphrase()) {
-    passphrase = EnigPassphrase();
-
-    if ((typeof passphrase) != "string") {
-      errorMsgObj.value = "Error - no passphrase supplied";
-      return "";
-    }
-  }
-
-  var statusMsgObj = new Object();    
-  var cipherText = enigmailSvc.encryptMessage(plainText,
-                                              EnigStripEmail(fromMailAddr),
-                                              EnigStripEmail(toMailAddr),
-                                              encryptFlags,
-	                                      passphrase,
-                                              exitCodeObj, errorMsgObj,
-                                              statusMsgObj);
-
-  return cipherText;
-}
-
-
-function IndexOfPGPString(text, str) {
-  var offset = 0;
-
-  while (offset < text.length) {
-
-    var loc = text.indexOf(str, offset);
-
-    if ((loc < 1) || (text.charAt(loc-1) == "\n"))
-      return loc;
-
-    offset = loc + str.length;
-  }
-
-  return -1;
-}
-
-function EnigDecryptMessage(cipherText, exitCodeObj, errorMsgObj) {
-  DEBUG_LOG("enigmailCommon.js: EnigDecryptMessage: \n");
-
-  exitCodeObj.value = -1;
-
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc) {
-     errorMsgObj.value = "Error in accessing Enigmail service";
-     return "";
-  }
-
-  var beginIndex = IndexOfPGPString(cipherText, "-----BEGIN PGP ");
-  var endIndex   = IndexOfPGPString(cipherText, "-----END PGP ");
-
-  // Locate newline at end of PGP block
-  if (endIndex > -1)
-    endIndex = cipherText.indexOf("\n", endIndex);
-
-  if ((beginIndex == -1) || (endIndex == -1) || (beginIndex > endIndex)) {
-     errorMsgObj.value = "Error - No valid armored PGP data block found";
-     return "";
-  }
-
-  var headBlock = cipherText.substr(0,beginIndex);
-  var pgpBlock  = cipherText.substr(beginIndex, endIndex-beginIndex+1);
-  var tailBlock = cipherText.substr(endIndex+1, cipherText.length-endIndex-1);
-
-  // Eliminate leading/trailing whitespace around the PGP block
-  headBlock = headBlock.replace(/\s+$/, "");
-  tailBlock = tailBlock.replace(/^\s+/, "");
-
-  if (headBlock)
-    headBlock = "-----UNSIGNED TEXT BELOW-----\n" + headBlock + "\n-----BEGIN SIGNED TEXT-----\n";
-
-  if (tailBlock)
-    tailBlock = "-----END SIGNED TEXT-----\n" + tailBlock + "\n-----UNSIGNED TEXT ABOVE-----\n";
-
-  var verifyOnly = (pgpBlock.indexOf("-----BEGIN PGP SIGNED MESSAGE-----") == 0);
-
-  var passphrase = null;
-
-  if (!verifyOnly && !enigmailSvc.haveDefaultPassphrase()) {
-    passphrase = EnigPassphrase();
-
-    if ((typeof passphrase) != "string") {
-      errorMsgObj.value = "Error - no passphrase supplied";
-      return "";
-    }
-  }
-
-  if ( (pgpBlock.indexOf("\xA0") != -1) &&
-        EnigGetPref("replaceNonBreakingSpace") ) {
-    // TEMPORARY WORKAROUND?
-    // Replace non-breaking spaces with plain spaces, if preferred
-
-    pgpBlock = pgpBlock.replace(/\xA0/g, " ");
-    DEBUG_LOG("enigmailCommon.js: replaced non-breaking spaces\n");
-  }
-
-  if (gLogLevel >= 4) {
-    WriteFileContents("enigdata.txt", pgpBlock);
-    DEBUG_LOG("enigmailCommon.js: copied pgpBlock to file enigdata.txt\n");
-  }
-
-  var statusMsgObj = new Object();    
-  var plainText = enigmailSvc.decryptMessage(pgpBlock, verifyOnly,
-                                             passphrase,
-                                             exitCodeObj, errorMsgObj,
-                                             statusMsgObj);
-
-  return headBlock + plainText + tailBlock;
 }
 
 function EnigSetDefaultPrefs() {
@@ -509,10 +377,6 @@ function EnigGetPref(prefName) {
    try {
       // Get pref value
       switch (typeof defaultValue) {
-      case "string":
-         prefValue = gPrefEnigmail.getCharPref(prefName);
-         break;
-
       case "boolean":
          prefValue = gPrefEnigmail.getBoolPref(prefName);
          break;
@@ -521,17 +385,18 @@ function EnigGetPref(prefName) {
          prefValue = gPrefEnigmail.getIntPref(prefName);
          break;
 
+      case "string":
+         prefValue = gPrefEnigmail.getCharPref(prefName);
+         break;
+
       default:
          prefValue = undefined;
+         break;
      }
 
    } catch (ex) {
       // Failed to get pref value; set pref to default value
       switch (typeof defaultValue) {
-      case "string":
-         gPrefEnigmail.setCharPref(prefName, defaultValue);
-         break;
-
       case "boolean":
          gPrefEnigmail.setBoolPref(prefName, defaultValue);
          break;
@@ -540,7 +405,12 @@ function EnigGetPref(prefName) {
          gPrefEnigmail.setIntPref(prefName, defaultValue);
          break;
 
+      case "string":
+         gPrefEnigmail.setCharPref(prefName, defaultValue);
+         break;
+
       default:
+         break;
      }
    }
 
@@ -556,11 +426,6 @@ function EnigSetPref(prefName, value) {
    var retVal = false;
 
    switch (typeof defaultValue) {
-      case "string":
-         gPrefEnigmail.setCharPref(prefName, value);
-         retVal = true;
-         break;
-
       case "boolean":
          gPrefEnigmail.setBoolPref(prefName, value);
          retVal = true;
@@ -568,6 +433,11 @@ function EnigSetPref(prefName, value) {
 
       case "number":
          gPrefEnigmail.setIntPref(prefName, value);
+         retVal = true;
+         break;
+
+      case "string":
+         gPrefEnigmail.setCharPref(prefName, value);
          retVal = true;
          break;
 
@@ -604,14 +474,14 @@ RequestObserver.prototype = {
 
   onStopRequest: function (channel, ctxt, status)
   {
-    DEBUG_LOG("enigmailCommon.js: RequestObserver.onStopRequest\n");
-    this._terminateFunc(this._terminateArg);
+    DEBUG_LOG("enigmailCommon.js: RequestObserver.onStopRequest: "+ctxt+"\n");
+    this._terminateFunc(this._terminateArg, ctxt);
   }
 }
 
 function EnigGetDeepText(node) {
 
-  DEBUG_LOG("enigmailCommon.js: EnigDeepText: <" + node.tagName + ">\n")
+  DEBUG_LOG("enigmailCommon.js: EnigDeepText: <" + node.tagName + ">\n");
 
   var depth = 0;
   var textArr = [""];
@@ -690,30 +560,6 @@ function EnigDumpHTML(node)
     }
 }
 
-
-function EnigTest() {
-  var plainText = "TEST MESSAGE 123\n";
-  var toMailAddr = "r_sarava@yahoo.com";
-
-  var exitCodeObj = new Object();
-  var errorMsgObj = new Object();
-
-  var cipherText = EnigEncryptMessage(plainText, "", toMailAddr, 3,
-                                      exitCodeObj, errorMsgObj);
-  DEBUG_LOG("enigmailCommon.js: enigTest: cipherText = "+cipherText+"\n");
-  DEBUG_LOG("enigmailCommon.js: enigTest: exitCode = "+exitCodeObj.value+"\n");
-  DEBUG_LOG("enigmailCommon.js: enigTest: errorMsg = "+errorMsgObj.value+"\n");
-
-  var exitCodeObj = new Object();
-  var errorMsgObj = new Object();
-
-  var decryptedText = EnigDecryptMessage(cipherText,
-                                         exitCodeObj, errorMsgObj);
-  DEBUG_LOG("enigmailCommon.js: enigTest: decryptedText = "+decryptedText+"\n");
-  DEBUG_LOG("enigmailCommon.js: enigTest: exitCode = "+exitCodeObj.value+"\n");
-  DEBUG_LOG("enigmailCommon.js: enigTest: errorMsg = "+errorMsgObj.value+"\n");
-}
-
 /////////////////////////
 // Console stuff
 /////////////////////////
@@ -775,120 +621,4 @@ function LoadURLInNavigatorWindow(url, aOpenFlag)
   DEBUG_LOG("enigmailCommon.js: LoadURLInNavigatorWindow: navWindow="+navWindow+"\n");
 
   return navWindow;
-}
-
-/////////////////////////
-// Uninstallation stuff
-/////////////////////////
-
-function GetFileOfProperty(prop) {
-  var dscontractid = "@mozilla.org/file/directory_service;1";
-  var ds = Components.classes[dscontractid].getService();
-
-  var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
-  DEBUG_LOG("enigmailCommon.js: GetFileOfProperty: prop="+prop+"\n");
-  var file = dsprops.get(prop, Components.interfaces.nsIFile);
-  DEBUG_LOG("enigmailCommon.js: GetFileOfProperty: file="+file+"\n");
-  return file;
-}
-
-
-function EnigUninstall() {
-  var delFiles = [];
-
-  var confirm;
-
-  confirm = EnigConfirm("Do you wish to delete all EnigMail-related files in the Mozilla component and chrome directories?");
-
-  if (confirm) {
-    var overlay1Removed = RemoveOverlay("communicator",
-                          ["chrome://enigmail/content/enigmailPrefsOverlay.xul"]);
-
-    var overlay2Removed = RemoveOverlay("messenger",
-                          ["chrome://enigmail/content/enigmailMsgComposeOverlay.xul",
-                           "chrome://enigmail/content/enigmailMessengerOverlay.xul"]);
-
-    if (!overlay1Removed || !overlay2Removed) {
-      EnigAlert("Failed to uninstall EnigMail communicator overlay RDF; not deleting chrome jar file");
-
-    } else {
-      var chromeFile = GetFileOfProperty("AChrom");
-      chromeFile.append("enigmail.jar");
-
-      delFiles.push(chromeFile);
-    }
-
-    var compDir = GetFileOfProperty("ComsD");
-    var compFiles = ["enigmail.js", "enigmail.xpt", "ipc.xpt"];
-    if (gPlatform.search(/^win/i)==0) {
-      compFiles.push("ipc.dll");
-    } else {
-      compFiles.push("libipc.so");
-    }
-
-    for (var k=0; k<compFiles.length; k++) {
-      var compFile = compDir.clone();
-      compFile.append(compFiles[k]);
-      delFiles.push(compFile);
-    }
-  }
-
-  // Need to unregister chrome: how???
-
-  // Delete files
-  for (var j=0; j<delFiles.length; j++) {
-    var delFile = delFiles[j];
-    if (delFile.exists()) {
-      WRITE_LOG("enigmailCommon.js: UninstallPackage: Deleting "+delFile.path+"\n")
-      try {
-          delFile.remove(true);
-      } catch (ex) {
-          EnigError("Error in deleting file "+delFile.path)
-      }
-    }
-  }
-
-  EnigAlert("Uninstalled EnigMail");
-
-  // Close window
-  window.close();
-}
-
-
-function RemoveOverlay(module, urls) {
-   DEBUG_LOG("enigmailCommon.js: RemoveOverlay: module="+module+", urls="+urls.join(",")+"\n");
-
-   var overlayFile = GetFileOfProperty("AChrom");
-   overlayFile.append("overlayinfo");
-   overlayFile.append(module);
-   overlayFile.append("content");
-   overlayFile.append("overlays.rdf");
-
-   DEBUG_LOG("enigmailCommon.js: RemoveOverlay: overlayFile="+overlayFile.path+"\n");
-
-   var overlayRemoved = false;
-
-   try {
-      var fileContents = ReadFileContents(overlayFile, -1);
-
-      for (var j=0; j<urls.length; j++) {
-         var overlayPat=new RegExp("\\s*<RDF:li>\\s*"+urls[j]+"\\s*</RDF:li>");
-
-         while (fileContents.search(overlayPat) != -1) {
-
-            fileContents = fileContents.replace(overlayPat, "");
-
-            overlayRemoved = true;
-
-            DEBUG_LOG("enigmailCommon.js: RemoveOverlay: removed overlay "+urls[j]+"\n");
-         }
-      }
-
-      if (overlayRemoved)
-         WriteFileContents(overlayFile.path, fileContents, 0);
-
-   } catch (ex) {
-   }
-
-   return overlayRemoved;
 }
