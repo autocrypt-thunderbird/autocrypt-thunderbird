@@ -21,7 +21,7 @@ var gEditorElement, gEditorShell;
 
 var gEnigProcessed = null;
 
-var gOrigSendButton, gEnigSendButton, gUndoMenuItem;
+var gOrigSendButton, gEnigSendButton;
 
 function enigMsgComposeStartup() {
    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
@@ -29,9 +29,6 @@ function enigMsgComposeStartup() {
 
    gOrigSendButton = document.getElementById("button-send");
    gEnigSendButton = document.getElementById("button-enigmail-send");
-
-   gUndoMenuItem = document.getElementById("enigmail_undo_encryption");
-   gUndoMenuItem.setAttribute("disabled", "true");
 
    // Get editor shell
    gEditorElement = document.getElementById("content-frame");
@@ -141,7 +138,8 @@ function enigUndoEncryption() {
 
     gEnigProcessed = null;
 
-    gUndoMenuItem.setAttribute("disabled", "true");
+  } else {
+    enigDecryptQuote(true);
   }
 }
 
@@ -185,18 +183,34 @@ function enigSend(encryptFlags) {
      // Check if sending to any newsgroups    
      var newsgroups = msgCompFields.newsgroups;
 
-     if (newsgroups && defaultSend && encryptMsg) {
+     if (newsgroups && defaultSend) {
        // Do not encrypt by default if sending to newsgroups
        encryptFlags &= ~nsIEnigmail.ENCRYPT_MESSAGE;
        encryptMsg = false;
+
+       if (!EnigGetPref("defaultSignNewsMsg")) {
+         // Do not sign by default if sending to any newsgroup
+         encryptFlags &= ~nsIEnigmail.SIGN_MESSAGE;
+         signMsg = false;
+       }
      }
 
      DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: gMsgCompose="+gMsgCompose+"\n");
-     var toAddr = msgCompFields.to;
-     if (msgCompFields.cc)  toAddr += ", "+msgCompFields.cc;
-     if (msgCompFields.bcc) toAddr += ", "+msgCompFields.bcc;
 
-     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: toAddr="+toAddr+"\n");
+     var toAddrList = [];
+
+     if (msgCompFields.to)  toAddrList.push(msgCompFields.to);
+
+     if (msgCompFields.cc)  toAddrList.push(msgCompFields.cc);
+     if (msgCompFields.bcc) toAddrList.push(msgCompFields.bcc);
+
+     var toAddr = toAddrList.join(", ");
+
+     if (newsgroups) toAddrList.push(newsgroups);
+
+     var toAddrAll = toAddrList.join(", ");;
+
+     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: toAddrAll="+toAddrAll+"\n");
 
      if (!gEnigProcessed && (signMsg || encryptMsg)) {
 
@@ -217,12 +231,17 @@ function enigSend(encryptFlags) {
 
        if (EnigGetPref("encryptToSelf")) {
          encryptFlags |= nsIEnigmail.ENCRYPT_TO_SELF;
-         fromAddr = currentId.email;
        }
 
        ///var editorDoc = gEditorShell.editorDocument;
        ///DEBUG_LOG("enigmailMsgComposeOverlay.js: Doc = "+editorDoc+"\n");
        ///EnigDumpHTML(editorDoc.documentElement);
+
+       if (gMsgCompose.composeHTML) {
+         var errMsg = "HTML mail warning:\nThis message may contain HTML, which could cause signing/encryption to fail. To avoid this in the future, you should press the SHIFT key when clicking on the Compose/Reply button to send signed mail.\nIf you sign mail by default, you should uncheck the 'Compose Messages in HTML' preference box to permanently disable HTML mail for this mail account."
+
+         EnigAlertCount("composeHtmlAlertCount", errMsg);
+       }
 
        try {    
          var convert = DetermineConvertibility();
@@ -238,7 +257,7 @@ function enigSend(encryptFlags) {
        // (Do we need to set nsIDocumentEncoder::* flags?)
        var encoderFlags = OutputFormatted;
        var docText = gEditorShell.GetContentsAs("text/plain", encoderFlags);
-       DEBUG_LOG("enigmailMsgComposeOverlay.js: docText["+encoderFlags+"] = '"+docText+"'\n");
+       //DEBUG_LOG("enigmailMsgComposeOverlay.js: docText["+encoderFlags+"] = '"+docText+"'\n");
 
        var sendFlowed;
        try {
@@ -262,7 +281,7 @@ function enigSend(encryptFlags) {
          RegExp.multiline = false;
        }
     
-       DEBUG_LOG("enigmailMsgComposeOverlay.js: docText = '"+docText+"'\n");
+       //DEBUG_LOG("enigmailMsgComposeOverlay.js: docText = '"+docText+"'\n");
     
        gEditorShell.SelectAll();
     
@@ -275,7 +294,7 @@ function enigSend(encryptFlags) {
 
        var plainText = gEditorShell.GetContentsAs("text/plain", encoderFlags);
 
-       DEBUG_LOG("enigmailMsgComposeOverlay.js: plainText["+encoderFlags+"] = '"+plainText+"'\n");
+       //DEBUG_LOG("enigmailMsgComposeOverlay.js: plainText["+encoderFlags+"] = '"+plainText+"'\n");
 
        if (!plainText) {
          encryptFlags = 0;
@@ -317,8 +336,6 @@ function enigSend(encryptFlags) {
     
            gEnigProcessed = {"plainText":plainText};
 
-           gUndoMenuItem.removeAttribute("disabled");
-
          } else if (signMsg || encryptMsg) {
            // Encryption/signing failed
            var errorMsg = errorMsgObj.value;
@@ -330,8 +347,13 @@ function enigSend(encryptFlags) {
 
      // EnigSend: Handle both plain and encrypted messages below
      if (gIsOffline) {
-       if (!EnigConfirm("You are currently offline. Do you wish to save the message in the Unsent Messages folder?\n"))
+       if (!EnigConfirm("You are currently offline. Do you wish to save the message in the Unsent Messages folder?\n")) {
+
+         if (gEnigProcessed)
+           enigUndoEncryption();
+
          return;
+       }
 
        enigGenericSendMessage(nsIMsgCompDeliverMode.Later);
        return;
@@ -349,8 +371,12 @@ function enigSend(encryptFlags) {
        if (!msgStatus)
          msgStatus = "plaintext ";
 
-       if (!EnigConfirm("Send "+msgStatus+"message to "+toAddr+"?\n"))
+       if (!EnigConfirm("Send "+msgStatus+"message to "+toAddrAll+"?\n")) {
+         if (gEnigProcessed)
+           enigUndoEncryption();
+
          return;
+       }
      }
     
      enigGenericSendMessage(nsIMsgCompDeliverMode.Now);
@@ -507,8 +533,8 @@ function enigToggleAttribute(attrName)
   enigUpdateOptionsDisplay();
 }
 
-function enigDecryptQuote() {
-  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote\n");
+function enigDecryptQuote(interactive) {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: "+interactive+"\n");
 
   if (gWindowLocked || gEnigProcessed)
     return;
@@ -579,7 +605,7 @@ function enigDecryptQuote() {
   var signStatusObj = new Object();
   signStatusObj.value = "";
 
-  var uiFlags = nsIEnigmail.UI_INTERACTIVE;
+  var uiFlags = nsIEnigmail.UI_INTERACTIVE | nsIEnigmail.UNVERIFIED_ENC_OK;
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, pgpBlock,
                                      exitCodeObj, errorMsgObj, signStatusObj);
   var exitCode = exitCodeObj.value;
@@ -606,8 +632,9 @@ function enigDecryptQuote() {
         statusLines.pop();
 
       displayMsg = statusLines.join("\n");
-      ///TEMPORARILY COMMENTED OUT
-      ///EnigAlert(displayMsg);
+
+      if (interactive)
+        EnigAlert(displayMsg);
     }
   }
 
@@ -662,7 +689,7 @@ DocumentStateListener.prototype = {
     if (!gDecryptTimeoutID &&
         gMsgCompose.editor.documentEditable &&
         gMsgCompose.editor.documentLength) {
-      gDecryptTimeoutID = window.setTimeout(enigDecryptQuote, 10);
+      gDecryptTimeoutID = window.setTimeout(enigDecryptQuote, 10, false);
     }
   }
 

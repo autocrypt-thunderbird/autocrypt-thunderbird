@@ -65,6 +65,9 @@
     <checkbox id="enigmail_alwaysTrustSend"
               label="&enigmail.alwaysTrustSend.label;" />
 
+    <checkbox id="enigmail_defaultSignNewsMsg"
+              label="&enigmail.defaultSignNewsMsg.label;" />
+
     <checkbox id="enigmail_confirmBeforeSend"
               label="&enigmail.confirmBeforeSend.label;" />
   </groupbox>

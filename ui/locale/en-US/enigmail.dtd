@@ -30,13 +30,14 @@
 
 <!ENTITY enigmail.agentPath.label         "GPG/PGP executable path:">
 
-<!ENTITY enigmail.defaultSignMsg.label    "Sign messages by default">
-<!ENTITY enigmail.defaultEncryptMsg.label "Encrypt messages if possible">
+<!ENTITY enigmail.defaultSignMsg.label    "Sign mail by default">
+<!ENTITY enigmail.defaultEncryptMsg.label "Encrypt mail if possible">
 <!ENTITY enigmail.send_plaintext_flowed.label "Allow flowed text (RFC 2646)">
 
 <!ENTITY enigmail.whenSending.label       "When sending mail">
 <!ENTITY enigmail.encryptToSelf.label     "Encrypt to self">
 <!ENTITY enigmail.alwaysTrustSend.label   "Always trust user ID">
+<!ENTITY enigmail.defaultSignNewsMsg.label "Sign news postings by default">
 <!ENTITY enigmail.confirmBeforeSend.label "Always confirm before send">
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Remember password for">

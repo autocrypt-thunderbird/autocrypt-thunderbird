@@ -16,16 +16,15 @@
 
 <!--
   <menubar id="mailMenubar">
-
     <menu id="menu_Enigmail"
           label="Enigmail"
           position="5">
 
       <menupopup id="menu_EnigmailPopup">
 
-        <menuitem id="enigmail_viewconsole"
-             label="&enigmail.viewconsole.label;"
-             oncommand="EnigViewConsole();" />
+        <menuitem id="enigmail_print"
+             label="print;"
+             oncommand="enigMsgPrint('');" />
 
       </menupopup>
     </menu>
@@ -53,7 +52,7 @@
           position="1"
           collapsed="true">
        <hbox id="expandedEnigmailStatusBox" class="headerValueBox">
-         <text class="headerdisplayname" value="Enigmail:"/>
+         <text class="headerdisplayname" value="Enigmail: "/>
        </hbox>
        <text id="expandedEnigmailStatusText" value=""/>
              tooltip="aTooltip"

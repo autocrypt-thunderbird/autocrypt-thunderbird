@@ -85,6 +85,7 @@ interface nsIEnigmail : nsISupports
   const long UI_INTERACTIVE    = 0x01;
   const long ALLOW_KEY_IMPORT  = 0x02;
   const long IMPORT_PUBLIC_KEY = 0x04;
+  const long UNVERIFIED_ENC_OK = 0x08;
 
   /* Encryption flags */
   const long SIGN_MESSAGE      = 0x01;
@@ -128,6 +129,13 @@ interface nsIEnigmail : nsISupports
                             in long   expiryDate,
                             in string passphrase,
                             in nsIRequestObserver requestObserver);
+
+  string createMessageURI(in string originalUrl,
+                          in string contentType,
+                          in string contentData,
+                          in boolean persist);
+
+  boolean deleteMessageURI(in string uri);
 
   boolean selectPanel(in string url);
 };

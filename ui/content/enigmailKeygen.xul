@@ -76,7 +76,7 @@
   <caption label="Keygen Console"/>
 
   <iframe id="keygenConsole" type="content" name="keygenConsole"
-          src="enigmail:keygenConsole" flex="1"/>
+          src="enigmail:keygenConsole" height="200" flex="1"/>
 
 </groupbox>
 

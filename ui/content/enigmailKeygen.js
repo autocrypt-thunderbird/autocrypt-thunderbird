@@ -152,6 +152,11 @@ function enigmailKeygenStart() {
    var userName = curId.fullName;
    var userEmail = curId.email;
 
+   if (!userName) {
+      EnigAlert("Please specify user name\n");
+      return;
+   }
+
    var idString = userName;
 
    if (comment)
@@ -192,7 +197,7 @@ function enigmailKeygenStart() {
 function enigmailKeygenCancel() {
    DEBUG_LOG("enigmailKeygen.js: Cancel\n");
 
-   var confirmMsg = "Cancel key generation?";
+   var confirmMsg = "Abort key generation?";
 
    if (EnigConfirm(confirmMsg)) {
      enigmailKeygenCloseRequest();

@@ -32,7 +32,8 @@ const THREE_BUTTON_STRINGS   = (BUTTON_TITLE_IS_STRING * BUTTON_POS_0) +
 
 var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "debug":false,
-                             "initAlertCount":0,
+                             "initAlertCount":2,
+                             "composeHtmlAlertCount":3,
                              "agentPath":"",
                              "passivePrivacy":false,
                              "userIdSource":USER_ID_DEFAULT,
@@ -40,6 +41,7 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "noPassphrase":false,
                              "defaultSignMsg":false,
                              "defaultEncryptMsg":false,
+                             "defaultSignNewsMsg":false,
                              "alwaysTrustSend":true,
                              "encryptToSelf":true,
                              "confirmBeforeSend":false,
@@ -117,22 +119,21 @@ function GetEnigmailSvc() {
       // Initialize enigmail
       gEnigmailSvc.initialize(gPrefEnigmail);
 
-      EnigSetPref("initAlertCount", 0);
+      try {
+        // Reset alert count to default value
+        gPrefEnigmail.clearUserPref("initAlertCount");
+      } catch(ex) {
+      }
 
     } catch (ex) {
 
-      var initAlertCount = EnigGetPref("initAlertCount");
-
-      if (firstInitialization && (initAlertCount < 2)) {
+      if (firstInitialization) {
         // Display initialization error alert
         var errMsg = gEnigmailSvc.initializationError ? gEnigmailSvc.initializationError : "Error in initializing Enigmail service";
 
         errMsg += "\n\nTo avoid this alert, either fix the problem or uninstall Enigmail using the Edit->Preferences->Privacy&Security->Enigmail menu"
 
-        EnigAlert("Enigmail: "+errMsg);
-
-        initAlertCount++;
-        EnigSetPref("initAlertCount", initAlertCount);
+        EnigAlertCount("initAlertCount", "Enigmail: "+errMsg);
       }
 
       return null;
@@ -172,11 +173,25 @@ function EnigConfigure() {
 
   var buttonPressed = buttonPressedObj.value;
 
+  if (buttonPressed == 1)  // Configure later
+    return;
+
+  for (var prefName in gEnigmailPrefDefaults) {
+    if (prefName.search(/AlertCount$/) >= 0) {
+       // Reset alert count to default value
+      try {
+        gPrefEnigmail.clearUserPref(prefName);
+      } catch(ex) {
+      }
+    }
+  }
+
   if (buttonPressed == 0) {
+    // Configure now
     EnigPrefWindow();
 
-  } else if (buttonPressed == 2) {
-    // "Do not ask me again"
+  } else {
+    // "Do not ask me again" => "already configured"
     EnigSetPref("configuredVersion", gEnigmailVersion);
     EnigSavePrefs();
   }
@@ -324,7 +339,26 @@ function CONSOLE_LOG(str) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function EnigAlert(mesg) {
-  return gPromptService.alert(window, "Enigmail Alert", mesg);
+  gPromptService.alert(window, "Enigmail Alert", mesg);
+}
+
+function EnigAlertCount(countPrefName, mesg) {
+  var alertCount = EnigGetPref(countPrefName);
+
+  if (alertCount <= 0)
+    return;
+
+  alertCount--;
+  EnigSetPref(countPrefName, alertCount);
+
+  if (alertCount > 0) {
+    mesg += "\n\nThis alert will repeat "+alertCount+" more time";
+    mesg += (alertCount == 1) ? "." : "s.";
+  } else {
+    mesg += "\n\nThis alert will not repeat until you upgrade Enigmail.";
+  }
+
+  EnigAlert(mesg);
 }
 
 function EnigConfirm(mesg) {
@@ -580,7 +614,7 @@ function EnigKeygen() {
 
   window.openDialog('chrome://enigmail/content/enigmailKeygen.xul',
                     'Enigmail Key Generation',
-                    'chrome,dialog,close=no');
+               'chrome,dialog,close=no,resizable=yes,width=600');
 
 }
 
