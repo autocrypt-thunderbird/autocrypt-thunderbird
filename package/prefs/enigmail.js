@@ -23,6 +23,8 @@ pref("extensions.enigmail.autoCrypto",false);
 // enable automatically decrypt/verify
 pref("extensions.enigmail.autoDecrypt",true);
 
+// enable automatically decrypt/verify
+pref("extensions.enigmail.addHeaders",true);
 
 // countdown for alerts when composing inline PGP HTML msgs
 pref("extensions.enigmail.composeHtmlAlertCount",3);

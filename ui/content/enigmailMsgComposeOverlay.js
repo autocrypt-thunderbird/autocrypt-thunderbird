@@ -1283,13 +1283,18 @@ function enigMessageSendCheck() {
 /////////////////////////////////////////////////////////////////////////
 function enigModifyCompFields(msgCompFields) {
 
-  var enigmailHeaders = "X-Enigmail-Version: "+gEnigmailVersion+"\r\n"+
-                        "X-Enigmail-Supports: pgp-inline, pgp-mime\r\n";
+  if (EnigGetPref("addHeaders")) {
+    var enigmailHeaders = "X-Enigmail-Version: "+gEnigmailVersion+"\r\n"+
+                          "X-Enigmail-Supports: pgp-inline, pgp-mime\r\n";
 
-  msgCompFields.otherRandomHeaders += enigmailHeaders;
+    msgCompFields.otherRandomHeaders += enigmailHeaders;
 
-  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigModifyCompFields: otherRandomHeaders = "+
-           msgCompFields.otherRandomHeaders+"\n");
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigModifyCompFields: otherRandomHeaders = "+
+             msgCompFields.otherRandomHeaders+"\n");
+  }
+  else {
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigModifyCompFields: no headers added\n");
+  }
 }
 
 
