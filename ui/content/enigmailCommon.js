@@ -30,7 +30,7 @@ const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
 
 // Interfaces
 const nsIEnigmail               = Components.interfaces.nsIEnigmail;
-const nsIStrBundle              = Components.interfaces.nsIStringBundleService;
+const nsIEnigStrBundle          = Components.interfaces.nsIStringBundleService;
 
 // Encryption flags
 if (nsIEnigmail) {
@@ -90,7 +90,7 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "show_headers":1
                             };
 
-var gLogLevel = 3;     // Output only errors/warnings by default
+var gLogLevel = 2;     // Output only errors/warnings by default
 var gDebugLog;
 
 var gEnigPrefSvc, gEnigPrefRoot, gPrefEnigmail;
@@ -110,7 +110,7 @@ try {
 
 var gPromptService;
 
-var gStrBundle;
+var gEnigStrBundle;
 
 // Initializes enigmailCommon
 function EnigInitCommon(id) {
@@ -949,18 +949,18 @@ function EnigLoadURLInNavigatorWindow(url, aOpenFlag)
 
 // retrieves a localized string from the enigmail.properties stringbundle
 function EnigGetString(aStr) {
-  if(!gStrBundle) {
+  if(!gEnigStrBundle) {
     try {
       var strBundleService = Components.classes[ENIG_STRINGBUNDLE_CONTRACTID].getService();
-      strBundleService = strBundleService.QueryInterface(nsIStrBundle);
-      gStrBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
+      strBundleService = strBundleService.QueryInterface(nsIEnigStrBundle);
+      gEnigStrBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
     } catch (ex) {
       ERROR_LOG("enigmailCommon.js: Error in instantiating stringBundleService\n");
     }
   }
-  if(gStrBundle) {
+  if(gEnigStrBundle) {
     try {
-      return gStrBundle.GetStringFromName(aStr);
+      return gEnigStrBundle.GetStringFromName(aStr);
     } catch (ex) {
       ERROR_LOG("enigmailCommon.js: Error in querying stringBundleService for string '"+aStr+"'\n");
     }
