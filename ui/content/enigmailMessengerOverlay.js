@@ -497,6 +497,7 @@ function enigMessageDecrypt(event) {
 
       var emailAttachment = false;
       var embeddedSigned = null;
+      var embeddedEncrypted = null;
       for (var indexb in currentAttachments) {
         var attachment = currentAttachments[indexb];
         if (attachment.contentType.search(/^message\/rfc822(;|$)/i) == 0) {
@@ -504,6 +505,9 @@ function enigMessageDecrypt(event) {
         }
         if (attachment.contentType.search(/^application\/pgp-signature/i) == 0) {
           embeddedSigned = attachment.url.replace(/\.\d+\.\d+$/, "");
+        }
+        if (attachment.contentType.search(/^application\/pgp-encrypted/i) == 0) {
+          embeddedEncrypted = attachment.url.replace(/\.\d+\.\d+$/, "");
         }
         DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.contentType+"\n");
         //DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.url+"\n");
@@ -533,7 +537,8 @@ function enigMessageDecrypt(event) {
     xEnigmailVersion = gEnigSavedHeaders["x-enigmail-version"];
   }
 
-  if (contentType.search(/^multipart\/encrypted(;|$)/i) == 0
+  if ((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) ||
+      (embeddedEncrypted && contentType.search(/^multipart\/mixed(;|$)/i) == 0)
       /* && (!embeddedSigned) */ ) {
     // multipart/encrypted
     DEBUG_LOG("enigmailMessengerOverlay.js: multipart/encrypted\n");
