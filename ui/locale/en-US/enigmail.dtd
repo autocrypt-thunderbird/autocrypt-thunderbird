@@ -29,7 +29,7 @@
 
 <!ENTITY enigmail.send_plaintext_flowed.label "Allow flowed text (RFC 2646)">
 <!ENTITY enigmail.mime_parts_on_demand.label  "Load MIME parts on demand (IMAP folders)">
-<!ENTITY enigmail.mime_parts_on_demand.tooltip "If you are receiving PGP/MIME messages on IMAP folders you should enable this option">
+<!ENTITY enigmail.mime_parts_on_demand.tooltip "You should turn this OFF if you are receiving PGP/MIME messages on IMAP folders">
 
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Remember password for">
@@ -138,7 +138,7 @@
 <!ENTITY enigmail.encryptIfPossible.accesskey "I">
 <!ENTITY enigmail.encryptIfPossible.key       "I">
 <!ENTITY enigmail.plainsend.accesskey         "N">
-<!ENTITY enigmail.plainsend.key               "N">
+<!ENTITY enigmail.plainsend.key               "O">
 
 
 <!ENTITY enigmail.sendOptionsMenu.accesskey    "o">
