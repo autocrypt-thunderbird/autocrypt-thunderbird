@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<?xul-overlay href="chrome://global/content/globalOverlay.xul"?>
+<?xul-overlay href="chrome://communicator/content/utilityOverlay.xul"?>
+
+<!DOCTYPE window [
+  <!ENTITY % enigmailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd">
+   %enigmailDTD;
+  <!ENTITY % utilDTD SYSTEM "chrome://communicator/locale/utilityOverlay.dtd">
+   %utilDTD;
+]>
+
+<window id="EnigmailHelp"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        title="Enigmail Help"
+        width="600" height="400"
+        persist="screenX screenY width height">
+
+  <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailHelp.js"/>
+
+
+<iframe id="contentFrame" type="content" name="contentFrame"
+        src="" 
+        flex="100%"/>
+
+</window>
