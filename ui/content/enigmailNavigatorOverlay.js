@@ -204,7 +204,7 @@ function enigYahooCompose() {
   var errorMsg  = errorMsgObj.value;
 
   if (exitCode != 0) {
-    EnigAlert("Error in encrypting and/or signing message.\n"+errorMsg);
+    EnigAlert(EnigGetString("navEncryptError")+errorMsg);
     return;
   }
 
@@ -247,7 +247,7 @@ function enigYahooShowLetter() {
   var errorMsg = errorMsgObj.value;
 
   if (exitCode != 0) {
-    EnigAlert("Error in decrypting message.\n"+errorMsg);
+    EnigAlert(EnigGetString("navDecryptError")+errorMsg);
     return;
   }
 
@@ -337,7 +337,7 @@ function enigHotmailCompose() {
   var errorMsg  = errorMsgObj.value;
 
   if (exitCode != 0) {
-    EnigAlert("Error in encrypting and/or signing message.\n"+errorMsg);
+    EnigAlert(EnigGetString("navEncryptError")+errorMsg);
     return;
   }
 
