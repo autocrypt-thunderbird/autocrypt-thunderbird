@@ -116,6 +116,9 @@ pref("extensions.enigmail.supportMultiPass",false);
 // use GnuPG's default comment for signed messages
 pref("extensions.enigmail.useDefaultComment",false);
 
+// max message size to verify RFC 3156 section 6.1 messages
+pref("extensions.enigmail.encapsulatedMimeMaxSize", 20000);
+
 // use gpg passphrase agent for passphrase handling
 pref("extensions.enigmail.useGpgAgent",false);
 

@@ -33,6 +33,7 @@
 
 // Maximum size of message directly processed by Enigmail
 const MSG_BUFFER_SIZE = 98304;   // 96 kB
+const MAX_MSG_BUFFER_SIZE = 512000 // slightly less than 512 kB
 
 const ERROR_BUFFER_SIZE = 16384; // 16 kB
 
@@ -1624,7 +1625,7 @@ function (exitCode, statusFlags) {
       exitCode = 0;
     }
   }
-  if ((this.agentVersion >= "1.3") && (this.isDosLike)) {
+  if (((this.agentVersion >= "1.3") && (this.agentVersion < "1.4.1" )) && (this.isDosLike)) {
       if ((exitCode == 2) && (!(statusFlags & (nsIEnigmail.BAD_PASSPHRASE |
                               nsIEnigmail.UNVERIFIED_SIGNATURE |
                               nsIEnigmail.MISSING_PASSPHRASE |
@@ -2022,6 +2023,19 @@ function EnigStripEmail(mailAddrs) {
 }
 
 
+Enigmail.prototype.stripWhitespace = function(sendFlags) {
+  var stripThem=false;
+  if ((sendFlags & nsIEnigmail.SEND_SIGNED) &&
+      (!(sendFlags & nsIEnigmail.SEND_ENCRYPTED))) {
+    if (this.agentVersion >= "1.40" && this.agentVersion < "1.4.1") {
+      stripThem = true;
+    }
+  }
+  
+  return stripThem;
+}
+
+
 Enigmail.prototype.encryptMessage =
 function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
           sendFlags, exitCodeObj, statusFlagsObj, errorMsgObj) {
@@ -2054,7 +2068,6 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
     // Using platform-specific linebreaks confuses some windows mail clients,
     // so we convert everything to windows like good old PGP worked anyway.
     plainText = plainText.replace(/\n/g, "\r\n");
-
   }
 
   var noProxy = true;
@@ -2250,7 +2263,13 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
     if (!useDefaultComment)
       encryptCommand += " --comment "+this.quoteSign+GPG_COMMENT_OPT.replace(/\%s/, this.vendor)+this.quoteSign;
 
-
+/*
+    if (usePgpMime && (! encryptMsg)) {
+      if (this.agentVersion >= "1.4.1") {
+        //encryptCommand += " --rfc2440-dshaw"
+      }
+    }
+*/
     var angledFromMailAddr = ((fromMailAddr.search(/^0x/) == 0) || hushMailSupport)
 	                         ? fromMailAddr : "<" + fromMailAddr + ">";
     angledFromMailAddr = angledFromMailAddr.replace(/([\"\'\`])/g, "\\$1");
@@ -2307,18 +2326,15 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
   DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: prompter="+prompter+", uiFlags="+uiFlags+", from "+fromMailAddr+" to "+toMailAddr+", hashAlgorithm="+hashAlgorithm+" ("+bytesToHex(pack(sendFlags,4))+")\n");
 
   var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
-  
-  if (pgpMime) {
+
+  if (uiFlags & nsIEnigmail.UI_RESTORE_STRICTLY_MIME) {
     try {
-      if (uiFlags & nsIEnigmail.UI_MOD_STRICTLY_MIME) {
-
-        var prefSvc = Components.classes[NS_PREFS_SERVICE_CID]
-                              .getService(Components.interfaces.nsIPrefService);
-
-        var prefRoot = prefSvc.getBranch(null);
-        prefRoot.setBoolPref("mail.strictly_mime", false);
-      }
-    } catch (ex) {}
+      var prefSvc = Components.classes[NS_PREFS_SERVICE_CID]
+                     .getService(Components.interfaces.nsIPrefService);
+      var prefRoot = prefSvc.getBranch(null);
+      prefRoot.setBoolPref("mail.strictly_mime", false);
+    }
+    catch (ex) {}
   }
 
   errorMsgObj.value = "";
@@ -2608,8 +2624,15 @@ function (parent, uiFlags, cipherText, signatureObj, exitCodeObj,
   var startErrorMsgObj = new Object();
 
   var readBytes = MSG_BUFFER_SIZE;
-  if (verifyOnly && pgpBlock.length > MSG_BUFFER_SIZE)
+  if (verifyOnly && pgpBlock.length > MSG_BUFFER_SIZE) {
     readBytes = ((pgpBlock.length+1500)/1024).toFixed(0)*1024;
+  }
+  if (readBytes > MAX_MSG_BUFFER_SIZE) {
+    errorMsgObj.value = EnigGetString("messageSizeError");
+    statusFlagsObj.value |= nsIEnigmail.OVERFLOWED;
+    exitCodeObj.value = 1;
+    return "";
+  }
 
   const maxTries = 2;
   var tryCount = 0;

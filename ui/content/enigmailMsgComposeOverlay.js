@@ -1237,20 +1237,24 @@ function enigEncryptMsg(msgSendType) {
        return;
      }
      
-     if ((uiFlags & nsIEnigmail.UI_PGP_MIME)  &&
-         (sendFlags & ENIG_SIGN) && !(sendFlags & ENIG_ENCRYPT)) {
-        if (! gEnigPrefRoot.getBoolPref("mail.strictly_mime")) {
-          try {
-            if (newSecurityInfo) {
-              // enable quoted-printable to be RFC 3156 compliant
-              gEnigPrefRoot.setBoolPref("mail.strictly_mime", true);
-              newSecurityInfo.UIFlags |= nsIEnigmail.UI_MOD_STRICTLY_MIME;
-            }
-          }
-          catch (ex) {}
-        }
+     try {
+       if (typeof(msgCompFields.forceCharSetEncoding) == "boolean") {
+          msgCompFields.forceCharSetEncoding = true;
+       }
      }
-
+     catch (ex) {}
+     
+     if (usingPGPMime &&
+         ((sendFlags & ENIG_ENCRYPT_OR_SIGN) &&
+          (! (sendFlags & ENIG_ENCRYPT)))) {
+      // temporarily enable quoted-printable for PGP/MIME signed messages
+       try {
+          if (! gEnigPrefRoot.getBoolPref("mail.strictly_mime")) {
+            gEnigPrefRoot.setBoolPref("mail.strictly_mime", true);
+            newSecurityInfo.UIFlags |= nsIEnigmail.UI_RESTORE_STRICTLY_MIME;
+          }
+       } catch (ex) {}
+    }
   } catch (ex) {
      msg=EnigGetString("signFailed");
      if (gEnigmailSvc && gEnigmailSvc.initializationError) {

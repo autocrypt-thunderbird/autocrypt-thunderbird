@@ -121,7 +121,9 @@ interface nsIEnigmail : nsISupports
                          out wstring userId,
                          out wstring sigDetails,
                          out wstring errorMsg);
-                         
+
+  boolean stripWhitespace(in unsigned long sendFlags);
+  
   long fixExitCode(in long exitCode,
                    in long statusFlags);
 
@@ -146,25 +148,26 @@ interface nsIEnigmail : nsISupports
                               in long part);
 
   /* User interaction flags */
-  const long UI_INTERACTIVE       = 0x01;
-  const long UI_ALLOW_KEY_IMPORT  = 0x02;
-  const long UI_UNVERIFIED_ENC_OK = 0x04;
-  const long UI_PGP_MIME          = 0x08;
-  const long UI_TEST              = 0x10;
-  const long UI_MOD_STRICTLY_MIME = 0x20;
+  const long UI_INTERACTIVE           = 0x01;
+  const long UI_ALLOW_KEY_IMPORT      = 0x02;
+  const long UI_UNVERIFIED_ENC_OK     = 0x04;
+  const long UI_PGP_MIME              = 0x08;
+  const long UI_TEST                  = 0x10;
+  const long UI_RESTORE_STRICTLY_MIME = 0x20;
 
   /* Send message flags */
-  const long SEND_SIGNED          = 0x001;
-  const long SEND_ENCRYPTED       = 0x002;
-  const long SEND_DEFAULT         = 0x004;
-  const long SEND_LATER           = 0x008;
-  const long SEND_WITH_CHECK      = 0x010;
-  const long SEND_ALWAYS_TRUST    = 0x020;
-  const long SEND_ENCRYPT_TO_SELF = 0x040;
-  const long SEND_PGP_MIME        = 0x080;
-  const long SEND_TEST            = 0x100;
-  const long SAVE_MESSAGE         = 0x200;
- 
+  const long SEND_SIGNED           = 0x001;
+  const long SEND_ENCRYPTED        = 0x002;
+  const long SEND_DEFAULT          = 0x004;
+  const long SEND_LATER            = 0x008;
+  const long SEND_WITH_CHECK       = 0x010;
+  const long SEND_ALWAYS_TRUST     = 0x020;
+  const long SEND_ENCRYPT_TO_SELF  = 0x040;
+  const long SEND_PGP_MIME         = 0x080;
+  const long SEND_TEST             = 0x100;
+  const long SAVE_MESSAGE          = 0x200;
+  const long SEND_STRIP_WHITESPACE = 0x400;
+
   wstring encryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,
                         in string  plainText,

@@ -594,10 +594,11 @@ function enigMessageDecrypt(event, isAuto) {
   // special treatment for embedded signed messages
   if (embeddedSigned) {
     if (contentType.search(/^multipart\/encrypted(;|$)/i) == 0) {
+      var maxSize = EnigGetPref("encapsulatedMimeMaxSize")
       var msgSize=messenger.messageServiceFromURI(msgUriSpec).messageURIToMsgHdr(msgUriSpec).messageSize
-      // workaround for bug 5777: try to verify if msg size < 40000
+      // workaround for bug 5777: try to verify if msg size < maxSize
       // to avoid blocking Mozilla
-      if (msgSize < 40000) tryVerify = true;
+      if (msgSize < maxSize) tryVerify = true;
     }
     if (contentType.search(/^multipart\/mixed(;|$)/i) == 0) {
       tryVerify = true;

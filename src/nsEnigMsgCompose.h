@@ -112,6 +112,7 @@ protected:
     PRUint32                      mUIFlags;
 
     PRBool                        mMultipartSigned;
+    PRBool                        mStripWhitespace;
 
     nsCString                     mSenderEmailAddr;
     nsCString                     mRecipients;

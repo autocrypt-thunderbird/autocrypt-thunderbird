@@ -143,6 +143,7 @@ nsEnigMsgCompose::nsEnigMsgCompose()
     mUIFlags(0),
 
     mMultipartSigned(PR_FALSE),
+    mStripWhitespace(PR_FALSE),
 
     mSenderEmailAddr(""),
     mRecipients(""),
@@ -459,6 +460,11 @@ nsEnigMsgCompose::Init()
 
   if (!mPipeTrans)
     return NS_ERROR_FAILURE;
+
+  rv = enigmailSvc->StripWhitespace(mSendFlags,
+                                    &mStripWhitespace);
+  if (NS_FAILED(rv))
+    return rv;
 
   mInitialized = PR_TRUE;
 
@@ -786,7 +792,7 @@ nsEnigMsgCompose::MimeCryptoWriteBlock(const char *aBuf, PRInt32 aLen)
     }
 
     mLinebreak = (aBuf[j] == '\r') || (aBuf[j] == '\n');
-    if ((aBuf[j] == ' ') || (aBuf[j] == '\t')) {
+    if (mStripWhitespace && ((aBuf[j] == ' ') || (aBuf[j] == '\t'))) {
       ++mSpace;
     }
     else {

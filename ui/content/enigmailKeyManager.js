@@ -623,7 +623,7 @@ function enigmailImportKeysFromFile() {
 
   var inFile = EnigFilePicker(EnigGetString("importFile"),
                                "", false, "*.asc", "",
-                               [EnigGetString("gnupgFile"), "*.asc; *.gpg; *.pgp"]);
+                               [EnigGetString("gnupgFile"), "*.asc;*.gpg;*.pgp"]);
   if (! inFile) return;
   
   var errorMsgObj = {};
