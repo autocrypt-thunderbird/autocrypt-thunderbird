@@ -165,8 +165,8 @@ nsEnigMimeVerify::Init(nsIURI* aURI, nsIMsgWindow* msgWindow,
   mArmorListener = do_CreateInstance(NS_PIPEFILTERLISTENER_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
 
-  const char* pgpHeader = "-----BEGIN PGP SIGNATURE-----";
-  const char* pgpFooter = "-----END PGP SIGNATURE-----";
+  const char* pgpHeader = "-----BEGIN PGP ";
+  const char* pgpFooter = "-----END PGP ";
 
   rv = mArmorListener->Init((nsIStreamListener*) this, nsnull,
                             pgpHeader, pgpFooter,
