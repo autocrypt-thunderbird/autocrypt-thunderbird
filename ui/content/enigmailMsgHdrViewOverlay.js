@@ -221,28 +221,21 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
       var dat=new Date(detailArr[2]*1000);
       var appLocale = Components.classes[ENIG_LOCALE_SVC_CONTRACTID].getService(Components.interfaces.nsILocaleService).getApplicationLocale();
       var dateFormat = Components.classes[ENIG_DATE_FORMAT_CONTRACTID].getService(Components.interfaces.nsIScriptableDateFormat);
-      var now = new Date();
-      if (now.getFullYear() == dat.getFullYear() &&
-          now.getMonth() == dat.getMonth() &&
-          now.getDate() == dat.getDate()) {
-        var dateTime = dateFormat.FormatTime(appLocale.getCategory("NSILOCALE_TIME"), 
-                            dateFormat.timeFormatNoSeconds,
-                            dat.getHours(), dat.getMinutes(), 0);
-      }
-      else {
-        dateTime = dateFormat.FormatDateTime(appLocale.getCategory("NSILOCALE_TIME"), 
-                            dateFormat.dateFormatShort,
-                            dateFormat.timeFormatNoSeconds,
-                            dat.getFullYear(), dat.getMonth()+1, dat.getDate(),
-                            dat.getHours(), dat.getMinutes(), 0);
-      }
+      dateTime = dateFormat.FormatDateTime(appLocale.getCategory("NSILOCALE_TIME"), 
+                          dateFormat.dateFormatShort,
+                          dateFormat.timeFormatNoSeconds,
+                          dat.getFullYear(), dat.getMonth()+1, dat.getDate(),
+                          dat.getHours(), dat.getMinutes(), 0);
       var txt = EnigGetString("keyAndSigDate", detailArr[0].substr(-8, 8), dateTime);
       statusArr.push(txt);
       statusInfo += "\n" + txt;
       // 933D 9948 DC0F A861 471B 10A9 D8A8 07C7 CCEC 227B
-      var fpr = detailArr[0].match(/^(....)(....)(....)(....)(....)(....)(....)(....)(....)(....)$/);
-      fpr.shift()
-      statusInfo += "\n"+EnigGetString("keyFpr",fpr.join(" "));
+      // 4628 4358 0136 4A06 B9EA FE9D 3C5D F224
+      var fpr = detailArr[0].match(/^(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?$/);
+      if (fpr && fpr.length > 2) {
+        fpr.shift()
+        statusInfo += "\n"+EnigGetString("keyFpr",fpr.join(" "));
+      }
     }
     fullStatusInfo = statusInfo;
 
