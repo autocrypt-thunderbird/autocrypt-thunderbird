@@ -54,13 +54,13 @@ function enigEndHeaders()
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigEndHeaders\n");
 }
 
-function enigUpdateHdrIcons(statusFlags, briefStatusMsg, expandedStatusMsg) {
+function enigUpdateHdrIcons(statusFlags, keyId, userId, fullStatusMsg, briefStatusMsg) {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateHdrIcons\n");
 
   var statusInfo = "";
   var statusLine = briefStatusMsg;
 
-  var statusLines = expandedStatusMsg.split(/\r?\n/);
+  var statusLines = fullStatusMsg.split(/\r?\n/);
 
   if (statusLines && statusLines.length) {
 
@@ -78,7 +78,10 @@ function enigUpdateHdrIcons(statusFlags, briefStatusMsg, expandedStatusMsg) {
     statusInfo = "Decrypted message";
   }
 
-  gEnigSecurityInfo = { statusLine: statusLine,
+  gEnigSecurityInfo = { statusFlags: statusFlags,
+                        keyId: keyId,
+                        userId: userId,
+                        statusLine: statusLine,
                         statusInfo: statusInfo };
 
   if (statusLine) {
@@ -264,16 +267,16 @@ EnigMimeHeaderSink.prototype =
     throw Components.results.NS_NOINTERFACE;
   },
 
-  updateSecurityStatus: function(uriSpec, statusFlags, briefStatusMsg, expandedStatusMsg)
+  updateSecurityStatus: function(uriSpec, statusFlags, keyId, userId, fullStatusMsg, briefStatusMsg)
   {
-    DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: uriSpec="+uriSpec+", statusFlags="+statusFlags+", "+briefStatusMsg+"\n");
+    DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: uriSpec="+uriSpec+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+briefStatusMsg+"\n");
 
     var msgUriSpec = enigGetCurrentMsgUriSpec();
 
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: msgUriSpec="+msgUriSpec+"\n");
 
     if (!uriSpec || (uriSpec == msgUriSpec)) {
-      enigUpdateHdrIcons(statusFlags, briefStatusMsg, expandedStatusMsg);
+      enigUpdateHdrIcons(statusFlags, keyId, userId, fullStatusMsg, briefStatusMsg);
     }
 
     return;

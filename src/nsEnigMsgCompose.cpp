@@ -140,6 +140,7 @@ nsEnigMsgCompose::nsEnigMsgCompose()
 
     mSenderEmailAddr(""),
     mRecipients(""),
+    mHashAlgorithm("sha1"),
 
     mBoundary(""),
 
@@ -295,14 +296,14 @@ nsEnigMsgCompose::WriteSignedHeaders1()
     return rv;
 
   char* headers = PR_smprintf(
- "Content-Type: multipart/signed; micalg=pgp-sha1;\r\n"
+ "Content-Type: multipart/signed; micalg=pgp-%s;\r\n"
  " protocol=\"application/pgp-signature\";\r\n"
  " boundary=\"%s\"\r\n"
  "\r\n"
  "The following is an OpenPGP/MIME signed message\r\n"
  "created by Enigmail/Mozilla, following RFC 2440 and RFC 2015\r\n"
  "--%s\r\n",
- mBoundary.get(), mBoundary.get());
+ mHashAlgorithm.get(), mBoundary.get(), mBoundary.get());
 
   if (!headers)
     return NS_ERROR_OUT_OF_MEMORY;
@@ -391,12 +392,12 @@ nsEnigMsgCompose::Init()
   nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
 
-  nsXPIDLCString errorMsg;
+  nsXPIDLString errorMsg;
   PRBool noProxy = PR_TRUE;
   rv = enigmailSvc->EncryptMessageStart(prompter,
-                                        mUIFlags,
                                         mSenderEmailAddr.get(),
                                         mRecipients.get(),
+                                        mHashAlgorithm.get(),
                                         mSendFlags,
                 NS_STATIC_CAST(nsIStreamListener*, mWriter),
                                         noProxy,
@@ -540,6 +541,10 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
   if (NS_FAILED(rv))
       return rv;
 
+  rv = enigSecurityInfo->GetHashAlgorithm(mHashAlgorithm);
+  if (NS_FAILED(rv))
+      return rv;
+
   if (mSendFlags & nsIEnigmail::SEND_PGP_MIME) {
     // RFC2015 crypto encapsulation
     rv = Init();
@@ -653,8 +658,9 @@ nsEnigMsgCompose::FinishAux(PRBool aAbort,
 
   PRInt32 newExitCode;
   PRUint32 statusFlags;
-  nsXPIDLCString errorMsg;
-  rv = enigmailSvc->EncryptMessageEnd(mSendFlags,
+  nsXPIDLString errorMsg;
+  rv = enigmailSvc->EncryptMessageEnd(mUIFlags,
+                                      mSendFlags,
                                       exitCode,
                                       mOutputLen,
                                       errorOutput,

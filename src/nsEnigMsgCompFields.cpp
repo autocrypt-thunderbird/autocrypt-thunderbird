@@ -77,6 +77,7 @@ nsEnigMsgCompFields::nsEnigMsgCompFields()
 
     mSenderEmailAddr(""),
     mRecipients(""),
+    mHashAlgorithm(""),
 
     mMsgSMIMECompFields(nsnull)
 {
@@ -185,5 +186,22 @@ nsEnigMsgCompFields::SetRecipients(const nsACString &aRecipients)
 {
   mRecipients = aRecipients;
   DEBUG_LOG(("nsEnigMsgCompFields::SetRecipients: %s\n", mRecipients.get()));
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsEnigMsgCompFields::GetHashAlgorithm(nsACString &aHashAlgorithm)
+{
+  DEBUG_LOG(("nsEnigMsgCompFields::GetHashAlgorithm:\n"));
+
+  aHashAlgorithm = mHashAlgorithm;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsEnigMsgCompFields::SetHashAlgorithm(const nsACString &aHashAlgorithm)
+{
+  mHashAlgorithm = aHashAlgorithm;
+  DEBUG_LOG(("nsEnigMsgCompFields::SetHashAlgorithm: %s\n", mHashAlgorithm.get()));
   return NS_OK;
 }

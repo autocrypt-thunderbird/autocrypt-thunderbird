@@ -138,6 +138,7 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     MISSING_PASSPHRASE: nsIEnigmail.MISSING_PASSPHRASE,
                     BAD_PASSPHRASE:  nsIEnigmail.BAD_PASSPHRASE,
                     BADARMOR:        nsIEnigmail.BAD_ARMOR,
+                    DECRYPTION_FAILED: nsIEnigmail.DECRYPTION_FAILED,
                     DECRYPTION_OKAY: nsIEnigmail.DECRYPTION_OKAY,
                     TRUST_UNDEFINED: nsIEnigmail.UNTRUSTED_IDENTITY,
                     TRUST_NEVER:     nsIEnigmail.UNTRUSTED_IDENTITY,
@@ -1865,10 +1866,10 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
 
 
 Enigmail.prototype.encryptMessageEnd = 
-function (sendFlags, exitCode, outputLen, errOutput,
+function (uiFlags, sendFlags, exitCode, outputLen, errOutput,
           statusFlagsObj, errorMsgObj)
 {
-  DEBUG_LOG("enigmail.js: Enigmail.encryptMessageEnd: sendFlags="+bytesToHex(pack(sendFlags,4))+", exitCode="+exitCode+", outputLen="+outputLen+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail.encryptMessageEnd: uiFlags="+uiFlags+", sendFlags="+bytesToHex(pack(sendFlags,4))+", exitCode="+exitCode+", outputLen="+outputLen+"\n");
 
   statusFlagsObj.value = 0;
   errorMsgObj.value    = "";
@@ -1923,11 +1924,12 @@ function (sendFlags, exitCode, outputLen, errOutput,
   return exitCode;
 }
 
+var gPGPHashNums = {md5:1, sha1:2, ripemd160:3};
 
 Enigmail.prototype.encryptMessageStart = 
-function (prompter, uiFlags, fromMailAddr, toMailAddr,
-          sendFlags, listener, noProxy, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: from "+fromMailAddr+" to "+toMailAddr+" ("+bytesToHex(pack(sendFlags,4))+")\n");
+function (prompter, fromMailAddr, toMailAddr,
+          hashAlgorithm, sendFlags, listener, noProxy, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: from "+fromMailAddr+" to "+toMailAddr+", hashAlgorithm="+hashAlgorithm+" ("+bytesToHex(pack(sendFlags,4))+")\n");
 
   errorMsgObj.value = "";
 
@@ -1978,6 +1980,9 @@ function (prompter, uiFlags, fromMailAddr, toMailAddr,
     if (detachedSig) {
       encryptCommand += " -sb";
 
+      if (hashAlgorithm && gPGPHashNum[hashAlgorithm])
+        encryptCommand += " +hashnum=" + gPGPHashNum[hashAlgorithm];
+
     } else if (signMsg) {
       encryptCommand += " -s";
     }
@@ -2007,6 +2012,10 @@ function (prompter, uiFlags, fromMailAddr, toMailAddr,
 
     } else if (detachedSig) {
       encryptCommand += " -s -b -t -a";
+
+      if (hashAlgorithm) {
+        encryptCommand += " --digest-algo "+hashAlgorithm;
+      }
 
     } else if (signMsg) {
       encryptCommand += " --clearsign";
@@ -2464,7 +2473,8 @@ function (parent, uiFlags, cipherText, signatureObj,
       var uiFlagsDeep = interactive ? nsIEnigmail.UI_INTERACTIVE : 0;
       signatureObj.value = "";
       return this.decryptMessage(parent, uiFlagsDeep, pgpBlock,
-                                 exitCodeObj, errorMsgObj, signatureObj);
+                                 signatureObj, exitCodeObj, statusFlagsObj,
+                                 keyIdObj, userIdObj, errorMsgObj);
     }
   }
 
@@ -2508,8 +2518,8 @@ function (parent, uiFlags, cipherText, signatureObj,
 
 
 Enigmail.prototype.decryptMessageStart = 
-function (prompter, uiFlags, verifyOnly, noOutput, listener, noProxy, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.decryptMessageStart: "+uiFlags+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
+function (prompter, verifyOnly, noOutput, listener, noProxy, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.decryptMessageStart: verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
 
   if (!this.initialized) {
     errorMsgObj.value = "Error - Enigmail service not yet initialized";
@@ -2549,9 +2559,14 @@ function (prompter, uiFlags, verifyOnly, noOutput, listener, noProxy, errorMsgOb
 
 
 Enigmail.prototype.decryptMessageEnd = 
-function (exitCode, outputLen, errOutput, verifyOnly, noOutput,
+function (uiFlags, exitCode, outputLen, errOutput, verifyOnly, noOutput,
           statusFlagsObj, keyIdObj, userIdObj, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.decryptMessageEnd: exitCode="+exitCode+", outputLen="+outputLen+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail.decryptMessageEnd: uiFlags="+uiFlags+", exitCode="+exitCode+", outputLen="+outputLen+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
+
+  var interactive = uiFlags & nsIEnigmail.UI_INTERACTIVE;
+  var pgpMime     = uiFlags & nsIEnigmail.UI_PGP_MIME;
+  var allowImport = uiFlags & nsIEnigmail.UI_ALLOW_KEY_IMPORT;
+  var unverifiedEncryptedOK = uiFlags & nsIEnigmail.UI_UNVERIFIED_ENC_OK;
 
   statusFlagsObj.value = 0;
   errorMsgObj.value    = "";
@@ -2565,6 +2580,9 @@ function (exitCode, outputLen, errOutput, verifyOnly, noOutput,
   var errorMsg = this.parseErrorOutput(errOutput, statusFlagsObj, statusMsgObj);
 
   CONSOLE_LOG(errorMsg+"\n");
+
+  if (pgpMime)
+    statusFlagsObj.value |= nsIEnigmail.RECEIVED_PGP_MIME;
 
   var statusMsg = statusMsgObj.value;
 
@@ -2685,15 +2703,24 @@ function (exitCode, outputLen, errOutput, verifyOnly, noOutput,
 
   if (pubKeyId) {
     errorMsgObj.value = "Error - public key "+pubKeyId+" needed to verify signature";
+    if (!interactive) 
+      errorMsgObj.value += "; click Broken Pen icon for details";
 
   } else if (verifyOnly) {
     errorMsgObj.value = "Error - signature verification failed";
 
+    if (!interactive) 
+      errorMsgObj.value += "; click Broken Pen icon for details";
+
   } else if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
     errorMsgObj.value = "Error - bad passphrase";
+    if (!interactive) 
+      errorMsgObj.value += "; click Decrypt button to retry";
 
   } else {
     errorMsgObj.value = "Error - decryption/verification failed";
+    if (!interactive) 
+      errorMsgObj.value += "; click Broken Pen icon for details";
   }
 
   if (errorMsg) {

@@ -78,38 +78,39 @@ interface nsIEnigmail : nsISupports
   string getLogDirectoryPrefix();
 
   nsIPipeTransport encryptMessageStart(in nsIPrompt prompter,
-                                       in unsigned long uiFlags,
                                        in string  fromMailAddr,
                                        in string  toMailAddr,
+                                       in string  hashAlgorithm,
                                        in unsigned long sendFlags,
                                        in nsIStreamListener listener,
                                        in boolean noProxy,
-                                       out string errorMsg);
+                                       out wstring errorMsg);
 
-  long encryptMessageEnd(in unsigned long sendFlags,
+  long encryptMessageEnd(in unsigned long uiFlags,
+                         in unsigned long sendFlags,
                          in long exitCode,
                          in unsigned long outputLen,
                          in string errOutput,
                          out unsigned long statusFlags,
-                         out string errorMsg);
+                         out wstring errorMsg);
 
   nsIPipeTransport decryptMessageStart(in nsIPrompt prompter,
-                                       in unsigned long uiFlags,
                                        in boolean verifyOnly,
                                        in boolean noOutput,
                                        in nsIStreamListener listener,
                                        in boolean noProxy,
-                                       out string errorMsg);
+                                       out wstring errorMsg);
 
-  long decryptMessageEnd(in long exitCode,
+  long decryptMessageEnd(in unsigned long uiFlags,
+                         in long exitCode,
                          in unsigned long outputLen,
                          in string errOutput,
                          in boolean verifyOnly,
                          in boolean noOutput,
                          out unsigned long statusFlags,
-                         out string keyId,
-                         out string userId,
-                         out string errorMsg);
+                         out wstring keyId,
+                         out wstring userId,
+                         out wstring errorMsg);
 
   string locateArmoredBlock(in string text,
                             in long offset,
@@ -129,6 +130,7 @@ interface nsIEnigmail : nsISupports
   const long UI_INTERACTIVE       = 0x01;
   const long UI_ALLOW_KEY_IMPORT  = 0x02;
   const long UI_UNVERIFIED_ENC_OK = 0x04;
+  const long UI_PGP_MIME          = 0x08;
 
   /* Send message flags */
   const long SEND_SIGNED          = 0x001;
@@ -148,7 +150,7 @@ interface nsIEnigmail : nsISupports
                         in unsigned long sendFlags,
                         out long exitCode,
                         out unsigned long statusFlags,
-                        out string errorMsg);
+                        out wstring errorMsg);
 
   /* Status flags */
   const long GOOD_SIGNATURE       = 0x00001;
@@ -168,6 +170,7 @@ interface nsIEnigmail : nsISupports
   const long DECRYPTION_OKAY      = 0x04000;
   const long UNTRUSTED_IDENTITY   = 0x08000;
   const long TRUSTED_IDENTITY     = 0x10000;
+  const long RECEIVED_PGP_MIME    = 0x20000;
 
   string decryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,
@@ -175,27 +178,26 @@ interface nsIEnigmail : nsISupports
                         inout string signature,
                         out long exitCode,
                         out unsigned long statusFlags,
-                        out string keyId,
-                        out string userId,
-                        out string errorMsg);
+                        out wstring keyId,
+                        out wstring userId,
+                        out wstring errorMsg);
 
   string extractKey(in nsIDOMWindow parent,
                     in unsigned long uiFlags,
                     in string userId,
                     out long   exitCode,
-                    out string errorMsg);
+                    out wstring errorMsg);
 
   long importKey(in nsIDOMWindow parent,
                  in unsigned long uiFlags,
                  in string msgText,
                  in string keyId,
-                 out string errorMsg);
+                 out wstring errorMsg);
 
   long receiveKey(in nsIDOMWindow parent,
                   in unsigned long uiFlags,
                   in string keyId,
-                  in string keyserver,
-                  out string errorMsg);
+                  out wstring errorMsg);
 
   nsIIPCRequest generateKey(in nsIDOMWindow parent,
                             in string name,

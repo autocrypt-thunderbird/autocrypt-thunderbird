@@ -48,8 +48,10 @@ interface nsIEnigMimeHeaderSink : nsISupports
 {
   void updateSecurityStatus(in AUTF8String uriSpec,
                             in unsigned long statusFlags,
-                            in string briefStatusMsg,
-                            in string expandedStatusMsg);
+                            in wstring keyId,
+                            in wstring userId,
+                            in wstring fullStatusMsg,
+                            in wstring briefStatusMsg);
 };
 
 

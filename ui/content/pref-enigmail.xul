@@ -79,7 +79,7 @@
 
     <hbox>
       <label control="userIdValue"
-             value="&enigmail.userIdValue.label;" />
+             value="&enigmail.userIdValue.label;:" />
 
       <textbox id="userIdValue"
                pref="true"

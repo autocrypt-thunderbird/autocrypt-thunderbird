@@ -10,6 +10,9 @@ const OutputFormatFlowed  = 64;
 const OutputCRLineBreak   = 512;
 const OutputLFLineBreak   = 1024;
 
+// List of hash algorithms for PGP/MIME signatures
+var gMimeHashAlgorithms = ["md5", "sha1", "ripemd160"];
+
 const NS_ENIGMSGCOMPFIELDS_CONTRACTID = "@mozdev.org/enigmail/composefields;1";
 
 // Initialize enigmailCommon
@@ -423,6 +426,9 @@ function enigSend(sendFlags) {
        usingPGPMime = false;
      }
 
+     if (usingPGPMime)
+       uiFlags |= nsIEnigmail.UI_PGP_MIME;
+
      if ( usingPGPMime ||
           (!hasAttachments && EnigGetPref("useMimeExperimental"))) {
        // Use EnigMime
@@ -454,6 +460,7 @@ function enigSend(sendFlags) {
        newSecurityInfo.UIFlags = uiFlags;
        newSecurityInfo.senderEmailAddr = fromAddr;
        newSecurityInfo.recipients = toAddr;
+       newSecurityInfo.hashAlgorithm = gMimeHashAlgorithms[EnigGetPref("mimeHashAlgorithm")];
 
        dump("securityInfo = "+newSecurityInfo+"\n");
 

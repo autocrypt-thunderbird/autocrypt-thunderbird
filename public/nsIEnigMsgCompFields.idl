@@ -57,6 +57,8 @@ interface nsIEnigMsgCompFields : nsISupports
   attribute ACString senderEmailAddr;
 
   attribute ACString recipients;
+
+  attribute ACString hashAlgorithm;
 };
 
 %{C++

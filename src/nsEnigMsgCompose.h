@@ -103,6 +103,7 @@ protected:
 
     nsCString                     mSenderEmailAddr;
     nsCString                     mRecipients;
+    nsCString                     mHashAlgorithm;
 
     nsCString                     mBoundary;
 

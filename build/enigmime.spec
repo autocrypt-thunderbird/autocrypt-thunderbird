@@ -1,5 +1,5 @@
 Name:      mozilla-enigmime
-Version:   0.60.0
+Version:   0.61.0
 Release:   1
 Requires:  mozilla = 1.0, mozilla-mail = 1.0
 Summary:   MIME and Inter-Process Communication for Enigmail/Mozilla

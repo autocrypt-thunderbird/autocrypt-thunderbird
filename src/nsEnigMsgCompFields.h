@@ -65,6 +65,7 @@ protected:
 
     nsCString                       mSenderEmailAddr;
     nsCString                       mRecipients;
+    nsCString                       mHashAlgorithm;
 
     nsCOMPtr<nsIMsgSMIMECompFields> mMsgSMIMECompFields;
 };

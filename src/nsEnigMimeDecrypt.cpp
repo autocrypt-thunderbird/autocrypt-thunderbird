@@ -287,12 +287,11 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   if (NS_FAILED(rv))
     return rv;
 
-  nsXPIDLCString errorMsg;
+  nsXPIDLString errorMsg;
   PRBool noOutput = PR_FALSE;
   PRBool noProxy = PR_FALSE;
 
   rv = enigmailSvc->DecryptMessageStart(prompter,
-                                        (PRUint32) 0,
                                         mVerifyOnly,
                                         noOutput,
                                         nsnull,
@@ -305,7 +304,8 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
     if (securityInfo) {
       nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
       if (enigHeaderSink) {
-        rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, 0, "", errorMsg);
+        NS_NAMED_LITERAL_STRING(nullString, "");
+        rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, 0, nullString.get(), nullString.get(), errorMsg, nullString.get());
       }
     }
 
@@ -388,10 +388,13 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
 
   PRInt32 newExitCode;
   PRUint32 statusFlags;
-  nsXPIDLCString keyId;
-  nsXPIDLCString userId;
+  nsXPIDLString keyId;
+  nsXPIDLString userId;
 
-  rv = enigmailSvc->DecryptMessageEnd(exitCode,
+  PRUint32 uiFlags = nsIEnigmail::UI_PGP_MIME;
+
+  rv = enigmailSvc->DecryptMessageEnd(uiFlags,
+                                      exitCode,
                                       mOutputLen,
                                       errorOutput,
                                       mVerifyOnly,
@@ -406,7 +409,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   if (securityInfo) {
     nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
     if (enigHeaderSink) {
-      rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, statusFlags, "", errorMsg);
+      rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, statusFlags, keyId, userId, errorMsg, NS_LITERAL_STRING("").get());
     }
   }
 

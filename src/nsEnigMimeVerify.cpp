@@ -322,17 +322,19 @@ temBoundary += "--";
   PRInt32 newExitCode;
   PRUint32 statusFlags;
 
-  nsXPIDLCString keyId;
-  nsXPIDLCString userId;
-  nsXPIDLCString errorMsg;
+  nsXPIDLString keyId;
+  nsXPIDLString userId;
+  nsXPIDLString errorMsg;
 
   nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
 
+  PRUint32 uiFlags = nsIEnigmail::UI_PGP_MIME;
   PRBool verifyOnly = PR_TRUE;
   PRBool noOutput = PR_TRUE;
 
-  rv = enigmailSvc->DecryptMessageEnd(exitCode,
+  rv = enigmailSvc->DecryptMessageEnd(uiFlags,
+                                      exitCode,
                                       outputLen,
                                       errorOutput,
                                       verifyOnly,
@@ -357,7 +359,7 @@ temBoundary += "--";
   if (securityInfo) {
     nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
     if (enigHeaderSink) {
-      rv = enigHeaderSink->UpdateSecurityStatus(mURISpec, statusFlags, "", errorMsg);
+      rv = enigHeaderSink->UpdateSecurityStatus(mURISpec, statusFlags, keyId, userId, errorMsg, NS_LITERAL_STRING("").get());
     }
   }
 
@@ -445,6 +447,9 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   } else if (contentMicalg.EqualsIgnoreCase("pgp-sha1")) {
     hashSymbol = "SHA1";
 
+  } else if (contentMicalg.EqualsIgnoreCase("pgp-ripemd160")) {
+    hashSymbol = "RIPEMD160";
+
   } else {
     ERROR_LOG(("nsEnigMimeVerify::OnStartRequest: ERROR contentMicalg='%s'\n", contentMicalg.get()));
     return NS_ERROR_FAILURE;
@@ -509,12 +514,11 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
 
-  nsXPIDLCString errorMsg;
+  nsXPIDLString errorMsg;
   PRBool verifyOnly = PR_TRUE;
   PRBool noOutput = PR_TRUE;
   PRBool noProxy = PR_TRUE;
   rv = enigmailSvc->DecryptMessageStart(prompter,
-                                        (PRUint32) 0,
                                         verifyOnly,
                                         noOutput,
                                         mOutBuffer,

@@ -209,9 +209,9 @@ nsEnigMimeService::GetPlainText(nsIDOMNode* domNode,
     }
   }
 
-  if (outStr.FindChar('\xA0') >= 0) {
+  if (outStr.FindChar(0xA0) >= 0) {
     // Replace non-breaking spaces with plain spaces
-    outStr.ReplaceChar('\xA0', ' ');
+    outStr.ReplaceChar(0xA0, ' ');
   }
 
   if (findStr &&

@@ -3,7 +3,7 @@
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail-adv");
 
-var gSendFlowedElement, gSendFlowedValue;
+var gMimeHashElement, gSendFlowedElement, gSendFlowedValue;
 
 function AdvStartup() {
    DEBUG_LOG("pref-enigmail-adv.js: AdvStartup\n");
@@ -11,6 +11,11 @@ function AdvStartup() {
 
    EnigDisplayRadioPref("usePGPMimeOption", EnigGetPref("usePGPMimeOption"),
                         gUsePGPMimeOptionList);
+
+   dump("index="+gMimeHashElement+"\n");
+   gMimeHashElement = document.getElementById("mimeHashList");
+   dump("index="+gMimeHashElement+"\n");
+   gMimeHashElement.selectedIndex = EnigGetPref("mimeHashAlgorithm");
 
    gSendFlowedElement = document.getElementById("send_plaintext_flowed");
 
@@ -39,6 +44,10 @@ function AdvResetPrefs() {
    EnigDisplayRadioPref("usePGPMimeOption", gEnigmailPrefDefaults["usePGPMimeOption"],
                         gUsePGPMimeOptionList);
 
+   dump("index="+gMimeHashElement.selectedIndex+"\n");
+   gMimeHashElement.selectedIndex = gEnigmailPrefDefaults["mimeHashAlgorithm"];
+   dump("index="+gMimeHashElement.selectedIndex+"\n");
+
    DisplayPrefs(true, true, false);
 }
 
@@ -50,6 +59,8 @@ function AdvOnAccept() {
    DisplayPrefs(false, false, true);
 
    EnigSetRadioPref("usePGPMimeOption", gUsePGPMimeOptionList);
+
+   EnigSetPref("mimeHashAlgorithm", gMimeHashElement.selectedIndex);
 
    dump("gSendFlowedElement.checked="+gSendFlowedElement.checked+"\n");
 

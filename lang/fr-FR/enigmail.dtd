@@ -12,15 +12,16 @@
 <!ENTITY enigmail.preferences.label	  "Préférences">
 
 <!ENTITY enigmail.autoCrypto.label        "Enable Auto Crypto">
-<!ENTITY enigmail.userIdValue.label       "Adresse email de l'utilisateur:">
+<!ENTITY enigmail.userIdValue.label       "Adresse email de l'utilisateur">
 <!ENTITY enigmail.userNoPassphrase.label  "Pas de passphrase pour l'utilisateur">
 
 <!ENTITY enigmail.userIdFromAddr.label    "Utiliser l'adresse email FROM">
 
 <!ENTITY enigmail.defaultEncryptionOption.label "Choose default encryption options">
-<!ENTITY enigmail.usePGPMimeOption.label        "Choose PGP/MIME option">
+<!ENTITY enigmail.usePGPMimeOption.label  "Choose PGP/MIME option">
+<!ENTITY enigmail.mimeHashAlgorithm.label "Hash algorithm ">
 
-<!ENTITY enigmail.agentPath.label         "Chemin de l'exécutable GPG/PGP:">
+<!ENTITY enigmail.agentPath.label         "Chemin de l'exécutable GPG/PGP">
 
 <!ENTITY enigmail.send_plaintext_flowed.label "Autoriser le texte glissé  (RFC 2646)">
 
@@ -44,7 +45,7 @@
 <!ENTITY enigmail.defaultSignNewsMsg.label "Signer les news postées par défaut">
 <!ENTITY enigmail.useDefaultComment.label "Utiliser le commentaire par défaut dans la signature">
 
-<!ENTITY enigmail.keyserver.label         "Serveur de clefs:">
+<!ENTITY enigmail.keyserver.label         "Serveur de clefs">
 
 <!ENTITY enigmail.disableSMIMEui.label    "Hide SMIME buttons/menus">
 <!ENTITY enigmail.captureWebMail.label	  "Rappatrier le courrier (expérimental)">

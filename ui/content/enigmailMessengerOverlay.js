@@ -85,7 +85,32 @@ function enigViewSecurityInfo() {
 
   if (gEnigSecurityInfo) {
     // Display OpenPGP security info
-    EnigAlert("OpenPGP Security Info\n\n"+gEnigSecurityInfo.statusInfo);
+
+    var keyserver = EnigGetPref("keyserver");
+
+    if (keyserver && gEnigSecurityInfo.keyId &&
+        (gEnigSecurityInfo.statusFlags & nsIEnigmail.RECEIVED_PGP_MIME) &&
+        (gEnigSecurityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) ) {
+
+      var pubKeyId = "0x" + gEnigSecurityInfo.keyId.substr(8, 8);
+
+      var mesg = "Click OK button to import public key "+pubKeyId+" from keyserver.\n\n" + gEnigSecurityInfo.statusInfo;
+
+      if (EnigConfirm(mesg)) {
+        var recvErrorMsgObj = new Object();
+        var recvFlags = nsIEnigmail.UI_INTERACTIVE;
+
+        var enigmailSvc = GetEnigmailSvc();
+        var exitStatus = enigmailSvc.receiveKey(window, recvFlags, pubKeyId,
+                                                recvErrorMsgObj);
+
+        if (exitStatus == 0)
+          enigMessageReload(false);
+      }
+
+    } else {
+      EnigAlert("OpenPGP Security Info\n\n"+gEnigSecurityInfo.statusInfo);
+    }
 
   } else {
     // Display SMIME security info
@@ -525,7 +550,7 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
      return;
   }
 
-  enigUpdateHdrIcons(statusFlags, "", errorMsg);
+  enigUpdateHdrIcons(statusFlags, keyIdObj.value, userIdObj.value, errorMsg, "");
 
   if (statusFlags & (nsIEnigmail.BAD_SIGNATURE | nsIEnigmail.BAD_ARMOR)) {
     // Bad signature/armor
@@ -543,9 +568,7 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
      return;
   }
 
-  if (currentAttachments && currentAttachments.length) {
-    plainText = "Note from Enigmail: Attachments to this message have not been signed/encrypted.\n\n" + plainText;
-  }
+  var hasAttachments = currentAttachments && currentAttachments.length;
 
   var msgFrame = window.frames["messagepane"];
   var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
@@ -562,13 +585,23 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
     selection.collapse(bodyElement, 0);
     var selRange = selection.getRangeAt(0);
 
-    var htmlText = enigEscapeTextForHTML(plainText, true);
+    var htmlText = "<pre>"+enigEscapeTextForHTML(plainText, true)+"</pre>";
 
-    var docFrag = selRange.createContextualFragment("<pre>"+htmlText+"</pre>");
+    var docFrag = selRange.createContextualFragment(htmlText);
 
     // Clear HTML body
     while (bodyElement.hasChildNodes())
         bodyElement.removeChild(bodyElement.childNodes[0]);
+
+    if (hasAttachments) {
+      var newTextNode = msgFrame.document.createTextNode("Note from Enigmail: Attachments to this message have not been signed or encrypted.");
+
+      var newEmElement = msgFrame.document.createElement("em");
+      newEmElement.appendChild(newTextNode);
+
+      bodyElement.appendChild(newEmElement);
+      bodyElement.appendChild(msgFrame.document.createElement("p"));
+    }
 
     bodyElement.appendChild(docFrag.firstChild);
 
@@ -579,7 +612,12 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
     while (bodyElement.hasChildNodes())
         bodyElement.removeChild(bodyElement.childNodes[0]);
 
-    var newPlainTextNode  = msgFrame.document.createTextNode(plainText);
+    var nodeText = plainText;
+    if (hasAttachments) {
+      nodeText = "Note from Enigmail: Attachments to this message have not been signed or encrypted.\n\n" + nodeText;
+    }
+
+    var newPlainTextNode  = msgFrame.document.createTextNode(nodeText);
     var newPreElement     = msgFrame.document.createElement("pre");
     newPreElement.appendChild(newPlainTextNode);
 
@@ -620,6 +658,7 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
   gEnigDecryptedMessage = {url:messageUrl,
                            headerList:headerList,
                            charset:charset,
+                           hasAttachments:hasAttachments,
                            plainText:plainText};
   return;
 }
