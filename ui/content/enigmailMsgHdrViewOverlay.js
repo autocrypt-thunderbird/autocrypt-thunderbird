@@ -1,3 +1,36 @@
+/*
+The contents of this file are subject to the Mozilla Public
+License Version 1.1 (the "MPL"); you may not use this file
+except in compliance with the MPL. You may obtain a copy of
+the MPL at http://www.mozilla.org/MPL/
+
+Software distributed under the MPL is distributed on an "AS
+IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+implied. See the MPL for the specific language governing
+rights and limitations under the MPL.
+
+The Original Code is Enigmail.
+
+The Initial Developer of the Original Code is Ramalingam Saravanan.
+Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
+Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
+
+Contributor(s):
+Patrick Brunschwig <patrick.brunschwig@gmx.net>
+
+Alternatively, the contents of this file may be used under the
+terms of the GNU General Public License (the "GPL"), in which case
+the provisions of the GPL are applicable instead of
+those above. If you wish to allow use of your version of this
+file only under the terms of the GPL and not to allow
+others to use your version of this file under the MPL, indicate
+your decision by deleting the provisions above and replace them
+with the notice and other provisions required by the GPL.
+If you do not delete the provisions above, a recipient
+may use your version of this file under either the MPL or the
+GPL.
+*/
+
 // Uses: chrome://enigmail/content/enigmailCommon.js
 // (already loaded by enigmailMessengerOverlay(!))
 
@@ -13,12 +46,14 @@ function enigHdrViewLoad()
   // Override SMIME ui
   var signedHdrElement = document.getElementById("signedHdrIcon");
   if (signedHdrElement) {
-    signedHdrElement.setAttribute("onclick", "enigViewSecurityInfo();");
+    signedHdrElement.setAttribute("onclick", "enigViewSecurityInfo(event, true);");
+    signedHdrElement.setAttribute("context", "enigSecurityContext");
   }
 
   var encryptedHdrElement = document.getElementById("encryptedHdrIcon");
   if (encryptedHdrElement) {
-    encryptedHdrElement.setAttribute("onclick", "enigViewSecurityInfo();");
+    encryptedHdrElement.setAttribute("onclick", "enigViewSecurityInfo(event, true);");
+    encryptedHdrElement.setAttribute("context", "enigSecurityContext");
   }
 
   gEnigStatusBar = document.getElementById("enigmail-status-bar");
@@ -70,6 +105,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
   gEnigLastEncryptedURI = GetLoadedMessage();
 
   var errorLines="";
+  var fullStatusInfo=errorMsg;
   if (errorMsg)
      errorLines = errorMsg.split(/\r?\n/);
 
@@ -107,9 +143,10 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
             nsIEnigmail.DECRYPTION_INCOMPLETE |
             nsIEnigmail.DECRYPTION_FAILED));
 
-  if ((exitCode == 0 &&
-        !(statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE)) ||
-       (statusFlags & nsIEnigmail.DISPLAY_MESSAGE)) {
+  if ((exitCode == 0 ||
+       (statusFlags & nsIEnigmail.DISPLAY_MESSAGE)) &&
+        !(statusFlags & (nsIEnigmail.UNVERIFIED_SIGNATURE |
+          nsIEnigmail.IMPORTED_KEY))) {
     // Normal exit / display message
     statusInfo = errorMsg;
     statusLine = errorMsg;
@@ -160,6 +197,9 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
     statusLine = statusInfo + EnigGetString("clickDecryptRetry");
     statusInfo += "\n\n" + errorMsg;
 
+  } else if (statusFlags & nsIEnigmail.IMPORTED_KEY) {
+    EnigAlert(errorMsg);
+
   } else {
     statusInfo = EnigGetString("failedDecryptVerify");
     statusLine = statusInfo + EnigGetString("viewInfo");
@@ -181,27 +221,28 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
     }
   }
 
-  var PARTIALLY_PGP = nsIEnigmail.INLINE_KEY << 1;
-  if (statusFlags & PARTIALLY_PGP) {
-    if  (msgSigned && msgEncrypted) {
-      statusLine = EnigGetString("msgPart", EnigGetString("msgSignedAndEnc"));
-      statusLine += EnigGetString("clickPenKeyDetails");
-     }
-    else if (msgEncrypted) {
-      statusLine = EnigGetString("msgPart", EnigGetString("msgEncrypted"));
-      statusLine += EnigGetString("clickQueryKeyDetails");
-    }
-    else if (msgSigned) {
-      statusLine = EnigGetString("msgPart", EnigGetString("msgSigned"));
-      statusLine += EnigGetString("clickQueryPenDetails");
+  if (EnigGetPref("displayPartiallySigned")) {
+    if (statusFlags & nsIEnigmail.PARTIALLY_PGP) {
+      if  (msgSigned && msgEncrypted) {
+        statusLine = EnigGetString("msgPart", EnigGetString("msgSignedAndEnc"));
+        statusLine += EnigGetString("clickPenKeyDetails");
+      }
+      else if (msgEncrypted) {
+        statusLine = EnigGetString("msgPart", EnigGetString("msgEncrypted"));
+        statusLine += EnigGetString("clickQueryKeyDetails");
+      }
+      else if (msgSigned) {
+        statusLine = EnigGetString("msgPart", EnigGetString("msgSigned"));
+        statusLine += EnigGetString("clickQueryPenDetails");
+      }
     }
   }
-
   gEnigSecurityInfo = { statusFlags: statusFlags,
                         keyId: keyId,
                         userId: userId,
                         statusLine: statusLine,
-                        statusInfo: statusInfo };
+                        statusInfo: statusInfo,
+                        fullStatusInfo: fullStatusInfo };
 
   var enigmailBox = document.getElementById("expandedEnigmailBox");
   var statusText  = document.getElementById("expandedEnigmailStatusText");
@@ -252,6 +293,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
     }
     else {
       gEnigStatusBar.removeAttribute("signed");
+      statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureOk");
     }
 
     if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
@@ -278,6 +320,31 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
   } catch (ex) {}
 }
 
+function enigDispSecurityContext() {
+  var optList = ["pgpSecurityInfo", "copySecurityInfo", "showPhoto"];
+  for (var j=0; j<optList.length; j++) {
+    var menuElement = document.getElementById("enigmail_"+optList[j]);
+    if (gEnigSecurityInfo) {
+      menuElement.removeAttribute("disabled");
+    }
+    else {
+      menuElement.setAttribute("disabled", "true");
+    }
+  }
+
+  if (gEnigSecurityInfo) {
+    if (gEnigSecurityInfo.statusFlags & nsIEnigmail.PHOTO_AVAILABLE) {
+      document.getElementById("enigmail_showPhoto").removeAttribute("disabled");
+    }
+    else {
+      document.getElementById("enigmail_showPhoto").setAttribute("disabled", "true");
+    }
+  }
+  else {
+
+  }
+}
+
 function enigMsgHdrViewLoad(event)
 {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigMsgHdrViewLoad\n");
@@ -295,6 +362,53 @@ function enigMessageUnload() {
 function enigHdrViewUnload() {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigHdrViewUnLoad\n");
   enigForgetEncryptedURI();
+}
+
+function enigCopyStatusInfo() {
+
+  if (gEnigSecurityInfo) {
+    var clipHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].createInstance(Components.interfaces.nsIClipboardHelper);
+    clipHelper.copyString(gEnigSecurityInfo.fullStatusInfo);
+  }
+
+}
+
+function enigShowPhoto() {
+
+  if (! gEnigSecurityInfo)
+    return
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (enigmailSvc) {
+    var exitCodeObj = new Object();
+    var errorMsgObj = new Object();
+    var photoPath = enigmailSvc.showKeyPhoto("0x"+gEnigSecurityInfo.keyId, exitCodeObj, errorMsgObj);
+    if (photoPath && exitCodeObj.value==0) {
+      var photoFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+      photoFile.initWithPath(photoPath);
+      if (! (photoFile.isFile() && photoFile.isReadable())) {
+        EnigAlert("Photo path '"+photoPath+"' is not readable");
+      }
+      else {
+        var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+        var photoUri = ioServ.newFileURI(photoFile).spec;
+        var argsObj = {
+          photoUri: photoUri,
+          userId: gEnigSecurityInfo.userId,
+          keyId: gEnigSecurityInfo.keyId
+        };
+        window.openDialog("chrome://enigmail/content/enigmailDispPhoto.xul",photoUri, "chrome,modal=1,resizable=1,dialog=1,centerscreen", argsObj);
+        try {
+          // delete the photo file
+          photoFile.remove(false);
+        }
+        catch (ex) {}
+     }
+    }
+    else {
+      EnigAlert("No Photo available");
+    }
+  }
 }
 
 function enigForgetEncryptedURI()
@@ -484,4 +598,3 @@ EnigMimeHeaderSink.prototype =
   }
 
 };
-
