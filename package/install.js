@@ -2,9 +2,9 @@
 
 var err;
 
-err = initInstall("Enigmail v0.39.2",  // name for install UI
+err = initInstall("Enigmail v0.39.3",  // name for install UI
                   "/enigmail",         // registered name
-                  "0.39.2.0");         // package version
+                  "0.39.3.0");         // package version
 
 logComment("initInstall: " + err);
 
@@ -28,11 +28,15 @@ if (err != SUCCESS)
 // Register chrome
 registerChrome(PACKAGE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "content/enigmail/");
 
-registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "locale/en-US/enigmail/");
-
 registerChrome(   SKIN | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "skin/modern/enigmail/");
 
 registerChrome(   SKIN | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "skin/classic/enigmail/");
+
+registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "locale/en-US/enigmail/");
+
+registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "locale/de-DE/enigmail/");
+
+registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail.jar"), "locale/de-AT/enigmail/");
 
 if (getLastError() == SUCCESS)
     performInstall();
