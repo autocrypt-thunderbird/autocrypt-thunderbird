@@ -1684,6 +1684,11 @@ function (parent, uiFlags, cipherText,
   var tail = cipherText.substr(endIndexObj.value+1,
                                cipherText.length - endIndexObj.value - 1);
 
+  if (!publicKey && (uiFlags & nsIEnigmail.IMPORT_PUBLIC_KEY)) {
+    errorMsgObj.value = "Error - No public key block found in message";
+    return "";
+  }
+
   if (publicKey) {
     if (!allowImport) {
       errorMsgObj.value = "Click Decrypt button to import public key block in message";

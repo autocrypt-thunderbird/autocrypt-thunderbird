@@ -27,6 +27,11 @@
              accesskey="&enigmail.decryptverify.accesskey;"
              oncommand="enigMessageDecrypt();" />
 
+        <menuitem id="enigmail_importpublickey"
+             label="&enigmail.importpublickey.label;"
+             accesskey="&enigmail.importpublickey.accesskey;"
+             oncommand="enigMessageImport();" />
+
         <menuitem id="enigmail_savedecrypted"
              label="&enigmail.savedecrypted.label;"
              accesskey="&enigmail.savedecrypted.accesskey;"
