@@ -208,7 +208,10 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
             nsIEnigmail.DECRYPTION_INCOMPLETE |
             nsIEnigmail.DECRYPTION_FAILED));
 
-  if ((exitCode == 0 ||
+  if (((!(statusFlags & (nsIEnigmail.DECRYPTION_INCOMPLETE |
+            nsIEnigmail.DECRYPTION_FAILED |
+            nsIEnigmail.UNVERIFIED_SIGNATURE |
+            nsIEnigmail.BAD_SIGNATURE))) ||
        (statusFlags & nsIEnigmail.DISPLAY_MESSAGE)) &&
         !(statusFlags & (nsIEnigmail.UNVERIFIED_SIGNATURE |
           nsIEnigmail.IMPORTED_KEY))) {
