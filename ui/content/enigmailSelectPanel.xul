@@ -29,10 +29,10 @@
 
   <box id="actionBox" class="action-box" orient="horizontal"
        copyPath="" exportPath="" persist="copyPath exportPath">
-    <button label="Select Enigmail Panel"
+    <button label="&enigmail.selectpanel.label;"
             class="dialog"
             tooltip="aTooltip"
-            tooltiptext="Select Enigmail Panel"
+            tooltiptext="&enigmail.selectpanel.tooltip;"
             oncommand="SelectPanel();"/>
 
   </box>
