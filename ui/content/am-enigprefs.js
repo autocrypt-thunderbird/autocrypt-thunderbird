@@ -38,7 +38,8 @@ var gPgpKeyMode;
 var gPgpkeyId;
 var gEnigPrefbranch;
 var gEncryptionChoicesEnabled;
-var gPgpSigningPolicy;
+var gPgpSignPlainPolicy;
+var gPgpSignEncPolicy;
 var gEncryptionPolicy;
 
 var gAccount;
@@ -69,35 +70,14 @@ function onInit()
   gPgpKeyMode.selectedItem = document.getElementById(selectedItemId);
   gPgpkeyId = document.getElementById("identity.pgpkeyId");
   gPgpkeyId.value = gIdentity.getCharAttribute("pgpkeyId");
-  gPgpSigningPolicy = document.getElementById("defaultSignPolicy");
-  var signingPolicy = EnigGetSignMsg(gIdentity);
-  switch(signingPolicy) {
-    case 2:
-      selectedItemId = 'pgpAlwaysSign';
-      break;
-    case 1:
-      selectedItemId = 'sign_ifEncrypted';
-      break;
-    default:
-      selectedItemId = 'dontSign';
-      break;
-  }
-  gPgpSigningPolicy.selectedItem = document.getElementById(selectedItemId);
+  EnigGetSignMsg(gIdentity);
+  gPgpSignEncPolicy = document.getElementById("sign_encrypted");
+  gPgpSignEncPolicy.checked = gIdentity.getBoolAttribute("pgpSignEncrypted");
+  gPgpSignPlainPolicy = document.getElementById("sign_notEncrypted");
+  gPgpSignPlainPolicy.checked = gIdentity.getBoolAttribute("pgpSignPlain");
 
-  gEncryptionPolicy = document.getElementById("defaultEncryptionPolicy");
-  var encryptionPolicy = gIdentity.getIntAttribute("defaultEncryptionPolicy");
-
-  switch (encryptionPolicy)
-  {
-    case 1:
-      selectedItemId = 'encrypt_ifPossible';
-      break;
-    default:
-      selectedItemId = 'encrypt_never';
-      break;
-  }
-
-  gEncryptionPolicy.selectedItem = document.getElementById(selectedItemId);
+  gEncryptionPolicy = document.getElementById("encrypt_ifPossible");
+  gEncryptionPolicy.checked = (gIdentity.getIntAttribute("defaultEncryptionPolicy")>0);
 
   // Disable all locked elements on the panel
   //onLockPreference();
@@ -118,8 +98,9 @@ function onSave()
     // PGP is enabled
     gIdentity.setIntAttribute("pgpKeyMode", gPgpKeyMode.selectedItem.value);
     gIdentity.setCharAttribute("pgpkeyId", gPgpkeyId.value);
-    gIdentity.setIntAttribute("pgpSignMsg", gPgpSigningPolicy.selectedItem.value);
-    gIdentity.setIntAttribute("defaultEncryptionPolicy", gEncryptionPolicy.selectedItem.value)
+    gIdentity.setBoolAttribute("pgpSignEncrypted", gPgpSignEncPolicy.checked);
+    gIdentity.setBoolAttribute("pgpSignPlain", gPgpSignPlainPolicy.checked);
+    gIdentity.setIntAttribute("defaultEncryptionPolicy", (gEncryptionPolicy.checked ? 1 : 0));
   }
 }
 
@@ -148,13 +129,9 @@ function enigEnableAllPrefs()
   var allItems = ["pgpKeyMode",
                   "keymode_useFromAddress",
                   "keymode_usePgpkeyId",
-                  "defaultEncryptionPolicy",
-                  "encrypt_never",
                   "encrypt_ifPossible",
-                  "defaultSignPolicy",
-                  "dontSign",
-                  "sign_ifEncrypted",
-                  "pgpAlwaysSign",
+                  "sign_encrypted",
+                  "sign_notEncrypted",
                   "enigmailPrefs"];
 
   var enable = gEncryptionChoicesEnabled;

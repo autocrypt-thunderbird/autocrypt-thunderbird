@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
 <!--
-
 The contents of this file are subject to the Mozilla Public
 License Version 1.1 (the "MPL"); you may not use this file
 except in compliance with the MPL. You may obtain a copy of
@@ -80,30 +79,18 @@ GPL.
       </radiogroup>
 
       <groupbox>
-        <caption label="&enigmail.amPrefEncryptOptions.label;"/>
-        <radiogroup id="defaultEncryptionPolicy"
-             value="0">
-          <radio id="encrypt_never" label="&enigmail.defaultEncryptionNone.label;"
-                 selected="true" value="0"/>
-          <radio id="encrypt_ifPossible" value="1"
-                label="&enigmail.defaultEncryptionOnly.label;"/>
-        </radiogroup>
-      </groupbox>
+        <caption label="Message Composition Default Options"/>
+        <checkbox id="sign_notEncrypted"
+                 checked="false"
+                 label="&enigmail.defaultSignPlainMsg.label;"/>
+        <checkbox id="sign_encrypted"
+                 checked="false"
+                 label="&enigmail.defaultEncryptionSign.label;"/>
 
-      <groupbox>
-        <caption label="&enigmail.amPrefSignOptions.label;"/>
-        <radiogroup id="defaultSignPolicy"
-             value="0">
-          <radio id="dontSign"
-                 value="0"
-                 label="&enigmail.defaultNotSignedsend.label;"/>
-          <radio id="pgpAlwaysSign"
-                 value="2"
-                 label="&enigmail.defaultSignMsg.label;"/>
-          <radio id="sign_ifEncrypted"
-                 value="1"
-                 label="&enigmail.signIfEncrypted.label;"/>
-        </radiogroup>
+        <separator/>
+
+        <checkbox id="encrypt_ifPossible" checked="false"
+                label="&enigmail.defaultEncryption.label;"/>
       </groupbox>
 
       <hbox autostretch="never">
