@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+
+<!--
+
+The contents of this file are subject to the Mozilla Public
+License Version 1.1 (the "MPL"); you may not use this file
+except in compliance with the MPL. You may obtain a copy of
+the MPL at http://www.mozilla.org/MPL/
+
+Software distributed under the MPL is distributed on an "AS
+IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+implied. See the MPL for the specific language governing
+rights and limitations under the MPL.
+
+The Original Code is Enigmail.
+
+The Initial Developer of the Original Code is Patrick Brunschwig.
+Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+are Copyright (C) 2003 Patrick Brunschwig.
+All Rights Reserved.
+
+Contributors:
+
+Alternatively, the contents of this file may be used under the
+terms of the GNU General Public License (the "GPL"), in which case
+the provisions of the GPL are applicable instead of
+those above. If you wish to allow use of your version of this
+file only under the terms of the GPL and not to allow
+others to use your version of this file under the MPL, indicate
+your decision by deleting the provisions above and replace them
+with the notice and other provisions required by the GPL.
+If you do not delete the provisions above, a recipient
+may use your version of this file under either the MPL or the
+GPL.
+
+-->
+
+<?xml-stylesheet href="chrome://messenger/skin/accountManage.css" type="text/css"?>
+
+<!DOCTYPE page SYSTEM "chrome://enigmail/locale/enigmail.dtd">
+
+<page xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+      class="color-dialog"
+      onload="parent.onPanelLoaded('am-enigprefs.xul');"
+      orient="vertical">
+
+  <script type="application/x-javascript" src="chrome://messenger/content/AccountManager.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/am-enigprefs.js"/>
+
+  <dialogheader title="&enigmail.amPrefTitle.label;"/>
+
+  <description>&enigmail.amPrefDesc.label;</description>
+
+  <checkbox id="enablePgp"
+            prefstring="mail.identity.%identitykey%.enablePgp"
+            preftype="bool" prefattribute="value"
+            label="&enigmail.amPrefEnablePgp.label;"
+            onclick="enigToggleEnable();"/>
+  <vbox>
+    <groupbox id="encryption.titleBox">
+      <radiogroup id="pgpKeyMode">
+        <radio id="keymode_useFromAddress"
+               label="&enigmail.amPrefUseFromAddr.label;"
+               value="0"
+               onclick="enigEnableKeySel(false);"/>
+        <vbox>
+          <radio id="keymode_usePgpkeyId"
+                 label="&enigmail.amPrefUseKeyId.label;"
+                 value="1"
+                 onclick="enigEnableKeySel(true);"/>
+          <hbox>
+            <textbox id="identity.pgpkeyId"
+                     prefstring="mail.identity.%identitykey%.pgpkeyId"
+                     preftype="wstring" prefattribute="value"/>
+            <button id="selectPgpKey" label="&enigmail.amPrefSelectKey.label;"
+                    collapsed="true"/>
+          </hbox>
+        </vbox>
+      </radiogroup>
+      <separator/>
+      <checkbox id="pgpAlwaysSign"
+                prefstring="mail.identity.%identitykey%.pgpAlwaysSign"
+                preftype="bool" prefattribute="value"
+                label="&enigmail.amPrefSignDefault.label;"/>
+      <groupbox>
+        <caption label="&enigmail.amPrefEncryptOptions.label;"/>
+        <radiogroup id="defaultEncryptionPolicy" value="0">
+          <radio id="encrypt_never" label="&enigmail.defaultEncryptionNone.label;"
+                 selected="true" value="0"/>
+          <radio id="encrypt_ifPossible" value="1"
+                 label="&enigmail.defaultEncryptionOnly.label;"/>
+        </radiogroup>
+      </groupbox>
+      <hbox autostretch="never">
+        <spacer flex="1"/>
+        <button class="dialog"
+                id="enigmailPrefs"
+                label="&enigmail.advancedPrefsButton.label; ..."
+                oncommand="EnigPrefWindow()"/>
+      </hbox>
+    </groupbox>
+  </vbox>
+</page>
