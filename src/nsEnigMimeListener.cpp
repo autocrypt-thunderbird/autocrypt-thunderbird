@@ -116,7 +116,7 @@ nsEnigMimeListener::nsEnigMimeListener()
     mListener(nsnull),
     mContext(nsnull)
 {
-    NS_INIT_REFCNT();
+    NS_INIT_ISUPPORTS();
 
 #ifdef PR_LOGGING
   if (gEnigMimeListenerLog == nsnull) {

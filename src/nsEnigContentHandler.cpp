@@ -77,7 +77,7 @@ nsEnigContentHandler::nsEnigContentHandler()
 {
   nsresult rv;
 
-  NS_INIT_REFCNT();
+  NS_INIT_ISUPPORTS();
 
 #ifdef PR_LOGGING
   if (gEnigContentHandlerLog == nsnull) {

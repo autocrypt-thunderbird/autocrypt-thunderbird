@@ -160,7 +160,7 @@ nsEnigMsgCompose::nsEnigMsgCompose()
 {
   nsresult rv;
 
-  NS_INIT_REFCNT();
+  NS_INIT_ISUPPORTS();
 
 #ifdef PR_LOGGING
   if (gEnigMsgComposeLog == nsnull) {

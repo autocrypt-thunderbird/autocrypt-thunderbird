@@ -77,7 +77,7 @@ nsEnigMimeWriter::nsEnigMimeWriter()
 
     mByteCount(0)
 {
-    NS_INIT_REFCNT();
+    NS_INIT_ISUPPORTS();
 
 #ifdef PR_LOGGING
   if (gEnigMimeWriterLog == nsnull) {
