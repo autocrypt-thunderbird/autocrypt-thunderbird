@@ -93,9 +93,10 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
    if (gUseForSigning.checked) {
       var identityItem = gIdentityList.selectedItem;
       var email = identityItem.getAttribute("email");
-
-      EnigSetPref("userIdValue", email);
-      EnigSetPref("userIdFromAddr", false);
+      var curId = getCurrentIdentity();
+      curId.setBoolAttribute("enablePgp", true);
+      curId.setIntAttribute("pgpKeyMode", 1);
+      curId.setCharAttribute("pgpkeyId", email);
 
       enigmailKeygenUpdate(false, true);
 
@@ -165,7 +166,7 @@ function enigmailKeygenStart() {
       EnigAlert(EnigGetString("passCheckBox"));
       return;
    }
-   
+
    var commentElement = document.getElementById("keyComment");
    var comment = commentElement.value;
 
@@ -311,19 +312,20 @@ function fillIdentityListPopup()
     dump("id.valid="+identity.valid+"\n");
     if (!identity.valid || !identity.email)
       continue;
-  
+
     var serverSupports = gAccountManager.GetServersForIdentity(identity);
-  
+
     if (serverSupports.GetElementAt(0)) {
       var inServer = serverSupports.GetElementAt(0).QueryInterface(Components.interfaces.nsIMsgIncomingServer);
 
       var accountName = " - "+inServer.prettyName;
-  
+
       DEBUG_LOG("enigmailKeygen.js: accountName="+accountName+"\n");
       DEBUG_LOG("enigmailKeygen.js: email="+identity.email+"\n");
 
       var item = document.createElement('menuitem');
-      item.setAttribute('label', identity.identityName);
+//      item.setAttribute('label', identity.identityName);
+      item.setAttribute('label', identity.identityName + accountName);
       item.setAttribute('class', 'identity-popup-item');
       item.setAttribute('accountname', accountName);
       item.setAttribute('id', identity.key);
