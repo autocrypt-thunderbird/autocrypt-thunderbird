@@ -119,6 +119,9 @@ pref("extensions.enigmail.useGpgKeysTool",true);
 // show "conflicting rules" message (and remember selected state)
 pref("extensions.enigmail.warnOnRulesConflict",0);
 
+// display a warning when the passphrase is cleared
+pref("extensions.enigmail.warnClearPassphrase",true);
+
 // wrap HTML messages before sending inline PGP messages
 pref("extensions.enigmail.wrapHtmlBeforeSend",true);
 
