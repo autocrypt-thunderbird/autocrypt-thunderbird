@@ -233,13 +233,17 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
             nsIEnigmail.DECRYPTION_INCOMPLETE |
             nsIEnigmail.DECRYPTION_FAILED));
 
+  if (msgSigned && (statusFlags & nsIEnigmail.IMPORTED_KEY)) {
+    statusFlags &= (~nsIEnigmail.IMPORTED_KEY);
+  }
+  
   if (((!(statusFlags & (nsIEnigmail.DECRYPTION_INCOMPLETE |
             nsIEnigmail.DECRYPTION_FAILED |
             nsIEnigmail.UNVERIFIED_SIGNATURE |
             nsIEnigmail.BAD_SIGNATURE))) ||
-       ((statusFlags & nsIEnigmail.DISPLAY_MESSAGE)) &&
-        !(statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) &&
-          !(statusFlags & nsIEnigmail.IMPORTED_KEY))) {
+       (statusFlags & nsIEnigmail.DISPLAY_MESSAGE) &&
+        !(statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE)) &&
+          !(statusFlags & nsIEnigmail.IMPORTED_KEY)) {
     // Normal exit / display message
     statusLine = errorMsg;
     statusInfo = statusLine;
@@ -266,8 +270,8 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
     fullStatusInfo = statusInfo;
 
   } else {
-      if (keyId) {
-        statusInfo = EnigGetString("keyNeeded",keyId);
+    if (keyId) {
+      statusInfo = EnigGetString("keyNeeded",keyId);
   
       if (statusFlags & nsIEnigmail.INLINE_KEY) {
         statusLine = statusInfo + EnigGetString("clickDecrypt");
@@ -313,6 +317,8 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
       statusInfo += "\n\n" + errorMsg;
   
     } else if (statusFlags & nsIEnigmail.IMPORTED_KEY) {
+      statusLine = "";
+      statusInfo = "";
       EnigAlert(errorMsg);
   
     } else {

@@ -1491,7 +1491,7 @@ function () {
     try {
       var pathDir = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
 
-      if (! isAbsolutePath(agentPath)) {
+      if (! isAbsolutePath(agentPath, this.isDosLike)) {
         // path relative to Mozilla installation dir
         var ds = Components.classes[DIR_SERV_CONTRACTID].getService();
         var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
@@ -2317,9 +2317,14 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
       if (signMsg)
         encryptCommand += " -s";
 
-      if (sendFlags & nsIEnigmail.SEND_ALWAYS_TRUST)
-        encryptCommand += " --always-trust";
-
+      if (sendFlags & nsIEnigmail.SEND_ALWAYS_TRUST) {
+        if (this.agentVersion >= "1.4") {
+          encryptCommand += " --trust-model always"
+        }
+        else {
+          encryptCommand += " --always-trust";
+        }
+      }
       if ((sendFlags & nsIEnigmail.SEND_ENCRYPT_TO_SELF) && fromMailAddr)
         encryptCommand += " --encrypt-to " + angledFromMailAddr;
 
@@ -2637,6 +2642,9 @@ function (parent, uiFlags, cipherText, signatureObj, exitCodeObj,
     var importFlags = nsIEnigmail.UI_INTERACTIVE;
     exitCodeObj.value = this.importKey(parent, importFlags, pgpBlock, "",
                                        errorMsgObj);
+    if (exitCodeObj.value == 0) {
+      statusFlagsObj.value |= nsIEnigmail.IMPORTED_KEY;
+    }
     return "";
   }
 
