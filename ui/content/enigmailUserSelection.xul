@@ -37,21 +37,25 @@
       onclick="enigmailUserSelCallback(event);">
 
       <treecols>
-        <treecol id="selectionCol" style="width:25px"
+        <treecol id="selectionCol" style="width:19px"
                  label="&enigmail.keySelection.label;"
+                 class="treecol-image"
+                 src="chrome://enigmail/content/check1.png"
+                 ignoreincolumnpicker="true"
                  persist="width"/>
         <splitter class="tree-splitter"/>
         <treecol id="enigUserNameCol" primary="true"
-            flex="1"
-            label="&enigmail.keyUserId.label;"/>
+                 flex="1"
+                 ignoreincolumnpicker="true"
+                 label="&enigmail.keyUserId.label;"/>
         <splitter class="tree-splitter"/>
         <treecol id="expCol" style="width:70px"
                  label="&enigmail.keyExpiry.label;"
-                 persist="width"/>
+                 persist="width,hidden"/>
         <splitter class="tree-splitter"/>
         <treecol id="keyCol" style="width:90px"
                  label="&enigmail.keyId.label;"
-                 persist="width"/>
+                 persist="width,hidden"/>
       </treecols>
 
       <treechildren id="enigmailUserIdSelectionChildren"
