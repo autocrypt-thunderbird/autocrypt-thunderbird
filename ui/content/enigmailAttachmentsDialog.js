@@ -47,6 +47,13 @@ function enigmailAttachDlgLoad() {
    dialog.setAttribute("title", EnigGetString("enigPrompt"));
 
    var optionSel=document.getElementById("enigmailAttachOptions");
+   descNotFound=document.getElementById("enigPgpMimeDetails");
+   if (gArguments[ENIG_INPUT].inlinePossible) {
+     descNotFound.firstChild.data = EnigGetString("pgpMimeNote", EnigGetString("second"));
+   }
+   else {
+     descNotFound.firstChild.data = EnigGetString("pgpMimeNote", EnigGetString("first"));
+   }
 
    var selected=EnigGetPref("encryptAttachments");
 

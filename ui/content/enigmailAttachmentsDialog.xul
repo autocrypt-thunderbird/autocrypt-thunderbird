@@ -37,6 +37,6 @@
 
   <spacer flex="1"/>
   <groupbox>
-    <description id="enigPgpMimeDetails" maxwidth="500px">&enigmail.enigPgpMimeDetails.label;</description>
+    <description id="enigPgpMimeDetails" maxwidth="500px">...</description>
   </groupbox>
 </dialog>
