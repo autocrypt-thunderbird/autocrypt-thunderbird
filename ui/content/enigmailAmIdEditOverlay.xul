@@ -60,7 +60,7 @@
 ]]>
   </script>
 
-  <tabs id="identitySettings" onselect="enigTabSelect(event)">
+  <tabs id="identitySettings">
     <tab label="&enigmail.openPgpSecurity.label;" id="enigmailSecurity"/>
   </tabs>
   

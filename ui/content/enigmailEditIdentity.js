@@ -109,8 +109,14 @@ function enigOnInit()
 }
 
 function enigOnLoadEditor() {
-  gEnigAccount  = gAccount;
-  gEnigIdentity = gIdentity;
+  if (typeof(gAccount) == "object") {
+    gEnigAccount  = gAccount;
+    gEnigIdentity = gIdentity;
+  }
+  else {
+    gEnigIdentity = window.arguments[0].identity;
+    gEnigAccount = window.arguments[0].account;
+  }
   
   if (gEnigIdentity) {
     var idLabel = EnigGetString("identityName", gEnigIdentity.identityName);
@@ -124,9 +130,12 @@ function enigOnLoadEditor() {
 }
 
 function enigOnAcceptEditor() {
-  if (onOk()==false) {
-    return false;
+  try {
+    if (onOk()==false) {
+      return false;
+    }
   }
+  catch (ex) {}
   enigOnSave();
 }
 

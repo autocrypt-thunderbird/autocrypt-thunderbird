@@ -47,12 +47,12 @@ GPL.
 <dialog id="enigmailEditPgpSettings"
         title="&enigmail.amPrefTitle.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        onload="onLoadEditor();"
-        ondialogaccept="onAcceptEditor();"
+        onload="enigOnLoadEditor();"
+        ondialogaccept="enigOnAcceptEditor();"
         >
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/am-enigprefs.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailEditIdentity.js"/>
 
   <broadcasterset>
     <broadcaster id="bcEnablePgp" disabled="false"/>
