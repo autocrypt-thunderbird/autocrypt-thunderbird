@@ -160,6 +160,11 @@ function enigmailKeygenStart() {
       return;
    }
 
+   if (passphrase.search(/[\x80-\xFF]/)>=0) {
+      EnigAlert(EnigGetString("passCharProblem"));
+      return;
+   }
+   
    var noPassphraseElement = document.getElementById("noPassphrase");
 
    if (!passphrase && !noPassphraseElement.checked) {
