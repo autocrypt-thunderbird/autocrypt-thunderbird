@@ -340,6 +340,11 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
 
     if (!readCount) break;
 
+    if (readCount < kCharMax) {
+      // make sure we can continue to write later
+      if (buf[readCount-1]==0) --readCount;
+    }
+
     PR_SetError(0,0);
     int status = mOutputFun(buf, readCount, mOutputClosure);
     if (status < 0) {
@@ -352,6 +357,16 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
 
     mOutputLen += readCount;
   }
+
+  // add final \n to make sure last line is always displayed (bug 5952)
+  buf[0]='\n';
+  PR_SetError(0,0);
+  int status = mOutputFun(buf, 1, mOutputClosure);
+  if (status >= 0) {
+    // ignore any errors here
+    mOutputLen++;
+  }
+  PR_SetError(0,0);
 
   // Close input stream
   plainStream->Close();
