@@ -21,8 +21,8 @@ var gEnigTest = true;
 function enigStartup() {
   dump("enigmailOverlay.js: enigStartup:\n");
   var contentArea = document.getElementById("appcontent");
-  contentArea.addEventListener("load",   enigDocLoadHandler,   true);
-  //contentArea.addEventListener("unload", enigDocUnloadHandler, true);
+  //contentArea.addEventListener("load",   enigDocLoadHandler, true);
+  contentArea.addEventListener("unload", enigDocUnloadHandler, true);
 
   gEnigCurrentSite = null;
   gEnigCurrentHandlerNavButton1 = enigConfigWindow;
@@ -45,20 +45,6 @@ function enigHandlerNavButton1()
 
 function enigDocLoadHandler(event) {
   dump("enigmailOverlay.js: enigDocLoadHandler:\n");
-
-  // Handle events for content document only
-  if (event.target != _content.document)
-      return;
-
-  var frames = _content.frames;
-
-  dump("enigmailOverlay.js: enigDocLoadHandler: frames = "+frames.length+"\n");
-
-  for (var j=0; j<frames.length; j++) {
-    dump("frame "+j+" = "+frames[j].name+"\n");
-    frames[j].addEventListener("load",   enigFrameLoadHandler,   false);
-    //frames[j].addEventListener("unload", enigFrameUnloadHandler, false);
-  }
 
   enigUpdateUI(_content.location);
 }
@@ -148,12 +134,15 @@ function enigSignClearText(plainText) {
 
 function enigGetPassPhrase() {
   var passwdObj = new Object();
+  var checkObj = new Object();
 
+  passwdObj.value = "";
+  checkObj.value = true;
   var success = window.prompter.promptPassword("Enigmail",
                                "Please type in your GPG passphrase",
-                               "",
-                               0,
-                               passwdObj);
+                               passwdObj,
+                               "Check msg",
+                               checkObj);
   if (!success)
     return "";
 
@@ -275,15 +264,15 @@ function enigYahooUpdateUI() {
 
   if (pathname.search(/ShowLetter$/) != -1) {
     gEnigCurrentHandlerNavButton1 = enigYahooShowLetter;
-    gEnigNavButton1.value = "Decrypt/Verify";
+    gEnigNavButton1.label = "Decrypt/Verify";
 
   } else if (pathname.search(/Compose$/) != -1) {
     gEnigCurrentHandlerNavButton1 = enigYahooCompose;
-    gEnigNavButton1.value = "Sign & Encrypt";
+    gEnigNavButton1.label = "Sign & Encrypt";
 
   } else {
     gEnigCurrentHandlerNavButton1 = enigConfigWindow;
-    gEnigNavButton1.value = "Enigmail";
+    gEnigNavButton1.label = "Enigmail";
   }
 }
 
@@ -363,15 +352,15 @@ function enigHotmailUpdateUI() {
 
   if (pathname.search(/getmsg$/) != -1) {
     gEnigCurrentHandlerNavButton1 = enigHotmailShowLetter;
-    gEnigNavButton1.value = "EnigShow";
+    gEnigNavButton1.label = "EnigShow";
 
   } else if (pathname.search(/compose$/) != -1) {
     gEnigCurrentHandlerNavButton1 = enigHotmailCompose;
-    gEnigNavButton1.value = "EnigCompose";
+    gEnigNavButton1.label = "EnigCompose";
 
   } else {
     gEnigCurrentHandlerNavButton1 = null;
-    gEnigNavButton1.value = "EnigMoz";
+    gEnigNavButton1.label = "EnigMoz";
   }
 }
 

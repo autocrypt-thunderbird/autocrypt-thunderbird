@@ -13,7 +13,7 @@
   <toolbar id="nav-bar">
     <box id="enig-nav-box" autostretch="never">
       <button id="enig-nav-button1"
-              value="Enigmail"
+              label="Enigmail"
               oncommand="enigHandlerNavButton1();"
               tooltip="aTooltip" tooltiptext="enigNavButton1"/>
     </box>
