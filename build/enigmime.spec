@@ -1,7 +1,7 @@
 Name:      mozilla-enigmime
 Version:   0.66.0
 Release:   1
-Requires:  mozilla = 1.0.0, mozilla-mail = 1.0.0, mozilla-psm = 1.0.0
+Requires:  mozilla = 1.0.1, mozilla-mail = 1.0.1, mozilla-psm = 1.0.1
 Summary:   MIME and Inter-Process Communication for Enigmail/Mozilla
 Copyright: Mozilla Public License 1.1/GPL
 Group:     Applications/Internet
@@ -32,9 +32,9 @@ chmod -R a+rX,g-w,o-w .
 
 %install
 cd ${RPM_PACKAGE_NAME}-${RPM_PACKAGE_VERSION}
-install -m 755 components/ipc.xpt   /usr/lib/mozilla-1.0.0/components
-install -m 755 components/enigmime.xpt   /usr/lib/mozilla-1.0.0/components
-install -m 755 components/libenigmime.so /usr/lib/mozilla-1.0.0/components
+install -m 755 components/ipc.xpt   /usr/lib/mozilla-1.0.1/components
+install -m 755 components/enigmime.xpt   /usr/lib/mozilla-1.0.1/components
+install -m 755 components/libenigmime.so /usr/lib/mozilla-1.0.1/components
 
 %pre
 
@@ -43,8 +43,8 @@ install -m 755 components/libenigmime.so /usr/lib/mozilla-1.0.0/components
 # run ldconfig before regxpcom
 /sbin/ldconfig >/dev/null 2>/dev/null
 
-if [ -f /usr/lib/mozilla-1.0.0/mozilla-rebuild-databases.pl ]; then
-    /usr/lib/mozilla-1.0.0/mozilla-rebuild-databases.pl
+if [ -f /usr/lib/mozilla-1.0.1/mozilla-rebuild-databases.pl ]; then
+    /usr/lib/mozilla-1.0.1/mozilla-rebuild-databases.pl
 fi
 
 %postun
@@ -52,14 +52,14 @@ fi
 # run ldconfig before regxpcom
 /sbin/ldconfig >/dev/null 2>/dev/null
 
-if [ -f /usr/lib/mozilla-1.0.0/mozilla-rebuild-databases.pl ]; then
-    /usr/lib/mozilla-1.0.0/mozilla-rebuild-databases.pl
+if [ -f /usr/lib/mozilla-1.0.1/mozilla-rebuild-databases.pl ]; then
+    /usr/lib/mozilla-1.0.1/mozilla-rebuild-databases.pl
 fi
 
 %files
 
-/usr/lib/mozilla-1.0.0/components/ipc.xpt
-/usr/lib/mozilla-1.0.0/components/libenigmime.so
-/usr/lib/mozilla-1.0.0/components/enigmime.xpt
+/usr/lib/mozilla-1.0.1/components/ipc.xpt
+/usr/lib/mozilla-1.0.1/components/libenigmime.so
+/usr/lib/mozilla-1.0.1/components/enigmime.xpt
 
 %changelog
