@@ -76,7 +76,7 @@ const nsIPGPMsgHeader        = Components.interfaces.nsIPGPMsgHeader;
 ///////////////////////////////////////////////////////////////////////////////
 // Global variables
 
-var gLogLevel = 5;         // Output only errors/warnings by default
+var gLogLevel = 3;         // Output only errors/warnings by default
 var gLogFileStream = null;
 
 var gEnigmailSvc = null;   // Global Enigmail Service
@@ -150,6 +150,10 @@ function CONSOLE_LOG(str) {
   if (gEnigmailSvc && gEnigmailSvc.console)
     gEnigmailSvc.console.write(str);
 }
+
+// Uncomment following two lines for debugging (use full path name on Win32)
+///if (gLogLevel >= 4)
+///  gLogFileStream = CreateFileStream("c:\\enigdbg1.txt");
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -665,9 +669,6 @@ function Enigmail(registeringModule)
   DEBUG_LOG("enigmail.js: Enigmail: END\n");
 }
 
-if (gLogLevel >= 4)
-  gLogFileStream = CreateFileStream("enigdbg1.txt");
-
 Enigmail.prototype.registeringModule = false;
 Enigmail.prototype.initialized = false;
 
@@ -730,6 +731,7 @@ function () {
   // Resolve relative path using PATH environment variable
   var envPath = GetEnv("PATH");
 
+  var j;
   for (j=0; j<agentList.length; j++) {
     agentType = agentList[j];
     var agentName = this.unix ? agentType : agentType+".exe";
@@ -739,15 +741,37 @@ function () {
       break;
   }
 
+  if (!agentPath && (this.platform.search(/Win/i) == 0)) {
+    // Win32: search for GPG in c:\gnupg and c:\gnupg\bin
+    agentType = "gpg";
+    agentPath = ResolvePath("gpg.exe", "c:\\gnupg;c:\\gnupg\\bin", this.unix);
+  }
+
   if (!agentPath) {
     ERROR_LOG("enigmail.js: Enigmail: Error - Unable to locate GPG or PGP executable\n");
     throw Components.results.NS_ERROR_FAILURE;
   }
 
-  WRITE_LOG("Enigmail.startup: agentPath="+agentPath+"\n");
+  // Escape backslashes in agent path
+  agentPath = agentPath.replace(/\\/g, "\\\\");
+
+  CONSOLE_LOG("EnigmailAgentPath="+agentPath+"\n");
 
   this.agentType = agentType;
   this.agentPath = agentPath;
+
+  var command = agentPath;
+  if (agentType == "gpg") {
+     command += " --batch --no-tty --version";
+  } else {
+     command += " -v";
+  }
+
+  CONSOLE_LOG("enigmail> "+command+"\n");
+
+  var version = this.ipcService.exec(command);
+
+  CONSOLE_LOG(version+"\n");
 
   this.initialized = true;
 
@@ -787,7 +811,7 @@ function (command, input, errMessagesObj, statusObj, exitCodeObj) {
   var outLenObj = new Object();
   var errLenObj = new Object();
 
-  CONSOLE_LOG(command+"\n");
+  CONSOLE_LOG("\nenigmail> "+command+"\n");
   
   exitCodeObj.value = gEnigmailSvc.ipcService.execPipe(command,
                                                        input, input.length,
@@ -846,10 +870,11 @@ function (plainText, toMailAddr, passphrase, statusCodeObj, statusMsgObj) {
     return "";
   }
 
-  var encryptCommand, recipientPrefix;
+  var recipientPrefix;
+  var encryptCommand = this.agentPath;
 
   if (this.agentType == "pgp") {
-    encryptCommand  = "pgp +batchmode +force -fat "
+    encryptCommand += " +batchmode +force -fat "
     recipientPrefix = " ";
 
     if (gEnigmailSvc.signMsg)
@@ -859,7 +884,7 @@ function (plainText, toMailAddr, passphrase, statusCodeObj, statusMsgObj) {
       encryptCommand += " -e";
 
   } else {
-    encryptCommand  = "gpg --batch --no-tty --passphrase-fd 0 --status-fd 2";
+    encryptCommand += " --batch --no-tty --passphrase-fd 0 --status-fd 2";
     recipientPrefix = " --recipient ";
 
     if (gEnigmailSvc.encryptMsg) {
@@ -899,6 +924,8 @@ function (plainText, toMailAddr, passphrase, statusCodeObj, statusMsgObj) {
                                   passphrase+"\n"+plainText,
                                   errMessagesObj, statusObj, statusCodeObj);
 
+  DEBUG_LOG("enigmail.js: Enigmail.encryptMessage: errMessages: "+errMessagesObj.value+"\n");
+
   if (statusCodeObj.value != 0) {
     // "Unremember" passphrase on error exit
     this.haveDefaultPassphrase = false;
@@ -926,13 +953,13 @@ function (cipherText, passphrase, statusCodeObj, statusMsgObj) {
     return "";
   }
 
-  var decryptCommand;
+  var decryptCommand = this.agentPath;
 
   if (this.agentType == "pgp") {
-    decryptCommand = "pgp +batchmode +force -ft";
+    decryptCommand += " +batchmode +force -ft";
 
   } else {
-    decryptCommand = "gpg --batch --no-tty --passphrase-fd 0 --status-fd 2 --decrypt";
+    decryptCommand += " --batch --no-tty --passphrase-fd 0 --status-fd 2 --decrypt";
   }
 
   if (passphrase == null) {
@@ -991,15 +1018,15 @@ function (email, secret, statusCodeObj, statusMsgObj) {
 
   var email_addr = "<"+email+">";
 
-  var command;
+  var command = this.agentPath;
 
   if (this.agentType == "pgp") {
-    command = "pgp +batchmode -kvc "+email_addr;
+    command += " +batchmode -kvc "+email_addr;
     if (secret)
       command += " secring.pkr";
 
   } else {
-    command = "gpg --batch --no-tty --fingerprint ";
+    command += " --batch --no-tty --fingerprint ";
     command += secret ? " --list-secret-keys" : " --list-keys";
     command += " "+email_addr;
   }
@@ -1052,7 +1079,7 @@ function (name, comment, email, expiryDate, passphrase, pipeConsole) {
   if (this.keygenProcess || (this.agentType != "gpg"))
     throw Components.results.NS_ERROR_FAILURE;
 
-  var  command = "gpg --batch --no-tty --gen-key"
+  var  command = this.agentPath+" --batch --no-tty --gen-key"
 
   var inputData =
 "%echo Generating a standard key\nKey-Type: DSA\nKey-Length: 1024\nSubkey-Type: ELG-E\nSubkey-Length: 1024\n";

@@ -122,8 +122,6 @@ function enigSend() {
     cipherText = EnigEncryptMessage(plainText, toAddr,
                                     statusCodeObj, statusMsgObj);
 
-    WriteFileContents("cipher.txt", cipherText, null);
-
     var statusCode = statusCodeObj.value;
     var statusMsg  = statusMsgObj.value;
 

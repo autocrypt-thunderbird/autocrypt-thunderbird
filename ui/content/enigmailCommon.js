@@ -4,7 +4,7 @@ const NS_IPCSERVICE_CONTRACTID = "@mozilla.org/process/ipc-service;1";
 const NS_ENIGMAIL_CONTRACTID   = "@mozdev.org/enigmail/enigmail;1";
 const ENIGMAIL_PREFS_ROOT      = "extensions.enigmail.";
 
-var gLogLevel = 5;     // Output only errors/warnings by default
+var gLogLevel = 3;     // Output only errors/warnings by default
 var gLogFileStream = null;
 
 var gEnigmailSvc;
@@ -157,8 +157,11 @@ function ERROR_LOG(str) {
     WRITE_LOG(str);
 }
 
-if (gLogLevel >= 4)
-  gLogFileStream = CreateFileStream("enigdbg2.txt");
+// Uncomment following two lines for debugging (use full path name on Win32)
+///if (gLogLevel >= 4)
+///  gLogFileStream = CreateFileStream("c:\\enigdbg2.txt");
+
+///////////////////////////////////////////////////////////////////////////////
 
 function EnigAlert(mesg) {
   return window.prompter.alert("Enigmail Alert", mesg);
