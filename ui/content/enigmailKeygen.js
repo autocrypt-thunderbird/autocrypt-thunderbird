@@ -181,7 +181,7 @@ function enigmailKeygenStart() {
    var userEmail = curId.email;
 
    if (!userName) {
-      EnigAlert("Please specify user name\n");
+      EnigAlert("Please specify user name for this identity\n");
       return;
    }
 

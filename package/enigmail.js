@@ -2966,7 +2966,7 @@ function (parent, name, comment, email, expiryDate, passphrase,
 
   var ipcRequest = null;
   try {
-    var useShell = this.isWin32;
+    var useShell = false;
     ipcRequest = gEnigmailSvc.ipcService.execAsync(command,
                                                    useShell,
                                                    "",
