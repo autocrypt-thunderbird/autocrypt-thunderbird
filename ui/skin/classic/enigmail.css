@@ -7,17 +7,17 @@
 #button-enigmail-decrypt
   {
     list-style-image      : url("chrome://enigmail/skin/enigmail-toolbar.png");
-    -moz-image-region: rect(0px 32px 32px 0px);
+    -moz-image-region: rect(0px 30px 30px 0px);
   }
 
-#button-enigmail-decrypt[buttonover]
+#button-enigmail-decrypt:hover
   {
-    -moz-image-region: rect(32px 31px 64px 0px);
+    -moz-image-region: rect(30px 30px 60px 0px);
   }
 
 #button-enigmail-decrypt[disabled]
   {
-    -moz-image-region: rect(64px 31px 96px 0px) !important;
+    -moz-image-region: rect(60px 30px 90px 0px) !important;
   }
 
 toolbar[iconsize="small"]  #button-enigmail-decrypt
@@ -26,7 +26,7 @@ toolbar[iconsize="small"]  #button-enigmail-decrypt
     list-style-image      : url("chrome://enigmail/skin/enigmail-toolbar-small.png");
   }
 
-toolbar[iconsize="small"] #button-enigmail-decrypt[buttonover]
+toolbar[iconsize="small"] #button-enigmail-decrypt:hover
   {
     -moz-image-region: rect(20px 20px 40px 0px);
   }
@@ -37,20 +37,16 @@ toolbar[iconsize="small"] #button-enigmail-decrypt[disabled]
   }
 
 #button-enigmail-send {
-   -moz-image-region: rect(0px 32px 32px 0px);
+   -moz-image-region: rect(0px 30px 30px 0px);
    list-style-image      : url("chrome://enigmail/skin/enigmail-settings.png");
 }
 
-#button-enigmail-send[buttonover] {
-  -moz-image-region: rect(32px 32px 64px 0px);
-}
-
-#button-enigmail-send[buttondown] {
-  -moz-image-region: rect(32px 32px 64px 0px);
+#button-enigmail-send:hover {
+  -moz-image-region: rect(30px 30px 60px 0px);
 }
 
 #button-enigmail-send[disabled] {
-  -moz-image-region: rect(64px 32px 96px 0px) !important;
+  -moz-image-region: rect(60px 30px 90px 0px) !important;
 }
 
 toolbar[iconsize="small"] #button-enigmail-send {
@@ -105,6 +101,11 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
 
 #enigmail-status-bar[signed="inactive"] #enigmail-signed-status {
   list-style-image: url("chrome://enigmail/skin/enigSignInactive.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[signed="ifencrypted"] #enigmail-signed-status {
+  list-style-image: url("chrome://enigmail/skin/enigSignIfEncrypted.png");
   visibility: visible;
 }
 
