@@ -127,7 +127,7 @@ function enigmailUninstall() {
 
   if (confirm) {
     var overlay1Removed = RemoveOverlay("communicator",
-                          ["chrome://enigmail/content/pref-enigmailOverlay.xul"]);
+                          ["chrome://enigmail/content/enigmailPrefsOverlay.xul"]);
 
     var overlay2Removed = RemoveOverlay("messenger",
                           ["chrome://enigmail/content/enigmailMsgComposeOverlay.xul",
@@ -144,11 +144,11 @@ function enigmailUninstall() {
     }
 
     var compDir = GetFileOfProperty("ComsD");
-    var compFiles = ["enigmail.js", "enigmail.xpt", "ipcserv.xpt"];
+    var compFiles = ["enigmail.js", "enigmail.xpt", "ipc.xpt"];
     if (gPlatform.search(/^win/i)==0) {
-      compFiles.push("ipcserv.dll");
+      compFiles.push("ipc.dll");
     } else {
-      compFiles.push("libipcserv.so");
+      compFiles.push("libipc.so");
     }
 
     for (var k=0; k<compFiles.length; k++) {
