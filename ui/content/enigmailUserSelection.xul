@@ -1,0 +1,61 @@
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?> 
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="enigmailUserSelectionList"
+        title="&enigmail.userSelectionList.label;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="enigmailUserSelLoad();"
+        ondialogaccept="enigmailUserSelAccept();"
+        minheight="450">
+
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <!-- script type="application/x-javascript" src="chrome://enigmail/content/enigmailUserSelection.js"/> -->
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailUserSelection.js"/>
+  <groupbox id="keygenConsoleBox" orient="vertical">
+     <caption label="&enigmail.usersNotFound.label;"/>
+     <description id="usersNotFoundDesc" width="700px">...</description>
+  </groupbox>
+
+  <!-- <separator/> -->
+  
+  <groupbox>
+    <caption label="&enigmail.usersSelectRecipients.label;"/>
+    
+    <tree  id="enigmailUserIdSelection" flex="1"
+      hidecolumnpicker="false"
+      style="height:350px"
+      onclick="enigmailUserSelCallback(event);">
+
+      <treecols>
+        <treecol id="selectionCol" style="width:25px" label="&enigmail.keySelection.label;"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="nameCol" primary="true"
+            flex="1"
+            label="&enigmail.keyUserId.label;"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="expCol" style="width:70px" label="&enigmail.keyExpiry.label;"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="keyCol" style="width:90px" label="&enigmail.keyId.label;"/>
+      </treecols>
+      
+      <treechildren id="enigmailUserIdSelectionChildren"/>
+
+    </tree>
+    
+
+  </groupbox>
+  
+  <checkbox id="enigmailUserSelPlainText"
+              label="&enigmail.userSelPlainText.label;"
+              accesskey="&enigmail.userSelPlainText.accesskey;"/>
+
+</dialog>
