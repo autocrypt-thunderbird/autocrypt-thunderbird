@@ -26,10 +26,11 @@
   </groupbox>
 
   <!-- <separator/> -->
-  
-  <groupbox>
-    <caption label="&enigmail.usersSelectRecipients.label;"/>
-    
+
+  <groupbox width="700px">
+    <caption id="dialogHeader"
+             label="..." collapsed="true"/>
+
     <tree  id="enigmailUserIdSelection" flex="1"
       hidecolumnpicker="false"
       style="height:350px"
