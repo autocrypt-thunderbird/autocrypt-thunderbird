@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# make-lang.sh v1.0.8
 # this script is used to create a language-specifi XPI for Enigmail
 
 # if you want to debug this script, set DEBUG to something >0
@@ -252,9 +253,10 @@ done
 if [ -d help ]; then
   cd help
 fi
+pwd
 
 for f in compose.html messenger.html rulesEditor.html editRcptRule.html ; do
-  cp ${f} ${HELPDIR} >/dev/null 2>&1
+  cp ${f} ${cwd}/${HELPDIR} 
 done
 
 cd ${cwd}/${ENIGLANG}
