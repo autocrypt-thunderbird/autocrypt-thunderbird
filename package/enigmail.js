@@ -1472,7 +1472,7 @@ function () {
   try {
     var  gpgVersion = this.agentVersion.match(/^\d+\.\d+/);
     if (this.prefBranch.getBoolPref("useGpgAgent")) {
-       command = " --use-agent ";
+       command = " --use-agent "
     }
     else {
       command = " --passphrase-fd 0";
