@@ -64,7 +64,7 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
   
     if (rulesList.firstChild.nodeName=="parsererror") {
       EnigAlert("Invalid enigmail.xml file:\n"+ rulesList.firstChild.textContent);
-      return 0;
+      return true;
     }
     DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys: keys loaded\n");
     var node=rulesList.firstChild.firstChild;
