@@ -1890,9 +1890,8 @@ function (parent, uiFlags, cipherText, signatureObj,
     return "";
   }
 
-  if (!interactive && !oldSignature &&
-      ((head.search(/\S/) >= 0) || (tail.search(/\S/) >= 0))) {
-    errorMsgObj.value = "Extra text surrounding PGP block. Click Decrypt button";
+  if (!interactive && !oldSignature && (head.search(/\S/) >= 0)) {
+    errorMsgObj.value = "Extra text preceding PGP block. Click Decrypt button";
     if (verifyOnly)
       errorMsgObj.value += " to verify signature";
 
