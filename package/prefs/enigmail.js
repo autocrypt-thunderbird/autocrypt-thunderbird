@@ -5,17 +5,24 @@
 // the last configured Enigmail version
 pref("extensions.enigmail.configuredVersion","");
 
+// additional parameter(s) to pass to GnuPG
+pref("extensions.enigmail.agentAdditionalParam","");
+
 // path to gpg executable
 pref("extensions.enigmail.agentPath","");
 
 // enable --always-trust for message sending
 pref("extensions.enigmail.alwaysTrustSend",true);
 
+// allow empty subject line without asking for confirmation
+pref("extensions.enigmail.allowEmptySubject",false);
+
 // not (yet) in use
 pref("extensions.enigmail.autoCrypto",false);
 
 // enable automatically decrypt/verify
 pref("extensions.enigmail.autoDecrypt",true);
+
 
 // countdown for alerts when composing inline PGP HTML msgs
 pref("extensions.enigmail.composeHtmlAlertCount",3);

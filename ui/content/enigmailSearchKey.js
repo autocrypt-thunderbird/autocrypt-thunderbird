@@ -68,7 +68,10 @@ function onLoad () {
     return false;
   }
   
-  var valueObj = { keyId: "<"+window.arguments[INPUT].searchList.join("> <")+">" };
+  var valueObj = {};
+  if (window.arguments[INPUT].searchList) {
+    valueObj = { keyId: "<"+window.arguments[INPUT].searchList.join("> <")+">" };
+  }
   var checkObj = new Object();
   var keyserver = null;
   
@@ -81,6 +84,9 @@ function onLoad () {
       return false;
     }
     keyserver = checkObj.value;
+    if (! window.arguments[INPUT].searchList) {
+      window.arguments[INPUT].searchList = checkObj.email.split(/[,; ]+/);
+    }
   }
   
   var protocol="";
@@ -470,7 +476,7 @@ function enigScanGpgKeys(txt) {
     if (outputType==2 && (lines[i].search(/^uid:.*:.*:.*:.*$/))==0) {
       // output from gpgkeys_* protocol version 1
       // uid for key
-      var m=lines[i].split(/:/);
+      m=lines[i].split(/:/);
       if (m && m.length>1 ) {
         if (key)
           key.uid.push(trim(m[1]));

@@ -73,6 +73,12 @@
  color: #E800FF;
 }
 
+.enigmailLink {
+  margin-left: 5px;
+  text-decoration: underline;
+  color: blue;
+  cursor: pointer;
+}
 
 #enigmail-status-bar #enigmail-signed-status {
   list-style-image: none;

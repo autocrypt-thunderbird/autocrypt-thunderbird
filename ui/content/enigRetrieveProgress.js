@@ -110,7 +110,7 @@ function onLoad() {
     }
 
     if ( !msgProgress ) {
-        dump( "Invalid argument to downloadProgress.xul\n" );
+        ERROR_LOG( "Invalid argument to downloadProgress.xul\n" );
         window.close()
         return;
     }

@@ -55,6 +55,7 @@ var gKeyList;
 var gEnigRemoveListener = false;
 var gEnigLastSelectedKeys = null;
 var gKeySortList = null;
+var gEnigIpcRequest=null;
 
 function enigmailKeyManagerLoad() {
    DEBUG_LOG("enigmailKeyManager.js: Load\n");
@@ -584,3 +585,167 @@ function enigmailSetPrimaryUid() {
         "", "dialog,modal,centerscreen", inputObj);
   enigmailRefreshKeys();
 }
+
+function enigmailSearchKey() {
+  var inputObj = {
+    searchList : null
+  };
+  var resultObj = new Object();
+  
+  window.openDialog("chrome://enigmail/content/enigmailSearchKey.xul",
+        "", "dialog,modal,centerscreen", inputObj, resultObj);
+        
+  if (resultObj.importedKeys > 0) {
+    enigmailRefreshKeys();
+  }
+}
+
+function enigmailUploadKeys() {
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
+  var resultObj = {};
+  var inputObj = {
+     upload: true
+  };
+
+  var selKeyList = enigmailGetSelectedKeys();
+  if (selKeyList.length==0) {
+    EnigAlert(EnigGetString("noKeySelected"));
+    return;
+  }
+  
+  var keyList=[];
+  for (var i=0; i < selKeyList.length; i++) {
+    keyList.push("0x"+selKeyList[i].substr(-8,8)+" - "+ gKeyList[selKeyList[i]].userId); 
+  }
+  inputObj.keyId = keyList.join(", ");
+  
+  window.openDialog("chrome://enigmail/content/enigmailKeyserverDlg.xul",
+        "", "dialog,modal,centerscreen", inputObj, resultObj);
+  if (! resultObj.value) {
+    return;
+  }
+  
+  var progressBar=Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
+  var requestObserver = new EnigRequestObserver(enigSendKeyTerminate, {'progressBar': progressBar, 'callType': 1});
+
+  var progressListener = {
+      onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus)
+      {
+        if (aStateFlags & Components.interfaces.nsIWebProgressListener.STATE_STOP) {
+          if (progressBar.processCanceledByUser)
+            enigSendKeyCancel(progressBar);
+        }
+      },
+
+      onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress)
+      {},
+
+      onLocationChange: function(aWebProgress, aRequest, aLocation)
+      {},
+
+      onStatusChange: function(aWebProgress, aRequest, aStatus, aMessage)
+      {},
+
+      onSecurityChange: function(aWebProgress, aRequest, state)
+      {},
+
+      QueryInterface : function(iid)
+      {
+        if (iid.equals(Components.interfaces.nsIWebProgressListener) ||
+            iid.equals(Components.interfaces.nsISupportsWeakReference) ||
+            iid.equals(Components.interfaces.nsISupports))
+          return this;
+
+        throw Components.results.NS_NOINTERFACE;
+      }
+  };
+  progressBar.registerListener(progressListener);
+     
+  var errorMsgObj={};
+  gEnigIpcRequest = enigmailSvc.receiveKey(nsIEnigmail.UPLOAD_KEY, resultObj.value, "0x"+selKeyList.join(" 0x"), requestObserver, errorMsgObj);
+  if (gEnigIpcRequest == null) {
+    EnigAlert(EnigGetString("sendKeysFailed")+"\n"+errorMsgObj.value);
+  }
+  document.getElementById("statusText").value="Uploading key...";
+  document.getElementById("progressBar").removeAttribute("collapsed");
+  document.getElementById("cancelBox").removeAttribute("collapsed");
+  
+}
+
+
+function enigSendKeyTerminate (terminateArg, ipcRequest) {
+  DEBUG_LOG("enigmailKeyManager.js: enigSendKeyTerminate\n");
+
+  if (terminateArg && terminateArg.progressBar) {
+    terminateArg.progressBar.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_STOP, 0);
+  }
+
+  if (gEnigIpcRequest) {
+    var keyRetrProcess = gEnigIpcRequest.pipeTransport;
+    var exitCode;
+    var statusText = document.getElementById("statusText");
+    document.getElementById("progressBar").setAttribute("collapsed", "true");
+    document.getElementById("cancelBox").setAttribute("collapsed", "true");
+    
+    if (keyRetrProcess && !keyRetrProcess.isAttached()) {
+      keyRetrProcess.terminate();
+      exitCode = keyRetrProcess.exitCode();
+      DEBUG_LOG("enigmailKeyManager.js: enigSendKeyTerminate: exitCode = "+exitCode+"\n");
+    }
+  
+    var enigmailSvc = GetEnigmailSvc();
+    if (exitCode==0) {
+      statusText.value=EnigGetString("sendKeysOk");
+    }
+    else {
+      statusText.value=EnigGetString("sendKeysFailed");
+    }
+    
+    var errorMsg="";
+    try {
+      var gpgConsole = gEnigIpcRequest.stderrConsole.QueryInterface(Components.interfaces.nsIPipeConsole);
+
+      if (gpgConsole && gpgConsole.hasNewData()) {
+        errorMsg = gpgConsole.getData();
+        if (enigmailSvc) {
+          var statusFlagsObj=new Object();
+          var statusMsgObj=new Object();
+          errorMsg=enigmailSvc.parseErrorOutput(errorMsg, statusFlagsObj, statusMsgObj);
+        }
+      }
+    } catch (ex) {}
+    
+    DEBUG_LOG("enigmailKeyManager.js: enigSendKeyTerminate: errorMsg="+errorMsg);
+    if (errorMsg.search(/ec=\d+/i)>=0) {
+      statusText.value=EnigGetString("sendKeysFailed");
+      EnigAlert(EnigGetString("sendKeysFailed") + "\n" + errorMsg);
+    }
+    window.setTimeout(enigHideStatus, 5000);
+    gEnigIpcRequest.close(true);
+  }
+}
+
+function enigSendKeyCancel() {
+  document.getElementById("cancelButton").setAttribute("collapsed", "true");
+  var keyRetrProcess = gEnigIpcRequest.pipeTransport;
+
+  if (keyRetrProcess && !keyRetrProcess.isAttached()) {
+    keyRetrProcess.terminate();
+  }
+  gEnigIpcRequest.close(true);
+  var statusText.value="aborted";
+  document.getElementById("progressBar").setAttribute("collapsed", "true");
+  window.setTimeout(enigHideStatus, 5000);
+  gEnigIpcRequest=null;
+}
+
+function enigHideStatus() {
+  document.getElementById("statusText").value="";
+  document.getElementById("progressBar").setAttribute("collapsed", "true");
+  document.getElementById("cancelBox").setAttribute("collapsed", "true");
+}
+

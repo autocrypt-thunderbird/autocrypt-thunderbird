@@ -639,8 +639,6 @@ if (messageHeaderSink) {
   // Use the pref "extensions.enigmail.show_headers"
   // instead of "mail.show_headers"
 
-  //dump("messageHeaderSink="+messageHeaderSink+"\n");
-
   messageHeaderSink.onStartHeaders = function()
   {
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: messageHeaderSink.onStartHeaders: START\n");

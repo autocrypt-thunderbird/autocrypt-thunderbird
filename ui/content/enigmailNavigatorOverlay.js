@@ -10,8 +10,6 @@ var gEnigCaptureWebMail = false;
 if (nsPreferences)
  gEnigCaptureWebMail = nsPreferences.getBoolPref(ENIGMAIL_PREFS_ROOT+"captureWebMail");
 
-//dump("enigmailNavigatorOverlay.js: gEnigCaptureWebMail="+gEnigCaptureWebMail+"\n");
-
 // Do nothing below if !gEnigCaptureWebMail
 
 if (gEnigCaptureWebMail) {

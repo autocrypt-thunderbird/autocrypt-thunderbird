@@ -45,7 +45,7 @@
         title="&enigmail.keyserverDlg.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="onLoad();"
-        ondialogaccept="onAccept();"
+        ondialogaccept="return onAccept();"
         >
 
 
@@ -56,9 +56,21 @@
 
     function onLoad() {
       window.arguments[1].value="";
-      var keyId = window.arguments[0].keyId;
       var keyIdText = document.getElementById("keyIdText");
-      keyIdText.firstChild.data = EnigGetString("importKey",keyId);
+      var emailRow = document.getElementById("emailRow");
+			if (typeof(window.arguments[0].keyId) == "string") {
+				var keyId = window.arguments[0].keyId;
+				if (window.arguments[0].upload) {
+					keyIdText.firstChild.data = EnigGetString("uploadKey",keyId);
+				}
+				else {
+					keyIdText.firstChild.data = EnigGetString("importKey",keyId);
+				}
+				emailRow.setAttribute("collapsed", "true");
+			}
+			else {
+				keyIdText.setAttribute("collapsed", "true");
+			}
       var keyservers = EnigGetPref("keyserver").split(/[ ,;]/g);
       var menulist=document.getElementById("selectedServer")
       for (var i=0; i < keyservers.length; i++) {
@@ -73,6 +85,13 @@
     function onAccept() {
       var menulist=document.getElementById("selectedServer");
       window.arguments[1].value = menulist.value;
+			if (typeof(window.arguments[0].keyId) != "string") {
+				window.arguments[1].email = document.getElementById("email").value;
+				if (!window.arguments[1].email) {
+					EnigAlert(EnigGetString("noEmailProvided"));
+					return false;
+				}
+			}
       var selected = menulist.selectedIndex;
 
       if (selected != 0) {
@@ -91,7 +110,9 @@
           keyServers+=", "+server.label;
           server = menulist.removeItemAt(0);
         }
+				
         EnigSetPref("keyserver", keyServers.substring(2));
+				return true;
       }
     }
   ]]>
@@ -100,10 +121,26 @@
   <vbox orient="vertical">
     <description id="keyIdText" width="300px">...</description>
     <separator/>
-    <hbox>
-    <label value="&enigmail.keyserver.label;:"/>
-    <menulist id="selectedServer" editable="true"/>
-    </hbox>
+		<grid>
+			<columns>
+				<column/>
+				<column flex="1"/>
+			</columns>
+			<rows>
+				<row id="emailRow">
+					<hbox align="center">
+						<label value="&enigmail.searchForKey.label;"/>
+					</hbox>
+					<textbox id="email"/>
+				</row>
+				<row>
+					<hbox align="center">
+						<label value="&enigmail.keyserver.label;"/>
+					</hbox>
+					<menulist id="selectedServer" editable="true"/>
+				</row>
+			</rows>
+    </grid>
     <separator/>
   </vbox>
 </dialog>

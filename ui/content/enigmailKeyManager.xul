@@ -93,14 +93,12 @@
         
         <menuitem label="&enigmail.keyMan.importFromServer.label;"
                   id="importFromServer"
-                  collapsed="true"
                   accesskey="&enigmail.keyMan.importFromServer.accesskey;"
-                  oncommand=""/>
+                  oncommand="enigmailSearchKey()"/>
         <menuitem label="&enigmail.keyMan.uploadToServer.label;"
                   id="uploadToServer"
-                  collapsed="true"
                   accesskey="&enigmail.keyMan.uploadToServer.accesskey;"
-                  oncommand=""/>
+                  oncommand="enigmailUploadKeys()"/>
                   
         <menuseparator collapsed="true"/>
         
@@ -126,7 +124,7 @@
       <menuitem id="ctxRevokationCert" label="&enigmail.keyMan.genRevoke.label;" oncommand="enigCreateRevokeCert()"/>
       <menuseparator/>
       <menuitem id="ctxExport" label="&enigmail.keyMan.exportToFile.label;" oncommand="enigmailExportKeys()"/>
-      <menuitem id="ctxUpload" label="&enigmail.keyMan.uploadToServer.label;" collapsed="true"/>
+      <menuitem id="ctxUpload" label="&enigmail.keyMan.uploadToServer.label;" oncommand="enigmailUploadKeys()"/>
       <menuitem id="ctxDetails" label="&enigmail.keyMan.keyProps.label;" collapsed="true"/>
     </popup>
   </popupset>
@@ -149,7 +147,7 @@
           <splitter class="tree-splitter"/>
           <treecol id="typeCol" style="width:70px"
                    label="&enigmail.keyMan.keyType.label;"
-                   persist="width"/>
+                   persist="width"/>    
           <splitter class="tree-splitter"/>
           <treecol id="validityCol" style="width:70px"
                    label="&enigmail.keyMan.calcTrust.label;"
@@ -169,4 +167,16 @@
       </tree>
   </hbox>
   </groupbox>
+	
+	<!-- status line -->
+	<hbox id="statusLine">
+		<label id="statusText" value=" "/>
+		<progressmeter id="progressBar" mode="undetermined" value="0" collapsed="true"/>
+		<description id="cancelBox" collapsed="true">
+			<a class="enigmailLink" href=""
+			   id="cancelButton" onclick="enigSendKeyCancel()">&enigmail.keyMan.stopTransfer.label;</a>
+		</description>
+	</hbox>
 </window>
+
+

@@ -1484,8 +1484,10 @@ function (domWindow, version, prefBranch) {
 
   this.agentType = agentType;
   this.agentPath = agentPath;
+  
+  
 
-  var command = agentPath;
+  var command = this.getAgentPath();
   if (agentType == "gpg") {
      command += " --batch --no-tty --version";
   } else {
@@ -1525,6 +1527,7 @@ function (domWindow, version, prefBranch) {
   this.stillActive();
   this.initialized = true;
 
+  // check GnuPG version number
   var evalVersion = this.agentVersion.match(/^\d+\.\d+/)
   if (evalVersion && evalVersion[0]<"1.2") {
     var count=1;
@@ -1544,6 +1547,17 @@ function (domWindow, version, prefBranch) {
 
   DEBUG_LOG("enigmail.js: Enigmail.initialize: END\n");
 }
+
+Enigmail.prototype.getAgentPath = 
+function () {
+  var p = "";
+  try {
+    p=" "+this.prefBranch.getCharPref("agentAdditionalParam").replace(/([\\\`])/g, "\\$1");
+  }
+  catch (ex) {}
+  return this.agentPath+p;
+}
+
 
 Enigmail.prototype.passwdCommand =
 function () {
@@ -2159,7 +2173,7 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
   var toAddrList = toMailAddr.split(/\s*,\s*/);
   var k;
 
-  var encryptCommand = this.agentPath;
+  var encryptCommand = this.getAgentPath();
 
   if (this.agentType == "pgp") {
     encryptCommand += PGP_BATCH_OPTS + " -fta "
@@ -2710,7 +2724,7 @@ function (parent, prompter, verifyOnly, noOutput,
     return null;
   }
 
-  var decryptCommand = this.agentPath;
+  var decryptCommand = this.getAgentPath();
 
   if (this.agentType == "pgp") {
     decryptCommand += PGP_BATCH_OPTS + " -ft";
@@ -3041,9 +3055,9 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
     }
   }
   catch (ex) {}
-  var command = this.agentPath 
+  var command = this.getAgentPath(); 
 
-  if (recvFlags & nsIEnigmail.DOWNLOAD_KEY) command += GPG_BATCH_OPTS;
+  if (! (recvFlags & nsIEnigmail.SEARCH_KEY)) command += GPG_BATCH_OPTS;
   
   if (proxyHost) {
     command += " --keyserver-options honor-http-proxy";
@@ -3056,6 +3070,9 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
   }
   else if (recvFlags & nsIEnigmail.SEARCH_KEY) {
     command += " --search-keys " + keyId;
+  }
+  else if (recvFlags & nsIEnigmail.UPLOAD_KEY) {
+    command += " --send-keys " + keyId;
   }
 
   var exitCodeObj    = new Object();
@@ -3300,7 +3317,7 @@ function (parent, exportFlags, userId, outputFile, exitCodeObj, errorMsgObj) {
     return "";
   }
 
-  var command = this.agentPath;
+  var command = this.getAgentPath();
   command += GPG_BATCH_OPTS + " -a --export ";
   command += userId;
 
@@ -3326,7 +3343,7 @@ function (parent, exportFlags, userId, outputFile, exitCodeObj, errorMsgObj) {
   }
 
   if (exportFlags & nsIEnigmail.EXTRACT_SECRET_KEY) {
-    command = this.agentPath;
+    command = this.getAgentPath();
     command += GPG_BATCH_OPTS + " -a --export-secret-keys ";
     command += userId;
     
@@ -3405,7 +3422,7 @@ function (parent, uiFlags, msgText, keyId, errorMsgObj) {
     }
   }
 
-  var command = this.agentPath;
+  var command = this.getAgentPath();
 
   if (this.agentType == "pgp") {
     command += PGP_BATCH_OPTS + " -ft -ka";
@@ -3452,7 +3469,7 @@ function (parent, fileName, errorMsgObj) {
   
   fileName=fileName.replace(/\\/g, "\\\\");
 
-  var command = this.agentPath;
+  var command = this.getAgentPath();
 
   command += GPG_BATCH_OPTS + " --import '"+fileName+"'";
 
@@ -3498,7 +3515,7 @@ function (parent, name, comment, email, expiryDate, keyLength, passphrase,
   // Create joinable console
   pipeConsole.open(100, 80, true);
 
-  var command = this.agentPath + " --batch --no-tty --gen-key";
+  var command = this.getAgentPath() + " --batch --no-tty --gen-key";
 
   pipeConsole.write(command.replace(/\\\\/g, "\\")+"\n");
   CONSOLE_LOG(command.replace(/\\\\/g, "\\")+"\n");
@@ -3844,7 +3861,7 @@ Enigmail.prototype.getUserIdList =
 function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
 
   if (secretOnly || refresh || this.userIdList == null) {
-    var gpgCommand = this.agentPath + GPG_BATCH_OPTS;
+    var gpgCommand = this.getAgentPath() + GPG_BATCH_OPTS;
   
     if (secretOnly) {
       gpgCommand += " --with-fingerprint --with-colons --list-secret-keys";  }
@@ -3894,7 +3911,7 @@ function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
 Enigmail.prototype.getKeySig =
 function  (keyId, exitCodeObj, errorMsgObj) {
 
-  var gpgCommand = this.agentPath + GPG_BATCH_OPTS + " --with-colons --with-fingerprint --list-sig "+keyId;
+  var gpgCommand = this.getAgentPath() + GPG_BATCH_OPTS + " --with-colons --with-fingerprint --list-sig "+keyId;
 
   if (!this.initialized) {
     errorMsgObj.value = EnigGetString("notInit");
@@ -3922,7 +3939,7 @@ function  (keyId, exitCodeObj, errorMsgObj) {
 
 
 Enigmail.prototype.getUidsForKey = function (keyId) {
-  var gpgCommand = this.agentPath + GPG_BATCH_OPTS 
+  var gpgCommand = this.getAgentPath() + GPG_BATCH_OPTS 
   gpgCommand += " --with-colons --list-keys " + keyId;
   var statusMsgObj   = new Object();
   var cmdErrorMsgObj = new Object();
@@ -4038,7 +4055,7 @@ function (parent, outFileName, displayName, inputBuffer,
     return true;
   }
 
-  var command = this.agentPath;
+  var command = this.getAgentPath();
 
   outFileName = outFileName.replace(/([\\\"\'\`])/g, "\\$1");
   //replace(/\\/g, "\\\\").replace(/'/g, "\\'");;
@@ -4110,7 +4127,7 @@ function (parent, outFileName, displayName, inputBuffer,
 Enigmail.prototype.showKeyPhoto =
 function(keyId, exitCodeObj, errorMsgObj) {
 
-  var command = this.agentPath;
+  var command = this.getAgentPath();
 
   command += " --batch --no-tty --status-fd 1 --attribute-fd 1";
   command += " --list-keys "+keyId;
@@ -4487,7 +4504,7 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
   }
   
   errorMsgObj.value = "";
-  var command = this.agentPath;
+  var command = this.getAgentPath();
 
   var statusFlags = new Object();
 

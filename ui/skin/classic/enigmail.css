@@ -7,59 +7,59 @@
 #button-enigmail-decrypt
   {
     list-style-image      : url("chrome://enigmail/skin/enigmail-toolbar.png");
-    -moz-image-region: rect(0px 30px 30px 0px);
+    -moz-image-region: rect(0px 24px 24px 0px);
   }
 
 #button-enigmail-decrypt:hover
   {
-    -moz-image-region: rect(30px 30px 60px 0px);
+    -moz-image-region: rect(24px 24px 48px 0px);
   }
 
 #button-enigmail-decrypt[disabled]
   {
-    -moz-image-region: rect(60px 30px 90px 0px);
+    -moz-image-region: rect(48px 24px 72px 0px);
   }
 
 toolbar[iconsize="small"]  #button-enigmail-decrypt
   {
-    -moz-image-region: rect(0px 20px 20px 0px);
+    -moz-image-region: rect(0px 16px 16px 0px);
     list-style-image      : url("chrome://enigmail/skin/enigmail-toolbar-small.png");
   }
 
 toolbar[iconsize="small"] #button-enigmail-decrypt:hover
   {
-    -moz-image-region: rect(20px 20px 40px 0px);
+    -moz-image-region: rect(16px 16px 32px 0px);
   }
 
 toolbar[iconsize="small"] #button-enigmail-decrypt[disabled]
   {
-    -moz-image-region: rect(40px 20px 60px 0px);
+    -moz-image-region: rect(32px 16px 48px 0px);
   }
 
 #button-enigmail-send {
-   -moz-image-region: rect(0px 30px 30px 0px);
+   -moz-image-region: rect(0px 24px 24px 0px);
    list-style-image      : url("chrome://enigmail/skin/enigmail-settings.png");
 }
 
 #button-enigmail-send:hover {
-  -moz-image-region: rect(30px 30px 60px 0px);
+  -moz-image-region: rect(24px 24px 48px 0px);
 }
 
 #button-enigmail-send[disabled] {
-  -moz-image-region: rect(60px 30px 90px 0px);
+  -moz-image-region: rect(48px 24px 72px 0px);
 }
 
 toolbar[iconsize="small"] #button-enigmail-send {
-  -moz-image-region: rect(0px 20px 20px 0px);
+  -moz-image-region: rect(0px 16px 16px 0px);
    list-style-image      : url("chrome://enigmail/skin/enigmail-settings-small.png");
 }
 
 toolbar[iconsize="small"] #button-enigmail-send:hover {
-  -moz-image-region: rect(20px 20px 40px 0px);
+  -moz-image-region: rect(16px 16px 32px 0px);
 }
 
 toolbar[iconsize="small"] #button-enigmail-send[disabled] {
-  -moz-image-region: rect(40px 20px 60px 0px);
+  -moz-image-region: rect(32px 16px 48px 0px);
 }
 
 .action-box { width: 100px }
@@ -89,6 +89,13 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
 
 .enigmailHeaderBoxLabelSignatureUnknown {
  color: #E800FF;
+}
+
+.enigmailLink {
+  margin-left: 5px;
+  text-decoration: underline;
+  color: blue;
+  cursor: pointer;
 }
 
 #enigmail-status-bar #enigmail-signed-status {

@@ -41,15 +41,21 @@ include $(DEPTH)/config/autoconf.mk
 MODULE		= enigmime
 LIBRARY_NAME	= enigmime_s
 
+# extract major and minor version of mozilla
+
+MOZILLA_VERSION_PARTS = $(subst ., ,$(MOZILLA_VERSION))
+MOZILLA_MAJOR_VERSION = $(firstword $(MOZILLA_VERSION_PARTS))
+TMP_VAR = $(word 2,$(MOZILLA_VERSION_PARTS))
+MOZILLA_MINOR_VERSION = $(shell echo $(TMP_VAR)|sed 's/[a-z].*//')
+
 ifdef USE_XPCOM_GLUE
 # Ensure that the xpcom classes that we build
 # do not export themselves
 DEFINES		+= -D_IMPL_NS_COM_OFF -DXPCOM_GLUE
 endif
 
-ifeq ($(MOZILLA_VERSION),1.6)
-DEFINES 	+= -DMOZ_16
-endif
+DEFINES		+= -DMOZILLA_MAJOR_VERSION=$(MOZILLA_MAJOR_VERSION)
+DEFINES		+= -DMOZILLA_MINOR_VERSION=$(MOZILLA_MINOR_VERSION)
 
 REQUIRES	= xpcom \
 		  xpcom_obsolete \

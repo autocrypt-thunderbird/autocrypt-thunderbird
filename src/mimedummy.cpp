@@ -10,10 +10,11 @@ MimeDefClass(MimeDummy, MimeDummyClass, mimeDummyClass,
 static int MimeDummy_initialize (MimeObject *);
 static void MimeDummy_finalize (MimeObject *);
 static int MimeDummy_parse_begin (MimeObject *);
-#ifndef MOZ_16
-static int MimeDummy_parse_buffer (const char *, PRInt32, MimeObject *);
-#else
+#if MOZILLA_MAJOR_VERSION==1 && MOZILLA_MINOR_VERSION<7
 static int MimeDummy_parse_buffer (char *, PRInt32, MimeObject *);
+#else
+// Mozilla >= 1.7
+static int MimeDummy_parse_buffer (const char *, PRInt32, MimeObject *);
 #endif
 static int MimeDummy_parse_line (char *, PRInt32, MimeObject *);
 static int MimeDummy_parse_eof (MimeObject *, PRBool);

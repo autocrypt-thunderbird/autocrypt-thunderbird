@@ -63,15 +63,39 @@
     </tabs>
 
     <tabpanels flex="1">
+		  <!-- "Basic" Tab -->
       <vbox id="basic" flex="1">
           <description class="enigmailPrefsTitle">&enigmail.basicPrefs.label;</description>
-          <hbox align="center">
-            <label control="enigmail_agentPath"
-                  value="&enigmail.agentPath.label;" />
-            <textbox id="enigmail_agentPath"/>
-            <button id="browse" label="&enigmail.browse.label;"
+					
+					<grid>
+            <columns>
+              <column flex="1"/>
+              <column/>
+            </columns>
+
+            <rows> <!-- autostretch="never"> -->
+							<row>
+							  <hbox align="center">
+							    <label control="enigmail_agentPath" 
+                    value="&enigmail.agentPath.label;" />
+							  </hbox>
+								<hbox align="center">
+								  <textbox id="enigmail_agentPath" size="30"/>
+                  <button id="browse" label="&enigmail.browse.label;"
                     oncommand="enigLocateGpg();"/>
-          </hbox>
+								</hbox>
+							</row>
+							<row>
+								<hbox align="center">
+									<label control="enigmail_agentAdditionalParam"
+											value="&enigmail.agentAdditionalParam.label;"/>
+								</hbox>
+								<hbox>
+									<textbox id="enigmail_agentAdditionalParam" size="30"/>
+								</hbox>
+							</row>
+						</rows>
+				  </grid>
 
           <hbox>
             <groupbox orient="vertical" flex="1">
@@ -120,6 +144,7 @@
 
       </vbox>
 
+			<!-- "Sending" Tab -->
       <vbox id="sending" flex="1">
           <description class="enigmailPrefsTitle">&enigmail.whenSending.label;</description>
 
@@ -135,10 +160,14 @@
           <checkbox id="enigmail_wrapHtmlBeforeSend"
                     label="&enigmail.wrapHtmlBeforeSend.label;" />
 
+				  <checkbox id="enigmail_allowEmptySubject"
+                    label="&enigmail.allowEmptySubject.label;" />
+
           <checkbox id="send_plaintext_flowed"
                     label="&enigmail.send_plaintext_flowed.label;" />
       </vbox>
 
+			<!-- "Key Selection" Tab -->
       <vbox id="keySel" flex="1">
           <description class="enigmailPrefsTitle">&enigmail.recipientsSelectionOption.label;</description>
           <groupbox>
@@ -193,6 +222,7 @@
           </groupbox>
       </vbox>
 
+			<!-- "PGP/MIME" Tab -->
       <vbox id="pgpMime" flex="1">
           <description class="enigmailPrefsTitle">&enigmail.usePGPMimeOption.label;</description>
           <radiogroup id="enigmail_usePGPMimeOption">
@@ -225,6 +255,7 @@
           </hbox>
       </vbox>
 
+			<!-- "Advanced" Tab -->
       <vbox id="advanced" flex="1">
           <description class="enigmailPrefsTitle">&enigmail.moreOptions.label;</description>
           <spacer flex="0"/>
@@ -252,6 +283,7 @@
                     tooltiptext="&enigmail.mime_parts_on_demand.tooltip;" />
       </vbox>
 
+			<!-- "Debugging" Tab -->
       <vbox id="debug" flex="1">
         <description class="enigmailPrefsTitle">&enigmail.debugMenu.label;</description>
         <spacer flex="0"/>

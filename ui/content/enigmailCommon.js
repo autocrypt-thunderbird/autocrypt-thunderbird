@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.89.0.0";
-var gEnigmimeVersion = "0.89.0.0";
+var gEnigmailVersion = "0.89.5.0";
+var gEnigmimeVersion = "0.89.5.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -139,7 +139,6 @@ try {
 function EnigGetFrame(win, frameName) {
   DEBUG_LOG("enigmailCommon.js: EnigGetFrame: name="+frameName+"\n");
   for (var j=0; j<win.frames.length; j++) {
-    dump(win.frames[j].name+"\n");
     if (win.frames[j].name == frameName) {
       return win.frames[j];
     }
@@ -890,7 +889,6 @@ function EnigConvertGpgToUnicode(text) {
       var ch=text.substr(a,2).toSource().substr(13,8).replace(/\\x/g, "\\u00");
       var newCh=EnigConvertToUnicode(EnigConvertToUnicode(ch, "x-u-escaped"), "utf-8");
       if (newCh != ch) {
-        //dump(ch+"\n");
         var r=new RegExp(text.substr(a, 2), "g");
         text=text.replace(r, newCh);
       }

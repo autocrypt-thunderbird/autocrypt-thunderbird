@@ -319,7 +319,7 @@ function fillIdentityListPopup()
   for (var i=0; i<identities.length; i++) {
     var identity = identities[i];
 
-    dump("id.valid="+identity.valid+"\n");
+    DEBUG_LOG("id.valid="+identity.valid+"\n");
     if (!identity.valid || !identity.email)
       continue;
 

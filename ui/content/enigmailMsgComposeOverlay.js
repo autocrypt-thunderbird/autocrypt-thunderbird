@@ -1336,7 +1336,8 @@ function enigGenericSendMessage( msgType )
         }            
 
         //Check if we have a subject, else ask user for confirmation
-        if (subject == "")
+        
+        if (subject == "" && (! EnigGetPref("allowEmptySubject")))
         {
           if (gEnigPromptSvc)
           {
@@ -1379,19 +1380,21 @@ function enigGenericSendMessage( msgType )
         }
         switch (action)
         {
-          case nsIMsgCompSendFormat.PlainText:
-            msgCompFields.forcePlainText = true;
-            msgCompFields.useMultipartAlternative = false;
-            break;
-          case nsIMsgCompSendFormat.HTML:
-            msgCompFields.forcePlainText = false;
-            msgCompFields.useMultipartAlternative = false;
-            break;
-          case nsIMsgCompSendFormat.Both:
-            msgCompFields.forcePlainText = false;
-            msgCompFields.useMultipartAlternative = true;
-            break;
-           default: dump("\###SendMessage Error: invalid action value\n"); return;
+        case nsIMsgCompSendFormat.PlainText:
+          msgCompFields.forcePlainText = true;
+          msgCompFields.useMultipartAlternative = false;
+          break;
+        case nsIMsgCompSendFormat.HTML:
+          msgCompFields.forcePlainText = false;
+          msgCompFields.useMultipartAlternative = false;
+          break;
+        case nsIMsgCompSendFormat.Both:
+          msgCompFields.forcePlainText = false;
+          msgCompFields.useMultipartAlternative = true;
+          break;
+        default: 
+          ERROR_LOG("\###SendMessage Error: invalid action value\n");
+          return;
         }
       }
 
@@ -1486,7 +1489,7 @@ function enigGenericSendMessage( msgType )
         }
       }
       catch (ex) {
-        dump("failed to SendMsg: " + ex + "\n");
+        ERROR_LOG("failed to SendMsg: " + ex + "\n");
         gWindowLocked = false;
         enableEditableFields();
         CommandUpdate_MsgCompose();
@@ -1494,7 +1497,7 @@ function enigGenericSendMessage( msgType )
     }
   }
   else
-    dump("###SendMessage Error: composeAppCore is null!\n");
+    ERROR_LOG("###SendMessage Error: composeAppCore is null!\n");
 }
 
 

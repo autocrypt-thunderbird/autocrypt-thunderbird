@@ -21,11 +21,13 @@
 <!ENTITY enigmail.usePGPMimeOption.label  "Choose PGP/MIME option">
 <!ENTITY enigmail.mimeHashAlgorithm.label "Hash algorithm">
 
-<!ENTITY enigmail.agentPath.label         "GnuPG executable path">
+<!ENTITY enigmail.agentPath.label             "GnuPG executable path">
+<!ENTITY enigmail.agentAdditionalParam.label  "Additional parameters for GnuPG">
 
 <!ENTITY enigmail.send_plaintext_flowed.label "Allow flowed text (RFC 2646)">
 <!ENTITY enigmail.mime_parts_on_demand.label  "Load MIME parts on demand (IMAP folders)">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "You should turn this OFF if you are receiving PGP/MIME messages on IMAP folders">
+<!ENTITY enigmail.allowEmptySubject.label     "Allow empty subject">
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Remember passphrase for">
 <!ENTITY enigmail.maxIdleMinutesTail.label "minutes of idle time">
@@ -56,6 +58,9 @@
 <!ENTITY enigmail.keyserverDlg.label      "Select Keyserver">
 <!ENTITY enigmail.keyservers.label        "Keyserver(s)">
 <!ENTITY enigmail.keyservers.sample       "Example: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
+
+<!ENTITY enigmail.searchForKey.label      "Search for key">
+
 
 <!ENTITY enigmail.disableSMIMEui.label    "Hide SMIME buttons/menus">
 <!ENTITY enigmail.doubleDashSeparator.label  "Treat '--' as signature separator">
@@ -355,6 +360,8 @@
 <!ENTITY enigmail.keyMan.keyType.label             "Type">
 <!ENTITY enigmail.keyMan.calcTrust.label           "Calculated Trust">
 <!ENTITY enigmail.keyMan.ownerTrust.label          "Owner Trust">
+<!ENTITY enigmail.keyMan.stopTransfer.label        "Stop transfer">
+
 
 <!ENTITY enigmail.keyMan.window.accesskey            "W">
 <!ENTITY enigmail.keyMan.close.accesskey             "C">

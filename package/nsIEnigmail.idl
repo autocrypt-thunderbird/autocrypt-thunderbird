@@ -247,6 +247,7 @@ interface nsIEnigmail : nsISupports
   /* Receive flags */
   const long SEARCH_KEY       = 0x01;
   const long DOWNLOAD_KEY     = 0x02;
+  const long UPLOAD_KEY       = 0x04;
 
   nsIIPCRequest searchKey(in unsigned long recvFlags,
                           in string protocol,
