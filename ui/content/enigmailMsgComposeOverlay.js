@@ -1310,26 +1310,37 @@ function enigMessageSendCheck() {
 /////////////////////////////////////////////////////////////////////////
 function enigModifyCompFields(msgCompFields) {
 
-  var enigmailHeaders = "";
-  if (EnigGetPref("addHeaders")) {
-    enigmailHeaders += "X-Enigmail-Version: "+gEnigmailVersion+"\r\n";
-  }
+  const ENIG_HEADERMODE_KEYID = 0x01;
+  const ENIG_HEADERMODE_URL   = 0x10;
+
   try {
-    var pgpHeader="";
-    switch(gEnigIdentity.getIntAttribute("openPgpHeaderMode")) {
-      case 1:
-        pgpHeader = gEnigIdentity.getCharAttribute("pgpkeyId");
-        if (pgpHeader.substr(0,2).toLowerCase() == "0x") {
-          enigmailHeaders += "OpenPGP: id="+pgpHeader.substr(2)+"\r\n";
-        }
-        break;
-      case 2:
-        enigmailHeaders += "OpenPGP: url="+gEnigIdentity.getCharAttribute("openPgpUrlName")+"\r\n";
-        break;
+    if (gEnigIdentity.getBoolAttribute("enablePgp")) {
+      var enigmailHeaders = "";
+      if (EnigGetPref("addHeaders")) {
+        enigmailHeaders += "X-Enigmail-Version: "+gEnigmailVersion+"\r\n";
+      }
+      var pgpHeader="";
+      var openPgpHeaderMode = gEnigIdentity.getIntAttribute("openPgpHeaderMode");
+
+      if (openPgpHeaderMode > 0) pgpHeader = "OpenPGP: ";
+
+      if (openPgpHeaderMode & ENIG_HEADERMODE_KEYID) {
+          var keyId = gEnigIdentity.getCharAttribute("pgpkeyId");
+          if (keyId.substr(0,2).toLowerCase() == "0x") {
+            pgpHeader += "id="+keyId.substr(2);
+          }
+      }
+      if (openPgpHeaderMode & ENIG_HEADERMODE_URL) {
+        if (pgpHeader.indexOf("=") > 0) pgpHeader += ";\r\n\t";
+        pgpHeader += "url="+gEnigIdentity.getCharAttribute("openPgpUrlName");
+      }
+      if (pgpHeader.length > 0) {
+        enigmailHeaders += pgpHeader + "\r\n";
+      }
+      msgCompFields.otherRandomHeaders += enigmailHeaders;
     }
   }
   catch (ex) {}
-  msgCompFields.otherRandomHeaders += enigmailHeaders;
 
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigModifyCompFields: otherRandomHeaders = "+
            msgCompFields.otherRandomHeaders+"\n");

@@ -19,6 +19,7 @@ enigmail.jar:
 	content/enigmail/enigmailCustToolOverlay.xul   (content/enigmailCustToolOverlay.xul)
 	content/enigmail/enigmailDispPhoto.xul         (content/enigmailDispPhoto.xul)
 	content/enigmail/enigmailEditIdentity.js       (content/enigmailEditIdentity.js)
+	content/enigmail/enigmailEditIdentity.xul      (content/enigmailEditIdentity.xul)
 	content/enigmail/enigmailEditKeyTrustDlg.xul   (content/enigmailEditKeyTrustDlg.xul)
 	content/enigmail/enigmailEncryptionDlg.xul     (content/enigmailEncryptionDlg.xul)
 	content/enigmail/enigmailEncryptionDlg.js      (content/enigmailEncryptionDlg.js)

@@ -40,10 +40,14 @@ var gEncryptionChoicesEnabled;
 var gPgpSignPlainPolicy;
 var gPgpSignEncPolicy;
 var gEncryptionPolicy;
-var gOpenPgpHeaderMode;
+var gOpenPgpHeaderKeyId;
+var gOpenPgpHeaderUrl;
 var gOpenPgpUrlName;
 var gEnigAccount;
 var gEnigDlgOnAccept;
+
+const ENIG_HEADERMODE_KEYID = 0x01;
+const ENIG_HEADERMODE_URL   = 0x10;
 
 EnigInitCommon("pref-enigmail");
 
@@ -52,7 +56,8 @@ function enigOnInit()
   // initialize all of our elements based on the current identity values....
   gEnablePgp          = document.getElementById("enablePgp");
   gPgpKeyMode         = document.getElementById("pgpKeyMode");
-  gOpenPgpHeaderMode  = document.getElementById("openpgpHeaderMode");
+  gOpenPgpHeaderKeyId = document.getElementById("openpgpHeaderMode.keyId");
+  gOpenPgpHeaderUrl   = document.getElementById("openpgpHeaderMode.url");
   gOpenPgpUrlName     = document.getElementById("openpgpHeaderMode.url.name");
   gPgpkeyId           = document.getElementById("identity.pgpkeyId");
   gPgpSignEncPolicy   = document.getElementById("sign_encrypted");
@@ -77,19 +82,11 @@ function enigOnInit()
     gPgpKeyMode.selectedItem = document.getElementById(selectedItemId);
 
     var openPgpHeaderMode=gEnigIdentity.getIntAttribute("openPgpHeaderMode");
-    switch(openPgpHeaderMode)
-    {
-      case 1:
-        selectedItemId = 'openpgpHeaderMode.keyId';
-        break;
-      case 2:
-        selectedItemId = 'openpgpHeaderMode.url';
-        break;
-      default:
-        selectedItemId = 'openpgpHeaderMode.none';
-        break;
-    }
-    gOpenPgpHeaderMode.selectedItem = document.getElementById(selectedItemId);
+    if (openPgpHeaderMode & ENIG_HEADERMODE_KEYID)
+      gOpenPgpHeaderKeyId.checked = true;
+
+    if (openPgpHeaderMode & ENIG_HEADERMODE_URL)
+      gOpenPgpHeaderUrl.checked = true;
 
     gPgpkeyId.value = gEnigIdentity.getCharAttribute("pgpkeyId");
     EnigGetSignMsg(gEnigIdentity);
@@ -154,12 +151,21 @@ function enigOnSave()
 
   if (gEnablePgp.checked) {
     // PGP is enabled
+    
+    var openPgpHeaderMode = 0;
+    
+    if (gOpenPgpHeaderKeyId.checked)
+      openPgpHeaderMode += ENIG_HEADERMODE_KEYID;
+
+    if (gOpenPgpHeaderUrl.checked)
+      openPgpHeaderMode += ENIG_HEADERMODE_URL;
+
     gEnigIdentity.setIntAttribute("pgpKeyMode", gPgpKeyMode.selectedItem.value);
     gEnigIdentity.setCharAttribute("pgpkeyId", gPgpkeyId.value);
     gEnigIdentity.setBoolAttribute("pgpSignEncrypted", gPgpSignEncPolicy.checked);
     gEnigIdentity.setBoolAttribute("pgpSignPlain", gPgpSignPlainPolicy.checked);
     gEnigIdentity.setIntAttribute("defaultEncryptionPolicy", (gEncryptionPolicy.checked ? 1 : 0));
-    gEnigIdentity.setIntAttribute("openPgpHeaderMode", gOpenPgpHeaderMode.selectedItem.value);
+    gEnigIdentity.setIntAttribute("openPgpHeaderMode", openPgpHeaderMode);
     gEnigIdentity.setCharAttribute("openPgpUrlName", gOpenPgpUrlName.value)
   }
 }
@@ -187,16 +193,15 @@ function enigEnableKeySel(enable)
 {
   if (enable) {
     document.getElementById("bcUseKeyId").removeAttribute("disabled");
-    enigEnableUrlName(gOpenPgpHeaderMode.selectedItem.value == 2);
   }
   else {
     document.getElementById("bcUseKeyId").setAttribute("disabled", "true");
-    enigEnableUrlName(false);
   }
+  enigEnableUrlName();
 }
 
-function enigEnableUrlName(enable) {
-  if (enable) {
+function enigEnableUrlName() {
+  if (gOpenPgpHeaderUrl.checked) {
     document.getElementById("bcUseUrl").removeAttribute("disabled");
   }
   else {

@@ -41,6 +41,8 @@
     <RDF:li resource="chrome://messenger/content/addressbook/abContactsPanel.xul"/>
     <RDF:li resource="chrome://global/content/customizeToolbar.xul"/>
     <RDF:li resource="chrome://communicator/content/pref/preftree.xul"/>
+    <RDF:li resource="chrome://enigmail/content/am-enigprefs.xul"/>
+    <RDF:li resource="chrome://enigmail/content/am-enigprefs-edit.xul"/>
   </RDF:Seq>
 
   <RDF:Seq about="chrome://messenger/content/messengercompose/messengercompose.xul">
@@ -63,6 +65,7 @@
 
   <RDF:Seq about="chrome://messenger/content/am-identity-edit.xul">
     <RDF:li>chrome://enigmail/content/enigmailAmIdEditOverlay.xul</RDF:li>
+    <RDF:li>chrome://enigmail/content/enigmailEditIdentity.xul</RDF:li>
   </RDF:Seq>
 
   <RDF:Seq about="chrome://messenger/content/addressbook/addressbook.xul">
@@ -81,5 +84,12 @@
     <RDF:li>chrome://enigmail/content/enigmailPrefsOverlay.xul</RDF:li>
   </RDF:Seq>
 
+  <RDF:Seq about="chrome://enigmail/content/am-enigprefs.xul">
+    <RDF:li>chrome://enigmail/content/enigmailEditIdentity.xul</RDF:li>
+  </RDF:Seq>
 
+  <RDF:Seq about="chrome://enigmail/content/am-enigprefs-edit.xul">
+    <RDF:li>chrome://enigmail/content/enigmailEditIdentity.xul</RDF:li>
+  </RDF:Seq>
+  
 </RDF:RDF>
