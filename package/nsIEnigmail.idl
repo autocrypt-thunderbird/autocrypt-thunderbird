@@ -227,18 +227,30 @@ interface nsIEnigmail : nsISupports
   const long DOWNLOAD_KEY     = 0x02;
 
   nsIIPCRequest searchKey(in unsigned long recvFlags,
-                  in string protocol,
-                  in string keyServer,
-                  in string port,
-                  in string keyValue,
-                  in nsIRequestObserver requestObserver,
-                  out wstring errorMsg);
+                          in string protocol,
+                          in string keyServer,
+                          in string port,
+                          in string keyValue,
+                          in nsIRequestObserver requestObserver,
+                          out wstring errorMsg);
 
   nsIIPCRequest receiveKey(in unsigned long recvFlags,
-                  in string keyServer,
-                  in string keyId,
-                  in nsIRequestObserver requestObserver,
-                  out wstring errorMsg);
+                           in string keyServer,
+                           in string keyId,
+                           in nsIRequestObserver requestObserver,
+                           out wstring errorMsg);
+
+  long setKeyTrust(in nsIDOMWindow parent, 
+                      in string keyId, 
+                      in string trustLevel, 
+                      out wstring errorMsg);
+
+  long signKey(in nsIDOMWindow parent, 
+                in string userId, 
+                in string keyId, 
+                in boolean signLocally, 
+                in string trustLevel, 
+                out wstring errorMsg);
 
   nsIIPCRequest generateKey(in nsIDOMWindow parent,
                             in string name,
@@ -260,30 +272,30 @@ interface nsIEnigmail : nsISupports
 
   /* manage GPG key list */
   string getUserIdList (in boolean secretOnly,
-                      in boolean refresh,
-                      out long exitCode,
-                      out unsigned long statusFlags,
-                      out wstring errorMsg);
+                        in boolean refresh,
+                        out long exitCode,
+                        out unsigned long statusFlags,
+                        out wstring errorMsg);
 
   void invalidateUserIdList();
 
   string encryptAttachment (in nsIDOMWindow parent,
-                      in string fromMailAddr,
-                      in string toMailAddr,
-                      in unsigned long sendFlags,
-                      in wstring inFile,
-                      in wstring outFile,
-                      out long exitCode,
-                      out unsigned long statusFlags,
-                      out wstring errorMsg);
+                            in string fromMailAddr,
+                            in string toMailAddr,
+                            in unsigned long sendFlags,
+                            in wstring inFile,
+                            in wstring outFile,
+                            out long exitCode,
+                            out unsigned long statusFlags,
+                            out wstring errorMsg);
 
   boolean decryptAttachment (in nsIDOMWindow parent,
-                      in string outFileName,
-                      in string displayName,
-                      in nsIIPCBuffer ipcBuffer,
-                      out long exitCode,
-                      out unsigned long statusFlags,
-                      out wstring errorMsg);
+                             in string outFileName,
+                             in string displayName,
+                             in nsIIPCBuffer ipcBuffer,
+                             out long exitCode,
+                             out unsigned long statusFlags,
+                             out wstring errorMsg);
 
   string showKeyPhoto (in string keyId,
                        out long exitCode,
@@ -292,10 +304,10 @@ interface nsIEnigmail : nsISupports
   boolean getRulesData(out nsIDOMDocument rulesList);
   
   void addRule(in string toAddress,
-                  in string keyList,
-                  in long sign,
-                  in long encrypt,
-                  in long pgpMime);
+               in string keyList,
+               in long sign,
+               in long encrypt,
+               in long pgpMime);
 
   boolean saveRulesFile();
   void clearRules();

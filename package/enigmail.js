@@ -160,6 +160,11 @@ const NS_CREATE_FILE = 0x08;
 const NS_TRUNCATE    = 0x20;
 const DEFAULT_FILE_PERMS = 0600;
 
+const GET_BOOL = "GET_BOOL";
+const GET_LINE = "GET_LINE";
+const GET_HIDDEN = "GET_HIDDEN";
+
+
 function CreateFileStream(filePath, permissions) {
 
   //DEBUG_LOG("enigmail.js: CreateFileStream: file="+filePath+"\n");
@@ -904,7 +909,7 @@ function GetXULOwner () {
 }
 
 
-function GetPassphrase(domWindow, prompter, passwdObj, useAgentObj) {
+function GetPassphrase(domWindow, passwdObj, useAgentObj) {
   DEBUG_LOG("enigmail.js: GetPassphrase: \n");
 
   useAgentObj.value = false;
@@ -1685,7 +1690,7 @@ function (command, needPassphrase, domWindow, prompter, listener,
 
     var passwdObj = new Object();
 
-    if (!GetPassphrase(domWindow, prompter, passwdObj, useAgentObj)) {
+    if (!GetPassphrase(domWindow, passwdObj, useAgentObj)) {
        ERROR_LOG("enigmail.js: Enigmail.execStart: Error - no passphrase supplied\n");
 
        statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
@@ -3517,94 +3522,6 @@ function (parent, name, comment, email, expiryDate, passphrase,
 }
 
 
-Enigmail.prototype.editKey = 
-function (parent, needPassphrase, userId, keyId, editCmd, exitCodeObj, errorMsgObj) {
-  WRITE_LOG("enigmail.js: Enigmail.editKey: parent="+parent+", editCmd="+editCmd+"\n");
-  
-  exitCodeObj.value = 0;
-  var command = this.agentPath;
-
-  var statusFlags = new Object();
-
-  var passphrase = null;
-  var passwdObj = new Object();
-  var useAgentObj = new Object();
-
-  if (needPassphrase) {
-    if (!GetPassphrase(parent, 0, passwdObj, useAgentObj)) {
-      ERROR_LOG("enigmail.js: Enigmail.decryptAttachment: Error - no passphrase supplied\n");
-  
-      statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
-      return null;
-    }
-  
-    passphrase = passwdObj.value;
-  }
-
-  needPassphrase = (needPassphrase && (! useAgentObj.value) && (passphrase.length > 0));
-  command += " --no-tty --status-fd 2 --command-fd 0"
-  if (needPassphrase) command += " --passphrase-fd 0"
-  if (userId) command += " -u " + userId;
-  command += " --edit-key " + keyId;
-
-  var noProxy = true;
-
-  var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
-  ipcBuffer.open(MSG_BUFFER_SIZE, false);
-
-  var pipeTrans = this.execStart(command, false, parent, 0,
-                                 ipcBuffer, true, statusFlags);
-
-
-  if (!pipeTrans) {
-    return false;
-  }
-
-  try {
-    if (needPassphrase) {
-      pipeTrans.writeSync(passphrase, passphrase.length);
-    }
-    pipeTrans.writeSync(editCmd, editCmd.length);
-  }
-  catch (ex) {
-    return false;
-  }
-  pipeTrans.join();
-
-  exitCodeObj.value = pipeTrans.exitCode();
-
-  var statusMsgObj = new Object();
-  var cmdLineObj     = new Object();
-
-  try {
-    this.execEnd(pipeTrans, statusFlags, statusMsgObj, cmdLineObj, errorMsgObj);
-  }
-  catch (ex) {};
-
-  return true;
-
-}
-
-
-Enigmail.prototype.setKeyTrust = 
-function (parent, keyId, trustLevel, exitCodeObj, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.setKeyTrust: parent="+parent+", keyId="+keyId+"\n");
-  
-  var editCmd="trust\n"+trustLevel+"\nsave\n";
-  return this.editKey(parent, false, null, keyId, editCmd, exitCodeObj, errorMsgObj);
-}
-
-
-Enigmail.prototype.signKey = 
-function (parent, userId, keyId, signLocally, trustLevel, exitCodeObj, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.signKey: parent="+parent+", userId="+userId+", keyId="+keyId+"\n");
-  
-  var editCmd=(signLocally ? "lsign" : "sign");
-  editCmd+= "\nY\n"+trustLevel+"\nY\nsave\n";
-  return this.editKey(parent, true, userId, keyId, editCmd, exitCodeObj, errorMsgObj);
-}
-
-
 Enigmail.prototype.createMessageURI =
 function (originalUrl, contentType, contentCharset, contentData, persist) {
   DEBUG_LOG("enigmail.js: Enigmail.createMessageURI: "+originalUrl+
@@ -4000,7 +3917,7 @@ function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
     var passwdObj = new Object();
     var useAgentObj = new Object();
 
-    if (!GetPassphrase(parent, sendFlags, passwdObj, useAgentObj)) {
+    if (!GetPassphrase(parent, passwdObj, useAgentObj)) {
        ERROR_LOG("enigmail.js: Enigmail.encryptAttachment: Error - no passphrase supplied\n");
 
        statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
@@ -4075,7 +3992,7 @@ function (parent, outFileName, displayName, inputBuffer,
   var passwdObj = new Object();
   var useAgentObj = new Object();
 
-  if (!GetPassphrase(parent, 0, passwdObj, useAgentObj)) {
+  if (!GetPassphrase(parent, passwdObj, useAgentObj)) {
     ERROR_LOG("enigmail.js: Enigmail.decryptAttachment: Error - no passphrase supplied\n");
 
     statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
@@ -4312,3 +4229,235 @@ Enigmail.prototype.addRule = function (toAddress, keyList, sign, encrypt, pgpMim
 Enigmail.prototype.clearRules = function () {
   this.rulesList = null;
 }
+
+
+
+function KeyEditor(pipeTrans) {
+  this._pipeTrans = pipeTrans
+}
+
+KeyEditor.prototype = {
+  _pipeTrans: null,
+  _txt: null,
+  
+  nextLine: function() {
+    return this._txt;
+  },
+  
+  writeLine: function (inputData) {
+    this._pipeTrans.writeSync(inputData+"\n", inputData.length+1);
+  },
+  
+  nextLine: function() {
+    var txt="";
+    while (txt.indexOf("[GNUPG:]") < 0) {
+      txt = this._pipeTrans.readLine(-1);
+    }
+    this._txt = txt;
+    return this._txt;
+  },
+  
+  doCheck: function(inputType, promptVal) {
+    var a=this._txt.split(/ /);
+    return ((a[1] == inputType) && (a[2] == promptVal))
+  },
+
+  QueryInterface: function (iid) {
+    if (!iid.equals(Components.interfaces.nsISupports))
+         throw Components.results.NS_ERROR_NO_INTERFACE;
+    return this;
+  }
+}
+
+
+Enigmail.prototype.signKey = 
+function (parent, userId, keyId, signLocally, trustLevel, errorMsgObj) {
+  
+  return this.editKey(parent, true, userId, keyId, 
+                      (signLocally ? "lsign" : "sign"),
+                      trustLevel, 
+                      signKeyCallback, 
+                      errorMsgObj);
+}
+
+Enigmail.prototype.setKeyTrust = 
+function (parent, keyId, trustLevel, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.setKeyTrust: parent="+parent+", keyId="+keyId+"\n");
+  
+  return this.editKey(parent, false, null, keyId, "trust", 
+                      trustLevel, keyTrustCallback, errorMsgObj);
+}
+
+
+Enigmail.prototype.editKey = 
+function (parent, needPassphrase, userId, keyId, editCmd, trustLevel, callbackFunc, errorMsgObj) {
+  WRITE_LOG("enigmail.js: Enigmail.editKey: parent="+parent+", editCmd="+editCmd+"\n");
+  
+  if (!this.initialized) {
+    errorMsgObj.value = EnigGetString("notInit");
+    return -1;
+  }
+
+  if (this.agentType != "gpg") {
+    errorMsgObj.value = EnigGetString("failOnlyGPG");
+    return -1;
+  }
+  
+  errorMsgObj.value = "";
+  var command = this.agentPath;
+
+  var statusFlags = new Object();
+
+  var passphrase = "";
+  var useAgentObj = new Object();
+
+  if (needPassphrase) {
+    command += this.passwdCommand();
+  
+    var passwdObj = new Object();
+  
+    if (!GetPassphrase(parent, passwdObj, useAgentObj)) {
+       ERROR_LOG("enigmail.js: Enigmail.execStart: Error - no passphrase supplied\n");
+  
+       errorMsgObj.value = EnigGetString("noPassphrase");
+       return -1;
+    }
+  
+    passphrase = passwdObj.value;
+  }
+  else 
+  {
+    useAgentObj.value = true;
+  }
+  
+  command += " --no-tty --status-fd 1 --command-fd 0"
+  if (userId) command += " -u " + userId;
+  command += " --edit-key " + keyId + " " + editCmd
+
+  var pipeTrans = this.execStart(command, false, parent, null, null,
+                                 true, statusFlags);
+  if (! pipeTrans) return -1;
+  
+  if (! useAgentObj.value) {
+    try {
+      if (passphrase) {
+         pipeTrans.writeSync(passphrase, passphrase.length);
+      }
+      pipeTrans.writeSync("\n", 1);
+    } catch (ex) {}
+  }
+
+  
+  try {
+    var exitCode = callbackFunc(pipeTrans, trustLevel);
+    if (exitCode == 0)
+      exitCode = pipeTrans.exitCode();
+  } catch (ex) {}
+  
+  return exitCode;
+}
+
+
+function signKeyCallback(pipeTrans, trustLevel) {
+  var inputData="";
+  var quitNow=false;
+  var txt="";
+  var exitCode = 0;
+  
+  var keyEdit = new KeyEditor(pipeTrans);
+
+  while (! quitNow) {
+    while (txt.indexOf("[GNUPG:] GET_") < 0) {
+      txt = keyEdit.nextLine();
+      DEBUG_LOG(txt+"\n");
+      if (txt.indexOf("KEYEXPIRED") > 0) {
+        errorMsgObj.value="key expired";
+        exitCode=-1;
+      }
+      if (txt.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
+        errorMsgObj.value="bad passphrase";
+        exitCode=-1;
+      }
+      if (txt.indexOf("[GNUPG:] ALREADY_SIGNED")>=0) {
+        errorMsgObj.value="already signed";
+        exitCode=-1;
+      }
+    }
+        
+    if (keyEdit.doCheck(GET_BOOL, "sign_uid.okay" )) {
+      exitCode = 0;
+      keyEdit.writeLine("Y");
+    }
+    else if (keyEdit.doCheck(GET_BOOL, "keyedit.sign_all.okay" )) {
+      exitCode = 0;
+      keyEdit.writeLine("Y");
+    }
+    else if (keyEdit.doCheck(GET_BOOL, "sign_uid.local_promote_okay" )) {
+      exitCode = 0;
+      keyEdit.writeLine("Y");
+    }
+    else if (keyEdit.doCheck(GET_LINE, "sign_uid.class" )) {
+      exitCode = 0;
+      keyEdit.writeLine(trustLevel);
+    }
+    else if (keyEdit.doCheck(GET_BOOL, "sign_uid.okay" )) {
+      exitCode = 0;
+      keyEdit.writeLine("Y");
+    }
+    else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt" ))
+      quitNow=true;
+    else {
+      quitNow=true;
+      errorMsgObj.value="Unknown command prompt:\n"+txt;
+    }
+    if (! quitNow) {
+      txt = keyEdit.nextLine();
+      DEBUG_LOG(txt+"\n");
+    }
+  }
+
+  keyEdit.writeLine("save");
+  txt = keyEdit.nextLine();
+
+  return exitCode;
+}
+
+function keyTrustCallback(pipeTrans, trustLevel) {
+  var quitNow=false;
+  var txt="";
+  var exitCode = 0;
+  
+  var keyEdit = new KeyEditor(pipeTrans);
+
+  while (! quitNow) {
+    while (txt.indexOf("[GNUPG:] GET_") < 0) {
+      txt = keyEdit.nextLine();
+      DEBUG_LOG(txt+"\n");
+    }
+        
+    if (keyEdit.doCheck(GET_LINE, "edit_ownertrust.value" )) {
+      exitCode = 0;
+      keyEdit.writeLine(trustLevel);
+    } 
+    else if (keyEdit.doCheck(GET_BOOL, "edit_ownertrust.set_ultimate.okay")) {
+      exitCode = 0;
+      keyEdit.writeLine("Y");
+    } 
+    else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt" ))
+      quitNow=true;
+    else {
+      quitNow=true;
+      errorMsgObj.value="Unknown command prompt:\n"+txt;
+    }
+    if (! quitNow) {
+      txt = keyEdit.nextLine();
+      DEBUG_LOG(txt+"\n");
+    }
+  }
+
+  keyEdit.writeLine("save");
+  txt = keyEdit.nextLine();
+
+  return exitCode;
+}
+
