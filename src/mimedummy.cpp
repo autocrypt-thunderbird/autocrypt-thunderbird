@@ -10,7 +10,7 @@ MimeDefClass(MimeDummy, MimeDummyClass, mimeDummyClass,
 static int MimeDummy_initialize (MimeObject *);
 static void MimeDummy_finalize (MimeObject *);
 static int MimeDummy_parse_begin (MimeObject *);
-static int MimeDummy_parse_buffer (char *, PRInt32, MimeObject *);
+static int MimeDummy_parse_buffer (const char *, PRInt32, MimeObject *);
 static int MimeDummy_parse_line (char *, PRInt32, MimeObject *);
 static int MimeDummy_parse_eof (MimeObject *, PRBool);
 static int MimeDummy_parse_end (MimeObject *, PRBool);
@@ -97,7 +97,7 @@ MimeDummy_parse_begin(MimeObject *obj)
 
 
 static int
-MimeDummy_parse_buffer(char *buffer, PRInt32 size, MimeObject *obj)
+MimeDummy_parse_buffer(const char *buffer, PRInt32 size, MimeObject *obj)
 {
   return 0;
 }
