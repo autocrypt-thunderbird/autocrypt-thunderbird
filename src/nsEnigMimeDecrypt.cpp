@@ -235,7 +235,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   nsCAutoString uriSpec("");
 
   if (mListener) {
-    mListener->OnStopRequest(nsnull, nsnull, 0);
+    rv = mListener->OnStopRequest(nsnull, nsnull, 0);
     if (NS_FAILED(rv))
       return rv;
 
@@ -244,7 +244,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
     if (NS_FAILED(rv)) return rv;
 
     if (endLine.IsEmpty()) {
-      ERROR_LOG(("nsEnigMimeDecrypt::FinishAux: ERROR MIME part nor terminated\n"));
+      ERROR_LOG(("nsEnigMimeDecrypt::FinishAux: ERROR MIME part not terminated\n"));
       return NS_ERROR_FAILURE;
     }
 

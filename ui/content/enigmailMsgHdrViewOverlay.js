@@ -81,7 +81,12 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
 
   } else if (keyId) {
     statusInfo = "Public key "+keyId+" needed to verify signature";
-    statusLine = statusInfo + "; click Broken Pen icon";
+
+    if (statusFlags & nsIEnigmail.INLINE_KEY) {
+      statusLine = statusInfo + "; click Decrypt button";
+    } else {
+      statusLine = statusInfo + "; click Broken Pen icon";
+    }
 
   } else if (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
                             nsIEnigmail.UNVERIFIED_SIGNATURE |

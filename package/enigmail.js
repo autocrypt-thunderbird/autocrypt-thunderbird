@@ -2094,7 +2094,7 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
   var encryptMsg  = sendFlags & nsIEnigmail.SEND_ENCRYPTED;
 
   if ( (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) ||
-       (!statusMsg && signMsg && !(defaultSend && encryptMsg)) ) {
+       ((this.agentType == "pgp") && signMsg && (exitCode != 21)) ) {
     // "Unremember" passphrase on error return
     this.clearCachedPassphrase();
   }
@@ -2126,7 +2126,7 @@ var gPGPHashNum = {md5:1, sha1:2, ripemd160:3};
 Enigmail.prototype.encryptMessageStart = 
 function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
           hashAlgorithm, sendFlags, listener, noProxy, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: uiFlags="+uiFlags+", from "+fromMailAddr+" to "+toMailAddr+", hashAlgorithm="+hashAlgorithm+" ("+bytesToHex(pack(sendFlags,4))+")\n");
+  DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: prompter="+prompter+", uiFlags="+uiFlags+", from "+fromMailAddr+" to "+toMailAddr+", hashAlgorithm="+hashAlgorithm+" ("+bytesToHex(pack(sendFlags,4))+")\n");
 
   var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
 
@@ -2169,7 +2169,9 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
 
   var detachedSig = usePgpMime && signMsg && !encryptMsg;
 
-  var recipientPrefix;
+  var toAddrList = toMailAddr.split(/\s*,\s*/);
+  var k;
+
   var encryptCommand = this.agentPath;
 
   if (this.agentType == "pgp") {
@@ -2178,9 +2180,19 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
     if (!useDefaultComment)
       encryptCommand += PGP_COMMENT_OPT + this.vendor + COMMENT_SUFFIX;
 
-    recipientPrefix = " ";
+    if (encryptMsg) {
+      encryptCommand += " -e";
 
-    if (detachedSig) {
+      if (signMsg)
+        encryptCommand += " -s";
+
+      if ((sendFlags & nsIEnigmail.SEND_ENCRYPT_TO_SELF) && fromMailAddr)
+        encryptCommand += " +encrypttoself=on";
+
+      for (k=0; k<toAddrList.length; k++)
+         encryptCommand += " "+toAddrList[k];
+
+    } else if (detachedSig) {
       encryptCommand += " -sb";
 
       if (hashAlgorithm && gPGPHashNum[hashAlgorithm.toLowerCase()])
@@ -2190,8 +2202,9 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
       encryptCommand += " -s";
     }
 
-    if (encryptMsg)
-      encryptCommand += " -e";
+    if (fromMailAddr) {
+      encryptCommand += " +myname=" + fromMailAddr;
+    }
 
   } else {
     encryptCommand += GPG_BATCH_OPTS;
@@ -2199,19 +2212,20 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
     if (!useDefaultComment)
       encryptCommand += GPG_COMMENT_OPT + this.vendor + COMMENT_SUFFIX;
 
-    recipientPrefix = " -r ";
-
-    if (sendFlags & nsIEnigmail.SEND_ALWAYS_TRUST)
-      encryptCommand += " --always-trust";
-
-    if ((sendFlags & nsIEnigmail.SEND_ENCRYPT_TO_SELF) && fromMailAddr)
-      encryptCommand += " --encrypt-to " + fromMailAddr;
-
     if (encryptMsg) {
       encryptCommand += " -a -e";
 
       if (signMsg)
         encryptCommand += " -s";
+
+      if (sendFlags & nsIEnigmail.SEND_ALWAYS_TRUST)
+        encryptCommand += " --always-trust";
+
+      if ((sendFlags & nsIEnigmail.SEND_ENCRYPT_TO_SELF) && fromMailAddr)
+        encryptCommand += " --encrypt-to " + fromMailAddr;
+
+      for (k=0; k<toAddrList.length; k++)
+         encryptCommand += " -r <" + toAddrList[k] + ">";
 
     } else if (detachedSig) {
       encryptCommand += " -s -b -t -a";
@@ -2223,16 +2237,10 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
     } else if (signMsg) {
       encryptCommand += " --clearsign";
     }
-  }
 
-  if (fromMailAddr) {
-    encryptCommand += " -u " + fromMailAddr;
-  }
-
-  if (encryptMsg) {
-    var addrList = toMailAddr.split(/\s*,\s*/);
-    for (var k=0; k<addrList.length; k++)
-       encryptCommand += recipientPrefix+addrList[k];
+    if (fromMailAddr) {
+      encryptCommand += " -u <" + fromMailAddr + ">";
+    }
   }
 
   var statusFlagsObj = new Object();
@@ -2900,6 +2908,7 @@ function (parent, uiFlags, cipherText, signatureObj,
 
         innerKeyBlock = innerKeyBlock.replace(/- -----/g, "-----");
 
+        statusFlagsObj.value |= nsIEnigmail.INLINE_KEY;
         DEBUG_LOG("enigmail.js: Enigmail.decryptMessage2: innerKeyBlock found\n");
       }
     }
@@ -2966,7 +2975,7 @@ function (parent, uiFlags, cipherText, signatureObj,
 Enigmail.prototype.decryptMessageStart = 
 function (parent, prompter, verifyOnly, noOutput,
           listener, noProxy, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.decryptMessageStart: verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail.decryptMessageStart: prompter="+prompter+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
 
   if (!this.initialized) {
     errorMsgObj.value = "Error - Enigmail service not yet initialized";
@@ -3112,11 +3121,21 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
       if (goodSignature) {
         errorMsgObj.value = trustPrefix + "Good signature from " + userId;
 
+        if (this.agentType != "gpg")
+          statusFlagsObj.value |= nsIEnigmail.GOOD_SIGNATURE;
+
       } else {
         errorMsgObj.value = trustPrefix + "BAD signature from " + userId;
         if (!exitCode)
           exitCode = 1;
+
+        if (this.agentType != "gpg")
+          statusFlagsObj.value |= nsIEnigmail.BAD_SIGNATURE;
       }
+    }
+
+    if (!verifyOnly && (this.agentType != "gpg")) {
+        statusFlagsObj.value |= nsIEnigmail.DECRYPTION_OKAY;
     }
 
     return exitCode;
@@ -3126,13 +3145,9 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
   ERROR_LOG("enigmail.js: Enigmail.decryptMessageEnd: Error in command execution\n");
 
   if ( (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) ||
-       (!statusMsg && !verifyOnly) ) {
+       ((this.agentType == "pgp") && !verifyOnly && (exitCode != 30)) ) {
     // "Unremember" passphrase on decryption failure
     this.clearCachedPassphrase();
-  }
-
-  if (!verifyOnly) {
-    statusFlagsObj.value |= nsIEnigmail.DECRYPTION_FAILED;
   }
 
   var pubKeyId;
@@ -3147,9 +3162,19 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
       keyIdObj.value = matchb[2]+matchb[3];
     }
 
-  } else if (verifyOnly && (this.agentType != "gpg")) {
-    // Assume bad signature (for checking later)
-    statusFlagsObj.value |= nsIEnigmail.BAD_SIGNATURE;
+  }
+
+  if (this.agentType != "gpg") {
+    // Not GPG
+
+    if (verifyOnly) {
+      // Assume bad signature is reason for failure
+      statusFlagsObj.value |= nsIEnigmail.BAD_SIGNATURE;
+
+    } else {
+      statusFlagsObj.value |= outputLen ? nsIEnigmail.DECRYPTION_OKAY
+                                        : nsIEnigmail.DECRYPTION_FAILED;
+    }
   }
 
   if (cmdErrorMsgObj.value) {

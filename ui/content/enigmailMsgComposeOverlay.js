@@ -307,13 +307,17 @@ function enigSend(sendFlags) {
        }
      }
 
+     var optSendFlags = 0;
+
      if (EnigGetPref("alwaysTrustSend")) {
-       sendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
+       optSendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
      }
 
      if (EnigGetPref("encryptToSelf")) {
-       sendFlags |= nsIEnigmail.SEND_ENCRYPT_TO_SELF;
+       optSendFlags |= nsIEnigmail.SEND_ENCRYPT_TO_SELF;
      }
+
+     sendFlags |= optSendFlags;
 
      var currentId = getCurrentIdentity();
      DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: currentId="+currentId+
@@ -368,15 +372,76 @@ function enigSend(sendFlags) {
      if (msgCompFields.to)  toAddrList.push(msgCompFields.to);
 
      if (msgCompFields.cc)  toAddrList.push(msgCompFields.cc);
-     if (msgCompFields.bcc) toAddrList.push(msgCompFields.bcc);
+
+     if (msgCompFields.bcc) {
+        toAddrList.push(msgCompFields.bcc);
+
+       if (sendFlags & ENIG_ENCRYPT) {
+
+         if (!defaultSend) {
+           EnigAlert("Encrypted send operation aborted.\n\nThis message cannot be encrypted because there are BCC (blind copy) recipients. Please move the BCC recipients to the CC list or re-send the message without encryption.");
+           return;
+         }
+
+         sendFlags &= ~ENIG_ENCRYPT;
+         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: No default encryption because of BCC\n");
+
+       }
+     }
+
+     if (newsgroups) {
+       toAddrList.push(newsgroups);
+
+       if (sendFlags & ENIG_ENCRYPT) {
+
+         if (!defaultSend) {
+           EnigAlert("Encrypted send operation aborted.\n\nThis message cannot be encrypted because there are newsgroup recipients. Please re-send the message without encryption.");
+           return;
+         }
+
+         sendFlags &= ~ENIG_ENCRYPT;
+         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: No default encryption because of newsgroups\n");
+
+       }
+     }
 
      var toAddr = toAddrList.join(", ");
 
-     if (newsgroups) toAddrList.push(newsgroups);
+     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: toAddr="+toAddr+"\n");
 
-     var toAddrAll = toAddrList.join(", ");;
+     if (defaultSend && (sendFlags & ENIG_ENCRYPT) ) {
+       // Encrypt test message for default encryption
+       var testExitCodeObj    = new Object();
+       var testStatusFlagsObj = new Object();    
+       var testErrorMsgObj    = new Object();
 
-     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: toAddrAll="+toAddrAll+"\n");
+       var testPlain = "Test Message";
+       var testUiFlags   = nsIEnigmail.UI_TEST;
+       var testSendFlags = nsIEnigmail.SEND_ENCRYPTED |
+                           nsIEnigmail.SEND_TEST |
+                           optSendFlags;
+
+       var testCipher = enigmailSvc.encryptMessage(window, testUiFlags,
+                                                   testPlain,
+                                                   fromAddr, toAddr,
+                                                   testSendFlags,
+                                                   testExitCodeObj,
+                                                   testStatusFlagsObj,
+                                                   testErrorMsgObj);
+
+       if (!testCipher || (testExitCodeObj.value != 0)) {
+         // Test encryption failed; turn off default encryption
+         sendFlags &= ~ENIG_ENCRYPT;
+         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: No default encryption because test failed\n");
+       }
+     }
+
+     if (defaultSend && (sendFlags & ENIG_SIGN) &&
+                        !(sendFlags & ENIG_ENCRYPT) &&
+                        !EnigGetPref("defaultSignMsg") ) {
+       // Default encryption turned off; turn off signing as well
+       sendFlags &= ~ENIG_SIGN;
+     }
 
      if (!gEnigProcessed) {
 /////////////////////////////////////////////////////////////////////////
@@ -391,30 +456,27 @@ function enigSend(sendFlags) {
        }
      }
 
-     var uiFlags = nsIEnigmail.UI_INTERACTIVE;
-
      var usePGPMimeOption = EnigGetPref("usePGPMimeOption");
 
-     if ( !(defaultSend && (sendFlags & ENIG_ENCRYPT)) ) {
+     if (gEnigSendPGPMime) {
+       // Use PGP/MIME
+       sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+     }
 
-       if (gEnigSendPGPMime) {
-         sendFlags |= nsIEnigmail.SEND_PGP_MIME;
-       }
+     var bucketList = document.getElementById("attachmentBucket");
+     var hasAttachments = bucketList && bucketList.hasChildNodes();
 
-       var bucketList = document.getElementById("attachmentBucket");
-       var hasAttachments = bucketList && bucketList.hasChildNodes();
+     DEBUG_LOG("enigmailMsgComposeOverlay.js: hasAttachments = "+hasAttachments+"\n");
 
-       DEBUG_LOG("enigmailMsgComposeOverlay.js: hasAttachments = "+hasAttachments+"\n");
+     if ( hasAttachments &&
+        (sendFlags & ENIG_ENCRYPT_OR_SIGN) &&
+        !(sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
+        (usePGPMimeOption >= PGP_MIME_POSSIBLE) &&
+        enigmailSvc.composeSecure ) {
 
-       if ( hasAttachments &&
-          (sendFlags & ENIG_ENCRYPT_OR_SIGN) &&
-          !(sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
-          (usePGPMimeOption >= PGP_MIME_POSSIBLE) &&
-          enigmailSvc.composeSecure ) {
-
-         if (EnigConfirm("Attachments to this message will be signed/encrypted only if the recipient's mail reader supports the PGP/MIME format. Enigmail, Evolution, and Mutt are known to support this format.\n Click OK to use PGP/MIME format for this message, or Cancel to use inline PGP.")) {
-         sendFlags |= nsIEnigmail.SEND_PGP_MIME;
-         }
+       if (EnigConfirm("Attachments to this message will be signed/encrypted only if the recipient's mail reader supports the PGP/MIME format. Enigmail, Evolution, and Mutt are known to support this format.\n Click OK to use PGP/MIME format for this message, or Cancel to use inline PGP.")) {
+       // Use PGP/MIME
+       sendFlags |= nsIEnigmail.SEND_PGP_MIME;
        }
      }
 
@@ -429,6 +491,8 @@ function enigSend(sendFlags) {
  
        usingPGPMime = false;
      }
+
+     var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
      if (usingPGPMime)
        uiFlags |= nsIEnigmail.UI_PGP_MIME;
@@ -561,29 +625,6 @@ function enigSend(sendFlags) {
 
          var exitCode = exitCodeObj.value;
     
-         if ((exitCode != 0) && defaultSend && (sendFlags & ENIG_ENCRYPT) &&
-             !(statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) ) {
-           // Default send error; turn off encryption
-           sendFlags &= ~ENIG_ENCRYPT;
-
-           if (!EnigGetPref("defaultSignMsg")) {
-             // Turn off signing
-             sendFlags &= ~ENIG_SIGN;
-           }
-
-           if (sendFlags & ENIG_SIGN) {
-             // Try signing only, to see if it removes the error condition
-             plainText = EnigConvertFromUnicode(escText, charset);
-
-             cipherText = enigmailSvc.encryptMessage(window,uiFlags, plainText,
-                                                fromAddr, toAddr, sendFlags,
-                                                exitCodeObj, statusFlagsObj,
-                                                errorMsgObj);
-
-             exitCode = exitCodeObj.value;
-           }
-         }
-
          if (cipherText && (exitCode == 0)) {
            // Encryption/signing succeeded; overwrite plaintext
 
@@ -609,24 +650,25 @@ function enigSend(sendFlags) {
      // EnigSend: Handle both plain and encrypted messages below
      var isOffline = (gIOService && gIOService.offline);
 
-     if (EnigGetPref("confirmBeforeSend") ||
-         (sendFlags & nsIEnigmail.SEND_WITH_CHECK) ) {
+     if (EnigGetPref("confirmBeforeSend")) {
        var msgStatus = "";
 
-       if (sendFlags & nsIEnigmail.SEND_PGP_MIME)
-         msgStatus += "PGP/MIME ";
+       if (sendFlags & ENIG_ENCRYPT_OR_SIGN) {
+         if (sendFlags & nsIEnigmail.SEND_PGP_MIME)
+           msgStatus += "PGP/MIME ";
 
-       if (sendFlags & ENIG_SIGN)
-         msgStatus += "SIGNED ";
+         if (sendFlags & ENIG_SIGN)
+           msgStatus += "SIGNED ";
 
-       if (sendFlags & ENIG_ENCRYPT)
-         msgStatus += "ENCRYPTED ";
+         if (sendFlags & ENIG_ENCRYPT)
+           msgStatus += "ENCRYPTED ";
 
-       if (!msgStatus)
-         msgStatus = "PLAINTEXT ";
+       } else {
+         msgStatus += "PLAINTEXT ";
+       }
 
-       var msgConfirm = isOffline ? "Save "+msgStatus+"message to "+toAddrAll+" in Unsent Messages folder?\n"
-                                  :"Send "+msgStatus+"message to "+toAddrAll+"?\n";
+       var msgConfirm = isOffline ? "Save "+msgStatus+"message to "+toAddr+" in Unsent Messages folder?\n"
+                                  :"Send "+msgStatus+"message to "+toAddr+"?\n";
 
        if (!EnigConfirm(msgConfirm)) {
          if (gEnigProcessed)
@@ -637,13 +679,20 @@ function enigSend(sendFlags) {
 
      } else if (isOffline &&
                 !EnigConfirm("You are currently offline. Do you wish to save the message in the Unsent Messages folder?\n") ) {
+       // Abort send
+       if (gEnigProcessed)
+         enigUndoEncryption();
 
+       return;
+
+     } else if ( (sendFlags & nsIEnigmail.SEND_WITH_CHECK) &&
+                 !enigMessageSendCheck() ) {
+       // Abort send
        if (gEnigProcessed)
          enigUndoEncryption();
 
        return;
      }
-
     
      if (isOffline || (sendFlags & nsIEnigmail.SEND_LATER)) {
        // Send message later
@@ -659,6 +708,35 @@ function enigSend(sendFlags) {
      if (EnigConfirm("Error in Enigmail; Encryption/signing failed; send unencrypted email?\n"))
        goDoCommand('cmd_sendButton');
   }
+}
+
+function enigMessageSendCheck() {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMessageSendCheck\n");
+
+  try {
+    var warn = sPrefs.getBoolPref("mail.warn_on_send_accel_key");
+
+    if (warn) {
+        var checkValue = {value:false};
+        var buttonPressed = gPromptService.confirmEx(window, 
+              sComposeMsgsBundle.getString('sendMessageCheckWindowTitle'), 
+              sComposeMsgsBundle.getString('sendMessageCheckLabel'),
+              (gPromptService.BUTTON_TITLE_IS_STRING * gPromptService.BUTTON_POS_0) +
+              (gPromptService.BUTTON_TITLE_CANCEL * gPromptService.BUTTON_POS_1),
+              sComposeMsgsBundle.getString('sendMessageCheckSendButtonLabel'),
+              null, null,
+              sComposeMsgsBundle.getString('CheckMsg'), 
+              checkValue);
+        if (buttonPressed != 0) {
+            return false;
+        }
+        if (checkValue.value) {
+            sPrefs.setBoolPref("mail.warn_on_send_accel_key", false);
+        }
+    }
+  } catch (ex) {}
+
+  return true;
 }
 
 /////////////////////////////////////////////////////////////////////////

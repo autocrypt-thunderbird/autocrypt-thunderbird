@@ -134,6 +134,7 @@ interface nsIEnigmail : nsISupports
   const long UI_ALLOW_KEY_IMPORT  = 0x02;
   const long UI_UNVERIFIED_ENC_OK = 0x04;
   const long UI_PGP_MIME          = 0x08;
+  const long UI_TEST              = 0x10;
 
   /* Send message flags */
   const long SEND_SIGNED          = 0x001;
@@ -144,6 +145,7 @@ interface nsIEnigmail : nsISupports
   const long SEND_ALWAYS_TRUST    = 0x020;
   const long SEND_ENCRYPT_TO_SELF = 0x040;
   const long SEND_PGP_MIME        = 0x080;
+  const long SEND_TEST            = 0x100;
 
   string encryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,
@@ -176,6 +178,7 @@ interface nsIEnigmail : nsISupports
   const long TRUSTED_IDENTITY     = 0x020000;
   const long RECEIVED_PGP_MIME    = 0x040000;
   const long DISPLAY_MESSAGE      = 0x080000;
+  const long INLINE_KEY           = 0x100000;
 
   string decryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,
