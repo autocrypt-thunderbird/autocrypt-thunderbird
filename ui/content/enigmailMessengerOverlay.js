@@ -1,3 +1,36 @@
+/*
+The contents of this file are subject to the Mozilla Public
+License Version 1.1 (the "MPL"); you may not use this file
+except in compliance with the MPL. You may obtain a copy of
+the MPL at http://www.mozilla.org/MPL/
+
+Software distributed under the MPL is distributed on an "AS
+IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+implied. See the MPL for the specific language governing
+rights and limitations under the MPL.
+
+The Original Code is Enigmail.
+
+The Initial Developer of the Original Code is Ramalingam Saravanan.
+Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
+Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
+
+Contributor(s):
+Patrick Brunschwig <patrick.brunschwig@gmx.net>
+
+Alternatively, the contents of this file may be used under the
+terms of the GNU General Public License (the "GPL"), in which case
+the provisions of the GPL are applicable instead of
+those above. If you wish to allow use of your version of this
+file only under the terms of the GPL and not to allow
+others to use your version of this file under the MPL, indicate
+your decision by deleting the provisions above and replace them
+with the notice and other provisions required by the GPL.
+If you do not delete the provisions above, a recipient
+may use your version of this file under either the MPL or the
+GPL.
+*/
+
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
 // Initialize enigmailCommon
@@ -37,7 +70,7 @@ function enigMessengerStartup() {
   // Override SMIME ui
   var smimeStatusElement = document.getElementById("cmd_viewSecurityStatus");
   if (smimeStatusElement) {
-    smimeStatusElement.setAttribute("oncommand", "enigViewSecurityInfo();");
+    smimeStatusElement.setAttribute("oncommand", "enigViewSecurityInfo(null, true);");
   }
 
   // Override print command
@@ -90,10 +123,6 @@ function enigMessengerStartup() {
   gEnigMessagePane.addEventListener("unload", enigMessageFrameUnload, true);
   gEnigMessagePane.addEventListener("load", enigMessageFrameLoad, true);
 
-  // Commented out; clean-up now handled by HdrView and Unload
-  //var tree = GetThreadTree();
-  //tree.addEventListener("click", enigThreadPaneOnClick, true);
-
   if (EnigGetPref("handleDoubleClick")) {
     // ovveride function for double clicking an attachment
     EnigOverrideAttribute(["attachmentList"], "onclick",
@@ -107,8 +136,11 @@ function enigMessengerFinish() {
 }
 
 
-function enigViewSecurityInfo() {
+function enigViewSecurityInfo(event, displaySmimeMsg) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigViewSecurityInfo\n");
+
+  if (event && event.button != 0)
+    return;
 
   if (gEnigSecurityInfo) {
     // Display OpenPGP security info
@@ -125,10 +157,7 @@ function enigViewSecurityInfo() {
            (nsIEnigmail.PGP_MIME_SIGNED | nsIEnigmail.PGP_MIME_ENCRYPTED)) ) {
 
       if (typeof(ReloadWithAllParts) == "function") {
-
-        var mesg = EnigGetString("reloadImapMessage");
-
-        if (EnigConfirm(mesg))
+        if (EnigConfirm(EnigGetString("reloadImapMessage")))
           ReloadWithAllParts();
 
       } else {
@@ -141,7 +170,12 @@ function enigViewSecurityInfo() {
 
   } else {
     // Display SMIME security info
-    showMessageReadSecurityInfo();
+    if (displaySmimeMsg) {
+      showMessageReadSecurityInfo();
+    }
+    else {
+      EnigAlert(EnigGetString("noPgpMessage"));
+    }
   }
 }
 
@@ -367,7 +401,7 @@ function enigUpdateOptionsDisplay() {
     menuElement.setAttribute("checked", EnigGetPref(optList[j]) ? "true" : "false");
   }
 
-  optList = ["decryptverify", "importpublickey","savedecrypted"];
+  optList = ["decryptverify", "importpublickey", "savedecrypted"];
   for (j=0; j<optList.length; j++) {
     var menuElement = document.getElementById("enigmail_"+optList[j]);
     if (gEnigDecryptButton && gEnigDecryptButton.disabled) {
@@ -430,10 +464,14 @@ function enigMessageDecrypt(event) {
       }
 
       var emailAttachment = false;
+      var embeddedSigned = null;
       for (var indexb in currentAttachments) {
         var attachment = currentAttachments[indexb];
-        if (attachment.contentType.search(/^message\/rfc822(;|$)/i)  == 0) {
+        if (attachment.contentType.search(/^message\/rfc822(;|$)/i) == 0) {
           emailAttachment = true;
+        }
+        if (attachment.contentType.search(/^application\/pgp-signature/i) == 0) {
+          embeddedSigned = attachment.url.replace(/\.\d+\.\d+$/, "");
         }
         DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.contentType+"\n");
         //DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.url+"\n");
@@ -489,8 +527,24 @@ function enigMessageDecrypt(event) {
     }
   }
 
-  if ( (contentType.search(/^multipart\/signed(;|$)/i) == 0) &&
-       (contentType.search(/application\/pgp-signature/i) >= 0) ) {
+  var tryVerify = false;
+  var enableSubpartTreatment = false;
+  // special treatment for embedded signed messages
+  if (embeddedSigned) {
+    if (contentType.search(/^multipart\/encrypted(;|$)/i) == 0)
+      tryVerify = true;
+
+    if (contentType.search(/^multipart\/mixed(;|$)/i) == 0) {
+      tryVerify = true;
+      enableSubpartTreatment = true;
+    }
+  }
+
+  if ((contentType.search(/^multipart\/signed(;|$)/i) == 0) &&
+       (contentType.search(/application\/pgp-signature/i) >= 0))
+    tryVerify=true;
+
+  if (tryVerify) {
     // multipart/signed
     DEBUG_LOG("enigmailMessengerOverlay.js: multipart/signed\n");
 
@@ -500,12 +554,16 @@ function enigMessageDecrypt(event) {
 
     var msgUriSpec = enigGetCurrentMsgUriSpec();
     var mailNewsUrl = enigGetCurrentMsgUrl();
+    if (embeddedSigned) {
+      mailNewsUrl.spec = embeddedSigned;
+    }
 
     if (mailNewsUrl) {
       const ENIG_ENIGMIMEVERIFY_CONTRACTID = "@mozilla.org/enigmail/mime-verify;1";
       var verifier = Components.classes[ENIG_ENIGMIMEVERIFY_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeVerify);
 
-      verifier.init(mailNewsUrl, msgWindow, msgUriSpec, true);
+      verifier.init(mailNewsUrl, msgWindow, msgUriSpec,
+                    true, enableSubpartTreatment);
 
       return;
     }
@@ -1789,8 +1847,15 @@ function enigReceiveKeyTerminate (terminateArg, ipcRequest) {
 
       if (keygenConsole && keygenConsole.hasNewData()) {
         errorMsg = keygenConsole.getData();
+        var enigmailSvc = GetEnigmailSvc();
+        if (enigmailSvc) {
+          var statusFlagsObj=new Object();
+          var statusMsgObj=new Object();
+          errorMsg=enigmailSvc.parseErrorOutput(errorMsg, statusFlagsObj, statusMsgObj);
+        }
       }
     } catch (ex) {}
+    DEBUG_LOG("enigmailMessengerOverlay.js: enigReceiveKeyTerminate: errorMsg="+errorMsg);
     EnigAlert(EnigGetString("keyImportError")+ errorMsg);
   }
   gEnigIpcRequest.close(true);
