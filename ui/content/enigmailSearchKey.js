@@ -352,6 +352,11 @@ function enigScanKeys(connType, htmlTxt) {
   window.enigRequest.httpInProgress=false;
   enigPopulateList(window.enigRequest.keyList);
   document.getElementById("progress.box").setAttribute("hidden", "true");
+  if (window.enigRequest.keyList.length == 0) {
+    EnigAlert(EnigGetString("noKeyFound"));
+    enigCloseDialog();
+  }
+  
   document.getElementById("dialog.accept").removeAttribute("disabled");
   
   return true;
@@ -446,15 +451,15 @@ function enigScanGpgKeys(txt) {
     if (outputType==2 && (lines[i].search(/^pub:/))==0) {
       // output from gpgkeys_* protocol version 1
       // new key
-      var m=lines[i].split(/:/);
+      m=lines[i].split(/:/);
       if (m && m.length>1 ) {
         if (key) {
           window.enigRequest.keyList.push(key);
           key=null;
         }
-        var dat=new Date(m[4]*1000);
-        var month=String(dat.getMonth()+101).substr(1);
-        var day=String(dat.getDate()+100).substr(1);
+        dat=new Date(m[4]*1000);
+        month=String(dat.getMonth()+101).substr(1);
+        day=String(dat.getDate()+100).substr(1);
         key={
           keyId: m[1],
           created: dat.getFullYear()+"-"+month+"-"+day,
