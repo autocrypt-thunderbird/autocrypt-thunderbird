@@ -987,7 +987,9 @@ function (plainText, fromMailAddr, toMailAddr, encryptFlags, passphrase,
     statusCodeObj.value = -1;
 
   if (statusCodeObj.value != 0) {
-    // "Unremember" passphrase on error exit
+    // "Unremember" passphrase on encryption failure
+    // NOTE: May need to be more selective in unremembering,
+    //       depending upon the details of the error
     this.haveDefaultPassphrase = false;
     this._passphrase = null;
 
@@ -1064,15 +1066,20 @@ function (cipherText, verifyOnly, passphrase, statusCodeObj, statusMsgObj) {
     statusCodeObj.value = -1;
 
   if (statusCodeObj.value != 0) {
-    // "Unremember" passphrase on error exit
-    // NOTE: May need to be more selective in unremembering,
-    //       depending upon the details of the error
-    this.haveDefaultPassphrase = false;
-    this._passphrase = null;
-
     ERROR_LOG("enigmail.js: Enigmail.decryptMessage: Error in command execution\n");
 
-    statusMsgObj.value = "Error - decryption/verification command failed";
+    if (verifyOnly) {
+      statusMsgObj.value = "Error - signature verification failed";
+
+    } else {
+      statusMsgObj.value = "Error - message decryption/verification failed";
+
+      // "Unremember" passphrase on decryption failure
+      // NOTE: May need to be more selective in unremembering,
+      //       depending upon the details of the error
+      this.haveDefaultPassphrase = false;
+      this._passphrase = null;
+    }
 
     if (errMessagesObj.value) {
       statusMsgObj.value += "\n" + decryptCommand;
