@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>{847b3a00-7ab1-11d4-8f02-006008948af5}</em:id>
+    <em:version>0.84.1</em:version>
+    
+    <!-- Target Application (Thunderbird) this extension can install into, 
+         with minimum and maximum supported versions. --> 
+    <em:targetApplication>
+      <Description>
+        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+        <em:minVersion>0.6</em:minVersion>
+        <em:maxVersion>0.7</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+    
+    
+    <!-- Front End MetaData -->
+    <em:name>Enigmail</em:name>
+    <em:description>OpenPGP message encryption and authentication</em:description>
+    <em:creator>Enigmail Team</em:creator>
+    <em:homepageURL>http://enigmail.mozdev.org/</em:homepageURL>
+    <em:locked>true</em:locked>
+
+    <!-- Front End Integration Hooks (used by Extension Manager)-->
+    <em:optionsURL>chrome://enigmail/content/pref-enigmail.xul</em:optionsURL>
+    <em:aboutURL>chrome://enigmail/content/enigmailAbout.xul</em:aboutURL>
+    <em:iconURL>chrome://enigmail/skin/enigmail-about.png</em:iconURL>
+    
+    <!-- Packages, Skins and Locales that this extension registers -->
+    <em:file>
+      <Description about="urn:mozilla:extension:file:enigmail.jar">
+        <em:package>content/enigmail/</em:package>
+        <em:locale>locale/en-US/enigmail/</em:locale>
+      </Description>
+      <Description about="urn:mozilla:extension:file:enigmail-skin-tbird.jar">
+        <em:skin>skin/classic/enigmail/</em:skin>
+      </Description>
+    </em:file>
+  </Description>      
+
+</RDF>
