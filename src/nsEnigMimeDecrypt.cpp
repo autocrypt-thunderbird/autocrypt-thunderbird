@@ -330,7 +330,8 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   rv = mPipeTrans->WriteAsync(bufStream, available, PR_TRUE);
   if (NS_FAILED(rv)) return rv;
 
-  PRUint32 readCount, iterations, ctFound;
+  PRUint32 readCount, iterations;
+  int ctFound = -1;
   char buf[kCharMax];
   iterations = 0;
   ctFound = -1;
@@ -346,9 +347,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
     
     if (iterations==1 && readCount > 25) {
       // add mime boundaries around text/plain message (bug 6627)
-      ctFound=nsCRT::strncasecmp("content-type:", buf, 13);
-      if (ctFound==0) {
-        ctFound = -1;
+      if (nsCRT::strncasecmp("content-type:", buf, 13)==0) {
         PRUint32 whitespace=13;
         while((whitespace<readCount) && buf[whitespace] && 
               ((buf[whitespace]==' ') || (buf[whitespace]=='\t'))) { whitespace++; }
