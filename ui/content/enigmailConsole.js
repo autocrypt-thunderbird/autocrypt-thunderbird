@@ -6,6 +6,8 @@ EnigInitCommon("enigmailConsole");
 function enigConsoleLoad() {
   DEBUG_LOG("enigmailConsole.js: enigConsoleLoad\n");
 
+  top.controllers.insertControllerAt(0, CommandController);
+
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return;
@@ -56,7 +58,80 @@ function enigRefreshConsole() {
   return false;
 }
 
+function enigConsoleCopy()
+{
+  var selText = enigConsoleGetSelectionStr();
+
+  DEBUG_LOG("enigmailConsole.js: enigConsoleCopy: selText='"+selText+"'\n");
+
+  if (selText) {
+    var clipHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].createInstance(Components.interfaces.nsIClipboardHelper);
+
+    clipHelper.copyString(selText);
+  }
+
+  return true;
+}
+
+function enigConsoleGetSelectionStr()
+{
+  try {
+    var contentFrame = window.frames["contentFrame"];
+
+    var sel = contentFrame.getSelection();
+    return sel.toString();
+
+  } catch (ex) {
+    return "";
+  }
+}
+
+function isItemSelected()
+{
+  DEBUG_LOG("enigmailConsole.js: isItemSelected\n");
+  return enigConsoleGetSelectionStr() != "";
+}
+
 function UpdateCopyMenu()
 {
+  DEBUG_LOG("enigmailConsole.js: enigConsoleUpdateCopyMenu\n");
   goUpdateCommand("cmd_copy");
 }
+
+var CommandController = 
+{
+  isCommandEnabled: function (aCommand)
+  {
+    switch (aCommand) {
+      case "cmd_copy":
+        return isItemSelected();
+      default:
+        return false;
+    }
+  },
+  
+  supportsCommand: function (aCommand) 
+  {
+    switch (aCommand) {
+      case "cmd_copy":
+        return true;
+      default:
+        return false;
+    }
+  },
+  
+  doCommand: function (aCommand)
+  {
+    switch (aCommand) {
+      case "cmd_copy":
+        enigConsoleCopy();
+        break;
+      default:
+        break;
+    }
+  },
+  
+  onEvent: function (aEvent) 
+  {
+  }
+};
