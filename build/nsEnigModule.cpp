@@ -175,4 +175,4 @@ static const nsModuleComponentInfo components[] =
 };
 
 // Module entry point
-NS_IMPL_NSGETMODULE("nsEnigModule", components)
+NS_IMPL_NSGETMODULE(nsEnigModule, components)
