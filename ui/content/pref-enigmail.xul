@@ -143,8 +143,6 @@
               prefattribute="checked"/>
     </groupbox>
 
-    <separator/>
-
     <hbox autostretch="never">
       <label control="enigmail_maxIdleMinutes"
              value="&enigmail.maxIdleMinutesHead.label;" />

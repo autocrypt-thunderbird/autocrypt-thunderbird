@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible IPC version
-var gEnigmailVersion = "0.28.0.0";
-var gIPCVersion      = "0.98.1.0";
+var gEnigmailVersion = "0.28.1.0";
+var gIPCVersion      = "0.98.2.0";
 
 const MESSAGE_BUFFER_SIZE = 16000;
 
@@ -30,6 +30,7 @@ const THREE_BUTTON_STRINGS   = (BUTTON_TITLE_IS_STRING * BUTTON_POS_0) +
 var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "debug":false,
                              "initAlertCount":0,
+                             "agentPath":"",
                              "passivePrivacy":false,
                              "userIdSource":USER_ID_DEFAULT,
                              "userIdValue":"",
@@ -37,12 +38,17 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "defaultSignMsg":false,
                              "defaultEncryptMsg":false,
                              "alwaysTrustSend":true,
-                             "encryptToSelf":false,
+                             "encryptToSelf":true,
+                             "confirmBeforeSend":false,
                              "maxIdleMinutes":5,
                              "keyserver":"www.keyserver.net",
                              "autoDecrypt":true,
                              "captureWebMail":false
                             };
+
+// User interaction flags
+const UI_INTERACTIVE    = 0x01;
+const IMPORT_KEY        = 0x02;
 
 // Encryption flags
 const SIGN_MESSAGE      = 0x01;

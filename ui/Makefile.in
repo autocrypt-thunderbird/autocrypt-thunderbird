@@ -47,6 +47,7 @@ libs::
 	@$(REGCHROME) content enigmail enigmail.jar
 	@$(REGCHROME) locale en-US/enigmail enigmail.jar
 	@$(REGCHROME) skin modern/enigmail enigmail.jar
+	@$(REGCHROME) skin classic/enigmail enigmail.jar
 
 ## NOTE: Put all the skin stuff in the content directory for the moment
 ##       (Otherwise every Mozilla skin will need to provide a enigmail skin!)

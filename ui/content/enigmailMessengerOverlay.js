@@ -7,18 +7,22 @@ window.addEventListener("load", enigMessengerStartup, false);
 
 function enigMessengerStartup() {
     DEBUG_LOG("enigmailMessengerOverlay.js: Startup\n");
-    // Commented out; clean-up now handled by HdrView
+    // Commented out; clean-up now handled by HdrView and Unload
     ///var outliner = GetThreadOutliner();
     ///outliner.addEventListener("click", enigThreadPaneOnClick, true);
 }
 
-function enigThreadPaneOnClick() {
-    //DEBUG_LOG("enigmailMessengerOverlay.js: enigThreadPaneOnClick\n");
+function enigMessengerUnload() {
+    DEBUG_LOG("enigmailMessengerOverlay.js: Unload\n");
     var enigmailBox = document.getElementById("expandedEnigmailBox");
     var statusText = document.getElementById("expandedEnigmailStatusText");
 
     statusText.setAttribute("value", "");
     enigmailBox.setAttribute("collapsed", "true");
+}
+
+function enigThreadPaneOnClick() {
+    //DEBUG_LOG("enigmailMessengerOverlay.js: enigThreadPaneOnClick\n");
 }
 
 function enigGetCurrentMsgUrl() {
@@ -98,7 +102,8 @@ function enigMessageDecryptCallback(msgText, interactive, signature) {
   var signatureObj = new Object();
   signatureObj.value = signature;
 
-  var plainText = enigmailSvc.decryptMessage(window, interactive, msgText,
+  var uiFlags = interactive ? (UI_INTERACTIVE | IMPORT_KEY) : 0;
+  var plainText = enigmailSvc.decryptMessage(window, uiFlags, msgText,
                                      exitCodeObj, errorMsgObj, signatureObj);
   //DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCallback: plainText='"+plainText+"'\n");
 

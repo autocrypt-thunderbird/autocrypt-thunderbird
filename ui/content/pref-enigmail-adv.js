@@ -107,10 +107,12 @@ function EnigTest() {
 
   CONSOLE_LOG("EnigTest: To: "+toMailAddr+"\n"+plainText+"\n");
 
+  var uiFlags = UI_INTERACTIVE;
+
   var exitCodeObj = new Object();
   var errorMsgObj = new Object();
 
-  var cipherText = enigmailSvc.encryptMessage(window, true, plainText,
+  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
                                               "", toMailAddr,
                                               SIGN_MESSAGE,
                                               exitCodeObj, errorMsgObj);
@@ -122,7 +124,7 @@ function EnigTest() {
 
   var signatureObj = new Object();
 
-  var decryptedText = enigmailSvc.decryptMessage(window, true, cipherText,
+  var decryptedText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
                                       exitCodeObj, errorMsgObj, signatureObj);
   CONSOLE_LOG("\n************************************************\n");
   CONSOLE_LOG("EnigTest: VERIFICATION\n");
@@ -131,7 +133,7 @@ function EnigTest() {
   CONSOLE_LOG("EnigTest: signature = "+signatureObj.value+"\n");
   CONSOLE_LOG("************************************************\n");
 
-  var cipherText = enigmailSvc.encryptMessage(window, true, plainText,
+  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
                                               "", toMailAddr,
                                               SIGN_MESSAGE|ENCRYPT_MESSAGE,
                                               exitCodeObj, errorMsgObj);
@@ -141,7 +143,7 @@ function EnigTest() {
   CONSOLE_LOG("EnigTest: exitCode = "+exitCodeObj.value+"\n");
   CONSOLE_LOG("************************************************\n");
 
-  var decryptedText = enigmailSvc.decryptMessage(window, true, cipherText,
+  var decryptedText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
                                       exitCodeObj, errorMsgObj, signatureObj);
   CONSOLE_LOG("\n************************************************\n");
   CONSOLE_LOG("EnigTest: DECRYPTION\n");

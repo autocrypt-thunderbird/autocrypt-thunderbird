@@ -59,6 +59,10 @@ const NS_HTTPPROTOCOLHANDLER_CID_STR= "{4f47e42e-4d23-4dd3-bfda-eb29255e9ea3}";
 
 const NS_IOSERVICE_CID_STR          = "{9ac9e770-18bc-11d3-9337-00104ba0fd40}";
 
+// User interaction flags
+const UI_INTERACTIVE    = 0x01;
+const IMPORT_KEY        = 0x02;
+
 // Encryption flags
 const SIGN_MESSAGE      = 0x01;
 const ENCRYPT_MESSAGE   = 0x02;
@@ -441,7 +445,7 @@ PGPModule.prototype = {
     var statusMsgObj = new Object();
     var encryptFlags = SIGN_MESSAGE|ENCRYPT_MESSAGE;
 
-    var cipherText = gEnigmailSvc.encryptMessage(null, false,
+    var cipherText = gEnigmailSvc.encryptMessage(null, 0,
                                                  aOrigBody.body,
                                                  "",
                                                  aMsgHeader.to,
@@ -465,7 +469,7 @@ PGPModule.prototype = {
     var errorMsgObj  = new Object();
     var signatureObj = new Object();
 
-    var plainText = gEnigmailSvc.decryptMessage(null, false,
+    var plainText = gEnigmailSvc.decryptMessage(null, 0,
                                                 aOrigBody.body,
                                                 exitCodeObj,
                                                 errorMsgObj,
@@ -932,7 +936,7 @@ function (prefBranch) {
 
     this.console = pipeConsole;
 
-    pipeConsole.write("Enigmail service initializing ...\n");
+    pipeConsole.write("Initializing Enigmail service ...\n");
 
   } catch (ex) {
     this.initializationError = "IPCService not available";
@@ -940,45 +944,80 @@ function (prefBranch) {
     throw Components.results.NS_ERROR_FAILURE;
   }
 
+  var agentPath = "";
+  try {
+    agentPath = this.prefBranch.getCharPref("agentPath");
+  } catch (ex) {
+  }
+
   var agentList = ["gpg", "pgp"];
   var agentType = "";
-  var agentPath = "";
 
-  // Resolve relative path using PATH environment variable
-  var envPath = this.processInfo.getEnv("PATH");
+  if (agentPath) {
+    // Locate GPG/PGP executable
+    try {
+      var pathDir = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
 
-  var j;
-  for (j=0; j<agentList.length; j++) {
-    agentType = agentList[j];
-    var agentName = this.isWin32 ? agentType+".exe" : agentType;
+      pathDir.initWithPath(agentPath);
 
-    agentPath = ResolvePath(agentName, envPath, this.isWin32);
-    if (agentPath) {
-      // Discard path info for win32
-      if (this.isWin32)
-        agentPath = agentType;
-      break;
+      if (!pathDir.exists())
+        throw Components.results.NS_ERROR_FAILURE;
+
+    } catch (ex) {
+      this.initializationError = "Unable to locate GPG/PGP agent "+agentPath;
+      ERROR_LOG("enigmail.js: Enigmail.initialize: Error - "+this.initializationError+"\n");
+      throw Components.results.NS_ERROR_FAILURE;
     }
-  }
 
-  if (!agentPath && this.isWin32) {
-    // Win32: search for GPG in c:\gnupg, c:\gnupg\bin, d:\gnupg, d:\gnupg\bin
-    var gpgPath = "c:\\gnupg;c:\\gnupg\\bin;d:\\gnupg;d:\\gnupg\\bin";
+    if (agentPath.search(/gpg[^\/\\]*$/i) > -1) {
+      agentType = "gpg";
 
-    agentType = "gpg";
-    agentPath = ResolvePath("gpg.exe", gpgPath, this.isWin32);
-  }
+    } else if (agentPath.search(/pgp[^\/\\]*$/i) > -1) {
+      agentType = "pgp";
 
-  if (!agentPath) {
-    this.initializationError = "Unable to locate GPG or PGP executable in the path";
-    ERROR_LOG("enigmail.js: Enigmail: Error - "+this.initializationError+"\n");
-    throw Components.results.NS_ERROR_FAILURE;
+    } else {
+      this.initializationError = "Cannot determine agent type (GPG/PGP) from executable filename "+agentPath;
+      ERROR_LOG("enigmail.js: Enigmail.initialize: Error - "+this.initializationError+"\n");
+      throw Components.results.NS_ERROR_FAILURE;
+    }
+
+  } else {
+    // Resolve relative path using PATH environment variable
+    var envPath = this.processInfo.getEnv("PATH");
+
+    var j;
+    for (j=0; j<agentList.length; j++) {
+      agentType = agentList[j];
+      var agentName = this.isWin32 ? agentType+".exe" : agentType;
+
+      agentPath = ResolvePath(agentName, envPath, this.isWin32);
+      if (agentPath) {
+        // Discard path info for win32
+        if (this.isWin32)
+          agentPath = agentType;
+        break;
+      }
+    }
+
+    if (!agentPath && this.isWin32) {
+      // Win32: search for GPG in c:\gnupg, c:\gnupg\bin, d:\gnupg, d:\gnupg\bin
+      var gpgPath = "c:\\gnupg;c:\\gnupg\\bin;d:\\gnupg;d:\\gnupg\\bin";
+
+      agentType = "gpg";
+      agentPath = ResolvePath("gpg.exe", gpgPath, this.isWin32);
+    }
+
+    if (!agentPath) {
+      this.initializationError = "Unable to locate GPG or PGP executable in the path";
+      ERROR_LOG("enigmail.js: Enigmail: Error - "+this.initializationError+"\n");
+      throw Components.results.NS_ERROR_FAILURE;
+    }
   }
 
   // Escape any backslashes in agent path
   agentPath = agentPath.replace(/\\/g, "\\\\");
 
-  CONSOLE_LOG("EnigmailAgentPath="+agentPath+"\n");
+  CONSOLE_LOG("EnigmailAgentPath="+agentPath+"\n\n");
 
   this.agentType = agentType;
   this.agentPath = agentPath;
@@ -990,12 +1029,22 @@ function (prefBranch) {
      command += " -h";
   }
 
-  CONSOLE_LOG("enigmail> "+command+"\n");
-
   // This particular command execution seems to be essential on win32
   // (In particular, this should be the first command executed and
   //  *should* use the shell, i.e., command.com)
-  var version = this.ipcService.execSh(command);
+  var outStrObj = new Object();
+  var outLenObj = new Object();
+  var errStrObj = new Object();
+  var errLenObj = new Object();
+
+  var exitCode = this.ipcService.execPipe(command, true, "", 0, [], 0,
+                                outStrObj, outLenObj, errStrObj, errLenObj);
+
+  CONSOLE_LOG("enigmail> "+command+"\n");
+
+  var version = outStrObj.value;
+  if (errStrObj.value)
+    version += errStrObj.value;
 
   CONSOLE_LOG(version+"\n");
 
@@ -1123,7 +1172,7 @@ function EnigStripEmail(mailAddrs) {
     
 
 Enigmail.prototype.encryptMessage = 
-function (parent, interactive, plainText, fromMailAddr, toMailAddr,
+function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
           encryptFlags, exitCodeObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.encryptMessage: "+plainText.length+" bytes from "+fromMailAddr+" to "+toMailAddr+" ("+encryptFlags+")\n");
 
@@ -1373,9 +1422,12 @@ function ExtractPGPSignature(signedText) {
 
 
 Enigmail.prototype.decryptMessage = 
-function (parent, interactive, cipherText,
+function (parent, uiFlags, cipherText,
           exitCodeObj, errorMsgObj, signatureObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.decryptMessage: "+cipherText.length+" bytes, "+interactive+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail.decryptMessage: "+cipherText.length+" bytes, "+uiFlags+"\n");
+
+  var interactive = uiFlags & UI_INTERACTIVE;
+  var importKey   = uiFlags & IMPORT_KEY;
 
   //DEBUG_LOG("enigmail.js: Enigmail.decryptMessage: signatureObj.value="+signatureObj.value+"\n");
 
@@ -1516,7 +1568,6 @@ function (parent, interactive, cipherText,
     errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
   }
 
-  var unverifiedMessage;
   var importKeyId;
 
   if (statusMsg && (statusMsg.search("ERRSIG ") > -1)) {
@@ -1537,12 +1588,13 @@ function (parent, interactive, cipherText,
   } catch (ex) {
   }
 
-  if (importKeyId && interactive && keyserver) {
+  if (importKeyId && importKey && keyserver) {
 
     var confirmMsg = "Import public key "+importKeyId+" from keyserver "+keyserver+"?";
     if (this.confirmMsg(parent, confirmMsg)) {
       var recvErrorMsgObj = new Object();
-      var exitStatus = this.receiveKey(parent, interactive, importKeyId,
+      var recvFlags = interactive ? UI_INTERACTIVE : 0;
+      var exitStatus = this.receiveKey(parent, recvFlags, importKeyId,
                                        keyserver, recvErrorMsgObj);
 
       if (exitStatus != 0) {
@@ -1550,8 +1602,9 @@ function (parent, interactive, cipherText,
 
       } else {
         // Recursive call
-        // Note that interactive is set to false to break the recursion
-        return this.decryptMessage(parent, false, cipherText,
+        // Note that IMPORT_KEY is set to false to break the recursion
+        var uiFlagsDeep = interactive ? UI_INTERACTIVE : 0;
+        return this.decryptMessage(parent, uiFlagsDeep, cipherText,
                                    exitCodeObj, errorMsgObj, signatureObj);
       }
     }
@@ -1564,11 +1617,10 @@ function (parent, interactive, cipherText,
     else
       errorMsgObj.value = "Error - public key "+importKeyId+" needed to verify signature";
 
-    if (plainText) {
+    if (plainText && !interactive) {
       // Append original PGP block to unverified message
-      unverifiedMessage = true;
       plainText = "-----BEGIN PGP UNVERIFIED MESSAGE-----\r\n" + plainText +
-                  "-----END PGP UNVERIFIED MESSAGE-----\r\n" + pgpBlock;
+                  "-----END PGP UNVERIFIED MESSAGE-----\r\n\r\n" + pgpBlock;
     }
 
   } else if (verifyOnly) {
@@ -1661,7 +1713,7 @@ function (email, secret, exitCodeObj, errorMsgObj) {
 
 
 Enigmail.prototype.receiveKey = 
-function (parent, interactive, keyId, keyserver, errorMsgObj) {
+function (parent, uiFlags, keyId, keyserver, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.receiveKey: "+keyId+" from "+keyserver+"\n");
 
   if (!this.initialized) {

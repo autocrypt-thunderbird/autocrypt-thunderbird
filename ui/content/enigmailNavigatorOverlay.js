@@ -191,7 +191,9 @@ function enigYahooCompose() {
 
   var exitCodeObj = new Object();
   var errorMsgObj = new Object();
-  var cipherText = enigmailSvc.encryptMessage(window, true, plainText,
+  var uiFlags = UI_INTERACTIVE;
+
+  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
                                               fromAddr, toAddr,
                                               encryptFlags,
                                               exitCodeObj, errorMsgObj);
@@ -230,7 +232,8 @@ function enigYahooShowLetter() {
   var errorMsgObj  = new Object();
   var signatureObj = new Object();
 
-  var plainText = enigmailSvc.decryptMessage(window, true, cipherText,
+  var uiFlags = UI_INTERACTIVE;
+  var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
                                        exitCodeObj, errorMsgObj, signatureObj);
 
   var exitCode = exitCodeObj.value;
@@ -316,7 +319,9 @@ function enigHotmailCompose() {
 
   var exitCodeObj = new Object();
   var errorMsgObj = new Object();
-  var cipherText = enigmailSvc.encryptMessage(window, true, plainText,
+  var uiFlags = UI_INTERACTIVE;
+
+  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
                                               fromAddr, toAddr,
                                               encryptFlags,
                                               exitCodeObj, errorMsgObj);
@@ -355,7 +360,8 @@ function enigHotmailShowLetter() {
   var errorMsgObj  = new Object();
   var signatureObj = new Object();
 
-  var plainText = enigmailSvc.decryptMessage(window, true, cipherText,
+  var uiFlags = UI_INTERACTIVE;
+  var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
                                        exitCodeObj, errorMsgObj, signatureObj);
 
   var exitCode = exitCodeObj.value;

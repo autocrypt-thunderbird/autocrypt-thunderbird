@@ -17,6 +17,7 @@ function enigStartHeaders()
     var msgFrame = window.frames["messagepane"];
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: msgFrame="+msgFrame+"\n");
     msgFrame.addEventListener("load", enigMessageDecrypt, false);
+    msgFrame.addEventListener("unload", enigMessengerUnload, false);
   }
 }
 

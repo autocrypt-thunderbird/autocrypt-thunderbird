@@ -62,7 +62,7 @@
     </toolbar>
   </toolbox>
 
-  <box id="messagepanebox">
+  <vbox id="messagepanebox">
     <box id="expandedEnigmailBox" class="headerBox"
           position="1"
           collapsed="true">
@@ -73,6 +73,6 @@
              tooltip="aTooltip"
              tooltiptext="Enigmail decryption/verification status" />
     </box>
-  </box>
+  </vbox>
 
 </overlay>

@@ -20,13 +20,15 @@
 <!ENTITY enigmail.preferences.label	  "Preferences">
 
 <!ENTITY enigmail.passivePrivacy.label    "Enable Passive Privacy">
-<!ENTITY enigmail.userIdValue.label       "User email address">
+<!ENTITY enigmail.userIdValue.label       "User email address:">
 <!ENTITY enigmail.userNoPassphrase.label  "No passphrase for user">
 
 <!ENTITY enigmail.userIdSource.label      "Choose secret key for signing">
 <!ENTITY enigmail.userIdDefault.label     "Use default key">
 <!ENTITY enigmail.userIdSpecified.label   "Use specified email address">
 <!ENTITY enigmail.userIdFromAddr.label    "Use FROM email address">
+
+<!ENTITY enigmail.agentPath.label         "GPG/PGP executable path:">
 
 <!ENTITY enigmail.defaultSignMsg.label    "Sign messages by default">
 <!ENTITY enigmail.defaultEncryptMsg.label "Encrypt messages by default">
@@ -35,11 +37,12 @@
 <!ENTITY enigmail.whenSending.label       "When sending mail">
 <!ENTITY enigmail.encryptToSelf.label     "Encrypt to self">
 <!ENTITY enigmail.alwaysTrustSend.label   "Always trust user ID">
+<!ENTITY enigmail.confirmBeforeSend.label "Always confirm before send">
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Remember password for">
 <!ENTITY enigmail.maxIdleMinutesTail.label "minutes of idle time">
 
-<!ENTITY enigmail.keyserver.label         "Keyserver">
+<!ENTITY enigmail.keyserver.label         "Keyserver:">
 
 <!ENTITY enigmail.autoDecrypt.label       "Automatically decrypt/verify messages (slow?)">
 <!ENTITY enigmail.replaceNonBreakingSpace.label "Replace non-breaking space with white space (workaround)">

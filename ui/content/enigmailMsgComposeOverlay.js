@@ -1,9 +1,21 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
+// nsIDocumentEncoder.h:
+const OutputSelectionOnly = 1;
+const OutputFormatted     = 2;
+const OutputRaw           = 4;
+const OutputPreformatted  = 16;
+const OutputWrap          = 32;
+const OutputFormatFlowed  = 64;
+const OutputCRLineBreak   = 512;
+const OutputLFLineBreak   = 1024;
+
 // Initialize enigmailCommon
 EnigInitCommon("enigmailMsgComposeOverlay");
 
 window.addEventListener("load", enigMsgComposeStartup, false);
+
+var gDecryptTimeoutID;
 
 var gEditorElement, gEditorShell;
 
@@ -13,6 +25,8 @@ var gOrigSendButton, gEnigSendButton, gUndoMenuItem;
 
 function enigMsgComposeStartup() {
    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
+   gDecryptTimeoutID = null;
+
    gOrigSendButton = document.getElementById("button-send");
    gEnigSendButton = document.getElementById("button-enigmail-send");
 
@@ -25,11 +39,14 @@ function enigMsgComposeStartup() {
 
    gEditorShell = gEditorElement.editorShell;
    DEBUG_LOG("enigmailMsgComposeOverlay.js: gEditorShell = "+gEditorShell+"\n");
+   var docStateListener = new DocumentStateListener();
+   gEditorShell.RegisterDocumentStateListener(docStateListener);
 
    enigUpdateOptionsDisplay();
 }
 
 function enigUpdateOptionsDisplay() {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigUpdateOptionsDisplay: \n");
    var optList = ["defaultEncryptMsg", "defaultSignMsg"];
 
    var signOrEncrypt = false;
@@ -78,18 +95,14 @@ function enigUndoEncryption() {
 function enigSend(encryptFlags) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: "+encryptFlags+"\n");
 
+  if (gWindowLocked) {
+    EnigAlert("Compose window is locked; send cancelled\n");
+    return;
+  }
+
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {
      if (EnigConfirm("Failed to initialize Enigmail.\nSend unencrypted email?"))
-        goDoCommand('cmd_sendButton');
-
-     return;
-  }
-
-  if (gWindowLocked || gIsOffline) {
-     // We perform this check because we are overriding the default
-     // GenericSendMessage function in MsgComposeCommands.js
-     if (EnigConfirm("Window is locked or computer is offline.\nEmulate default (unencrypted) send behaviour?"))
         goDoCommand('cmd_sendButton');
 
      return;
@@ -130,8 +143,8 @@ function enigSend(encryptFlags) {
     
        // Get plain text
        // (Do we need to set nsIDocumentEncoder::* flags?)
-       var encoderFlags = 16;   // OutputPreformatted
-       var docText = gEditorShell.GetContentsAs("text/plain", encoderFlags)
+       var encoderFlags = OutputFormatted;
+       var docText = gEditorShell.GetContentsAs("text/plain", encoderFlags);
        DEBUG_LOG("enigmailMsgComposeOverlay.js: docText["+encoderFlags+"] = '"+docText+"'\n");
 
        var sendFlowed;
@@ -156,16 +169,17 @@ function enigSend(encryptFlags) {
        }
     
        DEBUG_LOG("enigmailMsgComposeOverlay.js: docText = '"+docText+"'\n");
-       var directionFlags = 0;   // see nsIEditor.h
     
        gEditorShell.SelectAll();
     
+       var directionFlags = 0;   // see nsIEditor.h
        gEditorShell.DeleteSelection(directionFlags);
     
        gEditorShell.InsertText(docText);
     
-       encoderFlags = 32;   // OutputWrap
-       var plainText = gEditorShell.GetContentsAs("text/plain", encoderFlags)
+       encoderFlags = OutputWrap | OutputCRLineBreak | OutputLFLineBreak;
+
+       var plainText = gEditorShell.GetContentsAs("text/plain", encoderFlags);
        DEBUG_LOG("enigmailMsgComposeOverlay.js: plainText["+encoderFlags+"] = '"+plainText+"'\n");
     
        var cipherText;
@@ -192,7 +206,8 @@ function enigSend(encryptFlags) {
 
        var exitCodeObj = new Object();
        var errorMsgObj = new Object();
-       cipherText = enigmailSvc.encryptMessage(window, true, plainText,
+       var uiFlags = UI_INTERACTIVE;
+       cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
                                                fromAddr, toAddr, encryptFlags,
                                                exitCodeObj, errorMsgObj);
 
@@ -206,18 +221,20 @@ function enigSend(encryptFlags) {
     
        gEditorShell.SelectAll();
     
-       gEditorShell.DeleteSelection(directionFlags);
-    
        gEditorShell.InsertText(cipherText);
-    
-       //if (!EnigConfirm("enigmailMsgComposeOverlay.js: Sending encrypted/signed message to "+toAddr+"\n")) return;
     
        gEnigProcessed = {"plainText":plainText};
 
        gUndoMenuItem.removeAttribute("disabled");
      }
     
-     enigGenericSendMessage(nsIMsgCompDeliverMode.Now);
+     if (EnigGetPref("confirmBeforeSend")) {
+       if (!EnigConfirm("Send message to "+toAddr+"?\n"))
+         return;
+     }
+    
+     enigGenericSendMessage(gIsOffline ? nsIMsgCompDeliverMode.Later
+                                       : nsIMsgCompDeliverMode.Now);
 
   } catch (ex) {
      if (EnigConfirm("Error in Enigmail; Encryption/signing failed; send unencrypted email?\n"))
@@ -231,7 +248,7 @@ function enigSend(encryptFlags) {
 // (after the calls to Recipients2CompFields and Attachements2CompFields)
 /////////////////////////////////////////////////////////////////////////
 function enigModifyCompFields(msgCompFields) {
-  var enigmailHeaders = "X-Enigmail-Version: "+gEnigmailVersion+"\n";
+  var enigmailHeaders = "X-Enigmail-Version: "+gEnigmailVersion+"\r\n";
   msgCompFields.otherRandomHeaders += enigmailHeaders;
 
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigModifyCompFields: otherRandomHeaders = "+
@@ -366,6 +383,92 @@ function enigToggleAttribute(attrName)
   enigUpdateOptionsDisplay();
 }
 
+function enigDecryptQuote() {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote\n");
+
+  if (gWindowLocked || gEnigProcessed)
+    return;
+
+  var encoderFlags = OutputPreformatted | OutputLFLineBreak;
+
+  var docText = gEditorShell.GetContentsAs("text/plain", encoderFlags);
+
+  if (docText.indexOf("-----BEGIN PGP MESSAGE-----") < 0)
+    return;
+
+  var beginIndex = docText.search(/>\s*-----BEGIN PGP MESSAGE-----/);
+  var endIndex   = docText.search(/>\s*-----END PGP MESSAGE-----/)
+  if (endIndex > -1)
+    endIndex = docText.indexOf("\n", endIndex);
+
+  if ((beginIndex < 0)|| (endIndex < 0) || (beginIndex >= endIndex))
+    return;
+
+  var head = docText.substr(0, beginIndex);
+  var tail = docText.substr(endIndex+1);
+
+  var pgpBlock = docText.substr(beginIndex, endIndex-beginIndex+1);
+
+  var matches = pgpBlock.match(/(>\s*)-----BEGIN PGP MESSAGE-----/);
+
+  var indentStr = "> ";
+  if (matches && (matches.length > 1)) {
+    indentStr = matches[1];
+  }
+  
+  pgpBlock = pgpBlock.replace(/>[ \t]*/g, "");
+
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: pgpBlock='"+pgpBlock+"'\n");
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
+  var exitCodeObj = new Object();
+  var errorMsgObj = new Object();
+  var signatureObj = new Object();
+  signatureObj.value = "";
+
+  var uiFlags = UI_INTERACTIVE;
+  var plainText = enigmailSvc.decryptMessage(window, uiFlags, pgpBlock,
+                                     exitCodeObj, errorMsgObj, signatureObj);
+  var exitCode = exitCodeObj.value;
+
+  if (!plainText || (exitCode != 0)) {
+    // Error processing
+    var errorMsg = errorMsgObj.value;
+
+    var statusLines = errorMsg.split(/\r?\n/);
+
+    var displayMsg;
+    if (statusLines && statusLines.length) {
+      // Display only first ten lines of error message
+      while (statusLines.length > 10)
+        statusLines.pop();
+
+      displayMsg = statusLines.join("\n");
+      EnigAlert(displayMsg);
+    }
+
+    if (!plainText)
+      return;
+  }
+
+  // Replace encrypted quote with decrypted quote
+
+  gEditorShell.SelectAll();
+  //var directionFlags = 0;   // see nsIEditor.h
+  //gEditorShell.DeleteSelection(directionFlags);
+
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: plainText='"+plainText+"'\n");
+
+  gEditorShell.InsertText(head);
+  var nodeObj = new Object();
+  gEditorShell.InsertAsQuotation(plainText, nodeObj);
+  gEditorShell.InsertText(tail);
+}
+
+
 function DocumentStateListener()
 {
 }
@@ -373,7 +476,6 @@ function DocumentStateListener()
 DocumentStateListener.prototype = {
 
   QueryInterface: function (iid) {
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: QI\n");
 
     if (!iid.equals(Components.interfaces.nsIDocumentStateListener) &&
         !iid.equals(Components.interfaces.nsISupports))
@@ -384,15 +486,23 @@ DocumentStateListener.prototype = {
 
   NotifyDocumentCreated: function ()
   {
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentCreated\n");
+    //DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentCreated\n");
   },
 
   NotifyDocumentWillBeDestroyed: function ()
   {
+    //DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentWillBeDestroyed\n");
   },
 
   NotifyDocumentStateChanged: function (nowDirty)
   {
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentStateChanged\n");
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentStateChanged: "+nowDirty+"\n");
+
+    if (!gDecryptTimeoutID &&
+        gMsgCompose.editor.documentEditable &&
+        gMsgCompose.editor.documentLength) {
+      gDecryptTimeoutID = window.setTimeout(enigDecryptQuote, 10);
+    }
   }
+
 }

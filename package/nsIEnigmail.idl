@@ -67,6 +67,10 @@ interface nsIEnigmail : nsISupports
 
   boolean stillActive();
 
+  /* User interaction flags */
+  const long UI_INTERACTIVE    = 0x01;
+  const long IMPORT_KEY        = 0x02;
+
   /* Encryption flags */
   const long SIGN_MESSAGE      = 0x01;
   const long ENCRYPT_MESSAGE   = 0x02;
@@ -74,7 +78,7 @@ interface nsIEnigmail : nsISupports
   const long ENCRYPT_TO_SELF   = 0x08;
 
   string encryptMessage(in nsIDOMWindow parent,
-                        in boolean interactive,
+                        in unsigned long uiFlags,
                         in string  plainText,
                         in string  fromMailAddr,
                         in string  toMailAddr,
@@ -83,14 +87,14 @@ interface nsIEnigmail : nsISupports
                         out string errorMsg);
 
   string decryptMessage(in nsIDOMWindow parent,
-                        in boolean interactive,
+                        in unsigned long uiFlags,
                         in string  cipherText,
                         out long   exitCode,
                         out string errorMsg,
                         inout string signature);
 
   long receiveKey(in nsIDOMWindow parent,
-                  in boolean interactive,
+                  in unsigned long uiFlags,
                   in string keyId,
                   in string keyserver,
                   out string errorMsg);

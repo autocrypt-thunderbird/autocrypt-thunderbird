@@ -34,7 +34,7 @@
 # Makefile for package directory
 
 # Specify these as parameters to the make command
-ENIGMAIL_VERS = 0.28.0
+ENIGMAIL_VERS = 0.28.1
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@

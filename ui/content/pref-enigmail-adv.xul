@@ -50,6 +50,11 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail-adv.js"/>
 
+  <hbox>
+    <label control="enigmail_agentPath"
+           value="&enigmail.agentPath.label;" />
+    <textbox id="enigmail_agentPath"/>
+  </hbox>
 
   <groupbox orient="vertical">
     <caption label="&enigmail.whenSending.label;"/>
@@ -59,6 +64,9 @@
 
     <checkbox id="enigmail_alwaysTrustSend"
               label="&enigmail.alwaysTrustSend.label;" />
+
+    <checkbox id="enigmail_confirmBeforeSend"
+              label="&enigmail.confirmBeforeSend.label;" />
   </groupbox>
 
   <hbox autostretch="never">
