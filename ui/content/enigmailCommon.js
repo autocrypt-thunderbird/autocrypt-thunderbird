@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible IPC version
-var gEnigmailVersion = "0.39.4.0";
-var gIPCVersion      = "0.99.1.0";
+var gEnigmailVersion = "0.50.0.0";
+var gIPCVersion      = "1.0.0.0";
 
 // Maximum size of message directly processed by Enigmail
 const MESSAGE_BUFFER_SIZE = 32000;
@@ -19,6 +19,13 @@ const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
 
 // Interfaces
 const nsIEnigmail               = Components.interfaces.nsIEnigmail;
+
+// Encryption flags
+if (nsIEnigmail) {
+  const SIGN_MSG    = nsIEnigmail.SIGN_MESSAGE;
+  const ENCRYPT_MSG = nsIEnigmail.ENCRYPT_MESSAGE;
+  const ENCRYPT_OR_SIGN_MSG = ENCRYPT_MSG | SIGN_MSG;
+}
 
 // UserIdSource values
 const USER_ID_SPECIFIED = 0;
@@ -46,7 +53,7 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "userIdValue":"",
                              "noPassphrase":false,
                              "defaultSignMsg":false,
-                             "defaultEncryptMsg":false,
+                             "defaultEncryptSignMsg":false,
                              "defaultSignNewsMsg":false,
                              "alwaysTrustSend":true,
                              "encryptToSelf":true,

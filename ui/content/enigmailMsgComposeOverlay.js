@@ -50,7 +50,8 @@ function enigMsgComposeReset() {
 
 function enigUpdateOptionsDisplay() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigUpdateOptionsDisplay: \n");
-   var optList = ["defaultEncryptMsg", "defaultSignMsg", "confirmBeforeSend"];
+   var optList = ["defaultEncryptSignMsg", "defaultSignMsg",
+                  "confirmBeforeSend"];
 
    var signOrEncrypt = false;
 
@@ -58,7 +59,7 @@ function enigUpdateOptionsDisplay() {
      var optName = optList[j];
      var optValue = EnigGetPref(optName);
 
-     if (optValue && ((optName == "defaultEncryptMsg") ||
+     if (optValue && ((optName == "defaultEncryptSignMsg") ||
                       (optName == "defaultSignMsg")) )
        signOrEncrypt = true;
 
@@ -177,14 +178,11 @@ function enigSend(encryptFlags) {
      if (defaultSend) {
 
        if (EnigGetPref("defaultSignMsg"))
-         encryptFlags |= nsIEnigmail.SIGN_MESSAGE;
+         encryptFlags |= SIGN_MSG;
 
-       if (EnigGetPref("defaultEncryptMsg"))
-         encryptFlags |= nsIEnigmail.ENCRYPT_MESSAGE;
+       if (EnigGetPref("defaultEncryptSignMsg"))
+         encryptFlags |= ENCRYPT_OR_SIGN_MSG;
      }
-
-     var signMsg    = encryptFlags & nsIEnigmail.SIGN_MESSAGE;
-     var encryptMsg = encryptFlags & nsIEnigmail.ENCRYPT_MESSAGE;
 
      var msgCompFields = gMsgCompose.compFields;
      Recipients2CompFields(msgCompFields);
@@ -194,13 +192,11 @@ function enigSend(encryptFlags) {
 
      if (newsgroups && defaultSend) {
        // Do not encrypt by default if sending to newsgroups
-       encryptFlags &= ~nsIEnigmail.ENCRYPT_MESSAGE;
-       encryptMsg = false;
+       encryptFlags &= ~ENCRYPT_MSG;
 
        if (!EnigGetPref("defaultSignNewsMsg")) {
          // Do not sign by default if sending to any newsgroup
-         encryptFlags &= ~nsIEnigmail.SIGN_MESSAGE;
-         signMsg = false;
+         encryptFlags &= ~SIGN_MSG;
        }
      }
 
@@ -234,7 +230,7 @@ function enigSend(encryptFlags) {
        }
      }
 
-     if (!gEnigProcessed && (signMsg || encryptMsg)) {
+     if (!gEnigProcessed && (encryptFlags & ENCRYPT_OR_SIGN_MSG)) {
 
        ///var editorDoc = gEditorShell.editorDocument;
        ///DEBUG_LOG("enigmailMsgComposeOverlay.js: Doc = "+editorDoc+"\n");
@@ -299,8 +295,6 @@ function enigSend(encryptFlags) {
 
        if (!docText) {
          encryptFlags = 0;
-         signMsg = false;
-         encryptMsg = false;
 
        } else {
          // Encrypt plaintext
@@ -340,12 +334,16 @@ function enigSend(encryptFlags) {
 
          var exitCode = exitCodeObj.value;
     
-         if ((exitCode != 0) && defaultSend && encryptMsg) {
+         if ((exitCode != 0) && defaultSend && (encryptFlags & ENCRYPT_MSG)) {
            // Default send error; turn off encryption
-           encryptFlags &= ~nsIEnigmail.ENCRYPT_MESSAGE;
-           encryptMsg = false;
+           encryptFlags &= ~ENCRYPT_MSG;
 
-           if (signMsg) {
+           if (!EnigGetPref("defaultSignMsg")) {
+             // Turn off signing
+             encryptFlags &= ~SIGN_MSG;
+           }
+
+           if (encryptFlags & SIGN_MSG) {
              // Try signing only, to see if it removes the error condition
              cipherText = enigmailSvc.encryptMessage(window,uiFlags, plainText,
                                                 fromAddr, toAddr, encryptFlags,
@@ -364,7 +362,7 @@ function enigSend(encryptFlags) {
            // Save original text (for undo)
            gEnigProcessed = {"docText":docText};
 
-         } else if (signMsg || encryptMsg) {
+         } else if (encryptFlags & ENCRYPT_OR_SIGN_MSG) {
            // Encryption/signing failed
            var errorMsg = errorMsgObj.value;
            EnigAlert("Error in encrypting and/or signing message. Send operation aborted.\n"+errorMsg);
@@ -390,10 +388,10 @@ function enigSend(encryptFlags) {
      if (EnigGetPref("confirmBeforeSend")) {
        var msgStatus = "";
 
-       if (signMsg)
+       if (encryptFlags & SIGN_MSG)
          msgStatus += "SIGNED ";
 
-       if (encryptMsg)
+       if (encryptFlags & ENCRYPT_MSG)
          msgStatus += "ENCRYPTED ";
 
        if (!msgStatus)
