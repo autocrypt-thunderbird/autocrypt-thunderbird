@@ -12,7 +12,7 @@
       chrome:displayName="Deutsch"
        chrome:author="Alexander Ihrig"
        chrome:name="de-DE"
-       chrome:localeVersion="0.81.5"
+       chrome:localeVersion="0.81.6"
        chrome:previewURL="">
    <chrome:packages>
       <RDF:Seq about="urn:mozilla:locale:de-DE:packages">
@@ -20,5 +20,5 @@
       </RDF:Seq>
     </chrome:packages>
   </RDF:Description>
-<RDF:Description about="urn:mozilla:locale:de-DE:enigmail" chrome:localeVersion="0.81.5"/>
+<RDF:Description about="urn:mozilla:locale:de-DE:enigmail" chrome:localeVersion="0.81.6"/>
 </RDF:RDF>
