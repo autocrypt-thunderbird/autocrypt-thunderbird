@@ -92,6 +92,8 @@ const PGP_MIME_NEVER    = 0;
 const PGP_MIME_POSSIBLE = 1;
 const PGP_MIME_ALWAYS   = 2;
 
+const ENIG_POSSIBLE_PGPMIME = -2081;
+
 // property name for temporary directory service
 const ENIG_TEMPDIR_PROP = "TmpD";
 
@@ -114,48 +116,6 @@ const ENIG_BUTTON_TITLE_IS_STRING = 127;
 const ENIG_THREE_BUTTON_STRINGS   = (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_0) +
                                (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_1) +
                                (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_2);
-
-/* moved to enigprefs.js!
-var gEnigmailPrefDefaults = {"configuredVersion":"",
-                             "agentPath":"",
-                             "alwaysTrustSend":true,
-                             "autoCrypto":false,
-                             "autoDecrypt":true,
-                             "captureWebMail":false,
-                             "composeHtmlAlertCount":3,
-                             "confirmBeforeSend":false,
-                             "disableSMIMEui":false,
-                             "displaySignWarn":true,
-                             "displayPartiallySigned":true,
-                             "doubleDashSeparator":true,
-                             "encryptAttachments":1,
-                             "encryptToSelf":true,
-                             "gpgVersionWarnCount":1,
-                             "handleDoubleClick":false,
-                             "hushMailSupport":false,
-                             "initAlertCount":2,
-                             "inlineAttachAsciiArmor":false,
-                             "inlineAttachExt":".pgp",
-                             "logDirectory":"",
-                             "keepSettingsForReply":true,
-                             "keyserver":"random.sks.keyserver.penguin.de, pgp.dtype.org, keyserver.kjsl.com, ldap://certserver.pgp.com",
-                             "maxIdleMinutes":5,
-                             "mimeHashAlgorithm":1,
-                             "noPassphrase":false,
-                             "parseAllHeaders":true,
-                             "quotedPrintableWarn":0,
-                             "respectHttpProxy":true,
-                             "recipientsSelectionOption":1,
-                             "saveEncrypted":0,
-                             "show_headers":1,
-                             "supportMultiPass":false,
-                             "useDefaultComment":false,
-                             "useMimeExperimental":false,
-                             "useGpgAgent":false,
-                             "usePGPMimeOption":PGP_MIME_POSSIBLE,
-                             "wrapHtmlBeforeSend":true
-                            };
-*/
 
 var gEnigLogLevel = 2;     // Output only errors/warnings by default
 var gEnigDebugLog;

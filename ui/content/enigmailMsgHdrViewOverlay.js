@@ -83,9 +83,7 @@ function enigStartHeaders()
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: msgFrame="+msgFrame+"\n");
 
     msgFrame.addEventListener("unload", enigMessageUnload, true);
-
-    if (EnigGetPref("autoDecrypt"))
-      msgFrame.addEventListener("load", enigMessageDecrypt, false);
+    msgFrame.addEventListener("load", enigMessageAutoDecrypt, false);
   }
 
   enigForgetEncryptedURI();
@@ -114,7 +112,12 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
 
   gEnigLastEncryptedURI = GetLoadedMessage();
   userId=EnigConvertGpgToUnicode(userId);
-  errorMsg=EnigConvertGpgToUnicode(errorMsg);
+  if (exitCode == ENIG_POSSIBLE_PGPMIME) {
+    exitCode = 0;
+  }
+  else {
+    errorMsg=EnigConvertGpgToUnicode(errorMsg);
+  }
   
   var errorLines="";
   var fullStatusInfo=errorMsg;
@@ -306,10 +309,6 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureUnknown");
       gEnigStatusBar.setAttribute("signed", "unknown");
     }
-    else {
-    //  gEnigStatusBar.removeAttribute("signed");
-    //  statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureOk");
-    }
 
     if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
       var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
@@ -327,9 +326,6 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       // Display un-encrypted icon
       gEncryptedUINode.setAttribute("encrypted", "notok");
       gEnigStatusBar.setAttribute("encrypted", "notok");
-    }
-    else {
-      // gEnigStatusBar.removeAttribute("encrypted");
     }
 
   } catch (ex) {}

@@ -467,7 +467,13 @@ function enigMessageImport(event) {
   return enigMessageParse(!event, true, "");
 }
 
-function enigMessageDecrypt(event) {
+// callback function for automatic decryption
+function enigMessageAutoDecrypt(event) {
+  enigMessageDecrypt(event, true);
+}
+
+// analyse message header and decrypt/verify message
+function enigMessageDecrypt(event, isAuto) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecrypt: "+event+"\n");
 
   if (EnigGetPref("parseAllHeaders")) {
@@ -524,9 +530,7 @@ function enigMessageDecrypt(event) {
     }
 
   }
-
-  EnigShowHeadersAll(false);
-
+  
   var contentType = "";
   var contentEncoding = "";
   var xEnigmailVersion = "";
@@ -537,15 +541,32 @@ function enigMessageDecrypt(event) {
     xEnigmailVersion = gEnigSavedHeaders["x-enigmail-version"];
   }
 
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+    
+  if (isAuto && (! EnigGetPref("autoDecrypt"))) {
+    var signedMsg = ((contentType.search(/^multipart\/signed(;|$)/i) == 0) && (contentType.search(/application\/pgp-signature/i)>0));
+    var encrypedMsg = ((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) && (contentType.search(/application\/pgp-encrypted/i)>0));
+    if (embeddedSigned || embeddedEncrypted || 
+        encrypedMsg || signedMsg) {
+  
+      if (
+          (!enigmailSvc.mimeInitialized() && encrypedMsg) || signedMsg ||
+          ((!encrypedMsg) && (embeddedSigned || embeddedEncrypted))) {
+        enigUpdateHdrIcons(ENIG_POSSIBLE_PGPMIME, 0, "", "", EnigGetString("possiblyPgpMime"));
+      }
+    }
+    return;
+  }
+
+  EnigShowHeadersAll(false);
+
   if ((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) ||
       (embeddedEncrypted && contentType.search(/^multipart\/mixed(;|$)/i) == 0)
       /* && (!embeddedSigned) */ ) {
     // multipart/encrypted
     DEBUG_LOG("enigmailMessengerOverlay.js: multipart/encrypted\n");
-
-    var enigmailSvc = GetEnigmailSvc();
-    if (!enigmailSvc)
-      return;
 
     if (!enigmailSvc.mimeInitialized()) {
       // Display enigmail:dummy URL in message pane to initialize
