@@ -1,8 +1,41 @@
+/*
+The contents of this file are subject to the Mozilla Public
+License Version 1.1 (the "MPL"); you may not use this file
+except in compliance with the MPL. You may obtain a copy of
+the MPL at http://www.mozilla.org/MPL/
+
+Software distributed under the MPL is distributed on an "AS
+IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+implied. See the MPL for the specific language governing
+rights and limitations under the MPL.
+
+The Original Code is Enigmail.
+
+The Initial Developer of the Original Code is Ramalingam Saravanan.
+Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
+Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
+
+Contributor(s):
+Patrick Brunschwig <patrick.brunschwig@gmx.net>
+
+Alternatively, the contents of this file may be used under the
+terms of the GNU General Public License (the "GPL"), in which case
+the provisions of the GPL are applicable instead of
+those above. If you wish to allow use of your version of this
+file only under the terms of the GPL and not to allow
+others to use your version of this file under the MPL, indicate
+your decision by deleting the provisions above and replace them
+with the notice and other provisions required by the GPL.
+If you do not delete the provisions above, a recipient
+may use your version of this file under either the MPL or the
+GPL.
+*/
+
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.82.6.0";
-var gEnigmimeVersion = "0.82.6.0";
+var gEnigmailVersion = "0.83.0.0";
+var gEnigmimeVersion = "0.83.0.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -54,11 +87,6 @@ const PGP_MIME_NEVER    = 0;
 const PGP_MIME_POSSIBLE = 1;
 const PGP_MIME_ALWAYS   = 2;
 
-const EnigEncryptIfPossible = 1;
-const EnigEncrypt           = 2;
-const EnigSigned            = 4;
-const EnigSignIfEncrypted   = 8;
-
 // property name for temporary directory service
 const ENIG_TEMPDIR_PROP = "TmpD";
 
@@ -87,39 +115,43 @@ const ENIG_THREE_BUTTON_STRINGS   = (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_P
 
 
 var gEnigmailPrefDefaults = {"configuredVersion":"",
-                             "logDirectory":"",
-                             "initAlertCount":2,
-                             "composeHtmlAlertCount":3,
                              "agentPath":"",
-                             "autoCrypto":false,
-                             "useDefaultComment":false,
-                             "noPassphrase":false,
-                             "usePGPMimeOption":PGP_MIME_POSSIBLE,
-                             "mimeHashAlgorithm":1,
                              "alwaysTrustSend":true,
-                             "encryptToSelf":true,
-                             "confirmBeforeSend":false,
-                             "doubleDashSeparator":true,
-                             "maxIdleMinutes":5,
-                             "keyserver":"wwwkeys.pgp.net",
+                             "autoCrypto":false,
                              "autoDecrypt":true,
                              "captureWebMail":false,
-                             "useMimeExperimental":false,
-                             "parseAllHeaders":true,
-                             "show_headers":1,
-                             "hushMailSupport":false,
+                             "composeHtmlAlertCount":3,
+                             "confirmBeforeSend":false,
+                             "disableSMIMEui":false,
+                             "displaySignWarn":true,
+                             "displayPartiallySigned":true,
+                             "doubleDashSeparator":true,
                              "encryptAttachments":1,
+                             "encryptToSelf":true,
+                             "gpgVersionWarnCount":1,
+                             "handleDoubleClick":false,
+                             "hushMailSupport":false,
+                             "initAlertCount":2,
                              "inlineAttachAsciiArmor":false,
                              "inlineAttachExt":".pgp",
-                             "handleDoubleClick":false,
-                             "disableSMIMEui":true,
-                             "useGpgAgent":false,
-                             "gpgVersionWarnCount":1,
-                             "supportMultiPass":false,
-                             "wrapHtmlBeforeSend":true,
+                             "logDirectory":"",
                              "keepSettingsForReply":false,
+                             "keyserver":"random.sks.keyserver.penguin.de, pgp.dtype.org, keyserver.kjsl.com, ldap://certserver.pgp.com",
+                             "maxIdleMinutes":5,
+                             "mimeHashAlgorithm":1,
+                             "noPassphrase":false,
+                             "parseAllHeaders":true,
+                             "quotedPrintableWarn":0,
                              "respectHttpProxy":true,
-                             "recipientsSelectionOption":1
+                             "recipientsSelectionOption":1,
+                             "saveEncrypted":0,
+                             "show_headers":1,
+                             "supportMultiPass":false,
+                             "useDefaultComment":false,
+                             "useMimeExperimental":false,
+                             "useGpgAgent":false,
+                             "usePGPMimeOption":PGP_MIME_POSSIBLE,
+                             "wrapHtmlBeforeSend":true
                             };
 
 var gEnigLogLevel = 2;     // Output only errors/warnings by default
@@ -142,7 +174,6 @@ try {
 
 function EnigGetFrame(win, frameName) {
   DEBUG_LOG("enigmailCommon.js: EnigGetFrame: name="+frameName+"\n");
-  dump("direct="+win.frames[frameName]+"\n");
   for (var j=0; j<win.frames.length; j++) {
     dump(win.frames[j].name+"\n");
     if (win.frames[j].name == frameName) {
@@ -256,81 +287,23 @@ function GetEnigmailSvc() {
 }
 
 
-function EnigUpdate_0_60() {
-  DEBUG_LOG("enigmailCommon.js: EnigUpdate_0_60: \n");
-
-  var savePrefs = false;
-
-  try {
-    var userIdSource = gPrefEnigmail.getIntPref("userIdSource");
-
-    gPrefEnigmail.deleteBranch("userIdSource");
-    savePrefs = true;
-
-    if (!EnigGetPref("userIdFromAddr")) {
-
-      var userIdFromAddr = false;
-
-      if (userIdSource > 1) {
-        userIdFromAddr = true;
-
-      } else {
-        var userIdValue = EnigGetPref("userIdValue");
-
-        var mesg = EnigGetString("specifyEmail");
-
-        var valueObj = new Object();
-        valueObj.value = userIdValue;
-
-        if (EnigPromptValue(mesg, valueObj)) {
-          userIdValue = valueObj.value;
-          EnigSetPref("userIdValue", userIdValue);
-        }
-
-        userIdFromAddr = !userIdValue;
-
-        if (userIdFromAddr)
-          EnigAlert(EnigGetString("usingFrom"));
-        else
-          EnigAlert(EnigGetString("usingId",userIdValue));
-
-      }
-
-      EnigSetPref("userIdFromAddr", userIdFromAddr);
-    }
-
-  } catch (ex) {}
-
-  try {
-    var defaultEncryptMsg = gPrefEnigmail.getBoolPref("defaultEncryptMsg");
-
-    gPrefEnigmail.deleteBranch("defaultEncryptMsg");
-    savePrefs = true;
-  } catch (ex) {}
-
-  try {
-    var defaultEncryptSignMsg = gPrefEnigmail.getBoolPref("defaultEncryptSignMsg");
-    gPrefEnigmail.deleteBranch("defaultEncryptSignMsg");
-    savePrefs = true;
-
-    if (defaultEncryptSignMsg)
-        gPrefEnigmail.setIntPref("defaultEncryptionOption", 2);
-
-  } catch (ex) {}
-
-  if (savePrefs) {
-    DEBUG_LOG("enigmailCommon.js: EnigUpdate_0_60: Updating prefs\n");
-    EnigSavePrefs();
-  }
-}
-
 function EnigUpdate_0_80() {
   try {
     var oldVer=EnigGetPref("configuredVersion");
 
-    if (oldVer.substring(0,4)<"0.81") {
-      window.openDialog("chrome://enigmail/content/enigmailUpgrade.xul",
-          "", "dialog,modal,centerscreen");
+    if (oldVer.substring(0,1)=="0"){
+      if (oldVer.substring(0,4)<"0.83") {
+        var keySrv = EnigGetPref("keyserver");
+        if (keySrv.indexOf(",") == -1) {
+          var newKeySrv = gEnigmailPrefDefaults.keyserver.replace(keySrv, "");
+          newKeySrv = newKeySrv.replace(/(^, |, $)/, "").replace(/, , /,", ");
+          EnigSetPref("keyserver", keySrv+", "+newKeySrv);
+        }
+      }
+      if (oldVer.substring(0,4)<"0.81") {
+        window.openDialog("chrome://enigmail/content/enigmailUpgrade.xul",
+            "", "dialog,modal,centerscreen");
+      }
     }
   }
   catch (ex) {}
@@ -339,7 +312,6 @@ function EnigUpdate_0_80() {
 function EnigConfigure() {
   try {
     // Updates for specific versions (to be cleaned-up periodically)
-    EnigUpdate_0_60();
     EnigUpdate_0_80();
   } catch (ex) {}
 
@@ -553,13 +525,54 @@ function EnigAlertCount(countPrefName, mesg) {
 }
 
 function EnigConfirm(mesg) {
-  return gEnigPromptSvc.confirm(window, EnigGetString("enigConfirm"), mesg);
+  var dummy=new Object();
+
+  var buttonPressed = gEnigPromptSvc.confirmEx(window,
+                        EnigGetString("enigConfirm"),
+                        mesg,
+                        (gEnigPromptSvc.BUTTON_TITLE_YES * ENIG_BUTTON_POS_0) +
+                        (gEnigPromptSvc.BUTTON_TITLE_NO * ENIG_BUTTON_POS_1),
+                        null, null, null,
+                        null, dummy);
+
+  return (buttonPressed == 0);
+}
+
+function EnigConfirmPref(mesg, prefText) {
+  const notSet = 0;
+  const yes = 1;
+  const no = 2;
+
+  var prefValue = EnigGetPref(prefText);
+  switch (prefValue) {
+  case notSet:
+    var checkBoxObj = { value: false} ;
+    var buttonPressed = gEnigPromptSvc.confirmEx(window,
+                          EnigGetString("enigConfirm"),
+                          mesg,
+                          (gEnigPromptSvc.BUTTON_TITLE_YES * ENIG_BUTTON_POS_0) +
+                          (gEnigPromptSvc.BUTTON_TITLE_NO * ENIG_BUTTON_POS_1),
+                          null, null, null,
+                          EnigGetString("dlgKeepSetting"), checkBoxObj);
+    if (checkBoxObj.value) {
+      EnigSetPref(prefText, (buttonPressed==0 ? yes : no));
+    }
+    return (buttonPressed==0 ? 1 : 0);
+
+  case yes:
+    return 1;
+
+  case no:
+    return 0;
+
+  default:
+    return -1;
+  }
 }
 
 function EnigError(mesg) {
   return gEnigPromptSvc.alert(window, EnigGetString("enigError"), mesg);
 }
-
 
 function EnigPromptValue(mesg, valueObj) {
   var checkObj = new Object();
@@ -587,11 +600,12 @@ function EnigOverrideAttribute(elementIdList, attrName, prefix, suffix) {
 }
 
 
-function EnigPrefWindow(showBasic, clientType) {
+function EnigPrefWindow(showBasic, clientType, selectTab) {
   window.openDialog("chrome://enigmail/content/pref-enigmail.xul",
                     "_blank", "chrome,resizable=yes",
                     {'showBasic': showBasic,
-                     'clientType': clientType});
+                     'clientType': clientType,
+                     'selectTab': selectTab});
 }
 
 
@@ -753,14 +767,21 @@ function EnigSetPref(prefName, value) {
 function EnigGetSignMsg(identity) {
   var sign = null;
 
-  if (gEnigPrefRoot.getPrefType("mail.identity."+identity.key+".pgpSignMsg")==0) {
-    sign=(identity.getBoolAttribute("pgpAlwaysSign")? 2 : 0);
-    identity.setIntAttribute("pgpSignMsg", sign);
+  if (gEnigPrefRoot.getPrefType("mail.identity."+identity.key+".pgpSignPlain")==0) {
+    if (gEnigPrefRoot.getPrefType("mail.identity."+identity.key+".pgpSignMsg")==0) {
+      sign=identity.getBoolAttribute("pgpAlwaysSign");
+      identity.setBoolAttribute("pgpSignEncrypted", sign);
+      identity.setBoolAttribute("pgpSignPlain", sign);
+    }
+    else {
+      sign = identity.getIntAttribute("pgpSignMsg");
+      identity.setBoolAttribute("pgpSignEncrypted", sign==1);
+      identity.setBoolAttribute("pgpSignPlain", sign>0);
+    }
+    gEnigPrefRoot.deleteBranch("mail.identity."+identity.key+".pgpSignMsg");
+    gEnigPrefRoot.deleteBranch("mail.identity."+identity.key+".pgpAlwaysSign");
   }
-  else {
-    sign = identity.getIntAttribute("pgpSignMsg");
-  }
-  return sign;
+
 }
 
 function EnigRequestObserver(terminateFunc, terminateArg)
@@ -1194,4 +1215,57 @@ function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
          }
       }
    }
+}
+
+
+function EnigReceiveKey(parent, msgParentWindow, recvFlags, keyId,
+                        progressBar, requestObserver,
+                        errorMsgObj) {
+
+  if (keyId) {
+
+    var valueObj = { keyId: keyId };
+    var checkObj = new Object();
+
+    window.openDialog("chrome://enigmail/content/enigmailKeyserverDlg.xul",
+          "", "dialog,modal,centerscreen", valueObj, checkObj);
+
+    if (! checkObj.value) {
+      errorMsgObj.value = EnigGetString("failCancel");
+      return null;
+    }
+
+    var keyserver = checkObj.value;
+  }
+  else {
+    return null;
+  }
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+     return null;
+
+  if (progressBar) {
+    // wait one second before displaying the progress bar
+    var progressParam=Components.classes["@mozilla.org/messengercompose/composeprogressparameters;1"].createInstance(Components.interfaces.nsIMsgComposeProgressParams);
+    parent.setTimeout(progressBar.openProgressDialog, 1000, parent, msgWindow, "chrome://enigmail/content/enigRetrieveProgress.xul", progressParam);
+    //progressBar.openProgressDialog(parent, msgWindow, "chrome://enigmail/content/enigRetrieveProgress.xul", progressParam);
+    progressBar.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_START, 0);
+  }
+
+  return enigmailSvc.receiveKey(keyserver, keyId, requestObserver, errorMsgObj);
+}
+
+
+function EnigUninstall() {
+  const JSLIB_MIN_VER="0.1.128";
+  if ((typeof(JS_LIB_VERSION) != "string") || (JS_LIB_VERSION < JSLIB_MIN_VER)) {
+    EnigAlert(EnigGetString("jslibNeeded", JSLIB_MIN_VER));
+    return;
+  }
+  window.close();
+  if (!EnigConfirm(EnigGetString("uninstallConfirm")))
+    return;
+
+  return;
 }
