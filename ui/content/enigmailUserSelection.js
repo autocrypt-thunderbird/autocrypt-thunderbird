@@ -160,7 +160,7 @@ function enigmailUserSelLoad() {
    var toAddr = "";
    try {
      if ((typeof window.arguments[0].toAddr)=="string")
-       toAddr=enigStripEmail(window.arguments[0].toAddr)+",";
+       toAddr=EnigStripEmail(window.arguments[0].toAddr)+" ";
    }
    catch (ex) {}
 
@@ -188,7 +188,12 @@ function enigmailUserSelLoad() {
               ((!aUserList[i].expiry.length) ||
               (aUserList[i].expiry.length && aUserList[i].expiry.replace(/\-/g, "") >= now))) {
               // key still valid
-              mailAddr = enigStripEmail(aUserList[i].userId);
+              try {
+                mailAddr = EnigStripEmail(aUserList[i].userId);
+              }
+              catch (ex) {
+                mailAddr = EnigStripEmail(aUserList[i].userId.replace(/\"/g,""));
+              }
               aValidUsers.push(mailAddr);
               escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
               s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
@@ -213,7 +218,12 @@ function enigmailUserSelLoad() {
                 subChildren.appendChild(subItem);
                 if (activeState<2 || allowExpired) {
                   // add uid's for valid keys
-                  mailAddr = enigStripEmail(aUserList[i].SubUserIds[user]);
+                  try {
+                    mailAddr = EnigStripEmail(aUserList[i].userId);
+                  }
+                  catch (ex) {
+                    mailAddr = EnigStripEmail(aUserList[i].userId.replace(/\"]/g,""));
+                  }
                   aValidUsers.push(mailAddr);
                   escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
                   s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
