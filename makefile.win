@@ -35,5 +35,5 @@ DEPTH=..\..
 
 MODULE=enigmail
 
-DIRS = ui
+DIRS = ui mailnews
 include <$(DEPTH)\config\rules.mak>

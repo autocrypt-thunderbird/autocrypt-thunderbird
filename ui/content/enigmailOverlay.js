@@ -22,7 +22,7 @@ function enigStartup() {
   dump("enigmailOverlay.js: enigStartup:\n");
   var contentArea = document.getElementById("appcontent");
   contentArea.addEventListener("load",   enigDocLoadHandler,   true);
-  contentArea.addEventListener("unload", enigDocUnloadHandler, true);
+  //contentArea.addEventListener("unload", enigDocUnloadHandler, true);
 
   gEnigCurrentSite = null;
   gEnigCurrentHandlerNavButton1 = enigConfigWindow;
@@ -50,7 +50,25 @@ function enigDocLoadHandler(event) {
   if (event.target != _content.document)
       return;
 
+  var frames = _content.frames;
+
+  dump("enigmailOverlay.js: enigDocLoadHandler: frames = "+frames.length+"\n");
+
+  for (var j=0; j<frames.length; j++) {
+    dump("frame "+j+" = "+frames[j].name+"\n");
+    frames[j].addEventListener("load",   enigFrameLoadHandler,   false);
+    //frames[j].addEventListener("unload", enigFrameUnloadHandler, false);
+  }
+
   enigUpdateUI(_content.location);
+}
+
+function enigFrameLoadHandler(event) {
+ dump("enigmailOverlay.js: enigFrameLoadHandler: "+event.target.location.href+"\n");
+}
+
+function enigFrameUnloadHandler(event) {
+ dump("enigmailOverlay.js: enigFrameUnloadHandler: "+event.target.location.href+"\n");
 }
 
 function enigDocUnloadHandler(event) {
@@ -148,11 +166,16 @@ function enigGetPassPhrase() {
 function enigExecGPG(command, input, errMessages, status) {
   dump("enigmailOverlay.js: enigExecGPG: command = "+command+"\n");
 
-  var errObj = new Object();
   if ((typeof input) != "string") input = "";
-  var output = ipcService.execPipe(command, input, input.length, errObj);
-  var errOutput = errObj.value;
+  var outObj = new Object();
+  var errObj = new Object();
 
+  var exitCode = ipcService.execPipe(command, input, input.length,
+                                     [], 0, outObj, errObj);
+  var outputData = outObj.value;
+  var errOutput  = errObj.value;
+
+  dump("enigmailOverlay.js: enigExecGPG: exitCode = "+exitCode+"\n");
   dump("enigmailOverlay.js: enigExecGPG: errOutput = "+errOutput+"\n");
 
   var errLines = errOutput.split(/\r?\n/);
@@ -179,7 +202,7 @@ function enigExecGPG(command, input, errMessages, status) {
   status      = statusArray.join("\n");
 
   dump("enigmailOverlay.js: enigExecGPG: status = "+status+"\n");
-  return output;
+  return outputData;
 }
 
 
@@ -252,11 +275,11 @@ function enigYahooUpdateUI() {
 
   if (pathname.search(/ShowLetter$/) != -1) {
     gEnigCurrentHandlerNavButton1 = enigYahooShowLetter;
-    gEnigNavButton1.value = "Decrypt";
+    gEnigNavButton1.value = "Decrypt/Verify";
 
   } else if (pathname.search(/Compose$/) != -1) {
     gEnigCurrentHandlerNavButton1 = enigYahooCompose;
-    gEnigNavButton1.value = "Encrypt";
+    gEnigNavButton1.value = "Sign & Encrypt";
 
   } else {
     gEnigCurrentHandlerNavButton1 = enigConfigWindow;

@@ -31,10 +31,7 @@
 # GPL.
 #
 
-# Makefile for package directory
-
-# Specify these as parameters to the make command
-ENIGMAIL_VERS = 0.1
+# Makefile for mailnews directory
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
@@ -43,17 +40,14 @@ VPATH		= @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
+XPIDL_MODULE  = enigmail
+XPIDLSRCS     = nsIPGPModule.idl \
+	        nsIPGPMsgHeader.idl \
+	        nsIPGPMsgBody.idl
+
 include $(topsrcdir)/config/config.mk
 
 include $(topsrcdir)/config/rules.mk
 
-XPIFILE = enigmail-$(ENIGMAIL_VERS).xpi
-
-xpi::
-	zip -r $(DIST)/bin/$(XPIFILE) install.js \
-               enigmail -x \*~ -x \*/CVS/\*
-	cd $(DIST)/bin; zip -g $(XPIFILE) \
-               chrome/enigmail.jar \
-               components/enigmail.xpt \
-               components/enigmail.js
-	echo Created $(DIST)/bin/$(XPIFILE)
+install::
+	$(INSTALL) $(srcdir)/enigmail.js $(DIST)/bin/components

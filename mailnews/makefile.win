@@ -1,4 +1,4 @@
-#!gmake
+#!nmake
 #
 # The contents of this file are subject to the Mozilla Public
 # License Version 1.1 (the "MPL"); you may not use this file
@@ -31,29 +31,23 @@
 # GPL.
 #
 
-# Makefile for package directory
+# Makefile for mailnews directory
 
-# Specify these as parameters to the make command
-ENIGMAIL_VERS = 0.1
+DEPTH=..\..\..
 
-DEPTH		= ../../..
-topsrcdir	= @top_srcdir@
-srcdir		= @srcdir@
-VPATH		= @srcdir@
+MODULE=enigmail
 
-include $(DEPTH)/config/autoconf.mk
+MAKE_OBJ_TYPE=DLL
+DLLNAME=$(MODULE)
+DLL=.\$(OBJDIR)\$(DLLNAME).dll
 
-include $(topsrcdir)/config/config.mk
+XPIDLSRCS=  .\nsIPGPModule.idl \
+            .\nsIPGPMsgHeader.idl
+            .\nsIPGPMsgBody.idl
+            $(NULL)
 
-include $(topsrcdir)/config/rules.mk
 
-XPIFILE = enigmail-$(ENIGMAIL_VERS).xpi
+include <$(DEPTH)\config\rules.mak>
 
-xpi::
-	zip -r $(DIST)/bin/$(XPIFILE) install.js \
-               enigmail -x \*~ -x \*/CVS/\*
-	cd $(DIST)/bin; zip -g $(XPIFILE) \
-               chrome/enigmail.jar \
-               components/enigmail.xpt \
-               components/enigmail.js
-	echo Created $(DIST)/bin/$(XPIFILE)
+install::
+        $(MAKE_INSTALL) enigmail.js $(DIST)\bin\components

@@ -6,12 +6,20 @@ err = initInstall("Enigmail v0.1",  // name for install UI
 
 logComment("initInstall: " + err);
 
-var fComponents = getFolder("Components");
 var fChrome     = getFolder("Chrome");
+var fComponents = getFolder("Components");
 var fProfile    = getFolder("Profile");
 
 // addDirectory: blank, archive_dir, install_dir, install_subdir
 err = addDirectory("", "chrome",     fChrome,     "");
+if (err != SUCCESS)
+   cancelInstall(err);
+
+err = addDirectory("", "components", fComponents, "");
+if (err != SUCCESS)
+   cancelInstall(err);
+
+err = addDirectory("", "enigmail",   fProfile,    "enigmail");
 if (err != SUCCESS)
    cancelInstall(err);
 

@@ -46,8 +46,10 @@ XPIFILE = enigmail-$(ENIGMAIL_VERS).xpi
 
 xpi::
 	zip -r $(DIST)\bin\$(XPIFILE) install.js \
-               -x *~ -x */CVS/*
+               enigmail -x *~ -x */CVS/*
 	cd $(DIST)\bin
-        zip -g -r $(XPIFILE) \
-               chrome\enigmail.jar
+        zip -g $(XPIFILE) \
+               chrome\enigmail.jar \
+               components\enigmail.xpt \
+               components\enigmail.js
 	echo Created $(DIST)\bin\$(XPIFILE)
