@@ -47,6 +47,10 @@ ifdef USE_XPCOM_GLUE
 DEFINES		+= -D_IMPL_NS_COM_OFF -DXPCOM_GLUE
 endif
 
+ifeq ($(MOZILLA_VERSION),1.6)
+DEFINES 	+= -DMOZ_16
+endif
+
 REQUIRES	= xpcom \
 		  xpcom_obsolete \
 		  string \
