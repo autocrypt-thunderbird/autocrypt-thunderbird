@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# make-lang.sh v1.0.10
 # this script is used to create a language-specifi XPI for Enigmail
 
 # if you want to debug this script, set DEBUG to something >0
@@ -9,7 +10,7 @@ if [ $# -ne 2 ]; then
   echo "Usage: $0 xx-YY version"
   echo "       where: xx-YY   is the language and country code representing the"
   echo "                      translated language"
-  echo "              version is the Enigmail version, e.g. 0.81.3"
+  echo "              version is the Enigmail version, e.g. 0.84.1"
   exit 1
 fi
 
@@ -19,46 +20,47 @@ export ENIGLANG
 ENIGVERSION=$2
 export ENIGVERSION
 
-LANGDIR=${ENIGLANG}/locale/${ENIGLANG}/enigmail
+LANGDIR=${ENIGLANG}/chrome/locale/${ENIGLANG}/enigmail
+HELPDIR=${LANGDIR}/help
+cwd=`pwd`
 rm -rf ${LANGDIR} >/dev/null 2>&1
 mkdir -p ${LANGDIR} 
+mkdir -p ${HELPDIR}
+
+LANGHASH=`echo "${ENIGLANG}" | md5sum | awk '{ print substr($0,0,2)}'`
+export LANGHASH
 
 # create install.js
 cat > ${ENIGLANG}/install.js <<EOT
 // Install script for Enigmail ${ENIGLANG} language pack
 
-var chromeNode = "${ENIGLANG}";
-
-var vers = "${ENIGVERSION}.0";
-var srDest = 10;       // Disk space required for installation (KB)
-
-var prettyName = chromeNode + " language pack for Enigmail";
-var regName    = "/enigmail-" + chromeNode;
-var chromeName = "enigmail-"+chromeNode + ".jar";
-var localeName = "locale/" + chromeNode + "/";
-
 var err;
+const APP_VERSION="${ENIGVERSION}";
 
-var platformNode = getPlatform();
-logComment("initInstall: platformNode=" + platformNode);
+err = initInstall("Enigmail ${ENIGLANG} Language pack",  // name for install UI
+                  "/enigmail-${ENIGLANG}",   // registered name
+                  APP_VERSION+".0");         // package version
 
-err = initInstall(prettyName, regName, vers);
 logComment("initInstall: " + err);
 
-var fChrome = getFolder("Program", "chrome");
-logComment("fChrome: " + fChrome);
+var srDest = 15;       // Disk space required for installation (KB)
 
-if (!verifyDiskSpace(fChrome, srDest)) {
+var fProgram    = getFolder("Program");
+logComment("fProgram: " + fProgram);
+
+if (!verifyDiskSpace(fProgram, srDest)) {
   cancelInstall(INSUFFICIENT_DISK_SPACE);
 
 } else {
 
-  // addFile: blank, archive_file, install_dir, install_subdir
-  err = addFile("",  chromeName,   fChrome,     "");
+  var fChrome     = getFolder("Chrome");
 
+  // addDirectory: blank, archive_dir, install_dir, install_subdir
+  addDirectory("", "chrome",        fChrome,     "");
+
+  err = getLastError();
   if (err == ACCESS_DENIED) {
-    // Profile chrome does not really work right now; see bug 109044
-    alert("Unable to write to chrome directory "+fChrome+".\n You will need to restart the browser with administrator/root privileges to install this software. After installing as root (or administrator), you will need to restart the browser one more time to register the installed software.\n After the second restart, you can go back to running the browser without privileges!");
+    alert("Unable to write to components directory "+fChrome+".\n You will need to restart the browser with administrator/root privileges to install this software. After installing as root (or administrator), you will need to restart the browser one more time, as a privileged user, to register the installed software.\n After the second restart, you can go back to running the browser without privileges!");
 
     cancelInstall(ACCESS_DENIED);
 
@@ -67,10 +69,8 @@ if (!verifyDiskSpace(fChrome, srDest)) {
 
   } else {
     // Register chrome
-    var chromeJar = getFolder(fChrome, chromeName);
 
-    registerChrome( LOCALE | DELAYED_CHROME, chromeJar,
-                    localeName+"enigmail/");
+    registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail-${ENIGLANG}.jar"), "locale/${ENIGLANG}/enigmail/");
 
     err = getLastError();
 
@@ -79,21 +79,9 @@ if (!verifyDiskSpace(fChrome, srDest)) {
 
     } else {
       performInstall();
-      logComment("performInstall() returned: " + err);
-
-      if (err == SUCCESS) {
-        alert("Installation finished. RESTART the browser to use this enigmail locale via Edit > Preferences > Appearance > Languages/Content.");
-
-      } else if (err == 999) {
-        alert("Installation finished. REBOOT your system to use this enigmail locale via Edit > Preferences > Appearance > Languages/Content.");
-
-       resetError();
-      }
-
     }
   }
 }
-
 
 // this function verifies disk space in kilobytes
 function verifyDiskSpace(dirPath, spaceRequired) {
@@ -115,40 +103,51 @@ function verifyDiskSpace(dirPath, spaceRequired) {
 
   return true;
 }
+EOT
 
-// OS type detection
-// which platform?
-function getPlatform() {
-  var platformStr;
-  var platformNode;
+# create install.rdf for Thunderbird 0.7 and newer
+cat > ${ENIGLANG}/install.rdf <<EOT
+<?xml version="1.0"?>
 
-  if('platform' in Install) {
-    platformStr = new String(Install.platform);
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
-    if (!platformStr.search(/^Macintosh/))
-      platformNode = 'mac';
-    else if (!platformStr.search(/^Win/))
-      platformNode = 'win';
-    else
-      platformNode = 'unix';
-  }
-  else {
-    var fOSMac  = getFolder("Mac System");
-    var fOSWin  = getFolder("Win System");
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>{847b3a00-7b${LANGHASH}-11d4-8f02-006008948af5}</em:id>
+    <em:version>${ENIGVERSION}</em:version>
+    
+    <!-- Target Application (Thunderbird) this extension can install into, 
+        with minimum and maximum supported versions. --> 
+    <em:targetApplication>
+      <Description>
+        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+        <em:minVersion>0.7</em:minVersion>
+        <em:maxVersion>1.2</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+    
+    <!-- Front End MetaData -->
+    <em:name>Enigmail ${ENIGLANG}</em:name>
+    <em:description>Enigmail ${ENIGLANG} language package</em:description>
+    
+    <!-- Author of the package, replace with your name if you like -->
+    <em:creator>Enigmail Team</em:creator>
+    
+    <em:homepageURL>http://enigmail.mozdev.org/langpack.html</em:homepageURL>
 
-    logComment("fOSMac: "  + fOSMac);
-    logComment("fOSWin: "  + fOSWin);
-
-    if(fOSMac != null)
-      platformNode = 'mac';
-    else if(fOSWin != null)
-      platformNode = 'win';
-    else
-      platformNode = 'unix';
-  }
-
-  return platformNode;
-}
+    <!-- Front End Integration Hooks (used by Extension Manager)-->
+    <em:optionsURL>chrome://enigmail/content/pref-enigmail.xul</em:optionsURL>
+    <em:aboutURL>chrome://enigmail/content/enigmailAbout.xul</em:aboutURL>
+    <em:iconURL>chrome://enigmail/skin/enigmail-about.png</em:iconURL>
+    
+    <!-- Packages, Skins and Locales that this extension registers -->
+    <em:file>
+      <Description about="urn:mozilla:extension:file:enigmail-${ENIGLANG}.jar">
+        <em:locale>locale/${ENIGLANG}/enigmail/</em:locale>
+      </Description>
+    </em:file>
+  </Description>      
+</RDF>
 EOT
 
 # create enigmail-xx-YY.spec
@@ -242,14 +241,23 @@ cat >${LANGDIR}/contents.rdf <<EOT
 </RDF:RDF>
 EOT
 
-cp enigmail.dtd  ${LANGDIR}
-cp enigmail.properties ${LANGDIR}
-cp am-enigprefs.properties ${LANGDIR}
-cp upgrade_080.html ${LANGDIR}
+for f in enigmail.dtd enigmail.properties am-enigprefs.properties upgrade_080.html ; do
+  cp ${f} ${LANGDIR}
+done
 
-cd ${ENIGLANG}
+if [ -d help ]; then
+  cd help
+fi
+pwd
+
+for f in compose.html messenger.html rulesEditor.html editRcptRule.html ; do
+  cp ${f} ${cwd}/${HELPDIR} 
+done
+
+cd ${cwd}/${ENIGLANG}/chrome
 zip -r -D enigmail-${ENIGLANG}.jar locale
-zip ../enigmail-${ENIGLANG}-${ENIGVERSION}.xpi install.js enigmail-${ENIGLANG}.spec enigmail-${ENIGLANG}.jar
+cd ..
+zip ../enigmail-${ENIGLANG}-${ENIGVERSION}.xpi install.js install.rdf enigmail-${ENIGLANG}.spec chrome/enigmail-${ENIGLANG}.jar
 cd ..
 
-test $DEBUG -eq 0 && rm -rf ${ENIGLANG}
+test $DEBUG -eq 0 && rm -rf chrome
