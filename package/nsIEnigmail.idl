@@ -35,6 +35,7 @@
 #include "nsIIPCBuffer.idl"
 
 interface nsIDOMWindow;
+interface nsIMsgWindow;
 interface nsIPrompt;
 interface nsIPrefBranch;
 interface nsIStreamListener;
@@ -211,9 +212,9 @@ interface nsIEnigmail : nsISupports
                  in string keyId,
                  out wstring errorMsg);
 
-  long receiveKey(in nsIDOMWindow parent,
-                  in unsigned long uiFlags,
+  nsIIPCRequest receiveKey(in string keyServer,
                   in string keyId,
+                  in nsIRequestObserver requestObserver,
                   out wstring errorMsg);
 
   nsIIPCRequest generateKey(in nsIDOMWindow parent,
