@@ -2672,7 +2672,7 @@ function (parent, prompter, verifyOnly, noOutput,
 }
 
 
-Enigmail.prototype.decryptMessageEnd = 
+Enigmail.prototype.decryptMessageEnd =
 function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
           statusFlagsObj, keyIdObj, userIdObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.decryptMessageEnd: uiFlags="+uiFlags+", outputLen="+outputLen+", pipeTransport="+pipeTransport+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
@@ -2863,6 +2863,9 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
       pubKeyId = "0x" + matchb[3];
       DEBUG_LOG("enigmail.js: Enigmail.decryptMessageEnd: NO_PUBKEY "+pubKeyId+"\n");
       keyIdObj.value = matchb[2]+matchb[3];
+    }
+    if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_OKAY) {
+      exitCode=0;
     }
 
   }

@@ -100,8 +100,9 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       statusFlags |= nsIEnigmail.DECRYPTION_INCOMPLETE;
   }
 
-  if ( (exitCode == 0) ||
-       (statusFlags & nsIEnigmail.DISPLAY_MESSAGE) ) {
+  if ((exitCode == 0 &&
+        !(statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE)) ||
+       (statusFlags & nsIEnigmail.DISPLAY_MESSAGE)) {
     // Normal exit / display message
     statusInfo = errorMsg;
     statusLine = errorMsg;
