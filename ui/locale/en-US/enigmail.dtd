@@ -128,7 +128,7 @@
 
 <!ENTITY enigmail.sendOptionsMenu.accesskey    "o">
 <!ENTITY enigmail.mimeOptionsMenu.accesskey    "M">
-<!ENTITY enigmail.sendPGPMime.accesskey        "g">
+<!ENTITY enigmail.sendPGPMime.accesskey        "G">
 
 <!ENTITY enigmail.undoencryption.accesskey     "U">
 <!ENTITY enigmail.insertkey.accesskey          "I">
@@ -149,6 +149,7 @@
 <!ENTITY enigmail.defaultSignMsg.label            "Sign mail by default">
 <!ENTITY enigmail.keepSettingsForReply.label      "Encrypt if replying to encrypted message">
 <!ENTITY enigmail.confirmBeforeSend.label         "Always confirm before sending">
+<!ENTITY enigmail.wrapHtmlBeforeSend.label        "Rewrap signed HTML text before sending">
 
 <!ENTITY enigmail.defaultEncryptionSign.accesskey "E">
 <!ENTITY enigmail.defaultEncryptionOnly.accesskey "c">
