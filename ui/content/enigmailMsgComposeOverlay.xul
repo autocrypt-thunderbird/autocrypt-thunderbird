@@ -458,7 +458,8 @@
 
 
   <statusbar id="status-bar">
-    <hbox insertafter="totalMessageCount">
+    <hbox id="enigmail-status-bar"
+          insertafter="totalMessageCount">
       <statusbarpanel id="enigmail-signed-status"
         class="statusbarpanel-iconic"
         collapsed="true" oncommand="enigDoPgpButton();"/>

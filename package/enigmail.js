@@ -104,6 +104,7 @@ const NS_IOSERVICE_CONTRACTID       = "@mozilla.org/network/io-service;1";
 const NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
 
 const ENIG_STRINGBUNDLE_CONTRACTID = "@mozilla.org/intl/stringbundle;1";
+const NS_PREFS_SERVICE_CID ="@mozilla.org/preferences-service;1";
 
 // Interfaces
 const nsISupports            = Components.interfaces.nsISupports;
@@ -426,7 +427,7 @@ EnigmailFactory.prototype = {
   createInstance: function (outer, iid) {
     //DEBUG_LOG("EnigmailFactory.createInstance:\n");
     if (!gEnigmailSvc)
-      throw Components.results.NS_ERROR_NOT_INITIALIZED;
+      throw Components.results.NS_ERROR_NOT_D;
 
     return gEnigmailSvc;
   }
@@ -1005,7 +1006,7 @@ function (aSubject, aTopic, aData) {
 
     // Reset mail.show_headers pref
     try {
-      var prefSvc = Components.classes["@mozilla.org/preferences-service;1"]
+      var prefSvc = Components.classes[NS_PREFS_SERVICE_CID]
                             .getService(Components.interfaces.nsIPrefService);
 
       var prefRoot = prefSvc.getBranch(null);
@@ -2578,6 +2579,7 @@ function (parent, uiFlags, cipherText, signatureObj,
     }
 
     if (allowImport) {
+
       var importedKey = false;
 
       if (innerKeyBlock) {
@@ -2974,7 +2976,7 @@ function (email, secret, exitCodeObj, errorMsgObj) {
 // ExitCode == 0  => success
 // ExitCode > 0   => error
 // ExitCode == -1 => Cancelled by user
-Enigmail.prototype.receiveKey = 
+Enigmail.prototype.receiveKey =
 function (parent, uiFlags, keyId, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.receiveKey: "+keyId+"\n");
 
@@ -3019,18 +3021,49 @@ function (parent, uiFlags, keyId, errorMsgObj) {
     return 1;
   }
 
-  var command = this.agentPath;
+  var proxyHost = null;
+  try {
+    if (this.prefBranch.getCharPref("respectHttpProxy")) {
+      // determine proxy host
+      var prefsSvc = Components.classes[NS_PREFS_SERVICE_CID].getService(Components.interfaces.nsIPrefService);
+      var prefRoot = prefsSvc.getBranch(null);
+      var useProxy = prefRoot.getIntPref("network.proxy.type");
+      if (useProxy==1) {
+        var proxyHostName = prefRoot.getCharPref("network.proxy.http");
+        var proxyHostPort = prefRoot.getIntPref("network.proxy.http_port");
+        var noProxy = prefRoot.getCharPref("network.proxy.no_proxies_on").split(/[ ,]/);
+        for (var i=0; i<noProxy.length; i++) {
+          var proxySearch=new RegExp(noProxy[i].replace(/\./, "\\.")+"$", "i");
+          if (noProxy[i] && keyserver.search(proxySearch)>=0) {
+            i=noProxy.length+1;
+            proxyHostName=null;
+          }
+        }
+        if (proxyHostName && proxyHostPort) {
+          proxyHost="http://"+proxyHostName+":"+proxyHostPort
+        }
+      }
+    }
+  }
+  catch (ex) {}
+  var command = this.agentPath + GPG_BATCH_OPTS;
 
-  command += GPG_BATCH_OPTS + " --keyserver " + keyserver + " --recv-keys ";
-  command += keyId;
+  if (proxyHost) {
+    command += " --keyserver-options honor-http-proxy";
+    gEnvList.push("http_proxy="+proxyHost);
+  }
+  command += " --keyserver " + keyserver + " --recv-keys " + keyId;
 
   var exitCodeObj    = new Object();
-  var statusFlagsObj = new Object();    
+  var statusFlagsObj = new Object();
   var statusMsgObj   = new Object();
 
   var output = gEnigmailSvc.execCmd(command, null, "",
                        exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
 
+  if (proxyHost) {
+    gEnvList.pop(); // remove http_proxy from env. list
+  }
   return exitCodeObj.value;
 }
 
@@ -3083,7 +3116,7 @@ function (parent, uiFlags, userId, exitCodeObj, errorMsgObj) {
 // ExitCode == 0  => success
 // ExitCode > 0   => error
 // ExitCode == -1 => Cancelled by user
-Enigmail.prototype.importKey = 
+Enigmail.prototype.importKey =
 function (parent, uiFlags, msgText, keyId, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.importKey: id="+keyId+", "+uiFlags+"\n");
 

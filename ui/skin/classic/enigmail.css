@@ -83,71 +83,51 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
  color: #E800FF;
 }
 
-#msgcomposeWindow #enigmail-signed-status {
+#enigmail-status-bar #enigmail-signed-status {
   list-style-image: none;
   visibility: collapse;
 }
 
-#msgcomposeWindow[signed="ok"] #enigmail-signed-status {
+#enigmail-status-bar[signed="ok"] #enigmail-signed-status {
   list-style-image: url("chrome://messenger/skin/smime/icons/sbSignOk.gif");
   visibility: visible;
 }
 
-#msgcomposeWindow[signed="notok"] #enigmail-signed-status {
+#enigmail-status-bar[signed="notok"] #enigmail-signed-status {
   list-style-image: url("chrome://messenger/skin/smime/icons/sbSignNotOk.gif");
   visibility: visible;
 }
 
+#enigmail-status-bar[signed="unknown"] #enigmail-signed-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbSignUnknown.gif");
+  visibility: visible;
+}
 
-#msgcomposeWindow #enigmail-encrypted-status {
+#enigmail-status-bar #enigmail-encrypted-status {
   list-style-image: none;
   visibility: collapse;
 }
 
-#msgcomposeWindow[encrypted="ok"] #enigmail-encrypted-status {
+#enigmail-status-bar[encrypted="ok"] #enigmail-encrypted-status {
   list-style-image: url("chrome://messenger/skin/smime/icons/sbCryptoOk.gif");
   visibility: visible;
 }
 
-#msgcomposeWindow[encrypted="notok"] #enigmail-encrypted-status {
+#enigmail-status-bar[encrypted="notok"] #enigmail-encrypted-status {
   list-style-image: url("chrome://messenger/skin/smime/icons/sbCryptoNotOk.gif");
   visibility: visible;
 }
-
-
-#status-bar #enigmail-signed-status {
-  list-style-image: none;
-  visibility: collapse;
-}
-
-#status-bar[signed="ok"] #enigmail-signed-status {
-  list-style-image: url("chrome://messenger/skin/smime/icons/sbSignOk.gif");
-  visibility: visible;
-}
-
-#status-bar[signed="notok"] #enigmail-signed-status {
-  list-style-image: url("chrome://messenger/skin/smime/icons/sbSignNotOk.gif");
-  visibility: visible;
-}
-
-
-#status-bar #enigmail-encrypted-status {
-  list-style-image: none;
-  visibility: collapse;
-}
-
-#status-bar[encrypted="ok"] #enigmail-encrypted-status {
-  list-style-image: url("chrome://messenger/skin/smime/icons/sbCryptoOk.gif");
-  visibility: visible;
-}
-
-#status-bar[encrypted="notok"] #enigmail-encrypted-status {
-  list-style-image: url("chrome://messenger/skin/smime/icons/sbCryptoNotOk.gif");
-  visibility: visible;
-}
-
 
 .enigmailPrefsTitle {
   font-weight: bold;
   height: 25px;
+}
+
+treechildren::-moz-tree-cell-text(enigKeyInactive) {
+  color: gray;
+  font-style: italic;
+}
+
+treechildren::-moz-tree-column(enigDontEncrypt) {
+  background-color: rgb(90%, 90%, 90%);
 }

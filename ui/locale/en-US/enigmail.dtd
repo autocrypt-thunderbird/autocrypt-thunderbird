@@ -155,7 +155,7 @@
 <!ENTITY enigmail.recipientsSelectionOption.label "Behavior for Selecting Keys of Recipients">
 <!ENTITY enigmail.askRecipientsAlways.label       "Always display selection">
 <!ENTITY enigmail.askRecipientsClever.label       "Display selection when necessary">
-<!ENTITY enigmail.askRecipientsNever.label        "Never display selection">
+<!ENTITY enigmail.askRecipientsNever.label        "Do not display selection for 'encrypt if possible'">
 
 <!ENTITY enigmail.usePGPMimeAlways.label          "Always use PGP/MIME">
 <!ENTITY enigmail.usePGPMimePossible.label        "Allow to use PGP/MIME">

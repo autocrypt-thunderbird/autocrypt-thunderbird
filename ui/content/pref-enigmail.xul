@@ -103,6 +103,12 @@
             <textbox id="enigmail_keyserver" />
 
           </hbox>
+          <vbox autostretch="never" align="end">
+            <button id="resetPrefs"
+                    label="&enigmail.resetPrefsButton.label;"
+                    oncommand="AdvResetPrefs();"/>
+          </vbox>
+
       </vbox>
 
       <vbox id="sending" flex="1">
@@ -232,14 +238,5 @@
     </tabpanels>
   </tabbox>
 
-
-
-  <hbox autostretch="never" halign="right" hidden="true">
-    <button class="dialog"
-            id="resetPrefs"
-            label="&enigmail.resetPrefsButton.label;"
-            oncommand="AdvResetPrefs();"
-            />
-  </hbox>
 
 </dialog>

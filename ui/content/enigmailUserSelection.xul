@@ -39,7 +39,7 @@
       <treecols>
         <treecol id="selectionCol" style="width:25px" label="&enigmail.keySelection.label;"/>
         <splitter class="tree-splitter"/>
-        <treecol id="nameCol" primary="true"
+        <treecol id="enigUserNameCol" primary="true"
             flex="1"
             label="&enigmail.keyUserId.label;"/>
         <splitter class="tree-splitter"/>
@@ -48,7 +48,8 @@
         <treecol id="keyCol" style="width:90px" label="&enigmail.keyId.label;"/>
       </treecols>
 
-      <treechildren id="enigmailUserIdSelectionChildren"/>
+      <treechildren id="enigmailUserIdSelectionChildren"
+            properties="sendUnencrypted"/>
 
     </tree>
 
@@ -58,7 +59,8 @@
   <hbox autostretch="always">
     <checkbox id="enigmailUserSelPlainText"
                 label="&enigmail.userSelPlainText.label;"
-                accesskey="&enigmail.userSelPlainText.accesskey;"/>
+                accesskey="&enigmail.userSelPlainText.accesskey;"
+                onclick="disableList();"/>
 <!--
     <button class="dialog"
             halign="right"

@@ -110,29 +110,22 @@ function enigMsgComposeStartup() {
 }
 
 function enigDisplayUi() {
-  var  statusBar = document.getElementById("status-bar");
-  var sign = document.getElementById("enigmail-signed-status");
-  var enc  = document.getElementById("enigmail-encrypted-status");
+  var  statusBar = document.getElementById("enigmail-status-bar");
 
   if (gEnigSendMode & EnigSigned) {
     statusBar.setAttribute("signed", "ok");
-    sign.collapsed=false;
   }
   else {
     statusBar.setAttribute("signed", "");
-    sign.collapsed=true;
   }
   if (gEnigSendMode & EnigEncrypt) {
     statusBar.setAttribute("encrypted", "ok");
-    enc.collapsed=false;
   }
   else if (gEnigSendMode & EnigEncryptIfPossible) {
     statusBar.setAttribute("encrypted", "notok");
-    enc.collapsed=false;
   }
   else {
     statusBar.setAttribute("encrypted", "");
-    enc.collapsed=true;
   }
 }
 
@@ -877,27 +870,55 @@ function enigSend(gotSendFlags, elementId) {
        } catch (ex) {
        }
 
+       try {
+          if (gEnigPrefRoot.getBoolPref("mail.strictly_mime")) {
+              if (EnigConfirm(EnigGetString("quotedPrintableWarn"))) {
+                gEnigPrefRoot.setBoolPref("mail.strictly_mime", false);
+              }
+          }
+       } catch (ex) {}
+
+
        var sendFlowed;
        try {
          sendFlowed = gEnigPrefRoot.getBoolPref("mailnews.send_plaintext_flowed");
        } catch (ex) {
          sendFlowed = true;
        }
-
        var encoderFlags = EnigOutputFormatted | EnigOutputLFLineBreak;
 
-       if (gMsgCompose.composeHTML && !(sendFlags & ENIG_ENCRYPT)
-           && EnigGetPref("wrapHtmlBeforeSend")) {
+       var wrapWidth=72;
+       if (gMsgCompose.composeHTML) {
           // enforce line wrapping here
           // otherwise the message isn't signed correctly
           try {
-            var wrapWidth = gEnigPrefRoot.getIntPref("editor.htmlWrapColumn");
-            var editor = gMsgCompose.editor.QueryInterface(nsIPlaintextEditorMail);
-            editor.wrapWidth=wrapWidth-2; // prepare for the worst case: a 72 char's long line starting with '-'
-            editor.rewrap(false);
+            wrapWidth = gEnigPrefRoot.getIntPref("editor.htmlWrapColumn");
+
+            if (wrapWidth<68) {
+              if (EnigConfirm(EnigGetString("minimalLineWrapping", wrapWidth))) {
+                gEnigPrefRoot.setIntPref("editor.htmlWrapColumn", 68)
+              }
+            }
+            if (!(sendFlags & ENIG_ENCRYPT) && EnigGetPref("wrapHtmlBeforeSend")) {
+              var editor = gMsgCompose.editor.QueryInterface(nsIPlaintextEditorMail);
+              editor.wrapWidth=wrapWidth-2; // prepare for the worst case: a 72 char's long line starting with '-'
+              editor.rewrap(false);
+            }
           }
           catch (ex) {}
        }
+       else {
+          try {
+            wrapWidth = gEnigPrefRoot.getIntPref("mailnews.wraplength");
+            if (wrapWidth<68) {
+              if (EnigConfirm(EnigGetString("minimalLineWrapping", wrapWidth))) {
+                gEnigPrefRoot.setIntPref("mailnews.wraplength", 68)
+              }
+            }
+          }
+          catch (ex) {}
+      }
+
 
        // Get plain text
        // (Do we need to set the nsIDocumentEncoder::* flags?)

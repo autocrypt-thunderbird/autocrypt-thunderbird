@@ -54,6 +54,7 @@ var gResult;
 var gImg0="chrome://enigmail/skin/check0.png";
 var gImg1="chrome://enigmail/skin/check1.png";
 var gImg2="chrome://enigmail/skin/check2.png";
+var gSendEncrypted=true;
 
 // set the "active" flag and the corresponding image
 function enigSetActive(element, status) {
@@ -199,16 +200,16 @@ function enigmailUserSelLoad() {
           if (! hideExpired || activeState<2) {
             // do not show if expired keys are hidden
             if (secretOnly) {
-              treeItem=enigUserSelCreateRow(aUserList[i].keyId, activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].created, "")
+              treeItem=enigUserSelCreateRow(aUserList[i], activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].created, "")
             }
             else {
-              treeItem=enigUserSelCreateRow(aUserList[i].keyId, activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry, aUserList[i].keyTrust)
+              treeItem=enigUserSelCreateRow(aUserList[i], activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry, aUserList[i].keyTrust)
             }
             if (aUserList[i].SubUserIds.length) {
               treeItem.setAttribute("container", "true");
               var subChildren=document.createElement("treechildren");
               for (var user=0; user<aUserList[i].SubUserIds.length; user++) {
-                var subItem=enigUserSelCreateRow(aUserList[i].keyId, -1, aUserList[i].SubUserIds[user], "", "", "");
+                var subItem=enigUserSelCreateRow(aUserList[i], -1, aUserList[i].SubUserIds[user], "", "", "");
                 subChildren.appendChild(subItem);
                 if (activeState<2 || allowExpired) {
                   // add uid's for valid keys
@@ -302,31 +303,50 @@ function enigGetUserList(window, secretOnly, exitCodeObj, statusFlagsObj, errorM
 
 
 // create a (sub) row for the user tree
-function enigUserSelCreateRow (keyId, activeState, userId, keyValue, dateField, trustStatus) {
+function enigUserSelCreateRow (userObj, activeState, userId, keyValue, dateField, trustStatus) {
     var selectCol=document.createElement("treecell");
     selectCol.setAttribute("id", "indicator");
     enigSetActive(selectCol, activeState);
+    var expCol=document.createElement("treecell");
     var userCol=document.createElement("treecell");
     userCol.setAttribute("id", "name");
-    userCol.setAttribute("label", userId);
-    var expCol=document.createElement("treecell");
-    if (trustStatus==KEY_EXPIRED) {
+    if (trustStatus.charAt(0)==KEY_EXPIRED) {
       expCol.setAttribute("label", EnigGetString("selKeyExpired", dateField));
     }
     else {
       expCol.setAttribute("label", dateField);
     }
+
+    switch (trustStatus.charAt(0)) {
+      case KEY_REVOKED:
+        userId+= " - "+EnigGetString("prefRevoked");
+        break;
+      case KEY_INVALID:
+        userId+= " - "+EnigGetString("keyInvalid");
+        break;
+      case KEY_DISABLED:
+        userId+= " - "+EnigGetString("keyDisabled");
+        break;
+    }
     expCol.setAttribute("id", "expiry");
+    userCol.setAttribute("label", userId);
     var keyCol=document.createElement("treecell");
     keyCol.setAttribute("label", keyValue.substring(8,16));
     keyCol.setAttribute("id", "keyid");
+    if ((userObj.keyTrust.length>0) &&
+        (KEY_NOT_VALID.indexOf(userObj.keyTrust.charAt(0))>=0)) {
+      userCol.setAttribute("properties", "enigKeyInactive");
+      expCol.setAttribute("properties", "enigKeyInactive");
+      keyCol.setAttribute("properties", "enigKeyInactive");
+    }
+
     var userRow=document.createElement("treerow");
     userRow.appendChild(selectCol);
     userRow.appendChild(userCol);
     userRow.appendChild(expCol);
     userRow.appendChild(keyCol);
     var treeItem=document.createElement("treeitem");
-    treeItem.setAttribute("id", "0x"+keyId);
+    treeItem.setAttribute("id", "0x"+userObj.keyId);
     treeItem.appendChild(userRow);
     return treeItem;
 }
@@ -359,12 +379,14 @@ function enigmailUserSelAccept() {
     }
   }
 
-  var encrypt = document.getElementById("enigmailUserSelPlainText");
-  resultObj.encrypt = !(encrypt && encrypt.checked==true);
+  resultObj.encrypt = gSendEncrypted;
 
 }
 
 function enigmailUserSelCallback(event) {
+  if (!gSendEncrypted)
+    return;
+
   var Tree = document.getElementById("enigmailUserIdSelection");
   var row = {};
   var col = {};
@@ -388,6 +410,24 @@ function enigmailUserSelCallback(event) {
     } else if (elem.getAttribute("active") == "0") {
       enigSetActive(elem, 1);
     }
+  }
+}
+
+function disableList() {
+  gSendEncrypted = (! gSendEncrypted);
+  var Tree=document.getElementById("enigmailUserIdSelection");
+  var node = Tree.firstChild.firstChild;
+  while (node) {
+    // set the background of all colums to gray
+    if (node.localName == "treecol") {
+      if (gSendEncrypted) {
+        node.removeAttribute("properties");
+      }
+      else {
+        node.setAttribute("properties", "enigDontEncrypt");
+      }
+    }
+    node=node.nextSibling;
   }
 }
 
