@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.83.5.0";
-var gEnigmimeVersion = "0.83.5.0";
+var gEnigmailVersion = "0.83.6.0";
+var gEnigmimeVersion = "0.83.6.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -465,7 +465,7 @@ function EnigReadFileContents(localFile, maxBytes) {
   if (!ioServ)
     throw Components.results.NS_ERROR_FAILURE;
 
-  var fileURI = ioServ.newFileURI(localFile)
+  var fileURI = ioServ.newFileURI(localFile);
   return EnigReadURLContents(fileURI.asciiSpec, maxBytes);
 
 }
@@ -663,16 +663,18 @@ function EnigDisplayRadioPref(prefName, prefValue, optionElementIds) {
 function EnigSetRadioPref(prefName, optionElementIds) {
   DEBUG_LOG("enigmailCommon.js: EnigSetRadioPref: "+prefName+"\n");
 
-  var groupElement = document.getElementById("enigmail_"+prefName);
-  if (groupElement) {
-    var optionElement = groupElement.selectedItem;
-
-    var prefValue = optionElement.value;
-    if (prefValue < optionElementIds.length) {
-      EnigSetPref(prefName, prefValue);
-      groupElement.value = prefValue;
+  try {
+    var groupElement = document.getElementById("enigmail_"+prefName);
+    if (groupElement) {
+      var optionElement = groupElement.selectedItem;
+      var prefValue = optionElement.value;
+      if (prefValue < optionElementIds.length) {
+        EnigSetPref(prefName, prefValue);
+        groupElement.value = prefValue;
+      }
     }
   }
+  catch (ex) {}
 }
 
 function EnigSetDefaultPrefs() {
@@ -724,7 +726,7 @@ function EnigGetDefaultPref(prefName) {
   var prefValue=null;
   try {
     gPrefEnigmail.lockPref(prefName);
-    var prefValue = EnigGetPref(prefName);
+    prefValue = EnigGetPref(prefName);
     gPrefEnigmail.unlockPref(prefName);
   }
   catch (ex) {}

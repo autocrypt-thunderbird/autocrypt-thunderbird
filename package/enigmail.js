@@ -103,6 +103,8 @@ const NS_IOSERVICE_CONTRACTID       = "@mozilla.org/network/io-service;1";
 
 const NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
 
+const NS_SCRIPTABLEINPUTSTREAM_CONTRACTID = "@mozilla.org/scriptableinputstream;1"
+
 const ENIG_STRINGBUNDLE_CONTRACTID = "@mozilla.org/intl/stringbundle;1";
 const NS_PREFS_SERVICE_CID ="@mozilla.org/preferences-service;1";
 
@@ -3808,36 +3810,137 @@ function(keyId, exitCodeObj, errorMsgObj) {
   return picFile.path;
 }
 
+
 Enigmail.prototype.getUserFile = function () {
 
   var ds = Components.classes[DIR_SERV_CONTRACTID].getService();
   var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
   var userFile = dsprops.get("ProfD", Components.interfaces.nsILocalFile);
-  userFile.append("enigmail.xml");
+  userFile.append("pgprules.xml");
   return userFile;
 }
 
 Enigmail.prototype.loadUserList = function () {
+  DEBUG_LOG("enigmail.js: loadUserList\n");
   var flags = NS_RDONLY;
   var userFile = this.getUserFile();
 
   if (userFile.exists()) {
 
-    var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+    var ioServ = Components.classes[NS_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
     if (!ioServ)
       throw Components.results.NS_ERROR_FAILURE;
 
-    var fileChannel = ioServ.newChannel(url, null, null)
+    var fileURI = ioServ.newFileURI(userFile);
+    var fileChannel = ioServ.newChannel(fileURI.asciiSpec, null, null);
 
     var rawInStream = fileChannel.open();
 
-    var scriptableInStream = new Components.Constructor( "@mozilla.org/scriptableinputstream;1", "nsIScriptableInputStream" );
+    var scriptableInStream = Components.classes[NS_SCRIPTABLEINPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIScriptableInputStream);
     scriptableInStream.init(rawInStream);
     var available = scriptableInStream.available()
     var fileContents = scriptableInStream.read(available);
     scriptableInStream.close();
 
-    var p=Components.classes["@mozilla.org/xmlextras/domparser;1"].createInstance(Components.interfaces.nsIDOMParser);
-    this.userList = p.parseFromString(fileContents, "text/xml");
+    var domParser=Components.classes["@mozilla.org/xmlextras/domparser;1"].createInstance(Components.interfaces.nsIDOMParser);
+    this.userList = domParser.parseFromString(fileContents, "text/xml");
+
+    return true;
   }
+  return false;
 }
+
+Enigmail.prototype.getUserList = function (userListObj) {
+  var ret=true;
+  // if (! this.userList) {
+     ret=this.loadUserList();
+  // }
+  if (this.userList) {
+    userListObj.value = this.userList;
+    return ret;
+  }
+
+  userListObj.value = null;
+  return false;
+}
+
+/*
+Enigmail.prototype.getRecipientsKeys =
+function(parent, emailAddrs, matchedKeysObj, flagsObj) {
+
+  function getFlagVal(oldVal, newVal, valType) {
+    if (oldVal==0 || newVal==0) {
+      return 0;
+    }
+    else {
+      return (oldVal < newVal ? newVal: oldVal);
+    }
+  }
+
+  flagsObj.value = -1;
+  matchedKeysObj.value = "";
+  var encrypt=1;
+  var sign   =1;
+  var pgpMime=1;
+  var addresses="{"+EnigStripEmail(emailAddrs.toLowerCase()).replace(/[, ]+/g, "}{")+"}";
+  var keyList=new Array;
+
+//  if (this.userList == null) {
+    if (!this.loadUserList()) return 0;
+//  }
+
+  if (this.userList.firstChild.nodeName=="parsererror") {
+    this.alertMsg(parent, "Invalid enigmail.xml file:\n"+ this.userList.firstChild.textContent);
+    return 0;
+  }
+  DEBUG_LOG("enigmail.js: getRecipientsKeys: keys loaded\n");
+  var node=this.userList.firstChild.firstChild;
+  while (node) {
+    if (node.tagName=="pgpRule") {
+      try {
+        var nodeText=node.getAttribute("email");
+        if (! nodeText) continue;
+        addrList=nodeText.toLowerCase().split(/[ ,;]+/);
+        for(var addrIndex=0; addrIndex < addrList.length; addrIndex++) {
+          var email=addrList[addrIndex];
+          var i=addresses.indexOf(email);
+          while (i>=0) {
+            sign   =getFlagVal(sign,    node.getAttribute("sign"), 0);
+            encrypt=getFlagVal(encrypt, node.getAttribute("encrypt"), 1);
+            pgpMime=getFlagVal(pgpMime, node.getAttribute("pgpMime"), 2);
+
+            // extract found address
+            var keyIds=node.getAttribute("keyId");
+            if (keyIds) {
+              keyList.push(keyIds.replace(/[ ,;]/g, ", "));
+              var start=addresses.substring(0,i+email.length).lastIndexOf("{");
+              var end=start+addresses.substring(start).indexOf("}")+1;
+              // this.alertMsg(parent, "Found: ("+email+"): "+addresses.substring(start,end));
+              addresses=addresses.substring(0,start-1)+addresses.substring(end);
+              i=addresses.indexOf(email);
+            }
+            else {
+              var oldMatch=i;
+              i=addresses.substring(oldMatch+email.length).indexOf(email);
+              if (i>=0) i+=oldMatch+email.length;
+            }
+          }
+        }
+     }
+     catch (ex) {}
+    }
+    node = node.nextSibling;
+  }
+
+  if (keyList.length>0) {
+    // sort key list and make it unique?
+    matchedKeysObj.value = keyList.join(", ");
+    addresses.replace(/\{/g, ", ").replace(/\}/g, "");
+    matchedKeysObj.value += addresses.replace(/\{/g, ", ").replace(/\}/g, "");
+  }
+  flagsObj.value = sign | (encrypt << 2) | (pgpMime << 4);
+//  this.alertMsg(parent, "List: \n"+matchedKeysObj.value+"\nFlags:"+flagsObj.value);
+
+  return 0;
+}
+*/

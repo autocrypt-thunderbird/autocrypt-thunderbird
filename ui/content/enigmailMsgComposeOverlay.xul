@@ -15,10 +15,10 @@
    The Initial Developer of the Original Code is Ramalingam Saravanan.
    Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
    Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
-   
+
    Contributor(s):
    Patrick Brunschwig <patrick.brunschwig@gmx.net>
-   
+
    Alternatively, the contents of this file may be used under the
    terms of the GNU General Public License (the "GPL"), in which case
    the provisions of the GPL are applicable instead of
@@ -52,6 +52,7 @@
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailMsgComposeHelper.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailMsgComposeOverlay.js"/>
 
   <popupset id="aTooltipSet"/>

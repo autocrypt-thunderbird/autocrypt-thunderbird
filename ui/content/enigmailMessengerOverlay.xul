@@ -114,6 +114,13 @@
 
         <menuseparator/>
 
+        <menuitem id="enigmail_reload_msg"
+             label="&enigmail.reload.label;"
+             accesskey="&enigmail.reload.accesskey;"
+             oncommand="ReloadWithAllParts();" />
+
+        <menuseparator/>
+
         <menuitem id="enigmail_keygen"
              label="&enigmail.generatekey.label;"
              accesskey="&enigmail.generatekey.accesskey;"
@@ -201,8 +208,8 @@
         <menuseparator/>
 
         <menuitem id="enigmail_reload_msg"
-             label="Reload Message"
-             accesskey="R"
+             label="&enigmail.reload.label;"
+             accesskey="&enigmail.reload.accesskey;"
              oncommand="ReloadWithAllParts();" />
 
         <menuseparator/>

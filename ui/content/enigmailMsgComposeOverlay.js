@@ -538,7 +538,7 @@ function enigDisplaySignClickWarn() {
   }
 }
 
-function enigConfirmBeforeSend(toAddr, sendFlags, isOffline) {
+function enigConfirmBeforeSend(toAddr, gpgAddr, sendFlags, isOffline) {
   // get confirmation before sending message
   var msgStatus = "";
 
@@ -556,9 +556,13 @@ function enigConfirmBeforeSend(toAddr, sendFlags, isOffline) {
     msgStatus += EnigGetString("statPlain")+" ";
   }
 
+  toAddr=EnigStripEmail(toAddr);
+
   var msgConfirm = (isOffline || sendFlags & nsIEnigmail.SEND_LATER)
           ? EnigGetString("offlineSave",msgStatus,toAddr)
           : EnigGetString("onlineSend",msgStatus,toAddr);
+  if (sendFlags & ENIG_ENCRYPT)
+    msgConfirm += "\n\n"+EnigGetString("encryptKeysNote", gpgAddr);
 
   return EnigConfirm(msgConfirm);
 }
@@ -748,15 +752,61 @@ function enigSendCommand(elementId) {
        }
      }
 
+     var usePGPMimeOption = EnigGetPref("usePGPMimeOption");
+
+     if (gEnigSendPGPMime) {
+       // Use PGP/MIME
+       sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+     }
+
      var toAddr = toAddrList.join(", ");
      var testCipher = null;
 
      var notSignedIfNotEnc= (gEnigSendModeDirty<2 && (! enigGetAccDefault("signPlain")));
 
-
      if (toAddr.length>=1) {
 
         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: toAddr="+toAddr+"\n");
+
+        var matchedKeysObj  =new Object;
+        var flagsObj=new Object;
+        getRecipientsKeys(toAddr, matchedKeysObj, flagsObj);
+
+        if (matchedKeysObj.value) toAddr=matchedKeysObj.value;
+        if (flagsObj.value != -1) {
+          // sign:    0x0001 | 0x0002 => 3
+          // encrypt: 0x0004 | 0x0008 => 12
+          // pgpMime: 0x0010 | 0x0020 => 48
+          switch (flagsObj.value & 3) {
+           // sign
+           case 0:
+             sendFlags &= ~ENIG_SIGN;
+             break;
+           case 2:
+             sendFlags |= ENIG_SIGN;
+             break;
+          }
+
+          switch ((flagsObj.value & 12)>>2) {
+           // encrypt
+           case 0:
+             sendFlags &= ~ENIG_ENCRYPT;
+             break;
+           case 2:
+             sendFlags |= ENIG_ENCRYPT;
+             break;
+          }
+
+          switch ((flagsObj.value & 48)>>4) {
+           // pgpMime
+           case 0:
+             sendFlags &= ~nsIEnigmail.SEND_PGP_MIME;
+             break;
+           case 2:
+             sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+             break;
+          }
+        }
 
         if (sendFlags & ENIG_ENCRYPT) {
           // Encrypt test message for default encryption
@@ -845,13 +895,6 @@ function enigSendCommand(elementId) {
          if(window.cancelSendMessage)
            return;
        }
-     }
-
-     var usePGPMimeOption = EnigGetPref("usePGPMimeOption");
-
-     if (gEnigSendPGPMime) {
-       // Use PGP/MIME
-       sendFlags |= nsIEnigmail.SEND_PGP_MIME;
      }
 
      var bucketList = document.getElementById("attachmentBucket");
@@ -1150,7 +1193,7 @@ function enigSendCommand(elementId) {
      }
 
      if (EnigGetPref("confirmBeforeSend")) {
-       if (!enigConfirmBeforeSend(toAddr, sendFlags, isOffline)) {
+       if (!enigConfirmBeforeSend(toAddrList.join(", "), toAddr, sendFlags, isOffline)) {
          if (gEnigProcessed)
            enigUndoEncryption(bucketList, gEnigModifiedAttach);
 

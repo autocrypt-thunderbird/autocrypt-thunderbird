@@ -435,7 +435,7 @@ function enigUpdateOptionsDisplay() {
 
   optList = ["decryptverify", "importpublickey", "savedecrypted"];
   for (j=0; j<optList.length; j++) {
-    var menuElement = document.getElementById("enigmail_"+optList[j]);
+    menuElement = document.getElementById("enigmail_"+optList[j]);
     if (gEnigDecryptButton && gEnigDecryptButton.disabled) {
        menuElement.setAttribute("disabled", "true");
     }
@@ -581,7 +581,7 @@ function enigMessageDecrypt(event) {
     // multipart/signed
     DEBUG_LOG("enigmailMessengerOverlay.js: multipart/signed\n");
 
-    var enigmailSvc = GetEnigmailSvc();
+    enigmailSvc = GetEnigmailSvc();
     if (!enigmailSvc)
       return;
 
@@ -798,7 +798,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     if (head) {
       // print a warning if the signed or encrypted part doesn't start
       // quite early in the message
-      var matches=head.match(/(\n)/g);
+      matches=head.match(/(\n)/g);
       if (matches && matches.length >10) {
         msgRfc822Text=EnigGetString("notePartEncrypted")+"\n\n";
       }

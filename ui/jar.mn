@@ -35,6 +35,7 @@ enigmail.jar:
 	content/enigmail/enigmailNavigatorOverlay.js   (content/enigmailNavigatorOverlay.js)
 	content/enigmail/enigmailMsgComposeOverlay.xul (content/enigmailMsgComposeOverlay.xul)
 	content/enigmail/enigmailMsgComposeOverlay.js  (content/enigmailMsgComposeOverlay.js)
+	content/enigmail/enigmailMsgComposeHelper.js   (content/enigmailMsgComposeHelper.js)
 	content/enigmail/enigmailMessengerOverlay.xul  (content/enigmailMessengerOverlay.xul)
 	content/enigmail/enigmailMessengerOverlay.js   (content/enigmailMessengerOverlay.js)
 	content/enigmail/enigmailMsgHdrViewOverlay.xul (content/enigmailMsgHdrViewOverlay.xul)

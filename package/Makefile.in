@@ -35,7 +35,7 @@
 
 # Specify these as parameters to the make command
 XPI_MODULE	= enigmail
-XPI_MODULE_VERS = 0.83.5
+XPI_MODULE_VERS = 0.83.6
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
@@ -48,8 +48,6 @@ XPIDL_MODULE  = enigmail
 
 XPIDLSRCS     = nsIEnigmail.idl
 
-PREF_JS_EXPORTS=prefs/enigmail.js
-
 include $(topsrcdir)/config/rules.mk
 
 XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS).xpi
@@ -57,6 +55,7 @@ LANGXPIFILE = $(XPI_MODULE)-en-US-$(XPI_MODULE_VERS).xpi
 
 libs::
 	$(INSTALL) $(srcdir)/enigmail.js $(DIST)/bin/components
+	$(INSTALL) $(srcdir)/prefs/enigmail.js $(DIST)/bin/defaults/pref
 	$(INSTALL) $(srcdir)/enigprefs-service.js $(DIST)/bin/components
 
 xpi::

@@ -84,15 +84,17 @@
 <!ENTITY enigmail.viewconsole.label      "View console">
 <!ENTITY enigmail.viewdebuglog.label     "View logfile">
 
-<!ENTITY enigmail.generatekey.label      "Generate key">
-<!ENTITY enigmail.upgrade.label              "Upgrade">
-<!ENTITY enigmail.help.label              "Help">
+<!ENTITY enigmail.generatekey.label        "Generate key">
+<!ENTITY enigmail.upgrade.label            "Upgrade">
+<!ENTITY enigmail.help.label               "Help">
 <!ENTITY enigmail.about.label              "About Enigmail">
+<!ENTITY enigmail.reload.label             "Reload Message">
 <!ENTITY enigmail.browse.label             "Browse...">
 
 <!ENTITY enigmail.decryptverify.accesskey   "D">
 <!ENTITY enigmail.importpublickey.accesskey "I">
 <!ENTITY enigmail.savedecrypted.accesskey   "S">
+<!ENTITY enigmail.reload.accesskey          "R">
 
 <!ENTITY enigmail.autoDecrypt.accesskey     "A">
 
