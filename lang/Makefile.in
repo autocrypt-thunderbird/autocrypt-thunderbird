@@ -61,5 +61,8 @@ xpi-es-AR::
 xpi-es-ES::
 	./make-lang-xpi.pl es-ES $(XPI_VERS) $(DIST)/bin
 
+xpi-xx-XX::
+	./make-lang-xpi.pl xx-XX $(XPI_VERS) $(DIST)/bin
+
 xpi-zh-CN::
 	./make-lang-xpi.pl zh-CN $(XPI_VERS) $(DIST)/bin
