@@ -795,8 +795,9 @@ function (aURI)
 
     var channel = gEnigmailSvc.ipcService.newStringChannel(aURI,
                                                     contentType,
-                                                    contentCharset,
+                                                    "UTF-8",
                                                     contentData);
+
     return channel;
   }
 
@@ -3516,6 +3517,94 @@ function (parent, name, comment, email, expiryDate, passphrase,
 }
 
 
+Enigmail.prototype.editKey = 
+function (parent, needPassphrase, userId, keyId, editCmd, exitCodeObj, errorMsgObj) {
+  WRITE_LOG("enigmail.js: Enigmail.editKey: parent="+parent+", editCmd="+editCmd+"\n");
+  
+  exitCodeObj.value = 0;
+  var command = this.agentPath;
+
+  var statusFlags = new Object();
+
+  var passphrase = null;
+  var passwdObj = new Object();
+  var useAgentObj = new Object();
+
+  if (needPassphrase) {
+    if (!GetPassphrase(parent, 0, passwdObj, useAgentObj)) {
+      ERROR_LOG("enigmail.js: Enigmail.decryptAttachment: Error - no passphrase supplied\n");
+  
+      statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
+      return null;
+    }
+  
+    passphrase = passwdObj.value;
+  }
+
+  needPassphrase = (needPassphrase && (! useAgentObj.value) && (passphrase.length > 0));
+  command += " --no-tty --status-fd 2 --command-fd 0"
+  if (needPassphrase) command += " --passphrase-fd 0"
+  if (userId) command += " -u " + userId;
+  command += " --edit-key " + keyId;
+
+  var noProxy = true;
+
+  var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+  ipcBuffer.open(MSG_BUFFER_SIZE, false);
+
+  var pipeTrans = this.execStart(command, false, parent, 0,
+                                 ipcBuffer, true, statusFlags);
+
+
+  if (!pipeTrans) {
+    return false;
+  }
+
+  try {
+    if (needPassphrase) {
+      pipeTrans.writeSync(passphrase, passphrase.length);
+    }
+    pipeTrans.writeSync(editCmd, editCmd.length);
+  }
+  catch (ex) {
+    return false;
+  }
+  pipeTrans.join();
+
+  exitCodeObj.value = pipeTrans.exitCode();
+
+  var statusMsgObj = new Object();
+  var cmdLineObj     = new Object();
+
+  try {
+    this.execEnd(pipeTrans, statusFlags, statusMsgObj, cmdLineObj, errorMsgObj);
+  }
+  catch (ex) {};
+
+  return true;
+
+}
+
+
+Enigmail.prototype.setKeyTrust = 
+function (parent, keyId, trustLevel, exitCodeObj, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.setKeyTrust: parent="+parent+", keyId="+keyId+"\n");
+  
+  var editCmd="trust\n"+trustLevel+"\nsave\n";
+  return this.editKey(parent, false, null, keyId, editCmd, exitCodeObj, errorMsgObj);
+}
+
+
+Enigmail.prototype.signKey = 
+function (parent, userId, keyId, signLocally, trustLevel, exitCodeObj, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.signKey: parent="+parent+", userId="+userId+", keyId="+keyId+"\n");
+  
+  var editCmd=(signLocally ? "lsign" : "sign");
+  editCmd+= "\nY\n"+trustLevel+"\nY\nsave\n";
+  return this.editKey(parent, true, userId, keyId, editCmd, exitCodeObj, errorMsgObj);
+}
+
+
 Enigmail.prototype.createMessageURI =
 function (originalUrl, contentType, contentCharset, contentData, persist) {
   DEBUG_LOG("enigmail.js: Enigmail.createMessageURI: "+originalUrl+
@@ -4058,7 +4147,7 @@ function(keyId, exitCodeObj, errorMsgObj) {
     return "";
   }
 
-  if (this.agentVersion<"1.2.5" && this.isWin32) {
+  if (this.agentVersion<"1.3" && this.isWin32) {
     // workaround for error in gpg up to v1.2.4
     outputTxt=outputTxt.replace(/\r\n/g, "\n");
   }
