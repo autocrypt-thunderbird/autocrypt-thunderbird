@@ -220,16 +220,16 @@ addEventListener('messagepane-loaded', enigMsgHdrViewLoad, true);
 var fEnigOpenAttachment;
 if (openAttachment) {
   fEnigOpenAttachment = openAttachment;
-  openAttachment = function (contentType, url, displayName, messageUri)
+  openAttachment = function (msg)
     {
-      DEBUG_LOG("enigmailMsgHdrViewOverlay.js: openAttachment: "+contentType+"\n");
+      DEBUG_LOG("enigmailMsgHdrViewOverlay.js: openAttachment: "+msg.contentType+"\n");
 
-      if (contentType.search(/^message\/rfc822/i) == 0) {
+      if (msg.contentType.search(/^message\/rfc822/i) == 0) {
         // Reset mail.show_headers pref to "original" value
         EnigShowHeadersAll(false);
       }
 
-      fEnigOpenAttachment(contentType, url, displayName, messageUri);
+      fEnigOpenAttachment(msg);
     }
 }
 
@@ -368,5 +368,6 @@ EnigMimeHeaderSink.prototype =
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.encryptionStatus:\n");
     return this._smimeHeaderSink.encryptionStatus(aNestingLevel, aEncryptionStatus, aRecipientCert);
   }
+  */
 
 };
