@@ -35,7 +35,7 @@
 
 # Specify these as parameters to the make command
 XPI_MODULE	= enigmime
-XPI_MODULE_VERS = 0.82.4
+XPI_MODULE_VERS = 0.82.5
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
@@ -47,6 +47,8 @@ include $(DEPTH)/config/autoconf.mk
 MODULE		= enigmime
 LIBRARY_NAME	= enigmime
 SHORT_LIBNAME	= enigmime
+
+MODULE_NAME	= EnigModule
 
 IS_COMPONENT	= 1
 
@@ -84,8 +86,6 @@ REQUIRES	= xpcom \
 		  pipnss \
 		  $(NULL)
 
-MODULE_NAME	= EnigModule
-
 CPPSRCS		= nsEnigModule.cpp
 
 LOCAL_INCLUDES	= \
@@ -95,7 +95,7 @@ LOCAL_INCLUDES	= \
 
 # hack to build non standard library dependent build on unix
 ifeq ($(ENIGMAIL_STATIC),1)
-BUILD_STATIC       = -static-libgcc -nostdlib
+BUILD_STATIC       = -nodefaultlibs
 else
 BUILD_STATIC       =
 endif
@@ -108,17 +108,15 @@ SHARED_LIBRARY_LIBS = \
 
 ifdef USE_XPCOM_GLUE
 EXTRA_DSO_LDOPTS = \
-		$(DIST)/lib/$(LIB_PREFIX)xpcomglue.$(LIB_SUFFIX) \
-		$(DIST)/lib/$(LIB_PREFIX)string_s.$(LIB_SUFFIX) \
-		$(DIST)/lib/$(LIB_PREFIX)string_obsolete_s.$(LIB_SUFFIX) \
+		$(XPCOM_GLUE_LIBS) \
+		$(LIBS_DIR) \
 		$(XPCOM_LIBS) \
 		$(NSPR_LIBS) \
 		$(BUILD_STATIC) \
 		$(NULL)
 else
 EXTRA_DSO_LDOPTS = \
-		$(DIST)/lib/$(LIB_PREFIX)string_s.$(LIB_SUFFIX) \
-		$(DIST)/lib/$(LIB_PREFIX)string_obsolete_s.$(LIB_SUFFIX) \
+		$(LIBS_DIR) \
 		$(XPCOM_LIBS) \
 		$(MOZ_XPCOM_OBSOLETE_LIBS) \
 		$(NSPR_LIBS) \
@@ -147,8 +145,16 @@ ifeq ($(OS_CONFIG),SunOS5)
 PLATFORM_STR = sunos5
 endif
 
+ifeq ($(OS_ARCH),Darwin)
+PLATFORM_STR = darwin
+endif
+
 ifeq ($(OS_ARCH),FreeBSD)
 PLATFORM_STR = freebsd
+endif
+
+ifeq ($(OS_ARCH),OpenBSD)
+PLATFORM_STR = openbsd
 endif
 
 XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS)-$(PLATFORM_STR).xpi
