@@ -9,7 +9,7 @@ if [ $# -ne 2 ]; then
   echo "Usage: $0 xx-YY version"
   echo "       where: xx-YY   is the language and country code representing the"
   echo "                      translated language"
-  echo "              version is the Enigmail version, e.g. 0.84.0"
+  echo "              version is the Enigmail version, e.g. 0.81.3"
   exit 1
 fi
 
@@ -20,10 +20,8 @@ ENIGVERSION=$2
 export ENIGVERSION
 
 LANGDIR=${ENIGLANG}/locale/${ENIGLANG}/enigmail
-HELPDIR=${LANGDIR}/help
 rm -rf ${LANGDIR} >/dev/null 2>&1
 mkdir -p ${LANGDIR} 
-mkdir -p ${HELPDIR}
 
 # create install.js
 cat > ${ENIGLANG}/install.js <<EOT
@@ -244,13 +242,10 @@ cat >${LANGDIR}/contents.rdf <<EOT
 </RDF:RDF>
 EOT
 
-for f in enigmail.dtd enigmail.properties am-enigprefs.properties upgrade_080.html ; do
-  cp ${f} ${LANGDIR}
-done
-
-for f in compose.html messenger.html rulesEditor.html editRcptRule.html ; do
-  cp ${f} ${HELPDIR} >/dev/null 2>&1
-done
+cp enigmail.dtd  ${LANGDIR}
+cp enigmail.properties ${LANGDIR}
+cp am-enigprefs.properties ${LANGDIR}
+cp upgrade_080.html ${LANGDIR}
 
 cd ${ENIGLANG}
 zip -r -D enigmail-${ENIGLANG}.jar locale
