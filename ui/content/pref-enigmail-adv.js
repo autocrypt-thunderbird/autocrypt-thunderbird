@@ -8,6 +8,12 @@ var gPrefList = {"autoDecrypt":"", "captureWebMail":""};
 function AdvStartup() {
    DEBUG_LOG("pref-enigmail-adv.js: AdvStartup\n");
    DisplayPrefs(false, true, false);
+
+   var testEmailElement = document.getElementById("enigmail_test_email");
+   var userIdValue = EnigGetPref("userIdValue");
+
+   if (testEmailElement && userIdValue)
+     testEmailElement.value = userIdValue;
 }
 
 function AdvResetPrefs() {
@@ -22,11 +28,6 @@ function AdvOnAccept() {
    DEBUG_LOG("pref-enigmail-adv.js: AdvOnAccept\n");
 
    DisplayPrefs(false, false, true);
-
-   var enigmailSvc = GetEnigmailSvc();
-   if (enigmailSvc) {
-     enigmailSvc.debug = EnigGetPref("debug");
-   }
 
    return true;
 }

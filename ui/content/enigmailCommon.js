@@ -31,7 +31,7 @@ const THREE_BUTTON_STRINGS   = (BUTTON_TITLE_IS_STRING * BUTTON_POS_0) +
 
 
 var gEnigmailPrefDefaults = {"configuredVersion":"",
-                             "debug":false,
+                             "logDirectory":"",
                              "initAlertCount":2,
                              "composeHtmlAlertCount":3,
                              "agentPath":"",
@@ -52,7 +52,7 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                             };
 
 var gLogLevel = 3;     // Output only errors/warnings by default
-var gLogFileStream = null;
+var gLogFileStream;
 
 var gPrefSvc, gPrefEnigmail;
 try {
@@ -61,7 +61,7 @@ try {
   gPrefEnigmail = gPrefSvc.getBranch(ENIGMAIL_PREFS_ROOT);
   gPrefMailNews = gPrefSvc.getBranch(MAILNEWS_PREFS_ROOT);
 
-  if (EnigGetPref("debug"))
+  if (EnigGetPref("logDirectory"))
     gLogLevel = 5;
 
 } catch (ex) {
@@ -111,13 +111,20 @@ function GetEnigmailSvc() {
 
   DEBUG_LOG("enigmailCommon.js: gEnigmailSvc = "+gEnigmailSvc+"\n");
 
-  if (!gEnigmailSvc.initialized) {
+  if (gEnigmailSvc.initialized) {
+    gLogFileStream = gEnigmailSvc.logFileStream;
+    if (gLogFileStream)
+      gLogLevel = 5;
+
+  } else {
+    // Initialize enigmail
 
     var firstInitialization = !gEnigmailSvc.initializationAttempted;
 
     try {
       // Initialize enigmail
       gEnigmailSvc.initialize(gPrefEnigmail);
+      gLogFileStream = gEnigmailSvc.logFileStream;
 
       try {
         // Reset alert count to default value
@@ -305,7 +312,7 @@ function WRITE_LOG(str) {
 
   if (gLogFileStream) {
     gLogFileStream.write(str, str.length);
-    gLogFileStream.flush();
+    //gLogFileStream.flush();
   }
 }
 
@@ -331,10 +338,6 @@ function CONSOLE_LOG(str) {
   if (gEnigmailSvc && gEnigmailSvc.console)
     gEnigmailSvc.console.write(str);
 }
-
-// Uncomment following two lines for debugging (use full path name on Win32)
-///if (gLogLevel >= 4)
-///  gLogFileStream = CreateFileStream("c:\\enigdbg2.txt");
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -609,12 +612,29 @@ function EnigViewConsole() {
   //if (navWindow) navWindow.focus();
 }
 
+function EnigViewDebugLog() {
+  DEBUG_LOG("enigmailCommon.js: EnigViewDebugLog\n");
+
+  var logDirectory = EnigGetPref("logDirectory");
+
+  if (!logDirectory) {
+    EnigAlert("Please set advanced preference 'Log directory' to create log file");
+    return;
+  }
+
+  logDirectory = logDirectory.replace(/\\/g, "/");
+
+  var logFileURL = "file:///" + logDirectory + "/enigdbug.txt";
+
+  window.open(logFileURL, 'Enigmail Debug Log');
+}
+
 function EnigKeygen() {
   DEBUG_LOG("enigmailCommon.js: EnigKeygen\n");
 
   window.openDialog('chrome://enigmail/content/enigmailKeygen.xul',
                     'Enigmail Key Generation',
-               'chrome,dialog,close=no,resizable=yes,width=600');
+                    'chrome,dialog,close=no,resizable=yes,width=600');
 
 }
 

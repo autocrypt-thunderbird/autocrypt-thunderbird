@@ -38,6 +38,7 @@ interface nsIPipeConsole;
 interface nsIPipeTransport;
 interface nsIIPCRequest;
 interface nsIRequestObserver;
+interface nsIFileOutputStream;
 
 /**
  * The nsIEnigmail provides an openPGP-based encryption/decryption service
@@ -61,7 +62,7 @@ interface nsIEnigmail : nsISupports
   attribute boolean initializationAttempted;
   attribute  string initializationError;
 
-  attribute boolean debug;
+  readonly attribute nsIFileOutputStream logFileStream;
 
   void initialize(in nsIPrefBranch enigmailPrefs);
 

@@ -14,15 +14,6 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript"  src="chrome://enigmail/content/enigmailMsgComposeOverlay.js"/>
 
-  <keyset id="tasksKeys">
-    <key id="key_enigConsole"  key="&enigmail.viewconsole.commandkey;"
-         command="Tasks:EnigConsole" modifiers="accel"/>
-  </keyset>
-
-  <commandset id="tasksCommands">
-    <command id="Tasks:EnigConsole" oncommand="EnigViewConsole();"/>
-  </commandset>
-
     <toolbar id="composeToolbar">
       <box id="toolbar_button_box">
 
@@ -31,7 +22,7 @@
                label="&enigmail.sendbutton.label;"
                tooltip="aTooltip" tooltiptext="&enigmail.sendbutton.tip;" 
                oncommand="enigSend(4);"
-               position="1"
+               insertbefore="button-send"
                />
 
        </box>
@@ -42,7 +33,7 @@
     <menu id="menu_Enigmail"
           label="Enigmail"
           accesskey="&enigmail.composemenu.accesskey;"
-          position="7">
+          insertbefore="tasksMenu">
 
       <menupopup id="menu_EnigmailPopup">
 
@@ -96,38 +87,10 @@
 
         <menuseparator/>
 
-        <menuitem id="enigmail_prefs"
-             label="&enigmail.prefs.label;"
-             accesskey="&enigmail.prefs.accesskey;"
-             oncommand="EnigPrefWindow();" />
-
-        <menuseparator/>
-
-        <menuitem id="enigmail_console"
-             label="&enigmail.viewconsole.label;"
-             key="key_enigConsole"
-             accesskey="&enigmail.viewconsole.accesskey;"
-             command="Tasks:EnigConsole" />
-
-        <menuitem id="enigmail_keygen"
-             label="&enigmail.generatekey.label;"
-             accesskey="&enigmail.generatekey.accesskey;"
-             oncommand="EnigKeygen();" />
-
-        <menuitem id="enigmail_upgrade"
-             label="&enigmail.upgrade.label;"
-             accesskey="&enigmail.upgrade.accesskey;"
-             oncommand="EnigUpgrade();" />
-
         <menuitem id="enigmail_help"
              label="&enigmail.help.label;"
              accesskey="&enigmail.help.accesskey;"
-             oncommand="EnigHelpWindow();" />
-
-        <menuitem id="enigmail_about"
-             label="&enigmail.about.label;"
-             accesskey="&enigmail.about.accesskey;"
-             oncommand="window.open('enigmail:about');" />
+             oncommand="EnigHelpWindow('compose');" />
 
       </menupopup>
     </menu>

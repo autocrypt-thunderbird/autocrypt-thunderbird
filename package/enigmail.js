@@ -81,7 +81,6 @@ const nsIPGPMsgHeader        = Components.interfaces.nsIPGPMsgHeader;
 // Global variables
 
 var gLogLevel = 3;         // Output only errors/warnings by default
-var gLogFileStream = null;
 
 var gEnigmailSvc = null;   // Global Enigmail Service
 var gXULOwner = null;      // Global XUL owner
@@ -163,14 +162,14 @@ function WriteFileContents(filePath, data, permissions) {
 function WRITE_LOG(str) {
   dump(str);
 
-  if (gLogFileStream) {
-    gLogFileStream.write(str, str.length);
-    gLogFileStream.flush();
+  if (gEnigmailSvc && gEnigmailSvc.logFileStream) {
+    gEnigmailSvc.logFileStream.write(str, str.length);
+    //gEnigmailSvc.logFileStream.flush();
   }
 }
 
 function DEBUG_LOG(str) {
-  if ((gLogLevel >= 4) || (gEnigmailSvc && gEnigmailSvc.debug))
+  if ((gLogLevel >= 4) || (gEnigmailSvc && gEnigmailSvc.logFileStream))
     WRITE_LOG(str);
 }
 
@@ -197,10 +196,6 @@ function CONSOLE_LOG(str) {
   if (gEnigmailSvc && gEnigmailSvc.console)
     gEnigmailSvc.console.write(str);
 }
-
-// Uncomment following two lines for debugging (use full path name on Win32)
-///if (gLogLevel >= 4)
-///  gLogFileStream = CreateFileStream("c:\\enigdbg1.txt");
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -739,7 +734,7 @@ Enigmail.prototype.initialized = false;
 Enigmail.prototype.initializationAttempted = false;
 Enigmail.prototype.initializationError = "";
 
-Enigmail.prototype.debug = false;
+Enigmail.prototype.logFileStream = null;
 
 Enigmail.prototype.isUnix  = false;
 Enigmail.prototype.isWin32 = false;
@@ -795,6 +790,22 @@ function () {
   }
 
   return maxIdleMinutes;
+}
+
+Enigmail.prototype.getLogDirectoryPrefix =
+function () {
+  var logDirectory = "";
+  try {
+    logDirectory = this.prefBranch.getCharPref("logDirectory");
+  } catch (ex) {
+  }
+
+  if (!logDirectory)
+    return "";
+
+  var dirPrefix = logDirectory + (this.isWin32 ? "\\" : "/");
+
+  return dirPrefix;
 }
 
 Enigmail.prototype.stillActive =
@@ -891,6 +902,13 @@ function (prefBranch) {
   DEBUG_LOG("enigmail.js: Enigmail.initialize: START\n");
   if (this.initialized) return;
 
+  var prefix = this.getLogDirectoryPrefix();
+  if (prefix) {
+    gLogLevel = 5;
+    this.logFileStream = CreateFileStream(prefix+"enigdbug.txt");
+    DEBUG_LOG("enigmail.js: Enigmail.initialize: Logging debug output to "+prefix+"enigdbug.txt\n");
+  }
+
   var processInfo;
   try {
     processInfo = Components.classes[NS_PROCESSINFO_CONTRACTID].getService(nsIProcessInfo);
@@ -909,11 +927,6 @@ function (prefBranch) {
   if (matches && (matches.length > 1)) {
     gLogLevel = matches[1];
     WARNING_LOG("enigmail.js: Enigmail: gLogLevel="+gLogLevel+"\n");
-  }
-
-  try {
-    this.debug = this.prefBranch.getBoolPref("debug");
-  } catch (ex) {
   }
 
   // Initialize global environment variables list
@@ -1115,8 +1128,8 @@ function (command, input, passFD, exitCodeObj, errorMsgObj, statusMsgObj) {
     envList.push("PGPPASSFD=0");
   }
 
-  var prefix = this.isWin32 ? "c:\\" : "";
-  if (gLogLevel >= 4) {
+  var prefix = this.getLogDirectoryPrefix();
+  if (prefix && (gLogLevel >= 4)) {
     WriteFileContents(prefix+"enigcmd.txt", command+"\n");
     WriteFileContents(prefix+"enigenv.txt", envList.join(",")+"\n");
     WriteFileContents(prefix+"eniginp.txt", input);
@@ -1151,7 +1164,7 @@ function (command, input, passFD, exitCodeObj, errorMsgObj, statusMsgObj) {
   if (errObj.value)
      errOutput  = errObj.value;
 
-  if (gLogLevel >= 4) {
+  if (prefix && (gLogLevel >= 4)) {
     WriteFileContents(prefix+"enigout.txt", outputData);
     WriteFileContents(prefix+"enigerr.txt", errOutput);
     DEBUG_LOG("enigmail.js: Enigmail.execCmd: copied command out/err data to files "+prefix+"enigout.txt/enigerr.txt\n");
@@ -2103,8 +2116,8 @@ function (command, input, passFD, requestObserver) {
   if (passFD)
     envList.push("PGPPASSFD=0");
 
-  var prefix = this.isWin32 ? "c:\\" : "";
-  if (gLogLevel >= 4) {
+  var prefix = this.getLogDirectoryPrefix();
+  if (prefix && (gLogLevel >= 4)) {
     WriteFileContents(prefix+"enigcmd.txt", command+"\n");
     WriteFileContents(prefix+"enigenv.txt", envList.join(",")+"\n");
     WriteFileContents(prefix+"eniginp.txt", input);
@@ -2164,8 +2177,8 @@ function (ipcRequest, exitCodeObj, errorMsgObj, statusMsgObj) {
 
   ipcRequest.close(true);
 
-  var prefix = this.isWin32 ? "c:\\" : "";
-  if (gLogLevel >= 4) {
+  var prefix = this.getLogDirectoryPrefix();
+  if (prefix && (gLogLevel >= 4)) {
     WriteFileContents(prefix+"enigout.txt", outputData);
     WriteFileContents(prefix+"enigerr.txt", errOutput);
     DEBUG_LOG("enigmail.js: Enigmail.processAsync: copied command out/err data to files "+prefix+"enigout.txt/enigerr.txt\n");

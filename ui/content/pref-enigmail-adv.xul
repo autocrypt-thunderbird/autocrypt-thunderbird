@@ -93,19 +93,23 @@
   </groupbox>
 
   <groupbox orient="vertical">
+    <caption label="&enigmail.debugging.label;"/>
+
     <hbox autostretch="never">
-       <checkbox id="enigmail_debug"
-                 label="Debug Enigmail;" />
+      <label control="enigmail_logDirectory"
+             value="&enigmail.logdirectory.label;" />
+
+      <textbox id="enigmail_logDirectory" />
     </hbox>
     <hbox autostretch="never">
       <label control="enigmail_test_email"
-             value="Test email" />
+             value="&enigmail.testemail.label;" />
 
       <textbox id="enigmail_test_email" />
 
       <button class="dialog"
               id="enigmail_test"
-              label="Test"
+              label="&enigmail.test.label;"
               oncommand="EnigTest();"
               />
     </hbox>
