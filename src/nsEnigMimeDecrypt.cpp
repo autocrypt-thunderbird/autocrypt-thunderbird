@@ -21,7 +21,7 @@
  * Contributor(s):
  *
  * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or 
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
  * in which case the provisions of the GPL or the LGPL are applicable instead
  * of those above. If you wish to allow use of your version of this file only
@@ -34,7 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Logging of debug output 
+// Logging of debug output
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
@@ -63,7 +63,7 @@ PRLogModuleInfo* gEnigMimeDecryptLog = NULL;
 #define WARNING_LOG(args)  PR_LOG(gEnigMimeDecryptLog,PR_LOG_WARNING,args)
 #define DEBUG_LOG(args)    PR_LOG(gEnigMimeDecryptLog,PR_LOG_DEBUG,args)
 
-#define MAX_BUFFER_BYTES 32000
+#define MAX_BUFFER_BYTES 32768
 static const PRUint32 kCharMax = 1024;
 
 // nsEnigMimeDecrypt implementation
