@@ -1655,7 +1655,7 @@ function (parent, uiFlags, cipherText,
   var unverifiedEncryptedOK = uiFlags & nsIEnigmail.UNVERIFIED_ENC_OK;
   var oldSignStatus = signStatusObj.value;
 
-  //DEBUG_LOG("enigmail.js: Enigmail.decryptMessage: oldSignStatus="+oldSignStatus+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail.decryptMessage: oldSignStatus="+oldSignStatus+"\n");
 
   exitCodeObj.value = -1;
   errorMsgObj.value = "";
@@ -1692,25 +1692,15 @@ function (parent, uiFlags, cipherText,
   var tail = cipherText.substr(endIndexObj.value+1,
                                cipherText.length - endIndexObj.value - 1);
 
-  if (!publicKey && (uiFlags & nsIEnigmail.IMPORT_PUBLIC_KEY)) {
-    errorMsgObj.value = "Error - No public key block found in message";
-    return "";
-  }
-
   if (publicKey) {
     if (!allowImport) {
       errorMsgObj.value = "Click Decrypt button to import public key block in message";
       return "";
     }
 
-    var confirmMsg = "Import public key(s) from message?";
-
-    if (!this.confirmMsg(parent, confirmMsg))
-      return;
-
     // Import public key
-    var importFlags = interactive ? nsIEnigmail.UI_INTERACTIVE : 0;
-    exitCodeObj.value = this.importKey(parent, importFlags, pgpBlock,
+    var importFlags = nsIEnigmail.UI_INTERACTIVE;
+    exitCodeObj.value = this.importKey(parent, importFlags, pgpBlock, "",
                                        errorMsgObj);
     return "";
   }
@@ -1879,34 +1869,12 @@ function (parent, uiFlags, cipherText,
 
     if (innerBlockType == "PUBLIC KEY BLOCK") {
 
-      innerKeyBlock = cipherText.substr(beginIndexObj.value,
+      innerKeyBlock = pgpBlock.substr(beginIndexObj.value,
                                  endIndexObj.value - beginIndexObj.value + 1);
 
       innerKeyBlock = innerKeyBlock.replace(/- -----/g, "-----");
 
       DEBUG_LOG("enigmail.js: Enigmail.decryptMessage: innerKeyBlock found\n");
-    }
-  }
-
-  if (pubKeyId && allowImport && innerKeyBlock) {
-    var confirmMsg = "Import public key embedded in signed message?";
-
-    if (this.confirmMsg(parent, confirmMsg)) {
-      var importErrorMsgObj = new Object();
-      var importFlags = interactive ? nsIEnigmail.UI_INTERACTIVE : 0;
-      var exitStatus = this.importKey(parent, importFlags, innerKeyBlock,
-                                      importErrorMsgObj);
-
-      if (exitStatus != 0) {
-        this.alertMsg(parent, "Error in importing public key\n\n"+importErrorMsgObj.value);
-
-      } else {
-        // Recursive call; note that nsIEnigmail.ALLOW_KEY_IMPORT is unset
-        // to break the recursion
-        var uiFlagsDeep = interactive ? nsIEnigmail.UI_INTERACTIVE : 0;
-        return this.decryptMessage(parent, uiFlagsDeep, pgpBlock,
-                                   exitCodeObj, errorMsgObj, signStatusObj);
-      }
     }
   }
 
@@ -1916,28 +1884,42 @@ function (parent, uiFlags, cipherText,
   } catch (ex) {
   }
 
-  if (pubKeyId && allowImport && keyserver && (this.agentType == "gpg")) {
-    var prompt = "Import public key "+pubKeyId+" from keyserver: ";
+  if (pubKeyId && allowImport) {
+    var importedKey = false;
 
-    var valueObj = new Object();
-    valueObj.value = keyserver;
+    if (innerKeyBlock) {
+      var importErrorMsgObj = new Object();
+      var importFlags = nsIEnigmail.UI_INTERACTIVE;
+      var exitStatus = this.importKey(parent, importFlags, innerKeyBlock,
+                                      pubKeyId, importErrorMsgObj);
 
-    if (this.promptValue(parent, prompt, valueObj)) {
-      var recvErrorMsgObj = new Object();
-      var recvFlags = interactive ? nsIEnigmail.UI_INTERACTIVE : 0;
-      var exitStatus = this.receiveKey(parent, recvFlags, pubKeyId,
-                                       valueObj.value, recvErrorMsgObj);
+      importedKey = (exitStatus == 0);
 
-      if (exitStatus != 0) {
-        this.alertMsg(parent, "Unable to receive public key\n\n"+recvErrorMsgObj.value);
-
-      } else {
-        // Recursive call; note that nsIEnigmail.ALLOW_KEY_IMPORT is unset
-        // to break the recursion
-        var uiFlagsDeep = interactive ? nsIEnigmail.UI_INTERACTIVE : 0;
-        return this.decryptMessage(parent, uiFlagsDeep, pgpBlock,
-                                   exitCodeObj, errorMsgObj, signStatusObj);
+      if (exitStatus > 0) {
+        this.alertMsg(parent, "Error in importing public key\n\n"+importErrorMsgObj.value);
       }
+    }
+
+    if (!importedKey && keyserver && (this.agentType == "gpg")) {
+      var recvErrorMsgObj = new Object();
+      var recvFlags = nsIEnigmail.UI_INTERACTIVE;
+      var exitStatus = this.receiveKey(parent, recvFlags, pubKeyId,
+                                       recvErrorMsgObj);
+
+      importedKey = (exitStatus == 0);
+
+      if (exitStatus > 0) {
+        this.alertMsg(parent, "Unable to receive public key\n\n"+recvErrorMsgObj.value);
+      }
+    }
+
+    if (importedKey) {
+      // Recursive call; note that nsIEnigmail.ALLOW_KEY_IMPORT is unset
+      // to break the recursion
+      var uiFlagsDeep = interactive ? nsIEnigmail.UI_INTERACTIVE : 0;
+      signStatusObj.value = "";
+      return this.decryptMessage(parent, uiFlagsDeep, pgpBlock,
+                                 exitCodeObj, errorMsgObj, signStatusObj);
     }
   }
 
@@ -2050,17 +2032,48 @@ function (email, secret, exitCodeObj, errorMsgObj) {
 
 
 Enigmail.prototype.receiveKey = 
-function (parent, uiFlags, keyId, keyserver, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.receiveKey: "+keyId+" from "+keyserver+"\n");
+function (parent, uiFlags, keyId, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.receiveKey: "+keyId+"\n");
 
   if (!this.initialized) {
     errorMsgObj.value = "Error - Enigmail service not yet initialized";
-    return "";
+    return -1;
   }
 
   if (this.agentType != "gpg") {
     errorMsgObj.value = "Error - Only GPG can receive keys from keyserver";
-    return "";
+    return -1;
+  }
+
+  var interactive  = uiFlags & nsIEnigmail.UI_INTERACTIVE;
+
+  var keyserver;
+  try {
+    keyserver = this.prefBranch.getCharPref("keyserver");
+  } catch (ex) {}
+
+  if (keyId && keyserver && (this.agentType == "gpg")) {
+    var prompt = "Import public key "+keyId+" from keyserver: ";
+
+    var valueObj = new Object();
+    valueObj.value = keyserver;
+
+    if (!this.promptValue(parent, prompt, valueObj)) {
+      errorMsgObj.value = "Error - Key receive cancelled by user";
+      return -1;
+    }
+
+    keyserver = valueObj.value;
+  }
+
+  if (!keyserver) {
+    errorMsgObj.value = "Error - No keyserver specified to receive key from";
+    return -1;
+  }
+
+  if (!keyId) {
+    errorMsgObj.value = "Error - No key Id specified to receive key for";
+    return -1;
   }
 
   var command = this.agentPath;
@@ -2123,12 +2136,41 @@ function (parent, uiFlags, userId, exitCodeObj, errorMsgObj) {
 
 
 Enigmail.prototype.importKey = 
-function (parent, uiFlags, keyBlock, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.importKey: \n");
+function (parent, uiFlags, msgText, keyId, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.importKey: id="+keyId+", "+uiFlags+"\n");
 
   if (!this.initialized) {
     errorMsgObj.value = "Error - Enigmail service not yet initialized";
-    return "";
+    return -1;
+  }
+
+  var beginIndexObj = new Object();
+  var endIndexObj   = new Object();
+  var blockType = this.locateArmoredBlock(msgText, 0, "",
+                                          beginIndexObj, endIndexObj);
+
+  if (!blockType) {
+    errorMsgObj.value = "Error - No valid armored PGP data block found";
+    return -1;
+  }
+
+  if (blockType != "PUBLIC KEY BLOCK") {
+    errorMsgObj.value = "Error - First PGP block not public key block";
+    return -1;
+  }
+
+  var pgpBlock = msgText.substr(beginIndexObj.value,
+                                endIndexObj.value - beginIndexObj.value + 1);
+
+  var interactive = uiFlags & nsIEnigmail.UI_INTERACTIVE;
+
+  if (interactive) {
+    var confirmMsg = "Import public key(s) embedded in message?";
+
+    if (!this.confirmMsg(parent, confirmMsg)) {
+      errorMsgObj.value = "Error - Key import cancelled by user";
+      return -1;
+    }
   }
 
   var command = this.agentPath;
@@ -2143,7 +2185,7 @@ function (parent, uiFlags, keyBlock, errorMsgObj) {
   var exitCodeObj  = new Object();
   var statusMsgObj = new Object();
 
-  var output = gEnigmailSvc.execCmd(command, keyBlock, false,
+  var output = gEnigmailSvc.execCmd(command, pgpBlock, false,
                                     exitCodeObj, errorMsgObj, statusMsgObj);
 
   var statusMsg = statusMsgObj.value;

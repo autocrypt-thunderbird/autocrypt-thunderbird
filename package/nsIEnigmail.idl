@@ -87,8 +87,7 @@ interface nsIEnigmail : nsISupports
   /* User interaction flags */
   const long UI_INTERACTIVE    = 0x01;
   const long ALLOW_KEY_IMPORT  = 0x02;
-  const long IMPORT_PUBLIC_KEY = 0x04;
-  const long UNVERIFIED_ENC_OK = 0x08;
+  const long UNVERIFIED_ENC_OK = 0x04;
 
   /* Encryption flags */
   const long SIGN_MESSAGE      = 0x01;
@@ -119,6 +118,12 @@ interface nsIEnigmail : nsISupports
                     in string userId,
                     out long   exitCode,
                     out string errorMsg);
+
+  long importKey(in nsIDOMWindow parent,
+                 in unsigned long uiFlags,
+                 in string msgText,
+                 in string keyId,
+                 out string errorMsg);
 
   long receiveKey(in nsIDOMWindow parent,
                   in unsigned long uiFlags,

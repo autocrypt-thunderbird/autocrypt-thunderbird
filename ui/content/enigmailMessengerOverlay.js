@@ -187,48 +187,50 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
   if (!enigmailSvc)
     return;
 
-  var exitCodeObj = new Object();
+  var plainText;
+  var exitCode;
+  var newSignStatus = "";
   var errorMsgObj = new Object();
-  var signStatusObj = new Object();
-  signStatusObj.value = signStatus;
 
-  var uiFlags;
   if (importOnly) {
-    uiFlags = nsIEnigmail.ALLOW_KEY_IMPORT | nsIEnigmail.IMPORT_PUBLIC_KEY;
-    if (interactive)
-      uiFlags |= nsIEnigmail.UI_INTERACTIVE;
+    // Import public key
+    var importFlags = nsIEnigmail.UI_INTERACTIVE;
+    exitCode = enigmailSvc.importKey(window, importFlags, msgText, "",
+                                     errorMsgObj);
 
   } else {
-    uiFlags = interactive ? (nsIEnigmail.UI_INTERACTIVE |
-                               nsIEnigmail.ALLOW_KEY_IMPORT |
-                               nsIEnigmail.UNVERIFIED_ENC_OK) : 0;
+    var exitCodeObj = new Object();
+    var signStatusObj = new Object();
+    signStatusObj.value = signStatus;
 
+    var uiFlags = interactive ? (nsIEnigmail.UI_INTERACTIVE |
+                                 nsIEnigmail.ALLOW_KEY_IMPORT |
+                                 nsIEnigmail.UNVERIFIED_ENC_OK) : 0;
+
+
+    plainText = enigmailSvc.decryptMessage(window, uiFlags, msgText,
+                                     exitCodeObj, errorMsgObj, signStatusObj);
+
+    //DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: plainText='"+plainText+"'\n");
+
+    exitCode = exitCodeObj.value;
+    newSignStatus = signStatusObj.value;
+
+    DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: newSignStatus='"+newSignStatus+"'\n");
+
+    // Decode plaintext to unicode
+    plainText = EnigConvertToUnicode(plainText, charset);
   }
 
-  var plainText = enigmailSvc.decryptMessage(window, uiFlags, msgText,
-                                     exitCodeObj, errorMsgObj, signStatusObj);
-  //DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: plainText='"+plainText+"'\n");
-
-  // Decode plaintext to unicode
-  plainText = EnigConvertToUnicode(plainText, charset);
-
-  var newSignStatus = signStatusObj.value;
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: newSignStatus='"+newSignStatus+"'\n");
-
-  var exitCode = exitCodeObj.value;
   var errorMsg = errorMsgObj.value;
-
-  var enigmailBox = document.getElementById("expandedEnigmailBox");
-  var statusText  = document.getElementById("expandedEnigmailStatusText");
 
   var statusLines = errorMsg.split(/\r?\n/);
 
   var statusLine = "";
   var displayMsg = "";
+
   if (statusLines && statusLines.length) {
     statusLine = statusLines[0];
-    statusText.setAttribute("value", statusLine);
-    enigmailBox.removeAttribute("collapsed");
 
     // Display only first ten lines of error message
     while (statusLines.length > 10)
@@ -241,6 +243,13 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
      if (interactive && displayMsg)
        EnigAlert(displayMsg);
      return;
+
+  } else if (statusLine) {
+    var enigmailBox = document.getElementById("expandedEnigmailBox");
+    var statusText  = document.getElementById("expandedEnigmailStatusText");
+
+    statusText.setAttribute("value", statusLine);
+    enigmailBox.removeAttribute("collapsed");
   }
 
   if (newSignStatus.indexOf("BADSIG_ARMOR ") == 0) {
