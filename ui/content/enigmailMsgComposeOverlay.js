@@ -27,6 +27,7 @@ window.addEventListener('compose-window-reopen', enigMsgComposeReopen, true);
 var gEnigOrigSendButton, gEnigSendButton;
 var gEnigEditorElement, gEnigEditorShell;
 var gEnigDirty, gEnigProcessed, gEnigTimeoutID;
+var gEnigSendPGPMime;
 
 function enigMsgComposeStartup() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
@@ -83,15 +84,9 @@ function enigMsgComposeReset() {
 
   enigDisplaySendButton();
 
-  var sendPGPMime = document.getElementById("enigmail_sendPGPMime");
+  gEnigSendPGPMime = !(EnigGetPref("usePGPMimeOption") == PGP_MIME_ALWAYS);
 
-  if (sendPGPMime) {
-    if (EnigGetPref("usePGPMimeOption") == PGP_MIME_ALWAYS) {
-      sendPGPMime.setAttribute("checked", "true");
-    } else {
-      sendPGPMime.removeAttribute("checked");
-    }
-  }
+  enigTogglePGPMime();
 }
 
 function enigDisplaySendButton() {
@@ -156,6 +151,16 @@ function enigUsePGPMimeOption(value) {
   EnigSetPref("usePGPMimeOption", value);
 
   return true;
+}
+
+function enigTogglePGPMime() {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigTogglePGPMime: \n");
+
+  gEnigSendPGPMime = !gEnigSendPGPMime;
+
+  var menuElement = document.getElementById("enigmail_sendPGPMime");
+  if (menuElement)
+    menuElement.setAttribute("checked", gEnigSendPGPMime ? "true" : "false");
 }
 
 function enigInsertKey() {
@@ -391,9 +396,8 @@ function enigSend(sendFlags) {
      var usePGPMimeOption = EnigGetPref("usePGPMimeOption");
 
      if ( !(defaultSend && (sendFlags & ENCRYPT_MSG)) ) {
-       var sendPGPMime = document.getElementById("enigmail_sendPGPMime");
 
-       if (sendPGPMime && (sendPGPMime.getAttribute("checked") == "true")) {
+       if (gEnigSendPGPMime) {
          sendFlags |= nsIEnigmail.SEND_PGP_MIME;
        }
 

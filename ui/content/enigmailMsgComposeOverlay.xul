@@ -157,7 +157,8 @@
             type="checkbox"
             checked="false"
             label="&enigmail.sendPGPMime.label;"
-            accesskey="&enigmail.sendPGPMime.accesskey;" />
+            accesskey="&enigmail.sendPGPMime.accesskey;"
+            oncommand="enigTogglePGPMime();" />
 
         <menuseparator/>
 

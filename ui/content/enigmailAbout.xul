@@ -3,13 +3,22 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?> 
 <?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?> 
 
+<?xul-overlay href="chrome://global/content/charsetOverlay.xul"?>
+<?xul-overlay href="chrome://communicator/content/tasksOverlay.xul"?>
+<?xul-overlay href="chrome://communicator/content/communicatorOverlay.xul"?>
+
+<?xul-overlay href="chrome://messenger/content/messengercompose/addressingWidgetOverlay.xul"?>
+<?xul-overlay href="chrome://global/content/globalOverlay.xul"?>
+<?xul-overlay href="chrome://communicator/content/utilityOverlay.xul"?>
+<?xul-overlay href="chrome://editor/content/editorOverlay.xul"?>
+
 <?xul-overlay href="chrome://global/content/dialogOverlay.xul"?> 
 
 <!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
 
 <window id="EnigmailAbout"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        title="Enigmail About;"
+        title="Enigmail About"
         windowtype="enigmail:about"
         width="480" height="240"
         screenX="10" screenY="10"
@@ -18,6 +27,17 @@
   <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailAbout.js"/>
+
+<commandset id="tasksCommands"/>
+
+<command id="cmd_close" oncommand="window.close()"/>
+<command id="cmd_quit"/>
+
+<keyset id="tasksKeys">
+  <!-- File Menu -->
+  <key id="key_close"/>
+  <key id="key_quit"/>
+</keyset>
 
 <iframe id="contentFrame" type="content" name="contentFrame"
         src="chrome://enigmail/content/enigmailAbout.htm" flex="100%"/>

@@ -13,7 +13,7 @@
 
 <window id="EnigmailConsole"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        title="Enigmail Console;"
+        title="Enigmail Console"
         windowtype="enigmail:console"
         width="600" height="400"
         screenX="10" screenY="10"

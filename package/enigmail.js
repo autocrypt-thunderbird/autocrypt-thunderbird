@@ -93,7 +93,7 @@ const WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator
 
 const NS_HTTPPROTOCOLHANDLER_CID_STR= "{4f47e42e-4d23-4dd3-bfda-eb29255e9ea3}";
 
-const NS_IOSERVICE_CID_STR          = "{9ac9e770-18bc-11d3-9337-00104ba0fd40}";
+const NS_IOSERVICE_CONTRACTID       = "@mozilla.org/network/io-service;1";
 
 const NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
 
@@ -866,7 +866,7 @@ function GetXULOwner () {
     return gXULOwner;
 
   // Open temporary XUL channel
-  var ioServ = Components.classesByID[NS_IOSERVICE_CID_STR].getService(Components.interfaces.nsIIOService);
+  var ioServ = Components.classes[NS_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
 
   var temChannel = ioServ.newChannel("chrome://enigmail/content/dummy.xul",
                                      "",
@@ -1866,10 +1866,12 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
 
 
 Enigmail.prototype.encryptMessageEnd = 
-function (uiFlags, sendFlags, exitCode, outputLen, errOutput,
+function (prompter, uiFlags, sendFlags, exitCode, outputLen, errOutput,
           statusFlagsObj, errorMsgObj)
 {
   DEBUG_LOG("enigmail.js: Enigmail.encryptMessageEnd: uiFlags="+uiFlags+", sendFlags="+bytesToHex(pack(sendFlags,4))+", exitCode="+exitCode+", outputLen="+outputLen+"\n");
+
+  var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
 
   statusFlagsObj.value = 0;
   errorMsgObj.value    = "";
@@ -1921,15 +1923,21 @@ function (uiFlags, sendFlags, exitCode, outputLen, errOutput,
     errorMsgObj.value += "\n" + errorMsg;
   }
 
+  if (pgpMime && prompter) {
+    prompter.alert("Enigmail Alert", errorMsgObj.value);
+  }
+
   return exitCode;
 }
 
 var gPGPHashNums = {md5:1, sha1:2, ripemd160:3};
 
 Enigmail.prototype.encryptMessageStart = 
-function (prompter, fromMailAddr, toMailAddr,
+function (prompter, uiFlags, fromMailAddr, toMailAddr,
           hashAlgorithm, sendFlags, listener, noProxy, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: from "+fromMailAddr+" to "+toMailAddr+", hashAlgorithm="+hashAlgorithm+" ("+bytesToHex(pack(sendFlags,4))+")\n");
+  DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: uiFlags="+uiFlags+", from "+fromMailAddr+" to "+toMailAddr+", hashAlgorithm="+hashAlgorithm+" ("+bytesToHex(pack(sendFlags,4))+")\n");
+
+  var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
 
   errorMsgObj.value = "";
 
@@ -2040,7 +2048,10 @@ function (prompter, fromMailAddr, toMailAddr,
     ERROR_LOG("enigmail.js: Enigmail.encryptMessageStart: Error - no passphrase supplied\n");
 
     errorMsgObj.value = "Error - no passphrase supplied";
-    return null;
+  }
+
+  if (pgpMime && prompter && errorMsgObj.value) {
+    prompter.alert("Enigmail Alert", errorMsgObj.value);
   }
 
   return pipetrans;

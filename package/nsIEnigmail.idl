@@ -78,6 +78,7 @@ interface nsIEnigmail : nsISupports
   string getLogDirectoryPrefix();
 
   nsIPipeTransport encryptMessageStart(in nsIPrompt prompter,
+                                       in unsigned long uiFlags,
                                        in string  fromMailAddr,
                                        in string  toMailAddr,
                                        in string  hashAlgorithm,
@@ -86,7 +87,8 @@ interface nsIEnigmail : nsISupports
                                        in boolean noProxy,
                                        out wstring errorMsg);
 
-  long encryptMessageEnd(in unsigned long uiFlags,
+  long encryptMessageEnd(in nsIPrompt prompter,
+                         in unsigned long uiFlags,
                          in unsigned long sendFlags,
                          in long exitCode,
                          in unsigned long outputLen,
