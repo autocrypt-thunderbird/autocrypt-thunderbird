@@ -1035,9 +1035,10 @@ function enigEncryptMsg(msgSendType) {
        try {
          var convert = DetermineConvertibility();
          if (convert == nsIMsgCompConvertible.No) {
-           if (!EnigConfirm(EnigGetString("strippingHTML")))
+           if (!EnigConfirm(EnigGetString("strippingHTML"))) {
              window.cancelSendMessage=true;
              return;
+           }
          }
        } catch (ex) {
        }
@@ -1966,10 +1967,12 @@ function EnigEditorSelectAll() {
 }
 
 function EnigEditorGetCharset() {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: EnigEditorGetCharset\n");
   return gEnigEditor.documentCharacterSet;
 }
 
 function EnigEditorGetContentsAs(mimeType, flags) {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: EnigEditorGetContentsAs\n");
   if (gEnigEditor) {
     return gEnigEditor.outputToString(mimeType, flags);
   }
