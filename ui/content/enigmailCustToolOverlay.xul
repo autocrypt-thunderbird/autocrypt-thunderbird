@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!--
+  This overlay adds the Enigmail buttons to the Customize
+  Toolbar window so that they are displayed correctly
+-->
+
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
+                 type="text/css"?>
+
+
+<overlay id="enigCustToolOverlay"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+</overlay>
