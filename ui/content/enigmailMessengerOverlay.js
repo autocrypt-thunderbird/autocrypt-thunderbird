@@ -921,8 +921,8 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
 
 // check if the attachment could be encrypted
 function enigCheckEncryptedAttach(attachment) {
-  return (attachment.displayName.match(/\.(gpg|pgp|asc)$/) ||
-      attachment.contentType.match(/^application\/pgp(\-.*)?$/));
+  return (attachment.displayName.match(/\.(gpg|pgp|asc)$/i) ||
+      attachment.contentType.match(/^application\/pgp(\-.*)?$/i));
 }
 
 function enigEscapeTextForHTML(text, hyperlink) {
@@ -1614,7 +1614,7 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
   var errorMsgObj= new Object();
   var enigmailSvc =  GetEnigmailSvc();
   var outFile;
-  var rawFileName=callbackArg.attachment.displayName.replace(/\.(asc|pgp|gpg)$/,"");
+  var rawFileName=callbackArg.attachment.displayName.replace(/\.(asc|pgp|gpg)$/i,"");
 
   if (callbackArg.actionType == "saveAttachment") {
     outFile = EnigFilePicker(EnigGetString("saveAttachmentHeader"),
