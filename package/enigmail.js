@@ -909,13 +909,12 @@ function GetPassphrase(domWindow, prompter, passwdObj) {
   // Obtain password interactively
   var checkObj = new Object();
 
-  var promptMsg = EnigGetString("enterPassPrefix")+" "+gEnigmailSvc.agentType.toUpperCase()+" "+EnigGetString("enterPassSuffix");
+  var promptMsg = EnigGetString("enterPass",gEnigmailSvc.agentType.toUpperCase());
   passwdObj.value = "";
   checkObj.value = true;
 
   var maxIdleMinutes = gEnigmailSvc.getMaxIdleMinutes();
-  var checkMsg = (maxIdleMinutes>0) ? EnigGetString("rememberPrefix")+" "+maxIdleMinutes+" "+EnigGetString("rememberSuffix")
-                                : "";
+  var checkMsg = (maxIdleMinutes>0) ? EnigGetString("rememberPass",maxIdleMinutes) : "";
 
   var success;
 
@@ -2608,7 +2607,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
       }
 
       if (goodSignature) {
-        errorMsgObj.value = trustPrefix + EnigGetString("prefGood") + " " + userId;
+        errorMsgObj.value = trustPrefix + EnigGetString("prefGood",userId);
 
         if (this.agentType != "gpg") {
           // Trust all good signatures, if not GPG
@@ -2616,7 +2615,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
         }
 
       } else {
-        errorMsgObj.value = trustPrefix + EnigGetString("prefBad") + " " + userId;
+        errorMsgObj.value = trustPrefix + EnigGetString("prefBad",userId);
         if (!exitCode)
           exitCode = 1;
 
@@ -2734,7 +2733,7 @@ function (email, secret, exitCodeObj, errorMsgObj) {
   for (var j=0; j<outputLines.length; j++) {
     if (outputLines[j].search(fingerprintPat) == 0) {
       if (fingerprint) {
-        errorMsgObj.value = EnigGetString("failMultiple")+" "+email_addr;
+        errorMsgObj.value = EnigGetString("failMultiple",email_addr);
         return "";
       }
 
@@ -2743,7 +2742,7 @@ function (email, secret, exitCodeObj, errorMsgObj) {
   }
 
   if (!fingerprint) {
-    errorMsgObj.value = EnigGetString("failNoKey")+" "+email_addr;
+    errorMsgObj.value = EnigGetString("failNoKey",email_addr);
     return "";
   }
 
@@ -2781,7 +2780,7 @@ function (parent, uiFlags, keyId, errorMsgObj) {
   } catch (ex) {}
 
   if (keyId && keyserver && (this.agentType == "gpg")) {
-    var prompt = EnigGetString("importPrefix")+" "+keyId+" "+EnigGetString("importSuffix")+" ";
+    var prompt = EnigGetString("importKey",keyId);
 
     var valueObj = new Object();
     valueObj.value = keyserver;
@@ -3258,29 +3257,31 @@ function getSidebarDatasourceURI(panels_file_id)
     }
 }
 
-function EnigGetString(aStr)
-{
-  if(!gEnigStrBundle)
-  {
-    try
-    {
+// retrieves a localized string from the enigmail.properties stringbundle
+function EnigGetString(aStr) {
+  var restCount = arguments.length - 1;
+  if(!gEnigStrBundle) {
+    try {
       var strBundleService = Components.classes[ENIG_STRINGBUNDLE_CONTRACTID].getService();
       strBundleService = strBundleService.QueryInterface(nsIEnigStrBundle);
       gEnigStrBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
-    }
-    catch (ex)
-    {
+    } catch (ex) {
       ERROR_LOG("enigmailCommon.js: Error in instantiating stringBundleService\n");
     }
   }
-  if(gEnigStrBundle)
-  {
-    try
-    {
-      return gEnigStrBundle.GetStringFromName(aStr);
-    }
-    catch (ex)
-    {
+  if(gEnigStrBundle) {
+    try {
+      if(restCount > 0) {
+        var subPhrases = new Array();
+        for (var i = 1; i < arguments.length; i++) {
+          subPhrases.push(arguments[i]);
+        }
+        return gEnigStrBundle.formatStringFromName(aStr, subPhrases, subPhrases.length);
+      }
+      else {
+        return gEnigStrBundle.GetStringFromName(aStr);
+      }
+    } catch (ex) {
       ERROR_LOG("enigmailCommon.js: Error in querying stringBundleService for string '"+aStr+"'\n");
     }
   }

@@ -227,7 +227,7 @@ function enigInsertKey() {
     return;
   }
 
-  gEnigEditorShell.InsertText(EnigGetString("pubKeyPrefix")+" "+userIdValue+" "+EnigGetString("pubKeySuffix") + keyBlock);
+  gEnigEditorShell.InsertText(EnigGetString("pubKey",userIdValue) + keyBlock);
 }
 
 function enigUndoEncryption() {
@@ -701,8 +701,8 @@ function enigSend(sendFlags) {
          msgStatus += EnigGetString("statPlain")+" ";
        }
 
-       var msgConfirm = isOffline ? EnigGetString("offlineSavePrefix")+" "+msgStatus+" "+EnigGetString("offlineSaveInfix")+" "+toAddr+" "+EnigGetString("offlineSaveSuffix")
-                                  :EnigGetString("sendPrefix")+" "+msgStatus+" "+EnigGetString("sendInfix")+" "+toAddr+" "+EnigGetString("sendSuffix");
+       var msgConfirm = isOffline ? EnigGetString("offlineSave",msgStatus,toAddr)
+                                  :EnigGetString("onlineSend",msgStatus,toAddr);
 
        if (!EnigConfirm(msgConfirm)) {
          if (gEnigProcessed)

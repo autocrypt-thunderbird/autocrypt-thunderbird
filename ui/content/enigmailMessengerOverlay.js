@@ -106,7 +106,7 @@ function enigViewSecurityInfo() {
 
       var pubKeyId = "0x" + gEnigSecurityInfo.keyId.substr(8, 8);
 
-      var mesg =  gEnigSecurityInfo.statusInfo + EnigGetString("keyImportPrefix")+" "+pubKeyId+" "+EnigGetString("keyImportSuffix");
+      var mesg =  gEnigSecurityInfo.statusInfo + EnigGetString("keyImport",pubKeyId);
 
       if (EnigConfirm(mesg)) {
         var recvErrorMsgObj = new Object();

@@ -242,7 +242,7 @@ function EnigUpdate_0_60() {
         if (userIdFromAddr)
           EnigAlert(EnigGetString("usingFrom"));
         else
-          EnigAlert(EnigGetString("usingIdPrefix")+" "+userIdValue+" "+EnigGetString("usingIdSuffix"));
+          EnigAlert(EnigGetString("usingId",userIdValue));
 
       }
 
@@ -280,7 +280,7 @@ function EnigConfigure() {
     EnigUpdate_0_60();
   } catch (ex) {}
 
-  var msg = EnigGetString("configNowPrefix")+" "+gEnigmailVersion+" "+EnigGetString("configNowSuffix");
+  var msg = EnigGetString("configNowPrefix",gEnigmailVersion);
 
   var checkValueObj = new Object();
   checkValueObj.value = false;
@@ -472,7 +472,7 @@ function EnigAlertCount(countPrefName, mesg) {
   EnigSetPref(countPrefName, alertCount);
 
   if (alertCount > 0) {
-    mesg += EnigGetString("repeatPrefix")+" "+alertCount+" ";
+    mesg += EnigGetString("repeatPrefix",alertCount) + " ";
     mesg += (alertCount == 1) ? EnigGetString("repeatSuffixSingular") : EnigGetString("repeatSuffixPlural");
   } else {
     mesg += EnigGetString("noRepeat");
@@ -949,6 +949,7 @@ function EnigLoadURLInNavigatorWindow(url, aOpenFlag)
 
 // retrieves a localized string from the enigmail.properties stringbundle
 function EnigGetString(aStr) {
+  var restCount = arguments.length - 1;
   if(!gEnigStrBundle) {
     try {
       var strBundleService = Components.classes[ENIG_STRINGBUNDLE_CONTRACTID].getService();
@@ -960,7 +961,16 @@ function EnigGetString(aStr) {
   }
   if(gEnigStrBundle) {
     try {
-      return gEnigStrBundle.GetStringFromName(aStr);
+      if(restCount > 0) {
+        var subPhrases = new Array();
+        for (var i = 1; i < arguments.length; i++) {
+          subPhrases.push(arguments[i]);
+        }
+        return gEnigStrBundle.formatStringFromName(aStr, subPhrases, subPhrases.length);
+      }
+      else {
+        return gEnigStrBundle.GetStringFromName(aStr);
+      }
     } catch (ex) {
       ERROR_LOG("enigmailCommon.js: Error in querying stringBundleService for string '"+aStr+"'\n");
     }

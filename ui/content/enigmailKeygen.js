@@ -101,7 +101,7 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
 
       EnigSavePrefs();
 
-      EnigAlert(EnigGetString("genCompletePrefix")+email+EnigGetString("genCompleteSuffix"));
+      EnigAlert(EnigGetString("genComplete",email));
 
    } else {
       EnigAlert(EnigGetString("genCompleteNoSign"));
@@ -192,7 +192,7 @@ function enigmailKeygenStart() {
 
    idString += " <" + userEmail + ">";
 
-   var confirmMsg = EnigGetString("keyConfirmPrefix")+idString+EnigGetString("keyConfirmSuffix");
+   var confirmMsg = EnigGetString("keyConfirm",idString);
 
    if (!EnigConfirm(confirmMsg)) {
      window.close();

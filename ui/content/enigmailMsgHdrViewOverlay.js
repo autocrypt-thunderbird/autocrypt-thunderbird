@@ -80,7 +80,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
     statusLine = errorMsg;
 
   } else if (keyId) {
-    statusInfo = EnigGetString("keyNeededPrefix")+" "+keyId+" "+EnigGetString("keyNeededSuffix");
+    statusInfo = EnigGetString("keyNeeded",keyId);
 
     if (statusFlags & nsIEnigmail.INLINE_KEY) {
       statusLine = statusInfo + EnigGetString("clickDecrypt");
