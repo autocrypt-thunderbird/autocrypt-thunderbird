@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.81.6.0";
-var gEnigmimeVersion = "0.81.6.0";
+var gEnigmailVersion = "0.81.7.0";
+var gEnigmimeVersion = "0.81.0.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -52,6 +52,10 @@ if (nsIEnigmail) {
 const PGP_MIME_NEVER    = 0;
 const PGP_MIME_POSSIBLE = 1;
 const PGP_MIME_ALWAYS   = 2;
+
+const EnigEncryptIfPossible = 1;
+const EnigEncrypt           = 2;
+const EnigSigned            = 4;
 
 // property name for temporary directory service
 const ENIG_TEMPDIR_PROP = "TmpD";
