@@ -42,7 +42,7 @@
 <!ENTITY enigmail.encryptToSelf.label     "Encrypt to self">
 <!ENTITY enigmail.alwaysTrustSend.label   "Always trust user ID">
 <!ENTITY enigmail.defaultSignNewsMsg.label "Sign news postings by default">
-<!ENTITY enigmail.confirmBeforeSend.label "Always confirm before send">
+<!ENTITY enigmail.confirmBeforeSend.label "Always confirm before sending">
 
 <!ENTITY enigmail.keyserver.label         "Keyserver:">
 
@@ -98,6 +98,10 @@
 <!ENTITY enigmail.signedsend.accesskey	    "S">
 <!ENTITY enigmail.encryptsignsend.accesskey "E">
 <!ENTITY enigmail.plainsend.accesskey	    "P">
+
+<!ENTITY enigmail.defaultSignMsg.accesskey    "n">
+<!ENTITY enigmail.defaultEncryptMsg.accesskey "t">
+<!ENTITY enigmail.confirmBeforeSend.accesskey "c">
 
 <!ENTITY enigmail.undoencryption.accesskey  "U">
 <!ENTITY enigmail.insertkey.accesskey       "I">

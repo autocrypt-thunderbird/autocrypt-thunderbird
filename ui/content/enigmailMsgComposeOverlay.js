@@ -44,7 +44,7 @@ function enigMsgComposeStartup() {
 
 function enigUpdateOptionsDisplay() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigUpdateOptionsDisplay: \n");
-   var optList = ["defaultEncryptMsg", "defaultSignMsg"];
+   var optList = ["defaultEncryptMsg", "defaultSignMsg", "confirmBeforeSend"];
 
    var signOrEncrypt = false;
 
@@ -363,13 +363,13 @@ function enigSend(encryptFlags) {
        var msgStatus = "";
 
        if (signMsg)
-         msgStatus += "signed ";
+         msgStatus += "SIGNED ";
 
        if (encryptMsg)
-         msgStatus += "encrypted ";
+         msgStatus += "ENCRYPTED ";
 
        if (!msgStatus)
-         msgStatus = "plaintext ";
+         msgStatus = "PLAINTEXT ";
 
        if (!EnigConfirm("Send "+msgStatus+"message to "+toAddrAll+"?\n")) {
          if (gEnigProcessed)
@@ -546,6 +546,14 @@ function enigDecryptQuote(interactive) {
   var encoderFlags = OutputPreformatted | OutputLFLineBreak;
 
   var docText = gEditorShell.GetContentsAs("text/plain", encoderFlags);
+
+  // START TEMPORARY DEBUG CODE
+  var matches = docText.match(/(^|\n).*-----BEGIN.*\n/);
+
+  if (matches) {
+    WRITE_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: TEMPORARY matches[0]='"+matches[0]+"'\n");
+  }
+  // END TEMPORARY DEBUG CODE
 
   if (docText.indexOf("-----BEGIN PGP ") < 0)
     return;

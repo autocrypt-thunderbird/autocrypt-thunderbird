@@ -894,6 +894,28 @@ function (domWindow, passwdObj) {
 }
 
 
+Enigmail.prototype.finalize =
+function () {
+  DEBUG_LOG("enigmail.js: Enigmail.finalize:\n");
+  if (!this.initialized) return;
+
+  if (this.logFileStream) {
+    this.logFileStream.close();
+    this.logFileStream = null;
+  }
+
+  if (this.console) {
+    this.console.close();
+    this.console = null;
+  }
+
+  gLogLevel = 3;
+  this.initializationError = "";
+  this.initializationAttempted = false;
+  this.initialized = false;
+}
+
+
 Enigmail.prototype.initialize =
 function (prefBranch) {
   this.initializationAttempted = true;
@@ -2105,117 +2127,6 @@ function (uri) {
   return (delete this._messageIdList[messageId]);
 }
 
-
-Enigmail.prototype.execAsync = 
-function (command, input, passFD, requestObserver) {
-  WRITE_LOG("enigmail.js: Enigmail.execAsync: \n");
-
-  if ((typeof input) != "string") input = "";
-
-  var envList = gEnvList;
-  if (passFD)
-    envList.push("PGPPASSFD=0");
-
-  var prefix = this.getLogDirectoryPrefix();
-  if (prefix && (gLogLevel >= 4)) {
-    WriteFileContents(prefix+"enigcmd.txt", command+"\n");
-    WriteFileContents(prefix+"enigenv.txt", envList.join(",")+"\n");
-    WriteFileContents(prefix+"eniginp.txt", input);
-    DEBUG_LOG("enigmail.js: Enigmail.execAsync: copied command line/env/input to files "+prefix+"enigcmd.txt/enigenv.txt/eniginp.txt\n");
-  }
-
-  var outConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
-
-  var errConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
-
-  outConsole.open(-1, 0, true);
-  errConsole.open(-1, 0, true);
-
-  CONSOLE_LOG("\nenigmail> "+command+"\n");
-
-  var ipcRequest = null;
-  try {
-    var useShell = this.isWin32;
-    ipcRequest = gEnigmailSvc.ipcService.execAsync(command,
-                                                   useShell,
-                                                   input, input.length,
-                                                   envList, envList.length,
-                                                   outConsole,
-                                                   errConsole,
-                                                   true,
-                                                   reequestObserver);
-  } catch (ex) {
-  }
-
-  if (!ipcRequest) {
-    ERROR_LOG("enigmail.js: Enigmail.execAsync: FAILED\n");
-    return null;
-  }
-
-  DEBUG_LOG("enigmail.js: Enigmail.execAsync: ipcRequest = "+ipcRequest+"\n");
-
-  this.stillActive();
-
-  return;
-}
-
-Enigmail.prototype.processAsync = 
-function (ipcRequest, exitCodeObj, errorMsgObj, statusMsgObj) {
-  WRITE_LOG("enigmail.js: Enigmail.processAsync:\n");
-
-  if (!ipcRequest || !ipcRequest.stdoutConsole) {
-    exitCodeObj.value = -1;
-  }
-
-  var outputData =  ipcRequest.stdoutConsole.data;
-
-  var errOutput  = "";
-  if (ipcContent.stderrConsole) {
-     ipcContent.stderrConsole.join();
-     errOutput = ipcRequest.stderrConsole.data;
-  }
-
-  ipcRequest.close(true);
-
-  var prefix = this.getLogDirectoryPrefix();
-  if (prefix && (gLogLevel >= 4)) {
-    WriteFileContents(prefix+"enigout.txt", outputData);
-    WriteFileContents(prefix+"enigerr.txt", errOutput);
-    DEBUG_LOG("enigmail.js: Enigmail.processAsync: copied command out/err data to files "+prefix+"enigout.txt/enigerr.txt\n");
-  }
-
-  WRITE_LOG("enigmail.js: Enigmail.processAsync: exitCode = "+exitCodeObj.value+"\n");
-  WRITE_LOG("enigmail.js: Enigmail.processAsync: errOutput = "+errOutput+"\n");
-
-  var errLines = errOutput.split(/\r?\n/);
-
-  // Discard last null string, if any
-  if ((errLines.length > 1) && !errLines[errLines.length-1])
-    errLines.pop();
-
-  var errArray    = new Array();
-  var statusArray = new Array();
-
-  var statusPat = /^\[GNUPG:\] /;
-
-  for (var j=0; j<errLines.length; j++) {
-    if (errLines[j].search(statusPat) == 0) {
-      statusArray.push(errLines[j].replace(statusPat,""));
-
-    } else {
-      errArray.push(errLines[j]);
-    }
-  }
-
-  errorMsgObj.value  = errArray.join("\n");
-  statusMsgObj.value = statusArray.join("\n");
-
-  CONSOLE_LOG(errorMsgObj.value+"\n");
-
-  WRITE_LOG("enigmail.js: Enigmail.processAsync: status = "+statusMsgObj.value+"\n");
-
-  return outputData;
-}
 
 function IPCContext()
 {

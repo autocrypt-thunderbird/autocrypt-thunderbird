@@ -63,15 +63,22 @@
              type="checkbox"
              checked="false"
              label="&enigmail.defaultSignMsg.label;"
-             name="enigmail_MessageOptions"
+             accesskey="&enigmail.defaultSignMsg.accesskey;"
              oncommand="enigToggleAttribute('defaultSignMsg');" />
 
         <menuitem id="enigmail_defaultEncryptMsg"
              type="checkbox"
              checked="false"
              label="&enigmail.defaultEncryptMsg.label;"
-             name="enigmail_MessageOptions"
+             accesskey="&enigmail.defaultEncryptMsg.accesskey;"
              oncommand="enigToggleAttribute('defaultEncryptMsg');" />
+
+        <menuitem id="enigmail_confirmBeforeSend"
+             type="checkbox"
+             checked="false"
+             label="&enigmail.confirmBeforeSend.label;"
+             accesskey="&enigmail.confirmBeforeSend.accesskey;"
+             oncommand="enigToggleAttribute('confirmBeforeSend');" />
 
         <menuseparator/>
 

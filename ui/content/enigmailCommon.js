@@ -94,6 +94,7 @@ function EnigInitCommon(id) {
 }
 
 var gEnigmailSvc;
+
 function GetEnigmailSvc() {
   // Lazy initialization of enigmail JS component (for efficiency)
 
@@ -383,8 +384,9 @@ function EnigAdvPrefWindow() {
                     "_blank", "chrome,resizable=yes");
 }
 
-function EnigHelpWindow() {
-   window.open("http://enigmail.mozdev.org/usage.html");
+function EnigHelpWindow(source) {
+   if (!source) source = "";
+   window.open("http://enigmail.mozdev.org/"+source+"help.html");
 }
 
 function EnigUpgrade() {
@@ -621,6 +623,13 @@ function EnigViewDebugLog() {
     EnigAlert("Please set advanced preference 'Log directory' to create log file");
     return;
   }
+
+  if (!gLogFileStream) {
+    EnigAlert("Please restart Mozilla to create log file");
+    return;
+  }
+
+  gLogFileStream.flush();
 
   logDirectory = logDirectory.replace(/\\/g, "/");
 
