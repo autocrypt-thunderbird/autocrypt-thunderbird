@@ -967,6 +967,7 @@ Enigmail.prototype.keygenConsole = null;
 
 Enigmail.prototype.agentType = "";
 Enigmail.prototype.agentPath = "";
+Enigmail.prototype.agentVersion = "";
 
 Enigmail.prototype._lastActiveTime = 0;
 
@@ -1285,8 +1286,16 @@ function (domWindow, version, prefBranch) {
                   "NLSPATH", "PATH", "PATHEXT", "PROGRAMFILES", "PWD",
                   "SHELL", "SYSTEMDRIVE", "SYSTEMROOT",
                   "TEMP", "TMP", "TMPDIR", "TZ", "TZDIR",
-                  "USER", "USERPROFILE", "GPG_AGENT_INFO",
+                  "USER", "USERPROFILE",
                   "WINDIR" ];
+
+  try {
+    useAgent = this.prefBranch.getBoolPref("useGpgAgent");
+    if (useAgent) {
+       passEnv.push("GPG_AGENT_INFO");
+    }
+
+  } catch (ex) {}
 
   var passList = this.processInfo.getEnv("ENIGMAIL_PASS_ENV");
   if (passList) {
@@ -1436,6 +1445,11 @@ function (domWindow, version, prefBranch) {
 
   CONSOLE_LOG(outStr+"\n");
 
+  var versionParts = outStr.replace(/\n.*/g,"").split(/ /);
+  var gpgVersion = versionParts[versionParts.length-1]
+
+  this.agentVersion = gpgVersion;
+
   // Register to observe XPCOM shutdown
   var obsServ = Components.classes[NS_OBSERVERSERVICE_CONTRACTID].getService();
   obsServ = obsServ.QueryInterface(Components.interfaces.nsIObserverService);
@@ -1449,6 +1463,22 @@ function (domWindow, version, prefBranch) {
   DEBUG_LOG("enigmail.js: Enigmail.initialize: END\n");
 }
 
+Enigmail.prototype.useAgentString =
+function () {
+
+  var command = "";
+
+  try {
+    var  gpgVersion = this.agentVersion.match(/^\d+\.\d+/);
+    if (gpgVersion && gpgVersion[0] >= "1.2") {
+      if (! this.prefBranch.getBoolPref("useGpgAgent")) {
+        command = " --no-use-agent ";
+      }
+    }
+  } catch (ex) {}
+
+  return command;
+}
 
 Enigmail.prototype.execCmd =
 function (command, passphrase, input, exitCodeObj, statusFlagsObj,
@@ -1606,7 +1636,8 @@ function (command, needPassphrase, domWindow, prompter, listener,
   if (needPassphrase) {
 
     if (this.agentType == "gpg") {
-      command += " --passphrase-fd 0";
+      command += " --passphrase-fd 0" + this.useAgentString();
+
     } else {
       envList.push("PGPPASSFD=0");
     }
@@ -1753,7 +1784,7 @@ function (pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj) 
   var prefix = this.getLogDirectoryPrefix();
   if (prefix && (gLogLevel >= 4)) {
     WriteFileContents(prefix+"enigerr.txt", errOutput);
-    DEBUG_LOG("enigmail.js: Enigmail.execCmd: copied command err output to file "+prefix+"enigerr.txt\n");
+    DEBUG_LOG("enigmail.js: Enigmail.execEnd: copied command err output to file "+prefix+"enigerr.txt\n");
   }
 
   DEBUG_LOG("enigmail.js: Enigmail.execEnd: exitCode = "+exitCode+"\n");
@@ -3471,7 +3502,7 @@ function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
   var passphrase = null;
   var signMessage = (sendFlags & nsIEnigmail.SEND_SIGNED);
   if (signMessage) {
-    gpgCommand += " --passphrase-fd 0"
+    gpgCommand += " --passphrase-fd 0" + this.useAgentString();
 
     var passwdObj = new Object();
 
@@ -3523,7 +3554,7 @@ function (parent, outFileName, inputBuffer,
   var command = this.agentPath;
 
   outFileName = outFileName.replace(/\\/g, "\\\\");
-  command += GPG_BATCH_OPTS + " -o '"+outFileName+"' --yes --passphrase-fd 0 -d ";
+  command += GPG_BATCH_OPTS + " -o '"+outFileName+"' --yes --passphrase-fd 0" + this.useAgentString() + " -d ";
 
 
   statusFlagsObj.value = 0;
@@ -3532,7 +3563,7 @@ function (parent, outFileName, inputBuffer,
   var passwdObj = new Object();
 
   if (!GetPassphrase(parent, 0, passwdObj)) {
-    ERROR_LOG("enigmail.js: Enigmail.execStart: Error - no passphrase supplied\n");
+    ERROR_LOG("enigmail.js: Enigmail.decryptAttachment: Error - no passphrase supplied\n");
 
     statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
     return null;
