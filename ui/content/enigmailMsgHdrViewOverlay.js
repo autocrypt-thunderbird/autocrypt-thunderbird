@@ -164,7 +164,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
   if (!gSMIMEContainer)
     return;
 
-  // Update icons
+  // Update icons and header-box css-class
   try {
     gSMIMEContainer.collapsed = false;
     gSignedUINode.collapsed = false;
@@ -174,12 +174,14 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
         (statusFlags & nsIEnigmail.TRUSTED_IDENTITY) ) {
       // Display trusted good signature icon
       gSignedUINode.setAttribute("signed", "ok");
+      statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureOk");
       //gStatusBar.setAttribute("signed", "ok");
 
     } else if (statusFlags & (nsIEnigmail.UNVERIFIED_SIGNATURE | 
                               nsIEnigmail.GOOD_SIGNATURE)) {
       // Display unverified signature icon
       gSignedUINode.setAttribute("signed", "unknown");
+      statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureUnknown");
       //gStatusBar.setAttribute("signed", "unknown");
 
     } else if (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
@@ -187,6 +189,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
                               nsIEnigmail.EXPIRED_SIGNATURE) ) {
       // Display untrusted/bad signature icon
       gSignedUINode.setAttribute("signed", "notok");
+      statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureNotOk");
       //gStatusBar.setAttribute("signed", "notok");
     }
 
