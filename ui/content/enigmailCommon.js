@@ -143,7 +143,6 @@ function EnigGetFrame(win, frameName) {
       return win.frames[j];
     }
   }
-               if (asd)
   return null;
 }
 

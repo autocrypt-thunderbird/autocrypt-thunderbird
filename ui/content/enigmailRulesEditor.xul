@@ -34,7 +34,8 @@
       <hbox flex="1" >
         <tree id="rulesTree" flex="1" hidecolumnpicker="false">
           <treecols>
-            <treecol style="width:40px" id="negateRule" flex="0" label="&enigmail.not.label;" persist="width"/>
+            <treecol style="width:40px" id="negateRule" flex="0" label="&enigmail.not.label;" persist="width"
+                     hidden="true" ignoreincolumnpicker="true"/>
             <splitter class="tree-splitter"/>
             <treecol style="width:150px" id="email" flex="1" label="&enigmail.email.label;" persist="width"/>
             <splitter class="tree-splitter"/>

@@ -4733,7 +4733,7 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
     command += " "+editCmd + " " + keyId;
   }
   else {
-    command += " --edit-key " + keyId + " " + editCmd;
+    command += " --ask-cert-level --edit-key " + keyId + " " + editCmd;
   }
   var pipeTrans = this.execStart(command, false, parent, null, null,
                                  true, statusFlags);

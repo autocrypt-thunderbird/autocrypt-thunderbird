@@ -301,7 +301,6 @@
 <!ENTITY enigmail.sepratationDesc.label             "(Separate several email addresses with spaces)">
 <!ENTITY enigmail.matchDescStart.label              "Apply rule if recipient">
 <!ENTITY enigmail.matchDescEnd.label                "one of the above addresses">
-<!ENTITY enigmail.notDescEnd.label                  "NOT one of the above addresses">
 <!ENTITY enigmail.matchExact.label                  "Is exactly">
 <!ENTITY enigmail.matchContains.label               "Contains">
 <!ENTITY enigmail.matchBegin.label                  "Starts with">

@@ -67,11 +67,12 @@ function enigmailDlgOnLoad() {
     matchingRule.selectedIndex=1;
   }
   
+/*
   var negateRule=document.getElementById("negateRule");
   if (typeof(window.arguments[INPUT].negate)=="number") {
     negateRule.selectedIndex = (window.arguments[INPUT].negate ? 1 : 0);
   }
-  
+*/
   ruleEmail.value = window.arguments[INPUT].toAddress.replace(/[{}]/g, "");
   window.arguments[RESULT].cancelled=true;
 
@@ -176,7 +177,7 @@ function enigmailDlgOnAccept() {
   window.arguments[RESULT].sign    = document.getElementById("sign").value;
   window.arguments[RESULT].encrypt = document.getElementById("encrypt").value;
   window.arguments[RESULT].pgpMime = document.getElementById("pgpmime").value;
-  window.arguments[RESULT].negate = Number(document.getElementById("negateRule").value);
+  window.arguments[RESULT].negate = 0; /*Number(document.getElementById("negateRule").value);*/
   
   var actionType = document.getElementById("actionType");
   switch(Number(actionType.selectedItem.value)) {

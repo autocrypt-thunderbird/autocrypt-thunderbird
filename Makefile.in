@@ -82,7 +82,7 @@ ifeq ($(OS_ARCH),OS2)
 PLATFORM_STR = os2
 endif
 
-XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS)-$(PLATFORM_STR)-$(TARGET_CPU).xpi
+XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS)-$(PLATFORM_STR).xpi
 
 xpi::
 	$(srcdir)/genxpi $(XPIFILE) $(DIST)/bin $(srcdir) $(XPI_MODULE) $(DLL_SUFFIX) $(LIB_PREFIX)
