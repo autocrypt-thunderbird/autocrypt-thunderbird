@@ -3102,9 +3102,6 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
 }
 
 
-// ExitCode == 0  => success
-// ExitCode > 0   => error
-// ExitCode == -1 => Cancelled by user
 Enigmail.prototype.searchKey =
 function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.searchKey: "+keyValue+"\n");
@@ -3164,13 +3161,49 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
   if (m && m.length == 3) {
     command = m[1];
   }
+  if (! this.isWin32) {
+    command = command.replace(/\/bin\/$/, "/lib/gnupg/");
+  }
   command += "gpgkeys_" + protocol;
   if (this.isWin32) {
     command+=".exe";
   }
-  
+
+
+  // call gpgkeys to check if it's there (execAsync doesn't
+  // return error codes)
+
+  var outObj     = new Object();
+  var outLenObj  = new Object();
+  var errObj     = new Object();
+  var errLenObj  = new Object();
+  var testCmd = command + " -V"
+
+  CONSOLE_LOG("\nenigmail> "+testCmd.replace(/\\\\/g, "\\")+"\n");
+
+  try {
+    var exitCode = this.ipcService.execPipe(testCmd,
+                                          false,
+                                          "",
+                                          "", 0,
+                                          envList, envList.length,
+                                          outObj, outLenObj,
+                                          errObj, errLenObj);
+  }
+  catch (ex) {
+    CONSOLE_LOG(testCmd.replace(/\\\\/g, "\\")+" not found\n");
+    return null;
+  }
+
+  if (exitCode !=0) {
+    CONSOLE_LOG(testCmd.replace(/\\\\/g, "\\")+" not found\n");
+    return null;
+  }
+
+  CONSOLE_LOG(outObj.value+"\n");
+
   var inputData="VERSION 0\nHOST "+keyserver+"\nPORT "+port+"\n";
-  
+
   if (proxyHost) {
     inputData+="OPTION honor-http-proxy\n";
     envList.push("http_proxy="+proxyHost);
@@ -3183,10 +3216,6 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
     inputData+="COMMAND get\n\n+"+keyValue+"\n\n";
   }
 
-  var exitCodeObj    = new Object();
-  var statusFlagsObj = new Object();
-  var statusMsgObj   = new Object();
-  var cmdLineObj   = new Object();
 
   var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
   // Create joinable console
@@ -3690,7 +3719,7 @@ function EnigGetString(aStr) {
   return null;
 }
 
-Enigmail.prototype.invalidateUserIdList = 
+Enigmail.prototype.invalidateUserIdList =
 function () {
   // clean the userIdList to force reloading the list at next usage
   this.userIdList= null;
