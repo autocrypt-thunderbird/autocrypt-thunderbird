@@ -295,3 +295,25 @@
 <!ENTITY enigmail.searchKeyDlgCapt.label           "Found Keys - Select to Import">
 <!ENTITY enigmail.created.label                    "Created">
 <!ENTITY enigmail.progress.label                   "Progress">
+
+<!ENTITY enigmail.sKeyDlg.title                    "Enigmail - Sign Key">
+<!ENTITY enigmail.sKeyDlg.signKey.label            "Sign Key Id:">
+<!ENTITY enigmail.sKeyDlg.signWithKey.label        "Key for signing:">
+<!ENTITY enigmail.sKeyDlg.checked.label            "How carefully have you verified the key you are about to sign actually belongs to the person named above?">
+<!ENTITY enigmail.sKeyDlg.noAnswer.label           "I will not answer">
+<!ENTITY enigmail.sKeyDlg.notChecked.label         "I have not checked at all">
+<!ENTITY enigmail.sKeyDlg.casualCheck.label        "I have done casual checking">
+<!ENTITY enigmail.sKeyDlg.carefulCheck.label       "I have done very careful checking">
+<!ENTITY enigmail.sKeyDlg.createSig.label          "Create signature">
+<!ENTITY enigmail.sKeyDlg.createExport.label       "Exportable">
+<!ENTITY enigmail.sKeyDlg.createLocal.label        "Locally (non-exportable)">
+
+<!ENTITY enigmail.keyTrust.title                   "Enigmail - Set Key Trust">
+<!ENTITY enigmail.keyTrust.trustKey.label          "Key Id To Trust:">
+<!ENTITY enigmail.keyTrust.trustLevel.label        "How much do you trust the key?">
+<!ENTITY enigmail.keyTrust.dontKnow.label          "I don't know">
+<!ENTITY enigmail.keyTrust.noTrust.label           "I do NOT trust">
+<!ENTITY enigmail.keyTrust.marginalTrust.label     "I trust marginally">
+<!ENTITY enigmail.keyTrust.fullTrust.label         "I trust fully">
+<!ENTITY enigmail.keyTrust.ultimateTrust.label     "I trust ultimatelty">
+

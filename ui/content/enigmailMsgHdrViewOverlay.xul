@@ -24,6 +24,13 @@
                 id="enigmail_showPhoto"
                 oncommand="enigShowPhoto();"/>
       <menuseparator/>
+      <menuitem label="Sign Key"
+                id="enigmail_signKey"
+                oncommand="enigSignKey();"/>
+      <menuitem label="Edit Key Trust"
+                id="enigmail_editKeyTrust"
+                oncommand="enigEditKeyTrust();"/>
+      <menuseparator/>
       <menuitem label="&enigmail.smimeSecurityInfo.label;"
                 oncommand="showMessageReadSecurityInfo();"/>
     </popup>

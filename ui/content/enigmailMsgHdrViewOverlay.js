@@ -333,6 +333,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
                         keyId: keyId,
                         userId: userId,
                         statusLine: statusLine,
+                        msgSigned: msgSigned,
                         statusArr: statusArr,
                         statusInfo: statusInfo,
                         fullStatusInfo: fullStatusInfo };
@@ -421,7 +422,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
 }
 
 function enigDispSecurityContext() {
-  var optList = ["pgpSecurityInfo", "copySecurityInfo", "showPhoto"];
+  var optList = ["pgpSecurityInfo", "copySecurityInfo", "showPhoto", "signKey", "editKeyTrust"];
   for (var j=0; j<optList.length; j++) {
     var menuElement = document.getElementById("enigmail_"+optList[j]);
     if (gEnigSecurityInfo) {
@@ -436,7 +437,32 @@ function enigDispSecurityContext() {
     if (! (gEnigSecurityInfo.statusFlags & nsIEnigmail.PHOTO_AVAILABLE)) {
       document.getElementById("enigmail_showPhoto").setAttribute("disabled", "true");
     }
+    if (! (gEnigSecurityInfo.msgSigned && 
+      !(gEnigSecurityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE))) {
+      if (!(gEnigSecurityInfo.statusFlags & 
+            (nsIEnigmail.REVOKED_KEY | nsIEnigmail.EXPIRED_KEY_SIGNATURE))) {
+        document.getElementById("enigmail_signKey").setAttribute("disabled", "true");
+      }
+      document.getElementById("enigmail_editKeyTrust").setAttribute("disabled", "true");
+    }
   }
+}
+
+function enigEditKeyTrust() {
+  var inputObj = {
+    keyId: gEnigSecurityInfo.keyId,
+    userId: gEnigSecurityInfo.userId
+  }
+  window.openDialog("chrome://enigmail/content/enigmailEditKeyTrustDlg.xul","", "dialog,modal,centerscreen", inputObj);
+}
+
+function enigSignKey() {
+  var inputObj = {
+    keyId: gEnigSecurityInfo.keyId,
+    userId: gEnigSecurityInfo.userId
+  }
+  window.openDialog("chrome://enigmail/content/enigmailSignKeyDlg.xul","", "dialog,modal,centerscreen", inputObj);
+
 }
 
 function enigMsgHdrViewLoad(event)
