@@ -60,7 +60,7 @@
     <checkbox id="enigmailUserSelPlainText"
                 label="&enigmail.userSelPlainText.label;"
                 accesskey="&enigmail.userSelPlainText.accesskey;"
-                onclick="disableList();"/>
+                oncommand="disableList();"/>
 <!--
     <button class="dialog"
             halign="right"
