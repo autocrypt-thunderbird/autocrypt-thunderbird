@@ -23,7 +23,7 @@
 <!ENTITY enigmail.agentPath.label         "GPG/PGP executable path:">
 
 <!ENTITY enigmail.defaultSignMsg.label    "Sign mail by default">
-<!ENTITY enigmail.defaultEncryptMsg.label "Encrypt mail if possible">
+<!ENTITY enigmail.defaultEncryptSignMsg.label "Encrypt+sign if possible">
 <!ENTITY enigmail.send_plaintext_flowed.label "Allow flowed text (RFC 2646)">
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Remember password for">
@@ -61,6 +61,7 @@
 <!ENTITY enigmail.decryptbutton.tip	  "Enigmail decrypt/verify">
 
 <!ENTITY enigmail.decryptverify.label	  "Decrypt/verify">
+<!ENTITY enigmail.importpublickey.label	  "Import public key">
 <!ENTITY enigmail.savedecrypted.label	  "Save decrypted message">
 
 <!ENTITY enigmail.clearPassphrase.label	  "Clear saved passphrase">
@@ -75,6 +76,7 @@
 <!ENTITY enigmail.about.label	          "About Enigmail">
 
 <!ENTITY enigmail.decryptverify.accesskey   "D">
+<!ENTITY enigmail.importpublickey.accesskey "I">
 <!ENTITY enigmail.savedecrypted.accesskey   "S">
 
 <!ENTITY enigmail.autoDecrypt.accesskey     "A">
@@ -109,7 +111,7 @@
 <!ENTITY enigmail.plainsend.accesskey	    "P">
 
 <!ENTITY enigmail.defaultSignMsg.accesskey    "n">
-<!ENTITY enigmail.defaultEncryptMsg.accesskey "t">
+<!ENTITY enigmail.defaultEncryptSignMsg.accesskey "t">
 <!ENTITY enigmail.confirmBeforeSend.accesskey "c">
 
 <!ENTITY enigmail.undoencryption.accesskey  "U">
