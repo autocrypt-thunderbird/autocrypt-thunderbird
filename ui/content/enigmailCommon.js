@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.83.6.0";
-var gEnigmimeVersion = "0.83.6.0";
+var gEnigmailVersion = "0.84.0.0";
+var gEnigmimeVersion = "0.84.0.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -56,6 +56,7 @@ const ENIG_DIRSERVICE_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const ENIG_MIME_CONTRACTID = "@mozilla.org/mime;1";
 const ENIG_WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
 const ENIG_APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1"
+const ENIG_ASS_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
 
 const ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID =
                               "@mozilla.org/network/file-output-stream;1";
@@ -96,6 +97,10 @@ var gUsePGPMimeOptionList = ["usePGPMimeNever", "usePGPMimePossible",
 var gEnigRecipientsSelectionOptions = ["askRecipientsNever",
                                        "askRecipientsClever",
                                        "askRecipientsAlways"];
+                                       
+var gEnigPerRecipientRules = ["perRecipientRulesNo",
+                              "perRecipientRulesManual",
+                              "perRecipientRulesAlways"];
 
 const ENIG_BUTTON_POS_0           = 1;
 const ENIG_BUTTON_POS_1           = 1 << 8;
@@ -174,7 +179,7 @@ function EnigGetFrame(win, frameName) {
       return win.frames[j];
     }
   }
-
+               if (asd)
   return null;
 }
 
@@ -619,12 +624,12 @@ function EnigAdvPrefWindow() {
 
 function EnigHelpWindow(source) {
 
-   var helpUrl = "http://enigmail.mozdev.org/help.html";
+  input="chrome://enigmail/locale/help/"+source+".html";
 
-   if (source)
-     helpUrl += "#" + source
-
-   window.open(helpUrl);
+  EnigOpenWin("enigmail:help",
+              "chrome://enigmail/content/enigmailHelp.xul",
+              "chrome,resizable",
+              input);
 }
 
 function EnigUpgrade() {
@@ -835,7 +840,7 @@ EnigRequestObserver.prototype = {
 function EnigConvertFromUnicode(text, charset) {
   DEBUG_LOG("enigmailCommon.js: EnigConvertFromUnicode: "+charset+"\n");
 
-  if (!text || !charset || (charset.toLowerCase() == "iso-8859-1"))
+  if (!text || !charset /*|| (charset.toLowerCase() == "iso-8859-1")*/)
     return text;
 
   // Encode plaintext
@@ -854,7 +859,7 @@ function EnigConvertFromUnicode(text, charset) {
 function EnigConvertToUnicode(text, charset) {
   DEBUG_LOG("enigmailCommon.js: EnigConvertToUnicode: "+charset+"\n");
 
-  if (!text || !charset || (charset.toLowerCase() == "iso-8859-1"))
+  if (!text || !charset /*|| (charset.toLowerCase() == "iso-8859-1")*/)
     return text;
 
   // Encode plaintext
@@ -868,6 +873,30 @@ function EnigConvertToUnicode(text, charset) {
     return text;
   }
 }
+
+
+function EnigConvertGpgToUnicode(text) {
+  if (typeof(text)=="string") {
+    var a=text.search(/[\x80-\xFF]{2}/);
+    var b=0;
+    
+    while (a>=0) {
+      var ch=text.substr(a,2).toSource().substr(13,8).replace(/\\x/g, "\\u00");
+      var newCh=EnigConvertToUnicode(EnigConvertToUnicode(ch, "x-u-escaped"), "utf-8");
+      if (newCh != ch) {
+        //dump(ch+"\n");
+        var r=new RegExp(text.substr(a, 2), "g");
+        text=text.replace(r, newCh);
+      }
+      b=a+2;
+      a=text.substr(b+2).search(/[\x80-\xFF]{2}/);
+      if (a>=0) {
+        a += b+2;
+      }
+    }
+  }  
+  return text;
+} 
 
 
 function EnigGetDeepText(node, findStr) {
@@ -998,18 +1027,44 @@ function EnigClearPassphrase() {
   enigmailSvc.clearCachedPassphrase();
 }
 
+function EnigOpenWin (winName, spec, winOptions, optList) {
+  var windowManager = Components.classes[ENIG_APPSHELL_MEDIATOR_CONTRACTID].getService(Components.interfaces.nsIWindowMediator);
+
+  /* although accordign to the docs, this doesn't seem to work ...
+    var recentWin = windowManager.getMostRecentWindow(winName);
+  */
+  var winEnum=windowManager.getEnumerator(null);
+  var recentWin=null;
+  while (winEnum.hasMoreElements() && ! recentWin) {
+    var thisWin = winEnum.getNext();
+    if (thisWin.location.href==spec) {
+      recentWin = thisWin;
+    }
+  }
+  
+  if (recentWin) {
+    recentWin.focus();
+  } else {
+    var appShellSvc = Components.classes[ENIG_ASS_CONTRACTID].getService(Components.interfaces.nsIAppShellService);
+    var domWin = appShellSvc.hiddenDOMWindow;
+
+    domWin.openDialog(spec, winName, winOptions, optList);
+  }
+}
+
 function EnigViewAbout() {
   DEBUG_LOG("enigmailCommon.js: EnigViewAbout\n");
 
-  toOpenWindowByType("enigmail:about",
-                     "chrome://enigmail/content/enigmailAbout.xul");
+  EnigOpenWin ("about:enigmail",
+               "chrome://enigmail/content/enigmailAbout.xul",
+               "resizable,chrome");
 }
 
 function EnigViewConsole() {
   DEBUG_LOG("enigmailCommon.js: EnigViewConsole\n");
 
-  toOpenWindowByType("enigmail:console",
-                     "chrome://enigmail/content/enigmailConsole.xul");
+  EnigOpenWin("enigmail:console",
+              "chrome://enigmail/content/enigmailConsole.xul");
 }
 
 function EnigViewDebugLog() {
@@ -1344,3 +1399,10 @@ function EnigFilePicker(title, displayDir, save, defaultExtension, defaultName, 
 
   return file;
 }
+
+function EnigRulesEditor() {
+  EnigOpenWin("enigmail:rulesEditor",
+              "chrome://enigmail/content/enigmailRulesEditor.xul",
+              "dialog,centerscreen,resizable");
+}
+
