@@ -32,7 +32,7 @@
 #button-enigmail-send[disabled="true"]:hover:active
   {
     list-style-image      : url("chrome://enigmail/skin/enigsend-dis.gif");
-  } 
+  }
 
 #button-enigmail-send:hover
   {
@@ -48,4 +48,15 @@
 
 #expandedEnigmailBox {
  background-color:#d8e0e8 !important;
+}
+
+.enigmailHeaderBoxLabelSignatureOk {
+}
+
+.enigmailHeaderBoxLabelSignatureNotOk {
+ color: #ff0000;
+}
+
+.enigmailHeaderBoxLabelSignatureUnknown {
+ color: #ff9900;
 }
