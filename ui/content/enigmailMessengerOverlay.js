@@ -914,6 +914,19 @@ function enigGetDecryptedMessage(contentType, includeHeaders) {
                         "Date":    headerList.date,
                         "Newsgroups": msgData.messageHeader.folder.name };
           }
+          else if(urlObj.value.scheme=="imap") {
+            var msgKey=new Object();
+            msgData = urlObj.value.QueryInterface(Components.interfaces.nsIImapUrl);
+            // this only succeeds if exactly one message was selected, which is
+            // at this moment the case
+            msgData.createListOfMessageIdsString(msgKey);
+            var imapMsgHeader = msgData.imapMessageSink.GetMessageHeader(msgKey.value);
+            msgHdr = { "From":    imapMsgHeader.author,
+                        "Subject": imapMsgHeader.subject,
+                        "Cc":      imapMsgHeader.ccList,
+                        "To":      imapMsgHeader.recipients,
+                        "Date":    headerList.date };
+          }
           else {
             msgData = urlObj.value.QueryInterface(Components.interfaces.nsIMailboxUrl);
             msgHdr = { "From":    msgData.messageHeader.author,
@@ -1116,8 +1129,8 @@ function enigMessageSave() {
 
   var textContent = enigGetDecryptedMessage("text/plain", true);
 
-  EnigAlert(textContent);
-  
+//  EnigAlert(textContent);
+
   if (!EnigWriteFileContents(saveFile.path, textContent, null)) {
     EnigAlert("Error in saving to file "+saveFile.path);
     return;
@@ -1545,25 +1558,33 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
 
         var mimeService = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsIMIMEService);
         var fileMimeType = mimeService.GetTypeFromFile(outFile);
-        var fileMimeInfo = mimeService.GetFromMIMEType(fileMimeType);
-        if ((fileMimeInfo.preferredAction == fileMimeInfo.useHelperApp ||
-            fileMimeInfo.preferredAction == fileMimeInfo.useSystemDefault) &&
-            (! fileMimeType.indexOf("text/")==0)) {
+        var fileMimeInfo = mimeService.GetFromTypeAndExtension(fileMimeType, fileExt);
+        if (fileMimeType.indexOf("text/")==0 || fileMimeType.indexOf("image/")==0) {
+          // open attachment using a browser window
+          var w = window.open(outFileUri.asciiSpec,
+                      "_blank",
+                      "chrome,extrachrome,menubar,resizable,scrollbars,status,toolbar,width=600,height=400");
+          w.title=outFile.leafName;
+          if (fileMimeType.indexOf("text/")==0)
+              w.document.designMode="on";
+          return;
+        }
+        else {
           // open attachment with a helper application
-          window.OpenURL(outFileUri.asciiSpec);
+          messenger.OpenURL(outFileUri.asciiSpec);
           return;
         }
       }
       catch (ex) {
         // if the attachment file type is unknown, an exception is thrown,
         // so let it be handled by a browser window
-        EnigLoadURLInNavigatorWindow(outFileUri.asciiSpec, true)
+        messenger.launchExternalURL(outFileUri.asciiSpec);
         return;
       }
     }
 
-    // open the attachment in a browser window
-    EnigLoadURLInNavigatorWindow(outFileUri.asciiSpec, true)
+    // open the attachment using an external application
+    messenger.OpenURL(outFileUri.asciiSpec);
   }
 }
 
