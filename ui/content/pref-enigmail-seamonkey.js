@@ -12,12 +12,6 @@ function initPrefSeamonkey() {
 
   EnigSetPref("configuredVersion", gEnigmailVersion);
 
-  if (navigator.platform.search(/Win/i) == 0) {
-    // Windows doesn't work ... 
-    document.getElementById("uninstall").setAttribute("disabled", "true");
-  }
-
-
   setDisables(true);
 }
 
