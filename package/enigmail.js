@@ -1717,6 +1717,12 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
       exitCodeObj.value = 0;
     }
   }
+  if ((this.agentVersion >= "1.3") && (this.isdosLike)) {
+    if ((exitCodeObj.value == 2) && (!((statusFlags & nsIEnigmail.BAD_PASSPHRASE)))) {
+      WARNING_LOG("enigmail.js: Enigmail.execCmd: Using gpg version "+this.agentVersion+", activating countermeasures for file renaming bug.\n");
+      exitCodeObj.value = 0;
+    }
+  }
 
   statusFlagsObj.value = statusFlags;
   statusMsgObj.value   = statusArray.join("\n");
@@ -2103,6 +2109,12 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
       exitCode = 2;
     } else {
       WARNING_LOG("enigmail.js: Enigmail.encryptMessageEnd: Changing exitCode 256->0\n");
+      exitCode = 0;
+    }
+  }
+  if ((this.agentVersion >= "1.3") && (this.isdosLike)) {
+    if ((exitCodeObj.value == 2) && (!((statusFlags & nsIEnigmail.BAD_PASSPHRASE)))) {
+      WARNING_LOG("enigmail.js: Enigmail.execCmd: Using gpg version "+this.agentVersion+", activating countermeasures for file renaming bug.\n");
       exitCode = 0;
     }
   }
@@ -2802,6 +2814,12 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
       exitCode = 2;
     } else {
       WARNING_LOG("enigmail.js: Enigmail.decryptMessageEnd: Changing exitCode 256->0\n");
+      exitCode = 0;
+    }
+  }
+  if ((this.agentVersion >= "1.3") && (this.isdosLike)) {
+    if ((exitCodeObj.value == 2) && (!((statusFlags & nsIEnigmail.BAD_PASSPHRASE)))) {
+      WARNING_LOG("enigmail.js: Enigmail.execCmd: Using gpg version "+this.agentVersion+", activating countermeasures for file renaming bug.\n");
       exitCode = 0;
     }
   }
