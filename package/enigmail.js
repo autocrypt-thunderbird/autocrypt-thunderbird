@@ -98,8 +98,6 @@ const ASS_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
 
 const WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
 
-const NS_HTTPPROTOCOLHANDLER_CID_STR= "{4f47e42e-4d23-4dd3-bfda-eb29255e9ea3}";
-
 const NS_IOSERVICE_CONTRACTID       = "@mozilla.org/network/io-service;1";
 
 const NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
@@ -110,7 +108,6 @@ const ENIG_STRINGBUNDLE_CONTRACTID = "@mozilla.org/intl/stringbundle;1";
 const nsISupports            = Components.interfaces.nsISupports;
 const nsIObserver            = Components.interfaces.nsIObserver;
 const nsILocalFile           = Components.interfaces.nsILocalFile;
-const nsIHttpProtocolHandler = Components.interfaces.nsIHttpProtocolHandler;
 const nsIProtocolHandler     = Components.interfaces.nsIProtocolHandler;
 const nsIScriptableTimer     = Components.interfaces.nsIScriptableTimer;
 const nsIIPCService          = Components.interfaces.nsIIPCService;
@@ -1216,8 +1213,10 @@ function (domWindow, version, prefBranch) {
                           NS_ENIGMSGCOMPOSE_CID);
   } catch (ex) {}
 
-  var httpHandler = Components.classesByID[NS_HTTPPROTOCOLHANDLER_CID_STR].createInstance();
-  httpHandler = httpHandler.QueryInterface(nsIHttpProtocolHandler);
+  var ioServ = Components.classes[NS_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+
+  var httpHandler = ioServ.getProtocolHandler("http");
+  httpHandler = httpHandler.QueryInterface(Components.interfaces.nsIHttpProtocolHandler);
 
   this.oscpu = httpHandler.oscpu;
 
