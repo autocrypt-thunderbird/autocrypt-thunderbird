@@ -248,6 +248,11 @@ function enigReplaceEditorText(text) {
     
   //var directionFlags = 0;   // see nsIEditor.h
   //gEnigEditorShell.DeleteSelection(directionFlags);
+
+  // Overwrite text in clipboard for security
+  // (Otherwise plaintext will be available in the clipbaord)
+  gEnigEditorShell.InsertText("Enigmail");
+  gEnigEditorShell.SelectAll();
     
   gEnigEditorShell.InsertText(text);
 }
@@ -1191,16 +1196,31 @@ EnigDocStateListener.prototype = {
 
   NotifyDocumentStateChanged: function (nowDirty)
   {
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentStateChanged: "+nowDirty+", editable="+gMsgCompose.editor.documentEditable+"\n");
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentStateChanged: "+nowDirty+"\n");
 
-    if (!gMsgCompose.editor.documentEditable ||
-        !gMsgCompose.editor.documentLength) {
-      return;
+    var editor;
+    try {
+      editor = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIEditor);
+    } catch (ex) {}
+
+    var isEmpty, isEditable;
+
+    if (editor) {
+      // Mozilla 1.2  and later: gMsgCompose.editor => nsIEditor
+      isEmpty    = editor.documentIsEmpty;
+      isEditable = editor.isDocumentEditable;
+
+    } else {
+      // Mozilla 1.0 branch: gMsgCompose.editor => nsIEditorShell
+      editor = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIEditorShell);
+      isEmpty    = !editor.documentLength;
+      isEditable = editor.documentEditable;
     }
+      
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentStateChanged: isEmpty="+isEmpty+", isEditable="+isEditable+"\n");
 
-    var docLength = gMsgCompose.editor.documentLength;
-
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentStateChanged: docLength="+gMsgCompose.editor.documentLength+"\n");
+    if (!isEditable || isEmpty)
+      return;
 
     if (!gEnigTimeoutID && !gEnigDirty)
       gEnigTimeoutID = window.setTimeout(enigDecryptQuote, 10, false);
