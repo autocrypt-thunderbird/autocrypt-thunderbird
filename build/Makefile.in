@@ -35,7 +35,7 @@
 
 # Specify these as parameters to the make command
 XPI_MODULE	= enigmime
-XPI_MODULE_VERS = 0.81.7
+XPI_MODULE_VERS = 0.82.0
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
@@ -95,7 +95,7 @@ LOCAL_INCLUDES	= \
 
 # hack to build non standard library dependent build on unix
 ifeq ($(ENIGMAIL_STATIC),1)
-BUILD_STATIC       = -static -static-libgcc -nostdlib
+BUILD_STATIC       = -nodefaultlibs
 else
 BUILD_STATIC       =
 endif
