@@ -242,7 +242,7 @@ function enigMessageReload(noShowReload) {
 function enigMessageCleanup() {
   DEBUG_LOG("enigmailMessengerOverlay.js: MessageCleanup\n");
 
-  var enigmailBox = document.getElementById("expandedEnigmailBox");
+  var enigmailBox = document.getElementById("enigmailBox");
 
   if (enigmailBox && !enigmailBox.collapsed) {
     enigmailBox.setAttribute("collapsed", "true");
