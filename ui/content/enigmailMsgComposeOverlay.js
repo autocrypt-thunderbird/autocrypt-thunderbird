@@ -221,6 +221,19 @@ function enigSend(encryptFlags) {
 
      DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: toAddrAll="+toAddrAll+"\n");
 
+     if (!gEnigProcessed) {
+/////////////////////////////////////////////////////////////////////////
+// The following spellcheck logic is from the function
+// GenericSendMessage from the file MsgComposeCommands.js
+/////////////////////////////////////////////////////////////////////////
+       if (gPrefs.getBoolPref("mail.SpellCheckBeforeSend")) {
+        // We disable spellcheck for the following -subject line, attachment pane, identity and addressing widget
+        // therefore we need to explicitly focus on the mail body when we have to do a spellcheck.
+         gEditorShell.contentWindow.focus();
+         goDoCommand('cmd_spelling');
+       }
+     }
+
      if (!gEnigProcessed && (signMsg || encryptMsg)) {
 
        ///var editorDoc = gEditorShell.editorDocument;
@@ -244,7 +257,7 @@ function enigSend(encryptFlags) {
 
        var sendFlowed;
        try {
-         sendFlowed = gPrefMailNews.getBoolPref("send_plaintext_flowed");
+         sendFlowed = gPrefs.getBoolPref("mailnews.send_plaintext_flowed");
        } catch (ex) {
          sendFlowed = true;
        }
@@ -434,6 +447,7 @@ function enigGenericSendMessage( msgType )
       Attachments2CompFields(msgCompFields);
 
 /////////////////////////////////////////////////////////////////////////
+// MODIFICATION
 // Call the following function from our version of the function
 // GenericSendMessage from the file MsgComposeCommands.js
 // (after the calls to Recipients2CompFields and Attachements2CompFields)
@@ -444,12 +458,10 @@ function enigGenericSendMessage( msgType )
       if (msgType == nsIMsgCompDeliverMode.Now || msgType == nsIMsgCompDeliverMode.Later)
       {
         //Do we need to check the spelling?
-        if (sPrefs.getBoolPref("mail.SpellCheckBeforeSend")){
-        //We disable spellcheck for the following -subject line, attachment pane, identity and addressing widget
-        //therefore we need to explicitly focus on the mail body when we have to do a spellcheck.
-          editorShell.contentWindow.focus();
-          goDoCommand('cmd_spelling');
-        }
+/////////////////////////////////////////////////////////////////////////
+// MODIFICATION
+//      Moved spell check logic to enigSend
+/////////////////////////////////////////////////////////////////////////
 
         //Check if we have a subject, else ask user for confirmation
         if (subject == "")
@@ -709,7 +721,7 @@ function enigDecryptQuote(interactive) {
   // Position cursor
   var replyOnTop = 1;
   try {
-    replyOnTop = gPrefMailNews.getIntPref("reply_on_top");
+    replyOnTop = gPrefs.getIntPref("mailnews.reply_on_top");
   } catch (ex) {}
 
   if (!indentStr || !quoteElement)

@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible IPC version
-var gEnigmailVersion = "0.39.3.0";
-var gIPCVersion      = "0.99.0.0";
+var gEnigmailVersion = "0.39.4.0";
+var gIPCVersion      = "0.99.1.0";
 
 // Maximum size of message directly processed by Enigmail
 const MESSAGE_BUFFER_SIZE = 32000;
@@ -16,7 +16,6 @@ const NS_STREAMCONVERTERSERVICE_CID_STR =
 const NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
 
 const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
-const MAILNEWS_PREFS_ROOT       = "mailnews.";
 
 // Interfaces
 const nsIEnigmail               = Components.interfaces.nsIEnigmail;
@@ -61,12 +60,13 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
 var gLogLevel = 3;     // Output only errors/warnings by default
 var gDebugLog;
 
-var gPrefSvc, gPrefEnigmail;
+var gPrefSvc, gPrefs, gPrefEnigmail;
 try {
   var gPrefSvc = Components.classes["@mozilla.org/preferences-service;1"]
                              .getService(Components.interfaces.nsIPrefService);
+
+  gPrefs        = gPrefSvc.getBranch(null);
   gPrefEnigmail = gPrefSvc.getBranch(ENIGMAIL_PREFS_ROOT);
-  gPrefMailNews = gPrefSvc.getBranch(MAILNEWS_PREFS_ROOT);
 
   if (EnigGetPref("logDirectory"))
     gLogLevel = 5;
