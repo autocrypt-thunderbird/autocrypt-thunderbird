@@ -865,10 +865,10 @@ function enigEncryptMsg(msgSendType) {
             if ((recipientsSelectionOption==2) ||
                 ((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT) &&
                  (recipientsSelectionOption>0))) {
-  
                 var resultObj = new Object();
                 var inputObj = new Object();
                 inputObj.toAddr = toAddr;
+                inputObj.invalidAddr = enigGetInvalidAddress(testErrorMsgObj.value);
                 inputObj.options = "multisel";
                 if (perRecipientRules<2)
                   inputObj.options += ",rulesOption"

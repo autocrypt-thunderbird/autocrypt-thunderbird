@@ -1491,7 +1491,7 @@ function () {
     try {
       var pathDir = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
 
-      if (agentPath.substr(0,1) == ".") {
+      if (! isAbsolutePath(agentPath)) {
         // path relative to Mozilla installation dir
         var ds = Components.classes[DIR_SERV_CONTRACTID].getService();
         var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
@@ -1503,6 +1503,8 @@ function () {
             pathDir.append(dirs[i]);
           }
         }
+        pathDir.normalize();
+        agentPath = pathDir.target;
       }
       else {
         // absolute path

@@ -216,3 +216,15 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
   return true;
 }
 
+// determine invalid recipients returned from GnuPG
+function enigGetInvalidAddress(gpgMsg) {
+  var invalidAddr = [];
+  var lines = gpgMsg.split(/[\n\r]+/);
+  for (var i=0; i < lines.length; i++) {
+    var m = lines[i].match(/^(INV_RECP \d+ )(.*)$/);
+    if (m && m.length == 3) {
+      invalidAddr.push(EnigStripEmail(m[2].toLowerCase()));
+    }
+  }
+  return invalidAddr.join(" ");
+}
