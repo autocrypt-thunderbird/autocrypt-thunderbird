@@ -2,7 +2,7 @@
 
 // This Enigmail version and compatible Enigmime version
 var gEnigmailVersion = "0.81.7.0";
-var gEnigmimeVersion = "0.81.0.0";
+var gEnigmimeVersion = "0.81.7.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -816,18 +816,6 @@ function EnigGetDeepText(node, findStr) {
 
   DEBUG_LOG("enigmailCommon.js: EnigDeepText: <" + node.tagName + ">, '"+findStr+"'\n");
 
-  /*
-  try {
-    var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
-
-    var plainText = enigMimeService.getPlainText(node, findStr);
-    return plainText;
-
-  } catch (ex) {
-    DEBUG_LOG("enigmailCommon.js: EnigDeepText: Failed to access EnigMimeService\n");
-  }
-  */
-  
   if (findStr) {
     if (node.innerHTML.replace(/&nbsp;/g, " ").indexOf(findStr) < 0) {
       // exit immediately if findStr is not found at all
@@ -846,7 +834,6 @@ function EnigGetDeepText(node, findStr) {
         return "";
      }
   }
-  
 
   return plainText;
 
@@ -1001,7 +988,7 @@ function EnigKeygen() {
 
   window.openDialog('chrome://enigmail/content/enigmailKeygen.xul',
                     'Enigmail Key Generation',
-                    'chrome,dialog,close=no,resizable=yes,width=600');
+                    'chrome,dialog,modal,close=no,resizable=yes,width=600');
 
 }
 

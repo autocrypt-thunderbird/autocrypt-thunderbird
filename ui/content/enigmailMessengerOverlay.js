@@ -12,6 +12,7 @@ var gEnigLastSaveDir = "";
 var gEnigMessagePane = null;
 var gEnigNoShowReload = false;
 var gEnigLastEncryptedURI = null;
+var gEnigDecryptButton = null;
 
 var gEnigRemoveListener = false;
 
@@ -79,11 +80,14 @@ function enigMessengerStartup() {
   EnigShowHeadersAll(true);
   gEnigSavedHeaders = null;
 
+  gEnigDecryptButton = document.getElementById("button-enigmail-decrypt");
   gEnigMessagePane = document.getElementById("messagepane");
+  enigMessageFrameLoad();
 
   // Need to add event listener to gEnigMessagePane to make it work
   // Adding to msgFrame doesn't seem to work
   gEnigMessagePane.addEventListener("unload", enigMessageFrameUnload, true);
+  gEnigMessagePane.addEventListener("load", enigMessageFrameLoad, true);
 
   // Commented out; clean-up now handled by HdrView and Unload
   //var tree = GetThreadTree();
@@ -182,7 +186,7 @@ function enigInitViewHeadersMenu() {
 
   var menuitem = document.getElementById(id);
   if (menuitem)
-    menuitem.setAttribute("checked", "true"); 
+    menuitem.setAttribute("checked", "true");
 }
 
 function enigMsgViewHeaders(elementId) {
@@ -290,6 +294,17 @@ function enigMimeInit() {
 
 function enigMessageFrameLoad() {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageFrameLoad\n");
+  var setDisable=false;
+  try {
+    if (gDBView) {
+      setDisable=(gDBView.numSelected != 1);
+    }
+    else {
+      setDisable=true;
+    }
+  }
+  catch (ex) {}
+  gEnigDecryptButton.disabled=setDisable;
 }
 
 function enigMessageFrameUnload() {
@@ -353,12 +368,23 @@ function enigGetCurrentMsgUrl() {
 
 function enigUpdateOptionsDisplay() {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigUpdateOptionsDisplay: \n");
-   var optList = ["autoDecrypt"];
+  var optList = ["autoDecrypt"];
 
-   for (var j=0; j<optList.length; j++) {
-     var menuElement = document.getElementById("enigmail_"+optList[j]);
-     menuElement.setAttribute("checked", EnigGetPref(optList[j]) ? "true" : "false");
-   }
+  for (var j=0; j<optList.length; j++) {
+    var menuElement = document.getElementById("enigmail_"+optList[j]);
+    menuElement.setAttribute("checked", EnigGetPref(optList[j]) ? "true" : "false");
+  }
+
+  optList = ["decryptverify", "importpublickey","savedecrypted"];
+  for (j=0; j<optList.length; j++) {
+    var menuElement = document.getElementById("enigmail_"+optList[j]);
+    if (gEnigDecryptButton.disabled) {
+       menuElement.setAttribute("disabled", "true");
+    }
+    else {
+       menuElement.removeAttribute("disabled");
+    }
+  }
 }
 
 
@@ -507,7 +533,7 @@ function enigMessageParse(interactive, importOnly, contentEncoding) {
   var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
   DEBUG_LOG("enigmailMessengerOverlay.js: bodyElement="+bodyElement+"\n");
 
-  var findStr = interactive ? "" : "-----BEGIN PGP";
+  var findStr = interactive ? null : "-----BEGIN PGP";
   var msgText = EnigGetDeepText(bodyElement, findStr);
 
   if (!msgText) {

@@ -4,6 +4,7 @@
 EnigInitCommon("pref-enigmail");
 
 var gMimeHashElement, gSendFlowedElement, gSendFlowedValue;
+var gMimePartsElement, gMimePartsValue;
 
 function AdvStartup() {
    DEBUG_LOG("pref-enigmail.js: AdvStartup\n");
@@ -31,6 +32,20 @@ function AdvStartup() {
      gSendFlowedElement.setAttribute("checked", "true");
    } else {
      gSendFlowedElement.removeAttribute("checked");
+   }
+
+   gMimePartsElement = document.getElementById("mime_parts_on_demand");
+
+   try {
+     gMimePartsValue = gEnigPrefRoot.getBoolPref("mail.server.default.mime_parts_on_demand");
+   } catch (ex) {
+     gMimePartsValue = true;
+   }
+
+   if (gMimePartsValue) {
+     gMimePartsElement.setAttribute("checked", "true");
+   } else {
+     gMimePartsElement.removeAttribute("checked");
    }
 
    var testEmailElement = document.getElementById("enigmail_test_email");
@@ -71,11 +86,13 @@ function AdvOnAccept() {
    if (gSendFlowedElement &&
        (gSendFlowedElement.checked != gSendFlowedValue) ) {
 
-     if (gSendFlowedElement.checked) {
-       gEnigPrefRoot.setBoolPref("mailnews.send_plaintext_flowed", true);
-     } else {
-       gEnigPrefRoot.setBoolPref("mailnews.send_plaintext_flowed", false);
-     }
+     gEnigPrefRoot.setBoolPref("mailnews.send_plaintext_flowed", (gSendFlowedElement.checked ? true : false));
+   }
+
+   if (gMimePartsElement &&
+       (gMimePartsElement.checked != gMimePartsValue) ) {
+
+     gEnigPrefRoot.setBoolPref("mail.server.default.mime_parts_on_demand", (gMimePartsElement.checked ? true : false));
    }
 
    EnigSetPref("configuredVersion", gEnigmailVersion);
@@ -152,61 +169,68 @@ function EnigTest() {
     return;
   }
 
-  CONSOLE_LOG("\n\nEnigTest: START ********************************\n");
-  CONSOLE_LOG("EnigTest: To: "+toMailAddr+"\n"+plainText+"\n");
+  try {
+    CONSOLE_LOG("\n\nEnigTest: START ********************************\n");
+    CONSOLE_LOG("EnigTest: To: "+toMailAddr+"\n"+plainText+"\n");
 
-  var uiFlags = nsIEnigmail.UI_INTERACTIVE;
+    var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
-  var exitCodeObj    = new Object();
-  var statusFlagsObj = new Object();
-  var errorMsgObj    = new Object();
+    var exitCodeObj    = new Object();
+    var statusFlagsObj = new Object();
+    var errorMsgObj    = new Object();
 
-  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
-                                              "", toMailAddr,
-                                              nsIEnigmail.SEND_SIGNED,
-                                              exitCodeObj, statusFlagsObj,
-                                              errorMsgObj);
-  CONSOLE_LOG("************************************************\n");
-  CONSOLE_LOG("EnigTest: SIGNING ONLY\n");
-  CONSOLE_LOG("EnigTest: cipherText = "+cipherText+"\n");
-  CONSOLE_LOG("EnigTest: exitCode = "+exitCodeObj.value+"\n");
-  CONSOLE_LOG("************************************************\n");
+    var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
+                                                "", toMailAddr,
+                                                nsIEnigmail.SEND_SIGNED,
+                                                exitCodeObj, statusFlagsObj,
+                                                errorMsgObj);
+    CONSOLE_LOG("************************************************\n");
+    CONSOLE_LOG("EnigTest: SIGNING ONLY\n");
+    CONSOLE_LOG("EnigTest: cipherText = "+cipherText+"\n");
+    CONSOLE_LOG("EnigTest: exitCode = "+exitCodeObj.value+"\n");
+    CONSOLE_LOG("************************************************\n");
 
-  var signatureObj   = new Object();
-  var keyIdObj       = new Object();
-  var userIdObj      = new Object();
+    var signatureObj   = new Object();
+    var keyIdObj       = new Object();
+    var userIdObj      = new Object();
 
-  var decryptedText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
-                                      signatureObj, exitCodeObj,
-                                      statusFlagsObj, keyIdObj, userIdObj,
-                                      errorMsgObj);
-  CONSOLE_LOG("\n************************************************\n");
-  CONSOLE_LOG("EnigTest: VERIFICATION\n");
-  CONSOLE_LOG("EnigTest: decryptedText = "+decryptedText+"\n");
-  CONSOLE_LOG("EnigTest: exitCode  = "+exitCodeObj.value+"\n");
-  CONSOLE_LOG("EnigTest: signature = "+signatureObj.value+"\n");
-  CONSOLE_LOG("************************************************\n");
+    var decryptedText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
+                                        signatureObj, exitCodeObj,
+                                        statusFlagsObj, keyIdObj, userIdObj,
+                                        errorMsgObj);
+    CONSOLE_LOG("\n************************************************\n");
+    CONSOLE_LOG("EnigTest: VERIFICATION\n");
+    CONSOLE_LOG("EnigTest: decryptedText = "+decryptedText+"\n");
+    CONSOLE_LOG("EnigTest: exitCode  = "+exitCodeObj.value+"\n");
+    CONSOLE_LOG("EnigTest: signature = "+signatureObj.value+"\n");
+    CONSOLE_LOG("************************************************\n");
 
-  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
-                                              "", toMailAddr,
-                                              nsIEnigmail.SEND_SIGNED|
-                                              nsIEnigmail.SEND_ENCRYPTED,
-                                              exitCodeObj, statusFlagsObj,
-                                              errorMsgObj);
-  CONSOLE_LOG("************************************************\n");
-  CONSOLE_LOG("EnigTest: SIGNING + ENCRYPTION\n");
-  CONSOLE_LOG("EnigTest: cipherText = "+cipherText+"\n");
-  CONSOLE_LOG("EnigTest: exitCode = "+exitCodeObj.value+"\n");
-  CONSOLE_LOG("************************************************\n");
+    var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
+                                                "", toMailAddr,
+                                                nsIEnigmail.SEND_SIGNED|
+                                                nsIEnigmail.SEND_ENCRYPTED,
+                                                exitCodeObj, statusFlagsObj,
+                                                errorMsgObj);
+    CONSOLE_LOG("************************************************\n");
+    CONSOLE_LOG("EnigTest: SIGNING + ENCRYPTION\n");
+    CONSOLE_LOG("EnigTest: cipherText = "+cipherText+"\n");
+    CONSOLE_LOG("EnigTest: exitCode = "+exitCodeObj.value+"\n");
+    CONSOLE_LOG("************************************************\n");
 
-  var decryptedText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
-                                      signatureObj, exitCodeObj,
-                                      statusFlagsObj, keyIdObj, userIdObj,
-                                      errorMsgObj);
-  CONSOLE_LOG("\n************************************************\n");
-  CONSOLE_LOG("EnigTest: DECRYPTION\n");
-  CONSOLE_LOG("EnigTest: decryptedText = "+decryptedText+"\n");
-  CONSOLE_LOG("EnigTest: exitCode  = "+exitCodeObj.value+"\n");
-  CONSOLE_LOG("EnigTest: signature = "+signatureObj.value+"\n");
-  CONSOLE_LOG("************************************************\n");
+    var decryptedText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
+                                        signatureObj, exitCodeObj,
+                                        statusFlagsObj, keyIdObj, userIdObj,
+                                        errorMsgObj);
+    CONSOLE_LOG("\n************************************************\n");
+    CONSOLE_LOG("EnigTest: DECRYPTION\n");
+    CONSOLE_LOG("EnigTest: decryptedText = "+decryptedText+"\n");
+    CONSOLE_LOG("EnigTest: exitCode  = "+exitCodeObj.value+"\n");
+    CONSOLE_LOG("EnigTest: signature = "+signatureObj.value+"\n");
+    CONSOLE_LOG("************************************************\n");
+
+    EnigAlert(EnigGetString("testSucceeded"));
+  }
+  catch (ex) {
+    EnigAlert("error");
+  }
 }

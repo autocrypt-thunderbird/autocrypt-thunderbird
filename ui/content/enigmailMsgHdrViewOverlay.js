@@ -187,30 +187,32 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
     gSignedUINode.collapsed = false;
     gEncryptedUINode.collapsed = false;
 
-    if ((statusFlags & nsIEnigmail.GOOD_SIGNATURE) &&
-        (statusFlags & nsIEnigmail.TRUSTED_IDENTITY) ) {
+    if (statusFlags & nsIEnigmail.BAD_SIGNATURE) {
+      // Display untrusted/bad signature icon
+      gSignedUINode.setAttribute("signed", "notok");
+      statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureNotOk");
+      gEnigStatusBar.setAttribute("signed", "notok");
+      gEnigSignedPanel.collapsed=false;
+    }
+    else if (statusFlags & (nsIEnigmail.UNVERIFIED_SIGNATURE |
+                       nsIEnigmail.REVOKED_KEY |
+                       nsIEnigmail.EXPIRED_KEY_SIGNATURE |
+                       nsIEnigmail.EXPIRED_SIGNATURE |
+                       nsIEnigmail.GOOD_SIGNATURE)) {
+      // Display unverified signature icon
+      gSignedUINode.setAttribute("signed", "unknown");
+      statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureUnknown");
+      gEnigStatusBar.setAttribute("signed", "unknown");
+      gEnigSignedPanel.collapsed=false;
+    }
+    else if ((statusFlags & nsIEnigmail.GOOD_SIGNATURE) &&
+        (statusFlags & nsIEnigmail.TRUSTED_IDENTITY)) {
       // Display trusted good signature icon
       gSignedUINode.setAttribute("signed", "ok");
       statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureOk");
       gEnigStatusBar.setAttribute("signed", "ok");
       gEnigSignedPanel.collapsed=false;
 
-    } else if (statusFlags & (nsIEnigmail.UNVERIFIED_SIGNATURE |
-                              nsIEnigmail.GOOD_SIGNATURE)) {
-      // Display unverified signature icon
-      gSignedUINode.setAttribute("signed", "unknown");
-      statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureUnknown");
-      gEnigStatusBar.setAttribute("signed", "unknown");
-      gEnigSignedPanel.collapsed=false;
-
-    } else if (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
-                              nsIEnigmail.EXPIRED_KEY_SIGNATURE |
-                              nsIEnigmail.EXPIRED_SIGNATURE) ) {
-      // Display untrusted/bad signature icon
-      gSignedUINode.setAttribute("signed", "notok");
-      statusText.setAttribute("class", "enigmailHeaderBoxLabelSignatureNotOk");
-      gEnigStatusBar.setAttribute("signed", "notok");
-      gEnigSignedPanel.collapsed=false;
     }
 
     if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {

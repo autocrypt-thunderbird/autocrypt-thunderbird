@@ -3,7 +3,7 @@
 <!-- This is the overlay that adds a menu to messenger compose window -->
 
 <?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
-                 type="text/css"?> 
+                 type="text/css"?>
 
 <!DOCTYPE window [
 <!ENTITY % enigmailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
@@ -18,6 +18,8 @@
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailMsgComposeOverlay.js"/>
+
+  <popupset id="aTooltipSet"/>
 
   <keyset id="tasksKeys">
     <key id="key_enigPlain" key="&enigmail.plainsend.key;"
@@ -45,7 +47,7 @@
               label="&enigmail.plainsend.label;"
               accesskey="&enigmail.plainsend.accesskey;"
               key="key_enigPlain"
-              oncommand="enigSetSendMode('plain');" />
+              oncommand="enigDoPgpButton('plain');" />
 
           <menuitem id="enigmail_encrypt_if_possible"
               type="radio"
@@ -53,7 +55,7 @@
               label="&enigmail.encryptIfPossible.label;"
               accesskey="&enigmail.encryptIfPossible.accesskey;"
               key="key_enigEncryptIfPossible"
-              oncommand="enigSetSendMode('enc-ifpossible');" />
+              oncommand="enigDoPgpButton('enc-ifpossible');" />
 
           <menuitem id="enigmail_encrypted_send"
               type="radio"
@@ -61,7 +63,7 @@
               label="&enigmail.encryptedsend.label;"
               accesskey="&enigmail.encryptedsend.accesskey;"
               key="key_enigEncrypt"
-              oncommand="enigSetSendMode('encrypt');" />
+              oncommand="enigDoPgpButton('encrypt');" />
 
           <menuseparator/>
 
@@ -70,7 +72,7 @@
               label="&enigmail.signedsend.label;"
               accesskey="&enigmail.signedsend.accesskey;"
               key="key_enigSign"
-              oncommand="enigSetSendMode('sign');" />
+              oncommand="enigDoPgpButton('sign');" />
 
           <menuseparator/>
 
@@ -158,7 +160,7 @@
               checked="false"
               label="&enigmail.sendPGPMime.label;"
               accesskey="&enigmail.sendPGPMime.accesskey;"
-              oncommand="enigTogglePGPMime();" />
+              oncommand="enigDoPgpButton('togglePGPMime');" />
 
           <menuseparator/>
 
@@ -196,6 +198,7 @@
             id="button-enigmail-send"
             type="menu-button"
             label="&enigmail.securitybutton.label;"
+            tooltip="aTooltipSet"
             tooltiptext="&enigmail.securitybutton.tip;"
             oncommand="enigDoPgpButton();">
 

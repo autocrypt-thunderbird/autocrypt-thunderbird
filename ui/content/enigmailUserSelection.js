@@ -153,8 +153,8 @@ function enigmailUserSelLoad() {
    }
    catch (ex) {}
 
-
    aUserList.sort(sortUsers);
+
    var d = new Date();
    // create an ANSI date string (YYYYMMDD) for "now"
    var now=(d.getDate()+100*(d.getMonth()+1)+10000*(d.getYear()+1900)).toString();
@@ -182,9 +182,9 @@ function enigmailUserSelLoad() {
           expired=false;
       }
 
+      var treeItem=null;
       if (! hideExpired || activeState<2) {
         // do not show if expired keys are hidden
-        var treeItem=null;
         if (secretOnly) {
           treeItem=enigUserSelCreateRow(aUserList[i].keyId,activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].created, false)
         }
@@ -214,7 +214,8 @@ function enigmailUserSelLoad() {
         }
       }
 
-      treeChildren.appendChild(treeItem);
+      if (treeItem)
+        treeChildren.appendChild(treeItem);
 
    }
    gUserList.appendChild(treeChildren);
@@ -244,7 +245,7 @@ function enigGetUserList(window, secretOnly, exitCodeObj, statusFlagsObj, errorM
   var aUserList = new Array();
   try {
     var enigmailSvc = GetEnigmailSvc();
-    var userText = enigmailSvc.getUserIdList(window,
+    var listText = enigmailSvc.getUserIdList(window,
                                             secretOnly,
                                             exitCodeObj,
                                             statusFlagsObj,
@@ -254,18 +255,18 @@ function enigGetUserList(window, secretOnly, exitCodeObj, statusFlagsObj, errorM
       return null;
     }
 
-    userText.replace(/\r\n/g, "\n");
-    userText.replace(/\r/g, "\n");
-    var removeIndex=userText.indexOf("----\n");
-    userText = userText.substring(removeIndex + 5);
+    listText.replace(/\r\n/g, "\n");
+    listText.replace(/\r/g, "\n");
+    var startIndex=listText.indexOf("----\n")+5;
+    var nextIndex=listText.indexOf("\n",startIndex+1);
 
-    while (userText.length >0) {
-        var theLine=userText.substring(0,userText.indexOf("\n"));
-        theLine.replace(/\n/, "");
+    while (startIndex < listText.length && startIndex>=0) {
+        var theLine=listText.substring(startIndex+1,nextIndex);
         if (theLine.length>0) {
           aUserList.push(theLine.split(/\:/)); ///
         }
-        userText=userText.substring(theLine.length+1);
+        startIndex=nextIndex;
+        nextIndex=listText.indexOf("\n",startIndex+1);
     }
   } catch (ex) {}
 

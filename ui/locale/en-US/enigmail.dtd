@@ -8,7 +8,7 @@
 <!ENTITY enigmail.keyPassphrase.label     "Passphrase">
 <!ENTITY enigmail.keyPassphraseRepeat.label "Passphrase (repeat)">
 <!ENTITY enigmail.generateKey.label       "Generate key">
-<!ENTITY enigmail.generateKey.tooltip     "Generates key">
+<!ENTITY enigmail.generateKey.tooltip     "Generates a new OpenPGP compliant key for encryption and/or signing">
 <!ENTITY enigmail.cancelKey.label         "Cancel">
 <!ENTITY enigmail.cancelKey.tooltip       "Cancel Key Generation">
 
@@ -28,17 +28,28 @@
 <!ENTITY enigmail.agentPath.label         "GPG executable path">
 
 <!ENTITY enigmail.send_plaintext_flowed.label "Allow flowed text (RFC 2646)">
+<!ENTITY enigmail.mime_parts_on_demand.label  "Load MIME parts on demand (IMAP folders)">
+<!ENTITY enigmail.mime_parts_on_demand.tooltip "If you are receiving PGP/MIME messages on IMAP folders you should enable this option">
+
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Remember password for">
 <!ENTITY enigmail.maxIdleMinutesTail.label "minutes of idle time">
 
-<!ENTITY enigmail.advancedPrefsButton.label "Advanced">
 <!ENTITY enigmail.resetPrefsButton.label  "Reset">
 <!ENTITY enigmail.prefsHelpButton.label    "Help">
 
 <!ENTITY enigmail.upgradeButton.label    "Upgrade Enigmail">
 <!ENTITY enigmail.uninstallButton.label    "Uninstall Enigmail">
 
+<!ENTITY enigmail.basic.label         "Basic">
+<!ENTITY enigmail.sending.label       "Sending">
+<!ENTITY enigmail.keySel.label        "Key Selection">
+<!ENTITY enigmail.pgpMime.label        "PGP/MIME">
+<!ENTITY enigmail.keySel.label        "Key Selection">
+<!ENTITY enigmail.advancedPrefsButton.label "Advanced">
+<!ENTITY enigmail.debug.label         "Debugging">
+
+<!ENTITY enigmail.basicPrefs.label    "Basic Settings">
 <!ENTITY enigmail.advancedPrefs.label    "Enigmail Advanced Preferences">
 
 <!ENTITY enigmail.whenSending.label       "When sending mail">
@@ -63,7 +74,7 @@
 <!ENTITY enigmail.test.label        "Test">
 
 <!ENTITY enigmail.decryptbutton.label    "Decrypt">
-<!ENTITY enigmail.decryptbutton.tip    "Enigmail decrypt/verify">
+<!ENTITY enigmail.decryptbutton.tip      "Decrypt or verify the message with OpenPGP (Enigmail)">
 
 <!ENTITY enigmail.messengermenu.accesskey   "n">
 
