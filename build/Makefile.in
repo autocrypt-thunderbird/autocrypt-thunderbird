@@ -57,6 +57,7 @@ DEFINES		+= -D_IMPL_NS_COM_OFF -DXPCOM_GLUE
 endif
 
 REQUIRES	= xpcom \
+		  xpcom_obsolete \
 		  string \
 		  msgbase \
 		  msgbaseutil \
@@ -111,6 +112,7 @@ EXTRA_DSO_LDOPTS = \
 		$(DIST)/lib/$(LIB_PREFIX)string_s.$(LIB_SUFFIX) \
 		$(DIST)/lib/$(LIB_PREFIX)string_obsolete_s.$(LIB_SUFFIX) \
 		$(XPCOM_LIBS) \
+		$(MOZ_XPCOM_OBSOLETE_LIBS) \
 		$(NSPR_LIBS) \
 		$(NULL)
 endif

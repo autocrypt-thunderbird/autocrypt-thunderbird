@@ -48,6 +48,7 @@ DEFINES		+= -D_IMPL_NS_COM_OFF -DXPCOM_GLUE
 endif
 
 REQUIRES	= xpcom \
+		  xpcom_obsolete \
 		  string \
 		  msgbase \
 		  msgbaseutil \
