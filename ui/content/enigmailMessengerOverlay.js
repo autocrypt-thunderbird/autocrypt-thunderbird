@@ -582,7 +582,8 @@ function enigMessageDecrypt(event, isAuto) {
       gEnigNoShowReload = true;
 
       var msgFrame = EnigGetFrame(window, "messagepane");
-      msgFrame.location = "enigmail:dummy";
+      //msgFrame.location = "enigmail:dummy";
+      messenger.loadURL(msgFrame, "enigmail:dummy");
 
     }
     return;
@@ -867,7 +868,8 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
                                            false);
     gEnigCreatedURIs.push(uri);
 
-    msgFrame.location = uri;
+    //msgFrame.location=uri;
+    messenger.loadURL(msgFrame, uri);
 
   } catch (ex) {
     // Display plain text with hyperlinks
