@@ -55,13 +55,34 @@
       </rows>
     </grid>
     <separator/>
-    <hbox align="start">
-      <label value="&enigmail.keysToUse.label;"/>
-      <listbox flex="1" id="encryptionList" style="height:50px"/>
-      <button label="&enigmail.selKeysButton.label;"
-              accesskey="&enigmail.selKeysButton.accesskey;"
-              oncommand="enigmailDlgKeySelection();"/>
-    </hbox>
+      <groupbox>
+        <caption label="&enigmail.action.label;"/>
+        <vbox>
+          <hbox>
+            <radiogroup id="actionType">
+              <radio id="actionType.actionCont"
+                    value="0"
+                    oncommand="enigEnableKeySel(false);"
+                    label="&enigmail.nextRule.label;"/>
+              <radio id="actionType.actionStop"
+                    value="1"
+                    oncommand="enigEnableKeySel(false);"
+                    label="&enigmail.nextAddress.label;"/>
+              <radio id="actionType.actionUseKey"
+                    value="2"
+                    oncommand="enigEnableKeySel(true);"
+                    label="&enigmail.useKeys.label;"/>
+            </radiogroup>
+          </hbox>
+          <hbox align="start">
+            <listbox flex="1" id="encryptionList" style="height:50px"/>
+            <button label="&enigmail.selKeysButton.label;"
+                    id="encryptionListButton"
+                    accesskey="&enigmail.selKeysButton.accesskey;"
+                    oncommand="enigmailDlgKeySelection();"/>
+          </hbox>
+        </vbox>
+      </groupbox>
     <separator/>
    
     <groupbox>

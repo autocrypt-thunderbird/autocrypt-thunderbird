@@ -421,6 +421,13 @@ function enigShowPhoto() {
   }
 }
 
+function enigCreateRuleFromAddress(emailAddressNode) {
+  if (emailAddressNode)
+  {
+    EnigNewRule(emailAddressNode.getAttribute("emailAddress"));
+  }
+}
+
 function enigForgetEncryptedURI()
 {
   if (gEnigLastEncryptedURI)

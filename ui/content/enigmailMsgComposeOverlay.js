@@ -884,6 +884,7 @@ function enigEncryptMsg(msgSendType) {
                   testExitCodeObj.value = 0;
                 } catch (ex) {
                   // cancel pressed -> don't send mail
+                  EnigAlert("Something went wrong 1"); // REMOVE
                   window.cancelSendMessage=true;
                   return;
                 }
@@ -1406,6 +1407,7 @@ function enigGenericSendMessage( msgType )
 // (after having determined HTML convertibility)
 /////////////////////////////////////////////////////////////////////////
           try {
+            window.cancelSendMessage=false;
             enigEncryptMsg(msgType);
             if(window.cancelSendMessage)
               return;

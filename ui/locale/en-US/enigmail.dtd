@@ -244,10 +244,15 @@
 <!ENTITY  enigmail.copySecurityInfo.label           "Copy OpenPGP Security Info">
 <!ENTITY  enigmail.showPhoto.label                  "View PGP Photo ID">
 <!ENTITY  enigmail.smimeSecurityInfo.label          "S/MIME Security Info ...">
+<!ENTITY  enigmail.createRuleFromAddr.label         "Create PGP Rule from Address...">
 
 <!ENTITY enigmail.singleRcptSettings.label          "Enigmail - Recipient Settings">
 <!ENTITY enigmail.keysToUse.label                   "Key(s) to use:">
 <!ENTITY enigmail.selKeysButton.label               "Select Key(s)...">
+<!ENTITY enigmail.action.label                      "Action">
+<!ENTITY enigmail.nextRule.label                    "Continue with next rule for the matching address">
+<!ENTITY enigmail.nextAddress.label                 "Do not check further rules for the matching address">
+<!ENTITY enigmail.useKeys.label                     "Use the following keys:">
 <!ENTITY enigmail.selKeysButton.accesskey           "S">
 <!ENTITY enigmail.setDefaultsFor.label              "Defaults for ...">
 <!ENTITY enigmail.encryption.label                  "Encryption">

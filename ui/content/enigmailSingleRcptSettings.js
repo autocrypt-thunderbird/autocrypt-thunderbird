@@ -13,7 +13,7 @@
  *
  * The Initial Developer of this code is Patrick Brunschwig.
  * Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
- * are Copyright (C) 2003 Patrick Brunschwig.
+ * are Copyright (C) 2004 Patrick Brunschwig.
  * All Rights Reserved.
  *
  * Contributor(s):
@@ -69,13 +69,35 @@ function enigmailDlgOnLoad() {
   
   ruleEmail.value = window.arguments[INPUT].toAddress.replace(/[{}]/g, "");
   window.arguments[RESULT].cancelled=true;
+
+  var action="";
   if (typeof(window.arguments[INPUT].keyId)=="object") {
-    enigSetKeys(window.arguments[INPUT].keyId);
+    switch (window.arguments[INPUT].keyId.join("")) {
+    case ".":
+      enigSetKeys("");
+      action="actionStop";
+      break;
+    case "":
+      enigSetKeys("");
+      action="actionCont";
+      break;
+    default:      
+      enigSetKeys(window.arguments[INPUT].keyId);
+      action="actionUseKey";
+    }
   }
   else {
     enigSetKeys("");
+    action="actionCont";
   }
-  
+  if (window.arguments[INPUT].command=="add") {
+    action="actionUseKey";
+  }
+
+  var actionType = document.getElementById("actionType");
+  actionType.selectedItem = selectedItem = document.getElementById("actionType."+action);
+  enigEnableKeySel(action=="actionUseKey");
+
   if (typeof(window.arguments[INPUT].sign)=="number") {
     document.getElementById("sign").selectedIndex=window.arguments[INPUT].sign;
   }
@@ -149,11 +171,21 @@ function enigmailDlgOnAccept() {
   window.arguments[RESULT].sign    = document.getElementById("sign").value;
   window.arguments[RESULT].encrypt = document.getElementById("encrypt").value;
   window.arguments[RESULT].pgpMime = document.getElementById("pgpmime").value;
-  if (keyList == "" && (window.arguments[RESULT].encrypt>0)) {
-    if (!EnigConfirm(EnigGetString("noEncryption", ruleEmail.value, ruleEmail.value))) {
-      return false;
+  
+  var actionType = document.getElementById("actionType");
+  switch(Number(actionType.selectedItem.value)) {
+  case 1:
+    window.arguments[RESULT].keyId = ".";
+    break;
+    
+  case 2:
+    if (keyList == "" && (window.arguments[RESULT].encrypt>0)) {
+      if (!EnigConfirm(EnigGetString("noEncryption", ruleEmail.value, ruleEmail.value))) {
+        return false;
+      }
+      window.arguments[RESULT].encrypt = 0;
     }
-    window.arguments[RESULT].encrypt=0;
+    break;
   }
 
   window.arguments[RESULT].cancelled=false;
@@ -240,4 +272,15 @@ function enigSetKeys(keyList) {
                                 keyList[i]);
     }
   }
+}
+
+function enigEnableKeySel(enable) {
+  if (enable) {
+    document.getElementById("encryptionList").removeAttribute("disabled");
+    document.getElementById("encryptionListButton").removeAttribute("disabled");
+  }
+  else {
+    document.getElementById("encryptionList").setAttribute("disabled", "true");
+    document.getElementById("encryptionListButton").setAttribute("disabled", "true");
+  }  
 }

@@ -13,7 +13,7 @@
  *
  * The Initial Developer of this code is Patrick Brunschwig.
  * Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
- * are Copyright (C) 2003 Patrick Brunschwig.
+ * are Copyright (C) 2004 Patrick Brunschwig.
  * All Rights Reserved.
  *
  * Contributor(s):
@@ -103,7 +103,10 @@ function createCol(value, label, treeItem, translate) {
   var column=document.createElement("treecell");
   column.setAttribute("id", value);
   treeItem.setAttribute(value, label);
-  if (translate) {
+  switch (value) {
+  case "sign":
+  case "encrypt":
+  case "pgpMime":
     switch (Number(label)) {
     case 0: 
       label=EnigGetString("never");
@@ -115,17 +118,22 @@ function createCol(value, label, treeItem, translate) {
       label=EnigGetString("always");
       break;
     }
+    break;
+  case "keyId":
+    if (label==".") {
+      label=EnigGetString("nextRcpt");
+    }
   }
   column.setAttribute("label", label);
   return column;
 }
 
 function createRow(treeItem, userObj) {
-  var email=createCol("email", userObj.email, treeItem, false);
-  var keyId=createCol("keyId", userObj.keyId, treeItem, false);
-  var sign=createCol("sign", userObj.sign, treeItem, true);
-  var encrypt=createCol("encrypt", userObj.encrypt, treeItem, true);
-  var pgpMime=createCol("pgpMime", userObj.pgpMime, treeItem, true);
+  var email=createCol("email", userObj.email, treeItem);
+  var keyId=createCol("keyId", userObj.keyId, treeItem);
+  var sign=createCol("sign", userObj.sign, treeItem);
+  var encrypt=createCol("encrypt", userObj.encrypt, treeItem);
+  var pgpMime=createCol("pgpMime", userObj.pgpMime, treeItem);
   var treeRow=document.createElement("treerow");
   treeRow.appendChild(email);
   treeRow.appendChild(keyId);
@@ -157,7 +165,8 @@ function enigDoEdit() {
   if (node) {
     var inputObj  = new Object;
     var resultObj = new Object;
-    inputObj.options="nosave";
+    inputObj.command = "edit";
+    inputObj.options = "nosave";
     inputObj.toAddress = node.getAttribute("email");
     inputObj.keyId     = node.getAttribute("keyId").split(/[ ,]+/);
     inputObj.sign      = Number(node.getAttribute("sign"));
@@ -174,8 +183,9 @@ function enigDoEdit() {
 function enigDoAdd() {
   var inputObj  = new Object;
   var resultObj = new Object;
-  inputObj.options="nosave";
+  inputObj.options = "nosave";
   inputObj.toAddress = "{}";
+  inputObj.command = "add";
   
   window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
   if (resultObj.cancelled==false) {

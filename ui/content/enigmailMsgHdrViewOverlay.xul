@@ -28,4 +28,9 @@
                 oncommand="showMessageReadSecurityInfo();"/>
     </popup>
   </hbox>
+
+  <popup id="emailAddressPopup">
+    <menuitem label="&enigmail.createRuleFromAddr.label;"
+              oncommand="enigCreateRuleFromAddress(document.popupNode);"/>
+  </popup>
 </overlay>
