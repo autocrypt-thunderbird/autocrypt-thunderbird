@@ -16,7 +16,7 @@ const EnigOutputLFLineBreak   = 1024;
 const ENIG_ENIGMSGCOMPFIELDS_CONTRACTID = "@mozdev.org/enigmail/composefields;1";
 
 // List of hash algorithms for PGP/MIME signatures
-var gMimeHashAlgorithms = ["md5", "sha1", "ripemd160"];
+var gMimeHashAlgorithms = ["md5", "sha1", "ripemd160", "sha256", "sha384", "sha512"];
 
 var gEnigEditor;
 var gEnigDirty, gEnigProcessed, gEnigTimeoutID;
@@ -1027,6 +1027,7 @@ function enigEncryptMsg(msgSendType) {
        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: securityInfo = "+newSecurityInfo+"\n");
 
      } else if (!gEnigProcessed && (sendFlags & ENIG_ENCRYPT_OR_SIGN)) {
+       // inline PGP
 
        if (gMsgCompose.composeHTML) {
          var errMsg = EnigGetString("hasHTML");
@@ -1151,7 +1152,7 @@ function enigEncryptMsg(msgSendType) {
          statusFlagsObj = new Object();
          errorMsgObj    = new Object();
 
-         var cipherText = enigmailSvc.encryptMessage(window,uiFlags, plainText,
+         var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
                                                 fromAddr, toAddr, sendFlags,
                                                 exitCodeObj, statusFlagsObj,
                                                 errorMsgObj);

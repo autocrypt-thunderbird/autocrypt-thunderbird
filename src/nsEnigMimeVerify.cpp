@@ -425,6 +425,15 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   } else if (contentMicalg.EqualsIgnoreCase("pgp-ripemd160")) {
     hashSymbol = "RIPEMD160";
 
+  } else if (contentMicalg.EqualsIgnoreCase("pgp-sha256")) {
+    hashSymbol = "SHA256";
+    
+  } else if (contentMicalg.EqualsIgnoreCase("pgp-sha384")) {
+    hashSymbol = "SHA384";
+
+  } else if (contentMicalg.EqualsIgnoreCase("pgp-sha512")) {
+    hashSymbol = "SHA512";
+
   } else {
     ERROR_LOG(("nsEnigMimeVerify::OnStartRequest: ERROR contentMicalg='%s'\n", contentMicalg.get()));
     return NS_ERROR_FAILURE;

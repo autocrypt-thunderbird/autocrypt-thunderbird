@@ -247,9 +247,11 @@
             <menulist id="mimeHashList" label="SHA1" flex="1">
 
               <menupopup id="mimeHashPopup">
-                <menuitem id="mimeHashMD5"       label="MD5"/>
-                <menuitem id="mimeHashSHA1"      label="SHA1" selected="true"/>
+                <menuitem id="mimeHashSHA1"  label="SHA1" selected="true"/>
                 <menuitem id="mimeHashRIPEMD160" label="RIPEMD160"/>
+                <menuitem id="mimeHashSHA256" label="SHA256"/>
+                <menuitem id="mimeHashSHA384" label="SHA384"/>
+                <menuitem id="mimeHashSHA512" label="SHA512"/>
               </menupopup>
             </menulist>
           </hbox>

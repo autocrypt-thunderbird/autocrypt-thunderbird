@@ -46,7 +46,7 @@ function prefOnLoad() {
                         gEnigPerRecipientRules);
 
    gMimeHashElement = document.getElementById("mimeHashList");
-   gMimeHashElement.selectedIndex = EnigGetPref("mimeHashAlgorithm");
+   gMimeHashElement.selectedIndex = EnigGetPref("mimeHashAlgorithm")-1;
 
    gSendFlowedElement = document.getElementById("send_plaintext_flowed");
 
@@ -99,7 +99,7 @@ function resetPrefs() {
                       gEnigPerRecipientRules);
                       
 
-  gMimeHashElement.selectedIndex = EnigGetDefaultPref("mimeHashAlgorithm");
+  gMimeHashElement.selectedIndex = EnigGetDefaultPref("mimeHashAlgorithm")-1;
 }
 
 
@@ -114,7 +114,7 @@ function prefOnAccept() {
 
   EnigSetRadioPref("usePGPMimeOption", gUsePGPMimeOptionList);
 
-  EnigSetPref("mimeHashAlgorithm", gMimeHashElement.selectedIndex);
+  EnigSetPref("mimeHashAlgorithm", gMimeHashElement.selectedIndex+1);
 
   EnigSetRadioPref("recipientsSelectionOption", gEnigRecipientsSelectionOptions);
 
