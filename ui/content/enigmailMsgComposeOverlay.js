@@ -19,18 +19,6 @@ const ENIG_ENIGMSGCOMPFIELDS_CONTRACTID = "@mozdev.org/enigmail/composefields;1"
 // List of hash algorithms for PGP/MIME signatures
 var gMimeHashAlgorithms = ["md5", "sha1", "ripemd160"];
 
-var gSendFlagsObj = {
-  "cmd_sendButton":          0,
-  "cmd_send":                0,
-  "cmd_sendNow":             0,
-  "cmd_sendWithCheck":       nsIEnigmail.SEND_WITH_CHECK,
-  "cmd_sendLater":           nsIEnigmail.SEND_LATER,
-  "cmd_saveAsDraft":         nsIEnigmail.SAVE_MESSAGE,
-  "cmd_saveDefault":         nsIEnigmail.SAVE_MESSAGE,
-  "cmd_saveAsTemplate":      nsIEnigmail.SAVE_MESSAGE
-};
-
-
 var gEnigEditor;
 var gEnigDirty, gEnigProcessed, gEnigTimeoutID;
 var gEnigSendPGPMime, gEnigModifiedAttach, gEnigSendMode;
@@ -38,11 +26,23 @@ var gEnigSendModeDirty = 0;
 var gEnigNextCommand;
 var gEnigAccountId = null;
 
-window.addEventListener("load", enigMsgComposeStartup, false);
+if (typeof(GenericSendMessage)=="function") {
+  // replace GenericSendMessage with our own version
+  var origGenericSendMessage = GenericSendMessage;
+  GenericSendMessage = function (msgType) {
+    enigGenericSendMessage(msgType);
+  }
 
-// Handle recycled windows
-window.addEventListener('compose-window-close', enigMsgComposeClose, true);
-window.addEventListener('compose-window-reopen', enigMsgComposeReopen, true);
+  window.addEventListener("load", enigMsgComposeStartup, false);
+
+  // Handle recycled windows
+  window.addEventListener('compose-window-close', enigMsgComposeClose, true);
+  window.addEventListener('compose-window-reopen', enigMsgComposeReopen, true);
+
+}
+else {
+  EnigAlert("WARNING:\n\nCannot hook message sending -- you will not be able to send OpenPGP messages!");
+}
 
 function enigMsgComposeStartup() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
@@ -61,17 +61,6 @@ function enigMsgComposeStartup() {
           smimeButton.setAttribute("collapsed", "true");
     }
   }
-  // Override send command
-  var sendElementIds = ["cmd_sendButton", "cmd_sendNow", "cmd_sendWithCheck",
-                        "cmd_sendLater", "cmd_saveAsDraft", "cmd_saveDefault",
-                        "cmd_saveAsTemplate"];
-
-  EnigOverrideAttribute( sendElementIds, "oncommand",
-                         "enigSendCommand('", "');");
-
-
-  EnigOverrideAttribute( ["msgcomposeWindow"], "onclose",
-                        "return enigDoCommandClose('", "')");
 
   var composeStateListener = new EnigComposeStateListener();
 
@@ -305,9 +294,8 @@ function enigInsertKey() {
   EnigEditorInsertText(EnigGetString("pubKey",userIdValue) + keyBlock);
 }
 
-function enigUndoEncryption( bucketList, modifiedAttachments ) {
+function enigUndoEncryption() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigUndoEncryption: \n");
-
   if (gEnigProcessed) {
     enigReplaceEditorText(gEnigProcessed.origText);
 
@@ -317,13 +305,14 @@ function enigUndoEncryption( bucketList, modifiedAttachments ) {
     enigDecryptQuote(true);
   }
 
-  if ( modifiedAttachments && bucketList && bucketList.hasChildNodes() ) {
+  var bucketList = document.getElementById("attachmentBucket");
+  if ( gEnigModifiedAttach && bucketList && bucketList.hasChildNodes() ) {
     // undo inline encryption of attachments
-    for (var i=0; i<modifiedAttachments.length; i++) {
+    for (var i=0; i<gEnigModifiedAttach.length; i++) {
       var node = bucketList.firstChild;
       while (node) {
-        if (node.attachment.url == modifiedAttachments[i].newUrl) {
-          if (modifiedAttachments[i].dummyFile) {
+        if (node.attachment.url == gEnigModifiedAttach[i].newUrl) {
+          if (gEnigModifiedAttach[i].dummyFile) {
             node.attachment=null;
             var delNode=node;
             node=node.nextSibling;
@@ -331,14 +320,14 @@ function enigUndoEncryption( bucketList, modifiedAttachments ) {
             continue;
           }
           else {
-            node.attachment.url = modifiedAttachments[i].origUrl;
-            node.attachment.name = modifiedAttachments[i].origName;
-            node.attachment.temporary = modifiedAttachments[i].origTemp;
-            node.attachment.contentType = modifiedAttachments[i].origCType;
+            node.attachment.url = gEnigModifiedAttach[i].origUrl;
+            node.attachment.name = gEnigModifiedAttach[i].origName;
+            node.attachment.temporary = gEnigModifiedAttach[i].origTemp;
+            node.attachment.contentType = gEnigModifiedAttach[i].origCType;
           }
           // delete encrypted file
           try {
-            modifiedAttachments[i].newFile.remove(false);
+            gEnigModifiedAttach[i].newFile.remove(false);
           }
           catch (ex) {}
         }
@@ -346,7 +335,7 @@ function enigUndoEncryption( bucketList, modifiedAttachments ) {
       }
     }
 
-    modifiedAttachments = null;
+    gEnigModifiedAttach = null;
   }
 }
 
@@ -551,7 +540,7 @@ function enigDisplaySignClickWarn() {
   }
 }
 
-function enigConfirmBeforeSend(toAddr, gpgKeys, sendFlags, isOffline) {
+function enigConfirmBeforeSend(toAddr, gpgKeys, sendFlags, isOffline, msgSendType) {
   // get confirmation before sending message
   var msgStatus = "";
 
@@ -578,12 +567,24 @@ function enigConfirmBeforeSend(toAddr, gpgKeys, sendFlags, isOffline) {
   return EnigConfirm(msgConfirm);
 }
 
-function enigSendCommand(elementId) {
-  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: id="+elementId+", gEnigSendMode="+gEnigSendMode+"\n");
+function enigEncryptMsg(msgSendType) {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: msgType="+msgSendType+", gEnigSendMode="+gEnigSendMode+"\n");
 
   var gotSendFlags = gEnigSendMode;
   var sendFlags=0;
-  sendFlags |= gSendFlagsObj[elementId];
+  window.enigmailSendFlags=0;
+  switch (msgSendType) {
+  case nsIMsgCompDeliverMode.Later:          
+    sendFlags |= nsIEnigmail.SEND_LATER;
+    break;
+  case nsIMsgCompDeliverMode.SaveAsDraft:   
+    sendFlags |=  nsIEnigmail.SAVE_MESSAGE;
+    break;
+  case nsIMsgCompDeliverMode.SaveAsTemplate: 
+    sendFlags |= nsIEnigmail.SAVE_MESSAGE;
+    break;
+  }
+    
   if (gotSendFlags & ENIG_SIGN)
       sendFlags |= ENIG_SIGN;
   if (gotSendFlags & ENIG_ENCRYPT) {
@@ -593,13 +594,13 @@ function enigSendCommand(elementId) {
   if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
     if (!((sendFlags & ENIG_ENCRYPT) && EnigConfirmPref(EnigGetString("savingMessage"), "saveEncrypted"))) {
       sendFlags &= ~ENIG_ENCRYPT;
-      goDoCommand(elementId);
       return;
     }
   }
 
   if (gWindowLocked) {
     EnigAlert(EnigGetString("windowLocked"));
+    window.cancelSendMessage=true;
     return;
   }
 
@@ -637,9 +638,8 @@ function enigSendCommand(elementId) {
         msg = gEnigmailSvc.initializationError +"\n\n"+msg;
      }
 
-     if (EnigConfirm(msg))
-        goDoCommand(elementId);
-
+     if (!EnigConfirm(msg))
+        window.cancelSendMessage=true;
      return;
   }
 
@@ -650,7 +650,7 @@ function enigSendCommand(elementId) {
      var errorMsgObj    = new Object();
      gEnigModifiedAttach = null;
 
-     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: currentId="+gEnigAccountId+
+     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: currentId="+gEnigAccountId+
               ", "+gEnigAccountId.email+"\n");
      var fromAddr = gEnigAccountId.email;
 
@@ -658,11 +658,8 @@ function enigSendCommand(elementId) {
 
      if (! pgpEnabled) {
         if (sendFlags & ENIG_ENCRYPT_OR_SIGN) {
-          if (EnigConfirm(EnigGetString("acctNotConfigured")))
-              goDoCommand(elementId);
-        }
-        else {
-          goDoCommand(elementId);
+          if (!EnigConfirm(EnigGetString("acctNotConfigured")))
+              window.cancelSendMessage=true;
         }
         return;
      }
@@ -707,45 +704,37 @@ function enigSendCommand(elementId) {
      }
 
      var msgCompFields = gMsgCompose.compFields;
-     Recipients2CompFields(msgCompFields);
 
      // Check if sending to any newsgroups
      var newsgroups = msgCompFields.newsgroups;
 
-     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand:gMsgCompose="+gMsgCompose+"\n");
-
-     try {
-       var dummy = new Object();
-       gMsgCompose.CheckAndPopulateRecipients(true, false, dummy);
-     }
-     catch (ex) {}
+     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg:gMsgCompose="+gMsgCompose+"\n");
 
      var toAddrList = [];
-
      if (msgCompFields.to)  toAddrList.push(msgCompFields.to);
-
      if (msgCompFields.cc)  toAddrList.push(msgCompFields.cc);
 
      if (msgCompFields.bcc) {
        toAddrList.push(msgCompFields.bcc);
 
        var bccLC = EnigStripEmail(msgCompFields.bcc).toLowerCase()
-       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: BCC: "+bccLC+"\n");
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: BCC: "+bccLC+"\n");
 
-       var selfBCC = fromAddr && (fromAddr.toLowerCase() == bccLC);
+       var selfBCC = gEnigAccountId.email && (gEnigAccountId.email.toLowerCase() == bccLC);
 
        if (selfBCC) {
-         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: Self BCC\n");
+         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: Self BCC\n");
 
        } else if (sendFlags & ENIG_ENCRYPT) {
          // BCC and encryption
 
          if (encryptIfPossible) {
            sendFlags &= ~ENIG_ENCRYPT;
-           DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: No default encryption because of BCC\n");
+           DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: No default encryption because of BCC\n");
 
          } else {
            if (!EnigConfirm(EnigGetString("sendingBCC"))) {
+             window.cancelSendMessage=true;
              return;
            }
          }
@@ -759,11 +748,12 @@ function enigSendCommand(elementId) {
 
          if (!encryptIfPossible) {
            EnigAlert(EnigGetString("sendingNews"));
+           window.cancelSendMessage=true;
            return;
          }
 
          sendFlags &= ~ENIG_ENCRYPT;
-         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: No default encryption because of newsgroups\n");
+         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: No default encryption because of newsgroups\n");
 
        }
      }
@@ -782,7 +772,7 @@ function enigSendCommand(elementId) {
 
      if (toAddr.length>=1) {
 
-        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: toAddr="+toAddr+"\n");
+        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: toAddr="+toAddr+"\n");
         var perRecipientRules=EnigGetPref("perRecipientRules");
         var repeatSelection=0;
         while (repeatSelection<2) {
@@ -793,6 +783,7 @@ function enigSendCommand(elementId) {
                                   (repeatSelection==1),
                                   matchedKeysObj, 
                                   flagsObj)) {
+              window.cancelSendMessage=true;
               return;
             }
            
@@ -874,7 +865,10 @@ function enigSendCommand(elementId) {
   
                 window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
                 try {
-                  if (resultObj.cancelled) return;
+                  if (resultObj.cancelled) {
+                    window.cancelSendMessage=true;
+                    return;
+                  }
                   if (resultObj.perRecipientRules) {
                     // do an extra round because the user want to set a PGP rule
                     continue;
@@ -890,13 +884,14 @@ function enigSendCommand(elementId) {
                   testExitCodeObj.value = 0;
                 } catch (ex) {
                   // cancel pressed -> don't send mail
+                  window.cancelSendMessage=true;
                   return;
                 }
             }
             if ((!testCipher || (testExitCodeObj.value != 0)) && recipientsSelectionOption==0) {
                 // Test encryption failed; turn off default encryption
                 sendFlags &= ~ENIG_ENCRYPT;
-                DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: No default encryption because test failed\n");
+                DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: No default encryption because test failed\n");
             }
           }
           repeatSelection=2;
@@ -909,26 +904,6 @@ function enigSendCommand(elementId) {
             sendFlags  &= ~ENIG_SIGN;
           }
         }
-     }
-
-     if (!gEnigProcessed) {
-/////////////////////////////////////////////////////////////////////////
-// The following spellcheck logic is from the function
-// GenericSendMessage from the file MsgComposeCommands.js
-/////////////////////////////////////////////////////////////////////////
-       if (gEnigPrefRoot.getBoolPref("mail.SpellCheckBeforeSend")) {
-        // We disable spellcheck for the following -subject line, attachment pane, identity and addressing widget
-        // therefore we need to explicitly focus on the mail body when we have to do a spellcheck.
-         window.content.focus();
-
-         window.cancelSendMessage = false;
-         try {
-           window.openDialog("chrome://editor/content/EdSpellCheck.xul", "_blank", "chrome,close,titlebar,modal", true, true, false);
-         } catch(ex){}
-
-         if(window.cancelSendMessage)
-           return;
-       }
      }
 
      var bucketList = document.getElementById("attachmentBucket");
@@ -969,6 +944,7 @@ function enigSendCommand(elementId) {
           window.openDialog("chrome://enigmail/content/enigmailAttachmentsDialog.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
           if (resultObj.selected < 0) {
             // dialog cancelled
+            window.cancelSendMessage=true;
             return;
           }
           else if (resultObj.selected == 1) {
@@ -983,6 +959,7 @@ function enigSendCommand(elementId) {
         else {
           if (sendFlags & ENIG_ENCRYPT) {
             if (!EnigConfirm(EnigGetString("attachWarning")))
+              window.cancelSendMessage=true;
               return;
           }
         }
@@ -1007,11 +984,11 @@ function enigSendCommand(elementId) {
 
      if ((sendFlags & ENIG_ENCRYPT_OR_SIGN) && usingPGPMime) {
        // Use EnigMime
-       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: Using EnigMime, flags="+sendFlags+"\n");
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: Using EnigMime, flags="+sendFlags+"\n");
 
        var oldSecurityInfo = gMsgCompose.compFields.securityInfo;
 
-       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: oldSecurityInfo = "+oldSecurityInfo+"\n");
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: oldSecurityInfo = "+oldSecurityInfo+"\n");
 
        var newSecurityInfo;
 
@@ -1037,7 +1014,7 @@ function enigSendCommand(elementId) {
        newSecurityInfo.recipients = toAddr;
        newSecurityInfo.hashAlgorithm = gMimeHashAlgorithms[EnigGetPref("mimeHashAlgorithm")];
 
-       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSendCommand: securityInfo = "+newSecurityInfo+"\n");
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: securityInfo = "+newSecurityInfo+"\n");
 
      } else if (!gEnigProcessed && (sendFlags & ENIG_ENCRYPT_OR_SIGN)) {
 
@@ -1051,6 +1028,7 @@ function enigSendCommand(elementId) {
          var convert = DetermineConvertibility();
          if (convert == nsIMsgCompConvertible.No) {
            if (!EnigConfirm(EnigGetString("strippingHTML")))
+             window.cancelSendMessage=true;
              return;
          }
        } catch (ex) {
@@ -1192,6 +1170,7 @@ function enigSendCommand(elementId) {
            if (sendFlags & ENIG_ENCRYPT_OR_SIGN) {
              // Encryption/signing failed
              EnigAlert(EnigGetString("sendAborted")+errorMsgObj.value);
+             window.cancelSendMessage=true;
              return;
            }
          }
@@ -1211,7 +1190,8 @@ function enigSendCommand(elementId) {
                 EnigAlert(EnigGetString("sendAborted")+"an internal error has occurred");
               }
               if (gEnigProcessed)
-                enigUndoEncryption(bucketList, gEnigModifiedAttach);
+                enigUndoEncryption();
+              window.cancelSendMessage=true;
               return;
             }
          }
@@ -1220,58 +1200,49 @@ function enigSendCommand(elementId) {
 
      // EnigSend: Handle both plain and encrypted messages below
      var isOffline = (gIOService && gIOService.offline);
+     window.enigmailSendFlags=sendFlags;
 
+     
      if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
-       goDoCommand(elementId);
-       //if (! (sendFlags & nsIEnigmail.SEND_PGP_MIME)) {
-          enigUndoEncryption(bucketList, gEnigModifiedAttach);
-       //}
-
-       return;
+       // update the list of attachments
+       Attachments2CompFields(msgCompFields);
      }
-
-     if (EnigGetPref("confirmBeforeSend")) {
+     else if (EnigGetPref("confirmBeforeSend")) {
        if (!enigConfirmBeforeSend(toAddrList.join(", "), toAddr, sendFlags, isOffline)) {
          if (gEnigProcessed)
-           enigUndoEncryption(bucketList, gEnigModifiedAttach);
-
+           enigUndoEncryption();
+           
+         window.cancelSendMessage=true;
          return;
        }
-
-     } else if (isOffline &&
+     } 
+     else if (isOffline &&
                 !EnigConfirm(EnigGetString("offlineNote")) ) {
        // Abort send
        if (gEnigProcessed)
-         enigUndoEncryption(bucketList, gEnigModifiedAttach);
-
+         enigUndoEncryption();
+         
+       window.cancelSendMessage=true;
        return;
 
-     } else if ( (sendFlags & nsIEnigmail.SEND_WITH_CHECK) &&
+     }
+     else if ( (sendFlags & nsIEnigmail.SEND_WITH_CHECK) &&
                  !enigMessageSendCheck() ) {
        // Abort send
        if (gEnigProcessed)
-         enigUndoEncryption(bucketList, gEnigModifiedAttach);
+         enigUndoEncryption();
 
+       window.cancelSendMessage=true;
        return;
      }
-
-     if (isOffline || (sendFlags & nsIEnigmail.SEND_LATER)) {
-       // Send message later
-       DEBUG_LOG("enigmailMsgComposeOverlay.js: Sending message later ...\n");
-
-       enigGenericSendMessage(nsIMsgCompDeliverMode.Later);
-       return;
-     }
-
-     enigGenericSendMessage(nsIMsgCompDeliverMode.Now);
 
   } catch (ex) {
      var msg=EnigGetString("signFailed");
      if (gEnigmailSvc && gEnigmailSvc.initializationError) {
         msg += "\n"+gEnigmailSvc.initializationError;
      }
-     if (EnigConfirm(msg))
-       goDoCommand(elementId);
+     if (!EnigConfirm(msg))
+       window.cancelSendMessage=true;
   }
 }
 
@@ -1354,10 +1325,19 @@ function enigGenericSendMessage( msgType )
       if (msgType == nsIMsgCompDeliverMode.Now || msgType == nsIMsgCompDeliverMode.Later)
       {
         //Do we need to check the spelling?
-/////////////////////////////////////////////////////////////////////////
-// MODIFICATION
-//      Moved spell check logic to enigSendCommand
-/////////////////////////////////////////////////////////////////////////
+        if (sPrefs.getBoolPref("mail.SpellCheckBeforeSend")){
+        //We disable spellcheck for the following -subject line, attachment pane, identity and addressing widget
+        //therefore we need to explicitly focus on the mail body when we have to do a spellcheck.
+          window.content.focus();
+          window.cancelSendMessage = false;
+          try {
+            window.openDialog("chrome://editor/content/EdSpellCheck.xul", "_blank",
+                    "chrome,close,titlebar,modal", true, true, false);
+          }
+          catch(ex){}
+          if(window.cancelSendMessage)
+            return;
+        }            
 
         //Check if we have a subject, else ask user for confirmation
         if (subject == "")
@@ -1380,23 +1360,23 @@ function enigGenericSendMessage( msgType )
               }
               else
                 return;
-            }
           }
+        }
 
         // Before sending the message, check what to do with HTML message, eventually abort.
         var convert = DetermineConvertibility();
         var action = DetermineHTMLAction(convert);
         if (action == nsIMsgCompSendFormat.AskUser)
         {
-                    var recommAction = convert == nsIMsgCompConvertible.No
-                                   ? nsIMsgCompSendFormat.AskUser
-                                   : nsIMsgCompSendFormat.PlainText;
-                    var result2 = {action:recommAction,
-                                  convertible:convert,
-                                  abort:false};
-                    window.openDialog("chrome://messenger/content/messengercompose/askSendFormat.xul",
-                                      "askSendFormatDialog", "chrome,modal,titlebar,centerscreen",
-                                      result2);
+          var recommAction = convert == nsIMsgCompConvertible.No
+                         ? nsIMsgCompSendFormat.AskUser
+                         : nsIMsgCompSendFormat.PlainText;
+          var result2 = {action:recommAction,
+                        convertible:convert,
+                        abort:false};
+          window.openDialog("chrome://messenger/content/messengercompose/askSendFormat.xul",
+                            "askSendFormatDialog", "chrome,modal,titlebar,centerscreen",
+                            result2);
           if (result2.abort)
             return;
           action = result2.action;
@@ -1419,25 +1399,50 @@ function enigGenericSendMessage( msgType )
         }
       }
 
+/////////////////////////////////////////////////////////////////////////
+// MODIFICATION
+// Call the following function from our version of the function
+// GenericSendMessage from the file MsgComposeCommands.js
+// (after having determined HTML convertibility)
+/////////////////////////////////////////////////////////////////////////
+          try {
+            enigEncryptMsg(msgType);
+            if(window.cancelSendMessage)
+              return;
+          }
+          catch(ex){}
+/////////////////////////////////////////////////////////////////////////
+// END OF MODIFICATION
+/////////////////////////////////////////////////////////////////////////
+      
+      
       // hook for extra compose pre-processing
       var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
       observerService.notifyObservers(window, "mail:composeOnSend", null);
 
+/////////////////////////////////////////////////////////////////////////
+// MODIFICATION
+// Set the charset from the original text
+// (after setting observerService)
+/////////////////////////////////////////////////////////////////////////
       if (gEnigProcessed) {
         // Ensure that original charset is preserved for encrypted messages
         gMsgCompose.SetDocumentCharset(gEnigProcessed.charset);
 
       } else {
-        // Check if the headers of composing mail can be converted to a mail charset.
+/////////////////////////////////////////////////////////////////////////
+// END OF MODIFICATION
+/////////////////////////////////////////////////////////////////////////
+         // Check if the headers of composing mail can be converted to a mail charset.
         if (msgType == nsIMsgCompDeliverMode.Now ||
-          msgType == nsIMsgCompDeliverMode.Later ||
-          msgType == nsIMsgCompDeliverMode.Save ||
-          msgType == nsIMsgCompDeliverMode.SaveAsDraft ||
-          msgType == nsIMsgCompDeliverMode.SaveAsTemplate)
+            msgType == nsIMsgCompDeliverMode.Later ||
+            msgType == nsIMsgCompDeliverMode.Save ||
+            msgType == nsIMsgCompDeliverMode.SaveAsDraft ||
+            msgType == nsIMsgCompDeliverMode.SaveAsTemplate)
         {
           var fallbackCharset = new Object;
           if (gPromptService &&
-              !gMsgCompose.checkCharsetConversion(gEnigAccountId, fallbackCharset))
+              !gMsgCompose.checkCharsetConversion(getCurrentIdentity(), fallbackCharset))
           {
             var dlgTitle = sComposeMsgsBundle.getString("initErrorDlogTitle");
             var dlgText = sComposeMsgsBundle.getString("12553");  // NS_ERROR_MSG_MULTILINGUAL_SEND
@@ -1462,20 +1467,25 @@ function enigGenericSendMessage( msgType )
           progress.registerListener(progressListener);
           gSendOrSaveOperationInProgress = true;
         }
-        try {
-          // Mozilla <= 1.5
-          gMsgCompose.SendMsg(msgType, gEnigAccountId, progress);
+        msgWindow.SetDOMWindow(window);
+        
+        if (typeof(getCurrentAccountKey)=="function") {
+          // Mozilla >= 1.7a
+          gMsgCompose.SendMsg(msgType, getCurrentIdentity(), getCurrentAccountKey(), msgWindow, progress);
         }
-        catch (ex) {
-          msgWindow.SetDOMWindow(window);
-          if (typeof(getCurrentAccountKey)=="function") {
-            // Mozilla >= 1.7a
-            gMsgCompose.SendMsg(msgType, getCurrentIdentity(), getCurrentAccountKey(), msgWindow, progress);
-          }
-          else {
-            //Mozilla 1.6
-            gMsgCompose.SendMsg(msgType, getCurrentIdentity(), msgWindow, progress);
-          }
+        else {
+          //Mozilla <= 1.6
+          gMsgCompose.SendMsg(msgType, getCurrentIdentity(), msgWindow, progress);
+        }
+        
+/////////////////////////////////////////////////////////////////////////
+// MODIFICATION
+// Call the following function from our version of the function
+// GenericSendMessage from the file MsgComposeCommands.js
+// (after gMsgCompose.SendMsg)
+/////////////////////////////////////////////////////////////////////////
+        if (window.enigmailSendFlags & nsIEnigmail.SAVE_MESSAGE) {
+          enigUndoEncryption();
         }
       }
       catch (ex) {
@@ -1488,99 +1498,6 @@ function enigGenericSendMessage( msgType )
   }
   else
     dump("###SendMessage Error: composeAppCore is null!\n");
-}
-
-// Modified version of DoCommandClose() function from MsgComposeCommands.js
-function enigDoCommandClose() {
-  var retVal;
-
-// MODIFICATION
-  if ((retVal = enigComposeCanClose())) {
-
-    // Notify the SendListener that Send has been aborted and Stopped
-    if (gMsgCompose)
-    {
-      var externalListener = gMsgCompose.getExternalSendListener();
-      if (externalListener)
-      {
-        externalListener.onSendNotPerformed(null, Components.results.NS_ERROR_ABORT);
-      }
-    }
-
-    MsgComposeCloseWindow(true);
-
-    // at this point, we might be caching this window.
-    // in which case, we don't want to close it
-    if (sMsgComposeService.isCachedWindow(window)) {
-      retVal = false;
-    }
-  }
-
-  return retVal;
-}
-
-// modified version of ComposeCanClose from MsgComposeCommands.js
-function enigComposeCanClose()
-{
-  if (gSendOrSaveOperationInProgress)
-  {
-    var result;
-
-    if (gPromptService)
-    {
-      var promptTitle = sComposeMsgsBundle.getString("quitComposeWindowTitle");
-      var promptMsg = sComposeMsgsBundle.getString("quitComposeWindowMessage");
-      var quitButtonLabel = sComposeMsgsBundle.getString("quitComposeWindowQuitButtonLabel");
-      var waitButtonLabel = sComposeMsgsBundle.getString("quitComposeWindowWaitButtonLabel");
-
-      result = gPromptService.confirmEx(window, promptTitle, promptMsg,
-          (gPromptService.BUTTON_TITLE_IS_STRING*gPromptService.BUTTON_POS_0) +
-          (gPromptService.BUTTON_TITLE_IS_STRING*gPromptService.BUTTON_POS_1),
-          waitButtonLabel, quitButtonLabel, null, null, {value:0});
-
-      if (result == 1)
-      {
-        gMsgCompose.abort();
-        return true;
-      }
-      return false;
-    }
-  }
-
-  // Returns FALSE only if user cancels save action
-  if (gContentChanged || gMsgCompose.bodyModified)
-  {
-    // call window.focus, since we need to pop up a dialog
-    // and therefore need to be visible (to prevent user confusion)
-    window.focus();
-    if (gPromptService)
-    {
-      result = gPromptService.confirmEx(window,
-                              sComposeMsgsBundle.getString("saveDlogTitle"),
-                              sComposeMsgsBundle.getString("saveDlogMessage"),
-                              (gPromptService.BUTTON_TITLE_SAVE * gPromptService.BUTTON_POS_0) +
-                              (gPromptService.BUTTON_TITLE_CANCEL * gPromptService.BUTTON_POS_1) +
-                              (gPromptService.BUTTON_TITLE_DONT_SAVE * gPromptService.BUTTON_POS_2),
-                              null, null, null,
-                              null, {value:0});
-      switch (result)
-      {
-        case 0: //Save
-          gCloseWindowAfterSave = true;
-/// MODIFICATION
-          enigSendCommand("cmd_saveAsDraft");
-          return false;
-        case 1: //Cancel
-          return false;
-        case 2: //Don't Save
-          break;
-      }
-    }
-
-    SetContentAndBodyAsUnmodified();
-  }
-
-  return true;
 }
 
 
