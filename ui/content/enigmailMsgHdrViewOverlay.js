@@ -1,7 +1,5 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
-
-// Initialize enigmailCommon
-EnigInitCommon("enigmailMsgHdrViewOverlay");
+// (already loaded by enigmailMessengerOverlay(!))
 
 window.addEventListener("load", enigHdrViewLoad, false);
 addEventListener('messagepane-unloaded', enigHdrViewUnload, true);
