@@ -28,16 +28,16 @@
 
   <box id="actionBox" class="action-box" orient="vertical">
 
-    <button label="View Enigmail console"
+    <button label="&enigmail.console.label;"
             class="dialog"
             tooltip="aTooltip"
-            tooltiptext="View Enigmail Console"
+            tooltiptext="&enigmail.console.tooltip;"
             oncommand="EnigViewConsole();"/>
 
-    <button label="Uninstall Enigmail"
+    <button label="&enigmail.uninstall.label;"
             class="dialog"
             tooltip="aTooltip"
-            tooltiptext="Uninstall Enigmail"
+            tooltiptext="&enigmail.uninstall.tooltip;"
             oncommand="EnigUninstall();"/>
   </box>
 
