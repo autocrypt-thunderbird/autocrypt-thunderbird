@@ -2,9 +2,9 @@
 
 var err;
 
-err = initInstall("Enigmime v0.61.0", // name for install UI
+err = initInstall("Enigmime v0.62.0", // name for install UI
                   "/enigmime",         // registered name
-                  "0.61.0.0");        // package version
+                  "0.62.0.0");        // package version
 
 logComment("initInstall: " + err);
 
@@ -19,6 +19,14 @@ if (!verifyDiskSpace(fProgram, srDest)) {
 } else {
 
   var fComponents = getFolder("Components");
+
+  var delComps = [ "libipc.so", "ipc.dll"]; // Old DLLs
+
+  for (var j=0; j<delComps.length; j++) {
+     var delFile = getFolder(fComponents, delComps[j]);
+     if (File.exists(delFile))
+        File.remove(delFile);
+  }
 
   // addDirectory: blank, archive_dir, install_dir, install_subdir
   addDirectory("", "components", fComponents, "");

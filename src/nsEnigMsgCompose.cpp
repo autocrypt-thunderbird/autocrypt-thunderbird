@@ -264,7 +264,7 @@ nsEnigMsgCompose::WriteEncryptedHeaders()
  " boundary=\"%s\"\r\n"
  "\r\n"
  "The following is an OpenPGP/MIME encrypted message\r\n"
- "created by Enigmail/Mozilla, following RFC 2440 and RFC 2015\r\n"
+ "created by Enigmail/Mozilla, following RFC 2440 and RFC 3156\r\n"
  "--%s\r\n"
  "Content-Type: application/pgp-encrypted\r\n"
  "\r\n"

@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.61.1.0";
-var gEnigmimeVersion = "0.61.0.0";
+var gEnigmailVersion = "0.62.0.0";
+var gEnigmimeVersion = "0.62.0.0";
 
 // Maximum size of message directly processed by Enigmail
 const MESSAGE_BUFFER_SIZE = 32000;
@@ -103,7 +103,13 @@ var gPromptService;
 
 // Initializes enigmailCommon
 function EnigInitCommon(id) {
+   DEBUG_LOG("enigmailCommon.js: EnigInitCommon: id="+id+"\n");
+
    gPromptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
+
+   // Do not instantiate ProcessInfo for Prefs
+   if (id && (id.indexOf("pref-") == 0))
+     return;
 
    try {
      var processInfo = Components.classes[NS_PROCESSINFO_CONTRACTID].getService(Components.interfaces.nsIProcessInfo);
@@ -121,7 +127,6 @@ function EnigInitCommon(id) {
      dump("enigmailCommon.js: Error in instantiating ProcessInfo\n");
    }
 
-   DEBUG_LOG("enigmailCommon.js: EnigInitCommon: id="+id+"\n");
 }
 
 var gEnigmailSvc;
