@@ -2031,18 +2031,21 @@ function (email, secret, exitCodeObj, errorMsgObj) {
 }
 
 
+// ExitCode == 0  => success
+// ExitCode > 0   => error
+// ExitCode == -1 => Cancelled by user
 Enigmail.prototype.receiveKey = 
 function (parent, uiFlags, keyId, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.receiveKey: "+keyId+"\n");
 
   if (!this.initialized) {
     errorMsgObj.value = "Error - Enigmail service not yet initialized";
-    return -1;
+    return 1;
   }
 
   if (this.agentType != "gpg") {
     errorMsgObj.value = "Error - Only GPG can receive keys from keyserver";
-    return -1;
+    return 1;
   }
 
   var interactive  = uiFlags & nsIEnigmail.UI_INTERACTIVE;
@@ -2068,12 +2071,12 @@ function (parent, uiFlags, keyId, errorMsgObj) {
 
   if (!keyserver) {
     errorMsgObj.value = "Error - No keyserver specified to receive key from";
-    return -1;
+    return 1;
   }
 
   if (!keyId) {
     errorMsgObj.value = "Error - No key Id specified to receive key for";
-    return -1;
+    return 1;
   }
 
   var command = this.agentPath;
@@ -2135,13 +2138,16 @@ function (parent, uiFlags, userId, exitCodeObj, errorMsgObj) {
 }
 
 
+// ExitCode == 0  => success
+// ExitCode > 0   => error
+// ExitCode == -1 => Cancelled by user
 Enigmail.prototype.importKey = 
 function (parent, uiFlags, msgText, keyId, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.importKey: id="+keyId+", "+uiFlags+"\n");
 
   if (!this.initialized) {
     errorMsgObj.value = "Error - Enigmail service not yet initialized";
-    return -1;
+    return 1;
   }
 
   var beginIndexObj = new Object();
@@ -2151,12 +2157,12 @@ function (parent, uiFlags, msgText, keyId, errorMsgObj) {
 
   if (!blockType) {
     errorMsgObj.value = "Error - No valid armored PGP data block found";
-    return -1;
+    return 1;
   }
 
   if (blockType != "PUBLIC KEY BLOCK") {
     errorMsgObj.value = "Error - First PGP block not public key block";
-    return -1;
+    return 1;
   }
 
   var pgpBlock = msgText.substr(beginIndexObj.value,
