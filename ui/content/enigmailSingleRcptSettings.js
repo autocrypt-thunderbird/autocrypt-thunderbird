@@ -224,7 +224,7 @@ function enigmailDlgKeySelection() {
     }
   }
   
-  inputObj.options = "multisel,forUser";
+  inputObj.options = "multisel,forUser,noplaintext";
   var userIdValue="";
 
   window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);

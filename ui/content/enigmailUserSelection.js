@@ -196,7 +196,11 @@ function enigmailBuildList(refresh) {
    else if (window.arguments[INPUT].options.indexOf("noforcedisp")>=0) {
       document.getElementById("displayNoLonger").removeAttribute("collapsed");
    }
-
+   
+   if (window.arguments[INPUT].options.indexOf("noplaintext")>= 0) {
+      // hide hide "send unencrypted"
+      document.getElementById("enigmailUserSelPlainText").setAttribute("collapsed", "true");
+   }
 
    if (window.arguments[INPUT].options.indexOf("forUser")>=0) {
       descNotFound.firstChild.data=EnigGetString("keysToUse", window.arguments[INPUT].forUser);      
