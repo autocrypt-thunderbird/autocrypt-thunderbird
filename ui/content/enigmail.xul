@@ -1,0 +1,59 @@
+<?xml version="1.0"?> 
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?> 
+<?xml-stylesheet href="chrome://communicator/skin/button.css" type="text/css"?> 
+<?xml-stylesheet href="chrome://enigmail/content/enigmail.css"
+                 type="text/css"?> 
+
+<?xul-overlay href="chrome://global/content/globalOverlay.xul"?>
+
+<window
+     id="enigmailConfig"
+     title="Enigmail Config Page"
+     align="vertical"
+     onload="OnLoadEnigConfig()"
+     onunload="OnUnloadEnigConfig()"
+     xmlns:html="http://www.w3.org/1999/xhtml"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<script language="JavaScript" src="chrome://global/content/globalOverlay.js"/>
+
+<script language="JavaScript" src="chrome://enigmail/content/enigmailCommon.js"/>
+<script language="JavaScript" src="chrome://enigmail/content/enigmailConfig.js"/>
+
+<toolbox id="enigToolbox" class="enig-toolbox" deferattached="true">
+
+  <toolbar id="topToolbar"
+           persist="collapsed"
+           last-toolbar="true">
+
+    <button id="enigAboutButton" class="button-toolbar top"
+            value="About"
+            tooltip="aTooltip" persist="hidden"
+            tooltiptext="About Enigmail"
+            oncommand="window.open('enigmail:about');"/>
+    
+
+    <spring flex="1"/>
+
+    <button id="enigUninstallButton" class="button-toolbar top"
+            value="Uninstall"
+            tooltip="aTooltip" persist="hidden"
+            tooltiptext="Uninstall Enigmail"
+            oncommand="UninstallPackage();"/>
+    
+  </toolbar>
+
+</toolbox>
+
+<titledbox id="consoleBox" orient="vertical">
+
+  <title><text value="Console"/></title>
+
+  <iframe id="uiConsole" type="content" name="uiConsole"
+          src="about:blank" flex="100%"/>
+
+</titledbox>
+
+</window>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<!-- This is the overlay that adds a enigmail button to primary toolbar -->
+
+<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmailOverlay.dtd" >
+
+<overlay id="enigmailToolbarButton"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script language="JavaScript" src="chrome://enigmail/content/enigmailOverlay.js"/>
+
+  <toolbar id="nav-bar">
+    <box id="enig-nav-box" autostretch="never">
+      <button id="enig-nav-button1"
+              value="Enigmail"
+              oncommand="enigHandlerNavButton1();"
+              tooltip="aTooltip" tooltiptext="enigNavButton1"/>
+    </box>
+  </toolbar>
+
+</overlay>
