@@ -43,6 +43,7 @@
 <!ENTITY enigmail.alwaysTrustSend.label   "Always trust user ID">
 <!ENTITY enigmail.defaultSignNewsMsg.label "Sign news postings by default">
 <!ENTITY enigmail.confirmBeforeSend.label "Always confirm before sending">
+<!ENTITY enigmail.useDefaultComment.label "Use default comment in signature">
 
 <!ENTITY enigmail.keyserver.label         "Keyserver:">
 

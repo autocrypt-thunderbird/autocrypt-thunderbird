@@ -34,7 +34,7 @@
 # Makefile for package directory
 
 # Specify these as parameters to the make command
-ENIGMAIL_VERS = 0.39.0
+ENIGMAIL_VERS = 0.39.1
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
@@ -60,8 +60,7 @@ libs::
 	$(INSTALL) $(srcdir)/enigmail.js $(DIST)/bin/components
 
 xpi::
-	zip -r $(DIST)/bin/$(XPIFILE) install.js \
-               enigmail -x \*~ -x \*/CVS/\*
+	zip -r $(DIST)/bin/$(XPIFILE) install.js enigmail.spec
 	cd $(DIST)/bin; zip -g $(XPIFILE) \
                chrome/enigmail.jar \
                components/enigmail.xpt \

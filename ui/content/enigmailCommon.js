@@ -1,7 +1,7 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible IPC version
-var gEnigmailVersion = "0.39.0.0";
+var gEnigmailVersion = "0.39.1.0";
 var gIPCVersion      = "0.99.0.0";
 
 // Maximum size of message directly processed by Enigmail
@@ -40,6 +40,7 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "composeHtmlAlertCount":3,
                              "agentPath":"",
                              "passivePrivacy":false,
+                             "useDefaultComment":false,
                              "userIdSource":USER_ID_DEFAULT,
                              "userIdValue":"",
                              "noPassphrase":false,

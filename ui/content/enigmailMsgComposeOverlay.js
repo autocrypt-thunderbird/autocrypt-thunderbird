@@ -272,8 +272,7 @@ function enigSend(encryptFlags) {
          // Prevent space stuffing a la RFC 2646 (format=flowed).
 
          // (Do we need to set nsIDocumentEncoder::* flags?)
-         var encoderFlags = OutputFormatted | OutputCRLineBreak |
-                            OutputLFLineBreak;
+         var encoderFlags = OutputFormatted | OutputLFLineBreak;
          var docText = gEditorShell.GetContentsAs("text/plain", encoderFlags);
          //DEBUG_LOG("enigmailMsgComposeOverlay.js: docText["+encoderFlags+"] = '"+docText+"'\n");
 
@@ -295,8 +294,7 @@ function enigSend(encryptFlags) {
 
        // Get plain text
 
-       var encoderFlags = OutputFormatted | OutputCRLineBreak |
-                          OutputLFLineBreak;
+       var encoderFlags = OutputFormatted | OutputLFLineBreak;
 
        var plainText = gEditorShell.GetContentsAs("text/plain", encoderFlags);
 
@@ -604,11 +602,11 @@ function enigDecryptQuote(interactive) {
     tail     =     tail.replace(indentRegexp, "");
 
     // Handle blank indented lines
-    pgpBlock = pgpBlock.replace(/^[ \t]*>[ \t]*)$/, "");
-    tail     =     tail.replace(/^[ \t]*>[ \t]*)$/, "");
+    pgpBlock = pgpBlock.replace(/^[ \t]*>[ \t]*)$/g, "");
+    tail     =     tail.replace(/^[ \t]*>[ \t]*)$/g, "");
 
     // Trim leading space in tail
-    tail = tail.replace(/^\s*\n/, "\r\n");
+    tail = tail.replace(/^\s*\n/, "\n");
 
     // MULTILINE MATCHING OFF
     RegExp.multiline = false;

@@ -1146,9 +1146,16 @@ function (command, input, passFD, exitCodeObj, errorMsgObj, statusMsgObj) {
 
   var prefix = this.getLogDirectoryPrefix();
   if (prefix && (gLogLevel >= 4)) {
+    var inputCopy = input;
+
+    if (passFD) {
+      // Obscure passphrase
+      inputCopy = inputCopy.replace(/^.*\n/, "<passphrase>\n");
+    }
+
     WriteFileContents(prefix+"enigcmd.txt", command+"\n");
     WriteFileContents(prefix+"enigenv.txt", envList.join(",")+"\n");
-    WriteFileContents(prefix+"eniginp.txt", input);
+    WriteFileContents(prefix+"eniginp.txt", inputCopy);
     DEBUG_LOG("enigmail.js: Enigmail.execCmd: copied command line/env/input to files "+prefix+"enigcmd.txt/enigenv.txt/eniginp.txt\n");
   }
 
@@ -1290,6 +1297,11 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
     plainText = plainText.replace(/\n/g, "\r\n");
   }
 
+   var useDefaultComment = false;
+   try {
+     useDefaultComment = this.prefBranch.getBoolPref("useDefaultComment")
+   } catch(ex) { }
+
   var recipientPrefix;
   var encryptCommand = this.agentPath;
 
@@ -1304,7 +1316,11 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
       encryptCommand += " -e";
 
   } else {
-    encryptCommand += GPG_BATCH_OPTS + GPG_COMMENT_OPT;
+    encryptCommand += GPG_BATCH_OPTS;
+
+    if (!useDefaultComment)
+      encryptCommand += GPG_COMMENT_OPT;
+
     recipientPrefix = " -r ";
 
     if (encryptFlags & nsIEnigmail.ALWAYS_TRUST_SEND)
@@ -1651,22 +1667,37 @@ function (parent, uiFlags, cipherText,
 
   if (exitCodeObj.value == 0) {
     // Normal return
-    var errLines = cmdErrorMsgObj.value.split(/\r?\n/);
+    var errLines, goodSignPat, badSignPat;
 
-    var goodSignPat = /Good signature from (user )?"(.*)"\.?/i;
-    var badSignPat = /BAD signature from (user )?"(.*)"\.?/i;
+    if (statusMsg) {
+        errLines = statusMsg.split(/\r?\n/);
+
+        goodSignPat = /GOODSIG (\w{16}) (.*)$/i;
+        badSignPat  =  /BADSIG (\w{16}) (.*)$/i;
+
+    } else { 
+        errLines = cmdErrorMsgObj.value.split(/\r?\n/);
+
+        goodSignPat = /Good signature from (user )?"(.*)"\.?/i;
+        badSignPat  =  /BAD signature from (user )?"(.*)"\.?/i;
+    }
 
     errorMsgObj.value = "";
+    var matches;
 
     for (var j=0; j<errLines.length; j++) {
-      if (errLines[j].search(badSignPat) != -1) {
-        errorMsgObj.value = (errLines[j].match(badSignPat))[0];
+      matches = errLines[j].match(badSignPat);
+
+      if (matches && (matches.length > 2)) {
+        errorMsgObj.value = "BAD signature from " + matches[2];
         exitCodeObj.value = -1;
         break;
       }
 
-      if (errLines[j].search(goodSignPat) != -1) {
-        errorMsgObj.value = (errLines[j].match(goodSignPat))[0];
+      matches = errLines[j].match(goodSignPat);
+
+      if (matches && (matches.length > 2)) {
+        errorMsgObj.value = "Good signature from " + matches[2];
       }
     }
 
@@ -1942,7 +1973,7 @@ function (parent, uiFlags, userId, exitCodeObj, errorMsgObj) {
     command += PGP_BATCH_OPTS + " -f -kx ";
 
   } else {
-    command += GPG_BATCH_OPTS + GPG_COMMENT_OPT + " -a --export ";
+    command += GPG_BATCH_OPTS + " -a --export ";
   }
 
   command += userId;

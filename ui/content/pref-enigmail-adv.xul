@@ -70,6 +70,9 @@
 
     <checkbox id="enigmail_confirmBeforeSend"
               label="&enigmail.confirmBeforeSend.label;" />
+
+    <checkbox id="enigmail_useDefaultComment"
+              label="&enigmail.useDefaultComment.label;" />
   </groupbox>
 
   <hbox autostretch="never">
