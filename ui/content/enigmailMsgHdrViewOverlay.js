@@ -80,44 +80,44 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
     statusLine = errorMsg;
 
   } else if (keyId) {
-    statusInfo = "Public key "+keyId+" needed to verify signature";
+    statusInfo = EnigGetString("keyNeededPrefix")+" "+keyId+" "+EnigGetString("keyNeededSuffix");
 
     if (statusFlags & nsIEnigmail.INLINE_KEY) {
-      statusLine = statusInfo + "; click Decrypt button";
+      statusLine = statusInfo + EnigGetString("clickDecrypt");
     } else {
-      statusLine = statusInfo + "; click Broken Pen icon";
+      statusLine = statusInfo + EnigGetString("clickPen");
     }
 
   } else if (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
                             nsIEnigmail.UNVERIFIED_SIGNATURE |
                             nsIEnigmail.EXPIRED_SIGNATURE) ) {
-    statusInfo = "Error - signature verification failed";
-    statusLine = statusInfo + "; click Broken Pen icon for details";
+    statusInfo = EnigGetString("failedSig");
+    statusLine = statusInfo + EnigGetString("clickPenDetails");
     statusInfo += "\n\n" + errorMsg;
 
   } else if (statusFlags & nsIEnigmail.DECRYPTION_FAILED) {
     if (statusFlags & nsIEnigmail.NO_SECKEY) {
-      statusInfo = "Error - secret key needed to decrypt message";
+      statusInfo = EnigGetString("needKey");
     } else {
-      statusInfo = "Error - decryption failed";
+      statusInfo = EnigGetString("failedDecrypt");
     }
 
-    statusLine = statusInfo + "; click Broken Key icon for details";
+    statusLine = statusInfo + EnigGetString("clickKeyDetails");
     statusInfo += "\n\n" + errorMsg;
 
   } else if (statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
-    statusInfo = "Error - bad passphrase";
-    statusLine = statusInfo + "; click Decrypt button to retry";
+    statusInfo = EnigGetString("badPhrase");
+    statusLine = statusInfo + EnigGetString("clickDecryptRetry");
     statusInfo += "\n\n" + errorMsg;
 
   } else {
-    statusInfo = "Error - decryption/verification failed";
-    statusLine = statusInfo + "; View > Message security info for details";
+    statusInfo = EnigGetString("failedDecryptVerify");
+    statusLine = statusInfo + EnigGetString("viewInfo");
     statusInfo += "\n\n" + errorMsg;
   }
 
   if (!statusInfo && (statusFlags & nsIEnigmail.DECRYPTION_OKAY)) {
-    statusInfo = "Decrypted message";
+    statusInfo = EnigGetString("decryptedMsg");
   }
 
   gEnigSecurityInfo = { statusFlags: statusFlags,
