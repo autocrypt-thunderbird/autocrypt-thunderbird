@@ -1,4 +1,4 @@
-<?xml version="1.0"?> 
+<?xml version="1.0"?>
 
 <!--
    The contents of this file are subject to the Mozilla Public
@@ -57,7 +57,7 @@
   </hbox>
 
   <hbox>
-  <groupbox orient="vertical">
+  <groupbox width="300" orient="vertical">
     <caption label="&enigmail.whenSending.label;"/>
 
     <checkbox id="enigmail_defaultSignMsg"
@@ -77,7 +77,7 @@
 
   </groupbox>
 
-  <groupbox orient="vertical">
+  <groupbox width="300" orient="vertical">
     <caption label="&enigmail.moreOptions.label;"/>
 
     <checkbox id="enigmail_confirmBeforeSend"
@@ -99,9 +99,29 @@
               label="&enigmail.captureWebMail.label;" />
   </groupbox>
 
+
   </hbox>
 
-    <groupbox orient="vertical">
+  <hbox >
+    <groupbox  width="300" orient="vertical">
+       <caption label="&enigmail.recipientsSelectionOption.label;"/>
+       <radiogroup id="enigmail_recipientsSelectionOption">
+
+        <radio id="askRecipientsNever"
+               value="0"
+               label="&enigmail.askRecipientsNever.label;"/>
+
+        <radio id="askRecipientsClever"
+               value="1"
+               label="&enigmail.askRecipientsClever.label;"/>
+
+        <radio id="askRecipientsAlways"
+               value="2"
+               label="&enigmail.askRecipientsAlways.label;"/>
+       </radiogroup>
+    </groupbox>
+
+    <groupbox width="300" orient="vertical">
       <caption label="&enigmail.usePGPMimeOption.label;"/>
 
       <radiogroup id="enigmail_usePGPMimeOption">
@@ -120,7 +140,7 @@
 
        </radiogroup>
 
-      <hbox autostretch="never">
+      <hbox>
         <label control="mimeHashList"
              value="&enigmail.mimeHashAlgorithm.label;:" />
 
@@ -135,6 +155,7 @@
       </hbox>
 
     </groupbox>
+  </hbox>
 
   <hbox autostretch="never">
     <label control="enigmail_keyserver"

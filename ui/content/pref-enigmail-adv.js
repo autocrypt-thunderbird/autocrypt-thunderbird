@@ -12,6 +12,10 @@ function AdvStartup() {
    EnigDisplayRadioPref("usePGPMimeOption", EnigGetPref("usePGPMimeOption"),
                         gUsePGPMimeOptionList);
 
+
+   EnigDisplayRadioPref("recipientsSelectionOption", EnigGetPref("recipientsSelectionOption"),
+                          gEnigRecipientsSelectionOptions);
+
    gMimeHashElement = document.getElementById("mimeHashList");
    gMimeHashElement.selectedIndex = EnigGetPref("mimeHashAlgorithm");
 
@@ -34,6 +38,7 @@ function AdvStartup() {
 
    if (testEmailElement && userIdValue)
      testEmailElement.value = userIdValue;
+
 }
 
 function AdvResetPrefs() {
@@ -41,6 +46,8 @@ function AdvResetPrefs() {
 
    EnigDisplayRadioPref("usePGPMimeOption", gEnigmailPrefDefaults["usePGPMimeOption"],
                         gUsePGPMimeOptionList);
+   EnigDisplayRadioPref("recipientsSelectionOption", gEnigmailPrefDefaults["recipientsSelectionOption"],
+                        gEnigRecipientsSelectionOptions);
 
    gMimeHashElement.selectedIndex = gEnigmailPrefDefaults["mimeHashAlgorithm"];
 
@@ -57,6 +64,9 @@ function AdvOnAccept() {
    EnigSetRadioPref("usePGPMimeOption", gUsePGPMimeOptionList);
 
    EnigSetPref("mimeHashAlgorithm", gMimeHashElement.selectedIndex);
+
+   EnigSetRadioPref("recipientsSelectionOption", gEnigRecipientsSelectionOptions);
+
 
    if (gSendFlowedElement &&
        (gSendFlowedElement.checked != gSendFlowedValue) ) {

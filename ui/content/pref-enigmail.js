@@ -34,14 +34,6 @@ function setDisables(initializing) {
   EnigDisplayRadioPref("defaultEncryptionOption", defaultEncryptionOption,
                         gEnigDefaultEncryptionOptions);
 
-
-  var recipientsSelectionOptionElement = document.getElementById("enigmail_recipientsSelectionOption");
-  var recipientsSelectionOption = initializing ? EnigGetPref("recipientsSelectionOption")
-                                  : recipientsSelectionOptionElement.value;
-
-  EnigDisplayRadioPref("recipientsSelectionOption", recipientsSelectionOption,
-                        gEnigRecipientsSelectionOptions);
-  
   var noPassphraseElement = document.getElementById("noPassphrase");
   var noPassphrase = initializing ? EnigGetPref("noPassphrase")
                               : noPassphraseElement.checked;

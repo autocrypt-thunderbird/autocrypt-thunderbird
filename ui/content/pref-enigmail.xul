@@ -62,7 +62,6 @@
                        "userIdFromAddr",
                        "noPassphrase",
                        "enigmail_defaultEncryptionOption",
-                       "enigmail_recipientsSelectionOption",
                        "enigmail_maxIdleMinutes"
                        ];
   ]]>
@@ -124,29 +123,6 @@
         <radio id="defaultEncryptionSign"
                value="2"
                label="&enigmail.defaultEncryptionSign.label;" 
-               oncommand="setDisables(false);"/>
-       </radiogroup>
-    </groupbox>
-    
-    <groupbox  orient="vertical">
-       <caption label="&enigmail.recipientsSelectionOption.label;"/>
-       <radiogroup id="enigmail_recipientsSelectionOption"
-                  value="1"
-                  prefstring="extensions.enigmail.recipientsSelectionOption">
-
-        <radio id="askRecipientsNever"
-               value="0"
-               label="&enigmail.askRecipientsNever.label;"
-               oncommand="setDisables(false);"/>
-
-        <radio id="askRecipientsClever"
-               value="1"
-               label="&enigmail.askRecipientsClever.label;" 
-               oncommand="setDisables(false);"/>
-
-        <radio id="askRecipientsNever"
-               value="2"
-               label="&enigmail.askRecipientsAlways.label;" 
                oncommand="setDisables(false);"/>
        </radiogroup>
     </groupbox>
