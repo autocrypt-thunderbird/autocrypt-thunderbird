@@ -71,7 +71,8 @@ if (!verifyDiskSpace(fProgram, srDest)) {
     } else {
       performInstall();
       if (isTbird) {
-        alert("Enigmail v"+APP_VERSION+" has been successfully installed. Restart after EnigMime has been installed as well.");
+        var xulFile="XUL."+(getPlatform() == "win" ? 'mfl' : 'mfasl');
+        alert("Enigmail v"+APP_VERSION+" has been successfully installed. Install the EnigMime module and then restart Thunderbird.\n\n ********** IMPORTANT **********\nIf you upgraded from a previous version of Thunderbird, you *must* delete "+xulFile+" and the chrome folder in your profile directory, or Thunderbird/Enigmail may not work properly and may even *crash* !");
       }
     }
   }
