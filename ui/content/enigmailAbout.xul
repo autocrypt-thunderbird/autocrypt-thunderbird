@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?> 
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?> 
+
+<?xul-overlay href="chrome://global/content/dialogOverlay.xul"?> 
+
+<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+
+<window id="EnigmailAbout"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        title="Enigmail About;"
+        windowtype="enigmail:about"
+        width="480" height="240"
+        screenX="10" screenY="10"
+        persist="screenX screenY width height"> 
+
+  <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+
+<iframe id="contentFrame" type="content" name="contentFrame"
+        src="chrome://enigmail/content/enigmailAbout.htm" flex="100%"/>
+
+</window>

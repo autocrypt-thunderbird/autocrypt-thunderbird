@@ -2,82 +2,7 @@
 <head>
   <title>Enigmail Keygen Console</title>
 
-  <script language="JavaScript" src="chrome://enigmail/content/enigmailCommon.js">
-  </script>
-
   <script language="JavaScript">
-
-    // Initialize enigmailCommon
-    EnigInitCommon("enigmailKeygenConsole");
-
-    window.mouseDownState = false;
-
-    function RefreshConsole() {
-
-      //dump("enigmailKeygenConsole.htm: RefreshConsole\n");
-
-      var enigmailSvc = GetEnigmailSvc();
-      if (!enigmailSvc)
-        return;
-
-      var ipcRequest = enigmailSvc.keygenRequest;
-      if (!ipcRequest)
-        return;
-
-      var keygenConsole = ipcRequest.stdoutConsole;
-
-      if (keygenConsole && keygenConsole.hasNewData) {
-
-        keygenConsole.hasNewData = true;
-        var console = document.getElementById('console');
-        console.firstChild.data = keygenConsole.data;
-
-        if (!window.mouseDownState)
-           window.scrollTo(0,9999);
-      }
-
-      var keygenProcess = ipcRequest.pipeTransport;
-
-      if (keygenProcess && !keygenProcess.isAttached) {
-        dump("enigmailKeygenConsole.htm: KeygenProcess terminated\n");
-        UnloadHandler();
-
-        var exitCode = keygenProcess.exitCode();
-        dump("enigmailKeygenConsole.htm: exitCode = "+exitCode+"\n");
-        
-        keygenProcess.terminate();
-        keygenProcess = null;
-        enigmailSvc.keygenProcess = null;
-
-        keygenConsole.close();
-        keygenConsole = null;
-        enigmailSvc.keygenConsole = null;
-
-        // Give focus to this window
-        window.focus();
-      }
-
-      return false;
-    }
-
-    function LoadHandler() {
-      // Refresh console every second
-      //dump("enigmailKeygenConsole.htm: LoadHandler\n");
-
-      var enigmailSvc = GetEnigmailSvc();
-      if (!enigmailSvc)
-        return;
-
-       window.consoleIntervalId = window.setInterval(RefreshConsole, 1000);
-    }
-
-    function UnloadHandler() {
-       // Cancel console refresh
-       //dump("enigmailKeygenConsole.htm: UnloadHandler\n");
-
-       if (window.consoleIntervalId)
-          window.clearInterval(window.consoleIntervalId);
-    }
 
     function MouseDown(val) {
       // Tracks mouse down state
@@ -89,10 +14,8 @@
 
 </head>
 
-<body onLoad="LoadHandler();"
-      onMouseDown="MouseDown(true);"
-      onMouseUp="MouseDown(false);"
-      onUnload="UnloadHandler();">
+<body onMouseDown="MouseDown(true);"
+      onMouseUp="MouseDown(false);">
 
   <pre id="console">
    Click Generate key button to initiate key generation.

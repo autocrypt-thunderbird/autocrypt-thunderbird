@@ -698,12 +698,18 @@ function EnigClearPassphrase() {
   enigmailSvc.clearCachedPassphrase();
 }
 
+function EnigViewAbout() {
+  DEBUG_LOG("enigmailCommon.js: EnigViewAbout\n");
+
+  toOpenWindowByType("enigmail:about",
+                     "chrome://enigmail/content/enigmailAbout.xul");
+}
+
 function EnigViewConsole() {
   DEBUG_LOG("enigmailCommon.js: EnigViewConsole\n");
-  window.open('enigmail:console', 'Enigmail Console');
 
-  //var navWindow = LoadURLInNavigatorWindow("enigmail:console", true);
-  //if (navWindow) navWindow.focus();
+  toOpenWindowByType("enigmail:console",
+                     "chrome://enigmail/content/enigmailConsole.xul");
 }
 
 function EnigViewDebugLog() {
@@ -774,7 +780,7 @@ function LoadURLInNavigatorWindow(url, aOpenFlag)
 
   } else if (aOpenFlag) {
     // if no browser window available and it's ok to open a new one, do so
-    navWindow = window.open(url, "EnigmailConsole");
+    navWindow = window.open(url, "Enigmail");
   }
 
   DEBUG_LOG("enigmailCommon.js: LoadURLInNavigatorWindow: navWindow="+navWindow+"\n");

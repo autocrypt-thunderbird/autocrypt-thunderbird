@@ -418,6 +418,27 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
   var msgFrame = window.frames["messagepane"];
   var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
 
+  if (0) {
+    // Testing URL display in message pane
+    dump("AAA\n");
+    var uri2 = enigmailSvc.createMessageURI("OLD URL",
+                                         "text/html",
+                                         "",
+                                         "<html><body>BODY</body></html>",
+                                         false);
+
+    var browser = document.getElementById("messagepane");
+    dump("browser"+browser+"\n");
+    dump("browser.docshell"+browser.docShell+"\n");
+
+    // Need to add event listener to browser to make it work
+    // Adding to msgFrame doesn't seem to work
+    browser.addEventListener("unload", enigMessageUnload, true);
+
+    msgFrame.location = uri2;
+    return;
+  }
+
   try {
     // Display plain text with hyperlinks
 

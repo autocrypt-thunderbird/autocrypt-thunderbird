@@ -2,57 +2,9 @@
 <head>
   <title>Enigmail Console</title>
 
-  <script language="JavaScript" src="chrome://enigmail/content/enigmailCommon.js">
-  </script>
-
   <script language="JavaScript">
 
-    //netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-
-    // Initialize enigmailCommon
-    EnigInitCommon("enigmailConsole.htm");
-
     window.mouseDownState = false;
-
-    function RefreshConsole() {
-      //DEBUG_LOG("enigmailConsole.htm: RefreshConsole():\n");
-
-      var enigmailSvc = GetEnigmailSvc();
-      if (!enigmailSvc)
-        return;
-
-      if (enigmailSvc.console.hasNewData) {
-         DEBUG_LOG("enigmailConsole.htm: RefreshConsole(): hasNewData\n");
-         enigmailSvc.console.hasNewData = true;
-
-         var consoleElement = document.getElementById('console');
-
-         consoleElement.firstChild.data = enigmailSvc.console.data;
-
-         if (!window.mouseDownState)
-            window.scrollTo(0,9999);
-      }
-      return false;
-    }
-
-    function LoadHandler() {
-      var enigmailSvc = GetEnigmailSvc();
-      if (!enigmailSvc)
-        return;
-
-      WRITE_LOG("enigmailConsole.htm: LoadHandler: "+enigmailSvc+"\n");
-      enigmailSvc.console.hasNewData = true;
-
-      // Refresh console every 2 seconds
-      RefreshConsole();
-      window.consoleIntervalId = window.setInterval(RefreshConsole, 2000);
-    }
-
-    function UnloadHandler() {
-       // Cancel console refresh
-       if (window.consoleIntervalId)
-          window.clearInterval(window.consoleIntervalId);
-    }
 
     function MouseDown(val) {
       // Tracks mouse down state
@@ -64,10 +16,8 @@
 
 </head>
 
-<body onLoad="LoadHandler();"
-      onMouseDown="MouseDown(true);"
-      onMouseUp="MouseDown(false);"
-      onUnload="UnloadHandler();">
+<body onMouseDown="MouseDown(true);"
+      onMouseUp="MouseDown(false);">
 
 <pre id="console">
 ENIGMAIL CONSOLE

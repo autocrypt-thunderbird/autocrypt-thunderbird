@@ -17,5 +17,11 @@ nsEnigMail                CID    "847b3a01-7ab1-11d4-8f02-006008948af5"
 
 EnigMailProtocolHandler   CID    "847b3a11-7ab1-11d4-8f02-006008948af5"
 
+nsEnigMsgCompose          CID    "847b3a21-7ab1-11d4-8f02-006008948af5"
+nsEnigMsgComposeFactory   CID    "847b3a22-7ab1-11d4-8f02-006008948af5"
+
+nsIEnigMsgCompFields      IID    "847b3a30-7ab1-11d4-8f02-006008948af5"
+nsEnigMsgCompFields       CID    "847b3a31-7ab1-11d4-8f02-006008948af5"
+
 PGPModule                 CID    "847b3af1-7ab1-11d4-8f02-006008948af5"
 

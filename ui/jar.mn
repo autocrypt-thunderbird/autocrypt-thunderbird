@@ -1,7 +1,10 @@
 enigmail.jar:
 	content/enigmail/contents.rdf              (content/contents.rdf)
-	content/enigmail/enigmailAbout.htm         (content/enigmailAbout.htm)
 	content/enigmail/enigmailCommon.js         (content/enigmailCommon.js)
+	content/enigmail/enigmailAbout.xul         (content/enigmailAbout.xul)
+	content/enigmail/enigmailAbout.htm         (content/enigmailAbout.htm)
+	content/enigmail/enigmailConsole.xul       (content/enigmailConsole.xul)
+	content/enigmail/enigmailConsole.js        (content/enigmailConsole.js)
 	content/enigmail/enigmailConsole.htm       (content/enigmailConsole.htm)
 	content/enigmail/enigmailPanel.xul         (content/enigmailPanel.xul)
 	content/enigmail/enigmailPanel.js          (content/enigmailPanel.js)

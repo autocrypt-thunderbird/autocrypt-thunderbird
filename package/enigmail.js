@@ -44,10 +44,18 @@ const NS_ENIGMAILPROTOCOLHANDLER_CONTRACTID =
 
 const NS_ENIGMAIL_CID =
   Components.ID("{847b3a01-7ab1-11d4-8f02-006008948af5}");
+
 const NS_ENIGMAILPROTOCOLHANDLER_CID =
   Components.ID("{847b3a11-7ab1-11d4-8f02-006008948af5}");
+
 const NS_PGP_MODULE_CID =
   Components.ID("{847b3af1-7ab1-11d4-8f02-006008948af5}");
+
+const NS_ENIGMSGCOMPOSE_CID =
+  Components.ID("{847b3a21-7ab1-11d4-8f02-006008948af5}");
+
+const NS_ENIGMSGCOMPOSEFACTORY_CID =
+  Components.ID("{847b3a22-7ab1-11d4-8f02-006008948af5}");
 
 // Contract IDs and CIDs used by this module
 const NS_IPCSERVICE_CONTRACTID  = "@mozilla.org/process/ipc-service;1";
@@ -56,6 +64,11 @@ const NS_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1";
 
 const NS_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
 
+const NS_MSGCOMPOSESECURE_CONTRACTID = "@mozilla.org/messengercompose/composesecure;1";
+
+const NS_ENIGMSGCOMPOSE_CONTRACTID   = "@mozilla.org/enigmail/composesecure;1";
+const NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID   = "@mozilla.org/enigmail/composesecure-factory;1";
+
 const NS_SIMPLEURI_CONTRACTID   = "@mozilla.org/network/simple-uri;1";
 
 const NS_TIMER_CONTRACTID       = "@mozilla.org/timer;1";
@@ -63,6 +76,10 @@ const NS_TIMER_CONTRACTID       = "@mozilla.org/timer;1";
 const NS_OBSERVERSERVICE_CONTRACTID = "@mozilla.org/observer-service;1";
 
 const NS_PROMPTSERVICE_CONTRACTID = "@mozilla.org/embedcomp/prompt-service;1";
+
+const ASS_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
+
+const WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
 
 const NS_HTTPPROTOCOLHANDLER_CID_STR= "{4f47e42e-4d23-4dd3-bfda-eb29255e9ea3}";
 
@@ -748,39 +765,45 @@ function (aURI)
     return channel;
   }
 
-  var spec;
+  var winName, spec;
   if (aURI.spec == aURI.scheme+":about") {
     // About Enigmail
-    spec = "chrome://enigmail/content/enigmailAbout.htm";
+    winName = "enigmail:about";
+    spec = "chrome://enigmail/content/enigmailAbout.xul";
 
   } else if (aURI.spec == aURI.scheme+":console") {
     // Display enigmail console messages
-    spec = "chrome://enigmail/content/enigmailConsole.htm";
-
-  } else if (aURI.spec == aURI.scheme+":keygenConsole") {
-    // Display enigmail key generation console
-    spec = "chrome://enigmail/content/enigmailKeygenConsole.htm";
+    winName = "enigmail:console";
+    spec = "chrome://enigmail/content/enigmailConsole.xul";
 
   } else if (aURI.spec == aURI.scheme+":keygen") {
     // Display enigmail key generation console
+    winName = "enigmail:keygen";
     spec = "chrome://enigmail/content/enigmailKeygen.xul";
 
   } else {
     // Display Enigmail about page
-    spec = "chrome://enigmail/content/enigmailAbout.htm";
+    winName = "enigmail:about";
+    spec = "chrome://enigmail/content/enigmailAbout.xul";
   }
 
-  // ***NOTE*** Creating privileged channel
-  var ioServ = Components.classesByID[NS_IOSERVICE_CID_STR].getService(Components.interfaces.nsIIOService);
+  var windowManager = Components.classes[WMEDIATOR_CONTRACTID].getService(Components.interfaces.nsIWindowMediator);
 
-  var privChannel = ioServ.newChannel(spec, "", null);
+  var recentWin = windowManager.getMostRecentWindow(winName);
 
-  privChannel.originalURI = aURI;
+  dump("recentWin="+recentWin+"\n");
 
-  // Make new channel owned by XUL owner
-  privChannel.owner = GetXULOwner();
+  if (recentWin) {
+    recentWin.focus();
 
-  return privChannel;
+  } else {
+    var appShellSvc = Components.classes[ASS_CONTRACTID].getService(Components.interfaces.nsIAppShellService);
+    var domWin = appShellSvc.hiddenDOMWindow;
+
+    domWin.open(spec, "_blank", "chrome,menubar,toolbar,resizable");
+  }
+
+  throw Components.results.NS_ERROR_FAILURE;
 }
 
 function EnigmailProtocolHandlerFactory() {
@@ -898,6 +921,7 @@ Enigmail.prototype.registeringModule = false;
 Enigmail.prototype.initialized = false;
 Enigmail.prototype.initializationAttempted = false;
 Enigmail.prototype.initializationError = "";
+Enigmail.prototype.composeSecure = false;
 
 Enigmail.prototype.logFileStream = null;
 
@@ -1119,10 +1143,27 @@ function () {
 Enigmail.prototype.initialize =
 function (version, prefBranch) {
   this.initializationAttempted = true;
+
   this.prefBranch = prefBranch;
 
   DEBUG_LOG("enigmail.js: Enigmail.initialize: START\n");
   if (this.initialized) return;
+
+  try {
+    var enigMsgComposeFactory = Components.classes[NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID].createInstance(Components.interfaces.nsIFactory);
+
+    var compMgr = Components.manager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
+
+    compMgr.registerFactory(NS_ENIGMSGCOMPOSE_CID,
+                            "Enig Msg Compose",
+                            NS_MSGCOMPOSESECURE_CONTRACTID,
+                            enigMsgComposeFactory);
+
+    var msgComposeSecureCID = compMgr.contractIDToCID(NS_MSGCOMPOSESECURE_CONTRACTID);
+
+    this.composeSecure = (msgComposeSecureCID.toString() == 
+                          NS_ENIGMSGCOMPOSE_CID);
+  } catch (ex) {}
 
   var httpHandler = Components.classesByID[NS_HTTPPROTOCOLHANDLER_CID_STR].createInstance();
   httpHandler = httpHandler.QueryInterface(nsIHttpProtocolHandler);
@@ -1146,6 +1187,7 @@ function (version, prefBranch) {
   DEBUG_LOG("enigmail.js: Enigmail version "+this.version+"\n");
   DEBUG_LOG("enigmail.js: OS/CPU="+this.oscpu+"\n");
   DEBUG_LOG("enigmail.js: Platform="+this.platform+"\n");
+  DEBUG_LOG("enigmail.js: composeSecure="+this.composeSecure+"\n");
 
   var processInfo;
   try {
@@ -2506,7 +2548,6 @@ IPCContext.prototype = {
 }
 
 const ENIGMAIL_PANEL_URL = "chrome://enigmail/content/enigmailPanel.xul";
-const WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
 
 Enigmail.prototype.selectPanel = 
 function (url) {

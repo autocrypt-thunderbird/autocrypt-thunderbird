@@ -31,10 +31,14 @@
 # GPL.
 #
 
-DEPTH=..\..
+# Makefile for public directory
 
-MODULE=enigmail
+DEPTH=..\..\..
 
-DIRS = public src ui package
+MODULE       = enigmail
+XPIDL_MODULE = enigmail
+
+XPIDLSRCS=  .\nsIEnigmail.idl     \
+            $(NULL)
 
 include <$(DEPTH)\config\rules.mak>

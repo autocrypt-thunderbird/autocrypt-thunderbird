@@ -90,7 +90,7 @@
         <menuitem id="enigmail_about"
              label="&enigmail.about.label;"
              accesskey="&enigmail.about.accesskey;"
-             oncommand="window.open('enigmail:about');" />
+             oncommand="EnigViewAbout();" />
 
       </menupopup>
     </menu>

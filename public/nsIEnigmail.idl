@@ -54,14 +54,15 @@ interface nsIEnigmail : nsISupports
 
   readonly attribute boolean isWin32;         /* Platform type */
 
-  attribute nsIIPCRequest keygenRequest;
+  readonly attribute nsIIPCRequest keygenRequest;
 
-  attribute long maxIdleMinutes;
+  readonly attribute long maxIdleMinutes;
 
-  attribute boolean initialized;
-  attribute boolean initializationAttempted;
-  attribute  string initializationError;
+  readonly attribute boolean initialized;
+  readonly attribute boolean initializationAttempted;
+  readonly attribute  string initializationError;
 
+  readonly attribute boolean composeSecure;
   readonly attribute nsIFileOutputStream logFileStream;
 
   void initialize(in string version, in nsIPrefBranch enigmailPrefs);
