@@ -62,7 +62,7 @@
                        "userIdValue",
                        "noPassphrase",
                        "enigmail_defaultSignMsg",
-                       "enigmail_defaultEncryptMsg",
+                       "enigmail_defaultEncryptSignMsg",
                        "send_plaintext_flowed",
                        "enigmail_maxIdleMinutes"
                        ];
@@ -128,11 +128,11 @@
               prefstring="extensions.enigmail.defaultSignMsg"
               prefattribute="checked"/>
 
-      <checkbox id="enigmail_defaultEncryptMsg"
-              label="&enigmail.defaultEncryptMsg.label;"
+      <checkbox id="enigmail_defaultEncryptSignMsg"
+              label="&enigmail.defaultEncryptSignMsg.label;"
               pref="true"
               preftype="bool"
-              prefstring="extensions.enigmail.defaultEncryptMsg"
+              prefstring="extensions.enigmail.defaultEncryptSignMsg"
               prefattribute="checked"/>
 
       <checkbox id="send_plaintext_flowed"

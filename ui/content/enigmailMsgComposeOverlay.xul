@@ -66,12 +66,12 @@
              accesskey="&enigmail.defaultSignMsg.accesskey;"
              oncommand="enigToggleAttribute('defaultSignMsg');" />
 
-        <menuitem id="enigmail_defaultEncryptMsg"
+        <menuitem id="enigmail_defaultEncryptSignMsg"
              type="checkbox"
              checked="false"
-             label="&enigmail.defaultEncryptMsg.label;"
-             accesskey="&enigmail.defaultEncryptMsg.accesskey;"
-             oncommand="enigToggleAttribute('defaultEncryptMsg');" />
+             label="&enigmail.defaultEncryptSignMsg.label;"
+             accesskey="&enigmail.defaultEncryptSignMsg.accesskey;"
+             oncommand="enigToggleAttribute('defaultEncryptSignMsg');" />
 
         <menuitem id="enigmail_confirmBeforeSend"
              type="checkbox"
