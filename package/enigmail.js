@@ -2786,7 +2786,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
         badSignPat  =    /BADSIG (\w{16}) (.*)$/i;
         keyExpPat   = /EXPKEYSIG (\w{16}) (.*)$/i
         revKeyPat   = /REVKEYSIG (\w{16}) (.*)$/i;
-        validSigPat =  /VALIDSIG (\w+) (.*) (\d+) (.*) (.*) (.*) (.*) (.*) (.*) (.*)$/i;
+        validSigPat =  /VALIDSIG (\w+) (.*) (\d+) (.*)/i;
 
     } else {
         errLines = cmdErrorMsgObj.value.split(/\r?\n/);
