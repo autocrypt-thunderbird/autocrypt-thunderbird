@@ -172,6 +172,11 @@ function enigComposeOpen() {
       if (enigMimeService.isEncrypted(gMsgCompose.originalMsgURI)) {
         enigSetSendMode('encrypt');
       }
+      else if (typeof(gMsgCompose.compFields.draftId)=="string") {
+        if (enigMimeService.isEncrypted(gMsgCompose.compFields.draftId.replace(/\?.*$/, ""))) {
+          enigSetSendMode('encrypt');
+        }
+      }
     }
 
   }
@@ -1803,6 +1808,10 @@ function enigDecryptQuote(interactive) {
 
   // Decode plaintext from charset to unicode
   plainText = EnigConvertToUnicode(plainText, charset);
+  if (EnigGetPref("keepSettingsForReply")) {
+    if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_OKAY)
+      enigSetSendMode('encrypt');
+  }
 
   var exitCode = exitCodeObj.value;
 
@@ -1843,7 +1852,7 @@ function enigDecryptQuote(interactive) {
       plainText = plainText.substr(0, signOffset+1);
     }
   }
-
+  
   // Replace encrypted quote with decrypted quote
   EnigEditorSelectAll();
 
