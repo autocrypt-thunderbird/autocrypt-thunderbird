@@ -28,12 +28,20 @@
 
     passphrase = EnigPassphrase();
 
-    var gKeygenProcess = gEnigmailSvc.generateKey("First M. Last",
+    var gKeygenProcess;
+    try {
+       gKeygenProcess = gEnigmailSvc.generateKey("First M. Last",
                                                  "comment",
                                                  "user@example.com",
                                                  0,
                                                  passphrase,
                                                  gKeygenConsole);
+    } catch (ex) {
+    }
+
+    if (!gKeygenProcess) {
+       EnigAlert("Key generation failed!");
+    }
 
     dump("enigmailKeygen.htm: gKeygenProcess = "+gKeygenProcess+"\n");
 

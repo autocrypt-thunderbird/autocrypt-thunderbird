@@ -255,6 +255,9 @@ EnigmailFactory.prototype = {
 
   createInstance: function (outer, iid) {
     //DEBUG_LOG("EnigmailFactory.createInstance:\n");
+    if (!gEnigmailSvc || !gEnigmailSvc.initialized)
+    throw Components.results.NS_ERROR_NOT_INITIALIZED;
+
     return gEnigmailSvc;
   }
 }
@@ -472,26 +475,26 @@ function GetEnv(name) {
   return gProcessInfo.getEnv(name);
 }
 
-function isAbsolutePath(filePath, isUnix) {
+function isAbsolutePath(filePath, isWin32) {
   // Check if absolute path
-  if (isUnix) {
-    return (filePath.search(/^\//) == 0)
-  } else {
+  if (isWin32) {
     return (filePath.search(/^\w+:\\/) == 0);
+  } else {
+    return (filePath.search(/^\//) == 0)
   }
 }
 
-function ResolvePath(filePath, envPath, isUnix) {
+function ResolvePath(filePath, envPath, isWin32) {
   DEBUG_LOG("enigmail.js: ResolvePath: filePath="+filePath+"\n");
 
-  if (isAbsolutePath(filePath, isUnix))
+  if (isAbsolutePath(filePath, isWin32))
     return filePath;
 
   if (!envPath)
      return null;
 
   var retValue = null;
-  var pathDirs = envPath.split(isUnix ? ":" : ";");
+  var pathDirs = envPath.split(isWin32 ? ";" : ":");
   for (var j=0; j<pathDirs.length; j++) {
      var pathDir = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
 
@@ -630,7 +633,8 @@ function Enigmail(registeringModule)
   this.platform = httpHandler.platform;
   DEBUG_LOG("enigmail.js: Enigmail: platform="+this.platform+"\n");
 
-  this.unix = (this.platform == "X11");
+  this.unix = (this.platform.search(/X11/i) == 0);
+  this.win32 = (this.platform.search(/Win/i) == 0);
 
   this.passEnv = new Array();
 
@@ -734,17 +738,17 @@ function () {
   var j;
   for (j=0; j<agentList.length; j++) {
     agentType = agentList[j];
-    var agentName = this.unix ? agentType : agentType+".exe";
+    var agentName = this.win32 ? agentType+".exe" : agentType;
 
-    agentPath = ResolvePath(agentName, envPath, this.unix);
+    agentPath = ResolvePath(agentName, envPath, this.win32);
     if (agentPath)
       break;
   }
 
-  if (!agentPath && (this.platform.search(/Win/i) == 0)) {
+  if (!agentPath && this.win32) {
     // Win32: search for GPG in c:\gnupg and c:\gnupg\bin
     agentType = "gpg";
-    agentPath = ResolvePath("gpg.exe", "c:\\gnupg;c:\\gnupg\\bin", this.unix);
+    agentPath = ResolvePath("gpg.exe", "c:\\gnupg;c:\\gnupg\\bin", this.win32);
   }
 
   if (!agentPath) {
@@ -752,7 +756,7 @@ function () {
     throw Components.results.NS_ERROR_FAILURE;
   }
 
-  // Escape backslashes in agent path
+  // Escape any backslashes in agent path
   agentPath = agentPath.replace(/\\/g, "\\\\");
 
   CONSOLE_LOG("EnigmailAgentPath="+agentPath+"\n");
@@ -769,7 +773,10 @@ function () {
 
   CONSOLE_LOG("enigmail> "+command+"\n");
 
-  var version = this.ipcService.exec(command);
+  // This particular command execution seems to be essential on win32
+  // (In particular, this should be the first command executed and
+  //  *should* use the shell, i.e., command.com)
+  var version = this.ipcService.execSh(command);
 
   CONSOLE_LOG(version+"\n");
 
@@ -804,7 +811,6 @@ function (command, input, errMessagesObj, statusObj, exitCodeObj) {
   }
 
   WRITE_LOG("enigmail.js: Enigmail.execCmd: envList = "+envList+"\n");
-  WRITE_LOG("enigmail.js: Enigmail.execCmd: "+gEnigmailSvc.ipcService.execPipe+"\n");
 
   var outObj = new Object();
   var errObj = new Object();
@@ -813,13 +819,26 @@ function (command, input, errMessagesObj, statusObj, exitCodeObj) {
 
   CONSOLE_LOG("\nenigmail> "+command+"\n");
   
-  exitCodeObj.value = gEnigmailSvc.ipcService.execPipe(command,
+  try {
+    var useShell = this.win32;
+    exitCodeObj.value = gEnigmailSvc.ipcService.execPipe(command,
+                                                       useShell,
                                                        input, input.length,
                                                        envList, envList.length,
                                                        outObj, outLenObj,
                                                        errObj, errLenObj);
-  var outputData = outObj.value;
-  var errOutput  = errObj.value;
+  } catch (ex) {
+    exitCodeObj.value = -1;
+  }
+
+  var outputData = "";
+  var errOutput  = "";
+
+  if (outObj.value)
+     outputData = outObj.value;
+
+  if (errObj.value)
+     errOutput  = errObj.value;
 
   WRITE_LOG("enigmail.js: Enigmail.execCmd: exitCode = "+exitCodeObj.value+"\n");
   WRITE_LOG("enigmail.js: Enigmail.execCmd: errOutput = "+errOutput+"\n");
@@ -885,13 +904,13 @@ function (plainText, toMailAddr, passphrase, statusCodeObj, statusMsgObj) {
 
   } else {
     encryptCommand += " --batch --no-tty --passphrase-fd 0 --status-fd 2";
-    recipientPrefix = " --recipient ";
+    recipientPrefix = " -r ";
 
     if (gEnigmailSvc.encryptMsg) {
-      encryptCommand += " --armor --encrypt";
+      encryptCommand += " -a -e";
 
       if (gEnigmailSvc.signMsg)
-        encryptCommand += " --sign";
+        encryptCommand += " -s";
 
     } else if (gEnigmailSvc.signMsg) {
       encryptCommand += " --clearsign";
@@ -924,7 +943,7 @@ function (plainText, toMailAddr, passphrase, statusCodeObj, statusMsgObj) {
                                   passphrase+"\n"+plainText,
                                   errMessagesObj, statusObj, statusCodeObj);
 
-  DEBUG_LOG("enigmail.js: Enigmail.encryptMessage: errMessages: "+errMessagesObj.value+"\n");
+  CONSOLE_LOG(errMessagesObj.value+"\n");
 
   if (statusCodeObj.value != 0) {
     // "Unremember" passphrase on error exit
@@ -959,7 +978,7 @@ function (cipherText, passphrase, statusCodeObj, statusMsgObj) {
     decryptCommand += " +batchmode +force -ft";
 
   } else {
-    decryptCommand += " --batch --no-tty --passphrase-fd 0 --status-fd 2 --decrypt";
+    decryptCommand += " --batch --no-tty --passphrase-fd 0 --status-fd 2 -d";
   }
 
   if (passphrase == null) {
@@ -1094,12 +1113,24 @@ function (name, comment, email, expiryDate, passphrase, pipeConsole) {
 
   WRITE_LOG("enigmail.js: Enigmail.generateKey: inputData="+inputData+"\n");
 
-  var keygenProcess = gEnigmailSvc.ipcService.execAsync(command,
-                                                       inputData,
-                                                       inputData.length,
-                                                       [], 0,
-                                                       pipeConsole,
-                                                       pipeConsole);
+  var keygenProcess = null;
+  try {
+    var useShell = this.win32;
+    keygenProcess = gEnigmailSvc.ipcService.execAsync(command,
+                                                      useShell,
+                                                      inputData,
+                                                      inputData.length,
+                                                      [], 0,
+                                                      pipeConsole,
+                                                      pipeConsole);
+  } catch (ex) {
+  }
+
+  if (!keygenProcess) {
+    ERROR_LOG("enigmail.js: Enigmail.generateKey: keygenProcess failed\n");
+    return null;
+  }
+
   this.keygenProcess = keygenProcess;
   this.keygenConsole = pipeConsole;
 
