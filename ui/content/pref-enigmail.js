@@ -23,6 +23,12 @@ function AdvStartup() {
       if (window.arguments[0].clientType!="seamonkey") {
           document.getElementById("enigmail_disableSMIMEui").setAttribute("collapsed", true);
       }
+
+      if ((typeof window.arguments[0].selectTab)=="string") {
+          var selectTab=document.getElementById(window.arguments[0].selectTab);
+          selectTab.click();
+          selectTab.setAttribute("selected", true);
+      }
    }
    EnigDisplayRadioPref("usePGPMimeOption", EnigGetPref("usePGPMimeOption"),
                         gUsePGPMimeOptionList);

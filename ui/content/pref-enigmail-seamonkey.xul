@@ -11,7 +11,7 @@
    implied. See the MPL for the specific language governing
    rights and limitations under the MPL.
    
-   The Original Code is EnigMail.
+   The Original Code is Enigmail.
    
    The Initial Developer of the Original Code is Ramalingam Saravanan.
    Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
@@ -52,6 +52,7 @@
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail-seamonkey.js"/>
+  <script type="application/x-javascript" src="chrome://jslib/content/jslib.js"/>
 
   <script type="application/x-javascript">
   <![CDATA[
@@ -65,7 +66,7 @@
   ]]>
   </script>
 
-    <hbox>
+    <hbox align="center">
       <label control="enigmail_agentPath"
             value="&enigmail.agentPath.label;" />
       <textbox id="enigmail_agentPath"
@@ -77,10 +78,9 @@
     <hbox>
       <groupbox orient="vertical">
         <caption label="&enigmail.passwordSettings.label;"/>
-          <hbox autostretch="never">
+          <hbox autostretch="never" align="center">
             <label control="enigmail_maxIdleMinutes"
                   value="&enigmail.maxIdleMinutesHead.label;" />
-
             <textbox id="enigmail_maxIdleMinutes"
                     size="4"
                     pref="true"
@@ -100,17 +100,17 @@
 
       </groupbox>
     </hbox>
-    <hbox autostretch="never">
-      <label control="enigmail_keyserver"
-            value="&enigmail.keyserver.label;:"/>
 
+    <vbox>
+      <label control="enigmail_keyserver"
+            value="&enigmail.keyservers.label;:" />
       <textbox id="enigmail_keyserver"
             pref="true"
             preftype="string"
             prefstring="extensions.enigmail.keyserver"/>
-
-    </hbox>
-
+      <label value="&enigmail.keyservers.sample;" style="font-style: italic;"/>
+    </vbox>
+    <separator/>
 
     <hbox autostretch="never">
         <button class="dialog"

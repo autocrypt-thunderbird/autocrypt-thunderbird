@@ -5,13 +5,13 @@
    License Version 1.1 (the "MPL"); you may not use this file
    except in compliance with the MPL. You may obtain a copy of
    the MPL at http://www.mozilla.org/MPL/
-   
+
    Software distributed under the MPL is distributed on an "AS
    IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
    implied. See the MPL for the specific language governing
    rights and limitations under the MPL.
-   
-   The Original Code is EnigMail.
+
+   The Original Code is Enigmail.
 
    The Initial Developer of the Original Code is Ramalingam Saravanan.
    Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
@@ -33,6 +33,7 @@
    GPL.
 -->
 
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
 
@@ -50,6 +51,7 @@
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail.js"/>
+  <script type="application/x-javascript" src="chrome://jslib/content/jslib.js"/>
 
   <tabbox flex="1" style="margin:5px">
     <tabs id="prefTabBox">
@@ -64,16 +66,16 @@
     <tabpanels flex="1">
       <vbox id="basic" flex="1">
           <description class="enigmailPrefsTitle">&enigmail.basicPrefs.label;</description>
-          <hbox>
+          <hbox align="center">
             <label control="enigmail_agentPath"
                   value="&enigmail.agentPath.label;" />
             <textbox id="enigmail_agentPath"/>
           </hbox>
 
           <hbox>
-            <groupbox orient="vertical">
+            <groupbox orient="vertical" flex="1">
               <caption label="&enigmail.passwordSettings.label;"/>
-                <hbox autostretch="never">
+                <hbox autostretch="never" align="center">
                   <label control="enigmail_maxIdleMinutes"
                         value="&enigmail.maxIdleMinutesHead.label;" />
 
@@ -84,7 +86,6 @@
                           prefstring="extensions.enigmail.maxIdleMinutes"/>
 
                   <description>&enigmail.maxIdleMinutesTail.label;</description>
-
                 </hbox>
 
                 <checkbox id="enigmail_noPassphrase"
@@ -96,17 +97,23 @@
 
             </groupbox>
           </hbox>
-          <hbox autostretch="never">
+          <vbox>
             <label control="enigmail_keyserver"
-                  value="&enigmail.keyserver.label;:" />
-
-            <textbox id="enigmail_keyserver" />
-
-          </hbox>
+                  value="&enigmail.keyservers.label;:" />
+            <textbox id="enigmail_keyserver"/>
+            <label value="&enigmail.keyservers.sample;" style="font-style: italic;"/>
+          </vbox>
+          <separator/>
           <vbox autostretch="never" align="end">
-            <button id="resetPrefs"
-                    label="&enigmail.resetPrefsButton.label;"
-                    oncommand="AdvResetPrefs();"/>
+            <hbox>
+              <button id="uninstall"
+                      class="dialog"
+                      label="&enigmail.uninstallButton.label;"
+                      oncommand="EnigUninstall()"/>
+              <button id="resetPrefs"
+                      label="&enigmail.resetPrefsButton.label;"
+                      oncommand="AdvResetPrefs();"/>
+            </hbox>
           </vbox>
 
       </vbox>
@@ -166,10 +173,9 @@
 
           </radiogroup>
 
-          <hbox>
+          <hbox align="center">
             <label control="mimeHashList"
                 value="&enigmail.mimeHashAlgorithm.label;:" />
-
             <menulist id="mimeHashList" label="SHA1" flex="1">
 
               <menupopup id="mimeHashPopup">
@@ -209,31 +215,41 @@
       </vbox>
 
       <vbox id="debug" flex="1">
-          <description class="enigmailPrefsTitle">&enigmail.debugging.label;</description>
-          <spacer flex="0"/>
+        <description class="enigmailPrefsTitle">&enigmail.debugging.label;</description>
+        <spacer flex="0"/>
 
-          <hbox autostretch="never">
-            <label control="enigmail_logDirectory"
-                  value="&enigmail.logdirectory.label;" />
+        <grid>
+          <columns>
+            <column/>
+            <column flex="1"/>
+          </columns>
 
-            <textbox id="enigmail_logDirectory" />
-          </hbox>
-          <hbox autostretch="never">
-            <label control="enigmail_test_email"
-                  value="&enigmail.testemail.label;" />
+          <rows autostretch="never">
+            <row>
+              <hbox align="center">
+                <label control="enigmail_logDirectory"
+                    value="&enigmail.logdirectory.label;" />
+              </hbox>
+              <textbox id="enigmail_logDirectory" />
+            </row>
+            <row>
+              <hbox align="center">
+                <label control="enigmail_test_email"
+                    value="&enigmail.testemail.label;" />
+              </hbox>
+              <hbox autostretch="never">
+                <textbox id="enigmail_test_email"/>
 
-            <textbox id="enigmail_test_email" />
-
-            <button class="dialog"
-                    id="enigmail_test"
-                    label="&enigmail.test.label;"
-                    oncommand="EnigTest();"
-                    />
-          </hbox>
-
-          <checkbox id="enigmail_useMimeExperimental"
-                    label="&enigmail.experimental.label;" />
-
+                <button class="dialog"
+                        id="enigmail_test"
+                        label="&enigmail.test.label;"
+                        oncommand="EnigTest();"/>
+              </hbox>
+            </row>
+          </rows>
+        </grid>
+        <checkbox id="enigmail_useMimeExperimental"
+                  label="&enigmail.experimental.label;" />
       </vbox>
     </tabpanels>
   </tabbox>
