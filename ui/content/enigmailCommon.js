@@ -1054,7 +1054,7 @@ function EnigViewConsole() {
   DEBUG_LOG("enigmailCommon.js: EnigViewConsole\n");
 
   EnigOpenWin("enigmail:console",
-              "chrome://enigmail/content/enigmailConsole.xul");
+              "chrome://enigmail/content/enigmailConsole.xul", "chrome,resizable");
 }
 
 function EnigViewDebugLog() {
