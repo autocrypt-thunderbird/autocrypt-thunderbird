@@ -1,8 +1,8 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.82.5.0";
-var gEnigmimeVersion = "0.82.5.0";
+var gEnigmailVersion = "0.82.6.0";
+var gEnigmimeVersion = "0.82.6.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -1195,40 +1195,3 @@ function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
       }
    }
 }
-
-
-function EnigReceiveKey(parent, msgParentWindow, recvFlags, keyId,
-                        progressBar, requestObserver,
-                        errorMsgObj) {
-  var keyserver = EnigGetPref("keyserver");
-
-  if (keyId && keyserver) {
-    var prompt = EnigGetString("importKey",keyId);
-
-    var valueObj = new Object();
-    valueObj.value = keyserver;
-
-    if (!EnigPromptValue( prompt, valueObj)) {
-      errorMsgObj.value = EnigGetString("failCancel");
-      return null;
-    }
-
-    keyserver = valueObj.value;
-  }
-
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-     return null;
-
-  if (progressBar) {
-    // wait one second before displaying the progress bar
-    var progressParam=Components.classes["@mozilla.org/messengercompose/composeprogressparameters;1"].createInstance(Components.interfaces.nsIMsgComposeProgressParams);
-    parent.setTimeout(progressBar.openProgressDialog, 1000, parent, msgWindow, "chrome://enigmail/content/enigRetrieveProgress.xul", progressParam);
-    //progressBar.openProgressDialog(parent, msgWindow, "chrome://enigmail/content/enigRetrieveProgress.xul", progressParam);
-    progressBar.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_START, 0);
-  }
-
-  return enigmailSvc.receiveKey(keyserver, keyId, requestObserver, errorMsgObj);
-}
-
-
