@@ -73,6 +73,14 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
   var statusInfo = "";
   var statusLine = "";
 
+  if (statusFlags & nsIEnigmail.NODATA) {
+    if (statusFlags & nsIEnigmail.PGP_MIME_SIGNED)
+      statusFlags |= nsIEnigmail.UNVERIFIED_SIGNATURE;
+
+    if (statusFlags & nsIEnigmail.PGP_MIME_ENCRYPTED)
+      statusFlags |= nsIEnigmail.DECRYPTION_INCOMPLETE;
+  }
+
   if ( (exitCode == 0) ||
        (statusFlags & nsIEnigmail.DISPLAY_MESSAGE) ) {
     // Normal exit / display message
@@ -88,11 +96,25 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       statusLine = statusInfo + EnigGetString("clickPen");
     }
 
+    statusInfo = EnigGetString("unverifiedSig");
+    statusLine = statusInfo + EnigGetString("clickPen");
+    statusInfo += "\n\n" + errorMsg;
+
+  } else if (statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
+    statusInfo = EnigGetString("unverifiedSig");
+    statusLine = statusInfo + EnigGetString("clickQueryPenDetails");
+    statusInfo += "\n\n" + errorMsg;
+
   } else if (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
                             nsIEnigmail.UNVERIFIED_SIGNATURE |
                             nsIEnigmail.EXPIRED_SIGNATURE) ) {
     statusInfo = EnigGetString("failedSig");
     statusLine = statusInfo + EnigGetString("clickPenDetails");
+    statusInfo += "\n\n" + errorMsg;
+
+  } else if (statusFlags & nsIEnigmail.DECRYPTION_INCOMPLETE) {
+    statusInfo = EnigGetString("incompleteDecrypt");
+    statusLine = statusInfo + EnigGetString("clickKey");
     statusInfo += "\n\n" + errorMsg;
 
   } else if (statusFlags & nsIEnigmail.DECRYPTION_FAILED) {
@@ -153,9 +175,13 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       gSignedUINode.setAttribute("signed", "ok");
       //gStatusBar.setAttribute("signed", "ok");
 
+    } else if (statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
+      // Display unverified signature icon
+      gSignedUINode.setAttribute("signed", "unknown");
+      //gStatusBar.setAttribute("signed", "unknown");
+
     } else if (statusFlags & (nsIEnigmail.GOOD_SIGNATURE |
                               nsIEnigmail.BAD_SIGNATURE |
-                              nsIEnigmail.UNVERIFIED_SIGNATURE |
                               nsIEnigmail.EXPIRED_SIGNATURE) ) {
       // Display untrusted/bad signature icon
       gSignedUINode.setAttribute("signed", "notok");
@@ -167,7 +193,8 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
       gEncryptedUINode.setAttribute("encrypted", "ok");
       //gStatusBar.setAttribute("encrypted", "ok");
 
-    } else if (statusFlags & nsIEnigmail.DECRYPTION_FAILED) {
+    } else if (statusFlags &
+      (nsIEnigmail.DECRYPTION_INCOMPLETE | nsIEnigmail.DECRYPTION_FAILED) ) {
       // Display un-encrypted icon
       gEncryptedUINode.setAttribute("encrypted", "notok");
       //gStatusBar.setAttribute("encrypted", "notok");

@@ -147,6 +147,7 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     MISSING_PASSPHRASE: nsIEnigmail.MISSING_PASSPHRASE,
                     BAD_PASSPHRASE:  nsIEnigmail.BAD_PASSPHRASE,
                     BADARMOR:        nsIEnigmail.BAD_ARMOR,
+                    NODATA:          nsIEnigmail.NODATA,
                     DECRYPTION_FAILED: nsIEnigmail.DECRYPTION_FAILED,
                     DECRYPTION_OKAY: nsIEnigmail.DECRYPTION_OKAY,
                     TRUST_UNDEFINED: nsIEnigmail.UNTRUSTED_IDENTITY,
@@ -2529,8 +2530,10 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
 
   var exitCode = this.execEnd(pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, cmdErrorMsgObj);
 
-  if (pgpMime)
-    statusFlagsObj.value |= nsIEnigmail.RECEIVED_PGP_MIME;
+  if (pgpMime) {
+    statusFlagsObj.value |= verifyOnly ? nsIEnigmail.PGP_MIME_SIGNED
+                                       : nsIEnigmail.PGP_MIME_ENCRYPTED;
+  }
 
   var statusMsg = statusMsgObj.value;
 

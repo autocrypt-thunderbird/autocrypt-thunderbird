@@ -172,13 +172,16 @@ interface nsIEnigmail : nsISupports
   const long MISSING_PASSPHRASE   = 0x000800;
   const long BAD_PASSPHRASE       = 0x001000;
   const long BAD_ARMOR            = 0x002000;
-  const long DECRYPTION_FAILED    = 0x004000;
-  const long DECRYPTION_OKAY      = 0x008000;
-  const long UNTRUSTED_IDENTITY   = 0x010000;
-  const long TRUSTED_IDENTITY     = 0x020000;
-  const long RECEIVED_PGP_MIME    = 0x040000;
-  const long DISPLAY_MESSAGE      = 0x080000;
-  const long INLINE_KEY           = 0x100000;
+  const long NODATA               = 0x004000;
+  const long DECRYPTION_INCOMPLETE= 0x008000;
+  const long DECRYPTION_FAILED    = 0x010000;
+  const long DECRYPTION_OKAY      = 0x020000;
+  const long UNTRUSTED_IDENTITY   = 0x040000;
+  const long TRUSTED_IDENTITY     = 0x080000;
+  const long PGP_MIME_SIGNED      = 0x100000;
+  const long PGP_MIME_ENCRYPTED   = 0x200000;
+  const long DISPLAY_MESSAGE      = 0x400000;
+  const long INLINE_KEY           = 0x800000;
 
   string decryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,

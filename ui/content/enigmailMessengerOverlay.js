@@ -123,6 +123,21 @@ function enigViewSecurityInfo() {
         }
       }
 
+    } else if ( (gEnigSecurityInfo.statusFlags & nsIEnigmail.NODATA) &&
+         (gEnigSecurityInfo.statusFlags &
+           (nsIEnigmail.PGP_MIME_SIGNED | nsIEnigmail.PGP_MIME_ENCRYPTED)) ) {
+
+      if (typeof(ReloadWithAllParts) == "function") {
+
+        var mesg = EnigGetString("reloadImapMessage");
+
+        if (EnigConfirm(mesg))
+          ReloadWithAllParts();
+
+      } else {
+          EnigAlert(EnigGetString("reloadImapError"));
+      }
+
     } else {
       EnigAlert(EnigGetString("securityInfo")+gEnigSecurityInfo.statusInfo);
     }
