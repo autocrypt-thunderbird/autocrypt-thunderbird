@@ -53,12 +53,28 @@ IS_COMPONENT	= 1
 
 REQUIRES	= xpcom \
 		  string \
+		  msgbase \
+		  msgbaseutil \
+		  msgsmime \
+		  pref \
 		  js \
-		  caps \
-		  uconv \
 		  necko \
+		  uconv \
+		  unicharutil \
+		  msgcompose \
+		  editor \
+		  dom \
+		  intl \
+		  msgimap \
+		  exthandler \
+		  mailnews \
+		  msgdb \
+		  chardet \
+		  caps \
+		  mime \
 		  mimetype \
 		  xpconnect \
+		  pipnss \
 		  $(NULL)
 
 MODULE_NAME	= EnigModule
@@ -71,11 +87,11 @@ SHARED_LIBRARY_LIBS = \
 
 LOCAL_INCLUDES	= \
 		-I$(srcdir)/../src \
-		-I$(srcdir)/../../../mailnews/compose/public/_xpidlgen \
 		$(NULL)
 
 EXTRA_DSO_LDOPTS = \
 		$(MOZ_COMPONENT_LIBS) \
+		-L/home/svn/dat/mozilla/dist/bin/components -lmime \
 		$(NULL)
 
 include $(topsrcdir)/config/rules.mk

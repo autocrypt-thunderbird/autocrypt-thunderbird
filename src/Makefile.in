@@ -43,23 +43,47 @@ LIBRARY_NAME	= enigmime_s
 
 REQUIRES	= xpcom \
 		  string \
+		  msgbase \
+		  msgbaseutil \
+		  msgsmime \
+		  pref \
 		  js \
-		  caps \
-		  uconv \
 		  necko \
+		  uconv \
+		  unicharutil \
+		  msgcompose \
+		  editor \
+		  dom \
+		  intl \
+		  msgimap \
+		  exthandler \
+		  mime \
+		  mailnews \
+		  msgdb \
+		  chardet \
+		  caps \
 		  mimetype \
+		  uriloader \
 		  xpconnect \
+		  nkcache \
+		  pipnss \
+		  imglib2 \
 		  $(NULL)
 
 EXPORTS		=		    \
 		$(NULL)
 
 LOCAL_INCLUDES	= \
-		-I$(srcdir)/../../../mailnews/compose/public/_xpidlgen \
+		-I$(srcdir)/../../../mailnews/mime/src \
 		$(NULL)
 
 CPPSRCS		=		    \
 	        nsEnigMsgCompose.cpp \
+	        nsEnigMsgCompFields.cpp \
+	        nsEnigMimeService.cpp \
+	        nsEnigContentHandler.cpp \
+	        mimedummy.cpp \
+	        mimeenig.cpp \
 		$(NULL)
 
 FORCE_STATIC_LIB = 1

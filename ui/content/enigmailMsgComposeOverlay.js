@@ -10,6 +10,8 @@ const OutputFormatFlowed  = 64;
 const OutputCRLineBreak   = 512;
 const OutputLFLineBreak   = 1024;
 
+const NS_ENIGMSGCOMPFIELDS_CONTRACTID = "@mozdev.org/enigmail/composefields;1";
+
 // Initialize enigmailCommon
 EnigInitCommon("enigmailMsgComposeOverlay");
 
@@ -262,10 +264,6 @@ function enigSend(sendFlags) {
   }
 
   try {
-     var currentId = getCurrentIdentity();
-     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: currentId="+currentId+
-               ", "+currentId.email+"\n");
-
      var defaultEncryptionOption = EnigGetPref("defaultEncryptionOption");
 
      var defaultSend = sendFlags & nsIEnigmail.SEND_DEFAULT;
@@ -284,6 +282,31 @@ function enigSend(sendFlags) {
        default:
         break;
        }
+     }
+
+     var userIdSource = EnigGetPref("userIdSource");
+     DEBUG_LOG("enigmailMsgComposeOverlay.js: userIdSource = "+userIdSource+"\n");
+
+     if (userIdSource == USER_ID_DEFAULT) {
+       sendFlags |= nsIEnigmail.SEND_USER_ID_DEFAULT;
+     }
+
+     if (EnigGetPref("alwaysTrustSend")) {
+       sendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
+     }
+
+     if (EnigGetPref("encryptToSelf")) {
+       sendFlags |= nsIEnigmail.SEND_ENCRYPT_TO_SELF;
+     }
+
+     var currentId = getCurrentIdentity();
+     DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: currentId="+currentId+
+               ", "+currentId.email+"\n");
+
+     var fromAddr = EnigGetPref("userIdValue");
+
+     if (!fromAddr || (userIdSource == USER_ID_FROMADDR)) {
+       fromAddr = currentId.email;
      }
 
      var msgCompFields = gMsgCompose.compFields;
@@ -332,7 +355,56 @@ function enigSend(sendFlags) {
        }
      }
 
-     if (!gEnigProcessed && (sendFlags & ENCRYPT_OR_SIGN_MSG)) {
+     var uiFlags = nsIEnigmail.UI_INTERACTIVE;
+
+     // TEMPORARY
+     ///sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+
+     var usePgpMime = (sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
+                      (sendFlags & ENCRYPT_OR_SIGN_MSG);
+
+     if (!enigmailSvc.composeSecure) {
+       if (!EnigConfirm("PGP/MIME not available!\nUse inline PGP for signing/encryption?")) {
+          throw Components.results.NS_ERROR_FAILURE;
+          
+       }
+ 
+       usePgpMime = false;
+     }
+
+     if (usePgpMime) {
+       // Use PGP/MIME
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: Using PGP/MIME, flags="+sendFlags+"\n");
+
+       var oldSecurityInfo = gMsgCompose.compFields.securityInfo;
+
+       dump("oldSecurityInfo = "+oldSecurityInfo+"\n");
+
+       var newSecurityInfo;
+
+       if (!oldSecurityInfo) {
+         try {
+           newSecurityInfo = oldSecurityInfo.QueryInterface(Components.interfaces.nsIEnigMsgCompFields);
+         } catch (ex) {}
+       }
+
+       if (!newSecurityInfo) {
+         newSecurityInfo = Components.classes[NS_ENIGMSGCOMPFIELDS_CONTRACTID].createInstance(Components.interfaces.nsIEnigMsgCompFields);
+
+         if (!newSecurityInfo)
+           throw Components.results.NS_ERROR_FAILURE;
+
+         newSecurityInfo.init(oldSecurityInfo);
+         gMsgCompose.compFields.securityInfo = newSecurityInfo;
+       }
+
+       newSecurityInfo.sendFlags = sendFlags;
+       newSecurityInfo.uiFlags = uiFlags;
+       newSecurityInfo.senderEmailAddr = fromAddr;
+
+       dump("securityInfo = "+newSecurityInfo+"\n");
+
+     } else if (!gEnigProcessed && (sendFlags & ENCRYPT_OR_SIGN_MSG)) {
 
        ///var editorDoc = gEnigEditorShell.editorDocument;
        ///DEBUG_LOG("enigmailMsgComposeOverlay.js: Doc = "+editorDoc+"\n");
@@ -407,30 +479,9 @@ function enigSend(sendFlags) {
          // Encode plaintext to charset from unicode
          var plainText = EnigConvertFromUnicode(docText, charset);
 
-         var fromAddr = EnigGetPref("userIdValue");
-
-         var userIdSource = EnigGetPref("userIdSource");
-         DEBUG_LOG("enigmailMsgComposeOverlay.js: userIdSource = "+userIdSource+"\n");
-
-         if (!fromAddr || (userIdSource == USER_ID_FROMADDR)) {
-           fromAddr = currentId.email;
-         }
-
-         if (userIdSource == USER_ID_DEFAULT) {
-           sendFlags |= nsIEnigmail.SEND_USER_ID_DEFAULT;
-         }
-
-         if (EnigGetPref("alwaysTrustSend"))
-           sendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
-
-         if (EnigGetPref("encryptToSelf")) {
-           sendFlags |= nsIEnigmail.SEND_ENCRYPT_TO_SELF;
-         }
-
          var exitCodeObj    = new Object();
          var statusFlagsObj = new Object();    
          var errorMsgObj    = new Object();
-         var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
          var cipherText = enigmailSvc.encryptMessage(window,uiFlags, plainText,
                                                 fromAddr, toAddr, sendFlags,

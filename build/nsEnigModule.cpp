@@ -34,9 +34,23 @@
 
 #include "nsEnigMsgCompose.h"
 
+#include "nsEnigMsgCompFields.h"
+
+#include "nsEnigMimeService.h"
+
+#include "nsEnigContentHandler.h"
+
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgCompose)
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgComposeFactory)
+
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgCompFields)
+
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeService)
+
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigContentHandler)
+
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigContentHandlerFactory)
 
 // CIDs implemented by module
 static const nsModuleComponentInfo components[] =
@@ -52,6 +66,36 @@ static const nsModuleComponentInfo components[] =
       NS_ENIGMSGCOMPOSEFACTORY_CID,
       NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID,
       nsEnigMsgComposeFactoryConstructor,
+    },
+
+    { NS_ENIGMSGCOMPFIELDS_CLASSNAME,
+      NS_ENIGMSGCOMPFIELDS_CID,
+      NS_ENIGMSGCOMPFIELDS_CONTRACTID,
+      nsEnigMsgCompFieldsConstructor,
+    },
+
+    { NS_ENIGMIMESERVICE_CLASSNAME,
+      NS_ENIGMIMESERVICE_CID,
+      NS_ENIGMIMESERVICE_CONTRACTID,
+      nsEnigMimeServiceConstructor,
+    },
+
+    { NS_ENIGCONTENTHANDLER_CLASSNAME,
+      NS_ENIGCONTENTHANDLER_CID,
+      NS_ENIGDUMMYHANDLER_CONTRACTID,
+      nsEnigContentHandlerConstructor,
+    },
+
+    { NS_ENIGCONTENTHANDLER_CLASSNAME,
+      NS_ENIGCONTENTHANDLER_CID,
+      NS_ENIGENCRYPTEDHANDLER_CONTRACTID,
+      nsEnigContentHandlerConstructor,
+    },
+
+    { NS_ENIGCONTENTHANDLERFACTORY_CLASSNAME,
+      NS_ENIGCONTENTHANDLERFACTORY_CID,
+      NS_ENIGCONTENTHANDLERFACTORY_CONTRACTID,
+      nsEnigContentHandlerFactoryConstructor,
     },
 
 };

@@ -43,6 +43,7 @@ include $(DEPTH)/config/autoconf.mk
 MODULE        = enigmime
 XPIDL_MODULE  = enigmime
 
-XPIDLSRCS     = nsIEnigMsgCompFields.idl
+XPIDLSRCS     = nsIEnigMsgCompFields.idl \
+                nsIEnigMimeService.idl
 
 include $(topsrcdir)/config/rules.mk

@@ -91,14 +91,15 @@ interface nsIEnigmail : nsISupports
   const long UI_UNVERIFIED_ENC_OK = 0x04;
 
   /* Send message flags */
-  const long SEND_SIGNED          = 0x01;
-  const long SEND_ENCRYPTED       = 0x02;
-  const long SEND_DEFAULT         = 0x04;
-  const long SEND_LATER           = 0x08;
-  const long SEND_WITH_CHECK      = 0x10;
-  const long SEND_USER_ID_DEFAULT = 0x20;
-  const long SEND_ALWAYS_TRUST    = 0x40;
-  const long SEND_ENCRYPT_TO_SELF = 0x80;
+  const long SEND_SIGNED          = 0x001;
+  const long SEND_ENCRYPTED       = 0x002;
+  const long SEND_DEFAULT         = 0x004;
+  const long SEND_LATER           = 0x008;
+  const long SEND_WITH_CHECK      = 0x010;
+  const long SEND_USER_ID_DEFAULT = 0x020;
+  const long SEND_ALWAYS_TRUST    = 0x040;
+  const long SEND_ENCRYPT_TO_SELF = 0x080;
+  const long SEND_PGP_MIME        = 0x100;
 
   string encryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,

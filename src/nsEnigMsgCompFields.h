@@ -34,39 +34,38 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+#ifndef _nsEnigMsgCompFields_h_
+#define _nsEnigMsgCompFields_h_
 
-#include "nsISupports.idl"
-#include "nsIMsgSMIMECompFields.idl"
+#include "nsIMsgSMIMECompFields.h"
+#include "nsIEnigMsgCompFields.h"
+#include "nsCOMPtr.h"
+#include "nsString.h"
 
-/**
- * MsgCompose security info for Enigmail
- */
-[scriptable, uuid(847b3a30-7ab1-11d4-8f02-006008948af5)]
-interface nsIEnigMsgCompFields : nsISupports
+class nsEnigMsgCompFields : public nsIEnigMsgCompFields,
+                            public nsIMsgSMIMECompFields
+                            
 {
-  /**
-   * See nsIEnigmail.idl for valid uiFlags and sendFlags
-   */
+public:
+    NS_DECL_ISUPPORTS
+    NS_DECL_NSIENIGMSGCOMPFIELDS
+    NS_FORWARD_SAFE_NSIMSGSMIMECOMPFIELDS(mMsgSMIMECompFields)
 
-  void init(in nsIMsgSMIMECompFields smimeCompFields);
 
-  attribute unsigned long uiFlags;
+    nsEnigMsgCompFields();
+    virtual ~nsEnigMsgCompFields();
 
-  attribute unsigned long sendFlags;
+    // Define a Create method to be used with a factory:
+    static NS_METHOD
+    Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
 
-  attribute ACString senderEmailAddr;
+protected:
+    PRUint32                        mUiFlags;
+    PRUint32                        mSendFlags;
+
+    nsCString                       mSenderEmailAddr;
+
+    nsCOMPtr<nsIMsgSMIMECompFields> mMsgSMIMECompFields;
 };
 
-%{C++
-
-#define NS_ENIGMSGCOMPFIELDS_CLASSNAME  "Enigmail Msg Compose Fields"
-#define NS_ENIGMSGCOMPFIELDS_CONTRACTID "@mozdev.org/enigmail/composefields;1"
-     
-#define NS_ENIGMSGCOMPFIELDS_CID                          \
-{ /* 847b3a31-7ab1-11d4-8f02-006008948af5 */     \
-   0x847b3a31, 0x7ab1, 0x11d4,                   \
-{0x8f, 0x02, 0x00, 0x60, 0x08, 0x94, 0x8a, 0xf5} }
-
-%}
-
-//////////////////////////////////////////////////////////////////////////////
+#endif
