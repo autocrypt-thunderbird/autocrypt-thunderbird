@@ -149,3 +149,9 @@
 <!ENTITY enigmail.confirmBeforeSend.accesskey     "A">
 
 <!ENTITY enigmail.keygen.desc "NOTE: Key generation may take up to several minutes to complete. Do not exit the browser while key generation is in progress. Actively browsing or performing disk-intensive operations during key generation will replenish the 'randomness pool' and speed-up the process. You will be alerted when key generation is completed.">
+
+<!ENTITY enigmail.console.label                     "View Enigmail console">
+<!ENTITY enigmail.console.tooltip                   "View Enigmail console">
+
+<!ENTITY enigmail.uninstall.label                   "Uninstall Enigmail">
+<!ENTITY enigmail.uninstall.tooltip                 "Uninstall Enigmail">
