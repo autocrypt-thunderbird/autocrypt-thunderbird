@@ -334,7 +334,6 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   int ctFound = -1;
   char buf[kCharMax];
   iterations = 0;
-  ctFound = -1;
   int status;
   while (1) {
     ++iterations;
