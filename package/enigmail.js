@@ -3192,6 +3192,9 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
   // Create joinable console
   pipeConsole.open(5000, 0, true);
 
+  var errorConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
+  errorConsole.open(20, 0, true);
+
   var ipcRequest = null;
   try {
     ipcRequest = gEnigmailSvc.ipcService.execAsync(command,
@@ -3201,7 +3204,7 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
                                                    inputData.length,
                                                    envList, envList.length,
                                                    pipeConsole,
-                                                   pipeConsole,
+                                                   errorConsole,
                                                    requestObserver);
   } catch (ex) {
     ERROR_LOG("enigmail.js: Enigmail.searchKey: execAsync failed\n");
