@@ -224,6 +224,14 @@ interface nsIEnigmail : nsISupports
   const long SEARCH_KEY       = 0x01;
   const long DOWNLOAD_KEY     = 0x02;
 
+  nsIIPCRequest searchKey(in unsigned long recvFlags,
+                  in string protocol,
+                  in string keyServer,
+                  in string port,
+                  in string keyValue,
+                  in nsIRequestObserver requestObserver,
+                  out wstring errorMsg);
+
   nsIIPCRequest receiveKey(in unsigned long recvFlags,
                   in string keyServer,
                   in string keyId,

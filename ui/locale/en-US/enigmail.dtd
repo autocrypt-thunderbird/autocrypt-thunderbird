@@ -204,6 +204,7 @@
 <!ENTITY enigmail.userSelPlainText.accesskey        "S">
 <!ENTITY enigmail.displayNoLonger.label             "Do not display this dialog again if encryption is not possible">
 <!ENTITY enigmail.importMissingKeys.label           "Download missing keys">
+<!ENTITY enigmail.importMissingKeys.accesskey       "D">
 <!ENTITY enigmail.importMissingKeys.tooltip         "Try to import the missing keys from a key server">
 <!ENTITY enigmail.importMissingKeys.accesskey       "I">
 <!ENTITY enigmail.refreshKeys.label                 "Refresh Key List">

@@ -102,9 +102,9 @@ const nsIIPCService          = Components.interfaces.nsIIPCService;
 const nsIPipeConsole         = Components.interfaces.nsIPipeConsole;
 const nsIProcessInfo         = Components.interfaces.nsIProcessInfo;
 const nsIEnigmail            = Components.interfaces.nsIEnigmail;
-const nsIPGPModule           = Components.interfaces.nsIPGPModule;
-const nsIPGPMsgBody          = Components.interfaces.nsIPGPMsgBody;
-const nsIPGPMsgHeader        = Components.interfaces.nsIPGPMsgHeader;
+//const nsIPGPModule           = Components.interfaces.nsIPGPModule;
+//const nsIPGPMsgBody          = Components.interfaces.nsIPGPMsgBody;
+//const nsIPGPMsgHeader        = Components.interfaces.nsIPGPMsgHeader;
 const nsIEnigStrBundle       = Components.interfaces.nsIStringBundleService;
 
 const NS_XPCOM_SHUTDOWN_OBSERVER_ID = "xpcom-shutdown";
@@ -463,6 +463,7 @@ PGPMsgHeader.prototype = {
   }
 }
 
+/*
 function PGPMsgBody(aBody)
 {
   this.body = aBody;
@@ -637,6 +638,7 @@ PGPModule.prototype = {
   }
 
 }
+*/
 
 ///////////////////////////////////////////////////////////////////////////////
 // Utility functions
@@ -3100,6 +3102,120 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
 }
 
 
+// ExitCode == 0  => success
+// ExitCode > 0   => error
+// ExitCode == -1 => Cancelled by user
+Enigmail.prototype.searchKey =
+function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.searchKey: "+keyValue+"\n");
+
+  if (!this.initialized) {
+    errorMsgObj.value = EnigGetString("notInit");
+    return null;
+  }
+
+  if (this.agentType != "gpg") {
+    errorMsgObj.value = EnigGetString("failOnlyGPG");
+    return null;
+  }
+
+  if (!keyserver) {
+    errorMsgObj.value = EnigGetString("failNoServer");
+    return null;
+  }
+
+  if (!keyValue) {
+    errorMsgObj.value = EnigGetString("failNoID");
+    return null;
+  }
+
+  var envList = [];
+  envList = envList.concat(gEnvList);
+
+  var proxyHost = null;
+  if (protocol=="hkp") {
+    try {
+      if (this.prefBranch.getCharPref("respectHttpProxy")) {
+        // determine proxy host
+        var prefsSvc = Components.classes[NS_PREFS_SERVICE_CID].getService(Components.interfaces.nsIPrefService);
+        var prefRoot = prefsSvc.getBranch(null);
+        var useProxy = prefRoot.getIntPref("network.proxy.type");
+        if (useProxy==1) {
+          var proxyHostName = prefRoot.getCharPref("network.proxy.http");
+          var proxyHostPort = prefRoot.getIntPref("network.proxy.http_port");
+          var noProxy = prefRoot.getCharPref("network.proxy.no_proxies_on").split(/[ ,]/);
+          for (var i=0; i<noProxy.length; i++) {
+            var proxySearch=new RegExp(noProxy[i].replace(/\./, "\\.")+"$", "i");
+            if (noProxy[i] && keyserver.search(proxySearch)>=0) {
+              i=noProxy.length+1;
+              proxyHostName=null;
+            }
+          }
+          if (proxyHostName && proxyHostPort) {
+            proxyHost="http://"+proxyHostName+":"+proxyHostPort
+          }
+        }
+      }
+    }
+    catch (ex) {}
+  }
+  var m=this.agentPath.match(/^(.*[\\\/])([^\\\/]+)$/);
+  var command="";
+  if (m && m.length == 3) {
+    command = m[1];
+  }
+  command += "gpgkeys_" + protocol;
+  if (this.isWin32) {
+    command+=".exe";
+  }
+  
+  var inputData="VERSION 0\nHOST "+keyserver+"\nPORT "+port+"\n";
+  
+  if (proxyHost) {
+    inputData+="OPTION honor-http-proxy\n";
+    envList.push("http_proxy="+proxyHost);
+  }
+
+  if (recvFlags & nsIEnigmail.SEARCH_KEY) {
+    inputData+="COMMAND search\n\n+"+keyValue+"\n\n";
+  }
+  else if (recvFlags & nsIEnigmail.DOWNLOAD_KEY) {
+    inputData+="COMMAND get\n\n+"+keyValue+"\n\n";
+  }
+
+  var exitCodeObj    = new Object();
+  var statusFlagsObj = new Object();
+  var statusMsgObj   = new Object();
+  var cmdLineObj   = new Object();
+
+  var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
+  // Create joinable console
+  pipeConsole.open(5000, 80, true);
+
+  var ipcRequest = null;
+  try {
+    ipcRequest = gEnigmailSvc.ipcService.execAsync(command,
+                                                   false,
+                                                   "",
+                                                   inputData,
+                                                   inputData.length,
+                                                   envList, envList.length,
+                                                   pipeConsole,
+                                                   pipeConsole,
+                                                   requestObserver);
+  } catch (ex) {
+    ERROR_LOG("enigmail.js: Enigmail.searchKey: execAsync failed\n");
+  }
+
+  if (!ipcRequest) {
+    ERROR_LOG("enigmail.js: Enigmail.searchKey: execAsync failed somehow\n");
+    return null;
+  }
+
+  return ipcRequest;
+}
+
+
 Enigmail.prototype.extractKey =
 function (parent, uiFlags, userId, exitCodeObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.extractKey: "+userId+"\n");
@@ -3223,6 +3339,84 @@ function (parent, uiFlags, msgText, keyId, errorMsgObj) {
   return exitCodeObj.value;
 }
 
+
+// ExitCode == 0  => success
+// ExitCode > 0   => error
+// ExitCode == -1 => Cancelled by user
+Enigmail.prototype.importKey =
+function (parent, uiFlags, msgText, keyId, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.importKey: id="+keyId+", "+uiFlags+"\n");
+
+  if (!this.initialized) {
+    errorMsgObj.value = EnigGetString("notInit");
+    return 1;
+  }
+
+  var beginIndexObj = new Object();
+  var endIndexObj   = new Object();
+  var indentStrObj   = new Object();
+  var blockType = this.locateArmoredBlock(msgText, 0, "",
+                                          beginIndexObj, endIndexObj,
+                                          indentStrObj);
+
+  if (!blockType) {
+    errorMsgObj.value = EnigGetString("noPGPblock");
+    return 1;
+  }
+
+  if (blockType != "PUBLIC KEY BLOCK") {
+    errorMsgObj.value = EnigGetString("notFirstBlock");
+    return 1;
+  }
+
+  var pgpBlock = msgText.substr(beginIndexObj.value,
+                                endIndexObj.value - beginIndexObj.value + 1);
+
+  var interactive = uiFlags & nsIEnigmail.UI_INTERACTIVE;
+
+  if (interactive) {
+    var confirmMsg = EnigGetString("importKeyConfirm");
+
+    if (!this.confirmMsg(parent, confirmMsg)) {
+      errorMsgObj.value = EnigGetString("failCancel");
+      return -1;
+    }
+  }
+
+  var command = this.agentPath;
+
+  if (this.agentType == "pgp") {
+    command += PGP_BATCH_OPTS + " -ft -ka";
+
+  } else {
+    command += GPG_BATCH_OPTS + " --import";
+  }
+
+  var exitCodeObj    = new Object();
+  var statusFlagsObj = new Object();
+  var statusMsgObj   = new Object();
+
+  var output = gEnigmailSvc.execCmd(command, null, pgpBlock,
+                      exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
+
+  var statusMsg = statusMsgObj.value;
+
+  var pubKeyId;
+
+  if (exitCodeObj.value == 0) {
+    // Normal return
+    if (statusMsg && (statusMsg.search("IMPORTED ") > -1)) {
+      var matches = statusMsg.match(/(^|\n)IMPORTED (\w{8})(\w{8})/);
+
+      if (matches && (matches.length > 3)) {
+        pubKeyId = "0x" + matches[3];
+        DEBUG_LOG("enigmail.js: Enigmail.importKey: IMPORTED "+pubKeyId+"\n");
+      }
+    }
+  }
+
+  return exitCodeObj.value;
+}
 
 Enigmail.prototype.generateKey =
 function (parent, name, comment, email, expiryDate, passphrase,
