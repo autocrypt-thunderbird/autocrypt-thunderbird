@@ -255,6 +255,11 @@ function enigMimeInit() {
     DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit: RELOADING MESSAGE\n");
 
     enigMessageReload(false);
+
+  } else {
+    // Error in MIME initialization; forget saved headers (to avoid looping)
+    gEnigSavedHeaders = null;
+    ERROR_LOG("enigmailMessengerOverlay.js: *****enigMimeInit: Error in MIME initialization\n");
   }
 }
 
