@@ -8,38 +8,32 @@
 <?xul-overlay href="chrome://global/content/globalOverlay.xul"?>
 
 <window
-     id="enigmail"
-     title="Enigmail XUL Page"
+     id="enigmailSelectPanel"
+     title="Enigmail selectPanel Page"
      orient="vertical"
-     onload="OnLoadEnigmail()"
-     onunload="OnUnloadEnigmail()"
+     onload="OnLoadEnigmailSelectPanel()"
+     onunload="OnUnloadEnigmailSelectPanel()"
      xmlns:html="http://www.w3.org/1999/xhtml"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
 <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
 
-<script type="application/x-javascript" src="chrome://enigmail/content/enigmail.js"/>
+<script type="application/x-javascript" src="chrome://enigmail/content/enigmailSelectPanel.js"/>
 
 <popupset id="aTooltipSet"/>
 
 <groupbox id="enigmailBox" class="enigmail-box" orient="vertical"
            flex="1">
-   <label><text value="Protocols"/></label>
+   <label><text value="Box"/></label>
 
   <box id="actionBox" class="action-box" orient="horizontal"
        copyPath="" exportPath="" persist="copyPath exportPath">
-    <button label="Create"
+    <button label="Select Enigmail Panel"
             class="dialog"
             tooltip="aTooltip"
-            tooltiptext="Create a new protocol handler in protocols directory"
-            oncommand="CreateProtocol();"/>
-
-    <button label="Copy"
-            class="dialog"
-            tooltip="aTooltip"
-            tooltiptext="Copy new protocol handler to protocols directory"
-            oncommand="CopyProtocol();"/>
+            tooltiptext="Select Enigmail Panel"
+            oncommand="SelectPanel();"/>
 
   </box>
 

@@ -76,6 +76,8 @@ interface nsIEnigmail : nsISupports
                                in long   expiryDate,
                                in string passphrase,
                                in nsIPipeConsole pipeConsole);
+
+  boolean selectPanel(in string url);
 };
 
 %{C++
