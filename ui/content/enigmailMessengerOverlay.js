@@ -386,7 +386,6 @@ function enigMessageImport(event) {
 function enigMessageDecrypt(event) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecrypt: "+event+"\n");
 
-  gEnigLastEncryptedURI = GetLoadedMessage();
   if (EnigGetPref("parseAllHeaders")) {
     var showHeaders = 1;
     try {

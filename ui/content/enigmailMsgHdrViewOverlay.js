@@ -72,12 +72,7 @@ function enigEndHeaders()
 function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, errorMsg) {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateHdrIcons: exitCode="+exitCode+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+errorMsg+"\n");
 
-  if (gEnigLastEncryptedURI != GetLoadedMessage()) {
-     if (gEnigLastEncryptedURI) {
-       enigForgetEncryptedURI(enigForgetEncryptedURI);
-     }
-     return;
-  }
+  gEnigLastEncryptedURI = GetLoadedMessage();
 
   var errorLines = errorMsg.split(/\r?\n/);
 
