@@ -172,9 +172,8 @@
 <!ENTITY enigmail.selectpanel.label                 "Select Enigmail Panel">
 <!ENTITY enigmail.selectpanel.tooltip               "Select Enigmail Panel">
 
-<!ENTITY enigmail.userSelectionList.label           "Select Users For Mail Encryption">
+<!ENTITY enigmail.userSelectionList.label           "PGP Key Selection">
 <!ENTITY enigmail.usersNotFound.label               "Recipients not found">
-<!ENTITY enigmail.usersSelectRecipients.label       "Select Recipients for Encryption">
 <!ENTITY enigmail.keyExpiry.label                   "Expiry">
 <!ENTITY enigmail.keySelection.label                "Selection">
 <!ENTITY enigmail.keyId.label                       "Key Id">
