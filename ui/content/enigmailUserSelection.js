@@ -401,7 +401,7 @@ function enigmailUserSelAccept() {
     EnigSetPref("recipientsSelectionOption", 0);
   }
 
-  if (resultObj.userList.length == 0) {
+  if (resultObj.userList.length == 0 && gSendEncrypted) {
     EnigAlert(EnigGetString("atLeastOneKey"));
     return false;
   }
