@@ -20,16 +20,21 @@ function prefOnLoad() {
           sendTab.setAttribute("selected", true);
       }
 
-      if (window.arguments[0].clientType!="seamonkey") {
-          document.getElementById("enigmail_disableSMIMEui").setAttribute("collapsed", true);
-      }
 
       if ((typeof window.arguments[0].selectTab)=="string") {
           var selectTab=document.getElementById(window.arguments[0].selectTab);
           selectTab.click();
           selectTab.setAttribute("selected", true);
       }
+
    }
+   
+   if ((! window.arguments) || (window.arguments[0].clientType!="seamonkey")) {
+      document.getElementById("enigmail_disableSMIMEui").setAttribute("collapsed", true);
+      var uninst = document.getElementById("uninstall");
+      if (uninst) uninst.setAttribute("collapsed", "true");
+   }
+   
    EnigDisplayRadioPref("usePGPMimeOption", EnigGetPref("usePGPMimeOption"),
                         gUsePGPMimeOptionList);
 
@@ -76,13 +81,6 @@ function prefOnLoad() {
 
    if (testEmailElement && userIdValue)
      testEmailElement.value = userIdValue;
-
-   if (window.arguments[0].clientType!="seamonkey") {
-     // Don't show uninstall button on Thunderbird
-     var uninst = document.getElementById("uninstall");
-     if (uninst) uninst.setAttribute("collapsed", "true");
-   }
-
 
 }
 
@@ -434,7 +432,7 @@ enigUninstaller.prototype =
     chromeUrl = ioService.newFileURI(chromeRdfFile).spec;
     var userChromeDS = this.gRDF.GetDataSourceBlocking(chromeUrl);
   
-    for (var pt = 0; pt < this.mNames.length; pt++){
+    for (pt = 0; pt < this.mNames.length; pt++){
       this.handleChromeRDF(this.mNames[pt], userChromeDir, userChromeDS, makeChanges);
     }
   
