@@ -16,7 +16,7 @@
 <window id="EnigmailAbout"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         title="Enigmail About"
-        width="540" height="280"
+        width="540" height="360"
         screenX="10" screenY="10"
         persist="screenX screenY"> 
 
