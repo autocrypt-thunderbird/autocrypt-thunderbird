@@ -474,7 +474,7 @@ function enigMessageParse(interactive, importOnly) {
 
 function enigMessageParseCallback(msgText, charset, interactive, importOnly,
                                   messageUrl, signature, retry) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: "+interactive+", "+importOnly+", charset="+charset+", msgUrl="+messageUrl+", retry="+retry+", signature='"+signature+"'\n");
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: "+interactive+", "+interactive+", importOnly="+importOnly+", charset="+charset+", msgUrl="+messageUrl+", retry="+retry+", signature='"+signature+"'\n");
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
@@ -547,6 +547,10 @@ function enigMessageParseCallback(msgText, charset, interactive, importOnly,
      if (interactive && gEnigSecurityInfo && gEnigSecurityInfo.statusInfo)
        EnigAlert(gEnigSecurityInfo.statusInfo);
      return;
+  }
+
+  if (currentAttachments && currentAttachments.length) {
+    plainText = "Note from Enigmail: Attachments to this message have not been signed/encrypted.\n\n" + plainText;
   }
 
   var msgFrame = window.frames["messagepane"];
@@ -974,7 +978,7 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
     WARNING_LOG("enigmailMessengerOverlay.js: enigMsgDirectCallback: MESSAGE BUFFER OVERFLOW\n");
   }
 
-  var msgText = callbackArg.ipcBuffer.data;
+  var msgText = callbackArg.ipcBuffer.getData();
 
   callbackArg.ipcBuffer.shutdown();
 

@@ -3,6 +3,7 @@
 #include "mimeenig.h"
 #include "nsCRT.h"
 #include "nspr.h"
+#include "plstr.h"
 #include "nsCOMPtr.h"
 #include "nsIURI.h"
 #include "nsIMsgMailNewsUrl.h"

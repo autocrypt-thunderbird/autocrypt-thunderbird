@@ -74,7 +74,7 @@ function enigUpdateHdrIcons(statusFlags, briefStatusMsg, expandedStatusMsg) {
     statusInfo = statusLines.join("\n");
   }
 
-  if (!statusInfo && (statusFlags & nsIEnigmail.DECRYPTED_MESSAGE)) {
+  if (!statusInfo && (statusFlags & nsIEnigmail.DECRYPTION_OKAY)) {
     statusInfo = "Decrypted message";
   }
 
@@ -112,14 +112,14 @@ function enigUpdateHdrIcons(statusFlags, briefStatusMsg, expandedStatusMsg) {
       //gStatusBar.setAttribute("signed", "notok");
     }
 
-    if (statusFlags & nsIEnigmail.DECRYPTED_MESSAGE) {
+    if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
       // Display encrypted icon
       gEncryptedUINode.setAttribute("encrypted", "ok");
       //gStatusBar.setAttribute("encrypted", "ok");
 
-    } else {
+    } else if (statusFlags & nsIEnigmail.DECRYPTION_FAILED) {
       // Display un-encrypted icon
-      //gEncryptedUINode.setAttribute("encrypted", "notok");
+      gEncryptedUINode.setAttribute("encrypted", "notok");
       //gStatusBar.setAttribute("encrypted", "notok");
     }
 

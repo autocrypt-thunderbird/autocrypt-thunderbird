@@ -357,7 +357,7 @@ temBoundary += "--";
   if (securityInfo) {
     nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
     if (enigHeaderSink) {
-      rv = enigHeaderSink->UpdateSecurityStatus(mURISpec, statusFlags, errorMsg, errorMsg);
+      rv = enigHeaderSink->UpdateSecurityStatus(mURISpec, statusFlags, "", errorMsg);
     }
   }
 

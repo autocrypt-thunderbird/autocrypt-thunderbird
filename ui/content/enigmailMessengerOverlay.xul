@@ -60,6 +60,11 @@
              accesskey="&enigmail.prefs.accesskey;"
              oncommand="EnigPrefWindow();" />
 
+        <menuitem id="enigmail_advprefs"
+             label="&enigmail.advprefs.label;"
+             accesskey="&enigmail.advprefs.accesskey;"
+             oncommand="EnigAdvPrefWindow();" />
+
         <menuitem id="enigmail_console"
              label="&enigmail.viewconsole.label;"
              accesskey="&enigmail.viewconsole.accesskey;"

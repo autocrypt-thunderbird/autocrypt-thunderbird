@@ -134,11 +134,11 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     KEYREVOKED:      nsIEnigmail.REVOKED_KEY,
                     NO_PUBKEY:       nsIEnigmail.NO_PUBKEY,
                     IMPORTED:        nsIEnigmail.IMPORTED_KEY,
-                    INV_RECP:        nsIEnigmail.INVALID_RECPIENT,
+                    INV_RECP:        nsIEnigmail.INVALID_RECIPIENT,
                     MISSING_PASSPHRASE: nsIEnigmail.MISSING_PASSPHRASE,
                     BAD_PASSPHRASE:  nsIEnigmail.BAD_PASSPHRASE,
                     BADARMOR:        nsIEnigmail.BAD_ARMOR,
-                    DECRYPTION_OKAY: nsIEnigmail.DECRYPTED_MESSAGE,
+                    DECRYPTION_OKAY: nsIEnigmail.DECRYPTION_OKAY,
                     TRUST_UNDEFINED: nsIEnigmail.UNTRUSTED_IDENTITY,
                     TRUST_NEVER:     nsIEnigmail.UNTRUSTED_IDENTITY,
                     TRUST_MARGINAL:  nsIEnigmail.UNTRUSTED_IDENTITY,
@@ -1528,7 +1528,7 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
         if (flag)
           statusFlags |= flag;
 
-        //DEBUG_LOG("enigmail.js: Enigmail.execCmd: status match '+matches[1]+"\n");
+        //DEBUG_LOG("enigmail.js: Enigmail.execCmd: status match "+matches[1]+"\n");
       }
 
     } else {
@@ -1739,9 +1739,14 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
   var encryptMsg  = sendFlags & nsIEnigmail.SEND_ENCRYPTED;
 
   if (encryptMsg) {
-    // Ensure canonical line endings (CRLF) when encrypting
+    // First convert all linebreaks to newlines
     plainText = plainText.replace(/\r\n/g, "\n");
-    plainText = plainText.replace(/\n/g, "\r\n");
+    plainText = plainText.replace(/\r/g,   "\n");
+
+    // Use platform-specific linebreaks when encrypting
+    if (!this.isUnix) {
+      plainText = plainText.replace(/\n/g, "\r\n");
+    }
   }
 
    var useDefaultComment = false;
@@ -2231,7 +2236,7 @@ function (parent, uiFlags, cipherText, signatureObj,
     return "";
   }
 
-  if (!interactive && !oldSignature && (head.search(/\S/) >= 0)) {
+  if (!interactive && verifyOnly && !oldSignature && (head.search(/\S/) >= 0)) {
     errorMsgObj.value = "Extra text preceding PGP block. Click Decrypt button";
     if (verifyOnly)
       errorMsgObj.value += " to verify signature";
@@ -2657,6 +2662,10 @@ function (exitCode, outputLen, errOutput, verifyOnly, noOutput,
     this.clearCachedPassphrase();
   }
 
+  if (!verifyOnly) {
+    statusFlagsObj.value |= nsIEnigmail.DECRYPTION_FAILED;
+  }
+
   var pubKeyId;
 
   if (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE) {
@@ -2675,7 +2684,7 @@ function (exitCode, outputLen, errOutput, verifyOnly, noOutput,
   }
 
   if (pubKeyId) {
-      errorMsgObj.value = "Error - public key "+pubKeyId+" needed to verify signature";
+    errorMsgObj.value = "Error - public key "+pubKeyId+" needed to verify signature";
 
   } else if (verifyOnly) {
     errorMsgObj.value = "Error - signature verification failed";
@@ -2687,10 +2696,10 @@ function (exitCode, outputLen, errOutput, verifyOnly, noOutput,
     errorMsgObj.value = "Error - decryption/verification failed";
   }
 
-  if (cmdErrorMsgObj.value) {
+  if (errorMsg) {
     errorMsgObj.value += "\n\n" + this.agentType + " command output:";
     //errorMsgObj.value += "\n" + decryptCommand;
-    errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
+    errorMsgObj.value += "\n" + errorMsg;
   }
 
   return exitCode;

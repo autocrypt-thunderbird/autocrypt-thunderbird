@@ -57,22 +57,22 @@
   <![CDATA[
     // List of persisted elements (required to save prefs)
     var _elementIDs = [
-                       ///"passivePrivacy",
+                       ///"autoCrypto",
                        "userIdSource",
                        "userIdValue",
                        "noPassphrase",
-                       "defaultEncryptionOption",
+                       "enigmail_defaultEncryptionOption",
                        "enigmail_maxIdleMinutes"
                        ];
   ]]>
   </script>
 
 <!--
-    <checkbox id="passivePrivacy"
-            label="&enigmail.passivePrivacy.label;"
+    <checkbox id="autoCrypto"
+            label="&enigmail.autoCrypto.label;"
             pref="true"
             preftype="bool"
-            prefstring="extensions.enigmail.passivePrivacy"
+            prefstring="extensions.enigmail.autoCrypto"
             prefattribute="checked"
             oncommand="setDisables(false);"/>
 -->
@@ -97,6 +97,7 @@
       <caption label="&enigmail.userIdSource.label;"/>
 
       <radiogroup id="userIdSource"
+                  value="0"
                   prefstring="extensions.enigmail.userIdSource">
 
         <radio id="userIdSpecified"
@@ -113,13 +114,15 @@
                value="2"
                label="&enigmail.userIdFromAddr.label;" 
                oncommand="setDisables(false);"/>
+
        </radiogroup>
     </groupbox>
 
     <groupbox orient="vertical">
-      <caption label="&enigmail.defaultEncryptionOptions.label;"/>
+      <caption label="&enigmail.defaultEncryptionOption.label;"/>
 
-      <radiogroup id="defaultEncryptionOption"
+      <radiogroup id="enigmail_defaultEncryptionOption"
+                  value="1"
                   prefstring="extensions.enigmail.defaultEncryptionOption">
 
         <radio id="defaultEncryptionNone"

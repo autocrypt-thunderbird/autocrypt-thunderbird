@@ -65,6 +65,6 @@ xpi::
 	echo Created $(DIST)/bin/$(XPIFILE)
 	cd ../ui; zip -r $(DIST)/bin/$(LANGXPIFILE) \
                install.js
-	cd $(DIST)/bin; zip -g $(LANGXPIFILE) \
-               chrome/$(XPI_MODULE)-en-US.jar
+	cd $(DIST)/bin/chrome; zip -g ../$(LANGXPIFILE) \
+               $(XPI_MODULE)-en-US.jar
 	echo Created $(DIST)/bin/$(LANGXPIFILE)

@@ -35,6 +35,20 @@ const USER_ID_SPECIFIED = 0;
 const USER_ID_DEFAULT   = 1;
 const USER_ID_FROMADDR  = 2;
 
+// UsePGPMimeOption values
+const PGP_MIME_NEVER    = 0;
+const PGP_MIME_POSSIBLE = 1;
+const PGP_MIME_ALWAYS   = 2;
+
+var gUserIdSourceList = ["userIdSpecified", "userIdDefault", "userIdFromAddr"];
+
+var gUsePGPMimeOptionList = ["usePGPMimeNever", "usePGPMimePossible",
+                             "usePGPMimeAlways"];
+
+var gDefaultEncryptionOptionList = ["defaultEncryptionNone",
+                                    "defaultEncryptionOnly",
+                                    "defaultEncryptionSign"];
+
 const BUTTON_POS_0           = 1;
 const BUTTON_POS_1           = 1 << 8;
 const BUTTON_POS_2           = 1 << 16;
@@ -50,11 +64,12 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "initAlertCount":2,
                              "composeHtmlAlertCount":3,
                              "agentPath":"",
-                             "passivePrivacy":false,
+                             "autoCrypto":false,
                              "useDefaultComment":false,
                              "userIdSource":USER_ID_DEFAULT,
                              "userIdValue":"",
                              "noPassphrase":false,
+                             "usePGPMimeOption":PGP_MIME_POSSIBLE,
                              "defaultEncryptionOption":1,
                              "defaultSignMsg":false,
                              "defaultSignNewsMsg":false,
@@ -65,6 +80,7 @@ var gEnigmailPrefDefaults = {"configuredVersion":"",
                              "keyserver":"www.keyserver.net",
                              "autoDecrypt":true,
                              "captureWebMail":false,
+                             "useMimeExperimental":false,
                              "disableSMIMEui":true,
                              "parseAllHeaders":true,
                              "show_headers":1
@@ -480,6 +496,36 @@ function EnigShowHeadersAll(status) {
     // Reset mail.show_headers pref to "original" value
     gEnigPrefRoot.setIntPref("mail.show_headers",
                              EnigGetPref("show_headers"));
+  }
+}
+
+function EnigDisplayRadioPref(prefName, prefValue, optionElementIds) {
+  DEBUG_LOG("enigmailCommon.js: EnigDisplayRadioPref: "+prefName+", "+prefValue+"\n");
+
+  if (prefValue >= optionElementIds.length)
+    return;
+
+  var groupElement = document.getElementById("enigmail_"+prefName);
+  var optionElement = document.getElementById(optionElementIds[prefValue]);
+
+  if (groupElement && optionElement) {
+    groupElement.selectedItem = optionElement;
+    groupElement.value = prefValue;
+  }
+}
+
+function EnigSetRadioPref(prefName, optionElementIds) {
+  DEBUG_LOG("enigmailCommon.js: EnigSetRadioPref: "+prefName+"\n");
+
+  var groupElement = document.getElementById("enigmail_"+prefName);
+  if (groupElement) {
+    var optionElement = groupElement.selectedItem;
+
+    var prefValue = optionElement.value;
+    if (prefValue < optionElementIds.length) {
+      EnigSetPref(prefName, prefValue);
+      groupElement.value = prefValue;
+    }
   }
 }
 

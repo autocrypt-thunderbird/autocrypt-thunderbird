@@ -74,6 +74,10 @@ NS_IMPL_THREADSAFE_ISUPPORTS2(nsEnigMsgCompFields,
 nsEnigMsgCompFields::nsEnigMsgCompFields()
   : mUIFlags(0),
     mSendFlags(0),
+
+    mSenderEmailAddr(""),
+    mRecipients(""),
+
     mMsgSMIMECompFields(nsnull)
 {
   nsresult rv;
@@ -164,5 +168,22 @@ nsEnigMsgCompFields::SetSenderEmailAddr(const nsACString &aSenderEmailAddr)
 {
   mSenderEmailAddr = aSenderEmailAddr;
   DEBUG_LOG(("nsEnigMsgCompFields::SetSenderEmailAddr: %s\n", mSenderEmailAddr.get()));
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsEnigMsgCompFields::GetRecipients(nsACString &aRecipients)
+{
+  DEBUG_LOG(("nsEnigMsgCompFields::GetRecipients:\n"));
+
+  aRecipients = mRecipients;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsEnigMsgCompFields::SetRecipients(const nsACString &aRecipients)
+{
+  mRecipients = aRecipients;
+  DEBUG_LOG(("nsEnigMsgCompFields::SetRecipients: %s\n", mRecipients.get()));
   return NS_OK;
 }

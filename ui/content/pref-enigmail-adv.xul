@@ -56,6 +56,7 @@
     <textbox id="enigmail_agentPath"/>
   </hbox>
 
+  <hbox>
   <groupbox orient="vertical">
     <caption label="&enigmail.whenSending.label;"/>
 
@@ -71,16 +72,51 @@
     <checkbox id="enigmail_alwaysTrustSend"
               label="&enigmail.alwaysTrustSend.label;" />
 
+    <checkbox id="send_plaintext_flowed"
+              label="&enigmail.send_plaintext_flowed.label;" />
+
+  </groupbox>
+
+  <groupbox orient="vertical">
+    <caption label="&enigmail.moreOptions.label;"/>
+
     <checkbox id="enigmail_confirmBeforeSend"
               label="&enigmail.confirmBeforeSend.label;" />
 
     <checkbox id="enigmail_useDefaultComment"
               label="&enigmail.useDefaultComment.label;" />
 
-    <checkbox id="send_plaintext_flowed"
-              label="&enigmail.send_plaintext_flowed.label;" />
+    <checkbox id="enigmail_autoDecrypt"
+              label="&enigmail.autoDecrypt.label;" />
 
+    <checkbox id="enigmail_disableSMIMEui"
+              label="&enigmail.disableSMIMEui.label;" />
+
+    <checkbox id="enigmail_captureWebMail"
+              label="&enigmail.captureWebMail.label;" />
   </groupbox>
+
+  </hbox>
+
+    <groupbox orient="vertical">
+      <caption label="&enigmail.usePGPMimeOption.label;"/>
+
+      <radiogroup id="enigmail_usePGPMimeOption">
+
+        <radio id="usePGPMimeNever"
+               value="0"
+               label="&enigmail.usePGPMimeNever.label;" />
+
+        <radio id="usePGPMimePossible"
+               value="1"
+               label="&enigmail.usePGPMimePossible.label;" />
+
+        <radio id="usePGPMimeAlways"
+               value="2"
+               label="&enigmail.usePGPMimeAlways.label;" />
+
+       </radiogroup>
+    </groupbox>
 
   <hbox autostretch="never">
     <label control="enigmail_keyserver"
@@ -89,23 +125,6 @@
     <textbox id="enigmail_keyserver" />
 
   </hbox>
-
-  <groupbox orient="vertical">
-    <hbox autostretch="never">
-       <checkbox id="enigmail_autoDecrypt"
-                 label="&enigmail.autoDecrypt.label;" />
-    </hbox>
-
-    <hbox autostretch="never">
-       <checkbox id="enigmail_disableSMIMEui"
-                 label="&enigmail.disableSMIMEui.label;" />
-    </hbox>
-
-    <hbox autostretch="never">
-       <checkbox id="enigmail_captureWebMail"
-                 label="&enigmail.captureWebMail.label;" />
-    </hbox>
-  </groupbox>
 
   <groupbox orient="vertical">
     <caption label="&enigmail.debugging.label;"/>
@@ -128,6 +147,10 @@
               oncommand="EnigTest();"
               />
     </hbox>
+
+    <checkbox id="enigmail_useMimeExperimental"
+              label="Use experimental MIME signing/encryption" />
+
   </groupbox>
 
   <hbox autostretch="never" halign="right">

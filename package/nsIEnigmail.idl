@@ -151,22 +151,23 @@ interface nsIEnigmail : nsISupports
                         out string errorMsg);
 
   /* Status flags */
-  const long GOOD_SIGNATURE       = 0x0001;
-  const long BAD_SIGNATURE        = 0x0002;
-  const long UNVERIFIED_SIGNATURE = 0x0004;
-  const long EXPIRED_SIGNATURE    = 0x0008;
-  const long EXPIRED_KEY_SIGNATURE= 0x0010;
-  const long EXPIRED_KEY          = 0x0020;
-  const long REVOKED_KEY          = 0x0040;
-  const long NO_PUBKEY            = 0x0080;
-  const long IMPORTED_KEY         = 0x0100;
-  const long INVALID_RECPIENT     = 0x0200;
-  const long MISSING_PASSPHRASE   = 0x0400;
-  const long BAD_PASSPHRASE       = 0x0800;
-  const long BAD_ARMOR            = 0x1000;
-  const long DECRYPTED_MESSAGE    = 0x2000;
-  const long UNTRUSTED_IDENTITY   = 0x4000;
-  const long TRUSTED_IDENTITY     = 0x8000;
+  const long GOOD_SIGNATURE       = 0x00001;
+  const long BAD_SIGNATURE        = 0x00002;
+  const long UNVERIFIED_SIGNATURE = 0x00004;
+  const long EXPIRED_SIGNATURE    = 0x00008;
+  const long EXPIRED_KEY_SIGNATURE= 0x00010;
+  const long EXPIRED_KEY          = 0x00020;
+  const long REVOKED_KEY          = 0x00040;
+  const long NO_PUBKEY            = 0x00080;
+  const long IMPORTED_KEY         = 0x00100;
+  const long INVALID_RECIPIENT    = 0x00200;
+  const long MISSING_PASSPHRASE   = 0x00400;
+  const long BAD_PASSPHRASE       = 0x00800;
+  const long BAD_ARMOR            = 0x01000;
+  const long DECRYPTION_FAILED    = 0x02000;
+  const long DECRYPTION_OKAY      = 0x04000;
+  const long UNTRUSTED_IDENTITY   = 0x08000;
+  const long TRUSTED_IDENTITY     = 0x10000;
 
   string decryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,

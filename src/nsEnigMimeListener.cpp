@@ -591,6 +591,8 @@ nsEnigMimeListener::ParseMimeHeaders(const char* mimeHeaders, PRUint32 count)
   headers.ReplaceSubstring( "\n ",  " ");
   headers.ReplaceSubstring( "\n\t", "\t");
 
+  //DEBUG_LOG(("nsEnigMimeListener::ParseMimeHeaders: headers='%s'\n", headers.get()));
+
   PRUint32 offset = 0;
   while (offset < headers.Length()) {
     PRInt32 lineEnd = headers.FindChar('\n', offset);
@@ -618,7 +620,7 @@ void
 nsEnigMimeListener::ParseHeader(const char* header, PRUint32 count)
 {
 
-  //DEBUG_LOG(("nsEnigMimeListener::ParseHeader, count=%d\n", count));
+  //DEBUG_LOG(("nsEnigMimeListener::ParseHeade: header='%s'\n", header));
 
   if (!header || (count <= 0) )
     return;
@@ -687,7 +689,7 @@ nsEnigMimeListener::ParseHeader(const char* header, PRUint32 count)
       if (protocol)
         mContentProtocol = protocol;
       
-      if (boundary)
+      if (micalg)
         mContentMicalg = micalg;
       
       PR_FREEIF(charset);

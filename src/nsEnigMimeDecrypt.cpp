@@ -305,7 +305,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
     if (securityInfo) {
       nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
       if (enigHeaderSink) {
-        rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, 0, errorMsg, "");
+        rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, 0, "", errorMsg);
       }
     }
 
@@ -406,7 +406,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   if (securityInfo) {
     nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
     if (enigHeaderSink) {
-      rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, statusFlags, errorMsg, errorMsg);
+      rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, statusFlags, "", errorMsg);
     }
   }
 

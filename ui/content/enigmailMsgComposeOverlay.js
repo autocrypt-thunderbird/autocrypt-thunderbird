@@ -79,6 +79,16 @@ function enigMsgComposeReset() {
   EnigShowHeadersAll(true);
 
   enigDisplaySendButton();
+
+  var sendPGPMime = document.getElementById("enigmail_sendPGPMime");
+
+  if (sendPGPMime) {
+    if (EnigGetPref("usePGPMimeOption") == PGP_MIME_ALWAYS) {
+      sendPGPMime.setAttribute("checked", "true");
+    } else {
+      sendPGPMime.removeAttribute("checked");
+    }
+  }
 }
 
 function enigDisplaySendButton() {
@@ -93,28 +103,26 @@ function enigDisplaySendButton() {
   }
 }
 
-function enigInitDefaultOptionsMenu() {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigInitDefaultOptionsMenu\n");
+function enigInitRadioMenu(prefName, optionIds) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigInitRadioMenu: "+prefName+"\n");
 
   var encryptId;
 
-  var defaultEncryptionOption = EnigGetPref("defaultEncryptionOption");
+  var prefValue = EnigGetPref(prefName);
 
-  switch (defaultEncryptionOption) {
-  case 2:
-    encryptId = "enigmail_defaultEncryptionSign";
-    break;
-  case 1:	
-    encryptId = "enigmail_defaultEncryptionOnly";
-    break;
-  default:
-    encryptId = "enigmail_defaultEncryptionNone";
-    break;
-  }
+  if (prefValue >= optionIds.length)
+    return;
 
-  var encryptItem = document.getElementById(encryptId);
-  if (encryptItem)
-    encryptItem.setAttribute("checked", "true");
+  var menuItem = document.getElementById("enigmail_"+optionIds[prefValue]);
+  if (menuItem)
+    menuItem.setAttribute("checked", "true");
+}
+
+
+function enigInitSendOptionsMenu() {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigInitSendOptionsMenu\n");
+
+  enigInitRadioMenu('defaultEncryptionOption', gDefaultEncryptionOptionList);
 
   var optList = ["defaultSignMsg", "confirmBeforeSend"];
 
@@ -128,12 +136,21 @@ function enigInitDefaultOptionsMenu() {
   }
 }
 
-function enigDefaultEncryption(value) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigDefaultEncryption: "+value+"\n");
+
+function enigDefaultEncryptionOption(value) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigDefaultEncryptionOption: "+value+"\n");
 
   EnigSetPref("defaultEncryptionOption", value);
 
   enigDisplaySendButton();
+
+  return true;
+}
+
+function enigUsePGPMimeOption(value) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigUsePGPMimeOption: "+value+"\n");
+
+  EnigSetPref("usePGPMimeOption", value);
 
   return true;
 }
@@ -355,28 +372,46 @@ function enigSend(sendFlags) {
 
      var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
+     var usePGPMimeOption = EnigGetPref("usePGPMimeOption");
+
      var sendPGPMime = document.getElementById("enigmail_sendPGPMime");
 
      if (sendPGPMime && (sendPGPMime.getAttribute("checked") == "true")) {
-       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: using PGP/MIME\n");
        sendFlags |= nsIEnigmail.SEND_PGP_MIME;
      }
 
-     var usePgpMime = (sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
-                      (sendFlags & ENCRYPT_OR_SIGN_MSG);
+     var bucketList = document.getElementById("attachmentBucket");
+     var hasAttachments = bucketList && bucketList.hasChildNodes();
 
-     if (!enigmailSvc.composeSecure) {
+     DEBUG_LOG("enigmailMsgComposeOverlay.js: hasAttachments = "+hasAttachments+"\n");
+
+     if ( hasAttachments &&
+          (sendFlags & ENCRYPT_OR_SIGN_MSG) &&
+          !(sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
+          (usePGPMimeOption >= PGP_MIME_POSSIBLE) &&
+          enigmailSvc.composeSecure ) {
+
+       if (EnigConfirm("Attachments to this message will be signed/encrypted only if the recipient's mail reader supports the PGP/MIME format. Enigmail and Mutt are known to support this format.\n Do you wish to use PGP/MIME format for this message?")) {
+         sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+       }
+     }
+
+     var usingPGPMime = (sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
+                        (sendFlags & ENCRYPT_OR_SIGN_MSG);
+
+     if (usingPGPMime && !enigmailSvc.composeSecure) {
        if (!EnigConfirm("PGP/MIME not available!\nUse inline PGP for signing/encryption?")) {
           throw Components.results.NS_ERROR_FAILURE;
           
        }
  
-       usePgpMime = false;
+       usingPGPMime = false;
      }
 
-     if (usePgpMime) {
-       // Use PGP/MIME
-       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: Using PGP/MIME, flags="+sendFlags+"\n");
+     if ( usingPGPMime ||
+          (!hasAttachments && EnigGetPref("useMimeExperimental"))) {
+       // Use EnigMime
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: Using EnigMime, flags="+sendFlags+"\n");
 
        var oldSecurityInfo = gMsgCompose.compFields.securityInfo;
 
@@ -403,6 +438,7 @@ function enigSend(sendFlags) {
        newSecurityInfo.sendFlags = sendFlags;
        newSecurityInfo.UIFlags = uiFlags;
        newSecurityInfo.senderEmailAddr = fromAddr;
+       newSecurityInfo.recipients = toAddr;
 
        dump("securityInfo = "+newSecurityInfo+"\n");
 
@@ -534,26 +570,12 @@ function enigSend(sendFlags) {
      // EnigSend: Handle both plain and encrypted messages below
      var isOffline = (gIOService && gIOService.offline);
 
-     if (isOffline &&
-         !EnigConfirm("You are currently offline. Do you wish to save the message in the Unsent Messages folder?\n") ) {
-
-       if (gEnigProcessed)
-         enigUndoEncryption();
-
-       return;
-     }
-
-     if (isOffline || (sendFlags & nsIEnigmail.SEND_LATER)) {
-       // Send message later
-       DEBUG_LOG("enigmailMsgComposeOverlay.js: Sending message later ...\n");
-
-       enigGenericSendMessage(nsIMsgCompDeliverMode.Later);
-       return;
-     }
-
      if (EnigGetPref("confirmBeforeSend") ||
          (sendFlags & nsIEnigmail.SEND_WITH_CHECK) ) {
        var msgStatus = "";
+
+       if (sendFlags & nsIEnigmail.SEND_PGP_MIME)
+         msgStatus += "PGP/MIME ";
 
        if (sendFlags & SIGN_MSG)
          msgStatus += "SIGNED ";
@@ -564,14 +586,34 @@ function enigSend(sendFlags) {
        if (!msgStatus)
          msgStatus = "PLAINTEXT ";
 
-       if (!EnigConfirm("Send "+msgStatus+"message to "+toAddrAll+"?\n")) {
+       var msgConfirm = isOffline ? "Save "+msgStatus+"message to "+toAddrAll+" in Unsent Messages folder?\n"
+                                  :"Send "+msgStatus+"message to "+toAddrAll+"?\n";
+
+       if (!EnigConfirm(msgConfirm)) {
          if (gEnigProcessed)
            enigUndoEncryption();
 
          return;
        }
+
+     } else if (isOffline &&
+                !EnigConfirm("You are currently offline. Do you wish to save the message in the Unsent Messages folder?\n") ) {
+
+       if (gEnigProcessed)
+         enigUndoEncryption();
+
+       return;
      }
+
     
+     if (isOffline || (sendFlags & nsIEnigmail.SEND_LATER)) {
+       // Send message later
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: Sending message later ...\n");
+
+       enigGenericSendMessage(nsIMsgCompDeliverMode.Later);
+       return;
+     }
+
      enigGenericSendMessage(nsIMsgCompDeliverMode.Now);
 
   } catch (ex) {

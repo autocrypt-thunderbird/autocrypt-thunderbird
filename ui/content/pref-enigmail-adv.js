@@ -4,9 +4,13 @@
 EnigInitCommon("pref-enigmail-adv");
 
 var gSendFlowedElement, gSendFlowedValue;
+
 function AdvStartup() {
    DEBUG_LOG("pref-enigmail-adv.js: AdvStartup\n");
    DisplayPrefs(false, true, false);
+
+   EnigDisplayRadioPref("usePGPMimeOption", EnigGetPref("usePGPMimeOption"),
+                        gUsePGPMimeOptionList);
 
    gSendFlowedElement = document.getElementById("send_plaintext_flowed");
 
@@ -32,6 +36,9 @@ function AdvStartup() {
 function AdvResetPrefs() {
    DEBUG_LOG("pref-enigmail-adv.js: AdvReset\n");
 
+   EnigDisplayRadioPref("usePGPMimeOption", gEnigmailPrefDefaults["usePGPMimeOption"],
+                        gUsePGPMimeOptionList);
+
    DisplayPrefs(true, true, false);
 }
 
@@ -41,6 +48,8 @@ function AdvOnAccept() {
    DEBUG_LOG("pref-enigmail-adv.js: AdvOnAccept\n");
 
    DisplayPrefs(false, false, true);
+
+   EnigSetRadioPref("usePGPMimeOption", gUsePGPMimeOptionList);
 
    dump("gSendFlowedElement.checked="+gSendFlowedElement.checked+"\n");
 
@@ -54,7 +63,9 @@ function AdvOnAccept() {
      }
    }
 
-   return true;
+  EnigSavePrefs();
+
+  return true;
 }
 
 function DisplayPrefs(showDefault, showPrefs, setPrefs) {

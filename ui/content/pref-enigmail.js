@@ -22,44 +22,40 @@ function init_pref_enigmail() {
 function setDisables(initializing) {
   DEBUG_LOG("pref-enigmail.js: setDisables: "+initializing+"\n");
 
-  var passivePrivacy  = document.getElementById("passivePrivacy");
-  var userIdSource    = document.getElementById("userIdSource");
+  var userIdSourceElement = document.getElementById("userIdSource");
 
-  var passivePrivacyChecked = initializing ? EnigGetPref("passivePrivacy")
-                                           : passivePrivacy.checked;
+  var userIdSource = initializing ? EnigGetPref("userIdSource")
+                                  : userIdSourceElement.value;
 
-  var userIdSourceValue = initializing ? EnigGetPref("userIdSource")
-                                       : userIdSource.value;
+  var defaultEncryptionOptionElement = document.getElementById("enigmail_defaultEncryptionOption");
+  var defaultEncryptionOption = initializing ? EnigGetPref("defaultEncryptionOption")
+                                  : defaultEncryptionOptionElement.value;
 
-  if (passivePrivacyChecked)
-    userIdSourceValue = 0;
+  var autoCrypto = false;
+  var autoCryptoElement = document.getElementById("autoCrypto");
 
-  DEBUG_LOG("pref-enigmail.js: setDisables: userIdSourceValue="+userIdSourceValue+"\n");
+  if (autoCryptoElement) {
+    autoCrypto = initializing ? EnigGetPref("autoCrypto")
+                              : autoCryptoElement.checked;
 
-  var userIdOpts = ["userIdSpecified", "userIdDefault", "userIdFromAddr"];
-
-  var element;
-  for (var j=0; j<userIdOpts.length; j++) {
-    element = document.getElementById(userIdOpts[j]);
-    element.removeAttribute("selected");
-    element.checked = false;
-    element.disabled = passivePrivacyChecked;
   }
 
-  element = document.getElementById(userIdOpts[userIdSourceValue]);
-  element.disabled = false;
-  element.checked = true;
-  element.setAttribute("selected", "true");
+  if (autoCrypto) {
+    userIdSource = 0;
+  }
 
-  userIdSource.value = userIdSourceValue;
+  EnigDisplayRadioPref("userIdSource", userIdSource, gUserIdSourceList);
+  EnigDisplayRadioPref("defaultEncryptionOption", defaultEncryptionOption,
+                        gDefaultEncryptionOptionList);
 
-  var noPassphrase        = document.getElementById("noPassphrase");
-  var noPassphraseChecked = getPrefs ? EnigGetPref("noPassphrase")
-                                     : noPassphrase.checked;
 
-  var maxIdleMinutes = document.getElementById("enigmail_MaxIdleMinutes");
-  if (noPassphraseChecked)
-    maxIdleMinutes.disabled = true;
+  var noPassphraseElement = document.getElementById("noPassphrase");
+  var noPassphrase = getPrefs ? EnigGetPref("noPassphrase")
+                              : noPassphraseElement.checked;
+
+  var maxIdleMinutesElement = document.getElementById("enigmail_MaxIdleMinutes");
+  if (noPassphrase)
+    maxIdleMinutesElement.disabled = true;
 }
 
 
@@ -68,7 +64,7 @@ function enigmailPrefsHelp() {
 }
 
 function enigmailResetPrefs() {
-   DEBUG_LOG("pref-enigmail.js: enigmailReserPrefs\n");
+   DEBUG_LOG("pref-enigmail.js: enigmailResetPrefs\n");
 
    DisplayPrefs(true, true, false);
 

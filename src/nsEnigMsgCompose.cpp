@@ -549,12 +549,9 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
   if (NS_FAILED(rv))
       return rv;
 
-  nsXPIDLString toField;
-  rv = aCompFields->GetTo(getter_Copies(toField));
+  rv = enigSecurityInfo->GetRecipients(mRecipients);
   if (NS_FAILED(rv))
       return rv;
-
-  mRecipients.AssignWithConversion(toField);
 
   if (mSendFlags & nsIEnigmail::SEND_PGP_MIME) {
     // RFC2015 crypto encapsulation

@@ -64,6 +64,7 @@ protected:
     PRUint32                        mSendFlags;
 
     nsCString                       mSenderEmailAddr;
+    nsCString                       mRecipients;
 
     nsCOMPtr<nsIMsgSMIMECompFields> mMsgSMIMECompFields;
 };
