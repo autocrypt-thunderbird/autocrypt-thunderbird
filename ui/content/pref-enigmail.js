@@ -222,10 +222,13 @@ function EnigTest() {
     var signatureObj   = new Object();
     var keyIdObj       = new Object();
     var userIdObj      = new Object();
+    var sigDetailsObj      = new Object();
 
-    var decryptedText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
+    var decryptedText = enigmailSvc.decryptMessage(window, 
+                                        uiFlags, cipherText,
                                         signatureObj, exitCodeObj,
                                         statusFlagsObj, keyIdObj, userIdObj,
+                                        sigDetailsObj,
                                         errorMsgObj);
     CONSOLE_LOG("\n************************************************\n");
     CONSOLE_LOG("EnigTest: VERIFICATION\n");
@@ -249,6 +252,7 @@ function EnigTest() {
     decryptedText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
                                         signatureObj, exitCodeObj,
                                         statusFlagsObj, keyIdObj, userIdObj,
+                                        sigDetailsObj,
                                         errorMsgObj);
     CONSOLE_LOG("\n************************************************\n");
     CONSOLE_LOG("EnigTest: DECRYPTION\n");
@@ -260,7 +264,7 @@ function EnigTest() {
     EnigAlert(EnigGetString("testSucceeded"));
   }
   catch (ex) {
-    EnigAlert("error");
+    EnigAlert(EnigGetString("undefinedError"));
   }
 }
 

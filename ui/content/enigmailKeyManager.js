@@ -254,6 +254,9 @@ function enigGetTrustLabel(trustCode) {
   case 'u':
     keyTrust=EnigGetString("keyTrust.ultimate");
     break;
+  case '-':
+    keyTrust="-";
+    break;
   default:
     keyTrust="";
   }

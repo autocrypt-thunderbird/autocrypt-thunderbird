@@ -282,8 +282,8 @@ function EnigUpdate_0_80() {
         }
       }
       if (oldVer.substring(0,4)<"0.81") {
-        window.openDialog("chrome://enigmail/content/enigmailUpgrade.xul",
-            "", "dialog,modal,centerscreen");
+        window.open("chrome://enigmail/content/enigmailUpgrade.xul",
+            "", "chrome,modal,centerscreen");
       }
     }
   }
@@ -625,7 +625,7 @@ function EnigHelpWindow(source) {
 
   EnigOpenWin("enigmail:help",
               "chrome://enigmail/content/enigmailHelp.xul?src="+source,
-              "dialog,centerscreen,resizable");
+              "centerscreen,resizable");
 }
 
 function EnigUpgrade() {
@@ -788,6 +788,7 @@ function EnigSetPref(prefName, value) {
 }
 
 function EnigGetSignMsg(identity) {
+  DEBUG_LOG("enigmailCommon.js: EnigGetSignMsg: identity.key="+identity.key+"\n");
   var sign = null;
 
   if (gEnigPrefRoot.getPrefType("mail.identity."+identity.key+".pgpSignPlain")==0) {
@@ -1091,7 +1092,7 @@ function EnigViewAbout() {
 
   EnigOpenWin ("about:enigmail",
                "chrome://enigmail/content/enigmailAbout.xul",
-               "resizable,centerscreen,dialog");
+               "resizable,centerscreen");
 }
 
 function EnigViewConsole() {
@@ -1099,7 +1100,7 @@ function EnigViewConsole() {
 
   EnigOpenWin("enigmail:console",
               "chrome://enigmail/content/enigmailConsole.xul",
-              "dialog,resizable,centerscreen");
+              "resizable,centerscreen");
 }
 
 function EnigViewDebugLog() {
@@ -1131,7 +1132,7 @@ function EnigViewDebugLog() {
 
   EnigOpenWin("enigmail:logFile",
               "chrome://enigmail/content/enigmailViewFile.xul?"+opts,
-              "dialog,resizable,centerscreen");
+              "resizable,centerscreen");
 
 //  window.open(logFileURL, 'Enigmail Debug Log');
 }
@@ -1452,7 +1453,8 @@ function EnigNewRule(emailAddress) {
   inputObj.toAddress="{"+emailAddress+"}";
   inputObj.options="";
   inputObj.command = "add";
-  window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+  window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", 
+                    "dialog,modal,centerscreen,resizable", inputObj, resultObj);
   return true;
 }
 

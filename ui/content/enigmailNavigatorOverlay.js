@@ -236,12 +236,13 @@ function enigYahooShowLetter() {
   var statusFlagsObj = new Object();
   var keyIdObj       = new Object();
   var userIdObj      = new Object();
+  var sigDetailsObj  = new Object();
 
   var uiFlags = nsIEnigmail.UI_INTERACTIVE;
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
                                           signatureObj, exitCodeObj,
                                           statusFlagsObj, keyIdObj, userIdObj,
-                                          errorMsgObj);
+                                          sigDetailsObj, errorMsgObj);
 
   var exitCode = exitCodeObj.value;
   var errorMsg = errorMsgObj.value;
@@ -369,12 +370,13 @@ function enigHotmailShowLetter() {
   var statusFlagsObj = new Object();
   var keyIdObj       = new Object();
   var userIdObj      = new Object();
+  var sigDetailsObj  = new Object();
 
   var uiFlags = nsIEnigmail.UI_INTERACTIVE;
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
                                           signatureObj, exitCodeObj,
                                           statusFlagsObj, keyIdObj, userIdObj,
-                                          errorMsgObj);
+                                          sigDetailsObj, errorMsgObj);
   var exitCode = exitCodeObj.value;
   var errorMsg = errorMsgObj.value;
 

@@ -1,6 +1,6 @@
 <!ENTITY enigmail.label                   "Enigmail">
 
-<!ENTITY enigmail.keyUserId.label         "Account / User Id">
+<!ENTITY enigmail.keyUserId.label         "Account / User ID">
 <!ENTITY enigmail.keygenTitle.label       "Enigmail - Generate OpenPGP Key">
 <!ENTITY enigmail.useForSigning.label     "Use generated key for the selected account">
 <!ENTITY enigmail.keyComment.label        "Comment">
@@ -150,7 +150,7 @@
 <!ENTITY enigmail.sendPGPMime.accesskey        "P">
 
 <!ENTITY enigmail.undoencryption.accesskey     "U">
-<!ENTITY enigmail.insertkey.accesskey          "I">
+<!ENTITY enigmail.insertkey.accesskey          "K">
 
 <!ENTITY enigmail.defaultEncryption.label         "Encrypt messages by default">
 <!ENTITY enigmail.defaultEncryptionSign.label     "Sign encrypted messages by default">
@@ -205,7 +205,7 @@
 <!ENTITY enigmail.usersNotFound.label               "Recipients not found">
 <!ENTITY enigmail.keyExpiry.label                   "Expiry">
 <!ENTITY enigmail.keySelection.label                "Selection">
-<!ENTITY enigmail.keyId.label                       "Key Id">
+<!ENTITY enigmail.keyId.label                       "Key ID">
 <!ENTITY enigmail.userSelPlainText.label            "Send mail unencrypted">
 <!ENTITY enigmail.userSelPlainTextNotSigned.label   "Send mail unencrypted and not signed">
 <!ENTITY enigmail.userSelPlainText.accesskey        "S">
@@ -234,7 +234,7 @@
 <!ENTITY enigmail.amPrefDesc.label                  "Support for OpenPGP encryption and signing messages is provided by Enigmail. You need to have GnuPG (gpg) installed in order to use this feature.">
 <!ENTITY enigmail.amPrefEnablePgp.label             "Enable OpenPGP support (Enigmail) for this identity">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "Use Email address of this account to identify OpenPGP key">
-<!ENTITY enigmail.amPrefUseKeyId.label              "Use specific OpenPGP Key Id (0x1234ABCD):">
+<!ENTITY enigmail.amPrefUseKeyId.label              "Use specific OpenPGP Key ID (0x1234ABCD):">
 <!ENTITY enigmail.amPrefSelectKey.label             "Select Key ...">
 <!ENTITY enigmail.amPrefDefaultEncrypt.label        "Message Composition Default Options">
 <!ENTITY enigmail.encryptionDlg.label               "Enigmail Encryption &amp; Signing Settings">
@@ -255,7 +255,7 @@
 <!ENTITY  enigmail.trustSenderKey.label             "Set Key Trust ...">
 <!ENTITY  enigmail.smimeSecurityInfo.label          "S/MIME Security Info ...">
 <!ENTITY  enigmail.createRuleFromAddr.label         "Create OpenPGP Rule from Address...">
-<!ENTITY  enigmail.keyManWindow.label               "OpenPGP Key Management Window">
+<!ENTITY  enigmail.keyManWindow.label               "OpenPGP key management ">
 <!ENTITY  enigmail.keyManWindow.accesskey           "O">
 
 <!ENTITY enigmail.singleRcptSettings.label          "Enigmail - Recipient Settings">
@@ -310,10 +310,10 @@
 <!ENTITY enigmail.progress.label                   "Progress">
 
 <!ENTITY enigmail.sKeyDlg.title                    "Enigmail - Sign Key">
-<!ENTITY enigmail.sKeyDlg.signKey.label            "Key to sign:">
+<!ENTITY enigmail.sKeyDlg.signKey.label            "Key to be signed:">
 <!ENTITY enigmail.sKeyDlg.fingerprint.label        "Fingerprint:">
 <!ENTITY enigmail.sKeyDlg.signWithKey.label        "Key for signing:">
-<!ENTITY enigmail.sKeyDlg.checked.label            "How carefully have you verified the key you are about to sign actually belongs to the person named above?">
+<!ENTITY enigmail.sKeyDlg.checked.label            "How carefully have you verified that the key you are about to sign actually belongs to the person(s) named above?">
 <!ENTITY enigmail.sKeyDlg.noAnswer.label           "I will not answer">
 <!ENTITY enigmail.sKeyDlg.notChecked.label         "I have not checked at all">
 <!ENTITY enigmail.sKeyDlg.casualCheck.label        "I have done casual checking">
@@ -321,7 +321,7 @@
 <!ENTITY enigmail.sKeyDlg.createLocal.label        "Local signature (cannot be exported)">
 <!ENTITY enigmail.sKeyDlg.alreadySigned.label      "Note: some keys already signed with the key selected for signing!">
 
-<!ENTITY enigmail.addUidDlg.title                    "Enigmail - Add Uid">
+<!ENTITY enigmail.addUidDlg.title                    "Enigmail - Add User ID">
 <!ENTITY enigmail.addUidDlg.name.label               "Name">
 <!ENTITY enigmail.addUidDlg.email.label              "Email">
 <!ENTITY enigmail.addUidDlg.comment.label            "Comment (optional)">
@@ -341,7 +341,7 @@
 <!ENTITY enigmail.keyMan.key.label                 "Key">
 <!ENTITY enigmail.keyMan.generate.label            "Generate">
 <!ENTITY enigmail.keyMan.sign.label                "Sign">
-<!ENTITY enigmail.keyMan.setTrust.label            "Set Trust">
+<!ENTITY enigmail.keyMan.setTrust.label            "Set trust">
 <!ENTITY enigmail.keyMan.genRevoke.label           "Create Revokation Ceritficate">
 <!ENTITY enigmail.keyMan.importFromFile.label      "Import from file">
 <!ENTITY enigmail.keyMan.exportToFile.label        "Export to file">
@@ -353,8 +353,8 @@
 <!ENTITY enigmail.keyMan.keyProps.label            "Key Properties">
 <!ENTITY enigmail.keyMan.viewSig.label             "View signatures">
 <!ENTITY enigmail.keyMan.keyType.label             "Type">
-<!ENTITY enigmail.keyMan.calcTrust.label           "Calc. Trust">
-<!ENTITY enigmail.keyMan.ownerTrust.label          "Owner-Trust">
+<!ENTITY enigmail.keyMan.calcTrust.label           "Calculated Trust">
+<!ENTITY enigmail.keyMan.ownerTrust.label          "Owner Trust">
 
 <!ENTITY enigmail.keyMan.window.accesskey            "W">
 <!ENTITY enigmail.keyMan.close.accesskey             "C">
@@ -378,7 +378,7 @@
 <!ENTITY enigmail.viewKeySigDlg.sigForKey.label      "Signatures for Key:">
 <!ENTITY enigmail.viewKeySigDlg.sigType.label        "Sig. Type">
 
-<!ENTITY enigmail.setPrimUidDlg.title                "Change Primary User Id">
+<!ENTITY enigmail.setPrimUidDlg.title                "Change Primary User ID">
 <!ENTITY enigmail.setPrimUidDlg.affectedKey.label    "Key to change:">
-<!ENTITY enigmail.setPrimUidDlg.newPrimUid.label     "New Primary User Id:">
+<!ENTITY enigmail.setPrimUidDlg.newPrimUid.label     "New Primary User ID:">
 
