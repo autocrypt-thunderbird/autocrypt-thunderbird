@@ -252,7 +252,7 @@
       </vbox>
 
       <vbox id="debug" flex="1">
-        <description class="enigmailPrefsTitle">&enigmail.debugging.label;</description>
+        <description class="enigmailPrefsTitle">&enigmail.debugMenu.label;</description>
         <spacer flex="0"/>
 
         <grid>

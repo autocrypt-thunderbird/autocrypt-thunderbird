@@ -437,7 +437,7 @@ function enigDispSecurityContext() {
 }
 
 
-function enigUpdateKeyMgmtDisplay() {
+function enigUpdateSendersKeyMenu() {
   enigSetSenderStatus("keyMgmtSignKey", "keyMgmtKeyTrust", "keyMgmtShowPhoto")
 }
 

@@ -658,12 +658,9 @@ function EnigAdvPrefWindow() {
 
 function EnigHelpWindow(source) {
 
-  var input="chrome://enigmail/locale/help/"+source+".html";
-
   EnigOpenWin("enigmail:help",
-              "chrome://enigmail/content/enigmailHelp.xul",
-              "chrome,resizable",
-              input);
+              "chrome://enigmail/content/enigmailHelp.xul?src="+source,
+              "dialog,centerscreen,resizable");
 }
 
 function EnigUpgrade() {
@@ -1107,24 +1104,37 @@ function EnigOpenWin (winName, spec, winOptions, optList) {
   } else {
     var appShellSvc = C.classes[ENIG_ASS_CONTRACTID].getService(C.interfaces.nsIAppShellService);
     var domWin = appShellSvc.hiddenDOMWindow;
-
-    domWin.openDialog(spec, winName, winOptions, optList);
+    //nsIDOMJSWindow
+    domWin.open(spec, winName, "chrome,"+winOptions, optList);
   }
 }
 
+// return the options passed to a window
+function EnigGetWindowOptions() {
+  var winOptions=[];
+  if (window.location.search) {
+    var optList=window.location.search.substr(1).split(/\&/);
+    for (var i=0; i<optList.length; i++) {
+      var anOption=optList[i].split(/\=/);
+      winOptions[anOption[0]] = unescape(anOption[1]);
+    }
+  }
+  return winOptions;
+}
 function EnigViewAbout() {
   DEBUG_LOG("enigmailCommon.js: EnigViewAbout\n");
 
   EnigOpenWin ("about:enigmail",
                "chrome://enigmail/content/enigmailAbout.xul",
-               "dialog,resizable,chrome");
+               "resizable,centerscreen,dialog");
 }
 
 function EnigViewConsole() {
   DEBUG_LOG("enigmailCommon.js: EnigViewConsole\n");
 
   EnigOpenWin("enigmail:console",
-              "chrome://enigmail/content/enigmailConsole.xul", "dialog,chrome,resizable");
+              "chrome://enigmail/content/enigmailConsole.xul",
+              "dialog,resizable,centerscreen");
 }
 
 function EnigViewDebugLog() {
@@ -1152,11 +1162,11 @@ function EnigViewDebugLog() {
   logDirectory = logDirectory.replace(/\\/g, "/");
 
   var logFileURL = "file:///" + logDirectory + "/enigdbug.txt";
+  var opts="fileUrl="+escape(logFileURL)+"&title="+escape("Enigmail Debug Log");
 
   EnigOpenWin("enigmail:logFile",
-              "chrome://enigmail/content/enigmailViewFile.xul",
-              "dialog,chrome,resizable",
-              [ logFileURL, "Enigmail Debug Log"]);
+              "chrome://enigmail/content/enigmailViewFile.xul?"+opts,
+              "dialog,resizable,centerscreen");
 
 //  window.open(logFileURL, 'Enigmail Debug Log');
 }
@@ -1165,7 +1175,7 @@ function EnigKeygen() {
   DEBUG_LOG("enigmailCommon.js: EnigKeygen\n");
 
   window.openDialog('chrome://enigmail/content/enigmailKeygen.xul',
-                    EnigGetString('keyGeneration'),
+                    "enigmail:generateKey",
                     'chrome,dialog,modal,close=no,resizable=yes,width=600');
 
 }
@@ -1174,7 +1184,7 @@ function EnigKeyManager() {
   DEBUG_LOG("enigmailCommon.js: EnigKeygen\n");
   EnigOpenWin("enigmail:KeyManager",
               "chrome://enigmail/content/enigmailKeyManager.xul",
-              "dialog,chrome,resizable=yes");
+              "resizable");
 }
 
 // retrieves the most recent navigator window (opens one if need be)

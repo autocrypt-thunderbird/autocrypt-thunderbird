@@ -10,7 +10,9 @@ function enigHelpLoad() {
   if (!contentFrame)
     return;
 
-  contentFrame.document.location.href=window.arguments[0];
+  var winOptions = EnigGetWindowOptions();
+  var helpFile = winOptions["src"];
+  contentFrame.document.location.href="chrome://enigmail/locale/help/"+helpFile+".html";
 }
 
 window.onload = enigHelpLoad;

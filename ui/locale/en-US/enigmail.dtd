@@ -62,7 +62,6 @@
 <!ENTITY enigmail.useGpgAgent.label       "Use gpg-agent for passphrase handling">
 <!ENTITY enigmail.hushMailSupport.label   "Do not use '&lt;' and '&gt;' to specify email addresses (for Hushmail keys)">
 
-<!ENTITY enigmail.debugging.label         "Debugging Enigmail">
 <!ENTITY enigmail.logdirectory.label      "Log directory">
 <!ENTITY enigmail.testemail.label         "Test email">
 <!ENTITY enigmail.test.label              "Test">
@@ -82,6 +81,8 @@
 
 <!ENTITY enigmail.prefs.label            "Preferences">
 <!ENTITY enigmail.advprefs.label         "Advanced preferences">
+
+<!ENTITY enigmail.debugMenu.label        "Debugging Enigmail">
 <!ENTITY enigmail.viewconsole.label      "View console">
 <!ENTITY enigmail.viewdebuglog.label     "View logfile">
 
@@ -91,7 +92,7 @@
 <!ENTITY enigmail.about.label              "About Enigmail">
 <!ENTITY enigmail.reload.label             "Reload IMAP Message">
 <!ENTITY enigmail.browse.label             "Browse...">
-<!ENTITY enigmail.openpgpKeyMgmt.label     "OpenPGP Key Management">
+<!ENTITY enigmail.sendersKeyMenu.label     "Sender's Key">
 
 
 <!ENTITY enigmail.decryptverify.accesskey   "D">
@@ -100,19 +101,20 @@
 <!ENTITY enigmail.reload.accesskey          "M">
 
 <!ENTITY enigmail.autoDecrypt.accesskey     "A">
+<!ENTITY enigmail.debugMenu.accesskey       "G">
 
 <!ENTITY enigmail.clearPassphrase.accesskey "l">
 <!ENTITY enigmail.editRules.accesskey       "R">
 
 <!ENTITY enigmail.prefs.accesskey           "P">
-<!ENTITY enigmail.viewconsole.accesskey      "c">
+<!ENTITY enigmail.viewconsole.accesskey     "c">
 <!ENTITY enigmail.viewdebuglog.accesskey    "g">
 
 <!ENTITY enigmail.generatekey.accesskey     "G">
 <!ENTITY enigmail.upgrade.accesskey         "U">
 <!ENTITY enigmail.help.accesskey            "H">
 <!ENTITY enigmail.about.accesskey           "b">
-<!ENTITY enigmail.openpgpKeyMgmt.accesskey  "O">
+<!ENTITY enigmail.sendersKeyMenu.accesskey  "K">
 
 <!ENTITY enigmail.securitybutton.label       "OpenPGP">
 <!ENTITY enigmail.securitybutton.tip         "OpenPGP (Enigmail) security settings">
@@ -249,8 +251,8 @@
 <!ENTITY  enigmail.pgpSecurityInfo.label            "OpenPGP Security Info ...">
 <!ENTITY  enigmail.copySecurityInfo.label           "Copy OpenPGP Security Info">
 <!ENTITY  enigmail.showPhoto.label                  "View OpenPGP Photo ID">
-<!ENTITY  enigmail.signSenderKey.label              "Sign Sender's Key ...">
-<!ENTITY  enigmail.trustSenderKey.label             "Set Sender's Key Trust ...">
+<!ENTITY  enigmail.signSenderKey.label              "Sign Key ...">
+<!ENTITY  enigmail.trustSenderKey.label             "Set Key Trust ...">
 <!ENTITY  enigmail.smimeSecurityInfo.label          "S/MIME Security Info ...">
 <!ENTITY  enigmail.createRuleFromAddr.label         "Create OpenPGP Rule from Address...">
 <!ENTITY  enigmail.keyManWindow.label               "OpenPGP Key Management Window">

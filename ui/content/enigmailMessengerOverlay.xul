@@ -69,11 +69,6 @@
              accesskey="&enigmail.decryptverify.accesskey;"
              oncommand="enigMessageDecrypt();" />
 
-        <menuitem id="enigmail_importpublickey"
-             label="&enigmail.importpublickey.label;"
-             accesskey="&enigmail.importpublickey.accesskey;"
-             oncommand="enigMessageImport();" />
-
         <menuitem id="enigmail_savedecrypted"
              label="&enigmail.savedecrypted.label;"
              accesskey="&enigmail.savedecrypted.accesskey;"
@@ -95,6 +90,11 @@
              accesskey="&enigmail.clearPassphrase.accesskey;"
              oncommand="EnigClearPassphrase();" />
 
+        <menuitem id="enigmail_reload_msg"
+             label="&enigmail.reload.label;"
+             accesskey="&enigmail.reload.accesskey;"
+             oncommand="ReloadWithAllParts();" />
+
         <menuseparator/>
 
         <menuitem id="enigmail_prefs"
@@ -102,64 +102,63 @@
              accesskey="&enigmail.prefs.accesskey;"
              oncommand="EnigPrefWindow(true,'seamonkey');" />
 
-        <menuitem id="enigmail_console"
-             label="&enigmail.viewconsole.label;"
-             accesskey="&enigmail.viewconsole.accesskey;"
-             oncommand="EnigViewConsole();" />
-
-        <menuitem id="enigmail_debug_log"
-             label="&enigmail.viewdebuglog.label;"
-             accesskey="&enigmail.viewdebuglog.accesskey;"
-             oncommand="EnigViewDebugLog();" />
-
-        <menuseparator/>
-
-        <menuitem id="enigmail_reload_msg"
-             label="&enigmail.reload.label;"
-             accesskey="&enigmail.reload.accesskey;"
-             oncommand="ReloadWithAllParts();" />
-
-        <menuseparator/>
-        
-        <menu id="enigmail_keyManagement"
-             label="&enigmail.openpgpKeyMgmt.label;"
-             accesskey="&enigmail.openpgpKeyMgmt.accesskey;">
-
-          <menupopup onpopupshowing="enigUpdateKeyMgmtDisplay();">
-
-            <menuitem id="enigmail_keymgmt"
-                 label="&enigmail.keyManWindow.label;"
-                 accesskey="&enigmail.keyManWindow.accesskey;"
-                 oncommand="EnigKeyManager();" />
-                 
-            <menuseparator/>
-            
-            <menuitem id="enigmail_keygen"
-                 label="&enigmail.generatekey.label;"
-                 accesskey="&enigmail.generatekey.accesskey;"
-                 oncommand="EnigKeygen();" />
-                 
-            <menuitem label="&enigmail.signSenderKey.label;"
-                      id="enigmail_keyMgmtSignKey"
-                      oncommand="enigSignKey();"
-                      disabled="true"/>
-            <menuitem label="&enigmail.trustSenderKey.label;"
-                      id="enigmail_keyMgmtKeyTrust"
-                      oncommand="enigEditKeyTrust();"
-                      disabled="true"/>
-            <menuitem label="&enigmail.showPhoto.label;"
-                      id="enigmail_keyMgmtShowPhoto"
-                      oncommand="enigShowPhoto();"/>
-          </menupopup>
-        </menu>
 
         <menuitem id="enigmail_RulesEditor"
             label="&enigmail.editRules.label;"
             accesskey="&enigmail.editRules.accesskey;"
             oncommand="EnigRulesEditor();"/>
 
+        
+        <menuitem id="enigmail_keymgmt"
+             label="&enigmail.keyManWindow.label;"
+             accesskey="&enigmail.keyManWindow.accesskey;"
+             oncommand="EnigKeyManager();" />
+
+        <menu id="enigmail_sendersKeyMenu"
+             label="&enigmail.sendersKeyMenu.label;"
+             accesskey="&enigmail.sendersKeyMenu.accesskey;">
+
+          <menupopup onpopupshowing="enigUpdateSendersKeyMenu();">
+                 
+            <menuitem id="enigmail_importpublickey"
+                 label="&enigmail.importpublickey.label;"
+                 accesskey="&enigmail.importpublickey.accesskey;"
+                 oncommand="enigMessageImport();" />
+
+            <menuseparator/>
+
+            <menuitem label="&enigmail.signSenderKey.label;"
+                      id="enigmail_keyMgmtSignKey"
+                      oncommand="enigSignKey();"/>
+            <menuitem label="&enigmail.trustSenderKey.label;"
+                      id="enigmail_keyMgmtKeyTrust"
+                      oncommand="enigEditKeyTrust();"/>
+            <menuitem label="&enigmail.showPhoto.label;"
+                      id="enigmail_keyMgmtShowPhoto"
+                      oncommand="enigShowPhoto();"/>
+          </menupopup>
+        </menu>
+
         <menuseparator/>
 
+        <menu id="enigmail_debugMenu"
+             label="&enigmail.debugMenu.label;"
+             accesskey="&enigmail.debugMenu.accesskey;">
+
+          <menupopup>
+            <menuitem id="enigmail_console"
+                 label="&enigmail.viewconsole.label;"
+                 accesskey="&enigmail.viewconsole.accesskey;"
+                 oncommand="EnigViewConsole();" />
+    
+            <menuitem id="enigmail_debug_log"
+                 label="&enigmail.viewdebuglog.label;"
+                 accesskey="&enigmail.viewdebuglog.accesskey;"
+                 oncommand="EnigViewDebugLog();" />
+          </menupopup>
+        </menu>
+        
+        <menuseparator/>
         <menuitem id="enigmail_upgrade"
              label="&enigmail.upgrade.label;"
              accesskey="&enigmail.upgrade.accesskey;"
@@ -190,16 +189,11 @@
 
       <menupopup id="menu_EnigmailPopup"
         onpopupshowing="enigUpdateOptionsDisplay();">
-
+             
         <menuitem id="enigmail_decryptverify"
              label="&enigmail.decryptverify.label;"
              accesskey="&enigmail.decryptverify.accesskey;"
              oncommand="enigMessageDecrypt();" />
-
-        <menuitem id="enigmail_importpublickey"
-             label="&enigmail.importpublickey.label;"
-             accesskey="&enigmail.importpublickey.accesskey;"
-             oncommand="enigMessageImport();" />
 
         <menuitem id="enigmail_savedecrypted"
              label="&enigmail.savedecrypted.label;"
@@ -222,25 +216,6 @@
              accesskey="&enigmail.clearPassphrase.accesskey;"
              oncommand="EnigClearPassphrase();" />
 
-        <menuseparator/>
-
-        <menuitem id="enigmail_prefs"
-             label="&enigmail.prefs.label;"
-             accesskey="&enigmail.prefs.accesskey;"
-             oncommand="EnigPrefWindow(true,'thunderbird');" />
-
-        <menuitem id="enigmail_console"
-             label="&enigmail.viewconsole.label;"
-             accesskey="&enigmail.viewconsole.accesskey;"
-             oncommand="EnigViewConsole();" />
-
-        <menuitem id="enigmail_debug_log"
-             label="&enigmail.viewdebuglog.label;"
-             accesskey="&enigmail.viewdebuglog.accesskey;"
-             oncommand="EnigViewDebugLog();" />
-
-        <menuseparator/>
-
         <menuitem id="enigmail_reload_msg"
              label="&enigmail.reload.label;"
              accesskey="&enigmail.reload.accesskey;"
@@ -248,50 +223,68 @@
 
         <menuseparator/>
 
-        <menu id="enigmail_keyManagement"
-             label="&enigmail.openpgpKeyMgmt.label;"
-             accesskey="&enigmail.openpgpKeyMgmt.accesskey;">
+        <menuitem id="enigmail_prefs"
+             label="&enigmail.prefs.label;"
+             accesskey="&enigmail.prefs.accesskey;"
+             oncommand="EnigPrefWindow(true,'thunderbird');" />
 
-          <menupopup onpopupshowing="enigUpdateKeyMgmtDisplay();">
-          
-            <menuitem id="enigmail_keymgmt"
-                 label="&enigmail.keyManWindow.label;"
-                 accesskey="&enigmail.keyManWindow.accesskey;"
-                 oncommand="EnigKeyManager();" />
-                 
-            <menuseparator/>
-
-            <menuitem id="enigmail_keygen"
-                 label="&enigmail.generatekey.label;"
-                 accesskey="&enigmail.generatekey.accesskey;"
-                 oncommand="EnigKeygen();" />
-            <menuitem label="&enigmail.signSenderKey.label;"
-                      id="enigmail_keyMgmtSignKey"
-                      oncommand="enigSignKey();"
-                      disabled="true"/>
-            <menuitem label="&enigmail.trustSenderKey.label;"
-                      id="enigmail_keyMgmtKeyTrust"
-                      oncommand="enigEditKeyTrust();"
-                      disabled="true"/>
-            <menuitem label="&enigmail.showPhoto.label;"
-                      id="enigmail_keyMgmtShowPhoto"
-                      oncommand="enigShowPhoto();"/>
-          </menupopup>
-        </menu>
 
         <menuitem id="enigmail_RulesEditor"
             label="&enigmail.editRules.label;"
             accesskey="&enigmail.editRules.accesskey;"
             oncommand="EnigRulesEditor();"/>
 
+        
+        <menuitem id="enigmail_keymgmt"
+             label="&enigmail.keyManWindow.label;"
+             accesskey="&enigmail.keyManWindow.accesskey;"
+             oncommand="EnigKeyManager();" />
+
+        <menu id="enigmail_sendersKeyMenu"
+             label="&enigmail.sendersKeyMenu.label;"
+             accesskey="&enigmail.sendersKeyMenu.accesskey;">
+
+          <menupopup onpopupshowing="enigUpdateSendersKeyMenu();">
+                 
+            <menuitem id="enigmail_importpublickey"
+                 label="&enigmail.importpublickey.label;"
+                 accesskey="&enigmail.importpublickey.accesskey;"
+                 oncommand="enigMessageImport();" />
+
+            <menuseparator/>
+
+            <menuitem label="&enigmail.signSenderKey.label;"
+                      id="enigmail_keyMgmtSignKey"
+                      oncommand="enigSignKey();"/>
+            <menuitem label="&enigmail.trustSenderKey.label;"
+                      id="enigmail_keyMgmtKeyTrust"
+                      oncommand="enigEditKeyTrust();"/>
+            <menuitem label="&enigmail.showPhoto.label;"
+                      id="enigmail_keyMgmtShowPhoto"
+                      oncommand="enigShowPhoto();"/>
+          </menupopup>
+        </menu>
+
         <menuseparator/>
 
-<!--
-        <menuitem id="enigmail_upgrade"
-             label="&enigmail.upgrade.label;"
-             accesskey="&enigmail.upgrade.accesskey;"
-             oncommand="EnigUpgrade();" />
--->
+        <menu id="enigmail_debugMenu"
+             label="&enigmail.debugMenu.label;"
+             accesskey="&enigmail.debugMenu.accesskey;">
+
+          <menupopup>
+            <menuitem id="enigmail_console"
+                 label="&enigmail.viewconsole.label;"
+                 accesskey="&enigmail.viewconsole.accesskey;"
+                 oncommand="EnigViewConsole();" />
+    
+            <menuitem id="enigmail_debug_log"
+                 label="&enigmail.viewdebuglog.label;"
+                 accesskey="&enigmail.viewdebuglog.accesskey;"
+                 oncommand="EnigViewDebugLog();" />
+          </menupopup>
+        </menu>
+        
+        <menuseparator/>
 
         <menuitem id="enigmail_help"
              label="&enigmail.help.label;"

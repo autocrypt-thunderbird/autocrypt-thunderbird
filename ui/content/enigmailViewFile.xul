@@ -39,9 +39,10 @@
       if (!contentFrame)
         return;
     
-      contentFrame.document.location.href=window.arguments[0][0];
-      if (typeof(window.arguments[0][1])=="string") {
-        document.getElementById("EnigmailViewFile").setAttribute("title", window.arguments[0][1]);
+      var winOptions=EnigGetWindowOptions();
+      contentFrame.document.location.href=winOptions["fileUrl"];
+      if (typeof(winOptions["title"])=="string") {
+        document.getElementById("EnigmailViewFile").setAttribute("title", winOptions["title"]);
       }
     }
     
