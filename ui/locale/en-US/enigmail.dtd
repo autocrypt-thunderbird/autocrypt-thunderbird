@@ -157,11 +157,11 @@
 <!ENTITY enigmail.askRecipientsClever.label       "Display selection when necessary">
 <!ENTITY enigmail.askRecipientsNever.label        "Never display PGP key selection dialog">
 <!ENTITY enigmail.normalKeySelection.label        "Normal Key Selection">
-<!ENTITY enigmail.perRecipientRules.label         "Per-Recipient Rules">
+<!ENTITY enigmail.perRecipientRules.label         "Use Key Selection Rules">
 <!ENTITY enigmail.disabled.label                  "Disabled">
 <!ENTITY enigmail.perRecipientRulesManual.label   "Define rules manually">
 <!ENTITY enigmail.perRecipientRulesAlways.label   "Prompt for every unknown recipient">
-
+<!ENTITY enigmail.defineRules.label               "Define Rules ...">
 
 <!ENTITY enigmail.usePGPMimeAlways.label          "Always use PGP/MIME">
 <!ENTITY enigmail.usePGPMimePossible.label        "Allow to use PGP/MIME">
@@ -258,11 +258,13 @@
 <!ENTITY enigmail.singleRcptSettings.desc           "(Note: in case of conflicts, 'Never' overrules 'Always')">
 <!ENTITY enigmail.ruleEmail.label                   "Set PGP Rules for">
 <!ENTITY enigmail.ruleEmail.tooltip                 "Only fill in email addresses, do NOT set the names of the recipients\nE.g. 'Some Name &lt;some.name@address.net&gt;' is invalid">
-<!ENTITY enigmail.matchBegin.label                  "Match begin">
-<!ENTITY enigmail.matchBegin.tooltip                "When set, only matches addresses that start with the exact address entered\ni.e. no additional leading characters">
-<!ENTITY enigmail.matchEnd.label                    "Match end">
-<!ENTITY enigmail.matchEnd.tooltip                  "When set, only matches addresses that end with the exact address entered\ni.e. no additional trailing characters">
 <!ENTITY enigmail.sepratationDesc.label             "(Separate several email addresses with spaces)">
+<!ENTITY enigmail.matchDescStart.label              "Apply rule if recipient">
+<!ENTITY enigmail.matchDescEnd.label                "one of the above adresses">
+<!ENTITY enigmail.matchExact.label                  "Is exactly">
+<!ENTITY enigmail.matchContains.label               "Contains">
+<!ENTITY enigmail.matchBegin.label                  "Starts with">
+<!ENTITY enigmail.matchEnd.label                    "Ends with">
 
 <!ENTITY enigmail.rulesEditor.label                 "Enigmail - Per-Recipient Rules Editor">
 <!ENTITY enigmail.email.label                       "Email">

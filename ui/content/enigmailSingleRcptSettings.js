@@ -42,12 +42,29 @@ const INPUT=0;
 const RESULT=1;
  
 function enigmailDlgOnLoad() {
+  var matchBegin=false;
+  var matchEnd=false;
+  
   var ruleEmail=document.getElementById("ruleEmail");
   if (window.arguments[INPUT].toAddress.indexOf("{")==0) {
-    document.getElementById("matchBegin").checked=true;
+    matchBegin=true;
   }
   if (window.arguments[INPUT].toAddress.search(/}$/)>=0) {
-    document.getElementById("matchEnd").checked=true;
+    matchEnd=true;
+  }
+
+  var matchingRule=document.getElementById("matchingRule");
+  if (matchBegin && matchEnd) {
+    matchingRule.selectedIndex=0;
+  }
+  else if (matchBegin) {
+    matchingRule.selectedIndex=2;
+  }
+  else if (matchEnd) {
+    matchingRule.selectedIndex=3;
+  }
+  else {
+    matchingRule.selectedIndex=1;
   }
   
   ruleEmail.value = window.arguments[INPUT].toAddress.replace(/[{}]/g, "");
@@ -86,8 +103,21 @@ function enigmailDlgOnAccept() {
 
   var keyList="";
   var ruleEmail  = document.getElementById("ruleEmail");
-  var matchBegin = document.getElementById("matchBegin").checked;
-  var matchEnd   = document.getElementById("matchEnd").checked;
+  var matchingRule = document.getElementById("matchingRule").value;
+  var matchBegin=false;
+  var matchEnd=false;
+  switch (Number(matchingRule)) {
+  case 0:
+    matchBegin=true;
+    matchEnd=true;
+    break;
+  case 2:
+    matchBegin=true;
+    break;
+  case 3:
+    matchEnd=true;
+    break;
+  }
   
   if (ruleEmail.value.length==0) {
     EnigAlert(EnigGetString("noEmptyRule"));
@@ -95,6 +125,10 @@ function enigmailDlgOnAccept() {
   }
   if (ruleEmail.value.search(/[\<\>]/)>=0) {
     EnigAlert(EnigGetString("invalidAddress"));
+    return false;
+  }
+  if (ruleEmail.value.search(/[{}]/)>=0) {
+    EnigAlert(EnigGetString("noCurlyBrackets"));
     return false;
   }
   var encryptionList=document.getElementById("encryptionList");
@@ -116,7 +150,7 @@ function enigmailDlgOnAccept() {
   window.arguments[RESULT].encrypt = document.getElementById("encrypt").value;
   window.arguments[RESULT].pgpMime = document.getElementById("pgpmime").value;
   if (keyList == "" && (window.arguments[RESULT].encrypt>0)) {
-    if (!EnigConfirm(EnigGetString("noEncryption", window.arguments[INPUT].toAddress, window.arguments[INPUT].toAddress))) {
+    if (!EnigConfirm(EnigGetString("noEncryption", ruleEmail.value, ruleEmail.value))) {
       return false;
     }
     window.arguments[RESULT].encrypt=0;

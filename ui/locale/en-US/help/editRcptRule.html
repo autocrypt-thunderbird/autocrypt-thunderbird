@@ -13,30 +13,35 @@ of recipients with very similar attributes.
 <ul>
   <li><span style="font-weight: bold;">Set PGP Rules for</span>: Contains the email
     addresses of the recipients (without names, i.e. just an address like
-    <tt>somebody@email.com</tt>). You can specify several email addresses, separated by spaces.
+    <tt>somebody@email.domain</tt>). You can specify several email addresses, separated by spaces.
     The address specified here can consist of
     only the domain section so that mail to any address at that domain will
-    be matched, e.g. <tt>@email.com will</tt> allow matching to <tt>body@email.com</tt>,
-    <tt>somebody@email.com</tt>, <tt>anybody@email.com</tt>, etc.
+    be matched, e.g. <tt>@email.domain will</tt> allow matching to <tt>body@email.domain</tt>,
+    <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt>, etc.
   </li>
-  <li><span style="font-weight: bold;">Match begin</span>: 
-    This modifies the matching of the address as seen from right. With this
-    disabled, entering an address of <tt>body@email.com</tt> would also match
-    <tt>somebody@email.com</tt>, <tt>anybody@email.com</tt>, etc. Enabling this will only
-    match <tt>body@email.com</tt>. If multiple addresses are entered, the setting
-    will apply to all.
-  </li>
-  <li><span style="font-weight: bold;">Match end</span>:
-    This modifies the matching of the address as seen from left. With this disabled,
-    entering an address of <tt>body@email.domain</tt> will match
-    <tt>body@email.domain.com</tt>, <tt>body@email.domain.net</tt>, etc. Enabling this option
-    will exactly match from the right side, e.g. <tt>@email.domain.com</tt> will only
-    match <tt>@email.domain.com</tt>. If multiple addresses are entered, the setting
-    will apply to all.
-    <br><br>
-    With both <span style="font-weight: bold;">Match begin</span> and 
-    <span style="font-weight: bold;">Match end</span> enabled, the rule will only
-    trigger on an exact email address match.<br><br>
+  <li><span style="font-weight: bold;">Apply rule if recipient ...</span>: 
+    This modifies the matching of the email addresses.
+    If multiple addresses are entered, the setting will apply to all.
+    The examples below are based on <tt>body@email.domain</tt>
+    entered in the <i>PGP Rules</i> field above.
+    <ul>
+      <li><i>Is exactly</i>: with this setting, the rule will only trigger on
+       emails to <tt>body@email.domain</tt> (exact, case insensitive matching).
+      </li>
+      <li><i>Contains</i>: with this setting, any email address containing the string
+        is matched,
+        e.g. <tt>anybody@email.domain</tt> or <tt>body@email.domain.net</tt>
+      </li>
+      <li><i>Begins with</i>: with this setting, any email address starting with
+        the string is matched, e.g. <tt>body@email.domain.net</tt>,
+        <tt>body@email.domain-name.com</tt>.
+      </li>
+      <li><i>Ends with</i>: with this setting, any email address ending with
+        the string is matched, e.g. <tt>anybody@email.domain</tt>,
+        <tt>somebody@email.domain</tt>.
+      </li>
+    </ul>
+
   </li>
   <li><span style="font-weight: bold;">Key(s) to use</span>: contains
     the PGP key ID's to use for the recipient(s). These can be selected from

@@ -21,23 +21,39 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailSingleRcptSettings.js"/>
 
   <groupbox>
-    <hbox>
-      <label value="&enigmail.ruleEmail.label;"/>
-      <hbox align="center">
-        <vbox>
-          <textbox id="ruleEmail" tooltip="&enigmail.ruleEmail.tooltip;" size="30"/>
-          <hbox>
-            <checkbox id="matchBegin" checked="false"
-                      label="&enigmail.matchBegin.label;"
-                      tooltip="&enigmail.matchBegin.tooltip;"/>
-            <checkbox id="matchEnd" checked="false"
-                       label="&enigmail.matchEnd.label;"
-                       tooltip="&enigmail.matchEnd.tooltip;"/>
+    <grid>
+      <columns>
+        <column flex="0"/>
+        <column flex="1"/>
+      </columns>
+      <rows>
+        <row>
+          <hbox align="center">
+            <label value="&enigmail.ruleEmail.label;"/>
           </hbox>
-        </vbox>
-      </hbox>
-      <description width="130px">&enigmail.sepratationDesc.label;</description>
-    </hbox>
+          <hbox autostretch="never">
+            <textbox id="ruleEmail" tooltip="&enigmail.ruleEmail.tooltip;" size="30"/>
+            <description width="130px">&enigmail.sepratationDesc.label;</description>
+          </hbox>
+        </row>
+        <row>
+          <hbox align="center">
+            <label value="&enigmail.matchDescStart.label;"/>
+          </hbox>
+          <hbox align="center">
+            <menulist id="matchingRule">
+              <menupopup>
+                <menuitem value="0" label="&enigmail.matchExact.label;"/>
+                <menuitem value="1" label="&enigmail.matchContains.label;"/>
+                <menuitem value="2" label="&enigmail.matchBegin.label;"/>
+                <menuitem value="3" label="&enigmail.matchEnd.label;"/>
+              </menupopup>
+            </menulist>
+            <label value="&enigmail.matchDescEnd.label;"/>
+          </hbox>
+        </row>
+      </rows>
+    </grid>
     <separator/>
     <hbox align="start">
       <label value="&enigmail.keysToUse.label;"/>
