@@ -77,11 +77,7 @@
 
   <caption label="Keygen Console"/>
 
-  <description>NOTE: Key generation may take up to several minutes to complete.
-  Do not exit the browser while key generation is in progress.
-  Actively browsing or performing disk-intensive operations during key
-  generation will replenish the 'randomness pool' and speed-up the process.
-  You will be alerted when key generation is completed.</description>
+  <description>&enigmail.keygen.desc;</description>
 
   <iframe id="keygenConsole" type="content" name="keygenConsole"
           src="chrome://enigmail/content/enigmailKeygenConsole.htm"
