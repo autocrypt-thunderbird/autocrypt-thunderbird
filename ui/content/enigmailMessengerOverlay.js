@@ -533,7 +533,8 @@ function enigMessageDecrypt(event) {
     xEnigmailVersion = gEnigSavedHeaders["x-enigmail-version"];
   }
 
-  if (contentType.search(/^multipart\/encrypted(;|$)/i) == 0) {
+  if (contentType.search(/^multipart\/encrypted(;|$)/i) == 0
+      /* && (!embeddedSigned) */ ) {
     // multipart/encrypted
     DEBUG_LOG("enigmailMessengerOverlay.js: multipart/encrypted\n");
 
