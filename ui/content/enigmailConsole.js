@@ -12,8 +12,6 @@ function enigConsoleLoad() {
   if (!enigmailSvc)
     return;
 
-  enigmailSvc.console.hasNewData = true;
-
   // Refresh console every 2 seconds
   window.consoleIntervalId = window.setInterval(enigRefreshConsole, 2000);
   enigRefreshConsole();
@@ -39,9 +37,8 @@ function enigRefreshConsole() {
   if (!enigmailSvc)
     return;
 
-  if (enigmailSvc.console.hasNewData) {
+  if (enigmailSvc.console.hasNewData()) {
     DEBUG_LOG("enigmailConsole.js: enigRefreshConsole(): hasNewData\n");
-    enigmailSvc.console.hasNewData = true;
 
     var contentFrame = window.frames["contentFrame"];
     if (!contentFrame)
@@ -49,7 +46,7 @@ function enigRefreshConsole() {
 
     var consoleElement = contentFrame.document.getElementById('console');
 
-    consoleElement.firstChild.data = enigmailSvc.console.data;
+    consoleElement.firstChild.data = enigmailSvc.console.getData();
 
     if (!contentFrame.mouseDownState)
        contentFrame.scrollTo(0,9999);

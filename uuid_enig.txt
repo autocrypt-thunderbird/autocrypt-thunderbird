@@ -29,5 +29,10 @@ nsEnigMimeService         CID    "847b3a41-7ab1-11d4-8f02-006008948af5"
 nsEnigContentHandler      CID    "847b3a51-7ab1-11d4-8f02-006008948af5"
 nsEnigContentHandlerFactory CID  "847b3a52-7ab1-11d4-8f02-006008948af5"
 
-PGPModule                 CID    "847b3af1-7ab1-11d4-8f02-006008948af5"
+nsIEnigMimeListener       IID    "847b3a60-7ab1-11d4-8f02-006008948af5"
+nsEnigMimeListener        CID    "847b3a61-7ab1-11d4-8f02-006008948af5"
+
+nsIEnigMimeDecrypt        IID    "847b3a70-7ab1-11d4-8f02-006008948af5"
+nsEnigMimeDecrypt         CID    "847b3a71-7ab1-11d4-8f02-006008948af5"
+
 

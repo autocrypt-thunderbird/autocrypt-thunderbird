@@ -38,7 +38,7 @@
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
-#include "nsIEnigmail.h"
+#include "nsXPIDLString.h"
 #include "nsIMsgCompFields.h"
 #include "nsIEnigMsgCompFields.h"
 #include "nsEnigMsgCompose.h"
@@ -63,7 +63,7 @@ PRLogModuleInfo* gEnigMsgComposeLog = NULL;
    0xdd753201, 0x9a23, 0x4e08,                     \
   {0x95, 0x7f, 0xb3, 0x61, 0x6b, 0xf7, 0xe0, 0x12 }}
 
-#define MK_MIME_ERROR_WRITING_FILE -1
+static const PRUint32 kCharMax = 1024;
 
 static NS_DEFINE_CID(kMsgComposeSecureCID, NS_MSGCOMPOSESECURE_CID);
 
@@ -107,17 +107,36 @@ NS_IMETHODIMP nsEnigMsgComposeFactory::LockFactory(PRBool lock)
 
 // nsEnigMsgCompose implementation
 
-// nsISupports implementation
-NS_IMPL_THREADSAFE_ISUPPORTS1(nsEnigMsgCompose,
-                              nsIMsgComposeSecure);
+const char* nsEnigMsgCompose::EncryptionHeaders =
+ "Content-Type: application/pgp\r\n"
+ "\r\n";
 
+// nsISupports implementation
+NS_IMPL_THREADSAFE_ISUPPORTS3(nsEnigMsgCompose,
+                              nsIMsgComposeSecure,
+                              nsIRequestObserver,
+                              nsIStreamListener);
 
 // nsEnigMsgCompose implementation
 nsEnigMsgCompose::nsEnigMsgCompose()
   : mUseSMIME(PR_FALSE),
     mIsDraft(PR_FALSE),
-    mStream(0)
-    
+    mRequestStopped(PR_FALSE),
+
+    mInputLen(0),
+    mOutputLen(0),
+
+    mSendFlags(0),
+    mUIFlags(0),
+
+    mSenderEmailAddr(""),
+    mRecipients(""),
+
+    mStream(0),
+
+    mMsgComposeSecure(nsnull),
+    mErrBuffer(nsnull),
+    mPipeTrans(nsnull)
 {
   nsresult rv;
 
@@ -150,6 +169,15 @@ nsEnigMsgCompose::~nsEnigMsgCompose()
          (int) this, (int) myThread.get()));
 #endif
 
+  if (mPipeTrans) {
+    mPipeTrans->Terminate();
+    mPipeTrans = nsnull;
+  }
+
+  if (mErrBuffer) {
+    mErrBuffer->Shutdown();
+    mErrBuffer = nsnull;
+  }
 }
 
 
@@ -188,6 +216,11 @@ nsEnigMsgCompose::RequiresCryptoEncapsulation(
   if (NS_FAILED(rv))
     return rv;
 
+  if (!securityInfo) {
+    *aRequiresEncryptionWork = PR_FALSE;
+    return NS_OK;
+  }
+
   nsCOMPtr<nsIEnigMsgCompFields> enigSecurityInfo = do_QueryInterface(securityInfo);
 
   if (enigSecurityInfo) {
@@ -217,6 +250,8 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
                                         nsIMsgSendReport* sendReport,
                                         PRBool aIsDraft)
 {
+  nsresult rv;
+
   DEBUG_LOG(("nsEnigMsgCompose::BeginCryptoEncapsulation: %s\n", aRecipients));
   if (mUseSMIME) {
     return mMsgComposeSecure->BeginCryptoEncapsulation(aStream, aRecipients,
@@ -228,6 +263,60 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
   mStream = aStream;
   mIsDraft = aIsDraft;
 
+  nsCOMPtr<nsISupports> securityInfo;
+
+  rv = aCompFields->GetSecurityInfo(getter_AddRefs(securityInfo));
+  if (NS_FAILED(rv))
+    return rv;
+
+  if (!securityInfo)
+    return NS_ERROR_FAILURE;
+
+  nsCOMPtr<nsIEnigMsgCompFields> enigSecurityInfo = do_QueryInterface(securityInfo);
+
+  if (!enigSecurityInfo)
+    return NS_ERROR_FAILURE;
+
+  rv = enigSecurityInfo->GetSendFlags(&mSendFlags);
+  if (NS_FAILED(rv))
+      return rv;
+
+  rv = enigSecurityInfo->GetSendFlags(&mUIFlags);
+  if (NS_FAILED(rv))
+      return rv;
+
+  rv = enigSecurityInfo->GetSenderEmailAddr(mSenderEmailAddr);
+  if (NS_FAILED(rv))
+      return rv;
+
+  nsXPIDLString toField;
+  rv = aCompFields->GetTo(getter_Copies(toField));
+  if (NS_FAILED(rv))
+      return rv;
+
+  mRecipients.AssignWithConversion(toField);
+
+  DEBUG_LOG(("nsEnigMsgCompose::BeginCryptoEncapsulation: sendFlags=%x\n", mSendFlags));
+
+  nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) return rv;
+
+  nsXPIDLCString errorMsg;
+  rv = enigmailSvc->EncryptMessageStart((nsIDOMWindow*) nsnull,
+                                        mUIFlags,
+                                        mSenderEmailAddr.get(),
+                                        mRecipients.get(),
+                                        mSendFlags,
+                                        (nsIStreamListener*) this,
+                                        PR_TRUE,
+                                        getter_Copies(errorMsg),
+                                        getter_AddRefs(mPipeTrans) );
+  if (NS_FAILED(rv))
+    return rv;
+
+  if (!mPipeTrans)
+    return NS_ERROR_FAILURE;
+
   return NS_OK;
 }
 
@@ -235,12 +324,67 @@ NS_IMETHODIMP
 nsEnigMsgCompose::FinishCryptoEncapsulation(PRBool aAbort,
                                                 nsIMsgSendReport* sendReport)
 {
+  nsresult rv;
+
   DEBUG_LOG(("nsEnigMsgCompose::FinishCryptoEncapsulation: \n"));
   if (mUseSMIME) {
     return mMsgComposeSecure->FinishCryptoEncapsulation(aAbort, sendReport);
   }
 
   // Enigmail stuff
+  if (!mPipeTrans)
+    return NS_ERROR_NOT_INITIALIZED;
+
+  // Wait for STDOUT to close
+  rv = mPipeTrans->Join();
+  if (NS_FAILED(rv)) return rv;
+
+  PRInt32 exitCode;
+  rv = mPipeTrans->ExitCode(&exitCode);
+  if (NS_FAILED(rv)) return rv;
+
+  DEBUG_LOG(("nsEnigMsgCompose::FinishCryptoEncapsulation: exitCode=%d\n", exitCode));
+
+  // Extract STDERR output
+  nsCOMPtr<nsIPipeListener> errListener;
+  rv = mPipeTrans->GetConsole(getter_AddRefs(errListener));
+  if (NS_FAILED(rv)) return rv;
+
+  if (!errListener)
+    return NS_ERROR_FAILURE;
+
+  PRUint32 errorCount;
+  nsXPIDLCString errorOutput;
+  rv = errListener->GetByteData(&errorCount, getter_Copies(errorOutput));
+  if (NS_FAILED(rv)) return rv;
+
+  // Shutdown STDERR console
+  errListener->Shutdown();
+
+  // Terminate process
+  mPipeTrans->Terminate();
+  mPipeTrans = nsnull;
+
+  nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) return rv;
+
+  PRInt32 newExitCode;
+  PRUint32 statusFlags;
+  nsXPIDLCString errorMsg;
+  rv = enigmailSvc->EncryptMessageEnd(mSendFlags,
+                                      exitCode,
+                                      mOutputLen,
+                                      errorOutput,
+                                      &statusFlags,
+                                      getter_Copies(errorMsg),
+                                      &newExitCode);
+  if (NS_FAILED(rv)) return rv;
+
+  if (newExitCode != 0) {
+    DEBUG_LOG(("nsEnigMsgCompose::FinishCryptoEncapsulation: ERROR EXIT %d\n", newExitCode));
+    return NS_ERROR_FAILURE;
+  }
+
   return NS_OK;
 }
 
@@ -257,9 +401,94 @@ nsEnigMsgCompose::MimeCryptoWriteBlock(const char *aBuf, PRInt32 aLen)
   DEBUG_LOG(("nsEnigMsgCompose::MimeCryptoWriteBlock: aBuf='%s'\n",
              temStr.get()));
 
-  PRInt32 writeCount = mStream->write(aBuf, aLen);
-  if (writeCount < aLen) {
-    return MK_MIME_ERROR_WRITING_FILE;
+  if (!mPipeTrans)
+    return NS_ERROR_NOT_INITIALIZED;
+
+  if (aLen <= 0)
+    return NS_OK;
+
+  mInputLen += aLen;
+
+  mPipeTrans->WriteSync(aBuf, aLen);
+
+  return NS_OK;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// nsIRequestObserver methods
+///////////////////////////////////////////////////////////////////////////////
+
+NS_IMETHODIMP
+nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
+                                   nsISupports *aContext)
+{
+  DEBUG_LOG(("nsEnigMsgCompose::OnStartRequest:\n"));
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsEnigMsgCompose::OnStopRequest(nsIRequest* aRequest,
+                                  nsISupports* aContext,
+                                  nsresult aStatus)
+{
+  DEBUG_LOG(("nsEnigMsgCompose::OnStopRequest:\n"));
+
+  mRequestStopped = PR_TRUE;
+
+  return NS_OK;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// nsIStreamListener method
+///////////////////////////////////////////////////////////////////////////////
+
+NS_IMETHODIMP
+nsEnigMsgCompose::OnDataAvailable(nsIRequest* aRequest,
+                                  nsISupports* aContext,
+                                  nsIInputStream *aInputStream,
+                                  PRUint32 aSourceOffset,
+                                  PRUint32 aLength)
+{
+  nsresult rv = NS_OK;
+
+  DEBUG_LOG(("nsEnigMsgCompose::OnDataAVailable: %d\n", aLength));
+
+  if (!mStream)
+    return NS_ERROR_NOT_INITIALIZED;
+
+  if (!aLength)
+    return NS_OK;
+
+  if (mOutputLen == 0) {
+    // Emit RFC 2015 headers
+    mStream->write(EncryptionHeaders, nsCRT::strlen(EncryptionHeaders));
+  }
+
+  mOutputLen += aLength;
+
+  char buf[kCharMax];
+  PRUint32 readCount, readMax;
+
+  while (aLength > 0) {
+    readMax = (aLength < kCharMax) ? aLength : kCharMax;
+    rv = aInputStream->Read((char *) buf, readMax, &readCount);
+    if (NS_FAILED(rv)){
+      ERROR_LOG(("nsEnigMsgCompose::OnDataAvailable: Error in reading from input stream, %x\n", rv));
+      return rv;
+    }
+
+    if (readCount <= 0)
+      break;
+
+    aLength -= readCount;
+    aSourceOffset += readCount;
+
+    PRInt32 writeCount = mStream->write(buf, readCount);
+    if (writeCount < (int) readCount) {
+      ERROR_LOG(("nsEnigMsgCompose::OnDataAvailable: Error in writing to output stream, %x\n"));
+      return NS_ERROR_FAILURE;
+    }
   }
 
   return NS_OK;

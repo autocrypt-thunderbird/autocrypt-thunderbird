@@ -8,8 +8,11 @@ var gEnigmimeVersion = "0.99.9.0";
 const MESSAGE_BUFFER_SIZE = 32000;
 
 const NS_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
-const NS_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1"
+const NS_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1";
+const NS_IPCBUFFER_CONTRACTID   = "@mozilla.org/process/ipc-buffer;1";
 const NS_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
+const NS_ENIGMIMELISTENER_CONTRACTID = "@mozilla.org/enigmail/mime-listener;1";
+
 const NS_STREAMCONVERTERSERVICE_CID_STR =
       "{892FFEB0-3F80-11d3-A16C-0050041CAF44}";
 

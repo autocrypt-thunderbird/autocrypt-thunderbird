@@ -1,0 +1,106 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License
+ * Version 1.1 (the "MPL"); you may not use this file except in
+ * compliance with the MPL. You may obtain a copy of the MPL at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the MPL is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the MPL
+ * for the specific language governing rights and limitations under the
+ * MPL.
+ *
+ * The Original Code is Enigmail.
+ *
+ * The Initial Developer of the Original Code is
+ * Ramalingam Saravanan <sarava@sarava.net>
+ * Portions created by the Initial Developer are Copyright (C) 2002
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or 
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
+#include "nsIStreamListener.idl"
+#include "nsIInputStream.idl"
+
+%{C++
+#include "nsString.h"
+
+#define NS_ENIGMIMELISTENER_CLASSNAME "Enigmail Mime Listener"
+#define NS_ENIGMIMELISTENER_CONTRACTID "@mozilla.org/enigmail/mime-listener;1"
+     
+#define NS_ENIGMIMELISTENER_CID                  \
+{ /* 847b3a61-7ab1-11d4-8f02-006008948af5 */     \
+   0x847b3a61, 0x7ab1, 0x11d4,                   \
+{0x8f, 0x02, 0x00, 0x60, 0x08, 0x94, 0x8a, 0xf5} }
+
+%}
+
+/* nsIEnigMimeListener is a mime-aware filter for nsIStreamListener
+ */
+
+[scriptable, uuid(847b3a60-7ab1-11d4-8f02-006008948af5)]
+interface nsIEnigMimeListener : nsIStreamListener
+{
+  readonly attribute ACString headers;
+  readonly attribute ACString linebreak;
+
+  readonly attribute ACString contentType;
+  readonly attribute ACString contentCharset;
+  readonly attribute ACString contentBoundary;
+  readonly attribute ACString contentProtocol;
+  readonly attribute ACString contentMicalg;
+
+  readonly attribute ACString contentEncoding;
+
+  readonly attribute ACString contentDisposition;
+
+  /**
+   * The length of the data, if available.  A value
+   * of -1 indicates that the content length is unknown.
+   */
+  readonly attribute long contentLength;
+
+  /**
+   * MIME filtering for multipart stuff:
+   *  Display first part (should be non-multipart or multipart/alternative)
+   *  Each message/rfc822 is treated as a plain text (.eml) attachment
+   *  For display, each message/rfc822 item is emitted with its first
+   *  "atomic" item, so that the subject headers etc. are displayed.
+   *  Attempt to display all text/ or image/ items inline, if not marked
+   *  as attachment (also display them as attachments)
+   *  No. of attachments =  no. of "atomic" items - 1       (i.e., firstitem)
+   *                      + no. of message/rfc822 items
+   *  For display, multipart/mixed should not be nested, unless
+   *    there is an intervening message/rfc822 wrapper
+   */
+
+  /**
+   * Initialized filtering stream listener
+   */
+
+  void init(in nsIStreamListener listener, in nsISupports ctxt,
+            in unsigned long maxHeaderBytes,
+            in boolean skipHeaders, in boolean skipBody);
+
+  void write(in string buf, in unsigned long count,
+             in nsIRequest request, in nsISupports ctxt);
+
+};
+
+
+///////////////////////////////////////////////////////////////////////////////

@@ -61,6 +61,7 @@ REQUIRES	= xpcom \
 		  mailnews \
 		  msgdb \
 		  chardet \
+		  ipc \
 		  caps \
 		  mimetype \
 		  uriloader \
@@ -77,13 +78,16 @@ LOCAL_INCLUDES	= \
 		-I$(srcdir)/../../../mailnews/mime/src \
 		$(NULL)
 
-CPPSRCS		=		    \
-	        nsEnigMsgCompose.cpp \
-	        nsEnigMsgCompFields.cpp \
-	        nsEnigMimeService.cpp \
+CPPSRCS		=		         \
+	        nsEnigMsgCompose.cpp     \
+	        nsEnigMsgCompFields.cpp  \
+	        nsEnigMimeService.cpp    \
+	        nsEnigMimeListener.cpp   \
+	        nsEnigMimeDecrypt.cpp    \
 	        nsEnigContentHandler.cpp \
+	        mimehdrs2.cpp \
 	        mimedummy.cpp \
-	        mimeenig.cpp \
+	        mimeenig.cpp  \
 		$(NULL)
 
 FORCE_STATIC_LIB = 1

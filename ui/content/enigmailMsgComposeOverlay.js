@@ -357,8 +357,12 @@ function enigSend(sendFlags) {
 
      var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
-     // TEMPORARY
-     ///sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+     var sendPGPMime = document.getElementById("enigmail_sendPGPMime");
+
+     if (sendPGPMime && sendPGPMime.getAttribute("checked")) {
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSend: using PGP/MIME\n");
+       sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+     }
 
      var usePgpMime = (sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
                       (sendFlags & ENCRYPT_OR_SIGN_MSG);

@@ -36,6 +36,10 @@
 
 #include "nsEnigMsgCompFields.h"
 
+#include "nsEnigMimeDecrypt.h"
+
+#include "nsEnigMimeListener.h"
+
 #include "nsEnigMimeService.h"
 
 #include "nsEnigContentHandler.h"
@@ -45,6 +49,10 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgCompose)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgComposeFactory)
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgCompFields)
+
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeDecrypt)
+
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeListener)
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeService)
 
@@ -74,6 +82,18 @@ static const nsModuleComponentInfo components[] =
       nsEnigMsgCompFieldsConstructor,
     },
 
+    { NS_ENIGMIMELISTENER_CLASSNAME,
+      NS_ENIGMIMELISTENER_CID,
+      NS_ENIGMIMELISTENER_CONTRACTID,
+      nsEnigMimeListenerConstructor,
+    },
+
+    { NS_ENIGMIMEDECRYPT_CLASSNAME,
+      NS_ENIGMIMEDECRYPT_CID,
+      NS_ENIGMIMEDECRYPT_CONTRACTID,
+      nsEnigMimeDecryptConstructor,
+    },
+
     { NS_ENIGMIMESERVICE_CLASSNAME,
       NS_ENIGMIMESERVICE_CID,
       NS_ENIGMIMESERVICE_CONTRACTID,
@@ -89,6 +109,12 @@ static const nsModuleComponentInfo components[] =
     { NS_ENIGCONTENTHANDLER_CLASSNAME,
       NS_ENIGCONTENTHANDLER_CID,
       NS_ENIGENCRYPTEDHANDLER_CONTRACTID,
+      nsEnigContentHandlerConstructor,
+    },
+
+    { NS_ENIGCONTENTHANDLER_CLASSNAME,
+      NS_ENIGCONTENTHANDLER_CID,
+      NS_ENIGPGPHANDLER_CONTRACTID,
       nsEnigContentHandlerConstructor,
     },
 

@@ -84,6 +84,8 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
      DEBUG_LOG("enigmailKeygenConsole.htm: exitCode = "+exitCode+"\n");
    }
 
+   enigRefreshConsole();
+
    ipcRequest.close(true);
 
    if (gUseForSigning.checked) {
@@ -228,22 +230,24 @@ function enigRefreshConsole() {
 
   var keygenConsole = gKeygenRequest.stdoutConsole;
 
-  if (keygenConsole && keygenConsole.hasNewData) {
-    DEBUG_LOG("enigmailKeygen.js: enigRefreshConsole(): hasNewData\n");
+  try {
+    keygenConsole = keygenConsole.QueryInterface(Components.interfaces.nsIPipeConsole);
 
-    keygenConsole.hasNewData = true;
+    if (keygenConsole && keygenConsole.hasNewData()) {
+      DEBUG_LOG("enigmailKeygen.js: enigRefreshConsole(): hasNewData\n");
 
-    var contentFrame = window.frames["keygenConsole"];
-    if (contentFrame) {
+      var contentFrame = window.frames["keygenConsole"];
+      if (contentFrame) {
 
-      var consoleElement = contentFrame.document.getElementById('console');
+        var consoleElement = contentFrame.document.getElementById('console');
 
-      consoleElement.firstChild.data = keygenConsole.data;
+        consoleElement.firstChild.data = keygenConsole.getData();
 
-      if (!contentFrame.mouseDownState)
+        if (!contentFrame.mouseDownState)
          contentFrame.scrollTo(0,9999);
+      }
     }
-  }
+  } catch (ex) {}
 
   return false;
 }

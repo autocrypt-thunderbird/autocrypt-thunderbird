@@ -44,6 +44,8 @@ MODULE        = enigmime
 XPIDL_MODULE  = enigmime
 
 XPIDLSRCS     = nsIEnigMsgCompFields.idl \
-                nsIEnigMimeService.idl
+                nsIEnigMimeService.idl   \
+                nsIEnigMimeDecrypt.idl   \
+                nsIEnigMimeListener.idl
 
 include $(topsrcdir)/config/rules.mk

@@ -34,6 +34,7 @@
 
 interface nsIDOMWindow;
 interface nsIPrefBranch;
+interface nsIStreamListener;
 interface nsIPipeConsole;
 interface nsIPipeTransport;
 interface nsIIPCRequest;
@@ -70,6 +71,38 @@ interface nsIEnigmail : nsISupports
 
   void stillActive();
   void clearCachedPassphrase();
+
+  string getLogDirectoryPrefix();
+
+  nsIPipeTransport encryptMessageStart(in nsIDOMWindow parent,
+                                       in unsigned long uiFlags,
+                                       in string  fromMailAddr,
+                                       in string  toMailAddr,
+                                       in unsigned long sendFlags,
+                                       in nsIStreamListener listener,
+                                       in boolean noProxy,
+                                       out string errorMsg);
+
+  long encryptMessageEnd(in unsigned long sendFlags,
+                         in long exitCode,
+                         in unsigned long outputLen,
+                         in string errOutput,
+                         out unsigned long statusFlags,
+                         out string errorMsg);
+
+  nsIPipeTransport decryptMessageStart(in nsIDOMWindow parent,
+                                       in unsigned long uiFlags,
+                                       in nsIStreamListener listener,
+                                       in boolean noProxy,
+                                       out string errorMsg);
+
+  long decryptMessageEnd(in long exitCode,
+                         in unsigned long outputLen,
+                         in string errOutput,
+                         out unsigned long statusFlags,
+                         out string keyId,
+                         out string userId,
+                         out string errorMsg);
 
   string locateArmoredBlock(in string text,
                             in long offset,
@@ -108,7 +141,7 @@ interface nsIEnigmail : nsISupports
                         in string  toMailAddr,
                         in unsigned long sendFlags,
                         out long exitCode,
-                        out long statusFlags,
+                        out unsigned long statusFlags,
                         out string errorMsg);
 
   /* Status flags */
@@ -130,7 +163,7 @@ interface nsIEnigmail : nsISupports
                         in string  cipherText,
                         inout string signature,
                         out long exitCode,
-                        out long statusFlags,
+                        out unsigned long statusFlags,
                         out string keyId,
                         out string userId,
                         out string errorMsg);

@@ -831,20 +831,20 @@ function enigMsgDirect(interactive, importOnly, charset, signature) {
   if (!mailNewsUrl)
     return;
 
-  var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
+  var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
 
   var callbackArg = { interactive:interactive,
                       importOnly:importOnly,
                       charset:charset,
                       messageUrl:mailNewsUrl.spec,
                       signature:signature,
-                      pipeConsole:pipeConsole };
+                      ipcBuffer:ipcBuffer };
 
   var requestObserver = new EnigRequestObserver(enigMsgDirectCallback,
                                                 callbackArg);
 
-  pipeConsole.openURI(mailNewsUrl, MESSAGE_BUFFER_SIZE,
-                      false, requestObserver, mailNewsUrl);
+  ipcBuffer.openURI(mailNewsUrl, MESSAGE_BUFFER_SIZE,
+                    false, requestObserver, mailNewsUrl);
 }
 
 
@@ -859,13 +859,13 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
     return;
   }
 
-  if (callbackArg.pipeConsole.overflow) {
+  if (callbackArg.ipcBuffer.overflowed) {
     WARNING_LOG("enigmailMessengerOverlay.js: enigMsgDirectCallback: MESSAGE BUFFER OVERFLOW\n");
   }
 
-  var msgText = callbackArg.pipeConsole.data;
+  var msgText = callbackArg.ipcBuffer.data;
 
-  callbackArg.pipeConsole.close();
+  callbackArg.ipcBuffer.shutdown();
 
   //DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgDirectCallback: msgText='"+msgText+"'\n");
 

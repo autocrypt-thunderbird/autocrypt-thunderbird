@@ -121,6 +121,11 @@
           </menupopup>
         </menu>
 
+        <menuitem id="enigmail_sendPGPMime"
+            type="checkbox"
+            checked="false"
+            label="Send PGP/MIME (experimental)" />
+
         <menuseparator/>
 
         <menuitem id="enigmail_undo_encryption"

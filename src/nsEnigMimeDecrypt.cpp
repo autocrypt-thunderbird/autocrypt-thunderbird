@@ -1,0 +1,311 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License
+ * Version 1.1 (the "MPL"); you may not use this file except in
+ * compliance with the MPL. You may obtain a copy of the MPL at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the MPL is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the MPL
+ * for the specific language governing rights and limitations under the
+ * MPL.
+ *
+ * The Original Code is Enigmail.
+ *
+ * The Initial Developer of the Original Code is
+ * Ramalingam Saravanan <sarava@sarava.net>
+ * Portions created by the Initial Developer are Copyright (C) 2002
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or 
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
+// Logging of debug output 
+// The following define statement should occur before any include statements
+#define FORCE_PR_LOG       /* Allow logging even in release build */
+
+#include "nspr.h"
+#include "nsCOMPtr.h"
+#include "nsString.h"
+#include "nsXPIDLString.h"
+#include "nsNetUtil.h"
+#include "nsIThread.h"
+#include "nsEnigMimeDecrypt.h"
+#include "nsIPipeTransport.h"
+#include "nsIIPCBuffer.h"
+#include "nsIEnigmail.h"
+
+#ifdef PR_LOGGING
+PRLogModuleInfo* gEnigMimeDecryptLog = NULL;
+#endif
+
+#define ERROR_LOG(args)    PR_LOG(gEnigMimeDecryptLog,PR_LOG_ERROR,args)
+#define WARNING_LOG(args)  PR_LOG(gEnigMimeDecryptLog,PR_LOG_WARNING,args)
+#define DEBUG_LOG(args)    PR_LOG(gEnigMimeDecryptLog,PR_LOG_DEBUG,args)
+
+#define MAX_BUFFER_BYTES 32000
+static const PRUint32 kCharMax = 1024;
+
+// nsEnigMimeDecrypt implementation
+
+// nsISupports implementation
+NS_IMPL_THREADSAFE_ISUPPORTS1(nsEnigMimeDecrypt,
+                              nsIEnigMimeDecrypt);
+
+// nsEnigMimeDecrypt implementation
+nsEnigMimeDecrypt::nsEnigMimeDecrypt()
+  : mInitialized(PR_FALSE),
+    mRfc2015(PR_FALSE),
+
+    mInputLen(0),
+    mOutputLen(0),
+
+    mBuffer(nsnull),
+    mListener(nsnull)
+{
+  nsresult rv;
+
+  NS_INIT_REFCNT();
+
+#ifdef PR_LOGGING
+  if (gEnigMimeDecryptLog == nsnull) {
+    gEnigMimeDecryptLog = PR_NewLogModule("nsEnigMimeDecrypt");
+  }
+#endif
+
+#ifdef FORCE_PR_LOG
+  nsCOMPtr<nsIThread> myThread;
+  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  DEBUG_LOG(("nsEnigMimeDecrypt:: <<<<<<<<< CTOR(%x): myThread=%x\n",
+         (int) this, (int) myThread.get()));
+#endif
+}
+
+
+nsEnigMimeDecrypt::~nsEnigMimeDecrypt()
+{
+  nsresult rv;
+#ifdef FORCE_PR_LOG
+  nsCOMPtr<nsIThread> myThread;
+  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  DEBUG_LOG(("nsEnigMimeDecrypt:: >>>>>>>>> DTOR(%x): myThread=%x\n",
+         (int) this, (int) myThread.get()));
+#endif
+
+  mOutputFun = NULL;
+  mOutputClosure = NULL;
+
+  if (mListener) {
+    mListener = nsnull;
+  }
+
+  if (mBuffer) {
+    mBuffer->Shutdown();
+    mBuffer = nsnull;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// nsIMimeDecryptSecure methods:
+///////////////////////////////////////////////////////////////////////////////
+
+NS_IMETHODIMP
+nsEnigMimeDecrypt::Init(PRBool rfc2015, EnigDecryptCallbackFun outputFun,
+                        void* outputClosure)
+{
+  nsresult rv;
+
+  mBuffer = do_CreateInstance(NS_IPCBUFFER_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) return rv;
+
+  // Prepare to copy data to buffer, with temp file overflow
+  rv = mBuffer->Open(MAX_BUFFER_BYTES, PR_TRUE);
+  if (NS_FAILED(rv)) return rv;
+
+  mOutputFun     = outputFun;
+  mOutputClosure = outputClosure;
+
+  mRfc2015 = rfc2015;
+
+  if (mRfc2015) {
+    // RFC 2015: Create PipeFilterListener to extract second MIME part
+    mListener = do_CreateInstance(NS_PIPEFILTERLISTENER_CONTRACTID, &rv);
+    if (NS_FAILED(rv)) return rv;
+
+    rv = mListener->Init(NS_STATIC_CAST(nsIStreamListener*, mBuffer),
+                         nsnull, "", "", 1, PR_FALSE, PR_TRUE, nsnull);
+    if (NS_FAILED(rv)) return rv;
+  }
+
+  mInitialized = PR_TRUE;
+
+  return NS_OK;
+}
+
+
+NS_IMETHODIMP
+nsEnigMimeDecrypt::Write(const char *buf, PRUint32 buf_size)
+
+{
+  if (!mInitialized)
+    return NS_ERROR_NOT_INITIALIZED;
+
+  if (mListener)
+    mListener->Write(buf, buf_size, nsnull, nsnull);
+  else
+    mBuffer->WriteBuf(buf, buf_size);
+
+  mInputLen += buf_size;
+
+  return NS_OK;
+}
+
+
+NS_IMETHODIMP
+nsEnigMimeDecrypt::Finish()
+{
+  // Enigmail stuff
+  nsresult rv;
+
+  if (!mInitialized)
+    return NS_ERROR_NOT_INITIALIZED;
+
+  if (mListener) {
+    mListener->OnStopRequest(nsnull, nsnull, 0);
+    if (NS_FAILED(rv))
+      return rv;
+    mListener = nsnull;
+  }
+
+  rv = mBuffer->OnStopRequest(nsnull, nsnull, 0);
+  if (NS_FAILED(rv))
+    return rv;
+
+  nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
+  if (NS_FAILED(rv))
+    return rv;
+
+  nsXPIDLCString errorMsg;
+  nsCOMPtr<nsIPipeTransport> pipeTrans;
+  rv = enigmailSvc->DecryptMessageStart((nsIDOMWindow*) nsnull,
+                                        (PRUint32) 0,
+                                        nsnull,
+                                        PR_FALSE,
+                                        getter_Copies(errorMsg),
+                                        getter_AddRefs(pipeTrans) );
+  if (NS_FAILED(rv)) return rv;
+
+  if (!pipeTrans)
+    return NS_ERROR_FAILURE;;
+
+  nsCOMPtr<nsIInputStream> plainStream;
+  rv = pipeTrans->OpenInputStream(0, PRUint32(-1), 0,
+                                  getter_AddRefs(plainStream));
+  if (NS_FAILED(rv)) return rv;
+
+  // Write buffered data asyncronously to process
+  nsCOMPtr<nsIInputStream> bufStream;
+  rv = mBuffer->OpenInputStream(getter_AddRefs(bufStream));
+  if (NS_FAILED(rv)) return rv;
+
+  PRUint32 available;
+  rv = bufStream->Available(&available);
+  if (NS_FAILED(rv)) return rv;
+
+  DEBUG_LOG(("nsEnigMimeDecrypt::Finish: available=%d\n", available));
+
+  rv = pipeTrans->WriteAsync(bufStream, available, PR_TRUE);
+  if (NS_FAILED(rv)) return rv;
+
+  PRUint32 readCount;
+  char buf[kCharMax];
+  while (1) {
+    // Read synchronously
+
+    rv = plainStream->Read((char *) buf, kCharMax, &readCount);
+    if (NS_FAILED(rv)) return rv;
+
+    if (!readCount) break;
+
+    PR_SetError(0,0);
+    int status = mOutputFun(buf, readCount, mOutputClosure);
+    if (status < 0) {
+      PR_SetError(status, 0);
+      mOutputFun = NULL;
+      mOutputClosure = NULL;
+
+      return NS_ERROR_FAILURE;
+    }
+
+    mOutputLen += readCount;
+  }
+
+  // Close input stream
+  plainStream->Close();
+
+  // Close buffer
+  mBuffer->Shutdown();
+
+  PRInt32 exitCode;
+  rv = pipeTrans->ExitCode(&exitCode);
+  if (NS_FAILED(rv)) return rv;
+
+  DEBUG_LOG(("nsEnigMimeDecrypt::Finish: exitCode=%d\n", exitCode));
+
+  // Extract STDERR output
+  nsCOMPtr<nsIPipeListener> errListener;
+  rv = pipeTrans->GetConsole(getter_AddRefs(errListener));
+  if (NS_FAILED(rv)) return rv;
+
+  if (!errListener)
+    return NS_ERROR_FAILURE;
+
+  PRUint32 errorCount;
+  nsXPIDLCString errorOutput;
+  rv = errListener->GetByteData(&errorCount, getter_Copies(errorOutput));
+  if (NS_FAILED(rv)) return rv;
+
+  // Shutdown STDERR console
+  errListener->Shutdown();
+
+  // Terminate process
+  pipeTrans->Terminate();
+  pipeTrans = nsnull;
+
+  PRInt32 newExitCode;
+  PRUint32 statusFlags;
+  nsXPIDLCString keyId;
+  nsXPIDLCString userId;
+
+  rv = enigmailSvc->DecryptMessageEnd(exitCode,
+                                      mOutputLen,
+                                      errorOutput,
+                                      &statusFlags,
+                                      getter_Copies(keyId),
+                                      getter_Copies(userId),
+                                      getter_Copies(errorMsg),
+                                      &newExitCode);
+  if (NS_FAILED(rv)) return rv;
+
+  if (newExitCode != 0) {
+    DEBUG_LOG(("nsEnigMimeDecrypt::Finish: ERROR EXIT %d\n", newExitCode));
+    return NS_ERROR_FAILURE;
+  }
+
+  return NS_OK;
+}
