@@ -8,16 +8,14 @@
   </RDF:Seq>
 
   <!-- locale information -->
-  <RDF:Description about="urn:mozilla:locale:fr-FR"
-        chrome:displayName="Français"
-        chrome:author="Jean-Philippe Gaulier"
-        chrome:name="fr-FR"
-        chrome:previewURL="">
+  <RDF:Description about="urn:mozilla:locale:fr-FR">
+
     <chrome:packages>
       <RDF:Seq about="urn:mozilla:locale:fr-FR:packages">
         <RDF:li resource="urn:mozilla:locale:fr-FR:enigmail"/>
       </RDF:Seq>
     </chrome:packages>
+
   </RDF:Description>
 
 </RDF:RDF>

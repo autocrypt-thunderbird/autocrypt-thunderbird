@@ -12,28 +12,24 @@
   </RDF:Seq>
 
   <!-- locale information -->
-  <RDF:Description about="urn:mozilla:locale:de-DE"
-        chrome:displayName="Deutsch (Deutschland)"
-        chrome:author="mozilla.org"
-        chrome:name="de-DE"
-        chrome:previewURL="http://www.mozilla.org/locales/de-DE.gif">
+  <RDF:Description about="urn:mozilla:locale:de-DE">
+
     <chrome:packages>
       <RDF:Seq about="urn:mozilla:locale:de-DE:packages">
         <RDF:li resource="urn:mozilla:locale:de-DE:enigmail"/>
       </RDF:Seq>
     </chrome:packages>
+
   </RDF:Description>
 
-  <RDF:Description about="urn:mozilla:locale:de-AT"
-        chrome:displayName="Deutsch"
-        chrome:author="mozilla.org"
-        chrome:name="de-AT"
-        chrome:previewURL="http://www.mozilla.org/locales/de-AT.gif">
+  <RDF:Description about="urn:mozilla:locale:de-AT">
+
     <chrome:packages>
       <RDF:Seq about="urn:mozilla:locale:de-AT:packages">
         <RDF:li resource="urn:mozilla:locale:de-AT:enigmail"/>
       </RDF:Seq>
     </chrome:packages>
+
   </RDF:Description>
 
 </RDF:RDF>
