@@ -14,12 +14,8 @@
 
 <!ENTITY enigmail.preferences.label       "Enigmail Preferences">
 
-<!ENTITY enigmail.autoCrypto.label        "Enable Auto Crypto">
 <!ENTITY enigmail.passwordSettings.label  "Password settings">
-<!ENTITY enigmail.userIdValue.label       "User email address or Key Id (0xABCD1234)">
 <!ENTITY enigmail.userNoPassphrase.label  "No passphrase for user">
-
-<!ENTITY enigmail.userIdFromAddr.label    "Use FROM email address for signing to determine GPG key">
 
 <!ENTITY enigmail.defaultEncryptionOption.label "Choose default encryption options">
 <!ENTITY enigmail.usePGPMimeOption.label  "Choose PGP/MIME option">
@@ -30,7 +26,6 @@
 <!ENTITY enigmail.send_plaintext_flowed.label "Allow flowed text (RFC 2646)">
 <!ENTITY enigmail.mime_parts_on_demand.label  "Load MIME parts on demand (IMAP folders)">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "You should turn this OFF if you are receiving PGP/MIME messages on IMAP folders">
-
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Remember password for">
 <!ENTITY enigmail.maxIdleMinutesTail.label "minutes of idle time">
@@ -45,12 +40,10 @@
 <!ENTITY enigmail.sending.label          "Sending">
 <!ENTITY enigmail.keySel.label           "Key Selection">
 <!ENTITY enigmail.pgpMime.label          "PGP/MIME">
-<!ENTITY enigmail.keySel.label           "Key Selection">
 <!ENTITY enigmail.advancedPrefsButton.label "Advanced">
 <!ENTITY enigmail.debug.label            "Debugging">
 
 <!ENTITY enigmail.basicPrefs.label       "Basic Settings">
-<!ENTITY enigmail.advancedPrefs.label    "Enigmail Advanced Preferences">
 
 <!ENTITY enigmail.whenSending.label       "When sending mail">
 <!ENTITY enigmail.moreOptions.label       "More options">
@@ -63,7 +56,6 @@
 
 <!ENTITY enigmail.disableSMIMEui.label    "Hide SMIME buttons/menus">
 <!ENTITY enigmail.doubleDashSeparator.label  "Treat '--' as signature separator">
-<!ENTITY enigmail.captureWebMail.label    "Capture webmail (experimental)">
 <!ENTITY enigmail.useGpgAgent.label       "Use gpg-agent for passphrase handling">
 <!ENTITY enigmail.hushMailSupport.label   "Support for Hushmail">
 
@@ -103,7 +95,6 @@
 <!ENTITY enigmail.clearPassphrase.accesskey "l">
 
 <!ENTITY enigmail.prefs.accesskey           "P">
-<!ENTITY enigmail.advprefs.accesskey        "v">
 <!ENTITY enigmail.viewconsole.accesskey      "c">
 <!ENTITY enigmail.viewdebuglog.accesskey    "g">
 
@@ -238,3 +229,7 @@
 <!ENTITY enigmail.encDlgSign.accesskey              "S">
 <!ENTITY enigmail.encDlgPgpMime.label               "Use PGP/MIME">
 <!ENTITY enigmail.encDlgPgpMime.accesskey           "U">
+
+<!ENTITY  enigmail.retrieveKey.label                "Retrieving Keys">
+<!ENTITY  enigmail.progressText.label               "Progress:">
+
