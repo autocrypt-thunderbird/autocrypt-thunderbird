@@ -111,6 +111,8 @@ function enigMessengerStartup() {
   EnigOverrideAttribute( viewElementIds, "oncommand",
                          "enigMsgViewHeaders('", "');");
 
+  enigOverrideLayoutChange();
+
   EnigShowHeadersAll(true);
   gEnigSavedHeaders = null;
 
@@ -350,6 +352,36 @@ function enigMessageFrameUnload() {
 
 function enigThreadPaneOnClick() {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigThreadPaneOnClick\n");
+}
+
+function enigOverrideLayoutChange() {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigOverrideLayoutChange\n");
+  var viewTypeElementIds = ["messagePaneVertical",
+                            "messagePaneClassic",
+                            "messagePaneWide"];
+  for (var i = 0; i < viewTypeElementIds.length; i++) {
+    var elementId = viewTypeElementIds[i];
+    var element = document.getElementById(elementId);
+    if (element) {
+      try {
+        var oldValue = element.getAttribute("oncommand");
+        var arg=oldValue.replace(/^(.*)(\(.*\))/, "$2");
+        element.setAttribute("oncommand", "enigChangeMailLayout"+arg);
+      } catch (ex) {}
+    } else {
+      // we can break if the vertical Thunderbird pane
+      // doesn't exist, because that means it's Seamonkey!
+      break;
+    }
+  }
+}
+
+function enigChangeMailLayout(viewType) {
+  ChangeMailLayout(viewType);
+
+  // This event requires that we re-subscribe to these events!
+  gEnigMessagePane.addEventListener("unload", enigMessageFrameUnload, true);
+  gEnigMessagePane.addEventListener("load", enigMessageFrameLoad, true);
 }
 
 function enigGetCurrentMsgUriSpec() {
