@@ -348,7 +348,12 @@ function enigEditKeyTrust() {
     EnigAlert(EnigGetString("noKeySelected"));
     return;
   }
-  EnigEditKeyTrust(gKeyList[keyList[0]].userId, keyList[0]);
+  var userIdList = [];
+  for (var i=0; i < keyList.length; i++) {
+    userIdList.push(gKeyList[keyList[i]].userId);
+  }
+
+  EnigEditKeyTrust(userIdList, keyList);
   enigmailRefreshKeys();
 }
 
@@ -359,7 +364,11 @@ function enigSignKey() {
     EnigAlert(EnigGetString("noKeySelected"));
     return;
   }
-  EnigSignKey(gKeyList[keyList[0]].userId, keyList[0], null);
+  var userIdList = [];
+  for (var i=0; i < keyList.length; i++) {
+    userIdList.push(gKeyList[keyList[i]].userId);
+  }
+  EnigSignKey(userIdList, keyList, null);
   enigmailRefreshKeys();
 }
 

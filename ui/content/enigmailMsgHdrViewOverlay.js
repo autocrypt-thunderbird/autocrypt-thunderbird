@@ -471,12 +471,12 @@ function enigSetSenderStatus(elemSign, elemTrust, elemPhoto) {
 }
 
 function enigEditKeyTrust() {
-  EnigEditKeyTrust(gEnigSecurityInfo.userId, gEnigSecurityInfo.keyId);
+  EnigEditKeyTrust([gEnigSecurityInfo.userId], [gEnigSecurityInfo.keyId]);
   ReloadWithAllParts();
 }
 
 function enigSignKey() {
-  EnigSignKey(gEnigSecurityInfo.userId, gEnigSecurityInfo.keyId, null)
+  EnigSignKey([gEnigSecurityInfo.userId], [gEnigSecurityInfo.keyId], null)
   ReloadWithAllParts();
 }
 

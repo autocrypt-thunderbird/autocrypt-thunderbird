@@ -48,7 +48,12 @@
                   id="setTrust"
                   accesskey="&enigmail.keyMan.setTrust.accesskey;"
                   oncommand="enigEditKeyTrust()"/>
-                 
+        <menuitem label="&enigmail.keyMan.viewSig.label;"
+                  id="viewSig"
+                  disabled="true"
+                  accesskey="&enigmail.keyMan.viewSig.accesskey;"
+                  oncommand=""/>
+
         <menuseparator/>
         
         <menuitem id="addUid" 
@@ -98,6 +103,7 @@
   <popupset>
     <popup id="ctxmenu"
            onpopupshowing="enigmailCtxMenu();">
+      <menuitem id="ctxViewSig" label="&enigmail.keyMan.viewSig.label;" disabled="true"/>
       <menuitem id="ctxSign" label="&enigmail.keyMan.sign.label;" oncommand="enigSignKey()"/>
       <menuitem id="ctxTrust" label="&enigmail.keyMan.setTrust.label;" oncommand="enigEditKeyTrust()"/>
       <menuitem id="ctxAddUid" label="&enigmail.keyMan.addUid.label;" oncommand="enigmailAddUid()"/>

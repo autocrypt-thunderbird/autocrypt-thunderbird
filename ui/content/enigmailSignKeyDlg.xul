@@ -45,7 +45,7 @@
         title="&enigmail.sKeyDlg.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="onLoad();"
-        ondialogaccept="return onAccept();">
+        ondialogaccept="onAccept();">
 
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
@@ -59,7 +59,7 @@
       <rows autostretch="never">
         <row>
           <label value="&enigmail.sKeyDlg.signKey.label;"/>
-          <label id="keyIdValue" value="?"/>
+          <listbox flex="1" id="keyIdList" style="height:60px"/>
         </row>
         <row>
           <hbox align="center">
@@ -111,8 +111,11 @@
         window.close();
         return;
       }
-      var keyId = window.arguments[0].userId+" - 0x"+ window.arguments[0].keyId.substr(-8,8);
-      document.getElementById("keyIdValue").value=keyId;
+      var keyIdList = document.getElementById("keyIdList");
+      for (var i=0; i<window.arguments[0].userId.length; i++) {
+        var keyId = window.arguments[0].userId[i]+" - 0x"+ window.arguments[0].keyId[i].substr(-8,8);
+        keyIdList.appendItem(keyId);
+      }
     
       var exitCodeObj = new Object();
       var statusFlagsObj = new Object();
@@ -148,25 +151,25 @@
       var enigmailSvc = GetEnigmailSvc();
       if (!enigmailSvc) {
         EnigAlert(EnigGetString("accessError"));
-        return true;
+        return;
       }
       
       var errorMsgObj = new Object();
-      var r = enigmailSvc.signKey(window,
+      
+      for (var i=0; i<window.arguments[0].keyId.length; i++) {
+        var r = enigmailSvc.signKey(window,
                                   "0x"+signWithKey.selectedItem.value, 
-                                  window.arguments[0].keyId,
+                                  window.arguments[0].keyId[i],
                                   sigType.selectedItem.value == "0",
                                   trustLevel.selectedItem.value,
                                   errorMsgObj);
     
-     if (r != 0) {
-        EnigAlert(EnigGetString("signKeyFailed")+"\n\n"+errorMsgObj.value);
-        return false;
+        if (r != 0) {
+          EnigAlert(EnigGetString("signKeyFailed")+"\n\n"+errorMsgObj.value);
+          return;
+        }
       }
-      else {
-        EnigAlert(EnigGetString("signKeyOK"));
-      }
-      return true;
+      EnigAlert(EnigGetString("signKeyOK"));
     }
   ]]>
   </script>

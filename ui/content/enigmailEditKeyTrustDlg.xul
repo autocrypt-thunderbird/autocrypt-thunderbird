@@ -56,8 +56,11 @@
 
     EnigInitCommon("enigmailEditKeyTrustDlg");
     function onLoad() {
-      var keyId = window.arguments[0].userId+" - 0x"+ window.arguments[0].keyId.substr(-8,8);
-      document.getElementById("keyIdValue").value=keyId;
+      var keyIdList = document.getElementById("keyIdList");
+      for (var i=0; i<window.arguments[0].userId.length; i++) {
+        var keyId = window.arguments[0].userId[i]+" - 0x"+ window.arguments[0].keyId[i].substr(-8,8);
+        keyIdList.appendItem(keyId);
+      }
     }
 
     function onAccept() {
@@ -66,19 +69,19 @@
       if (!enigmailSvc)
         return;
       
-      var exitCodeObj = new Object();
       var errorMsgObj = new Object();
-        
-      var r = enigmailSvc.setKeyTrust(window, 
-                                      window.arguments[0].keyId, 
+
+      for (var i=0; i < window.arguments[0].keyId.length; i++) {
+        var r = enigmailSvc.setKeyTrust(window, 
+                                      window.arguments[0].keyId[i], 
                                       Number(t.selectedItem.value),
                                       errorMsgObj);
-      if (r) {
-        EnigAlert(EnigGetString("setKeyTrustFailed")+"\n\n"+errorMsgObj.value);
+        if (r != 0) {
+          EnigAlert(EnigGetString("setKeyTrustFailed")+"\n\n"+errorMsgObj.value);
+          return;
+        }
       }
-      else {
-        EnigAlert(EnigGetString("setKeyTrustOK"));
-      }
+      EnigAlert(EnigGetString("setKeyTrustOK"));
     }
   ]]>
   </script>
@@ -86,7 +89,7 @@
   <vbox orient="vertical">
     <hbox>
       <label value="&enigmail.keyTrust.trustKey.label;"/>
-      <label id="keyIdValue" value="?"/>
+      <listbox flex="1" id="keyIdList" style="height:60px"/>
     </hbox>
     <separator/>
     <vbox>
