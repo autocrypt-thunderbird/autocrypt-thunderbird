@@ -1251,10 +1251,11 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
     return "";
   }
 
-  var signMessage    = encryptFlags & nsIEnigmail.SIGN_MESSAGE;
-  var encryptMessage = encryptFlags & nsIEnigmail.ENCRYPT_MESSAGE;
+  var defaultSend = encryptFlags & nsIEnigmail.DEFAULT_SEND;
+  var signMsg     = encryptFlags & nsIEnigmail.SIGN_MESSAGE;
+  var encryptMsg  = encryptFlags & nsIEnigmail.ENCRYPT_MESSAGE;
 
-  if (encryptMessage) {
+  if (encryptMsg) {
     // Ensure canonical line endings (CRLF) when encrypting
     plainText = plainText.replace(/\r\n/g, "\n");
     plainText = plainText.replace(/\n/g, "\r\n");
@@ -1267,10 +1268,10 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
     encryptCommand += PGP_BATCH_OPTS + " -fta "
     recipientPrefix = " ";
 
-    if (signMessage)
+    if (signMsg)
       encryptCommand += " -s";
 
-    if (encryptMessage)
+    if (encryptMsg)
       encryptCommand += " -e";
 
   } else {
@@ -1283,20 +1284,20 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
     if ((encryptFlags & nsIEnigmail.ENCRYPT_TO_SELF) && fromMailAddr)
       encryptCommand += " --encrypt-to " + fromMailAddr;
 
-    if (encryptMessage) {
+    if (encryptMsg) {
       encryptCommand += " -a -e";
 
-      if (signMessage)
+      if (signMsg)
         encryptCommand += " -s";
 
-    } else if (signMessage) {
+    } else if (signMsg) {
       encryptCommand += " --clearsign";
     }
   }
 
   var inputText;
 
-  if (!signMessage) {
+  if (!signMsg) {
     inputText = plainText;
 
   } else {
@@ -1320,7 +1321,7 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
     encryptCommand += " -u " + fromMailAddr;
   }
 
-  if (encryptMessage) {
+  if (encryptMsg) {
     var addrList = toMailAddr.split(/\s*,\s*/);
     for (var k=0; k<addrList.length; k++)
        encryptCommand += recipientPrefix+addrList[k];
@@ -1329,7 +1330,7 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
   var cmdErrorMsgObj = new Object();
   var statusMsgObj   = new Object();    
 
-  var cipherText = gEnigmailSvc.execCmd(encryptCommand, inputText, signMessage,
+  var cipherText = gEnigmailSvc.execCmd(encryptCommand, inputText, signMsg,
                                  exitCodeObj, cmdErrorMsgObj, statusMsgObj);
 
   CONSOLE_LOG(cmdErrorMsgObj.value+"\n");
@@ -1348,7 +1349,7 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
   // Error processing
   ERROR_LOG("enigmail.js: Enigmail.encryptMessage: Error in command execution\n");
 
-  if (signMessage &&
+  if (signMsg && (!defaultSend || !encryptMsg) &&
       (!statusMsg || (statusMsg.search("BAD_PASSPHRASE") >= 0)) ) {
     // "Unremember" passphrase on signing failure
     // NOTE: May need to be more selective in unremembering,
