@@ -1,7 +1,7 @@
 <!ENTITY enigmail.label                    "Enigmail">
 
 <!ENTITY enigmail.keyUserId.label         "User Id">
-<!ENTITY enigmail.useForSigning.label     "Usa chiave per firmare">
+<!ENTITY enigmail.userIdValue.label       "Indirizzo email o ID chiave dell'utente (0xABCD1234)">
 <!ENTITY enigmail.keyComment.label        "Commento">
 <!ENTITY enigmail.keyNoPassphrase.label   "No passphrase">
 <!ENTITY enigmail.keyPassphrase.label     "Passphrase">
@@ -15,13 +15,13 @@
 <!ENTITY enigmail.userIdValue.label       "User indirizzo email">
 <!ENTITY enigmail.userNoPassphrase.label  "No passphrase">
 
-<!ENTITY enigmail.userIdFromAddr.label    "Usa indirizzo email del mittente per firmare">
+<!ENTITY enigmail.userId.label    "Scegli in base all'indirizzo email del mittente la chiave GPG per firmare">
 
 <!ENTITY enigmail.defaultEncryptionOption.label "Scegli cifratura di default">
 <!ENTITY enigmail.usePGPMimeOption.label  "Scegli opzione PGP/MIME">
 <!ENTITY enigmail.mimeHashAlgorithm.label "Algoritmo di Firma">
 
-<!ENTITY enigmail.agentPath.label         "Percorso eseguibile di GPG/PGP">
+<!ENTITY enigmail.agentPath.label         "Percorso eseguibile di GPG">
 
 <!ENTITY enigmail.send_plaintext_flowed.label "Permetti flowed tex (RFC 2646)">
 
@@ -176,3 +176,17 @@
 <!ENTITY enigmail.userSelPlainText.accesskey        "S">
 
 <!ENTITY enigmail.experimental.label                "Usa firma/cifratura 'inline' sperimentale">
+
+<!ENTITY enigmail.sendnow.label           "Spedisci immediatamente">
+<!ENTITY enigmail.sendlater.label         "Spedisci piu' tardi">
+<!ENTITY enigmail.sendnow.accesskey           "a">
+<!ENTITY enigmail.sendlater.accesskey         "t">
+<!ENTITY enigmail.userSelPlainText.label            "Spedisci in chiaro">
+<!ENTITY enigmail.enigmailAttachDesc.label          "Questo messaggio contiene degli allegati. In quale modo vuoi cifrarli/firmarli?">
+<!ENTITY enigmail.enigEncryptAttachNone.label       "Firma/cifra solo il testo del messaggio, ma non gli allegati">
+<!ENTITY enigmail.enigEncryptAttachInline.label     "Cifra ogni allegato separatamente e poi invia il messaggio usando Inline-PGP">
+<!ENTITY enigmail.enigEncryptAttachPgpMime.label    "Cifra/firma il messaggio tutto insieme e invialo usando PGP/MIME">
+<!ENTITY enigmail.ctxDecryptOpen.label              "Decifra e apri">
+<!ENTITY enigmail.ctxDecryptSave.label              "Decifra e salva con nome...">
+<!ENTITY enigmail.ctxDecryptOpen.accesskey          "D">
+<!ENTITY enigmail.ctxDecryptSave.accesskey          "n">
