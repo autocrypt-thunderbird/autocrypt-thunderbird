@@ -1554,6 +1554,13 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
 
       if (matches && (matches.length > 1)) {
         var flag = gStatusFlags[matches[1]];
+
+        if (flag == nsIEnigmail.NODATA) {
+          // Recognize only "NODATA 1"
+          if (statusLine.search(/NODATA 1\b/) < 0)
+            flag = 0;
+        }
+
         if (flag)
           statusFlags |= flag;
 
@@ -1685,6 +1692,13 @@ function (errOutput, statusFlagsObj, statusMsgObj) {
 
       if (matches && (matches.length > 1)) {
         var flag = gStatusFlags[matches[1]];
+
+        if (flag == nsIEnigmail.NODATA) {
+          // Recognize only "NODATA 1"
+          if (statusLine.search(/NODATA 1\b/) < 0)
+            flag = 0;
+        }
+
         if (flag)
           statusFlags |= flag;
 
@@ -1763,6 +1777,13 @@ function (pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj) 
 
       if (matches && (matches.length > 1)) {
         var flag = gStatusFlags[matches[1]];
+
+        if (flag == nsIEnigmail.NODATA) {
+          // Recognize only "NODATA 1"
+          if (statusLine.search(/NODATA 1\b/) < 0)
+            flag = 0;
+        }
+
         if (flag)
           statusFlags |= flag;
 
