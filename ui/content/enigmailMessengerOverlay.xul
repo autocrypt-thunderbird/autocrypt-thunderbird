@@ -63,7 +63,7 @@
 
       <menupopup id="menu_EnigmailPopup"
         onpopupshowing="enigUpdateOptionsDisplay();">
-
+             
         <menuitem id="enigmail_decryptverify"
              label="&enigmail.decryptverify.label;"
              accesskey="&enigmail.decryptverify.accesskey;"
@@ -125,6 +125,13 @@
              label="&enigmail.generatekey.label;"
              accesskey="&enigmail.generatekey.accesskey;"
              oncommand="EnigKeygen();" />
+
+        <menuitem id="enigmail_RulesEditor"
+            label="&enigmail.editRules.label;"
+            accesskey="&enigmail.editRules.accesskey;"
+            oncommand="EnigRulesEditor();"/>
+
+        <menuseparator/>
 
         <menuitem id="enigmail_upgrade"
              label="&enigmail.upgrade.label;"
@@ -218,6 +225,13 @@
              label="&enigmail.generatekey.label;"
              accesskey="&enigmail.generatekey.accesskey;"
              oncommand="EnigKeygen();" />
+
+        <menuitem id="enigmail_RulesEditor"
+            label="&enigmail.editRules.label;"
+            accesskey="&enigmail.editRules.accesskey;"
+            oncommand="EnigRulesEditor();"/>
+
+        <menuseparator/>
 
 <!--
         <menuitem id="enigmail_upgrade"
