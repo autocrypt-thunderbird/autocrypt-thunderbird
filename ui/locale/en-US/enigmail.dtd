@@ -214,7 +214,7 @@
 <!ENTITY enigmail.amPrefUseFromAddr.label           "Use Email address of this account to identify PGP key">
 <!ENTITY enigmail.amPrefUseKeyId.label              "Use specific PGP Key Id (0x1234ABCD):">
 <!ENTITY enigmail.amPrefSelectKey.label             "Select Key ...">
-
+<!ENTITY enigmail.amPrefDefaultEncrypt.label        "Message Composition Default Options">
 <!ENTITY enigmail.encryptionDlg.label               "Enigmail Encryption &amp; Signing Settings">
 <!ENTITY enigmail.encDlgEncrypt.label               "Encrypt Message">
 <!ENTITY enigmail.encDlgEncrypt.accesskey           "E">
