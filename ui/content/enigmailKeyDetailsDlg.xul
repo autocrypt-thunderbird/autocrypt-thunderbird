@@ -153,6 +153,9 @@
             if (aLine[11].indexOf("D")>=0) calcTrust="d"; 
             calcTrust=getTrustLabel(calcTrust);
             var ownerTrust=getTrustLabel(aLine[8]);
+          case "uid":
+            if (! userId) userId=aLine[9];
+            break;
           case "sub":
             addRow(treeChildren, aLine);
             break;
