@@ -32,7 +32,7 @@
 #
 
 XPI_MODULE	= enigmail
-XPI_MODULE_VERS = 0.90.1
+XPI_MODULE_VERS = 0.90.2
 
 DEPTH		= ../..
 topsrcdir	= @top_srcdir@
@@ -82,7 +82,7 @@ ifeq ($(OS_ARCH),OS2)
 PLATFORM_STR = os2
 endif
 
-XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS)-$(PLATFORM_STR).xpi
+XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS)-$(PLATFORM_STR)-$(TARGET_CPU).xpi
 
 xpi::
 	$(srcdir)/genxpi $(XPIFILE) $(DIST)/bin $(srcdir) $(XPI_MODULE) $(DLL_SUFFIX) $(LIB_PREFIX)
