@@ -24,6 +24,8 @@
         <RDF:li>ComsD:enigmime.dll</RDF:li>
         <RDF:li>ComsD:enigmime.xpt</RDF:li>
         <RDF:li>ComsD:enigmail.xpt</RDF:li>
+        <RDF:li>ComsD:ipc.xpt</RDF:li>
+        <RDF:li>AChrom:enigmail-skin-tbird.jar</RDF:li>
       </RDF:Seq>
     </chrome:uninstallInfo>
   </RDF:Description>
