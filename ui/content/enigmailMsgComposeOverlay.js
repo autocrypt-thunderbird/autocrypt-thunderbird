@@ -15,8 +15,13 @@ EnigInitCommon("enigmailMsgComposeOverlay");
 
 window.addEventListener("load", enigMsgComposeStartup, false);
 
+// The following event listeners seem to hang Mozilla on recycled windows
+//window.addEventListener('compose-window-close', enigMsgComposeClose, true);
+//window.addEventListener('compose-window-reopen', enigMsgComposeReopen, true);
+
 var gOrigSendButton, gEnigSendButton;
 var gEditorElement, gEditorShell;
+var gEnigReset, gEnigProcessed, gDecryptTimeoutID;
 
 function enigMsgComposeStartup() {
    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
@@ -36,7 +41,15 @@ function enigMsgComposeStartup() {
    enigMsgComposeReset();
 }
 
-var gEnigReset, gEnigProcessed, gDecryptTimeoutID;
+function enigMsgComposeReopen() {
+   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeReopen\n");
+   enigMsgComposeReset();
+}
+
+function enigMsgComposeClose() {
+   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeClose\n");
+   enigMsgComposeReset();
+}
 
 function enigMsgComposeReset() {
    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeReset\n");
