@@ -109,7 +109,6 @@ const nsISupports            = Components.interfaces.nsISupports;
 const nsIObserver            = Components.interfaces.nsIObserver;
 const nsILocalFile           = Components.interfaces.nsILocalFile;
 const nsIProtocolHandler     = Components.interfaces.nsIProtocolHandler;
-const nsIScriptableTimer     = Components.interfaces.nsIScriptableTimer;
 const nsIIPCService          = Components.interfaces.nsIIPCService;
 const nsIPipeConsole         = Components.interfaces.nsIPipeConsole;
 const nsIProcessInfo         = Components.interfaces.nsIProcessInfo;
@@ -1111,19 +1110,36 @@ function (passphrase) {
     if (gCacheTimer)
       gCacheTimer.cancel();
 
-    gCacheTimer = Components.classes[NS_TIMER_CONTRACTID].createInstance(nsIScriptableTimer);
-
-    if (!gCacheTimer) {
-      ERROR_LOG("enigmail.js: Enigmail.setCachedPassphrase: Error - failed to create times\n");
-      throw Components.results.NS_ERROR_FAILURE;
-    }
-
     var delayMillisec = maxIdleMinutes*60*1000;
 
-    gCacheTimer.init(this, delayMillisec,
-                     nsIScriptableTimer.PRIORITY_NORMAL,
-                     nsIScriptableTimer.TYPE_REPEATING_SLACK);
+    if (Components.interfaces.nsITimer) {
 
+      const nsITimer = Components.interfaces.nsITimer;
+      gCacheTimer = Components.classes[NS_TIMER_CONTRACTID].createInstance(nsITimer);
+
+      if (!gCacheTimer) {
+        ERROR_LOG("enigmail.js: Enigmail.setCachedPassphrase: Error - failed to create timer\n");
+        throw Components.results.NS_ERROR_FAILURE;
+      }
+
+      gCacheTimer.init(this, delayMillisec,
+                       nsITimer.TYPE_REPEATING_SLACK);
+    } else {
+
+      const nsIScriptableTimer = Components.interfaces.nsIScriptableTimer;
+      gCacheTimer = Components.classes[NS_TIMER_CONTRACTID].createInstance(nsIScriptableTimer);
+
+      if (!gCacheTimer) {
+        ERROR_LOG("enigmail.js: Enigmail.setCachedPassphrase: Error - failed to create scriptable timer\n");
+        throw Components.results.NS_ERROR_FAILURE;
+      }
+
+      gCacheTimer.init(this, delayMillisec,
+                       nsIScriptableTimer.PRIORITY_NORMAL,
+                       nsIScriptableTimer.TYPE_REPEATING_SLACK);
+    }
+
+    DEBUG_LOG("enigmail.js: Enigmail.setCachedPassphrase: gCacheTimer="+gCacheTimer+"\n");
   }
 }
 
