@@ -2036,6 +2036,11 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
      useDefaultComment = this.prefBranch.getBoolPref("useDefaultComment")
   } catch(ex) { }
 
+  var hushMailSupport = false;
+  try {
+     hushMailSupport = this.prefBranch.getBoolPref("hushMailSupport")
+  } catch(ex) { }
+  
   var detachedSig = usePgpMime && signMsg && !encryptMsg;
 
   var toAddrList = toMailAddr.split(/\s*,\s*/);
@@ -2081,8 +2086,9 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
     if (!useDefaultComment)
       encryptCommand += GPG_COMMENT_OPT + this.vendor + COMMENT_SUFFIX;
 
-    var angledFromMailAddr = (fromMailAddr.search(/^0x/) == 0) ? fromMailAddr
-                             : "<" + fromMailAddr + ">";
+    
+    var angledFromMailAddr = ((fromMailAddr.search(/^0x/) == 0) || hushMailSupport) 
+	                         ? fromMailAddr : "<" + fromMailAddr + ">";
 
     if (encryptMsg) {
       encryptCommand += " -a -e";
@@ -2097,7 +2103,8 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
         encryptCommand += " --encrypt-to " + angledFromMailAddr;
 
       for (k=0; k<toAddrList.length; k++)
-         encryptCommand += " -r <" + toAddrList[k] + ">";
+         encryptCommand += (! hushMailSupport) ? " -r <" + toAddrList[k] + ">"
+                            : " -r "+ toAddrList[k];
 
     } else if (detachedSig) {
       encryptCommand += " -s -b -t -a";
