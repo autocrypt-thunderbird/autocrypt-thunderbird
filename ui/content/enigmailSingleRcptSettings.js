@@ -95,7 +95,7 @@ function enigmailDlgOnLoad() {
   }
 
   var actionType = document.getElementById("actionType");
-  actionType.selectedItem = selectedItem = document.getElementById("actionType."+action);
+  actionType.selectedItem = document.getElementById("actionType."+action);
   enigEnableKeySel(action=="actionUseKey");
 
   if (typeof(window.arguments[INPUT].sign)=="number") {
@@ -205,7 +205,7 @@ function enigmailDlgKeySelection() {
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
-    return false;
+    return;
 
   var resultObj = new Object();
   var inputObj = new Object();
@@ -247,7 +247,7 @@ function enigSetKeys(keyList) {
   else {
     var enigmailSvc = GetEnigmailSvc();
     if (!enigmailSvc)
-      return false;
+      return;
       
     var exitCodeObj= new Object;
     var statusFlagsObj = new Object;
@@ -262,7 +262,7 @@ function enigSetKeys(keyList) {
       return;
     }
 
-    for (i=0; i<keyList.length; i++) {
+    for (var i=0; i<keyList.length; i++) {
       var keyId=keyList[i].substring(2);
       var keyStart=userListTxt.indexOf(":"+keyId+":");
       var keyEnd=userListTxt.substring(keyStart).indexOf("\n");

@@ -602,7 +602,7 @@ function enigMessageDecrypt(event) {
     }
   }
 
-  return enigMessageParse(!event, false, contentEncoding);
+  enigMessageParse(!event, false, contentEncoding);
 }
 
 
@@ -1604,14 +1604,14 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
       outFile.initWithPath(tmpDir);
       if (!(outFile.isDirectory() && outFile.isWritable())) {
         errorMsgObj.value=EnigGetString("noTempDir");
-        return -1;
+        return;
       }
       outFile.append(rawFileName);
       outFile.createUnique(Components.interfaces.NORMAL_FILE_TYPE, 0600);
     }
     catch (ex) {
       errorMsgObj.value=EnigGetString("noTempDir");
-      return -1;
+      return;
     }
   }
 

@@ -79,7 +79,8 @@ function prefOnLoad() {
 
    if (navigator.platform.search(/Win/i) == 0) {
      // Windows doesn't work ...
-     document.getElementById("uninstall").setAttribute("disabled", "true");
+     var uninst = document.getElementById("uninstall");
+     if (uninst) setAttribute("disabled", "true");
    }
 
 
@@ -141,11 +142,6 @@ function prefOnAccept() {
 
 function EnigMimeTest() {
   CONSOLE_LOG("\n\nEnigMimeTest: START ********************************\n");
-  var lines = ["--Boundary",
-               "\r\nPart 1\r\n",
-               " --Boundary\r\n\r\n",
-               "--Boundary\r",
-               "\nPart 2\r\nPL2\r\nx\r\n--Boundary--\r\n"];
 
   var lines = ["content-type: multipart/mixed;\r",
                "\n boundary=\"ABCD\"",
@@ -240,7 +236,7 @@ function EnigTest() {
     CONSOLE_LOG("EnigTest: signature = "+signatureObj.value+"\n");
     CONSOLE_LOG("************************************************\n");
 
-    var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
+    cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
                                                 "", toMailAddr,
                                                 nsIEnigmail.SEND_SIGNED|
                                                 nsIEnigmail.SEND_ENCRYPTED,
@@ -252,7 +248,7 @@ function EnigTest() {
     CONSOLE_LOG("EnigTest: exitCode = "+exitCodeObj.value+"\n");
     CONSOLE_LOG("************************************************\n");
 
-    var decryptedText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
+    decryptedText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
                                         signatureObj, exitCodeObj,
                                         statusFlagsObj, keyIdObj, userIdObj,
                                         errorMsgObj);

@@ -44,7 +44,7 @@ const RESULT=1;
 function enigmailDlgOnLoad() {
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
-    return false;
+    return;
 
   var rulesListObj=new Object;
   if (enigmailSvc.getRulesData(rulesListObj)) {
@@ -52,7 +52,7 @@ function enigmailDlgOnLoad() {
     var rulesList=rulesListObj.value;
         if (rulesList.firstChild.nodeName=="parsererror") {
       EnigAlert("Invalid enigmail.xml file:\n"+ rulesList.firstChild.textContent);
-      return 0;
+      return;
     }
     DEBUG_LOG("enigmailRulesEditor.js: dlgOnLoad: keys loaded\n");
     var node=rulesList.firstChild.firstChild;

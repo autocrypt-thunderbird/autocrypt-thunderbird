@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.84.10001.0";
-var gEnigmimeVersion = "0.84.10001.0";
+var gEnigmailVersion = "0.84.1.0";
+var gEnigmimeVersion = "0.84.1.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -624,7 +624,7 @@ function EnigAdvPrefWindow() {
 
 function EnigHelpWindow(source) {
 
-  input="chrome://enigmail/locale/help/"+source+".html";
+  var input="chrome://enigmail/locale/help/"+source+".html";
 
   EnigOpenWin("enigmail:help",
               "chrome://enigmail/content/enigmailHelp.xul",
@@ -1427,5 +1427,6 @@ function EnigNewRule(emailAddress) {
   inputObj.options="";
   inputObj.command = "add";
   window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+  return true;
 }
 

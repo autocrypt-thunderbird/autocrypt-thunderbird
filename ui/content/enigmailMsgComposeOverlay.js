@@ -120,6 +120,7 @@ function enigGetAccDefault(value) {
       return false;
     }
   }
+  return null;
 }
 
 function enigSetIdentityDefaults() {
@@ -141,7 +142,7 @@ function enigSetIdentityDefaults() {
 function enigSetSendDefaultOptions() {
   gEnigSendMode = 0;
   if (! enigGetAccDefault("enabled")) {
-    return 0;
+    return;
   }
   if (enigGetAccDefault("encrypt")>0) {
     gEnigSendMode |= ENIG_ENCRYPT;
@@ -925,7 +926,7 @@ function enigEncryptMsg(msgSendType) {
         !(sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
         enigmailSvc.composeSecure) {
 
-        var inputObj = new Object();
+        inputObj = new Object();
         inputObj.pgpMimePossible = (usePGPMimeOption >= PGP_MIME_POSSIBLE);
         inputObj.inlinePossible = (sendFlags & ENIG_ENCRYPT); // makes no sense for sign only!
 
@@ -940,7 +941,7 @@ function enigEncryptMsg(msgSendType) {
         }
 
         if (inputObj.pgpMimePossible || inputObj.inlinePossible) {
-          var resultObj = new Object();
+          resultObj = new Object();
           resultObj.selected = -1;
           window.openDialog("chrome://enigmail/content/enigmailAttachmentsDialog.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
           if (resultObj.selected < 0) {
@@ -990,8 +991,6 @@ function enigEncryptMsg(msgSendType) {
        var oldSecurityInfo = gMsgCompose.compFields.securityInfo;
 
        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: oldSecurityInfo = "+oldSecurityInfo+"\n");
-
-       var newSecurityInfo;
 
        if (!oldSecurityInfo) {
          try {
@@ -1179,7 +1178,7 @@ function enigEncryptMsg(msgSendType) {
          if (inlineEncAttach) {
             // encrypt attachments
             gEnigModifiedAttach = new Array();
-            var exitCode = enigEncryptAttachments(bucketList, gEnigModifiedAttach,
+            exitCode = enigEncryptAttachments(bucketList, gEnigModifiedAttach,
                                     window, uiFlags, fromAddr, toAddr, sendFlags,
                                     errorMsgObj);
             if (exitCode != 0) {
@@ -1238,7 +1237,7 @@ function enigEncryptMsg(msgSendType) {
      }
 
   } catch (ex) {
-     var msg=EnigGetString("signFailed");
+     msg=EnigGetString("signFailed");
      if (gEnigmailSvc && gEnigmailSvc.initializationError) {
         msg += "\n"+gEnigmailSvc.initializationError;
      }

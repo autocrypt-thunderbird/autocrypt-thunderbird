@@ -205,6 +205,7 @@ function enigmailKeygenStart() {
      return;
    }
 
+   var ipcRequest = null;
    var requestObserver = new EnigRequestObserver(enigmailKeygenTerminate,null);
 
    try {
@@ -256,8 +257,6 @@ function enigRefreshConsole() {
       }
     }
   } catch (ex) {}
-
-  return false;
 }
 
 function enigmailKeygenCancel() {

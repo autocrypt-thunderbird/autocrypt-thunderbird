@@ -96,6 +96,7 @@
             halign="right"
             id="importMissingKeys"
             label="&enigmail.importMissingKeys.label;"
+            accesskey="&enigmail.importMissingKeys.accesskey;"
             tooltip="&enigmail.importMissingKeys.tooltip;"
             oncommand="enigmailSearchMissingKeys();"/>
             
