@@ -224,7 +224,7 @@ function enigMessageCleanup() {
     var statusText = document.getElementById("expandedEnigmailStatusText");
 
     if (statusText)
-      statusText.fistChild.data="";
+      statusText.firstChild.data="";
   }
 
   if (gEnigCreatedURIs.length) {
