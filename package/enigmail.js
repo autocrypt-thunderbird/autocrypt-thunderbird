@@ -1245,9 +1245,14 @@ function (domWindow, version, prefBranch) {
 
   var ioServ = Components.classes[NS_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
 
-  var httpHandler = ioServ.getProtocolHandler("http");
-  httpHandler = httpHandler.QueryInterface(Components.interfaces.nsIHttpProtocolHandler);
-
+  try {
+    var httpHandler = ioServ.getProtocolHandler("http");
+    httpHandler = httpHandler.QueryInterface(Components.interfaces.nsIHttpProtocolHandler);
+  }
+  catch (ex) {
+    httpHandler = domWindow.navigator;
+  }
+  
   this.oscpu = httpHandler.oscpu;
 
   this.platform = httpHandler.platform;
