@@ -30,6 +30,7 @@ pref("extensions.enigmail.maxIdleMinutes",5);
 pref("extensions.enigmail.mimeHashAlgorithm",1);
 pref("extensions.enigmail.noPassphrase",false);
 pref("extensions.enigmail.parseAllHeaders",true);
+pref("extensions.enigmail.perRecipientRules",1);
 pref("extensions.enigmail.quotedPrintableWarn",0);
 pref("extensions.enigmail.respectHttpProxy",true);
 pref("extensions.enigmail.recipientsSelectionOption",1);
