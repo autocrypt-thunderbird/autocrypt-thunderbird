@@ -61,6 +61,9 @@ libs::
 	$(INSTALL) $(srcdir)/enigprefs-service.js $(DIST)/bin/components
 
 xpi::
+	$(error To create the Enigmail XPI package type "make xpi" from the enigmail root directory)
+
+old-xpi::
 	zip -r $(DIST)/bin/$(XPIFILE) install.js \
                install.rdf \
                $(XPI_MODULE).spec
