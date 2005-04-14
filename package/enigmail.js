@@ -108,6 +108,7 @@ const nsIEnigmail            = Components.interfaces.nsIEnigmail;
 const nsIEnigStrBundle       = Components.interfaces.nsIStringBundleService;
 const nsICmdLineHandler      = Components.interfaces.nsICmdLineHandler;
 const nsICategoryManager     = Components.interfaces.nsICategoryManager;
+const nsIWindowWatcher       = Components.interfaces.nsIWindowWatcher;
 
 const NS_XPCOM_SHUTDOWN_OBSERVER_ID = "xpcom-shutdown";
 
@@ -173,7 +174,6 @@ const BUTTON_POS_0           = 1;
 const BUTTON_POS_1           = 1 << 8;
 const BUTTON_POS_2           = 1 << 16;
 
-var gMimeHashAlgorithms = ["md5", "sha1", "ripemd160", "sha256", "sha384", "sha512"];
 
 function CreateFileStream(filePath, permissions) {
 
@@ -2074,8 +2074,7 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
   exitCodeObj.value    = -1;
   statusFlagsObj.value = 0;
   errorMsgObj.value    = "";
-  var hashAlgo = gMimeHashAlgorithms[this.prefBranch.getIntPref("mimeHashAlgorithm")];
-  
+
   if (!plainText) {
     DEBUG_LOG("enigmail.js: Enigmail.encryptMessage: NO ENCRYPTION!\n");
     exitCodeObj.value = 0;
@@ -2110,10 +2109,10 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
     bufferSize=MSG_BUFFER_SIZE;
 
   ipcBuffer.open(bufferSize, false);
-  
+
   var pipeTrans = this.encryptMessageStart(parent, null, uiFlags,
                                            fromMailAddr, toMailAddr,
-                                           hashAlgo, sendFlags, ipcBuffer,
+                                           "", sendFlags, ipcBuffer,
                                            noProxy, startErrorMsgObj);
 
   if (!pipeTrans) {
@@ -2249,12 +2248,12 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
 
   var useDefaultComment = false;
   try {
-     useDefaultComment = this.prefBranch.getBoolPref("useDefaultComment");
+     useDefaultComment = this.prefBranch.getBoolPref("useDefaultComment")
   } catch(ex) { }
 
   var hushMailSupport = false;
   try {
-     hushMailSupport = this.prefBranch.getBoolPref("hushMailSupport");
+     hushMailSupport = this.prefBranch.getBoolPref("hushMailSupport")
   } catch(ex) { }
 
   var detachedSig = usePgpMime && signMsg && !encryptMsg;
@@ -5141,24 +5140,39 @@ function deleteKeyCallback(inputData, keyEdit, ret) {
 function EnigCLineService()
 {}
 
-EnigCLineService.prototype.commandLineArgument = "-pgpkeyman";
-EnigCLineService.prototype.prefNameForStartup = "general.startup.pgpkeyman";
-EnigCLineService.prototype.chromeUrlForTask = "chrome://enigmail/content/enigmailKeyManager.xul";
-EnigCLineService.prototype.helpText = "Start with OpenPGP key manager";
-EnigCLineService.prototype.handlesArgs = false;
-EnigCLineService.prototype.defaultArgs = "";
-EnigCLineService.prototype.openWindowWithArgs = false;
+EnigCLineService.prototype = {
+  /* nsISupports */
+  QueryInterface : function handler_QI(iid) {
+    if (iid.equals(nsISupports))
+      return this;
+
+    if (nsICmdLineHandler && iid.equals(nsICmdLineHandler))
+      return this;
+
+    if (nsICommandLineHandler && iid.equals(nsICommandLineHandler))
+      return this;
+
+    throw Components.results.NS_ERROR_NO_INTERFACE;
+  },
+  commandLineArgument: "-pgpkeyman",
+   prefNameForStartup: "general.startup.pgpkeyman",
+   chromeUrlForTask: "chrome://enigmail/content/enigmailKeyManager.xul",
+   helpText: "Start with OpenPGP key manager",
+   helpInfo : "  -pgpkeyman             Open the OpenPGP key manager",
+   handlesArgs: false,
+   defaultArgs: "",
+   openWindowWithArgs: false
+}
 
 /* factory for command line handler service (EnigCLineService) */
-var EnigCLineFactory = new Object();
-
-EnigCLineFactory.createInstance =
-function (outer, iid) {
+var EnigCLineFactory = {
+  createInstance : function (outer, iid) {
     if (outer != null)
         throw Components.results.NS_ERROR_NO_AGGREGATION;
 
     if (!iid.equals(nsICmdLineHandler) && !iid.equals(nsISupports))
         throw Components.results.NS_ERROR_INVALID_ARG;
 
-    return new EnigCLineService();
+    return new EnigCLineService().QueryInterface(iid);
+  }
 }
