@@ -39,6 +39,7 @@
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
+#define MOZILLA_INTERNAL_API
 #include "mimeenig.h"
 #include "nsEnigModule.h"
 #include "nsEnigMimeService.h"
@@ -53,6 +54,7 @@
 #include "nsIGenericFactory.h"
 #include "nsEnigContentHandler.h"
 #include "nsReadableUtils.h"
+#undef MOZILLA_INTERNAL_API
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigContentHandler)
 

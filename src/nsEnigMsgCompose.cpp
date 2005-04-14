@@ -39,6 +39,7 @@
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
+#define MOZILLA_INTERNAL_API
 #include "nsXPIDLString.h"
 #include "nsIMsgCompFields.h"
 #include "nsMsgBaseCID.h"
@@ -55,6 +56,7 @@
 #include "nsFileStream.h"
 #include "nsIThread.h"
 #include "nsIFactory.h"
+#undef MOZILLA_INTERNAL_API
 
 #ifdef PR_LOGGING
 PRLogModuleInfo* gEnigMsgComposeLog = NULL;

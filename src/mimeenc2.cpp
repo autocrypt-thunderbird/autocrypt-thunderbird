@@ -35,6 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 #include <stdio.h>
+
+#define MOZILLA_INTERNAL_API
 #include "modmimee.h"
 #include "mimei.h"
 #include "nsCRT.h"
@@ -42,6 +44,7 @@
 #include "plstr.h"
 #include "prlog.h"
 #include "prprf.h"
+#undef MOZILLA_INTERNAL_API
 
 typedef enum mime_encoding {
   mime_Base64, mime_QuotedPrintable, mime_uuencode

@@ -1,3 +1,4 @@
+#define MOZILLA_INTERNAL_API
 #include "mimedummy.h"
 #include "nsEnigMimeService.h"
 

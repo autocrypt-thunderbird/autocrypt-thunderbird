@@ -39,6 +39,7 @@
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
+#define MOZILLA_INTERNAL_API
 #include "nsEnigContentHandler.h"
 #include "mimedummy.h"
 #include "mimeenig.h"
@@ -50,6 +51,7 @@
 #include "nsIThread.h"
 #include "nsIMimeObjectClassAccess.h"
 #include "nsMsgMimeCID.h"
+#undef MOZILLA_INTERNAL_API
 
 MimeContainerClass* mimeContainerClassP = NULL;
 

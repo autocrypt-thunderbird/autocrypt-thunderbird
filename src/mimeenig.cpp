@@ -1,3 +1,4 @@
+#define MOZILLA_INTERNAL_API
 #include "mimecth.h"
 #include "mimemoz2.h"
 #include "mimeenig.h"

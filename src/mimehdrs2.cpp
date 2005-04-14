@@ -34,6 +34,7 @@
  * the terms of any one of the NPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+#define MOZILLA_INTERNAL_API
 #include "nspr.h"
 #include "nsCOMPtr.h"
 #include "msgCore.h"
@@ -42,6 +43,7 @@
 #include "nsMailHeaders.h"
 #include "msgCore.h"
 #include "mimehdrs2.h"
+#undef MOZILLA_INTERNAL_API
 
 PRBool MimeHeaders_IsAsciiSpace(PRUnichar aChar) {
   return ((aChar == ' ') || (aChar == '\r') ||
