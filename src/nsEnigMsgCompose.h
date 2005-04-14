@@ -37,6 +37,7 @@
 #ifndef _nsEnigMsgCompose_h_
 #define _nsEnigMsgCompose_h_
 
+#define MOZILLA_INTERNAL_API
 #include "nsCOMPtr.h"
 #include "nsIFactory.h"
 #include "nsIMsgComposeSecure.h"
