@@ -90,8 +90,8 @@ nsEnigContentHandler::nsEnigContentHandler()
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
   rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
-  DEBUG_LOG(("nsEnigContentHandler:: <<<<<<<<< CTOR(%x): myThread=%x\n",
-         (int) this, (int) myThread.get()));
+  DEBUG_LOG(("nsEnigContentHandler:: <<<<<<<<< CTOR(%p): myThread=%p\n",
+         this, myThread.get()));
 #endif
 }
 
@@ -102,8 +102,8 @@ nsEnigContentHandler::~nsEnigContentHandler()
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
   rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
-  DEBUG_LOG(("nsEnigContentHandler:: >>>>>>>>> DTOR(%x): myThread=%x\n",
-         (int) this, (int) myThread.get()));
+  DEBUG_LOG(("nsEnigContentHandler:: >>>>>>>>> DTOR(%p): myThread=%p\n",
+         this, myThread.get()));
 #endif
 
 }

@@ -100,8 +100,8 @@ nsEnigMimeDecrypt::nsEnigMimeDecrypt()
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
   rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
-  DEBUG_LOG(("nsEnigMimeDecrypt:: <<<<<<<<< CTOR(%x): myThread=%x\n",
-         (int) this, (int) myThread.get()));
+  DEBUG_LOG(("nsEnigMimeDecrypt:: <<<<<<<<< CTOR(%p): myThread=%p\n",
+         this, myThread.get()));
 #endif
 }
 
@@ -112,8 +112,8 @@ nsEnigMimeDecrypt::~nsEnigMimeDecrypt()
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
   rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
-  DEBUG_LOG(("nsEnigMimeDecrypt:: >>>>>>>>> DTOR(%x): myThread=%x\n",
-         (int) this, (int) myThread.get()));
+  DEBUG_LOG(("nsEnigMimeDecrypt:: >>>>>>>>> DTOR(%p): myThread=%p\n",
+         this, myThread.get()));
 #endif
 
   Finalize();
@@ -264,7 +264,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
     if (headerSink)
         headerSink->GetSecurityInfo(getter_AddRefs(securityInfo));
   }
-  DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: securityInfo=%x\n", securityInfo.get()));
+  DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: securityInfo=%p\n", securityInfo.get()));
 
   nsCOMPtr<nsIPrompt> prompter;
   if (msgWindow) {
@@ -281,7 +281,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
     }
   }
 
-  DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: prompter=%x\n", prompter.get()));
+  DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: prompter=%p\n", prompter.get()));
 
   nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
   if (NS_FAILED(rv))

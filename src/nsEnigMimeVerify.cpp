@@ -114,8 +114,8 @@ nsEnigMimeVerify::nsEnigMimeVerify()
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
   rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
-  DEBUG_LOG(("nsEnigMimeVerify:: <<<<<<<<< CTOR(%x): myThread=%x\n",
-         (int) this, (int) myThread.get()));
+  DEBUG_LOG(("nsEnigMimeVerify:: <<<<<<<<< CTOR(%p): myThread=%p\n",
+         this, myThread.get()));
 #endif
 }
 
@@ -126,8 +126,8 @@ nsEnigMimeVerify::~nsEnigMimeVerify()
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
   rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
-  DEBUG_LOG(("nsEnigMimeVerify:: >>>>>>>>> DTOR(%x): myThread=%x\n",
-         (int) this, (int) myThread.get()));
+  DEBUG_LOG(("nsEnigMimeVerify:: >>>>>>>>> DTOR(%p): myThread=%p\n",
+         this, myThread.get()));
 #endif
 
   Finalize();
@@ -332,7 +332,7 @@ temBoundary += "--";
         headerSink->GetSecurityInfo(getter_AddRefs(securityInfo));
   }
 
-  DEBUG_LOG(("nsEnigMimeVerify::Finish: securityInfo=%x\n", securityInfo.get()));
+  DEBUG_LOG(("nsEnigMimeVerify::Finish: securityInfo=%p\n", securityInfo.get()));
 
   if (securityInfo) {
     nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
@@ -494,7 +494,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
     mMsgWindow->GetPromptDialog(getter_AddRefs(prompter));
   }
 
-  DEBUG_LOG(("nsEnigMimeVerify::OnStartRequest: prompter=%x\n", prompter.get()));
+  DEBUG_LOG(("nsEnigMimeVerify::OnStartRequest: prompter=%p\n", prompter.get()));
 
   nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
@@ -603,7 +603,7 @@ nsEnigMimeVerify::OnDataAvailable(nsIRequest* aRequest,
     readMax = (aLength < kCharMax) ? aLength : kCharMax;
     rv = aInputStream->Read((char *) buf, readMax, &readCount);
     if (NS_FAILED(rv)){
-      DEBUG_LOG(("nsEnigMimeVerify::OnDataAvailable: Error in reading from input stream, %x\n", rv));
+      DEBUG_LOG(("nsEnigMimeVerify::OnDataAvailable: Error in reading from input stream, %p\n", rv));
       return rv;
     }
 

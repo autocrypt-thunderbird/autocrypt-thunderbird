@@ -91,8 +91,8 @@ nsEnigMsgCompFields::nsEnigMsgCompFields()
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
   rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
-  DEBUG_LOG(("nsEnigMsgCompFields:: <<<<<<<<< CTOR(%x): myThread=%x\n",
-         (int) this, (int) myThread.get()));
+  DEBUG_LOG(("nsEnigMsgCompFields:: <<<<<<<<< CTOR(%p): myThread=%p\n",
+         this, myThread.get()));
 #endif
 }
 
@@ -103,8 +103,8 @@ nsEnigMsgCompFields::~nsEnigMsgCompFields()
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
   rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
-  DEBUG_LOG(("nsEnigMsgCompFields:: >>>>>>>>> DTOR(%x): myThread=%x\n",
-         (int) this, (int) myThread.get()));
+  DEBUG_LOG(("nsEnigMsgCompFields:: >>>>>>>>> DTOR(%p): myThread=%p\n",
+         this, myThread.get()));
 #endif
 
 }

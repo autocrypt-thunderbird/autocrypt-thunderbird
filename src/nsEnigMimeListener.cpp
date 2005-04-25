@@ -133,8 +133,8 @@ nsEnigMimeListener::nsEnigMimeListener()
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
   rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
-  DEBUG_LOG(("nsEnigMimeListener:: <<<<<<<<< CTOR(%x): myThread=%x\n",
-         (int) this, (int) myThread.get()));
+  DEBUG_LOG(("nsEnigMimeListener:: <<<<<<<<< CTOR(%p): myThread=%p\n",
+         this, myThread.get()));
 #endif
 }
 
@@ -145,8 +145,8 @@ nsEnigMimeListener::~nsEnigMimeListener()
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
   rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
-  DEBUG_LOG(("nsEnigMimeListener:: >>>>>>>>> DTOR(%x): myThread=%x\n",
-         (int) this, (int) myThread.get()));
+  DEBUG_LOG(("nsEnigMimeListener:: >>>>>>>>> DTOR(%p): myThread=%p\n",
+         this, myThread.get()));
 #endif
 
   if (mDecoderData) {
@@ -170,7 +170,7 @@ nsEnigMimeListener::Init(nsIStreamListener* listener, nsISupports* ctxt,
                          PRUint32 maxHeaderBytes, PRBool skipHeaders,
                          PRBool skipBody, PRBool decodeContent)
 {
-  DEBUG_LOG(("nsEnigMimeListener::Init: (%x) %d, %d, %d, %d\n", (int) this,
+  DEBUG_LOG(("nsEnigMimeListener::Init: (%p) %d, %d, %d, %d\n", this,
              maxHeaderBytes, skipHeaders, skipBody, decodeContent));
 
   if (!listener)
@@ -201,7 +201,7 @@ nsEnigMimeListener::Write(const char* buf, PRUint32 count,
 {
   nsresult rv;
 
-  DEBUG_LOG(("nsEnigMimeListener::Write: (%x) %d\n", (int) this, count));
+  DEBUG_LOG(("nsEnigMimeListener::Write: (%p) %d\n", this, count));
 
   if (mRequestStarted)
     return Transmit(buf, count, aRequest, aContext);
@@ -221,7 +221,7 @@ nsEnigMimeListener::Write(const char* buf, PRUint32 count,
 static nsresult
 EnigMimeListener_write(const char *buf, PRInt32 size, void *closure)
 {
-  DEBUG_LOG(("nsEnigMimeListener::EnigMimeListener_write: (%x) %d\n", (int) closure, size));
+  DEBUG_LOG(("nsEnigMimeListener::EnigMimeListener_write: (%p) %d\n", closure, size));
 
   if (!closure)
     return NS_ERROR_FAILURE;
@@ -236,7 +236,7 @@ NS_METHOD
 nsEnigMimeListener::Transmit(const char* buf, PRUint32 count,
                              nsIRequest* aRequest, nsISupports* aContext)
 {
-  DEBUG_LOG(("nsEnigMimeListener::Transmit: (%x) %d\n", (int) this, count));
+  DEBUG_LOG(("nsEnigMimeListener::Transmit: (%p) %d\n", this, count));
 
   if (!mDecoderData) {
     return SendStream(buf, count, aRequest, aContext);
@@ -255,7 +255,7 @@ nsEnigMimeListener::SendStream(const char* buf, PRUint32 count,
 {
   nsresult rv;
 
-  DEBUG_LOG(("nsEnigMimeListener::SendStream: (%x) %d\n", (int) this, count));
+  DEBUG_LOG(("nsEnigMimeListener::SendStream: (%p) %d\n", this, count));
 
   if (!mListener)
     return NS_OK;
@@ -363,7 +363,7 @@ NS_IMETHODIMP
 nsEnigMimeListener::OnStartRequest(nsIRequest *aRequest,
                                    nsISupports *aContext)
 {
-  DEBUG_LOG(("nsEnigMimeListener::OnStartRequest: (%x)\n", (int) this));
+  DEBUG_LOG(("nsEnigMimeListener::OnStartRequest: (%p)\n", this));
 
   if (!mInitialized)
     return NS_ERROR_NOT_INITIALIZED;
@@ -378,7 +378,7 @@ nsEnigMimeListener::OnStopRequest(nsIRequest* aRequest,
 {
   nsresult rv = NS_OK;
 
-  DEBUG_LOG(("nsEnigMimeListener::OnStopRequest: (%x)\n", (int) this));
+  DEBUG_LOG(("nsEnigMimeListener::OnStopRequest: (%p)\n", this));
 
   // Ensure that OnStopRequest call chain does not break by failing softly
 
@@ -436,7 +436,7 @@ nsEnigMimeListener::OnDataAvailable(nsIRequest* aRequest,
 {
   nsresult rv = NS_OK;
 
-  DEBUG_LOG(("nsEnigMimeListener::OnDataAvailable: (%x) %d\n", (int) this, aLength));
+  DEBUG_LOG(("nsEnigMimeListener::OnDataAvailable: (%p) %d\n", this, aLength));
 
   if (!mInitialized)
     return NS_ERROR_NOT_INITIALIZED;
@@ -486,7 +486,7 @@ nsEnigMimeListener::StartRequest(nsIRequest* aRequest, nsISupports* aContext)
 {
   nsresult rv;
 
-  DEBUG_LOG(("nsEnigMimeListener::StartRequest: (%x)\n", (int) this));
+  DEBUG_LOG(("nsEnigMimeListener::StartRequest: (%p)\n", this));
 
   if (!mHeaders.IsEmpty()) {
     // Try to parse headers
@@ -526,7 +526,7 @@ nsEnigMimeListener::StartRequest(nsIRequest* aRequest, nsISupports* aContext)
 PRBool
 nsEnigMimeListener::HeaderSearch(const char* buf, PRUint32 count)
 {
-  DEBUG_LOG(("nsEnigMimeListener::HeaderSearch: (%x) count=%d\n", (int) this, count));
+  DEBUG_LOG(("nsEnigMimeListener::HeaderSearch: (%p) count=%d\n", this, count));
 
   mHeaderSearchCounter++;
 
@@ -872,7 +872,7 @@ nsEnigMimeListener::Available(PRUint32* _retval)
   *_retval = (mStreamLength > mStreamOffset) ?
               mStreamLength - mStreamOffset : 0;
 
-  DEBUG_LOG(("nsEnigMimeListener::Available: (%x) %d\n", (int) this, *_retval));
+  DEBUG_LOG(("nsEnigMimeListener::Available: (%p) %d\n", this, *_retval));
 
   return NS_OK;
 }
@@ -881,7 +881,7 @@ NS_IMETHODIMP
 nsEnigMimeListener::Read(char* buf, PRUint32 count,
                          PRUint32 *readCount)
 {
-  DEBUG_LOG(("nsEnigMimeListener::Read: (%x) %d\n", (int) this, count));
+  DEBUG_LOG(("nsEnigMimeListener::Read: (%p) %d\n", this, count));
 
   if (!buf || !readCount)
     return NS_ERROR_NULL_POINTER;
@@ -966,7 +966,7 @@ nsEnigMimeListener::SetSubPartTreatment(PRBool aSubPartTreatment)
 NS_IMETHODIMP
 nsEnigMimeListener::Close()
 {
-  DEBUG_LOG(("nsEnigMimeListener::Close: (%x)\n", (int) this));
+  DEBUG_LOG(("nsEnigMimeListener::Close: (%p)\n", this));
   mStreamBuf = nsnull;
   mStreamOffset = 0;
   mStreamLength = 0;

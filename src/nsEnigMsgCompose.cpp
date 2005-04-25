@@ -179,8 +179,8 @@ nsEnigMsgCompose::nsEnigMsgCompose()
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
   rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
-  DEBUG_LOG(("nsEnigMsgCompose:: <<<<<<<<< CTOR(%x): myThread=%x\n",
-         (int) this, (int) myThread.get()));
+  DEBUG_LOG(("nsEnigMsgCompose:: <<<<<<<<< CTOR(%p): myThread=%p\n",
+         this, myThread.get()));
 #endif
 }
 
@@ -191,8 +191,8 @@ nsEnigMsgCompose::~nsEnigMsgCompose()
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
   rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
-  DEBUG_LOG(("nsEnigMsgCompose:: >>>>>>>>> DTOR(%x): myThread=%x\n",
-         (int) this, (int) myThread.get()));
+  DEBUG_LOG(("nsEnigMsgCompose:: >>>>>>>>> DTOR(%p): myThread=%p\n",
+         this, myThread.get()));
 #endif
 
   Finalize();
@@ -242,7 +242,7 @@ nsEnigMsgCompose::GetRandomTime(PRUint32 *_retval)
   // Elapsed time (1 millisecond to 10 microsecond resolution)
   PRIntervalTime randomNumberB = PR_IntervalNow();
 
-  DEBUG_LOG(("nsEnigMsgCompose::GetRandomTime: ranA=0x%x, ranB=0x%x\n",
+  DEBUG_LOG(("nsEnigMsgCompose::GetRandomTime: ranA=0x%p, ranB=0x%p\n",
                                            randomNumberA, randomNumberB));
 
   *_retval = ((randomNumberA & 0xFFFFF) << 12) | (randomNumberB & 0xFFF);
@@ -419,7 +419,7 @@ nsEnigMsgCompose::Init()
 {
   nsresult rv;
 
-  DEBUG_LOG(("nsEnigMsgCompose::Init: sendFlags=%x\n", mSendFlags));
+  DEBUG_LOG(("nsEnigMsgCompose::Init: sendFlags=%p\n", mSendFlags));
 
   PRBool signMsg    = mSendFlags & nsIEnigmail::SEND_SIGNED;
   PRBool encryptMsg = mSendFlags & nsIEnigmail::SEND_ENCRYPTED;
@@ -523,7 +523,7 @@ nsEnigMsgCompose::RequiresCryptoEncapsulation(
     if (NS_FAILED(rv))
       return rv;
 
-    DEBUG_LOG(("nsEnigMsgCompose::RequiresCryptoEncapsulation: sendFlags=%x\n", sendFlags));
+    DEBUG_LOG(("nsEnigMsgCompose::RequiresCryptoEncapsulation: sendFlags=%p\n", sendFlags));
 
     *aRequiresEncryptionWork = sendFlags &
       (nsIEnigmail::SEND_SIGNED | nsIEnigmail::SEND_ENCRYPTED);
@@ -815,7 +815,7 @@ nsEnigMsgCompose::MimeCryptoWriteBlock(const char *aBuf, PRInt32 aLen)
 static nsresult
 EnigMsgCompose_write(const char *buf, PRInt32 size, void *closure)
 {
-  DEBUG_LOG(("nsEnigMsgCompose::EnigMsgCompose_write: (%x) %d\n", (int) closure, size));
+  DEBUG_LOG(("nsEnigMsgCompose::EnigMsgCompose_write: (%p) %d\n", closure, size));
 
   if (!closure)
     return NS_ERROR_FAILURE;
@@ -998,7 +998,7 @@ nsEnigMsgCompose::OnDataAvailable(nsIRequest* aRequest,
     rv = aInputStream->Read((char *) buf, readMax, &readCount);
 
     if (NS_FAILED(rv)){
-      DEBUG_LOG(("nsEnigMsgCompose::OnDataAvailable: Error in reading from input stream, %x\n", rv));
+      DEBUG_LOG(("nsEnigMsgCompose::OnDataAvailable: Error in reading from input stream, %p\n", rv));
       return rv;
     }
 
