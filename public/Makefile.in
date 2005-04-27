@@ -49,6 +49,7 @@ XPIDLSRCS     = nsIEnigMsgCompFields.idl  \
                 nsIEnigMimeVerify.idl     \
                 nsIEnigMimeHeaderSink.idl \
                 nsIEnigMimeWriter.idl     \
-                nsIEnigMimeListener.idl
+                nsIEnigMimeListener.idl   \
+                nsIEnigMimeReadCallback.idl
 
 include $(topsrcdir)/config/rules.mk

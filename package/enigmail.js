@@ -4242,6 +4242,25 @@ function (parent, outFileName, displayName, inputBuffer,
 
 }
 
+Enigmail.prototype.getCardStatus =
+function(exitCodeObj, errorMsgObj) {
+  var command = this.getAgentPath();
+
+  command += " --status-fd 2 --with-colons --card-status";
+  var statusMsgObj = new Object();
+  var statusFlagsObj = new Object();
+
+  var outputTxt = this.execCmd(command, null, "",
+                exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
+
+  if ((exitCodeObj.value == 0) && !outputTxt) {
+    exitCodeObj.value = -1;
+    return "";
+  }
+
+  return outputTxt;
+}
+
 Enigmail.prototype.showKeyPhoto =
 function(keyId, exitCodeObj, errorMsgObj) {
 
@@ -4439,13 +4458,15 @@ Enigmail.prototype.clearRules = function () {
 
 
 
-function KeyEditor(pipeTrans) {
-  this._pipeTrans = pipeTrans
+function KeyEditor(pipeTrans, reqObserver) {
+  this._pipeTrans = pipeTrans;
+  this._reqObserver = reqObserver;
 }
 
 KeyEditor.prototype = {
   _pipeTrans: null,
   _txt: null,
+  _req: null,
   
   nextLine: function() {
     return this._txt;
@@ -4459,6 +4480,12 @@ KeyEditor.prototype = {
     var txt="";
     while (txt.indexOf("[GNUPG:]") < 0) {
       txt = this._pipeTrans.readLine(-1);
+      if (this._reqObserver) {
+        var newTxt = this._reqObserver.onDataAvailable(txt);
+        if (newTxt) {
+          txt = newTxt;
+        }
+      }
     }
     this._txt = txt;
     return this._txt;
@@ -4492,6 +4519,11 @@ KeyEditor.prototype = {
           }
           if (txt.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
             r.exitCode=-2;
+          }
+          if (txt.indexOf("[GNUPG:] ENIGMAIL_FAILURE")==0) {
+            r.exitCode = -3;
+            r.quitNow = true;
+            errorMsgObj.value = txt.substr(26);
           }
           if (txt.indexOf("[GNUPG:] ALREADY_SIGNED")>=0) {
             errorMsgObj.value=EnigGetString("keyAlreadySigned");
@@ -4556,6 +4588,7 @@ function (parent, userId, keyId, signLocally, trustLevel, errorMsgObj) {
                       (signLocally ? "lsign" : "sign"),
                       { trustLevel: trustLevel}, 
                       signKeyCallback, 
+                      null,
                       errorMsgObj);
   this.stillActive();
   
@@ -4569,6 +4602,7 @@ function (parent, keyId, trustLevel, errorMsgObj) {
   return this.editKey(parent, false, null, keyId, "trust", 
                       { trustLevel: trustLevel},
                       keyTrustCallback,
+                      null,
                       errorMsgObj);
 }
 
@@ -4581,6 +4615,7 @@ function (parent, keyId, outFile, reasonCode, reasonText, errorMsgObj) {
                         reasonCode: reasonCode,
                         reasonText: reasonText },
                       revokeCertCallback,
+                      null,
                       errorMsgObj);
   this.stillActive();
 
@@ -4596,7 +4631,8 @@ function (parent, keyId, name, email, comment, errorMsgObj) {
                         comment: comment,
                         nameAsked: 0,
                         emailAsked: 0 }, 
-                      addUidCallback, 
+                      addUidCallback,
+                      null,
                       errorMsgObj);
   this.stillActive();
   
@@ -4610,7 +4646,8 @@ function (parent, keyId, deleteSecretKey, errorMsgObj) {
   var cmd = (deleteSecretKey ? "--delete-secret-and-public-key" : "--delete-key");
   var r= this.editKey(parent, false, null, keyId, cmd,
                       {}, 
-                      deleteKeyCallback, 
+                      deleteKeyCallback,
+                      null,
                       errorMsgObj);
   this.stillActive();
   
@@ -4627,6 +4664,7 @@ function (parent, keyId, subkeys, reasonCode, reasonText, errorMsgObj) {
                         reasonCode: reasonCode,
                         reasonText: reasonText },
                       revokeSubkeyCallback,
+                      null,
                       errorMsgObj);
   this.stillActive();
 
@@ -4641,7 +4679,8 @@ function (parent, keyId, disableKey, errorMsgObj) {
   var cmd = (disableKey ? "disable" : "enable");
   var r= this.editKey(parent, false, null, keyId, cmd,
                       {}, 
-                      null, 
+                      null,
+                      null,
                       errorMsgObj);
   this.stillActive();
   
@@ -4654,7 +4693,8 @@ function (parent, keyId, idNumber, errorMsgObj) {
   var r = this.editKey(parent, true, null, keyId, "",
                       { idNumber: idNumber,
                         step: 0 }, 
-                      setPrimaryUidCallback, 
+                      setPrimaryUidCallback,
+                      null,
                       errorMsgObj);
   this.stillActive();
   
@@ -4669,6 +4709,7 @@ function (parent, keyId, idNumber, errorMsgObj) {
                       { idNumber: idNumber,
                         step: 0 },
                       deleteUidCallback,
+                      null,
                       errorMsgObj);
   this.stillActive();
 
@@ -4683,6 +4724,7 @@ function (parent, keyId, idNumber, errorMsgObj) {
                       { idNumber: idNumber,
                         step: 0 },
                       revokeUidCallback,
+                      null,
                       errorMsgObj);
   this.stillActive();
 
@@ -4690,8 +4732,84 @@ function (parent, keyId, idNumber, errorMsgObj) {
 }
 
 
+function enigCardAdminobserver(guiObserver, isDosLike) {
+  this._guiObserver = guiObserver;
+  this.isDosLike = isDosLike;
+}
+
+enigCardAdminobserver.prototype =
+{
+  _guiObserver: null,
+  _failureCode: 0,
+
+  QueryInterface : function(iid)
+  {
+    if (iid.equals(Components.interfaces.nsIEnigMimeReadCallback) ||
+        iid.equals(Components.interfaces.nsISupports) )
+      return this;
+
+    throw Components.results.NS_NOINTERFACE;
+  },
+
+  onDataAvailable: function (data) {
+    var ret="";
+    DEBUG_LOG("enigmail.js: enigCardAdminobserver.onDataAvailable: data="+data+"\n");
+    if (this.isDosLike && data.indexOf("[GNUPG:] BACKUP_KEY_CREATED") == 0) {
+      data=data.replace(/\//g, "\\");
+    }
+    if (this._failureCode) {
+      ret = "[GNUPG:] ENIGMAIL_FAILURE "+data;
+    }
+    if (data.indexOf("[GNUPG:] SC_OP_FAILURE")>=0) {
+      this._failureCode = 1;
+    }
+    if (this._guiObserver) {
+      this._guiObserver.onDataAvailable(data);
+    }
+    return ret;
+  },
+}
+
+Enigmail.prototype.genCardKey =
+function (parent, name, email, comment, expiry, backupPasswd, requestObserver, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.genCardKey: \n");
+  var generateObserver = new enigCardAdminobserver(requestObserver, this.isDosLike);
+  var r = this.editKey(parent, false, null, "", "--with-colons --card-edit",
+                      { step: 0,
+                        name: name,
+                        email: email,
+                        comment: comment,
+                        expiry: expiry,
+                        backupPasswd: backupPasswd,
+                        backupKey: (backupPasswd.length > 0 ? "Y" : "N"),
+                        parent: parent },
+                      genCardKeyCallback,
+                      generateObserver,
+                      errorMsgObj);
+  return r;
+}
+
+Enigmail.prototype.cardAdminData =
+function (parent, name, firstname, lang, sex, url, login, forcepin, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.cardAdminData: parent="+parent+", name="+name+", firstname="+firstname+", lang="+lang+", sex="+sex+", url="+url+", login="+login+", forcepin="+forcepin+"\n");
+  var adminObserver = new enigCardAdminobserver(null, this.isDosLike);
+  var r = this.editKey(parent, false, null, "", "--with-colons --card-edit",
+          { step: 0,
+            name: name,
+            firstname: firstname,
+            lang: lang,
+            sex: sex,
+            url: url,
+            login: login,
+            forcepin: forcepin },
+           cardAdminDataCallback,
+           adminObserver,
+           errorMsgObj);
+  return r;
+}
+                     
 Enigmail.prototype.editKey = 
-function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFunc, errorMsgObj) {
+function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFunc, requestObserver, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.editKey: parent="+parent+", editCmd="+editCmd+"\n");
   
   if (!this.initialized) {
@@ -4731,7 +4849,7 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
     useAgentObj.value = true;
   }
   
-  command += " --no-tty --status-fd 1 --command-fd 0"
+  command += " --no-tty --status-fd 1 --logger-fd 1 --command-fd 0"
   if (userId) command += " -u " + userId;
   if (editCmd == "revoke") {
     // escape backslashes and ' characters
@@ -4746,6 +4864,7 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
   else {
     command += " --ask-cert-level --edit-key " + keyId + " " + editCmd;
   }
+  command = command.replace(/ *$/, "");
   var pipeTrans = this.execStart(command, false, parent, null, null,
                                  true, statusFlags);
   if (! pipeTrans) return -1;
@@ -4762,7 +4881,7 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
 
   var exitCode=-1;  
   try {
-    var keyEdit = new KeyEditor(pipeTrans);
+    var keyEdit = new KeyEditor(pipeTrans, requestObserver);
     exitCode = keyEdit.keyEditorMainLoop(callbackFunc, inputData, errorMsgObj);
   } catch (ex) {
     DEBUG_LOG("enigmail.js: Enigmail.editKey: caught exception from writing to pipeTrans\n");
@@ -5135,6 +5254,206 @@ function deleteKeyCallback(inputData, keyEdit, ret) {
   }
 }
 
+function GetPin(domWindow, promptMsg, passwdObj) {
+  DEBUG_LOG("enigmail.js: GetPin: \n");
+
+  passwdObj.value = "";
+  var dummyObj = {};
+
+  var success = false;
+
+  var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
+  success = promptService.promptPassword(domWindow,
+                                         EnigGetString("Enigmail"),
+                                         promptMsg,
+                                         passwdObj,
+                                         null,
+                                         dummyObj);
+
+  if (!success)
+    return false;
+
+  DEBUG_LOG("enigmail.js: GetPin: got pin\n");
+
+  return true;
+}
+
+function genCardKeyCallback(inputData, keyEdit, ret) {
+  ret.writeTxt = "";
+  ret.errorMsg = "";
+  
+  var pinObj={};
+
+  if (keyEdit.doCheck(GET_LINE, "cardedit.prompt")) {
+    if (inputData.step == 0) {
+      ret.exitCode = 0;
+      ret.writeTxt = "admin";
+    }
+    else if (inputData.step == 1) {
+      ret.exitCode = 0;
+      ret.writeTxt = "generate";
+    }
+    else {
+      ret.exitCode = 0;
+      ret.quitNow=true;
+      ret.writeTxt = "quit";
+    }
+    ++inputData.step;
+  }
+  else if (keyEdit.doCheck(GET_LINE, "cardedit.genkeys.backup_enc") ||
+           keyEdit.doCheck(GET_BOOL, "cardedit.genkeys.backup_enc")) {
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.backupKey;
+  }
+  else if (keyEdit.doCheck(GET_BOOL, "cardedit.genkeys.replace_keys")) {
+    ret.exitCode = 0;
+    ret.writeTxt = "Y";
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
+    ret.exitCode = 0;
+    pinObj={};
+    if (GetPin(inputData.parent, EnigGetString("enterAdminPin"), pinObj)) {
+      ret.writeTxt = pinObj.value;
+    }
+    else {
+      ret.errorMsg = EnigGetString("noPassphrase");
+      ret.quitNow=true;
+    }
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
+    ret.exitCode = 0;
+    pinObj={};
+    if (GetPin(inputData.parent, EnigGetString("enterCardPin"), pinObj)) {
+      ret.writeTxt = pinObj.value;
+    }
+    else {
+      ret.errorMsg = EnigGetString("noPassphrase");
+      ret.quitNow=true;
+    }
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.enter")) {
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.backupPasswd;
+  }
+  else if (keyEdit.doCheck(GET_LINE, "keygen.valid")) {
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.expiry;
+  }
+  else if (keyEdit.doCheck(GET_LINE, "keygen.name")) {
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.name;
+  }
+  else if (keyEdit.doCheck(GET_LINE, "keygen.email")) {
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.email;
+  }
+  else if (keyEdit.doCheck(GET_LINE, "keygen.comment")) {
+    ret.exitCode = 0;
+    if (inputData.comment) {
+      ret.writeTxt = inputData.comment;
+    }
+    else {
+      ret.writeTxt="";
+    }
+  }
+  else {
+    ret.quitNow=true;
+    ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
+    ret.exitCode=-1;
+  }
+}
+
+function cardAdminDataCallback(inputData, keyEdit, ret) {
+  ret.writeTxt = "";
+  ret.errorMsg = "";
+
+  var pinObj={};
+
+  if (keyEdit.doCheck(GET_LINE, "cardedit.prompt")) {
+    ++inputData.step;
+    ret.exitCode = 0;
+    switch(inputData.step) {
+    case 1:
+      ret.writeTxt = "admin";
+      break;
+    case 2:
+      ret.writeTxt = "name";
+      break;
+    case 3:
+      ret.writeTxt = "lang";
+      break;
+    case 4:
+      ret.writeTxt = "sex";
+      break;
+    case 5:
+      ret.writeTxt = "url";
+      break;
+    case 6:
+      ret.writeTxt = "login";
+      break;
+    case 7:
+      if (inputData.forcepin != 0) {
+        ret.writeTxt = "forcesig";
+        break;
+      }
+    default:
+      ret.writeTxt = "quit";
+      ret.quitNow=true;
+      break;
+    }
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
+    pinObj={};
+    if (GetPin(inputData.parent, EnigGetString("enterAdminPin"), pinObj)) {
+      ret.exitCode = 0;
+      ret.writeTxt = pinObj.value;
+    }
+    else {
+      ret.errorMsg = EnigGetString("noPassphrase");
+      ret.quitNow=true;
+    }
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
+    ret.exitCode = 0;
+    pinObj={};
+    if (GetPin(inputData.parent, EnigGetString("enterCardPin"), pinObj)) {
+      ret.writeTxt = pinObj.value;
+    }
+    else {
+      ret.errorMsg = EnigGetString("noPassphrase");
+      ret.quitNow=true;
+    }
+  }
+  else if (keyEdit.doCheck(GET_LINE, "keygen.smartcard.surname")) {
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.firstname;
+  }
+  else if (keyEdit.doCheck(GET_LINE, "keygen.smartcard.givenname")) {
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.name;
+  }
+  else if (keyEdit.doCheck(GET_LINE, "cardedit.change_sex")) {
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.sex;
+  }
+  else if (keyEdit.doCheck(GET_LINE, "cardedit.change_lang")) {
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.lang;
+  }
+  else if (keyEdit.doCheck(GET_LINE, "cardedit.change_url")) {
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.url;
+  }
+  else if (keyEdit.doCheck(GET_LINE, "cardedit.change_login")) {
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.login;
+  }
+  else {
+    ret.quitNow=true;
+    ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
+    ret.exitCode=-1;
+  }
+}
 
 /* Command Line handler service */
 function EnigCLineService()

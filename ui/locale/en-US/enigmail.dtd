@@ -17,6 +17,7 @@
 <!ENTITY enigmail.keyGen.years.label      "years">
 <!ENTITY enigmail.keyGen.noExpiry.label   "Key does not expire">
 <!ENTITY enigmail.keyGen.keySize.label    "Key size">
+<!ENTITY enigmail.keyGen.console.label    "Key Generation Console">
 
 <!ENTITY enigmail.preferences.label       "Enigmail Preferences">
 
@@ -263,6 +264,7 @@
 
 <!ENTITY  enigmail.retrieveKey.label                "Retrieving keys">
 <!ENTITY  enigmail.progressText.label               "Progress:">
+<!ENTITY  enigmail.retrieveKey.retrieveMsg.label    "Retrieving key, please wait ...">
 
 <!ENTITY  enigmail.editPgpSecurity.label            "OpenPGP Security ...">
 <!ENTITY  enigmail.editPgpSecurity.accesskey        "O">
@@ -372,12 +374,14 @@
 <!ENTITY enigmail.keyMan.viewMenu.label            "View">
 <!ENTITY enigmail.keyMan.keyserverMenu.label       "Keyserver">
 <!ENTITY enigmail.keyMan.generateMenu.label        "Generate">
+<!ENTITY enigmail.keyMan.cardMenu.label            "SmartCard">
 
 <!ENTITY enigmail.keyMan.fileMenu.accesskey        "F">
 <!ENTITY enigmail.keyMan.editMenu.accesskey        "E">
 <!ENTITY enigmail.keyMan.viewMenu.accesskey        "V">
 <!ENTITY enigmail.keyMan.keyserverMenu.accesskey   "K">
 <!ENTITY enigmail.keyMan.generateMenu.accesskey    "G">
+<!ENTITY enigmail.keyMan.cardMenu.accesskey        "S">
 
 <!ENTITY enigmail.keyMan.importFromFile.label      "Import Keys from File">
 <!ENTITY enigmail.keyMan.importFromServer.label    "Search for Keys">
@@ -406,6 +410,8 @@
 <!ENTITY enigmail.keyMan.ownerTrust.label          "Owner Trust">
 <!ENTITY enigmail.keyMan.stopTransfer.label        "Stop transfer">
 <!ENTITY enigmail.keyMan.fingerprint.label         "Fingerprint">
+<!ENTITY enigmail.keyMan.cardData.label            "Card Details">
+<!ENTITY enigmail.keyMan.genCardKey.label          "Generate Key">
 
 <!ENTITY enigmail.keyMan.filter.label              "Filter for user ID's or key ID's containing:">
 <!ENTITY enigmail.keyMan.clearFilter.label         "Clear">
@@ -436,6 +442,8 @@
 <!ENTITY enigmail.keyMan.keyDetails.accesskey        "K">
 <!ENTITY enigmail.keyMan.enableKey.accesskey         "B">
 <!ENTITY enigmail.keyMan.refreshKey.accesskey        "R">
+<!ENTITY enigmail.keyMan.cardData.accesskey          "C">
+<!ENTITY enigmail.keyMan.genCardKey.accesskey        "G">
 
 <!ENTITY enigmail.viewKeySigDlg.title                "Signature List">
 <!ENTITY enigmail.viewKeySigDlg.sigForKey.label      "Signatures for Key:">
@@ -463,3 +471,27 @@
 <!ENTITY enigmail.keyDetails.ownerTrust.label        "Owner trust">
 <!ENTITY enigmail.keyDetails.fingerprint.label       "Fingerprint">
 
+<!ENTITY enigmail.cardDetails.title                  "OpenPGP SmartCard Details">
+<!ENTITY enigmail.cardDetails.vendor.label           "Manufacturer">
+<!ENTITY enigmail.cardDetails.serial.label           "Serial Number">
+<!ENTITY enigmail.cardDetails.name.label             "Firstname, Name">
+<!ENTITY enigmail.cardDetails.lang.label             "Language">
+<!ENTITY enigmail.cardDetails.sex.label              "Sex">
+<!ENTITY enigmail.cardDetails.url.label              "URL of public key">
+<!ENTITY enigmail.cardDetails.login.label            "Login data">
+<!ENTITY enigmail.cardDetails.forcepin.label         "Force signature PIN">
+<!ENTITY enigmail.cardDetails.maxpinlen.label        "Max. PIN length">
+<!ENTITY enigmail.cardDetails.pinretry.label         "PIN retry counter">
+<!ENTITY enigmail.cardDetails.sigcount.label         "Signature counter">
+<!ENTITY enigmail.cardDetails.sigKey.label           "Signature key">
+<!ENTITY enigmail.cardDetails.keyCreated.label       "Created">
+<!ENTITY enigmail.cardDetails.encKey.label           "Encryption key">
+<!ENTITY enigmail.cardDetails.authKey.label          "Authentication key">
+<!ENTITY enigmail.cardDetails.male.label             "Male">
+<!ENTITY enigmail.cardDetails.female.label           "Female">
+<!ENTITY enigmail.cardDetails.yes.label              "Yes">
+<!ENTITY enigmail.cardDetails.no.label               "No">
+
+<!ENTITY enigmail.genCardKey.title                   "Generate OpenPGP Key">
+<!ENTITY enigmail.genCardKey.backupKey.label         "Save backup of key outside the card">
+<!ENTITY enigmail.genCardKey.desc                    "<a class='enigmailStrong'>NOTE: Key generation may take up to several minutes to complete.</a> Do not exit the application while key generation is in progress.You will be alerted when key generation is completed.">

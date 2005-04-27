@@ -46,6 +46,7 @@ interface nsIIPCRequest;
 interface nsIRequestObserver;
 interface nsIFileOutputStream;
 interface nsIIPCBuffer;
+interface nsIEnigMimeReadCallback;
 
 /**
  * The nsIEnigmail provides an openPGP-based encryption/decryption service
@@ -68,7 +69,7 @@ interface nsIEnigmail : nsISupports
 
   readonly attribute boolean initialized;
   readonly attribute boolean initializationAttempted;
-  readonly attribute  string initializationError;
+  readonly attribute string initializationError;
 
   readonly attribute boolean composeSecure;
   readonly attribute nsIFileOutputStream logFileStream;
@@ -392,6 +393,29 @@ interface nsIEnigmail : nsISupports
 
   boolean saveRulesFile();
   void clearRules();
+  
+  /* smartcard functions */
+  string getCardStatus (out long exitCode,
+                        out wstring errorMsg);
+                        
+  long genCardKey (in nsIDOMWindow parent,
+                   in string name,
+                   in string email,
+                   in string comment,
+                   in string expiry,
+                   in string backupPasswd,
+                   in nsIEnigMimeReadCallback requestObserver,
+                   out wstring errorMsg);
+
+  long cardAdminData(in nsIDOMWindow parent,
+                     in string name,
+                     in string firstname,
+                     in string lang,
+                     in string sex,
+                     in string url,
+                     in string login,
+                     in long forcepin,
+                     out wstring errorMsg);
 };
 
 %{C++

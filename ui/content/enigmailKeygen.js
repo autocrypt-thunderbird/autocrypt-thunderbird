@@ -212,6 +212,10 @@ function enigmailKeygenStart() {
         EnigAlert(EnigGetString("expiryTooLong"));
         return;
       }
+      if (! (expiryTime > 0)) {
+        EnigAlert(EnigGetString("expiryTooShort"));
+        return;
+      }
    }
    var keySize = Number(document.getElementById("keySize").value);
 

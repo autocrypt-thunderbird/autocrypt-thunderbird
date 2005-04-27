@@ -78,7 +78,7 @@
           </hbox>
           <vbox>
             <separator/>
-            <label id="dialog.status2" crop="center" value="Retrieving key, please wait ..."/>
+            <label id="dialog.status2" crop="center" value="&enigmail.retrieveKey.retrieveMsg.label;"/>
           </vbox>
         </row>
       </rows>

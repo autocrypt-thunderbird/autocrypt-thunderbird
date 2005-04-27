@@ -39,11 +39,12 @@ EnigInitCommon("enigmailSearchKey");
 const INPUT = 0;
 const RESULT = 1;
 
-const ENIG_DEFAULT_HKP_PORT="11371";
+const ENIG_DEFAULT_HKP_PORT  = "11371";
+const ENIG_DEFAULT_LDAP_PORT = "389";
 
-const ENIG_IMG_NOT_SELECTED ="chrome://enigmail/content/check0.png";
-const ENIG_IMG_SELECTED     ="chrome://enigmail/content/check1.png";
-const ENIG_IMG_DISABLED     ="chrome://enigmail/content/check2.png";
+const ENIG_IMG_NOT_SELECTED = "chrome://enigmail/content/check0.png";
+const ENIG_IMG_SELECTED     = "chrome://enigmail/content/check1.png";
+const ENIG_IMG_DISABLED     = "chrome://enigmail/content/check2.png";
 
 const ENIG_CONN_TYPE_HTTP    = 1;
 const ENIG_CONN_TYPE_GPGKEYS = 2;
@@ -100,8 +101,17 @@ function onLoad () {
   else {
     protocol="hkp";
   }
+
+  var port="";
+  switch (protocol) {
+  case "hkp":
+    var port = ENIG_DEFAULT_HKP_PORT;
+    break;
+  case "ldap":
+    port = ENIG_DEFAULT_LDAP_PORT;
+    break;
+  }
   
-  var port = ENIG_DEFAULT_HKP_PORT;
   var m = keyserver.match(/^(.+)(:)(\d+)$/);
   if (m && m.length==4) {
     keyserver = m[1];
@@ -420,7 +430,7 @@ function enigScanGpgKeys(txt) {
   var lines=txt.split(/(\r\n|\n|\r)/);
   var outputType=0;
   var key;
-  for (i=0; i<lines.length; i++) {
+  for (var i=0; i<lines.length; i++) {
     if (outputType == 0 && lines[i].search(/^COUNT \d+\s*$/)==0) {
       outputType=1;
       continue;
@@ -473,7 +483,7 @@ function enigScanGpgKeys(txt) {
         };
       }
     }
-    if (outputType==2 && (lines[i].search(/^uid:.*:.*:.*:.*$/))==0) {
+    if (outputType==2 && (lines[i].search(/^uid:.+/))==0) {
       // output from gpgkeys_* protocol version 1
       // uid for key
       m=lines[i].split(/:/);

@@ -1033,3 +1033,13 @@ function enigHideStatus() {
   document.getElementById("cancelBox").setAttribute("collapsed", "true");
 }
 
+function engmailCardStatus() {
+  window.openDialog("chrome://enigmail/content/enigmailCardDetails.xul",
+        "", "dialog,modal,centerscreen");
+}
+
+function engmailGenerateCardKey() {
+  window.openDialog("chrome://enigmail/content/enigmailGenCardKey.xul",
+        "", "dialog,modal,centerscreen");
+  enigmailRefreshKeys();
+}

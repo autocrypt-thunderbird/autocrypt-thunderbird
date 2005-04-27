@@ -184,6 +184,21 @@
                   oncommand="enigCreateRevokeCert()"/>
 			</menupopup>
 		</menu>
+		
+		<menu id="cardMenu"
+          label="&enigmail.keyMan.cardMenu.label;"
+          accesskey="&enigmail.keyMan.cardMenu.accesskey;">
+      <menupopup>
+        <menuitem label="&enigmail.keyMan.cardData.label;"
+                  id="cardData"
+                  accesskey="&enigmail.keyMan.cardData.accesskey;"
+                  oncommand="engmailCardStatus()"/>
+        <menuitem label="&enigmail.keyMan.genCardKey.label;"
+                  id="genCardKey"
+                  accesskey="&enigmail.keyMan.genCardKey.accesskey;"
+                  oncommand="engmailGenerateCardKey()"/>
+      </menupopup>
+		</menu>
   </menubar>
   
   <popupset>

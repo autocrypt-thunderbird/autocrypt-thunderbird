@@ -56,7 +56,7 @@
       <hbox id="passphraseBox" align="center">
         <label control="passphrase" value="&enigmail.keyPassphrase.label;" />
       </hbox>
-      <hbox>
+      <hbox align="center">
         <textbox id="passphrase" type="password" />
         <label control="passphraseRepeat" value="&enigmail.keyPassphraseRepeat.label;" />
         <textbox id="passphraseRepeat" type="password" />
@@ -125,7 +125,7 @@
 
 <groupbox id="keygenConsoleBox" orient="vertical" flex="1">
 
-  <caption label="Keygen Console"/>
+  <caption label="&enigmail.keyGen.console.label;"/>
 
   <description>&enigmail.keygen.desc;</description>
 

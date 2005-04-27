@@ -172,6 +172,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
     userId=EnigConvertGpgToUnicode(replaceUid);
   }
 
+  userId=userId.replace(/\\[xe]3a/gi, ":");
   var errorLines="";
   var fullStatusInfo="";
 
@@ -180,7 +181,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
   }
   else {
     if (errorMsg) {
-      errorMsg=EnigConvertGpgToUnicode(errorMsg);
+      errorMsg=EnigConvertGpgToUnicode(errorMsg).replace(/\\[xe]3a/gi, ":");
       errorLines = errorMsg.split(/\r?\n/);
       fullStatusInfo=errorMsg;
     }
