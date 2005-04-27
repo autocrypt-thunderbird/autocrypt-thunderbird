@@ -1,0 +1,374 @@
+<!--
+  The contents of this file are subject to the Mozilla Public
+  License Version 1.1 (the "MPL"); you may not use this file
+  except in compliance with the MPL. You may obtain a copy of
+  the MPL at http://www.mozilla.org/MPL/
+
+  Software distributed under the MPL is distributed on an "AS
+  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  implied. See the MPL for the specific language governing
+  rights and limitations under the MPL.
+
+  The Original Code is Enigmail.
+
+  The Initial Developer of this code is Patrick Brunschwig.
+  Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+  are Copyright (C) 2005 Patrick Brunschwig.
+  All Rights Reserved.
+
+  Contributor(s):
+
+  Alternatively, the contents of this file may be used under the
+  terms of the GNU General Public License (the "GPL"), in which case
+  the provisions of the GPL are applicable instead of
+  those above. If you wish to allow use of your version of this
+  file only under the terms of the GPL and not to allow
+  others to use your version of this file under the MPL, indicate
+  your decision by deleting the provisions above and replace them
+  with the notice and other provisions required by the GPL.
+  If you do not delete the provisions above, a recipient
+  may use your version of this file under either the MPL or the
+  GPL.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<window id="enigmailGenCardKeyDlg"
+        title="&enigmail.genCardKey.title;"
+        windowtype="enigmail:genCardKey"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="onLoad()"
+        buttons="accept,cancel"
+        minwidth="450px"
+        maxwidth="600px">
+
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeygen.js"/>
+
+  <broadcasterset>
+    <broadcaster id="bcBackupKey"/>
+    <broadcaster id="bcNoExpiry"/>
+  </broadcasterset>
+
+  <popupset id="aTooltipSet"/>
+
+  <groupbox id="userIdBox" orient="vertical">
+
+    <hbox orient="horizontal" align="center">
+      <text class="label" value="&enigmail.keyUserId.label;"/>
+      <menulist id="userIdentity" label="..." flex="1">
+        <menupopup id="userIdentityPopup"/>
+      </menulist>
+    </hbox>
+
+    <checkbox id="useForSigning"
+              label="&enigmail.useForSigning.label;"
+              checked="true" />
+
+  </groupbox>
+
+  <checkbox id="createBackup"
+            label="&enigmail.genCardKey.backupKey.label;"
+            checked="true"
+            oncommand="enableDisable('createBackup','bcBackupKey', false)"/>
+  <grid>
+    <columns>
+      <column />
+      <column flex="1"/>
+    </columns>
+
+    <rows>
+      <row>
+        <hbox id="passphraseBox" align="center">
+          <label control="passphrase" value="&enigmail.keyPassphrase.label;" />
+        </hbox>
+        <hbox align="center">
+          <textbox id="passphrase" type="password" observes="bcBackupKey"/>
+          <label control="passphraseRepeat" value="&enigmail.keyPassphraseRepeat.label;" />
+          <textbox id="passphraseRepeat" type="password" observes="bcBackupKey"/>
+        </hbox>
+      </row>
+
+      <row>
+        <hbox align="center">
+          <label control="keyComment" value="&enigmail.keyComment.label;" />
+        </hbox>
+        <textbox id="keyComment" />
+      </row>
+
+      <row>
+        <hbox align="center">
+          <label value="&enigmail.keyGen.expire.label;"/>
+        </hbox>
+        <hbox align="center">
+          <textbox id="expireInput" size="5" maxlength="5" value="5" observes="bcNoExpiry"/>
+          <menulist id="timeScale" label="&enigmail.keyGen.years.label;" value="365"  observes="bcNoExpiry">
+            <menupopup id="timeScalePopup" value="5">
+              <menuitem id="years" value="y" label="&enigmail.keyGen.years.label;" selected="true"/>
+              <menuitem id="months" value="m" label="&enigmail.keyGen.months.label;"/>
+              <menuitem id="days" value="d" label="&enigmail.keyGen.days.label;"/>
+            </menupopup>
+          </menulist>
+          <checkbox label="&enigmail.keyGen.noExpiry.label;"
+                    id="noExpiry"
+                    oncommand="enableDisable('noExpiry','bcNoExpiry', true)"/>
+        </hbox>
+      </row>
+
+    </rows>
+  </grid>
+
+  <separator/>
+
+<hbox autostretch="never">
+  <button label="&enigmail.generateKey.label;"
+          class="dialog"
+          tooltip="aTooltip"
+          tooltiptext="&enigmail.generateKey.tooltip;"
+          oncommand="startKeyGen();" />
+
+  <button label="&enigmail.cancelKey.label;"
+          class="dialog"
+          tooltip="aTooltip"
+          tooltiptext="&enigmail.cancelKey.tooltip;"
+          oncommand="onClose();" />
+</hbox>
+
+<groupbox id="keygenConsoleBox" orient="vertical">
+
+  <caption label="&enigmail.keyGen.console.label;"/>
+
+  <description>&enigmail.genCardKey.desc;</description>
+
+  <iframe id="keygenConsole" type="content" name="keygenConsole"
+          src="chrome://enigmail/content/enigmailKeygenConsole.htm"
+          height="200" flex="1"/>
+
+</groupbox>
+
+
+  <script type="application/x-javascript">
+  <![CDATA[
+    var gIdentityList;
+    var gIdentityListPopup;
+    var gUseForSigning;
+    var gUsedId;
+
+    EnigInitCommon("enigmailGenCardKey");
+
+    function onLoad() {
+      gIdentityList      = document.getElementById("userIdentity");
+      gIdentityListPopup = document.getElementById("userIdentityPopup");
+      gUseForSigning     = document.getElementById("useForSigning");
+      //document.getElementById("bcNoExpiry")
+      if (gIdentityListPopup) {
+        fillIdentityListPopup();
+      }
+    }
+
+    function onClose() {
+      window.close();
+    }
+    
+    function enableDisable(watchElement, bcElement, inverted) {
+      var bcBackupKey = document.getElementById(bcElement);
+    
+      if (document.getElementById(watchElement).checked) {
+        if (inverted) {
+          bcBackupKey.setAttribute("disabled", "true");
+        }
+        else {
+         bcBackupKey.removeAttribute("disabled");
+        }
+      }
+      else {
+        if (inverted) {
+          bcBackupKey.removeAttribute("disabled");
+        }
+        else {
+          bcBackupKey.setAttribute("disabled", "true");
+        }
+      }
+    }
+
+    function enigGenKeyObserver() {
+      this._state = 0;
+    }
+
+    enigGenKeyObserver.prototype =
+    {
+      keyId: null,
+      backupLocation: null,
+      _state: null,
+
+      QueryInterface : function(iid)
+      {
+        //DEBUG_LOG("enigmailGenCardKey: EnigMimeReadCallback.QI: "+iid+"\n");
+        if (iid.equals(Components.interfaces.nsIEnigMimeReadCallback) ||
+            iid.equals(Components.interfaces.nsISupports) )
+          return this;
+
+        throw Components.results.NS_NOINTERFACE;
+      },
+      
+      onDataAvailable: function (data) {
+        var txt = "";
+        var aLine = data.split(/ +/);
+        if (aLine[0] == "[GNUPG:]") {
+         if (aLine[1]=="GET_LINE" && aLine[2]=="keygen.comment") {
+            txt=EnigGetString("keygen.started")+"\n";
+            this._state=1;
+          }
+          else if (aLine[1]=="PROGRESS" && aLine[2]=="primegen") {
+            txt = aLine[3];
+          }
+          else if (aLine[1] == "BACKUP_KEY_CREATED") {
+            this.backupLocation = data.replace(/^.*BACKUP_KEY_CREATED [A-Z0-9]+ +/, "");
+          }
+          else if (aLine[1] == "KEY_CREATED") {
+            this.keyId = aLine[3].substr(-16);
+          }
+        }
+        else if (this._state>0) {
+          txt=data+"\n";
+        }
+        if (txt) {
+          var contentFrame = EnigGetFrame(window, "keygenConsole");
+          if (contentFrame) {
+            var consoleElement = contentFrame.document.getElementById('console');
+            consoleElement.firstChild.data += txt;
+            if (!contentFrame.mouseDownState)
+              contentFrame.scrollTo(0,9999);
+          }
+        }
+        return "";
+      }
+    }
+    
+    function startKeyGen() {
+      DEBUG_LOG("enigmailGenCardKey: startKeyGen(): Start\n");
+
+      var enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc) {
+        EnigAlert(EnigGetString("accessError"));
+        return;
+      }
+
+      var passphraseElement = document.getElementById("passphrase");
+      var passphrase2Element = document.getElementById("passphraseRepeat");
+      var createBackupElement = document.getElementById("createBackup");
+
+      var passphrase = passphraseElement.value;
+
+      if (!createBackupElement.checked) {
+        passphrase="";
+      }
+      else {
+        if (passphrase != passphrase2Element.value) {
+          EnigAlert(EnigGetString("passNoMatch"));
+          return;
+        }
+
+        if (passphrase.search(/[\x80-\xFF]/)>=0) {
+          EnigAlert(EnigGetString("passCharProblem"));
+          return;
+        }
+        
+        if (!passphrase) {
+          EnigAlert(EnigGetString("keygen.passRequired"));
+          return;
+        }
+      }
+
+      var commentElement = document.getElementById("keyComment");
+      var comment = commentElement.value;
+
+      var noExpiry = document.getElementById("noExpiry");
+      var expireInput = document.getElementById("expireInput");
+      var timeScale = document.getElementById("timeScale");
+
+      var expiryTime = 0;
+      if (! noExpiry.checked) {
+        expiryTime = Number(expireInput.value) * (timeScale.value == "y" ? 365 : (timeScale.value == "m" ? 30 : 1));
+        if (expiryTime > 36500) {
+          EnigAlert(EnigGetString("expiryTooLong"));
+          return;
+        }
+        if (! (expiryTime > 0)) {
+          EnigAlert(EnigGetString("expiryTooShort"));
+          return;
+        }
+      }
+      var curId = getCurrentIdentity();
+      gUsedId = curId;
+
+      var userName = curId.fullName;
+      var userEmail = curId.email;
+
+      if (!userName) {
+        EnigAlert(EnigGetString("passUserName"));
+        return;
+      }
+
+      var idString = userName;
+
+      if (comment)
+        idString += " (" + comment + ")";
+
+      idString += " <" + userEmail + ">";
+
+      var confirmMsg = EnigGetString("keyConfirm",idString);
+
+      if (!EnigConfirm(confirmMsg)) {
+       return;
+      }
+      var contentFrame = EnigGetFrame(window, "keygenConsole");
+      if (contentFrame) {
+        var consoleElement = contentFrame.document.getElementById('console');
+        consoleElement.firstChild.data = "";
+      }
+      
+      var valid = String(Number(expireInput.value))
+      if (timeScale.value != "d") valid += timeScale.value;
+      var generateObserver = new enigGenKeyObserver();
+      var errorMsgObj={};
+      var r = enigmailSvc.genCardKey(window,
+                             userName,
+                             userEmail,
+                             comment,
+                             valid,
+                             passphrase,
+                             generateObserver,
+                             errorMsgObj);
+      if (r == 0 && generateObserver.keyId) {
+        if (document.getElementById("useForSigning").checked && generateObserver.keyId) {
+          gUsedId.setBoolAttribute("enablePgp", true);
+          gUsedId.setIntAttribute("pgpKeyMode", 1);
+          gUsedId.setCharAttribute("pgpkeyId", "0x"+generateObserver.keyId.substr(-8,8));
+        }
+        var msg=EnigGetString("keygen.completed", generateObserver.keyId);
+        if (generateObserver.backupLocation) {
+          msg += "\n"+EnigGetString("keygen.keyBackup", generateObserver.backupLocation);
+        }
+        EnigAlert(msg);
+        window.close();
+      }
+      else {
+        EnigAlert(errorMsgObj.value);
+      }
+    }
+
+  ]]>
+  </script>
+
+</window>
+
