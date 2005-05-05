@@ -1547,6 +1547,12 @@ function EnigCreateRevokeCert(keyId, userId) {
   return r;
 }
 
+function EngmailCardDetails() {
+  EnigOpenWin("enigmail:cardDetails",
+              "chrome://enigmail/content/enigmailCardDetails.xul",
+              "centerscreen");
+}
+
 
 // return the label of trust for a given trust code
 function EnigGetTrustLabel(trustCode) {

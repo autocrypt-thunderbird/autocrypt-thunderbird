@@ -4732,12 +4732,12 @@ function (parent, keyId, idNumber, errorMsgObj) {
 }
 
 
-function enigCardAdminobserver(guiObserver, isDosLike) {
+function enigCardAdminObserver(guiObserver, isDosLike) {
   this._guiObserver = guiObserver;
   this.isDosLike = isDosLike;
 }
 
-enigCardAdminobserver.prototype =
+enigCardAdminObserver.prototype =
 {
   _guiObserver: null,
   _failureCode: 0,
@@ -4753,7 +4753,7 @@ enigCardAdminobserver.prototype =
 
   onDataAvailable: function (data) {
     var ret="";
-    DEBUG_LOG("enigmail.js: enigCardAdminobserver.onDataAvailable: data="+data+"\n");
+    DEBUG_LOG("enigmail.js: enigCardAdminObserver.onDataAvailable: data="+data+"\n");
     if (this.isDosLike && data.indexOf("[GNUPG:] BACKUP_KEY_CREATED") == 0) {
       data=data.replace(/\//g, "\\");
     }
@@ -4773,7 +4773,7 @@ enigCardAdminobserver.prototype =
 Enigmail.prototype.genCardKey =
 function (parent, name, email, comment, expiry, backupPasswd, requestObserver, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.genCardKey: \n");
-  var generateObserver = new enigCardAdminobserver(requestObserver, this.isDosLike);
+  var generateObserver = new enigCardAdminObserver(requestObserver, this.isDosLike);
   var r = this.editKey(parent, false, null, "", "--with-colons --card-edit",
                       { step: 0,
                         name: name,
@@ -4792,7 +4792,7 @@ function (parent, name, email, comment, expiry, backupPasswd, requestObserver, e
 Enigmail.prototype.cardAdminData =
 function (parent, name, firstname, lang, sex, url, login, forcepin, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.cardAdminData: parent="+parent+", name="+name+", firstname="+firstname+", lang="+lang+", sex="+sex+", url="+url+", login="+login+", forcepin="+forcepin+"\n");
-  var adminObserver = new enigCardAdminobserver(null, this.isDosLike);
+  var adminObserver = new enigCardAdminObserver(null, this.isDosLike);
   var r = this.editKey(parent, false, null, "", "--with-colons --card-edit",
           { step: 0,
             name: name,
@@ -4807,7 +4807,25 @@ function (parent, name, firstname, lang, sex, url, login, forcepin, errorMsgObj)
            errorMsgObj);
   return r;
 }
-                     
+
+Enigmail.prototype.cardChangePin =
+function (parent, action, oldPin, newPin, adminPin, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.cardChangePin: parent="+parent+", action="+action+"\n");
+  var adminObserver = new enigCardAdminObserver(null, this.isDosLike);
+  var r = this.editKey(parent, false, null, "", "--with-colons --card-edit",
+          { step: 0,
+            pinStep: 0,
+            action: action,
+            oldPin: oldPin,
+            newPin: newPin,
+            adminPin: adminPin },
+           cardChangePinCallback,
+           adminObserver,
+           errorMsgObj);
+  return r;
+}
+
+
 Enigmail.prototype.editKey = 
 function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFunc, requestObserver, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.editKey: parent="+parent+", editCmd="+editCmd+"\n");
@@ -5452,6 +5470,58 @@ function cardAdminDataCallback(inputData, keyEdit, ret) {
     ret.quitNow=true;
     ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
     ret.exitCode=-1;
+  }
+}
+
+function cardChangePinCallback(inputData, keyEdit, ret) {
+  ret.writeTxt = "";
+  ret.errorMsg = "";
+  
+  if (keyEdit.doCheck(GET_LINE, "cardedit.prompt")) {
+    ++inputData.step;
+    ret.exitCode=0;
+    switch (inputData.step) {
+    case 1:
+      ret.writeTxt = "admin";
+      break;
+    case 2:
+      ret.writeTxt = "passwd";
+      break;
+    default:
+      ret.writeTxt = "quit";
+      ret.exitCode = 0;
+      ret.quitNow=true;
+      break;
+    }
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
+    ret.exitCode=0;
+    ret.writeTxt = inputData.adminPin;
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
+    ret.exitCode=0;
+    ret.writeTxt = inputData.oldPin;
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.new.ask") ||
+           keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.repeat") ||
+           keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.new.ask")) {
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.newPin;
+  }
+  else if (keyEdit.doCheck(GET_LINE, "cardutil.change_pin.menu")) {
+    ret.exitCode=0;
+    ++inputData.pinStep;
+    if (inputData.pinStep == 1) {
+      ret.writeTxt = inputData.action.toString();
+    }
+    else {
+      ret.writeTxt = "Q";
+    }
+  }
+  else {
+    ret.exitCode=-1;
+    ret.quitNow=true;
+    ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
   }
 }
 

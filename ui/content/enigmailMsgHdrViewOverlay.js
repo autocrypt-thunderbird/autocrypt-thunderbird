@@ -166,6 +166,8 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
   }
 */
 
+  if (!errorMsg) errorMsg="";
+
   if (userId && (userId.indexOf("\n")>=0)) {
     var replaceUid=enigMatchUidToSender(userId);
     errorMsg = errorMsg.replace(userId, replaceUid);

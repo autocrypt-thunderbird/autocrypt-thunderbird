@@ -416,6 +416,17 @@ interface nsIEnigmail : nsISupports
                      in string login,
                      in long forcepin,
                      out wstring errorMsg);
+                     
+  const long CARD_PIN_CHANGE       = 1;
+  const long CARD_PIN_UNBLOCK      = 2;
+  const long CARD_ADMIN_PIN_CHANGE = 3;
+
+  long cardChangePin(in nsIDOMWindow parent,
+                     in long action,
+                     in string oldPin,
+                     in string newPin,
+                     in string adminPin,
+                     out wstring errorMsg);
 };
 
 %{C++
