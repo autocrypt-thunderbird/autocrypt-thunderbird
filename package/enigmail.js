@@ -4767,8 +4767,9 @@ enigCardAdminObserver.prototype =
       this._guiObserver.onDataAvailable(data);
     }
     return ret;
-  },
+  }
 }
+
 
 Enigmail.prototype.genCardKey =
 function (parent, name, email, comment, expiry, backupPasswd, requestObserver, errorMsgObj) {
@@ -4809,9 +4810,9 @@ function (parent, name, firstname, lang, sex, url, login, forcepin, errorMsgObj)
 }
 
 Enigmail.prototype.cardChangePin =
-function (parent, action, oldPin, newPin, adminPin, errorMsgObj) {
+function (parent, action, oldPin, newPin, adminPin, pinObserver, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.cardChangePin: parent="+parent+", action="+action+"\n");
-  var adminObserver = new enigCardAdminObserver(null, this.isDosLike);
+  var adminObserver = new enigCardAdminObserver(pinObserver, this.isDosLike);
   var r = this.editKey(parent, false, null, "", "--with-colons --card-edit",
           { step: 0,
             pinStep: 0,

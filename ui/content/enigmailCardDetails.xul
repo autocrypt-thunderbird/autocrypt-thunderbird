@@ -73,6 +73,10 @@
           label="&enigmail.cardDetails.cardMenu.label;"
           accesskey="&enigmail.cardDetails.cardMenu.accesskey;">
       <menupopup>
+       <menuitem id="editData"
+              label="&enigmail.cardDetails.editData.label;"
+              accesskey="&enigmail.cardDetails.editData.accesskey;"
+              oncommand="doEditData()"/>
         <menuitem label="&enigmail.cardDetails.genCardKey.label;"
                   id="genCardKey"
                   accesskey="&enigmail.cardDetails.genCardKey.accesskey;"
@@ -198,16 +202,14 @@
 	
 	<vbox align="end">
     <hbox>
-      <button id="editData"
-              label="&enigmail.cardDetails.editData.label;"
-              oncommand="doEditData()"/>
       <button id="saveChanges"
               label="&enigmail.cardDetails.save.label;"
               oncommand="doSaveChanges()"
-              collapsed="true"/>
-      <button id="closeWin"
-            label="&enigmail.cardDetails.closeWindow.label;"
-            oncommand="window.close()"/>
+              observes="bcEnableMode"/>
+      <button id="reset"
+              label="&enigmail.cardDetails.reset.label;"
+              oncommand="doReset()"
+              observes="bcEnableMode"/>
     </hbox>
 	</vbox>
 		

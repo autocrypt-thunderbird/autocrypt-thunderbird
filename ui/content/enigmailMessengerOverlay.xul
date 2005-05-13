@@ -114,6 +114,11 @@
              accesskey="&enigmail.keyManWindow.accesskey;"
              oncommand="EnigKeyManager();" />
 
+       <menuitem label="&enigmail.adminSmartCard.label;"
+                id="enigmail_smartCard"
+                accesskey="&enigmail.adminSmartCard.accesskey;"
+                oncommand="EngmailCardDetails()"/>
+
         <menu id="enigmail_sendersKeyMenu"
              label="&enigmail.sendersKeyMenu.label;"
              accesskey="&enigmail.sendersKeyMenu.accesskey;">
@@ -239,6 +244,11 @@
              label="&enigmail.keyManWindow.label;"
              accesskey="&enigmail.keyManWindow.accesskey;"
              oncommand="EnigKeyManager();" />
+
+        <menuitem label="&enigmail.adminSmartCard.label;"
+                id="enigmail_smartCard"
+                accesskey="&enigmail.adminSmartCard.accesskey;"
+                oncommand="EngmailCardDetails()"/>
 
         <menu id="enigmail_sendersKeyMenu"
              label="&enigmail.sendersKeyMenu.label;"

@@ -123,7 +123,7 @@
   function onAccept() {
     var enigmailSvc = GetEnigmailSvc();
     if (!enigmailSvc)
-      return;
+      return false;
       
     var pinItem1;
     var pinItem2;
@@ -153,25 +153,29 @@
     var adminPin = document.getElementById("currAdmPinTxt").value;
     var oldPin = document.getElementById("currPinTxt").value;
     var newPin = document.getElementById(pinItem1).value;
-    if (newPin < minLen) {
-      EnigAlert("Min. PIN length "+minLen+" required");
+    if (newPin.length < minLen) {
+      EnigAlert(EnigGetString("cardPin.minLength", minLen));
       return false;
     }
     if (newPin != document.getElementById(pinItem2).value) {
-      EnigAlert("PIN don't match");
+      EnigAlert(EnigGetString("cardPin.dontMatch"));
       return false;
     }
     
     var errorMsgObj = new Object();
+    var pinObserver = new changePinObserver();
+    
     var r = enigmailSvc.cardChangePin(window,
                                      action,
                                      oldPin,
                                      newPin,
                                      adminPin,
+                                     pinObserver,
                                      errorMsgObj);
                                      
     if (r != 0) {
-      EnigAlert("Failed to change PIN - wrong PIN?");
+      EnigAlert(EnigGetString("cardPin.processFailed")+"\n"+pinObserver.result);
+      return false;
     }
     return true;
   }
@@ -211,6 +215,36 @@
       dlgEnable("pinRow");
       dlgEnable("pinRepeatRow");
       break;
+    }
+  }
+
+  function changePinObserver() {
+  }
+
+  changePinObserver.prototype =
+  {
+    _data: "",
+    result: "",
+
+    QueryInterface : function(iid)
+    {
+      if (iid.equals(Components.interfaces.nsIEnigMimeReadCallback) ||
+          iid.equals(Components.interfaces.nsISupports) )
+        return this;
+
+      throw Components.results.NS_NOINTERFACE;
+    },
+
+    onDataAvailable: function (data) {
+      var ret="";
+      DEBUG_LOG("enigmailSetCardPin: changePinObserver.onDataAvailable: data="+data+"\n");
+      if (data.indexOf("[GNUPG:] SC_OP_FAILURE")>=0) {
+        this.result = this._data;
+      }
+      else {
+        this._data = data
+      }
+      return "";
     }
   }
 

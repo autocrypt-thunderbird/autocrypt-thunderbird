@@ -105,12 +105,14 @@
 <!ENTITY enigmail.reload.label             "Reload IMAP Message">
 <!ENTITY enigmail.browse.label             "Browse...">
 <!ENTITY enigmail.sendersKeyMenu.label     "Sender's Key">
+<!ENTITY enigmail.adminSmartCard.label     "Manage SmartCard ...">
 
 
 <!ENTITY enigmail.decryptverify.accesskey   "D">
 <!ENTITY enigmail.importpublickey.accesskey "I">
 <!ENTITY enigmail.savedecrypted.accesskey   "S">
-<!ENTITY enigmail.reload.accesskey          "M">
+<!ENTITY enigmail.reload.accesskey          "I">
+<!ENTITY enigmail.adminSmartCard.accesskey  "M">
 
 <!ENTITY enigmail.autoDecrypt.accesskey     "A">
 <!ENTITY enigmail.debugMenu.accesskey       "G">
@@ -408,7 +410,6 @@
 <!ENTITY enigmail.keyMan.ownerTrust.label          "Owner Trust">
 <!ENTITY enigmail.keyMan.stopTransfer.label        "Stop transfer">
 <!ENTITY enigmail.keyMan.fingerprint.label         "Fingerprint">
-<!ENTITY enigmail.keyMan.cardData.label            "Manage SmartCard ...">
 
 <!ENTITY enigmail.keyMan.filter.label              "Filter for user ID's or key ID's containing:">
 <!ENTITY enigmail.keyMan.clearFilter.label         "Clear">
@@ -439,7 +440,6 @@
 <!ENTITY enigmail.keyMan.keyDetails.accesskey        "K">
 <!ENTITY enigmail.keyMan.enableKey.accesskey         "B">
 <!ENTITY enigmail.keyMan.refreshKey.accesskey        "R">
-<!ENTITY enigmail.keyMan.cardData.accesskey          "M">
 
 <!ENTITY enigmail.viewKeySigDlg.title                "Signature List">
 <!ENTITY enigmail.viewKeySigDlg.sigForKey.label      "Signatures for Key:">
@@ -491,13 +491,15 @@
 <!ENTITY enigmail.cardDetails.no.label               "No">
 <!ENTITY enigmail.cardDetails.male.label             "Male">
 <!ENTITY enigmail.cardDetails.female.label           "Female">
-<!ENTITY enigmail.cardDetails.editData.label         "Edit Data">
+<!ENTITY enigmail.cardDetails.editData.label         "Edit Card Data">
 <!ENTITY enigmail.cardDetails.save.label             "Save">
+<!ENTITY enigmail.cardDetails.reset.label            "Reset">
 <!ENTITY enigmail.cardDetails.closeWindow.label      "Close">
 
 <!ENTITY enigmail.cardDetails.adminPin.accesskey     "P">
 <!ENTITY enigmail.cardDetails.genCardKey.accesskey   "G">
 <!ENTITY enigmail.cardDetails.cardMenu.accesskey     "S">
+<!ENTITY enigmail.cardDetails.editData.accesskey     "E">
 
 <!ENTITY enigmail.genCardKey.title                   "Generate OpenPGP Key">
 <!ENTITY enigmail.genCardKey.backupKey.label         "Save backup of key outside the card">
@@ -509,7 +511,7 @@
 <!ENTITY enigmail.cardPin.changeAdmPin.label         "Change Admin PIN">
 <!ENTITY enigmail.cardPin.unblockPin.label           "Unblock PIN">
 <!ENTITY enigmail.cardPin.currAdmPin.label           "Current ADMIN PIN">
-<!ENTITY enigmail.cardPin.newAdminPin.label          "New ddmin PIN">
+<!ENTITY enigmail.cardPin.newAdminPin.label          "New admin PIN">
 <!ENTITY enigmail.cardPin.adminPinRepeat.label       "Repeat new PIN">
 <!ENTITY enigmail.cardPin.currPin.label              "Current PIN">
 <!ENTITY enigmail.cardPin.newPin.label               "New PIN">

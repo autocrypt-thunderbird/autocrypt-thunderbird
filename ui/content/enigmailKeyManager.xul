@@ -57,9 +57,9 @@
 
        <menuseparator/>
 
-       <menuitem label="&enigmail.keyMan.cardData.label;"
+       <menuitem label="&enigmail.adminSmartCard.label;"
                 id="cardData"
-                accesskey="&enigmail.keyMan.cardData.accesskey;"
+                accesskey="&enigmail.adminSmartCard.accesskey;"
                 oncommand="EngmailCardDetails()"/>
 
        <menuseparator/>

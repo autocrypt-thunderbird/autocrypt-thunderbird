@@ -123,7 +123,7 @@ function getDate(dateval) {
   var dat=new Date(dateval*1000);
   var appLocale = Components.classes[ENIG_LOCALE_SVC_CONTRACTID].getService(Components.interfaces.nsILocaleService).getApplicationLocale();
   var dateFormat = Components.classes[ENIG_DATE_FORMAT_CONTRACTID].getService(Components.interfaces.nsIScriptableDateFormat);
-  dateTime = dateFormat.FormatDateTime(appLocale.getCategory("NSILOCALE_TIME"),
+  var dateTime = dateFormat.FormatDateTime(appLocale.getCategory("NSILOCALE_TIME"),
                         dateFormat.dateFormatShort,
                         dateFormat.timeFormatNone,
                         dat.getFullYear(), dat.getMonth()+1, dat.getDate(),
@@ -134,15 +134,17 @@ function getDate(dateval) {
 function doEditData() {
   document.getElementById("bcEditMode").removeAttribute("readonly");
   document.getElementById("bcEnableMode").removeAttribute("disabled");
-  document.getElementById("editData").setAttribute("collapsed", "true");
-  document.getElementById("saveChanges").removeAttribute("collapsed");
+}
+
+function doReset() {
+  document.getElementById("bcEditMode").setAttribute("readonly", "true");
+  document.getElementById("bcEnableMode").setAttribute("disabled", "true");
+  onLoad();
 }
 
 function doSaveChanges() {
   document.getElementById("bcEditMode").setAttribute("readonly", "true");
   document.getElementById("bcEnableMode").setAttribute("disabled", "true");
-  document.getElementById("editData").removeAttribute("collapsed");
-  document.getElementById("saveChanges").setAttribute("collapsed", "true");
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {
