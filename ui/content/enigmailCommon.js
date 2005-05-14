@@ -1470,6 +1470,122 @@ function EnigNewRule(emailAddress) {
   return true;
 }
 
+// Obtain kay list from GnuPG
+function EnigObtainKeyList(secretOnly, refresh) {
+  DEBUG_LOG("enigmailCommon.js: EnigObtainKeyList\n");
+
+  try {
+    var exitCodeObj = new Object();
+    var statusFlagsObj = new Object();
+    var errorMsgObj = new Object();
+
+    var enigmailSvc = GetEnigmailSvc();
+    if (! enigmailSvc)
+      return null;
+    var userList = enigmailSvc.getUserIdList(secretOnly,
+                                             refresh,
+                                             exitCodeObj,
+                                             statusFlagsObj,
+                                             errorMsgObj);
+    if (exitCodeObj.value != 0) {
+      EnigAlert(errorMsgObj.value);
+      return null;
+    }
+  } catch (ex) {
+    ERROR_LOG("ERROR in enigmailUserSelection: enigLoadKeyList\n");
+  }
+
+  if (typeof(userList) == "string") {
+    return userList.split(/\n/);
+  }
+  else {
+    return [];
+  }
+}
+
+// Load the key list into memory
+function EnigLoadKeyList(refresh, keyListObj) {
+  DEBUG_LOG("enigmailCommon.js: EnigLoadKeyList\n");
+
+  var sortUsers = function (a, b) {
+
+   if (a.userId.toLowerCase()<b.userId.toLowerCase()) { return -1;} else {return 1; }
+
+  }
+
+  var aGpgUserList = EnigObtainKeyList(false, refresh);
+  if (!aGpgUserList) return;
+
+  var aGpgSecretsList = EnigObtainKeyList(true, refresh);
+  if (!aGpgSecretsList && !refresh) {
+    if (EnigConfirm(EnigGetString("noSecretKeys"))) {
+      EnigKeygen();
+      EnigLoadKeyList(true, keyListObj);
+    }
+  }
+
+  keyListObj.keyList = [];
+  keyListObj.keySortList = [];
+
+  var keyObj = new Object();
+  var i;
+
+  for (i=0; i<aGpgUserList.length; i++) {
+    var listRow=aGpgUserList[i].split(/:/);
+    if (listRow.length>=0) {
+      switch (listRow[0]) {
+      case "pub":
+        keyObj = new Object();
+        keyObj.expiry=listRow[EXPIRY];
+        keyObj.created=listRow[CREATED];
+        keyObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID].replace(/\\e3A/g, ":"));
+        keyObj.keyId=listRow[KEY_ID];
+        keyObj.keyTrust=listRow[KEY_TRUST];
+        keyObj.keyUseFor=listRow[KEY_USE_FOR];
+        keyObj.ownerTrust=listRow[OWNERTRUST];
+        keyObj.SubUserIds=new Array();
+        keyObj.fpr="";
+        keyObj.photoAvailable=false;
+        keyObj.secretAvailable=false;
+        keyListObj.keyList[listRow[KEY_ID]] = keyObj;
+        keyListObj.keySortList.push({userId: keyObj.userId, keyId: keyObj.keyId});
+        break;
+      case "fpr":
+        keyObj.fpr=listRow[USER_ID];
+        break;
+      case "uid":
+        var subUserId = {
+          userId: EnigConvertGpgToUnicode(listRow[USER_ID].replace(/\\e3A/g, ":")),
+          keyTrust: listRow[KEY_TRUST],
+          type: "uid"
+        }
+        keyObj.SubUserIds.push(subUserId);
+        break;
+      case "uat":
+        if (listRow[USER_ID].indexOf("1 ")==0) {
+          var userId=EnigGetString("userAtt.photo");
+          keyObj.SubUserIds.push({userId: userId, keyTrust:"", type: "uat"});
+          keyObj.photoAvailable=true;
+        }
+      }
+    }
+  }
+
+  // search and mark keys that have secret keys
+  for (i=0; i<aGpgSecretsList.length; i++) {
+     listRow=aGpgSecretsList[i].split(/:/);
+     if (listRow.length>=0) {
+       if (listRow[0] == "sec") {
+         if (typeof(keyListObj.keyList[listRow[KEY_ID]]) == "object") {
+           keyListObj.keyList[listRow[KEY_ID]].secretAvailable=true;
+         }
+       }
+     }
+  }
+
+  keyListObj.keySortList.sort(sortUsers);
+}
+
 
 function EnigEditKeyTrust(userId, keyId) {
   var inputObj = {

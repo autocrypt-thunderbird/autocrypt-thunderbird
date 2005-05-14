@@ -95,126 +95,23 @@ function enigmailRefreshKeys() {
   enigApplyFilter();
 }
 
-function enigLoadKeyList(secretOnly, refresh) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigLoadKeyList\n");
-
-  try {
-    var exitCodeObj = new Object();
-    var statusFlagsObj = new Object();
-    var errorMsgObj = new Object();
-    
-    var enigmailSvc = GetEnigmailSvc();
-    if (! enigmailSvc) 
-      return null;
-    var userList = enigmailSvc.getUserIdList(secretOnly,
-                                             refresh,
-                                             exitCodeObj,
-                                             statusFlagsObj,
-                                             errorMsgObj);
-    if (exitCodeObj.value != 0) {
-      EnigAlert(errorMsgObj.value);
-      return null;
-    }
-  } catch (ex) {
-    ERROR_LOG("ERROR in enigmailUserSelection: enigLoadKeyList\n");
-  }
-
-  if (typeof(userList) == "string") {
-    return userList.split(/\n/);
-  }
-  else {
-    return [];
-  }
-}
-
 
 function enigmailBuildList(refresh) {
   DEBUG_LOG("enigmailUserSelection.js: enigmailBuildList\n");
+
+  var keyListObj = {};
+
+  EnigLoadKeyList(refresh, keyListObj);
   
-  var sortUsers = function (a, b) {
-  
-   if (a.userId.toLowerCase()<b.userId.toLowerCase()) { return -1;} else {return 1; }
-  
-  }
-  
-  var aGpgUserList = enigLoadKeyList(false, refresh);
-  if (!aGpgUserList) return;
-  
-  var aGpgSecretsList = enigLoadKeyList(true, refresh);
-  if (!aGpgSecretsList && !refresh) {
-    if (EnigConfirm(EnigGetString("noSecretKeys"))) {
-      EnigKeygen();
-      enigmailRefreshKeys(true);
-    }
-  }
+  gKeyList = keyListObj.keyList;
+  gKeySortList = keyListObj.keySortList;
 
   gUserList.currentItem=null;
-  
+
   var treeChildren=document.getElementById("pgpKeyListChildren");
-  
-  gKeyList = new Array();
-  var gKeySortList = new Array();
-  
-  var keyObj = new Object();
-  var i;
-  
-  for (i=0; i<aGpgUserList.length; i++) {
-    var listRow=aGpgUserList[i].split(/:/);
-    if (listRow.length>=0) {
-      switch (listRow[0]) {
-      case "pub":
-        keyObj = new Object();
-        keyObj.expiry=listRow[EXPIRY];
-        keyObj.created=listRow[CREATED];
-        keyObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID].replace(/\\e3A/g, ":"));
-        keyObj.keyId=listRow[KEY_ID];
-        keyObj.keyTrust=listRow[KEY_TRUST];
-        keyObj.keyUseFor=listRow[KEY_USE_FOR];
-        keyObj.ownerTrust=listRow[OWNERTRUST];
-        keyObj.SubUserIds=new Array();
-        keyObj.fpr="";
-        keyObj.photoAvailable=false;
-        keyObj.secretAvailable=false;
-        gKeyList[listRow[KEY_ID]] = keyObj;
-        gKeySortList.push({userId: keyObj.userId, keyId: keyObj.keyId});
-        break;
-      case "fpr":
-        keyObj.fpr=listRow[USER_ID];
-        break;
-      case "uid":
-        var subUserId = {
-          userId: EnigConvertGpgToUnicode(listRow[USER_ID].replace(/\\e3A/g, ":")),
-          keyTrust: listRow[KEY_TRUST],
-          type: "uid"
-        }
-        keyObj.SubUserIds.push(subUserId);
-        break;
-      case "uat":
-        if (listRow[USER_ID].indexOf("1 ")==0) {
-          var userId=EnigGetString("userAtt.photo");
-          keyObj.SubUserIds.push({userId: userId, keyTrust:"", type: "uat"});
-          keyObj.photoAvailable=true;
-        }
-      }
-    }
-  }
-  
-  // search and mark keys that have secret keys
-  for (i=0; i<aGpgSecretsList.length; i++) {
-     listRow=aGpgSecretsList[i].split(/:/);
-     if (listRow.length>=0) {
-       if (listRow[0] == "sec") {
-         if (typeof(gKeyList[listRow[KEY_ID]]) == "object") {
-           gKeyList[listRow[KEY_ID]].secretAvailable=true;
-         }
-       }
-     }
-  }
- 
-  gKeySortList.sort(sortUsers);
- 
+
   var selectedItems=[];
-  for (i=0; i < gKeySortList.length; i++) {
+  for (var i=0; i < gKeySortList.length; i++) {
     var keyId = gKeySortList[i].keyId;
     if (gEnigLastSelectedKeys && typeof(gEnigLastSelectedKeys[keyId]) != "undefined")
       selectedItems.push(i);
@@ -660,9 +557,14 @@ function enigmailListSig() {
     keyId: keyList[0],
     keyListArr: gKeyList
   };
+  var resultObj = {};
   
   window.openDialog("chrome://enigmail/content/enigmailViewKeySigDlg.xul",
-        "", "dialog,modal,centerscreen,resizable=yes", inputObj);
+        "", "dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
+        
+  if (resultObj.refresh) {
+    enigmailRefreshKeys();
+  }
         
 }
 
