@@ -105,7 +105,7 @@ function onLoad () {
   var port="";
   switch (protocol) {
   case "hkp":
-    var port = ENIG_DEFAULT_HKP_PORT;
+    port = ENIG_DEFAULT_HKP_PORT;
     break;
   case "ldap":
     port = ENIG_DEFAULT_LDAP_PORT;

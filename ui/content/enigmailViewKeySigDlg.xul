@@ -52,6 +52,26 @@
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
 
+  <broadcasterset>
+    <broadcaster id="bcViewDetails" disabled="false"/>
+  </broadcasterset>
+
+  <popupset>
+    <popup id="sigCtxMenu"
+           onpopupshowing="showSigCtxMenu()">
+
+      <menuitem id="ctxViewSig" observes="bcViewDetails"
+                label="&enigmail.keyMan.ctxViewSig.label;"
+                oncommand="listSig()"/>
+      <menuitem id="ctxDetails" observes="bcViewDetails"
+                label="&enigmail.keyMan.keyProps.label;"
+								oncommand="viewKeyDetails()"/>
+      <menuitem id="ctxImportKey"
+                label="&enigmail.importpublickey.label;"
+                oncommand="importKey()"/>
+    </popup>
+  </popupset>
+
   <vbox flex="1">
     <hbox>
       <label value="&enigmail.viewKeySigDlg.sigForKey.label;"/>
@@ -61,7 +81,8 @@
     <tree id="keySigList" flex="1"
       enableColumnDrag="true"
       style="height:200px"
-      hidecolumnpicker="true">
+      hidecolumnpicker="true"
+      ondblclick="handleDblClick(event)">
       
       <treecols>
         <treecol id="enigUserNameCol" flex="1"
@@ -84,7 +105,8 @@
                  persist="width"/>
       </treecols>
 
-      <treechildren id="keySigListChildren"/>
+      <treechildren id="keySigListChildren"
+                    context="sigCtxMenu"/>
 
     </tree>
   </vbox>
@@ -109,8 +131,16 @@
     const KEY_INVALID="i";
     const KEY_DISABLED="d";
     const KEY_NOT_VALID=KEY_EXPIRED+KEY_REVOKED+KEY_INVALID+KEY_DISABLED;
+    
+    var gKeyListArr;
 
     function onLoad() {
+      gKeyListArr = window.arguments[0].keyListArr;
+      window.arguments[1].refresh = false;
+      loadList();
+    }
+    
+    function loadList() {
       var enigmailSvc = GetEnigmailSvc();
       if (!enigmailSvc) {
         EnigAlert(EnigGetString("accessError"));
@@ -118,11 +148,10 @@
         return;
       }
       
-      var keyListArr = window.arguments[0].keyListArr;
       var keyId = window.arguments[0].keyId;
       var keyIdValue = document.getElementById("keyIdValue");
       
-      keyIdValue.value = keyListArr[keyId].userId+" - 0x"+ window.arguments[0].keyId.substr(-8,8);
+      keyIdValue.value = gKeyListArr[keyId].userId+" - 0x"+ window.arguments[0].keyId.substr(-8,8);
     
       var exitCodeObj = {};
       var errorMsgObj = {};
@@ -162,7 +191,7 @@
             if (listRow[SIG_TYPE].substr(0,2).toLowerCase()!="1f") {
               // ignore "revoker" signatures
               userRow=document.createElement("treerow");
-              if (typeof(keyListArr[listRow[KEY_ID]]) == "object") {
+              if (typeof(gKeyListArr[listRow[KEY_ID]]) == "object") {
                 addCell(userRow, "   "+EnigConvertGpgToUnicode(listRow[USER_ID]));
               }
               else {
@@ -175,13 +204,15 @@
               else {
                 addCell(userRow, EnigGetString("keySignatureLocal"));
               }
-              if (typeof(keyListArr[listRow[KEY_ID]]) == "object") {
+              if (typeof(gKeyListArr[listRow[KEY_ID]]) == "object") {
                 addCell(userRow, EnigGetString("dlgYes"));
               }
               else {
                 addCell(userRow, EnigGetString("keySignatureNoKey"));
+                userRow.setAttribute("noKey", "true");
               }
 
+              userRow.setAttribute("keyID", listRow[KEY_ID]);
               addCell(userRow, listRow[CREATED]);
               treeItem=document.createElement("treeitem");
               treeItem.appendChild(userRow);
@@ -211,6 +242,101 @@
       }
       row.appendChild(cell);
       return cell;
+    }
+    
+    function getCurrRow() {
+      var sigList = document.getElementById("keySigList");
+      var item = sigList.view.getItemAtIndex(sigList.view.selection.currentIndex);
+      if (item) {
+        return item.firstChild;
+      }
+      return null;
+    }
+    
+    function showSigCtxMenu() {
+      var row = getCurrRow();
+      if (row.hasAttribute("keyID")) {
+        if (row.hasAttribute("noKey")) {
+          document.getElementById("bcViewDetails").setAttribute("disabled", "true");
+          document.getElementById("ctxImportKey").setAttribute("disabled", "false");
+        }
+        else {
+          document.getElementById("bcViewDetails").setAttribute("disabled", "false");
+          document.getElementById("ctxImportKey").setAttribute("disabled", "true");
+        }
+      }
+      else {
+        document.getElementById("bcViewDetails").setAttribute("disabled", "true");
+        document.getElementById("ctxImportKey").setAttribute("disabled", "true");
+      }
+    }
+    
+    function listSig() {
+      var row = getCurrRow();
+      var inputObj = {
+        keyId: row.getAttribute("keyID"),
+        keyListArr: gKeyListArr
+      };
+      var resultObj = {};
+
+      window.openDialog("chrome://enigmail/content/enigmailViewKeySigDlg.xul",
+             "", "dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
+      if (resultObj.refresh) {
+        window.arguments[1].refresh=true;
+      }
+    }
+    
+    function viewKeyDetails() {
+      var row = getCurrRow();
+      var keyId = row.getAttribute("keyID")
+
+      var inputObj = {
+        keyId:  keyId,
+        secKey: gKeyListArr[keyId].secretAvailable
+      };
+      window.openDialog("chrome://enigmail/content/enigmailKeyDetailsDlg.xul",
+            "", "dialog,modal,centerscreen", inputObj);
+
+    }
+    
+    function importKey() {
+      var row = getCurrRow();
+      var inputObj = {
+        searchList : ["0x"+row.getAttribute("keyID").substr(-8,8)]
+      };
+      var resultObj = new Object();
+
+      window.openDialog("chrome://enigmail/content/enigmailSearchKey.xul",
+            "", "dialog,modal,centerscreen", inputObj, resultObj);
+
+      if (resultObj.importedKeys > 0) {
+        var treeChildren = document.getElementById("keySigListChildren");
+        while (treeChildren.firstChild) {
+          treeChildren.removeChild(treeChildren.firstChild);
+        }
+        var keyListObj = {};
+        EnigLoadKeyList(true, keyListObj);
+        gKeyListArr = keyListObj.keyList;
+        window.arguments[1].refresh = true;
+        loadList();
+      }
+    }
+    
+    function handleDblClick(event) {
+      if (event) {
+        if (event.button != 0) return;
+      }
+      var row = getCurrRow();
+      if (row.hasAttribute("keyID")) {
+        if (row.hasAttribute("noKey")) {
+          if (EnigConfirm(EnigGetString("importKeyConfirm"))) {
+            importKey();
+          }
+        }
+        else {
+          listSig();
+        }
+      }
     }
   ]]>
   </script>
