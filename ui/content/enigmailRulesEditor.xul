@@ -53,12 +53,12 @@
           <treechildren id="rulesTreeChildren" properties=""/>
         </tree>
         <vbox>
-          <button label="&enigmail.edit.label;"
-                  accesskey="&enigmail.edit.accesskey;"
-                  oncommand="enigDoEdit();"/>
           <button label="&enigmail.add.label;"
                   accesskey="&enigmail.add.accesskey;"
                   oncommand="enigDoAdd();"/>
+          <button label="&enigmail.edit.label;"
+                  accesskey="&enigmail.edit.accesskey;"
+                  oncommand="enigDoEdit();"/>
           <button label="&enigmail.delete.label;"
                   accesskey="&enigmail.delete.accesskey;"
                   oncommand="enigDoDelete();"/>
