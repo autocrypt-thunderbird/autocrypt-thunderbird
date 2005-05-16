@@ -1703,105 +1703,21 @@ function enigAttachmentListClick (elementId, event) {
 function enigHandleUnknownKey() {
   var pubKeyId = "0x" + gEnigSecurityInfo.keyId.substr(8, 8);
 
-  var mesg =  gEnigSecurityInfo.statusInfo + EnigGetString("keyImport",pubKeyId);
+  var mesg =  EnigGetString("pubKeyNeeded") + EnigGetString("keyImport",pubKeyId);
 
   if (EnigConfirm(mesg)) {
-    var recvErrorMsgObj = new Object();
-    var recvFlags = nsIEnigmail.DOWNLOAD_KEY;
-    var progressBar=Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
-    var requestObserver = new EnigRequestObserver(enigReceiveKeyTerminate, {'progressBar': progressBar, 'callType': 1});
-
-    var progressListener = {
-        onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus)
-        {
-          if (aStateFlags & Components.interfaces.nsIWebProgressListener.STATE_STOP) {
-            if (progressBar.processCanceledByUser)
-              enigReceiveKeyCancel(progressBar);
-          }
-        },
-
-        onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress)
-        {},
-
-        onLocationChange: function(aWebProgress, aRequest, aLocation)
-        {},
-
-        onStatusChange: function(aWebProgress, aRequest, aStatus, aMessage)
-        {},
-
-        onSecurityChange: function(aWebProgress, aRequest, state)
-        {},
-
-        QueryInterface : function(iid)
-        {
-          if (iid.equals(Components.interfaces.nsIWebProgressListener) ||
-              iid.equals(Components.interfaces.nsISupportsWeakReference) ||
-              iid.equals(Components.interfaces.nsISupports))
-            return this;
-
-          throw Components.results.NS_NOINTERFACE;
-        }
+    var inputObj = {
+      searchList : [ pubKeyId ]
     };
-    progressBar.registerListener(progressListener);
+    var resultObj = new Object();
 
-    var ipcRequest = EnigReceiveKey(window, msgWindow,
-                      recvFlags, pubKeyId,
-                      progressBar,
-                      requestObserver,
-                      recvErrorMsgObj);
+    window.openDialog("chrome://enigmail/content/enigmailSearchKey.xul",
+          "", "dialog,modal,centerscreen", inputObj, resultObj);
 
-    if (ipcRequest == null) {
-      EnigAlert(EnigGetString("keyImportError")+recvErrorMsgObj.value);
-    }
-    gEnigIpcRequest = ipcRequest;
-  }
-}
-
-function enigReceiveKeyTerminate (terminateArg, ipcRequest) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: receiveKeyTerminate\n");
-
-  if (terminateArg && terminateArg.progressBar) {
-    terminateArg.progressBar.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_STOP, 0);
-  }
-
-  var keyRetrProcess = gEnigIpcRequest.pipeTransport;
-  var enigmailSvc = GetEnigmailSvc();
-  var exitCode;
-
-  if (keyRetrProcess && !keyRetrProcess.isAttached()) {
-    keyRetrProcess.terminate();
-    exitCode = keyRetrProcess.exitCode();
-    DEBUG_LOG("enigmailMessengerOverlay.js: enigReceiveKeyTerminate: exitCode = "+exitCode+"\n");
-    if (enigmailSvc) {
-      exitCode = enigmailSvc.fixExitCode(exitCode, 0);
+    if (resultObj.importedKeys > 0) {
+      enigMessageReload(false);
     }
   }
-
-  if (exitCode==0) {
-    enigMessageReload(false);
-    if (enigmailSvc) {
-      enigmailSvc.invalidateUserIdList();
-    }    
-  }
-  else {
-    var errorMsg="";
-    try {
-      var keygenConsole = gEnigIpcRequest.stderrConsole.QueryInterface(Components.interfaces.nsIPipeConsole);
-
-      if (keygenConsole && keygenConsole.hasNewData()) {
-        errorMsg = keygenConsole.getData();
-        if (enigmailSvc) {
-          var statusFlagsObj=new Object();
-          var statusMsgObj=new Object();
-          errorMsg=enigmailSvc.parseErrorOutput(errorMsg, statusFlagsObj, statusMsgObj);
-        }
-      }
-    } catch (ex) {}
-    DEBUG_LOG("enigmailMessengerOverlay.js: enigReceiveKeyTerminate: errorMsg="+errorMsg);
-    EnigAlert(EnigGetString("keyImportError")+ errorMsg);
-  }
-  gEnigIpcRequest.close(true);
-
 }
 
 function enigReceiveKeyCancel(progressBar) {
