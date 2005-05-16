@@ -45,8 +45,7 @@
         title="&enigmail.keyserverDlg.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="onLoad();"
-        ondialogaccept="return onAccept();"
-        >
+        ondialogaccept="return onAccept();">
 
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>

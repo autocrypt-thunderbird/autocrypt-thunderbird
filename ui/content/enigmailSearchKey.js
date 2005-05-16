@@ -399,7 +399,7 @@ function enigScanHtmlKeys (txt) {
           uid: []
         };
         if (m[4].search(/.+<.+@.+>/)>=0) {
-          key.uid.push(trim(m[4]));
+          if (! ignoreUid(m[4])) key.uid.push(trim(m[4]));
         }
         else if (m[4].search(/key (revoked|expired|disabled)/i)>=0) {
           DEBUG_LOG("revoked key id "+m[4]+"\n");
@@ -411,7 +411,7 @@ function enigScanHtmlKeys (txt) {
       // amend to key
       if (key) {
         var uid = trim(lines[i]);
-        if (uid.length>0)
+        if (uid.length>0 && ! ignoreUid(uid))
           key.uid.push(uid);
       }
     }
@@ -445,7 +445,7 @@ function enigScanGpgKeys(txt) {
       if (m && m.length>0 ) {
         if (key) {
           if (key.keyId == m[0]) {
-            key.uid.push(trim(m[1]));
+            if (! ignoreUid(m[i])) key.uid.push(trim(m[1]));
           }
           else {
             window.enigRequest.keyList.push(key);
@@ -459,8 +459,9 @@ function enigScanGpgKeys(txt) {
           key={
             keyId: m[0],
             created: dat.getFullYear()+"-"+month+"-"+day,
-            uid: [m[1]]
+            uid: []
           };
+          if (! ignoreUid(m[1])) key.uid.push(m[1]);
         }
       }
     }
@@ -488,8 +489,7 @@ function enigScanGpgKeys(txt) {
       // uid for key
       m=lines[i].split(/:/);
       if (m && m.length>1 ) {
-        if (key)
-          key.uid.push(trim(m[1]));
+        if (key && ! ignoreUid(m[1])) key.uid.push(trim(m[1]));
       }
     }
   }
@@ -634,6 +634,10 @@ function enigPopulateList(keyList) {
     }
     treeChildren.appendChild(treeItem);
   }
+  
+  if (keyList.length == 1) {
+    enigSetActive(treeItem.firstChild.firstChild, 1);
+  }
 }
 
 function enigUserSelCreateRow (keyId, subKey, userId, dateField, trustStatus) {
@@ -730,4 +734,9 @@ function enigSetActive(element, status) {
   default:
     element.setAttribute("active", -1);
   }
+}
+
+function ignoreUid(uid) {
+  const ignoreList = "{Test 555 <sdfg@gga.com>}";
+  return (ignoreList.indexOf("{"+trim(uid)+"}") >= 0);
 }

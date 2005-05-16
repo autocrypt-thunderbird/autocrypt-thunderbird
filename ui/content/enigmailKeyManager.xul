@@ -24,6 +24,8 @@
   <keyset id="winKeys">
     <key id="key_closeWin" key="&enigmail.keyMan.closeWin.key;"
          oncommand="window.close()" modifiers="accel"/>
+    <key id="key_selectAll" key="&enigmail.keyMan.selectAll.key;"
+         oncommand="enigmailSelectAllKeys()" modifiers="accel"/>
     <key id="key_delete"
          keycode="VK_DELETE"
          oncommand="enigmailDeleteKey()"/>
@@ -130,6 +132,13 @@
                   observes="bcManageUid"
                   accesskey="&enigmail.keyMan.manageUid.accesskey;"
                   oncommand="enigmailManageUids()"/>
+        <menuseparator/>
+
+        <menuitem id="selectAll"
+                  label="&enigmail.keyMan.selectAll.label;"
+                  accesskey="&enigmail.keyMan.selectAll.accesskey;"
+                  oncommand="enigmailSelectAllKeys()"/>
+
       </menupopup>
     </menu>
 
@@ -161,9 +170,9 @@
 					accesskey="&enigmail.keyMan.keyserverMenu.accesskey;">
 			<menupopup onpopupshowing="enigmailKeyMenu()"> <!-- keyserverMenu menu -->
 
-				<menuitem label="&enigmail.keyMan.refreshKey.label;"
+				<menuitem label="&enigmail.keyMan.refreshSelKeys.label;"
 									id="refreshKey"
-									accesskey="&enigmail.keyMan.refreshKey.accesskey;"
+									accesskey="&enigmail.keyMan.refreshSelKeys.accesskey;"
 									oncommand="enigmailReceiveKey()"/>
 				<menuitem label="&enigmail.keyMan.importFromServer.label;"
 									id="importFromServer"
@@ -173,6 +182,11 @@
 									id="uploadToServer"
 									accesskey="&enigmail.keyMan.uploadToServer.accesskey;"
 									oncommand="enigmailUploadKeys()"/>
+        <menuseparator/>
+				<menuitem label="&enigmail.keyMan.refreshAllKeys.label;"
+									id="refreshAllKeys"
+									accesskey="&enigmail.keyMan.refreshAllKeys.accesskey;"
+									oncommand="enigmailRefreshAllKeys()"/>
 			</menupopup>
 		</menu>
 
@@ -308,5 +322,3 @@
 		</description>
 	</hbox>
 </window>
-
-

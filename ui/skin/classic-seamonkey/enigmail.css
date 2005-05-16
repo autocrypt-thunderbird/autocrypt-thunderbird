@@ -164,3 +164,21 @@ treechildren::-moz-tree-cell-text(enigKeyInactive) {
 treechildren::-moz-tree-column(enigDontEncrypt) {
   background-color: rgb(90%, 90%, 90%);
 }
+
+/* the following styles are available for the key trust
+   columnm in the key manager:
+    enigmail_keyValid_unknown
+    enigmail_keyValid_invalid
+    enigmail_keyValid_disabled
+    enigmail_keyValid_revoked
+    enigmail_keyValid_expired
+    enigmail_keyTrust_untrusted
+    enigmail_keyTrust_marginal
+    enigmail_keyTrust_full
+    enigmail_keyTrust_ultimate
+    enigmail_keyTrust_unknown
+
+They can be applied using:
+treechildren::-moz-tree-cell(STYLE) {}
+treechildren::-moz-tree-cell-text(STYLE) {}
+*/

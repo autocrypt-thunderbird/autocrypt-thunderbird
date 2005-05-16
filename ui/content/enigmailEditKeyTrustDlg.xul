@@ -72,7 +72,7 @@
           for (var i=0; i < sigList.length; i++) {
             var aLine=sigList[i].split(/:/);
             if (aLine[0] == "pub") {
-              currTrust=("-nmfu").indexOf(aLine[8])+1;
+              currTrust=(("-nmfuq").indexOf(aLine[8]) % 5)+1;
               if (lastTrust==-1) lastTrust=currTrust;
               if (currTrust != lastTrust) {
                 currTrust = -1;
@@ -109,10 +109,8 @@
                                       errorMsgObj);
         if (r != 0) {
           EnigAlert(EnigGetString("setKeyTrustFailed")+"\n\n"+errorMsgObj.value);
-          return;
         }
       }
-      EnigAlert(EnigGetString("setKeyTrustOK"));
     }
   ]]>
   </script>

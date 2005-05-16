@@ -216,7 +216,7 @@
 <!ENTITY enigmail.selectpanel.tooltip               "Select Enigmail Panel">
 
 <!ENTITY enigmail.userSelectionList.label           "OpenPGP Key Selection">
-<!ENTITY enigmail.usersNotFound.label               "Recipients not found">
+<!ENTITY enigmail.usersNotFound.label               "Recipients not valid, not trusted or not found">
 <!ENTITY enigmail.keyExpiry.label                   "Expiry">
 <!ENTITY enigmail.keyTrust.label                    "Trust">
 <!ENTITY enigmail.keySelection.label                "Selection">
@@ -393,6 +393,8 @@
 <!ENTITY enigmail.keyMan.ctxUploadToServer.label   "Upload Public Keys to Keyserver">
 <!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label    "Copy Public Keys to Clipboard">
 <!ENTITY enigmail.keyMan.refreshKey.label          "Refresh Public Keys">
+<!ENTITY enigmail.keyMan.refreshSelKeys.label      "Refresh Selected Public Keys">
+<!ENTITY enigmail.keyMan.refreshAllKeys.label      "Refresh All Public Keys">
 <!ENTITY enigmail.keyMan.ctxRefreshKey.label       "Refresh Public Keys From Keyserver">
 
 <!ENTITY enigmail.keyMan.reload.label              "Reload Key Cache">
@@ -410,6 +412,8 @@
 <!ENTITY enigmail.keyMan.ownerTrust.label          "Owner Trust">
 <!ENTITY enigmail.keyMan.stopTransfer.label        "Stop transfer">
 <!ENTITY enigmail.keyMan.fingerprint.label         "Fingerprint">
+<!ENTITY enigmail.keyMan.selectAll.label           "Select all Keys">
+
 
 <!ENTITY enigmail.keyMan.filter.label              "Filter for user ID's or key ID's containing:">
 <!ENTITY enigmail.keyMan.clearFilter.label         "Clear">
@@ -432,7 +436,6 @@
 <!ENTITY enigmail.keyMan.manageUid.accesskey         "M">
 <!ENTITY enigmail.keyMan.viewSig.accesskey           "S">
 <!ENTITY enigmail.keyMan.showPhoto.accesskey         "P">
-<!ENTITY enigmail.keyMan.closeWin.key                "W">
 <!ENTITY enigmail.keyMan.importMenu.accesskey        "I">
 <!ENTITY enigmail.keyMan.exportMenu.accesskey        "X">
 <!ENTITY enigmail.keyMan.importFromClipbrd.accesskey "I">
@@ -440,6 +443,12 @@
 <!ENTITY enigmail.keyMan.keyDetails.accesskey        "K">
 <!ENTITY enigmail.keyMan.enableKey.accesskey         "B">
 <!ENTITY enigmail.keyMan.refreshKey.accesskey        "R">
+<!ENTITY enigmail.keyMan.refreshSelKeys.accesskey    "R">
+<!ENTITY enigmail.keyMan.refreshAllKeys.accesskey    "A">
+<!ENTITY enigmail.keyMan.selectAll.accesskey         "A">
+
+<!ENTITY enigmail.keyMan.closeWin.key                "W">
+<!ENTITY enigmail.keyMan.selectAll.key               "A">
 
 <!ENTITY enigmail.viewKeySigDlg.title                "Signature List">
 <!ENTITY enigmail.viewKeySigDlg.sigForKey.label      "Signatures for Key:">

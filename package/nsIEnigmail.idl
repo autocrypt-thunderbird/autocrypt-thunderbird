@@ -327,6 +327,7 @@ interface nsIEnigmail : nsISupports
   const long SEARCH_KEY       = 0x01;
   const long DOWNLOAD_KEY     = 0x02;
   const long UPLOAD_KEY       = 0x04;
+  const long REFRESH_KEY      = 0x08;
 
   nsIIPCRequest searchKey(in unsigned long recvFlags,
                           in string protocol,

@@ -174,7 +174,9 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
     userId=EnigConvertGpgToUnicode(replaceUid);
   }
 
-  userId=userId.replace(/\\[xe]3a/gi, ":");
+  if (userId) {
+    userId=userId.replace(/\\[xe]3a/gi, ":");
+  }
   var errorLines="";
   var fullStatusInfo="";
 
