@@ -45,6 +45,12 @@ function onLoad() {
   var exitCodeObj = new Object();
   var errorMsgObj = new Object();
 
+  var dryRun=false;
+  try {
+    dryRun = EnigGetPref("dryRun");
+  }
+  catch(ex) {}
+  
   var cardStr = enigmailSvc.getCardStatus(exitCodeObj, errorMsgObj);
   if (exitCodeObj.value == 0) {
     var statusList=cardStr.split(/[\r\n]+/);
@@ -86,8 +92,10 @@ function onLoad() {
     }
   }
   else {
-    EnigAlert(errorMsgObj.value);
-    window.close();
+    if (! dryRun) {
+      EnigAlert(errorMsgObj.value);
+      window.close();
+    }
   }
 }
 

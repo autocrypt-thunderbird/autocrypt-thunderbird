@@ -15,7 +15,7 @@
 
   The Initial Developer of this code is Patrick Brunschwig.
   Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
-  are Copyright (C) 2004 Patrick Brunschwig.
+  are Copyright (C) 2005 Patrick Brunschwig.
   All Rights Reserved.
 
   Contributor(s):
@@ -43,11 +43,13 @@
 
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         class="dialog"
-        title="&enigmail.retrieveKey.label;"
+        title=""
         style="width: 36em;"
         onload="onLoad()"
-        onunload="onUnload()">
+        onunload="onUnload()"
+        oncancel="return onCancel()">
 
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigRetrieveProgress.js"/>
 
     <grid flex="1">
@@ -78,14 +80,14 @@
           </hbox>
           <vbox>
             <separator/>
-            <label id="dialog.status2" crop="center" value="&enigmail.retrieveKey.retrieveMsg.label;"/>
+            <label id="dialog.status2" crop="center" value=""/>
           </vbox>
         </row>
       </rows>
     </grid>
     <separator/>
     <hbox id="CancelButton" pack="center">
-      <button id="cancel" label="&enigmail.cancelKey.label;" oncommand="doCancelButton()"/>
+      <button id="cancel" label="&enigmail.cancelKey.label;" oncommand="return onCancel();"/>
     </hbox>
 
 </window>

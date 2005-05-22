@@ -1359,7 +1359,7 @@ function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
   }
 }
 
-
+/* *
 function EnigReceiveKey(parent, msgParentWindow, recvFlags, keyId,
                         progressBar, requestObserver,
                         errorMsgObj) {
@@ -1397,7 +1397,7 @@ function EnigReceiveKey(parent, msgParentWindow, recvFlags, keyId,
 
   return enigmailSvc.receiveKey(recvFlags, keyserver, keyId, requestObserver, errorMsgObj);
 }
-
+/* */
 
 function EnigFilePicker(title, displayDir, save, defaultExtension, defaultName, filterPairs) {
   DEBUG_LOG("enigmailCommon.js: EnigFilePicker: "+save+"\n");

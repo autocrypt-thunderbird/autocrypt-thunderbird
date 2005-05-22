@@ -139,9 +139,7 @@ function enigmailBuildList(refresh) {
       gUserList.view.selection.rangedSelect(selectedItems[i], selectedItems[i], true)
     }
   }
-  else {
-    gUserList.view.selection.select(0);
-  }
+  gUserList.focus();
 }
 
 
@@ -334,6 +332,7 @@ function enigmailKeyMenu() {
     document.getElementById("bcKeyDetails").setAttribute("disabled", "true");
     document.getElementById("bcDeleteKey").setAttribute("disabled", "true");
     document.getElementById("bcEnableKey").setAttribute("disabled", "true");
+    document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.disableKey"))
   }
 }
 
@@ -721,6 +720,8 @@ function enigmailReceiveKey() {
 }
 
 function enigmailRefreshAllKeys() {
+
+  EnigAlertPref(EnigGetString("refreshKey.warn"), "warnRefreshAll");
   enigmailKeyServerAcess(nsIEnigmail.REFRESH_KEY, enigmailReceiveKeyCb);
 }
 
@@ -817,7 +818,6 @@ function enigApplyFilter() {
   }
 }
 
-
 //
 // ----- keyserver related functionality ----
 //
@@ -837,6 +837,7 @@ function enigmailKeyServerAcess(accessType, callbackFunc) {
   if (accessType != nsIEnigmail.REFRESH_KEY && selKeyList.length==0) {
     if (EnigConfirm(EnigGetString("refreshAllQuestion"))) {
       accessType = nsIEnigmail.REFRESH_KEY;
+      EnigAlertPref(EnigGetString("refreshKey.warn"), "warnRefreshAll");
     }
     else {
       return;
@@ -859,132 +860,18 @@ function enigmailKeyServerAcess(accessType, callbackFunc) {
   if (! resultObj.value) {
     return;
   }
-  
-  var progressBar=Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
-  var requestObserver = new EnigRequestObserver(enigSendKeyTerminate, {'progressBar': progressBar, 'callType': 1});
 
-  var progressListener = {
-      onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus)
-      {
-        if (aStateFlags & Components.interfaces.nsIWebProgressListener.STATE_STOP) {
-          if (progressBar.processCanceledByUser)
-            enigSendKeyCancel(progressBar);
-        }
-      },
-
-      onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress)
-      {},
-
-      onLocationChange: function(aWebProgress, aRequest, aLocation)
-      {},
-
-      onStatusChange: function(aWebProgress, aRequest, aStatus, aMessage)
-      {},
-
-      onSecurityChange: function(aWebProgress, aRequest, state)
-      {},
-
-      QueryInterface : function(iid)
-      {
-        if (iid.equals(Components.interfaces.nsIWebProgressListener) ||
-            iid.equals(Components.interfaces.nsISupportsWeakReference) ||
-            iid.equals(Components.interfaces.nsISupports))
-          return this;
-
-        throw Components.results.NS_NOINTERFACE;
-      }
+  var keyDlObj = {
+    accessType: accessType,
+    keyServer: resultObj.value,
+    keyList: "0x"+selKeyList.join(" 0x"),
+    cbFunc: callbackFunc
   };
-  progressBar.registerListener(progressListener);
-     
-  var errorMsgObj={};
-  gEnigIpcRequest = enigmailSvc.receiveKey(accessType, resultObj.value, "0x"+selKeyList.join(" 0x"), requestObserver, errorMsgObj);
-  if (gEnigIpcRequest == null) {
-    callbackFunc(-1, errorMsgObj.value, true);
-    return;
-  }
-  gEnigCallbackFunc = callbackFunc;
-  if (accessType == nsIEnigmail.UPLOAD_KEY) {
-    document.getElementById("statusText").value=EnigGetString("uploadingKey");
-  }
-  else {
-    document.getElementById("statusText").value=EnigGetString("downloadingKey");
-  }
-  document.getElementById("progressBar").removeAttribute("collapsed");
-  document.getElementById("cancelBox").removeAttribute("collapsed");
-}
-
-
-function enigSendKeyTerminate (terminateArg, ipcRequest) {
-  DEBUG_LOG("enigmailKeyManager.js: enigSendKeyTerminate\n");
-
-  if (terminateArg && terminateArg.progressBar) {
-    terminateArg.progressBar.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_STOP, 0);
-  }
-
-  if (gEnigIpcRequest) {
-    var cbFunc = gEnigCallbackFunc;
-    var keyRetrProcess = gEnigIpcRequest.pipeTransport;
-    var exitCode;
-    var statusText = document.getElementById("statusText");
-    document.getElementById("progressBar").setAttribute("collapsed", "true");
-    document.getElementById("cancelBox").setAttribute("collapsed", "true");
-    
-    var enigmailSvc = GetEnigmailSvc();
-    if (keyRetrProcess && !keyRetrProcess.isAttached()) {
-      keyRetrProcess.terminate();
-      exitCode = keyRetrProcess.exitCode();
-      DEBUG_LOG("enigmailKeyManager.js: enigSendKeyTerminate: exitCode = "+exitCode+"\n");
-      if (enigmailSvc) {
-        exitCode = enigmailSvc.fixExitCode(exitCode, 0);
-      }
-    }
   
-    statusText.value=cbFunc(exitCode, "", false);
-    
-    var errorMsg="";
-    try {
-      var gpgConsole = gEnigIpcRequest.stderrConsole.QueryInterface(Components.interfaces.nsIPipeConsole);
-
-      if (gpgConsole && gpgConsole.hasNewData()) {
-        errorMsg = gpgConsole.getData();
-        if (enigmailSvc) {
-          var statusFlagsObj=new Object();
-          var statusMsgObj=new Object();
-          errorMsg=enigmailSvc.parseErrorOutput(errorMsg, statusFlagsObj, statusMsgObj);
-        }
-      }
-    } catch (ex) {}
-    
-    DEBUG_LOG("enigmailKeyManager.js: enigSendKeyTerminate: errorMsg="+errorMsg);
-    if (errorMsg.search(/ec=\d+/i)>=0) {
-      exitCode=-1;
-    }
-    statusText.value=cbFunc(exitCode, "", false);
-    cbFunc(exitCode, errorMsg, true);
-
-    window.setTimeout(enigHideStatus, 5000);
-    gEnigIpcRequest.close(true);
+  window.openDialog("chrome://enigmail/content/enigRetrieveProgress.xul",
+        "", "dialog,modal,centerscreen", keyDlObj, resultObj);
+        
+  if (accessType != nsIEnigmail.UPLOAD_KEY && resultObj.result) {
+    enigmailRefreshKeys();
   }
 }
-
-function enigSendKeyCancel() {
-  document.getElementById("cancelButton").setAttribute("collapsed", "true");
-  var keyRetrProcess = gEnigIpcRequest.pipeTransport;
-
-  if (keyRetrProcess && !keyRetrProcess.isAttached()) {
-    keyRetrProcess.terminate();
-  }
-  gEnigIpcRequest.close(true);
-  document.getElementById("statusText").value=EnigGetString("keyserverAccessAborted");
-  document.getElementById("progressBar").setAttribute("collapsed", "true");
-  window.setTimeout(enigHideStatus, 5000);
-  gEnigIpcRequest=null;
-  gEnigCallbackFunc=null;
-}
-
-function enigHideStatus() {
-  document.getElementById("statusText").value="";
-  document.getElementById("progressBar").setAttribute("collapsed", "true");
-  document.getElementById("cancelBox").setAttribute("collapsed", "true");
-}
-

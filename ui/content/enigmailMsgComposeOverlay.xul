@@ -137,6 +137,11 @@
             </menupopup>
           </menu>
 
+          <menuitem id="enigmail_RulesEditor"
+              label="&enigmail.editRules.label;"
+              accesskey="&enigmail.editRules.accesskey;"
+              oncommand="EnigRulesEditor();"/>
+
           <menuseparator/>
 
           <menuitem id="enigmail_undo_encryption"
@@ -153,11 +158,6 @@
               label="&enigmail.clearPassphrase.label;"
               accesskey="&enigmail.clearPassphrase.accesskey;"
               oncommand="EnigClearPassphrase();" />
-
-          <menuitem id="enigmail_RulesEditor"
-              label="&enigmail.editRules.label;"
-              accesskey="&enigmail.editRules.accesskey;"
-              oncommand="EnigRulesEditor();"/>
 
           <menuseparator/>
 
@@ -248,6 +248,11 @@
             </menupopup>
           </menu>
 
+          <menuitem id="enigmail_RulesEditor"
+              label="&enigmail.editRules.label;"
+              accesskey="&enigmail.editRules.accesskey;"
+              oncommand="EnigRulesEditor();"/>
+
           <menuseparator/>
 
           <menuitem id="enigmail_undo_encryption"
@@ -264,11 +269,6 @@
               label="&enigmail.clearPassphrase.label;"
               accesskey="&enigmail.clearPassphrase.accesskey;"
               oncommand="EnigClearPassphrase();" />
-
-          <menuitem id="enigmail_RulesEditor"
-              label="&enigmail.editRules.label;"
-              accesskey="&enigmail.editRules.accesskey;"
-              oncommand="EnigRulesEditor();"/>
 
           <menuseparator/>
 

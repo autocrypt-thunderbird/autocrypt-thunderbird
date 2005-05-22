@@ -140,6 +140,11 @@
       loadList();
     }
     
+    function setWindowPos(x, y) {
+      window.screenX = x;
+      window.screenY = y;
+    }
+    
     function loadList() {
       var enigmailSvc = GetEnigmailSvc();
       if (!enigmailSvc) {
@@ -148,10 +153,16 @@
         return;
       }
       
-      var keyId = window.arguments[0].keyId;
+      var inArg = window.arguments[0];
+      var keyId = inArg.keyId;
       var keyIdValue = document.getElementById("keyIdValue");
       
-      keyIdValue.value = gKeyListArr[keyId].userId+" - 0x"+ window.arguments[0].keyId.substr(-8,8);
+      if (typeof(inArg.posX)=="number" &&
+          typeof(inArg.posY)=="number") {
+        window.setTimeout(setWindowPos, 0, inArg.posX, inArg.posY);
+      }
+
+      keyIdValue.value = gKeyListArr[keyId].userId+" - 0x"+ inArg.keyId.substr(-8,8);
     
       var exitCodeObj = {};
       var errorMsgObj = {};
@@ -275,7 +286,9 @@
       var row = getCurrRow();
       var inputObj = {
         keyId: row.getAttribute("keyID"),
-        keyListArr: gKeyListArr
+        keyListArr: gKeyListArr,
+        posX: window.screenX+10,
+        posY: window.screenY+10
       };
       var resultObj = {};
 

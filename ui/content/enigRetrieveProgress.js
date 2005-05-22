@@ -1,28 +1,40 @@
-/* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*
- * The contents of this file are subject to the Netscape Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.mozilla.org/NPL/
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "MPL"); you may not use this file
+ * except in compliance with the MPL. You may obtain a copy of
+ * the MPL at http://www.mozilla.org/MPL/
  *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
+ * Software distributed under the MPL is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the MPL for the specific language governing
+ * rights and limitations under the MPL.
  *
- * The Original Code is Mozilla Communicator client code, 
- * released March 31, 1998. 
+ * The Original Code is Enigmail.
  *
- * The Initial Developer of the Original Code is Netscape Communications 
- * Corporation.  Portions created by Netscape are 
- * Copyright (C) 1998 Netscape Communications Corporation.  All Rights
- * Reserved.
+ * The Initial Developer of this code is Patrick Brunschwig.
+ * Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+ * are Copyright (C) 2005 Patrick Brunschwig.
+ * All Rights Reserved.
  *
- * Contributors:
- *     William A. ("PowerGUI") Law <law@netscape.com>
- *     Scott MacGregor <mscott@netscape.com>
- *     jean-Francois Ducarroz <ducarroz@netscape.com>
+ * Contributor(s):
+ *
+ * Alternatively, the contents of this file may be used under the
+ * terms of the GNU General Public License (the "GPL"), in which case
+ * the provisions of the GPL are applicable instead of
+ * those above. If you wish to allow use of your version of this
+ * file only under the terms of the GPL and not to allow
+ * others to use your version of this file under the MPL, indicate
+ * your decision by deleting the provisions above and replace them
+ * with the notice and other provisions required by the GPL.
+ * If you do not delete the provisions above, a recipient
+ * may use your version of this file under either the MPL or the
+ * GPL.
  */
+
+// Uses: chrome://enigmail/content/enigmailCommon.js
+
+// Initialize enigmailCommon
+EnigInitCommon("enigRetrieveProgress");
 
 var msgCompDeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
 
@@ -35,103 +47,109 @@ var msgProgress = null;
 // random global variables...
 var targetFile;
 var itsASaveOperation = false;
+var gEnigIpcRequest = null;
+var gEnigCallbackFunc = null;
 
 // all progress notifications are done through the nsIWebProgressListener implementation...
 var progressListener = {
-    onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus)
+  onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus)
+  {
+    if (aStateFlags & Components.interfaces.nsIWebProgressListener.STATE_START)
     {
-      if (aStateFlags & Components.interfaces.nsIWebProgressListener.STATE_START)
-      {
-        // Put progress meter in undetermined mode.
-        // dialog.progress.setAttribute( "value", 0 );
-        dialog.progress.setAttribute( "mode", "undetermined" );
-      }
-
-      if (aStateFlags & Components.interfaces.nsIWebProgressListener.STATE_STOP)
-      {
-        // we are done sending/saving the message...
-        // Indicate completion in status area.
-
-        // Put progress meter at 100%.
-        dialog.progress.setAttribute( "value", 100 );
-        dialog.progress.setAttribute( "mode", "normal" );
-        window.close();
-      }
-    },
-
-    onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress)
-    {
-    },
-
-	  onLocationChange: function(aWebProgress, aRequest, aLocation)
-    {
-      // we can ignore this notification
-    },
-
-    onStatusChange: function(aWebProgress, aRequest, aStatus, aMessage)
-    {
-      /*if (aMessage != "")
-        dialog.status.setAttribute("value", aMessage); */
-    },
-
-    onSecurityChange: function(aWebProgress, aRequest, state)
-    {
-      // we can ignore this notification
-    },
-
-    QueryInterface : function(iid)
-    {
-      if (iid.equals(Components.interfaces.nsIWebProgressListener) ||
-          iid.equals(Components.interfaces.nsISupportsWeakReference) ||
-          iid.equals(Components.interfaces.nsISupports))
-        return this;
-
-      throw Components.results.NS_NOINTERFACE;
+      // dialog.progress.setAttribute( "value", 0 );
+      // Put progress meter in undetermined mode.
+      dialog.progress.setAttribute( "mode", "undetermined" );
     }
+
+    if (aStateFlags & Components.interfaces.nsIWebProgressListener.STATE_STOP)
+    {
+      // we are done transmitting
+      // Indicate completion in status area.
+
+      // Put progress meter at 100%.
+      dialog.progress.setAttribute( "value", 100 );
+      dialog.progress.setAttribute( "mode", "normal" );
+
+      if (msgProgress.processCanceledByUser)
+        enigSendKeyCancel(msgProgress);
+        
+      window.close();
+    }
+  },
+
+  onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress)
+  {
+  },
+
+  onLocationChange: function(aWebProgress, aRequest, aLocation)
+  {
+    // we can ignore this notification
+  },
+
+  onStatusChange: function(aWebProgress, aRequest, aStatus, aMessage)
+  {
+    // we can ignore this notification
+  },
+
+  onSecurityChange: function(aWebProgress, aRequest, state)
+  {
+    // we can ignore this notification
+  },
+
+  QueryInterface : function(iid)
+  {
+    if (iid.equals(Components.interfaces.nsIWebProgressListener) ||
+        iid.equals(Components.interfaces.nsISupportsWeakReference) ||
+        iid.equals(Components.interfaces.nsISupports))
+      return this;
+
+    throw Components.results.NS_NOINTERFACE;
+  }
 };
 
 
-function loadDialog()
-{
-}
-
 function onLoad() {
-    // Set global variables.
-    var subject = "";
-    msgProgress = window.arguments[0];
-    if (window.arguments[1])
-    {
-      var progressParams = window.arguments[1].QueryInterface(Components.interfaces.nsIMsgComposeProgressParams)
-      if (progressParams)
-      {
-        itsASaveOperation = (progressParams.deliveryMode != msgCompDeliverMode.Now);
-        subject = progressParams.subject;
-      }
-    }
+  // Set global variables.
+  var inArg = window.arguments[0];
+  window.arguments[1].result=false;
 
-    if ( !msgProgress ) {
-        ERROR_LOG( "Invalid argument to downloadProgress.xul\n" );
-        window.close()
-        return;
-    }
+  dialog = new Object;
+  dialog.strings = new Array;
+  dialog.progress    = document.getElementById("dialog.progress");
 
-    dialog = new Object;
-    dialog.strings = new Array;
-    dialog.progress    = document.getElementById("dialog.progress");
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
 
-    // Set up dialog button callbacks.
-    var object = this;
-    doSetOKCancel("", function () { return object.onCancel();});
+  // Set up dialog button callbacks.
+  var object = this;
+  doSetOKCancel("", function () { return object.onCancel();});
+  
 
-    // Fill dialog.
-    loadDialog();
+  var statTxt=document.getElementById("dialog.status2");
+  if (inArg.accessType == nsIEnigmail.UPLOAD_KEY) {
+    statTxt.value=EnigGetString("keyserverProgress.uploading");
+    subject = EnigGetString("keyserverTitle.uploading");
+  }
+  else {
+    statTxt.value=EnigGetString("keyserverProgress.refreshing");
+    var subject = EnigGetString("keyserverTitle.refreshing");
+  }
 
-    // set our web progress listener on the helper app launcher
-    msgProgress.registerListener(progressListener);
-    moveToAlertPosition();
+  msgProgress = Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
+  var requestObserver = new EnigRequestObserver(enigSendKeyTerminate, {'progressBar': msgProgress, 'callType': 1});
 
-    //We need to delay the set title else dom will overwrite it
-    //window.setTimeout(SetTitle, 0, subject);
+  msgProgress.registerListener(progressListener);
+  msgProgress.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_START, 0)
+  gEnigCallbackFunc = inArg.cbFunc;
+  
+  var errorMsgObj={};
+  gEnigIpcRequest = enigmailSvc.receiveKey(inArg.accessType, inArg.keyServer, inArg.keyList, requestObserver, errorMsgObj);
+  if (gEnigIpcRequest == null) {
+    EnigAlert(EnigGetString("sendKeysFailed")+"\n"+errorMsgObj.value);
+  }
+
+  window.title = subject;
 }
 
 function onUnload() 
@@ -152,12 +170,78 @@ function onUnload()
 function onCancel ()
 {
 
-   try
-   {
-     msgProgress.processCanceledByUser = true;
-   }
-   catch( ex ) {return true;}
+  try
+  {
+    msgProgress.processCanceledByUser = true;
+  }
+  catch( ex ) {return true;}
 
   // don't Close up dialog by returning false, the backend will close the dialog when everything will be aborted.
   return false;
+}
+
+function enigSendKeyTerminate (terminateArg, ipcRequest) {
+  DEBUG_LOG("enigmailRetrieveProgress.js: enigSendKeyTerminate\n");
+
+  if (gEnigIpcRequest) {
+    var cbFunc = gEnigCallbackFunc;
+    var keyRetrProcess = gEnigIpcRequest.pipeTransport;
+    var exitCode;
+
+    var enigmailSvc = GetEnigmailSvc();
+    if (keyRetrProcess && !keyRetrProcess.isAttached()) {
+      keyRetrProcess.terminate();
+      exitCode = keyRetrProcess.exitCode();
+      DEBUG_LOG("enigmailRetrieveProgress.js: enigSendKeyTerminate: exitCode = "+exitCode+"\n");
+      if (enigmailSvc) {
+        exitCode = enigmailSvc.fixExitCode(exitCode, 0);
+      }
+    }
+
+    var statusText=cbFunc(exitCode, "", false);
+
+    var errorMsg="";
+    try {
+      var gpgConsole = gEnigIpcRequest.stderrConsole.QueryInterface(Components.interfaces.nsIPipeConsole);
+
+      if (gpgConsole && gpgConsole.hasNewData()) {
+        errorMsg = gpgConsole.getData();
+        if (enigmailSvc) {
+          var statusFlagsObj=new Object();
+          var statusMsgObj=new Object();
+          errorMsg=enigmailSvc.parseErrorOutput(errorMsg, statusFlagsObj, statusMsgObj);
+        }
+      }
+    } catch (ex) {}
+
+    DEBUG_LOG("enigmailRetrieveProgress.js: enigSendKeyTerminate: errorMsg="+errorMsg);
+    if (errorMsg.search(/ec=\d+/i)>=0) {
+      exitCode=-1;
+    }
+    statusText=cbFunc(exitCode, "", false);
+    cbFunc(exitCode, errorMsg, true);
+    if (exitCode == 0) {
+        window.arguments[1].result=true;
+    }
+
+    gEnigIpcRequest.close(true);
+  }
+
+  if (terminateArg && terminateArg.progressBar) {
+    try {
+      terminateArg.progressBar.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_STOP, 0);
+    }
+    catch (ex) {}
+  }
+}
+
+function enigSendKeyCancel() {
+  var keyRetrProcess = gEnigIpcRequest.pipeTransport;
+
+  if (keyRetrProcess && !keyRetrProcess.isAttached()) {
+    keyRetrProcess.terminate();
+  }
+  gEnigIpcRequest.close(true);
+  gEnigIpcRequest=null;
+  gEnigCallbackFunc=null;
 }

@@ -134,6 +134,9 @@ pref("extensions.enigmail.warnOnRulesConflict",0);
 // display a warning when the passphrase is cleared
 pref("extensions.enigmail.warnClearPassphrase",true);
 
+// display a warning when all keys are to be refreshed
+pref("extensions.enigmail.warnRefreshAll",true);
+
 // wrap HTML messages before sending inline PGP messages
 pref("extensions.enigmail.wrapHtmlBeforeSend",true);
 
