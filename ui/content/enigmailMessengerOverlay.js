@@ -543,18 +543,18 @@ function enigMessageDecrypt(event, isAuto) {
     xEnigmailVersion = gEnigSavedHeaders["x-enigmail-version"];
   }
 
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return;
+  var enigmailSvc;
     
   if (isAuto && (! EnigGetPref("autoDecrypt"))) {
     var signedMsg = ((contentType.search(/^multipart\/signed(;|$)/i) == 0) && (contentType.search(/application\/pgp-signature/i)>0));
     var encrypedMsg = ((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) && (contentType.search(/application\/pgp-encrypted/i)>0));
     if (embeddedSigned || embeddedEncrypted || 
         encrypedMsg || signedMsg) {
-  
-      if (
-          (!enigmailSvc.mimeInitialized() && encrypedMsg) || signedMsg ||
+      enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc)
+        return;
+        
+      if ((!enigmailSvc.mimeInitialized() && encrypedMsg) || signedMsg ||
           ((!encrypedMsg) && (embeddedSigned || embeddedEncrypted))) {
         enigUpdateHdrIcons(ENIG_POSSIBLE_PGPMIME, 0, "", "", "", EnigGetString("possiblyPgpMime"));
       }
@@ -569,6 +569,9 @@ function enigMessageDecrypt(event, isAuto) {
        && (!embeddedSigned)) {
     // multipart/encrypted
     DEBUG_LOG("enigmailMessengerOverlay.js: multipart/encrypted\n");
+    enigmailSvc = GetEnigmailSvc();
+    if (!enigmailSvc)
+      return;
 
     if (!enigmailSvc.mimeInitialized()) {
       // Display enigmail:dummy URL in message pane to initialize
@@ -582,7 +585,6 @@ function enigMessageDecrypt(event, isAuto) {
       gEnigNoShowReload = true;
 
       var msgFrame = EnigGetFrame(window, "messagepane");
-      //msgFrame.location = "enigmail:dummy";
       messenger.loadURL(msgFrame, "enigmail:dummy");
 
     }
