@@ -162,6 +162,10 @@ function enigSetSendDefaultOptions() {
   }
 }
 
+function enigRemoveAttachedSig() {
+//  var bucketList = document.getElementById("attachmentBucket");
+//  var node = bucketList.firstChild;
+}
 
 function enigComposeOpen() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigComposeOpen\n");
@@ -174,6 +178,7 @@ function enigComposeOpen() {
           DEBUG_LOG("enigmailMsgComposeOverlay.js: enigComposeOpen: has encrypted originalMsgUri\n");
           DEBUG_LOG("originalMsgURI="+gMsgCompose.originalMsgURI+"\n");
           enigSetSendMode('encrypt');
+          enigRemoveAttachedSig();
         }
       }
       if (typeof(gMsgCompose.compFields.draftId)=="string") {
@@ -273,8 +278,12 @@ function enigTogglePGPMime() {
   gEnigSendPGPMime = !gEnigSendPGPMime;
 }
 
-function enigInsertKey() {
-  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigInsertKey: \n");
+function enigAttachKey() {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigAttachKey: \n");
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
 
   var resultObj = new Object();
   var inputObj = new Object();
@@ -291,25 +300,45 @@ function enigInsertKey() {
     return;
   }
 
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return;
+  var tmpDir=EnigGetTempDir();
 
-  var exitCodeObj = new Object();
-  var errorMsgObj = new Object();
+  try {
+    var tmpFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+    tmpFile.initWithPath(tmpDir);
+    if (!(tmpFile.isDirectory() && tmpFile.isWritable())) {
+      EnigAlert(EnigGetString("noTempDir"));
+      return;
+    }
+  }
+  catch (ex) {}
+  tmpFile.append("key.asc");
+  tmpFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
 
-  var keyBlock = enigmailSvc.extractKey(window, 0, userIdValue, null,
-                                        exitCodeObj, errorMsgObj);
-  var exitCode = exitCodeObj.value;
-
-  if (!keyBlock || (exitCode != 0)) {
-    // Error processing
-    var errorMsg = errorMsgObj.value;
-    EnigAlert(errorMsg);
+  // save file
+  var exitCodeObj= {};
+  var errorMsgObj = {};
+  enigmailSvc.extractKey(window, 0, userIdValue, tmpFile.path, exitCodeObj, errorMsgObj);
+  if (exitCodeObj.value != 0) {
+    EnigAlert(errorMsgObj.value);
     return;
   }
 
-  EnigEditorInsertText(EnigGetString("pubKey",userIdValue) + keyBlock);
+  // create attachment
+  var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+  var tmpFileURI = ioServ.newFileURI(tmpFile);
+  var keyAttachment = Components.classes["@mozilla.org/messengercompose/attachment;1"].createInstance(Components.interfaces.nsIMsgAttachment);
+  keyAttachment.url = tmpFileURI.spec;
+  keyAttachment.name = "keys.asc";
+  keyAttachment.temporary = true;
+  keyAttachment.contentType = "application/pgp-keys";
+
+  // add attachment to msg
+  AddAttachment(keyAttachment);
+  var attachmentBox = document.getElementById("attachments-box");
+  attachmentBox.hidden = false;
+  document.getElementById("attachmentbucket-sizer").hidden=false;
+
+  gContentChanged = true;
 }
 
 function enigUndoEncryption() {

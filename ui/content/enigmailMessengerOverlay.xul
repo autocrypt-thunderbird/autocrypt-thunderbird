@@ -379,6 +379,10 @@
 
   <popup id="attachmentListContext" onpopupshowing="return enigOnShowAttachmentContextMenu();">
     <menuseparator/>
+    <menuitem id="enigmail_ctxImportKey"
+      label="&enigmail.ctxImportKey.label;"
+      accesskey="&enigmail.ctxImportKey.accesskey;"
+      oncommand="enigHandleAttachmentSel('importKey');"/>
     <menuitem id="enigmail_ctxDecryptOpen"
       label="&enigmail.ctxDecryptOpen.label;"
       accesskey="&enigmail.ctxDecryptOpen.accesskey;"

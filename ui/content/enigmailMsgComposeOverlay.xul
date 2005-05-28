@@ -150,9 +150,9 @@
               oncommand="enigUndoEncryption();" />
 
           <menuitem id="enigmail_insert_key"
-              label="&enigmail.insertkey.label;"
-              accesskey="&enigmail.insertkey.accesskey;"
-              oncommand="enigInsertKey();" />
+              label="&enigmail.attachkey.label;"
+              accesskey="&enigmail.attachkey.accesskey;"
+              oncommand="enigAttachKey();" />
 
           <menuitem id="enigmail_clearPassphrase"
               label="&enigmail.clearPassphrase.label;"
@@ -261,9 +261,9 @@
               oncommand="enigUndoEncryption();" />
 
           <menuitem id="enigmail_insert_key"
-              label="&enigmail.insertkey.label;"
-              accesskey="&enigmail.insertkey.accesskey;"
-              oncommand="enigInsertKey();" />
+              label="&enigmail.attachkey.label;"
+              accesskey="&enigmail.attachkey.accesskey;"
+              oncommand="enigAttachKey();" />
 
           <menuitem id="enigmail_clearPassphrase"
               label="&enigmail.clearPassphrase.label;"

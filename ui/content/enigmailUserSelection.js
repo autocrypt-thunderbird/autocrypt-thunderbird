@@ -402,7 +402,7 @@ function enigmailBuildList(refresh) {
           var subChildren=document.createElement("treechildren");
           for (user=0; user<aUserList[i].SubUserIds.length; user++) {
             if (KEY_NOT_VALID.indexOf(aUserList[i].SubUserIds[user].trustLevel)<0) {
-              subItem=enigUserSelCreateRow(aUserList[i], -1, aUserList[i].SubUserIds[user].userId, "", "", aUserList[i].SubUserIds[user].trustLevel, true);
+              var subItem=enigUserSelCreateRow(aUserList[i], -1, aUserList[i].SubUserIds[user].userId, "", "", aUserList[i].SubUserIds[user].trustLevel, true);
               subChildren.appendChild(subItem);
             }
           }

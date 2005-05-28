@@ -1474,12 +1474,19 @@ function enigOnShowAttachmentContextMenu() {
   var saveMenu = document.getElementById('context-saveAttachment');
   var decryptOpenMenu = document.getElementById('enigmail_ctxDecryptOpen');
   var decryptSaveMenu = document.getElementById('enigmail_ctxDecryptSave');
+  var importMenu = document.getElementById('enigmail_ctxImportKey');
   if (selectedAttachments.length > 0)
   {
     openMenu.removeAttribute('disabled');
     saveMenu.removeAttribute('disabled');
 
-    if (enigCheckEncryptedAttach(selectedAttachments[0].attachment)) {
+    if (selectedAttachments[0].attachment.contentType.search(/^application\/pgp-keys/i) == 0) {
+      importMenu.removeAttribute('disabled');
+      decryptOpenMenu.setAttribute('disabled', true);
+      decryptSaveMenu.setAttribute('disabled', true);
+    }
+    else if (enigCheckEncryptedAttach(selectedAttachments[0].attachment)) {
+      importMenu.setAttribute('disabled', true);
       decryptOpenMenu.removeAttribute('disabled');
       decryptSaveMenu.removeAttribute('disabled');
       if (! selectedAttachments[0].attachment.displayName) {
@@ -1497,6 +1504,7 @@ function enigOnShowAttachmentContextMenu() {
     saveMenu.setAttribute('disabled', true);
     decryptOpenMenu.setAttribute('disabled', true);
     decryptSaveMenu.setAttribute('disabled', true);
+    importMenu.setAttribute('disabled', true);
   }
 }
 
@@ -1508,7 +1516,10 @@ function enigHandleAttachmentSel(actionType) {
   var selectedAttachments = attachmentList.selectedItems;
   var anAttachment = selectedAttachments[0].attachment;
 
-  if (actionType=="saveAttachment" || actionType=="openAttachment") {
+  switch (actionType) {
+  case "saveAttachment":
+  case "openAttachment":
+  case "importKey":
     enigHandleAttachment(actionType, anAttachment);
   }
 }
@@ -1561,6 +1572,8 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
   var exitCodeObj = new Object();
   var statusFlagsObj = new Object();
   var errorMsgObj= new Object();
+  var exitStatus = -1;
+
   var enigmailSvc =  GetEnigmailSvc();
   var outFile;
   var rawFileName=callbackArg.attachment.displayName.replace(/\.(asc|pgp|gpg)$/i,"");
@@ -1590,7 +1603,24 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
     }
   }
 
-  var exitStatus=enigmailSvc.decryptAttachment(window, outFile.path,
+  if (callbackArg.actionType == "importKey") {
+    try {
+      var dataLength = new Object();
+      var byteData = callbackArg.ipcBuffer.getByteData(dataLength);
+      exitStatus = enigmailSvc.importKey(parent, 0, byteData, "", errorMsgObj);
+    }
+    catch (ex) {}
+    if (exitStatus == 0) {
+      EnigLongAlert(EnigGetString("successKeyImport")+"\n\n"+errorMsgObj.value);
+    }
+    else {
+      EnigAlert(EnigGetString("failKeyImport")+"\n"+errorMsgObj.value);
+    }
+
+    return;
+  }
+
+  exitStatus=enigmailSvc.decryptAttachment(window, outFile.path,
                                 callbackArg.attachment.displayName, 
                                 callbackArg.ipcBuffer,
                                 exitCodeObj, statusFlagsObj,
@@ -1610,7 +1640,7 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
     }
     else {
       EnigAlert(EnigGetString("failedDecrypt")+"\n\n"+errorMsgObj.value);
-      exiStatus=false;
+      exitStatus=false;
     }
   }
   if (exitStatus) {

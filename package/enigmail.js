@@ -2637,9 +2637,9 @@ function (parent, uiFlags, cipherText, signatureObj, exitCodeObj,
 
   if (publicKey) {
     if (!allowImport) {
-      errorMsgObj.value = EnigGetString("decryptToImport");
+      // errorMsgObj.value = EnigGetString("decryptToImport");
       statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
-      statusFlagsObj.value |= nsIEnigmail.INLINE_KEY;
+      // statusFlagsObj.value |= nsIEnigmail.INLINE_KEY;
 
       return "";
     }

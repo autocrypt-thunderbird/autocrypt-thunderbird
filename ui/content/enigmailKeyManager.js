@@ -325,8 +325,15 @@ function enigmailKeyMenu() {
     else {
       document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.disableKey"))
     }
+    document.getElementById("bcNoKey").removeAttribute("disabled");
   }
   else {
+    if (keyList.length == 0) {
+      document.getElementById("bcNoKey").setAttribute("disabled", "true");
+    }
+    else {
+      document.getElementById("bcNoKey").removeAttribute("disabled");
+    }
     document.getElementById("bcSignKey").setAttribute("disabled", "true");
     document.getElementById("bcViewSig").setAttribute("disabled", "true");
     document.getElementById("bcKeyDetails").setAttribute("disabled", "true");
@@ -425,8 +432,66 @@ function enigShowPhoto() {
   EnigShowPhoto(keyList[0], gKeyList[keyList[0]].userId);
 }
 
+function enigCreateKeyMsg() {
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
+  var keyList = enigmailGetSelectedKeys();
+  if (keyList.length==0) {
+    EnigAlert(EnigGetString("noKeySelected"));
+    return;
+  }
+
+  var tmpDir=EnigGetTempDir();
+
+  try {
+    var tmpFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+    tmpFile.initWithPath(tmpDir);
+    if (!(tmpFile.isDirectory() && tmpFile.isWritable())) {
+      EnigAlert(EnigGetString("noTempDir"));
+      return;
+    }
+  }
+  catch (ex) {}
+  tmpFile.append("key.asc");
+  tmpFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
+
+  // save file
+  var exitCodeObj= {};
+  var errorMsgObj = {};
+  enigmailSvc.extractKey(window, 0, "0x"+keyList.join(" 0x"), tmpFile.path, exitCodeObj, errorMsgObj);
+  if (exitCodeObj.value != 0) {
+    EnigAlert(errorMsgObj.value);
+    return;
+  }
+
+  // create attachment
+  var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+  var tmpFileURI = ioServ.newFileURI(tmpFile);
+  var keyAttachment = Components.classes["@mozilla.org/messengercompose/attachment;1"].createInstance(Components.interfaces.nsIMsgAttachment);
+  keyAttachment.url = tmpFileURI.spec;
+  keyAttachment.name = "keys.asc";
+  keyAttachment.temporary = true;
+  keyAttachment.contentType = "application/pgp-keys";
+  
+  // create Msg
+  var msgCompFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
+  msgCompFields.addAttachment(keyAttachment);
+
+  var acctManager = Components.classes["@mozilla.org/messenger/account-manager;1"].createInstance(Components.interfaces.nsIMsgAccountManager);
+  
+  var msgCompSvc = Components.classes["@mozilla.org/messengercompose;1"].getService(Components.interfaces.nsIMsgComposeService);
+  msgCompSvc.OpenComposeWindowWithCompFields ("",
+            Components.interfaces.nsIMsgCompType.New,
+            Components.interfaces.nsIMsgCompFormat.Default,
+            msgCompFields,
+            acctManager.defaultAccount.defaultIdentity);
+}
+
 
 function enigEditKeyTrust() {
+
   var keyList = enigmailGetSelectedKeys();
   if (keyList.length==0) {
     EnigAlert(EnigGetString("noKeySelected"));

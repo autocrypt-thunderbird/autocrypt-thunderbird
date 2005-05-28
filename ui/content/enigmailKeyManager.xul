@@ -65,6 +65,7 @@
   </keyset>
   
   <broadcasterset>
+    <broadcaster id="bcNoKey" disabled="false"/>
     <broadcaster id="bcSignKey" disabled="false"/>
     <broadcaster id="bcSetTrust" disabled="false"/>
     <broadcaster id="bcViewSig" disabled="false"/>
@@ -87,8 +88,16 @@
 									oncommand="enigmailImportKeysFromFile()"/>
 				<menuitem label="&enigmail.keyMan.exportToFile.label;"
 									id="exportKey"
+									observes="bcNoKey"
 									accesskey="&enigmail.keyMan.exportToFile.accesskey;"
 									oncommand="enigmailExportKeys()"/>
+									
+				<menuitem label="&enigmail.keyMan.sendKeys.label;"
+									id="sendKey"
+									observes="bcNoKey"
+									accesskey="&enigmail.keyMan.sendKeys.accesskey;"
+									oncommand="enigCreateKeyMsg()"/>
+
 
        <menuseparator/>
 
@@ -123,6 +132,7 @@
 									oncommand="enigmailImportFromClipbrd()"/>
 				<menuitem label="&enigmail.keyMan.copyToClipbrd.label;"
 									id="copyToClipbrd"
+									observes="bcNoKey"
 									accesskey="&enigmail.keyMan.copyToClipbrd.accesskey;"
 									oncommand="enigmailCopyToClipbrd()"/>
 
@@ -135,7 +145,7 @@
                   oncommand="enigSignKey()"/>
         <menuitem label="&enigmail.keyMan.setTrust.label;"
                   id="setTrust"
-                  observes="bcSetTrust"
+                  observes="bcNoKey"
                   accesskey="&enigmail.keyMan.setTrust.accesskey;"
                   oncommand="enigEditKeyTrust()"/>
 
@@ -206,6 +216,7 @@
 
 				<menuitem label="&enigmail.keyMan.refreshSelKeys.label;"
 									id="refreshKey"
+									observes="bcNoKey"
 									accesskey="&enigmail.keyMan.refreshSelKeys.accesskey;"
 									oncommand="enigmailReceiveKey()"/>
 				<menuitem label="&enigmail.keyMan.importFromServer.label;"
@@ -214,6 +225,7 @@
 									oncommand="enigmailSearchKey()"/>
 				<menuitem label="&enigmail.keyMan.uploadToServer.label;"
 									id="uploadToServer"
+									observes="bcNoKey"
 									accesskey="&enigmail.keyMan.uploadToServer.accesskey;"
 									oncommand="enigmailUploadKeys()"/>
         <menuseparator/>
