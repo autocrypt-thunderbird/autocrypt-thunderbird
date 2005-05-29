@@ -311,6 +311,13 @@ function enigmailKeyMenu() {
   else {
     document.getElementById("bcViewPhoto").setAttribute("disabled", "true");
   }
+  
+  if (enigGetClipboard().length > 0) {
+    document.getElementById("bcClipbrd").removeAttribute("disabled");
+  }
+  else {
+    document.getElementById("bcClipbrd").setAttribute("disabled", "true");
+  }
 
   if (keyList.length == 1) {
     document.getElementById("bcSignKey").removeAttribute("disabled");
@@ -471,7 +478,12 @@ function enigCreateKeyMsg() {
   var tmpFileURI = ioServ.newFileURI(tmpFile);
   var keyAttachment = Components.classes["@mozilla.org/messengercompose/attachment;1"].createInstance(Components.interfaces.nsIMsgAttachment);
   keyAttachment.url = tmpFileURI.spec;
-  keyAttachment.name = "keys.asc";
+  if (keyList.length == 1) {
+    keyAttachment.name = "0x"+keyList[0].substr(-8,8)+".asc"
+  }
+  else {
+    keyAttachment.name = "pgpkeys.asc";
+  }
   keyAttachment.temporary = true;
   keyAttachment.contentType = "application/pgp-keys";
   
@@ -688,14 +700,9 @@ function enigmailManageUids() {
   enigmailRefreshKeys();
 }
 
-function enigmailImportFromClipbrd() {
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return;
-
-  if (!EnigConfirm(EnigGetString("importFromClip"))) {
-    return;
-  }
+function enigGetClipboard() {
+  DEBUG_LOG("enigmailKeyManager.js: enigGetClipboard:\n");
+  var cBoardContent = "";
   var clipBoard = Components.classes[ENIG_CLIPBOARD_CONTRACTID].getService(Components.interfaces.nsIClipboard);
   try {
     var transferable = Components.classes[ENIG_TRANSFERABLE_CONTRACTID].createInstance(Components.interfaces.nsITransferable);
@@ -705,11 +712,23 @@ function enigmailImportFromClipbrd() {
     var data = {};
     var length = {};
     transferable.getAnyTransferData(flavour, data, length);
-    var cBoardContent=data.value.QueryInterface(Components.interfaces.nsISupportsString).data;
-    DEBUG_LOG("enigmailKeyManager.js: enigmailImportFromClipbrd: got data from clipboard");
+    cBoardContent=data.value.QueryInterface(Components.interfaces.nsISupportsString).data;
+    DEBUG_LOG("enigmailKeyManager.js: enigGetClipboard: got data\n");
   }
   catch(ex) {}
+  return cBoardContent;
+}
 
+function enigmailImportFromClipbrd() {
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
+  if (!EnigConfirm(EnigGetString("importFromClip"))) {
+    return;
+  }
+
+  var cBoardContent = enigGetClipboard();
   var errorMsgObj = {};
   var r=enigmailSvc.importKey(window, 0, cBoardContent, "", errorMsgObj);
   EnigLongAlert(errorMsgObj.value);

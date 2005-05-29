@@ -182,9 +182,16 @@ function doSaveChanges() {
 function engmailGenerateCardKey() {
   window.openDialog("chrome://enigmail/content/enigmailGenCardKey.xul",
         "", "dialog,modal,centerscreen");
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (enigmailSvc) {
+    enigmailSvc.invalidateUserIdList();
+  }
+  onLoad();
 }
 
 function enigmailAdminPin() {
   window.openDialog("chrome://enigmail/content/enigmailSetCardPin.xul",
         "", "dialog,modal,centerscreen");
+  onLoad();
 }

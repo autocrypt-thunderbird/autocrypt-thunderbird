@@ -74,6 +74,7 @@
     <broadcaster id="bcRevoke" disabled="false"/>
     <broadcaster id="bcKeyDetails" disabled="false"/>
     <broadcaster id="bcDeleteKey" disabled="false"/>
+    <broadcaster id="bcClipbrd" disabled="false"/>
     <broadcaster id="bcEnableKey" disabled="false" label=""/>
   </broadcasterset>
   
@@ -97,7 +98,6 @@
 									observes="bcNoKey"
 									accesskey="&enigmail.keyMan.sendKeys.accesskey;"
 									oncommand="enigCreateKeyMsg()"/>
-
 
        <menuseparator/>
 
@@ -128,6 +128,7 @@
                  
 				<menuitem label="&enigmail.keyMan.importFromClipbrd.label;"
 									id="importFromClipbrd"
+									observes="bcClipbrd"
 									accesskey="&enigmail.keyMan.importFromClipbrd.accesskey;"
 									oncommand="enigmailImportFromClipbrd()"/>
 				<menuitem label="&enigmail.keyMan.copyToClipbrd.label;"
@@ -263,6 +264,9 @@
 			<menuitem label="&enigmail.keyMan.ctxExportToFile.label;"
 								id="ctxExport"
 								oncommand="enigmailExportKeys()"/>
+			<menuitem label="&enigmail.keyMan.sendKeys.label;"
+								id="ctxSendKey"
+								oncommand="enigCreateKeyMsg()"/>
 
       <menuseparator/>
 

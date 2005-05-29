@@ -561,7 +561,7 @@ function enigMessageDecrypt(event, isAuto) {
     }
     return;
   }
-
+  
   EnigShowHeadersAll(false);
 
   if (((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) ||
@@ -578,7 +578,7 @@ function enigMessageDecrypt(event, isAuto) {
 
       // Need to add event listener to gEnigMessagePane to make it work
       // Adding to msgFrame doesn't seem to work
-      gEnigMessagePane.addEventListener("load",   enigMimeInit, true);
+      gEnigMessagePane.addEventListener("load", enigMimeInit, true);
       gEnigRemoveListener = true;
 
       DEBUG_LOG("enigmailMessengerOverlay.js: loading enigmail:dummy ...\n");
@@ -587,6 +587,9 @@ function enigMessageDecrypt(event, isAuto) {
       var msgFrame = EnigGetFrame(window, "messagepane");
       messenger.loadURL(msgFrame, "enigmail:dummy");
 
+    }
+    else if (! isAuto) {
+      enigMessageReload(false);
     }
     return;
   }

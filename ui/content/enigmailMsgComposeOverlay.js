@@ -328,7 +328,12 @@ function enigAttachKey() {
   var tmpFileURI = ioServ.newFileURI(tmpFile);
   var keyAttachment = Components.classes["@mozilla.org/messengercompose/attachment;1"].createInstance(Components.interfaces.nsIMsgAttachment);
   keyAttachment.url = tmpFileURI.spec;
-  keyAttachment.name = "keys.asc";
+  if (resultObj.userList.length == 1) {
+    keyAttachment.name = "0x"+resultObj.userList[0].substr(-8,8)+".asc";
+  }
+  else {
+    keyAttachment.name = "pgpkeys.asc";
+  }
   keyAttachment.temporary = true;
   keyAttachment.contentType = "application/pgp-keys";
 
