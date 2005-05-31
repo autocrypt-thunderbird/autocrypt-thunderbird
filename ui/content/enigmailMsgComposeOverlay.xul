@@ -150,6 +150,11 @@
               oncommand="enigUndoEncryption();" />
 
           <menuitem id="enigmail_insert_key"
+              label="&enigmail.attachmykey.label;"
+              accesskey="&enigmail.attachmykey.accesskey;"
+              oncommand="enigAttachOwnKey();" />
+
+          <menuitem id="enigmail_insert_own_key"
               label="&enigmail.attachkey.label;"
               accesskey="&enigmail.attachkey.accesskey;"
               oncommand="enigAttachKey();" />
@@ -164,8 +169,7 @@
           <menuitem id="enigmail_help"
               label="&enigmail.help.label;"
               accesskey="&enigmail.help.accesskey;"
-              oncommand="EnigHelpWindow('compose');" />
-              
+              oncommand="EnigHelpWindow('compose');"/>
 
         </menupopup>
       </menu>
@@ -259,6 +263,11 @@
               label="&enigmail.undoencryption.label;"
               accesskey="&enigmail.undoencryption.accesskey;"
               oncommand="enigUndoEncryption();" />
+
+          <menuitem id="enigmail_insert_own_key"
+              label="&enigmail.attachmykey.label;"
+              accesskey="&enigmail.attachmykey.accesskey;"
+              oncommand="enigAttachOwnKey();" />
 
           <menuitem id="enigmail_insert_key"
               label="&enigmail.attachkey.label;"

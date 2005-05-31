@@ -278,12 +278,22 @@ function enigTogglePGPMime() {
   gEnigSendPGPMime = !gEnigSendPGPMime;
 }
 
+function enigAttachOwnKey() {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigAttachOwnKey:\n");
+  
+  var userIdValue;
+  if (gEnigIdentity.getIntAttribute("pgpKeyMode")>0) {
+    userIdValue = gEnigIdentity.getCharAttribute("pgpkeyId");
+  }
+  else {
+    userIdValue = gEnigIdentity.email;
+  }
+
+  enigExtractAndAttachKey( [userIdValue] );
+}
+
 function enigAttachKey() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigAttachKey: \n");
-
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return;
 
   var resultObj = new Object();
   var inputObj = new Object();
@@ -294,11 +304,18 @@ function enigAttachKey() {
   window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
   try {
     if (resultObj.cancelled) return;
-    userIdValue = resultObj.userList.join(" ");
+    enigExtractAndAttachKey(resultObj.userList);
   } catch (ex) {
     // cancel pressed -> do nothing
     return;
   }
+}
+
+function enigExtractAndAttachKey(uid) {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigAttachKey: \n");
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
 
   var tmpDir=EnigGetTempDir();
 
@@ -317,7 +334,8 @@ function enigAttachKey() {
   // save file
   var exitCodeObj= {};
   var errorMsgObj = {};
-  enigmailSvc.extractKey(window, 0, userIdValue, tmpFile.path, exitCodeObj, errorMsgObj);
+
+  enigmailSvc.extractKey(window, 0, uid.join(" "), tmpFile.path, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value != 0) {
     EnigAlert(errorMsgObj.value);
     return;
@@ -328,8 +346,8 @@ function enigAttachKey() {
   var tmpFileURI = ioServ.newFileURI(tmpFile);
   var keyAttachment = Components.classes["@mozilla.org/messengercompose/attachment;1"].createInstance(Components.interfaces.nsIMsgAttachment);
   keyAttachment.url = tmpFileURI.spec;
-  if (resultObj.userList.length == 1) {
-    keyAttachment.name = "0x"+resultObj.userList[0].substr(-8,8)+".asc";
+  if ((uid.length == 1) && (uid[0].search(/^(0x)?[a-fA-F0-9]+$/)==0)) {
+    keyAttachment.name = "0x"+uid[0].substr(-8,8)+".asc";
   }
   else {
     keyAttachment.name = "pgpkeys.asc";

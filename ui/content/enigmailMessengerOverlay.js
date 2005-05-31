@@ -1497,6 +1497,7 @@ function enigOnShowAttachmentContextMenu() {
       }
     }
     else {
+      importMenu.setAttribute('disabled', true);
       decryptOpenMenu.setAttribute('disabled', true);
       decryptSaveMenu.setAttribute('disabled', true);
     }

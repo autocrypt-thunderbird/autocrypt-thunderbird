@@ -3982,9 +3982,9 @@ function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
     var gpgCommand = this.getAgentPath() + GPG_BATCH_OPTS;
   
     if (secretOnly) {
-      gpgCommand += " --with-fingerprint --with-colons --list-secret-keys";  }
+      gpgCommand += " --with-fingerprint --fixed-list-mode --with-colons --list-secret-keys";  }
     else {
-      gpgCommand += " --with-fingerprint --with-colons --list-keys";
+      gpgCommand += " --with-fingerprint --fixed-list-mode --with-colons --list-keys";
     }
   
     if (!this.initialized) {
@@ -4059,7 +4059,7 @@ function  (keyId, exitCodeObj, errorMsgObj) {
 // if uidOnly is true, returns just a list of uid's
 Enigmail.prototype.getKeyDetails = function (keyId, uidOnly) {
   var gpgCommand = this.getAgentPath() + GPG_BATCH_OPTS 
-  gpgCommand += " --with-colons --list-keys " + keyId;
+  gpgCommand += " --fixed-list-mode --with-colons --list-keys " + keyId;
   var statusMsgObj   = new Object();
   var cmdErrorMsgObj = new Object();
   var statusFlagsObj = new Object();
@@ -4078,9 +4078,7 @@ Enigmail.prototype.getKeyDetails = function (keyId, uidOnly) {
     for (var i=0; i<keyArr.length; i++) {
       switch (keyArr[i].substr(0,4)) {
       case "uid:" :
-        userList += "\n";
-      case "pub:" :
-        userList += keyArr[i].split(/:/)[9];
+        userList += keyArr[i].split(/:/)[9] + "\n";
       }
     }
     return userList;
@@ -4275,7 +4273,7 @@ function(keyId, exitCodeObj, errorMsgObj) {
   var command = this.getAgentPath();
 
   command += " --batch --no-tty --status-fd 1 --attribute-fd 1";
-  command += " --list-keys "+keyId;
+  command += " --fixed-list-mode --list-keys "+keyId;
 
   var statusMsgObj = new Object();
   var statusFlagsObj = new Object();

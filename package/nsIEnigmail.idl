@@ -68,7 +68,7 @@ interface nsIEnigmail : nsISupports
   readonly attribute long maxIdleMinutes;
 
   readonly attribute boolean initialized;
-  readonly attribute boolean initializationAttempted;
+  attribute boolean initializationAttempted;
   readonly attribute string initializationError;
 
   readonly attribute boolean composeSecure;

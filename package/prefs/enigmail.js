@@ -62,8 +62,8 @@ pref("extensions.enigmail.handleDoubleClick",false);
 // disable '<' and '>' around email addresses
 pref("extensions.enigmail.hushMailSupport",false);
 
-// countdown for 'failed to initialize enigmime'
-pref("extensions.enigmail.initAlertCount",2);
+// display alert for 'failed to initialize enigmime'
+pref("extensions.enigmail.initAlert",true);
 
 // use -a for encrypting attachments for inline PGP
 pref("extensions.enigmail.inlineAttachAsciiArmor",false);
@@ -74,7 +74,7 @@ pref("extensions.enigmail.inlineAttachExt",".pgp");
 // debug log directory (if set, also enabled debugging)
 pref("extensions.enigmail.logDirectory","");
 
-// enable encrypten for replies to encrypted mails
+// enable encryption for replies to encrypted mails
 pref("extensions.enigmail.keepSettingsForReply",true);
 
 // list of keyservers to use

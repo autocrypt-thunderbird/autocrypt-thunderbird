@@ -392,23 +392,39 @@ function enigmailKeyDetails() {
 
 function enigmailDeleteKey() {
   var keyList = enigmailGetSelectedKeys();
+  var deleteSecret=false;
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return;
 
-  var userId="0x"+keyList[0].substr(-8,8)+" - "+gKeyList[keyList[0]].userId;
-  var deleteSecret=false;
-  if(gKeyList[keyList[0]].secretAvailable) {
-    if (!EnigConfirm(EnigGetString("deleteSecretKey", userId))) return;
-    deleteSecret=true;
+  if (keyList.length == 1) {
+    // one key selected
+    var userId="0x"+keyList[0].substr(-8,8)+" - "+gKeyList[keyList[0]].userId;
+    if(gKeyList[keyList[0]].secretAvailable) {
+      if (!EnigConfirm(EnigGetString("deleteSecretKey", userId))) return;
+      deleteSecret=true;
+    }
+    else {
+      if (!EnigConfirm(EnigGetString("deletePubKey", userId))) return;
+    }
   }
   else {
-    if (!EnigConfirm(EnigGetString("deletePubKey", userId))) return;
+    // several keys selected
+    for (var i=0; i<keyList.length; i++) {
+      if (gKeyList[keyList[i]].secretAvailable) deleteSecret = true;
+    }
+    
+    if (deleteSecret) {
+      if (!EnigConfirm(EnigGetString("deleteMix"))) return;
+    }
+    else {
+      if (!EnigConfirm(EnigGetString("deleteSelectedPubKey"))) return;
+    }
   }
   
   var errorMsgObj = {};
-  var r=enigmailSvc.deleteKey(window, "0x"+keyList[0], deleteSecret, errorMsgObj);
+  var r=enigmailSvc.deleteKey(window, "0x"+keyList.join(" 0x"), deleteSecret, errorMsgObj);
   if (r != 0) {
     EnigAlert(EnigGetString("deleteKeyFailed")+"\n\n"+errorMsgObj.value);
   }

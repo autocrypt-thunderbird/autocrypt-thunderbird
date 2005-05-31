@@ -182,7 +182,7 @@ var gEnigmailSvc;
 
 function GetEnigmailSvc() {
   // Lazy initialization of enigmail JS component (for efficiency)
-
+  
   if (gEnigmailSvc) {
     return gEnigmailSvc.initialized ? gEnigmailSvc : null;
   }
@@ -208,7 +208,7 @@ function GetEnigmailSvc() {
 
       try {
         // Reset alert count to default value
-        gPrefEnigmail.clearUserPref("initAlertCount");
+        gPrefEnigmail.clearUserPref("initAlert");
       } catch(ex) {
       }
 
@@ -220,7 +220,11 @@ function GetEnigmailSvc() {
 
         errMsg += "\n\n"+EnigGetString("avoidInitErr");
 
-        EnigAlertCount("initAlertCount", "Enigmail: "+errMsg);
+        EnigAlertPref("Enigmail: "+errMsg, "initAlert");
+        if (EnigGetPref("initAlert")) {
+          gEnigmailSvc.initializationAttempted = false;
+          gEnigmailSvc = null;
+        }
       }
 
       return null;
@@ -1538,7 +1542,6 @@ function EnigLoadKeyList(refresh, keyListObj) {
         keyObj = new Object();
         keyObj.expiry=listRow[EXPIRY];
         keyObj.created=listRow[CREATED];
-        keyObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID].replace(/\\e3A/g, ":"));
         keyObj.keyId=listRow[KEY_ID];
         keyObj.keyTrust=listRow[KEY_TRUST];
         keyObj.keyUseFor=listRow[KEY_USE_FOR];
@@ -1548,18 +1551,23 @@ function EnigLoadKeyList(refresh, keyListObj) {
         keyObj.photoAvailable=false;
         keyObj.secretAvailable=false;
         keyListObj.keyList[listRow[KEY_ID]] = keyObj;
-        keyListObj.keySortList.push({userId: keyObj.userId, keyId: keyObj.keyId});
         break;
       case "fpr":
         keyObj.fpr=listRow[USER_ID];
         break;
       case "uid":
-        var subUserId = {
-          userId: EnigConvertGpgToUnicode(listRow[USER_ID].replace(/\\e3A/g, ":")),
-          keyTrust: listRow[KEY_TRUST],
-          type: "uid"
+        if (typeof(keyObj.userId) != "string") {
+          keyObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID].replace(/\\e3A/g, ":"));
+          keyListObj.keySortList.push({userId: keyObj.userId, keyId: keyObj.keyId});
         }
-        keyObj.SubUserIds.push(subUserId);
+        else {
+          var subUserId = {
+            userId: EnigConvertGpgToUnicode(listRow[USER_ID].replace(/\\e3A/g, ":")),
+            keyTrust: listRow[KEY_TRUST],
+            type: "uid"
+          }
+          keyObj.SubUserIds.push(subUserId);
+        }
         break;
       case "uat":
         if (listRow[USER_ID].indexOf("1 ")==0) {

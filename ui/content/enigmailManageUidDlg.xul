@@ -108,14 +108,14 @@
       for (var i=0; i < keyList.length; i++) {
         var uidStr = keyList[i].split(/:/);
         switch(uidStr[0]) {
-        case "pub":
+/*        case "pub":
           ++uidNum;
           var uidTxt=EnigConvertGpgToUnicode(uidStr[9].replace(/\\e3A/g, ":"));
           var item=uidList.appendItem(uidTxt, "uid:"+String(uidNum));
           if (!window.enigmailUid) {
             window.enigmailUid = uidTxt;
           }
-          break;
+          break; */
         case "uid":
         case "uat":
           ++uidNum;

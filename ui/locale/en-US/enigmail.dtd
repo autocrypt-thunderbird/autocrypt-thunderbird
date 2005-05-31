@@ -148,6 +148,7 @@
 <!ENTITY enigmail.undoencryption.label         "Undo Encryption">
 <!ENTITY enigmail.insertkey.label              "Insert Public Key">
 <!ENTITY enigmail.attachkey.label              "Attach Public Key ...">
+<!ENTITY enigmail.attachmykey.label            "Attach My Public Key">
 
 <!ENTITY enigmail.composemenu.accesskey        "n">
 
@@ -167,6 +168,7 @@
 <!ENTITY enigmail.undoencryption.accesskey     "U">
 <!ENTITY enigmail.insertkey.accesskey          "K">
 <!ENTITY enigmail.attachkey.accesskey          "A">
+<!ENTITY enigmail.attachmykey.accesskey        "M">
 
 <!ENTITY enigmail.defaultEncryption.label         "Encrypt messages by default">
 <!ENTITY enigmail.defaultEncryptionSign.label     "Sign encrypted messages by default">
@@ -391,7 +393,7 @@
 <!ENTITY enigmail.keyMan.importFromServer.label    "Search for Keys">
 <!ENTITY enigmail.keyMan.importFromClipbrd.label   "Import Keys from Clipboard">
 <!ENTITY enigmail.keyMan.exportToFile.label        "Export Keys to File">
-<!ENTITY enigmail.keyMan.sendKeys.label            "Send Keys by Email">
+<!ENTITY enigmail.keyMan.sendKeys.label            "Send Public Keys by Email">
 <!ENTITY enigmail.keyMan.uploadToServer.label      "Upload Public Keys">
 <!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copy Public Keys to Clipboard">
 <!ENTITY enigmail.keyMan.ctxExportToFile.label     "Export Keys to File">
