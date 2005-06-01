@@ -256,14 +256,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
     if (sigDetails) {
       var detailArr=sigDetails.split(/ /);
 
-      var dat=new Date(detailArr[2]*1000);
-      var appLocale = Components.classes[ENIG_LOCALE_SVC_CONTRACTID].getService(Components.interfaces.nsILocaleService).getApplicationLocale();
-      var dateFormat = Components.classes[ENIG_DATE_FORMAT_CONTRACTID].getService(Components.interfaces.nsIScriptableDateFormat);
-      dateTime = dateFormat.FormatDateTime(appLocale.getCategory("NSILOCALE_TIME"), 
-                          dateFormat.dateFormatShort,
-                          dateFormat.timeFormatNoSeconds,
-                          dat.getFullYear(), dat.getMonth()+1, dat.getDate(),
-                          dat.getHours(), dat.getMinutes(), 0);
+      dateTime = EnigGetDateTime(detailArr[2], true, true);
       var txt = EnigGetString("keyAndSigDate", keyId.substr(-8, 8), dateTime);
       statusArr.push(txt);
       statusInfo += "\n" + txt;

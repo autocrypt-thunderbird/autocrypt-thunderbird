@@ -1540,8 +1540,8 @@ function EnigLoadKeyList(refresh, keyListObj) {
       switch (listRow[0]) {
       case "pub":
         keyObj = new Object();
-        keyObj.expiry=listRow[EXPIRY];
-        keyObj.created=listRow[CREATED];
+        keyObj.expiry=EnigGetDateTime(listRow[EXPIRY], true, false);
+        keyObj.created=EnigGetDateTime(listRow[CREATED], true, false);
         keyObj.keyId=listRow[KEY_ID];
         keyObj.keyTrust=listRow[KEY_TRUST];
         keyObj.keyUseFor=listRow[KEY_USE_FOR];
@@ -1716,6 +1716,25 @@ function EnigGetTrustLabel(trustCode) {
     keyTrust="";
   }
   return keyTrust;
+}
+
+function EnigGetDateTime(dateNum, withDate, withTime) {
+  if (dateNum != 0) {
+    var dat=new Date(dateNum * 1000);
+    var appLocale = Components.classes[ENIG_LOCALE_SVC_CONTRACTID].getService(Components.interfaces.nsILocaleService).getApplicationLocale();
+    var dateTimeFormat = Components.classes[ENIG_DATE_FORMAT_CONTRACTID].getService(Components.interfaces.nsIScriptableDateFormat);
+
+    var dateFormat = (withDate ? dateTimeFormat.dateFormatShort : dateTimeFormat.dateFormatNone);
+    var timeFormat = (withTime ? dateTimeFormat.timeFormatNoSeconds : dateTimeFormat.timeFormatNone);
+    return dateTimeFormat.FormatDateTime(appLocale.getCategory("NSILOCALE_TIME"),
+              dateFormat,
+              timeFormat,
+              dat.getFullYear(), dat.getMonth()+1, dat.getDate(),
+              dat.getHours(), dat.getMinutes(), 0);
+  }
+  else {
+    return "";
+  }
 }
 
 function enigCreateInstance (aURL, aInterface) 

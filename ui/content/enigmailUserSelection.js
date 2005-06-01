@@ -309,8 +309,7 @@ function enigmailBuildList(refresh) {
    toAddr=toAddrList.join(",")+" ";
 
    var d = new Date();
-   // create an ANSI date string (YYYYMMDD) for "now"
-   var now=(d.getDate()+100*(d.getMonth()+1)+10000*(d.getYear()+1900)).toString();
+   var now=d.valueOf() / 1000;
    var aValidUsers = new Array();
 
    var mailAddr, escapedMailAddr;
@@ -325,8 +324,8 @@ function enigmailBuildList(refresh) {
         if (((!aUserList[i].keyTrust) ||
               KEY_NOT_VALID.indexOf(aUserList[i].keyTrust)<0) &&
               aUserList[i].subkeyOK &&
-              ((!aUserList[i].expiry.length) ||
-              (aUserList[i].expiry.length && aUserList[i].expiry.replace(/\-/g, "") >= now))) {
+              ((!aUserList[i].expiry>0) ||
+              (aUserList[i].expiry >= now))) {
             // key still valid
             try {
               mailAddr = EnigStripEmail(aUserList[i].userId).toLowerCase();
@@ -472,7 +471,7 @@ function enigUserSelCreateRow (userObj, activeState, userId, keyValue, dateField
   trustCol.setAttribute("id", "trust");
 
   userCol.setAttribute("label", userId);
-  expCol.setAttribute("label", dateField);
+  expCol.setAttribute("label", EnigGetDateTime(dateField,true, false));
 
   var keyCol=document.createElement("treecell");
   keyCol.setAttribute("label", keyValue.substring(8,16));

@@ -184,8 +184,8 @@
       aRow.appendChild(createCell("0x"+aLine[4].substr(-8,8))); // key id
       aRow.appendChild(createCell(EnigGetString("keyAlgorithm_"+aLine[3]))); // algorithm
       aRow.appendChild(createCell(aLine[2])); // size
-      aRow.appendChild(createCell(aLine[5])); // created
-      var expire=(aLine[6].length==0 ? EnigGetString("keyExpiryNever") : aLine[6]);
+      aRow.appendChild(createCell(EnigGetDateTime(aLine[5], true, false))); // created
+      var expire=(aLine[6].length==0 ? EnigGetString("keyExpiryNever") : EnigGetDateTime(aLine[6], true, false));
       if (aLine[1]=="r") {
         expire = EnigGetString("keyValid.revoked");
       }

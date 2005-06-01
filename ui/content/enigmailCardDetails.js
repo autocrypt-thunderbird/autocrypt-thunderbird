@@ -80,9 +80,9 @@ function onLoad() {
         setValue("key_fpr_3", EnigFormatFpr(l[3]));
         break;
       case "fprtime":
-        setValue("key_created_1", getDate(l[1]));
-        setValue("key_created_2", getDate(l[2]));
-        setValue("key_created_3", getDate(l[3]));
+        setValue("key_created_1", EnigGetDateTime(l[1]), true, false);
+        setValue("key_created_2", EnigGetDateTime(l[2]), true, false);
+        setValue("key_created_3", EnigGetDateTime(l[3]), true, false);
         break;
       default:
         if (l[0]) {
@@ -125,18 +125,6 @@ function getSelection(attrib) {
   else {
     return "";
   }
-}
-
-function getDate(dateval) {
-  var dat=new Date(dateval*1000);
-  var appLocale = Components.classes[ENIG_LOCALE_SVC_CONTRACTID].getService(Components.interfaces.nsILocaleService).getApplicationLocale();
-  var dateFormat = Components.classes[ENIG_DATE_FORMAT_CONTRACTID].getService(Components.interfaces.nsIScriptableDateFormat);
-  var dateTime = dateFormat.FormatDateTime(appLocale.getCategory("NSILOCALE_TIME"),
-                        dateFormat.dateFormatShort,
-                        dateFormat.timeFormatNone,
-                        dat.getFullYear(), dat.getMonth()+1, dat.getDate(),
-                        0, 0, 0);
-  return dateTime;
 }
 
 function doEditData() {

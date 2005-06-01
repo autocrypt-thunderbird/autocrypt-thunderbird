@@ -4029,7 +4029,7 @@ function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
 Enigmail.prototype.getKeySig =
 function  (keyId, exitCodeObj, errorMsgObj) {
 
-  var gpgCommand = this.getAgentPath() + GPG_BATCH_OPTS + " --with-colons --with-fingerprint --list-sig "+keyId;
+  var gpgCommand = this.getAgentPath() + GPG_BATCH_OPTS + " --fixed-list-mode --with-colons --with-fingerprint --list-sig "+keyId;
 
   if (!this.initialized) {
     errorMsgObj.value = EnigGetString("notInit");

@@ -224,7 +224,7 @@
               }
 
               userRow.setAttribute("keyID", listRow[KEY_ID]);
-              addCell(userRow, listRow[CREATED]);
+              addCell(userRow, EnigGetDateTime(listRow[CREATED], true, false));
               treeItem=document.createElement("treeitem");
               treeItem.appendChild(userRow);
               treeChildren.appendChild(treeItem);
