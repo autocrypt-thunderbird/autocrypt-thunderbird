@@ -4904,17 +4904,27 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
   }
 
 
-  var exitCode=-1;  
+  var returnCode=-1;
   try {
     var keyEdit = new KeyEditor(pipeTrans, requestObserver);
-    exitCode = keyEdit.keyEditorMainLoop(callbackFunc, inputData, errorMsgObj);
+    returnCode = keyEdit.keyEditorMainLoop(callbackFunc, inputData, errorMsgObj);
   } catch (ex) {
     DEBUG_LOG("enigmail.js: Enigmail.editKey: caught exception from writing to pipeTrans\n");
   } 
   
-  switch(exitCode) {
+  var exitCode = -1;
+  switch(returnCode) {
   case 0:
-    try {
+    for (var retryCount = 50; retryCount > 0; retryCount--) {
+      if (pipeTrans.isAttached()) {
+        DEBUG_LOG("enigmail.js: Enigmail.editKey: sleeping 50 ms\n");
+        this.ipcService.sleep(50); // sleep 50 ms before retrying
+      }
+      else {
+        retryCount = -1;
+      }
+    }
+    try{
       exitCode = pipeTrans.exitCode();
     } catch (ex) {
       DEBUG_LOG("enigmail.js: Enigmail.editKey: caught exception from pipeTrans\n");
@@ -4923,6 +4933,8 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
   case -2:
     errorMsgObj.value=EnigGetString("badPhrase");
     this.clearCachedPassphrase();
+  default:
+    exitCode = returnCode;
   }
   
   DEBUG_LOG("enigmail.js: Enigmail.editKey: GnuPG terminated with code="+exitCode+"\n");
@@ -4970,6 +4982,12 @@ function signKeyCallback(inputData, keyEdit, ret) {
     ret.exitCode = 0;
     ret.writeTxt = inputData.trustLevel;
   }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterAdminPin"), ret);
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterCardPin"), ret);
+  }
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
     ret.quitNow = true;
   }
@@ -4994,6 +5012,12 @@ function keyTrustCallback(inputData, keyEdit, ret) {
   } 
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
     ret.quitNow = true;
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterAdminPin"), ret);
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterCardPin"), ret);
   }
   else {
     ret.quitNow=true;
@@ -5043,6 +5067,12 @@ function addUidCallback(inputData, keyEdit, ret) {
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
     ret.quitNow = true;
   }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterAdminPin"), ret);
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterCardPin"), ret);
+  }
   else {
     ret.quitNow=true;
     ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
@@ -5074,6 +5104,12 @@ function revokeCertCallback(inputData, keyEdit, ret) {
   else if (keyEdit.doCheck(GET_BOOL, "openfile.overwrite.okay" )) {
     ret.exitCode = 0;
     ret.writeTxt = "Y";
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterAdminPin"), ret);
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterCardPin"), ret);
   }
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
     ret.quitNow = true;
@@ -5126,6 +5162,12 @@ function revokeSubkeyCallback(inputData, keyEdit, ret) {
     ++inputData.step;
     ret.exitCode = 0;
     ret.writeTxt = "Y";
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterAdminPin"), ret);
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterCardPin"), ret);
   }
   else {
     ret.quitNow=true;
@@ -5196,6 +5238,12 @@ function deleteUidCallback(inputData, keyEdit, ret) {
     ret.exitCode = 0;
     ret.writeTxt = "Y";
   }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterAdminPin"), ret);
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterCardPin"), ret);
+  }
   else {
     ret.quitNow=true;
     ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
@@ -5248,6 +5296,12 @@ function revokeUidCallback(inputData, keyEdit, ret) {
     ret.exitCode = 0;
     ret.writeTxt = "Y";
   }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterAdminPin"), ret);
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterCardPin"), ret);
+  }
   else {
     ret.quitNow=true;
     ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
@@ -5272,6 +5326,12 @@ function deleteKeyCallback(inputData, keyEdit, ret) {
     ret.exitCode = 0;
     ret.writeTxt = "Y";
   } 
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterAdminPin"), ret);
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterCardPin"), ret);
+  }
   else {
     ret.quitNow=true;
     ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
@@ -5279,10 +5339,10 @@ function deleteKeyCallback(inputData, keyEdit, ret) {
   }
 }
 
-function GetPin(domWindow, promptMsg, passwdObj) {
+function GetPin(domWindow, promptMsg, ret) {
   DEBUG_LOG("enigmail.js: GetPin: \n");
 
-  passwdObj.value = "";
+  var passwdObj = {value: ""};
   var dummyObj = {};
 
   var success = false;
@@ -5295,10 +5355,14 @@ function GetPin(domWindow, promptMsg, passwdObj) {
                                          null,
                                          dummyObj);
 
-  if (!success)
+  if (!success) {
+    ret.errorMsg = EnigGetString("noPassphrase");
+    ret.quitNow=true;
     return false;
+  }
 
   DEBUG_LOG("enigmail.js: GetPin: got pin\n");
+  ret.writeTxt = passwdObj.value;
 
   return true;
 }
@@ -5335,26 +5399,10 @@ function genCardKeyCallback(inputData, keyEdit, ret) {
     ret.writeTxt = "Y";
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
-    ret.exitCode = 0;
-    pinObj={};
-    if (GetPin(inputData.parent, EnigGetString("enterAdminPin"), pinObj)) {
-      ret.writeTxt = pinObj.value;
-    }
-    else {
-      ret.errorMsg = EnigGetString("noPassphrase");
-      ret.quitNow=true;
-    }
+    GetPin(inputData.parent, EnigGetString("enterAdminPin"), ret);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
-    ret.exitCode = 0;
-    pinObj={};
-    if (GetPin(inputData.parent, EnigGetString("enterCardPin"), pinObj)) {
-      ret.writeTxt = pinObj.value;
-    }
-    else {
-      ret.errorMsg = EnigGetString("noPassphrase");
-      ret.quitNow=true;
-    }
+    GetPin(inputData.parent, EnigGetString("enterCardPin"), ret);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.enter")) {
     ret.exitCode = 0;
@@ -5428,26 +5476,10 @@ function cardAdminDataCallback(inputData, keyEdit, ret) {
     }
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
-    pinObj={};
-    if (GetPin(inputData.parent, EnigGetString("enterAdminPin"), pinObj)) {
-      ret.exitCode = 0;
-      ret.writeTxt = pinObj.value;
-    }
-    else {
-      ret.errorMsg = EnigGetString("noPassphrase");
-      ret.quitNow=true;
-    }
+    GetPin(inputData.parent, EnigGetString("enterAdminPin"), ret);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
-    ret.exitCode = 0;
-    pinObj={};
-    if (GetPin(inputData.parent, EnigGetString("enterCardPin"), pinObj)) {
-      ret.writeTxt = pinObj.value;
-    }
-    else {
-      ret.errorMsg = EnigGetString("noPassphrase");
-      ret.quitNow=true;
-    }
+    GetPin(inputData.parent, EnigGetString("enterCardPin"), ret);
   }
   else if (keyEdit.doCheck(GET_LINE, "keygen.smartcard.surname")) {
     ret.exitCode = 0;
