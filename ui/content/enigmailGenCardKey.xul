@@ -359,7 +359,9 @@
         if (generateObserver.backupLocation) {
           msg += "\n"+EnigGetString("keygen.keyBackup", generateObserver.backupLocation);
         }
-        EnigAlert(msg);
+        if (EnigConfirm(msg+"\n\n"+EnigGetString("revokeCertRecommended"))) {
+          EnigCreateRevokeCert(generateObserver.keyId, curId.email);
+        }
         window.close();
       }
       else {

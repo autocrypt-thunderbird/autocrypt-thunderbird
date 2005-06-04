@@ -102,7 +102,7 @@
 <!ENTITY enigmail.upgrade.label            "Upgrade">
 <!ENTITY enigmail.help.label               "Help">
 <!ENTITY enigmail.about.label              "About Enigmail">
-<!ENTITY enigmail.reload.label             "Reload IMAP Message">
+<!ENTITY enigmail.reload.label             "Reload Message">
 <!ENTITY enigmail.browse.label             "Browse...">
 <!ENTITY enigmail.sendersKeyMenu.label     "Sender's Key">
 <!ENTITY enigmail.adminSmartCard.label     "Manage SmartCard ...">
@@ -111,7 +111,7 @@
 <!ENTITY enigmail.decryptverify.accesskey   "D">
 <!ENTITY enigmail.importpublickey.accesskey "I">
 <!ENTITY enigmail.savedecrypted.accesskey   "S">
-<!ENTITY enigmail.reload.accesskey          "I">
+<!ENTITY enigmail.reload.accesskey          "E">
 <!ENTITY enigmail.adminSmartCard.accesskey  "M">
 
 <!ENTITY enigmail.autoDecrypt.accesskey     "A">

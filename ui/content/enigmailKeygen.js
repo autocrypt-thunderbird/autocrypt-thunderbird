@@ -118,7 +118,7 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
 
       EnigSavePrefs();
 
-      if (EnigConfirm(EnigGetString("genComplete", curId.email))) {
+      if (EnigConfirm(EnigGetString("keygenComplete", curId.email)+"\n\n"+EnigGetString("revokeCertRecommended"))) {
         EnigCreateRevokeCert(gGeneratedKey, curId.email);
       }
       

@@ -149,7 +149,8 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     TRUST_NEVER:     nsIEnigmail.UNTRUSTED_IDENTITY,
                     TRUST_MARGINAL:  nsIEnigmail.UNTRUSTED_IDENTITY,
                     TRUST_FULLY:     nsIEnigmail.TRUSTED_IDENTITY,
-                    TRUST_ULTIMATE:  nsIEnigmail.TRUSTED_IDENTITY
+                    TRUST_ULTIMATE:  nsIEnigmail.TRUSTED_IDENTITY,
+                    NO_CARD_AVAILABLE: nsIEnigmail.NO_SC_AVAILABLE
                     };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1753,6 +1754,7 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
   DEBUG_LOG("enigmail.js: Enigmail.execCmd: exitCode = "+exitCodeObj.value+"\n");
   DEBUG_LOG("enigmail.js: Enigmail.execCmd: errOutput = "+errOutput+"\n");
 
+/*
   var errLines = errOutput.split(/\r?\n/);
 
   // Discard last null string, if any
@@ -1792,15 +1794,17 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
     }
   }
 
-  exitCodeObj.value = this.fixExitCode(exitCodeObj.value, statusFlags);
-
   statusFlagsObj.value = statusFlags;
   statusMsgObj.value   = statusArray.join("\n");
   errorMsgObj.value    = errArray.join("\n");
+*/
+
+  errorMsgObj.value = this.parseErrorOutput(errOutput, statusFlagsObj, statusMsgObj);
+  exitCodeObj.value = this.fixExitCode(exitCodeObj.value, statusFlagsObj.value);
 
   CONSOLE_LOG(errorMsgObj.value+"\n");
 
-  DEBUG_LOG("enigmail.js: Enigmail.execCmd: statusFlags = "+bytesToHex(pack(statusFlags,4))+"\n");
+  //DEBUG_LOG("enigmail.js: Enigmail.execCmd: statusFlags = "+bytesToHex(pack(statusFlagsObj.value,4))+"\n");
   //DEBUG_LOG("enigmail.js: Enigmail.execCmd: statusMsg = "+statusMsgObj.value+"\n");
 
   this.stillActive();
@@ -1889,7 +1893,7 @@ function (command, needPassphrase, domWindow, prompter, listener,
 Enigmail.prototype.parseErrorOutput =
 function (errOutput, statusFlagsObj, statusMsgObj) {
 
-  WRITE_LOG("enigmail.js: Enigmail.parseErrorOutput: \n");
+  WRITE_LOG("enigmail.js: Enigmail.parseErrorOutput:\n");
   var errLines = errOutput.split(/\r?\n/);
 
   // Discard last null string, if any
@@ -1933,6 +1937,10 @@ function (errOutput, statusFlagsObj, statusMsgObj) {
   statusMsgObj.value   = statusArray.join("\n");
   var errorMsg         = errArray.join("\n");
 
+  if (statusFlags & nsIEnigmail.NO_SC_AVAILABLE) {
+    errorMsg = EnigGetString("noCardAvailable");
+  }
+
   DEBUG_LOG("enigmail.js: Enigmail.parseErrorOutput: statusFlags = "+bytesToHex(pack(statusFlags,4))+"\n");
   //DEBUG_LOG("enigmail.js: Enigmail.parseErrorOutput: statusMsg = "+statusMsgObj.value+"\n");
 
@@ -1974,6 +1982,7 @@ function (pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj) 
   DEBUG_LOG("enigmail.js: Enigmail.execEnd: exitCode = "+exitCode+"\n");
   DEBUG_LOG("enigmail.js: Enigmail.execEnd: errOutput = "+errOutput+"\n");
 
+/*
   var errLines = errOutput.split(/\r?\n/);
 
   // Discard last null string, if any
@@ -2012,18 +2021,24 @@ function (pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj) 
       errArray.push(errLines[j]);
     }
   }
-  if (errOutput.search(/jpeg image of size \d+/)>-1) {
-    statusFlags |= nsIEnigmail.PHOTO_AVAILABLE;
-
-  }
 
   statusFlagsObj.value = statusFlags;
   statusMsgObj.value   = statusArray.join("\n");
   errorMsgObj.value    = errArray.join("\n");
 
+  if (statusFlags & nsIEnigmail.NO_SC_AVAILABLE) {
+    errorMsgObj.value = EnigGetString("noCardAvailable");
+  }
+*/
+
+  errorMsgObj.value = this.parseErrorOutput(errOutput, statusFlagsObj, statusMsgObj);
+
+  if (errOutput.search(/jpeg image of size \d+/)>-1) {
+    statusFlags |= nsIEnigmail.PHOTO_AVAILABLE;
+  }
   CONSOLE_LOG(errorMsgObj.value+"\n");
 
-  DEBUG_LOG("enigmail.js: Enigmail.execEnd: statusFlags = "+bytesToHex(pack(statusFlags,4))+"\n");
+  //DEBUG_LOG("enigmail.js: Enigmail.execEnd: statusFlags = "+bytesToHex(pack(statusFlags,4))+"\n");
   //DEBUG_LOG("enigmail.js: Enigmail.execEnd: statusMsg = "+statusMsgObj.value+"\n");
 
   this.stillActive();
@@ -2637,9 +2652,9 @@ function (parent, uiFlags, cipherText, signatureObj, exitCodeObj,
 
   if (publicKey) {
     if (!allowImport) {
-      // errorMsgObj.value = EnigGetString("decryptToImport");
+      errorMsgObj.value = EnigGetString("decryptToImport");
       statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
-      // statusFlagsObj.value |= nsIEnigmail.INLINE_KEY;
+      statusFlagsObj.value |= nsIEnigmail.INLINE_KEY;
 
       return "";
     }
@@ -4252,7 +4267,7 @@ Enigmail.prototype.getCardStatus =
 function(exitCodeObj, errorMsgObj) {
   var command = this.getAgentPath();
 
-  command += " --status-fd 2 --with-colons --card-status";
+  command += " --status-fd 2 --fixed-list-mode --with-colons --card-status";
   var statusMsgObj = new Object();
   var statusFlagsObj = new Object();
 
@@ -4525,6 +4540,10 @@ KeyEditor.prototype = {
           }
           if (txt.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
             r.exitCode=-2;
+          }
+          if (txt.indexOf("[GNUPG:] NO_CARD_AVAILABLE")>=0) {
+            errorMsgObj.value=EnigGetString("noCardAvailable");
+            r.exitCode=-3;
           }
           if (txt.indexOf("[GNUPG:] ENIGMAIL_FAILURE")==0) {
             r.exitCode = -3;

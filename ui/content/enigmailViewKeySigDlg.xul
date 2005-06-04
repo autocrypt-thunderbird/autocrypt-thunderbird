@@ -342,7 +342,7 @@
       var row = getCurrRow();
       if (row.hasAttribute("keyID")) {
         if (row.hasAttribute("noKey")) {
-          if (EnigConfirm(EnigGetString("importKeyConfirm"))) {
+          if (EnigConfirm(EnigGetString("retrieveKeyConfirm"))) {
             importKey();
           }
         }

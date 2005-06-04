@@ -208,6 +208,7 @@ interface nsIEnigmail : nsISupports
   const long PARTIALLY_PGP        = 0x1000000;
   const long PHOTO_AVAILABLE      = 0x2000000;
   const long OVERFLOWED           = 0x4000000;
+  const long NO_SC_AVAILABLE      = 0x8000000;
 
   wstring decryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,
