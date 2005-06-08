@@ -750,6 +750,28 @@ function EnigConvertToUnicode(text, charset) {
   }
 }
 
+function EnigConvertFromUnicode(text, charset) {
+  DEBUG_LOG("enigmail.js: EnigConvertFromUnicode: "+charset+"\n");
+
+  if (!text)
+    return "";
+    
+  if (! charset) charset="utf-8";
+
+  // Encode plaintext
+  try {
+    var unicodeConv = Components.classes[NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(Components.interfaces.nsIScriptableUnicodeConverter);
+
+    unicodeConv.charset = charset;
+    return unicodeConv.ConvertFromUnicode(text);
+
+  } catch (ex) {
+    DEBUG_LOG("enigmail.js: EnigConvertFromUnicode: caught an exception\n");
+
+    return text;
+  }
+}
+
 
 function EnigConvertGpgToUnicode(text) {
   if (typeof(text)=="string") {
@@ -1627,10 +1649,10 @@ Enigmail.prototype.getAgentPath =
 function () {
   var p = "";
   try {
-    p=" "+this.prefBranch.getCharPref("agentAdditionalParam").replace(/([\\\`])/g, "\\$1");
+    p=this.prefBranch.getCharPref("agentAdditionalParam").replace(/([\\\`])/g, "\\$1");
   }
   catch (ex) {}
-  return this.agentPath+p;
+  return this.agentPath + " --charset utf8 " + p;
 }
 
 
@@ -3674,13 +3696,13 @@ function (parent, name, comment, email, expiryDate, keyLength, passphrase,
   var inputData = "%echo Generating a standard key\nKey-Type: DSA\nKey-Length: 1024\nSubkey-Type: ELG-E\n";
 
   inputData += "Subkey-Length: "+keyLength+"\n";
-  inputData += "Name-Real: "+name+"\n";
+  inputData += "Name-Real: "+EnigConvertFromUnicode(name)+"\n";
   if (comment)
-    inputData += "Name-Comment: "+comment+"\n";
+    inputData += "Name-Comment: "+EnigConvertFromUnicode(comment)+"\n";
   inputData += "Name-Email: "+email+"\n";
   inputData += "Expire-Date: "+String(expiryDate)+"\n";
 
-  pipeConsole.write(inputData+"\n");
+  pipeConsole.write(EnigConvertToUnicode(inputData, "utf-8")+"\n");
   CONSOLE_LOG(inputData+" \n");
 
   if (passphrase.length)
@@ -4656,7 +4678,7 @@ function (parent, keyId, outFile, reasonCode, reasonText, errorMsgObj) {
   var r= this.editKey(parent, true, null, keyId, "revoke", 
                       { outFile: outFile,
                         reasonCode: reasonCode,
-                        reasonText: reasonText },
+                        reasonText: EnigConvertFromUnicode(reasonText) },
                       revokeCertCallback,
                       null,
                       errorMsgObj);
@@ -4670,8 +4692,8 @@ function (parent, keyId, name, email, comment, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.addUid: keyId="+keyId+", name="+name+", email="+email+"\n");
   var r= this.editKey(parent, true, null, keyId, "adduid",
                       { email: email,
-                        name: name,
-                        comment: comment,
+                        name: EnigConvertFromUnicode(name),
+                        comment: EnigConvertFromUnicode(comment),
                         nameAsked: 0,
                         emailAsked: 0 }, 
                       addUidCallback,
@@ -4705,7 +4727,7 @@ function (parent, keyId, subkeys, reasonCode, reasonText, errorMsgObj) {
                       { step: 0,
                         subkeys: subkeys.split(/,/),
                         reasonCode: reasonCode,
-                        reasonText: reasonText },
+                        reasonText: EnigConvertFromUnicode(reasonText) },
                       revokeSubkeyCallback,
                       null,
                       errorMsgObj);
@@ -4820,9 +4842,9 @@ function (parent, name, email, comment, expiry, backupPasswd, requestObserver, e
   var generateObserver = new enigCardAdminObserver(requestObserver, this.isDosLike);
   var r = this.editKey(parent, false, null, "", "--with-colons --card-edit",
                       { step: 0,
-                        name: name,
+                        name: EnigConvertFromUnicode(name),
                         email: email,
-                        comment: comment,
+                        comment: EnigConvertFromUnicode(comment),
                         expiry: expiry,
                         backupPasswd: backupPasswd,
                         backupKey: (backupPasswd.length > 0 ? "Y" : "N"),
@@ -4839,8 +4861,8 @@ function (parent, name, firstname, lang, sex, url, login, forcepin, errorMsgObj)
   var adminObserver = new enigCardAdminObserver(null, this.isDosLike);
   var r = this.editKey(parent, false, null, "", "--with-colons --card-edit",
           { step: 0,
-            name: name,
-            firstname: firstname,
+            name: EnigConvertFromUnicode(name),
+            firstname: EnigConvertFromUnicode(firstname),
             lang: lang,
             sex: sex,
             url: url,

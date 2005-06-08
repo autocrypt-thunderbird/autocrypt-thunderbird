@@ -6,7 +6,7 @@
 pref("extensions.enigmail.configuredVersion","");
 
 // additional parameter(s) to pass to GnuPG
-pref("extensions.enigmail.agentAdditionalParam","--charset utf8");
+pref("extensions.enigmail.agentAdditionalParam","");
 
 // path to gpg executable
 pref("extensions.enigmail.agentPath","");
