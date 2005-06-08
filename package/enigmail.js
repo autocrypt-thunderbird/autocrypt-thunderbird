@@ -150,7 +150,7 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     TRUST_MARGINAL:  nsIEnigmail.UNTRUSTED_IDENTITY,
                     TRUST_FULLY:     nsIEnigmail.TRUSTED_IDENTITY,
                     TRUST_ULTIMATE:  nsIEnigmail.TRUSTED_IDENTITY,
-                    NO_CARD_AVAILABLE: nsIEnigmail.NO_SC_AVAILABLE
+                    CARDCTRL: nsIEnigmail.NO_SC_AVAILABLE
                     };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -298,11 +298,17 @@ function hexToBytes(hex) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function WRITE_LOG(str) {
-  
+  function f00(val, digits) {
+    return ("0000"+val.toString()).substr(-digits);
+  }
+
+  var d = new Date();
+  var datStr=d.getFullYear()+"-"+f00(d.getMonth()+1, 2)+"-"+f00(d.getDate(),2)+" "+f00(d.getHours(),2)+":"+f00(d.getMinutes(),2)+":"+f00(d.getSeconds(),2)+"."+f00(d.getMilliseconds(),3)+" ";
   if (gLogLevel >= 4)
-    dump(str);
+    dump(datStr+str);
 
   if (gEnigmailSvc && gEnigmailSvc.logFileStream) {
+    gEnigmailSvc.logFileStream.write(datStr, datStr.length);
     gEnigmailSvc.logFileStream.write(str, str.length);
     //gEnigmailSvc.logFileStream.flush();
   }
@@ -1902,6 +1908,7 @@ function (errOutput, statusFlagsObj, statusMsgObj) {
 
   var errArray    = new Array();
   var statusArray = new Array();
+  var errCode = 0;
 
   var statusPat = /^\[GNUPG:\] /;
   var statusFlags = 0;
@@ -1921,6 +1928,10 @@ function (errOutput, statusFlagsObj, statusMsgObj) {
           if (statusLine.search(/NODATA 1\b/) < 0)
             flag = 0;
         }
+        else if (flag == nsIEnigmail.NO_SC_AVAILABLE) {
+          var a = statusLine.split(/ +/);
+          errCode = Number(a[1]);
+        }
 
         if (flag)
           statusFlags |= flag;
@@ -1937,8 +1948,15 @@ function (errOutput, statusFlagsObj, statusMsgObj) {
   statusMsgObj.value   = statusArray.join("\n");
   var errorMsg         = errArray.join("\n");
 
-  if (statusFlags & nsIEnigmail.NO_SC_AVAILABLE) {
-    errorMsg = EnigGetString("noCardAvailable");
+  if ((statusFlags & nsIEnigmail.NO_SC_AVAILABLE) && errCode >0) {
+    switch (errCode) {
+    case 4:
+      errorMsg = EnigGetString("sc.noCardAvailable");
+      break;
+    case 5:
+      errorMsg = EnigGetString("sc.noReaderAvailable");
+      break;
+    }
   }
 
   DEBUG_LOG("enigmail.js: Enigmail.parseErrorOutput: statusFlags = "+bytesToHex(pack(statusFlags,4))+"\n");
@@ -4930,14 +4948,17 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
   } catch (ex) {
     DEBUG_LOG("enigmail.js: Enigmail.editKey: caught exception from writing to pipeTrans\n");
   } 
-  
+
+  var thread=Components.classes["@mozilla.org/thread;1"].getService(Components.interfaces.nsIThread);
+  thread=thread.currentThread;
+
   var exitCode = -1;
   switch(returnCode) {
   case 0:
-    for (var retryCount = 50; retryCount > 0; retryCount--) {
+    for (var retryCount = 100; retryCount > 0; retryCount--) {
       if (pipeTrans.isAttached()) {
-        DEBUG_LOG("enigmail.js: Enigmail.editKey: sleeping 50 ms\n");
-        this.ipcService.sleep(50); // sleep 50 ms before retrying
+        DEBUG_LOG("enigmail.js: Enigmail.editKey: sleeping 100 ms\n");
+        thread.sleep(100); // sleep 100 ms before retrying
       }
       else {
         retryCount = -1;
