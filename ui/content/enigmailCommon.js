@@ -459,10 +459,17 @@ function EnigReadFileContents(localFile, maxBytes) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function WRITE_LOG(str) {
+  function f00(val, digits) {
+    return ("0000"+val.toString()).substr(-digits);
+  }
+  
+  var d = new Date();
+  var datStr=d.getFullYear()+"-"+f00(d.getMonth()+1, 2)+"-"+f00(d.getDate(),2)+" "+f00(d.getHours(),2)+":"+f00(d.getMinutes(),2)+":"+f00(d.getSeconds(),2)+"."+f00(d.getMilliseconds(),3)+" ";
   if (gEnigLogLevel >= 4)
-    dump(str);
+    dump(datStr+str);
 
   if (gEnigDebugLog && gEnigmailSvc && gEnigmailSvc.logFileStream) {
+    gEnigmailSvc.logFileStream.write(datStr, datStr.length);
     gEnigmailSvc.logFileStream.write(str, str.length);
   }
 }

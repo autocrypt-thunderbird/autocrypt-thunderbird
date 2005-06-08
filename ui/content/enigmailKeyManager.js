@@ -319,24 +319,28 @@ function enigmailKeyMenu() {
     document.getElementById("bcClipbrd").setAttribute("disabled", "true");
   }
 
+  if (keyList.length >= 1) {
+    document.getElementById("bcEnableKey").removeAttribute("disabled");
+    if (gKeyList[keyList[0]].keyUseFor.indexOf("D")>0 ||
+        gKeyList[keyList[0]].keyTrust.indexOf(KEY_DISABLED)>=0) {
+      document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.enableKey"))
+    }
+    else {
+      document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.disableKey"))
+    }
+  }
+  
   if (keyList.length == 1) {
     document.getElementById("bcSignKey").removeAttribute("disabled");
     document.getElementById("bcViewSig").removeAttribute("disabled");
     document.getElementById("bcKeyDetails").removeAttribute("disabled");
     document.getElementById("bcDeleteKey").removeAttribute("disabled");
-    document.getElementById("bcEnableKey").removeAttribute("disabled");
-    if (gKeyList[keyList[0]].keyUseFor.indexOf("D")>0 || 
-        gKeyList[keyList[0]].keyTrust.indexOf(KEY_DISABLED)>=0) {
-      document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.enableKey"))
-    } 
-    else {
-      document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.disableKey"))
-    }
     document.getElementById("bcNoKey").removeAttribute("disabled");
   }
   else {
     if (keyList.length == 0) {
       document.getElementById("bcNoKey").setAttribute("disabled", "true");
+      document.getElementById("bcEnableKey").setAttribute("disabled", "true");
     }
     else {
       document.getElementById("bcNoKey").removeAttribute("disabled");
@@ -345,8 +349,6 @@ function enigmailKeyMenu() {
     document.getElementById("bcViewSig").setAttribute("disabled", "true");
     document.getElementById("bcKeyDetails").setAttribute("disabled", "true");
     document.getElementById("bcDeleteKey").setAttribute("disabled", "true");
-    document.getElementById("bcEnableKey").setAttribute("disabled", "true");
-    document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.disableKey"))
   }
 }
 
@@ -441,10 +443,13 @@ function enigmailEnableKey() {
   if (!enigmailSvc)
     return;
 
-  var errorMsgObj = {};
-  var r=enigmailSvc.enableDisableKey(window, "0x"+keyList[0], disableKey, errorMsgObj);
-  if (r != 0) {
-    EnigAlert(EnigGetString("enableKeyFailed")+"\n\n"+errorMsgObj.value);
+  for (var i=0; i<keyList.length; i++) {
+    var errorMsgObj = {};
+    var r=enigmailSvc.enableDisableKey(window, "0x"+keyList[i], disableKey, errorMsgObj);
+    if (r != 0) {
+      EnigAlert(EnigGetString("enableKeyFailed")+"\n\n"+errorMsgObj.value);
+      break;
+    }
   }
   enigmailRefreshKeys();
 }
