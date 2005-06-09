@@ -159,12 +159,6 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
 
   gEnigLastEncryptedURI = GetLoadedMessage();
   var bodyElement = document.getElementById("messagepanebox");
-/*
-  var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
-  if (! bodyElement) {
-    bodyElement = msgFrame.frames.document.body;
-  }
-*/
 
   if (!errorMsg) errorMsg="";
 
@@ -652,35 +646,16 @@ addEventListener('messagepane-unhide', enigMsgHdrViewUnhide, true);
 // THE FOLLOWING OVERRIDES CODE IN msgHdrViewOverlay.js
 
 
-var fEnigOpenAttachment;
-try {
-  // Mozilla <= 1.5
-  if (openAttachment) {
-    fEnigOpenAttachment = openAttachment;
-    openAttachment = function (msg) {
-      DEBUG_LOG("enigmailMsgHdrViewOverlay.js: openAttachment: "+msg.contentType+"\n");
-
-      if (msg.contentType.search(/^message\/rfc822/i) == 0) {
-        // Reset mail.show_headers pref to "original" value
-        EnigShowHeadersAll(false);
-      }
-
-      fEnigOpenAttachment(msg);
-    }
-  }
-} catch (ex) {
-  // Mozilla >= 1.6a
-  if (createNewAttachmentInfo.prototype.openAttachment) {
-    createNewAttachmentInfo.prototype.origOpenAttachment = createNewAttachmentInfo.prototype.openAttachment;
-    createNewAttachmentInfo.prototype.openAttachment = function () {
-      if (this.contentType.search(/^message\/rfc822/i) == 0) {
-        // Reset mail.show_headers pref to "original" value
-        EnigShowHeadersAll(false);
-      }
-
-      this.origOpenAttachment();
+// for Mozilla >= 1.6a only
+if (createNewAttachmentInfo.prototype.openAttachment) {
+  createNewAttachmentInfo.prototype.origOpenAttachment = createNewAttachmentInfo.prototype.openAttachment;
+  createNewAttachmentInfo.prototype.openAttachment = function () {
+    if (this.contentType.search(/^message\/rfc822/i) == 0) {
+      // Reset mail.show_headers pref to "original" value
+      EnigShowHeadersAll(false);
     }
 
+    this.origOpenAttachment();
   }
 }
 

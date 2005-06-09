@@ -1370,46 +1370,6 @@ function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
   }
 }
 
-/* *
-function EnigReceiveKey(parent, msgParentWindow, recvFlags, keyId,
-                        progressBar, requestObserver,
-                        errorMsgObj) {
-
-  if (keyId) {
-
-    var valueObj = { keyId: keyId };
-    var checkObj = new Object();
-
-    window.openDialog("chrome://enigmail/content/enigmailKeyserverDlg.xul",
-          "", "dialog,modal,centerscreen", valueObj, checkObj);
-
-    if (! checkObj.value) {
-      errorMsgObj.value = EnigGetString("failCancel");
-      return null;
-    }
-
-    var keyserver = checkObj.value;
-  }
-  else {
-    return null;
-  }
-
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-     return null;
-
-  if (progressBar) {
-    // wait one second before displaying the progress bar
-    var progressParam=ENIG_C.classes["@mozilla.org/messengercompose/composeprogressparameters;1"].createInstance(ENIG_C.interfaces.nsIMsgComposeProgressParams);
-    parent.setTimeout(progressBar.openProgressDialog, 1000, parent, msgParentWindow, "chrome://enigmail/content/enigRetrieveProgress.xul", progressParam);
-    //progressBar.openProgressDialog(parent, msgWindow, "chrome://enigmail/content/enigRetrieveProgress.xul", progressParam);
-    progressBar.onStateChange(null, null, ENIG_C.interfaces.nsIWebProgressListener.STATE_START, 0);
-  }
-
-  return enigmailSvc.receiveKey(recvFlags, keyserver, keyId, requestObserver, errorMsgObj);
-}
-/* */
-
 function EnigFilePicker(title, displayDir, save, defaultExtension, defaultName, filterPairs) {
   DEBUG_LOG("enigmailCommon.js: EnigFilePicker: "+save+"\n");
 
