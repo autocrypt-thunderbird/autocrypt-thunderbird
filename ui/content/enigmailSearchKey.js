@@ -348,7 +348,7 @@ function enigScanKeys(connType, htmlTxt) {
       enigScanHtmlKeys(htmlNode.firstChild.firstChild.data);
       break;
     case ENIG_CONN_TYPE_GPGKEYS:
-      enigScanGpgKeys(EnigConvertGpgToUnicode(htmlTxt));
+      enigScanGpgKeys(EnigConvertGpgToUnicode(unescape(htmlTxt)));
       break;
     default:
       ERROR_LOG("bizarre connType: "+connType+"\n");
