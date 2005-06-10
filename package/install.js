@@ -1,7 +1,7 @@
 // Install script for Enigmail
 
 var err;
-const APP_VERSION="0.91.0";
+const APP_VERSION="0.92.0";
 
 err = initInstall("Enigmail v"+APP_VERSION,  // name for install UI
                   "/enigmail",               // registered name
