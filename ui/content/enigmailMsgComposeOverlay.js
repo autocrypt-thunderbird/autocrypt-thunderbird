@@ -49,7 +49,7 @@ const EnigOutputLFLineBreak   = 1024;
 const ENIG_ENIGMSGCOMPFIELDS_CONTRACTID = "@mozdev.org/enigmail/composefields;1";
 
 // List of hash algorithms for PGP/MIME signatures
-var gMimeHashAlgorithms = ["md5", "sha1", "ripemd160"];
+var gMimeHashAlgorithms = ["md5", "sha1", "ripemd160", "sha256", "sha384", "sha512"];
 
 var gEnigEditor;
 var gEnigDirty, gEnigProcessed, gEnigTimeoutID;

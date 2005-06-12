@@ -175,6 +175,7 @@ const BUTTON_POS_0           = 1;
 const BUTTON_POS_1           = 1 << 8;
 const BUTTON_POS_2           = 1 << 16;
 
+var gMimeHashAlgorithms = ["md5", "sha1", "ripemd160", "sha256", "sha384", "sha512"];
 
 function CreateFileStream(filePath, permissions) {
 
@@ -2134,6 +2135,7 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
   exitCodeObj.value    = -1;
   statusFlagsObj.value = 0;
   errorMsgObj.value    = "";
+  var hashAlgo = gMimeHashAlgorithms[this.prefBranch.getIntPref("mimeHashAlgorithm")];
 
   if (!plainText) {
     DEBUG_LOG("enigmail.js: Enigmail.encryptMessage: NO ENCRYPTION!\n");
@@ -2172,7 +2174,7 @@ function (parent, uiFlags, plainText, fromMailAddr, toMailAddr,
 
   var pipeTrans = this.encryptMessageStart(parent, null, uiFlags,
                                            fromMailAddr, toMailAddr,
-                                           "", sendFlags, ipcBuffer,
+                                           hashAlgo, sendFlags, ipcBuffer,
                                            noProxy, startErrorMsgObj);
 
   if (!pipeTrans) {
