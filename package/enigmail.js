@@ -2371,6 +2371,12 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
 	                         ? fromMailAddr : "<" + fromMailAddr + ">";
     angledFromMailAddr = angledFromMailAddr.replace(/([\"\'\`])/g, "\\$1");
 
+    if (encryptMsg || signMsg) {
+      if (hashAlgorithm) {
+        encryptCommand += " --digest-algo "+hashAlgorithm;
+      }
+    }
+    
     if (encryptMsg) {
       if (isAscii)
         encryptCommand += " -a";
@@ -2402,15 +2408,8 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
       if (isAscii)
         encryptCommand += " -a";
 
-      if (hashAlgorithm) {
-        encryptCommand += " --digest-algo "+hashAlgorithm;
-      }
-
     } else if (signMsg) {
       encryptCommand += " --clearsign";
-      if (hashAlgorithm) {
-        encryptCommand += " --digest-algo "+hashAlgorithm;
-      }
     }
 
     if (fromMailAddr) {
