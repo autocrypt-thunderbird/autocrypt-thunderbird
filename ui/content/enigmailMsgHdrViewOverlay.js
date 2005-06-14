@@ -106,7 +106,7 @@ function enigStartHeaders()
     try {
       messageHeaderSink.enigPrepSecurityInfo();
     }
-    catch (ex) {}
+    catch (ex) {}
 }
 
 
