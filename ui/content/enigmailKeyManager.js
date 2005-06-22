@@ -202,7 +202,7 @@ function enigUserSelCreateRow (keyObj, subKeyNum) {
       keyTrustStyle="enigmail_keyTrust_untrusted";
       break;
     case 'm':
-      keyTrust="enigmail_keyTrust_marginal";
+      keyTrustStyle="enigmail_keyTrust_marginal";
       break;
     case 'f':
       keyTrustStyle="enigmail_keyTrust_full";
