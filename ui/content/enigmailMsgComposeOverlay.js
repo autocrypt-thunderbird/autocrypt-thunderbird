@@ -390,10 +390,17 @@ function enigExtractAndAttachKey(uid) {
 
   // add attachment to msg
   AddAttachment(keyAttachment);
-  var attachmentBox = document.getElementById("attachments-box");
-  attachmentBox.hidden = false;
-  document.getElementById("attachmentbucket-sizer").hidden=false;
-
+  
+  if (typeof(ChangeAttachmentBucketVisibility) == "function") {
+    // TB 1.1
+    ChangeAttachmentBucketVisibility(false);
+  }
+  else {
+    // TB 1.0
+    var attachmentBox = document.getElementById("attachments-box");
+    attachmentBox.hidden = false;
+    document.getElementById("attachmentbucket-sizer").hidden=false;
+  }
   gContentChanged = true;
 }
 
