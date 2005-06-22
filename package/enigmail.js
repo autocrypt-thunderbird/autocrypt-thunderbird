@@ -2325,96 +2325,63 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
 
   var encryptCommand = this.getAgentPath();
 
-  if (this.agentType == "pgp") {
-    encryptCommand += PGP_BATCH_OPTS + " -fta "
+  encryptCommand += GPG_BATCH_OPTS;
 
-    if (encryptMsg) {
-      encryptCommand += " -e";
-
-      if (signMsg)
-        encryptCommand += " -s";
-
-      if ((sendFlags & nsIEnigmail.SEND_ENCRYPT_TO_SELF) && fromMailAddr)
-        encryptCommand += " +encrypttoself=on";
-
-      for (k=0; k<toAddrList.length; k++)
-         encryptCommand += " "+toAddrList[k];
-
-    } else if (detachedSig) {
-      encryptCommand += " -sb";
-
-      if (hashAlgorithm && gPGPHashNum[hashAlgorithm.toLowerCase()])
-        encryptCommand += " +hashnum=" + gPGPHashNum[hashAlgorithm];
-
-    } else if (signMsg) {
-      encryptCommand += " -s";
-    }
-
-    if (fromMailAddr) {
-      encryptCommand += " +myname=" + fromMailAddr;
-    }
-
-  } else {
-    encryptCommand += GPG_BATCH_OPTS;
-
-    if (!useDefaultComment)
-      encryptCommand += " --comment "+this.quoteSign+GPG_COMMENT_OPT.replace(/\%s/, this.vendor)+this.quoteSign;
+  if (!useDefaultComment)
+    encryptCommand += " --comment "+this.quoteSign+GPG_COMMENT_OPT.replace(/\%s/, this.vendor)+this.quoteSign;
 
 /*
-    if (usePgpMime && (! encryptMsg)) {
-      if (this.agentVersion >= "1.4.1") {
-        //encryptCommand += " --rfc2440-dshaw"
-      }
+  if (usePgpMime && (! encryptMsg)) {
+    if (this.agentVersion >= "1.4.1") {
+      //encryptCommand += " --rfc2440-dshaw"
     }
+  }
 */
-    var angledFromMailAddr = ((fromMailAddr.search(/^0x/) == 0) || hushMailSupport)
-	                         ? fromMailAddr : "<" + fromMailAddr + ">";
-    angledFromMailAddr = angledFromMailAddr.replace(/([\"\'\`])/g, "\\$1");
+  var angledFromMailAddr = ((fromMailAddr.search(/^0x/) == 0) || hushMailSupport)
+                         ? fromMailAddr : "<" + fromMailAddr + ">";
+  angledFromMailAddr = angledFromMailAddr.replace(/([\"\'\`])/g, "\\$1");
 
-    if (encryptMsg || signMsg) {
-      if (hashAlgorithm) {
-        encryptCommand += " --digest-algo "+hashAlgorithm;
+  if (signMsg && hashAlgorithm) {
+    encryptCommand += " --digest-algo "+hashAlgorithm;
+  }
+  
+  if (encryptMsg) {
+    if (isAscii)
+      encryptCommand += " -a";
+
+    encryptCommand +=  " -e";
+
+    if (signMsg)
+      encryptCommand += " -s";
+
+    if (sendFlags & nsIEnigmail.SEND_ALWAYS_TRUST) {
+      if (this.agentVersion >= "1.4") {
+        encryptCommand += " --trust-model always"
+      }
+      else {
+        encryptCommand += " --always-trust";
       }
     }
-    
-    if (encryptMsg) {
-      if (isAscii)
-        encryptCommand += " -a";
+    if ((sendFlags & nsIEnigmail.SEND_ENCRYPT_TO_SELF) && fromMailAddr)
+      encryptCommand += " --encrypt-to " + angledFromMailAddr;
 
-      encryptCommand +=  " -e";
-
-      if (signMsg)
-        encryptCommand += " -s";
-
-      if (sendFlags & nsIEnigmail.SEND_ALWAYS_TRUST) {
-        if (this.agentVersion >= "1.4") {
-          encryptCommand += " --trust-model always"
-        }
-        else {
-          encryptCommand += " --always-trust";
-        }
-      }
-      if ((sendFlags & nsIEnigmail.SEND_ENCRYPT_TO_SELF) && fromMailAddr)
-        encryptCommand += " --encrypt-to " + angledFromMailAddr;
-
-      for (k=0; k<toAddrList.length; k++) {
-         toAddrList[k] = toAddrList[k].replace(/\'/g, "\\'");
-         encryptCommand += (hushMailSupport || (toAddrList[k].search(/^0x/) == 0)) ? " -r "+ toAddrList[k]
-                            :" -r <" + toAddrList[k] + ">";
-      }
-
-    } else if (detachedSig) {
-      encryptCommand += " -s -b -t";
-      if (isAscii)
-        encryptCommand += " -a";
-
-    } else if (signMsg) {
-      encryptCommand += " --clearsign";
+    for (k=0; k<toAddrList.length; k++) {
+       toAddrList[k] = toAddrList[k].replace(/\'/g, "\\'");
+       encryptCommand += (hushMailSupport || (toAddrList[k].search(/^0x/) == 0)) ? " -r "+ toAddrList[k]
+                          :" -r <" + toAddrList[k] + ">";
     }
 
-    if (fromMailAddr) {
-      encryptCommand += " -u " + angledFromMailAddr;
-    }
+  } else if (detachedSig) {
+    encryptCommand += " -s -b -t";
+    if (isAscii)
+      encryptCommand += " -a";
+
+  } else if (signMsg) {
+    encryptCommand += " --clearsign";
+  }
+
+  if (fromMailAddr) {
+    encryptCommand += " -u " + angledFromMailAddr;
   }
 
   return encryptCommand;
