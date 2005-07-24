@@ -306,6 +306,10 @@
              accesskey="&enigmail.about.accesskey;"
              oncommand="EnigViewAbout();" />
 
+        <menuitem id="enigmail_testWizard"
+            label="Test Wizard"
+            oncommand="EnigOpenSetupWizard()"/>
+
       </menupopup>
     </menu>
 

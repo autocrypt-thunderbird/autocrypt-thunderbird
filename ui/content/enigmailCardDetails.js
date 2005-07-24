@@ -152,11 +152,11 @@ function doSaveChanges() {
   var forcepin = (getSelection("forcepin") == gCardData.forcepin ? 0 : 1);
   var errorMsgObj = new Object();
   var r = enigmailSvc.cardAdminData(window,
-                                    getValue("name"),
-                                    getValue("firstname"),
+                                    EnigConvertFromUnicode(getValue("name")),
+                                    EnigConvertFromUnicode(getValue("firstname")),
                                     getValue("lang"),
                                     getSelection("sex"),
-                                    getValue("url"),
+                                    EnigConvertFromUnicode(getValue("url")),
                                     getValue("login"),
                                     forcepin,
                                     errorMsgObj);

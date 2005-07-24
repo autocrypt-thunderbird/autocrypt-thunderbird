@@ -71,6 +71,8 @@ enigmail.jar:
 	content/enigmail/enigmailMsgPrintOverlay.xul   (content/enigmailMsgPrintOverlay.xul)
 	content/enigmail/enigmailMsgPrintOverlay.js    (content/enigmailMsgPrintOverlay.js)
 	content/enigmail/enigmailPrefsOverlay.xul      (content/enigmailPrefsOverlay.xul)
+	content/enigmail/enigmailSetupWizard.js        (content/enigmailSetupWizard.js)
+	content/enigmail/enigmailSetupWizard.xul       (content/enigmailSetupWizard.xul)
 	content/enigmail/enigmailViewFile.xul          (content/enigmailViewFile.xul)
 	content/enigmail/enigmailViewKeySigDlg.xul     (content/enigmailViewKeySigDlg.xul)
 	content/enigmail/enigRetrieveProgress.xul      (content/enigRetrieveProgress.xul)

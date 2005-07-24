@@ -102,9 +102,9 @@
       var errorMsgObj = new Object();
       var r = enigmailSvc.addUid(window,
                                   window.arguments[0].keyId,
-                                  name.value,
+                                  EnigConvertFromUnicode(name.value),
                                   email.value,
-                                  comment.value,
+                                  EnigConvertFromUnicode(comment.value),
                                   errorMsgObj);
     
      if (r != 0) {

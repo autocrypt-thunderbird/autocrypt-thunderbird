@@ -857,8 +857,10 @@ EnigRequestObserver.prototype = {
 function EnigConvertFromUnicode(text, charset) {
   DEBUG_LOG("enigmailCommon.js: EnigConvertFromUnicode: "+charset+"\n");
 
-  if (!text || !charset /*|| (charset.toLowerCase() == "iso-8859-1")*/)
-    return text;
+  if (!text)
+    return "";
+
+  if (! charset) charset="utf-8";
 
   // Encode plaintext
   try {
@@ -1731,4 +1733,9 @@ function enigGetService (aURL, aInterface)
   }
   
   return null;
+}
+
+function EnigOpenSetupWizard() {
+  window.open("chrome://enigmail/content/enigmailSetupWizard.xul",
+            "", "chrome,modal,centerscreen");
 }

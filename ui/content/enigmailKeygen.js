@@ -281,8 +281,8 @@ function enigmailKeygenStart() {
 
    try {
       ipcRequest = enigmailSvc.generateKey(window,
-                                           userName,
-                                           comment,
+                                           EnigConvertFromUnicode(userName),
+                                           EnigConvertFromUnicode(comment),
                                            userEmail,
                                            expiryTime,
                                            keySize,
