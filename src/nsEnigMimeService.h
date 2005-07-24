@@ -43,6 +43,10 @@
 #include "nsCOMPtr.h"
 #include "nsVoidArray.h"
 
+#ifdef XP_WIN
+#include <windows.h>
+#endif
+
 class nsEnigMimeService : public nsIEnigMimeService
 {
 public:

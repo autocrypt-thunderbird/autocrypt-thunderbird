@@ -1514,8 +1514,8 @@ function () {
     agentPath = this.prefBranch.getCharPref("agentPath");
   } catch (ex) {}
 
-  var agentList = ["gpg"];
-  var agentType = "";
+  var agentType = "gpg";
+  var agentName = this.isDosLike ? agentType+".exe" : agentType;
 
   if (agentPath) {
     // Locate GPG/PGP executable
@@ -1555,43 +1555,32 @@ function () {
       throw Components.results.NS_ERROR_FAILURE;
     }
 
-    if (agentPath.search(/gpg[^\/\\]*$/i) > -1) {
-      agentType = "gpg";
-
-    } else if (agentPath.search(/pgp[^\/\\]*$/i) > -1) {
-      agentType = "pgp";
-
-    } else {
-      this.initializationError = "Cannot determine agent type (GPG/PGP) from executable filename "+agentPath;
-      ERROR_LOG("enigmail.js: Enigmail.initialize: Error - "+this.initializationError+"\n");
-      throw Components.results.NS_ERROR_FAILURE;
-    }
-
   } else {
-    // Resolve relative path using PATH environment variable
-    var envPath = this.processInfo.getEnv("PATH");
-
-    for (var index=0; index<agentList.length; index++) {
-      agentType = agentList[index];
-      var agentName = this.isDosLike ? agentType+".exe" : agentType;
+    // Resolve relative path using PATH environment variable or Windows Registry
+    if (this.isWin32) {
+      // check windows registry
+      var enigMimeService = Components.classes[NS_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
+      try {
+        var regPath = enigMimeService.getGpgPathFromRegistry();
+        agentPath = ResolvePath(agentName, regPath, this.isDosLike)
+      }
+      catch (ex) {}
+    }
+    
+    if (! agentPath) {
+      // Resolve relative path using PATH environment variable
+      var envPath = this.processInfo.getEnv("PATH");
 
       agentPath = ResolvePath(agentName, envPath, this.isDosLike);
-      if (agentPath) {
-        // Discard path info for DOS-like systems
-        /* if (this.isDosLike)
-          agentPath = agentType; */
-        break;
+
+      if (!agentPath && this.isDosLike) {
+        // DOS-like systems: search for GPG in c:\gnupg, c:\gnupg\bin, d:\gnupg, d:\gnupg\bin
+        var gpgPath = "c:\\gnupg;c:\\gnupg\\bin;d:\\gnupg;d:\\gnupg\\bin";
+
+        agentPath = ResolvePath(agentName, gpgPath, this.isDosLike);
       }
     }
-
-    if (!agentPath && this.isDosLike) {
-      // DOS-like systems: search for GPG in c:\gnupg, c:\gnupg\bin, d:\gnupg, d:\gnupg\bin
-      var gpgPath = "c:\\gnupg;c:\\gnupg\\bin;d:\\gnupg;d:\\gnupg\\bin";
-
-      agentType = "gpg";
-      agentPath = ResolvePath("gpg.exe", gpgPath, this.isDosLike);
-    }
-
+    
     if (!agentPath) {
       this.initializationError = EnigGetString("gpgNotInPath");
       ERROR_LOG("enigmail.js: Enigmail: Error - "+this.initializationError+"\n");
@@ -3664,9 +3653,9 @@ function (parent, name, comment, email, expiryDate, keyLength, passphrase,
   var inputData = "%echo Generating a standard key\nKey-Type: DSA\nKey-Length: 1024\nSubkey-Type: ELG-E\n";
 
   inputData += "Subkey-Length: "+keyLength+"\n";
-  inputData += "Name-Real: "+EnigConvertFromUnicode(name)+"\n";
+  inputData += "Name-Real: "+name+"\n";
   if (comment)
-    inputData += "Name-Comment: "+EnigConvertFromUnicode(comment)+"\n";
+    inputData += "Name-Comment: "+comment+"\n";
   inputData += "Name-Email: "+email+"\n";
   inputData += "Expire-Date: "+String(expiryDate)+"\n";
 
@@ -4660,8 +4649,8 @@ function (parent, keyId, name, email, comment, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.addUid: keyId="+keyId+", name="+name+", email="+email+"\n");
   var r= this.editKey(parent, true, null, keyId, "adduid",
                       { email: email,
-                        name: EnigConvertFromUnicode(name),
-                        comment: EnigConvertFromUnicode(comment),
+                        name: name,
+                        comment: comment,
                         nameAsked: 0,
                         emailAsked: 0 }, 
                       addUidCallback,
@@ -4829,8 +4818,8 @@ function (parent, name, firstname, lang, sex, url, login, forcepin, errorMsgObj)
   var adminObserver = new enigCardAdminObserver(null, this.isDosLike);
   var r = this.editKey(parent, false, null, "", "--with-colons --card-edit",
           { step: 0,
-            name: EnigConvertFromUnicode(name),
-            firstname: EnigConvertFromUnicode(firstname),
+            name: name,
+            firstname: firstname,
             lang: lang,
             sex: sex,
             url: url,
