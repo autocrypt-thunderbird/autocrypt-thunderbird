@@ -1491,11 +1491,20 @@ function enigGenericSendMessage( msgType )
         {
           if (gEnigPromptSvc)
           {
+            var msgTitle;
+            try {
+              // TB 1.1
+              msgTitle = sComposeMsgsBundle.getString("sendMsgTitle");
+            }
+            catch (ex) {
+              // TB <= 1.0
+              msgTitle = sComposeMsgsBundle.getString("subjectDlogTitle");
+            }
             var result = {value:sComposeMsgsBundle.getString("defaultSubject")};
             if (gEnigPromptSvc.prompt(
-              window,
-              sComposeMsgsBundle.getString("subjectDlogTitle"),
-              sComposeMsgsBundle.getString("subjectDlogMessage"),
+                        window,
+                        msgTitle,
+                        sComposeMsgsBundle.getString("subjectDlogMessage"),
                         result,
               null,
               {value:0}
