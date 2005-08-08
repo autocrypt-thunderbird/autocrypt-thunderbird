@@ -42,20 +42,20 @@
 ]>
 
 <dialog id="enigmailwizardPrefs"
-        title=""
+        title="&enigmail.setupWiz.details.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="onLoad();"
         ondialogaccept="return onAccept();">
         
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
 
-  <description>The following preferences are modified by this Wizard:</description>
+  <description>&enigmail.setupWiz.details.changingPrefs;</description>
   <separator/>
   <groupbox>
-    <checkbox id="pref_imapOnDemand" label="Disable loading IMAP parts on demand"/>
-    <checkbox id="pref_flowedText" label="Disable flowed text (RFC 2646)"/>
-    <checkbox id="pref_viewPlainText" label="View message body as plain text"/>
-    <checkbox id="pref_quotedPrintable" label="Use 8-bit encoding for message sending"/>
+    <checkbox id="pref_imapOnDemand" label="&enigmail.setupWiz.details.imapOnDemand;"/>
+    <checkbox id="pref_flowedText" label="&enigmail.setupWiz.details.noFlowedMsg;"/>
+    <checkbox id="pref_viewPlainText" label="&enigmail.setupWiz.details.viewAsPlain;"/>
+    <checkbox id="pref_quotedPrintable" label="&enigmail.setupWiz.details.8bitEncoding;"/>
   </groupbox>
   
   <script type="application/x-javascript">

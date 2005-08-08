@@ -560,3 +560,10 @@
 <!ENTITY enigmail.setupWiz.pgKeyCreate.desc          "Select a User ID and enter a password for creating your personal OpenPGP key.">
 <!ENTITY enigmail.setupWiz.pgComplete.title          "Thank you">
 <!ENTITY enigmail.setupWiz.pgComplete.desc           "OpenPGP is now set up. We wish you a good time with Enigmail.">
+
+<!ENTITY enigmail.setupWiz.details.title             "Modify Application Settings">
+<!ENTITY enigmail.setupWiz.details.imapOnDemand      "Disable loading IMAP parts on demand">
+<!ENTITY enigmail.setupWiz.details.changingPrefs     "The following preferences are modified by this Wizard:">
+<!ENTITY enigmail.setupWiz.details.noFlowedMsg       "Disable flowed text (RFC 2646)">
+<!ENTITY enigmail.setupWiz.details.viewAsPlain       "View message body as plain text">
+<!ENTITY enigmail.setupWiz.details.8bitEncoding      "Use 8-bit encoding for message sending">
