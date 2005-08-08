@@ -36,8 +36,6 @@ GPL.
 // Initialize enigmailCommon
 EnigInitCommon("enigmailKeygen");
 
-const ENIG_ACCOUNT_MANAGER_CONTRACTID = "@mozilla.org/messenger/account-manager;1";
-
 var gAccountManager = Components.classes[ENIG_ACCOUNT_MANAGER_CONTRACTID].getService(Components.interfaces.nsIMsgAccountManager);
 
 var gAutoCrypto;
@@ -86,6 +84,7 @@ function enigmailKeygenUnload() {
 
    enigmailKeygenCloseRequest();
 }
+
 
 function enigmailKeygenUpdate(getPrefs, setPrefs) {
   DEBUG_LOG("enigmailKeygen.js: Update: "+getPrefs+", "+setPrefs+"\n");
@@ -189,6 +188,26 @@ function enigmailKeygenCloseRequest() {
   }
 }
 
+function enigmailCheckPassphrase() {
+  var passphraseElement = document.getElementById("passphrase");
+  var passphrase2Element = document.getElementById("passphraseRepeat");
+
+  var passphrase = passphraseElement.value;
+
+  if (passphrase != passphrase2Element.value) {
+    EnigAlert(EnigGetString("passNoMatch"));
+    return "";
+  }
+
+  if (passphrase.search(/[\x80-\xFF]/)>=0) {
+    EnigAlert(EnigGetString("passCharProblem"));
+    return "";
+  }
+  return passphrase;
+}
+
+
+
 function enigmailKeygenStart() {
    DEBUG_LOG("enigmailKeygen.js: Start\n");
 
@@ -203,20 +222,8 @@ function enigmailKeygenStart() {
       return;
    }
 
-   var passphraseElement = document.getElementById("passphrase");
-   var passphrase2Element = document.getElementById("passphraseRepeat");
-
-   var passphrase = passphraseElement.value;
-
-   if (passphrase != passphrase2Element.value) {
-      EnigAlert(EnigGetString("passNoMatch"));
-      return;
-   }
-
-   if (passphrase.search(/[\x80-\xFF]/)>=0) {
-      EnigAlert(EnigGetString("passCharProblem"));
-      return;
-   }
+   var passphrase = enigmailCheckPassphrase();
+   if (!passphrase) return;
    
    var noPassphraseElement = document.getElementById("noPassphrase");
 

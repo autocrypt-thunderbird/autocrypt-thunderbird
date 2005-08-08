@@ -82,7 +82,7 @@ const NS_TIMER_CONTRACTID       = "@mozilla.org/timer;1";
 const NS_OBSERVERSERVICE_CONTRACTID = "@mozilla.org/observer-service;1";
 const NS_PROMPTSERVICE_CONTRACTID = "@mozilla.org/embedcomp/prompt-service;1";
 const ASS_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
-const WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
+const WMEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const NS_IOSERVICE_CONTRACTID       = "@mozilla.org/network/io-service;1";
 const NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
 const NS_SCRIPTABLEINPUTSTREAM_CONTRACTID = "@mozilla.org/scriptableinputstream;1"
@@ -924,13 +924,17 @@ function (aURI)
 
   var windowManager = Components.classes[WMEDIATOR_CONTRACTID].getService(Components.interfaces.nsIWindowMediator);
 
-  var recentWin = windowManager.getMostRecentWindow(winName);
-
-  dump("recentWin="+recentWin+"\n");
+  var winEnum=windowManager.getEnumerator(null);
+  var recentWin=null;
+  while (winEnum.hasMoreElements() && ! recentWin) {
+    var thisWin = winEnum.getNext();
+    if (thisWin.location.href==spec) {
+      recentWin = thisWin;
+    }
+  }
 
   if (recentWin) {
     recentWin.focus();
-
   } else {
     var appShellSvc = Components.classes[ASS_CONTRACTID].getService(Components.interfaces.nsIAppShellService);
     var domWin = appShellSvc.hiddenDOMWindow;
@@ -1556,9 +1560,20 @@ function () {
     }
 
   } else {
-    // Resolve relative path using PATH environment variable or Windows Registry
-    if (this.isWin32) {
-      // check windows registry
+    // Resolve relative path using PATH environment variable
+    var envPath = this.processInfo.getEnv("PATH");
+
+    agentPath = ResolvePath(agentName, envPath, this.isDosLike);
+
+    if (!agentPath && this.isDosLike) {
+      // DOS-like systems: search for GPG in c:\gnupg, c:\gnupg\bin, d:\gnupg, d:\gnupg\bin
+      var gpgPath = "c:\\gnupg;c:\\gnupg\\bin;d:\\gnupg;d:\\gnupg\\bin";
+
+      agentPath = ResolvePath(agentName, gpgPath, this.isDosLike);
+    }
+    
+    if ((! agentPath) && this.isWin32) {
+      // Look up in Windows Registry
       var enigMimeService = Components.classes[NS_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
       try {
         var regPath = enigMimeService.getGpgPathFromRegistry();
@@ -1566,21 +1581,7 @@ function () {
       }
       catch (ex) {}
     }
-    
-    if (! agentPath) {
-      // Resolve relative path using PATH environment variable
-      var envPath = this.processInfo.getEnv("PATH");
 
-      agentPath = ResolvePath(agentName, envPath, this.isDosLike);
-
-      if (!agentPath && this.isDosLike) {
-        // DOS-like systems: search for GPG in c:\gnupg, c:\gnupg\bin, d:\gnupg, d:\gnupg\bin
-        var gpgPath = "c:\\gnupg;c:\\gnupg\\bin;d:\\gnupg;d:\\gnupg\\bin";
-
-        agentPath = ResolvePath(agentName, gpgPath, this.isDosLike);
-      }
-    }
-    
     if (!agentPath) {
       this.initializationError = EnigGetString("gpgNotInPath");
       ERROR_LOG("enigmail.js: Enigmail: Error - "+this.initializationError+"\n");

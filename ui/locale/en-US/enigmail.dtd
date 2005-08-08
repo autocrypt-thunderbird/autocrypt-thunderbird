@@ -532,3 +532,31 @@
 <!ENTITY enigmail.cardPin.currPin.label              "Current PIN">
 <!ENTITY enigmail.cardPin.newPin.label               "New PIN">
 <!ENTITY enigmail.cardPin.pinRepeat.label            "Repeat new PIN">
+
+<!ENTITY enigmail.setupWiz.title                     "Enigmail Setup Wizard">
+<!ENTITY enigmail.setupWiz.yes                       "Yes">
+<!ENTITY enigmail.setupWiz.no                        "No, thanks">
+<!ENTITY enigmail.setupWiz.pgWelcome.desc            "This wizard helps you set up OpenPGP (blah) ...">
+<!ENTITY enigmail.setupWiz.pgWelcome.createKey       "Do you want to create a new OpenPGP key?">
+<!ENTITY enigmail.setupWiz.pgWelcome.useExistingKey  "No, I want to use an existing key">
+<!ENTITY enigmail.setupWiz.pgSelectId.title          "Select Identities">
+<!ENTITY enigmail.setupWiz.pgSelectId.desc           "Identities desc blah ...">
+<!ENTITY enigmail.setupWiz.pgSelectId.allIds         "Would you like to activate OpenPGP for all identities?">
+<!ENTITY enigmail.setupWiz.pgSelectId.selecteIds     "No, only for the following identities:">
+<!ENTITY enigmail.setupWiz.pgSign.title              "Signing &amp; Encryption">
+<!ENTITY enigmail.setupWiz.pgSign.desc               "Blah ...">
+<!ENTITY enigmail.setupWiz.pgSign.signAllMsg         "Do you want to sign all outgoing messages?">
+<!ENTITY enigmail.setupWiz.pgSign.noSign             "No, signing should be off by default">
+<!ENTITY enigmail.setupWiz.pgSign.encryptAllMsg      "Do you want to encrypt all outgoing messages?">
+<!ENTITY enigmail.setupWiz.pgSign.noEncrypt          "No, encryption should be off by default">
+<!ENTITY enigmail.setupWiz.pgSettings.title          "Change Application Settings">
+<!ENTITY enigmail.setupWiz.pgSettings.desc           "Blah ...">
+<!ENTITY enigmail.setupWiz.pgSettings.changePref     "Do you want Enigmail to change a few default settings in order to work more reliably?">
+<!ENTITY enigmail.setupWiz.pgSettings.details        "Details ...">
+<!ENTITY enigmail.setupWiz.pgKeySel.title            "Select private OpenPGP Key">
+<!ENTITY enigmail.setupWiz.pgKeySel.desc             "Blah ...">
+<!ENTITY enigmail.setupWiz.pgKeySel.keySel           "Please select the OpenPGP key to use with Enigmail">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.title         "Create your OpenPGP Key">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc          "Select a User ID and enter a password for creating your personal OpenPGP key.">
+<!ENTITY enigmail.setupWiz.pgComplete.title          "Thank you">
+<!ENTITY enigmail.setupWiz.pgComplete.desc           "OpenPGP is now set up. We wish you a good time with Enigmail.">
