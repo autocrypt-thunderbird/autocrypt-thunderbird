@@ -57,7 +57,7 @@
 <!-- Seamonkey -->
   <menubar id="mailMenubar">
     <menu id="menu_Enigmail"
-          label="Enigmail"
+          label="&enigmail.openpgp.label;"
           accesskey="&enigmail.messengermenu.accesskey;"
           insertbefore="tasksMenu">
 
@@ -188,7 +188,7 @@
 <!-- Thunderbird -->
   <menubar id="mail-menubar">
     <menu id="menu_Enigmail"
-          label="Enigmail"
+          label="&enigmail.openpgp.label;"
           accesskey="&enigmail.messengermenu.accesskey;"
           insertbefore="tasksMenu">
 
@@ -364,7 +364,7 @@
         <spacer flex="1"/>
         <label class="headerName" 
             id="enigmailStatusHdr"
-            value="Enigmail: "/>
+            value="&enigmail.openpgp.label;: "/>
       </hbox>
       <vbox flex="1" pack="start">
         <textbox flex="1" readonly="true" 

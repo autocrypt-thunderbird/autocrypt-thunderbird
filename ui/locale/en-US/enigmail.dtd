@@ -1,4 +1,5 @@
 <!ENTITY enigmail.label                   "Enigmail">
+<!ENTITY enigmail.openpgp.label           "OpenPGP">
 
 <!ENTITY enigmail.keyUserId.label         "Account / User ID">
 <!ENTITY enigmail.keygenTitle.label       "Enigmail - Generate OpenPGP Key">
@@ -537,8 +538,10 @@
 <!ENTITY enigmail.setupWiz.yes                       "Yes">
 <!ENTITY enigmail.setupWiz.no                        "No, thanks">
 <!ENTITY enigmail.setupWiz.pgWelcome.desc            "This wizard helps you set up OpenPGP (blah) ...">
-<!ENTITY enigmail.setupWiz.pgWelcome.createKey       "Do you want to create a new OpenPGP key?">
-<!ENTITY enigmail.setupWiz.pgWelcome.useExistingKey  "No, I want to use an existing key">
+<!ENTITY enigmail.setupWiz.pgOnwnKey.title           "Create New Key?">
+<!ENTITY enigmail.setupWiz.pgOnwnKey.desc            "Blah ...">
+<!ENTITY enigmail.setupWiz.pgOnwnKey.createKey       "Do you want to create a new OpenPGP key?">
+<!ENTITY enigmail.setupWiz.pgOnwnKey.useExistingKey  "No, I want to use an existing key">
 <!ENTITY enigmail.setupWiz.pgSelectId.title          "Select Identities">
 <!ENTITY enigmail.setupWiz.pgSelectId.desc           "Identities desc blah ...">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds         "Would you like to activate OpenPGP for all identities?">

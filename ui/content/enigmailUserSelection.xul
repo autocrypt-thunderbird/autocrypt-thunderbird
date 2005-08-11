@@ -33,6 +33,7 @@
 
     <tree  id="enigmailUserIdSelection" flex="1"
       hidecolumnpicker="false"
+      seltype="single"
       style="height:350px"
       onclick="enigmailUserSelCallback(event);">
 

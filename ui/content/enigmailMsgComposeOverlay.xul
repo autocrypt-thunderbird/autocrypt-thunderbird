@@ -68,7 +68,7 @@
   <menubar id="compose-menubar">
 
       <menu id="menu_Enigmail"
-            label="Enigmail"
+            label="&enigmail.openpgp.label;"
             accesskey="&enigmail.composemenu.accesskey;"
             insertbefore="tasksMenu">
 
@@ -183,7 +183,7 @@
   <menubar id="mail-menubar">
 
       <menu id="menu_Enigmail"
-            label="Enigmail"
+            label="&enigmail.openpgp.label;"
             accesskey="&enigmail.composemenu.accesskey;"
             insertbefore="tasksMenu">
 

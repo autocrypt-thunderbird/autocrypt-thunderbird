@@ -299,7 +299,7 @@ function enigmailKeygenStart() {
    }
 
    if (!ipcRequest) {
-      EnigAlert("Key generation failed!");
+      EnigAlert(EnigGetString("keyGenFailed"));
    }
 
    gKeygenRequest = ipcRequest;

@@ -1039,7 +1039,7 @@ function GetPassphrase(domWindow, passwdObj, useAgentObj, agentVersion) {
 
   var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
   success = promptService.promptPassword(domWindow,
-                                         EnigGetString("Enigmail"),
+                                         EnigGetString("enigPrompt"),
                                          promptMsg,
                                          passwdObj,
                                          checkMsg,
