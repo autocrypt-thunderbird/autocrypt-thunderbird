@@ -60,18 +60,6 @@
       &enigmail.setupWiz.pgWelcome.desc;
     </description>
 
-    <separator/>
-    
-    <label value="&enigmail.setupWiz.pgWelcome.createKey;"/>
-    <radiogroup id="createPgpKey" value="1">
-      <radio id="createPgpKey_yes"
-             label="&enigmail.setupWiz.yes;"
-             selected="true"
-             value="1"/>
-      <radio id="createPgpKey_no"
-             label="&enigmail.setupWiz.pgWelcome.useExistingKey;"
-             value="0"/>
-    </radiogroup>
   </wizardpage>
 
   <wizardpage id="pgSelectId" pageid="pgSelectId" next="pgSign"
@@ -130,7 +118,7 @@
 
   </wizardpage>
 
-  <wizardpage id="pgSettings" pageid="pgSettings" next="pgKeySel"
+  <wizardpage id="pgSettings" pageid="pgSettings" next="pgOnwnKey"
               description="&enigmail.setupWiz.pgSettings.title;">
     <description>
       &enigmail.setupWiz.pgSettings.desc;
@@ -154,36 +142,28 @@
     </radiogroup>
   </wizardpage>
 
-  <wizardpage id="pgKeySel" pageid="pgKeySel"
-              next="pgComplete"
-              onpageshow="loadKeys()"
-              description="&enigmail.setupWiz.pgKeySel.title;">
+  <wizardpage id="pgOnwnKey" pageid="pgOnwnKey" next="pgKeyCreate"
+              description="&enigmail.setupWiz.pgOnwnKey.title;">
     <description>
-      &enigmail.setupWiz.pgKeySel.desc;
+      &enigmail.setupWiz.pgOnwnKey.desc;
     </description>
+
     <separator/>
-    <label value="&enigmail.setupWiz.pgKeySel.keySel;"/>
-    <tree  id="uidSelection" flex="1"
-      hidecolumnpicker="false"
-      style="height:200px">
 
-      <treecols>
-        <treecol id="uidCol" primary="true"
-                 flex="1"
-                 ignoreincolumnpicker="true"
-                 label="&enigmail.keyUserId.label;"/>
-        <splitter class="tree-splitter"/>
-        <treecol id="expCol" style="width:70px"
-                 label="&enigmail.created.label;"/>
-        <splitter class="tree-splitter"/>
-        <treecol id="keyCol" style="width:90px"
-                 label="&enigmail.keyId.label;"/>
-      </treecols>
-
-      <treechildren id="uidSelectionChildren"/>
-    </tree>
+    <label value="&enigmail.setupWiz.pgOnwnKey.createKey;"/>
+    <radiogroup id="createPgpKey" value="1">
+      <radio id="createPgpKey_yes"
+             label="&enigmail.setupWiz.yes;"
+             selected="true"
+             oncommand="setNextPage('pgKeyCreate')"
+             value="1"/>
+      <radio id="createPgpKey_no"
+             label="&enigmail.setupWiz.pgOnwnKey.useExistingKey;"
+             oncommand="setNextPage('pgKeySel')"
+             value="0"/>
+    </radiogroup>
   </wizardpage>
-  
+
   <wizardpage id="pgKeyCreate" pageid="pgKeyCreate"
               next="pgComplete"
               onpageshow="fillIdentities('menulist')"
@@ -221,6 +201,38 @@
     </groupbox>
   </wizardpage>
 
+  <wizardpage id="pgKeySel" pageid="pgKeySel"
+              next="pgComplete"
+              onpageshow="loadKeys()"
+              description="&enigmail.setupWiz.pgKeySel.title;">
+    <description>
+      &enigmail.setupWiz.pgKeySel.desc;
+    </description>
+    <separator/>
+    <label value="&enigmail.setupWiz.pgKeySel.keySel;"/>
+    <tree id="uidSelection" flex="1"
+      hidecolumnpicker="false"
+      style="height:200px"
+      seltype="single"
+      onselect="onKeySelected();">
+
+      <treecols>
+        <treecol id="uidCol" primary="true"
+                 flex="1"
+                 ignoreincolumnpicker="true"
+                 label="&enigmail.keyUserId.label;"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="expCol" style="width:70px"
+                 label="&enigmail.created.label;"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="keyCol" style="width:90px"
+                 label="&enigmail.keyId.label;"/>
+      </treecols>
+
+      <treechildren id="uidSelectionChildren"/>
+    </tree>
+  </wizardpage>
+  
   <wizardpage id="pgComplete" pageid="pgComplete"
               onpageshow="loadLastPage()"
               description="&enigmail.setupWiz.pgComplete.title;">
