@@ -49,17 +49,21 @@
         onwizardcancel="return onCancel();"
         height="500px"
         width="600px"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeygen.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailSetupWizard.js"/>
 
+  <broadcasterset>
+    <broadcaster id="bcKeyEnabled" properties=""/>
+  </broadcasterset>
+
   <wizardpage id="pgWelcome" pageid="pgWelcome" next="pgSelectId">
     <description>
       &enigmail.setupWiz.pgWelcome.desc;
     </description>
-
   </wizardpage>
 
   <wizardpage id="pgSelectId" pageid="pgSelectId" next="pgSign"
@@ -86,9 +90,15 @@
     <groupbox height="60px" width="200px">
       <vbox id="idSelection"/>
     </groupbox>
+
+    <separator/>
+    <description>
+      &enigmail.setupWiz.pgSelectId.note;
+    </description>
+
   </wizardpage>
 
-  <wizardpage id="pgSign" pageid="pgSign" next="pgSettings"
+  <wizardpage id="pgSign" pageid="pgSign" next="pgEnc"
               description="&enigmail.setupWiz.pgSign.title;">
     <description>
       &enigmail.setupWiz.pgSign.desc;
@@ -97,29 +107,37 @@
     <label value="&enigmail.setupWiz.pgSign.signAllMsg;"/>
     <radiogroup id="signMsg" value="1">
       <radio id="signMsg_yes"
-             label="&enigmail.setupWiz.yes;"
+             label="&enigmail.setupWiz.pgSign.yesSign;"
              selected="true"
              value="1"/>
       <radio id="signMsg_no"
              label="&enigmail.setupWiz.pgSign.noSign;"
              value="0"/>
     </radiogroup>
+  </wizardpage>
+
+  <wizardpage id="pgEnc" pageid="pgEnc" next="pgSettings"
+              description="&enigmail.setupWiz.pgEnc.title;">
+    <description>
+      &enigmail.setupWiz.pgEnc.desc;
+    </description>
     <separator/>
-    <label value="&enigmail.setupWiz.pgSign.encryptAllMsg;"/>
+    <label value="&enigmail.setupWiz.pgEnc.encryptAllMsg;"/>
     <radiogroup id="encryptMsg" value="1">
       <radio id="encryptMsg_yes"
-             label="&enigmail.setupWiz.yes;"
+             label="&enigmail.setupWiz.pgEnc.yesEncrypt;"
              selected="true"
              value="1"/>
       <radio id="encryptMsg_no"
-             label="&enigmail.setupWiz.pgSign.noEncrypt;"
+             label="&enigmail.setupWiz.pgEnc.noEncrypt;"
              value="0"/>
     </radiogroup>
 
   </wizardpage>
 
-  <wizardpage id="pgSettings" pageid="pgSettings" next="pgOnwnKey"
-              description="&enigmail.setupWiz.pgSettings.title;">
+  <wizardpage id="pgSettings" pageid="pgSettings" next="pgKeySel"
+              description="&enigmail.setupWiz.pgSettings.title;"
+              onpageshow="disableNext(false)">
     <description>
       &enigmail.setupWiz.pgSettings.desc;
     </description>
@@ -142,26 +160,48 @@
     </radiogroup>
   </wizardpage>
 
-  <wizardpage id="pgOnwnKey" pageid="pgOnwnKey" next="pgKeyCreate"
-              description="&enigmail.setupWiz.pgOnwnKey.title;">
+  <wizardpage id="pgKeySel" pageid="pgKeySel"
+              next="pgKeyCreate"
+              onpageshow="setNewKey()"
+              description="&enigmail.setupWiz.pgKeySel.title;">
     <description>
-      &enigmail.setupWiz.pgOnwnKey.desc;
+      &enigmail.setupWiz.pgKeySel.desc;
     </description>
-
-    <separator/>
-
-    <label value="&enigmail.setupWiz.pgOnwnKey.createKey;"/>
     <radiogroup id="createPgpKey" value="1">
       <radio id="createPgpKey_yes"
-             label="&enigmail.setupWiz.yes;"
+             label="&enigmail.setupWiz.pgKeySel.newKey;"
              selected="true"
-             oncommand="setNextPage('pgKeyCreate')"
+             oncommand="setNewKey()"
              value="1"/>
       <radio id="createPgpKey_no"
-             label="&enigmail.setupWiz.pgOnwnKey.useExistingKey;"
-             oncommand="setNextPage('pgKeySel')"
+             label="&enigmail.setupWiz.pgKeySel.useExistingKey;"
+             oncommand="setUseKey()"
              value="0"/>
     </radiogroup>
+
+    <separator/>
+    
+    <tree id="uidSelection" flex="1"
+      hidecolumnpicker="false"
+      style="height:200px"
+      seltype="single"
+      onselect="onKeySelected();">
+
+      <treecols>
+        <treecol id="uidCol" primary="true"
+                 flex="1"
+                 ignoreincolumnpicker="true"
+                 label="&enigmail.keyUserId.label;"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="expCol" style="width:70px"
+                 label="&enigmail.created.label;"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="keyCol" style="width:90px"
+                 label="&enigmail.keyId.label;"/>
+      </treecols>
+
+      <treechildren id="uidSelectionChildren"/>
+    </tree>
   </wizardpage>
 
   <wizardpage id="pgKeyCreate" pageid="pgKeyCreate"
@@ -201,37 +241,6 @@
     </groupbox>
   </wizardpage>
 
-  <wizardpage id="pgKeySel" pageid="pgKeySel"
-              next="pgComplete"
-              onpageshow="loadKeys()"
-              description="&enigmail.setupWiz.pgKeySel.title;">
-    <description>
-      &enigmail.setupWiz.pgKeySel.desc;
-    </description>
-    <separator/>
-    <label value="&enigmail.setupWiz.pgKeySel.keySel;"/>
-    <tree id="uidSelection" flex="1"
-      hidecolumnpicker="false"
-      style="height:200px"
-      seltype="single"
-      onselect="onKeySelected();">
-
-      <treecols>
-        <treecol id="uidCol" primary="true"
-                 flex="1"
-                 ignoreincolumnpicker="true"
-                 label="&enigmail.keyUserId.label;"/>
-        <splitter class="tree-splitter"/>
-        <treecol id="expCol" style="width:70px"
-                 label="&enigmail.created.label;"/>
-        <splitter class="tree-splitter"/>
-        <treecol id="keyCol" style="width:90px"
-                 label="&enigmail.keyId.label;"/>
-      </treecols>
-
-      <treechildren id="uidSelectionChildren"/>
-    </tree>
-  </wizardpage>
   
   <wizardpage id="pgComplete" pageid="pgComplete"
               onpageshow="loadLastPage()"

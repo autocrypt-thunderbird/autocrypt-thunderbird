@@ -45,61 +45,6 @@ function onLoad() {
 }
 
 
-function wizardGenKey() {
-  var wizard = document.getElementById("enigmailSetupWizard");
-
-  var passphrase = enigmailCheckPassphrase();
-  if (!passphrase) return false;
-
-  var enigmailSvc = enigGetSvc();
-
-  var curId = wizardGetSelectedIdentity();
-
-  var userName = curId.fullName;
-  var userEmail = curId.email;
-
-  document.getElementById("keygenConsoleBox").removeAttribute("collapsed");
-
-  var ipcRequest = null;
-  var requestObserver = new EnigRequestObserver(wizardKeygenTerminate,null);
-
-  try {
-    ipcRequest = enigmailSvc.generateKey(window,
-                                         EnigConvertFromUnicode(userName),
-                                         "",
-                                         userEmail,
-                                         365*5 /* 5 years */,
-                                         2048,
-                                         passphrase,
-                                         requestObserver);
-  } catch (ex) {}
-
-  if (!ipcRequest) {
-    EnigAlert(EnigGetString("keyGenFailed"));
-    return false;
-  }
-  wizard.getButton("next").disabled = true;
-  wizard.getButton("back").disabled = true;
-
-  gKeygenRequest = ipcRequest;
-
-  WRITE_LOG("enigmailKeygen.js: Start: gKeygenRequest = "+gKeygenRequest+"\n");
-  // Refresh console every 2 seconds
-  window.consoleIntervalId = window.setInterval(wizardRefreshConsole, 2000);
-  wizardRefreshConsole();
-  return false;
-}
-
-function wizardSelKey() {
-  // use existing key
-  var uidSel = document.getElementById("uidSelection");
-  var currIndex = uidSel.view.selection.currentIndex;
-  var currItem = uidSel.view.getItemAtIndex(currIndex);
-
-  applyWizardSettings(currItem.getAttribute("keyId"));
-}
-
-
 function onCancel() {
   if (gKeygenRequest) {
     if (EnigConfirm(EnigGetString("keyAbort"))) {
@@ -137,6 +82,11 @@ function onNext() {
     case "pgKeySel":
       wizardSelKey();
       break;
+    case "pgWelcome":
+      checkIdentities();
+      break;
+    case "pgSettings":
+      return loadKeys();
     case "pgKeyCreate":
       wizardGenKey();
       return false;
@@ -151,6 +101,13 @@ function setNextPage(pageId) {
   wizard.currentPage.next = pageId;
 }
 
+
+function disableNext(disable) {
+  var wizard = document.getElementById("enigmailSetupWizard");
+  wizard.getButton("next").disabled = disable;
+}
+
+
 function clearKeyListEntries(){
   // remove all rows 
   var treeChildren = document.getElementById("uidSelectionChildren");
@@ -160,17 +117,16 @@ function clearKeyListEntries(){
 }
 
 
-function onKeySelected(x) {
+function onKeySelected() {
   var wizard = document.getElementById("enigmailSetupWizard");
   var uidSel = document.getElementById("uidSelection");
-  wizard.getButton("next").disabled = (uidSel.view.selection.count == 0);
+  disableNext(uidSel.view.selection.count == 0);
 }
 
 
 function loadKeys() {
   var wizard = document.getElementById("enigmailSetupWizard");
-  wizard.getButton("next").disabled = true;
-  
+
   var enigmailSvc = enigGetSvc();
   
   if (!enigmailSvc) {
@@ -186,7 +142,12 @@ function loadKeys() {
     EnigAlert(errorMsgObj.value);
     return false;
   }
-  
+
+  if (keyList.search(/^sec:/m) < 0) {
+    setNextPage("pgKeyCreate");
+    return true;
+  }
+
   var uidList = [];
   var uidObj = {};
   var keyArr = keyList.split(/[\r\n]/);
@@ -214,10 +175,17 @@ function loadKeys() {
     var item = uidChildren.appendChild( document.createElement('treeitem') );
     item.setAttribute("keyId", uidList[i].keyId);
     var row = item.appendChild(document.createElement('treerow'));
-    row.appendChild( document.createElement('treecell') ).setAttribute('label', uidList[i].uid);
-    row.appendChild( document.createElement('treecell') ).setAttribute('label', "0x"+uidList[i].keyId.substr(-8,8));
-    row.appendChild( document.createElement('treecell') ).setAttribute('label', uidList[i].created);
+    var cell = row.appendChild( document.createElement('treecell') )
+    cell.setAttribute('label', uidList[i].uid);
+    cell.setAttribute('observes', "bcKeyEnabled");
+    cell = row.appendChild( document.createElement('treecell') );
+    cell.setAttribute('label', "0x"+uidList[i].keyId.substr(-8,8));
+    cell.setAttribute('observes', "bcKeyEnabled");
+    cell = row.appendChild( document.createElement('treecell') );
+    cell.setAttribute('label', uidList[i].created);
+    cell.setAttribute('observes', "bcKeyEnabled");
   }
+  onKeySelected();
   return true;
 }
 
@@ -286,12 +254,83 @@ function enigGetSvc() {
   return gEnigmailSvc.initialized ? gEnigmailSvc : null;
 }
 
+function wizardGenKey() {
+  var wizard = document.getElementById("enigmailSetupWizard");
+
+  var passphrase = enigmailCheckPassphrase();
+  if (passphrase == null) return false;
+
+  if (passphrase.length < 8) {
+    EnigAlert(EnigGetString("passphrase.min8keys"));
+    return false;
+  }
+
+  var enigmailSvc = enigGetSvc();
+
+  var curId = wizardGetSelectedIdentity();
+
+  var userName = curId.fullName;
+  var userEmail = curId.email;
+
+  document.getElementById("keygenConsoleBox").removeAttribute("collapsed");
+
+  var ipcRequest = null;
+  var requestObserver = new EnigRequestObserver(wizardKeygenTerminate,null);
+
+  try {
+    ipcRequest = enigmailSvc.generateKey(window,
+                                         EnigConvertFromUnicode(userName),
+                                         "",
+                                         userEmail,
+                                         365*5 /* 5 years */,
+                                         2048,
+                                         passphrase,
+                                         requestObserver);
+  } catch (ex) {}
+
+  if (!ipcRequest) {
+    EnigAlert(EnigGetString("keyGenFailed"));
+    return false;
+  }
+  wizard.getButton("back").disabled = true;
+
+  gKeygenRequest = ipcRequest;
+
+  WRITE_LOG("enigmailKeygen.js: Start: gKeygenRequest = "+gKeygenRequest+"\n");
+  // Refresh console every 2 seconds
+  window.consoleIntervalId = window.setInterval(wizardRefreshConsole, 2000);
+  wizardRefreshConsole();
+  return false;
+}
+
+function wizardSelKey() {
+  // use existing key
+  var createKey=document.getElementById("createPgpKey");
+  if (createKey.value == "0") {
+    var uidSel = document.getElementById("uidSelection");
+    var currIndex = uidSel.view.selection.currentIndex;
+    var currItem = uidSel.view.getItemAtIndex(currIndex);
+    applyWizardSettings(currItem.getAttribute("keyId"));
+  }
+}
+
+
 function queryISupportsArray(supportsArray, iid) {
     var result = new Array;
     for (var i=0; i<supportsArray.Count(); i++) {
       result[i] = supportsArray.GetElementAt(i).QueryInterface(iid);
     }
     return result;
+}
+
+function checkIdentities() {
+  var accountManager = Components.classes[ENIG_ACCOUNT_MANAGER_CONTRACTID].getService(Components.interfaces.nsIMsgAccountManager);
+  var idSupports = accountManager.allIdentities;
+  var identities = queryISupportsArray(idSupports,
+                                       Components.interfaces.nsIMsgIdentity);
+  if (accountManager.defaultAccount.identities.Count() <= 1) {
+    setNextPage("pgSign");
+  }
 }
 
 function fillIdentities(fillType)
@@ -432,13 +471,22 @@ function applyMozSetting(param, preference, newVal) {
 
 function wizardApplyId(identity, keyId) {
   DEBUG_LOG("enigmailSetupWizard.js: wizardApplyId: identity.Key="+identity.key+"\n");
-  
+  var accountManager = Components.classes[ENIG_ACCOUNT_MANAGER_CONTRACTID].getService(Components.interfaces.nsIMsgAccountManager);
+  var idServers = accountManager.GetServersForIdentity(identity);
+  var servers = queryISupportsArray(idServers ,Components.interfaces.nsIMsgIncomingServer);
+
+  var newsServer = false;
+  for (var i=0; i<servers.length; i++) {
+    newsServer = (servers[i].localStoreType == "news")
+  }
+
   identity.setBoolAttribute("enablePgp", true);
   identity.setIntAttribute("pgpKeyMode", 1);
   identity.setCharAttribute("pgpkeyId", "0x"+keyId.substr(-8,8));
+  identity.setIntAttribute("openPgpHeaderMode", 0);
 
   var signMsg = (document.getElementById("signMsg").value== "1");
-  var encryptMsg = (document.getElementById("encryptMsg").value== "1");
+  var encryptMsg = ((!newsServer) && (document.getElementById("encryptMsg").value== "1"));
 
   identity.setBoolAttribute("pgpSignEncrypted", signMsg);
   identity.setBoolAttribute("pgpSignPlain", signMsg);
@@ -526,6 +574,7 @@ function disableIdSel(doDisable) {
   }
 }
 
+
 function showPrefDetails() {
 
   window.openDialog("chrome://enigmail/content/enigmailWizardPrefs.xul",
@@ -533,8 +582,22 @@ function showPrefDetails() {
   return true;
 }
 
+
 function loadLastPage() {
   var wizard = document.getElementById("enigmailSetupWizard");
   wizard.canRewind=false;
   wizard.getButton("cancel").disabled = true;
+}
+
+
+function setNewKey() {
+  setNextPage('pgKeyCreate');
+  disableNext(false);
+  document.getElementById("uidSelection").boxObject.element.setAttribute("disabled", "true")
+}
+
+function setUseKey() {
+  setNextPage('pgComplete');
+  document.getElementById("uidSelection").boxObject.element.removeAttribute("disabled");
+  onKeySelected();
 }

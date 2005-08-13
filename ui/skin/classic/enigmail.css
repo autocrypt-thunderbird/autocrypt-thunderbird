@@ -102,7 +102,6 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
 
 
 .enigmailLink {
-  margin-left: 5px;
   text-decoration: underline;
   color: blue;
   cursor: pointer;

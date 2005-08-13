@@ -196,12 +196,12 @@ function enigmailCheckPassphrase() {
 
   if (passphrase != passphrase2Element.value) {
     EnigAlert(EnigGetString("passNoMatch"));
-    return "";
+    return null;
   }
 
   if (passphrase.search(/[\x80-\xFF]/)>=0) {
     EnigAlert(EnigGetString("passCharProblem"));
-    return "";
+    return null;
   }
   return passphrase;
 }
@@ -223,7 +223,7 @@ function enigmailKeygenStart() {
    }
 
    var passphrase = enigmailCheckPassphrase();
-   if (!passphrase) return;
+   if (passphrase == null) return;
    
    var noPassphraseElement = document.getElementById("noPassphrase");
 
