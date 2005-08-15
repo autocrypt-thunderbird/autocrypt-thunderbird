@@ -262,7 +262,7 @@ function enigImportKeys (connType, txt, errorTxt) {
     }
     return;
   }
-  else {
+  else if (window.enigRequest.errorTxt) {
     EnigLongAlert(window.enigRequest.errorTxt);
   }
   
