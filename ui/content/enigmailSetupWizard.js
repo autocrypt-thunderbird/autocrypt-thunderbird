@@ -272,6 +272,7 @@ function wizardGenKey() {
   var userName = curId.fullName;
   var userEmail = curId.email;
 
+  document.getElementById("keyCreateDesc2").setAttribute("collapsed", "true");
   document.getElementById("keygenConsoleBox").removeAttribute("collapsed");
 
   var ipcRequest = null;

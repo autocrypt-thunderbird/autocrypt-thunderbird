@@ -2,7 +2,7 @@
 <!ENTITY enigmail.openpgp.label           "OpenPGP">
 
 <!ENTITY enigmail.keyUserId.label         "Account / User ID">
-<!ENTITY enigmail.keygenTitle.label       "Enigmail - Generate OpenPGP Key">
+<!ENTITY enigmail.keygenTitle.label       "Generate OpenPGP Key">
 <!ENTITY enigmail.useForSigning.label     "Use generated key for the selected identity">
 <!ENTITY enigmail.keyComment.label        "Comment">
 <!ENTITY enigmail.keyNoPassphrase.label   "No passphrase">
@@ -20,7 +20,7 @@
 <!ENTITY enigmail.keyGen.keySize.label    "Key size">
 <!ENTITY enigmail.keyGen.console.label    "Key Generation Console">
 
-<!ENTITY enigmail.preferences.label       "Enigmail Preferences">
+<!ENTITY enigmail.preferences.label       "OpenPGP Preferences">
 
 <!ENTITY enigmail.passwordSettings.label  "Passphrase settings">
 <!ENTITY enigmail.userNoPassphrase.label  "No passphrase for user">
@@ -102,7 +102,7 @@
 <!ENTITY enigmail.generatekey.label        "Generate key">
 <!ENTITY enigmail.upgrade.label            "Upgrade">
 <!ENTITY enigmail.help.label               "Help">
-<!ENTITY enigmail.about.label              "About Enigmail">
+<!ENTITY enigmail.about.label              "About OpenPGP">
 <!ENTITY enigmail.reload.label             "Reload Message">
 <!ENTITY enigmail.browse.label             "Browse...">
 <!ENTITY enigmail.sendersKeyMenu.label     "Sender's Key">
@@ -211,14 +211,14 @@
 
 <!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>NOTE: Key generation may take up to several minutes to complete.</a> Do not exit the application while key generation is in progress. Actively browsing or performing disk-intensive operations during key generation will replenish the 'randomness pool' and speed-up the process. You will be alerted when key generation is completed.">
 
-<!ENTITY enigmail.console.label                     "View Enigmail console">
-<!ENTITY enigmail.console.tooltip                   "View Enigmail console">
+<!ENTITY enigmail.console.label                     "View OpenPGP console">
+<!ENTITY enigmail.console.tooltip                   "View OpenPGP console">
 
 <!ENTITY enigmail.uninstall.label                   "Uninstall Enigmail">
 <!ENTITY enigmail.uninstall.tooltip                 "Uninstall Enigmail">
 
-<!ENTITY enigmail.selectpanel.label                 "Select Enigmail Panel">
-<!ENTITY enigmail.selectpanel.tooltip               "Select Enigmail Panel">
+<!ENTITY enigmail.selectpanel.label                 "Select OpenPGP Panel">
+<!ENTITY enigmail.selectpanel.tooltip               "Select OpenPGP Panel">
 
 <!ENTITY enigmail.userSelectionList.label           "OpenPGP Key Selection">
 <!ENTITY enigmail.usersNotFound.label               "Recipients not valid, not trusted or not found">
@@ -259,7 +259,7 @@
 <!ENTITY enigmail.amPrefUseKeyId.label              "Use specific OpenPGP key ID (0x1234ABCD):">
 <!ENTITY enigmail.amPrefSelectKey.label             "Select Key ...">
 <!ENTITY enigmail.amPrefDefaultEncrypt.label        "Message Composition Default Options">
-<!ENTITY enigmail.encryptionDlg.label               "Enigmail Encryption &amp; Signing Settings">
+<!ENTITY enigmail.encryptionDlg.label               "OpenPGP Encryption &amp; Signing Settings">
 <!ENTITY enigmail.encDlgEncrypt.label               "Encrypt Message">
 <!ENTITY enigmail.encDlgEncrypt.accesskey           "E">
 <!ENTITY enigmail.encDlgSign.label                  "Sign Message">
@@ -289,10 +289,10 @@
 <!ENTITY  enigmail.trustSenderKeyPopup.label        "Set Sender's Key Trust ...">
 <!ENTITY  enigmail.smimeSecurityInfo.label          "S/MIME Security Info ...">
 <!ENTITY  enigmail.createRuleFromAddr.label         "Create OpenPGP Rule from Address...">
-<!ENTITY  enigmail.keyManWindow.label               "OpenPGP Key Management">
-<!ENTITY  enigmail.keyManWindow.accesskey           "O">
+<!ENTITY  enigmail.keyManWindow.label               "Key Management">
+<!ENTITY  enigmail.keyManWindow.accesskey           "y">
 
-<!ENTITY enigmail.singleRcptSettings.label          "Enigmail - Recipient Settings">
+<!ENTITY enigmail.singleRcptSettings.label          "OpenPGP - Recipient Settings">
 <!ENTITY enigmail.keysToUse.label                   "Key(s) to use:">
 <!ENTITY enigmail.selKeysButton.label               "Select Key(s)...">
 <!ENTITY enigmail.action.label                      "Action">
@@ -318,7 +318,7 @@
 <!ENTITY enigmail.matchEnd.label                    "Ends with">
 <!ENTITY enigmail.not.label                         "Not">
 
-<!ENTITY enigmail.rulesEditor.label                 "Enigmail - Per-Recipient Rules Editor">
+<!ENTITY enigmail.rulesEditor.label                 "OpenPGP - Per-Recipient Rules Editor">
 <!ENTITY enigmail.email.label                       "Email">
 <!ENTITY enigmail.pgpKeys.label                     "OpenPGP Key(s)">
 <!ENTITY enigmail.sign.label                        "Sign">
@@ -344,7 +344,7 @@
 
 <!ENTITY enigmail.progress.label                   "Progress">
 
-<!ENTITY enigmail.sKeyDlg.title                    "Enigmail - Sign Key">
+<!ENTITY enigmail.sKeyDlg.title                    "OpenPGP - Sign Key">
 <!ENTITY enigmail.sKeyDlg.signKey.label            "Key to be signed:">
 <!ENTITY enigmail.sKeyDlg.fingerprint.label        "Fingerprint:">
 <!ENTITY enigmail.sKeyDlg.signWithKey.label        "Key for signing:">
@@ -356,12 +356,12 @@
 <!ENTITY enigmail.sKeyDlg.createLocal.label        "Local signature (cannot be exported)">
 <!ENTITY enigmail.sKeyDlg.alreadySigned.label      "Note: some keys already signed with the key selected for signing!">
 
-<!ENTITY enigmail.addUidDlg.title                    "Enigmail - Add User ID">
-<!ENTITY enigmail.addUidDlg.name.label               "Name">
-<!ENTITY enigmail.addUidDlg.email.label              "Email">
-<!ENTITY enigmail.addUidDlg.comment.label            "Comment (optional)">
+<!ENTITY enigmail.addUidDlg.title                  "OpenPGP - Add User ID">
+<!ENTITY enigmail.addUidDlg.name.label             "Name">
+<!ENTITY enigmail.addUidDlg.email.label            "Email">
+<!ENTITY enigmail.addUidDlg.comment.label          "Comment (optional)">
 
-<!ENTITY enigmail.keyTrust.title                   "Enigmail - Set Key Trust">
+<!ENTITY enigmail.keyTrust.title                   "OpenPGP - Set Key Trust">
 <!ENTITY enigmail.keyTrust.trustKey.label          "Key To Trust:">
 <!ENTITY enigmail.keyTrust.trustLevel.label        "How much do you trust the key?">
 <!ENTITY enigmail.keyTrust.dontKnow.label          "I don't know">
@@ -537,90 +537,100 @@
 <!ENTITY enigmail.setupWiz.title                     "OpenPGP Setup Wizard">
 <!ENTITY enigmail.setupWiz.yes                       "Yes">
 <!ENTITY enigmail.setupWiz.no                        "No, thanks">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc            "This wizard sets up everything you need to start using OpenPGP right
-                                                      away.<html:br/><html:br/>In order to keep this process simple, the wizard makes assumptions that
-                                                      are suitable for most novice users. If you don't feel comfortable with
-                                                      these settings, you can manipulate all of them after finishing the
-                                                      wizard. Please consult the Help menu or the <a class='enigmailLink'><html:a
+<!ENTITY enigmail.setupWiz.pgWelcome.desc            "This wizard helps you to start using OpenPGP right away. Over the next
+                                                      few screens we'll ask you some questions to everything setup.
+                                                      <html:br/><html:br/>
+                                                      To keep everything simple, we make some assumptions about configuration.
+                                                       These assumptions try to provide a high level of security for the
+                                                      average user without creating confusion.  If you don't feel comfortable
+                                                      with these default settings, you can manipulate all of them after
+                                                      finishing the wizard.  Please have a look at the Help menu or the
+                                                      <a class='enigmailLink'><html:a
                                                       href='http://enigmail.mozdev.org/configure.html'>Enigmail website</html:a></a>
-                                                      for a detailled explanation of the full feature set.<html:br/><html:br/>
-                                                      As for now, you should be fine after answering some simple questions on
-                                                      the next few wizard screens. Please <a class='enigmailLink'><html:a
-                                                      href='mailto:enigmail@mozdev.org'>report back</html:a></a> if you encounter any
-                                                      difficulties using this wizard.">
-<!ENTITY enigmail.setupWiz.pgSelectId.title          "Select the identities you intend to use with OpenPGP">
-<!ENTITY enigmail.setupWiz.pgSelectId.desc           "The wizard has detected that you have configured more than one identity.
-                                                      OpenPGP settings are specific to identities. That is why the wizard needs
-                                                      to find out for which of those you would like to set up OpenPGP.<html:br/><html:br/>
-                                                      Note: each identitiy can have different OpenPGP settings. This wizard sets
-                                                      up all selected identities with the same settings you are defining now.">
+                                                      for more information about OpenPGP's features.
+                                                      <html:br/><html:br/>
+                                                      If you have any difficulties using this wizard please let use know by
+                                                      <a class='enigmailLink'><html:a
+                                                      href='mailto:enigmail@mozdev.org'>emailing us</html:a></a>.
+                                                      <html:br/><html:br/>
+                                                      Thank you for choosing Enigmail!">
+<!ENTITY enigmail.setupWiz.pgSelectId.title          "Select the account or identity you want OpenPGP to work with">
+<!ENTITY enigmail.setupWiz.pgSelectId.desc           "OpenPGP settings are specific to accounts and identities. By default
+                                                      OpenPGP will configure itself to work on all your accounts and
+                                                      identities.  If that's not what you want, please select the specific
+                                                      account or identity you want OpenPGP to work with below.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds         "I would you like to set up OpenPGP for all identities">
 <!ENTITY enigmail.setupWiz.pgSelectId.selecteIds     "I would you like to set up OpenPGP only for the following identities:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note           "<a class='enigmailStrong'>Note:</a> Signatures will be verified for all accounts and
-                                                      identities, no matter whether you have OpenPGP enabled for that account
-                                                      or identity or not.">
+<!ENTITY enigmail.setupWiz.pgSelectId.note           "<a class='enigmailStrong'>Note:</a> OpenPGP will always verify signatures
+                                                      on emails for every account or identity, regardless of whether it is enabled or not">
 <!ENTITY enigmail.setupWiz.pgSign.title              "Digitally Sign Your Outgoing Emails">
-<!ENTITY enigmail.setupWiz.pgSign.desc               "OpenPGP provides for digital signatures. They can be looked at an
-                                                      electronic counterpart to real life signatures. In times of spam and
-                                                      phishing, the wizard proposes to per default sign all outgoing e-mail.
-                                                      That way, the receipient of your message <a class='enigmailStrong'>can</a> verify your
-                                                      signature if he uses an OpenPGP-aware mail program such as you do. But
-                                                      does not need to verify it or have a program that can.<html:br/><html:br/>
-                                                      Signing your e-mail might offend some receipients if their mail program
-                                                      is not OpenPGP-aware and thus displays these signatures as attachment or
-                                                      in clear around your e-mail message. This OpenPGP implementation also
-                                                      provides for per-receipient rules, but in order to keep the number of
-                                                      exeptions small, the choice below is about what should be the default
-                                                      behaviour for most you e-mail contacts.">
-<!ENTITY enigmail.setupWiz.pgSign.signAllMsg         "Shall all your outgoing emails be signed?">
-<!ENTITY enigmail.setupWiz.pgSign.yesSign            "Yes, I will switch it off if I need to send an unsigned e-mail">
-<!ENTITY enigmail.setupWiz.pgSign.noSign             "No, I will create per-receipient rules for those that need to be signed">
-<!ENTITY enigmail.setupWiz.pgEnc.title               "Encrypt Your Outgoing Emails">
-<!ENTITY enigmail.setupWiz.pgEnc.desc                "OpenPGP also provides for encryption of both your email message and
-                                                      attachments. Encryption can be seen as equivalent to an envelope of a
-                                                      letter. So sending encrypted e-mail is not only for &quot;secret&quot; messages
-                                                      only but for everything that in real life you would not send on a postcard.<html:br/><html:br/>
-                                                      On a technical level, digital envelops work more like padlocks that only
-                                                      the receipient has a key for. So unlike signing, in oder to be able to
+<!ENTITY enigmail.setupWiz.pgSign.desc               "OpenPGP allows you to digitally sign your emails. These signatures are an
+                                                      electronic counterpart to real life signatures. We suggest that
+                                                      you sign all outgoing email.  This allows people to verify your
+                                                      signature if they use an OpenPGP-aware mail program like you. Of course,
+                                                      they don't need to have OpenPGP to read your email.
+                                                      <html:br/><html:br/>
+                                                      Signing your email might annoy some receipients if their mail program
+                                                      is not OpenPGP-aware and displays these signatures as attachment or
+                                                      around your email message. If you want to avoid sending signed email to
+                                                      certain people, OpenPGP provides for per-receipient rules. You need to
+                                                      choose what should be the default behaviour for your email contacts.">
+<!ENTITY enigmail.setupWiz.pgSign.signAllMsg         "Do you want to sign all your outgoing email by default?">
+<!ENTITY enigmail.setupWiz.pgSign.yesSign            "Yes, I will switch it off if I need to send an unsigned email">
+<!ENTITY enigmail.setupWiz.pgSign.noSign             "No, I want to create per-receipient rules for emails that need to be signed">
+<!ENTITY enigmail.setupWiz.pgEnc.title               "Encrypt your outgoing emails">
+<!ENTITY enigmail.setupWiz.pgEnc.desc                "OpenPGP allows you to encrypt both your email messages and any
+                                                      attachments. Encryption is like the envelope of a letter. It makes
+                                                      things private. Sending encrypted email is not only for &quot;secret&quot;
+                                                      messages, but for everything that in real life you would not send on a
+                                                      postcard.
+                                                      <html:br/><html:br/>
+                                                      On a technical level, encryption works like a padlock that only
+                                                      the receipient has a key for. Unlike signing, in order to be able to
                                                       use encryption all the receipients of an email need to use OpenPGP
-                                                      encryption themselves and equip you as the sender with their public key
-                                                      (which works like a padlock only they have the proper key for).<html:br/><html:br/>
+                                                      encryption themselves and give you their public key (which is the
+                                                      padlock we were talking about).
+                                                      <html:br/><html:br/>
                                                       So this means that unless most your communication partners have public
-                                                      keys, the wizard proposes to not enable encryption per default.">
+                                                      keys, you should not enable encryption by default.">
 <!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg       "Shall your outgoing email be encrypted by default?">
-<!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt          "Yes, I have public keys for most of my contacts. I will disable signing for those that have not">
+<!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt          "Yes, I have public keys for most of my contacts. I will disable encryption for the people that don't have keys">
 <!ENTITY enigmail.setupWiz.pgEnc.noEncrypt           "No, I will create per-receipient rules for those that sent me their public key">
-<!ENTITY enigmail.setupWiz.pgSettings.title          "Change Application Settings Recommended for the use with OpenPGP">
-<!ENTITY enigmail.setupWiz.pgSettings.desc           "In order to have OpenPGP working more reliably, we recommend to change some default application settings.">
+<!ENTITY enigmail.setupWiz.pgSettings.title          "Change your email settings to make OpenPGP work more reliably">
+<!ENTITY enigmail.setupWiz.pgSettings.desc           "OpenPGP can change your email settings to make sure there are no
+                                                      problems with signing and encrypting email on your machine.  These
+                                                      setting changes are mostly technical details that you will not notice,
+                                                      though one important thing is that emails are sent in plain text by
+                                                      default.
+                                                      <html:br/><html:br/>
+                                                      Do you want Enigmail to change a few default settings in order to work
+                                                      more reliably on your machine?">
 <!ENTITY enigmail.setupWiz.pgSettings.changePref     "Do you want to modify the Application default settings now?">
 <!ENTITY enigmail.setupWiz.pgSettings.details        "Details ...">
-<!ENTITY enigmail.setupWiz.pgKeySel.title           "Create New Key?">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc            "In order to be able to sign your own messages and in order to enable
-                                                      your communication partners to encrypt messages received by you, you
-                                                      need a key pair. The public key and the private key of this key pair
-                                                      belong together. What is encrypted with one part can be decrypted only
-                                                      with the other part. The <a class='enigmailStrong'>public</a> key must be given to all contacts
-                                                      that shall be able to verify your signatures and to encrypt messages to
-                                                      you. The <a class='enigmailStrong'>secret</a> you must not give away - it must be well
-                                                      protected. See the <a class='enigmailLink'><html:a
-                                                      href='http://enigmail.mozdev.org/gpgconf.html#generate'>Enigmail
-                                                      website</html:a></a> for more instructions about that.">
-<!ENTITY enigmail.setupWiz.pgKeySel.createKey       "Do you want to use an existing OpenPGP key or do you want to create a new OpenPGP key?">
-<!ENTITY enigmail.setupWiz.pgKeySel.newKey          "I want to create a new key and use it for all my mail identities">
-<!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey  "I want to use the following existing key for signing and encrypting my emails:">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.title         "Create your OpenPGP Key">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc          "You have chosen to create a new OpenPGP key to use for signing and encrypting
-                                                      emails. The wizard will now create a new OpenPGP key for you. The key will
-                                                      be valid for 5 years and enables you to sign and encrypt messages.
-                                                      <html:br/><html:br/>
-                                                      The OpenPGP key needs to be protected by a passphrase, so that others may not
-                                                      sign messages in your name or decrypt your emails. Select from below the identity
-                                                      to be used for setting the name and email address of your personal OpenPGP key,
-                                                      and enter a password.
-                                                      <html:br/><html:br/>">
+<!ENTITY enigmail.setupWiz.pgKeySel.title            "Create a key to sign and encrypt email">
+<!ENTITY enigmail.setupWiz.pgKeySel.desc             "We have detected that you already have an OpenPGP key. You can
+                                                      either use one of your existing keys to sign, encrypt and decrypt
+                                                      emails, or you can create a new key pair on the following page.">
+<!ENTITY enigmail.setupWiz.pgKeySel.createKey        "Do you want to use one of the existing OpenPGP keys or do you want to create a new OpenPGP key?">
+<!ENTITY enigmail.setupWiz.pgKeySel.newKey           "I want to create a new key and use it for all my mail identities">
+<!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey   "I want to use the following existing key for signing and encrypting my emails:">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.title         "Create a key to sign and encrypt email">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1         "You need to have what's called a 'key pair' to sign and encrypt messagesy
+                                                      or to read messages that are encrypted. A key pair has two keys, one
+                                                      pubic and one private.
+                                                      You need to give your public key to everyone in your contact list who
+                                                      will want to be able to understand your signature, or to encrypt
+                                                      messages to you.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2         "Meanwhile, you need to keep your private key secret.
+                                                      You must not give it away or leave it unprotected. It can read all the
+                                                      information that people encrypt and send to you. Therefore the OpenPGP key
+                                                      is protected by a passphrase, so that others may not use it to
+                                                      sign messages in your name or decrypt your emails.
+                                                      If you want more information about this you can read <a class='enigmailLink'><html:a
+                                                      href='http://enigmail.mozdev.org/gpgconf.html#generate'>this page</html:a></a> on
+                                                      the Enigmail website.">
 <!ENTITY enigmail.setupWiz.pgComplete.title          "Thank you">
 <!ENTITY enigmail.setupWiz.pgComplete.desc           "OpenPGP is now ready to use.<html:br/><html:br/>Thank you for using Enigmail.">
-
 <!ENTITY enigmail.setupWiz.details.title             "Modify Application Settings">
 <!ENTITY enigmail.setupWiz.details.imapOnDemand      "Disable loading IMAP parts on demand">
 <!ENTITY enigmail.setupWiz.details.changingPrefs     "The following preferences are modified by this Wizard:">

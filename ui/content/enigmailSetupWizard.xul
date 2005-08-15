@@ -209,7 +209,11 @@
               onpageshow="fillIdentities('menulist')"
               description="&enigmail.setupWiz.pgKeyCreate.title;">
     <description>
-      &enigmail.setupWiz.pgKeyCreate.desc;
+      &enigmail.setupWiz.pgKeyCreate.desc1;
+    </description>
+    <separator/>
+    <description id="keyCreateDesc2">
+      &enigmail.setupWiz.pgKeyCreate.desc2;
     </description>
     <separator/>
     <vbox>
