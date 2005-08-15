@@ -168,6 +168,7 @@ function onAccept () {
     document.getElementById("progress.box").removeAttribute("hidden");
     document.getElementById("dialog.accept").setAttribute("disabled", "true");
     window.enigRequest.keyNum = 0;
+    window.enigRequest.errorTxt="";
     switch (window.enigRequest.requestType) {
     case ENIG_CONN_TYPE_HTTP:
       enigNewHttpRequest(nsIEnigmail.DOWNLOAD_KEY, enigImportKeys);
@@ -237,14 +238,19 @@ function enigStatusLoaded (event) {
 }
 
 
-function enigImportKeys (connType, txt) {
+function enigImportKeys (connType, txt, errorTxt) {
   DEBUG_LOG("enigmailSearchKey.js: enigImportKeys\n");
   
   window.enigRequest.keyNum++;
   window.enigRequest.progressMeter.mode = "determined";
   window.enigRequest.progressMeter.value = (100 * window.enigRequest.keyNum / window.enigRequest.dlKeyList.length).toFixed(0);
 
-  if (!enigImportHtmlKeys(txt)) return;
+  if (txt.search(/^\[GNUPG:\] IMPORT_RES/m) < 0) {
+    if (!enigImportHtmlKeys(txt)) return;
+  }
+  else if (errorTxt) {
+    window.enigRequest.errorTxt +=errorTxt+"\n";
+  }
 
   if (window.enigRequest.dlKeyList.length > window.enigRequest.keyNum) {
     switch (connType) {
@@ -255,6 +261,9 @@ function enigImportKeys (connType, txt) {
         enigNewGpgKeysRequest(nsIEnigmail.DOWNLOAD_KEY, window.enigRequest.callbackFunction);
     }
     return;
+  }
+  else {
+    EnigLongAlert(window.enigRequest.errorTxt);
   }
   
   window.enigRequest.httpInProgress=false;
@@ -592,17 +601,25 @@ function enigmailGpgkeysTerminate(terminateArg, ipcRequest) {
   try {
     console = console.QueryInterface(Components.interfaces.nsIPipeConsole);
     var txt = null;
+    var errorTxt = null;
 
     if (console && console.hasNewData()) {
-      DEBUG_LOG("enigmailSearchkey.js: enigRefreshConsole(): hasNewData\n");
+      DEBUG_LOG("enigmailSearchkey.js: Terminate(): stdout.hasNewData\n");
       txt = console.getData();
     }
-    
+    console = window.enigRequest.gpgkeysRequest.stderrConsole;
+    console = console.QueryInterface(Components.interfaces.nsIPipeConsole);
+    if (console && console.hasNewData()) {
+      DEBUG_LOG("enigmailSearchkey.js: Terminate(): stderr.hasNewData\n");
+      errorTxt = console.getData();
+    }
     ipcRequest.close(true);
     enigGpgkeysCloseRequest();
 
-    if (txt)
-      window.enigRequest.callbackFunction(ENIG_CONN_TYPE_GPGKEYS, txt);
+    if (txt) {
+      window.enigRequest.callbackFunction(ENIG_CONN_TYPE_GPGKEYS, txt, errorTxt);
+    }
+    
   } catch (ex) {}
 }
 
