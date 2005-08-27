@@ -1,331 +1,35 @@
-<h2>Enigmail Help Information</h2>
-<p>This document provides some basic information on using Enigmail.
-If you encounter unexpected problems, you should also check the 
-<a href="troubles.html">Troubleshooting</a> page.</p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Enigmail Help</title>
+</head>
 
-<ol>
-  <li><a href="#start">Getting started</a></li>
-  <li><a href="#gpg">Using Enigmail with GnuPG</a></li>
-  <li><a href="#win">Using Enigmail on Windows</a></li>
-  <li><a href="configure.html">Configuring Enigmail</a></li>
-  <li><a href="#messenger">Using Enigmail when reading messages</a></li>
-  <li><a href="#compose">Using Enigmail when composing messages</a></li>
-  <li><a href="#tips">Tips</a></li>
-  <li><a href="#problems">Known problems and workarounds</a></li>
-</ol>
-
-<br>
-<a name="start"></a>
-<h3>Getting started</h3>
-
-<p>In order to use Enigmail, you need a recent version of the GNU Privacy Guard
-(<a href="http://www.gnupg.org">GnuPG</a>).</p>
-
-<p>If you are new to GnuPG (gpg) and/or Mozilla/Enigmail, we have
-<a href="/gpgconf.html">step by step instructions</a> for installing 
-GnuPG on Windows, as well as a
-<a href="http://downloads.mozdev.org/enigmail/docs/beginners-manual.pdf">
-Beginners Manual</a> (PDF). Both give you a good introduction for setting 
-up GnuPG and using Mozilla/Enigmail.</p>
-
-<ul>
-  <li>You need to restart the application after installation to start 
-      using Enigmail. If you installed Enigmail as the <tt>root</tt> user 
-      on Unix/Linux systems, your first restart should also be as <tt>root</tt>. 
-      <em>(Subsequent restarts do not require root privileges.)</em></li>
-  <li>If the application crashes when launching 
-      just after installing Enigmail, just restart it again. This problem 
-      has to do with the XUL cache and usually just goes away after the 
-      second or third restart. As a last resort, you may try deleting 
-      in your user profile directory the file named <tt>XUL.mfasl</tt> (Unix)
-      or <tt>XUL.mfl</tt> (Windows), and the <tt>chrome</tt> directory, and
-      then re-launch the application.</li>
-  <li>The <b>gpg</b> executable must reside in one of the directories 
-      listed in the PATH environment variable.
-  <ul>
-    <li>On Windows only, the following additional directories are also searched for
-        the executable (<tt>gpg.exe</tt>) file: 
-        <tt>c:\gnupg;c:\gnupg\bin;d:\gnupg;d:\gnupg\bin</tt></li>
-    <li>If the GnuPG executable is in a non-standard directory, you should
-        specify its location using the Enigmail <em>Preferences</em> panel.</li>
-  </ul>
-  </li>
-  <li>To check if Enigmail has located the GnuPG executable and
-      is ready for use, go to the Enigmail menu of the mail window
-      and click on <em>About Enigmail</em><br></li>
-  <li>Configure the settings in both your <em>Account</em> and in <em>Enigmail 
-	  &gt; Preferences</em> before attempting to send your first mail or the mail will 
-      be sent unsigned and/or un-encrypted.</li>
-  <li>To <em>enable Enigmail for an account</em> and set the signing/encryption 
-      defaults:
-      <ul>
-        <li>On Mozilla, use the <b>Edit -&gt; Mail &amp; Newsgroups Account Settings
-            </b> menu in the Mail &amp; Newsgroups window.</li>
-        <li>On Thunderbird, use the <b>Tools -&gt; Account Settings</b> menu.</li>
-      </ul>
-      Select the <b>OpenPGP Security</b> menu item below the account you want 
-      to configure.</li>
-  <li>To <em>set</em> user preferences or to <em>uninstall</em> Enigmail,
-      use the <b>Enigmail -&gt; Preferences</b> menu choice in the Mail &amp; 
-      Newsgroups/Thunderbird window. <em>(The uninstall feature is yet to be enabled 
-      on the Windows platform.)</em></li>
-  <li><b>S/MIME</b>: You should be able to use Enigmail along side with S/MIME (but not
-      both together for one message). If you <em>do 
-      not</em> wish to use S/MIME, you can hide the S/MIME button (on Mozilla you need to use the 
-      Enigmail Advanced Preferences panel. <em>You will need to restart the application for this setting 
-      to take effect.</em>)</li>
-  <li>We recommend that you select the OpenPGP key in the account settings. This 
-      adds the option <tt>-u key-id</tt> to the GnuPG command line for the 
-      account from which the message is being sent.</li>
-  <li>Enigmail has the facility to create a <em>logfile</em> for debugging errors.
-      If you experience problems with Enigmail, enter a directory path (e.g.: <tt>/home/tmp, 
-      c:\temp, </tt>etc.) in the <em>Debugging</em> tab of Preferences. The logfile can be 
-      viewed by going to <b>Enigmail -&gt; View logfile</b>.</li>
-  <li>Enigmail creates a <em>Decrypt</em> button on the main Mail
-      window. It also creates <em>Enigmail</em> menus on the main Mail window
-      and the Mail/Compose window (see <a href="screenshots.html">screenshots</a>).</li>
-  <li>In addition Enigmail creates <em>pen</em> and <em>key</em> icons in the status 
-      bar of the Mail/Compose windows. These icons indicate what will be done to the 
-      message (<em>pen = sign, key = encrypt</em>) and can be clicked on to change the 
-      function of signing or encrypting <em>for that message only</em>.<br>
-      These icons will also appear in the status bar of the Message Pane if reading a 
-      signed or encrypted message to indicate if it was signed and/or encrypted.</li>
-  <li>You can use the <em>Enigmail</em> menu in the Mail/Compose window to
-      generate keys, decrypt and verify messages, import keys, etc.</li>
-  <li>There is a <em>console</em> to capture output from GnuPG. Choose
-      the <b>Enigmail -&gt; View Console</b> menu option to view the output.</li>
-</ul>
-
-<br>
-<a name="gpg"></a>
-<h3>Using Enigmail with GnuPG</h3>
-
-<ul>
-  <li>By default, Enigmail enables the <tt>--always-trust</tt> option
-      for GnuPG to allow outgoing mail to be encrypted to any key, even untrusted
-      ones. If you would like to encrypt only to trusted keys, you should
-      disable this option in <em>Preferences</em>. (This setting does not affect 
-      signature verification on received messages: you will always be warned if 
-      the signing key is untrusted.)</li>
-</ul>
-<br>
-
-<a name="win"></a>
-<h3>Using Enigmail on Windows</h3>
-<ul>
-  <li>Enigmail no longer supports any version of PGP. Instead you should
-      use GnuPG (GPG). If you download the version of GnuPG from
-      <a href="http://www.nullify.org">www.nullify.org</a> you will get a more
-      Windows-friendly compilation and on that site you will find links to
-      the Windows GUIs to make key management even more easy. The Nullify
-      build also supports hash algorithms greater than 160 bit (not OpenPGP
-      standard conform). Unfortunately, there still only is a somewhat ancient
-      version 1.2.3 from September 2003 on nullify.org; the current gnupg.org
-      version is 1.2.6, current Windows version is 1.2.5 from July 2004.</li>
-  <li>If you're lost with setting up or using GnuPG, here are
-      <a href="/gpgconf.html">step by step instructions for installing GnuPG</a>.
-      Additionally, think about joining the
-      <a href="http://groups.yahoo.com/group/PGP-Basics">PGP-Basics group</a> who 
-      have some excellent online documents to help new users set up GnuPG on Windows.
-      There is also a <a href="http://lists.gnupg.org/mailman/listinfo/gnupg-users">
-      GnuPG Users group</a> who offer friendly and knowledgeable support specifically 
-      for GnuPG.</li>
-  <li>If you want to switch from PGP to GnuPG, you can take over all your keys into GnuPG.
-      In order to do this, export your public keys and your private keys
-      from PGP as ASCII armored files. You can then import your keys in GnuPG
-      using the command <tt>gpg --import <i>filename.asc</i></tt>.</li>
-</ul>
-
-<br>
-<a name="messenger"></a>
+<body>
+<h1>Enigmail Help</h1>
 <h3>Using Enigmail when reading messages</h3>
-
 <ul>
-  <li><b>Decrypt button in main Mail window</b><br>
-      This button can be used for several purposes: decrypt, verify, or import
-      public keys. Normally decryption/verification happens automatically,
-      although this can be disabled through a preference. However, if this fails,
-      usually a short error message will appear in the Enigmail status line. If
-      you click the Decrypt button, you will be able to see a more detailed error
-      message, including the output from the GnuPG command.<b>Pen and Key icons in Message Header display</b><br>
-      The <em>Pen</em> and <em>Key</em> icons in the Message Header display indicate if 
-      the message you are reading was signed and/or encrypted and if the signature is 
-      good, i.e. the message has not been changed since it was signed. If the message 
-      has been changed, the <em>Pen</em> icon will change to a <em>Broken Pen</em> to 
-      indicate that the signature is bad. Right clicking on either the Pen or Key icons 
-      will bring up a menu with the following options:
+  <li><b>Decrypt button in main Mail window</b><br />
+    This button can be used for several purposes: decrypt, verify, or import public keys. Normally decryption/verification happens automatically, although this can be disabled through a preference. However, if this fails, usually a short error message will appear in the Enigmail status line. If you click the Decrypt button, you will be able to see a more detailed error message, including the output from the GnuPG command. </li>
+  <li><b>Pen and Key icons in Message Header display</b><br />
+    The <em>Pen</em> and <em>Key</em> icons in the Message Header display indicate if the message you are reading was signed and/or encrypted and if the signature is good, i.e. the message has not been changed since it was signed. If the message has been changed, the <em>Pen</em> icon will change to a <em>Broken Pen</em> to indicate that the signature is bad. Right clicking on either the Pen or Key icons will bring up a menu with the following options:
       <ul>
-      <li><em>OpenPGP Security info</em>: allows you to view the output status from 
-          GnuPG for the message.</li>
-      <li><em>Copy OpenPGP Security info</em>: copies the output status from GnuPG to the 
-          clipboard; to paste into a reply message, etc.</li>
-      <li><em>View OpenPGP Photo ID</em>: allows you to view the <em>Photo ID</em> of the 
-          person who sent the message, if they have a photo embedded in their Public Key. 
-          (<em>This option will only be enabled if a Photo ID exists in their key.)</em></li>
-      <li><em>S/MIME Security info</em>: allows you to view the S/MIME Security Info 
-          for the message.</li>
+        <li><em>OpenPGP Security info</em>: allows you to view the output status from GnuPG for the message.</li>
+        <li><em>Copy OpenPGP Security info</em>: copies the output status from GnuPG to the clipboard; to paste into a reply message, etc.</li>
+        <li><em>View OpenPGP Photo ID</em>: allows you to view the <em>Photo ID</em> of the person who sent the message, if they have a photo embedded in their Public Key. (<em>This option will only be enabled if a Photo ID exists in their key.)</em></li>
+        <li><em>S/MIME Security info</em>: allows you to view the S/MIME Security Info for the message.</li>
       </ul>
-	  If you recieve an email with multiple public key blocks in it, Enigmail
-	  will only import the first keyblock it finds. Should you need to import 
-	  multiple public key blocks, you will need to save each one as a separate 
-	  file and use GnuPG from the command line to import them into your keyring.</li>
-  <li><b>Automatically retrieve keys from a keyserver</b><br>
-      If you do not have <em>keyserver-options auto-key-retrieve</em> set in your 
-      <tt>gpg.conf</tt> file and you read a message which is signed or encrypted, 
-      you will see a <em>Pen</em> icon in the headers display area with a <em>Question 
-      mark</em> on it, the Enigmail status line in the headers area will say <em>Part 
-      of the message signed; click pen icon for details</em> and the message in the 
-      Message Pane will show all the OpenPGP message block indicators and the signature 
-      block.<br>
-      You may also see this if you have <em>keyserver-options auto-key-retrieve</em>
-      set in your <tt>gpg.conf</tt> file and the OpenPGP key is not available on the default
-      keyserver.<br>
-      Clicking on the <em>Pen and Question mark</em> icon will bring up a window
-      advising that the key is unavailable in your keyring. Clicking on OK will
-      bring up another window with a list of keyservers which you can select to
-      download the sender's public key from.<br>
-      To configure the list of keyservers you wish to use, go to <b>Enigmail -&gt;
-      Preferences -&gt; Basic</b> tab and enter the keyserver addresses in the
-      <em>Keyserver(s):</em> box, separated by a comma. <em>The first keyserver in the 
-      list will be used as the default.</em></li>
-  <li><b>Opening encrypted attachments / importing attached OpenPGP keys</b><br>
-      Attachments named *.pgp, *.asc and *.gpg are recognized as attachments that
-      can be handled specially by Enigmail. Right clicking on such an attachment
-      enables two special menu items in the context menu: <em>Decrypt and Open</em>
-      and <em>Decrypt and Save</em>. Use these two menu items if you want Enigmail
-      to decrypt an attachment before opening or saving it. If an attachment is
-      recognized as a OpenPGP key file, you are offered to import the keys it into
-      your keyrings.</li>
-</ul>
-
-<br>
-<a name="compose"></a>
-<h3>Using Enigmail when composing messages</h3>
-
-<p><b>Enigmail menu in Mail/Compose window</b></p>
-<ul>
-  <li><b>Sign message</b>: Enable/Disable sending signed mail. User is notified 
-	if signing fails.
+      <p>If you do not have <em>keyserver-options auto-key-retrieve</em> set in your <tt>gpg.conf</tt> file and you read a message which is signed or encrypted, you will see a <em>Pen</em> icon in the headers display area with a <em>Question mark</em> on it, the Enigmail status line in the headers area will say <em>Part of the message signed; click pen icon for details</em> and the message in the Message Pane will show all the OpenPGP message block indicators and the signature block.</p>
+      <p>You may also see this if you have <em>keyserver-options auto-key-retrieve</em> set in your <tt>gpg.conf</tt> file and the OpenPGP key is not available on the default keyserver.</p>
+      <p>Clicking on the <em>Pen and Question mark</em> icon will bring up a window advising that the key is unavailable in your keyring. Clicking on OK will bring up another window with a list of keyservers from which you can select to download the sender's public key from.</p>
+      <p>To configure the list of keyservers you wish to use, go to <b>Enigmail -&gt; Preferences -&gt; Basic</b> tab and enter the keyserver addresses in the <em>Keyserver(s):</em> box, separated by a comma. <em>The first keyserver in the list will be used as the default.</em></p>
   </li>
-  <li><b>Encrypt message</b>: Enable/Disable encryption to all recipient(s) before 
-	sending. User is notified if encryption fails.
-	<ul>
-	<p>If <em>Display selection when necessary</em> is set in <b>Preferences
-	-&gt; Key Selection tab</b>, a list of keys will pop up	if there are addresses 
-	in the list of recipients for the message for whom you have no public key.</p>
-	<p>If <em>Never display OpenPGP key selection dialog</em> is set in <b>Preferences
-	-&gt; Key Selection tab</b>, and there are addresses in the list of recipients for 
-	the message for whom you have no public key, the message will be sent unencrypted.</p>
-	</ul>
-  </li>
-  <li><b>Use PGP/MIME for this message</b>: Enable/Disable the use of 
-	<a href="http://community.roxen.com/developers/idocs/rfc/rfc3156.html">PGP/MIME</a> 
-	for this message.
-	<ul>
-	  <li>If you know the recipient(s) can read mail using the PGP/MIME format, you should use it.</li>
-        <li>This feature is dependent on the settings in <b>Preferences -&gt; PGP/MIME tab</b>
-             being set to <em>Allow to use PGP/MIME</em> or <em>Always use PGP/MIME</em>.</li>
-	</ul></li>
-  <li><b>Default composition options</b>: Submenu
-  <ul>
-    <li><b>Signing/Encryption Options...</b>: shortcut to <b>Account Settings -&gt; OpenPGP Options.</b></li>
-    <li><b>Send options...</b>: shortcut to <b>Preferences -&gt; Send</b> tab.</li>
-    <li><b>Key selection options...</b>: shortcut to <b>Preferences -&gt; Key Selection</b> tab.</li>
-    <li><b>PGP/MIME options...</b>: shortcut to <b>Preferences -&gt; PGP/MIME</b> tab.</li>
-  </ul></li>
-  <li><b>Undo encryption</b>: If there is a failure when actually sending mail,
-      such as the POP server not accepting the request, Enigmail will not know
-      about it, and the encrypted message will continue to be displayed in the
-      Compose window. Choosing this menu item will undo the encryption/signing,
-      reverting the Compose window back to its original text.<br>
-      <em>As a temporary fix, this option may also be used to decrypt the quoted
-      text when replying to encrypted messages. Enigmail should automatically
-      decrypt the quoted message, but if that fails for some reason, you can use
-      this menu item to force it.</em></li>
-  <li><b>Insert public key</b>: insert ASCII-armored public key block at the
-       current cursor location in the Compose window. You will be prompted for the
-       email addresses of the key(s) to be inserted. Keys inserted in this manner
-       will automatically be recognized at the receiving end by Enigmail. After
-       key insertion, you may still choose to sign/encrypt the mail as
-       needed. Also, do not insert more than one key block in a message; just
-       specify multiple email addresses, separated by commas or spaces, when
-       prompted.</li>
-  <li><b>Clear save passphrase</b>: Clears cached passphrase. Useful if you
-      have multiple passphrases.</li>
-  <li><b>Help</b>: Displays Help information from the website (this page).</li>
+  <li><b>Opening encrypted attachments / importing attached OpenPGP keys</b><br />
+    Attachments named *.pgp, *.asc and *.gpg are recognized as attachments that can be handled specially by Enigmail. Right clicking on such an attachment enables two special menu items in the context menu: <em>Decrypt and Open</em> and <em>Decrypt and Save</em>. Use these two menu items if you want Enigmail to decrypt an attachment before opening or saving it. If an attachment is recognized as an OpenPGP key file, you are offered to import the keys it into your keyrings. </li>
 </ul>
-
-<br>
-<a name="tips"></a>
-<h3>Tips</h3>
-
-<ul>
-  <li><b>How to change the HOMEDIR (where the keys are stored) in Windows?</b>:<br>
-      If you do not want to use the default directory <tt>c:\gnupg</tt> to store
-      your keys, you should enter a string with the directory path into the Windows 
-      Registry under the key: <tt>\\HKEY_CURRENT_USER\Software\GNU\GnuPG\HomeDir</tt><br>
-      <em>Note: Please use forward slashes and not the backslashes when setting filenames for 
-      GnuPG into the Registry.</em><br>
-      If you use a Key Manager such as <a href="http://www.jumaros.de/rsoft/index.html">
-      GPGshell</a> or <a href="http://winpt.sourceforge.net/en/">WinPT</a> then these will
-      normally create any registry keys required to allow GnuPG to work correctly.</li>
-  <li><b>Using <em>Encrypt to self</em></b>:<br>
-      In order to encrypt an email, you choose public keys belonging to your recipients.
-      Your email message is then optionally signed then encrypted to those keys.
-      The <em>Encrypt to self</em> preference makes sure that your mail is not only encrypted
-      to your recipients' keys but to your own key as well. If you don't encrypt to your own
-      key when sending, you won't be able to read the encrypted mail after it's sent!
-      The key chosen for <em>Encrypt to self</em> be the one you set up for Enigmail to
-      use for the sending account or identity.</li>
-  <li><b>Disable <em>Allow flowed text (RFC 2646)</em></b>:<br>
-      If you have trouble verifying signatures created using Enigmail,
-      or if you want to send ASCII art, you may want to disable the option
-      <em>Allow flowed text (RFC 2646)</em> in the Advanced Preferences panel.
-      Disabling this option also prevents the | symbol showing in quotes instead of 
-      the more normal &gt; symbol.</li>
-  <li><b>Using <em>BCC these email addresses</em></b>:<br>
-      If you use <em>BCC these email addresses</em> in <b>Account Settings / Mail 
-      &amp; Newsgroups Account Settings -&gt; Copies &amp; Folders</b> you <em>must</em> 
-      ensure that you insert a fully qualified email address i.e. <tt>user@domain.tld</tt> 
-      instead of just a local user name i.e. <tt>user</tt> otherwise you will get a warning 
-      message <em>"This message has BCC recipients..."</em> when you click on send.</li>
-  <li><b>How to transfer mail and settings to a new profile</b>:<br>
-      Although this is not exactly Enigmail-related, we have been asked how to
-      do this a few times, so we have put together this
-      <a href="newprofile.html">new profile howto</a> as a guide.</li>
-</ul>
-
-<br>
-<a name="problems"></a>
-<h3>Known problems and workarounds</h3>
-
-<ul>
- <li><b>Enigmail button icons do not line up with other icons</b>:<br> 
-     Try changing your theme twice. If you are using the Modern theme, switch to the
-     Classic theme using the View > Apply Theme menu option, and quit Mozilla.
-     Restart, change back to the Modern theme and restart again.</li>
- <li><b>Using Enigmail with PGP</b>:<br> 
-     Originally, Enigmail worked with some older command line versions of PGP. 
-     But as the newer versions of PGP do not have a command line anymore, support 
-     for PGP was dropped in favor of GnuPG.</li>
- <li><b>Enigmail and Debian Mozilla</b> (older versions only):<br>
-     The Debian Mozilla package use a patched version of Mozilla that is significantly 
-     different from the standard Mozilla binaries available from 
-     <a href="http://ftp.mozilla.org/pub/mozilla/releases/">ftp.mozilla.org</a>. This
-     can cause Debian Mozilla to crash when used with Enigmail. The solution is
-     to use the standard version of Mozilla, if at all possible. The alternative
-     would be for the Debian packagers to compile Enigmail along with the Debian
-     version of Mozilla.  
-     (See Mozilla <a href="http://bugzilla.mozilla.org/show_bug.cgi?id=133171"> bug 
-     133171</a> for more details on how Debian Mozilla differs from standard Mozilla)</li>
- <li><b>Mozilla integration</b>:<br> 
-     With Mozilla Thunderbird moving a lot of the non-core functionality into 
-     downloadable extensions, it is not very likely that OpenPGP would ever become 
-     an integrated part of Mozilla. However, the internal interfaces of Mozilla might over
-     time be adapted to make it easier for Enigmail to integrate. 
-     See <a href="http://bugzilla.mozilla.org/show_bug.cgi?id=22687">mozilla bug 
-     22687</a> for more information.</li>
-</ul>
-
-<br>
-<hr>
+<hr />
+<p> Further help is available on the <a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail OpenPGP Help web page</a> <br />
+If you have questions or comments about enigmail, please send a message to the <a href="http://www.mozdev.org/mailman/listinfo/enigmail" target="_blank">Enigmail OpenPGP mailing list</a></p>
+<p>Enigmail OpenPGP is open source and licensed under the <a href="http://www.mozilla.org/MPL/" target="_blank">Mozilla Public License</a> and the <a href="http://www.gnu.org/copyleft/gpl.html" target="_blank">GNU General Public License</a></p>
+</body>
+</html>
