@@ -254,7 +254,7 @@ function GetEnigmailSvc() {
 }
 
 
-function EnigUpdate_0_80() {
+function EnigUpdatePre0_8() {
   try {
     var oldVer=EnigGetPref("configuredVersion");
 
@@ -262,7 +262,8 @@ function EnigUpdate_0_80() {
       if ((oldVer.substring(0,4)<"0.89") && (navigator.vendor=="Thunderbird")) {
         // uninstall globally installed enigmime on Thunderbird
         var ioService = enigGetService("@mozilla.org/network/io-service;1", "nsIIOService");
-        var sysCompDir = this.gDirService.get("ComsD", ENIG_C.interfaces.nsIFile);
+        var dirService = enigGetService("@mozilla.org/file/directory_service;1", "nsIProperties");
+        var sysCompDir = dirService.get("ComsD", ENIG_C.interfaces.nsIFile);
         
         for (var f in [ "enigmime.xpt", "libenigmime.so", "enigmail.dll", "libenigmime.dylib" ]) {
           var compFile = sysCompDir.clone();
@@ -285,8 +286,7 @@ function EnigUpdate_0_80() {
         }
       }
       if (oldVer.substring(0,4)<"0.81") {
-        window.open("chrome://enigmail/content/enigmailUpgrade.xul",
-            "", "chrome,modal,centerscreen");
+        EnigOpenSetupWizard();
       }
     }
   }
@@ -296,52 +296,15 @@ function EnigUpdate_0_80() {
 function EnigConfigure() {
   try {
     // Updates for specific versions (to be cleaned-up periodically)
-    EnigUpdate_0_80();
+    EnigUpdatePre0_8();
   } catch (ex) {}
 
-  var msg = EnigGetString("configNow",gEnigmailVersion);
-
-  var checkValueObj = new Object();
-  checkValueObj.value = false;
-
-  var buttonPressed = gEnigPromptSvc.confirmEx(window,
-                                           EnigGetString("configEnigmail"),
-                                            msg,
-                                            ENIG_THREE_BUTTON_STRINGS,
-                                            EnigGetString("dlgYes"),
-                                            EnigGetString("dlgNo"),
-                                            EnigGetString("dlgNever"),
-                                            "",
-                                            checkValueObj);
-
-  DEBUG_LOG("enigmailCommon.js: EnigConfigure: "+buttonPressed+" \n");
-
-  if (buttonPressed == 1)  // Configure later
-    return;
-
-  var obj = new Object;
-  var prefList = gPrefEnigmail.getChildList("",obj);
-
-  for (var prefItem in prefList) {
-    var prefName=prefList[prefItem];
-    if (prefName.search(/AlertCount$/) >= 0) {
-       // Reset alert count to default value
-      try {
-        gPrefEnigmail.clearUserPref(prefName);
-      } catch(ex) {
-      }
-    }
+  var oldVer=EnigGetPref("configuredVersion");
+  if (oldVer == "") {
+    EnigOpenSetupWizard();
   }
-
-  if (buttonPressed == 0) {
-    // Configure now
-    EnigPrefWindow(true,(navigator.vendor=="Thunderbird" ? "thunderbird" : "seamonkey"));
-                             
-  } else {
-    // "Do not ask me again" => "already configured"
-    EnigSetPref("configuredVersion", gEnigmailVersion);
-    EnigSavePrefs();
-  }
+  EnigSetPref("configuredVersion", gEnigmailVersion);
+  EnigSavePrefs();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

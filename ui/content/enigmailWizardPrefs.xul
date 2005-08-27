@@ -56,6 +56,7 @@
     <checkbox id="pref_flowedText" label="&enigmail.setupWiz.details.noFlowedMsg;"/>
     <checkbox id="pref_viewPlainText" label="&enigmail.setupWiz.details.viewAsPlain;"/>
     <checkbox id="pref_quotedPrintable" label="&enigmail.setupWiz.details.8bitEncoding;"/>
+    <checkbox id="pref_composeHTML" label="&enigmail.setupWiz.details.noComposeHTML;"/>
   </groupbox>
   
   <script type="application/x-javascript">
