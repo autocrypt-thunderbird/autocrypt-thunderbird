@@ -45,7 +45,7 @@
         title="&enigmail.cardDetails.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         buttons="accept"
-        minwidth="450px"
+        minwidth="500px"
         windowtype="enigmail:cardDetails"
         onload="onLoad();">
 
