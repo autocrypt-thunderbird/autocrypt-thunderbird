@@ -283,6 +283,13 @@
           <checkbox id="mime_parts_on_demand"
                     label="&enigmail.mime_parts_on_demand.label;"
                     tooltiptext="&enigmail.mime_parts_on_demand.tooltip;" />
+
+          <separator/>
+
+          <hbox align="center">
+            <label value="&enigmail.autoKeyRetrieve.label;"/>
+            <textbox id="enigmail_autoKeyRetrieve" size="30"/>
+          </hbox>
       </vbox>
 
 			<!-- "Debugging" Tab -->

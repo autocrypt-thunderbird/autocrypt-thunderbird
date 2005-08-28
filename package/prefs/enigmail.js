@@ -20,6 +20,9 @@ pref("extensions.enigmail.allowEmptySubject",false);
 // not (yet) in use
 pref("extensions.enigmail.autoCrypto",false);
 
+// automatically download missing keys from keyserver
+pref("extensions.enigmail.autoKeyRetrieve","");
+
 // enable automatically decrypt/verify
 pref("extensions.enigmail.autoDecrypt",true);
 

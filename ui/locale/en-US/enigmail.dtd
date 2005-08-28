@@ -197,6 +197,7 @@
 <!ENTITY enigmail.keepSettingsForReply.label      "Encrypt if replying to encrypted message">
 <!ENTITY enigmail.confirmBeforeSend.label         "Always confirm before sending">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label        "Rewrap signed HTML text before sending">
+<!ENTITY enigmail.autoKeyRetrieve.label           "Automatically download keys from server">
 
 <!ENTITY enigmail.defaultEncryptionSign.accesskey "E">
 <!ENTITY enigmail.defaultEncryptionOnly.accesskey "c">

@@ -2863,16 +2863,23 @@ function (parent, prompter, verifyOnly, noOutput,
     return null;
   }
 
-  var decryptCommand = this.getAgentPath();
+  var decryptCommand = this.getAgentPath() + GPG_BATCH_OPTS;
+  
+  var keyserver = this.prefBranch.getCharPref("autoKeyRetrieve");
+  if (keyserver != "") {
+    decryptCommand += " --keyserver-options auto-key-retrieve";
+    var srvProxy = this.getHttpProxy(keyserver);
+    if (srvProxy && this.agentVersion>="1.4" ) {
+      decryptCommand += ",http-proxy="+srvProxy;
+    }
+    decryptCommand += " --keyserver "+keyserver;
+  }
 
-  if (this.agentType == "pgp") {
-    decryptCommand += PGP_BATCH_OPTS + " -ft";
-
-  } else if (noOutput) {
-    decryptCommand += GPG_BATCH_OPTS + " --verify";
+  if (noOutput) {
+    decryptCommand += " --verify";
 
   } else {
-    decryptCommand += GPG_BATCH_OPTS + " -d";
+    decryptCommand += " -d";
   }
 
   var statusFlagsObj = new Object();
@@ -3158,31 +3165,7 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
   var envList = [];
   envList = envList.concat(gEnvList);
 
-  var proxyHost = null;
-  try {
-    if (this.prefBranch.getBoolPref("respectHttpProxy")) {
-      // determine proxy host
-      var prefsSvc = Components.classes[NS_PREFS_SERVICE_CID].getService(Components.interfaces.nsIPrefService);
-      var prefRoot = prefsSvc.getBranch(null);
-      var useProxy = prefRoot.getIntPref("network.proxy.type");
-      if (useProxy==1) {
-        var proxyHostName = prefRoot.getCharPref("network.proxy.http");
-        var proxyHostPort = prefRoot.getIntPref("network.proxy.http_port");
-        var noProxy = prefRoot.getCharPref("network.proxy.no_proxies_on").split(/[ ,]/);
-        for (var i=0; i<noProxy.length; i++) {
-          var proxySearch=new RegExp(noProxy[i].replace(/\./, "\\.")+"$", "i");
-          if (noProxy[i] && keyserver.search(proxySearch)>=0) {
-            i=noProxy.length+1;
-            proxyHostName=null;
-          }
-        }
-        if (proxyHostName && proxyHostPort) {
-          proxyHost="http://"+proxyHostName+":"+proxyHostPort
-        }
-      }
-    }
-  }
-  catch (ex) {}
+  var proxyHost = this.getHttpProxy(keyserver);
   var command = this.getAgentPath(); 
 
   if (! (recvFlags & nsIEnigmail.SEARCH_KEY)) command += GPG_BATCH_OPTS;
@@ -3240,6 +3223,35 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
   return ipcRequest;
 }
 
+Enigmail.prototype.getHttpProxy =
+function (hostName) {
+  var proxyHost = null;
+  //try {
+    if (this.prefBranch.getBoolPref("respectHttpProxy")) {
+      // determine proxy host
+      var prefsSvc = Components.classes[NS_PREFS_SERVICE_CID].getService(Components.interfaces.nsIPrefService);
+      var prefRoot = prefsSvc.getBranch(null);
+      var useProxy = prefRoot.getIntPref("network.proxy.type");
+      if (useProxy==1) {
+        var proxyHostName = prefRoot.getCharPref("network.proxy.http");
+        var proxyHostPort = prefRoot.getIntPref("network.proxy.http_port");
+        var noProxy = prefRoot.getCharPref("network.proxy.no_proxies_on").split(/[ ,]/);
+        for (var i=0; i<noProxy.length; i++) {
+          var proxySearch=new RegExp(noProxy[i].replace(/\./, "\\.")+"$", "i");
+          if (noProxy[i] && hostName.search(proxySearch)>=0) {
+            i=noProxy.length+1;
+            proxyHostName=null;
+          }
+        }
+        if (proxyHostName && proxyHostPort) {
+          proxyHost="http://"+proxyHostName+":"+proxyHostPort;
+        }
+      }
+    }
+  //}
+  //catch (ex) {}
+  return proxyHost;
+}
 
 Enigmail.prototype.searchKey =
 function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, errorMsgObj) {
@@ -3270,32 +3282,9 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
 
   var proxyHost = null;
   if (protocol=="hkp") {
-    try {
-      if (this.prefBranch.getBoolPref("respectHttpProxy")) {
-        // determine proxy host
-        var prefsSvc = Components.classes[NS_PREFS_SERVICE_CID].getService(Components.interfaces.nsIPrefService);
-        var prefRoot = prefsSvc.getBranch(null);
-        var useProxy = prefRoot.getIntPref("network.proxy.type");
-        if (useProxy==1) {
-          var proxyHostName = prefRoot.getCharPref("network.proxy.http");
-          var proxyHostPort = prefRoot.getIntPref("network.proxy.http_port");
-          var noProxy = prefRoot.getCharPref("network.proxy.no_proxies_on").split(/[ ,]/);
-          for (var i=0; i<noProxy.length; i++) {
-            var proxySearch=new RegExp(noProxy[i].replace(/\./, "\\.")+"$", "i");
-            if (noProxy[i] && keyserver.search(proxySearch)>=0) {
-              i=noProxy.length+1;
-              proxyHostName=null;
-            }
-          }
-          if (proxyHostName && proxyHostPort) {
-            proxyHost="http://"+proxyHostName+":"+proxyHostPort
-          }
-        }
-      }
-    }
-    catch (ex) {}
+    proxyHost = this.getHttpProxy(keyserver);
   }
-  
+
   if (this.agentVersion < "1.4") {
     var baseCommand = "gpgkeys_" + protocol;
     if (this.isDosLike) {
@@ -3407,12 +3396,13 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
     }
   }
   else {
-    command = this.getAgentPath() + " --command-fd 0 --no-tty --batch --fixed-list --with-colons --keyserver ";
+    command = this.getAgentPath() + " --command-fd 0 --no-tty --batch --fixed-list --with-colons"
+    if (proxyHost) command+=" --keyserver-options http-proxy="+proxyHost
+    command +=" --keyserver ";
     if (! protocol) protocol="hkp";
     command += protocol + "://" + keyserver;
     if (port) command += ":"+port;
-    if (proxyHost) command+="--keyserver-options http-proxy="+proxyHost
-    
+
     if (recvFlags & nsIEnigmail.SEARCH_KEY) {
       command += " --search-keys ";
       inputData = "quit\n";
