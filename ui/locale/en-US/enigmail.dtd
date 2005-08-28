@@ -567,7 +567,7 @@
                                                       identities.  If that's not what you want, please select the specific
                                                       account or identity you want OpenPGP to work with below.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds         "I would you like to set up OpenPGP for all identities">
-<!ENTITY enigmail.setupWiz.pgSelectId.selecteIds     "I would you like to set up OpenPGP only for the following identities:">
+<!ENTITY enigmail.setupWiz.pgSelectId.selectIds      "I would you like to set up OpenPGP only for the following identities:">
 <!ENTITY enigmail.setupWiz.pgSelectId.note           "<a class='enigmailStrong'>Note:</a> OpenPGP will always verify signatures
                                                       on emails for every account or identity, regardless of whether it is enabled or not">
 <!ENTITY enigmail.setupWiz.pgSign.title              "Signing">
@@ -648,3 +648,6 @@
 <!ENTITY enigmail.setupWiz.details.viewAsPlain       "View message body as plain text">
 <!ENTITY enigmail.setupWiz.details.8bitEncoding      "Use 8-bit encoding for message sending">
 <!ENTITY enigmail.setupWiz.details.noComposeHTML     "Do not compose HTML messages">
+<!ENTITY enigmail.setupWiz.pgNoStart.title           "Cancel Wizard">
+<!ENTITY enigmail.setupWiz.pgNoStart.desc            "You have chosen not to use the Wizard to configure OpenPGP.
+                                                      <html:br/><html:br/>Thank you for using Enigmail.">

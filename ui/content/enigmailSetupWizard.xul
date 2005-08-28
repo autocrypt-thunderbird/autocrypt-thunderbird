@@ -83,7 +83,6 @@
   </wizardpage>
 
   <wizardpage id="pgSelectId" pageid="pgSelectId" next="pgSign"
-              onpageshow="fillIdentities('checkbox')"
               label="&enigmail.setupWiz.pgSelectId.title;"
               description="&enigmail.setupWiz.pgSelectId.subtitle;">
     <description>
@@ -100,7 +99,7 @@
              oncommand="disableIdSel(true)"
              value="1"/>
       <radio id="activateId_sel"
-             label="&enigmail.setupWiz.pgSelectId.selecteIds;"
+             label="&enigmail.setupWiz.pgSelectId.selectIds;"
              oncommand="disableIdSel(false)"
              value="0"/>
     </radiogroup>
@@ -142,13 +141,13 @@
     </description>
     <separator/>
     <label value="&enigmail.setupWiz.pgEnc.encryptAllMsg;"/>
-    <radiogroup id="encryptMsg" value="1">
+    <radiogroup id="encryptMsg" value="0">
       <radio id="encryptMsg_yes"
              label="&enigmail.setupWiz.pgEnc.yesEncrypt;"
-             selected="true"
              value="1"/>
       <radio id="encryptMsg_no"
              label="&enigmail.setupWiz.pgEnc.noEncrypt;"
+             selected="true"
              value="0"/>
     </radiogroup>
 
@@ -182,7 +181,7 @@
 
   <wizardpage id="pgKeySel" pageid="pgKeySel"
               next="pgSummary"
-              onpageshow="setUseKey()"
+              onpageshow="displayKeySel()"
               label="&enigmail.setupWiz.pgKeySel.title;"
               description="&enigmail.setupWiz.pgKeySel.subtitle;">
     <description>
@@ -229,7 +228,7 @@
 
   <wizardpage id="pgKeyCreate" pageid="pgKeyCreate"
               next="pgSummary"
-              onpageshow="fillIdentities('menulist')"
+              onpageshow="displayKeyCreate()"
               label="&enigmail.setupWiz.pgKeyCreate.title;"
               description="&enigmail.setupWiz.pgKeyCreate.subtitle;">
     <description>
@@ -246,6 +245,7 @@
         <menupopup id="userIdentityPopup"/>
       </menulist>
     </vbox>
+    <label id="userIdentityLabel" value="" collapsed="true"/>
 
     <vbox id="passphraseBox" align="start">
       <label control="passphrase" value="&enigmail.keyPassphrase.label;" />
@@ -302,6 +302,13 @@
               label="&enigmail.setupWiz.pgComplete.title;">
     <description>
       &enigmail.setupWiz.pgComplete.desc;
+    </description>
+  </wizardpage>
+
+  <wizardpage id="pgNoStart" pageid="pgNoStart"
+              label="&enigmail.setupWiz.pgNoStart.title;">
+    <description>
+      &enigmail.setupWiz.pgNoStart.desc;
     </description>
   </wizardpage>
 
