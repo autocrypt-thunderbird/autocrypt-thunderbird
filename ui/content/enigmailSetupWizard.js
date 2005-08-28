@@ -158,8 +158,11 @@ function displayKeyCreate() {
 }
 
 function displayKeySel() {
-  if (gLastDirection==1) {
+  if (document.getElementById("createPgpKey").value=="0") {
     setUseKey();
+  }
+  else {
+    setNewKey();
   }
 }
 
@@ -742,7 +745,9 @@ function displayActions() {
   }
   
   var createKey=document.getElementById("createPgpKey");
-  if (createKey.value == "1") {
+  
+  if (createKey.value == "1" ||
+      document.getElementById("pgSettings").next == "pgKeyCreate") {
     setNextPage('pgKeygen');
   }
   else {
