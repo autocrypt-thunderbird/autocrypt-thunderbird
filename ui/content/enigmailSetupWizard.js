@@ -280,16 +280,14 @@ function enigGetSvc() {
     gEnigmailSvc = ENIG_C.classes[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_C.interfaces.nsIEnigmail);
 
   } catch (ex) {
-    ERROR_LOG("enigmailCommon.js: Error in instantiating EnigmailService\n");
+    ERROR_LOG("enigmailWizard.js: Error in instantiating EnigmailService\n");
     return null;
   }
 
-  DEBUG_LOG("enigmailCommon.js: gEnigmailSvc = "+gEnigmailSvc+"\n");
+  DEBUG_LOG("enigmailWizard.js: gEnigmailSvc = "+gEnigmailSvc+"\n");
 
-  if (!gEnigmailSvc.initialized) {
-    // Initialize enigmail
-
-    var firstInitialization = !gEnigmailSvc.initializationAttempted;
+  while (!gEnigmailSvc.initialized) {
+    // Try to initialize enigmail
 
     try {
       // Initialize enigmail
@@ -298,31 +296,28 @@ function enigGetSvc() {
       try {
         // Reset alert count to default value
         gPrefEnigmail.clearUserPref("initAlert");
-      } catch(ex) {
-      }
+      } catch(ex) {}
 
     } catch (ex) {
 
-      if (firstInitialization) {
-        // Display initialization error alert
-        EnigAlert("Could not find GnuPG, please specify path");
-        if (EnigGetPref("initAlert")) {
-          gEnigmailSvc.initializationAttempted = false;
-          gEnigmailSvc = null;
+      // Display initialization error alert
+      EnigAlert(EnigGetString("setupWizard.locateGpg"));
+      var gpgPath = wizardLocateGpg();
+      if (! gpgPath) {
+        if (onCancel()) {
+          window.close();
+          return null;
         }
       }
-
-      return null;
+      else {
+        EnigSetPref("agentPath", gpgPath.path);
+      }
     }
 
     var configuredVersion = EnigGetPref("configuredVersion");
 
-    DEBUG_LOG("enigmailCommon.js: GetEnigmailSvc: "+configuredVersion+"\n");
+    DEBUG_LOG("enigmailWizard.js: enigGetSvc: "+configuredVersion+"\n");
 
-    if (firstInitialization && gEnigmailSvc.initialized &&
-        gEnigmailSvc.agentType && gEnigmailSvc.agentType == "pgp") {
-      EnigAlert(EnigGetString("pgpNotSupported"));
-    }
   }
 
   if (gEnigmailSvc.logFileStream) {
@@ -331,6 +326,18 @@ function enigGetSvc() {
   }
 
   return gEnigmailSvc.initialized ? gEnigmailSvc : null;
+}
+
+function wizardLocateGpg() {
+  var fileName="gpg";
+  var ext="";
+  if (navigator.platform.search(/Win/i) == 0) {
+    ext=".exe";
+  }
+  var filePath = EnigFilePicker(EnigGetString("locateGpg"),
+                           "", false, ext,
+                           fileName+ext, null);
+  return filePath;
 }
 
 function checkPassphrase() {
@@ -749,9 +756,11 @@ function displayActions() {
   if (createKey.value == "1" ||
       document.getElementById("pgSettings").next == "pgKeyCreate") {
     setNextPage('pgKeygen');
+    appendDesc(EnigGetString("setupWizard.createKey"));
   }
   else {
     setNextPage('pgComplete');
+    appendDesc(EnigGetString("setupWizard.useKey", gGeneratedKey))
   }
   
   var descList=document.getElementById("appliedSettings");
@@ -777,13 +786,6 @@ function displayActions() {
     appendDesc(EnigGetString("setupWizard.applySingleId", idList));
   }
   
-  if (createKey.value == "1") {
-    appendDesc(EnigGetString("setupWizard.createKey"));
-  }
-  else {
-    appendDesc(EnigGetString("setupWizard.useKey", gGeneratedKey))
-  }
-
   if (document.getElementById("signMsg").value== "1") {
     appendDesc(EnigGetString("setupWizard.signAll"));
   }
