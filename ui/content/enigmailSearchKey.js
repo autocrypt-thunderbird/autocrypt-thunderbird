@@ -13,7 +13,7 @@
  *
  * The Initial Developer of this code is Patrick Brunschwig.
  * Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
- * are Copyright (C) 2004 Patrick Brunschwig.
+ * are Copyright (C) 2004-2005 Patrick Brunschwig.
  * All Rights Reserved.
  *
  * Contributor(s):
@@ -250,6 +250,10 @@ function enigImportKeys (connType, txt, errorTxt) {
   }
   else if (errorTxt) {
     window.enigRequest.errorTxt +=errorTxt+"\n";
+  }
+  
+  if (txt.search(/^\[GNUPG:\] IMPORT_RES/m) >= 0) {
+    window.arguments[RESULT].importedKeys++;
   }
 
   if (window.enigRequest.dlKeyList.length > window.enigRequest.keyNum) {
@@ -653,7 +657,17 @@ function enigPopulateList(keyList) {
   }
   
   if (keyList.length == 1) {
+    // activate found item if just one key found
     enigSetActive(treeItem.firstChild.firstChild, 1);
+
+    if (window.arguments[INPUT].searchList.length == 1 &&
+        window.arguments[INPUT].searchList[0].search(/^0x[A-Fa-f0-9]{8,16}$/) == 0) {
+        // shrink dialog and start download if just one key ID provided
+        document.getElementById("keySelGroup").setAttribute("collapsed", "true");
+        window.sizeToContent();
+        window.resizeBy(0, -320);
+        window.setTimeout(onAccept, 10);
+    }
   }
 }
 

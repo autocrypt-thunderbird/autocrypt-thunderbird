@@ -179,6 +179,7 @@
       var keySigList=document.getElementById("keySigList");
       var treeChildren=keySigList.getElementsByAttribute("id", "keySigListChildren")[0];
       var aSigList = sigList.split(/\n/);
+      var aRevSig = [];
       
       for (var i=0; i<aSigList.length; i++) {
         var listRow=aSigList[i].split(/:/);
@@ -233,7 +234,25 @@
           else if (listRow[0] == "sub") {
             break;
           }
+          else if (listRow[0] == "rev") {
+            aRevSig.push(listRow[KEY_ID]);
+          }
         }
+      }
+      
+      // mark revoked signatures
+      for (i=0; i<aRevSig.length; i++) {
+        var nodes = document.getElementsByAttribute("keyID", aRevSig[i]);
+        try {
+          nodes[0].childNodes[3].setAttribute("label", EnigGetString("keyValid.revoked"));
+
+          var node=nodes[0].firstChild;
+          while (node) {
+            node.setAttribute("properties", "enigKeyInactive");
+            node=node.nextSibling;
+          }
+        }
+        catch (ex){}
       }
       
       keySigList.appendChild(treeChildren);

@@ -3396,6 +3396,7 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
     }
   }
   else {
+    // GnuPG >= v1.4.0
     command = this.getAgentPath() + " --command-fd 0 --no-tty --batch --fixed-list --with-colons"
     if (proxyHost) command+=" --keyserver-options http-proxy="+proxyHost
     command +=" --keyserver ";

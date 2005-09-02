@@ -22,7 +22,7 @@
   
   <!-- <separator/> -->
 
-  <groupbox width="700px">
+  <groupbox width="700px" id="keySelGroup">
     <caption id="dialogHeader"
              label="&enigmail.searchKeyDlgCapt.label;"/>
 

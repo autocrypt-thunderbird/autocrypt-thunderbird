@@ -45,7 +45,6 @@
         title="&enigmail.cardDetails.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         buttons="accept"
-        minwidth="500px"
         windowtype="enigmail:cardDetails"
         onload="onLoad();">
 
@@ -168,7 +167,7 @@
         <row>
           <label value="&enigmail.cardDetails.sigKey.label;"/>
           <vbox>
-            <textbox readonly="true" id="card_key_fpr_1" value=""/>
+            <textbox readonly="true" size="55" id="card_key_fpr_1" value=""/>
             <hbox align="center">
               <label value="&enigmail.cardDetails.keyCreated.label;"/>
               <textbox readonly="true" id="card_key_created_1" value=""/>
