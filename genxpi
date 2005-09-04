@@ -34,20 +34,21 @@
 # This script generates the Enigmail XPI
 #
 
-echo "genxpi: Generating $1 in $2"
+echo "genxpi: Generating $1 in $3"
 
-if [ $# -lt 5 ]; then
+if [ $# -lt 6 ]; then
   echo "Wrong number of parameters"
   exit 1
 fi
 
 xpiFile=$1
-srcDir=$3
-xpiModule=$4
-libPrefix=$6
-dllSuffix=$5
+platform=$2
+srcDir=$4
+xpiModule=$5
+dllSuffix=$6
+libPrefix=$7
 cwd=`pwd`
-cd "$2"
+cd "$3"
 targetDir=`pwd`
 cd "$cwd"
 
@@ -55,6 +56,12 @@ cd ${srcDir}/package
 zip -r ${targetDir}/${xpiFile} install.js \
                install.rdf \
                ${xpiModule}.spec
+
+if [ $platform = "darwin" ]; then
+  skinJarFile="skin-tb-mac"
+else
+  skinJarFile="skin-tbird"
+fi
 
 cd "$targetDir"
 zip -g ${xpiFile} \
@@ -65,7 +72,7 @@ zip -g ${xpiFile} \
                defaults/pref/enigmail.js \
                chrome/${xpiModule}.jar \
                chrome/${xpiModule}-skin.jar \
-               chrome/${xpiModule}-skin-tbird.jar \
+               chrome/${xpiModule}-${skinJarFile}.jar \
                components/ipc.xpt \
                components/enigmime.xpt \
                components/${libPrefix}enigmime${dllSuffix} \
