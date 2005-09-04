@@ -130,14 +130,28 @@ function onLoad () {
     progressMeter: document.getElementById("dialog.progress"),
     httpInProgress: false
   };
-
-  switch (window.enigRequest.requestType) {
-  case ENIG_CONN_TYPE_HTTP:
-    enigNewHttpRequest(nsIEnigmail.SEARCH_KEY, enigScanKeys);
-    break;
-  case ENIG_CONN_TYPE_GPGKEYS:
-    enigNewGpgKeysRequest(nsIEnigmail.SEARCH_KEY, enigScanKeys);
-    break;
+  
+  window.enigRequest.progressMeter.mode="undetermined";
+  
+  if (window.arguments[INPUT].searchList.length == 1 &&
+      window.arguments[INPUT].searchList[0].search(/^0x[A-Fa-f0-9]{8,16}$/) == 0) {
+      // shrink dialog and start download if just one key ID provided
+      
+      window.enigRequest.dlKeyList = [ window.arguments[INPUT].searchList ];
+      document.getElementById("keySelGroup").setAttribute("collapsed", "true");
+      window.sizeToContent();
+      window.resizeBy(0, -320);
+      window.setTimeout(startDownload, 10);
+  }
+  else {
+    switch (window.enigRequest.requestType) {
+    case ENIG_CONN_TYPE_HTTP:
+      enigNewHttpRequest(nsIEnigmail.SEARCH_KEY, enigScanKeys);
+      break;
+    case ENIG_CONN_TYPE_GPGKEYS:
+      enigNewGpgKeysRequest(nsIEnigmail.SEARCH_KEY, enigScanKeys);
+      break;
+    }
   }
   return true;
 }
@@ -161,10 +175,15 @@ function onAccept () {
     }
     item = item.nextSibling;
   }
+  return startDownload();
+}
 
+
+function startDownload() {
+  DEBUG_LOG("enigmailSearchKey.js: startDownload\n");
   if (window.enigRequest.dlKeyList.length>0) {
     window.enigRequest.progressMeter.value = 0;
-    window.enigRequest.progressMeter.mode = "determined";
+    window.enigRequest.progressMeter.mode = "undetermined";
     document.getElementById("progress.box").removeAttribute("hidden");
     document.getElementById("dialog.accept").setAttribute("disabled", "true");
     window.enigRequest.keyNum = 0;
@@ -659,15 +678,6 @@ function enigPopulateList(keyList) {
   if (keyList.length == 1) {
     // activate found item if just one key found
     enigSetActive(treeItem.firstChild.firstChild, 1);
-
-    if (window.arguments[INPUT].searchList.length == 1 &&
-        window.arguments[INPUT].searchList[0].search(/^0x[A-Fa-f0-9]{8,16}$/) == 0) {
-        // shrink dialog and start download if just one key ID provided
-        document.getElementById("keySelGroup").setAttribute("collapsed", "true");
-        window.sizeToContent();
-        window.resizeBy(0, -320);
-        window.setTimeout(onAccept, 10);
-    }
   }
 }
 

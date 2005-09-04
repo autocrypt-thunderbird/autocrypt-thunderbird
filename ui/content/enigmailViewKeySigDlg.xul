@@ -121,6 +121,7 @@
     const KEY_ID = 4;
     const CREATED = 5;
     const EXPIRY = 6;
+    const UID_ID = 7;
     const OWNERTRUST = 8;
     const USER_ID = 9;
     const SIG_TYPE = 10;
@@ -180,6 +181,7 @@
       var treeChildren=keySigList.getElementsByAttribute("id", "keySigListChildren")[0];
       var aSigList = sigList.split(/\n/);
       var aRevSig = [];
+      var currUid="";
       
       for (var i=0; i<aSigList.length; i++) {
         var listRow=aSigList[i].split(/:/);
@@ -193,6 +195,10 @@
                             listRow[KEY_USE_FOR].indexOf("D")<0);
             if (listRow[0] == "uat") {
               listRow[USER_ID]=EnigGetString("userAtt.photo");
+            }
+            
+            if (listRow[0] == "uid" || listRow[0] == "uat") {
+              currUid=listRow[UID_ID];
             }
             addCell(userRow, EnigConvertGpgToUnicode(listRow[USER_ID]), true, keyValid);
             var treeItem=document.createElement("treeitem");
@@ -225,6 +231,7 @@
               }
 
               userRow.setAttribute("keyID", listRow[KEY_ID]);
+              userRow.setAttribute("sigID", currUid+"-"+listRow[KEY_ID]);
               addCell(userRow, EnigGetDateTime(listRow[CREATED], true, false));
               treeItem=document.createElement("treeitem");
               treeItem.appendChild(userRow);
@@ -235,24 +242,26 @@
             break;
           }
           else if (listRow[0] == "rev") {
-            aRevSig.push(listRow[KEY_ID]);
+            aRevSig.push(currUid+"-"+listRow[KEY_ID]);
           }
         }
       }
       
       // mark revoked signatures
       for (i=0; i<aRevSig.length; i++) {
-        var nodes = document.getElementsByAttribute("keyID", aRevSig[i]);
-        try {
-          nodes[0].childNodes[3].setAttribute("label", EnigGetString("keyValid.revoked"));
+        var nodes = document.getElementsByAttribute("sigID", aRevSig[i]);
+        for (var node=0; node < nodes.length; node++) {
+          try {
+            nodes[node].childNodes[3].setAttribute("label", EnigGetString("keyValid.revoked"));
 
-          var node=nodes[0].firstChild;
-          while (node) {
-            node.setAttribute("properties", "enigKeyInactive");
-            node=node.nextSibling;
+            var cNode=nodes[node].firstChild;
+            while (cNode) {
+              cNode.setAttribute("properties", "enigKeyInactive");
+              cNode=cNode.nextSibling;
+            }
           }
+          catch (ex){}
         }
-        catch (ex){}
       }
       
       keySigList.appendChild(treeChildren);

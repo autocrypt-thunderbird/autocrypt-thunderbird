@@ -58,7 +58,7 @@
 
   <hbox id="progress.box">
     <label value="&enigmail.progress.label;:"/>
-    <progressmeter id="dialog.progress" mode="undetermined" value="0"/>
+    <progressmeter id="dialog.progress" mode="determined" value="0"/>
   </hbox>
 
   <vbox align="end">
