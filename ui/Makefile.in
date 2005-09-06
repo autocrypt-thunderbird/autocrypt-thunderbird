@@ -37,6 +37,9 @@ DEPTH      = ../../..
 topsrcdir  = @top_srcdir@
 VPATH      = @srcdir@
 srcdir     = @srcdir@
+
+DIRS = skin
+
 include $(DEPTH)/config/autoconf.mk
 
 include $(topsrcdir)/config/config.mk

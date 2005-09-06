@@ -3223,6 +3223,38 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
   return ipcRequest;
 }
 
+
+function GetPasswdForHost(hostname, userObj, passwdObj) {
+  return -1;
+  var passwordmanager = Components.classes["@mozilla.org/passwordmanager;1"].getService(Components.interfaces.nsIPasswordManager);
+  var enumerator = passwordmanager.enumerator;
+
+  while (enumerator.hasMoreElements()) {
+    var nextPassword;
+    try {
+      nextPassword = enumerator.getNext();
+    } catch(e) {
+      // user supplied invalid database key
+      return -1;
+    }
+    nextPassword = nextPassword.QueryInterface(Components.interfaces.nsIPassword);
+      // try/catch in case decryption fails (invalid signon entry)
+    try {
+      var passwdHost = nextPassword.host.replace(/^.*:\/\//, "");
+      if (passwdHost == hostname) {
+        userObj.value = nextPassword.user;
+        passwdObj.value = nextPassword.password;
+        return 0;
+      }
+    } catch (e) {
+      // password cannot be decrypted
+    }
+  }
+  return 1;
+}
+
+
+
 Enigmail.prototype.getHttpProxy =
 function (hostName) {
   var proxyHost = null;
@@ -3241,6 +3273,14 @@ function (hostName) {
           if (noProxy[i] && hostName.search(proxySearch)>=0) {
             i=noProxy.length+1;
             proxyHostName=null;
+          }
+        }
+        
+        if (proxyHostName) {
+          var userObj = new Object();
+          var passwdObj = new Object();
+          if (GetPasswdForHost(proxyHostName, userObj, passwdObj) == 0) {
+            proxyHostName = userObj.value+":"+passwdObj.value+"@"+proxyHostName;
           }
         }
         if (proxyHostName && proxyHostPort) {

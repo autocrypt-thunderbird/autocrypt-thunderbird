@@ -84,5 +84,7 @@ endif
 
 XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS)-$(PLATFORM_STR)-$(TARGET_CPU).xpi
 
+ENIG_XPCOM_ABI = $(OS_ARCH)_${TARGET_XPCOM_ABI}
+
 xpi::
-	$(srcdir)/genxpi $(XPIFILE) $(PLATFORM_STR) $(DIST)/bin $(srcdir) $(XPI_MODULE) $(DLL_SUFFIX) $(LIB_PREFIX)
+	$(srcdir)/genxpi $(XPIFILE) $(ENIG_XPCOM_ABI) $(MOZ_APP_NAME)-$(MOZ_APP_VERSION) $(DIST)/bin $(srcdir) $(XPI_MODULE) $(DLL_SUFFIX) $(LIB_PREFIX)

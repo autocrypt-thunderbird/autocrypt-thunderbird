@@ -42,10 +42,8 @@
         <em:package>content/enigmail/</em:package>
         <em:locale>locale/en-US/enigmail/</em:locale>
       </Description>
+      <!-- Theme JAR File  -->
       <Description about="urn:mozilla:extension:file:enigmail-skin-tbird.jar">
-        <em:skin>skin/classic/enigmail/</em:skin>
-      </Description>
-      <Description about="urn:mozilla:extension:file:enigmail-skin-tb-mac.jar">
         <em:skin>skin/classic/enigmail/</em:skin>
       </Description>
     </em:file>

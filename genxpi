@@ -34,36 +34,51 @@
 # This script generates the Enigmail XPI
 #
 
-echo "genxpi: Generating $1 in $3"
+echo "genxpi: Generating $1 in $4"
 
-if [ $# -lt 6 ]; then
+if [ $# -lt 7 ]; then
   echo "Wrong number of parameters"
   exit 1
 fi
 
 xpiFile=$1
 platform=$2
-srcDir=$4
-xpiModule=$5
-dllSuffix=$6
-libPrefix=$7
+mozApp=$3
+srcDir=$5
+xpiModule=$6
+dllSuffix=$7
+libPrefix=$8
 cwd=`pwd`
-cd "$3"
+cd "$4"
 targetDir=`pwd`
 cd "$cwd"
 
 cd ${srcDir}/package
-zip -r ${targetDir}/${xpiFile} install.js \
-               install.rdf \
+
+zip -r ${targetDir}/${xpiFile} install.rdf \
+               install.js \
                ${xpiModule}.spec
 
-if [ $platform = "darwin" ]; then
-  skinJarFile="skin-tb-mac"
-else
-  skinJarFile="skin-tbird"
-fi
 
 cd "$targetDir"
+
+appType=${mozApp//-*/}
+appVer=${mozApp//thunderbird-/}
+appVer=${appVer:0:3}
+
+#if [ "$appType" = "thunderbird" -a "$appVer" = "1.0" ]; then
+
+  dllFile=components/${libPrefix}enigmime${dllSuffix}
+               
+#else
+#  TB 1.5 once done as specified
+#  mkdir -p platform/${platform}/plugins
+#  cp components/${libPrefix}enigmime${dllSuffix} platform/${platform}/plugins/
+#
+#  dllFile=platform/${platform}/plugins/${libPrefix}enigmime${dllSuffix}
+#
+#fi
+
 zip -g ${xpiFile} \
                components/${xpiModule}.xpt \
                components/${xpiModule}.js \
@@ -72,8 +87,9 @@ zip -g ${xpiFile} \
                defaults/pref/enigmail.js \
                chrome/${xpiModule}.jar \
                chrome/${xpiModule}-skin.jar \
-               chrome/${xpiModule}-${skinJarFile}.jar \
+               chrome/${xpiModule}-skin-tbird.jar \
                components/ipc.xpt \
                components/enigmime.xpt \
-               components/${libPrefix}enigmime${dllSuffix} \
+               ${dllFile} \
                chrome/${xpiModule}.jar
+
