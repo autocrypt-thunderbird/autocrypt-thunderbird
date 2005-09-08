@@ -9,7 +9,7 @@ enigmail-skin-tbird.jar:
 	skin/classic/enigmail/enigSignOk.png  (images/enigSignOk.png)
 	skin/classic/enigmail/enigSignUnkown.png  (images/enigSignUnkown.png)
 	skin/classic/enigmail/enigmail-decrypt.png  (images/enigmail-decrypt.png)
-	skin/classic/enigmail/enigmail-decrypt-inactive.png  (images/enigmail-decrypt-small-inactive.png)
+	skin/classic/enigmail/enigmail-decrypt-inactive.png  (images/enigmail-decrypt-inactive.png)
 	skin/classic/enigmail/enigmail-decrypt-small.png  (images/enigmail-decrypt-small.png)
 	skin/classic/enigmail/enigmail-decrypt-small-inactive.png  (images/enigmail-decrypt-small-inactive.png)
 	skin/classic/enigmail/enigmail-options.png  (images/enigmail-options.png)
