@@ -1489,6 +1489,9 @@ function EnigLoadKeyList(refresh, keyListObj) {
         keyObj.fpr=listRow[USER_ID];
         break;
       case "uid":
+        if (listRow[USER_ID].length == 0) {
+          listRow[USER_ID] = "-";
+        }
         if (typeof(keyObj.userId) != "string") {
           keyObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID].replace(/\\e3A/g, ":"));
           keyListObj.keySortList.push({userId: keyObj.userId, keyId: keyObj.keyId});

@@ -154,6 +154,8 @@ function enigmailBuildList(refresh) {
      return r;
    }
 
+   var emptyUid = " -"; // replace with localizable string
+   
    window.arguments[RESULT].cancelled=true;
 
    var secretOnly = (window.arguments[INPUT].options.indexOf("private")>= 0);
@@ -249,6 +251,9 @@ function enigmailBuildList(refresh) {
          aUserList.push(userObj);
          break;
        case "uid":
+         if (listRow[USER_ID].length == 0) {
+            listRow[USER_ID] = emptyUid;
+         }
          if (typeof(userObj.userId) != "string") {
            userObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID].replace(/\\e3A/g, ":"));
          }
@@ -337,7 +342,7 @@ function enigmailBuildList(refresh) {
             escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
             s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
             s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
-            if (invalidAddr.indexOf(" "+mailAddr+" ")<0) {
+            if ((mailAddr != emptyUid) && (invalidAddr.indexOf(" "+mailAddr+" ")<0)) {
               aValidUsers.push(mailAddr);
               aUserList[i].activeState =(toAddr.search(s1)>=0 || toAddr.search(s2)>=0) ? 1 : 0;
             }
@@ -368,7 +373,7 @@ function enigmailBuildList(refresh) {
                     escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
                     s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
                     s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
-                    if (toAddr.search(s1)>=0 || toAddr.search(s2)>=0) {
+                    if ((mailAddr != emptyUid) && (toAddr.search(s1)>=0 || toAddr.search(s2)>=0)) {
                       aUserList[i].activeState = 1;
                     }
                   }
