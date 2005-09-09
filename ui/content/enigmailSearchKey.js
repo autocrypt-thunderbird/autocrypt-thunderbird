@@ -608,18 +608,19 @@ function enigGpgkeysCloseRequest() {
 function enigmailGpgkeysTerminate(terminateArg, ipcRequest) {
    DEBUG_LOG("enigmailSearchkey.js: Terminate: "+ipcRequest+"\n");
 
-   var GpgkeysProcess = ipcRequest.pipeTransport;
+   var gpgkeysRequest = window.enigRequest.gpgkeysRequest;
+   var gpgkeysProcess = gpgkeysRequest.pipeTransport;
    var enigmailSvc = GetEnigmailSvc();
-   if (GpgkeysProcess && !GpgkeysProcess.isAttached) {
-     GpgkeysProcess.terminate();
-     var exitCode = GpgkeysProcess.exitCode();
+   if (gpgkeysProcess && !gpgkeysProcess.isAttached()) {
+     gpgkeysProcess.terminate();
+     var exitCode = gpgkeysProcess.exitCode();
      DEBUG_LOG("enigmailGpgkeysConsole: exitCode = "+exitCode+"\n");
      if (enigmailSvc) {
         exitCode = enigmailSvc.fixExitCode(exitCode, 0);
      }
    }
 
-  var console = window.enigRequest.gpgkeysRequest.stdoutConsole;
+  var console = gpgkeysRequest.stdoutConsole;
 
   try {
     console = console.QueryInterface(Components.interfaces.nsIPipeConsole);
@@ -630,13 +631,13 @@ function enigmailGpgkeysTerminate(terminateArg, ipcRequest) {
       DEBUG_LOG("enigmailSearchkey.js: Terminate(): stdout.hasNewData\n");
       txt = console.getData();
     }
-    console = window.enigRequest.gpgkeysRequest.stderrConsole;
+    console = gpgkeysRequest.stderrConsole;
     console = console.QueryInterface(Components.interfaces.nsIPipeConsole);
     if (console && console.hasNewData()) {
       DEBUG_LOG("enigmailSearchkey.js: Terminate(): stderr.hasNewData\n");
       errorTxt = console.getData();
     }
-    ipcRequest.close(true);
+//    gpgkeysProcess.close(true);
     enigGpgkeysCloseRequest();
 
     if (txt) {
