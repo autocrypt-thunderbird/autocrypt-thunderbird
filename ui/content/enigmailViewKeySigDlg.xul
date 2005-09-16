@@ -186,9 +186,6 @@
       for (var i=0; i<aSigList.length; i++) {
         var listRow=aSigList[i].split(/:/);
         if (listRow.length>=0) {
-          if (listRow[USER_ID].length == 0) {
-            listRow[USER_ID] = "-";
-          }
           if ((listRow[0] == "uid" || listRow[0] == "pub" || listRow[0] == "uat") && (listRow[USER_ID].length>0)) {
             var userRow=document.createElement("treerow");
             if (typeof(listRow[KEY_USE_FOR])!="string") {
@@ -209,6 +206,9 @@
             treeChildren.appendChild(treeItem);
           }
           else if (listRow[0] == "sig") {
+            if (listRow[USER_ID].length == 0) {
+              listRow[USER_ID] = "-";
+            }
             if (listRow[SIG_TYPE].substr(0,2).toLowerCase()!="1f") {
               // ignore "revoker" signatures
               userRow=document.createElement("treerow");

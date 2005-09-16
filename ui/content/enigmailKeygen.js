@@ -117,6 +117,10 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
    // Give focus to this window
    window.focus();
 
+   if (!ipcRequest.pipeTransport) {
+      // changed interface in TB 1.1
+      ipcRequest = ipcRequest.QueryInterface(Components.interfaces.nsIIPCRequest);
+   }
    var keygenProcess = ipcRequest.pipeTransport;
    var enigmailSvc = GetEnigmailSvc();
    if (!enigmailSvc) {

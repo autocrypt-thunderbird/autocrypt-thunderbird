@@ -206,11 +206,11 @@
                    ignoreincolumnpicker="true"
                    label="&enigmail.keyUserId.label;"/>
           <splitter class="tree-splitter"/>
-          <treecol id="expCol" style="width:70px"
-                   label="&enigmail.created.label;"/>
-          <splitter class="tree-splitter"/>
           <treecol id="keyCol" style="width:90px"
                    label="&enigmail.keyId.label;"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="expCol" style="width:70px"
+                   label="&enigmail.created.label;"/>
         </treecols>
 
         <treechildren id="uidSelectionChildren"/>
