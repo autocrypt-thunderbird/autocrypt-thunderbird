@@ -262,7 +262,8 @@ function enigmailKeygenStart() {
       }
    }
    var keySize = Number(document.getElementById("keySize").value);
-
+   var keyType = Number(document.getElementById("keyType").value);
+   
    var curId = getCurrentIdentity();
    gUsedId = curId;
 
@@ -297,6 +298,7 @@ function enigmailKeygenStart() {
                                            userEmail,
                                            expiryTime,
                                            keySize,
+                                           keyType,
                                            passphrase,
                                            requestObserver);
    } catch (ex) {
@@ -328,23 +330,19 @@ function enigRefreshConsole() {
     if (keygenConsole && keygenConsole.hasNewData()) {
       DEBUG_LOG("enigmailKeygen.js: enigRefreshConsole(): hasNewData\n");
 
-      var contentFrame = EnigGetFrame(window, "keygenConsole");
-      if (contentFrame) {
-
-        var consoleElement = contentFrame.document.getElementById('console');
-
-        gAllData += keygenConsole.getNewData();
-        var keyCreatedIndex = gAllData.indexOf("[GNUPG:] KEY_CREATED");
-        if (keyCreatedIndex >0) {
-          gGeneratedKey = gAllData.substr(keyCreatedIndex);
-          gGeneratedKey = gGeneratedKey.replace(/(.*\[GNUPG:\] KEY_CREATED . )([a-fA-F0-9]+)([\n\r].*)*/, "$2");
-          gAllData = gAllData.replace(/\[GNUPG:\] KEY_CREATED . [a-fA-F0-9]+[\n\r]/, "");
-        }
-        gAllData = gAllData.replace(/[\r\n]*\[GNUPG:\] GOOD_PASSPHRASE/g, "").replace(/([\r\n]*\[GNUPG:\] PROGRESS primegen )(.)( \d+ \d+)/g, "$2")
-        consoleElement.firstChild.data = gAllData.replace(/(.{70})/g, "$1\n");
-        if (!contentFrame.mouseDownState)
-          contentFrame.scrollTo(0,9999);
+      gAllData += keygenConsole.getNewData();
+      var keyCreatedIndex = gAllData.indexOf("[GNUPG:] KEY_CREATED");
+      if (keyCreatedIndex >0) {
+        gGeneratedKey = gAllData.substr(keyCreatedIndex);
+        gGeneratedKey = gGeneratedKey.replace(/(.*\[GNUPG:\] KEY_CREATED . )([a-fA-F0-9]+)([\n\r].*)*/, "$2");
+        gAllData = gAllData.replace(/\[GNUPG:\] KEY_CREATED . [a-fA-F0-9]+[\n\r]/, "");
       }
+      gAllData = gAllData.replace(/[\r\n]*\[GNUPG:\] GOOD_PASSPHRASE/g, "").replace(/([\r\n]*\[GNUPG:\] PROGRESS primegen )(.)( \d+ \d+)/g, "$2")
+      var progMeter = document.getElementById("keygenProgress");
+      var progValue = Number(progMeter.value);
+      progValue += (1+(100-progValue)/20);
+      if (progValue >= 95) progValue=10;
+      progMeter.setAttribute("value", progValue);
     }
   } catch (ex) {}
 }

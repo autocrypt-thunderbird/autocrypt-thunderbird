@@ -79,6 +79,10 @@ const ENIG_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
 const ENIG_C = Components;
 
+// Key algorithms
+const ENIG_KEYTYPE_DSA = 1;
+const ENIG_KEYTYPE_RSA = 2;
+
 // Interfaces
 const nsIEnigmail               = ENIG_C.interfaces.nsIEnigmail;
 const nsIEnigStrBundle          = ENIG_C.interfaces.nsIStringBundleService;

@@ -19,6 +19,9 @@
 <!ENTITY enigmail.keyGen.noExpiry.label   "Key does not expire">
 <!ENTITY enigmail.keyGen.keySize.label    "Key size">
 <!ENTITY enigmail.keyGen.console.label    "Key Generation Console">
+<!ENTITY enigmail.keyGen.keyType.label    "Key type">
+<!ENTITY enigmail.keyGen.keyType.dsa      "DSA &amp; El Gamal">
+<!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
 
 <!ENTITY enigmail.preferences.label       "OpenPGP Preferences">
 

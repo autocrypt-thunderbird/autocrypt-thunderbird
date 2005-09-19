@@ -69,8 +69,18 @@
       </hbox>
       <textbox id="keyComment" />
     </row>
+  </rows>
+</grid>
+  
+<tabbox flex="1">
+  <tabs id="settingsTabBox">
+    <tab id="basicTab"    label="&enigmail.basic.label;"/>
+    <tab id="advancedTab" label="&enigmail.advancedPrefsButton.label;"/>
+  </tabs>
 
-    <row>
+  <tabpanels flex="1">
+
+    <hbox> <!-- Basic Tab -->
       <hbox align="center">
         <label value="&enigmail.keyGen.expire.label;"/>
       </hbox>
@@ -86,24 +96,48 @@
         <checkbox label="&enigmail.keyGen.noExpiry.label;"
                   id="noExpiry" oncommand="onNoExpiry()"/>
       </hbox>
-    </row>
-    
-    <row>
-      <hbox align="center">
-        <label value="&enigmail.keyGen.keySize.label;"/>
-      </hbox>
-      <hbox flex="0">
-        <menulist id="keySize" label="2048" value="2048" >
-          <menupopup id="keySizePopup">
-            <menuitem id="keySize_1024" value="1024" label="1024"/>
-            <menuitem id="keySize_2048" value="2048" label="2048" selected="true"/>
-            <menuitem id="keySize_4096" value="4096" label="4096"/>
-          </menupopup>
-        </menulist>
-      </hbox>
-    </row>
-  </rows>
-</grid>
+    </hbox>
+
+    <vbox> <!-- Advanced Tab -->
+      <grid>
+        <columns>
+          <column/>
+          <column flex="1"/>
+        </columns>
+
+        <rows>
+          <row>
+            <hbox align="center">
+              <label value="&enigmail.keyGen.keySize.label;"/>
+            </hbox>
+            <hbox flex="0">
+              <menulist id="keySize" label="2048" value="2048" >
+                <menupopup id="keySizePopup">
+                  <menuitem id="keySize_1024" value="1024" label="1024"/>
+                  <menuitem id="keySize_2048" value="2048" label="2048" selected="true"/>
+                  <menuitem id="keySize_4096" value="4096" label="4096"/>
+                </menupopup>
+              </menulist>
+            </hbox>
+          </row>
+          <row>
+            <hbox align="center">
+              <label value="&enigmail.keyGen.keyType.label;"/>
+            </hbox>
+            <hbox flex="0">
+              <menulist id="keyType" label="&enigmail.keyGen.keyType.dsa;" value="1" >
+                <menupopup id="keyTypePopup">
+                  <menuitem id="keyType_dsa" value="1" label="&enigmail.keyGen.keyType.dsa;" selected="true"/>
+                  <menuitem id="keySize_rsa" value="2" label="&enigmail.keyGen.keyType.rsa;"/>
+                </menupopup>
+              </menulist>
+            </hbox>
+          </row>
+        </rows>
+      </grid>
+  </vbox>
+  </tabpanels>
+</tabbox>
 
 <separator/>
 
@@ -129,9 +163,9 @@
 
   <description>&enigmail.keygen.desc;</description>
 
-  <iframe id="keygenConsole" type="content" name="keygenConsole"
-          src="chrome://enigmail/content/enigmailKeygenConsole.htm"
-          height="200" flex="1"/>
+  <groupbox>
+    <progressmeter id="keygenProgress" mode="determined" value="0"/>
+  </groupbox>
 
 </groupbox>
 

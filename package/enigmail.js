@@ -175,6 +175,9 @@ const BUTTON_POS_0           = 1;
 const BUTTON_POS_1           = 1 << 8;
 const BUTTON_POS_2           = 1 << 16;
 
+const KEYTYPE_DSA = 1;
+const KEYTYPE_RSA = 2;
+
 var gMimeHashAlgorithms = ["md5", "sha1", "ripemd160", "sha256", "sha384", "sha512"];
 
 function CreateFileStream(filePath, permissions) {
@@ -3682,10 +3685,9 @@ function (parent, fileName, errorMsgObj) {
   return exitCodeObj.value;
 }
 
-
 Enigmail.prototype.generateKey =
-function (parent, name, comment, email, expiryDate, keyLength, passphrase,
-          requestObserver) {
+function (parent, name, comment, email, expiryDate, keyLength, keyType,
+          passphrase, requestObserver) {
   WRITE_LOG("enigmail.js: Enigmail.generateKey: \n");
 
   if (this.keygenProcess || (this.agentType != "gpg"))
@@ -3700,10 +3702,21 @@ function (parent, name, comment, email, expiryDate, keyLength, passphrase,
 
   pipeConsole.write(command.replace(/\\\\/g, "\\")+"\n");
   CONSOLE_LOG(command.replace(/\\\\/g, "\\")+"\n");
+  
+  var inputData = "%echo Generating key\nKey-Type: "
 
-  var inputData = "%echo Generating a standard key\nKey-Type: DSA\nKey-Length: 1024\nSubkey-Type: ELG-E\n";
+  switch (keyType) {
+  case KEYTYPE_DSA:
+    inputData += "DSA\nKey-Length: 1024\nSubkey-Type: ELG-E\nSubkey-Length: ";
+    break;
+  case KEYTYPE_RSA:
+    inputData += "RSA\nKey-Length: ";
+    break;
+  default:
+    return null;
+  }
 
-  inputData += "Subkey-Length: "+keyLength+"\n";
+  inputData += keyLength+"\n";
   inputData += "Name-Real: "+name+"\n";
   if (comment)
     inputData += "Name-Comment: "+comment+"\n";

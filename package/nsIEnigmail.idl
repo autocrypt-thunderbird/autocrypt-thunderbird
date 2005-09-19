@@ -321,6 +321,7 @@ interface nsIEnigmail : nsISupports
                             in string email,
                             in long   expiryDate,
                             in long   keyLength,
+                            in long   keyType,
                             in string passphrase,
                             in nsIRequestObserver requestObserver);
 
