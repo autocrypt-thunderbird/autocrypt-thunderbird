@@ -15,6 +15,7 @@ enigmail.jar:
 	content/enigmail/enigmailCheckLanguage.xul     (content/enigmailCheckLanguage.xul)
 	content/enigmail/enigmailCardDetails.js        (content/enigmailCardDetails.js)
 	content/enigmail/enigmailCardDetails.xul       (content/enigmailCardDetails.xul)
+	content/enigmail/enigmailChangePasswd.xul      (content/enigmailChangePasswd.xul)
 	content/enigmail/enigmailConsole.xul           (content/enigmailConsole.xul)
 	content/enigmail/enigmailConsole.js            (content/enigmailConsole.js)
 	content/enigmail/enigmailConsole.htm           (content/enigmailConsole.htm)

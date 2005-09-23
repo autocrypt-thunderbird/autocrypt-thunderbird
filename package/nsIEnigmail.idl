@@ -285,6 +285,12 @@ interface nsIEnigmail : nsISupports
                   in string idNumber,
                   out wstring errorMsg);
 
+  long changePassphrase (in nsIDOMWindow parent,
+                         in string keyId,
+                         in string oldPw,
+                         in string newPw,
+                         out wstring errorMsgObj);
+
   string getKeySig (in string keyId,
                     out long exitCode,
                     out wstring errorMsg);

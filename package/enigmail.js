@@ -4740,6 +4740,23 @@ function (parent, keyId, deleteSecretKey, errorMsgObj) {
   return r;
 }
 
+Enigmail.prototype.changePassphrase =
+function (parent, keyId, oldPw, newPw, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.addUid: changePassphrase="+keyId+"\n");
+
+  var pwdObserver = new enigChangePasswdObserver();
+  var r= this.editKey(parent, false, null, keyId, "passwd",
+                      { oldPw: oldPw,
+                        newPw: newPw,
+                        step: 0,
+                        observer: pwdObserver },
+                      changePassphraseCallback,
+                      pwdObserver,
+                      errorMsgObj);
+  this.stillActive();
+
+  return r;
+}
 Enigmail.prototype.revokeSubkey =
 function (parent, keyId, subkeys, reasonCode, reasonText, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.revokeSubkey: keyId="+keyId+"\n");
@@ -4856,6 +4873,37 @@ enigCardAdminObserver.prototype =
   }
 }
 
+function enigChangePasswdObserver() {}
+
+enigChangePasswdObserver.prototype =
+{
+  _failureCode: 0,
+  passphraseStatus: 0,
+
+  QueryInterface : function(iid)
+  {
+    if (iid.equals(Components.interfaces.nsIEnigMimeReadCallback) ||
+        iid.equals(Components.interfaces.nsISupports) )
+      return this;
+
+    throw Components.results.NS_NOINTERFACE;
+  },
+
+  onDataAvailable: function (data) {
+    var ret="";
+    DEBUG_LOG("enigmail.js: enigChangePasswdObserver.onDataAvailable: data="+data+"\n");
+    if (this._failureCode) {
+      ret = "[GNUPG:] ENIGMAIL_FAILURE "+data;
+    }
+    if (data.indexOf("[GNUPG:] GOOD_PASSPHRASE")>=0) {
+      this.passphraseStatus = 1;
+    }
+    else if (data.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
+      this.passphraseStatus = -1;
+    }
+    return ret;
+  }
+}
 
 Enigmail.prototype.genCardKey =
 function (parent, name, email, comment, expiry, backupPasswd, requestObserver, errorMsgObj) {
@@ -5283,6 +5331,41 @@ function setPrimaryUidCallback(inputData, keyEdit, ret) {
       ret.quitNow=true;
     }
 
+  }
+  else {
+    ret.quitNow=true;
+    ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
+    ret.exitCode=-1;
+  }
+}
+
+
+function changePassphraseCallback(inputData, keyEdit, ret) {
+  ret.writeTxt = "";
+  ret.errorMsg = "";
+
+  if (keyEdit.doCheck(GET_HIDDEN, "passphrase.enter")) {
+    switch (inputData.observer.passphraseStatus) {
+    case 0:
+      ret.writeTxt = inputData.oldPw;
+      ret.exitCode = 0;
+      break;
+    case 1:
+      ret.writeTxt = inputData.newPw;
+      ret.exitCode = 0;
+      break;
+    case -1:
+      ret.exitCode = -2;
+      ret.quitNow=true;
+      break;
+    }
+  }
+  else if (keyEdit.doCheck(GET_BOOL, "change_passwd.empty.okay")) {
+    ret.writeTxt = "Y";
+    ret.exitCode = 0;
+  }
+  else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
+    ret.quitNow = true;
   }
   else {
     ret.quitNow=true;

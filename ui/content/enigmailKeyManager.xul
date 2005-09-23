@@ -176,6 +176,12 @@
                   observes="bcManageUid"
                   accesskey="&enigmail.keyMan.manageUid.accesskey;"
                   oncommand="enigmailManageUids()"/>
+
+        <menuitem id="changePwd"
+                  label="&enigmail.keyMan.changePwd.label;"
+                  observes="bcManageUid"
+                  accesskey="&enigmail.keyMan.changePwd.accesskey;"
+                  oncommand="enigmailChangePwd()"/>
         <menuseparator/>
 
         <menuitem id="selectAll"
@@ -292,6 +298,7 @@
       <menuseparator/>
 
       <menuitem id="ctxManageUid" observes="bcManageUid" label="&enigmail.keyMan.manageUid.label;" oncommand="enigmailManageUids()"/>
+      <menuitem id="ctxChangePwd" observes="bcManageUid" label="&enigmail.keyMan.changePwd.label;" oncommand="enigmailChangePwd()"/>
       <menuitem id="ctxRevokationCert" observes="bcRevoke" label="&enigmail.keyMan.ctxGenRevoke.label;" oncommand="enigCreateRevokeCert()"/>
 
 			<menuseparator/>

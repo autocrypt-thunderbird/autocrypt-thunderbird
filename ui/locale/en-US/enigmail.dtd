@@ -12,6 +12,7 @@
 <!ENTITY enigmail.generateKey.tooltip     "Generates a new OpenPGP compliant key for encryption and/or signing">
 <!ENTITY enigmail.cancelKey.label         "Cancel">
 <!ENTITY enigmail.cancelKey.tooltip       "Cancel Key Generation">
+<!ENTITY enigmail.keyGen.expiry.title     "Key expiry">
 <!ENTITY enigmail.keyGen.expire.label     "Key expires in">
 <!ENTITY enigmail.keyGen.days.label       "days">
 <!ENTITY enigmail.keyGen.months.label     "months">
@@ -413,6 +414,7 @@
 <!ENTITY enigmail.keyMan.reload.label              "Reload Key Cache">
 <!ENTITY enigmail.keyMan.addUid.label              "Add User ID">
 <!ENTITY enigmail.keyMan.manageUid.label           "Manage User IDs">
+<!ENTITY enigmail.keyMan.changePwd.label           "Change Passphrase">
 <!ENTITY enigmail.keyMan.delKey.label              "Delete Key">
 <!ENTITY enigmail.keyMan.revokeKey.label           "Revoke Key">
 <!ENTITY enigmail.keyMan.keyProps.label            "Key Properties">
@@ -446,6 +448,7 @@
 <!ENTITY enigmail.keyMan.reload.accesskey            "R">
 <!ENTITY enigmail.keyMan.addUid.accesskey            "A">
 <!ENTITY enigmail.keyMan.manageUid.accesskey         "M">
+<!ENTITY enigmail.keyMan.changePwd.accesskey         "P">
 <!ENTITY enigmail.keyMan.viewSig.accesskey           "S">
 <!ENTITY enigmail.keyMan.showPhoto.accesskey         "P">
 <!ENTITY enigmail.keyMan.importMenu.accesskey        "I">
@@ -538,6 +541,11 @@
 <!ENTITY enigmail.cardPin.currPin.label              "Current PIN">
 <!ENTITY enigmail.cardPin.newPin.label               "New PIN">
 <!ENTITY enigmail.cardPin.pinRepeat.label            "Repeat new PIN">
+
+<!ENTITY enigmail.changePasswd.title                 "Change OpenPGP Passphrase">
+<!ENTITY enigmail.changePasswd.currPasswd.label      "Current Passphrase">
+<!ENTITY enigmail.changePasswd.newPasswd.label       "New Passphrase">
+<!ENTITY enigmail.changePasswd.repeatPasswd.label    "Repeat Passphrase">
 
 <!ENTITY enigmail.setupWiz.title                     "OpenPGP Setup Wizard">
 <!ENTITY enigmail.setupWiz.yes                       "Yes">

@@ -1,0 +1,204 @@
+<!--
+  The contents of this file are subject to the Mozilla Public
+  License Version 1.1 (the "MPL"); you may not use this file
+  except in compliance with the MPL. You may obtain a copy of
+  the MPL at http://www.mozilla.org/MPL/
+
+  Software distributed under the MPL is distributed on an "AS
+  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  implied. See the MPL for the specific language governing
+  rights and limitations under the MPL.
+
+  The Original Code is Enigmail.
+
+  The Initial Developer of this code is Patrick Brunschwig.
+  Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+  are Copyright (C) 2005 Patrick Brunschwig.
+  All Rights Reserved.
+
+  Contributor(s):
+
+  Alternatively, the contents of this file may be used under the
+  terms of the GNU General Public License (the "GPL"), in which case
+  the provisions of the GPL are applicable instead of
+  those above. If you wish to allow use of your version of this
+  file only under the terms of the GPL and not to allow
+  others to use your version of this file under the MPL, indicate
+  your decision by deleting the provisions above and replace them
+  with the notice and other provisions required by the GPL.
+  If you do not delete the provisions above, a recipient
+  may use your version of this file under either the MPL or the
+  GPL.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="enigmailChangePwdDlg"
+        title="&enigmail.changePasswd.title;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="onLoad()"
+        ondialogaccept="return onAccept();">
+
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+
+  <vbox>
+    <label id="userId" value="..."/>
+    <separator/>
+    <grid>
+      <columns>
+        <column/>
+        <column flex="1"/>
+      </columns>
+      <rows>
+        <row align="center">
+          <label value="&enigmail.changePasswd.currPasswd.label; :"/>
+          <textbox id="currPasswd" value="" size="20" type="password"/>
+        </row>
+        <row align="center">
+          <label value="&enigmail.changePasswd.newPasswd.label; :"/>
+          <textbox id="newPasswd" value="" size="20" type="password"/>
+        </row>
+        <row align="center">
+          <label value="&enigmail.changePasswd.repeatPasswd.label; :"/>
+          <textbox id="repeatPasswd" value="" size="20" type="password"/>
+        </row>
+      </rows>
+    </grid>
+  </vbox>
+
+  <script type="application/x-javascript">
+  <![CDATA[
+
+  EnigInitCommon("enigmailSetCardPinDlg");
+
+  function onLoad() {
+    var uid = window.window.arguments[0].userId +" - 0x"+ window.arguments[0].keyId.substr(-8,8);
+    document.getElementById("userId").value = uid;
+  }
+
+  function onAccept() {
+    var enigmailSvc = GetEnigmailSvc();
+    if (!enigmailSvc)
+      return false;
+
+
+    var currPasswd = document.getElementById("currPasswd").value;
+    var newPasswd = document.getElementById("newPasswd").value;
+    var repeatPasswd = document.getElementById("repeatPasswd").value;
+    if (newPasswd.length == 0 && repeatPasswd.length == 0) {
+      if (! EnigConfirm(EnigGetString("removePassphrase"))) {
+        return false;
+      }
+    }
+    else {
+      if (newPasswd.length < 8) {
+        EnigAlert(EnigGetString("passphrase.min8keys"));
+        return false;
+      }
+      if (newPasswd != repeatPasswd) {
+        EnigAlert(EnigGetString("passNoMatch"));
+        return false;
+      }
+      if (newPasswd.search(/[\x80-\xFF]/)>=0) {
+        EnigAlert(EnigGetString("passCharProblem"));
+        return false;
+      }
+    }
+
+    var errorMsgObj = new Object();
+
+    var r = enigmailSvc.changePassphrase(window,
+                                         window.arguments[0].keyId,
+                                         currPasswd,
+                                         newPasswd,
+                                         errorMsgObj);
+
+    if (r != 0) {
+      EnigAlert(EnigGetString("changePassFailed")+"\n"+errorMsgObj.value);
+      return false;
+    }
+    return true;
+  }
+
+  function dlgEnable(item) {
+    document.getElementById(item).removeAttribute("collapsed");
+  }
+
+  function dlgDisable(item) {
+    document.getElementById(item).setAttribute("collapsed", "true");
+  }
+
+  function setDlgContent(sel) {
+    gAction = sel;
+    switch(sel) {
+    case 'P':
+      dlgDisable("currAdminPinRow");
+      dlgDisable("adminPinRow");
+      dlgDisable("adminPinRepeatRow");
+      dlgEnable("currPinRow");
+      dlgEnable("pinRow");
+      dlgEnable("pinRepeatRow");
+      break;
+    case 'A':
+      dlgEnable("currAdminPinRow");
+      dlgEnable("adminPinRow");
+      dlgEnable("adminPinRepeatRow");
+      dlgDisable("currPinRow");
+      dlgDisable("pinRow");
+      dlgDisable("pinRepeatRow");
+      break;
+    case 'U':
+      dlgEnable("currAdminPinRow");
+      dlgDisable("adminPinRow");
+      dlgDisable("adminPinRepeatRow");
+      dlgDisable("currPinRow");
+      dlgEnable("pinRow");
+      dlgEnable("pinRepeatRow");
+      break;
+    }
+  }
+
+  function changePinObserver() {
+  }
+
+  changePinObserver.prototype =
+  {
+    _data: "",
+    result: "",
+
+    QueryInterface : function(iid)
+    {
+      if (iid.equals(Components.interfaces.nsIEnigMimeReadCallback) ||
+          iid.equals(Components.interfaces.nsISupports) )
+        return this;
+
+      throw Components.results.NS_NOINTERFACE;
+    },
+
+    onDataAvailable: function (data) {
+      var ret="";
+      DEBUG_LOG("enigmailSetCardPin: changePinObserver.onDataAvailable: data="+data+"\n");
+      if (data.indexOf("[GNUPG:] SC_OP_FAILURE")>=0) {
+        this.result = this._data;
+      }
+      else {
+        this._data = data
+      }
+      return "";
+    }
+  }
+
+  ]]>
+  </script>
+</dialog>
+
+

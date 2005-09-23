@@ -721,6 +721,20 @@ function enigmailManageUids() {
   enigmailRefreshKeys();
 }
 
+function enigmailChangePwd() {
+  var keyList = enigmailGetSelectedKeys();
+  var inputObj = {
+    keyId: keyList[0],
+    userId: gKeyList[keyList[0]].userId
+  };
+  
+  window.openDialog("chrome://enigmail/content/enigmailChangePasswd.xul",
+        "", "dialog,modal,centerscreen", inputObj);
+
+
+}
+
+
 function enigGetClipboard() {
   DEBUG_LOG("enigmailKeyManager.js: enigGetClipboard:\n");
   var cBoardContent = "";

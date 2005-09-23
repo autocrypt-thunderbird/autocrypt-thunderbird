@@ -74,7 +74,7 @@
   
 <tabbox flex="1">
   <tabs id="settingsTabBox">
-    <tab id="basicTab"    label="&enigmail.basic.label;"/>
+    <tab id="basicTab"    label="&enigmail.keyGen.expiry.title;"/>
     <tab id="advancedTab" label="&enigmail.advancedPrefsButton.label;"/>
   </tabs>
 
