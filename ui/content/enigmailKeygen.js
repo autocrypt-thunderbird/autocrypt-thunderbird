@@ -138,9 +138,9 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
    enigRefreshConsole();
 
    ipcRequest.close(true);
+   var curId = gUsedId;
 
    if (gUseForSigning.checked) {
-      var curId = gUsedId;
       curId.setBoolAttribute("enablePgp", true);
       curId.setIntAttribute("pgpKeyMode", 1);
       if (gGeneratedKey) {
@@ -154,15 +154,16 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
 
       EnigSavePrefs();
 
-      if (EnigConfirm(EnigGetString("keygenComplete", curId.email)+"\n\n"+EnigGetString("revokeCertRecommended"))) {
-        EnigCreateRevokeCert(gGeneratedKey, curId.email);
-      }
-      
-
    } else {
       EnigAlert(EnigGetString("genCompleteNoSign"));
    }
-
+   
+   if (gGeneratedKey) {
+     if (EnigConfirm(EnigGetString("keygenComplete", curId.email)+"\n\n"+EnigGetString("revokeCertRecommended"))) {
+        EnigCreateRevokeCert(gGeneratedKey, curId.email);
+     }
+   }
+   
    enigmailKeygenCloseRequest();
 
    enigmailSvc.invalidateUserIdList();
