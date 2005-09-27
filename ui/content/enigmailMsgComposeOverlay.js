@@ -1805,16 +1805,15 @@ function enigDecryptQuote(interactive) {
 
   var docText = EnigEditorGetContentsAs("text/plain", encoderFlags);
 
-  if (docText.indexOf("-----BEGIN PGP ") < 0)
+  var blockBegin = docText.indexOf("-----BEGIN PGP ");
+  if (blockBegin < 0)
     return;
 
   // Determine indentation string
-  var matches = docText.match(/(^|\n)([ \t]*>*[ \t]*)-----BEGIN PGP /);
-
-  var indentStr= "";
-  if (matches && (matches.length > 2)) {
-    indentStr = matches[2];
-  }
+  var indentBegin = docText.substr(0, blockBegin).lastIndexOf("\n");
+  if (indentBegin < 0)
+    return;
+  var indentStr = docText.substring(indentBegin+1, blockBegin);
 
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: indentStr='"+indentStr+"'\n");
 
