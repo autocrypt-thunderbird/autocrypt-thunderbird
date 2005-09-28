@@ -31,6 +31,7 @@ GPL.
 */
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
+//       chrome://enigmail/content/enigmailBuildDate.js
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailAbout");
@@ -42,9 +43,10 @@ function enigAboutLoad() {
   if (!contentFrame)
     return;
 
+  var enigVersion=gEnigmailVersion+" ("+EnigBuildDate+")";
   var versionElement = contentFrame.document.getElementById('version');
   if (versionElement)
-    versionElement.firstChild.data = EnigGetString("usingVersion",gEnigmailVersion);
+    versionElement.firstChild.data = EnigGetString("usingVersion", enigVersion);
 
   var enigmimeElement = contentFrame.document.getElementById('enigmime');
 
