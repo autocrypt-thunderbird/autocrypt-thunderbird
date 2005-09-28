@@ -154,13 +154,16 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
 
       EnigSavePrefs();
 
+     if (gGeneratedKey) {
+       if (EnigConfirm(EnigGetString("keygenComplete", curId.email)+"\n\n"+EnigGetString("revokeCertRecommended"))) {
+          EnigCreateRevokeCert(gGeneratedKey, curId.email);
+       }
+     }
    } else {
-      EnigAlert(EnigGetString("genCompleteNoSign"));
-   }
-   
-   if (gGeneratedKey) {
-     if (EnigConfirm(EnigGetString("keygenComplete", curId.email)+"\n\n"+EnigGetString("revokeCertRecommended"))) {
-        EnigCreateRevokeCert(gGeneratedKey, curId.email);
+     if (gGeneratedKey) {
+       if (EnigConfirm(EnigGetString("genCompleteNoSign")+"\n\n"+EnigGetString("revokeCertRecommended"))) {
+          EnigCreateRevokeCert(gGeneratedKey, curId.email);
+       }
      }
    }
    
