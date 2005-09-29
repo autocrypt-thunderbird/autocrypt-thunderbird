@@ -202,7 +202,7 @@
 
         <treecols>
           <treecol id="uidCol" primary="true"
-                   flex="1"
+                   style="width:250px"
                    ignoreincolumnpicker="true"
                    label="&enigmail.keyUserId.label;"/>
           <splitter class="tree-splitter"/>
