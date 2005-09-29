@@ -194,15 +194,16 @@
              selected="true"
              value="0"/>
 
-      <tree id="uidSelection" flex="1"
+      <tree id="uidSelection"
         hidecolumnpicker="false"
         style="height:200px"
+        minwidth="450"
         seltype="single"
         onselect="onKeySelected();">
 
         <treecols>
           <treecol id="uidCol" primary="true"
-                   style="width:250px"
+                   flex="1"
                    ignoreincolumnpicker="true"
                    label="&enigmail.keyUserId.label;"/>
           <splitter class="tree-splitter"/>
