@@ -609,7 +609,7 @@
                                                       recipient has the key for. Unlike signing, to use encryption all the
                                                       recipients of an email need to use OpenPGP. People need to give you
                                                       their public key before you can send them encrypted email (the public
-                                                      key is the pack lock we were talking about).
+                                                      key is the pad lock we were talking about).
                                                       <html:br/><html:br/>
                                                       Unless most of your communication partners have public keys, you should
                                                       not enable encryption by default.">
