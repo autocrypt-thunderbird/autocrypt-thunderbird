@@ -2323,13 +2323,6 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
   if (!useDefaultComment)
     encryptCommand += " --comment "+this.quoteSign+GPG_COMMENT_OPT.replace(/\%s/, this.vendor)+this.quoteSign;
 
-/*
-  if (usePgpMime && (! encryptMsg)) {
-    if (this.agentVersion >= "1.4.1") {
-      //encryptCommand += " --rfc2440-dshaw"
-    }
-  }
-*/
   var angledFromMailAddr = ((fromMailAddr.search(/^0x/) == 0) || hushMailSupport)
                          ? fromMailAddr : "<" + fromMailAddr + ">";
   angledFromMailAddr = angledFromMailAddr.replace(/([\"\'\`])/g, "\\$1");
@@ -2342,7 +2335,7 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
     if (isAscii)
       encryptCommand += " -a";
 
-    encryptCommand +=  " -e";
+    encryptCommand +=  " -t -e";
 
     if (signMsg)
       encryptCommand += " -s";
@@ -2370,7 +2363,7 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
       encryptCommand += " -a";
 
   } else if (signMsg) {
-    encryptCommand += " --clearsign";
+    encryptCommand += " -t --clearsign";
   }
 
   if (fromMailAddr) {
@@ -4757,6 +4750,8 @@ function (parent, keyId, oldPw, newPw, errorMsgObj) {
 
   return r;
 }
+
+
 Enigmail.prototype.revokeSubkey =
 function (parent, keyId, subkeys, reasonCode, reasonText, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.revokeSubkey: keyId="+keyId+"\n");
