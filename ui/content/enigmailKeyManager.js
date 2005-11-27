@@ -511,15 +511,29 @@ function enigCreateKeyMsg() {
   // create Msg
   var msgCompFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
   msgCompFields.addAttachment(keyAttachment);
-
+  
   var acctManager = Components.classes["@mozilla.org/messenger/account-manager;1"].createInstance(Components.interfaces.nsIMsgAccountManager);
   
   var msgCompSvc = Components.classes["@mozilla.org/messengercompose;1"].getService(Components.interfaces.nsIMsgComposeService);
-  msgCompSvc.OpenComposeWindowWithCompFields ("",
+
+  if (typeof(msgCompSvc.OpenComposeWindowWithCompFields) != "function") {
+    // TB 1.5
+    var msgCompParam = Components.classes["@mozilla.org/messengercompose/composeparams;1"].createInstance(Components.interfaces.nsIMsgComposeParams);
+    msgCompParam.composeFields = msgCompFields;
+    msgCompParam.identity = acctManager.defaultAccount.defaultIdentity;
+    msgCompParam.type = Components.interfaces.nsIMsgCompType.New;
+    msgCompParam.format = Components.interfaces.nsIMsgCompFormat.Default;
+    msgCompParam.originalMsgURI = "";
+    msgCompSvc.OpenComposeWindowWithParams("", msgCompParam);
+  }
+  else {
+    // TB 1.0
+    msgCompSvc.OpenComposeWindowWithCompFields ("",
             Components.interfaces.nsIMsgCompType.New,
             Components.interfaces.nsIMsgCompFormat.Default,
             msgCompFields,
             acctManager.defaultAccount.defaultIdentity);
+  }
 }
 
 

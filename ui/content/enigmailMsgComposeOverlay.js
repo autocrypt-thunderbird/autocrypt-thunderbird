@@ -678,14 +678,21 @@ function enigEncryptMsg(msgSendType) {
   var gotSendFlags = gEnigSendMode;
   var sendFlags=0;
   window.enigmailSendFlags=0;
+  
+  var autoSaveAsDraft = nsIMsgCompDeliverMode.SaveAsDraft;
+  try {
+    // TB 1.5 only
+    autoSaveAsDraft = nsIMsgCompDeliverMode.AutoSaveAsDraft;
+  }
+  catch (ex) {}
+  
   switch (msgSendType) {
   case nsIMsgCompDeliverMode.Later:          
     sendFlags |= nsIEnigmail.SEND_LATER;
     break;
   case nsIMsgCompDeliverMode.SaveAsDraft:   
-    sendFlags |=  nsIEnigmail.SAVE_MESSAGE;
-    break;
-  case nsIMsgCompDeliverMode.SaveAsTemplate: 
+  case nsIMsgCompDeliverMode.SaveAsTemplate:
+  case autoSaveAsDraft:
     sendFlags |= nsIEnigmail.SAVE_MESSAGE;
     break;
   }
@@ -778,7 +785,7 @@ function enigEncryptMsg(msgSendType) {
        optSendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
      }
 
-     if (EnigGetPref("encryptToSelf")) {
+     if (EnigGetPref("encryptToSelf") || (sendFlags & nsIEnigmail.SAVE_MESSAGE)) {
        optSendFlags |= nsIEnigmail.SEND_ENCRYPT_TO_SELF;
      }
 
@@ -816,58 +823,68 @@ function enigEncryptMsg(msgSendType) {
      DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg:gMsgCompose="+gMsgCompose+"\n");
 
      var toAddrList = [];
-     if (msgCompFields.to) {
-       var recList = msgCompFields.SplitRecipients(msgCompFields.to, true)
-       enigAddRecipients(toAddrList, recList);
+     if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
+        if (userIdValue.search(/@/) == -1) {
+          toAddrList.push(userIdValue);
+        }
+        else {
+          enigAddRecipients(toAddrList, [ userIdValue ]);
+        }
      }
+     else {
+       if (msgCompFields.to) {
+         var recList = msgCompFields.SplitRecipients(msgCompFields.to, true)
+         enigAddRecipients(toAddrList, recList);
+       }
 
-     if (msgCompFields.cc) {
-       recList = msgCompFields.SplitRecipients(msgCompFields.cc, true)
-       enigAddRecipients(toAddrList, recList);
-     }
+       if (msgCompFields.cc) {
+         recList = msgCompFields.SplitRecipients(msgCompFields.cc, true)
+         enigAddRecipients(toAddrList, recList);
+       }
 
-     if (msgCompFields.bcc) {
-       recList = msgCompFields.SplitRecipients(msgCompFields.bcc, true)
-       enigAddRecipients(toAddrList, recList);
+       if (msgCompFields.bcc) {
+         recList = msgCompFields.SplitRecipients(msgCompFields.bcc, true)
+         enigAddRecipients(toAddrList, recList);
 
-       var bccLC = EnigStripEmail(msgCompFields.bcc).toLowerCase()
-       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: BCC: "+bccLC+"\n");
+         var bccLC = EnigStripEmail(msgCompFields.bcc).toLowerCase()
+         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: BCC: "+bccLC+"\n");
 
-       var selfBCC = gEnigIdentity.email && (gEnigIdentity.email.toLowerCase() == bccLC);
+         var selfBCC = gEnigIdentity.email && (gEnigIdentity.email.toLowerCase() == bccLC);
 
-       if (selfBCC) {
-         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: Self BCC\n");
+         if (selfBCC) {
+           DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: Self BCC\n");
 
-       } else if (sendFlags & ENIG_ENCRYPT) {
-         // BCC and encryption
+         } else if (sendFlags & ENIG_ENCRYPT) {
+           // BCC and encryption
 
-         if (encryptIfPossible) {
-           sendFlags &= ~ENIG_ENCRYPT;
-           DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: No default encryption because of BCC\n");
+           if (encryptIfPossible) {
+             sendFlags &= ~ENIG_ENCRYPT;
+             DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: No default encryption because of BCC\n");
 
-         } else {
-           if (!EnigConfirm(EnigGetString("sendingBCC"))) {
-             window.cancelSendMessage=true;
-             return;
+           } else {
+             if (!EnigConfirm(EnigGetString("sendingBCC"))) {
+               window.cancelSendMessage=true;
+               return;
+             }
            }
          }
        }
-     }
 
-     if (newsgroups) {
-       toAddrList.push(newsgroups);
+       if (newsgroups) {
+         toAddrList.push(newsgroups);
 
-       if (sendFlags & ENIG_ENCRYPT) {
+         if (sendFlags & ENIG_ENCRYPT) {
 
-         if (!encryptIfPossible) {
-           EnigAlert(EnigGetString("sendingNews"));
-           window.cancelSendMessage=true;
-           return;
+           if (!encryptIfPossible) {
+             EnigAlert(EnigGetString("sendingNews"));
+             window.cancelSendMessage=true;
+             return;
+           }
+
+           sendFlags &= ~ENIG_ENCRYPT;
+           DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: No default encryption because of newsgroups\n");
+
          }
-
-         sendFlags &= ~ENIG_ENCRYPT;
-         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: No default encryption because of newsgroups\n");
-
        }
      }
 
