@@ -105,6 +105,10 @@ function verifyDiskSpace(dirPath, spaceRequired) {
 }
 EOT
 
+cat > ${ENIGLANG}/chrome.manifest <<EOT
+locale	      enigmail    ${ENIGLANG}       jar:chrome/enigmail-${ENIGLANG}.jar!/locale/${ENIGLANG}/enigmail/
+EOT
+
 # create install.rdf for Thunderbird 0.7 and newer
 cat > ${ENIGLANG}/install.rdf <<EOT
 <?xml version="1.0"?>
@@ -121,8 +125,14 @@ cat > ${ENIGLANG}/install.rdf <<EOT
     <em:targetApplication>
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>0.7</em:minVersion>
-        <em:maxVersion>1.2</em:maxVersion>
+        <em:minVersion>1.0</em:minVersion>
+        <em:maxVersion>1.6</em:maxVersion>
+      </Description>
+      <Description>
+        <!-- Mozilla Suite -->
+        <em:id>{86c18b42-e466-45a9-ae7a-9b95ba6f5640}</em:id>
+        <em:minVersion>1.7</em:minVersion>
+        <em:maxVersion>1.9</em:maxVersion>
       </Description>
     </em:targetApplication>
     
@@ -148,73 +158,6 @@ cat > ${ENIGLANG}/install.rdf <<EOT
     </em:file>
   </Description>      
 </RDF>
-EOT
-
-# create enigmail-xx-YY.spec
-cat > ${ENIGLANG}/enigmail-${ENIGLANG}.spec <<EOT
-Name:      mozilla-enigmail-${ENIGLANG}
-Version:   ${ENIGVERSION}
-Release:   1
-Requires:  mozilla-enigmail = ${ENIGVERSION}
-Summary:   Language pack for Enigmail (${ENIGLANG})
-Copyright: Mozilla Public License 1.1/GPL
-Group:     Applications/Internet
-Source:    http://enigmail.mozdev.org/source.html
-URL:       http://enigmail.mozdev.org/
-Vendor:    xmlterm.org
-Packager:  R. Saravanan <svn@xmlterm.org>
-
-%description
-
- mozilla-enigmail-${ENIGLANG}: Language pack for Enigmail (${ENIGLANG})
-
-%prep
-cd \$RPM_BUILD_DIR
-rm -rf \${RPM_PACKAGE_NAME}-\${RPM_PACKAGE_VERSION}
-mkdir \${RPM_PACKAGE_NAME}-\${RPM_PACKAGE_VERSION}
-cd \${RPM_PACKAGE_NAME}-\${RPM_PACKAGE_VERSION}
-
-unzip \${RPM_SOURCE_DIR}/enigmail-${ENIGLANG}-\${RPM_PACKAGE_VERSION}.xpi
-if [ \$? -ne 0 ]; then
-  exit \$?
-fi
-
-chown -R root.root .
-chmod -R a+rX,g-w,o-w .
-
-%build
-
-%install
-cd \${RPM_PACKAGE_NAME}-\${RPM_PACKAGE_VERSION}
-install -m 755 enigmail-${ENIGLANG}.jar     /usr/lib/mozilla/chrome
-
-%pre
-
-%post
-
-if [ -f /usr/lib/mozilla/chrome/installed-chrome.txt ]; then
-
-  cat << EOF >> /usr/lib/mozilla/chrome/installed-chrome.txt
-locale,install,url,jar:resource:/chrome/enigmail-${ENIGLANG}.jar!/locale/${ENIGLANG}/enigmail/
-EOF
-
-fi
-
-if [ -f /usr/lib/mozilla/mozilla-rebuild-databases.pl ]; then
-    /usr/lib/mozilla/mozilla-rebuild-databases.pl
-fi
-
-%postun
-
-if [ -f /usr/lib/mozilla/mozilla-rebuild-databases.pl ]; then
-    /usr/lib/mozilla/mozilla-rebuild-databases.pl
-fi
-
-%files
-
-/usr/lib/mozilla/chrome/enigmail-${ENIGLANG}.jar
-
-%changelog
 EOT
 
 cat >${LANGDIR}/contents.rdf <<EOT
@@ -257,7 +200,7 @@ done
 cd ${cwd}/${ENIGLANG}/chrome
 zip -r -D enigmail-${ENIGLANG}.jar locale
 cd ..
-zip ../enigmail-${ENIGLANG}-${ENIGVERSION}.xpi install.js install.rdf enigmail-${ENIGLANG}.spec chrome/enigmail-${ENIGLANG}.jar
+zip ../enigmail-${ENIGLANG}-${ENIGVERSION}.xpi install.js install.rdf chrome.manifest chrome/enigmail-${ENIGLANG}.jar
 cd ..
 
 test $DEBUG -eq 0 && rm -rf ${ENIGLANG}
