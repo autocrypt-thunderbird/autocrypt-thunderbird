@@ -25,6 +25,8 @@
       </Description>
     </em:targetApplication>
     
+    <!-- targetPlatform placeholder -->
+    
     <!-- Front End MetaData -->
     <em:name>Enigmail</em:name>
     <em:description>OpenPGP message encryption and authentication</em:description>

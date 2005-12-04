@@ -55,30 +55,22 @@ cd "$cwd"
 
 cd ${srcDir}/package
 
-zip -r ${targetDir}/${xpiFile} install.rdf \
-               chrome.manifest \
+zip -r ${targetDir}/${xpiFile} chrome.manifest \
                install.js \
                ${xpiModule}.spec
 
-
+sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${platform}'<\/em:targetPlatform>/' < install.rdf >"$targetDir/install.rdf"
 cd "$targetDir"
 
 appType=${mozApp//-*/}
 appVer=${mozApp//thunderbird-/}
 appVer=${appVer:0:3}
 
-#if [ "$appType" = "thunderbird" -a "$appVer" = "1.0" ]; then
+dllFile=components/${libPrefix}enigmime${dllSuffix}
 
-  dllFile=components/${libPrefix}enigmime${dllSuffix}
-               
-#else
-#  TB 1.5 once done as specified
-#  mkdir -p platform/${platform}/plugins
-#  cp components/${libPrefix}enigmime${dllSuffix} platform/${platform}/plugins/
-#
-#  dllFile=platform/${platform}/plugins/${libPrefix}enigmime${dllSuffix}
-#
-#fi
+# Supposed to be used for TB 1.5 -- not (yet?) working
+#dllFile=platform/${platform}/plugins/${libPrefix}enigmime${dllSuffix}
+
 
 zip -g ${xpiFile} \
                components/${xpiModule}.xpt \
@@ -92,5 +84,7 @@ zip -g ${xpiFile} \
                components/ipc.xpt \
                components/enigmime.xpt \
                ${dllFile} \
+               install.rdf \
                chrome/${xpiModule}.jar
 
+rm install.rdf
