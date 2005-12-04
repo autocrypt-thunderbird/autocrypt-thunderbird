@@ -6,6 +6,7 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>{847b3a00-7ab1-11d4-8f02-006008948af5}</em:id>
     <em:version>0.93.1</em:version>
+    <em:type>2</em:type> <!-- type = extension -->
     
     <!-- Target Applications this extension can install into, 
          with minimum and maximum supported versions. --> 
@@ -17,10 +18,10 @@
         <em:maxVersion>1.5.0.*</em:maxVersion>
       </Description>
       <Description>
-        <!-- Mozilla Suite -->
-        <em:id>{86c18b42-e466-45a9-ae7a-9b95ba6f5640}</em:id>
-        <em:minVersion>1.8</em:minVersion>
-        <em:maxVersion>1.9</em:maxVersion>
+        <!-- Seamonkey -->
+        <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
+        <em:minVersion>0.1</em:minVersion>
+        <em:maxVersion>1.0</em:maxVersion>
       </Description>
     </em:targetApplication>
     
