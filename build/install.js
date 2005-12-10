@@ -2,9 +2,9 @@
 
 var err;
 
-err = initInstall("Enigmime v0.93.1", // name for install UI
+err = initInstall("Enigmime v0.93.2", // name for install UI
                   "/enigmime",         // registered name
-                  "0.93.1.0");        // package version
+                  "0.93.2.0");        // package version
 
 logComment("initInstall: " + err);
 
