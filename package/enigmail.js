@@ -178,6 +178,10 @@ const BUTTON_POS_2           = 1 << 16;
 const KEYTYPE_DSA = 1;
 const KEYTYPE_RSA = 2;
 
+const ENC_TYPE_MSG = 0;
+const ENC_TYPE_ATTACH_BINARY = 1;
+const ENC_TYPE_ATTACH_ASCII = 2;
+
 var gMimeHashAlgorithms = ["md5", "sha1", "ripemd160", "sha256", "sha384", "sha512"];
 
 function CreateFileStream(filePath, permissions) {
@@ -2332,10 +2336,15 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
   }
   
   if (encryptMsg) {
-    if (isAscii)
+    switch (isAscii) {
+    case ENC_TYPE_MSG:
+      encryptCommand += " -a -t";
+      break;
+    case ENC_TYPE_ATTACH_ASCII:
       encryptCommand += " -a";
+    }
 
-    encryptCommand +=  " -t -e";
+    encryptCommand +=  " -e";
 
     if (signMsg)
       encryptCommand += " -s";
@@ -2358,9 +2367,16 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
     }
 
   } else if (detachedSig) {
-    encryptCommand += " -s -b -t";
-    if (isAscii)
+    encryptCommand += " -s -b";
+    
+    switch (isAscii) {
+    case ENC_TYPE_MSG:
+      encryptCommand += " -a -t";
+      break;
+    case ENC_TYPE_ATTACH_ASCII:
       encryptCommand += " -a";
+    }
+
 
   } else if (signMsg) {
     encryptCommand += " -t --clearsign";
@@ -2410,7 +2426,7 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
     return null;
   }
 
-  var encryptCommand = this.getEncryptCommand(fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, true, errorMsgObj);
+  var encryptCommand = this.getEncryptCommand(fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, ENC_TYPE_MSG, errorMsgObj);
   if (! encryptCommand)
     return null;
 
@@ -4171,7 +4187,9 @@ function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
   try {
     asciiArmor = this.prefBranch.getBoolPref("inlineAttachAsciiArmor");
   } catch (ex) {}
-  var gpgCommand = this.getEncryptCommand(fromMailAddr, toMailAddr, "", sendFlags, asciiArmor, errorMsgObj);
+  var asciiFlags = (asciiArmor ? ENC_TYPE_ATTACH_ASCII : ENC_TYPE_ATTACH_BINARY);
+  
+  var gpgCommand = this.getEncryptCommand(fromMailAddr, toMailAddr, "", sendFlags, asciiFlags, errorMsgObj);
 
   if (! gpgCommand)
       return null;
@@ -4197,7 +4215,6 @@ function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
 
   // escape the backslashes (mainly for Windows) and the ' character
   inFile = inFile.replace(/([\\\"\'\`])/g, "\\$1");
-  //replace(/\\/g, "\\\\").replace(/\'/g, "\\'");
   outFile = outFile.replace(/([\\\"\'\`])/g, "\\$1");
 
   gpgCommand += " --yes -o " + this.quoteSign + outFile + this.quoteSign;
