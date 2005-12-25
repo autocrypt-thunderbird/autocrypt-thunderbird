@@ -1,38 +1,116 @@
-#!/bin/csh
-# makemake: Dumb script to make Makefile from Makefile.in
-#           (recursively, if -r is specified)
-# Usage: makemake [-r]
+#!/usr/bin/perl
+# makemake: script to generate Makefile from Makefile.in
+#           -r:     process recursively all subdirectories
+#           -o DIR: use DIR as MOZ_OBJDIR
+# Usage: makemake [-o @TOPSRCDIR@/somedir] [-r]
 
-if ($#argv == 0) then
-   set makelist = (./Makefile.in)
-else
-   set makelist = (`find . -name Makefile.in -print`)
-endif
+my $makelist="./Makefile.in";
+my $mozObjDir=".";
+my $makefile;
 
-foreach makefile ($makelist)
-   set dir=${makefile:h}
-   pushd $dir
+my $cwd=`pwd`;
+chomp($cwd);
+my $topdir=$cwd;
 
-   set wd=`pwd`
-   echo $wd
+while ( (length($topdir)>0) && ( basename($topdir) ne "mozilla" )) {
+  $topdir=dirname($topdir);
+}
 
-   set top_srcdir = ""
-   while (("$wd" != "") && (${wd:t} != "mozilla"))
-      if ("$top_srcdir" == "") then
-         set top_srcdir = ".."
-      else
-         set top_srcdir = "../$top_srcdir"
-      endif
-      set wd=${wd:h}
-   end
+if (open(MOZCONFIG, "$topdir/.mozconfig")) {
+  while (my $l = <MOZCONFIG>) {
+    chomp($l);
+    if ($l =~ /^\s*mk_add_options\s+MOZ_OBJDIR\s*=/) {
+      $l =~ s/(^\s*mk_add_options\s+MOZ_OBJDIR\s*=\s*)(.*)$/$2/;
+      $mozObjDir = $l;
+    }
+  }
+  close(MOZCONFIG);
+}
+else {
+  print "INFO: no .mozconfig file found\n";
+}
 
-   /bin/cp Makefile.in Makefile
-   ex -s Makefile << /EOF
-set nomagic
-g%@srcdir@%s%@srcdir@%.%gp
-g%@top_srcdir@%s%@top_srcdir@%${top_srcdir}%gp
-wq
-/EOF
 
-   popd
-end
+while ( $#ARGV >= 0 ) {
+  if ($ARGV[0] eq "-o") {
+    $mozObjDir=$ARGV[1];
+    shift @ARGV;
+  }
+  if ($ARGV[0] eq "-r") {
+    $makelist=`find . -name Makefile.in -print`;
+    break;
+  }
+  shift @ARGV;
+}
+
+
+$mozObjDir =~ s/\@TOPSRCDIR\@/$topdir/;
+print "INFO: using MOZ_OBJDIR=$mozObjDir\n\n";
+
+foreach $makefile (split(/[ \n\r]+/, $makelist)) {
+  $makefile =~ s/^\.\///;
+  my $dir=dirname("$cwd/$makefile");
+
+  my $wd=$dir;
+  print "Processing: $wd\n";
+  my $top_srcdir="";
+  my $newMakefile = $makefile;
+  $newMakefile =~ s/.in$//;
+
+  if ($mozObjDir eq ".") {
+    while ( (length($wd)>0) && (basename($wd) ne "mozilla") ) {
+      if (length($top_srcdir) == 0) {
+        $top_srcdir="..";
+      }
+      else {
+        $top_srcdir="../$top_srcdir";
+      }
+      $wd=dirname($wd);
+    }
+    $srcdir=".";
+  }
+  else {
+    while ( (length($wd)>0) && (basename($wd) ne "mozilla") ) {
+      $wd=dirname($wd);
+    }
+    $top_srcdir=$wd;
+    $srcdir=$dir;
+    my $targetDir=$srcdir;
+    $targetDir =~ s/$top_srcdir/$mozObjDir/x;
+    system("mkdir -p $targetDir");
+    $newMakefile=sprintf("%s/%s", $targetDir, basename($newMakefile));
+  }
+  
+  open(INFILE, $makefile) || die ("cannot open input file '$makefile'\n");
+  open(OUTFILE, ">$newMakefile") || die ("cannot open output file '$newMakefile'\n");
+  
+  my $line;
+  while ($line = <INFILE>) {
+    $line =~ s/\@srcdir\@/$srcdir/g;
+    $line =~ s/\@top_srcdir\@/$top_srcdir/g;
+    print OUTFILE $line;
+  }
+  close(INFILE);
+  close(OUTFILE);
+}
+
+if ($mozObjDir eq ".") {
+  print "Done\n\n";
+}
+else {
+  my $newWd=$cwd;
+  $newWd =~ s/$topdir/$mozObjDir/x;
+  print "Done. The code can now be compiled from $newWd\n\n";
+}
+
+sub basename {
+  my $fn=$_[0];
+  $fn =~ s/^(.*)\/(.*)$/$2/;
+  return $fn;
+}
+
+sub dirname {
+  my $dn=$_[0];
+  $dn =~ s/^(.*)\/(.*)$/$1/;
+  return $dn;
+}
