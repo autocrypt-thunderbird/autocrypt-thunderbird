@@ -33,7 +33,7 @@
 
 # makefile for ui directory
 
-DEPTH      = ../../../..
+DEPTH      = ../../../../..
 topsrcdir  = @top_srcdir@
 VPATH      = @srcdir@
 srcdir     = @srcdir@

@@ -40,7 +40,7 @@ DIRS = package
 XPI_MODULE	= enigmime
 XPI_MODULE_VERS = 0.93.2
 
-DEPTH		= ../../..
+DEPTH		= ../../../..
 topsrcdir	= @top_srcdir@
 srcdir		= @srcdir@
 VPATH		= @srcdir@
@@ -93,7 +93,7 @@ CPPSRCS		= nsEnigModule.cpp
 
 LOCAL_INCLUDES	= \
 		-I$(srcdir)/../src \
-		-I$(srcdir)/../../ipc/src \
+		-I$(srcdir)/../ipc/src \
 		$(NULL)
 
 # hack to build non standard library dependent build on unix

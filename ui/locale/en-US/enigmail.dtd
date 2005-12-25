@@ -47,8 +47,8 @@
 <!ENTITY enigmail.resetPrefsButton.label "Reset">
 <!ENTITY enigmail.prefsHelpButton.label  "Help">
 
-<!ENTITY enigmail.upgradeButton.label    "Upgrade OpenPGP">
-<!ENTITY enigmail.uninstallButton.label  "Uninstall OpenPGP">
+<!ENTITY enigmail.upgradeButton.label    "Upgrade Enigmail">
+<!ENTITY enigmail.uninstallButton.label  "Uninstall Enigmail">
 
 <!ENTITY enigmail.basic.label            "Basic">
 <!ENTITY enigmail.sending.label          "Sending">
@@ -220,8 +220,8 @@
 <!ENTITY enigmail.console.label                     "View OpenPGP console">
 <!ENTITY enigmail.console.tooltip                   "View OpenPGP console">
 
-<!ENTITY enigmail.uninstall.label                   "Uninstall OpenPGP">
-<!ENTITY enigmail.uninstall.tooltip                 "Uninstall OpenPGP">
+<!ENTITY enigmail.uninstall.label                   "Uninstall Enigmail">
+<!ENTITY enigmail.uninstall.tooltip                 "Uninstall Enigmail">
 
 <!ENTITY enigmail.selectpanel.label                 "Select OpenPGP Panel">
 <!ENTITY enigmail.selectpanel.tooltip               "Select OpenPGP Panel">

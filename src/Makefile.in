@@ -31,7 +31,7 @@
 # GPL.
 #
 
-DEPTH		= ../../..
+DEPTH		= ../../../..
 topsrcdir	= @top_srcdir@
 srcdir		= @srcdir@
 VPATH		= @srcdir@
@@ -93,7 +93,7 @@ REQUIRES	= xpcom \
 
 LOCAL_INCLUDES	= \
 		-I$(srcdir)/../build \
-		-I$(srcdir)/../../../mailnews/mime/src \
+		-I$(srcdir)/../../../mime/src \
 		$(NULL)
 
 CPPSRCS		=		         \

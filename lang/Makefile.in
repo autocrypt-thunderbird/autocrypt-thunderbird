@@ -37,7 +37,7 @@
 XPI_MODULE	= enigmail
 XPI_VERS        = 0.80.0
 
-DEPTH		= ../../..
+DEPTH		= ../../../..
 topsrcdir	= @top_srcdir@
 srcdir		= @srcdir@
 VPATH		= @srcdir@

@@ -34,14 +34,14 @@
 XPI_MODULE	= enigmail
 XPI_MODULE_VERS = 0.93.2
 
-DEPTH		= ../..
+DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
 srcdir		= @srcdir@
 VPATH		= @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
-DIRS = public src build ui package
+DIRS = ipc public src build ui package
 
 include $(topsrcdir)/config/config.mk
 

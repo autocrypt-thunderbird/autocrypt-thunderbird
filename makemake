@@ -45,7 +45,13 @@ while ( $#ARGV >= 0 ) {
 
 
 $mozObjDir =~ s/\@TOPSRCDIR\@/$topdir/;
-print "INFO: using MOZ_OBJDIR=$mozObjDir\n\n";
+
+if ($mozObjDir eq ".") {
+  print "INFO: no MOZ_OBJDIR used\n";
+}
+else {
+  print "INFO: using MOZ_OBJDIR=$mozObjDir\n\n";
+}
 
 foreach $makefile (split(/[ \n\r]+/, $makelist)) {
   $makefile =~ s/^\.\///;
