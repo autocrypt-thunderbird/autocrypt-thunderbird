@@ -290,6 +290,14 @@
             <label value="&enigmail.autoKeyRetrieve.label;"/>
             <textbox id="enigmail_autoKeyRetrieve" size="30"/>
           </hbox>
+          
+          <separator/>
+
+          <hbox>
+            <button id="resetRememberedValues"
+                    label="&enigmail.resetRememberedValues.label;"
+                    oncommand="resetRememberedValues();"/>
+          </hbox>
       </vbox>
 
 			<!-- "Debugging" Tab -->

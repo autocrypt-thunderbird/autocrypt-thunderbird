@@ -78,7 +78,9 @@ function enigmailAttachDlgLoad() {
       ++nodeCount;
       node=node.nextSibling;
    }
-
+   if (gArguments[ENIG_INPUT].restrictedScenario) {
+    document.getElementById("enigmailAttachSkipDlg").disabled=true;
+   }
 }
 
 
@@ -86,10 +88,14 @@ function enigmailAttachDlgAccept() {
   DEBUG_LOG("enigmailAttachDlgAccept.js: Accept\n");
 
   var optionSel=document.getElementById("enigmailAttachOptions");
-
-  if (optionSel) {
-     gArguments[ENIG_RESULT].selected = optionSel.value;
-     EnigSetPref("encryptAttachments", optionSel.value);
+  var skipDlg=document.getElementById("enigmailAttachSkipDlg");
+  
+  if (skipDlg.checked) {
+    EnigSetPref("encryptAttachmentsSkipDlg", 1);
+  }
+  if (optionSel && gArguments[ENIG_INPUT].restrictedScenario == false) {
+    gArguments[ENIG_RESULT].selected = optionSel.value;
+    EnigSetPref("encryptAttachments", optionSel.value);
   }
 
 }

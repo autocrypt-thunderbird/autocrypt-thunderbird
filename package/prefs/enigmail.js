@@ -53,10 +53,13 @@ pref("extensions.enigmail.doubleDashSeparator",true);
 // last state of dialog to choose encryption method if there are attachments
 pref("extensions.enigmail.encryptAttachments",1);
 
+// skip the attachments dialog
+pref("extensions.enigmail.encryptAttachmentsSkipDlg", 0);
+
 // Encrypt to self
 pref("extensions.enigmail.encryptToSelf",true);
 
-// warn if GnuPG <= v1.0.6 (countdown)
+// warn if GnuPG <= v1.2.0 (countdown)
 pref("extensions.enigmail.gpgVersionWarnCount",1);
 
 // enable 'Decrypt & open' for double click on attachment (if possible)

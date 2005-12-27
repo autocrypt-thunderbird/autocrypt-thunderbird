@@ -40,4 +40,5 @@
   <groupbox>
     <description id="enigPgpMimeDetails" maxwidth="500px">...</description>
   </groupbox>
+  <checkbox id="enigmailAttachSkipDlg" value="0" label="&enigmail.enigEncryptAttachSkipDlg.label;"/>
 </dialog>

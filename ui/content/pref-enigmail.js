@@ -94,7 +94,7 @@ function prefOnLoad() {
    } else {
      gSendFlowedElement.removeAttribute("checked");
    }
-
+   
    gMimePartsElement = document.getElementById("mime_parts_on_demand");
 
    try {
@@ -135,6 +135,23 @@ function resetPrefs() {
   gMimeHashElement.selectedIndex = EnigGetDefaultPref("mimeHashAlgorithm")-1;
 }
 
+function resetRememberedValues() {
+  DEBUG_LOG("pref-enigmail.js: resetRememberedValues\n");
+  var prefs=["confirmBeforeSend",
+             "displaySignWarn",
+             "encryptAttachmentsSkipDlg",
+             "initAlert",
+             "quotedPrintableWarn",
+             "saveEncrypted",
+             "warnOnRulesConflict",
+             "warnClearPassphrase",
+             "warnRefreshAll"];
+             
+  for (var j=0; j<prefs.length; j++) {
+    EnigSetPref(prefs[j], EnigGetDefaultPref(prefs[j]));
+  }
+  EnigAlert(EnigGetString("warningsAreReset"));
+}
 
 function prefOnAccept() {
 

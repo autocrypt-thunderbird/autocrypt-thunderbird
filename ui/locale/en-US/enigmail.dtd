@@ -40,6 +40,7 @@
 <!ENTITY enigmail.mime_parts_on_demand.label  "Load MIME parts on demand (IMAP folders)">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "You should turn this OFF if you are receiving PGP/MIME messages on IMAP folders">
 <!ENTITY enigmail.allowEmptySubject.label     "Allow empty subject">
+<!ENTITY enigmail.remember_attachSkipDlg.label "Remember Attachments Encryption method">
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Remember passphrase for">
 <!ENTITY enigmail.maxIdleMinutesTail.label "minutes of idle time">
@@ -250,6 +251,7 @@
 <!ENTITY enigmail.enigEncryptAttachNone.label       "Just encrypt/sign the message text, but not the attachments">
 <!ENTITY enigmail.enigEncryptAttachInline.label     "Encrypt each attachment separately and send the message using inline PGP">
 <!ENTITY enigmail.enigEncryptAttachPgpMime.label    "Encrypt/sign the message as a whole and send it using PGP/MIME">
+<!ENTITY enigmail.resetRememberedValues.label       "Reset Warnings">
 
 <!ENTITY enigmail.ctxDecryptOpen.label              "Decrypt and Open">
 <!ENTITY enigmail.ctxDecryptSave.label              "Decrypt and Save As...">

@@ -1048,7 +1048,8 @@ function enigEncryptMsg(msgSendType) {
         inputObj = new Object();
         inputObj.pgpMimePossible = (usePGPMimeOption >= PGP_MIME_POSSIBLE);
         inputObj.inlinePossible = (sendFlags & ENIG_ENCRYPT); // makes no sense for sign only!
-
+        inputObj.restrictedScenario = false;
+        
         // determine if attachments are all local (currently the only
         // supported kind of attachments)
         var node = bucketList.firstChild;
@@ -1061,8 +1062,21 @@ function enigEncryptMsg(msgSendType) {
 
         if (inputObj.pgpMimePossible || inputObj.inlinePossible) {
           resultObj = new Object();
-          resultObj.selected = -1;
-          window.openDialog("chrome://enigmail/content/enigmailAttachmentsDialog.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
+          resultObj.selected = EnigGetPref("encryptAttachments");
+          
+          //skip or not
+          var skipCheck=EnigGetPref("encryptAttachmentsSkipDlg");
+          if (skipCheck == 1) {
+            if ((resultObj.selected == 2 && inputObj.pgpMimePossible == false) || (resultObj.selected == 1 && inputObj.inlinePossible == false)) {
+              //add var to disable remember box since we're dealing with restricted scenarios...
+              inputObj.restrictedScenario = true;
+              resultObj.selected = -1;
+              window.openDialog("chrome://enigmail/content/enigmailAttachmentsDialog.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
+            }
+          } else {
+            resultObj.selected = -1;
+            window.openDialog("chrome://enigmail/content/enigmailAttachmentsDialog.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
+          }
           if (resultObj.selected < 0) {
             // dialog cancelled
             window.cancelSendMessage=true;
@@ -2027,41 +2041,40 @@ function enigDecryptQuote(interactive) {
     replyOnTop = gEnigIdentity.replyOnTop;
   } catch (ex) {}
 
-  if (!indentStr || !quoteElement)
-    replyOnTop = 1;
+  if (!indentStr || !quoteElement) replyOnTop = 1;
 
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: replyOnTop="+replyOnTop+", quoteElement="+quoteElement+"\n");
 
   var nsISelectionController = Components.interfaces.nsISelectionController;
 
-  var selection;
-  if (gEnigEditor.selectionController)
-      selection = gEnigEditor.selectionController.getSelection(nsISelectionController.SELECTION_NORMAL)
-
-  try {
-    var quoteOffset = 0;
-    if (quoteElement)
-      quoteOffset = enigGetChildOffset(quoteElement.parentNode, quoteElement);
-
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: quoteOffset="+quoteOffset+", selection="+selection+"\n");
+  if (gEnigEditor.selectionController) {
+    var selection = gEnigEditor.selectionController;
+    selection.completeMove(false, false); // go to start;
 
     switch (replyOnTop) {
     case 0:
       // Position after quote
-      if (selection && quoteOffset) {
-          selection.collapse(quoteElement.parentNode, quoteOffset);
+      gEnigEditor.endOfDocument();
+      if (tail) {
+        for (cPos = 0; cPos < tail.length; cPos++) {
+          selection.characterMove(false, false); // move backwards
+        }
       }
       break;
 
     case 2:
       // Select quote
 
-      if (selection && quoteOffset) {
-        selection.collapse(quoteElement.parentNode, quoteOffset-1);
-        selection.extend(quoteElement.parentNode, quoteOffset);
-
-      } else {
-        EnigEditorSelectAll();
+      if (head) {
+        for (cPos = 0; cPos < head.length; cPos++) {
+          selection.characterMove(true, false);
+        }
+      }
+      selection.completeMove(true, true);
+      if (tail) {
+        for (cPos = 0; cPos < tail.length; cPos++) {
+          selection.characterMove(false, true); // move backwards
+        }
       }
       break;
 
@@ -2070,16 +2083,14 @@ function enigDecryptQuote(interactive) {
 
       if (gEnigEditor) {
         gEnigEditor.beginningOfDocument();
-
       }
-
     }
-  } catch (ex) {}
 
-  if (gEnigEditor.selectionController)
-      gEnigEditor.selectionController.scrollSelectionIntoView(nsISelectionController.SELECTION_NORMAL,
-                                     nsISelectionController.SELECTION_ANCHOR_REGION,
-                                     true);
+    gEnigEditor.selectionController.scrollSelectionIntoView(nsISelectionController.SELECTION_NORMAL,
+                                   nsISelectionController.SELECTION_ANCHOR_REGION,
+                                   true);
+  }
+
 }
 
 // Returns offset of child (> 0), or 0, if child not found
@@ -2121,13 +2132,44 @@ function EnigEditorInsertAsQuotation(plainText) {
     } catch (ex) {}
 
     if (!mailEditor)
-      return null;
+      return 0;
 
     DEBUG_LOG("enigmailMsgComposeOverlay.js: EnigEditorInsertAsQuotation: mailEditor="+mailEditor+"\n");
 
-    return mailEditor.insertAsQuotation(plainText);
+    // use pasteAsQuotation because inertAsQuotation is buggy with TB 1.5
+    var clipBoard = Components.classes[ENIG_CLIPBOARD_CONTRACTID].getService(Components.interfaces.nsIClipboard);
+    // get the clipboard content
+    try {
+      var transferable = Components.classes[ENIG_TRANSFERABLE_CONTRACTID].createInstance(Components.interfaces.nsITransferable);
+      transferable.addDataFlavor("text/unicode");
+      clipBoard.getData(transferable, clipBoard.kGlobalClipboard);
+      var flavour = {};
+      var data = {};
+      var length = {};
+      transferable.getAnyTransferData(flavour, data, length);
+    }
+    catch(ex) {}
 
+    try {
+      var pasteClipboard;
+
+      // paste the email text
+      pasteClipboard = Components.classes[ENIG_CLIPBOARD_HELPER_CONTRACTID].getService(Components.interfaces.nsIClipboardHelper);
+      pasteClipboard.copyStringToClipboard(plainText, clipBoard.kGlobalClipboard);
+      mailEditor.pasteAsQuotation(1);
+
+      // restore the clipboard contents
+      data = data.value.QueryInterface(Components.interfaces.nsISupportsString).data;
+      pasteClipboard.copyStringToClipboard(data, clipBoard.kGlobalClipboard);
+    }
+    catch (ex) {}
+
+    // mailEditor.selectAll();
+    // var domElem = mailEditor.selection.anchorNode;
+    // mailEditor.selection.collapseToStart();
+    return 1;
   }
+  return 0;
 }
 
 
@@ -2245,4 +2287,3 @@ EnigDocStateListener.prototype = {
       gEnigTimeoutID = window.setTimeout(enigDecryptQuote, 10, false);
   }
 }
-
