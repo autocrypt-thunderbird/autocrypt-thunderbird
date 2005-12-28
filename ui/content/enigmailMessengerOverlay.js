@@ -1467,50 +1467,6 @@ function enigKeyRequestCallback(callbackArg, ctxt) {
   // NEED TO EXTRACT KEY ETC.
 }
 
-function enigOnShowAttachmentContextMenu() {
-  // if no attachments are selected, disable the Open and Save...
-  // this is Messenger's onShowAttachmentContextMenu, extended by
-  // Enigmail specific stuff!
-  var attachmentList = document.getElementById('attachmentList');
-  var selectedAttachments = attachmentList.selectedItems;
-  var openMenu = document.getElementById('context-openAttachment');
-  var saveMenu = document.getElementById('context-saveAttachment');
-  var decryptOpenMenu = document.getElementById('enigmail_ctxDecryptOpen');
-  var decryptSaveMenu = document.getElementById('enigmail_ctxDecryptSave');
-  var importMenu = document.getElementById('enigmail_ctxImportKey');
-  if (selectedAttachments.length > 0)
-  {
-    openMenu.removeAttribute('disabled');
-    saveMenu.removeAttribute('disabled');
-
-    if (selectedAttachments[0].attachment.contentType.search(/^application\/pgp-keys/i) == 0) {
-      importMenu.removeAttribute('disabled');
-      decryptOpenMenu.setAttribute('disabled', true);
-      decryptSaveMenu.setAttribute('disabled', true);
-    }
-    else if (enigCheckEncryptedAttach(selectedAttachments[0].attachment)) {
-      importMenu.setAttribute('disabled', true);
-      decryptOpenMenu.removeAttribute('disabled');
-      decryptSaveMenu.removeAttribute('disabled');
-      if (! selectedAttachments[0].attachment.displayName) {
-        selectedAttachments[0].attachment.displayName="message.pgp"
-      }
-    }
-    else {
-      importMenu.setAttribute('disabled', true);
-      decryptOpenMenu.setAttribute('disabled', true);
-      decryptSaveMenu.setAttribute('disabled', true);
-    }
-  }
-  else
-  {
-    openMenu.setAttribute('disabled', true);
-    saveMenu.setAttribute('disabled', true);
-    decryptOpenMenu.setAttribute('disabled', true);
-    decryptSaveMenu.setAttribute('disabled', true);
-    importMenu.setAttribute('disabled', true);
-  }
-}
 
 // handle a selected attachment (decrypt & open or save)
 function enigHandleAttachmentSel(actionType) {

@@ -638,12 +638,96 @@ function enigToggleHeaderView() {
   }
 }
 
+function enigOnShowAttachmentContextMenu() {
+  DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigOnShowAttachmentContextMenu\n");
+  // first, call the original function ...
+  onShowAttachmentContextMenu();
+
+  // then, do our own additional stuff ...
+  var attachmentList = document.getElementById('attachmentList');
+  var selectedAttachments = attachmentList.selectedItems;
+  var decryptOpenMenu = document.getElementById('enigmail_ctxDecryptOpen');
+  var decryptSaveMenu = document.getElementById('enigmail_ctxDecryptSave');
+  var importMenu = document.getElementById('enigmail_ctxImportKey');
+
+  if (selectedAttachments.length > 0)
+  {
+    if (selectedAttachments[0].attachment.contentType.search(/^application\/pgp-keys/i) == 0) {
+      importMenu.removeAttribute('disabled');
+      decryptOpenMenu.setAttribute('disabled', true);
+      decryptSaveMenu.setAttribute('disabled', true);
+    }
+    else if (enigCheckEncryptedAttach(selectedAttachments[0].attachment)) {
+      importMenu.setAttribute('disabled', true);
+      decryptOpenMenu.removeAttribute('disabled');
+      decryptSaveMenu.removeAttribute('disabled');
+      if (! selectedAttachments[0].attachment.displayName) {
+        selectedAttachments[0].attachment.displayName="message.pgp"
+      }
+    }
+    else {
+      importMenu.setAttribute('disabled', true);
+      decryptOpenMenu.setAttribute('disabled', true);
+      decryptSaveMenu.setAttribute('disabled', true);
+    }
+  }
+  else
+  {
+    openMenu.setAttribute('disabled', true);
+    saveMenu.setAttribute('disabled', true);
+    decryptOpenMenu.setAttribute('disabled', true);
+    decryptSaveMenu.setAttribute('disabled', true);
+    importMenu.setAttribute('disabled', true);
+  }
+}
+
+function enigCanDetachAttachments() {
+  DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigCanDetachAttachments\n");
+  var canDetach = true;
+  if (gEnigSecurityInfo && (typeof(gEnigSecurityInfo.statusFlags) != "undefined")) {
+    canDetach = ((gEnigSecurityInfo.statusFlags &
+                 (nsIEnigmail.PGP_MIME_SIGNED | nsIEnigmail.PGP_MIME_ENCRYPTED)) ? false : true);
+  }
+  return canDetach;
+}
+
+function enigFillAttachmentListPopup(item) {
+  DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigFillAttachmentListPopup\n");
+  FillAttachmentListPopup(item);
+  
+  if (! enigCanDetachAttachments()) {
+    for (var i=0; i< item.childNodes.length; i++) {
+      if (item.childNodes[i].className == "menu-iconic") {
+        var mnu = item.childNodes[i].firstChild.firstChild;
+        while (mnu) {
+          if (mnu.getAttribute("oncommand").search(/(detachAttachment|deleteAttachment)/) >=0) {
+            mnu.setAttribute("disabled" , true);
+          }
+          mnu = mnu.nextSibling;
+        }
+      }
+    }
+  }
+}
 
 addEventListener('messagepane-loaded', enigMsgHdrViewLoad, true);
 addEventListener('messagepane-hide', enigMsgHdrViewHide, true);
 addEventListener('messagepane-unhide', enigMsgHdrViewUnhide, true);
 
 // THE FOLLOWING OVERRIDES CODE IN msgHdrViewOverlay.js
+
+function CanDetachAttachments()
+{
+  var uri = GetLoadedMessage();
+  var canDetach = !IsNewsMessage(uri) && (!IsImapMessage(uri) || CheckOnline());
+  if (canDetach && ("content-type" in currentHeaderData))
+  {
+    var contentType = currentHeaderData["content-type"].headerValue;
+    canDetach = contentType.indexOf("application/x-pkcs7-mime") < 0 &&
+        contentType.indexOf("application/x-pkcs7-signature") < 0;
+  }
+  return canDetach && enigCanDetachAttachments();
+}
 
 
 // for Mozilla >= 1.6a only

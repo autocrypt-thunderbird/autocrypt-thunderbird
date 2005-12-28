@@ -36,6 +36,8 @@
     </popup>
   </hbox>
 
+  <menupopup id="attachmentMenuList" onpopupshowing="enigFillAttachmentListPopup(this);"/>
+  
   <popup id="emailAddressPopup">
     <menuitem label="&enigmail.createRuleFromAddr.label;"
               oncommand="enigCreateRuleFromAddress(document.popupNode);"/>
