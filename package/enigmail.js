@@ -2072,7 +2072,7 @@ function (pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj) 
   errorMsgObj.value = this.parseErrorOutput(errOutput, statusFlagsObj, statusMsgObj);
 
   if (errOutput.search(/jpeg image of size \d+/)>-1) {
-    statusFlags |= nsIEnigmail.PHOTO_AVAILABLE;
+    statusFlagsObj.value |= nsIEnigmail.PHOTO_AVAILABLE;
   }
   CONSOLE_LOG(errorMsgObj.value+"\n");
 
