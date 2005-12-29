@@ -1149,186 +1149,22 @@ function enigEncryptMsg(msgSendType) {
 
        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: securityInfo = "+newSecurityInfo+"\n");
 
-     } else if (!gEnigProcessed && (sendFlags & ENIG_ENCRYPT_OR_SIGN)) {
-
-       if (gMsgCompose.composeHTML) {
-         var errMsg = EnigGetString("hasHTML");
-
-         EnigAlertCount("composeHtmlAlertCount", errMsg);
-       }
-
-       try {
-         var convert = DetermineConvertibility();
-         if (convert == nsIMsgCompConvertible.No) {
-           if (!EnigConfirm(EnigGetString("strippingHTML"))) {
-             window.cancelSendMessage=true;
-             return;
-           }
-         }
-       } catch (ex) {
-       }
-
-       try {
-          if (gEnigPrefRoot.getBoolPref("mail.strictly_mime")) {
-              if (EnigConfirmPref(EnigGetString("quotedPrintableWarn"), "quotedPrintableWarn")) {
-                gEnigPrefRoot.setBoolPref("mail.strictly_mime", false);
-              }
-          }
-       } catch (ex) {}
-
-
-       var sendFlowed;
-       try {
-         sendFlowed = gEnigPrefRoot.getBoolPref("mailnews.send_plaintext_flowed");
-       } catch (ex) {
-         sendFlowed = true;
-       }
-       var encoderFlags = EnigOutputFormatted | EnigOutputLFLineBreak;
-
-       var wrapWidth=72;
-       if (gMsgCompose.composeHTML) {
-          // enforce line wrapping here
-          // otherwise the message isn't signed correctly
-          try {
-            wrapWidth = gEnigPrefRoot.getIntPref("editor.htmlWrapColumn");
-
-            if (wrapWidth<68) {
-              if (EnigConfirm(EnigGetString("minimalLineWrapping", wrapWidth))) {
-                gEnigPrefRoot.setIntPref("editor.htmlWrapColumn", 68)
-              }
-            }
-            if (!(sendFlags & ENIG_ENCRYPT) && EnigGetPref("wrapHtmlBeforeSend")) {
-              var editor = gMsgCompose.editor.QueryInterface(nsIPlaintextEditorMail);
-              editor.wrapWidth=wrapWidth-2; // prepare for the worst case: a 72 char's long line starting with '-'
-              editor.rewrap(false);
-            }
-          }
-          catch (ex) {}
-       }
-       else {
-          try {
-            wrapWidth = gEnigPrefRoot.getIntPref("mailnews.wraplength");
-            if (wrapWidth<68) {
-              if (EnigConfirm(EnigGetString("minimalLineWrapping", wrapWidth))) {
-                gEnigPrefRoot.setIntPref("mailnews.wraplength", 68)
-              }
-            }
-          }
-          catch (ex) {}
-      }
-
-
-       // Get plain text
-       // (Do we need to set the nsIDocumentEncoder::* flags?)
-       var origText = EnigEditorGetContentsAs("text/plain",
-                                                     encoderFlags);
-
-       // Copy plain text for possible escaping
-       var escText = origText;
-
-       if (sendFlowed && !(sendFlags & ENIG_ENCRYPT)) {
-         // Prevent space stuffing a la RFC 2646 (format=flowed).
-
-         //DEBUG_LOG("enigmailMsgComposeOverlay.js: escText["+encoderFlags+"] = '"+escText+"'\n");
-
-         // MULTILINE MATCHING ON
-         RegExp.multiline = true;
-
-         escText = escText.replace(/^From /g, "~From ");
-         escText = escText.replace(/^>/g, "|");
-         escText = escText.replace(/^[ \t]+$/g, "");
-         escText = escText.replace(/^ /g, "~ ");
-
-         // MULTILINE MATCHING OFF
-         RegExp.multiline = false;
-
-         //DEBUG_LOG("enigmailMsgComposeOverlay.js: escText = '"+escText+"'\n");
-         // Replace plain text and get it again
-         enigReplaceEditorText(escText);
-
-         escText = EnigEditorGetContentsAs("text/plain", encoderFlags);
-       }
-
-       // Replace plain text and get it again (to avoid linewrapping problems)
-       enigReplaceEditorText(escText);
-
-       escText = EnigEditorGetContentsAs("text/plain", encoderFlags);
-
-       //DEBUG_LOG("enigmailMsgComposeOverlay.js: escText["+encoderFlags+"] = '"+escText+"'\n");
-
-       if (!escText) {
-         // No encryption or signing for null text
-         sendFlags &= ~ENIG_ENCRYPT_OR_SIGN;
-
-       } else {
-         // Encrypt plaintext
-         var charset = EnigEditorGetCharset();
-         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: charset="+charset+"\n");
-
-         // Encode plaintext to charset from unicode
-         var plainText = (sendFlags & ENIG_ENCRYPT)
-                         ? EnigConvertFromUnicode(origText, charset)
-                         : EnigConvertFromUnicode(escText, charset);
-
-         exitCodeObj    = new Object();
-         statusFlagsObj = new Object();
-         errorMsgObj    = new Object();
-
-         var cipherText = enigmailSvc.encryptMessage(window,uiFlags, plainText,
-                                                fromAddr, toAddr, sendFlags,
-                                                exitCodeObj, statusFlagsObj,
-                                                errorMsgObj);
-
-         var exitCode = exitCodeObj.value;
-
-         //DEBUG_LOG("enigmailMsgComposeOverlay.js: cipherText = '"+cipherText+"'\n");
-         if (cipherText && (exitCode == 0)) {
-           // Encryption/signing succeeded; overwrite plaintext
-
-           if ( (sendFlags & ENIG_ENCRYPT) && charset &&
-                (charset.search(/^us-ascii$/i) != 0) ) {
-             // Add Charset armor header for encrypted blocks
-             cipherText = cipherText.replace(/(-----BEGIN PGP MESSAGE----- *)(\r?\n)/, "$1$2Charset: "+charset+"$2");
-           }
-
-           // Decode ciphertext from charset to unicode and overwrite
-           enigReplaceEditorText( EnigConvertToUnicode(cipherText, charset) );
-
-           // Save original text (for undo)
-           gEnigProcessed = {"origText":origText, "charset":charset};
-
-         } else {
-           // Restore original text
-           enigReplaceEditorText(origText);
-
-           if (sendFlags & ENIG_ENCRYPT_OR_SIGN) {
-             // Encryption/signing failed
-             EnigAlert(EnigGetString("sendAborted")+errorMsgObj.value);
-             window.cancelSendMessage=true;
-             return;
-           }
-         }
-
-         if (inlineEncAttach) {
-            // encrypt attachments
-            gEnigModifiedAttach = new Array();
-            exitCode = enigEncryptAttachments(bucketList, gEnigModifiedAttach,
-                                    window, uiFlags, fromAddr, toAddr, sendFlags,
-                                    errorMsgObj);
-            if (exitCode != 0) {
-              gEnigModifiedAttach = null;
-              if (errorMsgObj.value) {
-                EnigAlert(EnigGetString("sendAborted")+errorMsgObj.value);
-              }
-              else {
-                EnigAlert(EnigGetString("sendAborted")+"an internal error has occurred");
-              }
-              if (gEnigProcessed)
-                enigUndoEncryption();
-              window.cancelSendMessage=true;
-              return;
-            }
-         }
+     }
+     else if (!gEnigProcessed && (sendFlags & ENIG_ENCRYPT_OR_SIGN)) {
+       // use inline PGP
+       
+       var sendInfo = {
+         sendFlags: sendFlags,
+         inlineEncAttach: inlineEncAttach,
+         fromAddr: fromAddr,
+         toAddr: toAddr,
+         uiFlags: uiFlags,
+         bucketList: bucketList
+       };
+       
+       if (! enigEncryptInline(sendInfo)) {
+         window.cancelSendMessage=true;
+         return;
        }
      }
 
@@ -1396,6 +1232,187 @@ function enigEncryptMsg(msgSendType) {
        window.cancelSendMessage=true;
   }
 }
+
+function enigEncryptInline(sendInfo) {
+  // sign/encrpyt message using inline-PGP
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (! enigmailSvc) return false;
+  
+  if (gMsgCompose.composeHTML) {
+    var errMsg = EnigGetString("hasHTML");
+    EnigAlertCount("composeHtmlAlertCount", errMsg);
+  }
+
+  try {
+    var convert = DetermineConvertibility();
+    if (convert == nsIMsgCompConvertible.No) {
+      if (!EnigConfirm(EnigGetString("strippingHTML"))) {
+        return false;
+      }
+    }
+  } catch (ex) {}
+
+  try {
+  if (gEnigPrefRoot.getBoolPref("mail.strictly_mime")) {
+    if (EnigConfirmPref(EnigGetString("quotedPrintableWarn"), "quotedPrintableWarn")) {
+      gEnigPrefRoot.setBoolPref("mail.strictly_mime", false);
+    }
+  }
+  } catch (ex) {}
+
+
+  var sendFlowed;
+  try {
+    sendFlowed = gEnigPrefRoot.getBoolPref("mailnews.send_plaintext_flowed");
+  } catch (ex) {
+    sendFlowed = true;
+  }
+  var encoderFlags = EnigOutputFormatted | EnigOutputLFLineBreak;
+
+  var wrapWidth=72;
+  if (gMsgCompose.composeHTML) {
+    // enforce line wrapping here
+    // otherwise the message isn't signed correctly
+    try {
+      wrapWidth = gEnigPrefRoot.getIntPref("editor.htmlWrapColumn");
+
+      if (wrapWidth<68) {
+        if (EnigConfirm(EnigGetString("minimalLineWrapping", wrapWidth))) {
+          gEnigPrefRoot.setIntPref("editor.htmlWrapColumn", 68)
+        }
+      }
+      if (!(sendInfo.sendFlags & ENIG_ENCRYPT) && EnigGetPref("wrapHtmlBeforeSend")) {
+        var editor = gMsgCompose.editor.QueryInterface(nsIPlaintextEditorMail);
+        editor.wrapWidth=wrapWidth-2; // prepare for the worst case: a 72 char's long line starting with '-'
+        editor.rewrap(false);
+      }
+    }
+    catch (ex) {}
+  }
+  else {
+    try {
+      wrapWidth = gEnigPrefRoot.getIntPref("mailnews.wraplength");
+      if (wrapWidth<68) {
+        if (EnigConfirm(EnigGetString("minimalLineWrapping", wrapWidth))) {
+          gEnigPrefRoot.setIntPref("mailnews.wraplength", 68)
+        }
+      }
+    }
+    catch (ex) {}
+  }
+
+  var exitCodeObj    = new Object();
+  var statusFlagsObj = new Object();
+  var errorMsgObj    = new Object();
+
+
+  // Get plain text
+  // (Do we need to set the nsIDocumentEncoder.* flags?)
+  var origText = EnigEditorGetContentsAs("text/plain",
+                                         encoderFlags);
+
+  if (origText.length > 0) {
+    // Sign/encrypt body text
+    
+    var escText = origText; // Copy plain text for possible escaping
+
+    if (sendFlowed && !(sendInfo.sendFlags & ENIG_ENCRYPT)) {
+      // Prevent space stuffing a la RFC 2646 (format=flowed).
+
+      //DEBUG_LOG("enigmailMsgComposeOverlay.js: escText["+encoderFlags+"] = '"+escText+"'\n");
+
+      // MULTILINE MATCHING ON
+      RegExp.multiline = true;
+
+      escText = escText.replace(/^From /g, "~From ");
+      escText = escText.replace(/^>/g, "|");
+      escText = escText.replace(/^[ \t]+$/g, "");
+      escText = escText.replace(/^ /g, "~ ");
+
+      // MULTILINE MATCHING OFF
+      RegExp.multiline = false;
+
+      //DEBUG_LOG("enigmailMsgComposeOverlay.js: escText = '"+escText+"'\n");
+      // Replace plain text and get it again
+      enigReplaceEditorText(escText);
+
+      escText = EnigEditorGetContentsAs("text/plain", encoderFlags);
+    }
+
+    // Replace plain text and get it again (to avoid linewrapping problems)
+    enigReplaceEditorText(escText);
+
+    escText = EnigEditorGetContentsAs("text/plain", encoderFlags);
+
+    //DEBUG_LOG("enigmailMsgComposeOverlay.js: escText["+encoderFlags+"] = '"+escText+"'\n");
+
+    // Encrypt plaintext
+    var charset = EnigEditorGetCharset();
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: charset="+charset+"\n");
+
+    // Encode plaintext to charset from unicode
+    var plainText = (sendInfo.sendFlags & ENIG_ENCRYPT)
+                   ? EnigConvertFromUnicode(origText, charset)
+                   : EnigConvertFromUnicode(escText, charset);
+
+    var cipherText = enigmailSvc.encryptMessage(window, sendInfo.uiFlags, plainText,
+                                          sendInfo.fromAddr, sendInfo.toAddr, sendInfo.sendFlags,
+                                          exitCodeObj, statusFlagsObj,
+                                          errorMsgObj);
+
+    var exitCode = exitCodeObj.value;
+
+    //DEBUG_LOG("enigmailMsgComposeOverlay.js: cipherText = '"+cipherText+"'\n");
+    if (cipherText && (exitCode == 0)) {
+     // Encryption/signing succeeded; overwrite plaintext
+
+     if ( (sendInfo.sendFlags & ENIG_ENCRYPT) && charset &&
+          (charset.search(/^us-ascii$/i) != 0) ) {
+       // Add Charset armor header for encrypted blocks
+       cipherText = cipherText.replace(/(-----BEGIN PGP MESSAGE----- *)(\r?\n)/, "$1$2Charset: "+charset+"$2");
+     }
+
+     // Decode ciphertext from charset to unicode and overwrite
+     enigReplaceEditorText( EnigConvertToUnicode(cipherText, charset) );
+
+     // Save original text (for undo)
+     gEnigProcessed = {"origText":origText, "charset":charset};
+
+    }
+    else {
+      // Restore original text
+      enigReplaceEditorText(origText);
+
+      if (sendInfo.sendFlags & ENIG_ENCRYPT_OR_SIGN) {
+        // Encryption/signing failed
+        EnigAlert(EnigGetString("sendAborted")+errorMsgObj.value);
+        return false;
+      }
+    }
+  }
+
+  if (sendInfo.inlineEncAttach) {
+    // encrypt attachments
+    gEnigModifiedAttach = new Array();
+    exitCode = enigEncryptAttachments(sendInfo.bucketList, gEnigModifiedAttach,
+                            window, sendInfo.uiFlags, sendInfo.fromAddr, sendInfo.toAddr,
+                            sendInfo.sendFlags, errorMsgObj);
+    if (exitCode != 0) {
+      gEnigModifiedAttach = null;
+      if (errorMsgObj.value) {
+        EnigAlert(EnigGetString("sendAborted")+errorMsgObj.value);
+      }
+      else {
+        EnigAlert(EnigGetString("sendAborted")+"an internal error has occurred");
+      }
+      if (gEnigProcessed) enigUndoEncryption();
+      return false;
+    }
+  }
+  return true;
+}
+
 
 function enigMessageSendCheck() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMessageSendCheck\n");
@@ -1842,8 +1859,6 @@ function enigDecryptQuote(interactive) {
 
   // Determine indentation string
   var indentBegin = docText.substr(0, blockBegin).lastIndexOf("\n");
-  if (indentBegin < 0)
-    return;
   var indentStr = docText.substring(indentBegin+1, blockBegin);
 
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDecryptQuote: indentStr='"+indentStr+"'\n");
