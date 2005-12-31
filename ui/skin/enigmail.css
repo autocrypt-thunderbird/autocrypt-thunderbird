@@ -47,12 +47,14 @@
 .action-box { width: 100px }
 
 #expandedEnigmailBox {
- background-color:#d8e0e8;
+  background-color:#d8e0e8;
+  color: black;
 }
 
 .enigmailHeaderNameBox {
   width: 7.7em;
   background-color:#d8e0e8;
+  color: black;
 }
 
 .enigmailHeaderValue {
@@ -64,22 +66,27 @@
 
 .enigmailHeaderBoxLabelNoSignature {
   background-color:#d8e0e8;
+  color: black;
 }
 
 .enigmailHeaderBoxLabelSignatureOk {
   background-color:#ccffcc;
+  color: black;
 }
 
 .enigmailHeaderBoxLabelSignatureVerified {
   background-color:#ccffff;
+  color: black;
 }
 
 .enigmailHeaderBoxLabelSignatureNotOk {
- background-color:#FFD8FE;
+  background-color:#FFD8FE;
+  color: black;
 }
 
 .enigmailHeaderBoxLabelSignatureUnknown {
- background-color:#FFFFC9;
+  background-color:#FFFFC9;
+  color: black;
 }
 
 .enigmailLink {
