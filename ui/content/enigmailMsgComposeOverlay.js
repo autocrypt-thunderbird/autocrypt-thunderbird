@@ -61,17 +61,23 @@ var gEnigEnableRules = null;
 
 if (typeof(GenericSendMessage)=="function") {
   // replace GenericSendMessage with our own version
+
   var origGenericSendMessage = GenericSendMessage;
   GenericSendMessage = function (msgType) {
     enigGenericSendMessage(msgType);
   }
 
+  
   window.addEventListener("load", enigMsgComposeStartup, false);
 
   // Handle recycled windows
   window.addEventListener('compose-window-close', enigMsgComposeClose, true);
   window.addEventListener('compose-window-reopen', enigMsgComposeReopen, true);
 
+  /*
+    // Handle message sending (in future)
+    window.addEventListener('compose-send-message', enigMsgComposeSendMsg, true);
+  */
 }
 else {
   EnigAlert("WARNING:\n\nCannot hook message sending -- you will not be able to send OpenPGP messages!");
@@ -1031,7 +1037,7 @@ function enigEncryptMsg(msgSendType) {
      }
 
      var bucketList = document.getElementById("attachmentBucket");
-     var hasAttachments = bucketList && bucketList.hasChildNodes();
+     var hasAttachments = ((bucketList && bucketList.hasChildNodes()) || gMsgCompose.compFields.attachVCard);
 
      DEBUG_LOG("enigmailMsgComposeOverlay.js: hasAttachments = "+hasAttachments+"\n");
 
@@ -1503,35 +1509,23 @@ function enigGenericSendMessage( msgType )
       msgCompFields.subject = subject;
       Attachments2CompFields(msgCompFields);
 
-      var event = document.createEvent('Events');
-      event.initEvent('compose-send-message', false, true);
-      document.getElementById("msgcomposeWindow").dispatchEvent(event);
-
-/////////////////////////////////////////////////////////////////////////
-// MODIFICATION
-// Call the following function from our version of the function
-// GenericSendMessage from the file MsgComposeCommands.js
-// (after the calls to Recipients2CompFields and Attachements2CompFields)
-/////////////////////////////////////////////////////////////////////////
-      enigModifyCompFields(msgCompFields);
-/////////////////////////////////////////////////////////////////////////
-
       if (msgType == nsIMsgCompDeliverMode.Now || msgType == nsIMsgCompDeliverMode.Later)
       {
         //Do we need to check the spelling?
-        if (sPrefs.getBoolPref("mail.SpellCheckBeforeSend")){
-        //We disable spellcheck for the following -subject line, attachment pane, identity and addressing widget
-        //therefore we need to explicitly focus on the mail body when we have to do a spellcheck.
+        if (sPrefs.getBoolPref("mail.SpellCheckBeforeSend"))
+        {
+          //We disable spellcheck for the following -subject line, attachment pane, identity and addressing widget
+          //therefore we need to explicitly focus on the mail body when we have to do a spellcheck.
           window.content.focus();
           window.cancelSendMessage = false;
           try {
             window.openDialog("chrome://editor/content/EdSpellCheck.xul", "_blank",
-                    "chrome,close,titlebar,modal", true, true, false);
+                    "chrome,close,titlebar,modal", true, true);
           }
           catch(ex){}
           if(window.cancelSendMessage)
             return;
-        }            
+         }
 
         //Check if we have a subject, else ask user for confirmation
         
@@ -1567,84 +1561,131 @@ function enigGenericSendMessage( msgType )
           }
         }
 
-        // Before sending the message, check what to do with HTML message, eventually abort.
-        var convert = DetermineConvertibility();
-        var action = DetermineHTMLAction(convert);
-        if (action == nsIMsgCompSendFormat.AskUser)
-        {
-          var recommAction = convert == nsIMsgCompConvertible.No
-                         ? nsIMsgCompSendFormat.AskUser
-                         : nsIMsgCompSendFormat.PlainText;
-          var result2 = {action:recommAction,
-                        convertible:convert,
-                        abort:false};
-          window.openDialog("chrome://messenger/content/messengercompose/askSendFormat.xul",
-                            "askSendFormatDialog", "chrome,modal,titlebar,centerscreen",
-                            result2);
-          if (result2.abort)
-            return;
-          action = result2.action;
-        }
-        switch (action)
-        {
-        case nsIMsgCompSendFormat.PlainText:
-          msgCompFields.forcePlainText = true;
-          msgCompFields.useMultipartAlternative = false;
-          break;
-        case nsIMsgCompSendFormat.HTML:
-          msgCompFields.forcePlainText = false;
-          msgCompFields.useMultipartAlternative = false;
-          break;
-        case nsIMsgCompSendFormat.Both:
-          msgCompFields.forcePlainText = false;
-          msgCompFields.useMultipartAlternative = true;
-          break;
-        default: 
-          ERROR_LOG("\###SendMessage Error: invalid action value\n");
+          // check if the user tries to send a message to a newsgroup through a mail account
+          var currentAccountKey = getCurrentAccountKey();
+          var account = gAccountManager.getAccount(currentAccountKey);
+          if (!account)
+          {
+            throw "UNEXPECTED: currentAccountKey '" + currentAccountKey +
+                "' has no matching account!";
+          }
+          var servertype = account.incomingServer.type;
+
+          if (servertype != "nntp" && msgCompFields.newsgroups != "")
+          {
+            // default to ask user if the pref is not set
+            var dontAskAgain = sPrefs.getBoolPref("mail.compose.dontWarnMail2Newsgroup");
+
+            if (!dontAskAgain)
+            {
+              var checkbox = {value:false};
+              var okToProceed = gPromptService.confirmCheck(window,
+                                                            sComposeMsgsBundle.getString("sendMsgTitle"),
+                                                            sComposeMsgsBundle.getString("recipientDlogMessage"),
+                                                            sComposeMsgsBundle.getString("CheckMsg"), checkbox);
+
+              if (!okToProceed)
+                return;
+
+              if (checkbox.value)
+                sPrefs.setBoolPref(kDontAskAgainPref, true);
+            }
+
+            // remove newsgroups to prevent news_p to be set
+            // in nsMsgComposeAndSend::DeliverMessage()
+            msgCompFields.newsgroups = "";
+          }
+
+          // Before sending the message, check what to do with HTML message, eventually abort.
+          var convert = DetermineConvertibility();
+          var action = DetermineHTMLAction(convert);
+         // check if e-mail addresses are complete, in case user
+         // has turned off autocomplete to local domain.
+         if (!CheckValidEmailAddress(msgCompFields.to, msgCompFields.cc, msgCompFields.bcc))
           return;
-        }
+
+          if (action == nsIMsgCompSendFormat.AskUser)
+          {
+            var recommAction = convert == nsIMsgCompConvertible.No
+                           ? nsIMsgCompSendFormat.AskUser
+                           : nsIMsgCompSendFormat.PlainText;
+            var result2 = {action:recommAction,
+                          convertible:convert,
+                          abort:false};
+            window.openDialog("chrome://messenger/content/messengercompose/askSendFormat.xul",
+                              "askSendFormatDialog", "chrome,modal,titlebar,centerscreen",
+                              result2);
+            if (result2.abort)
+              return;
+            action = result2.action;
+          }
+
+          // we will remember the users "send format" decision
+          // in the address collector code (see nsAbAddressCollecter::CollectAddress())
+          // by using msgCompFields.forcePlainText and msgCompFields.useMultipartAlternative
+          // to determine the nsIAbPreferMailFormat (unknown, plaintext, or html)
+          // if the user sends both, we remember html.
+
+          switch (action)
+          {
+            case nsIMsgCompSendFormat.PlainText:
+              msgCompFields.forcePlainText = true;
+              msgCompFields.useMultipartAlternative = false;
+              break;
+            case nsIMsgCompSendFormat.HTML:
+              msgCompFields.forcePlainText = false;
+              msgCompFields.useMultipartAlternative = false;
+              break;
+            case nsIMsgCompSendFormat.Both:
+              msgCompFields.forcePlainText = false;
+              msgCompFields.useMultipartAlternative = true;
+              break;
+             default: dump("\###SendMessage Error: invalid action value\n"); return;
+          }
       }
 
       // hook for extra compose pre-processing
       var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
       observerService.notifyObservers(window, "mail:composeOnSend", null);
-/*
-/////////////////////////////////////////////////////////////////////////
-// MODIFICATION
-// Set the charset from the original text
-// (after setting observerService)
-/////////////////////////////////////////////////////////////////////////
-      if (gEnigProcessed) {
-        // Ensure that original charset is preserved for encrypted messages
-        gMsgCompose.SetDocumentCharset(gEnigProcessed.charset);
 
-      } else {
-/////////////////////////////////////////////////////////////////////////
-// END OF MODIFICATION
-/////////////////////////////////////////////////////////////////////////
-*/
-         // Check if the headers of composing mail can be converted to a mail charset.
-        if (msgType == nsIMsgCompDeliverMode.Now ||
-            msgType == nsIMsgCompDeliverMode.Later ||
-            msgType == nsIMsgCompDeliverMode.Save ||
-            msgType == nsIMsgCompDeliverMode.SaveAsDraft ||
-            msgType == nsIMsgCompDeliverMode.SaveAsTemplate)
+      // Check if the headers of composing mail can be converted to a mail charset.
+      if (msgType == nsIMsgCompDeliverMode.Now ||
+        msgType == nsIMsgCompDeliverMode.Later ||
+        msgType == nsIMsgCompDeliverMode.Save ||
+        msgType == nsIMsgCompDeliverMode.SaveAsDraft ||
+        msgType == nsIMsgCompDeliverMode.AutoSaveAsDraft ||
+        msgType == nsIMsgCompDeliverMode.SaveAsTemplate)
+      {
+        var fallbackCharset = new Object;
+        if (gPromptService &&
+            !gMsgCompose.checkCharsetConversion(getCurrentIdentity(), fallbackCharset))
         {
-          var fallbackCharset = new Object;
-          if (gPromptService &&
-              !gMsgCompose.checkCharsetConversion(getCurrentIdentity(), fallbackCharset))
+          var dlgTitle = sComposeMsgsBundle.getString("initErrorDlogTitle");
+          var dlgText = sComposeMsgsBundle.getString("12553");  // NS_ERROR_MSG_MULTILINGUAL_SEND
+          var result3 = gPromptService.confirmEx(window, dlgTitle, dlgText,
+              (gPromptService.BUTTON_TITLE_IS_STRING * gPromptService.BUTTON_POS_0) +
+              (gPromptService.BUTTON_TITLE_IS_STRING * gPromptService.BUTTON_POS_1) +
+              (gPromptService.BUTTON_TITLE_CANCEL * gPromptService.BUTTON_POS_2),
+              sComposeMsgsBundle.getString('sendInUTF8'),
+              sComposeMsgsBundle.getString('sendAnyway'),
+              null, null, {value:0});
+          switch(result3)
           {
-            var dlgTitle = sComposeMsgsBundle.getString("initErrorDlogTitle");
-            var dlgText = sComposeMsgsBundle.getString("12553");  // NS_ERROR_MSG_MULTILINGUAL_SEND
-            if (!gPromptService.confirm(window, dlgTitle, dlgText))
+            case 0:
+              fallbackCharset.value = "UTF-8";
+              break;
+            case 1:  // send anyway
+              msgCompFields.needToCheckCharset = false;
+              break;
+            case 2:  // cancel
               return;
-            fallbackCharset.value = "UTF-8";
           }
-          if (fallbackCharset &&
-              fallbackCharset.value && fallbackCharset.value != "")
-            gMsgCompose.SetDocumentCharset(fallbackCharset.value);
         }
-//      }
+        if (fallbackCharset &&
+            fallbackCharset.value && fallbackCharset.value != "")
+          gMsgCompose.SetDocumentCharset(fallbackCharset.value);
+      }
+
 
 /////////////////////////////////////////////////////////////////////////
 // MODIFICATION
@@ -1652,21 +1693,29 @@ function enigGenericSendMessage( msgType )
 // GenericSendMessage from the file MsgComposeCommands.js
 // (after having determined HTML convertibility)
 /////////////////////////////////////////////////////////////////////////
-          try {
-            window.cancelSendMessage=false;
-            enigEncryptMsg(msgType);
-            if(window.cancelSendMessage)
-              return;
-          }
-          catch(ex){}
+      try {
+        window.cancelSendMessage=false;
+        enigModifyCompFields(msgCompFields);
+        enigEncryptMsg(msgType);
+        if(window.cancelSendMessage)
+          return;
+      }
+      catch(ex){}
 /////////////////////////////////////////////////////////////////////////
 // END OF MODIFICATION
 /////////////////////////////////////////////////////////////////////////
 
       try {
+
+        // just before we try to send the message, fire off the compose-send-message event for listeners
+        // such as smime so they can do any pre-security work such as fetching certificates before sending
+        var event = document.createEvent('Events');
+        event.initEvent('compose-send-message', false, true);
+        document.getElementById("msgcomposeWindow").dispatchEvent(event);
+
         gWindowLocked = true;
-        CommandUpdate_MsgCompose();
         disableEditableFields();
+        updateComposeItems();
 
         var progress = Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
         if (progress)
@@ -1675,10 +1724,9 @@ function enigGenericSendMessage( msgType )
           gSendOrSaveOperationInProgress = true;
         }
         msgWindow.SetDOMWindow(window);
-        
-        // Mozilla >= 1.7a only
-        gMsgCompose.SendMsg(msgType, getCurrentIdentity(), getCurrentAccountKey(), msgWindow, progress);
-        
+        msgWindow.rootDocShell.allowAuth = true;
+        gMsgCompose.SendMsg(msgType, getCurrentIdentity(), currentAccountKey, msgWindow, progress);
+/*
 /////////////////////////////////////////////////////////////////////////
 // MODIFICATION
 // Call the following function from our version of the function
@@ -1688,12 +1736,16 @@ function enigGenericSendMessage( msgType )
         if (window.enigmailSendFlags & nsIEnigmail.SAVE_MESSAGE) {
           enigUndoEncryption();
         }
+/////////////////////////////////////////////////////////////////////////
+// END OF MODIFICATION
+/////////////////////////////////////////////////////////////////////////
+*/
       }
       catch (ex) {
-        ERROR_LOG("failed to SendMsg: " + ex + "\n");
+        dump("failed to SendMsg: " + ex + "\n");
         gWindowLocked = false;
         enableEditableFields();
-        CommandUpdate_MsgCompose();
+        updateComposeItems();
       }
     }
   }

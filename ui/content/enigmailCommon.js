@@ -1470,6 +1470,7 @@ function EnigLoadKeyList(refresh, keyListObj) {
 
   var keyObj = new Object();
   var i;
+  var uatNum=0; // counter for photos (counts per key)
 
   for (i=0; i<aGpgUserList.length; i++) {
     var listRow=aGpgUserList[i].split(/:/);
@@ -1477,6 +1478,7 @@ function EnigLoadKeyList(refresh, keyListObj) {
       switch (listRow[0]) {
       case "pub":
         keyObj = new Object();
+        uatNum = 0;
         keyObj.expiry=EnigGetDateTime(listRow[EXPIRY], true, false);
         keyObj.created=EnigGetDateTime(listRow[CREATED], true, false);
         keyObj.keyId=listRow[KEY_ID];
@@ -1512,8 +1514,12 @@ function EnigLoadKeyList(refresh, keyListObj) {
       case "uat":
         if (listRow[USER_ID].indexOf("1 ")==0) {
           var userId=EnigGetString("userAtt.photo");
-          keyObj.SubUserIds.push({userId: userId, keyTrust:"", type: "uat"});
+          keyObj.SubUserIds.push({userId: userId,
+                                  keyTrust:listRow[KEY_TRUST],
+                                  type: "uat",
+                                  uatNum: uatNum});
           keyObj.photoAvailable=true;
+          ++uatNum;
         }
       }
     }
@@ -1553,12 +1559,13 @@ function EnigSignKey(userId, keyId, signingKeyHint) {
   window.openDialog("chrome://enigmail/content/enigmailSignKeyDlg.xul","", "dialog,modal,centerscreen,resizable", inputObj);
 }
 
-function EnigShowPhoto(keyId, userId) {
+function EnigShowPhoto(keyId, userId, photoNumber) {
   var enigmailSvc = GetEnigmailSvc();
   if (enigmailSvc) {
+    if (photoNumber==null) photoNumber=0;
     var exitCodeObj = new Object();
     var errorMsgObj = new Object();
-    var photoPath = enigmailSvc.showKeyPhoto("0x"+keyId, exitCodeObj, errorMsgObj);
+    var photoPath = enigmailSvc.showKeyPhoto("0x"+keyId, photoNumber, exitCodeObj, errorMsgObj);
     if (photoPath && exitCodeObj.value==0) {
       var photoFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
       photoFile.initWithPath(photoPath);

@@ -1704,6 +1704,68 @@ function (exitCode, statusFlags) {
 }
 
 
+Enigmail.prototype.simpleExecCmd =
+function (command, exitCodeObj, errorMsgObj) {
+  WRITE_LOG("enigmail.js: Enigmail.simpleExecCmd: command = "+command+"\n");
+
+  var envList = [];
+  envList = envList.concat(gEnvList);
+
+  var prefix = this.getLogDirectoryPrefix();
+  if (prefix && (gLogLevel >= 4)) {
+
+    WriteFileContents(prefix+"enigcmd.txt", command.replace(/\\\\/g, "\\")+"\n");
+    WriteFileContents(prefix+"enigenv.txt", envList.join(",")+"\n");
+
+    DEBUG_LOG("enigmail.js: Enigmail.execCmd: copied command line/env/input to files "+prefix+"enigcmd.txt/enigenv.txt/eniginp.txt\n");
+  }
+
+  var outObj = new Object();
+  var errObj = new Object();
+  var outLenObj = new Object();
+  var errLenObj = new Object();
+
+  CONSOLE_LOG("\nenigmail> "+command.replace(/\\\\/g, "\\")+"\n");
+
+  try {
+    var useShell = false;
+    exitCodeObj.value = gEnigmailSvc.ipcService.execPipe(command,
+                                                       useShell,
+                                                       "",
+                                                       "", 0,
+                                                       envList, envList.length,
+                                                       outObj, outLenObj,
+                                                       errObj, errLenObj);
+  } catch (ex) {
+    exitCodeObj.value = -1;
+  }
+
+  var outputData = "";
+  var errOutput  = "";
+
+  if (outObj.value)
+     outputData = outObj.value;
+
+  if (errObj.value)
+     errorMsgObj.value  = errObj.value;
+
+  if (prefix && (gLogLevel >= 4)) {
+    WriteFileContents(prefix+"enigout.txt", outputData);
+    WriteFileContents(prefix+"enigerr.txt", errOutput);
+    DEBUG_LOG("enigmail.js: Enigmail.execCmd: copied command out/err data to files "+prefix+"enigout.txt/enigerr.txt\n");
+  }
+
+  DEBUG_LOG("enigmail.js: Enigmail.execCmd: exitCode = "+exitCodeObj.value+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail.execCmd: errOutput = "+errOutput+"\n");
+
+  exitCodeObj.value = exitCodeObj.value;
+
+  this.stillActive();
+
+  return outputData;
+}
+
+
 Enigmail.prototype.execCmd =
 function (command, passphrase, input, exitCodeObj, statusFlagsObj,
           statusMsgObj, errorMsgObj) {
@@ -1780,58 +1842,11 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
   DEBUG_LOG("enigmail.js: Enigmail.execCmd: exitCode = "+exitCodeObj.value+"\n");
   DEBUG_LOG("enigmail.js: Enigmail.execCmd: errOutput = "+errOutput+"\n");
 
-/*
-  var errLines = errOutput.split(/\r?\n/);
-
-  // Discard last null string, if any
-  if ((errLines.length > 1) && !errLines[errLines.length-1])
-    errLines.pop();
-
-  var errArray    = new Array();
-  var statusArray = new Array();
-
-  var statusPat = /^\[GNUPG:\] /;
-  var statusFlags = 0;
-
-  for (var j=0; j<errLines.length; j++) {
-    if (errLines[j].search(statusPat) == 0) {
-      var statusLine = errLines[j].replace(statusPat,"");
-      statusArray.push(statusLine);
-
-      var matches = statusLine.match(/^(\w+)\b/);
-
-      if (matches && (matches.length > 1)) {
-        var flag = gStatusFlags[matches[1]];
-
-        if (flag == nsIEnigmail.NODATA) {
-          // Recognize only "NODATA 1"
-          if (statusLine.search(/NODATA 1\b/) < 0)
-            flag = 0;
-        }
-
-        if (flag)
-          statusFlags |= flag;
-
-        //DEBUG_LOG("enigmail.js: Enigmail.execCmd: status match "+matches[1]+"\n");
-      }
-
-    } else {
-      errArray.push(errLines[j]);
-    }
-  }
-
-  statusFlagsObj.value = statusFlags;
-  statusMsgObj.value   = statusArray.join("\n");
-  errorMsgObj.value    = errArray.join("\n");
-*/
 
   errorMsgObj.value = this.parseErrorOutput(errOutput, statusFlagsObj, statusMsgObj);
   exitCodeObj.value = this.fixExitCode(exitCodeObj.value, statusFlagsObj.value);
 
   CONSOLE_LOG(errorMsgObj.value+"\n");
-
-  //DEBUG_LOG("enigmail.js: Enigmail.execCmd: statusFlags = "+bytesToHex(pack(statusFlagsObj.value,4))+"\n");
-  //DEBUG_LOG("enigmail.js: Enigmail.execCmd: statusMsg = "+statusMsgObj.value+"\n");
 
   this.stillActive();
 
@@ -4354,54 +4369,50 @@ function(exitCodeObj, errorMsgObj) {
 }
 
 Enigmail.prototype.showKeyPhoto =
-function(keyId, exitCodeObj, errorMsgObj) {
+function(keyId, photoNumber, exitCodeObj, errorMsgObj) {
 
   var command = this.getAgentPath();
 
-  command += " --batch --no-tty --status-fd 1 --attribute-fd 1";
+  command += " --batch --no-tty --status-fd 1 --attribute-fd 2";
   command += " --fixed-list-mode --list-keys "+keyId;
 
-  var statusMsgObj = new Object();
-  var statusFlagsObj = new Object();
+  var photoDataObj = new Object();
 
-  var outputTxt = this.execCmd(command, null, "",
-                exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
+  var outputTxt = this.simpleExecCmd(command, exitCodeObj, photoDataObj);
 
   if ((exitCodeObj.value == 0) && !outputTxt) {
     exitCodeObj.value = -1;
     return "";
   }
 
-  if (this.agentVersion<"1.5" && this.isDosLike) {
+  if (/*this.agentVersion<"1.5" &&*/ this.isDosLike) {
     // workaround for error in gpg
-    outputTxt=outputTxt.replace(/\r\n/g, "\n");
+    photoDataObj.value=photoDataObj.value.replace(/\r\n/g, "\n");
   }
-  var startIndex=0;
-  var nextIndex=outputTxt.indexOf("[GNUPG:]",startIndex);
-  var imgSize=-1;
 
-  while (nextIndex>=0 && startIndex < outputTxt.length && startIndex>=0) {
-    var matches = outputTxt.substring(startIndex).match(/ATTRIBUTE ([A-F\d]+) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+)/);
-
+// [GNUPG:] ATTRIBUTE A053069284158FC1E6770BDB57C9EB602B0717E2 2985
+  var foundPicture = -1;
+  var skipData = 0;
+  var imgSize = -1;
+  var statusLines = outputTxt.split(/[\n\r+]/);
+  
+  for (var i=0; i < statusLines.length; i++) {
+    var matches = statusLines[i].match(/\[GNUPG:\] ATTRIBUTE ([A-F\d]+) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+)/)
     if (matches && matches[3]=="1") {
       // attribute is an image
-      imgSize=Number(matches[2])
-      break;
+      ++foundPicture;
+      if (foundPicture == photoNumber) {
+        imgSize = Number(matches[2]);
+        break;
+      }
+      else {
+        skipData += Number(matches[2]);
+      }
     }
-    startIndex=nextIndex+1;
-    nextIndex=outputTxt.indexOf("[GNUPG:]",startIndex);
   }
-
-  if (imgSize>=0) {
-    startIndex = outputTxt.substring(nextIndex).search(/[\n\r]\[GNUPG:\] ATTRIBUTE /)+nextIndex+5;
-    var cr = outputTxt.substring(startIndex).search(/[\r\n]/);
-    // increase cr by 1 if CRLF
-    if (outputTxt.charAt(startIndex+cr)=="\r" &&
-        outputTxt.charAt(startIndex+cr+1)=="\n")
-        cr++;
-
-    var pictureData = outputTxt.substring(startIndex+cr+1+16, startIndex+cr+1+imgSize);
-
+  
+  if (foundPicture>=0 && foundPicture == photoNumber) {
+    var pictureData = photoDataObj.value.substr(16+skipData, imgSize);
     if (! pictureData.length)
       return "";
     try {

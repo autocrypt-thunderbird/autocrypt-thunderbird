@@ -175,6 +175,9 @@ function enigUserSelCreateRow (keyObj, subKeyNum) {
       keyObj.SubUserIds[subKeyNum].userId = EnigConvertGpgToUnicode(keyObj.SubUserIds[subKeyNum].userId);
       userCol.setAttribute("label", keyObj.SubUserIds[subKeyNum].userId);
       treeItem.setAttribute("keytype", keyObj.SubUserIds[subKeyNum].type);
+      if (keyObj.SubUserIds[subKeyNum].type == "uat") {
+        treeItem.setAttribute("uatNum", keyObj.SubUserIds[subKeyNum].uatNum);
+      }
       keyCol.setAttribute("label", "");
       typeCol.setAttribute("label", "");
       keyTrust = keyObj.SubUserIds[subKeyNum].keyTrust;
@@ -358,6 +361,7 @@ function enigmailDblClick(event) {
   }
   var keyList = enigmailGetSelectedKeys();
   var keyType="";
+  var uatNum="";
   if (keyList.length == 1) {
     var rangeCount = gUserList.view.selection.getRangeCount();
     var start = {};
@@ -365,11 +369,12 @@ function enigmailDblClick(event) {
     gUserList.view.selection.getRangeAt(0,start,end);
     try {
       keyType = gUserList.view.getItemAtIndex(start.value).getAttribute("keytype");
+      uatNum = gUserList.view.getItemAtIndex(start.value).getAttribute("uatNum");
     }
     catch(ex) {}
   }
   if (keyType=="uat") {
-    enigShowPhoto();
+    enigShowPhoto(uatNum);
   }
   else {
    enigmailKeyDetails();
@@ -454,10 +459,10 @@ function enigmailEnableKey() {
   enigmailRefreshKeys();
 }
 
-function enigShowPhoto() {
+function enigShowPhoto(uatNumber) {
   var keyList = enigmailGetSelectedKeys();
 
-  EnigShowPhoto(keyList[0], gKeyList[keyList[0]].userId);
+  EnigShowPhoto(keyList[0], gKeyList[keyList[0]].userId, uatNumber);
 }
 
 function enigCreateKeyMsg() {
