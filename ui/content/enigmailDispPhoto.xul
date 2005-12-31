@@ -46,8 +46,8 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="onLoad();"
         ondialogaccept="return window.close();"
-        minwidth="350px"
-        minheight="400px"
+        width="200px"
+        height="150px"
         buttons="accept">
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
 
@@ -58,8 +58,12 @@
       document.getElementById("photoImage").setAttribute("src", window.arguments[0].photoUri);
       document.getElementById("userId").setAttribute("value", EnigGetString("photoFor", window.arguments[0].userId));
       document.getElementById("keyId").setAttribute("value", EnigGetString("keyId")+": 0x"+window.arguments[0].keyId);
+      window.setTimeout(resizeDlg, 0);
     }
-
+    
+    function resizeDlg() {
+      window.sizeToContent();
+    }
   ]]>
   </script>
 
