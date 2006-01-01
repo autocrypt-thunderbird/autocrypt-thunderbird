@@ -104,10 +104,12 @@ function enigmailKeygenUpdate(getPrefs, setPrefs) {
   passphrase1.disabled = noPassphraseChecked;
   passphrase2.disabled = noPassphraseChecked;
 
-  if (gAutoCrypto) {
-    var commentElement = document.getElementById("keyComment");
-    commentElement.value = "Enigmail auto crypto";
-    commentElement.disabled = true;
+  var commentElement = document.getElementById("keyComment")
+  if (noPassphraseChecked) {
+    if (commentElement.value == "") commentElement.value = EnigGetString("keyGenNoPassphrase");
+  }
+  else {
+    if (commentElement.value == EnigGetString("keyGenNoPassphrase")) commentElement.value = "";
   }
 }
 
@@ -242,12 +244,6 @@ function enigmailKeygenStart() {
 
    var commentElement = document.getElementById("keyComment");
    var comment = commentElement.value;
-
-   if (!passphrase) {
-      if (comment)
-        comment += "; ";
-      comment += "no password";
-   }
 
    var noExpiry = document.getElementById("noExpiry");
    var expireInput = document.getElementById("expireInput");
