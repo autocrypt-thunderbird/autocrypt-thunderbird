@@ -44,7 +44,6 @@
 #include "nsIObserverService.h"
 #include "nsIIOService.h"
 #include "nsIInputStream.h"
-#include "nsIByteArrayInputStream.h"
 #include "nsIStringStream.h"
 #include "nsIHttpChannel.h"
 #include "nsIChannel.h"
@@ -69,6 +68,9 @@ PRLogModuleInfo* gIPCServiceLog = NULL;
 
 #define IPCSERVICE_COOKIE_DIGITS 16
 #define MAX_DATA_BYTES 2000000
+
+#define NS_STRINGINPUTSTREAM_CONTRACTID "@mozilla.org/io/string-input-stream;1"
+
 static const PRUint32 kCharMax = 1024;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -351,10 +353,13 @@ nsIPCService::ExecPipe(const char* command,
 
     memcpy(inputBuf, inputData, inputLength);
 
-    nsCOMPtr<nsIByteArrayInputStream> byteInStream;
-    rv = NS_NewByteArrayInputStream(getter_AddRefs(byteInStream),
-                                    inputBuf, 
-                                    inputLength);
+    nsCOMPtr<nsIStringInputStream> byteInStream;
+    byteInStream = do_CreateInstance(NS_STRINGINPUTSTREAM_CONTRACTID, &rv);
+    if (NS_FAILED(rv)) {
+      nsMemory::Free(inputBuf);
+      return NS_ERROR_FAILURE;
+    }
+    rv = byteInStream->ShareData(inputBuf, inputLength);
     if (NS_FAILED(rv)) {
       nsMemory::Free(inputBuf);
       return NS_ERROR_FAILURE;
@@ -501,10 +506,13 @@ nsIPCService::ExecAsync(const char* command,
 
     memcpy(inputBuf, inputData, inputLength);
 
-    nsCOMPtr<nsIByteArrayInputStream> byteInStream;
-    rv = NS_NewByteArrayInputStream(getter_AddRefs(byteInStream),
-                                    inputBuf, 
-                                    inputLength);
+    nsCOMPtr<nsIStringInputStream> byteInStream;
+    byteInStream = do_CreateInstance(NS_STRINGINPUTSTREAM_CONTRACTID, &rv);
+    if (NS_FAILED(rv)) {
+      nsMemory::Free(inputBuf);
+      return NS_ERROR_FAILURE;
+    }
+    rv = byteInStream->ShareData(inputBuf, inputLength);
     if (NS_FAILED(rv)) {
       nsMemory::Free(inputBuf);
       return NS_ERROR_FAILURE;
@@ -631,8 +639,11 @@ nsIPCService::NewStringChannel(nsIURI* aURI, const nsACString &aContentType,    
   nsresult rv;
 
   DEBUG_LOG(("nsIPCService::NewStringChannel:\n"));
-  nsCOMPtr<nsIInputStream> inputStream;
-  rv = NS_NewCharInputStream(getter_AddRefs(inputStream), aData);
+  nsCOMPtr<nsIStringInputStream> inputStream;
+  inputStream = do_CreateInstance(NS_STRINGINPUTSTREAM_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) return rv;
+
+  rv = inputStream->ShareData(aData, -1);
   if (NS_FAILED(rv)) return rv;
 
   nsCAutoString contentType(aContentType);
@@ -646,12 +657,7 @@ nsIPCService::NewStringChannel(nsIURI* aURI, const nsACString &aContentType,    
                                 aURI,
                                 inputStream,
                                 contentType,
-                                contentCharset
-#ifndef MOZILLA_VERSION
-  // Mods for Mozilla version prior to 1.3b
-                                ,strlen(aData)
-#endif
-                                );
+                                contentCharset);
 
   if (NS_FAILED(rv)) return rv;
 
