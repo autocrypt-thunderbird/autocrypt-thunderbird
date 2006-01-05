@@ -2208,22 +2208,7 @@ function EnigEditorInsertAsQuotation(plainText) {
     var clipBoard = Components.classes[ENIG_CLIPBOARD_CONTRACTID].getService(Components.interfaces.nsIClipboard);
     // get the clipboard content
     var transferable = Components.classes[ENIG_TRANSFERABLE_CONTRACTID].createInstance(Components.interfaces.nsITransferable);
-    var xferTypes = [ "text/unicode",
-           "text/html",
-           "AOLMAIL",
-           "image/png",
-           "image/jpg",
-           "image/gif",
-           "application/x-moz-file",
-           "text/x-moz-url",
-           "text/x-moz-url-data",
-           "text/x-moz-url-desc",
-           "application/x-moz-nativeimage",
-           "application/x-moz-nativehtml",
-           "application/x-moz-file-promise-url",
-           "application/x-moz-file-promise-dest-filename",
-           "application/x-moz-file-promise",
-           "application/x-moz-file-promise-dir" ];
+    var xferTypes = [ "text/unicode", "text/html" ];
 
     for (var i=0; i < xferTypes.length; i++) {
       transferable.addDataFlavor(xferTypes[i]);
@@ -2247,8 +2232,8 @@ function EnigEditorInsertAsQuotation(plainText) {
       pasteClipboard.copyStringToClipboard(plainText, clipBoard.kGlobalClipboard);
       mailEditor.pasteAsQuotation(clipBoard.kGlobalClipboard);
 
-      // Components.classes[ENIG_TRANSFERABLE_CONTRACTID].createInstance(Components.interfaces.nsIClipboardOwner)
-      clipBoard.setData(transferable, null, clipBoard.kGlobalClipboard);
+      data = data.value.QueryInterface(Components.interfaces.nsISupportsString).data;
+      pasteClipboard.copyStringToClipboard(data, clipBoard.kGlobalClipboard);
    }
    catch (ex) {
       ERROR_LOG("enigmailMsgComposeOverlay.js: EnigEditorInsertAsQuotation: (re-)setting clipboard failed\n");

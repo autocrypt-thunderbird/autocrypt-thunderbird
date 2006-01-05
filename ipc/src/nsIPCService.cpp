@@ -45,6 +45,7 @@
 #include "nsIIOService.h"
 #include "nsIInputStream.h"
 #include "nsIStringStream.h"
+#include "nsStringStream.h"
 #include "nsIHttpChannel.h"
 #include "nsIChannel.h"
 #include "nsIURL.h"
@@ -353,13 +354,8 @@ nsIPCService::ExecPipe(const char* command,
 
     memcpy(inputBuf, inputData, inputLength);
 
-    nsCOMPtr<nsIStringInputStream> byteInStream;
-    byteInStream = do_CreateInstance(NS_STRINGINPUTSTREAM_CONTRACTID, &rv);
-    if (NS_FAILED(rv)) {
-      nsMemory::Free(inputBuf);
-      return NS_ERROR_FAILURE;
-    }
-    rv = byteInStream->ShareData(inputBuf, inputLength);
+    nsCOMPtr<nsIInputStream> byteInStream;
+    rv = NS_NewByteInputStream(getter_AddRefs(byteInStream), inputBuf, inputLength);
     if (NS_FAILED(rv)) {
       nsMemory::Free(inputBuf);
       return NS_ERROR_FAILURE;
@@ -506,13 +502,8 @@ nsIPCService::ExecAsync(const char* command,
 
     memcpy(inputBuf, inputData, inputLength);
 
-    nsCOMPtr<nsIStringInputStream> byteInStream;
-    byteInStream = do_CreateInstance(NS_STRINGINPUTSTREAM_CONTRACTID, &rv);
-    if (NS_FAILED(rv)) {
-      nsMemory::Free(inputBuf);
-      return NS_ERROR_FAILURE;
-    }
-    rv = byteInStream->ShareData(inputBuf, inputLength);
+    nsCOMPtr<nsIInputStream> byteInStream;
+    rv = NS_NewByteInputStream(getter_AddRefs(byteInStream), inputBuf, inputLength);
     if (NS_FAILED(rv)) {
       nsMemory::Free(inputBuf);
       return NS_ERROR_FAILURE;
@@ -639,11 +630,9 @@ nsIPCService::NewStringChannel(nsIURI* aURI, const nsACString &aContentType,    
   nsresult rv;
 
   DEBUG_LOG(("nsIPCService::NewStringChannel:\n"));
-  nsCOMPtr<nsIStringInputStream> inputStream;
-  inputStream = do_CreateInstance(NS_STRINGINPUTSTREAM_CONTRACTID, &rv);
-  if (NS_FAILED(rv)) return rv;
 
-  rv = inputStream->ShareData(aData, -1);
+  nsCOMPtr<nsIInputStream> inputStream;
+  rv = NS_NewByteInputStream(getter_AddRefs(inputStream), aData, -1);
   if (NS_FAILED(rv)) return rv;
 
   nsCAutoString contentType(aContentType);
@@ -652,7 +641,7 @@ nsIPCService::NewStringChannel(nsIURI* aURI, const nsACString &aContentType,    
   if (contentCharset.IsEmpty())
     NS_ParseContentType(aContentType, contentType, contentCharset);
 
-  nsCOMPtr<nsIChannel> channel;
+//  nsCOMPtr<nsIChannel> channel;
   rv = NS_NewInputStreamChannel(result,
                                 aURI,
                                 inputStream,
