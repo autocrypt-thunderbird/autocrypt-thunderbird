@@ -83,9 +83,8 @@
         }
       }
       document.getElementById("selectedServer").value=keyservers[0];
-
     }
-
+    
     function onAccept() {
       var menulist=document.getElementById("selectedServer");
       window.arguments[1].value = menulist.value;

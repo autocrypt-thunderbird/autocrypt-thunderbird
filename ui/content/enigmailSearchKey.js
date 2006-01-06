@@ -62,34 +62,8 @@ function trim(str) {
 function onLoad () {
 
   window.arguments[RESULT].importedKeys=0;
-  var ioService = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
-  if (ioService && ioService.offline) {
-    EnigAlert(EnigGetString("needOnline"));
-    enigCloseDialog();
-    return false;
-  }
-  
-  var valueObj = {};
-  if (window.arguments[INPUT].searchList) {
-    valueObj = { keyId: "<"+window.arguments[INPUT].searchList.join("> <")+">" };
-  }
-  var checkObj = new Object();
-  var keyserver = null;
-  
-  while (! keyserver) {
-    window.openDialog("chrome://enigmail/content/enigmailKeyserverDlg.xul",
-          "", "dialog,modal,centerscreen", valueObj, checkObj);
-  
-    if (! checkObj.value) {
-      enigCloseDialog();
-      return false;
-    }
-    keyserver = checkObj.value;
-    if (! window.arguments[INPUT].searchList) {
-      window.arguments[INPUT].searchList = checkObj.email.split(/[,; ]+/);
-    }
-  }
-  
+
+  var keyserver = window.arguments[INPUT].keyserver;
   var protocol="";
   if (keyserver.search(/[a-zA-Z0-9\-\_\.]+:\/\//)==0) {
     protocol=keyserver.replace(/^([a-zA-Z0-9\-\_\.]+)(:\/\/.*)/, "$1");

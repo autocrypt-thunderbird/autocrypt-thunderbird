@@ -1703,8 +1703,7 @@ function enigHandleUnknownKey() {
     };
     var resultObj = new Object();
 
-    window.openDialog("chrome://enigmail/content/enigmailSearchKey.xul",
-          "", "dialog,modal,centerscreen", inputObj, resultObj);
+    EnigDownloadKeys(inputObj, resultObj);
 
     if (resultObj.importedKeys > 0) {
       enigMessageReload(false);

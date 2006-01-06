@@ -1391,6 +1391,45 @@ function EnigRulesEditor() {
               "dialog,centerscreen,resizable");
 }
 
+function EnigOpenSetupWizard() {
+  window.open("chrome://enigmail/content/enigmailSetupWizard.xul",
+            "", "chrome,modal,centerscreen");
+}
+
+// get keys from keyserver
+function EnigDownloadKeys(inputObj, resultObj) {
+  DEBUG_LOG("enigmailCommon.js: EnigSearchKeys: searchList="+inputObj.searchList+"\n");
+  
+  resultObj.importedKeys=0;
+
+  var ioService = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+  if (ioService && ioService.offline) {
+    EnigAlert(EnigGetString("needOnline"));
+    return;
+  }
+
+  var valueObj = {};
+  if (inputObj.searchList) {
+    valueObj = { keyId: "<"+inputObj.searchList.join("> <")+">" };
+  }
+
+  var keysrvObj = new Object();
+
+  window.openDialog("chrome://enigmail/content/enigmailKeyserverDlg.xul",
+        "", "dialog,modal,centerscreen", valueObj, keysrvObj);
+  if (! keysrvObj.value) {
+    return;
+  }
+  
+  inputObj.keyserver = keysrvObj.value;
+  if (! inputObj.searchList) {
+    inputObj.searchList = keysrvObj.email.split(/[,; ]+/);
+  }
+
+  window.openDialog("chrome://enigmail/content/enigmailSearchKey.xul",
+        "", "dialog,modal,centerscreen", inputObj, resultObj);
+}
+
 // create new PGP Rule
 function EnigNewRule(emailAddress) {    
   // make sure the rules database is loaded
@@ -1711,9 +1750,4 @@ function enigGetService (aURL, aInterface)
   }
   
   return null;
-}
-
-function EnigOpenSetupWizard() {
-  window.open("chrome://enigmail/content/enigmailSetupWizard.xul",
-            "", "chrome,modal,centerscreen");
 }
