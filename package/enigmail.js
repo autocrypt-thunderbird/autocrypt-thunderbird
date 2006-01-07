@@ -91,7 +91,7 @@ const NS_PREFS_SERVICE_CID = "@mozilla.org/preferences-service;1";
 const NS_DOMPARSER_CONTRACTID = "@mozilla.org/xmlextras/domparser;1";
 const NS_DOMSERIALIZER_CONTRACTID = "@mozilla.org/xmlextras/xmlserializer;1";
 const NS_CATMAN_CONTRACTID = "@mozilla.org/categorymanager;1";
-const NS_CLINE_SERVICE_CONTRACTID = "@mozilla.org/commandlinehandler/general-startup;1?type=pgpkeyman";
+const NS_CLINE_SERVICE_CONTRACTID = "@mozilla.org/enigmail/cline-handler;1";
 
 // Interfaces
 const nsISupports            = Components.interfaces.nsISupports;
@@ -109,6 +109,7 @@ const nsIEnigStrBundle       = Components.interfaces.nsIStringBundleService;
 const nsICmdLineHandler      = Components.interfaces.nsICmdLineHandler;
 const nsICategoryManager     = Components.interfaces.nsICategoryManager;
 const nsIWindowWatcher       = Components.interfaces.nsIWindowWatcher;
+const nsICommandLineHandler  = Components.interfaces.nsICommandLineHandler;
 
 const NS_XPCOM_SHUTDOWN_OBSERVER_ID = "xpcom-shutdown";
 
@@ -387,8 +388,8 @@ var EnigModuleObj = {
                                           componentType);
                                           
   	var catman = Components.classes[NS_CATMAN_CONTRACTID].getService(nsICategoryManager);
-  	catman.addCategoryEntry("command-line-argument-handlers",
-                            "Enigmail Key Management command line handler",
+  	catman.addCategoryEntry("command-line-handler",
+                            "cline-enigmail",
                             NS_CLINE_SERVICE_CONTRACTID, true, true);
 
     WRITE_LOG("enigmail.js: Registered components\n");
@@ -403,7 +404,7 @@ var EnigModuleObj = {
                                             moduleFile);
     var catman = Components.classes[NS_CATMAN_CONTRACTID]
                            .getService(nsICategoryManager);
-    catman.deleteCategoryEntry("command-line-argument-handlers",
+    catman.deleteCategoryEntry("command-line-handler",
                                NS_CLINE_SERVICE_CONTRACTID, true);
 
   },
@@ -419,8 +420,9 @@ var EnigModuleObj = {
       gEnigmailSvc = new Enigmail(false);
     }
     
-    if (cid.equals(NS_ENIGCLINE_SERVICE_CID))
-        return EnigCLineFactory;
+    if (cid.equals(NS_ENIGCLINE_SERVICE_CID)) {
+      return EnigCmdLineHandler.QueryInterface(iid);
+    }
 
     if (cid.equals(NS_ENIGMAIL_CID)) {
       return new EnigmailFactory();
@@ -5753,43 +5755,39 @@ function cardChangePinCallback(inputData, keyEdit, ret) {
   }
 }
 
-/* Command Line handler service */
-function EnigCLineService()
-{}
-
-EnigCLineService.prototype = {
+const EnigCmdLineHandler = {
   /* nsISupports */
-  QueryInterface : function handler_QI(iid) {
-    if (iid.equals(nsISupports))
-      return this;
-
-    if (nsICmdLineHandler && iid.equals(nsICmdLineHandler))
-      return this;
-
-    if (nsICommandLineHandler && iid.equals(nsICommandLineHandler))
-      return this;
+  QueryInterface: function (iid) {
+    if (iid.equals(nsICommandLineHandler) ||
+        iid.equals(Components.interfaces.nsIFactory) ||
+        iid.equals(nsISupports))
+        return this;
 
     throw Components.results.NS_ERROR_NO_INTERFACE;
   },
-  commandLineArgument: "-pgpkeyman",
-   prefNameForStartup: "general.startup.pgpkeyman",
-   chromeUrlForTask: "chrome://enigmail/content/enigmailKeyManager.xul",
-   helpText: "Start with OpenPGP key manager",
-   helpInfo : "  -pgpkeyman             Open the OpenPGP key manager",
-   handlesArgs: false,
-   defaultArgs: "",
-   openWindowWithArgs: false
-}
 
-/* factory for command line handler service (EnigCLineService) */
-var EnigCLineFactory = {
-  createInstance : function (outer, iid) {
+  /* nsICommandLineHandler */
+  handle: function(cmdLine) {
+    if (cmdLine.handleFlag("pgpkeyman", false)) {
+      cmdLine.preventDefault = true; // do not open main app window
+
+      var wwatch = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
+                             .getService(Components.interfaces.nsIWindowWatcher);
+      wwatch.openWindow(null, "chrome://enigmail/content/enigmailKeyManager.xul", "_blank",
+                        "chrome,dialog=no,all", cmdLine);
+    }
+  },
+
+  helpInfo: "  -pgpkeyman         Open the OpenPGP key management.\n",
+
+  /* nsIFactory */
+
+  createInstance: function (outer, iid) {
     if (outer != null)
-        throw Components.results.NS_ERROR_NO_AGGREGATION;
+      throw Components.results.NS_ERROR_NO_AGGREGATION;
 
-    if (!iid.equals(nsICmdLineHandler) && !iid.equals(nsISupports))
-        throw Components.results.NS_ERROR_INVALID_ARG;
+    return this.QueryInterface(iid);
+  },
 
-    return new EnigCLineService().QueryInterface(iid);
-  }
-}
+  lockFactory: function (lock) {}
+};
