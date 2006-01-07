@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # The contents of this file are subject to the Mozilla Public
 # License Version 1.1 (the "MPL"); you may not use this file
@@ -61,10 +61,6 @@ zip -r ${targetDir}/${xpiFile} chrome.manifest \
 
 sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${platform}'<\/em:targetPlatform>/' < install.rdf >"$targetDir/install.rdf"
 cd "$targetDir"
-
-appType=${mozApp//-*/}
-appVer=${mozApp//thunderbird-/}
-appVer=${appVer:0:3}
 
 dllFile=components/${libPrefix}enigmime${dllSuffix}
 

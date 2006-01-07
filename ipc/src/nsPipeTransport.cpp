@@ -464,13 +464,8 @@ NS_IMETHODIMP nsPipeTransport::Init(const char *executable,
     return NS_ERROR_FILE_EXECUTION_FAILED;
   }
 
-#ifdef XP_WIN
-  DEBUG_LOG(("nsPipeTransport::Init: Created process %d, %s\n",
-	     (int) mProcess, mExecutable.get() ));
-#else
-  DEBUG_LOG(("nsPipeTransport::Init: Created process %d, %s\n",
-	     (int)(intptr_t) mProcess, mExecutable.get() ));
-#endif
+  DEBUG_LOG(("nsPipeTransport::Init: Created process %p, %s\n",
+	     mProcess, mExecutable.get() ));
 
   // Close process-side STDIN/STDOUT/STDERR pipes
   IPC_Close(stdinRead);
