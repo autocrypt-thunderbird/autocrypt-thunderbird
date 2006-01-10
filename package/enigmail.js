@@ -1130,24 +1130,32 @@ function (aSubject, aTopic, aData) {
     }
 
   } else if (aTopic == NS_XPCOM_SHUTDOWN_OBSERVER_ID) {
-    // XPCOM shutdown
-    this.finalize();
-
     // Reset mail.show_headers pref
     try {
       var prefSvc = Components.classes[NS_PREFS_SERVICE_CID]
-                            .getService(Components.interfaces.nsIPrefService);
-
+                     .getService(Components.interfaces.nsIPrefService);
       var prefRoot = prefSvc.getBranch(null);
 
       var prefValue = 1;
       try {
         prefValue = this.prefBranch.getIntPref("show_headers");
-      } catch (ex) {}
+      } catch (ex) {
+        ERROR_LOG("enigmail.js: Enigmail.observe: could not obtain 'show_headers'\n");
+      }
 
       prefRoot.setIntPref("mail.show_headers", prefValue);
       prefSvc.savePrefFile(null);
-    } catch (ex) {}
+      DEBUG_LOG("enigmail.js: Enigmail.observe: changed preferences saved\n");
+    } catch (ex) {
+      ERROR_LOG("enigmail.js: Enigmail.observe: could not save preferences\n");
+    }
+
+    // XPCOM shutdown
+    this.finalize();
+
+  }
+  else {
+    DEBUG_LOG("enigmail.js: Enigmail.observe: no handler for '"+aTopic+"'\n");
   }
 }
 
@@ -1506,6 +1514,19 @@ function (domWindow, version, prefBranch) {
 
   this.stillActive();
   this.initialized = true;
+  
+  try {
+    var prefSvc = Components.classes[NS_PREFS_SERVICE_CID]
+                   .getService(Components.interfaces.nsIPrefService);
+    var prefRoot = prefSvc.getBranch(null);
+    
+    if (this.prefBranch.getBoolPref("parseAllHeaders")) {
+      // Show all mail headers
+      prefRoot.setIntPref("mail.show_headers", 2);
+    }
+    
+  } catch (ex) {}
+
 
   DEBUG_LOG("enigmail.js: Enigmail.initialize: END\n");
 }

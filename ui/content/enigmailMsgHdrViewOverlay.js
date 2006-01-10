@@ -254,7 +254,13 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
       var txt = EnigGetString("keyAndSigDate", keyId.substr(-8, 8), dateTime);
       statusArr.push(txt);
       statusInfo += "\n" + txt;
-      var fpr = EnigFormatFpr(detailArr[0]);
+      var fpr = "";
+      if (detailArr.length >= 10) {
+        fpr = EnigFormatFpr(detailArr[9]);
+      }
+      else {
+        EnigFormatFpr(detailArr[0]);
+      }
       if (fpr) {
         statusInfo += "\n"+EnigGetString("keyFpr", fpr);
       }
