@@ -1515,19 +1515,6 @@ function (domWindow, version, prefBranch) {
   this.stillActive();
   this.initialized = true;
   
-  try {
-    var prefSvc = Components.classes[NS_PREFS_SERVICE_CID]
-                   .getService(Components.interfaces.nsIPrefService);
-    var prefRoot = prefSvc.getBranch(null);
-    
-    if (this.prefBranch.getBoolPref("parseAllHeaders")) {
-      // Show all mail headers
-      prefRoot.setIntPref("mail.show_headers", 2);
-    }
-    
-  } catch (ex) {}
-
-
   DEBUG_LOG("enigmail.js: Enigmail.initialize: END\n");
 }
 
