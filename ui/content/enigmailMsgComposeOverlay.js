@@ -1932,13 +1932,19 @@ function enigDecryptQuote(interactive) {
   var tail = docText.substr(endIndex+1);
 
   var pgpBlock = docText.substr(beginIndex, endIndex-beginIndex+1);
-
+  var indentRegexp;
+  
   if (indentStr) {
     // MULTILINE MATCHING ON
     RegExp.multiline = true;
+    
+    if (indentStr == "> ") {
+      // replace ">> " with "> > " to allow correct quoting
+      pgpBlock = pgpBlock.replace(/^>>/g, "> >");
+    }
 
     // Delete indentation
-    var indentRegexp = new RegExp("^"+indentStr, "g");
+    indentRegexp = new RegExp("^"+indentStr, "g");
 
     pgpBlock = pgpBlock.replace(indentRegexp, "");
     tail     =     tail.replace(indentRegexp, "");
@@ -2047,6 +2053,10 @@ function enigDecryptQuote(interactive) {
       gMsgCompose.type != nsIMsgCompType.Draft &&
       doubleDashSeparator) {
     var signOffset = plainText.search(/[\r\n]-- +[\r\n]/);
+    
+    if (signOffset < 0 && blockType == "SIGNED MESSAGE") {
+      signOffset = plainText.search(/[\r\n]--[\r\n]/);
+    }
 
     if (signOffset > 0) {
       // Strip signature portion of quoted message
