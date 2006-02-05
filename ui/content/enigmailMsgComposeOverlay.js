@@ -1203,9 +1203,8 @@ function enigEncryptMsg(msgSendType) {
      }
 
      if (usingPGPMime &&
-         ((sendFlags & ENIG_ENCRYPT_OR_SIGN) &&
-          (! (sendFlags & ENIG_ENCRYPT)))) {
-      // temporarily enable quoted-printable for PGP/MIME signed messages
+         ((sendFlags & ENIG_ENCRYPT_OR_SIGN))) {
+      // temporarily enable quoted-printable for PGP/MIME messages
        try {
           if (! gEnigPrefRoot.getBoolPref("mail.strictly_mime")) {
             gEnigPrefRoot.setBoolPref("mail.strictly_mime", true);
