@@ -609,7 +609,7 @@ nsPipeChannel::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext,
       nsCAutoString urlSpec;
       rv = mURI->GetSpec(urlSpec);
       if (NS_SUCCEEDED(rv))
-        statusStr.Assign(NS_ConvertUTF8toUCS2(urlSpec));
+        statusStr.Assign(NS_ConvertUTF8toUTF16(urlSpec));
     }
 
     rv = mProgress->OnStatus(this, mContext, 
