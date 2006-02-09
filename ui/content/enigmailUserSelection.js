@@ -323,6 +323,12 @@ function enigmailBuildList(refresh) {
    var escapeRegExp = new RegExp("([^a-zA-Z0-9])","g");
 
    try {
+      // delete "empty" entries
+      for (i=0; i<aUserList.length; i++) {
+        if (typeof(aUserList[i].userId) != "string") {
+          aUserList.splice(i, 1);
+        }
+      }
       // find and activate keys
       for (i=0; i<aUserList.length; i++) {
         aUserList[i].activeState = (gAllowExpired ? 0 : 2);
