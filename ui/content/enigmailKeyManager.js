@@ -301,11 +301,11 @@ function enigmailKeyMenu() {
   var keyList = enigmailGetSelectedKeys();
   if (keyList.length == 1 && gKeyList[keyList[0]].secretAvailable) {
     document.getElementById("bcRevoke").removeAttribute("disabled");
-    document.getElementById("bcManageUid").removeAttribute("disabled");
+    document.getElementById("bcEditKey").removeAttribute("disabled");
   }
   else {
     document.getElementById("bcRevoke").setAttribute("disabled", "true");
-    document.getElementById("bcManageUid").setAttribute("disabled", "true");
+    document.getElementById("bcEditKey").setAttribute("disabled", "true");
   }
   
   if (keyList.length == 1 && gKeyList[keyList[0]].photoAvailable) {
@@ -336,7 +336,7 @@ function enigmailKeyMenu() {
   if (keyList.length == 1) {
     document.getElementById("bcSignKey").removeAttribute("disabled");
     document.getElementById("bcViewSig").removeAttribute("disabled");
-    document.getElementById("bcKeyDetails").removeAttribute("disabled");
+    document.getElementById("bcOneKey").removeAttribute("disabled");
     document.getElementById("bcDeleteKey").removeAttribute("disabled");
     document.getElementById("bcNoKey").removeAttribute("disabled");
   }
@@ -350,7 +350,7 @@ function enigmailKeyMenu() {
     }
     document.getElementById("bcSignKey").setAttribute("disabled", "true");
     document.getElementById("bcViewSig").setAttribute("disabled", "true");
-    document.getElementById("bcKeyDetails").setAttribute("disabled", "true");
+    document.getElementById("bcOneKey").setAttribute("disabled", "true");
     document.getElementById("bcDeleteKey").setAttribute("disabled", "true");
   }
 }
@@ -731,11 +731,12 @@ function enigmailListSig() {
 function enigmailManageUids() {
   var keyList = enigmailGetSelectedKeys();
   var inputObj = {
-    keyId: keyList[0]
+    keyId: keyList[0],
+    ownKey: gKeyList[keyList[0]].secretAvailable
   };
 
   window.openDialog("chrome://enigmail/content/enigmailManageUidDlg.xul",
-        "", "dialog,modal,centerscreen,resizable", inputObj);
+        "", "dialog,modal,centerscreen,resizable=yes", inputObj);
   enigmailRefreshKeys();
 }
 

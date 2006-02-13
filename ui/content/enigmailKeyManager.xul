@@ -70,9 +70,9 @@
     <broadcaster id="bcSetTrust" disabled="false"/>
     <broadcaster id="bcViewSig" disabled="false"/>
     <broadcaster id="bcViewPhoto" disabled="false"/>
-    <broadcaster id="bcManageUid" disabled="false"/>
+    <broadcaster id="bcEditKey" disabled="false"/>
     <broadcaster id="bcRevoke" disabled="false"/>
-    <broadcaster id="bcKeyDetails" disabled="false"/>
+    <broadcaster id="bcOneKey" disabled="false"/>
     <broadcaster id="bcDeleteKey" disabled="false"/>
     <broadcaster id="bcClipbrd" disabled="false"/>
     <broadcaster id="bcEnableKey" disabled="false" label=""/>
@@ -173,13 +173,13 @@
 
         <menuitem id="manageUid"
                   label="&enigmail.keyMan.manageUid.label;"
-                  observes="bcManageUid"
+                  observes="bcOneKey"
                   accesskey="&enigmail.keyMan.manageUid.accesskey;"
                   oncommand="enigmailManageUids()"/>
 
         <menuitem id="changePwd"
                   label="&enigmail.keyMan.changePwd.label;"
-                  observes="bcManageUid"
+                  observes="bcEditKey"
                   accesskey="&enigmail.keyMan.changePwd.accesskey;"
                   oncommand="enigmailChangePwd()"/>
         <menuseparator/>
@@ -209,7 +209,7 @@
                   oncommand="enigShowPhoto()"/>
 				<menuitem label="&enigmail.keyMan.keyProps.label;"
 									id="keyDetails"
-									observes="bcKeyDetails"
+									observes="bcOneKey"
 									accesskey="&enigmail.keyMan.keyDetails.accesskey;"
 								  oncommand="enigmailKeyDetails()"/>
 								  
@@ -297,8 +297,8 @@
 
       <menuseparator/>
 
-      <menuitem id="ctxManageUid" observes="bcManageUid" label="&enigmail.keyMan.manageUid.label;" oncommand="enigmailManageUids()"/>
-      <menuitem id="ctxChangePwd" observes="bcManageUid" label="&enigmail.keyMan.changePwd.label;" oncommand="enigmailChangePwd()"/>
+      <menuitem id="ctxManageUid" observes="bcOneKey" label="&enigmail.keyMan.manageUid.label;" oncommand="enigmailManageUids()"/>
+      <menuitem id="ctxChangePwd" observes="bcEditKey" label="&enigmail.keyMan.changePwd.label;" oncommand="enigmailChangePwd()"/>
       <menuitem id="ctxRevokationCert" observes="bcRevoke" label="&enigmail.keyMan.ctxGenRevoke.label;" oncommand="enigCreateRevokeCert()"/>
 
 			<menuseparator/>

@@ -88,7 +88,12 @@
       reloadUidList();
       var keyId = window.enigmailUid +" - 0x"+ window.arguments[0].keyId.substr(-8,8);
       document.getElementById("keyId").value = keyId;
-      return;
+      
+      if (! window.arguments[0].ownKey) {
+        document.getElementById("addUid").setAttribute("disabled", "true");
+        document.getElementById("setPrimary").setAttribute("disabled", "true");
+        document.getElementById("revokeUid").setAttribute("disabled", "true");
+      }
     }
     
     function reloadUidList() {
@@ -163,24 +168,34 @@
       else {
         selValue="uid:1";
       }
-      var uidType = selValue.substr(0,3);
-      if (uidType=="uat" || uidType=="rat" || uidType=="rid" || selValue.substr(4)=="1") {
-        document.getElementById("setPrimary").setAttribute("disabled", "true");
-      }
-      else {
-        document.getElementById("setPrimary").removeAttribute("disabled");
-      }
-      if (selValue.substr(4)=="1") {
-        document.getElementById("deleteUid").setAttribute("disabled", "true");
-        document.getElementById("revokeUid").setAttribute("disabled", "true");
-      }
-      else {
-        document.getElementById("deleteUid").removeAttribute("disabled");
-        if (uidType=="rid" || uidType=="rat") {
+      if (window.arguments[0].ownKey) {
+        var uidType = selValue.substr(0,3);
+        if (uidType=="uat" || uidType=="rat" || uidType=="rid" || selValue.substr(4)=="1") {
+          document.getElementById("setPrimary").setAttribute("disabled", "true");
+        }
+        else {
+          document.getElementById("setPrimary").removeAttribute("disabled");
+        }
+        if (selValue.substr(4)=="1") {
+          document.getElementById("deleteUid").setAttribute("disabled", "true");
           document.getElementById("revokeUid").setAttribute("disabled", "true");
         }
         else {
-          document.getElementById("revokeUid").removeAttribute("disabled");
+          document.getElementById("deleteUid").removeAttribute("disabled");
+          if (uidType=="rid" || uidType=="rat") {
+            document.getElementById("revokeUid").setAttribute("disabled", "true");
+          }
+          else {
+            document.getElementById("revokeUid").removeAttribute("disabled");
+          }
+        }
+      }
+      else {
+        if (selValue.substr(4)=="1") {
+          document.getElementById("deleteUid").setAttribute("disabled", "true");
+        }
+        else {
+          document.getElementById("deleteUid").removeAttribute("disabled");
         }
       }
     }
