@@ -151,7 +151,8 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     TRUST_MARGINAL:  nsIEnigmail.UNTRUSTED_IDENTITY,
                     TRUST_FULLY:     nsIEnigmail.TRUSTED_IDENTITY,
                     TRUST_ULTIMATE:  nsIEnigmail.TRUSTED_IDENTITY,
-                    CARDCTRL: nsIEnigmail.NO_SC_AVAILABLE
+                    CARDCTRL:        nsIEnigmail.NO_SC_AVAILABLE,
+                    SC_OP_FAILURE:   nsIEnigmail.SC_OP_FAILURE
                     };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2003,6 +2004,7 @@ function (errOutput, statusFlagsObj, statusMsgObj) {
       break;
     }
   }
+
 
   DEBUG_LOG("enigmail.js: Enigmail.parseErrorOutput: statusFlags = "+bytesToHex(pack(statusFlags,4))+"\n");
   //DEBUG_LOG("enigmail.js: Enigmail.parseErrorOutput: statusMsg = "+statusMsgObj.value+"\n");
@@ -5742,6 +5744,7 @@ function cardChangePinCallback(inputData, keyEdit, ret) {
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.new.ask") ||
            keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.repeat") ||
+           keyEdit.doCheck(GET_HIDDEN, "passphrase.ask") ||
            keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.new.ask")) {
     ret.exitCode = 0;
     ret.writeTxt = inputData.newPin;

@@ -200,15 +200,16 @@ interface nsIEnigmail : nsISupports
   const long DECRYPTION_FAILED    = 0x010000;
   const long DECRYPTION_OKAY      = 0x020000;
   const long UNTRUSTED_IDENTITY   = 0x040000;
-  const long TRUSTED_IDENTITY     = 0x080000;
-  const long PGP_MIME_SIGNED      = 0x100000;
-  const long PGP_MIME_ENCRYPTED   = 0x200000;
-  const long DISPLAY_MESSAGE      = 0x400000;
-  const long INLINE_KEY           = 0x800000;
-  const long PARTIALLY_PGP        = 0x1000000;
-  const long PHOTO_AVAILABLE      = 0x2000000;
-  const long OVERFLOWED           = 0x4000000;
-  const long NO_SC_AVAILABLE      = 0x8000000;
+  const long TRUSTED_IDENTITY     = 0x00080000;
+  const long PGP_MIME_SIGNED      = 0x00100000;
+  const long PGP_MIME_ENCRYPTED   = 0x00200000;
+  const long DISPLAY_MESSAGE      = 0x00400000;
+  const long INLINE_KEY           = 0x00800000;
+  const long PARTIALLY_PGP        = 0x01000000;
+  const long PHOTO_AVAILABLE      = 0x02000000;
+  const long OVERFLOWED           = 0x04000000;
+  const long NO_SC_AVAILABLE      = 0x08000000;
+  const long SC_OP_FAILURE        = 0x10000000;
 
   wstring decryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,

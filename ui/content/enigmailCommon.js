@@ -1472,7 +1472,7 @@ function EnigObtainKeyList(secretOnly, refresh) {
       return null;
     }
   } catch (ex) {
-    ERROR_LOG("ERROR in enigmailUserSelection: enigLoadKeyList\n");
+    ERROR_LOG("ERROR in enigmailCommon: EnigObtainKeyList\n");
   }
 
   if (typeof(userList) == "string") {
