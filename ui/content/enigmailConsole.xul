@@ -46,31 +46,27 @@
      accesskey="&copyCmd.accesskey;"/>
   </popup>
 </popupset>
-  
-<toolbox>
-  <menubar id="main-menubar" class="chromeclass-menubar"
-           grippytooltiptext="menuBar.tooltip;">
 
-    <menu id="menu_File">
-      <menupopup id="menu_FilePopup">
-        <menuitem id="menu_close"/>
-      </menupopup>
-    </menu>
+<menubar id="main-menubar" grippyhidden="true">
 
-    <menu id="menu_Edit">
-      <menupopup onpopupshowing="UpdateCopyMenu()">
-        <menuitem id="menu_copy2"
-                  label="&copyCmd.label;"
-                  accesskey="&copyCmd.accesskey;"
-                  oncommand="enigConsoleCopy();"/>
-      </menupopup>
-    </menu>
-  
-  </menubar>
+  <menu id="menu_File">
+    <menupopup id="menu_FilePopup">
+      <menuitem id="menu_close"/>
+    </menupopup>
+  </menu>
 
-</toolbox>
-  
-<browser id="contentFrame" type="content-primary" name="contentFrame"
+  <menu id="menu_Edit">
+    <menupopup onpopupshowing="UpdateCopyMenu()">
+      <menuitem id="menu_copy2"
+                label="&copyCmd.label;"
+                accesskey="&copyCmd.accesskey;"
+                oncommand="enigConsoleCopy();"/>
+    </menupopup>
+  </menu>
+
+</menubar>
+
+<browser id="contentFrame" name="contentFrame"
         src="chrome://enigmail/content/enigmailConsole.htm" flex="100%"/>
 
 </window>

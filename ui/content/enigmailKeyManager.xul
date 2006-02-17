@@ -34,11 +34,16 @@
  * GPL.
 -->
 
+<?xul-overlay href="chrome://global/content/globalOverlay.xul"?>
+<?xul-overlay href="chrome://communicator/content/utilityOverlay.xul"?>
+
 <!DOCTYPE window [
-<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
-%brandDTD;
-<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
-%enigMailDTD;
+  <!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+   %brandDTD;
+  <!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+  %enigMailDTD;
+  <!ENTITY % utilDTD SYSTEM "chrome://communicator/locale/utilityOverlay.dtd">
+   %utilDTD;
 ]>
 
 <window id="enigmailKeyManager"
@@ -50,18 +55,23 @@
         windowtype="enigmail:KeyManager"
         persist="screenX screenY width height">
 
-
+  <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyManager.js"/>
 
+  <commandset id="tasksCommands"/>
+  
+  <command id="cmd_close" oncommand="window.close()"/>
+  <command id="cmd_quit"/>
+  
   <keyset id="winKeys">
-    <key id="key_closeWin" key="&enigmail.keyMan.closeWin.key;"
-         oncommand="window.close()" modifiers="accel"/>
     <key id="key_selectAll" key="&enigmail.keyMan.selectAll.key;"
          oncommand="enigmailSelectAllKeys()" modifiers="accel"/>
     <key id="key_delete"
          keycode="VK_DELETE"
          oncommand="enigmailDeleteKey()"/>
+    <key id="key_close"/>
+    <key id="key_quit"/>
   </keyset>
   
   <broadcasterset>
@@ -78,12 +88,13 @@
     <broadcaster id="bcEnableKey" disabled="false" label=""/>
   </broadcasterset>
   
-  <menubar id="mainmenu" grippyhidden="true">
+  <menubar id="main-menubar" grippyhidden="true">
     <menu label="&enigmail.keyMan.fileMenu.label;"
+          id="menu_File"
           accesskey="&enigmail.keyMan.fileMenu.accesskey;">
-      <menupopup onpopupshowing="enigmailKeyMenu()">
+      <menupopup id="menu_FilePopup" onpopupshowing="enigmailKeyMenu()">
 
-				<menuitem label="&enigmail.keyMan.importFromFile.label;"
+			  <menuitem label="&enigmail.keyMan.importFromFile.label;"
 									id="importFromFile"
 									accesskey="&enigmail.keyMan.importFromFile.accesskey;"
 									oncommand="enigmailImportKeysFromFile()"/>
@@ -99,26 +110,24 @@
 									accesskey="&enigmail.keyMan.sendKeys.accesskey;"
 									oncommand="enigCreateKeyMsg()"/>
 
-       <menuseparator/>
+        <menuseparator/>
 
-       <menuitem label="&enigmail.adminSmartCard.label;"
+        <menuitem label="&enigmail.adminSmartCard.label;"
                 id="cardData"
                 accesskey="&enigmail.adminSmartCard.accesskey;"
                 oncommand="EngmailCardDetails()"/>
 
-       <menuseparator/>
+        <menuseparator/>
 
-       <menuitem label="&enigmail.keyMan.reload.label;"
+        <menuitem label="&enigmail.keyMan.reload.label;"
                 id="refreshKeys"
                 accesskey="&enigmail.keyMan.reload.accesskey;"
                 oncommand="enigmailRefreshKeys();"/>
 
-       <menuseparator/>
+        <menuseparator/>
 
-       <menuitem label="&enigmail.keyMan.close.label;"
-                  accesskey="&enigmail.keyMan.close.accesskey;"
-                  key="key_closeWin"
-                  oncommand="window.close()"/>
+        <!-- add Close and Exit menu items -->
+        <menuitem id="menu_close"/>
       </menupopup>
     </menu>
     
