@@ -430,8 +430,6 @@ function enigmailBuildList(refresh) {
         treeChildren.appendChild(treeItem);
    }
 
-   gUserList.appendChild(treeChildren);
-
    // Build up list of not found recipients
    var aNotFound=new Array();
    toAddrList = toAddr.split(/[, ]+/);

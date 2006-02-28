@@ -130,7 +130,6 @@ function enigmailBuildList(refresh) {
     if (treeItem)
       treeChildren.appendChild(treeItem);
   }
-  gUserList.appendChild(treeChildren);
   
   // select last selected key
   if (selectedItems.length>0) {
