@@ -78,7 +78,7 @@ function enigmailKeyManagerLoad() {
   gSearchInput = document.getElementById("filterKey");
   window.enigIpcRequest = null;
 
-  document.getElementById("statusText").value="Loading keys, please wait ...";
+  document.getElementById("statusText").value = EnigGetString("keyMan.loadingKeys");
   document.getElementById("progressBar").removeAttribute("collapsed");
   window.setTimeout(loadkeyList, 100);
 }
