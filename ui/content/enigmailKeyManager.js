@@ -71,17 +71,30 @@ var gSearchInput = null;
 
 
 function enigmailKeyManagerLoad() {
-   DEBUG_LOG("enigmailKeyManager.js: Load\n");
-   gUserList = document.getElementById("pgpKeyList");
-   gFilterBox = document.getElementById("filterKey");
-   gClearButton = document.getElementById("clearFilter");
-   gSearchInput = document.getElementById("filterKey");
-   window.enigIpcRequest = null;
-   enigmailBuildList(false);
+  DEBUG_LOG("enigmailKeyManager.js: enigmailKeyManagerLoad\n");
+  gUserList = document.getElementById("pgpKeyList");
+  gFilterBox = document.getElementById("filterKey");
+  gClearButton = document.getElementById("clearFilter");
+  gSearchInput = document.getElementById("filterKey");
+  window.enigIpcRequest = null;
+
+  document.getElementById("statusText").value="Loading keys, please wait ...";
+  document.getElementById("progressBar").removeAttribute("collapsed");
+  window.setTimeout(loadkeyList, 100);
+}
+
+
+function loadkeyList() {
+  DEBUG_LOG("enigmailKeyManager.js: loadkeyList\n");
+
+  enigmailBuildList(false);
+  document.getElementById("statusText").value=" ";
+  document.getElementById("progressBar").setAttribute("collapsed", "true");
 }
 
 
 function enigmailRefreshKeys() {
+  DEBUG_LOG("enigmailKeyManager.js: enigmailRefreshKeys\n");
   var keyList = enigmailGetSelectedKeys();
   gEnigLastSelectedKeys = [];
   for (var i=0; i<keyList.length; i++) {
@@ -97,8 +110,7 @@ function enigmailRefreshKeys() {
 
 
 function enigmailBuildList(refresh) {
-  DEBUG_LOG("enigmailUserSelection.js: enigmailBuildList\n");
-
+  DEBUG_LOG("enigmailKeyManager.js: enigmailBuildList\n");
   var keyListObj = {};
 
   EnigLoadKeyList(refresh, keyListObj);
