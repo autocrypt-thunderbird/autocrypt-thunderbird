@@ -48,6 +48,7 @@
 #include "nsNetCID.h"
 #include "nsIPrompt.h"
 #include "nsIMsgWindow.h"
+#include "nsIDOMWindow.h"
 #include "nsIMimeMiscStatus.h"
 #include "nsIEnigMimeHeaderSink.h"
 #include "nsIThread.h"
@@ -139,7 +140,9 @@ nsEnigMimeVerify::~nsEnigMimeVerify()
 ///////////////////////////////////////////////////////////////////////////////
 
 NS_IMETHODIMP
-nsEnigMimeVerify::Init(nsIURI* aURI, nsIMsgWindow* msgWindow,
+nsEnigMimeVerify::Init(nsIDOMWindow* window,
+                       nsIURI* aURI,
+                       nsIMsgWindow* msgWindow,
                        const nsACString& msgUriSpec,
                        PRBool rfc2015,
                        PRBool isSubPart)
@@ -199,12 +202,14 @@ nsEnigMimeVerify::Init(nsIURI* aURI, nsIMsgWindow* msgWindow,
   mOuterMimeListener = do_CreateInstance(NS_ENIGMIMELISTENER_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
 
-  rv = mOuterMimeListener->Init(mFirstPartListener, nsnull,
-                                MAX_HEADER_BYTES, PR_TRUE, PR_FALSE, PR_FALSE);
-  if (NS_FAILED(rv)) return rv;
-
   if (isSubPart)
     mOuterMimeListener->SetSubPartTreatment(PR_TRUE);
+
+  rv = mOuterMimeListener->Init(mFirstPartListener, nsnull,
+                                MAX_HEADER_BYTES, PR_TRUE, PR_FALSE, PR_FALSE);
+  
+  if (NS_FAILED(rv)) return rv;
+
   // Initiate asynchronous loading of URI
   rv = channel->AsyncOpen( mOuterMimeListener, nsnull );
   if (NS_FAILED(rv))

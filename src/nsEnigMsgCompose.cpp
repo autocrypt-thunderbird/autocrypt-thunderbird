@@ -453,7 +453,7 @@ nsEnigMsgCompose::Init()
                                         mRecipients.get(),
                                         mHashAlgorithm.get(),
                                         mSendFlags,
-                NS_STATIC_CAST(nsIStreamListener*, mWriter),
+                                        NS_STATIC_CAST(nsIStreamListener*, mWriter),
                                         noProxy,
                                         getter_Copies(errorMsg),
                                         getter_AddRefs(mPipeTrans) );
@@ -461,7 +461,7 @@ nsEnigMsgCompose::Init()
     return rv;
 
   if (!mPipeTrans)
-    return NS_ERROR_FAILURE;
+    return NS_OK;
 
   rv = enigmailSvc->StripWhitespace(mSendFlags,
                                     &mStripWhitespace);
@@ -919,6 +919,8 @@ nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
 
   rv = Init();
   if (NS_FAILED(rv)) return rv;
+  
+  if (!mPipeTrans) return NS_OK;
 
   if (encapsulate) {
     // RFC2015 crypto encapsulation for headers

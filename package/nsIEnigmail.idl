@@ -439,6 +439,7 @@ interface nsIEnigmail : nsISupports
                      in string adminPin,
                      in nsIEnigMimeReadCallback requestObserver,
                      out wstring errorMsg);
+                     
 };
 
 %{C++

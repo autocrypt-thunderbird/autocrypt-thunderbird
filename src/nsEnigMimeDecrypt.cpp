@@ -233,6 +233,8 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
 {
   // Enigmail stuff
   nsresult rv;
+  nsCOMPtr<nsIThread> myThread;
+  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
 
   nsCAutoString uriSpec("");
 

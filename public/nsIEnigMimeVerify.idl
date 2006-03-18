@@ -39,6 +39,7 @@
 
 interface nsIURI;
 interface nsIMsgWindow;
+interface nsIDOMWindow;
 
 %{C++
 #define NS_ENIGMIMEVERIFY_CLASSNAME "Enigmail Mime Verify"
@@ -57,7 +58,9 @@ interface nsIMsgWindow;
 [scriptable, uuid(847b3a90-7ab1-11d4-8f02-006008948af5)]
 interface nsIEnigMimeVerify : nsISupports
 {
-  void init(in nsIURI uri, in nsIMsgWindow msgWindow,
+  void init(in nsIDOMWindow window,
+            in nsIURI uri,
+            in nsIMsgWindow msgWindow,
             in AUTF8String msgUriSpec,
             in boolean rfc2015,
             in boolean isSubPart);

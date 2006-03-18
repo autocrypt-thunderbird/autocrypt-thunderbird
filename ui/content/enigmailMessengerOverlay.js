@@ -632,8 +632,8 @@ function enigMessageDecrypt(event, isAuto) {
     if (mailNewsUrl) {
       const ENIG_ENIGMIMEVERIFY_CONTRACTID = "@mozilla.org/enigmail/mime-verify;1";
       var verifier = Components.classes[ENIG_ENIGMIMEVERIFY_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeVerify);
-
-      verifier.init(mailNewsUrl, msgWindow, msgUriSpec,
+      
+      verifier.init(window, mailNewsUrl, msgWindow, msgUriSpec,
                     true, enableSubpartTreatment);
 
       return;

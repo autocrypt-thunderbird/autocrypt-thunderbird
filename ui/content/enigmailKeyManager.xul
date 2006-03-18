@@ -347,31 +347,37 @@
           <splitter class="tree-splitter"/>
           <treecol id="keyCol" style="width:90px"
                    label="&enigmail.keyId.label;"
+                   flex="0"
                    persist="width,hidden"/>
           <splitter class="tree-splitter"/>
           <treecol id="typeCol" style="width:70px"
                    label="&enigmail.keyMan.keyType.label;"
+                   flex="0"
                    persist="width,hidden"/>
           <splitter class="tree-splitter"/>
           <treecol id="validityCol" style="width:70px"
                    label="&enigmail.keyMan.calcTrust.label;"
+                   flex="0"
                    persist="width,hidden"/>
           <splitter class="tree-splitter"/>
           <treecol id="trustCol" style="width:70px"
                    label="&enigmail.keyMan.ownerTrust.label;"
+                   flex="0"
                    persist="width,hidden"/>
           <splitter class="tree-splitter"/>
           <treecol id="expCol" style="width:70px"
                    label="&enigmail.keyExpiry.label;"
+                   flex="0"
                    persist="width,hidden"/>
           <splitter class="tree-splitter"/>
           <treecol id="fprCol" style="width:70px"
                    label="&enigmail.keyMan.fingerprint.label;"
+                   flex="0"
                    hidden="true"
                    persist="width,hidden"/>
         </treecols>
-  
-        <treechildren id="pgpKeyListChildren"
+
+        <treechildren id="pgpKeyListChildren" properties=""
                       context="ctxmenu"/>
   
       </tree>
