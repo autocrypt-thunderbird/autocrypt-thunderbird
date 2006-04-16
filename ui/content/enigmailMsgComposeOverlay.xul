@@ -386,6 +386,12 @@
     </toolbarbutton>
   </toolbarpalette>
 
+  <!-- Thunderbird 2.0 -->
+  <toolbar id="composeToolbar2"
+           defaultset="button-send,spacer,button-address,spacer,spellingButton,spacer,button-attach,button-enigmail-send,spacer,button-security,spacer,button-save">
+  </toolbar>
+
+  <!-- Thunderbird 1.0 - 1-5 -->
   <toolbar id="composeToolbar"
           defaultset="button-send,spacer,button-address,spacer,spellingButton,spacer,button-attach,button-enigmail-send,spacer,button-security,spacer,button-save,spring,throbber-box">
   </toolbar>

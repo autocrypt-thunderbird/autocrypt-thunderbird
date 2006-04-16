@@ -63,7 +63,7 @@
 
       <menupopup id="menu_EnigmailPopup"
         onpopupshowing="enigUpdateOptionsDisplay();">
-             
+
         <menuitem id="enigmail_decryptverify"
              label="&enigmail.decryptverify.label;"
              accesskey="&enigmail.decryptverify.accesskey;"
@@ -133,7 +133,7 @@
             accesskey="&enigmail.editRules.accesskey;"
             oncommand="EnigRulesEditor();"/>
 
-        
+
         <menuitem id="enigmail_keymgmt"
              label="&enigmail.keyManWindow.label;"
              accesskey="&enigmail.keyManWindow.accesskey;"
@@ -155,14 +155,14 @@
                  label="&enigmail.viewconsole.label;"
                  accesskey="&enigmail.viewconsole.accesskey;"
                  oncommand="EnigViewConsole();" />
-    
+
             <menuitem id="enigmail_debug_log"
                  label="&enigmail.viewdebuglog.label;"
                  accesskey="&enigmail.viewdebuglog.accesskey;"
                  oncommand="EnigViewDebugLog();" />
           </menupopup>
         </menu>
-        
+
         <menuseparator/>
         <menuitem id="enigmail_upgrade"
              label="&enigmail.upgrade.label;"
@@ -194,7 +194,7 @@
 
       <menupopup id="menu_EnigmailPopup"
         onpopupshowing="enigUpdateOptionsDisplay();">
-             
+
         <menuitem id="enigmail_decryptverify"
              label="&enigmail.decryptverify.label;"
              accesskey="&enigmail.decryptverify.accesskey;"
@@ -264,7 +264,7 @@
             accesskey="&enigmail.editRules.accesskey;"
             oncommand="EnigRulesEditor();"/>
 
-        
+
         <menuitem id="enigmail_keymgmt"
              label="&enigmail.keyManWindow.label;"
              accesskey="&enigmail.keyManWindow.accesskey;"
@@ -286,14 +286,14 @@
                  label="&enigmail.viewconsole.label;"
                  accesskey="&enigmail.viewconsole.accesskey;"
                  oncommand="EnigViewConsole();" />
-    
+
             <menuitem id="enigmail_debug_log"
                  label="&enigmail.viewdebuglog.label;"
                  accesskey="&enigmail.viewdebuglog.accesskey;"
                  oncommand="EnigViewDebugLog();" />
           </menupopup>
         </menu>
-        
+
         <menuseparator/>
 
         <menuitem id="enigmail_help"
@@ -345,6 +345,12 @@
   </toolbarpalette>
 
   <!-- override default set to include enigmail decrypt icon -->
+  <!-- Thunderbird 2.0 -->
+  <toolbar id="mail-bar2"
+           defaultset="button-getmsg,button-newmsg,button-address,separator,button-enigmail-decrypt,spacer,button-reply,button-replyall,button-forward,separator,button-delete,button-junk,separator,button-print,button-stop,spring,search-container">
+  </toolbar>
+
+  <!-- Thunderbird 1.0 - 1.5 -->
   <toolbar id="mail-bar"
            defaultset="button-getmsg,button-newmsg,button-address,spacer,button-enigmail-decrypt,spacer,spacer,button-reply,button-replyall,button-forward,spacer,spacer,spacer,button-delete,button-junk,button-print,button-stop,spring,throbber-box">
   </toolbar>
@@ -358,23 +364,23 @@
                class="collapsedHeaderViewButton" onclick="enigToggleHeaderView();"
                state="false" persist="state class"/>
         <spacer flex="1"/>
-        <label class="headerName" 
+        <label class="headerName"
             id="enigmailStatusHdr"
             value="&enigmail.openpgp.label;: "/>
       </hbox>
       <vbox flex="1" pack="start">
-        <textbox flex="1" readonly="true" 
+        <textbox flex="1" readonly="true"
             id="enigmailStatusText"
                class="plain enigmailHeaderValue"/>
-        <textbox flex="1" readonly="true" 
+        <textbox flex="1" readonly="true"
                  id="expandedEnigmailStatusText"
                  class="plain enigmailHeaderValue"
-                 collapsed="true" display="false" state="false" 
+                 collapsed="true" display="false" state="false"
                  persist="display"/>
       </vbox>
     </hbox>
   </vbox>
-  
+
 
 
   <popup id="attachmentListContext" onpopupshowing="return enigOnShowAttachmentContextMenu();">
