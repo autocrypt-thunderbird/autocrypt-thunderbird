@@ -2968,7 +2968,8 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
 
   var statusMsg = statusMsgObj.value;
   exitCode = this.fixExitCode(exitCode, statusFlagsObj.value);
-  if ((exitCode == 0) && !noOutput && !outputLen) {
+  if ((exitCode == 0) && !noOutput && !outputLen &&
+      ((statusFlagsObj.value & (gStatusFlags.DECRYPTION_OKAY | gStatusFlags.GOODSIG)) == 0)) {
     exitCode = -1;
   }
 

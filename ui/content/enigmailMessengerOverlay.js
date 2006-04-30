@@ -764,6 +764,10 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
 
     exitCode = exitCodeObj.value;
     newSignature = signatureObj.value;
+    
+    if (plainText == "" && exitCode ==0) {
+      plainText = " ";
+    }
 
     statusFlags = statusFlagsObj.value;
 

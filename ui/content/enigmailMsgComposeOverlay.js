@@ -2038,6 +2038,10 @@ function enigDecryptQuote(interactive) {
     }
   }
 
+  if (blockType == "MESSAGE" && exitCode == 0 && plainText.length==0) {
+    plainText = " ";
+  }
+
   if (!plainText) {
     if (blockType != "SIGNED MESSAGE")
       return;
