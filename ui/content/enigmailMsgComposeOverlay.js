@@ -2216,14 +2216,12 @@ function EnigEditorInsertAsQuotation(plainText) {
     var appInfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
     var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"].getService(Components.interfaces.nsIVersionComparator);
       
-    if (vc.compare("1.8.0.1", appInfo.platformVersion) >= 0) {
-      //mailEditor.beginTransaction();
+    if (vc.compare("1.8.0.2", appInfo.platformVersion) <= 0) {
+      // TB 1.5.0.2 and newer
       mailEditor.insertAsQuotation(plainText);
-      //mailEditor.endTransaction();
-      //mailEditor.incrementModificationCount(1);
     }
     else {
-      // use pasteAsQuotation because inertAsQuotation is buggy with TB 1.5.0
+      // use pasteAsQuotation because inertAsQuotation is buggy with TB 1.5.0.0
       var clipBoard = Components.classes[ENIG_CLIPBOARD_CONTRACTID].getService(Components.interfaces.nsIClipboard);
       // get the clipboard content
       var transferable = Components.classes[ENIG_TRANSFERABLE_CONTRACTID].createInstance(Components.interfaces.nsITransferable);
