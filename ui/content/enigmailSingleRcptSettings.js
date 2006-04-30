@@ -277,8 +277,12 @@ function enigSetKeys(keyList) {
       keyStart+= userListTxt.substr(keyStart).indexOf("\nuid:");
       var keyEnd=userListTxt.substring(keyStart+2).indexOf("\n")+2;
       var userDescList=userListTxt.substr(keyStart,keyEnd).split(/:/);
+      var userDesc = "";
+      if (userDescList.length >= 9) {
+        userDesc = userDescList[9]
+      }
      
-      encryptionList.appendItem("0x"+keyList[i].substr(10,8)+" ("+EnigConvertGpgToUnicode(userDescList[9].replace(/\\e3A/g, ":"))+")",
+      encryptionList.appendItem("0x"+keyList[i].substr(10,8)+" ("+EnigConvertGpgToUnicode(userDesc.replace(/\\e3A/g, ":"))+")",
                                 keyList[i]);
     }
   }
