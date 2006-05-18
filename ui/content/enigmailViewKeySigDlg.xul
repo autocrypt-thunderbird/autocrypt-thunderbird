@@ -16,7 +16,8 @@
   are Copyright (C) 2004 Patrick Brunschwig.
   All Rights Reserved.
 
-  Contributor(s):
+  Contributor(s): 
+    * Russell Francis <rf358197@ohio.edu>
 
   Alternatively, the contents of this file may be used under the
   terms of the GNU General Public License (the "GPL"), in which case
@@ -285,6 +286,37 @@
       row.appendChild(cell);
       return cell;
     }
+
+    function getSelectedRows() 
+    {
+      var sigList = document.getElementById( "keySigList" );
+      var numRanges = sigList.view.selection.getRangeCount();
+      var selectedRows = new Array();
+      var start = new Object();
+      var end = new Object();
+
+      for( var i = 0; i < numRanges; ++i )
+      {
+        sigList.view.selection.getRangeAt( i, start, end );
+        for( var j = start.value; j <= end.value; ++j )
+        {
+          selectedRows.push( j );
+        }
+      }
+
+      return( selectedRows );
+    }
+
+    function getRowByIndex( index )
+    {
+      var sigList = document.getElementById( "keySigList" );
+      var item = sigList.view.getItemAtIndex( index );
+      if( item )
+      {
+        return item.firstChild;
+      }
+      return null;
+    }
     
     function getCurrRow() {
       var sigList = document.getElementById("keySigList");
@@ -295,22 +327,44 @@
       return null;
     }
     
-    function showSigCtxMenu() {
-      var row = getCurrRow();
-      if (row.hasAttribute("keyID")) {
-        if (row.hasAttribute("noKey")) {
-          document.getElementById("bcViewDetails").setAttribute("disabled", "true");
-          document.getElementById("ctxImportKey").setAttribute("disabled", "false");
-        }
-        else {
-          document.getElementById("bcViewDetails").setAttribute("disabled", "false");
-          document.getElementById("ctxImportKey").setAttribute("disabled", "true");
+    function showSigCtxMenu() 
+    {
+      var viewDetailsDisabled = "true";
+      var importKeyDisabled = "true";
+      var selectedRows = getSelectedRows();
+
+      if( selectedRows.length == 1 )
+      {
+        var row = getRowByIndex( selectedRows[0] );
+        if( row.hasAttribute( "keyID" ) )
+        {
+          if( row.hasAttribute( "noKey" ) )
+          {
+            importKeyDisabled = "false";
+          }
+          else
+          {
+            viewDetailsDisabled = "false";
+          }
         }
       }
-      else {
-        document.getElementById("bcViewDetails").setAttribute("disabled", "true");
-        document.getElementById("ctxImportKey").setAttribute("disabled", "true");
+      else 
+      {
+        /* We have more than one row. If any of them are importable, enable
+         * the import menuitem.
+         */
+        for( var i = 0; i < selectedRows.length; ++i )
+        {
+          var row = getRowByIndex( selectedRows[i] );
+          if( row.hasAttribute( "keyID" ) && row.hasAttribute( "noKey" ) )
+          {
+            importKeyDisabled = "false";
+            break;
+          }
+        }
       }
+      document.getElementById( "bcViewDetails" ).setAttribute( "disabled", viewDetailsDisabled );
+      document.getElementById( "ctxImportKey" ).setAttribute( "disabled", importKeyDisabled );
     }
     
     function listSig() {
@@ -340,21 +394,29 @@
       };
       window.openDialog("chrome://enigmail/content/enigmailKeyDetailsDlg.xul",
             "", "dialog,modal,centerscreen", inputObj);
-
     }
     
-    function importKey() {
-      var row = getCurrRow();
-      var inputObj = {
-        searchList : ["0x"+row.getAttribute("keyID").substr(-8,8)]
-      };
+    function importKey() 
+    {
       var resultObj = new Object();
+      var inputObj = new Object();
+      inputObj.searchList = new Array();
+      var selectedRows = getSelectedRows();
+      for( var i = 0; i < selectedRows.length; ++i )
+      {
+        var row = getRowByIndex( selectedRows[i] );
+        if( row.hasAttribute( "keyID" ) && row.hasAttribute( "noKey" ) )
+        {
+          inputObj.searchList.push( "0x" + row.getAttribute( "keyID" ).substr(-8,8) );
+        }
+      }
 
-      EnigDownloadKeys(inputObj, resultObj);
-
-      if (resultObj.importedKeys > 0) {
+      EnigDownloadKeys( inputObj, resultObj );
+      if( resultObj.importedKeys > 0 )
+      {
         var treeChildren = document.getElementById("keySigListChildren");
-        while (treeChildren.firstChild) {
+        while (treeChildren.firstChild) 
+        {
           treeChildren.removeChild(treeChildren.firstChild);
         }
         var keyListObj = {};
