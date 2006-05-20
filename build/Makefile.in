@@ -55,6 +55,14 @@ MODULE_NAME	= EnigModule
 
 IS_COMPONENT	= 1
 
+MOZILLA_VERSION_PARTS = $(subst ., ,$(MOZILLA_VERSION))
+MOZILLA_MAJOR_VERSION = $(firstword $(MOZILLA_VERSION_PARTS))
+TMP_VAR = $(word 2,$(MOZILLA_VERSION_PARTS))
+MOZILLA_MINOR_VERSION = $(shell echo $(TMP_VAR)|sed 's/[a-z].*//')
+
+DEFINES         += -DMOZILLA_MAJOR_VERSION=$(MOZILLA_MAJOR_VERSION)
+DEFINES         += -DMOZILLA_MINOR_VERSION=$(MOZILLA_MINOR_VERSION)
+
 ifdef USE_XPCOM_GLUE
 # Ensure that the xpcom classes that we build
 # do not export themselves

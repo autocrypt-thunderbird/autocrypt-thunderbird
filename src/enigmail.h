@@ -9,11 +9,11 @@
  * implied. See the MPL for the specific language governing
  * rights and limitations under the MPL.
  *
- * The Original Code is ipc.
+ * The Original Code is Enigmail.
  *
  * The Initial Developer of the Original Code is Patrick Brunschwig
- * Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
- * are Copyright (C) 2005 Patrick Brunschwig. All Rights Reserved.
+ * Portions created by Patrick Brunschwig <patrick@mozilla-enigmail.org>
+ * are Copyright (C) 2006 Patrick Brunschwig. All Rights Reserved.
  *
  * Contributor(s):
  *
@@ -30,36 +30,28 @@
  * GPL.
  */
 
-#ifndef ipc_h__
-#define ipc_h__
+#ifndef enigmail_h__
+#define enigmail_h__
 
 #define MOZILLA_INTERNAL_API
 
 #if MOZILLA_MAJOR_VERSION==1 && MOZILLA_MINOR_VERSION<9
-#define _IPC_MOZILLA_1_8
-
-// some compatibility re-definitions
-#define NS_PROXY_SYNC PROXY_SYNC
-#define NS_PROXY_ASYNC PROXY_ASYNC
-#define NS_PROXY_ALWAYS PROXY_ALWAYS
-#define NS_PROXY_TO_CURRENT_THREAD NS_CURRENT_EVENTQ
-#define NS_PROXY_TO_MAIN_THREAD NS_UI_THREAD_EVENTQ
-
+#define _ENIG_MOZILLA_1_8
 #else
-#define _IPC_MOZILLA_1_9
+#define _ENIG_MOZILLA_1_9
 #endif
 
 #ifdef FORCE_PR_LOG
 #include "nsIThread.h"
-#ifdef _IPC_MOZILLA_1_8
+#ifdef _ENIG_MOZILLA_1_8
 // Mozilla 1.8
-#define IPC_GET_THREAD(myThread) nsIThread::GetCurrent(getter_AddRefs(myThread))
+#define ENIG_GET_THREAD(myThread) nsIThread::GetCurrent(getter_AddRefs(myThread))
 
 #else
 // Mozilla 1.9
 #include "nsThreadUtils.h"
 
-#define IPC_GET_THREAD(myThread) NS_GetCurrentThread(getter_AddRefs(myThread))
+#define ENIG_GET_THREAD(myThread) NS_GetCurrentThread(getter_AddRefs(myThread))
 
 #endif
 #endif

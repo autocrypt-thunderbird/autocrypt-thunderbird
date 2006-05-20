@@ -3,20 +3,20 @@
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
  * the MPL at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the MPL is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the MPL for the specific language governing
  * rights and limitations under the MPL.
- * 
+ *
  * The Original Code is protoZilla.
- * 
+ *
  * The Initial Developer of the Original Code is Ramalingam Saravanan.
  * Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
  * Copyright (C) 2000 Ramalingam Saravanan. All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
  * the provisions of the GPL are applicable instead of
@@ -30,7 +30,7 @@
  * GPL.
  */
 
-// Logging of debug output 
+// Logging of debug output
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
@@ -120,7 +120,7 @@ nsPipeFilterListener::nsPipeFilterListener()
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeFilterListener:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -132,7 +132,7 @@ nsPipeFilterListener::~nsPipeFilterListener()
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeFilterListener:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -764,7 +764,7 @@ nsPipeFilterListener::Read(char* buf, PRUint32 count,
   return NS_OK;
 }
 
-NS_IMETHODIMP 
+NS_IMETHODIMP
 nsPipeFilterListener::ReadSegments(nsWriteSegmentFun writer,
                                  void * aClosure, PRUint32 count,
                                  PRUint32 *readCount)
@@ -785,7 +785,7 @@ nsPipeFilterListener::ReadSegments(nsWriteSegmentFun writer,
     readyCount = ((PRUint32) avail > count) ? count : avail;
 
     rv = writer(NS_STATIC_CAST(nsIInputStream*, this),
-                aClosure, mStreamBuf+mStreamOffset, 
+                aClosure, mStreamBuf+mStreamOffset,
                 mStreamOffset, readyCount, &writeCount);
     if (NS_FAILED(rv) || !writeCount)
       return rv;
@@ -804,7 +804,7 @@ nsPipeFilterListener::ReadSegments(nsWriteSegmentFun writer,
   return NS_OK;
 }
 
-NS_IMETHODIMP 
+NS_IMETHODIMP
 nsPipeFilterListener::IsNonBlocking(PRBool *aNonBlocking)
 {
   DEBUG_LOG(("nsPipeFilterListener::IsNonBlocking: \n"));
@@ -813,7 +813,7 @@ nsPipeFilterListener::IsNonBlocking(PRBool *aNonBlocking)
   return NS_OK;
 }
 
-NS_IMETHODIMP 
+NS_IMETHODIMP
 nsPipeFilterListener::Close()
 {
   DEBUG_LOG(("nsPipeFilterListener::Close: (%p)\n", this));

@@ -3,20 +3,20 @@
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
  * the MPL at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the MPL is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the MPL for the specific language governing
  * rights and limitations under the MPL.
- * 
+ *
  * The Original Code is protoZilla.
- * 
+ *
  * The Initial Developer of the Original Code is Ramalingam Saravanan.
  * Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
  * Copyright (C) 2000 Ramalingam Saravanan. All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
  * the provisions of the GPL are applicable instead of
@@ -30,7 +30,7 @@
  * GPL.
  */
 
-// Logging of debug output 
+// Logging of debug output
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
@@ -114,7 +114,7 @@ nsIPCBuffer::nsIPCBuffer()
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsIPCBuffer:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -126,7 +126,7 @@ nsIPCBuffer::~nsIPCBuffer()
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsIPCBuffer:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -159,10 +159,12 @@ nsIPCBuffer::Finalize(PRBool destructor)
     self = this;
   }
 
+#ifdef _IPC_MOZILLA_1_8
   if (mPipeThread) {
     // Interrupt thread; may fail
     mPipeThread->Interrupt();
   }
+#endif
 
   // Close write pipe
   if (mPipeWrite) {
@@ -241,7 +243,7 @@ nsIPCBuffer::OpenURI(nsIURI* aURI, PRInt32 maxBytes, PRBool synchronous,
     return rv;
 
   nsCOMPtr<nsISupports> ctxt = do_QueryInterface(aURI);
- 
+
   if (!synchronous) {
     // Initiate asynchronous loading of URI
     rv = channel->AsyncOpen( (nsIStreamListener*) this, ctxt );
@@ -571,7 +573,7 @@ nsIPCBuffer::Write(const char* str)
   PRUint32 len = strlen(str);
   if (!len)
     return NS_OK;
-  
+
   return WriteBuf(str, len);
 }
 
@@ -652,7 +654,12 @@ nsIPCBuffer::Join()
     }
   }
 
+#ifdef _IPC_MOZILLA_1_8
   rv = mPipeThread->Join();
+#else
+  rv = mPipeThread->Shutdown();
+#endif
+
   if (NS_FAILED(rv))
     return rv;
 
@@ -683,8 +690,13 @@ nsIPCBuffer::GetFileDesc(IPCFileDesc* *_retval)
     }
 
     // Spin up a new thread to handle STDOUT polling
+#ifdef _IPC_MOZILLA_1_8
     PRThreadState threadState = PR_JOINABLE_THREAD;
     rv = NS_NewThread(getter_AddRefs(mPipeThread), this, 0, threadState);
+#else
+    rv = NS_NewThread(getter_AddRefs(mPipeThread), this);
+#endif
+
     if (NS_FAILED(rv))
       return rv;
   }
@@ -794,7 +806,7 @@ nsIPCBuffer::Run()
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsIPCBuffer::Run: myThread=%p\n", myThread.get()));
 #endif
 
@@ -884,7 +896,7 @@ nsIPCBuffer::Read(char* buf, PRUint32 count,
   return NS_OK;
 }
 
-NS_IMETHODIMP 
+NS_IMETHODIMP
 nsIPCBuffer::ReadSegments(nsWriteSegmentFun writer,
                           void * aClosure, PRUint32 count,
                           PRUint32 *readCount)
@@ -905,7 +917,7 @@ nsIPCBuffer::ReadSegments(nsWriteSegmentFun writer,
       readyCount = ((PRUint32) avail > count) ? count : avail;
 
       rv = writer(NS_STATIC_CAST(nsIInputStream*, this),
-                  aClosure, mByteBuf.get()+mStreamOffset, 
+                  aClosure, mByteBuf.get()+mStreamOffset,
                   mStreamOffset, readyCount, &writeCount);
       if (NS_FAILED(rv) || !writeCount)
         return rv;
@@ -930,7 +942,7 @@ nsIPCBuffer::ReadSegments(nsWriteSegmentFun writer,
       }
 
       rv = writer(NS_STATIC_CAST(nsIInputStream*, this),
-                  aClosure, buf, 
+                  aClosure, buf,
                   mStreamOffset, readyCount, &writeCount);
       if (NS_FAILED(rv) || !writeCount)
         return rv;
@@ -951,7 +963,7 @@ nsIPCBuffer::ReadSegments(nsWriteSegmentFun writer,
   return NS_OK;
 }
 
-NS_IMETHODIMP 
+NS_IMETHODIMP
 nsIPCBuffer::IsNonBlocking(PRBool *aNonBlocking)
 {
   DEBUG_LOG(("nsIPCBuffer::IsNonBlocking: \n"));
@@ -960,7 +972,7 @@ nsIPCBuffer::IsNonBlocking(PRBool *aNonBlocking)
   return NS_OK;
 }
 
-NS_IMETHODIMP 
+NS_IMETHODIMP
 nsIPCBuffer::Close()
 {
   DEBUG_LOG(("nsIPCBuffer::Close: \n"));

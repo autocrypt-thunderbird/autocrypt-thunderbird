@@ -3,20 +3,20 @@
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
  * the MPL at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the MPL is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the MPL for the specific language governing
  * rights and limitations under the MPL.
- * 
+ *
  * The Original Code is protoZilla.
- * 
+ *
  * The Initial Developer of the Original Code is Ramalingam Saravanan.
  * Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
  * Copyright (C) 2000 Ramalingam Saravanan. All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
  * the provisions of the GPL are applicable instead of
@@ -32,7 +32,7 @@
 
 // NOTE: nsPipeChannel is not a thread-safe class
 
-// Logging of debug output 
+// Logging of debug output
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
@@ -53,6 +53,10 @@
 
 #include "nsMimeTypes.h"
 #include "nsIMIMEService.h"
+
+#ifndef _IPC_MOZILLA_1_8
+#include "nsXPCOMCIDInternal.h"
+#endif
 
 #include "nsPipeChannel.h"
 
@@ -164,9 +168,9 @@ nsPipeChannel::Finalize(PRBool destructor)
 // --------------------------------------------------------------------------
 //
 
-NS_IMPL_THREADSAFE_ISUPPORTS5(nsPipeChannel, 
-                              nsIPipeChannel, 
-                              nsIChannel, 
+NS_IMPL_THREADSAFE_ISUPPORTS5(nsPipeChannel,
+                              nsIPipeChannel,
+                              nsIChannel,
                               nsIRequest,
                               nsIStreamListener,
                               nsIPipeTransportHeaders)
@@ -481,15 +485,15 @@ nsPipeChannel::SetNotificationCallbacks(nsIInterfaceRequestor* aNotificationCall
     if (NS_FAILED(rv)) return NS_OK;        // don't need a progress event sink
 
     // Now generate a proxied event sink
-    nsCOMPtr<nsIProxyObjectManager> proxyMgr =  
+    nsCOMPtr<nsIProxyObjectManager> proxyMgr =
                                  do_GetService(NS_XPCOMPROXY_CONTRACTID, &rv);
 
     if (NS_FAILED(rv)) return rv;
-        
-    rv = proxyMgr->GetProxyForObject(NS_UI_THREAD_EVENTQ, // primordial thread
+
+    rv = proxyMgr->GetProxyForObject(NS_PROXY_TO_MAIN_THREAD, // primordial thread
                                      NS_GET_IID(nsIProgressEventSink),
                                      sink,
-                                     PROXY_ASYNC | PROXY_ALWAYS,
+                                     NS_PROXY_ASYNC | NS_PROXY_ALWAYS,
                                      getter_AddRefs(mProgress));
   }
 
@@ -497,7 +501,7 @@ nsPipeChannel::SetNotificationCallbacks(nsIInterfaceRequestor* aNotificationCall
 }
 
 
-NS_IMETHODIMP 
+NS_IMETHODIMP
 nsPipeChannel::GetSecurityInfo(nsISupports * *aSecurityInfo)
 {
 
@@ -524,8 +528,16 @@ nsPipeChannel::AsyncOpen(nsIStreamListener *listener, nsISupports *ctxt)
   DEBUG_LOG(("nsPipeChannel::AsyncOpen:\n"));
 
   if (listener) {
-    rv = NS_NewAsyncStreamListener(getter_AddRefs(mListener), 
+#ifdef _IPC_MOZILLA_1_8
+    rv = NS_NewAsyncStreamListener(getter_AddRefs(mListener),
                                    listener, nsnull);
+#else
+    rv = NS_GetProxyForObject(nsnull /* will that work?? */,
+                              NS_GET_IID(nsIStreamListener),
+                              listener,
+                              NS_PROXY_ASYNC | NS_PROXY_ALWAYS,
+                              getter_AddRefs(mListener));
+#endif
     if (NS_FAILED(rv)) return rv;
   }
 
@@ -547,7 +559,7 @@ nsPipeChannel::OnStartRequest(nsIRequest *aRequest, nsISupports *aContext)
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeChannel::OnStartRequest: myThread=%p\n", myThread.get()));
 #endif
 
@@ -575,7 +587,7 @@ nsPipeChannel::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext,
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeChannel::OnStopRequest: myThread=%p\n", myThread.get()));
 #endif
 
@@ -612,7 +624,7 @@ nsPipeChannel::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext,
         statusStr.Assign(NS_ConvertUTF8toUTF16(urlSpec));
     }
 
-    rv = mProgress->OnStatus(this, mContext, 
+    rv = mProgress->OnStatus(this, mContext,
                              NS_NET_STATUS_RECEIVING_FROM,
                              statusStr.get());
     NS_ASSERTION(NS_SUCCEEDED(rv), "unexpected OnStopRequest failure");
@@ -646,7 +658,7 @@ nsPipeChannel::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeChannel::OnDataAvailable: myThread=%p, offset=%d, length=%d\n",
          myThread.get(), aSourceOffset, aLength));
 #endif

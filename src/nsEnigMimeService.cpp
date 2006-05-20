@@ -22,7 +22,7 @@
  * Patrick Brunschwig <patrick.brunschwig@gmx.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or 
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
  * in which case the provisions of the GPL or the LGPL are applicable instead
  * of those above. If you wish to allow use of your version of this file only
@@ -35,11 +35,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Logging of debug output 
+// Logging of debug output
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
-#define MOZILLA_INTERNAL_API
+#include "enigmail.h"
 #include "mimeenig.h"
 #include "nsEnigModule.h"
 #include "nsEnigMimeService.h"
@@ -91,7 +91,7 @@ nsEnigMimeService::nsEnigMimeService()
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsEnigMimeService:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -112,7 +112,7 @@ nsEnigMimeService::nsEnigMimeService()
     nsCOMPtr<nsIComponentRegistrar> registrar;
     rv = NS_GetComponentRegistrar(getter_AddRefs(registrar));
     if (NS_FAILED(rv)) return;
-        
+
     rv = registrar->RegisterFactory(info.mCID, info.mDescription,
                                              info.mContractID, factory);
     if (NS_SUCCEEDED(rv)) {
@@ -127,7 +127,7 @@ nsEnigMimeService::~nsEnigMimeService()
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsEnigMimeService:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -166,7 +166,7 @@ nsEnigMimeService::Init()
   nsCOMPtr<nsIGenericFactory> factory;
   rv = NS_NewGenericFactory(getter_AddRefs(factory), &info);
   if (NS_FAILED(rv)) return rv;
-  
+
   nsCOMPtr<nsIComponentRegistrar> registrar;
   rv = NS_GetComponentRegistrar(getter_AddRefs(registrar));
   if (NS_FAILED(rv)) return rv;
@@ -310,7 +310,7 @@ nsEnigMimeService::GetGpgPathFromRegistry(nsAString& retval) {
 	gpgPath.AssignWithConversion((char*)gpgProg);
 	retval = gpgPath;
 	return NS_OK;
-	
+
 #else
   return NS_ERROR_FAILURE;
 #endif

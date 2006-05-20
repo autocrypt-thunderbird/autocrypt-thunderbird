@@ -58,7 +58,7 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeService)
 #include "nsProcessInfo.h"
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsProcessInfo)
-
+#include "ipc.h"
 #include "nsPipeTransport.h"
 #include "nsPipeConsole.h"
 #include "nsPipeChannel.h"

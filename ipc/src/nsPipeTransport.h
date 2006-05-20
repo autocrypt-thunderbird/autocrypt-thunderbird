@@ -3,20 +3,20 @@
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
  * the MPL at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the MPL is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the MPL for the specific language governing
  * rights and limitations under the MPL.
- * 
+ *
  * The Original Code is protoZilla.
- * 
+ *
  * The Initial Developer of the Original Code is Ramalingam Saravanan.
  * Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
  * Copyright (C) 2000 Ramalingam Saravanan. All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
  * the provisions of the GPL are applicable instead of
@@ -39,7 +39,6 @@
 #include "nsIPipeTransport.h"
 #include "nsIPipeListener.h"
 #include "nsIRunnable.h"
-#include "nsIEventQueueService.h"
 #include "nsIInterfaceRequestor.h"
 #include "nsITransport.h"
 #include "nsIChannel.h"
@@ -53,14 +52,14 @@
 #include "nsIInputStream.h"
 #include "nsIOutputStream.h"
 
-#ifdef MOZILLA_VERSION
+#ifdef _IPC_MOZILLA_1_8
+#include "nsIEventQueueService.h"
+#else
+#include "nsThreadUtils.h"
+#endif
+
 #include "nsIAsyncInputStream.h"
 #include "nsIAsyncOutputStream.h"
-#else
-// Mods for Mozilla version prior to 1.3b
-#include "nsIObservableInputStream.h"
-#include "nsIObservableOutputStream.h"
-#endif
 
 #define NS_PIPE_TRANSPORT_DEFAULT_SEGMENT_SIZE   (2*1024)
 #define NS_PIPE_TRANSPORT_DEFAULT_BUFFER_SIZE    (8*1024)
@@ -72,15 +71,8 @@ class nsPipeTransport : public nsIPipeTransport,
                         public nsIPipeTransportListener,
                         public nsIOutputStream,
                         public nsIStreamListener,
-#ifdef MOZILLA_VERSION
                         public nsIInputStreamCallback,
                         public nsIOutputStreamCallback
-#else
-// Mods for Mozilla version prior to 1.3b
-                        public nsIInputStreamObserver,
-                        public nsIOutputStreamObserver
-#endif
-
 {
 public:
     NS_DECL_ISUPPORTS
@@ -91,19 +83,12 @@ public:
     NS_DECL_NSIREQUESTOBSERVER
     NS_DECL_NSIOUTPUTSTREAM
     NS_DECL_NSISTREAMLISTENER
-
-#ifdef MOZILLA_VERSION
     NS_DECL_NSIINPUTSTREAMCALLBACK
     NS_DECL_NSIOUTPUTSTREAMCALLBACK
-#else
-    // Mods for Mozilla version prior to 1.3b
-    NS_DECL_NSIINPUTSTREAMOBSERVER
-    NS_DECL_NSIOUTPUTSTREAMOBSERVER
-#endif
 
     // nsPipeTransport methods:
     nsPipeTransport();
-    // Always make the destructor virtual: 
+    // Always make the destructor virtual:
     virtual ~nsPipeTransport();
 
     nsresult Finalize(PRBool destructor);
@@ -113,7 +98,7 @@ public:
     // Define a Create method to be used with a factory:
     static NS_METHOD
     Create(nsISupports* aOuter, const nsIID& aIID, void* *aResult);
-    
+
     enum PipeState {
       PIPE_NOT_YET_OPENED,
       PIPE_OPEN,
@@ -155,7 +140,7 @@ protected:
     nsCString                           mExecBuf;
 
     IPCFileDesc*                        mStdinWrite;
-    
+
     // Owning refs
     nsCOMPtr<nsIPipeTransportPoller>    mStdoutPoller;
     nsCOMPtr<nsIPipeListener>           mConsole;
@@ -223,7 +208,7 @@ protected:
     nsCOMPtr<nsIPipeTransportListener>  mProxyPipeListener;
     nsCOMPtr<nsIPipeListener>           mConsole;
 };
- 
+
 // Helper class to handle write to pipe
 class nsStdinWriter : public nsIPipeTransportWriter,
                       public nsIRunnable
@@ -242,5 +227,5 @@ protected:
     IPCFileDesc*             mPipe;
     PRBool                   mCloseAfterWrite;
 };
- 
+
 #endif // nsPipeTransport_h__

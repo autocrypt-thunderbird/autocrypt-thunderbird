@@ -22,7 +22,7 @@
  * Patrick Brunschwig <patrick.brunschwig@gmx.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or 
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
  * in which case the provisions of the GPL or the LGPL are applicable instead
  * of those above. If you wish to allow use of your version of this file only
@@ -35,11 +35,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Logging of debug output 
+// Logging of debug output
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
-#define MOZILLA_INTERNAL_API
+#include "enigmail.h"
 #include "prlog.h"
 #include "nsCOMPtr.h"
 #include "nsCRT.h"
@@ -132,7 +132,7 @@ nsEnigMimeListener::nsEnigMimeListener()
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsEnigMimeListener:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -144,7 +144,7 @@ nsEnigMimeListener::~nsEnigMimeListener()
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsEnigMimeListener:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -573,7 +573,7 @@ nsEnigMimeListener::HeaderSearch(const char* buf, PRUint32 count)
       ch=buf[j];
       j++;
     }
-    
+
     // set j=startOffset needed if startOffset == 0!
     j=startOffset;
 /*
@@ -803,16 +803,16 @@ nsEnigMimeListener::ParseHeader(const char* header, PRUint32 count)
 
       if (charset)
         mContentCharset = charset;
-      
+
       if (boundary)
         mContentBoundary = boundary;
 
       if (protocol)
         mContentProtocol = protocol;
-      
+
       if (micalg)
         mContentMicalg = micalg;
-      
+
       PR_FREEIF(charset);
       PR_FREEIF(boundary);
       PR_FREEIF(protocol);
@@ -903,7 +903,7 @@ nsEnigMimeListener::Read(char* buf, PRUint32 count,
   return NS_OK;
 }
 
-NS_IMETHODIMP 
+NS_IMETHODIMP
 nsEnigMimeListener::ReadSegments(nsWriteSegmentFun writer,
                                  void * aClosure, PRUint32 count,
                                  PRUint32 *readCount)
@@ -923,7 +923,7 @@ nsEnigMimeListener::ReadSegments(nsWriteSegmentFun writer,
 
   } else {
     nsresult rv = writer(NS_STATIC_CAST(nsIInputStream*, this),
-                         aClosure, mStreamBuf+mStreamOffset, 
+                         aClosure, mStreamBuf+mStreamOffset,
                          mStreamOffset, readyCount, readCount);
     if (NS_FAILED(rv))
       return rv;

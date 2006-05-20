@@ -35,11 +35,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Logging of debug output 
+// Logging of debug output
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
-#define MOZILLA_INTERNAL_API
+#include "enigmail.h"
 #include "nspr.h"
 #include "nsCOMPtr.h"
 #include "nsString.h"
@@ -114,7 +114,7 @@ nsEnigMimeVerify::nsEnigMimeVerify()
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsEnigMimeVerify:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -126,7 +126,7 @@ nsEnigMimeVerify::~nsEnigMimeVerify()
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsEnigMimeVerify:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -207,7 +207,7 @@ nsEnigMimeVerify::Init(nsIDOMWindow* window,
 
   rv = mOuterMimeListener->Init(mFirstPartListener, nsnull,
                                 MAX_HEADER_BYTES, PR_TRUE, PR_FALSE, PR_FALSE);
-  
+
   if (NS_FAILED(rv)) return rv;
 
   // Initiate asynchronous loading of URI
@@ -433,7 +433,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
 
   } else if (contentMicalg.EqualsIgnoreCase("pgp-sha256")) {
     hashSymbol = "SHA256";
-    
+
   } else if (contentMicalg.EqualsIgnoreCase("pgp-sha384")) {
     hashSymbol = "SHA384";
 

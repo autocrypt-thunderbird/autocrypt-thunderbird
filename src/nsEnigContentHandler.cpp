@@ -21,7 +21,7 @@
  * Contributor(s):
  *
  * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or 
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
  * in which case the provisions of the GPL or the LGPL are applicable instead
  * of those above. If you wish to allow use of your version of this file only
@@ -35,11 +35,11 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-// Logging of debug output 
+// Logging of debug output
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
-#define MOZILLA_INTERNAL_API
+#include "enigmail.h"
 #include "nsEnigContentHandler.h"
 #include "mimedummy.h"
 #include "mimeenig.h"
@@ -89,7 +89,7 @@ nsEnigContentHandler::nsEnigContentHandler()
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsEnigContentHandler:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -101,7 +101,7 @@ nsEnigContentHandler::~nsEnigContentHandler()
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsEnigContentHandler:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -122,8 +122,8 @@ nsEnigContentHandler::GetContentType(char **contentType)
 
 NS_IMETHODIMP
 nsEnigContentHandler::CreateContentTypeHandlerClass(
-                                    const char *content_type, 
-                                    contentTypeHandlerInitStruct *initStruct, 
+                                    const char *content_type,
+                                    contentTypeHandlerInitStruct *initStruct,
                                     MimeObjectClass **objClass)
 {
   DEBUG_LOG(("nsEnigContenthandler::CreateContentTypeHandlerClass: %s\n", content_type));

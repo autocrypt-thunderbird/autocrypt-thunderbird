@@ -3,20 +3,20 @@
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
  * the MPL at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the MPL is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the MPL for the specific language governing
  * rights and limitations under the MPL.
- * 
+ *
  * The Original Code is protoZilla.
- * 
+ *
  * The Initial Developer of the Original Code is Ramalingam Saravanan.
  * Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
  * Copyright (C) 2000 Ramalingam Saravanan. All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
  * the provisions of the GPL are applicable instead of
@@ -30,7 +30,7 @@
  * GPL.
  */
 
-// Logging of debug output 
+// Logging of debug output
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
@@ -40,7 +40,6 @@
 #include "nsCRT.h"
 #include "nsReadableUtils.h"
 #include "netCore.h"
-#include "nsEventQueueUtils.h"
 
 #include "nsIServiceManager.h"
 #include "nsIProxyObjectManager.h"
@@ -49,6 +48,13 @@
 
 #include "nsIIPCService.h"
 #include "nsPipeTransport.h"
+
+#ifdef _IPC_MOZILLA_1_8
+#include "nsEventQueueUtils.h"
+#else
+#include "nsThreadUtils.h"
+#include "nsXPCOMCIDInternal.h"
+#endif
 
 #ifdef PR_LOGGING
 PRLogModuleInfo* gPipeTransportLog = NULL;
@@ -119,7 +125,7 @@ nsPipeTransport::nsPipeTransport()
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeTransport:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -133,7 +139,7 @@ nsPipeTransport::~nsPipeTransport()
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeTransport:: >>>>>>>>> DTOR(%p): myThread=%p START\n",
          this, myThread.get()));
 #endif
@@ -154,8 +160,8 @@ nsPipeTransport::~nsPipeTransport()
 //
 
 #ifdef MOZILLA_VERSION
-NS_IMPL_THREADSAFE_ISUPPORTS8(nsPipeTransport, 
-                              nsIPipeTransport, 
+NS_IMPL_THREADSAFE_ISUPPORTS8(nsPipeTransport,
+                              nsIPipeTransport,
                               nsIPipeTransportHeaders,
                               nsIPipeTransportListener,
                               nsIRequest,
@@ -165,8 +171,8 @@ NS_IMPL_THREADSAFE_ISUPPORTS8(nsPipeTransport,
                               nsIOutputStreamCallback)
 #else // !MOZILLA_VERSION
 // Mods for Mozilla version prior to 1.3b
-NS_IMPL_THREADSAFE_ISUPPORTS8(nsPipeTransport, 
-                              nsIPipeTransport, 
+NS_IMPL_THREADSAFE_ISUPPORTS8(nsPipeTransport,
+                              nsIPipeTransport,
                               nsIPipeTransportHeaders,
                               nsIPipeTransportListener,
                               nsIRequest,
@@ -428,7 +434,7 @@ NS_IMETHODIMP nsPipeTransport::Init(const char *executable,
     argList[j+1] = (char *)args[j];
     DEBUG_LOG(("nsPipeTransport::Init: arg[%d] = %s\n", j+1, args[j]));
   }
-    
+
   argList[argCount+1] = NULL;
 
   char** envList = NULL;
@@ -440,7 +446,7 @@ NS_IMETHODIMP nsPipeTransport::Init(const char *executable,
 
     for (j=0; j < envCount; j++)
       envList[j] = (char *)env[j];
-    
+
     envList[envCount] = NULL;
   }
 
@@ -906,11 +912,10 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
 
     // Now generate proxied pipe observer/listener to enable async calling
     // from the polling thread to the current (UI?) thread
-    nsCOMPtr<nsIProxyObjectManager> proxyMgr =  
+    nsCOMPtr<nsIProxyObjectManager> proxyMgr =
                               do_GetService(NS_XPCOMPROXY_CONTRACTID, &rv);
     if (NS_FAILED(rv)) return rv;
 
-#ifdef MOZILLA_VERSION
     // Open pipe to handle STDOUT
     nsCOMPtr<nsIAsyncInputStream> asyncInputStream;
     nsCOMPtr<nsIAsyncOutputStream> asyncOutputStream;
@@ -923,6 +928,7 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
     mInputStream = asyncInputStream;
     mOutputStream = asyncOutputStream;
 
+#ifdef _IPC_MOZILLA_1_8
     nsCOMPtr<nsIEventQueue> eventQ;
 
     if (!mNoProxy) {
@@ -930,62 +936,30 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
       if (NS_FAILED(rv)) return rv;
     }
 
+#else
+    nsCOMPtr<nsIThread> eventQ;
+
+    if (!mNoProxy) {
+      rv = NS_GetCurrentThread(getter_AddRefs(eventQ));
+      if (NS_FAILED(rv)) return rv;
+    }
+
+#endif
+
     // Set input stream observer (using event queue, if need be)
     rv = asyncInputStream->AsyncWait((nsIInputStreamCallback*) this,
                                       0, 0, eventQ);
     if (NS_FAILED(rv)) return rv;
-
-#else // !MOZILLA_VERSION
-    // Mods for Mozilla version prior to 1.3b
-    // Open pipe to handle STDOUT
-    rv = NS_NewPipe(getter_AddRefs(mInputStream),
-                    getter_AddRefs(mOutputStream),
-                    mBufferSegmentSize, mBufferMaxSize,
-                    nonBlockingInput, nonBlockingOutput);
-    if (NS_FAILED(rv)) return rv;
-
-    nsCOMPtr<nsIOutputStreamObserver> observer;
-
-    if (mNoProxy) {
-      observer = this;
-
-    } else {
-      // Set output stream observer using proxy
-      nsCOMPtr<nsIOutputStreamObserver> temObserver = this;
-      rv = proxyMgr->GetProxyForObject(NS_CURRENT_EVENTQ, //current thread
-                                       NS_GET_IID(nsIOutputStreamObserver),
-                                       temObserver,
-                                       PROXY_SYNC | PROXY_ALWAYS,
-                                       getter_AddRefs(observer));
-      if (NS_FAILED(rv)) return rv;
-    }
-
-    nsCOMPtr<nsIObservableOutputStream> observableOut(do_QueryInterface(mOutputStream, &rv));
-    if (NS_FAILED(rv)) return rv;
-
-    rv = observableOut->SetObserver(observer);
-    if (NS_FAILED(rv)) return rv;
-
-    // Set input stream observer (no proxy needed)
-    nsCOMPtr<nsIInputStreamObserver> inputStreamObserver = this;
-
-    nsCOMPtr<nsIObservableInputStream> observableIn(do_QueryInterface(mInputStream, &rv));
-    if (NS_FAILED(rv)) return rv;
-
-    rv = observableIn->SetObserver(inputStreamObserver);
-    if (NS_FAILED(rv)) return rv;
-
-#endif // !MOZILLA_VERSION
 
     if (mNoProxy) {
       pipeListener = this;
 
     } else {
       nsCOMPtr<nsIPipeTransportListener> temListener = this;
-      rv = proxyMgr->GetProxyForObject(NS_CURRENT_EVENTQ, //current thread
+      rv = proxyMgr->GetProxyForObject(NS_PROXY_TO_CURRENT_THREAD, //current thread
                                        NS_GET_IID(nsIPipeTransportListener),
                                        temListener,
-                                       PROXY_SYNC | PROXY_ALWAYS,
+                                       NS_PROXY_SYNC | NS_PROXY_ALWAYS,
                                        getter_AddRefs(pipeListener));
       if (NS_FAILED(rv)) return rv;
     }
@@ -1198,7 +1172,7 @@ nsPipeTransport::ExecPrompt(const char* command, const char* prompt,
     if (returnCount < 0)
       returnCount = mExecBuf.Length();  // Return everything
   }
-  
+
   // Duplicate output string and return it
   nsCAutoString outStr("");
   if (returnCount > 0) {
@@ -1243,48 +1217,48 @@ nsPipeTransport::ReadLine(PRInt32 maxOutputLen,
     PRUint32 readCount, readMax;
 
     PRUint32 remainingCount = (maxOutputLen > 0) ? maxOutputLen : kCharMax;
-    
+
     if (mExecBuf.Length()>0) {
       mExecBuf.ReplaceSubstring("\r\n", "\n");
       mExecBuf.ReplaceSubstring("\r", "\n");
       returnCount = mExecBuf.Find("\n", PR_FALSE, 0);
       DEBUG_LOG(("nsPipeTransport::ReadLine: returnCount=%d\n", returnCount));
     }
-    
+
     if (returnCount < 0) {
       while (remainingCount > 0) {
         readMax = (remainingCount < kCharMax) ? remainingCount : kCharMax;
-  
+
         if (mStdoutPoller) {
           // Fail if poller has been interrupted
           PRBool interrupted;
           rv = mStdoutPoller->IsInterrupted(&interrupted);
           if (NS_FAILED(rv)) return rv;
-      
+
           if (interrupted)
             return NS_BASE_STREAM_CLOSED;
         }
         rv = mInputStream->Read((char *) buf, kCharMax, &readCount);
         if (NS_FAILED(rv)) return rv;
-  
+
         if (readCount < 0)
           return NS_ERROR_FAILURE;
-  
+
         if (readCount == 0)
           break;             // End-of-file
-  
+
         mExecBuf.Append(buf, readCount);
-  
+
         if (mExecBuf.Length() >= 1) {
           mExecBuf.ReplaceSubstring("\r\n", "\n");
           mExecBuf.ReplaceSubstring("\r", "\n");
           returnCount = mExecBuf.Find("\n", PR_FALSE, 0);
-  
+
           if (returnCount >= 0) {
             break;
           }
         }
-  
+
         if (maxOutputLen > 0) {
           // Limited read
           remainingCount -= readCount;
@@ -1297,7 +1271,7 @@ nsPipeTransport::ReadLine(PRInt32 maxOutputLen,
     if (returnCount < 0)
       returnCount = mExecBuf.Length();  // Return everything
   }
-  
+
   // Duplicate output string and return it
   nsCAutoString outStr("");
   if (returnCount >= 0) {
@@ -1358,7 +1332,7 @@ nsPipeTransport::Cancel(nsresult status)
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeTransport::Cancel, myThread=%p, status=%p\n",
          myThread.get(), status));
 #endif
@@ -1590,12 +1564,12 @@ nsPipeTransport::OnInputStreamReady(nsIAsyncInputStream* inStr)
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeTransport::OnInputStreamReady, myThread=%p\n", myThread.get()));
 #endif
 
   if (mListener) {
-    if (!mInputStream) 
+    if (!mInputStream)
       return NS_ERROR_NOT_INITIALIZED;
 
     PRUint32 available;
@@ -1610,12 +1584,22 @@ nsPipeTransport::OnInputStreamReady(nsIAsyncInputStream* inStr)
                                      mInputStream, 0, available);
     if (NS_FAILED(rv)) return rv;
 
+#ifdef _IPC_MOZILLA_1_8
     nsCOMPtr<nsIEventQueue> eventQ;
 
     if (!mNoProxy) {
       rv = NS_GetCurrentEventQ(getter_AddRefs(eventQ));
       if (NS_FAILED(rv)) return rv;
     }
+#else
+  // Mozilla >= 1.9
+    nsCOMPtr<nsIThread> eventQ;
+
+    if (!mNoProxy) {
+      rv = NS_GetCurrentThread(getter_AddRefs(eventQ));
+      if (NS_FAILED(rv)) return rv;
+    }
+#endif
 
     // Re-set input stream observer (using event queue, if need be)
     rv = inStr->AsyncWait((nsIInputStreamCallback*) this, 0, 0, eventQ);
@@ -1638,7 +1622,7 @@ nsPipeTransport::OnOutputStreamReady(nsIAsyncOutputStream* outStr)
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeTransport::OnOutputStreamReady, myThread=%p\n", myThread.get()));
 #endif
 
@@ -1659,7 +1643,7 @@ nsPipeTransport::OnEmpty(nsIInputStream* inStr)
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeTransport::OnEmpty, myThread=%p\n", myThread.get()));
 #endif
 
@@ -1672,7 +1656,7 @@ nsPipeTransport::OnClose(nsIInputStream* inStr)
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeTransport::OnClose, myThread=%p\n", myThread.get()));
 #endif
 
@@ -1691,13 +1675,13 @@ nsPipeTransport::OnWrite(nsIOutputStream* outStr, PRUint32 aCount)
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeTransport::OnWrite, myThread=%p\n", myThread.get()));
   DEBUG_LOG(("nsPipeTransport::OnWrite, count=%d\n", aCount));
 #endif
 
   if (mListener) {
-    if (!mInputStream) 
+    if (!mInputStream)
       return NS_ERROR_NOT_INITIALIZED;
 
     return mListener->OnDataAvailable((nsIRequest*) this, mContext,
@@ -1712,7 +1696,7 @@ nsPipeTransport::OnFull(nsIOutputStream* outStr)
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeTransport::OnFull, myThread=%p\n", myThread.get()));
 #endif
   return NS_OK;
@@ -1732,7 +1716,7 @@ nsPipeTransport::ParseMimeHeaders(const char* mimeHeaders, PRUint32 count,
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeTransport::ParseMimeHeaders, myThread=%p\n", myThread.get()));
 #endif
 
@@ -1754,7 +1738,7 @@ nsPipeTransport::StartRequest()
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeTransport::StartRequest, myThread=%p\n",myThread.get()));
 #endif
 
@@ -1779,7 +1763,7 @@ nsPipeTransport::StopRequest(nsresult aStatus)
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeTransport::StopRequest, myThread=%p, status=%p\n",
          myThread.get(), aStatus));
 #endif
@@ -1841,7 +1825,7 @@ nsStdoutPoller::nsStdoutPoller()
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsStdoutPoller:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -1855,7 +1839,7 @@ nsStdoutPoller::~nsStdoutPoller()
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsStdoutPoller:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -1870,12 +1854,12 @@ nsStdoutPoller::~nsStdoutPoller()
     IPC_Close(mStdoutRead);
     mStdoutRead = IPC_NULL_HANDLE;
   }
-  
+
   if (mStderrRead != IPC_NULL_HANDLE) {
     IPC_Close(mStderrRead);
     mStderrRead = IPC_NULL_HANDLE;
   }
-  
+
   if (mPollFD) {
     PR_Free(mPollFD);
     mPollFD = nsnull;
@@ -1969,10 +1953,14 @@ nsStdoutPoller::AsyncStart(nsIOutputStream*  aOutputStream,
 
   // Spin up a new thread to handle STDOUT polling (non-joinable)
   nsCOMPtr<nsIThread> stdoutThread;
+#ifdef _IPC_MOZILLA_1_8
   PRThreadState threadState = mJoinableThread ? PR_JOINABLE_THREAD
                                               : PR_UNJOINABLE_THREAD;
   rv = NS_NewThread(getter_AddRefs(stdoutThread), (nsIRunnable*) this,
                     0, threadState);
+#else
+  rv = NS_NewThread(getter_AddRefs(stdoutThread), (nsIRunnable*) this);
+#endif
   if (NS_FAILED(rv))
     return rv;
 
@@ -2044,12 +2032,12 @@ NS_IMETHODIMP
 nsStdoutPoller::IsInterrupted(PRBool* interrupted)
 {
   nsAutoLock lock(mLock);
-  
+
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
-  DEBUG_LOG(("nsStdoutPoller::IsInterrupted: %p, myThread=%p\n", 
+  rv = IPC_GET_THREAD(myThread);
+  DEBUG_LOG(("nsStdoutPoller::IsInterrupted: %p, myThread=%p\n",
          mInterrupted, myThread.get()));
 #endif
 
@@ -2075,7 +2063,12 @@ nsStdoutPoller::Join()
   if (!mStdoutThread)
     return NS_OK;
 
+#ifdef _IPC_MOZILLA_1_8
   rv = mStdoutThread->Join();
+#else
+  rv = mStdoutThread->Shutdown();
+#endif
+
   mStdoutThread = nsnull;
 
   return rv;
@@ -2103,7 +2096,7 @@ nsStdoutPoller::Interrupt(PRBool* alreadyInterrupted)
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsStdoutPoller::Interrupt: myThread=%p\n", myThread.get()));
 #endif
 
@@ -2118,7 +2111,9 @@ nsStdoutPoller::Interrupt(PRBool* alreadyInterrupted)
 
   } else if (mStdoutThread) {
     // Interrupt thread; may fail
+#ifdef _IPC_MOZILLA_1_8
     mStdoutThread->Interrupt();
+#endif
   }
 
   return NS_OK;
@@ -2155,7 +2150,7 @@ nsStdoutPoller::GetPolledFD(PRFileDesc*& aFileDesc)
       // Note: Interrupted; need to close all FDs
 #ifdef FORCE_PR_LOG
       nsCOMPtr<nsIThread> myThread;
-      rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+      rv = IPC_GET_THREAD(myThread);
       DEBUG_LOG(("nsStdoutPoller::GetPolledFD: Interrupted (NSPR) while polling, myThread=0x%p\n", myThread.get()));
 #endif
     }
@@ -2199,7 +2194,7 @@ nsStdoutPoller::GetPolledFD(PRFileDesc*& aFileDesc)
         // Exception/error condition; check next FD
 #ifdef FORCE_PR_LOG
         nsCOMPtr<nsIThread> myThread;
-        rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+        rv = IPC_GET_THREAD(myThread);
         WARNING_LOG(("nsStdoutPoller::GetPolledFD: mPollFD[%d]: Exception/error 0x%x, myThread=0x%x\n",
          j, mPollFD[j].out_flags, myThread.get()));
 #endif
@@ -2282,7 +2277,7 @@ nsStdoutPoller::HeaderSearch(const char* buf, PRUint32 count,
           mHeadersLastNewline = 1;
         else
           mHeadersLastNewline = 0;
-          
+
         j++;
       }
 
@@ -2352,11 +2347,11 @@ nsStdoutPoller::Run()
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsStdoutPoller::Run: myThread=%p\n", myThread.get()));
 #endif
 
-  if (!mPollCount) 
+  if (!mPollCount)
     return NS_ERROR_NOT_INITIALIZED;
 
   // Polling loop
@@ -2508,7 +2503,7 @@ nsStdinWriter::nsStdinWriter()
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsStdinWriter:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -2520,7 +2515,7 @@ nsStdinWriter::~nsStdinWriter()
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsStdinWriter:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -2529,7 +2524,7 @@ nsStdinWriter::~nsStdinWriter()
     IPC_Close(mPipe);
     mPipe = IPC_NULL_HANDLE;
   }
-  
+
   // Release ref to input stream
   mInputStream = nsnull;
 }
@@ -2570,7 +2565,7 @@ nsStdinWriter::Run()
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsStdinWriter::Run: myThread=%p\n", myThread.get()));
 #endif
 

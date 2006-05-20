@@ -35,11 +35,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Logging of debug output 
+// Logging of debug output
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
-#define MOZILLA_INTERNAL_API
+#include "enigmail.h"
 #include "nsXPIDLString.h"
 #include "nsIMsgCompFields.h"
 #include "nsMsgBaseCID.h"
@@ -96,17 +96,17 @@ nsEnigMsgComposeFactory::CreateInstance(nsISupports *aOuter,
                                         void **aResult)
 {
   NS_ENSURE_ARG_POINTER(aResult);
-  
-  *aResult = NULL;  
-  nsEnigMsgCompose *instance = new nsEnigMsgCompose;    
+
+  *aResult = NULL;
+  nsEnigMsgCompose *instance = new nsEnigMsgCompose;
   if (!instance)
     return NS_ERROR_OUT_OF_MEMORY;
-    
+
   nsresult rv = instance->QueryInterface(aIID, aResult);
-  if (rv != NS_OK) {  
-    delete instance;  
-  }  
-    
+  if (rv != NS_OK) {
+    delete instance;
+  }
+
   return rv;
 }
 
@@ -178,7 +178,7 @@ nsEnigMsgCompose::nsEnigMsgCompose()
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsEnigMsgCompose:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -190,7 +190,7 @@ nsEnigMsgCompose::~nsEnigMsgCompose()
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsEnigMsgCompose:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -231,14 +231,14 @@ nsresult
 nsEnigMsgCompose::GetRandomTime(PRUint32 *_retval)
 {
   if (!*_retval)
-    return NS_ERROR_NULL_POINTER; 
- 
+    return NS_ERROR_NULL_POINTER;
+
   // Current local time (microsecond resolution)
   PRExplodedTime localTime;
   PR_ExplodeTime(PR_Now(), PR_LocalTimeParameters, &localTime);
- 
+
   PRUint32       randomNumberA = localTime.tm_sec*1000000+localTime.tm_usec;
- 
+
   // Elapsed time (1 millisecond to 10 microsecond resolution)
   PRIntervalTime randomNumberB = PR_IntervalNow();
 
@@ -254,22 +254,22 @@ nsresult
 nsEnigMsgCompose::MakeBoundary(const char *prefix)
 {
   DEBUG_LOG(("nsEnigMsgCompose::MakeBoundary:\n"));
-  
+
   nsresult rv;
 
   if (!mRandomSeeded) {
     PRUint32 ranTime = 1;
-    
+
     rv = GetRandomTime(&ranTime);
     if (NS_FAILED(rv))
       return rv;
-    
+
     srand( ranTime );
     mRandomSeeded = PR_TRUE;
   }
-  
 
-  unsigned char ch[13]; 
+
+  unsigned char ch[13];
   for( PRUint32 j = 0; j < 12; j++)
     ch[j] = rand() % 256;
 
@@ -919,7 +919,7 @@ nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
 
   rv = Init();
   if (NS_FAILED(rv)) return rv;
-  
+
   if (!mPipeTrans) return NS_OK;
 
   if (encapsulate) {

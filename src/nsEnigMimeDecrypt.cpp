@@ -38,7 +38,7 @@
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
-#define MOZILLA_INTERNAL_API
+#include "enigmail.h"
 #include "nspr.h"
 #include "nsCOMPtr.h"
 #include "nsString.h"
@@ -99,7 +99,7 @@ nsEnigMimeDecrypt::nsEnigMimeDecrypt()
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsEnigMimeDecrypt:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -111,7 +111,7 @@ nsEnigMimeDecrypt::~nsEnigMimeDecrypt()
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsEnigMimeDecrypt:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -234,7 +234,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   // Enigmail stuff
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = ENIG_GET_THREAD(myThread);
 
   nsCAutoString uriSpec("");
 
@@ -347,12 +347,12 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
     if (NS_FAILED(rv)) return rv;
 
     if (!readCount) break;
-    
+
     if (iterations==1 && readCount > 25) {
       // add mime boundaries around text/plain message (bug 6627)
       if (nsCRT::strncasecmp("content-type:", buf, 13)==0) {
         PRUint32 whitespace=13;
-        while((whitespace<readCount) && buf[whitespace] && 
+        while((whitespace<readCount) && buf[whitespace] &&
               ((buf[whitespace]==' ') || (buf[whitespace]=='\t'))) { whitespace++; }
         if (buf[whitespace] && (whitespace<readCount)) {
           ctFound=nsCRT::strncasecmp(buf + whitespace, "text/plain", 10);
@@ -370,7 +370,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
             PR_SetError(status, 0);
             mOutputFun = NULL;
             mOutputClosure = NULL;
-      
+
             return NS_ERROR_FAILURE;
           }
           mOutputLen += strlen(header);
@@ -396,12 +396,12 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
     mOutputLen += readCount;
   }
 
-  
+
   if (ctFound==0) {
     // add mime boundaries around text/plain message (bug 6627)
     PR_SetError(0,0);
     strcpy(buf, "\n\n--enigDummy--\n");
-    
+
     int status = mOutputFun(buf, strlen(buf), mOutputClosure);
     if (status < 0) {
       PR_SetError(status, 0);
@@ -422,7 +422,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
       mOutputLen++;
     }
   }
-  
+
   PR_SetError(0,0);
 
   // Close input stream

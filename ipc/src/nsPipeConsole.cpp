@@ -3,20 +3,20 @@
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
  * the MPL at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the MPL is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the MPL for the specific language governing
  * rights and limitations under the MPL.
- * 
+ *
  * The Original Code is protoZilla.
- * 
+ *
  * The Initial Developer of the Original Code is Ramalingam Saravanan.
  * Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
  * Copyright (C) 2000 Ramalingam Saravanan. All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
  * the provisions of the GPL are applicable instead of
@@ -30,7 +30,7 @@
  * GPL.
  */
 
-// Logging of debug output 
+// Logging of debug output
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
@@ -107,7 +107,7 @@ nsPipeConsole::nsPipeConsole()
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeConsole:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -119,7 +119,7 @@ nsPipeConsole::~nsPipeConsole()
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeConsole:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -154,7 +154,9 @@ nsPipeConsole::Finalize(PRBool destructor)
 
   if (mPipeThread && !mThreadJoined) {
     // Interrupt thread; may fail
+#ifdef _IPC_MOZILLA_1_8
     mPipeThread->Interrupt();
+#endif
   }
 
   // Close write pipe
@@ -195,7 +197,7 @@ nsPipeConsole::Init()
   nsCOMPtr<nsIObserverService> observ(do_GetService("@mozilla.org/observer-service;1"));
   if (observ)
     observ->AddObserver(this, "xpcom-shutdown", PR_FALSE);
-  
+
   return NS_OK;
 }
 
@@ -231,9 +233,13 @@ nsPipeConsole::Open(PRInt32 maxRows, PRInt32 maxCols, PRBool joinable)
   }
 
   // Spin up a new thread to handle STDOUT polling
+#ifdef _IPC_MOZILLA_1_8
   PRThreadState threadState = mJoinable ? PR_JOINABLE_THREAD
                                         : PR_UNJOINABLE_THREAD;
   rv = NS_NewThread(getter_AddRefs(mPipeThread), this, 0, threadState);
+#else
+  rv = NS_NewThread(getter_AddRefs(mPipeThread), this);
+#endif
   if (NS_FAILED(rv))
     return rv;
 
@@ -356,7 +362,11 @@ nsPipeConsole::Join()
     mThreadJoined = PR_TRUE;
   }
 
+#ifdef _IPC_MOZILLA_1_8
   rv = mPipeThread->Join();
+#else
+  rv = mPipeThread->Shutdown();
+#endif
   if (NS_FAILED(rv))
     return rv;
 
@@ -444,7 +454,7 @@ nsPipeConsole::Write(const char* str)
   PRUint32 len = strlen(str);
   if (!len)
     return NS_OK;
-  
+
   return WriteBuf(str, len);
 }
 
@@ -626,7 +636,7 @@ nsPipeConsole::Run()
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = nsIThread::GetCurrent(getter_AddRefs(myThread));
+  rv = IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeConsole::Run: myThread=%p\n", myThread.get()));
 #endif
 
@@ -665,7 +675,7 @@ NS_IMETHODIMP
 nsPipeConsole::Observe(nsISupports *subject, const char *topic, const PRUnichar *data)
 {
     DEBUG_LOG(("nsPipeConsole::Observe: topic=%s\n", topic));
-    
+
     if (strcmp(topic, "xpcom-shutdown") == 0)
         Shutdown();
     return NS_OK;

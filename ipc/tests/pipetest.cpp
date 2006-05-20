@@ -3,20 +3,20 @@
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
  * the MPL at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the MPL is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the MPL for the specific language governing
  * rights and limitations under the MPL.
- * 
+ *
  * The Original Code is protoZilla.
- * 
+ *
  * The Initial Developer of the Original Code is Ramalingam Saravanan.
  * Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
  * Copyright (C) 2000 Ramalingam Saravanan. All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
  * the provisions of the GPL are applicable instead of
@@ -37,6 +37,8 @@
  * A Test application that exercises the PipeTransport module.
  */
 
+
+#include "../src/ipc.h"
 #include "nspr.h"
 #include "nsIRequestObserver.h"
 #include "nsIStreamListener.h"
@@ -110,7 +112,7 @@ nsListenerImpl::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
   PRUint32 readCount = 0;
 
   while (aLength > 0) {
-        
+
     rv = aInputStream->Read((char*) buf, 80, &readCount);
 
     if (NS_FAILED(rv) || (readCount <= 0))
@@ -211,7 +213,8 @@ main()
     }
 
     printf("pipetest: Creating event Q\n");
-    
+
+#ifdef _IPC_MOZILLA_1_8
     nsCOMPtr<nsIEventQueueService> service = do_GetService(NS_EVENTQUEUESERVICE_CONTRACTID, &rv);
     if (NS_FAILED(rv)) return rv;
 
@@ -219,10 +222,13 @@ main()
     if (NS_FAILED(rv)) return rv;
 
     nsCOMPtr<nsIEventQueue> currentThreadQ;
-    rv = service->GetThreadEventQueue(NS_CURRENT_THREAD, 
+#else
+
+#endif
+    rv = service->GetThreadEventQueue(NS_CURRENT_THREAD,
                                   getter_AddRefs(currentThreadQ));
     if (NS_FAILED(rv)) return rv;
-        
+
     (void) nsComponentManager::AutoRegister(nsIComponentManagerObsolete::NS_Startup, nsnull);
 
     // Create an instance of our component
