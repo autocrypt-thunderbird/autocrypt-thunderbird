@@ -5075,8 +5075,7 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
     DEBUG_LOG("enigmail.js: Enigmail.editKey: caught exception from writing to pipeTrans\n");
   }
 
-  var thread=Components.classes["@mozilla.org/thread;1"].getService(Components.interfaces.nsIThread);
-  thread=thread.currentThread;
+  var mimeSvc = Components.classes[NS_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
 
   var exitCode = -1;
   switch(returnCode) {
@@ -5084,7 +5083,7 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
     for (var retryCount = 100; retryCount > 0; retryCount--) {
       if (pipeTrans.isAttached()) {
         DEBUG_LOG("enigmail.js: Enigmail.editKey: sleeping 100 ms\n");
-        thread.sleep(100); // sleep 100 ms before retrying
+        mimeSvc.sleep(100);
       }
       else {
         retryCount = -1;
@@ -5104,7 +5103,6 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
   }
 
   DEBUG_LOG("enigmail.js: Enigmail.editKey: GnuPG terminated with code="+exitCode+"\n");
-
   return exitCode;
 }
 

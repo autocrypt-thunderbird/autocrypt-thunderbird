@@ -291,6 +291,14 @@ nsEnigMimeService::IsEncrypted(const nsACString & uri, PRBool *_retval)
 }
 
 NS_IMETHODIMP
+nsEnigMimeService::Sleep(PRUint32 miliSeconds)
+{
+  // Sleep for the specified amount of miliseconds
+  PR_Sleep(miliSeconds);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
 nsEnigMimeService::GetGpgPathFromRegistry(nsAString& retval) {
 
 #ifdef XP_WIN
