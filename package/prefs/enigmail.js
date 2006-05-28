@@ -74,8 +74,11 @@ pref("extensions.enigmail.initAlert",true);
 // use -a for encrypting attachments for inline PGP
 pref("extensions.enigmail.inlineAttachAsciiArmor",false);
 
-// extension to append for encrypting attachments for inline PGP
+// extension to append for inline-encrypted attachments
 pref("extensions.enigmail.inlineAttachExt",".pgp");
+
+// extension to append for inline-signed attachments
+pref("extensions.enigmail.inlineSigAttachExt",".sig");
 
 // debug log directory (if set, also enabled debugging)
 pref("extensions.enigmail.logDirectory","");

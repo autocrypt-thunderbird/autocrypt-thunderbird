@@ -125,7 +125,7 @@ interface nsIEnigmail : nsISupports
                          out wstring errorMsg);
 
   boolean stripWhitespace(in unsigned long sendFlags);
-  
+
   long fixExitCode(in long exitCode,
                    in long statusFlags);
 
@@ -169,6 +169,7 @@ interface nsIEnigmail : nsISupports
   const long SEND_TEST             = 0x100;
   const long SAVE_MESSAGE          = 0x200;
   const long SEND_STRIP_WHITESPACE = 0x400;
+  const long SEND_ATTACHMENT       = 0x800;
 
   wstring encryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,
@@ -228,23 +229,23 @@ interface nsIEnigmail : nsISupports
 
 
 /*** key handling functions ***/
-  long setKeyTrust(in nsIDOMWindow parent, 
-                      in string keyId, 
-                      in string trustLevel, 
+  long setKeyTrust(in nsIDOMWindow parent,
+                      in string keyId,
+                      in string trustLevel,
                       out wstring errorMsg);
 
-  long signKey(in nsIDOMWindow parent, 
-                in string userId, 
-                in string keyId, 
-                in boolean signLocally, 
-                in string trustLevel, 
+  long signKey(in nsIDOMWindow parent,
+                in string userId,
+                in string keyId,
+                in boolean signLocally,
+                in string trustLevel,
                 out wstring errorMsg);
 
-  long genRevokeCert(in nsIDOMWindow parent, 
-                in string keyId, 
+  long genRevokeCert(in nsIDOMWindow parent,
+                in string keyId,
                 in string outFile,
-                in string reasonCode, 
-                in string reasonText, 
+                in string reasonCode,
+                in string reasonText,
                 out wstring errorMsg);
 
   long revokeSubey (in nsIDOMWindow parent,
@@ -255,25 +256,25 @@ interface nsIEnigmail : nsISupports
                     out wstring errorMsgObj);
 
   long addUid(in nsIDOMWindow parent,
-                in string keyId, 
-                in string name, 
-                in string email, 
-                in string comment, 
+                in string keyId,
+                in string name,
+                in string email,
+                in string comment,
                 out wstring errorMsg);
 
-  long deleteKey(in nsIDOMWindow parent, 
+  long deleteKey(in nsIDOMWindow parent,
                  in string keyId,
                  in boolean deleteSecretKey,
                  out wstring errorMsg);
 
-  long enableDisableKey(in nsIDOMWindow parent, 
-                        in string keyId, 
-                        in boolean disableKey, 
+  long enableDisableKey(in nsIDOMWindow parent,
+                        in string keyId,
+                        in boolean disableKey,
                         out wstring errorMsgObj);
 
   long setPrimaryUid (in nsIDOMWindow parent,
-                      in string keyId, 
-                      in string idNumber, 
+                      in string keyId,
+                      in string idNumber,
                       out wstring errorMsg);
 
   long deleteUid (in nsIDOMWindow parent,
@@ -360,7 +361,7 @@ interface nsIEnigmail : nsISupports
                           in boolean persist);
 
   /* manage GPG key list cache */
-  
+
   string getUserIdList (in boolean secretOnly,
                         in boolean refresh,
                         out long exitCode,
@@ -391,9 +392,9 @@ interface nsIEnigmail : nsISupports
                              out wstring errorMsg);
 
   /* per-recipient rules */
-  
+
   boolean getRulesData(out nsIDOMDocument rulesList);
-  
+
   void addRule(in boolean appendToEnd,
                in string toAddress,
                in string keyList,
@@ -404,11 +405,11 @@ interface nsIEnigmail : nsISupports
 
   boolean saveRulesFile();
   void clearRules();
-  
+
   /* smartcard functions */
   string getCardStatus (out long exitCode,
                         out wstring errorMsg);
-                        
+
   long genCardKey (in nsIDOMWindow parent,
                    in string name,
                    in string email,
@@ -427,7 +428,7 @@ interface nsIEnigmail : nsISupports
                      in string login,
                      in long forcepin,
                      out wstring errorMsg);
-                     
+
   const long CARD_PIN_CHANGE       = 1;
   const long CARD_PIN_UNBLOCK      = 2;
   const long CARD_ADMIN_PIN_CHANGE = 3;
@@ -439,7 +440,7 @@ interface nsIEnigmail : nsISupports
                      in string adminPin,
                      in nsIEnigMimeReadCallback requestObserver,
                      out wstring errorMsg);
-                     
+
 };
 
 %{C++

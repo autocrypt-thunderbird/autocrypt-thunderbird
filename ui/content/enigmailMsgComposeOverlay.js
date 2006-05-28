@@ -67,7 +67,7 @@ if (typeof(GenericSendMessage)=="function") {
     enigGenericSendMessage(msgType);
   }
 
-  
+
   window.addEventListener("load", enigMsgComposeStartup, false);
 
   // Handle recycled windows
@@ -319,7 +319,7 @@ function enigTogglePGPMime() {
 
 function enigAttachOwnKey() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigAttachOwnKey:\n");
-  
+
   var userIdValue;
   if (gEnigIdentity.getIntAttribute("pgpKeyMode")>0) {
     userIdValue = gEnigIdentity.getCharAttribute("pgpkeyId");
@@ -396,7 +396,7 @@ function enigExtractAndAttachKey(uid) {
 
   // add attachment to msg
   AddAttachment(keyAttachment);
-  
+
   if (typeof(ChangeAttachmentBucketVisibility) == "function") {
     // TB 1.1
     ChangeAttachmentBucketVisibility(false);
@@ -426,19 +426,32 @@ function enigUndoEncryption() {
     // undo inline encryption of attachments
     for (var i=0; i<gEnigModifiedAttach.length; i++) {
       var node = bucketList.firstChild;
+      var nodeNumber=-1;
       while (node) {
+        ++nodeNumber;
         if (node.attachment.url == gEnigModifiedAttach[i].newUrl) {
-          node.attachment.url = gEnigModifiedAttach[i].origUrl;
-          node.attachment.name = gEnigModifiedAttach[i].origName;
-          node.attachment.temporary = gEnigModifiedAttach[i].origTemp;
-          node.attachment.contentType = gEnigModifiedAttach[i].origCType;
+          if (gEnigModifiedAttach[i].encrypted) {
+            node.attachment.url = gEnigModifiedAttach[i].origUrl;
+            node.attachment.name = gEnigModifiedAttach[i].origName;
+            node.attachment.temporary = gEnigModifiedAttach[i].origTemp;
+            node.attachment.contentType = gEnigModifiedAttach[i].origCType;
+          }
+          else {
+            node = bucketList.removeItemAt(nodeNumber);
+            // Let's release the attachment object held by the node else it won't go away until the window is destroyed
+            node.attachment = null;
+          }
           // delete encrypted file
           try {
             gEnigModifiedAttach[i].newFile.remove(false);
           }
           catch (ex) {}
+
+          node = null; // next attachment please
         }
-        node=node.nextSibling;
+        else {
+          node=node.nextSibling;
+        }
       }
     }
 
@@ -684,25 +697,25 @@ function enigEncryptMsg(msgSendType) {
   var gotSendFlags = gEnigSendMode;
   var sendFlags=0;
   window.enigmailSendFlags=0;
-  
+
   var autoSaveAsDraft = nsIMsgCompDeliverMode.SaveAsDraft;
   try {
     // TB 1.5 only
     autoSaveAsDraft = nsIMsgCompDeliverMode.AutoSaveAsDraft;
   }
   catch (ex) {}
-  
+
   switch (msgSendType) {
-  case nsIMsgCompDeliverMode.Later:          
+  case nsIMsgCompDeliverMode.Later:
     sendFlags |= nsIEnigmail.SEND_LATER;
     break;
-  case nsIMsgCompDeliverMode.SaveAsDraft:   
+  case nsIMsgCompDeliverMode.SaveAsDraft:
   case nsIMsgCompDeliverMode.SaveAsTemplate:
   case autoSaveAsDraft:
     sendFlags |= nsIEnigmail.SAVE_MESSAGE;
     break;
   }
-    
+
   if (gotSendFlags & ENIG_SIGN)
       sendFlags |= ENIG_SIGN;
   if (gotSendFlags & ENIG_ENCRYPT) {
@@ -915,14 +928,14 @@ function enigEncryptMsg(msgSendType) {
           if (perRecipientRules>0 && gEnigEnableRules) {
             var matchedKeysObj = new Object;
             var flagsObj=new Object;
-            if (!getRecipientsKeys(toAddr, 
+            if (!getRecipientsKeys(toAddr,
                                   (repeatSelection==1),
-                                  matchedKeysObj, 
+                                  matchedKeysObj,
                                   flagsObj)) {
               window.cancelSendMessage=true;
               return;
             }
-           
+
             if (matchedKeysObj.value) toAddr=matchedKeysObj.value;
             if (flagsObj.value) {
               switch (flagsObj.sign) {
@@ -933,7 +946,7 @@ function enigEncryptMsg(msgSendType) {
                  sendFlags |= ENIG_SIGN;
                  break;
               }
-    
+
               switch (flagsObj.encrypt) {
                case 0:
                  sendFlags &= ~ENIG_ENCRYPT;
@@ -942,7 +955,7 @@ function enigEncryptMsg(msgSendType) {
                  sendFlags |= ENIG_ENCRYPT;
                  break;
               }
-    
+
               switch (flagsObj.pgpMime) {
                case 0:
                  sendFlags &= ~nsIEnigmail.SEND_PGP_MIME;
@@ -954,19 +967,19 @@ function enigEncryptMsg(msgSendType) {
             }
           }
           repeatSelection++;
-          
+
           if (sendFlags & ENIG_ENCRYPT) {
             // Encrypt test message for default encryption
             var testExitCodeObj    = new Object();
             var testStatusFlagsObj = new Object();
             var testErrorMsgObj    = new Object();
-  
+
             var testPlain = "Test Message";
             var testUiFlags   = nsIEnigmail.UI_TEST;
             var testSendFlags = nsIEnigmail.SEND_ENCRYPTED |
                                 nsIEnigmail.SEND_TEST |
                                 optSendFlags;
-  
+
             // test recipients
             testCipher = enigmailSvc.encryptMessage(window, testUiFlags,
                                                           testPlain,
@@ -975,8 +988,8 @@ function enigEncryptMsg(msgSendType) {
                                                           testExitCodeObj,
                                                           testStatusFlagsObj,
                                                           testErrorMsgObj);
-  
-  
+
+
             if ((recipientsSelectionOption==2) ||
                 ((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT) &&
                  (recipientsSelectionOption>0))) {
@@ -992,7 +1005,7 @@ function enigEncryptMsg(msgSendType) {
                 if (recipientsSelectionOption<2)
                   inputObj.options += ",noforcedisp";
                 inputObj.dialogHeader = EnigGetString("recipientsSelectionHdr");
-  
+
                 window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
                 try {
                   if (resultObj.cancelled) {
@@ -1045,7 +1058,7 @@ function enigEncryptMsg(msgSendType) {
        // always enable PGP/MIME if message is saved
        sendFlags |= nsIEnigmail.SEND_PGP_MIME;
      }
-     
+
      if ( hasAttachments &&
         (sendFlags & ENIG_ENCRYPT_OR_SIGN) &&
         !(sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
@@ -1053,10 +1066,11 @@ function enigEncryptMsg(msgSendType) {
 
         inputObj = new Object();
         inputObj.pgpMimePossible = (usePGPMimeOption >= PGP_MIME_POSSIBLE);
-        inputObj.inlinePossible = (sendFlags & ENIG_ENCRYPT); // makes no sense for sign only!
+        // inputObj.inlinePossible = (sendFlags & ENIG_ENCRYPT); // makes no sense for sign only!
+        inputObj.inlinePossible = true;
         inputObj.restrictedScenario = false;
-        
-        // determine if attachments are all local (currently the only
+
+        // determine if attachments are all local files (currently the only
         // supported kind of attachments)
         var node = bucketList.firstChild;
         while (node) {
@@ -1069,7 +1083,7 @@ function enigEncryptMsg(msgSendType) {
         if (inputObj.pgpMimePossible || inputObj.inlinePossible) {
           resultObj = new Object();
           resultObj.selected = EnigGetPref("encryptAttachments");
-          
+
           //skip or not
           var skipCheck=EnigGetPref("encryptAttachmentsSkipDlg");
           if (skipCheck == 1) {
@@ -1158,7 +1172,7 @@ function enigEncryptMsg(msgSendType) {
      }
      else if (!gEnigProcessed && (sendFlags & ENIG_ENCRYPT_OR_SIGN)) {
        // use inline PGP
-       
+
        var sendInfo = {
          sendFlags: sendFlags,
          inlineEncAttach: inlineEncAttach,
@@ -1167,7 +1181,7 @@ function enigEncryptMsg(msgSendType) {
          uiFlags: uiFlags,
          bucketList: bucketList
        };
-       
+
        if (! enigEncryptInline(sendInfo)) {
          window.cancelSendMessage=true;
          return;
@@ -1178,20 +1192,18 @@ function enigEncryptMsg(msgSendType) {
      var isOffline = (gIOService && gIOService.offline);
      window.enigmailSendFlags=sendFlags;
 
-     
-     if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
-       // update the list of attachments
-       Attachments2CompFields(msgCompFields);
-     }
-     else if (EnigGetPref("confirmBeforeSend")) {
+     // update the list of attachments
+     Attachments2CompFields(msgCompFields);
+
+     if ((!(sendFlags & nsIEnigmail.SAVE_MESSAGE)) && EnigGetPref("confirmBeforeSend")) {
        if (!enigConfirmBeforeSend(toAddrList.join(", "), toAddr, sendFlags, isOffline)) {
          if (gEnigProcessed)
            enigUndoEncryption();
-           
+
          window.cancelSendMessage=true;
          return;
        }
-     } 
+     }
      else if ( (sendFlags & nsIEnigmail.SEND_WITH_CHECK) &&
                  !enigMessageSendCheck() ) {
        // Abort send
@@ -1243,7 +1255,7 @@ function enigEncryptInline(sendInfo) {
 
   var enigmailSvc = GetEnigmailSvc();
   if (! enigmailSvc) return false;
-  
+
   if (gMsgCompose.composeHTML) {
     var errMsg = EnigGetString("hasHTML");
     EnigAlertCount("composeHtmlAlertCount", errMsg);
@@ -1259,11 +1271,11 @@ function enigEncryptInline(sendInfo) {
   } catch (ex) {}
 
   try {
-  if (gEnigPrefRoot.getBoolPref("mail.strictly_mime")) {
-    if (EnigConfirmPref(EnigGetString("quotedPrintableWarn"), "quotedPrintableWarn")) {
-      gEnigPrefRoot.setBoolPref("mail.strictly_mime", false);
+    if (gEnigPrefRoot.getBoolPref("mail.strictly_mime")) {
+      if (EnigConfirmPref(EnigGetString("quotedPrintableWarn"), "quotedPrintableWarn")) {
+        gEnigPrefRoot.setBoolPref("mail.strictly_mime", false);
+      }
     }
-  }
   } catch (ex) {}
 
 
@@ -1319,7 +1331,7 @@ function enigEncryptInline(sendInfo) {
 
   if (origText.length > 0) {
     // Sign/encrypt body text
-    
+
     var escText = origText; // Copy plain text for possible escaping
 
     if (sendFlowed && !(sendInfo.sendFlags & ENIG_ENCRYPT)) {
@@ -1527,7 +1539,7 @@ function enigGenericSendMessage( msgType )
          }
 
         //Check if we have a subject, else ask user for confirmation
-        
+
         if (subject == "" && (! EnigGetPref("allowEmptySubject")))
         {
           if (gEnigPromptSvc)
@@ -1844,24 +1856,42 @@ function enigEncryptAttachments(bucketList, newAttachments, window, uiFlags,
     var newUri = ioServ.newFileURI(newFile);
     fileInfo.newUrl  = newUri.asciiSpec;
     fileInfo.newFile = newFile;
+    fileInfo.encrypted = (sendFlags & ENIG_ENCRYPT);
 
     newAttachments.push(fileInfo);
     node = node.nextSibling;
   }
 
-  // if we got here, all attachments were encrpted successfully,
-  // so we replace their names & urls
-  node = bucketList.firstChild;
   var i=0;
-  while (node) {
-    node.attachment.url = newAttachments[i].newUrl;
-    node.attachment.name += EnigGetPref("inlineAttachExt");
-    node.attachment.contentType="application/octet-stream";
-    node.attachment.temporary=true;
+  if (sendFlags & ENIG_ENCRYPT) {
+    // if we got here, all attachments were encrpted successfully,
+    // so we replace their names & urls
+    node = bucketList.firstChild;
 
-    ++i; node = node.nextSibling;
+    while (node) {
+      node.attachment.url = newAttachments[i].newUrl;
+      node.attachment.name += EnigGetPref("inlineAttachExt");
+      node.attachment.contentType="application/octet-stream";
+      node.attachment.temporary=true;
+
+      ++i; node = node.nextSibling;
+    }
   }
+  else {
+    // for inline signing we need to add new attachments for every
+    // signed file
+    for (i=0; i<newAttachments.length; i++) {
+      // create new attachment
+      var fileAttachment = Components.classes["@mozilla.org/messengercompose/attachment;1"].createInstance(Components.interfaces.nsIMsgAttachment);
+      fileAttachment.temporary = true;
+      fileAttachment.url = newAttachments[i].newUrl;
+      fileAttachment.name = newAttachments[i].origName + EnigGetPref("inlineSigAttachExt");
 
+      // add attachment to msg
+      AddAttachment(fileAttachment);
+    }
+
+  }
   return 0;
 
 }
@@ -1932,11 +1962,11 @@ function enigDecryptQuote(interactive) {
 
   var pgpBlock = docText.substr(beginIndex, endIndex-beginIndex+1);
   var indentRegexp;
-  
+
   if (indentStr) {
     // MULTILINE MATCHING ON
     RegExp.multiline = true;
-    
+
     if (indentStr == "> ") {
       // replace ">> " with "> > " to allow correct quoting
       pgpBlock = pgpBlock.replace(/^>>/g, "> >");
@@ -1979,7 +2009,7 @@ function enigDecryptQuote(interactive) {
 
   // Encode ciphertext from unicode to charset
   var cipherText = EnigConvertFromUnicode(pgpBlock, charset);
-  
+
   if ((! gEnigPrefRoot.getBoolPref("mailnews.reply_in_default_charset")) && (blockType == "MESSAGE")) {
     // set charset according to PGP block, if available (encrypted messages only)
     cipherText = cipherText.replace(/\r\n/g, "\n");
@@ -1993,7 +2023,7 @@ function enigDecryptQuote(interactive) {
       }
     }
   }
-  
+
   // Decrypt message
   var signatureObj   = new Object();
   signatureObj.value = "";
@@ -2052,11 +2082,11 @@ function enigDecryptQuote(interactive) {
   }
 
   var doubleDashSeparator = EnigGetPref("doubleDashSeparator")
-  if (gMsgCompose.type != nsIMsgCompType.Template && 
+  if (gMsgCompose.type != nsIMsgCompType.Template &&
       gMsgCompose.type != nsIMsgCompType.Draft &&
       doubleDashSeparator) {
     var signOffset = plainText.search(/[\r\n]-- +[\r\n]/);
-    
+
     if (signOffset < 0 && blockType == "SIGNED MESSAGE") {
       signOffset = plainText.search(/[\r\n]--[\r\n]/);
     }
@@ -2066,7 +2096,7 @@ function enigDecryptQuote(interactive) {
       plainText = plainText.substr(0, signOffset+1);
     }
   }
-  
+
   var clipBoard = Components.classes[ENIG_CLIPBOARD_CONTRACTID].getService(Components.interfaces.nsIClipboard);
   if (clipBoard.supportsSelectionClipboard()) {
     // get the clipboard contents for selected text (X11)
@@ -2081,7 +2111,7 @@ function enigDecryptQuote(interactive) {
     }
     catch(ex) {}
   }
-  
+
   // Replace encrypted quote with decrypted quote (destroys selection clipboard on X11)
   EnigEditorSelectAll();
 
@@ -2101,7 +2131,7 @@ function enigDecryptQuote(interactive) {
 
   if (tail)
     EnigEditorInsertText(tail);
-    
+
   if (clipBoard.supportsSelectionClipboard()) {
     try {
       // restore the clipboard contents for selected text (X11)
@@ -2219,7 +2249,7 @@ function EnigEditorInsertAsQuotation(plainText) {
 
     var appInfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
     var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"].getService(Components.interfaces.nsIVersionComparator);
-      
+
     if (vc.compare("1.8.0.2", appInfo.platformVersion) <= 0) {
       // TB 1.5.0.2 and newer
       mailEditor.insertAsQuotation(plainText);

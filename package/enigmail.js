@@ -2342,7 +2342,7 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
      hushMailSupport = this.prefBranch.getBoolPref("hushMailSupport")
   } catch(ex) { }
 
-  var detachedSig = usePgpMime && signMsg && !encryptMsg;
+  var detachedSig = (usePgpMime || (sendFlags & nsIEnigmail.SEND_ATTACHMENT)) && signMsg && !encryptMsg;
 
   var toAddrList = toMailAddr.split(/\s*,\s*/);
   var k;
@@ -2403,7 +2403,6 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
     case ENC_TYPE_ATTACH_ASCII:
       encryptCommand += " -a";
     }
-
 
   } else if (signMsg) {
     encryptCommand += " -t --clearsign";
@@ -4211,6 +4210,8 @@ function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
   }
 
   statusFlagsObj.value = 0;
+  sendFlags |= nsIEnigmail.SEND_ATTACHMENT;
+
   var asciiArmor = false;
   try {
     asciiArmor = this.prefBranch.getBoolPref("inlineAttachAsciiArmor");
