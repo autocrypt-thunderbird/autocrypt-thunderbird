@@ -3746,7 +3746,8 @@ function (parent, name, comment, email, expiryDate, keyLength, keyType,
     inputData += "DSA\nKey-Length: 1024\nSubkey-Type: ELG-E\nSubkey-Length: ";
     break;
   case KEYTYPE_RSA:
-    inputData += "RSA\nKey-Length: ";
+    inputData += "RSA\nKey-Usage: sign,auth\nKey-Length: "+keyLength;
+    inputData += "\nSubkey-Type: RSA\nSubkey-Usage: encrypt\nSubkey-Length: ";
     break;
   default:
     return null;
