@@ -1667,9 +1667,9 @@ function enigGenericSendMessage( msgType )
         msgType == nsIMsgCompDeliverMode.AutoSaveAsDraft ||
         msgType == nsIMsgCompDeliverMode.SaveAsTemplate)
       {
-        var fallbackCharset = new Object;
+        var fallbackCharset = "";
         if (gPromptService &&
-            !gMsgCompose.checkCharsetConversion(getCurrentIdentity(), fallbackCharset))
+            !enigCheckCharsetConversion(msgCompFields))
         {
           var dlgTitle = sComposeMsgsBundle.getString("initErrorDlogTitle");
           var dlgText = sComposeMsgsBundle.getString("12553");  // NS_ERROR_MSG_MULTILINGUAL_SEND
@@ -1683,7 +1683,7 @@ function enigGenericSendMessage( msgType )
           switch(result3)
           {
             case 0:
-              fallbackCharset.value = "UTF-8";
+              fallbackCharset = "UTF-8";
               break;
             case 1:  // send anyway
               msgCompFields.needToCheckCharset = false;
@@ -1692,9 +1692,8 @@ function enigGenericSendMessage( msgType )
               return;
           }
         }
-        if (fallbackCharset &&
-            fallbackCharset.value && fallbackCharset.value != "")
-          gMsgCompose.SetDocumentCharset(fallbackCharset.value);
+        if (fallbackCharset != "")
+          gMsgCompose.SetDocumentCharset(fallbackCharset);
       }
 
 
@@ -1763,6 +1762,25 @@ function enigGenericSendMessage( msgType )
   else
     ERROR_LOG("###SendMessage Error: composeAppCore is null!\n");
 }
+
+
+// Replacement for buggy charset conversion detection of Thunderbird
+
+function enigCheckCharsetConversion(msgCompFields) {
+
+  var converterOrig = Components.classes["@mozilla.org/intl/saveascharset;1"].createInstance(Components.interfaces.nsISaveAsCharset);
+  var converterUtf = Components.classes["@mozilla.org/intl/saveascharset;1"].createInstance(Components.interfaces.nsISaveAsCharset);
+
+  converterOrig.Init(msgCompFields.characterSet, 0, 1);
+  converterUtf.Init("UTF-8", 0, 1);
+
+  var encoderFlags = EnigOutputFormatted | EnigOutputLFLineBreak;
+  var docText = EnigEditorGetContentsAs("text/plain", encoderFlags);
+
+  var txtConverted = converterOrig.Convert(docText);
+  return converterUtf.Convert(txtConverted) == converterUtf.Convert(docText);
+}
+
 
 
 // encrypt attachments when sending inline PGP mails
