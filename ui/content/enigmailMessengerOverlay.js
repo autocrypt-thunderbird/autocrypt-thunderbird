@@ -479,7 +479,7 @@ function enigMessageDecrypt(event, isAuto) {
 
   if (EnigGetPref("parseAllHeaders")) {
     var showHeaders = 0;
-    
+
     try {
       showHeaders = gEnigPrefRoot.getIntPref("mail.show_headers");
     } catch (ex) {
@@ -532,7 +532,7 @@ function enigMessageDecrypt(event, isAuto) {
     }
 
   }
-  
+
   var contentType = "";
   var contentEncoding = "";
   var xEnigmailVersion = "";
@@ -544,16 +544,16 @@ function enigMessageDecrypt(event, isAuto) {
   }
 
   var enigmailSvc;
-    
+
   if (isAuto && (! EnigGetPref("autoDecrypt"))) {
     var signedMsg = ((contentType.search(/^multipart\/signed(;|$)/i) == 0) && (contentType.search(/application\/pgp-signature/i)>0));
     var encrypedMsg = ((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) && (contentType.search(/application\/pgp-encrypted/i)>0));
-    if (embeddedSigned || embeddedEncrypted || 
+    if (embeddedSigned || embeddedEncrypted ||
         encrypedMsg || signedMsg) {
       enigmailSvc = GetEnigmailSvc();
       if (!enigmailSvc)
         return;
-        
+
       if ((!enigmailSvc.mimeInitialized() && encrypedMsg) || signedMsg ||
           ((!encrypedMsg) && (embeddedSigned || embeddedEncrypted))) {
         enigUpdateHdrIcons(ENIG_POSSIBLE_PGPMIME, 0, "", "", "", EnigGetString("possiblyPgpMime"));
@@ -561,7 +561,7 @@ function enigMessageDecrypt(event, isAuto) {
     }
     return;
   }
-  
+
   EnigShowHeadersAll(false);
 
   if (((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) ||
@@ -632,7 +632,7 @@ function enigMessageDecrypt(event, isAuto) {
     if (mailNewsUrl) {
       const ENIG_ENIGMIMEVERIFY_CONTRACTID = "@mozilla.org/enigmail/mime-verify;1";
       var verifier = Components.classes[ENIG_ENIGMIMEVERIFY_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeVerify);
-      
+
       verifier.init(window, mailNewsUrl, msgWindow, msgUriSpec,
                     true, enableSubpartTreatment);
 
@@ -764,7 +764,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
 
     exitCode = exitCodeObj.value;
     newSignature = signatureObj.value;
-    
+
     if (plainText == "" && exitCode ==0) {
       plainText = " ";
     }
@@ -784,7 +784,8 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
 
   enigUpdateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsg);
 
-  if (statusFlags & (nsIEnigmail.BAD_SIGNATURE | nsIEnigmail.BAD_ARMOR)) {
+  if ((statusFlags & (nsIEnigmail.BAD_SIGNATURE | nsIEnigmail.BAD_ARMOR)) ||
+       (exitCode !=0 && (statusFlags & nsIEnigmail.PARTIALLY_PGP ))) {
     // Bad signature/armor
     if (retry) {
       // Try to verify signature by accessing raw message text directly
@@ -1491,7 +1492,7 @@ function enigHandleAttachmentSel(actionType) {
 
 function enigHandleAttachment(actionType, anAttachment) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigHandleAttachment: actionType="+actionType+", anAttachment(url)="+anAttachment.url+"\n");
- 
+
   var ipcBuffer = Components.classes[ENIG_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
 
   var argumentsObj = { actionType: actionType,
@@ -1585,7 +1586,7 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
   }
 
   exitStatus=enigmailSvc.decryptAttachment(window, outFile.path,
-                                callbackArg.attachment.displayName, 
+                                callbackArg.attachment.displayName,
                                 callbackArg.ipcBuffer,
                                 exitCodeObj, statusFlagsObj,
                                 errorMsgObj);
@@ -1622,7 +1623,7 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
         try {
           var extAppLauncher = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsPIExternalAppLauncher);
           extAppLauncher.deleteTemporaryFileOnExit(outFile);
-  
+
           var mimeService = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsIMIMEService);
           var fileMimeType = mimeService.GetTypeFromFile(outFile);
           var fileMimeInfo = mimeService.GetFromTypeAndExtension(fileMimeType, fileExt);
@@ -1662,7 +1663,7 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
           return;
         }
       }
-  
+
       // open the attachment using an external application
       enigLoadExternalURL(outFileUri.asciiSpec);
     }
