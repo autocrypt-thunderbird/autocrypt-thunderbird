@@ -784,8 +784,20 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
 
   enigUpdateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsg);
 
-  if ((statusFlags & (nsIEnigmail.BAD_SIGNATURE | nsIEnigmail.BAD_ARMOR)) ||
-       (exitCode !=0 && (statusFlags & nsIEnigmail.PARTIALLY_PGP ))) {
+  var noSecondTry = nsIEnigmail.GOOD_SIGNATURE |
+        nsIEnigmail.EXPIRED_SIGNATURE |
+        nsIEnigmail.EXPIRED_KEY_SIGNATURE |
+        nsIEnigmail.EXPIRED_KEY |
+        nsIEnigmail.REVOKED_KEY |
+        nsIEnigmail.NO_PUBKEY |
+        nsIEnigmail.NO_SECKEY |
+        nsIEnigmail.IMPORTED_KEY |
+        nsIEnigmail.MISSING_PASSPHRASE |
+        nsIEnigmail.BAD_PASSPHRASE |
+        nsIEnigmail.DECRYPTION_OKAY |
+        nsIEnigmail.OVERFLOWED;
+
+  if ((exitCode !=0) && (! (statusFlags & noSecondTry))) {
     // Bad signature/armor
     if (retry) {
       // Try to verify signature by accessing raw message text directly
