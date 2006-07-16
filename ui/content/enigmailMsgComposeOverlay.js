@@ -1768,17 +1768,21 @@ function enigGenericSendMessage( msgType )
 
 function enigCheckCharsetConversion(msgCompFields) {
 
-  var converterOrig = Components.classes["@mozilla.org/intl/saveascharset;1"].createInstance(Components.interfaces.nsISaveAsCharset);
-  var converterUtf = Components.classes["@mozilla.org/intl/saveascharset;1"].createInstance(Components.interfaces.nsISaveAsCharset);
+  try {
+    var encoderFlags = EnigOutputFormatted | EnigOutputLFLineBreak;
+    var docText = EnigEditorGetContentsAs("text/plain", encoderFlags);
 
-  converterOrig.Init(msgCompFields.characterSet, 0, 1);
-  converterUtf.Init("UTF-8", 0, 1);
+    if (docText.length > 0) {
+      var converter = Components.classes[ENIG_SAVEASCHARSET_CONTRACTID].createInstance(Components.interfaces.nsISaveAsCharset);
 
-  var encoderFlags = EnigOutputFormatted | EnigOutputLFLineBreak;
-  var docText = EnigEditorGetContentsAs("text/plain", encoderFlags);
+      converter.Init(msgCompFields.characterSet, 0, 1);
 
-  var txtConverted = converterOrig.Convert(docText);
-  return converterUtf.Convert(txtConverted) == converterUtf.Convert(docText);
+      return (converter.Convert(docText).length >= docText.length);
+    }
+  }
+  catch (ex) {}
+
+  return true;
 }
 
 

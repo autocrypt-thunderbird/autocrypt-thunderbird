@@ -67,7 +67,8 @@ const ENIG_ACCOUNT_MANAGER_CONTRACTID = "@mozilla.org/messenger/account-manager;
 const ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID =
                               "@mozilla.org/network/file-output-stream;1";
 const ENIG_STANDARD_URL_CONTRACTID = "@mozilla.org/network/standard-url;1";
-const ENIG_SCRIPTABLEINPUTSTREAM_CONTRACTID = "@mozilla.org/scriptableinputstream;1"
+const ENIG_SCRIPTABLEINPUTSTREAM_CONTRACTID = "@mozilla.org/scriptableinputstream;1";
+const ENIG_SAVEASCHARSET_CONTRACTID = "@mozilla.org/intl/saveascharset;1";
 
 const ENIG_STREAMCONVERTERSERVICE_CID_STR =
       "{892FFEB0-3F80-11d3-A16C-0050041CAF44}";
@@ -110,7 +111,7 @@ var gUsePGPMimeOptionList = ["usePGPMimeNever", "usePGPMimePossible",
 var gEnigRecipientsSelectionOptions = ["askRecipientsNever",
                                        "askRecipientsClever",
                                        "askRecipientsAlways"];
-                                       
+
 var gEnigPerRecipientRules = ["perRecipientRulesNo",
                               "perRecipientRulesManual",
                               "perRecipientRulesAlways"];
@@ -187,7 +188,7 @@ var gEnigmailSvc;
 
 function GetEnigmailSvc() {
   // Lazy initialization of enigmail JS component (for efficiency)
-  
+
   if (gEnigmailSvc) {
     return gEnigmailSvc.initialized ? gEnigmailSvc : null;
   }
@@ -268,7 +269,7 @@ function EnigUpdatePre0_8() {
         var ioService = enigGetService("@mozilla.org/network/io-service;1", "nsIIOService");
         var dirService = enigGetService("@mozilla.org/file/directory_service;1", "nsIProperties");
         var sysCompDir = dirService.get("ComsD", ENIG_C.interfaces.nsIFile);
-        
+
         for (var f in [ "enigmime.xpt", "libenigmime.so", "enigmail.dll", "libenigmime.dylib" ]) {
           var compFile = sysCompDir.clone();
           compFile.append(f);
@@ -277,7 +278,7 @@ function EnigUpdatePre0_8() {
           }
           catch (ex) {}
         }
-      }        
+      }
       if (oldVer.substring(0,4)<"0.83") {
         var keySrv = EnigGetPref("keyserver");
         if (keySrv.indexOf(",") == -1) {
@@ -430,7 +431,7 @@ function WRITE_LOG(str) {
   function f00(val, digits) {
     return ("0000"+val.toString()).substr(-digits);
   }
-  
+
   var d = new Date();
   var datStr=d.getFullYear()+"-"+f00(d.getMonth()+1, 2)+"-"+f00(d.getDate(),2)+" "+f00(d.getHours(),2)+":"+f00(d.getMinutes(),2)+":"+f00(d.getSeconds(),2)+"."+f00(d.getMilliseconds(),3)+" ";
   if (gEnigLogLevel >= 4)
@@ -839,7 +840,7 @@ function EnigConvertFromUnicode(text, charset) {
 
   } catch (ex) {
     DEBUG_LOG("enigmailCommon.js: EnigConvertFromUnicode: caught an exception\n");
-  
+
     return text;
   }
 }
@@ -869,7 +870,7 @@ function EnigConvertGpgToUnicode(text) {
   if (typeof(text)=="string") {
     var a=text.search(/[\x80-\xFF]{2}/);
     var b=0;
-    
+
     while (a>=0) {
       var ch=text.substr(a,2).toSource().substr(13,8).replace(/\\x/g, "\\u00");
       var newCh=EnigConvertToUnicode(EnigConvertToUnicode(ch, "x-u-escaped"), "utf-8");
@@ -883,7 +884,7 @@ function EnigConvertGpgToUnicode(text) {
         a += b+2;
       }
     }
-    
+
     a=text.search(/\\x3a/i);
     if (a>0) {
       text = text.replace(/\\x3a/ig, "\\e3A");
@@ -902,13 +903,13 @@ function EnigConvertGpgToUnicode(text) {
   }
 
   return text;
-} 
+}
 
 
 function EnigFormatFpr(fingerprint) {
   // format key fingerprint
   DEBUG_LOG("enigmailCommon.js: EnigFormatFpr: fingerprint="+fingerprint+"\n");
-  
+
   var r="";
   var fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
   if (fpr && fpr.length > 2) {
@@ -1063,7 +1064,7 @@ function EnigOpenWin (winName, spec, winOptions, optList) {
       recentWin = thisWin;
     }
   }
-  
+
   if (recentWin) {
     recentWin.focus();
   } else {
@@ -1089,7 +1090,7 @@ function EnigGetWindowOptions() {
 
 function EnigViewAbout() {
   DEBUG_LOG("enigmailCommon.js: EnigViewAbout\n");
-  
+
   EnigOpenWin ("about:enigmail",
                "chrome://enigmail/content/enigmailAbout.xul",
                "resizable,centerscreen");
@@ -1399,7 +1400,7 @@ function EnigOpenSetupWizard() {
 // get keys from keyserver
 function EnigDownloadKeys(inputObj, resultObj) {
   DEBUG_LOG("enigmailCommon.js: EnigSearchKeys: searchList="+inputObj.searchList+"\n");
-  
+
   resultObj.importedKeys=0;
 
   var ioService = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
@@ -1420,7 +1421,7 @@ function EnigDownloadKeys(inputObj, resultObj) {
   if (! keysrvObj.value) {
     return;
   }
-  
+
   inputObj.keyserver = keysrvObj.value;
   if (! inputObj.searchList) {
     inputObj.searchList = keysrvObj.email.split(/[,; ]+/);
@@ -1431,7 +1432,7 @@ function EnigDownloadKeys(inputObj, resultObj) {
 }
 
 // create new PGP Rule
-function EnigNewRule(emailAddress) {    
+function EnigNewRule(emailAddress) {
   // make sure the rules database is loaded
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
@@ -1445,7 +1446,7 @@ function EnigNewRule(emailAddress) {
   inputObj.toAddress="{"+emailAddress+"}";
   inputObj.options="";
   inputObj.command = "add";
-  window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", 
+  window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","",
                     "dialog,modal,centerscreen,resizable", inputObj, resultObj);
   return true;
 }
@@ -1723,7 +1724,7 @@ function EnigGetDateTime(dateNum, withDate, withTime) {
   }
 }
 
-function enigCreateInstance (aURL, aInterface) 
+function enigCreateInstance (aURL, aInterface)
 {
   return ENIG_C.classes[aURL].createInstance(ENIG_C.interfaces[aInterface]);
 }
@@ -1732,7 +1733,7 @@ function enigGetInterface (aInterface) {
   return rv = ENIG_C.interfaces[aInterface];
 }
 
-function enigGetService (aURL, aInterface) 
+function enigGetService (aURL, aInterface)
 {
   // determine how 'aInterface' is passed and handle accordingly
   switch (typeof(aInterface))
@@ -1744,10 +1745,10 @@ function enigGetService (aURL, aInterface)
     case "string":
       return ENIG_C.classes[aURL].getService(ENIG_C.interfaces[aInterface]);
       break;
- 
+
     default:
       return ENIG_C.classes[aURL].getService();
   }
-  
+
   return null;
 }
