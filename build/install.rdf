@@ -5,7 +5,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>{847b3a02-7ab1-11d4-8f02-006008948af5}</em:id>
-    <em:version>0.94.0</em:version>
+    <em:version>0.94.1</em:version>
     
     <!-- Target Applications this extension can install into, 
          with minimum and maximum supported versions. --> 
