@@ -1768,6 +1768,8 @@ function enigGenericSendMessage( msgType )
 
 function enigCheckCharsetConversion(msgCompFields) {
 
+  if (msgCompFields.characterSet == "UTF-8") return true;
+
   try {
     var encoderFlags = EnigOutputFormatted | EnigOutputLFLineBreak;
     var docText = EnigEditorGetContentsAs("text/plain", encoderFlags);
