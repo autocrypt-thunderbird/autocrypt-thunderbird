@@ -106,7 +106,7 @@ LOCAL_INCLUDES	= \
 
 # hack to build non standard library dependent build on unix
 ifeq ($(ENIGMAIL_STATIC),1)
-BUILD_STATIC       = -nodefaultlibs
+BUILD_STATIC       = -nodefaultlibs -Xlinker --unresolved-symbols=ignore-all
 else
 BUILD_STATIC       =
 endif
