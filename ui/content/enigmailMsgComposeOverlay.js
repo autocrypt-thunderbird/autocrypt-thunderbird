@@ -1722,10 +1722,19 @@ function enigGenericSendMessage( msgType )
         var event = document.createEvent('Events');
         event.initEvent('compose-send-message', false, true);
         document.getElementById("msgcomposeWindow").dispatchEvent(event);
-
-        gWindowLocked = true;
-        disableEditableFields();
-        updateComposeItems();
+        gAutoSaving = (msgType == nsIMsgCompDeliverMode.AutoSaveAsDraft);
+        // disable the ui if we're not auto-saving
+        if (!gAutoSaving)
+        {
+          gWindowLocked = true;
+          disableEditableFields();
+          updateComposeItems();
+        }
+        // if we're auto saving, mark the body as not changed here, and not
+        // when the save is done, because the user might change it between now
+        // and when the save is done.
+        else
+          SetContentAndBodyAsUnmodified();
 
         var progress = Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
         if (progress)
@@ -1733,7 +1742,14 @@ function enigGenericSendMessage( msgType )
           progress.registerListener(progressListener);
           gSendOrSaveOperationInProgress = true;
         }
-        msgWindow.SetDOMWindow(window);
+
+        try {
+          // TB <= 2.0
+          msgWindow.SetDOMWindow(window);
+        }
+        catch (ex) {
+          msgWindow.domWindow = window;
+        }
         msgWindow.rootDocShell.allowAuth = true;
         gMsgCompose.SendMsg(msgType, getCurrentIdentity(), currentAccountKey, msgWindow, progress);
 /*
@@ -1767,8 +1783,6 @@ function enigGenericSendMessage( msgType )
 // Replacement for buggy charset conversion detection of Thunderbird
 
 function enigCheckCharsetConversion(msgCompFields) {
-
-  if (msgCompFields.characterSet == "UTF-8") return true;
 
   try {
     var encoderFlags = EnigOutputFormatted | EnigOutputLFLineBreak;

@@ -2029,7 +2029,7 @@ function (pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj) 
   // Extract exit code and error output from pipeTransport
   var exitCode = pipeTransport.exitCode();
 
-  var errListener = pipeTransport.console;
+  var errListener = pipeTransport.console.QueryInterface(Components.interfaces.nsIIPCBuffer);
 
   var errOutput = errListener.getData();
 
