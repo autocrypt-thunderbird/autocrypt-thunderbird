@@ -44,9 +44,12 @@
 #include "nsIHttpChannel.h"
 #include "nsString.h"
 #include "nsNetUtil.h"
-#include "nsSpecialSystemDirectory.h"
+#include "nsDirectoryServiceUtils.h"
+#include "nsDirectoryServiceDefs.h"
 #include "nsReadableUtils.h"
 #include "nsNetCID.h"
+#include "nsIFileSpec.h"
+#include "nsXPIDLString.h"
 
 #include "nsIPCBuffer.h"
 
@@ -95,7 +98,7 @@ nsIPCBuffer::nsIPCBuffer()
     mPipeWrite(IPC_NULL_HANDLE),
     mPipeRead(IPC_NULL_HANDLE),
 
-    mTempFileSpec(nsnull),
+    mTempFile(nsnull),
     mTempOutStream(nsnull),
     mTempInStream(nsnull),
 
@@ -317,7 +320,7 @@ nsIPCBuffer::OpenInputStream(nsIInputStream** result)
 
   mStreamOffset = 0;
 
-  if (mByteCount && mTempFileSpec) {
+  if (mByteCount && mTempFile) {
     rv = OpenTempInStream();
     if (NS_FAILED(rv))
       return rv;
@@ -332,27 +335,47 @@ nsIPCBuffer::OpenInputStream(nsIInputStream** result)
 NS_IMETHODIMP
 nsIPCBuffer::CreateTempFile()
 {
+  nsresult rv;
+  nsIFileSpec* tempFileSpec;
+
   DEBUG_LOG(("nsIPCBuffer::CreateTempFile: \n"));
 
-  if (mTempFileSpec)
+  if (mTempFile)
     return NS_ERROR_FAILURE;
 
-  mTempFileSpec = new nsFileSpec(nsSpecialSystemDirectory(nsSpecialSystemDirectory::OS_TemporaryDirectory));
+  nsCOMPtr<nsIProperties> directoryService =
+    do_GetService(NS_DIRECTORY_SERVICE_CONTRACTID, &rv);
+  directoryService->Get(NS_OS_TEMP_DIR, NS_GET_IID(nsIFile), getter_AddRefs(mTempFile));
 
-  if (!mTempFileSpec)
+  if (! mTempFile)
     return NS_ERROR_OUT_OF_MEMORY;
 
-  *mTempFileSpec += SAFE_TMP_FILENAME;
-  mTempFileSpec->MakeUnique();
+  mTempFile->AppendNative(nsDependentCString(SAFE_TMP_FILENAME));
+  if (NS_FAILED(mTempFile->CreateUnique(nsIFile::NORMAL_FILE_TYPE, 00600))) {
+    return NS_ERROR_FAILURE;
+  }
+
+  rv = NS_NewFileSpecFromIFile(mTempFile, &tempFileSpec);
+
+  if (rv != NS_OK) return rv;
+
+  if (!tempFileSpec)
+    return NS_ERROR_OUT_OF_MEMORY;
+
+
+  nsXPIDLCString nativePath;
+  tempFileSpec->GetNativePath(getter_Copies(nativePath));
 
   DEBUG_LOG(("nsIPCBuffer::CreateTempFile: %s\n",
-             mTempFileSpec->GetNativePathCString()));
+            nativePath.get()));
 
-  mTempOutStream = new nsOutputFileStream(*mTempFileSpec,
-                            PR_WRONLY | PR_CREATE_FILE | PR_TRUNCATE, 00600);
+  mTempOutStream = new nsOutputFileStream(tempFileSpec);
 
-  if (!mTempOutStream->is_open())
+  if (!mTempOutStream->is_open()) {
     return NS_ERROR_FAILURE;
+  }
+
+  delete tempFileSpec;
 
   return NS_OK;
 }
@@ -397,9 +420,11 @@ nsIPCBuffer::CloseTempOutStream()
 NS_IMETHODIMP
 nsIPCBuffer::OpenTempInStream()
 {
+  nsIFileSpec* tempFileSpec;
+
   DEBUG_LOG(("nsIPCBuffer::OpenTempInStream: \n"));
 
-  if (!mTempFileSpec)
+  if (!mTempFile)
     return NS_ERROR_FAILURE;
 
   if (mTempOutStream) {
@@ -407,10 +432,17 @@ nsIPCBuffer::OpenTempInStream()
     return NS_ERROR_FAILURE;
   }
 
-  mTempInStream = new nsInputFileStream(*mTempFileSpec);
-
-  if (!mTempInStream->is_open())
+  if (NS_FAILED(NS_NewFileSpecFromIFile(mTempFile, &tempFileSpec))) {
     return NS_ERROR_FAILURE;
+  }
+
+  mTempInStream = new nsInputFileStream(tempFileSpec);
+
+  if (!mTempInStream->is_open()) {
+    return NS_ERROR_FAILURE;
+  }
+
+  delete tempFileSpec;
 
   return NS_OK;
 }
@@ -447,14 +479,22 @@ nsIPCBuffer::RemoveTempFile()
     CloseTempInStream();
   }
 
-  if (mTempFileSpec) {
+  if (mTempFile) {
+
+    nsIFileSpec* tempFileSpec;
+    if (NS_FAILED(NS_NewFileSpecFromIFile(mTempFile, &tempFileSpec))) {
+      return NS_ERROR_FAILURE;
+    }
+
+    nsXPIDLCString nativePath;
+    tempFileSpec->GetNativePath(getter_Copies(nativePath));
     DEBUG_LOG(("nsIPCBuffer::RemoveTempFile: Removing %s\n",
-                mTempFileSpec->GetNativePathCString()));
+                nativePath.get()));
 
-    mTempFileSpec->Delete(PR_FALSE);
+    tempFileSpec->Delete(PR_FALSE);
 
-    delete mTempFileSpec;
-    mTempFileSpec = nsnull;
+    delete tempFileSpec;
+    mTempFile = nsnull;
   }
 
   return NS_OK;
