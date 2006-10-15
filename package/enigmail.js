@@ -783,6 +783,10 @@ function EnigConvertFromUnicode(text, charset) {
   }
 }
 
+function EnigUnescape(text) {
+  var encodedTxt=text.replace(/"/g , '\\"'); //
+  return eval('String("'+encodedTxt+'")');
+}
 
 function EnigConvertGpgToUnicode(text) {
   if (typeof(text)=="string") {
@@ -791,7 +795,8 @@ function EnigConvertGpgToUnicode(text) {
 
     while (a>=0) {
       var ch=text.substr(a,2).toSource().substr(13,8).replace(/\\x/g, "\\u00");
-      var newCh=EnigConvertToUnicode(EnigConvertToUnicode(ch, "x-u-escaped"), "utf-8");
+      //var newCh=EnigConvertToUnicode(EnigConvertToUnicode(ch, "x-u-escaped"), "utf-8");
+      var newCh=EnigConvertToUnicode(EnigUnescape(ch), "utf-8");
       if (newCh != ch) {
         //dump(ch+"\n");
         var r=new RegExp(text.substr(a, 2), "g");
@@ -812,7 +817,8 @@ function EnigConvertGpgToUnicode(text) {
     a=text.search(/\\x/);
     while (a>=0) {
       ch=text.substr(a,4).replace(/\\x/g, "\\u00");
-      newCh=EnigConvertToUnicode(ch, "x-u-escaped");
+      //newCh=EnigConvertToUnicode(ch, "x-u-escaped");
+      newCh=EnigUnescape(ch);
       if (newCh != ch) {
         r=new RegExp("\\"+text.substr(a, 4), "g");
         text=text.replace(r, newCh);
