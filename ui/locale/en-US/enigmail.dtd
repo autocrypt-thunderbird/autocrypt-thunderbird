@@ -293,9 +293,9 @@
 <!ENTITY  enigmail.copySecurityInfo.label           "Copy OpenPGP Security Info">
 <!ENTITY  enigmail.showPhoto.label                  "View OpenPGP Photo ID">
 <!ENTITY  enigmail.signSenderKey.label              "Sign Key ...">
-<!ENTITY  enigmail.trustSenderKey.label             "Set Key Trust ...">
+<!ENTITY  enigmail.trustSenderKey.label             "Set Owner Trust ...">
 <!ENTITY  enigmail.signSenderKeyPopup.label         "Sign Sender's Key ...">
-<!ENTITY  enigmail.trustSenderKeyPopup.label        "Set Sender's Key Trust ...">
+<!ENTITY  enigmail.trustSenderKeyPopup.label        "Set Owner Trust of Sender's Key...">
 <!ENTITY  enigmail.smimeSecurityInfo.label          "S/MIME Security Info ...">
 <!ENTITY  enigmail.createRuleFromAddr.label         "Create OpenPGP Rule from Address...">
 <!ENTITY  enigmail.keyManWindow.label               "Key Management">
@@ -370,7 +370,7 @@
 <!ENTITY enigmail.addUidDlg.email.label            "Email">
 <!ENTITY enigmail.addUidDlg.comment.label          "Comment (optional)">
 
-<!ENTITY enigmail.keyTrust.title                   "OpenPGP - Set Key Trust">
+<!ENTITY enigmail.keyTrust.title                   "OpenPGP - Set Owner Trust">
 <!ENTITY enigmail.keyTrust.trustKey.label          "Key To Trust:">
 <!ENTITY enigmail.keyTrust.trustLevel.label        "How much do you trust the key?">
 <!ENTITY enigmail.keyTrust.dontKnow.label          "I don't know">
@@ -383,7 +383,7 @@
 <!ENTITY enigmail.keyMan.close.label               "Close Window">
 <!ENTITY enigmail.keyMan.generate.label            "New Key Pair">
 <!ENTITY enigmail.keyMan.sign.label                "Sign Key">
-<!ENTITY enigmail.keyMan.setTrust.label            "Set Key Trust">
+<!ENTITY enigmail.keyMan.setTrust.label            "Set Owner Trust">
 <!ENTITY enigmail.keyMan.genRevoke.label           "Revocation Certificate">
 <!ENTITY enigmail.keyMan.ctxGenRevoke.label        "Generate &amp; Save Revocation Certificate">
 
@@ -426,7 +426,7 @@
 <!ENTITY enigmail.keyMan.viewSig.label             "Signatures">
 <!ENTITY enigmail.keyMan.ctxViewSig.label          "View Signatures">
 <!ENTITY enigmail.keyMan.keyType.label             "Type">
-<!ENTITY enigmail.keyMan.calcTrust.label           "Calculated Trust">
+<!ENTITY enigmail.keyMan.calcTrust.label           "Key Validity">
 <!ENTITY enigmail.keyMan.ownerTrust.label          "Owner Trust">
 <!ENTITY enigmail.keyMan.stopTransfer.label        "Stop transfer">
 <!ENTITY enigmail.keyMan.fingerprint.label         "Fingerprint">
@@ -491,7 +491,7 @@
 <!ENTITY enigmail.keyDetails.size.label              "Size">
 <!ENTITY enigmail.keyDetails.created.label           "Created">
 <!ENTITY enigmail.keyDetails.expiry.label            "Expiry">
-<!ENTITY enigmail.keyDetails.calcTrust.label         "Calculated trust">
+<!ENTITY enigmail.keyDetails.calcTrust.label         "Key validity">
 <!ENTITY enigmail.keyDetails.ownerTrust.label        "Owner trust">
 <!ENTITY enigmail.keyDetails.fingerprint.label       "Fingerprint">
 
@@ -558,8 +558,8 @@
                                                       <html:br/><html:br/>
                                                       To keep everything simple, we make some assumptions about configuration.
                                                       These assumptions try to provide a high level of security for the
-                                                      average user without creating confusion. Of course, you can change all of 
-                                                      these settings after you finish the wizard. You can find out more about 
+                                                      average user without creating confusion. Of course, you can change all of
+                                                      these settings after you finish the wizard. You can find out more about
                                                       the OpenPGP features in the Help menu or on the
                                                       <a class='enigmailLink'><html:a
                                                       href='http://enigmail.mozdev.org/'>Enigmail website</html:a></a>.
