@@ -3749,7 +3749,7 @@ function (parent, name, comment, email, expiryDate, keyLength, keyType,
 
   switch (keyType) {
   case KEYTYPE_DSA:
-    inputData += "DSA\nKey-Length: 1024\nSubkey-Type: ELG-E\nSubkey-Length: ";
+    inputData += "DSA\nKey-Length: 1024\nSubkey-Type: 16\nSubkey-Length: ";
     break;
   case KEYTYPE_RSA:
     inputData += "RSA\nKey-Usage: sign,auth\nKey-Length: "+keyLength;
