@@ -79,6 +79,7 @@ interface nsIEnigmail : nsISupports
   void reinitialize();
   void finalize();
   boolean mimeInitialized();
+  boolean useGpgAgent();     /* is gpg-agent used */
 
   void stillActive();
   void clearCachedPassphrase();
@@ -291,6 +292,10 @@ interface nsIEnigmail : nsISupports
                          in string keyId,
                          in string oldPw,
                          in string newPw,
+                         out wstring errorMsgObj);
+
+  long simpleChangePassphrase (in nsIDOMWindow parent,
+                         in string keyId,
                          out wstring errorMsgObj);
 
   string getKeySig (in string keyId,
