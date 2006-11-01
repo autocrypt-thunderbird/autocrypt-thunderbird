@@ -110,6 +110,7 @@ const nsICmdLineHandler      = Components.interfaces.nsICmdLineHandler;
 const nsICategoryManager     = Components.interfaces.nsICategoryManager;
 const nsIWindowWatcher       = Components.interfaces.nsIWindowWatcher;
 const nsICommandLineHandler  = Components.interfaces.nsICommandLineHandler;
+const nsIWindowsRegKey       = Components.interfaces.nsIWindowsRegKey;
 
 const NS_XPCOM_SHUTDOWN_OBSERVER_ID = "xpcom-shutdown";
 
@@ -859,6 +860,25 @@ function EnigConvertGpgToUnicode(text) {
   return text;
 }
 
+// get a Windows registry value (string)
+// @ keyPath: the path of the registry (e.g. Software\\GNU\\GnuPG)
+// @ keyName: the name of the key to get (e.g. InstallDir)
+// @ rootKey: HKLM, HKCU, etc. (according to constants in nsIWindowsRegKey)
+function getWinRegistryString(keyPath, keyName, rootKey) {
+  var registry = Components.classes["@mozilla.org/windows-registry-key;1"].createInstance(Components.interfaces.nsIWindowsRegKey);
+
+  var retval = "";
+  try {
+    registry.open(rootKey, keyPath, registry.ACCESS_READ);
+    retval = registry.readStringValue(keyName);
+    registry.close();
+  }
+  catch (ex) {}
+
+  return retval;
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Enigmail protocol handler
@@ -1576,6 +1596,36 @@ function () {
   this.initialized = true;
 }
 
+
+Enigmail.prototype.determineGpgHomeDir =
+function () {
+
+  var homeDir = "";
+
+  homeDir = this.processInfo.getEnv("GNUPGHOME");
+
+  if (! homeDir && this.isWin32) {
+    homeDir=getWinRegistryString("Software\\GNU\\GNUPG", "HomeDir", nsIWindowsRegKey.ROOT_KEY_CURRENT_USER);
+
+    if (! homeDir) {
+      homeDir = this.processInfo.getEnv("USERPROFILE");
+
+      if (! homeDir) {
+        homeDir = this.processInfo.getEnv("SystemRoot");
+      }
+
+      if (homeDir) homeDir += "\\Application Data\\GnuPG";
+    }
+
+    if (! homeDir) homeDir = "C:\\gnupg";
+  }
+
+  if (! homeDir) homeDir = this.processInfo.getEnv("HOME")+"/.gnupg";
+
+  return homeDir;
+}
+
+
 Enigmail.prototype.setAgentPath =
 function () {
   var agentPath = "";
@@ -1641,7 +1691,7 @@ function () {
       // Look up in Windows Registry
       var enigMimeService = Components.classes[NS_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
       try {
-        var regPath = enigMimeService.getGpgPathFromRegistry();
+        var regPath = getWinRegistryString("Software\\GNU\\GNUPG", "Install Directory", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
         agentPath = ResolvePath(agentName, regPath, this.isDosLike)
       }
       catch (ex) {}
@@ -1771,9 +1821,8 @@ function (domWindow) {
         envList.push(gEnvList[i]);
       }
 
-      var ds = Components.classes[DIR_SERV_CONTRACTID].getService();
-      var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
-      var envFile = dsprops.get("ProfD", Components.interfaces.nsILocalFile);
+      var envFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
+      envFile.initWithPath(this.determineGpgHomeDir());
       envFile.append(".gpg-agent-info");
 
       if (envFile.exists() && gpgConnectAgent &&
