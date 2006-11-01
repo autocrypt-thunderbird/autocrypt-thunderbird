@@ -1579,7 +1579,7 @@ function() {
   var useAgent = false;
 
   try {
-    useAgent= (this.gpgAgentInfo.envStr.lenght>0 || this.prefBranch.getBoolPref("useGpgAgent"));
+    useAgent= (this.gpgAgentInfo.envStr.length>0 || this.prefBranch.getBoolPref("useGpgAgent"));
   }
   catch (ex) {}
   return useAgent;
