@@ -297,30 +297,3 @@ nsEnigMimeService::Sleep(PRUint32 miliSeconds)
   PR_Sleep(miliSeconds);
   return NS_OK;
 }
-
-NS_IMETHODIMP
-nsEnigMimeService::GetGpgPathFromRegistry(nsAString& retval) {
-
-#ifdef XP_WIN
-  HKEY key;
-	DWORD type, length;
-	unsigned char gpgProg[MAX_PATH];
-
-	if (::RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\GNU\\GNUPG", 0, KEY_READ, &key) != ERROR_SUCCESS) {
-    return NS_ERROR_FAILURE;
-  }
-
-	if (::RegQueryValueEx(key, "Install Directory", 0, &type, gpgProg, &length) != ERROR_SUCCESS) {
-    return NS_ERROR_FAILURE;
-  }
-	// printf("length: %d\nstring: %s\n", length, gpgProg);
-	nsAutoString gpgPath;
-	gpgPath.AssignWithConversion((char*)gpgProg);
-	retval = gpgPath;
-	return NS_OK;
-
-#else
-  return NS_ERROR_FAILURE;
-#endif
-
-}

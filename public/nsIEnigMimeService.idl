@@ -46,6 +46,7 @@ interface nsIDOMNode;
 [scriptable, uuid(847b3a40-7ab1-11d4-8f02-006008948af5)]
 interface nsIEnigMimeService : nsISupports
 {
+
   void init();
   readonly attribute boolean initialized;
 
@@ -60,8 +61,6 @@ interface nsIEnigMimeService : nsISupports
   boolean isEncrypted(in AUTF8String uri);
 
   void sleep(in unsigned long miliSeconds);
-
-  AString getGpgPathFromRegistry();
 };
 
 %{C++
