@@ -1861,7 +1861,7 @@ function (domWindow) {
 
       command += " --sh --daemon --write-env-file '"+envFile.path+"'";
       command += " --default-cache-ttl " + (this.getMaxIdleMinutes()*60);
-      command += " --max-cache-ttl " + (this.getMaxIdleMinutes()*60*4);
+      command += " --max-cache-ttl 999999";  // ca. 11 days
 
       var exitCode = this.ipcService.execPipe(command, false, "", "", 0,
                                     envList, envList.length,
