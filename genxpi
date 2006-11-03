@@ -62,10 +62,11 @@ zip -r ${targetDir}/${xpiFile} chrome.manifest \
 sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${platform}'<\/em:targetPlatform>/' < install.rdf >"$targetDir/install.rdf"
 cd "$targetDir"
 
-dllFile=components/${libPrefix}enigmime${dllSuffix}
+enigmimeDll=${libPrefix}enigmime${dllSuffix}
+dllFile=platform/${platform}/components/${enigmimeDll}
 
-# Supposed to be used for TB 1.5 -- not (yet?) working
-#dllFile=platform/${platform}/plugins/${libPrefix}enigmime${dllSuffix}
+mkdir -p platform/${platform}/components
+cp components/${enigmimeDll} ${dllFile}
 
 
 zip -g ${xpiFile} \
