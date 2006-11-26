@@ -50,7 +50,7 @@ function onLoad() {
     dryRun = EnigGetPref("dryRun");
   }
   catch(ex) {}
-  
+
   var cardStr = enigmailSvc.getCardStatus(exitCodeObj, errorMsgObj);
   if (exitCodeObj.value == 0) {
     var statusList=cardStr.split(/[\r\n]+/);
@@ -58,8 +58,8 @@ function onLoad() {
       var l=statusList[i].split(/:/);
       switch (l[0]) {
       case "name":
-        setValue("firstname", EnigConvertGpgToUnicode(l[2]));
-        setValue(l[0], EnigConvertGpgToUnicode(l[1]));
+        setValue("firstname", EnigConvertGpgToUnicode(l[1]));
+        setValue(l[0], EnigConvertGpgToUnicode(l[2]));
         break;
       case "vendor":
         setValue(l[0], EnigConvertGpgToUnicode(l[2].replace(/\\x3a/ig, ":")));
@@ -80,9 +80,9 @@ function onLoad() {
         setValue("key_fpr_3", EnigFormatFpr(l[3]));
         break;
       case "fprtime":
-        setValue("key_created_1", EnigGetDateTime(l[1]), true, false);
-        setValue("key_created_2", EnigGetDateTime(l[2]), true, false);
-        setValue("key_created_3", EnigGetDateTime(l[3]), true, false);
+        setValue("card_key_created_1", EnigGetDateTime(l[1]), true, false);
+        setValue("card_key_created_2", EnigGetDateTime(l[2]), true, false);
+        setValue("card_key_created_3", EnigGetDateTime(l[3]), true, false);
         break;
       default:
         if (l[0]) {
@@ -163,7 +163,7 @@ function doSaveChanges() {
   if (r != 0) {
     EnigAlert(errorMsgObj.value);
   }
-  
+
   onLoad();
 }
 
