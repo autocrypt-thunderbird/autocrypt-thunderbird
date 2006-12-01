@@ -20,8 +20,8 @@
       <Description>
         <!-- Seamonkey -->
         <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
-        <em:minVersion>0.1</em:minVersion>
-        <em:maxVersion>1.0</em:maxVersion>
+        <em:minVersion>1.0</em:minVersion>
+        <em:maxVersion>1.1</em:maxVersion>
       </Description>
     </em:targetApplication>
 
