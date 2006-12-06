@@ -1075,40 +1075,27 @@ function enigGetDecryptedMessage(contentType, includeHeaders) {
           var urlObj = new Object();
           msgService.GetUrlForUri(uriSpec, urlObj, msgWindow);
           var msgData, msgHdr
+
+          var msgDbHdr = messenger.msgHdrFromURI(uriSpec);
+          msgHdr = { "From": msgDbHdr.author,
+                     "Subject": msgDbHdr.subject,
+                     "To": msgDbHdr.recipients,
+                     "Cc": msgDbHdr.ccList,
+                     "Date": EnigGetDateTime(msgDbHdr.dateInSeconds, true, true) };
+
+
           if(urlObj.value.scheme=="news") {
             msgData = urlObj.value.QueryInterface(Components.interfaces.nsINntpUrl);
-            msgHdr = { "From":    msgData.messageHeader.author,
-                        "Subject": msgData.messageHeader.subject,
-                        "Cc":      msgData.messageHeader.ccList,
-                        "To":      msgData.messageHeader.recipients,
-                        "Date":    headerList.date,
-                        "Newsgroups": msgData.messageHeader.folder.name };
+            if (typeof (currentHeaderData.newsgroups)) {
+              msgHdr.Newsgroups = currentHeaderData.newsgroups.headerValue;
+            }
           }
-          else if(urlObj.value.scheme=="imap") {
-            var msgKey=new Object();
-            msgData = urlObj.value.QueryInterface(Components.interfaces.nsIImapUrl);
-            // this only succeeds if exactly one message was selected, which is
-            // at this moment the case
-            msgData.createListOfMessageIdsString(msgKey);
-            var imapMsgHeader = msgData.imapMessageSink.GetMessageHeader(msgKey.value);
-            msgHdr = { "From":    imapMsgHeader.author,
-                        "Subject": imapMsgHeader.subject,
-                        "Cc":      imapMsgHeader.ccList,
-                        "To":      imapMsgHeader.recipients,
-                        "Date":    headerList.date };
-          }
-          else {
-            msgData = urlObj.value.QueryInterface(Components.interfaces.nsIMailboxUrl);
-            msgHdr = { "From":    msgData.messageHeader.author,
-                        "Subject": msgData.messageHeader.subject,
-                        "Cc":      msgData.messageHeader.ccList,
-                        "To":      msgData.messageHeader.recipients,
-                        "Date":    headerList.date };
-          }
+
           for (headerName in msgHdr) {
-            if (msgHdr[headerName])
+            if (msgHdr[headerName] && msgHdr[headerName].length>0)
               contentData += headerName + ": " + msgHdr[headerName] + "\r\n";
           }
+
         }
       } catch (ex) {
         // the above seems to fail every now and then
