@@ -32,6 +32,7 @@
 <!ENTITY enigmail.defaultEncryptionOption.label "Choose default encryption options">
 <!ENTITY enigmail.usePGPMimeOption.label  "Choose PGP/MIME option">
 <!ENTITY enigmail.mimeHashAlgorithm.label "Hash algorithm">
+<!ENTITY enigmail.autoChoose.label        "Select automatically">
 
 <!ENTITY enigmail.agentPath.label             "GnuPG executable path">
 <!ENTITY enigmail.agentAdditionalParam.label  "Additional parameters for GnuPG">

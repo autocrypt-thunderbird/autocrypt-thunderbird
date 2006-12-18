@@ -66,7 +66,7 @@
 		  <!-- "Basic" Tab -->
       <vbox id="basic" flex="1">
           <description class="enigmailPrefsTitle">&enigmail.basicPrefs.label;</description>
-					
+
 					<grid>
             <columns>
               <column flex="1"/>
@@ -76,7 +76,7 @@
             <rows> <!-- autostretch="never"> -->
 							<row>
 							  <hbox align="center">
-							    <label control="enigmail_agentPath" 
+							    <label control="enigmail_agentPath"
                     value="&enigmail.agentPath.label;" />
 							  </hbox>
 								<hbox align="center">
@@ -176,19 +176,19 @@
               <radio id="askRecipientsNever"
                     value="0"
                     label="&enigmail.askRecipientsNever.label;"/>
-  
+
               <radio id="askRecipientsClever"
                     value="1"
                     label="&enigmail.askRecipientsClever.label;"/>
-  
+
               <radio id="askRecipientsAlways"
                     value="2"
                     label="&enigmail.askRecipientsAlways.label;"/>
             </radiogroup>
           </groupbox>
-          
+
           <separator/>
-          
+
           <groupbox>
             <caption label="&enigmail.perRecipientRules.label;"/>
             <grid>
@@ -203,11 +203,11 @@
                     <radio id="perRecipientRulesNo"
                         value="0"
                         label="&enigmail.disabled.label;"/>
-      
+
                   <radio id="perRecipientRulesManual"
                         value="1"
                         label="&enigmail.perRecipientRulesManual.label;"/>
-      
+
                   <radio id="perRecipientRulesAlways"
                         value="2"
                         label="&enigmail.perRecipientRulesAlways.label;"/>
@@ -215,7 +215,7 @@
                 <hbox autostretch="never" align="end">
                   <button label="&enigmail.defineRules.label;"
                           oncommand="EnigRulesEditor();"/>
-                </hbox>                            
+                </hbox>
               </row>
             </rows>
           </grid>
@@ -244,10 +244,11 @@
           <hbox align="center">
             <label control="mimeHashList"
                 value="&enigmail.mimeHashAlgorithm.label;:" />
-            <menulist id="mimeHashList" label="SHA1" flex="1">
+            <menulist id="mimeHashList" label="&enigmail.autoChoose.label;" flex="1">
 
               <menupopup id="mimeHashPopup">
-                <menuitem id="mimeHashSHA1"  label="SHA1" selected="true"/>
+                <menuitem id="mimeHashAuto"  label="&enigmail.autoChoose.label;" selected="true"/>
+                <menuitem id="mimeHashSHA1"  label="SHA1"/>
                 <menuitem id="mimeHashRIPEMD160" label="RIPEMD160"/>
                 <menuitem id="mimeHashSHA256" label="SHA256"/>
                 <menuitem id="mimeHashSHA384" label="SHA384"/>
@@ -290,7 +291,7 @@
             <label value="&enigmail.autoKeyRetrieve.label;"/>
             <textbox id="enigmail_autoKeyRetrieve" size="30"/>
           </hbox>
-          
+
           <separator/>
 
           <hbox>

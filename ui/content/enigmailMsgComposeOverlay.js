@@ -49,7 +49,7 @@ const EnigOutputLFLineBreak   = 1024;
 const ENIG_ENIGMSGCOMPFIELDS_CONTRACTID = "@mozdev.org/enigmail/composefields;1";
 
 // List of hash algorithms for PGP/MIME signatures
-var gMimeHashAlgorithms = ["md5", "sha1", "ripemd160", "sha256", "sha384", "sha512"];
+var gMimeHashAlgorithms = ["-", "sha1", "ripemd160", "sha256", "sha384", "sha512"];
 
 var gEnigEditor;
 var gEnigDirty, gEnigProcessed, gEnigTimeoutID;
@@ -685,6 +685,24 @@ function enigConfirmBeforeSend(toAddr, gpgKeys, sendFlags, isOffline, msgSendTyp
   return EnigConfirm(msgConfirm);
 }
 
+function enigExtractHashAlgo(msgTxt) {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigExtractHashAlgo\n");
+
+  var m = msgTxt.match(/^(Hash: )(.*)$/m);
+  if (m.length > 2 && m[1] == "Hash: ") {
+    var hashAlgorithm = m[2].toLowerCase();
+    for (var i=1; i < gMimeHashAlgorithms.length; i++) {
+      if (gMimeHashAlgorithms[i] == hashAlgorithm) {
+        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigExtractHashAlgo: found hashAlgorithm "+hashAlgorithm+"\n");
+        return hashAlgorithm;
+      }
+    }
+  }
+
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigExtractHashAlgo: no hashAlgorithm found\n");
+  return null;
+}
+
 function enigAddRecipients(toAddrList, recList) {
   for (var i=0; i<recList.count; i++) {
     toAddrList.push(EnigStripEmail(recList.StringAt(i).replace(/[\",]/g, "")));
@@ -916,6 +934,7 @@ function enigEncryptMsg(msgSendType) {
 
      var toAddr = toAddrList.join(", ");
      var testCipher = null;
+     var hashAlgorithm = null;
 
      var notSignedIfNotEnc= (gEnigSendModeDirty<2 && (! enigGetAccDefault("signPlain")));
 
@@ -968,7 +987,7 @@ function enigEncryptMsg(msgSendType) {
           }
           repeatSelection++;
 
-          if (sendFlags & ENIG_ENCRYPT) {
+          if (sendFlags & (ENIG_ENCRYPT | ENIG_SIGN)) {
             // Encrypt test message for default encryption
             var testExitCodeObj    = new Object();
             var testStatusFlagsObj = new Object();
@@ -976,12 +995,14 @@ function enigEncryptMsg(msgSendType) {
 
             var testPlain = "Test Message";
             var testUiFlags   = nsIEnigmail.UI_TEST;
-            var testSendFlags = nsIEnigmail.SEND_ENCRYPTED |
-                                nsIEnigmail.SEND_TEST |
+            var testSendFlags = nsIEnigmail.SEND_TEST |
                                 optSendFlags;
 
+            if (sendFlags & ENIG_ENCRYPT) testSendFlags |= ENIG_ENCRYPT;
+            if (sendFlags & ENIG_SIGN) testSendFlags |= ENIG_SIGN;
+
             // test recipients
-            testCipher = enigmailSvc.encryptMessage(window, testUiFlags,
+            testCipher = enigmailSvc.encryptMessage(window, testUiFlags, null,
                                                           testPlain,
                                                           fromAddr, toAddr,
                                                           testSendFlags,
@@ -989,7 +1010,15 @@ function enigEncryptMsg(msgSendType) {
                                                           testStatusFlagsObj,
                                                           testErrorMsgObj);
 
+            if ((testCipher.length > 0)
+                && (testExitCodeObj.value == 0)
+                && !(sendFlags & ENIG_ENCRYPT)
+                && (EnigGetPref("mimeHashAlgorithm")==0)) {
+              hashAlgorithm = enigExtractHashAlgo(testCipher);
+            }
+          }
 
+          if (sendFlags & ENIG_ENCRYPT) {
             if ((recipientsSelectionOption==2) ||
                 ((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT) &&
                  (recipientsSelectionOption>0))) {
@@ -1165,7 +1194,12 @@ function enigEncryptMsg(msgSendType) {
        newSecurityInfo.UIFlags = uiFlags;
        newSecurityInfo.senderEmailAddr = fromAddr;
        newSecurityInfo.recipients = toAddr;
-       newSecurityInfo.hashAlgorithm = gMimeHashAlgorithms[EnigGetPref("mimeHashAlgorithm")];
+       if (hashAlgorithm == null) {
+         newSecurityInfo.hashAlgorithm = gMimeHashAlgorithms[EnigGetPref("mimeHashAlgorithm")];
+       }
+       else {
+         newSecurityInfo.hashAlgorithm = hashAlgorithm;
+       }
 
        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: securityInfo = "+newSecurityInfo+"\n");
 
@@ -1373,7 +1407,7 @@ function enigEncryptInline(sendInfo) {
                    ? EnigConvertFromUnicode(origText, charset)
                    : EnigConvertFromUnicode(escText, charset);
 
-    var cipherText = enigmailSvc.encryptMessage(window, sendInfo.uiFlags, plainText,
+    var cipherText = enigmailSvc.encryptMessage(window, sendInfo.uiFlags, null, plainText,
                                           sendInfo.fromAddr, sendInfo.toAddr, sendInfo.sendFlags,
                                           exitCodeObj, statusFlagsObj,
                                           errorMsgObj);

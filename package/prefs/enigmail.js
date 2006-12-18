@@ -92,8 +92,8 @@ pref("extensions.enigmail.keyserver","pool.sks-keyservers.net, subkeys.pgp.net, 
 // keep passphrase for ... minutes
 pref("extensions.enigmail.maxIdleMinutes",5);
 
-// GnuPG hash algorithm (currently only 1 supported!)
-pref("extensions.enigmail.mimeHashAlgorithm",1);
+// GnuPG hash algorithm
+pref("extensions.enigmail.mimeHashAlgorithm",0);
 
 // no passphrase for GnuPG key needed
 pref("extensions.enigmail.noPassphrase",false);

@@ -61,13 +61,13 @@ function prefOnLoad() {
       }
 
    }
-   
+
    if ((! window.arguments) || (window.arguments[0].clientType!="seamonkey")) {
       document.getElementById("enigmail_disableSMIMEui").setAttribute("collapsed", true);
       var uninst = document.getElementById("uninstall");
       if (uninst) uninst.setAttribute("collapsed", "true");
    }
-   
+
    EnigDisplayRadioPref("usePGPMimeOption", EnigGetPref("usePGPMimeOption"),
                         gUsePGPMimeOptionList);
 
@@ -79,7 +79,7 @@ function prefOnLoad() {
                         gEnigPerRecipientRules);
 
    gMimeHashElement = document.getElementById("mimeHashList");
-   gMimeHashElement.selectedIndex = EnigGetPref("mimeHashAlgorithm")-1;
+   gMimeHashElement.selectedIndex = EnigGetPref("mimeHashAlgorithm");
 
    gSendFlowedElement = document.getElementById("send_plaintext_flowed");
 
@@ -94,7 +94,7 @@ function prefOnLoad() {
    } else {
      gSendFlowedElement.removeAttribute("checked");
    }
-   
+
    gMimePartsElement = document.getElementById("mime_parts_on_demand");
 
    try {
@@ -130,9 +130,9 @@ function resetPrefs() {
                       gEnigRecipientsSelectionOptions);
   EnigDisplayRadioPref("perRecipientRules", EnigGetPref("perRecipientRules"),
                       gEnigPerRecipientRules);
-                      
 
-  gMimeHashElement.selectedIndex = EnigGetDefaultPref("mimeHashAlgorithm")-1;
+
+  gMimeHashElement.selectedIndex = EnigGetDefaultPref("mimeHashAlgorithm");
 }
 
 function resetRememberedValues() {
@@ -146,7 +146,7 @@ function resetRememberedValues() {
              "warnOnRulesConflict",
              "warnClearPassphrase",
              "warnRefreshAll"];
-             
+
   for (var j=0; j<prefs.length; j++) {
     EnigSetPref(prefs[j], EnigGetDefaultPref(prefs[j]));
   }
@@ -156,15 +156,15 @@ function resetRememberedValues() {
 function prefOnAccept() {
 
   DEBUG_LOG("pref-enigmail.js: prefOnAccept\n");
-  
+
   var oldAgentPath = EnigGetPref("agentPath");
   var newAgentPath = document.getElementById("enigmail_agentPath").value;
-  
+
   EnigDisplayPrefs(false, false, true);
 
   EnigSetRadioPref("usePGPMimeOption", gUsePGPMimeOptionList);
 
-  EnigSetPref("mimeHashAlgorithm", gMimeHashElement.selectedIndex+1);
+  EnigSetPref("mimeHashAlgorithm", gMimeHashElement.selectedIndex);
 
   EnigSetRadioPref("recipientsSelectionOption", gEnigRecipientsSelectionOptions);
 
@@ -206,7 +206,7 @@ function prefOnAccept() {
       GetEnigmailSvc();
     }
   }
-  
+
   return true;
 }
 
@@ -282,7 +282,7 @@ function EnigTest() {
     var statusFlagsObj = new Object();
     var errorMsgObj    = new Object();
 
-    var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
+    var cipherText = enigmailSvc.encryptMessage(window, uiFlags, null, plainText,
                                                 "", toMailAddr,
                                                 nsIEnigmail.SEND_SIGNED,
                                                 exitCodeObj, statusFlagsObj,
@@ -298,7 +298,7 @@ function EnigTest() {
     var userIdObj      = new Object();
     var sigDetailsObj      = new Object();
 
-    var decryptedText = enigmailSvc.decryptMessage(window, 
+    var decryptedText = enigmailSvc.decryptMessage(window,
                                         uiFlags, cipherText,
                                         signatureObj, exitCodeObj,
                                         statusFlagsObj, keyIdObj, userIdObj,
@@ -311,7 +311,7 @@ function EnigTest() {
     CONSOLE_LOG("EnigTest: signature = "+signatureObj.value+"\n");
     CONSOLE_LOG("************************************************\n");
 
-    cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
+    cipherText = enigmailSvc.encryptMessage(window, uiFlags, null, plainText,
                                                 "", toMailAddr,
                                                 nsIEnigmail.SEND_SIGNED|
                                                 nsIEnigmail.SEND_ENCRYPTED,
@@ -361,12 +361,12 @@ function enigLocateGpg() {
 // Uninstallation stuff
 /////////////////////////
 
-function enigUninstall() 
+function enigUninstall()
 {
   if (!EnigConfirm(EnigGetString("uninstallConfirm"))) {
     return;
   }
-  
+
   try {
     var uninst=new enigUninstaller();
     uninst.uninstallPackage();
@@ -377,14 +377,14 @@ function enigUninstall()
   catch (ex) {
     EnigAlert(EnigGetString("uninstallFail"));
   }
-  
-}  
+
+}
 
 // The part below is taken from jslib (http://jslib.mozdev.org)
 // CONSTRUCTOR
-function enigUninstaller() 
+function enigUninstaller()
 {
-  
+
   this.mNames = ["enigmail", "enigmime"];
 
   this.gRDF = enigGetService("@mozilla.org/rdf/rdf-service;1", "nsIRDFService");
@@ -411,31 +411,31 @@ enigUninstaller.prototype =
   packageDisplayName      : "",
 
 
-  finish : function () 
+  finish : function ()
   {
     // do nothing
   },
-  
-  generateUninstallInfo : function () 
+
+  generateUninstallInfo : function ()
   {
     if (!this.mUninstallInfoGenerated){
       this.mUninstallInfoGenerated = true;
-  
+
       this.filesToDelete = [];
       this.filesToDeleteHash = {};
       this.overlaysToDelete = [];
       this.baseURIs = {};
-  
+
       this.doUninstall(false);
     }
   },
-  
-  uninstallPackage : function () 
+
+  uninstallPackage : function ()
   {
     this.generateUninstallInfo();
     this.doUninstall(true);
   },
-  
+
   /**
    * Iterates over the items in an RDF Container
    */
@@ -446,29 +446,29 @@ enigUninstaller.prototype =
       container.Init(ds, resource);
     }
     catch (ex){ return; }
-  
+
     var elements = container.GetElements();
     while (elements.hasMoreElements()){
       var element = elements.getNext();
       callback(resource, element, this);
     }
   },
-  
+
   /**
    * Get all of the currently installed packages. This function is not currently used.
    */
   getAllPackagesInfo : function(chromeDS)
   {
     var allPackages = {};
-  
+
     var handlePackages = function(container, packres, uninstallObj)
     {
       var childPred = uninstallObj.gRDF.GetResource(uninstallObj.CHROME_NS + "name")
       var childName = chromeDS.GetTarget(packres, childPred, true);
-  
+
       var displayPred = uninstallObj.gRDF.GetResource(uninstallObj.CHROME_NS + "displayName")
       var displayName = chromeDS.GetTarget(packres, displayPred, true);
-  
+
       if (childName instanceof ENIG_C.interfaces.nsIRDFLiteral){
         if (displayName instanceof ENIG_C.interfaces.nsIRDFLiteral){
           displayName = displayName.Value;
@@ -479,11 +479,11 @@ enigUninstaller.prototype =
         allPackages[childName.Value] = displayName;
       }
     }
-  
+
     var rootseq = this.gRDF.GetResource("urn:mozilla:package:root");
     this.iterateContainer(chromeDS, rootseq, handlePackages);
   },
-  
+
   /**
    * Do the uninstallation. This function will be called twice. Once to generate
    * the list of files and overlays to delete, and the second to do the deletions.
@@ -491,64 +491,64 @@ enigUninstaller.prototype =
   doUninstall : function(makeChanges)
   {
     var ioService = enigGetService("@mozilla.org/network/io-service;1", "nsIIOService");
-  
+
     // scan through chrome.rdf and find all references to the package and remove them.
     var appChromeDir = this.gDirService.get("AChrom", ENIG_C.interfaces.nsIFile);
     var chromeRdfFile = appChromeDir.clone();
     chromeRdfFile.append("chrome.rdf");
     var chromeUrl = ioService.newFileURI(chromeRdfFile).spec;
     var appChromeDS = this.gRDF.GetDataSourceBlocking(chromeUrl);
-  
+
     for (var pt = 0; pt < this.mNames.length; pt++){
       this.handleChromeRDF(this.mNames[pt], appChromeDir, appChromeDS, makeChanges);
     }
-  
+
     // scan through chrome.rdf and find all references to the package and remove them.
     var userChromeDir = this.gDirService.get("UChrm", ENIG_C.interfaces.nsIFile);
     chromeRdfFile = userChromeDir.clone();
     chromeRdfFile.append("chrome.rdf");
     chromeUrl = ioService.newFileURI(chromeRdfFile).spec;
     var userChromeDS = this.gRDF.GetDataSourceBlocking(chromeUrl);
-  
+
     for (pt = 0; pt < this.mNames.length; pt++){
       this.handleChromeRDF(this.mNames[pt], userChromeDir, userChromeDS, makeChanges);
     }
-  
+
     if (makeChanges){
       if (appChromeDS instanceof ENIG_C.interfaces.nsIRDFRemoteDataSource)
           appChromeDS.Flush();
       if (userChromeDS instanceof ENIG_C.interfaces.nsIRDFRemoteDataSource)
           userChromeDS.Flush();
-  
+
       for (t=0; t<this.overlaysToDelete.length; t++){
         this.removeOverlay(this.overlaysToDelete[t]);
       }
-  
+
       this.removeFromInstalledChrome(appChromeDir);
-  
+
       var uninstallObj = this;
       var callback = function() {  uninstallObj.doNextUninstallStep(uninstallObj,0); }
       setTimeout(callback,50);
     }
   },
-  
+
   doNextUninstallStep : function(uninstallObj,step)
   {
-  
+
     if (step >= uninstallObj.filesToDelete.length){
       return;
     }
-  
+
     // ignore errors since it doesn't matter if a file could not be found, and
     // non-empty directories should not be deleted.
     try {
       var file = uninstallObj.filesToDelete[step];
       var path = file.path;
-  
+
       DEBUG_LOG("pref-enigmail.js: Uninstalling " + file.leafName+": ");
-  
+
       var ext = path.substring(path.lastIndexOf(".")+1, path.length);
-      // close the jar filehandle so we can unlock it and delete it on 
+      // close the jar filehandle so we can unlock it and delete it on
       // OS's like Windows that like to lock their open files
       if (ext == "jar") {
         var IOService = enigGetService("@mozilla.org/network/io-service;1", "nsIIOService");
@@ -566,11 +566,11 @@ enigUninstaller.prototype =
       catch (ex) {}
     }
     catch (ex){ DEBUG_LOG(ex); }
-  
+
     var callback = function() {  uninstallObj.doNextUninstallStep(uninstallObj,step + 1); }
     setTimeout(callback,50);
   },
-  
+
   /**
    * Gather information about the package from a chrome.rdf file and remove it.
    */
@@ -579,13 +579,13 @@ enigUninstaller.prototype =
     // remove package from content
     var rootseq = this.gRDF.GetResource("urn:mozilla:package:root");
     var packres = this.gRDF.GetResource("urn:mozilla:package:" + packagename);
-  
+
     if (makeChanges){
       this.removeFromChrome(chromeDS, rootseq, packres);
     }
     else {
       this.generateUninstallData(chromeDS, rootseq, packres, chromeDir);
-  
+
       if (!this.packageDisplayName){
         var displayNamePred = this.gRDF.GetResource(this.CHROME_NS + "displayName")
         var displayName = chromeDS.GetTarget(packres, displayNamePred, true);
@@ -597,38 +597,38 @@ enigUninstaller.prototype =
         }
       }
     }
-  
+
     // remove package from skin
     var provider = "skin";
-  
+
     var handleSkinLocaleList = function(container, skinLocale, uninstallObj)
     {
       var rootseq = chromeDS.GetTarget(skinLocale,
                       uninstallObj.gRDF.GetResource(uninstallObj.CHROME_NS + "packages"),true);
       rootseq.QueryInterface(ENIG_C.interfaces.nsIRDFResource);
-  
+
       var skinLocaleName = chromeDS.GetTarget(skinLocale,
             uninstallObj.gRDF.GetResource(uninstallObj.CHROME_NS + "name"),true);
-  
+
       if (skinLocaleName instanceof ENIG_C.interfaces.nsIRDFLiteral){
         var skinLocaleRes = uninstallObj.gRDF.GetResource("urn:mozilla:" + provider + ":" +
                               skinLocaleName.Value + ":" + packagename);
-  
+
         if (makeChanges) uninstallObj.removeFromChrome(chromeDS, rootseq, skinLocaleRes);
         else uninstallObj.generateUninstallData(chromeDS, rootseq, skinLocaleRes, chromeDir);
       }
     };
-  
+
     var packreslist = this.gRDF.GetResource("urn:mozilla:skin:root");
     this.iterateContainer(chromeDS, packreslist, handleSkinLocaleList);
-  
+
     // remove package from locale
     provider = "locale";
-  
+
     packreslist = this.gRDF.GetResource("urn:mozilla:locale:root");
     this.iterateContainer(chromeDS, packreslist, handleSkinLocaleList);
   },
-  
+
   /**
    * Perform an uninstallation given a contents.rdf datasource.
    *   aChromeDS   - chrome.rdf datasource
@@ -645,15 +645,15 @@ enigUninstaller.prototype =
         ds = this.gRDF.GetDataSourceBlocking(baseUrl.Value + "contents.rdf");
       }
       catch (ex){ DEBUG_LOG(ex); return; }
-  
+
       this.markJarForDeletion(baseUrl.Value);
-  
+
       this.generateFilesToDelete(ds, packres);
       this.generateOverlaysToDelete(ds, chromeDir, "overlays");
       this.generateOverlaysToDelete(ds, chromeDir, "stylesheets");
     }
   },
-  
+
   /**
    * Generate the files to delete, which are listed in the uninstallInfo section
    * of the contents.rdf
@@ -666,7 +666,7 @@ enigUninstaller.prototype =
       this.iterateContainer(aDS, uninstallInfo, this.makeFileForDeletion);
     }
   },
-  
+
   /**
    * Mark a file for deletion.
    */
@@ -674,7 +674,7 @@ enigUninstaller.prototype =
   {
     if (!(filename instanceof ENIG_C.interfaces.nsIRDFLiteral)) return;
     filename = filename.Value;
-  
+
     var filekey;
     var colonIdx = filename.indexOf(":");
     if (colonIdx >= 0){
@@ -684,45 +684,45 @@ enigUninstaller.prototype =
     else {
       filekey = "CurProcD";
     }
-  
+
     var file;
     try {
        file = uninstallObj.gDirService.get(filekey, ENIG_C.interfaces.nsIFile);
     } catch (ex) { return; }
-  
+
     var fileparts = filename.split("/");
     for (var t=0; t<fileparts.length; t++){
       file.append(fileparts[t]);
     }
-  
+
     if (!uninstallObj.filesToDeleteHash[file.path]){
       uninstallObj.filesToDeleteHash[file.path] = file;
       uninstallObj.filesToDelete.push(file);
     }
   },
-  
+
   /**
    * Given a baseURI reference, determine the JAR file to delete.
    */
   markJarForDeletion : function(url)
   {
     this.baseURIs[url] = url;
-  
+
     if (url.indexOf("jar:")) return;
-  
+
     var jarfile;
-  
+
     url = url.substring(4);
-  
+
     var expos = url.indexOf("!");
     if (expos > 0){
       url = url.substring(0,expos);
-  
+
       if (url.indexOf("resource:/") == 0){
         url = url.substring(10);
-  
+
         jarfile = this.gDirService.get("CurProcD", ENIG_C.interfaces.nsIFile);
-  
+
         var fileparts = url.split("/");
         for (var t=0; t<fileparts.length; t++){
           jarfile.append(fileparts[t]);
@@ -736,13 +736,13 @@ enigUninstaller.prototype =
         }
       }
     }
-  
+
     if (!this.filesToDeleteHash[jarfile.path]){
       this.filesToDeleteHash[jarfile.path] = jarfile;
       this.filesToDelete.push(jarfile);
     }
   },
-  
+
   /**
    * Generate the list of overlays referenced in a contents.rdf file.
    */
@@ -759,16 +759,16 @@ enigUninstaller.prototype =
             type: overlayType });
       }
     }
-  
+
     var iterateOverlaids = function(container, overlaidFile, uninstallObj)
     {
       uninstallObj.iterateContainer(aDS, overlaidFile, iterateOverlays);
     }
-  
+
     var oroot = this.gRDF.GetResource("urn:mozilla:" + overlayType);
     this.iterateContainer(aDS, oroot, iterateOverlaids);
   },
-  
+
   /**
    * Remove an overlay from the overlayinfo.
    */
@@ -776,17 +776,17 @@ enigUninstaller.prototype =
   {
     DEBUG_LOG("pref-enigmail: removeOverlay\n");
     var overlayItems = this.splitURL(overlay.overlaidFile.Value);
-  
+
     var overlayRdfFile = overlay.chromeDir.clone();
     overlayRdfFile.append("overlayinfo");
     overlayRdfFile.append(overlayItems.packagename);
     overlayRdfFile.append(overlayItems.provider);
     overlayRdfFile.append(overlay.type + ".rdf");
-  
+
     var ioService = enigGetService("@mozilla.org/network/io-service;1", "nsIIOService");
     var overlayRdfUrl = ioService.newFileURI(overlayRdfFile).spec;
     var dsource = this.gRDF.GetDataSourceBlocking(overlayRdfUrl);
-  
+
     try {
       DEBUG_LOG("pref-enigmail: removeOverlay: Uncontain Overlay " + this.RDFGetValue(overlay.overlayFile) +
            " from " + this.RDFGetValue(overlay.overlaidFile) + "\n");
@@ -795,11 +795,11 @@ enigUninstaller.prototype =
       container.RemoveElement(overlay.overlayFile, true);
     }
     catch (ex) { DEBUG_LOG(ex); }
-  
+
     if (dsource instanceof ENIG_C.interfaces.nsIRDFRemoteDataSource)
       dsource.Flush();
   },
-  
+
   /**
    * split a chrome URL into component parts.
    *
@@ -808,25 +808,25 @@ enigUninstaller.prototype =
   splitURL : function(url)
   {
     if (url.indexOf("chrome://")) return null;
-  
+
     var packagename = url.substring(9);
     var slashidx = packagename.indexOf("/");
     if (slashidx == -1) return null;
-  
+
     var provider = packagename.substring(slashidx + 1);
     packagename = packagename.substring(0,slashidx);
-   
+
     slashidx = provider.indexOf("/");
     if (slashidx >= 0){
       provider = provider.substring(0,slashidx);
     }
-  
+
     return {
       packagename: packagename,
       provider: provider
     };
   },
-  
+
   /**
    * Useful debugging function to convert an nsIRDFNode into a string.
    */
@@ -835,15 +835,15 @@ enigUninstaller.prototype =
     return ((node instanceof ENIG_C.interfaces.nsIRDFResource) ? node.Value :
             ((node instanceof ENIG_C.interfaces.nsIRDFLiteral) ? node.Value : ""));
   },
-  
+
   /**
    * Remove references to a package from chrome.rdf.
    */
-  removeFromChrome : function (dsource, rootseq, packres) 
+  removeFromChrome : function (dsource, rootseq, packres)
   {
     DEBUG_LOG("pref-enigmail: removeFromChrome\n");
     var packresnode = packres.QueryInterface(ENIG_C.interfaces.nsIRDFNode);
-  
+
     try {
       DEBUG_LOG("pref-enigmail: removeFromChrome: Uncontain " + packres.Value + " from " +
                  rootseq.Value + "\n");
@@ -852,19 +852,19 @@ enigUninstaller.prototype =
       container.RemoveElement(packresnode, true);
     }
     catch (ex) { DEBUG_LOG(ex); }
-  
+
     var arcs = dsource.ArcLabelsOut(packres);
-  
+
     while(arcs.hasMoreElements()) {
       var arc = arcs.getNext();
-      
+
       var prop = arc.QueryInterface(ENIG_C.interfaces.nsIRDFResource);
-  
+
       var targets = dsource.GetTargets(packres, prop, true);
-  
+
       while (targets.hasMoreElements()) {
         var target = targets.getNext();
-  
+
         var targetNode = target.QueryInterface(ENIG_C.interfaces.nsIRDFNode);
         DEBUG_LOG("pref-enigmail: removeFromChrome: Unassert [" + packres.Value + " , " +
               prop.Value + " , " + this.RDFGetValue(target) + "]\n");
@@ -872,7 +872,7 @@ enigUninstaller.prototype =
       }
     }
   },
-  
+
   removeFromInstalledChrome : function(chromeDir)
   {
     DEBUG_LOG("pref-enigmail: removeFromInstalledChrome\n");
@@ -880,16 +880,16 @@ enigUninstaller.prototype =
     chromeDir.append("installed-chrome.txt");
     var ifile = new File(chromeDir.path);
     ifile.open("r");
-  
+
     var changeNeeded = false;
-  
+
     try {
       var content = "";
-  
+
       while (!ifile.EOF){
         var found = false;
         var ln = ifile.readline();
-  
+
         for (uri in this.baseURIs){
           var idx = ln.indexOf(uri);
           if ((idx > 0) && (idx == ln.length - uri.length)){
@@ -904,7 +904,7 @@ enigUninstaller.prototype =
     finally {
       ifile.close();
     }
-  
+
     if (changeNeeded){
       ifile.open("w",0664);
       try {

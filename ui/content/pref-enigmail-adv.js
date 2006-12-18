@@ -192,7 +192,7 @@ function EnigTest() {
   var statusFlagsObj = new Object();
   var errorMsgObj    = new Object();
 
-  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
+  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, null, plainText,
                                               "", toMailAddr,
                                               nsIEnigmail.SEND_SIGNED,
                                               exitCodeObj, statusFlagsObj,
@@ -218,7 +218,7 @@ function EnigTest() {
   CONSOLE_LOG("EnigTest: signature = "+signatureObj.value+"\n");
   CONSOLE_LOG("************************************************\n");
 
-  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
+  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, null, plainText,
                                               "", toMailAddr,
                                               nsIEnigmail.SEND_SIGNED|
                                               nsIEnigmail.SEND_ENCRYPTED,

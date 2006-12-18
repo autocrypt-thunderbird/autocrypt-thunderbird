@@ -224,7 +224,7 @@ function enigYahooCompose() {
   var errorMsgObj    = new Object();
   var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
-  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
+  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, null, plainText,
                                               fromAddr, toAddr,
                                               encryptFlags,
                                               exitCodeObj, statusFlagsObj,
@@ -287,7 +287,7 @@ function enigYahooShowLetter() {
 
   var newTextNode = msgFrame.document.createTextNode(plainText);
   preElement.appendChild(newTextNode);
-  
+
 }
 
 // *** HOTMAIL SPECIFIC STUFF ***
@@ -358,7 +358,7 @@ function enigHotmailCompose() {
   var errorMsgObj    = new Object();
   var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
-  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, plainText,
+  var cipherText = enigmailSvc.encryptMessage(window, uiFlags, null, plainText,
                                               fromAddr, toAddr,
                                               encryptFlags,
                                               exitCodeObj, statusFlagsObj,
