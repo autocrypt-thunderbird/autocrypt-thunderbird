@@ -185,7 +185,7 @@ const ENC_TYPE_MSG = 0;
 const ENC_TYPE_ATTACH_BINARY = 1;
 const ENC_TYPE_ATTACH_ASCII = 2;
 
-var gMimeHashAlgorithms = ["-", "sha1", "ripemd160", "sha256", "sha384", "sha512"];
+var gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512"];
 
 function CreateFileStream(filePath, permissions) {
 
@@ -2343,7 +2343,7 @@ function (parent, uiFlags, hashAlgorithm, plainText, fromMailAddr, toMailAddr,
 
   var hashAlgo = gMimeHashAlgorithms[this.prefBranch.getIntPref("mimeHashAlgorithm")];
 
-  if (hashAlgo == "-") {
+  if (hashAlgo == null) {
     hashAlgo = hashAlgorithm;
   }
 
