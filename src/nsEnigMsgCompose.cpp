@@ -445,6 +445,29 @@ nsEnigMsgCompose::Init()
   nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
 
+  if (usePgpMime && signMsg && (! encryptMsg)) {
+    // determine hash algorithm to use for PGP/MIME signed msg
+    PRInt32 exitCode;
+    PRUnichar* ha;
+
+    rv = enigmailSvc->DetermineHashAlgorithm(prompter,
+                                             mUIFlags,
+                                             mSenderEmailAddr.get(),
+                                             &ha,
+                                             &exitCode);
+
+    DEBUG_LOG(("nsEnigMsgCompose::Init: DetermineHash: rv=%d, exitCode=%d\n", rv, exitCode));
+
+    if (NS_FAILED(rv))
+      return rv;
+
+    if (exitCode != 0)
+      return NS_ERROR_NOT_IMPLEMENTED;
+
+    mHashAlgorithm = NS_ConvertUTF16toUTF8(ha).get();
+    DEBUG_LOG(("nsEnigMsgCompose::Init: hashAlgorithm=%s\n", mHashAlgorithm.get()));
+  }
+
   nsXPIDLString errorMsg;
   PRBool noProxy = PR_TRUE;
   rv = enigmailSvc->EncryptMessageStart(nsnull, prompter,

@@ -685,23 +685,6 @@ function enigConfirmBeforeSend(toAddr, gpgKeys, sendFlags, isOffline, msgSendTyp
   return EnigConfirm(msgConfirm);
 }
 
-function enigExtractHashAlgo(msgTxt) {
-  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigExtractHashAlgo\n");
-
-  var m = msgTxt.match(/^(Hash: )(.*)$/m);
-  if (m.length > 2 && m[1] == "Hash: ") {
-    var hashAlgorithm = m[2].toLowerCase();
-    for (var i=1; i < gMimeHashAlgorithms.length; i++) {
-      if (gMimeHashAlgorithms[i] == hashAlgorithm) {
-        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigExtractHashAlgo: found hashAlgorithm "+hashAlgorithm+"\n");
-        return hashAlgorithm;
-      }
-    }
-  }
-
-  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigExtractHashAlgo: no hashAlgorithm found\n");
-  return null;
-}
 
 function enigAddRecipients(toAddrList, recList) {
   for (var i=0; i<recList.count; i++) {
@@ -934,7 +917,6 @@ function enigEncryptMsg(msgSendType) {
 
      var toAddr = toAddrList.join(", ");
      var testCipher = null;
-     var hashAlgorithm = null;
 
      var notSignedIfNotEnc= (gEnigSendModeDirty<2 && (! enigGetAccDefault("signPlain")));
 
@@ -987,7 +969,7 @@ function enigEncryptMsg(msgSendType) {
           }
           repeatSelection++;
 
-          if (sendFlags & (ENIG_ENCRYPT | ENIG_SIGN)) {
+          if (sendFlags & ENIG_ENCRYPT) {
             // Encrypt test message for default encryption
             var testExitCodeObj    = new Object();
             var testStatusFlagsObj = new Object();
@@ -995,11 +977,8 @@ function enigEncryptMsg(msgSendType) {
 
             var testPlain = "Test Message";
             var testUiFlags   = nsIEnigmail.UI_TEST;
-            var testSendFlags = nsIEnigmail.SEND_TEST |
+            var testSendFlags = nsIEnigmail.SEND_TEST | ENIG_ENCRYPT |
                                 optSendFlags;
-
-            if (sendFlags & ENIG_ENCRYPT) testSendFlags |= ENIG_ENCRYPT;
-            if (sendFlags & ENIG_SIGN) testSendFlags |= ENIG_SIGN;
 
             // test recipients
             testCipher = enigmailSvc.encryptMessage(window, testUiFlags, null,
@@ -1010,15 +989,6 @@ function enigEncryptMsg(msgSendType) {
                                                           testStatusFlagsObj,
                                                           testErrorMsgObj);
 
-            if ((testCipher.length > 0)
-                && (testExitCodeObj.value == 0)
-                && !(sendFlags & ENIG_ENCRYPT)
-                && (EnigGetPref("mimeHashAlgorithm")==0)) {
-              hashAlgorithm = enigExtractHashAlgo(testCipher);
-            }
-          }
-
-          if (sendFlags & ENIG_ENCRYPT) {
             if ((recipientsSelectionOption==2) ||
                 ((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT) &&
                  (recipientsSelectionOption>0))) {
@@ -1194,12 +1164,7 @@ function enigEncryptMsg(msgSendType) {
        newSecurityInfo.UIFlags = uiFlags;
        newSecurityInfo.senderEmailAddr = fromAddr;
        newSecurityInfo.recipients = toAddr;
-       if (hashAlgorithm == null) {
-         newSecurityInfo.hashAlgorithm = gMimeHashAlgorithms[EnigGetPref("mimeHashAlgorithm")];
-       }
-       else {
-         newSecurityInfo.hashAlgorithm = hashAlgorithm;
-       }
+       newSecurityInfo.hashAlgorithm = gMimeHashAlgorithms[EnigGetPref("mimeHashAlgorithm")];
 
        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: securityInfo = "+newSecurityInfo+"\n");
 

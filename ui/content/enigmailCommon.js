@@ -865,52 +865,23 @@ function EnigConvertToUnicode(text, charset) {
   }
 }
 
-function EnigUnescape(text) {
-  var encodedTxt=text.replace(/"/g , '\\"'); //
-  return eval('String("'+encodedTxt+'")');
-}
-
-
 function EnigConvertGpgToUnicode(text) {
   if (typeof(text)=="string") {
-    var a=text.search(/[\x80-\xFF]{2}/);
-    var b=0;
-
+    text = text.replace(/\\x3a/ig, "\\e3A");
+    a=text.search(/\\x[0-9a-fA-F]{2}/);
     while (a>=0) {
-      var ch=text.substr(a,2).toSource().substr(13,8).replace(/\\x/g, "\\u00");
-      //var newCh=EnigConvertToUnicode(EnigConvertToUnicode(ch, "x-u-escaped"), "utf-8");
-      var newCh=EnigConvertToUnicode(EnigUnescape(ch), "utf-8");
-      if (newCh != ch) {
-        var r=new RegExp(text.substr(a, 2), "g");
-        text=text.replace(r, newCh);
-      }
-      b=a+2;
-      a=text.substr(b+2).search(/[\x80-\xFF]{2}/);
-      if (a>=0) {
-        a += b+2;
-      }
+        ch=unescape('%'+text.substr(a+2,2));
+        r= new RegExp("\\"+text.substr(a,4));
+        text=text.replace(r, ch);
+
+        a=text.search(/\\x[0-9a-fA-F]{2}/);
     }
 
-    a=text.search(/\\x3a/i);
-    if (a>0) {
-      text = text.replace(/\\x3a/ig, "\\e3A");
-    }
-
-    a=text.search(/\\x/);
-    while (a>=0) {
-      ch=text.substr(a,4).replace(/\\x/g, "\\u00");
-      newCh=EnigUnescape(ch);
-      if (newCh != ch) {
-        r=new RegExp("\\"+text.substr(a, 4), "g");
-        text=text.replace(r, newCh);
-      }
-      a=text.search(/\\x/);
-    }
+    text = EnigConvertToUnicode(text, "utf-8");
   }
 
   return text;
 }
-
 
 function EnigFormatFpr(fingerprint) {
   // format key fingerprint

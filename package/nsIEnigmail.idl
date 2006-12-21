@@ -142,6 +142,11 @@ interface nsIEnigmail : nsISupports
                             out long endIndex,
                             out string foundIndentStr);
 
+  long determineHashAlgorithm(in nsIPrompt prompter,
+                              in unsigned long uiFlags,
+                              in string  fromMailAddr,
+                              out wstring hashAlgorithm);
+
   /* Cleartext signature parts */
   const long SIGNATURE_TEXT    = 1;
   const long SIGNATURE_HEADERS = 2;
