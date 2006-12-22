@@ -240,22 +240,6 @@
                   label="&enigmail.usePGPMimeAlways.label;" />
 
           </radiogroup>
-
-          <hbox align="center">
-            <label control="mimeHashList"
-                value="&enigmail.mimeHashAlgorithm.label;:" />
-            <menulist id="mimeHashList" label="&enigmail.autoChoose.label;" flex="1">
-
-              <menupopup id="mimeHashPopup">
-                <menuitem id="mimeHashAuto"  label="&enigmail.autoChoose.label;" selected="true"/>
-                <menuitem id="mimeHashSHA1"  label="SHA1"/>
-                <menuitem id="mimeHashRIPEMD160" label="RIPEMD160"/>
-                <menuitem id="mimeHashSHA256" label="SHA256"/>
-                <menuitem id="mimeHashSHA384" label="SHA384"/>
-                <menuitem id="mimeHashSHA512" label="SHA512"/>
-              </menupopup>
-            </menulist>
-          </hbox>
       </vbox>
 
 			<!-- "Advanced" Tab -->

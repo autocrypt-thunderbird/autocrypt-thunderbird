@@ -36,7 +36,7 @@ GPL.
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail");
 
-var gMimeHashElement, gSendFlowedElement, gSendFlowedValue;
+var gSendFlowedElement, gSendFlowedValue;
 var gMimePartsElement, gMimePartsValue;
 
 function prefOnLoad() {
@@ -77,9 +77,6 @@ function prefOnLoad() {
 
    EnigDisplayRadioPref("perRecipientRules", EnigGetPref("perRecipientRules"),
                         gEnigPerRecipientRules);
-
-   gMimeHashElement = document.getElementById("mimeHashList");
-   gMimeHashElement.selectedIndex = EnigGetPref("mimeHashAlgorithm");
 
    gSendFlowedElement = document.getElementById("send_plaintext_flowed");
 
@@ -131,8 +128,6 @@ function resetPrefs() {
   EnigDisplayRadioPref("perRecipientRules", EnigGetPref("perRecipientRules"),
                       gEnigPerRecipientRules);
 
-
-  gMimeHashElement.selectedIndex = EnigGetDefaultPref("mimeHashAlgorithm");
 }
 
 function resetRememberedValues() {
@@ -163,8 +158,6 @@ function prefOnAccept() {
   EnigDisplayPrefs(false, false, true);
 
   EnigSetRadioPref("usePGPMimeOption", gUsePGPMimeOptionList);
-
-  EnigSetPref("mimeHashAlgorithm", gMimeHashElement.selectedIndex);
 
   EnigSetRadioPref("recipientsSelectionOption", gEnigRecipientsSelectionOptions);
 
