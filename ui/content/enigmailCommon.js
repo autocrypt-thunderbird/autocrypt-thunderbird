@@ -1516,12 +1516,12 @@ function EnigLoadKeyList(refresh, keyListObj) {
           listRow[USER_ID] = "-";
         }
         if (typeof(keyObj.userId) != "string") {
-          keyObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID].replace(/\\e3A/g, ":"));
+          keyObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID]).replace(/\\e3A/g, ":");
           keyListObj.keySortList.push({userId: keyObj.userId, keyId: keyObj.keyId});
         }
         else {
           var subUserId = {
-            userId: EnigConvertGpgToUnicode(listRow[USER_ID].replace(/\\e3A/g, ":")),
+            userId: EnigConvertGpgToUnicode(listRow[USER_ID]).replace(/\\e3A/g, ":"),
             keyTrust: listRow[KEY_TRUST],
             type: "uid"
           }

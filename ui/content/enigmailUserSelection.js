@@ -115,9 +115,9 @@ function enigGetUserList(secretOnly, refresh) {
     var exitCodeObj = new Object();
     var statusFlagsObj = new Object();
     var errorMsgObj = new Object();
-    
+
     var enigmailSvc = GetEnigmailSvc();
-    if (! enigmailSvc) 
+    if (! enigmailSvc)
       return null;
     var userList = enigmailSvc.getUserIdList(secretOnly,
                                              refresh,
@@ -138,7 +138,7 @@ function enigGetUserList(secretOnly, refresh) {
 
 function enigmailBuildList(refresh) {
    DEBUG_LOG("enigmailUserSelection.js: enigmailBuildList\n");
-   
+
    var sortUsers = function (a,b) {
      var r = 0;
      if ((a.activeState == 1 || b.activeState == 1) && (a.activeState != b.activeState)) {
@@ -150,12 +150,12 @@ function enigmailBuildList(refresh) {
      else {
        r = 1;
      }
-     
+
      return r;
    }
 
    var emptyUid = " -"; // replace with localizable string
-   
+
    window.arguments[RESULT].cancelled=true;
 
    var secretOnly = (window.arguments[INPUT].options.indexOf("private")>= 0);
@@ -172,7 +172,7 @@ function enigmailBuildList(refresh) {
    else {
      uidNotValid="o-qn";
    }
-   
+
    try {
      if (window.arguments[INPUT].dialogHeader) {
        var dialogHeader = document.getElementById("dialogHeader");
@@ -196,7 +196,7 @@ function enigmailBuildList(refresh) {
       var rulesOption = document.getElementById("perRecipientsOption");
       rulesOption.removeAttribute("collapsed");
    }
-   
+
    var descNotFound = document.getElementById("usersNotFoundDesc");
    var notFoundCapt = document.getElementById("usersNotFoundCapt");
    var treeChildren=gUserList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
@@ -217,14 +217,14 @@ function enigmailBuildList(refresh) {
    else if (window.arguments[INPUT].options.indexOf("noforcedisp")>=0) {
       document.getElementById("displayNoLonger").removeAttribute("collapsed");
    }
-   
+
    if (window.arguments[INPUT].options.indexOf("noplaintext")>= 0) {
       // hide hide "send unencrypted"
       document.getElementById("enigmailUserSelPlainText").setAttribute("collapsed", "true");
    }
 
    if (window.arguments[INPUT].options.indexOf("forUser")>=0) {
-      descNotFound.firstChild.data=EnigGetString("keysToUse", window.arguments[INPUT].forUser);      
+      descNotFound.firstChild.data=EnigGetString("keysToUse", window.arguments[INPUT].forUser);
       notFoundCapt.setAttribute("collapsed", "true");
    }
    var aUserList = new Array();
@@ -255,11 +255,11 @@ function enigmailBuildList(refresh) {
             listRow[USER_ID] = emptyUid;
          }
          if (typeof(userObj.userId) != "string") {
-           userObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID].replace(/\\e3A/g, ":"));
+           userObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID]).replace(/\\e3A/g, ":");
          }
          else {
            var userId = {
-             userId: EnigConvertGpgToUnicode(listRow[USER_ID].replace(/\\e3A/g, ":")),
+             userId: EnigConvertGpgToUnicode(listRow[USER_ID]).replace(/\\e3A/g, ":"),
              trustLevel: listRow[KEY_TRUST]
            };
            userObj.SubUserIds.push(userId);
@@ -285,7 +285,7 @@ function enigmailBuildList(refresh) {
        toAddr=EnigStripEmail(window.arguments[INPUT].toAddr);
    }
    catch (ex) {}
-   
+
    var toKeys = "";
    try{
      if (typeof(window.arguments[INPUT].toKeys)=="string") {
@@ -656,11 +656,11 @@ function enigmailSearchMissingKeys () {
     searchList : window.arguments[INPUT].notFoundList
   };
   var resultObj = new Object();
-  
+
   EnigDownloadKeys(inputObj, resultObj);
-        
+
   if (resultObj.importedKeys > 0) {
     enigmailRefreshKeys();
   }
-        
+
 }

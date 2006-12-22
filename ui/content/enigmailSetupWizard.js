@@ -243,7 +243,7 @@ function loadKeys() {
       break;
     case "uid":
       if ((uidObj.keyId !="-") && (uidObj.uid == "")) {
-        uidObj.uid = EnigConvertGpgToUnicode(l[9]);
+        uidObj.uid = EnigConvertGpgToUnicode(l[9]).replace(/\\e3A/g, ":");
       }
       break;
     }

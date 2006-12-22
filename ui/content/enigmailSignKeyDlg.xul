@@ -83,7 +83,7 @@
         <caption label="&enigmail.sKeyDlg.checked.label;"/>
           <radiogroup id="trustLevel">
             <radio value="0"
-                   selected="true" 
+                   selected="true"
                    label="&enigmail.sKeyDlg.noAnswer.label;"/>
            <radio value="1"
                    label="&enigmail.sKeyDlg.notChecked.label;"/>
@@ -106,7 +106,7 @@
       <button dlgtype="cancel"/>
     </hbox>
   </vbox>
- 
+
   <script type="application/x-javascript">
   <![CDATA[
     EnigInitCommon("enigmailSignKeyDlg");
@@ -143,7 +143,7 @@
         case "uid:":
           if (keyId != null) {
             aKey = userList[i].split(/:/);
-            menulist.appendItem(aKey[9].replace(/\\e3A/g, ":")+" - 0x"+keyId.substr(-8,8), keyId);
+            menulist.appendItem(EnigConvertGpgToUnicode(aKey[9]).replace(/\\e3A/g, ":")+" - 0x"+keyId.substr(-8,8), keyId);
             if (menulist.selectedIndex == -1)
               menulist.selectedIndex=0;
             keyId = null;

@@ -635,7 +635,7 @@ function EnigConvertFromUnicode(text, charset) {
   }
 }
 
-
+/*
 function EnigConvertGpgToUnicode(text) {
   if (typeof(text)=="string") {
     text = text.replace(/\\x3a/ig, "\\e3A");
@@ -652,6 +652,7 @@ function EnigConvertGpgToUnicode(text) {
 
   return text;
 }
+*/
 
 // get a Windows registry value (string)
 // @ keyPath: the path of the registry (e.g. Software\\GNU\\GnuPG)
@@ -3770,7 +3771,6 @@ function (parent, fileName, errorMsgObj) {
         DEBUG_LOG("enigmail.js: Enigmail.importKey: IMPORTED "+pubKeyId+"\n");
       }
     }
-    errorMsgObj.value = EnigConvertGpgToUnicode(errorMsgObj.value);
   }
 
   return exitCodeObj.value;
@@ -4178,7 +4178,7 @@ function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
       return "";
     }
 
-    listText=EnigConvertGpgToUnicode(listText).replace(/(\r\n|\r)/g, "\n");
+    listText=listText.replace(/(\r\n|\r)/g, "\n");
     if (secretOnly) {
       return listText;
     }
@@ -4238,7 +4238,7 @@ Enigmail.prototype.getKeyDetails = function (keyId, uidOnly) {
   if (exitCodeObj.value != 0) {
     return "";
   }
-  listText=EnigConvertGpgToUnicode(listText).replace(/(\r\n|\r)/g, "\n");
+  listText=listText.replace(/(\r\n|\r)/g, "\n");
 
   if (uidOnly) {
     var userList="";

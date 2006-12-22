@@ -614,7 +614,7 @@ function enigmailRevokeKey() {
   r = enigmailSvc.importKeyFromFile(window, revFile.path, errorMsgObj);
   revFile.remove(false);
   if (r != 0) {
-    EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+errorMsgObj.value);
+    EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+EnigConvertGpgToUnicode(errorMsgObj.value).replace(/\\e3A/g, ":"));
   }
   else {
     EnigAlert(EnigGetString("revokeKeyOk"));

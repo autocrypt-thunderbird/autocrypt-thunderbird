@@ -19,14 +19,14 @@
  * Contributor(s):
  *
  * Alternatively, the contents of this file may be used under the
- * terms of the GNU General Public License (the "GPL") or the GNU 
+ * terms of the GNU General Public License (the "GPL") or the GNU
  * Lesser General Public License (the "LGPL"), in which case
  * the provisions of the GPL or the LGPL are applicable instead of
  * those above. If you wish to allow use of your version of this
  * file only under the terms of the GPL or the LGPL and not to allow
  * others to use your version of this file under the MPL, indicate
  * your decision by deleting the provisions above and replace them
- * with the notice and other provisions required by the GPL or the 
+ * with the notice and other provisions required by the GPL or the
  * LGPL respectively.
  * If you do not delete the provisions above, a recipient
  * may use your version of this file under either the MPL, the
@@ -40,11 +40,11 @@ EnigInitCommon("enigmailSingleRcptSettings");
 
 const INPUT=0;
 const RESULT=1;
- 
+
 function enigmailDlgOnLoad() {
   var matchBegin=false;
   var matchEnd=false;
-  
+
   var ruleEmail=document.getElementById("ruleEmail");
   if (window.arguments[INPUT].toAddress.indexOf("{")==0) {
     matchBegin=true;
@@ -66,7 +66,7 @@ function enigmailDlgOnLoad() {
   else {
     matchingRule.selectedIndex=1;
   }
-  
+
 /*
   var negateRule=document.getElementById("negateRule");
   if (typeof(window.arguments[INPUT].negate)=="number") {
@@ -87,7 +87,7 @@ function enigmailDlgOnLoad() {
       enigSetKeys("");
       action="actionCont";
       break;
-    default:      
+    default:
       enigSetKeys(window.arguments[INPUT].keyId);
       action="actionUseKey";
     }
@@ -123,7 +123,7 @@ function enigmailDlgOnLoad() {
     document.getElementById("pgpmime").selectedIndex=1;
   }
 }
- 
+
 function enigmailDlgOnAccept() {
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
@@ -146,7 +146,7 @@ function enigmailDlgOnAccept() {
     matchEnd=true;
     break;
   }
-  
+
   if (ruleEmail.value.length==0) {
     EnigAlert(EnigGetString("noEmptyRule"));
     return false;
@@ -178,13 +178,13 @@ function enigmailDlgOnAccept() {
   window.arguments[RESULT].encrypt = document.getElementById("encrypt").value;
   window.arguments[RESULT].pgpMime = document.getElementById("pgpmime").value;
   window.arguments[RESULT].negate = 0; /*Number(document.getElementById("negateRule").value);*/
-  
+
   var actionType = document.getElementById("actionType");
   switch(Number(actionType.selectedItem.value)) {
   case 1:
     window.arguments[RESULT].keyId = ".";
     break;
-    
+
   case 2:
     if (keyList == "" && (window.arguments[RESULT].encrypt>0)) {
       if (!EnigConfirm(EnigGetString("noEncryption", ruleEmail.value, ruleEmail.value))) {
@@ -231,7 +231,7 @@ function enigmailDlgKeySelection() {
       inputObj.toKeys += valueLabel+",";
     }
   }
-  
+
   inputObj.options = "multisel,forUser,noplaintext";
   var userIdValue="";
 
@@ -257,7 +257,7 @@ function enigSetKeys(keyList) {
     var enigmailSvc = GetEnigmailSvc();
     if (!enigmailSvc)
       return;
-      
+
     var exitCodeObj= new Object;
     var statusFlagsObj = new Object;
     var errorMsgObj = new Object;
@@ -279,10 +279,10 @@ function enigSetKeys(keyList) {
       var userDescList=userListTxt.substr(keyStart,keyEnd).split(/:/);
       var userDesc = "";
       if (userDescList.length >= 9) {
-        userDesc = userDescList[9]
+        userDesc = userDescList[9];
       }
-     
-      encryptionList.appendItem("0x"+keyList[i].substr(10,8)+" ("+EnigConvertGpgToUnicode(userDesc.replace(/\\e3A/g, ":"))+")",
+
+      encryptionList.appendItem("0x"+keyList[i].substr(10,8)+" ("+EnigConvertGpgToUnicode(userDesc).replace(/\\e3A/g, ":")+")",
                                 keyList[i]);
     }
   }
@@ -296,5 +296,5 @@ function enigEnableKeySel(enable) {
   else {
     document.getElementById("encryptionList").setAttribute("disabled", "true");
     document.getElementById("encryptionListButton").setAttribute("disabled", "true");
-  }  
+  }
 }
