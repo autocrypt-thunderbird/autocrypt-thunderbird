@@ -37,18 +37,26 @@ EnigInitCommon("enigmailEncryptionDlg");
 
 
 function enigmailEncryptionDlgLoad() {
-   DEBUG_LOG("enigmailEncryptionDlgLoad.js: Load\n");
+  DEBUG_LOG("enigmailEncryptionDlgLoad.js: Load\n");
 
-   var sendFlags = window.arguments[0].sendFlags;
-   if (sendFlags & ENIG_ENCRYPT) {
-     document.getElementById("encryptMsg").setAttribute("checked", true);
-   }
-   if (sendFlags & ENIG_SIGN) {
-     document.getElementById("signMsg").setAttribute("checked", true);
-   }
-   if (window.arguments[0].usePgpMime) {
-     document.getElementById("usePgpMime").setAttribute("checked", true);
-   }
+  // Get Enigmail service, such that e.g. the wizard can be executed
+  // if needed.
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc) {
+    window.close();
+    return;
+  }
+
+  var sendFlags = window.arguments[0].sendFlags;
+  if (sendFlags & ENIG_ENCRYPT) {
+    document.getElementById("encryptMsg").setAttribute("checked", true);
+  }
+  if (sendFlags & ENIG_SIGN) {
+    document.getElementById("signMsg").setAttribute("checked", true);
+  }
+  if (window.arguments[0].usePgpMime) {
+    document.getElementById("usePgpMime").setAttribute("checked", true);
+  }
 }
 
 function enigmailEncryptionDlgAccept () {
