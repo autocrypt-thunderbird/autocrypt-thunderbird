@@ -466,6 +466,16 @@ function CONSOLE_LOG(str) {
     gEnigmailSvc.console.write(str);
 }
 
+// write exception information
+function EnigWriteException(referenceInfo, ex) {
+  ERROR_LOG(referenceInfo+": caught exception: "
+            +ex.name+"\n"
+            +"Message: '"+ex.message+"'\n"
+            +"File:    "+ex.fileName+"\n"
+            +"Line:    "+ex.lineNumber+"\n"
+            +"Stack:   "+ex.stack+"\n");
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function EnigAlert(mesg) {
@@ -1728,4 +1738,23 @@ function enigGetService (aURL, aInterface)
   }
 
   return null;
+}
+
+function EnigCollapseAdvanced(obj, dummy) {
+  DEBUG_LOG("enigmailCommon.js: EnigCollapseAdvanced: test\n");
+
+  var advancedUser = EnigGetPref("advancedUser");
+
+  var obj = obj.firstChild;
+  while (obj) {
+    if (obj.getAttribute("advanced")) {
+      if (advancedUser) {
+        obj.removeAttribute("hidden");
+      }
+      else {
+        obj.setAttribute("hidden", "true");
+      }
+    }
+    obj = obj.nextSibling;
+  }
 }

@@ -366,7 +366,9 @@ function enigExtractAndAttachKey(uid) {
       return;
     }
   }
-  catch (ex) {}
+  catch (ex) {
+    EnigWriteException("enigmailMsgComposeOverlay.js: enigExtractAndAttachKey", ex);
+  }
   tmpFile.append("key.asc");
   tmpFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
 
@@ -758,7 +760,9 @@ function enigEncryptMsg(msgSendType) {
           gMsgCompose.compFields.securityInfo = newSecurityInfo;
         }
       }
-      catch (ex) {}
+      catch (ex) {
+        EnigWriteException("enigmailMsgComposeOverlay.js: enigAttachKey", ex);
+      }
     }
   }
   gEnigDirty = true;
@@ -1240,6 +1244,7 @@ function enigEncryptMsg(msgSendType) {
     }
 
   } catch (ex) {
+     EnigWriteException("enigmailMsgComposeOverlay.js: enigEncryptMsg", ex);
      msg=EnigGetString("signFailed");
      if (gEnigmailSvc && gEnigmailSvc.initializationError) {
         msg += "\n"+gEnigmailSvc.initializationError;
@@ -1267,7 +1272,9 @@ function enigEncryptInline(sendInfo) {
         return false;
       }
     }
-  } catch (ex) {}
+  } catch (ex) {
+     EnigWriteException("enigmailMsgComposeOverlay.js: enigEncryptInline", ex);
+  }
 
   try {
     if (gEnigPrefRoot.getBoolPref("mail.strictly_mime")) {
@@ -1496,7 +1503,9 @@ function enigModifyCompFields(msgCompFields) {
       msgCompFields.otherRandomHeaders += enigmailHeaders;
     }
   }
-  catch (ex) {}
+  catch (ex) {
+    EnigWriteException("enigmailMsgComposeOverlay.js: enigModifyCompFields", ex)
+  }
 
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigModifyCompFields: otherRandomHeaders = "+
            msgCompFields.otherRandomHeaders+"\n");
@@ -1543,15 +1552,7 @@ function enigGenericSendMessage( msgType )
         {
           if (gEnigPromptSvc)
           {
-            var msgTitle;
-            try {
-              // TB 1.1
-              msgTitle = sComposeMsgsBundle.getString("sendMsgTitle");
-            }
-            catch (ex) {
-              // TB <= 1.0
-              msgTitle = sComposeMsgsBundle.getString("subjectDlogTitle");
-            }
+            var msgTitle = sComposeMsgsBundle.getString("sendMsgTitle");
             var result = {value:sComposeMsgsBundle.getString("defaultSubject")};
             if (gEnigPromptSvc.prompt(
                         window,
