@@ -28,6 +28,7 @@
 
 <!ENTITY enigmail.passwordSettings.label  "Passphrase settings">
 <!ENTITY enigmail.userNoPassphrase.label  "No passphrase for user">
+<!ENTITY enigmail.expertUser.label        "Display expert settings">
 
 <!ENTITY enigmail.defaultEncryptionOption.label "Choose default encryption options">
 <!ENTITY enigmail.usePGPMimeOption.label  "Choose PGP/MIME option">

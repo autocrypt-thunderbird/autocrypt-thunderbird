@@ -52,7 +52,11 @@ function prefOnLoad() {
           sendTab.click();
           sendTab.setAttribute("selected", true);
       }
+      else {
+        EnigCollapseAdvanced(document.getElementById("prefTabBox"), "hidden", null);
+        EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
 
+      }
 
       if ((typeof window.arguments[0].selectTab)=="string") {
           var selectTab=document.getElementById(window.arguments[0].selectTab);

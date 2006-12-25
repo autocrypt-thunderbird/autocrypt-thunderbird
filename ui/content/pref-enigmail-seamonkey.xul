@@ -5,21 +5,21 @@
    License Version 1.1 (the "MPL"); you may not use this file
    except in compliance with the MPL. You may obtain a copy of
    the MPL at http://www.mozilla.org/MPL/
-   
+
    Software distributed under the MPL is distributed on an "AS
    IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
    implied. See the MPL for the specific language governing
    rights and limitations under the MPL.
-   
+
    The Original Code is Enigmail.
-   
+
    The Initial Developer of the Original Code is Ramalingam Saravanan.
    Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
    Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
-   
+
    Contributor(s):
    Patrick Brunschwig <patrick.brunschwig@gmx.net>
-   
+
    Alternatively, the contents of this file may be used under the
    terms of the GNU General Public License (the "GPL"), in which case
    the provisions of the GPL are applicable instead of
@@ -34,7 +34,7 @@
 -->
 
 <?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?> 
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
 
 <!DOCTYPE window [
 <!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
@@ -43,7 +43,7 @@
 %enigMailDTD;
 ]>
 <page id="enigmailPrefs"
-        headertitle="&enigmail.label;"
+        headertitle="&enigmail.openpgp.label;"
         xmlns:html="http://www.w3.org/1999/xhtml"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         class="color-dialog"
@@ -61,7 +61,7 @@
                        "enigmail_agentPath",
                        "enigmail_noPassphrase",
                        "enigmail_maxIdleMinutes",
-                       "enigmail_keyserver"
+                       "enigmail_advancedUser"
                        ];
   ]]>
   </script>
@@ -103,21 +103,24 @@
       </groupbox>
     </hbox>
 
-    <vbox>
-      <label control="enigmail_keyserver"
-            value="&enigmail.keyservers.label;:" />
-      <textbox id="enigmail_keyserver"
-            pref="true"
-            preftype="string"
-            prefstring="extensions.enigmail.keyserver"/>
-      <label value="&enigmail.keyservers.sample;" style="font-style: italic;"/>
-    </vbox>
     <separator/>
 
-    <hbox autostretch="never">
+    <hbox autostretch="never" align="center">
+      <checkbox id="enigmail_advancedUser"
+            label="&enigmail.expertUser.label;"
+            pref="true"
+            preftype="bool"
+            prefstring="extensions.enigmail.advancedUser"
+            prefattribute="checked"/>
+    </hbox>
+    <separator/>
+
+    <hbox autostretch="never"
+          id="enigmailPrefsBox">
         <button class="dialog"
             id="enigmailPrefs"
             label="&enigmail.advancedPrefsButton.label; ..."
+            advanced="true"
             oncommand="EnigPrefWindow(false,'seamonkey')"/>
     </hbox>
 
@@ -126,12 +129,6 @@
               id="uninstall"
               label="&enigmail.uninstallButton.label;"
               oncommand="enigUninstall();"
-              />
-
-      <button class="dialog"
-              id="upgrade"
-              label="&enigmail.upgradeButton.label;"
-              oncommand="EnigUpgrade();"
               />
     </groupbox>
 

@@ -73,7 +73,7 @@
             insertbefore="tasksMenu">
 
         <menupopup id="menu_EnigmailPopup"
-                   onpopupshowing="enigSetMenuSettings('')">
+                   onpopupshowing="EnigCollapseAdvanced(this, 'hidden', enigSetMenuSettings(''))">
 
           <menuitem id="enigmail_signed_send"
               type="checkbox"
@@ -102,12 +102,15 @@
               type="checkbox"
               label="&enigmail.disableRules.label;"
               accesskey="&enigmail.disableRules.accesskey;"
+              advanced="true"
               key="key_enigDisableRules"
               oncommand="enigDoPgpButton('toggleRules');" />
 
-          <menuseparator/>
+          <menuseparator
+             advanced="true"/>
 
           <menu id="enigmail_compose_options_menu"
+              advanced="true"
                 label="&enigmail.composeOptionsMenu.label;"
                 accesskey="&enigmail.composeOptionsMenu.accesskey;">
 
@@ -140,6 +143,7 @@
           <menuitem id="enigmail_RulesEditor"
               label="&enigmail.editRules.label;"
               accesskey="&enigmail.editRules.accesskey;"
+              advanced="true"
               oncommand="EnigRulesEditor();"/>
 
           <menuseparator/>
@@ -149,19 +153,21 @@
               accesskey="&enigmail.undoencryption.accesskey;"
               oncommand="enigUndoEncryption();" />
 
-          <menuitem id="enigmail_insert_key"
+          <menuitem id="enigmail_insert_own_key"
               label="&enigmail.attachmykey.label;"
               accesskey="&enigmail.attachmykey.accesskey;"
               oncommand="enigAttachOwnKey();" />
 
-          <menuitem id="enigmail_insert_own_key"
+          <menuitem id="enigmail_insert_key"
               label="&enigmail.attachkey.label;"
               accesskey="&enigmail.attachkey.accesskey;"
+              advanced="true"
               oncommand="enigAttachKey();" />
 
           <menuitem id="enigmail_clearPassphrase"
               label="&enigmail.clearPassphrase.label;"
               accesskey="&enigmail.clearPassphrase.accesskey;"
+              advanced="true"
               oncommand="EnigClearPassphrase();" />
 
           <menuseparator/>
@@ -188,7 +194,7 @@
             insertbefore="tasksMenu">
 
         <menupopup id="menu_EnigmailPopup"
-                   onpopupshowing="enigSetMenuSettings('')">
+                   onpopupshowing="EnigCollapseAdvanced(this, 'hidden', enigSetMenuSettings(''))">
 
           <menuitem id="enigmail_signed_send"
               type="checkbox"
@@ -215,6 +221,7 @@
 
           <menuitem id="enigmail_disable_rules"
               type="checkbox"
+              advanced="true"
               label="&enigmail.disableRules.label;"
               accesskey="&enigmail.disableRules.accesskey;"
               key="key_enigDisableRules"
@@ -224,6 +231,7 @@
 
           <menu id="enigmail_compose_options_menu"
                 label="&enigmail.composeOptionsMenu.label;"
+                advanced="true"
                 accesskey="&enigmail.composeOptionsMenu.accesskey;">
 
             <menupopup>
@@ -255,9 +263,11 @@
           <menuitem id="enigmail_RulesEditor"
               label="&enigmail.editRules.label;"
               accesskey="&enigmail.editRules.accesskey;"
+              advanced="true"
               oncommand="EnigRulesEditor();"/>
 
-          <menuseparator/>
+          <menuseparator
+              advanced="true"/>
 
           <menuitem id="enigmail_undo_encryption"
               label="&enigmail.undoencryption.label;"
@@ -272,11 +282,13 @@
           <menuitem id="enigmail_insert_key"
               label="&enigmail.attachkey.label;"
               accesskey="&enigmail.attachkey.accesskey;"
+              advanced="true"
               oncommand="enigAttachKey();" />
 
           <menuitem id="enigmail_clearPassphrase"
               label="&enigmail.clearPassphrase.label;"
               accesskey="&enigmail.clearPassphrase.accesskey;"
+              advanced="true"
               oncommand="EnigClearPassphrase();" />
 
           <menuseparator/>

@@ -1740,7 +1740,7 @@ function enigGetService (aURL, aInterface)
   return null;
 }
 
-function EnigCollapseAdvanced(obj, dummy) {
+function EnigCollapseAdvanced(obj, attribute, dummy) {
   DEBUG_LOG("enigmailCommon.js: EnigCollapseAdvanced: test\n");
 
   var advancedUser = EnigGetPref("advancedUser");
@@ -1749,10 +1749,10 @@ function EnigCollapseAdvanced(obj, dummy) {
   while (obj) {
     if (obj.getAttribute("advanced")) {
       if (advancedUser) {
-        obj.removeAttribute("hidden");
+        obj.removeAttribute(attribute);
       }
       else {
-        obj.setAttribute("hidden", "true");
+        obj.setAttribute(attribute, "true");
       }
     }
     obj = obj.nextSibling;

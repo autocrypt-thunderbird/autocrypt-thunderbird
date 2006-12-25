@@ -986,12 +986,12 @@ function enigEncryptMsg(msgSendType) {
 
             // test recipients
             testCipher = enigmailSvc.encryptMessage(window, testUiFlags, null,
-                                                          testPlain,
-                                                          fromAddr, toAddr,
-                                                          testSendFlags,
-                                                          testExitCodeObj,
-                                                          testStatusFlagsObj,
-                                                          testErrorMsgObj);
+                                                    testPlain,
+                                                    fromAddr, toAddr,
+                                                    testSendFlags,
+                                                    testExitCodeObj,
+                                                    testStatusFlagsObj,
+                                                    testErrorMsgObj);
 
             if ((recipientsSelectionOption==2) ||
                 ((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT) &&

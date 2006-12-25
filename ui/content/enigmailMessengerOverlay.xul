@@ -62,11 +62,12 @@
           insertbefore="tasksMenu">
 
       <menupopup id="menu_EnigmailPopup"
-        onpopupshowing="enigUpdateOptionsDisplay();">
+        onpopupshowing="EnigCollapseAdvanced(this, 'hidden', enigUpdateOptionsDisplay());">
 
         <menuitem id="enigmail_decryptverify"
              label="&enigmail.decryptverify.label;"
              accesskey="&enigmail.decryptverify.accesskey;"
+             advanced="true"
              oncommand="enigMessageDecrypt();" />
 
         <menuitem id="enigmail_savedecrypted"
@@ -79,24 +80,29 @@
         <menuitem id="enigmail_autoDecrypt"
              type="checkbox"
              checked="false"
+             advanced="true"
              label="&enigmail.autoDecrypt.label;"
              accesskey="&enigmail.autoDecrypt.accesskey;"
              oncommand="enigToggleAttribute('autoDecrypt');" />
 
-        <menuseparator/>
+        <menuseparator
+             advanced="true"/>
 
         <menuitem id="enigmail_clearPassphrase"
              label="&enigmail.clearPassphrase.label;"
              accesskey="&enigmail.clearPassphrase.accesskey;"
+             advanced="true"
              oncommand="EnigClearPassphrase();" />
 
         <menuitem id="enigmail_reload_msg"
              label="&enigmail.reload.label;"
              accesskey="&enigmail.reload.accesskey;"
+             advanced="true"
              oncommand="ReloadWithAllParts();" />
 
         <menu id="enigmail_sendersKeyMenu"
              label="&enigmail.sendersKeyMenu.label;"
+             advanced="true"
              accesskey="&enigmail.sendersKeyMenu.accesskey;">
 
           <menupopup onpopupshowing="enigUpdateSendersKeyMenu();">
@@ -120,7 +126,8 @@
           </menupopup>
         </menu>
 
-        <menuseparator/>
+        <menuseparator
+             advanced="true"/>
 
         <menuitem id="enigmail_prefs"
              label="&enigmail.prefs.label;"
@@ -131,6 +138,7 @@
         <menuitem id="enigmail_RulesEditor"
             label="&enigmail.editRules.label;"
             accesskey="&enigmail.editRules.accesskey;"
+            advanced="true"
             oncommand="EnigRulesEditor();"/>
 
 
@@ -142,12 +150,15 @@
        <menuitem label="&enigmail.adminSmartCard.label;"
                 id="enigmail_smartCard"
                 accesskey="&enigmail.adminSmartCard.accesskey;"
+                advanced="true"
                 oncommand="EngmailCardDetails()"/>
 
-        <menuseparator/>
+        <menuseparator
+             advanced="true"/>
 
         <menu id="enigmail_debugMenu"
              label="&enigmail.debugMenu.label;"
+             advanced="true"
              accesskey="&enigmail.debugMenu.accesskey;">
 
           <menupopup>
@@ -164,10 +175,6 @@
         </menu>
 
         <menuseparator/>
-        <menuitem id="enigmail_upgrade"
-             label="&enigmail.upgrade.label;"
-             accesskey="&enigmail.upgrade.accesskey;"
-             oncommand="EnigUpgrade();" />
 
         <menuitem id="enigmail_help"
              label="&enigmail.help.label;"
@@ -193,11 +200,12 @@
           insertbefore="tasksMenu">
 
       <menupopup id="menu_EnigmailPopup"
-        onpopupshowing="enigUpdateOptionsDisplay();">
+        onpopupshowing="EnigCollapseAdvanced(this, 'hidden', enigUpdateOptionsDisplay());">
 
         <menuitem id="enigmail_decryptverify"
              label="&enigmail.decryptverify.label;"
              accesskey="&enigmail.decryptverify.accesskey;"
+             advanced="true"
              oncommand="enigMessageDecrypt();" />
 
         <menuitem id="enigmail_savedecrypted"
@@ -205,29 +213,35 @@
              accesskey="&enigmail.savedecrypted.accesskey;"
              oncommand="enigMessageSave();" />
 
-        <menuseparator/>
+        <menuseparator
+             advanced="true"/>
 
         <menuitem id="enigmail_autoDecrypt"
              type="checkbox"
              checked="false"
+             advanced="true"
              label="&enigmail.autoDecrypt.label;"
              accesskey="&enigmail.autoDecrypt.accesskey;"
              oncommand="enigToggleAttribute('autoDecrypt');" />
 
-        <menuseparator/>
+        <menuseparator
+             advanced="true"/>
 
         <menuitem id="enigmail_clearPassphrase"
              label="&enigmail.clearPassphrase.label;"
              accesskey="&enigmail.clearPassphrase.accesskey;"
+             advanced="true"
              oncommand="EnigClearPassphrase();" />
 
         <menuitem id="enigmail_reload_msg"
              label="&enigmail.reload.label;"
              accesskey="&enigmail.reload.accesskey;"
+             advanced="true"
              oncommand="ReloadWithAllParts();" />
 
         <menu id="enigmail_sendersKeyMenu"
              label="&enigmail.sendersKeyMenu.label;"
+             advanced="true"
              accesskey="&enigmail.sendersKeyMenu.accesskey;">
 
           <menupopup onpopupshowing="enigUpdateSendersKeyMenu();">
@@ -262,6 +276,7 @@
         <menuitem id="enigmail_RulesEditor"
             label="&enigmail.editRules.label;"
             accesskey="&enigmail.editRules.accesskey;"
+            advanced="true"
             oncommand="EnigRulesEditor();"/>
 
 
@@ -273,12 +288,15 @@
         <menuitem label="&enigmail.adminSmartCard.label;"
                 id="enigmail_smartCard"
                 accesskey="&enigmail.adminSmartCard.accesskey;"
+                advanced="true"
                 oncommand="EngmailCardDetails()"/>
 
-        <menuseparator/>
+        <menuseparator
+             advanced="true"/>
 
         <menu id="enigmail_debugMenu"
              label="&enigmail.debugMenu.label;"
+             advanced="true"
              accesskey="&enigmail.debugMenu.accesskey;">
 
           <menupopup>

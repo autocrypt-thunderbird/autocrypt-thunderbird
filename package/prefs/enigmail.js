@@ -5,6 +5,9 @@
 // the last configured Enigmail version
 pref("extensions.enigmail.configuredVersion","");
 
+// Hide prefs and menu entries from non-advanced users
+pref("extensions.enigmail.advancedUser",false);
+
 // additional parameter(s) to pass to GnuPG
 pref("extensions.enigmail.agentAdditionalParam","");
 
