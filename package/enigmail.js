@@ -35,7 +35,7 @@
 const MSG_BUFFER_SIZE = 98304;   // 96 kB
 const MAX_MSG_BUFFER_SIZE = 512000 // slightly less than 512 kB
 
-const ERROR_BUFFER_SIZE = 16384; // 16 kB
+const ERROR_BUFFER_SIZE = 32768; // 32 kB
 
 const PGP_BATCH_OPTS  = " +batchmode +force";
 const GPG_BATCH_OPTS  = " --batch --no-tty --status-fd 2";
