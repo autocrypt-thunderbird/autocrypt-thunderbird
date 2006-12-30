@@ -52,7 +52,7 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail.js"/>
 
-  <tabbox flex="1" style="margin:5px">
+  <tabbox flex="1" style="margin:5px" id="prefTabs">
     <tabs id="prefTabBox">
       <tab id="basicTab"    label="&enigmail.basic.label;"/>
       <tab id="sendTab"     label="&enigmail.sending.label;" advanced="true"/>

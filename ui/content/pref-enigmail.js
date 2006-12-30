@@ -48,9 +48,7 @@ function prefOnLoad() {
           // hide basic tab
           document.getElementById("basic").setAttribute("collapsed", true);
           document.getElementById("basicTab").setAttribute("collapsed", true);
-          var sendTab=document.getElementById("sendTab");
-          sendTab.click();
-          sendTab.setAttribute("selected", true);
+          selectPrefTabPanel("sendTab");
       }
       else {
         EnigCollapseAdvanced(document.getElementById("prefTabBox"), "hidden", null);
@@ -59,9 +57,8 @@ function prefOnLoad() {
       }
 
       if ((typeof window.arguments[0].selectTab)=="string") {
-          var selectTab=document.getElementById(window.arguments[0].selectTab);
-          selectTab.click();
-          selectTab.setAttribute("selected", true);
+          selectPrefTabPanel(window.arguments[0].selectTab);
+          prefTabs.selectedTab = selectTab;
       }
 
    }
@@ -70,6 +67,9 @@ function prefOnLoad() {
       document.getElementById("enigmail_disableSMIMEui").setAttribute("collapsed", true);
       var uninst = document.getElementById("uninstall");
       if (uninst) uninst.setAttribute("collapsed", "true");
+      EnigCollapseAdvanced(document.getElementById("prefTabBox"), "hidden", null);
+      EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
+
    }
 
    EnigDisplayRadioPref("usePGPMimeOption", EnigGetPref("usePGPMimeOption"),
@@ -116,6 +116,12 @@ function prefOnLoad() {
    if (testEmailElement && userIdValue)
      testEmailElement.value = userIdValue;
 
+}
+
+function selectPrefTabPanel(panelName) {
+  var prefTabs=document.getElementById("prefTabs");
+  var selectTab=document.getElementById(panelName);
+  prefTabs.selectedTab = selectTab;
 }
 
 function resetPrefs() {
