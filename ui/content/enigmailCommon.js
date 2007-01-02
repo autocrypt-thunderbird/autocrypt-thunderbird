@@ -1284,6 +1284,10 @@ function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
       switch (prefType) {
       case gPrefEnigmail.PREF_BOOL:
         if (showPrefs) {
+          if (prefElement.getAttribute("invert") == "true") {
+            prefValue = ! prefValue;
+          }
+
           if (prefValue) {
             prefElement.setAttribute("checked", "true");
           } else {
@@ -1292,10 +1296,20 @@ function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
         }
 
         if (setPrefs) {
-          if (prefElement.checked) {
-            EnigSetPref(prefName, true);
-          } else {
-            EnigSetPref(prefName, false);
+
+          if (prefElement.getAttribute("invert") == "true") {
+            if (prefElement.checked) {
+              EnigSetPref(prefName, false);
+            } else {
+              EnigSetPref(prefName, true);
+            }
+          }
+          else {
+            if (prefElement.checked) {
+              EnigSetPref(prefName, true);
+            } else {
+              EnigSetPref(prefName, false);
+            }
           }
         }
 

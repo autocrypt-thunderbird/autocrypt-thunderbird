@@ -101,6 +101,37 @@
     <tooltip id="defineRules.tooltip">
       <description>&enigmail.defineRules.tooltip;</description>
     </tooltip>
+    <tooltip id="keepSettingsForReply.tooltip">
+      <description>&enigmail.keepSettingsForReply.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="doubleDashSeparator.tooltip">
+      <description>&enigmail.doubleDashSeparator.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="useGpgAgent.tooltip">
+      <description>&enigmail.useGpgAgent.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="noHushMailSupport.tooltip">
+      <description>&enigmail.noHushMailSupport.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="mime_parts_on_demand.tooltip">
+      <description>&enigmail.mime_parts_on_demand.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="disableSMIMEui.tooltip">
+      <description>&enigmail.disableSMIMEui.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="agentAdditionalParam.tooltip">
+      <description>&enigmail.agentAdditionalParam.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="resetRememberedValues.tooltip">
+      <description>&enigmail.resetRememberedValues.tooltip;</description>
+    </tooltip>
 </popupset>
 
   <tabbox flex="1" style="margin:5px" id="prefTabs">
@@ -266,36 +297,46 @@
           <spacer flex="0"/>
 
           <checkbox id="enigmail_keepSettingsForReply"
+                    tooltip="keepSettingsForReply.tooltip"
                     label="&enigmail.keepSettingsForReply.label;" />
 
           <checkbox id="enigmail_useDefaultComment"
-                    label="&enigmail.useDefaultComment.label;" />
+                    invert="true"
+                    label="&enigmail.useNonDefaultComment.label;" />
 
           <checkbox id="enigmail_doubleDashSeparator"
+                    tooltip="doubleDashSeparator.tooltip"
                     label="&enigmail.doubleDashSeparator.label;" />
 
           <checkbox id="enigmail_useGpgAgent"
+                    tooltip="useGpgAgent.tooltip"
                     label="&enigmail.useGpgAgent.label;" />
 
           <checkbox id="enigmail_hushMailSupport"
-                    label="&enigmail.hushMailSupport.label;" />
+                    invert="true"
+                    tooltip="noHushMailSupport.tooltip"
+                    label="&enigmail.noHushMailSupport.label;" />
 
           <checkbox id="enigmail_disableSMIMEui"
+                    tooltip="disableSMIMEui.tooltip"
                     label="&enigmail.disableSMIMEui.label;" />
 
           <checkbox id="mime_parts_on_demand"
-                    label="&enigmail.mime_parts_on_demand.label;"
-                    tooltip="&enigmail.mime_parts_on_demand.tooltip;" />
+                    tooltip="mime_parts_on_demand.tooltip"
+                    label="&enigmail.mime_parts_on_demand.label;" />
 
           <separator/>
 
           <hbox>
             <hbox align="center">
               <label control="enigmail_agentAdditionalParam"
-                      value="&enigmail.agentAdditionalParam.label;"/>
+                     tooltip="agentAdditionalParam.tooltip"
+                     value="&enigmail.agentAdditionalParam.label;"/>
             </hbox>
             <hbox>
-              <textbox id="enigmail_agentAdditionalParam" size="30"/>
+              <textbox id="enigmail_agentAdditionalParam"
+                       tooltip="agentAdditionalParam.tooltip"
+                       size="30"/>
             </hbox>
           </hbox>
 
@@ -304,6 +345,7 @@
           <hbox>
             <button id="resetRememberedValues"
                     label="&enigmail.resetRememberedValues.label;"
+                    tooltip="resetRememberedValues.tooltip"
                     oncommand="resetRememberedValues();"/>
           </hbox>
       </vbox>
@@ -320,10 +362,10 @@
 
           <separator/>
 
-          <hbox align="center">
+          <vbox>
             <label value="&enigmail.autoKeyRetrieve.label;"/>
-            <textbox id="enigmail_autoKeyRetrieve" size="30"/>
-          </hbox>
+            <textbox id="enigmail_autoKeyRetrieve" size="35"/>
+          </vbox>
 
       </vbox>
 

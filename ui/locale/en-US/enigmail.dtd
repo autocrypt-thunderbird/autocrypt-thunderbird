@@ -41,12 +41,11 @@
 <!ENTITY enigmail.prefs.overrideGpg.tooltip   "Click to specify a location for GnuPG">
 
 
-<!ENTITY enigmail.agentPath.label             "GnuPG executable path">
-<!ENTITY enigmail.agentAdditionalParam.label  "Additional parameters for GnuPG">
+<!ENTITY enigmail.agentPath.label               "GnuPG executable path">
+<!ENTITY enigmail.agentAdditionalParam.label    "Additional parameters for GnuPG">
+<!ENTITY enigmail.agentAdditionalParam.tooltip  "Speficy specific parameters that will always be used by GnuPG.">
 
-<!ENTITY enigmail.send_plaintext_flowed.label "Allow flowed text (RFC 2646)">
-<!ENTITY enigmail.mime_parts_on_demand.label  "Load MIME parts on demand (IMAP folders)">
-<!ENTITY enigmail.mime_parts_on_demand.tooltip "You should turn this OFF if you are receiving PGP/MIME messages on IMAP folders">
+<!ENTITY enigmail.mime_parts_on_demand.label  "Only download attachments when opened (IMAP only)">
 <!ENTITY enigmail.allowEmptySubject.label     "Don't warn about empty subject line">
 <!ENTITY enigmail.allowEmptySubject.tooltip   "Click to disable the warning Thunderbird gives if sending an email without a subject header">
 
@@ -78,7 +77,7 @@
 <!ENTITY enigmail.encryptToSelf.tooltip   "If enabled, you will always be able to decrypt messages you have sent.">
 <!ENTITY enigmail.alwaysTrustSend.label   "Always trust people's keys">
 <!ENTITY enigmail.alwaysTrustSend.tooltip "Do not use the Web of Trust to determine the validity of keys">
-<!ENTITY enigmail.useDefaultComment.label "Do not add Enigmail comment in OpenPGP signature">
+<!ENTITY enigmail.useNonDefaultComment.label "Add Enigmail comment in OpenPGP signature">
 
 <!ENTITY enigmail.keyserver.label         "Keyserver">
 <!ENTITY enigmail.keyserverDlg.label      "Select Keyserver">
@@ -88,10 +87,17 @@
 <!ENTITY enigmail.searchForKey.label      "Search for key">
 
 
-<!ENTITY enigmail.disableSMIMEui.label    "Hide SMIME buttons/menus">
-<!ENTITY enigmail.doubleDashSeparator.label  "Treat '--' as signature separator">
-<!ENTITY enigmail.useGpgAgent.label       "Use gpg-agent for passphrase handling">
-<!ENTITY enigmail.hushMailSupport.label   "Do not use '&lt;' and '&gt;' to specify email addresses (for Hushmail keys)">
+<!ENTITY enigmail.disableSMIMEui.label      "Hide SMIME buttons/menus">
+<!ENTITY enigmail.doubleDashSeparator.label "'--' is a signature separator">
+<!ENTITY enigmail.useGpgAgent.label         "Use gpg-agent for passphrases">
+<!ENTITY enigmail.noHushMailSupport.label   "Use '&lt;' and '&gt;' to specify email addresses">
+
+<!ENTITY enigmail.keepSettingsForReply.tooltip "When possible, encrypt responses to encrypted email">
+<!ENTITY enigmail.doubleDashSeparator.tooltip  "Two dashes by themselves on a line will denote a signature block">
+<!ENTITY enigmail.useGpgAgent.tooltip          "Use gpg-agent (part of GnuPG 2) for all passphrase input">
+<!ENTITY enigmail.noHushMailSupport.tooltip    "Use the '&lt;' and '&gt;' characters to specify email addresses for GnuPG. Disable if recipients have old Hushmail keys.">
+<!ENTITY enigmail.mime_parts_on_demand.tooltip "Attachments to an email will be opened only when double-clicked. You should turn this OFF if you are receiving PGP/MIME messages on IMAP folders.">
+<!ENTITY enigmail.disableSMIMEui.tooltip       "Remove the S/MIME button from the message composition window toolbar">
 
 <!ENTITY enigmail.logdirectory.label      "Log directory">
 <!ENTITY enigmail.testemail.label         "Test email">
@@ -215,14 +221,14 @@
 <!ENTITY enigmail.usePGPMimePossible.label        "Allow to use PGP/MIME">
 <!ENTITY enigmail.usePGPMimeNever.label           "Never use PGP/MIME">
 
-<!ENTITY enigmail.keepSettingsForReply.label      "Encrypt if replying to encrypted message">
+<!ENTITY enigmail.keepSettingsForReply.label      "Encrypt replyies to encrypted message">
 <!ENTITY enigmail.confirmBeforeSend.label         "Always confirm before sending">
 <!ENTITY enigmail.confirmBeforeSend.tooltip       "Activate to display information dialog about signing/encryption before sending a message">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label        "Rewrap signed HTML text before sending">
 <!ENTITY enigmail.wrapHtmlBeforeSend.tooltip      "Rearrange the text to ensure that the signature will remain intact.">
-<!ENTITY enigmail.autoKeyRetrieve.label           "Automatically download keys from server">
+<!ENTITY enigmail.autoKeyRetrieve.label           "Automatically download keys from the following server:">
 <!ENTITY enigmail.resetRememberedValues.label     "Reset Warnings">
-
+<!ENTITY enigmail.resetRememberedValues.tooltip   "Re-display all warning dialogs and questions that you have hidden in the past.">
 
 <!ENTITY enigmail.defaultEncryptionSign.accesskey "E">
 <!ENTITY enigmail.defaultEncryptionOnly.accesskey "c">
