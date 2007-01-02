@@ -602,7 +602,7 @@ function EnigOverrideAttribute(elementIdList, attrName, prefix, suffix) {
 function EnigPrefWindow(showBasic, clientType, selectTab) {
   DEBUG_LOG("enigmailCommon.js: EnigPrefWindow\n");
 
-  if (showBasic && clientType == "seamonkey") {
+  if (showBasic && clientType == "seamonkey" && selectTab==null) {
     // Open the seamonkey pref window
     goPreferences("securityItem",
                   "chrome://enigmail/content/pref-enigmail.xul",
