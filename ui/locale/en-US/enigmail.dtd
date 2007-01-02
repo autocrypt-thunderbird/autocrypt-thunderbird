@@ -43,7 +43,7 @@
 
 <!ENTITY enigmail.agentPath.label               "GnuPG executable path">
 <!ENTITY enigmail.agentAdditionalParam.label    "Additional parameters for GnuPG">
-<!ENTITY enigmail.agentAdditionalParam.tooltip  "Speficy specific parameters that will always be used by GnuPG.">
+<!ENTITY enigmail.agentAdditionalParam.tooltip  "Specify options that will be used by GnuPG.">
 
 <!ENTITY enigmail.mime_parts_on_demand.label  "Only download attachments when opened (IMAP only)">
 <!ENTITY enigmail.allowEmptySubject.label     "Don't warn about empty subject line">

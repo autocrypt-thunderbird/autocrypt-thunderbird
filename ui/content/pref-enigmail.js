@@ -101,26 +101,30 @@ function prefOnLoad() {
    var testEmailElement = document.getElementById("enigmail_test_email");
    var userIdValue = EnigGetPref("userIdValue");
 
-   if (! gEnigmailSvc) {
-      try {
-        gEnigmailSvc = ENIG_C.classes[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_C.interfaces.nsIEnigmail);
-        if (! gEnigmailSvc.initialized) {
-          // attempt to initialize Enigmail
-          gEnigmailSvc.initialize(window, gEnigmailVersion, gPrefEnigmail);
-        }
-      } catch (ex) {}
-   }
-
-   if (gEnigmailSvc.initialized && gEnigmailSvc.agentPath) {
-      document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgFound", gEnigmailSvc.agentPath));
-   }
-   else {
-      document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgNotFound"));
-   }
+   enigDetermineGpgPath();
 
    if (testEmailElement && userIdValue)
      testEmailElement.value = userIdValue;
 
+}
+
+function enigDetermineGpgPath() {
+  if (! gEnigmailSvc) {
+    try {
+      gEnigmailSvc = ENIG_C.classes[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_C.interfaces.nsIEnigmail);
+      if (! gEnigmailSvc.initialized) {
+        // attempt to initialize Enigmail
+        gEnigmailSvc.initialize(window, gEnigmailVersion, gPrefEnigmail);
+      }
+    } catch (ex) {}
+  }
+
+  if (gEnigmailSvc.initialized && gEnigmailSvc.agentPath) {
+    document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgFound", gEnigmailSvc.agentPath));
+  }
+  else {
+    document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgNotFound"));
+  }
 }
 
 function selectPrefTabPanel(panelName) {

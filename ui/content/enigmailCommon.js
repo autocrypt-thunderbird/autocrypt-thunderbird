@@ -601,13 +601,22 @@ function EnigOverrideAttribute(elementIdList, attrName, prefix, suffix) {
 
 function EnigPrefWindow(showBasic, clientType, selectTab) {
   DEBUG_LOG("enigmailCommon.js: EnigPrefWindow\n");
-  window.openDialog("chrome://enigmail/content/pref-enigmail.xul",
-                    "_blank", "chrome,resizable=yes",
-                    {'showBasic': showBasic,
-                     'clientType': clientType,
-                     'selectTab': selectTab});
-}
 
+  if (showBasic && clientType == "seamonkey") {
+    // Open the seamonkey pref window
+    goPreferences("securityItem",
+                  "chrome://enigmail/content/pref-enigmail.xul",
+                  "enigmail");
+  }
+  else {
+    // open the normal pref window
+    window.openDialog("chrome://enigmail/content/pref-enigmail.xul",
+                      "_blank", "chrome,resizable=yes",
+                      {'showBasic': showBasic,
+                      'clientType': clientType,
+                      'selectTab': selectTab});
+  }
+}
 
 function EnigAdvPrefWindow() {
   EnigAlert("This function doesn't exist anymore!");

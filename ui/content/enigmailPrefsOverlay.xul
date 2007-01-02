@@ -2,7 +2,7 @@
 
 <!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
 
-<!-- This is the overlay that adds "Enigmail" to the prefs. -->
+<!-- This is the overlay that adds "OpenPGP" to the prefs. -->
 
 <overlay id="enigmailPrefsOverlay"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">

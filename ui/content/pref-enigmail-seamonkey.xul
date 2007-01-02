@@ -48,6 +48,7 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         class="color-dialog"
         orient="vertical"
+        onunload="prefSeamonkeyOnClose();"
         onload="initPrefSeamonkey();">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
@@ -66,70 +67,108 @@
   ]]>
   </script>
 
-    <hbox align="center">
-      <label control="enigmail_agentPath"
-            value="&enigmail.agentPath.label;" />
-      <textbox id="enigmail_agentPath"
-              pref="true"
-              preftype="string"
-              prefstring="extensions.enigmail.agentPath"/>
-      <button id="browse" label="&enigmail.browse.label;"
-              oncommand="enigLocateGpg();"/>
-    </hbox>
+  <popupset>
+    <tooltip id="neverAsk.tooltip">
+        <description>&enigmail.neverAsk.tooltip;</description>
+    </tooltip>
+    <tooltip id="prefs.overrideGpg.tooltip">
+      <description>&enigmail.prefs.overrideGpg.tooltip;</description>
+    </tooltip>
+    <tooltip id="maxIdleMinutes.tooltip">
+      <description>&enigmail.maxIdleMinutes.tooltip;</description>
+    </tooltip>
+    <tooltip id="userNoPassphrase.tooltip">
+      <description>&enigmail.userNoPassphrase.tooltip;</description>
+    </tooltip>
+    <tooltip id="expertUser.tooltip">
+      <description>&enigmail.expertUser.tooltip;</description>
+    </tooltip>
+    <tooltip id="resetPrefs.tooltip">
+      <description>&enigmail.resetPrefs.tooltip;</description>
+    </tooltip>
+  </popupset>
 
-    <hbox>
-      <groupbox orient="vertical">
-        <caption label="&enigmail.passwordSettings.label;"/>
-          <hbox autostretch="never" align="center">
-            <label control="enigmail_maxIdleMinutes"
-                  value="&enigmail.maxIdleMinutesHead.label;" />
-            <textbox id="enigmail_maxIdleMinutes"
-                    size="4"
-                    pref="true"
-                    preftype="int"
-                    prefstring="extensions.enigmail.maxIdleMinutes"/>
-
-            <description>&enigmail.maxIdleMinutesTail.label;</description>
-
-          </hbox>
-
-          <checkbox id="enigmail_noPassphrase"
-                  label="&enigmail.userNoPassphrase.label;"
-                  pref="true"
-                  preftype="bool"
-                  prefstring="extensions.enigmail.noPassphrase"
-                  prefattribute="checked"/>
-
-      </groupbox>
-    </hbox>
-
-    <separator/>
-
-    <hbox autostretch="never" align="center">
-      <checkbox id="enigmail_advancedUser"
-            label="&enigmail.expertUser.label;"
-            pref="true"
-            preftype="bool"
-            prefstring="extensions.enigmail.advancedUser"
-            prefattribute="checked"/>
-    </hbox>
-    <separator/>
-
-    <hbox autostretch="never"
-          id="enigmailPrefsBox">
-        <button class="dialog"
-            id="enigmailPrefs"
-            label="&enigmail.advancedPrefsButton.label; ..."
-            advanced="true"
-            oncommand="EnigPrefWindow(false,'seamonkey')"/>
-    </hbox>
-
-    <groupbox orient="horizontal">
-      <button class="dialog"
-              id="uninstall"
-              label="&enigmail.uninstallButton.label;"
-              oncommand="enigUninstall();"
-              />
+  <hbox>
+    <groupbox orient="vertical" flex="1">
+      <caption label="&enigmail.prefs.pathsTitle.label;"/>
+      <hbox align="center">
+        <label id="enigmailGpgPath" value="(error)"/>
+      </hbox>
+      <hbox align="center">
+        <checkbox label="&enigmail.prefs.overrideGpg.label;"
+                  tooltip="prefs.overrideGpg.tooltip"
+                  id="enigOverrideGpg"
+                  oncommand="enigActivateDependent(this, 'enigmail_agentPath enigmail_browsePath');"/>
+        <textbox id="enigmail_agentPath"
+                 size="30"
+                 pref="true"
+                 preftype="string"
+                 prefstring="extensions.enigmail.agentPath"/>
+        <button id="enigmail_browsePath"
+                label="&enigmail.browse.label;"
+                oncommand="enigLocateGpg();"/>
+      </hbox>
     </groupbox>
+  </hbox>
+  <hbox>
+    <groupbox orient="vertical" flex="1">
+      <caption label="&enigmail.passwordSettings.label;"/>
+      <hbox autostretch="never" align="center">
+        <label control="enigmail_maxIdleMinutes"
+                tooltip="maxIdleMinutes.tooltip"
+                value="&enigmail.maxIdleMinutesHead.label;" />
+
+        <textbox id="enigmail_maxIdleMinutes"
+                size="4"
+                maxlength="4"
+                pref="true"
+                preftype="int"
+                tooltip="maxIdleMinutes.tooltip"
+                prefstring="extensions.enigmail.maxIdleMinutes"/>
+
+        <description tooltip="maxIdleMinutes.tooltip">&enigmail.maxIdleMinutesTail.label;</description>
+      </hbox>
+
+      <checkbox id="enigmail_noPassphrase"
+              label="&enigmail.userNoPassphrase.label;"
+              tooltip="userNoPassphrase.tooltip"
+              pref="true"
+              preftype="bool"
+              prefstring="extensions.enigmail.noPassphrase"
+              prefattribute="checked"/>
+
+    </groupbox>
+  </hbox>
+
+  <separator/>
+
+  <hbox autostretch="never" align="center">
+    <checkbox id="enigmail_advancedUser"
+          label="&enigmail.expertUser.label;"
+          tooltip="expertUser.tooltip"
+          pref="true"
+          preftype="bool"
+          prefstring="extensions.enigmail.advancedUser"
+          prefattribute="checked"/>
+  </hbox>
+
+  <separator/>
+  <vbox autostretch="never" align="end">
+    <hbox id="enigmailPrefsBox">
+      <button class="dialog"
+          id="enigmailPrefs"
+          label="&enigmail.advancedPrefsButton.label; ..."
+          advanced="true"
+          oncommand="EnigPrefWindow(false,'seamonkey')"/>
+      <button id="uninstall"
+              class="dialog"
+              label="&enigmail.uninstallButton.label;"
+              oncommand="enigUninstall()"/>
+      <button id="resetPrefs"
+              label="&enigmail.resetPrefsButton.label;"
+              tooltip="resetPrefs.tooltip"
+              oncommand="resetPrefs();"/>
+    </hbox>
+  </vbox>
 
 </page>

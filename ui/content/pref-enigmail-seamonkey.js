@@ -42,9 +42,9 @@ function initPrefSeamonkey() {
   parent.initPanel('chrome://enigmail/content/pref-enigmail-seamonkey.xul');
 
   var prefsBox = document.getElementById("enigmailPrefsBox");
-  EnigCollapseAdvanced(prefsBox, "collapsed", null);
+  EnigCollapseAdvanced(prefsBox, "hidden", null);
 
-  EnigSetDefaultPrefs();
+  enigDetermineGpgPath();
 
   EnigSetPref("configuredVersion", gEnigmailVersion);
 
@@ -58,4 +58,21 @@ function setDisables(initializing) {
   var noPassphrase = initializing ? EnigGetPref("noPassphrase")
                               : noPassphraseElement.checked;
 
+  var overrideGpg = document.getElementById("enigOverrideGpg")
+  if (EnigGetPref("agentPath")) {
+    overrideGpg.checked = true;
+  }
+  else {
+    overrideGpg.checked = false;
+  }
+  enigActivateDependent(overrideGpg, "enigmail_agentPath enigmail_browsePath");
 }
+
+function prefSeamonkeyOnClose() {
+  DEBUG_LOG("pref-enigmail-seamonkey.js: prefSeamonkeyOnClose:\n");
+
+  if (! document.getElementById("enigOverrideGpg").checked) {
+    EnigSetPref("agentPath", "");
+  }
+}
+
