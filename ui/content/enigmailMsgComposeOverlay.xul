@@ -133,10 +133,6 @@
                 accesskey="&enigmail.defaultKeySelOpts.accesskey;"
                 oncommand="EnigPrefWindow(true, 'seamonkey', 'keySelTab');" />
 
-            <menuitem id="enigmail_mime_options_menu"
-                  label="&enigmail.mimeOptionsMenu.label;"
-                  accesskey="&enigmail.mimeOptionsMenu.accesskey;"
-                  oncommand="EnigPrefWindow(true, 'seamonkey', 'pgpMimeTab');"/>
             </menupopup>
           </menu>
 
@@ -253,10 +249,6 @@
                 accesskey="&enigmail.defaultKeySelOpts.accesskey;"
                 oncommand="EnigPrefWindow(true, 'thunderbird', 'keySelTab');" />
 
-            <menuitem id="enigmail_mime_options_menu"
-                  label="&enigmail.mimeOptionsMenu.label;"
-                  accesskey="&enigmail.mimeOptionsMenu.accesskey;"
-                  oncommand="EnigPrefWindow(true, 'thunderbird', 'pgpMimeTab');"/>
             </menupopup>
           </menu>
 

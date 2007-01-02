@@ -52,13 +52,64 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail.js"/>
 
+  <popupset>
+    <tooltip id="neverAsk.tooltip">
+        <description>&enigmail.neverAsk.tooltip;</description>
+    </tooltip>
+    <tooltip id="prefs.overrideGpg.tooltip">
+      <description>&enigmail.prefs.overrideGpg.tooltip;</description>
+    </tooltip>
+    <tooltip id="maxIdleMinutes.tooltip">
+      <description>&enigmail.maxIdleMinutes.tooltip;</description>
+    </tooltip>
+    <tooltip id="userNoPassphrase.tooltip">
+      <description>&enigmail.userNoPassphrase.tooltip;</description>
+    </tooltip>
+    <tooltip id="expertUser.tooltip">
+      <description>&enigmail.expertUser.tooltip;</description>
+    </tooltip>
+    <tooltip id="resetPrefs.tooltip">
+      <description>&enigmail.resetPrefs.tooltip;</description>
+    </tooltip>
+    <tooltip id="encryptToSelf.tooltip">
+      <description>&enigmail.encryptToSelf.tooltip;</description>
+    </tooltip>
+    <tooltip id="wrapHtmlBeforeSend.tooltip">
+      <description>&enigmail.wrapHtmlBeforeSend.tooltip;</description>
+    </tooltip>
+    <tooltip id="alwaysTrustSend.tooltip">
+      <description>&enigmail.alwaysTrustSend.tooltip;</description>
+    </tooltip>
+    <tooltip id="allowEmptySubject.tooltip">
+      <description>&enigmail.allowEmptySubject.tooltip;</description>
+    </tooltip>
+    <tooltip id="confirmBeforeSend.tooltip">
+      <description>&enigmail.confirmBeforeSend.tooltip;</description>
+    </tooltip>
+    <tooltip id="perRecipientRules.tooltip">
+      <description>&enigmail.perRecipientRules.tooltip;</description>
+    </tooltip>
+    <tooltip id="perRecipientRulesAndEmail.tooltip">
+      <description>&enigmail.perRecipientRulesAndEmail.tooltip;</description>
+    </tooltip>
+    <tooltip id="perEmailAddress.tooltip">
+      <description>&enigmail.perEmailAddress.tooltip;</description>
+    </tooltip>
+    <tooltip id="askRecipientsAlways.tooltip">
+      <description>&enigmail.askRecipientsAlways.tooltip;</description>
+    </tooltip>
+    <tooltip id="defineRules.tooltip">
+      <description>&enigmail.defineRules.tooltip;</description>
+    </tooltip>
+</popupset>
+
   <tabbox flex="1" style="margin:5px" id="prefTabs">
     <tabs id="prefTabBox">
       <tab id="basicTab"    label="&enigmail.basic.label;"/>
       <tab id="sendTab"     label="&enigmail.sending.label;" advanced="true"/>
       <tab id="keySelTab"   label="&enigmail.keySel.label;" advanced="true"/>
-      <tab id="pgpMimeTab"  label="&enigmail.pgpMime.label;" advanced="true"/>
       <tab id="advancedTab" label="&enigmail.advancedPrefsButton.label;" advanced="true"/>
+      <tab id="keyserverTab" label="&enigmail.keyserver.label;" advanced="true"/>
       <tab id="debugTab"    label="&enigmail.debug.label;" advanced="true"/>
     </tabs>
 
@@ -66,59 +117,50 @@
 		  <!-- "Basic" Tab -->
       <vbox id="basic" flex="1">
           <description class="enigmailPrefsTitle">&enigmail.basicPrefs.label;</description>
-
-					<grid>
-            <columns>
-              <column flex="1"/>
-              <column/>
-            </columns>
-
-            <rows> <!-- autostretch="never"> -->
-            <row>
+          <hbox>
+            <groupbox orient="vertical" flex="1">
+              <caption label="&enigmail.prefs.pathsTitle.label;"/>
               <hbox align="center">
-                <label control="enigmail_agentPath"
-                       value="&enigmail.agentPath.label;" />
+                <label id="enigmailGpgPath" value="(error)"/>
               </hbox>
-                <hbox align="center">
-                  <textbox id="enigmail_agentPath" size="30"/>
-                  <button id="browse" label="&enigmail.browse.label;"
-                    oncommand="enigLocateGpg();"/>
-                </hbox>
-              </row>
-              <row>
-                <hbox align="center">
-                  <label control="enigmail_agentAdditionalParam"
-                         value="&enigmail.agentAdditionalParam.label;"/>
-                </hbox>
-                <hbox>
-                  <textbox id="enigmail_agentAdditionalParam" size="30"/>
-                </hbox>
-              </row>
-            </rows>
-          </grid>
+              <hbox align="center">
+                <checkbox label="&enigmail.prefs.overrideGpg.label;"
+                          tooltip="prefs.overrideGpg.tooltip"
+                          id="enigOverrideGpg"
+                          oncommand="enigActivateDependent(this, 'enigmail_agentPath enigmail_browsePath');"/>
+                <textbox id="enigmail_agentPath" size="30"/>
+                <button id="enigmail_browsePath"
+                        label="&enigmail.browse.label;"
+                  oncommand="enigLocateGpg();"/>
+              </hbox>
+            </groupbox>
+          </hbox>
           <hbox>
             <groupbox orient="vertical" flex="1">
               <caption label="&enigmail.passwordSettings.label;"/>
-                <hbox autostretch="never" align="center">
-                  <label control="enigmail_maxIdleMinutes"
-                        value="&enigmail.maxIdleMinutesHead.label;" />
+              <hbox autostretch="never" align="center">
+                <label control="enigmail_maxIdleMinutes"
+                       tooltip="maxIdleMinutes.tooltip"
+                       value="&enigmail.maxIdleMinutesHead.label;" />
 
-                  <textbox id="enigmail_maxIdleMinutes"
-                          size="4"
-                          maxlength="4"
-                          pref="true"
-                          preftype="int"
-                          prefstring="extensions.enigmail.maxIdleMinutes"/>
-
-                  <description>&enigmail.maxIdleMinutesTail.label;</description>
-                </hbox>
-
-                <checkbox id="enigmail_noPassphrase"
-                        label="&enigmail.userNoPassphrase.label;"
+                <textbox id="enigmail_maxIdleMinutes"
+                        size="4"
+                        maxlength="4"
                         pref="true"
-                        preftype="bool"
-                        prefstring="extensions.enigmail.noPassphrase"
-                        prefattribute="checked"/>
+                        preftype="int"
+                        tooltip="maxIdleMinutes.tooltip"
+                        prefstring="extensions.enigmail.maxIdleMinutes"/>
+
+                <description tooltip="maxIdleMinutes.tooltip">&enigmail.maxIdleMinutesTail.label;</description>
+              </hbox>
+
+              <checkbox id="enigmail_noPassphrase"
+                      label="&enigmail.userNoPassphrase.label;"
+                      tooltip="userNoPassphrase.tooltip"
+                      pref="true"
+                      preftype="bool"
+                      prefstring="extensions.enigmail.noPassphrase"
+                      prefattribute="checked"/>
 
             </groupbox>
           </hbox>
@@ -127,7 +169,8 @@
 
           <hbox autostretch="never" align="center">
             <checkbox id="enigmail_advancedUser"
-                  label="&enigmail.expertUser.label;"/>
+                  label="&enigmail.expertUser.label;"
+                  tooltip="expertUser.tooltip"/>
           </hbox>
 
           <separator/>
@@ -139,6 +182,7 @@
                       oncommand="enigUninstall()"/>
               <button id="resetPrefs"
                       label="&enigmail.resetPrefsButton.label;"
+                      tooltip="resetPrefs.tooltip"
                       oncommand="resetPrefs();"/>
             </hbox>
           </vbox>
@@ -151,102 +195,71 @@
           <description class="enigmailPrefsTitle">&enigmail.whenSending.label;</description>
 
           <checkbox id="enigmail_encryptToSelf"
-                    label="&enigmail.encryptToSelf.label;" />
-
-          <checkbox id="enigmail_alwaysTrustSend"
-                    label="&enigmail.alwaysTrustSend.label;" />
-
-          <checkbox id="enigmail_confirmBeforeSend"
-                    label="&enigmail.confirmBeforeSend.label;" />
+                    label="&enigmail.encryptToSelf.label;"
+                    tooltip="encryptToSelf.tooltip"/>
 
           <checkbox id="enigmail_wrapHtmlBeforeSend"
-                    label="&enigmail.wrapHtmlBeforeSend.label;" />
+                    label="&enigmail.wrapHtmlBeforeSend.label;"
+                    tooltip="wrapHtmlBeforeSend.tooltip"/>
+
+          <checkbox id="enigmail_alwaysTrustSend"
+                    label="&enigmail.alwaysTrustSend.label;"
+                    tooltip="alwaysTrustSend.tooltip"/>
 
 				  <checkbox id="enigmail_allowEmptySubject"
-                    label="&enigmail.allowEmptySubject.label;" />
+                    label="&enigmail.allowEmptySubject.label;"
+                    tooltip="allowEmptySubject.tooltip"/>
 
-          <checkbox id="send_plaintext_flowed"
-                    label="&enigmail.send_plaintext_flowed.label;" />
+          <checkbox id="enigmail_confirmBeforeSend"
+                    label="&enigmail.confirmBeforeSend.label;"
+                    tooltip="confirmBeforeSend.tooltip"/>
       </vbox>
 
 			<!-- "Key Selection" Tab -->
       <vbox id="keySel" flex="1"
             advanced="true">
-          <description class="enigmailPrefsTitle">&enigmail.recipientsSelectionOption.label;</description>
           <groupbox>
-            <caption label="&enigmail.normalKeySelection.label;"/>
-            <radiogroup id="enigmail_recipientsSelectionOption">
-              <radio id="askRecipientsNever"
+            <caption label="&enigmail.recipientsSelectionOption.label;"/>
+            <radiogroup id="enigmail_recipientsSelection"
+                        oncommand="activateRulesButton(this, 'openRulesEditor')">
+              <radio id="perRecipientRules"
                     value="0"
-                    label="&enigmail.askRecipientsNever.label;"/>
+                    label="&enigmail.perRecipientRules.label;"
+                    tooltip="perRecipientRules.tooltip"/>
 
-              <radio id="askRecipientsClever"
+              <radio id="perRecipientRulesAndEmail"
                     value="1"
-                    label="&enigmail.askRecipientsClever.label;"/>
+                    label="&enigmail.perRecipientRulesAndEmail.label;"
+                    tooltip="perRecipientRulesAndEmail.tooltip"/>
+
+              <radio id="perEmailAddress"
+                    value="2"
+                    label="&enigmail.perEmailAddress.label;"
+                    tooltip="perEmailAddress.tooltip"/>
 
               <radio id="askRecipientsAlways"
-                    value="2"
-                    label="&enigmail.askRecipientsAlways.label;"/>
+                    value="3"
+                    label="&enigmail.askRecipientsAlways.label;"
+                    tooltip="askRecipientsAlways.tooltip"/>
+
+              <radio id="neverAsk"
+                    value="4"
+                    label="&enigmail.neverAsk.label;"
+                    tooltip="neverAsk.tooltip"/>
+
             </radiogroup>
+
+            <vbox autostretch="always" align="end">
+              <button id="openRulesEditor"
+                      label="&enigmail.defineRules.label;"
+                      tooltip="defineRules.tooltip"
+                      oncommand="EnigRulesEditor();"/>
+            </vbox>
           </groupbox>
 
-          <separator/>
-
-          <groupbox>
-            <caption label="&enigmail.perRecipientRules.label;"/>
-            <grid>
-              <columns>
-              <column flex="1"/>
-              <column/>
-            </columns>
-
-            <rows autostretch="never">
-              <row>
-                <radiogroup id="enigmail_perRecipientRules">
-                    <radio id="perRecipientRulesNo"
-                        value="0"
-                        label="&enigmail.disabled.label;"/>
-
-                  <radio id="perRecipientRulesManual"
-                        value="1"
-                        label="&enigmail.perRecipientRulesManual.label;"/>
-
-                  <radio id="perRecipientRulesAlways"
-                        value="2"
-                        label="&enigmail.perRecipientRulesAlways.label;"/>
-                </radiogroup>
-                <hbox autostretch="never" align="end">
-                  <button label="&enigmail.defineRules.label;"
-                          oncommand="EnigRulesEditor();"/>
-                </hbox>
-              </row>
-            </rows>
-          </grid>
-          </groupbox>
       </vbox>
 
-			<!-- "PGP/MIME" Tab -->
-      <vbox id="pgpMime" flex="1"
-            advanced="true">
-          <description class="enigmailPrefsTitle">&enigmail.usePGPMimeOption.label;</description>
-          <radiogroup id="enigmail_usePGPMimeOption">
-
-            <radio id="usePGPMimeNever"
-                  value="0"
-                  label="&enigmail.usePGPMimeNever.label;" />
-
-            <radio id="usePGPMimePossible"
-                  value="1"
-                  label="&enigmail.usePGPMimePossible.label;" />
-
-            <radio id="usePGPMimeAlways"
-                  value="2"
-                  label="&enigmail.usePGPMimeAlways.label;" />
-
-          </radiogroup>
-      </vbox>
-
-			<!-- "Advanced" Tab -->
+      <!-- "Advanced" Tab -->
       <vbox id="advanced" flex="1"
             advanced="true">
           <description class="enigmailPrefsTitle">&enigmail.moreOptions.label;</description>
@@ -272,10 +285,32 @@
 
           <checkbox id="mime_parts_on_demand"
                     label="&enigmail.mime_parts_on_demand.label;"
-                    tooltiptext="&enigmail.mime_parts_on_demand.tooltip;" />
+                    tooltip="&enigmail.mime_parts_on_demand.tooltip;" />
 
           <separator/>
 
+          <hbox>
+            <hbox align="center">
+              <label control="enigmail_agentAdditionalParam"
+                      value="&enigmail.agentAdditionalParam.label;"/>
+            </hbox>
+            <hbox>
+              <textbox id="enigmail_agentAdditionalParam" size="30"/>
+            </hbox>
+          </hbox>
+
+          <separator/>
+
+          <hbox>
+            <button id="resetRememberedValues"
+                    label="&enigmail.resetRememberedValues.label;"
+                    oncommand="resetRememberedValues();"/>
+          </hbox>
+      </vbox>
+
+      <!-- "Key Server" Tab -->
+      <vbox id="keyserver" flex="1"
+            advanced="true">
           <vbox>
             <label control="enigmail_keyserver"
                   value="&enigmail.keyservers.label;:" />
@@ -290,17 +325,9 @@
             <textbox id="enigmail_autoKeyRetrieve" size="30"/>
           </hbox>
 
-
-          <separator/>
-
-          <hbox>
-            <button id="resetRememberedValues"
-                    label="&enigmail.resetRememberedValues.label;"
-                    oncommand="resetRememberedValues();"/>
-          </hbox>
       </vbox>
 
-			<!-- "Debugging" Tab -->
+      <!-- "Debugging" Tab -->
       <vbox id="debug" flex="1"
             advanced="true">
         <description class="enigmailPrefsTitle">&enigmail.debugMenu.label;</description>

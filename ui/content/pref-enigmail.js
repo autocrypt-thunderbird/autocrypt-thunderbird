@@ -36,7 +36,6 @@ GPL.
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail");
 
-var gSendFlowedElement, gSendFlowedValue;
 var gMimePartsElement, gMimePartsValue;
 
 function prefOnLoad() {
@@ -72,29 +71,8 @@ function prefOnLoad() {
 
    }
 
-   EnigDisplayRadioPref("usePGPMimeOption", EnigGetPref("usePGPMimeOption"),
-                        gUsePGPMimeOptionList);
-
-
-   EnigDisplayRadioPref("recipientsSelectionOption", EnigGetPref("recipientsSelectionOption"),
-                        gEnigRecipientsSelectionOptions);
-
-   EnigDisplayRadioPref("perRecipientRules", EnigGetPref("perRecipientRules"),
-                        gEnigPerRecipientRules);
-
-   gSendFlowedElement = document.getElementById("send_plaintext_flowed");
-
-   try {
-     gSendFlowedValue = gEnigPrefRoot.getBoolPref("mailnews.send_plaintext_flowed");
-   } catch (ex) {
-     gSendFlowedValue = true;
-   }
-
-   if (gSendFlowedValue) {
-     gSendFlowedElement.setAttribute("checked", "true");
-   } else {
-     gSendFlowedElement.removeAttribute("checked");
-   }
+   EnigDisplayRadioPref("recipientsSelection", getRecipientsSelectionPref(false),
+                        gEnigRecipientsSelection);
 
    gMimePartsElement = document.getElementById("mime_parts_on_demand");
 
@@ -110,8 +88,35 @@ function prefOnLoad() {
      gMimePartsElement.removeAttribute("checked");
    }
 
+   var overrideGpg = document.getElementById("enigOverrideGpg")
+   if (EnigGetPref("agentPath")) {
+      overrideGpg.checked = true;
+   }
+   else {
+      overrideGpg.checked = false;
+   }
+   enigActivateDependent(overrideGpg, "enigmail_agentPath enigmail_browsePath");
+   activateRulesButton(document.getElementById("enigmail_recipientsSelection"), "openRulesEditor");
+
    var testEmailElement = document.getElementById("enigmail_test_email");
    var userIdValue = EnigGetPref("userIdValue");
+
+   if (! gEnigmailSvc) {
+      try {
+        gEnigmailSvc = ENIG_C.classes[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_C.interfaces.nsIEnigmail);
+        if (! gEnigmailSvc.initialized) {
+          // attempt to initialize Enigmail
+          gEnigmailSvc.initialize(window, gEnigmailVersion, gPrefEnigmail);
+        }
+      } catch (ex) {}
+   }
+
+   if (gEnigmailSvc.initialized && gEnigmailSvc.agentPath) {
+      document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgFound", gEnigmailSvc.agentPath));
+   }
+   else {
+      document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgNotFound"));
+   }
 
    if (testEmailElement && userIdValue)
      testEmailElement.value = userIdValue;
@@ -131,12 +136,8 @@ function resetPrefs() {
 
   EnigSetPref("configuredVersion", gEnigmailVersion);
 
-  EnigDisplayRadioPref("usePGPMimeOption", EnigGetDefaultPref("usePGPMimeOption"),
-                      gUsePGPMimeOptionList);
-  EnigDisplayRadioPref("recipientsSelectionOption", EnigGetDefaultPref("recipientsSelectionOption"),
-                      gEnigRecipientsSelectionOptions);
-  EnigDisplayRadioPref("perRecipientRules", EnigGetPref("perRecipientRules"),
-                      gEnigPerRecipientRules);
+  EnigDisplayRadioPref("recipientsSelection", getRecipientsSelectionPref(true),
+                      gEnigRecipientsSelection);
 
 }
 
@@ -163,21 +164,16 @@ function prefOnAccept() {
   DEBUG_LOG("pref-enigmail.js: prefOnAccept\n");
 
   var oldAgentPath = EnigGetPref("agentPath");
+
+  if (! document.getElementById("enigOverrideGpg").checked) {
+    document.getElementById("enigmail_agentPath").value = "";
+  }
   var newAgentPath = document.getElementById("enigmail_agentPath").value;
 
   EnigDisplayPrefs(false, false, true);
 
-  EnigSetRadioPref("usePGPMimeOption", gUsePGPMimeOptionList);
-
-  EnigSetRadioPref("recipientsSelectionOption", gEnigRecipientsSelectionOptions);
-
-  EnigSetRadioPref("perRecipientRules", gEnigPerRecipientRules);
-
-  if (gSendFlowedElement &&
-      (gSendFlowedElement.checked != gSendFlowedValue) ) {
-
-    gEnigPrefRoot.setBoolPref("mailnews.send_plaintext_flowed", (gSendFlowedElement.checked ? true : false));
-  }
+  setRecipientsSelectionPref(document.getElementById("enigmail_recipientsSelection").value);
+  //EnigSetRadioPref("recipientsSelection", gEnigRecipientsSelection);
 
   if (gMimePartsElement &&
       (gMimePartsElement.checked != gMimePartsValue) ) {
@@ -213,6 +209,123 @@ function prefOnAccept() {
   return true;
 }
 
+function enigActivateDependent (obj, dependentIds) {
+  var idList = dependentIds.split(/ /);
+  var depId;
+
+  for (depId in idList) {
+    if (obj.checked) {
+      document.getElementById(idList[depId]).removeAttribute("disabled");
+    }
+    else {
+      document.getElementById(idList[depId]).setAttribute("disabled", "true");
+    }
+  }
+  return true;
+}
+
+function activateRulesButton(radioListObj, buttonId) {
+  switch (radioListObj.value) {
+  case "2":
+  case "3":
+    document.getElementById(buttonId).setAttribute("disabled", "true");
+    break;
+  default:
+    document.getElementById(buttonId).removeAttribute("disabled");
+  }
+}
+
+function getRecipientsSelectionPref (defaultOptions) {
+  var keySel;
+  var perRecipientRules;
+
+  if (! defaultOptions) {
+    keySel = EnigGetPref("recipientsSelectionOption");
+    perRecipientRules = EnigGetPref("perRecipientRules");
+  }
+  else {
+    keySel = EnigGetDefaultPref("recipientsSelectionOption");
+    perRecipientRules = EnigGetDefaultPref("perRecipientRules");
+  }
+
+  var retVal = 1;
+
+  /*
+  0: rules only
+  1: rules & email addresses (normal)
+  2: email address only (no rules)
+  3: manually (always prompt, no rules)
+  4: no rules, no key selection
+  */
+
+  switch (perRecipientRules) {
+  case 0:
+    switch (keySel) {
+    case 0:
+      retVal = 4;
+      break;
+    case 1:
+      retVal = 2;
+      break;
+    case 2:
+      retVal = 3;
+      break;
+    default:
+      retVal = 1;
+    }
+    break;
+  case 1:
+    if (keySel == 0) {
+      retVal = 4;
+    }
+    else {
+      retVal = 1;
+    }
+    break;
+  case 2:
+    retVal = 0;
+    break;
+  default:
+    retVal = 1;
+  }
+
+  return retVal;
+}
+
+
+function setRecipientsSelectionPref(radioListValue) {
+  var keySelPref;
+  var rulesPref;
+
+  switch (radioListValue) {
+  case "0":
+    keySelPref = 1;
+    rulesPref = 2;
+    break;
+  case "1":
+    keySelPref = 1;
+    rulesPref = 1;
+    break;
+  case "2":
+    keySelPref = 1;
+    rulesPref = 0;
+    break;
+  case "3":
+    keySelPref = 2;
+    rulesPref = 0;
+    break;
+  case "4":
+    keySelPref = 0;
+    rulesPref = 0;
+    break;
+  default:
+    keySelPref = 1;
+    rulesPref = 1;
+  }
+
+  EnigSetPref("perRecipientRules", rulesPref);
+  EnigSetPref("recipientsSelectionOption", keySelPref);
+}
 
 
 function EnigMimeTest() {

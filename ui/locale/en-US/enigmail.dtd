@@ -26,13 +26,20 @@
 
 <!ENTITY enigmail.preferences.label       "OpenPGP Preferences">
 
-<!ENTITY enigmail.passwordSettings.label  "Passphrase settings">
-<!ENTITY enigmail.userNoPassphrase.label  "No passphrase for user">
-<!ENTITY enigmail.expertUser.label        "Display expert settings">
+<!ENTITY enigmail.passwordSettings.label   "Passphrase settings">
+<!ENTITY enigmail.userNoPassphrase.label   "Never ask for any passprase">
+<!ENTITY enigmail.userNoPassphrase.tooltip "Activate if your OpenPGP key is not protected by a passphrase.">
+<!ENTITY enigmail.expertUser.label         "Display expert settings">
+<!ENTITY enigmail.expertUser.tooltip       "Activate if you want to see more menu items and options for advanced users.">
 
 <!ENTITY enigmail.defaultEncryptionOption.label "Choose default encryption options">
 <!ENTITY enigmail.usePGPMimeOption.label  "Choose PGP/MIME option">
 <!ENTITY enigmail.mimeHashAlgorithm.label "Hash algorithm">
+
+<!ENTITY enigmail.prefs.pathsTitle.label      "Files and Directories">
+<!ENTITY enigmail.prefs.overrideGpg.label     "Override with">
+<!ENTITY enigmail.prefs.overrideGpg.tooltip   "Click to specify a location for GnuPG">
+
 
 <!ENTITY enigmail.agentPath.label             "GnuPG executable path">
 <!ENTITY enigmail.agentAdditionalParam.label  "Additional parameters for GnuPG">
@@ -40,12 +47,16 @@
 <!ENTITY enigmail.send_plaintext_flowed.label "Allow flowed text (RFC 2646)">
 <!ENTITY enigmail.mime_parts_on_demand.label  "Load MIME parts on demand (IMAP folders)">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "You should turn this OFF if you are receiving PGP/MIME messages on IMAP folders">
-<!ENTITY enigmail.allowEmptySubject.label     "Allow empty subject">
+<!ENTITY enigmail.allowEmptySubject.label     "Don't warn about empty subject line">
+<!ENTITY enigmail.allowEmptySubject.tooltip   "Click to disable the warning Thunderbird gives if sending an email without a subject header">
+
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Remember passphrase for">
 <!ENTITY enigmail.maxIdleMinutesTail.label "minutes of idle time">
+<!ENTITY enigmail.maxIdleMinutes.tooltip   "Cache passphrases in memory for a limited time. While cached, OpenPGP will not ask you for your passphrase for any reason.">
 
 <!ENTITY enigmail.resetPrefsButton.label "Reset">
+<!ENTITY enigmail.resetPrefs.tooltip     "Set all OpenPGP preferences back to their default value">
 <!ENTITY enigmail.prefsHelpButton.label  "Help">
 
 <!ENTITY enigmail.upgradeButton.label    "Upgrade Enigmail">
@@ -63,13 +74,15 @@
 <!ENTITY enigmail.whenSending.label       "When sending mail">
 <!ENTITY enigmail.moreOptions.label       "More options">
 
-<!ENTITY enigmail.encryptToSelf.label     "Encrypt to self">
-<!ENTITY enigmail.alwaysTrustSend.label   "Always trust user ID">
+<!ENTITY enigmail.encryptToSelf.label     "Add my own key to the recipients list">
+<!ENTITY enigmail.encryptToSelf.tooltip   "If enabled, you will always be able to decrypt messages you have sent.">
+<!ENTITY enigmail.alwaysTrustSend.label   "Always trust people's keys">
+<!ENTITY enigmail.alwaysTrustSend.tooltip "Do not use the Web of Trust to determine the validity of keys">
 <!ENTITY enigmail.useDefaultComment.label "Do not add Enigmail comment in OpenPGP signature">
 
 <!ENTITY enigmail.keyserver.label         "Keyserver">
 <!ENTITY enigmail.keyserverDlg.label      "Select Keyserver">
-<!ENTITY enigmail.keyservers.label        "Keyserver(s)">
+<!ENTITY enigmail.keyservers.label        "Specify your keyserver(s)">
 <!ENTITY enigmail.keyservers.sample       "Example: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
 
 <!ENTITY enigmail.searchForKey.label      "Search for key">
@@ -184,16 +197,19 @@
 <!ENTITY enigmail.defaultEncryptionNone.label     "No default encryption">
 <!ENTITY enigmail.defaultNotSignedsend.label      "Do not sign messages by default">
 
-<!ENTITY enigmail.recipientsSelectionOption.label "Behavior for Selecting Keys of Recipients When Sending Messages">
-<!ENTITY enigmail.askRecipientsAlways.label       "Always display selection">
-<!ENTITY enigmail.askRecipientsClever.label       "Display selection when necessary">
-<!ENTITY enigmail.askRecipientsNever.label        "Never display OpenPGP key selection dialog">
-<!ENTITY enigmail.normalKeySelection.label        "Normal Key Selection">
-<!ENTITY enigmail.perRecipientRules.label         "Use Key Selection Rules">
-<!ENTITY enigmail.disabled.label                  "Disabled">
-<!ENTITY enigmail.perRecipientRulesManual.label   "Define rules manually">
-<!ENTITY enigmail.perRecipientRulesAlways.label   "Prompt for every unknown recipient">
-<!ENTITY enigmail.defineRules.label               "Define Rules ...">
+<!ENTITY enigmail.recipientsSelectionOption.label "How should we choose the keys?">
+<!ENTITY enigmail.perRecipientRules.label         "By pre-set rules only">
+<!ENTITY enigmail.perRecipientRules.tooltip       "Choose keys according to rules you set in advance. If a recipient needs a rule, you will be prompted to create one.">
+<!ENTITY enigmail.perRecipientRulesAndEmail.label "By rules and email addresses">
+<!ENTITY enigmail.perRecipientRulesAndEmail.tooltip "If a rule exists, use it. If not, use email addresses  to decide which keys to use. If Enigmail still can't decide, you will be prompted to choose.">
+<!ENTITY enigmail.perEmailAddress.label           "By email addresses">
+<!ENTITY enigmail.perEmailAddress.tooltip         "Use email addresses to decide which keys to use. If Enigmail can't decide, you will be prompted to choose.">
+<!ENTITY enigmail.askRecipientsAlways.label       "Manually">
+<!ENTITY enigmail.askRecipientsAlways.tooltip     "Enigmail will never decide which keys to use. The decision will always be up to you.">
+<!ENTITY enigmail.neverAsk.label                  "No manual key selection">
+<!ENTITY enigmail.neverAsk.tooltip                "Choose keys according to rules set in advance. If Enigmail can't find a valid key for all recipients, automatically send the message unencrypted.">
+<!ENTITY enigmail.defineRules.label               "Edit Rules ...">
+<!ENTITY enigmail.defineRules.tooltip             "Click to view, add, remove or edit the key selection rules.">
 
 <!ENTITY enigmail.usePGPMimeAlways.label          "Always use PGP/MIME">
 <!ENTITY enigmail.usePGPMimePossible.label        "Allow to use PGP/MIME">
@@ -201,7 +217,9 @@
 
 <!ENTITY enigmail.keepSettingsForReply.label      "Encrypt if replying to encrypted message">
 <!ENTITY enigmail.confirmBeforeSend.label         "Always confirm before sending">
+<!ENTITY enigmail.confirmBeforeSend.tooltip       "Activate to display information dialog about signing/encryption before sending a message">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label        "Rewrap signed HTML text before sending">
+<!ENTITY enigmail.wrapHtmlBeforeSend.tooltip      "Rearrange the text to ensure that the signature will remain intact.">
 <!ENTITY enigmail.autoKeyRetrieve.label           "Automatically download keys from server">
 <!ENTITY enigmail.resetRememberedValues.label     "Reset Warnings">
 

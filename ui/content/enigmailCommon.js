@@ -108,13 +108,11 @@ const ENIG_TEMPDIR_PROP = "TmpD";
 var gUsePGPMimeOptionList = ["usePGPMimeNever", "usePGPMimePossible",
                              "usePGPMimeAlways"];
 
-var gEnigRecipientsSelectionOptions = ["askRecipientsNever",
-                                       "askRecipientsClever",
-                                       "askRecipientsAlways"];
-
-var gEnigPerRecipientRules = ["perRecipientRulesNo",
-                              "perRecipientRulesManual",
-                              "perRecipientRulesAlways"];
+var gEnigRecipientsSelection = ["perRecipientRules",
+                                "perRecipientRulesAndEmail",
+                                "perEmailAddress",
+                                "askRecipientsAlways",
+                                "neverAsk"];
 
 const ENIG_BUTTON_POS_0           = 1;
 const ENIG_BUTTON_POS_1           = 1 << 8;
