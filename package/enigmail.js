@@ -731,9 +731,6 @@ function (aURI)
 
       DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.newChannel: messageURL="+messageUriObj.originalUrl+", "+contentType+", "+contentCharset+"\n");
 
-      if (!messageUriObj.persist)
-        delete gEnigmailSvc._messageIdList[messageId];
-
     } else {
 
       contentType = "text/plain";
