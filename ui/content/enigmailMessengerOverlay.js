@@ -126,7 +126,11 @@ function enigEnsureExtraHeaders() {
   var extraHdrList = [
     "x-enigmail-version",
     "content-transfer-encoding",
-    "openpgp" ];
+    "openpgp",
+// the following headers are added for compatibility with DispMUA extension:
+    "x-mimeole",
+    "x-bugzilla-reason",
+    "x-php-bug" ];
 
   var addHdr = [];
 

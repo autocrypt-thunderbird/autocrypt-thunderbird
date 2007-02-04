@@ -371,6 +371,7 @@
 
           <vbox>
             <label value="&enigmail.autoKeyRetrieve.label;"/>
+            <label value="&enigmail.autoKeyRetrieve2.label;"/>
             <textbox id="enigmail_autoKeyRetrieve" size="35"/>
           </vbox>
 

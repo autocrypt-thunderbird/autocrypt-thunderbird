@@ -226,7 +226,8 @@
 <!ENTITY enigmail.confirmBeforeSend.tooltip       "Activate to display information dialog about signing/encryption before sending a message">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label        "Re-wrap signed HTML text before sending">
 <!ENTITY enigmail.wrapHtmlBeforeSend.tooltip      "Rearrange the text to ensure that the signature will remain intact.">
-<!ENTITY enigmail.autoKeyRetrieve.label           "Automatically download keys from the following server:">
+<!ENTITY enigmail.autoKeyRetrieve.label           "Automatically download keys for signature verification">
+<!ENTITY enigmail.autoKeyRetrieve2.label          "from the following keyserver:">
 <!ENTITY enigmail.resetRememberedValues.label     "Reset Warnings">
 <!ENTITY enigmail.resetRememberedValues.tooltip   "Re-display all warning dialogs and questions that you have hidden in the past.">
 
