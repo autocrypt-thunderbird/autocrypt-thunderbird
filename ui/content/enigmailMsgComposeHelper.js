@@ -19,14 +19,14 @@
  * Contributor(s):
  *
  * Alternatively, the contents of this file may be used under the
- * terms of the GNU General Public License (the "GPL") or the GNU 
+ * terms of the GNU General Public License (the "GPL") or the GNU
  * Lesser General Public License (the "LGPL"), in which case
  * the provisions of the GPL or the LGPL are applicable instead of
  * those above. If you wish to allow use of your version of this
  * file only under the terms of the GPL or the LGPL and not to allow
  * others to use your version of this file under the MPL, indicate
  * your decision by deleting the provisions above and replace them
- * with the notice and other provisions required by the GPL or the 
+ * with the notice and other provisions required by the GPL or the
  * LGPL respectively.
  * If you do not delete the provisions above, a recipient
  * may use your version of this file under either the MPL, the
@@ -45,7 +45,7 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
     if ((oldVal==2 && newVal==0) || (oldVal==0 && newVal==2)) {
       conflictObj[type] = 1;
     }
-    
+
     if (oldVal==0 || newVal==0) {
       return 0;
     }
@@ -57,7 +57,7 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return false;
-    
+
   flagsObj.value = 0;
   matchedKeysObj.value = "";
   var encrypt=1;
@@ -73,13 +73,13 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
   if (enigmailSvc.getRulesData(rulesListObj)) {
 
     var rulesList=rulesListObj.value;
-  
+
     if (rulesList.firstChild.nodeName=="parsererror") {
       EnigAlert("Invalid enigmail.xml file:\n"+ rulesList.firstChild.textContent);
       return true;
     }
     DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys: keys loaded\n");
-    
+
     // go through all rules to find match with email addresses
     var node=rulesList.firstChild.firstChild;
     while (node) {
@@ -153,8 +153,8 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
       node = node.nextSibling;
     }
   }
-    
-  if (EnigGetPref("perRecipientRules")>1 || forceSelection) {
+
+  if (EnigGetPref("recipientsSelection")==1 || forceSelection) {
     var addrList=emailAddrs.split(/,/);
     var inputObj=new Object;
     var resultObj=new Object;
@@ -168,10 +168,10 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
           inputObj.command = "add";
           window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
           if (resultObj.cancelled==true) return false;
-          
+
           // create a getAttribute() function for getFlagVal to work normally
           resultObj.getAttribute = function(attrName) {
-            return this[attrName]; 
+            return this[attrName];
           }
           if (!resultObj.negate) {
             sign   =getFlagVal(sign,    resultObj, "sign",    conflicts);
@@ -191,7 +191,7 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
       }
     }
   }
-  
+
   if (keyList.length>0) {
     // sort key list and make it unique?
     matchedKeysObj.value = keyList.join(", ");

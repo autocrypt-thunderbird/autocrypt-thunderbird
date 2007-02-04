@@ -553,7 +553,7 @@ function enigmailUserSelAccept() {
   }
 
   if (document.getElementById("displayNoLonger").checked) {
-    EnigSetPref("recipientsSelectionOption", 0);
+    EnigSetPref("recipientsSelection", 2);
   }
   if (resultObj.userList.length == 0 && gSendEncrypted) {
     EnigAlert(EnigGetString("atLeastOneKey"));
@@ -637,8 +637,8 @@ function disableList() {
 }
 
 function enigmailNewRecipientRule () {
-  if (EnigGetPref("perRecipientRules")==0) {
-    EnigSetPref("perRecipientRules", 1);
+  if (EnigGetPref("recipientsSelection")>2) {
+    EnigSetPref("recipientsSelection", 2);
   }
 
   var resultObj=window.arguments[RESULT];

@@ -68,6 +68,9 @@ pref("extensions.enigmail.gpgVersionWarnCount",1);
 // enable 'Decrypt & open' for double click on attachment (if possible)
 pref("extensions.enigmail.handleDoubleClick",false);
 
+// headers to be retrieved from the mail backend, but hidden from the users
+pref("extensions.enigmail.hideHeaders", "x-enigmail-version openpgp content-transfer-encoding");
+
 // disable '<' and '>' around email addresses
 pref("extensions.enigmail.hushMailSupport",false);
 
@@ -106,23 +109,26 @@ pref("extensions.enigmail.noPassphrase",false);
 // parse all mime headers (do NOT change)
 pref("extensions.enigmail.parseAllHeaders",true);
 
-// enable per recipient rules (0=off / 2=ask for every unknown user)
-pref("extensions.enigmail.perRecipientRules",1);
-
 // show quoted printable warning message (and remember selected state)
 pref("extensions.enigmail.quotedPrintableWarn",0);
 
 // use http proxy settings as set in Mozilla/Thunderbird
 pref("extensions.enigmail.respectHttpProxy",true);
 
-// enable selection of keys for unkown recipients (0=off, 1=when necessary, 2=always)
-pref("extensions.enigmail.recipientsSelectionOption",1);
+// selection of keys for unkown recipients
+// 1: rules only
+// 2: rules & email addresses (normal)
+// 3: email address only (no rules)
+// 4: manually (always prompt, no rules)
+// 5: no rules, no key selection
+pref("extensions.enigmail.recipientsSelection",2);
 
 // show "save draft encrypted" message (and remember selected state)
 pref("extensions.enigmail.saveEncrypted",0);
 
 // replacement of Mozilla's show all headers (because the original value is overriden)
-pref("extensions.enigmail.show_headers",1);
+// OBSOLETE
+// pref("extensions.enigmail.show_headers",1);
 
 // support different passwords for each key (not yet available)
 pref("extensions.enigmail.supportMultiPass",false);

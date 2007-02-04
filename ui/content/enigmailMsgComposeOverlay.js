@@ -261,8 +261,6 @@ function enigMsgComposeReset() {
   gEnigEnableRules = true;
   gEnigIdentity = null;
 
-  EnigShowHeadersAll(true);
-
   gEnigSendPGPMime = !(EnigGetPref("usePGPMimeOption") == PGP_MIME_ALWAYS);
   enigTogglePGPMime();
 
@@ -800,7 +798,7 @@ function enigEncryptMsg(msgSendType) {
         return;
      }
 
-     var recipientsSelectionOption = EnigGetPref("recipientsSelectionOption");
+     var recipientsSelection = EnigGetPref("recipientsSelection");
 
      var optSendFlags = 0;
      var inlineEncAttach=false;
@@ -927,10 +925,10 @@ function enigEncryptMsg(msgSendType) {
      if (toAddr.length>=1) {
 
         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: toAddr="+toAddr+"\n");
-        var perRecipientRules=EnigGetPref("perRecipientRules");
         var repeatSelection=0;
         while (repeatSelection<2) {
-          if (perRecipientRules>0 && gEnigEnableRules) {
+          if (recipientsSelection != 3 && recipientsSelection != 4
+              && gEnigEnableRules) {
             var matchedKeysObj = new Object;
             var flagsObj=new Object;
             if (!getRecipientsKeys(toAddr,
@@ -993,19 +991,19 @@ function enigEncryptMsg(msgSendType) {
                                                     testStatusFlagsObj,
                                                     testErrorMsgObj);
 
-            if ((recipientsSelectionOption==2) ||
+            if ((recipientsSelection==4) ||
                 ((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT) &&
-                 (recipientsSelectionOption>0))) {
+                 (recipientsSelection==2 || recipientsSelection==3))) {
                 var resultObj = new Object();
                 var inputObj = new Object();
                 inputObj.toAddr = toAddr;
                 inputObj.invalidAddr = enigGetInvalidAddress(testErrorMsgObj.value);
                 inputObj.options = "multisel";
-                if (perRecipientRules<2)
+                if (recipientsSelection==2)
                   inputObj.options += ",rulesOption"
                 if (notSignedIfNotEnc)
                   inputObj.options += ",notsigned";
-                if (recipientsSelectionOption<2)
+                if (recipientsSelection == 4)
                   inputObj.options += ",noforcedisp";
                 inputObj.dialogHeader = EnigGetString("recipientsSelectionHdr");
 
@@ -1034,7 +1032,7 @@ function enigEncryptMsg(msgSendType) {
                   return;
                 }
             }
-            if ((!testCipher || (testExitCodeObj.value != 0)) && recipientsSelectionOption==0) {
+            if ((!testCipher || (testExitCodeObj.value != 0)) && recipientsSelection==5) {
                 // Test encryption failed; turn off default encryption
                 sendFlags &= ~ENIG_ENCRYPT;
                 DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: No default encryption because test failed\n");

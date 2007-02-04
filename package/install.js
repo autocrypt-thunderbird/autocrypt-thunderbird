@@ -1,7 +1,7 @@
 // Install script for Enigmail
 
 var err;
-const APP_VERSION="0.94.1.2";
+const APP_VERSION="0.95.0.0";
 
 
 const ABI_PLATFORM_LINUX="Linux_x86-gcc3";

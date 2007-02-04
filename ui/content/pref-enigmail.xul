@@ -201,6 +201,7 @@
           <hbox autostretch="never" align="center">
             <checkbox id="enigmail_advancedUser"
                   label="&enigmail.expertUser.label;"
+                  oncommand="enigSwitchAdvancedMode(this)"
                   tooltip="expertUser.tooltip"/>
           </hbox>
 
@@ -252,34 +253,40 @@
           <groupbox>
             <caption label="&enigmail.recipientsSelectionOption.label;"/>
             <radiogroup id="enigmail_recipientsSelection"
-                        oncommand="activateRulesButton(this, 'openRulesEditor')">
+                        oncommand="activateRulesButton(this, 'openRulesEditor')"
+                        pref="true"
+                        preftype="int"
+                        prefstring="extensions.enigmail.recipientsSelection">
+
               <radio id="perRecipientRules"
-                    value="0"
+                    value="1"
                     label="&enigmail.perRecipientRules.label;"
                     tooltip="perRecipientRules.tooltip"/>
 
               <radio id="perRecipientRulesAndEmail"
-                    value="1"
+                    value="2"
                     label="&enigmail.perRecipientRulesAndEmail.label;"
                     tooltip="perRecipientRulesAndEmail.tooltip"/>
 
               <radio id="perEmailAddress"
-                    value="2"
+                    value="3"
                     label="&enigmail.perEmailAddress.label;"
                     tooltip="perEmailAddress.tooltip"/>
 
               <radio id="askRecipientsAlways"
-                    value="3"
+                    value="4"
                     label="&enigmail.askRecipientsAlways.label;"
                     tooltip="askRecipientsAlways.tooltip"/>
 
+              <separator/>
               <radio id="neverAsk"
-                    value="4"
+                    value="5"
                     label="&enigmail.neverAsk.label;"
+                    oncommand="enigAlertAskNever()"
                     tooltip="neverAsk.tooltip"/>
 
             </radiogroup>
-
+            <separator/>
             <vbox autostretch="always" align="end">
               <button id="openRulesEditor"
                       label="&enigmail.defineRules.label;"
@@ -408,6 +415,5 @@
       </vbox>
     </tabpanels>
   </tabbox>
-
 
 </dialog>

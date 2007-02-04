@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.94.1.2.0";
-var gEnigmimeVersion = "0.94.1.2.0";
+var gEnigmailVersion = "0.95b";
+var gEnigmimeVersion = "0.95.0.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -108,11 +108,11 @@ const ENIG_TEMPDIR_PROP = "TmpD";
 var gUsePGPMimeOptionList = ["usePGPMimeNever", "usePGPMimePossible",
                              "usePGPMimeAlways"];
 
-var gEnigRecipientsSelection = ["perRecipientRules",
+var gEnigRecipientsSelection = ["-",
+                                "perRecipientRules",
                                 "perRecipientRulesAndEmail",
                                 "perEmailAddress",
-                                "askRecipientsAlways",
-                                "neverAsk"];
+                                "askRecipientsAlways"];
 
 const ENIG_BUTTON_POS_0           = 1;
 const ENIG_BUTTON_POS_1           = 1 << 8;
@@ -257,54 +257,87 @@ function GetEnigmailSvc() {
 }
 
 
-function EnigUpdatePre0_8() {
-  try {
-    var oldVer=EnigGetPref("configuredVersion");
 
-    if (oldVer.substring(0,1)=="0"){
-      if ((oldVer.substring(0,4)<"0.89") && (navigator.vendor=="Thunderbird")) {
-        // uninstall globally installed enigmime on Thunderbird
-        var ioService = enigGetService("@mozilla.org/network/io-service;1", "nsIIOService");
-        var dirService = enigGetService("@mozilla.org/file/directory_service;1", "nsIProperties");
-        var sysCompDir = dirService.get("ComsD", ENIG_C.interfaces.nsIFile);
+function EnigUpgradeRecipientsSelection () {
+  // Upgrade perRecipientRules and recipientsSelectionOption to
+  // new recipientsSelection
 
-        for (var f in [ "enigmime.xpt", "libenigmime.so", "enigmail.dll", "libenigmime.dylib" ]) {
-          var compFile = sysCompDir.clone();
-          compFile.append(f);
-          try {
-            if (compFile.exists()) compFile.remove(false);
-          }
-          catch (ex) {}
-        }
-      }
-      if (oldVer.substring(0,4)<"0.83") {
-        var keySrv = EnigGetPref("keyserver");
-        if (keySrv.indexOf(",") == -1) {
-          try {
-            var newKeySrv = EnigGetDefaultPref("keyserver").replace(keySrv, "");
-            newKeySrv = newKeySrv.replace(/(^, |, $)/, "").replace(/, , /,", ");
-            EnigSetPref("keyserver", keySrv+", "+newKeySrv);
-          }
-          catch (ex) {}
-        }
-      }
-      if (oldVer.substring(0,4)<"0.81") {
-        EnigOpenSetupWizard();
-      }
+  var  keySel = EnigGetPref("recipientsSelectionOption");
+  var  perRecipientRules = EnigGetPref("perRecipientRules");
+
+  var setVal = 2;
+
+  /*
+  1: rules only
+  2: rules & email addresses (normal)
+  3: email address only (no rules)
+  4: manually (always prompt, no rules)
+  5: no rules, no key selection
+  */
+
+  switch (perRecipientRules) {
+  case 0:
+    switch (keySel) {
+    case 0:
+      setVal = 5;
+      break;
+    case 1:
+      setVal = 3;
+      break;
+    case 2:
+      setVal = 4;
+      break;
+    default:
+      setVal = 2;
     }
+    break;
+  case 1:
+    setVal = 2;
+    break;
+  case 2:
+    setVal = 1;
+    break;
+  default:
+    setVal = 2;
+  }
+
+  // set new pref
+  EnigSetPref("recipientsSelection", setVal);
+
+  // clear old prefs
+  gPrefEnigmail.clearUserPref("perRecipientRules");
+  gPrefEnigmail.clearUserPref("recipientsSelectionOption");
+}
+
+function EnigUpgradeHeadersView() {
+  // all headers hack removed -> make sure view is correct
+  var hdrMode = null;
+  try {
+    var hdrMode = EnigGetPref("show_headers");
   }
   catch (ex) {}
+
+  if (hdrMode == null) hdrMode = 1;
+  try {
+    gPrefEnigmail.clearUserPref("show_headers");
+  }
+  catch (ex) {}
+
+  gEnigPrefRoot.setIntPref("mail.show_headers", hdrMode);
+  enigMessageReload(false);
 }
 
 function EnigConfigure() {
-  try {
-    // Updates for specific versions (to be cleaned-up periodically)
-    EnigUpdatePre0_8();
-  } catch (ex) {}
-
   var oldVer=EnigGetPref("configuredVersion");
   if (oldVer == "") {
     EnigOpenSetupWizard();
+  }
+  else if (oldVer < "0.95") {
+    try {
+      EnigUpgradeHeadersView();
+      EnigUpgradeRecipientsSelection();
+    }
+    catch (ex) {}
   }
   EnigSetPref("configuredVersion", gEnigmailVersion);
   EnigSavePrefs();
@@ -638,19 +671,6 @@ function EnigUpgrade() {
   window.openDialog("http://enigmail.mozdev.org/no_wrap/update.html?upgrade=yes&enigmail="+gEnigmailVersion+"&enigmime="+gEnigmimeVersion, "dialog");
 }
 
-function EnigShowHeadersAll(status) {
-  DEBUG_LOG("enigmailCommon.js: EnigShowHeadersAll: "+status+"\n");
-
-  if (status && EnigGetPref("parseAllHeaders")) {
-    // Show all mail headers
-    gEnigPrefRoot.setIntPref("mail.show_headers", 2);
-
-  } else {
-    // Reset mail.show_headers pref to "original" value
-    gEnigPrefRoot.setIntPref("mail.show_headers",
-                             EnigGetPref("show_headers"));
-  }
-}
 
 function EnigDisplayRadioPref(prefName, prefValue, optionElementIds) {
   DEBUG_LOG("enigmailCommon.js: EnigDisplayRadioPref: "+prefName+", "+prefValue+"\n");

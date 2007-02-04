@@ -71,7 +71,7 @@ function prefOnLoad() {
 
    }
 
-   EnigDisplayRadioPref("recipientsSelection", getRecipientsSelectionPref(false),
+   EnigDisplayRadioPref("recipientsSelection", EnigGetPref("recipientsSelection"),
                         gEnigRecipientsSelection);
 
    gMimePartsElement = document.getElementById("mime_parts_on_demand");
@@ -140,7 +140,7 @@ function resetPrefs() {
 
   EnigSetPref("configuredVersion", gEnigmailVersion);
 
-  EnigDisplayRadioPref("recipientsSelection", getRecipientsSelectionPref(true),
+  EnigDisplayRadioPref("recipientsSelection", EnigGetPref("recipientsSelection"),
                       gEnigRecipientsSelection);
 
 }
@@ -176,7 +176,7 @@ function prefOnAccept() {
 
   EnigDisplayPrefs(false, false, true);
 
-  setRecipientsSelectionPref(document.getElementById("enigmail_recipientsSelection").value);
+  //setRecipientsSelectionPref(document.getElementById("enigmail_recipientsSelection").value);
   //EnigSetRadioPref("recipientsSelection", gEnigRecipientsSelection);
 
   if (gMimePartsElement &&
@@ -228,107 +228,43 @@ function enigActivateDependent (obj, dependentIds) {
   return true;
 }
 
+function enigSwitchAdvancedMode(checkbox) {
+
+  var origPref = EnigGetPref("advancedUser");
+
+  if (checkbox.checked) {
+    EnigSetPref("advancedUser", true);
+  }
+  else {
+    EnigSetPref("advancedUser", false);
+  }
+
+  var prefTabBox  = document.getElementById("prefTabBox");
+  if (prefTabBox) {
+    // Thunderbird
+    EnigCollapseAdvanced(prefTabBox, "hidden", null);
+    EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
+  }
+  else {
+    // Seamonkey
+    EnigCollapseAdvanced(document.getElementById("enigmailPrefsBox"), "hidden", null);
+  }
+  EnigSetPref("advancedUser", origPref);
+}
+
+function enigAlertAskNever () {
+  EnigAlert(EnigGetString("prefs.warnAskNever"));
+}
+
 function activateRulesButton(radioListObj, buttonId) {
   switch (radioListObj.value) {
-  case "2":
   case "3":
+  case "4":
     document.getElementById(buttonId).setAttribute("disabled", "true");
     break;
   default:
     document.getElementById(buttonId).removeAttribute("disabled");
   }
-}
-
-function getRecipientsSelectionPref (defaultOptions) {
-  var keySel;
-  var perRecipientRules;
-
-  if (! defaultOptions) {
-    keySel = EnigGetPref("recipientsSelectionOption");
-    perRecipientRules = EnigGetPref("perRecipientRules");
-  }
-  else {
-    keySel = EnigGetDefaultPref("recipientsSelectionOption");
-    perRecipientRules = EnigGetDefaultPref("perRecipientRules");
-  }
-
-  var retVal = 1;
-
-  /*
-  0: rules only
-  1: rules & email addresses (normal)
-  2: email address only (no rules)
-  3: manually (always prompt, no rules)
-  4: no rules, no key selection
-  */
-
-  switch (perRecipientRules) {
-  case 0:
-    switch (keySel) {
-    case 0:
-      retVal = 4;
-      break;
-    case 1:
-      retVal = 2;
-      break;
-    case 2:
-      retVal = 3;
-      break;
-    default:
-      retVal = 1;
-    }
-    break;
-  case 1:
-    if (keySel == 0) {
-      retVal = 4;
-    }
-    else {
-      retVal = 1;
-    }
-    break;
-  case 2:
-    retVal = 0;
-    break;
-  default:
-    retVal = 1;
-  }
-
-  return retVal;
-}
-
-
-function setRecipientsSelectionPref(radioListValue) {
-  var keySelPref;
-  var rulesPref;
-
-  switch (radioListValue) {
-  case "0":
-    keySelPref = 1;
-    rulesPref = 2;
-    break;
-  case "1":
-    keySelPref = 1;
-    rulesPref = 1;
-    break;
-  case "2":
-    keySelPref = 1;
-    rulesPref = 0;
-    break;
-  case "3":
-    keySelPref = 2;
-    rulesPref = 0;
-    break;
-  case "4":
-    keySelPref = 0;
-    rulesPref = 0;
-    break;
-  default:
-    keySelPref = 1;
-    rulesPref = 1;
-  }
-
-  EnigSetPref("perRecipientRules", rulesPref);
-  EnigSetPref("recipientsSelectionOption", keySelPref);
 }
 
 
@@ -491,7 +427,6 @@ function enigUninstall()
     var uninst=new enigUninstaller();
     uninst.uninstallPackage();
     EnigAlert(EnigGetString("uninstallSuccess"));
-    EnigShowHeadersAll(false);
     window.close();
   }
   catch (ex) {

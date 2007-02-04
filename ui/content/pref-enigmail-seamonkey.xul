@@ -149,6 +149,7 @@
           pref="true"
           preftype="bool"
           prefstring="extensions.enigmail.advancedUser"
+          oncommand="enigSwitchAdvancedMode(this)"
           prefattribute="checked"/>
   </hbox>
 

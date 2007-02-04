@@ -41,8 +41,7 @@ function initPrefSeamonkey() {
   DEBUG_LOG("pref-enigmail-seamonkey.js: initPrefSeamonkey\n");
   parent.initPanel('chrome://enigmail/content/pref-enigmail-seamonkey.xul');
 
-  var prefsBox = document.getElementById("enigmailPrefsBox");
-  EnigCollapseAdvanced(prefsBox, "hidden", null);
+  EnigCollapseAdvanced(document.getElementById("enigmailPrefsBox"), "hidden", null);
 
   enigDetermineGpgPath();
 

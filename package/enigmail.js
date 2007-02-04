@@ -729,7 +729,9 @@ function (aURI)
       contentCharset = messageUriObj.contentCharset;
       contentData    = messageUriObj.contentData;
 
-      DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.newChannel: messageURL="+messageUriObj.originalUrl+", "+contentType+", "+contentCharset+"\n");
+      DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.newChannel: messageURL="+messageUriObj.originalUrl+", content length="+contentData.length+", "+contentType+", "+contentCharset+"\n");
+
+      // do NOT delete the messageUriObj now from the list, this will be done once the message is unloaded (fix for bug 9730).
 
     } else {
 
@@ -962,6 +964,7 @@ function (aSubject, aTopic, aData) {
     }
 
   } else if (aTopic == NS_XPCOM_SHUTDOWN_OBSERVER_ID) {
+    /* OBSOLETE
     // Reset mail.show_headers pref
     try {
       var prefSvc = Components.classes[NS_PREFS_SERVICE_CID]
@@ -981,7 +984,7 @@ function (aSubject, aTopic, aData) {
     } catch (ex) {
       ERROR_LOG("enigmail.js: Enigmail.observe: could not save preferences\n");
     }
-
+    */
     // XPCOM shutdown
     this.finalize();
 
@@ -1437,7 +1440,7 @@ function () {
         // absolute path
         pathDir.initWithPath(agentPath);
       }
-      if (!pathDir.exists())
+      if (! (pathDir.isFile() && pathDir.isExecutable()))
         throw Components.results.NS_ERROR_FAILURE;
 
     } catch (ex) {
