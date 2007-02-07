@@ -460,14 +460,16 @@ function enigMessageDecrypt(event, isAuto) {
       DEBUG_LOG("enigmailMessengerOverlay.js: "+headerName+": "+headerValue+"\n");
     }
 
-    var emailAttachment = false;
+    // var emailAttachment = false;
     var embeddedSigned = null;
     var embeddedEncrypted = null;
     for (var indexb in currentAttachments) {
       var attachment = currentAttachments[indexb];
+/* obsolete
       if (attachment.contentType.search(/^message\/rfc822(;|$)/i) == 0) {
         emailAttachment = true;
       }
+*/
       if (attachment.contentType.search(/^application\/pgp-signature/i) == 0) {
         embeddedSigned = attachment.url.replace(/\.\d+\.\d+$/, "");
       }
@@ -478,11 +480,13 @@ function enigMessageDecrypt(event, isAuto) {
       //DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.url+"\n");
     }
 
+/* Obsolete
     if (emailAttachment) {
-      DEBUG_LOG("enigmailMessengerOverlay.js: Email attachment; reloading to hide headers\n");
+      // DEBUG_LOG("enigmailMessengerOverlay.js: Email attachment; reloading to hide headers\n");
       enigMessageReload(true);
       return;
     }
+*/
   }
 
   var contentType = "";
