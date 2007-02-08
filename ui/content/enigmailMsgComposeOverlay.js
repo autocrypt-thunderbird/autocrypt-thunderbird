@@ -834,6 +834,7 @@ function enigEncryptMsg(msgSendType) {
 
        } else {
          gEnigIdentity.setIntAttribute("pgpKeyMode", 0);
+         userIdValue = "";
        }
      }
 
