@@ -761,7 +761,8 @@ addEventListener('messagepane-unhide', enigMsgHdrViewUnhide, true);
 function CanDetachAttachments()
 {
   var uri = GetLoadedMessage();
-  var canDetach = !IsNewsMessage(uri) && (!IsImapMessage(uri) || CheckOnline());
+  var canDetach = !IsNewsMessage(uri) && (!IsImapMessage(uri) || MailOfflineMgr.isOnline());
+
   if (canDetach && ("content-type" in currentHeaderData))
   {
     var contentType = currentHeaderData["content-type"].headerValue;
