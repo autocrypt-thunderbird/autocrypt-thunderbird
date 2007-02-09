@@ -834,14 +834,16 @@ function enigEncryptMsg(msgSendType) {
 
        } else {
          gEnigIdentity.setIntAttribute("pgpKeyMode", 0);
-         userIdValue = "";
        }
      }
 
-     var msgCompFields = gMsgCompose.compFields;
+     if (typeof(userIdValue) != "string") {
+       DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: type of userIdValue="+typeof(userIdValue)+"\n");
+       userIdValue = "";
+     }
 
-     // Check if sending to any newsgroups
-     var newsgroups = msgCompFields.newsgroups;
+     var msgCompFields = gMsgCompose.compFields;
+     var newsgroups = msgCompFields.newsgroups;  // Check if sending to any newsgroups
 
      DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg:gMsgCompose="+gMsgCompose+"\n");
 

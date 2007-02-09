@@ -1440,7 +1440,7 @@ function () {
         // absolute path
         pathDir.initWithPath(agentPath);
       }
-      if (! (pathDir.isFile() && pathDir.isExecutable()))
+      if (! (pathDir.isFile() /* && pathDir.isExecutable()*/))
         throw Components.results.NS_ERROR_FAILURE;
 
     } catch (ex) {
