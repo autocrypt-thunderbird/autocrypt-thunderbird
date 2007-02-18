@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<?xul-overlay href="chrome://global/content/globalOverlay.xul"?>
+<?xul-overlay href="chrome://communicator/content/utilityOverlay.xul"?>
+
+<!DOCTYPE window [
+  <!ENTITY % enigmailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd">
+   %enigmailDTD;
+  <!ENTITY % utilDTD SYSTEM "chrome://communicator/locale/utilityOverlay.dtd">
+   %utilDTD;
+]>
+
+<dialog id="EnigmailGenericDisplay"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        title="OpenPGP"
+        width="540" height="460"
+        screenX="10" screenY="10"
+        persist="screenX screenY"
+        buttons="accept"
+        buttonlabelaccept="Close"
+        onload="enigLoadPage();">
+
+  <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailGenericDisplay.js"/>
+
+<commandset id="tasksCommands"/>
+
+<command id="cmd_close" oncommand="window.close()"/>
+<command id="cmd_quit"/>
+
+<keyset id="tasksKeys">
+  <!-- File Menu -->
+  <key id="key_close"/>
+  <key id="key_quit"/>
+</keyset>
+
+<iframe id="contentFrame" type="content" name="contentFrame"
+        src="chrome://enigmail/content/enigmailGenericDisplay.htm" flex="100%"/>
+
+</dialog>

@@ -37,21 +37,15 @@ var gEnigCurrentSite;
 var gEnigNavButton1;
 var gEnigCurrentHandlerNavButton1;
 var gEnigTest = true;
-var gEnigCaptureWebMail = false;
+var gEnigCaptureWebMail = true;
 
-if (nsPreferences)
- gEnigCaptureWebMail = nsPreferences.getBoolPref(ENIGMAIL_PREFS_ROOT+"captureWebMail");
-
-// Do nothing below if !gEnigCaptureWebMail
-
-if (gEnigCaptureWebMail) {
-   // Initialize enigmailCommon etc.
-   EnigInitCommon("enigmailNavigatorOverlay");
-   window.addEventListener("load", enigNavigatorStartup, true);
-}
+// Initialize enigmailCommon etc.
+EnigInitCommon("enigmailNavigatorOverlay");
+window.addEventListener("load", enigNavigatorStartup, false);
 
 function enigNavigatorStartup() {
   DEBUG_LOG("enigmailNavigatorOverlay.js: enigNavigatorStartup:\n");
+
   var contentArea = document.getElementById("appcontent");
   contentArea.addEventListener("load",   enigDocLoadHandler, true);
   contentArea.addEventListener("unload", enigDocUnloadHandler, true);
@@ -61,7 +55,7 @@ function enigNavigatorStartup() {
   gEnigNavButton1 = document.getElementById("button-enigmail-decrypt");
 }
 
-function enigHandlerNavButton1()
+function enigHandlerNavButton()
 {
   DEBUG_LOG("enigmailNavigatorOverlay.js: enigHandlerNavButton1:\n");
 
@@ -131,16 +125,18 @@ function enigUpdateUI(loc) {
     gEnigNavButton1.setAttribute("hidden", "false");
     gEnigCurrentSite = "hotmail.msn.com";
     enigHotmailUpdateUI();
-
-  } else if (loc.href.search(/^file:/) != -1) {
+/*
+  }  else if (loc.href.search(/^file:/) != -1) {
     gEnigCurrentSite = "TEST";
     if (gEnigTest) {
       gEnigTest = false;
       enigTest();
     }
-
+*/
   } else {
-    enigResetUI();
+    gEnigNavButton1.setAttribute("hidden", "false");
+    gEnigCurrentSite = "-generic-";
+    enigGenericUpdateUI();
   }
 }
 
@@ -267,12 +263,14 @@ function enigYahooShowLetter() {
   var keyIdObj       = new Object();
   var userIdObj      = new Object();
   var sigDetailsObj  = new Object();
+  var blockSeparationObj  = new Object();
 
   var uiFlags = nsIEnigmail.UI_INTERACTIVE;
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
                                           signatureObj, exitCodeObj,
                                           statusFlagsObj, keyIdObj, userIdObj,
-                                          sigDetailsObj, errorMsgObj);
+                                          sigDetailsObj, errorMsgObj,
+                                          blockSeparationObj);
 
   var exitCode = exitCodeObj.value;
   var errorMsg = errorMsgObj.value;
@@ -289,6 +287,177 @@ function enigYahooShowLetter() {
   preElement.appendChild(newTextNode);
 
 }
+
+// *** Generic Handling STUFF ***
+
+function enigGenericUpdateUI() {
+
+  DEBUG_LOG("enigmailYahoo.js: enigGenericUpdateUI:\n");
+
+  var msgFrame = enigGenericLocateMessageFrame();
+  var pathname = "";
+  if (msgFrame) {
+    DEBUG_LOG("msgFrame.name = "+msgFrame.name+"\n")
+
+    // Extract pathname from message frame URL
+    pathname = msgFrame.location.pathname;
+
+    DEBUG_LOG("pathname = "+pathname+"\n");
+  }
+
+  if (true) { //pathname.search(/ShowLetter$/) != -1) {
+    gEnigCurrentHandlerNavButton1 = enigGenericShowLetter;
+    gEnigNavButton1.label = "Decrypt/verify";
+
+  } else if (pathname.search(/Compose$/) != -1) {
+    gEnigCurrentHandlerNavButton1 = enigYahooCompose;
+    gEnigNavButton1.label = "Sign/encrypt";
+
+  } else {
+    gEnigCurrentHandlerNavButton1 = enigConfigWindow;
+    gEnigNavButton1.label = "Enigmail";
+  }
+}
+
+function enigGenericLocateMessageFrame() {
+  DEBUG_LOG("enigmailNavigator.js: enigGenericLocateMessageFrame:\n");
+
+  var msgFrame;
+
+  if (_content.frames.length) {
+    // Locate message frame
+    for (var j=0; j<_content.frames.length; j++) {
+      DEBUG_LOG("frame "+j+" = "+_content.frames[j].name+"\n");
+      if (_content.frames[j].name.search(/main/) >= 0)
+        msgFrame = _content.frames[j];
+    }
+  } else {
+    msgFrame = _content;
+  }
+
+  return msgFrame;
+}
+
+function enigGetClibpoardData() {
+  var clipBoard = Components.classes[ENIG_CLIPBOARD_CONTRACTID].getService(Components.interfaces.nsIClipboard);
+  // get the clipboard content
+  var transferable = Components.classes[ENIG_TRANSFERABLE_CONTRACTID].createInstance(Components.interfaces.nsITransferable);
+  var xferTypes = [ "text/unicode", "text/html" ];
+
+  for (var i=0; i < xferTypes.length; i++) {
+    transferable.addDataFlavor(xferTypes[i]);
+  }
+
+  var clipData = {};
+  clipData.flavour = {};
+  clipData.data = {};
+  clipData.length = {};
+
+  try {
+    clipBoard.getData(transferable, clipBoard.kGlobalClipboard);
+    transferable.getAnyTransferData(clipData.flavour, clipData.data, clipData.length);
+    return clipData;
+  }
+  catch (ex) {
+    return null;
+  }
+}
+
+
+function enigGenericShowLetter() {
+  DEBUG_LOG("enigmailNavigatorOverlay.js: enigGenericShowLetter:\n");
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
+  var cipherText;
+  var elem;
+  var preElements
+
+  var msgFrame = enigGenericLocateMessageFrame();
+
+  if (msgFrame) {
+    preElements = msgFrame.document.getElementsByTagName("pre");
+  }
+  else {
+    preElements = [];
+  }
+
+  if (preElements.length > 0) {
+    elem = preElements[0];
+    cipherText = EnigGetDeepText(elem, "");
+
+    //DEBUG_LOG("enigGenericShowLetter: "+elem+"\n");
+
+    cipherText = EnigGetDeepText(elem, "");
+  }
+  else {
+    goDoCommand('cmd_selectAll');
+    var origClipBoard = enigGetClibpoardData();
+    goDoCommand('cmd_copy');
+    var htmlCopy = enigGetClibpoardData();
+
+    restoreClipboard = Components.classes[ENIG_CLIPBOARD_HELPER_CONTRACTID].getService(Components.interfaces.nsIClipboardHelper);
+
+    try {
+      cipherText = htmlCopy.data.value.QueryInterface(Components.interfaces.nsISupportsString).data;
+    }
+    catch (ex) {
+      return;
+    }
+
+    try{
+      var data = origClipBoard.data.value.QueryInterface(Components.interfaces.nsISupportsString).data;
+      restoreClipboard.copyStringToClipboard(data, clipBoard.kGlobalClipboard);
+    }
+    catch (ex) {
+    }
+
+  }
+
+
+
+  DEBUG_LOG("enigGenericShowLetter: cipherText='"+cipherText+"'\n");
+
+  var exitCodeObj    = new Object();
+  var errorMsgObj    = new Object();
+  var signatureObj   = new Object();
+  var statusFlagsObj = new Object();
+  var keyIdObj       = new Object();
+  var userIdObj      = new Object();
+  var sigDetailsObj  = new Object();
+  var blockSeparationObj  = new Object();
+
+  var uiFlags = nsIEnigmail.UI_INTERACTIVE;
+  var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
+                                          signatureObj, exitCodeObj,
+                                          statusFlagsObj, keyIdObj, userIdObj,
+                                          sigDetailsObj, errorMsgObj,
+                                          blockSeparationObj);
+
+  var exitCode = exitCodeObj.value;
+  var errorMsg = errorMsgObj.value;
+
+  if (exitCode != 0) {
+    EnigAlert(EnigGetString("navDecryptError")+errorMsg);
+    return;
+  }
+
+  if (preElements.length > 0) {
+    while (elem.hasChildNodes())
+        elem.removeChild(elem.childNodes[0]);
+
+    var newTextNode = msgFrame.document.createTextNode(plainText);
+    elem.appendChild(newTextNode);
+  }
+  else {
+
+    var x = _content.document.createTextNode(plainText);
+    enigViewDecryptedMsg(x);
+  }
+}
+
 
 // *** HOTMAIL SPECIFIC STUFF ***
 
@@ -401,12 +570,14 @@ function enigHotmailShowLetter() {
   var keyIdObj       = new Object();
   var userIdObj      = new Object();
   var sigDetailsObj  = new Object();
+  var blockSeparationObj  = new Object();
 
   var uiFlags = nsIEnigmail.UI_INTERACTIVE;
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
                                           signatureObj, exitCodeObj,
                                           statusFlagsObj, keyIdObj, userIdObj,
-                                          sigDetailsObj, errorMsgObj);
+                                          sigDetailsObj, errorMsgObj,
+                                          blockSeparationObj);
   var exitCode = exitCodeObj.value;
   var errorMsg = errorMsgObj.value;
 
@@ -420,4 +591,19 @@ function enigHotmailShowLetter() {
 
   var newTextNode = msgFrame.document.createTextNode(plainText);
   preElement.appendChild(newTextNode);
+}
+
+function enigViewNaviConsole() {
+  DEBUG_LOG("enigmailNavigator.js: EnigViewConsole\n");
+
+  EnigOpenWin("enigmail:console",
+              "chrome://enigmail/content/enigmailNaviConsole.xul",
+              "resizable,centerscreen");
+}
+
+function enigViewDecryptedMsg(param) {
+  DEBUG_LOG("enigmailNavigator.js: enigViewDecryptedMsg\n");
+
+  window.openDialog("chrome://enigmail/content/enigmailGenericDisplay.xul",
+              "", "resizable,centerscreen", param);
 }

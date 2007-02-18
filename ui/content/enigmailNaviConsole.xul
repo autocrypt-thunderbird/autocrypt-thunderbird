@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://browser/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<?xul-overlay href="chrome://global/content/globalOverlay.xul"?>
+<?xul-overlay href="chrome://browser/content/utilityOverlay.xul"?>
+<?xul-overlay href="chrome://browser/content/contentAreaUtils.xul"?>
+
+<!DOCTYPE window [
+  <!ENTITY % enigmailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd">
+   %enigmailDTD;
+  <!ENTITY % utilDTD SYSTEM "chrome://browser/locale/utilityOverlay.dtd">
+   %utilDTD;
+]>
+
+<window id="EnigmailConsole"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        title="Enigmail Console"
+        windowtype="enigmail:console"
+        width="600" height="400"
+        screenX="10" screenY="10"
+        persist="screenX screenY width height">
+
+  <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailConsole.js"/>
+
+<commandset id="tasksCommands"/>
+
+<command id="cmd_copy"
+         oncommand="enigConsoleCopy();"
+         disabled="true"/>
+
+<command id="cmd_close" oncommand="window.close()"/>
+<command id="cmd_quit"/>
+
+<keyset id="tasksKeys">
+  <key id="key_copy"/>
+  <key id="key_close"/>
+  <key id="key_quit"/>
+</keyset>
+
+<popupset id="ContextMenus">
+  <popup id="ConsoleContext" onpopupshowing="UpdateCopyMenu()">
+    <menuitem id="menu_copy_cm" observes="cmd_copy" label="Copy"
+     accesskey="key_copy"/>
+  </popup>
+</popupset>
+
+<menubar id="main-menubar" grippyhidden="true">
+
+  <menu id="menu_File">
+    <menupopup id="menu_FilePopup">
+      <menuitem id="menu_close"/>
+    </menupopup>
+  </menu>
+
+  <menu id="menu_Edit">
+    <menupopup onpopupshowing="UpdateCopyMenu()">
+      <menuitem id="menu_copy2"
+                label="Copy"
+                accesskey="C"
+                oncommand="enigConsoleCopy();"/>
+    </menupopup>
+  </menu>
+
+</menubar>
+
+<browser id="contentFrame" name="contentFrame"
+        src="chrome://enigmail/content/enigmailConsole.htm" flex="100%"/>
+
+</window>
