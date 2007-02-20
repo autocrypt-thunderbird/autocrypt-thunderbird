@@ -15,3 +15,4 @@ overlay chrome://global/content/customizeToolbar.xul chrome://enigmail/content/e
 overlay chrome://communicator/content/pref/preftree.xul chrome://enigmail/content/enigmailPrefsOverlay.xul
 overlay chrome://enigmail/content/am-enigprefs.xul chrome://enigmail/content/enigmailEditIdentity.xul
 overlay chrome://enigmail/content/am-enigprefs-edit.xul chrome://enigmail/content/enigmailEditIdentity.xul
+overlay chrome://browser/content/browser.xul chrome://enigmail/content/enigmailNavigatorOverlay.xul
