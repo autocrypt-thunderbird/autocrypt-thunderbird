@@ -1186,7 +1186,7 @@ function enigMsgPrint(elementId) {
   var messageList = [uri];
 
   if (gPrintSettings == null) {
-    gPrintSettings = GetPrintSettings();
+    gPrintSettings = PrintUtils.getPrintSettings();
   }
 
   var printPreview = (elementId.indexOf("printpreview")>=0);
