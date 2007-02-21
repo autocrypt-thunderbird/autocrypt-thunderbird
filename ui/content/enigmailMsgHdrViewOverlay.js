@@ -175,7 +175,7 @@ function enigMatchUidToSender(userId) {
   return userId;
 }
 
-function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, errorMsg) {
+function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation) {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateHdrIcons: exitCode="+exitCode+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+errorMsg+"\n");
 
   gEnigLastEncryptedURI = GetLoadedMessage();
@@ -387,7 +387,8 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
                         msgSigned: msgSigned,
                         statusArr: statusArr,
                         statusInfo: statusInfo,
-                        fullStatusInfo: fullStatusInfo };
+                        fullStatusInfo: fullStatusInfo,
+                        blockSeparation: blockSeparation };
 
   var enigmailBox = document.getElementById("enigmailBox");
   var statusText  = document.getElementById("enigmailStatusText");
@@ -558,17 +559,6 @@ function enigMsgHdrViewLoad(event)
 {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigMsgHdrViewLoad\n");
 
-/*
-  var index;
-  if (! gViewAllHeaders) {
-    var hideHeaders = EnigGetPref("hideHeaders").split(' ');
-    for (index = 0; index < hideHeaders.length; index++) {
-      if (typeof(gExpandedHeaderView[hideHeaders[index]]) == "object") {
-        gExpandedHeaderView[hideHeaders[index]].enclosingBox.setAttribute("hidden", true);
-      }
-    }
-  }
-*/
   var listener = {};
   listener.onStartHeaders = enigStartHeaders;
   listener.onEndHeaders = enigEndHeaders;
@@ -612,10 +602,6 @@ function enigForgetEncryptedURI()
 {
   if (gEnigLastEncryptedURI)
   {
-/*    var enigmailSvc = GetEnigmailSvc();
-    if (enigmailSvc) {
-      EnigAlert("delte URI " + gEnigLastEncryptedURI + ": "+enigmailSvc.deleteMessageURI(gEnigLastEncryptedURI));
-    } */
     var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
     if (enigMimeService) {
       enigMimeService.forgetEncrypted(gEnigLastEncryptedURI);
@@ -826,7 +812,7 @@ EnigMimeHeaderSink.prototype =
     throw Components.results.NS_NOINTERFACE;
   },
 
-  updateSecurityStatus: function(uriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg)
+  updateSecurityStatus: function(uriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation)
   {
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: uriSpec="+uriSpec+"\n");
 
@@ -835,7 +821,7 @@ EnigMimeHeaderSink.prototype =
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: msgUriSpec="+msgUriSpec+"\n");
 
     if (!uriSpec || (uriSpec == msgUriSpec)) {
-      enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, errorMsg);
+      enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation);
     }
 
     return;

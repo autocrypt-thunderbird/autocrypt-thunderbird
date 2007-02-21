@@ -123,7 +123,8 @@ interface nsIEnigmail : nsISupports
                          out wstring keyId,
                          out wstring userId,
                          out wstring sigDetails,
-                         out wstring errorMsg);
+                         out wstring errorMsg,
+                         out wstring blockSeparation);
 
   boolean stripWhitespace(in unsigned long sendFlags);
 
@@ -228,7 +229,8 @@ interface nsIEnigmail : nsISupports
                         out wstring keyId,
                         out wstring userId,
                         out wstring sigDetails,
-                        out wstring errorMsg);
+                        out wstring errorMsg,
+                        out wstring blockSeparation);
 
   boolean deleteMessageURI(in string uri);
 

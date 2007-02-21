@@ -2072,12 +2072,14 @@ function enigDecryptQuote(interactive) {
   var keyIdObj       = new Object();
   var sigDateObj     = new Object();
   var errorMsgObj    = new Object();
+  var blockSeparationObj  = new Object();
 
   var uiFlags = nsIEnigmail.UI_UNVERIFIED_ENC_OK;
 
   var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
                                  signatureObj, exitCodeObj, statusFlagsObj,
-                                 keyIdObj, userIdObj, sigDateObj, errorMsgObj);
+                                 keyIdObj, userIdObj, sigDateObj,
+                                 errorMsgObj, blockSeparationObj);
 
   // Decode plaintext from charset to unicode
   plainText = EnigConvertToUnicode(plainText, charset);

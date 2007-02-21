@@ -169,7 +169,8 @@ function enigViewSecurityInfo(event, displaySmimeMsg) {
 
         enigHandleUnknownKey();
 
-    } else if ( (gEnigSecurityInfo.statusFlags & nsIEnigmail.NODATA) &&
+    }
+    else if ( (gEnigSecurityInfo.statusFlags & nsIEnigmail.NODATA) &&
          (gEnigSecurityInfo.statusFlags &
            (nsIEnigmail.PGP_MIME_SIGNED | nsIEnigmail.PGP_MIME_ENCRYPTED)) ) {
 
@@ -181,7 +182,13 @@ function enigViewSecurityInfo(event, displaySmimeMsg) {
           EnigAlert(EnigGetString("reloadImapError"));
       }
 
-    } else {
+    }
+    else if ((gEnigSecurityInfo.statusFlags & (nsIEnigmail.PGP_MIME_SIGNED | nsIEnigmail.PGP_MIME_ENCRYPTED))
+            && gEnigSecurityInfo.blockSeparation && (gEnigSecurityInfo.blockSeparation.indexOf("0:")>=0)) {
+
+       enigDisplayMimeMessage();
+    }
+    else {
       EnigLongAlert(EnigGetString("securityInfo")+gEnigSecurityInfo.statusInfo);
     }
 
@@ -191,14 +198,68 @@ function enigViewSecurityInfo(event, displaySmimeMsg) {
       showMessageReadSecurityInfo();
     }
     else {
-      EnigAlert(EnigGetString("noPgpMessage"));
+      EnigAlert(EnigGetString("securityInfo")+gEnigSecurityInfo.statusInfo+"\n\n"+EnigGetString("noPgpMessage"));
     }
   }
 }
 
+function enigDisplayMimeMessage() {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigDisplayMimeMessage\n");
+
+  var charset = msgWindow ? msgWindow.mailCharacterSet : "";
+  var contentEncoding = "";
+
+  if ("content-transfer-encoding" in gEnigSavedHeaders) {
+    contentEncoding = gEnigSavedHeaders["content-transfer-encoding"];
+  }
+
+  enigMsgDirect(true, false, contentEncoding, charset, "", 0, "", "", enigDisplayMimeCallback)
+}
+
+function enigDisplayMimeCallback(msgText) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigDisplayMimeCallback\n");
+
+  if (!msgText)
+    return;
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
+  var plainText;
+  var exitCode;
+  var statusFlags = 0;
+
+  var errorMsgObj    = new Object();
+  var keyIdObj       = new Object();
+  var exitCodeObj    = new Object();
+  var statusFlagsObj = new Object();
+  var userIdObj      = new Object();
+  var sigDetailsObj  = new Object();
+  var blockSeparationObj = new Object();
+  var signatureObj = new Object();
+  var uiFlags = nsIEnigmail.UI_INTERACTIVE;
+
+  plainText = enigmailSvc.decryptMessage(window, uiFlags, msgText,
+                                signatureObj, exitCodeObj, statusFlagsObj,
+                                keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj);
+
+  if (!plainText) {
+     if (interactive && gEnigSecurityInfo && gEnigSecurityInfo.statusInfo)
+       EnigLongAlert(gEnigSecurityInfo.statusInfo);
+     return;
+  }
+
+  if (blockSeparationObj.value.indexOf(" ")>=0) {
+    var blocks = blockSeparationObj.value.split(/ /);
+    var blockInfo = blocks[0].split(/:/);
+    plainText = EnigGetString("notePartEncrypted") + "\n\n" + plainText.substr(0, blockInfo[1]) + "\n\n" + EnigGetString("noteCutMessage");
+  }
+  EnigLongAlert(EnigGetString("securityInfo")+gEnigSecurityInfo.statusInfo+"\n---------------------------------\n"+plainText);
+}
 
 function enigMessageReload(noShowReload) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: MessageReload: "+noShowReload+"\n");
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageReload: "+noShowReload+"\n");
 
   gEnigNoShowReload = noShowReload;
 
@@ -206,7 +267,7 @@ function enigMessageReload(noShowReload) {
 }
 
 function enigMessageCleanup() {
-  DEBUG_LOG("enigmailMessengerOverlay.js: MessageCleanup\n");
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageCleanup\n");
 
   var enigmailBox = document.getElementById("enigmailBox");
 
@@ -701,6 +762,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     var statusFlagsObj = new Object();
     var userIdObj      = new Object();
     var sigDetailsObj  = new Object();
+    var blockSeparationObj = new Object();
 
     var signatureObj = new Object();
     signatureObj.value = signature;
@@ -712,7 +774,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
 
     plainText = enigmailSvc.decryptMessage(window, uiFlags, msgText,
                                  signatureObj, exitCodeObj, statusFlagsObj,
-                                 keyIdObj, userIdObj, sigDetailsObj, errorMsgObj);
+                                 keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj);
 
     //DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: plainText='"+plainText+"'\n");
 
@@ -736,7 +798,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
      return;
   }
 
-  enigUpdateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsg);
+  enigUpdateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsg, null);
 
   var noSecondTry = nsIEnigmail.GOOD_SIGNATURE |
         nsIEnigmail.EXPIRED_SIGNATURE |
@@ -756,7 +818,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     if (retry) {
       // Try to verify signature by accessing raw message text directly
       // (avoid recursion by setting retry parameter to false on callback)
-      enigMsgDirect(interactive, importOnly, contentEncoding, charset, newSignature, 0, head, tail);
+      enigMsgDirect(interactive, importOnly, contentEncoding, charset, newSignature, 0, head, tail, enigMessageParseCallback);
       return;
     }
   }
@@ -765,6 +827,12 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
      if (interactive && gEnigSecurityInfo && gEnigSecurityInfo.statusInfo)
        EnigLongAlert(gEnigSecurityInfo.statusInfo);
      return;
+  }
+
+  if (blockSeparationObj.value.indexOf(" ")>=0) {
+    var blocks = blockSeparationObj.value.split(/ /);
+    var blockInfo = blocks[0].split(/:/);
+    plainText = EnigGetString("notePartEncrypted") + "\n\n" + plainText.substr(0, blockInfo[1]) + "\n\n" + EnigGetString("noteCutMessage");
   }
 
   // Save decrypted message status, headers, and content
@@ -1244,7 +1312,7 @@ function enigMessageSave() {
   return;
 }
 
-function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signature, bufferSize, head, tail) {
+function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signature, bufferSize, head, tail, callbackFunction) {
   WRITE_LOG("enigmailMessengerOverlay.js: enigMsgDirect: contentEncoding="+contentEncoding+", signature="+signature+"\n");
   var mailNewsUrl = enigGetCurrentMsgUrl();
   if (!mailNewsUrl)
@@ -1268,7 +1336,8 @@ function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signat
                       ipcBuffer:ipcBuffer,
                       expectedBufferSize: bufferSize,
                       head:head,
-                      tail:tail };
+                      tail:tail,
+                      callbackFunction: callbackFunction };
 
   var requestObserver = new EnigRequestObserver(enigMsgDirectCallback,
                                                 callbackArg);
@@ -1336,12 +1405,13 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
                   callbackArg.signature,
                   newBufferSize,
                   callbackArg.head,
-                  callbackArg.tail);
+                  callbackArg.tail,
+                  callbackArg.callbackFunction);
 
   }
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgDirectCallback: msgText='"+msgText+"'\n");
 
-  enigMessageParseCallback(msgText, callbackArg.contentEncoding,
+  callbackArg.callbackFunction(msgText, callbackArg.contentEncoding,
                            callbackArg.charset,
                            callbackArg.interactive,
                            callbackArg.importOnly,

@@ -308,6 +308,7 @@ temBoundary += "--";
   nsXPIDLString userId;
   nsXPIDLString sigDate;
   nsXPIDLString errorMsg;
+  nsXPIDLString blockSeparation;
 
   nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
@@ -326,6 +327,7 @@ temBoundary += "--";
                                       getter_Copies(userId),
                                       getter_Copies(sigDate),
                                       getter_Copies(errorMsg),
+                                      getter_Copies(blockSeparation),
                                       &exitCode);
   if (NS_FAILED(rv)) return rv;
 
@@ -342,7 +344,7 @@ temBoundary += "--";
   if (securityInfo) {
     nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
     if (enigHeaderSink) {
-      rv = enigHeaderSink->UpdateSecurityStatus(mURISpec, exitCode, statusFlags, keyId, userId, sigDate, errorMsg);
+      rv = enigHeaderSink->UpdateSecurityStatus(mURISpec, exitCode, statusFlags, keyId, userId, sigDate, errorMsg, blockSeparation);
     }
   }
 

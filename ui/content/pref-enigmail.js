@@ -352,14 +352,17 @@ function EnigTest() {
     var signatureObj   = new Object();
     var keyIdObj       = new Object();
     var userIdObj      = new Object();
-    var sigDetailsObj      = new Object();
+    var sigDetailsObj  = new Object();
+    var blockSeparationObj  = new Object();
 
     var decryptedText = enigmailSvc.decryptMessage(window,
                                         uiFlags, cipherText,
                                         signatureObj, exitCodeObj,
                                         statusFlagsObj, keyIdObj, userIdObj,
                                         sigDetailsObj,
-                                        errorMsgObj);
+                                        errorMsgObj,
+                                        blockSeparationObj);
+
     CONSOLE_LOG("\n************************************************\n");
     CONSOLE_LOG("EnigTest: VERIFICATION\n");
     CONSOLE_LOG("EnigTest: decryptedText = "+decryptedText+"\n");
@@ -383,7 +386,8 @@ function EnigTest() {
                                         signatureObj, exitCodeObj,
                                         statusFlagsObj, keyIdObj, userIdObj,
                                         sigDetailsObj,
-                                        errorMsgObj);
+                                        errorMsgObj, blockSeparationObj);
+
     CONSOLE_LOG("\n************************************************\n");
     CONSOLE_LOG("EnigTest: DECRYPTION\n");
     CONSOLE_LOG("EnigTest: decryptedText = "+decryptedText+"\n");

@@ -308,7 +308,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
       nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
       if (enigHeaderSink) {
         NS_NAMED_LITERAL_STRING(nullString, "");
-        rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, -1, 0, nullString.get(), nullString.get(), nullString.get(), errorMsg);
+        rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, -1, 0, nullString.get(), nullString.get(), nullString.get(), errorMsg, nullString.get());
       }
     }
 
@@ -436,6 +436,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   nsXPIDLString keyId;
   nsXPIDLString userId;
   nsXPIDLString sigDate;
+  nsXPIDLString blockSeparation;
 
   PRUint32 uiFlags = nsIEnigmail::UI_PGP_MIME;
 
@@ -449,13 +450,14 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
                                       getter_Copies(userId),
                                       getter_Copies(sigDate),
                                       getter_Copies(errorMsg),
+                                      getter_Copies(blockSeparation),
                                       &exitCode);
   if (NS_FAILED(rv)) return rv;
 
   if (securityInfo) {
     nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
     if (enigHeaderSink) {
-      rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, exitCode, statusFlags, keyId, userId, sigDate, errorMsg);
+      rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, exitCode, statusFlags, keyId, userId, sigDate, errorMsg, blockSeparation);
     }
   }
 

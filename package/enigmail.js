@@ -1823,6 +1823,7 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
   var errObj = new Object();
   var outLenObj = new Object();
   var errLenObj = new Object();
+  var blockSeparationObj = new Object();
 
   CONSOLE_LOG("\nenigmail> "+command.replace(/\\\\/g, "\\")+"\n");
 
@@ -1858,8 +1859,12 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
   DEBUG_LOG("enigmail.js: Enigmail.execCmd: errOutput = "+errOutput+"\n");
 
 
-  errorMsgObj.value = this.parseErrorOutput(errOutput, statusFlagsObj, statusMsgObj);
+  errorMsgObj.value = this.parseErrorOutput(errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj);
   exitCodeObj.value = this.fixExitCode(exitCodeObj.value, statusFlagsObj.value);
+
+  if (blockSeparationObj.value.indexOf(" ") > 0) {
+    exitCodeObj.value = 2;
+  }
 
   CONSOLE_LOG(errorMsgObj.value+"\n");
 
@@ -1947,7 +1952,7 @@ function (command, needPassphrase, domWindow, prompter, listener,
 
 
 Enigmail.prototype.parseErrorOutput =
-function (errOutput, statusFlagsObj, statusMsgObj) {
+function (errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj) {
 
   WRITE_LOG("enigmail.js: Enigmail.parseErrorOutput:\n");
   var errLines = errOutput.split(/\r?\n/);
@@ -1994,6 +1999,44 @@ function (errOutput, statusFlagsObj, statusMsgObj) {
     }
   }
 
+  // detect forged message insets
+
+  if (! blockSeparationObj) {
+    blockSeparationObj = new Object();
+  }
+  blockSeparationObj.value = "";
+
+  var plaintextCount=0;
+  var withinCryptoMsg = false;
+  var cryptoStartPat = /^BEGIN_DECRYPTION/;
+  var cryptoEndPat = /^END_DECRYPTION/;
+  var plaintextPat = /^PLAINTEXT /;
+  var plaintextLengthPat = /^PLAINTEXT_LENGTH /;
+  for (j=0; j<statusArray.length; j++) {
+    if (statusArray[j].search(cryptoStartPat) == 0) {
+      withinCryptoMsg = true;
+    }
+    else if (withinCryptoMsg && statusArray[j].search(cryptoEndPat) == 0) {
+      withinCryptoMsg = false;
+    }
+    else if (statusArray[j].search(plaintextPat) == 0) {
+      ++plaintextCount;
+      if ((statusArray.length > j+1) && (statusArray[j+1].search(plaintextLengthPat) == 0)) {
+        matches = statusArray[j+1].match(/(\w+) (\d+)/);
+        if (matches.length>=3) {
+          blockSeparationObj.value += (withinCryptoMsg ? "1" : "0") + ":"+matches[2]+" ";
+        }
+      }
+      else {
+        // strange: we got PLAINTEXT XX, but not PLAINTEXT_LENGTH XX
+        blockSeparationObj.value += (withinCryptoMsg ? "1" : "0") + ":0 ";
+      }
+    }
+  }
+
+  if (plaintextCount > 1) statusFlags |= (nsIEnigmail.PARTIALLY_PGP | nsIEnigmail.DECRYPTION_FAILED | nsIEnigmail.BAD_SIGNATURE);
+
+  blockSeparationObj.value = blockSeparationObj.value.replace(/ $/, "");
   statusFlagsObj.value = statusFlags;
   statusMsgObj.value   = statusArray.join("\n");
   var errorMsg         = errArray.join("\n");
@@ -2017,7 +2060,7 @@ function (errOutput, statusFlagsObj, statusMsgObj) {
 }
 
 Enigmail.prototype.execEnd =
-function (pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj) {
+function (pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj, blockSeparationObj) {
 
   WRITE_LOG("enigmail.js: Enigmail.execEnd: \n");
 
@@ -2052,11 +2095,15 @@ function (pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj) 
   DEBUG_LOG("enigmail.js: Enigmail.execEnd: errOutput = "+errOutput+"\n");
 
 
-  errorMsgObj.value = this.parseErrorOutput(errOutput, statusFlagsObj, statusMsgObj);
+  errorMsgObj.value = this.parseErrorOutput(errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj);
 
   if (errOutput.search(/jpeg image of size \d+/)>-1) {
     statusFlagsObj.value |= nsIEnigmail.PHOTO_AVAILABLE;
   }
+  if (blockSeparationObj.value.indexOf(" ") > 0) {
+    exitCode = 2;
+  }
+
   CONSOLE_LOG(errorMsgObj.value+"\n");
 
   //DEBUG_LOG("enigmail.js: Enigmail.execEnd: statusFlags = "+bytesToHex(pack(statusFlags,4))+"\n");
@@ -2692,7 +2739,8 @@ function (signatureBlock, part) {
 
 Enigmail.prototype.decryptMessage =
 function (parent, uiFlags, cipherText, signatureObj, exitCodeObj,
-          statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj) {
+          statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj,
+          blockSeparationObj) {
   DEBUG_LOG("enigmail.js: Enigmail.decryptMessage: "+cipherText.length+" bytes, "+uiFlags+"\n");
 
   if (! cipherText)
@@ -2834,7 +2882,7 @@ function (parent, uiFlags, cipherText, signatureObj, exitCodeObj,
     var exitCode = this.decryptMessageEnd(uiFlags, plainText.length, pipeTrans,
                                         verifyOnly, noOutput,
                                         statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj,
-                                        errorMsgObj);
+                                        errorMsgObj, blockSeparationObj);
     exitCodeObj.value = exitCode;
   }
 
@@ -2993,16 +3041,18 @@ function (parent, prompter, verifyOnly, noOutput,
 
 Enigmail.prototype.decryptMessageEnd =
 function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
-          statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj) {
+          statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj) {
   DEBUG_LOG("enigmail.js: Enigmail.decryptMessageEnd: uiFlags="+uiFlags+", outputLen="+outputLen+", pipeTransport="+pipeTransport+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
 
   var interactive = uiFlags & nsIEnigmail.UI_INTERACTIVE;
   var pgpMime     = uiFlags & nsIEnigmail.UI_PGP_MIME;
   var allowImport = uiFlags & nsIEnigmail.UI_ALLOW_KEY_IMPORT;
   var unverifiedEncryptedOK = uiFlags & nsIEnigmail.UI_UNVERIFIED_ENC_OK;
+  var j;
 
   statusFlagsObj.value = 0;
   errorMsgObj.value    = "";
+  blockSeparationObj.value = "";
 
   if (!this.initialized) {
      errorMsgObj.value = EnigGetString("notInit");
@@ -3014,7 +3064,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
   var cmdLineObj     = new Object();
   var cmdErrorMsgObj = new Object();
 
-  var exitCode = this.execEnd(pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, cmdErrorMsgObj);
+  var exitCode = this.execEnd(pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, cmdErrorMsgObj, blockSeparationObj);
 
   if (pgpMime) {
     statusFlagsObj.value |= verifyOnly ? nsIEnigmail.PGP_MIME_SIGNED
@@ -4407,7 +4457,7 @@ function (parent, outFileName, displayName, inputBuffer,
   exitCodeObj.value = pipeTrans.exitCode();
 
   var statusMsgObj = new Object();
-  var cmdLineObj     = new Object();
+  var cmdLineObj   = new Object();
 
   try {
     this.execEnd(pipeTrans, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
