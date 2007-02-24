@@ -2100,7 +2100,7 @@ function (pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj, 
   if (errOutput.search(/jpeg image of size \d+/)>-1) {
     statusFlagsObj.value |= nsIEnigmail.PHOTO_AVAILABLE;
   }
-  if (blockSeparationObj.value.indexOf(" ") > 0) {
+  if (blockSeparationObj && blockSeparationObj.value.indexOf(" ") > 0) {
     exitCode = 2;
   }
 
