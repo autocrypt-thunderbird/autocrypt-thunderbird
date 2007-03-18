@@ -126,7 +126,7 @@ cat > ${ENIGLANG}/install.rdf <<EOT
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
         <em:minVersion>1.0</em:minVersion>
-        <em:maxVersion>1.6</em:maxVersion>
+        <em:maxVersion>2.0.0.*</em:maxVersion>
       </Description>
       <Description>
         <!-- Mozilla Suite -->
