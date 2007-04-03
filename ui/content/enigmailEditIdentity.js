@@ -45,6 +45,7 @@ var gOpenPgpHeaderUrl;
 var gOpenPgpUrlName;
 var gEnigAccount;
 var gEnigDlgOnAccept;
+var gPgpMimeMode;
 
 const ENIG_HEADERMODE_KEYID = 0x01;
 const ENIG_HEADERMODE_URL   = 0x10;
@@ -63,6 +64,7 @@ function enigOnInit()
   gPgpSignEncPolicy   = document.getElementById("sign_encrypted");
   gPgpSignPlainPolicy = document.getElementById("sign_notEncrypted");
   gEncryptionPolicy   = document.getElementById("encrypt_ifPossible");
+  gPgpMimeMode      = document.getElementById("pgpMimeMode");
 
   if (gEnigIdentity) {
     gEnablePgp.checked  = gEnigIdentity.getBoolAttribute("enablePgp");
@@ -92,6 +94,7 @@ function enigOnInit()
     EnigGetSignMsg(gEnigIdentity);
     gPgpSignEncPolicy.checked = gEnigIdentity.getBoolAttribute("pgpSignEncrypted");
     gPgpSignPlainPolicy.checked = gEnigIdentity.getBoolAttribute("pgpSignPlain");
+    gPgpMimeMode.checked = gEnigIdentity.getBoolAttribute("pgpMimeMode");
     gEncryptionPolicy.checked = (gEnigIdentity.getIntAttribute("defaultEncryptionPolicy")>0);
     gOpenPgpUrlName.value = gEnigIdentity.getCharAttribute("openPgpUrlName");
   }
@@ -99,7 +102,7 @@ function enigOnInit()
     gEnablePgp.checked=false;
     gEncryptionChoicesEnabled=false;
   }
-  
+
   // Disable all locked elements on the panel
   //onLockPreference();
   enigEnableAllPrefs();
@@ -114,15 +117,15 @@ function enigOnLoadEditor() {
     gEnigIdentity = window.arguments[0].identity;
     gEnigAccount = window.arguments[0].account;
   }
-  
+
   if (gEnigIdentity) {
     var idLabel = EnigGetString("identityName", gEnigIdentity.identityName);
     document.getElementById("identityName").value = idLabel;
   }
-  
+
   var dlg = document.getElementsByTagName("dialog")[0];
   dlg.setAttribute("ondialogaccept", "return enigOnAcceptEditor();");
-  
+
   enigOnInit();
 }
 
@@ -151,9 +154,9 @@ function enigOnSave()
 
   if (gEnablePgp.checked) {
     // PGP is enabled
-    
+
     var openPgpHeaderMode = 0;
-    
+
     if (gOpenPgpHeaderKeyId.checked)
       openPgpHeaderMode += ENIG_HEADERMODE_KEYID;
 
@@ -164,6 +167,7 @@ function enigOnSave()
     gEnigIdentity.setCharAttribute("pgpkeyId", gPgpkeyId.value);
     gEnigIdentity.setBoolAttribute("pgpSignEncrypted", gPgpSignEncPolicy.checked);
     gEnigIdentity.setBoolAttribute("pgpSignPlain", gPgpSignPlainPolicy.checked);
+    gEnigIdentity.setBoolAttribute("pgpMimeMode", gPgpMimeMode.checked);
     gEnigIdentity.setIntAttribute("defaultEncryptionPolicy", (gEncryptionPolicy.checked ? 1 : 0));
     gEnigIdentity.setIntAttribute("openPgpHeaderMode", openPgpHeaderMode);
     gEnigIdentity.setCharAttribute("openPgpUrlName", gOpenPgpUrlName.value)

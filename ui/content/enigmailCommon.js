@@ -324,7 +324,34 @@ function EnigUpgradeHeadersView() {
   catch (ex) {}
 
   gEnigPrefRoot.setIntPref("mail.show_headers", hdrMode);
-  enigMessageReload(false);
+  try {
+    enigMessageReload(false);
+  }
+  catch (ex) {}
+}
+
+function EnigUpgradePgpMime() {
+  var pgpMimeMode = false;
+  try {
+    var pgpMimeMode = (EnigGetPref("usePGPMimeOption") == 2);
+  }
+  catch (ex) {
+    return;
+  }
+
+  try {
+    if (pgpMimeMode) {
+      var accountManager = Components.classes["@mozilla.org/messenger/account-manager;1"].getService(Components.interfaces.nsIMsgAccountManager);
+      for (var i=0; i < accountManager.allIdentities.Count(); i++) {
+        var id = accountManager.allIdentities.QueryElementAt(i, Components.interfaces.nsIMsgIdentity);
+        if (id.getBoolAttribute("enablePgp")) {
+          id.setBoolAttribute("pgpMimeMode", true);
+        }
+      }
+    }
+    gPrefEnigmail.clearUserPref("usePGPMimeOption");
+  }
+  catch (ex) {}
 }
 
 function EnigConfigure() {
@@ -335,6 +362,7 @@ function EnigConfigure() {
   else if (oldVer < "0.95") {
     try {
       EnigUpgradeHeadersView();
+      EnigUpgradePgpMime();
       EnigUpgradeRecipientsSelection();
     }
     catch (ex) {}

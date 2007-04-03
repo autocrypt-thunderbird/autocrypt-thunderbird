@@ -154,6 +154,8 @@ function enigGetAccDefault(value) {
       break;
     case 'signEnc':
       r=gEnigIdentity.getBoolAttribute("pgpSignEncrypted");
+    case 'pgpMimeMode':
+      r=gEnigIdentity.getBoolAttribute("pgpMimeMode");
     }
     DEBUG_LOG("  "+value+"="+r+"\n");
     return r;
@@ -164,6 +166,7 @@ function enigGetAccDefault(value) {
       return 0;
     case 'signPlain':
     case 'signEnc':
+    case 'pgpMimeMode':
       return false;
     }
   }
@@ -199,6 +202,8 @@ function enigSetSendDefaultOptions() {
   else {
     if (enigGetAccDefault("signPlain")) gEnigSendMode |= ENIG_SIGN;
   }
+
+  gEnigSendPGPMime = enigGetAccDefault("pgpMimeMode");
 }
 
 function enigRemoveAttachedSig() {
@@ -260,9 +265,6 @@ function enigMsgComposeReset() {
   gEnigSendMode = 0;
   gEnigEnableRules = true;
   gEnigIdentity = null;
-
-  gEnigSendPGPMime = !(EnigGetPref("usePGPMimeOption") == PGP_MIME_ALWAYS);
-  enigTogglePGPMime();
 
   enigSetIdentityDefaults();
 }

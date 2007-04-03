@@ -90,6 +90,10 @@
           <checkbox id="encrypt_ifPossible" checked="false"
                     observes="bcEnablePgp"
                     label="&enigmail.defaultEncryption.label;"/>
+
+          <checkbox id="pgpMimeMode" checked="false"
+                    observes="bcEnablePgp"
+                    label="&enigmail.usePGPMimeAlways.label;"/>
         </groupbox>
 
         <hbox autostretch="never">

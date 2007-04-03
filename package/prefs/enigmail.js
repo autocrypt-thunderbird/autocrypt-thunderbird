@@ -143,7 +143,7 @@ pref("extensions.enigmail.encapsulatedMimeMaxSize", 8000);
 pref("extensions.enigmail.useGpgAgent",false);
 
 // use PGP/MIME (0=never, 1=allow, 2=always)
-pref("extensions.enigmail.usePGPMimeOption",1);
+// pref("extensions.enigmail.usePGPMimeOption",1); -- OBSOLETE, see mail.identity.default.pgpMimeMode
 
 // enable using gpgkeys_*
 pref("extensions.enigmail.useGpgKeysTool",true);
@@ -173,6 +173,7 @@ pref("mail.identity.default.pgpSignEncrypted", false);
 pref("mail.identity.default.defaultEncryptionPolicy", 0);
 pref("mail.identity.default.openPgpHeaderMode", 0);
 pref("mail.identity.default.openPgpUrlName", "");
+pref("mail.identity.default.pgpMimeMode", false);
 
 /*
    Other settings (change Mozilla behaviour)
