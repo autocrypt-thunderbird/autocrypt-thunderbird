@@ -91,6 +91,8 @@
                     observes="bcEnablePgp"
                     label="&enigmail.defaultEncryption.label;"/>
 
+          <separator/>
+
           <checkbox id="pgpMimeMode" checked="false"
                     observes="bcEnablePgp"
                     label="&enigmail.usePGPMimeAlways.label;"/>
