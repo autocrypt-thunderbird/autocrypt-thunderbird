@@ -4471,6 +4471,7 @@ function (parent, outFileName, displayName, inputBuffer,
 
 Enigmail.prototype.getCardStatus =
 function(exitCodeObj, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.getCardStatus\n");
   var command = this.getAgentPath();
 
   command += " --status-fd 2 --fixed-list-mode --with-colons --card-status";
@@ -4490,10 +4491,10 @@ function(exitCodeObj, errorMsgObj) {
 
 Enigmail.prototype.showKeyPhoto =
 function(keyId, photoNumber, exitCodeObj, errorMsgObj) {
-
+  DEBUG_LOG("enigmail.js: Enigmail.showKeyPhoto, keyId="+keyId+" photoNumber="+photoNumber+"\n");
   var command = this.getAgentPath();
 
-  command += " --no-secmem-warning --batch --no-tty --status-fd 1 --attribute-fd 2";
+  command += " --no-secmem-warning --no-verbose --no-auto-check-trustdb --batch --no-tty --status-fd 1 --attribute-fd 2";
   command += " --fixed-list-mode --list-keys "+keyId;
 
   var photoDataObj = new Object();
