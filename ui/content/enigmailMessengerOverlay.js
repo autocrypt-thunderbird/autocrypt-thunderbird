@@ -66,6 +66,10 @@ window.addEventListener("unload", enigMessengerFinish,  false);
 function enigMessengerStartup() {
   DEBUG_LOG("enigmailMessengerOverlay.js: Startup\n");
 
+  gEnigMessagePane = document.getElementById("messagepane");
+
+  if (gEnigMessagePane == null) return; // TB 2.0 on Mac OS X calls this twice -- once far too early
+
   // enigUpdateOptionsDisplay();
 
   // Override SMIME ui
@@ -102,7 +106,7 @@ function enigMessengerStartup() {
   gEnigSavedHeaders = null;
 
   gEnigDecryptButton = document.getElementById("button-enigmail-decrypt");
-  gEnigMessagePane = document.getElementById("messagepane");
+  //EnigAlert("enigmailMessengerOverlay.js: gEnigMessagePane="+gEnigMessagePane+"\n");
   enigMessageFrameLoad();
 
   // Need to add event listener to gEnigMessagePane to make it work
@@ -113,10 +117,10 @@ function enigMessengerStartup() {
   if (EnigGetPref("handleDoubleClick")) {
     // ovveride function for double clicking an attachment
     EnigOverrideAttribute(["attachmentList"], "onclick",
-                         "enigAttachmentListClick('", "', event);");
+                        "enigAttachmentListClick('", "', event);");
   }
 
-  enigEnsureExtraHeaders()
+  enigEnsureExtraHeaders();
 }
 
 function enigEnsureExtraHeaders() {
