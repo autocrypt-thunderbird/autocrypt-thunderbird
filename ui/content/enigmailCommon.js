@@ -34,7 +34,7 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.95b";
+var gEnigmailVersion = "0.95.0";
 var gEnigmimeVersion = "0.95.0.0";
 
 // Maximum size of message directly processed by Enigmail
@@ -63,6 +63,7 @@ const ENIG_TRANSFERABLE_CONTRACTID = "@mozilla.org/widget/transferable;1"
 const ENIG_LOCALE_SVC_CONTRACTID = "@mozilla.org/intl/nslocaleservice;1";
 const ENIG_DATE_FORMAT_CONTRACTID = "@mozilla.org/intl/scriptabledateformat;1"
 const ENIG_ACCOUNT_MANAGER_CONTRACTID = "@mozilla.org/messenger/account-manager;1";
+const ENIG_XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
 const ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID =
                               "@mozilla.org/network/file-output-stream;1";
@@ -1303,10 +1304,7 @@ function EnigGetTempDir() {
   }
   catch (ex) {
     // let's guess ...
-    var httpHandler = ioServ.getProtocolHandler("http");
-    httpHandler = httpHandler.QueryInterface(ENIG_C.interfaces.nsIHttpProtocolHandler);
-    isWin = (httpHandler.platform.search(/Win/i) == 0);
-    if (isWin) {
+    if (EnigGetOS() == "WINNT") {
       tmpDir="C:\\TEMP";
     } else {
       tmpDir="/tmp";
@@ -1315,6 +1313,13 @@ function EnigGetTempDir() {
   return tmpDir;
 }
 
+// get the OS platform
+function EnigGetOS () {
+
+  var xulAppinfo = ENIG_C.classes[ENIG_XPCOM_APPINFO].getService(ENIG_C.interfaces.nsIXULRuntime);
+  return xulAppinfo.OS;
+
+}
 
 function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
   DEBUG_LOG("enigmailCommon.js: EnigDisplayPrefs\n");

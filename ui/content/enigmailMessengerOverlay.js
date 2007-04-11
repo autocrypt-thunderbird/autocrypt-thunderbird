@@ -106,6 +106,9 @@ function enigMessengerStartup() {
   gEnigSavedHeaders = null;
 
   gEnigDecryptButton = document.getElementById("button-enigmail-decrypt");
+  if (EnigGetOS() == "Darwin") {
+    gEnigDecryptButton.setAttribute("platform", "macos");
+  }
   //EnigAlert("enigmailMessengerOverlay.js: gEnigMessagePane="+gEnigMessagePane+"\n");
   enigMessageFrameLoad();
 

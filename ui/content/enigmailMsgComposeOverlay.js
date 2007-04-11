@@ -213,6 +213,12 @@ function enigRemoveAttachedSig() {
 
 function enigComposeOpen() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigComposeOpen\n");
+
+  var enigButton = document.getElementById("button-enigmail-send");
+  if (enigButton && (EnigGetOS() == "Darwin")) {
+    enigButton.setAttribute("platform", "macos");
+  }
+
   if (EnigGetPref("keepSettingsForReply") && (!(gEnigSendMode & ENIG_ENCRYPT))) {
     var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
     if (enigMimeService)
@@ -245,7 +251,6 @@ function enigMsgComposeReopen() {
    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeReopen\n");
    enigMsgComposeReset();
    enigComposeOpen();
-
 }
 
 function enigMsgComposeClose() {

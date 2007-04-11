@@ -362,6 +362,7 @@
                 oncommand="enigMessageDecrypt();"
                 buttontype="seamonkey"
                 insertafter="button-newmsg"
+                persist="platform"
                 />
 
         <toolbarseparator class="toolbarseparator-primary"
