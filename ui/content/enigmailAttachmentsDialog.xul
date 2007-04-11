@@ -1,5 +1,5 @@
 <?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?> 
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
 
 <!DOCTYPE window [
 <!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
@@ -11,7 +11,7 @@
 <dialog id="attachmentsDialog"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="enigmailAttachDlgLoad();"
-        ondialogaccept="enigmailAttachDlgAccept();"
+        ondialogaccept="return enigmailAttachDlgAccept();"
         minheight="250">
 
 

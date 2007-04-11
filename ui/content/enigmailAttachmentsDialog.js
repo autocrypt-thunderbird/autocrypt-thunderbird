@@ -3,20 +3,20 @@
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
  * the MPL at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the MPL is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the MPL for the specific language governing
  * rights and limitations under the MPL.
- * 
+ *
  * The Original Code is Enigmail.
  *
  * The Initial Developer of this code is Patrick Brunschwig.
  * Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net> are
  * Copyright (C) 2003 Patrick Brunschwig. All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
  * the provisions of the GPL are applicable instead of
@@ -89,14 +89,22 @@ function enigmailAttachDlgAccept() {
 
   var optionSel=document.getElementById("enigmailAttachOptions");
   var skipDlg=document.getElementById("enigmailAttachSkipDlg");
-  
+
   if (skipDlg.checked) {
     EnigSetPref("encryptAttachmentsSkipDlg", 1);
   }
-  if (optionSel && gArguments[ENIG_INPUT].restrictedScenario == false) {
-    gArguments[ENIG_RESULT].selected = optionSel.value;
-    EnigSetPref("encryptAttachments", optionSel.value);
+  if (optionSel) {
+    if (optionSel.value != "") {
+      gArguments[ENIG_RESULT].selected = optionSel.value;
+      if (gArguments[ENIG_INPUT].restrictedScenario == false) {
+        EnigSetPref("encryptAttachments", optionSel.value);
+      }
+      return true;
+    }
+    else {
+       return false;
+    }
   }
-
+  return true;
 }
 

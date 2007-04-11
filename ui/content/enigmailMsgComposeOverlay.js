@@ -719,6 +719,20 @@ function enigEncryptMsg(msgSendType) {
     break;
   }
 
+  var msgCompFields = gMsgCompose.compFields;
+  var newsgroups = msgCompFields.newsgroups;  // Check if sending to any newsgroups
+
+  if ((! (sendFlags & nsIEnigmail.SAVE_MESSAGE)) &&
+      msgCompFields.to == "" &&
+      msgCompFields.cc == "" &&
+      msgCompFields.bcc == "" &&
+      newsgroups == "") {
+    // don't attempt to send message if no recipient specified
+    EnigAlert(sComposeMsgsBundle.getString("12511"));
+    window.cancelSendMessage=true;
+    return;
+  }
+
   if (gotSendFlags & ENIG_SIGN)
       sendFlags |= ENIG_SIGN;
   if (gotSendFlags & ENIG_ENCRYPT) {
@@ -737,7 +751,6 @@ function enigEncryptMsg(msgSendType) {
     window.cancelSendMessage=true;
     return;
   }
-
 
   if (gEnigDirty) {
     // make sure the sendFlags are reset before the message is processed
@@ -843,9 +856,6 @@ function enigEncryptMsg(msgSendType) {
        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: type of userIdValue="+typeof(userIdValue)+"\n");
        userIdValue = "";
      }
-
-     var msgCompFields = gMsgCompose.compFields;
-     var newsgroups = msgCompFields.newsgroups;  // Check if sending to any newsgroups
 
      DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg:gMsgCompose="+gMsgCompose+"\n");
 
@@ -1137,6 +1147,18 @@ function enigEncryptMsg(msgSendType) {
 
        usingPGPMime = false;
      }
+
+/*
+     // Detect PGP/MIME and S/MIME
+     if (usingPGPMime) {
+        if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields) {
+            if (gMsgCompose.compFields.securityInfo.requireEncryptMessage ||
+              gMsgCompose.compFields.securityInfo.signMessage) {
+                EnigAlert("pgpMime.sMime.incomaptible");
+            }
+        }
+     }
+*/
 
      var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
