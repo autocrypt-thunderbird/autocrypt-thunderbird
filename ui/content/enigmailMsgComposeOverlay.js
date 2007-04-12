@@ -154,8 +154,10 @@ function enigGetAccDefault(value) {
       break;
     case 'signEnc':
       r=gEnigIdentity.getBoolAttribute("pgpSignEncrypted");
+      break;
     case 'pgpMimeMode':
       r=gEnigIdentity.getBoolAttribute("pgpMimeMode");
+      break;
     }
     DEBUG_LOG("  "+value+"="+r+"\n");
     return r;
