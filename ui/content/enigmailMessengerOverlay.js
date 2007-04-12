@@ -106,10 +106,12 @@ function enigMessengerStartup() {
   gEnigSavedHeaders = null;
 
   gEnigDecryptButton = document.getElementById("button-enigmail-decrypt");
-  if (EnigGetOS() == "Darwin") {
-    gEnigDecryptButton.setAttribute("platform", "macos");
+
+  var toolbarElem = document.getElementById("mail-bar2");
+  if (toolbarElem && EnigGetOS() == "Darwin") {
+    toolbarElem.setAttribute("platform", "macos");
   }
-  //EnigAlert("enigmailMessengerOverlay.js: gEnigMessagePane="+gEnigMessagePane+"\n");
+
   enigMessageFrameLoad();
 
   // Need to add event listener to gEnigMessagePane to make it work

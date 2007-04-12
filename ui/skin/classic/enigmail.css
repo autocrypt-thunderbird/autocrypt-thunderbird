@@ -4,74 +4,6 @@
 
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
-/********* special styles for Mac OS *********/
-
-/* Note: see below for standard styles. The styles here are not
-   needed if you want to create a theme for Enigmail, this is just
-   a workaround to deliver a Mac theme and a Windows/Linux theme in
-   one installer */
-
-#button-enigmail-decrypt[platform="macos"] {
-  list-style-image : url("chrome://enigmail/skin/mac/enigmail-decrypt.png");
-  -moz-image-region: rect(0px 32px 32px 0px)
-}
-
-#button-enigmail-decrypt[platform="macos"]:hover {
-  list-style-image : url("chrome://enigmail/skin/mac/enigmail-decrypt.png");
-  -moz-image-region: rect(0px 32px 32px 0px)
-}
-
-#button-enigmail-decrypt[platform="macos"][disabled] {
-  list-style-image : url("chrome://enigmail/skin/mac/enigmail-decrypt-inactive.png");
-  -moz-image-region: rect(0px 32px 32px 0px)
-}
-
-toolbar[iconsize="small"]  #button-enigmail-decrypt[platform="macos"] {
-  list-style-image : url("chrome://enigmail/skin/mac/enigmail-decrypt-small.png");
-  -moz-image-region: rect(0px 24px 24px 0px)
-}
-
-toolbar[iconsize="small"]  #button-enigmail-decrypt[platform="macos"]:hover {
-  list-style-image : url("chrome://enigmail/skin/mac/enigmail-decrypt-small.png");
-  -moz-image-region: rect(0px 24px 24px 0px)
-}
-toolbar[iconsize="small"] #button-enigmail-decrypt[platform="macos"][disabled] {
-  list-style-image : url("chrome://enigmail/skin/mac/enigmail-decrypt-small-inactive.png");
-  -moz-image-region: rect(0px 24px 24px 0px)
-}
-
-
-#button-enigmail-send[platform="macos"] {
-   list-style-image : url("chrome://enigmail/skin/mac/enigmail-options.png");
-    -moz-image-region: rect(0px 32px 32px 0px)
-}
-
-#button-enigmail-send[platform="macos"]:hover {
-  list-style-image : url("chrome://enigmail/skin/mac/enigmail-options.png");
-    -moz-image-region: rect(0px 32px 32px 0px)
-}
-
-#button-enigmail-send[platform="macos"][disabled] {
-  list-style-image : url("chrome://enigmail/skin/mac/enigmail-options-inactive.png");
-    -moz-image-region: rect(0px 32px 32px 0px)
-}
-
-
-toolbar[iconsize="small"] #button-enigmail-send[platform="macos"] {
-  list-style-image : url("chrome://enigmail/skin/mac/enigmail-options-small.png");
-  -moz-image-region: rect(0px 24px 24px 0px)
-}
-
-toolbar[iconsize="small"] #button-enigmail-send[platform="macos"]:hover {
-  list-style-image : url("chrome://enigmail/skin/mac/enigmail-options-small.png");
-  -moz-image-region: rect(0px 24px 24px 0px)
-}
-
-toolbar[iconsize="small"] #button-enigmail-send[platform="macos"][disabled] {
-  list-style-image : url("chrome://enigmail/skin/mac/enigmail-options-small-inactive.png");
-  -moz-image-region: rect(0px 24px 24px 0px)
-}
-
 
 /* styles of other platforms (Windows, Linux/Unix) */
 
@@ -280,3 +212,73 @@ They can be applied using:
 treechildren::-moz-tree-cell(STYLE) {}
 treechildren::-moz-tree-cell-text(STYLE) {}
 */
+
+
+/********* special styles for Mac OS *********/
+
+/* Note: see above for standard styles. The styles here are not
+   needed if you want to create a theme for Enigmail, this is just
+   a workaround to enable the Mac theme and the Windows/Linux theme in
+   one single XPI */
+
+toolbar[platform="macos"] #button-enigmail-decrypt {
+  list-style-image : url("chrome://enigmail/skin/mac/enigmail-decrypt.png");
+  -moz-image-region: rect(0px 32px 32px 0px)
+}
+
+toolbar[platform="macos"] #button-enigmail-decrypt:hover {
+  list-style-image : url("chrome://enigmail/skin/mac/enigmail-decrypt.png");
+  -moz-image-region: rect(0px 32px 32px 0px)
+}
+
+toolbar[platform="macos"] #button-enigmail-decrypt[disabled] {
+  list-style-image : url("chrome://enigmail/skin/mac/enigmail-decrypt-inactive.png");
+  -moz-image-region: rect(0px 32px 32px 0px)
+}
+
+toolbar[platform="macos"][iconsize="small"]  #button-enigmail-decrypt {
+  list-style-image : url("chrome://enigmail/skin/mac/enigmail-decrypt-small.png");
+  -moz-image-region: rect(0px 24px 24px 0px)
+}
+
+toolbar[platform="macos"][iconsize="small"]  #button-enigmail-decrypt:hover {
+  list-style-image : url("chrome://enigmail/skin/mac/enigmail-decrypt-small.png");
+  -moz-image-region: rect(0px 24px 24px 0px)
+}
+toolbar[platform="macos"][iconsize="small"] #button-enigmail-decrypt[disabled] {
+  list-style-image : url("chrome://enigmail/skin/mac/enigmail-decrypt-small-inactive.png");
+  -moz-image-region: rect(0px 24px 24px 0px)
+}
+
+
+toolbar[platform="macos"] #button-enigmail-send {
+   list-style-image : url("chrome://enigmail/skin/mac/enigmail-options.png");
+    -moz-image-region: rect(0px 32px 32px 0px)
+}
+
+toolbar[platform="macos"] #button-enigmail-send:hover {
+  list-style-image : url("chrome://enigmail/skin/mac/enigmail-options.png");
+    -moz-image-region: rect(0px 32px 32px 0px)
+}
+
+toolbar[platform="macos"] #button-enigmail-send[disabled] {
+  list-style-image : url("chrome://enigmail/skin/mac/enigmail-options-inactive.png");
+    -moz-image-region: rect(0px 32px 32px 0px)
+}
+
+
+toolbar[platform="macos"][iconsize="small"] #button-enigmail-send {
+  list-style-image : url("chrome://enigmail/skin/mac/enigmail-options-small.png");
+  -moz-image-region: rect(0px 24px 24px 0px)
+}
+
+toolbar[platform="macos"][iconsize="small"] #button-enigmail-send:hover {
+  list-style-image : url("chrome://enigmail/skin/mac/enigmail-options-small.png");
+  -moz-image-region: rect(0px 24px 24px 0px)
+}
+
+toolbar[platform="macos"][iconsize="small"] #button-enigmail-send[disabled] {
+  list-style-image : url("chrome://enigmail/skin/mac/enigmail-options-small-inactive.png");
+  -moz-image-region: rect(0px 24px 24px 0px)
+}
+

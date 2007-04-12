@@ -214,9 +214,9 @@ function enigRemoveAttachedSig() {
 function enigComposeOpen() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigComposeOpen\n");
 
-  var enigButton = document.getElementById("button-enigmail-send");
-  if (enigButton && (EnigGetOS() == "Darwin")) {
-    enigButton.setAttribute("platform", "macos");
+  var toobarElem = document.getElementById("composeToolbar2");
+  if (toobarElem && (EnigGetOS() == "Darwin")) {
+    toobarElem.setAttribute("platform", "macos");
   }
 
   if (EnigGetPref("keepSettingsForReply") && (!(gEnigSendMode & ENIG_ENCRYPT))) {
@@ -1086,8 +1086,7 @@ function enigEncryptMsg(msgSendType) {
         enigmailSvc.composeSecure) {
 
         inputObj = new Object();
-        inputObj.pgpMimePossible = (usePGPMimeOption >= PGP_MIME_POSSIBLE);
-        // inputObj.inlinePossible = (sendFlags & ENIG_ENCRYPT); // makes no sense for sign only!
+        inputObj.pgpMimePossible = true;
         inputObj.inlinePossible = true;
         inputObj.restrictedScenario = false;
 
