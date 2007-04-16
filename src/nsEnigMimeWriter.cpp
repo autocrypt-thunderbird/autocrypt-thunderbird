@@ -114,9 +114,15 @@ nsEnigMimeWriter::~nsEnigMimeWriter()
 // nsIEnigMimeWriter methods
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef _ENIG_MOZILLA_1_8
 NS_IMETHODIMP
 nsEnigMimeWriter::Init(nsOutputFileStream* aStream,
                          PRBool forceCRLF)
+#else
+NS_IMETHODIMP
+nsEnigMimeWriter::Init(nsIOutputStream* aStream,
+                         PRBool forceCRLF)
+#endif
 {
   DEBUG_LOG(("nsEnigMimeWriter::Init: %d\n", forceCRLF));
 
@@ -185,15 +191,21 @@ nsresult
 nsEnigMimeWriter::WriteStream(const char* buf, PRUint32 count)
 {
   DEBUG_LOG(("nsEnigMimeWriter::WriteStream: %d\n", count));
+  PRUint32 writeCount;
 
   if (!mStream)
     return NS_ERROR_NOT_INITIALIZED;
 
   while (count > 0) {
-    PRInt32 writeCount = mStream->write(buf, count);
-
+#ifdef _ENIG_MOZILLA_1_8
+    writeCount = mStream->write(buf, count);
     if (writeCount <= 0)
       return NS_ERROR_FAILURE;
+#else
+    nsresult rv = mStream->Write(buf, count, &writeCount);
+    if (NS_FAILED(rv) || (writeCount != count))
+      return NS_ERROR_FAILURE;
+#endif
 
     mByteCount += writeCount;
 

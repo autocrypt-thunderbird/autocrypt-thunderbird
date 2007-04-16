@@ -53,7 +53,7 @@
 #include "nsString.h"
 #include "nsIPrompt.h"
 #include "nsNetUtil.h"
-#include "nsFileStream.h"
+#include "nsIFileStream.h"
 #include "nsIThread.h"
 #include "nsIFactory.h"
 #undef MOZILLA_INTERNAL_API
@@ -558,9 +558,14 @@ nsEnigMsgCompose::RequiresCryptoEncapsulation(
   return NS_OK;
 }
 
+
 NS_IMETHODIMP
 nsEnigMsgCompose::BeginCryptoEncapsulation(
+#ifdef _ENIG_MOZILLA_1_8
                                         nsOutputFileStream* aStream,
+#else
+                                        nsIOutputStream* aStream,
+#endif
                                         const char* aRecipients,
                                         nsIMsgCompFields* aCompFields,
                                         nsIMsgIdentity* aIdentity,

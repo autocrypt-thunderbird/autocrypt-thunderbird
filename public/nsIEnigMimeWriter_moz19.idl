@@ -34,47 +34,37 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef nsEnigMimeWriter_h__
-#define nsEnigMimeWriter_h__
+#include "nsIStreamListener.idl"
+#include "nsIOutputStream.idl"
 
-#include "nspr.h"
-#include "enigmail.h"
 
-#include "nsIEnigMimeWriter.h"
-#include "nsCOMPtr.h"
-#include "nsString.h"
+%{C++
 
-// Implementation class for nsIEnigMimeWriter
-class nsEnigMimeWriter : public nsIEnigMimeWriter
+#define NS_ENIGMIMEWRITER_CLASSNAME "Enigmail Mime Writer"
+#define NS_ENIGMIMEWRITER_CONTRACTID "@mozilla.org/enigmail/mime-writer;1"
+
+#define NS_ENIGMIMEWRITER_CID                    \
+{ /* 847b3aa1-7ab1-11d4-8f02-006008948af5 */     \
+   0x847b3aa1, 0x7ab1, 0x11d4,                   \
+{0x8f, 0x02, 0x00, 0x60, 0x08, 0x94, 0x8a, 0xf5} }
+
+%}
+
+
+/* nsIEnigMimeWriter is a StreamListener that writes to a file
+ */
+
+[scriptable, uuid(847b3aa0-7ab1-11d4-8f02-006008948af5)]
+interface nsIEnigMimeWriter : nsIStreamListener
 {
-public:
-    NS_DECL_ISUPPORTS
-    NS_DECL_NSIREQUESTOBSERVER
-    NS_DECL_NSISTREAMLISTENER
-    NS_DECL_NSIENIGMIMEWRITER
 
-    nsEnigMimeWriter();
-    virtual ~nsEnigMimeWriter();
+  [noscript] void init(in nsIOutputStream aStream, in boolean forceCRLF);
 
-    // Define a Create method to be used with a factory:
-    static NS_METHOD
-    Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
+  void write(in string buf, in unsigned long count);
 
-protected:
+  readonly attribute unsigned long bytesWritten;
 
-    nsresult WriteStream(const char* buf, PRUint32 count);
-
-#ifdef _ENIG_MOZILLA_1_8
-    nsOutputFileStream*                 mStream;
-#else
-    nsIOutputStream*                    mStream;
-#endif
-    PRBool                              mForceCRLF;
-
-    PRBool                              mClosed;
-    PRBool                              mLastCR;
-
-    PRUint32                            mByteCount;
+  void close();
 };
 
-#endif // nsEnigMimeWriter_h__
+///////////////////////////////////////////////////////////////////////////////

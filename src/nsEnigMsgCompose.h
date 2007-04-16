@@ -21,7 +21,7 @@
  * Contributor(s):
  *
  * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or 
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
  * in which case the provisions of the GPL or the LGPL are applicable instead
  * of those above. If you wish to allow use of your version of this file only
@@ -44,9 +44,11 @@
 #include "nsIStreamListener.h"
 #include "nsIPipeTransport.h"
 #include "nsIEnigMimeListener.h"
-#include "nsIEnigMimeWriter.h"
 #include "nsIEnigmail.h"
 #include "modmimee2.h"
+#include "enigmail.h"
+#include "nsIEnigMimeWriter.h"
+
 
 #define NS_ENIGMSGCOMPOSE_CLASSNAME "Enigmail Msg Compose"
 
@@ -121,7 +123,11 @@ protected:
 
     nsCString                     mBoundary;
 
+#ifdef _ENIG_MOZILLA_1_8
     nsOutputFileStream*           mStream;
+#else
+    nsIOutputStream*              mStream;
+#endif
 
     MimeEncoderData*              mEncoderData;
 

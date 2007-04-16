@@ -43,13 +43,37 @@ include $(DEPTH)/config/autoconf.mk
 MODULE        = enigmime
 XPIDL_MODULE  = enigmime
 
+MOZILLA_VERSION_PARTS = $(subst ., ,$(MOZILLA_VERSION))
+MOZILLA_MAJOR_VERSION = $(firstword $(MOZILLA_VERSION_PARTS))
+TMP_VAR = $(word 2,$(MOZILLA_VERSION_PARTS))
+MOZILLA_MINOR_VERSION = $(shell echo $(TMP_VAR)|sed 's/[a-z].*//')
+ENIG_GECKO_VERSION=$(MOZILLA_MAJOR_VERSION)$(MOZILLA_MINOR_VERSION)
+
+# Gecko 1.8 and Gecko 1.9 have different interfaces for 
+# message composition, thus require different nsIEnigMimeWriter
+# interfaces ...
+
+ifeq ($(ENIG_GECKO_VERSION),18)
+ENIGMIMEWRTMOD = nsIEnigMimeWriter_moz18.idl 
+else
+ENIGMIMEWRTMOD = nsIEnigMimeWriter_moz19.idl 
+endif
+
+nsIEnigMimeWriter.idl:
+	cp $(ENIGMIMEWRTMOD) nsIEnigMimeWriter.idl
+
 XPIDLSRCS     = nsIEnigMsgCompFields.idl  \
                 nsIEnigMimeService.idl    \
                 nsIEnigMimeDecrypt.idl    \
                 nsIEnigMimeVerify.idl     \
-                nsIEnigMimeHeaderSink.idl \
                 nsIEnigMimeWriter.idl     \
+                nsIEnigMimeHeaderSink.idl \
                 nsIEnigMimeListener.idl   \
                 nsIEnigMimeReadCallback.idl
+
+clean::
+	test -f nsIEnigMimeWriter.idl && rm nsIEnigMimeWriter.idl || echo ""
+
+distclean:: clean
 
 include $(topsrcdir)/config/rules.mk
