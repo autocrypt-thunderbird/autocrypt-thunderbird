@@ -60,7 +60,7 @@ ENIGMIMEWRTMOD = nsIEnigMimeWriter_moz19.idl
 endif
 
 nsIEnigMimeWriter.idl:
-	cp $(ENIGMIMEWRTMOD) nsIEnigMimeWriter.idl
+	cp $(srcdir)/$(ENIGMIMEWRTMOD) nsIEnigMimeWriter.idl
 
 XPIDLSRCS     = nsIEnigMsgCompFields.idl  \
                 nsIEnigMimeService.idl    \
