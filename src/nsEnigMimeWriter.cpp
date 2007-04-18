@@ -43,7 +43,11 @@
 #include "nsCOMPtr.h"
 #include "nsCRT.h"
 #include "nsIThread.h"
+#ifdef _ENIG_MOZILLA_1_8
 #include "nsFileStream.h"
+#else
+#include "nsIInputStream.h"
+#endif
 
 #include "nsEnigMimeWriter.h"
 #undef MOZILLA_INTERNAL_API

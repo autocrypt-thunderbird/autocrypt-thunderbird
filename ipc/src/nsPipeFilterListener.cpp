@@ -40,7 +40,6 @@
 #include "nsEscape.h"
 #include "nsCRT.h"
 #include "nsAutoLock.h"
-#include "nsFileStream.h"
 #include "nsIInputStream.h"
 #include "nsIThread.h"
 #include "nsIHttpChannel.h"

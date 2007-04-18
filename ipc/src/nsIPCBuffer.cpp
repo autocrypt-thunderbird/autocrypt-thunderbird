@@ -48,8 +48,6 @@
 #include "nsDirectoryServiceDefs.h"
 #include "nsReadableUtils.h"
 #include "nsNetCID.h"
-#include "nsIFileSpec.h"
-#include "nsXPIDLString.h"
 
 #include "nsIPCBuffer.h"
 
@@ -336,7 +334,6 @@ NS_IMETHODIMP
 nsIPCBuffer::CreateTempFile()
 {
   nsresult rv;
-  nsIFileSpec* tempFileSpec;
 
   DEBUG_LOG(("nsIPCBuffer::CreateTempFile: \n"));
 
@@ -355,27 +352,18 @@ nsIPCBuffer::CreateTempFile()
     return NS_ERROR_FAILURE;
   }
 
-  rv = NS_NewFileSpecFromIFile(mTempFile, &tempFileSpec);
-
-  if (rv != NS_OK) return rv;
-
-  if (!tempFileSpec)
-    return NS_ERROR_OUT_OF_MEMORY;
-
-
-  nsXPIDLCString nativePath;
-  tempFileSpec->GetNativePath(getter_Copies(nativePath));
+  nsCAutoString nativePath;
+  mTempFile->GetNativePath(nativePath);
 
   DEBUG_LOG(("nsIPCBuffer::CreateTempFile: %s\n",
             nativePath.get()));
 
-  mTempOutStream = new nsOutputFileStream(tempFileSpec);
+  mTempOutStream  = do_CreateInstance("@mozilla.org/network/file-output-stream;1", &rv);
+  if (NS_FAILED(rv)) return rv;
 
-  if (!mTempOutStream->is_open()) {
-    return NS_ERROR_FAILURE;
-  }
+  rv = mTempOutStream->Init(mTempFile, PR_WRONLY | PR_CREATE_FILE | PR_TRUNCATE, 00600, 0);
+  if (NS_FAILED(rv)) return rv;
 
-  delete tempFileSpec;
 
   return NS_OK;
 }
@@ -390,8 +378,9 @@ nsIPCBuffer::WriteTempOutStream(const char* buf, PRUint32 count)
   if (!count)
     return NS_OK;
 
-  PRInt32 status = mTempOutStream->write(buf, count);
-  if (status < int(count))
+  PRUint32 writeCount;
+  nsresult rv = mTempOutStream->Write(buf, count, &writeCount);
+  if (NS_FAILED(rv) || (writeCount != count))
     return NS_ERROR_FAILURE;
 
   return NS_OK;
@@ -405,12 +394,13 @@ nsIPCBuffer::CloseTempOutStream()
   DEBUG_LOG(("nsIPCBuffer::CloseTempOutStream: \n"));
 
   if (mTempOutStream) {
-    if (NS_FAILED(mTempOutStream->flush()) || mTempOutStream->failed()) {
+    if (NS_FAILED(mTempOutStream->Flush())) {
       rv = NS_ERROR_FAILURE;
     }
 
-    mTempOutStream->close();
-    delete mTempOutStream;
+    if (NS_FAILED(mTempOutStream->Close())) {
+      rv = NS_ERROR_FAILURE;
+    }
     mTempOutStream = nsnull;
   }
 
@@ -420,7 +410,7 @@ nsIPCBuffer::CloseTempOutStream()
 NS_IMETHODIMP
 nsIPCBuffer::OpenTempInStream()
 {
-  nsIFileSpec* tempFileSpec;
+  nsresult rv;
 
   DEBUG_LOG(("nsIPCBuffer::OpenTempInStream: \n"));
 
@@ -432,17 +422,11 @@ nsIPCBuffer::OpenTempInStream()
     return NS_ERROR_FAILURE;
   }
 
-  if (NS_FAILED(NS_NewFileSpecFromIFile(mTempFile, &tempFileSpec))) {
-    return NS_ERROR_FAILURE;
-  }
+  mTempInStream  = do_CreateInstance("@mozilla.org/network/file-input-stream;1", &rv);
+  if (NS_FAILED(rv)) return rv;
 
-  mTempInStream = new nsInputFileStream(tempFileSpec);
-
-  if (!mTempInStream->is_open()) {
-    return NS_ERROR_FAILURE;
-  }
-
-  delete tempFileSpec;
+  rv = mTempInStream->Init(mTempFile, PR_RDONLY, 00600, 0);
+  if (NS_FAILED(rv)) return rv;
 
   return NS_OK;
 }
@@ -452,14 +436,15 @@ NS_IMETHODIMP
 nsIPCBuffer::CloseTempInStream()
 {
   DEBUG_LOG(("nsIPCBuffer::CloseTempInStream: \n"));
+  nsresult rv = NS_OK;
 
   if (mTempInStream) {
-    mTempInStream->close();
-    delete mTempInStream;
+    rv = mTempInStream->Close();
+    //delete mTempInStream;
     mTempInStream = nsnull;
   }
 
-  return NS_OK;
+  return rv;
 }
 
 
@@ -480,20 +465,16 @@ nsIPCBuffer::RemoveTempFile()
   }
 
   if (mTempFile) {
-
-    nsIFileSpec* tempFileSpec;
-    if (NS_FAILED(NS_NewFileSpecFromIFile(mTempFile, &tempFileSpec))) {
-      return NS_ERROR_FAILURE;
-    }
-
-    nsXPIDLCString nativePath;
-    tempFileSpec->GetNativePath(getter_Copies(nativePath));
+    // delete temp file
+    nsCAutoString nativePath;
+    mTempFile->GetNativePath(nativePath);
     DEBUG_LOG(("nsIPCBuffer::RemoveTempFile: Removing %s\n",
                 nativePath.get()));
 
-    tempFileSpec->Delete(PR_FALSE);
+    if (NS_FAILED(mTempFile->Remove(PR_FALSE))) {
+      return NS_ERROR_FAILURE;
+    }
 
-    delete tempFileSpec;
     mTempFile = nsnull;
   }
 
@@ -909,6 +890,8 @@ nsIPCBuffer::Read(char* buf, PRUint32 count,
 {
   DEBUG_LOG(("nsIPCBuffer::Read: %d\n", count));
 
+  nsresult rv;
+
   if (!buf || !readCount)
     return NS_ERROR_NULL_POINTER;
 
@@ -919,8 +902,10 @@ nsIPCBuffer::Read(char* buf, PRUint32 count,
 
   if (readyCount) {
     if (mTempInStream) {
-      *readCount = mTempInStream->read(buf, readyCount);
-
+      rv = mTempInStream->Read((char *)buf, readyCount, readCount);
+      if (NS_FAILED(rv)) {
+        return rv;
+      }
     } else {
       memcpy(buf, mByteBuf.get()+mStreamOffset, readyCount);
       *readCount = readyCount;
@@ -974,7 +959,8 @@ nsIPCBuffer::ReadSegments(nsWriteSegmentFun writer,
 
     while ((count > 0) && (mStreamOffset < mByteCount)) {
       avail = (count < kCharMax) ? count : kCharMax;
-      readyCount = mTempInStream->read((char *) buf, avail);
+      rv = mTempInStream->Read((char *) buf, avail, &readyCount);
+      if (NS_FAILED(rv)) { return rv; }
 
       if (!readyCount) {
         ERROR_LOG(("nsIPCBuffer::ReadSegments: Error in reading from TempInputStream\n"));

@@ -37,12 +37,11 @@
 
 #include "nsIIPCBuffer.h"
 #include "nsIInputStream.h"
+#include "nsIFileStreams.h"
 #include "nsIRunnable.h"
 #include "nsIThread.h"
 #include "nsCOMPtr.h"
 #include "nsString.h"
-#include "nsIFileSpec.h"
-#include "nsFileStream.h"
 
 // Implementation class for nsIIPCBuffer
 class nsIPCBuffer : public nsIIPCBuffer,
@@ -97,8 +96,8 @@ protected:
     IPCFileDesc*                        mPipeRead;
 
     nsCOMPtr<nsILocalFile>              mTempFile;
-    nsOutputFileStream*                 mTempOutStream;
-    nsInputFileStream*                  mTempInStream;
+    nsCOMPtr<nsIFileOutputStream>       mTempOutStream;
+    nsCOMPtr<nsIFileInputStream>        mTempInStream;
 
     // Owning refs
     nsCOMPtr<nsIThread>                 mPipeThread;

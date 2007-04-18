@@ -53,9 +53,11 @@
 #include "nsString.h"
 #include "nsIPrompt.h"
 #include "nsNetUtil.h"
-#include "nsIFileStream.h"
 #include "nsIThread.h"
 #include "nsIFactory.h"
+#ifdef _ENIG_MOZILLA_1_8
+#include "nsIFileStream.h"
+#endif
 #undef MOZILLA_INTERNAL_API
 
 #ifdef PR_LOGGING

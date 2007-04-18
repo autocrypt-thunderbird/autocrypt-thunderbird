@@ -44,7 +44,6 @@
 #include "nsCOMPtr.h"
 #include "nsCRT.h"
 #include "nsAutoLock.h"
-#include "nsFileStream.h"
 #include "nsIInputStream.h"
 #include "nsIThread.h"
 #include "nsString.h"
@@ -52,6 +51,9 @@
 #include "mimehdrs2.h"
 #include "nsMimeTypes.h"
 #include "nsMailHeaders.h"
+#ifdef _ENIG_MOZILLA_1_8
+#include "nsFileStream.h"
+#endif
 #undef MOZILLA_INTERNAL_API
 
 #include "nsEnigMimeListener.h"
