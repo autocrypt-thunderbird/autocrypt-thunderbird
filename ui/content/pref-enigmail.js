@@ -42,7 +42,7 @@ function prefOnLoad() {
 
    EnigDisplayPrefs(false, true, false);
 
-   var gAdvancedMode = EnigGetPref("advancedUser");
+   gAdvancedMode = EnigGetPref("advancedUser");
 
    if (window.arguments) {
       if (! window.arguments[0].showBasic) {

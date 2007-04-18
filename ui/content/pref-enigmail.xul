@@ -233,7 +233,7 @@
 			<!-- "Sending" Tab -->
       <vbox id="sending" flex="1"
             advanced="true">
-          <description class="enigmailPrefsTitle">&enigmail.whenSending.label;</description>
+          <description class="enigmailPrefsTitle">&enigmail.whenSending.label; ...</description>
 
           <checkbox id="enigmail_encryptToSelf"
                     label="&enigmail.encryptToSelf.label;"
