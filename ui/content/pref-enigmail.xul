@@ -68,6 +68,9 @@
     <tooltip id="expertUser.tooltip">
       <description>&enigmail.expertUser.tooltip;</description>
     </tooltip>
+    <tooltip id="basicUser.tooltip">
+      <description>&enigmail.basicUser.tooltip;</description>
+    </tooltip>
     <tooltip id="resetPrefs.tooltip">
       <description>&enigmail.resetPrefs.tooltip;</description>
     </tooltip>
@@ -199,10 +202,16 @@
           <separator/>
 
           <hbox autostretch="never" align="center">
-            <checkbox id="enigmail_advancedUser"
+            <button id="enigmail_advancedUser"
                   label="&enigmail.expertUser.label;"
-                  oncommand="enigSwitchAdvancedMode(this)"
+                  oncommand="enigSwitchAdvancedMode(true)"
                   tooltip="expertUser.tooltip"/>
+
+            <button id="enigmail_basicUser"
+                  label="&enigmail.basicUser.label;"
+                  oncommand="enigSwitchAdvancedMode(false)"
+                  tooltip="basicUser.tooltip"
+                  hidden="true"/>
           </hbox>
 
           <separator/>

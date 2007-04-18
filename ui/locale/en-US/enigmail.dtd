@@ -29,8 +29,10 @@
 <!ENTITY enigmail.passwordSettings.label   "Passphrase settings">
 <!ENTITY enigmail.userNoPassphrase.label   "Never ask for any passprase">
 <!ENTITY enigmail.userNoPassphrase.tooltip "Activate if your OpenPGP key is not protected by a passphrase.">
-<!ENTITY enigmail.expertUser.label         "Display expert settings">
-<!ENTITY enigmail.expertUser.tooltip       "Activate if you want to see menu items and options for advanced users.">
+<!ENTITY enigmail.expertUser.label         "Display Expert Settings">
+<!ENTITY enigmail.expertUser.tooltip       "Press if you want to see menu items and options for advanced users.">
+<!ENTITY enigmail.basicUser.label          "Hide Expert Settings">
+<!ENTITY enigmail.basicUser.tooltip        "Press if you do not want to see menu items and options for advanced users.">
 
 <!ENTITY enigmail.defaultEncryptionOption.label "Choose default encryption options">
 <!ENTITY enigmail.usePGPMimeOption.label  "Choose PGP/MIME option">
@@ -119,7 +121,7 @@
 <!ENTITY enigmail.prefs.label            "Preferences">
 <!ENTITY enigmail.advprefs.label         "Advanced preferences">
 
-<!ENTITY enigmail.debugMenu.label        "Debugging OpenPGP">
+<!ENTITY enigmail.debugMenu.label        "Debugging Options">
 <!ENTITY enigmail.viewconsole.label      "View Console">
 <!ENTITY enigmail.viewdebuglog.label     "View Logfile">
 
@@ -141,7 +143,7 @@
 <!ENTITY enigmail.adminSmartCard.accesskey  "M">
 
 <!ENTITY enigmail.autoDecrypt.accesskey     "A">
-<!ENTITY enigmail.debugMenu.accesskey       "G">
+<!ENTITY enigmail.debugMenu.accesskey       "g">
 
 <!ENTITY enigmail.clearPassphrase.accesskey "l">
 <!ENTITY enigmail.editRules.accesskey       "R">

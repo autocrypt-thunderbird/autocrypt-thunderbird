@@ -36,11 +36,13 @@ GPL.
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail");
 
-var gMimePartsElement, gMimePartsValue;
+var gMimePartsElement, gMimePartsValue, gAdvancedMode;
 
 function prefOnLoad() {
 
    EnigDisplayPrefs(false, true, false);
+
+   var gAdvancedMode = EnigGetPref("advancedUser");
 
    if (window.arguments) {
       if (! window.arguments[0].showBasic) {
@@ -52,7 +54,7 @@ function prefOnLoad() {
       else {
         EnigCollapseAdvanced(document.getElementById("prefTabBox"), "hidden", null);
         EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
-
+        enigShowUserModeButtons(gAdvancedMode);
       }
 
       if ((typeof window.arguments[0].selectTab)=="string") {
@@ -186,6 +188,7 @@ function prefOnAccept() {
   }
 
   EnigSetPref("configuredVersion", gEnigmailVersion);
+  EnigSetPref("advancedUser", gAdvancedMode);
 
   EnigSavePrefs();
 
@@ -228,11 +231,26 @@ function enigActivateDependent (obj, dependentIds) {
   return true;
 }
 
-function enigSwitchAdvancedMode(checkbox) {
+function enigShowUserModeButtons(expertUser) {
+  var advUserButton = document.getElementById("enigmail_advancedUser");
+  var basicUserButton = document.getElementById("enigmail_basicUser");
+  if (! expertUser) {
+    basicUserButton.setAttribute("hidden", true);
+    advUserButton.removeAttribute("hidden");
+  }
+  else {
+    advUserButton.setAttribute("hidden", true);
+    basicUserButton.removeAttribute("hidden");
+  }
+}
+
+function enigSwitchAdvancedMode(expertUser) {
 
   var origPref = EnigGetPref("advancedUser");
+  enigShowUserModeButtons(expertUser);
+  gAdvancedMode = expertUser;
 
-  if (checkbox.checked) {
+  if (expertUser) {
     EnigSetPref("advancedUser", true);
   }
   else {
