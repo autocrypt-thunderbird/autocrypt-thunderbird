@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/st
+rict.dtd">
+<html>
+<head>
+</head>
+<body>
+<h1>Informations de mise à jour pour Enigmail 0.8x</h1>
+
+<p>Enigmail v0.8x pour Thunderbird comporte une nouvelle interface utilisateur !
+<b>Si vous êtes habitués avec une version d'Enigmail antérieures à la 0.81.0, veuillez
+lire ces informations avant de continuer</b>.
+</p>
+<h2>Configurer Enigmail</h2>
+<p>La configuration d'Enigmail est maintenant divisée en deux parties&nbsp;:</p>
+<ul>
+<li>Réglages spécifiques au compte pour l'identifiant de clef, le chiffrement/signature
+par défaut
+</li>
+<li>Préférences globales communes
+</li>
+</ul>
+<h3>Réglages spécifiques au compte</h3>
+<p>Les réglages spécifiques au compte sont disponibles dans le menu <em>Outils
+-&gt; Paramètres des comptes</em>. Chaque compte possède une entrée
+<em>Sécurité OpenPGP</em> qui contient les options spécifiques
+pour chaque comptes.
+</p>
+<p>Les paramètres de clef PGP pour les version d'Enigmail inférieure ou égale à 0.80.0
+ne sont <b>pas</b> converties vers les nouveaux paramètres spécifiques à chaque compte.
+Enigmail est, par défaut, <b>désactivé</b> pour tous les comptes !
+</p>
+<h3>Préférences globales communes</h3>
+<p>Les préférences globales ont été nettoyées et fusionnées dans une boite de dialogue.
+Les préférences sont accessibles soit depuis le menu Enigmail soit en cliquant le bouton
+<em>Avancées</em> dans le panneau Sécurité OpenPGP du gestionnaire des comptes.
+</p>
+<p>Une nouvelle option est apparue permettant d'activer automatiquement le chiffrement
+lors de la réponse à un message chiffré. À noter que ceci n'influe pas sur les réglages
+de signature des messages.
+</p>
+<h2>Rédaction de messages</h2>
+<p>Le comportement d'Enigmail a été adapté pour être plus semblable
+au comportement de S/MIME. Un nouveau bouton OpenPGP a été ajouté
+permettant de sélectionner les paramètres de chiffrement/signature.
+Le menu Enigmail ne sert plus à l'envoi de messages chiffrés ou signés,
+l'envoi se fait uniquement via l'habituel bouton
+<em>Envoyer</em> ou depuis le menu Fichier -&gt; Envoyer. <b>Il est
+recommandé de tester les nouveaux réglages en vous envoyant quelques
+messages à vous-même avant de l'utiliser de manière intense</b>, de
+manière à bien comprendre le nouveau fonctionnement.
+</p>
+<p>Les réglages pour le chiffrement ou la signature sont dorénavant visibles
+dans le coin inférieur droit de la fenêtre de composition, sous la forme de
+petites icônes affichées si la signature ou le chiffrement sont activés.
+</p>
+
+<h2>Problèmes connus</h2>
+
+<ul>
+<li>Enigmail n'est pour l'instant pas capable de retenir plusieurs mot de passe
+pour des clefs PGP différentes. Il faut saisir le mot de passe à chaque fois, ou
+choisir le même mot de passe pour toutes les clefs utilisées.
+</li>
+</ul>
+</body>
+</html>

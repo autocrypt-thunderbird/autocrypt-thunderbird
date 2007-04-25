@@ -14,11 +14,23 @@ open OUTFILE, ">jar.mn";
 
 print OUTFILE "enigmail-locale.jar:\n";
 
+my @files = ("contents.rdf",
+  "enigmail.properties",
+  "enigmail.dtd",
+  "am-enigprefs.properties",
+  "upgrade_080.html",
+  "help/rulesEditor.html",
+  "help/compose.html",
+  "help/messenger.html",
+  "help/editRcptRule.html");
+
 while ($_ = <INFILE>) {
   #print STDERR $_;
   chomp();
   $lang = $_;
-  printf OUTFILE "\tlocale/%s/enigmail\t(%s/am-enigprefs.properties)\n", $lang, $lang;
+  foreach $file (@files) {
+    printf OUTFILE "\tlocale/%s/enigmail/%s\t(%s/%s)\n", $lang, $file, $lang, $file;
+  }
 }
 
 close INFILE;
