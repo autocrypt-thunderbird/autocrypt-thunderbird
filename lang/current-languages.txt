@@ -2,7 +2,6 @@ ca-AD
 de-AT
 de-DE
 el
-es-AR
 es-ES
 fi-FI
 fr-FR

@@ -18,7 +18,7 @@ while ($_ = <INFILE>) {
   #print STDERR $_;
   chomp();
   $lang = $_;
-  printf OUTFILE "\tlocale/%s/enigmail\t(%s/contents.rdf)\n", $lang, $lang;
+  printf OUTFILE "\tlocale/%s/enigmail\t(%s/am-enigprefs.properties)\n", $lang, $lang;
 }
 
 close INFILE;
