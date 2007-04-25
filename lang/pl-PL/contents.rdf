@@ -8,7 +8,7 @@
   </RDF:Seq>
 
   <!-- locale information -->
-  <RDF:Description about="urn:mozilla:locale:pl-PL">
+  <RDF:Description about="urn:mozilla:locale:pl-PL"  chrome:name="pl-PL">
 
     <chrome:packages>
       <RDF:Seq about="urn:mozilla:locale:pl-PL:packages">

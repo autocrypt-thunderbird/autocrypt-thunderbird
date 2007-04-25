@@ -4,67 +4,35 @@ rict.dtd">
 <head>
 </head>
 <body>
-<h1>Upgrade Information for Enigmail 0.8x</h1>
+<h1>Upgrade-Information f&uuml;r Enigmail ab Version 0.8x</h1>
 
-<p>Enigmail v0.8x for Thunderbird has received a new user interface!
-<b>If you are familiar with Enigmail versions prior to 0.81.0, please
-read this information before proceeding</b>.
+<p>Enigmail ab Version 0.8x f&uuml;r Thunderbird hat eine neue Benutzeroberfl&auml;che erhalten! <b>Wenn Sie bisher schon mit Enigmail Versionen vor 0.81.0 vertraut waren, dann lesen Sie diese Information bevor Sie fortfahren</b>.
 </p>
-<h2>Configuring Enigmail</h2>
-<p>Enigmail configuration is now split into two parts:</p>
+<h2>Enigmail konfigurieren</h2>
+<p>Enigmails Konfiguration ist nun zweigeteilt:</p>
 <ul>
-<li>Account specific settings for PGP key ID, default encryption
-/ signing
-</li>
-<li>Common global preferences
+<li>Kontenabh&auml;ngige Einstellungen f&uuml;r die OpenPGP-Schl&uuml;ssel-ID, Standards zu Verschl&uuml;sselung &amp; Authentifizierung</li>
+<li>Allgemeine Einstellungen
 </li>
 </ul>
-<h3>Account Specific Settings</h3>
-<p>The account specific settings are available through the menu <em>Tools
--&gt; Account Settings</em>. For each account there is now an
-<em>OpenPGP Security</em> list item which holds the options specific
-for each account.
+<h3>Kontenabh&auml;ngige Einstellungen</h3>
+<p>Die kontenabh&auml;ngigen Einstellungen sind &uuml;ber das Men&uuml; <em>Extras &gt; Konten...</em> erreichbar. F&uuml;r jedes Konto ist dort ein Listeneintrag &quot;<em>OpenPGP-Sicherheit</em>&quot; vorhanden, der die kontenabh&auml;ngigen Einstellungen beherbergt.</p>
+<p>Die OpenPGP-Schl&uuml;sseleinstellungen von Enigmail v0.80.0 und &auml;lter werden 
+<b>nicht</b> &uuml;bernommen f&uuml;r die neuen kontenabh&auml;ngigen Einstellungen. Enigmail ist standardm&auml;&szlig;ig <b>deaktiviert</b> f&uuml;r alle Konten!</p>
+<h3>Allgemeine Einstellungen</h3>
+<p>Die allgemeinen Einstellungen wurden bereinigt und in einen Dialog zusammen gefasst. Die Einstellungen sind &uuml;ber das Men&uuml; &quot;Enigmail&quot; und &uuml;ber die Schaltfl&auml;che &quot;<em>Erweitert...</em>&quot; in den Konteneinstellungen &gt; OpenPGP-Sicherheit erreichbar.</p>
+<p>Eine neue Option wurde hinzugef&uuml;gt, die eine automatische Verschl&uuml;sselung bei Antworten auf verschl&uuml;sselte Nachrichten erm&ouml;glicht. Beachten Sie, dass davon die Einstellungen f&uuml;r das Unterschreiben von Nachrichten nicht betroffen sind.</p>
+<h2>Nachrichten verfassen</h2>
+<p>Das Verhalten von Enigmail wurde angepasst, sodass es eher dem Verhalten bei S/MIME entspricht. Eine neue Schaltfl&auml;che &quot;OpenPGP&quot; wurde hinzugef&uuml;gt, &uuml;ber die man die Verschl&uuml;sselungs-/Unterschriften-Einstellungen ausw&auml;hlen kann. Das Men&uuml; &quot;Enigmail&quot; bietet nun nicht mehr die M&ouml;glichkeit zum Senden von verschl&uuml;sselten/unterschriebenen Nachrichten - dies geschieht nun &uuml;ber die normale Schaltfl&auml;che &quot;<em>Senden</em>&quot; oder &uuml;ber das Men&uuml; &quot;<em>Datei</em>&quot;<em> &gt; </em>&quot;<em>Senden</em>&quot;<em>.</em>
+<b> Es empfiehlt sich, dass Sie Ihre neuen Einstellungen testen, indem Sie sich eine Reihe von Nachrichten selbst senden, bevor Sie Enigmail aktiv 
+nutzen. Dadurch werden Sie das neuen Verhalten besser verstehen.</b>
 </p>
-<p>The PGP key settings from Enigmail v0.80.0 and earlier version are
-<b>not</b> converted into the new per-account settings.
-Enigmail is by default <b>disabled</b> for all accounts!
-</p>
-<h3>Common Global Preferences</h3>
-<p>The common global settings have been cleaned up and merged into one dialog.
-The preferences are either available through the Enigmail menu, or by clicking
-the <em>Advanced</em> button in the Account Manager's OpenPGP Security Preferences.
-</p>
-<p>A new option has been added that enables you to turn on encryption
-automatically if replying to an encrypted message. Note that this
-doesn't influence the settings for message signing.
-</p>
-<h2>Composing Messages</h2>
-<p>The behavior of Enigmail has been adapted to be more similar
-to the behavior of S/MIME. A new OpenPGP button has been added
-from where the encryption / signature settings can be selected.
-The Enigmail menu does no longer serve for sending encrypted or
-signed mails, sending isdone uniquely from the normal
-<em>Send</em> button or the File -&gt; Send menu. <b>It is
-suggested that you try the new settings by sending a couple of
-mails to yourself before you use it actively</b>, so that you
-understand the new behavior.
-</p>
-<p>The settings for encrypting or signing a message are now visible
-in the lower right corner of the compose window, with small icons
-being displayed if signing or encryption is turned on.
-</p>
+<p>Die Einstellungen f&uuml;r Verschl&uuml;sselung und Unterschreiben von Nachrichten sind nun sichtbar in der unteren rechten Ecke des Fensters &quot;Verfassen&quot;. Kleine Symbole zeigen, ob Unterschreiben oder Verschl&uuml;sselung aktiviert sind.</p>
 
-<h2>Known Issues</h2>
+<h2>Bekannte Probleme</h2>
 
 <ul>
-<li>Enigmail is not yet capable of remembering several passwords for
-different PGP keys. Either type in the password each time, or
-set the same password for all keys you're using.
-</li>
-<li>The current version is a snapshot of work in progress. It has been
-basically tested, but it is not considered to be as bug-free as a
-released version!
-</li>
+<li>Enigmail ist bisher nicht in der Lage, sich mehrere Passphrasen f&uuml;r unterschiedliche OpenPGP-Schl&uuml;ssel zu merken. Entweder geben Sie die Passphrasen jedesmal neu ein, oder Sie vergeben f&uuml;r alle Schl&uuml;ssel die gleiche Passphrase.</li>
 </ul>
 </body>
 </html>

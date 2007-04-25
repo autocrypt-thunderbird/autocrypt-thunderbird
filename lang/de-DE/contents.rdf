@@ -2,20 +2,23 @@
 <RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
          xmlns:chrome="http://www.mozilla.org/rdf/chrome#">
 
-  <!-- list all the packages being supplied by this jar -->
+  <!-- list all the skins being supplied by this package -->
   <RDF:Seq about="urn:mozilla:locale:root">
     <RDF:li resource="urn:mozilla:locale:de-DE"/>
   </RDF:Seq>
 
   <!-- locale information -->
-  <RDF:Description about="urn:mozilla:locale:de-DE">
-
-    <chrome:packages>
+<RDF:Description about="urn:mozilla:locale:de-DE"
+      chrome:displayName="Deutsch"
+       chrome:author="Alexander Ihrig"
+       chrome:name="de-DE"
+       chrome:localeVersion="1.8b2"
+       chrome:previewURL="">
+   <chrome:packages>
       <RDF:Seq about="urn:mozilla:locale:de-DE:packages">
         <RDF:li resource="urn:mozilla:locale:de-DE:enigmail"/>
       </RDF:Seq>
     </chrome:packages>
-
   </RDF:Description>
-
+<RDF:Description about="urn:mozilla:locale:de-DE:enigmail" chrome:localeVersion="1.8b2"/>
 </RDF:RDF>
