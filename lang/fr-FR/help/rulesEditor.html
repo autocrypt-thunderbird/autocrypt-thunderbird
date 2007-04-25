@@ -1,0 +1,67 @@
+<html>
+<head><title>Aide Enigmail&nbsp;: Éditeur de règles</title>
+</head>
+<body>
+<h1>Aide Enigmail</h1>
+
+<h3>Utilisation de l'éditeur de règles</h3>
+<p>Dans l'éditeur de règles, vous pouvez spécifier les paramètres par défaut par destinataire,
+concernant l'activation du chiffrement, de la signature, de PGP/MIME et de choisir
+quelle(s) clef(s) utiliser. Chaque règle consiste en 5 champs et est représentée sur une seule ligne&nbsp;:
+</p>
+<ul>
+  <li><span style="font-weight: bold;">Adresse</span>&nbsp;: l'adresse électronique
+    des champs Pour, Cc et Bcc pour la correspondance. Cette correspondance est faite sur des <span
+    style="font-style: italic;">sous-chaînes</span> (plus de détails se trouvent dans la
+    boite de dialogue d'édition des règles)&nbsp;;
+  </li>
+  <li><span style="font-weight: bold;">Clef(s) à utiliser</span>&nbsp;: une liste d'identifiants
+de clefs OpenPGP à utiliser pour le destinataire&nbsp;;</li>
+  <li><span style="font-weight: bold;">Signature</span>&nbsp;: activer ou désactiver
+    la signature des messages. Ceci utilise ou outrepasse les réglages effectués
+    dans la fenêtre de rédaction. Les valeurs possibles sont&nbsp;:
+  </li>
+  <ul>
+    <li><i>Jamais</i>&nbsp;: désactiver la signature, même si elle est activée dans la fenêtre de
+       rédaction du messages (prévaut sur les autres valeurs),<br>
+    </li>
+    <li><i>Oui, si sélectionné lors de la composition du message</i>&nbsp;: laisser le réglage
+      de signature tel qu'il est spécifié dans la fenêtre de rédaction,</li>
+    <li><i>Toujours</i>&nbsp;: activer la signature, même si elle n'est <span
+      style="font-style: italic;">pas</span> activée dans la fenêtre de
+      rédaction,
+    </li>
+  </ul>
+</ul>
+<div style="margin-left: 40px;">Ces paramètres de signature sont appliqués pour
+toutes les règles qui correspondent. Si l'une des règles désactive la signature, le message
+ne sera pas signé, même si d'autres règles spécifiaient <i>Toujours</i>&nbsp;;<br>
+</div>
+<ul>
+  <li><span style="font-weight: bold;">Chiffrement</span>: activer ou
+    désactiver le chiffrement des messages. Les valeurs autorisées ainsi que leur signification
+    sont les mêmes que pour la signature des messages&nbsp;;</li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: activer ou
+    désactiver l'utilisation du codage de message PGP/MIME (RFC 3156).
+    Si PGP/MIME est désactivé, les
+    messages sont codés en utilisant le format «&nbsp;PGP en ligne&nbsp;». Les valeurs autorisées
+    ainsi que leur signification sont les mêmes que pour la signature des messages.
+  </li>
+</ul>
+<p>Les règles sont appliquées dans l'ordre d'affichage de la liste. Dès lors qu'une règle
+correspond à un destinataire et contient un identifiant de clef OpenPGP, non seulement l'identifiant 
+de clef spécifié est utilisé, mais le destinataire n'est plus pris en compte dans le traitement
+des règles suivantes.</p>
+<p><i>Note&nbsp;:</i> l'éditeur de règles n'est pas encore terminé. Il est possible d'écrire des
+règles plus avancées en modifiant directement le fichier de règles
+(ces règles ne devront alors plus être modifiées dans l'éditeur de règles). <a 
+href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Des informations
+complémentaires</a> pour modifier directement le fichier sont disponibles
+sur le site Web d'Enigmail</p>
+<hr/>
+<p>
+De l'aide supplémentaire est disponible sur la
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">page Web d'Enigmail</a>
+</p>
+</body>
+</html>

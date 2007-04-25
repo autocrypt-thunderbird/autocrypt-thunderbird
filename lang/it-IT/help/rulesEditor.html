@@ -1,0 +1,67 @@
+<html>
+<head><title>Enigmail Help: Editor delle regole</title>
+</head>
+<body>
+<h1>Enigmail Help</h1>
+
+<h3>Usare l'editor delle regole di Enigmail</h3>
+<p>Nell'Editor delle regole, puoi specificare le impostazioni predefinite per ogni destinatario sull'abilitazione della cifratura, della firma del formato PGP/MIME, e sulla scelta della chiave OpenPGP da usare. Ogni regole &egrave; composta da 5 campi ed &egrave; rappresentata su una singola linea:
+</p>
+<ul>
+    <li><span style="font-weight: bold;">Email</span>: L'indirizzo email che
+    compare nei campi A:, Cc: e Bcc:. La corrispondenza funziona anche per 
+    <span style="font-style: italic;">sottostringhe</span> (Ulteriori dettagli
+    possono essere trovati nella finestra di dialogo Modifica regola)
+  </li>
+  <li><span style="font-weight: bold;">Chiave/i OpenPGP</span>: una lista di ID
+  chiave OpenPGP da usare per il destinatario</li>
+  <li><span style="font-weight: bold;">Firma</span>: abilita o disabilita
+  l'invio di messaggi firmati. Questa impostazione usa o ha la precedenza su
+  quella specificata nella finestra di composizione del messaggio. I valori
+  possibili sono:
+  </li>
+  <ul>
+  <li><i>Mai</i>: disabilita la firma, anche se &egrave; attivata nella
+  finestra di composizione del messaggio (ha la precedenza sulle altre
+  impostazioni)<br>
+    </li>
+    <li><i>Possibile</i>: usa l'impostazione specificata nella finestra
+    di composizione del messaggio</li>
+    <li><i>Sempre</i>: abilita la firma, anche se essa <span
+    style="font-style: italic;">non</span> &egrave; abilitata nella
+    finestra di composizione del messaggio
+    </li>
+  </ul>
+</ul>
+<div style="margin-left: 40px;">Le impostazioni sulla firma vengono
+applicate per tutte le regole che corrispondono. Se una regola disabilita
+la firma, il messaggio non verr&agrave; firmato, indipendentemente dalle
+altre eventuali regole che specificano <i>Sempre</i>.<br>
+</div>
+<ul>
+   <li><span style="font-weight: bold;">Cifra</span>: abilita o disabilita
+   la cifratura del messaggio. Le possibili impostazioni sono le stesse della
+   firma e hanno lo stesso significato.</li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: abilita o disabilita
+    l'uso della codifica PGP/MIME (RFC 3156) per il messaggio. 
+    Se PGP/MIME &egrave; disabilitato, i messaggi saranno codificati
+    usando "inline PGP". Le possibili impostazioni sono le stesse della
+   firma e hanno lo stesso significato.
+  </li>
+</ul>
+<p>Le regole sono elaborate nell'ordine in cui appaiono nella lista.
+Se una regola &egrave; applicabile a un destinatario e contiene un ID chiave
+OpenPGP, il destinatario, oltre a usare l'ID specificato, sar&agrave; ignorato
+nell'elaborazione delle altre regole.</p>
+<p><i>Nota:</i> L'editor delle regole non &egrave; ancora completo. Regole
+pi&ugrave; avanzate possono essere create modificando direttamente il file
+delle regole (tali regole non dovranno essere pi&ugrave; modificate
+con l'editor delle regole). <a 
+href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Ulteriori informazioni</a> sulla modifica diretta del file delle regole sono disponibili sulla home page di Enigmail.</p>
+<hr/>
+<p>
+Ulteriore aiuto &egrave; disponibile sul
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">sito web di Enigmail</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<html>
+<head><title>Enigmail Help: Modifica regole OpenPGP</title>
+</head>
+<body>
+<h1>Enigmail Help</h1>
+
+<h3>Usare l'editor delle regole di Enigmail: Modifica di una regola OpenPGP</h3>
+<p>Nell'editor delle regole puoi specificare le impostazioni predefinite per ogni
+destinatario per abilitare la cifratura, la firma, il formato PGP/MIME e per definire
+quali chiavi OpenPGP usare. In questa finestra di dialogo, puoi specificare le regole
+per un singolo destinatario o per un gruppo di destinatari con caratteristiche simili.
+</p>
+<ul>
+   <li><span style="font-weight: bold;">Imposta regole OpenPGP per </span>: Contiene gli
+    indirizzi email dei destinatari (senza i nomi, ovvero solo indirizzi del tipo
+    <tt>nome.cognome@indirizzo.email</tt>). Puoi specificare indirizzi multipli,
+    separati sa spazi.
+    Gli indirizzi specificati qui possono consistere anche del solo dominio, in modo da
+    comprendere tutti i destinatari di quel dominio, ad esempio <tt>@indirizzo.email</tt>
+    corrisponder&agrave; sia a <tt>nome@indirizzo.email</tt>,
+    <tt>nome2@indirizzo.email</tt>, <tt>nome3@indirizzo.email</tt>, ecc.
+  </li>
+  <li><span style="font-weight: bold;">Applica la regola se il destinatario ...</span>: 
+  Questo modifica la corrispondenza dell'indirizzo email.
+  Se sono stati specificati indirizzi multipli, l'impostazione si applica a tutti.
+  Gli esempi qui sotto assumono che si stato immesso l'indirizzo <tt>nome@indirizzo.email</tt>
+  nel campo <i>Regole OpenPGP</i> sopra.
+    <ul>
+    <li><i>&Egrave; esattamente</i>: con questa impostazione, la regola viene
+    applicata solo ai messaggi indirizzati a <tt>nome@indirizzo.email</tt>
+    (corrispondenza esatta, maiuscole/minuscole ignorate).
+      </li>
+      <li><i>Contiene</i>: con questa impostazione, la regola si applica a ogni
+      indirizzo contenente quello specificato,
+      ad esempio <tt>tuo.nome@indirizzo.email</tt> o <tt>altro.nome@indirizzo.email.suo</tt>
+      </li>
+      <li><i>Comincia con</i>: con questa impostazione, la regola viene applicata a
+      ogni indirizzo che inizia con quello specificato, ad esempio
+      <tt>nome@indirizzo.email.suo</tt>, <tt>nome@indirizzo.email-2.suo</tt>.
+      </li>
+      <li><i>Finisce con</i>: Con questa impostazione la regola viene applicata a
+      ogni indirizzo che finisce con quello specificato, ad esempio
+      <tt>tuonome@indirizzo.email</tt> o <tt>altro.nome@indirizzo.email</tt>
+      </li>
+    </ul>
+
+  </li>
+  <li><span style="font-weight: bold;">Continua con la regola successiva per l'indirizzo corrispondente</span><br>
+  Abilitare questa funzione ti permette di definire una regola senza dover specificare
+  un ID chiave nel campo  <em>Usa le seguenti chiavi OpenPGP:</em>. In tal caso la
+  chiave da usare sar&agrave; scelta al momento dell'invio in base all'indirizzo email
+  del destinatario. Inoltre, saranno anche applicate le eventuali ulteriori regole per
+  lo stesso indirizzo. 
+  </li>
+  <li><span style="font-weight: bold;">Non controllare le regole successive per l'indirizzo corrispondente</span><br>
+  Abilitando questa funzione si impedisce l'applicazione di qualunque altra regola per
+  gli indirizzi corrispondenti, se questa regola viene applicata; il controllo delle
+  regole passa al destinatario seguente.
+  </li>
+  <li><span style="font-weight: bold;">Usa le seguenti chiavi OpenPGP:</span><br>
+  Usa il pulsante <em>Seleziona chiave/i..</em> per scegliere la chiave pubblica del
+  destinatario da usare per la cifratura. Come nel caso precedente, nessuna ulteriore
+  regola viene applicata allo stesso indirizzo.
+  </li>
+  <li><span style="font-weight: bold;">Impostazioni predefinite per... Firma</span>:
+  abilita o disabilita
+  l'invio di messaggi firmati. Questa impostazione usa o ha la precedenza su
+  quella specificata nella finestra di composizione del messaggio. I valori
+  possibili sono:
+  </li>
+  <ul>
+    <li><i>Mai</i>: disabilita la firma, anche se &egrave; attivata nella
+    finestra di composizione del messaggio (ha la precedenza sulle altre
+    impostazioni)<br>
+    </li>
+    <li><i>S&igrave;, se selezionato durante la composizione del messaggio</i>:
+    usa l'impostazione specificata nella finestra
+    di composizione del messaggio
+    </li>
+    <li><i>Sempre</i>: abilita la firma, anche se essa <span
+    style="font-style: italic;">non</span> &egrave; abilitata nella
+    finestra di composizione del messaggio
+    </li>
+  </ul>
+</ul>
+<div style="margin-left: 40px;">Le impostazioni sulla firma vengono
+applicate per tutte le regole che corrispondono. Se una regola disabilita
+la firma, il messaggio non verr&agrave; firmato, indipendentemente dalle
+altre eventuali regole che specificano <i>Sempre</i>.<br>
+</div>
+<ul>
+	<li><span style="font-weight: bold;">Impostazioni predefinite per... Cifratura</span>: abilita o disabilita
+   la cifratura del messaggio. Le possibili impostazioni sono le stesse della
+   firma e hanno lo stesso significato.</li>
+   <li><span style="font-weight: bold;">Impostazioni predefinite per...
+    PGP/MIME</span>:abilita o disabilita
+    l'uso della codifica PGP/MIME (RFC 3156) per il messaggio. 
+    Se PGP/MIME &egrave; disabilitato, i messaggi saranno codificati
+    usando "inline PGP". Le possibili impostazioni sono le stesse della
+   firma e hanno lo stesso significato.
+  </li>
+</ul>
+<p>Le regole sono elaborate nell'ordine in cui appaiono nella lista
+dell'<em>Editor delle regole OpenPGP</em>.
+Se una regola &egrave; applicabile a un destinatario e contiene un ID chiave
+OpenPGP, il destinatario, oltre a usare l'ID specificato, sar&agrave; ignorato
+nell'elaborazione delle altre regole.</p>
+<hr/>
+<p>
+Ulteriore aiuto &egrave; disponibile sulla 
+<a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">pagina web di Enigmail sulle regole per singolo destinatario</a>
+</p>
+</body>
+</html>

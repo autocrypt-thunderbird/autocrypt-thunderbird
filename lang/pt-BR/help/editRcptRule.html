@@ -1,0 +1,76 @@
+<html>
+<head><title>Ajuda do Enigmail: Edi&ccedil;&atilde;o de Regra do OpenPGP</title>
+</head>
+<body>
+<h1>Ajuda do Enigmail</h1>
+
+<h3>Usando o Editor de Regras do Enigmail: Editando uma Regra OpenPGP</h3>
+<p>No Editor de Regras, voc&ecirc; pode especificar padr&otilde;es por destinat&aacute;rio para permitir criptografia, assinatura e PGP/MIME, e definir quais chaves OpenPGP ser&atilde;o utilizadas. Neste di&aacute;logo, voc&ecirc; poder&aacute; especificar as regras para um &uacute;nico destinat&aacute;rio, ou para um grupo de destinat&aacute;rios com caracter&iacute;sticas similares.
+</p>
+<ul>
+  <li><span style="font-weight: bold;">Definir Regras OpenPGP para</span>: Cont&eacute;m os endere&ccedil;os de email dos destinat&aacute;rios (sem nomes, por exemplo: apenas um endere&ccedil;o como
+    <tt>alguem@dominio</tt>). Voc&ecird; pode especificar diversos endere&ccedil;os, separados por espa&ccedil;os.
+    O endere&ccedil;o especificado aqui pode consistir apenas da parte com o dom&iacute;nio, de forma que qualquer mensagem que fa&ccedil;a parte deste dom&iacute;nio ser&aacute; processada, por exemplo <tt>@email.domain</tt> permitir&aacute; processar mensagens como <tt>usuario@email.domain</tt>,
+    <tt>alguem@email.domain</tt>, <tt>qualquerumy@email.domain</tt>, etc.
+  </li>
+  <li><span style="font-weight: bold;">Aplicar regra se o destinat&aacute;rio for ...</span>: 
+    Esta op&ccedil;&atilde;o modifica a maneira como os endere&ccedil;os s&atilde;o processados.
+    Caso m&uacute;ltiplos endere&ccedil;os sejam colocados, esta configura&ccedil;&atilde;o ser&aacute; aplicada a todos. 
+    Os exemplos abaixo s&atilde;o baseados no endere&ccedil;o <tt>usuario@email.domain</tt>
+    mostrado no exemplo de <i>Regras OpenPGP</i> mostrado acima.
+    <ul>
+      <li><i>&Eacute; exatamente</i>: com esta configura&ccedil;&atilde;o, esta regra ser&aacute; apenas utilizada em emails para <tt>usuario@email.domain</tt> (texto exato, sem levar em considera&ccedil;&atilde;o mai&uacute;sculas ou min&uacute;sculas).
+      </li>
+      <li><i>Cont&eacute;m</i>: com esta configura&ccedil;&atilde;o, qualquer endere&ccedil;o de email contendo a sub-palavra especificada &eacute; encontrada, por exemplo <tt>qualquerum@email.domain</tt> ou <tt>usuario@email.domain.net</tt>
+      </li>
+      <li><i>Come&ccedil;a com</i>: com esta configura&ccedil;&atilde;o, qualquer endere&ccedil;o come&ccedil;ando com esta palavra &eacute; processado, por exemplo <tt>usuario@email.domain.net</tt>, <tt>usuario@email.domain-name.com</tt>.
+      </li>
+      <li><i>Termina com</i>: com esta configura&ccedil;&atilde;o, qualquer endere&ccedil;o terminando com esta palavra será processado, por exemplo <tt>qualquerum@email.domain</tt>,
+        <tt>alguem@email.domain</tt>.
+      </li>
+    </ul>
+
+  </li>
+  <li><span style="font-weight: bold;">Continua com a pr&oacute;xima regra para o endere&ccedil;o selecionado</span><br>
+      Ligando esta fun&ccedil;&atilde; permitir&aacute; que se defina uma regra mas n&atilde;o seja necess&aacute;rio especificar um ID de Chave no campo <em>Usar as seguintes chaves OpenPGP:</em>, de formad que o endere&ccedil;o de email será utilizado para verificar por uma chave na hora do envio. Al&eacute;m disso, regras criadas para o mesmo endere&ccedil;o ser&atilde;o processadas tamb&eacute;.
+  </li>
+  <li><span style="font-weight: bold;">N&atilde;o continuar verificando regras para o endere&ccedil;o selecionado</span><br>
+	  Ligando esta fun&ccedil;&atilde;o, o processamento de quaisquer outras regras ser&aacutel; abortado para o(s) endere&ccedil;o(s) selecionado(s) caso esta regra seja utilizada, ou seja, o processamento de regras continua com o pr&oacute;ximo destinat&aacute;rio.
+  </li>
+  <li><span style="font-weight: bold;">Utilizar as seguintes chaves OpenPGP:</span><br>
+	  Utilize o bot&atilde;o <em>Selecionar Chave(s)..</em> para selecionar as chaves de destinat&aacute;rio que ser&atilde;o utilizadas para criptografia.
+	  Como na a&ccedil;&atilde;o descrita anteriormente, nenhuma regra adicional para o(s) endere&ccedil;o(s) selecionado(s) ser&atilde;o processadas.
+  </li>
+  <li><span style="font-weight: bold;">Padr&atilde;o para Assinatura</span>: habilitar ou desabilitar assinatura de mensagens.
+    Esta op&ccedil;&atilde;o utiliza ou sobrep&otilde;e o que voc&ecirc; especificou na janela de composi&ccedil;&atilde;o de mensagem. 
+	Os valores s&atilde;o:
+  </li>
+  <ul>
+    <li><i>Nunca</i>: desabilitar assinatura, mesmo quando tiver sido habilitada na janela de composi&ccedil;&atilde;o de mensagem. (sobrep&otilde;e os outros valores)<br>
+    </li>
+    <li><i>Sim, se selecionado na Composi&ccedil;&atilde;o da Mensagem</i>: deixe a assinatura como especificada na janela de composi&ccedil;&atilde;o de mensagem
+    </li>
+    <li><i>Sempre</i>: habilitar assinatura, mesmo se   <span
+      style="font-style: italic;">n&atilde;o</span> foi habilitada na janela de composi&ccedil;&atilde;o de mensagem
+	 </li>
+  </ul>
+</ul>
+<div style="margin-left: 40px;">Estas configura&ccedil;&otilde;es de assinatura s&atilde;o aplicadas para todas as regras que coincidirem. 
+Caso uma das regras desabilite assinatura, a mensagem n&atilde;o ser&aacute; assinada, mesmo que outras regras especifiquem <i>Sempre</i> assinar.<br>
+</div>
+<ul>
+  <li><span style="font-weight: bold;">Criptografia</span>: habilitar ou desabilitar criptografia de mensagem. 
+  As configura&ccedil;&otilde;es permitidas e seu significado &eacute; o mesmo que para assinatura de mensagens.</li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: habilitar ou desabilitar o uso de codifica&ccedil;&atilde;o de mensagem PGP/MIME (RFC 3156). 
+    Caso o PGP/MIME esteja desligado, as mensagens s&atilde;o codificadas utilizando o processo "PGP inline". Os valores permitidos e seus significados s&atilde;o os mesmos utilizados para assinatura de mensagens.
+  </li>
+</ul>
+<p>As regras s&atilde;o processadas na ordem mostrada na lista do <em>Editor de Regras OpenPGP</em>. Sempre que uma regras coincidir com um destinat&aacute;rio e conter um ID de Chave OpenPGP, al&eacute;m de utilizar o ID de Chave especificado, o destinat&aacute;rio  n&atilde;o &eacute; mais considerado ao se processar as regras seguintes.
+</p>
+<hr/>
+<p>
+Mais ajuda pode ser encontrada na
+<a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">p&aacute;gina web de Ajuda do Enigmail para Configura&ccedil;&aacute;o por Destinat&aacute;rio</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<html>
+<head><title>Enigmail Hilfe: Enigmail-EmpfÃƒÆ’Ã‚Â¤ngerregel bearbeiten</title>
+</head>
+<body>
+<h1>OpenPGP-Hilfe</h1>
+
+<h3>OpenPGP-Empf&auml;ngerregeln bearbeiten</h3>
+<p>Es k&ouml;nnen Standards f&uuml;r einen Empf&auml;nger bez&uuml;glich Verschl&uuml;sselung, Unterschreiben und PGP/MIME sowie die Verwendung von OpenPGP-Schl&uuml;sseln festgelegt werden. In diesem Dialog k&ouml;nnen Sie Regeln f&uuml;r einen einzelnen Empf&auml;nger sowie Gruppen von Empf&auml;ngern mit &auml;hnlichen Eigenschaften festlegen.</p>
+<ul>
+  <li><span style="font-weight: bold;">Regel f&uuml;r</span>: Beinhaltet die E-Mail-Adressen der Empf&auml;nger (ohne Namen, also z.B. einfach <tt>somebody@email.domain</tt>). Sie k&ouml;nnen mehrere E-Mail-Adressen festlegen; die Adressen m&uuml;ssen mit Leerzeichen voneinander getrennt sein. Die eingegebenen Adressen k&ouml;nnen auch nur aus dem Domain-Namen bestehen, so dass die Regel auf alle Mails dieser Domain angewendet wird, also z.B. <tt>@email.domain</tt> bezieht ein <tt>body@email.domain</tt>,
+    <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt>, etc.
+  </li>
+  <li><span style="font-weight: bold;">Anwenden, wenn Empf&auml;nger...</span>: Dies modifiziert die &Uuml;bereinstimmung der E-Mail-Adressen. Wenn mehrere E-Mail-Adressen eingegeben werden, dann wird diese Einstellung auf alle angewendet. Die folgenden Beispiele beziehen sich auf die Adresse <tt>body@email.domain</tt>, die im oberen Feld <i>Enigmail-Empf&auml;ngerregel</i> eingegeben wurde.
+				<ul>
+      <li><i>ist exakt</i>: Mit dieser Einstellung wird die Regel nur angewendet, wenn die E-Mail-Adresse <tt>body@email.domain</tt> lautet (exakt, Gross-/Kleinschreibung
+wird nicht beachtet).
+      </li>
+      <li><i>enth&auml;lt</i>: Regel wird angewendet, wenn die Zeichenfolge in der E-Mail-Adresse auftaucht, also z.B. <tt>anybody@email.domain</tt> oder <tt>body@email.domain.net</tt>
+      </li>
+      <li><i>beginnt mit</i>: Regel wird angewendet, wenn die Zeichenfolge am Beginn der E-Mail-Adresse steht, also z.B. <tt>body@email.domain.net</tt>,
+        <tt>body@email.domain-name.com</tt>.
+      </li>
+      <li><i>endet mit</i>: Regel wird angewendet, wenn die Zeichenfolge am Ende der E-Mail-Adresse steht, also z.B. <tt>anybody@email.domain</tt>,
+        <tt>somebody@email.domain</tt>.
+      </li>
+    </ul>
+
+  </li>
+  
+    <li><span style="font-weight: bold;">Weitere Regeln auf passende Adressen pr&uuml;fen</span><br>Diese Einstellung erlaubt Ihnen, eine Regel zu erstellen ohne eine spezielle Schl&uuml;ssel-ID in <em>Verwende folgende OpenPGP-Schl&uuml;ssel</em> angeben zu m&uuml;ssen. Die E-Mail-Adresse wird f&uuml;r die Auswahl des passenden Schl&uuml;ssels beim Senden genutzt. Weitere Regeln f&uuml;r die gleiche E-Mail-Adresse werden auch ausgef&uuml;hrt.
+  </li>
+  <li><span style="font-weight: bold;">Weitere Regeln nicht auf passende Adressen pr&uuml;fen</span><br>
+				Bei dieser Einstellung werden weitere Regeln nicht mehr ausgef&uuml;hrt, sobald eine passende Regel gefunden wurde.  </li>
+  <li><span style="font-weight: bold;">Verwende folgende OpenPGP-Schl&uuml;ssel:</span><br>Nutzen Sie die Schaltfl&auml;che <em>Ausw&auml;hlen...</em>, um die gew&uuml;nschten Schl&uuml;ssel auszuw&auml;hlen. Auch hier werden keine weiteren Regeln ausgef&uuml;hrt.</li>
+
+  
+  <li><span style="font-weight: bold;">Unterschreiben</span>: Unterschreiben von Nachrichten erm&ouml;glichen / nicht erm&ouml;glichen. Diese Einstellung verwendet oder &uuml;bergeht, was Sie im Fenster &quot;Verfassen&quot; angegeben haben. Die m&ouml;glichen Einstellungen lauten:</li>
+  <ul>
+    <li><i>Nie</i>: Unterschreiben nicht erm&ouml;glichen, auch wenn es im Fenster &quot;Verfassen&quot; m&ouml;glich war (andere Einstellungen werden &uuml;bergangen).<br>
+    </li>
+    <li><i>Ja, wenn beim Verfassen ausgew&auml;hlt</i>: &Uuml;bernimmt die Einstellung, die beim Verfassen gew&auml;hlt wurde.</li>
+    <li><i>Immer</i>: Unterschreiben erm&ouml;glichen, selbst wenn es <span
+      style="font-style: italic;">nicht</span> im Fenster &quot;Verfassen&quot; erm&ouml;glicht war.</li>
+  </ul>
+</ul>
+<div style="margin-left: 40px;">
+			Diese Unterschriftseinstellungen werden bei allen &uuml;bereinstimmenden Regeln angewendet. Wenn eine der Regeln das Unterschreiben nicht erm&ouml;glicht, dann wird die Nachricht ungeachtet anderer Regeln, die <i>Immer </i>vorschreiben, nicht unterschrieben.<br>
+		</div>
+<ul>
+  <li><span style="font-weight: bold;">Verschl&uuml;sselung</span>: Verschl&uuml;sselung erm&ouml;glichen / nicht erm&ouml;glichen. Die m&ouml;glichen Einstellungen und Bedeutungen stimmen mit den oben genannten &uuml;berein.</li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: Verschl&uuml;sselung mit PGP/MIME (RFC 3156) erm&ouml;glichen / nicht erm&ouml;glichen. Wenn nicht PGP/MIME abgestellt (nicht m&ouml;glich) ist, dann wird die Nachricht per &quot;Inline PGP&quot; verschl&uuml;sselt. Die m&ouml;glichen Einstellungen und Bedeutungen stimmen mit den oben genannten &uuml;berein.</li>
+</ul>
+<p>Die Regeln werden in der Reihenfolge, wie sie in der Liste im Dialog &quot;OpenPGP-Empf&auml;ngerregeln&quot; erscheinen, angewendet. Wann immer eine Regel auf einen Empf&auml;nger zutrifft und eine OpenPGP-Schl&uuml;ssel-ID enth&auml;lt, dann wird der Empf&auml;nger nach Verwendung der angegeben Schl&uuml;ssel-ID bei den nachfolgenden Regeln nicht mehr beachtet.</p>
+<hr/>
+<p>Weitere Hilfe ist verf&uuml;gbar auf der <a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Enigmail Per-Recipient Settings page</a>
+</p>
+</body>
+</html>

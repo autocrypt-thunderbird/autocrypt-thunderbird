@@ -1,0 +1,58 @@
+<html>
+<head><title>Enigmail Help: Rules Editor</title>
+</head>
+<body>
+<h1>Enigmail ヘルプ</h1>
+
+<h3>Enigmail ルールエディタの使い方</h3>
+<p>ルールエディタでは、受取人ごとに暗号化、署名、PGP/MIMEを有効にするのを
+デフォルトとし、どのOpenPGP鍵を用いるかを設定できます。
+各ルールは、5つのフィールドからなり、1つの方針をあらわします。:
+</p>
+<ul>
+  <li><span style="font-weight: bold;">Email</span>: メールを To:, Cc: そして Bcc: フィールドでマッチさせます。
+    マッチングは、<span style="font-style: italic;">部分一致</span>で行われます。 (詳細は ルール編集 ダイアログにあります。)
+  </li>
+  <li><span style="font-weight: bold;">OpenPGP 鍵</span>: 受取人ごとに用いる
+    OpenPGP鍵IDを設定します。</li>
+  <li><span style="font-weight: bold;">署名</span>: 署名する・しないを設定します。
+    メッセージ作成ウインドウの設定を使用したり、上書きすることがあります。設定値は:
+  </li>
+  <ul>
+    <li><i>常にしない</i>: メッセージ作成画面で署名するとしても、署名しません。
+        (他の値を無効にします)<br>
+    </li>
+    <li><i>可能ならば</i>: メッセージ作成画面で設定されないかぎり署名します。
+    </li>
+    <li><i>常にする</i>: メッセージ作成画面で署名<span style="font-style: italic;">しない</span>
+      としても署名します。
+    </li>
+  </ul>
+</ul>
+<div style="margin-left: 40px;">これらの設定はマッチするもの全てが適用されます。
+もし、ルールのうち1つが署名しないことにすると、他のルールが<i>常にする</i>と
+なっていない限り、メッセージは署名されません。<br>
+</div>
+<ul>
+  <li><span style="font-weight: bold;">暗号化</span>: メッセージの暗号化を
+    するかしないかを設定します。設定可能な項目と意味は、署名と同様です。</li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: PGP/MIME (RFC 3156)
+    エンコードをするかしないかを設定します。
+    もし PGP/MIME が無効なら、メッセージはインラインPGPでエンコードされます。
+    設定可能な項目と意味は、署名と同様です。
+  </li>
+</ul>
+<p>ルールは表示されている順に処理されます。あるルールが受取人にあてはまり、
+OpenPGP鍵ID、さらに特定された鍵IDを含んでいる場合、その受取人については、
+他のルールは考慮されません。</p>
+<p><i>注意:</i> ルールエディタはまだ完成していません。ルールファイルを直接編集
+することで、より詳細なルールを設定することが可能です。(これらのルールはルール
+エディタで編集できなかったものです。)
+直接ファイルを編集することについての<a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">詳細な情報 (英語)</a>はEnigmail Homepageにあります。</p>
+<hr/>
+<p>
+更なるヘルプは以下のサイトで利用できます（英語）
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail Help web page</a>
+</p>
+</body>
+</html>

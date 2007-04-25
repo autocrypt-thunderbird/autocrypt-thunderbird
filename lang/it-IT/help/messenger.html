@@ -1,0 +1,74 @@
+<html>
+	<head><title>Enigmail Help: Lettura dei messaggi</title>
+</head>
+<body>
+<h1>Enigmail Help</h1>
+
+<h3>Usare Enigmail durante la lettura dei messaggi</h3>
+<ul>
+  <li><b>Pulsante Decifra nella finestra principale della posta</b><br>
+  Questo pulsante pu&ograve; essere usato per molti scopi: decifrare,
+  verificare, o importare chiavi pubbliche. Di solito, la decifratura/verifica
+  dei messaggi viene fatta automaticamente, anche se questo pu&ograve; essere
+  disabilitato nelle impostazioni. Tuttavia, in caso di errori, apparirebbe
+  solo un breve messaggio nella barra di stato di Enigmail. Se premi il pulsante
+  Decifra, verr&agrave; mostrato un messaggio di errore pi&ugrave; dettagliato,
+  che include anche l'output esatto di GnuPG.
+  </li>
+  <li><b>Icone della penna e della chiave tra le intestazioni del messaggio</b><br>
+  Le icone <em>Penna</em> e <em>Chiave</em> tra le intestazioni del messaggio
+  indicano se esso &egrave; stato cifrato/firmato e se la firma &egrave; valida,
+  cio&egrave; se il messaggio non &egrave; stato modificato dopo la firma. Se ci
+  sono state modifiche, l'icona <em>Penna</em> apparir&agrave; come una <em>Penna
+  spezzata</em> per indicare che la firma non &egrave; valida. Premendo con il tasto
+  destro sulla penna o sulla chiave si visualizzer&agrave; un menu con le
+  seguenti opzioni:
+  <ul>
+  <li><em>Informazioni di sicurezza OpenPGP</em>: mostra l'output di GnuPG per il
+  messaggio.</li>
+  <li><em>Copia le informazioni di sicurezza OpenPGP</em>: copia l'output di GnuPG
+  negli appunti, ad esempio per incollarlo in un messaggio, ecc.</li>
+  <li><em>Mostra la foto-ID OpenPGP</em>: Visualizza la <em>Foto-ID</em> del
+  mittente del messaggio, se una foto &egrave; presente nella sua chiave pubblica.
+  (<em>Questa opzione &egrave; attiva solo se c'&egrave; una foto nella chiave
+  pubblica.)</em></li>
+  <li><em>Informazioni di sicurezza S/MIME</em>: mostra le informazioni di sicurezza
+  S/MIME per il messaggio.</li>
+  </ul>
+  <p>Se non hai impostato <em>keyserver-options auto-key-retrieve</em> nel file
+  <tt>gpg.conf</tt> file e visualizzi un messaggio firmato e/o cifrato, vedrai una
+  icona <em>Penna</em> tra le intestazioni del messaggio con un <em>Punto
+  interrogativo</em> su di essa, la riga di stato di Enigmail mostrer&agrave; la
+  scritta <em>Parte del messaggio firmata; premi sull'icona della penna per i
+  dettagli</em> e il messaggio nella finestra mostrer&agrave; tutte le
+  intestazioni OpenPGP e la firma in calce.</p>
+  <p>Puoi vedere questo messaggio anche se hai impostato <em>keyserver-options
+  auto-key-retrieve</em> nel file <tt>gpg.conf</tt> e la chiave OpenPGP richiesta
+  non &egrave; disponibile sul server della chiavi predefinito.</p>
+  <p>Premendo sull'icona <em>Penna e punto interrogativo</em> apparir&agrave;
+  una finestra che avverte che la chiave pubblica richiesta non &egrave; disponibile nel
+  tuo portachiavi. Premendo su OK apparir&agrave; un'altra finestra con una lista
+  di server di chiavi da cui potrai scegliere di scaricare la chiave pubblica del
+  mittente.</p>
+  <p>Per configurare la lista dei server di chiavi che vuoi usare, vai su
+  <b>Enigmail -&gt;
+  Impostazioni -&gt; Generali</b> e inserisci gli indirizzi dei server nella riga
+  <em>Keyserver:</em>, separati da una virgola. <em>Il primo server sar&agrave;
+  considerato il predefinito.</p></em>
+  </li>
+  <li><b>Apertura di allegati cifrati / importazioni di chiavi OpenPGP allegate</b><br>
+  Gli allegati con estensioni *.pgp, *.asc e *.gpg sono riconosciuti da Enigmail
+  come allegati da trattare in modo speciale. Premendo con il tasto destro su tali
+  allegati, appariranno due speciali voci del menu contestuale: <em>Decifra e
+  apri</em> e <em>Decifra e salva</em>. Usa queste due voci se vuoi che Enigmail
+  decifri un allegato prima di aprirlo o salvarlo. Se un allegato &egrave; riconosciuto
+  essere una chiave OpenPGP, ti sar&agrave; offerta la possibilit&agrave; di importarla
+  nel tuo portachiavi.
+  </li>
+</ul><hr/>
+<p>
+Ulteriore aiuto &egrave; disponibile sul
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">sito web di Enigmail</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<html>
+<head>
+  <title>Ayuda de Enigmail: Redacci&oacute;n de mensajes</title>
+</head>
+<body>
+<h1>Ayuda de Enigmail</h1>
+
+<h3>Uso de Enigmail para redactar mensajes</h3>
+
+<ul>
+  <li><b>Men&uacute; Enigmail en la ventana de redacci&oacute;n de
+mensajes</b>
+    <ul>
+      <li><b>Firmar mensaje</b>: Activa o desactiva el env&iacute;o de
+correo firmado. El usuario recibe una notificac&oacute;n si hay un
+fallo en la firma. </li>
+      <li><b>Cifrar mensaje</b>: Activa o desactiva el cifrado para
+todos los destinatarios antes de enviarlo. El usuario recibe una
+notificac&oacute;n si hay un fallo al cifrar.
+        <ul>
+          <p>Si est&aacute; activada la opci&oacute;n <em>Mostrar la
+selecci&oacute;n si es necesario</em> en <b>Preferencias -&gt;
+pesta&ntilde;a Selecci&oacute;n de clave</b>, se abrir&aacute; una
+ventana con una lista de claves si hay direcciones en la lista de
+destinatarios del mensaje de las que no se tiene la clave
+p&uacute;blica.</p>
+          <p>Si est&aacute; activada la opci&oacute;n <em>Nunca
+mostrar el cuadro de selecci&oacute;n de clave OpenPGP</em> en <b>Preferencias
+-&gt; pesta&ntilde;a Selecci&oacute;n de clave</b>, y hay direcciones
+en la lista de destinatarios del mensaje de las que no se tiene la
+clave p&uacute;blica, el mensaje se enviar&aacute; sin cifrar.</p>
+        </ul>
+      </li>
+      <li><b>Usar PGP/MIME en este mensaje</b>: Activa o desactiva el
+uso de <a
+ href="http://community.roxen.com/developers/idocs/rfc/rfc3156.html"
+ target="_blank">PGP/MIME</a> en este mensaje.
+        <ul>
+          <p>Si sabe con certeza que los destinatarios pueden leer el
+correo usando el formato PGP/MIME, entonces se debe usar.</p>
+          <p>Esta caracter&iacute;stica depende de la
+configuraci&oacute;n en <b>Preferencias -&gt; pesta&ntilde;a PGP/MIME</b>
+si est&aacute; establecida en <em>Permitir usar PGP/MIME</em> o <em>Usar
+siempre PGP/MIME</em>.</p>
+        </ul>
+      </li>
+      <li>Submen&uacute; <b>Opciones predeterminadas de
+redacci&oacute;n</b>:
+        <ul>
+          <li><b>Opciones de firmado/cifrado...</b>: acceso directo a <b>Configuraci&oacute;n
+de la cuenta-&gt; Opciones OpenPGP</b>, en el cliente de correo. </li>
+          <li><b>Opciones de env&iacute;o...</b>: acceso directo a la
+pesta&ntilde;a <b>Preferencias -&gt; Enviar</b>. </li>
+          <li><b>Opciones de selecci&oacute;n de clave...</b>: acceso
+directo a la pesta&ntilde;a<b>Preferencias -&gt; Selecci&oacute;n de
+clave</b>. </li>
+          <li><b>Opciones PGP/MIME...</b>: acceso directo a la
+pesta&ntilde;a <b>Preferencias -&gt; PGP/MIME</b>. </li>
+        </ul>
+      </li>
+      <li><b>Deshacer cifrado</b>: Si hay un fallo al enviar el correo,
+como un fallo en el servidor POP que no acepta la solicitud, Enigmail
+no lo sabr&aacute;, y el mensaje cifrado seguir&aacute;
+mostr&aacute;ndose en la ventana de redacci&oacute;n. Con esta
+opci&oacute;n de men&uacute;, se deshar&aacute; el cifrado o firma,
+volviendo a la ventana de redacci&oacute;n con su texto original.<br>
+        <em>Como soluci&oacute;n temporal, tambi&eacute;n se puede usar
+para descifrar el texto citado al contestar a mensajes cifrados.
+Enigmail debe descifrar autom&aacute;ticamente el mensaje citado, pero
+si se produce un fallo por cualquier motivo, se puede usar esta
+opci&oacute;n del menu para forzarlo.</em> </li>
+      <li><b>Insertar clave p&uacute;blica</b>: inserta el bloque de la
+clave en ASCII-armored en la ubicaci&oacute;n actual del cursor en la
+ventana de redacci&oacute;n. Se le preguntar&aacute; por las
+direcciones de correo de las claves que se van a insertar. Las claves
+insertadas de esta forma, se reconocer&aacute;n autom&aacute;ticamente
+en la recepci&oacute;n por Enigmail. Despu&eacute;s de insertar la
+clave, todav&iacute;a puede elegir si firmar o cifrar el correo
+seg&uacute;n se necesite. Tampoco inserte m&aacute;s de un bloque de en
+un mensaje; simplemente especique varias direcciones de correo,
+separadas por comas o espacios, cuando se le pregunte. </li>
+      <li><b>Limpiar clave salvada</b>: Limpia las contrase&ntilde;as
+introducidas manualmente de la cach&eacute;. Esto es &uacute;til si se
+tienen varias contrase&ntilde;as. </li>
+      <li><b>Ayuda</b>: Muestra informaci&oacute;n de ayuda desde el
+sitio web. </li>
+    </ul>
+  </li>
+</ul>
+<hr>
+<p>M&aacute;s ayuda disponible en la
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">p&aacute;gina
+web de ayuda de Enigmail</a>
+</p>
+</body>
+</html>

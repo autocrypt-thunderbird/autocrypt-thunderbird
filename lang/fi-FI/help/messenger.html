@@ -1,0 +1,70 @@
+<html>
+<head><title>Enigmailin ohje: Viestien lukeminen</title>
+</head>
+<body>
+<h1>Enigmailin ohje</h1>
+
+<h3>Enigmailin käyttö luettaessa viestejä</h3>
+<ul>
+<li><b>Pura salaus -painike posti-ikkunassa</b><br>
+Pura-painikkeella voi purkaa salauksen, varmistaa allekirjoituksen tai tuoda
+julkisia avaimia. Normaalisti salauksen purku tai allekirjoituksen varmistus
+tapahtuu automaattisesti, mutta jos näin ei käy, Enigmailin tilariville ilmestyy
+lyhyt virheilmoitus. Pura-painikkeesta saa tarkemman virheilmoituksen jossa
+on mukana GnuPG-komennon virheilmoitus.
+</li>
+<li><b>Allekirjoitus- ja salauskuvakkeet viestin otsaketiedoissa</b><br>
+<em>Allekirjoitus</em> (kynä) ja <em>salaus</em> (avain) -kuvakkeet 
+ovat viestiotsakkeissa riippuen siitä, onko viesti allekirjoitettu hyvin (eli 
+viestiä ei ole muokattu siirrettäessä) tai salattu. Jos viestiä on jollain tapaa
+muutettu siirrettäessä eli sen allekirjoitus on huono, tämä näkyy 
+allekirjoituskuvakkeessa (se on esimerkiksi rikkinäinen tai yliviivattu kynä). 
+Napsauttamalla kuvaketta hiiren oikealla painikkeella avautuu ponnahdusvalikko, 
+jossa on seuraavat kohdat:
+<ul>
+<li><em>OpenPGP-turvallisuustiedot</em>: Näyttää GnuPG:n tulosteen tälle 
+viestille.</li>
+<li><em>Kopioi OpenPGP-turvallisuustiedot</em>: Kopiot leikepöydälle GnuPG:n 
+tulosteen tälle viestille.</li>
+<li><em>Näytä OpenPGP-kuva</em>: Näyttää <em>kuvan</em>, jonka viestin 
+lähettäjä on liittänyt julkiseen avaimeensa (vain jos kuva on olemassa).</li>
+<li><em>S/MIME-turvallisuustiedot</em>: Näyttää viestin 
+S/MIME-turvallisuustiedot.</li>
+</ul>
+<p>Kun saat viestin, joka on allekirjoitettu sinulta puuttuvalla avaimella, ja 
+jos sinulla ei ole <em>keyserver-options auto-key-retrieve</em> asetusta 
+<tt>gpg.conf</tt>-tiedostossa (eli että kaikki tuntemattomat avaimet yritetään 
+hakea avainpalvelimelta), Enigmail näyttää viestiotsakkeissa 
+allekirjoituskuvakkeen, jossa on kysymysmerkki ja tekstirivin, jossa lukee
+<em>Osa viestistä allekirjoitettu. Napsauta allekirjoituskuvaketta saadaksesi 
+lisätietoja</em>.</p>
+<p>Sama allekirjoituskuvake voi näkyä vaikka 
+<em>keyserver-options auto-key-retrieve</em> olisikin asetettu, koska haettua 
+avainta ei ehkä löydy oletusavainpalvelimelta.</p>
+<p>
+Napsauttamalla allekirjoituskuvaketta, jossa on kysymysmerkki, avautuu ikkuna,
+joka ilmoittaa, että avainta ei löydy avainrenkaastasi. Sulkemalla tämän ikkunan
+OK:ta napsauttamalla avautuu ikkuna, josta voit valita avainpalvelimen, jolta
+julkista avainta tulisi hakea.</p>
+<p>
+Voit muokata valittavissa olevia avainpalvelimia Enigmailin asetuksista: 
+<b>Enigmail -&gt; Asetukset -&gt; Yleiset</b>-välilehti, ja muokkaamalla 
+pilkulla erotettuja avainpalvelinten osoitteita 
+<em>Avainpalvelimet:</em>-kentässä. Oletusavainpalvelin on listassa ensimmäisenä.
+</p></em>
+</li>
+<li><b>Salattujen liitetiedostojen avaaminen ja liitettyjen OpenPGP-avainten tuonti</b><br>
+Enigmail käsittelee liitteet, joiden tiedostopääte on pgp, asc tai gpg. 
+Tällaisen liitteen ponnahdusvalikossa (napsauta hiiren oikealla painikkeella 
+liitettä) on kaksi erityistä valintaa: <em>Pura ja avaa</em> sekä <em>Pura ja 
+tallenna</em>. Näillä valinnoilla voit purkaa liitteen salauksen ennen kuin
+avaat tai tallennat sen. Jos liite tunnistetaan OpenPGP-avaintiedostoksi, 
+sinulta kysytään haluatko tuoda avaimet.
+</li>
+</ul><hr/>
+<p>
+Lisää ohjeita
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmailin ohjesivuilta</a>
+</p>
+</body>
+</html>

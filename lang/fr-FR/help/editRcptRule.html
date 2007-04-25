@@ -1,0 +1,105 @@
+<html>
+<head><title>Aide Enigmail&nbsp;: Modifier les règles OpenPGP</title>
+</head>
+<body>
+<h1>Aide Enigmail</h1>
+
+<h3>Utiliser l'éditeur de règles d'Enigmail&nbsp;: modifier les règles OpenPGP</h3>
+<p>Avec l'éditeur de règles, il est possible de définir les paramètres par défaut
+par destinataire concernant l'activation du chiffrement, de la signature, de PGP/MIME 
+et de choisir quelle(s) clef(s) utiliser. Dans cette boite de dialogue, vous pouvez 
+spécifier les règles pour un destinataire unique ou pour un groupe de destinataires
+ayant des attributs très proches.
+</p>
+<ul>
+  <li><span style="font-weight: bold;">Définir les règles OpenPGP pour</span>&nbsp;: contient les adresses
+    électroniques des destinataires (sans leur nom, c.à.d. juste une adresse comme
+    <tt>personne@adresse.domaine</tt>). Il est possible de spécifier plusieurs adresses séparées par des espaces.
+    L'adresse indiquée ici peut être réduite uniquement à la partie domaine de l'adresse
+    afin de faire correspondre toutes les adresses vers ce domaine, par exemple
+    <tt>@adresse.domaine</tt> correspondra à <tt>nafnaf@adresse.domaine</tt>,
+    <tt>nifnif@adresse.domaine</tt>, <tt>noufnouf@adresse.domaine</tt>, etc&nbsp;;
+  </li>
+  <li><span style="font-weight: bold;">Appliquer la règle si le destinataire...</span>&nbsp;: 
+    Ceci modifie la correspondance des adresses.
+    Si plusieurs adresses sont saisies, le réglages s'applique à toutes.
+    Les exemples ci-dessous sont basés sur le fait que <tt>naf@adresse.domaine</tt>
+    à été saisi dans le champ <i>règles OpenPGP</i> ci-dessus&nbsp;:
+    <ul>
+      <li><i>Est exactement</i>&nbsp;: avec ce réglage, la règle s'appliquera uniquement
+       sur des messages à destination de <tt>naf@adresse.domaine</tt> (correspondance exacte, insensible à la casse),
+      </li>
+      <li><i>Contient</i>&nbsp;: avec ce réglage, n'importe quelle adresse contenant la chaîne correspond,
+        par exemple <tt>nafnaf@adresse.domaine</tt> ou <tt>aeronaf@adresse.domaine.net,</tt>
+      </li>
+      <li><i>Débute par</i>&nbsp;: avec ce réglage, n'importe quelle adresse commençant
+        par la chaîne correspond, par exemple <tt>naf@adresse.domaine.net</tt>,
+        <tt>naf@adresse.domaine-nom.com</tt>,
+      </li>
+      <li><i>Se termine par</i>&nbsp;: avec ce réglage, n'importe quelle adresse finissant
+        par la chaîne correspond, par exemple <tt>nafnaf@adresse.domaine</tt>,
+        <tt>nafnafnaf@adresse.domaine</tt>&nbsp;;
+      </li>
+    </ul>
+
+  </li>
+  <li><span style="font-weight: bold;">Continuer avec la prochaine règle pour l'adresse correspondante</span><br>
+      Activer cette fonctionnalité vous permettra de définir une règle sans avoir à spécifier
+	  un ID de clef dans le champ <em>Utiliser les clefs OpenPGP suivantes :</em> 
+	  , de ce fait l'adresse électronique est utilisée pour trouver une clef au moment de
+	  l'envoi. De plus, les règles suivantes pour la (les) même(s) adresse(s) seront traitées également.
+  </li>
+  <li><span style="font-weight: bold;">Ne pas vérifier les prochaines règles pour l'adresse correspondante</span><br>
+	  Activer cette fonctionnalité interrompra le traitement des autres règles pour l'adresse correspondante 
+          si la règle en cours correspond&nbsp;; c.à.d. que le traitement des règles continu avec le destinataire
+          suivant.
+  </li>
+  <li><span style="font-weight: bold;">Utiliser les clefs OpenPGP suivantes :</span><br>
+	  Utilisez le bouton <em>Sélectionner les clefs...</em> pour sélectionner la clef du
+          destinataire à utiliser pour le chiffrement. Comme dans l'option ci-dessus, plus aucune règle
+	  pour l'adresse correpondante n'est traitée.
+  </li>
+  <li><span style="font-weight: bold;">Par défaut pour signature</span>&nbsp;: activer ou désactiver
+    la signature des messages. Ceci utilise ou outrepasse les réglages effectués
+    dans la fenêtre de rédaction. Les valeurs possibles sont&nbsp;:
+  </li>
+  <ul>
+    <li><i>Jamais</i>: désactiver la signature, même si elle est activée dans la fenêtre de
+       rédaction du messages (prévaut sur les autres valeurs),<br>
+    </li>
+    <li><i>Oui, si sélectionné lors de la composition du message</i>: laisser le réglage
+      de signature tel qu'il est spécifié dans la fenêtre de rédaction,
+    </li>
+    <li><i>Toujours</i>: activer la signature, même si elle n'est <span
+      style="font-style: italic;">pas</span> activée dans la fenêtre de
+      rédaction,
+    </li>
+  </ul>
+</ul>
+<div style="margin-left: 40px;">Ces paramètres de signature sont appliqués pour
+toutes les règles qui correspondent. Si l'une des règles désactive la signature, le message
+ne sera pas signé, même si d'autres règles spécifiaient <i>Toujours</i>&nbsp;;<br>
+</div>
+<ul>
+  <li><span style="font-weight: bold;">Chiffrement</span>&nbsp;: activer ou
+    désactiver le chiffrement des messages. Les valeurs autorisées ainsi que leur signification
+    sont les mêmes que pour la signature des messages&nbsp;;</li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>&nbsp;: activer ou
+    désactiver l'utilisation du codage de message PGP/MIME (RFC 3156). 
+    Si PGP/MIME est désactivé, les
+    messages sont codés en utilisant le format «&nbsp;PGP en ligne&nbsp;». Les valeurs autorisées
+    ainsi que leur signification sont les mêmes que pour la signature des messages.
+  </li>
+</ul>
+<p>Les règles sont appliquées dans l'ordre d'affichage de la liste de
+<em>l'éditeur de règles OpenPGP</em>. Dès lors qu'une règle
+correspond à un destinataire et contient un identifiant de clef OpenPGP, non seulement l'identifiant 
+de clef spécifié est utilisé, mais le destinataire n'est plus pris en compte dans le traitement
+des règles suivantes.</p>
+<hr/>
+<p>
+De l'aide supplémentaire est disponible sur la
+<a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">page des réglages par destinataire d'Enigmail</a>
+</p>
+</body>
+</html>

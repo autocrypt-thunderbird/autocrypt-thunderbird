@@ -1,0 +1,51 @@
+<html>
+<head><title>Enigmail Hilfe: Verfassen von Nachrichten</title>
+</head>
+<body>
+<h1>OpenPGP-Hilfe</h1>
+
+<h3>Verwenden von OpenPGP beim Verfassen von Nachrichten</h3>
+
+<p><b>Men&uuml; &quot;OpenPGP&quot; im Fenster &quot;Verfassen&quot;</b></p>
+  <ul>
+    <li>
+    	<b>Nachricht unterschreiben</b>: Unterschreiben von Nachrichten aktivieren / deaktivieren. Der Benutzer wird benachrichtigt, falls das Unterschreiben fehlschl&auml;gt.
+    </li>
+    <li><b>Nachricht verschl&uuml;sseln</b>: Verschl&uuml;sselung an alle Adressaten aktivieren / deaktivieren. Der Benutzer wird benachrichtigt, falls die Verschl&uuml;sselung fehlschl&auml;gt.
+				<ul>
+			<p>Falls <em>Auswahl anzeigen, wenn notwendig</em> im Men&uuml; <b>OpenPGP -&gt; Einstellungen -&gt; Schl&uuml;sselauswahl...</b> eingestellt ist, dann wird eine Liste mit Schl&uuml;sseln erscheinen, wenn Sie keinen &ouml;ffentlichen Schl&uuml;ssel f&uuml;r einen oder mehrere Empf&auml;nger der Nachrichten besitzen.</p>
+			<p>Falls <em>Auswahlfenster nie anzeigen</em> im Men&uuml; <b>OpenPGP -&gt; Einstellungen -&gt; Schl&uuml;sselauswahl...</b> eingestellt ist, dann wird die Nachricht an die Empf&auml;nger unverschl&uuml;sselt gesendet, von denen Sie keinen &ouml;ffentlichen Schl&uuml;ssel besitzen.</p>
+		</ul>
+    </li>
+    <li>
+    	<b>PGP/MIME verwenden</b>: Verwenden von <a href="http://community.roxen.com/developers/idocs/rfc/rfc3156.html" target="_blank">PGP/MIME</a> f&uuml;r diese Nachricht erm&ouml;glichen / nicht erm&ouml;glichen.
+    	<ul>
+			<p>Wenn Sie wissen, dass die Empf&auml;nger das PGP/MIME-Format verwenden k&ouml;nnen, dann sollten Sie dies benutzen.</p>
+			<p>Diese M&ouml;glichkeit h&auml;ngt von den Einstellungen unter <b>OpenPGP -&gt; Einstellungen -&gt; PGP/MIME...</b> ab. Hier muss <em>PGP/MIME verwenden, wenn m&ouml;glich</em> oder <em>Immer PGP/MIME verwenden</em> aktiviert sein.</p>
+		</ul>
+	</li>
+    <li>
+    	<b>Einstellungen</b>: Untermen&uuml;.
+	    <ul>
+			<li><b>Unterschrift/Verschl&uuml;sselung...</b>: Abk&uuml;rzung zu den <b>Konten-Einstellungen -&gt; OpenPGP-Sicherheit.</b></li>
+			<li><b>Senden...</b>: Abk&uuml;rzung zu <b>Einstellungen -&gt; Senden</b>.</li>
+			<li><b>Schl&uuml;sselwauswahl...</b>: Abk&uuml;rzung zu <b>Einstellungen -&gt; Schl&uuml;sselauswahl</b>.</li>
+			<li><b>PGP/MIME...</b>: Abk&uuml;rzung zu <b>Einstellungen -&gt; PGP/MIME</b>.</li>
+    	</ul>
+    </li>
+    <li>
+    	<b>Verschl&uuml;sselung r&uuml;ckg&auml;ngig machen</b>: Wenn es einen Fehler beim Senden der Nachricht gibt, also z.B. der POP-Server nicht erreichbar ist, dann wird OpenPGP dies nicht wissen und die verschl&uuml;sselte Nachricht wird auch weiterhin im Fenster &quot;Verfassen&quot; angezeigt. Dieser Men&uuml;punkt nimmt die Verschl&uuml;sselung / das Unterschreiben zur&uuml;ck und das Fenster &quot;Verfassen&quot; kehrt zum Originaltext zur&uuml;ck.<br>
+		<em>Als vorl&auml;ufige Ma&szlig;nahme kann &uuml;ber diesen Men&uuml;punkt auch eine verschl&uuml;sselte Nachricht, die man zitiert und auf die man antwortet, entschl&uuml;sselt angezeigt werden. Enigmail sollte zitierte Nachrichten automatisch entschl&uuml;sseln, was bisher jedoch fehlschl&auml;gt. &Uuml;ber diesen Men&uuml;eintrag kann Enigmail zur Entschl&uuml;sselung gezwungen werden.</em>
+	</li>
+    <li>
+    	<b>&Ouml;ffentlichen Schl&uuml;ssel einf&uuml;gen</b>: f&uuml;gt an der Cursorposition den &ouml;ffentlichen Schl&uuml;sselblock im ASCII-Format ein. Sie werden gefragt, von welchen E-Mail-Adressen die Schl&uuml;ssel eingef&uuml;gt werden sollen. Schl&uuml;ssel, die auf diese Weise eingef&uuml;gt werden, werden automatisch vom Enigmail des Empf&auml;ngers entdeckt. Es ist weiterhin m&ouml;glich, die Nachricht auch nach Einf&uuml;gen eines Schl&uuml;sselblocks zu unterschreiben / verschl&uuml;sseln. Bitte nicht mehr als einen Schl&uuml;sselblock separat einf&uuml;gen; geben Sie einfach beim ersten Einf&uuml;gen alle E-Mail-Adressen an (durch Kommas oder Leerzeichen getrennt), die eingef&uuml;gt werden sollen.
+    </li>
+    <li><b>Passphrase aus Cache l&ouml;schen</b>: L&ouml;scht die gespeicherte Passphrase. N&uuml;tzlich, falls Sie mehrere Passphrasen verwenden.</li>
+    <li><b>Hilfe</b>: Zeigt die Hilfe an (diese Seite).</li>
+  </ul>
+<hr/>
+<p>
+	Weitere Hilfe ist verf&uuml;gbar unter <a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail Help web page</a>
+</p>
+</body>
+</html>

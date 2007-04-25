@@ -1,0 +1,77 @@
+<html>
+<head><title>Enigmail Help: Composizione del Messaggio</title>
+</head>
+<body>
+<h1>Enigmail Help</h1>
+
+<h3>Usare Enigmail durante la composizione dei messaggi</h3>
+
+<ul>
+  <li><b>Menu di Enigmail nella finestra di Composizione dei messaggi</b>
+  <ul>
+	  <li><b>Firma il messaggio</b>: Abilita/disabilita l'invio del messaggio firmato. L'utente viene avvertito se l'operazione di firma fallisce.
+    </li>
+    <li><b>Cifra il messaggio</b>: Abilita/disabilita la cifratura per tutti i destinatari prima dell'invio. L'utente viene avvertito se l'operazione di cifratura fallisce.
+	<ul>
+		<p>Se in <b>Impostazioni -&gt; Scelta della chiave</b> &egrave; stato impostato <em>Mostra la finestra di selezione solo quando &egrave; necessario</em>, e tra i destinatari del messaggio figurano indirizzi a cui non corrisponde nessuna delle chiavi pubbliche in tuo possesso, al momento dell'invio verr&agrave; mostrata una lista di chiavi tra cui scegliere.</p>
+		<p>Se in <b>Impostazioni -&gt; Scelta della chiave</b> &egrave; stato impostato <em>Non mostrare mai la finestra di selezione delle chiavi OpenPGP</em>, e tra i destinatari del messaggio figurano indirizzi a cui non corrisponde nessuna delle chiavi pubbliche in tuo possesso, il messaggio sar&agrave; inviato come testo in chiaro, senza venire cifrato.</p>
+	</ul>
+    </li>
+    <li><b>Usa PGP/MIME per questo messaggio</b>: Abilita/disabilita l'uso del formato <a href="http://community.roxen.com/developers/idocs/rfc/rfc3156.html" target="_blank">PGP/MIME</a> 
+	per il messaggio corrente.
+	<ul>
+		<p>Se sai che i destinatari sono in grado di ricevere messaggi in formato PGP/MIME, allora faresti meglio ad usarlo.</p>
+		<p>La possibilit&agrave; di attivare questa funzione dipende dall'avere impostato o meno <em>Consenti l'uso di PGP/MIME</em>, o <em>Usa sempre PGP/MIME</em>, in <b>Impostazioni -&gt; PGP/MIME</b>.</p>
+	</ul></li>
+	<li><b>Impostazioni predefinite per la composizione</b>: Sotto-menu.
+    </p>
+    <ul>
+	    <li><b>Impostazioni di firma/cifratura...</b>: scorciatoia per <b>Configurazione account posta -&gt;
+	  OpenPGP.</b>
+      </li>
+      <li><b>Impostazioni di invio...</b>: scorciatoia per <b>Impostazioni -&gt;
+	      invio</b>.
+      </li>
+      <li><b>Impostazioni per la scelta della chiave...</b>: scorciatoia per <b>Impostazioni -&gt; 
+	      Scelta della chiave</b>.
+      </li>
+      <li><b>Impostazioni PGP/MIME...</b>: scorciatoia per <b>Impostazioni -&gt; 
+	      PGP/MIME</b>.
+      </li>
+	  </li>
+    </ul>
+    <li><b>Annulla cifratura</b>: Se si verifica un problema durante l'invio
+    del messaggio, se ad esempio il server rifiuta la richiesta, Enigmail non
+    avr&agrave; modo di saperlo e il messaggio continuer&agrave; ad
+    essere mostrato in formato cifrato nella finestra di composizione. Scegliendo
+    questa voce di menu, la firma/cifratura verranno annullate e nella
+    finestra di composizione apparir&agrave; nuovamente il testo in chiaro.<br>
+    <em>Come soluzione temporanea, questa opzione pu&ograve; anche essere usata per
+    decifrare il testo quotato quando si risponde a un messaggio cifrato. Enigmail
+    dovrebbe decifrare automaticamente il messaggio quotato, ma se cio&ograve; non
+    dovesse funzionare per qualche ragione, puoi usare questa voce di menu.</em>
+    </li>
+    <li><b>Inserisci chiave pubblica</b>: inserisci una chiave pubblica in formato
+    ASCII-armored a partire dalla posizione corrente del cursore nella finestra di
+    composizione. Ti verranno chiesti gli indirizzi email delle chiavi da inserire.
+    Le chiavi inserite in questo modo saranno automaticamente riconosciute da
+    Enigmail sul computer del destinatario. Dopo l'inserimento della chiave, 
+    puoi ancora scegliere di cifrare/firmare il messaggio, se necessario. Attenzione
+    a non inserire pi&ugrave; di un blocco di chiavi pubbliche in un messaggio;
+    specifica nel caso pi&ugrave; indirizzi email, separati da virgole o spazi, per
+    lo stesso blocco.
+    </li>
+    <li><b>Cancella la passphrase memorizzata</b>: Cancella la passphrase salvata in memoria. Utile se hai pi&ugrave; di una passphrase.
+    </li>
+    <li><b>Aiuto</b>: Mostra le informazioni di aiuto (questa pagina).
+    </li>
+	</li>
+  </ul>
+</ul>
+<hr/>
+<p>
+Ulteriore aiuto &egrave; disponibile sul
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">sito web di Enigmail</a>
+</p>
+</body>
+</html>

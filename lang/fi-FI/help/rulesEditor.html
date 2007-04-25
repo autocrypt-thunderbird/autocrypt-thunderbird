@@ -1,0 +1,64 @@
+<html>
+<head><title>Enigmailin ohje: Sääntömuokkain</title>
+</head>
+<body>
+<h1>Enigmailin ohje</h1>
+
+<h3>Enigmailin sääntömuokkaimen käyttö</h3>
+<p>Sääntömuokkaimessa voit muokata vastaanottajakohtaisia lähetysasetuksia. 
+Voit määrätä, missä PGP/MIME-muodossa viesti lähetetään, mitä avainta käytetään 
+ja allekirjoitetaanko tai salataanko se. Jokainen sääntö muodostuu viidestä 
+kentästä ja on kirjoitettu yhdelle riville:
+</p>
+<ul>
+<li><strong>Sähköpostiosoite</strong>: 
+Osoitteet, joiden vastaanottaja-, kopio- tai piilokopiokentässä on 
+ehdon täyttävä osoite. Ehto voi koskea myös vain <em>osaa osoitteesta</em> 
+(lisätietoja muokkaa sääntöjä -ikkunasta)
+</li>
+<li><strong>OpenPGP-avaimet</strong>: Lista vastaanottajalle käytettävistä 
+OpenPGP-avaimista</li>
+<li><strong>Allekirjoita</strong>: Allekirjoita tai älä allekirjoita viestejä 
+tälle vastaanottajalle. Tämä asetus joko noudattaa viestin kirjoitusikkunassa 
+antamaasi käskyä tai muuttaa sen. Mahdolliset arvot:
+</li>
+<ul>
+<li><i>Ei koskaan</i>: Älä ikinä allekirjoita viestiä vastaanottajalle, 
+huolimatta viestin kirjoitusikkunan asetuksista.<br>
+</li>
+<li><i>Mahdollisesti</i>: Allekirjoita viesti jos niin on viestin 
+kirjoitusikkunassa asetettu</li>
+<li><i>Aina</i>: Allekirjoita viestit vastaanottajalle aina, huolimatta viestin
+kirjoitusikkunan asetuksista
+</li>
+</ul>
+</ul>
+<div style="margin-left: 40px;">Jokainen sääntö pätee kaikille täsmääville 
+viesteille. Jos jokin säännöistä ottaa allekirjoituksen pois päältä, viestiä ei
+allekirjoiteta huolimatta siitä, mitä muut säännöt määräisivät.<br>
+</div>
+<ul>
+<li><strong>Salaa</strong>: Salaa tai älä salaa viestiä. Asetusvalinnat ja 
+niiden merkitykset ovat samat kuin viestin allekirjoitukselle.</li>
+<li><strong>PGP/MIME</strong>: Ota käyttöön tai poista käytöstä PGP/MIME (RFC 
+3156) -koodaus. Jos PGP/MIME ei ole käytössä, viestit allekirjoitetaan ja 
+salataan käyttäen viestinsisäistä PGP:tä. Asetusvalinnat ja niiden merkitykset 
+ovat samat kuin viestin allekirjoitukselle.</li>
+</ul>
+<p>Säännöt käsitellään niiden listausjärjestyksessä. Jos säännössä on annettu
+vastaanottajan OpenPGP-avaintunnus ja osoite täsmää vastaanottajan osoitteeseen,
+muita viestin kanssa täsmääviä sääntöjä ei enää käsitellä.
+</p>
+<p><i>Huom.:</i> Sääntömuokkain ei ole vielä valmis. Monimutkaisempia sääntöjä 
+on mahdollista kirjoittaa muokkaamalla sääntötiedostoa käsin (näin muokattuihin
+sääntöihin ei pitäisi enää koskea sääntömuokkaimella). <a 
+href="http://enigmail.mozdev.org/pgprules_file.html" 
+target="_blank">Tarkempia ohjeita</a> sääntötiedoston muokkaamisesta Enigmailin
+kotisivulta.</p>
+<hr/>
+<p>
+Lisää ohjeita
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmailin ohjesivuilta</a>
+</p>
+</body>
+</html>

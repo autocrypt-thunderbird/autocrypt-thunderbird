@@ -1,0 +1,121 @@
+<html>
+<head>
+  <title>Ayuda de Enigmail: Editar regla OpenPGP</title>
+</head>
+<body>
+<h1>Ayuda de Enigmail</h1>
+<h3>Uso del editor de reglas de Enigmail: Editar regla OpenPGP</h3>
+<p>En el editor de reglas, se pueden especificar opciones
+predeterminadas para cada destinatario, activando el cifrado, la firma
+y PGP/MIME, y para definir qu&eacute; claves OpenPGP se usan. En este
+di&aacute;logo, se pueden especificar las reglas para un &uacute;nico
+destinatario, y para un grupo de destinatarios con atributos muy
+similares.
+</p>
+<ul>
+  <li><span style="font-weight: bold;">Poner reglas OpenPGP para</span>: Contiene
+las direcciones de correo electr&oacute;nico de
+los destinatarios (sin nombre, s&oacute;lo una direcci&oacute;n como <tt>alguien@dominio.correo</tt>).
+Se pueden especificar varias direcciones de correo, separadas por
+espacios. La direcci&oacute;n especificada aqu&iacute; puede consistir
+de s&oacute;lo la secci&oacute;n del dominio, para que se aplique al
+correo de cualquier direcci&oacute;n de ese dominio, como <tt>@dominio.correo</tt>
+se aplicar&aacute; a <tt>algo@dominio.correo</tt>, <tt>alguien@dominio.correo</tt>,
+    <tt>cualquiera@dominio.correo</tt>, etc. </span></li>
+  <li><span style="font-weight: bold;">Aplicar la regla si el
+destinatario...</span>: Esto modifica si coinciden las direcciones de
+correo electr&oacute;nico. Si se introducen varias direcciones, la
+opci&oacute;n se aplicar&aacute; a todas. Los ejemplos de debajo
+est&aacute;n basados en que se ha introducido <tt>body@email.domain</tt>
+en el campo <i>Reglas openPGP. </i>
+    <ul>
+      <i> <li><i>Es exactamente</i>: con esta opci&oacute;n, la regla
+s&oacute;lo se activar&aacute; en los correos a <tt>body@email.domain</tt>
+(exacto, no se tienen en cuenta las may&uacute;sculas). </li>
+      <li><i>Contiene</i>: con esta opci&oacute;n, cualquier
+direcci&oacute;n de correo que contenga la cadena, cumplir&aacute; la
+regla, como <tt>anybody@email.domain</tt> o <tt>body@email.domain.net</tt>
+      </li>
+      <li><i>Empieza por</i>: con esta opci&oacute;n, cualquier
+direcci&oacute;n de correo que empiece por la cadena, cumplir&aacute;
+la regla, como <tt>body@email.domain.net</tt>, <tt>body@email.domain-name.com</tt>.
+      </li>
+      <li><i>Acaba en</i>: con esta opci&oacute;n, cualquier
+direcci&oacute;n de correo que acabe en la cadena, cumplir&aacute; la
+regla, como <tt>anybody@email.domain</tt>, <tt>somebody@email.domain</tt>.
+      </li>
+      </i>
+    </ul>
+   </li>
+
+ <li><span style="font-weight: bold;">Continuar con la regla siguiente para la direcci&oacute;n que coincida</span><br>
+      Activar esta funci&oacute;n permitir&aacute; definir una regla pero no tener
+	  que especificar un ID de clave en el campos <em>Usar las siguientes claves OpenPGP:</em>, 
+	  para que se use la direcci&oacute;n de correo electr&oacute;nico para comprobar una clave en el momento
+	  del env&iacute;o. Tambi&eacute;n se procesar&aacute;n las reglas posteriores para la misma direcci&oacute;n.
+  </li>
+  <li><span style="font-weight: bold;">No comprobar las reglas siguientes para la direcci&oacute;n que coincida</span><br>
+	  Activar esta funci&oacute;n detiene el procesamiento de cualquier otra regla para
+	  las direcciones que cumplan la regla. Es decir, las reglas se reanudan procesando
+	  el siguiente destinatario.
+  </li>
+  <li><span style="font-weight: bold;">Usar las siguiente claves OpenPGP:</span><br>
+	  Use el bot&oacute;n <em>Selecciona clave(s)..</em> para seleccionar las claves del destinatario
+	  que se usen para el cifrado. Al igual que la acci&oacute;n anterior, no se contin&uacute;an procesando
+	  las reglas para las direcciones que cumplan la regla.
+  </li>
+
+
+  <li><span style="font-weight: bold;">Clave(s) a usar</span>:
+contiene el ID de la clave PGP a usar para los destinatarios. Estos se
+pueden seleccionar de una lista pulsando en el bot&oacute;n <em>Seleccionar
+clave(s)</em>.</li>
+  <li><span style="font-weight: bold;">Predeterminado para firmar</span>:
+activa o desactiva la firma del mensaje. Esta opci&oacute;n usa o
+ignora lo especificado en la ventana de redacci&oacute;n de mensajes.
+Los valores son:</li>
+  </i>
+  <ul>
+    <li><i>Nunca</i>: desactiva la firma, incluso si se
+activ&oacute; en la ventana de redacci&oacute;n de mensajes (tiene
+preferencia sobre los otros valores)<br>
+    </li>
+    <li><i>S&iacute;, si est&aacute; seleccionado en la
+redacci&oacute;n del mensaje</i>: deja la firma como se haya
+especificado en la ventana de redacci&oacute;n de mensajes </li>
+    <li><i>Siempre</i>: activa la firma, incluso si <span
+ style="font-style: italic;">no</span> estaba activada en la ventana de
+redacci&oacute;n de mensajes </li>
+    </i>
+  </ul>
+</ul>
+<div style="margin-left: 40px;">Estas opciones de firma se aplican a
+todas las
+reglas que coincidan con el criterio. Si una de las reglas desactiva la
+firma, el mensaje
+no se firmar&aacute;, independientemente de que otras especifiquen <i>Siempre</i>.<br>
+</div>
+<ul>
+  <li><span style="font-weight: bold;">Cifrado</span>: activa o
+desactiva el cifrado del mensaje. Las opciones permitidas y su
+significado son las mismas que para la firma de mensajes.</li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: activa o
+desactiva el uso de condificaci&oacute;n PGP/MIME (RFC 3156) en el
+mensaje. Si PGP/MIME est&aacute; desactivado, los mensajes se codifican
+usando "PGP inline". Los valores permitidos y su significado son los
+mismos que para la firma de mensajes. </li>
+  </i>
+</ul>
+<p>Las reglas se procesan en el orden mostrado en la lista del
+<em>Editor de reglas PGP</em>. Cuando una regla coincida con un
+destinatario y contenga un ID de clave OpenPGP, adem&aacute;s de usar el ID
+de clave
+especificado, el destinatario ya no se considera cuando se procesen
+m&aacute;s reglas.</p>
+<hr/>
+<p>M&aacute;s ayuda disponible en la
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">p&aacute;gina
+web de ayuda de Enigmail</a>
+</p>
+</body>
+</html>

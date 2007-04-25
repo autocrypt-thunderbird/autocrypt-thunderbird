@@ -1,0 +1,60 @@
+<html>
+<head><title>Enigmail帮助: 规则编辑器</title>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+</head>
+<body>
+<h1>Enigmail帮助</h1>
+
+<h3>使用 Enigmail 规则编辑器</h3>
+<p>在规则编辑器中您可以为每个收件人默认设置加密、签名和PGP/MIME，以及定义使用某个 OpenPGP 密钥。每一条规则由5个字段组成，并且每条规则占一行:
+</p>
+<ul>
+  <li><span style="font-weight: bold;">电子邮件</span>: 要从 To:、Cc: 和 Bcc: 字段
+  中匹配的电子邮件地址。该匹配使用 <span
+    style="font-style: italic;">子字串</span> 匹配方式工作(详细信息请见
+    规则编辑对话框)
+  </li>
+  <li><span style="font-weight: bold;">OpenPGP 密钥</span>: 为收件人使用的 OpenPGP
+密钥标识的列表</li>
+  <li><span style="font-weight: bold;">数字签名</span>: 启用或禁用
+    电子邮件数字签名。此选项将使用或者取代您在邮件撰写窗口选择的设置。
+    其值为:
+  </li>
+  <ul>
+    <li><i>从不</i>: 禁用数字签名，即便已经在邮件撰写窗口做出选择
+      (取代其他值)<br>
+    </li>
+    <li><i>在撰写邮件时选择</i>: 使用在邮件撰写窗口中选择的设置
+    </li>
+    <li><i>总是</i>: 启用数字签名，即便您在邮件撰写窗口 <span
+      style="font-style: italic;">并未</span> 启用数字签名
+    </li>
+  </ul>
+</ul>
+<div style="margin-left: 40px;">这些数字签名设置将应用于所有匹配的规则。如果有任意一条
+  规则禁用了数字签名，不管其他规则是否指定了<i>总是</i>进行数字签名，该邮件都不会被数字签名。<br>
+</div>
+<ul>
+  <li><span style="font-weight: bold;">加密</span>: 启用或禁用
+    邮件加密。可选的设置及其含义同数字签名。</li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: 启用或禁用
+    PGP/MIME (RFC 3156) 邮件编码。
+    如果禁用了 PGP/MIME，信件将使用 "嵌入式 PGP" 编码。可选的设置及其含义同数字签名。
+  </li>
+</ul>
+<p>所有的规则将会按照 <em>OpenPGP 规则编辑器</em> 列表中的顺序逐个处理。当任一包含 OpenPGP 
+密钥标识的规则成功匹配一个收件人，我们除了为这个收件人使用规则中包含的密钥之外，还将在后续的规则
+测试中忽略该收件人。</p>
+<p><i>注意:</i> 规则编辑器的功能还不完全。 你可以通过直接编辑规则文件来写更多高级的规则(不要再在规则编辑器中编辑这些规则)。直接编辑规则文件的<a 
+href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">更详细帮助</a> 可以 Enigmail 的主页上找到</p>
+<hr/>
+<p>
+您可以从
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail 帮助web页</a>上获得更多的帮助信息
+</p>
+</body>
+</html>
+
+<!-- Local Variables: -->
+<!-- coding: utf-8 -->
+<!-- End: -->
