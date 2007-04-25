@@ -4,20 +4,20 @@
 # License Version 1.1 (the "MPL"); you may not use this file
 # except in compliance with the MPL. You may obtain a copy of
 # the MPL at http://www.mozilla.org/MPL/
-# 
+#
 # Software distributed under the MPL is distributed on an "AS
 # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
 # implied. See the MPL for the specific language governing
 # rights and limitations under the MPL.
-# 
+#
 # The Original Code is Enigmail.
-# 
+#
 # The Initial Developer of the Original Code is Ramalingam Saravanan.
 # Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
 # Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
-# 
+#
 # Contributor(s):
-# 
+#
 # Alternatively, the contents of this file may be used under the
 # terms of the GNU General Public License (the "GPL"), in which case
 # the provisions of the GPL are applicable instead of
@@ -46,35 +46,5 @@ include $(DEPTH)/config/autoconf.mk
 
 include $(topsrcdir)/config/rules.mk
 
-xpi-de-DE::
-	./make-lang-xpi.pl de-DE $(XPI_VERS) $(DIST)/bin
-
-xpi-de-AT::
-	./make-lang-xpi.pl de-AT $(XPI_VERS) $(DIST)/bin
-
-xpi-fr-FR::
-	./make-lang-xpi.pl fr-FR $(XPI_VERS) $(DIST)/bin
-
-xpi-es-AR::
-	./make-lang-xpi.pl es-AR $(XPI_VERS) $(DIST)/bin
-
-xpi-es-ES::
-	./make-lang-xpi.pl es-ES $(XPI_VERS) $(DIST)/bin
-
-xpi-it-IT::
-	./make-lang-xpi.pl it-IT $(XPI_VERS) $(DIST)/bin
-
-xpi-pl-PL::
-	./make-lang-xpi.pl pl-PL $(XPI_VERS) $(DIST)/bin
-
-xpi-xx-XX::
-	./make-lang-xpi.pl xx-XX $(XPI_VERS) $(DIST)/bin
-
-xpi-zh-CN::
-	./make-lang-xpi.pl zh-CN $(XPI_VERS) $(DIST)/bin
-
-xpi-zh-TW::
-	./make-lang-xpi.pl zh-TW $(XPI_VERS) $(DIST)/bin
-
-xpi-zh-HK::
-	./make-lang-xpi.pl zh-HK $(XPI_VERS) $(DIST)/bin
+export::
+	./make-lang-xpi.pl current-languages.txt

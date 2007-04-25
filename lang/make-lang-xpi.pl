@@ -1,57 +1,25 @@
 #!/usr/bin/perl
 
-if (@ARGV != 3) {
-    print "Usage: make-lang-xpi <la-RE> <version> <relative-bin-dir>\n";
+# generate jar.mn from a list of language packs
+
+if (@ARGV != 1) {
+    print "Usage: make-lang-xpi.pl <input-file>\n";
     exit -1;
 }
 
-my ($lang, $vers, $bindir) = @ARGV;
+my ($inputfile) = @ARGV;
 
-my $pkg = "enigmail";
-my $xpifile = "$pkg-$lang-$vers.xpi";
+open INFILE, "$inputfile";
+open OUTFILE, ">jar.mn";
 
-my ($dir, $cmd);
-
-open INFILE, "../ui/$pkg-en-US.spec";
-open OUTFILE, ">$lang/$pkg-$lang.spec";
+print OUTFILE "enigmail-locale.jar:\n";
 
 while ($_ = <INFILE>) {
-    #print STDERR $_;
-    $_ =~ s/en-US/$lang/g;
-    #print STDERR $_;
-    print OUTFILE $_;
+  #print STDERR $_;
+  chomp();
+  $lang = $_;
+  printf OUTFILE "\tlocale/%s/enigmail\t(%s/contents.rdf)\n", $lang, $lang;
 }
 
 close INFILE;
 close OUTFILE;
-
-open INFILE, "../ui/install.js";
-open OUTFILE, ">$lang/install.js";
-
-while ($_ = <INFILE>) {
-    #print STDERR $_;
-    $_ =~ s/en-US/$lang/g;
-    #print STDERR $_;
-    print OUTFILE $_;
-}
-
-close INFILE;
-close OUTFILE;
-
-$dir = $lang;
-$cmd = "zip -r ../$bindir/$xpifile install.js $pkg-$lang.spec";
-print STDERR "cd $dir; $cmd\n";
-chdir $dir;
-system($cmd);
-
-$cmd = "/bin/rm install.js $pkg-$lang.spec";
-print STDERR "$cmd\n";
-system($cmd);
-
-$dir = "../$bindir/chrome";
-$cmd = "cd $bindir/chrome; zip -g ../$xpifile $pkg-$lang.jar";
-print STDERR "cd $dir; $cmd\n";
-chdir $dir;
-system($cmd);
-
-print STDERR "make-lang-xpi: Created $bindir/$xpifile\n";

@@ -1,48 +1,19 @@
-enigmail-de-DE.jar:
-	locale/de-DE/enigmail/contents.rdf         (de-DE/contents.rdf)
-	locale/de-DE/enigmail/enigmail.dtd         (de-DE/enigmail.dtd)
-	locale/de-DE/enigmail/enigmail.properties  (de-DE/enigmail.properties)
-enigmail-de-AT.jar:
-	locale/de-AT/enigmail/contents.rdf         (de-AT/contents.rdf)
-	locale/de-AT/enigmail/enigmail.dtd         (de-DE/enigmail.dtd)
-	locale/de-AT/enigmail/enigmail.properties  (de-DE/enigmail.properties)
-enigmail-fr-FR.jar:
-	locale/fr-FR/enigmail/contents.rdf         (fr-FR/contents.rdf)
-	locale/fr-FR/enigmail/enigmail.dtd         (fr-FR/enigmail.dtd)
-	locale/fr-FR/enigmail/enigmail.properties  (fr-FR/enigmail.properties)
-enigmail-es-AR.jar:
-	locale/es-AR/enigmail/contents.rdf         (es-AR/contents.rdf)
-	locale/es-AR/enigmail/enigmail.dtd         (es-AR/enigmail.dtd)
-	locale/es-ES/enigmail/enigmail.properties  (es-AR/enigmail.properties)
-enigmail-es-ES.jar:
-	locale/es-ES/enigmail/contents.rdf         (es-ES/contents.rdf)
-	locale/es-ES/enigmail/enigmail.dtd         (es-ES/enigmail.dtd)
-	locale/es-ES/enigmail/enigmail.properties  (es-ES/enigmail.properties)
-enigmail-it-IT.jar:
-	locale/it-IT/enigmail/contents.rdf         (it-IT/contents.rdf)
-	locale/it-IT/enigmail/enigmail.dtd         (it-IT/enigmail.dtd)
-	locale/it-IT/enigmail/enigmail.properties  (it-IT/enigmail.properties)
-enigmail-ja-JP.jar:
-	locale/ja-JP/enigmail/contents.rdf         (ja-JP/contents.rdf)
-	locale/ja-JP/enigmail/enigmail.dtd         (ja-JP/enigmail.dtd)
-	locale/ja-JP/enigmail/enigmail.properties  (ja-JP/enigmail.properties)
-enigmail-pl-PL.jar:
-	locale/pl-PL/enigmail/contents.rdf         (pl-PL/contents.rdf)
-	locale/pl-PL/enigmail/enigmail.dtd         (pl-PL/enigmail.dtd)
-	locale/pl-PL/enigmail/enigmail.properties  (pl-PL/enigmail.properties)
-enigmail-xx-YY.jar:
-	locale/xx-YY/enigmail/contents.rdf         (xx-YY/contents.rdf)
-	locale/xx-YY/enigmail/enigmail.dtd         (xx-YY/enigmail.dtd)
-	locale/xx-YY/enigmail/enigmail.properties  (xx-YY/enigmail.properties)
-enigmail-zh-CN.jar:
-	locale/zh-CN/enigmail/contents.rdf         (zh-CN/contents.rdf)
-	locale/zh-CN/enigmail/enigmail.dtd         (zh-CN/enigmail.dtd)
-	locale/zh-CN/enigmail/enigmail.properties  (zh-CN/enigmail.properties)
-enigmail-zh-TW.jar:
-	locale/zh-TW/enigmail/contents.rdf         (zh-TW/contents.rdf)
-	locale/zh-TW/enigmail/enigmail.dtd         (zh-TW/enigmail.dtd)
-	locale/zh-TW/enigmail/enigmail.properties  (zh-TW/enigmail.properties)
-enigmail-zh-HK.jar:
-	locale/zh-HK/enigmail/contents.rdf         (zh-HK/contents.rdf)
-	locale/zh-HK/enigmail/enigmail.dtd         (zh-HK/enigmail.dtd)
-	locale/zh-HK/enigmail/enigmail.properties  (zh-HK/enigmail.properties)
+enigmail-locale.jar:
+	locale/ca-AD/enigmail	(ca-AD/contents.rdf)
+	locale/de-AT/enigmail	(de-AT/contents.rdf)
+	locale/de-DE/enigmail	(de-DE/contents.rdf)
+	locale/el/enigmail	(el/contents.rdf)
+	locale/es-AR/enigmail	(es-AR/contents.rdf)
+	locale/es-ES/enigmail	(es-ES/contents.rdf)
+	locale/fi-FI/enigmail	(fi-FI/contents.rdf)
+	locale/fr-FR/enigmail	(fr-FR/contents.rdf)
+	locale/hu-HU/enigmail	(hu-HU/contents.rdf)
+	locale/it-IT/enigmail	(it-IT/contents.rdf)
+	locale/ja-JP/enigmail	(ja-JP/contents.rdf)
+	locale/ko-KR/enigmail	(ko-KR/contents.rdf)
+	locale/nb-NO/enigmail	(nb-NO/contents.rdf)
+	locale/pl-PL/enigmail	(pl-PL/contents.rdf)
+	locale/pt-BR/enigmail	(pt-BR/contents.rdf)
+	locale/ru-RU/enigmail	(ru-RU/contents.rdf)
+	locale/sv-SE/enigmail	(sv-SE/contents.rdf)
+	locale/zh-CN/enigmail	(zh-CN/contents.rdf)
