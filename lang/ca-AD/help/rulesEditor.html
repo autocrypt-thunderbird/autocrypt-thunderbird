@@ -1,0 +1,69 @@
+<html>
+<head><title>Ajuda Enigmail: Editor de regles</title>
+</head>
+<body>
+<h1>Ajuda Enigmail</h1>
+
+<h3>Emprant l'editor de regles de l'Enigmail</h3>
+<p>En el editor de regles podeu indicar que, en funci&oacute; del destinatari, s'activi el xifratge, 
+la signatura i el PGP/MIME, i definir quina clau OpenPGP emprar. Cada regla consisteix 
+en 5 camps que es representen en una l&iacute;nia individual:
+</p>
+<ul>
+  <li><span style="font-weight: bold;">Correu electr&ograve;nic</span>: l'adre&ccedil;a(es) dels camps 
+    A: (To), C&ograve;pia: (Cc) i C&ograve;pia invisible: (Bcc) a comprovar. La coincid&egrave;ncia es basa en <span
+    style="font-style: italic;">subcadenes</span> (es poden trobar m&eacute;s detalls al di&agrave;leg 
+    d'edici&oacute; de regles)
+  </li>
+  <li><span style="font-weight: bold;">Clau(s) OpenPGP</span>: una llista de les identificacions 
+  de claus OpenPGP per a usar amb el destinatari 
+  </li>
+  <li><span style="font-weight: bold;">Signatura</span>: activa o desactiva 
+    la signatura del missatge. Aix&ograve; preval sobre el que s'ha indicat a la  
+    finestra de redacci&oacute; del missatge. El valors s&oacute;n:
+  </li>
+  <ul>
+    <li><i>Mai</i>: desactiva la signatura, incl&ograve;s si s'ha activat a la finestra 
+       de redacci&oacute; del missatge (preval sobre els altres valors)<br>
+    </li>
+    <li><i>Possible</i>: deixa la signatura 
+      tal com s'ha indicat a la finestra de redacci&oacute; del missatge
+    </li>
+    <li><i>Sempre</i>: activa la signatura, incl&ograve;s si <span
+      style="font-style: italic;">no</span> s'ha activat a la finestra de redacci&oacute; del 
+      missatge
+    </li>
+  </ul>
+</ul>
+<div style="margin-left: 40px;">Aquests par&agrave;metres de signatura s'aplicaran a totes les 
+regles que coincideixin. Si una de les regles desactiva la signatura, el missatge no es 
+signar&agrave;, a menys que altres regles indiquin <i>Sempre</i>.<br>
+</div>
+<ul>
+  <li><span style="font-weight: bold;">Xifratge</span>: activa o desactiva 
+    el xifratge del missatge. Els par&agrave;metres permesos i els seu significat s&oacute;n 
+    els mateixos que per la signatura de missatge.</li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: activa o desactiva 
+    l'&uacute;s de la codificaci&oacute; PGP/MIME (RFC 3156) del missatge.
+    Si el el PGP/MIME est&agrave; desactivat, els missatges es codifiquen amb el 
+    "PGP inserit". Els par&agrave;metres permesos i els seu significat s&oacute;n 
+    els mateixos que per la signatura de missatge.
+  </li>
+</ul>
+<p>Les regles es processen segons l'ordre mostrat a la llista. Quan una regla 
+coincideix amb un destinatari i cont&eacute; un identificador de clau OpenPGP, a m&eacute;s d'emprar 
+l'dentificador de clau indicat, el destinatari no es tornar&agrave; a considerar en processar les 
+regles seguents.</p>
+<p><i>Nota:</i> L'editor de regles encara no est&agrave; acabat. És posible escriure les regles 
+m&eacute;s avan&ccedil;ades editant directament el fitxer de regles (aquestes regles no haur&iacute;en 
+de tornar-se a editar en el editor de regles). 
+<a 
+href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">M&eacute;s informaci&oacute;</a> 
+per editar directament el fitxer a la p&agrave;gina web de l'Enigmail</p>
+<hr/>
+<p>
+Teniu m&eacute;s ajuda a la vostra disposici&oacute; a la
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">p&agrave;gina web d'ajuda de l'Enigmail</a>
+</p>
+</body>
+</html>
