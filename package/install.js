@@ -14,6 +14,50 @@ const APP_PLATFORM_WIN="win";
 const APP_PLATFORM_MAC="mac";
 const APP_PLATFORM_OTHER="other";
 
+
+// this function verifies disk space in kilobytes
+function verifyDiskSpace(dirPath, spaceRequired) {
+  var spaceAvailable;
+
+  // Get the available disk space on the given path
+  spaceAvailable = fileGetDiskSpaceAvailable(dirPath);
+
+  // Convert the available disk space into kilobytes
+  spaceAvailable = parseInt(spaceAvailable / 1024);
+
+  // do the verification
+  if(spaceAvailable < spaceRequired) {
+    logComment("Insufficient disk space: " + dirPath);
+    logComment("  required : " + spaceRequired + " K");
+    logComment("  available: " + spaceAvailable + " K");
+    return false;
+  }
+
+  return true;
+}
+
+// OS type detection
+// which platform?
+function getPlatform() {
+  var platformStr;
+  var platformNode = "";
+
+  if('platform' in Install) {
+    platformStr = new String(Install.platform);
+
+    if (!platformStr.search(/^Macintosh/))
+      platformNode = APP_PLATFORM_MAC;
+    else if (!platformStr.search(/^Win/))
+      platformNode = APP_PLATFORM_WIN;
+    else if (platformStr.search(/Linux/))
+      platformNode = APP_PLATFORM_LINUX;
+    else
+      platformNode = APP_PLATFORM_OTHER;
+  }
+
+  return platformNode;
+}
+
 err = initInstall("Enigmail v"+APP_VERSION,  // name for install UI
                   "/enigmail",               // registered name
                   APP_VERSION);              // package version
@@ -108,47 +152,4 @@ if (!verifyDiskSpace(fProgram, srDest)) {
       performInstall();
     }
   }
-}
-
-// this function verifies disk space in kilobytes
-function verifyDiskSpace(dirPath, spaceRequired) {
-  var spaceAvailable;
-
-  // Get the available disk space on the given path
-  spaceAvailable = fileGetDiskSpaceAvailable(dirPath);
-
-  // Convert the available disk space into kilobytes
-  spaceAvailable = parseInt(spaceAvailable / 1024);
-
-  // do the verification
-  if(spaceAvailable < spaceRequired) {
-    logComment("Insufficient disk space: " + dirPath);
-    logComment("  required : " + spaceRequired + " K");
-    logComment("  available: " + spaceAvailable + " K");
-    return false;
-  }
-
-  return true;
-}
-
-// OS type detection
-// which platform?
-function getPlatform() {
-  var platformStr;
-  var platformNode = "";
-
-  if('platform' in Install) {
-    platformStr = new String(Install.platform);
-
-    if (!platformStr.search(/^Macintosh/))
-      platformNode = APP_PLATFORM_MAC;
-    else if (!platformStr.search(/^Win/))
-      platformNode = APP_PLATFORM_WIN;
-    else if (platformStr.search(/Linux/))
-      platformNode = APP_PLATFORM_LINUX;
-    else
-      platformNode = APP_PLATFORM_OTHER;
-  }
-
-  return platformNode;
 }

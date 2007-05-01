@@ -41,7 +41,7 @@ VPATH		= @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
-DIRS = ipc public src build ui package
+DIRS = ipc public src build ui package lang
 
 include $(topsrcdir)/config/config.mk
 
@@ -95,7 +95,7 @@ ENIG_XPCOM_ABI = $(OS_ARCH)_${TARGET_XPCOM_ABI}
 endif
 
 xpi::
-	$(srcdir)/genxpi $(XPIFILE) $(ENIG_XPCOM_ABI) $(MOZ_APP_NAME)-$(MOZ_APP_VERSION) $(DIST)/bin $(srcdir) $(XPI_MODULE) $(DLL_SUFFIX) $(LIB_PREFIX)
+	$(srcdir)/genxpi $(XPIFILE) $(XPI_MODULE_VERS) $(ENIG_XPCOM_ABI) $(MOZ_APP_NAME)-$(MOZ_APP_VERSION) $(DIST)/bin $(srcdir) $(XPI_MODULE) $(DLL_SUFFIX) $(LIB_PREFIX)
 
 clean::
 	test -f $(DIST)/bin/$(XPIFILE) && rm $(DIST)/bin/$(XPIFILE) || echo ""

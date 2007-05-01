@@ -1154,17 +1154,17 @@ function enigEncryptMsg(msgSendType) {
        usingPGPMime = false;
      }
 
-/*
      // Detect PGP/MIME and S/MIME
      if (usingPGPMime) {
         if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields) {
             if (gMsgCompose.compFields.securityInfo.requireEncryptMessage ||
               gMsgCompose.compFields.securityInfo.signMessage) {
                 EnigAlert("pgpMime.sMime.incomaptible");
+                window.cancelSendMessage=true;
+                return;
             }
         }
      }
-*/
 
      var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 

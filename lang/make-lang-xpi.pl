@@ -2,15 +2,15 @@
 
 # generate jar.mn from a list of language packs
 
-if (@ARGV != 1) {
-    print "Usage: make-lang-xpi.pl <input-file>\n";
+if (@ARGV != 2) {
+    print "Usage: make-lang-xpi.pl <input-file> <output-dir>\n";
     exit -1;
 }
 
-my ($inputfile) = @ARGV;
+my ($inputfile, $outdir) = @ARGV;
 
 open INFILE, "$inputfile";
-open OUTFILE, ">jar.mn";
+open OUTFILE, ">$outdir/jar.mn";
 
 print OUTFILE "enigmail-locale.jar:\n";
 
