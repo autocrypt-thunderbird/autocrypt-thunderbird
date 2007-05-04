@@ -27,7 +27,7 @@ rm -rf ${LANGDIR} >/dev/null 2>&1
 mkdir -p ${LANGDIR} 
 mkdir -p ${HELPDIR}
 
-LANGHASH=`echo "${ENIGLANG}" | md5sum | awk '{ print substr($0,0,2)}'`
+LANGHASH=`echo "${ENIGLANG}" | md5sum | awk '{ print substr($0,1,2)}'`
 export LANGHASH
 
 # create install.js
