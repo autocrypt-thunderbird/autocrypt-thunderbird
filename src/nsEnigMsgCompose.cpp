@@ -55,6 +55,7 @@
 #include "nsNetUtil.h"
 #include "nsIThread.h"
 #include "nsIFactory.h"
+#include "nsMsgComposeStringBundle.h"
 #ifdef _ENIG_MOZILLA_1_8
 #include "nsIFileStream.h"
 #endif
@@ -464,7 +465,7 @@ nsEnigMsgCompose::Init()
       return rv;
 
     if (exitCode != 0)
-      return NS_ERROR_NOT_IMPLEMENTED;
+      return NS_ERROR_SMTP_PASSWORD_UNDEFINED;
 
     mHashAlgorithm = NS_ConvertUTF16toUTF8(ha).get();
     DEBUG_LOG(("nsEnigMsgCompose::Init: hashAlgorithm=%s\n", mHashAlgorithm.get()));
@@ -536,7 +537,7 @@ nsEnigMsgCompose::RequiresCryptoEncapsulation(
     return rv;
 
   if (!securityInfo) {
-    *aRequiresEncryptionWork = PR_FALSE;
+    *aRequiresEncryptionWork = PR_TRUE;
     return NS_OK;
   }
 
@@ -893,11 +894,13 @@ nsEnigMsgCompose::WriteCopy(const char *aBuf, PRInt32 aLen)
 
   if (mMimeListener) {
     // Write to listener
-    mMimeListener->Write(aBuf, aLen, nsnull, nsnull);
+    rv = mMimeListener->Write(aBuf, aLen, nsnull, nsnull);
+    if (NS_FAILED(rv)) return rv;
 
   } else if (mPipeTrans) {
     // Write to process and copy if multipart/signed
-    mPipeTrans->WriteSync(aBuf, aLen);
+    rv = mPipeTrans->WriteSync(aBuf, aLen);
+    if (NS_FAILED(rv)) return rv;
 
     if (mMultipartSigned) {
       rv = WriteOut(aBuf, aLen);
