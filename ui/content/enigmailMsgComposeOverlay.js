@@ -1252,12 +1252,6 @@ function enigEncryptMsg(msgSendType) {
          ((sendFlags & ENIG_ENCRYPT_OR_SIGN))) {
       // temporarily enable quoted-printable for PGP/MIME messages
        try {
-          if (! gEnigPrefRoot.getBoolPref("mail.strictly_mime")) {
-            gEnigPrefRoot.setBoolPref("mail.strictly_mime", true);
-            newSecurityInfo.UIFlags |= nsIEnigmail.UI_RESTORE_STRICTLY_MIME;
-            DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: enabled quoted-printable\n");
-          }
-
           // make sure plaintext is not changed to 7bit
           if (typeof(msgCompFields.forceMsgEncoding) == "boolean") {
             msgCompFields.forceMsgEncoding = true;
