@@ -122,7 +122,11 @@ function enigDetermineGpgPath() {
   }
 
   if (gEnigmailSvc.initialized && gEnigmailSvc.agentPath) {
-    document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgFound", gEnigmailSvc.agentPath));
+    var agentPath = gEnigmailSvc.agentPath;
+    if (EnigGetOS() == "WINNT") {
+      agentPath = agentPath.replace(/\\\\/g, "\\");
+    }
+    document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgFound", agentPath));
   }
   else {
     document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgNotFound"));

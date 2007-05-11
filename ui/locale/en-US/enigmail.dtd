@@ -209,11 +209,11 @@
 <!ENTITY enigmail.perRecipientRules.label         "By pre-set rules only">
 <!ENTITY enigmail.perRecipientRules.tooltip       "Choose keys according to rules; prompt for creating new rules recipients without rules.">
 <!ENTITY enigmail.perRecipientRulesAndEmail.label "By rules and email addresses">
-<!ENTITY enigmail.perRecipientRulesAndEmail.tooltip "Choose keys manually, if OpenPGP can't decide after having applied rules and checked email addresses.">
+<!ENTITY enigmail.perRecipientRulesAndEmail.tooltip "Choose keys manually, if GnuPG can't decide after having applied rules and checked email addresses.">
 <!ENTITY enigmail.perEmailAddress.label           "By email addresses">
-<!ENTITY enigmail.perEmailAddress.tooltip         "Choose keys manually, if OpenPGP can't decide after having checked email addresses (no rules used).">
+<!ENTITY enigmail.perEmailAddress.tooltip         "Choose keys manually, if GnuPG can't decide after having checked email addresses (no rules used).">
 <!ENTITY enigmail.askRecipientsAlways.label       "Manually">
-<!ENTITY enigmail.askRecipientsAlways.tooltip     "OpenPGP will never decide which keys to use. The decision will always be up to you.">
+<!ENTITY enigmail.askRecipientsAlways.tooltip     "GnuPG will never decide which keys to use. The decision will always be up to you.">
 <!ENTITY enigmail.neverAsk.label                  "No manual key selection">
 <!ENTITY enigmail.neverAsk.tooltip                "If no valid key is found for all recipients, automatically send the message unencrypted.">
 <!ENTITY enigmail.defineRules.label               "Edit Rules ...">
