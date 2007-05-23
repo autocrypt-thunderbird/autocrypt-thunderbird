@@ -33,6 +33,7 @@ enigmail.jar:
 	content/enigmail/enigmailGenericDisplay.htm    (content/enigmailGenericDisplay.htm)
 	content/enigmail/enigmailHelp.xul              (content/enigmailHelp.xul)
 	content/enigmail/enigmailHelp.js               (content/enigmailHelp.js)
+	content/enigmail/enigmailKeyDetailsDlg.js      (content/enigmailKeyDetailsDlg.js)
 	content/enigmail/enigmailKeyDetailsDlg.xul     (content/enigmailKeyDetailsDlg.xul)
 	content/enigmail/enigmailKeyManager.xul        (content/enigmailKeyManager.xul)
 	content/enigmail/enigmailKeyManager.js         (content/enigmailKeyManager.js)

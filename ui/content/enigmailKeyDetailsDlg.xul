@@ -50,41 +50,62 @@
 
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyDetailsDlg.js"/>
 
   <vbox orient="vertical">
     <grid>
       <columns>
         <column/>
-        <column flex="1"/>
+        <column flex="2"/>
       </columns>
       <rows>
         <row>
-          <label value="&enigmail.keyDetails.userId.label;"/>
+          <hbox align="center">
+            <label value="&enigmail.keyDetails.userId.label;"/>
+          </hbox>
           <textbox readonly="true" id="userId" value="?"/>
         </row>
         <row>
-          <label value="&enigmail.keyDetails.keyId.label;"/>
+          <hbox align="center">
+            <label value="&enigmail.keyDetails.keyId.label;"/>
+          </hbox>
           <textbox readonly="true" id="keyId" value="?"/>
         </row>
         <row>
-          <label value="&enigmail.keyDetails.keyType.label;"/>
+          <hbox align="center">
+            <label value="&enigmail.keyDetails.keyType.label;"/>
+          </hbox>
           <textbox readonly="true" id="keyType" value="?"/>
         </row>
         <row>
-          <label value="&enigmail.keyDetails.calcTrust.label;"/>
+          <hbox align="center">
+            <label value="&enigmail.keyDetails.calcTrust.label;"/>
+          </hbox>
           <textbox readonly="true" id="calcTrust" value="?"/>
         </row>
         <row>
-          <label value="&enigmail.keyDetails.ownerTrust.label;"/>
+          <hbox align="center">
+            <label value="&enigmail.keyDetails.ownerTrust.label;"/>
+          </hbox>
           <textbox readonly="true" id="ownerTrust" value="?"/>
         </row>
         <row>
-          <label value="&enigmail.keyDetails.fingerprint.label;"/>
+          <hbox align="center">
+            <label value="&enigmail.keyDetails.fingerprint.label;"/>
+          </hbox>
           <textbox readonly="true" id="fingerprint" value="?"/>
         </row>
       </rows>
     </grid>
+  </vbox>
 
+  <groupbox flex="2">
+    <caption label="&enigmail.keyDetails.additionalUid.label;"/>
+    <listbox id="uidList" flex="2"
+             height="100px"/>
+  </groupbox>
+
+  <hbox flex="1">
     <tree id="subkeyList" flex="1"
       enableColumnDrag="true"
       style="height:100px"
@@ -120,102 +141,14 @@
       <treechildren id="keyListChildren"/>
 
     </tree>
-	</vbox>
-		
-  <script type="application/x-javascript">
-  <![CDATA[
-    EnigInitCommon("enigmailSignKeyDlg");
+	</hbox>
 
-    function onLoad() {
-      var enigmailSvc = GetEnigmailSvc();
-      if (!enigmailSvc) {
-        EnigAlert(EnigGetString("accessError"));
-        window.close();
-        return;
-      }
-      var exitCodeObj = new Object();
-      var statusFlagsObj = new Object();
-      var errorMsgObj = new Object();
-
-			var fingerprint = "";
-      var subKeyLen="";
-      var subAlgo="";
-      var treeChildren=document.getElementById("keyListChildren");
-			var sigListStr = enigmailSvc.getKeySig("0x"+window.arguments[0].keyId, exitCodeObj, errorMsgObj);
-			if (exitCodeObj.value == 0) {
-				var sigList = sigListStr.split(/[\n\r]+/);
-				for (var i=0; i < sigList.length; i++) {
-					var aLine=sigList[i].split(/:/);
-					switch (aLine[0]) {
-					case "pub":
-            var userId=EnigConvertGpgToUnicode(aLine[9]);
-						var calcTrust=aLine[1];
-            if (aLine[11].indexOf("D")>=0) calcTrust="d"; 
-            calcTrust=getTrustLabel(calcTrust);
-            var ownerTrust=getTrustLabel(aLine[8]);
-          case "uid":
-            if (! userId) userId=EnigConvertGpgToUnicode(aLine[9]);
-            break;
-          case "sub":
-            addRow(treeChildren, aLine);
-            break;
-					case "fpr":
-						fingerprint = aLine[9];
-						break;
-					}
-				}
-			}
-      
-      setAttr("userId", userId);
-      setAttr("keyId", "0x"+ window.arguments[0].keyId.substr(-8,8));
-      setAttr("calcTrust", calcTrust);
-      setAttr("ownerTrust", ownerTrust);
-      setAttr("keyType", EnigGetString(window.arguments[0].secKey ? "keyTypePair" : "keyTypePublic"));
-      if (fingerprint) {
-        setAttr("fingerprint", EnigFormatFpr(fingerprint));
-      }
-    }
-
-    function addRow(treeChildren, aLine) {
-      var aRow=document.createElement("treerow");
-      var treeItem=document.createElement("treeitem");
-      var subkey=EnigGetString(aLine[0]=="sub" ? "keyTypeSubkey" : "keyTypePublic")
-      aRow.appendChild(createCell(subkey)); // subkey type
-      aRow.appendChild(createCell("0x"+aLine[4].substr(-8,8))); // key id
-      aRow.appendChild(createCell(EnigGetString("keyAlgorithm_"+aLine[3]))); // algorithm
-      aRow.appendChild(createCell(aLine[2])); // size
-      aRow.appendChild(createCell(EnigGetDateTime(aLine[5], true, false))); // created
-      var expire=(aLine[6].length==0 ? EnigGetString("keyExpiryNever") : EnigGetDateTime(aLine[6], true, false));
-      if (aLine[1]=="r") {
-        expire = EnigGetString("keyValid.revoked");
-      }
-      aRow.appendChild(createCell(expire)); // expiry
-      treeItem.appendChild(aRow);
-      treeChildren.appendChild(treeItem);
-    }
-
-    function createCell(label) {
-      var cell = document.createElement("treecell");
-      cell.setAttribute("label", label);
-      return cell;
-    }
-
-    function getTrustLabel(trustCode) {
-      var trustTxt=EnigGetTrustLabel(trustCode);
-      if (trustTxt=="-" || trustTxt.length==0) {
-        trustTxt=EnigGetString("keyValid.unknown");
-      }
-      return trustTxt;
-    }
-    
-    function setAttr(attribute, value) {
-      var elem = document.getElementById(attribute);
-      if (elem) {
-        elem.value = value;
-      }
-    }
-  ]]>
-  </script>
+  <hbox flex="0">
+     <button label="View Photo"/>
+     <button label="View Signatures"/>
+     <button label="Sign Key"/>
+     <button label="Set Owner Trust"/>
+  </hbox>
 
 </dialog>
 

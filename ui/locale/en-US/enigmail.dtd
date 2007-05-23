@@ -449,10 +449,12 @@
 <!ENTITY enigmail.keyMan.delKey.label              "Delete Key">
 <!ENTITY enigmail.keyMan.revokeKey.label           "Revoke Key">
 <!ENTITY enigmail.keyMan.keyProps.label            "Key Properties">
+<!ENTITY enigmail.keyMan.showAllKeys.label         "Display All Keys by Default">
 <!ENTITY enigmail.keyMan.viewPhoto.label           "Photo ID">
 <!ENTITY enigmail.keyMan.ctxViewPhoto.label        "View Photo ID">
 <!ENTITY enigmail.keyMan.viewSig.label             "Signatures">
 <!ENTITY enigmail.keyMan.ctxViewSig.label          "View Signatures">
+<!ENTITY enigmail.keyMan.userId.label              "Name">
 <!ENTITY enigmail.keyMan.keyType.label             "Type">
 <!ENTITY enigmail.keyMan.calcTrust.label           "Key Validity">
 <!ENTITY enigmail.keyMan.ownerTrust.label          "Owner Trust">
@@ -460,7 +462,7 @@
 <!ENTITY enigmail.keyMan.fingerprint.label         "Fingerprint">
 <!ENTITY enigmail.keyMan.selectAll.label           "Select all Keys">
 
-<!ENTITY enigmail.keyMan.filter.label              "Filter for user ID's or key ID's containing:">
+<!ENTITY enigmail.keyMan.filter.label              "Search:">
 <!ENTITY enigmail.keyMan.clearFilter.label         "Clear">
 <!ENTITY enigmail.keyMan.clearFilter.accesskey     "C">
 
@@ -487,6 +489,7 @@
 <!ENTITY enigmail.keyMan.importFromClipbrd.accesskey "I">
 <!ENTITY enigmail.keyMan.copyToClipbrd.accesskey     "C">
 <!ENTITY enigmail.keyMan.keyDetails.accesskey        "K">
+<!ENTITY enigmail.keyMan.showAllKeys.accesskey       "D">
 <!ENTITY enigmail.keyMan.enableKey.accesskey         "B">
 <!ENTITY enigmail.keyMan.refreshKey.accesskey        "R">
 <!ENTITY enigmail.keyMan.refreshSelKeys.accesskey    "R">
@@ -512,6 +515,7 @@
 <!ENTITY enigmail.keyDetails.title                   "Key Properties">
 <!ENTITY enigmail.keyDetails.userId.label            "Primary User ID">
 <!ENTITY enigmail.keyDetails.keyId.label             "Key ID">
+<!ENTITY enigmail.keyDetails.additionalUid.label     "Additional User ID's">
 <!ENTITY enigmail.keyDetails.ID.label                "ID">
 <!ENTITY enigmail.keyDetails.keyType.label           "Type">
 <!ENTITY enigmail.keyDetails.subType.label           "Subkey">

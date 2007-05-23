@@ -92,6 +92,10 @@ pref("extensions.enigmail.logDirectory","");
 // enable encryption for replies to encrypted mails
 pref("extensions.enigmail.keepSettingsForReply",true);
 
+// display all or no keys by default in the key manager
+pref("extensions.enigmail.keyManShowAllKeys",false);
+
+
 // list of keyservers to use
 pref("extensions.enigmail.keyserver","pool.sks-keyservers.net, subkeys.pgp.net, pgp.mit.edu, ldap://certserver.pgp.com");
 

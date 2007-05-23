@@ -68,7 +68,7 @@ var gClearButton = null;
 var gFilterBox = null;
 var gSearchTimer = null;
 var gSearchInput = null;
-
+var gShowAllKeysElement = null;
 
 function enigmailKeyManagerLoad() {
   DEBUG_LOG("enigmailKeyManager.js: enigmailKeyManagerLoad\n");
@@ -76,22 +76,31 @@ function enigmailKeyManagerLoad() {
   gFilterBox = document.getElementById("filterKey");
   gClearButton = document.getElementById("clearFilter");
   gSearchInput = document.getElementById("filterKey");
+  gShowAllKeysElement = document.getElementById("showAllKeys");
+  if (EnigGetPref("keyManShowAllKeys")) {
+    gShowAllKeysElement.setAttribute("checked", "true");
+  }
+
   window.enigIpcRequest = null;
 
   document.getElementById("statusText").value = EnigGetString("keyMan.loadingKeys");
   document.getElementById("progressBar").removeAttribute("collapsed");
   window.setTimeout(loadkeyList, 100);
+  gSearchInput.focus();
 }
 
+function displayFullList() {
+  return (gShowAllKeysElement.getAttribute("checked") == "true");
+}
 
 function loadkeyList() {
   DEBUG_LOG("enigmailKeyManager.js: loadkeyList\n");
 
   enigmailBuildList(false);
+  showOrHideAllKeys();
   document.getElementById("statusText").value=" ";
   document.getElementById("progressBar").setAttribute("collapsed", "true");
 }
-
 
 function enigmailRefreshKeys() {
   DEBUG_LOG("enigmailKeyManager.js: enigmailRefreshKeys\n");
@@ -150,7 +159,7 @@ function enigmailBuildList(refresh) {
       gUserList.view.selection.rangedSelect(selectedItems[i], selectedItems[i], true)
     }
   }
-  gUserList.focus();
+  // gUserList.focus();
 }
 
 
@@ -921,7 +930,7 @@ function onSearchInput(returnKeyHit)
     onEnterInSearchBar();
   }
   else {
-    gSearchTimer = setTimeout("onEnterInSearchBar();", 800);
+    gSearchTimer = setTimeout("onEnterInSearchBar();", 600);
   }
 }
 
@@ -950,17 +959,47 @@ function getFirstNode() {
 
 function onResetFilter() {
   gFilterBox.value="";
+  showOrHideAllKeys();
+  /*
+  if (! displayFullList()) {
+    showOrHideAllKeys();
+  }
+  else {
+    var node=getFirstNode();
+    while (node) {
+      node.hidden=false;
+      node = node.nextSibling;
+    }
+  } */
+  gClearButton.setAttribute("disabled", true);
+}
+
+function enigmailToggleShowAll() {
+  // gShowAllKeysElement.checked = (! gShowAllKeysElement.checked);
+  EnigSetPref("keyManShowAllKeys", displayFullList());
+
+  if (!gSearchInput.value || gSearchInput.value.length==0) {
+    showOrHideAllKeys();
+  }
+}
+
+
+function showOrHideAllKeys() {
+  var hideNode = ! displayFullList();
   var node=getFirstNode();
   while (node) {
-    node.hidden=false;
+    node.hidden= hideNode;
     node = node.nextSibling;
   }
-  gClearButton.setAttribute("disabled", true);
 }
 
 function enigApplyFilter() {
   var searchTxt=gSearchInput.value;
-  if (!searchTxt || searchTxt.length==0) return;
+  if (!searchTxt || searchTxt.length==0) {
+    showOrHideAllKeys();
+    return;
+  }
+
   searchTxt = searchTxt.toLowerCase();
   var node=getFirstNode();
   while (node) {

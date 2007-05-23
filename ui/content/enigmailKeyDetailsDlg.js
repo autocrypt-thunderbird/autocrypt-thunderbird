@@ -1,0 +1,130 @@
+/*
+  The contents of this file are subject to the Mozilla Public
+  License Version 1.1 (the "MPL"); you may not use this file
+  except in compliance with the MPL. You may obtain a copy of
+  the MPL at http://www.mozilla.org/MPL/
+
+  Software distributed under the MPL is distributed on an "AS
+  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  implied. See the MPL for the specific language governing
+  rights and limitations under the MPL.
+
+  The Original Code is Enigmail.
+
+  The Initial Developer of this code is Patrick Brunschwig.
+  Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+  are Copyright (C) 2007 Patrick Brunschwig.
+  All Rights Reserved.
+
+  Contributor(s):
+
+  Alternatively, the contents of this file may be used under the
+  terms of the GNU General Public License (the "GPL"), in which case
+  the provisions of the GPL are applicable instead of
+  those above. If you wish to allow use of your version of this
+  file only under the terms of the GPL and not to allow
+  others to use your version of this file under the MPL, indicate
+  your decision by deleting the provisions above and replace them
+  with the notice and other provisions required by the GPL.
+  If you do not delete the provisions above, a recipient
+  may use your version of this file under either the MPL or the
+  GPL.
+*/
+
+
+EnigInitCommon("enigmailKeyDetailsDlg");
+
+function onLoad() {
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc) {
+    EnigAlert(EnigGetString("accessError"));
+    window.close();
+    return;
+  }
+  var exitCodeObj = new Object();
+  var statusFlagsObj = new Object();
+  var errorMsgObj = new Object();
+
+  var fingerprint = "";
+  var subKeyLen="";
+  var subAlgo="";
+  var treeChildren = document.getElementById("keyListChildren");
+  var uidList = document.getElementById("uidList");
+  var sigListStr = enigmailSvc.getKeySig("0x"+window.arguments[0].keyId, exitCodeObj, errorMsgObj);
+  if (exitCodeObj.value == 0) {
+    var sigList = sigListStr.split(/[\n\r]+/);
+    for (var i=0; i < sigList.length; i++) {
+      var aLine=sigList[i].split(/:/);
+      switch (aLine[0]) {
+      case "pub":
+        var userId=EnigConvertGpgToUnicode(aLine[9]);
+        var calcTrust=aLine[1];
+        if (aLine[11].indexOf("D")>=0) calcTrust="d";
+        calcTrust=getTrustLabel(calcTrust);
+        var ownerTrust=getTrustLabel(aLine[8]);
+      case "uid":
+        if (! userId) {
+          userId=EnigConvertGpgToUnicode(aLine[9]);
+        }
+        else {
+          uidList.appendItem(EnigConvertGpgToUnicode(aLine[9]), i);
+        }
+        break;
+      case "sub":
+        addRow(treeChildren, aLine);
+        break;
+      case "fpr":
+        fingerprint = aLine[9];
+        break;
+      }
+    }
+  }
+
+  setAttr("userId", userId);
+  setAttr("keyId", "0x"+ window.arguments[0].keyId.substr(-8,8));
+  setAttr("calcTrust", calcTrust);
+  setAttr("ownerTrust", ownerTrust);
+  setAttr("keyType", EnigGetString(window.arguments[0].secKey ? "keyTypePair" : "keyTypePublic"));
+  if (fingerprint) {
+    setAttr("fingerprint", EnigFormatFpr(fingerprint));
+  }
+}
+
+function addRow(treeChildren, aLine) {
+  var aRow=document.createElement("treerow");
+  var treeItem=document.createElement("treeitem");
+  var subkey=EnigGetString(aLine[0]=="sub" ? "keyTypeSubkey" : "keyTypePublic")
+  aRow.appendChild(createCell(subkey)); // subkey type
+  aRow.appendChild(createCell("0x"+aLine[4].substr(-8,8))); // key id
+  aRow.appendChild(createCell(EnigGetString("keyAlgorithm_"+aLine[3]))); // algorithm
+  aRow.appendChild(createCell(aLine[2])); // size
+  aRow.appendChild(createCell(EnigGetDateTime(aLine[5], true, false))); // created
+  var expire=(aLine[6].length==0 ? EnigGetString("keyExpiryNever") : EnigGetDateTime(aLine[6], true, false));
+  if (aLine[1]=="r") {
+    expire = EnigGetString("keyValid.revoked");
+  }
+  aRow.appendChild(createCell(expire)); // expiry
+  treeItem.appendChild(aRow);
+  treeChildren.appendChild(treeItem);
+}
+
+function createCell(label) {
+  var cell = document.createElement("treecell");
+  cell.setAttribute("label", label);
+  return cell;
+}
+
+function getTrustLabel(trustCode) {
+  var trustTxt=EnigGetTrustLabel(trustCode);
+  if (trustTxt=="-" || trustTxt.length==0) {
+    trustTxt=EnigGetString("keyValid.unknown");
+  }
+  return trustTxt;
+}
+
+function setAttr(attribute, value) {
+  var elem = document.getElementById(attribute);
+  if (elem) {
+    elem.value = value;
+  }
+}
