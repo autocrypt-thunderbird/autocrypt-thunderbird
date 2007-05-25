@@ -410,10 +410,15 @@ function enigmailKeyDetails() {
 
   var inputObj = {
     keyId:  keyList[0],
+    keyListArr: gKeyList,
     secKey: gKeyList[ keyList[0]].secretAvailable
   };
+  var resultObj = { refresh: false };
   window.openDialog("chrome://enigmail/content/enigmailKeyDetailsDlg.xul",
-        "", "dialog,modal,centerscreen", inputObj);
+        "", "dialog,modal,centerscreen", inputObj, resultObj);
+  if (resultObj.refresh) {
+    enigmailRefreshKeys();
+  }
 }
 
 
@@ -541,24 +546,13 @@ function enigCreateKeyMsg() {
 
   var msgCompSvc = Components.classes["@mozilla.org/messengercompose;1"].getService(Components.interfaces.nsIMsgComposeService);
 
-  if (typeof(msgCompSvc.OpenComposeWindowWithCompFields) != "function") {
-    // TB 1.5
-    var msgCompParam = Components.classes["@mozilla.org/messengercompose/composeparams;1"].createInstance(Components.interfaces.nsIMsgComposeParams);
-    msgCompParam.composeFields = msgCompFields;
-    msgCompParam.identity = acctManager.defaultAccount.defaultIdentity;
-    msgCompParam.type = Components.interfaces.nsIMsgCompType.New;
-    msgCompParam.format = Components.interfaces.nsIMsgCompFormat.Default;
-    msgCompParam.originalMsgURI = "";
-    msgCompSvc.OpenComposeWindowWithParams("", msgCompParam);
-  }
-  else {
-    // TB 1.0
-    msgCompSvc.OpenComposeWindowWithCompFields ("",
-            Components.interfaces.nsIMsgCompType.New,
-            Components.interfaces.nsIMsgCompFormat.Default,
-            msgCompFields,
-            acctManager.defaultAccount.defaultIdentity);
-  }
+  var msgCompParam = Components.classes["@mozilla.org/messengercompose/composeparams;1"].createInstance(Components.interfaces.nsIMsgComposeParams);
+  msgCompParam.composeFields = msgCompFields;
+  msgCompParam.identity = acctManager.defaultAccount.defaultIdentity;
+  msgCompParam.type = Components.interfaces.nsIMsgCompType.New;
+  msgCompParam.format = Components.interfaces.nsIMsgCompFormat.Default;
+  msgCompParam.originalMsgURI = "";
+  msgCompSvc.OpenComposeWindowWithParams("", msgCompParam);
 }
 
 
@@ -574,8 +568,9 @@ function enigEditKeyTrust() {
     userIdList.push(gKeyList[keyList[i]].userId);
   }
 
-  EnigEditKeyTrust(userIdList, keyList);
-  enigmailRefreshKeys();
+  if (EnigEditKeyTrust(userIdList, keyList)) {
+    enigmailRefreshKeys();
+  }
 }
 
 
@@ -585,50 +580,16 @@ function enigSignKey() {
     EnigAlert(EnigGetString("noKeySelected"));
     return;
   }
-  EnigSignKey(gKeyList[keyList[0]].userId, keyList[0], null);
-  enigmailRefreshKeys();
+  if (EnigSignKey(gKeyList[keyList[0]].userId, keyList[0], null)) {
+    enigmailRefreshKeys();
+  }
 }
 
 function enigmailRevokeKey() {
   var keyList = enigmailGetSelectedKeys();
-
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return;
-
-  var userId="0x"+keyList[0].substr(-8,8)+" - "+gKeyList[keyList[0]].userId;
-  if (!EnigConfirm(EnigGetString("revokeKeyAsk", userId))) return;
-
-  var tmpDir=EnigGetTempDir();
-
-  try {
-    var revFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
-    revFile.initWithPath(tmpDir);
-    if (!(revFile.isDirectory() && revFile.isWritable())) {
-      EnigAlert(EnigGetString("noTempDir"));
-      return;
-    }
+  if (EnigRevokeKey(keyList[0], gKeyList[keyList[0]].userId)) {
+    enigmailRefreshKeys();
   }
-  catch (ex) {}
-  revFile.append("revkey.asc");
-  revFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
-
-  var errorMsgObj = {};
-  var r=enigmailSvc.genRevokeCert(window, "0x"+keyList[0], revFile.path, "0", "", errorMsgObj);
-  if (r != 0) {
-    revFile.remove(false);
-    EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+errorMsgObj.value);
-    return;
-  }
-  r = enigmailSvc.importKeyFromFile(window, revFile.path, errorMsgObj);
-  revFile.remove(false);
-  if (r != 0) {
-    EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+EnigConvertGpgToUnicode(errorMsgObj.value).replace(/\\e3A/g, ":"));
-  }
-  else {
-    EnigAlert(EnigGetString("revokeKeyOk"));
-  }
-  enigmailRefreshKeys();
 }
 
 function enigCreateRevokeCert() {
@@ -754,38 +715,17 @@ function enigmailManageUids() {
     keyId: keyList[0],
     ownKey: gKeyList[keyList[0]].secretAvailable
   };
-
+  var resultObj = { refresh: false };
   window.openDialog("chrome://enigmail/content/enigmailManageUidDlg.xul",
-        "", "dialog,modal,centerscreen,resizable=yes", inputObj);
-  enigmailRefreshKeys();
+        "", "dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
+  if (resultObj.refresh) {
+    enigmailRefreshKeys();
+  }
 }
 
 function enigmailChangePwd() {
   var keyList = enigmailGetSelectedKeys();
-  var inputObj = {
-    keyId: keyList[0],
-    userId: gKeyList[keyList[0]].userId
-  };
-
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return;
-
-  if (! enigmailSvc.useGpgAgent()) {
-    window.openDialog("chrome://enigmail/content/enigmailChangePasswd.xul",
-        "", "dialog,modal,centerscreen", inputObj);
-  }
-  else {
-    // gpg-agent will handle everything
-    var errorMsgObj = new Object();
-    var r = enigmailSvc.simpleChangePassphrase(window, keyList[0], errorMsgObj);
-
-    if (r != 0) {
-      EnigAlert(EnigGetString("changePassFailed")+"\n\n"+errorMsgObj.value);
-
-    }
-  }
-
+  EnigChangeKeyPwd(keyList[0], gKeyList[keyList[0]].userId);
 }
 
 

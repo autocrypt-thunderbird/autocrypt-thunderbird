@@ -60,10 +60,11 @@
       var enigmailSvc = GetEnigmailSvc();
       if (!enigmailSvc)
         return;
-      
+
       var errorMsgObj = new Object();
       var exitCodeObj = new Object();
       try {
+        window.arguments[1].refresh = false;
         var currTrust = -1;
         var lastTrust = -1;
         var sigListStr = enigmailSvc.getKeySig("0x"+window.arguments[0].keyId.join(" 0x"), exitCodeObj, errorMsgObj);
@@ -86,7 +87,7 @@
           }
         }
       } catch (ex) {}
-      
+
       var keyIdList = document.getElementById("keyIdList");
       for (i=0; i<window.arguments[0].userId.length; i++) {
         var keyId = window.arguments[0].userId[i]+" - 0x"+ window.arguments[0].keyId[i].substr(-8,8);
@@ -99,16 +100,19 @@
       var enigmailSvc = GetEnigmailSvc();
       if (!enigmailSvc)
         return;
-      
+
       var errorMsgObj = new Object();
 
       for (var i=0; i < window.arguments[0].keyId.length; i++) {
-        var r = enigmailSvc.setKeyTrust(window, 
-                                      window.arguments[0].keyId[i], 
+        var r = enigmailSvc.setKeyTrust(window,
+                                      window.arguments[0].keyId[i],
                                       Number(t.selectedItem.value),
                                       errorMsgObj);
         if (r != 0) {
           EnigAlert(EnigGetString("setKeyTrustFailed")+"\n\n"+errorMsgObj.value);
+        }
+        else {
+          window.arguments[1].refresh = true;
         }
       }
     }

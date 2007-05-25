@@ -16,7 +16,7 @@
   are Copyright (C) 2004 Patrick Brunschwig.
   All Rights Reserved.
 
-  Contributor(s): 
+  Contributor(s):
     * Russell Francis <rf358197@ohio.edu>
 
   Alternatively, the contents of this file may be used under the
@@ -84,7 +84,7 @@
       style="height:200px"
       hidecolumnpicker="true"
       ondblclick="handleDblClick(event)">
-      
+
       <treecols>
         <treecol id="enigUserNameCol" flex="1"
             label="&enigmail.keyUserId.label;"/>
@@ -111,12 +111,12 @@
 
     </tree>
   </vbox>
-  
+
   <script type="application/x-javascript">
   <![CDATA[
 
     EnigInitCommon("enigmailViewKeySigDlg");
-    
+
     // field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
     const KEY_TRUST=1;
     const KEY_ID = 4;
@@ -127,13 +127,13 @@
     const USER_ID = 9;
     const SIG_TYPE = 10;
     const KEY_USE_FOR = 11;
-    
+
     const KEY_EXPIRED="e";
     const KEY_REVOKED="r";
     const KEY_INVALID="i";
     const KEY_DISABLED="d";
     const KEY_NOT_VALID=KEY_EXPIRED+KEY_REVOKED+KEY_INVALID+KEY_DISABLED;
-    
+
     var gKeyListArr;
 
     function onLoad() {
@@ -141,12 +141,12 @@
       window.arguments[1].refresh = false;
       loadList();
     }
-    
+
     function setWindowPos(x, y) {
       window.screenX = x;
       window.screenY = y;
     }
-    
+
     function loadList() {
       var enigmailSvc = GetEnigmailSvc();
       if (!enigmailSvc) {
@@ -154,36 +154,36 @@
         window.close();
         return;
       }
-      
+
       var inArg = window.arguments[0];
       var keyId = inArg.keyId;
       var keyIdValue = document.getElementById("keyIdValue");
-      
+
       if (typeof(inArg.posX)=="number" &&
           typeof(inArg.posY)=="number") {
         window.setTimeout(setWindowPos, 0, inArg.posX, inArg.posY);
       }
 
       keyIdValue.value = gKeyListArr[keyId].userId+" - 0x"+ inArg.keyId.substr(-8,8);
-    
+
       var exitCodeObj = {};
       var errorMsgObj = {};
-    
+
       var sigList = enigmailSvc.getKeySig("0x"+keyId, exitCodeObj, errorMsgObj);
-      
+
       if (exitCodeObj.value != 0) {
         EnigAlert(errorMsgObj.value);
         window.close();
         return;
       }
-      
-      
+
+
       var keySigList=document.getElementById("keySigList");
       var treeChildren=keySigList.getElementsByAttribute("id", "keySigListChildren")[0];
       var aSigList = sigList.split(/\n/);
       var aRevSig = [];
       var currUid="";
-      
+
       for (var i=0; i<aSigList.length; i++) {
         var listRow=aSigList[i].split(/:/);
         if (listRow.length>=0) {
@@ -197,7 +197,7 @@
             if (listRow[0] == "uat") {
               listRow[USER_ID]=EnigGetString("userAtt.photo");
             }
-            
+
             if (listRow[0] == "uid" || listRow[0] == "uat") {
               currUid=listRow[UID_ID];
             }
@@ -250,7 +250,7 @@
           }
         }
       }
-      
+
       // mark revoked signatures
       for (i=0; i<aRevSig.length; i++) {
         var nodes = document.getElementsByAttribute("sigID", aRevSig[i]);
@@ -267,11 +267,11 @@
           catch (ex){}
         }
       }
-      
+
       keySigList.appendChild(treeChildren);
       return;
     }
-    
+
     function addCell(row, label, subkeyRow, keyActive) {
       var cell = document.createElement("treecell");
       cell.setAttribute("label", label);
@@ -287,7 +287,7 @@
       return cell;
     }
 
-    function getSelectedRows() 
+    function getSelectedRows()
     {
       var sigList = document.getElementById( "keySigList" );
       var numRanges = sigList.view.selection.getRangeCount();
@@ -317,7 +317,7 @@
       }
       return null;
     }
-    
+
     function getCurrRow() {
       var sigList = document.getElementById("keySigList");
       var item = sigList.view.getItemAtIndex(sigList.view.selection.currentIndex);
@@ -326,8 +326,8 @@
       }
       return null;
     }
-    
-    function showSigCtxMenu() 
+
+    function showSigCtxMenu()
     {
       var viewDetailsDisabled = "true";
       var importKeyDisabled = "true";
@@ -348,7 +348,7 @@
           }
         }
       }
-      else 
+      else
       {
         /* We have more than one row. If any of them are importable, enable
          * the import menuitem.
@@ -366,7 +366,7 @@
       document.getElementById( "bcViewDetails" ).setAttribute( "disabled", viewDetailsDisabled );
       document.getElementById( "ctxImportKey" ).setAttribute( "disabled", importKeyDisabled );
     }
-    
+
     function listSig() {
       var row = getCurrRow();
       var inputObj = {
@@ -383,20 +383,25 @@
         window.arguments[1].refresh=true;
       }
     }
-    
+
     function viewKeyDetails() {
       var row = getCurrRow();
       var keyId = row.getAttribute("keyID")
 
       var inputObj = {
         keyId:  keyId,
+        keyListArr: gKeyListArr,
         secKey: gKeyListArr[keyId].secretAvailable
       };
+      var resultObj = { refresh: true };
       window.openDialog("chrome://enigmail/content/enigmailKeyDetailsDlg.xul",
-            "", "dialog,modal,centerscreen", inputObj);
+            "", "dialog,modal,centerscreen", inputObj, resultObj);
+      if (resultObj.refresh) {
+        window.arguments[1].refresh=true;
+      }
     }
-    
-    function importKey() 
+
+    function importKey()
     {
       var resultObj = new Object();
       var inputObj = new Object();
@@ -415,7 +420,7 @@
       if( resultObj.importedKeys > 0 )
       {
         var treeChildren = document.getElementById("keySigListChildren");
-        while (treeChildren.firstChild) 
+        while (treeChildren.firstChild)
         {
           treeChildren.removeChild(treeChildren.firstChild);
         }
@@ -426,7 +431,7 @@
         loadList();
       }
     }
-    
+
     function handleDblClick(event) {
       if (event) {
         if (event.button != 0) return;

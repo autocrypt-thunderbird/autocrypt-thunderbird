@@ -85,6 +85,7 @@
     EnigInitCommon("enigmailManageUidDlg");
 
     function onLoad() {
+      window.arguments[1].refresh = false;
       reloadUidList();
       var keyId = window.enigmailUid +" - 0x"+ window.arguments[0].keyId.substr(-8,8);
       document.getElementById("keyId").value = keyId;
@@ -197,9 +198,10 @@
         keyId: "0x"+window.arguments[0].keyId,
         userId: window.enigmailUid
       };
-
+      var resultObj = { refresh: false };
       window.openDialog("chrome://enigmail/content/enigmailAddUidDlg.xul",
-            "", "dialog,modal,centerscreen", inputObj);
+            "", "dialog,modal,centerscreen", inputObj, resultObj);
+      window.arguments[1].refresh = resultObj.refresh;
       reloadUidList();
     }
 
@@ -220,6 +222,7 @@
           return;
         }
         EnigAlert(EnigGetString("changePrimUidOK"));
+        window.arguments[1].refresh = true;
         reloadUidList();
       }
     }
@@ -242,6 +245,7 @@
           return;
         }
         EnigAlert(EnigGetString("revokeUidOK", uidList.selectedItem.label));
+        window.arguments[1].refresh = true;
         reloadUidList();
       }
     }
@@ -264,6 +268,7 @@
           return;
         }
         EnigAlert(EnigGetString("deleteUidOK", uidList.selectedItem.label));
+        window.arguments[1].refresh = true;
         reloadUidList();
       }
     }

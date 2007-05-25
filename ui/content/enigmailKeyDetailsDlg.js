@@ -34,7 +34,28 @@
 
 EnigInitCommon("enigmailKeyDetailsDlg");
 
+var gKeyId = null;
+var gUserId = null;
+var gKeyList = null;
+
 function onLoad() {
+  window.arguments[1].refresh = false;
+
+  gKeyId = window.arguments[0].keyId;
+  gKeyList = window.arguments[0].keyListArr;
+
+  reloadData();
+
+  if (window.arguments[0].secKey) {
+    setAttr("keyType", EnigGetString("keyTypePair"));
+    document.getElementById("ownKeyCommands").removeAttribute("hidden");
+  }
+  else {
+    setAttr("keyType", EnigGetString("keyTypePublic"));
+  }
+}
+
+function reloadData() {
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {
     EnigAlert(EnigGetString("accessError"));
@@ -45,33 +66,49 @@ function onLoad() {
   var statusFlagsObj = new Object();
   var errorMsgObj = new Object();
 
+  gUserId = null;
+
   var fingerprint = "";
   var subKeyLen="";
   var subAlgo="";
   var treeChildren = document.getElementById("keyListChildren");
-  var uidList = document.getElementById("uidList");
-  var sigListStr = enigmailSvc.getKeySig("0x"+window.arguments[0].keyId, exitCodeObj, errorMsgObj);
+  var uidList = document.getElementById("uidListChildren");
+
+  // clean lists
+  while (treeChildren.firstChild) {
+    treeChildren.removeChild(treeChildren.firstChild);
+  }
+  while (uidList.firstChild) {
+    uidList.removeChild(uidList.firstChild);
+  }
+
+  var sigListStr = enigmailSvc.getKeySig("0x"+gKeyId, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value == 0) {
     var sigList = sigListStr.split(/[\n\r]+/);
     for (var i=0; i < sigList.length; i++) {
       var aLine=sigList[i].split(/:/);
       switch (aLine[0]) {
       case "pub":
-        var userId=EnigConvertGpgToUnicode(aLine[9]);
+        gUserId=EnigConvertGpgToUnicode(aLine[9]);
         var calcTrust=aLine[1];
         if (aLine[11].indexOf("D")>=0) calcTrust="d";
         calcTrust=getTrustLabel(calcTrust);
         var ownerTrust=getTrustLabel(aLine[8]);
       case "uid":
-        if (! userId) {
-          userId=EnigConvertGpgToUnicode(aLine[9]);
+        if (! gUserId) {
+          gUserId=EnigConvertGpgToUnicode(aLine[9]);
         }
         else {
-          uidList.appendItem(EnigConvertGpgToUnicode(aLine[9]), i);
+          uidList.appendChild(createUidRow(aLine));
+        }
+        break;
+      case "uat":
+        if (aLine[9].search("1 ") == 0) {
+          document.getElementById("showPhoto").removeAttribute("disabled");
         }
         break;
       case "sub":
-        addRow(treeChildren, aLine);
+        addSubkey(treeChildren, aLine);
         break;
       case "fpr":
         fingerprint = aLine[9];
@@ -80,17 +117,31 @@ function onLoad() {
     }
   }
 
-  setAttr("userId", userId);
-  setAttr("keyId", "0x"+ window.arguments[0].keyId.substr(-8,8));
+  setAttr("userId", gUserId);
+  setAttr("keyId", "0x"+ gKeyId.substr(-8,8));
   setAttr("calcTrust", calcTrust);
   setAttr("ownerTrust", ownerTrust);
-  setAttr("keyType", EnigGetString(window.arguments[0].secKey ? "keyTypePair" : "keyTypePublic"));
   if (fingerprint) {
     setAttr("fingerprint", EnigFormatFpr(fingerprint));
   }
 }
 
-function addRow(treeChildren, aLine) {
+function createUidRow(aLine) {
+  var treeItem = document.createElement("treeitem");
+  var treeRow = document.createElement("treerow");
+  var uidCol = createCell(EnigConvertGpgToUnicode(aLine[9]));
+  var validCol = createCell(getTrustLabel(aLine[1]));
+  if ("dre".search(aLine[1]) >= 0) {
+    uidCol.setAttribute("properties", "enigKeyInactive");
+    validCol.setAttribute("properties", "enigKeyInactive");
+  }
+  treeRow.appendChild(uidCol);
+  treeRow.appendChild(validCol);
+  treeItem.appendChild(treeRow);
+  return treeItem;
+}
+
+function addSubkey(treeChildren, aLine) {
   var aRow=document.createElement("treerow");
   var treeItem=document.createElement("treeitem");
   var subkey=EnigGetString(aLine[0]=="sub" ? "keyTypeSubkey" : "keyTypePublic")
@@ -127,4 +178,76 @@ function setAttr(attribute, value) {
   if (elem) {
     elem.value = value;
   }
+}
+
+function enableRefresh() {
+  window.arguments[1].refresh = true;
+}
+
+// ------------------ onCommand Functions  -----------------
+
+function showPhoto() {
+  EnigShowPhoto(gKeyId, gUserId, 0)
+}
+
+function viewSignatures() {
+  var inputObj = {
+    keyId: gKeyId,
+    keyListArr: gKeyList
+  };
+  var resultObj = {refresh: false};
+
+  window.openDialog("chrome://enigmail/content/enigmailViewKeySigDlg.xul",
+        "", "dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
+
+  if (resultObj.refresh) {
+    enableRefresh();
+    reloadData();
+  }
+
+}
+
+function signKey() {
+  if (EnigSignKey(gUserId, gKeyId, null)) {
+    enableRefresh();
+    reloadData();
+  }
+}
+
+function setOwnerTrust() {
+
+  if (EnigEditKeyTrust([gUserId], [gKeyId])) {
+    enableRefresh();
+    reloadData();
+  }
+}
+
+function manageUids() {
+  var inputObj = {
+    keyId: gKeyId,
+    ownKey: window.arguments[0].secKey
+  };
+
+  var resultObj = {refresh: false};
+  window.openDialog("chrome://enigmail/content/enigmailManageUidDlg.xul",
+        "", "dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
+  if (resultObj.refresh) {
+    enableRefresh();
+    reloadData();
+  }
+}
+
+function changePassword() {
+  EnigChangeKeyPwd(gKeyId, gUserId);
+}
+
+function revokeKey() {
+  if (EnigRevokeKey(gKeyId, gUserId)) {
+    enableRefresh();
+    reloadData();
+  }
+}
+
+function genRevocationCert() {
+  EnigCreateRevokeCert(gKeyId, gUserId);
 }

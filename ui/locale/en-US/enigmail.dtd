@@ -515,7 +515,7 @@
 <!ENTITY enigmail.keyDetails.title                   "Key Properties">
 <!ENTITY enigmail.keyDetails.userId.label            "Primary User ID">
 <!ENTITY enigmail.keyDetails.keyId.label             "Key ID">
-<!ENTITY enigmail.keyDetails.additionalUid.label     "Additional User ID's">
+<!ENTITY enigmail.keyDetails.additionalUid.label     "Additional User ID">
 <!ENTITY enigmail.keyDetails.ID.label                "ID">
 <!ENTITY enigmail.keyDetails.keyType.label           "Type">
 <!ENTITY enigmail.keyDetails.subType.label           "Subkey">
