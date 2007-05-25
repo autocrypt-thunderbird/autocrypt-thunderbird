@@ -40,15 +40,10 @@ var gEncryptionChoicesEnabled;
 var gPgpSignPlainPolicy;
 var gPgpSignEncPolicy;
 var gEncryptionPolicy;
-var gOpenPgpHeaderKeyId;
 var gOpenPgpHeaderUrl;
-var gOpenPgpUrlName;
 var gEnigAccount;
 var gEnigDlgOnAccept;
 var gPgpMimeMode;
-
-const ENIG_HEADERMODE_KEYID = 0x01;
-const ENIG_HEADERMODE_URL   = 0x10;
 
 EnigInitCommon("pref-enigmail");
 
@@ -57,14 +52,12 @@ function enigOnInit()
   // initialize all of our elements based on the current identity values....
   gEnablePgp          = document.getElementById("enablePgp");
   gPgpKeyMode         = document.getElementById("pgpKeyMode");
-  gOpenPgpHeaderKeyId = document.getElementById("openpgpHeaderMode.keyId");
   gOpenPgpHeaderUrl   = document.getElementById("openpgpHeaderMode.url");
-  gOpenPgpUrlName     = document.getElementById("openpgpHeaderMode.url.name");
   gPgpkeyId           = document.getElementById("identity.pgpkeyId");
   gPgpSignEncPolicy   = document.getElementById("sign_encrypted");
   gPgpSignPlainPolicy = document.getElementById("sign_notEncrypted");
   gEncryptionPolicy   = document.getElementById("encrypt_ifPossible");
-  gPgpMimeMode      = document.getElementById("pgpMimeMode");
+  gPgpMimeMode        = document.getElementById("pgpMimeMode");
 
   if (gEnigIdentity) {
     gEnablePgp.checked  = gEnigIdentity.getBoolAttribute("enablePgp");
@@ -83,20 +76,12 @@ function enigOnInit()
     }
     gPgpKeyMode.selectedItem = document.getElementById(selectedItemId);
 
-    var openPgpHeaderMode=gEnigIdentity.getIntAttribute("openPgpHeaderMode");
-    if (openPgpHeaderMode & ENIG_HEADERMODE_KEYID)
-      gOpenPgpHeaderKeyId.checked = true;
-
-    if (openPgpHeaderMode & ENIG_HEADERMODE_URL)
-      gOpenPgpHeaderUrl.checked = true;
-
     gPgpkeyId.value = gEnigIdentity.getCharAttribute("pgpkeyId");
     EnigGetSignMsg(gEnigIdentity);
     gPgpSignEncPolicy.checked = gEnigIdentity.getBoolAttribute("pgpSignEncrypted");
     gPgpSignPlainPolicy.checked = gEnigIdentity.getBoolAttribute("pgpSignPlain");
     gPgpMimeMode.checked = gEnigIdentity.getBoolAttribute("pgpMimeMode");
     gEncryptionPolicy.checked = (gEnigIdentity.getIntAttribute("defaultEncryptionPolicy")>0);
-    gOpenPgpUrlName.value = gEnigIdentity.getCharAttribute("openPgpUrlName");
   }
   else {
     gEnablePgp.checked=false;
@@ -154,23 +139,12 @@ function enigOnSave()
 
   if (gEnablePgp.checked) {
     // PGP is enabled
-
-    var openPgpHeaderMode = 0;
-
-    if (gOpenPgpHeaderKeyId.checked)
-      openPgpHeaderMode += ENIG_HEADERMODE_KEYID;
-
-    if (gOpenPgpHeaderUrl.checked)
-      openPgpHeaderMode += ENIG_HEADERMODE_URL;
-
     gEnigIdentity.setIntAttribute("pgpKeyMode", gPgpKeyMode.selectedItem.value);
     gEnigIdentity.setCharAttribute("pgpkeyId", gPgpkeyId.value);
     gEnigIdentity.setBoolAttribute("pgpSignEncrypted", gPgpSignEncPolicy.checked);
     gEnigIdentity.setBoolAttribute("pgpSignPlain", gPgpSignPlainPolicy.checked);
     gEnigIdentity.setBoolAttribute("pgpMimeMode", gPgpMimeMode.checked);
     gEnigIdentity.setIntAttribute("defaultEncryptionPolicy", (gEncryptionPolicy.checked ? 1 : 0));
-    gEnigIdentity.setIntAttribute("openPgpHeaderMode", openPgpHeaderMode);
-    gEnigIdentity.setCharAttribute("openPgpUrlName", gOpenPgpUrlName.value)
   }
 }
 
@@ -201,16 +175,6 @@ function enigEnableKeySel(enable)
   else {
     document.getElementById("bcUseKeyId").setAttribute("disabled", "true");
   }
-  enigEnableUrlName();
-}
-
-function enigEnableUrlName() {
-  if (gOpenPgpHeaderUrl.checked) {
-    document.getElementById("bcUseUrl").removeAttribute("disabled");
-  }
-  else {
-    document.getElementById("bcUseUrl").setAttribute("disabled", "true");
-  }
 }
 
 function enigSelectKeyId()
@@ -233,3 +197,10 @@ function enigSelectKeyId()
   }
 }
 
+function enigAdvancedIdentitySettings() {
+  var inputObj = {
+    identity: gEnigIdentity,
+    pgpKeyMode: gPgpKeyMode.selectedItem.value
+  };
+  window.openDialog("chrome://enigmail/content/enigmailAdvancedIdentityDlg.xul","", "dialog,modal,centerscreen", inputObj);
+}

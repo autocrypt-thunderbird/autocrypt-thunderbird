@@ -219,9 +219,7 @@
 <!ENTITY enigmail.defineRules.label               "Edit Rules ...">
 <!ENTITY enigmail.defineRules.tooltip             "Click to view, add, remove or edit the key selection rules.">
 
-<!ENTITY enigmail.usePGPMimeAlways.label          "Always use PGP/MIME">
-<!ENTITY enigmail.usePGPMimePossible.label        "Allow to use PGP/MIME">
-<!ENTITY enigmail.usePGPMimeNever.label           "Never use PGP/MIME">
+<!ENTITY enigmail.usePGPMimeAlways.label          "Use PGP/MIME by default">
 
 <!ENTITY enigmail.keepSettingsForReply.label      "Encrypt replies to encrypted message">
 <!ENTITY enigmail.confirmBeforeSend.label         "Always confirm before sending">
@@ -698,3 +696,5 @@
 <!ENTITY enigmail.setupWiz.pgNoStart.title           "Cancel Wizard">
 <!ENTITY enigmail.setupWiz.pgNoStart.desc            "You have chosen not to use the Wizard to configure OpenPGP.
                                                       <html:br/><html:br/>Thank you for using Enigmail.">
+<!ENTITY enigmail.advancedIdentityDlg.title          "Advanced OpenPGP Identity Settings">
+<!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label     "Attach public key to signed or encrypted messages">

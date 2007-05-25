@@ -104,10 +104,10 @@
                   id="enigmailPrefs"
                   observes="bcEnablePgp"
                   label="&enigmail.advancedPrefsButton.label; ..."
-                  oncommand="EnigPrefWindow(true,'thunderbird')"/>
+                  oncommand="enigAdvancedIdentitySettings()"/>
         </hbox>
       </groupbox>
-
+<!--
       <groupbox>
         <caption label="&enigmail.amPrefPgpHeader.label;"/>
         <vbox>
@@ -127,6 +127,7 @@
           </hbox>
         </vbox>
       </groupbox>
+-->
     </vbox>
   </vbox>
 </overlay>

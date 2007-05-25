@@ -178,6 +178,7 @@ pref("mail.identity.default.defaultEncryptionPolicy", 0);
 pref("mail.identity.default.openPgpHeaderMode", 0);
 pref("mail.identity.default.openPgpUrlName", "");
 pref("mail.identity.default.pgpMimeMode", false);
+pref("mail.identity.default.attachPgpKey", false);
 
 /*
    Other settings (change Mozilla behaviour)

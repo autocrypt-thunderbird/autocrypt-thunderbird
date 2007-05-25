@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+
+<!--
+   The contents of this file are subject to the Mozilla Public
+   License Version 1.1 (the "MPL"); you may not use this file
+   except in compliance with the MPL. You may obtain a copy of
+   the MPL at http://www.mozilla.org/MPL/
+
+   Software distributed under the MPL is distributed on an "AS
+   IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+   implied. See the MPL for the specific language governing
+   rights and limitations under the MPL.
+
+   The Original Code is Enigmail.
+
+   The Initial Developer of the Original Code is Patrick Brunschwig.
+   Portions created by Patrick Brunschwig <patrick.brunschwig@gmx.net>
+   are Copyright (C) 2005 Patrick Brunschwig. All Rights Reserved.
+
+   Contributor(s):
+
+   Alternatively, the contents of this file may be used under the
+   terms of the GNU General Public License (the "GPL"), in which case
+   the provisions of the GPL are applicable instead of
+   those above. If you wish to allow use of your version of this
+   file only under the terms of the GPL and not to allow
+   others to use your version of this file under the MPL, indicate
+   your decision by deleting the provisions above and replace them
+   with the notice and other provisions required by the GPL.
+   If you do not delete the provisions above, a recipient
+   may use your version of this file under either the MPL or the
+   GPL.
+-->
+
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
+                 type="text/css"?>
+
+<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+
+<dialog id="enigmailAdvancedIdentityDlg"
+        title="&enigmail.advancedIdentityDlg.title;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="onLoad();"
+        ondialogaccept="onAccept()">
+
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
+
+  <broadcaster id="bcUseUrl" disabled="true"/>
+
+  <caption label="&enigmail.amPrefPgpHeader.label;"/>
+  <vbox>
+    <checkbox id="openpgpHeaderMode.keyId"
+              label="&enigmail.amPrefPgpHeader.id.label;"
+              checked="false"/>
+    <hbox>
+      <checkbox id="openpgpHeaderMode.url"
+              label="&enigmail.amPrefPgpHeader.url.label;"
+              oncommand="enigEnableUrlName();"
+              checked="false"/>
+      <textbox id="openpgpHeaderMode.url.name"
+            observes="bcUseUrl"
+            size="30"/>
+    </hbox>
+
+    <separator/>
+
+    <checkbox id="openpgp.sendKeyWithMsg"
+            label="&enigmail.amPrefPgp.sendKeyWithMsg.label;"
+            checked="false"/>
+  </vbox>
+
+
+  <script type="application/x-javascript">
+<![CDATA[
+
+  const ENIG_HEADERMODE_KEYID = 0x01;
+  const ENIG_HEADERMODE_URL   = 0x10;
+
+  EnigInitCommon("enigmailAdvancedIdentityDlg");
+
+  var gOpenPgpUrlName;
+  var gOpenPgpHeaderUrl;
+  var gOpenPgpHeaderKeyId;
+  var gOpenPgpSendKeyWithMsg;
+
+  function onLoad() {
+    gOpenPgpUrlName        = document.getElementById("openpgpHeaderMode.url.name");
+    gOpenPgpHeaderKeyId    = document.getElementById("openpgpHeaderMode.keyId");
+    gOpenPgpHeaderUrl      = document.getElementById("openpgpHeaderMode.url");
+    gOpenPgpSendKeyWithMsg = document.getElementById("openpgp.sendKeyWithMsg");
+
+    var identity = window.arguments[0].identity;
+    var openPgpHeaderMode = identity.getIntAttribute("openPgpHeaderMode");
+    if (openPgpHeaderMode & ENIG_HEADERMODE_KEYID)
+      gOpenPgpHeaderKeyId.checked = true;
+
+    if (openPgpHeaderMode & ENIG_HEADERMODE_URL)
+      gOpenPgpHeaderUrl.checked = true;
+
+    gOpenPgpUrlName.value = identity.getCharAttribute("openPgpUrlName");
+    gOpenPgpSendKeyWithMsg.checked = identity.getBoolAttribute("attachPgpKey");
+    if (window.arguments[0].pgpKeyMode == 0) {
+      gOpenPgpHeaderKeyId.setAttribute("disabled", "true");
+    }
+    enigEnableUrlName();
+  }
+
+  function enigEnableUrlName() {
+    if (gOpenPgpHeaderUrl.checked) {
+      document.getElementById("bcUseUrl").removeAttribute("disabled");
+    }
+    else {
+      document.getElementById("bcUseUrl").setAttribute("disabled", "true");
+    }
+  }
+
+  function onAccept() {
+    var identity = window.arguments[0].identity;
+    var openPgpHeaderMode = 0;
+    if (gOpenPgpHeaderKeyId.checked)
+      openPgpHeaderMode += ENIG_HEADERMODE_KEYID;
+
+    if (gOpenPgpHeaderUrl.checked)
+      openPgpHeaderMode += ENIG_HEADERMODE_URL;
+
+    identity.setIntAttribute("openPgpHeaderMode", openPgpHeaderMode);
+    identity.setCharAttribute("openPgpUrlName", gOpenPgpUrlName.value);
+    identity.setBoolAttribute("attachPgpKey", gOpenPgpSendKeyWithMsg.checked);
+  }
+]]>
+  </script>
+</dialog>
