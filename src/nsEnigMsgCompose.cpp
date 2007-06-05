@@ -55,9 +55,11 @@
 #include "nsNetUtil.h"
 #include "nsIThread.h"
 #include "nsIFactory.h"
-#include "nsMsgComposeStringBundle.h"
 #ifdef _ENIG_MOZILLA_1_8
 #include "nsIFileStream.h"
+#include "nsMsgComposeStringBundle.h"
+#else
+#include "nsComposeStrings.h"
 #endif
 #undef MOZILLA_INTERNAL_API
 
