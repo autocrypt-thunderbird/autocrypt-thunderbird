@@ -50,6 +50,8 @@ EnigInitCommon("pref-enigmail");
 function enigOnInit()
 {
   // initialize all of our elements based on the current identity values....
+  EnigCollapseAdvanced(document.getElementById("enigmailPrefsBox"), "hidden");
+
   gEnablePgp          = document.getElementById("enablePgp");
   gPgpKeyMode         = document.getElementById("pgpKeyMode");
   gOpenPgpHeaderUrl   = document.getElementById("openpgpHeaderMode.url");

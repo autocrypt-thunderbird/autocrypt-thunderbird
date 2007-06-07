@@ -152,7 +152,9 @@
           <menuitem id="enigmail_insert_own_key"
               label="&enigmail.attachmykey.label;"
               accesskey="&enigmail.attachmykey.accesskey;"
-              oncommand="enigAttachOwnKey();" />
+              type="checkbox"
+              checked="false"
+              oncommand="enigToggleAttachOwnKey();" />
 
           <menuitem id="enigmail_insert_key"
               label="&enigmail.attachkey.label;"
@@ -269,7 +271,9 @@
           <menuitem id="enigmail_insert_own_key"
               label="&enigmail.attachmykey.label;"
               accesskey="&enigmail.attachmykey.accesskey;"
-              oncommand="enigAttachOwnKey();" />
+              type="checkbox"
+              checked="false"
+              oncommand="enigToggleAttachOwnKey();" />
 
           <menuitem id="enigmail_insert_key"
               label="&enigmail.attachkey.label;"

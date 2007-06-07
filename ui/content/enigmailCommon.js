@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.95.0";
-var gEnigmimeVersion = "0.95.0.0";
+var gEnigmailVersion = "0.95.1";
+var gEnigmimeVersion = "0.95.1.0";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -119,6 +119,10 @@ const ENIG_BUTTON_POS_0           = 1;
 const ENIG_BUTTON_POS_1           = 1 << 8;
 const ENIG_BUTTON_POS_2           = 1 << 16;
 const ENIG_BUTTON_TITLE_IS_STRING = 127;
+
+const ENIG_HEADERMODE_KEYID = 0x01;
+const ENIG_HEADERMODE_URL   = 0x10;
+
 
 const ENIG_THREE_BUTTON_STRINGS   = (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_0) +
                                (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_1) +

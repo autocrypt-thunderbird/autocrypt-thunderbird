@@ -34,26 +34,28 @@
 # This script generates the Enigmail XPI
 #
 
-echo "genxpi: Generating $1 in $5"
+echo "genxpi: Generating $1 in $6"
 
-if [ $# -lt 8 ]; then
+if [ $# -lt 9 ]; then
   echo "Wrong number of parameters"
   exit 1
 fi
 
 xpiFile=$1
 xpiVersion="$2"
-platform=$3
-mozApp=$4
-srcDir=$6
-xpiModule=$7
-dllSuffix=$8
-libPrefix=$9
+osArch=$3
+xpcomAbi=$4
+mozApp=$5
+srcDir=$7
+xpiModule=$8
+dllSuffix=$9
+libPrefix=${10}
 cwd=`pwd`
-cd "$5"
+cd "$6"
 targetDir=`pwd`
 cd "$cwd"
 
+platform=${osArch}_${xpcomAbi}
 # Prepare chrome.manifest
 cat  ${srcDir}/package/chrome.manifest > ${targetDir}/chrome.manifest
 
@@ -263,7 +265,7 @@ EOT
 cd ${srcDir}/package
 
 enigmimeDll=${libPrefix}enigmime${dllSuffix}
-dllFile=platform/${platform}/components/${enigmimeDll}
+dllFile=platform/${platform}/components/${libPrefix}enigmime-${xpcomAbi}${dllSuffix}
 
 cd "$targetDir"
 

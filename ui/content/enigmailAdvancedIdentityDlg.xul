@@ -48,20 +48,22 @@
 
   <broadcaster id="bcUseUrl" disabled="true"/>
 
-  <caption label="&enigmail.amPrefPgpHeader.label;"/>
   <vbox>
-    <checkbox id="openpgpHeaderMode.keyId"
-              label="&enigmail.amPrefPgpHeader.id.label;"
-              checked="false"/>
-    <hbox>
-      <checkbox id="openpgpHeaderMode.url"
-              label="&enigmail.amPrefPgpHeader.url.label;"
-              oncommand="enigEnableUrlName();"
-              checked="false"/>
-      <textbox id="openpgpHeaderMode.url.name"
-            observes="bcUseUrl"
-            size="30"/>
-    </hbox>
+    <groupbox>
+      <caption label="&enigmail.amPrefPgpHeader.label;"/>
+      <checkbox id="openpgpHeaderMode.keyId"
+                label="&enigmail.amPrefPgpHeader.id.label;"
+                checked="false"/>
+      <hbox>
+        <checkbox id="openpgpHeaderMode.url"
+                label="&enigmail.amPrefPgpHeader.url.label;"
+                oncommand="enigEnableUrlName();"
+                checked="false"/>
+        <textbox id="openpgpHeaderMode.url.name"
+              observes="bcUseUrl"
+              size="30"/>
+      </hbox>
+    </groupbox>
 
     <separator/>
 
@@ -73,9 +75,6 @@
 
   <script type="application/x-javascript">
 <![CDATA[
-
-  const ENIG_HEADERMODE_KEYID = 0x01;
-  const ENIG_HEADERMODE_URL   = 0x10;
 
   EnigInitCommon("enigmailAdvancedIdentityDlg");
 

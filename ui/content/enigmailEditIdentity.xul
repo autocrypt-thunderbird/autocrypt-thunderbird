@@ -98,36 +98,16 @@
                     label="&enigmail.usePGPMimeAlways.label;"/>
         </groupbox>
 
-        <hbox autostretch="never">
+        <hbox autostretch="never" id="enigmailPrefsBox">
           <spacer flex="1"/>
           <button class="dialog"
                   id="enigmailPrefs"
                   observes="bcEnablePgp"
+                  advanced="true"
                   label="&enigmail.advancedPrefsButton.label; ..."
                   oncommand="enigAdvancedIdentitySettings()"/>
         </hbox>
       </groupbox>
-<!--
-      <groupbox>
-        <caption label="&enigmail.amPrefPgpHeader.label;"/>
-        <vbox>
-          <checkbox id="openpgpHeaderMode.keyId"
-                   label="&enigmail.amPrefPgpHeader.id.label;"
-                   observes="bcUseKeyId"
-                   checked="false"/>
-          <hbox>
-            <checkbox id="openpgpHeaderMode.url"
-                   label="&enigmail.amPrefPgpHeader.url.label;"
-                   observes="bcEnablePgp"
-                   oncommand="enigEnableUrlName();"
-                   checked="false"/>
-            <textbox id="openpgpHeaderMode.url.name"
-                 observes="bcUseUrl"
-                 size="30"/>
-          </hbox>
-        </vbox>
-      </groupbox>
--->
     </vbox>
   </vbox>
 </overlay>
