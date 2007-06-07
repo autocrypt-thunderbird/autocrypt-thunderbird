@@ -2490,6 +2490,12 @@ function (prompter, uiFlags, fromMailAddr, hashAlgoObj) {
 
   if (exitCode != 0) {
     // Abormal return
+    if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
+      // "Unremember" passphrase on error return
+      this.clearCachedPassphrase();
+      errorMsgObj.value = EnigGetString("badPhrase");
+    }
+    this.alertMsg(null, errorMsgObj.value);
     return exitCode;
   }
 
@@ -3208,7 +3214,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
     return exitCode;
   }
 
-  if ( (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) ||
+  if ((statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) ||
        ((this.agentType == "pgp") && !verifyOnly && (exitCode != 30)) ) {
     // "Unremember" passphrase on decryption failure
     this.clearCachedPassphrase();
