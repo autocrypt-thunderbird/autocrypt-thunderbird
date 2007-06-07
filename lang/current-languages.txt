@@ -12,6 +12,8 @@ ko-KR
 nb-NO
 pl-PL
 pt-BR
+pt-PT
 ru-RU
+sl-SI
 sv-SE
 zh-CN

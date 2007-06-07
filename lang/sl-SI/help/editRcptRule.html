@@ -1,0 +1,106 @@
+<html>
+<head><title>Pomoč za Enigmail: Urejanje pravil OpenPGP</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>
+<body>
+<h1>Pomoč za Enigmail</h1>
+
+<h3>Uporaba Urejevalnika pravil Enigmail: Uredi pravilo OpenPGP</h3>
+<p>V urejevalniku pravil lahko navedete privzete dejavnosti po uporabniku za omogočanje 
+šifriranja, podpisovanje in PGP/MIME, ter določite, kateri ključ(i) OpenPGP naj bo(do) uporabljen(i). V tem 
+pogovornem oknu lahko določite pravila za posameznega prejemnika ali za skupino 
+prejemnikov z zelo podobnimi atributi.
+</p>
+<ul>
+  <li><span style="font-weight: bold;">Nastavi pravila OpenPGP za</span>: vsebuje e-poštne
+    naslove za prejemnike (brez imen, torej le naslove, kot je
+    <tt>nekdo@neka.domena</tt>). Določite lahko več e-poštnih sporočil, ločenih s presledkom.
+    Tukaj neveden naslov lahko sestavlja le
+    del domene, tako da se bo ujemalo vsako sporočilo na kateri koli naslov iz te domene,
+    npr. <tt>@neka.domena</tt> omogoča ujemanje <tt>francelj@neka.domena</tt>,
+    <tt>nekdodrug@neka.domena</tt>, <tt>vsakdo@neka.domena</tt> itn.
+  </li>
+  <li><span style="font-weight: bold;">Uporabi pravilo, če prejemnik ...</span>: 
+    S tem spremenite ujemanje e-naslovov.
+    Če je vnesenih več naslovov, bo nastavitev veljala za vse.
+    Spodnji primeri temeljijo na <tt>body@email.domain</tt>,
+    vnesenem v gornjem polju <i>Pravila OpenPGP</i>.
+    <ul>
+      <li><i>je enako</i>: s to nastavitvijo se bo pravilo sprožilo le na
+       e-sporočilih za <tt>body@email.domain</tt> (natančno ujemanje, ne razlikuje velikih/malih črk).
+      </li>
+      <li><i>vsebuje</i>: s to nastavitvijo se ujema vsak e-naslov, ki vsebuje
+        tak niz,
+        npr. <tt>anybody@email.domain</tt> ali <tt>body@email.domain.net</tt>
+      </li>
+      <li><i>se začne z</i>: s to nastavitvijo se ujemajo vsi e-naslovi, ki se začenjajo
+        z ujemajočim nizom, npr. <tt>body@email.domain.net</tt>,
+        <tt>body@email.domain-name.com</tt>.
+      </li>
+      <li><i>se konča z</i>: s to nastavitvijo se ujemajo vsi e-naslovi, ki se končujejo
+        z ujemajočim nizom, npr. <tt>anybody@email.domain</tt>,
+        <tt>somebody@email.domain</tt>.
+      </li>
+    </ul>
+
+  </li>
+  <li><span style="font-weight: bold;">Nadaljuj z naslednjim pravilom za ujemajoči naslov</span><br>
+      Vključitev te funkcije vam omogoča določanje pravila, ne da bi morali 
+	  navesti ID ključa v polje <em>Uporabi naslednje ključe OpenPGP:</em>, 
+	  tako da je e-naslov uporabljen za preverjanje ključa ob času 
+	  pošiljanja. Prav tako bodo procesirana tudi nadaljna pravila za iste naslove. 
+  </li>
+  <li><span style="font-weight: bold;">Ne preverjaj nadaljnjih pravil za ujemajoči naslov</span><br>
+	  Z vključitvijo te funkcije ustavite obdelavo vseh drugih pravil za 
+	  ujemajoč(i) naslov(e), če je temu pravilu ustreženo; t.j. obdelava pravil 
+	  nadaljuje z naslednjim prejemnikom.
+  </li>
+  <li><span style="font-weight: bold;">Uporabi naslednje ključe OpenPGP:</span><br>
+	  Uporabite gumb <em>Izberi ključ(e) ...</em> za izbor ključev prejemnika, 
+	  ki naj bodo uporabljeni za šifriranje. Tako kot pri gornjem dejanju ne bodo 
+	  obdelana nobena druga pravila za ujemajoče naslove.
+  </li>
+  <li><span style="font-weight: bold;">Privzeto za podpisovanje</span>: vključite ali izključite
+    podpisovanje sporočil. S tem uporabite ali prekličete, kar ste določili v oknu
+    sestavljanja sporočil. Vrednosti so:
+  </li>
+  <ul>
+    <li><i>nikoli</i>: onemogočite podpisovanje, čeprav je morda omogočeno v oknu 
+       sestavljanja sporočila (preglasi druge vrednosti);<br>
+    </li>
+    <li><i>da, če je izbrano v sestavljanju sporočila</i>: podpisovanje 
+      poteka v skladu z izbranim v oknu sestavljanja sporočila;
+    </li>
+    <li><i>vedno</i>: omogočite podpisovanje, četudi <span 
+      style="font-style: italic;">ni</span> omogočeno v oknu 
+      sestavljanja sporočila;
+    </li>
+  </ul>
+</ul>
+<div style="margin-left: 40px;">Te nastavitve podpisovanja se uporabljajo za
+vsa pravila, ki se ujemajo. Če eno od pravil prepoveduje podpisovanje, sporočilo
+ne bo podpisano, ne glede na druga pravila, ki morda določajo <i>vedno</i>.<br>
+</div>
+<ul>
+  <li><span style="font-weight: bold;">Šifriranje</span>: vključite ali
+    izključite šifriranje sporočil. Dovoljene nastavitve in njihov pomen so
+    enaki kot za podpisovanje sporočil.</li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: vključite ali
+    izključite uporabo kodiranja sporočil PGP/MIME (RFC 3156). 
+    Če je PGP/MIME izključen, so
+    sporočila kodirana z uporabo "medvrstičnega PGP". Dovoljene vrednosti in njihov
+    pomen so enaki kot za podpisovanje sporočil.
+  </li>
+</ul>
+<p>Pravila se obdelujejo v zaporedju seznama v 
+<em>Urejevalniku pravil OpenPGP</em>. Vsakič, ko se pravilo 
+ujema s prejemnikom in ko vsebuje ID ključa OpenPGP, poleg uporabe navedenega ID 
+ključa, se prejemnik ne obravnava več pri obdelavi 
+naslednjih pravil.
+</p>
+<hr/>
+<p>
+Nadaljno pomoč najdete na
+<a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">strani nastavitev Enigmail po prejemniku</a>.
+</p>
+</body>
+</html>

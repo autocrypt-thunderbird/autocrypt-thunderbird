@@ -1,0 +1,68 @@
+<html>
+<head>
+	<title>Ajuda do Enigmail: Editor de Regras</title>
+	<meta http-equiv="Content-Language" content="pt" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body>
+<h1>Ajuda do Enigmail</h1>
+
+<h3>Usar o Editor de Regras do Enigmail</h3>
+<p>No Editor de Regras, pode indicar as configura&ccedil;&otilde;es a usar por omiss&atilde;o para cifrar,
+assinar e usar PGP/MIME, por destinat&aacute;rio e quais as chaves a usar. Cada regra consiste
+em 5 campos e &eacute; representada numa &uacute;nica linha:</p>
+<ul>
+	<li><span style="font-weight: bold;">Email</span>: o(s) endere&ccedil;o(s) de email dos campos
+	Para:, CC:, e BCC: a encontrar. Cada coincid&ecirc;ncia trabalha em
+	<span style="font-style:italic">substrings</em> (Mais detalhes na janela do Editor de
+	Regras)
+	</li>
+	<li><span style="font-weight: bold;">Chave(s) OpenPGP</span>: a lista de Identificadores
+	de chaves OpenPGP a usar para o destinat&aacute;rio
+	</li>
+	<li><span style="font-weight: bold;">Assinar</span>: activar ou desactivar o assinar
+	de mensagens. Esta configura&ccedil;&atilde;o usa ou sobrep&otilde;e-se ao indicado na janela de Composi&ccedil;&atilde;o
+	de mensagens. Os valores s&atilde;o:
+	<ul>
+		<li><i>Nunca</i>: a mensagem n&atilde;o ser&aacute; assinada, mesmo com uma configura&ccedil;&atilde;o em contr&aacute;rio
+		na janela de composi&ccedil;&atilde;o de mensagens (sobrep&otilde;e-se a outros valores)<br />
+		</li>
+		<li><i>Poss&iacute;vel</i>: a mensagem ser&aacute; assinada ou n&atilde;o, consoante a configura&ccedil;&atilde;o na
+		janela de composi&ccedil;&atilde;o de mensagens.
+		</li>
+		<li><i>Sempre</i>: a mensagem ser&aacute; assinada, mesmo que a assinatura esteja
+		<span style="font-style: italic;">desactivada</span> na janela de composi&ccedil;&atilde;o de
+		mensagens
+		</li>
+	</ul>
+	<div style="margin-left: 40px;">Estas configura&ccedil;&otilde;es aplicam-se a todas as regras
+	coincidentes. Se uma das regras desactivar a assinatura, a mensagem n&atilde;o ser&aacute; assinada,
+	independentemente de outras regras especificadas. <i>Sempre</i>.<br />
+	</div>
+	</li>
+	<li><span style="font-weight: bold;">Cifrar</span>: activar ou desactivar a encripta&ccedil;&atilde;o
+	de mensagens. As configura&ccedil;&otilde;es permitidas e o seu significado s&atilde;o os mesmos de que
+	para a assinatura de mensagens.
+	</li>
+	<li><span style="font-weight: bold;">PGP/MIME</span>: activar ou desactivar o uso da
+	codifica&ccedil;&atilde;o de mensagens PGP/MIME (RFC 3156). Se a PGP/MIME estiver desactivada, as
+	mensagens ser&atilde;o codificadas usando "PGP embebido". As configura&ccedil;&otilde;es permitidas e o
+	seu significado s&atilde;o os mesmo de que para a assinatura de mensagens.
+	</li>
+</ul>
+<p>As regras s&atilde;o processadas na ordem em que s&atilde;o mostradas na lista. Sempre que uma regra
+coincidir com um destinat&aacute;rio e contiver um Identificador de chave OpenPGP, esse destinat&aacute;rio n&atilde;o
+ser&aacute; mais considerado ao processar as regras seguintes, para al&eacute;m de ser usado o Identificador de
+chave especificado.</p>
+<p><i>Nota:</i> O editor de regras ainda n&atilde;o est&aacute; completo. &Eacute; poss&iacute;vel escrever regras
+mais avan&ccedil;adas editando o ficheiro de regras directamente (estas regras n&atilde;o devem ser
+posteriormente editadas no editor de regras).  <a 
+href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Mais informa&ccedil;&atilde;o</a>
+sobre a edi&ccedil;&atilde;o directa deste ficheiro est&aacute; dispon&iacute;vel na Homepage do Enigmail.</p>
+<hr />
+<p>
+Ajuda adicional dispon&iacute;vel na
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">p&aacute;gina web de Ajuda do Enigmail</a>
+</p>
+</body>
+</html>

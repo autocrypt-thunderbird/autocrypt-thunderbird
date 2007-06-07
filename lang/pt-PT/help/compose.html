@@ -1,0 +1,78 @@
+<html>
+<head>
+	<title>Ajuda do Enigmail: Composi&ccedil;&atilde;o de Mensagens</title>
+	<meta http-equiv="Content-Language" content="pt" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head
+<body>
+<h1>Ajuda do Enigmail</h1>
+
+<h3>Usando o Enigmail ao compor mensagens</h3>
+
+<ul>
+	<li><b>Menu Enigmail na janela Correio/Composi&ccedil;&atilde;o</b>
+	<ul>
+		<li><b>Assinar mensagem</b>: Activar/Desactivar o envio de correio assinado. O utilizador
+		ser&aacute; notificado se a assinatura falhar.</li>
+		<li><b>Cifrar mensagem</b>: Activar/Desactivar a encripta&ccedil;&atilde;o para todo(s) o(s) destinat&aacute;rio(s)
+		antes do envio. O utilizador ser&aacute; notificado se a encripta&ccedil;&atilde;o falhar.
+			<ul>
+			<p>Se a op&ccedil;&atilde;o <em>Mostrar selec&ccedil;&atilde;o quando necess&aacute;rio</em> estiver seleccionada no separador
+			<b>Prefer&ecirc;ncias Enigmail -&gt; Selec&ccedil;&atilde;o de chaves</b>, ser&aacute; apresentada uma lista de chaves
+			no caso de haver endere&ccedil;os de email na lista de destinat&aacute;rios para os quais tenha a chave p&uacute;blica.</p>
+			<p>Se a op&ccedil;&atilde;o <em>Nunca mostrar selec&ccedil;&atilde;o de chave OpenPGP</em> estiver seleccionada no separador
+			<b>Prefer&ecirc;ncias Enigmail -&gt; Selec&ccedil;&atilde;o de chaves</b>, e houver endere&ccedil;os de email na lista de
+			destinat&aacute;rios para os quais n&atilde;o tem a chave p&uacute;blica, a mensagem ser&aacute; enviada em claro.</p>
+			</ul>
+		</li>
+		<li><b>Usar PGP/MIME para esta mensagem</b>: Activar/Desactivar o uso de
+		<a href="http://community.roxen.com/developers/idocs/rfc/rfc3156.html" target="_blank">PGP/MIME</a>
+		para esta mensagem.
+			<ul>
+			<p>Se sabe que o(s) destinat&aacute;rio(s) podem ler correio electr&oacute;nico no formato PGP/MIME, deve
+			us&aacute;-lo.</p>
+			<p>Esta funcionalidade depende da configura&ccedil;&atilde;o no separador <b>Prefer&ecirc;ncias -&gt; PGP/MIME</b>
+			estar para <em>Permitir o uso de PGP/MIME</em> ou <em>Usar sempre PGP/MIME</em>.</p>
+			</ul></li>
+		<li><b>Op&ccedil;&otilde;es de composi&ccedil;&atilde;o por omiss&atilde;o</b>: Submenu.
+			<ul>
+				<li><b>Op&ccedil;&otilde;es de assinar/cifrar...</b>: atalho para <b>Op&ccedil;&otilde;es de conta -&gt; Op&ccedil;&otilde;es OpenPGP.</b>
+				</li>
+				<li><b>Op&ccedil;&otilde;es de envio...</b>: atalho para o separador <b>Prefer&ecirc;ncias -&gt; Ao Enviar</b>.
+				</li>
+				<li><b>Op&ccedil;&otilde;es de Selec&ccedil;&atilde;o de chaves...</b>: atalho o separador <b>Prefer&ecirc;ncias -&gt;
+				Selec&ccedil;&atilde;o de chaves</b>.</li>
+				<li><b>Op&ccedil;&otilde;es PGP/MIME...</b>: atalho para o separador <b>Prefer&ecirc;ncias -&gt; PGP/MIME</b>.
+				</li>
+			</ul>
+		</li>
+		<li><b>Desfazer encripta&ccedil;&atilde;o</b>: se acontecer um erro ao enviar o correio, por exemplo o servidor
+		POP n&atilde;o aceitar o pedido, o Enigmail n&atilde;o ter&aacute; conhecimento disso e a mensagem cifrada continuar&aacute;
+		a ser mostrada na janela de composi&ccedil;&atilde;o. Ao escolher este item de menu reverter&aacute; a opera&ccedil;&atilde;o de
+		encripta&ccedil;&atilde;o, colocando o texto original novamente na janela.<br />
+		<em>Como solu&ccedil;&atilde;o tempor&aacute;ria, esta op&ccedil;&atilde;o pode tamb&eacute;m ser usada para decifrar as cita&ccedil;&otilde;es
+		ao responder a mensagens cifradas. O Enigmail deve decifrar automaticamente as mensagens
+		cifradas, mas se isso falhar por alguma raz&atilde;o, pode usar este item de menu para o for&ccedil;ar.</em>
+		</li>
+		<li><b>Inserir chave p&uacute;blica</b>: inserir bloco de chave p&uacute;blica em ASCII na posi&ccedil;&atilde;o corrente
+		do cursor na janela de Composi&ccedil;&atilde;o. Ser-lhe-&aacute; pedido o endere&ccedil;o de correio electr&oacute;nico da(s)
+		chave(s) a inserir. As chaves inseridas desta forma ser&atilde;o automaticamente reconhecidas pelo
+		Enigmail na recep&ccedil;&atilde;o. Ap&oacute;s a inser&ccedil;&atilde;o da chave, pode escolher assinar/cifrar a mensagem
+		consoante necess&aacute;rio. N&atilde;o insira mais do que um bloco de chave por mensagem; em vez disso,
+		indique os v&aacute;rios endere&ccedil;os de email separados por v&iacute;rgulas ou espa&ccedil;os quando tal lhe
+		for pedido.
+		</li>
+		<li><b>Limpar senha memorizada</b>: Limpa a senha guardada em mem&oacute;ria. Útil se tem v&aacute;rias senhas
+		diferentes.</li>
+		<li><b>Editar regras por destinat&aacute;rio</b></li>
+		<li><b>Ajuda</b>: Mostra a informa&ccedil;&atilde;o de ajuda do site web (esta p&aacute;gina).
+		</li>
+	</li>
+	</ul>
+<hr />
+<p>
+Ajuda adicional dispon&iacute;vel na
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">p&aacute;gina web de Ajuda do Enigmail</a>
+</p>
+</body>
+</html>

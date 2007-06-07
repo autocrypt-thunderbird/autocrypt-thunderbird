@@ -1,0 +1,78 @@
+<html>
+<head>
+	<title>Ajuda Enigmail: Leitura de mensagens</title>
+	<meta http-equiv="Content-Language" content="pt" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body>
+<h1>Ajuda Enigmail</h1>
+
+<h3>Usar o Enigmail ao ler mensagens</h3>
+<ul>
+	<li><b>Bot&atilde;o Decifrar na janela principal do Mail &amp; Newsgroups / Thunderbird</b><br />
+	Este bot&atilde;o pode ser usado para: decifrar, verificar ou importar chaves p&uacute;blicas.
+	Normalmente, as mensagens s&atilde;o decifradas e verificadas automaticamente, embora
+	este comportamento possa ser desactivado numa prefer&ecirc;ncia. Contudo, se isto falhar,
+	ser&aacute; apresentada uma curta mensagem de erro na barra de estado do Enigmail. Se clicar
+	sobre o bot&atilde;o Decifrar, poder&aacute; ver uma mensagem mais detalhada, incluindo a sa&iacute;da
+	do comando GnuPG.
+	</li>
+	<li><b>&Iacute;cones da Caneta e da Chave no Cabe&ccedil;alho da Mensagem</b><br />
+	Os &iacute;cones da <em>Caneta</em> e da <em>Chave</em> no Cabe&ccedil;alho da Mensagem indicam se
+	a mensagem que est&aacute; a ler foi assinada e/ou cifrada e se a assinatura &eacute; v&aacute;lida, ou
+	seja, se a mensagem n&atilde;o foi alterada desde que foi assinada. Se a mensagem foi
+	alterada o &iacute;cone da <em>Caneta</em> mudar&aacute; para uma <em>Caneta Quebrada</em> para
+	indicar que a assinatura n&atilde;o &eacute; v&aacute;lida. Clicar com o bot&atilde;o alternativo do rato quer no
+	&iacute;cone da Caneta quer no &iacute;cone da Chave far&aacute; aparecer um menu com as seguintes
+	op&ccedil;&otilde;es:
+	<ul>
+		<li><em>Informa&ccedil;&atilde;o de Seguran&ccedil;a OpenPGP</em>: permite ver a sa&iacute;da do GnuPG para a
+		mensagem.</li>
+		<li><em>Copiar Informa&ccedil;&atilde;o de Seguran&ccedil;a OpenPGP</em>: copia a sa&iacute;da do GnuPG para a
+		&aacute;rea de transfer&ecirc;ncia; para colar numa mensagem de resposta, etc.</li>
+		<li>Ver Identificador Fotogr&aacute;fico OpenPGP</em>: permite ver o <em>Identificador
+		Fotogr&aacute;fico</em> do remetente, se ele tiver uma fotografia embebida na sua Chave
+		P&uacute;blica. (<em>Esta op&ccedil;&atilde;o estar&aacute; activa apenas se existir um Identificador
+		Fotogr&aacute;fico na chave.)</em>
+		</li>
+		<li><em>Informa&ccedil;&atilde;o de Seguran&ccedil;a S/MIME</em>: permite ver a informa&ccedil;&atilde;o de seguran&ccedil;a
+		S/MIME da mensagem.
+		</li>
+	</ul>
+	<p>Se n&atilde;o tiver <em>keyserver-options auto-key-retrieve</em> no seu ficheiro
+	<tt>gpg.conf</tt> e receber uma mensagem assinada ou cifrada, ver&aacute;, na &aacute;rea de
+	visualiza&ccedil;&atilde;o do cabe&ccedil;alho da mensagem, um &iacute;cone com uma <em>Caneta</em> com um
+	ponto de interroga&ccedil;&atilde;o sobreposto, a barra de estado do Enigmail na &aacute;rea do
+	cabe&ccedil;alho dir&aacute; <em>Parte da mensagem assinada; para mais informa&ccedil;&atilde;o, clique sobre
+	o &iacute;cone da caneta</em> e a mensagem no Painel de Mensagem mostrar&aacute; os indicadores
+	de um bloco OpenPGP e o bloco da assinatura.</p>
+	<p>Tamb&eacute;m poder&aacute; ver isto se tiver <em>keyserver-options auto-key-retrieve</em>
+	no seu ficheiro <tt>gpg.conf</tt> e a chave n&atilde;o estiver dispon&iacute;vel no seu
+	servidor de chaves por omiss&atilde;o.</p>
+	<p>Clicar sobre o <em>&iacute;cone da Caneta e Ponto de Interroga&ccedil;&atilde;o</em> far&aacute; aparecer
+	uma janela informando que a chave n&atilde;o est&aacute; dispon&iacute;vel no seu porta-chaves. Clicar
+	em OK mostrar&aacute; outra janela com uma lista de servidores de chaves para escolher
+	a partir de qual quer fazer a transfer&ecirc;ncia da chave p&uacute;blica do remetente.</p>
+	<p>Para configurar a lista dos servidores de chaves que deseja usar, v&aacute; ao separador
+	<b>Enigmail -&gt; Prefer&ecirc;ncias -&gt; B&aacute;sicas</b> e introduza os endere&ccedil;os dos servidores
+	no campo <em>Servidor(es) de chave(s):</em>, separados por v&iacute;rgulas. <em>O
+	servidor de chaves listado em primeiro lugar ser&aacute; usado como o servidor por omiss&atilde;o.</em>
+	</p>
+	</li>
+	<li><b>Abrir anexos cifrados / importar chaves OpenPGP em anexo</b><br />
+	Anexos de nome *.pgp, *.asc, e *.gpg s&atilde;o reconhecidos como podendo ter um tratamento
+	especial por parte do Enigmail. Clicar com o bot&atilde;o alternativo do rato num anexo
+	deste tipo, activa dois itens de menu especiais no menu de contexto: <em>Decifrar e
+	Abrir</em> e <em>Decifrar e Gravar Como...</em>. Use estes dois itens de menu se
+	deseja que o Enigmail decifre um anexo antes de o abrir ou gravar. Se um anexo for
+	reconhecido como um ficheiro contendo uma chave OpenPGP, &eacute;-lhe oferecida a
+	possibilidade de importar as chaves para o seu porta-chaves.
+	</li>
+</ul>
+<hr />
+<p>
+Ajuda adicional dispon&iacute;vel na
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">p&aacute;gina web de Ajuda do Enigmail</a>
+</p>
+</body>
+</html>

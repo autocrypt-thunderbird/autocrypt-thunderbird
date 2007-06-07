@@ -1,0 +1,68 @@
+<html>
+<head><title>Pomoč za Enigmail: Urejevalnik pravil</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>
+<body>
+<h1>Pomoč za Enigmail</h1>
+
+<h3>Uporaba urejevalnika pravil Enigmail</h3>
+<p>V Urejevalniku pravil lahko določite privzete vrednosti za prejemnike z omogočanjem 
+šifriranja, podpisovanja in PGP/MIME, ter
+določite, katerei ključ(i) OpenPGP naj bo(do) uporabljen(i). Vsako pravilo sestavlja pet polj in je predstavljeno
+v eni vrstici:
+</p>
+<ul>
+  <li><span style="font-weight: bold;">Email</span>: e-sporočilo(a) from
+    the To:, Cc: and Bcc: fields to match. Ujemanje deluje na <span
+    style="font-style: italic;">podnizih</span> (Podrobnosti najdete
+    v pogovornem oknu Urejanja pravil)
+  </li>
+  <li><span style="font-weight: bold;">Ključ(i) OpenPGP</span>: seznam ID ključev OpenPGP, 
+ki naj se uporabi(jo) za naslovnika</li>
+  <li><span style="font-weight: bold;">Podpisovanje</span>: omogoči ali onemogoči
+    podpisovanje sporočil. To ali uporabi ali pa prezre nastavitve
+    v oknu sestavljanja sporočila. Možne vrednosti so:
+  </li>
+  <ul>
+    <li><i>nikoli</i>: onemogoči podpisovanje, čeprav je omogočeno v oknu sestavljanja
+       sporočila (preglasi druge vrednosti)<br>
+    </li>
+    <li><i>dovoli</i>: prepusti nastavitev podpisovanja določitvi v oknu sestavljanja
+      sporočila</li>
+    <li><i>vedno</i>: omogoči podpisovanje, četudi <span
+      style="font-style: italic;">ni</span> omogočeno v oknu
+      sestavljanja sporočila
+    </li>
+  </ul>
+</ul>
+<div style="margin-left: 40px;">Te nastavitve podpisovanja se upoštevajo pri
+vseh ujemajočih pravilih. Če eno od pravil onemogoči podpisovanje, sporočilo
+ne bo podpisoano, ne glede na določila dugega pravila, ki določa podpisovanje <i>Vedno</i>.<br>
+</div>
+<ul>
+  <li><span style="font-weight: bold;">Šifriraj</span>: omogoči ali
+    onemogoči šifriranje sporočila. Dovoljene nastavitve in njihov pomen so
+    enaki kot pri podpisovanju sporočila.</li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: omogoči ali
+    onemogoči uporabo šifriranja sporočil PGP/MIME (RFC 3156). 
+    Če je PGP/MIME onemogočen, se
+    sporočila šifrirajo z uporabo "inline PGP". Dovoljene vrednosti in njihov
+    pomen so enaki kot pri podpisovanju sporočil.
+  </li>
+</ul>
+<p>Pravila se procesirajo v vrstnem redu seznama. Ko se pravilo ujema 
+s prejemnikom in vsebuje ID ključa OpenPGP poleg zporabe 
+navedenega ID ključa, se prejemnik več ne preučuje pri procesiranju 
+nadaljnih pravil.</p>
+<p><i>Opomba:</i> Urejevalnik pravil še ni dokončan. Možno je napisati nekaj
+naprednejših pravil z neposrednim urejanjem datoteke pravil (ta pravila
+kasneje več ne smete urejati v urejevalniku pravil). <a 
+href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Nadaljne
+informacije</a> za neposredno urejanje datoteke
+je na voljo na domači strani Enigmail.</p>
+<hr/>
+<p>
+Nadaljna pomoč je na voljo na naslovu 
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">spletni strani pomoči za Enigmail</a>
+</p>
+</body>
+</html>

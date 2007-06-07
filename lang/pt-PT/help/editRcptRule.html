@@ -1,0 +1,99 @@
+<html>
+<head>
+	<title>Ajuda do Engimail: Editar Regras OpenPGP</title>
+	<meta http-equiv="Content-Language" content="pt" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body>
+<h1>Ajuda do Enigmail</h1>
+
+<h3>Usar o Editor de Regras do Enigmail: Editar Regras OpenPGP</h3>
+<p>No Editor de Regras, pode especificar, para cada destinat&aacute;rio, se deseja cifrar, assinar ou
+usar PGP/MIME por omiss&atilde;o e ainda quais as chaves OpenPGP a usar. Neste di&aacute;logo, pode especificar
+as regras para cada destinat&aacute;rio individualmente ou para cada grupo de destinat&aacute;rios com
+atributos semelhantes.
+</p>
+<ul>
+	<li><span style="font-weight: bold;">Configurar regras OpenPGP para</span>: Cont&eacute;m os
+	endere&ccedil;os de email dos destinat&aacute;rios (sem nomes, isto &eacute;, apenas um endere&ccedil;o como
+	<tt>alguem@dominio.email</tt>). Pode indicar v&aacute;rios endere&ccedil;os de email, separados por espa&ccedil;os.
+	Os endere&ccedil;os indicados aqui podem conter apenas o dom&iacute;nio, de forma a que apenas os endere&ccedil;os
+	daquele dom&iacute;nio sejam mostrados, por exemplo, <tt>@dominio.email</tt> permitiria mostrar os
+	endere&ccedil;os <tt>pessoa@dominio.email</tt>, <tt>alguem@dominio.email</tt>,
+	<tt>qualquer@dominio.email</tt>, etc.
+	</li>
+	<li><span style="font-weight: bold;">Aplicar regra se destinat&aacute;rio ...</span>:
+	Altera a forma de correspond&ecirc;ncia de endere&ccedil;os de email. Se forem introduzidos v&aacute;rios endere&ccedil;os,
+	esta defini&ccedil;&atilde;o aplicar-se-&aacute; a todos. Os exemplos abaixo baseiam-se em introduzir
+	<tt>pessoa@dominio.email</tt> no campo Regras OpenPGP definido acima.
+	<ul>
+		<li><i>&Eacute; exactamente</i>: com esta configura&ccedil;&atilde;o, a regra apenas se aplicar&aacute; &agrave;s mensagens para
+		<tt>pessoa@dominio.email</tt> (correspond&ecirc;ncia exacta, ignorando mai&uacute;sculas/min&uacute;sculas).
+		</li>
+		<li><i>Cont&eacute;m</i>: com esta configura&ccedil;&atilde;o, a regra aplicar-se-&aacute; a todos os endere&ccedil;os que contenham
+		a cadeia de caracteres especificada, por exemplo <tt>qualquerpessoa@dominio.email</tt> ou
+		<tt>pessoa@dominio.email.net</tt>
+		</li>
+		<li><i>Come&ccedil;a por</i>: com esta configura&ccedil;&atilde;o, a regra ir&aacute; aplicar-se a qualquer endere&ccedil;o
+		iniciado pela cadeia de caracteres especificada, como <tt>pessoa@dominio.email.net</tt> ou
+		<tt>pessoa@dominio.email-nome.com</tt>.
+		</li>
+		<li><i>Termina em</i>: esta configura&ccedil;&atilde;o aplica a regra a todos os endere&ccedil;os terminados com
+		a cadeia de caracteres especificada, tais como <tt>qualquerpessoa@dominio.email</tt> ou
+		<tt>umapessoa@dominio.email</tt>.
+		</li>
+	</ul>
+	
+	</li>
+	<li><span style="font-weight: bold;">Continuar com a pr&oacute;xima regra para os endere&ccedil;os coindidentes</span><br />
+	Activar esta fun&ccedil;&atilde;o permitir&aacute; definir uma regra sem ter que especificar o Identificador da chave em
+	<em>Usar as seguintes chaves OpenPGP:</em>, de forma a que o endere&ccedil;o de email seja usado para
+	procurar a chave ao enviar. De igual modo, as regras seguintes para os mesmos endere&ccedil;os ser&atilde;o
+	processadas da mesma maneira.
+	</li>
+	<li><span style="font-weight: bold;">N&atilde;o verificar mais regras para os endere&ccedil;os coincidentes</span><br />
+	Activar esta defini&ccedil;&atilde;o impede o processamento de quaisquer outras regras para os endere&ccedil;os
+	coincidentes, caso esta regra seja verificada; ou seja, o processamento de regras continua
+	com o pr&oacute;ximo destinat&aacute;rio.
+	</li>
+	<li><span style="font-weight: bold;">Defini&ccedil;&otilde;es por omiss&atilde;o para assinar</span>: activar ou desactivar
+	a assinatura de mensagens. Esta defini&ccedil;&atilde;o usa ou sobrep&otilde;e-se ao que especificou na janela de composi&ccedil;&otilde;es
+	de mensagens. Os valores s&atilde;o:
+	</li>
+	<ul>
+		<li><i>Nunca</i>: desactivar a assinatura, mesmo se estiver seleccionada na janela de composi&ccedil;&atilde;o de
+		mensagens (sobrep&otilde;e-se a outros valores)<br />
+		</li>
+		<li><i>Sim, se seleccionado na Composi&ccedil;&atilde;o de Mensagens</i>:  deixar a assinatura como especificado na
+		janela de composi&ccedil;&atilde;o de mensagens
+		</li>
+		<li><i>Sempre</i>: Activar a assinatura, mesmo se <span style="font-style: bold;">n&atilde;o</span> estiver
+		seleccionada na janela de composi&ccedil;&atilde;o de mensagens
+		</li>
+	</ul>
+</ul>
+<div style="margin-left: 40px;">Estas configura&ccedil;&otilde;es de assinatura s&atilde;o aplicadas a todas as regras
+coincidentes. Se uma das regras desactivar a assinatura, a mensagem n&atilde;o ser&aacute; assinada, independentemente
+do que outras regras especifiquem. <i>Sempre</i>.<br />
+</div>
+<ul>
+	<li><span style="font-weight: bold;">Cifrar</span>: Activar ou desactivar a encripta&ccedil;&atilde;o de mensagens.
+	As configura&ccedil;&otilde;es permitidas e o seu significado s&atilde;o os mesmos que para a assinatura de mensagens.</li>
+	<li><span style="font-weight: bold;">PGP/MIME</span>: activar ou desactivar o uso de PGP/MIME (RFC 3156)
+	para a codifica&ccedil;&atilde;o de mensagens. Se n&atilde;o seleccionar PGP/MIME, as mensagens ser&atilde;o codificadas usando o
+	m&eacute;todo "PGP embebido". Os valores permitidos e o seu significado s&atilde;o os mesmos que para a assinatura de
+	mensagens.
+	</li>
+</ul>
+<p>As regras s&atilde;o processadas na ordem em que s&atilde;o mostradas na lista <em>Editor de Regras por
+Destinat&aacute;rio</em>. Sempre que uma regra coincidir com um destinat&aacute;rio e contiver um Identificador de chave OpenPGP,
+para al&eacute;m de usar o Identificador de chave espec&iacute;fico, implica que o destinat&aacute;rio n&atilde;o seja mais considerado ao
+processar regras posteriores.
+</p>
+<hr />
+<p>
+Pode encontrar mais ajuda na <a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">
+p&aacute;gina de Configura&ccedil;&otilde;es de Regras por Destinat&aacute;rio do Enigmail</a>
+</p>
+</body>
+</html>
