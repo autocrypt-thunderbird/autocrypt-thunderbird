@@ -42,7 +42,8 @@
     <em:description>OpenPGP message encryption and authentication</em:description>
     <em:creator>Enigmail Team</em:creator>
     <em:homepageURL>http://enigmail.mozdev.org/</em:homepageURL>
-    <em:updateURL>http://www.mozilla-enigmail.org/update/update-%APP_OS%_%APP_ABI%.rdf</em:updateURL>
+    <!-- use the default updateURL (on AMO) -->
+    <!-- <em:updateURL>http://www.mozilla-enigmail.org/update/update-%APP_OS%_%APP_ABI%.rdf</em:updateURL> -->
 
     <!-- Front End Integration Hooks (used by Extension Manager)-->
     <em:optionsURL>chrome://enigmail/content/pref-enigmail.xul</em:optionsURL>

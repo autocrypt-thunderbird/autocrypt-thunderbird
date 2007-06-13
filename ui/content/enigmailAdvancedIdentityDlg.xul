@@ -101,6 +101,7 @@
     gOpenPgpSendKeyWithMsg.checked = identity.getBoolAttribute("attachPgpKey");
     if (window.arguments[0].pgpKeyMode == 0) {
       gOpenPgpHeaderKeyId.setAttribute("disabled", "true");
+      gOpenPgpSendKeyWithMsg.setAttribute("disabled", "true");
     }
     enigEnableUrlName();
   }

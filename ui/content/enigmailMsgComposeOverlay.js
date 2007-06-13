@@ -58,7 +58,7 @@ var gEnigSendModeDirty = 0;
 var gEnigNextCommand;
 var gEnigIdentity = null;
 var gEnigEnableRules = null;
-var gEnigAttachOwnKey = false;
+var gEnigAttachOwnKey = { appendAttachment: false, attachedObj: null } ;
 
 if (typeof(GenericSendMessage)=="function") {
   // replace GenericSendMessage with our own version
@@ -209,12 +209,8 @@ function enigSetSendDefaultOptions() {
   }
 
   gEnigSendPGPMime = enigGetAccDefault("pgpMimeMode");
-  gEnigAttachOwnKey = enigGetAccDefault("attachPgpKey");
-}
-
-function enigRemoveAttachedSig() {
-//  var bucketList = document.getElementById("attachmentBucket");
-//  var node = bucketList.firstChild;
+  gEnigAttachOwnKey.appendAttachment = enigGetAccDefault("attachPgpKey");
+  gEnigAttachOwnKey.attachedObj = null;
 }
 
 function enigComposeOpen() {
@@ -234,7 +230,7 @@ function enigComposeOpen() {
           DEBUG_LOG("enigmailMsgComposeOverlay.js: enigComposeOpen: has encrypted originalMsgUri\n");
           DEBUG_LOG("originalMsgURI="+gMsgCompose.originalMsgURI+"\n");
           enigSetSendMode('encrypt');
-          enigRemoveAttachedSig();
+          enigRemoveAttachedKey();
         }
       }
       if (typeof(gMsgCompose.compFields.draftId)=="string") {
@@ -330,7 +326,7 @@ function enigTogglePGPMime() {
 
 function enigToggleAttachOwnKey () {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigToggleAttachOwnKey\n");
-  gEnigAttachOwnKey = !gEnigAttachOwnKey;
+  gEnigAttachOwnKey.appendAttachment = !gEnigAttachOwnKey.appendAttachment;
 }
 
 function enigAttachOwnKey() {
@@ -339,13 +335,14 @@ function enigAttachOwnKey() {
   var userIdValue;
   if (gEnigIdentity.getIntAttribute("pgpKeyMode")>0) {
     userIdValue = gEnigIdentity.getCharAttribute("pgpkeyId");
+    var attachedObj = enigExtractAndAttachKey( [userIdValue] );
+    if (attachedObj) {
+      gEnigAttachOwnKey.attachedObj = attachedObj;
+    }
   }
   else {
-    userIdValue = gEnigIdentity.email;
+     ERROR_LOG("enigmailMsgComposeOverlay.js: enigAttachOwnKey: trying to attach unknown own key!\n");
   }
-
-
-  enigExtractAndAttachKey( [userIdValue] );
 }
 
 function enigAttachKey() {
@@ -371,7 +368,7 @@ function enigExtractAndAttachKey(uid) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigAttachKey: \n");
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
-    return;
+    return null;
 
   var tmpDir=EnigGetTempDir();
 
@@ -380,7 +377,7 @@ function enigExtractAndAttachKey(uid) {
     tmpFile.initWithPath(tmpDir);
     if (!(tmpFile.isDirectory() && tmpFile.isWritable())) {
       EnigAlert(EnigGetString("noTempDir"));
-      return;
+      return null;
     }
   }
   catch (ex) {
@@ -396,7 +393,7 @@ function enigExtractAndAttachKey(uid) {
   enigmailSvc.extractKey(window, 0, uid.join(" "), tmpFile.path, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value != 0) {
     EnigAlert(errorMsgObj.value);
-    return;
+    return  null;
   }
 
   // create attachment
@@ -418,6 +415,7 @@ function enigExtractAndAttachKey(uid) {
 
   ChangeAttachmentBucketVisibility(false);
   gContentChanged = true;
+  return keyAttachment;
 }
 
 function enigUndoEncryption() {
@@ -431,12 +429,14 @@ function enigUndoEncryption() {
     enigDecryptQuote(true);
   }
 
+  var node;
+  var nodeNumber;
   var bucketList = document.getElementById("attachmentBucket");
   if ( gEnigModifiedAttach && bucketList && bucketList.hasChildNodes() ) {
     // undo inline encryption of attachments
     for (var i=0; i<gEnigModifiedAttach.length; i++) {
-      var node = bucketList.firstChild;
-      var nodeNumber=-1;
+      node = bucketList.firstChild;
+      nodeNumber=-1;
       while (node) {
         ++nodeNumber;
         if (node.attachment.url == gEnigModifiedAttach[i].newUrl) {
@@ -464,8 +464,35 @@ function enigUndoEncryption() {
         }
       }
     }
+  }
 
-    gEnigModifiedAttach = null;
+  enigRemoveAttachedKey();
+}
+
+function enigRemoveAttachedKey() {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigRemoveAttachedKey: \n");
+
+  var bucketList = document.getElementById("attachmentBucket");
+  var node = bucketList.firstChild;
+
+  if (bucketList && bucketList.hasChildNodes() && gEnigAttachOwnKey.attachedObj) {
+    // undo attaching own key
+    var nodeNumber=-1;
+    while (node) {
+      ++nodeNumber;
+      if (node.attachment.url == gEnigAttachOwnKey.attachedObj.url) {
+        node = bucketList.removeItemAt(nodeNumber);
+        // Let's release the attachment object held by the node else it won't go away until the window is destroyed
+        node.attachment = null;
+        gEnigAttachOwnKey.attachedObj = null;
+        node = null; // exit loop
+      }
+      else {
+        node=node.nextSibling;
+      }
+    }
+    if (! bucketList.hasChildNodes())
+      ChangeAttachmentBucketVisibility(true);
   }
 }
 
@@ -631,8 +658,8 @@ function enigDisplayUi() {
 
 function enigSetMenuSettings(postfix) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigSetMenuSettings: postfix="+postfix+"\n");
-  document.getElementById("enigmail_encrypted_send"+postfix).setAttribute("checked",(gEnigSendMode & ENIG_ENCRYPT).toString());
-  document.getElementById("enigmail_signed_send"+postfix).setAttribute("checked",(gEnigSendMode & ENIG_SIGN).toString());
+  document.getElementById("enigmail_encrypted_send"+postfix).setAttribute("checked", gEnigSendMode & ENIG_ENCRYPT ? "true": "false");
+  document.getElementById("enigmail_signed_send"+postfix).setAttribute("checked", gEnigSendMode & ENIG_SIGN ? "true" : "false");
 
   var menuElement = document.getElementById("enigmail_sendPGPMime"+postfix);
   if (menuElement)
@@ -643,8 +670,15 @@ function enigSetMenuSettings(postfix) {
     menuElement.setAttribute("checked", (!gEnigEnableRules).toString());
 
   menuElement = document.getElementById("enigmail_insert_own_key");
-  if (menuElement)
-    menuElement.setAttribute("checked", gEnigAttachOwnKey.toString());
+  if (menuElement) {
+    if (gEnigIdentity.getIntAttribute("pgpKeyMode")>0) {
+      menuElement.setAttribute("checked", gEnigAttachOwnKey.appendAttachment.toString());
+      menuElement.removeAttribute("disabled");
+    }
+    else {
+      menuElement.setAttribute("disabled", "true");
+    }
+  }
 }
 
 function enigDisplaySecuritySettings() {
@@ -1071,24 +1105,24 @@ function enigEncryptMsg(msgSendType) {
             !(sendFlags & ENIG_ENCRYPT)) {
           // Default encryption turned off; turn off signing as well
           if (gEnigSendModeDirty<2 && (! enigGetAccDefault("signPlain"))) {
-            sendFlags  &= ~ENIG_SIGN;
+            sendFlags &= ~ENIG_SIGN;
           }
         }
      }
-
-     var bucketList = document.getElementById("attachmentBucket");
-     var hasAttachments = ((bucketList && bucketList.hasChildNodes()) || gMsgCompose.compFields.attachVCard);
-
-     DEBUG_LOG("enigmailMsgComposeOverlay.js: hasAttachments = "+hasAttachments+"\n");
 
      if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
        // always enable PGP/MIME if message is saved
        sendFlags |= nsIEnigmail.SEND_PGP_MIME;
      }
 
-     if (gEnigAttachOwnKey) {
+     if (gEnigAttachOwnKey.appendAttachment && (sendFlags & ENIG_ENCRYPT_OR_SIGN)) {
         enigAttachOwnKey();
      }
+
+     var bucketList = document.getElementById("attachmentBucket");
+     var hasAttachments = ((bucketList && bucketList.hasChildNodes()) || gMsgCompose.compFields.attachVCard);
+
+     DEBUG_LOG("enigmailMsgComposeOverlay.js: hasAttachments = "+hasAttachments+"\n");
 
      if ( hasAttachments &&
         (sendFlags & ENIG_ENCRYPT_OR_SIGN) &&
@@ -1239,9 +1273,12 @@ function enigEncryptMsg(msgSendType) {
 
      if ((!(sendFlags & nsIEnigmail.SAVE_MESSAGE)) && EnigGetPref("confirmBeforeSend")) {
        if (!enigConfirmBeforeSend(toAddrList.join(", "), toAddr, sendFlags, isOffline)) {
-         if (gEnigProcessed)
+         if (gEnigProcessed) {
            enigUndoEncryption();
-
+         }
+         else {
+           enigRemoveAttachedKey();
+         }
          window.cancelSendMessage=true;
          return;
        }
@@ -1249,8 +1286,12 @@ function enigEncryptMsg(msgSendType) {
      else if ( (sendFlags & nsIEnigmail.SEND_WITH_CHECK) &&
                  !enigMessageSendCheck() ) {
        // Abort send
-       if (gEnigProcessed)
-         enigUndoEncryption();
+       if (gEnigProcessed) {
+          enigUndoEncryption();
+       }
+       else {
+          enigRemoveAttachedKey();
+       }
 
        window.cancelSendMessage=true;
        return;
@@ -1462,7 +1503,12 @@ function enigEncryptInline(sendInfo) {
       else {
         EnigAlert(EnigGetString("sendAborted")+"an internal error has occurred");
       }
-      if (gEnigProcessed) enigUndoEncryption();
+      if (gEnigProcessed) {
+        enigUndoEncryption();
+      }
+      else {
+        enigRemoveAttachedKey();
+      }
       return false;
     }
   }
@@ -1505,9 +1551,6 @@ function enigMessageSendCheck() {
 // (after the calls to Recipients2CompFields and Attachements2CompFields)
 /////////////////////////////////////////////////////////////////////////
 function enigModifyCompFields(msgCompFields) {
-
-  const ENIG_HEADERMODE_KEYID = 0x01;
-  const ENIG_HEADERMODE_URL   = 0x10;
 
   try {
     if (gEnigIdentity.getBoolAttribute("enablePgp")) {

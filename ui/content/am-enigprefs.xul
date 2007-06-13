@@ -53,7 +53,7 @@ GPL.
     <broadcaster id="bcUseKeyId" disabled="false"/>
     <broadcaster id="bcUseUrl" disabled="true"/>
   </broadcasterset>
-  
+
   <dialogheader title="&enigmail.amPrefTitle.label;"/>
 
   <description>&enigmail.amPrefDesc.label;</description>
