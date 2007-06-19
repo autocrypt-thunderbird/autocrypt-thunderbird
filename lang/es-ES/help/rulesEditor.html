@@ -1,74 +1,68 @@
 <html>
-<head><title>Ayuda de Enigmail: Editor de reglas</title>
+<head><title>Enigmail Help: Rules Editor</title>
 </head>
 <body>
-<h1>Ayuda de Enigmail</h1>
+<h1>Enigmail Help</h1>
 
-<h3>Uso del editor de reglas de Enigmail</h3>
-<p>En el editor de reglas, se pueden especificar opciones predeterminadas por destinatario
-para activar el cifrado, firma y PGP/MIME, as&iacute; como
-definir qu&eacute; claves OpenPGP usar. Cada regla consiste de 5 campos y
-se representa en una sola l&iacute;nea:
+<h3>Using the Enigmail Rules Editor</h3>
+<p>In the Rules Editor, you can specify defaults per recipient for enabling 
+encryption, signing and PGP/MIME, and to
+define what OpenPGP key(s) to use. Each rule consists of 5 fields and is represented
+on a single line:
 </p>
 <ul>
-  <li><span style="font-weight: bold;">Correo electr&oacute;nico</span>: las direcciones de correo en 
-    los campos Para:, Cc: y Bcc: que tienen que coincidir. La coincidencia funciona en <span  
-    style="font-style: italic;">subcadenas</span> (M&aacute;s detalles en
-    el di&aacute;logo de Editar regla)
+  <li><span style="font-weight: bold;">Email</span>: the e-mail(s) from
+    the To:, Cc: and Bcc: fields to match. The matching works on <span
+    style="font-style: italic;">substrings</span> (Further details can be
+    found in the Edit Rule dialog)
   </li>
-  <li><span style="font-weight: bold;">Clave(s) OpenPGP</span>: una lista
-de IDs de claves OpenPGP para usar con el destinatario</li>
-  <li><span style="font-weight: bold;">Firmar</span>: activar o desactivar el firmado del mensaje. Esta opci&oacute;n usa o ignora lo
-    que se haya especificado en la ventana de redacci&oacute;n de mensajes. 
-    Los valores son:
+  <li><span style="font-weight: bold;">OpenPGP Key(s)</span>: a list of OpenPGP
+Key ID's to use for the recipient</li>
+  <li><span style="font-weight: bold;">Sign</span>: enable or disable
+    message signing. This either uses or overrides what you have specified
+    in the message composition window. The values are:
   </li>
   <ul>
-    <li><i>Nunca</i>: desactiva la firma, incluso si estaba activada en
-la ventana de redacci&oacute;n del mensaje (tiene preferencia sobre los
-otros valores)<br>
+    <li><i>Never</i>: disable signing, even if it was enabled in the message
+       composition window (overrules the other values)<br>
     </li>
-    <li><i>Posible</i>: Deja la firma como se haya especificado en la
-ventana de redacci&oacute;n de mensajes</li>
-    <li><i>Siempre</i>: activar la firma, incluso si <span
- style="font-style: italic;">no</span> est&aacute; activado en la
-ventana de redacci&oacute;n de mensajes </li>
+    <li><i>Possible</i>: leave signing as specified in the message composition
+      window</li>
+    <li><i>Always</i>: enable signing, even if it was <span
+      style="font-style: italic;">not</span> enabled in the message
+      composition window
+    </li>
   </ul>
 </ul>
-<div style="margin-left: 40px;">Estas opciones de firma se aplican a
-todas las reglas que las cumplan. Si una de las reglas desactiva la
-firma, el mensaje
-no se firmar&aacute;, independientemente de otras reglas que
-especifiquen <i>Siempre</i>.<br>
+<div style="margin-left: 40px;">These signing settings are applied for
+all rules that match. If one of the rules disables signing, the message
+will not be signed, regardless of other rules that specify <i>Always</i>.<br>
 </div>
 <ul>
-  <li><span style="font-weight: bold;">Cifrar</span>: activa o
-desactiva el cifrado del mensaje. Las opciones permitidas y su
-significado son las mismas que para la firma.</li>
-  <li><span style="font-weight: bold;">PGP/MIME</span>: activa o
-desactiva el uso de codificaci&oacute;n del mensaje PGP/MIME (RFC
-3156). Si PGP/MIME est&aacute; desactivado, los mensajes se codifican
-usando "PGP inline". Los valores permitidos y su significado son los
-mismos que para la firma de mensajes. </li>
+  <li><span style="font-weight: bold;">Encrypt</span>: enable or
+    disable message encryption. The allowed settings and their meaning are
+    the same as for message signing.</li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: enable or
+    disable the use of the PGP/MIME (RFC 3156) message encoding. 
+    If PGP/MIME is disabled, the
+    messages are encoded using "inline PGP". The allowed values and their
+    meaning are the same as for message signing.
+  </li>
 </ul>
-<p>Las reglas se procesan en el orden mostrado en la lista. Cuando una
-regla coincida
-con un destinatario y contenga un ID de clave OpenPGP, adem&aacute;s de
-usar el ID de clave
-especificado, el recipiente no se tendr&aacute; en consideraci&oacute;n
-al procesar
-m&aacute;s reglas.</p>
-<p><i>Nota:</i> El editor de reglas a&uacute;n no est&aacute; completo.
-Es posible escribir
-algunas reglas m&aacute;s avanzadas editando directamente el fichero de
-reglas (en cuyo caso,
-&eacute;stas no se deben volver a editar mediante el editor). <a
- href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">M&aacute;s
-informaci&oacute;n</a> para editar directamente el fichero en la
-p&aacute;gina de Enigmail</p>
-<hr>
-<p>M&aacute;s ayuda disponible en la
-<a href="http://enigmail.mozdev.org/help.html" target="_blank">p&aacute;gina
-web de ayuda de Enigmail</a>
+<p>The rules are processed in the order displayed in the list. Whenever a rule 
+matches a recipient and contains a OpenPGP Key ID, in addition to using the 
+specified Key ID, the recipient is not considered anymore when processing 
+further rules.</p>
+<p><i>Note:</i> The rule editor is not yet complete. It is possible to write
+some more advanced rules by directly editing the rules file (these rules
+should then not be edited anymore in the rule editor). <a 
+href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Further
+information</a> for directly editing the file
+is available on the Enigmail Homepage</p>
+<hr/>
+<p>
+Further help is available on the
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail Help web page</a>
 </p>
 </body>
 </html>
