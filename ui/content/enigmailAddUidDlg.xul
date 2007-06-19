@@ -82,15 +82,19 @@
       var comment = document.getElementById("addUid_comment");
 
       if ((email.value.search(/^ *$/) == 0) || (name.value.search(/^ *$/) == 0)) {
-        EnigAlert("You have to fill in a name and an email address");
+        EnigAlert(EnigGetString("addUidDlg.nameOrEmailError"));
         return false;
       }
       if (name.value.replace(/ *$/, "").length <5) {
-        EnigAlert("The name must at least have 5 characters");
+        EnigAlert(EnigGetString("addUidDlg.nameMinLengthError"));
         return false;
       }
       if (email.value.search(/.@./)<0) {
-        EnigAlert("You must specify a valid email address");
+        EnigAlert(EnigGetString("addUidDlg.invalidEmailError"));
+        return false;
+      }
+      if (comment.value.search(/[()]/) >= 0) {
+        EnigAlert(EnigGetString("addUidDlg.commentError"));
         return false;
       }
       var enigmailSvc = GetEnigmailSvc();
