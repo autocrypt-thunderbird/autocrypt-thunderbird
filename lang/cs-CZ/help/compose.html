@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=windows-1250">
+  <meta name="generator" content="PSPad editor, www.pspad.com">
+  <title>Nápověda Enigmail: Psaní zprávy</title>
+  <style type="text/css">
+    .armored{
+      border-bottom: 1px green dotted;
+      cursor: help;
+    }
+  </style> 
+  </head>
+  <body>
+<h1>Nápověda Enigmail</h1>
+
+<h3>Použití Enigmail při psaní zprávy</h3>
+
+<ul>
+  <li><b>Enigmail menu v okně Zpráva/Nová zpráva (ctrl+M)</b>
+  <ul>
+    <li><b>Podepsat zprávu</b>: Povolit / zakázat zaslání podepsané zprávy. Pokud digitální podpis selže,
+      je uživatel o této zkutečnosti informován.
+    </li>
+    <li><b>Zašifrovat zprávu</b>: Povolit / zakázat šifrování zprávy pro všechny příjemce před zasláním.
+      Pokud šifrování selže, je uživatel o této zkutečnosti informován.
+    </li>
+	<ul>
+	<p>Při nastavené volbě <em>Zobraz výběr, když je třeba</em> v menu <b>Předvolby
+	-&gt; záložka Výběr klíče</b>, se při odesílání pošty zobrazí seznam klíčů pro šifrování zprávy, pokud jsou v seznamu příjemců pošty adresáti,
+  od kterým nemáte veřejný klíč.</p>
+	<p>Při nastavené volbě <em>Nikdy nezobrazovat výběr OpenPGP klíče</em> v menu <b>Předvolby
+	-&gt; záložka Výběr klíče</b>, se odešle zpráva nezašifrovaná, pokud jsou v seznamu příjemců pošty adresáti,
+  od kterým nemáte veřejný klíč.</p>
+	</ul>
+    </li>
+    <li><b>Použít PGP/MIME pro tuto zprávu</b>: Povolit / zakázat použití
+	<a href="http://community.roxen.com/developers/idocs/rfc/rfc3156.html" target="_blank" title="Popis PGP/MIME (anglicky)">PGP/MIME</a> 
+	pro tuto zprávu.
+	<ul>
+	<p>Pokud víte, že příjemce dokáže přečíst poštu, která používá PGP/MIME formát, můžete tento formát použít.
+	</p>
+	<p>Tato volba je povolena, pokud na záložce <b>Předvolby
+	-&gt; PGP/MIME </b>je nastaveno <em>Dovolit použití PGP/MIME</em> nebo <em>Vždy použít
+	PGP/MIME</em>.</p>
+	</ul></li>
+    <li><b>Výchozí nastavení tvorby zpráv</b>
+    <ul>
+      <li><b>Nastavení podepisování šifrování...</b>: odkaz na <b>Nastavení účtu -&gt;
+	  OpenPGP.</b>
+      </li>
+      <li><b>Nastavení odesílání...</b>: odkaz na záložku <b>Předvolby -&gt;
+	  Odesílání</b> .
+      </li>
+      <li><b>Nastavení výběru klíče...</b>: odkaz na záložku <b>Předvolby -&gt; 
+	  Výběr klíče</b> .
+      </li>
+      <li><b>PGP/MIME nastavení...</b>: odkaz na záložku <b>Předvolby -&gt; 
+	  PGP/MIME</b>.
+      </li>
+	  </li>
+    </ul>
+    <li><b>Zpět šifrování</b>: Pokud při zasílání pošty dojde k chybě,
+    například když POP server nepřijme požadavek, Enigmail o tom nebude vědět,
+    a zašifrovaná zpráva zůstane zobrazena v okně Psaní zprávy.
+    Zvolením této položky menu dojde ke zrušení šifrování a podepsání, což se
+    projeví zobrazením původního (nezašifrovaného) textu v okně Psaní zprávy.<br>
+    <em>Tato volba může být použita taky jako nouzová oprava, pokud odpovídáte na
+    zašifrovanou zprávu. Enigmail dešifruje citovanou zprávu automaticky, ale pokud
+    z nějakého důvodu dešifrování neproběhne, může být tato volba použita k vynucenému
+    dešifrování zprávy.</em>
+    </li>
+    <li><b>Připojit můj veřejný klíč</b>: K vytvářené zprávě se připojí soubor s názvem
+    0xkey_id.asc ( kde key_id je číselný identifikátor vašeho klíče ), který obsahuje
+    <span title="Blok tisknutelných znaků, který vznikl použitím kódování Radix-64 na veřejný klíč v binárním tvaru" class="armored">ASCII-armored</span> text vašeho
+    veřejného klíče.
+    </li>
+    <li><b>Připojit jiný veřejný klíč</b>: Zobrazí se seznam veřejných klíčů, které můžete
+    připojit k vytvářené zprávě. Pokud zvolíte jediný klíč, připojí se ke zprávě
+    soubor s názvem 0xkey_id.asc ( kde key_id je číselný identifikátor zvoleného klíče ),
+     který obsahuje <span title="Blok tisknutelných znaků, který vznikl použitím kódování Radix-64 na veřejný klíč v binárním tvaru" class="armored">ASCII-armored
+     </span> text zvolného klíče. Pokud vyberete více klíčů, připojí se soubor s názvem
+     pgpkeys.asc , který obsahuje <span title="Blok tisknutelných znaků, který vznikl použitím kódování Radix-64 na veřejný klíč v binárním tvaru" class="armored">ASCII-armored
+     </span>text všech zvolených klíčů. 
+    </li>
+    <li><b>Smazat uložené heslo</b>: Dojde k odtranění dočasně uloženého hesla k soukromému klíči.
+      Užitečné zejména pokud máte více hesel.
+    </li>
+    <li><b>Nápověda</b>: Zobrazí nápovědu z internetu (tato stránka).
+    </li>
+	</li>
+  </ul>
+</ul>
+<hr/>
+<p>
+Další nápověda je dostupná na stránkách
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail Help web page</a> (anglicky)
+</p>
+  </body>
+</html>

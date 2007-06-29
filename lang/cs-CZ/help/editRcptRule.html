@@ -1,0 +1,99 @@
+<html>
+<head><title>Nápovìda Enigmail: Úprava OpenPGP pravidla</title>
+</head>
+<body>
+<h1>Nápovìda Enigmail</h1>
+
+<h3>Používání editoru pravidel v Enigmail: Úprava OpenPGP pravidla</h3>
+<p>V editoru pravidel mùžete pro každého pøíjemce urèit implicitní nastavení povolení
+šifrování, podpisu , PGP/MIME a k urèení OpenPGP klíèe, který se má pro daného pøíjemce používat.
+V tomto dialogovém oknì mùžete urèit pravidla pro jednoho pøíjemce a pro skupinu pøíjemcù 
+s velmi podobnými atributy.
+</p>
+<ul>
+  <li><span style="font-weight: bold;">Nastavit OpenPGP pravidla pro</span>: Obsahuje emailové
+    adresy pøíjemcù ( bez jmen , t.j. pouze adresu ve tvaru
+    <tt>adresát@email.doména</tt>). Mùžete uvést nìkolik emailových adres, oddìlených mezerami.
+    Adresy, zde uvedené, se mohou skládat pouze z adresy domény, takže pravidlo odpovídá každému
+    adresátovi z dané domény , napø. <tt>@neco.cz </tt>zahrnuje tyto adresy <tt>pepa@neco.cz</tt>,
+    <tt>karel@neco.cz</tt>, <tt>petra.novakova@neco.cz</tt>, atd.
+  </li>
+  <li><span style="font-weight: bold;">Použij pravidlo jestliže adresát ...</span>: 
+    Toto upravuje nalezení odpovídajících emailových adres, na které se mají použít pravidla.
+    Pokud je zapsáno více adres, nastavení se aplikuje na všechny uvedené adresy.
+    Následují pøíklady jsou založeny na situaci, kdy do vstupního pole <i>Nastavit OpenPGP pravidla pro</i>
+    je zadána adresa <tt>adresat@neco</tt>.
+    <ul>
+      <li><i>Je pøesnì</i>: s tímto nastavením bude pravidlo použito, pokud je email adresáta pøesnì
+       <tt>adresat@neco</tt> (nezávisle na použití velkých a malých písmen v emailové adrese).
+      </li>
+      <li><i>Obsahuje</i>: s tímto nastavením bude pravidlo použito pro každou emailovou adresu,
+        která obsahuje zadaný text t.j.
+        <tt>mujadresat@neco</tt> nebo <tt>adresat@neco.cz</tt>
+      </li>
+      <li><i>Zaèíná s</i>: s tímto nastavením bude pravidlo použito pro každou emailovou adresu,
+        která zaèíná zadaným textem t.j.
+        <tt>adresat@neco.cz</tt>, <tt>adresat@neco-jineho.com</tt>.
+      </li>
+      <li><i>Konèí s</i>: s tímto nastavením bude pravidlo použito pro každou emailovou adresu,
+        která zaèíná zadaným textem t.j.
+        <tt>mujadresat@neco</tt>, <tt>jinyadresat@neco</tt>.
+      </li>
+    </ul>
+
+  </li>
+  <li><span style="font-weight: bold;">Pokraèovat s dalším pravidlem k dané adrese</span><br>
+    Zvolením této akce je umožnìno definovat pravidlo bez urèení KeyID ve vstupním poli
+    <em>Použít následující OpenPGP klíèe:</em> , takže emailová adresa je použita k vyhledání
+    odpovídajícího klíèe bìhem posílání zprávy. Pokud jsou k dané adrese další pravidla, tak
+    tato adresa je jim postoupena k dalšímu zpracování.
+  </li>
+  <li><span style="font-weight: bold;">Nekontrolovat dále pravidla k dané adrese</span><br>
+	  Zvolením této akce je ukonèeno použití jiných pravidel, která jsou platná pro danou adresu;
+    t.j. zaène se zpracovávat další adresa pøíjemce.
+  </li>
+  <li><span style="font-weight: bold;">Použít následující OpenPGP klíèe:</span><br>
+	  Použitím tlaèítka <em>Vybrat klíè(e)..</em> vyberte klíèe, které budou použity k šifrování.
+    Stejnì jako v pøedchozím pøípadì se již nepoužijí jiná pravidla, kterým daná adresa vyhovuje.
+  </li>
+  <li><span style="font-weight: bold;">Výchozí pro podepisování</span>: Povolit / zakázat
+    podepsání zprávy. To, zda dojde k podepsání zprávy, závisí na nastavení podepisovámí
+    v oknì Psání zprávy a na vybrané hodnotì z tìchto možností:
+  </li>
+  <ul>
+    <li><i>Nikdy</i>: zakáže podepsání zprávy bez ohledu na to, jaká byla volba v oknì
+    Psaní zprávy<br>
+    </li>
+    <li><i>Ano, jestliže je vybrána v oknì Psání zprávy </i>: podepisování zprávy závisí
+    na volbì, která byla vybrána v oknì Psaní zprávy
+    </li>
+    <li><i>Vždy</i>: dojde k podepsání zprávy bez ohledu na to, jaká byla volba v oknì
+    Psání zprávy<br> 
+    </li>
+  </ul>
+</ul>
+<div style="margin-left: 40px;">Toto nastavení podepisování závisí na volbì ve všech pravidlech,
+které dané emailové adrese vyhovují. Jestliže jedno z tìchto pravidel zakáže podepsání, zpráva nebude
+podepsána, i kdyby v ostatních pravidlech byla nastavena volba <i>Vždy</i>.
+</div>
+<ul>
+  <li><span style="font-weight: bold;">Šifrování</span>: Povolit / zakázat
+    šifrování zprávy. Nastavení šifrování probíhá ve stejném duchu jako nastavení podepisování.
+  </li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: Povolit / zakázat
+    použití PGP/MIME (RFC 3156) kódování zprávy. 
+    Pokud je PGP/MIME zakázáno, zpráva je kódována použitím "vkládaného PGP".
+    Nastavení šifrování probíhá ve stejném duchu jako nastavení podepisování.
+  </li>
+</ul>
+<p>Pravidla jsou zpracovávána v poøadí zobrazeném v seznamu  
+<em>Editoru OpenPGP pravidel</em>. Vždy, když pravidlo odpovídá pøíjemci a obsahuje OpenPGP klíè (
+navíc pokud má specifikováno použití daného KeyID ) , pøíjemce již není zpracováván v dalších pravidlech.
+</p>
+<hr/>
+<p>
+Další nápovìda je dostupná na stránkách
+<a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Enigmail Per-Recipient Settings page</a> (anglicky)
+</p>
+</body>
+</html>
