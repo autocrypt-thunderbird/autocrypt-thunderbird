@@ -1,17 +1,19 @@
 // Install script for Enigmail
 
 var err;
-const APP_VERSION="0.95.1.0";
+const APP_VERSION="0.95.2.0";
 
 
 const ABI_PLATFORM_LINUX="Linux_x86-gcc3";
 const ABI_PLATFORM_WIN="WINNT_x86-msvc";
 const ABI_PLATFORM_DARWIN_PPC="Darwin_ppc-gcc3";
 const ABI_PLATFORM_DARWIN_X86="Darwin_x86-gcc3";
+const ABI_PLATFORM_OS2="OS2_x86-gcc3";
 
 const APP_PLATFORM_LINUX="linux";
 const APP_PLATFORM_WIN="win";
 const APP_PLATFORM_MAC="mac";
+const APP_PLATFORM_OS2="os2";
 const APP_PLATFORM_OTHER="other";
 
 
@@ -49,8 +51,10 @@ function getPlatform() {
       platformNode = APP_PLATFORM_MAC;
     else if (!platformStr.search(/^Win/))
       platformNode = APP_PLATFORM_WIN;
-    else if (platformStr.search(/Linux/))
+    else if (!platformStr.search(/Linux/))
       platformNode = APP_PLATFORM_LINUX;
+    else if (!platformStr.search(/^OS\/2/))
+      platformNode = APP_PLATFORM_OS2;
     else
       platformNode = APP_PLATFORM_OTHER;
   }
@@ -98,6 +102,9 @@ if (!verifyDiskSpace(fProgram, srDest)) {
   case APP_PLATFORM_MAC:
     addDirectory("", "platform/"+ABI_PLATFORM_DARWIN_PPC+"/components",    fComponents, "");
     addDirectory("", "platform/"+ABI_PLATFORM_DARWIN_X86+"/components",    fComponents, "");
+    break;
+  case APP_PLATFORM_OS2:
+    addDirectory("", "platform/"+ABI_PLATFORM_OS2+"/components",    fComponents, "");
     break;
   }
 

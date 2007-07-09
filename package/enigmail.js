@@ -1274,7 +1274,7 @@ function (domWindow, version, prefBranch) {
   }
 
   // Initialize global environment variables list
-  var passEnv = [ "PGPPATH", "GNUPGHOME",
+  var passEnv = [ "PGPPATH", "GNUPGHOME", "GPGDIR", "ETC",
                   "ALLUSERSPROFILE", "APPDATA", "BEGINLIBPATH",
                   "COMMONPROGRAMFILES", "COMSPEC", "DISPLAY",
                   "ENIGMAIL_PASS_ENV", "ENDLIBPATH",
