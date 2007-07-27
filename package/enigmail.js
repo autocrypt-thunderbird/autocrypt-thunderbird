@@ -1331,7 +1331,7 @@ function (domWindow, version, prefBranch) {
 
   this.detectGpgAgent(domWindow);
 
-  if (this.useGpgAgent()) {
+  if (this.useGpgAgent() && ! this.isDosLike) {
     gEnvList.push("GPG_AGENT_INFO="+this.gpgAgentInfo.envStr);
   }
 
@@ -1489,11 +1489,9 @@ function () {
   this.agentType = agentType;
   this.agentPath = agentPath;
 
-  var command = this.getAgentPath();
+  var command = agentPath;
   if (agentType == "gpg") {
-     command += " --batch --no-tty --version";
-  } else {
-     command += " +batchmode -h";
+     command += " --version --version --batch --no-tty --charset utf8";
   }
 
   // This particular command execution seems to be essential on win32
@@ -1515,8 +1513,22 @@ function () {
 
   CONSOLE_LOG(outStr+"\n");
 
+  // detection for Gpg4Win wrapper
+  if (outStr.search(/^gpgwrap.*;/) == 0) {
+    var outLines = outStr.split(/[\n\r]+/);
+    var firstLine = outLines[0];
+    outLines.splice(0,1);
+    outStr = outLines.join("\n");
+    agentPath = firstLine.replace(/^.*;/, "")
+
+    CONSOLE_LOG("gpg4win-gpgwrapper detected; EnigmailAgentPath="+agentPath+"\n\n");
+    this.agentPath = agentPath.replace(/\\/g, "\\\\");
+  }
+
+
   var versionParts = outStr.replace(/[\r\n].*/g,"").split(/ /);
   var gpgVersion = versionParts[versionParts.length-1]
+
 
   this.agentVersion = gpgVersion;
 
@@ -1553,6 +1565,7 @@ function (domWindow) {
     if (filePath) {
       filePath.append(fileName);
       if (filePath.exists()) {
+        filePath.normalize();
         return filePath;
       }
     }
@@ -1568,6 +1581,7 @@ function (domWindow) {
       catch (ex) {}
     }
 
+    foundPath.normalize();
     return foundPath;
   }
 
@@ -1582,7 +1596,7 @@ function (domWindow) {
     DEBUG_LOG("enigmail.js: detectGpgAgent: no GPG_AGENT_INFO variable set\n");
     this.gpgAgentInfo.preStarted = false;
 
-    if ((this.agentVersion >= "1.9.92") && (! this.isDosLike)) {
+    if ((this.agentVersion >= "1.9.92")) {
       var command = null;
       var gpgConnectAgent = resolveAgentPath("gpg-connect-agent");
 
@@ -1601,19 +1615,31 @@ function (domWindow) {
       envFile.initWithPath(this.determineGpgHomeDir());
       envFile.append(".gpg-agent-info");
 
-      if (envFile.exists() && gpgConnectAgent &&
+      if ((envFile.exists() || this.isDosLike) && gpgConnectAgent &&
           gpgConnectAgent.isExecutable()) {
         // try to connect to a running gpg-agent
 
-        this.gpgAgentInfo.envStr = extractAgentInfo(EnigReadFile(envFile));
+        if (! this.isDosLike) {
+          this.gpgAgentInfo.envStr = extractAgentInfo(EnigReadFile(envFile));
+          envList.push("GPG_AGENT_INFO="+this.gpgAgentInfo.envStr);
+        }
+        else {
+          this.gpgAgentInfo.envStr = "dummy";
+        }
 
-        envList.push("GPG_AGENT_INFO="+this.gpgAgentInfo.envStr);
-        var exitCode = this.ipcService.execPipe(gpgConnectAgent.path, false,
-                                    "", "/echo OK\n", 0,
-                                    envList, envList.length,
-                                    outStrObj, outLenObj, errStrObj, errLenObj);
+        command = "\""+gpgConnectAgent.path.replace(/\\/g, "\\\\")+"\"";
+        try {
+          var exitCode = this.ipcService.execPipe(command, false,
+                                      "", "/echo OK\n", 0,
+                                      envList, envList.length,
+                                      outStrObj, outLenObj, errStrObj, errLenObj);
+        }
+        catch (ex) {
+          ERROR_LOG("enigmail.js: detectGpgAgent: "+command+" failed\n");
+          exitCode = -1;
+        }
 
-        CONSOLE_LOG("enigmail> "+gpgConnectAgent.path.replace(/\\\\/g, "\\")+"\n");
+        CONSOLE_LOG("enigmail> "+command.replace(/\\\\/g, "\\")+"\n");
         if (exitCode==0) {
           DEBUG_LOG("enigmail.js: detectGpgAgent: found running gpg-agent. GPG_AGENT_INFO='"+this.gpgAgentInfo.envStr+"'\n");
           return;
@@ -1626,7 +1652,7 @@ function (domWindow) {
       // and finally try to start gpg-agent
       var commandFile = resolveAgentPath("gpg-agent");
       if (commandFile  && commandFile.isExecutable()) {
-        command = commandFile.path;
+        command = "\""+commandFile.path.replace(/\\/g, "\\\\")+"\"";
       }
 
       if (command == null) {
@@ -1635,14 +1661,21 @@ function (domWindow) {
         throw Components.results.NS_ERROR_FAILURE;
       }
 
-      command += " --sh --daemon --write-env-file '"+envFile.path+"'";
-      command += " --default-cache-ttl " + (this.getMaxIdleMinutes()*60);
+      if (! this.isDosLike) {
+        command += " --sh --write-env-file '"+envFile.path+"'";
+      }
+      command += " --daemon --default-cache-ttl " + (this.getMaxIdleMinutes()*60);
       command += " --max-cache-ttl 999999";  // ca. 11 days
 
-      var exitCode = this.ipcService.execPipe(command, false, "", "", 0,
-                                    envList, envList.length,
-                                    outStrObj, outLenObj, errStrObj, errLenObj);
-
+      try {
+        var exitCode = this.ipcService.execPipe(command, false, "", "", 0,
+                                      envList, envList.length,
+                                      outStrObj, outLenObj, errStrObj, errLenObj);
+      }
+      catch (ex) {
+        ERROR_LOG("enigmail.js: detectGpgAgent: "+command+" failed\n");
+        exitCode = -1;
+      }
       CONSOLE_LOG("enigmail> "+command.replace(/\\\\/g, "\\")+"\n");
 
       if (exitCode == 0) {
@@ -1666,6 +1699,7 @@ function () {
     p=this.prefBranch.getCharPref("agentAdditionalParam").replace(/([\\\`])/g, "\\$1");
   }
   catch (ex) {}
+
   return this.agentPath + " --charset utf8 " + p;
 }
 
