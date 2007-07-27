@@ -460,7 +460,7 @@
 <!ENTITY enigmail.keyMan.fingerprint.label         "Fingerprint">
 <!ENTITY enigmail.keyMan.selectAll.label           "Select all Keys">
 
-<!ENTITY enigmail.keyMan.filter.label              "Search:">
+<!ENTITY enigmail.keyMan.filter.label              "Search for:">
 <!ENTITY enigmail.keyMan.clearFilter.label         "Clear">
 <!ENTITY enigmail.keyMan.clearFilter.accesskey     "C">
 

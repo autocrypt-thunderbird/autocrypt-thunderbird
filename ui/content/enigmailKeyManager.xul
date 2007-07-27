@@ -222,14 +222,15 @@
 									accesskey="&enigmail.keyMan.keyDetails.accesskey;"
 								  oncommand="enigmailKeyDetails()"/>
 
-        <menuseparator/>
+<!--
+    <menuseparator/>
         <menuitem label="&enigmail.keyMan.showAllKeys.label;"
                   type="checkbox"
                   checked="false"
                   id="showAllKeys"
                   accesskey="&enigmail.keyMan.showAllKeys.accesskey;"
                   oncommand="enigmailToggleShowAll(this)"/>
-
+-->
 			</menupopup>
 		</menu>
 
@@ -338,6 +339,13 @@
             id="clearFilter" disabled="true"
             accesskey="&enigmail.keyMan.clearFilter.accesskey;"
             oncommand="onResetFilter();"/>
+    <separator orient="vertical"/>
+    <checkbox label="&enigmail.keyMan.showAllKeys.label;"
+          checked="false"
+          id="showAllKeys"
+          accesskey="&enigmail.keyMan.showAllKeys.accesskey;"
+          oncommand="enigmailToggleShowAll(this)"/>
+
   </hbox>
 
   <groupbox width="700px" flex="1">
