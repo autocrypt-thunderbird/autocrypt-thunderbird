@@ -1524,12 +1524,11 @@ function () {
     var firstLine = outLines[0];
     outLines.splice(0,1);
     outStr = outLines.join("\n");
-    agentPath = firstLine.replace(/^.*;/, "")
+    agentPath = firstLine.replace(/^.*;[ \t]*/, "")
 
     CONSOLE_LOG("gpg4win-gpgwrapper detected; EnigmailAgentPath="+agentPath+"\n\n");
     this.agentPath = agentPath.replace(/\\/g, "\\\\");
   }
-
 
   var versionParts = outStr.replace(/[\r\n].*/g,"").split(/ /);
   var gpgVersion = versionParts[versionParts.length-1]

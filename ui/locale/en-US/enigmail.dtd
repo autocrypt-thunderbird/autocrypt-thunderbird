@@ -459,6 +459,8 @@
 <!ENTITY enigmail.keyMan.stopTransfer.label        "Stop transfer">
 <!ENTITY enigmail.keyMan.fingerprint.label         "Fingerprint">
 <!ENTITY enigmail.keyMan.selectAll.label           "Select all Keys">
+<!ENTITY enigmail.keyMan.emptyTree.tooltip         "Enter search terms in the box above">
+<!ENTITY enigmail.keyMan.pleaseWait.tooltip        "Please wait while keys are being loaded ...">
 
 <!ENTITY enigmail.keyMan.filter.label              "Search for:">
 <!ENTITY enigmail.keyMan.clearFilter.label         "Clear">

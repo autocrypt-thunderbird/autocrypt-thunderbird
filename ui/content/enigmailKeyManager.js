@@ -81,8 +81,11 @@ function enigmailKeyManagerLoad() {
     gShowAllKeysElement.setAttribute("checked", "true");
   }
 
+  gUserList.addEventListener('click', enigmailOnClick, true);
+
   window.enigIpcRequest = null;
 
+  document.getElementById("pleaseWait").showPopup(gSearchInput, -1, -1, "tooltip", "after_end", "");
   document.getElementById("statusText").value = EnigGetString("keyMan.loadingKeys");
   document.getElementById("progressBar").removeAttribute("collapsed");
   window.setTimeout(loadkeyList, 100);
@@ -98,6 +101,7 @@ function loadkeyList() {
 
   enigmailBuildList(false);
   showOrHideAllKeys();
+  document.getElementById("pleaseWait").hidePopup();
   document.getElementById("statusText").value=" ";
   document.getElementById("progressBar").setAttribute("collapsed", "true");
 }
@@ -375,10 +379,15 @@ function enigmailKeyMenu() {
   }
 }
 
-function enigmailDblClick(event) {
-  if (event) {
-    if (event.button != 0) return;
+
+function enigmailOnClick(event) {
+  if (event.detail != 2) {
+    return;
   }
+
+  // do not propagate double clicks
+  event.stopPropagation();
+
   var keyList = enigmailGetSelectedKeys();
   var keyType="";
   var uatNum="";
@@ -926,6 +935,14 @@ function enigmailToggleShowAll() {
 
 function showOrHideAllKeys() {
   var hideNode = ! displayFullList();
+  var initHint = document.getElementById("treeTooltip");
+  if (hideNode) {
+    var elem = document.getElementById("pgpKeyListChildren");
+    initHint.showPopup(elem, -1, -1, "tooltip", "after_end", "");
+  }
+  else {
+    initHint.hidePopup();
+  }
   var node=getFirstNode();
   while (node) {
     node.hidden= hideNode;
@@ -939,7 +956,9 @@ function enigApplyFilter() {
     showOrHideAllKeys();
     return;
   }
-
+  else {
+    document.getElementById("treeTooltip").hidePopup();
+  }
   searchTxt = searchTxt.toLowerCase();
   var node=getFirstNode();
   while (node) {
