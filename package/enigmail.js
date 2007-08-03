@@ -1459,7 +1459,6 @@ function () {
     if (!agentPath && this.isDosLike) {
       // DOS-like systems: search for GPG in c:\gnupg, c:\gnupg\bin, d:\gnupg, d:\gnupg\bin
       var gpgPath = "c:\\gnupg;c:\\gnupg\\bin;d:\\gnupg;d:\\gnupg\\bin";
-
       agentPath = ResolvePath(agentName, gpgPath, this.isDosLike);
     }
 
@@ -1467,10 +1466,16 @@ function () {
       // Look up in Windows Registry
       var enigMimeService = Components.classes[NS_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
       try {
-        var regPath = getWinRegistryString("Software\\GNU\\GNUPG", "Install Directory", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
-        agentPath = ResolvePath(agentName, regPath, this.isDosLike)
+        gpgPath = getWinRegistryString("Software\\GNU\\GNUPG", "Install Directory", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
+        agentPath = ResolvePath(agentName, gpgPath, this.isDosLike)
       }
       catch (ex) {}
+    }
+
+    if (!agentPath && !this.isDosLike) {
+      // Unix-like systems: check /usr/bin and /usr/local/bin
+      gpgPath = "/usr/bin:/usr/local/bin";
+      agentPath = ResolvePath(agentName, gpgPath, this.isDosLike)
     }
 
     if (!agentPath) {
