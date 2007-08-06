@@ -53,8 +53,8 @@ function enigAboutLoad() {
   try {
     var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
 
-    var binaryVersion = enigMimeService.version.replace(/\.\d+\.\d+$/, "");
-    var textVersion = gEnigmimeVersion.replace(/\.\d+\.\d+$/, "");
+    var binaryVersion = enigMimeService.version.replace(/^(\d+\.\d+)(\..*|[a-z]*)/, "$1");
+    var textVersion = gEnigmimeVersion.replace(/^(\d+\.\d+)(\..*|[a-z]*)/, "$1");
 
     if (binaryVersion != textVersion) {
       if (enigmimeElement)

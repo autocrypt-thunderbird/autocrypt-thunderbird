@@ -32,7 +32,7 @@
 #
 
 XPI_MODULE	= enigmail
-XPI_MODULE_VERS = 0.95.2
+XPI_MODULE_VERS = 0.96a
 
 DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
