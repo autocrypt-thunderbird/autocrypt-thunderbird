@@ -111,7 +111,7 @@ function enigMsgComposeStartup() {
     msgId.setAttribute("oncommand", "enigSetIdentityCallback();");
 
   enigSetIdentityDefaults();
-  enigMsgComposeReset();
+  enigMsgComposeReset(false);
 
   enigComposeOpen();
 }
@@ -180,6 +180,7 @@ function enigGetAccDefault(value) {
 
 function enigSetIdentityDefaults() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSetIdentityDefaults\n");
+
   gEnigIdentity = getCurrentIdentity();
   if (enigGetAccDefault("enabled")) {
     EnigGetSignMsg(gEnigIdentity);
@@ -251,16 +252,16 @@ function enigComposeOpen() {
 
 function enigMsgComposeReopen() {
    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeReopen\n");
-   enigMsgComposeReset();
+   enigMsgComposeReset(false);
    enigComposeOpen();
 }
 
 function enigMsgComposeClose() {
    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeClose\n");
-   enigMsgComposeReset();
+   enigMsgComposeReset(true);
 }
 
-function enigMsgComposeReset() {
+function enigMsgComposeReset(closing) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeReset\n");
 
   gEnigDirty = 0;
@@ -273,7 +274,9 @@ function enigMsgComposeReset() {
   gEnigEnableRules = true;
   gEnigIdentity = null;
 
-  enigSetIdentityDefaults();
+  if (! closing) {
+    enigSetIdentityDefaults();
+  }
 }
 
 
@@ -1592,7 +1595,10 @@ function enigModifyCompFields(msgCompFields) {
 function enigGenericSendMessage( msgType )
 {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigGenericSendMessage: msgType="+msgType+"\n");
-  DEBUG_LOG("  Identity = " + gEnigIdentity + "\n");
+  //DEBUG_LOG("  Identity = " + gEnigIdentity + "\n");
+
+  var currId = getCurrentIdentity();
+  DEBUG_LOG("Identity = " + currId + "\n");
 
   if (gMsgCompose != null)
   {
@@ -1827,7 +1833,7 @@ function enigGenericSendMessage( msgType )
           msgWindow.domWindow = window;
         }
         msgWindow.rootDocShell.allowAuth = true;
-        gMsgCompose.SendMsg(msgType, getCurrentIdentity(), currentAccountKey, msgWindow, progress);
+        gMsgCompose.SendMsg(msgType, currId, currentAccountKey, msgWindow, progress);
 /*
 /////////////////////////////////////////////////////////////////////////
 // MODIFICATION
@@ -2456,6 +2462,8 @@ EnigComposeStateListener.prototype = {
     }
 
   },
+
+  NotifyComposeBodyReady: function() {},
 
   SaveInFolderDone: function(folderURI) {
   }
