@@ -1535,7 +1535,6 @@ function enigMessageSendCheck() {
 /////////////////////////////////////////////////////////////////////////
 // Call the following function from our version of the function
 // GenericSendMessage from the file MsgComposeCommands.js
-// (after the calls to Recipients2CompFields and Attachements2CompFields)
 /////////////////////////////////////////////////////////////////////////
 function enigModifyCompFields(msgCompFields) {
 
@@ -1579,7 +1578,7 @@ function enigSendMessageListener(event) {
   try {
     var msgcomposeWindow = document.getElementById("msgcomposeWindow");
     enigModifyCompFields(gMsgCompose.compFields);
-    if (! enigEncryptMsg(msgcomposeWindow.getAttribute("msgtype"))) {
+    if (! enigEncryptMsg(Number(msgcomposeWindow.getAttribute("msgtype")))) {
       event.preventDefault();
       event.stopPropagation();
     }
