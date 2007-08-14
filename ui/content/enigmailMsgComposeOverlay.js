@@ -747,20 +747,13 @@ function enigEncryptMsg(msgSendType) {
   var sendFlags=0;
   window.enigmailSendFlags=0;
 
-  var autoSaveAsDraft = nsIMsgCompDeliverMode.SaveAsDraft;
-  try {
-    // TB 1.5 only
-    autoSaveAsDraft = nsIMsgCompDeliverMode.AutoSaveAsDraft;
-  }
-  catch (ex) {}
-
   switch (msgSendType) {
   case nsIMsgCompDeliverMode.Later:
     sendFlags |= nsIEnigmail.SEND_LATER;
     break;
   case nsIMsgCompDeliverMode.SaveAsDraft:
   case nsIMsgCompDeliverMode.SaveAsTemplate:
-  case autoSaveAsDraft:
+  case nsIMsgCompDeliverMode.AutoSaveAsDraft:
     sendFlags |= nsIEnigmail.SAVE_MESSAGE;
     break;
   }
@@ -896,18 +889,18 @@ function enigEncryptMsg(msgSendType) {
 
      if (typeof(userIdValue) != "string") {
        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: type of userIdValue="+typeof(userIdValue)+"\n");
-       userIdValue = "";
+       userIdValue = gEnigIdentity.email;
      }
 
      DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg:gMsgCompose="+gMsgCompose+"\n");
 
      var toAddrList = [];
      if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
-        if (userIdValue.search(/@/) == -1) {
+        if (userIdValue.search(/@/) == -1 ) {
           toAddrList.push(userIdValue);
         }
         else {
-          enigAddRecipients(toAddrList, [ userIdValue ]);
+          toAddrList.push(EnigStripEmail(userIdValue.replace(/[\",]/g, "")));
         }
      }
      else {
