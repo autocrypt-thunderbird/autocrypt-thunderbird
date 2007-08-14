@@ -69,6 +69,7 @@ var gFilterBox = null;
 var gSearchTimer = null;
 var gSearchInput = null;
 var gShowAllKeysElement = null;
+var gTreeChildren = null;
 
 function enigmailKeyManagerLoad() {
   DEBUG_LOG("enigmailKeyManager.js: enigmailKeyManagerLoad\n");
@@ -77,6 +78,7 @@ function enigmailKeyManagerLoad() {
   gClearButton = document.getElementById("clearFilter");
   gSearchInput = document.getElementById("filterKey");
   gShowAllKeysElement = document.getElementById("showAllKeys");
+  gTreeChildren = document.getElementById("pgpKeyListChildren");
   if (EnigGetPref("keyManShowAllKeys")) {
     gShowAllKeysElement.setAttribute("checked", "true");
   }
@@ -113,7 +115,7 @@ function enigmailRefreshKeys() {
   for (var i=0; i<keyList.length; i++) {
     gEnigLastSelectedKeys[keyList[i]] = 1;
   }
-  var treeChildren = document.getElementById("pgpKeyListChildren");
+  var treeChildren = gTreeChildren;
   while (treeChildren.firstChild) {
     treeChildren.removeChild(treeChildren.firstChild);
   }
@@ -131,9 +133,9 @@ function enigmailBuildList(refresh) {
   gKeyList = keyListObj.keyList;
   gKeySortList = keyListObj.keySortList;
 
-  gUserList.currentItem=null;
+  gUserList.currentItem = null;
 
-  var treeChildren=document.getElementById("pgpKeyListChildren");
+  var treeChildren = gTreeChildren;
 
   var selectedItems=[];
   for (var i=0; i < gKeySortList.length; i++) {
@@ -903,7 +905,7 @@ function onEnterInSearchBar() {
 }
 
 function getFirstNode() {
-  return document.getElementById("pgpKeyListChildren").firstChild;
+  return gTreeChildren.firstChild;
 }
 
 function onResetFilter() {
@@ -935,10 +937,10 @@ function enigmailToggleShowAll() {
 
 function showOrHideAllKeys() {
   var hideNode = ! displayFullList();
-  var initHint = document.getElementById("treeTooltip");
+  var initHint = document.getElementById("emptyTree");
+  document.getElementById("nothingFound").hidePopup();
   if (hideNode) {
-    var elem = document.getElementById("pgpKeyListChildren");
-    initHint.showPopup(elem, -1, -1, "tooltip", "after_end", "");
+    initHint.showPopup(gTreeChildren, -1, -1, "tooltip", "after_end", "");
   }
   else {
     initHint.hidePopup();
@@ -952,14 +954,19 @@ function showOrHideAllKeys() {
 
 function enigApplyFilter() {
   var searchTxt=gSearchInput.value;
+  var nothingFoundElem = document.getElementById("nothingFound");
+  nothingFoundElem.hidePopup();
+
   if (!searchTxt || searchTxt.length==0) {
     showOrHideAllKeys();
     return;
   }
   else {
-    document.getElementById("treeTooltip").hidePopup();
+    document.getElementById("emptyTree").hidePopup();
   }
+
   searchTxt = searchTxt.toLowerCase();
+  var foundResult = false;
   var node=getFirstNode();
   while (node) {
     var uid = gKeyList[node.id].userId;
@@ -972,10 +979,15 @@ function enigApplyFilter() {
       uid = gKeyList[node.id].SubUserIds[subUid].userId;
       if (uid.toLowerCase().indexOf(searchTxt) >= 0) {
         hideNode = false;
+        var foundResult = true;
       }
     }
     node.hidden=hideNode;
     node = node.nextSibling;
+  }
+
+  if (! foundResult) {
+    nothingFoundElem.showPopup(gTreeChildren, -1, -1, "tooltip", "after_end", "");
   }
 }
 

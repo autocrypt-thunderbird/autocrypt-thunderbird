@@ -348,7 +348,8 @@
 
   </hbox>
 
-  <tooltip id="treeTooltip" label="&enigmail.keyMan.emptyTree.tooltip;" noautohide="true"/>
+  <tooltip id="emptyTree" label="&enigmail.keyMan.emptyTree.tooltip;" noautohide="true"/>
+  <tooltip id="nothingFound" label="&enigmail.keyMan.nothingFound.tooltip;" noautohide="true"/>
   <tooltip id="pleaseWait" label="&enigmail.keyMan.pleaseWait.tooltip;" noautohide="true"/>
 
   <groupbox width="700px" flex="1">
