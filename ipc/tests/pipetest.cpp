@@ -16,6 +16,7 @@
  * Copyright (C) 2000 Ramalingam Saravanan. All Rights Reserved.
  *
  * Contributor(s):
+ * Patrick Brunschwig <patrick@mozilla-enigmail.org>
  *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
@@ -177,7 +178,7 @@ nsConsolePoll::Run()
   nsCOMPtr<nsIOutputStream> stdinWrite;
   rv = mPipeT->OpenOutputStream(0, PRUint32(-1), 0,
                                 getter_AddRefs(stdinWrite));
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   printf("***Accepting console line input\n");
 
@@ -192,7 +193,7 @@ nsConsolePoll::Run()
     printf("CONSOLE: %s", line);
 #endif
     rv = stdinWrite->Write(line, strlen(line), &writeCount);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
   gExited = 11;
@@ -227,7 +228,7 @@ main()
 #endif
     rv = service->GetThreadEventQueue(NS_CURRENT_THREAD,
                                   getter_AddRefs(currentThreadQ));
-    if (NS_FAILED(rv)) return rv;
+    if (NS_FAILED(rv)) return -3;
 
     (void) nsComponentManager::AutoRegister(nsIComponentManagerObsolete::NS_Startup, nsnull);
 
@@ -294,14 +295,14 @@ main()
       }
 
       rv = currentThreadQ->EventAvailable(eventAvailable);
-      if (NS_FAILED(rv)) return rv;
+      if (NS_FAILED(rv)) return -4;
 
       if (eventAvailable) {
         rv = currentThreadQ->WaitForEvent(&event);
-        if (NS_FAILED(rv)) return rv;
+        if (NS_FAILED(rv)) return -5;
 
         rv = currentThreadQ->HandleEvent(event);
-        if (NS_FAILED(rv)) return rv;
+        if (NS_FAILED(rv)) return -6;
 
       } else {
         PR_Sleep(sleepInterval);
@@ -310,7 +311,7 @@ main()
 
   if (NS_FAILED(rv)) {
       printf("pipetest: ERROR: Calling Kill [%x]\n", rv);
-      return NS_ERROR_FAILURE;
+      return -7;
   }
 
   printf("pipetest: Finished testing ....\n");
@@ -318,7 +319,7 @@ main()
 
   printf("pipetest: Destroying event Q\n");
   rv = service->DestroyThreadEventQueue();
-  if (NS_FAILED(rv)) return rv;
+  if (NS_FAILED(rv)) return -8;
 
   // Shutdown XPCOM
   NS_ShutdownXPCOM(nsnull);

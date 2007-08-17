@@ -16,6 +16,7 @@
  * Copyright (C) 2000 Ramalingam Saravanan. All Rights Reserved.
  *
  * Contributor(s):
+ * Patrick Brunschwig <patrick@mozilla-enigmail.org>
  *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
@@ -119,10 +120,10 @@ nsIPCService::Init()
 
   // Create a non-joinable pipeconsole
   mConsole = do_CreateInstance(NS_PIPECONSOLE_CONTRACTID, &rv);
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   rv = mConsole->Open(500, 80, PR_FALSE);
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   nsCOMPtr<nsIObserverService> observerSvc =
            do_GetService("@mozilla.org/observer-service;1");
@@ -207,7 +208,7 @@ nsIPCService::ExecCommand(const char* command,
 
   // Create a pipetransport instance
   nsCOMPtr<nsIPipeTransport> pipeTrans = do_CreateInstance(NS_PIPETRANSPORT_CONTRACTID, &rv);
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   PRBool noProxy = PR_FALSE;
   PRBool mergeStderr = PR_FALSE;
@@ -227,7 +228,6 @@ nsIPCService::ExecCommand(const char* command,
                                 0, "",
                                 noProxy, mergeStderr,
                                 console);
-    if (NS_FAILED(rv)) return rv;
 #elif defined(XP_OS2)
     nsCAutoString commandStr ("cmd.exe /c ");
     commandStr.Append(command);
@@ -237,7 +237,6 @@ nsIPCService::ExecCommand(const char* command,
                                 0, "",
                                 noProxy, mergeStderr,
                                 console);
-    if (NS_FAILED(rv)) return rv;
 #else
     const char *executable = "/bin/sh";
     const char *args[] = {"-c", command};
@@ -248,15 +247,15 @@ nsIPCService::ExecCommand(const char* command,
                          0, "",
                          noProxy, mergeStderr,
                          console);
-    if (NS_FAILED(rv)) return rv;
 #endif
+    NS_ENSURE_SUCCESS(rv, rv);
   } else {
     rv = pipeTrans->InitCommand(command,
                                 env, envCount,
                                 0, "",
                                 noProxy, mergeStderr,
                                 console);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
   NS_IF_ADDREF(*_retval = pipeTrans);
@@ -316,10 +315,10 @@ nsIPCService::ExecPipe(const char* command,
     *errorCount = 0;
 
     nsCOMPtr<nsIIPCBuffer> temBuffer = do_CreateInstance(NS_IPCBUFFER_CONTRACTID, &rv);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     rv = temBuffer->Open(MAX_DATA_BYTES, PR_FALSE);
-    if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
     pipeConsole = do_QueryInterface(temBuffer);
     if (!pipeConsole)
@@ -333,12 +332,12 @@ nsIPCService::ExecPipe(const char* command,
   nsCOMPtr<nsIPipeTransport> pipeTrans;
   rv = ExecCommand(command, useShell, env, envCount, pipeConsole,
                    getter_AddRefs(pipeTrans) );
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   nsCOMPtr<nsIInputStream> inputStream;
   rv = pipeTrans->OpenInputStream(0, PRUint32(-1), 0,
                                   getter_AddRefs(inputStream));
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   if (preInput && strlen(preInput)) {
     // Write pre-input data to process STDIN synchronously
@@ -358,16 +357,16 @@ nsIPCService::ExecPipe(const char* command,
     rv = NS_NewByteInputStream(getter_AddRefs(byteInStream), inputBuf, inputLength);
     if (NS_FAILED(rv)) {
       nsMemory::Free(inputBuf);
-      return NS_ERROR_FAILURE;
+      return rv;
     }
 
     rv = pipeTrans->WriteAsync(byteInStream, inputLength, PR_TRUE);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
   } else {
     // Close process STDIN
     rv = pipeTrans->CloseStdin();
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
   PRUint32 readCount;
@@ -377,7 +376,7 @@ nsIPCService::ExecPipe(const char* command,
     // Read and append output until end-of-file
 
     rv = inputStream->Read((char *) buf, kCharMax, &readCount);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     if (!readCount) break;
 
@@ -395,7 +394,7 @@ nsIPCService::ExecPipe(const char* command,
   if (outputError) {
     // Extract STDERR output
     rv = pipeConsole->GetByteData(errorCount, outputError);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     // Shutdown STDERR console
     pipeConsole->Shutdown();
@@ -463,7 +462,7 @@ nsIPCService::ExecAsync(const char* command,
   nsCOMPtr<nsIPipeTransport> pipeTrans;
   rv = ExecCommand(command, useShell, env, envCount,
                    errConsole, getter_AddRefs(pipeTrans) );
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   // Create and initialize IPC request object
   nsIPCRequest* rawIPCRequest = new nsIPCRequest();
@@ -474,11 +473,11 @@ nsIPCService::ExecAsync(const char* command,
   ipcRequest = rawIPCRequest;
 
   rv = ipcRequest->Init(command, pipeTrans, outConsole, errConsole);
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   if (outConsole && requestObserver) {
     rv = outConsole->Observe(requestObserver, ipcRequest);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
   // Asynchronous capturing of output by console
@@ -486,7 +485,7 @@ nsIPCService::ExecAsync(const char* command,
   rv = pipeTrans->AsyncRead(outConsole ? outConsole : mConsole.get(),
                             nsnull, 0, PRUint32(-1), 0,
                             getter_AddRefs(pipeRequest) );
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   if (preInput && strlen(preInput)) {
     // Write pre-input data to process STDIN synchronously
@@ -506,16 +505,16 @@ nsIPCService::ExecAsync(const char* command,
     rv = NS_NewByteInputStream(getter_AddRefs(byteInStream), inputBuf, inputLength);
     if (NS_FAILED(rv)) {
       nsMemory::Free(inputBuf);
-      return NS_ERROR_FAILURE;
+      return rv;
     }
 
     rv = pipeTrans->WriteAsync(byteInStream, inputLength, PR_TRUE);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
   } else {
     // Close process STDIN
     rv = pipeTrans->CloseStdin();
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
   NS_IF_ADDREF(*_retval = ipcRequest);
@@ -604,7 +603,7 @@ nsIPCService::GetCookie(char **_retval)
     // Initialize cookie with random time
     PRUint32 randomTime;
     rv = GetRandomTime(&randomTime);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
     DEBUG_LOG(("nsIPCService::GetCookie: randomTime=%p\n", randomTime));
 
     // Convert to hexadecimal
@@ -634,7 +633,7 @@ nsIPCService::NewStringChannel(nsIURI* aURI, const nsACString &aContentType,
 
   nsCOMPtr<nsIInputStream> inputStream;
   rv = NS_NewByteInputStream(getter_AddRefs(inputStream), aData, -1);
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   nsCAutoString contentType(aContentType);
   nsCAutoString contentCharset(aContentCharset);
@@ -649,9 +648,7 @@ nsIPCService::NewStringChannel(nsIURI* aURI, const nsACString &aContentType,
                                 contentType,
                                 contentCharset);
 
-  if (NS_FAILED(rv)) return rv;
-
-  return NS_OK;
+  return rv;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

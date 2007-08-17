@@ -16,6 +16,7 @@
  * Copyright (C) 2000 Ramalingam Saravanan. All Rights Reserved.
  *
  * Contributor(s):
+ * Patrick Brunschwig <patrick@mozilla-enigmail.org>
  *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
@@ -159,7 +160,6 @@ nsPipeTransport::~nsPipeTransport()
 // --------------------------------------------------------------------------
 //
 
-#ifdef MOZILLA_VERSION
 NS_IMPL_THREADSAFE_ISUPPORTS8(nsPipeTransport,
                               nsIPipeTransport,
                               nsIPipeTransportHeaders,
@@ -169,18 +169,6 @@ NS_IMPL_THREADSAFE_ISUPPORTS8(nsPipeTransport,
                               nsIStreamListener,
                               nsIInputStreamCallback,
                               nsIOutputStreamCallback)
-#else // !MOZILLA_VERSION
-// Mods for Mozilla version prior to 1.3b
-NS_IMPL_THREADSAFE_ISUPPORTS8(nsPipeTransport,
-                              nsIPipeTransport,
-                              nsIPipeTransportHeaders,
-                              nsIPipeTransportListener,
-                              nsIRequest,
-                              nsIOutputStream,
-                              nsIStreamListener,
-                              nsIInputStreamObserver,
-                              nsIOutputStreamObserver)
-#endif // !MOZILLA_VERSION
 
 ///////////////////////////////////////////////////////////////////////////////
 // nsIPipeTransport methods
@@ -403,17 +391,17 @@ NS_IMETHODIMP nsPipeTransport::Init(const char *executable,
 
     if (!console) {
       nsCOMPtr<nsIIPCService> ipcserv = do_GetService( NS_IPCSERVICE_CONTRACTID, &rv );
-      if (NS_FAILED(rv)) return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
 
       nsCOMPtr<nsIPipeConsole> ipcConsole;
       rv = ipcserv->GetConsole(getter_AddRefs(ipcConsole));
-      if (NS_FAILED(rv)) return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
 
       console = ipcConsole;
     }
 
     rv = console->GetFileDesc(&stderrPipe);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     DEBUG_LOG(("nsPipeTransport::Init: stderrPipe=0x%p\n", stderrPipe));
   }
@@ -494,8 +482,7 @@ NS_IMETHODIMP nsPipeTransport::Init(const char *executable,
 
   // Initialize polling helper class
   rv = stdoutPoller->Init(stdoutRead, stderrRead, timeoutInterval, mConsole);
-  if (NS_FAILED(rv))
-    return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   mPipeState = PIPE_OPEN;
 
@@ -665,7 +652,7 @@ nsPipeTransport::IsAttached(PRBool* attached)
   if (mStdoutPoller) {
     PRBool interrupted;
     rv = mStdoutPoller->IsInterrupted(&interrupted);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     *attached = !interrupted;
 
@@ -690,7 +677,7 @@ nsPipeTransport::Join()
 
   if (mStdoutPoller) {
     rv = mStdoutPoller->Join();
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
     mStdoutPoller = nsnull;
   }
 
@@ -721,7 +708,7 @@ nsPipeTransport::ExitCode(PRInt32* _retval)
     // Fail if poller has not been interrupted
     PRBool interrupted;
     rv = mStdoutPoller->IsInterrupted(&interrupted);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     if (!interrupted)
       return NS_ERROR_FAILURE;
@@ -835,13 +822,11 @@ nsPipeTransport::OpenInputStream(PRUint32 offset,
                   getter_AddRefs(mOutputStream),
                   mBufferSegmentSize, mBufferMaxSize,
                   nonBlockingInput, nonBlockingOutput);
-  if (NS_FAILED(rv)) {
-    return rv;
-  }
+  NS_ENSURE_SUCCESS(rv, rv);
 
   // Spin up a new thread to handle STDOUT polling
   rv = mStdoutPoller->AsyncStart(mOutputStream, nsnull, PR_FALSE, 0);
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   rv = mInputStream->QueryInterface(NS_GET_IID(nsIInputStream),
                                     (void**)result);
@@ -914,7 +899,7 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
     // from the polling thread to the current (UI?) thread
     nsCOMPtr<nsIProxyObjectManager> proxyMgr =
                               do_GetService(NS_XPCOMPROXY_CONTRACTID, &rv);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     // Open pipe to handle STDOUT
     nsCOMPtr<nsIAsyncInputStream> asyncInputStream;
@@ -923,7 +908,7 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
     rv = NS_NewPipe2(getter_AddRefs(asyncInputStream),
                      getter_AddRefs(asyncOutputStream),
                      nonBlockingInput, nonBlockingOutput);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     mInputStream = asyncInputStream;
     mOutputStream = asyncOutputStream;
@@ -933,7 +918,7 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
 
     if (!mNoProxy) {
       rv = NS_GetCurrentEventQ(getter_AddRefs(eventQ));
-      if (NS_FAILED(rv)) return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
     }
 
 #else
@@ -941,7 +926,7 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
 
     if (!mNoProxy) {
       rv = NS_GetCurrentThread(getter_AddRefs(eventQ));
-      if (NS_FAILED(rv)) return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
     }
 
 #endif
@@ -949,7 +934,7 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
     // Set input stream observer (using event queue, if need be)
     rv = asyncInputStream->AsyncWait((nsIInputStreamCallback*) this,
                                       0, 0, eventQ);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     if (mNoProxy) {
       pipeListener = this;
@@ -961,7 +946,7 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
                                        temListener,
                                        NS_PROXY_SYNC | NS_PROXY_ALWAYS,
                                        getter_AddRefs(pipeListener));
-      if (NS_FAILED(rv)) return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
     }
   }
 
@@ -970,7 +955,7 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
   rv = mStdoutPoller->AsyncStart(mOutputStream, pipeListener,
                                  (mNoProxy != nsnull),
                                  mimeHeadersMaxSize);
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   NS_ADDREF(*_retval = this);
   return NS_OK;
@@ -985,7 +970,7 @@ nsPipeTransport::WriteSync(const char *buf, PRUint32 count)
 
   PRUint32 writeCount;
   rv = Write(buf, count, &writeCount);
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   if (writeCount != count)
     return NS_ERROR_FAILURE;
@@ -1066,7 +1051,7 @@ nsPipeTransport::ExecPrompt(const char* command, const char* prompt,
   if (!mInputStream) {
     nsCOMPtr<nsIInputStream> inputStream;
     rv = OpenInputStream(0, PRUint32(-1), 0, getter_AddRefs(inputStream));
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
   if (mStdoutStream != STREAM_SYNC_OPEN)
@@ -1084,7 +1069,7 @@ nsPipeTransport::ExecPrompt(const char* command, const char* prompt,
     while (available > 0) {
       readMax = (available < kCharMax) ? available : kCharMax;
       rv = mInputStream->Read((char *) buf, readMax, &readCount);
-      if (NS_FAILED(rv)) return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
       if (readCount <= 0)
         break;
       available -= readCount;
@@ -1100,7 +1085,7 @@ nsPipeTransport::ExecPrompt(const char* command, const char* prompt,
     // Transmit command
     PRUint32 writeCount;
     rv = Write(command, commandLen, &writeCount);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
   PRInt32 returnCount = -1;
@@ -1120,7 +1105,7 @@ nsPipeTransport::ExecPrompt(const char* command, const char* prompt,
       readMax = (remainingCount < kCharMax) ? remainingCount : kCharMax;
 
       rv = mInputStream->Read((char *) buf, kCharMax, &readCount);
-      if (NS_FAILED(rv)) return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
 
       if (readCount < 0)
         return NS_ERROR_FAILURE;
@@ -1203,7 +1188,7 @@ nsPipeTransport::ReadLine(PRInt32 maxOutputLen,
   if (!mInputStream) {
     nsCOMPtr<nsIInputStream> inputStream;
     rv = OpenInputStream(0, PRUint32(-1), 0, getter_AddRefs(inputStream));
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
   if (mStdoutStream != STREAM_SYNC_OPEN)
@@ -1233,13 +1218,13 @@ nsPipeTransport::ReadLine(PRInt32 maxOutputLen,
           // Fail if poller has been interrupted
           PRBool interrupted;
           rv = mStdoutPoller->IsInterrupted(&interrupted);
-          if (NS_FAILED(rv)) return rv;
+          NS_ENSURE_SUCCESS(rv, rv);
 
           if (interrupted)
             return NS_BASE_STREAM_CLOSED;
         }
         rv = mInputStream->Read((char *) buf, kCharMax, &readCount);
-        if (NS_FAILED(rv)) return rv;
+        NS_ENSURE_SUCCESS(rv, rv);
 
         if (readCount < 0)
           return NS_ERROR_FAILURE;
@@ -1541,15 +1526,13 @@ nsPipeTransport::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
     if (readCount <= 0) return NS_OK;
 
     rv = WriteSync(buf, readCount);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     aLength -= readCount;
   }
 
   return NS_OK;
 }
-
-#ifdef MOZILLA_VERSION
 
 ///////////////////////////////////////////////////////////////////////////////
 // nsIInputStreamCallback methods:
@@ -1574,15 +1557,14 @@ nsPipeTransport::OnInputStreamReady(nsIAsyncInputStream* inStr)
 
     PRUint32 available;
     rv = mInputStream->Available(&available);
-    if (NS_FAILED(rv))
-      return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     DEBUG_LOG(("nsPipeTransport::OnInputStreamReady: available=%d\n",
                available));
 
     rv = mListener->OnDataAvailable((nsIRequest*) this, mContext,
                                      mInputStream, 0, available);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
 #ifdef _IPC_MOZILLA_1_8
     nsCOMPtr<nsIEventQueue> eventQ;
@@ -1597,13 +1579,13 @@ nsPipeTransport::OnInputStreamReady(nsIAsyncInputStream* inStr)
 
     if (!mNoProxy) {
       rv = NS_GetCurrentThread(getter_AddRefs(eventQ));
-      if (NS_FAILED(rv)) return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
     }
 #endif
 
     // Re-set input stream observer (using event queue, if need be)
     rv = inStr->AsyncWait((nsIInputStreamCallback*) this, 0, 0, eventQ);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     return rv;
   }
@@ -1628,81 +1610,6 @@ nsPipeTransport::OnOutputStreamReady(nsIAsyncOutputStream* outStr)
 
   return NS_OK;
 }
-
-#else  // !MOZILLA_VERSION
-// Mods for Mozilla version prior to 1.3b
-
-///////////////////////////////////////////////////////////////////////////////
-// nsIInputStreamObserver methods:
-// (Should be invoked in the thread creating nsIPipeTransport object)
-///////////////////////////////////////////////////////////////////////////////
-
-NS_IMETHODIMP
-nsPipeTransport::OnEmpty(nsIInputStream* inStr)
-{
-#ifdef FORCE_PR_LOG
-  nsresult rv;
-  nsCOMPtr<nsIThread> myThread;
-  rv = IPC_GET_THREAD(myThread);
-  DEBUG_LOG(("nsPipeTransport::OnEmpty, myThread=%p\n", myThread.get()));
-#endif
-
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsPipeTransport::OnClose(nsIInputStream* inStr)
-{
-#ifdef FORCE_PR_LOG
-  nsresult rv;
-  nsCOMPtr<nsIThread> myThread;
-  rv = IPC_GET_THREAD(myThread);
-  DEBUG_LOG(("nsPipeTransport::OnClose, myThread=%p\n", myThread.get()));
-#endif
-
-  return NS_OK;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// nsIOutputStreamObserver methods:
-// (Should be invoked in the thread creating nsIPipeTransport object,
-//  unless mNoProxy is true.)
-///////////////////////////////////////////////////////////////////////////////
-
-NS_IMETHODIMP
-nsPipeTransport::OnWrite(nsIOutputStream* outStr, PRUint32 aCount)
-{
-#ifdef FORCE_PR_LOG
-  nsresult rv;
-  nsCOMPtr<nsIThread> myThread;
-  rv = IPC_GET_THREAD(myThread);
-  DEBUG_LOG(("nsPipeTransport::OnWrite, myThread=%p\n", myThread.get()));
-  DEBUG_LOG(("nsPipeTransport::OnWrite, count=%d\n", aCount));
-#endif
-
-  if (mListener) {
-    if (!mInputStream)
-      return NS_ERROR_NOT_INITIALIZED;
-
-    return mListener->OnDataAvailable((nsIRequest*) this, mContext,
-                                      mInputStream, 0, aCount);
-  }
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsPipeTransport::OnFull(nsIOutputStream* outStr)
-{
-#ifdef FORCE_PR_LOG
-  nsresult rv;
-  nsCOMPtr<nsIThread> myThread;
-  rv = IPC_GET_THREAD(myThread);
-  DEBUG_LOG(("nsPipeTransport::OnFull, myThread=%p\n", myThread.get()));
-#endif
-  return NS_OK;
-}
-
-#endif // !MOZILLA_VERSION
 
 ///////////////////////////////////////////////////////////////////////////////
 // nsIPipeTransportHeaders methods:
@@ -1745,8 +1652,7 @@ nsPipeTransport::StartRequest()
   if (mListener) {
     // Starting processing of async output
     rv = mListener->OnStartRequest((nsIRequest*) this, mContext);
-    if (NS_FAILED(rv))
-      return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
     mStartedRequest = PR_TRUE;
   }
 
@@ -1961,8 +1867,7 @@ nsStdoutPoller::AsyncStart(nsIOutputStream*  aOutputStream,
 #else
   rv = NS_NewThread(getter_AddRefs(stdoutThread), (nsIRunnable*) this);
 #endif
-  if (NS_FAILED(rv))
-    return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   mStdoutThread = stdoutThread;
 
@@ -2316,7 +2221,7 @@ nsStdoutPoller::HeaderSearch(const char* buf, PRUint32 count,
     DEBUG_LOG(("nsStdoutPoller::HeaderSearch: Calling mProxyPipeListener->StartRequest\n"));
 
     rv = mProxyPipeListener->StartRequest();
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     if (!skipHeaders && (mHeadersBufSize > 0)) {
       // Header search/parse failed; flush buffered data
@@ -2324,7 +2229,7 @@ nsStdoutPoller::HeaderSearch(const char* buf, PRUint32 count,
         PRUint32 writeCount = 0;
         rv = mOutputStream->Write(mHeadersBuf.get(),
                                   mHeadersBuf.Length(), &writeCount);
-        if (NS_FAILED(rv)) return rv;
+        NS_ENSURE_SUCCESS(rv, rv);
       }
     }
 
@@ -2364,7 +2269,7 @@ nsStdoutPoller::Run()
 #else
     // Poll to determine file descriptor to read from
     rv = GetPolledFD(readHandle);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     if (!readHandle) {
       // Null handle means end-of-file/error
@@ -2548,10 +2453,7 @@ nsStdinWriter::WriteFromStream(nsIInputStream *inStr, PRUint32 count,
   // Spin up a new thread to handle writing (non-joinable)
   nsCOMPtr<nsIThread> thread;
   nsresult rv = NS_NewThread(getter_AddRefs(thread), (nsIRunnable*) this);
-  if (NS_FAILED(rv))
-    return rv;
-
-  return NS_OK;
+  return rv;
 }
 ///////////////////////////////////////////////////////////////////////////////
 // nsIRunnable methods:

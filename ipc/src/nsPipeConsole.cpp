@@ -16,6 +16,7 @@
  * Copyright (C) 2000 Ramalingam Saravanan. All Rights Reserved.
  *
  * Contributor(s):
+ * Patrick Brunschwig <patrick@mozilla-enigmail.org>
  *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
@@ -213,8 +214,7 @@ nsPipeConsole::Open(PRInt32 maxRows, PRInt32 maxCols, PRBool joinable)
   DEBUG_LOG(("nsPipeConsole::Open: %d, %d, %d\n", maxRows, maxCols,
                                                   (int) joinable));
   rv = Init();
-  if (NS_FAILED(rv))
-    return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   mJoinable = joinable;
 
@@ -240,8 +240,7 @@ nsPipeConsole::Open(PRInt32 maxRows, PRInt32 maxCols, PRBool joinable)
 #else
   rv = NS_NewThread(getter_AddRefs(mPipeThread), this);
 #endif
-  if (NS_FAILED(rv))
-    return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   return NS_OK;
 }
@@ -367,8 +366,7 @@ nsPipeConsole::Join()
 #else
   rv = mPipeThread->Shutdown();
 #endif
-  if (NS_FAILED(rv))
-    return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   return NS_OK;
 }
@@ -616,7 +614,7 @@ nsPipeConsole::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
     if (readCount <= 0) return NS_OK;
 
     rv = WriteBuf(buf, readCount);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     aLength -= readCount;
   }

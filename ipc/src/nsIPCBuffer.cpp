@@ -16,6 +16,7 @@
  * Copyright (C) 2000 Ramalingam Saravanan. All Rights Reserved.
  *
  * Contributor(s):
+ * Patrick Brunschwig <patrick@mozilla-enigmail.org>
  *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
@@ -207,8 +208,7 @@ nsIPCBuffer::Open(PRUint32 maxBytes, PRBool overflowFile)
 
   DEBUG_LOG(("nsIPCBuffer::Open: %d, %d\n", maxBytes, (int) overflowFile));
   rv = Init();
-  if (NS_FAILED(rv))
-    return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   mMaxBytes = maxBytes;
   mOverflowFile = overflowFile;
@@ -226,8 +226,7 @@ nsIPCBuffer::OpenURI(nsIURI* aURI, PRInt32 maxBytes, PRBool synchronous,
   nsresult rv;
 
   rv = Init();
-  if (NS_FAILED(rv))
-    return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   mMaxBytes = maxBytes;
 
@@ -235,21 +234,18 @@ nsIPCBuffer::OpenURI(nsIURI* aURI, PRInt32 maxBytes, PRBool synchronous,
   mObserverContext = context;
 
   nsCOMPtr<nsIIOService> ioService(do_GetService(NS_IOSERVICE_CONTRACTID, &rv));
-  if (NS_FAILED(rv))
-    return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   nsCOMPtr<nsIChannel> channel;
   rv = ioService->NewChannelFromURI(aURI, getter_AddRefs(channel));
-  if (NS_FAILED(rv))
-    return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   nsCOMPtr<nsISupports> ctxt = do_QueryInterface(aURI);
 
   if (!synchronous) {
     // Initiate asynchronous loading of URI
     rv = channel->AsyncOpen( (nsIStreamListener*) this, ctxt );
-    if (NS_FAILED(rv))
-      return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     DEBUG_LOG(("nsIPCBuffer::OpenURI: Starting asynchronous load ...\n"));
     return NS_OK;
@@ -259,7 +255,7 @@ nsIPCBuffer::OpenURI(nsIURI* aURI, PRInt32 maxBytes, PRBool synchronous,
   DEBUG_LOG(("nsIPCBuffer::OpenURI: Starting synchronous load ...\n"));
   nsCOMPtr<nsIInputStream> inputStream;
   rv = channel->Open(getter_AddRefs(inputStream));
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   OnStartRequest(nsnull, mObserverContext);
 
@@ -269,12 +265,12 @@ nsIPCBuffer::OpenURI(nsIURI* aURI, PRInt32 maxBytes, PRBool synchronous,
   while (1) {
     // Read and append output until end-of-file
     rv = inputStream->Read((char *) buf, 1024, &readCount);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     if (!readCount) break;
 
     rv = WriteBuf(buf, readCount);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
   // Close input stream
@@ -320,8 +316,7 @@ nsIPCBuffer::OpenInputStream(nsIInputStream** result)
 
   if (mByteCount && mTempFile) {
     rv = OpenTempInStream();
-    if (NS_FAILED(rv))
-      return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
   return this->QueryInterface(NS_GET_IID(nsIInputStream), (void**)result);
@@ -359,13 +354,10 @@ nsIPCBuffer::CreateTempFile()
             nativePath.get()));
 
   mTempOutStream  = do_CreateInstance("@mozilla.org/network/file-output-stream;1", &rv);
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   rv = mTempOutStream->Init(mTempFile, PR_WRONLY | PR_CREATE_FILE | PR_TRUNCATE, 00600, 0);
-  if (NS_FAILED(rv)) return rv;
-
-
-  return NS_OK;
+  return rv;
 }
 
 
@@ -380,10 +372,11 @@ nsIPCBuffer::WriteTempOutStream(const char* buf, PRUint32 count)
 
   PRUint32 writeCount;
   nsresult rv = mTempOutStream->Write(buf, count, &writeCount);
-  if (NS_FAILED(rv) || (writeCount != count))
+
+  if (writeCount != count)
     return NS_ERROR_FAILURE;
 
-  return NS_OK;
+  return rv;
 }
 
 NS_IMETHODIMP
@@ -423,12 +416,10 @@ nsIPCBuffer::OpenTempInStream()
   }
 
   mTempInStream  = do_CreateInstance("@mozilla.org/network/file-input-stream;1", &rv);
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   rv = mTempInStream->Init(mTempFile, PR_RDONLY, 00600, 0);
-  if (NS_FAILED(rv)) return rv;
-
-  return NS_OK;
+  return rv;
 }
 
 
@@ -617,10 +608,8 @@ nsIPCBuffer::WriteBuf(const char* buf, PRUint32 count)
       return NS_OK;
 
     rv = WriteTempOutStream(buf, count);
-    if (NS_FAILED(rv))
-      return rv;
 
-    return NS_OK;
+    return rv;
   }
 
   // Find space available in buffer
@@ -645,14 +634,10 @@ nsIPCBuffer::WriteBuf(const char* buf, PRUint32 count)
 
   // Write out previously buffered data first
   rv = WriteTempOutStream(mByteBuf.get(), mByteBuf.Length());
-  if (NS_FAILED(rv))
-    return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   rv = WriteTempOutStream(buf+nAvail, count-nAvail);
-  if (NS_FAILED(rv))
-    return rv;
-
-  return NS_OK;
+  return rv;
 }
 
 NS_IMETHODIMP
@@ -681,8 +666,7 @@ nsIPCBuffer::Join()
   rv = mPipeThread->Shutdown();
 #endif
 
-  if (NS_FAILED(rv))
-    return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   mThreadJoined = PR_TRUE;
   return NS_OK;
@@ -718,8 +702,7 @@ nsIPCBuffer::GetFileDesc(IPCFileDesc* *_retval)
     rv = NS_NewThread(getter_AddRefs(mPipeThread), this);
 #endif
 
-    if (NS_FAILED(rv))
-      return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
   if (mPipeWrite == IPC_NULL_HANDLE)
@@ -903,9 +886,7 @@ nsIPCBuffer::Read(char* buf, PRUint32 count,
   if (readyCount) {
     if (mTempInStream) {
       rv = mTempInStream->Read((char *)buf, readyCount, readCount);
-      if (NS_FAILED(rv)) {
-        return rv;
-      }
+      NS_ENSURE_SUCCESS(rv, rv);
     } else {
       memcpy(buf, mByteBuf.get()+mStreamOffset, readyCount);
       *readCount = readyCount;
@@ -944,8 +925,10 @@ nsIPCBuffer::ReadSegments(nsWriteSegmentFun writer,
       rv = writer(NS_STATIC_CAST(nsIInputStream*, this),
                   aClosure, mByteBuf.get()+mStreamOffset,
                   mStreamOffset, readyCount, &writeCount);
-      if (NS_FAILED(rv) || !writeCount)
-        return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
+
+      if (!writeCount)
+        return (NS_ERROR_FAILURE);
 
       DEBUG_LOG(("nsIPCBuffer::ReadSegments: writer %d\n", writeCount));
 
@@ -960,7 +943,7 @@ nsIPCBuffer::ReadSegments(nsWriteSegmentFun writer,
     while ((count > 0) && (mStreamOffset < mByteCount)) {
       avail = (count < kCharMax) ? count : kCharMax;
       rv = mTempInStream->Read((char *) buf, avail, &readyCount);
-      if (NS_FAILED(rv)) { return rv; }
+      NS_ENSURE_SUCCESS(rv, rv);
 
       if (!readyCount) {
         ERROR_LOG(("nsIPCBuffer::ReadSegments: Error in reading from TempInputStream\n"));
@@ -970,8 +953,9 @@ nsIPCBuffer::ReadSegments(nsWriteSegmentFun writer,
       rv = writer(NS_STATIC_CAST(nsIInputStream*, this),
                   aClosure, buf,
                   mStreamOffset, readyCount, &writeCount);
-      if (NS_FAILED(rv) || !writeCount)
-        return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
+      if (!writeCount)
+        return NS_ERROR_FAILURE;
 
       DEBUG_LOG(("nsIPCBuffer::ReadSegments: writer %d (Temp)\n", writeCount));
 

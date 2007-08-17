@@ -16,6 +16,7 @@
  * Copyright (C) 2000 Ramalingam Saravanan. All Rights Reserved.
  *
  * Contributor(s):
+ * Patrick Brunschwig <patrick@mozilla-enigmail.org>
  *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
@@ -212,16 +213,10 @@ nsPipeChannel::Init(nsIURI* aURI,
     // because we have a very loose interpretation of an URI
 
     nsCOMPtr<nsIMIMEService> MIMEService (do_GetService("@mozilla.org/mime;1", &rv));
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
-#if MOZILLA_MAJOR_VERSION==1 && MOZILLA_MINOR_VERSION<8
-    char *contentType = nsnull;
-    rv = MIMEService->GetTypeFromURI(url, (char **)&contentType);
-#else
-    // Mozilla >= 1.8a1
     nsXPIDLCString contentType;
     rv = MIMEService->GetTypeFromURI(url, contentType);
-#endif
 
     if (NS_SUCCEEDED(rv) && contentType) {
       mContentType.Assign(contentType);
@@ -248,6 +243,7 @@ nsPipeChannel::Init(nsIURI* aURI,
 
   // Close process STDIN
   rv = mPipeTransport->CloseStdin();
+  NS_ENSURE_SUCCESS(rv, rv);
 
   mChannelState = CHANNEL_OPEN;
   return NS_OK;
@@ -488,13 +484,14 @@ nsPipeChannel::SetNotificationCallbacks(nsIInterfaceRequestor* aNotificationCall
     nsCOMPtr<nsIProxyObjectManager> proxyMgr =
                                  do_GetService(NS_XPCOMPROXY_CONTRACTID, &rv);
 
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     rv = proxyMgr->GetProxyForObject(NS_PROXY_TO_MAIN_THREAD, // primordial thread
                                      NS_GET_IID(nsIProgressEventSink),
                                      sink,
                                      NS_PROXY_ASYNC | NS_PROXY_ALWAYS,
                                      getter_AddRefs(mProgress));
+    // TODO: ignore rv value here on purpose??
   }
 
   return NS_OK;
@@ -532,17 +529,18 @@ nsPipeChannel::AsyncOpen(nsIStreamListener *listener, nsISupports *ctxt)
     rv = NS_NewAsyncStreamListener(getter_AddRefs(mListener),
                                    listener, nsnull);
 #else
+    // Mozilla >= 1.9a
     rv = NS_GetProxyForObject(nsnull /* will that work?? */,
                               NS_GET_IID(nsIStreamListener),
                               listener,
                               NS_PROXY_ASYNC | NS_PROXY_ALWAYS,
                               getter_AddRefs(mListener));
 #endif
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
   rv = mPipeTransport->SetHeaderProcessor(mNoMimeHeaders ? nsnull : (nsIPipeTransportHeaders*) this);
-  if (NS_FAILED(rv)) return rv;
+  NS_ENSURE_SUCCESS(rv, rv);
 
   return mPipeTransport->AsyncRead(this, ctxt, 0, PRUint32(-1), 0,
                                    getter_AddRefs(mPipeRequest));
@@ -569,7 +567,7 @@ nsPipeChannel::OnStartRequest(nsIRequest *aRequest, nsISupports *aContext)
 
       DEBUG_LOG(("nsPipeChannel::OnStartRequest: AddRequest\n"));
       rv = mLoadGroup->AddRequest(this, nsnull);
-      if (NS_FAILED(rv)) return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
     }
 
     return mListener->OnStartRequest(this, aContext);
@@ -609,7 +607,7 @@ nsPipeChannel::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext,
 
     DEBUG_LOG(("nsPipeChannel::OnStopRequest: RemoveRequest\n"));
     rv = mLoadGroup->RemoveRequest(this, nsnull, aStatus);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
   rv = mListener->OnStopRequest(this, aContext, aStatus);
@@ -793,8 +791,7 @@ nsPipeChannel::ParseMimeHeaders(const char* mimeHeaders, PRUint32 count,
 
     // Parse header line
     rv = ParseHeader((headers.get())+offset, lineEnd - offset);
-    if (NS_FAILED(rv))
-      return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     offset = lineEnd+1;
   }

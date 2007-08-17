@@ -16,6 +16,7 @@
  * Copyright (C) 2000 Ramalingam Saravanan. All Rights Reserved.
  *
  * Contributor(s):
+ * Patrick Brunschwig <patrick@mozilla-enigmail.org>
  *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
@@ -292,14 +293,12 @@ nsPipeFilterListener::Write(const char* buf, PRUint32 count,
       rv = mListener->OnStartRequest(aRequest,
                                      mContext ? mContext.get() : aContext);
 
-      if (NS_FAILED(rv))
-        return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
 
       if (mKeepDelimiters && !mStartLine.IsEmpty()) {
         rv = TransmitData(mStartLine.get(), mStartLine.Length(),
                           mListener, aRequest, aContext);
-        if (NS_FAILED(rv))
-          return rv;
+        NS_ENSURE_SUCCESS(rv, rv);
       }
     }
   }
@@ -319,7 +318,7 @@ nsPipeFilterListener::Write(const char* buf, PRUint32 count,
     if (mTailListener) {
       DEBUG_LOG(("nsPipeFilterListener::Write: TAIL count %d\n", count));
       rv = TransmitData(buf, count, mTailListener, aRequest, aContext);
-      if (NS_FAILED(rv)) return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
     }
 
     return NS_OK;
@@ -338,7 +337,7 @@ nsPipeFilterListener::Write(const char* buf, PRUint32 count,
 
     rv = TransmitData(mOldPartMatch.get(), savedPartMatchLen,
                       mListener, aRequest, aContext);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     mOldPartMatch = "";
   }
@@ -347,7 +346,7 @@ nsPipeFilterListener::Write(const char* buf, PRUint32 count,
 
   if (transCount > 0) {
     rv = TransmitData(buf, transCount, mListener, aRequest, aContext);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
   if (mTailListener && (mEnd.matchCount > mEnd.skipCount)) {
@@ -355,14 +354,14 @@ nsPipeFilterListener::Write(const char* buf, PRUint32 count,
     mTailRequestStarted = PR_TRUE;
     rv = mTailListener->OnStartRequest(aRequest,
                                        mContext ? mContext.get() : aContext);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     buf   += consumed;
     count -= consumed;
     if (count > 0) {
       DEBUG_LOG(("nsPipeFilterListener::Write: TAIL START count %d\n", count));
       rv = TransmitData(buf, count, mTailListener, aRequest, aContext);
-      if (NS_FAILED(rv)) return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
     }
   }
 
@@ -583,14 +582,12 @@ nsPipeFilterListener::EndRequest(nsIRequest* aRequest, nsISupports* aContext)
 
       rv = mListener->OnStartRequest(aRequest,
                                      mContext ? mContext.get() : aContext);
-      if (NS_FAILED(rv))
-        return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
 
       if (mKeepDelimiters && !mStartLine.IsEmpty()) {
         rv = TransmitData(mStartLine.get(), mStartLine.Length(),
                           mListener, aRequest, aContext);
-        if (NS_FAILED(rv))
-          return rv;
+        NS_ENSURE_SUCCESS(rv, rv);
       }
     }
 
@@ -599,8 +596,7 @@ nsPipeFilterListener::EndRequest(nsIRequest* aRequest, nsISupports* aContext)
       DEBUG_LOG(("nsPipeFilterListener::EndRequest: PARTIALLY MATCHED LINE '%s'\n", mPartMatch.get()));
       rv = TransmitData(mPartMatch.get(), mPartMatch.Length(),
                         mListener, aRequest, aContext);
-      if (NS_FAILED(rv))
-        return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
 
       mPartMatch = "";
     }
@@ -608,8 +604,7 @@ nsPipeFilterListener::EndRequest(nsIRequest* aRequest, nsISupports* aContext)
     if (mKeepDelimiters && !mEndLine.IsEmpty()) {
       rv = TransmitData(mEndLine.get(), mEndLine.Length(),
                         mListener, aRequest, aContext);
-      if (NS_FAILED(rv))
-        return rv;
+      NS_ENSURE_SUCCESS(rv, rv);
     }
   }
 
@@ -786,8 +781,9 @@ nsPipeFilterListener::ReadSegments(nsWriteSegmentFun writer,
     rv = writer(NS_STATIC_CAST(nsIInputStream*, this),
                 aClosure, mStreamBuf+mStreamOffset,
                 mStreamOffset, readyCount, &writeCount);
-    if (NS_FAILED(rv) || !writeCount)
-      return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
+    if (!writeCount)
+      return NS_ERROR_FAILURE;
 
     DEBUG_LOG(("nsPipeFilterListener::ReadSegments: writer %d\n", writeCount));
 
