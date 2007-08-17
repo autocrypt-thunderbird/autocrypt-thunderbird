@@ -794,12 +794,10 @@ function enigEncryptMsg(msgSendType) {
     // (it may have been set by a previously cancelled send operation!)
     try {
       if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIEnigMsgCompFields) {
-        if (!gEnigSendPGPMime) {
-          gMsgCompose.compFields.securityInfo=null;
-        }
-        else {
-          gMsgCompose.compFields.securityInfo.sendFlags=0;
-        }
+        gMsgCompose.compFields.securityInfo.sendFlags=0;
+      }
+      else if (gMsgCompose.compFields.securityInfo == null) {
+        throw "dummy";
       }
     }
     catch (ex){
