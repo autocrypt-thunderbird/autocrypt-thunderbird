@@ -134,7 +134,7 @@
 <!ENTITY enigmail.browse.label             "Browse...">
 <!ENTITY enigmail.sendersKeyMenu.label     "Sender's Key">
 <!ENTITY enigmail.adminSmartCard.label     "Manage SmartCard ...">
-
+<!ENTITY enigmail.setupWiz.label           "Setup Wizard">
 
 <!ENTITY enigmail.decryptverify.accesskey   "D">
 <!ENTITY enigmail.importpublickey.accesskey "I">
@@ -147,6 +147,8 @@
 
 <!ENTITY enigmail.clearPassphrase.accesskey "l">
 <!ENTITY enigmail.editRules.accesskey       "R">
+<!ENTITY enigmail.setupWiz.accesskey        "S">
+
 
 <!ENTITY enigmail.prefs.accesskey           "P">
 <!ENTITY enigmail.viewconsole.accesskey     "c">

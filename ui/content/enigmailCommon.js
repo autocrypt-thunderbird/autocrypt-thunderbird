@@ -1897,7 +1897,7 @@ function EnigCollapseAdvanced(obj, attribute, dummy) {
 
   var obj = obj.firstChild;
   while (obj) {
-    if (obj.getAttribute("advanced")) {
+    if (obj.getAttribute("advanced") == "true") {
       if (advancedUser) {
         obj.removeAttribute(attribute);
       }
@@ -1905,6 +1905,15 @@ function EnigCollapseAdvanced(obj, attribute, dummy) {
         obj.setAttribute(attribute, "true");
       }
     }
+    else if (obj.getAttribute("advanced") == "reverse") {
+      if (advancedUser) {
+        obj.setAttribute(attribute, "true");
+      }
+      else {
+        obj.removeAttribute(attribute);
+      }
+    }
+
     obj = obj.nextSibling;
   }
 }

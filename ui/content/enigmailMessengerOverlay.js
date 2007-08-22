@@ -183,13 +183,8 @@ function enigViewSecurityInfo(event, displaySmimeMsg) {
          (gEnigSecurityInfo.statusFlags &
            (nsIEnigmail.PGP_MIME_SIGNED | nsIEnigmail.PGP_MIME_ENCRYPTED)) ) {
 
-      if (typeof(ReloadWithAllParts) == "function") {
-        if (EnigConfirm(EnigGetString("reloadImapMessage")))
-          ReloadWithAllParts();
-
-      } else {
-          EnigAlert(EnigGetString("reloadImapError"));
-      }
+      if (EnigConfirm(EnigGetString("reloadImapMessage")))
+        enigmailReloadCompleteMsg();
 
     }
     else if ((gEnigSecurityInfo.statusFlags & (nsIEnigmail.PGP_MIME_SIGNED | nsIEnigmail.PGP_MIME_ENCRYPTED))
@@ -274,6 +269,11 @@ function enigMessageReload(noShowReload) {
 
   MsgReload();
 }
+
+function enigmailReloadCompleteMsg() {
+  gDBView.reloadMessageWithAllParts();
+}
+
 
 function enigMessageCleanup() {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageCleanup\n");

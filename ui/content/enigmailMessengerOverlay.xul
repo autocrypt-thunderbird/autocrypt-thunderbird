@@ -102,7 +102,7 @@
              accesskey="&enigmail.reload.accesskey;"
              advanced="true"
              hidden="true"
-             oncommand="ReloadWithAllParts();" />
+             oncommand="enigmailReloadCompleteMsg();" />
 
         <menu id="enigmail_sendersKeyMenu"
              label="&enigmail.sendersKeyMenu.label;"
@@ -184,6 +184,12 @@
           </menupopup>
         </menu>
 
+        <menuitem id="enigmail_wizard"
+             label="&enigmail.setupWiz.label;"
+             accesskey="&enigmail.setupWiz.accesskey;"
+             advanced="reverse"
+             oncommand="EnigOpenSetupWizard();" />
+
         <menuseparator/>
 
         <menuitem id="enigmail_help"
@@ -253,7 +259,7 @@
              accesskey="&enigmail.reload.accesskey;"
              advanced="true"
              hidden="true"
-             oncommand="ReloadWithAllParts();" />
+             oncommand="enigmailReloadCompleteMsg();" />
 
         <menu id="enigmail_sendersKeyMenu"
              label="&enigmail.sendersKeyMenu.label;"
@@ -332,6 +338,12 @@
                  oncommand="EnigViewDebugLog();" />
           </menupopup>
         </menu>
+
+        <menuitem id="enigmail_wizard"
+             label="&enigmail.setupWiz.label;"
+             accesskey="&enigmail.setupWiz.accesskey;"
+             advanced="reverse"
+             oncommand="EnigOpenSetupWizard();" />
 
         <menuseparator/>
 

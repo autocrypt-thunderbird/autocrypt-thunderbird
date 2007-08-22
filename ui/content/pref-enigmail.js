@@ -261,8 +261,8 @@ function enigSwitchAdvancedMode(expertUser) {
   var prefTabBox  = document.getElementById("prefTabBox");
   if (prefTabBox) {
     // Thunderbird
-    EnigCollapseAdvanced(prefTabBox, "hidden", null);
     EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
+    EnigCollapseAdvanced(prefTabBox, "collapsed", null);
   }
   else {
     // Seamonkey
