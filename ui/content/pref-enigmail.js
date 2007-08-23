@@ -52,7 +52,7 @@ function prefOnLoad() {
           selectPrefTabPanel("sendTab");
       }
       else {
-        EnigCollapseAdvanced(document.getElementById("prefTabBox"), "hidden", null);
+        EnigCollapseAdvanced(document.getElementById("prefTabBox"), "collapsed", null);
         EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
         enigShowUserModeButtons(gAdvancedMode);
       }
@@ -68,7 +68,7 @@ function prefOnLoad() {
       document.getElementById("enigmail_disableSMIMEui").setAttribute("collapsed", true);
       var uninst = document.getElementById("uninstall");
       if (uninst) uninst.setAttribute("collapsed", "true");
-      EnigCollapseAdvanced(document.getElementById("prefTabBox"), "hidden", null);
+      EnigCollapseAdvanced(document.getElementById("prefTabBox"), "collapsed", null);
       EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
 
    }

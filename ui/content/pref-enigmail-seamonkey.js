@@ -37,11 +37,15 @@ GPL.
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail-seamonkey");
 
+var gAdvancedMode;
+
 function initPrefSeamonkey() {
   DEBUG_LOG("pref-enigmail-seamonkey.js: initPrefSeamonkey\n");
   parent.initPanel('chrome://enigmail/content/pref-enigmail-seamonkey.xul');
 
+  gAdvancedMode = EnigGetPref("advancedUser");
   EnigCollapseAdvanced(document.getElementById("enigmailPrefsBox"), "hidden", null);
+  enigShowUserModeButtons(gAdvancedMode);
 
   enigDetermineGpgPath();
 
@@ -73,5 +77,6 @@ function prefSeamonkeyOnClose() {
   if (! document.getElementById("enigOverrideGpg").checked) {
     EnigSetPref("agentPath", "");
   }
+  EnigSetPref("advancedUser", gAdvancedMode);
 }
 

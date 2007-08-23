@@ -143,14 +143,18 @@
   <separator/>
 
   <hbox autostretch="never" align="center">
-    <checkbox id="enigmail_advancedUser"
-          label="&enigmail.expertUser.label;"
-          tooltip="expertUser.tooltip"
-          pref="true"
-          preftype="bool"
-          prefstring="extensions.enigmail.advancedUser"
-          oncommand="enigSwitchAdvancedMode(this)"
-          prefattribute="checked"/>
+    <hbox autostretch="never" align="center">
+      <button id="enigmail_advancedUser"
+            label="&enigmail.expertUser.label;"
+            oncommand="enigSwitchAdvancedMode(true)"
+            tooltip="expertUser.tooltip"/>
+
+      <button id="enigmail_basicUser"
+            label="&enigmail.basicUser.label;"
+            oncommand="enigSwitchAdvancedMode(false)"
+            tooltip="basicUser.tooltip"
+            hidden="true"/>
+    </hbox>
   </hbox>
 
   <separator/>
