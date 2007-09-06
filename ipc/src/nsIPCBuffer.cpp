@@ -549,7 +549,7 @@ nsIPCBuffer::GetByteData(PRUint32 *count, char **data)
 
   // Copy bytes
   *count = mByteBuf.Length();
-  *data = NS_REINTERPRET_CAST(char*, nsMemory::Alloc((*count)+1));
+  *data = reinterpret_cast<char*>(nsMemory::Alloc((*count)+1));
   if (!*data)
     return NS_ERROR_OUT_OF_MEMORY;
 

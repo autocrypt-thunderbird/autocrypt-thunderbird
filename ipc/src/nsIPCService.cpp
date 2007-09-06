@@ -408,8 +408,7 @@ nsIPCService::ExecPipe(const char* command,
     *outputCount = commandOut.Length();
 
     // Copy bytes
-    *outputData = NS_REINTERPRET_CAST(char*,
-                                      nsMemory::Alloc((*outputCount)+1));
+    *outputData = reinterpret_cast<char*>(nsMemory::Alloc((*outputCount)+1));
 
     if (*outputData) {
       memcpy(*outputData, commandOut.get(), *outputCount);
