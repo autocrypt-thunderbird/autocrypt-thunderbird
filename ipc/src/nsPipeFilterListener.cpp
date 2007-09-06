@@ -212,7 +212,7 @@ nsPipeFilterListener::TransmitData(const char* buf, PRUint32 count,
 
   rv = listener->OnDataAvailable(aRequest,
                                  mContext ? mContext.get() : aContext,
-                                 NS_STATIC_CAST(nsIInputStream*, this),
+                                 (nsIInputStream*)(this),
                                  0, count);
   if (NS_FAILED(rv)) {
     DEBUG_LOG(("nsPipeFilterListener::TransmitData: (%p) rv=%p\n", this, rv));
@@ -778,7 +778,7 @@ nsPipeFilterListener::ReadSegments(nsWriteSegmentFun writer,
     avail = mStreamLength - mStreamOffset;
     readyCount = ((PRUint32) avail > count) ? count : avail;
 
-    rv = writer(NS_STATIC_CAST(nsIInputStream*, this),
+    rv = writer((nsIInputStream*)(this),
                 aClosure, mStreamBuf+mStreamOffset,
                 mStreamOffset, readyCount, &writeCount);
     NS_ENSURE_SUCCESS(rv, rv);

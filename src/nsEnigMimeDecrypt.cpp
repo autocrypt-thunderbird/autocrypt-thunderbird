@@ -153,7 +153,7 @@ nsEnigMimeDecrypt::Init(PRBool verifyOnly,
     mListener = do_CreateInstance(NS_PIPEFILTERLISTENER_CONTRACTID, &rv);
     if (NS_FAILED(rv)) return rv;
 
-    rv = mListener->Init(NS_STATIC_CAST(nsIStreamListener*, mBuffer),
+    rv = mListener->Init((nsIStreamListener*)(mBuffer),
                          nsnull, "", "", 1, PR_FALSE, PR_TRUE, nsnull);
     if (NS_FAILED(rv)) return rv;
   }

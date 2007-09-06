@@ -269,7 +269,7 @@ nsEnigMimeListener::SendStream(const char* buf, PRUint32 count,
 
   rv = mListener->OnDataAvailable(aRequest,
                                   mContext ? mContext.get() : aContext,
-                                  NS_STATIC_CAST(nsIInputStream*, this),
+                                  (nsIInputStream*)(this),
                                   0, count);
   Close();
 
@@ -924,7 +924,7 @@ nsEnigMimeListener::ReadSegments(nsWriteSegmentFun writer,
     *readCount = 0;
 
   } else {
-    nsresult rv = writer(NS_STATIC_CAST(nsIInputStream*, this),
+    nsresult rv = writer((nsIInputStream*)(this),
                          aClosure, mStreamBuf+mStreamOffset,
                          mStreamOffset, readyCount, readCount);
     if (NS_FAILED(rv))

@@ -922,7 +922,7 @@ nsIPCBuffer::ReadSegments(nsWriteSegmentFun writer,
       avail = mByteCount - mStreamOffset;
       readyCount = ((PRUint32) avail > count) ? count : avail;
 
-      rv = writer(NS_STATIC_CAST(nsIInputStream*, this),
+      rv = writer((nsIInputStream*)(this),
                   aClosure, mByteBuf.get()+mStreamOffset,
                   mStreamOffset, readyCount, &writeCount);
       NS_ENSURE_SUCCESS(rv, rv);
@@ -950,7 +950,7 @@ nsIPCBuffer::ReadSegments(nsWriteSegmentFun writer,
         return NS_ERROR_FAILURE;
       }
 
-      rv = writer(NS_STATIC_CAST(nsIInputStream*, this),
+      rv = writer((nsIInputStream*)(this),
                   aClosure, buf,
                   mStreamOffset, readyCount, &writeCount);
       NS_ENSURE_SUCCESS(rv, rv);

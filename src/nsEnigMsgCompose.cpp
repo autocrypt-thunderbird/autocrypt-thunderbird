@@ -481,7 +481,7 @@ nsEnigMsgCompose::Init()
                                         mRecipients.get(),
                                         mHashAlgorithm.get(),
                                         mSendFlags,
-                                        NS_STATIC_CAST(nsIStreamListener*, mWriter),
+                                        (nsIStreamListener*)(mWriter),
                                         noProxy,
                                         getter_Copies(errorMsg),
                                         getter_AddRefs(mPipeTrans) );

@@ -129,7 +129,7 @@ nsIPCService::Init()
            do_GetService("@mozilla.org/observer-service;1");
 
   if (observerSvc) {
-    observerSvc->AddObserver(NS_STATIC_CAST(nsIObserver*, this),
+    observerSvc->AddObserver((nsIObserver*)(this),
                              NS_XPCOM_SHUTDOWN_OBSERVER_ID, PR_FALSE);
   }
 
@@ -155,7 +155,7 @@ nsIPCService::Shutdown()
            do_GetService("@mozilla.org/observer-service;1");
 
   if (observerSvc) {
-    observerSvc->RemoveObserver(NS_STATIC_CAST(nsIObserver*, this),
+    observerSvc->RemoveObserver((nsIObserver*)(this),
                                 NS_XPCOM_SHUTDOWN_OBSERVER_ID);
   }
 
