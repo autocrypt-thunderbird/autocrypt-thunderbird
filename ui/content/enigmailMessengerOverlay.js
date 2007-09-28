@@ -615,7 +615,7 @@ function enigMessageDecrypt(event, isAuto) {
     else if (! isAuto) {
       enigMessageReload(false);
     }
-    else if (embeddedEncrypted) {
+    else if (embeddedEncrypted && (! encrypedMsg)) {
       var mailNewsUrl = enigGetCurrentMsgUrl();
       if (mailNewsUrl) {
         mailNewsUrl.spec = embeddedEncrypted;
@@ -687,7 +687,10 @@ function enigMessageParse(interactive, importOnly, contentEncoding) {
   DEBUG_LOG("enigmailMessengerOverlay.js: bodyElement="+bodyElement+"\n");
 
   var findStr = interactive ? null : "-----BEGIN PGP";
-  var msgText = EnigGetDeepText(bodyElement, findStr);
+  var msgText = null;
+
+  if ((! findStr) || (findStr && (bodyElement.textContent.indexOf(findStr) >= 0)))
+    msgText = bodyElement.textContent;
 
   if (!msgText) {
     // No PGP content
@@ -718,8 +721,10 @@ function enigMessageParse(interactive, importOnly, contentEncoding) {
 
   var urlSpec = mailNewsUrl ? mailNewsUrl.spec : "";
 
+  retry = (charset != "UTF-8" ? 1 : 2);
+
   enigMessageParseCallback(msgText, contentEncoding, charset, interactive,
-                           importOnly, urlSpec, "", true, head, tail);
+                           importOnly, urlSpec, "", retry, head, tail);
 }
 
 
@@ -832,7 +837,13 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
 
   if ((exitCode !=0) && (! (statusFlags & noSecondTry))) {
     // Bad signature/armor
-    if (retry) {
+    if (retry == 1) {
+      msgText = EnigConvertFromUnicode(msgText, "UTF-8");
+      enigMessageParseCallback(msgText, contentEncoding, charset, interactive,
+                               importOnly, messageUrl, signature, 2,
+                               head, tail)
+    }
+    else if (retry == 2) {
       // Try to verify signature by accessing raw message text directly
       // (avoid recursion by setting retry parameter to false on callback)
       enigMsgDirect(interactive, importOnly, contentEncoding, charset, newSignature, 0, head, tail, enigMessageParseCallback);
@@ -1412,6 +1423,7 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
   }
 
   var msgText = callbackArg.ipcBuffer.getData();
+  msgText = EnigConvertFromUnicode(msgText, "UTF-8");
 
   callbackArg.ipcBuffer.shutdown();
 
@@ -1436,7 +1448,7 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
                            callbackArg.importOnly,
                            callbackArg.messageUrl,
                            callbackArg.signature,
-                           false,
+                           0,
                            callbackArg.head,
                            callbackArg.tail);
 }
