@@ -615,6 +615,14 @@ function enigMessageDecrypt(event, isAuto) {
     else if (! isAuto) {
       enigMessageReload(false);
     }
+    else if (embeddedEncrypted) {
+      var mailNewsUrl = enigGetCurrentMsgUrl();
+      if (mailNewsUrl) {
+        mailNewsUrl.spec = embeddedEncrypted;
+        enigVerifyEmbeddedMsg(window, mailNewsUrl, msgWindow, msgUriSpec, contentEncoding, event);
+      }
+    }
+
     return;
   }
 
@@ -649,17 +657,17 @@ function enigMessageDecrypt(event, isAuto) {
       return;
 
     var mailNewsUrl = enigGetCurrentMsgUrl();
-    if (embeddedSigned) {
-      mailNewsUrl.spec = embeddedSigned;
-    }
-
     if (mailNewsUrl) {
-      const ENIG_ENIGMIMEVERIFY_CONTRACTID = "@mozilla.org/enigmail/mime-verify;1";
-      var verifier = Components.classes[ENIG_ENIGMIMEVERIFY_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeVerify);
+      if (embeddedSigned) {
+        mailNewsUrl.spec = embeddedSigned;
+        enigVerifyEmbeddedMsg(window, mailNewsUrl, msgWindow, msgUriSpec, contentEncoding, event);
+      }
+      else {
+        var verifier = Components.classes[ENIG_ENIGMIMEVERIFY_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeVerify);
 
-      verifier.init(window, mailNewsUrl, msgWindow, msgUriSpec,
-                    true, enableSubpartTreatment);
-
+        verifier.init(window, mailNewsUrl, msgWindow, msgUriSpec,
+                      true, enableSubpartTreatment);
+      }
       return;
     }
   }
@@ -1328,6 +1336,7 @@ function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signat
     return;
 
   var ipcBuffer = Components.classes[ENIG_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+  var mimeListener = Components.classes[ENIG_ENIGMIMELISTENER_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeListener);
 
   if (bufferSize > 0) {
     ipcBuffer.open(bufferSize, false);
@@ -1346,6 +1355,7 @@ function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signat
                       expectedBufferSize: bufferSize,
                       head:head,
                       tail:tail,
+                      mimeListener: mimeListener,
                       callbackFunction: callbackFunction };
 
   var requestObserver = new EnigRequestObserver(enigMsgDirectCallback,
@@ -1358,7 +1368,6 @@ function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signat
   var channel = ioServ.newChannelFromURI(mailNewsUrl);
 
   var pipeFilter = Components.classes[ENIG_PIPEFILTERLISTENER_CONTRACTID].createInstance(Components.interfaces.nsIPipeFilterListener);
-
   pipeFilter.init(ipcBuffer, null,
                 "-----BEGIN PGP",
                 "-----END PGP",
@@ -1367,7 +1376,6 @@ function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signat
   var listener;
 
   try {
-    var mimeListener = Components.classes[ENIG_ENIGMIMELISTENER_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeListener);
 
     mimeListener.init(pipeFilter, null, ENIG_MSG_HEADER_SIZE, true, false, true);
 
@@ -1377,7 +1385,7 @@ function enigMsgDirect(interactive, importOnly, contentEncoding, charset, signat
     listener = pipeFilter;
   }
 
-  channel.asyncOpen(listener, mailNewsUrl);
+  channel.asyncOpen(pipeFilter, mailNewsUrl);
 }
 
 
@@ -1388,7 +1396,9 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
   var urlSpec = mailNewsUrl ? mailNewsUrl.spec : "";
   var newBufferSize = 0;
 
-  if (urlSpec != callbackArg.messageUrl) {
+  var l= urlSpec.length;
+
+  if (urlSpec.substr(0, l) != callbackArg.messageUrl.substr(0, l)) {
     ERROR_LOG("enigmailMessengerOverlay.js: enigMsgDirectCallback: Message URL mismatch "+mailNewsUrl.spec+" vs. "+callbackArg.messageUrl+"\n");
     return;
   }
@@ -1429,6 +1439,64 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
                            false,
                            callbackArg.head,
                            callbackArg.tail);
+}
+
+
+function enigVerifyEmbeddedMsg(window, msgUrl, msgWindow, msgUriSpec, contentEncoding, event) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigVerifyEmbedded: msgUrl"+msgUrl+"\n");
+
+  var ipcBuffer = Components.classes[ENIG_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+  ipcBuffer.open(ENIG_MSG_BUFFER_SIZE, false);
+
+  var callbackArg = { ipcBuffer: ipcBuffer,
+                      window: window,
+                      msgUrl: msgUrl,
+                      msgWindow: msgWindow,
+                      msgUriSpec: msgUriSpec,
+                      contentEncoding: contentEncoding,
+                      event: event };
+
+  var requestObserver = new EnigRequestObserver(enigVerifyEmbeddedCallback,
+                                                callbackArg);
+
+  ipcBuffer.observe(requestObserver, msgUrl);
+
+  var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+
+  var channel = ioServ.newChannelFromURI(msgUrl);
+
+
+  var pipeFilter = Components.classes[ENIG_PIPEFILTERLISTENER_CONTRACTID].createInstance(Components.interfaces.nsIPipeFilterListener);
+
+  pipeFilter.init(ipcBuffer, null,
+                "",
+                "",
+                0, false, false, null);
+  channel.asyncOpen(pipeFilter, msgUrl);
+}
+
+
+function enigVerifyEmbeddedCallback(callbackArg, ctxt) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigVerifyEmbeddedCallback: "+ctxt+"\n");
+
+  var txt = callbackArg.ipcBuffer.getData();
+  callbackArg.ipcBuffer.shutdown();
+
+  if (txt.length > 0 && txt.search(/content\-type:[ \t]*multipart\/signed/i) >= 0) {
+    // Real multipart/signed message; let's try to verify it
+    DEBUG_LOG("enigmailMessengerOverlay.js: enigVerifyEmbeddedCallback: detected multipart/signed\n");
+
+    var verifier = Components.classes[ENIG_ENIGMIMEVERIFY_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeVerify);
+
+    verifier.init(callbackArg.window, callbackArg.msgUrl, callbackArg.msgWindow, callbackArg.msgUriSpec,
+                      true, true);
+  }
+  else {
+    // try inline PGP
+    DEBUG_LOG("enigmailMessengerOverlay.js: enigVerifyEmbeddedCallback: try inline PGP\n");
+
+    enigMessageParse(!callbackArg.event, false, callbackArg.contentEncoding);
+  }
 }
 
 
