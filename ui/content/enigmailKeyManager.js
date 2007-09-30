@@ -974,12 +974,13 @@ function enigApplyFilter() {
     if ((uid.toLowerCase().indexOf(searchTxt) >= 0) ||
         (node.id.toLowerCase().indexOf(searchTxt) >= 0)) {
       hideNode = false;
+      foundResult = true;
     }
     for (var subUid=0; subUid < gKeyList[node.id].SubUserIds.length; subUid++) {
       uid = gKeyList[node.id].SubUserIds[subUid].userId;
       if (uid.toLowerCase().indexOf(searchTxt) >= 0) {
         hideNode = false;
-        var foundResult = true;
+        foundResult = true;
       }
     }
     node.hidden=hideNode;
