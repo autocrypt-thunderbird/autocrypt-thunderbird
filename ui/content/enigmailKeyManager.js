@@ -124,7 +124,7 @@ function enigmailRefreshKeys() {
 }
 
 
-function enigmailBuildList(refresh) {
+function old_enigmail_Build_List_unused(refresh) {
   DEBUG_LOG("enigmailKeyManager.js: enigmailBuildList\n");
   var keyListObj = {};
 
@@ -156,6 +156,84 @@ function enigmailBuildList(refresh) {
 
     if (treeItem)
       treeChildren.appendChild(treeItem);
+  }
+
+  if (selectedItems.length>0) {
+    gUserList.view.selection.select(selectedItems[0]);
+    for (i=1; i<selectedItems.length; i++) {
+      gUserList.view.selection.rangedSelect(selectedItems[i], selectedItems[i], true)
+    }
+  }
+}
+
+
+function enigmailBuildList(refresh) {
+  DEBUG_LOG("enigmailKeyManager.js: enigmailBuildList\n");
+
+  var keyListObj = {};
+
+  EnigLoadKeyList(refresh, keyListObj);
+
+  gKeyList = keyListObj.keyList;
+  gKeySortList = keyListObj.keySortList;
+
+  gUserList.currentItem = null;
+
+  var treeChildren = gTreeChildren;
+
+  var selectedItems=[];
+  for (var i=0; i < gKeySortList.length; i++) {
+    var keyId = gKeySortList[i].keyId;
+    if (gEnigLastSelectedKeys && typeof(gEnigLastSelectedKeys[keyId]) != "undefined")
+      selectedItems.push(i);
+    var treeItem=null;
+    treeItem=enigUserSelCreateRow(gKeyList[keyId], -1)
+    treeItem.setAttribute("container", "true");
+    var subChildren = document.createElement("treechildren");
+    treeItem.appendChild(subChildren);
+    var uidItem = document.createElement("treeitem");
+    subChildren.appendChild(uidItem);
+    var uidRow=document.createElement("treerow");
+    var uidCell=document.createElement("treecell");
+    uidCell.setAttribute("label", EnigGetString("keylist.noOtherUids"));
+    uidRow.appendChild(uidCell);
+    uidItem.appendChild(uidRow);
+    uidItem.setAttribute("keytype", "none");
+    uidItem.setAttribute("id", keyId);
+
+    var uidChildren = document.createElement("treechildren");
+    uidItem.appendChild(uidChildren);
+    var uatItem = document.createElement("treeitem");
+    uatItem.setAttribute("id", keyId);
+    uatItem.setAttribute("keytype", "none");
+
+    subChildren.appendChild(uatItem);
+    var uatRow=document.createElement("treerow");
+    var uatCell=document.createElement("treecell");
+    uatCell.setAttribute("label", EnigGetString("keylist.noPhotos"));
+    uatRow.appendChild(uatCell);
+    uatItem.appendChild(uatRow);
+    var uatChildren = document.createElement("treechildren");
+    uatItem.appendChild(uatChildren);
+
+    for (var subkey=0; subkey<gKeyList[keyId].SubUserIds.length; subkey++) {
+      var subItem=enigUserSelCreateRow(gKeyList[keyId], subkey);
+      if (gKeyList[keyId].SubUserIds[subkey].type == "uat") {
+        uatItem.setAttribute("container", "true");
+        uatCell.setAttribute("label", EnigGetString("keylist.hasPhotos"));
+        uatChildren.appendChild(subItem);
+        uatItem.setAttribute("open", "true");
+      }
+      else {
+        uidItem.setAttribute("container", "true");
+        uidCell.setAttribute("label", EnigGetString("keylist.hasOtherUids"));
+        uidChildren.appendChild(subItem);
+        uidItem.setAttribute("open", "true");
+      }
+    }
+    if (treeItem)
+      treeChildren.appendChild(treeItem);
+
   }
 
   // select last selected key

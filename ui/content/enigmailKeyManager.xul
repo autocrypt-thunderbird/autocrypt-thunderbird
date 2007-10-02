@@ -358,9 +358,6 @@
         enableColumnDrag="true"
         seltype="multiple"
         hidecolumnpicker="false">
-       <!--
-        onclick="event.stopPropagation();"
-        ondblclick="event.preventDefault(); enigmailDblClck(event)" -->
 
         <treecols>
           <treecol id="enigUserNameCol" primary="true"
@@ -408,6 +405,7 @@
 
       </tree>
   </hbox>
+
   </groupbox>
 
 	<!-- status line -->
