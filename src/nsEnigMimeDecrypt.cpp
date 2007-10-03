@@ -350,14 +350,14 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
 
     if (iterations==1 && readCount > 25) {
       // add mime boundaries around text/plain message (bug 6627)
-      if (nsCRT::strncasecmp("content-type:", buf, 13)==0) {
+      if (PL_strncasecmp("content-type:", buf, 13)==0) {
         PRUint32 whitespace=13;
         while((whitespace<readCount) && buf[whitespace] &&
               ((buf[whitespace]==' ') || (buf[whitespace]=='\t'))) { whitespace++; }
         if (buf[whitespace] && (whitespace<readCount)) {
-          ctFound=nsCRT::strncasecmp(buf + whitespace, "text/plain", 10);
+          ctFound=PL_strncasecmp(buf + whitespace, "text/plain", 10);
           if (ctFound != 0) {
-            ctFound=nsCRT::strncasecmp(buf + whitespace, "text/html", 9);
+            ctFound=PL_strncasecmp(buf + whitespace, "text/html", 9);
           }
         }
         if (ctFound==0) {

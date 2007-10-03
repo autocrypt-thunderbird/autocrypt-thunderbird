@@ -44,6 +44,7 @@
 #include "mimedummy.h"
 #include "mimeenig.h"
 #include "nspr.h"
+#include "plstr.h"
 #include "nsCOMPtr.h"
 #include "nsString.h"
 #include "nsNetUtil.h"
@@ -134,7 +135,7 @@ nsEnigContentHandler::CreateContentTypeHandlerClass(
 
   *objClass = NULL;
 
-  if (!nsCRT::strcasecmp(content_type, APPLICATION_XENIGMAIL_DUMMY)) {
+  if (!PL_strcasecmp(content_type, APPLICATION_XENIGMAIL_DUMMY)) {
     // application/x-enigmail-dummy
 
     if (!mimeContainerClassP) {
@@ -160,7 +161,7 @@ nsEnigContentHandler::CreateContentTypeHandlerClass(
     return NS_OK;
   }
 
-  if (!nsCRT::strcasecmp(content_type, MULTIPART_ENCRYPTED)) {
+  if (!PL_strcasecmp(content_type, MULTIPART_ENCRYPTED)) {
     // multipart/encrypted
 
     if (!mimeContainerClassP || !mimeEncryptedClassP)
@@ -173,7 +174,7 @@ nsEnigContentHandler::CreateContentTypeHandlerClass(
     return NS_OK;
   }
 
-  if (!nsCRT::strcasecmp(content_type, APPLICATION_PGP)) {
+  if (!PL_strcasecmp(content_type, APPLICATION_PGP)) {
     // application/pgp
 
     if (!mimeContainerClassP || !mimeEncryptedClassP)

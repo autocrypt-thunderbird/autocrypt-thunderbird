@@ -44,6 +44,7 @@
 #include "nsEnigModule.h"
 #include "nsEnigMimeService.h"
 #include "nspr.h"
+#include "plstr.h"
 #include "nsString.h"
 #include "nsCOMPtr.h"
 #include "nsIDOMNode.h"
@@ -200,7 +201,7 @@ nsEnigMimeService::GetInitialized(PRBool *_retval)
 NS_IMETHODIMP
 nsEnigMimeService::GetVersion(char **_retval)
 {
-  *_retval = nsCRT::strdup(ENIGMIME_VERSION);
+  *_retval = PL_strdup(ENIGMIME_VERSION);
   if (!*_retval)
     return NS_ERROR_OUT_OF_MEMORY;
 

@@ -41,7 +41,6 @@
 #include "enigmail.h"
 #include "prlog.h"
 #include "nsCOMPtr.h"
-#include "nsCRT.h"
 #include "nsIThread.h"
 #ifdef _ENIG_MOZILLA_1_8
 #include "nsFileStream.h"

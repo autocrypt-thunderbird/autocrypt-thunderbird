@@ -37,8 +37,8 @@
 #ifndef nsEnigMimeWriter_h__
 #define nsEnigMimeWriter_h__
 
-#include "nspr.h"
 #include "enigmail.h"
+#include "nspr.h"
 
 #include "nsIEnigMimeWriter.h"
 #include "nsCOMPtr.h"

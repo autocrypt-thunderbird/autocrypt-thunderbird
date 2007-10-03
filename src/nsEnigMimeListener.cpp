@@ -42,7 +42,6 @@
 #include "enigmail.h"
 #include "prlog.h"
 #include "nsCOMPtr.h"
-#include "nsCRT.h"
 #include "nsAutoLock.h"
 #include "nsIInputStream.h"
 #include "nsIThread.h"
