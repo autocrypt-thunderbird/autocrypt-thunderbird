@@ -33,7 +33,7 @@
 
 #include "ipc.h"
 #include "prenv.h"
-#include "nsCRT.h"
+#include "plstr.h"
 
 #include "nsProcessInfo.h"
 
@@ -64,9 +64,9 @@ nsProcessInfo::GetEnv(const char *aName, char **_retval)
 
   char *value = PR_GetEnv(aName);
   if (value) {
-    *_retval = nsCRT::strdup(value);
+    *_retval = PL_strdup(value);
   } else {
-    *_retval = nsCRT::strdup("");
+    *_retval = PL_strdup("");
   }
   return NS_OK;
 }

@@ -37,8 +37,7 @@
 
 #include "ipc.h"
 #include "nspr.h"
-#include "nsXPIDLString.h"
-#include "nsCRT.h"
+#include "plstr.h"
 #include "nsReadableUtils.h"
 
 #include "nsIServiceManager.h"
@@ -171,7 +170,7 @@ nsIPCService::Shutdown()
 NS_IMETHODIMP
 nsIPCService::GetVersion(char **_retval)
 {
-  *_retval = nsCRT::strdup(IPC_MODULE_VERSION);
+  *_retval = PL_strdup(IPC_MODULE_VERSION);
   if (!*_retval)
     return NS_ERROR_OUT_OF_MEMORY;
 
@@ -660,7 +659,7 @@ nsIPCService::Observe(nsISupports *aSubject, const char *aTopic,
 {
   DEBUG_LOG(("nsIPCService::Observe: %s\n", aTopic));
 
-  if (!nsCRT::strcmp(aTopic, NS_XPCOM_SHUTDOWN_OBSERVER_ID)) {
+  if (!PL_strcmp(aTopic, NS_XPCOM_SHUTDOWN_OBSERVER_ID)) {
     // Shutdown IPC service on XPCOM shutdown
     Shutdown();
   }

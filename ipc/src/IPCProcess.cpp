@@ -38,8 +38,6 @@
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
 #include "ipc.h"
-#include "nsCRT.h"
-
 #include "IPCProcess.h"
 
 #ifdef PR_LOGGING

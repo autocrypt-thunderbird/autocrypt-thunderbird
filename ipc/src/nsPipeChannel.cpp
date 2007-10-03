@@ -40,8 +40,7 @@
 #include "ipc.h"
 #include "prlog.h"
 #include "nsAutoLock.h"
-#include "nsCRT.h"
-#include "nsXPIDLString.h"
+#include "plstr.h"
 #include "nsReadableUtils.h"
 
 #include "nsIProxyObjectManager.h"
@@ -55,7 +54,9 @@
 #include "nsMimeTypes.h"
 #include "nsIMIMEService.h"
 
-#ifndef _IPC_MOZILLA_1_8
+#ifdef _IPC_MOZILLA_1_8
+#include "nsXPIDLString.h"
+#else
 #include "nsXPCOMCIDInternal.h"
 #endif
 
@@ -215,10 +216,14 @@ nsPipeChannel::Init(nsIURI* aURI,
     nsCOMPtr<nsIMIMEService> MIMEService (do_GetService("@mozilla.org/mime;1", &rv));
     NS_ENSURE_SUCCESS(rv, rv);
 
+#ifdef _IPC_MOZILLA_1_8
     nsXPIDLCString contentType;
+#else
+    nsCString contentType;
+#endif
     rv = MIMEService->GetTypeFromURI(url, contentType);
 
-    if (NS_SUCCEEDED(rv) && contentType) {
+    if (NS_SUCCEEDED(rv) && (contentType.Length() > 0)) {
       mContentType.Assign(contentType);
     }
   }

@@ -38,7 +38,7 @@
 #include "ipc.h"
 #include "prlog.h"
 #include "nsAutoLock.h"
-#include "nsCRT.h"
+#include "plstr.h"
 #include "nsReadableUtils.h"
 #include "netCore.h"
 
@@ -1117,7 +1117,7 @@ nsPipeTransport::ExecPrompt(const char* command, const char* prompt,
 
       if (matchWithoutNewline && (mExecBuf.Length() >= promptLen-1)) {
 
-        if (nsCRT::strncmp(mExecBuf.get(), prompt+1, promptLen-1) == 0) {
+        if (PL_strncmp(mExecBuf.get(), prompt+1, promptLen-1) == 0) {
           // Prompt without newline matches output start; return null string
           returnCount = 0;
           mExecBuf.Cut(returnCount, promptLen-1);
@@ -1164,7 +1164,7 @@ nsPipeTransport::ExecPrompt(const char* command, const char* prompt,
     mExecBuf.Left(outStr, returnCount);
     mExecBuf.Cut(0,returnCount);
   }
-  *_retval = nsCRT::strdup(outStr.get());
+  *_retval = PL_strdup(outStr.get());
   if (!*_retval)
     return NS_ERROR_OUT_OF_MEMORY;
 
@@ -1263,7 +1263,7 @@ nsPipeTransport::ReadLine(PRInt32 maxOutputLen,
     mExecBuf.Left(outStr, returnCount);
     mExecBuf.Cut(0,returnCount+1);
   }
-  *_retval = nsCRT::strdup(outStr.get());
+  *_retval = PL_strdup(outStr.get());
   if (!*_retval)
     return NS_ERROR_OUT_OF_MEMORY;
 
