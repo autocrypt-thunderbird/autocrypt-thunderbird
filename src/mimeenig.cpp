@@ -2,7 +2,6 @@
 #include "mimecth.h"
 #include "mimemoz2.h"
 #include "mimeenig.h"
-#include "nsCRT.h"
 #include "nspr.h"
 #include "plstr.h"
 #include "nsCOMPtr.h"
@@ -49,7 +48,7 @@ typedef struct MimeEnigData
   int (*output_fn) (const char *buf, PRInt32 buf_size, void *output_closure);
   void *output_closure;
   MimeObject *self;
-  
+
   nsCOMPtr<nsIEnigMimeDecrypt> mimeDecrypt;
 
   MimeEnigData()
@@ -57,7 +56,7 @@ typedef struct MimeEnigData
      output_closure(nsnull)
   {
   }
-  
+
   ~MimeEnigData()
   {
     mimeDecrypt = nsnull;

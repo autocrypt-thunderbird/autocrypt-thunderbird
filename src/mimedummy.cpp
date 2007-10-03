@@ -11,12 +11,7 @@ MimeDefClass(MimeDummy, MimeDummyClass, mimeDummyClass,
 static int MimeDummy_initialize (MimeObject *);
 static void MimeDummy_finalize (MimeObject *);
 static int MimeDummy_parse_begin (MimeObject *);
-#if MOZILLA_MAJOR_VERSION==1 && MOZILLA_MINOR_VERSION<7
-static int MimeDummy_parse_buffer (char *, PRInt32, MimeObject *);
-#else
-// Mozilla >= 1.7
 static int MimeDummy_parse_buffer (const char *, PRInt32, MimeObject *);
-#endif
 #if MOZILLA_MAJOR_VERSION==1 && MOZILLA_MINOR_VERSION<9
 static int MimeDummy_parse_line (char *, PRInt32, MimeObject *);
 #else
@@ -82,7 +77,7 @@ MimeDummy_parse_begin(MimeObject *obj)
       if (superclazz) {
         fprintf(stderr, "MimeDummy_parse_begin: sibling superclass_name=%s\n", superclazz->class_name);
 
-        if (!nsCRT::strcasecmp(superclazz->class_name, "MimeEncrypted")) {
+        if (!PL_strcasecmp(superclazz->class_name, "MimeEncrypted")) {
           // mimeEncryptedClass
           fprintf(stderr, "MimeDummy_parse_begin: found MimeEncrypted\n");
 
@@ -107,13 +102,8 @@ MimeDummy_parse_begin(MimeObject *obj)
 }
 
 
-#ifndef MOZ_16
 static int
 MimeDummy_parse_buffer(const char *buffer, PRInt32 size, MimeObject *obj)
-#else
-static int
-MimeDummy_parse_buffer(char *buffer, PRInt32 size, MimeObject *obj)
-#endif
 {
   return 0;
 }
