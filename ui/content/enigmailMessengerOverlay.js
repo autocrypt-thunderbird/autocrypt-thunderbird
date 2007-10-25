@@ -530,16 +530,11 @@ function enigMessageDecrypt(event, isAuto) {
       DEBUG_LOG("enigmailMessengerOverlay.js: "+headerName+": "+headerValue+"\n");
     }
 
-    // var emailAttachment = false;
     var embeddedSigned = null;
     var embeddedEncrypted = null;
     for (var indexb in currentAttachments) {
       var attachment = currentAttachments[indexb];
-/* obsolete
-      if (attachment.contentType.search(/^message\/rfc822(;|$)/i) == 0) {
-        emailAttachment = true;
-      }
-*/
+
       if (attachment.contentType.search(/^application\/pgp-signature/i) == 0) {
         embeddedSigned = attachment.url.replace(/\.\d+\.\d+$/, "");
       }
@@ -547,16 +542,8 @@ function enigMessageDecrypt(event, isAuto) {
         embeddedEncrypted = attachment.url.replace(/\.\d+\.\d+$/, "");
       }
       DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.contentType+"\n");
-      //DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.url+"\n");
     }
 
-/* Obsolete
-    if (emailAttachment) {
-      // DEBUG_LOG("enigmailMessengerOverlay.js: Email attachment; reloading to hide headers\n");
-      enigMessageReload(true);
-      return;
-    }
-*/
   }
 
   var contentType = "";
@@ -1248,22 +1235,29 @@ function enigMsgPrint(elementId) {
 
   var contextMenu = (elementId.search("Context") > -1);
 
-  if (!gEnigDecryptedMessage)
+  if (!gEnigDecryptedMessage || typeof(gEnigDecryptedMessage) == "undefined") {
     enigMsgDefaultPrint(elementId);
+    return;
+  }
 
   var mailNewsUrl = enigGetCurrentMsgUrl();
 
-  if (!mailNewsUrl)
+  if (!mailNewsUrl) {
     enigMsgDefaultPrint(elementId);
+    return
+  }
 
   if (gEnigDecryptedMessage.url != mailNewsUrl.spec) {
     gEnigDecryptedMessage = null;
     enigMsgDefaultPrint(elementId);
+    return;
   }
 
   var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
+  if (!enigmailSvc) {
     enigMsgDefaultPrint(elementId);
+    return;
+  }
 
   // Note: Trying to print text/html content does not seem to work with
   //       non-ASCII chars
