@@ -29,7 +29,7 @@
 # GPL.
 #
 
-DEPTH		= ../../..
+DEPTH		= ../../../../..
 topsrcdir	= @top_srcdir@
 srcdir		= @srcdir@
 VPATH		= @srcdir@
@@ -37,13 +37,22 @@ VPATH		= @srcdir@
 include $(DEPTH)/config/autoconf.mk
 
 XPI_MODULE	= ipc
-XPI_MODULE_VERS = 1.1.7
+XPI_MODULE_VERS = 1.1.8
 
 MODULE		= ipc
 LIBRARY_NAME	= ipc
 EXPORT_LIBRARY  = 1
 SHORT_LIBNAME	= ipc
 IS_COMPONENT	= 1
+
+MOZILLA_VERSION_PARTS = $(subst ., ,$(MOZILLA_VERSION))
+MOZILLA_MAJOR_VERSION = $(firstword $(MOZILLA_VERSION_PARTS))
+TMP_VAR = $(word 2,$(MOZILLA_VERSION_PARTS))
+MOZILLA_MINOR_VERSION = $(shell echo $(TMP_VAR)|sed 's/[a-z].*//')
+
+DEFINES         += -DMOZILLA_MAJOR_VERSION=$(MOZILLA_MAJOR_VERSION)
+DEFINES         += -DMOZILLA_MINOR_VERSION=$(MOZILLA_MINOR_VERSION)
+
 
 ifdef USE_XPCOM_GLUE
 # Ensure that the xpcom classes that we build
@@ -66,7 +75,7 @@ MODULE_NAME	= IPCModule
 CPPSRCS		= nsIPCModule.cpp
 
 SHARED_LIBRARY_LIBS = \
-		$(DIST)/lib/$(LIB_PREFIX)ipc_s.$(LIB_SUFFIX) \
+		../src/$(LIB_PREFIX)ipc_s.$(LIB_SUFFIX) \
 		$(NULL)
 
 LOCAL_INCLUDES	= \
@@ -75,18 +84,19 @@ LOCAL_INCLUDES	= \
 
 ifdef USE_XPCOM_GLUE
 EXTRA_DSO_LDOPTS = \
-		$(DIST)/lib/$(LIB_PREFIX)xpcomglue.$(LIB_SUFFIX) \
-		$(DIST)/lib/$(LIB_PREFIX)string_s.$(LIB_SUFFIX) \
-		$(DIST)/lib/$(LIB_PREFIX)string_obsolete_s.$(LIB_SUFFIX) \
+		$(XPCOM_GLUE_LIBS) \
+		$(LIBS_DIR) \
 		$(XPCOM_LIBS) \
 		$(NSPR_LIBS) \
+		$(BUILD_STATIC) \
 		$(NULL)
 else
 EXTRA_DSO_LDOPTS = \
-		$(DIST)/lib/$(LIB_PREFIX)string_s.$(LIB_SUFFIX) \
-		$(DIST)/lib/$(LIB_PREFIX)string_obsolete_s.$(LIB_SUFFIX) \
+		$(LIBS_DIR) \
 		$(XPCOM_LIBS) \
+		$(MOZ_XPCOM_OBSOLETE_LIBS) \
 		$(NSPR_LIBS) \
+		$(BUILD_STATIC) \
 		$(NULL)
 endif
 
@@ -114,12 +124,3 @@ endif
 ifeq ($(OS_ARCH),FreeBSD)
 PLATFORM_STR = freebsd
 endif
-
-XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS)-$(PLATFORM_STR).xpi
-
-xpi::
-	zip -r $(DIST)/bin/$(XPIFILE) install.js ipc.spec
-	cd $(DIST)/bin; zip -g $(XPIFILE) \
-               components/$(XPI_MODULE).xpt \
-               components/$(LIB_PREFIX)$(XPI_MODULE)$(DLL_SUFFIX)
-	echo Created $(DIST)/bin/$(XPIFILE)

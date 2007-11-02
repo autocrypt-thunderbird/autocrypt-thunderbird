@@ -3,20 +3,20 @@
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
  * the MPL at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the MPL is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the MPL for the specific language governing
  * rights and limitations under the MPL.
- * 
+ *
  * The Original Code is protoZilla.
- * 
+ *
  * The Initial Developer of the Original Code is Ramalingam Saravanan.
  * Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
  * Copyright (C) 2000 Ramalingam Saravanan. All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License (the "GPL"), in which case
  * the provisions of the GPL are applicable instead of
@@ -33,10 +33,12 @@
 #include "nsIGenericFactory.h"
 #include "nsIPCModule.h"
 
-#include "nsProcessInfo.h"
+#define MOZILLA_INTERNAL_API
 
+#include "nsProcessInfo.h"
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsProcessInfo)
 
+#include "ipc.h"
 #include "nsPipeTransport.h"
 #include "nsPipeConsole.h"
 #include "nsPipeChannel.h"
