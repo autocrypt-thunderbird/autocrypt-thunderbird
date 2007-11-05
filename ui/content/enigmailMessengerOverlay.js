@@ -827,7 +827,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     if (retry == 1) {
       msgText = EnigConvertFromUnicode(msgText, "UTF-8");
       enigMessageParseCallback(msgText, contentEncoding, charset, interactive,
-                               importOnly, messageUrl, signature, 2,
+                               importOnly, messageUrl, signature, retry + 1,
                                head, tail)
     }
     else if (retry == 2) {
@@ -835,6 +835,12 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
       // (avoid recursion by setting retry parameter to false on callback)
       enigMsgDirect(interactive, importOnly, contentEncoding, charset, newSignature, 0, head, tail, enigMessageParseCallback);
       return;
+    }
+    else if (retry == 3) {
+      msgText = EnigConvertToUnicode(msgText, "UTF-8");
+      enigMessageParseCallback(msgText, contentEncoding, charset, interactive,
+                               importOnly, messageUrl, signature, retry + 1,
+                               head, tail)
     }
   }
 
@@ -1442,7 +1448,7 @@ function enigMsgDirectCallback(callbackArg, ctxt) {
                            callbackArg.importOnly,
                            callbackArg.messageUrl,
                            callbackArg.signature,
-                           0,
+                           3,
                            callbackArg.head,
                            callbackArg.tail);
 }
