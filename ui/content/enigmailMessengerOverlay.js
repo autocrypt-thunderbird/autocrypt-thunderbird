@@ -839,7 +839,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     else if (retry == 3) {
       msgText = EnigConvertToUnicode(msgText, "UTF-8");
       enigMessageParseCallback(msgText, contentEncoding, charset, interactive,
-                               importOnly, messageUrl, signature, retry + 1,
+                               importOnly, messageUrl, null, retry + 1,
                                head, tail)
     }
   }
