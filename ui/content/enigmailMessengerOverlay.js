@@ -689,6 +689,17 @@ function enigMessageParse(interactive, importOnly, contentEncoding) {
   // Encode ciphertext to charset from unicode
   msgText = EnigConvertFromUnicode(msgText, charset);
 
+  // workaround for too much expanded smileys
+  msgText = msgText.replace(/ ;-\) /g, ";-)").replace(/ :-\) /g, ":-)");
+  msgText = msgText.replace(/ ;\) /g, ";)").replace(/ :\) /g, ":)");
+  msgText = msgText.replace(/ :-\( /g, ":-(").replace(/ :\( /g, ":(");
+  msgText = msgText.replace(/ :-\\ /g, ":-\\").replace(/ :-P /g, ":-P");
+  msgText = msgText.replace(/ :-D /g, ":-D").replace(/ :-\[ /g, ":-[");
+  msgText = msgText.replace(/ :-\* /g, ":-*").replace(/ \>:o /g, ">:o");
+  msgText = msgText.replace(/ 8-\) /g, "8-)").replace(/ :-\$ /g, ":-$");
+  msgText = msgText.replace(/ :-\! /g, ":-!").replace(/ O:-\) /g, "O:-)");
+  msgText = msgText.replace(/ :\'\( /g, ":\'(").replace(/ :-X /g, ":-X");
+
   // extract text preceeding and/or following armored block
   var head="";
   var tail="";
@@ -723,6 +734,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
   if (!msgText)
     return;
 
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: msgText >>>:\n"+msgText+"\n<<<\n");
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return;
@@ -827,6 +839,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     // Bad signature/armor
     if (retry == 1) {
       msgText = EnigConvertFromUnicode(msgText, "UTF-8");
+      signature="";
       enigMessageParseCallback(msgText, contentEncoding, charset, interactive,
                                importOnly, messageUrl, signature, retry + 1,
                                head, tail)
