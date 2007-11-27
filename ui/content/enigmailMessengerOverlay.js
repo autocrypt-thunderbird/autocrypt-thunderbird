@@ -819,6 +819,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
         nsIEnigmail.IMPORTED_KEY |
         nsIEnigmail.MISSING_PASSPHRASE |
         nsIEnigmail.BAD_PASSPHRASE |
+        nsIEnigmail.UNKNOWN_ALGO |
         nsIEnigmail.DECRYPTION_OKAY |
         nsIEnigmail.OVERFLOWED;
 

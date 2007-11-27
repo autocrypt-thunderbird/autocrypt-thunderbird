@@ -433,6 +433,9 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   } else if (contentMicalg.EqualsIgnoreCase("pgp-ripemd160")) {
     hashSymbol = "RIPEMD160";
 
+  } else if (contentMicalg.EqualsIgnoreCase("pgp-sha224")) {
+    hashSymbol = "SHA224";
+
   } else if (contentMicalg.EqualsIgnoreCase("pgp-sha256")) {
     hashSymbol = "SHA256";
 

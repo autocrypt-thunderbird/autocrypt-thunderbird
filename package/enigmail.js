@@ -151,7 +151,8 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     TRUST_FULLY:     nsIEnigmail.TRUSTED_IDENTITY,
                     TRUST_ULTIMATE:  nsIEnigmail.TRUSTED_IDENTITY,
                     CARDCTRL:        nsIEnigmail.NO_SC_AVAILABLE,
-                    SC_OP_FAILURE:   nsIEnigmail.SC_OP_FAILURE
+                    SC_OP_FAILURE:   nsIEnigmail.SC_OP_FAILURE,
+                    UNKNOWN_ALGO:    nsIEnigmail.UNKNOWN_ALGO
                     };
 
 var gCachedPassphrase = null;
@@ -186,7 +187,7 @@ const ENC_TYPE_MSG = 0;
 const ENC_TYPE_ATTACH_BINARY = 1;
 const ENC_TYPE_ATTACH_ASCII = 2;
 
-var gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512"];
+var gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512", "sha224"];
 
 function CreateFileStream(filePath, permissions) {
 
@@ -2004,6 +2005,7 @@ function (errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj) {
 
   var errArray    = new Array();
   var statusArray = new Array();
+  var lineSplit = null;
   var errCode = 0;
 
   var statusPat = /^\[GNUPG:\] /;
@@ -2025,8 +2027,14 @@ function (errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj) {
             flag = 0;
         }
         else if (flag == nsIEnigmail.NO_SC_AVAILABLE) {
-          var a = statusLine.split(/ +/);
-          errCode = Number(a[1]);
+          lineSplit = statusLine.split(/ +/);
+          errCode = Number(lineSplit[1]);
+        }
+        else if (flag == nsIEnigmail.UNVERIFIED_SIGNATURE) {
+          lineSplit = statusLine.split(/ +/);
+          if (lineSplit.length > 7 && lineSplit[7] == "4") {
+            flag = nsIEnigmail.UNKNOWN_ALGO;
+          }
         }
 
         if (flag)
@@ -2363,7 +2371,7 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
   return exitCode;
 }
 
-var gPGPHashNum = {md5:1, sha1:2, ripemd160:3, sha256:4, sha384:5, sha512:6};
+var gPGPHashNum = {md5:1, sha1:2, ripemd160:3, sha256:4, sha384:5, sha512:6, sha224:7};
 
 Enigmail.prototype.getEncryptCommand =
 function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgObj) {
@@ -2550,6 +2558,8 @@ function (prompter, uiFlags, fromMailAddr, hashAlgoObj) {
       }
     }
   }
+
+  DEBUG_LOG("enigmail.js: Enigmail.determineHashAlgorithm: no hashAlgorithm found\n");
 
   return 2;
 }

@@ -34,7 +34,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+#include "nsISupports.h"
+#include "nsCOMPtr.h"
+
+#include "nsIFactory.h"
 #include "nsIGenericFactory.h"
+#include "nsIServiceManager.h"
+#include "nsIModule.h"
+
+#include "pratom.h"
 #include "nsEnigModule.h"
 
 #include "nsEnigMsgCompose.h"
