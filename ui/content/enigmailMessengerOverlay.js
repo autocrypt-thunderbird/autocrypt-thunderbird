@@ -668,6 +668,7 @@ function enigMessageParse(interactive, importOnly, contentEncoding) {
   var msgFrame = EnigGetFrame(window, "messagepane");
   DEBUG_LOG("enigmailMessengerOverlay.js: msgFrame="+msgFrame+"\n");
 
+
   ///EnigDumpHTML(msgFrame.document.documentElement);
 
   var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
@@ -689,16 +690,16 @@ function enigMessageParse(interactive, importOnly, contentEncoding) {
   // Encode ciphertext to charset from unicode
   msgText = EnigConvertFromUnicode(msgText, charset);
 
-  // workaround for too much expanded smileys
-  msgText = msgText.replace(/ ;-\) /g, ";-)").replace(/ :-\) /g, ":-)");
-  msgText = msgText.replace(/ ;\) /g, ";)").replace(/ :\) /g, ":)");
-  msgText = msgText.replace(/ :-\( /g, ":-(").replace(/ :\( /g, ":(");
-  msgText = msgText.replace(/ :-\\ /g, ":-\\").replace(/ :-P /g, ":-P");
-  msgText = msgText.replace(/ :-D /g, ":-D").replace(/ :-\[ /g, ":-[");
-  msgText = msgText.replace(/ :-\* /g, ":-*").replace(/ \>:o /g, ">:o");
-  msgText = msgText.replace(/ 8-\) /g, "8-)").replace(/ :-\$ /g, ":-$");
-  msgText = msgText.replace(/ :-\! /g, ":-!").replace(/ O:-\) /g, "O:-)");
-  msgText = msgText.replace(/ :\'\( /g, ":\'(").replace(/ :-X /g, ":-X");
+  var mozPlainText = bodyElement.innerHTML.search(/class=\"moz-text-plain\"/);
+
+  if ((mozPlainText >= 0) && (mozPlainText < 40)) {
+    // workaround for too much expanded emoticons in plaintext msg
+    var r = new RegExp(/( )(;-\)|:-\)|;\)|:\)|:-\(|:\(|:-\\|:-P|:-D|:-\[|:-\*|\>:o|8-\)|:-\$|:-X|\=-O|:-\!|O:-\)|:\'\()( )/g);
+    if (msgText.search(r) >= 0) {
+      DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParse: performing emoticons fixing\n");
+      msgText = msgText.replace(r, "$2");
+    }
+  }
 
   // extract text preceeding and/or following armored block
   var head="";
@@ -734,7 +735,6 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
   if (!msgText)
     return;
 
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: msgText >>>:\n"+msgText+"\n<<<\n");
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return;
@@ -839,7 +839,6 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     // Bad signature/armor
     if (retry == 1) {
       msgText = EnigConvertFromUnicode(msgText, "UTF-8");
-      signature="";
       enigMessageParseCallback(msgText, contentEncoding, charset, interactive,
                                importOnly, messageUrl, signature, retry + 1,
                                head, tail)
@@ -847,6 +846,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     else if (retry == 2) {
       // Try to verify signature by accessing raw message text directly
       // (avoid recursion by setting retry parameter to false on callback)
+      newSignature = "";
       enigMsgDirect(interactive, importOnly, contentEncoding, charset, newSignature, 0, head, tail, enigMessageParseCallback);
       return;
     }
