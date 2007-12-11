@@ -44,7 +44,13 @@
 #include "nsIHttpChannel.h"
 #include "nsIURI.h"
 #include "nsNetUtil.h"
+
+#ifndef _IPC_FORCE_INTERNAL_API
 #include "nsStringAPI.h"
+#else
+#include "nsString.h"
+#endif
+
 #include "nsPipeConsole.h"
 
 #ifdef PR_LOGGING

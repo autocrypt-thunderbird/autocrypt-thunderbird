@@ -35,7 +35,13 @@
 #define nsIPCService_h__
 
 #include "nspr.h"
+
+#ifndef _IPC_FORCE_INTERNAL_API
 #include "nsStringAPI.h"
+#else
+#include "nsString.h"
+#endif
+
 #include "nsIObserver.h"
 #include "nsIIPCService.h"
 #include "nsIPipeConsole.h"

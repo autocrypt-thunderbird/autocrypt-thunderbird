@@ -39,8 +39,15 @@
 #include "prlog.h"
 #include "nsAutoLock.h"
 #include "plstr.h"
+
+#ifndef _IPC_FORCE_INTERNAL_API
 #include "nsStringAPI.h"
+#else
+#include "nsString.h"
+#endif
+
 #include "netCore.h"
+
 #include "nsComponentManagerUtils.h"
 #include "nsServiceManagerUtils.h"
 #include "nsIServiceManager.h"
@@ -1197,7 +1204,7 @@ nsPipeTransport::ExecPrompt(const char* command, const char* prompt,
       }
 
       if ((promptLen > 0) && (mExecBuf.Length() >= promptLen)) {
-#ifdef _IPC_MOZILLA_1_8
+#if _IPC_MOZILLA_1_8 || _IPC_FORCE_INTERNAL_API
         returnCount = mExecBuf.Find(prompt, PR_FALSE, searchOffset);
 #else
         returnCount = mExecBuf.Find(Substring(prompt, searchOffset), CaseInsensitiveCompare);

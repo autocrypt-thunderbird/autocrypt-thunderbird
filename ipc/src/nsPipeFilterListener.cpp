@@ -36,7 +36,13 @@
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
 #include "ipc.h"
+
+#ifndef _IPC_FORCE_INTERNAL_API
 #include "nsStringAPI.h"
+#else
+#include "nsString.h"
+#endif
+
 #include "prlog.h"
 #include "nsCOMPtr.h"
 #include "nsAutoLock.h"

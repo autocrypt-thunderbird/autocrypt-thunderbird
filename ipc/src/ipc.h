@@ -34,7 +34,7 @@
 #define ipc_h__
 
 #if MOZILLA_MAJOR_VERSION==1 && MOZILLA_MINOR_VERSION<9
-#define _IPC_MOZILLA_1_8   1
+#define _IPC_MOZILLA_1_8 1
 
 #define MOZILLA_INTERNAL_API
 
@@ -46,7 +46,14 @@
 #define NS_PROXY_TO_MAIN_THREAD NS_UI_THREAD_EVENTQ
 
 #else
-#define _IPC_MOZILLA_1_9   1
+#define _IPC_MOZILLA_1_9 1
+#endif
+
+#if MOZ_THUNDERBIRD || MOZ_SUITE || MOZ_STATIC_MAIL_BUILD
+
+#define _IPC_FORCE_INTERNAL_API 1
+#define MOZILLA_INTERNAL_API
+
 #endif
 
 #ifdef FORCE_PR_LOG

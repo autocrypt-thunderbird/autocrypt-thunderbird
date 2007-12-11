@@ -41,7 +41,13 @@
 #include "prlog.h"
 #include "nsAutoLock.h"
 #include "plstr.h"
+
+#ifndef _IPC_FORCE_INTERNAL_API
 #include "nsStringAPI.h"
+#else
+#include "nsString.h"
+#endif
+
 #include "nsIProxyObjectManager.h"
 #include "nsIThread.h"
 #include "nsIURI.h"
@@ -917,7 +923,7 @@ nsPipeChannel::ParseHeader(const char* header, PRUint32 count)
   }
 
   if (headerKey.Equals("content-length")) {
-#ifdef _IPC_MOZILLA_1_8
+#if _IPC_MOZILLA_1_8 || _IPC_FORCE_INTERNAL_API
     PRInt32 status;
 #else
     PRUint32 status;

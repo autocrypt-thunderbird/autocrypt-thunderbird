@@ -38,7 +38,12 @@
 #include "ipc.h"
 #include "nspr.h"
 #include "plstr.h"
+#ifndef _IPC_FORCE_INTERNAL_API
 #include "nsStringAPI.h"
+#else
+#include "nsString.h"
+#endif
+
 #include "nsIServiceManager.h"
 #include "nsIObserverService.h"
 #include "nsIIOService.h"
