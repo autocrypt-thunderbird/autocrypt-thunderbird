@@ -54,6 +54,7 @@ SHORT_LIBNAME	= enigmime
 MODULE_NAME	= EnigModule
 
 IS_COMPONENT	= 1
+FORCE_SHARED_LIB = 1
 
 MOZILLA_VERSION_PARTS = $(subst ., ,$(MOZILLA_VERSION))
 MOZILLA_MAJOR_VERSION = $(firstword $(MOZILLA_VERSION_PARTS))
@@ -100,7 +101,6 @@ CPPSRCS		= nsEnigModule.cpp
 
 LOCAL_INCLUDES	= \
 		-I$(srcdir)/../src \
-		-I$(srcdir)/../ipc/src \
 		$(NULL)
 
 # hack to build non standard library dependent build on unix
@@ -113,7 +113,6 @@ endif
 # separate libraries linked in.
 SHARED_LIBRARY_LIBS = \
 		../src/$(LIB_PREFIX)enigmime_s.$(LIB_SUFFIX) \
-		../ipc/src/$(LIB_PREFIX)ipc_s.$(LIB_SUFFIX) \
 		$(NULL)
 
 ifdef USE_XPCOM_GLUE
@@ -121,6 +120,7 @@ EXTRA_DSO_LDOPTS = \
 		$(XPCOM_GLUE_LIBS) \
 		$(LIBS_DIR) \
 		$(XPCOM_LIBS) \
+		$(XPCOM_GLUE_LDOPTS) \
 		$(NSPR_LIBS) \
 		$(BUILD_STATIC) \
 		$(NULL)
@@ -128,7 +128,7 @@ else
 EXTRA_DSO_LDOPTS = \
 		$(LIBS_DIR) \
 		$(XPCOM_LIBS) \
-		$(MOZ_XPCOM_OBSOLETE_LIBS) \
+		$(XPCOM_GLUE_LDOPTS) \
 		$(NSPR_LIBS) \
 		$(BUILD_STATIC) \
 		$(NULL)

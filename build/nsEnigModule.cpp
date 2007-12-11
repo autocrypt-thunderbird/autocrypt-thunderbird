@@ -19,9 +19,10 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ * Patrick Brunschwig <patrick@mozilla-enigmail.org>
  *
  * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or 
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
  * in which case the provisions of the GPL or the LGPL are applicable instead
  * of those above. If you wish to allow use of your version of this file only
@@ -62,11 +63,11 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeListener)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeWriter)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeService)
 
-#ifndef NO_IPC
+#ifdef WITH_IPC
+#include "ipc.h"
 #include "nsProcessInfo.h"
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsProcessInfo)
-#include "ipc.h"
 #include "nsPipeTransport.h"
 #include "nsPipeConsole.h"
 #include "nsPipeChannel.h"
@@ -82,7 +83,7 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsIPCBuffer)
 #include "nsIPCService.h"
 NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsIPCService, Init)
 
-#endif /* !NO_IPC */
+#endif /* !WITH_IPC */
 
 // CIDs implemented by module
 static const nsModuleComponentInfo components[] =
@@ -136,7 +137,7 @@ static const nsModuleComponentInfo components[] =
       nsEnigMimeServiceConstructor,
     },
 
-#ifndef NO_IPC
+#ifdef WITH_IPC
     { NS_PROCESSINFO_CLASSNAME,
       NS_PROCESSINFO_CID,
       NS_PROCESSINFO_CONTRACTID,
@@ -178,7 +179,7 @@ static const nsModuleComponentInfo components[] =
       NS_IPCSERVICE_CONTRACTID,
       nsIPCServiceConstructor,
     },
-#endif /* !NO_IPC */
+#endif /* !WITH_IPC */
 
 };
 

@@ -272,13 +272,16 @@ EOT
 cd ${srcDir}/package
 
 enigmimeDll=${libPrefix}enigmime${dllSuffix}
-dllFile=platform/${platform}/components/${libPrefix}enigmime-${xpcomAbi}${dllSuffix}
+enigDllFile=platform/${platform}/components/${libPrefix}enigmime-${xpcomAbi}${dllSuffix}
+ipcDll=${libPrefix}ipc${dllSuffix}
+ipcDllFile=platform/${platform}/components/${libPrefix}ipc-${xpcomAbi}${dllSuffix}
 
 cd "$targetDir"
 
 
 mkdir -p platform/${platform}/components
-cp components/${enigmimeDll} ${dllFile}
+cp components/${enigmimeDll} ${enigDllFile}
+cp components/${ipcDll} ${ipcDllFile}
 
 
 zip ${xpiFile} \
@@ -293,7 +296,8 @@ zip ${xpiFile} \
     ${localeJar} \
     components/ipc.xpt \
     components/enigmime.xpt \
-    ${dllFile} \
+    ${ipcDllFile} \
+    ${enigDllFile} \
     chrome.manifest \
     install.js \
     install.rdf

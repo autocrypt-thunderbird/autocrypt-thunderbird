@@ -48,6 +48,7 @@
 #include "modmimee2.h"
 #include "enigmail.h"
 #include "nsIEnigMimeWriter.h"
+#include "nsString.h"
 
 
 #define NS_ENIGMSGCOMPOSE_CLASSNAME "Enigmail Msg Compose"
