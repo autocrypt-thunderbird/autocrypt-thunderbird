@@ -32,13 +32,11 @@
 
 #include "nsIGenericFactory.h"
 #include "nsIPCModule.h"
-
-#define MOZILLA_INTERNAL_API
+#include "ipc.h"
 
 #include "nsProcessInfo.h"
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsProcessInfo)
 
-#include "ipc.h"
 #include "nsPipeTransport.h"
 #include "nsPipeConsole.h"
 #include "nsPipeChannel.h"
@@ -52,7 +50,7 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsPipeFilterListener)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsIPCBuffer)
 
 #include "nsIPCService.h"
-NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsIPCService, Init);
+NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsIPCService, Init)
 
 // CIDs implemented by module
 static const nsModuleComponentInfo components[] =
@@ -103,4 +101,4 @@ static const nsModuleComponentInfo components[] =
 };
 
 // Module entry point
-NS_IMPL_NSGETMODULE("nsIPCModule", components)
+NS_IMPL_NSGETMODULE(nsIPCModule, components)

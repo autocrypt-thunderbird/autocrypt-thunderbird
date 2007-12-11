@@ -42,12 +42,11 @@
 #include "nsIInputStream.h"
 #include "nsIThread.h"
 #include "nsIHttpChannel.h"
-#include "nsString.h"
 #include "nsNetUtil.h"
 #include "nsDirectoryServiceUtils.h"
 #include "nsDirectoryServiceDefs.h"
-#include "nsReadableUtils.h"
 #include "nsNetCID.h"
+#include "nsStringAPI.h"
 
 #include "nsIPCBuffer.h"
 
@@ -484,7 +483,13 @@ nsIPCBuffer::GetData(char** _retval)
   nsCAutoString bufCopy (mByteBuf);
 
   // Replace any NULs with '0'
-  bufCopy.ReplaceChar(char(0),'0');
+  PRInt32 nulIndex = 0;
+  while (nulIndex != -1) {
+    nulIndex = bufCopy.FindChar(char(0));
+    if (nulIndex != -1) {
+      bufCopy.Replace(nulIndex, 1, "0", 1);
+    }
+  }
 
   // Duplicate new C string
   *_retval = ToNewCString(bufCopy);

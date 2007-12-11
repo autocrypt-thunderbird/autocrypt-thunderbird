@@ -41,7 +41,7 @@ XPI_MODULE_VERS = 1.1.8
 
 MODULE		= ipc
 LIBRARY_NAME	= ipc
-EXPORT_LIBRARY  = 1
+FORCE_SHARED_LIB = 1
 SHORT_LIBNAME	= ipc
 IS_COMPONENT	= 1
 
@@ -74,6 +74,13 @@ MODULE_NAME	= IPCModule
 
 CPPSRCS		= nsIPCModule.cpp
 
+# hack to build non standard library dependent build on unix
+ifeq ($(ENIGMAIL_STATIC),1)
+BUILD_STATIC       = -nodefaultlibs -Xlinker --unresolved-symbols=ignore-all
+else
+BUILD_STATIC       =
+endif
+
 SHARED_LIBRARY_LIBS = \
 		../src/$(LIB_PREFIX)ipc_s.$(LIB_SUFFIX) \
 		$(NULL)
@@ -86,6 +93,7 @@ ifdef USE_XPCOM_GLUE
 EXTRA_DSO_LDOPTS = \
 		$(XPCOM_GLUE_LIBS) \
 		$(LIBS_DIR) \
+		$(XPCOM_GLUE_LDOPTS) \
 		$(XPCOM_LIBS) \
 		$(NSPR_LIBS) \
 		$(BUILD_STATIC) \
@@ -94,33 +102,10 @@ else
 EXTRA_DSO_LDOPTS = \
 		$(LIBS_DIR) \
 		$(XPCOM_LIBS) \
-		$(MOZ_XPCOM_OBSOLETE_LIBS) \
+		$(XPCOM_GLUE_LDOPTS) \
 		$(NSPR_LIBS) \
 		$(BUILD_STATIC) \
 		$(NULL)
 endif
 
 include $(topsrcdir)/config/rules.mk
-
-PLATFORM_STR = unknown
-
-# Edit the lines below as needed, depending upon your platform(s)
-ifeq ($(OS_ARCH),Linux)
-PLATFORM_STR = linux
-endif
-
-ifeq ($(OS_ARCH),WIN95)
-PLATFORM_STR = win32
-endif
-
-ifeq ($(OS_ARCH),WINNT)
-PLATFORM_STR = win32
-endif
-
-ifeq ($(OS_CONFIG),SunOS5)
-PLATFORM_STR = sunos5
-endif
-
-ifeq ($(OS_ARCH),FreeBSD)
-PLATFORM_STR = freebsd
-endif

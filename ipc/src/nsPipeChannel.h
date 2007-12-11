@@ -35,7 +35,7 @@
 #define nsPipeChannel_h__
 
 #include "nspr.h"
-#include "nsString.h"
+#include "nsStringAPI.h"
 #include "nsIPipeChannel.h"
 #include "nsIPipeTransport.h"
 #include "nsILoadGroup.h"

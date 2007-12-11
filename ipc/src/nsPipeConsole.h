@@ -41,7 +41,7 @@
 #include "nsIRunnable.h"
 #include "nsIThread.h"
 #include "nsCOMPtr.h"
-#include "nsString.h"
+#include "nsStringAPI.h"
 #include "nsIObserverService.h"
 #include "nsIObserver.h"
 

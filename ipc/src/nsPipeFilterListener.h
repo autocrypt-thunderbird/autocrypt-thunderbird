@@ -38,7 +38,7 @@
 
 #include "nsIPipeFilterListener.h"
 #include "nsCOMPtr.h"
-#include "nsString.h"
+#include "nsStringAPI.h"
 
 typedef struct LineMatchStatus LineMatchStatus;
 struct LineMatchStatus {

@@ -35,7 +35,7 @@
 #define nsProcessInfo_h__
 
 #include "nspr.h"
-#include "nsString.h"
+#include "nsStringAPI.h"
 #include "nsIProcessInfo.h"
 #include "nsIGenericFactory.h"
 #include "nsCOMPtr.h"

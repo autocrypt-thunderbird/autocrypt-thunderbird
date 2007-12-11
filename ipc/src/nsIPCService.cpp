@@ -38,8 +38,7 @@
 #include "ipc.h"
 #include "nspr.h"
 #include "plstr.h"
-#include "nsReadableUtils.h"
-
+#include "nsStringAPI.h"
 #include "nsIServiceManager.h"
 #include "nsIObserverService.h"
 #include "nsIIOService.h"
@@ -352,8 +351,12 @@ nsIPCService::ExecPipe(const char* command,
 
     memcpy(inputBuf, inputData, inputLength);
 
-    nsCOMPtr<nsIInputStream> byteInStream;
-    rv = NS_NewByteInputStream(getter_AddRefs(byteInStream), inputBuf, inputLength);
+    nsCOMPtr<nsIStringInputStream> byteInStream =
+      do_CreateInstance(NS_STRINGINPUTSTREAM_CONTRACTID, &rv);
+    NS_ENSURE_SUCCESS(rv, rv);
+
+    rv = byteInStream->SetData((const char*)inputBuf, inputLength);
+
     if (NS_FAILED(rv)) {
       nsMemory::Free(inputBuf);
       return rv;
@@ -417,7 +420,14 @@ nsIPCService::ExecPipe(const char* command,
 
   } else {
     // Replace any NULs with '0' and return NUL terminated string
-    commandOut.ReplaceChar(char(0),'0');
+    PRInt32 nulIndex = 0;
+    while (nulIndex != -1) {
+      nulIndex = commandOut.FindChar(char(0));
+      if (nulIndex != -1) {
+        commandOut.Replace(nulIndex, 1, "0", 1);
+      }
+    }
+
     *outputData = ToNewCString(commandOut);
   }
 
@@ -499,8 +509,12 @@ nsIPCService::ExecAsync(const char* command,
 
     memcpy(inputBuf, inputData, inputLength);
 
-    nsCOMPtr<nsIInputStream> byteInStream;
-    rv = NS_NewByteInputStream(getter_AddRefs(byteInStream), inputBuf, inputLength);
+    nsCOMPtr<nsIStringInputStream> byteInStream =
+      do_CreateInstance(NS_STRINGINPUTSTREAM_CONTRACTID, &rv);
+    NS_ENSURE_SUCCESS(rv, rv);
+
+    rv = byteInStream->SetData((const char*)inputBuf, inputLength);
+
     if (NS_FAILED(rv)) {
       nsMemory::Free(inputBuf);
       return rv;
@@ -629,8 +643,12 @@ nsIPCService::NewStringChannel(nsIURI* aURI, const nsACString &aContentType,
 
   DEBUG_LOG(("nsIPCService::NewStringChannel:\n"));
 
-  nsCOMPtr<nsIInputStream> inputStream;
-  rv = NS_NewByteInputStream(getter_AddRefs(inputStream), aData, -1);
+  nsCOMPtr<nsIStringInputStream> inputStream =
+    do_CreateInstance(NS_STRINGINPUTSTREAM_CONTRACTID, &rv);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  rv = inputStream->SetData((const char*)aData, -1);
+
   NS_ENSURE_SUCCESS(rv, rv);
 
   nsCAutoString contentType(aContentType);

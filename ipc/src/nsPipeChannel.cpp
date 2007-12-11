@@ -41,8 +41,7 @@
 #include "prlog.h"
 #include "nsAutoLock.h"
 #include "plstr.h"
-#include "nsReadableUtils.h"
-
+#include "nsStringAPI.h"
 #include "nsIProxyObjectManager.h"
 #include "nsIThread.h"
 #include "nsIURI.h"
@@ -535,11 +534,16 @@ nsPipeChannel::AsyncOpen(nsIStreamListener *listener, nsISupports *ctxt)
                                    listener, nsnull);
 #else
     // Mozilla >= 1.9a
-    rv = NS_GetProxyForObject(nsnull /* will that work?? */,
-                              NS_GET_IID(nsIStreamListener),
-                              listener,
-                              NS_PROXY_ASYNC | NS_PROXY_ALWAYS,
-                              getter_AddRefs(mListener));
+    nsCOMPtr<nsIProxyObjectManager> proxyMgr =
+                                 do_GetService(NS_XPCOMPROXY_CONTRACTID, &rv);
+
+    NS_ENSURE_SUCCESS(rv, rv);
+
+    rv = proxyMgr->GetProxyForObject(nsnull /* will that work?? */,
+                                     NS_GET_IID(nsIStreamListener),
+                                     listener,
+                                     NS_PROXY_ASYNC | NS_PROXY_ALWAYS,
+                                     getter_AddRefs(mListener));
 #endif
     NS_ENSURE_SUCCESS(rv, rv);
   }
@@ -703,9 +707,9 @@ nsPipeChannel::ParseMimeHeaders(const char* mimeHeaders, PRUint32 count,
       && (PL_strncmp(headers.get(), "HTTP/", 5) == 0)) {
     // Look for possible HTTP header line preceding MIME headers
 
-    PRInt32 lineEnd = headers.FindChar('\n');
+    PRInt32 lineEnd = headers.Find("\n");
 
-    if (lineEnd != kNotFound) {
+    if (lineEnd != -1) {
       // Strip HTTP header line
       headers.Cut(0, lineEnd+1);
       foundStatusLine = PR_TRUE;
@@ -713,7 +717,14 @@ nsPipeChannel::ParseMimeHeaders(const char* mimeHeaders, PRUint32 count,
   }
 
   // Replace CRLF with just LF
-  headers.ReplaceSubstring("\r\n", "\n");
+  PRInt32 lineIndex = 0;
+
+  while (lineIndex != -1) {
+    lineIndex = headers.Find("\r\n", PR_FALSE, 0);
+    if (lineIndex != -1) {
+      headers.Replace(lineIndex, 2, "\n", 1);
+    }
+  }
 
   if (headers.Length() < 2)
     return NS_ERROR_FAILURE;
@@ -773,7 +784,14 @@ nsPipeChannel::ParseMimeHeaders(const char* mimeHeaders, PRUint32 count,
     return NS_ERROR_FAILURE;
 
   // Handle continuation of MIME headers, i.e., newline followed by a space
-  headers.ReplaceSubstring(  "\n ",  " ");
+  lineIndex = 0;
+
+  while (lineIndex != -1) {
+    lineIndex = headers.Find("\n");
+    if (lineIndex != -1) {
+      headers.Replace(lineIndex, 1, " ", 1);
+    }
+  }
 
   // Default values for header content type/length (to be overridden by header)
   mHeaderContentType   = UNKNOWN_CONTENT_TYPE;
@@ -782,9 +800,9 @@ nsPipeChannel::ParseMimeHeaders(const char* mimeHeaders, PRUint32 count,
 
   PRUint32 offset = 0;
   while (offset < headers.Length()) {
-    PRInt32 lineEnd = headers.FindChar('\n', offset);
+    PRInt32 lineEnd = headers.Find("\n", offset);
 
-    if (lineEnd == kNotFound) {
+    if (lineEnd == -1) {
       // Header line terminator not found
       NS_NOTREACHED("lineEnd == kNotFound");
       return NS_ERROR_FAILURE;
@@ -828,15 +846,15 @@ nsPipeChannel::ParseHeader(const char* header, PRUint32 count)
   nsCAutoString headerStr(header, count);
 
   PRInt32 colonOffset;
-  colonOffset = headerStr.FindChar(':');
-  if (colonOffset == kNotFound) {
+  colonOffset = headerStr.Find(":");
+  if (colonOffset == -1) {
     // Malformed headerStr ... simulate NS4.x/IE behaviour trying SPC/TAB as delimiters
 
-    colonOffset = headerStr.FindChar(' ');
-    if (kNotFound == colonOffset) {
+    colonOffset = headerStr.Find(" ");
+    if (colonOffset == -1) {
 
-      colonOffset = headerStr.FindChar('\t');
-      if (kNotFound == colonOffset) {
+      colonOffset = headerStr.Find("\t");
+      if (colonOffset == -1) {
         return NS_ERROR_FAILURE;
       }
     }
@@ -848,12 +866,15 @@ nsPipeChannel::ParseHeader(const char* header, PRUint32 count)
 
   // Extract header key (not case-sensitive)
   nsCAutoString headerKey;
-  headerStr.Left(headerKey, colonOffset);
+  // headerStr.Left(headerKey, colonOffset);
+  headerStr = Substring(headerStr, 0, colonOffset);
+
   ToLowerCase(headerKey);
 
   // Extract header value, trimming leading/trailing whitespace
   nsCAutoString headerValue;
-  headerStr.Right(headerValue, headerStr.Length() - colonOffset - 1);
+  // headerStr.Right(headerValue, headerStr.Length() - colonOffset - 1);
+  headerValue = Substring(headerStr, colonOffset + 1, headerStr.Length());
   headerValue.Trim(" ");
 
 
@@ -862,25 +883,29 @@ nsPipeChannel::ParseHeader(const char* header, PRUint32 count)
 
   if (headerKey.Equals("content-type")) {
     // Ignore comments
-    PRInt32 parenOffset = headerValue.FindChar('(');
+    PRInt32 parenOffset = headerValue.Find("(");
     if (parenOffset > -1) {
-      headerValue.Truncate(parenOffset);
+      // headerValue.Truncate(parenOffset);
+      headerValue = Substring(headerValue, 0, parenOffset);
       headerValue.Trim(" ", PR_FALSE);
     }
 
     if (!headerValue.IsEmpty()) {
-      PRInt32 semicolonOffset = headerValue.FindChar(';');
-      if (semicolonOffset == kNotFound) {
+      PRInt32 semicolonOffset = headerValue.Find(";");
+      if (semicolonOffset == -1) {
         // No charset stuff
         mHeaderContentType = headerValue.get();
 
       } else {
         nsCAutoString buf;
-        headerValue.Left(buf, semicolonOffset);
-        mHeaderContentType = buf.get();
+        // headerValue.Left(buf, semicolonOffset);
+        // mHeaderContentType = buf.get();
+
+        mHeaderContentType = Substring(headerValue, semicolonOffset);
 
         // Look for charset
-        headerValue.Right(buf, headerValue.Length() - semicolonOffset - 1);
+        // headerValue.Right(buf, headerValue.Length() - semicolonOffset - 1);
+        buf = Substring(headerValue, semicolonOffset + 1, headerValue.Length());
         buf.Trim(" ");
         if (buf.Find("charset=", PR_TRUE) == 0) {
           // Charset found
@@ -892,8 +917,11 @@ nsPipeChannel::ParseHeader(const char* header, PRUint32 count)
   }
 
   if (headerKey.Equals("content-length")) {
+#ifdef _IPC_MOZILLA_1_8
     PRInt32 status;
-
+#else
+    PRUint32 status;
+#endif
     mHeaderContentLength = headerValue.ToInteger(&status);
     if (NS_FAILED((nsresult) status))
       return NS_ERROR_FAILURE;

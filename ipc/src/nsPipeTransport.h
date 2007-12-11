@@ -48,15 +48,16 @@
 #include "nsIThread.h"
 #include "nsILoadGroup.h"
 #include "nsCOMPtr.h"
-#include "nsString.h"
 #include "nsIStreamListener.h"
 #include "nsIInputStream.h"
 #include "nsIOutputStream.h"
 
 #ifdef _IPC_MOZILLA_1_8
 #include "nsIEventQueueService.h"
+#include "nsString.h"
 #else
 #include "nsThreadUtils.h"
+#include "nsStringAPI.h"
 #endif
 
 #include "nsIAsyncInputStream.h"

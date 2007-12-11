@@ -36,16 +36,16 @@
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
 #include "ipc.h"
+#include "nsStringAPI.h"
 #include "prlog.h"
 #include "nsCOMPtr.h"
-#include "nsEscape.h"
 #include "nsAutoLock.h"
 #include "nsIInputStream.h"
 #include "nsIThread.h"
 #include "nsIHttpChannel.h"
-#include "nsString.h"
 #include "nsNetUtil.h"
 #include "nsMimeTypes.h"
+
 
 #include "nsPipeFilterListener.h"
 

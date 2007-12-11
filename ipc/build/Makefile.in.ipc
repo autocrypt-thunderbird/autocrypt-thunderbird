@@ -15,7 +15,6 @@
 # Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
 #
 # Contributor(s):
-# Patrick Brunschwig <patrick@mozilla-enigmail.org>
 #
 # Alternatively, the contents of this file may be used under the
 # terms of the GNU General Public License (the "GPL"), in which case
@@ -30,13 +29,84 @@
 # GPL.
 #
 
-DEPTH		= ../../../..
+DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
 srcdir		= @srcdir@
 VPATH		= @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
-DIRS            = public src build
+XPI_MODULE	= ipc
+XPI_MODULE_VERS = 1.1.8
+
+MODULE		= ipc
+LIBRARY_NAME	= ipc
+FORCE_SHARED_LIB = 1
+SHORT_LIBNAME	= ipc
+IS_COMPONENT	= 1
+
+MOZILLA_VERSION_PARTS = $(subst ., ,$(MOZILLA_VERSION))
+MOZILLA_MAJOR_VERSION = $(firstword $(MOZILLA_VERSION_PARTS))
+TMP_VAR = $(word 2,$(MOZILLA_VERSION_PARTS))
+MOZILLA_MINOR_VERSION = $(shell echo $(TMP_VAR)|sed 's/[a-z].*//')
+
+DEFINES         += -DMOZILLA_MAJOR_VERSION=$(MOZILLA_MAJOR_VERSION)
+DEFINES         += -DMOZILLA_MINOR_VERSION=$(MOZILLA_MINOR_VERSION)
+
+
+ifdef USE_XPCOM_GLUE
+# Ensure that the xpcom classes that we build
+# do not export themselves
+DEFINES		+= -D_IMPL_NS_COM_OFF -DXPCOM_GLUE
+endif
+
+REQUIRES	= xpcom \
+		  string \
+		  js \
+		  caps \
+		  uconv \
+		  necko \
+		  mimetype \
+		  xpconnect \
+		  $(NULL)
+
+MODULE_NAME	= IPCModule
+
+CPPSRCS		= nsIPCModule.cpp
+
+# hack to build non standard library dependent build on unix
+ifeq ($(IPC_STATIC),1)
+BUILD_STATIC       = -nodefaultlibs -Xlinker --unresolved-symbols=ignore-all
+else
+BUILD_STATIC       =
+endif
+
+
+SHARED_LIBRARY_LIBS = \
+		../src/$(LIB_PREFIX)ipc_s.$(LIB_SUFFIX) \
+		$(NULL)
+
+LOCAL_INCLUDES	= \
+		-I$(srcdir)/../src \
+		$(NULL)
+
+ifdef USE_XPCOM_GLUE
+EXTRA_DSO_LDOPTS = \
+		$(XPCOM_GLUE_LIBS) \
+		$(LIBS_DIR) \
+		$(XPCOM_GLUE_LDOPTS) \
+		$(XPCOM_LIBS) \
+		$(NSPR_LIBS) \
+		$(BUILD_STATIC) \
+		$(NULL)
+else
+EXTRA_DSO_LDOPTS = \
+		$(LIBS_DIR) \
+		$(XPCOM_LIBS) \
+		$(XPCOM_GLUE_LDOPTS) \
+		$(NSPR_LIBS) \
+		$(BUILD_STATIC) \
+		$(NULL)
+endif
 
 include $(topsrcdir)/config/rules.mk

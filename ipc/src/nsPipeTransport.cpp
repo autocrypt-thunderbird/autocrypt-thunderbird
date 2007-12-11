@@ -39,9 +39,10 @@
 #include "prlog.h"
 #include "nsAutoLock.h"
 #include "plstr.h"
-#include "nsReadableUtils.h"
+#include "nsStringAPI.h"
 #include "netCore.h"
-
+#include "nsComponentManagerUtils.h"
+#include "nsServiceManagerUtils.h"
 #include "nsIServiceManager.h"
 #include "nsIProxyObjectManager.h"
 #include "nsIURI.h"
@@ -792,6 +793,74 @@ nsPipeTransport::SetLoggingEnabled(PRBool aLoggingEnabled)
   return mStdoutPoller->SetLoggingEnabled(aLoggingEnabled);
 }
 
+#ifndef _IPC_MOZILLA_1_8
+NS_COM nsresult
+NS_NewPipe(nsIInputStream **pipeIn,
+           nsIOutputStream **pipeOut,
+           PRUint32 segmentSize,
+           PRUint32 maxSize,
+           PRBool nonBlockingInput,
+           PRBool nonBlockingOutput,
+           nsIMemory *segmentAlloc)
+{
+  if (segmentSize == 0)
+      segmentSize = 4096;
+
+  // Handle maxSize of PR_UINT32_MAX as a special case
+  PRUint32 segmentCount;
+  if (maxSize == PR_UINT32_MAX)
+    segmentCount = PR_UINT32_MAX;
+  else
+    segmentCount = maxSize / segmentSize;
+
+  nsIAsyncInputStream *in;
+  nsIAsyncOutputStream *out;
+  nsresult rv = NS_NewPipe2(&in, &out, nonBlockingInput, nonBlockingOutput,
+                            segmentSize, segmentCount, segmentAlloc);
+  if (NS_FAILED(rv)) return rv;
+
+  *pipeIn = in;
+  *pipeOut = out;
+  return NS_OK;
+}
+
+NS_COM nsresult
+NS_NewPipe2(nsIAsyncInputStream **pipeIn,
+            nsIAsyncOutputStream **pipeOut,
+            PRBool nonBlockingInput,
+            PRBool nonBlockingOutput,
+            PRUint32 segmentSize,
+            PRUint32 segmentCount,
+            nsIMemory *segmentAlloc)
+{
+  nsresult rv;
+
+
+  nsCOMPtr<nsIPipe> pipe =
+    do_CreateInstance("@mozilla.org/pipe;1", &rv);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  if (!pipe)
+      return NS_ERROR_OUT_OF_MEMORY;
+
+  rv = pipe->Init(nonBlockingInput,
+                  nonBlockingOutput,
+                  segmentSize,
+                  segmentCount,
+                  segmentAlloc);
+  if (NS_FAILED(rv)) {
+    //FIXME: NS_ADDREF(pipe);
+    //FIXME: NS_RELEASE(pipe);
+    NS_ENSURE_SUCCESS(rv, rv);
+  }
+
+  pipe->GetInputStream(pipeIn);
+  pipe->GetOutputStream(pipeOut);
+
+  return NS_OK;
+}
+#endif
+
 NS_IMETHODIMP
 nsPipeTransport::OpenInputStream(PRUint32 offset,
                                  PRUint32 count,
@@ -1128,7 +1197,11 @@ nsPipeTransport::ExecPrompt(const char* command, const char* prompt,
       }
 
       if ((promptLen > 0) && (mExecBuf.Length() >= promptLen)) {
+#ifdef _IPC_MOZILLA_1_8
         returnCount = mExecBuf.Find(prompt, PR_FALSE, searchOffset);
+#else
+        returnCount = mExecBuf.Find(Substring(prompt, searchOffset), CaseInsensitiveCompare);
+#endif
 
         if (returnCount >= 0) {
           // Prompt found; delete it from line
@@ -1161,10 +1234,11 @@ nsPipeTransport::ExecPrompt(const char* command, const char* prompt,
   // Duplicate output string and return it
   nsCAutoString outStr("");
   if (returnCount > 0) {
-    mExecBuf.Left(outStr, returnCount);
+    outStr = Substring(mExecBuf, 0, returnCount);
     mExecBuf.Cut(0,returnCount);
   }
   *_retval = PL_strdup(outStr.get());
+
   if (!*_retval)
     return NS_ERROR_OUT_OF_MEMORY;
 
@@ -1204,9 +1278,24 @@ nsPipeTransport::ReadLine(PRInt32 maxOutputLen,
     PRUint32 remainingCount = (maxOutputLen > 0) ? maxOutputLen : kCharMax;
 
     if (mExecBuf.Length()>0) {
-      mExecBuf.ReplaceSubstring("\r\n", "\n");
-      mExecBuf.ReplaceSubstring("\r", "\n");
-      returnCount = mExecBuf.Find("\n", PR_FALSE, 0);
+      PRInt32 lineIndex = 0;
+
+      while (lineIndex != -1) {
+        lineIndex = mExecBuf.Find("\r\n", PR_FALSE, 0);
+        if (lineIndex != -1) {
+          mExecBuf.Replace(lineIndex, 2, "\n", 1);
+        }
+      }
+
+      lineIndex = 0;
+      while (lineIndex != -1) {
+        lineIndex = mExecBuf.Find("\r");
+        if (lineIndex != -1) {
+          mExecBuf.Replace(lineIndex, 1, "\n", 1);
+        }
+      }
+
+      returnCount = mExecBuf.Find("\n");
       DEBUG_LOG(("nsPipeTransport::ReadLine: returnCount=%d\n", returnCount));
     }
 
@@ -1235,9 +1324,24 @@ nsPipeTransport::ReadLine(PRInt32 maxOutputLen,
         mExecBuf.Append(buf, readCount);
 
         if (mExecBuf.Length() >= 1) {
-          mExecBuf.ReplaceSubstring("\r\n", "\n");
-          mExecBuf.ReplaceSubstring("\r", "\n");
-          returnCount = mExecBuf.Find("\n", PR_FALSE, 0);
+          PRInt32 lineIndex = 0;
+
+          while (lineIndex != -1) {
+            lineIndex = mExecBuf.Find("\r\n", PR_FALSE, 0);
+            if (lineIndex != -1) {
+              mExecBuf.Replace(lineIndex, 2, "\n", 1);
+            }
+          }
+
+          lineIndex = 0;
+          while (lineIndex != -1) {
+            lineIndex = mExecBuf.Find("\r");
+            if (lineIndex != -1) {
+              mExecBuf.Replace(lineIndex, 1, "\n", 1);
+            }
+          }
+
+          returnCount = mExecBuf.Find("\n");
 
           if (returnCount >= 0) {
             break;
@@ -1259,11 +1363,12 @@ nsPipeTransport::ReadLine(PRInt32 maxOutputLen,
 
   // Duplicate output string and return it
   nsCAutoString outStr("");
-  if (returnCount >= 0) {
-    mExecBuf.Left(outStr, returnCount);
-    mExecBuf.Cut(0,returnCount+1);
+  if (returnCount > 0) {
+    outStr = Substring(mExecBuf, 0, returnCount);
+    mExecBuf.Cut(0,returnCount);
   }
   *_retval = PL_strdup(outStr.get());
+
   if (!*_retval)
     return NS_ERROR_OUT_OF_MEMORY;
 

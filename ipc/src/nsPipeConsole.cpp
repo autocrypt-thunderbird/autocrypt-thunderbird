@@ -42,11 +42,9 @@
 #include "nsIInputStream.h"
 #include "nsIThread.h"
 #include "nsIHttpChannel.h"
-#include "nsString.h"
 #include "nsIURI.h"
 #include "nsNetUtil.h"
-#include "nsReadableUtils.h"
-
+#include "nsStringAPI.h"
 #include "nsPipeConsole.h"
 
 #ifdef PR_LOGGING
@@ -294,7 +292,13 @@ nsPipeConsole::GetNewData(char** _retval)
     consoleCopy.Cut(0,offset);
 
   // Replace any NULs with '0'
-  consoleCopy.ReplaceChar(char(0),'0');
+  PRInt32 nulIndex = 0;
+  while (nulIndex != -1) {
+    nulIndex = consoleCopy.FindChar(char(0));
+    if (nulIndex != -1) {
+      consoleCopy.Replace(nulIndex, 1, "0", 1);
+    }
+  }
 
   // Duplicate new C string
   *_retval = ToNewCString(consoleCopy);
@@ -518,7 +522,7 @@ nsPipeConsole::WriteBuf(const char* buf, PRUint32 count)
 
     while ((offset < consoleLen) && (linesLocated < deleteLines)) {
       newOffset = mConsoleBuf.FindChar('\n', offset);
-      if (newOffset == kNotFound) break;
+      if (newOffset == -1) break;
       offset = newOffset + 1;
       linesLocated++;
     }

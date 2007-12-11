@@ -42,7 +42,7 @@
 #include "nsIRunnable.h"
 #include "nsIThread.h"
 #include "nsCOMPtr.h"
-#include "nsString.h"
+#include "nsStringAPI.h"
 
 // Implementation class for nsIIPCBuffer
 class nsIPCBuffer : public nsIIPCBuffer,
