@@ -54,6 +54,8 @@
 #include "nsEnigMimeWriter.h"
 #include "nsEnigMimeService.h"
 
+#define WITH_IPC 1
+
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgCompose)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgComposeFactory)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgCompFields)

@@ -296,7 +296,6 @@ zip ${xpiFile} \
     ${localeJar} \
     components/ipc.xpt \
     components/enigmime.xpt \
-    ${ipcDllFile} \
     ${enigDllFile} \
     chrome.manifest \
     install.js \
