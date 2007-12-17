@@ -856,8 +856,9 @@ NS_NewPipe2(nsIAsyncInputStream **pipeIn,
                   segmentCount,
                   segmentAlloc);
   if (NS_FAILED(rv)) {
-    //FIXME: NS_ADDREF(pipe);
-    //FIXME: NS_RELEASE(pipe);
+    pipe->AddRef();
+    pipe->Release();
+    pipe = 0;
     NS_ENSURE_SUCCESS(rv, rv);
   }
 
