@@ -42,6 +42,7 @@
 
 #ifndef _IPC_FORCE_INTERNAL_API
 #include "nsStringAPI.h"
+#include "nsISupportsUtils.h"
 #else
 #include "nsString.h"
 #endif
@@ -800,7 +801,7 @@ nsPipeTransport::SetLoggingEnabled(PRBool aLoggingEnabled)
   return mStdoutPoller->SetLoggingEnabled(aLoggingEnabled);
 }
 
-#ifndef _IPC_MOZILLA_1_8
+#ifndef _IPC_FORCE_INTERNAL_API
 NS_COM nsresult
 NS_NewPipe(nsIInputStream **pipeIn,
            nsIOutputStream **pipeOut,
@@ -856,9 +857,8 @@ NS_NewPipe2(nsIAsyncInputStream **pipeIn,
                   segmentCount,
                   segmentAlloc);
   if (NS_FAILED(rv)) {
-    pipe->AddRef();
-    pipe->Release();
-    pipe = 0;
+    NS_ADDREF(pipe);
+    NS_RELEASE(pipe);
     NS_ENSURE_SUCCESS(rv, rv);
   }
 
