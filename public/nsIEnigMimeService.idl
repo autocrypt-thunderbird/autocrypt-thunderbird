@@ -61,6 +61,15 @@ interface nsIEnigMimeService : nsISupports
   boolean isEncrypted(in AUTF8String uri);
 
   void sleep(in unsigned long miliSeconds);
+
+  /**
+   * Returns random number with specified number of digits,
+   * in hexadecimal format.
+   * CAUTION: This call uses the entropy source, which may cause the
+   * calling thread to block until sufficient entropy is collected.
+   */
+  string getRandomHex(in unsigned long nDigits);
+
 };
 
 %{C++

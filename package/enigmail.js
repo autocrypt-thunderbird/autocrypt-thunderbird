@@ -37,8 +37,7 @@ const MAX_MSG_BUFFER_SIZE = 512000 // slightly less than 512 kB
 
 const ERROR_BUFFER_SIZE = 32768; // 32 kB
 
-const PGP_BATCH_OPTS  = " +batchmode +force";
-const GPG_BATCH_OPTS  = " --batch --no-tty --status-fd 2";
+const GPG_BATCH_OPT_LIST = [ "--batch", "--no-tty", "--status-fd", "2" ];
 
 const gDummyPKCS7 = 'Content-Type: multipart/mixed;\r\n boundary="------------060503030402050102040303\r\n\r\nThis is a multi-part message in MIME format.\r\n--------------060503030402050102040303\r\nContent-Type: application/x-pkcs7-mime\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303\r\nContent-Type: application/x-enigmail-dummy\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303--\r\n';
 
@@ -336,6 +335,13 @@ function hexToBytes(hex) {
 
   return str;
 }
+
+function printCmdLine(command, args) {
+  return (command+" "+args.join(" ")).replace(/\\\\/g, "\\")
+}
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function WRITE_LOG(str) {
@@ -929,7 +935,6 @@ Enigmail.prototype.console = null;
 Enigmail.prototype.keygenProcess = null;
 Enigmail.prototype.keygenConsole = null;
 
-Enigmail.prototype.quoteSign = "";
 Enigmail.prototype.agentType = "";
 Enigmail.prototype.agentPath = "";
 Enigmail.prototype.agentVersion = "";
@@ -1231,13 +1236,6 @@ function (domWindow, version, prefBranch) {
   this.isWin32 = (this.platform.search(/Win/i) == 0);
   this.isOs2   = (this.platform.search(/OS\/2/i) == 0);
 
-  if (this.isOs2) {
-    this.quoteSign="\\\"";
-  }
-  else {
-    this.quoteSign="'";
-  }
-
   this.isDosLike = (this.isWin32 || this.isOs2);
 
   var prefix = this.getLogDirectoryPrefix();
@@ -1275,7 +1273,7 @@ function (domWindow, version, prefBranch) {
   }
 
   // Initialize global environment variables list
-  var passEnv = [ "PGPPATH", "GNUPGHOME", "GPGDIR", "ETC",
+  var passEnv = [ "GNUPGHOME", "GPGDIR", "ETC",
                   "ALLUSERSPROFILE", "APPDATA", "BEGINLIBPATH",
                   "COMMONPROGRAMFILES", "COMSPEC", "DISPLAY",
                   "ENIGMAIL_PASS_ENV", "ENDLIBPATH",
@@ -1414,7 +1412,7 @@ function () {
   var agentName = this.isDosLike ? agentType+".exe" : agentType;
 
   if (agentPath) {
-    // Locate GPG/PGP executable
+    // Locate GnuPG executable
 
     // Append default .exe extension for DOS-Like systems, if needed
     if (this.isDosLike && (agentPath.search(/\.\w+$/) < 0))
@@ -1496,8 +1494,9 @@ function () {
   this.agentPath = agentPath;
 
   var command = agentPath;
+  var args = [];
   if (agentType == "gpg") {
-     command += " --version --version --batch --no-tty --charset utf8";
+     args = [ "--version", "--version", "--batch", "--no-tty", "--charset", "utf8" ];
   }
 
   // This particular command execution seems to be essential on win32
@@ -1508,7 +1507,8 @@ function () {
   var errStrObj = new Object();
   var errLenObj = new Object();
 
-  var exitCode = this.ipcService.execPipe(command, false, "", "", 0, [], 0,
+  var exitCode = this.ipcService.runPipe(command, args, args.length,
+                                false, "", "", 0, [], 0,
                                 outStrObj, outLenObj, errStrObj, errLenObj);
 
   CONSOLE_LOG("enigmail> "+command.replace(/\\\\/g, "\\")+"\n");
@@ -1632,9 +1632,9 @@ function (domWindow) {
           this.gpgAgentInfo.envStr = "dummy";
         }
 
-        command = "\""+gpgConnectAgent.path.replace(/\\/g, "\\\\")+"\"";
+        command = gpgConnectAgent.path.replace(/\\/g, "\\\\");
         try {
-          var exitCode = this.ipcService.execPipe(command, false,
+          var exitCode = this.ipcService.runPipe(command, [], 0, false,
                                       "", "/echo OK\n", 0,
                                       envList, envList.length,
                                       outStrObj, outLenObj, errStrObj, errLenObj);
@@ -1655,9 +1655,10 @@ function (domWindow) {
       }
 
       // and finally try to start gpg-agent
+      var args = [];
       var commandFile = resolveAgentPath("gpg-agent");
       if (commandFile  && commandFile.isExecutable()) {
-        command = "\""+commandFile.path.replace(/\\/g, "\\\\")+"\"";
+        command = commandFile.path.replace(/\\/g, "\\\\");
       }
 
       if (command == null) {
@@ -1667,13 +1668,15 @@ function (domWindow) {
       }
 
       if (! this.isDosLike) {
-        command += " --sh --write-env-file '"+envFile.path+"'";
+        args = [ "--sh", "--write-env-file", envFile.path ];
       }
-      command += " --daemon --default-cache-ttl " + (this.getMaxIdleMinutes()*60);
-      command += " --max-cache-ttl 999999";  // ca. 11 days
+
+      args = args.concat([ "--daemon", "--default-cache-ttl", this.getMaxIdleMinutes()*60 ] );
+      args = args.concat([ "--max-cache-ttl", "999999" ]);  // ca. 11 days
 
       try {
-        var exitCode = this.ipcService.execPipe(command, false, "", "", 0,
+        var exitCode = this.ipcService.runPipe(command, args, args.length,
+                                      false, "", "", 0,
                                       envList, envList.length,
                                       outStrObj, outLenObj, errStrObj, errLenObj);
       }
@@ -1697,39 +1700,52 @@ function (domWindow) {
   DEBUG_LOG("enigmail.js: detectGpgAgent: GPG_AGENT_INFO='"+this.gpgAgentInfo.envStr+"'\n");
 }
 
-Enigmail.prototype.getAgentPath =
-function () {
+
+Enigmail.prototype.getAgentArgs =
+function (withBatchOpts) {
   var p = "";
   try {
     p=this.prefBranch.getCharPref("agentAdditionalParam").replace(/([\\\`])/g, "\\$1");
   }
   catch (ex) {}
 
-  return this.agentPath + " --charset utf8 " + p;
+  var r = [ "--charset", "utf8" ];
+
+  if (p.length > 0 ) {
+    r = r.concat(p.split(" "));
+  }
+
+  if (withBatchOpts) {
+    r = r.concat(GPG_BATCH_OPT_LIST);
+  }
+
+  return r;
 }
+
 
 
 Enigmail.prototype.passwdCommand =
 function () {
 
-  var command = "";
+  var commandArgs = [];
 
   try {
     var  gpgVersion = this.agentVersion.match(/^\d+\.\d+/);
     if (this.useGpgAgent()) {
-       command = " --use-agent "
+       commandArgs.push("--use-agent");
     }
     else {
       if (! gEnigmailSvc.prefBranch.getBoolPref("noPassphrase")) {
-        command = " --passphrase-fd 0";
+        commandArgs.push("--passphrase-fd");
+        commandArgs.push("0");
         if (gpgVersion && gpgVersion[0] >= "1.1") {
-          command += " --no-use-agent ";
+          commandArgs.push("--no-use-agent");
         }
       }
     }
   } catch (ex) {}
 
-  return command;
+  return commandArgs;
 }
 
 Enigmail.prototype.fixExitCode =
@@ -1762,8 +1778,8 @@ function (exitCode, statusFlags) {
 
 
 Enigmail.prototype.simpleExecCmd =
-function (command, exitCodeObj, errorMsgObj) {
-  WRITE_LOG("enigmail.js: Enigmail.simpleExecCmd: command = "+command+"\n");
+function (command, args, exitCodeObj, errorMsgObj) {
+  WRITE_LOG("enigmail.js: Enigmail.simpleExecCmd: command = "+command+" "+args.join(" ")+"\n");
 
   var envList = [];
   envList = envList.concat(gEnvList);
@@ -1771,7 +1787,7 @@ function (command, exitCodeObj, errorMsgObj) {
   var prefix = this.getLogDirectoryPrefix();
   if (prefix && (gLogLevel >= 4)) {
 
-    WriteFileContents(prefix+"enigcmd.txt", command.replace(/\\\\/g, "\\")+"\n");
+    WriteFileContents(prefix+"enigcmd.txt", printCmdLine(command, args)+"\n");
     WriteFileContents(prefix+"enigenv.txt", envList.join(",")+"\n");
 
     DEBUG_LOG("enigmail.js: Enigmail.execCmd: copied command line/env/input to files "+prefix+"enigcmd.txt/enigenv.txt/eniginp.txt\n");
@@ -1782,17 +1798,19 @@ function (command, exitCodeObj, errorMsgObj) {
   var outLenObj = new Object();
   var errLenObj = new Object();
 
-  CONSOLE_LOG("\nenigmail> "+command.replace(/\\\\/g, "\\")+"\n");
+  CONSOLE_LOG("\nenigmail> "+printCmdLine(command, args)+"\n");
 
   try {
     var useShell = false;
-    exitCodeObj.value = gEnigmailSvc.ipcService.execPipe(command,
-                                                       useShell,
-                                                       "",
-                                                       "", 0,
-                                                       envList, envList.length,
-                                                       outObj, outLenObj,
-                                                       errObj, errLenObj);
+    exitCodeObj.value = gEnigmailSvc.ipcService.runPipe(command,
+                                                        args,
+                                                        args.length,
+                                                        useShell,
+                                                        "",
+                                                        "", 0,
+                                                        envList, envList.length,
+                                                        outObj, outLenObj,
+                                                        errObj, errLenObj);
   } catch (ex) {
     exitCodeObj.value = -1;
   }
@@ -1822,9 +1840,8 @@ function (command, exitCodeObj, errorMsgObj) {
   return outputData;
 }
 
-
 Enigmail.prototype.execCmd =
-function (command, passphrase, input, exitCodeObj, statusFlagsObj,
+function (command, args, passphrase, input, exitCodeObj, statusFlagsObj,
           statusMsgObj, errorMsgObj) {
   WRITE_LOG("enigmail.js: Enigmail.execCmd: command = "+command+"\n");
 
@@ -1837,7 +1854,6 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
   var preInput;
 
   if (prependPassphrase) {
-    envList.push("PGPPASSFD=0");
     preInput = passphrase;
     input = "\n" + input;
 
@@ -1855,7 +1871,7 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
       WriteFileContents(prefix+"eniginp.txt", input);
     }
 
-    WriteFileContents(prefix+"enigcmd.txt", command.replace(/\\\\/g, "\\")+"\n");
+    WriteFileContents(prefix+"enigcmd.txt", printCmdLine(command, args)+"\n");
     WriteFileContents(prefix+"enigenv.txt", envList.join(",")+"\n");
 
     DEBUG_LOG("enigmail.js: Enigmail.execCmd: copied command line/env/input to files "+prefix+"enigcmd.txt/enigenv.txt/eniginp.txt\n");
@@ -1867,17 +1883,19 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
   var errLenObj = new Object();
   var blockSeparationObj = new Object();
 
-  CONSOLE_LOG("\nenigmail> "+command.replace(/\\\\/g, "\\")+"\n");
+  CONSOLE_LOG("\nenigmail> "+printCmdLine(command, args)+"\n");
 
   try {
     var useShell = false;
-    exitCodeObj.value = gEnigmailSvc.ipcService.execPipe(command,
-                                                       useShell,
-                                                       preInput,
-                                                       input, input.length,
-                                                       envList, envList.length,
-                                                       outObj, outLenObj,
-                                                       errObj, errLenObj);
+    exitCodeObj.value = gEnigmailSvc.ipcService.runPipe(command,
+                                                        args,
+                                                        args.length,
+                                                        useShell,
+                                                        preInput,
+                                                        input, input.length,
+                                                        envList, envList.length,
+                                                        outObj, outLenObj,
+                                                        errObj, errLenObj);
   } catch (ex) {
     exitCodeObj.value = -1;
   }
@@ -1917,9 +1935,9 @@ function (command, passphrase, input, exitCodeObj, statusFlagsObj,
 
 
 Enigmail.prototype.execStart =
-function (command, needPassphrase, domWindow, prompter, listener,
+function (command, args, needPassphrase, domWindow, prompter, listener,
           noProxy, statusFlagsObj) {
-  WRITE_LOG("enigmail.js: Enigmail.execStart: command = "+command+", needPassphrase="+needPassphrase+", domWindow="+domWindow+", prompter="+prompter+", listener="+listener+", noProxy="+noProxy+"\n");
+  WRITE_LOG("enigmail.js: Enigmail.execStart: command = "+printCmdLine(command, args)+", needPassphrase="+needPassphrase+", domWindow="+domWindow+", prompter="+prompter+", listener="+listener+", noProxy="+noProxy+"\n");
 
   statusFlagsObj.value = 0;
 
@@ -1930,7 +1948,7 @@ function (command, needPassphrase, domWindow, prompter, listener,
   var useAgentObj = {value: false};
 
   if (needPassphrase) {
-    command += this.passwdCommand();
+    args = args.concat(this.passwdCommand());
 
     var passwdObj = new Object();
 
@@ -1947,13 +1965,13 @@ function (command, needPassphrase, domWindow, prompter, listener,
   var prefix = this.getLogDirectoryPrefix();
   if (prefix && (gLogLevel >= 4)) {
 
-    WriteFileContents(prefix+"enigcmd.txt", command.replace(/\\\\/g, "\\")+"\n");
+    WriteFileContents(prefix+"enigcmd.txt", printCmdLine(command, args)+"\n");
     WriteFileContents(prefix+"enigenv.txt", envList.join(",")+"\n");
 
     DEBUG_LOG("enigmail.js: Enigmail.execStart: copied command line/env to files "+prefix+"enigcmd.txt/enigenv.txt\n");
   }
 
-  CONSOLE_LOG("\nenigmail> "+command.replace(/\\\\/g, "\\")+"\n");
+  CONSOLE_LOG("\nenigmail> "+printCmdLine(command, args)+"\n");
 
   var pipetrans = Components.classes[NS_PIPETRANSPORT_CONTRACTID].createInstance();
 
@@ -1965,7 +1983,7 @@ function (command, needPassphrase, domWindow, prompter, listener,
     ipcBuffer.open(ERROR_BUFFER_SIZE, false);
 
     var mergeStderr = false;
-    pipetrans.initCommand(command, envList, envList.length,
+    pipetrans.init(command, args, args.length, envList, envList.length,
                           0, "", noProxy, mergeStderr,
                           ipcBuffer);
 
@@ -2338,8 +2356,7 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
   var signMsg     = sendFlags & nsIEnigmail.SEND_SIGNED;
   var encryptMsg  = sendFlags & nsIEnigmail.SEND_ENCRYPTED;
 
-  if ( (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) ||
-       ((this.agentType == "pgp") && signMsg && (exitCode != 21)) ) {
+  if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
     // "Unremember" passphrase on error return
     this.clearCachedPassphrase();
   }
@@ -2404,72 +2421,73 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
   var toAddrList = toMailAddr.split(/\s*,\s*/);
   var k;
 
-  var encryptCommand = this.getAgentPath();
-
-  encryptCommand += GPG_BATCH_OPTS;
+  var encryptArgs = this.getAgentArgs(true);
 
   if (!useDefaultComment)
-    encryptCommand += " --comment "+this.quoteSign+GPG_COMMENT_OPT.replace(/\%s/, this.vendor)+this.quoteSign;
+    encryptArgs = encryptArgs.concat(["--comment", GPG_COMMENT_OPT.replace(/\%s/, this.vendor)]);
 
   var angledFromMailAddr = ((fromMailAddr.search(/^0x/) == 0) || hushMailSupport)
                          ? fromMailAddr : "<" + fromMailAddr + ">";
   angledFromMailAddr = angledFromMailAddr.replace(/([\"\'\`])/g, "\\$1");
 
   if (signMsg && hashAlgorithm) {
-    encryptCommand += " --digest-algo "+hashAlgorithm;
+    encryptArgs = encryptArgs.concat(["--digest-algo", hashAlgorithm]);
   }
 
   if (encryptMsg) {
     switch (isAscii) {
     case ENC_TYPE_MSG:
-      encryptCommand += " -a -t";
+      encryptArgs.push("-a");
+      encryptArgs.push("-t");
       break;
     case ENC_TYPE_ATTACH_ASCII:
-      encryptCommand += " -a";
+      encryptArgs.push("-a");
     }
 
-    encryptCommand +=  " -e";
+    encryptArgs.push("-e");
 
     if (signMsg)
-      encryptCommand += " -s";
+      encryptArgs.push("-s");
 
     if (sendFlags & nsIEnigmail.SEND_ALWAYS_TRUST) {
       if (this.agentVersion >= "1.4") {
-        encryptCommand += " --trust-model always"
+        encryptArgs.push("--trust-model");
+        encryptArgs.push("always");
       }
       else {
-        encryptCommand += " --always-trust";
+        encryptArgs.push("--always-trust");
       }
     }
     if ((sendFlags & nsIEnigmail.SEND_ENCRYPT_TO_SELF) && fromMailAddr)
-      encryptCommand += " --encrypt-to " + angledFromMailAddr;
+      encryptArgs = encryptArgs.concat(["--encrypt-to", angledFromMailAddr]);
 
     for (k=0; k<toAddrList.length; k++) {
        toAddrList[k] = toAddrList[k].replace(/\'/g, "\\'");
-       encryptCommand += (hushMailSupport || (toAddrList[k].search(/^0x/) == 0)) ? " -r "+ toAddrList[k]
-                          :" -r <" + toAddrList[k] + ">";
+       encryptArgs.push("-r");
+       encryptArgs.push((hushMailSupport || (toAddrList[k].search(/^0x/) == 0)) ? toAddrList[k]
+                          :"<" + toAddrList[k] + ">");
     }
 
   } else if (detachedSig) {
-    encryptCommand += " -s -b";
+    encryptArgs = encryptArgs.concat(["-s", "-b"]);
 
     switch (isAscii) {
     case ENC_TYPE_MSG:
-      encryptCommand += " -a -t";
+      encryptArgs = encryptArgs.concat(["-a", "-t"]);
       break;
     case ENC_TYPE_ATTACH_ASCII:
-      encryptCommand += " -a";
+      encryptArgs.push("-a");
     }
 
   } else if (signMsg) {
-    encryptCommand += " -t --clearsign";
+    encryptArgs = encryptArgs.concat(["-t", "--clearsign"]);
   }
 
   if (fromMailAddr) {
-    encryptCommand += " -u " + angledFromMailAddr;
+    encryptArgs = encryptArgs.concat(["-u", angledFromMailAddr]);
   }
 
-  return encryptCommand;
+  return encryptArgs;
 }
 
 Enigmail.prototype.determineHashAlgorithm =
@@ -2590,14 +2608,14 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
     return null;
   }
 
-  var encryptCommand = this.getEncryptCommand(fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, ENC_TYPE_MSG, errorMsgObj);
-  if (! encryptCommand)
+  var encryptArgs = this.getEncryptCommand(fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, ENC_TYPE_MSG, errorMsgObj);
+  if (! encryptArgs)
     return null;
 
   var signMsg     = sendFlags & nsIEnigmail.SEND_SIGNED;
 
   var statusFlagsObj = new Object();
-  var pipetrans = this.execStart(encryptCommand, signMsg, parent, prompter,
+  var pipetrans = this.execStart(this.agentPath, encryptArgs, signMsg, parent, prompter,
                                  listener, noProxy, statusFlagsObj);
 
   if (statusFlagsObj.value & nsIEnigmail.MISSING_PASSPHRASE) {
@@ -3040,27 +3058,30 @@ function (parent, prompter, verifyOnly, noOutput,
     return null;
   }
 
-  var decryptCommand = this.getAgentPath() + GPG_BATCH_OPTS;
+  var args = this.getAgentArgs(true);
 
   var keyserver = this.prefBranch.getCharPref("autoKeyRetrieve");
   if (keyserver != "") {
-    decryptCommand += " --keyserver-options auto-key-retrieve";
+    args.push("--keyserver-options");
+    var keySrvArgs="auto-key-retrieve";
     var srvProxy = this.getHttpProxy(keyserver);
     if (srvProxy && this.agentVersion>="1.4" ) {
-      decryptCommand += ",http-proxy="+srvProxy;
+      keySrvArgs += ",http-proxy="+srvProxy;
     }
-    decryptCommand += " --keyserver "+keyserver;
+    args.push(keySrvArgs);
+    args.push("--keyserver");
+    args.push(keyserver);
   }
 
   if (noOutput) {
-    decryptCommand += " --verify";
+    args.push("--verify");
 
   } else {
-    decryptCommand += " -d";
+    args.push("-d");
   }
 
   var statusFlagsObj = new Object();
-  var pipetrans = this.execStart(decryptCommand, !verifyOnly, parent, prompter,
+  var pipetrans = this.execStart(this.agentPath, args, !verifyOnly, parent, prompter,
                                  listener, noProxy, statusFlagsObj);
 
   if (statusFlagsObj.value & nsIEnigmail.MISSING_PASSPHRASE) {
@@ -3240,32 +3261,18 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
       if (goodSignature) {
         errorMsgObj.value = trustPrefix + EnigGetString("prefGood",userId) /* + ", " +
               EnigGetString("keyId") + " 0x" + keyId.substring(8,16); */
-
-        if (this.agentType != "gpg") {
-          // Trust all good signatures, if not GPG
-          statusFlagsObj.value |= nsIEnigmail.GOOD_SIGNATURE | nsIEnigmail.TRUSTED_IDENTITY;
-        }
-
       } else {
         errorMsgObj.value = trustPrefix + EnigGetString("prefBad",userId) /*+ ", " +
               EnigGetString("keyId") + " 0x" + keyId.substring(8,16); */
         if (!exitCode)
           exitCode = 1;
-
-        if (this.agentType != "gpg")
-          statusFlagsObj.value |= nsIEnigmail.BAD_SIGNATURE;
       }
-    }
-
-    if (!verifyOnly && (this.agentType != "gpg")) {
-        statusFlagsObj.value |= nsIEnigmail.DECRYPTION_OKAY;
     }
 
     return exitCode;
   }
 
-  if ((statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) ||
-       ((this.agentType == "pgp") && !verifyOnly && (exitCode != 30)) ) {
+  if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
     // "Unremember" passphrase on decryption failure
     this.clearCachedPassphrase();
   }
@@ -3285,19 +3292,6 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
       exitCode=0;
     }
 
-  }
-
-  if (this.agentType != "gpg") {
-    // Not GPG
-
-    if (verifyOnly) {
-      // Assume bad signature is reason for failure
-      statusFlagsObj.value |= nsIEnigmail.BAD_SIGNATURE;
-
-    } else {
-      statusFlagsObj.value |= outputLen ? nsIEnigmail.DECRYPTION_OKAY
-                                        : nsIEnigmail.DECRYPTION_FAILED;
-    }
   }
 
   if (exitCode != 0) {
@@ -3327,11 +3321,6 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
     return null;
   }
 
-  if (this.agentType != "gpg") {
-    errorMsgObj.value = EnigGetString("failOnlyGPG");
-    return null;
-  }
-
   if (!keyserver) {
     errorMsgObj.value = EnigGetString("failNoServer");
     return null;
@@ -3346,27 +3335,32 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
   envList = envList.concat(gEnvList);
 
   var proxyHost = this.getHttpProxy(keyserver);
-  var command = this.getAgentPath();
+  var args = this.getAgentArgs(false);
 
-  if (! (recvFlags & nsIEnigmail.SEARCH_KEY)) command += GPG_BATCH_OPTS;
+  if (! (recvFlags & nsIEnigmail.SEARCH_KEY)) args = this.getAgentArgs(true);
 
   if (proxyHost) {
-    command += " --keyserver-options honor-http-proxy";
+    args = args.concat(["--keyserver-options", "honor-http-proxy"]);
     envList.push("http_proxy="+proxyHost);
   }
-  command += " --keyserver " + keyserver;
+  args = args.concat(["--keyserver", keyserver]);
+
+  var keyIdList = keyId.split(" ");
 
   if (recvFlags & nsIEnigmail.DOWNLOAD_KEY) {
-    command += " --recv-keys " + keyId;
+    args.push("--recv-keys");
+    args = args.concat(keyIdList);
   }
   else if (recvFlags & nsIEnigmail.SEARCH_KEY) {
-    command += " --search-keys " + keyId;
+    args.push("--search-keys");
+    args = args.concat(keyIdList);
   }
   else if (recvFlags & nsIEnigmail.UPLOAD_KEY) {
-    command += " --send-keys " + keyId;
+    args.push("--send-keys");
+    args = args.concat(keyIdList);
   }
   else if (recvFlags & nsIEnigmail.REFRESH_KEY) {
-    command += " --refresh-keys";
+    args.push("--refresh-keys");
   }
 
   var exitCodeObj    = new Object();
@@ -3374,7 +3368,7 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
   var statusMsgObj   = new Object();
   var cmdLineObj   = new Object();
 
-  CONSOLE_LOG("enigmail> "+command.replace(/\\\\/g, "\\")+"\n");
+  CONSOLE_LOG("enigmail> "+printCmdLine(this.agentPath, args)+"\n");
 
   var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
   // Create joinable console
@@ -3382,7 +3376,8 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
 
   var ipcRequest = null;
   try {
-    ipcRequest = gEnigmailSvc.ipcService.execAsync(command,
+    ipcRequest = gEnigmailSvc.ipcService.runAsync (this.agentPath,
+                                                   args, args.length,
                                                    false,
                                                    "",
                                                    "",
@@ -3392,11 +3387,11 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
                                                    pipeConsole,
                                                    requestObserver);
   } catch (ex) {
-    ERROR_LOG("enigmail.js: Enigmail.receiveKey: execAsync failed\n");
+    ERROR_LOG("enigmail.js: Enigmail.receiveKey: runAsync failed\n");
   }
 
   if (!ipcRequest) {
-    ERROR_LOG("enigmail.js: Enigmail.receiveKey: execAsync failed somehow\n");
+    ERROR_LOG("enigmail.js: Enigmail.receiveKey: runAsync failed due to unknown reasons\n");
     return null;
   }
 
@@ -3482,11 +3477,6 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
     return null;
   }
 
-  if (this.agentType != "gpg") {
-    errorMsgObj.value = EnigGetString("failOnlyGPG");
-    return null;
-  }
-
   if (!keyserver) {
     errorMsgObj.value = EnigGetString("failNoServer");
     return null;
@@ -3499,6 +3489,9 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
 
   var envList = [];
   envList = envList.concat(gEnvList);
+
+  var args;
+  var command = null;
 
   var proxyHost = null;
   if (protocol=="hkp") {
@@ -3513,7 +3506,6 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
 
     var baseDir = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
     baseDir.initWithPath(this.agentPath);
-    var command = null;
 
     // try to locate gpgkeys_*
     if (baseDir)
@@ -3563,7 +3555,7 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
       return null;
     }
 
-    command=command.replace(/\\\\/g, "\\").replace(/\\/g, "\\\\");
+    // command=command.replace(/\\\\/g, "\\").replace(/\\/g, "\\\\");
 
     // call gpgkeys to check the version number
 
@@ -3571,12 +3563,12 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
     var outLenObj  = new Object();
     var errObj     = new Object();
     var errLenObj  = new Object();
-    var testCmd = command + " -V"
 
-    CONSOLE_LOG("\nenigmail> "+testCmd.replace(/\\\\/g, "\\")+"\n");
+    args = [ "-V" ];
+    CONSOLE_LOG("\nenigmail> "+printCmdLine(command, args)+"\n");
 
     try {
-      var exitCode = this.ipcService.execPipe(testCmd,
+      var exitCode = this.ipcService.execPipe(command, args, args.length,
                                             false,
                                             "",
                                             "", 0,
@@ -3585,12 +3577,12 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
                                             errObj, errLenObj);
     }
     catch (ex) {
-      CONSOLE_LOG(testCmd.replace(/\\\\/g, "\\")+" failed\n");
+      CONSOLE_LOG(command.replace(/\\\\/g, "\\")+" failed\n");
       return null;
     }
 
     if (exitCode !=0) {
-      CONSOLE_LOG(testCmd.replace(/\\\\/g, "\\")+" not found\n");
+      CONSOLE_LOG(command.replace(/\\\\/g, "\\")+" not found\n");
       return null;
     }
 
@@ -3617,22 +3609,28 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
   }
   else {
     // GnuPG >= v1.4.0
-    command = this.getAgentPath() + " --command-fd 0 --no-tty --batch --fixed-list --with-colons"
-    if (proxyHost) command+=" --keyserver-options http-proxy="+proxyHost
-    command +=" --keyserver ";
+    command = this.agentPath;
+    args= this.getAgentArgs();
+    args = args.concat(["--command-fd", "0", "--no-tty", "--batch", "--fixed-list", "--with-colons"]);
+    if (proxyHost) args = args.concat(["--keyserver-options", "http-proxy="+proxyHost]);
+    args.push("--keyserver");
     if (! protocol) protocol="hkp";
-    command += protocol + "://" + keyserver;
-    if (port) command += ":"+port;
+    if (port) {
+      args.push(protocol + "://" + keyserver + ":"+port);
+    }
+    else {
+      args.push(protocol + "://" + keyserver);
+    }
 
     if (recvFlags & nsIEnigmail.SEARCH_KEY) {
-      command += " --search-keys ";
+      args.push("--search-keys");
       inputData = "quit\n";
     }
     else if (recvFlags & nsIEnigmail.DOWNLOAD_KEY) {
-      command+=" --status-fd 1 --recv-keys ";
+      args = args.concat(["--status-fd", "1", "--recv-keys"]);
       inputData = "";
     }
-    command += keyValue
+    args.push(keyValue);
   }
 
   var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
@@ -3642,12 +3640,13 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
   var errorConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
   errorConsole.open(20, 0, true);
 
-  CONSOLE_LOG("enigmail> "+command.replace(/\\\\/g, "\\")+"\n");
+  CONSOLE_LOG("enigmail> "+printCmdLine(command, args)+"\n");
 
 
   var ipcRequest = null;
   try {
-    ipcRequest = gEnigmailSvc.ipcService.execAsync(command,
+    ipcRequest = gEnigmailSvc.ipcService.runAsync (command,
+                                                   args, args.length,
                                                    false,
                                                    "",
                                                    inputData,
@@ -3657,11 +3656,11 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
                                                    errorConsole,
                                                    requestObserver);
   } catch (ex) {
-    ERROR_LOG("enigmail.js: Enigmail.searchKey: execAsync failed\n");
+    ERROR_LOG("enigmail.js: Enigmail.searchKey: runAsync failed\n");
   }
 
   if (!ipcRequest) {
-    ERROR_LOG("enigmail.js: Enigmail.searchKey: execAsync failed somehow\n");
+    ERROR_LOG("enigmail.js: Enigmail.searchKey: runAsync failed for unkown reasons\n");
     return null;
   }
 
@@ -3678,15 +3677,14 @@ function (parent, exportFlags, userId, outputFile, exitCodeObj, errorMsgObj) {
     return "";
   }
 
-  var command = this.getAgentPath();
-  command += GPG_BATCH_OPTS + " -a --export ";
-  command += userId;
+  var args = this.getAgentArgs(true);
+  args = args.concat(["-a", "--export", userId]);
 
   var statusFlagsObj = new Object();
   var statusMsgObj   = new Object();
   var cmdErrorMsgObj = new Object();
 
-  var keyBlock = this.execCmd(command, null, "",
+  var keyBlock = this.execCmd(this.agentPath, args, null, "",
                     exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
 
   if ((exitCodeObj.value == 0) && !keyBlock)
@@ -3704,11 +3702,10 @@ function (parent, exportFlags, userId, outputFile, exitCodeObj, errorMsgObj) {
   }
 
   if (exportFlags & nsIEnigmail.EXTRACT_SECRET_KEY) {
-    command = this.getAgentPath();
-    command += GPG_BATCH_OPTS + " -a --export-secret-keys ";
-    command += userId;
+    args = this.getAgentArgs(true);
+    args = args.concat(["-a", "--export-secret-keys", userId]);
 
-    var secKeyBlock = this.execCmd(command, null, "",
+    var secKeyBlock = this.execCmd(this.agentPath, args, null, "",
                     exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
 
     if ((exitCodeObj.value == 0) && !secKeyBlock)
@@ -3783,20 +3780,14 @@ function (parent, uiFlags, msgText, keyId, errorMsgObj) {
     }
   }
 
-  var command = this.getAgentPath();
-
-  if (this.agentType == "pgp") {
-    command += PGP_BATCH_OPTS + " -ft -ka";
-
-  } else {
-    command += GPG_BATCH_OPTS + " --import";
-  }
+  var args = this.getAgentArgs(true);
+  args.push("--import");
 
   var exitCodeObj    = new Object();
   var statusFlagsObj = new Object();
   var statusMsgObj   = new Object();
 
-  var output = this.execCmd(command, null, pgpBlock,
+  var output = this.execCmd(this.agentPath, args, null, pgpBlock,
                       exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
 
   var statusMsg = statusMsgObj.value;
@@ -3830,15 +3821,15 @@ function (parent, fileName, errorMsgObj) {
 
   fileName=fileName.replace(/\\/g, "\\\\");
 
-  var command = this.getAgentPath();
-
-  command += GPG_BATCH_OPTS + " --import '"+fileName+"'";
+  var args = this.getAgentArgs(true);
+  args.push("--import");
+  args.push(fileName);
 
   var statusFlagsObj = new Object();
   var statusMsgObj   = new Object();
   var exitCodeObj    = new Object();
 
-  var output = this.execCmd(command, null, "",
+  var output = this.execCmd(this.agentPath, args, null, "",
                       exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
 
   var statusMsg = statusMsgObj.value;
@@ -3866,7 +3857,7 @@ function (parent, name, comment, email, expiryDate, keyLength, keyType,
           passphrase, requestObserver) {
   WRITE_LOG("enigmail.js: Enigmail.generateKey: \n");
 
-  if (this.keygenProcess || (this.agentType != "gpg"))
+  if (this.keygenProcess)
     throw Components.results.NS_ERROR_FAILURE;
 
   var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
@@ -3874,10 +3865,11 @@ function (parent, name, comment, email, expiryDate, keyLength, keyType,
   // Create joinable console
   pipeConsole.open(100, 80, true);
 
-  var command = this.getAgentPath() + GPG_BATCH_OPTS + " --gen-key";
+  var args = this.getAgentArgs(true);
+  args.push("--gen-key");
 
-  pipeConsole.write(command.replace(/\\\\/g, "\\")+"\n");
-  CONSOLE_LOG(command.replace(/\\\\/g, "\\")+"\n");
+  pipeConsole.write(printCmdLine(this.agentPath, args)+"\n");
+  CONSOLE_LOG(printCmdLine(this.agentPath, args)+"\n");
 
   var inputData = "%echo Generating key\nKey-Type: "
 
@@ -3911,7 +3903,8 @@ function (parent, name, comment, email, expiryDate, keyLength, keyType,
   var ipcRequest = null;
   try {
     var useShell = false;
-    ipcRequest = gEnigmailSvc.ipcService.execAsync(command,
+    ipcRequest = gEnigmailSvc.ipcService.runAsync (this.agentPath,
+                                                   args, args.length,
                                                    useShell,
                                                    "",
                                                    inputData,
@@ -3924,7 +3917,7 @@ function (parent, name, comment, email, expiryDate, keyLength, keyType,
   }
 
   if (!ipcRequest) {
-    ERROR_LOG("enigmail.js: Enigmail.generateKey: execAsync failed\n");
+    ERROR_LOG("enigmail.js: Enigmail.generateKey: runAsync failed\n");
     return null;
   }
 
@@ -4232,12 +4225,13 @@ Enigmail.prototype.getUserIdList =
 function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
 
   if (secretOnly || refresh || this.userIdList == null) {
-    var gpgCommand = this.getAgentPath() + GPG_BATCH_OPTS;
+    var args = this.getAgentArgs(true);
 
     if (secretOnly) {
-      gpgCommand += " --with-fingerprint --fixed-list-mode --with-colons --list-secret-keys";  }
+      args=args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-secret-keys"]);
+    }
     else {
-      gpgCommand += " --with-fingerprint --fixed-list-mode --with-colons --list-keys";
+      args=args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-keys"]);
     }
 
     if (!this.initialized) {
@@ -4250,13 +4244,13 @@ function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
     var statusMsgObj   = new Object();
     var cmdErrorMsgObj = new Object();
 
-    var listText = this.execCmd(gpgCommand, null, "",
+    var listText = this.execCmd(this.agentPath, args, null, "",
                       exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
 
     if (exitCodeObj.value != 0) {
       errorMsgObj.value = EnigGetString("badCommand");
       if (cmdErrorMsgObj.value) {
-        errorMsgObj.value += "\n" + gpgCommand;
+        errorMsgObj.value += "\n" + printCmdLine(this.agentPath, args);
         errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
       }
 
@@ -4282,7 +4276,10 @@ function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
 Enigmail.prototype.getKeySig =
 function  (keyId, exitCodeObj, errorMsgObj) {
 
-  var gpgCommand = this.getAgentPath() + GPG_BATCH_OPTS + " --fixed-list-mode --with-colons --with-fingerprint --list-sig "+keyId;
+  var keyIdList = keyId.split(" ");
+  var args = this.getAgentArgs(true);
+  args=args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-sig"]);
+  args=args.concat(keyIdList);
 
   if (!this.initialized) {
     errorMsgObj.value = EnigGetString("notInit");
@@ -4293,13 +4290,13 @@ function  (keyId, exitCodeObj, errorMsgObj) {
   var statusMsgObj   = new Object();
   var cmdErrorMsgObj = new Object();
 
-  var listText = this.execCmd(gpgCommand, null, "",
+  var listText = this.execCmd(this.agentPath, args, null, "",
                     exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
 
   if (exitCodeObj.value != 0) {
     errorMsgObj.value = EnigGetString("badCommand");
     if (cmdErrorMsgObj.value) {
-      errorMsgObj.value += "\n" + gpgCommand;
+      errorMsgObj.value += "\n" + printCmdLine(this.agentPath, args);
       errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
     }
 
@@ -4311,14 +4308,17 @@ function  (keyId, exitCodeObj, errorMsgObj) {
 // get key details.
 // if uidOnly is true, returns just a list of uid's
 Enigmail.prototype.getKeyDetails = function (keyId, uidOnly) {
-  var gpgCommand = this.getAgentPath() + GPG_BATCH_OPTS
-  gpgCommand += " --fixed-list-mode --with-colons --list-keys " + keyId;
+  var args = this.getAgentArgs(true);
+  var keyIdList = keyId.split(" ");
+  args=args.concat([ "--fixed-list-mode", "--with-colons", "--list-keys"]);
+  args=args.concat(keyIdList);
+
   var statusMsgObj   = new Object();
   var cmdErrorMsgObj = new Object();
   var statusFlagsObj = new Object();
   var exitCodeObj = new Object();
 
-  var listText = this.execCmd(gpgCommand, null, "",
+  var listText = this.execCmd(this.agentPath, args, null, "",
                     exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
   if (exitCodeObj.value != 0) {
     return "";
@@ -4359,16 +4359,16 @@ function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
   } catch (ex) {}
   var asciiFlags = (asciiArmor ? ENC_TYPE_ATTACH_ASCII : ENC_TYPE_ATTACH_BINARY);
 
-  var gpgCommand = this.getEncryptCommand(fromMailAddr, toMailAddr, "", sendFlags, asciiFlags, errorMsgObj);
+  var args = this.getEncryptCommand(fromMailAddr, toMailAddr, "", sendFlags, asciiFlags, errorMsgObj);
 
-  if (! gpgCommand)
+  if (! args)
       return null;
 
   var passphrase = null;
   var signMessage = (sendFlags & nsIEnigmail.SEND_SIGNED);
 
   if (signMessage ) {
-    gpgCommand += this.passwdCommand();
+    args = args.concat(this.passwdCommand());
 
     var passwdObj = new Object();
     var useAgentObj = new Object();
@@ -4387,19 +4387,18 @@ function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
   inFile = inFile.replace(/([\\\"\'\`])/g, "\\$1");
   outFile = outFile.replace(/([\\\"\'\`])/g, "\\$1");
 
-  gpgCommand += " --yes -o " + this.quoteSign + outFile + this.quoteSign;
-  gpgCommand += " "+this.quoteSign + inFile + this.quoteSign;
+  args = args.concat(["--yes", "-o", outFile, inFile ]);
 
   var statusMsgObj   = new Object();
   var cmdErrorMsgObj = new Object();
 
-  var msg = this.execCmd(gpgCommand, passphrase, "",
+  var msg = this.execCmd(this.agentPath, args, passphrase, "",
                     exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
 
   if (exitCodeObj.value != 0) {
 
     if (cmdErrorMsgObj.value) {
-      errorMsgObj.value = gpgCommand;
+      errorMsgObj.value = printCmdLine(this.agentPath, args);
       errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
     }
     else {
@@ -4435,13 +4434,13 @@ function (parent, outFileName, displayName, inputBuffer,
     return true;
   }
 
-  var command = this.getAgentPath();
-
   outFileName = outFileName.replace(/([\\\"\'\`])/g, "\\$1");
   //replace(/\\/g, "\\\\").replace(/'/g, "\\'");;
 
-  command += GPG_BATCH_OPTS + " -o " + this.quoteSign + outFileName + this.quoteSign;
-  command+= " --yes " + this.passwdCommand() + " -d ";
+  var args = this.getAgentArgs(true);
+  args = args.concat(["-o", outFileName, "--yes"]);
+  args = args.concat(this.passwdCommand());
+  args.push("-d");
 
 
   statusFlagsObj.value = 0;
@@ -4464,7 +4463,7 @@ function (parent, outFileName, displayName, inputBuffer,
   var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
   ipcBuffer.open(MSG_BUFFER_SIZE, false);
 
-  var pipeTrans = this.execStart(command, false, parent, 0,
+  var pipeTrans = this.execStart(this.agentPath, args, false, parent, 0,
                                  ipcBuffer, noProxy, statusFlagsObj);
 
 
@@ -4505,13 +4504,13 @@ function (parent, outFileName, displayName, inputBuffer,
 Enigmail.prototype.getCardStatus =
 function(exitCodeObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.getCardStatus\n");
-  var command = this.getAgentPath();
+  var args = this.getAgentArgs(false);
 
-  command += " --status-fd 2 --fixed-list-mode --with-colons --card-status";
+  args = args.concat(["--status-fd", "2", "--fixed-list-mode", "--with-colons", "--card-status"]);
   var statusMsgObj = new Object();
   var statusFlagsObj = new Object();
 
-  var outputTxt = this.execCmd(command, null, "",
+  var outputTxt = this.execCmd(this.agentPath, args, null, "",
                 exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
 
   if ((exitCodeObj.value == 0) && !outputTxt) {
@@ -4525,14 +4524,14 @@ function(exitCodeObj, errorMsgObj) {
 Enigmail.prototype.showKeyPhoto =
 function(keyId, photoNumber, exitCodeObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.showKeyPhoto, keyId="+keyId+" photoNumber="+photoNumber+"\n");
-  var command = this.getAgentPath();
 
-  command += " --no-secmem-warning --no-verbose --no-auto-check-trustdb --batch --no-tty --status-fd 1 --attribute-fd 2";
-  command += " --fixed-list-mode --list-keys "+keyId;
+  var args = this.getAgentArgs();
+  args = args.concat(["--no-secmem-warning", "--no-verbose", "--no-auto-check-trustdb", "--batch", "--no-tty", "--status-fd", "1", "--attribute-fd", "2" ]);
+  args = args.concat(["--fixed-list-mode", "--list-keys", keyId]);
 
   var photoDataObj = new Object();
 
-  var outputTxt = this.simpleExecCmd(command, exitCodeObj, photoDataObj);
+  var outputTxt = this.simpleExecCmd(this.agentPath, args, exitCodeObj, photoDataObj);
 
   if ((exitCodeObj.value == 0) && !outputTxt) {
     exitCodeObj.value = -1;
@@ -4919,15 +4918,14 @@ Enigmail.prototype.simpleChangePassphrase =
 function (parent, keyId, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.simpleChangePassphrase: keyId="+keyId+"\n");
 
-  var command = this.getAgentPath();
-
-  command += GPG_BATCH_OPTS + " --edit-key " + keyId +" passwd"
+  var args = this.getAgentArgs(true);
+  args = args.concat(["--edit-key", keyId, "passwd"]);
 
   var exitCodeObj   = new Object();
   var statusFlagsObj = new Object();
   var statusMsgObj = new Object();
 
-  var msg = this.execCmd(command, null, "",
+  var msg = this.execCmd(this.agentPath, args, null, "",
                       exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
 
   if (statusFlagsObj.value & (gStatusFlags.BAD_PASSPHRASE |
@@ -5154,13 +5152,9 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
     return -1;
   }
 
-  if (this.agentType != "gpg") {
-    errorMsgObj.value = EnigGetString("failOnlyGPG");
-    return -1;
-  }
-
   errorMsgObj.value = "";
-  var command = this.getAgentPath();
+  var keyIdList = keyId.split(" ");
+  var args = this.getAgentArgs(false);
 
   var statusFlags = new Object();
 
@@ -5168,12 +5162,12 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
   var useAgentObj = new Object();
 
   if (needPassphrase) {
-    command += this.passwdCommand();
+    args=args.concat(this.passwdCommand());
 
     var passwdObj = new Object();
 
     if (!GetPassphrase(parent, passwdObj, useAgentObj, 0)) {
-       ERROR_LOG("enigmail.js: Enigmail.execStart: Error - no passphrase supplied\n");
+       ERROR_LOG("enigmail.js: Enigmail.editKey: Error - no passphrase supplied\n");
 
        errorMsgObj.value = EnigGetString("noPassphrase");
        return -1;
@@ -5186,23 +5180,24 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
     useAgentObj.value = true;
   }
 
-  command += " --no-tty --status-fd 1 --logger-fd 1 --command-fd 0"
-  if (userId) command += " -u " + userId;
+  args=args.concat(["--no-tty", "--status-fd", "1", "--logger-fd", "1", "--command-fd", "0"]);
+  if (userId) args=args.concat(["-u", userId]);
   if (editCmd == "revoke") {
     // escape backslashes and ' characters
-    command += " -a -o "+this.quoteSign;
-    command += inputData.outFile.replace(/([\\\"\'\`])/g, "\\$1");
+    args=args.concat(["-a", "-o"]);
+    args.push(inputData.outFile.replace(/([\\\"\'\`])/g, "\\$1"));
     //replace(/\\/g, "\\\\").replace(/'/g, "\\'");
-    command += this.quoteSign+" --gen-revoke " + keyId;
+    args.push("--gen-revoke");
+    args=args.concat(keyIdList);
   }
   else if (editCmd.indexOf("--")==0) {
-    command += " "+editCmd + " " + keyId;
+    args.push(editCmd);
+    args=args.concat(keyIdList);
   }
   else {
-    command += " --ask-cert-level --edit-key " + keyId + " " + editCmd;
+    args=args.concat(["--ask-cert-level", "--edit-key", keyId, editCmd]);
   }
-  command = command.replace(/ *$/, "");
-  var pipeTrans = this.execStart(command, false, parent, null, null,
+  var pipeTrans = this.execStart(this.agentPath, args, false, parent, null, null,
                                  true, statusFlags);
   if (! pipeTrans) return -1;
 

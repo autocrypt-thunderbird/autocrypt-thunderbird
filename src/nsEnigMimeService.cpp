@@ -298,3 +298,174 @@ nsEnigMimeService::Sleep(PRUint32 miliSeconds)
   PR_Sleep(miliSeconds);
   return NS_OK;
 }
+
+
+NS_IMETHODIMP
+nsEnigMimeService::GetRandomHex(PRUint32 nDigits, char **_retval)
+{
+  DEBUG_LOG(("nsIPCService::GetRandomHex: %d\n", nDigits));
+
+  if (!_retval)
+    return NS_ERROR_NULL_POINTER;
+
+  if (nDigits < 1)
+    return NS_ERROR_FAILURE;
+
+  // Get random noise
+  PRSize nBytes = (nDigits+1)/2;
+  PRBool discardOneDigit = (nBytes*2 == nDigits+1);
+
+  unsigned char *randomBuf = (unsigned char*) PR_Malloc(sizeof(char *)
+                                                        * nBytes );
+  PRSize randomBytes = PR_GetRandomNoise((void*)randomBuf, nBytes);
+
+  if (randomBytes < nBytes) {
+    PR_Free(randomBuf);
+    return NS_ERROR_NOT_AVAILABLE;
+  }
+
+  // Convert random bytes to hexadecimal string
+  nsCAutoString hex ("");
+  for (PRUint32 j=0; j<nBytes; j++) {
+     PRInt32 value = randomBuf[j];
+     if (discardOneDigit && (j == nBytes-1)) {
+       value = value % 16;
+     } else if (value < 16) {
+       hex.Append("0");
+     }
+     hex.AppendInt(value, 16);
+  }
+
+  PR_Free(randomBuf);
+
+  *_retval = ToNewCString(hex);
+
+  return NS_OK;
+}
+
+
+
+/*
+NS_IMETHODIMP nsPipeTransport::InitCommand(const char *command,
+                                           const char **env,
+                                           PRUint32 envCount,
+                                           PRUint32 timeoutMS,
+                                           const char *killString,
+                                           PRBool noProxy,
+                                           PRBool mergeStderr,
+                                           nsIPipeListener* console)
+{
+  nsresult rv;
+
+  DEBUG_LOG(("nsPipeTransport::InitCommand: command=%s [%d]\n",
+             command, envCount));
+
+  if (!command)
+    return NS_ERROR_FAILURE;
+
+  mCommand = command;
+
+  // Create a buffer of same size as the command string
+  PRUint32 len = strlen(command);
+  char* buf = (char*) PR_Malloc(sizeof(char) * (len+1) );
+
+  // Parse command arguments separated by whitespace
+  PRUint32 j;
+  char quote = '\0';
+  PRBool backquote = PR_FALSE;
+  PRBool inArg = PR_FALSE;
+  PRUint32 bufCount = 0;
+  PRUint32 argCount = 0;
+
+  for (j=0; j<len; j++) {
+    char ch = command[j];
+    if (!quote && !backquote) {
+      // Unquoted character
+
+      if ((ch == ' ') || (ch == '\t') || (ch == '\r') || (ch == '\n')) {
+        // Whitespace (skip)
+
+        if (inArg) {
+          // End argument parsing; insert null character in buffer
+          buf[bufCount++] = '\0';
+          inArg = PR_FALSE;
+        }
+
+      } else if (!inArg) {
+        // Non-whitespace character; start parsing new argument
+        inArg = PR_TRUE;
+        argCount++;
+      }
+    }
+
+    if (inArg) {
+      // Argument parsing
+
+      if (backquote) {
+        // Backquoted character; append to buffer
+        buf[bufCount++] = ch;
+        backquote = PR_FALSE;
+
+      } else if (ch == '\\') {
+        // Backquote following character
+        backquote = PR_TRUE;
+
+      } else if (quote == ch) {
+        // Matching end quote
+        quote = '\0';
+
+      } else if (!quote && ((ch == '"') || (ch == '\'')) ) {
+        // Start new quote
+        quote = ch;
+
+      } else {
+        // Append character to buffer (quoted/unquoted)
+        buf[bufCount++] = ch;
+      }
+    }
+  }
+
+  if (inArg)
+    buf[bufCount++] = '\0';   // End argument parsing
+
+  PR_ASSERT(bufCount <= (len+1)); // No buffer overflow
+
+  if (quote) {
+    ERROR_LOG(("nsPipeTransport::InitCommand: Unmatched quote in command string\n"));
+    PR_Free(buf);
+    return NS_ERROR_FAILURE;
+  }
+
+  if (!argCount) {
+    ERROR_LOG(("nsPipeTransport::InitCommand: Blank/null command string\n"));
+    PR_Free(buf);
+    return NS_ERROR_FAILURE;
+  }
+
+  DEBUG_LOG(("nsPipeTransport::InitCommand: argCount=%d\n", argCount));
+
+  // Argument list (includes command path as the first argument)
+  char** args = (char **) PR_Malloc(sizeof(char *) * (argCount+1) );
+  if (!args)
+    return NS_ERROR_OUT_OF_MEMORY;
+
+  PRUint32 argOffset = 0;
+  for (j=0; j<argCount; j++) {
+    args[j] = buf + argOffset;
+    argOffset += strlen(args[j]) + 1;
+  }
+
+  PR_ASSERT(argOffset == bufCount);
+
+  args[argCount] = NULL;
+
+  rv = Init((const char*) args[0],
+            (const char**) args+1, argCount-1, env, envCount,
+            timeoutMS, killString, noProxy, mergeStderr,
+            console);
+
+  PR_Free(buf);
+
+  return rv;
+}
+*/

@@ -255,6 +255,7 @@ nsEnigMsgCompose::GetRandomTime(PRUint32 *_retval)
   return NS_OK;
 }
 
+
 nsresult
 nsEnigMsgCompose::MakeBoundary(const char *prefix)
 {
