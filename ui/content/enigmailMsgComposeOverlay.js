@@ -1276,12 +1276,18 @@ function enigEncryptMsg(msgSendType) {
 
      if (usingPGPMime &&
          ((sendFlags & ENIG_ENCRYPT_OR_SIGN))) {
-      // temporarily enable quoted-printable for PGP/MIME messages
+       // temporarily enable quoted-printable for PGP/MIME messages
        try {
           // make sure plaintext is not changed to 7bit
           if (typeof(msgCompFields.forceMsgEncoding) == "boolean") {
             msgCompFields.forceMsgEncoding = true;
             DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: enabled forceMsgEncoding\n");
+          }
+
+          if (msgCompFields.characterSet == "ISO-2022-JP") {
+            if (EnigConfirmPref(EnigGetString("warnIso2022jp"), "warnIso2022jp")) {
+              gMsgCompose.SetDocumentCharset("UTF-8");
+            }
           }
        }
        catch (ex) {}
@@ -1291,6 +1297,12 @@ function enigEncryptMsg(msgSendType) {
         // force keeping the charset (i.e. don't convert to us-ascii)
         msgCompFields.forceMsgEncoding = true;
         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: enabled forceMsgEncoding\n");
+
+        if (msgCompFields.characterSet == "ISO-2022-JP") {
+          if (EnigConfirmPref(EnigGetString("warnIso2022jp"), "warnIso2022jp")) {
+            gMsgCompose.SetDocumentCharset("UTF-8");
+          }
+        }
       }
     }
 
@@ -1557,7 +1569,7 @@ function enigModifyCompFields(msgCompFields) {
     }
   }
   catch (ex) {
-    EnigWriteException("enigmailMsgComposeOverlay.js: enigModifyCompFields", ex)
+    EnigWriteException("enigmailMsgComposeOverlay.js: enigModifyCompFields", ex);
   }
 
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigModifyCompFields: otherRandomHeaders = "+

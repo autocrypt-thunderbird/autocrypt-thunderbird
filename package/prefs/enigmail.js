@@ -104,7 +104,7 @@ pref("extensions.enigmail.maxIdleMinutes",5);
 
 // GnuPG hash algorithm
 // 0: automatic seletion (i.e. let GnuPG choose)
-// 1: SHA1, 2: RIPEMD160, 3: SHA256, 4: SHA384, 5: SHA512
+// 1: SHA1, 2: RIPEMD160, 3: SHA256, 4: SHA384, 5: SHA512, 6: SHA224
 pref("extensions.enigmail.mimeHashAlgorithm",0);
 
 // no passphrase for GnuPG key needed
@@ -160,6 +160,9 @@ pref("extensions.enigmail.warnClearPassphrase",true);
 
 // display a warning when all keys are to be refreshed
 pref("extensions.enigmail.warnRefreshAll",true);
+
+// display a warning if the broken character set ISO-2022-JP is used (and remember selected state)
+pref("extensions.enigmail.warnIso2022jp", 0);
 
 // wrap HTML messages before sending inline PGP messages
 pref("extensions.enigmail.wrapHtmlBeforeSend",true);

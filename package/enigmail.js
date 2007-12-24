@@ -1705,7 +1705,7 @@ Enigmail.prototype.getAgentArgs =
 function (withBatchOpts) {
   var p = "";
   try {
-    p=this.prefBranch.getCharPref("agentAdditionalParam").replace(/([\\\`])/g, "\\$1");
+    p=this.prefBranch.getCharPref("agentAdditionalParam").replace(/\\\\/g, "\\");
   }
   catch (ex) {}
 
