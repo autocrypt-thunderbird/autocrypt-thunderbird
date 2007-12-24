@@ -71,11 +71,15 @@ public:
     NS_METHOD Shutdown();
 
 protected:
-    NS_METHOD ExecCommand(const char* command,
+    NS_METHOD RunCommand (const char* executable,
+                          const char **args,
+                          PRUint32 argCount,
                           PRBool useShell,
                           const char **env, PRUint32 envCount,
                           nsIPipeListener* errConsole,
                           nsIPipeTransport** _retval);
+
+    NS_METHOD GetRandomTime (PRUint32 *_retval);
 
     PRBool                        mInitialized;
     nsCString                     mCookieStr;
@@ -97,7 +101,7 @@ public:
     virtual ~nsIPCRequest();
 
 protected:
-    nsCString                  mCommand;
+    nsCString                  mExecutable;
 
     // Owning references
     nsCOMPtr<nsIPipeTransport> mPipeTransport;

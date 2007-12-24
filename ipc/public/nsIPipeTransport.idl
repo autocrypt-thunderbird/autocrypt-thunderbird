@@ -125,33 +125,6 @@ interface nsIPipeTransport : nsIRequest
               in nsIPipeListener console);
 
     /**
-     * Initializes PipeTransport by executing the specified command line,
-     * using the supplied environment variables.
-     *
-     * @param command  command line string (executable + arguments)
-     *                 (Remember to escape any backslashes etc. in arguments)
-     * @param env         environment (variable=value) string array
-     * @param timeoutMS   timeout (in milliseconds) after which the process
-     *                    at the other end of the pipe can be assumed to be
-     *                    dead
-     *                    (if == 0, a default value, usually an hour, is used)
-     * @param killString  string to be transmitted to process before it is
-     *                    killed (specify null string, if none)
-     * @param noProxy     do not use proxy for async callback
-     *                    (must use join to terminate process, in this case)
-     * @param mergeStderr merge STDERR with STDOUT
-     * @param console     nsIPipeListener object to capture STDERR
-     */
-    void initCommand(in string command,
-              [array, size_is(envCount)] in string env,
-              in unsigned long envCount,
-              in unsigned long timeoutMS,
-              in string killString,
-              in boolean noProxy,
-              in boolean mergeStderr,
-              in nsIPipeListener console);
-
-    /**
      * Returns console object used to capture STDERR by default
      */
     readonly attribute nsIPipeListener console;

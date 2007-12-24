@@ -70,31 +70,37 @@ interface nsIIPCService : nsISupports
   readonly attribute string version;
 
   /**
-   * Executes command and returns the standard output emitted by the command
-   * as a string. (Uses shell expansion)
-   * This method blocks for the completion of the command.
+   * Runs executable with parameters (args[]) and returns the standard output
+   * emitted by the executable as a string. No shell expansion is carried out.
+   * This method blocks for the completion of the executable.
    */
-  string execSh(in string command);
+  string runSh(in string executable,
+               [array, size_is(argCount)] in string args,
+               in unsigned long argCount);
 
   /**
-   * Executes command and returns the standard output emitted by the command
-   * as a string. No shell expansion is carried out.
-   * Unquoting (stripping quotes/backaslashes) is always done.
-   * This method blocks for the completion of the command.
+   * Runs executable with parameters (args[]) and returns the standard output
+   * emitted by the executable as a string. No shell expansion is carried out.
+   * Unquoting (stripping quotes/backaslashes) is not done.
+   * This method blocks for the completion of the executable.
    */
-  string exec(in string command);
+  string run(in string executable,
+             [array, size_is(argCount)] in string args,
+             in unsigned long argCount);
 
   /**
-   * Executes command, with optional data for standard input,
+   * Runs executable with parameters (args[]) and optional data for standard input,
    * and returns the exit code from the process. The standard output
    * and standard error strings are returned as "out" arguments.
    * (If outputError is null, use default console to capture error output.)
    * UseShell controls shell expansion.
    * PreInput may be used for passphrases etc.
-   * Unquoting the command (stripping quotes/backaslashes) is always done.
+   * Unquoting the command (stripping quotes/backaslashes) is not done.
    * This method blocks for the completion of the command.
    */
-  long execPipe(in string command,
+  long runPipe (in string executable,
+                [array, size_is(argCount)] in string args,
+                in unsigned long argCount,
                 in boolean useShell,
                 in string preInput,
                 in string inputData,
@@ -107,7 +113,7 @@ interface nsIIPCService : nsISupports
                 out unsigned long errorCount);
 
   /**
-   * Executes command, with optional data for standard input,
+   * Runs executable, with parameters (args[]) and optional data for standard input,
    * and asynchronously captures the standard output (and standard error
    * output) in supplied console(s). This method does not block for
    * command completion, unlike the other exec methods. The nsIIPCRequest
@@ -121,36 +127,23 @@ interface nsIIPCService : nsISupports
    * PreInput may be used for passphrases etc.
    * Unquoting the command (stripping quotes/backslashes) is always done.
    */
-  nsIIPCRequest execAsync(in string command,
-                          in boolean useShell,
-                          in string preInput,
-                          in string inputData,
-                          in unsigned long inputLength,
-                          [array, size_is(envCount)] in string env,
-                          in unsigned long envCount,
-                          in nsIPipeListener outConsole,
-                          in nsIPipeListener errConsole,
-                          in nsIRequestObserver requestObserver);
+  nsIIPCRequest runAsync(in string executable,
+                         [array, size_is(argCount)] in string args,
+                         in unsigned long argCount,
+                         in boolean useShell,
+                         in string preInput,
+                         in string inputData,
+                         in unsigned long inputLength,
+                         [array, size_is(envCount)] in string env,
+                         in unsigned long envCount,
+                         in nsIPipeListener outConsole,
+                         in nsIPipeListener errConsole,
+                         in nsIRequestObserver requestObserver);
 
   /**
    * Returns console object used to capture STDERR by default
    */
   readonly attribute nsIPipeConsole console;
-
-  /**
-   * Returns "random" portion of current time, combining
-   * microsecond values for current local time and
-   * millisecond values for elapsed time
-   */
-  unsigned long getRandomTime();
-
-  /**
-   * Returns random number with specified number of digits,
-   * in hexadecimal format.
-   * CAUTION: This call uses the entropy source, which may cause the
-   * calling thread to block until sufficient entropy is collected.
-   */
-  string getRandomHex(in unsigned long nDigits);
 
   /**
    * Returns secret random cookie used for security
@@ -168,7 +161,7 @@ interface nsIIPCService : nsISupports
 [scriptable, uuid(8431e1A0-7ab1-11d4-8f02-006008948af5)]
 interface nsIIPCRequest : nsISupports
 {
-  void init(in string command, in nsIPipeTransport pipeTransport,
+  void init(in string executable, in nsIPipeTransport pipeTransport,
             in nsIPipeListener stdoutConsole, in nsIPipeListener stderrConsole);
 
   /**
@@ -182,7 +175,7 @@ interface nsIIPCRequest : nsISupports
    */
   void close(in boolean closeConsoles);
 
-  readonly attribute string command;
+  readonly attribute string executable;
 
   readonly attribute nsIPipeTransport pipeTransport;
 
