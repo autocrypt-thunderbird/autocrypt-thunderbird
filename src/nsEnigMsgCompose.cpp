@@ -59,6 +59,7 @@
 #include "nsIFileStream.h"
 #include "nsMsgComposeStringBundle.h"
 #else
+#include "msgCore.h"
 #include "nsComposeStrings.h"
 #endif
 #undef MOZILLA_INTERNAL_API

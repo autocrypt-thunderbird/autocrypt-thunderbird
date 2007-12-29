@@ -41,6 +41,7 @@
 #include "enigmail.h"
 #include "nspr.h"
 #include "nsCOMPtr.h"
+#include "plstr.h"
 #include "nsString.h"
 #include "nsXPIDLString.h"
 #include "nsNetUtil.h"
