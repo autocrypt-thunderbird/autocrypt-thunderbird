@@ -1,68 +1,41 @@
 <html>
-<head><title>Enigmail Help: Rules Editor</title>
+<head><title>Enigmail 도움말: 규칙 편집기</title>
 </head>
 <body>
-<h1>Enigmail Help</h1>
+<h1>Enigmail 도움말</h1>
 
-<h3>Using the Enigmail Rules Editor</h3>
-<p>In the Rules Editor, you can specify defaults per recipient for enabling 
-encryption, signing and PGP/MIME, and to
-define what OpenPGP key(s) to use. Each rule consists of 5 fields and is represented
-on a single line:
-</p>
+<h3>Enigmail 규칙 편집기 사용하기</h3>
+<p> 이 규칙 편집기에서는 암호화를 활성화, 서명, PGP/MIME 활성화 기본값을 받는 사람별로  지정할 수 있으며, 어떤 OpenPGP 키를 사용할지 지정할 수 있습니다. 각 규칙은 5개의 필드로 이루어져 있으며 한 줄에 다음과 같이 나타납니다:</p>
 <ul>
-  <li><span style="font-weight: bold;">Email</span>: the e-mail(s) from
-    the To:, Cc: and Bcc: fields to match. The matching works on <span
-    style="font-style: italic;">substrings</span> (Further details can be
-    found in the Edit Rule dialog)
+  <li><span style="font-weight: bold;">전자 메일</span>: 받는 사람:, 참조: 그리고 숨은 참조 필드의 전자 메일 주소가 비교됩니다. 문자열의 일부를 비교해서 일치시키는 방식으로 이뤄집니다. (자세한 사항은 규칙 편집 대화상자에 자세히 나와있습니다.)<br>
+    <br>
   </li>
-  <li><span style="font-weight: bold;">OpenPGP Key(s)</span>: a list of OpenPGP
-Key ID's to use for the recipient</li>
-  <li><span style="font-weight: bold;">Sign</span>: enable or disable
-    message signing. This either uses or overrides what you have specified
-    in the message composition window. The values are:
+  <li><span style="font-weight: bold;">OpenPGP 키</span>: 규칙과 일치하는 받는 사람에게 사용할 OpenPGP 키 ID 목록 입니다.<br>
+    <br>
+  </li>
+  <li><span style="font-weight: bold;">서명</span>: 메시지 서명을 활성화 또는 비활성화 합니다. 이는 메시지 작성 윈도우에서 지정한 옵션을 사용하게 하거나, 무시하고 규칙에 설정된 옵션을 사용하게할 수 있습니다. 표시되는 설정값의 의미는 다음과 같습니다:<br>
+    <br>
   </li>
   <ul>
-    <li><i>Never</i>: disable signing, even if it was enabled in the message
-       composition window (overrules the other values)<br>
+    <li><i>하지않음</i>: 메시지 작성 윈도우에 서명을 하도록 지정되어 있더라도, 서명하지 않습니다. (다른 모든 규칙의 설정값을 무시합니다)<br>
     </li>
-    <li><i>Possible</i>: leave signing as specified in the message composition
-      window</li>
-    <li><i>Always</i>: enable signing, even if it was <span
-      style="font-style: italic;">not</span> enabled in the message
-      composition window
-    </li>
+    <li><i>가능</i>: 메시지 작성 윈도우의 설정을 따릅니다</li>
+    <li><i>항상</i>: 메시지 설정 윈도우에 설정되어 있지 않더라도, 서명 합니다.</li>
   </ul>
 </ul>
-<div style="margin-left: 40px;">These signing settings are applied for
-all rules that match. If one of the rules disables signing, the message
-will not be signed, regardless of other rules that specify <i>Always</i>.<br>
+<div style="margin-left: 40px;">일치하는 모든 규칙의 설정값이 서명될 메시지에 적용됩니다. 단, 어떤 한 규칙에서 서명을 <i>하지않음</i>으로 설정 되어있으면, 다른 규칙에 설정되어 있는 설정값 <i>항상</i> 에 관계없이 메시지는 서명되지 않습니다. (<i>하지않음 </i>설정값이 우선적으로 적용됩니다.)<br>
 </div>
 <ul>
-  <li><span style="font-weight: bold;">Encrypt</span>: enable or
-    disable message encryption. The allowed settings and their meaning are
-    the same as for message signing.</li>
-  <li><span style="font-weight: bold;">PGP/MIME</span>: enable or
-    disable the use of the PGP/MIME (RFC 3156) message encoding. 
-    If PGP/MIME is disabled, the
-    messages are encoded using "inline PGP". The allowed values and their
-    meaning are the same as for message signing.
+  <li><span style="font-weight: bold;">암호화</span>: 메시지 암호화를 활성화 또는 비활성화 합니다. 이 항목의 설정값은 메시지 서명에서 설명한 설정값의 의미와 같습니다.<br>
+    <br>
+  </li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: PGP/MIME (RFC 2156) 메시지 인코딩의 사용여부를 활성화 또는 비활성화 합니다. PGP/MIME가 비활성화되면 메시지는 &quot;인라인 형식&quot;으로 인코딩됩니다. 이 항목의 설정값과 그 의미는 메시지 서명에서 설명한 설정값의 의미와 같습니다.<br>
   </li>
 </ul>
-<p>The rules are processed in the order displayed in the list. Whenever a rule 
-matches a recipient and contains a OpenPGP Key ID, in addition to using the 
-specified Key ID, the recipient is not considered anymore when processing 
-further rules.</p>
-<p><i>Note:</i> The rule editor is not yet complete. It is possible to write
-some more advanced rules by directly editing the rules file (these rules
-should then not be edited anymore in the rule editor). <a 
-href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Further
-information</a> for directly editing the file
-is available on the Enigmail Homepage</p>
+<p>규칙들은 OpenPGP 규칙 편집기 내 목록에서 표시된 순서로 처리됩니다. 어떤 한 규칙이 받는 사람과 일치하고 OpenPGP 키 ID를 포함하는 경우, 추가적으로 키 ID를 사용하려고 지정해도, 이후 규칙을 처리할 때 그 받는 사람은 더 고려되지 않습니다.</p>
+<p><i>주의:</i> 규칙 편집기는 아직 완벽한 것이 아닙니다. 규칙 파일을 직접 편집해서 더 고급 규칙을 만들어 적용할 수 있습니다 (이렇게 만들어진 규칙은 규칙 편집기에서 편집할 수 없습니다). 직접 규칙 파일을 편집하기 위한 <a 
+href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">더 자세한 정보</a>는 Enigmail 홈페이지에서 얻을 수 있습니다.</p>
 <hr/>
-<p>
-Further help is available on the
-<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail Help web page</a>
-</p>
+<p>이후 도움말은 <a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail OpenPGP 도움말 웹 페이지</a>에서 얻을 수 있습니다.</p>
 </body>
 </html>
