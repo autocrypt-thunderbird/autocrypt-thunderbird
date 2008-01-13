@@ -197,7 +197,6 @@ NS_METHOD
 nsIPCService::RunCommand(const char *executable,
                          const char **args,
                          PRUint32 argCount,
-                         PRBool useShell,
                          const char **env, PRUint32 envCount,
                          nsIPipeListener* errConsole,
                          nsIPipeTransport** _retval)
@@ -223,63 +222,18 @@ nsIPCService::RunCommand(const char *executable,
   if (!errConsole)
     errConsole = mConsole;
 
-  if (useShell) {
-#ifdef XP_WIN
-    const char *shellExecutable = "command.com";
-    const char *shellParam = "/c";
-#elif defined(XP_OS2)
-    const char *shellExecutable = "cmd.exe";
-    const char *shellParam = "/c";
-#else
-    const char *shellExecutable = "/bin/sh";
-    const char *shellParam = "-c";
-#endif
-
-    char* shellArgs = (char*) PR_Malloc(sizeof(char) * (argCount + 2 ));
-
-    shellArgs[0] = *executable;
-    shellArgs[1] = *shellParam;
-    for (PRUint32 i = 0; i < argCount ; i++) {
-      shellArgs[i + 2] = *args [i];
-    }
-
-    rv = pipeTrans->Init(shellExecutable,
-                         (const char **)shellArgs,
-                         argCount + 2,
-                         env, envCount,
-                         0, "",
-                         noProxy, mergeStderr,
-                         console);
-    NS_ENSURE_SUCCESS(rv, rv);
-
-    PR_Free(shellArgs);
-  } else {
-    rv = pipeTrans->Init(executable,
-                         args, argCount,
-                         env, envCount,
-                         0, "",
-                         noProxy, mergeStderr,
-                         console);
-    NS_ENSURE_SUCCESS(rv, rv);
-  }
+  rv = pipeTrans->Init(executable,
+                       args, argCount,
+                       env, envCount,
+                       0, "",
+                       noProxy, mergeStderr,
+                       console);
+  NS_ENSURE_SUCCESS(rv, rv);
 
   NS_IF_ADDREF(*_retval = pipeTrans);
   return NS_OK;
 }
 
-NS_IMETHODIMP
-nsIPCService::RunSh(const char *executable,
-                    const char **args,
-                    PRUint32 argCount,
-                    char **_retval)
-{
-  DEBUG_LOG(("nsIPCService::RunSh: %s (%d)\n", executable, argCount));
-
-  PRInt32 exitCode;
-  return RunPipe(executable, args,argCount,
-                 PR_TRUE, nsnull, nsnull, 0, nsnull, 0,
-                 _retval, nsnull, nsnull, nsnull, &exitCode);
-}
 
 NS_IMETHODIMP
 nsIPCService::Run(const char *executable,
@@ -291,7 +245,7 @@ nsIPCService::Run(const char *executable,
 
   PRInt32 exitCode;
   return RunPipe(executable, args,argCount,
-                 PR_FALSE, nsnull, nsnull, 0, nsnull, 0,
+                 nsnull, nsnull, 0, nsnull, 0,
                  _retval, nsnull, nsnull, nsnull, &exitCode);
 }
 
@@ -300,7 +254,6 @@ NS_IMETHODIMP
 nsIPCService::RunPipe (const char *executable,
                        const char **args,
                        PRUint32 argCount,
-                       PRBool useShell,
                        const char* preInput,
                        const char* inputData, PRUint32 inputLength,
                        const char** env, PRUint32 envCount,
@@ -333,7 +286,7 @@ nsIPCService::RunPipe (const char *executable,
     NS_ENSURE_SUCCESS(rv, rv);
 
     rv = temBuffer->Open(MAX_DATA_BYTES, PR_FALSE);
-  NS_ENSURE_SUCCESS(rv, rv);
+    NS_ENSURE_SUCCESS(rv, rv);
 
     pipeConsole = do_QueryInterface(temBuffer);
     if (!pipeConsole)
@@ -344,7 +297,7 @@ nsIPCService::RunPipe (const char *executable,
 
   // Create a pipetransport instance to execute command
   nsCOMPtr<nsIPipeTransport> pipeTrans;
-  rv = RunCommand(executable, args, argCount, useShell, env, envCount, pipeConsole,
+  rv = RunCommand(executable, args, argCount, env, envCount, pipeConsole,
                    getter_AddRefs(pipeTrans) );
   NS_ENSURE_SUCCESS(rv, rv);
 
@@ -467,7 +420,6 @@ NS_IMETHODIMP
 nsIPCService::RunAsync(const char *executable,
                        const char **args,
                        PRUint32 argCount,
-                       PRBool useShell,
                        const char* preInput,
                        const char* inputData, PRUint32 inputLength,
                        const char** env, PRUint32 envCount,
@@ -488,7 +440,7 @@ nsIPCService::RunAsync(const char *executable,
   // Create a pipetransport instance to execute executable
   nsCOMPtr<nsIPipeTransport> pipeTrans;
   rv = RunCommand(executable, args, argCount,
-                   useShell, env, envCount,
+                   env, envCount,
                    errConsole, getter_AddRefs(pipeTrans) );
   NS_ENSURE_SUCCESS(rv, rv);
 

@@ -114,13 +114,13 @@ function getPlatform() {
   if('platform' in Install) {
     platformStr = new String(Install.platform);
 
-    if (!platformStr.search(/^Macintosh/))
+    if (platformStr.search(/^Macintosh/) == 0)
       platformNode = APP_PLATFORM_MAC;
-    else if (!platformStr.search(/^Win/))
+    else if (platformStr.search(/^Win/) == 0)
       platformNode = APP_PLATFORM_WIN;
-    else if (!platformStr.search(/Linux/))
+    else if (platformStr.search(/Linux/) >= 0)
       platformNode = APP_PLATFORM_LINUX;
-    else if (!platformStr.search(/^OS\/2/))
+    else if (platformStr.search(/^OS\/2/) == 0)
       platformNode = APP_PLATFORM_OS2;
     else
       platformNode = APP_PLATFORM_OTHER;

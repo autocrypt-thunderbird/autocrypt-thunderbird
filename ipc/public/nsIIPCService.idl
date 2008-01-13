@@ -72,15 +72,6 @@ interface nsIIPCService : nsISupports
   /**
    * Runs executable with parameters (args[]) and returns the standard output
    * emitted by the executable as a string. No shell expansion is carried out.
-   * This method blocks for the completion of the executable.
-   */
-  string runSh(in string executable,
-               [array, size_is(argCount)] in string args,
-               in unsigned long argCount);
-
-  /**
-   * Runs executable with parameters (args[]) and returns the standard output
-   * emitted by the executable as a string. No shell expansion is carried out.
    * Unquoting (stripping quotes/backaslashes) is not done.
    * This method blocks for the completion of the executable.
    */
@@ -93,7 +84,6 @@ interface nsIIPCService : nsISupports
    * and returns the exit code from the process. The standard output
    * and standard error strings are returned as "out" arguments.
    * (If outputError is null, use default console to capture error output.)
-   * UseShell controls shell expansion.
    * PreInput may be used for passphrases etc.
    * Unquoting the command (stripping quotes/backaslashes) is not done.
    * This method blocks for the completion of the command.
@@ -101,7 +91,6 @@ interface nsIIPCService : nsISupports
   long runPipe (in string executable,
                 [array, size_is(argCount)] in string args,
                 in unsigned long argCount,
-                in boolean useShell,
                 in string preInput,
                 in string inputData,
                 in unsigned long inputLength,
@@ -123,14 +112,12 @@ interface nsIIPCService : nsISupports
    * "observe" the standard output console, and the nsIIPCRequest object
    * is automatically supplied as the context argument to the observer.
    *
-   * UseShell controls shell expansion.
    * PreInput may be used for passphrases etc.
    * Unquoting the command (stripping quotes/backslashes) is always done.
    */
   nsIIPCRequest runAsync(in string executable,
                          [array, size_is(argCount)] in string args,
                          in unsigned long argCount,
-                         in boolean useShell,
                          in string preInput,
                          in string inputData,
                          in unsigned long inputLength,

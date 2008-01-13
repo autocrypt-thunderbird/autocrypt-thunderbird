@@ -37,7 +37,7 @@ VPATH		= @srcdir@
 include $(DEPTH)/config/autoconf.mk
 
 XPI_MODULE	= ipc
-XPI_MODULE_VERS = 1.1.8
+XPI_MODULE_VERS = 1.2.0
 
 MODULE		= ipc
 LIBRARY_NAME	= ipc

@@ -74,7 +74,6 @@ protected:
     NS_METHOD RunCommand (const char* executable,
                           const char **args,
                           PRUint32 argCount,
-                          PRBool useShell,
                           const char **env, PRUint32 envCount,
                           nsIPipeListener* errConsole,
                           nsIPipeTransport** _retval);

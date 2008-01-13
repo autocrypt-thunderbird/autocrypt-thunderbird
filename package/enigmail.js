@@ -1508,7 +1508,7 @@ function () {
   var errLenObj = new Object();
 
   var exitCode = this.ipcService.runPipe(command, args, args.length,
-                                false, "", "", 0, [], 0,
+                                "", "", 0, [], 0,
                                 outStrObj, outLenObj, errStrObj, errLenObj);
 
   CONSOLE_LOG("enigmail> "+command.replace(/\\\\/g, "\\")+"\n");
@@ -1634,7 +1634,7 @@ function (domWindow) {
 
         command = gpgConnectAgent.path.replace(/\\/g, "\\\\");
         try {
-          var exitCode = this.ipcService.runPipe(command, [], 0, false,
+          var exitCode = this.ipcService.runPipe(command, [], 0,
                                       "", "/echo OK\n", 0,
                                       envList, envList.length,
                                       outStrObj, outLenObj, errStrObj, errLenObj);
@@ -1676,7 +1676,7 @@ function (domWindow) {
 
       try {
         var exitCode = this.ipcService.runPipe(command, args, args.length,
-                                      false, "", "", 0,
+                                      "", "", 0,
                                       envList, envList.length,
                                       outStrObj, outLenObj, errStrObj, errLenObj);
       }
@@ -1801,11 +1801,9 @@ function (command, args, exitCodeObj, errorMsgObj) {
   CONSOLE_LOG("\nenigmail> "+printCmdLine(command, args)+"\n");
 
   try {
-    var useShell = false;
     exitCodeObj.value = gEnigmailSvc.ipcService.runPipe(command,
                                                         args,
                                                         args.length,
-                                                        useShell,
                                                         "",
                                                         "", 0,
                                                         envList, envList.length,
@@ -1886,11 +1884,9 @@ function (command, args, passphrase, input, exitCodeObj, statusFlagsObj,
   CONSOLE_LOG("\nenigmail> "+printCmdLine(command, args)+"\n");
 
   try {
-    var useShell = false;
     exitCodeObj.value = gEnigmailSvc.ipcService.runPipe(command,
                                                         args,
                                                         args.length,
-                                                        useShell,
                                                         preInput,
                                                         input, input.length,
                                                         envList, envList.length,
@@ -3378,7 +3374,6 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
   try {
     ipcRequest = gEnigmailSvc.ipcService.runAsync (this.agentPath,
                                                    args, args.length,
-                                                   false,
                                                    "",
                                                    "",
                                                    0,
@@ -3647,7 +3642,6 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
   try {
     ipcRequest = gEnigmailSvc.ipcService.runAsync (command,
                                                    args, args.length,
-                                                   false,
                                                    "",
                                                    inputData,
                                                    inputData.length,
@@ -3902,10 +3896,8 @@ function (parent, name, comment, email, expiryDate, keyLength, keyType,
 
   var ipcRequest = null;
   try {
-    var useShell = false;
     ipcRequest = gEnigmailSvc.ipcService.runAsync (this.agentPath,
                                                    args, args.length,
-                                                   useShell,
                                                    "",
                                                    inputData,
                                                    inputData.length,
