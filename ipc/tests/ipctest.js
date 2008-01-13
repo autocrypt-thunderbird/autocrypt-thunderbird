@@ -8,11 +8,10 @@ dump("Testing IPC service etc.\n");
 dump("\nTesting getEnv('PATH')\n");
 dump("  PATH="+getEnv('PATH')+"\n");
 
-// Test execSh
-dump("\nTesting execSh('echo ECHO-OUTPUT')\n");
-dump("  "+execSh('echo ECHO-OUTPUT'));
+// Test runSh
+dump("\nTesting runSh('echo ECHO-OUTPUT')\n");
+dump("-->  "+runSh('echo ECHO-OUTPUT'));
 
-// Test execPipe
 function escape_nul(str) {
    return str.replace(/\0/g, "\\0");
 }
@@ -26,10 +25,10 @@ var errStrObj = new Object();
 var errLenObj = new Object();
 
 // Test cat
-dump("\nTesting execPipe('"+command+"', true, '', inputData, ...)\n");
+dump("\nTesting runPipe('"+command+"', '', inputData, ...)\n");
 dump("  inputData='"+escape_nul(inputData)+"'\n");
 dump("  inputData.length="+inputData.length+"\n");
-dump("  exitCode="+ipcService.execPipe(command, true, '', inputData, inputData.length, [], 0, outStrObj, outLenObj, errStrObj, errLenObj)+"\n");
+dump("  exitCode="+ipcService.runPipe(gShell, [gShellParam, command], 2, '', inputData, inputData.length, [], 0, outStrObj, outLenObj, errStrObj, errLenObj)+"\n");
 
 dump("  STDOUT = '"+escape_nul(outStrObj.value)+"'\n");
 dump("  STDERR = '"+escape_nul(errStrObj.value)+"'\n");
@@ -37,24 +36,24 @@ dump("  STDERR = '"+escape_nul(errStrObj.value)+"'\n");
 
 // Create temporary file
 command = "cat > "+tempFile;
-dump("\nTesting execPipe('"+command+"', true, '', inputData, ...)\n");
+dump("\nTesting runPipe('"+command+"', '', inputData, ...)\n");
 dump("  inputData='"+escape_nul(inputData)+"'\n");
 dump("  inputData.length="+inputData.length+"\n");
-dump("  exitCode="+ipcService.execPipe(command, true, '', inputData, inputData.length, [], 0, outStrObj, outLenObj, errStrObj, errLenObj)+"\n");
+dump("  exitCode="+ipcService.runPipe(gShell, [gShellParam, command], 2, '', inputData, inputData.length, [], 0, outStrObj, outLenObj, errStrObj, errLenObj)+"\n");
 
 dump("  STDOUT = '"+escape_nul(outStrObj.value)+"'\n");
 dump("  STDERR = '"+escape_nul(errStrObj.value)+"'\n");
 
-// Testing exec (read from temporary file)
-dump("\nTesting execSh('cat "+tempFile+"')\n");
-dump("  STDOUT = '"+escape_nul(execSh('cat '+tempFile))+"'\n");
+// Testing runSh (read from temporary file)
+dump("\nTesting runSh('cat "+tempFile+"')\n");
+dump("  STDOUT = '"+escape_nul(runSh('cat '+tempFile))+"'\n");
 
 // Read from temporary file to STDOUT
 inputData = "";
-command = "cat "+tempFile;
+command = "cat "+ tempFile;
 
-dump("\nTesting execPipe('"+command+"', ...)\n");
-dump("  exitCode="+ipcService.execPipe(command, true, '', inputData, inputData.length, [], 0, outStrObj, outLenObj, errStrObj, errLenObj)+"\n");
+dump("\nTesting runPipe('"+command+"', '', inputData, ...)\n");
+dump("  exitCode="+ipcService.runPipe(gShell, [gShellParam, command], 2, '', inputData, inputData.length, [], 0, outStrObj, outLenObj, errStrObj, errLenObj)+"\n");
 
 dump("  outputData.length="+outStrObj.value.length+"\n");
 dump("  STDOUT = '"+escape_nul(outStrObj.value)+"'\n");
@@ -63,8 +62,8 @@ dump("  STDERR = '"+escape_nul(errStrObj.value)+"'\n");
 // Read from temporary file to STDERR
 command = "cat 1>&2 "+tempFile;
 
-dump("\nTesting execPipe('"+command+"', ...)\n");
-dump("  exitCode="+ipcService.execPipe(command, true, '', inputData, inputData.length, [], 0, outStrObj, outLenObj, errStrObj, errLenObj)+"\n");
+dump("\nTesting runPipe('"+command+"', '', inputData, ...)\n");
+dump("  exitCode="+ipcService.runPipe(gShell, [gShellParam, command], 2, '', inputData, inputData.length, [], 0, outStrObj, outLenObj, errStrObj, errLenObj)+"\n");
 
 dump("  errorData.length="+errStrObj.value.length+"\n");
 dump("  STDOUT = '"+escape_nul(outStrObj.value)+"'\n");

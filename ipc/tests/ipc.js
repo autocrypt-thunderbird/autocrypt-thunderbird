@@ -16,6 +16,9 @@ var ipcService = Components.classes[NS_IPCSERVICE_CONTRACTID].getService(Compone
 
 var processInfo = Components.classes[NS_PROCESSINFO_CONTRACTID].getService(Components.interfaces.nsIProcessInfo);
 
+var gShell = null;
+var gShellParam = null;
+
 function write(args) {
   for (var j=0; j<arguments.length; j++) {
     dump(arguments[j].toString());
@@ -29,6 +32,15 @@ function writeln(args) {
   dump("\n");
 }
 
+function getPlatform() {
+  var ioServ = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
+
+  var httpHandler = ioServ.getProtocolHandler("http");
+  httpHandler = httpHandler.QueryInterface(Components.interfaces.nsIHttpProtocolHandler);
+
+  return httpHandler.platform;
+}
+
 function getEnv(name) {
   if (!processInfo) {
     ERROR_LOG("ipc.js:getEnv: ProcessInfo not available\n");
@@ -39,15 +51,26 @@ function getEnv(name) {
   return value ? value : "";
 }
 
-function execSh(command) {
+function runSh(command) {
   if (!ipcService) {
     ERROR_LOG("ipc.js:exec: IPCService not available\n");
     throw Components.results.NS_ERROR_FAILURE;
   }
 
-  DEBUG_LOG("ipc.js:execSh: command="+command+"\n");
+  var pf = getPlatform();
+  if ((pf.search(/Win/i) == 0) || (pf.search(/OS\/2/i) == 0)) {
+    // Windows, OS/2
+    shell="cmd.exe";
+    param="/c";
+  }
+  else {
+    // Unix-like systems
+    shell="/bin/sh";
+    param="-c";
+  }
+  DEBUG_LOG("ipc.js:runSh: command="+command+"\n");
 
-  return ipcService.execSh(command);
+  return ipcService.run(gShell, [gShellParam, command], 2);
 }
 
 var gLogLevel = 3;     // Output only errors/warnings by default
@@ -87,5 +110,21 @@ function CONSOLE_LOG(str) {
   if (ipcService)
     ipcService.console.write(str);
 }
+
+function initIpcTest() {
+  var pf = getPlatform();
+  if ((pf.search(/Win/i) == 0) || (pf.search(/OS\/2/i) == 0)) {
+    // Windows, OS/2
+    gShell="cmd.exe";
+    gShellParam="/c";
+  }
+  else {
+    // Unix-like systems
+    gShell="/bin/sh";
+    gShellParam="-c";
+  }
+}
+
+initIpcTest();
 
 DEBUG_LOG("ipc.js loaded.\n");
