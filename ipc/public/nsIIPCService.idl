@@ -113,7 +113,7 @@ interface nsIIPCService : nsISupports
    * is automatically supplied as the context argument to the observer.
    *
    * PreInput may be used for passphrases etc.
-   * Unquoting the command (stripping quotes/backslashes) is always done.
+   * Unquoting the command (stripping quotes/backslashes) is not done.
    */
   nsIIPCRequest runAsync(in string executable,
                          [array, size_is(argCount)] in string args,
@@ -138,7 +138,7 @@ interface nsIIPCService : nsISupports
   readonly attribute string cookie;
 
   /**
-   * Creates scriptable schannel from input string data.
+   * Creates scriptable string channel from input string data.
    */
   nsIChannel newStringChannel(in nsIURI uri, in AUTF8String contentType,
                               in AUTF8String contentCharset,

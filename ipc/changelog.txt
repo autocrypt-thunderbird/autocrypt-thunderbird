@@ -15,3 +15,12 @@ v1.1.0
 ------
 nsPipeTransport: added ReadLine(...)
 
+v1.2.0
+------
+Major changes to nsIIPCService. Renamed methods:
+exec      -> run;
+execPipe  -> runPipe;
+execAsync -> runAsync.
+Removed runSh and support for "useShell".
+Changed API for run*: replaced "command" parameter with:
+executable, argumentsList[], argumentsListCount.
