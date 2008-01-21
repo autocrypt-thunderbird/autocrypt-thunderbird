@@ -84,17 +84,6 @@ function runSh(command) {
     throw Components.results.NS_ERROR_FAILURE;
   }
 
-  var pf = getPlatform();
-  if ((pf.search(/Win/i) == 0) || (pf.search(/OS\/2/i) == 0)) {
-    // Windows, OS/2
-    shell="cmd.exe";
-    param="/c";
-  }
-  else {
-    // Unix-like systems
-    shell="/bin/sh";
-    param="-c";
-  }
   DEBUG_LOG("ipc.js:runSh: command="+command+"\n");
 
   return ipcService.run(gShell, [gShellParam, command], 2);
@@ -140,16 +129,21 @@ function CONSOLE_LOG(str) {
 
 function initIpcTest() {
   var pf = getPlatform();
+  var shell = "";
   if ((pf.search(/Win/i) == 0) || (pf.search(/OS\/2/i) == 0)) {
     // Windows, OS/2
-    gShell="cmd.exe";
+    shell="C:\\Windows\\command\\cmd.exe";
     gShellParam="/c";
   }
   else {
     // Unix-like systems
-    gShell="/bin/sh";
+    shell="/bin/sh";
     gShellParam="-c";
   }
+
+  var localfile= Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+  localfile.initWithPath(shell);
+  gShell = localfile.QueryInterface(Components.interfaces.nsIFile);
 }
 
 initIpcTest();

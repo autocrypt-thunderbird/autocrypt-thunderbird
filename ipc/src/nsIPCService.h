@@ -47,6 +47,7 @@
 #include "nsIPipeConsole.h"
 #include "nsIGenericFactory.h"
 #include "nsCOMPtr.h"
+#include "nsIFile.h"
 
 class nsIPCService : public nsIIPCService,
                      public nsIObserver
@@ -71,7 +72,7 @@ public:
     NS_METHOD Shutdown();
 
 protected:
-    NS_METHOD RunCommand (const char* executable,
+    NS_METHOD RunCommand (nsIFile* executable,
                           const char **args,
                           PRUint32 argCount,
                           const char **env, PRUint32 envCount,
@@ -100,7 +101,7 @@ public:
     virtual ~nsIPCRequest();
 
 protected:
-    nsCString                  mExecutable;
+    nsCString          mExecutable;
 
     // Owning references
     nsCOMPtr<nsIPipeTransport> mPipeTransport;

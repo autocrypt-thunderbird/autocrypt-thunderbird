@@ -33,6 +33,7 @@
 
 #include "nsIPipeTransport.idl"
 #include "nsIPipeConsole.idl"
+#include "nsIFile.idl"
 
 interface nsIURI;
 interface nsIChannel;
@@ -75,7 +76,7 @@ interface nsIIPCService : nsISupports
    * Unquoting (stripping quotes/backaslashes) is not done.
    * This method blocks for the completion of the executable.
    */
-  string run(in string executable,
+  string run(in nsIFile executable,
              [array, size_is(argCount)] in string args,
              in unsigned long argCount);
 
@@ -88,7 +89,7 @@ interface nsIIPCService : nsISupports
    * Unquoting the command (stripping quotes/backaslashes) is not done.
    * This method blocks for the completion of the command.
    */
-  long runPipe (in string executable,
+  long runPipe (in nsIFile executable,
                 [array, size_is(argCount)] in string args,
                 in unsigned long argCount,
                 in string preInput,
@@ -115,7 +116,7 @@ interface nsIIPCService : nsISupports
    * PreInput may be used for passphrases etc.
    * Unquoting the command (stripping quotes/backslashes) is not done.
    */
-  nsIIPCRequest runAsync(in string executable,
+  nsIIPCRequest runAsync(in nsIFile executable,
                          [array, size_is(argCount)] in string args,
                          in unsigned long argCount,
                          in string preInput,

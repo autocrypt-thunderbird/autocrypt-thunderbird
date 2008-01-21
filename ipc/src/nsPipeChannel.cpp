@@ -188,7 +188,7 @@ NS_IMPL_THREADSAFE_ISUPPORTS5(nsPipeChannel,
 
 NS_IMETHODIMP
 nsPipeChannel::Init(nsIURI* aURI,
-                    const char *executable,
+                    nsIFile *executable,
                     const char **args,
                     PRUint32 argCount,
                     const char **env,

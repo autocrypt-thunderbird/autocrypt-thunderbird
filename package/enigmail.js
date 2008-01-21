@@ -337,7 +337,7 @@ function hexToBytes(hex) {
 }
 
 function printCmdLine(command, args) {
-  return (command+" "+args.join(" ")).replace(/\\\\/g, "\\")
+  return (command.path+" "+args.join(" ")).replace(/\\\\/g, "\\")
 }
 
 
@@ -1434,7 +1434,6 @@ function () {
           }
         }
         pathDir.normalize();
-        agentPath = pathDir.target;
       }
       else {
         // absolute path
@@ -1442,6 +1441,7 @@ function () {
       }
       if (! (pathDir.isFile() /* && pathDir.isExecutable()*/))
         throw Components.results.NS_ERROR_FAILURE;
+      agentPath = pathDir.QueryInterface(Components.interfaces.nsIFile);
 
     } catch (ex) {
       this.initializationError = EnigGetString("gpgNotFound", agentPath);
@@ -1482,13 +1482,10 @@ function () {
       ERROR_LOG("enigmail.js: Enigmail: Error - "+this.initializationError+"\n");
       throw Components.results.NS_ERROR_FAILURE;
     }
-    agentPath = agentPath.path;
+    agentPath = agentPath.QueryInterface(Components.interfaces.nsIFile);
   }
 
-  CONSOLE_LOG("EnigmailAgentPath="+agentPath+"\n\n");
-
-  // Escape any backslashes in agent path
-  agentPath = agentPath.replace(/\\/g, "\\\\");
+  CONSOLE_LOG("EnigmailAgentPath="+agentPath.path+"\n\n");
 
   this.agentType = agentType;
   this.agentPath = agentPath;
@@ -1511,7 +1508,7 @@ function () {
                                 "", "", 0, [], 0,
                                 outStrObj, outLenObj, errStrObj, errLenObj);
 
-  CONSOLE_LOG("enigmail> "+command.replace(/\\\\/g, "\\")+"\n");
+  CONSOLE_LOG("enigmail> "+printCmdLine(command, args)+"\n");
 
   var outStr = outStrObj.value;
   if (errStrObj.value)
@@ -1564,7 +1561,7 @@ function (domWindow) {
       fileName += ".exe";
     }
 
-    filePath.initWithPath(gEnigmailSvc.agentPath);
+    filePath = gEnigmailSvc.agentPath.clone();
 
     if (filePath) filePath = filePath.parent;
     if (filePath) {
@@ -1632,7 +1629,7 @@ function (domWindow) {
           this.gpgAgentInfo.envStr = "dummy";
         }
 
-        command = gpgConnectAgent.path.replace(/\\/g, "\\\\");
+        command = gpgConnectAgent.QueryInterface(Components.interfaces.nsIFile);
         try {
           var exitCode = this.ipcService.runPipe(command, [], 0,
                                       "", "/echo OK\n", 0,
@@ -1640,11 +1637,11 @@ function (domWindow) {
                                       outStrObj, outLenObj, errStrObj, errLenObj);
         }
         catch (ex) {
-          ERROR_LOG("enigmail.js: detectGpgAgent: "+command+" failed\n");
+          ERROR_LOG("enigmail.js: detectGpgAgent: "+command.path+" failed\n");
           exitCode = -1;
         }
 
-        CONSOLE_LOG("enigmail> "+command.replace(/\\\\/g, "\\")+"\n");
+        CONSOLE_LOG("enigmail> "+command.path+"\n");
         if (exitCode==0) {
           DEBUG_LOG("enigmail.js: detectGpgAgent: found running gpg-agent. GPG_AGENT_INFO='"+this.gpgAgentInfo.envStr+"'\n");
           return;
@@ -1658,7 +1655,7 @@ function (domWindow) {
       var args = [];
       var commandFile = resolveAgentPath("gpg-agent");
       if (commandFile  && commandFile.isExecutable()) {
-        command = commandFile.path.replace(/\\/g, "\\\\");
+        command = commandFile.QueryInterface(Components.interfaces.nsIFile);
       }
 
       if (command == null) {
@@ -1684,7 +1681,7 @@ function (domWindow) {
         ERROR_LOG("enigmail.js: detectGpgAgent: "+command+" failed\n");
         exitCode = -1;
       }
-      CONSOLE_LOG("enigmail> "+command.replace(/\\\\/g, "\\")+"\n");
+      CONSOLE_LOG("enigmail> "+printCmdLine(command, args)+"\n");
 
       if (exitCode == 0) {
         var outStr = outStrObj.value;
@@ -3550,8 +3547,6 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
       return null;
     }
 
-    // command=command.replace(/\\\\/g, "\\").replace(/\\/g, "\\\\");
-
     // call gpgkeys to check the version number
 
     var outObj     = new Object();
@@ -3572,12 +3567,12 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
                                             errObj, errLenObj);
     }
     catch (ex) {
-      CONSOLE_LOG(command.replace(/\\\\/g, "\\")+" failed\n");
+      CONSOLE_LOG(printCmdLine(command, args)+" failed\n");
       return null;
     }
 
     if (exitCode !=0) {
-      CONSOLE_LOG(command.replace(/\\\\/g, "\\")+" not found\n");
+      CONSOLE_LOG(printCmdLine(command, args)+" not found\n");
       return null;
     }
 

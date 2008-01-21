@@ -72,7 +72,7 @@ function enigAboutLoad() {
 
   var agentStr;
   if (enigmailSvc) {
-    agentStr = EnigGetString("usingAgent", enigmailSvc.agentType, enigmailSvc.agentPath.replace(/\\\\/g, "\\"));
+    agentStr = EnigGetString("usingAgent", enigmailSvc.agentType, enigmailSvc.agentPath.path);
 
   } else {
     agentStr = EnigGetString("agentError");

@@ -194,7 +194,7 @@ nsIPCService::GetConsole(nsIPipeConsole* *_retval)
 }
 
 NS_METHOD
-nsIPCService::RunCommand(const char *executable,
+nsIPCService::RunCommand(nsIFile *executable,
                          const char **args,
                          PRUint32 argCount,
                          const char **env, PRUint32 envCount,
@@ -203,7 +203,7 @@ nsIPCService::RunCommand(const char *executable,
 {
   nsresult rv;
 
-  DEBUG_LOG(("nsIPCService::RunCommand: %s [%d]\n", executable, argCount));
+  DEBUG_LOG(("nsIPCService::RunCommand: [%d]\n", argCount));
 
   if (!_retval || !executable)
     return NS_ERROR_NULL_POINTER;
@@ -236,12 +236,12 @@ nsIPCService::RunCommand(const char *executable,
 
 
 NS_IMETHODIMP
-nsIPCService::Run(const char *executable,
+nsIPCService::Run(nsIFile *executable,
                   const char **args,
                   PRUint32 argCount,
                   char **_retval)
 {
-  DEBUG_LOG(("nsIPCService::Run:  %s (%d)\n", executable, argCount));
+  DEBUG_LOG(("nsIPCService::Run: (%d)\n", argCount));
 
   PRInt32 exitCode;
   return RunPipe(executable, args,argCount,
@@ -251,7 +251,7 @@ nsIPCService::Run(const char *executable,
 
 // If outputError is null, use default console to capture error output
 NS_IMETHODIMP
-nsIPCService::RunPipe (const char *executable,
+nsIPCService::RunPipe (nsIFile *executable,
                        const char **args,
                        PRUint32 argCount,
                        const char* preInput,
@@ -263,7 +263,8 @@ nsIPCService::RunPipe (const char *executable,
 {
   nsresult rv;
 
-  DEBUG_LOG(("nsIPCService::RunPipe: %s (%d)\n", executable, argCount));
+  DEBUG_LOG(("nsIPCService::RunPipe: (%d)\n", argCount));
+
 
   if (!_retval || !outputData || !executable)
     return NS_ERROR_NULL_POINTER;
@@ -295,10 +296,17 @@ nsIPCService::RunPipe (const char *executable,
 
   nsCAutoString commandOut ("");
 
+  nsCAutoString execNativePath;
+  rv = executable->GetNativePath(execNativePath);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  DEBUG_LOG(("nsIPCService::RunPipe: about to execute %s\n", execNativePath.get()));
+
   // Create a pipetransport instance to execute command
   nsCOMPtr<nsIPipeTransport> pipeTrans;
+
   rv = RunCommand(executable, args, argCount, env, envCount, pipeConsole,
-                   getter_AddRefs(pipeTrans) );
+                  getter_AddRefs(pipeTrans) );
   NS_ENSURE_SUCCESS(rv, rv);
 
   nsCOMPtr<nsIInputStream> inputStream;
@@ -417,7 +425,7 @@ nsIPCService::RunPipe (const char *executable,
 
 
 NS_IMETHODIMP
-nsIPCService::RunAsync(const char *executable,
+nsIPCService::RunAsync(nsIFile *executable,
                        const char **args,
                        PRUint32 argCount,
                        const char* preInput,
@@ -430,12 +438,16 @@ nsIPCService::RunAsync(const char *executable,
 {
   nsresult rv;
 
-  DEBUG_LOG(("nsIPCService::RunAsync: %s (%d/%d)\n", executable, argCount, inputLength));
+  DEBUG_LOG(("nsIPCService::RunAsync: (%d/%d)\n", argCount, inputLength));
 
   if (!_retval || !executable)
     return NS_ERROR_NULL_POINTER;
 
   *_retval = nsnull;
+
+  nsCAutoString execNativePath;
+  rv = executable->GetNativePath(execNativePath);
+  NS_ENSURE_SUCCESS(rv, rv);
 
   // Create a pipetransport instance to execute executable
   nsCOMPtr<nsIPipeTransport> pipeTrans;
@@ -443,6 +455,8 @@ nsIPCService::RunAsync(const char *executable,
                    env, envCount,
                    errConsole, getter_AddRefs(pipeTrans) );
   NS_ENSURE_SUCCESS(rv, rv);
+
+  DEBUG_LOG(("nsIPCService::RunAsync: about to execute %s\n", execNativePath.get()));
 
   // Create and initialize IPC request object
   nsIPCRequest* rawIPCRequest = new nsIPCRequest();
@@ -452,7 +466,7 @@ nsIPCService::RunAsync(const char *executable,
   nsCOMPtr<nsIIPCRequest> ipcRequest;
   ipcRequest = rawIPCRequest;
 
-  rv = ipcRequest->Init(executable, pipeTrans, outConsole, errConsole);
+  rv = ipcRequest->Init(execNativePath.get(), pipeTrans, outConsole, errConsole);
   NS_ENSURE_SUCCESS(rv, rv);
 
   if (outConsole && requestObserver) {
@@ -520,7 +534,7 @@ nsIPCService::GetRandomTime(PRUint32 *_retval)
   // Elapsed time (1 millisecond to 10 microsecond resolution)
   PRIntervalTime randomNumberB = PR_IntervalNow();
 
-  DEBUG_LOG(("nsEnigMsgCompose::GetRandomTime: ranA=0x%p, ranB=0x%p\n",
+  DEBUG_LOG(("nsIPCService::GetRandomTime: ranA=0x%p, ranB=0x%p\n",
                                            randomNumberA, randomNumberB));
 
   *_retval = ((randomNumberA & 0xFFFFF) << 12) | (randomNumberB & 0xFFF);
@@ -639,10 +653,6 @@ nsIPCRequest::~nsIPCRequest()
   mStdoutConsole = nsnull;
   mStderrConsole = nsnull;
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// nsIIPCRequest methods
-///////////////////////////////////////////////////////////////////////////////
 
 NS_IMETHODIMP
 nsIPCRequest::Init(const char *aExecutable, nsIPipeTransport* aPipeTransport,

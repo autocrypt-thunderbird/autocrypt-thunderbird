@@ -184,7 +184,7 @@ NS_IMPL_THREADSAFE_ISUPPORTS8(nsPipeTransport,
 ///////////////////////////////////////////////////////////////////////////////
 
 
-NS_IMETHODIMP nsPipeTransport::Init(const char *executable,
+NS_IMETHODIMP nsPipeTransport::Init(nsIFile *executable,
                                     const char **args,
                                     PRUint32 argCount,
                                     const char **env,
@@ -198,8 +198,8 @@ NS_IMETHODIMP nsPipeTransport::Init(const char *executable,
   nsresult rv;
   PRUint32 j;
 
-  DEBUG_LOG(("nsPipeTransport::Init: executable=%s [%d]\n",
-             executable, envCount));
+  DEBUG_LOG(("nsPipeTransport::Init: [%d]\n",
+             envCount));
 
   if (mPipeState != PIPE_NOT_YET_OPENED) {
     return NS_ERROR_ALREADY_INITIALIZED;
@@ -215,7 +215,11 @@ NS_IMETHODIMP nsPipeTransport::Init(const char *executable,
     timeoutInterval = PR_MillisecondsToInterval(timeoutMS);
   }
 
-  mExecutable.Assign(executable);
+
+  rv = executable->GetNativePath( mExecutable );
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  DEBUG_LOG(("nsPipeTransport::Init: executable=[%s]\n", mExecutable.get()));
 
   mKillString.Assign(killString);
 
