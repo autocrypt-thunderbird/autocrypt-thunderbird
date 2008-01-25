@@ -37,6 +37,9 @@
 
 load("ipc.js");
 
+const NS_PIPETRANSPORT_CONTRACTID = "@mozilla.org/process/pipe-transport;1";
+
+
 dump("Testing IPC service etc.\n");
 
 // Test getEnv
@@ -103,3 +106,49 @@ dump("  exitCode="+ipcService.runPipe(gShell, [gShellParam, command], 2, '', inp
 dump("  errorData.length="+errStrObj.value.length+"\n");
 dump("  STDOUT = '"+escape_nul(outStrObj.value)+"'\n");
 dump("  STDERR = '"+escape_nul(errStrObj.value)+"'\n");
+
+
+function SimpleStreamListener() {}
+
+SimpleStreamListener.prototype = {
+  QueryInterface: function(aIID) {
+    if (aIID.equals(Components.interfaces.nsISupports)
+    || aIID.equals(Components.interfaces.nsIStreamListener))
+      return this;
+    throw Components.interfaces.NS_NOINTERFACE;
+  },
+
+  onStartRequest: function(aRequest, aContext) {
+    dump("  SimpleStreamListener: onStartRequest\n");
+  },
+
+  onStopRequest: function(aRequest, aContext, aStatusCode) {
+    dump("  SimpleStreamListener: onStopRequest\n");
+  },
+
+  onDataAvailable: function(aRequest, aContext, aInputStream, offset, count) {
+    var av = aInputStream.available();
+    dump("  aInputStream.available = "+av+"\n");
+    var scInpStr = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance(Components.interfaces.nsIScriptableInputStream);
+    scInpStr.init(aInputStream);
+    var r = scInpStr.read(av)
+    // scriptableInputStream can't handle NUL characters ...
+    dump("  STDOUT = '"+ escape_nul(r) +"'\n");
+  }
+}
+
+command = "cat "+tempFile;
+
+dump("\nTesting pipeTrans('"+command+"' ...) with asyncRead\n");
+
+var pipeTrans = Components.classes[NS_PIPETRANSPORT_CONTRACTID].createInstance(Components.interfaces.nsIPipeTransport);
+pipeTrans.init(gShell, [gShellParam, command], 2, [], 0,
+                      0, "", true, true,
+                      null);
+
+var myListener = new SimpleStreamListener();
+
+pipeTrans.asyncRead(myListener, null, 0, -1, 0);
+
+pipeTrans.join(); // wait for command to complete
+dump("  exitCode="+pipeTrans.exitCode()+"\n");
