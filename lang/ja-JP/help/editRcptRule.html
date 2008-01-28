@@ -1,22 +1,22 @@
 <html>
-<head><title>Enigmail Help: Edit OpenPGP Rule</title>
+<head><title>Enigmail ヘルプ: OpenPGP ルールの編集</title>
 </head>
 <body>
 <h1>Enigmail ヘルプ</h1>
 
-<h3>Enigmail ルールエディッタ: OpenPGP ルールの編集</h3>
-<p>ルールエディッタで、受け取り人毎の初期設定（暗号化、署名、PGP/MIMEを使用する・しない）および使用するOpenPGP鍵を指定出来ます。このダイアログで一人の受取人、および同様な方法でグループにに対して設定できます。
+<h3>Enigmail ルールエディタ: OpenPGP ルールの編集</h3>
+<p>ルールエディタで、受け取り人毎の初期設定（暗号化、署名、PGP/MIME を使用する/しない）および使用する OpenPGP鍵を指定できます。このダイアログで 1 人の受取人、および同様な方法でグループに対して設定できます。
 </p>
 <ul>
-  <li><span style="font-weight: bold;">OpenPGP ルールを適用する</span>: 受取人のe-mail
-    アドレスを入力してください。 (ただし、名前は入力しないでください。例:
-    <tt>somebody@email.domain</tt>) 
+  <li><span style="font-weight: bold;">OpenPGP ルールを適用する</span>: 受取人のメール
+    アドレスを入力してください(ただし、名前は入力しないでください。例:
+    <tt>somebody@email.domain</tt>)。
     半角スペースで区切って複数のアドレスを入力することもできます。
-    ここで指定するアドレスは、ドメインセクション(@の右側）だけを指定できます。
-    そうすることにより、同じドメインの(@マークの右側が同じ)どんなアドレスにもルールを
+    ここで指定するアドレスは、ドメインセクション(@ の右側)だけを指定できます。
+    そうすることにより、同じドメインの(@ マークの右側が同じ)どんなアドレスにもルールを
     適用することができます。
-    例えば <tt>@email.domain </tt> と入力した場合、 <tt>body@email.domain</tt>,
-    <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt>などにもルールが適用されます。
+    例えば <tt>@email.domain</tt> と入力した場合、<tt>body@email.domain</tt>,
+    <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt> などにもルールが適用されます。
   </li>
   <li><span style="font-weight: bold;">受取人が ... のときにルールを適用</span>: 
     電子メールアドレスの適用方法を指定します。
@@ -42,7 +42,7 @@
 
   </li>
   <li><span style="font-weight: bold;">当てはまるアドレスについては、次のルールを続いて適用する:</span><br>
-      これにチェックをすると、<em>以下のOpen PGP鍵を使用する</em>の欄で鍵IDの指定をする
+      これにチェックをすると、<em>以下の OpenPGP鍵を使用する</em>の欄で鍵 ID の指定をする
       必要がなくなります。
       電子メールアドレスは、送信時にチェックされ、その電子メールアドレスについてのルールが
       続いて適用されます。
@@ -52,12 +52,12 @@
           適用するかチェックされなくなります。
 　　　　　ルール処理は次の受取人から行われることになります。
   </li>
-  <li><span style="font-weight: bold;">以下のOpenPGP鍵を使用する:</span><br>
-	  <em>鍵の選択(s)..</em> ボタンをクリックし、暗号化に使用する受取人の鍵を選択してください。
+  <li><span style="font-weight: bold;">以下の OpenPGP鍵を使用する:</span><br>
+	  <em>鍵の選択(s)...</em> ボタンをクリックし、暗号化に使用する受取人の鍵を選択してください。
 	  既に述べたように、マッチするアドレスに対してこれ以上のルール処理はされません。
   </li>
-  <li><span style="font-weight: bold;">署名のデフォルト</span>: 署名する・しないを
-    決定します。 これはメッセージ作成画面の設定を上書きするなどに利用されます。 設定値は:
+  <li><span style="font-weight: bold;">署名のデフォルト</span>: 署名する/しないを
+    決定します。これはメッセージ作成画面の設定を上書きするなどに利用されます。 設定値は:
   </li>
   <ul>
     <li><i>しない</i>: 例えメッセージ作成画面で設定しても署名をしません。
@@ -72,23 +72,23 @@
   </ul>
 </ul>
 <div style="margin-left: 40px;">この署名に関する設定はマッチするすべてのルールに
-対して適用されます。もし署名をしないルールが1つでもあれば、他の署名をするルールがマッチしても、署名はされません。(例え、<i>常に</i>があってもです。)
+対して適用されます。もし署名をしないルールが 1 つでもあれば、他の署名をするルールがマッチしても、署名はされません(例え、<i>常に</i>があってもです)。
 </div>
 <ul>
-  <li><span style="font-weight: bold;">暗号化</span>: 暗号化のする・しないを
+  <li><span style="font-weight: bold;">暗号化</span>: 暗号化する/しないを
     決定します。設定可能な項目と意味は、署名と同一です。</li>
   <li><span style="font-weight: bold;">PGP/MIME</span>: PGP/MIME (RFC 3156)
     を用いてメッセージをエンコードするかどうかを決定します。
-    PGP/MIME が無効の場合、メッセージはインラインPGPを用いて行われます。
+    PGP/MIME が無効の場合、メッセージはインライン PGP を用いて行われます。
     設定可能な項目と意味は、署名と同一です。
   </li>
 </ul>
-<p>こららのルールは<em>OpenPGP ルールエディタ</em>に表示されている順に処理されます。
-ルールに受取人がマッチし、OpenPGP鍵のIDを含み、加えて設定された鍵IDを使用している場合には、その受取人に関してはそれ以上のルールは考慮されません。
+<p>こららのルールは <em>OpenPGP ルールエディタ</em>に表示されている順に処理されます。
+ルールに受取人がマッチし、OpenPGP鍵の ID を含み、加えて設定された鍵ID を使用している場合には、その受取人に関してはそれ以上のルールは考慮されません。
 </p>
 <hr/>
 <p>
-更なるヘルプは以下のサイトで利用できます（英語）
+更なるヘルプは以下のサイトで利用できます(英語)
 <a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Enigmail Per-Recipient Settings page</a>
 </p>
 </body>
