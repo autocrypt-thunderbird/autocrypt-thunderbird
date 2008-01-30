@@ -1364,15 +1364,17 @@ function enigEncryptInline(sendInfo) {
     try {
       wrapWidth = gEnigPrefRoot.getIntPref("editor.htmlWrapColumn");
 
-      if (wrapWidth<68) {
+      if (wrapWidth > 0 && wrapWidth < 68) {
         if (EnigConfirm(EnigGetString("minimalLineWrapping", wrapWidth))) {
           gEnigPrefRoot.setIntPref("editor.htmlWrapColumn", 68)
         }
       }
       if (!(sendInfo.sendFlags & ENIG_ENCRYPT) && EnigGetPref("wrapHtmlBeforeSend")) {
-        var editor = gMsgCompose.editor.QueryInterface(nsIPlaintextEditorMail);
-        editor.wrapWidth=wrapWidth-2; // prepare for the worst case: a 72 char's long line starting with '-'
-        editor.rewrap(false);
+        if (wrapWidth > 0) {
+          var editor = gMsgCompose.editor.QueryInterface(nsIPlaintextEditorMail);
+          editor.wrapWidth=wrapWidth-2; // prepare for the worst case: a 72 char's long line starting with '-'
+          editor.rewrap(false);
+        }
       }
     }
     catch (ex) {}
@@ -1380,7 +1382,7 @@ function enigEncryptInline(sendInfo) {
   else {
     try {
       wrapWidth = gEnigPrefRoot.getIntPref("mailnews.wraplength");
-      if (wrapWidth<68) {
+      if (wrapWidth > 0 && wrapWidth < 68) {
         if (EnigConfirm(EnigGetString("minimalLineWrapping", wrapWidth))) {
           gEnigPrefRoot.setIntPref("mailnews.wraplength", 68)
         }
@@ -1811,13 +1813,7 @@ function enigGenericSendMessage( msgType )
           gSendOrSaveOperationInProgress = true;
         }
 
-        try {
-          // TB <= 2.0
-          msgWindow.SetDOMWindow(window);
-        }
-        catch (ex) {
-          msgWindow.domWindow = window;
-        }
+        msgWindow.SetDOMWindow(window);
         msgWindow.rootDocShell.allowAuth = true;
         gMsgCompose.SendMsg(msgType, currId, currentAccountKey, msgWindow, progress);
       }
