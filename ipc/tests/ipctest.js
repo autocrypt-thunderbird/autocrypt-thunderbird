@@ -1,7 +1,7 @@
 /*
- * buftest.js
+ * ipctest.js
  * Test and demo application for:
- * nsIIPCService (runPipe, run)
+ * nsIIPCService (runPipe, run) and pipeTrans
  *
  * The contents of this file are subject to the Mozilla Public
  * License Version 1.1 (the "MPL"); you may not use this file

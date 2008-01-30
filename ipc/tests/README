@@ -1,7 +1,7 @@
 Test programs for IPCService
 ----------------------------
 
-ipctest.js: Tests interfaces in nsIProcessInfo, nsIPipeConsole, nsIIPCService
+ipctest.js: Tests interfaces in nsIProcessInfo, nsIPipeConsole, nsIIPCService, nsIPipeTrans
          (Execute as "xpcshell ipctest.js")
 
 buftest.js: Tests interfaces in nsIPipeConsole, nsIIPCBuffer, nsIPipeFilterListener
