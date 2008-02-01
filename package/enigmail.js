@@ -1697,20 +1697,54 @@ function (domWindow) {
   DEBUG_LOG("enigmail.js: detectGpgAgent: GPG_AGENT_INFO='"+this.gpgAgentInfo.envStr+"'\n");
 }
 
+// Helper function for pushing a string without leading/trailing spaces
+// to an array
+function pushTrimmedStr(arr, str) {
+  str = str.replace(/^ */, "").replace(/ *$/, "");
+  if (str.length > 0)
+    arr.push(str);
+
+  return (str.length > 0);
+}
 
 Enigmail.prototype.getAgentArgs =
 function (withBatchOpts) {
-  var p = "";
+  var r = [ "--charset", "utf8" ];
+
   try {
+    var p = "";
     p=this.prefBranch.getCharPref("agentAdditionalParam").replace(/\\\\/g, "\\");
+
+    var i = 0;
+    var last = 0;
+    var foundSign="";
+    var startQuote=-1;
+
+    while ((i=p.substr(last).search(/['"]/)) >= 0) {
+      if (startQuote==-1) {
+        startQuote = i;
+        foundSign=p.substr(last).charAt(i);
+        last = i +1;
+      }
+      else if (p.substr(last).charAt(i) == foundSign) {
+        // found enquoted part
+        if (startQuote > 1) pushTrimmedStr(r, p.substr(0, startQuote));
+
+        pushTrimmedStr(r, p.substr(startQuote + 1, last + i - startQuote -1));
+        p = p.substr(last + i + 1);
+        last = 0;
+        startQuote = -1;
+        foundSign = "";
+      }
+      else {
+        last = last + i + 1;
+      }
+    }
+
+    pushTrimmedStr(r, p);
   }
   catch (ex) {}
 
-  var r = [ "--charset", "utf8" ];
-
-  if (p.length > 0 ) {
-    r = r.concat(p.split(" "));
-  }
 
   if (withBatchOpts) {
     r = r.concat(GPG_BATCH_OPT_LIST);
