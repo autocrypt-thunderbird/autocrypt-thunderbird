@@ -183,15 +183,19 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
 
   if (!errorMsg) errorMsg="";
 
+  var replaceUid=null;
   if (userId && (userId.indexOf("\n")>=0)) {
-    var replaceUid=enigMatchUidToSender(userId);
-    errorMsg = errorMsg.replace(userId, replaceUid);
-    userId=EnigConvertGpgToUnicode(replaceUid);
+    replaceUid = enigMatchUidToSender(userId);
+  }
+  else {
+    replaceUid = userId;
   }
 
-  if (userId) {
-    userId=userId.replace(/\\[xe]3a/gi, ":");
+  if (userId && replaceUid) {
+    replaceUid = EnigConvertGpgToUnicode(replaceUid).replace(/\\[xe]3a/gi, ":");
+    errorMsg = errorMsg.replace(userId, replaceUid);
   }
+
   var errorLines="";
   var fullStatusInfo="";
 
@@ -200,7 +204,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
   }
   else {
     if (errorMsg) {
-      errorMsg=EnigConvertGpgToUnicode(errorMsg).replace(/\\[xe]3a/gi, ":");
+      // don't do EnigConvertGpgToUnicode() here, it might destroy UTF-8 message strings
       errorLines = errorMsg.split(/\r?\n/);
       fullStatusInfo=errorMsg;
     }
