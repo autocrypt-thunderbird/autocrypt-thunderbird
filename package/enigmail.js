@@ -116,7 +116,7 @@ const NS_XPCOM_SHUTDOWN_OBSERVER_ID = "xpcom-shutdown";
 ///////////////////////////////////////////////////////////////////////////////
 // Global variables
 
-const GPG_COMMENT_OPT = "Using GnuPG with %s - http://enigmail.mozdev.org";
+const GPG_COMMENT_OPT = "Using GnuPG with %s - http://enigmail.mozdev.org/";
 
 var gLogLevel = 3;            // Output only errors/warnings by default
 
