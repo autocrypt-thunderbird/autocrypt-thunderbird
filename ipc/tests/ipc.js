@@ -84,12 +84,12 @@ function runSh(command) {
     throw Components.results.NS_ERROR_FAILURE;
   }
 
-  DEBUG_LOG("ipc.js:runSh: command="+command+"\n");
+  DEBUG_LOG("ipc.js:runSh: command="+gShell.path+" "+command+"\n");
 
   return ipcService.run(gShell, [gShellParam, command], 2);
 }
 
-var gLogLevel = 3;     // Output only errors/warnings by default
+var gLogLevel = 10;     // Output only errors/warnings by default
 
 var nspr_log_modules = getEnv("NSPR_LOG_MODULES");
 
@@ -132,7 +132,7 @@ function initIpcTest() {
   var shell = "";
   if ((pf.search(/Win/i) == 0) || (pf.search(/OS\/2/i) == 0)) {
     // Windows, OS/2
-    shell="C:\\Windows\\command\\cmd.exe";
+    shell="C:\\Windows\\system32\\cmd.exe";
     gShellParam="/c";
   }
   else {
