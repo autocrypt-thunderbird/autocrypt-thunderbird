@@ -1525,7 +1525,6 @@ function () {
     agentPath = firstLine.replace(/^.*;[ \t]*/, "")
 
     CONSOLE_LOG("gpg4win-gpgwrapper detected; EnigmailAgentPath="+agentPath+"\n\n");
-    this.agentPath = agentPath.replace(/\\/g, "\\\\");
   }
 
   var versionParts = outStr.replace(/[\r\n].*/g,"").split(/ /);
