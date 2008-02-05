@@ -1698,17 +1698,27 @@ function (domWindow) {
 
 // Helper function for pushing a string without leading/trailing spaces
 // to an array
-function pushTrimmedStr(arr, str) {
+function pushTrimmedStr(arr, str, splitStr) {
   str = str.replace(/^ */, "").replace(/ *$/, "");
-  if (str.length > 0)
-    arr.push(str);
-
+  if (str.length > 0) {
+    if (splitStr) {
+      var tmpArr = str.split(/[\t ]+/);
+      for (var i=0; i< tmpArr.length; i++) {
+        arr.push(tmpArr[i]);
+      }
+    }
+    else {
+      arr.push(str);
+    }
+  }
   return (str.length > 0);
 }
 
+
+// return the arguments to pass to every call GnuPG
 Enigmail.prototype.getAgentArgs =
 function (withBatchOpts) {
-  var r = [ "--charset", "utf8" ];
+  var r = [ "--charset", "utf8" ]; // mandatory parameter to add in all cases
 
   try {
     var p = "";
@@ -1727,9 +1737,9 @@ function (withBatchOpts) {
       }
       else if (p.substr(last).charAt(i) == foundSign) {
         // found enquoted part
-        if (startQuote > 1) pushTrimmedStr(r, p.substr(0, startQuote));
+        if (startQuote > 1) pushTrimmedStr(r, p.substr(0, startQuote), true);
 
-        pushTrimmedStr(r, p.substr(startQuote + 1, last + i - startQuote -1));
+        pushTrimmedStr(r, p.substr(startQuote + 1, last + i - startQuote -1), false);
         p = p.substr(last + i + 1);
         last = 0;
         startQuote = -1;
@@ -1740,7 +1750,7 @@ function (withBatchOpts) {
       }
     }
 
-    pushTrimmedStr(r, p);
+    pushTrimmedStr(r, p, true);
   }
   catch (ex) {}
 
@@ -1751,7 +1761,6 @@ function (withBatchOpts) {
 
   return r;
 }
-
 
 
 Enigmail.prototype.passwdCommand =

@@ -451,6 +451,7 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
   }
 
   PROCESS_INFORMATION processInfo;
+  //TODO: change to CreateProcessW
   bRetVal = CreateProcess( NULL,		// executable
                            cmdLine,		// command line
                            NULL,		// process security
