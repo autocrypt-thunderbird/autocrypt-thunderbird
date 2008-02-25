@@ -726,7 +726,7 @@ nsPipeChannel::ParseMimeHeaders(const char* mimeHeaders, PRUint32 count,
   PRInt32 lineIndex = 0;
 
   while (lineIndex != -1) {
-    lineIndex = headers.Find("\r\n", PR_FALSE, 0);
+    lineIndex = headers.Find("\r\n");
     if (lineIndex != -1) {
       headers.Replace(lineIndex, 2, "\n", 1);
     }

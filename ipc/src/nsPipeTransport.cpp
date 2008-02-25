@@ -1170,7 +1170,7 @@ nsPipeTransport::ReadLine(PRInt32 maxOutputLen,
       PRInt32 lineIndex = 0;
 
       while (lineIndex != -1) {
-        lineIndex = mExecBuf.Find("\r\n", PR_FALSE, 0);
+        lineIndex = mExecBuf.Find("\r\n");
         if (lineIndex != -1) {
           mExecBuf.Replace(lineIndex, 2, "\n", 1);
         }
@@ -1217,7 +1217,7 @@ nsPipeTransport::ReadLine(PRInt32 maxOutputLen,
           PRInt32 lineIndex = 0;
 
           while (lineIndex != -1) {
-            lineIndex = mExecBuf.Find("\r\n", PR_FALSE, 0);
+            lineIndex = mExecBuf.Find("\r\n");
             if (lineIndex != -1) {
               mExecBuf.Replace(lineIndex, 2, "\n", 1);
             }
