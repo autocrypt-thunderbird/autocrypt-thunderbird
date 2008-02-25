@@ -683,7 +683,7 @@ nsPipeTransport::SetLoggingEnabled(PRBool aLoggingEnabled)
 }
 
 #ifndef _IPC_FORCE_INTERNAL_API
-NS_COM nsresult
+nsresult
 NS_NewPipe(nsIInputStream **pipeIn,
            nsIOutputStream **pipeOut,
            PRUint32 segmentSize,
@@ -713,7 +713,7 @@ NS_NewPipe(nsIInputStream **pipeIn,
   return NS_OK;
 }
 
-NS_COM nsresult
+nsresult
 NS_NewPipe2(nsIAsyncInputStream **pipeIn,
             nsIAsyncOutputStream **pipeOut,
             PRBool nonBlockingInput,
