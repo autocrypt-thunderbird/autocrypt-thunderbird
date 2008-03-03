@@ -1813,7 +1813,13 @@ function enigGenericSendMessage( msgType )
           gSendOrSaveOperationInProgress = true;
         }
 
-        msgWindow.SetDOMWindow(window);
+       try {
+          // TB <= 2.0
+          msgWindow.SetDOMWindow(window);
+        }
+        catch (ex) {
+          msgWindow.domWindow = window;
+        }
         msgWindow.rootDocShell.allowAuth = true;
         gMsgCompose.SendMsg(msgType, currId, currentAccountKey, msgWindow, progress);
       }
