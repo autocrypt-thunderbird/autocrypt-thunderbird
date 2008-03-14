@@ -98,25 +98,17 @@
       var selected = menulist.selectedIndex;
 
       if (selected != 0) {
-        if (selected == -1) {
-          var newItem=menulist.value;
-          menulist.insertItemAt(0, newItem);
-        }
-        else {
-          var item=menulist.removeItemAt(selected);
-          menulist.insertItemAt(0, item.label);
-        }
-
-        var keyServers="";
-        var server = menulist.removeItemAt(0);
-        while (server) {
-          keyServers+=", "+server.label;
-          server = menulist.removeItemAt(0);
-        }
-				
-        EnigSetPref("keyserver", keyServers.substring(2));
-				return true;
-      }
+				var servers = [menulist.value];
+				var nodes = menulist.menupopup.getElementsByTagName('menuitem');
+				for (var i = 0, e = nodes.length; i < e; ++i) {
+					if (i == selected) {
+						continue;
+					}
+					servers.push(nodes[i].label);
+				}
+        EnigSetPref("keyserver", servers.join(', '));
+			}
+			return true;
     }
   ]]>
   </script>
