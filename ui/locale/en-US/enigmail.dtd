@@ -27,7 +27,7 @@
 <!ENTITY enigmail.preferences.label       "OpenPGP Preferences">
 
 <!ENTITY enigmail.passwordSettings.label   "Passphrase settings">
-<!ENTITY enigmail.userNoPassphrase.label   "Never ask for any passprase">
+<!ENTITY enigmail.userNoPassphrase.label   "Never ask for any passphrase">
 <!ENTITY enigmail.userNoPassphrase.tooltip "Activate if your OpenPGP key is not protected by a passphrase.">
 <!ENTITY enigmail.expertUser.label         "Display Expert Settings">
 <!ENTITY enigmail.expertUser.tooltip       "Press if you want to see menu items and options for advanced users.">
