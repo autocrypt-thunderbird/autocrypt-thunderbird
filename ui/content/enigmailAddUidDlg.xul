@@ -57,15 +57,15 @@
       </columns>
       <rows autostretch="never">
         <row>
-          <label value="&enigmail.addUidDlg.name.label;"/>
+          <label value="&enigmail.addUidDlg.name.label;" control="addUid_name"/>
           <textbox id="addUid_name" size="30"/>
         </row>
         <row>
-          <label value="&enigmail.addUidDlg.email.label;"/>
+          <label value="&enigmail.addUidDlg.email.label;" control="addUid_email"/>
           <textbox id="addUid_email" size="30"/>
         </row>
         <row>
-          <label value="&enigmail.addUidDlg.comment.label;"/>
+          <label value="&enigmail.addUidDlg.comment.label;" control="addUid_comment"/>
           <textbox id="addUid_comment" size="30"/>
         </row>
       </rows>

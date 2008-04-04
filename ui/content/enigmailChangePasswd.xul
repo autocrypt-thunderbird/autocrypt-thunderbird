@@ -60,15 +60,15 @@
       </columns>
       <rows>
         <row align="center">
-          <label value="&enigmail.changePasswd.currPasswd.label; :"/>
+          <label value="&enigmail.changePasswd.currPasswd.label; :" control="currPasswd"/>
           <textbox id="currPasswd" value="" size="20" type="password"/>
         </row>
         <row align="center">
-          <label value="&enigmail.changePasswd.newPasswd.label; :"/>
+          <label value="&enigmail.changePasswd.newPasswd.label; :" control="newPasswd"/>
           <textbox id="newPasswd" value="" size="20" type="password"/>
         </row>
         <row align="center">
-          <label value="&enigmail.changePasswd.repeatPasswd.label; :"/>
+          <label value="&enigmail.changePasswd.repeatPasswd.label; :" control="repeatPasswd"/>
           <textbox id="repeatPasswd" value="" size="20" type="password"/>
         </row>
       </rows>

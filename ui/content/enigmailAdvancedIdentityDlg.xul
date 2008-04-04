@@ -61,7 +61,7 @@
                 checked="false"/>
         <textbox id="openpgpHeaderMode.url.name"
               observes="bcUseUrl"
-              size="30"/>
+              size="30" aria-labelledby="openpgpHeaderMode.url"/>
       </hbox>
     </groupbox>
 

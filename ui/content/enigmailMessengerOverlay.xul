@@ -418,7 +418,7 @@
         <spacer flex="1"/>
         <label class="headerName"
             id="enigmailStatusHdr"
-            value="&enigmail.openpgp.label;: "/>
+            value="&enigmail.openpgp.label;: " control="enigmailStatusText"/>
       </hbox>
       <vbox flex="1" pack="start">
         <textbox flex="1" readonly="true"
@@ -428,7 +428,7 @@
                  id="expandedEnigmailStatusText"
                  class="plain enigmailHeaderValue"
                  collapsed="true" display="false" state="false"
-                 persist="display"/>
+                 persist="display" aria-labelledby="enigmailStatusHdr"/>
       </vbox>
     </hbox>
   </vbox>

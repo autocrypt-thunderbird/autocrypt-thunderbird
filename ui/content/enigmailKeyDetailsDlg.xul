@@ -62,37 +62,37 @@
       <rows>
         <row>
           <hbox align="center">
-            <label value="&enigmail.keyDetails.userId.label;"/>
+            <label value="&enigmail.keyDetails.userId.label;" control="userId"/>
           </hbox>
           <textbox readonly="true" id="userId" value="?"/>
         </row>
         <row>
           <hbox align="center">
-            <label value="&enigmail.keyDetails.keyId.label;"/>
+            <label value="&enigmail.keyDetails.keyId.label;" control="keyId"/>
           </hbox>
           <textbox readonly="true" id="keyId" value="?"/>
         </row>
         <row>
           <hbox align="center">
-            <label value="&enigmail.keyDetails.keyType.label;"/>
+            <label value="&enigmail.keyDetails.keyType.label;" control="keyType"/>
           </hbox>
           <textbox readonly="true" id="keyType" value="?"/>
         </row>
         <row>
           <hbox align="center">
-            <label value="&enigmail.keyDetails.calcTrust.label;"/>
+            <label value="&enigmail.keyDetails.calcTrust.label;" control="calcTrust"/>
           </hbox>
           <textbox readonly="true" id="calcTrust" value="?"/>
         </row>
         <row>
           <hbox align="center">
-            <label value="&enigmail.keyDetails.ownerTrust.label;"/>
+            <label value="&enigmail.keyDetails.ownerTrust.label;" control="ownerTrust"/>
           </hbox>
           <textbox readonly="true" id="ownerTrust" value="?"/>
         </row>
         <row>
           <hbox align="center">
-            <label value="&enigmail.keyDetails.fingerprint.label;"/>
+            <label value="&enigmail.keyDetails.fingerprint.label;" control="fingerprint"/>
           </hbox>
           <textbox readonly="true" id="fingerprint" value="?"/>
         </row>

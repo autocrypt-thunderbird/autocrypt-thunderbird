@@ -57,7 +57,7 @@
     </hbox>
     <separator/>
     <hbox align="center">
-      <label value="&enigmail.setPrimUidDlg.newPrimUid.label;"/>
+      <label value="&enigmail.setPrimUidDlg.newPrimUid.label;" control="uidList"/>
       <menulist id="uidList"/>
     </hbox>
     <separator/>

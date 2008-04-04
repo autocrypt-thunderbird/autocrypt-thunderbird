@@ -29,7 +29,7 @@
 <groupbox id="userIdBox" orient="vertical">
 
   <hbox orient="horizontal" align="center">
-    <text class="label" value="&enigmail.keyUserId.label;"/>
+    <label value="&enigmail.keyUserId.label;" control="userIdentity"/>
     <menulist id="userIdentity" label="..." flex="1">
       <menupopup id="userIdentityPopup"/>
     </menulist>
@@ -82,7 +82,7 @@
 
     <hbox> <!-- Basic Tab -->
       <hbox align="center">
-        <label value="&enigmail.keyGen.expire.label;"/>
+        <label value="&enigmail.keyGen.expire.label;" control="expireInput"/>
       </hbox>
       <hbox align="center">
         <textbox id="expireInput" size="5" maxlength="5" value="5"/>
@@ -108,7 +108,7 @@
         <rows>
           <row>
             <hbox align="center">
-              <label value="&enigmail.keyGen.keySize.label;"/>
+              <label value="&enigmail.keyGen.keySize.label;" control="keySize"/>
             </hbox>
             <hbox flex="0">
               <menulist id="keySize" label="2048" value="2048" >
@@ -122,7 +122,7 @@
           </row>
           <row>
             <hbox align="center">
-              <label value="&enigmail.keyGen.keyType.label;"/>
+              <label value="&enigmail.keyGen.keyType.label;" control="keyType"/>
             </hbox>
             <hbox flex="0">
               <menulist id="keyType" label="&enigmail.keyGen.keyType.dsa;" value="1" >

@@ -99,7 +99,7 @@
                   tooltip="prefs.overrideGpg.tooltip"
                   id="enigOverrideGpg"
                   oncommand="enigActivateDependent(this, 'enigmail_agentPath enigmail_browsePath');"/>
-        <textbox id="enigmail_agentPath"
+        <textbox id="enigmail_agentPath" aria-labelledby="enigOverrideGpg"
                  size="30"
                  pref="true"
                  preftype="string"
@@ -116,9 +116,9 @@
       <hbox autostretch="never" align="center">
         <label control="enigmail_maxIdleMinutes"
                 tooltip="maxIdleMinutes.tooltip"
-                value="&enigmail.maxIdleMinutesHead.label;" />
+                value="&enigmail.maxIdleMinutesHead.label;" id="maxIdleMinutesHeadLabel"/>
 
-        <textbox id="enigmail_maxIdleMinutes"
+        <textbox id="enigmail_maxIdleMinutes" aria-labelledby="maxIdleMinutesHeadLabel enigmail_maxIdleMinutes maxIdleMinutesTailLabel"
                 size="4"
                 maxlength="4"
                 pref="true"
@@ -126,7 +126,7 @@
                 tooltip="maxIdleMinutes.tooltip"
                 prefstring="extensions.enigmail.maxIdleMinutes"/>
 
-        <description tooltip="maxIdleMinutes.tooltip">&enigmail.maxIdleMinutesTail.label;</description>
+        <description tooltip="maxIdleMinutes.tooltip" id="maxIdleMinutesTailLabel">&enigmail.maxIdleMinutesTail.label;</description>
       </hbox>
 
       <checkbox id="enigmail_noPassphrase"

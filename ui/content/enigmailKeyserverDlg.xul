@@ -124,13 +124,13 @@
 			<rows>
 				<row id="emailRow">
 					<hbox align="center">
-						<label value="&enigmail.searchForKey.label;"/>
+						<label value="&enigmail.searchForKey.label;" control="email"/>
 					</hbox>
 					<textbox id="email"/>
 				</row>
 				<row>
 					<hbox align="center">
-						<label value="&enigmail.keyserver.label;"/>
+						<label value="&enigmail.keyserver.label;" control="selectedServer"/>
 					</hbox>
 					<menulist id="selectedServer" editable="true"/>
 				</row>

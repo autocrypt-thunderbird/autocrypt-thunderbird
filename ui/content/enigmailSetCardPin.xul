@@ -54,7 +54,7 @@
 
   <vbox>
     <hbox align="center">
-      <label value="&enigmail.cardPin.action.label;"/>
+      <label value="&enigmail.cardPin.action.label;" control="actionMenu"/>
       <menulist id="actionMenu" label="&enigmail.cardPin.changePin.label;" value="P">
         <menupopup id="actionMenuPopup">
           <menuitem id="changePin"
@@ -78,27 +78,27 @@
       </columns>
       <rows>
         <row align="center" id="currAdminPinRow" collapsed="true">
-          <label value="&enigmail.cardPin.currAdmPin.label; :" type="password"/>
+          <label value="&enigmail.cardPin.currAdmPin.label; :" type="password" control="currAdmPinTxt"/>
           <textbox id="currAdmPinTxt" value="" type="password"/>
         </row>
         <row align="center" id="adminPinRow" collapsed="true">
-          <label value="&enigmail.cardPin.newAdminPin.label; :"/>
+          <label value="&enigmail.cardPin.newAdminPin.label; :" control="adminPinTxt"/>
           <textbox id="adminPinTxt" value="" type="password"/>
         </row>
         <row align="center" id="adminPinRepeatRow" collapsed="true">
-          <label value="&enigmail.cardPin.adminPinRepeat.label; :"/>
+          <label value="&enigmail.cardPin.adminPinRepeat.label; :" control="adminPinRepeatTxt"/>
           <textbox id="adminPinRepeatTxt" value="" type="password"/>
         </row>
         <row align="center" id="currPinRow">
-          <label value="&enigmail.cardPin.currPin.label; :"/>
+          <label value="&enigmail.cardPin.currPin.label; :" control="currPinTxt"/>
           <textbox id="currPinTxt" value="" type="password"/>
         </row>
         <row align="center" id="pinRow">
-          <label value="&enigmail.cardPin.newPin.label; :"/>
+          <label value="&enigmail.cardPin.newPin.label; :" control="pinTxt"/>
           <textbox id="pinTxt" value="" type="password"/>
         </row>
         <row align="center" id="pinRepeatRow">
-          <label value="&enigmail.cardPin.pinRepeat.label; :"/>
+          <label value="&enigmail.cardPin.pinRepeat.label; :" control="pinRepeatTxt"/>
           <textbox id="pinRepeatTxt" value="" type="password"/>
         </row>
       </rows>

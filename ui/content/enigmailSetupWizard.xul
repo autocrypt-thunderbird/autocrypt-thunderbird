@@ -68,7 +68,7 @@
     </description>
     <separator/>
 
-    <label value="&enigmail.setupWiz.pgWelcome.startNow;"/>
+    <label value="&enigmail.setupWiz.pgWelcome.startNow;" control="startNow"/>
     <radiogroup id="startNow" value="1">
       <radio id="startNow_yes"
              label="&enigmail.setupWiz.pgWelcome.yes;"
@@ -91,7 +91,7 @@
 
     <separator/>
     
-    <label value="&enigmail.setupWiz.pgSelectId.allIds;"/>
+    <label value="&enigmail.setupWiz.pgSelectId.allIds;" control="activateId"/>
     <radiogroup id="activateId" value="1">
       <radio id="activateId_all"
              label="&enigmail.setupWiz.yes;"
@@ -121,7 +121,7 @@
       &enigmail.setupWiz.pgSign.desc;
     </description>
     <separator/>
-    <label value="&enigmail.setupWiz.pgSign.signAllMsg;"/>
+    <label value="&enigmail.setupWiz.pgSign.signAllMsg;" control="signMsg"/>
     <radiogroup id="signMsg" value="1">
       <radio id="signMsg_yes"
              label="&enigmail.setupWiz.pgSign.yesSign;"
@@ -140,7 +140,7 @@
       &enigmail.setupWiz.pgEnc.desc;
     </description>
     <separator/>
-    <label value="&enigmail.setupWiz.pgEnc.encryptAllMsg;"/>
+    <label value="&enigmail.setupWiz.pgEnc.encryptAllMsg;" control="encryptMsg"/>
     <radiogroup id="encryptMsg" value="0">
       <radio id="encryptMsg_yes"
              label="&enigmail.setupWiz.pgEnc.yesEncrypt;"
@@ -161,10 +161,10 @@
       &enigmail.setupWiz.pgSettings.desc;
     </description>
     <separator/>
-    <description>
+    <description id="changeSettingsLabel">
      &enigmail.setupWiz.pgSettings.changePref;
     </description>
-    <radiogroup id="changeSettings" value="1">
+    <radiogroup id="changeSettings" value="1" aria-labelledby="changeSettingsLabel">
       <hbox>
         <radio id="changeSettings_yes"
                label="&enigmail.setupWiz.yes;"
@@ -184,10 +184,10 @@
               onpageshow="displayKeySel()"
               label="&enigmail.setupWiz.pgKeySel.title;"
               description="&enigmail.setupWiz.pgKeySel.subtitle;">
-    <description>
+    <description id="createPgpKeyLabel">
       &enigmail.setupWiz.pgKeySel.desc;
     </description>
-    <radiogroup id="createPgpKey" value="0">
+    <radiogroup id="createPgpKey" value="0" aria-labelledby="createPgpKeyLabel">
       <radio id="createPgpKey_no"
              label="&enigmail.setupWiz.pgKeySel.useExistingKey;"
              oncommand="setUseKey()"
@@ -241,7 +241,7 @@
     </description>
     <separator/>
     <vbox>
-      <label class="label" value="&enigmail.keyUserId.label;:"/>
+      <label class="label" value="&enigmail.keyUserId.label;:" control="userIdentity"/>
       <menulist id="userIdentity" label="..." flex="1">
         <menupopup id="userIdentityPopup"/>
       </menulist>

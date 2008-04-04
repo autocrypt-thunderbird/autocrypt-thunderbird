@@ -96,26 +96,26 @@
       </columns>
       <rows>
         <row align="center">
-          <label value="&enigmail.cardDetails.vendor.label;"/>
+          <label value="&enigmail.cardDetails.vendor.label;" control="card_vendor"/>
           <textbox readonly="true" id="card_vendor" value=""/>
         </row>
         <row align="center">
-          <label value="&enigmail.cardDetails.serial.label;"/>
+          <label value="&enigmail.cardDetails.serial.label;" control="card_serial"/>
           <textbox readonly="true" id="card_serial" value=""/>
         </row>
         <row align="center">
-          <label value="&enigmail.cardDetails.name.label;"/>
+          <label value="&enigmail.cardDetails.name.label;" id="card_namelabel"/>
           <hbox>
-            <textbox observes="bcEditMode" id="card_firstname" value=""/>
-            <textbox observes="bcEditMode" id="card_name" value=""/>
+            <textbox observes="bcEditMode" id="card_firstname" value="" aria-labelledby="card_namelabel"/>
+            <textbox observes="bcEditMode" id="card_name" value="" aria-labelledby="card_namelabel"/>
           </hbox>
         </row>
         <row align="center">
-          <label value="&enigmail.cardDetails.lang.label;"/>
+          <label value="&enigmail.cardDetails.lang.label;" control="card_lang"/>
           <textbox observes="bcEditMode" id="card_lang" value=""/>
         </row>
         <row align="center">
-          <label value="&enigmail.cardDetails.sex.label;"/>
+          <label value="&enigmail.cardDetails.sex.label;" control="card_sex"/>
           <radiogroup id="card_sex">
             <hbox>
               <radio id="card_sex_m"
@@ -130,15 +130,15 @@
           </radiogroup>
         </row>
         <row align="center">
-          <label value="&enigmail.cardDetails.url.label;"/>
+          <label value="&enigmail.cardDetails.url.label;" control="card_url"/>
           <textbox observes="bcEditMode" id="card_url" value=""/>
         </row>
         <row align="center">
-          <label value="&enigmail.cardDetails.login.label;"/>
+          <label value="&enigmail.cardDetails.login.label;" control="card_login"/>
           <textbox observes="bcEditMode" id="card_login" value=""/>
         </row>
         <row align="center">
-          <label value="&enigmail.cardDetails.forcepin.label;"/>
+          <label value="&enigmail.cardDetails.forcepin.label;" control="card_forcepin"/>
           <radiogroup id="card_forcepin">
             <hbox>
               <radio id="card_forcepin_0"
@@ -153,43 +153,43 @@
           </radiogroup>
         </row>
         <row align="center">
-          <label value="&enigmail.cardDetails.maxpinlen.label;"/>
+          <label value="&enigmail.cardDetails.maxpinlen.label;" control="card_maxpinlen"/>
           <textbox readonly="true" id="card_maxpinlen" value=""/>
         </row>
         <row align="center">
-          <label value="&enigmail.cardDetails.pinretry.label;"/>
+          <label value="&enigmail.cardDetails.pinretry.label;" control="card_pinretry"/>
           <textbox readonly="true" id="card_pinretry" value=""/>
         </row>
         <row align="center">
-          <label value="&enigmail.cardDetails.sigcount.label;"/>
+          <label value="&enigmail.cardDetails.sigcount.label;" control="card_sigcount"/>
           <textbox readonly="true" id="card_sigcount" value=""/>
         </row>
         <row>
-          <label value="&enigmail.cardDetails.sigKey.label;"/>
+          <label value="&enigmail.cardDetails.sigKey.label;" control="card_key_fpr_1"/>
           <vbox>
             <textbox readonly="true" size="55" id="card_key_fpr_1" value=""/>
             <hbox align="center">
-              <label value="&enigmail.cardDetails.keyCreated.label;"/>
+              <label value="&enigmail.cardDetails.keyCreated.label;" control="card_key_created_1"/>
               <textbox readonly="true" id="card_key_created_1" value=""/>
             </hbox>
           </vbox>
         </row>
         <row>
-          <label value="&enigmail.cardDetails.encKey.label;"/>
+          <label value="&enigmail.cardDetails.encKey.label;" control="card_key_fpr_2"/>
           <vbox>
             <textbox readonly="true" id="card_key_fpr_2" value=""/>
             <hbox align="center">
-              <label value="&enigmail.cardDetails.keyCreated.label;"/>
+              <label value="&enigmail.cardDetails.keyCreated.label;" control="card_key_created_2"/>
               <textbox readonly="true" id="card_key_created_2" value=""/>
             </hbox>
           </vbox>
         </row>
         <row>
-          <label value="&enigmail.cardDetails.authKey.label;"/>
+          <label value="&enigmail.cardDetails.authKey.label;" control="card_key_fpr_3"/>
           <vbox>
             <textbox readonly="true" id="card_key_fpr_3" value=""/>
             <hbox align="center">
-              <label value="&enigmail.cardDetails.keyCreated.label;"/>
+              <label value="&enigmail.cardDetails.keyCreated.label;" control="card_key_created_3"/>
               <textbox readonly="true" id="card_key_created_3" value=""/>
             </hbox>
           </vbox>

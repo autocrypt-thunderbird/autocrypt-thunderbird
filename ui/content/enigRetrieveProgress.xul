@@ -67,7 +67,7 @@
         </row>
         <row class="thin-separator">
           <hbox pack="end">
-            <label value="&enigmail.progressText.label;"/>
+            <label value="&enigmail.progressText.label;" control="dialog.progress"/>
           </hbox>
           <progressmeter id="dialog.progress" mode="normal" value="0"/>
           <hbox pack="end">

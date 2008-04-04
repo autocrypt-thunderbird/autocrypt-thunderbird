@@ -68,7 +68,7 @@
         <separator/>
         <row>
           <hbox align="center">
-            <label value="&enigmail.sKeyDlg.signWithKey.label;"/>
+            <label value="&enigmail.sKeyDlg.signWithKey.label;" control="signWithKey"/>
           </hbox>
           <menulist id="signWithKey" oncommand="enigKeySelCb()"/>
         </row>

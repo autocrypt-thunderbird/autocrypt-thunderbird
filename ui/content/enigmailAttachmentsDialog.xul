@@ -20,7 +20,7 @@
 
   <description id="enigmailAttachDesc">&enigmail.enigmailAttachDesc.label;</description>
 
-  <radiogroup id="enigmailAttachOptions">
+  <radiogroup id="enigmailAttachOptions" aria-labelledby="enigmailAttachDesc">
 
     <radio id="enigEncryptAttachNone"
           value="0"

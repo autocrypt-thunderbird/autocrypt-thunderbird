@@ -49,7 +49,7 @@
               oncommand="enigToggleEnable();"/>
     <vbox>
       <groupbox id="encryption.titleBox">
-        <radiogroup id="pgpKeyMode">
+        <radiogroup id="pgpKeyMode" aria-labelledby="enablePgp">
           <radio id="keymode_useFromAddress"
                  label="&enigmail.amPrefUseFromAddr.label;"
                  value="0"
@@ -62,7 +62,7 @@
                    value="1"
                    oncommand="enigEnableKeySel(true);"/>
             <hbox>
-              <textbox id="identity.pgpkeyId"
+              <textbox id="identity.pgpkeyId" aria-labelledby="keymode_usePgpkeyId"
                        prefstring="mail.identity.%identitykey%.pgpkeyId"
                        observes="bcUseKeyId"
                        preftype="wstring" prefattribute="value"/>

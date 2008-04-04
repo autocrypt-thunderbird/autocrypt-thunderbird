@@ -24,7 +24,7 @@
   <groupbox width="700px" flex="1">
     <vbox flex="1" align="stretch">
       <hbox flex="0" align="center">
-        <label value="&enigmail.searchRule.label;"/>
+        <label value="&enigmail.searchRule.label;" control="filterEmail"/>
         <textbox id="filterEmail" type="text" size="30" onfocus="this.select();"
           onclick="this.select();" oninput="onSearchInput(false);" onkeypress="onSearchKeyPress(event);"/>
         <button label="&enigmail.clearSearch.label;" id="clearButton" disabled="true"

@@ -329,7 +329,7 @@
   </popupset>
 
   <hbox flex="0" align="center">
-    <label value="&enigmail.keyMan.filter.label;"/>
+    <label value="&enigmail.keyMan.filter.label;" control="filterKey"/>
     <textbox id="filterKey" type="text" size="30"
              onfocus="this.select();"
              onclick="this.select();"

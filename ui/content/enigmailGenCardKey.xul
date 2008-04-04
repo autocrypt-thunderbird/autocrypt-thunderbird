@@ -64,7 +64,7 @@
   <groupbox id="userIdBox" orient="vertical">
 
     <hbox orient="horizontal" align="center">
-      <text class="label" value="&enigmail.keyUserId.label;"/>
+      <label value="&enigmail.keyUserId.label;" control="userIdentity"/>
       <menulist id="userIdentity" label="..." flex="1">
         <menupopup id="userIdentityPopup"/>
       </menulist>
@@ -107,7 +107,7 @@
 
       <row>
         <hbox align="center">
-          <label value="&enigmail.keyGen.expire.label;"/>
+          <label value="&enigmail.keyGen.expire.label;" control="expireInput"/>
         </hbox>
         <hbox align="center">
           <textbox id="expireInput" size="5" maxlength="5" value="5" observes="bcNoExpiry"/>

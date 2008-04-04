@@ -57,7 +57,7 @@
   </groupbox>
 
   <hbox id="progress.box">
-    <label value="&enigmail.progress.label;:"/>
+    <label value="&enigmail.progress.label;:" control="dialog.progress"/>
     <progressmeter id="dialog.progress" mode="determined" value="0"/>
   </hbox>
 
