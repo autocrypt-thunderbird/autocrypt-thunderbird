@@ -38,7 +38,7 @@
         </row>
         <row>
           <hbox align="center">
-            <label value="&enigmail.matchDescStart.label;" id="matchDescStartLabel/>
+            <label value="&enigmail.matchDescStart.label;" id="matchDescStartLabel"/>
           </hbox>
           <hbox align="center">
             <menulist id="matchingRule" aria-labelledby="matchDescStartLabel matchingRule matchDescEndLabel">
@@ -84,9 +84,9 @@
         </vbox>
       </groupbox>
     <separator/>
-   
+
     <groupbox>
-      <caption label="&enigmail.setDefaultsFor.label;"/> 
+      <caption label="&enigmail.setDefaultsFor.label;"/>
       <grid>
         <columns>
           <column flex="0"/>
@@ -141,5 +141,5 @@
       </description>
     </groupbox>
   </groupbox>
-  
+
 </dialog>
