@@ -767,7 +767,9 @@ function enigEncryptMsg(msgSendType) {
       msgCompFields.bcc == "" &&
       newsgroups == "") {
     // don't attempt to send message if no recipient specified
-    EnigAlert(sComposeMsgsBundle.getString("12511"));
+    var bundle = document.getElementById("bundle_composeMsgs");
+    EnigAlert(bundle.getString("12511"));
+    // EnigAlert(sComposeMsgsBundle.getString("12511"));
     return false;
   }
 
@@ -1507,29 +1509,64 @@ function enigEncryptInline(sendInfo) {
   return true;
 }
 
+function enigGetMailPref(prefName) {
+
+   var prefValue = null;
+   try {
+      var prefType = gEnigPrefRoot.getPrefType(prefName);
+      // Get pref value
+      switch (prefType) {
+      case gPrefEnigmail.PREF_BOOL:
+         prefValue = gEnigPrefRoot.getBoolPref(prefName);
+         break;
+
+      case gPrefEnigmail.PREF_INT:
+         prefValue = gEnigPrefRoot.getIntPref(prefName);
+         break;
+
+      case gPrefEnigmail.PREF_STRING:
+         prefValue = gEnigPrefRoot.getCharPref(prefName);
+         break;
+
+      default:
+         prefValue = undefined;
+         break;
+     }
+
+   } catch (ex) {
+      // Failed to get pref value
+      ERROR_LOG("enigmailMsgComposeOverlay.js: enigGetMailPref: unknown prefName:"+prefName+" \n");
+   }
+
+   return prefValue;
+}
 
 function enigMessageSendCheck() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMessageSendCheck\n");
 
   try {
-    var warn = sPrefs.getBoolPref("mail.warn_on_send_accel_key");
+    var warn = enigGetMailPref("mail.warn_on_send_accel_key");
 
     if (warn) {
         var checkValue = {value:false};
+        var bundle = document.getElementById("bundle_composeMsgs");
         var buttonPressed = gEnigPromptSvc.confirmEx(window,
-              sComposeMsgsBundle.getString('sendMessageCheckWindowTitle'),
-              sComposeMsgsBundle.getString('sendMessageCheckLabel'),
+              bundle.getString('sendMessageCheckWindowTitle'),
+              bundle.getString('sendMessageCheckLabel'),
               (gEnigPromptSvc.BUTTON_TITLE_IS_STRING * gEnigPromptSvc.BUTTON_POS_0) +
               (gEnigPromptSvc.BUTTON_TITLE_CANCEL * gEnigPromptSvc.BUTTON_POS_1),
-              sComposeMsgsBundle.getString('sendMessageCheckSendButtonLabel'),
+              bundle.getString('sendMessageCheckSendButtonLabel'),
               null, null,
-              sComposeMsgsBundle.getString('CheckMsg'),
+              bundle.getString('CheckMsg'),
               checkValue);
         if (buttonPressed != 0) {
             return false;
         }
         if (checkValue.value) {
-            sPrefs.setBoolPref("mail.warn_on_send_accel_key", false);
+          var branch = Components.classes["@mozilla.org/preferences-service;1"]
+                                .getService(Components.interfaces.nsIPrefBranch);
+
+          branch.setBoolPref("mail.warn_on_send_accel_key", false);
         }
     }
   } catch (ex) {}
@@ -1604,6 +1641,7 @@ function enigGenericSendMessage( msgType )
 
   if (gMsgCompose != null)
   {
+    var promptSvc = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
     var msgCompFields = gMsgCompose.compFields;
     if (msgCompFields)
     {
@@ -1615,7 +1653,7 @@ function enigGenericSendMessage( msgType )
       if (msgType == nsIMsgCompDeliverMode.Now || msgType == nsIMsgCompDeliverMode.Later)
       {
         //Do we need to check the spelling?
-        if (sPrefs.getBoolPref("mail.SpellCheckBeforeSend"))
+        if (enigGetMailPref("mail.SpellCheckBeforeSend"))
         {
           //We disable spellcheck for the following -subject line, attachment pane, identity and addressing widget
           //therefore we need to explicitly focus on the mail body when we have to do a spellcheck.
@@ -1636,12 +1674,13 @@ function enigGenericSendMessage( msgType )
         {
           if (gEnigPromptSvc)
           {
-            var msgTitle = sComposeMsgsBundle.getString("sendMsgTitle");
-            var result = {value:sComposeMsgsBundle.getString("defaultSubject")};
+            var bundle = document.getElementById("bundle_composeMsgs");
+            var msgTitle = bundle.getString("sendMsgTitle");
+            var result = {value:bundle.getString("defaultSubject")};
             if (gEnigPromptSvc.prompt(
                         window,
                         msgTitle,
-                        sComposeMsgsBundle.getString("subjectDlogMessage"),
+                        bundle.getString("subjectDlogMessage"),
                         result,
               null,
               {value:0}
@@ -1658,7 +1697,9 @@ function enigGenericSendMessage( msgType )
 
           // check if the user tries to send a message to a newsgroup through a mail account
           var currentAccountKey = getCurrentAccountKey();
-          var account = gAccountManager.getAccount(currentAccountKey);
+          var acctMgr = Components.classes["@mozilla.org/messenger/account-manager;1"].getService(Components.interfaces.nsIMsgAccountManager);
+
+          var account = acctMgr.getAccount(currentAccountKey);
           if (!account)
           {
             throw "UNEXPECTED: currentAccountKey '" + currentAccountKey +
@@ -1669,21 +1710,26 @@ function enigGenericSendMessage( msgType )
           if (servertype != "nntp" && msgCompFields.newsgroups != "")
           {
             // default to ask user if the pref is not set
-            var dontAskAgain = sPrefs.getBoolPref("mail.compose.dontWarnMail2Newsgroup");
+            var dontAskAgain = enigGetMailPref("mail.compose.dontWarnMail2Newsgroup");
 
             if (!dontAskAgain)
             {
               var checkbox = {value:false};
-              var okToProceed = gPromptService.confirmCheck(window,
-                                                            sComposeMsgsBundle.getString("sendMsgTitle"),
-                                                            sComposeMsgsBundle.getString("recipientDlogMessage"),
-                                                            sComposeMsgsBundle.getString("CheckMsg"), checkbox);
+              var bundle = document.getElementById("bundle_composeMsgs");
+              var okToProceed = promptSvc.confirmCheck(window,
+                                                            bundle.getString("sendMsgTitle"),
+                                                            bundle.getString("recipientDlogMessage"),
+                                                            bundle.getString("CheckMsg"), checkbox);
 
               if (!okToProceed)
                 return;
 
-              if (checkbox.value)
-                sPrefs.setBoolPref(kDontAskAgainPref, true);
+              if (checkbox.value) {
+                var branch = Components.classes["@mozilla.org/preferences-service;1"]
+                                    .getService(Components.interfaces.nsIPrefBranch);
+
+                branch.setBoolPref(kDontAskAgainPref, true);
+              }
             }
 
             // remove newsgroups to prevent news_p to be set
@@ -1752,17 +1798,18 @@ function enigGenericSendMessage( msgType )
         msgType == nsIMsgCompDeliverMode.SaveAsTemplate)
       {
         var fallbackCharset = "";
-        if (gPromptService &&
+        if (promptSvc &&
             !enigCheckCharsetConversion(msgCompFields))
         {
-          var dlgTitle = sComposeMsgsBundle.getString("initErrorDlogTitle");
-          var dlgText = sComposeMsgsBundle.getString("12553");  // NS_ERROR_MSG_MULTILINGUAL_SEND
-          var result3 = gPromptService.confirmEx(window, dlgTitle, dlgText,
-              (gPromptService.BUTTON_TITLE_IS_STRING * gPromptService.BUTTON_POS_0) +
-              (gPromptService.BUTTON_TITLE_IS_STRING * gPromptService.BUTTON_POS_1) +
-              (gPromptService.BUTTON_TITLE_CANCEL * gPromptService.BUTTON_POS_2),
-              sComposeMsgsBundle.getString('sendInUTF8'),
-              sComposeMsgsBundle.getString('sendAnyway'),
+          var bundle = document.getElementById("bundle_composeMsgs");
+          var dlgTitle = bundle.getString("initErrorDlogTitle");
+          var dlgText = bundle.getString("12553");  // NS_ERROR_MSG_MULTILINGUAL_SEND
+          var result3 = promptSvc.confirmEx(window, dlgTitle, dlgText,
+              (promptSvc.BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_0) +
+              (promptSvc.BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_1) +
+              (promptSvc.BUTTON_TITLE_CANCEL * promptSvc.BUTTON_POS_2),
+              bundle.getString('sendInUTF8'),
+              bundle.getString('sendAnyway'),
               null, null, {value:0});
           switch(result3)
           {
