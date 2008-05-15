@@ -926,6 +926,7 @@ Enigmail.prototype.logFileStream = null;
 
 Enigmail.prototype.isUnix    = false;
 Enigmail.prototype.isWin32   = false;
+Enigmail.prototype.isMacOs   = false;
 Enigmail.prototype.isOs2     = false;
 Enigmail.prototype.isDosLike = false;
 
@@ -1235,6 +1236,7 @@ function (domWindow, version, prefBranch) {
   this.isUnix  = (this.platform.search(/X11/i) == 0);
   this.isWin32 = (this.platform.search(/Win/i) == 0);
   this.isOs2   = (this.platform.search(/OS\/2/i) == 0);
+  this.isMacOs = (this.platform.search(/Mac/i) == 0);
 
   this.isDosLike = (this.isWin32 || this.isOs2);
 
@@ -1494,6 +1496,13 @@ function () {
   var args = [];
   if (agentType == "gpg") {
      args = [ "--version", "--version", "--batch", "--no-tty", "--charset", "utf8" ];
+  }
+
+  if (this.isMacOs) {
+    // workaround to avoid Enigmail hanging on Mac OS X 10.5
+
+    command = ResolvePath("sh", "/bin", this.isDosLike);
+    args = [ "-c", agentPath.path+" "+args.join(" ") ];
   }
 
   // This particular command execution seems to be essential on win32
