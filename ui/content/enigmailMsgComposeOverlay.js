@@ -334,6 +334,7 @@ function enigAttachOwnKey() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigAttachOwnKey:\n");
 
   var userIdValue;
+
   if (gEnigIdentity.getIntAttribute("pgpKeyMode")>0) {
     userIdValue = gEnigIdentity.getCharAttribute("pgpkeyId");
     var attachedObj = enigExtractAndAttachKey( [userIdValue] );
@@ -782,6 +783,8 @@ function enigEncryptMsg(msgSendType) {
   if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
     if (!((sendFlags & ENIG_ENCRYPT) && EnigConfirmPref(EnigGetString("savingMessage"), "saveEncrypted"))) {
       sendFlags &= ~ENIG_ENCRYPT;
+
+      if (gEnigAttachOwnKey.appendAttachment) enigAttachOwnKey();
       return true;
     }
   }
@@ -841,7 +844,7 @@ function enigEncryptMsg(msgSendType) {
      var pgpEnabled = enigGetAccDefault("enabled");
 
      if (! pgpEnabled) {
-        if (sendFlags & ENIG_ENCRYPT_OR_SIGN) {
+        if ((sendFlags & ENIG_ENCRYPT_OR_SIGN) || gEnigAttachOwnKey.appendAttachment) {
           if (!EnigConfirm(EnigGetString("acctNotConfigured")))
               return false;
         }
@@ -1100,7 +1103,7 @@ function enigEncryptMsg(msgSendType) {
        sendFlags |= nsIEnigmail.SEND_PGP_MIME;
      }
 
-     if (gEnigAttachOwnKey.appendAttachment && (sendFlags & ENIG_ENCRYPT_OR_SIGN)) {
+     if (gEnigAttachOwnKey.appendAttachment) {
         enigAttachOwnKey();
      }
 
