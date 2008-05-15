@@ -1802,25 +1802,33 @@ function enigGenericSendMessage( msgType )
             !enigCheckCharsetConversion(msgCompFields))
         {
           var bundle = document.getElementById("bundle_composeMsgs");
-          var dlgTitle = bundle.getString("initErrorDlogTitle");
-          var dlgText = bundle.getString("12553");  // NS_ERROR_MSG_MULTILINGUAL_SEND
-          var result3 = promptSvc.confirmEx(window, dlgTitle, dlgText,
-              (promptSvc.BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_0) +
-              (promptSvc.BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_1) +
-              (promptSvc.BUTTON_TITLE_CANCEL * promptSvc.BUTTON_POS_2),
-              bundle.getString('sendInUTF8'),
-              bundle.getString('sendAnyway'),
-              null, null, {value:0});
-          switch(result3)
-          {
-            case 0:
-              fallbackCharset = "UTF-8";
-              break;
-            case 1:  // send anyway
-              msgCompFields.needToCheckCharset = false;
-              break;
-            case 2:  // cancel
-              return;
+          try {
+            // Thunderbird 3 will always apply charset conversation
+            // The string aren't there anymore, which we will catch below and also fall back to utf-8
+            // https://bugzilla.mozilla.org/show_bug.cgi?id=410333
+            var dlgTitle = bundle.getString("initErrorDlogTitle");
+            var dlgText = bundle.getString("12553");  // NS_ERROR_MSG_MULTILINGUAL_SEND
+            var result3 = promptSvc.confirmEx(window, dlgTitle, dlgText,
+                (promptSvc.BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_0) +
+                (promptSvc.BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_1) +
+                (promptSvc.BUTTON_TITLE_CANCEL * promptSvc.BUTTON_POS_2),
+                bundle.getString('sendInUTF8'),
+                bundle.getString('sendAnyway'),
+                null, null, {value:0});
+            switch(result3)
+            {
+              case 0:
+                fallbackCharset = "UTF-8";
+                break;
+              case 1:  // send anyway
+                msgCompFields.needToCheckCharset = false;
+                break;
+              case 2:  // cancel
+                return;
+            }
+          }
+          catch (ex) {
+            fallbackCharset = 'UTF-8';
           }
         }
         if (fallbackCharset != "")
