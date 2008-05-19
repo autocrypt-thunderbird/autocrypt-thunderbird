@@ -66,6 +66,8 @@ const NS_ENIGMSGCOMPOSEFACTORY_CID =
 const NS_ENIGCLINE_SERVICE_CID =
   Components.ID("{847b3ab1-7ab1-11d4-8f02-006008948af5}");
 
+const ENIGMAIL_EXTENSION_ID=  "{847b3a00-7ab1-11d4-8f02-006008948af5}";
+
 // Contract IDs and CIDs used by this module
 const NS_IPCSERVICE_CONTRACTID  = "@mozilla.org/process/ipc-service;1";
 const NS_IPCBUFFER_CONTRACTID   = "@mozilla.org/process/ipc-buffer;1";
@@ -91,6 +93,8 @@ const NS_DOMPARSER_CONTRACTID = "@mozilla.org/xmlextras/domparser;1";
 const NS_DOMSERIALIZER_CONTRACTID = "@mozilla.org/xmlextras/xmlserializer;1";
 const NS_CATMAN_CONTRACTID = "@mozilla.org/categorymanager;1";
 const NS_CLINE_SERVICE_CONTRACTID = "@mozilla.org/enigmail/cline-handler;1";
+const NS_EXTENSION_MANAGER_CONTRACTID = "@mozilla.org/extensions/manager;1"
+
 
 // Interfaces
 const nsISupports            = Components.interfaces.nsISupports;
@@ -1501,8 +1505,18 @@ function () {
   if (this.isMacOs) {
     // workaround to avoid Enigmail hanging on Mac OS X 10.5
 
-    command = ResolvePath("sh", "/bin", this.isDosLike);
-    args = [ "-c", agentPath.path+" "+args.join(" ") ];
+    try {
+      var installLoc = Components.classes[NS_EXTENSION_MANAGER_CONTRACTID]
+                   .getService(Components.interfaces.nsIExtensionManager)
+                   .getInstallLocation(ENIGMAIL_EXTENSION_ID);
+      var extensionLoc = installLoc.getItemFile(ENIGMAIL_EXTENSION_ID, "components");
+      extensionLoc.append("gpg-wrapper.sh");
+      args.unshift(command.path);
+      command = extensionLoc;
+    }
+    catch (ex) {
+      ERROR_LOG("enigmail.js: Enigmail.initialize: cannot get extension location.sh\n");
+    }
   }
 
   // This particular command execution seems to be essential on win32

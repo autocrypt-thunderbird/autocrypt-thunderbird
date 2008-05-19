@@ -269,6 +269,20 @@ cat <<EOT >> ${targetDir}/install.js
 }
 EOT
 
+cat << EOT > ${targetDir}/components/gpg-wrapper.sh
+#!/bin/sh
+
+GPG="\$1"
+shift
+
+\$GPG "\$@"
+exitCode=\$?
+
+sleep 2
+exit $exitCode
+EOT
+
+chmod 755 ${targetDir}/components/gpg-wrapper.sh
 cd ${srcDir}/package
 
 enigmimeDll=${libPrefix}enigmime${dllSuffix}
@@ -288,6 +302,7 @@ zip ${xpiFile} \
     components/${xpiModule}.xpt \
     components/${xpiModule}.js \
     components/enigprefs-service.js \
+    components/gpg-wrapper.sh \
     defaults/preferences/enigmail.js \
     defaults/pref/enigmail.js \
     chrome/${xpiModule}.jar \
