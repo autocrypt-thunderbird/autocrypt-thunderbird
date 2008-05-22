@@ -136,6 +136,8 @@ protected:
     nsCString                           mExecutable;
     nsCString                           mCommand;
     nsCString                           mKillString;
+    nsCString                           mCwd;
+    PRUint32                            mStartupFlags;
 
     IPCProcess*                         mProcess;
     PRIntervalTime                      mKillWaitInterval;

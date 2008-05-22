@@ -92,13 +92,43 @@ interface nsIPipeTransportListener;
 interface nsIPipeTransport : nsIRequest
 {
     /**
+     * Old, oboslete version of init, kept for compatibility reasons
+     * For parameters please refer to init above and open
+     */
+    void init(in nsIFile executable,
+              [array, size_is(argCount)] in string args,
+              in unsigned long argCount,
+              [array, size_is(envCount)] in string env,
+              in unsigned long envCount,
+              in unsigned long timeoutMS,
+              in string killString,
+              in boolean noProxy,
+              in boolean mergeStderr,
+              in nsIPipeListener console);
+
+    /**
      * Initializes PipeTransport by executing the specified file using the
      * supplied argument list and environment variables.
      * It is expected that nsIPipeTransport will be embedded in a
      * full-featured channel, which will also act as an async stream
      * observer/listener and forward calls to the actual observer/listener.
      *
-     * @param executable  executable file
+     * @param executable   executable file
+     * @param cwd          working directory for the excutable
+     * @param startupFlags flags defining how the process should be created
+     */
+
+    void initialize(in nsIFile executable,
+              in nsIFile cwd,
+              in unsigned long startupFlags);
+
+    /**
+     * Opens a PipeTransport by executing the specified file using the
+     * supplied argument list and environment variables.
+     * It is expected that nsIPipeTransport will be embedded in a
+     * full-featured channel, which will also act as an async stream
+     * observer/listener and forward calls to the actual observer/listener.
+     *
      * @param args        arguments string array
      *                    (excluding the executable path itself)
      * @param env         environment (variable=value) string array
@@ -113,9 +143,7 @@ interface nsIPipeTransport : nsIRequest
      * @param mergeStderr merge STDERR with STDOUT
      * @param console     nsIPipeListener object to capture STDERR
      */
-
-    void init(in nsIFile executable,
-              [array, size_is(argCount)] in string args,
+    void open([array, size_is(argCount)] in string args,
               in unsigned long argCount,
               [array, size_is(envCount)] in string env,
               in unsigned long envCount,
@@ -124,6 +152,12 @@ interface nsIPipeTransport : nsIRequest
               in boolean noProxy,
               in boolean mergeStderr,
               in nsIPipeListener console);
+
+    /**
+     * detach process after start
+     */
+    const long PROCESS_DETACHED       = 0x01;
+    const long INHERIT_PROC_ATTRIBS   = 0x02;
 
     /**
      * Returns console object used to capture STDERR by default

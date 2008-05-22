@@ -85,7 +85,8 @@ PRProcess* IPC_CreateProcessRedirectedNSPR(const char *path,
                                            const char *cwd,
                                            PRFileDesc* std_in,
                                            PRFileDesc* std_out,
-                                           PRFileDesc* std_err);
+                                           PRFileDesc* std_err,
+                                           PRBool detach);
 
 PRStatus IPC_CreateInheritablePipeNSPR(PRFileDesc* *readPipe,
                                        PRFileDesc* *writePipe,
@@ -101,7 +102,8 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
                                             const char *cwd,
                                             IPCFileDesc* std_in,
                                             IPCFileDesc* std_out,
-                                            IPCFileDesc* std_err);
+                                            IPCFileDesc* std_err,
+                                            PRBool detach);
 
 PRStatus IPC_CreateInheritablePipeWin32(IPCFileDesc* *readPipe,
                                         IPCFileDesc* *writePipe,

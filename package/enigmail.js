@@ -66,7 +66,7 @@ const NS_ENIGMSGCOMPOSEFACTORY_CID =
 const NS_ENIGCLINE_SERVICE_CID =
   Components.ID("{847b3ab1-7ab1-11d4-8f02-006008948af5}");
 
-const ENIGMAIL_EXTENSION_ID=  "{847b3a00-7ab1-11d4-8f02-006008948af5}";
+const ENIGMAIL_EXTENSION_ID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
 
 // Contract IDs and CIDs used by this module
 const NS_IPCSERVICE_CONTRACTID  = "@mozilla.org/process/ipc-service;1";
@@ -1336,7 +1336,7 @@ function (domWindow, version, prefBranch) {
 
   this.detectGpgAgent(domWindow);
 
-  if (this.useGpgAgent() && ! this.isDosLike) {
+  if (this.useGpgAgent() && (! this.isDosLike)) {
     gEnvList.push("GPG_AGENT_INFO="+this.gpgAgentInfo.envStr);
   }
 
@@ -1360,7 +1360,12 @@ function() {
   var useAgent = false;
 
   try {
-    useAgent= (this.gpgAgentInfo.envStr.length>0 || this.prefBranch.getBoolPref("useGpgAgent"));
+    if (this.isDosLike && this.agentVersion < "2.0") {
+      useAgent = false;
+    }
+    else {
+      useAgent = (this.gpgAgentInfo.envStr.length>0 || this.prefBranch.getBoolPref("useGpgAgent"));
+    }
   }
   catch (ex) {}
   return useAgent;
@@ -1550,7 +1555,7 @@ function () {
     CONSOLE_LOG("gpg4win-gpgwrapper detected; EnigmailAgentPath="+agentPath+"\n\n");
   }
 
-  var versionParts = outStr.replace(/[\r\n].*/g,"").split(/ /);
+  var versionParts = outStr.replace(/[\r\n].*/g,"").replace(/ *\(gpg4win.*\)/i, "").split(/ /);
   var gpgVersion = versionParts[versionParts.length-1]
 
 
@@ -1569,10 +1574,14 @@ function (domWindow) {
   DEBUG_LOG("enigmail.js: detectGpgAgent\n");
 
   function extractAgentInfo(fullStr) {
-    fullStr = fullStr.replace(/^.*\=/,"");
-    fullStr = fullStr.replace(/^\;.*$/,"");
-    fullStr = fullStr.replace(/[\n\r]*/g,"");
-    return fullStr;
+    if (fullStr) {
+      fullStr = fullStr.replace(/^.*\=/,"");
+      fullStr = fullStr.replace(/^\;.*$/,"");
+      fullStr = fullStr.replace(/[\n\r]*/g,"");
+      return fullStr;
+    }
+    else
+      return "";
   }
 
 
@@ -1620,7 +1629,7 @@ function (domWindow) {
     DEBUG_LOG("enigmail.js: detectGpgAgent: no GPG_AGENT_INFO variable set\n");
     this.gpgAgentInfo.preStarted = false;
 
-    if ((this.agentVersion >= "1.9.92")) {
+    if ((this.agentVersion >= "2.0")) {
       var command = null;
       var gpgConnectAgent = resolveAgentPath("gpg-connect-agent");
 
@@ -1652,8 +1661,10 @@ function (domWindow) {
         }
 
         command = gpgConnectAgent.QueryInterface(Components.interfaces.nsIFile);
+        var exitCode = -1;
+
         try {
-          var exitCode = this.ipcService.runPipe(command, [], 0,
+          exitCode = this.ipcService.runPipe(command, [], 0,
                                       "", "/echo OK\n", 0,
                                       envList, envList.length,
                                       outStrObj, outLenObj, errStrObj, errLenObj);
@@ -1687,32 +1698,52 @@ function (domWindow) {
       }
 
       if (! this.isDosLike) {
-        args = [ "--sh", "--write-env-file", envFile.path ];
-      }
+        args = [ "--sh", "--write-env-file", envFile.path,
+                "--daemon",
+                "--default-cache-ttl", (this.getMaxIdleMinutes()*60).toString(),
+                "--max-cache-ttl", "999999" ];  // ca. 11 days
 
-      args = args.concat([ "--daemon", "--default-cache-ttl", this.getMaxIdleMinutes()*60 ] );
-      args = args.concat([ "--max-cache-ttl", "999999" ]);  // ca. 11 days
+        try {
+          exitCode = this.ipcService.runPipe(command, args, args.length,
+                                        "", "", 0,
+                                        envList, envList.length,
+                                        outStrObj, outLenObj, errStrObj, errLenObj);
+        }
+        catch (ex) {
+          ERROR_LOG("enigmail.js: detectGpgAgent: "+command+" failed\n");
+          exitCode = -1;
+        }
 
-      try {
-        var exitCode = this.ipcService.runPipe(command, args, args.length,
-                                      "", "", 0,
-                                      envList, envList.length,
-                                      outStrObj, outLenObj, errStrObj, errLenObj);
-      }
-      catch (ex) {
-        ERROR_LOG("enigmail.js: detectGpgAgent: "+command+" failed\n");
-        exitCode = -1;
-      }
-      CONSOLE_LOG("enigmail> "+printCmdLine(command, args)+"\n");
+        CONSOLE_LOG("enigmail> "+printCmdLine(command, args)+"\n");
 
-      if (exitCode == 0) {
-        var outStr = outStrObj.value;
-        this.gpgAgentInfo.envStr = extractAgentInfo(outStrObj.value);
+        if (exitCode == 0) {
+          var outStr = outStrObj.value;
+          this.gpgAgentInfo.envStr = extractAgentInfo(outStrObj.value);
+        }
+        else {
+          ERROR_LOG("enigmail.js: detectGpgAgent: gpg-agent output: "+errStrObj.value+"\n");
+          this.alertMsg(domWindow, EnigGetString("gpgAgentNotStarted", this.agentVersion));
+          throw Components.results.NS_ERROR_FAILURE;
+        }
       }
       else {
-        ERROR_LOG("enigmail.js: detectGpgAgent: gpg-agent output: "+errStrObj.value+"\n");
-        this.alertMsg(domWindow, EnigGetString("gpgAgentNotStarted", this.agentVersion));
-        throw Components.results.NS_ERROR_FAILURE;
+        this.gpgAgentInfo.envStr = "dummy";
+        envFile.initWithPath(this.determineGpgHomeDir());
+        envFile.append("gpg-agent.conf");
+
+        var data="default-cache-ttl " + (this.getMaxIdleMinutes()*60)+"\n";
+        data += "max-cache-ttl 999999";
+        if (! envFile.exists()) {
+          try {
+            var flags = 0x02 | 0x08 | 0x20;
+            var fileOutStream = Components.classes[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIFileOutputStream);
+            fileOutStream.init(envFile, flags, 0600, 0);
+            fileOutStream.write(data, data.length);
+            fileOutStream.flush();
+            fileOutStream.close();
+          }
+          catch (ex) {} // ignore file write errors
+        }
       }
     }
   }

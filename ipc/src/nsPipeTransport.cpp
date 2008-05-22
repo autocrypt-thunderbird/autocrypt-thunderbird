@@ -111,6 +111,7 @@ nsPipeTransport::nsPipeTransport()
       mExecutable(""),
       mCommand(""),
       mKillString(""),
+      mCwd(""),
 
       mProcess(IPC_NULL_HANDLE),
       mKillWaitInterval(PR_MillisecondsToInterval(KILL_WAIT_TIME_IN_MS)),
@@ -184,6 +185,35 @@ NS_IMPL_THREADSAFE_ISUPPORTS8(nsPipeTransport,
 ///////////////////////////////////////////////////////////////////////////////
 
 
+NS_IMETHODIMP nsPipeTransport::Initialize(nsIFile *executable,
+                                    nsIFile *cwd,
+                                    PRUint32 startupFlags)
+{
+  nsresult rv;
+  if (mPipeState != PIPE_NOT_YET_OPENED) {
+    return NS_ERROR_ALREADY_INITIALIZED;
+  }
+
+  rv = executable->GetNativePath( mExecutable );
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  DEBUG_LOG(("nsPipeTransport::Init: executable=[%s]\n", mExecutable.get()));
+
+  if ( cwd != nsnull) {
+    rv = cwd->GetNativePath( mCwd );
+    NS_ENSURE_SUCCESS(rv, rv);
+
+    DEBUG_LOG(("nsPipeTransport::Init: working dir=[%s]\n", mCwd.get()));
+  }
+  else {
+    mCwd = "";
+    DEBUG_LOG(("nsPipeTransport::Init: no working dir set\n"));
+  }
+  mStartupFlags = startupFlags;
+
+  return NS_OK;
+}
+
 NS_IMETHODIMP nsPipeTransport::Init(nsIFile *executable,
                                     const char **args,
                                     PRUint32 argCount,
@@ -196,9 +226,25 @@ NS_IMETHODIMP nsPipeTransport::Init(nsIFile *executable,
                                     nsIPipeListener* console)
 {
   nsresult rv;
+  rv = Initialize(executable, nsnull, INHERIT_PROC_ATTRIBS);
+  NS_ENSURE_SUCCESS(rv, rv);
+  return Open(args, argCount, env, envCount, timeoutMS, killString, noProxy, mergeStderr, console);
+}
+
+NS_IMETHODIMP nsPipeTransport::Open(const char **args,
+                                    PRUint32 argCount,
+                                    const char **env,
+                                    PRUint32 envCount,
+                                    PRUint32 timeoutMS,
+                                    const char *killString,
+                                    PRBool noProxy,
+                                    PRBool mergeStderr,
+                                    nsIPipeListener* console)
+{
+  nsresult rv;
   PRUint32 j;
 
-  DEBUG_LOG(("nsPipeTransport::Init: [%d]\n",
+  DEBUG_LOG(("nsPipeTransport::Open: [%d]\n",
              envCount));
 
   if (mPipeState != PIPE_NOT_YET_OPENED) {
@@ -216,10 +262,6 @@ NS_IMETHODIMP nsPipeTransport::Init(nsIFile *executable,
   }
 
 
-  rv = executable->GetNativePath( mExecutable );
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  DEBUG_LOG(("nsPipeTransport::Init: executable=[%s]\n", mExecutable.get()));
 
   mKillString.Assign(killString);
 
@@ -241,13 +283,15 @@ NS_IMETHODIMP nsPipeTransport::Init(nsIFile *executable,
   npipe = mergeStderr ? 3 : 2;
 #endif
 
+  IPCFileDesc* stderrPipe;
+
   for (int ipipe = 0; ipipe < npipe; ipipe++) {
     // Create pipe pair
     IPCFileDesc* fd[2];
     status = IPC_CreateInheritablePipe(&fd[0], &fd[1],
-                                       (ipipe == 0), (ipipe != 0));
+                                      (ipipe == 0), (ipipe != 0));
     if (status != PR_SUCCESS) {
-      ERROR_LOG(("nsPipeTransport::Init: Error in creating pipe %d\n", ipipe));
+      ERROR_LOG(("nsPipeTransport::Open: Error in creating pipe %d\n", ipipe));
       return NS_ERROR_FAILURE;
     }
 
@@ -266,7 +310,6 @@ NS_IMETHODIMP nsPipeTransport::Init(nsIFile *executable,
     }
   }
 
-  IPCFileDesc* stderrPipe;
   if (stderrWrite) {
     // This STDOUT/STDERR merging technique works on Unix only (uses PR_Poll)
     stderrPipe = stderrWrite;
@@ -293,7 +336,7 @@ NS_IMETHODIMP nsPipeTransport::Init(nsIFile *executable,
     rv = console->GetFileDesc(&stderrPipe);
     NS_ENSURE_SUCCESS(rv, rv);
 
-    DEBUG_LOG(("nsPipeTransport::Init: stderrPipe=0x%p\n", stderrPipe));
+    DEBUG_LOG(("nsPipeTransport::Open: stderrPipe=0x%p\n", stderrPipe));
   }
 
   char** argList = NULL;
@@ -310,7 +353,7 @@ NS_IMETHODIMP nsPipeTransport::Init(nsIFile *executable,
 
   for (j=0; j < argCount; j++) {
     argList[j+1] = (char *)args[j];
-    DEBUG_LOG(("nsPipeTransport::Init: arg[%d] = %s\n", j+1, args[j]));
+    DEBUG_LOG(("nsPipeTransport::Open: arg[%d] = %s\n", j+1, args[j]));
   }
 
   argList[argCount+1] = NULL;
@@ -328,11 +371,14 @@ NS_IMETHODIMP nsPipeTransport::Init(nsIFile *executable,
     envList[envCount] = NULL;
   }
 
+
   /* Create NSPR process */
   mProcess = IPC_CreateProcessRedirected(mExecutable.get(),
                                          argList, envList,
-                                         nsnull, stdinRead,
-                                         stdoutWrite, stderrPipe);
+                                         mCwd.Equals("") ? nsnull : mCwd.get(),
+                                         stdinRead,
+                                         stdoutWrite, stderrPipe,
+                                         mStartupFlags & PROCESS_DETACHED ? PR_TRUE : PR_FALSE);
 
   // Do some clean-up for pointers on stack
   // before checking if process creation succeeded
@@ -344,11 +390,11 @@ NS_IMETHODIMP nsPipeTransport::Init(nsIFile *executable,
 
   if (mProcess == IPC_NULL_HANDLE) {
     // Process creation failed
-    ERROR_LOG(("nsPipeTransport::Init: Error in creating process ...\n"));
+    ERROR_LOG(("nsPipeTransport::Open: Error in creating process ...\n"));
     return NS_ERROR_FILE_EXECUTION_FAILED;
   }
 
-  DEBUG_LOG(("nsPipeTransport::Init: Created process %p, %s\n",
+  DEBUG_LOG(("nsPipeTransport::Open: Created process %p, %s\n",
 	     mProcess, mExecutable.get() ));
 
   // Close process-side STDIN/STDOUT/STDERR pipes
@@ -431,6 +477,7 @@ nsPipeTransport::Finalize(PRBool destructor)
   // Kill process to wake up thread blocked for input from process
   // NOTE: This should always be done after "interrupting" the thread
   //       so that the interrupt flag is set.
+
   KillProcess();
 
   // Release refs to input arguments
@@ -455,7 +502,7 @@ void
 nsPipeTransport::KillProcess(void)
 {
   // Process cleanup
-  if (mProcess == IPC_NULL_HANDLE)
+  if ((mProcess == IPC_NULL_HANDLE) || (mStartupFlags & PROCESS_DETACHED))
     return;
 
   if ((mStdinWrite != IPC_NULL_HANDLE) &&

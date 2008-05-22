@@ -66,7 +66,8 @@ PRProcess* IPC_CreateProcessRedirectedNSPR(const char *path,
                                            const char *cwd,
                                            PRFileDesc* std_in,
                                            PRFileDesc* std_out,
-                                           PRFileDesc* std_err)
+                                           PRFileDesc* std_err,
+                                           PRBool detach)
 {
 #ifdef XP_WIN
   // Workaround for Win32
@@ -74,6 +75,7 @@ PRProcess* IPC_CreateProcessRedirectedNSPR(const char *path,
   IPC_HideConsoleWin32();
 #endif
 
+  PRProcess* process;
   PRProcessAttr *processAttr;
   processAttr = PR_NewProcessAttr();
 
@@ -93,7 +95,14 @@ PRProcess* IPC_CreateProcessRedirectedNSPR(const char *path,
 
 
   /* Create NSPR process */
-  return PR_CreateProcess(path, argv, envp, processAttr);
+  process = PR_CreateProcess(path, argv, envp, processAttr);
+
+  if (detach) {
+    PR_DetachProcess(process);
+  }
+
+  return process;
+
 }
 
 
@@ -394,7 +403,8 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
                                             const char *cwd,
                                             IPCFileDesc* std_in,
                                             IPCFileDesc* std_out,
-                                            IPCFileDesc* std_err)
+                                            IPCFileDesc* std_err,
+                                            PRBool detach)
 {
   BOOL bRetVal;
 
@@ -443,6 +453,10 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
     startupInfo.wShowWindow = SW_HIDE;
     dwCreationFlags |= CREATE_SHARED_WOW_VDM;
     dwCreationFlags |= CREATE_NEW_CONSOLE;
+    if (detach) {
+      dwCreationFlags |= DETACHED_PROCESS;
+      dwCreationFlags |= CREATE_NEW_PROCESS_GROUP;
+    }
 
   } else {
     // Hide parent process console (after creating one, if need be)
