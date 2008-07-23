@@ -1745,8 +1745,11 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
           extAppLauncher.deleteTemporaryFileOnExit(outFile);
 
           var mimeService = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsIMIMEService);
-          var fileMimeType = mimeService.GetTypeFromFile(outFile);
-          var fileMimeInfo = mimeService.GetFromTypeAndExtension(fileMimeType, fileExt);
+          var fileMimeType = mimeService.getTypeFromFile(outFile);
+          var fileMimeInfo = mimeService.getFromTypeAndExtension(fileMimeType, fileExt);
+
+          fileMimeInfo.launchWithFile(outFile);
+          /*
           if (gEnigDecryptButton && gEnigDecryptButton.getAttribute("buttontype")=="seamonkey") {
             // Seamonkey variant
             if ((fileMimeInfo.preferredAction == fileMimeInfo.useHelperApp ||
@@ -1775,6 +1778,7 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
               return;
             }
           }
+          */
         }
         catch (ex) {
           // if the attachment file type is unknown, an exception is thrown,
