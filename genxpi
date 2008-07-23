@@ -173,6 +173,8 @@ if (!verifyDiskSpace(fProgram, srDest)) {
   case APP_PLATFORM_OS2:
     addDirectory("", "platform/"+ABI_PLATFORM_OS2+"/components",    fComponents, "");
     break;
+  default:
+    addDirectory("", "platform/${platform}/components",    fComponents, "");
   }
 
   err = getLastError();
