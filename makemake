@@ -12,8 +12,27 @@ my $cwd=`pwd`;
 chomp($cwd);
 my $topdir=$cwd;
 
-while ( (length($topdir)>0) && ( basename($topdir) ne "mozilla" )) {
-  $topdir=dirname($topdir);
+open(MAKEFILE, $makelist) || die ("Could not open '$makelist'\n");
+my $depth="";
+while (my $l = <MAKEFILE>) {
+  chomp($l);
+  if ($l =~ /^\s*DEPTH\s*=/) {
+    $l =~ s/(^\s*DEPTH\s*=\s*)(.*)$/$2/;
+    $depth = $l;
+  }
+}
+close(MAKEFILE);
+
+if ($depth eq "") {
+  while ( (length($topdir)>0) && ( basename($topdir) ne "mozilla" )) {
+    $topdir=dirname($topdir);
+  }
+}
+else {
+  chdir($depth) || die "Directory '$depth' not found\n";
+  $topdir=`pwd`;
+  chomp($topdir);
+  chdir($cwd);
 }
 
 if (open(MOZCONFIG, "$topdir/.mozconfig")) {
@@ -86,10 +105,10 @@ foreach $makefile (split(/[ \n\r]+/, $makelist)) {
     system("mkdir -p $targetDir");
     $newMakefile=sprintf("%s/%s", $targetDir, basename($newMakefile));
   }
-  
+
   open(INFILE, $makefile) || die ("cannot open input file '$makefile'\n");
   open(OUTFILE, ">$newMakefile") || die ("cannot open output file '$newMakefile'\n");
-  
+
   my $line;
   while ($line = <INFILE>) {
     $line =~ s/\@srcdir\@/$srcdir/g;
