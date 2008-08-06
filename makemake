@@ -11,9 +11,9 @@ my $makefile;
 my $cwd=`pwd`;
 chomp($cwd);
 my $topdir=$cwd;
+my $depth="";
 
 open(MAKEFILE, $makelist) || die ("Could not open '$makelist'\n");
-my $depth="";
 while (my $l = <MAKEFILE>) {
   chomp($l);
   if ($l =~ /^\s*DEPTH\s*=/) {
@@ -34,6 +34,7 @@ else {
   chomp($topdir);
   chdir($cwd);
 }
+print "INFO: found toplevel source directory $topdir\n";
 
 if (open(MOZCONFIG, "$topdir/.mozconfig")) {
   while (my $l = <MOZCONFIG>) {
@@ -83,26 +84,35 @@ foreach $makefile (split(/[ \n\r]+/, $makelist)) {
   $newMakefile =~ s/.in$//;
 
   if ($mozObjDir eq ".") {
-    while ( (length($wd)>0) && (basename($wd) ne "mozilla") ) {
-      if (length($top_srcdir) == 0) {
-        $top_srcdir="..";
+    if ($depth eq "") {
+      while ( (length($wd)>0) && (basename($wd) ne "mozilla") ) {
+        if (length($top_srcdir) == 0) {
+          $top_srcdir="..";
+        }
+        else {
+          $top_srcdir="../$top_srcdir";
+        }
+        $wd=dirname($wd);
       }
-      else {
-        $top_srcdir="../$top_srcdir";
-      }
-      $wd=dirname($wd);
+      $srcdir=".";
     }
-    $srcdir=".";
+    else {
+      $top_srcdir=$topdir;
+    }
   }
   else {
-    while ( (length($wd)>0) && (basename($wd) ne "mozilla") ) {
-      $wd=dirname($wd);
+    if ($depth eq "") {
+      while ( (length($wd)>0) && (basename($wd) ne "mozilla") ) {
+        $wd=dirname($wd);
+      }
+      $top_srcdir=$wd;
     }
-    $top_srcdir=$wd;
+    else {
+      $top_srcdir=$topdir;
+    }
     $srcdir=$dir;
     my $targetDir=$srcdir;
     $targetDir =~ s/$top_srcdir/$mozObjDir/x;
-    system("mkdir -p $targetDir");
     $newMakefile=sprintf("%s/%s", $targetDir, basename($newMakefile));
   }
 
