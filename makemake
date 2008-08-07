@@ -84,6 +84,7 @@ foreach $makefile (split(/[ \n\r]+/, $makelist)) {
   $newMakefile =~ s/.in$//;
 
   if ($mozObjDir eq ".") {
+    # no OBJDIR specified
     if ($depth eq "") {
       while ( (length($wd)>0) && (basename($wd) ne "mozilla") ) {
         if (length($top_srcdir) == 0) {
@@ -94,13 +95,14 @@ foreach $makefile (split(/[ \n\r]+/, $makelist)) {
         }
         $wd=dirname($wd);
       }
-      $srcdir=".";
     }
     else {
       $top_srcdir=$topdir;
     }
+    $srcdir=".";
   }
   else {
+    # using OBJDIR
     if ($depth eq "") {
       while ( (length($wd)>0) && (basename($wd) ne "mozilla") ) {
         $wd=dirname($wd);
