@@ -115,6 +115,7 @@ foreach $makefile (split(/[ \n\r]+/, $makelist)) {
     $srcdir=$dir;
     my $targetDir=$srcdir;
     $targetDir =~ s/$top_srcdir/$mozObjDir/x;
+    system("mkdir -p '$targetDir'");
     $newMakefile=sprintf("%s/%s", $targetDir, basename($newMakefile));
   }
 
