@@ -47,7 +47,7 @@
         title="&enigmail.preferences.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="prefOnLoad();"
-        ondialogaccept="prefOnAccept();">
+        ondialogaccept="return prefOnAccept();">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail.js"/>

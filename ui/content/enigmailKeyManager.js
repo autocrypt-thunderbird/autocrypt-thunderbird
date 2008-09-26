@@ -607,7 +607,7 @@ function enigCreateKeyMsg() {
   // save file
   var exitCodeObj= {};
   var errorMsgObj = {};
-  enigmailSvc.extractKey(window, 0, "0x"+keyList.join(" 0x"), tmpFile.path, exitCodeObj, errorMsgObj);
+  enigmailSvc.extractKey(window, 0, "0x"+keyList.join(" 0x"), tmpFile, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value != 0) {
     EnigAlert(errorMsgObj.value);
     return;
@@ -734,7 +734,7 @@ function enigmailExportKeys() {
   var keyListStr = "0x"+keyList.join(" 0x");
   var exitCodeObj = {};
   var errorMsgObj = {};
-  enigmailSvc.extractKey(window, exportFlags, keyListStr, outFile.path, exitCodeObj, errorMsgObj);
+  enigmailSvc.extractKey(window, exportFlags, keyListStr, outFile, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value != 0) {
     EnigAlert(EnigGetString("saveKeysFailed")+"\n\n"+errorMsgObj.value);
   }
@@ -755,7 +755,7 @@ function enigmailImportKeysFromFile() {
   if (! inFile) return;
 
   var errorMsgObj = {};
-  var exitCode =enigmailSvc.importKeyFromFile(window, inFile.path, errorMsgObj);
+  var exitCode =enigmailSvc.importKeyFromFile(window, inFile.persistentDescriptor, errorMsgObj);
   if (exitCode != 0) {
     EnigAlert(EnigGetString("importKeysFailed")+"\n\n"+errorMsgObj.value);
   }

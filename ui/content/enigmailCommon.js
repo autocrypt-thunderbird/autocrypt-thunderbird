@@ -1787,7 +1787,7 @@ function EnigCreateRevokeCert(keyId, userId) {
     return -1;
 
   var errorMsgObj = {};
-  var r=enigmailSvc.genRevokeCert(window, "0x"+keyId, outFile.path, "1", "", errorMsgObj);
+  var r=enigmailSvc.genRevokeCert(window, "0x"+keyId, outFile.persistentDescriptor, "1", "", errorMsgObj);
   if (r != 0) {
     EnigAlert(EnigGetString("revokeCertFailed")+"\n\n"+errorMsgObj.value);
   }

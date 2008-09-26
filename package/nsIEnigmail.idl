@@ -48,6 +48,7 @@ interface nsIFileOutputStream;
 interface nsIIPCBuffer;
 interface nsIEnigMimeReadCallback;
 interface nsIFile;
+interface nsILocalFile;
 
 /**
  * The nsIEnigmail provides an openPGP-based encryption/decryption service
@@ -57,7 +58,7 @@ interface nsIEnigmail : nsISupports
 {
   readonly attribute string agentType;        /* "gpg" or "pgp" */
 
-  readonly attribute nsIFile agentPath;        /* executable path */
+  readonly attribute nsILocalFile agentPath;        /* executable path */
 
   readonly attribute nsIPipeConsole console;  /* Enigmail console */
 
@@ -325,7 +326,7 @@ interface nsIEnigmail : nsISupports
   string extractKey(in nsIDOMWindow parent,
                     in unsigned long exportFlags,
                     in string userId,
-                    in string outputFile,
+                    in nsIFile outputFile,
                     out long   exitCode,
                     out wstring errorMsg);
 

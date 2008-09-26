@@ -79,7 +79,7 @@ function enigRefreshConsole() {
 
     var consoleElement = contentFrame.document.getElementById('console');
 
-    consoleElement.firstChild.data = enigmailSvc.console.getData();
+    consoleElement.firstChild.data = EnigConvertToUnicode(enigmailSvc.console.getData(), "utf-8");
 
     if (!contentFrame.mouseDownState)
        contentFrame.scrollTo(0,9999);
@@ -128,7 +128,7 @@ function UpdateCopyMenu()
   goUpdateCommand("cmd_copy");
 }
 
-var CommandController = 
+var CommandController =
 {
   isCommandEnabled: function (aCommand)
   {
@@ -139,8 +139,8 @@ var CommandController =
         return false;
     }
   },
-  
-  supportsCommand: function (aCommand) 
+
+  supportsCommand: function (aCommand)
   {
     switch (aCommand) {
       case "cmd_copy":
@@ -149,7 +149,7 @@ var CommandController =
         return false;
     }
   },
-  
+
   doCommand: function (aCommand)
   {
     switch (aCommand) {
@@ -160,8 +160,8 @@ var CommandController =
         break;
     }
   },
-  
-  onEvent: function (aEvent) 
+
+  onEvent: function (aEvent)
   {
   }
 };

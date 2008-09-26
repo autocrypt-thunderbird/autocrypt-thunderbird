@@ -41,6 +41,7 @@ var gMimePartsElement, gMimePartsValue, gAdvancedMode;
 function prefOnLoad() {
 
    EnigDisplayPrefs(false, true, false);
+   document.getElementById("enigmail_agentPath").value = EnigConvertToUnicode(EnigGetPref("agentPath"), "utf-8");
 
    gAdvancedMode = EnigGetPref("advancedUser");
 
@@ -121,9 +122,14 @@ function enigDetermineGpgPath() {
     } catch (ex) {}
   }
 
-  if (gEnigmailSvc.initialized && typeof(gEnigmailSvc.agentPath) == "string") {
-    var agentPath = gEnigmailSvc.agentPath.replace(/\\\\/g, "\\");
-    document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgFound", agentPath));
+  if (gEnigmailSvc.initialized && typeof(gEnigmailSvc.agentPath) == "object") {
+    try {
+      var agentPath = EnigConvertToUnicode(gEnigmailSvc.agentPath.persistentDescriptor.replace(/\\\\/g, "\\"), "utf-8");
+      document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgFound", agentPath));
+    }
+    catch(ex) {
+      document.getElementById("enigmailGpgPath").setAttribute("value", "error 2");
+    }
   }
   else {
     document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgNotFound"));
@@ -171,6 +177,13 @@ function prefOnAccept() {
 
   DEBUG_LOG("pref-enigmail.js: prefOnAccept\n");
 
+  var autoKey = document.getElementById("enigmail_autoKeyRetrieve").value;
+
+  if (autoKey.search(/.[ ,;\t]./)>=0)  {
+    EnigAlert(EnigGetString("prefEnigmail.oneKeyserverOnly"));
+    return false;
+  }
+
   var oldAgentPath = EnigGetPref("agentPath");
 
   if (! document.getElementById("enigOverrideGpg").checked) {
@@ -179,6 +192,7 @@ function prefOnAccept() {
   var newAgentPath = document.getElementById("enigmail_agentPath").value;
 
   EnigDisplayPrefs(false, false, true);
+  EnigSetPref("agentPath", EnigConvertFromUnicode(newAgentPath, "utf-8"));
 
   //setRecipientsSelectionPref(document.getElementById("enigmail_recipientsSelection").value);
   //EnigSetRadioPref("recipientsSelection", gEnigRecipientsSelection);
@@ -432,14 +446,14 @@ function enigLocateGpg() {
                            "", false, ext,
                            fileName+ext, null);
   if (filePath) {
-    document.getElementById("enigmail_agentPath").value = filePath.path;
+    document.getElementById("enigmail_agentPath").value = EnigConvertToUnicode(filePath.persistentDescriptor, "utf-8");
   }
 }
 
 
-/////////////////////////
-// Uninstallation stuff
-/////////////////////////
+/////////////////////////////////////////////////
+// Uninstallation stuff for Seamonkey < 2.0
+/////////////////////////////////////////////////
 
 function enigUninstall()
 {
@@ -955,44 +969,6 @@ enigUninstaller.prototype =
   removeFromInstalledChrome : function(chromeDir)
   {
     DEBUG_LOG("pref-enigmail: removeFromInstalledChrome\n");
-    /*
-    chromeDir.append("installed-chrome.txt");
-    var ifile = new File(chromeDir.path);
-    ifile.open("r");
-
-    var changeNeeded = false;
-
-    try {
-      var content = "";
-
-      while (!ifile.EOF){
-        var found = false;
-        var ln = ifile.readline();
-
-        for (uri in this.baseURIs){
-          var idx = ln.indexOf(uri);
-          if ((idx > 0) && (idx == ln.length - uri.length)){
-            DEBUG_LOG("Uninstall ---- Removing from installed-chrome.txt : " + ln + "\n");
-            found = true;
-            changeNeeded = true;
-          }
-        }
-        if (!found) content += ln + "\n";
-      }
-    }
-    finally {
-      ifile.close();
-    }
-
-    if (changeNeeded){
-      ifile.open("w",0664);
-      try {
-        ifile.write(content);
-      }
-      finally {
-        ifile.close();
-      }
-    } */
   }
 }
 

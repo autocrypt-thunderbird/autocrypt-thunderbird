@@ -313,7 +313,7 @@ function enigGetSvc() {
         }
       }
       else {
-        EnigSetPref("agentPath", gpgPath.path);
+        EnigSetPref("agentPath", gpgPath.persistentDescriptor);
       }
     }
 

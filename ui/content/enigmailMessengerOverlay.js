@@ -1340,7 +1340,7 @@ function enigMessageSave() {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageSave: path="+saveFile.path+"\n");
 
   if (saveFile.parent)
-    gEnigLastSaveDir = saveFile.parent.path;
+    gEnigLastSaveDir = saveFile.parent.persistentDescriptor;
 
   var textContent = enigGetDecryptedMessage("text/plain", true);
 
@@ -1705,7 +1705,7 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
     return;
   }
 
-  exitStatus=enigmailSvc.decryptAttachment(window, outFile.path,
+  exitStatus=enigmailSvc.decryptAttachment(window, outFile.persistentDescriptor,
                                 callbackArg.attachment.displayName,
                                 callbackArg.ipcBuffer,
                                 exitCodeObj, statusFlagsObj,
@@ -1749,36 +1749,6 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
           var fileMimeInfo = mimeService.getFromTypeAndExtension(fileMimeType, fileExt);
 
           fileMimeInfo.launchWithFile(outFile);
-          /*
-          if (gEnigDecryptButton && gEnigDecryptButton.getAttribute("buttontype")=="seamonkey") {
-            // Seamonkey variant
-            if ((fileMimeInfo.preferredAction == fileMimeInfo.useHelperApp ||
-                fileMimeInfo.preferredAction == fileMimeInfo.useSystemDefault) &&
-                (! fileMimeType.indexOf("text/")==0)) {
-              // open attachment with a helper application
-              window.OpenURL(outFileUri.asciiSpec);
-              return;
-            }
-          }
-          else {
-            // Thunderbird variant
-            if (fileMimeType.indexOf("text/")==0 || fileMimeType.indexOf("image/")==0) {
-              // open attachment using a browser window
-              var w = window.open(outFileUri.asciiSpec,
-                          "_blank",
-                          "chrome,extrachrome,menubar,resizable,scrollbars,status,toolbar,width=600,height=400");
-              w.title=outFile.leafName;
-              if (fileMimeType.indexOf("text/")==0)
-                  w.document.designMode="on";
-              return;
-            }
-            else {
-              // open attachment with a helper application
-              messenger.OpenURL(outFileUri.asciiSpec);
-              return;
-            }
-          }
-          */
         }
         catch (ex) {
           // if the attachment file type is unknown, an exception is thrown,

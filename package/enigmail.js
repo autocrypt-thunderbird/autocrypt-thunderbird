@@ -197,9 +197,14 @@ function CreateFileStream(filePath, permissions) {
   //DEBUG_LOG("enigmail.js: CreateFileStream: file="+filePath+"\n");
 
   try {
-    var localFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
-
-    localFile.initWithPath(filePath);
+    var localFile;
+    if (typeof filePath == "string") {
+      localFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+      initPath(localFile, filePath);
+    }
+    else {
+      localFile = filePath.QueryInterface(Components.interfaces.nsILocalFile);
+    }
 
     if (localFile.exists()) {
 
@@ -229,7 +234,7 @@ function CreateFileStream(filePath, permissions) {
 
 function WriteFileContents(filePath, data, permissions) {
 
-  DEBUG_LOG("enigmail.js: WriteFileContents: file="+filePath+"\n");
+  DEBUG_LOG("enigmail.js: WriteFileContents: file="+filePath.toString()+"\n");
 
   try {
     var fileOutStream = CreateFileStream(filePath, permissions);
@@ -341,7 +346,7 @@ function hexToBytes(hex) {
 }
 
 function printCmdLine(command, args) {
-  return (command.path+" "+args.join(" ")).replace(/\\\\/g, "\\")
+  return (command.persistentDescriptor+" "+args.join(" ")).replace(/\\\\/g, "\\")
 }
 
 
@@ -392,6 +397,17 @@ function CONSOLE_LOG(str) {
 
   if (gEnigmailSvc && gEnigmailSvc.console)
     gEnigmailSvc.console.write(str);
+}
+
+// path initialization function
+// uses persistentDescriptor in case that initWithPath fails
+// (seems to happen frequently with UTF-8 characters in path names)
+function initPath(localFileObj, pathStr) {
+  localFileObj.initWithPath(pathStr);
+
+  if (! localFileObj.exists()) {
+    localFileObj.persistentDescriptor = pathStr;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -591,7 +607,7 @@ function ResolvePath(filePath, envPath, isDosLike) {
      try {
         var pathDir = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
 
-        pathDir.initWithPath(pathDirs[j]);
+        initPath(pathDir, pathDirs[j]);
 
         if (pathDir.exists() && pathDir.isDirectory()) {
            pathDir.appendRelativePath(filePath);
@@ -1448,7 +1464,7 @@ function () {
       }
       else {
         // absolute path
-        pathDir.initWithPath(agentPath);
+        initPath(pathDir, agentPath);
       }
       if (! (pathDir.isFile() /* && pathDir.isExecutable()*/))
         throw Components.results.NS_ERROR_FAILURE;
@@ -1496,7 +1512,7 @@ function () {
     agentPath = agentPath.QueryInterface(Components.interfaces.nsIFile);
   }
 
-  CONSOLE_LOG("EnigmailAgentPath="+agentPath.path+"\n\n");
+  CONSOLE_LOG("EnigmailAgentPath="+agentPath.persistentDescriptor+"\n\n");
 
   this.agentType = agentType;
   this.agentPath = agentPath;
@@ -1645,7 +1661,7 @@ function (domWindow) {
       }
 
       var envFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
-      envFile.initWithPath(this.determineGpgHomeDir());
+      initPath(envFile, this.determineGpgHomeDir());
       envFile.append(".gpg-agent-info");
 
       if ((envFile.exists() || this.isDosLike) && gpgConnectAgent &&
@@ -1728,7 +1744,7 @@ function (domWindow) {
       }
       else {
         this.gpgAgentInfo.envStr = "dummy";
-        envFile.initWithPath(this.determineGpgHomeDir());
+        initPath(envFile, this.determineGpgHomeDir());
         envFile.append("gpg-agent.conf");
 
         var data="default-cache-ttl " + (this.getMaxIdleMinutes()*60)+"\n";
@@ -3593,7 +3609,7 @@ function (recvFlags, protocol, keyserver, port, keyValue, requestObserver, error
     }
 
     var baseDir = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
-    baseDir.initWithPath(this.agentPath);
+    initPath(baseDir, this.agentPath);
 
     // try to locate gpgkeys_*
     if (baseDir)
