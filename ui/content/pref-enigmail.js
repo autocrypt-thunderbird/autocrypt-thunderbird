@@ -125,7 +125,10 @@ function enigDetermineGpgPath() {
   if (gEnigmailSvc.initialized && typeof(gEnigmailSvc.agentPath) == "object") {
     try {
       var agentPath = EnigConvertToUnicode(gEnigmailSvc.agentPath.persistentDescriptor.replace(/\\\\/g, "\\"), "utf-8");
-      document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgFound", agentPath));
+      if (agentPath.length > 50) {
+        agentPath = agentPath.substring(0,50)+"..."
+      }
+      document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgFound", );
     }
     catch(ex) {
       document.getElementById("enigmailGpgPath").setAttribute("value", "error 2");
