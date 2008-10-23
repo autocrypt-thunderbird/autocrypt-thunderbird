@@ -269,7 +269,6 @@
 <!ENTITY enigmail.importMissingKeys.label           "Download missing keys">
 <!ENTITY enigmail.importMissingKeys.accesskey       "D">
 <!ENTITY enigmail.importMissingKeys.tooltip         "Try to import the missing keys from a key server">
-<!ENTITY enigmail.importMissingKeys.accesskey       "I">
 <!ENTITY enigmail.refreshKeys.label                 "Refresh Key List">
 <!ENTITY enigmail.refreshKeys.accesskey             "R">
 <!ENTITY enigmail.perRecipientsOption.label         "Create per-recipient rule(s)">
