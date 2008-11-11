@@ -128,7 +128,7 @@ function enigDetermineGpgPath() {
       if (agentPath.length > 50) {
         agentPath = agentPath.substring(0,50)+"..."
       }
-      document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgFound", );
+      document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgFound", agentPath));
     }
     catch(ex) {
       document.getElementById("enigmailGpgPath").setAttribute("value", "error 2");
