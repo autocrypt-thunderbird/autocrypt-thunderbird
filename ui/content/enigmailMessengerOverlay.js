@@ -267,7 +267,13 @@ function enigMessageReload(noShowReload) {
 
   gEnigNoShowReload = noShowReload;
 
-  MsgReload();
+  if (typeof(MsgReload) == "function") {
+    // <= TB 2.0
+    MsgReload();
+  }
+  else {
+    ReloadMessage();
+  }
 }
 
 function enigmailReloadCompleteMsg() {
