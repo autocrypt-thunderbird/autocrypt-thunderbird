@@ -1095,8 +1095,13 @@ function EnigClearPassphrase() {
   if (!enigmailSvc)
     return;
 
-  enigmailSvc.clearCachedPassphrase();
-  EnigAlertPref(EnigGetString("passphraseCleared"), "warnClearPassphrase");
+  if (enigmailSvc.useGpgAgent()) {
+    EnigAlert(EnigGetString("passphraseCannotBeCleared"))
+  }
+  else {
+    enigmailSvc.clearCachedPassphrase();
+    EnigAlertPref(EnigGetString("passphraseCleared"), "warnClearPassphrase");
+  }
 }
 
 function EnigOpenWin (winName, spec, winOptions, optList) {
