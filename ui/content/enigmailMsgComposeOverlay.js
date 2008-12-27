@@ -907,18 +907,28 @@ function enigEncryptMsg(msgSendType) {
         }
      }
      else {
+       var splitRecipients;
+       var arrLen =  new Object();
+       if (typeof(msgCompFields.SplitRecipients) == "function") {
+          // TB <= 2.0
+          splitRecipients = msgCompFields.SplitRecipients;
+       }
+       else {
+          // TB >= 3.0
+          splitRecipients = msgCompFields.splitRecipients;
+       }
        if (msgCompFields.to) {
-         var recList = msgCompFields.SplitRecipients(msgCompFields.to, true)
+         var recList = splitRecipients(msgCompFields.to, true, arrLen)
          enigAddRecipients(toAddrList, recList);
        }
 
        if (msgCompFields.cc) {
-         recList = msgCompFields.SplitRecipients(msgCompFields.cc, true)
+         recList = splitRecipients(msgCompFields.cc, true, arrLen)
          enigAddRecipients(toAddrList, recList);
        }
 
        if (msgCompFields.bcc) {
-         recList = msgCompFields.SplitRecipients(msgCompFields.bcc, true)
+         recList = splitRecipients(msgCompFields.bcc, true, arrLen)
          enigAddRecipients(toAddrList, recList);
 
          var bccLC = EnigStripEmail(msgCompFields.bcc).toLowerCase()
