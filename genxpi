@@ -304,6 +304,7 @@ zip ${xpiFile} \
     components/${xpiModule}.xpt \
     components/${xpiModule}.js \
     components/enigprefs-service.js \
+    components/enigMsgCompFields.js \
     components/gpg-wrapper.sh \
     defaults/preferences/enigmail.js \
     defaults/pref/enigmail.js \

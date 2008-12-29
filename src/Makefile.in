@@ -98,7 +98,6 @@ LOCAL_INCLUDES	= \
 
 CPPSRCS		=		         \
 	        nsEnigMsgCompose.cpp     \
-	        nsEnigMsgCompFields.cpp  \
 	        nsEnigMimeService.cpp    \
 	        nsEnigMimeListener.cpp   \
 	        nsEnigMimeWriter.cpp     \

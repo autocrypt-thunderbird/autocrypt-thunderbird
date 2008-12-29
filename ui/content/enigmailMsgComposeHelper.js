@@ -228,3 +228,6 @@ function enigGetInvalidAddress(gpgMsg) {
   }
   return invalidAddr.join(" ");
 }
+
+
+

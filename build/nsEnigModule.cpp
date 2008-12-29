@@ -47,7 +47,6 @@
 #include "nsEnigModule.h"
 
 #include "nsEnigMsgCompose.h"
-#include "nsEnigMsgCompFields.h"
 #include "nsEnigMimeDecrypt.h"
 #include "nsEnigMimeVerify.h"
 #include "nsEnigMimeListener.h"
@@ -58,7 +57,6 @@
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgCompose)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgComposeFactory)
-NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgCompFields)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeDecrypt)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeVerify)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeListener)
@@ -101,12 +99,6 @@ static const nsModuleComponentInfo components[] =
       NS_ENIGMSGCOMPOSEFACTORY_CID,
       NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID,
       nsEnigMsgComposeFactoryConstructor,
-    },
-
-    { NS_ENIGMSGCOMPFIELDS_CLASSNAME,
-      NS_ENIGMSGCOMPFIELDS_CID,
-      NS_ENIGMSGCOMPFIELDS_CONTRACTID,
-      nsEnigMsgCompFieldsConstructor,
     },
 
     { NS_ENIGMIMELISTENER_CLASSNAME,

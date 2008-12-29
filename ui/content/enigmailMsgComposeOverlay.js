@@ -736,8 +736,17 @@ function enigConfirmBeforeSend(toAddr, gpgKeys, sendFlags, isOffline, msgSendTyp
 
 
 function enigAddRecipients(toAddrList, recList) {
-  for (var i=0; i<recList.count; i++) {
-    toAddrList.push(EnigStripEmail(recList.StringAt(i).replace(/[\",]/g, "")));
+  // TB <= 2.0
+  if (typeof(recList.count) != "undefined") {
+    for (var i=0; i<recList.count; i++) {
+      toAddrList.push(EnigStripEmail(recList.StringAt(i).replace(/[\",]/g, "")));
+    }
+  }
+  else {
+    // TB >= 3.0
+    for (var i=0; i<recList.length; i++) {
+      toAddrList.push(EnigStripEmail(recList[i].replace(/[\",]/g, "")));
+    }
   }
 }
 
@@ -917,17 +926,18 @@ function enigEncryptMsg(msgSendType) {
           // TB >= 3.0
           splitRecipients = msgCompFields.splitRecipients;
        }
-       if (msgCompFields.to) {
+       //EnigAlert(typeof(msgCompFields.cc));
+       if (msgCompFields.to.length > 0) {
          var recList = splitRecipients(msgCompFields.to, true, arrLen)
          enigAddRecipients(toAddrList, recList);
        }
 
-       if (msgCompFields.cc) {
+       if (msgCompFields.cc.length > 0) {
          recList = splitRecipients(msgCompFields.cc, true, arrLen)
          enigAddRecipients(toAddrList, recList);
        }
 
-       if (msgCompFields.bcc) {
+       if (msgCompFields.bcc.length > 0) {
          recList = splitRecipients(msgCompFields.bcc, true, arrLen)
          enigAddRecipients(toAddrList, recList);
 
@@ -1224,6 +1234,7 @@ function enigEncryptMsg(msgSendType) {
 
        if (!newSecurityInfo) {
          newSecurityInfo = Components.classes[ENIG_ENIGMSGCOMPFIELDS_CONTRACTID].createInstance(Components.interfaces.nsIEnigMsgCompFields);
+         //newSecurityInfo = new EnigMsgCompFields();
 
          if (!newSecurityInfo)
            throw Components.results.NS_ERROR_FAILURE;
