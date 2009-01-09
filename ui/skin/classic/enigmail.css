@@ -8,18 +8,21 @@
 /* styles of other platforms (Windows, Linux/Unix) */
 
 
-#button-enigmail-decrypt
+#button-enigmail-decrypt,
+[typeid="button-enigmail-decrypt"]
   {
     list-style-image : url("chrome://enigmail/skin/enigmail-toolbar.png");
     -moz-image-region: rect(0px 24px 24px 0px);
   }
 
-#button-enigmail-decrypt:hover
+#button-enigmail-decrypt:hover,
+[typeid="button-enigmail-decrypt"]
   {
     -moz-image-region: rect(24px 24px 48px 0px);
   }
 
-#button-enigmail-decrypt[disabled]
+#button-enigmail-decrypt[disabled],
+[typeid="button-enigmail-decrypt"]
   {
     -moz-image-region: rect(48px 24px 72px 0px);
   }

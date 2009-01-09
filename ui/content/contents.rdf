@@ -34,10 +34,12 @@
   <RDF:Seq about="urn:mozilla:overlays">
     <RDF:li resource="chrome://messenger/content/messengercompose/messengercompose.xul"/>
     <RDF:li resource="chrome://messenger/content/mailWindowOverlay.xul"/>
+    <RDF:li resource="chrome://messenger/content/csMailWindowOverlay.xul"/>
     <RDF:li resource="chrome://messenger/content/msgHdrViewOverlay.xul"/>
     <RDF:li resource="chrome://messenger/content/msgPrintEngine.xul"/>
     <RDF:li resource="chrome://messenger/content/am-identity-edit.xul"/>
     <RDF:li resource="chrome://messenger/content/addressbook/addressbook.xul"/>
+    <RDF:li resource="chrome://messenger/content/addressbook/csContactsOverlay.xul"/>
     <RDF:li resource="chrome://messenger/content/addressbook/abContactsPanel.xul"/>
     <RDF:li resource="chrome://global/content/customizeToolbar.xul"/>
     <RDF:li resource="chrome://communicator/content/pref/preftree.xul"/>
@@ -56,6 +58,12 @@
     <RDF:li>chrome://enigmail/content/enigmailMessengerOverlay.xul</RDF:li>
   </RDF:Seq>
 
+  <!-- Spicebird only -->
+  <RDF:Seq about="chrome://messenger/content/csMailWindowOverlay.xul">
+    <RDF:li>chrome://enigmail/content/enigmailCheckLanguage.xul</RDF:li>
+    <RDF:li>chrome://enigmail/content/enigmailMessengerOverlay.xul</RDF:li>
+  </RDF:Seq>
+
   <RDF:Seq about="chrome://messenger/content/msgHdrViewOverlay.xul">
     <RDF:li>chrome://enigmail/content/enigmailMsgHdrViewOverlay.xul</RDF:li>
   </RDF:Seq>
@@ -70,6 +78,11 @@
   </RDF:Seq>
 
   <RDF:Seq about="chrome://messenger/content/addressbook/addressbook.xul">
+    <RDF:li>chrome://enigmail/content/enigmailAbCardViewOverlay.xul</RDF:li>
+  </RDF:Seq>
+
+  <!-- Spicebird only -->
+  <RDF:Seq about="chrome://messenger/content/addressbook/csContactsOverlay.xul">
     <RDF:li>chrome://enigmail/content/enigmailAbCardViewOverlay.xul</RDF:li>
   </RDF:Seq>
 

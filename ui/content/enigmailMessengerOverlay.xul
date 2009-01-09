@@ -184,18 +184,17 @@
           </menupopup>
         </menu>
 
-        <menuitem id="enigmail_wizard"
-             label="&enigmail.setupWiz.label;"
-             accesskey="&enigmail.setupWiz.accesskey;"
-             advanced="reverse"
-             oncommand="EnigOpenSetupWizard();" />
-
         <menuseparator/>
 
         <menuitem id="enigmail_help"
              label="&enigmail.help.label;"
              accesskey="&enigmail.help.accesskey;"
              oncommand="EnigHelpWindow('messenger');" />
+
+        <menuitem id="enigmail_wizard"
+             label="&enigmail.setupWiz.label;"
+             accesskey="&enigmail.setupWiz.accesskey;"
+             oncommand="EnigOpenSetupWizard();" />
 
         <menuitem id="enigmail_about"
              label="&enigmail.about.label;"
@@ -339,11 +338,159 @@
           </menupopup>
         </menu>
 
+        <menuseparator/>
+
+        <menuitem id="enigmail_help"
+             label="&enigmail.help.label;"
+             accesskey="&enigmail.help.accesskey;"
+             oncommand="EnigHelpWindow('messenger');" />
+
         <menuitem id="enigmail_wizard"
              label="&enigmail.setupWiz.label;"
              accesskey="&enigmail.setupWiz.accesskey;"
-             advanced="reverse"
              oncommand="EnigOpenSetupWizard();" />
+
+        <menuitem id="enigmail_about"
+             label="&enigmail.about.label;"
+             accesskey="&enigmail.about.accesskey;"
+             oncommand="EnigViewAbout();" />
+
+      </menupopup>
+    </menu>
+
+  </menubar>
+
+<!-- Spicebird -->
+  <menubar id="framework-menubar">
+    <menu id="menu_Enigmail"
+          label="&enigmail.openpgp.label;"
+          accesskey="&enigmail.messengermenu.accesskey;"
+          insertafter="messageMenu,go-menu,view-menu" insertbefore="tools-menu"
+          app="mailnews">
+
+      <menupopup id="menu_EnigmailPopup"
+        onpopupshowing="EnigCollapseAdvanced(this, 'hidden', enigUpdateOptionsDisplay());">
+
+        <menuitem id="enigmail_decryptverify"
+             label="&enigmail.decryptverify.label;"
+             accesskey="&enigmail.decryptverify.accesskey;"
+             advanced="true"
+             hidden="false"
+             oncommand="enigMessageDecrypt();" />
+
+        <menuitem id="enigmail_savedecrypted"
+             label="&enigmail.savedecrypted.label;"
+             accesskey="&enigmail.savedecrypted.accesskey;"
+             oncommand="enigMessageSave();" />
+
+        <menuseparator
+             advanced="true"
+             hidden="false"/>
+
+        <menuitem id="enigmail_autoDecrypt"
+             type="checkbox"
+             checked="false"
+             advanced="true"
+             hidden="false"
+             label="&enigmail.autoDecrypt.label;"
+             accesskey="&enigmail.autoDecrypt.accesskey;"
+             oncommand="enigToggleAttribute('autoDecrypt');" />
+
+        <menuseparator
+             advanced="true"
+             hidden="false"/>
+
+        <menuitem id="enigmail_clearPassphrase"
+             label="&enigmail.clearPassphrase.label;"
+             accesskey="&enigmail.clearPassphrase.accesskey;"
+             advanced="true"
+             hidden="false"
+             oncommand="EnigClearPassphrase();" />
+
+        <menuitem id="enigmail_reload_msg"
+             label="&enigmail.reload.label;"
+             accesskey="&enigmail.reload.accesskey;"
+             advanced="true"
+             hidden="false"
+             oncommand="enigmailReloadCompleteMsg();" />
+
+        <menu id="enigmail_sendersKeyMenu"
+             label="&enigmail.sendersKeyMenu.label;"
+             advanced="true"
+             hidden="false"
+             accesskey="&enigmail.sendersKeyMenu.accesskey;">
+
+          <menupopup onpopupshowing="enigUpdateSendersKeyMenu();">
+
+            <menuitem id="enigmail_importpublickey"
+                 label="&enigmail.importpublickey.label;"
+                 accesskey="&enigmail.importpublickey.accesskey;"
+                 oncommand="enigMessageImport();" />
+
+            <menuseparator/>
+
+            <menuitem label="&enigmail.signSenderKey.label;"
+                      id="enigmail_keyMgmtSignKey"
+                      oncommand="enigSignKey();"/>
+            <menuitem label="&enigmail.trustSenderKey.label;"
+                      id="enigmail_keyMgmtKeyTrust"
+                      oncommand="enigEditKeyTrust();"/>
+            <menuitem label="&enigmail.showPhoto.label;"
+                      id="enigmail_keyMgmtShowPhoto"
+                      oncommand="enigShowPhoto();"/>
+          </menupopup>
+        </menu>
+
+        <menuseparator/>
+
+        <menuitem id="enigmail_prefs"
+             label="&enigmail.prefs.label;"
+             accesskey="&enigmail.prefs.accesskey;"
+             oncommand="EnigPrefWindow(true,'thunderbird');" />
+
+
+        <menuitem id="enigmail_RulesEditor"
+            label="&enigmail.editRules.label;"
+            accesskey="&enigmail.editRules.accesskey;"
+            advanced="true"
+            hidden="false"
+            oncommand="EnigRulesEditor();"/>
+
+
+        <menuitem id="enigmail_keymgmt"
+             label="&enigmail.keyManWindow.label;"
+             accesskey="&enigmail.keyManWindow.accesskey;"
+             oncommand="EnigKeyManager();" />
+
+        <menuitem label="&enigmail.adminSmartCard.label;"
+                id="enigmail_smartCard"
+                accesskey="&enigmail.adminSmartCard.accesskey;"
+                advanced="true"
+                hidden="false"
+                oncommand="EngmailCardDetails()"/>
+
+        <menuseparator
+             advanced="true"
+             hidden="false"/>
+
+        <menu id="enigmail_debugMenu"
+             label="&enigmail.debugMenu.label;"
+             advanced="true"
+             hidden="false"
+             accesskey="&enigmail.debugMenu.accesskey;">
+
+          <menupopup>
+            <menuitem id="enigmail_console"
+                 label="&enigmail.viewconsole.label;"
+                 accesskey="&enigmail.viewconsole.accesskey;"
+                 oncommand="EnigViewConsole();" />
+
+            <menuitem id="enigmail_debug_log"
+                 label="&enigmail.viewdebuglog.label;"
+                 accesskey="&enigmail.viewdebuglog.accesskey;"
+                 oncommand="EnigViewDebugLog();" />
+          </menupopup>
+        </menu>
 
         <menuseparator/>
 
@@ -351,6 +498,11 @@
              label="&enigmail.help.label;"
              accesskey="&enigmail.help.accesskey;"
              oncommand="EnigHelpWindow('messenger');" />
+
+        <menuitem id="enigmail_wizard"
+             label="&enigmail.setupWiz.label;"
+             accesskey="&enigmail.setupWiz.accesskey;"
+             oncommand="EnigOpenSetupWizard();" />
 
         <menuitem id="enigmail_about"
              label="&enigmail.about.label;"
@@ -393,6 +545,19 @@
               oncommand="enigMessageDecrypt();"
               buttontype="thunderbird"
               insertafter="button-newmsg"
+              />
+  </toolbarpalette>
+
+<!-- Spicebird part -->
+   <toolbarpalette id="framework-toolpalette">
+      <toolbarbutton class="framework-toolbarbutton padded-toolbarbutton"
+              id="button-enigmail-decrypt"
+              label="&enigmail.decryptbutton.label;"
+              tooltiptext="&enigmail.decryptbutton.tip;"
+              oncommand="enigMessageDecrypt();"
+              buttontype="thunderbird"
+              insertafter="button-newmsg"
+              app="mailnews"
               />
   </toolbarpalette>
 
@@ -454,7 +619,8 @@
 
   <statusbar id="status-bar">
     <hbox id="enigmail-status-bar"
-          insertafter="totalMessageCount">
+          insertafter="totalMessageCount"
+          app="mailnews">
       <statusbarpanel id="enigmail-signed-status"
         class="statusbarpanel-iconic"
         collapsed="true" oncommand="enigViewSecurityInfo();"/>

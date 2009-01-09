@@ -1301,18 +1301,31 @@ function enigMsgPrint(elementId) {
 
   var messageList = [uri];
 
-  if (gPrintSettings == null) {
-    gPrintSettings = PrintUtils.getPrintSettings();
-  }
-
   var printPreview = (elementId.indexOf("printpreview")>=0);
-  var printEngineWindow = window.openDialog("chrome://messenger/content/msgPrintEngine.xul",
-                                        "",
-                                        "chrome,dialog=no,all,centerscreen",
-                                        1, messageList, statusFeedback, gPrintSettings,
-                                        printPreview, Components.interfaces.nsIMsgPrintEngine.MNAB_PRINTPREVIEW_MSG,
-                                        window);
 
+  try {
+    // TB <= 2.0
+    if (gPrintSettings == null) {
+      gPrintSettings = PrintUtils.getPrintSettings();
+    }
+    
+    window.openDialog("chrome://messenger/content/msgPrintEngine.xul",
+                      "",
+                      "chrome,dialog=no,all,centerscreen",
+                      1, messageList, statusFeedback, gPrintSettings,
+                      printPreview, Components.interfaces.nsIMsgPrintEngine.MNAB_PRINTPREVIEW_MSG,
+                      window);
+  }
+  catch (ex) {
+    // TB >= 3.0
+    window.openDialog("chrome://messenger/content/msgPrintEngine.xul",
+                      "",
+                      "chrome,dialog=no,all,centerscreen",
+                      1, messageList, statusFeedback,
+                      printPreview, Components.interfaces.nsIMsgPrintEngine.MNAB_PRINTPREVIEW_MSG,
+                      window);
+  }
+  
   return true;
 
 }

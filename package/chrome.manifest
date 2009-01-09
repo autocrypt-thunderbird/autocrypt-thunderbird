@@ -4,12 +4,15 @@ skin          enigmail    classic/1.0 jar:chrome/enigmail-skin-tbird.jar!/skin/c
 overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://enigmail/content/enigmailCheckLanguage.xul
 overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://enigmail/content/enigmailMsgComposeOverlay.xul
 overlay chrome://messenger/content/mailWindowOverlay.xul chrome://enigmail/content/enigmailCheckLanguage.xul
+overlay chrome://messenger/content/csMailWindowOverlay.xul chrome://enigmail/content/enigmailCheckLanguage.xul
 overlay chrome://messenger/content/mailWindowOverlay.xul chrome://enigmail/content/enigmailMessengerOverlay.xul
+overlay chrome://messenger/content/csMailWindowOverlay.xul chrome://enigmail/content/enigmailMessengerOverlay.xul
 overlay chrome://messenger/content/msgHdrViewOverlay.xul chrome://enigmail/content/enigmailMsgHdrViewOverlay.xul
 overlay chrome://messenger/content/msgPrintEngine.xul chrome://enigmail/content/enigmailMsgPrintOverlay.xul
 overlay chrome://messenger/content/am-identity-edit.xul chrome://enigmail/content/enigmailAmIdEditOverlay.xul
 overlay chrome://messenger/content/am-identity-edit.xul chrome://enigmail/content/enigmailEditIdentity.xul
 overlay chrome://messenger/content/addressbook/addressbook.xul chrome://enigmail/content/enigmailAbCardViewOverlay.xul
+overlay chrome://messenger/content/addressbook/csContactsOverlay.xul chrome://enigmail/content/enigmailAbCardViewOverlay.xul
 overlay chrome://messenger/content/addressbook/abContactsPanel.xul chrome://enigmail/content/enigmailAbContactsPanel.xul
 overlay chrome://global/content/customizeToolbar.xul chrome://enigmail/content/enigmailCustToolOverlay.xul
 overlay chrome://communicator/content/pref/preftree.xul chrome://enigmail/content/enigmailPrefsOverlay.xul

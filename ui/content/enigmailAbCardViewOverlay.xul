@@ -21,6 +21,15 @@
     
   </window>
 
+  <!-- Spicebird only -->
+  <popupset id="framework-popupset">
+    <popup id="enigmailContext" popupanchor="bottomleft">
+      <menuitem id="enigmailCreateCardRule"
+                label="&enigmail.createRuleFromAddr.label;"
+                oncommand="enigCreateRuleFromAddress(document.popupNode);"/>
+    </popup>
+  </popupset>
+
   <popup id="abResultsTreeContext">
       <menuitem id="enigmailCreateTreeRule"
                 label="&enigmail.createRuleFromAddr.label;"
@@ -31,11 +40,3 @@
   <vbox id="cvAddresses" context="enigmailContext"/>
 
 </overlay>       
-
-
-
-
-
-
-
-

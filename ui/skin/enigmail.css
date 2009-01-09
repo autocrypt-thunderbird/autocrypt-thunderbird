@@ -1,23 +1,29 @@
 /* Enigmail styles */
 
-#button-enigmail-decrypt
+#button-enigmail-decrypt,
+[typeid="button-enigmail-decrypt"] /* typeid is used by Spicebird */
   {
     list-style-image      : url("chrome://enigmail/skin/enigdecrypt.png");
   }
 
 #button-enigmail-decrypt[disabled="true"],
 #button-enigmail-decrypt[disabled="true"]:hover,
-#button-enigmail-decrypt[disabled="true"]:hover:active
+#button-enigmail-decrypt[disabled="true"]:hover:active,
+[typeid="button-enigmail-decrypt"][disabled="true"],
+[typeid="button-enigmail-decrypt"][disabled="true"]:hover,
+[typeid="button-enigmail-decrypt"][disabled="true"]:hover:active
   {
     list-style-image      : url("chrome://enigmail/skin/enigdecrypt-dis.png");
   }
 
-#button-enigmail-decrypt:hover
+#button-enigmail-decrypt:hover,
+[typeid="button-enigmail-decrypt"]:hover
   {
     list-style-image      : url("chrome://enigmail/skin/enigdecrypt-hov.png");
   }
 
-#button-enigmail-decrypt:hover:active
+#button-enigmail-decrypt:hover:active,
+[typeid="button-enigmail-decrypt"]:hover:active
   {
     list-style-image      : url("chrome://enigmail/skin/enigdecrypt-act.png");
   }

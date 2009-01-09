@@ -101,8 +101,8 @@ EXTRA_DSO_LDOPTS = \
 else
 EXTRA_DSO_LDOPTS = \
 		$(LIBS_DIR) \
-		$(XPCOM_LIBS) \
 		$(XPCOM_GLUE_LDOPTS) \
+		$(XPCOM_LIBS) \
 		$(NSPR_LIBS) \
 		$(BUILD_STATIC) \
 		$(NULL)
