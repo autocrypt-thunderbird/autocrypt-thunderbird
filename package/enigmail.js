@@ -192,6 +192,8 @@ const ENC_TYPE_ATTACH_ASCII = 2;
 
 var gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512", "sha224"];
 
+var gKeyAlgorithms = [];
+
 function CreateFileStream(filePath, permissions) {
 
   //DEBUG_LOG("enigmail.js: CreateFileStream: file="+filePath+"\n");
@@ -2613,78 +2615,88 @@ function (prompter, uiFlags, fromMailAddr, hashAlgoObj) {
     return 2;
   }
 
-  var passwdObj   = new Object();
-  var useAgentObj = new Object();
-  // Get the passphrase and remember it for the next 2 subsequent calls to gpg
-  if (!GetPassphrase(null, passwdObj, useAgentObj, 2)) {
-    ERROR_LOG("enigmail.js: Enigmail.determineHashAlgorithm: Error - no passphrase supplied\n");
+  if (typeof(gKeyAlgorithms[fromMailAddr]) != "string") {
+    // hash algorithm not yet known
+    var passwdObj   = new Object();
+    var useAgentObj = new Object();
+    // Get the passphrase and remember it for the next 2 subsequent calls to gpg
+    if (!GetPassphrase(null, passwdObj, useAgentObj, 2)) {
+      ERROR_LOG("enigmail.js: Enigmail.determineHashAlgorithm: Error - no passphrase supplied\n");
 
-    return 3;
-  }
-
-  var noProxy = true;
-  var testUiFlags = nsIEnigmail.UI_TEST;
-
-  var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
-  var bufferSize = 10240;
-
-  ipcBuffer.open(bufferSize, false);
-
-  var pipeTrans = this.encryptMessageStart(null, prompter, testUiFlags,
-                                           fromMailAddr, "",
-                                           hashAlgo, sendFlags, ipcBuffer,
-                                           noProxy, errorMsgObj);
-  if (!pipeTrans) {
-    return 1;
-  }
-
-  var plainText = "Dummy Test";
-
-  // Write to child STDIN
-  // (ignore errors, because child may have exited already, closing STDIN)
-  try {
-    pipeTrans.writeSync(plainText, plainText.length);
-  } catch (ex) {}
-
-  // Wait for child STDOUT to close
-  pipeTrans.join();
-
-  var msgText = ipcBuffer.getData();
-  ipcBuffer.shutdown();
-
-  var exitCode = this.encryptMessageEnd(null, prompter, testUiFlags, sendFlags,
-                                        plainText.length, pipeTrans,
-                                        statusFlagsObj, errorMsgObj);
-
-  if ((exitCode == 0) && !msgText) exitCode = 1;
-  // if (exitCode > 0) exitCode = -exitCode;
-
-  if (exitCode != 0) {
-    // Abormal return
-    if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
-      // "Unremember" passphrase on error return
-      this.clearCachedPassphrase();
-      errorMsgObj.value = EnigGetString("badPhrase");
+      return 3;
     }
-    this.alertMsg(null, errorMsgObj.value);
-    return exitCode;
-  }
 
-  var m = msgText.match(/^(Hash: )(.*)$/m);
-  if (m.length > 2 && m[1] == "Hash: ") {
-    var hashAlgorithm = m[2].toLowerCase();
-    for (var i=1; i < gMimeHashAlgorithms.length; i++) {
-      if (gMimeHashAlgorithms[i] == hashAlgorithm) {
-        DEBUG_LOG("enigmail.js: Enigmail.determineHashAlgorithm: found hashAlgorithm "+hashAlgorithm+"\n");
-        hashAlgoObj.value = hashAlgorithm;
-        return 0;
+    var noProxy = true;
+    var testUiFlags = nsIEnigmail.UI_TEST;
+
+    var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+    var bufferSize = 10240;
+
+    ipcBuffer.open(bufferSize, false);
+
+    var pipeTrans = this.encryptMessageStart(null, prompter, testUiFlags,
+                                             fromMailAddr, "",
+                                             hashAlgo, sendFlags, ipcBuffer,
+                                             noProxy, errorMsgObj);
+    if (!pipeTrans) {
+      return 1;
+    }
+
+    var plainText = "Dummy Test";
+
+    // Write to child STDIN
+    // (ignore errors, because child may have exited already, closing STDIN)
+    try {
+      pipeTrans.writeSync(plainText, plainText.length);
+    } catch (ex) {}
+
+    // Wait for child STDOUT to close
+    pipeTrans.join();
+
+    var msgText = ipcBuffer.getData();
+    ipcBuffer.shutdown();
+
+    var exitCode = this.encryptMessageEnd(null, prompter, testUiFlags, sendFlags,
+                                          plainText.length, pipeTrans,
+                                          statusFlagsObj, errorMsgObj);
+
+    if ((exitCode == 0) && !msgText) exitCode = 1;
+    // if (exitCode > 0) exitCode = -exitCode;
+
+    if (exitCode != 0) {
+      // Abormal return
+      if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
+        // "Unremember" passphrase on error return
+        this.clearCachedPassphrase();
+        errorMsgObj.value = EnigGetString("badPhrase");
+      }
+      this.alertMsg(null, errorMsgObj.value);
+      return exitCode;
+    }
+
+    var m = msgText.match(/^(Hash: )(.*)$/m);
+    if (m.length > 2 && m[1] == "Hash: ") {
+      var hashAlgorithm = m[2].toLowerCase();
+      for (var i=1; i < gMimeHashAlgorithms.length; i++) {
+        if (gMimeHashAlgorithms[i] == hashAlgorithm) {
+          DEBUG_LOG("enigmail.js: Enigmail.determineHashAlgorithm: found hashAlgorithm "+hashAlgorithm+"\n");
+          gKeyAlgorithms[fromMailAddr] = hashAlgorithm;
+          hashAlgoObj.value = hashAlgorithm;
+          return 0;
+        }
       }
     }
+
+    DEBUG_LOG("enigmail.js: Enigmail.determineHashAlgorithm: no hashAlgorithm found\n");
+
+    return 2;
   }
-
-  DEBUG_LOG("enigmail.js: Enigmail.determineHashAlgorithm: no hashAlgorithm found\n");
-
-  return 2;
+  else {
+    DEBUG_LOG("enigmail.js: Enigmail.determineHashAlgorithm: hashAlgorithm "+gKeyAlgorithms[fromMailAddr]+" is cached\n");
+    hashAlgoObj.value = gKeyAlgorithms[fromMailAddr];
+  }
+  
+  return 0;
 }
 
 
