@@ -124,7 +124,13 @@ function enigDetermineGpgPath() {
 
   if (gEnigmailSvc.initialized && typeof(gEnigmailSvc.agentPath) == "object") {
     try {
-      var agentPath = EnigConvertToUnicode(gEnigmailSvc.agentPath.persistentDescriptor.replace(/\\\\/g, "\\"), "utf-8");
+      var agentPath = "";
+      if (EnigGetOS() == "WINNT") {
+        agentPath = EnigConvertToUnicode(gEnigmailSvc.agentPath.persistentDescriptor.replace(/\\\\/g, "\\"), "utf-8");
+      }
+      else {
+        agentPath = gEnigmailSvc.agentPath.path.replace(/\\\\/g, "\\");
+      }
       if (agentPath.length > 50) {
         agentPath = agentPath.substring(0,50)+"..."
       }
