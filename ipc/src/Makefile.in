@@ -39,6 +39,7 @@ include $(DEPTH)/config/autoconf.mk
 
 MODULE		= ipc
 LIBRARY_NAME	= ipc_s
+USE_STATIC_LIBS = 1
 
 # extract major and minor version of mozilla
 

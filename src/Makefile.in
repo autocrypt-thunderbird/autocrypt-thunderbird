@@ -40,6 +40,7 @@ include $(DEPTH)/config/autoconf.mk
 
 MODULE		= enigmime
 LIBRARY_NAME	= enigmime_s
+USE_STATIC_LIBS = 1
 
 # extract major and minor version of mozilla
 
