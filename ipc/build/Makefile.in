@@ -42,9 +42,11 @@ XPI_MODULE_VERS = 1.2.0
 MODULE		= ipc
 LIBRARY_NAME	= ipc
 SHORT_LIBNAME	= ipc
+
 IS_COMPONENT	= 1
 EXPORT_LIBRARY = 0
 USE_STATIC_LIBS = 1
+
 
 MOZILLA_VERSION_PARTS = $(subst ., ,$(MOZILLA_VERSION))
 MOZILLA_MAJOR_VERSION = $(firstword $(MOZILLA_VERSION_PARTS))
@@ -90,17 +92,7 @@ LOCAL_INCLUDES	= \
 		-I$(srcdir)/../src \
 		$(NULL)
 
-ifdef USE_XPCOM_GLUE
-  EXTRA_DSO_LDOPTS = \
-    $(XPCOM_GLUE_LIBS) \
-    $(LIBS_DIR) \
-    $(XPCOM_GLUE_LDOPTS) \
-    $(XPCOM_LIBS) \
-    $(NSPR_LIBS) \
-    $(BUILD_STATIC) \
-    $(NULL)
-  else
-  ifeq ($(OS_ARCH),WINNT)
+ifneq ($(OS_ARCH),WINNT)
     EXTRA_DSO_LDOPTS = \
       $(LIBS_DIR) \
       $(XPCOM_LIBS) \
@@ -108,7 +100,7 @@ ifdef USE_XPCOM_GLUE
       $(NSPR_LIBS) \
       $(BUILD_STATIC) \
       $(NULL)
-  else
+else
     EXTRA_DSO_LDOPTS = \
       $(LIBS_DIR) \
       $(XPCOM_GLUE_LDOPTS) \
@@ -116,7 +108,6 @@ ifdef USE_XPCOM_GLUE
       $(NSPR_LIBS) \
       $(BUILD_STATIC) \
       $(NULL)
-  endif
 endif
 
 include $(topsrcdir)/config/rules.mk

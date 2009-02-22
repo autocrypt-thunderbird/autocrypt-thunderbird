@@ -54,10 +54,12 @@ SHORT_LIBNAME	= enigmime
 MODULE_NAME	= EnigModule
 
 IS_COMPONENT	= 1
-EXPORT_LIBRARY = 0
-USE_STATIC_LIBS = 1
-ifneq ($(OS_ARCH),WINNT)
-  FORCE_SHARED_LIB = 1
+FORCE_SHARED_LIB = 1
+
+ifeq ($(OS_ARCH),WINNT)
+  EXPORT_LIBRARY = 0
+  USE_STATIC_LIBS = 1
+  FORCE_SHARED_LIB = 0
 endif
 
 MOZILLA_VERSION_PARTS = $(subst ., ,$(MOZILLA_VERSION))
@@ -129,37 +131,16 @@ SHARED_LIBRARY_LIBS = \
 		../ipc/src/$(LIB_PREFIX)ipc_s.$(LIB_SUFFIX) \
 		$(NULL)
 
-ifdef USE_XPCOM_GLUE
-  ifeq ($(OS_ARCH),WINNT)
+ifeq ($(OS_ARCH),WINNT)
     EXTRA_DSO_LDOPTS = \
-		  $(XPCOM_GLUE_LIBS) \
 		  $(LIBS_DIR) \
 		  $(XPCOM_LIBS) \
+		  $(ENIGXPCOMCOMPAT) \
 		  $(XPCOM_GLUE_LDOPTS) \
 		  $(NSPR_LIBS) \
 		  $(BUILD_STATIC) \
 		  $(NULL)
-  else
-    EXTRA_DSO_LDOPTS = \
-		  $(XPCOM_GLUE_LIBS) \
-		  $(LIBS_DIR) \
-		  $(XPCOM_GLUE_LDOPTS) \
-		  $(XPCOM_LIBS) \
-		  $(NSPR_LIBS) \
-		  $(BUILD_STATIC) \
-		  $(NULL)
-  endif
 else
-  ifeq ($(OS_ARCH),WINNT)
-    EXTRA_DSO_LDOPTS = \
-		  $(LIBS_DIR) \
-		  $(XPCOM_LIBS) \
-		  $(ENIGXPCOMCOMPAT) \
-		  $(XPCOM_GLUE_LDOPTS) \
-		  $(NSPR_LIBS) \
-		  $(BUILD_STATIC) \
-		  $(NULL)
-  else
     EXTRA_DSO_LDOPTS = \
 		  $(LIBS_DIR) \
 		  $(XPCOM_GLUE_LDOPTS) \
@@ -168,7 +149,6 @@ else
 		  $(NSPR_LIBS) \
 		  $(BUILD_STATIC) \
 		  $(NULL)
-  endif
 endif
 
 include $(topsrcdir)/config/rules.mk
