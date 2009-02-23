@@ -92,7 +92,7 @@ LOCAL_INCLUDES	= \
 		-I$(srcdir)/../src \
 		$(NULL)
 
-ifneq ($(OS_ARCH),WINNT)
+ifeq ($(OS_ARCH),WINNT)
     EXTRA_DSO_LDOPTS = \
       $(LIBS_DIR) \
       $(XPCOM_LIBS) \
