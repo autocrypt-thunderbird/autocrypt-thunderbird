@@ -392,7 +392,7 @@ function enigExtractAndAttachKey(uid) {
   var exitCodeObj= {};
   var errorMsgObj = {};
 
-  enigmailSvc.extractKey(window, 0, uid.join(" "), tmpFile.path, exitCodeObj, errorMsgObj);
+  enigmailSvc.extractKey(window, 0, uid.join(" "), tmpFile /*.path */, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value != 0) {
     EnigAlert(errorMsgObj.value);
     return  null;
@@ -413,11 +413,20 @@ function enigExtractAndAttachKey(uid) {
   keyAttachment.contentType = "application/pgp-keys";
 
   // add attachment to msg
-  AddAttachment(keyAttachment);
+  enigAddAttachment(keyAttachment);
 
   ChangeAttachmentBucketVisibility(false);
   gContentChanged = true;
   return keyAttachment;
+}
+
+function enigAddAttachment(attachment) {
+  if (typeof(AddAttachment) == "undefined") {
+    AddUrlAttachment(attachment);
+  }
+  else {
+    AddAttachment(attachment);
+  }
 }
 
 function enigUndoEncryption() {
@@ -2061,7 +2070,7 @@ function enigEncryptAttachments(bucketList, newAttachments, window, uiFlags,
       fileAttachment.name = newAttachments[i].origName + EnigGetPref("inlineSigAttachExt");
 
       // add attachment to msg
-      AddAttachment(fileAttachment);
+      enigAddAttachment(fileAttachment);
     }
 
   }
