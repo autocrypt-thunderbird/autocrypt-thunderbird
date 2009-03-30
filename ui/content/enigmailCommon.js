@@ -1778,6 +1778,13 @@ function EnigShowPhoto(keyId, userId, photoNumber) {
   }
 }
 
+function EnigGetFilePath (nsFileObj) {
+  if (EnigGetOS() == "WINNT") {
+    return EnigConvertToUnicode(nsFileObj.persistentDescriptor, "utf-8");
+  }
+  return nsFileObj.path;
+}
+
 function EnigCreateRevokeCert(keyId, userId) {
   var defaultFileName = userId.replace(/[\<\>]/g, "");
   defaultFileName += " (0x"+keyId.substr(-8,8)+") rev.asc"
@@ -1792,7 +1799,7 @@ function EnigCreateRevokeCert(keyId, userId) {
     return -1;
 
   var errorMsgObj = {};
-  var r=enigmailSvc.genRevokeCert(window, "0x"+keyId, outFile.persistentDescriptor, "1", "", errorMsgObj);
+  var r=enigmailSvc.genRevokeCert(window, "0x"+keyId, EnigGetFilePath(outFile), "1", "", errorMsgObj);
   if (r != 0) {
     EnigAlert(EnigGetString("revokeCertFailed")+"\n\n"+errorMsgObj.value);
   }
