@@ -977,8 +977,10 @@ nsPipeTransport::WriteSync(const char *buf, PRUint32 count)
   rv = Write(buf, count, &writeCount);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  if (writeCount != count)
+  if (writeCount != count) {
+      DEBUG_LOG(("nsPipeTransport::WriteSync: written %d instead of %d bytes\n", writeCount, count));
     return NS_ERROR_FAILURE;
+  }
 
   return NS_OK;
 }
