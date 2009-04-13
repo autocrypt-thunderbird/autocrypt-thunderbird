@@ -94,7 +94,7 @@ const NS_DOMSERIALIZER_CONTRACTID = "@mozilla.org/xmlextras/xmlserializer;1";
 const NS_CATMAN_CONTRACTID = "@mozilla.org/categorymanager;1";
 const NS_CLINE_SERVICE_CONTRACTID = "@mozilla.org/enigmail/cline-handler;1";
 const NS_EXTENSION_MANAGER_CONTRACTID = "@mozilla.org/extensions/manager;1"
-
+const NS_XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
 // Interfaces
 const nsISupports            = Components.interfaces.nsISupports;
@@ -348,7 +348,7 @@ function hexToBytes(hex) {
 }
 
 function printCmdLine(command, args) {
-  return (command.persistentDescriptor+" "+args.join(" ")).replace(/\\\\/g, "\\")
+  return (getFilePath(command)+" "+args.join(" ")).replace(/\\\\/g, "\\")
 }
 
 
@@ -410,6 +410,22 @@ function initPath(localFileObj, pathStr) {
   if (! localFileObj.exists()) {
     localFileObj.persistentDescriptor = pathStr;
   }
+}
+
+// return the readable path of a file object
+function getFilePath (nsFileObj) {
+  if (detectOS() == "WINNT") {
+    return EnigConvertToUnicode(nsFileObj.persistentDescriptor, "utf-8");
+  }
+  return nsFileObj.path;
+}
+
+// return the OS string from XUL runtime
+function detectOS () {
+
+  var xulAppinfo = Components.classes[NS_XPCOM_APPINFO].getService(Components.interfaces.nsIXULRuntime);
+  return xulAppinfo.OS;
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1514,7 +1530,7 @@ function () {
     agentPath = agentPath.QueryInterface(Components.interfaces.nsIFile);
   }
 
-  CONSOLE_LOG("EnigmailAgentPath="+agentPath.persistentDescriptor+"\n\n");
+  CONSOLE_LOG("EnigmailAgentPath="+getFilePath(agentPath)+"\n\n");
 
   this.agentType = agentType;
   this.agentPath = agentPath;
