@@ -297,7 +297,6 @@ cd "$targetDir"
 
 mkdir -p platform/${platform}/components
 cp components/${enigmimeDll} ${enigDllFile}
-cp components/${ipcDll} ${ipcDllFile}
 
 
 zip ${xpiFile} \
