@@ -847,7 +847,8 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
       msgText = EnigConvertFromUnicode(msgText, "UTF-8");
       enigMessageParseCallback(msgText, contentEncoding, charset, interactive,
                                importOnly, messageUrl, signature, retry + 1,
-                               head, tail)
+                               head, tail);
+      return;
     }
     else if (retry == 2) {
       // Try to verify signature by accessing raw message text directly
@@ -861,6 +862,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
       enigMessageParseCallback(msgText, contentEncoding, charset, interactive,
                                importOnly, messageUrl, null, retry + 1,
                                head, tail)
+      return;
     }
   }
 
@@ -868,6 +870,10 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
      if (interactive && gEnigSecurityInfo && gEnigSecurityInfo.statusInfo)
        EnigLongAlert(gEnigSecurityInfo.statusInfo);
      return;
+  }
+  
+  if (retry >= 2) {
+    plainText = EnigConvertFromUnicode(EnigConvertToUnicode(plainText, "UTF-8"), charset);
   }
 
   if (blockSeparationObj.value.indexOf(" ")>=0) {
