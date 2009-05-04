@@ -185,7 +185,7 @@
 <!ENTITY enigmail.signedsend.accesskey         "S">
 <!ENTITY enigmail.signedsend.key               "S">
 <!ENTITY enigmail.encryptedsend.accesskey      "E">
-<!ENTITY enigmail.encryptedsend.key            "P">
+<!ENTITY enigmail.encryptedsend.key            "E">
 <!ENTITY enigmail.disableRules.accesskey       "I">
 
 <!ENTITY enigmail.composeOptionsMenu.accesskey "D">

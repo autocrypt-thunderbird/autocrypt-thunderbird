@@ -1877,6 +1877,13 @@ function () {
 
 Enigmail.prototype.fixExitCode =
 function (exitCode, statusFlags) {
+  if (exitCode != 0) {
+    if ((statusFlags & (nsIEnigmail.BAD_PASSPHRASE | nsIEnigmail.UNVERIFIED_SIGNATURE)) &&
+        (statusFlags & nsIEnigmail.DECRYPTION_OKAY)) {
+      DEBUG_LOG("enigmail.js: Enigmail.fixExitCode: Changing exitCode for decrypted msg "+exitCode+"->0\n");
+      exitCode = 0;
+    }
+  }
   if ((this.agentType == "gpg") && (exitCode == 256)) {
     WARNING_LOG("enigmail.js: Enigmail.fixExitCode: Using gpg and exit code is 256. You seem to use cygwin-gpg, activating countermeasures.\n");
     if (statusFlags & (nsIEnigmail.BAD_PASSPHRASE | nsIEnigmail.UNVERIFIED_SIGNATURE)) {
@@ -2345,7 +2352,7 @@ Enigmail.prototype.stripWhitespace = function(sendFlags) {
 
 
 Enigmail.prototype.encryptMessage =
-function (parent, uiFlags, hashAlgorithm, plainText, fromMailAddr, toMailAddr,
+function (parent, uiFlags, hashAlgorithm, plainText, fromMailAddr, toMailAddr, bccMailAddr,
           sendFlags, exitCodeObj, statusFlagsObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.encryptMessage: "+plainText.length+" bytes from "+fromMailAddr+" to "+toMailAddr+" ("+sendFlags+")\n");
 
@@ -2395,7 +2402,7 @@ function (parent, uiFlags, hashAlgorithm, plainText, fromMailAddr, toMailAddr,
   ipcBuffer.open(bufferSize, false);
 
   var pipeTrans = this.encryptMessageStart(parent, null, uiFlags,
-                                           fromMailAddr, toMailAddr,
+                                           fromMailAddr, toMailAddr, bccMailAddr,
                                            hashAlgo, sendFlags, ipcBuffer,
                                            noProxy, startErrorMsgObj);
 
@@ -2514,10 +2521,11 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
 var gPGPHashNum = {md5:1, sha1:2, ripemd160:3, sha256:4, sha384:5, sha512:6, sha224:7};
 
 Enigmail.prototype.getEncryptCommand =
-function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgObj) {
+function (fromMailAddr, toMailAddr, bccMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgObj) {
   try {
     fromMailAddr = EnigStripEmail(fromMailAddr);
     toMailAddr = EnigStripEmail(toMailAddr);
+    bccMailAddr = EnigStripEmail(bccMailAddr);
 
   } catch (ex) {
     errorMsgObj.value = EnigGetString("invalidEmail");
@@ -2542,6 +2550,7 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
   var detachedSig = (usePgpMime || (sendFlags & nsIEnigmail.SEND_ATTACHMENT)) && signMsg && !encryptMsg;
 
   var toAddrList = toMailAddr.split(/\s*,\s*/);
+  var bccAddrList = bccMailAddr.split(/\s*,\s*/);
   var k;
 
   var encryptArgs = this.getAgentArgs(true);
@@ -2585,10 +2594,21 @@ function (fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgO
       encryptArgs = encryptArgs.concat(["--encrypt-to", angledFromMailAddr]);
 
     for (k=0; k<toAddrList.length; k++) {
-       toAddrList[k] = toAddrList[k].replace(/\'/g, "\\'");
+      toAddrList[k] = toAddrList[k].replace(/\'/g, "\\'");
+      if (toAddrList[k].length > 0) {
        encryptArgs.push("-r");
        encryptArgs.push((hushMailSupport || (toAddrList[k].search(/^0x/) == 0)) ? toAddrList[k]
-                          :"<" + toAddrList[k] + ">");
+                        :"<" + toAddrList[k] + ">");
+      }
+    }
+
+    for (k=0; k<bccAddrList.length; k++) {
+      bccAddrList[k] = bccAddrList[k].replace(/\'/g, "\\'");
+      if (bccAddrList[k].length > 0) {
+        encryptArgs.push("--hidden-recipient");
+        encryptArgs.push((hushMailSupport || (bccAddrList[k].search(/^0x/) == 0)) ? bccAddrList[k]
+                  :"<" + bccAddrList[k] + ">");
+      }
     }
 
   } else if (detachedSig) {
@@ -2651,7 +2671,7 @@ function (prompter, uiFlags, fromMailAddr, hashAlgoObj) {
     ipcBuffer.open(bufferSize, false);
 
     var pipeTrans = this.encryptMessageStart(null, prompter, testUiFlags,
-                                             fromMailAddr, "",
+                                             fromMailAddr, "", "",
                                              hashAlgo, sendFlags, ipcBuffer,
                                              noProxy, errorMsgObj);
     if (!pipeTrans) {
@@ -2717,7 +2737,7 @@ function (prompter, uiFlags, fromMailAddr, hashAlgoObj) {
 
 
 Enigmail.prototype.encryptMessageStart =
-function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
+function (parent, prompter, uiFlags, fromMailAddr, toMailAddr, bccMailAddr,
           hashAlgorithm, sendFlags, listener, noProxy, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: prompter="+prompter+", uiFlags="+uiFlags+", from "+fromMailAddr+" to "+toMailAddr+", hashAlgorithm="+hashAlgorithm+" ("+bytesToHex(pack(sendFlags,4))+")\n");
 
@@ -2741,7 +2761,7 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr,
     return null;
   }
 
-  var encryptArgs = this.getEncryptCommand(fromMailAddr, toMailAddr, hashAlgorithm, sendFlags, ENC_TYPE_MSG, errorMsgObj);
+  var encryptArgs = this.getEncryptCommand(fromMailAddr, toMailAddr, bccMailAddr, hashAlgorithm, sendFlags, ENC_TYPE_MSG, errorMsgObj);
   if (! encryptArgs)
     return null;
 
@@ -4468,7 +4488,7 @@ Enigmail.prototype.getKeyDetails = function (keyId, uidOnly) {
 }
 
 Enigmail.prototype.encryptAttachment =
-function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
+function (parent, fromMailAddr, toMailAddr, bccMailAddr, sendFlags, inFile, outFile,
           exitCodeObj, statusFlagsObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.encryptAttachment\n");
 
@@ -4486,7 +4506,7 @@ function (parent, fromMailAddr, toMailAddr, sendFlags, inFile, outFile,
   } catch (ex) {}
   var asciiFlags = (asciiArmor ? ENC_TYPE_ATTACH_ASCII : ENC_TYPE_ATTACH_BINARY);
 
-  var args = this.getEncryptCommand(fromMailAddr, toMailAddr, "", sendFlags, asciiFlags, errorMsgObj);
+  var args = this.getEncryptCommand(fromMailAddr, toMailAddr, bccMailAddr, "", sendFlags, asciiFlags, errorMsgObj);
 
   if (! args)
       return null;

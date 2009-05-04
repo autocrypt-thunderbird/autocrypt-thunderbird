@@ -120,6 +120,7 @@ protected:
 
     nsCString                     mSenderEmailAddr;
     nsCString                     mRecipients;
+    nsCString                     mBccAddr;
     nsCString                     mHashAlgorithm;
 
     nsCString                     mBoundary;

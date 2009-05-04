@@ -155,6 +155,7 @@ nsEnigMsgCompose::nsEnigMsgCompose()
 
     mSenderEmailAddr(""),
     mRecipients(""),
+    mBccAddr(""),
     mHashAlgorithm("sha1"),
 
     mBoundary(""),
@@ -481,6 +482,7 @@ nsEnigMsgCompose::Init()
                                         mUIFlags,
                                         mSenderEmailAddr.get(),
                                         mRecipients.get(),
+                                        mBccAddr.get(),
                                         mHashAlgorithm.get(),
                                         mSendFlags,
                                         (nsIStreamListener*)(mWriter),
@@ -628,6 +630,10 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
       return rv;
 
   rv = enigSecurityInfo->GetRecipients(mRecipients);
+  if (NS_FAILED(rv))
+      return rv;
+      
+  rv = enigSecurityInfo->GetBccRecipients(mBccAddr);
   if (NS_FAILED(rv))
       return rv;
 

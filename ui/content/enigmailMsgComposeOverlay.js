@@ -916,6 +916,7 @@ function enigEncryptMsg(msgSendType) {
      DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg:gMsgCompose="+gMsgCompose+"\n");
 
      var toAddrList = [];
+     var bccAddrList = [];
      if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
         if (userIdValue.search(/@/) == -1 ) {
           toAddrList.push(userIdValue);
@@ -948,7 +949,6 @@ function enigEncryptMsg(msgSendType) {
 
        if (msgCompFields.bcc.length > 0) {
          recList = splitRecipients(msgCompFields.bcc, true, arrLen)
-         enigAddRecipients(toAddrList, recList);
 
          var bccLC = EnigStripEmail(msgCompFields.bcc).toLowerCase()
          DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: BCC: "+bccLC+"\n");
@@ -957,6 +957,7 @@ function enigEncryptMsg(msgSendType) {
 
          if (selfBCC) {
            DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: Self BCC\n");
+           enigAddRecipients(toAddrList, recList);
 
          } else if (sendFlags & ENIG_ENCRYPT) {
            // BCC and encryption
@@ -966,9 +967,26 @@ function enigEncryptMsg(msgSendType) {
              DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: No default encryption because of BCC\n");
 
            } else {
-             if (!EnigConfirm(EnigGetString("sendingBCC"))) {
+             var dummy={value: null};
+
+             var hideBccUsers = gEnigPromptSvc.confirmEx(window,
+                        EnigGetString("enigConfirm"),
+                        EnigGetString("sendingHiddenRcpt"),
+                        (gEnigPromptSvc. BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_0) +
+                        (gEnigPromptSvc. BUTTON_TITLE_CANCEL * ENIG_BUTTON_POS_1) +
+                        (gEnigPromptSvc. BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_2),
+                        EnigGetString("sendWithHiddenBcc"), null, EnigGetString("sendWithShownBcc"),
+                        null, dummy);
+              switch (hideBccUsers) {
+              case 0:
+                enigAddRecipients(bccAddrList, recList);
+                // no break here on purpose!
+              case 2:
+                enigAddRecipients(toAddrList, recList);
+                break;
+              case 1:
                return false;
-             }
+              }
            }
          }
        }
@@ -998,6 +1016,7 @@ function enigEncryptMsg(msgSendType) {
      }
 
      var toAddr = toAddrList.join(", ");
+     var bccAddr = bccAddrList.join(", ");
      var testCipher = null;
 
      var notSignedIfNotEnc= (gEnigSendModeDirty<2 && (! enigGetAccDefault("signPlain")));
@@ -1017,8 +1036,8 @@ function enigEncryptMsg(msgSendType) {
                                   flagsObj)) {
               return false;
             }
-
             if (matchedKeysObj.value) toAddr=matchedKeysObj.value;
+
             if (flagsObj.value) {
               switch (flagsObj.sign) {
                case 0:
@@ -1047,6 +1066,15 @@ function enigEncryptMsg(msgSendType) {
                  break;
               }
             }
+
+            if (!getRecipientsKeys(bccAddr,
+                                  (repeatSelection==1),
+                                  matchedKeysObj,
+                                  flagsObj)) {
+              return false;
+            }
+            if (matchedKeysObj.value) bccAddr=matchedKeysObj.value;
+            // bcc recipients are part of "normal" recipients as well; no need to do furter processing of flags etc.
           }
           repeatSelection++;
 
@@ -1064,7 +1092,7 @@ function enigEncryptMsg(msgSendType) {
             // test recipients
             testCipher = enigmailSvc.encryptMessage(window, testUiFlags, null,
                                                     testPlain,
-                                                    fromAddr, toAddr,
+                                                    fromAddr, toAddr, bccAddr,
                                                     testSendFlags,
                                                     testExitCodeObj,
                                                     testStatusFlagsObj,
@@ -1256,6 +1284,7 @@ function enigEncryptMsg(msgSendType) {
        newSecurityInfo.UIFlags = uiFlags;
        newSecurityInfo.senderEmailAddr = fromAddr;
        newSecurityInfo.recipients = toAddr;
+       newSecurityInfo.bccRecipients = bccAddr;
        newSecurityInfo.hashAlgorithm = gMimeHashAlgorithms[EnigGetPref("mimeHashAlgorithm")];
 
        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: securityInfo = "+newSecurityInfo+"\n");
@@ -1269,6 +1298,7 @@ function enigEncryptMsg(msgSendType) {
          inlineEncAttach: inlineEncAttach,
          fromAddr: fromAddr,
          toAddr: toAddr,
+         bccAddr: bccAddr,
          uiFlags: uiFlags,
          bucketList: bucketList
        };
@@ -1481,7 +1511,8 @@ function enigEncryptInline(sendInfo) {
                    : EnigConvertFromUnicode(escText, charset);
 
     var cipherText = enigmailSvc.encryptMessage(window, sendInfo.uiFlags, null, plainText,
-                                          sendInfo.fromAddr, sendInfo.toAddr, sendInfo.sendFlags,
+                                          sendInfo.fromAddr, sendInfo.toAddr, sendInfo.bccAddr,
+                                          sendInfo.sendFlags,
                                           exitCodeObj, statusFlagsObj,
                                           errorMsgObj);
 
@@ -1520,7 +1551,7 @@ function enigEncryptInline(sendInfo) {
     // encrypt attachments
     gEnigModifiedAttach = new Array();
     exitCode = enigEncryptAttachments(sendInfo.bucketList, gEnigModifiedAttach,
-                            window, sendInfo.uiFlags, sendInfo.fromAddr, sendInfo.toAddr,
+                            window, sendInfo.uiFlags, sendInfo.fromAddr, sendInfo.toAddr, sendInfo.bccAddr,
                             sendInfo.sendFlags, errorMsgObj);
     if (exitCode != 0) {
       gEnigModifiedAttach = null;
@@ -1952,7 +1983,7 @@ function enigCheckCharsetConversion(msgCompFields) {
 // and the attachments list is modified to pick up the
 // encrypted file(s) instead of the original ones.
 function enigEncryptAttachments(bucketList, newAttachments, window, uiFlags,
-                                fromAddr, toAddr, sendFlags,
+                                fromAddr, toAddr, bccAddr, sendFlags,
                                 errorMsgObj) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptAttachments\n");
   var ioServ;
@@ -2017,7 +2048,7 @@ function enigEncryptAttachments(bucketList, newAttachments, window, uiFlags,
     var txtMessgae;
     try {
       newFile.createUnique(Components.interfaces.NORMAL_FILE_TYPE, 0600);
-      txtMessage = enigmailSvc.encryptAttachment(window, fromAddr, toAddr, sendFlags,
+      txtMessage = enigmailSvc.encryptAttachment(window, fromAddr, toAddr, bccAddr, sendFlags,
                                 origFile.file.path, newFile.path,
                                 exitCodeObj, statusFlagsObj,
                                 errorMsgObj);
