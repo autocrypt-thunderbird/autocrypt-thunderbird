@@ -997,13 +997,14 @@ function enigEncryptMsg(msgSendType) {
          if (sendFlags & ENIG_ENCRYPT) {
 
            if (!encryptIfPossible) {
-             EnigAlert(EnigGetString("sendingNews"));
-             return false;
+             if (!EnigConfirm(EnigGetString("sendToNewsgroup"))) {
+               return false;
+             }
            }
-
-           sendFlags &= ~ENIG_ENCRYPT;
-           DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: No default encryption because of newsgroups\n");
-
+           else {
+             sendFlags &= ~ENIG_ENCRYPT;
+             DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: No default encryption because of newsgroups\n");
+           }
          }
        }
      }

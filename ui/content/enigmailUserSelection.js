@@ -569,27 +569,34 @@ function enigmailUserSelCallback(event) {
   if (!gSendEncrypted)
     return;
 
-  var Tree = document.getElementById("enigmailUserIdSelection");
   var row = {};
   var col = {};
   var elt = {};
-  Tree.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, elt);
-  if (row.value == -1)
-    return;
-
-
-  var treeItem = Tree.contentView.getItemAtIndex(row.value);
-  Tree.currentItem=treeItem;
-  if (typeof(col.value) == "string") {
-    // mozilla <= 1.7
-    if (col.value != "selectionCol")
+  var Tree;
+  if (event.type == "keypress") {
+    // key event
+    if (event.charCode == 32) {
+      Tree = event.target;
+      if (Tree.view.selection.count > 0) {
+        row.value = Tree.view.selection.currentIndex;
+      }
+    }
+    else {
       return;
+    }
   }
   else {
-    // mozilla >= 1.8a1
+    // Mouse event
+    Tree = document.getElementById("enigmailUserIdSelection");
+    Tree.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, elt);
     if (col.value.id != "selectionCol")
       return;
   }
+
+  if (row.value == -1)
+    return;
+  var treeItem = Tree.contentView.getItemAtIndex(row.value);
+  Tree.currentItem=treeItem;
   var aRows = treeItem.getElementsByAttribute("id","indicator")
 
   if (aRows.length) {
