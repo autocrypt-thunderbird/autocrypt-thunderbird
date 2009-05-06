@@ -56,9 +56,11 @@ var gEnigDirty, gEnigProcessed, gEnigTimeoutID;
 var gEnigSendPGPMime, gEnigMeodifiedAttach, gEnigSendMode;
 var gEnigSendModeDirty = 0;
 var gEnigNextCommand;
+var gEnigDocStateListener = null;
 var gEnigIdentity = null;
 var gEnigEnableRules = null;
-var gEnigAttachOwnKey = { appendAttachment: false, attachedObj: null } ;
+var gEnigAttachOwnKey = { appendAttachment: false, attachedObj: null };
+var gEnigModifiedAttach;
 
 if (typeof(GenericSendMessage)=="function") {
   // replace GenericSendMessage with our own version
@@ -67,7 +69,6 @@ if (typeof(GenericSendMessage)=="function") {
   GenericSendMessage = function (msgType) {
     enigGenericSendMessage(msgType);
   }
-
 
   window.addEventListener("load", enigMsgComposeStartup, false);
 
@@ -99,10 +100,6 @@ function enigMsgComposeStartup() {
           smimeButton.setAttribute("collapsed", "true");
     }
   }
-
-  var composeStateListener = new EnigComposeStateListener();
-
-  gMsgCompose.RegisterStateListener(composeStateListener);
 
   var msgId = document.getElementById("msgIdentityPopup");
   if (msgId)
@@ -215,6 +212,10 @@ function enigSetSendDefaultOptions() {
 function enigComposeOpen() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigComposeOpen\n");
 
+  var composeStateListener = new EnigComposeStateListener();
+  gMsgCompose.RegisterStateListener(composeStateListener);
+
+
   var toobarElem = document.getElementById("composeToolbar2");
   if (toobarElem && (EnigGetOS() == "Darwin")) {
     toobarElem.setAttribute("platform", "macos");
@@ -249,14 +250,41 @@ function enigComposeOpen() {
 
 
 function enigMsgComposeReopen() {
-   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeReopen\n");
-   enigMsgComposeReset(false);
-   enigComposeOpen();
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeReopen\n");
+  enigMsgComposeReset(false);
+
+  enigComposeOpen();
 }
 
 function enigMsgComposeClose() {
-   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeClose\n");
-   enigMsgComposeReset(true);
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeClose\n");
+  
+  var ioServ;
+  try {
+    // we should delete the original temporary files of the encrypted or signed
+    // inline PGP attachments (the rest is done automatically)
+    if (gEnigModifiedAttach) {
+      ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+      if (!ioServ)
+        return;
+
+      for (var i in gEnigModifiedAttach) {
+        if (gEnigModifiedAttach[i].origTemp) {
+          DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeClose: deleting "+gEnigModifiedAttach[i].origUrl+"\n");
+          var fileUri = ioServ.newURI(gEnigModifiedAttach[i].origUrl, null, null);
+          var fileHandle = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+          fileHandle.initWithPath(fileUri.path);
+          if (fileHandle.exists()) fileHandle.remove(false);
+        }
+      }
+      gEnigModifiedAttach = null;
+    }
+
+  } catch (ex) {
+    ERROR_LOG("enigmailMsgComposeOverlay.js: ECSL.ComposeProcessDone: could not delete all files:\n"+ex.toString()+"\n");
+  }
+
+  enigMsgComposeReset(true);
 }
 
 function enigMsgComposeReset(closing) {
@@ -2419,23 +2447,6 @@ function enigDecryptQuote(interactive) {
 
 }
 
-// Returns offset of child (> 0), or 0, if child not found
-function enigGetChildOffset(parentNode, childNode) {
-  if (!parentNode || !childNode)
-    return 0;
-
-  var children = parentNode.childNodes;
-  var length = children.length;
-  var count = 0;
-  while(count < length) {
-      var node = children[count]
-      count++
-      if (node == childNode)
-        return count;
-  }
-  return 0;
-}
-
 function EnigEditorInsertText(plainText) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: EnigEditorInsertText\n");
   if (gEnigEditor) {
@@ -2466,46 +2477,8 @@ function EnigEditorInsertAsQuotation(plainText) {
     var appInfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
     var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"].getService(Components.interfaces.nsIVersionComparator);
 
-    if (vc.compare("1.8.0.2", appInfo.platformVersion) <= 0) {
-      // TB 1.5.0.2 and newer
-      mailEditor.insertAsQuotation(plainText);
-    }
-    else {
-      // use pasteAsQuotation because inertAsQuotation is buggy with TB 1.5.0.0
-      var clipBoard = Components.classes[ENIG_CLIPBOARD_CONTRACTID].getService(Components.interfaces.nsIClipboard);
-      // get the clipboard content
-      var transferable = Components.classes[ENIG_TRANSFERABLE_CONTRACTID].createInstance(Components.interfaces.nsITransferable);
-      var xferTypes = [ "text/unicode", "text/html" ];
+    mailEditor.insertAsQuotation(plainText);
 
-      for (var i=0; i < xferTypes.length; i++) {
-        transferable.addDataFlavor(xferTypes[i]);
-      }
-      var flavour = {};
-      var data = {};
-      var length = {};
-      try {
-        clipBoard.getData(transferable, clipBoard.kGlobalClipboard);
-        transferable.getAnyTransferData(flavour, data, length);
-      }
-      catch (ex) {
-        ERROR_LOG("enigmailMsgComposeOverlay.js: EnigEditorInsertAsQuotation: getting clipboard failed\n");
-      }
-
-      try {
-        var pasteClipboard;
-
-        // paste the email text
-        pasteClipboard = Components.classes[ENIG_CLIPBOARD_HELPER_CONTRACTID].getService(Components.interfaces.nsIClipboardHelper);
-        pasteClipboard.copyStringToClipboard(plainText, clipBoard.kGlobalClipboard);
-        mailEditor.pasteAsQuotation(clipBoard.kGlobalClipboard);
-
-        data = data.value.QueryInterface(Components.interfaces.nsISupportsString).data;
-        pasteClipboard.copyStringToClipboard(data, clipBoard.kGlobalClipboard);
-      }
-      catch (ex) {
-        ERROR_LOG("enigmailMsgComposeOverlay.js: EnigEditorInsertAsQuotation: (re-)setting clipboard failed\n");
-      }
-    }
     return 1;
   }
   return 0;
@@ -2534,9 +2507,9 @@ function EnigComposeStateListener() {}
 
 EnigComposeStateListener.prototype = {
   NotifyComposeFieldsReady: function() {
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyComposeFieldsReady\n");
-
-    var editor;
+    // Note: NotifyComposeFieldsReady is only called when a new window is created (i.e. not in case a window is reused). 
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.NotifyComposeFieldsReady\n");
+    
     try {
       gEnigEditor = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIEditor);
     } catch (ex) {}
@@ -2545,21 +2518,25 @@ EnigComposeStateListener.prototype = {
       return;
 
     var docStateListener = new EnigDocStateListener();
-
     gEnigEditor.addDocumentStateListener(docStateListener);
   },
 
   ComposeProcessDone: function(aResult) {
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: ComposeProcessDone\n");
+    // Note: called after a mail was sent (or saved)
+    //DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.ComposeProcessDone\n");
 
     if (aResult== Components.results.NS_OK) {
+      //DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.ComposeProcessDone: OK\n");
     }
 
   },
 
-  NotifyComposeBodyReady: function() {},
+  NotifyComposeBodyReady: function() {
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady\n");
+  },
 
   SaveInFolderDone: function(folderURI) {
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.SaveInFolderDone\n");
   }
 };
 
@@ -2578,48 +2555,25 @@ EnigDocStateListener.prototype = {
 
   NotifyDocumentCreated: function ()
   {
-    //DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentCreated\n");
+    //DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.NotifyDocumentCreated\n");
   },
 
   NotifyDocumentWillBeDestroyed: function ()
   {
-    //DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentWillBeDestroyed\n");
-
-    var ioServ;
-    try {
-      // we should delete the original temporary files of the encrypted
-      // inline PGP attachments (the rest is done automatically)
-      if (this.modifiedAttachments) {
-        ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
-        if (!ioServ)
-          return;
-
-        for (var i in modifiedAttachments) {
-          if (modifiedAttachments[i].origTemp) {
-            var fileUri = ioServ.newURI(modifiedAttachments[i].origUrl, null, null);
-            var fileHandle=fileUri.QueryInterface(Components.interfaces.nsIFileURL);
-            fileHandle.remove(false);
-          }
-        }
-      }
-
-    } catch (ex) {}
+    //DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.EnigDocStateListener.NotifyDocumentWillBeDestroyed\n");
   },
 
   NotifyDocumentStateChanged: function (nowDirty)
   {
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentStateChanged: "+nowDirty+"\n");
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.NotifyDocumentStateChanged: "+nowDirty+"\n");
 
     var isEmpty, isEditable;
 
     isEmpty    = gEnigEditor.documentIsEmpty;
     isEditable = gEnigEditor.isDocumentEditable;
 
-    if (gEnigModifiedAttach) {
-      this.modifiedAttachments = gEnigModifiedAttach;
-    }
 
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: NotifyDocumentStateChanged: isEmpty="+isEmpty+", isEditable="+isEditable+"\n");
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.NotifyDocumentStateChanged: isEmpty="+isEmpty+", isEditable="+isEditable+"\n");
 
     if (!isEditable || isEmpty)
       return;
@@ -2629,4 +2583,3 @@ EnigDocStateListener.prototype = {
   }
 }
 
-//identity....attachPgpKey
