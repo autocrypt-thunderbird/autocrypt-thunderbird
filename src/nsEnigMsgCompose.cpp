@@ -42,6 +42,7 @@
 #include "enigmail.h"
 #include "nsXPIDLString.h"
 #include "nsIMsgCompFields.h"
+#include "nsIMsgWindow.h"
 #include "nsMsgBaseCID.h"
 #include "nsMsgCompCID.h"
 #include "nsIMsgMailSession.h"
