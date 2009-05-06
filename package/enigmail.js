@@ -4857,6 +4857,7 @@ KeyEditor.prototype = {
   _req: null,
 
   writeLine: function (inputData) {
+    DEBUG_LOG("enigmail.js: Enigmail.keyEditor.writeLine: '"+inputData+"'\n");
     this._pipeTrans.writeSync(inputData+"\n", inputData.length+1);
   },
 
@@ -4951,7 +4952,7 @@ KeyEditor.prototype = {
     }
 
     try {
-      this.writeLine("save");
+      this.writeLine("save\n");
       txt = this.nextLine();
       DEBUG_LOG(txt+"\n");
     }
@@ -5352,8 +5353,9 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
     try {
       if (passphrase) {
          pipeTrans.writeSync(passphrase, passphrase.length);
+         pipeTrans.writeSync("\n", 1);
       }
-      pipeTrans.writeSync("\n", 1);
+
     } catch (ex) {}
   }
 

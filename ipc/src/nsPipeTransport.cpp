@@ -1297,7 +1297,7 @@ nsPipeTransport::ReadLine(PRInt32 maxOutputLen,
       }
     }
     if (returnCount < 0)
-      returnCount = mExecBuf.Length();  // Return everything
+      returnCount = mExecBuf.Length() - 1;  // Return everything
   }
 
   // make sure to always delete next '\n'
