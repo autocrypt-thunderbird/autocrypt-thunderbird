@@ -1025,7 +1025,11 @@ function enigEncryptMsg(msgSendType) {
          if (sendFlags & ENIG_ENCRYPT) {
 
            if (!encryptIfPossible) {
-             if (!EnigConfirm(EnigGetString("sendToNewsgroup"))) {
+             if (!EnigGetPref("encryptToNews")) {
+               EnigAlert(EnigGetString("sendingNews"));
+               return false;
+             }
+             else if (!EnigConfirm(EnigGetString("sendToNewsWarning"))) {
                return false;
              }
            }
