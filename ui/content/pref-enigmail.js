@@ -172,6 +172,7 @@ function resetRememberedValues() {
              "quotedPrintableWarn",
              "saveEncrypted",
              "warnOnRulesConflict",
+             "warnGpgAgentAndIdleTime",
              "warnClearPassphrase",
              "warnIso2022jp",
              "warnRefreshAll"];
@@ -237,6 +238,16 @@ function prefOnAccept() {
       GetEnigmailSvc();
     }
   }
+  
+  // detect use of gpg-agent and warn if needed
+  var enigmailSvc = GetEnigmailSvc();
+  if (enigmailSvc.useGpgAgent()) {
+    if ((document.getElementById("enigmail_maxIdleMinutes").value > 0) &&
+        (! document.getElementById("enigmail_noPassphrase").checked)) {
+      EnigAlertPref(EnigGetString("prefs.warnIdleTimeWithGpgAgent"), "warnGpgAgentAndIdleTime");
+    }
+  }
+  
 
   return true;
 }

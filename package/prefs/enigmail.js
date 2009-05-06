@@ -158,6 +158,9 @@ pref("extensions.enigmail.warnOnRulesConflict",0);
 // display a warning when the passphrase is cleared
 pref("extensions.enigmail.warnClearPassphrase",true);
 
+// warn if gpg-agent is found and "remember passphrase for X minutes is active"
+pref("extensions.enigmail.warnGpgAgentAndIdleTime",true);
+
 // display a warning when all keys are to be refreshed
 pref("extensions.enigmail.warnRefreshAll",true);
 
