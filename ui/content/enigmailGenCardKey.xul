@@ -297,6 +297,7 @@
       var timeScale = document.getElementById("timeScale");
 
       var expiryTime = 0;
+      var valid = "0";
       if (! noExpiry.checked) {
         expiryTime = Number(expireInput.value) * (timeScale.value == "y" ? 365 : (timeScale.value == "m" ? 30 : 1));
         if (expiryTime > 36500) {
@@ -307,6 +308,8 @@
           EnigAlert(EnigGetString("expiryTooShort"));
           return;
         }
+        valid = String(Number(expireInput.value));
+        if (timeScale.value != "d") valid += timeScale.value;
       }
       var curId = getCurrentIdentity();
       gUsedId = curId;
@@ -337,8 +340,6 @@
         consoleElement.firstChild.data = "";
       }
       
-      var valid = String(Number(expireInput.value))
-      if (timeScale.value != "d") valid += timeScale.value;
       var generateObserver = new enigGenKeyObserver();
       var errorMsgObj={};
       var r = enigmailSvc.genCardKey(window,
