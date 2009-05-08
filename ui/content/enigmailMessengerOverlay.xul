@@ -544,6 +544,7 @@
               tooltiptext="&enigmail.decryptbutton.tip;"
               oncommand="enigMessageDecrypt();"
               buttontype="thunderbird"
+              observes="button_enigmail_decrypt"
               insertafter="button-newmsg"
               />
   </toolbarpalette>
@@ -556,6 +557,7 @@
               tooltiptext="&enigmail.decryptbutton.tip;"
               oncommand="enigMessageDecrypt();"
               buttontype="thunderbird"
+              observes="button_enigmail_decrypt"
               insertafter="button-newmsg"
               app="mailnews"
               />
@@ -563,9 +565,9 @@
 
   <!-- override default set to include enigmail decrypt icon -->
   <!-- Thunderbird 2.0 and newer -->
-  <!-- toolbar id="mail-bar2"
-           defaultset="button-getmsg,button-newmsg,button-address,separator,button-enigmail-decrypt,spacer,button-reply,button-replyall,button-forward,separator,button-delete,button-junk,separator,button-print,button-stop,spring,search-container">
-  </toolbar -->
+  <toolbar id="mail-bar2"
+           defaultset="button-getmsg,button-newmsg,button-address,separator,button-enigmail-decrypt,spacer,button-reply,button-replyall,button-forward,separator,button-tag,button-delete,button-junk,button-print,separator,button-goback,button-goforward,spring,search-container">
+  </toolbar>
 
   <vbox id="messagepanebox">
     <hbox id="enigmailBox" class="expandedEnigmailBox"

@@ -62,6 +62,41 @@ var gShowHeadersObj = {"viewallheaders":2,
 window.addEventListener("load",   enigMessengerStartup, false);
 window.addEventListener("unload", enigMessengerFinish,  false);
 
+var gEnigTreeController = {
+  supportsCommand: function(command) {
+    // DEBUG_LOG("enigmailMessengerOverlay.js: treeCtrl: supportsCommand: "+command+"\n");
+    switch(command) {
+    case "button_enigmail_decrypt":
+      return true;
+    }
+    return false;
+  },
+  isCommandEnabled: function(command) {
+    // DEBUG_LOG("enigmailMessengerOverlay.js: treeCtrl: isCommandEnabled: "+command+"\n");
+    try {
+      if (typeof(IsMessagePaneCollapsed) == "function") {
+        // threaded view
+        if (! IsMessagePaneCollapsed()) {
+          if (gDBView) {
+            return (gDBView.numSelected == 1);
+          }
+        }
+      }
+      else {
+        // single mail window -> always enable
+        return true;
+      }
+    }
+    catch (ex) {}
+    return  false;
+  },
+  doCommand: function(command) {
+    // nothing
+  },
+  onEvent: function(event) {
+    // nothing
+  }
+}
 
 function enigMessengerStartup() {
   DEBUG_LOG("enigmailMessengerOverlay.js: Startup\n");
@@ -114,6 +149,7 @@ function enigMessengerStartup() {
   }
 
   enigEnsureExtraHeaders();
+  top.controllers.appendController(gEnigTreeController);
 }
 
 function enigEnsureExtraHeaders() {
@@ -345,25 +381,8 @@ function enigMimeInit() {
 
 function enigMessageFrameLoad() {
   // called before a message is displayed
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageFrameLoad\n");
-  if (gEnigDecryptButton) {
-    var setDisable=false;
-    try {
-      if (gDBView) {
-        var uriType="none";
-        try {
-          uriType=typeof gDBView.URIForFirstSelectedMessage;
-        }
-        catch (ex) {}
-        setDisable=((gDBView.numSelected > 1) || (uriType!="string"));
-      }
-      else {
-        setDisable=true;
-      }
-    }
-    catch (ex) {}
-    gEnigDecryptButton.disabled=setDisable;
-  }
+  // DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageFrameLoad\n");
+  // not used anymore (-> gEnigTreeController)
 }
 
 
@@ -420,6 +439,7 @@ function enigChangeMailLayout(viewType) {
   // This event requires that we re-subscribe to these events!
   gEnigMessagePane.addEventListener("unload", enigMessageFrameUnload, true);
   gEnigMessagePane.addEventListener("load", enigMessageFrameLoad, true);
+  enigMessageReload(false);  
 }
 
 function enigToggleMessagePane() {
@@ -427,6 +447,13 @@ function enigToggleMessagePane() {
   
   // Reload message to get it decrypted/verified
   enigMessageReload(false);
+  var button=document.getElementById("button_enigmail_decrypt")
+  if (IsMessagePaneCollapsed()) {
+    button.setAttribute("disabled", "true");
+  }
+  else {
+    button.removeAttribute("disabled");
+  }
 }
 
 function enigGetCurrentMsgUriSpec() {
@@ -1837,3 +1864,5 @@ function enigReceiveKeyCancel(progressBar) {
   EnigAlert(EnigGetString("keyImportError")+ EnigGetString("failCancel"));
 
 }
+
+
