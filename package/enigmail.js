@@ -2795,7 +2795,7 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr, bccMailAddr,
   if (statusFlagsObj.value & nsIEnigmail.MISSING_PASSPHRASE) {
     ERROR_LOG("enigmail.js: Enigmail.encryptMessageStart: Error - no passphrase supplied\n");
 
-    errorMsgObj.value = null;
+    errorMsgObj.value = "";
   }
 
   if (pgpMime && errorMsgObj.value) {
