@@ -356,6 +356,7 @@ function enigTogglePGPMime() {
 
 function enigToggleAttachOwnKey () {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigToggleAttachOwnKey\n");
+  GetEnigmailSvc(); // make sure Enigmail is loaded and working
   gEnigAttachOwnKey.appendAttachment = !gEnigAttachOwnKey.appendAttachment;
 }
 
@@ -551,6 +552,7 @@ function enigReplaceEditorText(text) {
 function enigGoAccountManager()
 {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigGoAccountManager:\n");
+  GetEnigmailSvc();
   var server=null;
   try {
       var currentId=getCurrentIdentity();
