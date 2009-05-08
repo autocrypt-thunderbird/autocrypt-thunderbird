@@ -62,7 +62,7 @@ function onCancel() {
     }
   }
   else {
-    return (EnigLongAlert(EnigGetString("setupWizard.reallyCancel"), EnigGetString("dlg.button.close"), EnigGetString("dlg.button.continue")) == 0);
+    return (EnigLongAlert(EnigGetString("setupWizard.reallyCancel"), null, EnigGetString("dlg.button.close"), EnigGetString("dlg.button.continue")) == 0);
   }
 }
 
