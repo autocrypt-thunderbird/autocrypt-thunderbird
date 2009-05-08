@@ -568,18 +568,19 @@ function enigMessageDecrypt(event, isAuto) {
 
     var embeddedSigned = null;
     var embeddedEncrypted = null;
-    for (var indexb in currentAttachments) {
-      var attachment = currentAttachments[indexb];
+    if (gEnigSavedHeaders["content-type"] && gEnigSavedHeaders["content-type"].search(/^multipart\/mixed/i) == 0) {
+      for (var indexb in currentAttachments) {
+        var attachment = currentAttachments[indexb];
 
-      if (attachment.contentType.search(/^application\/pgp-signature/i) == 0) {
-        embeddedSigned = attachment.url.replace(/\.\d+\.\d+$/, "");
+        if (attachment.contentType.search(/^application\/pgp-signature/i) == 0) {
+          embeddedSigned = attachment.url.replace(/.filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
+        }
+        if (attachment.contentType.search(/^application\/pgp-encrypted/i) == 0) {
+          embeddedEncrypted = attachment.url.replace(/.filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
+        }
+        DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.contentType+"\n");
       }
-      if (attachment.contentType.search(/^application\/pgp-encrypted/i) == 0) {
-        embeddedEncrypted = attachment.url.replace(/\.\d+\.\d+$/, "");
-      }
-      DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.contentType+"\n");
     }
-
   }
 
   var contentType = "";
