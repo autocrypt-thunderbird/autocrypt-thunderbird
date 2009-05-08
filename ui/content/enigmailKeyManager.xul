@@ -63,13 +63,14 @@
 
   <command id="cmd_close" oncommand="window.close()"/>
   <command id="cmd_quit"/>
+  <command id="cmd_enigmailDeleteKey" oncommand="enigmailDeleteKey()"/>
 
   <keyset id="winKeys">
     <key id="key_selectAll" key="&enigmail.keyMan.selectAll.key;"
          oncommand="enigmailSelectAllKeys()" modifiers="accel"/>
-    <key id="key_delete"
+    <key id="key_enigDelete"
          keycode="VK_DELETE"
-         oncommand="enigmailDeleteKey()"/>
+         command="cmd_enigmailDeleteKey"/>
     <key id="key_close"/>
     <key id="key_quit"/>
   </keyset>
@@ -94,21 +95,21 @@
           accesskey="&enigmail.keyMan.fileMenu.accesskey;">
       <menupopup id="menu_FilePopup" onpopupshowing="enigmailKeyMenu()">
 
-			  <menuitem label="&enigmail.keyMan.importFromFile.label;"
-									id="importFromFile"
-									accesskey="&enigmail.keyMan.importFromFile.accesskey;"
-									oncommand="enigmailImportKeysFromFile()"/>
-				<menuitem label="&enigmail.keyMan.exportToFile.label;"
-									id="exportKey"
-									observes="bcNoKey"
-									accesskey="&enigmail.keyMan.exportToFile.accesskey;"
-									oncommand="enigmailExportKeys()"/>
+      <menuitem label="&enigmail.keyMan.importFromFile.label;"
+        id="importFromFile"
+        accesskey="&enigmail.keyMan.importFromFile.accesskey;"
+        oncommand="enigmailImportKeysFromFile()"/>
+      <menuitem label="&enigmail.keyMan.exportToFile.label;"
+        id="exportKey"
+        observes="bcNoKey"
+        accesskey="&enigmail.keyMan.exportToFile.accesskey;"
+        oncommand="enigmailExportKeys()"/>
 
-				<menuitem label="&enigmail.keyMan.sendKeys.label;"
-									id="sendKey"
-									observes="bcNoKey"
-									accesskey="&enigmail.keyMan.sendKeys.accesskey;"
-									oncommand="enigCreateKeyMsg()"/>
+      <menuitem label="&enigmail.keyMan.sendKeys.label;"
+        id="sendKey"
+        observes="bcNoKey"
+        accesskey="&enigmail.keyMan.sendKeys.accesskey;"
+        oncommand="enigCreateKeyMsg()"/>
 
         <menuseparator/>
 
@@ -162,21 +163,21 @@
         <menuseparator/>
 
         <menuitem id="enableKey"
-									observes="bcEnableKey"
-									accesskey="&enigmail.keyMan.enableKey.accesskey;"
-									oncommand="enigmailEnableKey()"/>
+          observes="bcEnableKey"
+          accesskey="&enigmail.keyMan.enableKey.accesskey;"
+          oncommand="enigmailEnableKey()"/>
         <menuitem label="&enigmail.keyMan.revokeKey.label;"
-									id="revokeKey"
-									observes="bcRevoke"
-									accesskey="&enigmail.keyMan.revokeKey.accesskey;"
-									oncommand="enigmailRevokeKey()"/>
+          id="revokeKey"
+          observes="bcRevoke"
+          accesskey="&enigmail.keyMan.revokeKey.accesskey;"
+          oncommand="enigmailRevokeKey()"/>
 
         <menuitem label="&enigmail.keyMan.delKey.label;"
-									id="deleteKey"
-									key="key_delete"
-									observes="bcNoKey"
-									accesskey="&enigmail.keyMan.delKey.accesskey;"
-									oncommand="enigmailDeleteKey()"/>
+          id="deleteKey"
+          key="key_enigDelete"
+          observes="bcNoKey"
+          accesskey="&enigmail.keyMan.delKey.accesskey;"
+          oncommand="enigmailDeleteKey()"/>
 
         <menuseparator/>
 
@@ -202,10 +203,10 @@
       </menupopup>
     </menu>
 
-		<menu id="viewMenu"
-					label="&enigmail.keyMan.viewMenu.label;"
-					accesskey="&enigmail.keyMan.viewMenu.accesskey;">
-			<menupopup onpopupshowing="enigmailKeyMenu()"> <!-- view menu -->
+      <menu id="viewMenu"
+        label="&enigmail.keyMan.viewMenu.label;"
+        accesskey="&enigmail.keyMan.viewMenu.accesskey;">
+      <menupopup onpopupshowing="enigmailKeyMenu()"> <!-- view menu -->
         <menuitem label="&enigmail.keyMan.viewSig.label;"
                   id="viewSig"
                   observes="bcViewSig"
@@ -216,11 +217,11 @@
                   observes="bcViewPhoto"
                   accesskey="&enigmail.keyMan.showPhoto.accesskey;"
                   oncommand="enigShowPhoto()"/>
-				<menuitem label="&enigmail.keyMan.keyProps.label;"
-									id="keyDetails"
-									observes="bcOneKey"
-									accesskey="&enigmail.keyMan.keyDetails.accesskey;"
-								  oncommand="enigmailKeyDetails()"/>
+        <menuitem label="&enigmail.keyMan.keyProps.label;"
+                  id="keyDetails"
+                  observes="bcOneKey"
+                  accesskey="&enigmail.keyMan.keyDetails.accesskey;"
+                  oncommand="enigmailKeyDetails()"/>
 
 <!--
     <menuseparator/>

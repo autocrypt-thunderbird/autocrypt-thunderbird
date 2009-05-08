@@ -157,13 +157,13 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
       EnigSavePrefs();
 
      if (gGeneratedKey) {
-       if (EnigConfirm(EnigGetString("keygenComplete", curId.email)+"\n\n"+EnigGetString("revokeCertRecommended"))) {
+       if (EnigConfirm(EnigGetString("keygenComplete", curId.email)+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"))) {
           EnigCreateRevokeCert(gGeneratedKey, curId.email);
        }
      }
    } else {
      if (gGeneratedKey) {
-       if (EnigConfirm(EnigGetString("genCompleteNoSign")+"\n\n"+EnigGetString("revokeCertRecommended"))) {
+       if (EnigConfirm(EnigGetString("genCompleteNoSign")+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"))) {
           EnigCreateRevokeCert(gGeneratedKey, curId.email);
        }
      }
@@ -282,9 +282,9 @@ function enigmailKeygenStart() {
 
    idString += " <" + userEmail + ">";
 
-   var confirmMsg = EnigGetString("keyConfirm",idString);
+   var confirmMsg = EnigGetString("keyConfirm", idString);
 
-   if (!EnigConfirm(confirmMsg)) {
+   if (!EnigConfirm(confirmMsg, EnigGetString("keyMan.button.generateKey"))) {
      return;
    }
 
@@ -301,8 +301,7 @@ function enigmailKeygenStart() {
                                            keyType,
                                            passphrase,
                                            requestObserver);
-   } catch (ex) {
-   }
+   } catch (ex) { }
 
    if (!ipcRequest) {
       EnigAlert(EnigGetString("keyGenFailed"));
@@ -348,18 +347,19 @@ function enigRefreshConsole() {
 }
 
 function enigmailKeygenCancel() {
-   DEBUG_LOG("enigmailKeygen.js: Cancel\n");
-
-   if (gKeygenRequest) {
-      var closeWin = EnigConfirm(EnigGetString("keyAbort"));
-   }
-   else {
-      closeWin=true;
-   }
-   if (closeWin) {
-     enigmailKeygenCloseRequest();
-     window.close();
-   }
+  DEBUG_LOG("enigmailKeygen.js: Cancel\n");
+  var closeWin=false;
+  
+  if (gKeygenRequest) {
+    var closeWin = EnigConfirm(EnigGetString("keyAbort"), EnigGetString("keyMan.button.generateKeyAbort"), EnigGetString("keyMan.button.generateKeyContinue"));
+  }
+  else {
+    closeWin=true;
+  }
+  if (closeWin) {
+    enigmailKeygenCloseRequest();
+    window.close();
+  }
 }
 
 function onNoExpiry() {

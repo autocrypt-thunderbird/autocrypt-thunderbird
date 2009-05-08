@@ -562,15 +562,10 @@
   </toolbarpalette>
 
   <!-- override default set to include enigmail decrypt icon -->
-  <!-- Thunderbird 2.0 -->
-  <toolbar id="mail-bar2"
+  <!-- Thunderbird 2.0 and newer -->
+  <!-- toolbar id="mail-bar2"
            defaultset="button-getmsg,button-newmsg,button-address,separator,button-enigmail-decrypt,spacer,button-reply,button-replyall,button-forward,separator,button-delete,button-junk,separator,button-print,button-stop,spring,search-container">
-  </toolbar>
-
-  <!-- Thunderbird 1.0 - 1.5 -->
-  <toolbar id="mail-bar"
-           defaultset="button-getmsg,button-newmsg,button-address,spacer,button-enigmail-decrypt,spacer,spacer,button-reply,button-replyall,button-forward,spacer,spacer,spacer,button-delete,button-junk,button-print,button-stop,spring,throbber-box">
-  </toolbar>
+  </toolbar -->
 
   <vbox id="messagepanebox">
     <hbox id="enigmailBox" class="expandedEnigmailBox"

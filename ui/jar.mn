@@ -8,7 +8,7 @@ enigmail.jar:
 	content/enigmail/enigmailAbout.js              (content/enigmailAbout.js)
 	content/enigmail/enigmailAbout.htm             (content/enigmailAbout.htm)
 	content/enigmail/enigmailAddUidDlg.xul         (content/enigmailAddUidDlg.xul)
-  content/enigmail/enigmailAdvancedIdentityDlg.xul (content/enigmailAdvancedIdentityDlg.xul)
+	content/enigmail/enigmailAdvancedIdentityDlg.xul (content/enigmailAdvancedIdentityDlg.xul)
 	content/enigmail/enigmailAlertDlg.xul          (content/enigmailAlertDlg.xul)
 	content/enigmail/enigmailAttachmentsDialog.xul (content/enigmailAttachmentsDialog.xul)
 	content/enigmail/enigmailAttachmentsDialog.js  (content/enigmailAttachmentsDialog.js)
@@ -96,6 +96,7 @@ enigmail.jar:
 	locale/en-US/enigmail/help/compose.html        (locale/en-US/help/compose.html)
 	locale/en-US/enigmail/help/rulesEditor.html    (locale/en-US/help/rulesEditor.html)
 	locale/en-US/enigmail/help/editRcptRule.html   (locale/en-US/help/editRcptRule.html)
+	locale/en-US/enigmail/help/initError.html      (locale/en-US/help/initError.html)
 enigmail-en-US.jar:
 	locale/en-US/enigmail/contents.rdf         (locale/en-US/contents.rdf)
 	locale/en-US/enigmail/enigmail.dtd         (locale/en-US/enigmail.dtd)
@@ -105,6 +106,7 @@ enigmail-en-US.jar:
 	locale/en-US/enigmail/help/compose.html        (locale/en-US/help/compose.html)
 	locale/en-US/enigmail/help/rulesEditor.html    (locale/en-US/help/rulesEditor.html)
 	locale/en-US/enigmail/help/editRcptRule.html   (locale/en-US/help/editRcptRule.html)
+	locale/en-US/enigmail/help/initError.html      (locale/en-US/help/initError.html)
 
 enigmail-skin.jar:
 	skin/modern/enigmail/contents.rdf        (skin/contents.rdf)

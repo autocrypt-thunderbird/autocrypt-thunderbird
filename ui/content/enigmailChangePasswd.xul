@@ -95,7 +95,7 @@
     var newPasswd = document.getElementById("newPasswd").value;
     var repeatPasswd = document.getElementById("repeatPasswd").value;
     if (newPasswd.length == 0 && repeatPasswd.length == 0) {
-      if (! EnigConfirm(EnigGetString("removePassphrase"))) {
+      if (! EnigConfirm(EnigGetString("removePassphrase"), EnigGetString("keyMan.button.removePass"))) {
         return false;
       }
     }

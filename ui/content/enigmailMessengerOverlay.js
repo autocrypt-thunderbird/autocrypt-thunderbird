@@ -80,26 +80,14 @@ function enigMessengerStartup() {
 
   // Override print command
   var printElementIds = ["cmd_print", "cmd_printpreview", "key_print", "button-print",
+                         // TB <= 2.0
                          "threadPaneContext-print", "threadPaneContext-printpreview",
-                         "messagePaneContext-print", "messagePaneContext-printpreview"];
+                         "messagePaneContext-print", "messagePaneContext-printpreview",
+                         // TB >= 3.0
+                         "mailContext-print", "mailContext-printpreview"];
 
   EnigOverrideAttribute( printElementIds, "oncommand",
                          "enigMsgPrint('", "');");
-
-  // Override forward command
-  var forwardCmdElementIds = ["cmd_forward", "cmd_forwardInline",
-                              "cmd_forwardAttachment", "key_forward"];
-
-  EnigOverrideAttribute( forwardCmdElementIds, "oncommand",
-                         "enigMsgForward('", "', null);");
-
-  var forwardEventElementIds = [ "button-forward",
-                                 "threadPaneContext-forward",
-                                 "threadPaneContext-forwardAsAttachment",
-                                 "messagePaneContext-forward"];
-
-  EnigOverrideAttribute( forwardEventElementIds, "oncommand",
-                         "enigMsgForward('", "', event);");
 
   enigOverrideLayoutChange();
 
@@ -183,7 +171,7 @@ function enigViewSecurityInfo(event, displaySmimeMsg) {
          (gEnigSecurityInfo.statusFlags &
            (nsIEnigmail.PGP_MIME_SIGNED | nsIEnigmail.PGP_MIME_ENCRYPTED)) ) {
 
-      if (EnigConfirm(EnigGetString("reloadImapMessage")))
+      if (EnigConfirm(EnigGetString("reloadImapMessage"), EnigGetString("msgOvl.button.reload")))
         enigmailReloadCompleteMsg();
 
     }
@@ -406,16 +394,24 @@ function enigOverrideLayoutChange() {
     var element = document.getElementById(elementId);
     if (element) {
       try {
-        var oldValue = element.getAttribute("oncommand");
+        var oldValue = element.getAttribute("oncommand").replace(/;/g, "");
         var arg=oldValue.replace(/^(.*)(\(.*\))/, "$2");
         element.setAttribute("oncommand", "enigChangeMailLayout"+arg);
       } catch (ex) {}
-    } else {
-      // we can break if the vertical Thunderbird pane
-      // doesn't exist, because that means it's Seamonkey!
-      break;
     }
   }
+  
+  var toggleMsgPaneElementIds = ["key_toggleMessagePane"];
+  for (var i = 0; i < toggleMsgPaneElementIds.length; i++) {
+    var elementId = toggleMsgPaneElementIds[i];
+    var element = document.getElementById(elementId);
+    if (element) {
+      try {
+        element.setAttribute("oncommand", "enigToggleMessagePane()");
+      } catch (ex) {}
+    }
+  }
+  
 }
 
 function enigChangeMailLayout(viewType) {
@@ -424,6 +420,13 @@ function enigChangeMailLayout(viewType) {
   // This event requires that we re-subscribe to these events!
   gEnigMessagePane.addEventListener("unload", enigMessageFrameUnload, true);
   gEnigMessagePane.addEventListener("load", enigMessageFrameLoad, true);
+}
+
+function enigToggleMessagePane() {
+  MsgToggleMessagePane();
+  
+  // Reload message to get it decrypted/verified
+  enigMessageReload(false);
 }
 
 function enigGetCurrentMsgUriSpec() {
@@ -1241,20 +1244,6 @@ function enigGetDecryptedMessage(contentType, includeHeaders) {
   return contentData;
 }
 
-function enigMsgForward(elementId, event) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgForward: "+elementId+", "+event+"\n");
-
-  if ((elementId == "cmd_forwardAttachment") ||
-      (elementId == "threadPaneContext-forwardAsAttachment")) {
-    MsgForwardAsAttachment(event);
-
-  } else if (elementId == "cmd_forwardInline") {
-    MsgForwardAsInline(event);
-
-  } else {
-    MsgForwardMessage(event);
-  }
-}
 
 function enigMsgDefaultPrint(elementId) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMsgDefaultPrint: "+elementId+"\n");
@@ -1742,7 +1731,7 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
     if (statusFlagsObj.value &
         (nsIEnigmail.DECRYPTION_OKAY | nsIEnigmail.UNVERIFIED_SIGNATURE)) {
       if (callbackArg.actionType == "openAttachment") {
-        exitStatus = EnigConfirm(EnigGetString("decryptOkNoSig")+"\n\n"+EnigGetString("contAnyway"));
+        exitStatus = EnigConfirm(EnigGetString("decryptOkNoSig"), EnigGetString("msgOvl.button.contAnyway"));
       }
       else {
         EnigAlert(EnigGetString("decryptOkNoSig"));
@@ -1758,17 +1747,18 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
       EnigLongAlert(EnigGetString("successKeyImport")+"\n\n"+errorMsgObj.value);
     }
     else if (statusFlagsObj.value & nsIEnigmail.DISPLAY_MESSAGE) {
-      EnigLoadURLInNavigatorWindow(callbackArg.attachment.url, true)
+      HandleSelectedAttachments('open');
     }
-    else if (callbackArg.actionType == "openAttachment") {
+    else if ((statusFlagsObj.value & nsIEnigmail.DISPLAY_MESSAGE) || 
+             (callbackArg.actionType == "openAttachment")) {
       var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
       var outFileUri = ioServ.newFileURI(outFile);
       var fileExt = outFile.leafName.replace(/(.*\.)(\w+)$/, "$2")
       if (fileExt && ! callbackArg.forceBrowser) {
+        var extAppLauncher = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsPIExternalAppLauncher);
+        extAppLauncher.deleteTemporaryFileOnExit(outFile);
+        
         try {
-          var extAppLauncher = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsPIExternalAppLauncher);
-          extAppLauncher.deleteTemporaryFileOnExit(outFile);
-
           var mimeService = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsIMIMEService);
           var fileMimeType = mimeService.getTypeFromFile(outFile);
           var fileMimeInfo = mimeService.getFromTypeAndExtension(fileMimeType, fileExt);
@@ -1779,7 +1769,6 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
           // if the attachment file type is unknown, an exception is thrown,
           // so let it be handled by a browser window
           enigLoadExternalURL(outFileUri.asciiSpec);
-          return;
         }
       }
 
@@ -1821,7 +1810,7 @@ function enigHandleUnknownKey() {
 
   var mesg =  EnigGetString("pubKeyNeeded") + EnigGetString("keyImport",pubKeyId);
 
-  if (EnigConfirm(mesg)) {
+  if (EnigConfirm(mesg, EnigGetString("keyMan.button.import"))) {
     var inputObj = {
       searchList : [ pubKeyId ]
     };

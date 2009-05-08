@@ -53,7 +53,8 @@ var gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha51
 
 var gEnigEditor;
 var gEnigDirty, gEnigProcessed, gEnigTimeoutID;
-var gEnigSendPGPMime, gEnigMeodifiedAttach, gEnigSendMode;
+var gEnigSendPGPMime = false;
+var gEnigMeodifiedAttach, gEnigSendMode;
 var gEnigSendModeDirty = 0;
 var gEnigNextCommand;
 var gEnigDocStateListener = null;
@@ -566,9 +567,11 @@ function enigDoPgpButton(what) {
   if (! what)
     what = gEnigNextCommand;
   gEnigNextCommand = "";
+  GetEnigmailSvc(); // try to access Enigmail to launch the wizard if needed
+
   try {
     if (!enigGetAccDefault("enabled")) {
-      if (EnigConfirm(EnigGetString("configureNow"))) {
+      if (EnigConfirm(EnigGetString("configureNow"), EnigGetString("msgCompose.button.configure"))) {
         enigGoAccountManager();
         if (! gEnigIdentity.getBoolAttribute("enablePgp")) return;
       }
@@ -768,7 +771,8 @@ function enigConfirmBeforeSend(toAddr, gpgKeys, sendFlags, isOffline, msgSendTyp
   if (sendFlags & ENIG_ENCRYPT)
     msgConfirm += "\n\n"+EnigGetString("encryptKeysNote", gpgKeys);
 
-  return EnigConfirm(msgConfirm);
+  return EnigConfirm(msgConfirm, 
+      EnigGetString((isOffline || sendFlags & nsIEnigmail.SEND_LATER) ? "msgCompose.button.save" :"msgCompose.button.send"));
 }
 
 
@@ -827,7 +831,7 @@ function enigEncryptMsg(msgSendType) {
   }
   var encryptIfPossible = false;
   if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
-    if (!((sendFlags & ENIG_ENCRYPT) && EnigConfirmPref(EnigGetString("savingMessage"), "saveEncrypted"))) {
+    if (!((sendFlags & ENIG_ENCRYPT) && EnigConfirmPref(EnigGetString("savingMessage"), "saveEncrypted", EnigGetString("msgCompose.button.encrypt"), EnigGetString("msgCompose.button.dontEncrypt")))) {
       sendFlags &= ~ENIG_ENCRYPT;
 
       if (gEnigAttachOwnKey.appendAttachment) enigAttachOwnKey();
@@ -873,7 +877,7 @@ function enigEncryptMsg(msgSendType) {
         msg = gEnigmailSvc.initializationError +"\n\n"+msg;
      }
 
-     return EnigConfirm(msg);
+     return EnigConfirm(msg, EnigGetString("msgCompose.button.send"));
   }
 
 
@@ -891,7 +895,7 @@ function enigEncryptMsg(msgSendType) {
 
      if (! pgpEnabled) {
         if ((sendFlags & ENIG_ENCRYPT_OR_SIGN) || gEnigAttachOwnKey.appendAttachment) {
-          if (!EnigConfirm(EnigGetString("acctNotConfigured")))
+          if (!EnigConfirm(EnigGetString("acctNotConfigured"), EnigGetString("msgCompose.button.send")))
               return false;
         }
         return true;
@@ -1029,7 +1033,7 @@ function enigEncryptMsg(msgSendType) {
                EnigAlert(EnigGetString("sendingNews"));
                return false;
              }
-             else if (!EnigConfirm(EnigGetString("sendToNewsWarning"))) {
+             else if (!EnigConfirm(EnigGetString("sendToNewsWarning"), EnigGetString("msgCompose.button.send"))) {
                return false;
              }
            }
@@ -1254,7 +1258,7 @@ function enigEncryptMsg(msgSendType) {
         }
         else {
           if (sendFlags & ENIG_ENCRYPT) {
-            if (!EnigConfirm(EnigGetString("attachWarning")))
+            if (!EnigConfirm(EnigGetString("attachWarning"), EnigGetString("msgCompose.button.send")))
               return false;
           }
         }
@@ -1264,7 +1268,7 @@ function enigEncryptMsg(msgSendType) {
                         (sendFlags & ENIG_ENCRYPT_OR_SIGN);
 
      if (usingPGPMime && !enigmailSvc.composeSecure) {
-       if (!EnigConfirm(EnigGetString("noPGPMIME"))) {
+       if (!EnigConfirm(EnigGetString("noPGPMIME"), EnigGetString("msgCompose.button.useInlinePGP"))) {
           throw Components.results.NS_ERROR_FAILURE;
 
        }
@@ -1383,9 +1387,7 @@ function enigEncryptMsg(msgSendType) {
           }
 
           if (msgCompFields.characterSet == "ISO-2022-JP") {
-            if (EnigConfirmPref(EnigGetString("warnIso2022jp"), "warnIso2022jp")) {
               gMsgCompose.SetDocumentCharset("UTF-8");
-            }
           }
        }
        catch (ex) {}
@@ -1397,9 +1399,7 @@ function enigEncryptMsg(msgSendType) {
         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: enabled forceMsgEncoding\n");
 
         if (msgCompFields.characterSet == "ISO-2022-JP") {
-          if (EnigConfirmPref(EnigGetString("warnIso2022jp"), "warnIso2022jp")) {
             gMsgCompose.SetDocumentCharset("UTF-8");
-          }
         }
       }
     }
@@ -1410,7 +1410,7 @@ function enigEncryptMsg(msgSendType) {
      if (gEnigmailSvc && gEnigmailSvc.initializationError) {
         msg += "\n"+gEnigmailSvc.initializationError;
      }
-     return EnigConfirm(msg);
+     return EnigConfirm(msg, EnigGetString("msgCompose.button.sendUnencrypted"));
   }
 
   return true;
@@ -1430,7 +1430,7 @@ function enigEncryptInline(sendInfo) {
   try {
     var convert = DetermineConvertibility();
     if (convert == nsIMsgCompConvertible.No) {
-      if (!EnigConfirm(EnigGetString("strippingHTML"))) {
+      if (!EnigConfirm(EnigGetString("strippingHTML"), EnigGetString("msgCompose.button.sendAnyway"))) {
         return false;
       }
     }

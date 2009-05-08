@@ -232,7 +232,7 @@ function enigDoAdd() {
 function enigDoDelete() {
   var node=getCurrentNode();
   if (node) {
-    if (EnigConfirm(EnigGetString("deleteRule"))) {
+    if (EnigConfirm(EnigGetString("deleteRule"), EnigGetString("dlg.button.delete"))) {
       var treeChildren=document.getElementById("rulesTreeChildren");
       treeChildren.removeChild(node);
     }

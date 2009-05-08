@@ -53,7 +53,7 @@ function onLoad() {
 
 function onCancel() {
   if (gKeygenRequest) {
-    if (EnigConfirm(EnigGetString("keyAbort"))) {
+    if (EnigConfirm(EnigGetString("keyAbort"), EnigGetString("keyMan.button.generateKeyAbort"), EnigGetString("keyMan.button.generateKeyContinue"))) {
       enigmailKeygenCloseRequest();
       return true;
     }
@@ -62,7 +62,7 @@ function onCancel() {
     }
   }
   else {
-    return EnigConfirm(EnigGetString("setupWizard.reallyCancel"))
+    return (EnigLongAlert(EnigGetString("setupWizard.reallyCancel"), EnigGetString("dlg.button.close"), EnigGetString("dlg.button.continue")) == 0);
   }
 }
 
@@ -136,10 +136,10 @@ function displayKeyCreate() {
     var node = document.getElementById("idSelection").firstChild;
     while (node) {
       if (node.checked) {
-        var identity = gEnigAccountManager.getIdentity(node.getAttribute("account-id"));
+        var identity = gEnigAccountMgr.getIdentity(node.getAttribute("account-id"));
         var idName = identity.identityName;
 
-        var serverSupports = gEnigAccountManager.GetServersForIdentity(identity);
+        var serverSupports = gEnigAccountMgr.GetServersForIdentity(identity);
         if (serverSupports.GetElementAt(0)) {
           var inServer = serverSupports.GetElementAt(0).QueryInterface(Components.interfaces.nsIMsgIncomingServer);
 
@@ -448,7 +448,7 @@ function fillIdentities(fillType)
 
     // Find out default identity
     var defIdentity;
-    var defIdentities = gEnigAccountManager.defaultAccount.identities;
+    var defIdentities = gEnigAccountMgr.defaultAccount.identities;
     if (defIdentities.Count() >= 1) {
       defIdentity = defIdentities.QueryElementAt(0, Components.interfaces.nsIMsgIdentity);
     } else {
@@ -460,7 +460,7 @@ function fillIdentities(fillType)
       var node = document.getElementById("idSelection").firstChild;
       while (node) {
         if (node.checked) {
-          var currId = gEnigAccountManager.getIdentity(node.getAttribute("account-id"));
+          var currId = gEnigAccountMgr.getIdentity(node.getAttribute("account-id"));
           if (currId.key == defIdentity.key) {
             break;
           }
@@ -473,7 +473,7 @@ function fillIdentities(fillType)
         node = document.getElementById("idSelection").firstChild;
         while (node) {
           if (node.checked) {
-            defIdentity = gEnigAccountManager.getIdentity(node.getAttribute("account-id"));
+            defIdentity = gEnigAccountMgr.getIdentity(node.getAttribute("account-id"));
             break;
           }
           node = node.nextSibling;
@@ -487,7 +487,7 @@ function fillIdentities(fillType)
     parentElement.removeChild(child);
     child=parentElement.firstChild;
   }
-  var idSupports = gEnigAccountManager.allIdentities;
+  var idSupports = gEnigAccountMgr.allIdentities;
   var identities = queryISupportsArray(idSupports,
                                        Components.interfaces.nsIMsgIdentity);
 
@@ -502,7 +502,7 @@ function fillIdentities(fillType)
     if (!identity.valid || !identity.email)
       continue;
 
-    var serverSupports = gEnigAccountManager.GetServersForIdentity(identity);
+    var serverSupports = gEnigAccountMgr.GetServersForIdentity(identity);
 
     if (serverSupports.GetElementAt(0)) {
       var inServer = serverSupports.GetElementAt(0).QueryInterface(Components.interfaces.nsIMsgIncomingServer);
@@ -550,7 +550,7 @@ function wizardGetSelectedIdentity()
   var item = document.getElementById("userIdentity").selectedItem;
   var identityKey = item.getAttribute('account-id');
 
-  return gEnigAccountManager.getIdentity(identityKey);
+  return gEnigAccountMgr.getIdentity(identityKey);
 }
 
 function applyWizardSettings() {
@@ -559,7 +559,7 @@ function applyWizardSettings() {
   loadLastPage();
 
   if (document.getElementById("activateId").value == "1") {
-    var idSupports = gEnigAccountManager.allIdentities;
+    var idSupports = gEnigAccountMgr.allIdentities;
     var identities = queryISupportsArray(idSupports,
                                        Components.interfaces.nsIMsgIdentity);
     for (var i=0; i<identities.length; i++) {
@@ -570,7 +570,7 @@ function applyWizardSettings() {
     var node = document.getElementById("idSelection").firstChild;
     while (node) {
       if (node.checked) {
-        var identity = gEnigAccountManager.getIdentity(node.getAttribute("account-id"));
+        var identity = gEnigAccountMgr.getIdentity(node.getAttribute("account-id"));
         wizardApplyId(identity, gGeneratedKey);
       }
       node = node.nextSibling;
@@ -662,7 +662,7 @@ function wizardKeygenTerminate(terminateArg, ipcRequest) {
   ipcRequest.close(true);
   var curId = wizardGetSelectedIdentity();
 
-  if (EnigConfirm(EnigGetString("keygenComplete", curId.email)+"\n\n"+EnigGetString("revokeCertRecommended"))) {
+  if (EnigConfirm(EnigGetString("keygenComplete", curId.email)+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"), EnigGetString("dlg.button.skip"))) {
     EnigCreateRevokeCert(gGeneratedKey, curId.email);
   }
 
@@ -787,7 +787,7 @@ function displayActions() {
       var node = document.getElementById("idSelection").firstChild;
       while (node) {
         if (node.checked) {
-          var identity = gEnigAccountManager.getIdentity(node.getAttribute("account-id"));
+          var identity = gEnigAccountMgr.getIdentity(node.getAttribute("account-id"));
           idList+="<"+identity.email+"> "
         }
         node = node.nextSibling;

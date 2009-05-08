@@ -328,7 +328,7 @@
 
       var confirmMsg = EnigGetString("keyConfirm",idString);
 
-      if (!EnigConfirm(confirmMsg)) {
+      if (!EnigConfirm(confirmMsg, EnigGetString("keyMan.button.generateKey"))) {
        return;
       }
       var contentFrame = EnigGetFrame(window, "keygenConsole");
@@ -359,7 +359,7 @@
         if (generateObserver.backupLocation) {
           msg += "\n"+EnigGetString("keygen.keyBackup", generateObserver.backupLocation);
         }
-        if (EnigConfirm(msg+"\n\n"+EnigGetString("revokeCertRecommended"))) {
+        if (EnigConfirm(msg+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"))) {
           EnigCreateRevokeCert(generateObserver.keyId, curId.email);
         }
         window.close();

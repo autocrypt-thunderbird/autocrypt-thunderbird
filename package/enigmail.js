@@ -1047,17 +1047,38 @@ function (domWindow, mesg) {
 }
 
 Enigmail.prototype.confirmMsg =
-function (domWindow, mesg) {
+function (domWindow, mesg, okLabel, cancelLabel) {
   var dummy={};
   var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
+  
+  var buttonTitles = 0;
+  if (okLabel == null && cancelLabel == null) {
+    buttonTitles = (promptService.BUTTON_TITLE_YES * ENIG_BUTTON_POS_0) +
+                   (promptService.BUTTON_TITLE_NO * ENIG_BUTTON_POS_1);
+  }
+  else {
+    if (okLabel != null) {
+      buttonTitles += (promptService.BUTTON_TITLE_IS_STRING * promptService.BUTTON_POS_0);
+    }
+    else {
+      buttonTitles += promptService.BUTTON_TITLE_OK * promptService.BUTTON_POS_1;
+    }
+    
+    if (cancelLabel != null) {
+      buttonTitles += (promptService.BUTTON_TITLE_IS_STRING * promptService.BUTTON_POS_1);
+    }
+    else {
+      buttonTitles += promptService.BUTTON_TITLE_CANCEL * promptService.BUTTON_POS_1;
+    }
+  }
+
   var buttonPressed = promptService.confirmEx(domWindow,
                         EnigGetString("enigConfirm"),
                         mesg,
-                        (promptService.BUTTON_TITLE_YES * BUTTON_POS_0) +
-                        (promptService.BUTTON_TITLE_NO * BUTTON_POS_1),
-                        null, null, null,
+                        buttonTitles,
+                        okLabel, cancelLabel, null,
                         null, dummy);
-  return (buttonPressed==0); // promptService.confirm(domWindow, EnigGetString("enigConfirm"), mesg);
+  return (buttonPressed==0);
 }
 
 Enigmail.prototype.promptValue =
@@ -3921,9 +3942,7 @@ function (parent, uiFlags, msgText, keyId, errorMsgObj) {
   var interactive = uiFlags & nsIEnigmail.UI_INTERACTIVE;
 
   if (interactive) {
-    var confirmMsg = EnigGetString("importKeyConfirm");
-
-    if (!this.confirmMsg(parent, confirmMsg)) {
+    if (!this.confirmMsg(parent, EnigGetString("importKeyConfirm"), EnigGetString("keyMan.button.import"))) {
       errorMsgObj.value = EnigGetString("failCancel");
       return -1;
     }
@@ -4570,7 +4589,7 @@ function (parent, outFileName, displayName, inputBuffer,
   if (attachmentHead.match(/\-\-\-\-\-BEGIN PGP \w+ KEY BLOCK\-\-\-\-\-/)) {
     // attachment appears to be a PGP key file
 
-    if (this.confirmMsg(parent, EnigGetString("attachmentPgpKey", displayName))) {
+    if (this.confirmMsg(parent, EnigGetString("attachmentPgpKey", displayName), EnigGetString("keyMan.button.import"), EnigGetString("dlg.button.view"))) {
       exitCodeObj.value = this.importKey(parent, 0, byteData, "", errorMsgObj);
       statusFlagsObj.value = gStatusFlags.IMPORTED;
     }

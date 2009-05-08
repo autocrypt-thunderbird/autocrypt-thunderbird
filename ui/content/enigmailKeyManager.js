@@ -523,11 +523,11 @@ function enigmailDeleteKey() {
     // one key selected
     var userId="0x"+keyList[0].substr(-8,8)+" - "+gKeyList[keyList[0]].userId;
     if(gKeyList[keyList[0]].secretAvailable) {
-      if (!EnigConfirm(EnigGetString("deleteSecretKey", userId))) return;
+      if (!EnigConfirm(EnigGetString("deleteSecretKey", userId), EnigGetString("dlg.button.delete"))) return;
       deleteSecret=true;
     }
     else {
-      if (!EnigConfirm(EnigGetString("deletePubKey", userId))) return;
+      if (!EnigConfirm(EnigGetString("deletePubKey", userId), EnigGetString("dlg.button.delete"))) return;
     }
   }
   else {
@@ -537,10 +537,10 @@ function enigmailDeleteKey() {
     }
 
     if (deleteSecret) {
-      if (!EnigConfirm(EnigGetString("deleteMix"))) return;
+      if (!EnigConfirm(EnigGetString("deleteMix"), EnigGetString("dlg.button.delete"))) return;
     }
     else {
-      if (!EnigConfirm(EnigGetString("deleteSelectedPubKey"))) return;
+      if (!EnigConfirmSring(EnigGetString("deleteSelectedPubKey"), EnigGetString("dlg.button.delete"))) return;
     }
   }
 
@@ -696,7 +696,7 @@ function enigmailExportKeys() {
 
   var exportFlags = 0;
   if (gKeyList[keyList[0]].secretAvailable) {
-    if (EnigConfirm(EnigGetString("exportSecretKey"))) {
+    if (EnigConfirm(EnigGetString("exportSecretKey"), EnigGetString("keyMan.button.exportSecKey"))) {
       exportFlags |= nsIEnigmail.EXTRACT_SECRET_KEY;
     }
   }
@@ -842,7 +842,7 @@ function enigmailImportFromClipbrd() {
   if (!enigmailSvc)
     return;
 
-  if (!EnigConfirm(EnigGetString("importFromClip"))) {
+  if (!EnigConfirm(EnigGetString("importFromClip"), EnigGetString("keyMan.button.import"))) {
     return;
   }
 
@@ -1087,7 +1087,7 @@ function enigmailKeyServerAcess(accessType, callbackFunc) {
 
   var selKeyList = enigmailGetSelectedKeys();
   if (accessType != nsIEnigmail.REFRESH_KEY && selKeyList.length==0) {
-    if (EnigConfirm(EnigGetString("refreshAllQuestion"))) {
+    if (EnigConfirm(EnigGetString("refreshAllQuestion"), EnigGetString("keyMan.button.refreshAll"))) {
       accessType = nsIEnigmail.REFRESH_KEY;
       EnigAlertPref(EnigGetString("refreshKey.warn"), "warnRefreshAll");
     }

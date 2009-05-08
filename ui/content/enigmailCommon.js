@@ -227,11 +227,21 @@ function GetEnigmailSvc() {
 
       if (firstInitialization) {
         // Display initialization error alert
-        var errMsg = gEnigmailSvc.initializationError ? gEnigmailSvc.initializationError : "Error in initializing Enigmail service";
+        var errMsg = gEnigmailSvc.initializationError ? gEnigmailSvc.initializationError : EnigGetString("accessError");
 
         errMsg += "\n\n"+EnigGetString("avoidInitErr");
 
-        EnigAlertPref("Enigmail: "+errMsg, "initAlert");
+
+        var checkedObj = {value: false};
+        if (EnigGetPref("initAlert")) {
+          var r = EnigLongAlert("Enigmail: "+errMsg, EnigGetString("dlgNoPrompt"), null, ":help", null, checkedObj);
+          if (r >= 0 && checkedObj.value) {
+            EnigSetPref("initAlert", false);
+          }
+          if (r == 1) {
+            EnigHelpWindow("initError");
+          }
+        }
         if (EnigGetPref("initAlert")) {
           gEnigmailSvc.initializationAttempted = false;
           gEnigmailSvc = null;
@@ -548,9 +558,30 @@ function EnigAlert(mesg) {
   gEnigPromptSvc.alert(window, EnigGetString("enigAlert"), mesg);
 }
 
-function EnigLongAlert(mesg) {
-  window.openDialog("chrome://enigmail/content/enigmailAlertDlg.xul",
-            "", "chrome,modal,centerscreen", {msgtext: mesg});
+/**
+ * Displays an alert dialog with 3-4 optional buttons.
+ * prefName: if not null, display checkbox "don't show again", linked to the prefName preference
+ * button-Labels: use "&" to indicate access key
+ *     use "buttonType:label" or ":buttonType" to indicate special button types 
+ *        (buttonType is one of cancel, help, extra1, extra2)
+ * return: 0-2: button Number pressed
+ *          -1: ESC or close window button pressed
+ *
+ */
+function EnigLongAlert(mesg, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj) {
+  var result = {
+    value: -1,
+    checked: false
+  };
+  window.openDialog("chrome://enigmail/content/enigmailAlertDlg.xul", "",
+            "chrome,centerscreen,modal",
+            {msgtext: mesg, checkboxLabel: checkBoxLabel, button1: okLabel, button2: labelButton2, button3: labelButton3},
+            result);
+  
+  if (checkBoxLabel) {
+    checkedObj.value=result.checked
+  }
+  return result.value;
 }
 
 function EnigAlertCount(countPrefName, mesg) {
@@ -591,24 +622,67 @@ function EnigAlertPref(mesg, prefText) {
   }
 }
 
-function EnigConfirm(mesg) {
+// Confirmation dialog with OK / Cancel buttons (both customizable)
+function EnigConfirm(mesg, okLabel, cancelLabel) {
   var dummy=new Object();
-
+  
+  var buttonTitles = 0;
+  if (okLabel == null && cancelLabel == null) {
+    buttonTitles = (gEnigPromptSvc.BUTTON_TITLE_YES * ENIG_BUTTON_POS_0) +
+                   (gEnigPromptSvc.BUTTON_TITLE_NO * ENIG_BUTTON_POS_1);
+  }
+  else {
+    if (okLabel != null) {
+      buttonTitles += (gEnigPromptSvc.BUTTON_TITLE_IS_STRING * gEnigPromptSvc.BUTTON_POS_0);
+    }
+    else {
+      buttonTitles += gEnigPromptSvc.BUTTON_TITLE_OK * ENIG_BUTTON_POS_0;
+    }
+    
+    if (cancelLabel != null) {
+      buttonTitles += (gEnigPromptSvc.BUTTON_TITLE_IS_STRING * gEnigPromptSvc.BUTTON_POS_1);
+    }
+    else {
+      buttonTitles += gEnigPromptSvc.BUTTON_TITLE_CANCEL * ENIG_BUTTON_POS_1;
+    }
+  }
+  
   var buttonPressed = gEnigPromptSvc.confirmEx(window,
                         EnigGetString("enigConfirm"),
                         mesg,
-                        (gEnigPromptSvc.BUTTON_TITLE_YES * ENIG_BUTTON_POS_0) +
-                        (gEnigPromptSvc.BUTTON_TITLE_NO * ENIG_BUTTON_POS_1),
-                        null, null, null,
+                        buttonTitles,
+                        okLabel, cancelLabel, null,
                         null, dummy);
 
   return (buttonPressed == 0);
 }
 
-function EnigConfirmPref(mesg, prefText) {
+
+function EnigConfirmPref(mesg, prefText, okLabel, cancelLabel) {
   const notSet = 0;
   const yes = 1;
   const no = 2;
+  
+  var buttonTitles = 0;
+  if (okLabel == null && cancelLabel == null) {
+    buttonTitles = (gEnigPromptSvc.BUTTON_TITLE_YES * ENIG_BUTTON_POS_0) +
+                   (gEnigPromptSvc.BUTTON_TITLE_NO * ENIG_BUTTON_POS_1);
+  }
+  else {
+    if (okLabel != null) {
+      buttonTitles += (gEnigPromptSvc.BUTTON_TITLE_IS_STRING * gEnigPromptSvc.BUTTON_POS_0);
+    }
+    else {
+      buttonTitles += gEnigPromptSvc.BUTTON_TITLE_OK * ENIG_BUTTON_POS_0;
+    }
+    
+    if (cancelLabel != null) {
+      buttonTitles += (gEnigPromptSvc.BUTTON_TITLE_IS_STRING * gEnigPromptSvc.BUTTON_POS_1);
+    }
+    else {
+      buttonTitles += gEnigPromptSvc.BUTTON_TITLE_CANCEL * ENIG_BUTTON_POS_1;
+    }
+  }
 
   var prefValue = EnigGetPref(prefText);
   switch (prefValue) {
@@ -617,9 +691,8 @@ function EnigConfirmPref(mesg, prefText) {
     var buttonPressed = gEnigPromptSvc.confirmEx(window,
                           EnigGetString("enigConfirm"),
                           mesg,
-                          (gEnigPromptSvc.BUTTON_TITLE_YES * ENIG_BUTTON_POS_0) +
-                          (gEnigPromptSvc.BUTTON_TITLE_NO * ENIG_BUTTON_POS_1),
-                          null, null, null,
+                          buttonTitles,
+                          okLabel, cancelLabel, null,
                           EnigGetString("dlgKeepSetting"), checkBoxObj);
     if (checkBoxObj.value) {
       EnigSetPref(prefText, (buttonPressed==0 ? yes : no));
@@ -670,6 +743,7 @@ function EnigOverrideAttribute(elementIdList, attrName, prefix, suffix) {
 function EnigPrefWindow(showBasic, clientType, selectTab) {
   DEBUG_LOG("enigmailCommon.js: EnigPrefWindow\n");
 
+  GetEnigmailSvc();
   if (showBasic && clientType == "seamonkey" && selectTab==null) {
     // Open the seamonkey pref window
     goPreferences("securityItem",
@@ -1203,10 +1277,27 @@ function EnigKeygen() {
 
 function EnigKeyManager() {
   DEBUG_LOG("enigmailCommon.js: EnigKeygen\n");
+  GetEnigmailSvc();
   EnigOpenWin("enigmail:KeyManager",
               "chrome://enigmail/content/enigmailKeyManager.xul",
               "resizable");
 }
+
+
+function EnigLaunchFile(fileName) {
+  try {
+    var mimeService = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsIMIMEService);
+    var fileMimeType = mimeService.getTypeFromFile(fileName);
+    var fileMimeInfo = mimeService.getFromTypeAndExtension(fileMimeType, fileExt);
+
+    fileMimeInfo.launchWithFile(fileName);
+  }
+  catch (ex) {
+    // if the attachment file type is unknown, an exception is thrown,
+    // so let it be handled by a browser window
+    enigLoadExternalURL(outFileUri.asciiSpec);
+  }
+}  
 
 // retrieves the most recent navigator window (opens one if need be)
 function EnigLoadURLInNavigatorWindow(url, aOpenFlag)
@@ -1561,9 +1652,7 @@ function EnigLoadKeyList(refresh, keyListObj) {
   DEBUG_LOG("enigmailCommon.js: EnigLoadKeyList\n");
 
   var sortUsers = function (a, b) {
-
-   if (a.userId.toLowerCase()<b.userId.toLowerCase()) { return -1;} else {return 1; }
-
+    if (a.userId.toLowerCase()<b.userId.toLowerCase()) { return -1; } else { return 1; }
   }
 
   var aGpgUserList = EnigObtainKeyList(false, refresh);
@@ -1571,7 +1660,7 @@ function EnigLoadKeyList(refresh, keyListObj) {
 
   var aGpgSecretsList = EnigObtainKeyList(true, refresh);
   if (!aGpgSecretsList && !refresh) {
-    if (EnigConfirm(EnigGetString("noSecretKeys"))) {
+    if (EnigConfirm(EnigGetString("noSecretKeys"), EnigGetString("keyMan.button.generateKey"), EnigGetString("keyMan.button.skip"))) {
       EnigKeygen();
       EnigLoadKeyList(true, keyListObj);
     }
@@ -1708,7 +1797,7 @@ function EnigRevokeKey(keyId, userId) {
     return false;
 
   var userDesc="0x"+keyId.substr(-8,8)+" - "+userId;
-  if (!EnigConfirm(EnigGetString("revokeKeyAsk", userDesc))) return;
+  if (!EnigConfirm(EnigGetString("revokeKeyAsk", userDesc), EnigGetString("keyMan.button.revokeKey"))) return;
 
   var tmpDir=EnigGetTempDir();
 
