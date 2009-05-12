@@ -713,10 +713,19 @@ function enigMessageParse(interactive, importOnly, contentEncoding) {
 
   var findStr = interactive ? null : "-----BEGIN PGP";
   var msgText = null;
-
-  if ((! findStr) || (findStr && (bodyElement.textContent.indexOf(findStr) >= 0)))
+  var foundIndex = -1;
+  
+  if (findStr) {
+    foundIndex = bodyElement.textContent.indexOf(findStr);
+    if (foundIndex >= 0) {
+      if (bodyElement.textContent.indexOf(findStr+" LICENSE AUTHORIZATION") == foundIndex) 
+        foundIndex = -1;
+    }
+  }
+  if (foundIndex >= 0) {
     msgText = bodyElement.textContent;
-
+  }
+  
   if (!msgText) {
     // No PGP content
     return;
