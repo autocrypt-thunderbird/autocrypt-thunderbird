@@ -66,15 +66,19 @@ var gEnigModifiedAttach;
 if (typeof(GenericSendMessage)=="function") {
   // replace GenericSendMessage with our own version
 
-  var appInfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
-  var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"].getService(Components.interfaces.nsIVersionComparator);
- 
-  if (vc.compare(appInfo.platformVersion, "1.9.0") <= 0) {
-    var origGenericSendMessage = GenericSendMessage;
-    GenericSendMessage = function (msgType) {
-      enigGenericSendMessage(msgType);
+  try {
+    var appInfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
+    var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"].getService(Components.interfaces.nsIVersionComparator);
+   
+    if (vc.compare(appInfo.platformVersion, "1.9.0") <= 0) {
+      // TB <= 2.0
+      var origGenericSendMessage = GenericSendMessage;
+      GenericSendMessage = function (msgType) {
+        enigGenericSendMessage(msgType);
+      }
     }
   }
+  catch (ex) {}
   window.addEventListener("load", enigMsgComposeStartup, false);
 
   // Handle recycled windows
@@ -247,9 +251,28 @@ function enigComposeOpen() {
         }
       }
     }
-
   }
 
+  // check for attached signature files and remove them
+  var bucketList = document.getElementById("attachmentBucket");
+  if (bucketList.hasChildNodes()) {
+    var node = bucketList.firstChild;
+    nodeNumber=0;
+    while (node) {
+      if (node.attachment.contentType == "application/pgp-signature") {
+        node = bucketList.removeItemAt(nodeNumber);
+        // Let's release the attachment object held by the node else it won't go away until the window is destroyed
+        node.attachment = null;
+      }
+      else {
+        ++nodeNumber;
+      }
+      node = node.nextSibling;
+    }
+    if (! bucketList.hasChildNodes()) {
+      ChangeAttachmentBucketVisibility(true);    
+    }
+  }
   enigDisplayUi();
 }
 
