@@ -66,11 +66,15 @@ var gEnigModifiedAttach;
 if (typeof(GenericSendMessage)=="function") {
   // replace GenericSendMessage with our own version
 
-  var origGenericSendMessage = GenericSendMessage;
-  GenericSendMessage = function (msgType) {
-    enigGenericSendMessage(msgType);
+  var appInfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
+  var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"].getService(Components.interfaces.nsIVersionComparator);
+ 
+  if (vc.compare(appInfo.platformVersion, "1.9.0") <= 0) {
+    var origGenericSendMessage = GenericSendMessage;
+    GenericSendMessage = function (msgType) {
+      enigGenericSendMessage(msgType);
+    }
   }
-
   window.addEventListener("load", enigMsgComposeStartup, false);
 
   // Handle recycled windows
@@ -452,9 +456,11 @@ function enigExtractAndAttachKey(uid) {
 
 function enigAddAttachment(attachment) {
   if (typeof(AddAttachment) == "undefined") {
+    // TB >= 3.0
     AddUrlAttachment(attachment);
   }
   else {
+    // TB <= 3.0
     AddAttachment(attachment);
   }
 }
