@@ -1650,6 +1650,8 @@ function EnigObtainKeyList(secretOnly, refresh) {
 // Load the key list into memory
 function EnigLoadKeyList(refresh, keyListObj) {
   DEBUG_LOG("enigmailCommon.js: EnigLoadKeyList\n");
+  
+  const TRUSTLEVEL_SORTED="oidre-qnmfu"; // trust level sorted by increasing level of trust
 
   var sortUsers = function (a, b) {
     if (a.userId.toLowerCase()<b.userId.toLowerCase()) { return -1; } else { return 1; }
@@ -1702,6 +1704,10 @@ function EnigLoadKeyList(refresh, keyListObj) {
         if (typeof(keyObj.userId) != "string") {
           keyObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID]).replace(/\\e3A/g, ":");
           keyListObj.keySortList.push({userId: keyObj.userId, keyId: keyObj.keyId});
+          if (TRUSTLEVEL_SORTED.indexOf(listRow[KEY_TRUST]) < TRUSTLEVEL_SORTED.indexOf(keyObj.keyTrust)) {
+            // reduce key trust if primary UID is less trusted than public key
+            keyObj.keyTrust = listRow[KEY_TRUST];
+          }
         }
         else {
           var subUserId = {

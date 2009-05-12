@@ -139,6 +139,7 @@ function enigGetUserList(secretOnly, refresh) {
 function enigmailBuildList(refresh) {
    DEBUG_LOG("enigmailUserSelection.js: enigmailBuildList\n");
 
+   const TRUSTLEVEL_SORTED="oidre-qnmfu"; // trust level sorted by increasing level of trust
    var sortUsers = function (a,b) {
      var r = 0;
      if ((a.activeState == 1 || b.activeState == 1) && (a.activeState != b.activeState)) {
@@ -255,7 +256,12 @@ function enigmailBuildList(refresh) {
             listRow[USER_ID] = emptyUid;
          }
          if (typeof(userObj.userId) != "string") {
+           // primary UID
            userObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID]).replace(/\\e3A/g, ":");
+            if (TRUSTLEVEL_SORTED.indexOf(listRow[KEY_TRUST]) < TRUSTLEVEL_SORTED.indexOf(userObj.keyTrust)) {
+            // reduce key trust if primary UID is less trusted than public key
+            userObj.keyTrust = listRow[KEY_TRUST];
+          }           
          }
          else {
            var userId = {
