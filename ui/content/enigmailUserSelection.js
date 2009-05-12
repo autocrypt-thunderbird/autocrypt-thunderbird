@@ -68,6 +68,9 @@ var gSendEncrypted=true;
 var gAllowExpired=false;
 
 var gEnigRemoveListener = false;
+const EMPTY_UID = " -";
+
+
 
 // set the "active" flag and the corresponding image
 function enigSetActive(element, status) {
@@ -155,8 +158,6 @@ function enigmailBuildList(refresh) {
      return r;
    }
 
-   var emptyUid = " -"; // replace with localizable string
-
    window.arguments[RESULT].cancelled=true;
 
    var secretOnly = (window.arguments[INPUT].options.indexOf("private")>= 0);
@@ -193,9 +194,11 @@ function enigmailBuildList(refresh) {
       var plainText = document.getElementById("enigmailUserSelPlainText");
       plainText.setAttribute("label", plainText.getAttribute("noSignLabel"));
    }
-   if ((window.arguments[INPUT].options.indexOf("rulesOption")>= 0)) {
-      var rulesOption = document.getElementById("perRecipientsOption");
-      rulesOption.removeAttribute("collapsed");
+   if ((window.arguments[INPUT].options.indexOf("rulesOption") < 0)) {
+      // var rulesOption = document.getElementById("perRecipientsOption");
+      // rulesOption.removeAttribute("collapsed");
+      var rulesOption = document.getElementById("enigmailUserSelectionList").getButton("extra1");
+      rulesOption.setAttribute("hidden", "true");
    }
 
    var descNotFound = document.getElementById("usersNotFoundDesc");
@@ -253,7 +256,7 @@ function enigmailBuildList(refresh) {
          break;
        case "uid":
          if (listRow[USER_ID].length == 0) {
-            listRow[USER_ID] = emptyUid;
+            listRow[USER_ID] = EMPTY_UID;
          }
          if (typeof(userObj.userId) != "string") {
            // primary UID
@@ -285,13 +288,6 @@ function enigmailBuildList(refresh) {
      }
    }
 
-   var toAddr = "";
-   try {
-     if (typeof(window.arguments[INPUT].toAddr)=="string")
-       toAddr=EnigStripEmail(window.arguments[INPUT].toAddr);
-   }
-   catch (ex) {}
-
    var toKeys = "";
    try{
      if (typeof(window.arguments[INPUT].toKeys)=="string") {
@@ -309,7 +305,7 @@ function enigmailBuildList(refresh) {
    catch (ex) {}
 
    // sort out PGP keys in toAddr
-   var toAddrList = toAddr.split(/[ ,]+/);
+   var toAddrList = getToAddrList();
    for (i=0; i<toAddrList.length; i++) {
     if (toAddrList[i].search(/^0x([0-9A-Fa-f]{8}|[0-9A-Fa-f]{16})$/)>=0) {
       var newKey=toAddrList.splice(i,1);
@@ -317,7 +313,7 @@ function enigmailBuildList(refresh) {
       i--;
     }
    }
-   toAddr=toAddrList.join(",")+" ";
+   var toAddr=toAddrList.join(",")+" ";
 
    var d = new Date();
    var now=d.valueOf() / 1000;
@@ -354,7 +350,7 @@ function enigmailBuildList(refresh) {
             escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
             s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
             s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
-            if ((mailAddr != emptyUid) && (invalidAddr.indexOf(" "+mailAddr+" ")<0)) {
+            if ((mailAddr != EMPTY_UID) && (invalidAddr.indexOf(" "+mailAddr+" ")<0)) {
               aValidUsers.push(mailAddr);
               aUserList[i].activeState =(toAddr.search(s1)>=0 || toAddr.search(s2)>=0) ? 1 : 0;
             }
@@ -385,7 +381,7 @@ function enigmailBuildList(refresh) {
                     escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
                     s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
                     s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
-                    if ((mailAddr != emptyUid) && (toAddr.search(s1)>=0 || toAddr.search(s2)>=0)) {
+                    if ((mailAddr != EMPTY_UID) && (toAddr.search(s1)>=0 || toAddr.search(s2)>=0)) {
                       aUserList[i].activeState = 1;
                     }
                   }
@@ -565,10 +561,27 @@ function enigmailUserSelAccept() {
     EnigAlert(EnigGetString("atLeastOneKey"));
     return false;
   }
+  
+  if ((resultObj.userList.length < getToAddrList().length) && gSendEncrypted) {
+    if (! EnigConfirm(EnigGetString("fewerKeysThanRecipients"), EnigGetString("dlg.button.continue"), EnigGetString("userSel.button.goBack")))
+      return false;
+  }
+  
   resultObj.cancelled=false;
 
   resultObj.encrypt = gSendEncrypted;
   return true;
+}
+
+function getToAddrList() {
+  var toAddrList
+  try {
+    toAddrList=EnigStripEmail(window.arguments[INPUT].toAddr).split(/[ ,]+/);
+  }
+  catch(ex) {
+    toAddrList = new Array();
+  }
+  return toAddrList;
 }
 
 function enigmailUserSelCallback(event) {
@@ -634,6 +647,7 @@ function displayNoLonger() {
 
 function disableList() {
   var Tree=document.getElementById("enigmailUserIdSelection");
+
   var node = Tree.firstChild.firstChild;
   while (node) {
     // set the background of all colums to gray

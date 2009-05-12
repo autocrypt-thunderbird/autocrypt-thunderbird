@@ -13,6 +13,9 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="enigmailUserSelLoad();"
         ondialogaccept="return enigmailUserSelAccept();"
+        buttons="accept,cancel,extra1"
+        buttonlabelextra1="&enigmail.perRecipientsOption.label;"
+        ondialogextra1="enigmailNewRecipientRule();"
         minheight="450">
 
 
@@ -27,73 +30,61 @@
 
   <!-- <separator/> -->
 
-  <groupbox width="700px">
-    <caption id="dialogHeader"
-             label="..." collapsed="true"/>
+  <vbox flex="1">
+    <groupbox width="700px" flex="1">
+      <caption id="dialogHeader"
+               label="..." collapsed="true"/>
 
-    <tree  id="enigmailUserIdSelection" flex="1"
-      hidecolumnpicker="false"
-      seltype="single"
-      style="height:350px"
-      onkeypress="enigmailUserSelCallback(event)"
-      onclick="enigmailUserSelCallback(event);">
+      <tree  id="enigmailUserIdSelection" flex="1"
+        hidecolumnpicker="false"
+        seltype="single"
+        style="height:350px"
+        onkeypress="enigmailUserSelCallback(event)"
+        onclick="enigmailUserSelCallback(event);">
 
-      <treecols>
-        <treecol id="selectionCol" style="width:19px"
-                 label="&enigmail.keySelection.label;"
-                 class="treecol-image"
-                 src="chrome://enigmail/content/check1.png"
-                 ignoreincolumnpicker="true"
-                 persist="width"/>
-        <splitter class="tree-splitter"/>
-        <treecol id="enigUserNameCol" primary="true"
-                 flex="1"
-                 ignoreincolumnpicker="true"
-                 label="&enigmail.keyUserId.label;"/>
-        <splitter class="tree-splitter"/>
-        <treecol id="trustCol" style="width:85px"
-                 label="&enigmail.keyTrust.label;"
-                 persist="width,hidden"/>
-        <splitter class="tree-splitter"/>
-        <treecol id="expCol" style="width:70px"
-                 label="&enigmail.keyExpiry.label;"
-                 persist="width,hidden"/>
-        <splitter class="tree-splitter"/>
-        <treecol id="keyCol" style="width:90px"
-                 label="&enigmail.keyId.label;"
-                 persist="width,hidden"/>
-      </treecols>
+        <treecols>
+          <treecol id="selectionCol" style="width:19px"
+                   label="&enigmail.keySelection.label;"
+                   class="treecol-image"
+                   src="chrome://enigmail/content/check1.png"
+                   ignoreincolumnpicker="true"
+                   persist="width"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="enigUserNameCol" primary="true"
+                   flex="1"
+                   ignoreincolumnpicker="true"
+                   label="&enigmail.keyUserId.label;"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="trustCol" style="width:85px"
+                   label="&enigmail.keyTrust.label;"
+                   persist="width,hidden"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="expCol" style="width:70px"
+                   label="&enigmail.keyExpiry.label;"
+                   persist="width,hidden"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="keyCol" style="width:90px"
+                   label="&enigmail.keyId.label;"
+                   persist="width,hidden"/>
+        </treecols>
 
-      <treechildren id="enigmailUserIdSelectionChildren"
-            properties="sendUnencrypted"/>
+        <treechildren id="enigmailUserIdSelectionChildren"
+              properties="sendUnencrypted"/>
 
-    </tree>
-
-
-  </groupbox>
-
-  <grid flex="1">
-      <columns>
-        <column flex="1"/>
-      </columns>
-
-    <rows>
-      <row>
-        <checkbox id="enigmailUserSelPlainText"
-                  label="&enigmail.userSelPlainText.label;"
-                  noSignLabel="&enigmail.userSelPlainTextNotSigned.label;"
-                  accesskey="&enigmail.userSelPlainText.accesskey;"
-                  oncommand="plainTextCallback();"/>
-      </row>
-      <row>
-        <checkbox id="displayNoLonger"
-                  label="&enigmail.displayNoLonger.label;"
-                  checked="false"
-                  disabled="true"
-                  collapsed="true"/>
-      </row>
-    </rows>
-  </grid>
+      </tree>
+    </groupbox>
+    
+    <checkbox id="enigmailUserSelPlainText"
+              label="&enigmail.userSelPlainText.label;"
+              noSignLabel="&enigmail.userSelPlainTextNotSigned.label;"
+              accesskey="&enigmail.userSelPlainText.accesskey;"
+              oncommand="plainTextCallback();"/>
+    <checkbox id="displayNoLonger"
+              label="&enigmail.displayNoLonger.label;"
+              checked="false"
+              disabled="true"
+              collapsed="true"/>
+  </vbox>
   
   <hbox>    
     <button class="dialog"
@@ -109,16 +100,5 @@
             accesskey="&enigmail.importMissingKeys.accesskey;"
             tooltip="&enigmail.importMissingKeys.tooltip;"
             oncommand="enigmailSearchMissingKeys();"/>
-            
   </hbox>
-  <vbox align="end">
-    <hbox>
-      <button dlgtype="accept"/>
-      <button dlgtype="cancel"/>
-      <button id="perRecipientsOption"
-               label="&enigmail.perRecipientsOption.label;"
-               oncommand="enigmailNewRecipientRule();"
-               collapsed="true"/>
-    </hbox>
-  </vbox>
 </dialog>
