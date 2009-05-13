@@ -922,9 +922,20 @@ function enigmailReceiveKey() {
 }
 
 function enigmailRefreshAllKeys() {
-
-  EnigAlertPref(EnigGetString("refreshKey.warn"), "warnRefreshAll");
-  enigmailKeyServerAcess(nsIEnigmail.REFRESH_KEY, enigmailReceiveKeyCb);
+  var checkedObj = {};
+  var doIt=false;
+  if (!EnigGetPref("warnRefreshAll")) {
+    doIt=true;
+  }
+  else if (EnigLongAlert(EnigGetString("refreshKey.warn"), EnigGetString("dlgNoPrompt"), 
+      EnigGetString("dlg.button.continue"), ":cancel", null, checkedObj) == 0) {
+      if (checkedObj.value) {
+        EnigSetPref("warnRefreshAll", false)
+      }
+    doIt=true;
+  }
+  
+  if (doIt) enigmailKeyServerAcess(nsIEnigmail.REFRESH_KEY, enigmailReceiveKeyCb);
 }
 
 function enigmailReceiveKeyCb(exitCode, errorMsg, msgBox) {
