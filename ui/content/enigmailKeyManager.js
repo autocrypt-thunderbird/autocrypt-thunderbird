@@ -84,7 +84,8 @@ function enigmailKeyManagerLoad() {
   }
 
   gUserList.addEventListener('click', enigmailOnClick, true);
-
+  document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.disableKey"))
+  
   window.enigIpcRequest = null;
 
   document.getElementById("pleaseWait").showPopup(gSearchInput, -1, -1, "tooltip", "after_end", "");
@@ -430,10 +431,10 @@ function enigmailKeyMenu() {
     document.getElementById("bcEnableKey").removeAttribute("disabled");
     if (gKeyList[keyList[0]].keyUseFor.indexOf("D")>0 ||
         gKeyList[keyList[0]].keyTrust.indexOf(KEY_DISABLED)>=0) {
-      document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.enableKey"))
+      document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.enableKey"));
     }
     else {
-      document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.disableKey"))
+      document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.disableKey"));
     }
   }
 
