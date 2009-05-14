@@ -1194,6 +1194,7 @@ function enigEncryptMsg(msgSendType) {
                   if (! resultObj.encrypt) {
                     // encryption explicitely turned off
                     sendFlags &= ~ENIG_ENCRYPT;
+                    if (notSignedIfNotEnc) sendFlags &= ~ENIG_SIGN;
                   }
                   else {
                     toAddr = resultObj.userList.join(", ");
