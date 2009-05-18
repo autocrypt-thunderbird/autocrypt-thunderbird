@@ -80,6 +80,7 @@ if (typeof(GenericSendMessage)=="function") {
   }
   catch (ex) {}
   window.addEventListener("load", enigMsgComposeStartup, false);
+  window.addEventListener("unload", enigMsgComposeUnload, false);
 
   // Handle recycled windows
   window.addEventListener('compose-window-close', enigMsgComposeClose, true);
@@ -119,6 +120,14 @@ function enigMsgComposeStartup() {
 
   enigComposeOpen();
 }
+
+function enigMsgComposeUnload() {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeUnload\n");
+  if (gMsgCompose)
+    gMsgCompose.UnregisterStateListener(gEnigComposeStateListener);
+
+}
+
 
 
 function enigHandleClick(event, modifyType) {
@@ -221,8 +230,7 @@ function enigSetSendDefaultOptions() {
 function enigComposeOpen() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigComposeOpen\n");
 
-  var composeStateListener = new EnigComposeStateListener();
-  gMsgCompose.RegisterStateListener(composeStateListener);
+  gMsgCompose.RegisterStateListener(gEnigComposeStateListener);
 
 
   var toobarElem = document.getElementById("composeToolbar2");
@@ -1932,9 +1940,6 @@ function enigGenericSendMessage( msgType )
         {
           var bundle = document.getElementById("bundle_composeMsgs");
           try {
-            // Thunderbird 3 will always apply charset conversation
-            // The string aren't there anymore, which we will catch below and also fall back to utf-8
-            // https://bugzilla.mozilla.org/show_bug.cgi?id=410333
             var dlgTitle = bundle.getString("initErrorDlogTitle");
             var dlgText = bundle.getString("12553");  // NS_ERROR_MSG_MULTILINGUAL_SEND
             var result3 = promptSvc.confirmEx(window, dlgTitle, dlgText,
@@ -2539,11 +2544,10 @@ function EnigEditorGetContentsAs(mimeType, flags) {
   }
 }
 
-function EnigComposeStateListener() {}
 
-EnigComposeStateListener.prototype = {
+var gEnigComposeStateListener = {
   NotifyComposeFieldsReady: function() {
-    // Note: NotifyComposeFieldsReady is only called when a new window is created (i.e. not in case a window is reused). 
+    // Note: NotifyComposeFieldsReady is only called when a new window is created (i.e. not in case a window object is reused). 
     DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.NotifyComposeFieldsReady\n");
     
     try {
@@ -2559,20 +2563,20 @@ EnigComposeStateListener.prototype = {
 
   ComposeProcessDone: function(aResult) {
     // Note: called after a mail was sent (or saved)
-    //DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.ComposeProcessDone\n");
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.ComposeProcessDone: "+aResult+"\n");
 
-    if (aResult== Components.results.NS_OK) {
-      //DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.ComposeProcessDone: OK\n");
+    if (aResult != Components.results.NS_OK) {
+      if (gEnigProcessed)  enigUndoEncryption();
     }
 
   },
 
   NotifyComposeBodyReady: function() {
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady\n");
+    //DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady\n");
   },
 
   SaveInFolderDone: function(folderURI) {
-    DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.SaveInFolderDone\n");
+    //DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.SaveInFolderDone\n");
   }
 };
 
@@ -2591,12 +2595,12 @@ EnigDocStateListener.prototype = {
 
   NotifyDocumentCreated: function ()
   {
-    //DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.NotifyDocumentCreated\n");
+    // DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.NotifyDocumentCreated\n");
   },
 
   NotifyDocumentWillBeDestroyed: function ()
   {
-    //DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.EnigDocStateListener.NotifyDocumentWillBeDestroyed\n");
+    // DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.EnigDocStateListener.NotifyDocumentWillBeDestroyed\n");
   },
 
   NotifyDocumentStateChanged: function (nowDirty)
