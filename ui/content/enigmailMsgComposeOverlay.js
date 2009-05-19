@@ -599,6 +599,7 @@ function enigGoAccountManager()
       server=GetMsgFolderFromUri(folderURI, true).server
   } catch (ex) {}
   window.openDialog("chrome://enigmail/content/am-enigprefs-edit.xul", "", "dialog,modal,centerscreen", {identity: currentId, account: server});
+  enigSetIdentityDefaults();
 }
 
 function enigDoPgpButton(what) {
@@ -1236,10 +1237,6 @@ function enigEncryptMsg(msgSendType) {
        // always enable PGP/MIME if message is saved
        sendFlags |= nsIEnigmail.SEND_PGP_MIME;
      }
-
-//     if ((sendFlags & ENIG_ENCRYPT_OR_SIGN) && enigGetAccDefault("attachPgpKey")) {
-//       gEnigAttachOwnKey.appendAttachment = true;
-//     }
 
      if (gEnigAttachOwnKey.appendAttachment) enigAttachOwnKey();
 
