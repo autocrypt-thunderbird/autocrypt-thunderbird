@@ -949,11 +949,12 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
     headerList["cc"] = "";
 
   var hasAttachments = currentAttachments && currentAttachments.length;
-  var attachmentsEncrypted = true;
+  var attachmentsEncrypted=true;
 
   for (index in currentAttachments) {
-    if (! enigCheckEncryptedAttach(currentAttachments[index]))
-      attachmentsEncrypted=false;
+    if (! enigCheckEncryptedAttach(currentAttachments[index])) {
+      if (!enigCheckSignedAttachment(currentAttachments, index)) attachmentsEncrypted=false;
+    }
   }
 
   var msgRfc822Text = "";
@@ -1055,6 +1056,17 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
   }
 
   return;
+}
+
+// check if an attachment could be signed
+function enigCheckSignedAttachment(currentAttachments, index) {
+  var signed = false;
+  var findFile = currentAttachments[index].displayName+".sig";
+  var i;
+  for (i in currentAttachments) {
+    if (currentAttachments[i].displayName == findFile) signed=true;
+  }
+  return signed;
 }
 
 // check if the attachment could be encrypted
@@ -1521,7 +1533,7 @@ function enigVerifyEmbeddedMsg(window, msgUrl, msgWindow, msgUriSpec, contentEnc
   DEBUG_LOG("enigmailMessengerOverlay.js: enigVerifyEmbedded: msgUrl"+msgUrl+"\n");
 
   var ipcBuffer = Components.classes[ENIG_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
-  ipcBuffer.open(/* ENIG_MSG_BUFFER_SIZE */ -1, false);
+  ipcBuffer.open(ENIG_UNLIMITED_BUFFER_SIZE, false);
 
   var callbackArg = { ipcBuffer: ipcBuffer,
                       window: window,
@@ -1573,14 +1585,14 @@ function enigVerifyEmbeddedCallback(callbackArg, ctxt) {
       
       verifier.initWithChannel(callbackArg.window, channel, callbackArg.msgWindow, callbackArg.msgUriSpec,
                       true, callbackArg.enableSubpartTreatment);
+      return;
     }
   }
-  else {
-    // try inline PGP
-    DEBUG_LOG("enigmailMessengerOverlay.js: enigVerifyEmbeddedCallback: try inline PGP\n");
+  
+  // try inline PGP
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigVerifyEmbeddedCallback: try inline PGP\n");
 
-    enigMessageParse(!callbackArg.event, false, callbackArg.contentEncoding);
-  }
+  enigMessageParse(!callbackArg.event, false, callbackArg.contentEncoding);
 }
 
 
