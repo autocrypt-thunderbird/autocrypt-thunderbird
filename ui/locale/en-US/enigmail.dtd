@@ -701,4 +701,4 @@
 <!ENTITY enigmail.setupWiz.pgNoStart.desc            "You have chosen not to use the Wizard to configure OpenPGP.
                                                       <html:br/><html:br/>Thank you for using Enigmail.">
 <!ENTITY enigmail.advancedIdentityDlg.title          "Advanced OpenPGP Identity Settings">
-<!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label     "Attach public key to signed or encrypted messages">
+<!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label     "Attach my public key to messages">
