@@ -213,7 +213,12 @@ nsIPCBuffer::Open(PRUint32 maxBytes, PRBool overflowFile)
   rv = Init();
   NS_ENSURE_SUCCESS(rv, rv);
 
-  mMaxBytes = maxBytes;
+  if (maxBytes == -1) {
+    mMaxBytes = PR_INT32_MAX;
+  }
+  else {
+    mMaxBytes = maxBytes;
+  }
   mOverflowFile = overflowFile;
 
   return NS_OK;
