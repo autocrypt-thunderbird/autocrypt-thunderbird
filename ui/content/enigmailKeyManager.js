@@ -505,7 +505,7 @@ function enigmailKeyDetails() {
   };
   var resultObj = { refresh: false };
   window.openDialog("chrome://enigmail/content/enigmailKeyDetailsDlg.xul",
-        "", "dialog,modal,centerscreen", inputObj, resultObj);
+        "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
   if (resultObj.refresh) {
     enigmailRefreshKeys();
   }
