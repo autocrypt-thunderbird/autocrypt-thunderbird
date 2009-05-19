@@ -843,15 +843,20 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
 
     //DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: plainText='"+plainText+"'\n");
 
+    if (exitCodeObj.value != 0 && (statusFlagsObj.value & enigmailSvc.DISPLAY_MESSAGE)) {
+      EnigAlert(errorMsgObj.value);
+      return;
+    }
+
     exitCode = exitCodeObj.value;
     newSignature = signatureObj.value;
 
-    if (plainText == "" && exitCode ==0) {
+    if (plainText == "" && exitCode == 0) {
       plainText = " ";
     }
 
     statusFlags = statusFlagsObj.value;
-
+    
     DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: newSignature='"+newSignature+"'\n");
   }
 
@@ -1060,11 +1065,15 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
 
 // check if an attachment could be signed
 function enigCheckSignedAttachment(currentAttachments, index) {
+
+  // check if filename ends with .sig
+  if (currentAttachments[index].displayName.search(/\.sig$/i) > 0) return true;
+  
   var signed = false;
-  var findFile = currentAttachments[index].displayName+".sig";
+  var findFile = currentAttachments[index].displayName.toLowerCase()+".sig";
   var i;
   for (i in currentAttachments) {
-    if (currentAttachments[i].displayName == findFile) signed=true;
+    if (currentAttachments[i].displayName.toLowerCase() == findFile) signed=true;
   }
   return signed;
 }
