@@ -223,7 +223,7 @@ function enigSetSendDefaultOptions() {
   }
 
   gEnigSendPGPMime = enigGetAccDefault("pgpMimeMode");
-  // gEnigAttachOwnKey.appendAttachment = enigGetAccDefault("attachPgpKey");
+  gEnigAttachOwnKey.appendAttachment = enigGetAccDefault("attachPgpKey");
   gEnigAttachOwnKey.attachedObj = null;
 }
 
@@ -1237,9 +1237,9 @@ function enigEncryptMsg(msgSendType) {
        sendFlags |= nsIEnigmail.SEND_PGP_MIME;
      }
 
-     if ((sendFlags & ENIG_ENCRYPT_OR_SIGN) && enigGetAccDefault("attachPgpKey")) {
-       gEnigAttachOwnKey.appendAttachment = true;
-     }
+//     if ((sendFlags & ENIG_ENCRYPT_OR_SIGN) && enigGetAccDefault("attachPgpKey")) {
+//       gEnigAttachOwnKey.appendAttachment = true;
+//     }
 
      if (gEnigAttachOwnKey.appendAttachment) enigAttachOwnKey();
 
