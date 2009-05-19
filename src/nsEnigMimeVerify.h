@@ -45,6 +45,7 @@
 #include "nsIPipeTransport.h"
 #include "nsIIPCBuffer.h"
 #include "nsIMsgWindow.h"
+#include "nsIStringStream.h"
 #include "nsIURI.h"
 
 // Implementation class for nsIEnigMimeVerify
@@ -70,7 +71,7 @@ protected:
     NS_METHOD Finish();
 
     PRBool                          mInitialized;
-    PRBool                          mRfc2015;
+    PRBool                          mPgpMime;
     PRBool                          mRequestStopped;
     PRBool                          mLastLinebreak;
 

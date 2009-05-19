@@ -40,12 +40,14 @@ var gEnigmimeVersion = "0.96a";
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
 const ENIG_MSG_HEADER_SIZE = 16000;
+const ENIG_UNLIMITED_BUFFER_SIZE = -1;
 
 const ENIG_KEY_BUFFER_SIZE = 64000;
 
 const ENIG_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
 const ENIG_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1";
 const ENIG_IPCBUFFER_CONTRACTID   = "@mozilla.org/process/ipc-buffer;1";
+const ENIG_IPCSERVICE_CONTRACTID  = "@mozilla.org/process/ipc-service;1";
 const ENIG_PIPEFILTERLISTENER_CONTRACTID = "@mozilla.org/process/pipe-filter-listener;1";
 const ENIG_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
 const ENIG_ENIGMIMELISTENER_CONTRACTID = "@mozilla.org/enigmail/mime-listener;1";
@@ -65,7 +67,8 @@ const ENIG_LOCALE_SVC_CONTRACTID = "@mozilla.org/intl/nslocaleservice;1";
 const ENIG_DATE_FORMAT_CONTRACTID = "@mozilla.org/intl/scriptabledateformat;1"
 const ENIG_ACCOUNT_MANAGER_CONTRACTID = "@mozilla.org/messenger/account-manager;1";
 const ENIG_XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
-
+const ENIG_THREAD_MANAGER_CID = "@mozilla.org/thread-manager;1";
+const ENIG_SIMPLEURI_CONTRACTID   = "@mozilla.org/network/simple-uri;1";
 
 const ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID =
                               "@mozilla.org/network/file-output-stream;1";
@@ -993,7 +996,7 @@ function EnigConvertFromUnicode(text, charset) {
 
 
 function EnigConvertToUnicode(text, charset) {
-  DEBUG_LOG("enigmailCommon.js: EnigConvertToUnicode: "+charset+"\n");
+  // DEBUG_LOG("enigmailCommon.js: EnigConvertToUnicode: "+charset+"\n");
 
   if (!text || !charset /*|| (charset.toLowerCase() == "iso-8859-1")*/)
     return text;
@@ -1006,7 +1009,7 @@ function EnigConvertToUnicode(text, charset) {
     return unicodeConv.ConvertToUnicode(text);
 
   } catch (ex) {
-    DEBUG_LOG("enigmailCommon.js: EnigConvertToUnicode: caught an exception\n");
+    DEBUG_LOG("enigmailCommon.js: EnigConvertToUnicode: caught an exception while converting'"+text+"' to "+charset+"\n");
     return text;
   }
 }

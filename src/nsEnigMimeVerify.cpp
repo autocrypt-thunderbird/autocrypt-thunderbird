@@ -56,6 +56,8 @@
 #include "nsIPipeTransport.h"
 #include "nsIIPCBuffer.h"
 #include "nsIEnigmail.h"
+#include "nsIUnicharOutputStream.h"
+
 #undef MOZILLA_INTERNAL_API
 #ifdef PR_LOGGING
 PRLogModuleInfo* gEnigMimeVerifyLog = NULL;
@@ -81,7 +83,7 @@ NS_IMPL_THREADSAFE_ISUPPORTS3(nsEnigMimeVerify,
 // nsEnigMimeVerify implementation
 nsEnigMimeVerify::nsEnigMimeVerify()
   : mInitialized(PR_FALSE),
-    mRfc2015(PR_FALSE),
+    mPgpMime(PR_FALSE),
     mRequestStopped(PR_FALSE),
     mLastLinebreak(PR_TRUE),
 
@@ -144,19 +146,19 @@ nsEnigMimeVerify::Init(nsIDOMWindow* window,
                        nsIURI* aURI,
                        nsIMsgWindow* msgWindow,
                        const nsACString& msgUriSpec,
-                       PRBool rfc2015,
+                       PRBool pgpMime,
                        PRBool isSubPart)
 {
   nsresult rv;
 
-  DEBUG_LOG(("nsEnigMimeVerify::Init: rfc2015=%d\n", (int) rfc2015));
+  DEBUG_LOG(("nsEnigMimeVerify::Init: pgpMime=%d\n", (int) pgpMime));
 
   if (!aURI)
     return NS_ERROR_NULL_POINTER;
 
   mMsgWindow = msgWindow;
   mURISpec = msgUriSpec;
-  mRfc2015 = rfc2015;
+  mPgpMime = pgpMime;
 
   nsCOMPtr<nsIIOService> ioService(do_GetService(NS_IOSERVICE_CONTRACTID, &rv));
   if (NS_FAILED(rv)) return rv;
@@ -212,6 +214,80 @@ nsEnigMimeVerify::Init(nsIDOMWindow* window,
 
   // Initiate asynchronous loading of URI
   rv = channel->AsyncOpen( mOuterMimeListener, nsnull );
+  if (NS_FAILED(rv))
+    return rv;
+
+  mInitialized = PR_TRUE;
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsEnigMimeVerify::InitWithChannel(nsIDOMWindow* window,
+                       nsIChannel* aChannel,
+                       nsIMsgWindow* msgWindow,
+                       const nsACString& msgUriSpec,
+                       PRBool pgpMime,
+                       PRBool isSubPart)
+{
+  nsresult rv;
+
+  DEBUG_LOG(("nsEnigMimeVerify::Init: pgpMime=%d\n", (int) pgpMime));
+
+  mMsgWindow = msgWindow;
+  mURISpec = msgUriSpec;
+  mPgpMime = pgpMime;
+
+  nsCOMPtr<nsIIOService> ioService(do_GetService(NS_IOSERVICE_CONTRACTID, &rv));
+  if (NS_FAILED(rv)) return rv;
+
+  // Listener to parse PGP block armor
+  mArmorListener = do_CreateInstance(NS_PIPEFILTERLISTENER_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) return rv;
+
+  const char* pgpHeader = "-----BEGIN PGP ";
+  const char* pgpFooter = "-----END PGP ";
+
+  rv = mArmorListener->Init((nsIStreamListener*) this, nsnull,
+                            pgpHeader, pgpFooter,
+                            0, PR_TRUE, PR_FALSE, nsnull);
+  if (NS_FAILED(rv)) return rv;
+
+  // Inner mime listener to parse second part
+  mInnerMimeListener = do_CreateInstance(NS_ENIGMIMELISTENER_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) return rv;
+
+  rv = mInnerMimeListener->Init(mArmorListener, nsnull,
+                                MAX_HEADER_BYTES, PR_TRUE, PR_FALSE, PR_FALSE);
+  if (NS_FAILED(rv)) return rv;
+
+  // Create PipeFilterListener to extract second MIME part
+  mSecondPartListener = do_CreateInstance(NS_PIPEFILTERLISTENER_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) return rv;
+
+  // Create PipeFilterListener to extract first MIME part
+  mFirstPartListener = do_CreateInstance(NS_PIPEFILTERLISTENER_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) return rv;
+
+  rv = mFirstPartListener->Init((nsIStreamListener*) this,
+                               nsnull, "", "", 0, PR_FALSE, PR_TRUE,
+                               mSecondPartListener);
+  if (NS_FAILED(rv)) return rv;
+
+  // Outer mime listener to capture URI content
+  mOuterMimeListener = do_CreateInstance(NS_ENIGMIMELISTENER_CONTRACTID, &rv);
+  if (NS_FAILED(rv)) return rv;
+
+  if (isSubPart)
+    mOuterMimeListener->SetSubPartTreatment(PR_TRUE);
+
+  rv = mOuterMimeListener->Init(mFirstPartListener, nsnull,
+                                MAX_HEADER_BYTES, PR_TRUE, PR_FALSE, PR_FALSE);
+
+  if (NS_FAILED(rv)) return rv;
+
+  // Initiate asynchronous loading of URI
+  rv = aChannel->AsyncOpen( mOuterMimeListener, nsnull );
   if (NS_FAILED(rv))
     return rv;
 

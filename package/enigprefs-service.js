@@ -50,14 +50,8 @@ EnigmailPrefService.prototype.chromePackageName = "enigmail"
 EnigmailPrefService.prototype.showPanel =
 function (server)
 {
-  // show Enigmail panel for POP3, IMAP and NNTP account types
-  switch (server.type) {
-  case "nntp":
-  case "imap":
-  case "pop3":
-    return true;
-  }
-  return false;
+  // show Enigmail panel for all account types
+  return true;
 }
 
 // factory for command line handler service (EnigmailPrefService)

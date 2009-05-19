@@ -568,15 +568,17 @@ function enigMessageDecrypt(event, isAuto) {
 
     var embeddedSigned = null;
     var embeddedEncrypted = null;
-    if (gEnigSavedHeaders["content-type"] && gEnigSavedHeaders["content-type"].search(/^multipart\/mixed/i) == 0) {
+    if (gEnigSavedHeaders["content-type"] && 
+        ((gEnigSavedHeaders["content-type"].search(/^multipart\/mixed/i) == 0) || 
+         (gEnigSavedHeaders["content-type"].search(/^multipart\/encrypted/i) == 0))) {
       for (var indexb in currentAttachments) {
         var attachment = currentAttachments[indexb];
 
         if (attachment.contentType.search(/^application\/pgp-signature/i) == 0) {
-          embeddedSigned = attachment.url.replace(/.filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
+          embeddedSigned = attachment.url.replace(/\&filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
         }
         if (attachment.contentType.search(/^application\/pgp-encrypted/i) == 0) {
-          embeddedEncrypted = attachment.url.replace(/.filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
+          embeddedEncrypted = attachment.url.replace(/\&filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
         }
         DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.contentType+"\n");
       }
@@ -656,11 +658,7 @@ function enigMessageDecrypt(event, isAuto) {
   // special treatment for embedded signed messages
   if (embeddedSigned) {
     if (contentType.search(/^multipart\/encrypted(;|$)/i) == 0) {
-      var maxSize = EnigGetPref("encapsulatedMimeMaxSize")
-      var msgSize=messenger.messageServiceFromURI(msgUriSpec).messageURIToMsgHdr(msgUriSpec).messageSize
-      // workaround for bug 5777: try to verify if msg size < maxSize
-      // to avoid blocking Mozilla
-      if (msgSize < maxSize) tryVerify = true;
+      tryVerify = true;
     }
     if (contentType.search(/^multipart\/mixed(;|$)/i) == 0) {
       tryVerify = true;
@@ -1523,7 +1521,7 @@ function enigVerifyEmbeddedMsg(window, msgUrl, msgWindow, msgUriSpec, contentEnc
   DEBUG_LOG("enigmailMessengerOverlay.js: enigVerifyEmbedded: msgUrl"+msgUrl+"\n");
 
   var ipcBuffer = Components.classes[ENIG_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
-  ipcBuffer.open(ENIG_MSG_BUFFER_SIZE, false);
+  ipcBuffer.open(/* ENIG_MSG_BUFFER_SIZE */ -1, false);
 
   var callbackArg = { ipcBuffer: ipcBuffer,
                       window: window,
@@ -1542,16 +1540,15 @@ function enigVerifyEmbeddedMsg(window, msgUrl, msgWindow, msgUriSpec, contentEnc
 
   var channel = ioServ.newChannelFromURI(msgUrl);
 
-
   var pipeFilter = Components.classes[ENIG_PIPEFILTERLISTENER_CONTRACTID].createInstance(Components.interfaces.nsIPipeFilterListener);
 
   pipeFilter.init(ipcBuffer, null,
                 "",
                 "",
                 0, false, false, null);
+
   channel.asyncOpen(pipeFilter, msgUrl);
 }
-
 
 function enigVerifyEmbeddedCallback(callbackArg, ctxt) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigVerifyEmbeddedCallback: "+ctxt+"\n");
@@ -1559,14 +1556,24 @@ function enigVerifyEmbeddedCallback(callbackArg, ctxt) {
   var txt = callbackArg.ipcBuffer.getData();
   callbackArg.ipcBuffer.shutdown();
 
-  if (txt.length > 0 && txt.search(/content\-type:[ \t]*multipart\/signed/i) >= 0) {
-    // Real multipart/signed message; let's try to verify it
-    DEBUG_LOG("enigmailMessengerOverlay.js: enigVerifyEmbeddedCallback: detected multipart/signed\n");
+  if (txt.length > 0) {
+    msigned=txt.search(/content\-type:[ \t]*multipart\/signed/i);
+    if(msigned >= 0) {
+      // Real multipart/signed message; let's try to verify it
+      DEBUG_LOG("enigmailMessengerOverlay.js: enigVerifyEmbeddedCallback: detected multipart/signed\n");
 
-    var verifier = Components.classes[ENIG_ENIGMIMEVERIFY_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeVerify);
+      callbackArg.enableSubpartTreatment=(msigned > 0);
 
-    verifier.init(callbackArg.window, callbackArg.msgUrl, callbackArg.msgWindow, callbackArg.msgUriSpec,
-                      true, true);
+      var uri = Components.classes[ENIG_SIMPLEURI_CONTRACTID].createInstance(Components.interfaces.nsIURI);
+      uri.spec = "enigmail:dummy";
+
+      var ipcService = Components.classes[ENIG_IPCSERVICE_CONTRACTID].getService(Components.interfaces.nsIIPCService);
+      var channel = ipcService.newStringChannel(uri, "", "", txt);
+      var verifier = Components.classes[ENIG_ENIGMIMEVERIFY_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeVerify);
+      
+      verifier.initWithChannel(callbackArg.window, channel, callbackArg.msgWindow, callbackArg.msgUriSpec,
+                      true, callbackArg.enableSubpartTreatment);
+    }
   }
   else {
     // try inline PGP
@@ -1677,7 +1684,7 @@ function enigHandleAttachment(actionType, anAttachment) {
 
   var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
 
-  ipcBuffer.open(99999999999, false); // -1 doesn't work, so I set it to a _big_ number ...
+  ipcBuffer.open(ENIG_UNLIMITED_BUFFER_SIZE, false);
   var msgUri = ioServ.newURI(argumentsObj.attachment.url, null, null);
 
   ipcBuffer.observe(requestObserver, msgUri);

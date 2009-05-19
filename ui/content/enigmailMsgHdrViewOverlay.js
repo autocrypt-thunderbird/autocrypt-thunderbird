@@ -63,6 +63,11 @@ function enigStartHeaders()
 {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigStartHeaders\n");
 
+  var tm = Components.classes[ENIG_THREAD_MANAGER_CID].getService(Components.interfaces.nsIThreadManager);
+  if (! tm.isMainThread) {
+    DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigStartHeaders: not on main thread\n");
+    return;
+  }
   //var hideHeaderBox = document.getElementById();
   try {
     var index;
@@ -131,6 +136,11 @@ function enigStartHeaders()
 function enigEndHeaders()
 {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigEndHeaders\n");
+  var tm = Components.classes[ENIG_THREAD_MANAGER_CID].getService(Components.interfaces.nsIThreadManager);
+  if (! tm.isMainThread) {
+    DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigEndHeaders: not on main thread\n");
+    return;
+  }
   try {
     gEnigStatusBar.removeAttribute("signed");
     gEnigStatusBar.removeAttribute("encrypted");
