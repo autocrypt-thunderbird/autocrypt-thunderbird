@@ -223,7 +223,7 @@ function enigSetSendDefaultOptions() {
   }
 
   gEnigSendPGPMime = enigGetAccDefault("pgpMimeMode");
-  gEnigAttachOwnKey.appendAttachment = enigGetAccDefault("attachPgpKey");
+  // gEnigAttachOwnKey.appendAttachment = enigGetAccDefault("attachPgpKey");
   gEnigAttachOwnKey.attachedObj = null;
 }
 
@@ -1231,15 +1231,17 @@ function enigEncryptMsg(msgSendType) {
           }
         }
      }
-
+     
      if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
        // always enable PGP/MIME if message is saved
        sendFlags |= nsIEnigmail.SEND_PGP_MIME;
      }
 
-     if (gEnigAttachOwnKey.appendAttachment) {
-        enigAttachOwnKey();
+     if ((sendFlags & ENIG_ENCRYPT_OR_SIGN) && enigGetAccDefault("attachPgpKey")) {
+       gEnigAttachOwnKey.appendAttachment = true;
      }
+
+     if (gEnigAttachOwnKey.appendAttachment) enigAttachOwnKey();
 
      var bucketList = document.getElementById("attachmentBucket");
      var hasAttachments = ((bucketList && bucketList.hasChildNodes()) || gMsgCompose.compFields.attachVCard);
@@ -1758,6 +1760,7 @@ function enigSendMessageListener(event) {
     var msgcomposeWindow = document.getElementById("msgcomposeWindow");
     enigModifyCompFields(gMsgCompose.compFields);
     if (! enigEncryptMsg(Number(msgcomposeWindow.getAttribute("msgtype")))) {
+      enigRemoveAttachedKey();
       event.preventDefault();
       event.stopPropagation();
     }
@@ -1765,8 +1768,8 @@ function enigSendMessageListener(event) {
   catch (ex) {}
 }
 
-// GenericSendMessage from the file MsgComposeCommands.js (backported from TB 3.0)
-// only used for TB 2.0
+// GenericSendMessage from the file MsgComposeCommands.js
+// only used for TB <= 2.0
 
 function enigGenericSendMessage( msgType )
 {
@@ -2566,7 +2569,8 @@ var gEnigComposeStateListener = {
     DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.ComposeProcessDone: "+aResult+"\n");
 
     if (aResult != Components.results.NS_OK) {
-      if (gEnigProcessed)  enigUndoEncryption();
+      if (gEnigProcessed) enigUndoEncryption();
+      enigRemoveAttachedKey();
     }
 
   },
