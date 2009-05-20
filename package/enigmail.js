@@ -153,7 +153,7 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     TRUST_MARGINAL:  nsIEnigmail.UNTRUSTED_IDENTITY,
                     TRUST_FULLY:     nsIEnigmail.TRUSTED_IDENTITY,
                     TRUST_ULTIMATE:  nsIEnigmail.TRUSTED_IDENTITY,
-                    CARDCTRL:        nsIEnigmail.NO_SC_AVAILABLE,
+                    CARDCTRL:        nsIEnigmail.CARDCTRL,
                     SC_OP_FAILURE:   nsIEnigmail.SC_OP_FAILURE,
                     UNKNOWN_ALGO:    nsIEnigmail.UNKNOWN_ALGO
                     };
@@ -1669,7 +1669,7 @@ function (domWindow) {
       catch (ex) {}
     }
 
-    foundPath.normalize();
+    if (foundPath != null) { foundPath.normalize(); }
     return foundPath;
   }
 
@@ -2176,6 +2176,8 @@ function (errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj) {
   var statusArray = new Array();
   var lineSplit = null;
   var errCode = 0;
+  var detectedCard = null;
+  var requestedCard = null;
 
   var statusPat = /^\[GNUPG:\] /;
   var statusFlags = 0;
@@ -2195,9 +2197,15 @@ function (errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj) {
           if (statusLine.search(/NODATA 1\b/) < 0)
             flag = 0;
         }
-        else if (flag == nsIEnigmail.NO_SC_AVAILABLE) {
+        else if (flag == nsIEnigmail.CARDCTRL) {
           lineSplit = statusLine.split(/ +/);
-          errCode = Number(lineSplit[1]);
+          if (lineSplit[1] == "3") {
+            detectedCard=lineSplit[2];
+          }
+          else {
+            errCode = Number(lineSplit[1]);
+            if (errCode == 1) requestedCard = lineSplit[2];
+          }
         }
         else if (flag == nsIEnigmail.UNVERIFIED_SIGNATURE) {
           lineSplit = statusLine.split(/ +/);
@@ -2259,8 +2267,17 @@ function (errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj) {
   statusMsgObj.value   = statusArray.join("\n");
   var errorMsg         = errArray.join("\n");
 
-  if ((statusFlags & nsIEnigmail.NO_SC_AVAILABLE) && errCode >0) {
+  if ((statusFlags & nsIEnigmail.CARDCTRL) && errCode >0) {
     switch (errCode) {
+    case 1:
+      if (detectedCard) {
+        errorMsg = EnigGetString("sc.wrongCardAvailable", detectedCard, requestedCard);
+      }
+      else
+        errorMsg = EnigGetString("sc.insertCard", requestedCard);
+      break;
+    case 2:
+      errorMsg = EnigGetString("sc.removeCard");
     case 4:
       errorMsg = EnigGetString("sc.noCardAvailable");
       break;
@@ -2268,6 +2285,7 @@ function (errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj) {
       errorMsg = EnigGetString("sc.noReaderAvailable");
       break;
     }
+    statusFlags |= nsIEnigmail.DISPLAY_MESSAGE;
   }
 
 
@@ -2597,10 +2615,10 @@ function (fromMailAddr, toMailAddr, bccMailAddr, hashAlgorithm, sendFlags, isAsc
       encryptArgs.push("-a");
     }
 
-    encryptArgs.push("-e");
+    encryptArgs.push("--encrypt");
 
     if (signMsg)
-      encryptArgs.push("-s");
+      encryptArgs.push("--sign");
 
     if (sendFlags & nsIEnigmail.SEND_ALWAYS_TRUST) {
       if (this.agentVersion >= "1.4") {
@@ -3250,7 +3268,7 @@ function (parent, prompter, verifyOnly, noOutput,
     args.push("--verify");
 
   } else {
-    args.push("-d");
+    args.push("--decrypt");
   }
 
   var pipetrans = this.execStart(this.agentPath, args, !verifyOnly, parent, prompter,
@@ -3440,6 +3458,10 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
           exitCode = 1;
       }
     }
+    
+//    if (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE) {
+//      keyIdObj.value = this.extractPubkey
+//    }
 
     return exitCode;
   }

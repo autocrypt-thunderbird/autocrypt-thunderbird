@@ -223,7 +223,7 @@ interface nsIEnigmail : nsISupports
   const long PARTIALLY_PGP        = 0x01000000;
   const long PHOTO_AVAILABLE      = 0x02000000;
   const long OVERFLOWED           = 0x04000000;
-  const long NO_SC_AVAILABLE      = 0x08000000;
+  const long CARDCTRL             = 0x08000000;
   const long SC_OP_FAILURE        = 0x10000000;
   const long UNKNOWN_ALGO         = 0x20000000;
 

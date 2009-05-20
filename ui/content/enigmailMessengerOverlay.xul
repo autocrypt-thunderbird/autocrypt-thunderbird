@@ -54,6 +54,10 @@
     <command id="button_enigmail_decrypt"/>
   </commandset>
 
+  <broadcasterset>
+    <broadcaster id="enigmailBcDisplayClass" class="enigmailHeaderValue"/>
+  </broadcasterset>
+
 <!-- Seamonkey -->
   <menubar id="mailMenubar">
     <menu id="menu_Enigmail"
@@ -582,16 +586,26 @@
             id="enigmailStatusHdr"
             value="&enigmail.openpgp.label;: " control="enigmailStatusText"/>
       </hbox>
-      <vbox flex="1" pack="start">
-        <textbox flex="1" readonly="true"
-            id="enigmailStatusText"
+      <hbox flex="1" pack="start">
+        <vbox flex="1" pack="start">
+          <textbox flex="1" readonly="true"
+               id="enigmailStatusText"
                class="plain enigmailHeaderValue"/>
-        <textbox flex="1" readonly="true"
+          <textbox flex="1" readonly="true"
                  id="expandedEnigmailStatusText"
                  class="plain enigmailHeaderValue"
+                 observes="enigmailStatusText"
                  collapsed="true" display="false" state="false"
                  persist="display" aria-labelledby="enigmailStatusHdr"/>
-      </vbox>
+        </vbox>
+        <vbox class="enigmailHeaderNameBox" flex="0">
+          <observes element="enigmailStatusText" attribute="class"/>
+          <button id="enigmailStatusHdrDetails" pack="center" 
+            label="&enigmail.detailsHdrButton.label;" 
+            class="msgHeaderView-flat-button"
+            oncommand="enigViewSecurityInfo();"/>
+        </vbox>
+      </hbox>
     </hbox>
   </vbox>
 
