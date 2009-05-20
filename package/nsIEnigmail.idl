@@ -98,6 +98,7 @@ interface nsIEnigmail : nsISupports
                                        in unsigned long sendFlags,
                                        in nsIStreamListener listener,
                                        in boolean noProxy,
+                                       out unsigned long statusFlags,
                                        out wstring errorMsg);
 
   long encryptMessageEnd(in nsIDOMWindow parent,
@@ -115,6 +116,7 @@ interface nsIEnigmail : nsISupports
                                        in boolean noOutput,
                                        in nsIStreamListener listener,
                                        in boolean noProxy,
+                                       out unsigned long statusFlags,
                                        out wstring errorMsg);
 
   long decryptMessageEnd(in unsigned long uiFlags,

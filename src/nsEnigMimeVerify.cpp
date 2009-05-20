@@ -589,19 +589,38 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   PRBool verifyOnly = PR_TRUE;
   PRBool noOutput = PR_TRUE;
   PRBool noProxy = PR_TRUE;
+  PRUint32 statusFlags;
   rv = enigmailSvc->DecryptMessageStart(nsnull,
                                         prompter,
                                         verifyOnly,
                                         noOutput,
                                         mOutBuffer,
                                         noProxy,
+                                        &statusFlags,
                                         getter_Copies(errorMsg),
                                         getter_AddRefs(mPipeTrans) );
   if (NS_FAILED(rv)) return rv;
 
-  if (!mPipeTrans)
-    return NS_ERROR_FAILURE;
+  if (!mPipeTrans) {
+    nsCOMPtr<nsISupports> securityInfo;
+    if (mMsgWindow) {
+      nsCOMPtr<nsIMsgHeaderSink> headerSink;
+      mMsgWindow->GetMsgHeaderSink(getter_AddRefs(headerSink));
+      if (headerSink)
+          headerSink->GetSecurityInfo(getter_AddRefs(securityInfo));
+    }
 
+    if (securityInfo) {
+      nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
+      if (enigHeaderSink) {
+        NS_NAMED_LITERAL_STRING(nullString, "");
+        rv = enigHeaderSink->UpdateSecurityStatus(mURISpec, -1, statusFlags, nullString.get(), nullString.get(), nullString.get(), errorMsg, nullString.get());
+      }
+    }
+
+    return NS_ERROR_FAILURE;
+  }
+  
   // Write clearsigned message header
   const char* clearsignHeader = "-----BEGIN PGP SIGNED MESSAGE-----";
 

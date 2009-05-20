@@ -478,6 +478,7 @@ nsEnigMsgCompose::Init()
   }
 
   nsXPIDLString errorMsg;
+  PRUint32 statusFlags;
   PRBool noProxy = PR_TRUE;
   rv = enigmailSvc->EncryptMessageStart(nsnull, prompter,
                                         mUIFlags,
@@ -488,10 +489,14 @@ nsEnigMsgCompose::Init()
                                         mSendFlags,
                                         (nsIStreamListener*)(mWriter),
                                         noProxy,
+                                        &statusFlags,
                                         getter_Copies(errorMsg),
                                         getter_AddRefs(mPipeTrans) );
   if (NS_FAILED(rv))
     return rv;
+
+  if (statusFlags & nsIEnigmail::MISSING_PASSPHRASE)
+    return NS_ERROR_SMTP_PASSWORD_UNDEFINED;
 
   if (!mPipeTrans)
     return NS_OK;

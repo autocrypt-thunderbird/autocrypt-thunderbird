@@ -709,7 +709,7 @@ function enigMessageParse(interactive, importOnly, contentEncoding) {
   var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
   DEBUG_LOG("enigmailMessengerOverlay.js: bodyElement="+bodyElement+"\n");
 
-  var findStr = interactive ? null : "-----BEGIN PGP";
+  var findStr = /* interactive ? null : */ "-----BEGIN PGP";
   var msgText = null;
   var foundIndex = -1;
   
@@ -843,14 +843,9 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
 
     //DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageParseCallback: plainText='"+plainText+"'\n");
 
-    if (exitCodeObj.value != 0 && (statusFlagsObj.value & enigmailSvc.DISPLAY_MESSAGE)) {
-      EnigAlert(errorMsgObj.value);
-      return;
-    }
-
     exitCode = exitCodeObj.value;
     newSignature = signatureObj.value;
-
+    
     if (plainText == "" && exitCode == 0) {
       plainText = " ";
     }

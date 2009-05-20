@@ -293,6 +293,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   nsXPIDLString errorMsg;
   PRBool noOutput = PR_FALSE;
   PRBool noProxy = PR_FALSE;
+  PRUint32 statusFlags;
 
   rv = enigmailSvc->DecryptMessageStart(nsnull,
                                         prompter,
@@ -300,6 +301,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
                                         noOutput,
                                         nsnull,
                                         noProxy,
+                                        &statusFlags,
                                         getter_Copies(errorMsg),
                                         getter_AddRefs(mPipeTrans) );
   if (NS_FAILED(rv)) return rv;
@@ -309,7 +311,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
       nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
       if (enigHeaderSink) {
         NS_NAMED_LITERAL_STRING(nullString, "");
-        rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, -1, 0, nullString.get(), nullString.get(), nullString.get(), errorMsg, nullString.get());
+        rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, -1, statusFlags, nullString.get(), nullString.get(), nullString.get(), errorMsg, nullString.get());
       }
     }
 
@@ -433,7 +435,6 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   mBuffer->Shutdown();
 
   PRInt32 exitCode;
-  PRUint32 statusFlags;
   nsXPIDLString keyId;
   nsXPIDLString userId;
   nsXPIDLString sigDate;

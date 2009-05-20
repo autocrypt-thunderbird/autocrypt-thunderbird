@@ -2425,7 +2425,7 @@ function (parent, uiFlags, hashAlgorithm, plainText, fromMailAddr, toMailAddr, b
   var pipeTrans = this.encryptMessageStart(parent, null, uiFlags,
                                            fromMailAddr, toMailAddr, bccMailAddr,
                                            hashAlgo, sendFlags, ipcBuffer,
-                                           noProxy, startErrorMsgObj);
+                                           noProxy, statusFlagsObj, startErrorMsgObj);
 
   if (!pipeTrans) {
     errorMsgObj.value = startErrorMsgObj.value;
@@ -2694,7 +2694,7 @@ function (prompter, uiFlags, fromMailAddr, hashAlgoObj) {
     var pipeTrans = this.encryptMessageStart(null, prompter, testUiFlags,
                                              fromMailAddr, "", "",
                                              hashAlgo, sendFlags, ipcBuffer,
-                                             noProxy, errorMsgObj);
+                                             noProxy, statusFlagsObj, errorMsgObj);
     if (!pipeTrans) {
       return 1;
     }
@@ -2759,7 +2759,7 @@ function (prompter, uiFlags, fromMailAddr, hashAlgoObj) {
 
 Enigmail.prototype.encryptMessageStart =
 function (parent, prompter, uiFlags, fromMailAddr, toMailAddr, bccMailAddr,
-          hashAlgorithm, sendFlags, listener, noProxy, errorMsgObj) {
+          hashAlgorithm, sendFlags, listener, noProxy, statusFlagsObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: prompter="+prompter+", uiFlags="+uiFlags+", from "+fromMailAddr+" to "+toMailAddr+", hashAlgorithm="+hashAlgorithm+" ("+bytesToHex(pack(sendFlags,4))+")\n");
 
   var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
@@ -2788,7 +2788,6 @@ function (parent, prompter, uiFlags, fromMailAddr, toMailAddr, bccMailAddr,
 
   var signMsg     = sendFlags & nsIEnigmail.SEND_SIGNED;
 
-  var statusFlagsObj = new Object();
   var pipetrans = this.execStart(this.agentPath, encryptArgs, signMsg, parent, prompter,
                                  listener, noProxy, statusFlagsObj);
 
@@ -3075,7 +3074,7 @@ function (parent, uiFlags, cipherText, signatureObj, exitCodeObj,
     ipcBuffer.open(readBytes, false);
 
     var pipeTrans = this.decryptMessageStart(parent, null, verifyOnly, noOutput,
-                                          ipcBuffer, noProxy, startErrorMsgObj);
+                                          ipcBuffer, noProxy, statusFlagsObj, startErrorMsgObj);
 
     if (!pipeTrans) {
       errorMsgObj.value = startErrorMsgObj.value;
@@ -3219,7 +3218,7 @@ function (parent, uiFlags, cipherText, signatureObj, exitCodeObj,
 
 Enigmail.prototype.decryptMessageStart =
 function (parent, prompter, verifyOnly, noOutput,
-          listener, noProxy, errorMsgObj) {
+          listener, noProxy, statusFlagsObj, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.decryptMessageStart: prompter="+prompter+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
 
   if (!this.initialized) {
@@ -3254,7 +3253,6 @@ function (parent, prompter, verifyOnly, noOutput,
     args.push("-d");
   }
 
-  var statusFlagsObj = new Object();
   var pipetrans = this.execStart(this.agentPath, args, !verifyOnly, parent, prompter,
                                  listener, noProxy, statusFlagsObj);
 
