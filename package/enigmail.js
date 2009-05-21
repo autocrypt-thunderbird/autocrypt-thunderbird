@@ -3459,12 +3459,13 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
       }
     }
     
-//    if (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE) {
-//      keyIdObj.value = this.extractPubkey
-//    }
+    if (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE) {
+      keyIdObj.value = this.extractPubkey(statusMsg)
+    }
 
     return exitCode;
   }
+
 
   if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
     // "Unremember" passphrase on decryption failure
@@ -3475,13 +3476,8 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
 
   if (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE) {
     // Unverified signature
-    var matchb = statusMsg.match(/(^|\n)NO_PUBKEY (\w{8})(\w{8})/);
+    keyIdObj.value = this.extractPubkey(statusMsg);
 
-    if (matchb && (matchb.length > 3)) {
-      pubKeyId = "0x" + matchb[3];
-      DEBUG_LOG("enigmail.js: Enigmail.decryptMessageEnd: NO_PUBKEY "+pubKeyId+"\n");
-      keyIdObj.value = matchb[2]+matchb[3];
-    }
     if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_OKAY) {
       exitCode=0;
     }
@@ -3500,6 +3496,21 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
   }
 
   return exitCode;
+}
+
+
+// Extract public key from Status Message
+Enigmail.prototype.extractPubkey =
+function (statusMsg) {
+  var keyId = null;
+  var matchb = statusMsg.match(/(^|\n)NO_PUBKEY (\w{8})(\w{8})/);
+
+  if (matchb && (matchb.length > 3)) {
+    DEBUG_LOG("enigmail.js: Enigmail.extractPubkey: NO_PUBKEY 0x"+matchb[3]+"\n");
+    keyId = matchb[2]+matchb[3];
+  }
+
+  return keyId;
 }
 
 
