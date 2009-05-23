@@ -131,6 +131,33 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
   font-style: italic;
 }
 
+.enigMsgHdrView-flat-button {
+  min-width: 1px !important;
+  -moz-appearance: none;
+  color: GrayText;
+  background-color: transparent;
+  border: 2px solid transparent;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding: 0 2px;
+  -moz-border-radius: 2px;
+  -moz-border-top-colors: none;
+  -moz-border-right-colors: none;
+  -moz-border-bottom-colors: none;
+  -moz-border-left-colors: none;
+  min-height: 1ex;
+}
+
+.enigMsgHdrView-flat-button:hover {
+  color: -moz-buttonhovertext;
+  background-color: -moz-buttonhoverface;
+  -moz-border-top-colors: transparent threedhighlight threedlightshadow;
+  -moz-border-right-colors: transparent threeddarkshadow threedshadow;
+  -moz-border-bottom-colors: transparent threeddarkshadow threedshadow;
+  -moz-border-left-colors: transparent threedhighlight threedlightshadow;
+}
+
+
 #enigmail-status-bar #enigmail-signed-status {
   list-style-image: none;
   visibility: collapse;

@@ -598,11 +598,11 @@
                  collapsed="true" display="false" state="false"
                  persist="display" aria-labelledby="enigmailStatusHdr"/>
         </vbox>
-        <vbox class="enigmailHeaderNameBox" flex="0">
+        <vbox class="enigmailHeaderNameBox" flex="0" pack="center">
           <observes element="enigmailStatusText" attribute="class"/>
           <button id="enigmailStatusHdrDetails" pack="center" 
             label="&enigmail.detailsHdrButton.label;" 
-            class="msgHeaderView-flat-button"
+            class="enigMsgHdrView-flat-button"
             oncommand="enigViewSecurityInfo();"/>
         </vbox>
       </hbox>
