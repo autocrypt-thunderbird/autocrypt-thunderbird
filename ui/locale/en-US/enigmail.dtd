@@ -54,7 +54,7 @@
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Remember passphrase for">
 <!ENTITY enigmail.maxIdleMinutesTail.label "minutes of idle time">
-<!ENTITY enigmail.maxIdleMinutes.tooltip   "Cache passphrases in memory for a limited time.">
+<!ENTITY enigmail.maxIdleMinutes.tooltip   "Cache passphrase in memory for a limited time.">
 
 <!ENTITY enigmail.resetPrefsButton.label "Reset">
 <!ENTITY enigmail.resetPrefs.tooltip     "Set all OpenPGP preferences back to their default value.">
