@@ -268,9 +268,11 @@ function enigComposeOpen() {
     nodeNumber=0;
     while (node) {
       if (node.attachment.contentType == "application/pgp-signature") {
-        node = bucketList.removeItemAt(nodeNumber);
-        // Let's release the attachment object held by the node else it won't go away until the window is destroyed
-        node.attachment = null;
+        if (! enigFindRelatedAttachment(bucketList, node)) {
+          node = bucketList.removeItemAt(nodeNumber);
+          // Let's release the attachment object held by the node else it won't go away until the window is destroyed
+          node.attachment = null;
+        }
       }
       else {
         ++nodeNumber;
@@ -284,6 +286,21 @@ function enigComposeOpen() {
   enigDisplayUi();
 }
 
+// check if an signature is related to another attachment
+function enigFindRelatedAttachment(bucketList, node) {
+
+  // check if filename ends with .sig
+  if (node.attachment.name.search(/\.sig$/i) < 0) return null;
+  
+  var relatedNode = bucketList.firstChild;
+  var findFile = node.attachment.name.toLowerCase();
+  var baseAttachment = null;
+  while (relatedNode) {
+    if (relatedNode.attachment.name.toLowerCase()+".sig" == findFile) baseAttachment = relatedNode.attachment;
+    relatedNode = relatedNode.nextSibling;
+  } 
+  return baseAttachment;
+}
 
 function enigMsgComposeReopen() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeReopen\n");
