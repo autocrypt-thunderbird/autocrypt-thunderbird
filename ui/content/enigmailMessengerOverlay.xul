@@ -601,9 +601,37 @@
         <vbox class="enigmailHeaderNameBox" flex="0" pack="center">
           <observes element="enigmailStatusText" attribute="class"/>
           <button id="enigmailStatusHdrDetails" pack="center" 
-            label="&enigmail.detailsHdrButton.label;" 
-            class="enigMsgHdrView-flat-button"
-            oncommand="enigViewSecurityInfo();"/>
+                  label="&enigmail.detailsHdrButton.label;" 
+                  type="menu"
+                  class="enigMsgHdrView-flat-button">
+            <menupopup id="enigSecurityContext"
+                   onpopupshowing="enigDispSecurityContext();">
+              <menuitem label="&enigmail.importpublickey.label;"
+                        id="enigmail_importKey"
+                        hidden="true"
+                        oncommand="enigHandleUnknownKey();"/>
+              <menuitem label="&enigmail.reload.label;"
+                        id="enigmail_reloadMessage"
+                        hidden="true"
+                        oncommand="enigmailReloadCompleteMsg();"/>
+              <menuitem label="&enigmail.pgpSecurityInfo.label;"
+                        id="enigmail_pgpSecurityInfo"
+                        oncommand="enigViewSecurityInfo(null, false);"/>
+              <menuitem label="&enigmail.copySecurityInfo.label;"
+                        id="enigmail_copySecurityInfo"
+                        oncommand="enigCopyStatusInfo();"/>
+              <menuitem label="&enigmail.showPhoto.label;"
+                        id="enigmail_showPhoto"
+                        oncommand="enigShowPhoto();"/>
+              <menuseparator/>
+              <menuitem label="&enigmail.signSenderKeyPopup.label;"
+                        id="enigmail_signSenderKey"
+                        oncommand="enigSignKey();"/>
+              <menuitem label="&enigmail.trustSenderKeyPopup.label;"
+                        id="enigmail_editSenderKeyTrust"
+                        oncommand="enigEditKeyTrust();"/>
+            </menupopup>
+          </button>
         </vbox>
       </hbox>
     </hbox>
@@ -634,10 +662,10 @@
           app="mailnews">
       <statusbarpanel id="enigmail-signed-status"
         class="statusbarpanel-iconic"
-        collapsed="true" oncommand="enigViewSecurityInfo();"/>
+        collapsed="true"/>
       <statusbarpanel id="enigmail-encrypted-status"
         class="statusbarpanel-iconic"
-        collapsed="true" oncommand="enigViewSecurityInfo();"/>
+        collapsed="true"/>
     </hbox>
   </statusbar>
 </overlay>

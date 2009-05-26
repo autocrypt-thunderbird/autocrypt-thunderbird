@@ -491,6 +491,26 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
 }
 
 function enigDispSecurityContext() {
+
+  if (gEnigSecurityInfo) {
+    if (gEnigSecurityInfo.keyId &&
+        (gEnigSecurityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) ) {
+      document.getElementById("enigmail_importKey").removeAttribute("hidden");
+    }
+    else {
+      document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
+    }
+    
+    if ( (gEnigSecurityInfo.statusFlags & nsIEnigmail.NODATA) &&
+         (gEnigSecurityInfo.statusFlags &
+           (nsIEnigmail.PGP_MIME_SIGNED | nsIEnigmail.PGP_MIME_ENCRYPTED)) ) {
+      document.getElementById("enigmail_reloadMessage").removeAttribute("hidden");
+    }
+    else {
+      document.getElementById("enigmail_reloadMessage").setAttribute("hidden", "true");
+    }
+  }
+  
   var optList = ["pgpSecurityInfo", "copySecurityInfo"];
   for (var j=0; j<optList.length; j++) {
     var menuElement = document.getElementById("enigmail_"+optList[j]);

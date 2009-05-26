@@ -11,31 +11,6 @@
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailMsgHdrViewOverlay.js"/>
 
-  <hbox id="expandedHeaderView">
-    <popup id="enigSecurityContext"
-           onpopupshowing="enigDispSecurityContext();">
-      <menuitem label="&enigmail.pgpSecurityInfo.label;"
-                id="enigmail_pgpSecurityInfo"
-                oncommand="enigViewSecurityInfo(null, false);"/>
-      <menuitem label="&enigmail.copySecurityInfo.label;"
-                id="enigmail_copySecurityInfo"
-                oncommand="enigCopyStatusInfo();"/>
-      <menuitem label="&enigmail.showPhoto.label;"
-                id="enigmail_showPhoto"
-                oncommand="enigShowPhoto();"/>
-      <menuseparator/>
-      <menuitem label="&enigmail.signSenderKeyPopup.label;"
-                id="enigmail_signSenderKey"
-                oncommand="enigSignKey();"/>
-      <menuitem label="&enigmail.trustSenderKeyPopup.label;"
-                id="enigmail_editSenderKeyTrust"
-                oncommand="enigEditKeyTrust();"/>
-      <menuseparator/>
-      <menuitem label="&enigmail.smimeSecurityInfo.label;"
-                oncommand="showMessageReadSecurityInfo();"/>
-    </popup>
-  </hbox>
-
   <menupopup id="attachmentMenuList" onpopupshowing="enigFillAttachmentListPopup(this);"/>
   
   <popup id="emailAddressPopup">

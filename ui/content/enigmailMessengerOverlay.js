@@ -108,9 +108,9 @@ function enigMessengerStartup() {
   // enigUpdateOptionsDisplay();
 
   // Override SMIME ui
-  var smimeStatusElement = document.getElementById("cmd_viewSecurityStatus");
-  if (smimeStatusElement) {
-    smimeStatusElement.setAttribute("oncommand", "enigViewSecurityInfo(null, true);");
+  var viewSecurityCmd = document.getElementById("cmd_viewSecurityStatus");
+  if (viewSecurityCmd) {
+    viewSecurityCmd.setAttribute("oncommand", "enigViewSecurityInfo(null, true);");
   }
 
   // Override print command
@@ -193,33 +193,7 @@ function enigViewSecurityInfo(event, displaySmimeMsg) {
     return;
 
   if (gEnigSecurityInfo) {
-    // Display OpenPGP security info
-
-    var keyserver = EnigGetPref("keyserver");
-
-    if (keyserver && gEnigSecurityInfo.keyId &&
-        (gEnigSecurityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) ) {
-
-        enigHandleUnknownKey();
-
-    }
-    else if ( (gEnigSecurityInfo.statusFlags & nsIEnigmail.NODATA) &&
-         (gEnigSecurityInfo.statusFlags &
-           (nsIEnigmail.PGP_MIME_SIGNED | nsIEnigmail.PGP_MIME_ENCRYPTED)) ) {
-
-      if (EnigConfirm(EnigGetString("reloadImapMessage"), EnigGetString("msgOvl.button.reload")))
-        enigmailReloadCompleteMsg();
-
-    }
-    else if ((gEnigSecurityInfo.statusFlags & (nsIEnigmail.PGP_MIME_SIGNED | nsIEnigmail.PGP_MIME_ENCRYPTED))
-            && gEnigSecurityInfo.blockSeparation && (gEnigSecurityInfo.blockSeparation.indexOf("0:")>=0)) {
-
-       enigDisplayMimeMessage();
-    }
-    else {
-      EnigLongAlert(EnigGetString("securityInfo")+gEnigSecurityInfo.statusInfo);
-    }
-
+    EnigLongAlert(EnigGetString("securityInfo")+gEnigSecurityInfo.statusInfo);
   } else {
     // Display SMIME security info
     if (displaySmimeMsg) {
