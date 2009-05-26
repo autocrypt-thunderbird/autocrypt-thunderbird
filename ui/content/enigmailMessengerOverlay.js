@@ -191,19 +191,21 @@ function enigViewSecurityInfo(event, displaySmimeMsg) {
 
   if (event && event.button != 0)
     return;
-
-  if (gEnigSecurityInfo) {
-    EnigLongAlert(EnigGetString("securityInfo")+gEnigSecurityInfo.statusInfo);
-  } else {
-    // Display SMIME security info
-    if (displaySmimeMsg) {
-      showMessageReadSecurityInfo();
-    }
-    else {
-      EnigAlert(EnigGetString("securityInfo")+gEnigSecurityInfo.statusInfo+"\n\n"+EnigGetString("noPgpMessage"));
-    }
+    
+  if (gSignatureStatus >= 0 || gEncryptionStatus >= 0) {
+    showMessageReadSecurityInfo()
+  }
+  else {
+    if (gEnigSecurityInfo) enigViewOpenpgpInfo();
   }
 }
+
+function enigViewOpenpgpInfo() {
+  if (gEnigSecurityInfo) {
+    EnigLongAlert(EnigGetString("securityInfo")+gEnigSecurityInfo.statusInfo);
+  }
+}
+
 
 function enigDisplayMimeMessage() {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigDisplayMimeMessage\n");

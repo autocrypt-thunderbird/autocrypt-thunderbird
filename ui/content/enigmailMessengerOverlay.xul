@@ -616,7 +616,7 @@
                         oncommand="enigmailReloadCompleteMsg();"/>
               <menuitem label="&enigmail.pgpSecurityInfo.label;"
                         id="enigmail_pgpSecurityInfo"
-                        oncommand="enigViewSecurityInfo(null, false);"/>
+                        oncommand="enigViewOpenpgpInfo(null, false);"/>
               <menuitem label="&enigmail.copySecurityInfo.label;"
                         id="enigmail_copySecurityInfo"
                         oncommand="enigCopyStatusInfo();"/>

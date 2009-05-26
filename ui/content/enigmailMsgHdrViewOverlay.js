@@ -43,17 +43,18 @@ function enigHdrViewLoad()
 {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigHdrViewLoad\n");
 
+
   // Override SMIME ui
   var signedHdrElement = document.getElementById("signedHdrIcon");
   if (signedHdrElement) {
     signedHdrElement.setAttribute("onclick", "enigViewSecurityInfo(event, true);");
-    signedHdrElement.setAttribute("context", "enigSecurityContext");
+    // signedHdrElement.setAttribute("context", "enigSecurityContext");
   }
 
   var encryptedHdrElement = document.getElementById("encryptedHdrIcon");
   if (encryptedHdrElement) {
     encryptedHdrElement.setAttribute("onclick", "enigViewSecurityInfo(event, true);");
-    encryptedHdrElement.setAttribute("context", "enigSecurityContext");
+    // encryptedHdrElement.setAttribute("context", "enigSecurityContext");
   }
 
   gEnigStatusBar = document.getElementById("enigmail-status-bar");

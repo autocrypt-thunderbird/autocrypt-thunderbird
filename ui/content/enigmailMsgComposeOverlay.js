@@ -1337,7 +1337,7 @@ function enigEncryptMsg(msgSendType) {
         if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields) {
             if (gMsgCompose.compFields.securityInfo.requireEncryptMessage ||
               gMsgCompose.compFields.securityInfo.signMessage) {
-                EnigAlert("pgpMime.sMime.incomaptible");
+                EnigAlert(EnigGetString("pgpMime.sMime.incomaptible"));
                 return false;
             }
         }
