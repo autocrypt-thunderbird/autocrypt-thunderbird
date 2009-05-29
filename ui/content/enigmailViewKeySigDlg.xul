@@ -227,7 +227,7 @@
                 addCell(userRow, EnigGetString("keySignatureLocal"));
               }
               if (typeof(gKeyListArr[listRow[KEY_ID]]) == "object") {
-                addCell(userRow, EnigGetString("dlgYes"));
+                addCell(userRow, EnigGetString("signatureValid"));
               }
               else {
                 addCell(userRow, EnigGetString("keySignatureNoKey"));
