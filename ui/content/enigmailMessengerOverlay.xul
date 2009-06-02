@@ -55,7 +55,7 @@
   </commandset>
 
   <broadcasterset>
-    <broadcaster id="enigmailBcDisplayClass" class="enigmailHeaderValue"/>
+    <broadcaster id="enigmailBcDisplayClass" class="headerValue"/>
   </broadcasterset>
 
 <!-- Seamonkey -->
@@ -576,25 +576,32 @@
   <vbox id="messagepanebox">
     <hbox id="enigmailBox" class="expandedEnigmailBox"
           position="1"
-          collapsed="true">
-      <hbox class="enigmailHeaderNameBox" align="start" id="enigmailStatusTextBox">
+          collapsed="true" align="center">
+          
+      <vbox>
+        <spacer class="enigmailHeaderSpacer"/>
+      </vbox>
+
+      <hbox class="headerNameBox" align="start" id="enigmailStatusTextBox" pack="start">
         <image id="enigToggleHeaderView"
                class="collapsedHeaderViewButton" onclick="enigToggleHeaderView();"
                state="false" persist="state class"/>
         <spacer flex="1"/>
-        <label class="headerName"
-            id="enigmailStatusHdr"
-            value="&enigmail.openpgp.label;: " control="enigmailStatusText"/>
+        <label class="enigmailHeaderName"
+              id="enigmailStatusHdr" flex="1"
+              value="&enigmail.openpgp.label;: " control="enigmailStatusText"/>
       </hbox>
-      <hbox flex="1" pack="start">
+
+      <hbox flex="1" pack="start" class="headerValueBox">
         <vbox flex="1" pack="start">
-          <textbox flex="1" readonly="true"
-               id="enigmailStatusText"
-               class="plain enigmailHeaderValue"/>
+          <textbox flex="1" readonly="true" align="center"
+               id="enigmailStatusText" chromedir="ltr"
+               class="headerValue"/>
           <textbox flex="1" readonly="true"
                  id="expandedEnigmailStatusText"
-                 class="plain enigmailHeaderValue"
+                 class="headerValue"
                  observes="enigmailStatusText"
+                 chromedir="ltr"
                  collapsed="true" display="false" state="false"
                  persist="display" aria-labelledby="enigmailStatusHdr"/>
         </vbox>

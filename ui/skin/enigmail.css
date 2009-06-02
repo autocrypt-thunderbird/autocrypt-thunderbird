@@ -57,6 +57,16 @@
   color: black;
 }
 
+.enigmailHeaderName {
+  color: #888a85; /* lower contrast, TB3 */
+  text-align: right;
+  background-color: transparent;
+  -moz-margin-end: 2px;
+}
+
+.enigmailHeaderSpacer {
+  width: 2px;
+}
 .enigmailHeaderNameBox {
   width: 7.7em;
   background-color:#d8e0e8;
@@ -113,7 +123,7 @@
 .enigMsgHdrView-flat-button {
   min-width: 1px !important;
   -moz-appearance: none;
-  color: GrayText;
+  color: black;
   background-color: transparent;
   border: 2px solid transparent;
   margin-top: 0px;
@@ -126,6 +136,7 @@
   -moz-border-left-colors: none;
   min-height: 1ex;
 }
+
 
 .enigMsgHdrView-flat-button:hover {
   color: -moz-buttonhovertext;

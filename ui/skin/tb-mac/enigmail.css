@@ -108,6 +108,17 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
   font-style: italic;
 }
 
+.enigmailHeaderName {
+  color: #888a85; /* lower contrast, TB3 */
+  text-align: right;
+  background-color: transparent;
+  -moz-margin-end: 2px;
+}
+
+.enigmailHeaderSpacer {
+  width: 2px;
+}
+
 .enigMsgHdrView-flat-button {
   min-width: 1px !important;
   -moz-appearance: none;
