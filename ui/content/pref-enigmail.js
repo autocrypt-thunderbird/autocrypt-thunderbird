@@ -174,6 +174,7 @@ function resetRememberedValues() {
              "warnOnRulesConflict",
              "warnGpgAgentAndIdleTime",
              "warnClearPassphrase",
+             "warnOnSendingNewsgroups",
              "warnIso2022jp",
              "warnRefreshAll"];
 

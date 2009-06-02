@@ -142,6 +142,7 @@ pref("extensions.enigmail.useDefaultComment",false);
 
 // allow encryption to newsgroups
 pref("extensions.enigmail.encryptToNews", false);
+pref("extensions.enigmail.warnOnSendingNewsgroups",true);
 
 // use gpg passphrase agent for passphrase handling
 pref("extensions.enigmail.useGpgAgent",false);

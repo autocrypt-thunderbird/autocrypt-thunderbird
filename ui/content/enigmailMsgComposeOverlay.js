@@ -822,6 +822,8 @@ function enigConfirmBeforeSend(toAddr, gpgKeys, sendFlags, isOffline, msgSendTyp
     msgStatus += EnigGetString("statPlain")+" ";
   }
 
+  gpgKeys=gpgKeys.replace(/^, /, "").replace(/, $/,"");
+  
   var msgConfirm = (isOffline || sendFlags & nsIEnigmail.SEND_LATER)
           ? EnigGetString("offlineSave",msgStatus,EnigStripEmail(toAddr).replace(/,/g, ", "))
           : EnigGetString("onlineSend",msgStatus,EnigStripEmail(toAddr).replace(/,/g, ", "));
@@ -1064,13 +1066,13 @@ function enigEncryptMsg(msgSendType) {
                         (gEnigPromptSvc. BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_0) +
                         (gEnigPromptSvc. BUTTON_TITLE_CANCEL * ENIG_BUTTON_POS_1) +
                         (gEnigPromptSvc. BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_2),
-                        EnigGetString("sendWithHiddenBcc"), null, EnigGetString("sendWithShownBcc"),
+                        EnigGetString("sendWithShownBcc"), null, EnigGetString("sendWithHiddenBcc"),
                         null, dummy);
               switch (hideBccUsers) {
-              case 0:
+              case 2:
                 enigAddRecipients(bccAddrList, recList);
                 // no break here on purpose!
-              case 2:
+              case 0:
                 enigAddRecipients(toAddrList, recList);
                 break;
               case 1:
@@ -1090,7 +1092,7 @@ function enigEncryptMsg(msgSendType) {
                EnigAlert(EnigGetString("sendingNews"));
                return false;
              }
-             else if (!EnigConfirm(EnigGetString("sendToNewsWarning"), EnigGetString("msgCompose.button.send"))) {
+             else if (!EnigConfirmPref(EnigGetString("sendToNewsWarning"), "warnOnSendingNewsgroups", EnigGetString("msgCompose.button.send"))) {
                return false;
              }
            }
@@ -1223,7 +1225,14 @@ function enigEncryptMsg(msgSendType) {
                     if (notSignedIfNotEnc) sendFlags &= ~ENIG_SIGN;
                   }
                   else {
-                    toAddr = resultObj.userList.join(", ");
+                    if (bccAddrList.length > 0) {
+                      bccAddr=resultObj.userList.join(", ");
+                      toAddr="";
+                    }
+                    else {
+                      toAddr = resultObj.userList.join(", ");
+                      bccAddr="";
+                    }
                   }
                   testCipher="ok";
                   testExitCodeObj.value = 0;
@@ -1409,7 +1418,7 @@ function enigEncryptMsg(msgSendType) {
      Attachments2CompFields(msgCompFields);
 
      if ((!(sendFlags & nsIEnigmail.SAVE_MESSAGE)) && EnigGetPref("confirmBeforeSend")) {
-       if (!enigConfirmBeforeSend(toAddrList.join(", "), toAddr, sendFlags, isOffline)) {
+       if (!enigConfirmBeforeSend(toAddrList.join(", "), toAddr+", "+bccAddr, sendFlags, isOffline)) {
          if (gEnigProcessed) {
            enigUndoEncryption();
          }

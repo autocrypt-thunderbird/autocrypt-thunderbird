@@ -665,7 +665,9 @@ function EnigConfirmPref(mesg, prefText, okLabel, cancelLabel) {
   const notSet = 0;
   const yes = 1;
   const no = 2;
-  
+  const display = true;
+  const dontDisplay = false;
+
   var buttonTitles = 0;
   if (okLabel == null && cancelLabel == null) {
     buttonTitles = (gEnigPromptSvc.BUTTON_TITLE_YES * ENIG_BUTTON_POS_0) +
@@ -688,28 +690,56 @@ function EnigConfirmPref(mesg, prefText, okLabel, cancelLabel) {
   }
 
   var prefValue = EnigGetPref(prefText);
-  switch (prefValue) {
-  case notSet:
-    var checkBoxObj = { value: false} ;
-    var buttonPressed = gEnigPromptSvc.confirmEx(window,
-                          EnigGetString("enigConfirm"),
-                          mesg,
-                          buttonTitles,
-                          okLabel, cancelLabel, null,
-                          EnigGetString("dlgKeepSetting"), checkBoxObj);
-    if (checkBoxObj.value) {
-      EnigSetPref(prefText, (buttonPressed==0 ? yes : no));
+  
+  if (typeof(prefValue) != "boolean") {
+    // number: remember user's choice
+    switch (prefValue) {
+    case notSet:
+      var checkBoxObj = { value: false} ;
+      var buttonPressed = gEnigPromptSvc.confirmEx(window,
+                            EnigGetString("enigConfirm"),
+                            mesg,
+                            buttonTitles,
+                            okLabel, cancelLabel, null,
+                            EnigGetString("dlgKeepSetting"), checkBoxObj);
+      if (checkBoxObj.value) {
+        EnigSetPref(prefText, (buttonPressed==0 ? yes : no));
+      }
+      return (buttonPressed==0 ? 1 : 0);
+
+    case yes:
+      return 1;
+
+    case no:
+      return 0;
+
+    default:
+      return -1;
     }
-    return (buttonPressed==0 ? 1 : 0);
+  }
+  else {
+    // boolean: "do not show this dialog anymore" (and return default)
+    switch (prefValue) {
+    case display:
+      var checkBoxObj = { value: false} ;
+      var buttonPressed = gEnigPromptSvc.confirmEx(window,
+                            EnigGetString("enigConfirm"),
+                            mesg,
+                            buttonTitles,
+                            okLabel, cancelLabel, null,
+                            EnigGetString("dlgNoPrompt"), checkBoxObj);
+      if (checkBoxObj.value) {
+        EnigSetPref(prefText, false);
+      }
+      return (buttonPressed==0 ? 1 : 0);
 
-  case yes:
-    return 1;
+    case dontDisplay:
+      return 1;
 
-  case no:
-    return 0;
-
-  default:
-    return -1;
+    default:
+      return -1;
+    }
+  
   }
 }
 
