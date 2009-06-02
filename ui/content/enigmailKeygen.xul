@@ -127,8 +127,8 @@
             <hbox flex="0">
               <menulist id="keyType" label="&enigmail.keyGen.keyType.dsa;" value="1" >
                 <menupopup id="keyTypePopup">
-                  <menuitem id="keyType_dsa" value="1" label="&enigmail.keyGen.keyType.dsa;" selected="true"/>
-                  <menuitem id="keySize_rsa" value="2" label="&enigmail.keyGen.keyType.rsa;"/>
+                  <menuitem id="keySize_rsa" value="2" label="&enigmail.keyGen.keyType.rsa;" selected="true"/>
+                  <menuitem id="keyType_dsa" value="1" label="&enigmail.keyGen.keyType.dsa;"/>
                 </menupopup>
               </menulist>
             </hbox>

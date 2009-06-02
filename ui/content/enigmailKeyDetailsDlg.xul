@@ -46,6 +46,7 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         buttons="accept"
         minwidth="450px"
+        persist="width height"
         buttonlabelaccept="&enigmail.cardDetails.closeWindow.label;"
         onload="onLoad();">
 
