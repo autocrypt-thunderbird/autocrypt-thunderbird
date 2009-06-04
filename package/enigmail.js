@@ -1896,6 +1896,18 @@ function () {
   return commandArgs;
 }
 
+/***
+ * determine if a password is required to be sent to GnuPG
+ */
+Enigmail.prototype.requirePassword = 
+function () {
+  if (this.useGpgAgent()) {
+    return false;
+  }
+  
+  return (! gEnigmailSvc.prefBranch.getBoolPref("noPassphrase"));
+}
+
 Enigmail.prototype.fixExitCode =
 function (exitCode, statusFlags) {
   if (exitCode != 0) {
@@ -2142,11 +2154,11 @@ function (command, args, needPassphrase, domWindow, prompter, listener,
       pipetrans.asyncRead(listener, null, 0, -1, 0);
     }
 
-    if (needPassphrase && ! useAgentObj.value) {
+    if (needPassphrase) {
       // Write to child STDIN
       // (ignore errors, because child may have exited already, closing STDIN)
       try {
-        if (passphrase) {
+        if (this.requirePassword()) {
            pipetrans.writeSync(passphrase, passphrase.length);
            pipetrans.writeSync("\n", 1);
         }
@@ -4669,11 +4681,9 @@ function (parent, outFileName, displayName, inputBuffer,
   }
 
   try {
-    if (! useAgentObj.value) {
-      if (passphrase.length > 0) {
-        pipeTrans.writeSync(passphrase, passphrase.length);
-        pipeTrans.writeSync("\n", 1);
-      }
+    if (this.requirePassword()) {
+      pipeTrans.writeSync(passphrase, passphrase.length);
+      pipeTrans.writeSync("\n", 1);
     }
     pipeTrans.writeSync(byteData, dataLength.value);
 
@@ -5399,13 +5409,10 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
                                  true, statusFlags);
   if (! pipeTrans) return -1;
 
-  if (! useAgentObj.value) {
+  if (this.requirePassword()) {
     try {
-      if (passphrase) {
-         pipeTrans.writeSync(passphrase, passphrase.length);
-         pipeTrans.writeSync("\n", 1);
-      }
-
+      pipeTrans.writeSync(passphrase, passphrase.length);
+      pipeTrans.writeSync("\n", 1);
     } catch (ex) {}
   }
 
