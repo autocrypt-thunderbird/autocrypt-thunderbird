@@ -596,10 +596,10 @@
         <vbox flex="1" pack="start">
           <textbox flex="1" readonly="true" align="center"
                id="enigmailStatusText" chromedir="ltr"
-               class="headerValue"/>
+               class="enigmailHeaderValue"/>
           <textbox flex="1" readonly="true"
                  id="expandedEnigmailStatusText"
-                 class="headerValue"
+                 class="enigmailHeaderValue"
                  observes="enigmailStatusText"
                  chromedir="ltr"
                  collapsed="true" display="false" state="false"

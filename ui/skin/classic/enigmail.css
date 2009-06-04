@@ -83,6 +83,22 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
   -moz-margin-end: 2px;
 }
 
+.enigmailHeaderValue {
+  min-width: 50px;
+  white-space: normal;
+  color: WindowText;
+  line-height: 1.4em;
+
+  -moz-appearance: none !important;
+  -moz-appearance: none;
+
+  padding: 0px !important;
+  margin: 0px !important;
+  -moz-margin-start: 3px !important;
+  border: none !important;
+  background-color: transparent;
+}
+
 .enigmailHeaderSpacer {
   width: 2px;
 }
