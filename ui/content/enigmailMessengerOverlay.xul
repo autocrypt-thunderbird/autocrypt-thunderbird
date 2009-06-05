@@ -589,7 +589,7 @@
         <spacer flex="1"/>
         <label class="enigmailHeaderName"
               id="enigmailStatusHdr" flex="1"
-              value="&enigmail.openpgp.label;: " control="enigmailStatusText"/>
+              value="&enigmail.openpgp.label;" control="enigmailStatusText"/>
       </hbox>
 
       <hbox flex="1" pack="start" class="headerValueBox">

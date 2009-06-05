@@ -537,8 +537,10 @@ function enigmailUserSelAccept() {
   var treeChildren=gUserList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
 
   if (window.arguments[INPUT].options.indexOf("multisel")<0) {
-    if (gUserList.currentItem)
-      resultObj.userList.push(gUserList.currentItem.getAttribute("id"));
+    if (gUserList.currentIndex >= 0) {
+      resultObj.userList.push(gUserList.view.getItemAtIndex(gUserList.currentIndex).getAttribute("id"));
+      // resultObj.userList.push(gUserList.currentItem.getAttribute("id"));
+    }
   }
   else {
     var item=treeChildren.firstChild;

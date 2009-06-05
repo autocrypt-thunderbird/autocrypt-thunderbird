@@ -1569,7 +1569,7 @@ function () {
       var installLoc = Components.classes[NS_EXTENSION_MANAGER_CONTRACTID]
                    .getService(Components.interfaces.nsIExtensionManager)
                    .getInstallLocation(ENIGMAIL_EXTENSION_ID);
-      var extensionLoc = installLoc.getItemFile(ENIGMAIL_EXTENSION_ID, "components");
+      var extensionLoc = installLoc.getItemFile(ENIGMAIL_EXTENSION_ID, "wrappers");
       extensionLoc.append("gpg-wrapper.sh");
       args.unshift(command.path);
       command = extensionLoc;
