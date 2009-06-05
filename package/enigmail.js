@@ -604,9 +604,9 @@ PGPMsgHeader.prototype = {
 function isAbsolutePath(filePath, isDosLike) {
   // Check if absolute path
   if (isDosLike) {
-    return (filePath.search(/^\w+:\\/) == 0);
+    return ((filePath.search(/^\w+:\\/) == 0) || (filePath.search(/^\\\\/) == 0));
   } else {
-    return (filePath.search(/^\//) == 0)
+    return (filePath.search(/^\//) == 0);
   }
 }
 
