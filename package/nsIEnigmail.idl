@@ -226,6 +226,8 @@ interface nsIEnigmail : nsISupports
   const long CARDCTRL             = 0x08000000;
   const long SC_OP_FAILURE        = 0x10000000;
   const long UNKNOWN_ALGO         = 0x20000000;
+  const long SIG_CREATED          = 0x40000000;
+  const long END_ENCRYPTION       = 0x80000000;
 
   wstring decryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,

@@ -155,8 +155,10 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     TRUST_ULTIMATE:  nsIEnigmail.TRUSTED_IDENTITY,
                     CARDCTRL:        nsIEnigmail.CARDCTRL,
                     SC_OP_FAILURE:   nsIEnigmail.SC_OP_FAILURE,
-                    UNKNOWN_ALGO:    nsIEnigmail.UNKNOWN_ALGO
-                    };
+                    UNKNOWN_ALGO:    nsIEnigmail.UNKNOWN_ALGO,
+                    SIG_CREATED:     nsIEnigmail.SIG_CREATED,
+                    END_ENCRYPTION : nsIEnigmail.END_ENCRYPTION 
+};
 
 var gCachedPassphrase = null;
 var gCacheTimer = null;
@@ -1912,7 +1914,7 @@ Enigmail.prototype.fixExitCode =
 function (exitCode, statusFlags) {
   if (exitCode != 0) {
     if ((statusFlags & (nsIEnigmail.BAD_PASSPHRASE | nsIEnigmail.UNVERIFIED_SIGNATURE)) &&
-        (statusFlags & nsIEnigmail.DECRYPTION_OKAY)) {
+        (statusFlags & nsIEnigmail.DECRYPTION_OKAY )) {
       DEBUG_LOG("enigmail.js: Enigmail.fixExitCode: Changing exitCode for decrypted msg "+exitCode+"->0\n");
       exitCode = 0;
     }
@@ -2503,6 +2505,9 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
   DEBUG_LOG("enigmail.js: Enigmail.encryptMessageEnd: uiFlags="+uiFlags+", sendFlags="+bytesToHex(pack(sendFlags,4))+", outputLen="+outputLen+", pipeTransport="+pipeTransport+"\n");
 
   var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
+  var defaultSend = sendFlags & nsIEnigmail.SEND_DEFAULT;
+  var signMsg     = sendFlags & nsIEnigmail.SEND_SIGNED;
+  var encryptMsg  = sendFlags & nsIEnigmail.SEND_ENCRYPTED;
 
   statusFlagsObj.value = 0;
   errorMsgObj.value    = "";
@@ -2524,6 +2529,18 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
     exitCode = -1;
   }
 
+  if (exitCode == 2) {
+    // GnuPG might return a non-zero exit code, even though the message was correctly 
+    // signed or encryped -> try to fix the exit code
+    exitCode = 0;
+    if (signMsg) {
+      if (! (statusFlagsObj.value & nsIEnigmail.SIG_CREATED)) exitCode = 2;
+    }
+    if (encryptMsg) {
+      if (! (statusFlagsObj.value & nsIEnigmail.END_ENCRYPTION)) exitCode = 2;
+    }
+  }
+  
   if (exitCode == 0) {
     // Normal return
     errorMsgObj.value = cmdErrorMsgObj.value;
@@ -2532,10 +2549,6 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
 
   // Error processing
   ERROR_LOG("enigmail.js: Enigmail.encryptMessageEnd: Error in command execution\n");
-
-  var defaultSend = sendFlags & nsIEnigmail.SEND_DEFAULT;
-  var signMsg     = sendFlags & nsIEnigmail.SEND_SIGNED;
-  var encryptMsg  = sendFlags & nsIEnigmail.SEND_ENCRYPTED;
 
   if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
     // "Unremember" passphrase on error return
