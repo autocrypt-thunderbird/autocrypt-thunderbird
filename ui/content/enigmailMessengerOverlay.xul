@@ -518,7 +518,7 @@
 
   </menubar>
 
-<!-- Seamonkey part -->
+<!-- Seamonkey 1.x -->
  <toolbox id="mailToolbarToolbox">
    <toolbar id="msgToolbar" persist="collapsed">
      <hbox id="toolbar_button_box">
@@ -540,7 +540,7 @@
    </toolbar>
  </toolbox>
 
-<!-- Thunderbird part -->
+<!-- Thunderbird & SeaMonkey 2.x -->
    <toolbarpalette id="MailToolbarPalette">
       <toolbarbutton class="toolbarbutton-1"
               id="button-enigmail-decrypt"
@@ -553,7 +553,7 @@
               />
   </toolbarpalette>
 
-<!-- Spicebird part -->
+<!-- Spicebird -->
    <toolbarpalette id="framework-toolpalette">
       <toolbarbutton class="framework-toolbarbutton padded-toolbarbutton"
               id="button-enigmail-decrypt"
@@ -571,6 +571,11 @@
   <!-- Thunderbird 2.0 and newer -->
   <toolbar id="mail-bar2"
            defaultset="button-getmsg,button-newmsg,button-address,separator,button-enigmail-decrypt,spacer,button-reply,button-replyall,button-forward,separator,button-tag,button-delete,button-junk,button-print,separator,button-goback,button-goforward,spring,search-container">
+  </toolbar>
+
+  <!-- SeaMonkey 2.0 and newer -->
+  <toolbar id="msgToolbar"
+           defaultset="button-getmsg,button-newmsg,separator,button-reply,button-replyall,button-forward,separator,button-enigmail-decrypt,spacer,button-goback,button-goforward,button-next,button-junk,button-delete,button-mark,spring,throbber-box">
   </toolbar>
 
   <vbox id="messagepanebox">
