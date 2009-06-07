@@ -2529,16 +2529,18 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
     exitCode = -1;
   }
 
-  if (exitCode == 2) {
+  if (exitCode != 0 && (signMsg || encryptMsg)) {
     // GnuPG might return a non-zero exit code, even though the message was correctly 
     // signed or encryped -> try to fix the exit code
-    exitCode = 0;
+
+    var correctedExitCode = 0;
     if (signMsg) {
-      if (! (statusFlagsObj.value & nsIEnigmail.SIG_CREATED)) exitCode = 2;
+      if (! (statusFlagsObj.value & nsIEnigmail.SIG_CREATED)) correctedExitCode = exitCode;
     }
     if (encryptMsg) {
-      if (! (statusFlagsObj.value & nsIEnigmail.END_ENCRYPTION)) exitCode = 2;
+      if (! (statusFlagsObj.value & nsIEnigmail.END_ENCRYPTION)) correctedExitCode = exitCode;
     }
+    exitCode = correctedExitCode;
   }
   
   if (exitCode == 0) {
