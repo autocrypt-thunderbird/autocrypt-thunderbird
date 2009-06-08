@@ -245,7 +245,8 @@ interface nsIEnigmail : nsISupports
 
   boolean selectPanel(in string url);
 
-
+  string getGnupgConfig (out long exitCodeObj, out wstring errorMsgObj);
+  
 /*** key handling functions ***/
   long setKeyTrust(in nsIDOMWindow parent,
                       in string keyId,

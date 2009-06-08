@@ -1,5 +1,68 @@
 /* Enigmail styles */
 
+#button-enigmail-decrypt,
+[typeid="button-enigmail-decrypt"]
+  {
+    list-style-image : url("chrome://enigmail/skin/enigmail-toolbar.png");
+    -moz-image-region: rect(0px 30px 30px 0px);
+  }
+
+#button-enigmail-decrypt:hover,
+[typeid="button-enigmail-decrypt"]
+  {
+    -moz-image-region: rect(30px 30px 60px 0px);
+  }
+
+#button-enigmail-decrypt[disabled],
+[typeid="button-enigmail-decrypt"]
+  {
+    -moz-image-region: rect(60px 30px 90px 0px);
+  }
+
+toolbar[iconsize="small"]  #button-enigmail-decrypt
+  {
+    -moz-image-region: rect(0px 30px 30px 0px);
+    list-style-image : url("chrome://enigmail/skin/enigmail-toolbar.png");
+  }
+
+toolbar[iconsize="small"] #button-enigmail-decrypt:hover
+  {
+    -moz-image-region: rect(30px 30px 60px 0px);
+  }
+
+toolbar[iconsize="small"] #button-enigmail-decrypt[disabled]
+  {
+    -moz-image-region: rect(60px 30px 90px 0px);
+  }
+
+#button-enigmail-send {
+    -moz-image-region: rect(0px 30px 30px 0px);
+   list-style-image      : url("chrome://enigmail/skin/enigmail-send.png");
+}
+
+#button-enigmail-send:hover {
+    -moz-image-region: rect(30px 30px 60px 0px);
+}
+
+#button-enigmail-send[disabled] {
+    -moz-image-region: rect(60px 30px 90px 0px);
+}
+
+toolbar[iconsize="small"] #button-enigmail-send {
+  -moz-image-region: rect(0px 16px 16px 0px);
+   list-style-image      : url("chrome://enigmail/skin/enigmail-send.png");
+}
+
+toolbar[iconsize="small"] #button-enigmail-send:hover {
+  -moz-image-region: rect(16px 16px 32px 0px);
+}
+
+toolbar[iconsize="small"] #button-enigmail-send[disabled] {
+  -moz-image-region: rect(32px 16px 48px 0px);
+}
+
+
+/*
 #button-enigmail-decrypt
   {
     list-style-image      : url("chrome://enigmail/skin/enigdecrypt.gif");
@@ -43,6 +106,7 @@
   {
     list-style-image      : url("chrome://enigmail/skin/enigsend-act.gif");
   }
+*/
 
 .action-box { width: 100px }
 

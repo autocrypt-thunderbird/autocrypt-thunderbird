@@ -2662,9 +2662,15 @@ function (fromMailAddr, toMailAddr, bccMailAddr, hashAlgorithm, sendFlags, isAsc
     for (k=0; k<toAddrList.length; k++) {
       toAddrList[k] = toAddrList[k].replace(/\'/g, "\\'");
       if (toAddrList[k].length > 0) {
-       encryptArgs.push("-r");
-       encryptArgs.push((hushMailSupport || (toAddrList[k].search(/^0x/) == 0)) ? toAddrList[k]
-                        :"<" + toAddrList[k] + ">");
+         encryptArgs.push("-r");
+         if (toAddrList[k].search(/^GROUP:/) == 0) {
+           // groups from gpg.conf file
+           encryptArgs.push(toAddrList[k].substr(6));
+         }
+         else {
+           encryptArgs.push((hushMailSupport || (toAddrList[k].search(/^0x/) == 0)) ? toAddrList[k]
+                          :"<" + toAddrList[k] + ">");
+         }
       }
     }
 
@@ -4563,6 +4569,41 @@ Enigmail.prototype.getKeyDetails = function (keyId, uidOnly) {
 
   return listText;
 }
+
+// returns the output of -with-colons --list-config
+Enigmail.prototype.getGnupgConfig =
+function  (exitCodeObj, errorMsgObj) {
+
+  var args = this.getAgentArgs(true);
+
+  args=args.concat(["--fixed-list-mode", "--with-colons", "--list-config"]);
+
+  if (!this.initialized) {
+    errorMsgObj.value = EnigGetString("notInit");
+    return "";
+  }
+
+  var statusMsgObj   = new Object();
+  var cmdErrorMsgObj = new Object();
+  var statusFlagsObj = new Object();
+
+  var listText = this.execCmd(this.agentPath, args, null, "",
+                    exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
+
+  if (exitCodeObj.value != 0) {
+    errorMsgObj.value = EnigGetString("badCommand");
+    if (cmdErrorMsgObj.value) {
+      errorMsgObj.value += "\n" + printCmdLine(this.agentPath, args);
+      errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
+    }
+
+    return "";
+  }
+
+  listText=listText.replace(/(\r\n|\r)/g, "\n");
+  return listText;
+}
+
 
 Enigmail.prototype.encryptAttachment =
 function (parent, fromMailAddr, toMailAddr, bccMailAddr, sendFlags, inFile, outFile,
