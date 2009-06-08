@@ -131,6 +131,21 @@ function enigGetUserList(secretOnly, refresh) {
       EnigAlert(errorMsgObj.value);
       return null;
     }
+    
+    if (! secretOnly) {
+      var configString = enigmailSvc.getGnupgConfig(exitCodeObj, errorMsgObj);
+      if (exitCodeObj.value != 0) {
+        EnigAlert(errorMsgObj.value);
+        return null;
+      }                                             
+      var configList = configString.split(/\n/);
+      for (var i=0; i<configList.length;i++) {
+        if (configList[i].indexOf("cfg:group") == 0) {
+          var groupArr=configList[i].split(/:/);
+          userList += "grp:"+groupArr[2]+":"+groupArr[3]+"\n";
+        }
+      }
+    }    
   } catch (ex) {
     ERROR_LOG("ERROR in enigmailUserSelection: enigGetUserList\n");
   }
@@ -252,6 +267,24 @@ function enigmailBuildList(refresh) {
          userObj.uidValid=true;
          userObj.subkeyOK=(listRow[KEY_USE_FOR].indexOf("e") >= 0 || secretOnly);
          userObj.SubUserIds=new Array();
+         aUserList.push(userObj);
+         break;
+       case "grp":
+         // groups
+         userObj = new Object();
+         userObj.expiry="";
+         userObj.created=1;
+         userObj.keyTrust="g";
+         userObj.valid=true;
+         userObj.uidValid=true;
+         userObj.subkeyOK=true;
+         userObj.userId=EnigConvertGpgToUnicode(listRow[1]).replace(/\\e3A/g, ":");
+         userObj.keyId=userObj.userId;
+         userObj.SubUserIds=new Array();
+         var grpMembers=EnigConvertGpgToUnicode(listRow[2]).replace(/\\e3A/g, ":").split(/[,;]/);
+         for (var grpIdx=0; grpIdx<grpMembers.length; grpIdx++) {
+           userObj.SubUserIds.push({ userId: grpMembers[grpIdx], trustLevel: "q" });
+         }
          aUserList.push(userObj);
          break;
        case "uid":
@@ -485,7 +518,8 @@ function enigUserSelCreateRow (userObj, activeState, userId, keyValue, dateField
   expCol.setAttribute("label", EnigGetDateTime(dateField,true, false));
 
   var keyCol=document.createElement("treecell");
-  keyCol.setAttribute("label", keyValue.substring(8,16));
+  if (userObj.keyTrust != "g") {
+    keyCol.setAttribute("label", keyValue.substring(8,16));
   keyCol.setAttribute("id", "keyid");
 
   var trust=EnigGetTrustLabel(trustStatus.charAt(0));
@@ -521,7 +555,12 @@ function enigUserSelCreateRow (userObj, activeState, userId, keyValue, dateField
   userRow.appendChild(expCol);
   userRow.appendChild(keyCol);
   var treeItem=document.createElement("treeitem");
-  treeItem.setAttribute("id", "0x"+userObj.keyId);
+  if (userObj.keyTrust == "g") {
+    treeItem.setAttribute("id", "GROUP:"+userObj.keyId);
+  }
+  else {
+    treeItem.setAttribute("id", "0x"+userObj.keyId);
+  }
   treeItem.appendChild(userRow);
   return treeItem;
 }
