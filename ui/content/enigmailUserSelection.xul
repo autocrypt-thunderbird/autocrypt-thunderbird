@@ -39,8 +39,8 @@
         hidecolumnpicker="false"
         seltype="single"
         style="height:350px"
-        onkeypress="enigmailUserSelCallback(event)"
-        onclick="enigmailUserSelCallback(event);">
+        onkeypress="enigmailUserSelCallback(event)">
+        <!-- onclick="enigmailUserSelCallback(event);" -->
 
         <treecols>
           <treecol id="selectionCol" style="width:19px"
