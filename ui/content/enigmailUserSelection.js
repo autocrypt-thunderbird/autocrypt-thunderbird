@@ -53,6 +53,7 @@ const KEY_REVOKED="r";
 const KEY_INVALID="i";
 const KEY_DISABLED="d";
 const KEY_NOT_VALID=KEY_EXPIRED+KEY_REVOKED+KEY_INVALID+KEY_DISABLED;
+const KEY_IS_GROUP="g";
 
 // HKP related stuff
 const ENIG_DEFAULT_HKP_PORT="11371";
@@ -274,7 +275,7 @@ function enigmailBuildList(refresh) {
          userObj = new Object();
          userObj.expiry="";
          userObj.created=1;
-         userObj.keyTrust="g";
+         userObj.keyTrust=KEY_IS_GROUP;
          userObj.valid=true;
          userObj.uidValid=true;
          userObj.subkeyOK=true;
@@ -367,37 +368,52 @@ function enigmailBuildList(refresh) {
       // find and activate keys
       for (i=0; i<aUserList.length; i++) {
         aUserList[i].activeState = (gAllowExpired ? 0 : 2);
-        if (((!aUserList[i].keyTrust) ||
-              KEY_NOT_VALID.indexOf(aUserList[i].keyTrust)<0) &&
-              aUserList[i].subkeyOK &&
-              ((!aUserList[i].expiry>0) ||
-              (aUserList[i].expiry >= now))) {
-            // key still valid
-            try {
-              mailAddr = EnigStripEmail(aUserList[i].userId).toLowerCase();
-            }
-            catch (ex) {
-              mailAddr = EnigStripEmail(aUserList[i].userId.replace(/\"/g,"")).toLowerCase();
-            }
-            aUserList[i].valid=true;
-            escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
-            s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
-            s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
-            if ((mailAddr != EMPTY_UID) && (invalidAddr.indexOf(" "+mailAddr+" ")<0)) {
-              aValidUsers.push(mailAddr);
-              aUserList[i].activeState =(toAddr.search(s1)>=0 || toAddr.search(s2)>=0) ? 1 : 0;
-            }
-            else {
-              aUserList[i].uidValid = false;
-              aUserList[i].activeState = 0;
-            }
-            if (aUserList[i].activeState==0 && toKeys.length>0) {
-              aUserList[i].activeState=(toKeys.indexOf("0x"+aUserList[i].keyId)>=0 ? 1 : 0)
-            }
+        if (aUserList[i].keyTrust != KEY_IS_GROUP) {
+          // handling of "normal" keys
+          if (((!aUserList[i].keyTrust) ||
+                KEY_NOT_VALID.indexOf(aUserList[i].keyTrust)<0) &&
+                aUserList[i].subkeyOK &&
+                ((!aUserList[i].expiry>0) ||
+                (aUserList[i].expiry >= now))) {
+              // key still valid
+              try {
+                mailAddr = EnigStripEmail(aUserList[i].userId).toLowerCase();
+              }
+              catch (ex) {
+                mailAddr = EnigStripEmail(aUserList[i].userId.replace(/\"/g,"")).toLowerCase();
+              }
+              aUserList[i].valid=true;
+              escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
+              s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
+              s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
+              if ((mailAddr != EMPTY_UID) && (invalidAddr.indexOf(" "+mailAddr+" ")<0)) {
+                aValidUsers.push(mailAddr);
+                aUserList[i].activeState =(toAddr.search(s1)>=0 || toAddr.search(s2)>=0) ? 1 : 0;
+              }
+              else {
+                aUserList[i].uidValid = false;
+                aUserList[i].activeState = 0;
+              }
+              if (aUserList[i].activeState==0 && toKeys.length>0) {
+                aUserList[i].activeState=(toKeys.indexOf("0x"+aUserList[i].keyId)>=0 ? 1 : 0)
+              }
+          }
         }
-
+        else {
+          // special handling for gpg groups
+          mailAddr = EnigStripEmail(aUserList[i].userId).toLowerCase();
+          aValidUsers.push(mailAddr);
+          aUserList[i].valid = true;
+          aUserList[i].uidValid = true;
+          if (toKeys.length > 0) {
+            aUserList[i].activeState=(toKeys.indexOf("GROUP:"+aUserList[i].keyId+",")>=0 ? 1 : 0)
+          }
+          else
+            aUserList[i].activeState = 0;
+        }
+        
         if (! hideExpired || aUserList[i].activeState < 2) {
-          if (aUserList[i].SubUserIds.length) {
+          if ((aUserList[i].keyTrust != KEY_IS_GROUP) && aUserList[i].SubUserIds.length) {
             for (var user=0; user<aUserList[i].SubUserIds.length; user++) {
               if (KEY_NOT_VALID.indexOf(aUserList[i].SubUserIds[user].trustLevel)<0) {
                 if (aUserList[i].activeState < 2 || gAllowExpired) {
@@ -444,7 +460,6 @@ function enigmailBuildList(refresh) {
           treeItem=enigUserSelCreateRow(aUserList[i], aUserList[i].activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].created, "", true)
         }
         else {
-
           treeItem=enigUserSelCreateRow(aUserList[i], aUserList[i].activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry, aUserList[i].keyTrust, aUserList[i].uidValid)
         }
         if (aUserList[i].SubUserIds.length) {
@@ -518,8 +533,11 @@ function enigUserSelCreateRow (userObj, activeState, userId, keyValue, dateField
   expCol.setAttribute("label", EnigGetDateTime(dateField,true, false));
 
   var keyCol=document.createElement("treecell");
-  if (userObj.keyTrust != "g") {
+  if (userObj.keyTrust != KEY_IS_GROUP) {
     keyCol.setAttribute("label", keyValue.substring(8,16));
+  }
+  else
+    keyCol.setAttribute("label", EnigGetString("keyTrust.group"));
   keyCol.setAttribute("id", "keyid");
 
   var trust=EnigGetTrustLabel(trustStatus.charAt(0));
@@ -555,7 +573,7 @@ function enigUserSelCreateRow (userObj, activeState, userId, keyValue, dateField
   userRow.appendChild(expCol);
   userRow.appendChild(keyCol);
   var treeItem=document.createElement("treeitem");
-  if (userObj.keyTrust == "g") {
+  if (userObj.keyTrust == KEY_IS_GROUP) {
     treeItem.setAttribute("id", "GROUP:"+userObj.keyId);
   }
   else {

@@ -1957,9 +1957,6 @@ function EnigGetTrustLabel(trustCode) {
   case 'd':
     keyTrust=EnigGetString("keyValid.disabled");
     break;
-  case 'g':
-    keyTrust=EnigGetString("keyValid.group");
-    break;
   case 'r':
     keyTrust=EnigGetString("keyValid.revoked");
     break;
