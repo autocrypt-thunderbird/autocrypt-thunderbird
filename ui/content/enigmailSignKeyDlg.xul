@@ -46,11 +46,13 @@
         title="&enigmail.sKeyDlg.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="onLoad();"
+        buttons="accept,cancel"
         ondialogaccept="onAccept();">
 
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailSignKeyDlg.js"/>
+  
   <vbox orient="vertical">
     <grid>
       <columns>
@@ -101,157 +103,12 @@
             label="&enigmail.sKeyDlg.createLocal.label;"/>
     </vbox>
   </vbox>
-  <vbox align="end">
+  <!-- vbox align="end">
     <hbox>
       <button id="acceptButton" dlgtype="accept"/>
       <button dlgtype="cancel"/>
     </hbox>
-  </vbox>
-
-  <script type="application/x-javascript">
-  <![CDATA[
-    EnigInitCommon("enigmailSignKeyDlg");
-
-    var gEnigSigList = null;
-    function onLoad() {
-      window.arguments[1].refresh = false;
-      var enigmailSvc = GetEnigmailSvc();
-      if (!enigmailSvc) {
-        EnigAlert(EnigGetString("accessError"));
-        window.close();
-        return;
-      }
-      var exitCodeObj = new Object();
-      var statusFlagsObj = new Object();
-      var errorMsgObj = new Object();
-      var keyList=enigmailSvc.getUserIdList(true, false, exitCodeObj, statusFlagsObj, errorMsgObj);
-
-      if (exitCodeObj.value != 0) {
-        EnigAlert(errorMsgObj.value);
-        window.close();
-        return;
-      }
-
-      var userList=keyList.split(/\n/);
-
-      var menulist=document.getElementById("signWithKey");
-      var keyId = null;
-      var keys = [];
-      for (var i=0; i < userList.length; i++) {
-        switch(userList[i].substr(0,4)){
-        case "sec:":
-          keyId = userList[i].split(/:/)[4];
-          break;
-        case "uid:":
-          if (keyId == null) {
-            break;
-           }
-          try {
-            // try to get the calculated trust
-            var calculatedTrust = enigmailSvc.getKeyDetails(keyId, false).split(/\r?\n/)[1].split(':')[1];
-            if (calculatedTrust != 'u') {
-              // do not offer signing with keys that do not have ultimate calculated trust
-              break;
-            }
-          }
-          catch (ex) {
-            // cannot get validity... no-op?
-          }
-          keys.push({name: EnigConvertGpgToUnicode(userList[i].split(/:/)[9]).replace(/\\e3A/g, ":") + " - 0x"+keyId.substr(-8,8), id: keyId});
-          keyId = null;
-          break;
-        }
-      }
-      keys.sort(function(a,b) { return a.name == b.name ? (a.id < b.id ? -1 : 1) : (a.name < b.name ? -1 : 1); });
-      for each (key in keys) {
-        menulist.appendItem(key.name, key.id);
-      }
-      if (menulist.selectedIndex == -1) {
-        menulist.selectedIndex = 0;
-      }
-
-      // determine keys that have already signed the key
-      try {
-        gEnigSigList = [];
-        var fingerprint = "";
-        var sigListStr = enigmailSvc.getKeySig("0x"+window.arguments[0].keyId, exitCodeObj, errorMsgObj);
-        if (exitCodeObj.value == 0) {
-          var sigList = sigListStr.split(/[\n\r]+/);
-          var currKey = null;
-          for (i=0; i < sigList.length; i++) {
-            var aLine=sigList[i].split(/:/);
-            switch (aLine[0]) {
-            case "uid":
-              if (typeof(currKey) != "string") currKey = aLine[4];
-              break;
-            case "sig":
-              gEnigSigList[aLine[4]] = 1;
-              break;
-            case "fpr":
-              DEBUG_LOG("fpr:"+currKey+" -> "+aLine[9]+"\n");
-              fingerprint = aLine[9];
-              break;
-            }
-          }
-        }
-        enigKeySelCb();
-      } catch (ex) {}
-
-      var keyDesc = window.arguments[0].userId+" - 0x"+ window.arguments[0].keyId.substr(-8,8);
-      document.getElementById("keyId").value=keyDesc;
-      if (fingerprint) {
-        var fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
-        if (fpr && fpr.length > 2) {
-          fpr.shift();
-          document.getElementById("fingerprint").value=fpr.join(" ");
-        }
-      }
-    }
-
-    function onAccept() {
-      var trustLevel = document.getElementById("trustLevel");
-      var localSig = document.getElementById("localSig");
-      var signWithKey = document.getElementById("signWithKey");
-
-      var enigmailSvc = GetEnigmailSvc();
-      if (!enigmailSvc) {
-        EnigAlert(EnigGetString("accessError"));
-        return;
-      }
-
-      var errorMsgObj = new Object();
-
-      var r = enigmailSvc.signKey(window,
-                                "0x"+signWithKey.selectedItem.value,
-                                window.arguments[0].keyId,
-                                localSig.checked,
-                                trustLevel.selectedItem.value,
-                                errorMsgObj);
-
-      if (r != 0) {
-        EnigAlert(EnigGetString("signKeyFailed")+"\n\n"+errorMsgObj.value);
-        return;
-      }
-      else {
-        window.arguments[1].refresh = true;
-      }
-    }
-
-    function enigKeySelCb() {
-      var signWithKey = document.getElementById("signWithKey");
-      var alreadySigned = document.getElementById("alreadySigned");
-      var acceptButton = document.getElementById("acceptButton");
-      if (gEnigSigList[signWithKey.selectedItem.value]) {
-        alreadySigned.removeAttribute("collapsed");
-        acceptButton.disabled = true;
-      }
-      else {
-        alreadySigned.setAttribute("collapsed", "true");
-        acceptButton.disabled = false;
-      }
-    }
-  ]]>
-  </script>
+  </vbox -->
 
 </dialog>
 
