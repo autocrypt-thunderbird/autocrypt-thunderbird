@@ -77,7 +77,7 @@
         </row>
         <row>
           <label value=" "/>
-          <label id="alreadySigned" value="&enigmail.sKeyDlg.alreadySigned.label;" collapsed="true"/>
+          <label id="alreadySigned" value="" collapsed="true"/>
         </row>
       </rows>
     </grid>

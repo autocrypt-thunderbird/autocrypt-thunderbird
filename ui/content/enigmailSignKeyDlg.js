@@ -56,36 +56,39 @@ function onLoad() {
   }
 
   var userList=keyList.split(/\n/);
-
+  var secretKeyList = new Array();
+  var i;
+  var keyId = null;
+  
   var menulist=document.getElementById("signWithKey");
   var keyId = null;
   var keys = [];
-  for (var i=0; i < userList.length; i++) {
-    switch(userList[i].substr(0,4)){
-    case "sec:":
+  for (i=0; i < userList.length; i++) {
+    if (userList[i].substr(0,4) == "sec:") {
       keyId = userList[i].split(/:/)[4];
-      break;
-    case "uid:":
-      if (keyId == null) {
-        break;
-       }
-      try {
-        // try to get the calculated trust
-        var calculatedTrust = enigmailSvc.getKeyDetails(keyId, false).split(/\r?\n/)[1].split(':')[1];
-        if (calculatedTrust != 'u') {
-          // do not offer signing with keys that do not have ultimate calculated trust
-          break;
-        }
-      }
-      catch (ex) {
-        // cannot get validity... no-op?
-      }
-      keys.push({name: EnigConvertGpgToUnicode(userList[i].split(/:/)[9]).replace(/\\e3A/g, ":") + " - 0x"+keyId.substr(-8,8), id: keyId});
-      keyId = null;
-      break;
+      secretKeyList.push(keyId);
     }
   }
-  keys.sort(function(a,b) { return a.name == b.name ? (a.id < b.id ? -1 : 1) : (a.name < b.name ? -1 : 1); });
+
+  keyList = enigmailSvc.getKeyDetails(secretKeyList.join(" "), false);
+  userList=keyList.split(/\n/);
+  
+  for (var i=0; i < userList.length; i++) {
+    var aLine = userList[i].split(/:/);
+    switch (aLine[0]) {
+    case "pub":
+      if (aLine[1] == "u") keyId = aLine[4]; // public key is ultimately trusted
+      break;
+    case "uid":
+      if ((keyId != null) && (aLine[1] == 'u')) {
+        // UID is valid and ultimately trusted
+        keys.push({name: EnigConvertGpgToUnicode(aLine[9]).replace(/\\e3A/g, ":") + " - 0x"+keyId.substr(-8,8), id: keyId});
+        keyId = null;
+      }
+    }
+  }
+
+  keys.sort(function(a,b) { return a.name == b.name ? (a.id < b.id ? -1 : 1) : (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1); });
   for each (key in keys) {
     menulist.appendItem(key.name, key.id);
   }
@@ -165,6 +168,7 @@ function enigKeySelCb() {
   var alreadySigned = document.getElementById("alreadySigned");
   var acceptButton = document.getElementById("enigmailSignKeyDlg").getButton("accept");
   if (gSignatureList[signWithKey.selectedItem.value]) {
+    alreadySigned.setAttribute("value", EnigGetString("alreadySigned.label", "0x"+ window.arguments[0].keyId.substr(-8,8)));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = true;
   }
