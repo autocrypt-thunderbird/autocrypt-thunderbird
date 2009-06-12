@@ -4502,7 +4502,7 @@ function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
   return this.userIdList;
 }
 
-// returns the output of -with-colons --list-sig
+// returns the output of --with-colons --list-sig
 Enigmail.prototype.getKeySig =
 function  (keyId, exitCodeObj, errorMsgObj) {
 
@@ -4535,8 +4535,6 @@ function  (keyId, exitCodeObj, errorMsgObj) {
   return listText;
 }
 
-// get key details.
-// if uidOnly is true, returns just a list of uid's
 Enigmail.prototype.getKeyDetails = function (keyId, uidOnly) {
   var args = this.getAgentArgs(true);
   var keyIdList = keyId.split(" ");
@@ -4557,11 +4555,21 @@ Enigmail.prototype.getKeyDetails = function (keyId, uidOnly) {
 
   if (uidOnly) {
     var userList="";
+    var hideInvalidUid=true;
     var keyArr=listText.split(/\n/);
     for (var i=0; i<keyArr.length; i++) {
       switch (keyArr[i].substr(0,4)) {
-      case "uid:" :
-        userList += keyArr[i].split(/:/)[9] + "\n";
+      case "pub:":
+        if ("idre".indexOf(keyArr[i].split(/:/)[1]) >= 0) {
+          // pub key not valid (anymore)-> display all UID's
+          hideInvalidUid = false;
+        }
+      case "uid:":
+        var theLine=keyArr[i].split(/:/);
+        if (("idre".indexOf(theLine[1]) < 0) || (! hideInvalidUid)) {
+          // UID valid or key not valid
+          userList += theLine[9] + "\n";
+        }
       }
     }
     return userList;
@@ -4570,7 +4578,7 @@ Enigmail.prototype.getKeyDetails = function (keyId, uidOnly) {
   return listText;
 }
 
-// returns the output of -with-colons --list-config
+// returns the output of --with-colons --list-config
 Enigmail.prototype.getGnupgConfig =
 function  (exitCodeObj, errorMsgObj) {
 
@@ -5465,7 +5473,7 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
                                  true, statusFlags);
   if (! pipeTrans) return -1;
 
-  if (this.requirePassword()) {
+  if (needPassphrase && this.requirePassword()) {
     try {
       pipeTrans.writeSync(passphrase, passphrase.length);
       pipeTrans.writeSync("\n", 1);

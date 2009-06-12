@@ -55,8 +55,14 @@
   <![CDATA[
 
     function onLoad() {
+      var userIdList=window.arguments[0].userId.split(/\r?\n/);
+      var uid = document.getElementById("uidContainer");
       document.getElementById("photoImage").setAttribute("src", window.arguments[0].photoUri);
-      document.getElementById("userId").setAttribute("value", EnigGetString("photoFor", window.arguments[0].userId));
+      for (var i=0; i< userIdList.length; i++) {
+        var l=document.createElement("label");
+        l.setAttribute("value", userIdList[i]);
+        uid.appendChild(l);
+      }
       document.getElementById("keyId").setAttribute("value", EnigGetString("keyId")+": 0x"+window.arguments[0].keyId);
       window.setTimeout(resizeDlg, 0);
     }
@@ -67,8 +73,8 @@
   ]]>
   </script>
 
-  <vbox autostretch="always">
-    <label id="userId"/>
+  <vbox>
+    <vbox autostretch="always" id="uidContainer"/>
     <label id="keyId"/>
   </vbox>
   <vbox align="center">
