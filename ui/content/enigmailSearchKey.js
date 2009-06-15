@@ -432,6 +432,7 @@ function enigScanHtmlKeys (txt) {
 
 function enigScanGpgKeys(txt) {
   DEBUG_LOG("enigmailSearchKey.js: enigScanGpgKeys\n");
+  DEBUG_LOG("got text: "+txt+"\n");
   
   var lines=txt.split(/(\r\n|\n|\r)/);
   var outputType=0;
@@ -580,29 +581,32 @@ function enigGpgkeysCloseRequest() {
 }
 
 function enigmailGpgkeysTerminate(terminateArg, ipcRequest) {
-   DEBUG_LOG("enigmailSearchkey.js: Terminate: "+ipcRequest+"\n");
+  DEBUG_LOG("enigmailSearchkey.js: Terminate: "+ipcRequest+"\n");
 
-   var gpgkeysRequest = window.enigRequest.gpgkeysRequest;
-   var gpgkeysProcess = gpgkeysRequest.pipeTransport;
-   var enigmailSvc = GetEnigmailSvc();
-   if (gpgkeysProcess && !gpgkeysProcess.isAttached()) {
-     gpgkeysProcess.terminate();
-     var exitCode = gpgkeysProcess.exitCode();
-     DEBUG_LOG("enigmailGpgkeysConsole: exitCode = "+exitCode+"\n");
-     if (enigmailSvc) {
-        exitCode = enigmailSvc.fixExitCode(exitCode, 0);
-     }
-   }
+  var gpgkeysRequest = window.enigRequest.gpgkeysRequest;
+  var gpgkeysProcess = gpgkeysRequest.pipeTransport;
+  var enigmailSvc = GetEnigmailSvc();
 
   var console = gpgkeysRequest.stdoutConsole;
 
   try {
-    console = console.QueryInterface(Components.interfaces.nsIPipeConsole);
     var txt = null;
     var errorTxt = null;
 
+    try {
+      console = console.QueryInterface(Components.interfaces.nsIPipeConsole);
+      console.join();
+    }    
+    catch (ex) {
+      ERROR_LOG("enigmailSearchkey.js: Terminate(): cannot join stdout\n");
+    }
+    
     if (console && console.hasNewData()) {
       DEBUG_LOG("enigmailSearchkey.js: Terminate(): stdout.hasNewData\n");
+      txt = console.getData();
+    }
+    else {
+      DEBUG_LOG("enigmailSearchkey.js: Terminate(): stdout - no data??\n");
       txt = console.getData();
     }
     console = gpgkeysRequest.stderrConsole;
@@ -610,8 +614,18 @@ function enigmailGpgkeysTerminate(terminateArg, ipcRequest) {
     if (console && console.hasNewData()) {
       DEBUG_LOG("enigmailSearchkey.js: Terminate(): stderr.hasNewData\n");
       errorTxt = console.getData();
+      CONSOLE_LOG(errorTxt+"\n");
     }
-//    gpgkeysProcess.close(true);
+
+    if (gpgkeysProcess && !gpgkeysProcess.isAttached()) {
+      gpgkeysProcess.terminate();
+      var exitCode = gpgkeysProcess.exitCode();
+      DEBUG_LOG("enigmailGpgkeysConsole: exitCode = "+exitCode+"\n");
+      if (enigmailSvc) {
+        exitCode = enigmailSvc.fixExitCode(exitCode, 0);
+      }
+    }
+
     enigGpgkeysCloseRequest();
 
     if (txt) {

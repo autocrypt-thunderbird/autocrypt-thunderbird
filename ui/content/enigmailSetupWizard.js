@@ -210,61 +210,30 @@ function loadKeys() {
   var exitCodeObj = {};
   var statusFlagsObj = {};
   var errorMsgObj = {};
-  var keyList = enigmailSvc.getUserIdList(true, true, exitCodeObj, statusFlagsObj, errorMsgObj);
-  if (exitCodeObj.value != 0) {
-    EnigAlert(errorMsgObj.value);
+  var keyList = EnigGetSecretKeys();
+  if (keyList == null) {
     return false;
   }
 
-  if (keyList.search(/^sec:/m) < 0) {
+  if (keyList.length ==0) {
     setNextPage("pgKeyCreate");
     return true;
   }
 
-  var uidList = [];
-  var uidObj = {};
-  var keyArr = keyList.split(/[\r\n]/);
-  var now = Number(new Date())/1000;
-  for (var i=0; i<keyArr.length; i++) {
-    var l = keyArr[i].split(/:/);
-    switch(l[0]) {
-    case "sec":
-      if ((l[6]=="") || (l[6] > now)) {
-        uidObj = {
-          keyId: l[4],
-          uid: "",
-          created: EnigGetDateTime(l[5], true, false)
-        };
-        uidList.push(uidObj);
-      }
-      else {
-        uidObj = {
-          keyId: "-",
-          uid: ""
-        }
-      }
-      break;
-    case "uid":
-      if ((uidObj.keyId !="-") && (uidObj.uid == "")) {
-        uidObj.uid = EnigConvertGpgToUnicode(l[9]).replace(/\\e3A/g, ":");
-      }
-      break;
-    }
-  }
 
   var uidChildren = document.getElementById("uidSelectionChildren")
-  for (i=0; i<uidList.length; i++) {
+  for (i=0; i < keyList.length; i++) {
     var item = uidChildren.appendChild( document.createElement('treeitem') );
-    item.setAttribute("keyId", uidList[i].keyId);
+    item.setAttribute("keyId", keyList[i].id);
     var row = item.appendChild(document.createElement('treerow'));
     var cell = row.appendChild( document.createElement('treecell') )
-    cell.setAttribute('label', uidList[i].uid);
+    cell.setAttribute('label', keyList[i].name);
     cell.setAttribute('observes', "bcKeyEnabled");
     cell = row.appendChild( document.createElement('treecell') );
-    cell.setAttribute('label', "0x"+uidList[i].keyId.substr(-8,8));
+    cell.setAttribute('label', "0x"+keyList[i].id.substr(-8,8));
     cell.setAttribute('observes', "bcKeyEnabled");
     cell = row.appendChild( document.createElement('treecell') );
-    cell.setAttribute('label', uidList[i].created);
+    cell.setAttribute('label', keyList[i].created);
     cell.setAttribute('observes', "bcKeyEnabled");
   }
   onKeySelected();

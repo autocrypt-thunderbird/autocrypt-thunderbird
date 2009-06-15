@@ -35,62 +35,22 @@
 
 EnigInitCommon("enigmailSignKeyDlg");
 
+
 var gSignatureList = null;
 function onLoad() {
   window.arguments[1].refresh = false;
+  
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {
     EnigAlert(EnigGetString("accessError"));
     window.close();
     return;
   }
-  var exitCodeObj = new Object();
-  var statusFlagsObj = new Object();
-  var errorMsgObj = new Object();
-  var keyList=enigmailSvc.getUserIdList(true, false, exitCodeObj, statusFlagsObj, errorMsgObj);
-
-  if (exitCodeObj.value != 0) {
-    EnigAlert(errorMsgObj.value);
-    window.close();
-    return;
-  }
-
-  var userList=keyList.split(/\n/);
-  var secretKeyList = new Array();
-  var i;
-  var keyId = null;
-  
+  var keys = EnigGetSecretKeys();
   var menulist=document.getElementById("signWithKey");
-  var keyId = null;
-  var keys = [];
-  for (i=0; i < userList.length; i++) {
-    if (userList[i].substr(0,4) == "sec:") {
-      keyId = userList[i].split(/:/)[4];
-      secretKeyList.push(keyId);
-    }
-  }
 
-  keyList = enigmailSvc.getKeyDetails(secretKeyList.join(" "), false);
-  userList=keyList.split(/\n/);
-  
-  for (var i=0; i < userList.length; i++) {
-    var aLine = userList[i].split(/:/);
-    switch (aLine[0]) {
-    case "pub":
-      if (aLine[1] == "u") keyId = aLine[4]; // public key is ultimately trusted
-      break;
-    case "uid":
-      if ((keyId != null) && (aLine[1] == 'u')) {
-        // UID is valid and ultimately trusted
-        keys.push({name: EnigConvertGpgToUnicode(aLine[9]).replace(/\\e3A/g, ":") + " - 0x"+keyId.substr(-8,8), id: keyId});
-        keyId = null;
-      }
-    }
-  }
-
-  keys.sort(function(a,b) { return a.name == b.name ? (a.id < b.id ? -1 : 1) : (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1); });
   for each (key in keys) {
-    menulist.appendItem(key.name, key.id);
+    menulist.appendItem(key.name + " - 0x"+key.id.substr(-8,8), key.id);
   }
   if (menulist.selectedIndex == -1) {
     menulist.selectedIndex = 0;
@@ -98,6 +58,8 @@ function onLoad() {
 
   // determine keys that have already signed the key
   try {
+    var exitCodeObj = new Object();
+    var errorMsgObj = new Object();
     gSignatureList = new Array();
     var fingerprint = "";
     var sigListStr = enigmailSvc.getKeySig("0x"+window.arguments[0].keyId, exitCodeObj, errorMsgObj);
