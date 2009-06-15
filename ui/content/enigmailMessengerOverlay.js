@@ -45,7 +45,7 @@ var gEnigLastSaveDir = "";
 
 var gEnigMessagePane = null;
 var gEnigNoShowReload = false;
-var gEnigLastEncryptedURI = null;
+var gEnigLastEncryptedMsgKey = null;
 var gEnigDecryptButton = null;
 var gEnigIpcRequest = null;
 
@@ -434,10 +434,10 @@ function enigToggleMessagePane() {
 
 function enigGetCurrentMsgUriSpec() {
   try {
-    if (GetNumSelectedMessages() != 1)
+    if (gFolderDisplay.selectedMessages.length != 1)
       return "";
 
-    var uriSpec = GetFirstSelectedMessage();
+    var uriSpec = gFolderDisplay.selectedMessageUris[0];
     //DEBUG_LOG("enigmailMessengerOverlay.js: enigGetCurrentMsgUrl: uriSpec="+uriSpec+"\n");
 
     return uriSpec;

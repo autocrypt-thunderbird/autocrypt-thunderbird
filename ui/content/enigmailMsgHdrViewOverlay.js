@@ -106,7 +106,7 @@ function enigStartHeaders()
       msgFrame.addEventListener("load", enigMessageAutoDecrypt, false);
     }
 
-    enigForgetEncryptedURI();
+    enigForgetEncryptedMsgKey();
 
     if (messageHeaderSink) {
       try {
@@ -141,12 +141,13 @@ function enigBeforeStartHeaders() {
 
 // Match the userId from gpg to the sender's from address
 function enigMatchUidToSender(userId) {
-  var fromAddr = currentHeaderData["from"].headerValue;
+  var fromAddr = gFolderDisplay.selectedMessage.author;
   try {
     fromAddr=EnigStripEmail(fromAddr);
   }
   catch(ex) {}
 
+  userId = userId.replace(/\n+/, "").replace(/\n+$/, "").replace(/\n\n+/, "\n");
   var userIdList=userId.split(/\n/);
   try {
     for (var i=0; i<userIdList.length; i++) {
@@ -166,7 +167,7 @@ function enigMatchUidToSender(userId) {
 function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation) {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateHdrIcons: exitCode="+exitCode+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+errorMsg+"\n");
 
-  gEnigLastEncryptedURI = GetLoadedMessage();
+  gEnigLastEncryptedMsgKey = gFolderDisplay.selectedMessage.folder.URI+"@"+gFolderDisplay.selectedMessage.messageKey;
   var bodyElement = document.getElementById("messagepanebox");
 
   if (!errorMsg) errorMsg="";
@@ -471,7 +472,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
       var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
       if (enigMimeService)
       {
-        enigMimeService.rememberEncrypted(gEnigLastEncryptedURI);
+        enigMimeService.rememberEncrypted(gEnigLastEncryptedMsgKey);
       }
 
       // Display encrypted icon
@@ -588,7 +589,7 @@ function enigMessageUnload() {
 
 function enigHdrViewUnload() {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigHdrViewUnLoad\n");
-  enigForgetEncryptedURI();
+  enigForgetEncryptedMsgKey();
 }
 
 function enigCopyStatusInfo() {
@@ -614,14 +615,14 @@ function enigCreateRuleFromAddress(emailAddressNode) {
   }
 }
 
-function enigForgetEncryptedURI()
+function enigForgetEncryptedMsgKey()
 {
-  if (gEnigLastEncryptedURI)
+  if (gEnigLastEncryptedMsgKey)
   {
     var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
     if (enigMimeService) {
-      enigMimeService.forgetEncrypted(gEnigLastEncryptedURI);
-      gEnigLastEncryptedURI = null;
+      enigMimeService.forgetEncrypted(gEnigLastEncryptedMsgKey);
+      gEnigLastEncryptedMsgKey = null;
     }
   }
 }
@@ -762,14 +763,14 @@ addEventListener('messagepane-unhide', enigMsgHdrViewUnhide, true);
 
 function CanDetachAttachments()
 {
-  var uri = GetLoadedMessage();
-  var canDetach = !IsNewsMessage(uri) && (!IsImapMessage(uri) || MailOfflineMgr.isOnline());
+  var canDetach = !gFolderDisplay.selectedMessageIsNews &&
+                  (!gFolderDisplay.selectedMessageIsImap || MailOfflineMgr.isOnline());
 
   if (canDetach && ("content-type" in currentHeaderData))
   {
     var contentType = currentHeaderData["content-type"].headerValue;
-    canDetach = contentType.indexOf("application/x-pkcs7-mime") < 0 &&
-        contentType.indexOf("application/x-pkcs7-signature") < 0;
+    
+    canDetach = !ContentTypeIsSMIME(currentHeaderData["content-type"].headerValue);
   }
   return canDetach && enigCanDetachAttachments();
 }
