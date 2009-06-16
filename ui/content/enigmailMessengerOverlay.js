@@ -115,10 +115,6 @@ function enigMessengerStartup() {
 
   // Override print command
   var printElementIds = ["cmd_print", "cmd_printpreview", "key_print", "button-print",
-                         // TB <= 2.0
-                         "threadPaneContext-print", "threadPaneContext-printpreview",
-                         "messagePaneContext-print", "messagePaneContext-printpreview",
-                         // TB >= 3.0
                          "mailContext-print", "mailContext-printpreview"];
 
   EnigOverrideAttribute( printElementIds, "oncommand",
@@ -267,13 +263,7 @@ function enigMessageReload(noShowReload) {
 
   gEnigNoShowReload = noShowReload;
 
-  if (typeof(MsgReload) == "function") {
-    // <= TB 2.0
-    MsgReload();
-  }
-  else {
-    ReloadMessage();
-  }
+  ReloadMessage();
 }
 
 function enigmailReloadCompleteMsg() {
@@ -1166,25 +1156,17 @@ function enigGetDecryptedMessage(contentType, includeHeaders) {
 
     if (includeHeaders) {
       try {
-        var uriSpec = enigGetCurrentMsgUriSpec();
 
-        if (uriSpec) {
-          var msgService = messenger.messageServiceFromURI(uriSpec);
-
-          var urlObj = new Object();
-          msgService.GetUrlForUri(uriSpec, urlObj, msgWindow);
-          var msgData, msgHdr
-
-          var msgDbHdr = messenger.msgHdrFromURI(uriSpec);
-          msgHdr = { "From": msgDbHdr.author,
-                     "Subject": msgDbHdr.subject,
-                     "To": msgDbHdr.recipients,
-                     "Cc": msgDbHdr.ccList,
-                     "Date": EnigGetDateTime(msgDbHdr.dateInSeconds, true, true) };
+        var msg = gFolderDisplay.selectedMessage;
+        if (msg) {
+          msgHdr = { "From": msg.author,
+                     "Subject": msg.subject,
+                     "To": msg.recipients,
+                     "Cc": msg.ccList,
+                     "Date": EnigGetDateTime(msg.dateInSeconds, true, true) };
 
 
-          if(urlObj.value.scheme=="news") {
-            msgData = urlObj.value.QueryInterface(Components.interfaces.nsINntpUrl);
+          if(gFolderDisplay.selectedMessageIsNews) {
             if (typeof (currentHeaderData.newsgroups)) {
               msgHdr.Newsgroups = currentHeaderData.newsgroups.headerValue;
             }
@@ -1325,28 +1307,12 @@ function enigMsgPrint(elementId) {
 
   var printPreview = (elementId.indexOf("printpreview")>=0);
 
-  try {
-    // TB <= 2.0
-    if (gPrintSettings == null) {
-      gPrintSettings = PrintUtils.getPrintSettings();
-    }
-    
-    window.openDialog("chrome://messenger/content/msgPrintEngine.xul",
-                      "",
-                      "chrome,dialog=no,all,centerscreen",
-                      1, messageList, statusFeedback, gPrintSettings,
-                      printPreview, Components.interfaces.nsIMsgPrintEngine.MNAB_PRINTPREVIEW_MSG,
-                      window);
-  }
-  catch (ex) {
-    // TB >= 3.0
-    window.openDialog("chrome://messenger/content/msgPrintEngine.xul",
-                      "",
-                      "chrome,dialog=no,all,centerscreen",
-                      1, messageList, statusFeedback,
-                      printPreview, Components.interfaces.nsIMsgPrintEngine.MNAB_PRINTPREVIEW_MSG,
-                      window);
-  }
+  window.openDialog("chrome://messenger/content/msgPrintEngine.xul",
+                    "",
+                    "chrome,dialog=no,all,centerscreen",
+                    1, messageList, statusFeedback,
+                    printPreview, Components.interfaces.nsIMsgPrintEngine.MNAB_PRINTPREVIEW_MSG,
+                    window);
   
   return true;
 

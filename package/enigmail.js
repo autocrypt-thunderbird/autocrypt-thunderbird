@@ -4572,7 +4572,7 @@ Enigmail.prototype.getKeyDetails = function (keyId, uidOnly) {
         }
       }
     }
-    return userList;
+    return userList.replace(/^\n+/, "").replace(/\n+$/, "").replace(/\n\n+/g, "\n");
   }
 
   return listText;

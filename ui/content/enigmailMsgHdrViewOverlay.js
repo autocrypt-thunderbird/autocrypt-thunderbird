@@ -147,7 +147,6 @@ function enigMatchUidToSender(userId) {
   }
   catch(ex) {}
 
-  userId = userId.replace(/\n+/, "").replace(/\n+$/, "").replace(/\n\n+/, "\n");
   var userIdList=userId.split(/\n/);
   try {
     for (var i=0; i<userIdList.length; i++) {
@@ -167,7 +166,9 @@ function enigMatchUidToSender(userId) {
 function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation) {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateHdrIcons: exitCode="+exitCode+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+errorMsg+"\n");
 
-  gEnigLastEncryptedMsgKey = gFolderDisplay.selectedMessage.folder.URI+"@"+gFolderDisplay.selectedMessage.messageKey;
+  if (gFolderDisplay.selectedMessageUris.length > 0) {
+    gEnigLastEncryptedMsgKey = gFolderDisplay.selectedMessageUris[0];
+  }
   var bodyElement = document.getElementById("messagepanebox");
 
   if (!errorMsg) errorMsg="";

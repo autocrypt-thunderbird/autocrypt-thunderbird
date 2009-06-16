@@ -722,16 +722,9 @@ function enigmailKeySelCallback(event) {
 
   var treeItem = Tree.contentView.getItemAtIndex(row.value);
   Tree.currentItem=treeItem;
-  if (typeof(col.value) == "string") {
-    // mozilla <= 1.7
-    if (col.value != "selectionCol")
-      return;
-  }
-  else {
-    // mozilla >= 1.8a1
-    if (col.value.id != "selectionCol")
-      return;
-  }
+  if (col.value.id != "selectionCol")
+    return;
+
   var aRows = treeItem.getElementsByAttribute("id","indicator")
 
   if (aRows.length) {
