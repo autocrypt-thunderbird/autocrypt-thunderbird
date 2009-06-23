@@ -890,9 +890,10 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
   var headerList = {"subject":"", "from":"", "date":"", "to":"", "cc":""};
 
   var index, headerName;
+
   if (!gViewAllHeaders) {
-    for (index = 0; index < gCollapsedHeaderList.length; index++) {
-      headerList[gCollapsedHeaderList[index].name] = "";
+    for (index = 0; index < headerList.length; index++) {
+      headerList[index] = "";
     }
 
   } else {

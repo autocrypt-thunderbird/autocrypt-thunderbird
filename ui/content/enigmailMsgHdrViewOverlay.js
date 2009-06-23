@@ -672,13 +672,13 @@ function enigToggleHeaderView() {
 
   if (state=="true") {
     viewToggle.setAttribute("state", "false");
-    viewToggle.setAttribute("class", "collapsedHeaderViewButton");
+    viewToggle.setAttribute("class", "enigmailExpandViewButton");
     expandedText.setAttribute("display", "false");
     enigDisplayExtendedStatus(false);
   }
   else {
     viewToggle.setAttribute("state", "true");
-    viewToggle.setAttribute("class", "expandHeaderViewButton");
+    viewToggle.setAttribute("class", "enigmailCollapseViewButton");
     expandedText.setAttribute("display", "true");
     enigDisplayExtendedStatus(true);
   }

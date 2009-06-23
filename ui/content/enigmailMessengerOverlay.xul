@@ -589,7 +589,7 @@
 
       <hbox class="headerNameBox" align="start" id="enigmailStatusTextBox" pack="start">
         <image id="enigToggleHeaderView"
-               class="collapsedHeaderViewButton" onclick="enigToggleHeaderView();"
+               class="enigmailExpandViewButton" onclick="enigToggleHeaderView();"
                state="false" persist="state class"/>
         <spacer flex="1"/>
         <label class="enigmailHeaderName"
