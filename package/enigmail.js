@@ -4042,6 +4042,15 @@ function (parent, uiFlags, msgText, keyId, errorMsgObj) {
   return exitCodeObj.value;
 }
 
+Enigmail.prototype.getEscapedFilename =
+function (fileNameStr) {
+  if (this.isDosLike) {
+    // escape the backslashes and the " character (for Windows and OS/2)
+    fileNameStr = fileNameStr.replace(/([\\\"])/g, "\\$1");
+  }
+  return fileNameStr;
+}
+
 Enigmail.prototype.importKeyFromFile =
 function (parent, fileName, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.importKeyFromFile: fileName="+fileName+"\n");
@@ -4051,7 +4060,7 @@ function (parent, fileName, errorMsgObj) {
     return 1;
   }
 
-  fileName=fileName.replace(/\\/g, "\\\\");
+  fileName=this.getEscapedFilename(fileName);
 
   var args = this.getAgentArgs(true);
   args.push("--import");
@@ -4656,10 +4665,9 @@ function (parent, fromMailAddr, toMailAddr, bccMailAddr, sendFlags, inFile, outF
     passphrase = passwdObj.value;
   }
 
-  // escape the backslashes (mainly for Windows) and the ' character
-  inFile = inFile.replace(/([\\\"\'\`])/g, "\\$1");
-  outFile = outFile.replace(/([\\\"\'\`])/g, "\\$1");
-
+  inFile  = this.getEscapedFilename(inFile);
+  outFile = this.getEscapedFilename(outFile);
+  
   args = args.concat(["--yes", "-o", outFile, inFile ]);
 
   var statusMsgObj   = new Object();
@@ -4707,8 +4715,7 @@ function (parent, outFileName, displayName, inputBuffer,
     return true;
   }
 
-  outFileName = outFileName.replace(/([\\\"\'\`])/g, "\\$1");
-  //replace(/\\/g, "\\\\").replace(/'/g, "\\'");;
+  outFileName = this.getEscapedFilename(outFileName);
 
   var args = this.getAgentArgs(true);
   args = args.concat(["-o", outFileName, "--yes"]);
@@ -5457,8 +5464,7 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
   if (editCmd == "revoke") {
     // escape backslashes and ' characters
     args=args.concat(["-a", "-o"]);
-    args.push(inputData.outFile.replace(/([\\\"\'\`])/g, "\\$1"));
-    //replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    args.push(this.getEscapedFilename(inputData.outFile));
     args.push("--gen-revoke");
     args=args.concat(keyIdList);
   }
