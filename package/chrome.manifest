@@ -2,10 +2,12 @@ content       enigmail                jar:chrome/enigmail.jar!/content/enigmail/
 locale        enigmail    en-US       jar:chrome/enigmail.jar!/locale/en-US/enigmail/
 # Skin for TB 2.0 (the OS parameter is unfortunately not supported on TB 2)
 skin          enigmail    classic/1.0 jar:chrome/enigmail-skin.jar!/skin/classic/enigmail/ application={3550f703-e582-4d05-9a08-453d09bdfdc6} appversion<=2.0.*
-# Skin for TBird non-Mac
-skin          enigmail    classic/1.0 jar:chrome/enigmail-skin.jar!/skin/classic/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os!=Darwin
+# Skin for TBird Windows
+skin          enigmail    classic/1.0 jar:chrome/enigmail-skin.jar!/skin/classic/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT
 # Skin for TBird Mac OS X
 skin          enigmail    classic/1.0 jar:chrome/enigmail-skin.jar!/skin/tb-mac/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Darwin
+# Skin for TBird other OS (e.g. Linux)
+skin          enigmail    classic/1.0 jar:chrome/enigmail-skin.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os!=WINNT os!=Darwin
 # Skin for SeaMonkey
 skin          enigmail    classic/1.0 jar:chrome/enigmail-skin.jar!/skin/classic-seamonkey/enigmail/ application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
 overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://enigmail/content/enigmailCheckLanguage.xul
