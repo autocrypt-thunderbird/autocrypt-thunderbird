@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Enigmail ヘルプ: OpenPGP の初期化に関する問題の解決法</title>
+  <style type="text/css">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <h1>Enigmail ヘルプ</h1>
+
+  <h3>OpenPGP の初期化に関する問題の解決法</h3>
+
+  <p>OpenPGP の初期化の失敗にはいくつかの原因が考えられます。そのうち主なものを列挙します。詳細な情報は <a href="http://enigmail.mozdev.org/support/" target="_blank">Enigmail Support page</a> にあります。</p>
+
+  <dl>
+    <dt>GnuPG が見つからない</dt>
+    <dd>
+    <p>
+     OpenPGP を利用するためには、<a href="http://www.gnupg.org/" target="_blank">GnuPG</a> インストールされている必要があります。
+     GnuPG が見つからない場合には、実行可能な <tt>gpg.exe</tt> (Windows の場合; 他のプラットフォームの場合には <tt>gpg</tt>) がシステムにインストールされていることを確認してください。
+     GnuPG がインストールされているにもかかわらず OpenPGP が利用できない場合には、手動で GnuPG へのパスを指定してください (メニュー <i>OpenPGP</i> &gt; <i>設定</i>)
+    </p>  
+
+    <dt>Enigmime の初期化に失敗する</dt>
+
+    <dd>
+      <p>
+      OpenPGP は Thunderbird あるいは SeaMonkey がビルドされた環境と同じ環境でないと利用できません。これは公式版の Enigmail を利用できるのは <a href="www.mozilla.org">mozilla.org</a> からリリースされた公式版の Thunderbird あるいは SeaMonkey を利用している場合に限られることを意味します。
+      </p>
+      <p>
+     Linux ディストリビュータなど他の配布元から入手した Thunderbird あるいは SeaMonkey を利用している場合や、自分でビルドしたアプリケーションを利用している場合には、同じ配布元から入手した Enigmail あるいは自分でビルドした Enigmail を利用する必要があります。Enigmail のビルドに関しては、Enigmail home page の <a href="http://enigmail.mozdev.org/download/source.php">Source Code section</a> を参照してください。この問題に関連するバグ報告は行なわないでください。
+      </p>
+    </dd>
+
+  <p>更なるヘルプは以下のサイトで利用できます (英語): <a href="http://enigmail.mozdev.org/support/troubles.php" target="_blank">Enigmail Support Web Site</a></p>
+</body>
+</html>

@@ -4,15 +4,18 @@
 
   <!-- list all the packages being supplied by this jar -->
   <RDF:Seq about="urn:mozilla:locale:root">
-    <RDF:li resource="urn:mozilla:locale:de-AT"/>
+    <RDF:li resource="urn:mozilla:locale:de"/>
   </RDF:Seq>
 
   <!-- locale information -->
-  <RDF:Description about="urn:mozilla:locale:de-AT"  chrome:name="de-AT">
-
-    <chrome:packages>
-      <RDF:Seq about="urn:mozilla:locale:de-AT:packages">
-        <RDF:li resource="urn:mozilla:locale:de-AT:enigmail"/>
+  <RDF:Description about="urn:mozilla:locale:de"
+       chrome:displayName="Deutsch"
+       chrome:author="Alexander Ihrig"
+       chrome:name="de"
+       chrome:previewURL="">
+   <chrome:packages>
+      <RDF:Seq about="urn:mozilla:locale:de:packages">
+        <RDF:li resource="urn:mozilla:locale:de:enigmail"/>
       </RDF:Seq>
     </chrome:packages>
 

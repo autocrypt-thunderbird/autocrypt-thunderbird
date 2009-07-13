@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Enigmail Hjälp: Hur man löser problem med att initiera OpenPGP</title>
+  <style type="text/css">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <h1>Enigmail Hjälp</h1>
+
+  <h3>Hur man löser problem med att initiera OpenPGP</h3>
+
+  <p>Det finns flera orsaker till att initiering av OpenPGP misslyckas. De vanligaste beskrivs nedan och för mer information var vänlig att besök
+	<a href="http://enigmail.mozdev.org/support/" target="_blank">Enigmail's supportsida</a>.</p>
+
+  <dl>
+    <dt>GnuPG kunde inte hittas</dt>
+    <dd>
+    <p>
+      För att OpenPGP ska fungera, måste verktyget <a href="http://www.gnupg.org/" target="_blank">GnuPG</a> vara installerat.
+      Om GnuPG inte kan hittas, se först till att programmet <tt>gpg.exe</tt> (i Windows och  <tt>gpg</tt> på andra plattformar) finns installerat på din dator.
+      Om GnuPG är installerat, och OpenPGP kan inte hitta den, då måste du manuellt ställa in sökvägen till GnuPG i inställningarna för OpenPGP (meny <i>OpenPGP</i> &gt; <i>Inställningar</i>)
+    </p>  
+
+    <dt>Enigmime kunde inte initieras</dt>
+
+    <dd>
+      <p>
+      OpenPGP fungerar endast om den har byggs i samma miljö som Thunderbird eller SeaMonkey har byggts i. Det betyder att du kan använda den officiella Enigmail-utgåvan endast om du använder den officiella utgåvan av Thunderbird och SeaMonkey från <a href="www.mozilla.org">mozilla.org</a>.
+      </p>
+      <p>
+      Om du använder en version av Thunderbird eller SeaMonkey som kommer från en annan källa (t.ex. utgivaren av din Linuxdistribution), eller om du har byggt programmet själv, bör du antigen använda en version av Enigmail byggd med samma källa, eller bygga en själv. För att bygga Enigmail själv, se <a href="http://enigmail.mozdev.org/download/source.php">avsnittet om källkod</a> på Enigmail's hemsida. Var vänlig och skicka inga felrapporter angående detta problem, det går inte att lösa.
+      </p>
+    </dd>
+
+  <p>Ytterligare hjälp finns på <a href="http://enigmail.mozdev.org/support/troubles.php" target="_blank">Enigmail's supportsida</a>.</p>
+</body>
+</html>

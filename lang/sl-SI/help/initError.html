@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" content="text/html; charset=utf-8">
+<head>
+  <title>Pomoč za Enigmail: Kako razrešimo težave z inicializacijo OpenPGP</title>
+  <style type="text/css">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <h1>Pomoč za Enigmail</h1>
+
+  <h3>Kako razrešimo težave z inicializacijo OpenPGP</h3>
+
+  <p>Možnih je več razlogov, zaradi katerih inicializacija OpenPGP ne uspe. Najpogostejši so opisani spodaj;
+     če želite več informacij, obiščite <a href="http://enigmail.mozdev.org/support/" target="_blank">stran podpore za Enigmail (v angl.).</a></p>
+
+  <dl>
+    <dt>GnuPG ni mogoče najti</dt>
+    <dd>
+    <p>
+      Da bi OpenPGP deloval, morate namestiti orodje <a href="http://www.gnupg.org/" target="_blank">GnuPG</a>.
+      Če GnuPG ni mogoče najti, najprej preverite, da je datoteka programa <tt>gpg.exe</tt> (v okolju Windows; <tt>gpg</tt> na drugih operacijskih sistemih) nameščena na vašem računalniku.
+      Če je GnuPG nameščen in ga OpenPGP ne najde, morate ročno nastaviti pot do GnuPG v Nastavitvah OpenPGP (meni <i>OpenPGP</i> &gt; <i>Nastavitve</i>)
+    </p>  
+
+    <dt>Enigmime se ne uspe inicializirati</dt>
+
+    <dd>
+      <p>
+      OpenPGP deluje le, če je zgrajen z istim razvijalskim okoljem kot Thunderbird ali SeaMonkey. To pomeni, da lahko uporabljate uradne izdaje Enigmaila le, če uporabljate uradne izdaje programov Thunderbird ali SeaMonkey, kot ju ponuja <a href="www.mozilla.org">mozilla.org</a>.
+      </p>
+      <p>
+      Če uporabljate različice Thunderbird ali SeaMonkey iz drugih virov (npr. ponudnik vaše distribucije Linuxa) ali če ste program prevedli sami, uporabite različico Enigmaila iz istega vira ali pa prevedite Enigmail sami. Odgovore na vprašanja o gradnji Enigmaila poiščite v <a href="http://enigmail.mozdev.org/download/source.php">odseku Source Code (izvorna koda)</a> na domači strani Enigmail. Glede te težave ne vpisujte poročil o hroščih, saj te težave ni mogoče razrešiti.
+      </p>
+    </dd>
+
+  <p>Dodatna pomoč je na voljo na <a href="http://enigmail.mozdev.org/support/troubles.php" target="_blank">spletni strani podpore za Enigmail (v angl.)</a>.</p>
+</body>
+</html>

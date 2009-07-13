@@ -1,34 +1,62 @@
-<html>
-<head><title>Enigmail Hilfe: Enigmail-EmpfÃƒÆ’Ã‚Â¤ngerregeln</title>
-</head>
-<body>
-<h1>OpenPGP-Hilfe</h1>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<h3>OpenPGP-Empf&auml;ngerregeln</h3>
-<p>Mit dem Regel-Editor kann man Standards in Bezug auf Verschl&uuml;sselung, Unterschreiben und PGP/MIME f&uuml;r bestimmte Empf&auml;nger und die Benutzung von Schl&uuml;sseln einstellen. Jede Regel besteht aus 5 Feldern und ist in einer einzelnen Zeile zu finden:</p>
-<ul>
-  <li><span style="font-weight: bold;">E-Mail</span>: Die E-Mail-Adressen der Felder &quot;An:&quot;, &quot;CC:&quot; und &quot;BCC:&quot;, die &uuml;bereinstimmen sollen. Die &Uuml;bereinstimmung arbeitet mit <span style="font-style: italic;">substrings</span> (Weitere Details im Dialog &quot;OpenPGP-Empf&auml;ngerregel bearbeiten&quot;).</li>
-  <li><span style="font-weight: bold;">OpenPGP-Schl&uuml;ssel</span>: Eine Liste der OpenPGP-Schl&uuml;ssel-IDs, die f&uuml;r den Empf&auml;nger verwendet werden sollen.</li>
-  <li><span style="font-weight: bold;">Unterschreiben</span>: Unterschreiben von Nachrichten erm&ouml;glichen / nicht erm&ouml;glichen. Dies verwendet die Einstellungen, die im Fenster &quot;Verfassen&quot; angegeben sind oder setzt sich dar&uuml;ber hinweg. Es gibt folgende Optionen:</li>
-  <ul>
-    <li><i>Nie</i>: Unterschreiben unm&ouml;glich, selbst wenn im Fenster &quot;Verfassen&quot; angegeben (setzt sich &uuml;ber andere Einstellungen hinweg).<br>
-    </li>
-    <li><i>Ja, wenn beim Verfassen ausgew&auml;hlt</i>: Einstellung aus dem Fenster &quot;Verfassen&quot; wird &uuml;bernommen.</li>
-    <li><i>Immer</i>: Unterschreiben, selbst wenn <span
-      style="font-style: italic;">nicht</span> im Fenster &quot;Verfassen&quot; angegeben.</li>
-  </ul>
-</ul>
-<div style="margin-left: 40px;">Diese Unterschriftseinstellungen werden auf alle Regeln angewendet, die &uuml;bereinstimmen. Wenn eine der Regeln das Unterschreiben unm&ouml;glich macht, dann wird die Nachricht nicht unterschrieben - auch wenn bei anderen Regeln <i>Immer</i> angegeben ist.<br>
-</div>
-<ul>
-  <li><span style="font-weight: bold;">Verschl&uuml;sseln</span>: Verschl&uuml;sselung erm&ouml;glichen / nicht erm&ouml;glichen. Die m&ouml;glichen Einstellungen und ihre Bedeutungen stimmen mit den oben genannten &uuml;berein.</li>
-  <li><span style="font-weight: bold;">PGP/MIME</span>: Verwendung von PGP/MIME (RFC 3156) erm&ouml;glichen / nicht erm&ouml;glichen. Falls PGP/MIME nicht m&ouml;glich ist, dann werden die Nachrichten per &quot;Inline PGP&quot; verschl&uuml;sselt. Die m&ouml;glichen Einstellungen und ihre Bedeutungen stimmen mit den oben genannten &uuml;berein.</li>
-</ul>
-<p>Die Regeln werden in der Reihenfolge, wie sie in der Liste erscheinen, angewendet. Wann immer eine Regel auf einen Empf&auml;nger zutrifft und eine OpenPGP-Schl&uuml;ssel-ID enth&auml;lt, dann wird der Empf&auml;nger nach Verwendung der angegeben Schl&uuml;ssel-ID bei den nachfolgenden Regeln nicht mehr beachtet.</p>
-<p><i>Hinweis:</i> Der Regel-Editor ist noch nicht komplett. Es ist m&ouml;glich, weiter fortgeschrittene Regeln zu schreiben, indem man direkt die Regel-Datei bearbeitet (diese Regeln sollten danach nicht mehr mit dem Regel-Editor bearbeitet werden). <a 
-href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Weitere Informationen</a> wie die Datei bearbeitet werden muss, gibt es auf der Enigmail-Homepage</p>
-<hr/>
-<p>Weitere Hilfe ist verf&uuml;gbar auf der <a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail Help web page</a>
-</p>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>OpenPGP-Hilfe: Enigmail-Empf&auml;gerregeln</title>
+  <style type="text/css" xml:space="preserve">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+	<h1>OpenPGP-Hilfe</h1>
+	
+	<h3>OpenPGP-Empf&auml;ngerregeln</h3>
+	
+	<p>Mit dem Regel-Editor kann man Standards in Bezug auf Verschl&uuml;sselung, Unterschreiben und PGP/MIME f&uuml;r bestimmte Empf&auml;nger und die Benutzung von Schl&uuml;sseln einstellen. Jede Regel besteht aus 5 Feldern und ist in einer einzelnen Zeile zu finden:</p>
+
+	<dl>
+	  <dt>E-Mail</dt>
+	  
+	  <dd>Die E-Mail-Adressen der Felder &quot;An:&quot;, &quot;CC:&quot; und &quot;BCC:&quot;, die &uuml;bereinstimmen sollen. Die &Uuml;bereinstimmung arbeitet mit <span style="font-style: italic;">substrings</span> (Weitere Details im Dialog &quot;OpenPGP-Empf&auml;ngerregel bearbeiten&quot;).</dd>
+
+	  <dt>OpenPGP-Schl&uuml;ssel</dt>
+	  
+	  <dd>Eine Liste der OpenPGP-Schl&uuml;ssel-IDs, die f&uuml;r den Empf&auml;nger verwendet werden sollen.</dd>
+
+	  <dt>Unterschreiben</dt>
+	  
+	  <dd>
+	  	Unterschreiben von Nachrichten erm&ouml;glichen / nicht erm&ouml;glichen. Dies verwendet die Einstellungen, die im Fenster &quot;Verfassen&quot; angegeben sind oder setzt sich dar&uuml;ber hinweg. Es gibt folgende Optionen:</li>
+
+		  <ul>
+		    <li><em>Nie</em>: Unterschreiben unm&ouml;glich, selbst wenn im Fenster &quot;Verfassen&quot; angegeben (setzt sich &uuml;ber andere Einstellungen hinweg).</li>
+
+		    <li><em>Ja, wenn beim Verfassen ausgew&auml;hlt</em>: Einstellung aus dem Fenster &quot;Verfassen&quot; wird &uuml;bernommen.</li>
+
+		    <li><em>Immer</em>: Unterschreiben, selbst wenn <span style="font-style: italic;">nicht</span> im Fenster &quot;Verfassen&quot; angegeben.</li>
+		  </ul>
+
+			<p>Diese Unterschriftseinstellungen werden auf alle Regeln angewendet, die &uuml;bereinstimmen. Wenn eine der Regeln das Unterschreiben unm&ouml;glich macht, dann wird die Nachricht nicht unterschrieben - auch wenn bei anderen Regeln <i>Immer</i> angegeben ist.</p>
+		</dd>
+
+		<dt>Verschl&uuml;sseln</dt>
+		
+		<dd>Verschl&uuml;sselung erm&ouml;glichen / nicht erm&ouml;glichen. Die m&ouml;glichen Einstellungen und ihre Bedeutungen stimmen mit den oben genannten &uuml;berein.</dd>
+		
+		<dt>PGP/MIME</dt>
+		
+		<dd>Verwenden von PGP/MIME (RFC 3156) erm&ouml;glichen / nicht erm&ouml;glichen. Falls PGP/MIME nicht m&ouml;glich ist, dann werden die Nachrichten per &quot;Inline PGP&quot; verschl&uuml;sselt. Die m&ouml;glichen Einstellungen und ihre Bedeutungen stimmen mit den oben genannten &uuml;berein.</dd>
+	</dl>
+
+	<p>Die Regeln werden in der Reihenfolge, wie sie in der Liste erscheinen, angewendet. Wann immer eine Regel auf einen Empf&auml;nger zutrifft und eine OpenPGP-Schl&uuml;ssel-ID enth&auml;lt, dann wird der Empf&auml;nger nach Verwendung der angegeben Schl&uuml;ssel-ID bei den nachfolgenden Regeln nicht mehr beachtet.</p>
+
+	<p><em>Hinweis:</em> Der Regel-Editor ist noch nicht komplett. Es ist m&ouml;glich, weiter fortgeschrittene Regeln zu schreiben, indem man direkt die Regel-Datei bearbeitet (diese Regeln sollten danach nicht mehr mit dem Regel-Editor bearbeitet werden). <a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Weitere Informationen</a> wie die Datei bearbeitet werden muss, gibt es auf der Enigmail-Homepage</p>
+	<hr/>
+
+	<p>Weitere Hilfe ist verf&uuml;gbar auf der <a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail Help web page</a></p>
 </body>
 </html>

@@ -1,3 +1,4 @@
+ar
 ca-AD
 de-AT
 de-DE
