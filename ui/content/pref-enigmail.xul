@@ -148,7 +148,7 @@
     </tabs>
 
     <tabpanels flex="1" id="enigPrefTabPanel">
-		  <!-- "Basic" Tab -->
+      <!-- "Basic" Tab -->
       <vbox id="basic" flex="1">
           <description class="enigmailPrefsTitle">&enigmail.basicPrefs.label;</description>
           <hbox>
@@ -177,7 +177,10 @@
                        tooltip="maxIdleMinutes.tooltip"
                        value="&enigmail.maxIdleMinutesHead.label;" id="maxIdleMinutesHeadLabel"/>
 
-                <textbox id="enigmail_maxIdleMinutes" aria-labelledby="maxIdleMinutesHeadLabel enigmail_maxIdleMinutes maxIdleMinutesTailLabel"
+                <textbox id="enigmail_maxIdleMinutes" 
+                        aria-labelledby="maxIdleMinutesHeadLabel enigmail_maxIdleMinutes maxIdleMinutesTailLabel"
+                        type="number"
+                        min="0" max="9999"
                         size="4"
                         maxlength="4"
                         pref="true"
