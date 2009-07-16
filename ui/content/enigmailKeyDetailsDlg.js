@@ -94,6 +94,7 @@ function reloadData() {
         if (aLine[11].indexOf("D")>=0) calcTrust="d";
         calcTrust=getTrustLabel(calcTrust);
         var ownerTrust=getTrustLabel(aLine[8]);
+        addSubkey(treeChildren, aLine);
       case "uid":
         if (! gUserId) {
           gUserId=EnigConvertGpgToUnicode(aLine[9]);
@@ -144,7 +145,7 @@ function createUidRow(aLine) {
 function addSubkey(treeChildren, aLine) {
   var aRow=document.createElement("treerow");
   var treeItem=document.createElement("treeitem");
-  var subkey=EnigGetString(aLine[0]=="sub" ? "keyTypeSubkey" : "keyTypePublic")
+  var subkey=EnigGetString(aLine[0]=="sub" ? "keyTypeSubkey" : "keyTypePrimary")
   aRow.appendChild(createCell(subkey)); // subkey type
   aRow.appendChild(createCell("0x"+aLine[4].substr(-8,8))); // key id
   aRow.appendChild(createCell(EnigGetString("keyAlgorithm_"+aLine[3]))); // algorithm

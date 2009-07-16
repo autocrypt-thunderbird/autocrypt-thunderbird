@@ -124,7 +124,7 @@
 
       <treecols>
         <treecol id="subkeyCol" primary="true"
-            label="&enigmail.keyDetails.subType.label;"
+            label="&enigmail.keyDetails.keyPart.label;"
             style="width:71px"
             persist="width"/>
         <splitter class="tree-splitter"/>

@@ -520,7 +520,7 @@
 <!ENTITY enigmail.keyDetails.additionalUid.label     "Additional User ID">
 <!ENTITY enigmail.keyDetails.ID.label                "ID">
 <!ENTITY enigmail.keyDetails.keyType.label           "Type">
-<!ENTITY enigmail.keyDetails.subType.label           "Subkey">
+<!ENTITY enigmail.keyDetails.keyPart.label           "Key Part">
 <!ENTITY enigmail.keyDetails.algorithm.label         "Algorithm">
 <!ENTITY enigmail.keyDetails.size.label              "Size">
 <!ENTITY enigmail.keyDetails.created.label           "Created">
