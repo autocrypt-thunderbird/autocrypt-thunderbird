@@ -106,7 +106,7 @@ function verifyDiskSpace(dirPath, spaceRequired) {
 EOT
 
 cat > ${ENIGLANG}/chrome.manifest <<EOT
-locale	      enigmail    ${ENIGLANG}       jar:chrome/enigmail-${ENIGLANG}.jar!/locale/${ENIGLANG}/enigmail/
+locale      enigmail    ${ENIGLANG}       jar:chrome/enigmail-${ENIGLANG}.jar!/locale/${ENIGLANG}/enigmail/
 EOT
 
 # create install.rdf for Thunderbird 0.7 and newer
@@ -150,12 +150,6 @@ cat > ${ENIGLANG}/install.rdf <<EOT
     <em:aboutURL>chrome://enigmail/content/enigmailAbout.xul</em:aboutURL>
     <em:iconURL>chrome://enigmail/skin/enigmail-about.png</em:iconURL>
     
-    <!-- Packages, Skins and Locales that this extension registers -->
-    <em:file>
-      <Description about="urn:mozilla:extension:file:enigmail-${ENIGLANG}.jar">
-        <em:locale>locale/${ENIGLANG}/enigmail/</em:locale>
-      </Description>
-    </em:file>
   </Description>      
 </RDF>
 EOT
@@ -193,7 +187,7 @@ if [ -d help ]; then
 fi
 pwd
 
-for f in compose.html messenger.html rulesEditor.html editRcptRule.html ; do
+for f in compose.html messenger.html rulesEditor.html editRcptRule.html initError.html ; do
   cp ${f} ${cwd}/${HELPDIR} 
 done
 
