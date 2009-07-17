@@ -1,0 +1,61 @@
+<html>
+<head><title>Enigmail幫助: 規則編輯器</title>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+</head>
+<body>
+<h1>Enigmail幫助</h1>
+
+<h3>使用 Enigmail 規則編輯器</h3>
+<p>在規則編輯器中您可以為每個收件人預設設置加密、簽名和PGP/MIME，以及定義使用某個 OpenPGP 密鑰。每一條規則由5個字段組成，並且每條規則佔一行:
+</p>
+<ul>
+  <li><span style="font-weight: bold;">電子郵件</span>: 要從 To:、Cc: 和 Bcc: 字段
+  中匹配的電子郵件地址。該匹配使用 <span
+    style="font-style: italic;">子字串</span> 匹配方式工作(詳細訊息請見
+    規則編輯對話框)
+  </li>
+  <li><span style="font-weight: bold;">OpenPGP 密鑰</span>: 為收件人使用的 OpenPGP
+密鑰標識的列表</li>
+  <li><span style="font-weight: bold;">數字簽名</span>: 啟用或禁用
+    電子郵件數字簽名。此選項將使用或者取代您在郵件撰寫視窗選擇的設置。
+    其值為:
+  </li>
+  <ul>
+    <li><i>從不</i>: 禁用數字簽名，即便已經在郵件撰寫視窗做出選擇
+      (取代其他值)<br>
+    </li>
+    <li><i>在撰寫郵件時選擇</i>: 使用在郵件撰寫視窗中選擇的設置
+    </li>
+    <li><i>總是</i>: 啟用數字簽名，即便您在郵件撰寫視窗 <span
+      style="font-style: italic;">並未</span> 啟用數字簽名
+    </li>
+  </ul>
+</ul>
+<div style="margin-left: 40px;">這些數字簽名設置將應用於所有匹配的規則。如果有任意一條
+  規則禁用了數字簽名，不管其他規則是否指定了<i>總是</i>進行數字簽名，該郵件都不會被數字簽名。<br>
+</div>
+<ul>
+  <li><span style="font-weight: bold;">加密</span>: 啟用或禁用
+    郵件加密。可選的設置及其含義同數字簽名。</li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: 啟用或禁用
+    PGP/MIME (RFC 3156) 郵件編碼。
+    如果禁用了 PGP/MIME，信件將使用 "嵌入式 PGP" 編碼。可選的設置及其含義同數字簽名。
+  </li>
+</ul>
+<p>所有的規則將會按照 <em>OpenPGP 規則編輯器</em> 列表中的順序逐個處理。當任一包含 OpenPGP 
+密鑰標識的規則成功匹配一個收件人，我們除了為這個收件人使用規則中包含的密鑰之外，還將在後續的規則
+測試中忽略該收件人。</p>
+<p><i>注意:</i> 規則編輯器的功能還不完全。 你可以通過直接編輯規則文件來寫更多進階的規則(不要再在規則編輯器中編輯這些規則)。直接編輯規則文件的<a 
+href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">更詳細幫助</a> 可以 Enigmail 的主頁上找到</p>
+<hr/>
+<p>
+您可以從
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail 幫助web頁</a>上獲得更多的幫助訊息
+</p>
+</body>
+</html>
+
+<!-- Local Variables: -->
+<!-- coding: utf-8 -->
+<!-- End: -->
+

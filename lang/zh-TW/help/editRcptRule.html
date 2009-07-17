@@ -1,0 +1,97 @@
+<html>
+<head><title>Enigmail 幫助: 編輯 OpenPGP 規則</title>
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+</head>
+<body>
+<h1>Enigmail 幫助</h1>
+
+<h3>使用 Enigmail 規則編輯器: 編輯 OpenPGP 規則</h3>
+<p>在規則編輯器中，您可以為每個收件人單獨指定
+加密，數字簽名和 PGP/MIME，並定義要使用的 OpenPGP 密鑰。通過這個
+對話框，您可以為單個收件人定義規則，也可以為具有相似屬性的一組
+收件人定義規則。
+</p>
+<ul>
+  <li><span style="font-weight: bold;">為如下收件人設置 OpenPGP 規則</span>: 包含收件人的電子郵件地址 (不包含姓名，例如: 類似
+    <tt>somebody@email.domain</tt> 的電子郵件地址)。您可以使用空格分隔多個不同的電子郵件地址。
+    電子郵件地址僅包含域名部分則可以匹配發往該域的任何郵件，
+例如: <tt>@email.domain</tt> 將匹配 <tt>body@email.domain</tt>、
+    <tt>somebody@email.domain</tt>、<tt>anybody@email.domain</tt> 等等。
+  </li>
+  <li><span style="font-weight: bold;">如果收件人地址 ...</span>:
+    此項修改郵件地址的匹配規則。
+    如果輸入了多個地址，該設置將應用於所有地址。
+    下面的示例假定在上面的 <i>OpenPGP 規則</i> 欄中輸入了 <tt>body@email.domain</tt>。
+    <ul>
+      <li><i>與上述某郵件地址完全相同</i>: 使用此設置，只有郵件地址與 <tt>body@email.domain</tt> 完全相同才會觸發規則(完全相同，大小寫敏感匹配)。
+      </li>
+      <li><i>包含上述郵件地址中的字符</i>: 使用此設置，任何包含上述字符的郵件地址都將被
+	匹配到，
+        例如: <tt>any<strong>body@email.domain</strong></tt> 或 <tt><strong>body@email.domain</strong>.net</tt>
+      </li>
+      <li><i>以上述某郵件地址開頭</i>: 使用此設置，任何以上述字符開頭的郵件地址都將被
+        匹配到，例如: <tt><strong>body@email.domain</strong>.net</tt>、
+        <tt><strong>body@email.domain</strong>-name.com</tt>。
+      </li>
+      <li><i>以上述某郵件地址結尾</i>: 使用此設置，任何以上述字符結尾的郵件地址都將被
+	匹配到，例如: <tt>any<strong>body@email.domain</strong></tt>、
+        <tt>some<strong>body@email.domain</strong></tt>。
+      </li>
+    </ul>
+
+  </li>
+  <li><span style="font-weight: bold;">如果郵件地址符合條件則測試下一條規則</span><br>
+    通過啟用此功能，您將可以不必為某個郵件地址在 <em>使用下列 OpenPGP 密鑰進行加密或數字簽名:</em> 欄中指定
+    密鑰，直到發送的時候再為發往該地址的郵件選擇一個要使用的密鑰。
+    此外，匹配這些郵件地址的後續規則還會相繼處理。
+  </li>
+  <li><span style="font-weight: bold;">如果郵件地址符合條件則不再測試後續規則</span><br>
+    啟用此功能將會停止處理任何匹配這些郵件地址的後續規則; 例如: 如果郵件地址符合
+    條件則測試下一條規則。
+  </li>
+  <li><span style="font-weight: bold;">使用下列 OpenPGP 密鑰進行加密或數字簽名:</span><br>
+    通過 <em>選擇密鑰(S)...</em> 按鈕選擇加密用的收件人密鑰。
+    與上面的動作相同，此項規則匹配後將不再處理能夠匹配的後續規則。
+  </li>
+  <li><span style="font-weight: bold;">數字簽名</span>: 啟用或禁用
+    電子郵件數字簽名。此選項將使用或者取代您在郵件撰寫選擇的設置。
+    其值為:
+  </li>
+  <ul>
+    <li><i>從不</i>: 禁用數字簽名，即便已經在郵件撰寫視窗做出選擇
+      (取代其他值)<br>
+    </li>
+    <li><i>在撰寫郵件時選擇</i>: 使用在郵件撰寫視窗中選擇的設置
+    </li>
+    <li><i>總是</i>: 啟用數字簽名，即便您在郵件撰寫窗口 <span
+      style="font-style: italic;">並未</span> 啟用數字簽名
+    </li>
+  </ul>
+</ul>
+<div style="margin-left: 40px;">這些數字簽名設置將應用於所有匹配的規則。如果有任意一條
+  規則禁用了數字簽名，不管其他規則是否指定了<i>總是</i>進行數字簽名，該郵件都不會被數字簽名.<br>
+</div>
+<ul>
+  <li><span style="font-weight: bold;">加密</span>: 啟用或禁用
+    郵件加密。可選的設置及其含義同數字簽名.</li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: 啟用或禁用
+    PGP/MIME (RFC 3156) 郵件編碼。
+    如果禁用了 PGP/MIME，信件將使用 "嵌入式 PGP" 編碼。可選的設置及其含義同數字簽名。
+  </li>
+</ul>
+<p>所有的規則將會按照 <em>OpenPGP 規則編輯器</em> 列表中的順序逐個處理。當任一包含 OpenPGP 
+密鑰標識的規則成功匹配一個收件人，我們除了為這個收件人使用規則中包含的密鑰之外，還將在後續的規則
+測試中忽略該收件人。
+</p>
+<hr/>
+<p>
+您可以從
+<a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Enigmail 每收件人設置幫助頁</a> 獲得更多幫助
+</p>
+</body>
+</html>
+
+<!-- Local Variables: -->
+<!-- coding: utf-8 -->
+<!-- End: -->
+
