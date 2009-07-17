@@ -1744,7 +1744,12 @@ function (domWindow) {
       // and finally try to start gpg-agent
       var args = [];
       var commandFile = resolveAgentPath("gpg-agent");
-      if (commandFile  && commandFile.isExecutable()) {
+      
+      if ((! commandFile) || (! commandFile.exists())) {
+        commandFile = resolveAgentPath("gpg-agent2");
+      }
+      
+      if (commandFile  && commandFile.exists()) {
         command = commandFile.QueryInterface(Components.interfaces.nsIFile);
       }
 
