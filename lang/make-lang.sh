@@ -117,7 +117,7 @@ cat > ${ENIGLANG}/install.rdf <<EOT
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
   <Description about="urn:mozilla:install-manifest">
-    <em:id>{847b3a00-7b${LANGHASH}-11d4-8f02-006008948af5}</em:id>
+    <em:id>enigmail-${ENIGLANG}@enigmail.mozdev.org</em:id>
     <em:version>${ENIGVERSION}</em:version>
     
     <!-- Target Application (Thunderbird) this extension can install into, 
