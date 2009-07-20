@@ -5375,7 +5375,7 @@ Enigmail.prototype.genCardKey =
 function (parent, name, email, comment, expiry, backupPasswd, requestObserver, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.genCardKey: \n");
   var generateObserver = new enigCardAdminObserver(requestObserver, this.isDosLike);
-  var r = this.editKey(parent, false, null, "", "--with-colons --card-edit",
+  var r = this.editKey(parent, false, null, "", ["--with-colons", "--card-edit"] ,
                       { step: 0,
                         name: EnigConvertFromUnicode(name),
                         email: email,
@@ -5394,7 +5394,7 @@ Enigmail.prototype.cardAdminData =
 function (parent, name, firstname, lang, sex, url, login, forcepin, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.cardAdminData: parent="+parent+", name="+name+", firstname="+firstname+", lang="+lang+", sex="+sex+", url="+url+", login="+login+", forcepin="+forcepin+"\n");
   var adminObserver = new enigCardAdminObserver(null, this.isDosLike);
-  var r = this.editKey(parent, false, null, "", "--with-colons --card-edit",
+  var r = this.editKey(parent, false, null, "", ["--with-colons", "--card-edit"],
           { step: 0,
             name: name,
             firstname: firstname,
@@ -5413,7 +5413,7 @@ Enigmail.prototype.cardChangePin =
 function (parent, action, oldPin, newPin, adminPin, pinObserver, errorMsgObj) {
   DEBUG_LOG("enigmail.js: Enigmail.cardChangePin: parent="+parent+", action="+action+"\n");
   var adminObserver = new enigCardAdminObserver(pinObserver, this.isDosLike);
-  var r = this.editKey(parent, false, null, "", "--with-colons --card-edit",
+  var r = this.editKey(parent, false, null, "", ["--with-colons", "--card-edit"],
           { step: 0,
             pinStep: 0,
             action: action,
@@ -5466,20 +5466,30 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
 
   args=args.concat(["--no-tty", "--status-fd", "1", "--logger-fd", "1", "--command-fd", "0"]);
   if (userId) args=args.concat(["-u", userId]);
-  if (editCmd == "revoke") {
+  var editCmdArr;
+  if (typeof(editCmd) == "string") {
+    editCmdArr = [ editCmd ];
+  }
+  else {
+    editCmdArr = editCmd;
+  }
+
+  if (editCmd[0] == "revoke") {
     // escape backslashes and ' characters
     args=args.concat(["-a", "-o"]);
     args.push(this.getEscapedFilename(inputData.outFile));
     args.push("--gen-revoke");
     args=args.concat(keyIdList);
   }
-  else if (editCmd.indexOf("--")==0) {
-    args.push(editCmd);
+  else if (editCmd[0].indexOf("--")==0) {
+    args=args.concat(editCmd);
     args=args.concat(keyIdList);
   }
   else {
-    args=args.concat(["--ask-cert-level", "--edit-key", keyId, editCmd]);
+    args=args.concat(["--ask-cert-level", "--edit-key", keyId]);
+    args=args.concat(editCmd);
   }
+
   var pipeTrans = this.execStart(this.agentPath, args, false, parent, null, null,
                                  true, statusFlags);
   if (! pipeTrans) return -1;
@@ -6107,11 +6117,11 @@ function cardAdminDataCallback(inputData, keyEdit, ret) {
   }
   else if (keyEdit.doCheck(GET_LINE, "keygen.smartcard.surname")) {
     ret.exitCode = 0;
-    ret.writeTxt = inputData.firstname;
+    ret.writeTxt = inputData.firstname.replace(/^$/, "-");;
   }
   else if (keyEdit.doCheck(GET_LINE, "keygen.smartcard.givenname")) {
     ret.exitCode = 0;
-    ret.writeTxt = inputData.name;
+    ret.writeTxt = inputData.name.replace(/^$/, "-");;
   }
   else if (keyEdit.doCheck(GET_LINE, "cardedit.change_sex")) {
     ret.exitCode = 0;
@@ -6119,15 +6129,15 @@ function cardAdminDataCallback(inputData, keyEdit, ret) {
   }
   else if (keyEdit.doCheck(GET_LINE, "cardedit.change_lang")) {
     ret.exitCode = 0;
-    ret.writeTxt = inputData.lang;
+    ret.writeTxt = inputData.lang.replace(/^$/, "-");;
   }
   else if (keyEdit.doCheck(GET_LINE, "cardedit.change_url")) {
     ret.exitCode = 0;
-    ret.writeTxt = inputData.url;
+    ret.writeTxt = inputData.url.replace(/^$/, "-");;
   }
   else if (keyEdit.doCheck(GET_LINE, "cardedit.change_login")) {
     ret.exitCode = 0;
-    ret.writeTxt = inputData.login;
+    ret.writeTxt = inputData.login.replace(/^$/, "-");
   }
   else {
     ret.quitNow=true;
