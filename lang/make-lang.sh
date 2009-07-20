@@ -129,10 +129,10 @@ cat > ${ENIGLANG}/install.rdf <<EOT
         <em:maxVersion>2.0.0.*</em:maxVersion>
       </Description>
       <Description>
-        <!-- Mozilla Suite -->
-        <em:id>{86c18b42-e466-45a9-ae7a-9b95ba6f5640}</em:id>
-        <em:minVersion>1.7</em:minVersion>
-        <em:maxVersion>1.9</em:maxVersion>
+        <!-- Seamonkey -->
+        <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
+        <em:minVersion>2.0a1</em:minVersion>
+        <em:maxVersion>2.0.*</em:maxVersion>
       </Description>
     </em:targetApplication>
     
