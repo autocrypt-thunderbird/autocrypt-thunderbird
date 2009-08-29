@@ -38,6 +38,7 @@ window.addEventListener("load", enigHdrViewLoad, false);
 addEventListener('messagepane-unloaded', enigHdrViewUnload, true);
 
 var gEnigStatusBar;
+var gEnigmailBox;
 
 function enigHdrViewLoad()
 {
@@ -48,23 +49,31 @@ function enigHdrViewLoad()
   var signedHdrElement = document.getElementById("signedHdrIcon");
   if (signedHdrElement) {
     signedHdrElement.setAttribute("onclick", "enigViewSecurityInfo(event, true);");
-    // signedHdrElement.setAttribute("context", "enigSecurityContext");
   }
 
   var encryptedHdrElement = document.getElementById("encryptedHdrIcon");
   if (encryptedHdrElement) {
     encryptedHdrElement.setAttribute("onclick", "enigViewSecurityInfo(event, true);");
-    // encryptedHdrElement.setAttribute("context", "enigSecurityContext");
   }
 
   gEnigStatusBar = document.getElementById("enigmail-status-bar");
+  gEnigmailBox = document.getElementById("enigmailBox");
+
+}
+
+function enigStatusBarHide() {
+  try {
+    gEnigStatusBar.removeAttribute("signed");
+    gEnigStatusBar.removeAttribute("encrypted");
+    gEnigmailBox.setAttribute("collapsed", "true")
+  }
+  catch (ex) {}
 }
 
 function enigStartHeaders()
 {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigStartHeaders\n");
 
-  //var hideHeaderBox = document.getElementById();
   try {
     var index;
     var hideHeaders = EnigGetPref("hideHeaders").split(' ');
@@ -79,23 +88,12 @@ function enigStartHeaders()
       }
     }
 
-    gEnigStatusBar.removeAttribute("signed");
-    gEnigStatusBar.removeAttribute("encrypted");
+    enigStatusBarHide();
 
-    var enigmailBox = document.getElementById("enigmailBox");
     var statusText = document.getElementById("enigmailStatusText");
-    var statusTextBox = document.getElementById("enigmailStatusTextBox");
-    var statusHdrButton = document.getElementById("enigmailBox");
+    if (statusText) statusText.value="";
 
-    if (enigmailBox && !enigmailBox.collapsed) {
-      enigmailBox.setAttribute("collapsed", "true");
-
-      if (statusText) statusText.value="";
-    }
-
-//    statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureOk");
-    statusHdrButton.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureOk");
-//    statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureOk");
+    gEnigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureOk");
     
     var msgFrame = EnigGetFrame(window, "messagepane");
 
@@ -123,14 +121,10 @@ function enigEndHeaders()
 {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigEndHeaders\n");
   try {
-    gEnigStatusBar.removeAttribute("signed");
-    gEnigStatusBar.removeAttribute("encrypted");
+    enigStatusBarHide();
     var statusText = document.getElementById("enigmailStatusText");
-    var statusHdrButton = document.getElementById("enigmailBox");
 
-//    statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureOk");
-    statusHdrButton.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureOk");
-//    statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureOk");
+    gEnigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureOk");
   }
   catch (ex) {}
 }
@@ -384,11 +378,8 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
                         fullStatusInfo: fullStatusInfo,
                         blockSeparation: blockSeparation };
 
-  var enigmailBox = document.getElementById("enigmailBox");
   var statusText  = document.getElementById("enigmailStatusText");
-  var statusTextBox = document.getElementById("enigmailStatusTextBox");
   var expStatusText  = document.getElementById("expandedEnigmailStatusText");
-  var statusHdrButton = document.getElementById("enigmailBox");
   
   if (statusArr.length>0) {
     expStatusText.value = statusArr[0];
@@ -401,11 +392,11 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
 
   if (statusLine) {
     statusText.value = statusLine +" ";
-    enigmailBox.removeAttribute("collapsed");
+    gEnigmailBox.removeAttribute("collapsed");
     enigDisplayExtendedStatus(true);
   } else {
     statusText.value = "";
-    enigmailBox.setAttribute("collapsed", "true");
+    gEnigmailBox.setAttribute("collapsed", "true");
     enigDisplayExtendedStatus(false);
   }
 
@@ -421,9 +412,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
     if (statusFlags & nsIEnigmail.BAD_SIGNATURE) {
       // Display untrusted/bad signature icon
       gSignedUINode.setAttribute("signed", "notok");
-//      statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureNotOk");
-//      statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureNotOk");
-      statusHdrButton.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureNotOk");
+      gEnigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureNotOk");
       gEnigStatusBar.setAttribute("signed", "notok");
     }
     else if ((statusFlags & nsIEnigmail.GOOD_SIGNATURE) &&
@@ -433,18 +422,14 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
                        nsIEnigmail.EXPIRED_SIGNATURE))) {
       // Display trusted good signature icon
       gSignedUINode.setAttribute("signed", "ok");
-//      statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureOk");
-//      statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureOk");
-      statusHdrButton.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureOk");
+      gEnigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureOk");
       gEnigStatusBar.setAttribute("signed", "ok");
       bodyElement.setAttribute("enigSigned", "ok");
     }
     else if (statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
       // Display unverified signature icon
       gSignedUINode.setAttribute("signed", "unknown");
-//      statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureUnknown");
-//      statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureUnknown");
-      statusHdrButton.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureUnknown");
+      gEnigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureUnknown");
       gEnigStatusBar.setAttribute("signed", "unknown");
     }
     else if (statusFlags & (nsIEnigmail.REVOKED_KEY |
@@ -453,20 +438,14 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
                        nsIEnigmail.GOOD_SIGNATURE)) {
       // Display unverified signature icon
       gSignedUINode.setAttribute("signed", "unknown");
-//      statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureVerified");
-//      statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureVerified");
-      statusHdrButton.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureVerified");
+      gEnigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureVerified");
       gEnigStatusBar.setAttribute("signed", "unknown");
     }
     else if (statusFlags & nsIEnigmail.INLINE_KEY) {
-//      statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureUnknown");
-      statusHdrButton.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureUnknown");
-//      statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureUnknown");
+      gEnigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureUnknown");
     }
     else {
-//      statusText.setAttribute("class", "plain enigmailHeaderNameBox enigmailHeaderBoxLabelNoSignature");
-      statusHdrButton.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelNoSignature");
-//      statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelNoSignature");
+      gEnigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelNoSignature");
     }
 
     if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
@@ -485,9 +464,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
       // Display un-encrypted icon
       gEncryptedUINode.setAttribute("encrypted", "notok");
       gEnigStatusBar.setAttribute("encrypted", "notok");
-//      statusText.setAttribute("class", "plain enigmailHeaderValue enigmailHeaderBoxLabelSignatureNotOk");
-      statusHdrButton.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureNotOk");
-//      statusTextBox.setAttribute("class", "enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureNotOk");
+      gEnigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureNotOk");
     }
 
   } catch (ex) {}
@@ -630,8 +607,7 @@ function enigForgetEncryptedMsgKey()
 
 function enigMsgHdrViewHide() {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigMsgHdrViewHide\n");
-  var enigmailBox = document.getElementById("enigmailBox");
-  enigmailBox.setAttribute("collapsed", true);
+  gEnigmailBox.setAttribute("collapsed", true);
 
   gEnigSecurityInfo = { statusFlags: 0,
                       keyId: "",
@@ -645,8 +621,7 @@ function enigMsgHdrViewHide() {
 function enigMsgHdrViewUnhide() {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigMsgHdrViewUnhide\n");
   if (gEnigSecurityInfo.statusFlags != 0) {
-    var enigmailBox = document.getElementById("enigmailBox");
-    enigmailBox.removeAttribute("collapsed");
+    gEnigmailBox.removeAttribute("collapsed");
   }
 }
 
@@ -864,36 +839,4 @@ EnigMimeHeaderSink.prototype =
   }
 
 };
-
-function createEnum() {
-  var enumObj = {
-    _data: new Array(),
-    _index: 0,
-
-    addValue: function (strVal) {
-      this._data.push(strVal);
-    },
-
-    hasMore: function () {
-      return this._data.length > this._index;
-    },
-
-    getNext: function () {
-      if (this._data.length > this._index) {
-        var idx = this._index;
-        ++this._index;
-        return this._data[idx];
-      }
-      else {
-        return null;
-      }
-    },
-
-    resetEnum: function () {
-      this._index = 0;
-    }
-  }
-
-  return enumObj;
-}
 
