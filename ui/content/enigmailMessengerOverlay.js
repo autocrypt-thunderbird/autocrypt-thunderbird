@@ -74,26 +74,21 @@ var gEnigTreeController = {
   isCommandEnabled: function(command) {
     // DEBUG_LOG("enigmailMessengerOverlay.js: treeCtrl: isCommandEnabled: "+command+"\n");
     try {
-      if (typeof(IsMessagePaneCollapsed) == "function") {
-        // threaded view
-        if (! IsMessagePaneCollapsed()) {
-          if (gDBView) {
-            return (gDBView.numSelected == 1);
-          }
-        }
+      if (gFolderDisplay.messageDisplay.visible) {
+        if (gFolderDisplay.selectedCount != 1) enigStatusBarHide();
+        return (gFolderDisplay.selectedCount == 1);
       }
-      else {
-        // single mail window -> always enable
-        return true;
-      }
+      enigStatusBarHide();
     }
     catch (ex) {}
     return  false;
   },
   doCommand: function(command) {
+    //DEBUG_LOG("enigmailMessengerOverlay.js: treeCtrl: doCommand: "+command+"\n");
     // nothing
   },
   onEvent: function(event) {
+    // DEBUG_LOG("enigmailMessengerOverlay.js: treeCtrl: onEvent: "+command+"\n");
     // nothing
   }
 }
@@ -347,7 +342,7 @@ function enigMimeInit() {
 
 function enigMessageFrameLoad() {
   // called before a message is displayed
-  // DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageFrameLoad\n");
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageFrameLoad\n");
   // not used anymore (-> gEnigTreeController)
 }
 
@@ -409,6 +404,7 @@ function enigChangeMailLayout(viewType) {
 }
 
 function enigToggleMessagePane() {
+  enigStatusBarHide();
   MsgToggleMessagePane();
   
   // Reload message to get it decrypted/verified
