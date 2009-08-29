@@ -669,7 +669,6 @@ function getToAddrList() {
 }
 
 function onClickCallback(event) {
-  event.stopPropagation();
 
   enigmailUserSelCallback(event);
 }
@@ -701,6 +700,9 @@ function enigmailUserSelCallback(event) {
 
     if ((event.detail == 1) && (col.value.id != "selectionCol"))
       return; // single clicks are only relvant for the selection column
+
+    event.stopPropagation();
+
   }
 
   if (row.value == -1)
