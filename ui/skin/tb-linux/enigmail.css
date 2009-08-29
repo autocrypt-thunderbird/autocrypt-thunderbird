@@ -1,11 +1,9 @@
-/* Enigmail styles */
+/* Enigmail stylesfor Linux */
 
+@import url("chrome://global/skin/");
 @import url("chrome://messenger/skin/");
 
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
-
-
-/* styles of other platforms (Linux/Unix etc.) */
 
 
 #button-enigmail-decrypt,
@@ -237,11 +235,14 @@ treechildren::-moz-tree-column(enigDontEncrypt) {
 }
 
 .enigmailExpandViewButton {
-  -moz-appearance: treetwisty;
+  width: 9px; /* The image's width is 9 pixels */
+  list-style-image: url("chrome://enigmail/skin/twisty-clsd.png");
 }
 
 .enigmailCollapseViewButton {
-  -moz-appearance: treetwistyopen;
+  width: 9px; /* The image's width is 9 pixels */
+  list-style-image: url("chrome://enigmail/skin/twisty-open.png");
+
 }
 
 /* the following styles are available for the key trust
