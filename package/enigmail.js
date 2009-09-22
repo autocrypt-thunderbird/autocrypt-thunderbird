@@ -3916,8 +3916,11 @@ function (parent, exportFlags, userId, outputFile, exitCodeObj, errorMsgObj) {
     return "";
   }
 
+  var uidList=userId.split(/[ ,\t]+/);
+
   var args = this.getAgentArgs(true);
-  args = args.concat(["-a", "--export", userId]);
+  args = args.concat(["-a", "--export"]);
+  args = args.concat(uidList);
 
   var statusFlagsObj = new Object();
   var statusMsgObj   = new Object();
@@ -3942,7 +3945,8 @@ function (parent, exportFlags, userId, outputFile, exitCodeObj, errorMsgObj) {
 
   if (exportFlags & nsIEnigmail.EXTRACT_SECRET_KEY) {
     args = this.getAgentArgs(true);
-    args = args.concat(["-a", "--export-secret-keys", userId]);
+    args = args.concat(["-a", "--export-secret-keys"]);
+    args = args.concat(uidList);
 
     var secKeyBlock = this.execCmd(this.agentPath, args, null, "",
                     exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
@@ -4670,10 +4674,10 @@ function (parent, fromMailAddr, toMailAddr, bccMailAddr, sendFlags, inFile, outF
     passphrase = passwdObj.value;
   }
 
-  inFile  = this.getEscapedFilename(inFile);
-  outFile = this.getEscapedFilename(outFile);
+  var inFilePath  = EnigConvertFromUnicode(this.getEscapedFilename(getFilePath(inFile.QueryInterface(nsILocalFile))));
+  var outFilePath = EnigConvertFromUnicode(this.getEscapedFilename(getFilePath(outFile.QueryInterface(nsILocalFile))));
   
-  args = args.concat(["--yes", "-o", outFile, inFile ]);
+  args = args.concat(["--yes", "-o", outFilePath, inFilePath ]);
 
   var statusMsgObj   = new Object();
   var cmdErrorMsgObj = new Object();

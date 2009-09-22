@@ -1856,7 +1856,7 @@ function enigEncryptAttachments(bucketList, newAttachments, window, uiFlags,
     try {
       newFile.createUnique(Components.interfaces.NORMAL_FILE_TYPE, 0600);
       txtMessage = enigmailSvc.encryptAttachment(window, fromAddr, toAddr, bccAddr, sendFlags,
-                                origFile.file.path, newFile.path,
+                                origFile.file, newFile,
                                 exitCodeObj, statusFlagsObj,
                                 errorMsgObj);
     } catch (ex) {}

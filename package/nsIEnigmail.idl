@@ -401,8 +401,8 @@ interface nsIEnigmail : nsISupports
                             in string toMailAddr,
                             in string bccMailAddr,
                             in unsigned long sendFlags,
-                            in wstring inFile,
-                            in wstring outFile,
+                            in nsIFile inFile,
+                            in nsIFile outFile,
                             out long exitCode,
                             out unsigned long statusFlags,
                             out wstring errorMsg);
