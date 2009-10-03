@@ -3642,32 +3642,26 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
 
 
 function GetPasswdForHost(hostname, userObj, passwdObj) {
-  return -1;
-  var passwordmanager = Components.classes["@mozilla.org/passwordmanager;1"].getService(Components.interfaces.nsIPasswordManager);
-  var enumerator = passwordmanager.enumerator;
+  var loginmgr = Components.classes["@mozilla.org/login-manager;1"].getService(Components.interfaces.nsILoginManager);
+  
+  // search HTTP password 1st
+  var logins = loginmgr.findLogins({}, "http://"+hostname, "", "");
+  if (logins.length > 0) {
+    userObj.value = logins[0].username;
+    passwdObj.value = logins[0].password;
+    return true;
+  }
 
-  while (enumerator.hasMoreElements()) {
-    var nextPassword;
-    try {
-      nextPassword = enumerator.getNext();
-    } catch(e) {
-      // user supplied invalid database key
-      return -1;
-    }
-    nextPassword = nextPassword.QueryInterface(Components.interfaces.nsIPassword);
-      // try/catch in case decryption fails (invalid signon entry)
-    try {
-      var passwdHost = nextPassword.host.replace(/^.*:\/\//, "");
-      if (passwdHost == hostname) {
-        userObj.value = nextPassword.user;
-        passwdObj.value = nextPassword.password;
-        return 0;
-      }
-    } catch (e) {
-      // password cannot be decrypted
+  // look for any other password for same host
+  logins = loginmgr.getAllLogins({});
+  for (var i=0; i < logins.lenth; i++) {
+    if (hostname == logins[i].hostname.replace(/^.*:\/\//, "")) {
+      userObj.value = logins[i].username;
+      passwdObj.value = logins[i].password;
+      return true;
     }
   }
-  return 1;
+  return false;
 }
 
 
@@ -3696,7 +3690,7 @@ function (hostName) {
         if (proxyHostName) {
           var userObj = new Object();
           var passwdObj = new Object();
-          if (GetPasswdForHost(proxyHostName, userObj, passwdObj) == 0) {
+          if (GetPasswdForHost(proxyHostName, userObj, passwdObj)) {
             proxyHostName = userObj.value+":"+passwdObj.value+"@"+proxyHostName;
           }
         }
