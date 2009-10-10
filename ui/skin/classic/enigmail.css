@@ -43,12 +43,12 @@ toolbar[iconsize="small"] #button-enigmail-decrypt[disabled]
 
 #button-enigmail-send,
 #button-enigmail-send:hover {
-  -moz-image-region: rect(0px 22px 22px 0px);
+  -moz-image-region: rect(0px 24px 24px 0px);
    list-style-image      : url("chrome://enigmail/skin/enigmail-settings.png");
 }
 
 #button-enigmail-send[disabled] {
-  -moz-image-region: rect(22px 22px 44px 0px);
+  -moz-image-region: rect(24px 24px 48px 0px);
 }
 
 
