@@ -5472,14 +5472,14 @@ function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFun
     editCmdArr = editCmd;
   }
 
-  if (editCmd[0] == "revoke") {
+  if (editCmdArr[0] == "revoke") {
     // escape backslashes and ' characters
     args=args.concat(["-a", "-o"]);
     args.push(this.getEscapedFilename(inputData.outFile));
     args.push("--gen-revoke");
     args=args.concat(keyIdList);
   }
-  else if (editCmd[0].indexOf("--")==0) {
+  else if (editCmdArr[0].indexOf("--")==0) {
     args=args.concat(editCmd);
     args=args.concat(keyIdList);
   }
