@@ -567,10 +567,10 @@
               />
   </toolbarpalette>
 
-  <!-- override default set to include enigmail decrypt icon -->
-  <!-- Thunderbird 2.0 and newer -->
-  <toolbar id="mail-bar2"
-           defaultset="button-getmsg,button-newmsg,button-address,separator,button-enigmail-decrypt,spacer,button-reply,button-replyall,button-forward,separator,button-tag,button-delete,button-junk,button-print,separator,button-goback,button-goforward,spring,search-container">
+  <!-- override default set to include enigmail decryption icon -->
+  <!-- Thunderbird 3.0 and newer -->
+  <toolbar id="mail-bar3"
+           defaultset="button-getmsg,button-newmsg,button-address,separator,button-tag,button-enigmail-decrypt,spring,gloda-search">
   </toolbar>
 
   <!-- SeaMonkey 2.0 and newer -->

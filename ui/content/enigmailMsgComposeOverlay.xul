@@ -346,54 +346,7 @@
        </toolbarbutton>
     </hbox>
 
-<!-- Seamonkey 2.x -->
-    <toolbar id="composeToolbar">
-   <!-- for compatibility reasons (themes) the button name is unchanged and doesn't match the action(s) -->
-       <toolbarbutton class="toolbarbutton-1"
-               id="button-enigmail-send"
-               label="&enigmail.securitybutton.label;"
-               tooltiptext="&enigmail.securitybutton.tip;"
-               insertbefore="saveSeparator"
-               buttontype="seamonkey"
-               type="menu-button"
-               oncommand="enigDoPgpButton();">
-
-          <menupopup onpopupshowing="enigSetMenuSettings('2')">
-            <menuitem id="enigmail_signed_send2"
-                type="checkbox"
-                label="&enigmail.signedsend.label;"
-                accesskey="&enigmail.signedsend.accesskey;"
-                key="key_enigSign"
-                oncommand="enigNextCommand('toggle-sign');" />
-
-            <menuitem id="enigmail_encrypted_send2"
-                type="checkbox"
-                label="&enigmail.encryptedsend.label;"
-                accesskey="&enigmail.encryptedsend.accesskey;"
-                key="key_enigEncrypt"
-                oncommand="enigNextCommand('toggle-encrypt');" />
-
-            <menuseparator/>
-
-            <menuitem id="enigmail_sendPGPMime2"
-                type="checkbox"
-                checked="false"
-                label="&enigmail.sendPGPMime.label;"
-                accesskey="&enigmail.sendPGPMime.accesskey;"
-                oncommand="enigNextCommand('togglePGPMime');" />
-
-            <menuitem id="enigmail_disable_rules2"
-                type="checkbox"
-                label="&enigmail.disableRules.label;"
-                accesskey="&enigmail.disableRules.accesskey;"
-                key="key_enigDisableRules"
-                oncommand="enigNextCommand('toggleRules');" />
-
-          </menupopup>
-       </toolbarbutton>
-    </toolbar>
-
-<!-- Thunderbird -->
+  <!-- Enigmail toolbar button -->
   <toolbarpalette id="MsgComposeToolbarPalette">
    <!-- for compatibility reasons (themes) the button name is unchanged and doesn't match the action(s) -->
     <toolbarbutton class="toolbarbutton-1"
@@ -441,7 +394,12 @@
 
   <!-- Thunderbird & Spicebird -->
   <toolbar id="composeToolbar2"
-           defaultset="button-send,spacer,button-address,spacer,spellingButton,spacer,button-attach,button-enigmail-send,spacer,button-security,spacer,button-save">
+           defaultset="button-send,separator,button-address,spellingButton,button-attach,button-enigmail-send,button-security,button-save">
+  </toolbar>
+
+  <!-- Seamonkey 2.x -->
+  <toolbar id="composeToolbar"
+           defaultset="button-send,separator,button-address,button-attach,spellingButton,button-enigmail-send,button-security,separator,button-save,spring,throbber-box">
   </toolbar>
 
   <statusbar id="status-bar">
