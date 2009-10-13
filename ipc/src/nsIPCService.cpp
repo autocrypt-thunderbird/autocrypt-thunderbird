@@ -297,6 +297,10 @@ nsIPCService::RunPipe (nsIFile *executable,
   nsCAutoString commandOut ("");
 
   nsCAutoString execNativePath;
+#ifdef XP_WIN
+  rv = executable->GetNativeTarget(execNativePath)
+  if (NS_FAILED(rv) || execNativePath.IsEmpty())
+#endif
   rv = executable->GetNativePath(execNativePath);
   NS_ENSURE_SUCCESS(rv, rv);
 
