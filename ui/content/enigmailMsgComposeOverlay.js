@@ -1442,9 +1442,9 @@ function enigEncryptMsg(msgSendType) {
             DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: enabled forceMsgEncoding\n");
           }
 
-          if (msgCompFields.characterSet == "ISO-2022-JP") {
-              gMsgCompose.SetDocumentCharset("UTF-8");
-          }
+          //if (msgCompFields.characterSet == "ISO-2022-JP") {
+          //    gMsgCompose.SetDocumentCharset("UTF-8");
+          //}
        }
        catch (ex) {}
     }
@@ -1454,9 +1454,9 @@ function enigEncryptMsg(msgSendType) {
         msgCompFields.forceMsgEncoding = true;
         DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: enabled forceMsgEncoding\n");
 
-        if (msgCompFields.characterSet == "ISO-2022-JP") {
-            gMsgCompose.SetDocumentCharset("UTF-8");
-        }
+        //if (msgCompFields.characterSet == "ISO-2022-JP") {
+        //   gMsgCompose.SetDocumentCharset("UTF-8");
+        //}
       }
     }
 
