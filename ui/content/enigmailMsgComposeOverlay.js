@@ -273,7 +273,11 @@ function enigComposeOpen() {
       node = node.nextSibling;
     }
     if (! bucketList.hasChildNodes()) {
+      try {
+        // TB only
       ChangeAttachmentBucketVisibility(true);    
+      }
+      catch (ex) {}
     }
   }
   enigDisplayUi();
@@ -490,13 +494,24 @@ function enigExtractAndAttachKey(uid) {
   // add attachment to msg
   enigAddAttachment(keyAttachment);
 
-  ChangeAttachmentBucketVisibility(false);
+  try {
+    // TB only
+    ChangeAttachmentBucketVisibility(false);
+  }
+  catch (ex) {}
   gContentChanged = true;
   return keyAttachment;
 }
 
 function enigAddAttachment(attachment) {
-  AddUrlAttachment(attachment);
+  if (typeof(AddAttachment) == "undefined") {
+    // TB >= 3.0
+    AddUrlAttachment(attachment);
+  }
+  else {
+    // SeaMonkey and TB <= 3.0
+    AddAttachment(attachment);
+  }
 }
 
 function enigUndoEncryption() {
@@ -572,8 +587,13 @@ function enigRemoveAttachedKey() {
         node=node.nextSibling;
       }
     }
-    if (! bucketList.hasChildNodes())
-      ChangeAttachmentBucketVisibility(true);
+    if (! bucketList.hasChildNodes()) {
+      try {
+        // TB only
+        ChangeAttachmentBucketVisibility(true);
+      }
+      catch(ex) {}
+    }
   }
 }
 
