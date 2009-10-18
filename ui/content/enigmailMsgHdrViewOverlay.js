@@ -589,7 +589,11 @@ function enigShowPhoto() {
 function enigCreateRuleFromAddress(emailAddressNode) {
   if (emailAddressNode)
   {
-    EnigNewRule(emailAddressNode.getAttribute("emailAddress"));
+    var emailAddr = emailAddressNode.getAttribute("emailAddress");
+    if (emailAddr.length == 0) {
+      emailAddr = EnigStripEmail(emailAddressNode.getAttribute("value"));
+    }
+    EnigNewRule(emailAddr);
   }
 }
 
