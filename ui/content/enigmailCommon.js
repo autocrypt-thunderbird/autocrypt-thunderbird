@@ -1056,7 +1056,7 @@ function EnigConvertGpgToUnicode(text) {
         a=text.search(/\\x[0-9a-fA-F]{2}/);
     }
 
-    text = EnigConvertToUnicode(text, "utf-8");
+    text = EnigConvertToUnicode(text, "utf-8").replace(/\\e3A/g, ":");
   }
 
   return text;
@@ -1735,7 +1735,7 @@ function EnigLoadKeyList(refresh, keyListObj) {
           listRow[USER_ID] = "-";
         }
         if (typeof(keyObj.userId) != "string") {
-          keyObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID]).replace(/\\e3A/g, ":");
+          keyObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID]);
           keyListObj.keySortList.push({userId: keyObj.userId, keyId: keyObj.keyId});
           if (TRUSTLEVEL_SORTED.indexOf(listRow[KEY_TRUST]) < TRUSTLEVEL_SORTED.indexOf(keyObj.keyTrust)) {
             // reduce key trust if primary UID is less trusted than public key
@@ -1744,7 +1744,7 @@ function EnigLoadKeyList(refresh, keyListObj) {
         }
         else {
           var subUserId = {
-            userId: EnigConvertGpgToUnicode(listRow[USER_ID]).replace(/\\e3A/g, ":"),
+            userId: EnigConvertGpgToUnicode(listRow[USER_ID]),
             keyTrust: listRow[KEY_TRUST],
             type: "uid"
           }
@@ -1829,7 +1829,7 @@ function EnigGetSecretKeys() {
     case "uid":
       if ((keyId != null) && (aLine[1] == 'u')) {
         // UID is valid and ultimately trusted
-        keys.push({ name: EnigConvertGpgToUnicode(aLine[9]).replace(/\\e3A/g, ":"), 
+        keys.push({ name: EnigConvertGpgToUnicode(aLine[9]), 
                     id: keyId,
                     created: secretKeyCreated[keyId]});
         keyId = null;
@@ -1922,7 +1922,7 @@ function EnigRevokeKey(keyId, userId) {
   r = enigmailSvc.importKeyFromFile(window, revFile.path, errorMsgObj);
   revFile.remove(false);
   if (r != 0) {
-    EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+EnigConvertGpgToUnicode(errorMsgObj.value).replace(/\\e3A/g, ":"));
+    EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+EnigConvertGpgToUnicode(errorMsgObj.value));
   }
   else {
     EnigAlert(EnigGetString("revokeKeyOk"));

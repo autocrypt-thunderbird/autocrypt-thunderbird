@@ -286,7 +286,7 @@ function enigSetKeys(keyList) {
         encryptionList.appendItem(keyList[i].substr(6)+" "+EnigGetString("keyTrust.group"), keyList[i]);
       }
       else
-        encryptionList.appendItem("0x"+keyList[i].substr(10,8)+" ("+EnigConvertGpgToUnicode(userDesc).replace(/\\e3A/g, ":")+")",
+        encryptionList.appendItem("0x"+keyList[i].substr(10,8)+" ("+EnigConvertGpgToUnicode(userDesc)+")",
                                 keyList[i]);
     }
   }
