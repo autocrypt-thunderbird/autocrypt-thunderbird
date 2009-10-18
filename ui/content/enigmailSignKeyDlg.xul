@@ -62,7 +62,7 @@
       <rows autostretch="never">
         <row>
           <label value="&enigmail.sKeyDlg.signKey.label;"/>
-          <label id="keyId" value="?"/>
+          <description class="plain" id="keyId" value="?" crop="end"/>
         </row>
         <row>
           <label value="&enigmail.sKeyDlg.fingerprint.label;"/>
