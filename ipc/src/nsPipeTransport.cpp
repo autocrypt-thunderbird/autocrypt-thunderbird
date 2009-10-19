@@ -194,12 +194,20 @@ NS_IMETHODIMP nsPipeTransport::Initialize(nsIFile *executable,
     return NS_ERROR_ALREADY_INITIALIZED;
   }
 
-  rv = executable->GetNativePath( mExecutable );
+#ifdef XP_WIN
+  rv = executable->GetNativeTarget(mExecutable);
+  if (NS_FAILED(rv) || mExecutable.IsEmpty())
+#endif
+  rv = executable->GetNativePath(mExecutable);
   NS_ENSURE_SUCCESS(rv, rv);
 
   DEBUG_LOG(("nsPipeTransport::Init: executable=[%s]\n", mExecutable.get()));
 
   if ( cwd != nsnull) {
+#ifdef XP_WIN
+    rv = cwd->GetNativeTarget(mCwd);
+    if (NS_FAILED(rv) || mExecutable.IsEmpty())
+#endif
     rv = cwd->GetNativePath( mCwd );
     NS_ENSURE_SUCCESS(rv, rv);
 

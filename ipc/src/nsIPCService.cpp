@@ -296,16 +296,6 @@ nsIPCService::RunPipe (nsIFile *executable,
 
   nsCAutoString commandOut ("");
 
-  nsCAutoString execNativePath;
-#ifdef XP_WIN
-  rv = executable->GetNativeTarget(execNativePath);
-  if (NS_FAILED(rv) || execNativePath.IsEmpty())
-#endif
-  rv = executable->GetNativePath(execNativePath);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  DEBUG_LOG(("nsIPCService::RunPipe: about to execute %s\n", execNativePath.get()));
-
   // Create a pipetransport instance to execute command
   nsCOMPtr<nsIPipeTransport> pipeTrans;
 
@@ -450,6 +440,11 @@ nsIPCService::RunAsync(nsIFile *executable,
   *_retval = nsnull;
 
   nsCAutoString execNativePath;
+
+#ifdef XP_WIN
+  rv = executable->GetNativeTarget(execNativePath);
+  if (NS_FAILED(rv) || execNativePath.IsEmpty())
+#endif
   rv = executable->GetNativePath(execNativePath);
   NS_ENSURE_SUCCESS(rv, rv);
 
