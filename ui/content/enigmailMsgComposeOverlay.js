@@ -1432,34 +1432,19 @@ function enigEncryptMsg(msgSendType) {
        return false;
      }
 
-     if (usingPGPMime &&
-         ((sendFlags & ENIG_ENCRYPT_OR_SIGN))) {
-       // temporarily enable quoted-printable for PGP/MIME messages
-       try {
-          // make sure plaintext is not changed to 7bit
-          if (typeof(msgCompFields.forceMsgEncoding) == "boolean") {
-            msgCompFields.forceMsgEncoding = true;
-            DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: enabled forceMsgEncoding\n");
-          }
-
-          //if (msgCompFields.characterSet == "ISO-2022-JP") {
-          //    gMsgCompose.SetDocumentCharset("UTF-8");
-          //}
-       }
-       catch (ex) {}
-    }
-    else if ((! usingPGPMime) && (sendFlags & ENIG_ENCRYPT)) {
-      if (typeof(msgCompFields.forceMsgEncoding) == "boolean") {
-        // force keeping the charset (i.e. don't convert to us-ascii)
-        msgCompFields.forceMsgEncoding = true;
-        DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: enabled forceMsgEncoding\n");
-
-        //if (msgCompFields.characterSet == "ISO-2022-JP") {
-        //   gMsgCompose.SetDocumentCharset("UTF-8");
-        //}
+     if (msgCompFields.characterSet != "ISO-2022-JP") {
+       if ((usingPGPMime &&
+           ((sendFlags & ENIG_ENCRYPT_OR_SIGN))) || ((! usingPGPMime) && (sendFlags & ENIG_ENCRYPT))) {
+         try {
+            // make sure plaintext is not changed to 7bit
+            if (typeof(msgCompFields.forceMsgEncoding) == "boolean") {
+              msgCompFields.forceMsgEncoding = true;
+              DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: enabled forceMsgEncoding\n");
+            }
+         }
+         catch (ex) {}
       }
     }
-
   } catch (ex) {
      EnigWriteException("enigmailMsgComposeOverlay.js: enigEncryptMsg", ex);
      msg=EnigGetString("signFailed");
