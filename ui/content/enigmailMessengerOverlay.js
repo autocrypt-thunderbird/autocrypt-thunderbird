@@ -1718,7 +1718,7 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
     return;
   }
 
-  exitStatus=enigmailSvc.decryptAttachment(window, EnigGetFilePath(outFile),
+  exitStatus=enigmailSvc.decryptAttachment(window, outFile,
                                 callbackArg.attachment.displayName,
                                 callbackArg.ipcBuffer,
                                 exitCodeObj, statusFlagsObj,

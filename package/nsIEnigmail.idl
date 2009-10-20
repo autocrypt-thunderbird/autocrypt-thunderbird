@@ -408,7 +408,7 @@ interface nsIEnigmail : nsISupports
                             out wstring errorMsg);
 
   boolean decryptAttachment (in nsIDOMWindow parent,
-                             in string outFileName,
+                             in nsIFile outFile,
                              in string displayName,
                              in nsIIPCBuffer ipcBuffer,
                              out long exitCode,

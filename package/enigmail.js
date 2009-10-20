@@ -100,6 +100,7 @@ const NS_XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 const nsISupports            = Components.interfaces.nsISupports;
 const nsIObserver            = Components.interfaces.nsIObserver;
 const nsILocalFile           = Components.interfaces.nsILocalFile;
+const nsILocalFileWin        = Components.interfaces.nsILocalFileWin;
 const nsIProtocolHandler     = Components.interfaces.nsIProtocolHandler;
 const nsIIPCService          = Components.interfaces.nsIIPCService;
 const nsIPipeConsole         = Components.interfaces.nsIPipeConsole;
@@ -350,7 +351,7 @@ function hexToBytes(hex) {
 }
 
 function printCmdLine(command, args) {
-  return (getFilePath(command)+" "+args.join(" ")).replace(/\\\\/g, "\\")
+  return (getFilePath(command, false)+" "+args.join(" ")).replace(/\\\\/g, "\\")
 }
 
 
@@ -415,11 +416,18 @@ function initPath(localFileObj, pathStr) {
 }
 
 // return the readable path of a file object
-function getFilePath (nsFileObj) {
+function getFilePath (nsFileObj, useNative) {
   if (detectOS() == "WINNT") {
-    return EnigConvertToUnicode(nsFileObj.persistentDescriptor, "utf-8");
+    if (useNative)
+      return EnigConvertToUnicode(nsFileObj.QueryInterface(nsILocalFileWin).canonicalPath, "utf-8");
+    else
+      return EnigConvertToUnicode(nsFileObj.persistentDescriptor, "utf-8");
   }
-  return nsFileObj.path;
+  
+  if (useNative)
+    return nsFileObj.path;
+  else
+    return EnigConvertFromUnicode(nsFileObj.path, "utf-8");
 }
 
 // return the OS string from XUL runtime
@@ -1553,7 +1561,7 @@ function () {
     agentPath = agentPath.QueryInterface(Components.interfaces.nsIFile);
   }
 
-  CONSOLE_LOG("EnigmailAgentPath="+getFilePath(agentPath)+"\n\n");
+  CONSOLE_LOG("EnigmailAgentPath="+getFilePath(agentPath, false)+"\n\n");
 
   this.agentType = agentType;
   this.agentPath = agentPath;
@@ -4628,7 +4636,7 @@ function  (exitCodeObj, errorMsgObj) {
 Enigmail.prototype.encryptAttachment =
 function (parent, fromMailAddr, toMailAddr, bccMailAddr, sendFlags, inFile, outFile,
           exitCodeObj, statusFlagsObj, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.encryptAttachment\n");
+  DEBUG_LOG("enigmail.js: Enigmail.encryptAttachment infileName="+inFile.path+"\n");
 
   if (!this.initialized) {
     errorMsgObj.value = EnigGetString("notInit");
@@ -4668,9 +4676,9 @@ function (parent, fromMailAddr, toMailAddr, bccMailAddr, sendFlags, inFile, outF
     passphrase = passwdObj.value;
   }
 
-  var inFilePath  = EnigConvertFromUnicode(this.getEscapedFilename(getFilePath(inFile.QueryInterface(nsILocalFile))));
-  var outFilePath = EnigConvertFromUnicode(this.getEscapedFilename(getFilePath(outFile.QueryInterface(nsILocalFile))));
-  
+  var inFilePath  = EnigConvertFromUnicode(this.getEscapedFilename(getFilePath(inFile.QueryInterface(nsILocalFile), true)));
+  var outFilePath = EnigConvertFromUnicode(this.getEscapedFilename(getFilePath(outFile.QueryInterface(nsILocalFile), true)));
+    
   args = args.concat(["--yes", "-o", outFilePath, inFilePath ]);
 
   var statusMsgObj   = new Object();
@@ -4697,9 +4705,9 @@ function (parent, fromMailAddr, toMailAddr, bccMailAddr, sendFlags, inFile, outF
 
 
 Enigmail.prototype.decryptAttachment =
-function (parent, outFileName, displayName, inputBuffer,
+function (parent, outFile, displayName, inputBuffer,
           exitCodeObj, statusFlagsObj, errorMsgObj) {
-  WRITE_LOG("enigmail.js: Enigmail.decryptAttachment: parent="+parent+", outFileName="+outFileName+"\n");
+  WRITE_LOG("enigmail.js: Enigmail.decryptAttachment: parent="+parent+", outFileName="+outFile.path+"\n");
 
   var dataLength = new Object();
   var byteData = inputBuffer.getByteData(dataLength);
@@ -4718,7 +4726,7 @@ function (parent, outFileName, displayName, inputBuffer,
     return true;
   }
 
-  outFileName = this.getEscapedFilename(outFileName);
+  outFileName = this.getEscapedFilename(getFilePath(outFile.QueryInterface(nsILocalFile), false));
 
   var args = this.getAgentArgs(true);
   args = args.concat(["-o", outFileName, "--yes"]);

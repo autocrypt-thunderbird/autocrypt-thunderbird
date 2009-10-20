@@ -1970,7 +1970,7 @@ function EnigGetFilePath (nsFileObj) {
   if (EnigGetOS() == "WINNT") {
     return EnigConvertToUnicode(nsFileObj.persistentDescriptor, "utf-8");
   }
-  return nsFileObj.path;
+  return EnigConvertFromUnicode(nsFileObj.path, "utf-8");
 }
 
 function EnigCreateRevokeCert(keyId, userId) {
