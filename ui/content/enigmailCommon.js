@@ -1919,7 +1919,7 @@ function EnigRevokeKey(keyId, userId) {
     EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+errorMsgObj.value);
     return false;
   }
-  r = enigmailSvc.importKeyFromFile(window, revFile.path, errorMsgObj);
+  r = enigmailSvc.importKeyFromFile(window, revFile, errorMsgObj);
   revFile.remove(false);
   if (r != 0) {
     EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+EnigConvertGpgToUnicode(errorMsgObj.value));

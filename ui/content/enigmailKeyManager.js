@@ -756,7 +756,7 @@ function enigmailImportKeysFromFile() {
   if (! inFile) return;
 
   var errorMsgObj = {};
-  var exitCode = enigmailSvc.importKeyFromFile(window, EnigGetFilePath(inFile), errorMsgObj);
+  var exitCode = enigmailSvc.importKeyFromFile(window, inFile, errorMsgObj);
   if (exitCode != 0) {
     EnigAlert(EnigGetString("importKeysFailed")+"\n\n"+errorMsgObj.value);
   }

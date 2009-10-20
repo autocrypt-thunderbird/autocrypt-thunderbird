@@ -351,7 +351,7 @@ function hexToBytes(hex) {
 }
 
 function printCmdLine(command, args) {
-  return (getFilePath(command, false)+" "+args.join(" ")).replace(/\\\\/g, "\\")
+  return (getFilePathDesc(command)+" "+args.join(" ")).replace(/\\\\/g, "\\")
 }
 
 
@@ -415,19 +415,31 @@ function initPath(localFileObj, pathStr) {
   }
 }
 
-// return the readable path of a file object
-function getFilePath (nsFileObj, useNative) {
-  if (detectOS() == "WINNT") {
-    if (useNative)
-      return EnigConvertToUnicode(nsFileObj.QueryInterface(nsILocalFileWin).canonicalPath, "utf-8");
-    else
-      return EnigConvertToUnicode(nsFileObj.persistentDescriptor, "utf-8");
-  }
-  
-  if (useNative)
-    return nsFileObj.path;
+// return the human readable path of a file object
+function getFilePathDesc (nsFileObj) {
+  if (detectOS() == "WINNT")
+    return nsFileObj.persistentDescriptor;
   else
-    return EnigConvertFromUnicode(nsFileObj.path, "utf-8");
+    return nsFileObj.path;
+}
+
+// return the useable path (for gpg) of a file object
+function getFilePath (nsFileObj, creationMode) {
+  if (creationMode == null) creationMode = NS_RDONLY;
+  
+  if (detectOS() == "WINNT") {
+    if (creationMode & NS_WRONLY) {
+      // HACK to get a canonical file name
+      if (!nsFileObj.exists()) {
+        nsFileObj.create(nsFileObj.NORMAL_FILE_TYPE, DEFAULT_FILE_PERMS);
+        var nsFileObjTmp=nsFileObj.clone();
+        return EnigConvertToUnicode(nsFileObjTmp.QueryInterface(nsILocalFileWin).canonicalPath, "utf-8");
+      }
+    }
+      return EnigConvertToUnicode(nsFileObj.QueryInterface(nsILocalFileWin).canonicalPath, "utf-8");
+  }
+
+  return EnigConvertFromUnicode(nsFileObj.path, "utf-8");
 }
 
 // return the OS string from XUL runtime
@@ -1561,7 +1573,7 @@ function () {
     agentPath = agentPath.QueryInterface(Components.interfaces.nsIFile);
   }
 
-  CONSOLE_LOG("EnigmailAgentPath="+getFilePath(agentPath, false)+"\n\n");
+  CONSOLE_LOG("EnigmailAgentPath="+getFilePathDesc(agentPath)+"\n\n");
 
   this.agentType = agentType;
   this.agentPath = agentPath;
@@ -4063,15 +4075,15 @@ function (fileNameStr) {
 }
 
 Enigmail.prototype.importKeyFromFile =
-function (parent, fileName, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.importKeyFromFile: fileName="+fileName+"\n");
+function (parent, inputFile, errorMsgObj) {
+  DEBUG_LOG("enigmail.js: Enigmail.importKeyFromFile: fileName="+inputFile.path+"\n");
 
   if (!this.initialized) {
     errorMsgObj.value = EnigGetString("notInit");
     return 1;
   }
 
-  fileName=this.getEscapedFilename(fileName);
+  var fileName=this.getEscapedFilename(getFilePath(inputFile.QueryInterface(nsILocalFile)));
 
   var args = this.getAgentArgs(true);
   args.push("--import");
@@ -4676,8 +4688,8 @@ function (parent, fromMailAddr, toMailAddr, bccMailAddr, sendFlags, inFile, outF
     passphrase = passwdObj.value;
   }
 
-  var inFilePath  = EnigConvertFromUnicode(this.getEscapedFilename(getFilePath(inFile.QueryInterface(nsILocalFile), true)));
-  var outFilePath = EnigConvertFromUnicode(this.getEscapedFilename(getFilePath(outFile.QueryInterface(nsILocalFile), true)));
+  var inFilePath  = this.getEscapedFilename(getFilePath(inFile.QueryInterface(nsILocalFile)));
+  var outFilePath = this.getEscapedFilename(getFilePath(outFile.QueryInterface(nsILocalFile)));
     
   args = args.concat(["--yes", "-o", outFilePath, inFilePath ]);
 
@@ -4726,7 +4738,7 @@ function (parent, outFile, displayName, inputBuffer,
     return true;
   }
 
-  outFileName = this.getEscapedFilename(getFilePath(outFile.QueryInterface(nsILocalFile), false));
+  var outFileName = this.getEscapedFilename(getFilePath(outFile.QueryInterface(nsILocalFile), NS_WRONLY));
 
   var args = this.getAgentArgs(true);
   args = args.concat(["-o", outFileName, "--yes"]);
