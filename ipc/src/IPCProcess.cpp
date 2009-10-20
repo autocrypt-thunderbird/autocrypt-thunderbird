@@ -212,18 +212,14 @@ void IPC_HideConsoleWin32()
 
 #ifdef XP_WIN_IPC
 
-/* Windows specific code adapted from nsprpub/pr/src/md/windows/ntmisc.c
+/* Windows specific code adapted from mozilla/xpcom/threads/nsProcessCommon.cpp
+   Out param `wideCmdLine` must be PR_Freed by the caller.
  */
 
-/*
- * Assemble the command line by concatenating the argv array.
- * On success, this function returns 0 and the resulting command
- * line is returned in *cmdLine.  On failure, it returns -1.
- */
-static int assembleCmdLine(char *const *argv, char **cmdLine)
+static int assembleCmdLine(char *const *argv, PRUnichar **wideCmdLine)
 {
     char *const *arg;
-    char *p, *q;
+    char *p, *q, *cmdLine;
     int cmdLineSize;
     int numBackslashes;
     int i;
@@ -245,7 +241,7 @@ static int assembleCmdLine(char *const *argv, char **cmdLine)
                 + 2                      /* we quote every argument */
                 + 1;                     /* space in between, or final null */
     }
-    p = *cmdLine = (char*) PR_MALLOC(cmdLineSize);
+    p = cmdLine = (char *) PR_MALLOC(cmdLineSize*sizeof(char));
     if (p == NULL) {
         return -1;
     }
@@ -253,7 +249,7 @@ static int assembleCmdLine(char *const *argv, char **cmdLine)
     for (arg = argv; *arg; arg++) {
         /* Add a space to separates the arguments */
         if (arg != argv) {
-            *p++ = ' ';
+            *p++ = ' '; 
         }
         q = *arg;
         numBackslashes = 0;
@@ -316,12 +312,15 @@ static int assembleCmdLine(char *const *argv, char **cmdLine)
         if (argNeedQuotes) {
             *p++ = '"';
         }
-    }
+    } 
 
     *p = '\0';
+    PRInt32 numChars = MultiByteToWideChar(CP_ACP, 0, cmdLine, -1, NULL, 0); 
+    *wideCmdLine = (PRUnichar *) PR_MALLOC(numChars*sizeof(PRUnichar));
+    MultiByteToWideChar(CP_ACP, 0, cmdLine, -1, *wideCmdLine, numChars); 
+    PR_Free(cmdLine);
     return 0;
 }
-
 
 /*
  * Assemble the environment block by concatenating the envp array
@@ -424,7 +423,37 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
                           (osvi.dwMajorVersion >= 5);
   }
 
-  char *cmdLine = NULL;
+  PRUint32 count = 0;
+  char *const *arg;
+  for (arg = argv; *arg; arg++) {
+    ++count;
+  }
+  
+  // make sure that when we allocate we have 1 greater than the
+  // count since we need to null terminate the list for the argv to
+  // pass into PR_CreateProcess
+  char **my_argv = NULL;
+  my_argv = (char **)nsMemory::Alloc(sizeof(char *) * (count + 2) );
+  if (!my_argv) {
+    return IPC_NULL_HANDLE;
+  }
+
+  // copy the args
+  PRUint32 i;
+  for (i=0; i < count; i++) {
+    my_argv[i+1] = const_cast<char*>(argv[i]);
+  }
+
+  // we need to set argv[0] to the program name.
+  my_argv[0] = const_cast<char*>(path);
+  PRInt32 numChars = MultiByteToWideChar(CP_ACP, 0, my_argv[0], -1, NULL, 0); 
+  PRUnichar* wideFile = (PRUnichar *) PR_MALLOC(numChars * sizeof(PRUnichar));
+  MultiByteToWideChar(CP_ACP, 0, my_argv[0], -1, wideFile, numChars); 
+  
+  // null terminate the array
+  my_argv[count+1] = NULL;
+
+  PRUnichar *cmdLine = NULL;
   if (assembleCmdLine(argv, &cmdLine) == -1)
     return IPC_NULL_HANDLE;
 
@@ -432,16 +461,24 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
   if (assembleEnvBlock(envp, &envBlock) == -1)
     return IPC_NULL_HANDLE;
 
+  PRUnichar* wideCwd = NULL;
+  
+  if (cwd != NULL) {
+    numChars = MultiByteToWideChar(CP_ACP, 0, cwd, -1, NULL, 0); 
+    PRUnichar* wideCwd = (PRUnichar *) PR_MALLOC(numChars * sizeof(PRUnichar));
+    MultiByteToWideChar(CP_ACP, 0, cwd, -1, wideCwd, numChars);
+    DEBUG_LOG(("IPCProcess: createProcess converted cwd to %s\n", NS_ConvertUTF16toUTF8(wideCwd).get()));
+	}
+  
   // Fill in the process's startup information
-  STARTUPINFO startupInfo;
-  memset( &startupInfo, 0, sizeof(STARTUPINFO) );
-  startupInfo.cb	  = sizeof(STARTUPINFO);
-  startupInfo.dwFlags	  = STARTF_USESTDHANDLES;
-  startupInfo.hStdInput	  = std_in  ? (HANDLE) std_in  : GetStdHandle(STD_INPUT_HANDLE);
-  startupInfo.hStdOutput  = std_out ? (HANDLE) std_out : GetStdHandle(STD_OUTPUT_HANDLE);
-  startupInfo.hStdError	  = std_err ? (HANDLE) std_err : GetStdHandle(STD_ERROR_HANDLE);
-
-  DWORD dwCreationFlags = CREATE_DEFAULT_ERROR_MODE;
+  STARTUPINFOW startupInfo;
+  memset( &startupInfo, 0, sizeof(STARTUPINFOW) );
+  startupInfo.cb         = sizeof(STARTUPINFOW);
+  startupInfo.dwFlags    = STARTF_USESTDHANDLES;
+  startupInfo.hStdInput  = std_in  ? (HANDLE) std_in  : GetStdHandle(STD_INPUT_HANDLE);
+  startupInfo.hStdOutput = std_out ? (HANDLE) std_out : GetStdHandle(STD_OUTPUT_HANDLE);
+  startupInfo.hStdError  = std_err ? (HANDLE) std_err : GetStdHandle(STD_ERROR_HANDLE);
+  DWORD dwCreationFlags = CREATE_DEFAULT_ERROR_MODE /*| CREATE_UNICODE_ENVIRONMENT */;
 
   char buf[128];
   BOOL bIsConsoleAttached = (GetConsoleTitle(buf, 127) > 0);
@@ -465,28 +502,31 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
   }
 
   PROCESS_INFORMATION processInfo;
-  //TODO: change to CreateProcessW
-  bRetVal = CreateProcess( NULL,		// executable
+  
+  bRetVal = CreateProcessW(wideFile,		// executable
                            cmdLine,		// command line
                            NULL,		// process security
                            NULL,		// thread security
                            TRUE,		// inherit handles
                            dwCreationFlags,     // creation flags
                            envBlock, 	        // environment
-                           cwd,	                // cwd
+                           wideCwd,	                // cwd
                            &startupInfo,	// startup info
                            &processInfo );	// process info (returned)
 
-  DEBUG_LOG(("IPCProcess: created process %s (%d) %p: %s\n", cmdLine,
+  DEBUG_LOG(("IPCProcess: created process %s (%d) %p: %s\n", NS_ConvertUTF16toUTF8(cmdLine).get(),
                (int) bRetVal, processInfo.hProcess, envBlock));
 
-  if (cmdLine) {
-    PR_DELETE(cmdLine);
-  }
+  if (cmdLine)
+    PR_Free(cmdLine);
+    
+  if (wideCwd)
+      PR_Free(wideCwd);
 
-  if (envBlock) {
+  if (envBlock)
     PR_DELETE(envBlock);
-  }
+  
+  nsMemory::Free(my_argv);
 
   // Close handle to primary thread of process (we don't need it)
   CloseHandle(processInfo.hThread);
