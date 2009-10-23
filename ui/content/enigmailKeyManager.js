@@ -697,8 +697,13 @@ function enigmailExportKeys() {
 
   var exportFlags = 0;
   if (gKeyList[keyList[0]].secretAvailable) {
-    if (EnigConfirm(EnigGetString("exportSecretKey"), EnigGetString("keyMan.button.exportSecKey"))) {
+    var r=EnigLongAlert(EnigGetString("exportSecretKey"), null, EnigGetString("keyMan.button.exportPubKey"), EnigGetString("keyMan.button.exportSecKey"), ":cancel");
+    switch (r) {
+    case 1:
       exportFlags |= nsIEnigmail.EXTRACT_SECRET_KEY;
+      break;
+    case 2:
+      return;
     }
   }
 
