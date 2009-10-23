@@ -528,6 +528,8 @@
 <!ENTITY enigmail.keyDetails.calcTrust.label         "Key validity">
 <!ENTITY enigmail.keyDetails.ownerTrust.label        "Owner trust">
 <!ENTITY enigmail.keyDetails.fingerprint.label       "Fingerprint">
+<!ENTITY enigmail.keyDetails.selAction.label         "Select action ...">
+<!ENTITY enigmail.keyDetails.selAction.accesskey     "S">
 
 <!ENTITY enigmail.cardDetails.title                  "OpenPGP SmartCard Details">
 <!ENTITY enigmail.cardDetails.cardMenu.label         "SmartCard">

@@ -54,6 +54,10 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyDetailsDlg.js"/>
 
+  <broadcasterset>
+    <broadcaster id="ownKeyCommands" hidden="true"/>
+  </broadcasterset>
+
   <vbox orient="vertical">
     <grid>
       <columns>
@@ -152,25 +156,26 @@
       <treechildren id="keyListChildren"/>
 
     </tree>
-	</hbox>
-
-  <separator/>
-
-  <hbox flex="0">
-    <button label="&enigmail.keyMan.ctxViewPhoto.label;" oncommand="showPhoto()" id="showPhoto" disabled="true"/>
-    <button label="&enigmail.keyMan.ctxViewSig.label;" oncommand="viewSignatures()"/>
-    <button label="&enigmail.keyMan.sign.label;" oncommand="signKey()"/>
-    <button label="&enigmail.keyMan.setTrust.label;" oncommand="setOwnerTrust()"/>
   </hbox>
 
-  <vbox id="ownKeyCommands" hidden="true" flex="0">
-    <separator/>
-    <hbox>
-      <button label="&enigmail.keyMan.manageUid.label;" oncommand="manageUids()"/>
-      <button label="&enigmail.keyMan.changePwd.label;" oncommand="changePassword()"/>
-      <button label="&enigmail.keyMan.revokeKey.label;" oncommand="revokeKey()"/>
-      <button label="&enigmail.keyMan.genRevoke.label;" oncommand="genRevocationCert()"/>
-    </hbox>
-  </vbox>
+  <separator/>
+  
+  <hbox flex="0">
+    <button id="actions" label="&enigmail.keyDetails.selAction.label;" 
+            accesskey="&enigmail.keyDetails.selAction.accesskey;" type="menu">
+      <menupopup id="actionPopup">
+        <menuitem label="&enigmail.keyMan.ctxViewPhoto.label;" oncommand="showPhoto()" id="showPhoto" disabled="true"/>
+        <menuitem label="&enigmail.keyMan.ctxViewSig.label;" oncommand="viewSignatures()"/>
+        <menuitem label="&enigmail.keyMan.sign.label;" oncommand="signKey()"/>
+        <menuitem label="&enigmail.keyMan.setTrust.label;" oncommand="setOwnerTrust()"/>
+        <menuseparator observes="ownKeyCommands" />
+        <menuitem label="&enigmail.keyMan.manageUid.label;" observes="ownKeyCommands" oncommand="manageUids()"/>
+        <menuitem label="&enigmail.keyMan.changePwd.label;" observes="ownKeyCommands" oncommand="changePassword()"/>
+        <menuitem label="&enigmail.keyMan.revokeKey.label;" observes="ownKeyCommands" oncommand="revokeKey()"/>
+        <menuitem label="&enigmail.keyMan.ctxGenRevoke.label;" observes="ownKeyCommands" oncommand="genRevocationCert()"/>
+      </menupopup>
+    </button>
+  </hbox>
+
 </dialog>
 
