@@ -485,19 +485,33 @@ function enigMessageDecrypt(event, isAuto) {
     event: event,
     isAuto: isAuto
   };
-  
-  MsgHdrToMimeMessage(gFolderDisplay.selectedMessage , cbObj, enigMessageDecryptCb, true);
+
+  try {  
+    MsgHdrToMimeMessage(gFolderDisplay.selectedMessage , cbObj, enigMsgDecryptMimeCb, true);
+  }
+  catch (ex) {
+    DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecrypt: cannot use MsgHdrToMimeMessage\n");
+    var contentType=currentHeaderData['content-type'].headerValue;
+    var mimeMsg = {
+      headers: {'content-type': contentType },
+      contentType: contentType,
+      parts: {}
+    }
+    enigMessageDecryptCb(event, isAuto, mimeMsg);
+  }
 }
 
 
-function enigMessageDecryptCb(msg, mimeMsg) {
-
+function enigMsgDecryptMimeCb(msg, mimeMsg) {
   var enigmailSvc=GetEnigmailSvc();
   if (!enigmailSvc) return;
   
-  var isAuto = this.isAuto;
-  var event = this.event;
-  
+  enigMessageDecryptCb(this.event, this.event, mimeMsg);
+}  
+
+function enigMessageDecryptCb(event, isAuto, mimeMsg){
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCb:\n");
+
   var showHeaders = 0;
 
   // Copy selected headers
