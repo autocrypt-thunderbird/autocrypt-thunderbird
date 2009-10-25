@@ -68,9 +68,6 @@ pref("extensions.enigmail.gpgVersionWarnCount",1);
 // enable 'Decrypt & open' for double click on attachment (if possible)
 pref("extensions.enigmail.handleDoubleClick",true);
 
-// headers to be retrieved from the mail backend, but hidden from the users
-pref("extensions.enigmail.hideHeaders", "x-enigmail-version openpgp content-transfer-encoding x-mimeole x-bugzilla-reason x-php-bug");
-
 // disable '<' and '>' around email addresses
 pref("extensions.enigmail.hushMailSupport",false);
 

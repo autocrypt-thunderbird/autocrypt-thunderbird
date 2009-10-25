@@ -75,18 +75,6 @@ function enigStartHeaders()
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigStartHeaders\n");
 
   try {
-    var index;
-    var hideHeaders = EnigGetPref("hideHeaders").split(' ');
-    for (index = 0; index < hideHeaders.length; index++) {
-      if (typeof(gExpandedHeaderView[hideHeaders[index]]) == "object") {
-        if (! gViewAllHeaders) {
-          gExpandedHeaderView[hideHeaders[index]].enclosingBox.setAttribute("hidden", true);
-        }
-        else {
-          gExpandedHeaderView[hideHeaders[index]].enclosingBox.removeAttribute("hidden");
-        }
-      }
-    }
 
     enigStatusBarHide();
 

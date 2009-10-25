@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "0.97a";
-var gEnigmimeVersion = "0.97a";
+var gEnigmailVersion = "0.97b";
+var gEnigmimeVersion = "0.97b";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -350,6 +350,28 @@ function EnigUpgradeHeadersView() {
   catch (ex) {}
 }
 
+function EnigUpgradeCustomHeaders() {
+  try {
+    var extraHdrs = " " + gEnigPrefRoot.getCharPref("mailnews.headers.extraExpandedHeaders").toLowerCase() + " ";
+
+    var extraHdrList = [
+      "x-enigmail-version",
+      "content-transfer-encoding",
+      "openpgp",
+      "x-mimeole",
+      "x-bugzilla-reason",
+      "x-php-bug" ];
+
+    for (hdr in extraHdrList) {
+      extraHdrs = extraHdrs.replace(" "+extraHdrList[hdr]+" ", " ");
+    }
+
+    extraHdrs = extraHdrs.replace(/^ */, "").replace(/ *$/, "");
+    gEnigPrefRoot.setCharPref("mailnews.headers.extraExpandedHeaders", extraHdrs)
+  }
+  catch(ex) {}
+}
+
 function EnigUpgradePgpMime() {
   var pgpMimeMode = false;
   try {
@@ -376,17 +398,23 @@ function EnigUpgradePgpMime() {
 
 function EnigConfigure() {
   var oldVer=EnigGetPref("configuredVersion");
-  if (oldVer == "") {
-    EnigOpenSetupWizard();
-  }
-  else if (oldVer < "0.95") {
-    try {
-      EnigUpgradeHeadersView();
-      EnigUpgradePgpMime();
-      EnigUpgradeRecipientsSelection();
+
+  try {
+    var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"].getService(Components.interfaces.nsIVersionComparator);
+    if (oldVer == "") {
+      EnigOpenSetupWizard();
     }
-    catch (ex) {}
+    else if (oldVer < "0.95") {
+      try {
+        EnigUpgradeHeadersView();
+        EnigUpgradePgpMime();
+        EnigUpgradeRecipientsSelection();
+      }
+      catch (ex) {}
+    }
+    else if (vc.compare(oldVer, "0.97b") < 0) EnigUpgradeCustomHeaders();
   }
+  catch(ex) {};
   EnigSetPref("configuredVersion", gEnigmailVersion);
   EnigSavePrefs();
 }
