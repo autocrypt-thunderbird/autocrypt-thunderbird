@@ -486,7 +486,7 @@ function enigMessageDecrypt(event, isAuto) {
     isAuto: isAuto
   };
   
-  MsgHdrToMimeMessage(gFolderDisplay.selectedMessage , cbObj, enigMessageDecryptCb);
+  MsgHdrToMimeMessage(gFolderDisplay.selectedMessage , cbObj, enigMessageDecryptCb, true);
 }
 
 
