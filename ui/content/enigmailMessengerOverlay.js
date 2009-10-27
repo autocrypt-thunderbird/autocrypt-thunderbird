@@ -352,7 +352,7 @@ function enigOverrideLayoutChange() {
     }
   }
   
-  var toggleMsgPaneElementIds = ["key_toggleMessagePane"];
+  var toggleMsgPaneElementIds = ["cmd_toggleMessagePane"];
   for (var i = 0; i < toggleMsgPaneElementIds.length; i++) {
     var elementId = toggleMsgPaneElementIds[i];
     var element = document.getElementById(elementId);
@@ -376,16 +376,14 @@ function enigChangeMailLayout(viewType) {
 
 function enigToggleMessagePane() {
   enigStatusBarHide();
-  MsgToggleMessagePane();
+  MsgToggleMessagePane(true);
   
-  // Reload message to get it decrypted/verified
-  enigMessageReload(false);
   var button=document.getElementById("button_enigmail_decrypt")
-  if (IsMessagePaneCollapsed()) {
-    button.setAttribute("disabled", "true");
+  if (gFolderDisplay.messageDisplay.visible) {
+    button.removeAttribute("disabled");
   }
   else {
-    button.removeAttribute("disabled");
+    button.setAttribute("disabled", "true");
   }
 }
 
