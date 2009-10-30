@@ -33,6 +33,6 @@
 #ifndef nsIPCModule_h__
 #define nsIPCModule_h__
 
-#define IPC_MODULE_VERSION "1.2.0"
+#define IPC_MODULE_VERSION "1.2.1"
 
 #endif // nsIPCModule_h__

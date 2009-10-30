@@ -24,3 +24,8 @@ execAsync -> runAsync.
 Removed runSh and support for "useShell".
 Changed API for run*: replaced "command" parameter with:
 executable, argumentsList[], argumentsListCount.
+
+v1.2.1
+------
+Adaptations to better support Unicode characters in
+command line options and path for Windows
