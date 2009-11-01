@@ -124,6 +124,7 @@ function enigOnAcceptEditor() {
   }
   catch (ex) {}
   enigOnSave();
+  return smimeOnAcceptEditor();
 }
 
 function onPreInit(account, accountValues)
