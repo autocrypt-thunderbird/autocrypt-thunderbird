@@ -4,8 +4,8 @@ locale        enigmail    en-US       jar:chrome/enigmail.jar!/locale/en-US/enig
 # Skin for TBird Mac OS X
 skin          enigmail    classic/1.0 jar:chrome/enigmail-skin.jar!/skin/tb-mac/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Darwin
 # Skin for TBird Windows
-skin          enigmail    classic/1.0 jar:chrome/enigmail-skin.jar!/skin/classic/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT osversion<6
-skin          enigmail    classic/1.0 jar:chrome/enigmail-skin.jar!/skin/aero/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT osversion>=6
+#skin          enigmail    classic/1.0 jar:chrome/enigmail-skin.jar!/skin/classic/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT osversion<6
+skin          enigmail    classic/1.0 jar:chrome/enigmail-skin.jar!/skin/aero/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT
 skin          enigmail    classic/1.0 jar:chrome/enigmail-skin.jar!/skin/classic/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=OS2
 # Skin for TBird other OS (e.g. Linux)
 skin          enigmail    classic/1.0 jar:chrome/enigmail-skin.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Linux
