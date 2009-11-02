@@ -489,8 +489,7 @@ function enigMessageDecrypt(event, isAuto) {
   }
   catch (ex) {
     DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecrypt: cannot use MsgHdrToMimeMessage\n");
-    var contentType=currentHeaderData['content-type'].headerValue;
-    enigMessageDecryptCb(event, isAuto);
+    enigMessageDecryptCb(event, isAuto, null);
   }
 }
 
@@ -499,15 +498,18 @@ function enigMsgDecryptMimeCb(msg, mimeMsg) {
   var enigmailSvc=GetEnigmailSvc();
   if (!enigmailSvc) return;
   
-  enigMessageDecryptCb(this.event, this.isAuto, null);
+  enigMessageDecryptCb(this.event, this.isAuto, mimeMsg);
 }  
 
 function enigMessageDecryptCb(event, isAuto, mimeMsg){
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCb:\n");
 
   var showHeaders = 0;
+  var contentType = "";
 
   if (mimeMsg == null) {
+    DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCb: mimeMsg is null\n");
+    contentType=currentHeaderData['content-type'].headerValue;
     mimeMsg = {
       headers: {'content-type': contentType },
       contentType: contentType,
@@ -549,7 +551,6 @@ function enigMessageDecryptCb(event, isAuto, mimeMsg){
   }
   
 
-  var contentType = "";
   var contentEncoding = "";
   var xEnigmailVersion = "";
 
