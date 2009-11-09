@@ -109,7 +109,10 @@ EnigMsgCompFields.prototype = {
       "ConvertBodyToPlainText",
       "checkCharsetConversion",
       "needToCheckCharset",
-      "securityInfo" ];
+      "securityInfo",
+      "senderReply",
+      "allReply",
+      "listReply" ];
     this._parent = smimeCompFields;
     
     for (mbr in members) { 
@@ -117,15 +120,7 @@ EnigMsgCompFields.prototype = {
       eval("this."+members[mbr]+" = this._parent."+members[mbr]+";\n");
     }
    
-    if (typeof(this._parent.splitRecipients) == "function") {
-      // TB >= 3.0
-      this.splitRecipients = this._parent.splitRecipients;
-    }
-    else {
-      this.SplitRecipients = this._parent.SplitRecipients;
-    }
-
-    
+    this.splitRecipients = this._parent.splitRecipients;
   }
 }
 
