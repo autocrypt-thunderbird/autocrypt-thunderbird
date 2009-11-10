@@ -158,7 +158,10 @@ function enigViewSecurityInfo(event, displaySmimeMsg) {
     showMessageReadSecurityInfo()
   }
   else {
-    if (gEnigSecurityInfo) enigViewOpenpgpInfo();
+    if (gEnigSecurityInfo) 
+      enigViewOpenpgpInfo()
+    else 
+      showMessageReadSecurityInfo();
   }
 }
 
@@ -416,11 +419,13 @@ function enigGetCurrentMsgUrl() {
 
     var url = urlObj.value;
 
-    var mailNewsUrl = url.QueryInterface(Components.interfaces.nsIMsgMailNewsUrl);
-    //DEBUG_LOG("enigmailMessengerOverlay.js: enigGetCurrentMsgUrl: mailNewsUrl.spec="+mailNewsUrl.spec+"\n");
-
-    return mailNewsUrl;
-
+    if (url.scheme=="file") {
+      return url;
+    }
+    else {
+      return url.QueryInterface(Components.interfaces.nsIMsgMailNewsUrl);
+    }
+    
   } catch (ex) {
     return null;
   }
