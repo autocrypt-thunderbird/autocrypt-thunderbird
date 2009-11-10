@@ -33,22 +33,6 @@
 #ifndef ipc_h__
 #define ipc_h__
 
-#if MOZILLA_MAJOR_VERSION==1 && MOZILLA_MINOR_VERSION<9
-#define _IPC_MOZILLA_1_8 1
-
-#define MOZILLA_INTERNAL_API
-
-// some compatibility re-definitions
-#define NS_PROXY_SYNC PROXY_SYNC
-#define NS_PROXY_ASYNC PROXY_ASYNC
-#define NS_PROXY_ALWAYS PROXY_ALWAYS
-#define NS_PROXY_TO_CURRENT_THREAD NS_CURRENT_EVENTQ
-#define NS_PROXY_TO_MAIN_THREAD NS_UI_THREAD_EVENTQ
-
-#else
-#define _IPC_MOZILLA_1_9 1
-#endif
-
 #if MOZ_THUNDERBIRD || MOZ_SUITE || MOZ_STATIC_MAIL_BUILD
 
 #define _IPC_FORCE_INTERNAL_API 1
@@ -58,16 +42,9 @@
 
 #ifdef FORCE_PR_LOG
 #include "nsIThread.h"
-#ifdef _IPC_MOZILLA_1_8
-// Mozilla 1.8
-#define IPC_GET_THREAD(myThread) nsIThread::GetCurrent(getter_AddRefs(myThread))
-
-#else
-// Mozilla 1.9
 #include "nsThreadUtils.h"
 
 #define IPC_GET_THREAD(myThread) NS_GetCurrentThread(getter_AddRefs(myThread))
 
-#endif
 #endif
 #endif

@@ -156,13 +156,6 @@ nsPipeConsole::Finalize(PRBool destructor)
     self = this;
   }
 
-  if (mPipeThread && !mThreadJoined) {
-    // Interrupt thread; may fail
-#ifdef _IPC_MOZILLA_1_8
-    mPipeThread->Interrupt();
-#endif
-  }
-
   // Close write pipe
   if (mPipeWrite) {
     IPC_Close(mPipeWrite);
@@ -236,13 +229,7 @@ nsPipeConsole::Open(PRInt32 maxRows, PRInt32 maxCols, PRBool joinable)
   }
 
   // Spin up a new thread to handle STDOUT polling
-#ifdef _IPC_MOZILLA_1_8
-  PRThreadState threadState = mJoinable ? PR_JOINABLE_THREAD
-                                        : PR_UNJOINABLE_THREAD;
-  rv = NS_NewThread(getter_AddRefs(mPipeThread), this, 0, threadState);
-#else
   rv = NS_NewThread(getter_AddRefs(mPipeThread), this);
-#endif
   NS_ENSURE_SUCCESS(rv, rv);
 
   return NS_OK;
@@ -370,11 +357,7 @@ nsPipeConsole::Join()
     mThreadJoined = PR_TRUE;
   }
 
-#ifdef _IPC_MOZILLA_1_8
-  rv = mPipeThread->Join();
-#else
   rv = mPipeThread->Shutdown();
-#endif
   NS_ENSURE_SUCCESS(rv, rv);
 
   return NS_OK;

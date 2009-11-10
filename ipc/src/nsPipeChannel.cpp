@@ -59,11 +59,7 @@
 #include "nsMimeTypes.h"
 #include "nsIMIMEService.h"
 
-#ifdef _IPC_MOZILLA_1_8
-#include "nsXPIDLString.h"
-#else
 #include "nsXPCOMCIDInternal.h"
-#endif
 
 #include "nsPipeChannel.h"
 
@@ -221,11 +217,7 @@ nsPipeChannel::Init(nsIURI* aURI,
     nsCOMPtr<nsIMIMEService> MIMEService (do_GetService("@mozilla.org/mime;1", &rv));
     NS_ENSURE_SUCCESS(rv, rv);
 
-#ifdef _IPC_MOZILLA_1_8
-    nsXPIDLCString contentType;
-#else
     nsCString contentType;
-#endif
     rv = MIMEService->GetTypeFromURI(url, contentType);
 
     if (NS_SUCCEEDED(rv) && (contentType.Length() > 0)) {
@@ -535,11 +527,6 @@ nsPipeChannel::AsyncOpen(nsIStreamListener *listener, nsISupports *ctxt)
   DEBUG_LOG(("nsPipeChannel::AsyncOpen:\n"));
 
   if (listener) {
-#ifdef _IPC_MOZILLA_1_8
-    rv = NS_NewAsyncStreamListener(getter_AddRefs(mListener),
-                                   listener, nsnull);
-#else
-    // Mozilla >= 1.9a
     nsCOMPtr<nsIProxyObjectManager> proxyMgr =
                                  do_GetService(NS_XPCOMPROXY_CONTRACTID, &rv);
 
@@ -550,7 +537,6 @@ nsPipeChannel::AsyncOpen(nsIStreamListener *listener, nsISupports *ctxt)
                                      listener,
                                      NS_PROXY_ASYNC | NS_PROXY_ALWAYS,
                                      getter_AddRefs(mListener));
-#endif
     NS_ENSURE_SUCCESS(rv, rv);
   }
 
@@ -923,7 +909,7 @@ nsPipeChannel::ParseHeader(const char* header, PRUint32 count)
   }
 
   if (headerKey.Equals("content-length")) {
-#if _IPC_MOZILLA_1_8 || _IPC_FORCE_INTERNAL_API
+#if _IPC_FORCE_INTERNAL_API
     PRInt32 status;
 #else
     PRUint32 status;

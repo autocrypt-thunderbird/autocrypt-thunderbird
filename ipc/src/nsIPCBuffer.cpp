@@ -164,13 +164,6 @@ nsIPCBuffer::Finalize(PRBool destructor)
     self = this;
   }
 
-#ifdef _IPC_MOZILLA_1_8
-  if (mPipeThread) {
-    // Interrupt thread; may fail
-    mPipeThread->Interrupt();
-  }
-#endif
-
   // Close write pipe
   if (mPipeWrite) {
     IPC_Close(mPipeWrite);
@@ -674,11 +667,7 @@ nsIPCBuffer::Join()
     }
   }
 
-#ifdef _IPC_MOZILLA_1_8
-  rv = mPipeThread->Join();
-#else
   rv = mPipeThread->Shutdown();
-#endif
 
   NS_ENSURE_SUCCESS(rv, rv);
 
@@ -709,12 +698,7 @@ nsIPCBuffer::GetFileDesc(IPCFileDesc* *_retval)
     }
 
     // Spin up a new thread to handle STDOUT polling
-#ifdef _IPC_MOZILLA_1_8
-    PRThreadState threadState = PR_JOINABLE_THREAD;
-    rv = NS_NewThread(getter_AddRefs(mPipeThread), this, 0, threadState);
-#else
     rv = NS_NewThread(getter_AddRefs(mPipeThread), this);
-#endif
 
     NS_ENSURE_SUCCESS(rv, rv);
   }

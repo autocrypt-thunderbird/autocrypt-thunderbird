@@ -51,11 +51,6 @@
 #include "nsIStreamListener.h"
 #include "nsIInputStream.h"
 #include "nsIOutputStream.h"
-
-#ifdef _IPC_MOZILLA_1_8
-#include "nsIEventQueueService.h"
-#include "nsString.h"
-#else
 #include "nsThreadUtils.h"
 
 #ifndef _IPC_FORCE_INTERNAL_API
@@ -64,7 +59,6 @@
 #include "nsString.h"
 #endif
 
-#endif
 
 #include "nsIAsyncInputStream.h"
 #include "nsIAsyncOutputStream.h"
@@ -162,6 +156,7 @@ protected:
     nsCOMPtr<nsIStreamListener>         mListener;
     nsCOMPtr<nsISupports>               mContext;
     nsCOMPtr<nsILoadGroup>              mLoadGroup;
+    nsCOMPtr<nsIPipeTransportWriter>    mPipeTransportWriter;
 };
 
 // Helper class to handle polling of STDOUT pipe
@@ -236,6 +231,7 @@ protected:
     PRUint32                 mCount;
     IPCFileDesc*             mPipe;
     PRBool                   mCloseAfterWrite;
+    nsCOMPtr<nsIThread>      mThread;
 };
 
 #endif // nsPipeTransport_h__

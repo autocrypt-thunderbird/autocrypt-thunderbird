@@ -58,13 +58,9 @@
 
 #include "nsIIPCService.h"
 #include "nsPipeTransport.h"
-
-#ifdef _IPC_MOZILLA_1_8
-#include "nsEventQueueUtils.h"
-#else
-#include "nsThreadUtils.h"
 #include "nsXPCOMCIDInternal.h"
-#endif
+#include "nsThreadUtils.h"
+
 
 #ifdef PR_LOGGING
 PRLogModuleInfo* gPipeTransportLog = NULL;
@@ -120,6 +116,7 @@ nsPipeTransport::nsPipeTransport()
       mBufferSegmentSize(NS_PIPE_TRANSPORT_DEFAULT_SEGMENT_SIZE),
       mBufferMaxSize(NS_PIPE_TRANSPORT_DEFAULT_BUFFER_SIZE),
       mHeadersMaxSize(NS_PIPE_TRANSPORT_DEFAULT_HEADERS_SIZE),
+      mPipeTransportWriter(nsnull),
 
       mExecBuf(""),
 
@@ -476,12 +473,21 @@ nsPipeTransport::Finalize(PRBool destructor)
       // Join poller thread to free resources (may block)
       rv = mStdoutPoller->Join();
       if (NS_FAILED(rv)) {
-        ERROR_LOG(("nsPipeTransport::Finalize: Failed to join Stdout thread, %x\n", rv));
+        ERROR_LOG(("nsPipeTransport::Finalize: Failed to shutdown Stdout thread, %x\n", rv));
         rv = NS_ERROR_FAILURE;
       }
     }
   }
 
+  if (mPipeTransportWriter) {
+    rv = mPipeTransportWriter->Join();
+      if (NS_FAILED(rv)) {
+        ERROR_LOG(("nsPipeTransport::Finalize: Failed to shutdown Stdin thread, %x\n", rv));
+        rv = NS_ERROR_FAILURE;
+      }
+    mPipeTransportWriter = nsnull;
+  }
+  
   // Kill process to wake up thread blocked for input from process
   // NOTE: This should always be done after "interrupting" the thread
   //       so that the interrupt flag is set.
@@ -926,23 +932,12 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
     mInputStream = asyncInputStream;
     mOutputStream = asyncOutputStream;
 
-#ifdef _IPC_MOZILLA_1_8
-    nsCOMPtr<nsIEventQueue> eventQ;
-
-    if (!mNoProxy) {
-      rv = NS_GetCurrentEventQ(getter_AddRefs(eventQ));
-      NS_ENSURE_SUCCESS(rv, rv);
-    }
-
-#else
     nsCOMPtr<nsIThread> eventQ;
 
     if (!mNoProxy) {
       rv = NS_GetCurrentThread(getter_AddRefs(eventQ));
       NS_ENSURE_SUCCESS(rv, rv);
     }
-
-#endif
 
     // Set input stream observer (using event queue, if need be)
     rv = asyncInputStream->AsyncWait((nsIInputStreamCallback*) this,
@@ -1034,11 +1029,10 @@ nsPipeTransport::WriteAsync(nsIInputStream *inStr, PRUint32 count,
   if (!stdinWriter)
     return NS_ERROR_OUT_OF_MEMORY;
 
-  nsCOMPtr<nsIPipeTransportWriter> pipeTransportWriter;
-  pipeTransportWriter = stdinWriter;
+  mPipeTransportWriter = stdinWriter;
 
   nsresult rv;
-  rv = pipeTransportWriter->WriteFromStream(inStr, count, mStdinWrite,
+  rv = mPipeTransportWriter->WriteFromStream(inStr, count, mStdinWrite,
                                             closeAfterWrite);
 
   if (closeAfterWrite) {
@@ -1143,7 +1137,7 @@ nsPipeTransport::ExecPrompt(const char* command, const char* prompt,
       }
 
       if ((promptLen > 0) && (mExecBuf.Length() >= promptLen)) {
-#if _IPC_MOZILLA_1_8 || _IPC_FORCE_INTERNAL_API
+#if _IPC_FORCE_INTERNAL_API
         returnCount = mExecBuf.Find(prompt, PR_FALSE, searchOffset);
 #else
         returnCount = mExecBuf.Find(Substring(prompt, searchOffset), CaseInsensitiveCompare);
@@ -1538,6 +1532,7 @@ nsPipeTransport::OnStartRequest(nsIRequest *aRequest, nsISupports *aContext)
 {
   DEBUG_LOG(("nsPipeTransport::OnStartRequest:\n"));
 
+  
   return NS_OK;
 }
 
@@ -1621,22 +1616,13 @@ nsPipeTransport::OnInputStreamReady(nsIAsyncInputStream* inStr)
                                      mInputStream, 0, available);
     NS_ENSURE_SUCCESS(rv, rv);
 
-#ifdef _IPC_MOZILLA_1_8
-    nsCOMPtr<nsIEventQueue> eventQ;
-
-    if (!mNoProxy) {
-      rv = NS_GetCurrentEventQ(getter_AddRefs(eventQ));
-      if (NS_FAILED(rv)) return rv;
-    }
-#else
-  // Mozilla >= 1.9
+    // Mozilla >= 1.9
     nsCOMPtr<nsIThread> eventQ;
 
     if (!mNoProxy) {
       rv = NS_GetCurrentThread(getter_AddRefs(eventQ));
       NS_ENSURE_SUCCESS(rv, rv);
     }
-#endif
 
     // Re-set input stream observer (using event queue, if need be)
     rv = inStr->AsyncWait((nsIInputStreamCallback*) this, 0, 0, eventQ);
@@ -1805,6 +1791,12 @@ nsStdoutPoller::~nsStdoutPoller()
          this, myThread.get()));
 #endif
 
+  if (mStdoutThread) {
+    rv = mStdoutThread->Shutdown();
+    DEBUG_LOG(("nsStdoutPoller::destructor: stdout shutdown: %d\n", rv));
+    mStdoutThread = nsnull;
+  }
+
   Finalize(PR_TRUE);
 
   // Free non-owning references/resources
@@ -1904,7 +1896,7 @@ nsStdoutPoller::AsyncStart(nsIOutputStream*  aOutputStream,
 { // Should be invoked in the thread creating nsIPipeTransport object
   nsresult rv = NS_OK;
 
-  DEBUG_LOG(("nsStdoutPoller::AsyncStart: %d\n", aMimeHeadersMaxSize));
+  DEBUG_LOG(("nsStdoutPoller::AsyncStart: %d / %d\n", aMimeHeadersMaxSize, joinable));
 
   mJoinableThread    = joinable;
   mHeadersBufSize    = aMimeHeadersMaxSize;
@@ -1914,19 +1906,12 @@ nsStdoutPoller::AsyncStart(nsIOutputStream*  aOutputStream,
 
   // Spin up a new thread to handle STDOUT polling (non-joinable)
   nsCOMPtr<nsIThread> stdoutThread;
-#ifdef _IPC_MOZILLA_1_8
-  PRThreadState threadState = mJoinableThread ? PR_JOINABLE_THREAD
-                                              : PR_UNJOINABLE_THREAD;
-  rv = NS_NewThread(getter_AddRefs(stdoutThread), (nsIRunnable*) this,
-                    0, threadState);
-#else
   rv = NS_NewThread(getter_AddRefs(stdoutThread), (nsIRunnable*) this);
-#endif
   NS_ENSURE_SUCCESS(rv, rv);
 
   mStdoutThread = stdoutThread;
 
-  return NS_OK;
+  return rv;
 }
 
 nsresult
@@ -1947,7 +1932,7 @@ nsStdoutPoller::Finalize(PRBool destructor)
   }
 
   DEBUG_LOG(("nsStdoutPoller::Finalize:\n"));
-
+  
   nsCOMPtr<nsIPipeTransportPoller> self;
   if (!destructor) {
     // Hold a reference to ourselves to prevent our DTOR from being called
@@ -1959,9 +1944,6 @@ nsStdoutPoller::Finalize(PRBool destructor)
   mOutputStream = nsnull;
   mProxyPipeListener = nsnull;
   mConsole = nsnull;
-
-  // Release ref to owned thread
-  mStdoutThread = nsnull;
 
   return rv;
 }
@@ -2015,19 +1997,18 @@ nsStdoutPoller::IsInterrupted(PRBool* interrupted)
 NS_IMETHODIMP
 nsStdoutPoller::Join()
 {
-  nsresult rv;
+  DEBUG_LOG(("nsStdoutPoller::Join\n"));
+  nsresult rv = NS_OK;
 
   if (!mJoinableThread)
     return NS_ERROR_FAILURE;
 
+
   if (!mStdoutThread)
     return NS_OK;
 
-#ifdef _IPC_MOZILLA_1_8
-  rv = mStdoutThread->Join();
-#else
   rv = mStdoutThread->Shutdown();
-#endif
+  DEBUG_LOG(("nsStdoutPoller::Join, rv=%d\n", rv));
 
   mStdoutThread = nsnull;
 
@@ -2069,11 +2050,6 @@ nsStdoutPoller::Interrupt(PRBool* alreadyInterrupted)
     if (status != PR_SUCCESS)
       return NS_ERROR_FAILURE;
 
-  } else if (mStdoutThread) {
-    // Interrupt thread; may fail
-#ifdef _IPC_MOZILLA_1_8
-    mStdoutThread->Interrupt();
-#endif
   }
 
   return NS_OK;
@@ -2456,7 +2432,8 @@ nsStdinWriter::nsStdinWriter()
   : mInputStream(nsnull),
     mCount(0),
     mPipe(IPC_NULL_HANDLE),
-    mCloseAfterWrite(PR_FALSE)
+    mCloseAfterWrite(PR_FALSE),
+    mThread(nsnull)
 {
     NS_INIT_ISUPPORTS();
 
@@ -2480,6 +2457,8 @@ nsStdinWriter::~nsStdinWriter()
          this, myThread.get()));
 #endif
 
+  if (mThread) mThread->Shutdown();
+  
   if (mPipe != IPC_NULL_HANDLE) {
     IPC_Close(mPipe);
     mPipe = IPC_NULL_HANDLE;
@@ -2505,9 +2484,7 @@ nsStdinWriter::WriteFromStream(nsIInputStream *inStr, PRUint32 count,
   mPipe = pipe;
   mCloseAfterWrite = closeAfterWrite;
 
-  // Spin up a new thread to handle writing (non-joinable)
-  nsCOMPtr<nsIThread> thread;
-  nsresult rv = NS_NewThread(getter_AddRefs(thread), (nsIRunnable*) this);
+  nsresult rv = NS_NewThread(getter_AddRefs(mThread), (nsIRunnable*) this);
   return rv;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -2573,3 +2550,18 @@ nsStdinWriter::Run()
 
   return rv;
 }
+
+
+NS_IMETHODIMP
+nsStdinWriter::Join() {
+  DEBUG_LOG(("nsStdinWriter::Join\n"));
+  
+  nsresult rv = NS_OK;
+  
+  if (mThread) {
+    rv = mThread->Shutdown();
+    mThread = nsnull;
+  }
+  return rv;
+}
+

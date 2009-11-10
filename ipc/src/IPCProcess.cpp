@@ -179,7 +179,6 @@ void IPC_HideConsoleWin32()
       FILE *hf = ::_fdopen(hCrt, "w");
       if ( hf ) {
         *stderr = *hf;
-        //::fprintf( stderr, "stderr console\n" );
       }
     }
 

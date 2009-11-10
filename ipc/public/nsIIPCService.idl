@@ -137,7 +137,7 @@ interface nsIIPCService : nsISupports
    * Returns secret random cookie used for security
    */
   readonly attribute string cookie;
-
+  
   /**
    * Creates scriptable string channel from input string data.
    */

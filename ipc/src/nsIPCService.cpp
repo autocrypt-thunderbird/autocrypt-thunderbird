@@ -753,3 +753,6 @@ nsIPCRequest::GetStderrConsole(nsIPipeListener* *_retval)
   NS_IF_ADDREF(*_retval = mStderrConsole);
   return NS_OK;
 }
+
+
+

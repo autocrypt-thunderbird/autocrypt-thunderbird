@@ -215,26 +215,6 @@ int main( void )
 
     printf("pipetest: Creating event Q\n");
 
-#ifdef _IPC_MOZILLA_1_8
-
-    nsCOMPtr<nsIEventQueueService> service = do_GetService(NS_EVENTQUEUESERVICE_CONTRACTID, &rv);
-    if (NS_FAILED(rv)) return rv;
-
-    rv = service->CreateThreadEventQueue();
-    if (NS_FAILED(rv)) return rv;
-
-    nsCOMPtr<nsIEventQueue> currentThreadQ;
-
-    rv = service->GetThreadEventQueue(NS_CURRENT_THREAD,
-                                  getter_AddRefs(currentThreadQ));
-    if (NS_FAILED(rv)) return -3;
-
-    //(void) nsComponentManager::AutoRegister(nsIComponentManagerObsolete::NS_Startup, nsnull);
-
-#else
-
-#endif
-
     // Create an instance of our component
     nsCOMPtr<nsIPipeTransport> mypipet = do_CreateInstance(NS_PIPETRANSPORT_CONTRACTID, &rv);
     if (NS_FAILED(rv)) {

@@ -51,12 +51,7 @@
 #include "nsIInterfaceRequestor.h"
 #include "nsIURI.h"
 #include "nsIComponentManager.h"
-
-#ifdef _IPC_MOZILLA_1_8
-#include "nsIEventQueueService.h"
-#else
 #include "nsThreadUtils.h"
-#endif
 
 class nsPipeChannel : public nsIPipeChannel,
                       public nsIStreamListener,

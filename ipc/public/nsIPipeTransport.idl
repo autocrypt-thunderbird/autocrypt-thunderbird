@@ -362,6 +362,11 @@ interface nsIPipeTransportWriter : nsISupports
                        in unsigned long aCount,
                        in IPCFileDescStar pipe,
                        in boolean closeAfterWrite);
+                       
+  /**
+   * Joins writer thread, if joinable (blocking until it terminates)
+   */
+  void join();
 };
 
 
