@@ -128,7 +128,7 @@ enigmail-skin.jar:
 	skin/classic/enigmail/twisty-open.png  (skin/images/twisty-open.png)
 	skin/classic/enigmail/twisty-clsd.png  (skin/images/twisty-clsd.png)
 	skin/aero/enigmail/contents.rdf        (skin/classic/contents.rdf)
-	skin/aero/enigmail/enigmail.css        (skin/classic/enigmail.css)
+	skin/aero/enigmail/enigmail.css        (skin/classic/enigmail-aero.css)
 	skin/aero/enigmail/enigmail-about.png  (skin/images/enigmail-about.png)
 	skin/aero/enigmail/enigmail-toolbar.png (skin/classic/images/enigmail-toolbar-aero.png)
 	skin/aero/enigmail/enigmail-toolbar-small.png (skin/classic/images/enigmail-toolbar-small-aero.png)
