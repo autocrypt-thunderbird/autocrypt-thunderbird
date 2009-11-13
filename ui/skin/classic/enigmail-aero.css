@@ -1,0 +1,267 @@
+/* Enigmail styles for Windows */
+
+@import url("chrome://global/skin/");
+@import url("chrome://messenger/skin/");
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+
+#button-enigmail-decrypt,
+[typeid="button-enigmail-decrypt"]
+  {
+    list-style-image : url("chrome://enigmail/skin/enigmail-toolbar.png");
+    -moz-image-region: rect(0px 24px 24px 0px);
+  }
+
+#button-enigmail-decrypt:hover,
+[typeid="button-enigmail-decrypt"]
+  {
+    -moz-image-region: rect(24px 24px 48px 0px);
+  }
+
+#button-enigmail-decrypt[disabled],
+[typeid="button-enigmail-decrypt"]
+  {
+    -moz-image-region: rect(48px 24px 72px 0px);
+  }
+
+toolbar[iconsize="small"]  #button-enigmail-decrypt
+  {
+    -moz-image-region: rect(0px 16px 16px 0px);
+    list-style-image      : url("chrome://enigmail/skin/enigmail-toolbar-small.png");
+  }
+
+toolbar[iconsize="small"] #button-enigmail-decrypt:hover
+  {
+    -moz-image-region: rect(16px 16px 32px 0px);
+  }
+
+toolbar[iconsize="small"] #button-enigmail-decrypt[disabled]
+  {
+    -moz-image-region: rect(32px 16px 48px 0px);
+  }
+
+#button-enigmail-send,
+#button-enigmail-send:hover {
+  -moz-image-region: rect(0px 24px 24px 0px);
+   list-style-image      : url("chrome://enigmail/skin/enigmail-settings.png");
+}
+
+#button-enigmail-send[disabled] {
+  -moz-image-region: rect(24px 24px 48px 0px);
+}
+
+
+toolbar[iconsize="small"] #button-enigmail-send {
+  -moz-image-region: rect(0px 16px 16px 0px);
+   list-style-image      : url("chrome://enigmail/skin/enigmail-settings-small.png");
+}
+
+toolbar[iconsize="small"] #button-enigmail-send:hover {
+  -moz-image-region: rect(16px 16px 32px 0px);
+}
+
+toolbar[iconsize="small"] #button-enigmail-send[disabled] {
+  -moz-image-region: rect(32px 16px 48px 0px);
+}
+
+.action-box { width: 100px }
+
+#expandedEnigmailBox {
+ background-color: #d8e0e8;
+ color: black;
+}
+
+.enigmailHeaderName {
+  color: #888a85; /* lower contrast, TB3 */
+  text-align: right;
+  background-color: transparent;
+  -moz-margin-end: 2px;
+}
+
+.enigmailHeaderValue {
+  min-width: 50px;
+  white-space: normal;
+  color: WindowText;
+  line-height: 1.4em;
+
+  -moz-appearance: none !important;
+  -moz-appearance: none;
+
+  padding: 0px !important;
+  margin: 0px !important;
+  -moz-margin-start: 3px !important;
+  border: none !important;
+  background-color: transparent;
+}
+
+.enigmailHeaderSpacer {
+  width: 2px;
+}
+
+.enigmailHeaderBoxLabelNoSignature {
+  background-color:#d8e0e8;
+  color: black;
+}
+
+.enigmailHeaderBoxLabelSignatureOk {
+  background-color:#ccffcc;
+  color: black;
+}
+
+.enigmailHeaderBoxLabelSignatureVerified {
+  background-color:#ccffff;
+  color: black;
+}
+
+.enigmailHeaderBoxLabelSignatureNotOk {
+ background-color:#FFD8FE;
+ color: black;
+}
+
+.enigmailHeaderBoxLabelSignatureUnknown {
+ background-color:#FFFFC9;
+ color: black;
+}
+
+
+.enigmailLink {
+  text-decoration: underline;
+  color: blue;
+  cursor: pointer;
+}
+
+.enigmailStrong {
+  font-weight: bold;
+}
+
+.enigmailUidInactive {
+  color: gray;
+  font-style: italic;
+}
+
+.enigMsgHdrView-flat-button {
+  min-width: 1px !important;
+  -moz-appearance: none;
+  color: black;
+  background-color: transparent;
+  border: 2px solid transparent;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding: 0 2px;
+  -moz-border-radius: 2px;
+  -moz-border-top-colors: none;
+  -moz-border-right-colors: none;
+  -moz-border-bottom-colors: none;
+  -moz-border-left-colors: none;
+  min-height: 1ex;
+}
+
+.enigMsgHdrView-flat-button:hover {
+  color: -moz-buttonhovertext;
+  background-color: -moz-buttonhoverface;
+  -moz-border-top-colors: transparent threedhighlight threedlightshadow;
+  -moz-border-right-colors: transparent threeddarkshadow threedshadow;
+  -moz-border-bottom-colors: transparent threeddarkshadow threedshadow;
+  -moz-border-left-colors: transparent threedhighlight threedlightshadow;
+}
+
+
+#enigmail-status-bar #enigmail-signed-status {
+  list-style-image: none;
+  visibility: collapse;
+}
+
+#enigmail-status-bar[signed="ok"] #enigmail-signed-status {
+  list-style-image: url("chrome://enigmail/skin/enigSignOk.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[signed="notok"] #enigmail-signed-status {
+  list-style-image: url("chrome://enigmail/skin/enigSignNotOk.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[signed="unknown"] #enigmail-signed-status {
+  list-style-image: url("chrome://enigmail/skin/enigSignUnkown.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[signed="inactive"] #enigmail-signed-status {
+  list-style-image: url("chrome://enigmail/skin/enigSignInactive.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar #enigmail-encrypted-status {
+  list-style-image: none;
+  visibility: collapse;
+}
+
+#enigmail-status-bar[encrypted="ok"] #enigmail-encrypted-status {
+  list-style-image: url("chrome://enigmail/skin/enigEncOk.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[encrypted="notok"] #enigmail-encrypted-status {
+  list-style-image: url("chrome://enigmail/skin/enigEncNotOk.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[encrypted="inactive"] #enigmail-encrypted-status {
+  list-style-image: url("chrome://enigmail/skin/enigEncInactive.png");
+  visibility: visible;
+}
+
+.enigmailPrefsTitle {
+  font-weight: bold;
+  height: 25px;
+}
+
+treechildren::-moz-tree-cell-text(enigmailSubkeyTitle) {
+  font-weight: bold;
+}
+
+treechildren::-moz-tree-cell-text(enigmailOwnKey) {
+  font-weight: bold;
+}
+
+treechildren::-moz-tree-cell-text(enigKeyInactive) {
+  color: gray;
+  font-style: italic;
+}
+
+treechildren::-moz-tree-column(enigDontEncrypt) {
+  background-color: rgb(90%, 90%, 90%);
+}
+
+.enigmailExpandViewButton {
+  width: 9px; /* The image's width is 9 pixels */
+  list-style-image: url("chrome://enigmail/skin/twisty-clsd.png");
+}
+
+.enigmailCollapseViewButton {
+  width: 9px; /* The image's width is 9 pixels */
+  list-style-image: url("chrome://enigmail/skin/twisty-open.png");
+
+}
+
+
+/* the following styles are available for the key trust
+   columnm in the key manager:
+    enigmail_keyValid_unknown
+    enigmail_keyValid_invalid
+    enigmail_keyValid_disabled
+    enigmail_keyValid_revoked
+    enigmail_keyValid_expired
+    enigmail_keyTrust_untrusted
+    enigmail_keyTrust_marginal
+    enigmail_keyTrust_full
+    enigmail_keyTrust_ultimate
+    enigmail_keyTrust_unknown
+
+They can be applied using:
+treechildren::-moz-tree-cell(STYLE) {}
+treechildren::-moz-tree-cell-text(STYLE) {}
+*/
+
+
