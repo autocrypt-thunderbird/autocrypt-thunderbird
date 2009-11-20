@@ -32,6 +32,7 @@
    GPL.
 -->
 
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
                  type="text/css"?>
 
