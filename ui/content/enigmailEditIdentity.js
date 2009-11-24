@@ -124,7 +124,11 @@ function enigOnAcceptEditor() {
   }
   catch (ex) {}
   enigOnSave();
-  return smimeOnAcceptEditor();
+  if (typeof(smimeOnAcceptEditor) == "function") {
+    return smimeOnAcceptEditor();
+  }
+  else 
+    return true;
 }
 
 function onPreInit(account, accountValues)
