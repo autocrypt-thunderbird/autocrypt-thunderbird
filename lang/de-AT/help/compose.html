@@ -18,64 +18,70 @@
 
   <dl>
 		<dt>Men&uuml; &quot;OpenPGP&quot; im Fenster &quot;Verfassen&quot;</dt>
-		
+
 	  <dd>
 	    <dl>
 	    	<dt>Nachricht unterschreiben</dt>
-	    	
+
 	    	<dd>Unterschreiben von Nachrichten aktivieren / deaktivieren. Der Benutzer wird benachrichtigt, falls das Unterschreiben fehlschl&auml;gt.</dd>
-	
+
 	    	<dt>Nachricht verschl&uuml;sseln</dt>
 	    	<dd>
 	    		<p>Verschl&uuml;sselung an alle Adressaten aktivieren / deaktivieren. Der Benutzer wird benachrichtigt, falls die Verschl&uuml;sselung fehlschl&auml;gt.</p>
-	
+
 					<p>Falls <em>Auswahl anzeigen, wenn notwendig</em> im Men&uuml; <strong>OpenPGP -&gt; Einstellungen -&gt; Schl&uuml;sselauswahl...</strong> eingestellt ist, dann wird eine Liste mit Schl&uuml;sseln erscheinen, wenn Sie keinen &ouml;ffentlichen Schl&uuml;ssel f&uuml;r einen oder mehrere Empf&auml;nger der Nachrichten besitzen.</p>
-	
+
 					<p>Falls <em>Auswahlfenster nie anzeigen</em> im Men&uuml; <strong>OpenPGP -&gt; Einstellungen -&gt; Schl&uuml;sselauswahl...</strong> eingestellt ist, dann wird die Nachricht an die Empf&auml;nger unverschl&uuml;sselt gesendet, von denen Sie keinen &ouml;ffentlichen Schl&uuml;ssel besitzen.</p>
 			  </dd>
-	
+
 	    	<dt>PGP/MIME verwenden</dt>
-	    	
+
 	    	<dd>
 	    		Verwenden von <a href="http://community.roxen.com/developers/idocs/rfc/rfc3156.html" target="_blank">PGP/MIME</a> f&uuml;r diese Nachricht erm&ouml;glichen / nicht erm&ouml;glichen.
-	
+
 				  <p>Wenn Sie wissen, dass die Empf&auml;nger das PGP/MIME-Format verwenden k&ouml;nnen, dann sollten Sie dies benutzen.</p>
-				  
+
 				  <p>Diese M&ouml;glichkeit h&auml;ngt von den Einstellungen unter <strong>OpenPGP -&gt; Einstellungen -&gt; PGP/MIME...</strong> ab. Hier muss <em>PGP/MIME verwenden, wenn m&ouml;glich</em> oder <em>Immer PGP/MIME verwenden</em> aktiviert sein.</p>
 			  </dd>
-	
+
 	    	<dt>Einstellungen (Untermen&uuml;)</dt>
-		    
+
 		    <dd>
 		    	<ul>
 						<li><strong>Unterschrift/Verschl&uuml;sselung...</strong>: Abk&uuml;rzung zu den <strong>Konten-Einstellungen -&gt; OpenPGP-Sicherheit.</strong></li>
-				
+
 						<li><strong>Senden...</strong>: Abk&uuml;rzung zu <strong>Einstellungen -&gt; Senden</strong>.</li>
-				
+
 						<li><strong>Schl&uuml;sselwauswahl...</strong>: Abk&uuml;rzung zu <strong>Einstellungen -&gt; Schl&uuml;sselauswahl</strong>.</li>
-				
-						<li><strong>PGP/MIME...</strong>: Abk&uuml;rzung zu <strong>Einstellungen -&gt; PGP/MIME</strong>.</li>
 	    		</ul>
 	    	</dd>
-	
+
+	    	<dt>Empf&auml;ngerregeln</dt>
+
+	    	<dd>&Ouml;ffnet den Dialog mit den Empf&auml;ngerregeln.</dd>
+
 	    	<dt>Verschl&uuml;sselung r&uuml;ckg&auml;ngig machen</dt>
-	    	
+
 	    	<dd>
 	    		<p>Wenn es einen Fehler beim Senden der Nachricht gibt, also z.B. der POP-Server nicht erreichbar ist, dann wird OpenPGP dies nicht wissen und die verschl&uuml;sselte Nachricht wird auch weiterhin im Fenster &quot;Verfassen&quot; angezeigt. Dieser Men&uuml;punkt nimmt die Verschl&uuml;sselung / das Unterschreiben zur&uuml;ck und das Fenster &quot;Verfassen&quot; kehrt zum Originaltext zur&uuml;ck.</p>
-	
+
 					<p><em>Als vorl&auml;ufige Ma&szlig;nahme kann &uuml;ber diesen Men&uuml;punkt auch eine verschl&uuml;sselte Nachricht, die man zitiert und auf die man antwortet, entschl&uuml;sselt angezeigt werden. Enigmail sollte zitierte Nachrichten automatisch entschl&uuml;sseln, was bisher jedoch fehlschl&auml;gt. &Uuml;ber diesen Men&uuml;eintrag kann Enigmail zur Entschl&uuml;sselung gezwungen werden.</em></p>
 				</dd>
-	
-	    	<dt>&Ouml;ffentlichen Schl&uuml;ssel einf&uuml;gen</dt>
-	    	
-	    	<dd>f&uuml;gt an der Cursorposition den &ouml;ffentlichen Schl&uuml;sselblock im ASCII-Format ein. Sie werden gefragt, von welchen E-Mail-Adressen die Schl&uuml;ssel eingef&uuml;gt werden sollen. Schl&uuml;ssel, die auf diese Weise eingef&uuml;gt werden, werden automatisch vom Enigmail des Empf&auml;ngers entdeckt. Es ist weiterhin m&ouml;glich, die Nachricht auch nach Einf&uuml;gen eines Schl&uuml;sselblocks zu unterschreiben / verschl&uuml;sseln. Bitte nicht mehr als einen Schl&uuml;sselblock separat einf&uuml;gen; geben Sie einfach beim ersten Einf&uuml;gen alle E-Mail-Adressen an (durch Kommas oder Leerzeichen getrennt), die eingef&uuml;gt werden sollen.</dd>
-	
-	    	<dt>Passphrase aus Cache l&ouml;schen</dt>
-	    	
+
+	    	<dt>Meinen &ouml;ffentlichen Schl&uuml;ssel anh&auml;ngen</dt>
+
+	    	<dd>H&auml;gt an die Nachricht Ihren &ouml;ffentlichen Schl&uuml;ssel im ASCII-Format an.</dd>
+
+	    	<dt>&Ouml;ffentlichen Schl&uuml;ssel anh&auml;ngen</dt>
+
+	    	<dd>H&auml;gt an die Nachricht &ouml;ffentliche Schl&uuml;ssel im ASCII-Format an. Sie k&ouml;nnen die gew&uuml;nschten Schl&uuml;ssel dazu ausw&auml;hlen.</dd>
+
+	    	<dt>Passphrase aus Zwischenspeicher l&ouml;schen</dt>
+
 	    	<dd>L&ouml;scht die gespeicherte Passphrase. N&uuml;tzlich, falls Sie mehrere Passphrasen verwenden.</dd>
-	
+
 	    	<dt>Hilfe</dt>
-	    	
+
 	    	<dd>Zeigt die Hilfe an (diese Seite).</dd>
 	  	</dl>
 		</dd>

@@ -13,49 +13,49 @@
 
 <body>
 	<h1>OpenPGP-Hilfe</h1>
-	
+
 	<h3>OpenPGP-Empf&auml;ngerregeln bearbeiten</h3>
-	
+
 	<p>Es k&ouml;nnen Standards f&uuml;r einen Empf&auml;nger bez&uuml;glich Verschl&uuml;sselung, Unterschreiben und PGP/MIME sowie die Verwendung von OpenPGP-Schl&uuml;sseln festgelegt werden. In diesem Dialog k&ouml;nnen Sie Regeln f&uuml;r einen einzelnen Empf&auml;nger sowie Gruppen von Empf&auml;ngern mit &auml;hnlichen Eigenschaften festlegen.</p>
 
 	<dl>
 	  <dt>Regel f&uuml;r</dt>
-	  
+
 	  <dd>Beinhaltet die E-Mail-Adressen der Empf&auml;nger (ohne Namen, also z.B. einfach <tt>somebody@email.domain</tt>). Sie k&ouml;nnen mehrere E-Mail-Adressen festlegen; die Adressen m&uuml;ssen mit Leerzeichen voneinander getrennt sein. Die eingegebenen Adressen k&ouml;nnen auch nur aus dem Domain-Namen bestehen, so dass die Regel auf alle Mails dieser Domain angewendet wird, also z.B. <tt>@email.domain</tt> bezieht ein <tt>body@email.domain</tt>, <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt>, etc.</dd>
 
 	  <dt>Anwenden, wenn Empf&auml;nger...</dt>
-	  
+
 	  <dd>
 	  	Dies modifiziert die &Uuml;bereinstimmung der E-Mail-Adressen. Wenn mehrere E-Mail-Adressen eingegeben werden, dann wird diese Einstellung auf alle angewendet. Die folgenden Beispiele beziehen sich auf die Adresse <tt>body@email.domain</tt>, die im oberen Feld <em>Enigmail-Empf&auml;ngerregel</em> eingegeben wurde.
-			
+
 			<ul>
 	      <li><em>ist exakt</em>: Mit dieser Einstellung wird die Regel nur angewendet, wenn die E-Mail-Adresse <tt>body@email.domain</tt> lautet (exakt, Gross-/Kleinschreibung wird nicht beachtet).</li>
-	
+
 	      <li><em>enth&auml;lt</em>: Regel wird angewendet, wenn die Zeichenfolge in der E-Mail-Adresse auftaucht, also z.B. <tt>anybody@email.domain</tt> oder <tt>body@email.domain.net</tt></li>
 
 	      <li><em>beginnt mit</em>: Regel wird angewendet, wenn die Zeichenfolge am Beginn der E-Mail-Adresse steht, also z.B. <tt>body@email.domain.net</tt>, <tt>body@email.domain-name.com</tt>.</li>
 
 	      <li><em>endet mit</em>: Regel wird angewendet, wenn die Zeichenfolge am Ende der E-Mail-Adresse steht, also z.B. <tt>anybody@email.domain</tt>, <tt>somebody@email.domain</tt>.</li>
-	    </ul>	
+	    </ul>
 	  </dd>
-	  
-	  <dt>Weitere Regeln auf passende Adressen pr&uuml;fen</dt>
-	  
+
+	  <dt>Weitere Regeln auf passende Adresse pr&uuml;fen</dt>
+
 	  <dd>Diese Einstellung erlaubt Ihnen, eine Regel zu erstellen ohne eine spezielle Schl&uuml;ssel-ID in <em>Verwende folgende OpenPGP-Schl&uuml;ssel</em> angeben zu m&uuml;ssen. Die E-Mail-Adresse wird f&uuml;r die Auswahl des passenden Schl&uuml;ssels beim Senden genutzt. Weitere Regeln f&uuml;r die gleiche E-Mail-Adresse werden auch ausgef&uuml;hrt.</dd>
 
-	  <dt>Weitere Regeln nicht auf passende Adressen pr&uuml;fen</dt>
-	  
+	  <dt>Weitere Regeln nicht auf passende Adresse pr&uuml;fen</dt>
+
 	  <dd>Bei dieser Einstellung werden weitere Regeln nicht mehr ausgef&uuml;hrt, sobald eine passende Regel gefunden wurde.</dd>
 
 	  <dt>Verwende folgende OpenPGP-Schl&uuml;ssel:</dt>
-	  
+
 	  <dd>Nutzen Sie die Schaltfl&auml;che <em>Ausw&auml;hlen...</em>, um die gew&uuml;nschten Schl&uuml;ssel auszuw&auml;hlen. Auch hier werden keine weiteren Regeln ausgef&uuml;hrt.</dd>
-		  
+
 	  <dt>Unterschreiben</dt>
-	  
+
 	  <dd>
 	  	Unterschreiben von Nachrichten erm&ouml;glichen / nicht erm&ouml;glichen. Diese Einstellung verwendet oder &uuml;bergeht, was Sie im Fenster &quot;Verfassen&quot; angegeben haben. Die m&ouml;glichen Einstellungen lauten:
-	  
+
 		  <ul>
 		    <li><em>Nie</em>: Unterschreiben nicht erm&ouml;glichen, auch wenn es im Fenster &quot;Verfassen&quot; m&ouml;glich war (andere Einstellungen werden &uuml;bergangen).</li>
 
@@ -66,11 +66,11 @@
 		</dd>
 
 		<dt>Verschl&uuml;sselung</dt>
-		
+
 		<dd>Verschl&uuml;sselung erm&ouml;glichen / nicht erm&ouml;glichen. Die m&ouml;glichen Einstellungen und Bedeutungen stimmen mit den oben genannten &uuml;berein.</dd>
-	  
+
 	  <dt>PGP/MIME</dt>
-	  
+
 	  <dd>Verschl&uuml;sselung mit PGP/MIME (RFC 3156) erm&ouml;glichen / nicht erm&ouml;glichen. Wenn nicht PGP/MIME abgestellt (nicht m&ouml;glich) ist, dann wird die Nachricht per &quot;Inline PGP&quot; verschl&uuml;sselt. Die m&ouml;glichen Einstellungen und Bedeutungen stimmen mit den oben genannten &uuml;berein.</dd>
 	</dl>
 

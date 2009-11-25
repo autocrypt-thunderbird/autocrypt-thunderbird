@@ -78,7 +78,7 @@
 <!ENTITY enigmail.encryptToSelf.label "Zusätzlich mit eigenem Schlüssel verschlüsseln">
 <!ENTITY enigmail.encryptToSelf.tooltip "Auch Sie selbst können die Nachrichten wieder entschlüsseln und lesen.">
 <!ENTITY enigmail.alwaysTrustSend.label "Schlüsseln immer vertrauen">
-<!ENTITY enigmail.alwaysTrustSend.tooltip 'Das "Web of Trust" nicht verwenden, um die Gültigkeit der Schlüssel zu bestimmen.'>
+<!ENTITY enigmail.alwaysTrustSend.tooltip "Das &quot;Web of Trust&quot; nicht verwenden, um die Gültigkeit der Schlüssel zu bestimmen.">
 <!ENTITY enigmail.useNonDefaultComment.label "Enigmail-Information zur OpenPGP-Signatur hinzufügen">
 
 <!ENTITY enigmail.keyserver.label "Schlüssel-Server">
@@ -90,9 +90,9 @@
 
 
 <!ENTITY enigmail.disableSMIMEui.label "S/MIME-Schaltflächen/Menüs verstecken">
-<!ENTITY enigmail.doubleDashSeparator.label "'--' als Unterschriften-Trenner behandeln">
+<!ENTITY enigmail.doubleDashSeparator.label "&quot;--&quot; als Unterschriften-Trenner behandeln">
 <!ENTITY enigmail.useGpgAgent.label "Zur Passphrasen-Verwaltung die GPG-Agent-Anwendung  verwenden">
-<!ENTITY enigmail.noHushMailSupport.label "Die Zeichen '&lt;' und '&gt;' verwenden, um E-Mail-Adressen zu kennzeichnen.">
+<!ENTITY enigmail.noHushMailSupport.label "Die Zeichen &quot;&lt;&quot; und &quot;&gt;&quot; verwenden, um E-Mail-Adressen zu kennzeichnen.">
 
 <!ENTITY enigmail.keepSettingsForReply.tooltip "Antworten auf verschlüsselte Nachrichten werden, wenn möglich, auch verschlüsselt.">
 <!ENTITY enigmail.doubleDashSeparator.tooltip "Zwei in einer Zeile allein stehende Bindestriche kündigen einen Signaturblock an.">
@@ -276,9 +276,9 @@
 <!ENTITY enigmail.experimental.label "Experimentelles Inline-Unterschreiben/Verschlüsseln für PGP/MIME verwenden">
 
 <!ENTITY enigmail.enigmailAttachDesc.label "Diese Nachricht enthält Anhänge. Wie sollen diese verschlüsselt/unterschrieben werden?">
-<!ENTITY enigmail.enigEncryptAttachNone.label "Nur den Haupttext verschlüsseln, den Anhang unverändert lassen">
-<!ENTITY enigmail.enigEncryptAttachInline.label "Jeden Anhang einzeln verschlüsseln/unterschreiben und als Inline-PGP-Nachricht senden">
-<!ENTITY enigmail.enigEncryptAttachPgpMime.label "Nachricht als Ganzes verschlüsseln/unterschreiben und als PGP/MIME-Nachricht senden">
+<!ENTITY enigmail.enigEncryptAttachNone.label "Nur den Haupttext verschlüsseln/unterschreiben, Anhänge unverändert lassen">
+<!ENTITY enigmail.enigEncryptAttachInline.label "Jeden Anhang einzeln verschlüsseln/unterschreiben und Nachricht mittels Inline-PGP senden">
+<!ENTITY enigmail.enigEncryptAttachPgpMime.label "Nachricht als Ganzes verschlüsseln/unterschreiben und mittels PGP/MIME senden">
 <!ENTITY enigmail.encryptAttachSkipDlg.label "Die gewählte Methode für alle zukünftigen Anhänge verwenden">
 
 <!ENTITY enigmail.ctxDecryptOpen.label "Entschlüsseln und Öffnen">
@@ -304,7 +304,7 @@
 <!ENTITY enigmail.encDlgPgpMime.label "PGP/MIME verwenden">
 <!ENTITY enigmail.encDlgPgpMime.accesskey "P">
 <!ENTITY enigmail.amPrefPgpHeader.label "OpenPGP-Kopfzeilen">
-<!ENTITY enigmail.amPrefPgpHeader.none.label "Sende keine 'OpenPGP'-Kopfzeilen">
+<!ENTITY enigmail.amPrefPgpHeader.none.label "Sende keine &quot;OpenPGP&quot;-Kopfzeilen">
 <!ENTITY enigmail.amPrefPgpHeader.id.label "Sende OpenPGP-Schlüssel-ID">
 <!ENTITY enigmail.amPrefPgpHeader.url.label "Sende URL, um Schlüssel zu empfangen:">
 
@@ -343,9 +343,9 @@
 <!ENTITY enigmail.never.label "Nie">
 <!ENTITY enigmail.always.label "Immer">
 <!ENTITY enigmail.maybe.label "Ja, wenn beim Verfassen ausgewählt">
-<!ENTITY enigmail.singleRcptSettings.desc "(Hinweis: Bei Konflikten hat 'Nie' Vorrang vor 'Immer')">
+<!ENTITY enigmail.singleRcptSettings.desc "(Hinweis: Bei Konflikten hat &quot;Nie&quot; Vorrang vor &quot;Immer&quot;)">
 <!ENTITY enigmail.ruleEmail.label "Regel für:">
-<!ENTITY enigmail.ruleEmail.tooltip "Geben Sie nur die E-Mail-Adresse ein - nicht den Namen des Empfängers\nBeispiel: 'Max Mustermann &lt;max.mustermann@domain.de&gt;' ist ungültig">
+<!ENTITY enigmail.ruleEmail.tooltip "Geben Sie nur die E-Mail-Adresse ein - nicht den Namen des Empfängers\nBeispiel: &quot;Max Mustermann &lt;max.mustermann@domain.de&gt;&quot; ist ungültig">
 <!ENTITY enigmail.sepratationDesc.label "(Mehrere E-Mail-Adressen mit Leerzeichen trennen)">
 <!ENTITY enigmail.matchDescStart.label "Anwenden, wenn Empfänger">
 <!ENTITY enigmail.matchDescEnd.label "eine(r) der obigen Adressen">
@@ -520,7 +520,7 @@
 <!ENTITY enigmail.keyDetails.additionalUid.label "Weitere Benutzer-ID">
 <!ENTITY enigmail.keyDetails.ID.label "ID">
 <!ENTITY enigmail.keyDetails.keyType.label "Typ">
-<!ENTITY enigmail.keyDetails.subType.label "Typ">
+<!ENTITY enigmail.keyDetails.keyPart.label "Schlüsselteil">
 <!ENTITY enigmail.keyDetails.algorithm.label "Algorithmus">
 <!ENTITY enigmail.keyDetails.size.label "Stärke">
 <!ENTITY enigmail.keyDetails.created.label "Erzeugt">
@@ -528,6 +528,8 @@
 <!ENTITY enigmail.keyDetails.calcTrust.label "Schlüsselgültigkeit">
 <!ENTITY enigmail.keyDetails.ownerTrust.label "Besitzervertrauen">
 <!ENTITY enigmail.keyDetails.fingerprint.label "Fingerabdruck">
+<!ENTITY enigmail.keyDetails.selAction.label "Aktion wählen…">
+<!ENTITY enigmail.keyDetails.selAction.accesskey "w">
 
 <!ENTITY enigmail.cardDetails.title "SmartCard-Details">
 <!ENTITY enigmail.cardDetails.cardMenu.label "SmartCard">
@@ -692,7 +694,7 @@
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Ich möchte einen der vorhandenen Schlüssel verwenden:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "OpenPGP-Schlüssel erzeugen">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Erzeugen eines Schlüssels zum Unterschreiben und Verschlüsseln">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Sie benötigen ein 'Schlüsselpaar', um Nachrichten unterschreiben 
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Sie benötigen ein &quot;Schlüsselpaar&quot;, um Nachrichten unterschreiben 
                                                       und verschlüsseln zu können. Ein Schlüsselpaar besteht aus einem 
                                                       öffentlichen Schlüssel und einem privaten Schlüssel.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Ihren öffentlichen Schlüssel (das Vorhängeschloss) müssen Sie 
@@ -708,7 +710,7 @@
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Bitte bestätigen Sie Ihre Passphrase durch erneutes Eingeben">
 <!ENTITY enigmail.setupWiz.pgSummary.title "Zusammenfassung">
 <!ENTITY enigmail.setupWiz.pgSummary.subtitle "Bestätigen Sie, dass der Assistent nun die getroffenen Einstellungen vornehmen soll">
-<!ENTITY enigmail.setupWiz.pgSummary.desc "Sie sind nun fast fertig! Wenn Sie auf die Schaltfläche 'Weiter' klicken, 
+<!ENTITY enigmail.setupWiz.pgSummary.desc "Sie sind nun fast fertig! Wenn Sie auf die Schaltfläche &quot;Weiter&quot; klicken, 
                                                       wird der Assistent folgende Einstellungen übernehmen:">
 <!ENTITY enigmail.setupWiz.pgKeygen.title "Schlüsselerzeugung">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "Ihr Schlüsselpaar wird nun erzeugt">

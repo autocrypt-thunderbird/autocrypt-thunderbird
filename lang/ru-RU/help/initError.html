@@ -3,7 +3,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Enigmail Help: How to Resolve Problems with Initializing OpenPGP</title>
+  <title>Справка Enigmail: Как разрешить проблемы с инициализацией OpenPGP</title>
   <style type="text/css">
   /*<![CDATA[*/
     dt  { font-weight: bold;  }
@@ -12,33 +12,33 @@
 </head>
 
 <body>
-  <h1>Enigmail Help</h1>
+  <h1>Справка Enigmail</h1>
 
-  <h3>How to Resolve Problems with Initializing OpenPGP</h3>
+  <h3>Как разрешить проблемы с инициализацией OpenPGP</h3>
 
-  <p>There are several reasons why initializing OpenPGP does not succeed. The most common ones are described below;
-     for more information please visit the <a href="http://enigmail.mozdev.org/support/" target="_blank">Enigmail Support page.</a></p>
+  <p>Существует несколько причин, по которым инициализация OpenPGP может не удастся. Наиболее распространённые из них описаны ниже. Для получения дополнительной информации посетите <a href="http://enigmail.mozdev.org/support/" target="_blank">страницу поддержки Enigmail.</a></p>
 
   <dl>
-    <dt>GnuPG could not be found</dt>
+    <dt>GnuPG не может быть найден</dt>
     <dd>
     <p>
-      In order for OpenPGP to work, the tool <a href="http://www.gnupg.org/" target="_blank">GnuPG</a> needs to be installed.
-      If GnuPG cannot be found, then first make sure that the executable <tt>gpg.exe</tt> (on Windows; <tt>gpg</tt> on other platforms) is installed on your computer.
-      If GnuPG is installed, and OpenPGP cannot find it, then you need to manually set the path to GnuPG in the OpenPGP Preferences (menu <i>OpenPGP</i> &gt; <i>Preferences</i>)
+      Для работы OpenPGP должна быть установлена программа <a href="http://www.gnupg.org/" target="_blank">GnuPG</a>.
+      Если GnuPG не может быть найден, то сначала убедитесь, что исполняемый файл <tt>gpg.exe</tt> (на Windows) или <tt>gpg</tt> (на других платформах) установлен на вашем компьютере.
+      Если GnuPG установлен, и OpenPGP не может его найти, то вам придется вручную указать путь к GnuPG в настройках OpenPGP (меню <i>OpenPGP</i> &gt; <i>Настройки</i>)
     </p>  
 
-    <dt>Enigmime failed to initialize</dt>
+    <dt>Ошибка инициализации Enigmime</dt>
 
     <dd>
       <p>
-      OpenPGP works only if it is built using the same build environment as Thunderbird or SeaMonkey was built. This means that you can use the official Enigmail releases only if you use the official releases of Thunderbird or SeaMonkey provided by <a href="www.mozilla.org">mozilla.org</a>.
+      OpenPGP работает только в том случае, если инструменты, использовавшиеся для его сборки и инструменты, использовавшиеся для сборки Thunderbird или SeaMonkey, одинаковы. Это значит, что вы можете использовать официальные релизы Enigmail, только если вы используете официальные релизы Thunderbird или SeaMonkey, предоставляемые <a href="www.mozilla.org">mozilla.org</a>.
       </p>
       <p>
-      If you use a Thunderbird or SeaMonkey version coming from some other source (e.g. the provider of your Linux distribution), or if you built the application yourself, you should either use an Enigmail version built by the same source, or build Enigmail yourself. For building Enigmail, refer to the <a href="http://enigmail.mozdev.org/download/source.php">Source Code section</a> on the Enigmail home page. Please don't file any bug report concerning this problem, it is not solvable.
+      Если вы используете сборки Thunderbird или SeaMonkey, предоставляемые каким-либо другим источником (например, провайдером вашего дистрибутива Linux), или если вы сами собрали приложение, вы должны либо использовать версию Enigmail из этого же источника, либо сами собрать Enigmail.
+      Для получения информации о сборке Enigmail, обратитесь к разделу <a href="http://enigmail.mozdev.org/download/source.php">Исходный код</a> домашней страницы Enigmail. Пожалуйста, не создавайте сообщения об ошибках, касающихся этой проблемы, она не решаема.
       </p>
     </dd>
 
-  <p>Further help is available on the <a href="http://enigmail.mozdev.org/support/troubles.php" target="_blank">Enigmail Support Web Site</a>.</p>
+  <p>Дальнейшую помощь можно получить на <a href="http://enigmail.mozdev.org/support/troubles.php" target="_blank">веб-сайте поддержки Enigmail</a>.</p>
 </body>
 </html>
