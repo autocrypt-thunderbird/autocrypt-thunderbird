@@ -1,11 +1,12 @@
 ar
-ca-AD
+ca
 de-AT
 de-DE
 el
 es-ES
 fi-FI
 fr-FR
+gl-ES
 hu-HU
 it-IT
 ja-JP
