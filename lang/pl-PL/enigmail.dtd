@@ -437,7 +437,7 @@
 <!ENTITY enigmail.keyDetails.additionalUid.label     "Dodatkowe ID użytkownika">
 <!ENTITY enigmail.keyDetails.ID.label                "ID">
 <!ENTITY enigmail.keyDetails.keyType.label           "Typ">
-<!ENTITY enigmail.keyDetails.subType.label           "Podklucze">
+<!ENTITY enigmail.keyDetails.keyPart.label           "Key Part">
 <!ENTITY enigmail.keyDetails.algorithm.label         "Algorytm">
 <!ENTITY enigmail.keyDetails.size.label              "Rozmiar">
 <!ENTITY enigmail.keyDetails.created.label           "Utworzony">
@@ -445,6 +445,8 @@
 <!ENTITY enigmail.keyDetails.calcTrust.label         "Zaufanie wyliczone">
 <!ENTITY enigmail.keyDetails.ownerTrust.label        "Zaufanie użytkownika">
 <!ENTITY enigmail.keyDetails.fingerprint.label       "Odcisk klucza">
+<!ENTITY enigmail.keyDetails.selAction.label         "Select action ...">
+<!ENTITY enigmail.keyDetails.selAction.accesskey     "S">
 <!ENTITY enigmail.cardDetails.title                  "Szczegóły karty SmartCard">
 <!ENTITY enigmail.cardDetails.cardMenu.label         "SmartCard">
 <!ENTITY enigmail.cardDetails.adminPin.label         "Zmień PIN">

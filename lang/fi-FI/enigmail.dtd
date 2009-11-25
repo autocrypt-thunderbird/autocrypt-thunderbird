@@ -437,7 +437,7 @@
 <!ENTITY enigmail.keyDetails.additionalUid.label     "Additional User ID">
 <!ENTITY enigmail.keyDetails.ID.label                "Tunnus">
 <!ENTITY enigmail.keyDetails.keyType.label           "Tyyppi">
-<!ENTITY enigmail.keyDetails.subType.label           "Aliavain">
+<!ENTITY enigmail.keyDetails.keyPart.label           "Key Part">
 <!ENTITY enigmail.keyDetails.algorithm.label         "Algorithmi">
 <!ENTITY enigmail.keyDetails.size.label              "Koko">
 <!ENTITY enigmail.keyDetails.created.label           "Luotu">
@@ -445,6 +445,8 @@
 <!ENTITY enigmail.keyDetails.calcTrust.label         "Avaimen luotettavuus">
 <!ENTITY enigmail.keyDetails.ownerTrust.label        "Omistajan luottamus">
 <!ENTITY enigmail.keyDetails.fingerprint.label       "Sormenjälki">
+<!ENTITY enigmail.keyDetails.selAction.label         "Select action ...">
+<!ENTITY enigmail.keyDetails.selAction.accesskey     "S">
 <!ENTITY enigmail.cardDetails.title                  "OpenPGP-älykortin tiedot">
 <!ENTITY enigmail.cardDetails.cardMenu.label         "Älykortti">
 <!ENTITY enigmail.cardDetails.adminPin.label         "Vaihda PIN-koodi">

@@ -437,7 +437,7 @@
 <!ENTITY enigmail.keyDetails.additionalUid.label     "Identificador Adicional de Utilizador">
 <!ENTITY enigmail.keyDetails.ID.label                "Identificador">
 <!ENTITY enigmail.keyDetails.keyType.label           "Tipo">
-<!ENTITY enigmail.keyDetails.subType.label           "Chave Secundária">
+<!ENTITY enigmail.keyDetails.keyPart.label           "Key Part">
 <!ENTITY enigmail.keyDetails.algorithm.label         "Algoritmo">
 <!ENTITY enigmail.keyDetails.size.label              "Tamanho">
 <!ENTITY enigmail.keyDetails.created.label           "Criada">
@@ -445,6 +445,8 @@
 <!ENTITY enigmail.keyDetails.calcTrust.label         "Validade da chave">
 <!ENTITY enigmail.keyDetails.ownerTrust.label        "Confiança no Utilizador">
 <!ENTITY enigmail.keyDetails.fingerprint.label       "Impressão digital">
+<!ENTITY enigmail.keyDetails.selAction.label         "Select action ...">
+<!ENTITY enigmail.keyDetails.selAction.accesskey     "S">
 <!ENTITY enigmail.cardDetails.title                  "Detalhes do SmartCard OpenPGP">
 <!ENTITY enigmail.cardDetails.cardMenu.label         "SmartCard">
 <!ENTITY enigmail.cardDetails.adminPin.label         "Alterar PIN">

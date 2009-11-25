@@ -437,7 +437,7 @@
 <!ENTITY enigmail.keyDetails.additionalUid.label     "Additional User ID">
 <!ENTITY enigmail.keyDetails.ID.label                "标识">
 <!ENTITY enigmail.keyDetails.keyType.label           "类型">
-<!ENTITY enigmail.keyDetails.subType.label           "子密钥">
+<!ENTITY enigmail.keyDetails.keyPart.label           "Key Part">
 <!ENTITY enigmail.keyDetails.algorithm.label         "算法">
 <!ENTITY enigmail.keyDetails.size.label              "长度">
 <!ENTITY enigmail.keyDetails.created.label           "创建于">
@@ -445,6 +445,8 @@
 <!ENTITY enigmail.keyDetails.calcTrust.label         "推算的信任级">
 <!ENTITY enigmail.keyDetails.ownerTrust.label        "设定的信任级">
 <!ENTITY enigmail.keyDetails.fingerprint.label       "指纹">
+<!ENTITY enigmail.keyDetails.selAction.label         "Select action ...">
+<!ENTITY enigmail.keyDetails.selAction.accesskey     "S">
 <!ENTITY enigmail.cardDetails.title                  "OpenPGP 智能卡细节">
 <!ENTITY enigmail.cardDetails.cardMenu.label         "智能卡">
 <!ENTITY enigmail.cardDetails.adminPin.label         "修改识别码">

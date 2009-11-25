@@ -437,7 +437,7 @@
 <!ENTITY enigmail.keyDetails.additionalUid.label     "Identifiant additionel">
 <!ENTITY enigmail.keyDetails.ID.label                "Identifiant">
 <!ENTITY enigmail.keyDetails.keyType.label           "Type">
-<!ENTITY enigmail.keyDetails.subType.label           "Sous-clef">
+<!ENTITY enigmail.keyDetails.keyPart.label           "Key Part">
 <!ENTITY enigmail.keyDetails.algorithm.label         "Algorithme">
 <!ENTITY enigmail.keyDetails.size.label              "Taille">
 <!ENTITY enigmail.keyDetails.created.label           "Créée le">
@@ -445,6 +445,8 @@
 <!ENTITY enigmail.keyDetails.calcTrust.label         "Validité de la clef">
 <!ENTITY enigmail.keyDetails.ownerTrust.label        "Confiance du propriétaire">
 <!ENTITY enigmail.keyDetails.fingerprint.label       "Empreinte">
+<!ENTITY enigmail.keyDetails.selAction.label         "Select action ...">
+<!ENTITY enigmail.keyDetails.selAction.accesskey     "S">
 <!ENTITY enigmail.cardDetails.title                  "Détails de la carte à puce OpenPGP">
 <!ENTITY enigmail.cardDetails.cardMenu.label         "Carte à puce">
 <!ENTITY enigmail.cardDetails.adminPin.label         "Changer le code PIN">
