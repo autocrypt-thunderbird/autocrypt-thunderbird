@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta name="author" content="EduLeo" />
 <title>Ayuda de Enigmail: Lectura de mensajes</title>
 </head>
@@ -10,23 +10,23 @@
 <body>
 <h1>Ayuda de Enigmail</h1>
 <h3>Usando Enigmail para leer mensajes</h3><ul>
-<li><strong>Botón Descifrar en la ventana principal de correo</strong><br />
-Este botón se puede usar para varios propósitos: descifrar, verificar o importar claves públicas. Normalmente el descifrado/verificación se realiza automáticamente, aunque hay una opción para desactivar esto. Sin embargo, si esto falla, normalmente aparecerá un breve mensaje de error en la línea de estado de Enigmail. Si se pulsa el botón Descifrar, podrá ver un mensaje de error más detallado, incluyendo la salida del comando GnuPG.</li>
-<li><strong>Los iconos Lápiz y Llave mostrados en la cabecera del mensaje</strong><br />
-Los iconos <em>Lápiz</em> y <em>Llave</em> en la cabecera del mensaje indican si el mensaje que se está leyendo está firmado y/o cifrado y si la firma es buena, es decir; que el mensaje no se ha modificado desde el momento de su firma. Si el mensaje ha sido modificado, el icono del <em>Lápiz</em> cambiará a un <em>Lápiz roto</em> para indicar que la firma no es correcta. Al pulsar con el botón derecho del ratón en los iconos del Lápiz o Llave, se obtendrá un menú con las siguientes opciones:
+<li><strong>Bot&oacute;n Descifrar en la ventana principal de correo</strong><br />
+Este bot&oacute;n se puede usar para varios prop&oacute;sitos: descifrar, verificar o importar claves p&uacute;blicas. Normalmente el descifrado/verificaci&oacute;n se realiza autom&aacute;ticamente, aunque hay una opci&oacute;n para desactivar esto. Sin embargo, si esto falla, normalmente aparecer&aacute; un breve mensaje de error en la l&iacute;nea de estado de Enigmail. Si se pulsa el bot&oacute;n Descifrar, podr&aacute; ver un mensaje de error m&aacute;s detallado, incluyendo la salida del comando GnuPG.</li>
+<li><strong>Los iconos L&aacute;piz y Llave mostrados en la cabecera del mensaje</strong><br />
+Los iconos <em>L&aacute;piz</em> y <em>Llave</em> en la cabecera del mensaje indican si el mensaje que se est&aacute; leyendo est&aacute; firmado y/o cifrado y si la firma es buena, es decir; que el mensaje no se ha modificado desde el momento de su firma. Si el mensaje ha sido modificado, el icono del <em>L&aacute;piz</em> cambiar&aacute; a un <em>L&aacute;piz roto</em> para indicar que la firma no es correcta. Al pulsar con el bot&oacute;n derecho del rat&oacute;n en los iconos del L&aacute;piz o Llave, se obtendr&aacute; un men&uacute; con las siguientes opciones:
 <br /><br /><ul>
-<li><em>Información de seguridad OpenPGP</em>: permite ver el estado de salida de GnuPG para el mensaje.</li>
-<li><em>Copiar información de seguridad OpenPGP</em>: copia el estado de salida de GnuPG al portapapeles; para pegarlo en un mensaje de respuesta, etc.</li>
-<li><em>Ver ID fotográfico OpenPGP</em>: permite ver la <em>Foto ID</em> de la persona que envió el mensaje, si tiene una foto incrustada en su clave pública (<em>Esta opción sólo se activará si existe un ID fotográfico en su clave)</em>.</li>
-<li><em>Información de seguridad S/MIME</em>: permite ver la información de seguridad S/MIME del mensaje.</li>
+<li><em>Informaci&oacute;n de seguridad OpenPGP</em>: permite ver el estado de salida de GnuPG para el mensaje.</li>
+<li><em>Copiar informaci&oacute;n de seguridad OpenPGP</em>: copia el estado de salida de GnuPG al portapapeles; para pegarlo en un mensaje de respuesta, etc.</li>
+<li><em>Ver ID fotogr&aacute;fico OpenPGP</em>: permite ver la <em>Foto ID</em> de la persona que envi&oacute; el mensaje, si tiene una foto incrustada en su clave p&uacute;blica (<em>Esta opci&oacute;n s&oacute;lo se activar&aacute; si existe un ID fotogr&aacute;fico en su clave)</em>.</li>
+<li><em>Informaci&oacute;n de seguridad S/MIME</em>: permite ver la informaci&oacute;n de seguridad S/MIME del mensaje.</li>
 </ul>
-<p>Si no tiene puesta la opción <em>keyserver-options auto-key-retrieve</em> en su archivo <tt>gpg.conf</tt> y lee un mensaje que está firmado o cifrado, verá un icono de un <em>Lápiz</em> en el área de visión de las cabeceras con un <em>Signo de interrogación</em> y, la línea de estado de Enigmail en el área de las cabeceras dirá: <em>Parte del mensaje firmado; pulse el icono del lápiz para más detalles</em> y el mensaje en el panel de mensajes mostrará todos los indicadores del bloque del mensaje OpenPGP y el bloque de la firma.</p>
-<p>También se puede ver esto si tiene activada la opción <em>keyserver-options auto-key-retrieve</em> en su archivo <tt>gpg.conf</tt> y la clave OpenPGP no está disponible en el servidor de claves predeterminado.</p>
-<p>Al pulsar en el icono del <em>Lápiz y Signo de interrogación</em> abrirá una ventana avisando que la clave no está disponible en el anillo de claves. Al pulsar en Aceptar abrirá otra ventana con una lista de servidores de claves en los que puede seleccionar para descargar la clave pública del remitente.</p>
-<p>Para configurar la lista de servidores de claves que desee usar, vaya a la pestaña <strong>Enigmail -&gt; Preferencias -&gt; Básicas</strong> e introduzca la dirección de los servidores de claves en el recuadro <em>Servidor(es) de claves:</em> separados por una coma. <em>El primer servidor de claves de la lista se usará como predeterminado.</em></p>
+<p>Si no tiene puesta la opci&oacute;n <em>keyserver-options auto-key-retrieve</em> en su archivo <tt>gpg.conf</tt> y lee un mensaje que est&aacute; firmado o cifrado, ver&aacute; un icono de un <em>L&aacute;piz</em> en el &aacute;rea de visi&oacute;n de las cabeceras con un <em>Signo de interrogaci&oacute;n</em> y, la l&iacute;nea de estado de Enigmail en el &aacute;rea de las cabeceras dir&aacute;: <em>Parte del mensaje firmado; pulse el icono del l&aacute;piz para m&aacute;s detalles</em> y el mensaje en el panel de mensajes mostrar&aacute; todos los indicadores del bloque del mensaje OpenPGP y el bloque de la firma.</p>
+<p>Tambi&eacute;n se puede ver esto si tiene activada la opci&oacute;n <em>keyserver-options auto-key-retrieve</em> en su archivo <tt>gpg.conf</tt> y la clave OpenPGP no est&aacute; disponible en el servidor de claves predeterminado.</p>
+<p>Al pulsar en el icono del <em>L&aacute;piz y Signo de interrogaci&oacute;n</em> abrir&aacute; una ventana avisando que la clave no est&aacute; disponible en el anillo de claves. Al pulsar en Aceptar abrir&aacute; otra ventana con una lista de servidores de claves en los que puede seleccionar para descargar la clave p&uacute;blica del remitente.</p>
+<p>Para configurar la lista de servidores de claves que desee usar, vaya a la pesta&ntilde;a <strong>Enigmail -&gt; Preferencias -&gt; B&aacute;sicas</strong> e introduzca la direcci&oacute;n de los servidores de claves en el recuadro <em>Servidor(es) de claves:</em> separados por una coma. <em>El primer servidor de claves de la lista se usar&aacute; como predeterminado.</em></p>
 </li>
 <li><strong>Abrir adjuntos cifrados / importar claves OpenPGP adjuntas</strong><br />
-Los adjuntos con el nombre *.pgp, *.asc y *.gpg se reconocen como adjuntos que se pueden manejar especialmente con Enigmail. Al pulsar con el botón derecho en un adjunto de este tipo se activan dos elementos especiales en el menú contextual: <em>Descifrar y Abrir</em> y <em>Descifrar y Guardar</em>. Use estos elementos si desea que Enigmail descifre un adjunto antes de abrirlo o guardarlo. Si se reconoce un adjunto como un archivo de clave OpenPGP, se le ofrece la posibilidad de importar las claves a sus anillos.</li>
+Los adjuntos con el nombre *.pgp, *.asc y *.gpg se reconocen como adjuntos que se pueden manejar especialmente con Enigmail. Al pulsar con el bot&oacute;n derecho en un adjunto de este tipo se activan dos elementos especiales en el men&uacute; contextual: <em>Descifrar y Abrir</em> y <em>Descifrar y Guardar</em>. Use estos elementos si desea que Enigmail descifre un adjunto antes de abrirlo o guardarlo. Si se reconoce un adjunto como un archivo de clave OpenPGP, se le ofrece la posibilidad de importar las claves a sus anillos.</li>
 </ul><hr />
-<p>Más ayuda disponible en la <a href="http://enigmail.mozdev.org/help.html" onclick="window.open('http://enigmail.mozdev.org/help.html');return false">página Web de ayuda de Enigmail</a></p>
+<p>M&aacute;s ayuda disponible en la <a href="http://enigmail.mozdev.org/help.html" onclick="window.open('http://enigmail.mozdev.org/help.html');return false">p&aacute;gina Web de ayuda de Enigmail</a></p>
 </body></html>

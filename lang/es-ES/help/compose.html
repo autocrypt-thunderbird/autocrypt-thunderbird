@@ -1,86 +1,58 @@
 <html>
 <head><title>Enigmail Help: Message Composition</title>
-</head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head>
 <body>
-<h1>Enigmail Help</h1>
+<h1>Ayuda de Enigmail</h1>
 
-<h3>Using Enigmail when composing messages</h3>
+<h3>Uso de Enigmail al redactar mensajes</h3>
 
 <ul>
-  <li><b>Enigmail menu in Mail/Compose window</b>
-  <ul>
-    <li><b>Sign message</b>: Enable/Disable sending signed mail. User is notified 
-	if signing fails.
-    </li>
-    <li><b>Encrypt message</b>: Enable/Disable encryption to all recipient(s) before 
-	sending. User is notified if encryption fails.
-	<ul>
-	<p>If <em>Display selection when necessary</em> is set in <b>Preferences
-	-&gt; Key Selection tab</b>, a list of keys will pop up	if there are addresses 
-	in the list of recipients for the message for whom you have no public key.</p>
-	<p>If <em>Never display OpenPGP key selection dialog</em> is set in <b>Preferences
-	-&gt; Key Selection tab</b>, and there are addresses in the list of recipients for 
-	the message for whom you have no public key, the message will be sent unencrypted.</p>
+  <li><b>Men&uacute; Enigmail en la ventana de Redacci&oacute;n de Correo</b><ul>
+    <li><b>Firmar mensaje</b>: Activa/Desactiva el env&iacute;o de mensajes firmados. El usuario es notificado si el firmado falla.    </li>
+    <li><b>Cifrar mensaje</b>: Activa/Desactiva el cifrado para el(los) destinatario(s) antes del env&iacute;o. El usuario es notificado si el cifrado falla.
+      <ul>
+	<p>Si  <em>Mostrar selecci&oacute;n cuando sea necesario</em> est&aacute; seleccionado en <b>Preferencias
+	-&gt; pesta&ntilde;a Selecci&oacute;n de Claves</b>, una lista de claves aparecer&aacute; si hay direcciones en la lista de destinatarios para los que usted no tenga clave p&uacute;blica.</p>
+	<p>Si  <em>Nunca mostrar di&aacute;logo de selecci&oacute;n de clave OpenPGP</em> est&aacute; seleccionado en <b>Preferencias
+	-&gt; pesta&ntilde;a Selecci&oacute;n de Claves</b>, y hay direcciones en la lista de destinatarios para los cuales usted no tiene clave p&uacute;blica, el mensaje ser&aacute; enviado sin cifrar.</p>
 	</ul>
     </li>
-    <li><b>Use PGP/MIME for this message</b>: Enable/Disable the use of 
+    <li><b>Usar PGP/MIME para este mensaje </b>: Activa/Desactiva el uso de 
 	<a href="http://community.roxen.com/developers/idocs/rfc/rfc3156.html" target="_blank">PGP/MIME</a> 
-	for this message.
+	para este mensaje.
 	<ul>
-	<p>If you know the recipient(s) can read mail using the PGP/MIME format,
-	you should use it.</p>
-	<p>This feature is dependent on the settings in <b>Preferences
-	-&gt; PGP/MIME tab</b> being set to <em>Allow to use PGP/MIME</em> or <em>Always use
+	<p>Si usted sabe que el(los) destinatario(s) pueden leer correos usando el formato PGP/MIME,
+	usted debiera usarlo.</p>
+	<p>Esta caracter&iacute;stica depende de la configuraci&oacute;n en <b>Preferencias
+	-&gt; pesta&ntilde;a PGP/MIME</b> estando configurada para <em>Permitir el uso de PGP/MIME</em> o <em>Siempre usar 
 	PGP/MIME</em>.</p>
-	</ul></li>
-    <li><b>Default composition options</b>: Submenu.
+	</ul>
+    </li>
+    <li><b>Opciones por defecto para redacci&oacute;n</b>: Submen&uacute;.
     </p>
     <ul>
-      <li><b>Signing/Encryption Options...</b>: shortcut to <b>Account Settings -&gt;
-	  OpenPGP Options.</b>
-      </li>
-      <li><b>Send options...</b>: shortcut to <b>Preferences -&gt;
-	  Send</b> tab.
-      </li>
-      <li><b>Key selection options...</b>: shortcut to <b>Preferences -&gt; 
-	  Key Selection</b> tab.
-      </li>
-      <li><b>PGP/MIME options...</b>: shortcut to <b>Preferences -&gt; 
-	  PGP/MIME</b> tab.
-      </li>
+      <li><b>Opciones de Firma/Cifrado...</b>: atajo a <b>Configuraci&oacute;n de Cuentas -&gt;
+	  Opciones de OpenPGP.</b>      </li>
+      <li><b>Opciones de Env&iacute;o...</b>: atajo a la pesta&ntilde;a <b>Opciones -&gt;
+	  Enviando</b>.</li>
+      <li><b>Opciones de Selecci&oacute;n de Clave...</b>: atajo a la pesta&ntilde;a <b>Preferencias -&gt; 
+	  Selecci&oacute;n de Clave</b>.      </li>
+      <li><b>Opciones PGP/MIME...</b>: atajo a la pesta&ntilde;a <b>Preferencias -&gt; 
+	  PGP/MIME</b>.      </li>
 	  </li>
     </ul>
-    <li><b>Undo encryption</b>: If there is a failure when actually sending mail,
-    such as the POP server not accepting the request, Enigmail will not know
-    about it, and the encrypted message will continue to be displayed in the
-    Compose window. Choosing this menu item will undo the encryption/signing,
-    reverting the Compose window back to its original text.<br>
-    <em>As a temporary fix, this option may also be used to decrypt the quoted
-    text when replying to encrypted messages. Enigmail should automatically
-    decrypt the quoted message, but if that fails for some reason, you can use
-    this menu item to force it.</em>
-    </li>
-    <li><b>Insert public key</b>: insert ASCII-armored public key block at the
-     current cursor location in the Compose window. You will be prompted for the
-     email addresses of the key(s) to be inserted. Keys inserted in this manner
-     will automatically be recognized at the receiving end by Enigmail. After
-     key insertion, you may still choose to sign/encrypt the mail as
-     needed. Also, do not insert more than one key block in a message; just
-     specify multiple email addresses, separated by commas or spaces, when
-     prompted.
-    </li>
-    <li><b>Clear save passphrase</b>: Clears cached passphrase. Useful if you
-    have multiple passphrases.
-    </li>
-    <li><b>Help</b>: Displays Help information from the website (this page).
-    </li>
+    <li><b>Deshacer cifrado</b>: Si hay un fallo al momento del env&iacute;o,
+    tal como el servidor POP no aceptando la petici&oacute;n,  Enigmail no sabr&aacute; al respecto, y el mensaje cifrado continuar&aacute; siendo mostrado en la ventana de Redacci&oacute;n. Elegir este &iacute;tem de men&uacute; deshar&aacute; el cifrado/firmado, devolviendo la ventana de Redacci&oacute;n a su texto original.<br>
+    <em>Como una soluci&oacute;n temporal, esta opci&oacute;n puede tambi&eacute;n ser usada para descifrar el texto citado cuando se responde a mensajes cifrados. Enigmail debiera descifrar autom&aacute;ticamente el texto citado, pero si eso falla por alguna raz&oacute;n, usted puede utilizar este &iacute;tem de men&uacute; para forzarlo.</em>    </li>
+    <li><b>Insertar clave p&uacute;blica</b>: inserta la clave p&uacute;blica como un bloque de texto ASCII-blindado en la posici&oacute;n actual del cursor en la ventana de Redacci&oacute;n. Se le preguntar&aacute; por la direcci&oacute;n email de la(s) clave(s) a ser insertada(s). Las Claves insertadas de esta manera ser&aacute;n reconocidas autom&aacute;ticamente en el lado receptor por Enigmail. Luego de la inserci&oacute;n de clave, usted a&uacute;n puede elegir firmar/cifrar el mensaje como sea necesario. Adem&aacute;s, no inserte m&aacute;s de un bloque de claves en un mensaje; s&oacute;lo especifique m&uacute;ltiples direcciones email, separadas por comas o espacios, cuando se le pregunte.</li>
+    <li><b>Limpiar clave salvada</b>: Limpia la contrase&ntilde;a retenida. &uacute;til si usted tiene m&uacute;ltiples contrase&ntilde;as.</li>
+    <li><b>Ayuda</b>: Despliega la informaci&oacute;n de Ayuda del sitio web (esta p&aacute;gina).    </li>
 	</li>
   </ul>
 </ul>
 <hr/>
 <p>
-Further help is available on the
-<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail Help web page</a>
-</p>
+M&aacute;s ayuda disponible en la
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">P&aacute;gina web de Ayuda de Enigmail</a></p>
 </body>
 </html>

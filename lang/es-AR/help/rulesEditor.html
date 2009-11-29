@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta name="author" content="EduLeo" />
 <title>Ayuda de Enigmail: Editor de reglas</title>
 </head>
@@ -10,22 +10,22 @@
 <body>
 <h1>Ayuda de Enigmail</h1>
 <h3>Usando el editor de reglas de Enigmail</h3>
-<p>En el editor de reglas, se pueden especificar opciones predeterminadas por destinatario para activar el cifrado, firma y PGP/MIME, así como definir qué clave(s) OpenPGP usar. Cada regla consiste de 5 campos y se representa en una sola línea:</p>
+<p>En el editor de reglas, se pueden especificar opciones predeterminadas por destinatario para activar el cifrado, firma y PGP/MIME, as&iacute; como definir qu&eacute; clave(s) OpenPGP usar. Cada regla consiste de 5 campos y se representa en una sola l&iacute;nea:</p>
 <ul>
-<li><strong>Correo electrónico</strong>: Las direcciones de correo en los campos Para:, Cc: y Cco: tienen que coincidir. La coincidencia funciona en <em>subcadenas</em> (Más detalles en el diálogo de Editar regla)</li>
+<li><strong>Correo electr&oacute;nico</strong>: Las direcciones de correo en los campos Para:, Cc: y Cco: tienen que coincidir. La coincidencia funciona en <em>subcadenas</em> (M&aacute;s detalles en el di&aacute;logo de Editar regla)</li>
 <li><strong>Clave(s) OpenPGP</strong>: Una lista de IDs de claves OpenPGP para usar con el destinatario.</li>
-<li><strong>Firmar</strong>: Activar o desactivar el firmado de mensajes. Esta opción usa o ignora lo que se haya especificado en la ventana de redacción de mensajes. Los valores son:</li>
+<li><strong>Firmar</strong>: Activar o desactivar el firmado de mensajes. Esta opci&oacute;n usa o ignora lo que se haya especificado en la ventana de redacci&oacute;n de mensajes. Los valores son:</li>
 <br /><ul>
-<li><em>Nunca</em>: Desactiva la firma, incluso si estaba activada en la ventana de redacción del mensaje (tiene preferencia sobre los otros valores).</li>
-<li><em>Posible</em>: Deja la firma como se haya especificado en la ventana de redacción de mensajes.</li>
-<li><em>Siempre</em>: Activar la firma, incluso si <em>no</em> está activada en la ventana de redacción de mensajes.</li>
+<li><em>Nunca</em>: Desactiva la firma, incluso si estaba activada en la ventana de redacci&oacute;n del mensaje (tiene preferencia sobre los otros valores).</li>
+<li><em>Posible</em>: Deja la firma como se haya especificado en la ventana de redacci&oacute;n de mensajes.</li>
+<li><em>Siempre</em>: Activar la firma, incluso si <em>no</em> est&aacute; activada en la ventana de redacci&oacute;n de mensajes.</li>
 </ul></ul>
-<div style="margin-left: 40px;">Estas opciones de firma se aplican a todas las reglas que las cumplan. Si una de las reglas desactiva la firma, el mensaje no se firmará, independientemente de otras reglas que especifiquen <em>Siempre</em>.</div>
+<div style="margin-left: 40px;">Estas opciones de firma se aplican a todas las reglas que las cumplan. Si una de las reglas desactiva la firma, el mensaje no se firmar&aacute;, independientemente de otras reglas que especifiquen <em>Siempre</em>.</div>
 <ul>
 <li><strong>Cifrar</strong>: Activa o desactiva el cifrado del mensaje. Las opciones permitidas y su significado son las mismas que para la firma.</li>
-<li><strong>PGP/MIME</strong>: Activa o desactiva el uso de la codificación del mensaje PGP/MIME (RFC 3156). Si PGP/MIME está desactivado, los mensajes se codifican usando "PGP integrado". Los valores permitidos y su significado son los mismos que para la firma de mensajes.</li>
+<li><strong>PGP/MIME</strong>: Activa o desactiva el uso de la codificaci&oacute;n del mensaje PGP/MIME (RFC 3156). Si PGP/MIME est&aacute; desactivado, los mensajes se codifican usando "PGP integrado". Los valores permitidos y su significado son los mismos que para la firma de mensajes.</li>
 </ul>
-<p>Las reglas se procesan en el orden mostrado en la lista. Cuando una regla coincida con un destinatario y contenga un ID de clave OpenPGP, además de usar el ID de clave especificado, el destinatario no se tendrá en consideración al procesar más reglas.</p>
-<p><em>NOTA:</em> El editor de reglas aún no está completo. Es posible escribir algunas reglas más avanzadas editando directamente el archivo de reglas (en cuyo caso, éstas no se deben volver a editar mediante el editor). <a href="http://enigmail.mozdev.org/pgprules_file.html" onclick="window.open('http://enigmail.mozdev.org/pgprules_file.html');return false">Más información</a> para editar el archivo directamente se encuentra disponible en la página Web de Enigmail.</p>
-<hr /><p>Más ayuda disponible en la <a href="http://enigmail.mozdev.org/help.html" onclick="window.open('http://enigmail.mozdev.org/help.html');return false">página Web de ayuda de Enigmail</a></p>
+<p>Las reglas se procesan en el orden mostrado en la lista. Cuando una regla coincida con un destinatario y contenga un ID de clave OpenPGP, adem&aacute;s de usar el ID de clave especificado, el destinatario no se tendr&aacute; en consideraci&oacute;n al procesar m&aacute;s reglas.</p>
+<p><em>NOTA:</em> El editor de reglas a&uacute;n no est&aacute; completo. Es posible escribir algunas reglas m&aacute;s avanzadas editando directamente el archivo de reglas (en cuyo caso, &eacute;stas no se deben volver a editar mediante el editor). <a href="http://enigmail.mozdev.org/pgprules_file.html" onclick="window.open('http://enigmail.mozdev.org/pgprules_file.html');return false">M&aacute;s informaci&oacute;n</a> para editar el archivo directamente se encuentra disponible en la p&aacute;gina Web de Enigmail.</p>
+<hr /><p>M&aacute;s ayuda disponible en la <a href="http://enigmail.mozdev.org/help.html" onclick="window.open('http://enigmail.mozdev.org/help.html');return false">p&aacute;gina Web de ayuda de Enigmail</a></p>
 </body></html>

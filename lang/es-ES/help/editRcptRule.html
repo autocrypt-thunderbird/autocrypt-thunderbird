@@ -1,107 +1,49 @@
 <html>
 <head><title>Enigmail Help: Edit OpenPGP Rule</title>
-</head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head>
 <body>
-<h1>Enigmail Help</h1>
+<h1>Ayuda de Enigmail</h1>
 
-<h3>Using the Enigmail Rules Editor: Edit OpenPGP Rule</h3>
-<p>In the Rules Editor, you can specify defaults per recipient for enabling 
-encryption, signing and PGP/MIME, and to define what OpenPGP key(s) to use. In this 
-dialog, you can specify the rules for a single recipient, and for a group 
-of recipients with very similar attributes.
-</p>
+<h3>Usando el Editor de Reglas de Enigmail: Editar Regla OpenPGP</h3>
+<p>En el Editor de Reglas, usted puede especificar valores por defecto por destinatarios para activar cifrado, firmado y PGP/MIME, y para definir qu&eacute; clave(s) OpenPGP utilizar. En este di&aacute;logo, usted puede especificar reglas para un &uacute;nico destinatario, y para un grupo de destinatarios con atributos muy similares.</p>
 <ul>
-  <li><span style="font-weight: bold;">Set OpenPGP Rules for</span>: Contains the email
-    addresses of the recipients (without names, i.e. just an address like
-    <tt>somebody@email.domain</tt>). You can specify several email addresses, separated by spaces.
-    The address specified here can consist of
-    only the domain section so that mail to any address at that domain will
-    be matched, e.g. <tt>@email.domain will</tt> allow matching to <tt>body@email.domain</tt>,
-    <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt>, etc.
-  </li>
-  <li><span style="font-weight: bold;">Apply rule if recipient ...</span>: 
-    This modifies the matching of the email addresses.
-    If multiple addresses are entered, the setting will apply to all.
-    The examples below are based on <tt>body@email.domain</tt>
-    entered in the <i>OpenPGP Rules</i> field above.
+  <li><span style="font-weight: bold;">Poner Regla OpenPGP para </span>: Contiene la(s) direcci&oacute;n(es) email de el/los destinatario(s) (sin nombres, p.ej. s&oacute;lo una direcci&oacute;n como alguien@email.dom). Usted puede especificar varias direcciones email, separadas por espacios. La direcci&oacute;n especificada aqu&iacute; puede consistir s&oacute;lo de la secci&oacute;n de dominio de modo que cualquier direcci&oacute;n en ese dominio concuerde, p.ej. @email.domain <tt>permitir&aacute; concordancia a body@email.comain, somebody@email.domain, anybody@email.domain, etc.</tt></li>
+  <li><span style="font-weight: bold;">Aplicar regla si el destinatario ...</span>: 
+    Esto modifica la concordancia de las direcciones email. Si se ingresa m&uacute;ltiples direcciones, la configuraci&oacute;n se aplicar&aacute; a todas. Los ejemplos abajo est&aacute;n basados en body@email.domain ingresado en el campo <em>Poner Regla OpenPGP para</em> m&aacute;s arriba.
     <ul>
-      <li><i>Is exactly</i>: with this setting, the rule will only trigger on
-       emails to <tt>body@email.domain</tt> (exact, case insensitive matching).
-      </li>
-      <li><i>Contains</i>: with this setting, any email address containing the string
-        is matched,
-        e.g. <tt>anybody@email.domain</tt> or <tt>body@email.domain.net</tt>
-      </li>
-      <li><i>Begins with</i>: with this setting, any email address starting with
-        the string is matched, e.g. <tt>body@email.domain.net</tt>,
-        <tt>body@email.domain-name.com</tt>.
-      </li>
-      <li><i>Ends with</i>: with this setting, any email address ending with
-        the string is matched, e.g. <tt>anybody@email.domain</tt>,
-        <tt>somebody@email.domain</tt>.
-      </li>
+      <li><i>Es exactamente</i>: con esta configuraci&oacute;n, la regla s&oacute;lo se disparar&aacute; en emails para body@email.domain (comparaci&oacute;n exacta, sin considerar may&uacute;sculas/min&uacute;sculas).      </li>
+      <li><i>Contiene</i>: con esta configuraci&oacute;n, cualquier direcci&oacute;n email que contenga el patr&oacute;n concuerda, p.ej. anybody@email.domain o body@email.domain.net </li>
+      <li><i>Empieza por </i>: con esta configuraci&oacute;n, cualquier direcci&oacute;n email comenzando con el patr&oacute;n concuerda, p.ej. body@email.domain.net, body@email.domain-name.com.</li>
+      <li><i>Acaba en</i>: con esta configuraci&oacute;n, cualquier direcci&oacute;n email finalizando en el patr&oacute;n concuerda, p.ej. anybody@email.domain, somebody@email.domain.</li>
     </ul>
 
   </li>
-  <li><span style="font-weight: bold;">Continue with the next rule for the matching address</span><br>
-      Enabling this function will allow you to define a rule but not have 
-	  to specify a KeyID in the <em>Use the following OpenPGP keys:</em> 
-	  field, so that the email address is used to check for a key at the 
-	  time of sending. Also, further rules for the same address(es) will
-	  be processed as well. 
-  </li>
-  <li><span style="font-weight: bold;">Do not check further rules for the matching address</span><br>
-	  Enabling this function stops processing any other rules for the 
-	  matching address(es) if this rule is matched; i.e. rule processing 
-	  continues with the next recipient.
-  </li>
-  <li><span style="font-weight: bold;">Use the following OpenPGP keys:</span><br>
-	  Use the <em>Select Key(s)..</em> button to select the recipient 
-	  keys to be used for encryption. As in the action above, no further 
-	  rules for the matching address(es) are processed.
-  </li>
-  <li><span style="font-weight: bold;">Default for Signing</span>: enable or disable
-    message signing. This either uses or overrides what you have specified
-    in the message composition window. The values are:
-  </li>
+  <li><span style="font-weight: bold;">Continuar con la siguiente regla para la direcci&oacute;n que coincida</span><br>
+      Activar esta funci&oacute;n le permitir&aacute; definir una regla pero no tener que especificar un KeyID en el campo <em>Usar las siguientes claves OpenPGP:</em> 
+	  , de modo que la direcci&oacute;n email es usada para buscar una clave al momento de enviar. Adem&aacute;s, reglas adicionales para la(s) misma(s) direcci&oacute;n(es) tambi&eacute;n ser&aacute;(n) procesada(s).  </li>
+  <li><span style="font-weight: bold;">No comprobar m&aacute;s reglas para la direcci&oacute;n que coincida</span><br>
+  Activar esta funci&oacute;n detiene el procesamiento de cualquier otra regla para la(s) direcci&oacute;n(es) que coincide(n) si es que la regla coincide; p.ej. el procesamiento de reglas contin&uacute;a con el siguiente destinatario.</li>
+  <li><span style="font-weight: bold;">Usar las siguientes claves OpenPGP:</span><br>
+	  Use el bot&oacute;n  <em>Seleccionar Clave(s)..</em> para seleccionar las claves receptoras a ser usadas para el cifrado. Como en la acci&oacute;n de arriba, no se sigue procesando m&aacute;s reglas para la(s) direcci&oacute;n(es) coincidentes.</li>
+  <li><span style="font-weight: bold;">Por defecto para Firmado</span>: activa o desactiva la firma de mensaje. Esto o bien usa o anula lo que usted ha especificado en la ventana de redacci&oacute;n de mensaje. Los valores son:</li>
   <ul>
-    <li><i>Never</i>: disable signing, even if it was enabled in the message
-       composition window (overrules the other values)<br>
+    <li><i>Nunca</i>: desactiva el firmado, incluso si est&aacute; activado en la ventana de redacci&oacute;n de mensaje (anula los otros valores)<br>
     </li>
-    <li><i>Yes, if selected from in Message Composition</i>: leave signing 
-      as specified in the message composition window
-    </li>
-    <li><i>Always</i>: enable signing, even if it was <span
-      style="font-style: italic;">not</span> enabled in the message
-      composition window
-    </li>
+    <li><i>S&iacute;, si est&aacute; seleccionado en la redacci&oacute;n del mensaje</i>: deja el firmado tal como est&aacute; especificado en la ventana de redacci&oacute;n del mensaje</li>
+    <li><i>Siempre</i>: activa el firmado, incluso si <span
+      style="font-style: italic;">no</span> estaba activado en la ventana de redacci&oacute;n del mensaje</li>
   </ul>
 </ul>
-<div style="margin-left: 40px;">These signing settings are applied for
-all rules that match. If one of the rules disables signing, the message
-will not be signed, regardless of other rules that specify <i>Always</i>.<br>
+<div style="margin-left: 40px;">Esas configuraciones para firmado son aplicadas para todas las reglas que coinciden. Si una de las reglas desactiva el firmado, el mensaje no ser&aacute; firmado, sin importar otras reglas que especifiquen <i>Siempre</i>.
 </div>
 <ul>
-  <li><span style="font-weight: bold;">Encryption</span>: enable or
-    disable message encryption. The allowed settings and their meaning are
-    the same as for message signing.</li>
-  <li><span style="font-weight: bold;">PGP/MIME</span>: enable or
-    disable the use of the PGP/MIME (RFC 3156) message encoding. 
-    If PGP/MIME is disabled, the
-    messages are encoded using "inline PGP". The allowed values and their
-    meaning are the same as for message signing.
-  </li>
+  <li><span style="font-weight: bold;">Cifrado</span>: activa o desactiva el cifrado de mensaje. Las configuraciones permitidas y su significado son las mismas que para la firma de mensajes.</li>
+  <li><span style="font-weight: bold;">PGP/MIME</span>: activa o desactiva el uso de la codificaci&oacute;n de mensaje PGP/MIME (RFC 3156). 
+    Si  PGP/MIME est&aacute; desactivado, los mensajes son codificados utilizando "inline PGP". Los valores permitidos y sus significados son los mismos que para la firma de mensajes.  </li>
 </ul>
-<p>The rules are processed in the order displayed in the list in the 
-<em>OpenPGP Rules Editor</em>. Whenever a rule 
-matches a recipient and contains a OpenPGP Key ID, in addition to using the 
-specified Key ID, the recipient is not considered anymore when processing 
-further rules.
-</p>
+<p>Las reglas son procesadas en el orden en que se muestran en la lista en el <em>Editor de Reglas OpenPGP</em>. Siempre que una regla coincide con un destinatario y contiene una KeyID OpenPGP, adicionalmente a usar la KeyID especificada, el destinatario deja de ser considerado al procesar otras reglas adicionales.</p>
 <hr/>
 <p>
-Further help is available on the
-<a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Enigmail Per-Recipient Settings page</a>
-</p>
+Ayuda adicional disponible en la <a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">p&aacute;gina de Configuraci&oacute;n Por-Destinatario de Enigmail</a></p>
 </body>
 </html>
