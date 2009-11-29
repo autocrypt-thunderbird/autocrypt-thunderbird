@@ -588,7 +588,7 @@
       </vbox>
 
       <hbox class="headerNameBox" align="start" id="enigmailStatusTextBox" pack="start">
-        <image id="enigToggleHeaderView"
+        <image id="enigToggleHeaderView2"
                class="enigmailExpandViewButton" onclick="enigToggleHeaderView();"
                state="false" persist="state class"/>
         <spacer flex="1"/>

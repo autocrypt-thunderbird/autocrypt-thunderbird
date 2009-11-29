@@ -632,7 +632,7 @@ function enigDisplayExtendedStatus(displayMe) {
 }
 
 function enigToggleHeaderView() {
-  var viewToggle = document.getElementById("enigToggleHeaderView");
+  var viewToggle = document.getElementById("enigToggleHeaderView2");
   var expandedText = document.getElementById("expandedEnigmailStatusText");
   var state = viewToggle.getAttribute("state");
 
