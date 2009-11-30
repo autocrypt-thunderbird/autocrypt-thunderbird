@@ -437,7 +437,6 @@
 <!ENTITY enigmail.keyDetails.additionalUid.label     "ID de Usuario Adicional">
 <!ENTITY enigmail.keyDetails.ID.label "ID">
 <!ENTITY enigmail.keyDetails.keyType.label "Tipo">
-<!ENTITY enigmail.keyDetails.subType.label "Subclave">
 <!ENTITY enigmail.keyDetails.algorithm.label "Algoritmo">
 <!ENTITY enigmail.keyDetails.size.label "Tama\u00F1o">
 <!ENTITY enigmail.keyDetails.created.label "Creada">
@@ -554,3 +553,6 @@
 <!ENTITY enigmail.setupWiz.pgNoStart.desc "Ha escogido no usar el asistente para configurar OpenPGP. <html:br/><html:br/>Gracias por usar Enigmail.">
 <!ENTITY enigmail.advancedIdentityDlg.title          "Configuraci\u00F3n Avanzada de Identidades OpenPGP">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label     "Adjuntar mi clave p\u00FAblica a los mensajes">
+<!ENTITY enigmail.keyDetails.keyPart.label           "Parte de Clave">
+<!ENTITY enigmail.keyDetails.selAction.label         "Seleccionar acci\u00F3n ...">
+<!ENTITY enigmail.keyDetails.selAction.accesskey     "S">
