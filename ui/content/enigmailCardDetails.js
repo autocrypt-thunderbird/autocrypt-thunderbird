@@ -38,8 +38,7 @@ var gCardData = {};
 function onLoad() {
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {
-    EnigAlert(EnigGetString("accessError"));
-    window.close();
+    window.setTimeout(failWithError, 0, EnigGetString("accessError"));
     return;
   }
   var exitCodeObj = new Object();
@@ -93,11 +92,17 @@ function onLoad() {
   }
   else {
     if (! dryRun) {
-      EnigAlert(errorMsgObj.value);
-      window.close();
+      window.setTimeout(failWithError, 0, errorMsgObj.value);
     }
   }
+  return;
 }
+
+function failWithError(errorMsg) {
+  EnigAlert(errorMsg);
+  window.close();
+}
+
 
 function setValue(attrib, value) {
   var elem = document.getElementById("card_"+attrib);
