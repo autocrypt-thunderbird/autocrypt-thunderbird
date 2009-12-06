@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Enigmail Help: Message Reading</title>
+  <style type="text/css">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+</head>
+
+<body>
+  <h1>Enigmail help</h1>
+
+  <h3>Enigmail gebruiken bij het lezen van berichten</h3>
+
+  <dl>
+    <dt>Ontcijferknop in het hoofdvenster</dt>
+
+    <dd>Deze knop kan gebruikt worden voor verschillende doelen: ontcijferen, verifiëren of publieke sleutels importeren. Normaalgesproken gebeurt ontcijfering/verificatie automatisch, maar dit kan uitgeschakeld worden door middel van een instelling. Hoewel, als dit mislukt, wordt er een kort foutbericht weergegeven in de Enigmail statusregel. Als u op de Ontcijferknop klikt, zal u een meer gedetailleerd foutbericht zien, samen met de uitvoer van het GPG commando.</dd>
+  
+    <dt>Pen- en sleuteliconen in de berichtkop</dt>
+
+    <dd>
+      Het <em>Pen</em> en <em>Sleutel</em> icoon in de berichtkop toont of het bericht dat u aan het lezen bent ondertekend en/of versleuteld was en of de ondertekening goed is, d.w.z. als het bericht niet gewijzigd is sinds de ondertekening.	Als het bericht toch gewijzigd is, zal het <em>Pen</em> icoon veranderen naar een <em>Gebroken pen</em> om aan te geven dat de ondertekening ongeldig is. Een rechtermuisklik op het Pen- of Sleutelicoon geeft een menu met de volgende opties:
+
+      <ul>
+        <li><em>OpenPGP beveiligingsinfo</em>: staat u toe de outputstatus van GPG voor	het bericht te bekijken.</li>
+
+        <li><em>Kopieer OpenPGP beveiligingsinfo</em>: kopieert de output status van GPG naar het klembord; om in een antwoord te plakken, enz.</li>
+
+        <li><em>Bekijk PGP foto ID</em>: staat u toe om het <em>Foto ID</em> van de persoon die u het bericht gezonden heeft te bekijken, als er natuurlijk een foto ingebed zit in de publieke sleutel. (<em>Deze optie is enkel beschikbaar als er een Foto ID bestaat in de gebruikte sleutel.)</em></li>
+
+        <li><em>S/MIME beveilingsinfo</em>: staat u toe om de S/MIME beveilingsinfo van	het bericht te bekijken.</li>
+      </ul>
+
+      <p>Als u <em>keyserver-options auto-key-retrieve</em> niet ingesteld hebt in uw <tt>gpg.conf</tt> bestand en u leest een bericht dat ondertekend of versleuteld is, dan zal u een <em>Pen</em> icoon in de hoofding zien met een <em>Vraagteken</em> er op. De Enigmail statusregel zal zeggen <em>Gedeelte van het bericht getekend; klik op het pen icoon voor details</em> en het bericht in het berichtvenster zal alle OpenPGP informatie, samen met de ondertekening tonen.</p>
+  
+      <p>U kan dit ook zien als u <em>keyserver-options auto-key-retrieve</em> ingesteld hebt in uw <tt>gpg.conf</tt> bestand en als de OpenPGP key niet beschikbaar is op de standaard keyserver.</p>
+  
+      <p>Een klik op het <em>Pen en Vraagteken</em> icoon zal een venster tonen met het bericht dat de sleutel niet in uw sleutelbos zit. Als u dan op OK klikt, krijgt u een ander venster met een lijst met publieke keyservers waaruit u kan kiezen om de publieke sleutel van de verzender te downloaden.</p>
+
+      <p>Ga naar <b>Enigmail -&gt; Voorkeuren -&gt; Basis</b> tab en geef het adres van de keyserver in in het <em>Keyserver(s):</em> vakje, gescheiden door een komma om een lijst van keyservers die u wilt gebruiken te configureren. <em>De eerste keyserver uit de lijst zal als standaardserver gebruikt worden.</em></p>
+    </dd>
+
+    <dt>Versleutelde bijlagen openen / bijgevoegde OpenPGP sleutels importeren</dt>
+
+    <dd>Bijlagen met de extensie *.pgp, *.asc en *.gpg worden herkend door Enigmail en worden speciaal behandeld. Bij een rechtermuisklik op zo een bijlage krijg je twee speciale menu items in het contextmenu: <em>Ontcijfer en open</em> en <em>Ontcijfer en sla op als...</em>. Gebruik deze twee menu items als u wilt dat Enigmail de bijlage ontcijfert voor deze te openen of op te slaan. Als een bijlage herkend word als een OpenPGP sleutelbestand, krijg je de kans om de sleutels in je sleutelbos te importeren.</dd>
+  </dl>
+  <hr/>
+
+  <p>Verdere help is verkrijgbaar op de <a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail Helppagina</a></p>
+</body>
+</html>

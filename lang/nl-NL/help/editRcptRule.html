@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Enigmail help: Bewerk PGP regels</title>
+  <style type="text/css">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+</head>
+
+<body>
+<h1>Enigmail help</h1>
+
+  <h3>De Enigmail regeleditor gebruiken: PGP regels bewerken</h3>
+
+  <p>In de Regeleditor kan u standaarden opgeven om versleuteling, ondertekening en PGP/MIME te gebruiken en om te definiëren welke OpenPGP sleutel(s) er gebruikt moeten worden. In dit dialoogvenster kan u de regels voor een enkele ontvanger opgeven en voor een groep van ontvangers met sterk vergelijkbare eigenschappen.</p>
+
+  <dl>
+    <dt>Stel PGP regels in voor</dt>
+
+    <dd> bevat de e-mailadressen van de ontvangers (zonder namen, d.w.z. enkel een adres zoals <tt>persoon@email.domain</tt>). U kan meerdere e-mailadressen opgeven, gescheiden door spaties. Het opgegeven e-mailadres kan bestaan uit enkel de domeinnaam zodat alle e-mailadressen van dit domein ermee overeenkomen. Bijvoorbeeld <tt>@email.domain zal</tt> overeenkomen met <tt>per@email.domain</tt>,<tt>soon@email.domain</tt>, <tt>persoon@email.domain</tt>, enz.</dd>
+  
+    <dt>Pas regel toe als ontvanger ...</dt> 
+
+    <dd>
+      Dit past de vergelijking van de e-mailadressen aan. Als er meerdere e-mailadressen opgegeven zijn, zal de instelling betrekking hebben op alle e-mailadressen. De voorbeelden hieronder zijn gebaseerd op <tt>persoon@email.domain</tt> ingegeven in het <em>PGP regels</em> veld erboven.
+      
+      <ul>
+        <li><em>Is exact</em> met deze instelling heeft de regel enkel betrekking op e-mails naar <tt>persoon@email.domain</tt> (exact, niet hoofdlettergevoelig).</li>
+
+        <li><em>Bevat</em> met deze instelling zal de regel toegepast worden op elk e-mailadres dat deze tekenreeks bevat. B.v. <tt>persoon@email.domain</tt> or <tt>soon@email.domain.net</tt></li>
+
+        <li><em>Begint met</em> met deze instelling wordt de regel toegepast op e-mailadressen die beginnen met de opgegeven tekenreeks. B.v. <tt>per@email.domain.net</tt>, <tt>per@email.domain-name.com</tt>.</li>
+
+        <li><em>Eindigt met</em> met deze instelling wordt de regel toegpast op e-mailadressen die eindigen met de opgegeven tekenreeks. B.v. <tt>persoon@email.domain</tt>, <tt>soon@email.domain</tt>.</li>
+      </ul>
+    </dd>
+
+    <dt>Ga verder met de volgende regel voor het overeenstemmende adres</dt>
+
+    <dd>Het inschakelen van deze functie staat u toe om een regel te definiëren zonder een KeyID in het <em>Gebruik de volgende OpenPGP sleutel:</em> veld, zodat het e-mailadres gebruikt wordt om de sleutel te controleren op het moment van verzenden. Verdere regels voor hetzelfde adres zullen ook uitgevoerd worden.</dd>
+  
+    <dt>Controleer verdere regels voor het overeenstemmende adres niet</dt>
+
+    <dd>Het inschakelen van deze functie zorgt ervoor dat andere regels niet uitgevoerd worden als het adres met deze regel overeenstemd.  Er wordt dus direct naar de volgende ontvanger overgeschakeld. </dd>
+
+    <dt>Gebruik de volgende OpenPGP sleutels</dt>
+
+    <dd>Gebruik de <em>Selecteer sleutel(s)..</em> knop om de sleutel van de ontvanger te kiezen die u wilt gebruiken voor versleuteling.  Net zoals bij de bovenstaande actie zullen er geen verdere regels voor het overeenstemmende adres uitgevoerd worden.</dd>
+  
+    <dt>Standaard voor ondertekening</dt>
+
+    <dd>
+    Ondertekening in- of uitschakelen. Dit gebruikt of overschrijft datgene dat u opgegeven hebt in het berichtopstel venster.  Mogelijke waarden zijn:
+  
+      <ul>
+        <li><em>Nooit</em>: ondertekening uitschakelen, zelf al is het ingeschakeld in het berichtopstelvenster (overschrijft de andere waarden)</li>
+    
+        <li><em>Ja, als het geselecteerd is bij Berichtopstelling</em>: laat ondertekening zoals opgegeven in het berichtopstelvenster </li>
+    
+        <li><em>Altijd</em>: ondertekening inschakelen, zelfs al is het <span style="font-style: italic;">niet</span> ingeschakeld in het	berichtopstelvenster</li>
+      </ul>Deze ondertekeningsregels worden toegepast op alle regels die ermee overeenkomen.  Als één van de regesl ondertekening uitschakeld, dan word het bericht niet ondertekend, ook al hebt u een regel die <i>Altijd</i> opgeeft bij ondertekening.
+    </dd>
+
+    <dt>Versleuteling</dt>
+
+    <dd>berichtversleuteling in- of uitschakelen.  De toegestane instellingen en hun betekening zijn dezelfde als voor berichtondertekening.</dd>
+  
+    <dt>PGP/MIME</dt>
+
+    <dd>Het gebruik van PGP/MIME (RFC 3156) berichtencodering in- of uitschakelen. Als PGP/MIME uitgeschakeld is, worden de berichten met "inline PGP) ondertekend of versleuteld. De toegestane waarden en hun betekenis zijn dezelfde als deze voor berichtondertekening.</dd>
+  </dl>
+
+  <p>De regels worden uitgevoerd in de volgorde waarin ze weergegeven worden in de <em>PGP regeleditor</em>. Wanneer een regel overeenstemt met een ontvanger en een PGP sleutel ID bevat, met daarbij nog een opgegeven sleutel ID, dan wordt de ontvanger niet meer gecontroleerd bij het uitvoeren van verdere regels.</p>
+  <hr/>
+
+  <p>Verdere help is beschikbaar op de <a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Enigmail per-ontvanger instellingen pagina</a></p>
+</body>
+</html>
+
