@@ -12,7 +12,7 @@ my ($inputfile, $outdir) = @ARGV;
 open INFILE, "$inputfile";
 open OUTFILE, ">$outdir/jar.mn";
 
-print OUTFILE "enigmail-locale.jar:\n";
+print OUTFILE "enigmail.jar:\n";
 
 my @files = ("contents.rdf",
   "enigmail.properties",

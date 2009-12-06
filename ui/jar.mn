@@ -98,19 +98,6 @@ enigmail.jar:
 	locale/en-US/enigmail/help/rulesEditor.html    (locale/en-US/help/rulesEditor.html)
 	locale/en-US/enigmail/help/editRcptRule.html   (locale/en-US/help/editRcptRule.html)
 	locale/en-US/enigmail/help/initError.html      (locale/en-US/help/initError.html)
-
-enigmail-en-US.jar:
-	locale/en-US/enigmail/contents.rdf         (locale/en-US/contents.rdf)
-	locale/en-US/enigmail/enigmail.dtd         (locale/en-US/enigmail.dtd)
-	locale/en-US/enigmail/enigmail.properties  (locale/en-US/enigmail.properties)
-	locale/en-US/enigmail/am-enigprefs.properties  (locale/en-US/am-enigprefs.properties)
-	locale/en-US/enigmail/help/messenger.html      (locale/en-US/help/messenger.html)
-	locale/en-US/enigmail/help/compose.html        (locale/en-US/help/compose.html)
-	locale/en-US/enigmail/help/rulesEditor.html    (locale/en-US/help/rulesEditor.html)
-	locale/en-US/enigmail/help/editRcptRule.html   (locale/en-US/help/editRcptRule.html)
-	locale/en-US/enigmail/help/initError.html      (locale/en-US/help/initError.html)
-
-enigmail-skin.jar:
 	skin/classic/enigmail/contents.rdf        (skin/classic/contents.rdf)
 	skin/classic/enigmail/enigmail.css        (skin/classic/enigmail.css)
 	skin/classic/enigmail/enigmail-about.png  (skin/images/enigmail-about.png)

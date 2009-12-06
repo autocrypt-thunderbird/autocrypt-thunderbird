@@ -65,13 +65,13 @@ sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${platform}'<\/em
 # Prepare languages other than en-US
 
 if [ -s ${srcDir}/lang/current-languages.txt ]; then
-  localeJar=chrome/${xpiModule}-locale.jar
+  localeJar=chrome/${xpiModule}.jar
 
-  echo '      <Description about="urn:mozilla:extension:file:enigmail-locale.jar">' > ${targetDir}/install.rdf.t2
+  echo '      <Description about="urn:mozilla:extension:file:enigmail.jar">' > ${targetDir}/install.rdf.t2
 
   for lang in `cat ${srcDir}/lang/current-languages.txt`; do
     echo '        <em:locale>locale/'$lang'/enigmail/</em:locale>' >> ${targetDir}/install.rdf.t2
-    echo 'locale        enigmail    '$lang'       jar:chrome/enigmail-locale.jar!/locale/'$lang'/enigmail/' >> ${targetDir}/chrome.manifest
+    echo 'locale        enigmail    '$lang'       jar:chrome/enigmail.jar!/locale/'$lang'/enigmail/' >> ${targetDir}/chrome.manifest
   done
   echo '      </Description>' >> ${targetDir}/install.rdf.t2
 
@@ -135,8 +135,6 @@ zip ${xpiFile} \
     defaults/preferences/enigmail.js \
     defaults/pref/enigmail.js \
     chrome/${xpiModule}.jar \
-    chrome/${xpiModule}-skin.jar \
-    chrome/${xpiModule}-skin-tbird.jar \
     wrappers/gpg-wrapper.sh \
     ${localeJar} \
     components/ipc.xpt \
