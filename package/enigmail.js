@@ -193,6 +193,8 @@ const ENC_TYPE_MSG = 0;
 const ENC_TYPE_ATTACH_BINARY = 1;
 const ENC_TYPE_ATTACH_ASCII = 2;
 
+const DUMMY_AGENT_INFO = "none";
+
 var gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512", "sha224"];
 
 var gKeyAlgorithms = [];
@@ -1414,7 +1416,8 @@ function (domWindow, version, prefBranch) {
   this.detectGpgAgent(domWindow);
 
   if (this.useGpgAgent() && (! this.isDosLike)) {
-    gEnvList.push("GPG_AGENT_INFO="+this.gpgAgentInfo.envStr);
+    if (this.gpgAgentInfo.envStr != DUMMY_AGENT_INFO)
+      gEnvList.push("GPG_AGENT_INFO="+this.gpgAgentInfo.envStr);
   }
 
 
@@ -1716,25 +1719,22 @@ function (domWindow) {
       var errLenObj = new Object();
 
       var envList = new Array();
-
-      for (i in gEnvList) {
-        envList.push(gEnvList[i]);
-      }
+      envList = envList.concat(gEnvList);
 
       var envFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
       initPath(envFile, this.determineGpgHomeDir());
-      envFile.append(".gpg-agent-info");
 
-      if (/* (envFile.exists() || this.isDosLike) && */ gpgConnectAgent &&
-          gpgConnectAgent.isExecutable()) {
+      if (gpgConnectAgent && gpgConnectAgent.isExecutable()) {
         // try to connect to a running gpg-agent
+        
+        DEBUG_LOG("enigmail.js: detectGpgAgent: gpg-connect-agent is executable\n");
 
         if ((! this.isDosLike) && envFile.exists()) {
           this.gpgAgentInfo.envStr = extractAgentInfo(EnigReadFile(envFile));
           envList.push("GPG_AGENT_INFO="+this.gpgAgentInfo.envStr);
         }
         else {
-          this.gpgAgentInfo.envStr = "dummy";
+          this.gpgAgentInfo.envStr = DUMMY_AGENT_INFO;
         }
 
         command = gpgConnectAgent.QueryInterface(Components.interfaces.nsIFile);
@@ -1748,16 +1748,43 @@ function (domWindow) {
         }
         catch (ex) {
           ERROR_LOG("enigmail.js: detectGpgAgent: "+command.path+" failed\n");
+          
           exitCode = -1;
         }
-
+        
         CONSOLE_LOG("enigmail> "+command.path+"\n");
         if (exitCode==0) {
           DEBUG_LOG("enigmail.js: detectGpgAgent: found running gpg-agent. GPG_AGENT_INFO='"+this.gpgAgentInfo.envStr+"'\n");
           return;
         }
         else {
-          DEBUG_LOG("enigmail.js: detectGpgAgent: no running gpg-agent:"+errStrObj.value+"\n");
+          DEBUG_LOG("enigmail.js: detectGpgAgent: no running gpg-agent: "+errStrObj.value+"\n");
+          
+          if (this.gpgAgentInfo.envStr != DUMMY_AGENT_INFO) {
+            // try again without GPG_AGENT_INFO set
+            DEBUG_LOG("enigmail.js: detectGpgAgent: re-trying without GPG_AGENT_INFO\n");
+            this.gpgAgentInfo.envStr = DUMMY_AGENT_INFO;
+            
+            try {
+              exitCode = this.ipcService.runPipe(command, [], 0,
+                                          "", "/echo OK\n", 0,
+                                          gEnvList, gEnvList.length,
+                                          outStrObj, outLenObj, errStrObj, errLenObj);
+            }
+            catch (ex) {
+              ERROR_LOG("enigmail.js: detectGpgAgent: "+command.path+" failed\n");
+              
+              exitCode = -1;
+            }
+            CONSOLE_LOG("enigmail> "+command.path+"\n");
+          }
+          if (exitCode==0) {
+            DEBUG_LOG("enigmail.js: detectGpgAgent: found running gpg-agent. GPG_AGENT_INFO='"+this.gpgAgentInfo.envStr+"'\n");
+            return;
+          }
+          else {
+             DEBUG_LOG("enigmail.js: detectGpgAgent: again no running gpg-agent:"+errStrObj.value+"\n");
+          }
         }
       }
 
@@ -1809,7 +1836,7 @@ function (domWindow) {
         }
       }
       else {
-        this.gpgAgentInfo.envStr = "dummy";
+        this.gpgAgentInfo.envStr = DUMMY_AGENT_INFO;
         initPath(envFile, this.determineGpgHomeDir());
         envFile.append("gpg-agent.conf");
 
@@ -1827,6 +1854,9 @@ function (domWindow) {
           catch (ex) {} // ignore file write errors
         }
       }
+    }
+    else {
+      DEBUG_LOG("enigmail.js: detectGpgAgent - gpg 1.x found\n");
     }
   }
   DEBUG_LOG("enigmail.js: detectGpgAgent: GPG_AGENT_INFO='"+this.gpgAgentInfo.envStr+"'\n");
