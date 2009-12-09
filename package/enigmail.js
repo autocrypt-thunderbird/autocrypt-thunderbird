@@ -1635,7 +1635,7 @@ function () {
   var versionParts = outStr.replace(/[\r\n].*/g,"").replace(/ *\(gpg4win.*\)/i, "").split(/ /);
   var gpgVersion = versionParts[versionParts.length-1]
 
-
+  DEBUG_LOG("enigmail.js: detected GnuPG version '"+gpgVersion+"'\n");
   this.agentVersion = gpgVersion;
 
   // check GnuPG version number
@@ -1706,7 +1706,7 @@ function (domWindow) {
     DEBUG_LOG("enigmail.js: detectGpgAgent: no GPG_AGENT_INFO variable set\n");
     this.gpgAgentInfo.preStarted = false;
 
-    if ((this.agentVersion >= "2.0")) {
+    if (this.agentVersion >= "2.0") {
       var command = null;
       var gpgConnectAgent = resolveAgentPath("gpg-connect-agent");
 
