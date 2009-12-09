@@ -197,9 +197,11 @@ nsPipeConsole::Init()
   }
 
   // add shutdown observer
+
   nsCOMPtr<nsIObserverService> observ(do_GetService("@mozilla.org/observer-service;1"));
   if (observ)
-    observ->AddObserver(this, "xpcom-shutdown", PR_FALSE);
+    observ->AddObserver((nsIObserver*)(this),
+                        NS_XPCOM_SHUTDOWN_OBSERVER_ID, PR_FALSE);
 
   return NS_OK;
 }
@@ -364,6 +366,7 @@ nsPipeConsole::Join()
     mThreadJoined = PR_TRUE;
   }
 
+  DEBUG_LOG(("nsPipeConsole::terminating thread\n"));
   rv = mPipeThread->Shutdown();
   NS_ENSURE_SUCCESS(rv, rv);
   
@@ -380,6 +383,14 @@ nsPipeConsole::Shutdown()
   DEBUG_LOG(("nsPipeConsole::Shutdown:\n"));
   
   Finalize(PR_FALSE);
+
+  nsCOMPtr<nsIObserverService> observerSvc =
+           do_GetService("@mozilla.org/observer-service;1");
+
+  if (observerSvc) {
+    observerSvc->RemoveObserver((nsIObserver*)(this),
+                                NS_XPCOM_SHUTDOWN_OBSERVER_ID);
+  }
 
   return NS_OK;
 }
@@ -671,11 +682,12 @@ nsPipeConsole::Run()
 //-----------------------------------------------------------------------------
 
 NS_IMETHODIMP
-nsPipeConsole::Observe(nsISupports *subject, const char *topic, const PRUnichar *data)
+nsPipeConsole::Observe(nsISupports *subject, const char *aTopic, const PRUnichar *data)
 {
-    DEBUG_LOG(("nsPipeConsole::Observe: topic=%s\n", topic));
+    DEBUG_LOG(("nsPipeConsole::Observe: topic=%s\n", aTopic));
 
-    if (strcmp(topic, "xpcom-shutdown") == 0)
-        Shutdown();
+    if (!PL_strcmp(aTopic, NS_XPCOM_SHUTDOWN_OBSERVER_ID)) {
+      Shutdown();
+    }
     return NS_OK;
 }

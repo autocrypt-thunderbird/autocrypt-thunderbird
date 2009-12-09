@@ -1249,7 +1249,7 @@ function () {
   }
 
   if (this.console) {
-    this.console.close();
+    this.console.shutdown();
     this.console = null;
   }
 
@@ -1397,7 +1397,7 @@ function (domWindow, version, prefBranch) {
     // Create a non-joinable console
     var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(nsIPipeConsole);
 
-    pipeConsole.open(500, 80, false);
+    pipeConsole.open(499, 80, false);
 
     this.console = pipeConsole;
 
