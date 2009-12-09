@@ -1725,11 +1725,11 @@ function (domWindow) {
       initPath(envFile, this.determineGpgHomeDir());
       envFile.append(".gpg-agent-info");
 
-      if ((envFile.exists() || this.isDosLike) && gpgConnectAgent &&
+      if (/* (envFile.exists() || this.isDosLike) && */ gpgConnectAgent &&
           gpgConnectAgent.isExecutable()) {
         // try to connect to a running gpg-agent
 
-        if (! this.isDosLike) {
+        if ((! this.isDosLike) && envFile.exists()) {
           this.gpgAgentInfo.envStr = extractAgentInfo(EnigReadFile(envFile));
           envList.push("GPG_AGENT_INFO="+this.gpgAgentInfo.envStr);
         }
