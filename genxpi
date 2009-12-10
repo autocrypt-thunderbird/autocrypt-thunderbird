@@ -108,11 +108,28 @@ shift
 \$GPG "\$@"
 exitCode=\$?
 
-sleep 2
+sleep 1
 exit \$exitCode
 EOT
 
-chmod 755 "${targetDir}/wrappers/gpg-wrapper.sh"
+cat << EOT > "${targetDir}/wrappers/gpg-agent-wrapper.sh"
+#!/bin/sh
+
+action=\$1
+shift
+
+if [ \$action = "start" ]; then
+  GPGAGENT="\$1"
+  shift
+  exec "\$GPGAGENT" "\$@"
+fi
+
+if [ \$action = "stop" ]; then
+  kill \$1
+fi
+EOT
+
+chmod 755 "${targetDir}/wrappers/gpg-agent-wrapper.sh"
 cd ${srcDir}/package
 
 enigmimeDll=${libPrefix}enigmime${dllSuffix}
@@ -136,6 +153,7 @@ zip ${xpiFile} \
     defaults/pref/enigmail.js \
     chrome/${xpiModule}.jar \
     wrappers/gpg-wrapper.sh \
+    wrappers/gpg-agent-wrapper.sh \
     ${localeJar} \
     components/ipc.xpt \
     components/enigmime.xpt \

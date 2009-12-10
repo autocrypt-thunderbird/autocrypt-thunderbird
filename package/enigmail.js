@@ -74,6 +74,7 @@ const NS_IPCBUFFER_CONTRACTID   = "@mozilla.org/process/ipc-buffer;1";
 const NS_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1";
 const NS_PIPETRANSPORT_CONTRACTID="@mozilla.org/process/pipe-transport;1";
 const NS_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
+const NS_PROCESS_UTIL_CONTRACTID = "@mozilla.org/process/util;1"
 const NS_MSGCOMPOSESECURE_CONTRACTID = "@mozilla.org/messengercompose/composesecure;1";
 const NS_ENIGMSGCOMPOSE_CONTRACTID   = "@mozilla.org/enigmail/composesecure;1";
 const NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID   = "@mozilla.org/enigmail/composesecure-factory;1";
@@ -106,9 +107,6 @@ const nsIIPCService          = Components.interfaces.nsIIPCService;
 const nsIPipeConsole         = Components.interfaces.nsIPipeConsole;
 const nsIProcessInfo         = Components.interfaces.nsIProcessInfo;
 const nsIEnigmail            = Components.interfaces.nsIEnigmail;
-//const nsIPGPModule           = Components.interfaces.nsIPGPModule;
-//const nsIPGPMsgBody          = Components.interfaces.nsIPGPMsgBody;
-//const nsIPGPMsgHeader        = Components.interfaces.nsIPGPMsgHeader;
 const nsIEnigStrBundle       = Components.interfaces.nsIStringBundleService;
 const nsICmdLineHandler      = Components.interfaces.nsICmdLineHandler;
 const nsICategoryManager     = Components.interfaces.nsICategoryManager;
@@ -1001,6 +999,7 @@ Enigmail.prototype.keygenConsole = null;
 Enigmail.prototype.agentType = "";
 Enigmail.prototype.agentPath = "";
 Enigmail.prototype.agentVersion = "";
+Enigmail.prototype.gpgAgentProcess = null;
 Enigmail.prototype.userIdList = null;
 Enigmail.prototype.rulesList = null;
 Enigmail.prototype.gpgAgentInfo = {preStarted: false, envStr: ""};
@@ -1034,27 +1033,6 @@ function (aSubject, aTopic, aData) {
     }
 
   } else if (aTopic == NS_XPCOM_SHUTDOWN_OBSERVER_ID) {
-    /* OBSOLETE
-    // Reset mail.show_headers pref
-    try {
-      var prefSvc = Components.classes[NS_PREFS_SERVICE_CID]
-                     .getService(Components.interfaces.nsIPrefService);
-      var prefRoot = prefSvc.getBranch(null);
-
-      var prefValue = 1;
-      try {
-        prefValue = this.prefBranch.getIntPref("show_headers");
-      } catch (ex) {
-        ERROR_LOG("enigmail.js: Enigmail.observe: could not obtain 'show_headers'\n");
-      }
-
-      prefRoot.setIntPref("mail.show_headers", prefValue);
-      prefSvc.savePrefFile(null);
-      DEBUG_LOG("enigmail.js: Enigmail.observe: changed preferences saved\n");
-    } catch (ex) {
-      ERROR_LOG("enigmail.js: Enigmail.observe: could not save preferences\n");
-    }
-    */
     // XPCOM shutdown
     this.finalize();
 
@@ -1245,6 +1223,23 @@ function () {
   DEBUG_LOG("enigmail.js: Enigmail.finalize:\n");
   if (!this.initialized) return;
 
+  if (this.gpgAgentProcess != null) {
+    DEBUG_LOG("enigmail.js: Enigmail.finalize: stopping gpg-agent PID="+this.gpgAgentProcess+"\n");
+    try {
+      var installLoc = Components.classes[NS_EXTENSION_MANAGER_CONTRACTID]
+               .getService(Components.interfaces.nsIExtensionManager)
+               .getInstallLocation(ENIGMAIL_EXTENSION_ID);
+      var extensionLoc = installLoc.getItemFile(ENIGMAIL_EXTENSION_ID, "wrappers");
+      extensionLoc.append("gpg-agent-wrapper.sh");
+
+      agentProcess = Components.classes[NS_PROCESS_UTIL_CONTRACTID].createInstance(Components.interfaces.nsIProcess);
+      agentProcess.init(extensionLoc);
+      agentProcess.run(true, [ "stop", this.gpgAgentProcess ], 2);
+    }
+    catch (ex) {
+    }
+  }
+  
   if (this.logFileStream) {
     this.logFileStream.close();
     this.logFileStream = null;
@@ -1723,6 +1718,7 @@ function (domWindow) {
 
       var envFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
       initPath(envFile, this.determineGpgHomeDir());
+      envFile.append(".gpg-agent-info");
 
       if (gpgConnectAgent && gpgConnectAgent.isExecutable()) {
         // try to connect to a running gpg-agent
@@ -1791,6 +1787,7 @@ function (domWindow) {
       // and finally try to start gpg-agent
       var args = [];
       var commandFile = resolveAgentPath("gpg-agent");
+      var agentProcess = null;
       
       if ((! commandFile) || (! commandFile.exists())) {
         commandFile = resolveAgentPath("gpg-agent2");
@@ -1808,15 +1805,24 @@ function (domWindow) {
 
       if (! this.isDosLike) {
         args = [ "--sh", "--write-env-file", envFile.path,
-                "--daemon",
+                "--daemon", 
                 "--default-cache-ttl", (this.getMaxIdleMinutes()*60).toString(),
                 "--max-cache-ttl", "999999" ];  // ca. 11 days
 
         try {
+          var installLoc = Components.classes[NS_EXTENSION_MANAGER_CONTRACTID]
+                   .getService(Components.interfaces.nsIExtensionManager)
+                   .getInstallLocation(ENIGMAIL_EXTENSION_ID);
+          var extensionLoc = installLoc.getItemFile(ENIGMAIL_EXTENSION_ID, "wrappers");
+          extensionLoc.append("gpg-agent-wrapper.sh");
+          args.unshift(command.path);
+          args.unshift("start");
+          command = extensionLoc;
           exitCode = this.ipcService.runPipe(command, args, args.length,
                                         "", "", 0,
                                         envList, envList.length,
                                         outStrObj, outLenObj, errStrObj, errLenObj);
+
         }
         catch (ex) {
           ERROR_LOG("enigmail.js: detectGpgAgent: "+command+" failed\n");
@@ -1826,8 +1832,8 @@ function (domWindow) {
         CONSOLE_LOG("enigmail> "+printCmdLine(command, args)+"\n");
 
         if (exitCode == 0) {
-          var outStr = outStrObj.value;
           this.gpgAgentInfo.envStr = extractAgentInfo(outStrObj.value);
+          this.gpgAgentProcess = this.gpgAgentInfo.envStr.split(":")[1];
         }
         else {
           ERROR_LOG("enigmail.js: detectGpgAgent: gpg-agent output: "+errStrObj.value+"\n");
