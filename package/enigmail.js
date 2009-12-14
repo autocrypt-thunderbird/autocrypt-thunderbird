@@ -1764,7 +1764,7 @@ function (domWindow) {
       }
 
       if (! this.isDosLike) {
-        args = [ "--sh", "--use-standard-socket",
+        args = [ "--sh", "--no-use-standard-socket",
                 "--daemon", 
                 "--default-cache-ttl", (this.getMaxIdleMinutes()*60).toString(),
                 "--max-cache-ttl", "999999" ];  // ca. 11 days
