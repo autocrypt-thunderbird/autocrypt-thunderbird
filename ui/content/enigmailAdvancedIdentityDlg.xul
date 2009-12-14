@@ -90,16 +90,16 @@
     gOpenPgpHeaderUrl      = document.getElementById("openpgpHeaderMode.url");
     gOpenPgpSendKeyWithMsg = document.getElementById("openpgp.sendKeyWithMsg");
 
-    var identity = window.arguments[0].identity;
-    var openPgpHeaderMode = identity.getIntAttribute("openPgpHeaderMode");
+    var settings = window.arguments[0].identitySettings;
+    var openPgpHeaderMode = settings.openPgpHeaderMode;
     if (openPgpHeaderMode & ENIG_HEADERMODE_KEYID)
       gOpenPgpHeaderKeyId.checked = true;
 
     if (openPgpHeaderMode & ENIG_HEADERMODE_URL)
       gOpenPgpHeaderUrl.checked = true;
 
-    gOpenPgpUrlName.value = identity.getCharAttribute("openPgpUrlName");
-    gOpenPgpSendKeyWithMsg.checked = identity.getBoolAttribute("attachPgpKey");
+    gOpenPgpUrlName.value = settings.openPgpUrlName;
+    gOpenPgpSendKeyWithMsg.checked = settings.attachPgpKey;
     if (window.arguments[0].pgpKeyMode == 0) {
       gOpenPgpHeaderKeyId.setAttribute("disabled", "true");
       gOpenPgpSendKeyWithMsg.setAttribute("disabled", "true");
@@ -117,7 +117,6 @@
   }
 
   function onAccept() {
-    var identity = window.arguments[0].identity;
     var openPgpHeaderMode = 0;
     if (gOpenPgpHeaderKeyId.checked)
       openPgpHeaderMode += ENIG_HEADERMODE_KEYID;
@@ -125,9 +124,10 @@
     if (gOpenPgpHeaderUrl.checked)
       openPgpHeaderMode += ENIG_HEADERMODE_URL;
 
-    identity.setIntAttribute("openPgpHeaderMode", openPgpHeaderMode);
-    identity.setCharAttribute("openPgpUrlName", gOpenPgpUrlName.value);
-    identity.setBoolAttribute("attachPgpKey", gOpenPgpSendKeyWithMsg.checked);
+    var s = window.arguments[0].identitySettings;
+    s.openPgpHeaderMode = openPgpHeaderMode;
+    s.openPgpUrlName = gOpenPgpUrlName.value;
+    s.attachPgpKey = gOpenPgpSendKeyWithMsg.checked;
   }
 ]]>
   </script>

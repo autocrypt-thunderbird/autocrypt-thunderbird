@@ -44,6 +44,7 @@ var gOpenPgpHeaderUrl;
 var gEnigAccount;
 var gEnigDlgOnAccept;
 var gPgpMimeMode;
+var gEnigAdvancedSettings;
 
 EnigInitCommon("pref-enigmail");
 
@@ -84,10 +85,21 @@ function enigOnInit()
     gPgpSignPlainPolicy.checked = gEnigIdentity.getBoolAttribute("pgpSignPlain");
     gPgpMimeMode.checked = gEnigIdentity.getBoolAttribute("pgpMimeMode");
     gEncryptionPolicy.checked = (gEnigIdentity.getIntAttribute("defaultEncryptionPolicy")>0);
+    gEnigAdvancedSettings = {
+      openPgpHeaderMode: gEnigIdentity.getIntAttribute("openPgpHeaderMode"),
+      openPgpUrlName: gEnigIdentity.getCharAttribute("openPgpUrlName"),
+      attachPgpKey: gEnigIdentity.getBoolAttribute("attachPgpKey")
+    }
+    
   }
   else {
     gEnablePgp.checked=false;
     gEncryptionChoicesEnabled=false;
+    gEnigAdvancedSettings = {
+      openPgpHeaderMode: 0,
+      openPgpUrlName: "",
+      attachPgpKey: false
+    }
   }
 
   // Disable all locked elements on the panel
@@ -152,6 +164,10 @@ function enigOnSave()
     gEnigIdentity.setBoolAttribute("pgpSignPlain", gPgpSignPlainPolicy.checked);
     gEnigIdentity.setBoolAttribute("pgpMimeMode", gPgpMimeMode.checked);
     gEnigIdentity.setIntAttribute("defaultEncryptionPolicy", (gEncryptionPolicy.checked ? 1 : 0));
+    gEnigIdentity.setIntAttribute("openPgpHeaderMode", gEnigAdvancedSettings.openPgpHeaderMode);
+    gEnigIdentity.setCharAttribute("openPgpUrlName", gEnigAdvancedSettings.openPgpUrlName);
+    gEnigIdentity.setBoolAttribute("attachPgpKey", gEnigAdvancedSettings.attachPgpKey);
+    
   }
 }
 
@@ -206,7 +222,7 @@ function enigSelectKeyId()
 
 function enigAdvancedIdentitySettings() {
   var inputObj = {
-    identity: gEnigIdentity,
+    identitySettings: gEnigAdvancedSettings,
     pgpKeyMode: gPgpKeyMode.selectedItem.value
   };
   window.openDialog("chrome://enigmail/content/enigmailAdvancedIdentityDlg.xul","", "dialog,modal,centerscreen", inputObj);
