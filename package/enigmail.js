@@ -1694,7 +1694,7 @@ function (domWindow) {
   }
 
   var gpgAgentInfo = this.processInfo.getEnv("GPG_AGENT_INFO");
-  if (gpgAgentInfo) {
+  if (gpgAgentInfo && gpgAgentInfo.length>0) {
     DEBUG_LOG("enigmail.js: detectGpgAgent: GPG_AGENT_INFO variable available\n");
     // env. variable suggests running gpg-agent
     this.gpgAgentInfo.preStarted = true;
@@ -1713,75 +1713,35 @@ function (domWindow) {
       var errStrObj = new Object();
       var errLenObj = new Object();
 
-      var envList = new Array();
-      envList = envList.concat(gEnvList);
-
-      var envFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
-      initPath(envFile, this.determineGpgHomeDir());
-      envFile.append(".gpg-agent-info");
-
       if (gpgConnectAgent && gpgConnectAgent.isExecutable()) {
         // try to connect to a running gpg-agent
         
         DEBUG_LOG("enigmail.js: detectGpgAgent: gpg-connect-agent is executable\n");
 
-        if ((! this.isDosLike) && envFile.exists()) {
-          this.gpgAgentInfo.envStr = extractAgentInfo(EnigReadFile(envFile));
-          envList.push("GPG_AGENT_INFO="+this.gpgAgentInfo.envStr);
-        }
-        else {
-          this.gpgAgentInfo.envStr = DUMMY_AGENT_INFO;
-        }
+        this.gpgAgentInfo.envStr = DUMMY_AGENT_INFO;
 
         command = gpgConnectAgent.QueryInterface(Components.interfaces.nsIFile);
         var exitCode = -1;
 
+        CONSOLE_LOG("enigmail> "+command.path+"\n");
         try {
+          var inputTxt="/echo OK\n";
           exitCode = this.ipcService.runPipe(command, [], 0,
-                                      "", "/echo OK\n", 0,
-                                      envList, envList.length,
+                                      "", inputTxt, inputTxt.length,
+                                      gEnvList, gEnvList.length,
                                       outStrObj, outLenObj, errStrObj, errLenObj);
+                                      
+          if (exitCode==0 || outStrObj.value.substr(0,2)=="OK") {
+            DEBUG_LOG("enigmail.js: detectGpgAgent: found running gpg-agent\n");
+            return;
+          }
+          else
+            DEBUG_LOG("enigmail.js: detectGpgAgent: no running gpg-agent. Output='"+outStrObj.value+"' error text='"+errStrObj.value+"'\n");
         }
         catch (ex) {
           ERROR_LOG("enigmail.js: detectGpgAgent: "+command.path+" failed\n");
-          
-          exitCode = -1;
         }
-        
-        CONSOLE_LOG("enigmail> "+command.path+"\n");
-        if (exitCode==0) {
-          DEBUG_LOG("enigmail.js: detectGpgAgent: found running gpg-agent. GPG_AGENT_INFO='"+this.gpgAgentInfo.envStr+"'\n");
-          return;
-        }
-        else {
-          DEBUG_LOG("enigmail.js: detectGpgAgent: no running gpg-agent: "+errStrObj.value+"\n");
-          
-          if (this.gpgAgentInfo.envStr != DUMMY_AGENT_INFO) {
-            // try again without GPG_AGENT_INFO set
-            DEBUG_LOG("enigmail.js: detectGpgAgent: re-trying without GPG_AGENT_INFO\n");
-            this.gpgAgentInfo.envStr = DUMMY_AGENT_INFO;
-            
-            try {
-              exitCode = this.ipcService.runPipe(command, [], 0,
-                                          "", "/echo OK\n", 0,
-                                          gEnvList, gEnvList.length,
-                                          outStrObj, outLenObj, errStrObj, errLenObj);
-            }
-            catch (ex) {
-              ERROR_LOG("enigmail.js: detectGpgAgent: "+command.path+" failed\n");
-              
-              exitCode = -1;
-            }
-            CONSOLE_LOG("enigmail> "+command.path+"\n");
-          }
-          if (exitCode==0) {
-            DEBUG_LOG("enigmail.js: detectGpgAgent: found running gpg-agent. GPG_AGENT_INFO='"+this.gpgAgentInfo.envStr+"'\n");
-            return;
-          }
-          else {
-             DEBUG_LOG("enigmail.js: detectGpgAgent: again no running gpg-agent:"+errStrObj.value+"\n");
-          }
-        }
+       
       }
 
       // and finally try to start gpg-agent
@@ -1804,7 +1764,7 @@ function (domWindow) {
       }
 
       if (! this.isDosLike) {
-        args = [ "--sh", "--write-env-file", envFile.path,
+        args = [ "--sh", "--use-standard-socket",
                 "--daemon", 
                 "--default-cache-ttl", (this.getMaxIdleMinutes()*60).toString(),
                 "--max-cache-ttl", "999999" ];  // ca. 11 days
@@ -1820,7 +1780,7 @@ function (domWindow) {
           command = extensionLoc;
           exitCode = this.ipcService.runPipe(command, args, args.length,
                                         "", "", 0,
-                                        envList, envList.length,
+                                        gEnvList, gEnvList.length,
                                         outStrObj, outLenObj, errStrObj, errLenObj);
 
         }
