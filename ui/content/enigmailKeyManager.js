@@ -943,18 +943,18 @@ function enigmailRefreshAllKeys() {
   if (doIt) enigmailKeyServerAcess(nsIEnigmail.REFRESH_KEY, enigmailReceiveKeyCb);
 }
 
-function displayResult(msgText, refresh) {
+function displayResult(msgText) {
   EnigLongAlert(msgText);
-  if (refresh) enigmailRefreshKeys();
 }
 
 function enigmailReceiveKeyCb(exitCode, errorMsg, msgBox) {
   if (msgBox) {
     if (exitCode==0) {
-      window.setTimeout(displayResult, 100, EnigGetString("receiveKeysOk") + "\n"+ errorMsg, true);
+      enigmailRefreshKeys();
+      window.setTimeout(displayResult, 100, EnigGetString("receiveKeysOk") + "\n"+ errorMsg);
     }
     else {
-      window.setTimeout(displayResult, 100, EnigGetString("receiveKeysFailed")+"\n"+errorMsg, false);
+      window.setTimeout(displayResult, 100, EnigGetString("receiveKeysFailed")+"\n"+errorMsg);
     }
   }
   else {
