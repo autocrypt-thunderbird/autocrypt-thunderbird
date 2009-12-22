@@ -597,7 +597,7 @@
                                                       average user without creating confusion. Of course, you can change all of
                                                       these settings after you finish the wizard. You can find out more about
                                                       the OpenPGP features in the Help menu or on the
-                                                      <a class='enigmailLink'><html:a
+                                                      <a class='enigmailLink'><html:a onclick='EnigOpenURL(event, this)'
                                                       href='http://enigmail.mozdev.org/'>Enigmail website</html:a></a>.
                                                       <html:br/><html:br/>
                                                       If you have any trouble using this wizard, please let us know by

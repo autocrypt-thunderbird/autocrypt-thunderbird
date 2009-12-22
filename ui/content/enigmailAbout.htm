@@ -8,12 +8,28 @@
           href="chrome://enigmail/content/enigmail.css">
 
   </head>
+  
+  <script>
+function EnigOpenURL(hrefObj) {
+  const SEAMONKEY_ID="{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
+  var xulAppinfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
+  if (xulAppinfo.ID == SEAMONKEY_ID) return;
+
+  var ioservice  = Components.classes["@mozilla.org/network/io-service;1"].
+                getService(Components.interfaces.nsIIOService);
+  var iUri = ioservice.newURI(hrefObj.href, null, null);
+  var eps  = Components.classes["@mozilla.org/uriloader/external-protocol-service;1"].
+                getService(Components.interfaces.nsIExternalProtocolService);
+
+  eps.loadURI(iUri, null); 
+}
+  </script>
 
   <body>
 
     <p>
     <font size="+1">
-    GnuPG support provided by <b><a target="_new" href="http://enigmail.mozdev.org/">Enigmail</a></b>
+    GnuPG support provided by <b><a target="_blank" onclick="EnigOpenURL(this)" href="http://enigmail.mozdev.org/">Enigmail</a></b>
     </font>
     </p>
 
@@ -36,19 +52,19 @@
     <li>Usability: <em>Robert J. Hansen, Shane M. Coughlan</em></li>
     <li>Testing: <em>John Clizbe, Olav Seyfarth, John W. Moore III</em></li>
     <li>User Support: <em>the team and the list/forum members</em></li>
-    <li>Localization: <em>See the <a href="http://enigmail.mozdev.org/download/langpack.php" target="_blank">Enigmail Language Packs page</a></em></li>
+    <li>Localization: <em>See the <a onclick="EnigOpenURL(this)" href="http://enigmail.mozdev.org/download/langpack.php" target="_blank">Enigmail Language Packs page</a></em></li>
   </ul>
   <p>Credits</p>
   <ul>
     <li>R. Saravanan: <em>Original author of the Enigmail extension</em></li>
     <li>Barry Porter: <em>Usability, Testing, User Support and Newsletter</em></li>
     <li>Icons: <em>Jochen Eisinger (Modern), Jan Gerber (Classic), Frank Gerhardt</em></li>
-    <li>Website hosting: <em><a href="http://www.mozdev.org/" target="_blank">mozdev.org</a></em></li>
+    <li>Website hosting: <em><a onclick="EnigOpenURL(this)" href="http://www.mozdev.org/" target="_blank">mozdev.org</a></em></li>
   </ul>
 
-  <p>Enigmail OpenPGP is updated frequently. Visit the Enigmail OpenPGP <a target="_blank" href="http://enigmail.mozdev.org/download/">download page</a> to check for newer versions</p>
-  <p>  Enigmail OpenPGP is open source and licensed under the <a href="http://www.gnu.org/copyleft/gpl.html" target="_blank"> GNU General Public License </a> and the <a href="http://www.mozilla.org/MPL/" target="_blank">Mozilla Public License</a></p>
-  <p>Visit our homepage at <a target="_blank" href="http://enigmail.mozdev.org/">http://enigmail.mozdev.org</a></p>
+  <p> Enigmail OpenPGP is open source and licensed under the <a onclick="EnigOpenURL(this)" href="http://www.gnu.org/copyleft/gpl.html" target="_blank"> 
+      GNU General Public License </a> and the <a onclick="EnigOpenURL(this)" href="http://www.mozilla.org/MPL/" target="_blank">Mozilla Public License</a></p>
+  <p>Support and download is available from <a onclick="EnigOpenURL(this)" target="_blank" href="http://enigmail.mozdev.org/">http://enigmail.mozdev.org</a></p>
   </body>
 
 </html>

@@ -69,6 +69,8 @@ const ENIG_ACCOUNT_MANAGER_CONTRACTID = "@mozilla.org/messenger/account-manager;
 const ENIG_XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 const ENIG_THREAD_MANAGER_CID = "@mozilla.org/thread-manager;1";
 const ENIG_SIMPLEURI_CONTRACTID   = "@mozilla.org/network/simple-uri;1";
+const ENIG_SEAMONKEY_ID = "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
+
 
 const ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID =
                               "@mozilla.org/network/file-output-stream;1";
@@ -2150,3 +2152,24 @@ function EnigCollapseAdvanced(obj, attribute, dummy) {
     obj = obj.nextSibling;
   }
 }
+
+
+function EnigOpenURL(event, hrefObj) {
+  var xulAppinfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
+  if (xulAppinfo.ID == ENIG_SEAMONKEY_ID) return;
+
+  try {
+    var ioservice  = Components.classes["@mozilla.org/network/io-service;1"].
+                  getService(Components.interfaces.nsIIOService);
+    var iUri = ioservice.newURI(hrefObj.href, null, null);
+    var eps  = Components.classes["@mozilla.org/uriloader/external-protocol-service;1"].
+                  getService(Components.interfaces.nsIExternalProtocolService);
+
+    eps.loadURI(iUri, null);
+    
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  catch (ex) {}
+}
+
