@@ -6060,6 +6060,10 @@ function genCardKeyCallback(inputData, keyEdit, ret) {
     ret.exitCode = 0;
     ret.writeTxt = inputData.expiry;
   }
+  else if (keyEdit.doCheck(GET_LINE, "cardedit.genkeys.size")) {
+    ret.exitCode = 0;
+    ret.writeTxt = "2048";
+  }  
   else if (keyEdit.doCheck(GET_LINE, "keygen.name")) {
     ret.exitCode = 0;
     ret.writeTxt = inputData.name;
