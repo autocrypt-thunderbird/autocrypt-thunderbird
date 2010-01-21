@@ -156,7 +156,7 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     SC_OP_FAILURE:   nsIEnigmail.SC_OP_FAILURE,
                     UNKNOWN_ALGO:    nsIEnigmail.UNKNOWN_ALGO,
                     SIG_CREATED:     nsIEnigmail.SIG_CREATED,
-                    END_ENCRYPTION : nsIEnigmail.END_ENCRYPTION 
+                    END_ENCRYPTION : nsIEnigmail.END_ENCRYPTION
 };
 
 var gCachedPassphrase = null;
@@ -426,7 +426,7 @@ function getFilePathDesc (nsFileObj) {
 // return the useable path (for gpg) of a file object
 function getFilePath (nsFileObj, creationMode) {
   if (creationMode == null) creationMode = NS_RDONLY;
-  
+
   if (detectOS() == "WINNT") {
     if (creationMode & NS_WRONLY) {
       // HACK to get a canonical file name
@@ -1052,7 +1052,7 @@ Enigmail.prototype.confirmMsg =
 function (domWindow, mesg, okLabel, cancelLabel) {
   var dummy={};
   var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
-  
+
   var buttonTitles = 0;
   if (okLabel == null && cancelLabel == null) {
     buttonTitles = (promptService.BUTTON_TITLE_YES * ENIG_BUTTON_POS_0) +
@@ -1065,7 +1065,7 @@ function (domWindow, mesg, okLabel, cancelLabel) {
     else {
       buttonTitles += promptService.BUTTON_TITLE_OK * promptService.BUTTON_POS_1;
     }
-    
+
     if (cancelLabel != null) {
       buttonTitles += (promptService.BUTTON_TITLE_IS_STRING * promptService.BUTTON_POS_1);
     }
@@ -1239,7 +1239,7 @@ function () {
     catch (ex) {
     }
   }
-  
+
   if (this.logFileStream) {
     this.logFileStream.close();
     this.logFileStream = null;
@@ -1582,23 +1582,6 @@ function () {
      args = [ "--version", "--version", "--batch", "--no-tty", "--charset", "utf8" ];
   }
 
-  if (this.isMacOs) {
-    // workaround to avoid Enigmail hanging on Mac OS X 10.5
-
-    try {
-      var installLoc = Components.classes[NS_EXTENSION_MANAGER_CONTRACTID]
-                   .getService(Components.interfaces.nsIExtensionManager)
-                   .getInstallLocation(ENIGMAIL_EXTENSION_ID);
-      var extensionLoc = installLoc.getItemFile(ENIGMAIL_EXTENSION_ID, "wrappers");
-      extensionLoc.append("gpg-wrapper.sh");
-      args.unshift(command.path);
-      command = extensionLoc;
-    }
-    catch (ex) {
-      ERROR_LOG("enigmail.js: Enigmail.initialize: cannot get extension location.sh\n");
-    }
-  }
-
   // This particular command execution seems to be essential on win32
   // (In particular, this should be the first command executed and
   //  *should* use the shell, i.e., command.com)
@@ -1715,7 +1698,7 @@ function (domWindow) {
 
       if (gpgConnectAgent && gpgConnectAgent.isExecutable()) {
         // try to connect to a running gpg-agent
-        
+
         DEBUG_LOG("enigmail.js: detectGpgAgent: gpg-connect-agent is executable\n");
 
         this.gpgAgentInfo.envStr = DUMMY_AGENT_INFO;
@@ -1730,7 +1713,7 @@ function (domWindow) {
                                       "", inputTxt, inputTxt.length,
                                       gEnvList, gEnvList.length,
                                       outStrObj, outLenObj, errStrObj, errLenObj);
-                                      
+
           if (exitCode==0 || outStrObj.value.substr(0,2)=="OK") {
             DEBUG_LOG("enigmail.js: detectGpgAgent: found running gpg-agent\n");
             return;
@@ -1741,18 +1724,18 @@ function (domWindow) {
         catch (ex) {
           ERROR_LOG("enigmail.js: detectGpgAgent: "+command.path+" failed\n");
         }
-       
+
       }
 
       // and finally try to start gpg-agent
       var args = [];
       var commandFile = resolveAgentPath("gpg-agent");
       var agentProcess = null;
-      
+
       if ((! commandFile) || (! commandFile.exists())) {
         commandFile = resolveAgentPath("gpg-agent2");
       }
-      
+
       if (commandFile  && commandFile.exists()) {
         command = commandFile.QueryInterface(Components.interfaces.nsIFile);
       }
@@ -1765,7 +1748,7 @@ function (domWindow) {
 
       if (! this.isDosLike) {
         args = [ "--sh", "--no-use-standard-socket",
-                "--daemon", 
+                "--daemon",
                 "--default-cache-ttl", (this.getMaxIdleMinutes()*60).toString(),
                 "--max-cache-ttl", "999999" ];  // ca. 11 days
 
@@ -1922,12 +1905,12 @@ function () {
 /***
  * determine if a password is required to be sent to GnuPG
  */
-Enigmail.prototype.requirePassword = 
+Enigmail.prototype.requirePassword =
 function () {
   if (this.useGpgAgent()) {
     return false;
   }
-  
+
   return (! gEnigmailSvc.prefBranch.getBoolPref("noPassphrase"));
 }
 
@@ -2551,7 +2534,7 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
   }
 
   if (exitCode != 0 && (signMsg || encryptMsg)) {
-    // GnuPG might return a non-zero exit code, even though the message was correctly 
+    // GnuPG might return a non-zero exit code, even though the message was correctly
     // signed or encryped -> try to fix the exit code
 
     var correctedExitCode = 0;
@@ -2563,7 +2546,7 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
     }
     exitCode = correctedExitCode;
   }
-  
+
   if (exitCode == 0) {
     // Normal return
     errorMsgObj.value = cmdErrorMsgObj.value;
@@ -2824,7 +2807,7 @@ function (prompter, uiFlags, fromMailAddr, hashAlgoObj) {
     DEBUG_LOG("enigmail.js: Enigmail.determineHashAlgorithm: hashAlgorithm "+gKeyAlgorithms[fromMailAddr]+" is cached\n");
     hashAlgoObj.value = gKeyAlgorithms[fromMailAddr];
   }
-  
+
   return 0;
 }
 
@@ -3512,7 +3495,7 @@ function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
           exitCode = 1;
       }
     }
-    
+
     if (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE) {
       keyIdObj.value = this.extractPubkey(statusMsg)
     }
@@ -3659,7 +3642,7 @@ function (recvFlags, keyserver, keyId, requestObserver, errorMsgObj) {
 
 function GetPasswdForHost(hostname, userObj, passwdObj) {
   var loginmgr = Components.classes["@mozilla.org/login-manager;1"].getService(Components.interfaces.nsILoginManager);
-  
+
   // search HTTP password 1st
   var logins = loginmgr.findLogins({}, "http://"+hostname, "", "");
   if (logins.length > 0) {
@@ -4686,7 +4669,7 @@ function (parent, fromMailAddr, toMailAddr, bccMailAddr, sendFlags, inFile, outF
 
   var inFilePath  = this.getEscapedFilename(getFilePath(inFile.QueryInterface(nsILocalFile)));
   var outFilePath = this.getEscapedFilename(getFilePath(outFile.QueryInterface(nsILocalFile)));
-    
+
   args = args.concat(["--yes", "-o", outFilePath, inFilePath ]);
 
   var statusMsgObj   = new Object();
@@ -6063,7 +6046,7 @@ function genCardKeyCallback(inputData, keyEdit, ret) {
   else if (keyEdit.doCheck(GET_LINE, "cardedit.genkeys.size")) {
     ret.exitCode = 0;
     ret.writeTxt = "2048";
-  }  
+  }
   else if (keyEdit.doCheck(GET_LINE, "keygen.name")) {
     ret.exitCode = 0;
     ret.writeTxt = inputData.name;
