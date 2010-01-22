@@ -1,62 +1,57 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html lang="cs"><head><title>Nápovìda Enigmail: Ètení zpráv</title></head>
-<body><h1>Nápovìda OpenPGP</h1>
-<h3>Pouívání OpenPGP pøi ètení zpráv</h3>
-<ul> <li><b>Tlaèítko dešifrovat v hlavním
-oknì&nbsp;</b><br>Toto
-tlaèítko má nìkolik funkcí: dešifrování, ovìøování, nebo import
-veøejnıch klíèù. Bìnì probíhá
-dešifrování/ovìøování&nbsp;automaticky,
-ovšem tato funkce mùe bıt zakázána v pøedvolbách. Pokud nastane chyba,
-zobrazí se krátká zpráva ve stavovém øádku zprávy. Pokud klepnete na
-ikonu Dešifrovat, zobrazí se detailní vıpis chyb vèetnì&nbsp;GnuPG
-pøíkazù. </li> <li><b>Ikony pera a klíèe v hlavièce
-zprávy</b><br>
-Ikony pera a klíèe v hlavièce zprávy indikují zda zpráva, kterou ètete
-je podepsána a nebo šifrována a zda je podpis platnı tj.&nbsp;e
-zpráva
-nebyla zmìnìna. Pokud byla zpráva zmìnìna, ikona pera se zmìní v ikonu
-zlomeného pera, která indikuje neplatnı podpis.<em></em><em></em>
-Pokud klepnete pravım tlaèítkem na ikonu pera nebo klíèe zobrazí se
-menu s následujícími volbami: <ul> <li><em>OpenPGP
-Bezpeènostní informace</em>: umoní zobrazit
-vıstup&nbsp;GnuPG pro tuto zprávu.</li> <li><em>Kopírovat
-OpenPGP bezpeènostní informace</em>: kopíruje vıstup z GnuPG do
-schránky; umoní napøíklad vloení do odpovìdi na zprávu.</li> <li><em>Zobraz&nbsp;OpenPGP
-Photo ID</em>: umoní zobrazit&nbsp;<em>Photo ID</em>
-osoby, která zaslala danou zprávu, jestlie jej veøejnı klíè obsahuje. (<em>Tato
-volba je dostupná pouze pokud je fotografie ve veøejném klíèi uloena.)</em></li>
-<li><em>S/MIME Bezpeènostní informace</em>: umoní
-zobrazit&nbsp;S/MIME Bezpeènostní informace zprávy.</li> </ul>
-<p>Jestlie nemáte nastaveno <em>keyserver-options
-auto-key-retrieve</em> v souboru <tt>gpg.conf</tt> a
-ètete zprávy, které jsou podepsány nebo šifrovány, uvidíte panelu
-zprávy ikonku <em>Pera</em>, na kterém bude ještì <em>Otazník</em>
-a v horní èásti se zobrazí: <em>Èást zprávy byla podepsána;
-klepnìte na ikonku pera pro více informací</em> a poté se Vám v
-panelu zobrazí všechny&nbsp;OpenPGP údaje o podepsané zprávì.</p>
-<p>Toto se mùe stát i v pøípadì, e máte volbu <em>keyserver-options
-auto-key-retrieve</em> nastavenou v souboru <tt>gpg.conf</tt>
-ale&nbsp;OpenPGP klíè není dostupnı na vıchozím&nbsp;keyserveru.</p>
-<p>Klepnutím na ikonku&nbsp;<em>Pera a Otazníku</em>
-se Vám zobrazí hlášení e klíè, kterım byla zpráva podepsaná nemáte
-dostupnı. Klepnutím na tlaèítko OK se dostanete k dalšímu oknu, kde si
-mùete ze seznamu keyserverù odkud mùete stáhnout odesílatelùv veøejnı
-klíè.</p> <p>Pro nastavení, kterı z keyserverù chcete
-pouívat pouijte menu&nbsp;<b>OpenPGP -&gt; Pøedvolby
--&gt; Základní</b> a napište adresy&nbsp;do øádky<em>
-Keyserver(y):</em> více adres&nbsp;oddìlte èárkou.&nbsp;<em>První
-keyserver bude pouit jako vıchozí.</em></p> </li> <li><b>Otevøení
-šifrovanıch pøíloh / import pøiloenıch&nbsp;OpenPGP klíèù</b><br>Pøílohy
-pojmenované *.pgp, *,asc a *.gpg je OpenPGP schopno rozeznat a pouít.
-Pravım kliknutím na tuto pøílohu máte dvì specifické poloky v
-kontextovém menu: <span style="font-style: italic;">Dešifrovat
-a Otevøít</span> a <span style="font-style: italic;">Dešifrovat
-a a uloit</span>. Mùete pouít&nbsp;první volbu pokud
-chcete pøílohu nejdøíve otevøít nebo druhou jestlie
-chcete&nbsp;klíè&nbsp;uloit. Jakmile je pøíloha zprávy
-rozpoznána jako soubor obsahující OpenPGP klíè budete vyzvání zda
-chcete klíè importovat do vašeho seznamu klíèù. </li>
-</ul><hr><p>Další nápovìda dostupná na
-stánkách&nbsp;<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail Help web page</a> (anglicky)
-</p></body></html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>NÃ¡povÄ›da pro Enigmail - ÄtenÃ­ zprÃ¡v</title>
+  	<meta http-equiv="content-type" content="text/html; charset=utf-8" />  
+  <style type="text/css">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <h1>NÃ¡povÄ›da pro Enigmail</h1>
+
+  <h3>PouÅ¾Ã­vÃ¡nÃ­ Enigmailu pÅ™i ÄtenÃ­ zprÃ¡v</h3>
+
+  <dl>
+    <dt>TlaÄÃ­tko "DeÅ¡ifrovat" v hlavnÃ­m oknÄ›</dt>
+
+    <dd>Toto tlaÄÃ­tko mÃ¡ nÄ›kolik funkcÃ­: deÅ¡ifrovÃ¡nÃ­, ovÄ›Å™ovÃ¡nÃ­ nebo import veÅ™ejnÃ½ch klÃ­ÄÅ¯. NormÃ¡lnÄ› probÃ­hÃ¡ deÅ¡ifrovÃ¡nÃ­/ovÄ›Å™ovÃ¡nÃ­ automaticky, ovÅ¡em tato funkce mÅ¯Å¾e bÃ½t v pÅ™edvolbÃ¡ch zakÃ¡zÃ¡na. Pokud nastane chyba, zobrazÃ­ se krÃ¡tkÃ¡ zprÃ¡va ve stavovÃ©m Å™Ã¡dku Enigmailu. Pokud klepnete na tlaÄÃ­tko "DeÅ¡ifrovat", zobrazÃ­ se podrobnÄ›jÅ¡Ã­ vÃ½pis chyb vÄetnÄ› GnuPG pÅ™Ã­kazÅ¯.</dd>
+
+    <dt>Ikony pera a klÃ­Äe zobrazenÃ© v hlaviÄce zprÃ¡vy</dt>
+
+    <dd>
+      Ikony <em>Pera</em> a <em>KlÃ­Äe</em> ikony pera a klÃ­Äe v hlaviÄce zprÃ¡vy indikujÃ­ zda zprÃ¡va, kterou Ätete, je podepsÃ¡na a/nebo Å¡ifrovÃ¡na a zda je podpis platnÃ½, tj., Å¾e zprÃ¡va nebyla od okamÅ¾iku podpisu zmÄ›nÄ›na. Ikona <em>zlomnÃ©ho pera</em> indikuje, Å¾e zprÃ¡va mÃ¡ neplatnÃ½ podpis nebo byla zmÄ›nÄ›na. Pokud klepnete pravÃ½m tlaÄÃ­tkem na ikonu pera nebo klÃ­Äe zobrazÃ­ se menu s nÃ¡sledujÃ­cÃ­mi moÅ¾nostmi:
+
+      <ul>
+        <li><em>BezpeÄnostnÃ­ informace:</em> zobrazÃ­ vÃ½stup GnuPG pro tuto zprÃ¡vu.</li>
+
+        <li><em>KopÃ­rovat bezpeÄnostnÃ­ informace OpenPGP:</em> zkopÃ­ruje vÃ½stup z GnuPG do schrÃ¡nky; umoÅ¾nÃ­ napÅ™Ã­klad vloÅ¾enÃ­ do odpovÄ›di na zprÃ¡vu.</li>
+
+        <li><em>Zobrazit Foto ID</em>: zobrazÃ­ <em>Photo ID</em> osoby, kterÃ¡ zprÃ¡vu poslala, jestliÅ¾e jej veÅ™ejnÃ½ klÃ­Ä obsahuje. (<em>Tato volba je dostupnÃ¡ pouze pokud je fotografie ve veÅ™ejnÃ©m klÃ­Äi uloÅ¾ena.)</em></li>
+
+        <li><em>BezpeÄnostnÃ­ informace S/MIME:</em> zobrazÃ­ bezpeÄnostnÃ­ informace S/MIME.</li>
+      </ul>
+
+      <p>JestliÅ¾e v souboru <tt>gpg.conf</tt> nemÃ¡te nastaveno automatickÃ© naÄÃ­tÃ¡nÃ­ klÃ­ÄÅ¯ z keyserveru a Ätete elektronicky podepsÃ¡nÃ© nebo Å¡ifrovÃ¡nÃ© zprÃ¡vy, uvidÃ­te panelu zprÃ¡vy ikonku <em>pera s otaznÃ­kem</em> a v hornÃ­ ÄÃ¡sti se zobrazÃ­: <em>ÄŒÃ¡st zprÃ¡vy byla podepsÃ¡na; klepnÄ›te na ikonku pera nebo klÃ­Äe pro vÃ­ce informacÃ­</em>. Ve zprÃ¡vÄ› se zobrazÃ­ znaÄky Ãºseku textu OpenPGP a blok podpisu.</p>
+
+      <p>MÅ¯Å¾e se to stÃ¡t i v pÅ™Ã­padÄ›, Å¾e mÃ¡te nastaveno automatickÃ© naÄÃ­tÃ¡nÃ­ klÃ­ÄÅ¯ z keyserveru, ale klÃ­Ä nenÃ­ na serveru k dispozici.</p>
+
+      <p>KlepnutÃ­m na ikonku <em>pera a otaznÃ­ku</em> se VÃ¡m zobrazÃ­ hlÃ¡Å¡enÃ­ Å¾e klÃ­Ä, kterÃ½m byla zprÃ¡va podepsÃ¡na, nenÃ­ dostupnÃ½. KlepnutÃ­m na tlaÄÃ­tko OK se dostanete k dalÅ¡Ã­mu oknu, kde si mÅ¯Å¾ete ze seznamu keyserverÅ¯ vybrat odkud veÅ™ejnÃ½ klÃ­Ä odesÃ­latele stÃ¡hnout.</p>
+
+      <p>Seznam keyserverÅ¯, kterÃ© chcete pouÅ¾Ã­vat, nastavÃ­te v menu <strong>OpenPGP -&gt; PÅ™edvolby... -&gt; UrÄete VÃ¡Å¡/VaÅ¡e keyservery</strong>, adresy napiÅ¡te&nbsp;do Å™Ã¡dku <em>Keyserver(y):</em>. VÃ­ce adres <em>oddÄ›lte ÄÃ¡rkou<em>. Jako vÃ½chozÃ­ bude pouÅ¾it prvnÃ­ keyserver.</em></p>
+    </dd>
+
+    <dt>OtevÅ™enÃ­ Å¡ifrovanÃ½ch pÅ™Ã­loh / import pÅ™iloÅ¾enÃ½ch klÃ­ÄÅ¯ OpenPGP</dt>
+
+    <dd>PÅ™Ã­lohy pojmenovanÃ© *.pgp, *,asc a *.gpg je OpenPGP schopno rozeznat a zpracovat. KliknutÃ­m pravÃ½m tlaÄÃ­tkem myÅ¡i na pÅ™Ã­lohu dostanete dvÄ› specifickÃ© poloÅ¾ky kontextovÃ©ho menu: <em>DeÅ¡ifrovat a otevÅ™Ã­t</em> a <em>DeÅ¡ifrovat a  uloÅ¾it jako ...</em>. Tyto moÅ¾nosti vyuÅ¾ijete, kdyÅ¾ budete chtÃ­t, aby Enigmail pÅ™Ã­lohy pÅ™ed otevÅ™enÃ­m nebo uloÅ¾enÃ­m deÅ¡ifroval. JestliÅ¾e je pÅ™Ã­loha zprÃ¡vy rozpoznÃ¡na jako soubor obsahujÃ­cÃ­ s klÃ­Äem OpenPGP, bude VÃ¡m nabÃ­dnuta moÅ¾nost importovat klÃ­Ä do VaÅ¡eho ÃºloÅ¾iÅ¡tÄ›.</dd>
+  </dl>
+  <hr />
+
+  <p>DalÅ¡Ã­ nÃ¡povÄ›da je dostupnÃ¡ na strÃ¡nkÃ¡ch <a href="http://enigmail.mozdev.org/help.html">dokumentace Enigmailu</a> (anglicky).</p>
+</body>
+</html>

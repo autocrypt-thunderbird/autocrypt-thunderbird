@@ -1,67 +1,54 @@
-<html>
-<head><title>Nápovìda Enigmail: Editor pravidel</title>
-</head>
-<body>
-<h1>Nápovìda Enigmail</h1>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<h3>Pouívání editoru pravidel v Enigmail</h3>
-<p>V editoru pravidel mùete pro kadého pøíjemce urèit implicitní nastavení povolení
-šifrování, podpisu , PGP/MIME a k urèení OpenPGP klíèe, kterı se má pro daného pøíjemce pouívat.
-Kadé pravidlo se skládá z 5 poloek a je reprezentováno jedním øádkem:
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>NÃ¡povÄ›da pro Enigmail: editor pravidel</title>
+  	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <style type="text/css" xml:space="preserve">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <h1>NÃ¡povÄ›da pro Enigmail</h1>
+
+<h3>PouÅ¾itÃ­ editoru pravidel v Enigmailu</h3>
+<p>V editoru pravidel mÅ¯Å¾ete pro kaÅ¾dÃ©ho pÅ™Ã­jemce nastavit vÃ½chozÃ­ chovÃ¡nÃ­ Enigmailu tak, Å¾e povolÃ­te
+Å¡ifrovÃ¡nÃ­, podpis, PGP/MIME a urÄÃ­te klÃ­Ä(e) OpenPGP, kterÃ½ se bude pro danÃ©ho pÅ™Ã­jemce pouÅ¾Ã­vat.
+KaÅ¾dÃ© pravidlo se sklÃ¡dÃ¡ z 5 poloÅ¾ek a je reprezentovÃ¡no jednÃ­m Å™Ã¡dkem:
 </p>
-<ul>
-  <li><span style="font-weight: bold;">Email</span>: Email(y) z polí
-    Komu:, Kopie: a Skrytá kopie: na které se má pravidlo pouít.
-    Urèení toho, jestli se dané pravidlo pouije, je zaloeno na porovnávání <span
-    style="font-style: italic;">podøetìzcù</span> ( Další detaily si mùete 
-    prohlédnout v nápovìdì k vytváøení OpenPGP pravidla)
-  </li>
-  <li><span style="font-weight: bold;">OpenPGP Klíè(e)</span>: seznam OpenPGP klíèù pro zvoleného
-  pøíjemce.
-  </li>
-  <li><span style="font-weight: bold;">Podpis</span>: Povolit / zakázat
-    podepsání zprávy. To, zda dojde k podepsání zprávy, závisí na nastavení podepisovámí
-    v oknì Psání zprávy a na vybrané hodnotì z tìchto moností:
-  </li>
+<dl>
+  <dt>Email</dt>
+    <dd>UrÄenÃ­ emailovÃ©(Ã½ch) adresy (adres) z polÃ­ Komu:, Kopie: a SkrytÃ¡ kopie:, pro kterou(Ã©) se pravidlo pouÅ¾ije. UrÄenÃ­ probÃ­hÃ¡ podle <span style="font-style: italic;">podÅ™etÄ›zcÅ¯</span> (vÃ­ce podrobnostÃ­ najdete v dialogu pÅ™i vytvÃ¡Å™enÃ­ pravidla).</dd>
+
+  <dt>KlÃ­Ä(e) OpenPGP</dt>
+     <dd>Seznam ID klÃ­ÄÅ¯ OpenPGP k pouÅ¾itÃ­ pro zvolenÃ©ho pÅ™Ã­jemce</dd>
+  
+  <dt>Podpis</dt>
+    <dd>Povolit / zakÃ¡zat podepsÃ¡nÃ­ zprÃ¡vy. PouÅ¾ije se zadanÃ¡ hodnota anebo bude pÅ™epsÃ¡na hodnota nastavenÃ¡ v oknÄ› vytvÃ¡Å™enÃ­ zprÃ¡vy. MoÅ¾nosti jsou:
+
   <ul>
-    <li><i>Nikdy</i>: zakáe podepsání zprávy bez ohledu na to, jaká byla volba v oknì
-    Psaní zprávy<br>
-    </li>
-    <li><i>Vhodnı</i>: podepisování zprávy závisí na volbì, která byla vybrána v oknì
-    Psaní zprávy
-    </li>
-    <li><i>Vdy</i>: dojde k podepsání zprávy bez ohledu na to, jaká byla volba v oknì
-    Psání zprávy<br> 
-    </li>
-  </ul>
-</ul>
-<div style="margin-left: 40px;">Toto nastavení podepisování závisí na volbì ve všech pravidlech,
-které dané emailové adrese vyhovují. Jestlie jedno z tìchto pravidel zakáe podepsání, zpráva nebude
-podepsána, i kdyby v ostatních pravidlech byla nastavena volba <i>Vdy</i>.
-</div>
-<ul>
-  <li><span style="font-weight: bold;">Šifrovat</span>: Povolit / zakázat
-    šifrování zprávy. Nastavení šifrování probíhá ve stejném duchu jako nastavení podepisování.
-  </li>
-  <li><span style="font-weight: bold;">PGP/MIME</span>: Povolit / zakázat
-    pouití PGP/MIME (RFC 3156) kódování zprávy. 
-    Pokud je PGP/MIME zakázáno, zpráva je kódována pouitím "vkládaného PGP".
-    Nastavení šifrování probíhá ve stejném duchu jako nastavení podepisování.
-  </li>
-</ul>
-<p>Pravidla jsou zobrazována v poøadí zobrazeném v seznamu. Vdy, kdy pravidlo odpovídá pøíjemci
-a obsahuje OpenPGP klíè ( navíc pokud má specifikováno pouití daného KeyID ), pøíjemce ji není
-zpracováván v dalších pravidlech.</p>
-<p><i>Poznámka:</i> Editor pravidel ještì není kompletní. Je mono napsat sloitìjší pravidla
-pøímou úpravou souboru pravidel, avšak tyto pravidla ji pak nesmíte upravovat pomocí editoru
-pravidel. <a 
-href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Další informace</a> 
-jak pøímo upravovat soubor s pravidly si mùete pøeèíst na stránkách Enigmail (anglicky)
-</p>
+    <li><em>Nikdy</em>: zakÃ¡Å¾e podepsÃ¡nÃ­ zprÃ¡vy bez ohledu na to, jakÃ¡ volba je v oknÄ› psanÃ­ zprÃ¡vy. Tato volba potlaÄuje ostatnÃ­.</li>
+    <li><em>MoÅ¾nÃ½</em>: ponechÃ¡ podepisovÃ¡nÃ­ zprÃ¡vy na nastavenÃ­ v oknÄ› psanÃ­ zprÃ¡vy.</li>
+    <li><em>VÅ¾dy</em>: zprÃ¡vy bude podepsÃ¡na, i kdyby to v oknÄ› psanÃ­ zprÃ¡vy povoleno nebylo.</li></ul>
+  
+<p>NastavenÃ­ pro podepisovÃ¡nÃ­ se pouÅ¾ije pro vÅ¡echna odpovÃ­dajÃ­cÃ­ pravidla. JestliÅ¾e jedno pravidlo podepsÃ¡nÃ­ zakazuje, zprÃ¡va nebude podepsÃ¡na bez ohledu na to, zda ostatnÃ­ pravidla majÃ­ nastavenou volbu <em>VÅ¾dy</em>.</p></dd>
+
+  <dt>Å ifrovÃ¡nÃ­</dt>
+    <dd>Povolit / zakÃ¡zat Å¡ifrovÃ¡nÃ­ zprÃ¡vy. NastavenÃ­ Å¡ifrovÃ¡nÃ­ a jeho vÃ½znam jsou podobnÃ© jako nastavenÃ­ podepisovÃ¡nÃ­.</dd>
+    
+  <dt>PGP/MIME</dt>
+    <dd> Povolit / zakÃ¡zat kÃ³dovÃ¡nÃ­ zprÃ¡vy pomocÃ­ PGP/MIME (RFC 3156). Pokud je PGP/MIME zakÃ¡zÃ¡no, zprÃ¡va je kÃ³dovÃ¡na pouÅ¾itÃ­m "vklÃ¡danÃ©ho PGP" ("inline PGP"). NastavenÃ­ a jeho vÃ½znam jsou podobnÃ© jako nastavenÃ­ podepisovÃ¡nÃ­.</dd>
+    
+<p>Pravidla jsou zpracovÃ¡na v poÅ™adÃ­ podle uvedenÃ©ho seznamu. VÅ¾dy, kdyÅ¾ pravidlo odpovÃ­dÃ¡ pÅ™Ã­jemci a obsahuje ID klÃ­Äe OpenPGP, pÅ™Ã­jemce se jiÅ¾ kromÄ› pouÅ¾itÃ­ urÄenÃ©ho klÃ­Äe v dalÅ¡Ã­ch pravidlech nezpracovÃ¡vÃ¡.</p>
+
+<p><em>PoznÃ¡mka:</em> Editor pravidel jeÅ¡tÄ› nenÃ­ kompletnÃ­. Je moÅ¾no napsat sloÅ¾itÄ›jÅ¡Ã­ pravidla pÅ™Ã­mou Ãºpravou souboru pravidel, avÅ¡ak tyto pravidla jiÅ¾ pak nesmÃ­te upravovat pomocÃ­ editoru
+pravidel. <a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">DalÅ¡Ã­ informace</a> o pÅ™Ã­mÃ© ÃºpravÄ› souboru s pravidly si mÅ¯Å¾ete pÅ™eÄÃ­st na strÃ¡nkÃ¡ch Enigmailu (anglicky).</p>
 <hr/>
-<p>
-Další nápovìda je dostupná na stránkách
-<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail Help web page</a> (anglicky)
-</p>
+
+  <p>DalÅ¡Ã­ nÃ¡povÄ›da je dostupnÃ¡ na strÃ¡nkÃ¡ch <a href="http://enigmail.mozdev.org/help.html">dokumentace Enigmailu</a> (anglicky).</p>
 </body>
 </html>
