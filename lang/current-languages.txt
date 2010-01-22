@@ -1,5 +1,6 @@
 ar
 ca
+cs-CZ
 de-AT
 de-DE
 el
