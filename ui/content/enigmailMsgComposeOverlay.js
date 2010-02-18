@@ -69,7 +69,7 @@ if (typeof(GenericSendMessage)=="function") {
   try {
     var appInfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
     var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"].getService(Components.interfaces.nsIVersionComparator);
-   
+
   }
   catch (ex) {}
   window.addEventListener("load", enigMsgComposeStartup, false);
@@ -275,7 +275,7 @@ function enigComposeOpen() {
     if (! bucketList.hasChildNodes()) {
       try {
         // TB only
-      ChangeAttachmentBucketVisibility(true);    
+      ChangeAttachmentBucketVisibility(true);
       }
       catch (ex) {}
     }
@@ -288,14 +288,14 @@ function enigFindRelatedAttachment(bucketList, node) {
 
   // check if filename ends with .sig
   if (node.attachment.name.search(/\.sig$/i) < 0) return null;
-  
+
   var relatedNode = bucketList.firstChild;
   var findFile = node.attachment.name.toLowerCase();
   var baseAttachment = null;
   while (relatedNode) {
     if (relatedNode.attachment.name.toLowerCase()+".sig" == findFile) baseAttachment = relatedNode.attachment;
     relatedNode = relatedNode.nextSibling;
-  } 
+  }
   return baseAttachment;
 }
 
@@ -308,7 +308,7 @@ function enigMsgComposeReopen() {
 
 function enigMsgComposeClose() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeClose\n");
-  
+
   var ioServ;
   try {
     // we should delete the original temporary files of the encrypted or signed
@@ -829,14 +829,14 @@ function enigConfirmBeforeSend(toAddr, gpgKeys, sendFlags, isOffline, msgSendTyp
   }
 
   gpgKeys=gpgKeys.replace(/^, /, "").replace(/, $/,"");
-  
+
   var msgConfirm = (isOffline || sendFlags & nsIEnigmail.SEND_LATER)
           ? EnigGetString("offlineSave",msgStatus,EnigStripEmail(toAddr).replace(/,/g, ", "))
           : EnigGetString("onlineSend",msgStatus,EnigStripEmail(toAddr).replace(/,/g, ", "));
   if (sendFlags & ENIG_ENCRYPT)
     msgConfirm += "\n\n"+EnigGetString("encryptKeysNote", gpgKeys);
 
-  return EnigConfirm(msgConfirm, 
+  return EnigConfirm(msgConfirm,
       EnigGetString((isOffline || sendFlags & nsIEnigmail.SEND_LATER) ? "msgCompose.button.save" :"msgCompose.button.send"));
 }
 
@@ -938,6 +938,7 @@ function enigEncryptMsg(msgSendType) {
 
 
   try {
+
      var exitCodeObj    = new Object();
      var statusFlagsObj = new Object();
      var errorMsgObj    = new Object();
@@ -1249,7 +1250,7 @@ function enigEncryptMsg(msgSendType) {
           }
         }
      }
-     
+
      if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
        // always enable PGP/MIME if message is saved
        sendFlags |= nsIEnigmail.SEND_PGP_MIME;
@@ -1594,19 +1595,22 @@ function enigEncryptInline(sendInfo) {
 
     //DEBUG_LOG("enigmailMsgComposeOverlay.js: cipherText = '"+cipherText+"'\n");
     if (cipherText && (exitCode == 0)) {
-     // Encryption/signing succeeded; overwrite plaintext
+      // Encryption/signing succeeded; overwrite plaintext
 
-     if ( (sendInfo.sendFlags & ENIG_ENCRYPT) && charset &&
-          (charset.search(/^us-ascii$/i) != 0) ) {
-       // Add Charset armor header for encrypted blocks
-       cipherText = cipherText.replace(/(-----BEGIN PGP MESSAGE----- *)(\r?\n)/, "$1$2Charset: "+charset+"$2");
-     }
+      if (! gMsgCompose.composeHTML)
+        cipherText = cipherText.replace(/\r\n/g, "\n");
 
-     // Decode ciphertext from charset to unicode and overwrite
-     enigReplaceEditorText( EnigConvertToUnicode(cipherText, charset) );
+      if ( (sendInfo.sendFlags & ENIG_ENCRYPT) && charset &&
+        (charset.search(/^us-ascii$/i) != 0) ) {
+        // Add Charset armor header for encrypted blocks
+        cipherText = cipherText.replace(/(-----BEGIN PGP MESSAGE----- *)(\r?\n)/, "$1$2Charset: "+charset+"$2");
+      }
 
-     // Save original text (for undo)
-     gEnigProcessed = {"origText":origText, "charset":charset};
+      // Decode ciphertext from charset to unicode and overwrite
+      enigReplaceEditorText( EnigConvertToUnicode(cipherText, charset) );
+
+      // Save original text (for undo)
+      gEnigProcessed = {"origText":origText, "charset":charset};
 
     }
     else {
@@ -2289,9 +2293,9 @@ function EnigEditorGetContentsAs(mimeType, flags) {
 
 var gEnigComposeStateListener = {
   NotifyComposeFieldsReady: function() {
-    // Note: NotifyComposeFieldsReady is only called when a new window is created (i.e. not in case a window object is reused). 
+    // Note: NotifyComposeFieldsReady is only called when a new window is created (i.e. not in case a window object is reused).
     DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.NotifyComposeFieldsReady\n");
-    
+
     try {
       gEnigEditor = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIEditor);
     } catch (ex) {}
