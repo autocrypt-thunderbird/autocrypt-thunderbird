@@ -85,7 +85,7 @@ function enigmailKeyManagerLoad() {
 
   gUserList.addEventListener('click', enigmailOnClick, true);
   document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.disableKey"))
-  
+
   window.enigIpcRequest = null;
 
   document.getElementById("pleaseWait").showPopup(gSearchInput, -1, -1, "tooltip", "after_end", "");
@@ -541,7 +541,7 @@ function enigmailDeleteKey() {
       if (!EnigConfirm(EnigGetString("deleteMix"), EnigGetString("dlg.button.delete"))) return;
     }
     else {
-      if (!EnigConfirmSring(EnigGetString("deleteSelectedPubKey"), EnigGetString("dlg.button.delete"))) return;
+      if (!EnigConfirmString(EnigGetString("deleteSelectedPubKey"), EnigGetString("dlg.button.delete"))) return;
     }
   }
 
@@ -932,14 +932,14 @@ function enigmailRefreshAllKeys() {
   if (!EnigGetPref("warnRefreshAll")) {
     doIt=true;
   }
-  else if (EnigLongAlert(EnigGetString("refreshKey.warn"), EnigGetString("dlgNoPrompt"), 
+  else if (EnigLongAlert(EnigGetString("refreshKey.warn"), EnigGetString("dlgNoPrompt"),
       EnigGetString("dlg.button.continue"), ":cancel", null, checkedObj) == 0) {
       if (checkedObj.value) {
         EnigSetPref("warnRefreshAll", false)
       }
     doIt=true;
   }
-  
+
   if (doIt) enigmailKeyServerAcess(nsIEnigmail.REFRESH_KEY, enigmailReceiveKeyCb);
 }
 
