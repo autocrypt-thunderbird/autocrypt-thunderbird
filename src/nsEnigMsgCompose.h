@@ -37,7 +37,6 @@
 #ifndef _nsEnigMsgCompose_h_
 #define _nsEnigMsgCompose_h_
 
-#define MOZILLA_INTERNAL_API
 #include "nsCOMPtr.h"
 #include "nsIFactory.h"
 #include "nsIMsgComposeSecure.h"
@@ -48,7 +47,7 @@
 #include "modmimee2.h"
 #include "enigmail.h"
 #include "nsIEnigMimeWriter.h"
-#include "nsString.h"
+#include "nsStringAPI.h"
 
 
 #define NS_ENIGMSGCOMPOSE_CLASSNAME "Enigmail Msg Compose"

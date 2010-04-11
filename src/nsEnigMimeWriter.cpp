@@ -49,7 +49,6 @@
 #endif
 
 #include "nsEnigMimeWriter.h"
-#undef MOZILLA_INTERNAL_API
 
 #ifdef PR_LOGGING
 PRLogModuleInfo* gEnigMimeWriterLog = NULL;

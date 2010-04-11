@@ -60,7 +60,6 @@ DEFINES		+= -DMOZILLA_MAJOR_VERSION=$(MOZILLA_MAJOR_VERSION)
 DEFINES		+= -DMOZILLA_MINOR_VERSION=$(MOZILLA_MINOR_VERSION)
 
 REQUIRES	= xpcom \
-		  xpcom_obsolete \
 		  string \
 		  msgbase \
 		  msgbaseutil \

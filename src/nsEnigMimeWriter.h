@@ -42,7 +42,7 @@
 
 #include "nsIEnigMimeWriter.h"
 #include "nsCOMPtr.h"
-#include "nsString.h"
+#include "nsStringAPI.h"
 
 // Implementation class for nsIEnigMimeWriter
 class nsEnigMimeWriter : public nsIEnigMimeWriter

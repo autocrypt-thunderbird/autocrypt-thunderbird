@@ -46,7 +46,7 @@
 #include "nspr.h"
 #include "plstr.h"
 #include "nsCOMPtr.h"
-#include "nsString.h"
+#include "nsStringAPI.h"
 #include "nsNetUtil.h"
 #include "nsIThread.h"
 #include "nsIMimeObjectClassAccess.h"
@@ -54,7 +54,6 @@
 #ifdef _ENIG_MOZILLA_1_8
 #include "nsFileStream.h"
 #endif
-#undef MOZILLA_INTERNAL_API
 
 MimeContainerClass* mimeContainerClassP = NULL;
 

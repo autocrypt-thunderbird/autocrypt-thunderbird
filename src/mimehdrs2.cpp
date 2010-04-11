@@ -39,11 +39,69 @@
 #include "nsCOMPtr.h"
 #include "msgCore.h"
 #include "plstr.h"
-#include "nsEscape.h"
 #include "nsMailHeaders.h"
 #include "msgCore.h"
 #include "mimehdrs2.h"
 #undef MOZILLA_INTERNAL_API
+
+#define HEX_ESCAPE '%'
+
+#define UNHEX(C) \
+    ((C >= '0' && C <= '9') ? C - '0' : \
+     ((C >= 'A' && C <= 'F') ? C - 'A' + 10 : \
+     ((C >= 'a' && C <= 'f') ? C - 'a' + 10 : 0)))
+
+
+static PRInt32 __nsUnescapeCount(char * str)
+{
+    register char *src = str;
+    register char *dst = str;
+    static const char hexChars[] = "0123456789ABCDEFabcdef";
+
+    char c1[] = " ";
+    char c2[] = " ";
+    char* const pc1 = c1;
+    char* const pc2 = c2;
+
+    while (*src)
+    {
+        c1[0] = *(src+1);
+        if (*(src+1) == '\0') 
+            c2[0] = '\0';
+        else
+            c2[0] = *(src+2);
+
+        if (*src != HEX_ESCAPE || PL_strpbrk(pc1, hexChars) == 0 || 
+                                  PL_strpbrk(pc2, hexChars) == 0 )
+        	*dst++ = *src++;
+        else 	
+		{
+        	src++; /* walk over escape */
+        	if (*src)
+            {
+            	*dst = UNHEX(*src) << 4;
+            	src++;
+            }
+        	if (*src)
+            {
+            	*dst = (*dst + UNHEX(*src));
+            	src++;
+            }
+        	dst++;
+        }
+    }
+
+    *dst = 0;
+    return (int)(dst - str);
+
+} /* NET_UnEscapeCnt */
+
+static char* __nsUnescape(char * str)
+{
+	__nsUnescapeCount(str);
+	return str;
+}
+
 
 PRBool MimeHeaders_IsAsciiSpace(PRUnichar aChar) {
   return ((aChar == ' ') || (aChar == '\r') ||
@@ -190,7 +248,7 @@ MimeHeaders_get_parameter (const char *header_value, const char *parm_name,
 					  *(s+(value_end-(s_quote2+1))) = 0;
 					  if (needUnescape)
 					  {
-						  nsUnescape(s);
+						  __nsUnescape(s);
 						  if (token_end-token_start == parm_len+1)
 							  return s; /* we done; this is the simple case of
 										   encoding charset and language info
@@ -224,7 +282,7 @@ MimeHeaders_get_parameter (const char *header_value, const char *parm_name,
 				  memcpy(s+len, value_start, value_end-value_start);
 				  *(s+len+(value_end-value_start)) = 0;
 				  if (needUnescape)
-					  nsUnescape(s+len);
+					  __nsUnescape(s+len);
 			  }
 		  }
 	  }

@@ -42,8 +42,7 @@
 #include "nspr.h"
 #include "nsCOMPtr.h"
 #include "plstr.h"
-#include "nsString.h"
-#include "nsXPIDLString.h"
+#include "nsStringAPI.h"
 #include "nsNetUtil.h"
 #include "nsIPrompt.h"
 #include "nsIMsgWindow.h"
@@ -56,7 +55,6 @@
 #include "nsIPipeTransport.h"
 #include "nsIIPCBuffer.h"
 #include "nsIEnigmail.h"
-#undef MOZILLA_INTERNAL_API
 
 #ifdef PR_LOGGING
 PRLogModuleInfo* gEnigMimeDecryptLog = NULL;
@@ -290,7 +288,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   if (NS_FAILED(rv))
     return rv;
 
-  nsXPIDLString errorMsg;
+  nsString errorMsg;
   PRBool noOutput = PR_FALSE;
   PRBool noProxy = PR_FALSE;
   PRUint32 statusFlags;
@@ -311,7 +309,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
       nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
       if (enigHeaderSink) {
         NS_NAMED_LITERAL_STRING(nullString, "");
-        rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, -1, statusFlags, nullString.get(), nullString.get(), nullString.get(), errorMsg, nullString.get());
+        rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, -1, statusFlags, nullString.get(), nullString.get(), nullString.get(), errorMsg.get(), nullString.get());
       }
     }
 
@@ -435,10 +433,10 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   mBuffer->Shutdown();
 
   PRInt32 exitCode;
-  nsXPIDLString keyId;
-  nsXPIDLString userId;
-  nsXPIDLString sigDate;
-  nsXPIDLString blockSeparation;
+  nsString keyId;
+  nsString userId;
+  nsString sigDate;
+  nsString blockSeparation;
 
   PRUint32 uiFlags = nsIEnigmail::UI_PGP_MIME;
 
@@ -459,7 +457,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   if (securityInfo) {
     nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
     if (enigHeaderSink) {
-      rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, exitCode, statusFlags, keyId, userId, sigDate, errorMsg, blockSeparation);
+      rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, exitCode, statusFlags, keyId.get(), userId.get(), sigDate.get(), errorMsg.get(), blockSeparation.get());
     }
   }
 

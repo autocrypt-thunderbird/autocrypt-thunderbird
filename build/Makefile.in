@@ -115,7 +115,6 @@ CPPSRCS		= nsEnigModule.cpp
 
 LOCAL_INCLUDES	= \
 		-I$(srcdir)/../src \
-		-I$(srcdir)/../ipc/src \
 		$(NULL)
 
 # hack to build non standard library dependent build on unix
@@ -128,7 +127,6 @@ endif
 # separate libraries linked in.
 SHARED_LIBRARY_LIBS = \
 		../src/$(LIB_PREFIX)enigmime_s.$(LIB_SUFFIX) \
-		../ipc/src/$(LIB_PREFIX)ipc_s.$(LIB_SUFFIX) \
 		$(NULL)
 
 ifeq ($(OS_ARCH),WINNT)

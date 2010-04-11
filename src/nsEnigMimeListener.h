@@ -42,7 +42,7 @@
 
 #include "nsIEnigMimeListener.h"
 #include "nsCOMPtr.h"
-#include "nsString.h"
+#include "nsStringAPI.h"
 #include "modmimee2.h"
 
 // Implementation class for nsIEnigMimeListener

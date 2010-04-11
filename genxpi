@@ -142,6 +142,7 @@ cd "$targetDir"
 
 mkdir -p platform/${platform}/components
 cp components/${enigmimeDll} ${enigDllFile}
+cp components/${ipcDll} ${ipcDllFile}
 
 
 zip ${xpiFile} \
@@ -158,6 +159,7 @@ zip ${xpiFile} \
     components/ipc.xpt \
     components/enigmime.xpt \
     ${enigDllFile} \
+    ${ipcDllFile} \
     chrome.manifest \
     install.rdf
 

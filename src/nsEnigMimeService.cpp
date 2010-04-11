@@ -45,7 +45,7 @@
 #include "nsEnigMimeService.h"
 #include "nspr.h"
 #include "plstr.h"
-#include "nsString.h"
+#include "nsStringAPI.h"
 #include "nsCOMPtr.h"
 #include "nsIDOMNode.h"
 #include "nsIDOMText.h"
@@ -54,8 +54,6 @@
 #include "nsIComponentRegistrar.h"
 #include "nsIGenericFactory.h"
 #include "nsEnigContentHandler.h"
-#include "nsReadableUtils.h"
-#undef MOZILLA_INTERNAL_API
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigContentHandler)
 
@@ -209,6 +207,21 @@ nsEnigMimeService::GetVersion(char **_retval)
   return NS_OK;
 }
 
+
+static void
+__ReplaceSubstring (nsAString &string, nsAString &replace, nsAString &with)
+{
+        PRInt32 i = string.Find (replace);
+        string.Replace (i, replace.Length(), with);
+}
+
+static void
+__ReplaceChar (nsAString &string, const PRUnichar replace, const PRUnichar with)
+{
+        PRInt32 i = string.FindChar (replace);
+        string.Replace (i, 1, &with, 1);
+}
+
 NS_IMETHODIMP
 nsEnigMimeService::GetPlainText(nsIDOMNode* domNode,
                                 const PRUnichar* findStr,
@@ -252,14 +265,14 @@ nsEnigMimeService::GetPlainText(nsIDOMNode* domNode,
 
   if (outStr.FindChar(0xA0) >= 0) {
     // Replace non-breaking spaces with plain spaces
-    outStr.ReplaceChar(0xA0, ' ');
+    __ReplaceChar(outStr, 0xA0, ' ');
   }
 
   if (findStr &&
-      nsCharTraits<PRUnichar>::length(findStr) &&
-      (outStr.Find(findStr) < 0) ) {
+      nsDependentString(findStr).Length() &&
+      (outStr.Find(nsDependentString(findStr)) < 0) ) {
     // Substring not found; return empty string
-    outStr.Truncate(0);
+    outStr.Truncate();
   }
 
   text = outStr;

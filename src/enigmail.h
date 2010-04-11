@@ -33,8 +33,6 @@
 #ifndef enigmail_h__
 #define enigmail_h__
 
-#define MOZILLA_INTERNAL_API
-
 #if MOZILLA_MAJOR_VERSION==1 && MOZILLA_MINOR_VERSION<9
 #define _ENIG_MOZILLA_1_8
 #else

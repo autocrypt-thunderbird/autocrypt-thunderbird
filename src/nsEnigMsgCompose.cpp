@@ -40,7 +40,7 @@
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
 #include "enigmail.h"
-#include "nsXPIDLString.h"
+#include "nsStringAPI.h"
 #include "nsIMsgCompFields.h"
 #include "nsIMsgWindow.h"
 #include "nsMsgBaseCID.h"
@@ -51,7 +51,6 @@
 #include "nsEnigMsgCompose.h"
 #include "nspr.h"
 #include "nsCOMPtr.h"
-#include "nsString.h"
 #include "nsIPrompt.h"
 #include "nsNetUtil.h"
 #include "nsIThread.h"
@@ -477,7 +476,7 @@ nsEnigMsgCompose::Init()
     DEBUG_LOG(("nsEnigMsgCompose::Init: hashAlgorithm=%s\n", mHashAlgorithm.get()));
   }
 
-  nsXPIDLString errorMsg;
+  nsString errorMsg;
   PRUint32 statusFlags;
   PRBool noProxy = PR_TRUE;
   rv = enigmailSvc->EncryptMessageStart(nsnull, prompter,
@@ -747,7 +746,7 @@ nsEnigMsgCompose::FinishAux(PRBool aAbort,
 
   PRInt32 exitCode;
   PRUint32 statusFlags;
-  nsXPIDLString errorMsg;
+  nsString errorMsg;
   rv = enigmailSvc->EncryptMessageEnd(nsnull,
                                       prompter,
                                       mUIFlags,
@@ -960,7 +959,7 @@ nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
     // RFC2015 crypto encapsulation
     encapsulate = PR_TRUE;
 
-  } else if (!contentType.EqualsIgnoreCase("text/plain")) {
+  } else if (!contentType.Equals("text/plain", CaseInsensitiveCompare)) {
     // Force RFC2015 crypto encapsulation for non-plaintext messages
     encapsulate = PR_TRUE;
     mSendFlags |= nsIEnigmail::SEND_PGP_MIME;
@@ -979,7 +978,7 @@ nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
     if (NS_FAILED(rv)) return rv;
 
     if (mMultipartSigned) {
-      rv = WriteSignedHeaders1( contentEncoding.EqualsIgnoreCase("8bit") );
+      rv = WriteSignedHeaders1( contentEncoding.Equals("8bit", CaseInsensitiveCompare) );
       if (NS_FAILED(rv)) return rv;
 
       // Copy original headers to output
@@ -998,11 +997,11 @@ nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
     rv = WriteOut(headers.get(), headers.Length());
     if (NS_FAILED(rv)) return rv;
 
-    if (contentEncoding.EqualsIgnoreCase("base64")) {
+    if (contentEncoding.Equals("base64", CaseInsensitiveCompare)) {
 
       mEncoderData = MimeB64EncoderInit(EnigMsgCompose_write, (void*) mWriter);
 
-    } else if (contentEncoding.EqualsIgnoreCase("quoted-printable")) {
+    } else if (contentEncoding.Equals("quoted-printable", CaseInsensitiveCompare)) {
 
       mEncoderData = MimeQPEncoderInit(EnigMsgCompose_write, (void*) mWriter);
     }

@@ -42,8 +42,7 @@
 #include "enigmail.h"
 #include "nspr.h"
 #include "nsCOMPtr.h"
-#include "nsString.h"
-#include "nsXPIDLString.h"
+#include "nsStringAPI.h"
 #include "nsNetUtil.h"
 #include "nsNetCID.h"
 #include "nsIPrompt.h"
@@ -380,11 +379,11 @@ temBoundary += "--";
   PRInt32 exitCode;
   PRUint32 statusFlags;
 
-  nsXPIDLString keyId;
-  nsXPIDLString userId;
-  nsXPIDLString sigDate;
-  nsXPIDLString errorMsg;
-  nsXPIDLString blockSeparation;
+  nsString keyId;
+  nsString userId;
+  nsString sigDate;
+  nsString errorMsg;
+  nsString blockSeparation;
 
   nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
@@ -420,7 +419,7 @@ temBoundary += "--";
   if (securityInfo) {
     nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
     if (enigHeaderSink) {
-      rv = enigHeaderSink->UpdateSecurityStatus(mURISpec, exitCode, statusFlags, keyId, userId, sigDate, errorMsg, blockSeparation);
+      rv = enigHeaderSink->UpdateSecurityStatus(mURISpec, exitCode, statusFlags, keyId.get(), userId.get(), sigDate.get(), errorMsg.get(), blockSeparation.get());
     }
   }
 
@@ -459,7 +458,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
     rv = mInnerMimeListener->GetContentType(innerContentType);
     if (NS_FAILED(rv)) return rv;
 
-    if (!innerContentType.EqualsIgnoreCase("application/pgp-signature")) {
+    if (!innerContentType.Equals("application/pgp-signature", CaseInsensitiveCompare)) {
       DEBUG_LOG(("nsEnigMimeVerify::OnStartRequest: ERROR innerContentType=%s\n", innerContentType.get()));
       return NS_ERROR_FAILURE;
     }
@@ -481,7 +480,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   rv = mOuterMimeListener->GetContentType(contentType);
   if (NS_FAILED(rv)) return rv;
 
-  if (!contentType.EqualsIgnoreCase("multipart/signed")) {
+  if (!contentType.Equals("multipart/signed", CaseInsensitiveCompare)) {
     ERROR_LOG(("nsEnigMimeVerify::OnStartRequest: ERROR contentType=%s\n", contentType.get()));
     return NS_ERROR_FAILURE;
   }
@@ -490,7 +489,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   rv = mOuterMimeListener->GetContentProtocol(contentProtocol);
   if (NS_FAILED(rv)) return rv;
 
-  if (!contentProtocol.EqualsIgnoreCase("application/pgp-signature")) {
+  if (!contentProtocol.Equals("application/pgp-signature", CaseInsensitiveCompare)) {
     ERROR_LOG(("nsEnigMimeVerify::OnStartRequest: ERROR contentProtocol=%s\n", contentProtocol.get()));
     return NS_ERROR_FAILURE;
   }
@@ -500,25 +499,25 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   if (NS_FAILED(rv)) return rv;
 
   nsCAutoString hashSymbol;
-  if (contentMicalg.EqualsIgnoreCase("pgp-md5")) {
+  if (contentMicalg.Equals("pgp-md5", CaseInsensitiveCompare)) {
     hashSymbol = "MD5";
 
-  } else if (contentMicalg.EqualsIgnoreCase("pgp-sha1")) {
+  } else if (contentMicalg.Equals("pgp-sha1", CaseInsensitiveCompare)) {
     hashSymbol = "SHA1";
 
-  } else if (contentMicalg.EqualsIgnoreCase("pgp-ripemd160")) {
+  } else if (contentMicalg.Equals("pgp-ripemd160", CaseInsensitiveCompare)) {
     hashSymbol = "RIPEMD160";
 
-  } else if (contentMicalg.EqualsIgnoreCase("pgp-sha224")) {
+  } else if (contentMicalg.Equals("pgp-sha224", CaseInsensitiveCompare)) {
     hashSymbol = "SHA224";
 
-  } else if (contentMicalg.EqualsIgnoreCase("pgp-sha256")) {
+  } else if (contentMicalg.Equals("pgp-sha256", CaseInsensitiveCompare)) {
     hashSymbol = "SHA256";
 
-  } else if (contentMicalg.EqualsIgnoreCase("pgp-sha384")) {
+  } else if (contentMicalg.Equals("pgp-sha384", CaseInsensitiveCompare)) {
     hashSymbol = "SHA384";
 
-  } else if (contentMicalg.EqualsIgnoreCase("pgp-sha512")) {
+  } else if (contentMicalg.Equals("pgp-sha512", CaseInsensitiveCompare)) {
     hashSymbol = "SHA512";
 
   } else {
@@ -585,7 +584,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
 
-  nsXPIDLString errorMsg;
+  nsString errorMsg;
   PRBool verifyOnly = PR_TRUE;
   PRBool noOutput = PR_TRUE;
   PRBool noProxy = PR_TRUE;
@@ -614,7 +613,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
       nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
       if (enigHeaderSink) {
         NS_NAMED_LITERAL_STRING(nullString, "");
-        rv = enigHeaderSink->UpdateSecurityStatus(mURISpec, -1, statusFlags, nullString.get(), nullString.get(), nullString.get(), errorMsg, nullString.get());
+        rv = enigHeaderSink->UpdateSecurityStatus(mURISpec, -1, statusFlags, nullString.get(), nullString.get(), nullString.get(), errorMsg.get(), nullString.get());
       }
     }
 
