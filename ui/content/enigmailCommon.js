@@ -34,8 +34,8 @@ GPL.
 // enigmailCommon.js: shared JS functions for Enigmail
 
 // This Enigmail version and compatible Enigmime version
-var gEnigmailVersion = "1.0";
-var gEnigmimeVersion = "1.0";
+var gEnigmailVersion = "1.1";
+var gEnigmimeVersion = "1.1";
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -80,6 +80,8 @@ const ENIG_SAVEASCHARSET_CONTRACTID = "@mozilla.org/intl/saveascharset;1";
 
 const ENIG_STREAMCONVERTERSERVICE_CID_STR =
       "{892FFEB0-3F80-11d3-A16C-0050041CAF44}";
+const ENIG_EXTENSION_GUID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
+
 
 const ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
 
@@ -595,7 +597,7 @@ function EnigAlert(mesg) {
  * Displays an alert dialog with 3-4 optional buttons.
  * prefName: if not null, display checkbox "don't show again", linked to the prefName preference
  * button-Labels: use "&" to indicate access key
- *     use "buttonType:label" or ":buttonType" to indicate special button types 
+ *     use "buttonType:label" or ":buttonType" to indicate special button types
  *        (buttonType is one of cancel, help, extra1, extra2)
  * return: 0-2: button Number pressed
  *          -1: ESC or close window button pressed
@@ -610,7 +612,7 @@ function EnigLongAlert(mesg, checkBoxLabel, okLabel, labelButton2, labelButton3,
             "chrome,centerscreen,modal",
             {msgtext: mesg, checkboxLabel: checkBoxLabel, button1: okLabel, button2: labelButton2, button3: labelButton3},
             result);
-  
+
   if (checkBoxLabel) {
     checkedObj.value=result.checked
   }
@@ -658,7 +660,7 @@ function EnigAlertPref(mesg, prefText) {
 // Confirmation dialog with OK / Cancel buttons (both customizable)
 function EnigConfirm(mesg, okLabel, cancelLabel) {
   var dummy=new Object();
-  
+
   var buttonTitles = 0;
   if (okLabel == null && cancelLabel == null) {
     buttonTitles = (gEnigPromptSvc.BUTTON_TITLE_YES * ENIG_BUTTON_POS_0) +
@@ -671,7 +673,7 @@ function EnigConfirm(mesg, okLabel, cancelLabel) {
     else {
       buttonTitles += gEnigPromptSvc.BUTTON_TITLE_OK * ENIG_BUTTON_POS_0;
     }
-    
+
     if (cancelLabel != null) {
       buttonTitles += (gEnigPromptSvc.BUTTON_TITLE_IS_STRING * gEnigPromptSvc.BUTTON_POS_1);
     }
@@ -679,7 +681,7 @@ function EnigConfirm(mesg, okLabel, cancelLabel) {
       buttonTitles += gEnigPromptSvc.BUTTON_TITLE_CANCEL * ENIG_BUTTON_POS_1;
     }
   }
-  
+
   var buttonPressed = gEnigPromptSvc.confirmEx(window,
                         EnigGetString("enigConfirm"),
                         mesg,
@@ -710,7 +712,7 @@ function EnigConfirmPref(mesg, prefText, okLabel, cancelLabel) {
     else {
       buttonTitles += gEnigPromptSvc.BUTTON_TITLE_OK * ENIG_BUTTON_POS_0;
     }
-    
+
     if (cancelLabel != null) {
       buttonTitles += (gEnigPromptSvc.BUTTON_TITLE_IS_STRING * gEnigPromptSvc.BUTTON_POS_1);
     }
@@ -720,7 +722,7 @@ function EnigConfirmPref(mesg, prefText, okLabel, cancelLabel) {
   }
 
   var prefValue = EnigGetPref(prefText);
-  
+
   if (typeof(prefValue) != "boolean") {
     // number: remember user's choice
     switch (prefValue) {
@@ -769,7 +771,7 @@ function EnigConfirmPref(mesg, prefText, okLabel, cancelLabel) {
     default:
       return -1;
     }
-  
+
   }
 }
 
@@ -1360,7 +1362,7 @@ function EnigLaunchFile(fileName) {
     // so let it be handled by a browser window
     enigLoadExternalURL(outFileUri.asciiSpec);
   }
-}  
+}
 
 // retrieves the most recent navigator window (opens one if need be)
 function EnigLoadURLInNavigatorWindow(url, aOpenFlag)
@@ -1484,6 +1486,12 @@ function EnigGetOS () {
   var xulAppinfo = ENIG_C.classes[ENIG_XPCOM_APPINFO].getService(ENIG_C.interfaces.nsIXULRuntime);
   return xulAppinfo.OS;
 
+}
+
+function EnigGetVersion() {
+  return Components.classes["@mozilla.org/extensions/manager;1"].
+    getService(Components.interfaces.nsIExtensionManager).
+    getItemForID(ENIG_EXTENSION_GUID).version
 }
 
 function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
@@ -1713,7 +1721,7 @@ function EnigObtainKeyList(secretOnly, refresh) {
 // Load the key list into memory
 function EnigLoadKeyList(refresh, keyListObj) {
   DEBUG_LOG("enigmailCommon.js: EnigLoadKeyList\n");
-  
+
   const TRUSTLEVEL_SORTED="oidre-qnmfu"; // trust level sorted by increasing level of trust
 
   var sortUsers = function (a, b) {
@@ -1835,7 +1843,7 @@ function EnigGetSecretKeys() {
   var secretKeyCreated = new Array();
   var i;
   var keyId = null;
-  
+
   var keyId = null;
   var keys = [];
   for (i=0; i < userList.length; i++) {
@@ -1849,7 +1857,7 @@ function EnigGetSecretKeys() {
 
   keyList = enigmailSvc.getKeyDetails(secretKeyList.join(" "), false);
   userList=keyList.split(/\n/);
-  
+
   for (var i=0; i < userList.length; i++) {
     var aLine = userList[i].split(/:/);
     switch (aLine[0]) {
@@ -1859,7 +1867,7 @@ function EnigGetSecretKeys() {
     case "uid":
       if ((keyId != null) && (aLine[1] == 'u')) {
         // UID is valid and ultimately trusted
-        keys.push({ name: EnigConvertGpgToUnicode(aLine[9]), 
+        keys.push({ name: EnigConvertGpgToUnicode(aLine[9]),
                     id: keyId,
                     created: secretKeyCreated[keyId]});
         keyId = null;
@@ -2166,7 +2174,7 @@ function EnigOpenURL(event, hrefObj) {
                   getService(Components.interfaces.nsIExternalProtocolService);
 
     eps.loadURI(iUri, null);
-    
+
     event.preventDefault();
     event.stopPropagation();
   }

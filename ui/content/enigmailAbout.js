@@ -43,7 +43,7 @@ function enigAboutLoad() {
   if (!contentFrame)
     return;
 
-  var enigVersion=gEnigmailVersion+" ("+EnigBuildDate+")";
+  var enigVersion=EnigGetVersion()+" ("+EnigBuildDate+")";
   var versionElement = contentFrame.document.getElementById('version');
   if (versionElement)
     versionElement.firstChild.data = EnigGetString("usingVersion", enigVersion);
