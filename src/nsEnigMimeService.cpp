@@ -211,15 +211,21 @@ nsEnigMimeService::GetVersion(char **_retval)
 static void
 __ReplaceSubstring (nsAString &string, nsAString &replace, nsAString &with)
 {
-        PRInt32 i = string.Find (replace);
-        string.Replace (i, replace.Length(), with);
+  PRInt32 i = string.Find (replace);
+  while (i >= 0) {
+    string.Replace (i, replace.Length(), with);
+    i = string.Find (replace);
+  }
 }
 
 static void
 __ReplaceChar (nsAString &string, const PRUnichar replace, const PRUnichar with)
 {
-        PRInt32 i = string.FindChar (replace);
-        string.Replace (i, 1, &with, 1);
+  PRInt32 i = string.FindChar (replace);
+  while (i >= 0) {
+    string.Replace (i, 1, &with, 1);
+    i = string.FindChar (replace);
+  }
 }
 
 NS_IMETHODIMP

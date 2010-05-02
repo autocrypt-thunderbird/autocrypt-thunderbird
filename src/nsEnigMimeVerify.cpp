@@ -156,8 +156,9 @@ nsEnigMimeVerify::Init(nsIDOMWindow* window,
     return NS_ERROR_NULL_POINTER;
 
   mMsgWindow = msgWindow;
-  mURISpec = msgUriSpec;
+  mURISpec.Assign(msgUriSpec);
   mPgpMime = pgpMime;
+
 
   nsCOMPtr<nsIIOService> ioService(do_GetService(NS_IOSERVICE_CONTRACTID, &rv));
   if (NS_FAILED(rv)) return rv;
@@ -619,7 +620,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
 
     return NS_ERROR_FAILURE;
   }
-  
+
   // Write clearsigned message header
   const char* clearsignHeader = "-----BEGIN PGP SIGNED MESSAGE-----";
 

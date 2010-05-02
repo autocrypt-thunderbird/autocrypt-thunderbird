@@ -678,14 +678,20 @@ static void
 __ReplaceCSubstring (nsACString &string, const char* replace, const char* with)
 {
 	PRInt32 i = string.Find (replace);
-	string.Replace (i, strlen (replace), with);
+	while ( i >= 0 ) {
+  	string.Replace (i, strlen (replace), with);
+  	i = string.Find (replace);
+  }
 }
 
 static void
 __ReplaceCChar (nsACString &string, const char replace, const char with)
 {
 	PRInt32 i = string.FindChar (replace);
-	string.Replace (i, 1, (const char*) &with, 1);
+  while (i >= 0 ) {
+	  string.Replace (i, 1, (const char*) &with, 1);
+	  i = string.FindChar (replace);
+	}
 }
 
 void
@@ -762,6 +768,7 @@ nsEnigMimeListener::ParseHeader(const char* header, PRUint32 count)
   // Create header string
   nsCAutoString headerStr(header, count);
 
+  //DEBUG_LOG(("nsEnigMimeListener::ParseHeader: header='%s'\n", headerStr.get()));
   PRInt32 colonOffset;
   colonOffset = headerStr.FindChar(':');
   if (colonOffset < 0)
@@ -772,14 +779,15 @@ nsEnigMimeListener::ParseHeader(const char* header, PRUint32 count)
     return;
 
   // Extract header key (not case-sensitive)
-  nsCAutoString headerKey = (nsCString) nsDependentCSubstring (headerStr, colonOffset);
+  nsCAutoString headerKey = (nsCString) nsDependentCSubstring (headerStr, 0, colonOffset);
   ToLowerCase(headerKey);
 
-  // Extract header value, trimming leading/trailing whitespace
-  nsCAutoString buf = (nsCString) nsDependentCSubstring (headerStr, colonOffset, headerStr.Length() - colonOffset);
-  buf.Trim(" ");
 
-  //DEBUG_LOG(("nsEnigMimeListener::ParseHeader: %s: %s\n", headerKey.get(), buf.get()));
+  // Extract header value, trimming leading/trailing whitespace
+  nsCAutoString buf = (nsCString) nsDependentCSubstring (headerStr, colonOffset+1, headerStr.Length() - colonOffset);
+  buf.Trim(" ", PR_TRUE, PR_TRUE);
+
+  //DEBUG_LOG(("nsEnigMimeListener::ParseHeader: '%s': %s\n", headerKey.get(), buf.get()));
 
   PRInt32 semicolonOffset = buf.FindChar(';');
 
@@ -790,11 +798,11 @@ nsEnigMimeListener::ParseHeader(const char* header, PRUint32 count)
 
   } else {
     // Extract value to left of parameters
-    headerValue = nsDependentCSubstring (buf, semicolonOffset);
+    headerValue = nsDependentCSubstring (buf, 0, semicolonOffset);
   }
 
   // Trim leading and trailing spaces in header value
-  headerValue.Trim(" ");
+  headerValue.Trim(" ", PR_TRUE, PR_TRUE);
 
   if (headerKey.Equals("content-type")) {
     mContentType = headerValue;
