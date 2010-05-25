@@ -518,28 +518,6 @@
 
   </menubar>
 
-<!-- Seamonkey 1.x -->
- <toolbox id="mailToolbarToolbox">
-   <toolbar id="msgToolbar" persist="collapsed">
-     <hbox id="toolbar_button_box">
-
-        <toolbarbutton class="toolbarbutton-1"
-                id="button-enigmail-decrypt"
-                label="&enigmail.decryptbutton.label;"
-                tooltip="aTooltip" tooltiptext="&enigmail.decryptbutton.tip;"
-                oncommand="enigMessageDecrypt();"
-                buttontype="seamonkey"
-                insertafter="button-newmsg"
-                persist="platform"
-                />
-
-        <toolbarseparator class="toolbarseparator-primary"
-              insertafter="button-newmsg"
-                />
-      </hbox>
-   </toolbar>
- </toolbox>
-
 <!-- Thunderbird & SeaMonkey 2.x -->
    <toolbarpalette id="MailToolbarPalette">
       <toolbarbutton class="toolbarbutton-1"
@@ -578,11 +556,18 @@
            defaultset="button-getmsg,button-newmsg,separator,button-reply,button-replyall,button-forward,separator,button-enigmail-decrypt,spacer,button-goback,button-goforward,button-next,button-junk,button-delete,button-mark,spring,throbber-box">
   </toolbar>
 
+<!--
   <vbox id="messagepanebox">
     <hbox id="enigmailBox" class="expandedEnigmailBox"
-          position="1"
-          collapsed="true" align="center">
-          
+          collapsed="true" align="center"
+          position="1">
+-->
+
+  <vbox id="singlemessage">
+    <hbox id="enigmailBox" class="expandedEnigmailBox"
+          collapsed="true" align="center"
+          insertafter="msgHeaderView">
+
       <vbox>
         <spacer class="enigmailHeaderSpacer"/>
       </vbox>
@@ -612,8 +597,8 @@
         </vbox>
         <vbox class="enigmailHeaderNameBox" flex="0" pack="center">
           <observes element="enigmailStatusText" attribute="class"/>
-          <button id="enigmailStatusHdrDetails" pack="center" 
-                  label="&enigmail.detailsHdrButton.label;" 
+          <button id="enigmailStatusHdrDetails" pack="center"
+                  label="&enigmail.detailsHdrButton.label;"
                   type="menu"
                   class="enigMsgHdrView-flat-button">
             <menupopup id="enigSecurityContext"

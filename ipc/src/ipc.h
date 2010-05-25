@@ -33,13 +33,6 @@
 #ifndef ipc_h__
 #define ipc_h__
 
-#if MOZ_THUNDERBIRD || MOZ_SUITE || MOZ_STATIC_MAIL_BUILD
-
-#define _IPC_FORCE_INTERNAL_API 1
-#define MOZILLA_INTERNAL_API
-
-#endif
-
 #ifdef FORCE_PR_LOG
 #include "nsIThread.h"
 #include "nsThreadUtils.h"

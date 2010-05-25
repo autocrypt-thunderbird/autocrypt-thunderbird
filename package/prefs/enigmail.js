@@ -62,9 +62,6 @@ pref("extensions.enigmail.encryptAttachmentsSkipDlg", 0);
 // Encrypt to self
 pref("extensions.enigmail.encryptToSelf",true);
 
-// warn if GnuPG <= v1.2.0 (countdown)
-pref("extensions.enigmail.gpgVersionWarnCount",1);
-
 // enable 'Decrypt & open' for double click on attachment (if possible)
 pref("extensions.enigmail.handleDoubleClick",true);
 

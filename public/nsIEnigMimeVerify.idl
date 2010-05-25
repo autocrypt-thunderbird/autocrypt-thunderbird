@@ -22,7 +22,7 @@
  * Patrick Brunschwig <patrick.brunschwig@gmx.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or 
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
  * in which case the provisions of the GPL or the LGPL are applicable instead
  * of those above. If you wish to allow use of your version of this file only
@@ -46,7 +46,7 @@ interface nsIEnigMimeListener;
 %{C++
 #define NS_ENIGMIMEVERIFY_CLASSNAME "Enigmail Mime Verify"
 #define NS_ENIGMIMEVERIFY_CONTRACTID "@mozilla.org/enigmail/mime-verify;1"
-     
+
 #define NS_ENIGMIMEVERIFY_CID                    \
 { /* 847b3a91-7ab1-11d4-8f02-006008948af5 */     \
    0x847b3a91, 0x7ab1, 0x11d4,                   \

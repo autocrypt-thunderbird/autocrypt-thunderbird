@@ -13,6 +13,7 @@ it-IT
 ja-JP
 ko-KR
 nb-NO
+nl-NL
 pl-PL
 pt-BR
 pt-PT

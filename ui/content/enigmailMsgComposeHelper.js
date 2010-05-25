@@ -52,7 +52,7 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
     else {
       return (oldVal < newVal ? newVal: oldVal);
     }
-  }
+  } 
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
