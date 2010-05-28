@@ -437,6 +437,7 @@
 <!ENTITY enigmail.keyDetails.additionalUid.label     "ID de Usuario Adicional">
 <!ENTITY enigmail.keyDetails.ID.label "ID">
 <!ENTITY enigmail.keyDetails.keyType.label "Tipo">
+<!ENTITY enigmail.keyDetails.keyPart.label           "Parte de Clave">
 <!ENTITY enigmail.keyDetails.algorithm.label "Algoritmo">
 <!ENTITY enigmail.keyDetails.size.label "Tama&#x00F1;o">
 <!ENTITY enigmail.keyDetails.created.label "Creada">
@@ -444,6 +445,8 @@
 <!ENTITY enigmail.keyDetails.calcTrust.label "Validez de la clave">
 <!ENTITY enigmail.keyDetails.ownerTrust.label "Confianza del propietario">
 <!ENTITY enigmail.keyDetails.fingerprint.label "Huella digital">
+<!ENTITY enigmail.keyDetails.selAction.label         "Seleccionar acci&#x00F3;n ...">
+<!ENTITY enigmail.keyDetails.selAction.accesskey     "S">
 <!ENTITY enigmail.cardDetails.title "Detalles de la tarjeta inteligente OpenPGP">
 <!ENTITY enigmail.cardDetails.cardMenu.label "Tarjeta inteligente">
 <!ENTITY enigmail.cardDetails.adminPin.label "Cambiar el PIN">
@@ -514,7 +517,17 @@
 <!ENTITY enigmail.setupWiz.pgSign.noSign "No, deseo crear reglas por destinatario para los correos que necesiten estar firmado">
 <!ENTITY enigmail.setupWiz.pgEnc.title "Cifrado">
 <!ENTITY enigmail.setupWiz.pgEnc.subtitle "Cifrar los correos salientes">
-<!ENTITY enigmail.setupWiz.pgEnc.desc "OpenPGP le permite cifrar sus mensajes de correo y cualquier adjunto. El cifrado es como poner una carta dentro de un sobre. Hace que las cosas sean privadas. No es para mensajes &quot;secretos&quot;, sino para todo lo que no enviar&iacute;a en una postal. <html:br/><html:br/> A nivel t&#x00E9;cnico, el cifrado funciona como un candado del cual s&#x00F3;lo el destinatario tiene la llave. A diferencia de la firma, para usar el cifrado, todos los destinatarios de un correo necesitan usar OpenPGP. La gente necesita darle su clave p&#x00FA;blica antes de que usted pueda enviarles correo cifrado (la clave p&#x00FA;blica es el candado del que habl&#x00E1;bamos). <html:br/><html:br/> A menos que la mayor&#x00ED;a de sus compa&#x00F1;eros de comunicaciones tengan claves p&#x00FA;blicas, no debe activar el cifrar por defecto.">
+<!ENTITY enigmail.setupWiz.pgEnc.desc "OpenPGP le permite cifrar sus mensajes de correo y cualquier adjunto. El cifrado es como poner una carta
+                                      dentro de un sobre. Hace que las cosas sean privadas.
+                                      No es para mensajes &quot;secretos&quot;, sino para todo lo que no enviaria en una postal.
+                                      <html:br/><html:br/>
+                                      A nivel t&#x00E9;cnico, el cifrado funciona como un candado del cual s&#x00F3;lo el destinatario tiene la llave.
+                                      A diferencia de la firma, para usar el cifrado, todos los destinatarios de un correo necesitan usar OpenPGP.
+                                      La gente necesita darle su clave p&#x00FA;blica antes de que usted pueda enviarles correo cifrado
+                                      (la clave p&#x00FA;blica es el candado del que habl&#x00E1;bamos).
+                                      <html:br/><html:br/>
+                                      A menos que la mayor&#x00ED;a de sus compa&#x00F1;eros de comunicaciones tengan claves p&#x00FA;blicas,
+                                      no debe activar el cifrar por defecto.">
 <!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg "&#x00BF;Debe cifrarse por defecto el correo saliente?">
 <!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt "S&#x00ED;, tengo claves p&#x00FA;blicas para la mayor&#x00ED;a de mis contactos">
 <!ENTITY enigmail.setupWiz.pgEnc.noEncrypt "No, crear&#x00E9; reglas por destinatario para aqu&#x00E9;llos que me env&#x00ED;en su clave p&#x00FA;blica">
@@ -553,6 +566,3 @@
 <!ENTITY enigmail.setupWiz.pgNoStart.desc "Ha escogido no usar el asistente para configurar OpenPGP. <html:br/><html:br/>Gracias por usar Enigmail.">
 <!ENTITY enigmail.advancedIdentityDlg.title          "Configuraci&#x00F3;n Avanzada de Identidades OpenPGP">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label     "Adjuntar mi clave p&#x00FA;blica a los mensajes">
-<!ENTITY enigmail.keyDetails.keyPart.label           "Parte de Clave">
-<!ENTITY enigmail.keyDetails.selAction.label         "Seleccionar acci&#x00F3;n ...">
-<!ENTITY enigmail.keyDetails.selAction.accesskey     "S">
