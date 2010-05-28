@@ -115,7 +115,7 @@
 <!ENTITY enigmail.debugMenu.accesskey "b">
 <!ENTITY enigmail.clearPassphrase.accesskey "Z">
 <!ENTITY enigmail.editRules.accesskey "r">
-<!ENTITY enigmail.setupWiz.accesskey "w">
+<!ENTITY enigmail.setupWiz.accesskey "g">
 <!ENTITY enigmail.prefs.accesskey "t">
 <!ENTITY enigmail.viewconsole.accesskey "k">
 <!ENTITY enigmail.viewdebuglog.accesskey "l">
@@ -279,7 +279,7 @@
 <!ENTITY enigmail.maybe.label "Tak, jeżeli zaznaczono taką opcję tworzenia wiadomości">
 <!ENTITY enigmail.singleRcptSettings.desc "(Uwaga: w przypadku konfliktów, „Nigdy” ma pierwszeństwo przed „Zawsze”)">
 <!ENTITY enigmail.ruleEmail.label "Ustaw reguły OpenPGP dla">
-<!ENTITY enigmail.ruleEmail.tooltip "Należy wpisać tylko sam adres e-mail, BEZ nazwy adresata\nNp. wpis „Jan Kowalski <jakis.adres@poczta.pl>” jest nieprawidłowy">
+<!ENTITY enigmail.ruleEmail.tooltip "Należy wpisać tylko sam adres e-mail, BEZ nazwy adresata\nNp. wpis „Jan Kowalski &lt;jakis.adres@poczta.pl&gt;” jest nieprawidłowy">
 <!ENTITY enigmail.sepratationDesc.label "(Przy wpisywaniu kilku adresów należy oddzielić je spacjami)">
 <!ENTITY enigmail.matchDescStart.label "Zastosuj regułę gdy adresat">
 <!ENTITY enigmail.matchDescEnd.label "jeden z powyższych adresów">
