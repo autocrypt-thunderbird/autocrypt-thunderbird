@@ -20,4 +20,6 @@ pt-PT
 ru-RU
 sl-SI
 sv-SE
+tr-TR
+vi-VN
 zh-CN
