@@ -133,7 +133,12 @@ chmod 755 "${targetDir}/wrappers/gpg-agent-wrapper.sh"
 cd ${srcDir}/package
 
 enigmimeDll=${libPrefix}enigmime${dllSuffix}
-enigDllFile=platform/${platform}/components/${libPrefix}enigmime-${xpcomAbi}${dllSuffix}
+if [ ${platform} = OS2_x86-gcc3 ]; then
+  # workaround for file name length limit on OS/2
+  enigDllFile=platform/${platform}/components/${enigmimeDll}
+else
+  enigDllFile=platform/${platform}/components/${libPrefix}enigmime-${xpcomAbi}${dllSuffix}
+fi
 ipcDll=${libPrefix}ipc${dllSuffix}
 ipcDllFile=platform/${platform}/components/${libPrefix}ipc-${xpcomAbi}${dllSuffix}
 
