@@ -589,28 +589,29 @@
 <!ENTITY enigmail.setupWiz.title "OpenPGP-Assistent">
 <!ENTITY enigmail.setupWiz.yes "Ja">
 <!ENTITY enigmail.setupWiz.no "Nein, Danke">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "Dieser Assistent hilft Ihnen, um OpenPGP einzurichten. In den nächsten Schritten 
-                                                      werden mit Hilfe von ein paar Fragen die korrekten Einstellungen gemacht. 
+<!ENTITY enigmail.setupWiz.pgWelcome.desc "Dieser Assistent hilft Ihnen, um OpenPGP einzurichten. In den nächsten Schritten
+                                                      werden mit Hilfe von ein paar Fragen die korrekten Einstellungen gemacht.
                                                       <html:br/><html:br/>
-                                                      Um alles etwas zu vereinfachen, geht der Assistent außerdem von ein 
-                                                      paar vermutlich gewünschten Einstellungen aus. 
-                                                      Dabei wird versucht eine möglichst hohe Sicherheit zu erreichen, ohne 
-                                                      dabei den Anwender zu verwirren. Natürlich können Sie alle Einstellungen 
-                                                      nach dem Beenden des Assistenten bei Bedarf noch weiter anpassen. 
+                                                      Um alles etwas zu vereinfachen, geht der Assistent außerdem von ein
+                                                      paar vermutlich gewünschten Einstellungen aus.
+                                                      Dabei wird versucht eine möglichst hohe Sicherheit zu erreichen, ohne
+                                                      dabei den Anwender zu verwirren. Natürlich können Sie alle Einstellungen
+                                                      nach dem Beenden des Assistenten bei Bedarf noch weiter anpassen.
                                                       <html:br/><html:br/>
-                                                      Weitere Informationen zu den OpenPGP-Funktionen erhalten Sie im Menü 
-                                                      OpenPGP > Hilfe oder auf der 
+                                                      Weitere Informationen zu den OpenPGP-Funktionen erhalten Sie im Menü
+                                                      OpenPGP > Hilfe oder auf der
                                                       <a class='enigmailLink'>
-                                                      <html:a href='http://enigmail.mozdev.org/'>Enigmail website</html:a></a>.
+                                                      <html:a onclick='EnigOpenURL(event, this)'
+                                                       href='http://enigmail.mozdev.org/'>Enigmail website</html:a></a>.
                                                       <html:br/><html:br/>
-                                                      Sollten Sie Probleme mit dem OpenPGP-Assistenten haben, informieren 
-                                                      Sie uns per 
+                                                      Sollten Sie Probleme mit dem OpenPGP-Assistenten haben, informieren
+                                                      Sie uns per
                                                       <a class='enigmailLink'>
                                                       <html:a href='mailto:enigmail@mozdev.org'>E-Mail</html:a></a>.
                                                       <html:br/><html:br/>
-                                                      Dieser Assistent wird nur gezeigt, wenn Sie Enigmail das erste Mal 
-                                                      verwenden. Er wird später nicht mehr angezeigt und kann nicht aus dem 
-                                                      Menü heraus aufgerufen werden.
+                                                      Dieser Assistent wird automatisch gezeigt, wenn Sie Enigmail das erste Mal
+                                                      verwenden. Er kann später aus dem Menü OpenPGP heraus wieder aufgerufen
+                                                      werden.
                                                       <html:br/><html:br/>
                                                       Danke für das Verwenden von Enigmail OpenPGP!">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "Möchten Sie den Assistenten nun verwenden?">
@@ -618,31 +619,31 @@
 <!ENTITY enigmail.setupWiz.pgWelcome.no "Nein Danke, ich werde alles manuell einstellen">
 <!ENTITY enigmail.setupWiz.pgSelectId.title "Identitäten auswählen">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Wählen Sie die Konten oder Identitäten, mit der Sie OpenPGP verwenden möchten">
-<!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP-Einstellungen beziehen sich auf Konten bzw. Identitäten. 
+<!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP-Einstellungen beziehen sich auf Konten bzw. Identitäten.
                                                       Standardmäßig wird OpenPGP für alle Konten bzw. Identitäten
-                                                      eingerichtet. Wenn Sie dies nicht möchten, wählen Sie bitte 
-                                                      die einzelnen Konten bzw. Identitäten aus, für die OpenPGP 
+                                                      eingerichtet. Wenn Sie dies nicht möchten, wählen Sie bitte
+                                                      die einzelnen Konten bzw. Identitäten aus, für die OpenPGP
                                                       eingerichtet werden soll.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "Möchten Sie OpenPGP für alle Konten bzw. Identitäten einrichten?">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Nein, nur für die folgenden Konten bzw. Identitäten:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Hinweis:</a> OpenPGP wird Unterschriften immer 
-                                                      für alle Konten bzw. Identitäten überprüfen, unabhängig davon was 
+<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Hinweis:</a> OpenPGP wird Unterschriften immer
+                                                      für alle Konten bzw. Identitäten überprüfen, unabhängig davon was
                                                       hier ausgewählt wird.">
 <!ENTITY enigmail.setupWiz.pgSign.title "Unterschreiben">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "Digitales Unterschreiben Ihrer ausgehenden Nachrichten">
 <!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP ermöglicht Ihnen das digitale Unterschreiben Ihrer Nachrichten.
-                                                      Dies ist die elektronische Version Ihrer Unterschrift unter einem Brief, 
-                                                      und es ermöglicht Ihren Empfängern sicher zu gehen, dass 
-                                                      Nachrichten tatsächlich von Ihnen stammen und nicht verändert 
+                                                      Dies ist die elektronische Version Ihrer Unterschrift unter einem Brief,
+                                                      und es ermöglicht Ihren Empfängern sicher zu gehen, dass
+                                                      Nachrichten tatsächlich von Ihnen stammen und nicht verändert
                                                       wurden.
                                                       <html:br/><html:br/>
-                                                      Ihre Empfänger benötigen Ihren öffentlichen Schlüssel und ein 
-                                                      OpenPGP-kompatibles E-Mail-Programm, um die Unterschrift überprüfen 
-                                                      zu können. Andernfalls können Ihre Empfänger zwar die Nachrichten lesen, 
-                                                      die Unterschrift wird aber nur als kryptischer Text ober- und unterhalb 
-                                                      der Nachrichten bzw. als Anhang angezeigt. Dies könnte einige 
-                                                      Empfänger stören, daher sollten Sie sich überlegen, ob alle 
-                                                      ausgehenden Nachrichten unterschrieben werden sollen oder ob 
+                                                      Ihre Empfänger benötigen Ihren öffentlichen Schlüssel und ein
+                                                      OpenPGP-kompatibles E-Mail-Programm, um die Unterschrift überprüfen
+                                                      zu können. Andernfalls können Ihre Empfänger zwar die Nachrichten lesen,
+                                                      die Unterschrift wird aber nur als kryptischer Text ober- und unterhalb
+                                                      der Nachrichten bzw. als Anhang angezeigt. Dies könnte einige
+                                                      Empfänger stören, daher sollten Sie sich überlegen, ob alle
+                                                      ausgehenden Nachrichten unterschrieben werden sollen oder ob
                                                       einige Empfänger ausgenommen werden sollen.">
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg "Möchten Sie, dass standardmäßig alle ausgehenden Nachrichten unterschrieben werden?">
 <!ENTITY enigmail.setupWiz.pgSign.yesSign "Ja, ich möchte alle Nachrichten unterschreiben">
@@ -650,67 +651,67 @@
 <!ENTITY enigmail.setupWiz.pgEnc.title "Verschlüsseln">
 <!ENTITY enigmail.setupWiz.pgEnc.subtitle "Verschlüsseln Ihrer ausgehenden Nachrichten">
 <!ENTITY enigmail.setupWiz.pgEnc.desc "OpenPGP ermöglicht Ihnen Nachrichten und deren Anhänge zu verschlüsseln.
-                                                      Verschlüsselung ist Vergleichbar mit einem Briefumschlag - 
-                                                      Inhalte bleiben privat. Dabei ist Verschlüsselung nicht nur für 
-                                                      &quot;geheime&quot; Nachrichten gedacht, sondern für alles 
-                                                      was Sie nicht auf einer ungeschützten Postkarte versenden 
+                                                      Verschlüsselung ist Vergleichbar mit einem Briefumschlag -
+                                                      Inhalte bleiben privat. Dabei ist Verschlüsselung nicht nur für
+                                                      &quot;geheime&quot; Nachrichten gedacht, sondern für alles
+                                                      was Sie nicht auf einer ungeschützten Postkarte versenden
                                                       würden.
                                                       <html:br/><html:br/>
-                                                      Technisch betrachtet ist Verschlüsselung wie ein 
-                                                      Vorhängeschloss, zu dem nur der Empfänger einen Schlüssel 
-                                                      besitzt. Im Gegensatz zum Unterschreiben müssen bei 
-                                                      verschlüsselten Nachrichten alle Empfänger ein OpenPGP-kompatibles 
-                                                      E-Mail-Programm verwenden. 
-                                                      Die potenziellen Empfänger müssen Ihnen ihren öffentlichen 
-                                                      Schlüssel geben, bevor Sie ihnen verschlüsselte Nachrichten 
-                                                      senden können (der öffentliche Schlüssel ist quasi das 
-                                                      Vorhängeschloss). 
+                                                      Technisch betrachtet ist Verschlüsselung wie ein
+                                                      Vorhängeschloss, zu dem nur der Empfänger einen Schlüssel
+                                                      besitzt. Im Gegensatz zum Unterschreiben müssen bei
+                                                      verschlüsselten Nachrichten alle Empfänger ein OpenPGP-kompatibles
+                                                      E-Mail-Programm verwenden.
+                                                      Die potenziellen Empfänger müssen Ihnen ihren öffentlichen
+                                                      Schlüssel geben, bevor Sie ihnen verschlüsselte Nachrichten
+                                                      senden können (der öffentliche Schlüssel ist quasi das
+                                                      Vorhängeschloss).
                                                       <html:br/><html:br/>
-                                                      Solange nicht die meisten Ihrer E-Mail-Empfänger ein 
-                                                      OpenPGP-kompatibles E-Mail-Programm verwenden und Ihnen den 
-                                                      öffentlichen Schlüssel ausgehändigt haben, sollten Sie die 
+                                                      Solange nicht die meisten Ihrer E-Mail-Empfänger ein
+                                                      OpenPGP-kompatibles E-Mail-Programm verwenden und Ihnen den
+                                                      öffentlichen Schlüssel ausgehändigt haben, sollten Sie die
                                                       Verschlüsselung nicht standardmäßig aktivieren.">
 <!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg "Sollen Ihre ausgehenden Nachrichten standardmäßig verschlüsselt werden?">
 <!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt "Ja, ich habe öffentliche Schlüssel für die meisten meiner Empfänger">
 <!ENTITY enigmail.setupWiz.pgEnc.noEncrypt "Nein, ich möchte in Empfängerregeln festlegen, wann verschlüsselt werden soll">
 <!ENTITY enigmail.setupWiz.pgSettings.title "Einstellungen">
 <!ENTITY enigmail.setupWiz.pgSettings.subtitle "Ihre E-Mail-Einstellungen anpassen, so dass OpenPGP zuverlässiger funktioniert">
-<!ENTITY enigmail.setupWiz.pgSettings.desc "Der Assistent kann Ihre E-Mail-Einstellungen so anpassen, dass keine 
-                                                      Probleme beim Unterschreiben und Verschlüsseln von 
-                                                      Nachrichten auftreten werden. 
+<!ENTITY enigmail.setupWiz.pgSettings.desc "Der Assistent kann Ihre E-Mail-Einstellungen so anpassen, dass keine
+                                                      Probleme beim Unterschreiben und Verschlüsseln von
+                                                      Nachrichten auftreten werden.
                                                       Die meisten Einstellungen betreffen nur technische Dinge, aber
-                                                      ein wichtiger Punkt ist, dass Nachrichten standardmäßig nur 
+                                                      ein wichtiger Punkt ist, dass Nachrichten standardmäßig nur
                                                       als Reintext verfasst werden (also ohne HTML-Formatierung).">
 <!ENTITY enigmail.setupWiz.pgSettings.changePref "Möchten Sie die Einstellungen anpassen, so dass OpenPGP besser funktionieren wird?">
 <!ENTITY enigmail.setupWiz.pgSettings.details "Details…">
 <!ENTITY enigmail.setupWiz.pgKeySel.title "Schlüsselauswahl">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "Erzeugen eines Schlüssels zum Unterschreiben und Verschlüsseln">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc "Sie haben bereits einen oder mehrere OpenPGP-Schlüssel. Sie 
-                                                      können daher einen Ihrer existierenden Schlüssel verwenden, 
-                                                      um Nachrichten zu unterschreiben und zu verschlüsseln, oder 
+<!ENTITY enigmail.setupWiz.pgKeySel.desc "Sie haben bereits einen oder mehrere OpenPGP-Schlüssel. Sie
+                                                      können daher einen Ihrer existierenden Schlüssel verwenden,
+                                                      um Nachrichten zu unterschreiben und zu verschlüsseln, oder
                                                       Sie können ein neues Schlüsselpaar erzeugen.">
 <!ENTITY enigmail.setupWiz.pgKeySel.createKey "Möchten Sie ein neues Schlüsselpaar erzeugen?">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey "Ich möchte ein neues Schlüsselpaar erzeugen">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Ich möchte einen der vorhandenen Schlüssel verwenden:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "OpenPGP-Schlüssel erzeugen">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Erzeugen eines Schlüssels zum Unterschreiben und Verschlüsseln">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Sie benötigen ein &quot;Schlüsselpaar&quot;, um Nachrichten unterschreiben 
-                                                      und verschlüsseln zu können. Ein Schlüsselpaar besteht aus einem 
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Sie benötigen ein &quot;Schlüsselpaar&quot;, um Nachrichten unterschreiben
+                                                      und verschlüsseln zu können. Ein Schlüsselpaar besteht aus einem
                                                       öffentlichen Schlüssel und einem privaten Schlüssel.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Ihren öffentlichen Schlüssel (das Vorhängeschloss) müssen Sie 
-                                                      allen Personen geben, die Ihre Unterschrift überprüfen und 
-                                                      Nachrichten verschlüsselt an Sie senden können sollen. 
-                                                      Im Gegensatz dazu müssen Sie Ihren privaten Schlüssel geheim 
-                                                      halten! Sie dürfen diesen NICHT weitergeben oder ungeschützt 
-                                                      lassen. Mit Hilfe Ihres privaten Schlüssels kann man alle Nachrichten 
-                                                      lesen, die verschlüsselt an Sie gesendet wurden. Außerdem kann 
-                                                      man damit in Ihrem Namen unterschreiben! 
-                                                      Der private Schlüssel wird deshalb von einer Passphrase 
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Ihren öffentlichen Schlüssel (das Vorhängeschloss) müssen Sie
+                                                      allen Personen geben, die Ihre Unterschrift überprüfen und
+                                                      Nachrichten verschlüsselt an Sie senden können sollen.
+                                                      Im Gegensatz dazu müssen Sie Ihren privaten Schlüssel geheim
+                                                      halten! Sie dürfen diesen NICHT weitergeben oder ungeschützt
+                                                      lassen. Mit Hilfe Ihres privaten Schlüssels kann man alle Nachrichten
+                                                      lesen, die verschlüsselt an Sie gesendet wurden. Außerdem kann
+                                                      man damit in Ihrem Namen unterschreiben!
+                                                      Der private Schlüssel wird deshalb von einer Passphrase
                                                       geschützt.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Bitte bestätigen Sie Ihre Passphrase durch erneutes Eingeben">
 <!ENTITY enigmail.setupWiz.pgSummary.title "Zusammenfassung">
 <!ENTITY enigmail.setupWiz.pgSummary.subtitle "Bestätigen Sie, dass der Assistent nun die getroffenen Einstellungen vornehmen soll">
-<!ENTITY enigmail.setupWiz.pgSummary.desc "Sie sind nun fast fertig! Wenn Sie auf die Schaltfläche &quot;Weiter&quot; klicken, 
+<!ENTITY enigmail.setupWiz.pgSummary.desc "Sie sind nun fast fertig! Wenn Sie auf die Schaltfläche &quot;Weiter&quot; klicken,
                                                       wird der Assistent folgende Einstellungen übernehmen:">
 <!ENTITY enigmail.setupWiz.pgKeygen.title "Schlüsselerzeugung">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "Ihr Schlüsselpaar wird nun erzeugt">
@@ -725,7 +726,7 @@
 <!ENTITY enigmail.setupWiz.details.8bitEncoding "8 Bit Zeichenkodierung beim Senden verwenden">
 <!ENTITY enigmail.setupWiz.details.noComposeHTML "Deaktiviere das Verfassen von HTML-Nachrichten">
 <!ENTITY enigmail.setupWiz.pgNoStart.title "OpenPGP-Assistent beenden">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc "Sie haben sich entschlossen den Assistenten nicht zu verwenden, 
+<!ENTITY enigmail.setupWiz.pgNoStart.desc "Sie haben sich entschlossen den Assistenten nicht zu verwenden,
                                                       um OpenPGP einzurichten.
                                                       <html:br/><html:br/>Danke, dass Sie Enigmail verwenden.">
 <!ENTITY enigmail.advancedIdentityDlg.title "Erweiterte OpenPGP-Identitäten-Einstellungen">

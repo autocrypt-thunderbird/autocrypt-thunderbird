@@ -279,7 +279,7 @@
 <!ENTITY enigmail.maybe.label "メッセージ作成時に選択されていたらする">
 <!ENTITY enigmail.singleRcptSettings.desc "(注意: もし矛盾が発生したら「常にしない」が「常にする」より優先されます)">
 <!ENTITY enigmail.ruleEmail.label "OpenPGP ルールの設定">
-<!ENTITY enigmail.ruleEmail.tooltip "メールアドレスだけを入力してください。受取人の名前は含めないでください。\nすなわち '日本　太郎 <taro.nippon@address.net>' は無効です。">
+<!ENTITY enigmail.ruleEmail.tooltip "メールアドレスだけを入力してください。受取人の名前は含めないでください。\nすなわち '日本　太郎 &lt;taro.nippon@address.net&gt;' は無効です。">
 <!ENTITY enigmail.sepratationDesc.label "(複数のメールアドレスは、スペースで区切って入力してください)">
 <!ENTITY enigmail.matchDescStart.label "受取人が上記アドレス">
 <!ENTITY enigmail.matchDescEnd.label "とき、ルールを適用">
