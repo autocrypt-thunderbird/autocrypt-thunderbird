@@ -357,8 +357,16 @@ NS_IMETHODIMP nsPipeTransport::Open(const char **args,
   argList[0] = (char *) mExecutable.get();
 
   for (j=0; j < argCount; j++) {
+#ifdef XP_OS2
+    nsCAutoString tmpArg ( args[j] );
+    if (tmpArg.FindChar(' ', 0) >= 0) {
+      tmpArg.Insert("\"", 0);
+      tmpArg.Append("\"");
+      args[j] = tmpArg.get();
+    }
+#endif
     argList[j+1] = (char *)args[j];
-    DEBUG_LOG(("nsPipeTransport::Open: arg[%d] = %s\n", j+1, args[j]));
+    DEBUG_LOG(("nsPipeTransport::Open: arg[%d] = %s\n", j+1, argList[j+1]));
   }
 
   argList[argCount+1] = NULL;
@@ -487,7 +495,7 @@ nsPipeTransport::Finalize(PRBool destructor)
       }
     mPipeTransportWriter = nsnull;
   }
-  
+
   // Kill process to wake up thread blocked for input from process
   // NOTE: This should always be done after "interrupting" the thread
   //       so that the interrupt flag is set.
@@ -1532,7 +1540,7 @@ nsPipeTransport::OnStartRequest(nsIRequest *aRequest, nsISupports *aContext)
 {
   DEBUG_LOG(("nsPipeTransport::OnStartRequest:\n"));
 
-  
+
   return NS_OK;
 }
 
@@ -1932,7 +1940,7 @@ nsStdoutPoller::Finalize(PRBool destructor)
   }
 
   DEBUG_LOG(("nsStdoutPoller::Finalize:\n"));
-  
+
   nsCOMPtr<nsIPipeTransportPoller> self;
   if (!destructor) {
     // Hold a reference to ourselves to prevent our DTOR from being called
@@ -2458,7 +2466,7 @@ nsStdinWriter::~nsStdinWriter()
 #endif
 
   if (mThread) mThread->Shutdown();
-  
+
   if (mPipe != IPC_NULL_HANDLE) {
     IPC_Close(mPipe);
     mPipe = IPC_NULL_HANDLE;
@@ -2555,9 +2563,9 @@ nsStdinWriter::Run()
 NS_IMETHODIMP
 nsStdinWriter::Join() {
   DEBUG_LOG(("nsStdinWriter::Join\n"));
-  
+
   nsresult rv = NS_OK;
-  
+
   if (mThread) {
     rv = mThread->Shutdown();
     mThread = nsnull;
