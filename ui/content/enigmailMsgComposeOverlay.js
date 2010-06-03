@@ -1597,7 +1597,11 @@ function enigEncryptInline(sendInfo) {
     if (cipherText && (exitCode == 0)) {
       // Encryption/signing succeeded; overwrite plaintext
 
-      if (! gMsgCompose.composeHTML)
+      if (gMsgCompose.composeHTML) {
+        // workaround for Thunderbird bug (TB adds an extra space in front of the text)
+        cipherText = "\n"+cipherText;
+      }
+      else
         cipherText = cipherText.replace(/\r\n/g, "\n");
 
       if ( (sendInfo.sendFlags & ENIG_ENCRYPT) && charset &&
