@@ -523,10 +523,8 @@ nsEnigMsgCompose::RequiresCryptoEncapsulation(
   nsresult rv;
   DEBUG_LOG(("nsEnigMsgCompose::RequiresCryptoEncapsulation: \n"));
 
-  if (!mMsgComposeSecure) {
-    ERROR_LOG(("nsEnigMsgCompose::RequiresCryptoEncapsulation: ERROR MsgComposeSecure not instantiated\n"));
+  if (!mMsgComposeSecure)
     return NS_ERROR_FAILURE;
-  }
 
   rv = mMsgComposeSecure->RequiresCryptoEncapsulation(aIdentity,
                                                       aCompFields,
@@ -548,7 +546,8 @@ nsEnigMsgCompose::RequiresCryptoEncapsulation(
     return rv;
 
   if (!securityInfo) {
-    *aRequiresEncryptionWork = PR_TRUE;
+    DEBUG_LOG(("nsEnigMsgCompose::RequiresCryptoEncapsulation: no crypto required\n"));
+    *aRequiresEncryptionWork = PR_FALSE;
     return NS_OK;
   }
 
@@ -560,12 +559,11 @@ nsEnigMsgCompose::RequiresCryptoEncapsulation(
     if (NS_FAILED(rv))
       return rv;
 
-    DEBUG_LOG(("nsEnigMsgCompose::RequiresCryptoEncapsulation: sendFlags=%p\n", sendFlags));
-
     *aRequiresEncryptionWork = sendFlags &
       (nsIEnigmail::SEND_SIGNED | nsIEnigmail::SEND_ENCRYPTED);
 
   } else {
+    DEBUG_LOG(("nsEnigMsgCompose::RequiresCryptoEncapsulation: no Enigmail crypto required\n"));
     *aRequiresEncryptionWork = PR_FALSE;
   }
 
@@ -575,11 +573,7 @@ nsEnigMsgCompose::RequiresCryptoEncapsulation(
 
 NS_IMETHODIMP
 nsEnigMsgCompose::BeginCryptoEncapsulation(
-#ifdef _ENIG_MOZILLA_1_8
-                                        nsOutputFileStream* aStream,
-#else
                                         nsIOutputStream* aStream,
-#endif
                                         const char* aRecipients,
                                         nsIMsgCompFields* aCompFields,
                                         nsIMsgIdentity* aIdentity,
@@ -591,7 +585,7 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
   DEBUG_LOG(("nsEnigMsgCompose::BeginCryptoEncapsulation: %s\n", aRecipients));
 
   if (!mMsgComposeSecure) {
-    ERROR_LOG(("nsEnigMsgCompose::RequiresCryptoEncapsulation: ERROR MsgComposeSecure not instantiated\n"));
+    ERROR_LOG(("nsEnigMsgCompose::BeginCryptoEncapsulation: ERROR MsgComposeSecure not instantiated\n"));
     return NS_ERROR_FAILURE;
   }
 
@@ -637,7 +631,7 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
   rv = enigSecurityInfo->GetRecipients(mRecipients);
   if (NS_FAILED(rv))
       return rv;
-      
+
   rv = enigSecurityInfo->GetBccRecipients(mBccAddr);
   if (NS_FAILED(rv))
       return rv;
@@ -645,6 +639,7 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
   rv = enigSecurityInfo->GetHashAlgorithm(mHashAlgorithm);
   if (NS_FAILED(rv))
       return rv;
+
 
   // Create listener to intercept MIME headers
   mMimeListener = do_CreateInstance(NS_ENIGMIMELISTENER_CONTRACTID, &rv);
@@ -667,7 +662,7 @@ nsEnigMsgCompose::FinishCryptoEncapsulation(PRBool aAbort,
   DEBUG_LOG(("nsEnigMsgCompose::FinishCryptoEncapsulation: \n"));
 
   if (!mMsgComposeSecure)
-    return NS_ERROR_FAILURE;
+    return NS_ERROR_NOT_INITIALIZED;
 
   if (mUseSMIME) {
     return mMsgComposeSecure->FinishCryptoEncapsulation(aAbort, sendReport);
