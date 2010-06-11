@@ -59,3 +59,9 @@ the build itself (i.e. make) has to executed from OBJDIR/mailnews/ipc.
 
 Please note that if you want to specify OBJDIR manually, use
 "makemake -o /path/to/objdir"
+
+Usage Instructions
+==================
+
+The file docu.txt contains a high-level API description. Some examples for
+how to use the API can be found in the tests/ directory.
