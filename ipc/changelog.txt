@@ -29,3 +29,7 @@ v1.2.1
 ------
 Adaptations to better support Unicode characters in
 command line options and path for Windows
+
+v1.2.2
+------
+Fixed errors with stale threads that consume over time all virtual memory.
