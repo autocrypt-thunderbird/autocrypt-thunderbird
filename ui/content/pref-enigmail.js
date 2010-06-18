@@ -239,7 +239,7 @@ function prefOnAccept() {
       GetEnigmailSvc();
     }
   }
-  
+
   // detect use of gpg-agent and warn if needed
   var enigmailSvc = GetEnigmailSvc();
   if (enigmailSvc && enigmailSvc.useGpgAgent()) {
@@ -248,7 +248,7 @@ function prefOnAccept() {
       EnigAlertPref(EnigGetString("prefs.warnIdleTimeWithGpgAgent"), "warnGpgAgentAndIdleTime");
     }
   }
-  
+
 
   return true;
 }
@@ -394,7 +394,7 @@ function EnigTest() {
     var errorMsgObj    = new Object();
 
     var cipherText = enigmailSvc.encryptMessage(window, uiFlags, null, plainText,
-                                                "", toMailAddr,
+                                                toMailAddr, toMailAddr, "",
                                                 nsIEnigmail.SEND_SIGNED,
                                                 exitCodeObj, statusFlagsObj,
                                                 errorMsgObj);
@@ -426,7 +426,7 @@ function EnigTest() {
     CONSOLE_LOG("************************************************\n");
 
     cipherText = enigmailSvc.encryptMessage(window, uiFlags, null, plainText,
-                                                "", toMailAddr,
+                                                toMailAddr, toMailAddr, "",
                                                 nsIEnigmail.SEND_SIGNED|
                                                 nsIEnigmail.SEND_ENCRYPTED,
                                                 exitCodeObj, statusFlagsObj,
