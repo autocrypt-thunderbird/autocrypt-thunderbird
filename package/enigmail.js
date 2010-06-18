@@ -156,7 +156,8 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     SC_OP_FAILURE:   nsIEnigmail.SC_OP_FAILURE,
                     UNKNOWN_ALGO:    nsIEnigmail.UNKNOWN_ALGO,
                     SIG_CREATED:     nsIEnigmail.SIG_CREATED,
-                    END_ENCRYPTION : nsIEnigmail.END_ENCRYPTION
+                    END_ENCRYPTION : nsIEnigmail.END_ENCRYPTION,
+                    INV_SGNR:				 0x100000000
 };
 
 var gCachedPassphrase = null;
@@ -2196,6 +2197,8 @@ function (errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj) {
   var errCode = 0;
   var detectedCard = null;
   var requestedCard = null;
+  var errorMsg = "";
+  statusMsgObj.value = "";
 
   var statusPat = /^\[GNUPG:\] /;
   var statusFlags = 0;
@@ -2231,6 +2234,13 @@ function (errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj) {
             flag = nsIEnigmail.UNKNOWN_ALGO;
           }
         }
+        else if (flag == gStatusFlags["INV_SGNR"]) {
+          lineSplit = statusLine.split(/ +/);
+          statusFlags |= nsIEnigmail.DISPLAY_MESSAGE;
+          flag = 0;
+        	DEBUG_LOG("enigmail.js: detected invalid sender: "+lineSplit[2]+" / code: "+lineSplit[1]+"\n");
+					statusMsgObj.value += EnigGetString("gnupg.invalidKey.desc", lineSplit[2]);
+				}
 
         if (flag)
           statusFlags |= flag;
@@ -2282,8 +2292,8 @@ function (errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj) {
 
   blockSeparationObj.value = blockSeparationObj.value.replace(/ $/, "");
   statusFlagsObj.value = statusFlags;
-  statusMsgObj.value   = statusArray.join("\n");
-  var errorMsg         = errArray.join("\n");
+  if (statusMsgObj.value.length == 0) statusMsgObj.value = statusArray.join("\n");
+  if (errorMsg.length == 0) errorMsg = errArray.join("\n");
 
   if ((statusFlags & nsIEnigmail.CARDCTRL) && errCode >0) {
     switch (errCode) {
@@ -2308,7 +2318,6 @@ function (errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj) {
 
 
   DEBUG_LOG("enigmail.js: Enigmail.parseErrorOutput: statusFlags = "+bytesToHex(pack(statusFlags,4))+"\n");
-  //DEBUG_LOG("enigmail.js: Enigmail.parseErrorOutput: statusMsg = "+statusMsgObj.value+"\n");
 
   return errorMsg;
 }
@@ -2565,7 +2574,11 @@ function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
     errorMsgObj.value = EnigGetString("badPhrase");
   }
   else if (statusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT) {
-   errorMsgObj.value = statusMsg;
+    errorMsgObj.value = statusMsg;
+    cmdErrorMsgObj.value = null;
+  }
+  else if (statusFlagsObj.value & nsIEnigmail.DISPLAY_MESSAGE) {
+  	errorMsgObj.value = statusMsg;
 
   }
   else {
@@ -4433,7 +4446,7 @@ function EnigGetString(aStr) {
       strBundleService = strBundleService.QueryInterface(nsIEnigStrBundle);
       gEnigStrBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
     } catch (ex) {
-      ERROR_LOG("enigmailCommon.js: Error in instantiating stringBundleService\n");
+      ERROR_LOG("enigmail.js: Error in instantiating stringBundleService\n");
     }
   }
   if(gEnigStrBundle) {
@@ -4449,10 +4462,10 @@ function EnigGetString(aStr) {
         return gEnigStrBundle.GetStringFromName(aStr);
       }
     } catch (ex) {
-      ERROR_LOG("enigmailCommon.js: Error in querying stringBundleService for string '"+aStr+"'\n");
+      ERROR_LOG("enigmail.js: Error in querying stringBundleService for string '"+aStr+"'\n");
     }
   }
-  return null;
+  return aStr;
 }
 
 Enigmail.prototype.invalidateUserIdList =
