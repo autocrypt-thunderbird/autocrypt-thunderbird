@@ -1157,15 +1157,17 @@ function enigGetDecryptedMessage(contentType, includeHeaders) {
           contentData += headerName + ": " + headerValue + "\r\n";
         }
       }
+
+      contentData += "Content-Type: text/plain";
+
+      if (gEnigDecryptedMessage.charset) {
+        contentData += "; charset="+gEnigDecryptedMessage.charset;
+      }
+
+      contentData += "\r\n";
     }
 
-    contentData += "Content-Type: text/plain";
-
-    if (gEnigDecryptedMessage.charset) {
-      contentData += "; charset="+gEnigDecryptedMessage.charset;
-    }
-
-    contentData += "\r\n\r\n";
+    contentData += "\r\n";
 
     if (gEnigDecryptedMessage.hasAttachments && (! gEnigDecryptedMessage.attachmentsEncrypted)) {
       contentData += EnigGetString("enigContentNote");
