@@ -63,7 +63,7 @@
              maxheigth="500px"
              value=""/>
   </vbox>
-  
+
   <vbox align="left">
     <checkbox id="theCheckBox" hidden="true" checked="false"/>
   </vbox>
@@ -100,7 +100,7 @@
       if (button3) {
         setButton(2, button3)
       }
-      
+
       if (checkboxLabel != null) {
         var prefCheck=document.getElementById("theCheckBox");
         prefCheck.setAttribute("label", checkboxLabel)
@@ -112,11 +112,11 @@
       textbox.setAttribute("rows", lines);
       window.setTimeout(resizeDlg, 0);
     }
-    
+
     function resizeDlg() {
       document.getElementById("enigmailAlertDlg").centerWindowOnScreen();
     }
-    
+
     function setButton (buttonId, label) {
       var labelType="extra"+buttonId.toString();
       if (labelType=="extra0") labelType="accept";
@@ -148,13 +148,13 @@
       elem.setAttribute("oncommand","dlgClose("+buttonId.toString()+")");
       elem.removeAttribute("hidden");
     }
-    
+
     function dlgClose(buttonNumber) {
       window.arguments[1].value = buttonNumber;
       window.arguments[1].checked = (document.getElementById("theCheckBox").getAttribute("checked") == "true");
       window.close();
     }
-    
+
   ]]>
   </script>
 

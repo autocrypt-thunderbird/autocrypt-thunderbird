@@ -71,7 +71,7 @@
     </row>
   </rows>
 </grid>
-  
+
 <tabbox flex="1">
   <tabs id="settingsTabBox">
     <tab id="basicTab"    label="&enigmail.keyGen.expiry.title;"/>

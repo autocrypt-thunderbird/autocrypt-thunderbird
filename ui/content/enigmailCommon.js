@@ -1334,9 +1334,9 @@ function EnigViewDebugLog() {
 function EnigKeygen() {
   DEBUG_LOG("enigmailCommon.js: EnigKeygen\n");
 
-  window.openDialog('chrome://enigmail/content/enigmailKeygen.xul',
+  window.open('chrome://enigmail/content/enigmailKeygen.xul',
                     "enigmail:generateKey",
-                    'chrome,dialog,modal,resizable=yes,width=600');
+                    'chrome,dialog,modal,resizable=yes');
 
 }
 
