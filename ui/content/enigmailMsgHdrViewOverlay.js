@@ -82,7 +82,7 @@ function enigStartHeaders()
     if (statusText) statusText.value="";
 
     gEnigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureOk");
-    
+
     var msgFrame = EnigGetFrame(window, "messagepane");
 
     if (msgFrame) {
@@ -368,7 +368,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
 
   var statusText  = document.getElementById("enigmailStatusText");
   var expStatusText  = document.getElementById("expandedEnigmailStatusText");
-  
+
   if (statusArr.length>0) {
     expStatusText.value = statusArr[0];
     expStatusText.setAttribute("state", "true");
@@ -468,7 +468,7 @@ function enigDispSecurityContext() {
     else {
       document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
     }
-    
+
     if ( (gEnigSecurityInfo.statusFlags & nsIEnigmail.NODATA) &&
          (gEnigSecurityInfo.statusFlags &
            (nsIEnigmail.PGP_MIME_SIGNED | nsIEnigmail.PGP_MIME_ENCRYPTED)) ) {
@@ -478,7 +478,7 @@ function enigDispSecurityContext() {
       document.getElementById("enigmail_reloadMessage").setAttribute("hidden", "true");
     }
   }
-  
+
   var optList = ["pgpSecurityInfo", "copySecurityInfo"];
   for (var j=0; j<optList.length; j++) {
     var menuElement = document.getElementById("enigmail_"+optList[j]);
@@ -736,7 +736,7 @@ function CanDetachAttachments()
   if (canDetach && ("content-type" in currentHeaderData))
   {
     var contentType = currentHeaderData["content-type"].headerValue;
-    
+
     canDetach = !ContentTypeIsSMIME(currentHeaderData["content-type"].headerValue);
   }
   return canDetach && enigCanDetachAttachments();
