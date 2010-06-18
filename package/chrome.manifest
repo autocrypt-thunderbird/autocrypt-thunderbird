@@ -1,4 +1,4 @@
-content       enigmail                jar:chrome/enigmail.jar!/content/enigmail/ xpcnativewrappers=yes
+content       enigmail                jar:chrome/enigmail.jar!/content/enigmail/
 locale        enigmail    en-US       jar:chrome/enigmail.jar!/locale/en-US/enigmail/
 
 # Skin for TBird Mac OS X
