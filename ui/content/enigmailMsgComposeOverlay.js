@@ -60,7 +60,7 @@ var gEnigNextCommand;
 var gEnigDocStateListener = null;
 var gEnigIdentity = null;
 var gEnigEnableRules = null;
-var gEnigAttachOwnKey = { appendAttachment: false, attachedObj: null };
+var gEnigAttachOwnKey = { appendAttachment: false, attachedObj: null, attachedKey: null };
 var gEnigModifiedAttach;
 
 if (typeof(GenericSendMessage)=="function") {
@@ -218,6 +218,7 @@ function enigSetSendDefaultOptions() {
   gEnigSendPGPMime = enigGetAccDefault("pgpMimeMode");
   gEnigAttachOwnKey.appendAttachment = enigGetAccDefault("attachPgpKey");
   gEnigAttachOwnKey.attachedObj = null;
+  gEnigAttachOwnKey.attachedKey = null;
 }
 
 function enigComposeOpen() {
@@ -416,9 +417,18 @@ function enigAttachOwnKey() {
 
   if (gEnigIdentity.getIntAttribute("pgpKeyMode")>0) {
     userIdValue = gEnigIdentity.getCharAttribute("pgpkeyId");
-    var attachedObj = enigExtractAndAttachKey( [userIdValue] );
-    if (attachedObj) {
-      gEnigAttachOwnKey.attachedObj = attachedObj;
+
+    if (gEnigAttachOwnKey.attachedKey && (gEnigAttachOwnKey.attachedKey != userIdValue)) {
+      // remove attached key if user ID changed
+      enigRemoveAttachedKey();
+    }
+
+    if (! gEnigAttachOwnKey.attachedKey) {
+      var attachedObj = enigExtractAndAttachKey( [userIdValue] );
+      if (attachedObj) {
+        gEnigAttachOwnKey.attachedObj = attachedObj;
+        gEnigAttachOwnKey.attachedKey = userIdValue;
+      }
     }
   }
   else {
@@ -581,6 +591,7 @@ function enigRemoveAttachedKey() {
         // Let's release the attachment object held by the node else it won't go away until the window is destroyed
         node.attachment = null;
         gEnigAttachOwnKey.attachedObj = null;
+        gEnigAttachOwnKey.attachedKey = null;
         node = null; // exit loop
       }
       else {
