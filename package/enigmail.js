@@ -1232,6 +1232,7 @@ function () {
                .getInstallLocation(ENIGMAIL_EXTENSION_ID);
       var extensionLoc = installLoc.getItemFile(ENIGMAIL_EXTENSION_ID, "wrappers");
       extensionLoc.append("gpg-agent-wrapper.sh");
+      extensionLoc.permissions=0755;
 
       agentProcess = Components.classes[NS_PROCESS_UTIL_CONTRACTID].createInstance(Components.interfaces.nsIProcess);
       agentProcess.init(extensionLoc);
@@ -1759,6 +1760,7 @@ function (domWindow) {
                    .getInstallLocation(ENIGMAIL_EXTENSION_ID);
           var extensionLoc = installLoc.getItemFile(ENIGMAIL_EXTENSION_ID, "wrappers");
           extensionLoc.append("gpg-agent-wrapper.sh");
+          extensionLoc.permissions=0755;
           args.unshift(command.path);
           args.unshift("start");
           command = extensionLoc;
