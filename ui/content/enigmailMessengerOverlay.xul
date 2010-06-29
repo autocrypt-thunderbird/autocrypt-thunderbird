@@ -556,14 +556,8 @@
            defaultset="button-getmsg,button-newmsg,separator,button-reply,button-replyall,button-forward,separator,button-enigmail-decrypt,spacer,button-goback,button-goforward,button-next,button-junk,button-delete,button-mark,spring,throbber-box">
   </toolbar>
 
-<!--
-  <vbox id="messagepanebox">
-    <hbox id="enigmailBox" class="expandedEnigmailBox"
-          collapsed="true" align="center"
-          position="1">
--->
 
-  <vbox id="singlemessage">
+  <vbox id="messagepanebox">
     <hbox id="enigmailBox" class="expandedEnigmailBox"
           collapsed="true" align="center"
           insertafter="msgHeaderView">
