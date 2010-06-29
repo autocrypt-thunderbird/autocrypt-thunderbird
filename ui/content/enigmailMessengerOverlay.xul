@@ -560,7 +560,7 @@
   <vbox id="messagepanebox">
     <hbox id="enigmailBox" class="expandedEnigmailBox"
           collapsed="true" align="center"
-          insertafter="msgHeaderView">
+          position="1">
 
       <vbox>
         <spacer class="enigmailHeaderSpacer"/>
