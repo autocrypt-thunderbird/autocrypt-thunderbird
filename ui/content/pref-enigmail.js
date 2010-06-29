@@ -64,6 +64,9 @@ function prefOnLoad() {
       }
 
    }
+   else {
+    enigShowUserModeButtons(gAdvancedMode);
+   }
 
    if ((! window.arguments) || (window.arguments[0].clientType!="seamonkey")) {
       document.getElementById("enigmail_disableSMIMEui").setAttribute("collapsed", true);
