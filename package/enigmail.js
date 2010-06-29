@@ -2001,11 +2001,11 @@ function (command, args, exitCodeObj, errorMsgObj) {
   if (prefix && (gLogLevel >= 4)) {
     WriteFileContents(prefix+"enigout.txt", outputData);
     WriteFileContents(prefix+"enigerr.txt", errOutput);
-    DEBUG_LOG("enigmail.js: Enigmail.execCmd: copied command out/err data to files "+prefix+"enigout.txt/enigerr.txt\n");
+    DEBUG_LOG("enigmail.js: Enigmail.simpleExecCmd: copied command out/err data to files "+prefix+"enigout.txt/enigerr.txt\n");
   }
 
-  DEBUG_LOG("enigmail.js: Enigmail.execCmd: exitCode = "+exitCodeObj.value+"\n");
-  DEBUG_LOG("enigmail.js: Enigmail.execCmd: errOutput = "+errOutput+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail.simpleExecCmd: exitCode = "+exitCodeObj.value+"\n");
+  DEBUG_LOG("enigmail.js: Enigmail.simpleExecCmd: errOutput = "+errOutput+"\n");
 
   exitCodeObj.value = exitCodeObj.value;
 
@@ -5199,6 +5199,7 @@ function (parent, keyId, oldPw, newPw, errorMsgObj) {
   var r= this.editKey(parent, false, null, keyId, "passwd",
                       { oldPw: oldPw,
                         newPw: newPw,
+                        useAgent: this.useGpgAgent(),
                         step: 0,
                         observer: pwdObserver },
                       changePassphraseCallback,
@@ -5209,31 +5210,6 @@ function (parent, keyId, oldPw, newPw, errorMsgObj) {
   return r;
 }
 
-
-Enigmail.prototype.simpleChangePassphrase =
-function (parent, keyId, errorMsgObj) {
-  DEBUG_LOG("enigmail.js: Enigmail.simpleChangePassphrase: keyId="+keyId+"\n");
-
-  var args = this.getAgentArgs(true);
-  args = args.concat(["--edit-key", keyId, "passwd"]);
-
-  var exitCodeObj   = new Object();
-  var statusFlagsObj = new Object();
-  var statusMsgObj = new Object();
-
-  var msg = this.execCmd(this.agentPath, args, null, "",
-                      exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
-
-  if (statusFlagsObj.value & (gStatusFlags.BAD_PASSPHRASE |
-                              gStatusFlags.SC_OP_FAILURE |
-                              gStatusFlags.NODATA |
-                              gStatusFlags.MISSING_PASSPHRASE |
-                              gStatusFlags.CARDCTRL)) {
-    exitCodeObj.value = 1;
-  }
-
-  return exitCodeObj.value;
-}
 
 Enigmail.prototype.revokeSubkey =
 function (parent, keyId, subkeys, reasonCode, reasonText, errorMsgObj) {
@@ -5845,6 +5821,7 @@ function changePassphraseCallback(inputData, keyEdit, ret) {
     ret.exitCode = 0;
   }
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
+    if (inputData.useAgent) ret.exitCode=0;
     ret.quitNow = true;
   }
   else {

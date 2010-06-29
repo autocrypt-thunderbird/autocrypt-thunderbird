@@ -1919,7 +1919,8 @@ function EnigChangeKeyPwd(keyId, userId) {
   else {
     // gpg-agent will handle everything
     var errorMsgObj = new Object();
-    var r = enigmailSvc.simpleChangePassphrase(window, "0x"+keyId, errorMsgObj);
+    var r = enigmailSvc.changePassphrase(window, "0x"+keyId, "", "", errorMsgObj);
+
 
     if (r != 0) {
       EnigAlert(EnigGetString("changePassFailed")+"\n\n"+errorMsgObj.value);

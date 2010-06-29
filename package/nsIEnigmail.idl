@@ -312,10 +312,6 @@ interface nsIEnigmail : nsISupports
                          in string newPw,
                          out wstring errorMsgObj);
 
-  long simpleChangePassphrase (in nsIDOMWindow parent,
-                         in string keyId,
-                         out wstring errorMsgObj);
-
   string getKeySig (in string keyId,
                     out long exitCode,
                     out wstring errorMsg);
