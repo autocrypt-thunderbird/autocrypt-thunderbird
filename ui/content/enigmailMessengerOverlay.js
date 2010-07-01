@@ -497,13 +497,17 @@ function enigMessageDecryptCb(event, isAuto, mimeMsg){
       for (var indexb in currentAttachments) {
         var attachment = currentAttachments[indexb];
 
-        if (attachment.contentType.search(/^application\/pgp-signature/i) == 0) {
-          embeddedSigned = attachment.url.replace(/\&filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
+        if (attachment) {
+          if (attachment.contentType.search(/^application\/pgp-signature/i) == 0) {
+            if (! attachment.isExternalAttachment)
+              embeddedSigned = attachment.url.replace(/\&filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
+          }
+          if (attachment.contentType.search(/^application\/pgp-encrypted/i) == 0) {
+            if (! attachment.isExternalAttachment)
+              embeddedEncrypted = attachment.url.replace(/\&filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
+          }
+          DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.contentType+"\n");
         }
-        if (attachment.contentType.search(/^application\/pgp-encrypted/i) == 0) {
-          embeddedEncrypted = attachment.url.replace(/\&filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
-        }
-        DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.contentType+"\n");
       }
     }
 
