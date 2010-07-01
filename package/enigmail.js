@@ -378,28 +378,38 @@ function WRITE_LOG(str) {
 
 function DEBUG_LOG(str) {
   if ((gLogLevel >= 4) || (gEnigmailSvc && gEnigmailSvc.logFileStream))
-    WRITE_LOG(str);
+    WRITE_LOG("[DEBUG] "+str);
 }
 
 function WARNING_LOG(str) {
   if (gLogLevel >= 3)
-    WRITE_LOG(str);
+    WRITE_LOG("[WARN] "+str);
 
   if (gEnigmailSvc && gEnigmailSvc.console)
     gEnigmailSvc.console.write(str);
 }
 
 function ERROR_LOG(str) {
-  if (gLogLevel >= 2)
-    WRITE_LOG(str);
+  try {
+    var consoleSvc = Components.classes["@mozilla.org/consoleservice;1"].
+        getService(Components.interfaces.nsIConsoleService);
 
-  if (gEnigmailSvc && gEnigmailSvc.console)
-    gEnigmailSvc.console.write(str);
+    var scriptError = Components.classes["@mozilla.org/scripterror;1"]
+                                .createInstance(Components.interfaces.nsIScriptError);
+    scriptError.init(str, null, null, 0,
+                     0, scriptError.errorFlag, "Enigmail");
+    consoleSvc.logMessage(scriptError);
+
+  }
+  catch (ex) {}
+
+  if (gLogLevel >= 2)
+    WRITE_LOG("[ERROR] "+str);
 }
 
 function CONSOLE_LOG(str) {
   if (gLogLevel >= 3)
-    WRITE_LOG(str);
+    WRITE_LOG("[CONSOLE] "+str);
 
   if (gEnigmailSvc && gEnigmailSvc.console)
     gEnigmailSvc.console.write(str);

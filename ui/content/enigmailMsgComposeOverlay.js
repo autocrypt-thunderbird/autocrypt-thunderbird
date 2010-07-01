@@ -62,29 +62,24 @@ var gEnigIdentity = null;
 var gEnigEnableRules = null;
 var gEnigAttachOwnKey = { appendAttachment: false, attachedObj: null, attachedKey: null };
 var gEnigModifiedAttach;
+var gEnigLastFocusedWindow = null;
+var gEnigDetermineSendFlagID = null;
 
-if (typeof(GenericSendMessage)=="function") {
-  // replace GenericSendMessage with our own version
+try {
+  var appInfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
+  var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"].getService(Components.interfaces.nsIVersionComparator);
 
-  try {
-    var appInfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
-    var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"].getService(Components.interfaces.nsIVersionComparator);
-
-  }
-  catch (ex) {}
-  window.addEventListener("load", enigMsgComposeStartup, false);
-  window.addEventListener("unload", enigMsgComposeUnload, false);
-
-  // Handle recycled windows
-  window.addEventListener('compose-window-close', enigMsgComposeClose, true);
-  window.addEventListener('compose-window-reopen', enigMsgComposeReopen, true);
-
-  // Listen to message sending event
-  window.addEventListener('compose-send-message', enigSendMessageListener, true);
 }
-else {
-  EnigAlert("WARNING:\n\nCannot hook message sending -- you will not be able to send OpenPGP messages!");
-}
+catch (ex) {}
+window.addEventListener("load", enigMsgComposeStartup, false);
+window.addEventListener("unload", enigMsgComposeUnload, false);
+
+// Handle recycled windows
+window.addEventListener('compose-window-close', enigMsgComposeClose, true);
+window.addEventListener('compose-window-reopen', enigMsgComposeReopen, true);
+
+// Listen to message sending event
+window.addEventListener('compose-send-message', enigSendMessageListener, true);
 
 function enigMsgComposeStartup() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigMsgComposeStartup\n");
@@ -108,10 +103,12 @@ function enigMsgComposeStartup() {
   if (msgId)
     msgId.setAttribute("oncommand", "enigSetIdentityCallback();");
 
+  var subj = document.getElementById("msgSubject");
+
+  subj.setAttribute('onfocus', "enigFireSendFlags()");
+
   enigSetIdentityDefaults();
   enigMsgComposeReset(false);
-
-  enigComposeOpen();
 }
 
 function enigMsgComposeUnload() {
@@ -2385,3 +2382,40 @@ EnigDocStateListener.prototype = {
   }
 }
 
+function enigFocusChange() {
+  // call original TB function
+  CommandUpdate_MsgCompose();
+
+  var focusedWindow = top.document.commandDispatcher.focusedWindow;
+
+  // we're just setting focus to where it was before
+  if (focusedWindow == gEnigLastFocusedWindow) {
+    // skip
+    return;
+  }
+
+  gEnigLastFocusedWindow = focusedWindow;
+
+  enigFireSendFlags()
+}
+
+function enigFireSendFlags() {
+  try {
+    DEBUG_LOG("enigmailMsgComposeOverlay.js: enigFireSendFlags\n");
+    if (! gEnigDetermineSendFlagID) {
+      gEnigDetermineSendFlagID = window.setTimeout(enigDetermineSendFlags, 0);
+    }
+  }
+  catch (ex) {}
+}
+
+var gEnigDummyValue = 0;
+
+function enigDetermineSendFlags() {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigFocusChange: enigDetermineSendFlags\n");
+  if (enigGetAccDefault("enabled")) {
+    ++gEnigDummyValue;
+    document.getElementById("enigmail-rules-status").setAttribute("value", "changed: "+gEnigDummyValue);
+  }
+  gEnigDetermineSendFlagID = null;
+}

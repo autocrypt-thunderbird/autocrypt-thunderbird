@@ -55,6 +55,11 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailMsgComposeHelper.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailMsgComposeOverlay.js"/>
 
+ <commandset id="msgComposeCommandUpdate"
+              commandupdater="true"
+              events="focus"
+              oncommandupdate="enigFocusChange()"/>
+
   <popupset id="aTooltipSet"/>
 
   <keyset id="tasksKeys">
@@ -405,6 +410,7 @@
   <statusbar id="status-bar">
     <hbox id="enigmail-status-bar"
           insertafter="totalMessageCount">
+       <label id="enigmail-rules-status" value="Enigmail: nothing"/>
       <statusbarpanel id="enigmail-signed-status"
         class="statusbarpanel-iconic"
         collapsed="true" onclick="enigHandleClick(event,'toggle-sign');"/>
