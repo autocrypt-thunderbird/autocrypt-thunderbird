@@ -109,6 +109,7 @@ function enigMsgComposeStartup() {
 
   enigSetIdentityDefaults();
   enigMsgComposeReset(false);
+  enigComposeOpen();
 }
 
 function enigMsgComposeUnload() {
