@@ -41,7 +41,12 @@
 #include "nsString.h"
 #endif
 #include "nsIProcessInfo.h"
+
+#if MOZILLA_MAJOR_VERSION < 2
 #include "nsIGenericFactory.h"
+#else
+#include "mozilla/ModuleUtils.h"
+#endif
 #include "nsCOMPtr.h"
 
 class nsProcessInfo : public nsIProcessInfo

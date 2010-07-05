@@ -45,7 +45,13 @@
 #include "nsIObserver.h"
 #include "nsIIPCService.h"
 #include "nsIPipeConsole.h"
+
+#if MOZILLA_MAJOR_VERSION < 2
 #include "nsIGenericFactory.h"
+#else
+#include "mozilla/ModuleUtils.h"
+#endif
+
 #include "nsCOMPtr.h"
 #include "nsIFile.h"
 
