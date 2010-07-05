@@ -52,7 +52,15 @@
 #include "nsIThread.h"
 #include "nsIComponentManager.h"
 #include "nsIComponentRegistrar.h"
-#include "nsIGenericFactory.h"
+#if MOZILLA_MAJOR_VERSION < 2
+
+#include "nsIGenericFactory.h"#include "nsIGenericFactory.h"
+
+#else
+
+#include "mozilla/ModuleUtils.h"
+
+#endif
 #include "nsEnigContentHandler.h"
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigContentHandler)
@@ -95,6 +103,8 @@ nsEnigMimeService::nsEnigMimeService()
          this, myThread.get()));
 #endif
 
+#if MOZILLA_MAJOR_VERSION < 2
+
   static const nsModuleComponentInfo info =
   { NS_ENIGCONTENTHANDLER_CLASSNAME,
     NS_ENIGCONTENTHANDLER_CID,
@@ -118,6 +128,12 @@ nsEnigMimeService::nsEnigMimeService()
       mDummyHandler = PR_TRUE;
     }
   }
+
+#else
+  // Gecko >= 2.0
+
+
+#endif
 }
 
 
@@ -154,6 +170,8 @@ nsEnigMimeService::Init()
     return NS_ERROR_FAILURE;
   }
 
+#if MOZILLA_MAJOR_VERSION < 2
+
   static const nsModuleComponentInfo info =
   { NS_ENIGCONTENTHANDLER_CLASSNAME,
     NS_ENIGCONTENTHANDLER_CID,
@@ -177,6 +195,7 @@ nsEnigMimeService::Init()
   if (NS_FAILED(rv)) return rv;
 
   DEBUG_LOG(("nsEnigMimeService::Init: registered %s\n", info.mContractID));
+#endif
 
   mInitialized = PR_TRUE;
 

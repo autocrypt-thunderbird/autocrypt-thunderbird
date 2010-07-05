@@ -32,6 +32,7 @@
 
 #include "nsIPCModule.h"
 #include "ipc.h"
+#include "nsIClassInfoImpl.h"
 
 #include "nsProcessInfo.h"
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsProcessInfo)
