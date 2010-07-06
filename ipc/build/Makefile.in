@@ -98,10 +98,7 @@ LOCAL_INCLUDES	= \
 ifeq ($(OS_ARCH),WINNT)
     EXTRA_DSO_LDOPTS = \
       $(LIBS_DIR) \
-      $(XPCOM_LIBS) \
-      $(XPCOM_GLUE_LDOPTS) \
-      $(NSPR_LIBS) \
-      $(BUILD_STATIC) \
+      -FORCE \
       $(NULL)
 else
     EXTRA_DSO_LDOPTS = \
