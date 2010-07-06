@@ -59,6 +59,7 @@
 #else
 
 #include "mozilla/ModuleUtils.h"
+#include "nsXULAppAPI.h"
 
 #endif
 #include "nsEnigContentHandler.h"
@@ -133,6 +134,27 @@ nsEnigMimeService::nsEnigMimeService()
   // Gecko >= 2.0
 
 
+  NS_DEFINE_NAMED_CID(NS_ENIGCONTENTHANDLER_CID);
+
+  static const mozilla::Module::CIDEntry kDummyHandlerCIDs[] = {
+    { &kNS_ENIGCONTENTHANDLER_CID, false, NULL, nsEnigContentHandlerConstructor },
+    { NULL }
+  };
+
+  static const mozilla::Module::ContractIDEntry kDummyHandlerContracts[] = {
+    { NS_ENIGDUMMYHANDLER_CONTRACTID, &kNS_ENIGCONTENTHANDLER_CID },
+    { NULL }
+  };
+
+  static const mozilla::Module kDummyHandlerModule = {
+    mozilla::Module::kVersion,
+    kDummyHandlerCIDs,
+    kDummyHandlerContracts
+  };
+  XRE_AddStaticComponent(&kDummyHandlerModule);
+
+  mDummyHandler = PR_TRUE;
+
 #endif
 }
 
@@ -195,6 +217,28 @@ nsEnigMimeService::Init()
   if (NS_FAILED(rv)) return rv;
 
   DEBUG_LOG(("nsEnigMimeService::Init: registered %s\n", info.mContractID));
+
+#else
+
+  NS_DEFINE_NAMED_CID(NS_ENIGCONTENTHANDLER_CID);
+
+  static const mozilla::Module::CIDEntry kEncryptedHandlerCIDs[] = {
+    { &kNS_ENIGCONTENTHANDLER_CID, false, NULL, nsEnigContentHandlerConstructor },
+    { NULL }
+  };
+
+  static const mozilla::Module::ContractIDEntry kEncryptedHandlerContracts[] = {
+    { NS_ENIGENCRYPTEDHANDLER_CONTRACTID, &kNS_ENIGCONTENTHANDLER_CID },
+    { NULL }
+  };
+
+  static const mozilla::Module kEncryptedHandlerModule = {
+    mozilla::Module::kVersion,
+    kEncryptedHandlerCIDs,
+    kEncryptedHandlerContracts
+  };
+  XRE_AddStaticComponent(&kEncryptedHandlerModule);
+
 #endif
 
   mInitialized = PR_TRUE;
