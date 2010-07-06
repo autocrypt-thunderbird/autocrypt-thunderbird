@@ -56,9 +56,6 @@ targetDir=`pwd`
 cd "$cwd"
 
 platform=${osArch}_${xpcomAbi}
-# Prepare chrome.manifest
-cat  ${srcDir}/package/chrome.manifest > ${targetDir}/chrome.manifest
-
 # Pepare install.rdf
 sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${platform}'<\/em:targetPlatform>/' < ${srcDir}/package/install.rdf > ${targetDir}/install.rdf.t1
 
@@ -133,14 +130,22 @@ chmod 755 "${targetDir}/wrappers/gpg-agent-wrapper.sh"
 cd ${srcDir}/package
 
 enigmimeDll=${libPrefix}enigmime${dllSuffix}
+ipcDll=${libPrefix}ipc${dllSuffix}
 if [ ${platform} = OS2_x86-gcc3 ]; then
   # workaround for file name length limit on OS/2
   enigDllFile=platform/${platform}/components/${enigmimeDll}
+  ipcDllFile=platform/${platform}/components/${ipcDll}
 else
   enigDllFile=platform/${platform}/components/${libPrefix}enigmime-${xpcomAbi}${dllSuffix}
+  ipcDllFile=platform/${platform}/components/${libPrefix}ipc-${xpcomAbi}${dllSuffix}
 fi
-ipcDll=${libPrefix}ipc${dllSuffix}
-ipcDllFile=platform/${platform}/components/${libPrefix}ipc-${xpcomAbi}${dllSuffix}
+
+# Prepare chrome.manifest
+cat  ${srcDir}/package/chrome.manifest | \
+sed  's/##ENIGMIMEDLL-PLACEHOLDER##/binary-component platform\/'${platform}'\/components\/'`basename ${enigDllFile}`' ABI='${platform}'/' | \
+sed  's/##IPCDLL-PLACEHOLDER##/binary-component platform\/'${platform}'\/components\/'`basename ${ipcDllFile}`' ABI='${platform}'/' \
+> ${targetDir}/chrome.manifest
+
 
 cd "$targetDir"
 

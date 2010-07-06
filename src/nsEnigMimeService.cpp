@@ -54,7 +54,7 @@
 #include "nsIComponentRegistrar.h"
 #if MOZILLA_MAJOR_VERSION < 2
 
-#include "nsIGenericFactory.h"#include "nsIGenericFactory.h"
+#include "nsIGenericFactory.h"
 
 #else
 
