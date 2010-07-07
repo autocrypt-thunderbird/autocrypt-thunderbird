@@ -33,6 +33,8 @@
  * GPL or the LGPL.
  */
 
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+
 // components defined in this file
 const ENIG_ENIGMSGCOMPFIELDS_CONTRACTID =
     "@mozdev.org/enigmail/composefields;1";
@@ -46,28 +48,28 @@ function EnigMsgCompFields()
 
 EnigMsgCompFields.prototype = {
 
+  classDescription: "Enigmail Msg Compose Fields",
+  classID:  ENIG_ENIGMSGCOMPFIELDS_CID,
+  contractID: ENIG_ENIGMSGCOMPFIELDS_CONTRACTID,
+  QueryInterface: XPCOMUtils.generateQI([
+    Components.interfaces.nsIEnigMsgCompFields,
+    Components.interfaces.nsEnigMsgCompFields,
+    Components.interfaces.nsIMsgSMIMECompFields,
+    Components.interfaces.nsISupports]),
+
   _parent: null,
-  
+
   UIFlags: 0,
-  
+
   endFlags: 0,
 
   senderEmailAddr: "",
-  
-  recipients: "",
-  
-  hashAlgorithm: "",
-  
-  msgSMIMECompFields: null,
 
-  QueryInterface: function (iid) {
-    if (!iid.equals(Components.interfaces.nsIEnigMsgCompFields) &&
-        !iid.equals(Components.interfaces.nsEnigMsgCompFields) &&
-        !iid.equals(Components.interfaces.nsIMsgSMIMECompFields) &&
-        !iid.equals(Components.interfaces.nsISupports))
-      throw Components.results.NS_ERROR_NO_INTERFACE;
-    return this;
-  },
+  recipients: "",
+
+  hashAlgorithm: "",
+
+  msgSMIMECompFields: null,
 
   init: function (smimeCompFields) {
     var members = [ "from",
@@ -114,73 +116,19 @@ EnigMsgCompFields.prototype = {
       "allReply",
       "listReply" ];
     this._parent = smimeCompFields;
-    
-    for (mbr in members) { 
+
+    for (mbr in members) {
       // dump("enigMsgCompHlp: nsEnigMsgCompFields: init:"+mbr+"\n");
       eval("this."+members[mbr]+" = this._parent."+members[mbr]+";\n");
     }
-   
+
     this.splitRecipients = this._parent.splitRecipients;
   }
 }
 
-var EnigmailCompFldModule = {
-
-  registerSelf: function (compMgr, fileSpec, location, type)
-  {
-    //dump("Registering nsEnigMsgCompFields.\n");
-
-    compMgr = compMgr.QueryInterface(Components.interfaces.nsIComponentRegistrar);
-    compMgr.registerFactoryLocation(ENIG_ENIGMSGCOMPFIELDS_CID,
-                                    "Enigmail Msg Compose Fields",
-                                    ENIG_ENIGMSGCOMPFIELDS_CONTRACTID,
-                                    fileSpec,
-                                    location,
-                                    type);
-    //dump("nsEnigMsgCompFields registered.\n");
-  },
-  
-  unregisterSelf: function(compMgr, fileSpec, location)
-  {
-    compMgr = compMgr.QueryInterface(Components.interfaces.nsIComponentRegistrar);
-    compMgr.unregisterFactoryLocation(ENIG_ENIGMSGCOMPFIELDS_CID, fileSpec);
-  },
-  
-  getClassObject: function (compMgr, cid, iid) {
-    if (cid.equals(ENIG_ENIGMSGCOMPFIELDS_CID))
-      return EnigmailCompFldFactory;
-
-    if (!iid.equals(Components.interfaces.nsIFactory))
-      throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
-
-    throw Components.results.NS_ERROR_NO_INTERFACE;    
-  },
-
-  canUnload: function(compMgr)
-  {
-    return true;
-  }
-}
-
-// entrypoint
-function NSGetModule(compMgr, fileSpec) {
-  return EnigmailCompFldModule;
-}
-
-// factory for nsIEnigMsgCompFields
-var EnigmailCompFldFactory = new Object();
-
-EnigmailCompFldFactory.createInstance =
-function (outer, iid) {
-  if (outer != null)
-    throw Components.results.NS_ERROR_NO_AGGREGATION;
-  
-  if (!iid.equals(Components.interfaces.nsIEnigMsgCompFields) &&
-        !iid.equals(Components.interfaces.nsEnigMsgCompFields) &&
-        !iid.equals(Components.interfaces.nsIMsgSMIMECompFields) &&
-        !iid.equals(Components.interfaces.nsISupports))
-    throw Components.results.NS_ERROR_INVALID_ARG;
-
-  return new EnigMsgCompFields();
-}
-
+if (XPCOMUtils.generateNSGetFactory)
+  // Gecko >= 2.0
+  var NSGetFactory = XPCOMUtils.generateNSGetFactory([EnigMsgCompFields]);
+else
+  // Gecko <= 1.9.x
+  var NSGetModule = XPCOMUtils.generateNSGetModule([EnigMsgCompFields]);
