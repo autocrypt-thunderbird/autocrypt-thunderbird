@@ -139,6 +139,8 @@ const ENIG_THREE_BUTTON_STRINGS   = (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_P
 
 var gEnigLogLevel = 2;     // Output only errors/warnings by default
 var gEnigDebugLog;
+var gEnigExtensionVersion;
+
 
 var gEnigPrefSvc, gEnigPrefRoot, gPrefEnigmail, gEnigConsoleSvc;
 try {
@@ -153,6 +155,17 @@ try {
 } catch (ex) {
   ERROR_LOG("enigmailCommon.js: Error in instantiating PrefService\n");
 }
+
+try {
+  // Gecko 2.0 only
+  Components.utils.import("resource://gre/modules/AddonManager.jsm");
+  AddonManager.getAddonByID(ENIG_EXTENSION_GUID,
+    function (aAddon) {
+      gEnigExtensionVersion = aAddon.version;
+    }
+  );
+}
+catch (ex) {}
 
 function EnigGetFrame(win, frameName) {
   DEBUG_LOG("enigmailCommon.js: EnigGetFrame: name="+frameName+"\n");
@@ -1503,9 +1516,22 @@ function EnigGetOS () {
 }
 
 function EnigGetVersion() {
-  return Components.classes["@mozilla.org/extensions/manager;1"].
-    getService(Components.interfaces.nsIExtensionManager).
-    getItemForID(ENIG_EXTENSION_GUID).version
+  ERROR_LOG("enigmailCommon.js: EnigGetVersion\n");
+
+  var addonVersion = "?";
+  try {
+    // Gecko 1.9.x
+    addonVersion = Components.classes["@mozilla.org/extensions/manager;1"].
+      getService(Components.interfaces.nsIExtensionManager).
+      getItemForID(ENIG_EXTENSION_GUID).version
+  }
+  catch (ex) {
+    // Gecko 2.0
+    addonVersion = gEnigExtensionVersion;
+  }
+
+  ERROR_LOG("enigmailCommon.js: installed version: "+addonVersion+"\n");
+  return addonVersion;
 }
 
 function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
