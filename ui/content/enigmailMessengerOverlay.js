@@ -34,9 +34,11 @@ GPL.
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
 // Initialize enigmailCommon
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 EnigInitCommon("enigmailMessengerOverlay");
 Components.utils.import("resource://app/modules/gloda/mimemsg.js");
+
 
 var gEnigCreatedURIs = [];
 
@@ -234,6 +236,8 @@ function enigMimeInit() {
     DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit: handlePGPMime="+handlePGPMime+"\n");
 
   } catch (ex) {}
+
+
 
   if (gEnigRemoveListener) {
     gEnigMessagePane.removeEventListener("load", enigMimeInit, true);
