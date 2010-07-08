@@ -490,16 +490,16 @@ function enigDispSecurityContext() {
     }
   }
 
-  enigSetSenderStatus("signSenderKey", "editSenderKeyTrust" , "showPhoto");
+  enigSetSenderStatus("signSenderKey", "editSenderKeyTrust" , "showPhoto", "dispKeyDetails");
 }
 
 
 function enigUpdateSendersKeyMenu() {
-  enigSetSenderStatus("keyMgmtSignKey", "keyMgmtKeyTrust", "keyMgmtShowPhoto")
+  enigSetSenderStatus("keyMgmtSignKey", "keyMgmtKeyTrust", "keyMgmtShowPhoto", "keyMgmtDispKeyDetails");
 }
 
 
-function enigSetSenderStatus(elemSign, elemTrust, elemPhoto) {
+function enigSetSenderStatus(elemSign, elemTrust, elemPhoto, elemKeyProps) {
   var photo=false;
   var sign=false;
   var trust=false;
@@ -524,6 +524,8 @@ function enigSetSenderStatus(elemSign, elemTrust, elemPhoto) {
     document.getElementById("enigmail_"+elemSign).setAttribute("disabled", !sign);
   if (elemPhoto)
     document.getElementById("enigmail_"+elemPhoto).setAttribute("disabled", !photo);
+  if (elemKeyProps)
+    document.getElementById("enigmail_"+elemKeyProps).setAttribute("disabled", !sign);
 
 }
 
@@ -568,10 +570,16 @@ function enigCopyStatusInfo() {
 }
 
 function enigShowPhoto() {
-  if (! gEnigSecurityInfo)
-    return
+  if (! gEnigSecurityInfo) return
 
   EnigShowPhoto(gEnigSecurityInfo.keyId, gEnigSecurityInfo.userId);
+}
+
+
+function enigDispKeyDetails() {
+  if (! gEnigSecurityInfo) return
+
+  EnigDisplayKeyDetails(gEnigSecurityInfo.keyId, false);
 }
 
 function enigCreateRuleFromAddress(emailAddressNode) {

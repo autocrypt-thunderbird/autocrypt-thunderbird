@@ -123,6 +123,12 @@
 
             <menuseparator/>
 
+            <menuitem label="&enigmail.displayKeyProperties.label;"
+                      id="enigmail_keyMgmtDispKeyDetails"
+                      oncommand="enigDispKeyDetails();"/>
+            <menuitem label="&enigmail.signSenderKey.label;"
+                      id="enigmail_keyMgmtSignKey"
+                      oncommand="enigSignKey();"/>
             <menuitem label="&enigmail.signSenderKey.label;"
                       id="enigmail_keyMgmtSignKey"
                       oncommand="enigSignKey();"/>
@@ -279,6 +285,9 @@
 
             <menuseparator/>
 
+            <menuitem label="&enigmail.displayKeyProperties.label;"
+                      id="enigmail_keyMgmtDispKeyDetails"
+                      oncommand="enigDispKeyDetails();"/>
             <menuitem label="&enigmail.signSenderKey.label;"
                       id="enigmail_keyMgmtSignKey"
                       oncommand="enigSignKey();"/>
@@ -611,10 +620,13 @@
               <menuitem label="&enigmail.copySecurityInfo.label;"
                         id="enigmail_copySecurityInfo"
                         oncommand="enigCopyStatusInfo();"/>
+              <menuseparator/>
+              <menuitem label="&enigmail.displayKeyProperties.label;"
+                        id="enigmail_dispKeyDetails"
+                        oncommand="enigDispKeyDetails();"/>
               <menuitem label="&enigmail.showPhoto.label;"
                         id="enigmail_showPhoto"
                         oncommand="enigShowPhoto();"/>
-              <menuseparator/>
               <menuitem label="&enigmail.signSenderKeyPopup.label;"
                         id="enigmail_signSenderKey"
                         oncommand="enigSignKey();"/>

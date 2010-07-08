@@ -94,6 +94,25 @@ const ENIG_C = Components;
 const ENIG_KEYTYPE_DSA = 1;
 const ENIG_KEYTYPE_RSA = 2;
 
+
+// field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
+const ENIG_KEY_TRUST=1;
+const ENIG_KEY_ID = 4;
+const ENIG_CREATED = 5;
+const ENIG_EXPIRY = 6;
+const ENIG_UID_ID = 7;
+const ENIG_OWNERTRUST = 8;
+const ENIG_USER_ID = 9;
+const ENIG_SIG_TYPE = 10;
+const ENIG_KEY_USE_FOR = 11;
+
+const ENIG_KEY_EXPIRED="e";
+const ENIG_KEY_REVOKED="r";
+const ENIG_KEY_INVALID="i";
+const ENIG_KEY_DISABLED="d";
+const ENIG_KEY_NOT_VALID=ENIG_KEY_EXPIRED+ENIG_KEY_REVOKED+ENIG_KEY_INVALID+ENIG_KEY_DISABLED;
+
+
 // Interfaces
 const nsIEnigmail               = ENIG_C.interfaces.nsIEnigmail;
 const nsIEnigStrBundle          = ENIG_C.interfaces.nsIStringBundleService;
@@ -1793,47 +1812,47 @@ function EnigLoadKeyList(refresh, keyListObj) {
       case "pub":
         keyObj = new Object();
         uatNum = 0;
-        keyObj.expiry=EnigGetDateTime(listRow[EXPIRY], true, false);
-        keyObj.created=EnigGetDateTime(listRow[CREATED], true, false);
-        keyObj.keyId=listRow[KEY_ID];
-        keyObj.keyTrust=listRow[KEY_TRUST];
-        keyObj.keyUseFor=listRow[KEY_USE_FOR];
-        keyObj.ownerTrust=listRow[OWNERTRUST];
+        keyObj.expiry=EnigGetDateTime(listRow[ENIG_EXPIRY], true, false);
+        keyObj.created=EnigGetDateTime(listRow[ENIG_CREATED], true, false);
+        keyObj.keyId=listRow[ENIG_KEY_ID];
+        keyObj.keyTrust=listRow[ENIG_KEY_TRUST];
+        keyObj.keyUseFor=listRow[ENIG_KEY_USE_FOR];
+        keyObj.ownerTrust=listRow[ENIG_OWNERTRUST];
         keyObj.SubUserIds=new Array();
         keyObj.fpr="";
         keyObj.photoAvailable=false;
         keyObj.secretAvailable=false;
-        keyListObj.keyList[listRow[KEY_ID]] = keyObj;
+        keyListObj.keyList[listRow[ENIG_KEY_ID]] = keyObj;
         break;
       case "fpr":
-        keyObj.fpr=listRow[USER_ID];
+        keyObj.fpr=listRow[ENIG_USER_ID];
         break;
       case "uid":
-        if (listRow[USER_ID].length == 0) {
-          listRow[USER_ID] = "-";
+        if (listRow[ENIG_USER_ID].length == 0) {
+          listRow[ENIG_USER_ID] = "-";
         }
         if (typeof(keyObj.userId) != "string") {
-          keyObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID]);
+          keyObj.userId=EnigConvertGpgToUnicode(listRow[ENIG_USER_ID]);
           keyListObj.keySortList.push({userId: keyObj.userId, keyId: keyObj.keyId});
-          if (TRUSTLEVEL_SORTED.indexOf(listRow[KEY_TRUST]) < TRUSTLEVEL_SORTED.indexOf(keyObj.keyTrust)) {
+          if (TRUSTLEVEL_SORTED.indexOf(listRow[ENIG_KEY_TRUST]) < TRUSTLEVEL_SORTED.indexOf(keyObj.keyTrust)) {
             // reduce key trust if primary UID is less trusted than public key
-            keyObj.keyTrust = listRow[KEY_TRUST];
+            keyObj.keyTrust = listRow[ENIG_KEY_TRUST];
           }
         }
         else {
           var subUserId = {
-            userId: EnigConvertGpgToUnicode(listRow[USER_ID]),
-            keyTrust: listRow[KEY_TRUST],
+            userId: EnigConvertGpgToUnicode(listRow[ENIG_USER_ID]),
+            keyTrust: listRow[ENIG_KEY_TRUST],
             type: "uid"
           }
           keyObj.SubUserIds.push(subUserId);
         }
         break;
       case "uat":
-        if (listRow[USER_ID].indexOf("1 ")==0) {
+        if (listRow[ENIG_USER_ID].indexOf("1 ")==0) {
           var userId=EnigGetString("userAtt.photo");
           keyObj.SubUserIds.push({userId: userId,
-                                  keyTrust:listRow[KEY_TRUST],
+                                  keyTrust:listRow[ENIG_KEY_TRUST],
                                   type: "uat",
                                   uatNum: uatNum});
           keyObj.photoAvailable=true;
@@ -1848,8 +1867,8 @@ function EnigLoadKeyList(refresh, keyListObj) {
      listRow=aGpgSecretsList[i].split(/:/);
      if (listRow.length>=0) {
        if (listRow[0] == "sec") {
-         if (typeof(keyListObj.keyList[listRow[KEY_ID]]) == "object") {
-           keyListObj.keyList[listRow[KEY_ID]].secretAvailable=true;
+         if (typeof(keyListObj.keyList[listRow[ENIG_KEY_ID]]) == "object") {
+           keyListObj.keyList[listRow[ENIG_KEY_ID]].secretAvailable=true;
          }
        }
      }
@@ -1929,6 +1948,25 @@ function EnigEditKeyTrust(userIdArr, keyIdArr) {
   return resultObj.refresh;
 }
 
+function EnigDisplayKeyDetails(keyId, refresh) {
+  var keyListObj = {};
+
+  EnigLoadKeyList(refresh, keyListObj);
+
+  var inputObj = {
+    keyId:  keyId,
+    keyListArr: keyListObj.keyList,
+    secKey: keyListObj.keyList[ keyId ].secretAvailable
+  };
+  var resultObj = { refresh: false };
+  window.openDialog("chrome://enigmail/content/enigmailKeyDetailsDlg.xul",
+        "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+  if (resultObj.refresh) {
+    enigmailRefreshKeys();
+  }
+
+
+}
 
 function EnigSignKey(userId, keyId, signingKeyHint) {
   var inputObj = {

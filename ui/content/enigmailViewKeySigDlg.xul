@@ -117,23 +117,6 @@
 
     EnigInitCommon("enigmailViewKeySigDlg");
 
-    // field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
-    const KEY_TRUST=1;
-    const KEY_ID = 4;
-    const CREATED = 5;
-    const EXPIRY = 6;
-    const UID_ID = 7;
-    const OWNERTRUST = 8;
-    const USER_ID = 9;
-    const SIG_TYPE = 10;
-    const KEY_USE_FOR = 11;
-
-    const KEY_EXPIRED="e";
-    const KEY_REVOKED="r";
-    const KEY_INVALID="i";
-    const KEY_DISABLED="d";
-    const KEY_NOT_VALID=KEY_EXPIRED+KEY_REVOKED+KEY_INVALID+KEY_DISABLED;
-
     var gKeyListArr;
 
     function onLoad() {
@@ -187,46 +170,46 @@
       for (var i=0; i<aSigList.length; i++) {
         var listRow=aSigList[i].split(/:/);
         if (listRow.length>=0) {
-          if ((listRow[0] == "uid" || listRow[0] == "pub" || listRow[0] == "uat") && (listRow[USER_ID].length>0)) {
+          if ((listRow[0] == "uid" || listRow[0] == "pub" || listRow[0] == "uat") && (listRow[ENIG_USER_ID].length>0)) {
             var userRow=document.createElement("treerow");
-            if (typeof(listRow[KEY_USE_FOR])!="string") {
-              listRow[KEY_USE_FOR]="";
+            if (typeof(listRow[ENIG_KEY_USE_FOR])!="string") {
+              listRow[ENIG_KEY_USE_FOR]="";
             }
-            var keyValid = (KEY_NOT_VALID.indexOf(listRow[KEY_TRUST])<0 &&
-                            listRow[KEY_USE_FOR].indexOf("D")<0);
+            var keyValid = (ENIG_KEY_NOT_VALID.indexOf(listRow[ENIG_KEY_TRUST])<0 &&
+                            listRow[ENIG_KEY_USE_FOR].indexOf("D")<0);
             if (listRow[0] == "uat") {
-              listRow[USER_ID]=EnigGetString("userAtt.photo");
+              listRow[ENIG_USER_ID]=EnigGetString("userAtt.photo");
             }
 
             if (listRow[0] == "uid" || listRow[0] == "uat") {
-              currUid=listRow[UID_ID];
+              currUid=listRow[ENIG_UID_ID];
             }
-            addCell(userRow, EnigConvertGpgToUnicode(listRow[USER_ID]), true, keyValid);
+            addCell(userRow, EnigConvertGpgToUnicode(listRow[ENIG_USER_ID]), true, keyValid);
             var treeItem=document.createElement("treeitem");
             treeItem.appendChild(userRow);
             treeChildren.appendChild(treeItem);
           }
           else if (listRow[0] == "sig") {
-            if (listRow[USER_ID].length == 0) {
-              listRow[USER_ID] = "-";
+            if (listRow[ENIG_USER_ID].length == 0) {
+              listRow[ENIG_USER_ID] = "-";
             }
-            if (listRow[SIG_TYPE].substr(0,2).toLowerCase()!="1f") {
+            if (listRow[ENIG_SIG_TYPE].substr(0,2).toLowerCase()!="1f") {
               // ignore "revoker" signatures
               userRow=document.createElement("treerow");
-              if (typeof(gKeyListArr[listRow[KEY_ID]]) == "object") {
-                addCell(userRow, "   "+EnigConvertGpgToUnicode(listRow[USER_ID]));
+              if (typeof(gKeyListArr[listRow[ENIG_KEY_ID]]) == "object") {
+                addCell(userRow, "   "+EnigConvertGpgToUnicode(listRow[ENIG_USER_ID]));
               }
               else {
                 addCell(userRow, "   "+EnigGetString("userIdNotFound"));
               }
-              addCell(userRow, listRow[KEY_ID].substr(-8,8));
-              if (listRow[SIG_TYPE].substr(2,1) == "x") {
+              addCell(userRow, listRow[ENIG_KEY_ID].substr(-8,8));
+              if (listRow[ENIG_SIG_TYPE].substr(2,1) == "x") {
                 addCell(userRow, EnigGetString("keySignatureExportable"));
               }
               else {
                 addCell(userRow, EnigGetString("keySignatureLocal"));
               }
-              if (typeof(gKeyListArr[listRow[KEY_ID]]) == "object") {
+              if (typeof(gKeyListArr[listRow[ENIG_KEY_ID]]) == "object") {
                 addCell(userRow, EnigGetString("signatureValid"));
               }
               else {
@@ -234,9 +217,9 @@
                 userRow.setAttribute("noKey", "true");
               }
 
-              userRow.setAttribute("keyID", listRow[KEY_ID]);
-              userRow.setAttribute("sigID", currUid+"-"+listRow[KEY_ID]);
-              addCell(userRow, EnigGetDateTime(listRow[CREATED], true, false));
+              userRow.setAttribute("keyID", listRow[ENIG_KEY_ID]);
+              userRow.setAttribute("sigID", currUid+"-"+listRow[ENIG_KEY_ID]);
+              addCell(userRow, EnigGetDateTime(listRow[ENIG_CREATED], true, false));
               treeItem=document.createElement("treeitem");
               treeItem.appendChild(userRow);
               treeChildren.appendChild(treeItem);
@@ -246,7 +229,7 @@
             break;
           }
           else if (listRow[0] == "rev") {
-            aRevSig.push(currUid+"-"+listRow[KEY_ID]);
+            aRevSig.push(currUid+"-"+listRow[ENIG_KEY_ID]);
           }
         }
       }

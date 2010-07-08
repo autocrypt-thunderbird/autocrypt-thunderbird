@@ -39,21 +39,6 @@ EnigInitCommon("enigmailKeyManager");
 const INPUT = 0;
 const RESULT = 1;
 
-// field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
-const KEY_TRUST=1;
-const KEY_ID = 4;
-const CREATED = 5;
-const EXPIRY = 6;
-const OWNERTRUST = 8;
-const USER_ID = 9;
-const KEY_USE_FOR = 11;
-
-const KEY_EXPIRED="e";
-const KEY_REVOKED="r";
-const KEY_INVALID="i";
-const KEY_DISABLED="d";
-const KEY_NOT_VALID=KEY_EXPIRED+KEY_REVOKED+KEY_INVALID+KEY_DISABLED;
-
 
 var gUserList;
 var gResult;
@@ -123,50 +108,6 @@ function enigmailRefreshKeys() {
   enigmailBuildList(true);
   enigApplyFilter();
 }
-
-
-function old_enigmail_Build_List_unused(refresh) {
-  DEBUG_LOG("enigmailKeyManager.js: enigmailBuildList\n");
-  var keyListObj = {};
-
-  EnigLoadKeyList(refresh, keyListObj);
-
-  gKeyList = keyListObj.keyList;
-  gKeySortList = keyListObj.keySortList;
-
-  gUserList.currentItem = null;
-
-  var treeChildren = gTreeChildren;
-
-  var selectedItems=[];
-  for (var i=0; i < gKeySortList.length; i++) {
-    var keyId = gKeySortList[i].keyId;
-    if (gEnigLastSelectedKeys && typeof(gEnigLastSelectedKeys[keyId]) != "undefined")
-      selectedItems.push(i);
-    var treeItem=null;
-    treeItem=enigUserSelCreateRow(gKeyList[keyId], -1)
-    if (gKeyList[keyId].SubUserIds.length) {
-      treeItem.setAttribute("container", "true");
-      var subChildren=document.createElement("treechildren");
-      for (var subkey=0; subkey<gKeyList[keyId].SubUserIds.length; subkey++) {
-        var subItem=enigUserSelCreateRow(gKeyList[keyId], subkey);
-        subChildren.appendChild(subItem);
-      }
-      treeItem.appendChild(subChildren);
-    }
-
-    if (treeItem)
-      treeChildren.appendChild(treeItem);
-  }
-
-  if (selectedItems.length>0) {
-    gUserList.view.selection.select(selectedItems[0]);
-    for (i=1; i<selectedItems.length; i++) {
-      gUserList.view.selection.rangedSelect(selectedItems[i], selectedItems[i], true)
-    }
-  }
-}
-
 
 function enigmailBuildList(refresh) {
   DEBUG_LOG("enigmailKeyManager.js: enigmailBuildList\n");
@@ -351,7 +292,7 @@ function enigUserSelCreateRow (keyObj, subKeyNum) {
     userRow.appendChild(fprCol);
 
     if ((keyTrust.length>0) &&
-        (KEY_NOT_VALID.indexOf(keyTrust.charAt(0))>=0) ||
+        (ENIG_KEY_NOT_VALID.indexOf(keyTrust.charAt(0))>=0) ||
         (keyObj.keyUseFor.indexOf("D")>=0)) {
       for (var node=userRow.firstChild; node; node=node.nextSibling) {
         var attr=node.getAttribute("properties");
@@ -430,7 +371,7 @@ function enigmailKeyMenu() {
   if (keyList.length >= 1) {
     document.getElementById("bcEnableKey").removeAttribute("disabled");
     if (gKeyList[keyList[0]].keyUseFor.indexOf("D")>0 ||
-        gKeyList[keyList[0]].keyTrust.indexOf(KEY_DISABLED)>=0) {
+        gKeyList[keyList[0]].keyTrust.indexOf(ENIG_KEY_DISABLED)>=0) {
       document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.enableKey"));
     }
     else {
@@ -498,17 +439,7 @@ function enigmailSelectAllKeys() {
 function enigmailKeyDetails() {
   var keyList = enigmailGetSelectedKeys();
 
-  var inputObj = {
-    keyId:  keyList[0],
-    keyListArr: gKeyList,
-    secKey: gKeyList[ keyList[0]].secretAvailable
-  };
-  var resultObj = { refresh: false };
-  window.openDialog("chrome://enigmail/content/enigmailKeyDetailsDlg.xul",
-        "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
-  if (resultObj.refresh) {
-    enigmailRefreshKeys();
-  }
+  EnigDisplayKeyDetails(keyList[0], false);
 }
 
 
@@ -557,7 +488,7 @@ function enigmailDeleteKey() {
 function enigmailEnableKey() {
   var keyList = enigmailGetSelectedKeys();
   var disableKey = (gKeyList[keyList[0]].keyUseFor.indexOf("D")<0 &&
-                     gKeyList[keyList[0]].keyTrust.indexOf(KEY_DISABLED)<0);
+                     gKeyList[keyList[0]].keyTrust.indexOf(ENIG_KEY_DISABLED)<0);
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
