@@ -55,6 +55,9 @@ cd "$6"
 targetDir=`pwd`
 cd "$cwd"
 
+if [ "$xpcomAbi" = "" ] ; then
+  xpcomAbi="unknown"
+fi
 platform=${osArch}_${xpcomAbi}
 # Pepare install.rdf
 sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${platform}'<\/em:targetPlatform>/' < ${srcDir}/package/install.rdf > ${targetDir}/install.rdf.t1
