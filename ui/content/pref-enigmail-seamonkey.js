@@ -49,7 +49,7 @@ function initPrefSeamonkey() {
 
   enigDetermineGpgPath();
 
-  EnigSetPref("configuredVersion", gEnigmailVersion);
+  EnigSetPref("configuredVersion", EnigGetVersion());
 
   setDisables(true);
 }

@@ -120,7 +120,7 @@ function enigDetermineGpgPath() {
       gEnigmailSvc = ENIG_C.classes[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_C.interfaces.nsIEnigmail);
       if (! gEnigmailSvc.initialized) {
         // attempt to initialize Enigmail
-        gEnigmailSvc.initialize(window, gEnigmailVersion, gPrefEnigmail);
+        gEnigmailSvc.initialize(window, EnigGetVersion(), gPrefEnigmail);
       }
     } catch (ex) {}
   }
@@ -159,7 +159,7 @@ function resetPrefs() {
 
   EnigDisplayPrefs(true, true, false);
 
-  EnigSetPref("configuredVersion", gEnigmailVersion);
+  EnigSetPref("configuredVersion", EnigGetVersion());
 
   EnigDisplayRadioPref("recipientsSelection", EnigGetPref("recipientsSelection"),
                       gEnigRecipientsSelection);
@@ -217,7 +217,7 @@ function prefOnAccept() {
     gEnigPrefRoot.setBoolPref("mail.server.default.mime_parts_on_demand", (gMimePartsElement.checked ? true : false));
   }
 
-  EnigSetPref("configuredVersion", gEnigmailVersion);
+  EnigSetPref("configuredVersion", EnigGetVersion());
   EnigSetPref("advancedUser", gAdvancedMode);
 
   EnigSavePrefs();

@@ -254,7 +254,7 @@ function GetEnigmailSvc() {
 
     try {
       // Initialize enigmail
-      gEnigmailSvc.initialize(window, gEnigmailVersion, gPrefEnigmail);
+      gEnigmailSvc.initialize(window, EnigGetVersion(), gPrefEnigmail);
 
       try {
         // Reset alert count to default value
@@ -299,7 +299,7 @@ function GetEnigmailSvc() {
       EnigAlert(EnigGetString("pgpNotSupported"));
     }
 
-    if (gEnigmailSvc.initialized && (gEnigmailVersion != configuredVersion)) {
+    if (gEnigmailSvc.initialized && (EnigGetVersion() != configuredVersion)) {
       EnigConfigure();
     }
   }
@@ -451,7 +451,7 @@ function EnigConfigure() {
     else if (vc.compare(oldVer, "1.0") < 0) EnigUpgradeCustomHeaders();
   }
   catch(ex) {};
-  EnigSetPref("configuredVersion", gEnigmailVersion);
+  EnigSetPref("configuredVersion", EnigGetVersion());
   EnigSavePrefs();
 }
 
@@ -880,15 +880,6 @@ function EnigHelpWindow(source) {
   EnigOpenWin("enigmail:help",
               "chrome://enigmail/content/enigmailHelp.xul?src="+source,
               "centerscreen,resizable");
-}
-
-function EnigUpgrade() {
-  var ioService = ENIG_C.classes[ENIG_IOSERVICE_CONTRACTID].getService(ENIG_C.interfaces.nsIIOService);
-  if (ioService && ioService.offline) {
-    EnigAlert(EnigGetString("needOnline"));
-    return;
-  }
-  window.openDialog("http://enigmail.mozdev.org/no_wrap/update.html?upgrade=yes&enigmail="+gEnigmailVersion+"&enigmime="+gEnigmimeVersion, "dialog");
 }
 
 

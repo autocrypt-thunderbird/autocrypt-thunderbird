@@ -1739,7 +1739,7 @@ function enigModifyCompFields(msgCompFields) {
     if (gEnigIdentity.getBoolAttribute("enablePgp")) {
       var enigmailHeaders = "";
       if (EnigGetPref("addHeaders")) {
-        enigmailHeaders += "X-Enigmail-Version: "+gEnigmailVersion+"\r\n";
+        enigmailHeaders += "X-Enigmail-Version: "+EnigGetVersion()+"\r\n";
       }
       var pgpHeader="";
       var openPgpHeaderMode = gEnigIdentity.getIntAttribute("openPgpHeaderMode");

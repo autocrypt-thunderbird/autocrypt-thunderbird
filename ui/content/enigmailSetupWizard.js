@@ -263,7 +263,7 @@ function enigGetSvc() {
 
     try {
       // Initialize enigmail
-      gEnigmailSvc.initialize(window, gEnigmailVersion, gPrefEnigmail);
+      gEnigmailSvc.initialize(window, EnigGetVersion(), gPrefEnigmail);
 
       try {
         // Reset alert count to default value
@@ -552,7 +552,7 @@ function applyWizardSettings() {
   applyMozSetting("viewPlainText", "mailnews.display.html_as", 1);
   applyMozSetting("viewPlainText", "mailnews.display.prefer_plaintext", true);
 
-  EnigSetPref("configuredVersion", gEnigmailVersion);
+  EnigSetPref("configuredVersion", EnigGetVersion());
   EnigSavePrefs();
 }
 
