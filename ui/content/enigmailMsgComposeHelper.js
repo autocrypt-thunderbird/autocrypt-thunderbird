@@ -36,7 +36,7 @@
 
 // helper functions for message composition
 
-function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj) {
+function getRecipientsKeys(emailAddrs, forceSelection, interactive, matchedKeysObj, flagsObj) {
   DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys: emailAddrs="+emailAddrs+"\n");
 
   function getFlagVal(oldVal, node, type, conflictObj) {
@@ -154,7 +154,7 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
     }
   }
 
-  if (EnigGetPref("recipientsSelection")==1 || forceSelection) {
+  if (interactive && (EnigGetPref("recipientsSelection")==1 || forceSelection)) {
     var addrList=emailAddrs.split(/,/);
     var inputObj=new Object;
     var resultObj=new Object;
@@ -202,7 +202,7 @@ function getRecipientsKeys(emailAddrs, forceSelection, matchedKeysObj, flagsObj)
   flagsObj.pgpMime = pgpMime;
   flagsObj.value = 1;
 
-  if ((!EnigGetPref("confirmBeforeSend")) && (conflicts.encrypt ||conflicts.sign)) {
+  if (interactive && (!EnigGetPref("confirmBeforeSend")) && (conflicts.encrypt ||conflicts.sign)) {
     if (sign<2) sign = (sign & (gEnigSendMode & ENIG_SIGN));
     if (encrypt<2) encrypt = (encrypt & (gEnigSendMode & ENIG_ENCRYPT ? 1 : 0));
     var msg = "\n"+"- " + EnigGetString(sign>0 ? "signYes" : "signNo");

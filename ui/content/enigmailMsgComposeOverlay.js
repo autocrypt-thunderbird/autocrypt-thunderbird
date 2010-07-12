@@ -351,6 +351,7 @@ function enigMsgComposeReset(closing) {
 
   if (! closing) {
     enigSetIdentityDefaults();
+    document.getElementById("enigmail-rules-status").setAttribute("value", "-");
   }
 }
 
@@ -1129,6 +1130,7 @@ function enigEncryptMsg(msgSendType) {
             var flagsObj=new Object;
             if (!getRecipientsKeys(toAddr,
                                   (repeatSelection==1),
+                                  true,
                                   matchedKeysObj,
                                   flagsObj)) {
               return false;
@@ -1166,6 +1168,7 @@ function enigEncryptMsg(msgSendType) {
 
             if (!getRecipientsKeys(bccAddr,
                                   (repeatSelection==1),
+                                  true,
                                   matchedKeysObj,
                                   flagsObj)) {
               return false;
@@ -2415,8 +2418,36 @@ var gEnigDummyValue = 0;
 function enigDetermineSendFlags() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigFocusChange: enigDetermineSendFlags\n");
   if (enigGetAccDefault("enabled")) {
+    var compFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
+    Recipients2CompFields(compFields);
+    var arrLen = new Object();
+    var matchedKeysObj = new Object();
+    var flagsObj = new Object();
+    var toAddrList = new Array();
+    var recList;
+    if (compFields.to.length > 0) {
+      recList = compFields.splitRecipients(compFields.to, true, arrLen)
+      enigAddRecipients(toAddrList, recList);
+    }
+
+    if (compFields.cc.length > 0) {
+      recList = compFields.splitRecipients(compFields.cc, true, arrLen)
+      enigAddRecipients(toAddrList, recList);
+    }
+
+    if (compFields.bcc.length > 0) {
+      recList = compFields.splitRecipients(compFields.bcc, true, arrLen)
+      enigAddRecipients(toAddrList, recList);
+    }
+
+    if (toAddrList.length > 0) {
+      if (getRecipientsKeys(toAddrList.join(", "), false, false, matchedKeysObj, flagsObj)) {
+        document.getElementById("enigmail-rules-status").setAttribute("value",
+          "sign: "+flagsObj.sign+" encrypt: "+flagsObj.encrypt);
+      }
+    }
     ++gEnigDummyValue;
-    document.getElementById("enigmail-rules-status").setAttribute("value", "changed: "+gEnigDummyValue);
+    //document.getElementById("enigmail-rules-status").setAttribute("value", "changed: "+gEnigDummyValue);
   }
   gEnigDetermineSendFlagID = null;
 }
