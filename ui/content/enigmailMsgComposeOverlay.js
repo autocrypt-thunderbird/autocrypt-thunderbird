@@ -223,7 +223,7 @@ function enigComposeOpen() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigComposeOpen\n");
 
   gMsgCompose.RegisterStateListener(gEnigComposeStateListener);
-
+  gEnigDetermineSendFlagID = null;
 
   var toobarElem = document.getElementById("composeToolbar2");
   if (toobarElem && (EnigGetOS() == "Darwin")) {
