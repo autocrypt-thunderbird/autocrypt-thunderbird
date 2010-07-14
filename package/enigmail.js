@@ -1148,20 +1148,27 @@ Enigmail.prototype = {
 
     this.composeSecure = true;
     try {
-      var enigMsgComposeFactory = Components.classes[NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID].createInstance(Components.interfaces.nsIFactory);
+      if (XPCOMUtils.generateNSGetModule) {
+        // Gecko 1.9.x
+        var enigMsgComposeFactory = Components.classes[NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID].createInstance(Components.interfaces.nsIFactory);
 
-      var compMgr = Components.manager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
+        var compMgr = Components.manager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
 
-      compMgr.registerFactory(NS_ENIGMSGCOMPOSE_CID,
-                              "Enig Msg Compose",
-                              NS_MSGCOMPOSESECURE_CONTRACTID,
-                              enigMsgComposeFactory);
+        compMgr.registerFactory(NS_ENIGMSGCOMPOSE_CID,
+                                "Enig Msg Compose",
+                                NS_MSGCOMPOSESECURE_CONTRACTID,
+                                enigMsgComposeFactory);
 
-      var msgComposeSecureCID = compMgr.contractIDToCID(NS_MSGCOMPOSESECURE_CONTRACTID);
+        var msgComposeSecureCID = compMgr.contractIDToCID(NS_MSGCOMPOSESECURE_CONTRACTID);
 
-      this.composeSecure = (msgComposeSecureCID.toString() ==
-                            NS_ENIGMSGCOMPOSE_CID);
-    } catch (ex) {}
+        this.composeSecure = (msgComposeSecureCID.toString() ==
+                              NS_ENIGMSGCOMPOSE_CID);
+      }
+      else
+        this.composeSecure = true;
+    } catch (ex) {
+      ERROR_LOG("could not register Enig Msg Compose handler\n");
+    }
 
     var ioServ = Components.classes[NS_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
 

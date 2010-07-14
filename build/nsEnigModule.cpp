@@ -44,6 +44,8 @@
 #include "nsEnigMimeListener.h"
 #include "nsEnigMimeWriter.h"
 #include "nsEnigMimeService.h"
+#include "nsEnigContentHandler.h"
+//#include "nsIMsgComposeSecure.h"
 
 #if MOZILLA_MAJOR_VERSION < 2
 
@@ -122,6 +124,24 @@ NS_IMPL_NSGETMODULE(nsEnigModule, components)
 #else
   // Gecko >= 2.0
 
+/*
+      var enigMsgComposeFactory = Components.classes[NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID].createInstance(Components.interfaces.nsIFactory);
+
+      var compMgr = Components.manager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
+
+      compMgr.registerFactory(NS_ENIGMSGCOMPOSE_CID,
+                              "Enig Msg Compose",
+                              NS_MSGCOMPOSESECURE_CONTRACTID,
+                              enigMsgComposeFactory);
+
+      var msgComposeSecureCID = compMgr.contractIDToCID(NS_MSGCOMPOSESECURE_CONTRACTID);
+
+      this.composeSecure = (msgComposeSecureCID.toString() ==
+                            NS_ENIGMSGCOMPOSE_CID);
+*/
+
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigContentHandler)
+
 NS_DEFINE_NAMED_CID(NS_ENIGMSGCOMPOSE_CID);
 NS_DEFINE_NAMED_CID(NS_ENIGMSGCOMPOSEFACTORY_CID);
 NS_DEFINE_NAMED_CID(NS_ENIGMIMELISTENER_CID);
@@ -129,25 +149,35 @@ NS_DEFINE_NAMED_CID(NS_ENIGMIMEWRITER_CID);
 NS_DEFINE_NAMED_CID(NS_ENIGMIMEDECRYPT_CID);
 NS_DEFINE_NAMED_CID(NS_ENIGMIMEVERIFY_CID);
 NS_DEFINE_NAMED_CID(NS_ENIGMIMESERVICE_CID);
+NS_DEFINE_NAMED_CID(NS_ENIGCONTENTHANDLER_CID);
 
 const mozilla::Module::CIDEntry kEnigModuleCIDs[] = {
   { &kNS_ENIGMSGCOMPOSE_CID, false, NULL, nsEnigMsgComposeConstructor },
   { &kNS_ENIGMSGCOMPOSEFACTORY_CID, false, NULL, nsEnigMsgComposeFactoryConstructor },
+  { &kNS_ENIGMSGCOMPOSE_CID, false, NULL, nsEnigMsgComposeFactoryConstructor },
   { &kNS_ENIGMIMELISTENER_CID, false, NULL, nsEnigMimeListenerConstructor },
   { &kNS_ENIGMIMEWRITER_CID, false, NULL, nsEnigMimeWriterConstructor },
   { &kNS_ENIGMIMEDECRYPT_CID, false, NULL, nsEnigMimeDecryptConstructor },
   { &kNS_ENIGMIMEVERIFY_CID, false, NULL, nsEnigMimeVerifyConstructor },
-  { &kNS_ENIGMIMESERVICE_CID, false, NULL, nsEnigMimeServiceConstructor }
+  { &kNS_ENIGMIMESERVICE_CID, false, NULL, nsEnigMimeServiceConstructor },
+  { &kNS_ENIGCONTENTHANDLER_CID, false, NULL, nsEnigContentHandlerConstructor },
+  { &kNS_ENIGCONTENTHANDLER_CID, false, NULL, nsEnigContentHandlerConstructor },
+  { NULL }
 };
 
 const mozilla::Module::ContractIDEntry kEnigModuleContracts[] = {
   { NS_ENIGMSGCOMPOSE_CONTRACTID, &kNS_ENIGMSGCOMPOSE_CID },
   { NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID, &kNS_ENIGMSGCOMPOSEFACTORY_CID },
+  { "@mozilla.org/messengercompose/composesecure;1", &kNS_ENIGMSGCOMPOSE_CID },
   { NS_ENIGMIMELISTENER_CONTRACTID, &kNS_ENIGMIMELISTENER_CID },
   { NS_ENIGMIMEWRITER_CONTRACTID, &kNS_ENIGMIMEWRITER_CID },
   { NS_ENIGMIMEDECRYPT_CONTRACTID, &kNS_ENIGMIMEDECRYPT_CID },
   { NS_ENIGMIMEVERIFY_CONTRACTID, &kNS_ENIGMIMEVERIFY_CID },
-  { NS_ENIGMIMESERVICE_CONTRACTID, &kNS_ENIGMIMESERVICE_CID }
+  { NS_ENIGMIMESERVICE_CONTRACTID, &kNS_ENIGMIMESERVICE_CID },
+  { NS_ENIGENCRYPTEDHANDLER_CONTRACTID, &kNS_ENIGCONTENTHANDLER_CID },
+  { NS_ENIGDUMMYHANDLER_CONTRACTID, &kNS_ENIGCONTENTHANDLER_CID },
+  { NULL }
+
 };
 
 static const mozilla::Module::CategoryEntry kEnigModuleCategories[] = {
