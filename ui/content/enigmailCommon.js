@@ -1525,7 +1525,7 @@ function EnigGetOS () {
 }
 
 function EnigGetVersion() {
-  ERROR_LOG("enigmailCommon.js: EnigGetVersion\n");
+  DEBUG_LOG("enigmailCommon.js: EnigGetVersion\n");
 
   var addonVersion = "?";
   try {
@@ -1539,7 +1539,7 @@ function EnigGetVersion() {
     addonVersion = gEnigExtensionVersion;
   }
 
-  ERROR_LOG("enigmailCommon.js: installed version: "+addonVersion+"\n");
+  DEBUG_LOG("enigmailCommon.js: installed version: "+addonVersion+"\n");
   return addonVersion;
 }
 
