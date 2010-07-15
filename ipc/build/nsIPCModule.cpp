@@ -42,6 +42,7 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsProcessInfo)
 #include "nsPipeChannel.h"
 #include "nsPipeFilterListener.h"
 #include "nsIPCBuffer.h"
+#include "nsIPCService.h"
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsPipeTransport)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsPipeConsole)
@@ -49,12 +50,12 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsPipeChannel)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsPipeFilterListener)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsIPCBuffer)
 
-#include "nsIPCService.h"
 NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsIPCService, Init)
 
 #if MOZILLA_MAJOR_VERSION < 2
 
 #include "nsIGenericFactory.h"
+
 
 // CIDs implemented by module
 static const nsModuleComponentInfo components[] =
@@ -109,6 +110,9 @@ NS_IMPL_NSGETMODULE(nsIPCModule, components)
 
 #else
  // Gecko >= 2.0
+
+ #include "mozilla/ModuleUtils.h"
+
 NS_DEFINE_NAMED_CID(NS_PROCESSINFO_CID);
 NS_DEFINE_NAMED_CID(NS_PIPETRANSPORT_CID);
 NS_DEFINE_NAMED_CID(NS_PIPECONSOLE_CID);
@@ -124,7 +128,8 @@ const mozilla::Module::CIDEntry kIPCModuleCIDs[] = {
   { &kNS_PIPECHANNEL_CID, false, NULL, nsPipeChannelConstructor },
   { &kNS_PIPEFILTERLISTENER_CID, false, NULL, nsPipeFilterListenerConstructor },
   { &kNS_IPCBUFFER_CID, false, NULL, nsIPCBufferConstructor },
-  { &kNS_IPCSERVICE_CID, false, NULL, nsIPCServiceConstructor }
+  { &kNS_IPCSERVICE_CID, false, NULL, nsIPCServiceConstructor },
+  { NULL }
 };
 
 const mozilla::Module::ContractIDEntry kIPCModuleContracts[] = {
@@ -134,7 +139,8 @@ const mozilla::Module::ContractIDEntry kIPCModuleContracts[] = {
   { NS_PIPECHANNEL_CONTRACTID, &kNS_PIPECHANNEL_CID },
   { NS_PIPEFILTERLISTENER_CONTRACTID, &kNS_PIPEFILTERLISTENER_CID },
   { NS_IPCBUFFER_CONTRACTID, &kNS_IPCBUFFER_CID },
-  { NS_IPCSERVICE_CONTRACTID, &kNS_IPCSERVICE_CID }
+  { NS_IPCSERVICE_CONTRACTID, &kNS_IPCSERVICE_CID },
+  { NULL }
 };
 
 static const mozilla::Module::CategoryEntry kIPCModuleCategories[] = {
