@@ -124,21 +124,6 @@ NS_IMPL_NSGETMODULE(nsEnigModule, components)
 #else
   // Gecko >= 2.0
 
-/*
-      var enigMsgComposeFactory = Components.classes[NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID].createInstance(Components.interfaces.nsIFactory);
-
-      var compMgr = Components.manager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
-
-      compMgr.registerFactory(NS_ENIGMSGCOMPOSE_CID,
-                              "Enig Msg Compose",
-                              NS_MSGCOMPOSESECURE_CONTRACTID,
-                              enigMsgComposeFactory);
-
-      var msgComposeSecureCID = compMgr.contractIDToCID(NS_MSGCOMPOSESECURE_CONTRACTID);
-
-      this.composeSecure = (msgComposeSecureCID.toString() ==
-                            NS_ENIGMSGCOMPOSE_CID);
-*/
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigContentHandler)
 
