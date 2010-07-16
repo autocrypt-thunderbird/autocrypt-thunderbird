@@ -42,7 +42,7 @@
 ]>
 
 <dialog id="enigmailDispPhoto"
-        title="&enigmail.showPhoto.label;"
+        title="&enigmail.photoViewer.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="onLoad();"
         ondialogaccept="return window.close();"
@@ -54,8 +54,16 @@
   <script type="application/x-javascript">
   <![CDATA[
 
+    var repaintCount=0;
+    var keyId;
     function onLoad() {
+      window.addEventListener("MozAfterPaint", resizeDlg, false);
+
+      var keyListObj = new Object();
+      EnigLoadKeyList(false, keyListObj);
+
       var userIdList=window.arguments[0].userId.split(/\r?\n/);
+      keyId = window.arguments[0].keyId;
       var uid = document.getElementById("uidContainer");
       document.getElementById("photoImage").setAttribute("src", window.arguments[0].photoUri);
       for (var i=0; i< userIdList.length; i++) {
@@ -63,26 +71,48 @@
         l.setAttribute("value", userIdList[i]);
         uid.appendChild(l);
       }
-      document.getElementById("keyId").setAttribute("value", EnigGetString("keyId")+": 0x"+window.arguments[0].keyId);
-      window.setTimeout(resizeDlg, 0);
+      document.getElementById("keyId").setAttribute("value", EnigGetString("keyId")+": 0x"+keyId);
+      document.getElementById("keyValidity").setAttribute("value", EnigGetTrustLabel(EnigGetTrustCode(keyListObj.keyList[keyId])));
     }
-    
-    function resizeDlg() {
+
+    function resizeDlg(event) {
       window.sizeToContent();
+      ++repaintCount;
+      if (repaintCount > 3)
+        removeListener();
     }
+
+    function removeListener() {
+      window.removeEventListener("MozAfterPaint", resizeDlg, false);
+    }
+
+    function displayKeyProps() {
+      EnigDisplayKeyDetails(keyId, false);
+    }
+
   ]]>
   </script>
 
-  <vbox>
-    <vbox autostretch="always" id="uidContainer"/>
-    <label id="keyId"/>
-  </vbox>
-  <vbox align="center">
-    <hbox align="center">
-      <groupbox autostretch="always">
-        <image id="photoImage" autostretch="never"/>
-      </groupbox>
-    </hbox>
-  </vbox>
+  <hbox align="center">
+    <vbox align="center">
+      <hbox align="center">
+        <groupbox autostretch="always">
+          <image id="photoImage" autostretch="never"/>
+        </groupbox>
+      </hbox>
+    </vbox>
+    <vbox>
+      <vbox autostretch="always" id="uidContainer"/>
+      <label id="keyId"/>
+      <hbox align="start">
+        <label value="Key validity: "/>
+        <label id="keyValidity"/>
+      </hbox>
+      <separator/>
+      <hbox align="end">
+        <button label="&enigmail.displayKeyProperties.label;" oncommand="displayKeyProps()"/>
+      </hbox>
+    </vbox>
+  </hbox>
 </dialog>
 

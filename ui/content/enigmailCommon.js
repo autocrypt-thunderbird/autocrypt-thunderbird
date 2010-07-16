@@ -2192,6 +2192,7 @@ function EnigGetTrustLabel(trustCode) {
     keyTrust=EnigGetString("keyValid.invalid");
     break;
   case 'd':
+  case 'D':
     keyTrust=EnigGetString("keyValid.disabled");
     break;
   case 'r':
