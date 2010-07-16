@@ -445,32 +445,3 @@
 		</description>
 	</hbox>
 </window>
-
-<!--
-<!DOCTYPE window>
-<window
-	title="Sorting a custom tree view example"
-	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-	onload="init()">
-
-	<script type="application/javascript" src="chrome://enigmail/content/enigmailKeyManager.js"/>
-
-	<hbox align="center" id="search-box">
-		<label accesskey="F" control="filter">Filter</label>
-		<textbox id="filter" oninput="inputFilter(event)" flex="1"/>
-		<button id="clearFilter" oncommand="clearFilter()" label="Clear" accesskey="C" disabled="true"/>
-	</hbox>
-
-	<tree id="tree" flex="1" persist="sortDirection sortResource" sortDirection="ascending" sortResource="description">
-		<treecols>
-			<treecol id="name" label="Name" flex="1" persist="width ordinal hidden" onclick="sort(this)" class="sortDirectionIndicator" sortDirection="ascending"/>
-			<splitter class="tree-splitter"/>
-			<treecol id="description" label="description" flex="1" persist="width ordinal hidden" onclick="sort(this)" class="sortDirectionIndicator"/>
-			<splitter class="tree-splitter"/>
-			<treecol id="weapon" label="Weapon" flex="1" persist="width ordinal hidden" onclick="sort(this)" class="sortDirectionIndicator"/>
-		</treecols>
-		<treechildren id="tree-children"/>
-	</tree>
-
-</window>
--->
