@@ -1768,13 +1768,47 @@ function EnigObtainKeyList(secretOnly, refresh) {
 }
 
 // Load the key list into memory
-function EnigLoadKeyList(refresh, keyListObj) {
+// sortDirection: 1 = ascending / -1 = descending
+
+function EnigLoadKeyList(refresh, keyListObj, sortColumn, sortDirection) {
   DEBUG_LOG("enigmailCommon.js: EnigLoadKeyList\n");
+
+  if (! sortColumn) sortColumn = "userid";
+  if (! sortDirection) sortDirection = 1;
 
   const TRUSTLEVEL_SORTED="oidre-qnmfu"; // trust level sorted by increasing level of trust
 
-  var sortUsers = function (a, b) {
-    if (a.userId.toLowerCase()<b.userId.toLowerCase()) { return -1; } else { return 1; }
+  var sortByKeyId = function (a, b) {
+    return (a.keyId < b.keyId) ? -sortDirection : sortDirection;
+  }
+
+  var sortByKeyIdShort = function (a, b) {
+    return (a.keyId.substr(-8,8) < b.keyId.substr(-8 ,8)) ? -sortDirection : sortDirection;
+  }
+
+  var sortByUserId = function (a, b) {
+    return (a.userId < b.userId) ? -sortDirection : sortDirection;
+  }
+
+  var sortByFpr = function (a, b) {
+    return (keyListObj.keyList[a.keyId].fpr < keyListObj.keyList[b.keyId].fpr) ? -sortDirection : sortDirection;
+  }
+
+  var sortByKeyType = function (a, b) {
+    return (keyListObj.keyList[a.keyId].secretAvailable < keyListObj.keyList[b.keyId].secretAvailable) ? -sortDirection : sortDirection;
+  }
+
+
+  var sortByValidity = function (a, b) {
+    return (TRUSTLEVEL_SORTED.indexOf(keyListObj.keyList[a.keyId].keyTrust) < TRUSTLEVEL_SORTED.indexOf(keyListObj.keyList[b.keyId].keyTrust)) ? -sortDirection : sortDirection;
+  }
+
+  var sortByTrust = function (a, b) {
+    return (TRUSTLEVEL_SORTED.indexOf(keyListObj.keyList[a.keyId].ownerTrust) < TRUSTLEVEL_SORTED.indexOf(keyListObj.keyList[b.keyId].ownerTrust)) ? -sortDirection : sortDirection;
+  }
+
+  var sortByExpiry = function (a, b) {
+    return (keyListObj.keyList[a.keyId].expiryTime < keyListObj.keyList[b.keyId].expiryTime) ? -sortDirection : sortDirection;
   }
 
   var aGpgUserList = EnigObtainKeyList(false, refresh);
@@ -1788,8 +1822,8 @@ function EnigLoadKeyList(refresh, keyListObj) {
     }
   }
 
-  keyListObj.keyList = [];
-  keyListObj.keySortList = [];
+  keyListObj.keyList = new Array();
+  keyListObj.keySortList = new Array();
 
   var keyObj = new Object();
   var i;
@@ -1803,6 +1837,7 @@ function EnigLoadKeyList(refresh, keyListObj) {
         keyObj = new Object();
         uatNum = 0;
         keyObj.expiry=EnigGetDateTime(listRow[ENIG_EXPIRY], true, false);
+        keyObj.expiryTime = Number(listRow[ENIG_EXPIRY]);
         keyObj.created=EnigGetDateTime(listRow[ENIG_CREATED], true, false);
         keyObj.keyId=listRow[ENIG_KEY_ID];
         keyObj.keyTrust=listRow[ENIG_KEY_TRUST];
@@ -1823,7 +1858,10 @@ function EnigLoadKeyList(refresh, keyListObj) {
         }
         if (typeof(keyObj.userId) != "string") {
           keyObj.userId=EnigConvertGpgToUnicode(listRow[ENIG_USER_ID]);
-          keyListObj.keySortList.push({userId: keyObj.userId, keyId: keyObj.keyId});
+          keyListObj.keySortList.push({
+            userId: keyObj.userId.toLowerCase(),
+            keyId: keyObj.keyId
+          });
           if (TRUSTLEVEL_SORTED.indexOf(listRow[ENIG_KEY_TRUST]) < TRUSTLEVEL_SORTED.indexOf(keyObj.keyTrust)) {
             // reduce key trust if primary UID is less trusted than public key
             keyObj.keyTrust = listRow[ENIG_KEY_TRUST];
@@ -1864,7 +1902,31 @@ function EnigLoadKeyList(refresh, keyListObj) {
      }
   }
 
-  keyListObj.keySortList.sort(sortUsers);
+  switch (sortColumn.toLowerCase()) {
+  case "keyid":
+    keyListObj.keySortList.sort(sortByKeyId);
+    break;
+  case "keyidshort":
+    keyListObj.keySortList.sort(sortByKeyIdShort);
+    break;
+  case "fpr":
+    keyListObj.keySortList.sort(sortByFpr);
+    break;
+  case "keytype":
+    keyListObj.keySortList.sort(sortByKeyType);
+    break;
+  case "validity":
+    keyListObj.keySortList.sort(sortByValidity);
+    break;
+  case "trust":
+    keyListObj.keySortList.sort(sortByTrust);
+    break;
+  case "expiry":
+    keyListObj.keySortList.sort(sortByExpiry);
+    break;
+  default:
+    keyListObj.keySortList.sort(sortByUserId);
+  }
 }
 
 function EnigGetSecretKeys() {

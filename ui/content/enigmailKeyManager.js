@@ -87,7 +87,8 @@ function displayFullList() {
 function loadkeyList() {
   DEBUG_LOG("enigmailKeyManager.js: loadkeyList\n");
 
-  enigmailBuildList(false);
+  //enigmailBuildList(false);
+  sortTree();
   showOrHideAllKeys();
   document.getElementById("pleaseWait").hidePopup();
   document.getElementById("statusText").value=" ";
@@ -101,12 +102,17 @@ function enigmailRefreshKeys() {
   for (var i=0; i<keyList.length; i++) {
     gEnigLastSelectedKeys[keyList[i]] = 1;
   }
+
+  enigmailClearTree();
+  enigmailBuildList(true);
+  enigApplyFilter();
+}
+
+function enigmailClearTree() {
   var treeChildren = gTreeChildren;
   while (treeChildren.firstChild) {
     treeChildren.removeChild(treeChildren.firstChild);
   }
-  enigmailBuildList(true);
-  enigApplyFilter();
 }
 
 function enigmailBuildList(refresh) {
@@ -114,7 +120,8 @@ function enigmailBuildList(refresh) {
 
   var keyListObj = {};
 
-  EnigLoadKeyList(refresh, keyListObj);
+
+  EnigLoadKeyList(refresh, keyListObj, getSortColumn(), getSortDirection());
 
   gKeyList = keyListObj.keyList;
   gKeySortList = keyListObj.keySortList;
@@ -941,17 +948,6 @@ function getFirstNode() {
 function onResetFilter() {
   gFilterBox.value="";
   showOrHideAllKeys();
-  /*
-  if (! displayFullList()) {
-    showOrHideAllKeys();
-  }
-  else {
-    var node=getFirstNode();
-    while (node) {
-      node.hidden=false;
-      node = node.nextSibling;
-    }
-  } */
   gClearButton.setAttribute("disabled", true);
 }
 
@@ -1077,5 +1073,49 @@ function enigmailKeyServerAcess(accessType, callbackFunc) {
 
   if (accessType != nsIEnigmail.UPLOAD_KEY && resultObj.result) {
     enigmailRefreshKeys();
+  }
+}
+
+function getSortDirection() {
+  return gUserList.getAttribute("sortDirection") == "ascending" ? 1 : -1;
+}
+
+function sortTree(column) {
+
+	var columnName;
+	var order = getSortDirection();
+
+	//if the column is passed and it's already sorted by that column, reverse sort
+	if (column) {
+		columnName = column.id;
+		if (gUserList.getAttribute("sortResource") == columnName) {
+			order *= -1;
+		}
+		else {
+  		document.getElementById(gUserList.getAttribute("sortResource")).removeAttribute("sortDirection");
+  		order = 1;
+		}
+	} else {
+		columnName = gUserList.getAttribute("sortResource");
+	}
+	gUserList.setAttribute("sortDirection", order == 1 ? "ascending" : "descending");
+	gUserList.setAttribute("sortResource", columnName);
+	document.getElementById(columnName).setAttribute("sortDirection", order == 1 ? "ascending" : "descending");
+  enigmailClearTree();
+	enigmailBuildList(false);
+  enigApplyFilter();
+}
+
+
+function getSortColumn() {
+  switch (gUserList.getAttribute("sortResource")) {
+  case "enigUserNameCol": return "userid";
+  case "keyCol": return "keyidshort";
+  case "typeCol": return "keytype";
+  case "validityCol": return "validity";
+  case "trustCol": return "trust";
+  case "expCol": return "expiry";
+  case "fprCol": return "fpr";
+  default: return "?";
   }
 }
