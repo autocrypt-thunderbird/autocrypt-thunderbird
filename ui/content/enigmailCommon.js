@@ -1767,6 +1767,14 @@ function EnigObtainKeyList(secretOnly, refresh) {
   }
 }
 
+function EnigGetTrustCode(keyObj) {
+  // return a merged value of trust level "key disabled"
+  if (keyObj.keyUseFor.indexOf("D")>=0)
+    return "D";
+  else
+    return keyObj.keyTrust;
+}
+
 // Load the key list into memory
 // sortDirection: 1 = ascending / -1 = descending
 
@@ -1776,7 +1784,7 @@ function EnigLoadKeyList(refresh, keyListObj, sortColumn, sortDirection) {
   if (! sortColumn) sortColumn = "userid";
   if (! sortDirection) sortDirection = 1;
 
-  const TRUSTLEVEL_SORTED="oidre-qnmfu"; // trust level sorted by increasing level of trust
+  const TRUSTLEVEL_SORTED="oidreD-qnmfu"; // trust level sorted by increasing level of trust
 
   var sortByKeyId = function (a, b) {
     return (a.keyId < b.keyId) ? -sortDirection : sortDirection;
@@ -1800,7 +1808,7 @@ function EnigLoadKeyList(refresh, keyListObj, sortColumn, sortDirection) {
 
 
   var sortByValidity = function (a, b) {
-    return (TRUSTLEVEL_SORTED.indexOf(keyListObj.keyList[a.keyId].keyTrust) < TRUSTLEVEL_SORTED.indexOf(keyListObj.keyList[b.keyId].keyTrust)) ? -sortDirection : sortDirection;
+    return (TRUSTLEVEL_SORTED.indexOf(EnigGetTrustCode(keyListObj.keyList[a.keyId])) < TRUSTLEVEL_SORTED.indexOf(EnigGetTrustCode(keyListObj.keyList[b.keyId]))) ? -sortDirection : sortDirection;
   }
 
   var sortByTrust = function (a, b) {

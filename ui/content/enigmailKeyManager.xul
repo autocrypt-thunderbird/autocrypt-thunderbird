@@ -225,6 +225,21 @@
                   observes="bcOneKey"
                   accesskey="&enigmail.keyMan.keyDetails.accesskey;"
                   oncommand="enigmailKeyDetails()"/>
+        <menuseparator/>
+        <menuitem label="&enigmail.keyMan.showInvalidKeys.label;"
+                  id="showInvalidKeys"
+                  type="checkbox"
+                  checked="true"
+                  persist="checked"
+                  accesskey="&enigmail.keyMan.showInvalidKeys.accesskey;"
+                  oncommand="enigApplyFilter()"/>
+        <menuitem label="&enigmail.keyMan.showUntrustedKeys.label;"
+                  id="showUntrustedKeys"
+                  type="checkbox"
+                  checked="true"
+                  persist="checked"
+                  accesskey="&enigmail.keyMan.showUntrustedKeys.accesskey;"
+                  oncommand="enigApplyFilter()"/>
 
 			</menupopup>
 		</menu>

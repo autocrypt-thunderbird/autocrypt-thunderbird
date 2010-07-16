@@ -453,6 +453,8 @@
 <!ENTITY enigmail.keyMan.viewPhoto.label           "Photo ID">
 <!ENTITY enigmail.keyMan.ctxViewPhoto.label        "View Photo ID">
 <!ENTITY enigmail.keyMan.viewSig.label             "Signatures">
+<!ENTITY enigmail.keyMan.showInvalidKeys.label     "Display invalid keys">
+<!ENTITY enigmail.keyMan.showUntrustedKeys.label   "Display untrusted keys">
 <!ENTITY enigmail.keyMan.ctxViewSig.label          "View Signatures">
 <!ENTITY enigmail.keyMan.userId.label              "Name">
 <!ENTITY enigmail.keyMan.keyType.label             "Type">
@@ -486,6 +488,8 @@
 <!ENTITY enigmail.keyMan.manageUid.accesskey         "M">
 <!ENTITY enigmail.keyMan.changePwd.accesskey         "P">
 <!ENTITY enigmail.keyMan.viewSig.accesskey           "S">
+<!ENTITY enigmail.keyMan.showInvalidKeys.accesskey   "D">
+<!ENTITY enigmail.keyMan.showUntrustedKeys.accesskey "U">
 <!ENTITY enigmail.keyMan.showPhoto.accesskey         "P">
 <!ENTITY enigmail.keyMan.importMenu.accesskey        "I">
 <!ENTITY enigmail.keyMan.exportMenu.accesskey        "X">

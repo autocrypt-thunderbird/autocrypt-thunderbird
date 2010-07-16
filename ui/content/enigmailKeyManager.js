@@ -55,6 +55,8 @@ var gSearchTimer = null;
 var gSearchInput = null;
 var gShowAllKeysElement = null;
 var gTreeChildren = null;
+var gShowInvalidKeys = null;
+var gShowUntrustedKeys = null;
 
 function enigmailKeyManagerLoad() {
   DEBUG_LOG("enigmailKeyManager.js: enigmailKeyManagerLoad\n");
@@ -64,6 +66,8 @@ function enigmailKeyManagerLoad() {
   gSearchInput = document.getElementById("filterKey");
   gShowAllKeysElement = document.getElementById("showAllKeys");
   gTreeChildren = document.getElementById("pgpKeyListChildren");
+  gShowInvalidKeys = document.getElementById("showInvalidKeys");
+  gShowUntrustedKeys = document.getElementById("showUntrustedKeys");
   if (EnigGetPref("keyManShowAllKeys")) {
     gShowAllKeysElement.setAttribute("checked", "true");
   }
@@ -964,6 +968,9 @@ function enigmailToggleShowAll() {
 function showOrHideAllKeys() {
   var hideNode = ! displayFullList();
   var initHint = document.getElementById("emptyTree");
+  var showInvalidKeys = gShowInvalidKeys.getAttribute("checked") == "true";
+  var showUntrustedKeys = gShowUntrustedKeys.getAttribute("checked") == "true";
+
   document.getElementById("nothingFound").hidePopup();
   if (hideNode) {
     initHint.showPopup(gTreeChildren, -1, -1, "tooltip", "after_end", "");
@@ -973,15 +980,32 @@ function showOrHideAllKeys() {
   }
   var node=getFirstNode();
   while (node) {
-    node.hidden= hideNode;
+    node.hidden = hideNode;
+     if (! determineHiddenKeys(showInvalidKeys, EnigGetTrustCode(gKeyList[node.id]), showUntrustedKeys, gKeyList[node.id].ownerTrust)) {
+       node.hidden = true;
+    }
+
     node = node.nextSibling;
   }
+}
+
+function determineHiddenKeys(showInvalidKeys, keyTrust, showUntrustedKeys, ownerTrust) {
+  var show = true;
+
+  const INVALID_KEYS = "ierdD";
+  const UNTRUSTED_KEYS = "n";
+
+  if ((!showInvalidKeys) && INVALID_KEYS.indexOf(keyTrust)>=0) show = false;
+  if ((!showUntrustedKeys) && UNTRUSTED_KEYS.indexOf(ownerTrust)>=0) show = false;
+  return show;
 }
 
 function enigApplyFilter() {
   var searchTxt=gSearchInput.value;
   var nothingFoundElem = document.getElementById("nothingFound");
   nothingFoundElem.hidePopup();
+  var showInvalidKeys = gShowInvalidKeys.getAttribute("checked") == "true";
+  var showUntrustedKeys = gShowUntrustedKeys.getAttribute("checked") == "true";
 
   if (!searchTxt || searchTxt.length==0) {
     showOrHideAllKeys();
@@ -999,14 +1023,18 @@ function enigApplyFilter() {
     var hideNode = true;
     if ((uid.toLowerCase().indexOf(searchTxt) >= 0) ||
         (node.id.toLowerCase().indexOf(searchTxt) >= 0)) {
-      hideNode = false;
-      foundResult = true;
+       if (determineHiddenKeys(showInvalidKeys, EnigGetTrustCode(gKeyList[node.id]), showUntrustedKeys, gKeyList[node.id].ownerTrust)) {
+          hideNode = false;
+          foundResult = true;
+        }
     }
     for (var subUid=0; subUid < gKeyList[node.id].SubUserIds.length; subUid++) {
       uid = gKeyList[node.id].SubUserIds[subUid].userId;
       if (uid.toLowerCase().indexOf(searchTxt) >= 0) {
-        hideNode = false;
-        foundResult = true;
+       if (determineHiddenKeys(showInvalidKeys, EnigGetTrustCode(gKeyList[node.id]), showUntrustedKeys, gKeyList[node.id].ownerTrust)) {
+          hideNode = false;
+          foundResult = true;
+        }
       }
     }
     node.hidden=hideNode;
