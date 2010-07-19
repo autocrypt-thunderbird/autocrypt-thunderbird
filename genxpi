@@ -165,6 +165,7 @@ zip ${xpiFile} \
     components/enigMsgCompFields.js \
     defaults/preferences/enigmail.js \
     defaults/pref/enigmail.js \
+    modules/subprocess.jsm \
     chrome/${xpiModule}.jar \
     wrappers/gpg-wrapper.sh \
     wrappers/gpg-agent-wrapper.sh \

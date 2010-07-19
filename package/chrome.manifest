@@ -60,6 +60,8 @@ contract @mozdev.org/enigmail/composefields;1 {847b3a30-7ab1-11d4-8f02-006008948
 component {847b3ab0-7ab1-11d4-8f02-006008948af5} components/enigprefs-service.js
 contract @mozilla.org/accountmanager/extension;1?name=enigprefs {847b3ab0-7ab1-11d4-8f02-006008948af5}
 
+# Resource module registration
+resource enigmail modules/
 
 ## Gecko 2.0 interface specifiacations
 interfaces  components/ipc.xpt
