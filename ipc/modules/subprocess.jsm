@@ -86,7 +86,8 @@
  *            might need to be escaped.
  *
  * onFinished: optional function that is called when the process has terminated. The exit code
- *             from the process is passed as input parameter.
+ *             from the process is passed as input parameter. If stdin was not defined, then the
+ *             output from stdout is available via subprocess.stdoutData.
 */
 
 
@@ -102,6 +103,7 @@ var subprocess = {
   _pipeIn: null,
   _pipeErr: null,
   _pipeTransport: null,
+  stdoutData: null,
 
   call: function (commandObj) {
 
@@ -137,11 +139,7 @@ var subprocess = {
           this._initializedStream = true;
         }
         var av = aInputStream.available();
-        var data = this._scInpStr.read(av);
-
-        if (this._subprocess._pipeOut != null) {
-          this._subprocess._pipeOut(data);
-        }
+        this._subprocess._pipeOut(this._scInpStr.read(av));
       }
     };
 
@@ -176,9 +174,18 @@ var subprocess = {
                               commandObj.envVars, commandObj.envVars.length,
                               0, "", true, false, stderrData);
 
-    var stdoutListener = new SimpleStreamListener(this, commandObj);
+    var stdoutListener;
+    if (this._pipeOut != null) {
+      // add listener for asynchronous processing of data
+      stdoutListener = new SimpleStreamListener(this, commandObj);
+    }
+    else {
+      stdoutListener = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+      stdoutListener.open(-1, true);
+    }
 
     this._pipeTransport.asyncRead(stdoutListener, null, 0, -1, 0);
+
 
     if (typeof(this._pipeIn) == "string") {
       this._pipeTransport.writeSync(this._pipeIn, this._pipeIn.length);
@@ -190,7 +197,15 @@ var subprocess = {
     this._pipeTransport.join(); // wait for command to complete
     this.result = this._pipeTransport.exitCode();
 
-    if (this._pipeErr != null) this._pipeErr(stderrData.getData());
+    if (this._pipeErr != null) {
+      this._pipeErr(stderrData.getData());
+      stderrData.shutdown();
+    }
+
+    if (this.pipeOut == null) {
+      this.stdoutData = stdoutListener.getData();
+      stdoutListener.shutdown();
+    }
 
     if (typeof(commandObj.onFinished) == "function") commandObj.onFinished(this.result);
 
