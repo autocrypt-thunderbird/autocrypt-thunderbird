@@ -31,6 +31,7 @@
  * GPL.
  */
 
+
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
 // Initialize enigmailCommon
@@ -491,6 +492,7 @@ function enigmailDeleteKey() {
   var r=enigmailSvc.deleteKey(window, "0x"+keyList.join(" 0x"), deleteSecret, errorMsgObj);
   if (r != 0) {
     EnigAlert(EnigGetString("deleteKeyFailed")+"\n\n"+errorMsgObj.value);
+    return;
   }
   enigmailRefreshKeys();
 }
@@ -520,6 +522,46 @@ function enigShowPhoto(uatNumber) {
   var keyList = enigmailGetSelectedKeys();
 
   EnigShowPhoto(keyList[0], gKeyList[keyList[0]].userId, uatNumber);
+}
+
+function enigmailAddPhoto() {
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
+  var keyList = enigmailGetSelectedKeys();
+
+  var inFile = EnigFilePicker(EnigGetString("keyMan.addphoto.filepicker.title"),
+                               "", false, "*.jpg",
+                               null,
+                               ["JPG", "*.jpg", "JPEG" , "*.jpeg"]);
+  if (! inFile) return;
+
+  if (inFile.fileSize> 25600) {
+    // warn if file size > 25 kB
+    if (!EnigConfirm(EnigGetString("keyMan.addphoto.warnLargeFile"), EnigGetString("dlg.button.continue"), EnigGetString("dlg.button.cancel")))
+      return;
+  }
+
+  var ioServ = enigGetService(ENIG_IOSERVICE_CONTRACTID, "nsIIOService");
+  var photoUri = ioServ.newFileURI(inFile).spec;
+  var argsObj = {
+    photoUri: photoUri,
+    userId: gKeyList[keyList[0]].userId,
+    keyId: keyList[0],
+    okPressed: false
+  };
+
+  window.openDialog("chrome://enigmail/content/enigmailImportPhoto.xul", inFile, "chrome,modal=1,resizable=1,dialog=1,centerscreen", argsObj);
+
+  var errorMsgObj = {};
+  var r=enigmailSvc.addPhoto(window, "0x"+keyList[0], inFile, errorMsgObj);
+  if (r != 0) {
+    EnigAlert(EnigGetString("deleteKeyFailed")+"\n\n"+errorMsgObj.value);
+    return;
+  }
+  enigmailRefreshKeys();
+
 }
 
 function enigCreateKeyMsg() {
@@ -629,6 +671,7 @@ function enigCreateRevokeCert() {
 
   EnigCreateRevokeCert(keyList[0], gKeyList[keyList[0]].userId);
 }
+
 
 function enigmailExportKeys() {
   var keyList = enigmailGetSelectedKeys();

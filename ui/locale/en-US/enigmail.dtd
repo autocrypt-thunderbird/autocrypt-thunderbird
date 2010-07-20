@@ -445,6 +445,7 @@
 
 <!ENTITY enigmail.keyMan.reload.label              "Reload Key Cache">
 <!ENTITY enigmail.keyMan.addUid.label              "Add User ID">
+<!ENTITY enigmail.keyMan.addPhoto.label            "Add Photo">
 <!ENTITY enigmail.keyMan.manageUid.label           "Manage User IDs">
 <!ENTITY enigmail.keyMan.changePwd.label           "Change Passphrase">
 <!ENTITY enigmail.keyMan.delKey.label              "Delete Key">
@@ -486,6 +487,7 @@
 <!ENTITY enigmail.keyMan.uploadToServer.accesskey    "U">
 <!ENTITY enigmail.keyMan.reload.accesskey            "R">
 <!ENTITY enigmail.keyMan.addUid.accesskey            "A">
+<!ENTITY enigmail.keyMan.addPhoto.accesskey          "P">
 <!ENTITY enigmail.keyMan.manageUid.accesskey         "M">
 <!ENTITY enigmail.keyMan.changePwd.accesskey         "P">
 <!ENTITY enigmail.keyMan.viewSig.accesskey           "S">
@@ -710,3 +712,6 @@
                                                       <html:br/><html:br/>Thank you for using Enigmail.">
 <!ENTITY enigmail.advancedIdentityDlg.title          "Advanced OpenPGP Identity Settings">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label     "Attach my public key to messages">
+
+<!ENTITY enigmail.addPhoto.question.label            "Do you want to add the following picture to the following key?">
+<!ENTITY enigmail.addPhoto.title                     "Add Photo to Key">

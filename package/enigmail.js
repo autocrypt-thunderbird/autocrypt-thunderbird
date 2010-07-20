@@ -4743,6 +4743,21 @@ Enigmail.prototype = {
     return r;
   },
 
+  addPhoto: function (parent, keyId, photoFile, errorMsgObj) {
+    DEBUG_LOG("enigmail.js: Enigmail.addPhoto: keyId="+keyId+"\n");
+
+    var photoFileName = this.getEscapedFilename(getFilePath(photoFile.QueryInterface(nsILocalFile)));
+
+    var r = this.editKey(parent, true, null, keyId, "addphoto",
+                        { file: photoFileName, step: 0 },
+                        addPhotoCallback,
+                        null,
+                        errorMsgObj);
+    this.stillActive();
+
+    return r;
+  },
+
 
   genCardKey: function (parent, name, email, comment, expiry, backupPasswd, requestObserver, errorMsgObj) {
     DEBUG_LOG("enigmail.js: Enigmail.genCardKey: \n");
@@ -5034,7 +5049,8 @@ KeyEditor.prototype = {
          throw Components.results.NS_ERROR_NO_INTERFACE;
     return this;
   }
-}
+};
+
 function signKeyCallback(inputData, keyEdit, ret) {
 
   ret.writeTxt = "";
@@ -5694,6 +5710,44 @@ function cardChangePinCallback(inputData, keyEdit, ret) {
     ret.exitCode=-1;
     ret.quitNow=true;
     ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
+  }
+}
+
+
+function addPhotoCallback(inputData, keyEdit, ret) {
+  ret.writeTxt = "";
+  ret.errorMsg = "";
+
+  if (keyEdit.doCheck(GET_LINE, "keyedit.prompt" )) {
+    ret.exitCode = 0;
+    ret.writeTxt = "save";
+    ret.quitNow=true;
+  }
+  else if (keyEdit.doCheck(GET_LINE, "photoid.jpeg.add" )) {
+    if (inputData.step == 0) {
+      ++inputData.step;
+      ret.exitCode = 0;
+      ret.writeTxt = inputData.file;
+    }
+    else {
+      ret.exitCode = -1;
+      ret.quitNow=true;
+    }
+  }
+  else if (keyEdit.doCheck(GET_BOOL, "photoid.jpeg.size")) {
+    ret.exitCode = 0;
+    ret.writeTxt = "Y"; // add large file
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterAdminPin"), ret);
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
+    GetPin(inputData.parent, EnigGetString("enterCardPin"), ret);
+  }
+  else {
+    ret.quitNow=true;
+    ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
+    ret.exitCode=-1;
   }
 }
 

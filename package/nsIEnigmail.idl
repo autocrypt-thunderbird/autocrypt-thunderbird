@@ -306,6 +306,11 @@ interface nsIEnigmail : nsISupports
                   in string idNumber,
                   out wstring errorMsg);
 
+  long addPhoto (in nsIDOMWindow parent,
+                  in string keyId,
+                  in nsIFile photoFile,
+                  out wstring errorMsg);
+
   long changePassphrase (in nsIDOMWindow parent,
                          in string keyId,
                          in string oldPw,
