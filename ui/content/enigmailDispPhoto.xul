@@ -46,8 +46,8 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="onLoad();"
         ondialogaccept="return window.close();"
-        width="200px"
-        height="150px"
+        width="500px"
+        height="400px"
         buttons="accept">
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
 
@@ -76,10 +76,11 @@
     }
 
     function resizeDlg(event) {
-      window.sizeToContent();
       ++repaintCount;
-      if (repaintCount > 3)
+      window.sizeToContent();
+      if (repaintCount > 3) {
         removeListener();
+      }
     }
 
     function removeListener() {
@@ -97,7 +98,7 @@
     <vbox align="center">
       <hbox align="center">
         <groupbox autostretch="always">
-          <image id="photoImage" autostretch="never"/>
+          <image id="photoImage" maxwidth="350px" maxheight="300px"/>
         </groupbox>
       </hbox>
     </vbox>
