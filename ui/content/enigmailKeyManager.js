@@ -437,7 +437,7 @@ function enigmailOnClick(event) {
     catch(ex) {}
   }
   if (keyType=="uat") {
-    enigShowPhoto(uatNum);
+    enigShowSpecificPhoto(uatNum);
   }
   else {
    enigmailKeyDetails();
@@ -518,18 +518,47 @@ function enigmailEnableKey() {
   enigmailRefreshKeys();
 }
 
-function enigShowPhoto(uatNumber) {
+function enigShowPhoto() {
+
+  var keyList = enigmailGetSelectedKeys();
+  var keyType="";
+  var uatNum="";
+  if (keyList.length == 1) {
+    var rangeCount = gUserList.view.selection.getRangeCount();
+    var start = {};
+    var end = {};
+    gUserList.view.selection.getRangeAt(0,start,end);
+    try {
+      keyType = gUserList.view.getItemAtIndex(start.value).getAttribute("keytype");
+      uatNum = gUserList.view.getItemAtIndex(start.value).getAttribute("uatNum");
+    }
+    catch(ex) {}
+
+    if (keyType=="uat") {
+      enigShowSpecificPhoto(uatNum);
+      return;
+    }
+  }
+
+  enigShowSpecificPhoto(null);
+}
+
+function enigShowSpecificPhoto(uatNumber) {
   var keyList = enigmailGetSelectedKeys();
 
   EnigShowPhoto(keyList[0], gKeyList[keyList[0]].userId, uatNumber);
 }
 
 function enigmailAddPhoto() {
+  var keyList = enigmailGetSelectedKeys();
+  keyMgrAddPhoto(gKeyList[keyList[0]].userId, keyList[0]);
+
+}
+
+function keyMgrAddPhoto(userId, keyId) {
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return;
-
-  var keyList = enigmailGetSelectedKeys();
 
   var validFile=false;
   while (! validFile) {
@@ -560,8 +589,8 @@ function enigmailAddPhoto() {
   var photoUri = ioServ.newFileURI(inFile).spec;
   var argsObj = {
     photoUri: photoUri,
-    userId: gKeyList[keyList[0]].userId,
-    keyId: keyList[0],
+    userId: userId,
+    keyId: keyId,
     okPressed: false
   };
 
@@ -570,7 +599,7 @@ function enigmailAddPhoto() {
   if (!argsObj.okPressed) return;
 
   var errorMsgObj = {};
-  var r=enigmailSvc.addPhoto(window, "0x"+keyList[0], inFile, errorMsgObj);
+  var r=enigmailSvc.addPhoto(window, "0x"+keyId, inFile, errorMsgObj);
   if (r != 0) {
     EnigAlert(EnigGetString("keyMan.addphoto.failed")+"\n\n"+errorMsgObj.value);
     return;

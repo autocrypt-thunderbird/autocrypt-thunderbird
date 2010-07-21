@@ -208,6 +208,10 @@ function viewSignatures() {
 
 }
 
+function keyDetailsAddPhoto() {
+  keyMgrAddPhoto(gUserId, gKeyId);
+}
+
 function signKey() {
   if (EnigSignKey(gUserId, gKeyId, null)) {
     enableRefresh();

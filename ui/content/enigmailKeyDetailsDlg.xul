@@ -53,6 +53,7 @@
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyDetailsDlg.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyManager.js"/>
 
   <broadcasterset>
     <broadcaster id="ownKeyCommands" hidden="true"/>
@@ -159,9 +160,9 @@
   </hbox>
 
   <separator/>
-  
+
   <hbox flex="0">
-    <button id="actions" label="&enigmail.keyDetails.selAction.label;" 
+    <button id="actions" label="&enigmail.keyDetails.selAction.label;"
             accesskey="&enigmail.keyDetails.selAction.accesskey;" type="menu">
       <menupopup id="actionPopup">
         <menuitem label="&enigmail.keyMan.ctxViewPhoto.label;" oncommand="showPhoto()" id="showPhoto" disabled="true"/>
@@ -170,6 +171,7 @@
         <menuitem label="&enigmail.keyMan.setTrust.label;" oncommand="setOwnerTrust()"/>
         <menuseparator observes="ownKeyCommands" />
         <menuitem label="&enigmail.keyMan.manageUid.label;" observes="ownKeyCommands" oncommand="manageUids()"/>
+        <menuitem label="&enigmail.keyMan.addPhoto.label;" observes="ownKeyCommands" oncommand="keyDetailsAddPhoto()"/>
         <menuitem label="&enigmail.keyMan.changePwd.label;" observes="ownKeyCommands" oncommand="changePassword()"/>
         <menuitem label="&enigmail.keyMan.revokeKey.label;" observes="ownKeyCommands" oncommand="revokeKey()"/>
         <menuitem label="&enigmail.keyMan.ctxGenRevoke.label;" observes="ownKeyCommands" oncommand="genRevocationCert()"/>
