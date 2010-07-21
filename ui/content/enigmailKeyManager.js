@@ -531,11 +531,24 @@ function enigmailAddPhoto() {
 
   var keyList = enigmailGetSelectedKeys();
 
-  var inFile = EnigFilePicker(EnigGetString("keyMan.addphoto.filepicker.title"),
-                               "", false, "*.jpg",
-                               null,
-                               ["JPG", "*.jpg", "JPEG" , "*.jpeg"]);
-  if (! inFile) return;
+  var validFile=false;
+  while (! validFile) {
+    var inFile = EnigFilePicker(EnigGetString("keyMan.addphoto.filepicker.title"),
+                                 "", false, "*.jpg",
+                                 null,
+                                 ["JPG", "*.jpg", "JPEG" , "*.jpeg"]);
+    if (! inFile) return;
+
+    var jpgHeader = EnigReadFileContents(inFile, 10);
+
+    validFile = (jpgHeader.charCodeAt(0) == 0xFF &&
+        jpgHeader.charCodeAt(1) == 0xD8 &&
+        jpgHeader.substr(6,4) == "JFIF");
+
+    if (! validFile) {
+      EnigAlert(EnigGetString("keyMan.addphoto.noJpegFile"));
+    }
+  }
 
   if (inFile.fileSize> 25600) {
     // warn if file size > 25 kB
@@ -554,10 +567,12 @@ function enigmailAddPhoto() {
 
   window.openDialog("chrome://enigmail/content/enigmailImportPhoto.xul", inFile, "chrome,modal=1,resizable=1,dialog=1,centerscreen", argsObj);
 
+  if (!argsObj.okPressed) return;
+
   var errorMsgObj = {};
   var r=enigmailSvc.addPhoto(window, "0x"+keyList[0], inFile, errorMsgObj);
   if (r != 0) {
-    EnigAlert(EnigGetString("deleteKeyFailed")+"\n\n"+errorMsgObj.value);
+    EnigAlert(EnigGetString("keyMan.addphoto.failed")+"\n\n"+errorMsgObj.value);
     return;
   }
   enigmailRefreshKeys();

@@ -57,7 +57,8 @@
     var repaintCount=0;
     function onLoad() {
       document.getElementById("photoImage").setAttribute("src", window.arguments[0].photoUri);
-      document.getElementById("keyDesc").setAttribute("value", window.arguments[0].userId);
+      document.getElementById("keyDesc").setAttribute("value", "0x"+window.arguments[0].keyId.substr(-8,8)
+          + " - " + window.arguments[0].userId);
     }
 
     function acceptDlg() {
