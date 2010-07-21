@@ -75,6 +75,7 @@ const ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID =
                               "@mozilla.org/network/file-output-stream;1";
 const ENIG_STANDARD_URL_CONTRACTID = "@mozilla.org/network/standard-url;1";
 const ENIG_SCRIPTABLEINPUTSTREAM_CONTRACTID = "@mozilla.org/scriptableinputstream;1";
+const ENIG_BINARYINPUTSTREAM_CONTRACTID = "@mozilla.org/binaryinputstream;1";
 const ENIG_SAVEASCHARSET_CONTRACTID = "@mozilla.org/intl/saveascharset;1";
 
 const ENIG_STREAMCONVERTERSERVICE_CID_STR =
@@ -535,18 +536,18 @@ function EnigReadURLContents(url, maxBytes) {
 
   var rawInStream = fileChannel.open();
 
-  var scriptableInStream = ENIG_C.classes[ENIG_SCRIPTABLEINPUTSTREAM_CONTRACTID].createInstance(ENIG_C.interfaces.nsIScriptableInputStream);
-  scriptableInStream.init(rawInStream);
+  var inStream = ENIG_C.classes[ENIG_BINARYINPUTSTREAM_CONTRACTID].createInstance(ENIG_C.interfaces.nsIBinaryInputStream);
+  inStream.setInputStream(rawInStream);
 
-  var available = scriptableInStream.available()
+  var available = inStream.available()
   if ((maxBytes < 0) || (maxBytes > available))
     maxBytes = available;
 
-  var urlContents = scriptableInStream.read(maxBytes);
+  var data = inStream.readBytes(maxBytes);
 
-  scriptableInStream.close();
+  inStream.close();
 
-  return urlContents;
+  return data;
 }
 
 // maxBytes == -1 => read whole file
