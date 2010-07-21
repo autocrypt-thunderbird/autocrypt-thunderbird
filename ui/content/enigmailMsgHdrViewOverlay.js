@@ -454,6 +454,7 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
       gEnigStatusBar.setAttribute("encrypted", "notok");
       gEnigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureNotOk");
     }
+    enigUpdateMsgDb();
 
   } catch (ex) {}
 }
@@ -699,6 +700,15 @@ function enigOnShowAttachmentContextMenu() {
     decryptSaveMenu.setAttribute('disabled', true);
     importMenu.setAttribute('disabled', true);
   }
+}
+
+function enigUpdateMsgDb() {
+  DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateMsgDb\n");
+  var msg = gFolderDisplay.selectedMessage;
+  var msgHdr = msg.folder.GetMessageHeader(msg.messageKey);
+  if (gEnigStatusBar.getAttribute("encrypted") == "ok")
+    gEnigSecurityInfo.statusFlags |= nsIEnigmail.DECRYPTION_OKAY;
+  msgHdr.setUint32Property("enigmail", gEnigSecurityInfo.statusFlags);
 }
 
 function enigCanDetachAttachments() {

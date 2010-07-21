@@ -222,6 +222,7 @@ function enigSetSendDefaultOptions() {
 function enigComposeOpen() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigComposeOpen\n");
 
+  ERROR_LOG("*** original URI: '"+ typeof(gMsgCompose.originalMsgURI) +"'");
   gMsgCompose.RegisterStateListener(gEnigComposeStateListener);
   gEnigDetermineSendFlagID = null;
 
