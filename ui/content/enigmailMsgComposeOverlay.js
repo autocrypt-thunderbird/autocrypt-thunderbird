@@ -33,6 +33,8 @@ GPL.
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
+Components.utils.import("resource://app/modules/gloda/mimemsg.js");
+
 // Initialize enigmailCommon
 EnigInitCommon("enigmailMsgComposeOverlay");
 
@@ -219,10 +221,50 @@ function enigSetSendDefaultOptions() {
   gEnigAttachOwnKey.attachedKey = null;
 }
 
+function enigGetMsgProperties(msgUri, draft) {
+  var properties = 0;
+  try {
+    var messenger = Components.classes["@mozilla.org/messenger;1"].getService(Components.interfaces.nsIMessenger);
+    var msgHdr = messenger.messageServiceFromURI(msgUri).messageURIToMsgHdr(msgUri);
+    if (msgHdr) {
+      properties = msgHdr.getUint32Property("enigmail");
+      if (draft) {
+        try {
+          MsgHdrToMimeMessage(msgHdr , null, enigGetMsgPropertiesCb, false);
+        }
+        catch (ex) {
+          DEBUG_LOG("enigmailMessengerOverlay.js: enigGetMsgProperties: cannot use MsgHdrToMimeMessage\n");
+        }
+      }
+    }
+  }
+  catch (ex) {  }
+
+  var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
+  if (enigMimeService && enigMimeService.isEncrypted(msgUri)) {
+    properties |= nsIEnigmail.DECRYPTION_OKAY;
+  }
+
+  return properties;
+}
+
+function enigGetMsgPropertiesCb (msg, mimeMsg) {
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigGetMsgPropertiesCb\n");
+
+  var flags = 0;
+  if (mimeMsg && mimeMsg.headers["x-enigmail-draft-status"])
+    flags = Number(mimeMsg.headers["x-enigmail-draft-status"]);
+
+  if (flags & ENIG_SIGN) enigSetSendMode('sign');
+}
+
+
 function enigComposeOpen() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigComposeOpen\n");
 
-  ERROR_LOG("*** original URI: '"+ typeof(gMsgCompose.originalMsgURI) +"'");
+  var msgFlags;
+  var msgUri = null;
+  var msgIsDraft = false;
   gMsgCompose.RegisterStateListener(gEnigComposeStateListener);
   gEnigDetermineSendFlagID = null;
 
@@ -235,20 +277,28 @@ function enigComposeOpen() {
     var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
     if (enigMimeService)
     {
-      if (typeof(gMsgCompose.originalMsgURI)=="string") {
-        if (gMsgCompose.originalMsgURI.length>0 && enigMimeService.isEncrypted(gMsgCompose.originalMsgURI)) {
+      var draftId = gMsgCompose.compFields.draftId;
+      if (typeof(draftId)=="string" && draftId.length>0) {
+        msgUri = draftId.replace(/\?.*$/, "");
+        msgIsDraft = true;
+      }
+      else if (typeof(gMsgCompose.originalMsgURI)=="string" && gMsgCompose.originalMsgURI.length>0) {
+        msgUri = gMsgCompose.originalMsgURI;
+      }
+
+      if (msgUri != null) {
+        msgFlags = enigGetMsgProperties(msgUri, msgIsDraft);
+        if (msgFlags & nsIEnigmail.DECRYPTION_OKAY) {
           DEBUG_LOG("enigmailMsgComposeOverlay.js: enigComposeOpen: has encrypted originalMsgUri\n");
           DEBUG_LOG("originalMsgURI="+gMsgCompose.originalMsgURI+"\n");
           enigSetSendMode('encrypt');
           enigRemoveAttachedKey();
         }
-      }
-      if (typeof(gMsgCompose.compFields.draftId)=="string") {
-        if (gMsgCompose.compFields.draftId.length>0 && enigMimeService.isEncrypted(gMsgCompose.compFields.draftId.replace(/\?.*$/, ""))) {
-          DEBUG_LOG("enigmailMsgComposeOverlay.js: enigComposeOpen: has encrypted draftId=");
-          DEBUG_LOG(gMsgCompose.compFields.draftId);
-          DEBUG_LOG(" encrypted="+enigMimeService.isEncrypted(gMsgCompose.compFields.draftId)+"\n");
-          enigSetSendMode('encrypt');
+        else if (msgFlags & (nsIEnigmail.GOOD_SIGNATURE |
+            nsIEnigmail.BAD_SIGNATURE |
+            nsIEnigmail.UNVERIFIED_SIGNATURE)) {
+          enigSetSendMode('sign');
+          enigRemoveAttachedKey();
         }
       }
     }
@@ -687,7 +737,7 @@ function enigNextCommand(what) {
 }
 
 function enigSetSendMode(sendMode) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigSetSendMode: sendMode="+sendMode+"\n");
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSetSendMode: sendMode="+sendMode+"\n");
   var origSendMode=gEnigSendMode;
   switch (sendMode) {
     case 'toggle-sign':
@@ -719,6 +769,9 @@ function enigSetSendMode(sendMode) {
         }
       }
       break;
+    case 'sign':
+      gEnigSendMode |= ENIG_SIGN;
+      break;
     case 'plain':
       gEnigSendMode &= ~ENIG_ENCRYPT;
       if (gEnigSendModeDirty<2) {
@@ -740,7 +793,7 @@ function enigSetSendMode(sendMode) {
 }
 
 function enigDisplayUi() {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigDisplayUi:\n");
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDisplayUi:\n");
   var statusBar = document.getElementById("enigmail-status-bar");
 
   if (!enigGetAccDefault("enabled")) {
@@ -773,7 +826,7 @@ function enigDisplayUi() {
 }
 
 function enigSetMenuSettings(postfix) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigSetMenuSettings: postfix="+postfix+"\n");
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigSetMenuSettings: postfix="+postfix+"\n");
   document.getElementById("enigmail_encrypted_send"+postfix).setAttribute("checked", gEnigSendMode & ENIG_ENCRYPT ? "true": "false");
   document.getElementById("enigmail_signed_send"+postfix).setAttribute("checked", gEnigSendMode & ENIG_SIGN ? "true" : "false");
 
@@ -798,7 +851,7 @@ function enigSetMenuSettings(postfix) {
 }
 
 function enigDisplaySecuritySettings() {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigDisplaySecuritySettings\n");
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDisplaySecuritySettings\n");
   var inputObj = { sendFlags: gEnigSendMode,
                    usePgpMime: gEnigSendPGPMime,
                    disableRules: gEnigEnableRules};
@@ -812,7 +865,7 @@ function enigDisplaySecuritySettings() {
 }
 
 function enigDisplaySignClickWarn() {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigDisplaySignClickWarn\n");
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDisplaySignClickWarn\n");
   if ((gEnigSendModeDirty<2) &&
       (enigGetAccDefault("signPlain") ||
        enigGetAccDefault("signEnc"))) {
@@ -821,7 +874,7 @@ function enigDisplaySignClickWarn() {
 }
 
 function enigConfirmBeforeSend(toAddr, gpgKeys, sendFlags, isOffline, msgSendType) {
-  DEBUG_LOG("enigmailMessengerOverlay.js: enigConfirmBeforeSend: sendFlags="+sendFlags+"\n");
+  DEBUG_LOG("enigmailMsgComposeOverlay.js: enigConfirmBeforeSend: sendFlags="+sendFlags+"\n");
   // get confirmation before sending message
   var msgStatus = "";
 
@@ -1387,6 +1440,11 @@ function enigEncryptMsg(msgSendType) {
          gMsgCompose.compFields.securityInfo = newSecurityInfo;
        }
 
+       if ((sendFlags & nsIEnigmail.SAVE_MESSAGE) && (sendFlags & ENIG_SIGN)) {
+          msgCompFields.otherRandomHeaders += "X-Enigmail-Draft-Status: "+sendFlags+"\r\n";
+          sendFlags &= ~ENIG_SIGN;
+       }
+
        newSecurityInfo.sendFlags = sendFlags;
        newSecurityInfo.UIFlags = uiFlags;
        newSecurityInfo.senderEmailAddr = fromAddr;
@@ -1733,10 +1791,6 @@ function enigMessageSendCheck() {
   return true;
 }
 
-/////////////////////////////////////////////////////////////////////////
-// Call the following function from our version of the function
-// GenericSendMessage from the file MsgComposeCommands.js
-/////////////////////////////////////////////////////////////////////////
 function enigModifyCompFields(msgCompFields) {
 
   try {
