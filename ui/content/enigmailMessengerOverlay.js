@@ -36,7 +36,6 @@ GPL.
 // Initialize enigmailCommon
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
-EnigInitCommon("enigmailMessengerOverlay");
 Components.utils.import("resource://app/modules/gloda/mimemsg.js");
 
 
@@ -97,12 +96,13 @@ var gEnigTreeController = {
 }
 
 function enigMessengerStartup() {
-  DEBUG_LOG("enigmailMessengerOverlay.js: Startup\n");
 
   gEnigMessagePane = document.getElementById("messagepane");
 
   if (gEnigMessagePane == null) return; // TB 2.0 on Mac OS X calls this twice -- once far too early
 
+  DEBUG_LOG("enigmailMessengerOverlay.js: Startup\n");
+  EnigInitCommon("enigmailMessengerOverlay");
   // enigUpdateOptionsDisplay();
 
   // Override SMIME ui
@@ -490,16 +490,18 @@ function enigMessageDecryptCb(event, isAuto, mimeMsg){
       }
 
       gEnigSavedHeaders[headerName] = headerValue;
-      DEBUG_LOG("enigmailMessengerOverlay.js: "+headerName+": "+headerValue+"\n");
+      DEBUG_LOG("enigmailMessengerOverlay.js: header "+headerName+": "+headerValue+"\n");
     }
+
+    var allAttachments = gFolderDisplay.selectedMessage.allAttachments;
 
     var embeddedSigned = null;
     var embeddedEncrypted = null;
     if (gEnigSavedHeaders["content-type"] &&
         ((gEnigSavedHeaders["content-type"].search(/^multipart\/mixed/i) == 0) ||
          (gEnigSavedHeaders["content-type"].search(/^multipart\/encrypted/i) == 0))) {
-      for (var indexb in currentAttachments) {
-        var attachment = currentAttachments[indexb];
+      for (var indexb in allAttachments) {
+        var attachment = allAttachments[indexb];
 
         if (attachment) {
           if (attachment.contentType.search(/^application\/pgp-signature/i) == 0) {
@@ -510,7 +512,7 @@ function enigMessageDecryptCb(event, isAuto, mimeMsg){
             if (! attachment.isExternalAttachment)
               embeddedEncrypted = attachment.url.replace(/\&filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
           }
-          DEBUG_LOG("enigmailMessengerOverlay.js: "+indexb+": "+attachment.contentType+"\n");
+          DEBUG_LOG("enigmailMessengerOverlay.js: mimePart "+indexb+": "+attachment.contentType+"\n");
         }
       }
     }
