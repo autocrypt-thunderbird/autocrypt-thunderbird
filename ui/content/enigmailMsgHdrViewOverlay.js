@@ -368,14 +368,17 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
 
   var statusText  = document.getElementById("enigmailStatusText");
   var expStatusText  = document.getElementById("expandedEnigmailStatusText");
+  var icon = document.getElementById("enigToggleHeaderView2");
 
   if (statusArr.length>0) {
     expStatusText.value = statusArr[0];
     expStatusText.setAttribute("state", "true");
+    icon.removeAttribute("collapsed");
   }
   else {
     expStatusText.value = "";
     expStatusText.setAttribute("state", "false");
+    icon.setAttribute("collapsed", "true");
   }
 
   if (statusLine) {
