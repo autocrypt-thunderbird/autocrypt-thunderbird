@@ -911,6 +911,11 @@ function enigAddRecipients(toAddrList, recList) {
   }
 }
 
+function enigSetDraftStatus(sendFlags) {
+  gMsgCompose.compFields.otherRandomHeaders += "X-Enigmail-Draft-Status: "+sendFlags+"\r\n";
+}
+
+
 function enigEncryptMsg(msgSendType) {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigEncryptMsg: msgType="+msgSendType+", gEnigSendMode="+gEnigSendMode+"\n");
 
@@ -955,6 +960,8 @@ function enigEncryptMsg(msgSendType) {
       sendFlags &= ~ENIG_ENCRYPT;
 
       if (gEnigAttachOwnKey.appendAttachment) enigAttachOwnKey();
+
+      if (sendFlags & ENIG_SIGN) enigSetDraftStatus(sendFlags);
       return true;
     }
   }
@@ -1441,7 +1448,7 @@ function enigEncryptMsg(msgSendType) {
        }
 
        if ((sendFlags & nsIEnigmail.SAVE_MESSAGE) && (sendFlags & ENIG_SIGN)) {
-          msgCompFields.otherRandomHeaders += "X-Enigmail-Draft-Status: "+sendFlags+"\r\n";
+          enigSetDraftStatus(sendFlags);
           sendFlags &= ~ENIG_SIGN;
        }
 
