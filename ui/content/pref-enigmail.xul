@@ -104,8 +104,8 @@
     <tooltip id="defineRules.tooltip">
       <description>&enigmail.defineRules.tooltip;</description>
     </tooltip>
-    <tooltip id="keepSettingsForReply.tooltip">
-      <description>&enigmail.keepSettingsForReply.tooltip;</description>
+    <tooltip id="keepCryptoSettingsForReply.tooltip">
+      <description>&enigmail.keepCryptoSettingsForReply.tooltip;</description>
     </tooltip>
 
     <tooltip id="doubleDashSeparator.tooltip">
@@ -177,7 +177,7 @@
                        tooltip="maxIdleMinutes.tooltip"
                        value="&enigmail.maxIdleMinutesHead.label;" id="maxIdleMinutesHeadLabel"/>
 
-                <textbox id="enigmail_maxIdleMinutes" 
+                <textbox id="enigmail_maxIdleMinutes"
                         aria-labelledby="maxIdleMinutesHeadLabel enigmail_maxIdleMinutes maxIdleMinutesTailLabel"
                         type="number"
                         min="0" max="9999"
@@ -316,8 +316,8 @@
           <spacer flex="0"/>
 
           <checkbox id="enigmail_keepSettingsForReply"
-                    tooltip="keepSettingsForReply.tooltip"
-                    label="&enigmail.keepSettingsForReply.label;" />
+                    tooltip="keepCryptoSettingsForReply.tooltip"
+                    label="&enigmail.keepCryptoSettingsForReply.label;" />
 
           <checkbox id="enigmail_useDefaultComment"
                     invert="true"

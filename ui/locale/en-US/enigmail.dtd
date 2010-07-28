@@ -94,7 +94,7 @@
 <!ENTITY enigmail.useGpgAgent.label         "Use gpg-agent for passphrases">
 <!ENTITY enigmail.noHushMailSupport.label   "Use '&lt;' and '&gt;' to specify email addresses">
 
-<!ENTITY enigmail.keepSettingsForReply.tooltip "When possible, encrypt responses to encrypted email">
+<!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "When possible, encrypt/sign responses to encrypted/signed email">
 <!ENTITY enigmail.doubleDashSeparator.tooltip  "Two dashes by themselves on a line will denote a signature block">
 <!ENTITY enigmail.useGpgAgent.tooltip          "Use gpg-agent (part of GnuPG 2) for all passphrase input">
 <!ENTITY enigmail.noHushMailSupport.tooltip    "Use the '&lt;' and '&gt;' characters to specify email addresses for GnuPG. Disable if recipients have old Hushmail keys.">
@@ -223,7 +223,7 @@
 
 <!ENTITY enigmail.usePGPMimeAlways.label          "Use PGP/MIME by default">
 
-<!ENTITY enigmail.keepSettingsForReply.label      "Encrypt replies to encrypted message">
+<!ENTITY enigmail.keepCryptoSettingsForReply.label      "Encrypt/sign replies to encrypted/signed message">
 <!ENTITY enigmail.confirmBeforeSend.label         "Always confirm before sending">
 <!ENTITY enigmail.confirmBeforeSend.tooltip       "Activate to display information dialog about signing/encryption before sending a message">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label        "Re-wrap signed HTML text before sending">
