@@ -461,6 +461,28 @@ function enigMsgDecryptMimeCb(msg, mimeMsg) {
   enigMessageDecryptCb(this.event, this.isAuto, mimeMsg);
 }
 
+
+function enigEnumerateMimeParts(mimePart, resultObj) {
+  DEBUG_LOG("enigEnumParts: "+mimePart.partName+" - "+mimePart.headers["content-type"]+"\n");
+
+  // does not work properly because MsgHdrToMimeMessage() cannot [yet] handle inner parts of encrypted messages
+
+  var ct = mimePart.headers["content-type"][0];
+  if (typeof(ct) == "string") {
+    if (ct.search(/multipart\/signed.*application\/pgp-signature/i) >= 0) {
+      resultObj.signed=mimePart.partName;
+    }
+    else if (ct.search(/application\/pgp-encrypted/i) >= 0)
+      resultObj.encrypted=mimePart.partName;
+  }
+
+  var i;
+  for (i in mimePart.parts) {
+    enigEnumerateMimeParts(mimePart.parts[i], resultObj);
+  }
+}
+
+
 function enigMessageDecryptCb(event, isAuto, mimeMsg){
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCb:\n");
 
@@ -474,7 +496,7 @@ function enigMessageDecryptCb(event, isAuto, mimeMsg){
       mimeMsg = {
         headers: {'content-type': contentType },
         contentType: contentType,
-        parts: {}
+        parts: null
       }
     }
 
@@ -493,15 +515,21 @@ function enigMessageDecryptCb(event, isAuto, mimeMsg){
       DEBUG_LOG("enigmailMessengerOverlay.js: header "+headerName+": "+headerValue+"\n");
     }
 
-    var allAttachments = gFolderDisplay.selectedMessage.allAttachments;
-
     var embeddedSigned = null;
     var embeddedEncrypted = null;
+
+    /*
+    if (mimeMsg.parts != null) {
+      var resultObj={ encrypted: "", signed: "" };
+      enigEnumerateMimeParts(mimeMsg, resultObj);
+      DEBUG_LOG("embedded: "+resultObj.encrypted+" / "+resultObj.signed+"\n");
+    }
+    */
     if (gEnigSavedHeaders["content-type"] &&
         ((gEnigSavedHeaders["content-type"].search(/^multipart\/mixed/i) == 0) ||
          (gEnigSavedHeaders["content-type"].search(/^multipart\/encrypted/i) == 0))) {
-      for (var indexb in allAttachments) {
-        var attachment = allAttachments[indexb];
+      for (var indexb in currentAttachments) {
+        var attachment = currentAttachments[indexb];
 
         if (attachment) {
           if (attachment.contentType.search(/^application\/pgp-signature/i) == 0) {
@@ -517,6 +545,7 @@ function enigMessageDecryptCb(event, isAuto, mimeMsg){
       }
     }
 
+    DEBUG_LOG("Got here\n");
 
     var contentEncoding = "";
     var xEnigmailVersion = "";
