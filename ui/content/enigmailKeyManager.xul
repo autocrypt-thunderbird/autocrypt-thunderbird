@@ -247,6 +247,13 @@
                   persist="checked"
                   accesskey="&enigmail.keyMan.showUntrustedKeys.accesskey;"
                   oncommand="enigApplyFilter()"/>
+        <menuitem label="&enigmail.keyMan.showOthersKeys.label;"
+                  id="showOthersKeys"
+                  type="checkbox"
+                  checked="true"
+                  persist="checked"
+                  accesskey="&enigmail.keyMan.showOthersKeys.accesskey;"
+                  oncommand="enigApplyFilter()"/>
 
 			</menupopup>
 		</menu>

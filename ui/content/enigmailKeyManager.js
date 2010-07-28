@@ -57,6 +57,7 @@ var gShowAllKeysElement = null;
 var gTreeChildren = null;
 var gShowInvalidKeys = null;
 var gShowUntrustedKeys = null;
+var gShowOthersKeys = null;
 
 function enigmailKeyManagerLoad() {
   DEBUG_LOG("enigmailKeyManager.js: enigmailKeyManagerLoad\n");
@@ -68,6 +69,8 @@ function enigmailKeyManagerLoad() {
   gTreeChildren = document.getElementById("pgpKeyListChildren");
   gShowInvalidKeys = document.getElementById("showInvalidKeys");
   gShowUntrustedKeys = document.getElementById("showUntrustedKeys");
+  gShowOthersKeys = document.getElementById("showOthersKeys");
+
   if (EnigGetPref("keyManShowAllKeys")) {
     gShowAllKeysElement.setAttribute("checked", "true");
   }
@@ -1056,6 +1059,7 @@ function showOrHideAllKeys() {
   var initHint = document.getElementById("emptyTree");
   var showInvalidKeys = gShowInvalidKeys.getAttribute("checked") == "true";
   var showUntrustedKeys = gShowUntrustedKeys.getAttribute("checked") == "true";
+  var showOthersKeys = gShowOthersKeys.getAttribute("checked") == "true";
 
   document.getElementById("nothingFound").hidePopup();
   if (hideNode) {
@@ -1067,7 +1071,7 @@ function showOrHideAllKeys() {
   var node=getFirstNode();
   while (node) {
     node.hidden = hideNode;
-     if (! determineHiddenKeys(showInvalidKeys, EnigGetTrustCode(gKeyList[node.id]), showUntrustedKeys, gKeyList[node.id].ownerTrust)) {
+     if (! determineHiddenKeys(gKeyList[node.id], showInvalidKeys, showUntrustedKeys, showOthersKeys)) {
        node.hidden = true;
     }
 
@@ -1075,14 +1079,16 @@ function showOrHideAllKeys() {
   }
 }
 
-function determineHiddenKeys(showInvalidKeys, keyTrust, showUntrustedKeys, ownerTrust) {
+function determineHiddenKeys(keyObj, showInvalidKeys, showUntrustedKeys, showOthersKeys) {
   var show = true;
 
   const INVALID_KEYS = "ierdD";
   const UNTRUSTED_KEYS = "n";
 
-  if ((!showInvalidKeys) && INVALID_KEYS.indexOf(keyTrust)>=0) show = false;
-  if ((!showUntrustedKeys) && UNTRUSTED_KEYS.indexOf(ownerTrust)>=0) show = false;
+  if ((!showInvalidKeys) && INVALID_KEYS.indexOf(EnigGetTrustCode(keyObj))>=0) show = false;
+  if ((!showUntrustedKeys) && UNTRUSTED_KEYS.indexOf(keyObj.ownerTrust)>=0) show = false;
+  if ((!showOthersKeys) && (!keyObj.secretAvailable)) show = false;
+
   return show;
 }
 
@@ -1092,6 +1098,7 @@ function enigApplyFilter() {
   nothingFoundElem.hidePopup();
   var showInvalidKeys = gShowInvalidKeys.getAttribute("checked") == "true";
   var showUntrustedKeys = gShowUntrustedKeys.getAttribute("checked") == "true";
+  var showOthersKeys = gShowOthersKeys.getAttribute("checked") == "true";
 
   if (!searchTxt || searchTxt.length==0) {
     showOrHideAllKeys();
@@ -1109,7 +1116,7 @@ function enigApplyFilter() {
     var hideNode = true;
     if ((uid.toLowerCase().indexOf(searchTxt) >= 0) ||
         (node.id.toLowerCase().indexOf(searchTxt) >= 0)) {
-       if (determineHiddenKeys(showInvalidKeys, EnigGetTrustCode(gKeyList[node.id]), showUntrustedKeys, gKeyList[node.id].ownerTrust)) {
+       if (determineHiddenKeys(gKeyList[node.id], showInvalidKeys, showUntrustedKeys, showOthersKeys)) {
           hideNode = false;
           foundResult = true;
         }
@@ -1117,10 +1124,8 @@ function enigApplyFilter() {
     for (var subUid=0; subUid < gKeyList[node.id].SubUserIds.length; subUid++) {
       uid = gKeyList[node.id].SubUserIds[subUid].userId;
       if (uid.toLowerCase().indexOf(searchTxt) >= 0) {
-       if (determineHiddenKeys(showInvalidKeys, EnigGetTrustCode(gKeyList[node.id]), showUntrustedKeys, gKeyList[node.id].ownerTrust)) {
-          hideNode = false;
-          foundResult = true;
-        }
+        hideNode = false;
+        foundResult = true;
       }
     }
     node.hidden=hideNode;
@@ -1233,3 +1238,47 @@ function getSortColumn() {
   default: return "?";
   }
 }
+
+/*
+Components.utils.import("resource://enigmail/subprocess.jsm");
+
+function logMsg(str) {
+  try {
+    var consoleSvc = Components.classes["@mozilla.org/consoleservice;1"].
+        getService(Components.interfaces.nsIConsoleService);
+
+    var scriptError = Components.classes["@mozilla.org/scripterror;1"]
+                                .createInstance(Components.interfaces.nsIScriptError);
+    scriptError.init(str, null, null, 0,
+                     0, scriptError.errorFlag, "Enigmail");
+    consoleSvc.logMessage(scriptError);
+
+  }
+  catch (ex) {}
+}
+
+function enigmailKeyManagerLoad() {
+   var p = subprocess.call({
+     command:   '/Users/pbr/enigmail/tmp/test.sh',
+     arguments: ['-v', 'foo'],
+     environment:   [ "XYZ=abc", "MYVAR=def" ],
+     stdin: subprocess.WritablePipe(function() {
+          this.write("Writing example data\n");
+     }),
+
+     stdout: subprocess.ReadablePipe(function(data) {
+       logMsg("*** Got data on stdout: '"+ data+"'\n");
+     }),
+     stderr: subprocess.ReadablePipe(function(data) {
+       logMsg("*** Got data on stderr: '"+data+"'\n");
+     }),
+     onFinished: subprocess.Terminate(function() {
+       logMsg("*** Process finished with result code: " + this.exitCode + "\n");
+       logMsg("got data: "+this.stdoutData);
+     }),
+     mergeStderr: false
+   });
+
+}
+
+/**/
