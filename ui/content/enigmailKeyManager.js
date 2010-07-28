@@ -31,8 +31,6 @@
  * GPL.
  */
 
-/*
-
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
 // Initialize enigmailCommon
@@ -1235,4 +1233,3 @@ function getSortColumn() {
   default: return "?";
   }
 }
-*/
