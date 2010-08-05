@@ -9,7 +9,7 @@
  * implied. See the MPL for the specific language governing
  * rights and limitations under the MPL.
  *
- * The Original Code is Enigmail.
+ * The Original Code is IPC-Pipe.
  *
  * The Initial Developer of this code is Patrick Brunschwig.
  * Portions created by Patrick Brunschwig <patrick@mozilla-enigmail.org>
@@ -103,7 +103,6 @@ const NS_IPCBUFFER_CONTRACTID = "@mozilla.org/process/ipc-buffer;1";
 
 var subprocess = {
   result: -1,
-  _scInpStr: null,
   _pipeTransport: null,
   stdoutData: null,
 
@@ -124,12 +123,10 @@ var subprocess = {
       },
 
       onStartRequest: function(aRequest, aContext) {
-        dump("onStartRequest\n");
         this._scInpStr = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance(Components.interfaces.nsIScriptableInputStream);
       },
 
       onStopRequest: function(aRequest, aContext, aStatusCode) {
-        dump("onStopRequest\n");
         try {
           this._scInpStr.close();
         }
@@ -137,7 +134,6 @@ var subprocess = {
       },
 
       onDataAvailable: function(aRequest, aContext, aInputStream, offset, count) {
-        dump("onDataAvailable: got "+count+" bytes\n");
 
         if (! this._initializedStream) {
           this._scInpStr.init(aInputStream);

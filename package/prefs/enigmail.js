@@ -38,8 +38,8 @@ pref("extensions.enigmail.composeHtmlAlertCount",3);
 // enable confirm dialog before sending message
 pref("extensions.enigmail.confirmBeforeSend",false);
 
-// disable the S/MIME button
-pref("extensions.enigmail.disableSMIMEui",false);
+// prefer S/MIME or PGP/MIME (0: PGP/MIME, 1: ask, 2: S/MIME)
+pref("extensions.enigmail.mimePreferPgp",1);
 
 // show warning message when clicking on sign icon
 pref("extensions.enigmail.displaySignWarn",true);

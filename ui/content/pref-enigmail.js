@@ -172,6 +172,7 @@ function resetRememberedValues() {
              "displaySignWarn",
              "encryptAttachmentsSkipDlg",
              "initAlert",
+             "mimePreferPgp",
              "quotedPrintableWarn",
              "saveEncrypted",
              "warnOnRulesConflict",

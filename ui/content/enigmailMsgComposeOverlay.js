@@ -94,12 +94,6 @@ function enigMsgComposeStartup() {
   }
 
   var enigButton = document.getElementById("button-enigmail-send");
-  if (enigButton && smimeButton) {
-    if (enigButton.getAttribute("buttontype")=="seamonkey") {
-      if (EnigGetPref("disableSMIMEui"))
-          smimeButton.setAttribute("collapsed", "true");
-    }
-  }
 
   var msgId = document.getElementById("msgIdentityPopup");
   if (msgId)
@@ -1409,10 +1403,36 @@ function enigEncryptMsg(msgSendType) {
      // Detect PGP/MIME and S/MIME
      if (usingPGPMime) {
         if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields) {
+
             if (gMsgCompose.compFields.securityInfo.requireEncryptMessage ||
-              gMsgCompose.compFields.securityInfo.signMessage) {
-                EnigAlert(EnigGetString("pgpMime.sMime.incomaptible"));
-                return false;
+               gMsgCompose.compFields.securityInfo.signMessage) {
+               var prefAlgo = EnigGetPref("mimePreferPgp");
+               if (prefAlgo == 1) {
+                 var checkedObj={ value: null};
+                 var prefAlgo = gEnigPromptSvc.confirmEx(window,
+                            EnigGetString("enigConfirm"),
+                            EnigGetString("pgpMime_sMime.dlg.text"),
+                            (gEnigPromptSvc. BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_0) +
+                            (gEnigPromptSvc. BUTTON_TITLE_CANCEL * ENIG_BUTTON_POS_1) +
+                            (gEnigPromptSvc. BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_2),
+                            EnigGetString("pgpMime_sMime.dlg.pgpMime.button"), null,
+                            EnigGetString("pgpMime_sMime.dlg.sMime.button"),
+                            EnigGetString("dlgKeepSetting"), checkedObj);
+                 if (checkedObj.value && (prefAlgo==0 || prefAlgo==2)) EnigSetPref("mimePreferPgp", prefAlgo);
+               }
+               switch (prefAlgo) {
+               case 0:
+                  gMsgCompose.compFields.securityInfo.requireEncryptMessage = false;
+                  gMsgCompose.compFields.securityInfo.signMessage = false;
+                  break;
+               case 1:
+                  return false;
+               case 2:
+                  return true;
+                  break;
+               default:
+                 return false;
+               }
             }
         }
      }
@@ -1438,7 +1458,6 @@ function enigEncryptMsg(msgSendType) {
 
        if (!newSecurityInfo) {
          newSecurityInfo = Components.classes[ENIG_ENIGMSGCOMPFIELDS_CONTRACTID].createInstance(Components.interfaces.nsIEnigMsgCompFields);
-         //newSecurityInfo = new EnigMsgCompFields();
 
          if (!newSecurityInfo)
            throw Components.results.NS_ERROR_FAILURE;
