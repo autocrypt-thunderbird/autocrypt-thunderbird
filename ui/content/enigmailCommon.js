@@ -641,7 +641,7 @@ function EnigAlert(mesg) {
 
 /**
  * Displays an alert dialog with 3-4 optional buttons.
- * prefName: if not null, display checkbox "don't show again", linked to the prefName preference
+ * checkBoxLabel: if not null, display checkbox with text; the checkbox state is returned in checkedObj
  * button-Labels: use "&" to indicate access key
  *     use "buttonType:label" or ":buttonType" to indicate special button types
  *        (buttonType is one of cancel, help, extra1, extra2)
