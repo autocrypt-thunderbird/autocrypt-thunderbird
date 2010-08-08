@@ -486,7 +486,7 @@ function enigmailDeleteKey() {
       if (!EnigConfirm(EnigGetString("deleteMix"), EnigGetString("dlg.button.delete"))) return;
     }
     else {
-      if (!EnigConfirmString(EnigGetString("deleteSelectedPubKey"), EnigGetString("dlg.button.delete"))) return;
+      if (!EnigConfirm(EnigGetString("deleteSelectedPubKey"), EnigGetString("dlg.button.delete"))) return;
     }
   }
 
