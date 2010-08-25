@@ -2102,7 +2102,7 @@ function enigDecryptQuote(interactive) {
     indentRegexp = new RegExp("^"+indentStr, "g");
 
     pgpBlock = pgpBlock.replace(indentRegexp, "");
-    tail     =     tail.replace(indentRegexp, "");
+    //tail     =     tail.replace(indentRegexp, "");
 
     if (indentStr.match(/[ \t]*$/)) {
       indentStr = indentStr.replace(/[ \t]*$/g, "");
@@ -2114,7 +2114,7 @@ function enigDecryptQuote(interactive) {
 
     // Handle blank indented lines
     pgpBlock = pgpBlock.replace(/^[ \t]*>[ \t]*$/g, "");
-    tail     =     tail.replace(/^[ \t]*>[ \t]*$/g, "");
+    //tail     =     tail.replace(/^[ \t]*>[ \t]*$/g, "");
 
     // Trim leading space in tail
     tail = tail.replace(/^\s*\n/, "\n");
