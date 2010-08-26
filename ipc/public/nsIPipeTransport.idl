@@ -93,13 +93,12 @@ interface nsIPipeTransportListener;
 interface nsIPipeTransport : nsIRequest
 {
 
+    /**
+      * Initialises the process with an executable to be run. Call the open method
+      * to run the executable for piping in/out.
+      * @param executable The executable to run.
+      */
     void init(in nsIFile executable);
-    void run(in boolean blocking, [array, size_is(count)] in string args,
-            in unsigned long count);
-    void runAsync([array, size_is(count)] in string args, in unsigned long count,
-         [optional] in nsIObserver observer, [optional] in boolean holdWeak);
-
-
 
     /**
      * Initializes PipeTransport by executing the specified file using the
@@ -295,6 +294,22 @@ interface nsIPipeTransport : nsIRequest
     attribute unsigned long bufferMaxSize;
     attribute unsigned long headersMaxSize;
 
+    /**
+      * the following methods are available for compatibility with the nsIProcess API only. They
+      * don't perform any functionality in nsIPipeTransport.
+      */
+
+    void run(in boolean blocking, [array, size_is(count)] in string args,
+            in unsigned long count);
+    void runAsync([array, size_is(count)] in string args, in unsigned long count,
+         [optional] in nsIObserver observer, [optional] in boolean holdWeak);
+    void runw(in boolean blocking, [array, size_is(count)] in wstring args,
+                 in unsigned long count);
+    void runwAsync([array, size_is(count)] in wstring args,
+                  in unsigned long count,
+                  [optional] in nsIObserver observer, [optional] in boolean holdWeak);
+
+
 };
 
 
@@ -356,6 +371,7 @@ interface nsIPipeTransportPoller : nsISupports
    * Controls console logging of STDOUT from process
    */
   attribute boolean loggingEnabled;
+
 };
 
 

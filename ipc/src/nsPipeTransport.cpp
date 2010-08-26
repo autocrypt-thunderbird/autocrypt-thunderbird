@@ -244,6 +244,20 @@ NS_IMETHODIMP nsPipeTransport::RunAsync(const char **args,
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
+NS_IMETHODIMP nsPipeTransport::Runw(PRBool blocking, const PRUnichar **args,
+                                    PRUint32 argCount)
+{
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+NS_IMETHODIMP nsPipeTransport::RunwAsync(const PRUnichar **args,
+                                    PRUint32 argCount,
+                                    nsIObserver* observer,
+                                    PRBool holdWeak)
+{
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 NS_IMETHODIMP nsPipeTransport::Open(const char **args,
                                     PRUint32 argCount,
                                     const char **env,
