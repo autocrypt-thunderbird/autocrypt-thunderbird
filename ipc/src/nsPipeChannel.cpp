@@ -429,7 +429,7 @@ nsPipeChannel::SetContentCharset(const nsACString &aContentCharset)
 }
 
 NS_IMETHODIMP
-nsPipeChannel::GetContentLength(PRInt32 *aContentLength)
+nsPipeChannel::GetContentLength(IPCLong *aContentLength)
 {
   DEBUG_LOG(("nsPipeChannel::GetContentLength: \n"));
   *aContentLength = mContentLength;
@@ -437,7 +437,7 @@ nsPipeChannel::GetContentLength(PRInt32 *aContentLength)
 }
 
 NS_IMETHODIMP
-nsPipeChannel::SetContentLength(PRInt32 aContentLength)
+nsPipeChannel::SetContentLength(IPCLong aContentLength)
 {
   DEBUG_LOG(("nsPipeChannel::SetContentLength: %d\n", aContentLength));
   mContentLength = aContentLength;

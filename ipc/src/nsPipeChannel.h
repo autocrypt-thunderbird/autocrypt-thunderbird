@@ -53,6 +53,17 @@
 #include "nsIComponentManager.h"
 #include "nsThreadUtils.h"
 
+#if MOZILLA_MAJOR_VERSION < 2
+
+#define IPCLong PRInt32
+
+#else
+
+#define IPCLong PRInt64
+
+#endif
+
+
 class nsPipeChannel : public nsIPipeChannel,
                       public nsIStreamListener,
                       public nsIPipeTransportHeaders
@@ -102,7 +113,7 @@ protected:
 
     nsCString                           mContentType;
     nsCString                           mContentCharset;
-    PRInt32                             mContentLength;
+    IPCLong                             mContentLength;
 
     nsCString                           mHeaderContentType;
     PRInt32                             mHeaderContentLength;
