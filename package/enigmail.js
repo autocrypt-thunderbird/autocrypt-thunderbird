@@ -2025,7 +2025,8 @@ Enigmail.prototype = {
       ipcBuffer.open(ERROR_BUFFER_SIZE, false);
 
       var mergeStderr = false;
-      pipetrans.init(command, args, args.length, envList, envList.length,
+      pipetrans.init(command);
+      pipetrans.open(args, args.length, envList, envList.length,
                             0, "", noProxy, mergeStderr,
                             ipcBuffer);
 
@@ -2207,7 +2208,7 @@ Enigmail.prototype = {
     }
 
     // Extract exit code and error output from pipeTransport
-    var exitCode = pipeTransport.exitCode();
+    var exitCode = pipeTransport.exitValue;
 
     var errListener = pipeTransport.console.QueryInterface(Components.interfaces.nsIIPCBuffer);
 
@@ -4376,7 +4377,7 @@ Enigmail.prototype = {
     // Wait for child STDOUT to close
     pipeTrans.join();
 
-    exitCodeObj.value = pipeTrans.exitCode();
+    exitCodeObj.value = pipeTrans.exitValue;
 
     var statusMsgObj = new Object();
     var cmdLineObj   = new Object();
@@ -4901,7 +4902,7 @@ Enigmail.prototype = {
     switch(returnCode) {
     case 0:
       for (var retryCount = 100; retryCount > 0; retryCount--) {
-        if (pipeTrans.isAttached()) {
+        if (pipeTrans.isRunning) {
           DEBUG_LOG("enigmail.js: Enigmail.editKey: sleeping 100 ms\n");
           mimeSvc.sleep(100);
         }
@@ -4910,7 +4911,7 @@ Enigmail.prototype = {
         }
       }
       try{
-        exitCode = pipeTrans.exitCode();
+        exitCode = pipeTrans.exitValue;
       } catch (ex) {
         DEBUG_LOG("enigmail.js: Enigmail.editKey: caught exception from pipeTrans\n");
       }

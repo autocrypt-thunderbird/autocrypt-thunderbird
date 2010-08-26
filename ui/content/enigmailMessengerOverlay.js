@@ -1846,7 +1846,7 @@ function enigReceiveKeyCancel(progressBar) {
 
   var keyRetrProcess = gEnigIpcRequest.pipeTransport;
 
-  if (keyRetrProcess && !keyRetrProcess.isAttached()) {
+  if (keyRetrProcess && !keyRetrProcess.isRunning) {
     keyRetrProcess.terminate();
   }
   gEnigIpcRequest.close(true);

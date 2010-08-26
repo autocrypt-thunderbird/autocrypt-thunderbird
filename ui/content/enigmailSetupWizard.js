@@ -615,9 +615,9 @@ function wizardKeygenTerminate(terminateArg, ipcRequest) {
   if (!enigmailSvc) {
     EnigAlert(EnigGetString("accessError"));
   }
-  if (keygenProcess && !keygenProcess.isAttached) {
+  if (keygenProcess && !keygenProcess.isRunning) {
     keygenProcess.terminate();
-    var exitCode = keygenProcess.exitCode();
+    var exitCode = keygenProcess.exitValue;
     DEBUG_LOG("enigmailSetupWizard.js: exitCode = "+exitCode+"\n");
     if (enigmailSvc) {
       exitCode = enigmailSvc.fixExitCode(exitCode, 0);

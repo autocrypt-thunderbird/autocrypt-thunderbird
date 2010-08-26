@@ -234,9 +234,10 @@ nsPipeChannel::Init(nsIURI* aURI,
   }
 
   PRBool noProxy = PR_FALSE;
-  rv = mPipeTransport->Init(executable, args, argCount, env, envCount,
-                            timeoutMS, killString, noProxy,
-                            mergeStderr, console);
+  rv = mPipeTransport->Init(executable);
+  NS_ENSURE_SUCCESS(rv, rv);
+  return mPipeTransport->Open(args, argCount, env, envCount, timeoutMS, killString, noProxy, mergeStderr, console);
+
   if (NS_FAILED(rv)) {
 
     DEBUG_LOG(("nsPipeChannel::Init: Failed to initialize pipe transport\n"));

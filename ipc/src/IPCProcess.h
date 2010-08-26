@@ -37,6 +37,7 @@
 #define IPCProcess_h__
 
 #include "nspr.h"
+#include "prproces.h"
 
 /* Define XP_WIN_IPC to enable Win32-specific IPC stuff;
  * this avoids some problems with the NSPR IPC implementation on Win32
@@ -57,6 +58,7 @@
 
 #define IPC_WaitProcess IPC_WaitProcessWin32
 #define IPC_KillProcess IPC_KillProcessWin32
+#define IPC_GetProcessId IPC_GetProcessIdWin32
 #define IPC_Read IPC_ReadWin32
 #define IPC_Write IPC_WriteWin32
 #define IPC_Close IPC_CloseWin32
@@ -73,6 +75,7 @@
 
 #define IPC_WaitProcess PR_WaitProcess
 #define IPC_KillProcess PR_KillProcess
+#define IPC_GetProcessId IPC_GetProcessIdNSPR
 #define IPC_Read PR_Read
 #define IPC_Write PR_Write
 #define IPC_Close PR_Close
@@ -92,6 +95,9 @@ PRStatus IPC_CreateInheritablePipeNSPR(PRFileDesc* *readPipe,
                                        PRFileDesc* *writePipe,
                                        PRBool readInherit,
                                        PRBool writeInherit);
+
+PRStatus IPC_GetProcessIdNSPR(IPCProcess* process, PRInt32 *pid);
+
 
 void IPC_Shutdown();
 

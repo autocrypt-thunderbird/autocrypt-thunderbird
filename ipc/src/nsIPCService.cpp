@@ -222,8 +222,10 @@ nsIPCService::RunCommand(nsIFile *executable,
   if (!errConsole)
     errConsole = mConsole;
 
-  rv = pipeTrans->Init(executable,
-                       args, argCount,
+  rv = pipeTrans->Init(executable);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  rv = pipeTrans->Open(args, argCount,
                        env, envCount,
                        0, "",
                        noProxy, mergeStderr,
@@ -414,7 +416,7 @@ nsIPCService::RunPipe (nsIFile *executable,
   // Terminate process to release resources
   pipeTrans->Terminate();
 
-  return pipeTrans->ExitCode(_retval);
+  return pipeTrans->GetExitValue(_retval);
 }
 
 
@@ -705,7 +707,7 @@ nsIPCRequest::IsPending(PRBool *_retval)
     return NS_OK;
   }
 
-  return mPipeTransport->IsAttached(_retval);
+  return mPipeTransport->GetIsRunning(_retval);
 }
 
 NS_IMETHODIMP

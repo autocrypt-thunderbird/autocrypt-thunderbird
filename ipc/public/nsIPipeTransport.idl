@@ -36,6 +36,7 @@
 #include "nsIFile.idl"
 #include "nsIRequest.idl"
 #include "nsIPipeListener.idl"
+#include "nsIProcess.idl"
 
 interface nsIRequest;
 interface nsIFile;
@@ -91,20 +92,14 @@ interface nsIPipeTransportListener;
 [scriptable, uuid(8431e100-7ab1-11d4-8f02-006008948af5)]
 interface nsIPipeTransport : nsIRequest
 {
-    /**
-     * Old, oboslete version of init, kept for compatibility reasons
-     * For parameters please refer to init above and open
-     */
-    void init(in nsIFile executable,
-              [array, size_is(argCount)] in string args,
-              in unsigned long argCount,
-              [array, size_is(envCount)] in string env,
-              in unsigned long envCount,
-              in unsigned long timeoutMS,
-              in string killString,
-              in boolean noProxy,
-              in boolean mergeStderr,
-              in nsIPipeListener console);
+
+    void init(in nsIFile executable);
+    void run(in boolean blocking, [array, size_is(count)] in string args,
+            in unsigned long count);
+    void runAsync([array, size_is(count)] in string args, in unsigned long count,
+         [optional] in nsIObserver observer, [optional] in boolean holdWeak);
+
+
 
     /**
      * Initializes PipeTransport by executing the specified file using the
@@ -218,11 +213,6 @@ interface nsIPipeTransport : nsIRequest
                          in unsigned long flags);
 
     /**
-     * Checks if process is still actively piping I/O
-     */
-    boolean isAttached();
-
-    /**
      * Joins STDOUT handling thread (blocking until STDOUT is closed),
      * (Necessary and only works if noProxy is true)
      * The process still needs to be terminated to free resources.
@@ -235,10 +225,28 @@ interface nsIPipeTransport : nsIRequest
     void terminate();
 
     /**
-     * Returns exit code of process which has exited;
-     *  fails with an exception if process is still attached.
+     * kills process
      */
-    long exitCode();
+    void kill();
+
+    /**
+     * The exit value of the process. This is only valid after the process has
+     * exited.
+     */
+    readonly attribute long exitValue;
+
+    /**
+      * The process identifier of the currently running process. This will only
+      * be available after the process has started and may not be available on
+      * some platforms.
+     */
+    readonly attribute unsigned long pid;
+
+    /**
+     * Checks if process is still actively piping I/O
+     */
+
+    readonly attribute boolean isRunning;
 
     /**
      * Writes string to process STDIN (synchronously)
@@ -362,12 +370,11 @@ interface nsIPipeTransportWriter : nsISupports
                        in unsigned long aCount,
                        in IPCFileDescStar pipe,
                        in boolean closeAfterWrite);
-                       
+
   /**
    * Joins writer thread, if joinable (blocking until it terminates)
    */
   void join();
 };
-
 
 ///////////////////////////////////////////////////////////////////////////////

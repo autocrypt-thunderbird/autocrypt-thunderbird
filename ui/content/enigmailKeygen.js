@@ -48,6 +48,7 @@ var gKeygenRequest;
 var gAllData = "";
 var gGeneratedKey="";
 var gUsedId;
+var gConsoleIntervalId;
 
 function enigmailKeygenLoad() {
   DEBUG_LOG("enigmailKeygen.js: Load\n");
@@ -129,9 +130,9 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
    if (!enigmailSvc) {
      EnigAlert(EnigGetString("accessError"));
    }
-   if (keygenProcess && !keygenProcess.isAttached) {
+   if (keygenProcess && !keygenProcess.isRunning) {
      keygenProcess.terminate();
-     var exitCode = keygenProcess.exitCode();
+     var exitCode = keygenProcess.exitValue;
      DEBUG_LOG("enigmailKeygenConsole.htm: exitCode = "+exitCode+"\n");
      if (enigmailSvc) {
         exitCode = enigmailSvc.fixExitCode(exitCode, 0);
@@ -182,9 +183,9 @@ function enigmailKeygenCloseRequest() {
    DEBUG_LOG("enigmailKeygen.js: CloseRequest\n");
 
   // Cancel console refresh
-  if (window.consoleIntervalId) {
-    window.clearInterval(window.consoleIntervalId);
-    window.consoleIntervalId = null;
+  if (gConsoleIntervalId) {
+    window.clearInterval(gConsoleIntervalId);
+    gConsoleIntervalId = null;
   }
 
   if (gKeygenRequest) {
@@ -312,7 +313,7 @@ function enigmailKeygenStart() {
 
    WRITE_LOG("enigmailKeygen.js: Start: gKeygenRequest = "+gKeygenRequest+"\n");
    // Refresh console every 2 seconds
-   window.consoleIntervalId = window.setInterval(enigRefreshConsole, 2000);
+   gConsoleIntervalId = window.setInterval(enigRefreshConsole, 2000);
    enigRefreshConsole();
 }
 
@@ -322,7 +323,14 @@ function enigRefreshConsole() {
   if (!gKeygenRequest)
     return;
 
-  var keygenConsole = gKeygenRequest.stdoutConsole;
+  var keygenConsole
+
+  try {
+    keygenConsole = gKeygenRequest.stdoutConsole;
+  }
+  catch (ex) {
+    return;
+  }
 
   try {
     keygenConsole = keygenConsole.QueryInterface(Components.interfaces.nsIPipeConsole);

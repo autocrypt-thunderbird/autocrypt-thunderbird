@@ -53,6 +53,7 @@
 #include "nsServiceManagerUtils.h"
 #include "nsIServiceManager.h"
 #include "nsIProxyObjectManager.h"
+#include "nsIObserver.h"
 #include "nsIURI.h"
 #include "nsIHttpChannel.h"
 
@@ -112,6 +113,7 @@ nsPipeTransport::nsPipeTransport()
       mProcess(IPC_NULL_HANDLE),
       mKillWaitInterval(PR_MillisecondsToInterval(KILL_WAIT_TIME_IN_MS)),
       mExitCode(0),
+      mPid(-1),
 
       mBufferSegmentSize(NS_PIPE_TRANSPORT_DEFAULT_SEGMENT_SIZE),
       mBufferMaxSize(NS_PIPE_TRANSPORT_DEFAULT_BUFFER_SIZE),
@@ -219,21 +221,26 @@ NS_IMETHODIMP nsPipeTransport::Initialize(nsIFile *executable,
   return NS_OK;
 }
 
-NS_IMETHODIMP nsPipeTransport::Init(nsIFile *executable,
-                                    const char **args,
-                                    PRUint32 argCount,
-                                    const char **env,
-                                    PRUint32 envCount,
-                                    PRUint32 timeoutMS,
-                                    const char *killString,
-                                    PRBool noProxy,
-                                    PRBool mergeStderr,
-                                    nsIPipeListener* console)
+
+NS_IMETHODIMP nsPipeTransport::Init(nsIFile *executable)
 {
   nsresult rv;
   rv = Initialize(executable, nsnull, INHERIT_PROC_ATTRIBS);
   NS_ENSURE_SUCCESS(rv, rv);
-  return Open(args, argCount, env, envCount, timeoutMS, killString, noProxy, mergeStderr, console);
+}
+
+NS_IMETHODIMP nsPipeTransport::Run(PRBool blocking, const char **args,
+                                    PRUint32 argCount)
+{
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+NS_IMETHODIMP nsPipeTransport::RunAsync(const char **args,
+                                    PRUint32 argCount,
+                                    nsIObserver* observer,
+                                    PRBool holdWeak)
+{
+  return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 NS_IMETHODIMP nsPipeTransport::Open(const char **args,
@@ -410,6 +417,9 @@ NS_IMETHODIMP nsPipeTransport::Open(const char **args,
   DEBUG_LOG(("nsPipeTransport::Open: Created process %p, %s\n",
 	     mProcess, mExecutable.get() ));
 
+  IPC_GetProcessIdNSPR (mProcess, &mPid);
+
+
   // Close process-side STDIN/STDOUT/STDERR pipes
   IPC_Close(stdinRead);
   stdinRead = nsnull;
@@ -500,7 +510,7 @@ nsPipeTransport::Finalize(PRBool destructor)
   // NOTE: This should always be done after "interrupting" the thread
   //       so that the interrupt flag is set.
 
-  KillProcess();
+  Kill();
 
   // Release refs to input arguments
   mListener         = nsnull;
@@ -520,12 +530,12 @@ nsPipeTransport::Finalize(PRBool destructor)
   return rv;
 }
 
-void
-nsPipeTransport::KillProcess(void)
+NS_IMETHODIMP
+nsPipeTransport::Kill(void)
 {
   // Process cleanup
   if ((mProcess == IPC_NULL_HANDLE) || (mStartupFlags & PROCESS_DETACHED))
-    return;
+    return NS_OK;
 
   if ((mStdinWrite != IPC_NULL_HANDLE) &&
       mKillString.get() && (strlen(mKillString.get()) > 0)) {
@@ -535,7 +545,7 @@ nsPipeTransport::KillProcess(void)
                            strlen(mKillString.get()));
 
     if (writeCount != (int) strlen(mKillString.get())) {
-      WARNING_LOG(("KillProcess: Failed to send kill string\n"));
+      WARNING_LOG(("Kill: Failed to send kill string\n"));
     }
 
     // Wait a few milliseconds for cleanup
@@ -550,9 +560,9 @@ nsPipeTransport::KillProcess(void)
   status = IPC_KillProcess(mProcess);
 
   if (status != PR_SUCCESS)
-    DEBUG_LOG(("nsPipeTransport::KillProcess: Failed to kill process\n"));
+    DEBUG_LOG(("nsPipeTransport::Kill: Failed to kill process\n"));
   else
-    DEBUG_LOG(("nsPipeTransport::KillProcess: Killed process\n"));
+    DEBUG_LOG(("nsPipeTransport::Kill: Killed process\n"));
 
 
   // Reap process (to avoid memory leaks in NSPR)
@@ -560,11 +570,11 @@ nsPipeTransport::KillProcess(void)
   status = IPC_WaitProcess(mProcess, &mExitCode);
 
   if (status != PR_SUCCESS)
-    WARNING_LOG(("nsPipeTransport::KillProcess: Failed to reap process\n"));
+    WARNING_LOG(("nsPipeTransport::Kill: Failed to reap process\n"));
 
   mProcess = IPC_NULL_HANDLE;
 
-  return;
+  return status;
 }
 
 NS_IMETHODIMP
@@ -603,10 +613,10 @@ nsPipeTransport::GetConsole(nsIPipeListener* *_retval)
 }
 
 NS_IMETHODIMP
-nsPipeTransport::IsAttached(PRBool* attached)
+nsPipeTransport::GetIsRunning(PRBool* attached)
 {
   nsresult rv;
-  DEBUG_LOG(("nsPipeTransport::IsAttached: \n"));
+  DEBUG_LOG(("nsPipeTransport::GetIsRunning: \n"));
 
   if (mStdoutPoller) {
     PRBool interrupted;
@@ -621,6 +631,7 @@ nsPipeTransport::IsAttached(PRBool* attached)
 
   return NS_OK;
 }
+
 
 NS_IMETHODIMP
 nsPipeTransport::Join()
@@ -653,9 +664,21 @@ nsPipeTransport::Terminate()
   return Finalize(PR_FALSE);
 }
 
+NS_IMETHODIMP
+nsPipeTransport::GetPid(PRUint32* _retval)
+{
+  if (mProcess == IPC_NULL_HANDLE)
+    return NS_ERROR_FAILURE;
+
+  if (mPid < 0)
+    return NS_ERROR_NOT_IMPLEMENTED;
+
+  *_retval = mPid;
+  return NS_OK;
+}
 
 NS_IMETHODIMP
-nsPipeTransport::ExitCode(PRInt32* _retval)
+nsPipeTransport::GetExitValue(PRInt32* _retval)
 {
   nsresult rv;
   DEBUG_LOG(("nsPipeTransport::ExitCode: \n"));
@@ -675,7 +698,7 @@ nsPipeTransport::ExitCode(PRInt32* _retval)
 
   // Kill process, if need be
   // (Needed for synchronous reads where StopRequest is not called)
-  KillProcess();
+  Kill();
 
   *_retval = mExitCode;
 

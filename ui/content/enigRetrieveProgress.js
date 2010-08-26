@@ -72,7 +72,7 @@ var progressListener = {
 
       if (msgProgress.processCanceledByUser)
         enigSendKeyCancel(msgProgress);
-        
+
       window.close();
     }
   },
@@ -124,7 +124,7 @@ function onLoad() {
   // Set up dialog button callbacks.
   var object = this;
   doSetOKCancel("", function () { return object.onCancel();});
-  
+
 
   var statTxt=document.getElementById("dialog.status2");
   if (inArg.accessType == nsIEnigmail.UPLOAD_KEY) {
@@ -142,7 +142,7 @@ function onLoad() {
   msgProgress.registerListener(progressListener);
   msgProgress.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_START, 0)
   gEnigCallbackFunc = inArg.cbFunc;
-  
+
   var errorMsgObj={};
   gEnigIpcRequest = enigmailSvc.receiveKey(inArg.accessType, inArg.keyServer, inArg.keyList, requestObserver, errorMsgObj);
   if (gEnigIpcRequest == null) {
@@ -152,16 +152,16 @@ function onLoad() {
   window.title = subject;
 }
 
-function onUnload() 
+function onUnload()
 {
   if (msgProgress)
   {
-   try 
+   try
    {
      msgProgress.unregisterListener(progressListener);
      msgProgress = null;
    }
-    
+
    catch( exception ) {}
   }
 }
@@ -189,9 +189,9 @@ function enigSendKeyTerminate (terminateArg, ipcRequest) {
     var exitCode;
 
     var enigmailSvc = GetEnigmailSvc();
-    if (keyRetrProcess && !keyRetrProcess.isAttached()) {
+    if (keyRetrProcess && !keyRetrProcess.isRunning) {
       keyRetrProcess.terminate();
-      exitCode = keyRetrProcess.exitCode();
+      exitCode = keyRetrProcess.exitValue;
       DEBUG_LOG("enigmailRetrieveProgress.js: enigSendKeyTerminate: exitCode = "+exitCode+"\n");
       if (enigmailSvc) {
         exitCode = enigmailSvc.fixExitCode(exitCode, 0);
@@ -238,7 +238,7 @@ function enigSendKeyTerminate (terminateArg, ipcRequest) {
 function enigSendKeyCancel() {
   var keyRetrProcess = gEnigIpcRequest.pipeTransport;
 
-  if (keyRetrProcess && !keyRetrProcess.isAttached()) {
+  if (keyRetrProcess && !keyRetrProcess.isRunning) {
     keyRetrProcess.terminate();
   }
   gEnigIpcRequest.close(true);

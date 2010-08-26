@@ -52,6 +52,7 @@ extern PRLogModuleInfo* gIPCServiceLog;
 
 #ifdef XP_WIN
 #include <windows.h>
+#include <shellapi.h>
 #include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
@@ -105,7 +106,6 @@ PRProcess* IPC_CreateProcessRedirectedNSPR(const char *path,
 
 }
 
-
 PRStatus IPC_CreateInheritablePipeNSPR(PRFileDesc* *readPipe,
                                        PRFileDesc* *writePipe,
                                        PRBool readInherit,
@@ -155,6 +155,23 @@ void IPC_Shutdown()
 #endif
 
 }
+
+PRStatus IPC_GetProcessIdNSPR(IPCProcess* process, PRInt32 *pid)
+{
+  *pid = -1;
+
+  if (! process)
+    return PR_FAILURE;
+
+  struct MYProcess {
+      PRUint32 pid;
+  };
+  MYProcess* ptrProc = (MYProcess *) process;
+  *pid = ptrProc->pid;
+
+  return PR_SUCCESS;
+}
+
 
 #ifdef XP_WIN
 // Workaround for Win32
@@ -248,7 +265,7 @@ static int assembleCmdLine(char *const *argv, PRUnichar **wideCmdLine)
     for (arg = argv; *arg; arg++) {
         /* Add a space to separates the arguments */
         if (arg != argv) {
-            *p++ = ' '; 
+            *p++ = ' ';
         }
         q = *arg;
         numBackslashes = 0;
@@ -311,12 +328,12 @@ static int assembleCmdLine(char *const *argv, PRUnichar **wideCmdLine)
         if (argNeedQuotes) {
             *p++ = '"';
         }
-    } 
+    }
 
     *p = '\0';
-    PRInt32 numChars = MultiByteToWideChar(CP_ACP, 0, cmdLine, -1, NULL, 0); 
+    PRInt32 numChars = MultiByteToWideChar(CP_ACP, 0, cmdLine, -1, NULL, 0);
     *wideCmdLine = (PRUnichar *) PR_MALLOC(numChars*sizeof(PRUnichar));
-    MultiByteToWideChar(CP_ACP, 0, cmdLine, -1, *wideCmdLine, numChars); 
+    MultiByteToWideChar(CP_ACP, 0, cmdLine, -1, *wideCmdLine, numChars);
     PR_Free(cmdLine);
     return 0;
 }
@@ -427,7 +444,7 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
   for (arg = argv; *arg; arg++) {
     ++count;
   }
-  
+
   // make sure that when we allocate we have 1 greater than the
   // count since we need to null terminate the list for the argv to
   // pass into PR_CreateProcess
@@ -445,10 +462,10 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
 
   // we need to set argv[0] to the program name.
   my_argv[0] = const_cast<char*>(path);
-  PRInt32 numChars = MultiByteToWideChar(CP_ACP, 0, my_argv[0], -1, NULL, 0); 
+  PRInt32 numChars = MultiByteToWideChar(CP_ACP, 0, my_argv[0], -1, NULL, 0);
   PRUnichar* wideFile = (PRUnichar *) PR_MALLOC(numChars * sizeof(PRUnichar));
-  MultiByteToWideChar(CP_ACP, 0, my_argv[0], -1, wideFile, numChars); 
-  
+  MultiByteToWideChar(CP_ACP, 0, my_argv[0], -1, wideFile, numChars);
+
   // null terminate the array
   my_argv[count+1] = NULL;
 
@@ -461,14 +478,14 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
     return IPC_NULL_HANDLE;
 
   PRUnichar* wideCwd = NULL;
-  
+
   if (cwd != NULL) {
-    numChars = MultiByteToWideChar(CP_ACP, 0, cwd, -1, NULL, 0); 
+    numChars = MultiByteToWideChar(CP_ACP, 0, cwd, -1, NULL, 0);
     PRUnichar* wideCwd = (PRUnichar *) PR_MALLOC(numChars * sizeof(PRUnichar));
     MultiByteToWideChar(CP_ACP, 0, cwd, -1, wideCwd, numChars);
     DEBUG_LOG(("IPCProcess: createProcess converted cwd to %s\n", NS_ConvertUTF16toUTF8(wideCwd).get()));
 	}
-  
+
   // Fill in the process's startup information
   STARTUPINFOW startupInfo;
   memset( &startupInfo, 0, sizeof(STARTUPINFOW) );
@@ -501,7 +518,7 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
   }
 
   PROCESS_INFORMATION processInfo;
-  
+
   bRetVal = CreateProcessW(wideFile,		// executable
                            cmdLine,		// command line
                            NULL,		// process security
@@ -518,13 +535,13 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
 
   if (cmdLine)
     PR_Free(cmdLine);
-    
+
   if (wideCwd)
       PR_Free(wideCwd);
 
   if (envBlock)
     PR_DELETE(envBlock);
-  
+
   nsMemory::Free(my_argv);
 
   // Close handle to primary thread of process (we don't need it)
@@ -644,6 +661,23 @@ PRStatus IPC_KillProcessWin32(IPCProcess* process)
   return PR_FAILURE;
 }
 
+PRStatus IPC_GetProcessIdWin32(IPCProcess* process, PRInt32 *pid)
+{
+  *pid = -1;
+  if (! process)
+    return PR_FAILURE;
+
+  HMODULE kernelDLL = ::LoadLibraryW(L"kernel32.dll");
+  if (kernelDLL) {
+      GetProcessIdPtr getProcessId = (GetProcessIdPtr)GetProcAddress(kernelDLL, "GetProcessId");
+      if (getProcessId)
+         *pid  = getProcessId((HANDLE) process);
+
+      FreeLibrary(kernelDLL);
+  }
+
+  return PR_SUCCESS;
+}
 
 PRInt32 IPC_ReadWin32(IPCFileDesc* fd, void *buf, PRInt32 amount)
 {

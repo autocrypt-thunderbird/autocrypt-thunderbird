@@ -52,6 +52,7 @@
 #include "nsIInputStream.h"
 #include "nsIOutputStream.h"
 #include "nsThreadUtils.h"
+#include "nsIProcess.h"
 
 #ifndef _IPC_FORCE_INTERNAL_API
 #include "nsStringAPI.h"
@@ -74,7 +75,8 @@ class nsPipeTransport : public nsIPipeTransport,
                         public nsIOutputStream,
                         public nsIStreamListener,
                         public nsIInputStreamCallback,
-                        public nsIOutputStreamCallback
+                        public nsIOutputStreamCallback,
+                        public nsIProcess
 {
 public:
     NS_DECL_ISUPPORTS
@@ -136,6 +138,7 @@ protected:
     IPCProcess*                         mProcess;
     PRIntervalTime                      mKillWaitInterval;
     PRInt32                             mExitCode;
+    PRInt32                             mPid;
 
     PRUint32                            mBufferSegmentSize;
     PRUint32                            mBufferMaxSize;
