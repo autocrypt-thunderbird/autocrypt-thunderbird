@@ -200,7 +200,7 @@ NS_IMETHODIMP nsPipeTransport::Initialize(nsIFile *executable,
   rv = executable->GetNativePath(mExecutable);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  DEBUG_LOG(("nsPipeTransport::Init: executable=[%s]\n", mExecutable.get()));
+  DEBUG_LOG(("nsPipeTransport::Initialize: executable=[%s]\n", mExecutable.get()));
 
   if ( cwd != nsnull) {
 #ifdef XP_WIN
@@ -210,11 +210,11 @@ NS_IMETHODIMP nsPipeTransport::Initialize(nsIFile *executable,
     rv = cwd->GetNativePath( mCwd );
     NS_ENSURE_SUCCESS(rv, rv);
 
-    DEBUG_LOG(("nsPipeTransport::Init: working dir=[%s]\n", mCwd.get()));
+    DEBUG_LOG(("nsPipeTransport::Initialize: working dir=[%s]\n", mCwd.get()));
   }
   else {
     mCwd = "";
-    DEBUG_LOG(("nsPipeTransport::Init: no working dir set\n"));
+    DEBUG_LOG(("nsPipeTransport::Initialize: no working dir set\n"));
   }
   mStartupFlags = startupFlags;
 
@@ -227,6 +227,7 @@ NS_IMETHODIMP nsPipeTransport::Init(nsIFile *executable)
   nsresult rv;
   rv = Initialize(executable, nsnull, INHERIT_PROC_ATTRIBS);
   NS_ENSURE_SUCCESS(rv, rv);
+  return rv;
 }
 
 NS_IMETHODIMP nsPipeTransport::Run(PRBool blocking, const char **args,

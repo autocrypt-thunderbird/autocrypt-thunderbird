@@ -54,6 +54,7 @@ extern PRLogModuleInfo* gIPCServiceLog;
 #include <windows.h>
 #include <shellapi.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <io.h>
 #include <fcntl.h>
 

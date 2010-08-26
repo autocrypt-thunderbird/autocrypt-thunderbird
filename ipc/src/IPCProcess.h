@@ -49,6 +49,11 @@
 
 #ifdef XP_WIN_IPC
 
+#include <windows.h>
+#include <shellapi.h>
+
+typedef DWORD (WINAPI*GetProcessIdPtr)(HANDLE process);
+
 #define IPCProcess void
 #define IPCFileDesc void
 #define IPC_NULL_HANDLE NULL
