@@ -41,7 +41,6 @@ MODULE		= ipc
 XPIDL_MODULE	= ipc
 
 XPIDLSRCS	=                      \
-                  nsIProcessInfo.idl   \
                   nsIPipeTransport.idl \
                   nsIPipeConsole.idl   \
                   nsIPipeListener.idl  \

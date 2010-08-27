@@ -34,9 +34,6 @@
 #include "ipc.h"
 #include "nsIClassInfoImpl.h"
 
-#include "nsProcessInfo.h"
-NS_GENERIC_FACTORY_CONSTRUCTOR(nsProcessInfo)
-
 #include "nsPipeTransport.h"
 #include "nsPipeConsole.h"
 #include "nsPipeChannel.h"
@@ -60,12 +57,6 @@ NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsIPCService, Init)
 // CIDs implemented by module
 static const nsModuleComponentInfo components[] =
 {
-
-    { NS_PROCESSINFO_CLASSNAME,
-      NS_PROCESSINFO_CID,
-      NS_PROCESSINFO_CONTRACTID,
-      nsProcessInfoConstructor,
-    },
 
     { NS_PIPETRANSPORT_CLASSNAME,
       NS_PIPETRANSPORT_CID,
@@ -113,7 +104,6 @@ NS_IMPL_NSGETMODULE(nsIPCModule, components)
 
  #include "mozilla/ModuleUtils.h"
 
-NS_DEFINE_NAMED_CID(NS_PROCESSINFO_CID);
 NS_DEFINE_NAMED_CID(NS_PIPETRANSPORT_CID);
 NS_DEFINE_NAMED_CID(NS_PIPECONSOLE_CID);
 NS_DEFINE_NAMED_CID(NS_PIPECHANNEL_CID);
@@ -122,7 +112,6 @@ NS_DEFINE_NAMED_CID(NS_IPCBUFFER_CID);
 NS_DEFINE_NAMED_CID(NS_IPCSERVICE_CID);
 
 const mozilla::Module::CIDEntry kIPCModuleCIDs[] = {
-  { &kNS_PROCESSINFO_CID, false, NULL, nsProcessInfoConstructor },
   { &kNS_PIPETRANSPORT_CID, false, NULL, nsPipeTransportConstructor },
   { &kNS_PIPECONSOLE_CID, false, NULL, nsPipeConsoleConstructor },
   { &kNS_PIPECHANNEL_CID, false, NULL, nsPipeChannelConstructor },
@@ -133,7 +122,6 @@ const mozilla::Module::CIDEntry kIPCModuleCIDs[] = {
 };
 
 const mozilla::Module::ContractIDEntry kIPCModuleContracts[] = {
-  { NS_PROCESSINFO_CONTRACTID, &kNS_PROCESSINFO_CID },
   { NS_PIPETRANSPORT_CONTRACTID, &kNS_PIPETRANSPORT_CID },
   { NS_PIPECONSOLE_CONTRACTID, &kNS_PIPECONSOLE_CID },
   { NS_PIPECHANNEL_CONTRACTID, &kNS_PIPECHANNEL_CID },

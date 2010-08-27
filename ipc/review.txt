@@ -7,6 +7,7 @@ will change the comment
 nsIProcessInfo: I don't think it should be merged with nsIProcess, although it
 could be moved to xpcom and/or renamed. This interface provides info about the
 current process, not about any newly created process (like nsIProcess)
+[nsIProcessInfo has been removed; its functionality is now available from nsIEnvironment]
 
 nsIRandomService: This is necessary for Protozilla and could be useful otherwise
 too. It too could be moved to XPCOM, if it isn't to stay in the extensions.
@@ -96,7 +97,7 @@ This class is not threadsafe.  Not sure if you intend it to be.
 
 > DOES IT NEED TO BE?
 
-don't init nscomptr's to null.  General Rule. 
+don't init nscomptr's to null.  General Rule.
 
 If you do this:
 
@@ -106,13 +107,13 @@ to test success, all you must do is check url, not rv or both.
 
 > DONE
 
-When getting an out string from a API, it is better to use nsXPIDL(C)String. 
+When getting an out string from a API, it is better to use nsXPIDL(C)String.
 Change:
 
     char* contentType = nsnull;
     rv = MIMEService->GetTypeFromURI(url, &contentType);
 
-to 
+to
     nsXPIDLCString contentType;
     rv = MIMEService->GetTypeFromURI(url, getter_Copies(contentType));
 
