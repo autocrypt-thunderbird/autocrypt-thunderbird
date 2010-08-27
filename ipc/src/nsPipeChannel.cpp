@@ -236,7 +236,7 @@ nsPipeChannel::Init(nsIURI* aURI,
   PRBool noProxy = PR_FALSE;
   rv = mPipeTransport->Init(executable);
   NS_ENSURE_SUCCESS(rv, rv);
-  return mPipeTransport->Open(args, argCount, env, envCount, timeoutMS, killString, noProxy, mergeStderr, console);
+  return mPipeTransport->OpenPipe(args, argCount, env, envCount, timeoutMS, killString, noProxy, mergeStderr, console);
 
   if (NS_FAILED(rv)) {
 

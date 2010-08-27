@@ -225,7 +225,7 @@ nsIPCService::RunCommand(nsIFile *executable,
   rv = pipeTrans->Init(executable);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = pipeTrans->Open(args, argCount,
+  rv = pipeTrans->OpenPipe(args, argCount,
                        env, envCount,
                        0, "",
                        noProxy, mergeStderr,

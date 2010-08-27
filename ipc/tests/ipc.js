@@ -36,12 +36,11 @@
 const NS_IPCSERVICE_CONTRACTID =
       "@mozilla.org/process/ipc-service;1";
 
-const NS_PROCESSINFO_CONTRACTID =
-      "@mozilla.org/xpcom/process-info;1";
-
 var ipcService = Components.classes[NS_IPCSERVICE_CONTRACTID].getService(Components.interfaces.nsIIPCService);
 
-var processInfo = Components.classes[NS_PROCESSINFO_CONTRACTID].getService(Components.interfaces.nsIProcessInfo);
+const nsIEnvironment = Components.interfaces.nsIEnvironment;
+var gEnv = Components.classes["@mozilla.org/process/environment;1"].getService(nsIEnvironment);
+
 
 var gShell = null;
 var gShellParam = null;
@@ -69,12 +68,7 @@ function getPlatform() {
 }
 
 function getEnv(name) {
-  if (!processInfo) {
-    ERROR_LOG("ipc.js:getEnv: ProcessInfo not available\n");
-    throw Components.results.NS_ERROR_FAILURE;
-  }
-
-  var value = processInfo.getEnv(name);
+  var value = gEnv.get(name);
   return value ? value : "";
 }
 

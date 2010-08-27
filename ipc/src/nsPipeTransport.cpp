@@ -109,6 +109,7 @@ nsPipeTransport::nsPipeTransport()
       mCommand(""),
       mKillString(""),
       mCwd(""),
+      mStartupFlags(0),
 
       mProcess(IPC_NULL_HANDLE),
       mKillWaitInterval(PR_MillisecondsToInterval(KILL_WAIT_TIME_IN_MS)),
@@ -118,11 +119,12 @@ nsPipeTransport::nsPipeTransport()
       mBufferSegmentSize(NS_PIPE_TRANSPORT_DEFAULT_SEGMENT_SIZE),
       mBufferMaxSize(NS_PIPE_TRANSPORT_DEFAULT_BUFFER_SIZE),
       mHeadersMaxSize(NS_PIPE_TRANSPORT_DEFAULT_HEADERS_SIZE),
-      mPipeTransportWriter(nsnull),
 
       mExecBuf(""),
+      mStdinWrite(IPC_NULL_HANDLE),
 
-      mStdinWrite(IPC_NULL_HANDLE)
+      mPipeTransportWriter(nsnull)
+
 {
     NS_INIT_ISUPPORTS();
 
@@ -169,8 +171,9 @@ nsPipeTransport::~nsPipeTransport()
 // --------------------------------------------------------------------------
 //
 
-NS_IMPL_THREADSAFE_ISUPPORTS8(nsPipeTransport,
+NS_IMPL_THREADSAFE_ISUPPORTS9(nsPipeTransport,
                               nsIPipeTransport,
+                              nsIProcess,
                               nsIPipeTransportHeaders,
                               nsIPipeTransportListener,
                               nsIRequest,
@@ -184,7 +187,7 @@ NS_IMPL_THREADSAFE_ISUPPORTS8(nsPipeTransport,
 ///////////////////////////////////////////////////////////////////////////////
 
 
-NS_IMETHODIMP nsPipeTransport::Initialize(nsIFile *executable,
+NS_IMETHODIMP nsPipeTransport::InitWithWorkDir(nsIFile *executable,
                                     nsIFile *cwd,
                                     PRUint32 startupFlags)
 {
@@ -224,52 +227,20 @@ NS_IMETHODIMP nsPipeTransport::Initialize(nsIFile *executable,
 
 NS_IMETHODIMP nsPipeTransport::Init(nsIFile *executable)
 {
-  nsresult rv;
-  rv = Initialize(executable, nsnull, INHERIT_PROC_ATTRIBS);
-  NS_ENSURE_SUCCESS(rv, rv);
-  return rv;
+  return InitWithWorkDir(executable, nsnull, INHERIT_PROC_ATTRIBS);
 }
 
-NS_IMETHODIMP nsPipeTransport::Run(PRBool blocking, const char **args,
-                                    PRUint32 argCount)
-{
-  return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-NS_IMETHODIMP nsPipeTransport::RunAsync(const char **args,
-                                    PRUint32 argCount,
-                                    nsIObserver* observer,
-                                    PRBool holdWeak)
-{
-  return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-NS_IMETHODIMP nsPipeTransport::Runw(PRBool blocking, const PRUnichar **args,
-                                    PRUint32 argCount)
-{
-  return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-NS_IMETHODIMP nsPipeTransport::RunwAsync(const PRUnichar **args,
-                                    PRUint32 argCount,
-                                    nsIObserver* observer,
-                                    PRBool holdWeak)
-{
-  return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-NS_IMETHODIMP nsPipeTransport::Open(const char **args,
-                                    PRUint32 argCount,
-                                    const char **env,
-                                    PRUint32 envCount,
-                                    PRUint32 timeoutMS,
-                                    const char *killString,
-                                    PRBool noProxy,
-                                    PRBool mergeStderr,
-                                    nsIPipeListener* console)
+NS_IMETHODIMP nsPipeTransport::OpenPipe(const char **args,
+                                        PRUint32 argCount,
+                                        const char **env,
+                                        PRUint32 envCount,
+                                        PRUint32 timeoutMS,
+                                        const char *killString,
+                                        PRBool noProxy,
+                                        PRBool mergeStderr,
+                                        nsIPipeListener* console)
 {
   nsresult rv;
-  PRUint32 j;
 
   DEBUG_LOG(("nsPipeTransport::Open: [%d]\n",
              envCount));
@@ -366,10 +337,53 @@ NS_IMETHODIMP nsPipeTransport::Open(const char **args,
     DEBUG_LOG(("nsPipeTransport::Open: stderrPipe=0x%p\n", stderrPipe));
   }
 
-  char** argList = NULL;
+  rv = CopyArgsAndCreateProcess(args, argCount, env, envCount, stdinRead, stdoutWrite, stderrPipe);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+
+  // Close process-side STDIN/STDOUT/STDERR pipes
+  IPC_Close(stdinRead);
+  stdinRead = nsnull;
+
+  IPC_Close(stdoutWrite);
+  stdoutWrite = nsnull;
+
+  if (stderrWrite) {
+    IPC_Close(stderrWrite);
+    stderrWrite = nsnull;
+  }
+
+  // Create polling helper class (will be deleted when thread terminates?)
+  nsStdoutPoller* stdoutPoller = new nsStdoutPoller();
+  if (!stdoutPoller)
+    return NS_ERROR_OUT_OF_MEMORY;
+
+  mStdoutPoller = stdoutPoller; // owning ref
+
+  // Initialize polling helper class
+  rv = stdoutPoller->Init(stdoutRead, stderrRead, timeoutInterval, mConsole);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  mPipeState = PIPE_OPEN;
+
+  return NS_OK;
+}
+
+nsresult
+nsPipeTransport::CopyArgsAndCreateProcess(const char **args,
+                                          PRUint32 argCount,
+                                          const char **env,
+                                          PRUint32 envCount,
+                                          IPCFileDesc* stdinRead,
+                                          IPCFileDesc* stdoutWrite,
+                                          IPCFileDesc* stderrPipe)
+{
+  PRUint32 j;
 
   if (argCount < 0)
     return NS_ERROR_FAILURE;
+
+  char** argList = NULL;
 
   // Extended copy of argument list (execpath, args, NULL)
   argList = (char **) PR_Malloc(sizeof(char *) * (argCount + 2) );
@@ -388,7 +402,7 @@ NS_IMETHODIMP nsPipeTransport::Open(const char **args,
     }
 #endif
     argList[j+1] = (char *)args[j];
-    DEBUG_LOG(("nsPipeTransport::Open: arg[%d] = %s\n", j+1, argList[j+1]));
+    DEBUG_LOG(("nsPipeTransport::CopyArgsAndCreateProcess: arg[%d] = %s\n", j+1, argList[j+1]));
   }
 
   argList[argCount+1] = NULL;
@@ -433,33 +447,6 @@ NS_IMETHODIMP nsPipeTransport::Open(const char **args,
 	     mProcess, mExecutable.get() ));
 
   IPC_GetProcessIdNSPR (mProcess, &mPid);
-
-
-  // Close process-side STDIN/STDOUT/STDERR pipes
-  IPC_Close(stdinRead);
-  stdinRead = nsnull;
-
-  IPC_Close(stdoutWrite);
-  stdoutWrite = nsnull;
-
-  if (stderrWrite) {
-    IPC_Close(stderrWrite);
-    stderrWrite = nsnull;
-  }
-
-  // Create polling helper class (will be deleted when thread terminates?)
-  nsStdoutPoller* stdoutPoller = new nsStdoutPoller();
-  if (!stdoutPoller)
-    return NS_ERROR_OUT_OF_MEMORY;
-
-  mStdoutPoller = stdoutPoller; // owning ref
-
-  // Initialize polling helper class
-  rv = stdoutPoller->Init(stdoutRead, stderrRead, timeoutInterval, mConsole);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  mPipeState = PIPE_OPEN;
-
   return NS_OK;
 }
 
@@ -1678,6 +1665,34 @@ nsPipeTransport::OnInputStreamReady(nsIAsyncInputStream* inStr)
   }
 
   return NS_OK;
+}
+
+NS_IMETHODIMP nsPipeTransport::Run(PRBool blocking, const char **args,
+                                    PRUint32 argCount)
+{
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+NS_IMETHODIMP nsPipeTransport::RunAsync(const char **args,
+                                    PRUint32 argCount,
+                                    nsIObserver* observer,
+                                    PRBool holdWeak)
+{
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+NS_IMETHODIMP nsPipeTransport::Runw(PRBool blocking, const PRUnichar **args,
+                                    PRUint32 argCount)
+{
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+NS_IMETHODIMP nsPipeTransport::RunwAsync(const PRUnichar **args,
+                                    PRUint32 argCount,
+                                    nsIObserver* observer,
+                                    PRBool holdWeak)
+{
+  return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

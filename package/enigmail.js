@@ -75,7 +75,6 @@ const NS_IPCSERVICE_CONTRACTID  = "@mozilla.org/process/ipc-service;1";
 const NS_IPCBUFFER_CONTRACTID   = "@mozilla.org/process/ipc-buffer;1";
 const NS_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1";
 const NS_PIPETRANSPORT_CONTRACTID="@mozilla.org/process/pipe-transport;1";
-const NS_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
 const NS_PROCESS_UTIL_CONTRACTID = "@mozilla.org/process/util;1"
 const NS_MSGCOMPOSESECURE_CONTRACTID = "@mozilla.org/messengercompose/composesecure;1";
 const NS_ENIGMSGCOMPOSE_CONTRACTID   = "@mozilla.org/enigmail/composesecure;1";
@@ -99,6 +98,7 @@ const NS_CLINE_SERVICE_CONTRACTID = "@mozilla.org/enigmail/cline-handler;1";
 const NS_EXTENSION_MANAGER_CONTRACTID = "@mozilla.org/extensions/manager;1"
 const NS_XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
+
 const DIR_SERV_CONTRACTID  = "@mozilla.org/file/directory_service;1"
 
 // Interfaces
@@ -109,7 +109,7 @@ const nsILocalFileWin        = Components.interfaces.nsILocalFileWin;
 const nsIProtocolHandler     = Components.interfaces.nsIProtocolHandler;
 const nsIIPCService          = Components.interfaces.nsIIPCService;
 const nsIPipeConsole         = Components.interfaces.nsIPipeConsole;
-const nsIProcessInfo         = Components.interfaces.nsIProcessInfo;
+const nsIEnvironment         = Components.interfaces.nsIEnvironment;
 const nsIEnigmail            = Components.interfaces.nsIEnigmail;
 const nsIEnigStrBundle       = Components.interfaces.nsIStringBundleService;
 const nsICmdLineHandler      = Components.interfaces.nsICmdLineHandler;
@@ -1211,9 +1211,9 @@ Enigmail.prototype = {
     DEBUG_LOG("enigmail.js: Platform="+this.platform+"\n");
     DEBUG_LOG("enigmail.js: composeSecure="+this.composeSecure+"\n");
 
-    var processInfo;
+    var environment;
     try {
-      processInfo = Components.classes[NS_PROCESSINFO_CONTRACTID].getService(nsIProcessInfo);
+      environment = Components.classes["@mozilla.org/process/environment;1"].getService(nsIEnvironment);
 
     } catch (ex) {
       this.initializationError = EnigGetString("enigmimeNotAvail");
@@ -1221,9 +1221,9 @@ Enigmail.prototype = {
       throw Components.results.NS_ERROR_FAILURE;
     }
 
-    this.processInfo = processInfo;
+    this.environment = environment;
 
-    var nspr_log_modules = processInfo.getEnv("NSPR_LOG_MODULES");
+    var nspr_log_modules = environment.get("NSPR_LOG_MODULES");
     var matches = nspr_log_modules.match(/enigmail:(\d+)/);
 
     if (matches && (matches.length > 1)) {
@@ -1245,7 +1245,7 @@ Enigmail.prototype = {
                     "TEMP", "TMP", "TMPDIR", "TZ", "TZDIR", "UNIXROOT",
                     "USER", "USERPROFILE", "WINDIR" ];
 
-    var passList = this.processInfo.getEnv("ENIGMAIL_PASS_ENV");
+    var passList = this.environment.get("ENIGMAIL_PASS_ENV");
     if (passList) {
       var passNames = passList.split(":");
       for (var k=0; k<passNames.length; k++)
@@ -1255,7 +1255,7 @@ Enigmail.prototype = {
     gEnvList = [];
     for (var j=0; j<passEnv.length; j++) {
       var envName = passEnv[j];
-      var envValue = this.processInfo.getEnv(envName);
+      var envValue = this.environment.get(envName);
       if (envValue)
          gEnvList.push(envName+"="+envValue);
     }
@@ -1339,16 +1339,16 @@ Enigmail.prototype = {
 
     var homeDir = "";
 
-    homeDir = this.processInfo.getEnv("GNUPGHOME");
+    homeDir = this.environment.get("GNUPGHOME");
 
     if (! homeDir && this.isWin32) {
       homeDir=getWinRegistryString("Software\\GNU\\GNUPG", "HomeDir", nsIWindowsRegKey.ROOT_KEY_CURRENT_USER);
 
       if (! homeDir) {
-        homeDir = this.processInfo.getEnv("USERPROFILE");
+        homeDir = this.environment.get("USERPROFILE");
 
         if (! homeDir) {
-          homeDir = this.processInfo.getEnv("SystemRoot");
+          homeDir = this.environment.get("SystemRoot");
         }
 
         if (homeDir) homeDir += "\\Application Data\\GnuPG";
@@ -1357,7 +1357,7 @@ Enigmail.prototype = {
       if (! homeDir) homeDir = "C:\\gnupg";
     }
 
-    if (! homeDir) homeDir = this.processInfo.getEnv("HOME")+"/.gnupg";
+    if (! homeDir) homeDir = this.environment.get("HOME")+"/.gnupg";
 
     return homeDir;
   },
@@ -1412,7 +1412,7 @@ Enigmail.prototype = {
 
     } else {
       // Resolve relative path using PATH environment variable
-      var envPath = this.processInfo.getEnv("PATH");
+      var envPath = this.environment.get("PATH");
 
       agentPath = ResolvePath(agentName, envPath, this.isDosLike);
 
@@ -1535,7 +1535,7 @@ Enigmail.prototype = {
         }
       }
 
-      var foundPath = ResolvePath(fileName, gEnigmailSvc.processInfo.getEnv("PATH"), gEnigmailSvc.isDosLike)
+      var foundPath = ResolvePath(fileName, gEnigmailSvc.environment.get("PATH"), gEnigmailSvc.isDosLike)
       if ((! foundPath) && gEnigmailSvc.isWin32) {
         // Look up in Windows Registry
         var enigMimeService = Components.classes[NS_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
@@ -1550,7 +1550,7 @@ Enigmail.prototype = {
       return foundPath;
     }
 
-    var gpgAgentInfo = this.processInfo.getEnv("GPG_AGENT_INFO");
+    var gpgAgentInfo = this.environment.get("GPG_AGENT_INFO");
     if (gpgAgentInfo && gpgAgentInfo.length>0) {
       DEBUG_LOG("enigmail.js: detectGpgAgent: GPG_AGENT_INFO variable available\n");
       // env. variable suggests running gpg-agent
@@ -2026,7 +2026,7 @@ Enigmail.prototype = {
 
       var mergeStderr = false;
       pipetrans.init(command);
-      pipetrans.open(args, args.length, envList, envList.length,
+      pipetrans.openPipe(args, args.length, envList, envList.length,
                             0, "", noProxy, mergeStderr,
                             ipcBuffer);
 

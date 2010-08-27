@@ -160,6 +160,14 @@ protected:
     nsCOMPtr<nsISupports>               mContext;
     nsCOMPtr<nsILoadGroup>              mLoadGroup;
     nsCOMPtr<nsIPipeTransportWriter>    mPipeTransportWriter;
+
+    nsresult CopyArgsAndCreateProcess(const char **args,
+                                      PRUint32 argCount,
+                                      const char **env,
+                                      PRUint32 envCount,
+                                      IPCFileDesc* stdinRead,
+                                      IPCFileDesc* stdoutWrite,
+                                      IPCFileDesc* stderrPipe);
 };
 
 // Helper class to handle polling of STDOUT pipe

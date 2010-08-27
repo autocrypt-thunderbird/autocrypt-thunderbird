@@ -112,7 +112,7 @@ interface nsIPipeTransport : nsIRequest
      * @param startupFlags flags defining how the process should be created
      */
 
-    void initialize(in nsIFile executable,
+    void initWithWorkDir(in nsIFile executable,
               in nsIFile cwd,
               in unsigned long startupFlags);
 
@@ -137,15 +137,15 @@ interface nsIPipeTransport : nsIRequest
      * @param mergeStderr merge STDERR with STDOUT
      * @param console     nsIPipeListener object to capture STDERR
      */
-    void open([array, size_is(argCount)] in string args,
-              in unsigned long argCount,
-              [array, size_is(envCount)] in string env,
-              in unsigned long envCount,
-              in unsigned long timeoutMS,
-              in string killString,
-              in boolean noProxy,
-              in boolean mergeStderr,
-              in nsIPipeListener console);
+    void openPipe([array, size_is(argCount)] in string args,
+                  in unsigned long argCount,
+                  [array, size_is(envCount)] in string env,
+                  in unsigned long envCount,
+                  in unsigned long timeoutMS,
+                  in string killString,
+                  in boolean noProxy,
+                  in boolean mergeStderr,
+                  in nsIPipeListener console);
 
     /**
      * detach process after start
@@ -219,7 +219,7 @@ interface nsIPipeTransport : nsIRequest
     void join();
 
     /**
-     * Terminates process, if active.
+     * Terminates process, if active, by closing stdin/stdout/stderr.
      */
     void terminate();
 
