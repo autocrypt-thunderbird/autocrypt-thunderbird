@@ -116,7 +116,7 @@ protected:
     IPCLong                             mContentLength;
 
     nsCString                           mHeaderContentType;
-    PRInt32                             mHeaderContentLength;
+    IPCLong                             mHeaderContentLength;
     nsCString                           mHeaderCharset;
     nsCString                           mHeaderContentDisposition;
 

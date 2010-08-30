@@ -440,14 +440,6 @@ nsPipeChannel::GetContentDisposition(nsACString &aHeaderContentDisposition)
   return NS_OK;
 }
 
-NS_IMETHODIMP
-nsPipeChannel::SetContentDisposition(const nsACString &aContentDisposition)
-{
-
-  mContentDisposition = aContentDisposition;
-  DEBUG_LOG(("nsPipeChannel::SetContentDisposition: %s\n", mContentDisposition.get()));
-  return NS_OK;
-}
 #endif
 
 NS_IMETHODIMP
@@ -687,7 +679,7 @@ nsPipeChannel::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
   mContentReceived += aLength;
 
   if (mProgress && !(mLoadFlags & LOAD_BACKGROUND)) {
-    PRUint32 contentMax = (mContentLength >= 0) ? mContentLength : 0;
+    IPCLong contentMax = (mContentLength >= 0) ? mContentLength : 0;
     rv = mProgress->OnProgress(this, aContext,
                                mContentReceived, contentMax);
     NS_ASSERTION(NS_SUCCEEDED(rv), "unexpected OnProgress failure");
