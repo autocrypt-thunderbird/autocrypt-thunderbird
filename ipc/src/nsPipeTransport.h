@@ -97,7 +97,7 @@ public:
 
     nsresult Finalize(PRBool destructor);
 
-    void KillProcess(void);
+    //void KillProcess(void);
 
     // Define a Create method to be used with a factory:
     static NS_METHOD

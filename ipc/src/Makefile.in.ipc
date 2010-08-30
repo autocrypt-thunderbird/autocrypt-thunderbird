@@ -82,7 +82,6 @@ CPPSRCS		=		    \
 	        IPCProcess.cpp      \
 	        nsIPCBuffer.cpp     \
 	        nsIPCService.cpp    \
-	        nsProcessInfo.cpp   \
 		$(NULL)
 
 FORCE_STATIC_LIB = 1

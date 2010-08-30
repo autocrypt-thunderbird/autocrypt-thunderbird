@@ -118,6 +118,7 @@ protected:
     nsCString                           mHeaderContentType;
     PRInt32                             mHeaderContentLength;
     nsCString                           mHeaderCharset;
+    nsCString                           mHeaderContentDisposition;
 
     PRUint32                            mContentReceived;
 

@@ -96,6 +96,7 @@ nsPipeChannel::nsPipeChannel()
       mHeaderContentType(UNKNOWN_CONTENT_TYPE),
       mHeaderContentLength(-1),
       mHeaderCharset(""),
+      mHeaderContentDisposition(""),
 
       mContentReceived(0)
 
@@ -428,6 +429,26 @@ nsPipeChannel::SetContentCharset(const nsACString &aContentCharset)
   DEBUG_LOG(("nsPipeChannel::SetContentCharset: %s\n", mContentCharset.get()));
   return NS_OK;
 }
+
+#if MOZILLA_MAJOR_VERSION >= 2
+
+NS_IMETHODIMP
+nsPipeChannel::GetContentDisposition(nsACString &aHeaderContentDisposition)
+{
+  aHeaderContentDisposition = mHeaderContentDisposition;
+  DEBUG_LOG(("nsPipeChannel::GetContentDisposition: content-disposition: %s\n", mHeaderContentDisposition.get()));
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsPipeChannel::SetContentDisposition(const nsACString &aContentDisposition)
+{
+
+  mContentDisposition = aContentDisposition;
+  DEBUG_LOG(("nsPipeChannel::SetContentDisposition: %s\n", mContentDisposition.get()));
+  return NS_OK;
+}
+#endif
 
 NS_IMETHODIMP
 nsPipeChannel::GetContentLength(IPCLong *aContentLength)

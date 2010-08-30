@@ -173,14 +173,14 @@ nsPipeTransport::~nsPipeTransport()
 
 NS_IMPL_THREADSAFE_ISUPPORTS9(nsPipeTransport,
                               nsIPipeTransport,
-                              nsIProcess,
                               nsIPipeTransportHeaders,
                               nsIPipeTransportListener,
                               nsIRequest,
                               nsIOutputStream,
                               nsIStreamListener,
                               nsIInputStreamCallback,
-                              nsIOutputStreamCallback)
+                              nsIOutputStreamCallback,
+                              nsIProcess)
 
 ///////////////////////////////////////////////////////////////////////////////
 // nsIPipeTransport methods
