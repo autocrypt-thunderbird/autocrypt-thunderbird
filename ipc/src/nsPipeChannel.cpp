@@ -430,8 +430,8 @@ nsPipeChannel::SetContentCharset(const nsACString &aContentCharset)
   return NS_OK;
 }
 
-#if MOZILLA_MAJOR_VERSION >= 2
-
+#if MOZILLA_MAJOR_VERSION >= 3
+// backed  out from Firefox 4.0
 NS_IMETHODIMP
 nsPipeChannel::GetContentDisposition(nsACString &aHeaderContentDisposition)
 {
