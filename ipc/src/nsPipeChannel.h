@@ -53,13 +53,8 @@
 #include "nsIComponentManager.h"
 #include "nsThreadUtils.h"
 
-#if MOZILLA_MAJOR_VERSION < 2
-
+// will change to PRInt64 at some point ...
 #define IPCLong PRInt32
-
-#else
-
-#define IPCLong PRInt64
 
 #endif
 
