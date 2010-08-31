@@ -56,8 +56,6 @@
 // will change to PRInt64 at some point ...
 #define IPCLong PRInt32
 
-#endif
-
 
 class nsPipeChannel : public nsIPipeChannel,
                       public nsIStreamListener,
