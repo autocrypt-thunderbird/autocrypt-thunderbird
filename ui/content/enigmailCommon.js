@@ -130,6 +130,7 @@ const PGP_MIME_POSSIBLE = 1;
 const PGP_MIME_ALWAYS   = 2;
 
 const ENIG_POSSIBLE_PGPMIME = -2081;
+const ENIG_PGP_DESKTOP_ATT  = -2082;
 
 // property name for temporary directory service
 const ENIG_TEMPDIR_PROP = "TmpD";

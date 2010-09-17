@@ -145,6 +145,16 @@ function enigMatchUidToSender(userId) {
   return userId;
 }
 
+
+function enigRevealAttachments() {
+
+  var attachmentList = new Array();
+  var i;
+  for (i in currentAttachments) {
+    enigHandleAttachment("revealName", currentAttachments[i]);
+  }
+}
+
 function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation) {
   DEBUG_LOG("enigmailMsgHdrViewOverlay.js: enigUpdateHdrIcons: exitCode="+exitCode+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+errorMsg+"\n");
 
@@ -161,6 +171,12 @@ function enigUpdateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, er
   }
   else {
     replaceUid = userId;
+  }
+
+  if (gEnigSavedHeaders && (gEnigSavedHeaders["x-pgp-encoding-format"].search(/partitioned/i)==0)) {
+    if (currentAttachments && currentAttachments.length) {
+      enigSetAttachmentReveal(currentAttachments);
+    }
   }
 
   if (userId && replaceUid) {

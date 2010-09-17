@@ -54,7 +54,7 @@ var gEnigIpcRequest = null;
 var gEnigRemoveListener = false;
 
 var gEnigHeadersList = ["content-type", "content-transfer-encoding",
-                        "x-enigmail-version"];
+                        "x-enigmail-version", "x-pgp-encoding-format" ];
 var gEnigSavedHeaders = null;
 
 var gShowHeadersObj = {"viewallheaders":2,
@@ -186,6 +186,14 @@ function enigmailReloadCompleteMsg() {
   gDBView.reloadMessageWithAllParts();
 }
 
+function enigSetAttachmentReveal(attachmentList) {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigUpdateAttachmentView\n");
+
+  var revealBox = document.getElementById("enigmailRevealAttachments");
+  revealBox.setAttribute("hidden", attachmentList == null ? "true" : "false");
+
+}
+
 
 function enigMessageCleanup() {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageCleanup\n");
@@ -200,6 +208,8 @@ function enigMessageCleanup() {
     if (statusText)
       statusText.value="";
   }
+
+  enigSetAttachmentReveal(null);
 
   if (gEnigCreatedURIs.length) {
     // Cleanup messages belonging to this window (just in case)
@@ -453,12 +463,45 @@ function enigMessageDecrypt(event, isAuto) {
   }
 }
 
+// object for dispatching callback from MsgHdrToMimeMessage to main thread
+// MsgHdrToMimeMessage is not on the main thread which may lead to problems with accessing DOM
+var EnigDecryptCbThread = function(event, isAuto, mimeMsg) {
+  this.event = event;
+  this.isAuto = isAuto;
+  this.mimeMsg = mimeMsg;
+};
+
+EnigDecryptCbThread.prototype = {
+
+  run: function() {
+  {
+    var enigmailSvc=GetEnigmailSvc();
+    if (!enigmailSvc) return;
+
+    enigMessageDecryptCb(this.event, this.isAuto, this.mimeMsg);
+  }
+
+  },
+
+  QueryInterface: function(iid) {
+    if (iid.equals(Components.interfaces.nsIRunnable) ||
+        iid.equals(Components.interfaces.nsISupports)) {
+            return this;
+    }
+    throw Components.results.NS_ERROR_NO_INTERFACE;
+  }
+};
+
+
 
 function enigMsgDecryptMimeCb(msg, mimeMsg) {
-  var enigmailSvc=GetEnigmailSvc();
-  if (!enigmailSvc) return;
 
-  enigMessageDecryptCb(this.event, this.isAuto, mimeMsg);
+  var mainThread = Components.classes["@mozilla.org/thread-manager;1"].getService().mainThread;
+
+  // dispatch the message parsing back to the main thread
+  mainThread.dispatch(new EnigDecryptCbThread(this.event, this.isAuto, mimeMsg),
+    Components.interfaces.nsIThread.DISPATCH_NORMAL);
+
 }
 
 
@@ -544,8 +587,6 @@ function enigMessageDecryptCb(event, isAuto, mimeMsg){
         }
       }
     }
-
-    DEBUG_LOG("Got here\n");
 
     var contentEncoding = "";
     var xEnigmailVersion = "";
@@ -1637,6 +1678,7 @@ function enigHandleAttachmentSel(actionType) {
   case "saveAttachment":
   case "openAttachment":
   case "importKey":
+  case "revealName":
     enigHandleAttachment(actionType, anAttachment);
   }
 }
@@ -1679,6 +1721,20 @@ function enigHandleAttachment(actionType, anAttachment) {
 
 }
 
+function enigSetAttachmentName(attachment, newLabel) {
+
+  var attList=document.getElementById("attachmentList");
+  if (attList) {
+    var attNode = attList.firstChild;
+    while (attNode) {
+      if (attNode.getAttribute("label") == attachment.displayName)
+        attNode.setAttribute("label", newLabel);
+      attNode=attNode.nextSibling;
+    }
+  }
+
+  attachment.displayName = newLabel;
+}
 
 function enigDecryptAttachmentCallback(callbackArg, ctxt) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigDecryptAttachmentCallback: "+ctxt+"\n");
@@ -1705,6 +1761,13 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
                                 gEnigLastSaveDir, true, "",
                                 rawFileName, null);
     if (! outFile) return;
+  }
+  else if (callbackArg.actionType == "revealName") {
+    if (origFilename && origFilename.length > 0) {
+      enigSetAttachmentName(callbackArg.attachment, origFilename+".pgp");
+    }
+    enigSetAttachmentReveal(null);
+    return;
   }
   else {
     // open
