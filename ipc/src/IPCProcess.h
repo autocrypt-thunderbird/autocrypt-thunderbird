@@ -125,6 +125,8 @@ PRStatus IPC_WaitProcessWin32(IPCProcess* process, PRInt32 *exitCode);
 
 PRStatus IPC_KillProcessWin32(IPCProcess* process);
 
+PRStatus IPC_GetProcessIdWin32(IPCProcess* process, PRInt32 *pid);
+
 PRInt32  IPC_ReadWin32(IPCFileDesc* fd, void *buf, PRInt32 amount);
 
 PRInt32  IPC_WriteWin32(IPCFileDesc* fd, const void *buf, PRInt32 amount);

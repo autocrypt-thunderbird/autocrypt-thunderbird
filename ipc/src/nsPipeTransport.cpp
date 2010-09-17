@@ -446,7 +446,7 @@ nsPipeTransport::CopyArgsAndCreateProcess(const char **args,
   DEBUG_LOG(("nsPipeTransport::Open: Created process %p, %s\n",
 	     mProcess, mExecutable.get() ));
 
-  IPC_GetProcessIdNSPR (mProcess, &mPid);
+  IPC_GetProcessId (mProcess, &mPid);
   return NS_OK;
 }
 
