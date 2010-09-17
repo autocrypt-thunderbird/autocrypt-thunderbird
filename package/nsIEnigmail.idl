@@ -408,6 +408,9 @@ interface nsIEnigmail : nsISupports
                             out unsigned long statusFlags,
                             out wstring errorMsg);
 
+  string getAttachmentFileName(in NSIDOMWindow parent,
+                               in nsIIPCBuffer ipcBuffer);
+
   boolean decryptAttachment (in nsIDOMWindow parent,
                              in nsIFile outFile,
                              in string displayName,

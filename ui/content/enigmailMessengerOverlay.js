@@ -1628,6 +1628,7 @@ function enigKeyRequestCallback(callbackArg, ctxt) {
 function enigHandleAttachmentSel(actionType) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigHandleAttachmentSel: actionType="+actionType+"\n");
 
+
   var attachmentList = document.getElementById('attachmentList');
   var selectedAttachments = attachmentList.selectedItems;
   var anAttachment = selectedAttachments[0].attachment;
@@ -1675,6 +1676,7 @@ function enigHandleAttachment(actionType, anAttachment) {
   listener = pipeFilter;
 
   channel.asyncOpen(listener, msgUri);
+
 }
 
 
@@ -1693,6 +1695,10 @@ function enigDecryptAttachmentCallback(callbackArg, ctxt) {
   var enigmailSvc =  GetEnigmailSvc();
   var outFile;
   var rawFileName=callbackArg.attachment.displayName.replace(/\.(asc|pgp|gpg)$/i,"");
+
+  var origFilename = enigmailSvc.getAttachmentFileName(window, callbackArg.ipcBuffer);
+  if (origFilename && origFilename.length > 0) rawFileName = origFilename;
+
 
   if (callbackArg.actionType == "saveAttachment") {
     outFile = EnigFilePicker(EnigGetString("saveAttachmentHeader"),

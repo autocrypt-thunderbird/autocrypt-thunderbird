@@ -4306,6 +4306,80 @@ Enigmail.prototype = {
   },
 
 
+  getAttachmentFileName: function (parent, inputBuffer) {
+    WRITE_LOG("enigmail.js: Enigmail.getAttachmentFileName\n");
+
+    var args = this.getAgentArgs(true);
+    args = args.concat(this.passwdCommand());
+    args.push("--list-packets");
+
+    var passphrase = null;
+    var passwdObj = new Object();
+    var useAgentObj = new Object();
+
+    if (!GetPassphrase(parent, passwdObj, useAgentObj, 0)) {
+      ERROR_LOG("enigmail.js: Enigmail.getAttachmentFileName: Error - no passphrase supplied\n");
+      return null;
+    }
+
+    var dataLength = new Object();
+    var byteData = inputBuffer.getByteData(dataLength);
+
+    passphrase = passwdObj.value;
+
+    var exitCodeObj    = new Object();
+    var statusFlagsObj = new Object();
+    var statusMsgObj   = new Object();
+    var errorMsgObj    = new Object();
+
+    var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+    ipcBuffer.open(MSG_BUFFER_SIZE, false);
+
+    var noProxy = true;
+
+    var pipeTrans = this.execStart(this.agentPath, args, false, parent, 0,
+                                   ipcBuffer, noProxy, statusFlagsObj);
+
+
+    if (!pipeTrans) {
+      return false;
+    }
+
+    try {
+      if (this.requirePassword()) {
+        pipeTrans.writeSync(passphrase, passphrase.length);
+        pipeTrans.writeSync("\n", 1);
+      }
+      pipeTrans.writeSync(byteData, dataLength.value);
+
+    }
+    catch (ex) {
+      return false;
+    }
+    // Wait for child STDOUT to close
+    pipeTrans.join();
+
+    exitCodeObj.value = pipeTrans.exitValue;
+
+    var statusMsgObj = new Object();
+    var cmdLineObj   = new Object();
+
+    try {
+      this.execEnd(pipeTrans, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
+    }
+    catch (ex) {};
+
+    outputTxt = ipcBuffer.getData();
+
+    var matches = outputTxt.match(/:literal data packet:\n.*name="(.*)",/m);
+    if (matches && (matches.length > 1)) {
+      return matches[1];
+    }
+    else
+      return null;
+  },
+
+
   decryptAttachment: function (parent, outFile, displayName, inputBuffer,
             exitCodeObj, statusFlagsObj, errorMsgObj) {
     WRITE_LOG("enigmail.js: Enigmail.decryptAttachment: parent="+parent+", outFileName="+outFile.path+"\n");
@@ -4687,7 +4761,6 @@ Enigmail.prototype = {
 
     return r;
   },
-
 
   enableDisableKey: function (parent, keyId, disableKey, errorMsgObj) {
     DEBUG_LOG("enigmail.js: Enigmail.addUid: keyId="+keyId+", disableKey="+disableKey+"\n");
