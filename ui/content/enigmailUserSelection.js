@@ -136,13 +136,13 @@ function enigGetUserList(secretOnly, refresh) {
       EnigAlert(errorMsgObj.value);
       return null;
     }
-    
+
     if (! secretOnly) {
       var configString = enigmailSvc.getGnupgConfig(exitCodeObj, errorMsgObj);
       if (exitCodeObj.value != 0) {
         EnigAlert(errorMsgObj.value);
         return null;
-      }                                             
+      }
       var configList = configString.split(/\n/);
       for (var i=0; i<configList.length;i++) {
         if (configList[i].indexOf("cfg:group") == 0) {
@@ -153,7 +153,7 @@ function enigGetUserList(secretOnly, refresh) {
     }
     else {
       userList = getPubkeysFromSecretKeys(userList);
-    }    
+    }
   } catch (ex) {
     ERROR_LOG("ERROR in enigmailUserSelection: enigGetUserList\n");
   }
@@ -171,7 +171,7 @@ function getPubkeysFromSecretKeys(keyString) {
       aSecretKeys.push("0x"+listRow[KEY_ID]);
     }
   }
-  
+
   var enigmailSvc = GetEnigmailSvc();
   if (! enigmailSvc)
     return null;
@@ -203,7 +203,7 @@ function enigmailBuildList(refresh) {
    var secretOnly = (window.arguments[INPUT].options.indexOf("private")>= 0);
    var hideExpired = (window.arguments[INPUT].options.indexOf("hidexpired")>= 0);
    gAllowExpired = (window.arguments[INPUT].options.indexOf("allowexpired")>= 0);
-   
+
    var aGpgUserList = enigGetUserList(secretOnly, refresh);
 
    if (!aGpgUserList) return;
@@ -323,7 +323,7 @@ function enigmailBuildList(refresh) {
             if (TRUSTLEVEL_SORTED.indexOf(listRow[KEY_TRUST]) < TRUSTLEVEL_SORTED.indexOf(userObj.keyTrust)) {
             // reduce key trust if primary UID is less trusted than public key
             userObj.keyTrust = listRow[KEY_TRUST];
-          }           
+          }
          }
          else {
            var userId = {
@@ -436,7 +436,7 @@ function enigmailBuildList(refresh) {
           else
             aUserList[i].activeState = 0;
         }
-        
+
         if (! hideExpired || aUserList[i].activeState < 2) {
           if ((aUserList[i].keyTrust != KEY_IS_GROUP) && aUserList[i].SubUserIds.length) {
             for (var user=0; user<aUserList[i].SubUserIds.length; user++) {
@@ -645,12 +645,12 @@ function enigmailUserSelAccept() {
     EnigAlert(EnigGetString("atLeastOneKey"));
     return false;
   }
-  
+
   if ((resultObj.userList.length < getToAddrList().length) && gSendEncrypted) {
     if (! EnigConfirm(EnigGetString("fewerKeysThanRecipients"), EnigGetString("dlg.button.continue"), EnigGetString("userSel.button.goBack")))
       return false;
   }
-  
+
   resultObj.cancelled=false;
 
   resultObj.encrypt = gSendEncrypted;
@@ -700,6 +700,9 @@ function enigmailUserSelCallback(event) {
 
     if ((event.detail == 1) && (col.value.id != "selectionCol"))
       return; // single clicks are only relvant for the selection column
+
+    if ((event.detail == 2)  && ("selectionCol,enigUserNameCol,trustCol,expCol,keyCol".indexOf(col.value.id) < 0))
+      return;
 
     event.stopPropagation();
 
