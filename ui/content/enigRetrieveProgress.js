@@ -33,6 +33,8 @@
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
+Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+
 // Initialize enigmailCommon
 EnigInitCommon("enigRetrieveProgress");
 
@@ -128,12 +130,12 @@ function onLoad() {
 
   var statTxt=document.getElementById("dialog.status2");
   if (inArg.accessType == nsIEnigmail.UPLOAD_KEY) {
-    statTxt.value=EnigGetString("keyserverProgress.uploading");
-    subject = EnigGetString("keyserverTitle.uploading");
+    statTxt.value=EnigCommon.getString("keyserverProgress.uploading");
+    subject = EnigCommon.getString("keyserverTitle.uploading");
   }
   else {
-    statTxt.value=EnigGetString("keyserverProgress.refreshing");
-    var subject = EnigGetString("keyserverTitle.refreshing");
+    statTxt.value=EnigCommon.getString("keyserverProgress.refreshing");
+    var subject = EnigCommon.getString("keyserverTitle.refreshing");
   }
 
   msgProgress = Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
@@ -146,7 +148,7 @@ function onLoad() {
   var errorMsgObj={};
   gEnigIpcRequest = enigmailSvc.receiveKey(inArg.accessType, inArg.keyServer, inArg.keyList, requestObserver, errorMsgObj);
   if (gEnigIpcRequest == null) {
-    EnigAlert(EnigGetString("sendKeysFailed")+"\n"+errorMsgObj.value);
+    EnigAlert(EnigCommon.getString("sendKeysFailed")+"\n"+EnigConvertGpgToUnicode(errorMsgObj.value));
   }
 
   window.title = subject;
@@ -181,7 +183,7 @@ function onCancel ()
 }
 
 function enigSendKeyTerminate (terminateArg, ipcRequest) {
-  DEBUG_LOG("enigmailRetrieveProgress.js: enigSendKeyTerminate\n");
+  EnigCommon.DEBUG_LOG("enigmailRetrieveProgress.js: enigSendKeyTerminate\n");
 
   if (gEnigIpcRequest) {
     var cbFunc = gEnigCallbackFunc;
@@ -192,7 +194,7 @@ function enigSendKeyTerminate (terminateArg, ipcRequest) {
     if (keyRetrProcess && !keyRetrProcess.isRunning) {
       keyRetrProcess.terminate();
       exitCode = keyRetrProcess.exitValue;
-      DEBUG_LOG("enigmailRetrieveProgress.js: enigSendKeyTerminate: exitCode = "+exitCode+"\n");
+      EnigCommon.DEBUG_LOG("enigmailRetrieveProgress.js: enigSendKeyTerminate: exitCode = "+exitCode+"\n");
       if (enigmailSvc) {
         exitCode = enigmailSvc.fixExitCode(exitCode, 0);
       }
@@ -205,16 +207,16 @@ function enigSendKeyTerminate (terminateArg, ipcRequest) {
       var gpgConsole = gEnigIpcRequest.stderrConsole.QueryInterface(Components.interfaces.nsIPipeConsole);
 
       if (gpgConsole && gpgConsole.hasNewData()) {
-        errorMsg = gpgConsole.getData();
+        errorMsg = gpgConsole.getByteData(new Object());
         if (enigmailSvc) {
           var statusFlagsObj=new Object();
           var statusMsgObj=new Object();
-          errorMsg=enigmailSvc.parseErrorOutput(errorMsg, statusFlagsObj, statusMsgObj);
+          errorMsg=EnigCommon.parseErrorOutput(errorMsg, statusFlagsObj, statusMsgObj);
         }
       }
     } catch (ex) {}
 
-    DEBUG_LOG("enigmailRetrieveProgress.js: enigSendKeyTerminate: errorMsg="+errorMsg);
+    EnigCommon.DEBUG_LOG("enigmailRetrieveProgress.js: enigSendKeyTerminate: errorMsg="+errorMsg);
     if (errorMsg.search(/ec=\d+/i)>=0) {
       exitCode=-1;
     }

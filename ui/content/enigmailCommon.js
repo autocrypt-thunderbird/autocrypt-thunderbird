@@ -1117,10 +1117,10 @@ function EnigConvertToUnicode(text, charset) {
 function EnigConvertGpgToUnicode(text) {
   if (typeof(text)=="string") {
     text = text.replace(/\\x3a/ig, "\\e3A");
-    a=text.search(/\\x[0-9a-fA-F]{2}/);
+    var a=text.search(/\\x[0-9a-fA-F]{2}/);
     while (a>=0) {
-        ch=unescape('%'+text.substr(a+2,2));
-        r= new RegExp("\\"+text.substr(a,4));
+        var ch = unescape('%'+text.substr(a+2,2));
+        var r = new RegExp("\\"+text.substr(a,4));
         text=text.replace(r, ch);
 
         a=text.search(/\\x[0-9a-fA-F]{2}/);

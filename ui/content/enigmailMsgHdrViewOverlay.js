@@ -837,6 +837,7 @@ EnigMimeHeaderSink.prototype =
   {
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: uriSpec="+uriSpec+"\n");
 
+    //errorMsg = EnigConvertGpgToUnicode(errorMsg);
     var msgUriSpec = enigGetCurrentMsgUriSpec();
 
     DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: msgUriSpec="+msgUriSpec+"\n");

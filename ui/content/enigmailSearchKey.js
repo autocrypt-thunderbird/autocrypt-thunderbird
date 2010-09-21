@@ -260,7 +260,7 @@ function enigImportKeys (connType, txt, errorTxt) {
     return;
   }
   else if (window.enigRequest.errorTxt) {
-    EnigLongAlert(window.enigRequest.errorTxt);
+    EnigLongAlert(EnigConvertGpgToUnicode(window.enigRequest.errorTxt));
   }
 
   window.enigRequest.httpInProgress=false;
