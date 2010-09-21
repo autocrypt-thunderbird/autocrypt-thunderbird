@@ -57,28 +57,10 @@ LANGXPIFILE = $(XPI_MODULE)-en-US-$(XPI_MODULE_VERS).xpi
 
 libs::
 	$(INSTALL) $(srcdir)/enigmail.js $(DIST)/bin/components
+	$(INSTALL) $(srcdir)/enigmailCommon.jsm $(DIST)/bin/modules
 	$(INSTALL) $(srcdir)/prefs/enigmail.js $(DIST)/bin/defaults/preferences
 	$(INSTALL) $(srcdir)/enigprefs-service.js $(DIST)/bin/components
 	$(INSTALL) $(srcdir)/enigMsgCompFields.js $(DIST)/bin/components
-
-xpi::
-	$(error To create the Enigmail XPI package type "make xpi" from the enigmail root directory)
-
-old-xpi::
-	zip -r $(DIST)/bin/$(XPIFILE) install.js \
-               install.rdf \
-               $(XPI_MODULE).spec
-	cd $(DIST)/bin; zip -g $(XPIFILE) \
-               components/$(XPI_MODULE).xpt \
-               components/$(XPI_MODULE).js \
-               components/enigprefs-service.js \
-	       components//enigMsgCompFields.js \
-               defaults/preferences/enigmail.js \
-               defaults/pref/enigmail.js \
-               chrome/$(XPI_MODULE).jar \
-               chrome/$(XPI_MODULE)-skin.jar \
-               chrome/$(XPI_MODULE)-skin-tbird.jar
-	echo Created $(DIST)/bin/$(XPIFILE)
 
 xpi-en-US::
 	cd ../ui; zip -r $(DIST)/bin/$(LANGXPIFILE) \

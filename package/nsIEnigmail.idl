@@ -136,11 +136,6 @@ interface nsIEnigmail : nsISupports
   long fixExitCode(in long exitCode,
                    in long statusFlags);
 
-  string parseErrorOutput(in string errOutput,
-                          out unsigned long statusFlags,
-                          out wstring statusMsg);
-
-
   string locateArmoredBlock(in string text,
                             in long offset,
                             in string indentStr,
@@ -408,7 +403,7 @@ interface nsIEnigmail : nsISupports
                             out unsigned long statusFlags,
                             out wstring errorMsg);
 
-  string getAttachmentFileName(in NSIDOMWindow parent,
+  string getAttachmentFileName(in nsIDOMWindow parent,
                                in nsIIPCBuffer ipcBuffer);
 
   boolean decryptAttachment (in nsIDOMWindow parent,
