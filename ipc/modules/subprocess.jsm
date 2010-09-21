@@ -36,7 +36,10 @@
  * Import into a JS component using
  * 'Components.utils.import("resource://gre/modules/subprocess.jsm");'
  *
- * This object allows to start a process, and read/write data to/from it using stdin/stour/stderr
+ * As long as this code is not yet in Mozilla platform, use;
+ * 'Components.utils.import("resource://enigmail/subprocess.jsm");'
+ *
+ * This object allows to start a process, and read/write data to/from it using stdin/stdout/stderr
  * streams.
  * Usage example:
  *
@@ -44,21 +47,23 @@
  *    command:     '/bin/foo',
  *    arguments:   ['-v', 'foo'],
  *    environment: [ "XYZ=abc", "MYVAR=def" ],
+ *    workdir: '/home/foo',
  *    stdin: subprocess.WritablePipe(function() {
  *      this.write("Writing example data\n");
+ *      this.close();
  *    }),
  *    stdout: subprocess.ReadablePipe(function(data) {
- *      dump("Got data on stdout: " + data+"\n");
+ *      dump("got data on stdout:" +data+"\n");
  *    }),
  *    stderr: subprocess.ReadablePipe(function(data) {
- *      dump("Got data on stderr: "+data+"\n");
- *    )},
+ *      dump("got data on stderr:" +data+"\n");
+ *    }),
  *    onFinished: subprocess.Terminate(function() {
- *      dump("Process finished with result code: "+this.exitCode+"\n");
- *    },
+ *      dump("process terminated with " +this.exitCode + "\n");
+ *    }),
  *    mergeStderr: false
  *  });
- *  p.waitFor(); // wait for the subprocess to terminate
+ *  p.wait(); // wait for the subprocess to terminate
  *
  *
  * Description of parameters:
@@ -74,10 +79,15 @@
  *              The array elements must have the form "VAR=data". Please note that if environment is
  *              defined, it replaces any existing environment variables for the subprocess.
  *
+ * workdir:     optional; either a |nsIFile| object pointing to a directory or a String
+ *              containing the platform-dependent path to a directory to become the current
+ *              working directory of the subprocess.
+ *
  * stdin:       optional input data for the process to be passed on standard input. stdin can either
  *              be a string or a function. If stdin is a string, then the string content is passed
  *              to the process. If stdin is a function defined using subprocess.WritablePipe, input
  *              data can be written synchronously to the process using this.write(string).
+ *              The stream to the subprocess can be closed with this.close().
  *
  * stdout:      an optional function that can receive output data from the process. The stdout-function
  *              is called asynchronously; it can be called mutliple times during the execution of a
@@ -101,12 +111,23 @@
  * ------------------------------------------------------
  * The object returned by subprocess.call offers a few methods that can be executed:
  *
- * waitFor():   waits for the subprocess to terminate. It is not required to use waitFor,
- *              however onFinished and stderr will only be called if waitFor is called or if
- *              stdout is defined.
+ * wait():      waits for the subprocess to terminate. It is not required to use wait; onFinshed
+ *              and stderr will be called in any case when the subprocess terminated.
  *
  * kill():      kill the subprocess. Any open pipes will be closed and onFinished will be called.
-*/
+ *
+ *
+ * Important notes
+ * ---------------
+ *
+ * Be careful if you create more than one subprocess in parallel. Because p.wait() is blocking
+ * the termination of other processes, you cannot wait on the same thread for more than one
+ * subprocess to terminate, unless you know the sequence in which the subprocesses finish. Therefore
+ * it is safer to create new threads if you need to execute several subprocesses at the same time.
+ *
+ * The callbacks to ReadablePipe and Terminate are always dispatched to the main thread, no matter
+ * from which thread you started the process.
+ */
 
 
 var EXPORTED_SYMBOLS = [ "subprocess" ];
@@ -117,136 +138,11 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 
 var subprocess = {
-  result: -1,
-  _pipeTransport: null,
-  stdoutData: null,
 
   call: function (commandObj) {
-
-    function StdoutStreamListener(cmdObj, pipeTransport, stderrData) {
-      this._cmdObj = cmdObj;
-      this._pipeTransport = pipeTransport;
-      this.stderrData = stderrData;
-    }
-
-    StdoutStreamListener.prototype = {
-      // a stream listener used for calling back to stdout
-      QueryInterface: function(aIID) {
-        if (aIID.equals(Ci.nsISupports)
-        || aIID.equals(Ci.nsIRequestObserver)
-        || aIID.equals(Ci.nsIStreamListener))
-          return this;
-        throw Ci.NS_NOINTERFACE;
-      },
-
-      onStartRequest: function(aRequest, aContext) {
-        this._inputStream = null;
-      },
-
-      onDataAvailable: function(aRequest, aContext, aInputStream, offset, count) {
-
-        if (! this._inputStream) {
-          // we are using nsIBinaryInputStream in order to ensure correct handling in case the subprocess
-          // feeds special characters like NULL
-          this._inputStream = Cc["@mozilla.org/binaryinputstream;1"].createInstance(Ci.nsIBinaryInputStream);
-          this._inputStream.setInputStream(aInputStream);
-        }
-        var av = aInputStream.available();
-        this._cmdObj.stdout.onDataAvailable(this._inputStream.readBytes(av));
-      },
-
-      onStopRequest: function(aRequest, aContext, aStatusCode) {
-        try {
-          this._inputStream.close();
-        }
-        catch(ex) {}
-
-        // call to stderr and onFinished from here to avoid mandatory use of p.waitFor()
-        callFinalCallbacks(this);
-      }
-    };
-
-    this.pipeObj = {
-      stderrData: null,
-
-      init: function(cmdObj) {
-        this._cmdObj = cmdObj;
-        if (typeof(cmdObj.stderr) == "object") {
-          // create & open pipeListener
-          this.stderrData = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
-          this.stderrData.open(-1, true);
-        }
-
-
-        if (typeof (cmdObj.command) == "string") {
-          var localfile= Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
-          localfile.initWithPath(cmdObj.command);
-          cmdObj._commandFile = localfile.QueryInterface(Ci.nsIFile);
-        }
-        else {
-          cmdObj._commandFile = cmdObj.command;
-        }
-        if (typeof (cmdObj.arguments) != "object") cmdObj.arguments = [];
-        if (typeof (cmdObj.environment) != "object") cmdObj.environment = [];
-
-        this._pipeTransport = Cc[NS_PIPETRANSPORT_CONTRACTID].createInstance(Ci.nsIPipeTransport);
-        this._pipeTransport.initWithWorkDir(cmdObj._commandFile, null,
-                                Ci.nsIPipeTransport.INHERIT_PROC_ATTRIBS);
-
-        this.stdoutListener = null;
-        if (typeof(cmdObj.stdout) == "object") {
-          // add listener for asynchronous processing of data
-          this.stdoutListener = new StdoutStreamListener(cmdObj, this._pipeTransport, this.stderrData);
-        }
-        else {
-          this.stdoutListener = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
-          this.stdoutListener.open(-1, true);
-        }
-
-        this._pipeTransport.openPipe(cmdObj.arguments, cmdObj.arguments.length,
-                                     cmdObj.environment, cmdObj.environment.length,
-                                     0, "", true, cmdObj.mergeStderr ? true : false,
-                                     this.stderrData);
-
-        this._pipeTransport.asyncRead(this.stdoutListener, null, 0, -1, 0);
-
-        if (typeof(cmdObj.stdin) == "string") {
-          this._pipeTransport.writeSync(cmdObj.stdin, cmdObj.stdin.length);
-        }
-        else if (typeof(cmdObj.stdin) == "object") {
-          cmdObj.stdin._pipeTransport = this._pipeTransport;
-          cmdObj.stdin.startWriting();
-        }
-      }, // init
-
-      waitFor: function () {
-        this._pipeTransport.join(); // wait for subprocess to complete
-        this.result = this._pipeTransport.exitValue;
-
-        if (this._cmdObj.stdout == null && typeof(this._cmdObj.onFinished) == "object") {
-          this._cmdObj.onFinished.stdoutData = this.stdoutListener.getData();
-          this.stdoutListener.shutdown();
-        }
-
-
-        if (typeof(this._cmdObj.stdout) != "object") {
-          // call stderr and onFinished if not using StdoutStreamListener
-          callFinalCallbacks(this);
-        }
-      }, // waitFor
-
-      kill: function() {
-        try {
-          this._pipeTransport.kill();
-        }
-        catch(ex) {
-          dump(ex.toString())
-        }
-      }
-    }
-    this.pipeObj.init(commandObj);
-    return this.pipeObj;
-
+    var pipeObj = new PipeObj();
+    pipeObj.init(commandObj);
+    return pipeObj;
   },
   WritablePipe: function(func) {
     var pipeWriterObj = {
@@ -254,81 +150,263 @@ var subprocess = {
       write: function(data) {
         this._pipeTransport.writeSync(data, data.length);
       },
+      close: function() {
+        this._pipeTransport.closeStdin();
+      },
       startWriting: func
     };
     return pipeWriterObj;
   },
   ReadablePipe: function(func) {
     var pipeReaderObj = {
-      onDataAvailable: func
+      callbackFunction: func,
+      onDataAvailable: function(data) {
+        // onDataAvailable is called on a separate thread, dispatch to main thread
+        mainThread.dispatch(new readablePipeMainThread(this.callbackFunction, data),
+          Components.interfaces.nsIThread.DISPATCH_NORMAL);
+      }
     }
     return pipeReaderObj;
   },
   Terminate: function(func) {
     var onFinishedObj = {
       stdoutData: null,
-      exitCode: -1,
-      callback: func
+      callbackFunction: func,
+      callback: function (exitCode) {
+        // callback is called on a separate thread, dispatch to main thread
+        mainThread.dispatch(new terminateMainThread(this.callbackFunction, exitCode, this.stdoutData),
+          Components.interfaces.nsIThread.DISPATCH_NORMAL);
+      }
     };
     return onFinishedObj;
   },
 };
 
+// the main thread, needed for dispatching events
+var mainThread = Components.classes["@mozilla.org/thread-manager;1"].getService().mainThread;
 
-function callFinalCallbacks(aObj) {
-  if (typeof(aObj._cmdObj.stderr) == "object" && (! aObj._cmdObj.mergeStderr)) {
-    aObj._cmdObj.stderr.onDataAvailable(aObj.stderrData.getData());
-    aObj.stderrData.shutdown();
-  }
 
-  if (typeof(aObj._cmdObj.onFinished) == "object") {
-    aObj._cmdObj.onFinished.exitCode = aObj._pipeTransport.exitValue;
-    aObj._cmdObj.onFinished.callback();
+// object for dispatching ReadablePipe callbacks to main thread
+var readablePipeMainThread = function(cbFunction, data) {
+  this.cbFunction = cbFunction;
+  this.data = data;
+};
+
+readablePipeMainThread.prototype = {
+
+  run: function() {
+    this.cbFunction(this.data);
+  },
+
+  QueryInterface: function(iid) {
+    if (iid.equals(Components.interfaces.nsIRunnable) ||
+        iid.equals(Components.interfaces.nsISupports)) {
+            return this;
+    }
+    throw Components.results.NS_ERROR_NO_INTERFACE;
   }
+};
+
+
+
+// object for dispatching Terminate callbacks to main thread
+
+var terminateMainThread = function(cbFunction, exitCode, stdoutData) {
+  this.cbFunction = cbFunction;
+  this.stdoutData = stdoutData;
+  this.exitCode = exitCode;
+};
+
+terminateMainThread.prototype = {
+
+  run: function() {
+    this.cbFunction();
+  },
+
+  QueryInterface: function(iid) {
+    if (iid.equals(Components.interfaces.nsIRunnable) ||
+        iid.equals(Components.interfaces.nsISupports)) {
+            return this;
+    }
+    throw Components.results.NS_ERROR_NO_INTERFACE;
+  }
+};
+
+
+// Listener for handling stdout callbacks
+function StdoutStreamListener(cmdObj) {
+  this._cmdObj = cmdObj;
+  this._observer = null;
 }
 
-/*
+StdoutStreamListener.prototype = {
+  // a stream listener used for calling back to stdout
+  QueryInterface: function(aIID) {
+    if (aIID.equals(Ci.nsISupports)
+    || aIID.equals(Ci.nsIRequestObserver)
+    || aIID.equals(Ci.nsIStreamListener))
+      return this;
+    throw Ci.NS_NOINTERFACE;
+  },
 
-// working example:
+  observe: function (aObserver, aContext) {
+    this._observer = aObserver;
+  },
 
-Components.utils.import("resource://enigmail/subprocess.jsm");
+  onStartRequest: function(aRequest, aContext) {
+    if (this._observer)
+      this._observer.onStartRequest(aRequest, aContext);
+  },
 
-function logMsg(str) {
-  try {
-    var consoleSvc = Cc["@mozilla.org/consoleservice;1"].
-        getService(Ci.nsIConsoleService);
+  onDataAvailable: function(aRequest, aContext, aInputStream, offset, count) {
 
-    var scriptError = Cc["@mozilla.org/scripterror;1"]
-                                .createInstance(Ci.nsIScriptError);
-    scriptError.init(str, null, null, 0,
-                     0, scriptError.errorFlag, "Enigmail");
-    consoleSvc.logMessage(scriptError);
+    let sis = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
+    sis.init(aInputStream);
+    try {
+      if ("readBytes" in sis) {
+         // Gecko > 2.0b4, supports NULL characters
+        this._cmdObj.stdout.onDataAvailable(sis.readBytes(count));
+      }
+      else
+        // Gecko <= 1.9.2
+        this._cmdObj.stdout.onDataAvailable(sis.read(count));
+    }
+    catch (e) {
+       // Adjust the stack so it throws at the caller's location.
+       throw new Components.Exception(e.message, e.result,
+                                      Components.stack.caller, e.data);
+    }
+    sis = null;
+  },
 
+  onStopRequest: function(aRequest, aContext, aStatusCode) {
+    try {
+      this._inputStream.close();
+    }
+    catch(ex) {}
+
+    // call to stderr and onFinished from here to avoid mandatory use of p.waitFor()
+    if (this._observer)
+      this._observer.onStopRequest(aRequest, aContext, aStatusCode);
   }
-  catch (ex) {}
+};
+
+// Listener for handling subprocess termination
+function OnFinishedListener(pipeObj) {
+  this._pipeObj = pipeObj;
 }
 
-function enigmailKeyManagerLoad() {
-   var p = subprocess.call({
-     command:   '/Users/pbr/enigmail/tmp/test.sh',
-     arguments: ['-v', 'foo'],
-     environment:   [ "XYZ=abc", "MYVAR=def" ],
-     stdin: subprocess.WritablePipe(function() {
-          this.write("Writing example data\n");
-     }),
+OnFinishedListener.prototype = {
+  QueryInterface: function(aIID) {
+    if (aIID.equals(Ci.nsISupports)
+    || aIID.equals(Ci.nsIRequestObserver))
+      return this;
+    throw Ci.NS_NOINTERFACE;
+  },
 
-     stdout: subprocess.ReadablePipe(function(data) {
-       logMsg("*** Got data on stdout: '"+ data+"'\n");
-     }),
-     stderr: subprocess.ReadablePipe(function(data) {
-       logMsg("*** Got data on stderr: '"+data+"'\n");
-     }),
-     onFinished: subprocess.Terminate(function() {
-       logMsg("*** Process finished with result code: " + this.exitCode + "\n");
-       logMsg("got data: "+this.stdoutData);
-     }),
-     mergeStderr: false
-   });
+  onStartRequest: function(aRequest, aContext) { },
 
+  onStopRequest: function(aRequest, aContext, aStatusCode) {
+
+    // call to stderr and onFinished from here to avoid mandatory use of p.waitFor()
+    if (typeof(this._pipeObj._cmdObj.stderr) == "object" && (! this._pipeObj._cmdObj.mergeStderr)) {
+      this._pipeObj._cmdObj.stderr.onDataAvailable(this._pipeObj.stderrData.getData());
+      this._pipeObj.stderrData.shutdown();
+    }
+
+    if (typeof(this._pipeObj._cmdObj.onFinished) == "object") {
+      if (this._pipeObj._cmdObj.stdout == null) {
+        this._pipeObj._cmdObj.onFinished.stdoutData = this._pipeObj.stdoutListener.getData();
+        this._pipeObj.stdoutListener.shutdown();
+      }
+
+      this._pipeObj._cmdObj.onFinished.callback(this._pipeObj._pipeTransport.exitValue);
+    }
+  } // onStopRequest
+} // OnFinishedListener
+
+
+// Class to represent a running process
+function PipeObj() {
 }
-*/
+
+PipeObj.prototype = {
+  stderrData: null,
+
+  init: function(cmdObj) {
+    this._cmdObj = cmdObj;
+
+    // create & open pipeListener for stderr, no matter if needed or not
+    this.stderrData = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
+    this.stderrData.open(-1, true);
+
+
+    if (typeof (cmdObj.command) == "string") {
+      var localfile= Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
+      localfile.initWithPath(cmdObj.command);
+      cmdObj._commandFile = localfile.QueryInterface(Ci.nsIFile);
+    }
+    else {
+      cmdObj._commandFile = cmdObj.command;
+    }
+    if (typeof (cmdObj.arguments) != "object") cmdObj.arguments = [];
+    if (typeof (cmdObj.environment) != "object") cmdObj.environment = [];
+    if (typeof (cmdObj.workdir) == "string") {
+      var localfile= Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
+      localfile.initWithPath(cmdObj.workdir);
+      cmdObj._cwd = localfile.QueryInterface(Ci.nsIFile);
+    }
+    else if (typeof (cmdObj.workdir) == "object") {
+      cmdObj._cwd = cmdObj.workdir;
+    }
+    else {
+      cmdObj._cwd = null;
+    }
+
+    this._pipeTransport = Cc[NS_PIPETRANSPORT_CONTRACTID].createInstance(Ci.nsIPipeTransport);
+    this._pipeTransport.initWithWorkDir(cmdObj._commandFile, cmdObj._cwd,
+                            Ci.nsIPipeTransport.INHERIT_PROC_ATTRIBS);
+
+    this.stdoutListener = null;
+    if (typeof(cmdObj.stdout) == "object") {
+      // add listener for asynchronous processing of data
+      this.stdoutListener = new StdoutStreamListener(cmdObj);
+    }
+    else {
+      this.stdoutListener = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
+      this.stdoutListener.open(-1, true);
+    }
+
+    if (typeof(cmdObj.stderr) == "object" || typeof(cmdObj.onFinished) == "object")
+      this.stdoutListener.observe(new OnFinishedListener(this), null);
+
+    this._pipeTransport.openPipe(cmdObj.arguments, cmdObj.arguments.length,
+                                 cmdObj.environment, cmdObj.environment.length,
+                                 0, "", true, cmdObj.mergeStderr ? true : false,
+                                 this.stderrData);
+
+    this._pipeTransport.asyncRead(this.stdoutListener, null, 0, -1, 0);
+
+    if (typeof(cmdObj.stdin) == "string") {
+      this._pipeTransport.writeSync(cmdObj.stdin, cmdObj.stdin.length);
+      this._pipeTransport.closeStdin();
+    }
+    else if (typeof(cmdObj.stdin) == "object") {
+      cmdObj.stdin._pipeTransport = this._pipeTransport;
+      cmdObj.stdin.startWriting();
+    }
+  }, // init
+
+  wait: function () {
+    this._pipeTransport.join(); // wait for subprocess to complete
+  }, // wait
+
+  kill: function() {
+    try {
+      this._pipeTransport.kill();
+    }
+    catch(ex) {
+      // do nothing with it
+    }
+  }
+}; // PipeObj
