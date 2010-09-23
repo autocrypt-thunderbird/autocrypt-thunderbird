@@ -33,24 +33,11 @@
 #ifndef enigmail_h__
 #define enigmail_h__
 
-#if MOZILLA_MAJOR_VERSION==1 && MOZILLA_MINOR_VERSION<9
-#define _ENIG_MOZILLA_1_8
-#else
-#define _ENIG_MOZILLA_1_9
-#endif
-
 #ifdef FORCE_PR_LOG
 #include "nsIThread.h"
-#ifdef _ENIG_MOZILLA_1_8
-// Mozilla 1.8
-#define ENIG_GET_THREAD(myThread) nsIThread::GetCurrent(getter_AddRefs(myThread))
-
-#else
-// Mozilla 1.9
 #include "nsThreadUtils.h"
 
 #define ENIG_GET_THREAD(myThread) NS_GetCurrentThread(getter_AddRefs(myThread))
 
-#endif
 #endif
 #endif

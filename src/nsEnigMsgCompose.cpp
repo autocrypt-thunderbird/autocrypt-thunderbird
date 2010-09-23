@@ -55,13 +55,8 @@
 #include "nsNetUtil.h"
 #include "nsIThread.h"
 #include "nsIFactory.h"
-#ifdef _ENIG_MOZILLA_1_8
-#include "nsIFileStream.h"
-#include "nsMsgComposeStringBundle.h"
-#else
 #include "msgCore.h"
 #include "nsComposeStrings.h"
-#endif
 #undef MOZILLA_INTERNAL_API
 
 #ifdef PR_LOGGING

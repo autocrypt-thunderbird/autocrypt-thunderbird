@@ -50,9 +50,6 @@
 #include "mimehdrs2.h"
 #include "nsMimeTypes.h"
 #include "nsMailHeaders.h"
-#ifdef _ENIG_MOZILLA_1_8
-#include "nsFileStream.h"
-#endif
 
 #include "nsEnigMimeListener.h"
 

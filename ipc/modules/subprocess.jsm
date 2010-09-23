@@ -280,14 +280,12 @@ StdoutStreamListener.prototype = {
   },
 
   onStopRequest: function(aRequest, aContext, aStatusCode) {
-    try {
-      this._inputStream.close();
-    }
-    catch(ex) {}
-
     // call to stderr and onFinished from here to avoid mandatory use of p.waitFor()
     if (this._observer)
       this._observer.onStopRequest(aRequest, aContext, aStatusCode);
+
+    this._observer=null;
+    this._cmdObj=null;
   }
 };
 
@@ -322,6 +320,7 @@ OnFinishedListener.prototype = {
 
       this._pipeObj._cmdObj.onFinished.callback(this._pipeObj._pipeTransport.exitValue);
     }
+    this._pipeObj = null;
   } // onStopRequest
 } // OnFinishedListener
 

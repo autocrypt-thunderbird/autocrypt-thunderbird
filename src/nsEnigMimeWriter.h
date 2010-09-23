@@ -64,11 +64,7 @@ protected:
 
     nsresult WriteStream(const char* buf, PRUint32 count);
 
-#ifdef _ENIG_MOZILLA_1_8
-    nsOutputFileStream*                 mStream;
-#else
     nsIOutputStream*                    mStream;
-#endif
     PRBool                              mForceCRLF;
 
     PRBool                              mClosed;

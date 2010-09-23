@@ -124,11 +124,7 @@ protected:
 
     nsCString                     mBoundary;
 
-#ifdef _ENIG_MOZILLA_1_8
-    nsOutputFileStream*           mStream;
-#else
     nsIOutputStream*              mStream;
-#endif
 
     MimeEncoderData*              mEncoderData;
 

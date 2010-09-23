@@ -51,9 +51,6 @@
 #include "nsIThread.h"
 #include "nsIMimeObjectClassAccess.h"
 #include "nsMsgMimeCID.h"
-#ifdef _ENIG_MOZILLA_1_8
-#include "nsFileStream.h"
-#endif
 
 MimeContainerClass* mimeContainerClassP = NULL;
 
