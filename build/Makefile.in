@@ -122,6 +122,12 @@ SHARED_LIBRARY_LIBS = \
 		../src/$(LIB_PREFIX)enigmime_s.$(LIB_SUFFIX) \
 		$(NULL)
 
+ifeq ($(MOZILLA_MAJOR_VERSION),2)
+    EXTRA_DSO_LDOPTS = \
+		  $(LIBS_DIR) \
+		  $(BUILD_STATIC) \
+		  $(NULL)
+else
 ifeq ($(OS_ARCH),WINNT)
     EXTRA_DSO_LDOPTS = \
 		  $(LIBS_DIR) \
@@ -138,5 +144,5 @@ else
 		  $(BUILD_STATIC) \
 		  $(NULL)
 endif
-
+endif
 include $(topsrcdir)/config/rules.mk
