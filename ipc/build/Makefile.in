@@ -95,18 +95,12 @@ LOCAL_INCLUDES	= \
 		-I$(srcdir)/../src \
 		$(NULL)
 
-ifeq ($(MOZILLA_MAJOR_VERSION),2)
-  EXTRA_DSO_LDOPTS = \
-      $(LIBS_DIR) \
-      $(BUILD_STATIC) \
-      $(NULL)
-else
-  EXTRA_DSO_LDOPTS = \
+EXTRA_DSO_LDOPTS = \
       $(LIBS_DIR) \
       $(XPCOM_GLUE_LDOPTS) \
       $(XPCOM_LIBS) \
       $(NSPR_LIBS) \
       $(BUILD_STATIC) \
       $(NULL)
-endif
+
 include $(topsrcdir)/config/rules.mk
