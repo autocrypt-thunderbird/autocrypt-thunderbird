@@ -127,6 +127,8 @@ nsPipeTransport::nsPipeTransport()
 {
     NS_INIT_ISUPPORTS();
 
+    mExecutable.AssignLiteral("");
+
 #ifdef PR_LOGGING
   if (gPipeTransportLog == nsnull) {
     gPipeTransportLog = PR_NewLogModule("nsPipeTransport");
