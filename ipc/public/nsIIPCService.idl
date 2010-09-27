@@ -77,7 +77,7 @@ interface nsIIPCService : nsISupports
    * This method blocks for the completion of the executable.
    */
   string run(in nsIFile executable,
-             [array, size_is(argCount)] in string args,
+             [array, size_is(argCount)] in wstring args,
              in unsigned long argCount);
 
   /**
@@ -90,12 +90,12 @@ interface nsIIPCService : nsISupports
    * This method blocks for the completion of the command.
    */
   long runPipe (in nsIFile executable,
-                [array, size_is(argCount)] in string args,
+                [array, size_is(argCount)] in wstring args,
                 in unsigned long argCount,
                 in string preInput,
                 in string inputData,
                 in unsigned long inputLength,
-                [array, size_is(envCount)] in string env,
+                [array, size_is(envCount)] in wstring env,
                 in unsigned long envCount,
                 [size_is(outputCount)] out string outputData,
                 out unsigned long outputCount,
@@ -117,12 +117,12 @@ interface nsIIPCService : nsISupports
    * Unquoting the command (stripping quotes/backslashes) is not done.
    */
   nsIIPCRequest runAsync(in nsIFile executable,
-                         [array, size_is(argCount)] in string args,
+                         [array, size_is(argCount)] in wstring args,
                          in unsigned long argCount,
                          in string preInput,
                          in string inputData,
                          in unsigned long inputLength,
-                         [array, size_is(envCount)] in string env,
+                         [array, size_is(envCount)] in wstring env,
                          in unsigned long envCount,
                          in nsIPipeListener outConsole,
                          in nsIPipeListener errConsole,
@@ -137,7 +137,7 @@ interface nsIIPCService : nsISupports
    * Returns secret random cookie used for security
    */
   readonly attribute string cookie;
-  
+
   /**
    * Creates scriptable string channel from input string data.
    */

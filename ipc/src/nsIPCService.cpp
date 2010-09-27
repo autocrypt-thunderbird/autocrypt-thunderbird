@@ -195,9 +195,9 @@ nsIPCService::GetConsole(nsIPipeConsole* *_retval)
 
 NS_METHOD
 nsIPCService::RunCommand(nsIFile *executable,
-                         const char **args,
+                         const PRUnichar **args,
                          PRUint32 argCount,
-                         const char **env, PRUint32 envCount,
+                         const PRUnichar **env, PRUint32 envCount,
                          nsIPipeListener* errConsole,
                          nsIPipeTransport** _retval)
 {
@@ -239,7 +239,7 @@ nsIPCService::RunCommand(nsIFile *executable,
 
 NS_IMETHODIMP
 nsIPCService::Run(nsIFile *executable,
-                  const char **args,
+                  const PRUnichar **args,
                   PRUint32 argCount,
                   char **_retval)
 {
@@ -254,11 +254,11 @@ nsIPCService::Run(nsIFile *executable,
 // If outputError is null, use default console to capture error output
 NS_IMETHODIMP
 nsIPCService::RunPipe (nsIFile *executable,
-                       const char **args,
+                       const PRUnichar **args,
                        PRUint32 argCount,
                        const char* preInput,
                        const char* inputData, PRUint32 inputLength,
-                       const char** env, PRUint32 envCount,
+                       const PRUnichar** env, PRUint32 envCount,
                        char** outputData, PRUint32* outputCount,
                        char** outputError, PRUint32* errorCount,
                        PRInt32* _retval)
@@ -422,11 +422,11 @@ nsIPCService::RunPipe (nsIFile *executable,
 
 NS_IMETHODIMP
 nsIPCService::RunAsync(nsIFile *executable,
-                       const char **args,
+                       const PRUnichar **args,
                        PRUint32 argCount,
                        const char* preInput,
                        const char* inputData, PRUint32 inputLength,
-                       const char** env, PRUint32 envCount,
+                       const PRUnichar** env, PRUint32 envCount,
                        nsIPipeListener* outConsole,
                        nsIPipeListener* errConsole,
                        nsIRequestObserver* requestObserver,

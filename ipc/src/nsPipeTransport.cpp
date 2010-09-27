@@ -105,7 +105,6 @@ nsPipeTransport::nsPipeTransport()
       mLoadFlags(LOAD_NORMAL),
       mNotificationFlags(0),
 
-      mExecutable(""),
       mCommand(""),
       mKillString(""),
       mCwd(""),
@@ -197,10 +196,10 @@ NS_IMETHODIMP nsPipeTransport::InitWithWorkDir(nsIFile *executable,
   }
 
 #ifdef XP_WIN
-  rv = executable->GetNativeTarget(mExecutable);
+  rv = executable->GetTarget(mExecutable);
   if (NS_FAILED(rv) || mExecutable.IsEmpty())
 #endif
-  rv = executable->GetNativePath(mExecutable);
+  rv = executable->GetPath(mExecutable);
   NS_ENSURE_SUCCESS(rv, rv);
 
   DEBUG_LOG(("nsPipeTransport::Initialize: executable=[%s]\n", mExecutable.get()));
@@ -230,9 +229,9 @@ NS_IMETHODIMP nsPipeTransport::Init(nsIFile *executable)
   return InitWithWorkDir(executable, nsnull, INHERIT_PROC_ATTRIBS);
 }
 
-NS_IMETHODIMP nsPipeTransport::OpenPipe(const char **args,
+NS_IMETHODIMP nsPipeTransport::OpenPipe(const PRUnichar **args,
                                         PRUint32 argCount,
-                                        const char **env,
+                                        const PRUnichar **env,
                                         PRUint32 envCount,
                                         PRUint32 timeoutMS,
                                         const char *killString,
@@ -370,9 +369,9 @@ NS_IMETHODIMP nsPipeTransport::OpenPipe(const char **args,
 }
 
 nsresult
-nsPipeTransport::CopyArgsAndCreateProcess(const char **args,
+nsPipeTransport::CopyArgsAndCreateProcess(const PRUnichar **args,
                                           PRUint32 argCount,
-                                          const char **env,
+                                          const PRUnichar **env,
                                           PRUint32 envCount,
                                           IPCFileDesc* stdinRead,
                                           IPCFileDesc* stdoutWrite,
@@ -390,7 +389,7 @@ nsPipeTransport::CopyArgsAndCreateProcess(const char **args,
   if (!argList)
     return NS_ERROR_OUT_OF_MEMORY;
 
-  argList[0] = (char *) mExecutable.get();
+  argList[0] = ToNewUTF8String(mExecutable);
 
   for (j=0; j < argCount; j++) {
 #ifdef XP_OS2
@@ -398,10 +397,10 @@ nsPipeTransport::CopyArgsAndCreateProcess(const char **args,
     if (tmpArg.FindChar(' ', 0) >= 0) {
       tmpArg.Insert("\"", 0);
       tmpArg.Append("\"");
-      args[j] = tmpArg.get();
+      args[j] = ToNewUTF8String(tmpArg);
     }
 #endif
-    argList[j+1] = (char *)args[j];
+    argList[j+1] = ToNewUTF8String(nsDependentString(args[j]));
     DEBUG_LOG(("nsPipeTransport::CopyArgsAndCreateProcess: arg[%d] = %s\n", j+1, argList[j+1]));
   }
 
@@ -415,14 +414,14 @@ nsPipeTransport::CopyArgsAndCreateProcess(const char **args,
       return NS_ERROR_OUT_OF_MEMORY;
 
     for (j=0; j < envCount; j++)
-      envList[j] = (char *)env[j];
+      envList[j] = ToNewUTF8String(nsDependentString(env[j]));
 
     envList[envCount] = NULL;
   }
 
 
   /* Create NSPR process */
-  mProcess = IPC_CreateProcessRedirected(mExecutable.get(),
+  mProcess = IPC_CreateProcessRedirected(ToNewUTF8String(mExecutable),
                                          argList, envList,
                                          mCwd.Equals("") ? nsnull : mCwd.get(),
                                          stdinRead,
@@ -1366,7 +1365,7 @@ nsPipeTransport::GetName(nsACString &result)
   if (!mCommand.IsEmpty()) {
     result = mCommand;
   } else {
-    result = mExecutable;
+    result = ToNewUTF8String(mExecutable);
   }
 
   return NS_OK;

@@ -137,9 +137,9 @@ interface nsIPipeTransport : nsIRequest
      * @param mergeStderr merge STDERR with STDOUT
      * @param console     nsIPipeListener object to capture STDERR
      */
-    void openPipe([array, size_is(argCount)] in string args,
+    void openPipe([array, size_is(argCount)] in wstring args,
                   in unsigned long argCount,
-                  [array, size_is(envCount)] in string env,
+                  [array, size_is(envCount)] in wstring env,
                   in unsigned long envCount,
                   in unsigned long timeoutMS,
                   in string killString,

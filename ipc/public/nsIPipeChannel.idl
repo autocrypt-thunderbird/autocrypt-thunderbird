@@ -62,9 +62,9 @@ interface nsIPipeChannel : nsIChannel
 
     void init(in nsIURI aURI,
               in nsIFile executable,
-              [array, size_is(argCount)] in string args,
+              [array, size_is(argCount)] in wstring args,
               in unsigned long argCount,
-              [array, size_is(envCount)] in string env,
+              [array, size_is(envCount)] in wstring env,
               in unsigned long envCount,
               in unsigned long timeoutMS,
               in string killString,

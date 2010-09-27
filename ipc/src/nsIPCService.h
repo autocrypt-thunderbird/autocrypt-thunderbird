@@ -79,9 +79,9 @@ public:
 
 protected:
     NS_METHOD RunCommand (nsIFile* executable,
-                          const char **args,
+                          const PRUnichar **args,
                           PRUint32 argCount,
-                          const char **env, PRUint32 envCount,
+                          const PRUnichar **env, PRUint32 envCount,
                           nsIPipeListener* errConsole,
                           nsIPipeTransport** _retval);
 

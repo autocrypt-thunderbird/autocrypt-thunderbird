@@ -129,7 +129,7 @@ protected:
     nsLoadFlags                         mLoadFlags;
     PRUint32                            mNotificationFlags;
 
-    nsCString                           mExecutable;
+    nsString                            mExecutable;
     nsCString                           mCommand;
     nsCString                           mKillString;
     nsCString                           mCwd;
@@ -161,9 +161,9 @@ protected:
     nsCOMPtr<nsILoadGroup>              mLoadGroup;
     nsCOMPtr<nsIPipeTransportWriter>    mPipeTransportWriter;
 
-    nsresult CopyArgsAndCreateProcess(const char **args,
+    nsresult CopyArgsAndCreateProcess(const PRUnichar **args,
                                       PRUint32 argCount,
-                                      const char **env,
+                                      const PRUnichar **env,
                                       PRUint32 envCount,
                                       IPCFileDesc* stdinRead,
                                       IPCFileDesc* stdoutWrite,
