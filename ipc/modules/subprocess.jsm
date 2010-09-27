@@ -284,6 +284,7 @@ StdoutStreamListener.prototype = {
     if (this._observer)
       this._observer.onStopRequest(aRequest, aContext, aStatusCode);
 
+    // unset assigned variables to avoid memory leak
     this._observer=null;
     this._cmdObj=null;
   }
@@ -320,9 +321,11 @@ OnFinishedListener.prototype = {
 
       this._pipeObj._cmdObj.onFinished.callback(this._pipeObj._pipeTransport.exitValue);
     }
+
+    // unset assigned variables to avoid memory leak
     this._pipeObj = null;
-  } // onStopRequest
-} // OnFinishedListener
+  }
+}
 
 
 // Class to represent a running process
