@@ -441,7 +441,7 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
   }
 
   PRUint32 count = 0;
-  PRUnichar *const *arg;
+  char *const *arg;
   for (arg = argv; *arg; arg++) {
     ++count;
   }
@@ -449,8 +449,8 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
   // make sure that when we allocate we have 1 greater than the
   // count since we need to null terminate the list for the argv to
   // pass into PR_CreateProcess
-  PRUnichar **my_argv = NULL;
-  my_argv = (PRUnichar **)nsMemory::Alloc(sizeof(PRUnichar *) * (count + 2) );
+  char **my_argv = NULL;
+  my_argv = (char **)nsMemory::Alloc(sizeof(char *) * (count + 2) );
   if (!my_argv) {
     return IPC_NULL_HANDLE;
   }
@@ -458,11 +458,11 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
   // copy the args
   PRUint32 i;
   for (i=0; i < count; i++) {
-    my_argv[i+1] = const_cast<PRUnichar*>(argv[i]);
+    my_argv[i+1] = const_cast<char*>(argv[i]);
   }
 
   // we need to set argv[0] to the program name.
-  my_argv[0] = const_cast<PRUnichar*>(path);
+  my_argv[0] = const_cast<char*>(path);
   PRInt32 numChars = MultiByteToWideChar(CP_ACP, 0, my_argv[0], -1, NULL, 0);
   PRUnichar* wideFile = (PRUnichar *) PR_MALLOC(numChars * sizeof(PRUnichar));
   MultiByteToWideChar(CP_ACP, 0, my_argv[0], -1, wideFile, numChars);
