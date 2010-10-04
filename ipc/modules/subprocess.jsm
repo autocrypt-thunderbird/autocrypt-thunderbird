@@ -163,7 +163,7 @@ var subprocess = {
       onDataAvailable: function(data) {
         // onDataAvailable is called on a separate thread, dispatch to main thread
         mainThread.dispatch(new readablePipeMainThread(this.callbackFunction, data),
-          Components.interfaces.nsIThread.DISPATCH_NORMAL);
+          Components.interfaces.nsIThread.DISPATCH_SYNC);  // wait for event to be dispatched before continuing
       }
     }
     return pipeReaderObj;
@@ -175,7 +175,7 @@ var subprocess = {
       callback: function (exitCode) {
         // callback is called on a separate thread, dispatch to main thread
         mainThread.dispatch(new terminateMainThread(this.callbackFunction, exitCode, this.stdoutData),
-          Components.interfaces.nsIThread.DISPATCH_NORMAL);
+          Components.interfaces.nsIThread.DISPATCH_SYNC);
       }
     };
     return onFinishedObj;
