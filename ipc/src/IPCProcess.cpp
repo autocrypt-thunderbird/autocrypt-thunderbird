@@ -50,6 +50,8 @@ extern PRLogModuleInfo* gIPCServiceLog;
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "nsMemory.h"
+
 #ifdef XP_WIN
 #include <windows.h>
 #include <shellapi.h>
