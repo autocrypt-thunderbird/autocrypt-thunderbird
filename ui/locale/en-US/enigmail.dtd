@@ -108,7 +108,7 @@
 <!ENTITY enigmail.decryptbutton.label     "Decrypt">
 <!ENTITY enigmail.decryptbutton.tip       "Decrypt or verify the message with OpenPGP (Enigmail)">
 
-<!ENTITY enigmail.messengermenu.accesskey "n">
+<!ENTITY enigmail.messengermenu.accesskey "o">
 
 <!ENTITY enigmail.decryptverify.label    "Decrypt/Verify">
 <!ENTITY enigmail.importpublickey.label  "Import Public Key">
