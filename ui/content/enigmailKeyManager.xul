@@ -304,7 +304,7 @@
   </menubar>
 
   <popupset>
-    <popup id="ctxmenu"
+    <menupopup id="ctxmenu"
            onpopupshowing="enigmailKeyMenu();">
 			<menuitem label="&enigmail.keyMan.ctxCopyToClipbrd.label;"
 								id="ctxCopyToClipbrd"
@@ -350,7 +350,7 @@
       <menuitem id="ctxViewPhoto" observes="bcViewPhoto" label="&enigmail.keyMan.ctxViewPhoto.label;" oncommand="enigShowPhoto()"/>
       <menuitem id="ctxDetails" observes="bcViewSig" label="&enigmail.keyMan.keyProps.label;"
 								oncommand="enigmailKeyDetails()"/>
-    </popup>
+    </menupopup>
   </popupset>
 
   <hbox flex="0" align="center">
