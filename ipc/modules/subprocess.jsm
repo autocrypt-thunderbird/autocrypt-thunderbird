@@ -125,8 +125,6 @@
  * subprocess to terminate, unless you know the sequence in which the subprocesses finish. Therefore
  * it is safer to create new threads if you need to execute several subprocesses at the same time.
  *
- * The callbacks to ReadablePipe and Terminate are always dispatched to the main thread, no matter
- * from which thread you started the process.
  */
 
 
@@ -161,9 +159,7 @@ var subprocess = {
     var pipeReaderObj = {
       callbackFunction: func,
       onDataAvailable: function(data) {
-        // onDataAvailable is called on a separate thread, dispatch to main thread
-        mainThread.dispatch(new readablePipeMainThread(this.callbackFunction, data),
-          Components.interfaces.nsIThread.DISPATCH_SYNC);  // wait for event to be dispatched before continuing
+        this.callbackFunction(data);
       }
     }
     return pipeReaderObj;
@@ -173,65 +169,13 @@ var subprocess = {
       stdoutData: null,
       callbackFunction: func,
       callback: function (exitCode) {
-        // callback is called on a separate thread, dispatch to main thread
-        mainThread.dispatch(new terminateMainThread(this.callbackFunction, exitCode, this.stdoutData),
-          Components.interfaces.nsIThread.DISPATCH_SYNC);
+        this.exitCode = exitCode;
+        this.callbackFunction();
       }
     };
     return onFinishedObj;
   },
 };
-
-// the main thread, needed for dispatching events
-var mainThread = Components.classes["@mozilla.org/thread-manager;1"].getService().mainThread;
-
-
-// object for dispatching ReadablePipe callbacks to main thread
-var readablePipeMainThread = function(cbFunction, data) {
-  this.cbFunction = cbFunction;
-  this.data = data;
-};
-
-readablePipeMainThread.prototype = {
-
-  run: function() {
-    this.cbFunction(this.data);
-  },
-
-  QueryInterface: function(iid) {
-    if (iid.equals(Components.interfaces.nsIRunnable) ||
-        iid.equals(Components.interfaces.nsISupports)) {
-            return this;
-    }
-    throw Components.results.NS_ERROR_NO_INTERFACE;
-  }
-};
-
-
-
-// object for dispatching Terminate callbacks to main thread
-
-var terminateMainThread = function(cbFunction, exitCode, stdoutData) {
-  this.cbFunction = cbFunction;
-  this.stdoutData = stdoutData;
-  this.exitCode = exitCode;
-};
-
-terminateMainThread.prototype = {
-
-  run: function() {
-    this.cbFunction();
-  },
-
-  QueryInterface: function(iid) {
-    if (iid.equals(Components.interfaces.nsIRunnable) ||
-        iid.equals(Components.interfaces.nsISupports)) {
-            return this;
-    }
-    throw Components.results.NS_ERROR_NO_INTERFACE;
-  }
-};
-
 
 // Listener for handling stdout callbacks
 function StdoutStreamListener(cmdObj) {
@@ -306,6 +250,8 @@ OnFinishedListener.prototype = {
   onStartRequest: function(aRequest, aContext) { },
 
   onStopRequest: function(aRequest, aContext, aStatusCode) {
+
+      dump("inside stop request");
 
     // call to stderr and onFinished from here to avoid mandatory use of p.waitFor()
     if (typeof(this._pipeObj._cmdObj.stderr) == "object" && (! this._pipeObj._cmdObj.mergeStderr)) {

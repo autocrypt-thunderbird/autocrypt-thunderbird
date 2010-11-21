@@ -1,4 +1,4 @@
-/*
+﻿/*
  * The contents of this file are subject to the Mozilla Public
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
@@ -69,6 +69,7 @@
 #define NS_PIPE_TRANSPORT_DEFAULT_HEADERS_SIZE   (4*1024)
 
 class nsStdoutPoller;
+class nsStreamDispatcher;
 
 class nsPipeTransport : public nsIPipeTransport,
                         public nsIPipeTransportListener,
@@ -149,6 +150,8 @@ protected:
     IPCFileDesc*                        mStdinWrite;
 
     // Owning refs
+    nsCOMPtr<nsIThread>                 mCreatorThread;
+
     nsCOMPtr<nsIPipeTransportPoller>    mStdoutPoller;
     nsCOMPtr<nsIPipeListener>           mConsole;
     nsCOMPtr<nsIPipeTransportHeaders>   mHeaderProcessor;
@@ -245,4 +248,41 @@ protected:
     nsCOMPtr<nsIThread>      mThread;
 };
 
+class nsStreamDispatcher : public nsIRunnable
+{
+public:
+    NS_DECL_ISUPPORTS
+    NS_DECL_NSIRUNNABLE
+
+    enum DispatchType {
+      ON_START_REQUEST,
+      ON_DATA_AVAILABLE,
+      ON_STOP_REQUEST
+    };
+
+    nsStreamDispatcher(nsCOMPtr<nsIStreamListener>  aListener, nsCOMPtr<nsISupports> context,
+              nsIRequest* pipeTransport);
+    virtual ~nsStreamDispatcher();
+
+    nsresult DispatchOnDataAvailable(nsCOMPtr<nsIInputStream> inputStream,
+                    PRUint32 startOffset,
+                    PRUint32 count);
+
+    nsresult DispatchOnStartRequest();
+
+    nsresult DispatchOnStopRequest(nsresult status);
+
+protected:
+
+    PRUint32        mDispatchType;
+    PRUint32        mStartOffset;
+    PRUint32        mCount;
+    nsresult        mStatus;
+
+    nsIRequest*                   mPipeTransport;
+    nsCOMPtr<nsISupports>         mContext;
+    nsCOMPtr<nsIInputStream>      mInputStream;
+    nsCOMPtr<nsIStreamListener>   mListener;
+
+};
 #endif // nsPipeTransport_h__

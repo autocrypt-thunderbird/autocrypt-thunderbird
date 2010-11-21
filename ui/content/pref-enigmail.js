@@ -366,6 +366,7 @@ function EnigMimeTest() {
   CONSOLE_LOG("************************************************\n");
 }
 
+
 function EnigTest() {
   var plainText = "TEST MESSAGE 123\nTEST MESSAGE 345\n";
   var testEmailElement = document.getElementById("enigmail_test_email");

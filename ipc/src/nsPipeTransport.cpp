@@ -1,4 +1,4 @@
-/*
+﻿/*
  * The contents of this file are subject to the Mozilla Public
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
@@ -61,6 +61,7 @@
 #include "nsPipeTransport.h"
 #include "nsXPCOMCIDInternal.h"
 #include "nsThreadUtils.h"
+#include "nsIEventTarget.h"
 
 
 #ifdef PR_LOGGING
@@ -128,6 +129,7 @@ nsPipeTransport::nsPipeTransport()
     NS_INIT_ISUPPORTS();
 
     mExecutable.AssignLiteral("");
+    mCreatorThread = nsnull;
 
 #ifdef PR_LOGGING
   if (gPipeTransportLog == nsnull) {
@@ -162,6 +164,7 @@ nsPipeTransport::~nsPipeTransport()
   // Release refs to objects that do not hold strong refs to this
   mInputStream  = nsnull;
   mOutputStream = nsnull;
+  mCreatorThread = nsnull;
 
   DEBUG_LOG(("nsPipeTransport:: ********* DTOR(%p) END\n", this));
 }
@@ -939,6 +942,9 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
 
   if (listener) {
     // Initialize listening interface
+    rv = IPC_GET_THREAD(mCreatorThread);
+    if (NS_FAILED(rv)) return NS_ERROR_FAILURE;
+
     mListener = listener;
     mContext  = ctxt;
 
@@ -1636,7 +1642,7 @@ nsPipeTransport::OnInputStreamReady(nsIAsyncInputStream* inStr)
 #endif
 
   if (mListener) {
-    if (!mInputStream)
+    if (!mInputStream || !mCreatorThread)
       return NS_ERROR_NOT_INITIALIZED;
 
     PRUint32 available;
@@ -1646,11 +1652,13 @@ nsPipeTransport::OnInputStreamReady(nsIAsyncInputStream* inStr)
     DEBUG_LOG(("nsPipeTransport::OnInputStreamReady: available=%d\n",
                available));
 
-    rv = mListener->OnDataAvailable((nsIRequest*) this, mContext,
-                                     mInputStream, 0, available);
+    nsStreamDispatcher* streamDispatch = new nsStreamDispatcher(mListener, mContext, (nsIRequest*) this);
+    rv = streamDispatch->DispatchOnDataAvailable(mInputStream, 0, available);
     NS_ENSURE_SUCCESS(rv, rv);
 
-    // Mozilla >= 1.9
+    rv = mCreatorThread->Dispatch(streamDispatch, nsIEventTarget::DISPATCH_SYNC);
+    NS_ENSURE_SUCCESS(rv, rv);
+
     nsCOMPtr<nsIThread> eventQ;
 
     if (!mNoProxy) {
@@ -1754,8 +1762,16 @@ nsPipeTransport::StartRequest()
 
   if (mListener) {
     // Starting processing of async output
-    rv = mListener->OnStartRequest((nsIRequest*) this, mContext);
+
+    if (! mCreatorThread) return NS_ERROR_NOT_INITIALIZED;
+
+    nsStreamDispatcher* streamDispatch = new nsStreamDispatcher(mListener, mContext, (nsIRequest*) this);
+    rv = streamDispatch->DispatchOnStartRequest();
     NS_ENSURE_SUCCESS(rv, rv);
+
+    rv = mCreatorThread->Dispatch(streamDispatch, nsIEventTarget::DISPATCH_SYNC);
+    NS_ENSURE_SUCCESS(rv, rv);
+
     mStartedRequest = PR_TRUE;
   }
 
@@ -1786,17 +1802,27 @@ nsPipeTransport::StopRequest(nsresult aStatus)
   // to be closed each time, and causing nsBufferedOutputStream::Flush
   // to segfault on the second close.
 
+  rv = NS_OK;
+
   if (mStartedRequest && mListener && (mCancelStatus == NS_OK) &&
       (aStatus == NS_OK)) {
+
+    if (! mCreatorThread) return NS_ERROR_NOT_INITIALIZED;
+
     mStartedRequest = PR_FALSE;
     mCancelStatus = NS_BINDING_ABORTED;
-    mListener->OnStopRequest( (nsIRequest*) this, mContext, aStatus);
+
+    nsStreamDispatcher* streamDispatch = new nsStreamDispatcher(mListener, mContext, (nsIRequest*) this);
+    rv = streamDispatch->DispatchOnStopRequest(aStatus);
+    NS_ENSURE_SUCCESS(rv, rv);
+
+    rv = mCreatorThread->Dispatch(streamDispatch, nsIEventTarget::DISPATCH_SYNC);
   }
 
   if (!mNoProxy)
     Finalize(PR_FALSE);
 
-  return NS_OK;
+  return rv;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2627,3 +2653,112 @@ nsStdinWriter::Join() {
   return rv;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// nsStreamDispatcher
+///////////////////////////////////////////////////////////////////////////////
+
+NS_IMPL_THREADSAFE_ISUPPORTS1 (nsStreamDispatcher,
+                               nsIRunnable)
+
+
+// nsStdinWriter implementation
+nsStreamDispatcher::nsStreamDispatcher(nsCOMPtr<nsIStreamListener>  aListener,
+                    nsCOMPtr<nsISupports> context,
+                    nsIRequest* pipeTransport)
+  : mListener(nsnull)
+{
+    NS_INIT_ISUPPORTS();
+
+#ifdef FORCE_PR_LOG
+  nsresult rv;
+  nsCOMPtr<nsIThread> myThread;
+  rv = IPC_GET_THREAD(myThread);
+  DEBUG_LOG(("nsStreamDispatcher:: <<<<<<<<< CTOR(%p): myThread=%p\n",
+         this, myThread.get()));
+#endif
+
+  mListener = aListener;
+  mContext = context;
+  mPipeTransport = pipeTransport;
+}
+
+
+nsStreamDispatcher::~nsStreamDispatcher()
+{
+  nsresult rv;
+#ifdef FORCE_PR_LOG
+  nsCOMPtr<nsIThread> myThread;
+  rv = IPC_GET_THREAD(myThread);
+  DEBUG_LOG(("nsStreamDispatcher:: >>>>>>>>> DTOR(%p): myThread=%p\n",
+         this, myThread.get()));
+#endif
+
+
+  // Release references
+  mListener = nsnull;
+  mContext = nsnull;
+  mInputStream = nsnull;
+  mPipeTransport = nsnull;
+}
+
+NS_IMETHODIMP nsStreamDispatcher::DispatchOnDataAvailable(nsCOMPtr<nsIInputStream> inputStream,
+                    PRUint32 startOffset,
+                    PRUint32 count)
+{
+  DEBUG_LOG(("nsStreamDispatcher:: DispatchOnDataAvailable\n"));
+
+  mDispatchType = ON_DATA_AVAILABLE;
+  mInputStream = inputStream;
+  mStartOffset = startOffset;
+  mCount = count;
+
+  return NS_OK;
+}
+
+
+NS_IMETHODIMP nsStreamDispatcher::DispatchOnStartRequest()
+{
+  DEBUG_LOG(("nsStreamDispatcher:: DispatchOnStartRequest\n"));
+  mDispatchType = ON_START_REQUEST;
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP nsStreamDispatcher::DispatchOnStopRequest(nsresult status)
+{
+  DEBUG_LOG(("nsStreamDispatcher:: DispatchOnStopRequest\n"));
+
+  mDispatchType = ON_STOP_REQUEST;
+  mStatus = status;
+
+  return NS_OK;
+}
+
+
+
+NS_IMETHODIMP nsStreamDispatcher::Run()
+{
+  nsresult rv;
+
+#ifdef FORCE_PR_LOG
+  nsCOMPtr<nsIThread> myThread;
+  rv = IPC_GET_THREAD(myThread);
+  DEBUG_LOG(("nsStreamDispatcher::Run: myThread=%p\n", myThread.get()));
+#endif
+
+  switch (mDispatchType) {
+  case ON_START_REQUEST:
+    rv = mListener->OnStartRequest(mPipeTransport, mContext);
+    break;
+  case ON_DATA_AVAILABLE:
+    rv = mListener->OnDataAvailable(mPipeTransport, mContext,
+                                     mInputStream, mStartOffset, mCount);
+    break;
+  case ON_STOP_REQUEST:
+    rv = mListener->OnStopRequest(mPipeTransport, mContext, mStatus);
+    break;
+  default:
+    return NS_ERROR_FAILURE;
+  }
+  return rv;
+}
