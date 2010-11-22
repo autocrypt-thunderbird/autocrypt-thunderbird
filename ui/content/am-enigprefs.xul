@@ -42,6 +42,7 @@ GPL.
       class="color-dialog"
       title="&enigmail.amPrefTitle.label;"
       onload="parent.onPanelLoaded('am-enigprefs.xul');"
+      ondialogaccept="enigmailOnAcceptEditor();"
       orient="vertical">
 
   <script type="application/x-javascript" src="chrome://messenger/content/AccountManager.js"/>
@@ -59,6 +60,6 @@ GPL.
 
   <description>&enigmail.amPrefDesc.label;</description>
 
-  <vbox id="enigIdentityEdit"/>
+  <vbox flex="1" id="enigIdentityEdit"/>
 
 </page>

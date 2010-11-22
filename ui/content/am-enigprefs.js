@@ -67,3 +67,7 @@ function disableIfLocked( prefstrArray )
   var i=1;
 }
 
+function enigmailOnAcceptEditor() {
+  enigOnSave();
+  return true;
+}

@@ -30,34 +30,22 @@
  * GPL.
  */
 
-// components defined in this file
-const ENIGMAIL_PREFS_EXTENSION_SERVICE_CONTRACTID =
-    "@mozilla.org/accountmanager/extension;1?name=enigprefs";
-const ENIGMAIL_PREFS_EXTENSION_SERVICE_CID =
-    Components.ID("{847b3ab0-7ab1-11d4-8f02-006008948af5}");
-
-// interafces used in this file
-const nsIMsgAccountManagerExtension  = Components.interfaces.nsIMsgAccountManagerExtension;
-const nsICategoryManager = Components.interfaces.nsICategoryManager;
-const nsISupports        = Components.interfaces.nsISupports;
-
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
-function EnigmailPrefService()
-{}
+function EnigmailPrefService() {}
 
 EnigmailPrefService.prototype = {
+  name: "enigprefs",
+  chromePackageName: "enigmail",
+  classID:  Components.ID("{847b3ab0-7ab1-11d4-8f02-006008948af5}"),
   classDescription: "Enigmail Account Manager Extension Service",
-  classID:  ENIGMAIL_PREFS_EXTENSION_SERVICE_CID,
-  contractID: ENIGMAIL_PREFS_EXTENSION_SERVICE_CONTRACTID,
+  contractID: "@mozilla.org/accountmanager/extension;1?name=enigprefs",
   _xpcom_categories: [{
     category: "mailnews-accountmanager-extensions",
     entry: "Enigmail account manager extension",
     service: false
   }],
-  name: "enigprefs",
-  chromePackageName: "enigmail",
-  QueryInterface: XPCOMUtils.generateQI([nsIMsgAccountManagerExtension, nsISupports]),
+  QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIMsgAccountManagerExtension]),
   showPanel: function (server)
   {
     // show Enigmail panel for POP3, IMAP and NNTP account types
@@ -73,7 +61,8 @@ EnigmailPrefService.prototype = {
 
 if (XPCOMUtils.generateNSGetFactory) {
   // Gecko >= 2.0
-  var NSGetFactory = XPCOMUtils.generateNSGetFactory([EnigmailPrefService]);
+  var components = [EnigmailPrefService];
+  const NSGetFactory = XPCOMUtils.generateNSGetFactory(components);
 }
 else {
   // Gecko <= 1.9.x
@@ -84,4 +73,3 @@ else {
 function postModuleRegisterCallback (compMgr, fileSpec, componentsArray) {
   dump("Enigmail account manager extension registered\n");
 }
-

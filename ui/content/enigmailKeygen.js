@@ -144,6 +144,8 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
    ipcRequest.close(true);
    var curId = gUsedId;
 
+   enigmailKeygenCloseRequest();
+
    if (gUseForSigning.checked) {
       curId.setBoolAttribute("enablePgp", true);
       curId.setIntAttribute("pgpKeyMode", 1);
@@ -170,8 +172,6 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
        }
      }
    }
-
-   enigmailKeygenCloseRequest();
 
    enigmailSvc.invalidateUserIdList();
    window.close();
@@ -291,7 +291,7 @@ function enigmailKeygenStart() {
    }
 
    var ipcRequest = null;
-   var requestObserver = new EnigRequestObserver(enigmailKeygenTerminate,null);
+   var requestObserver = new EnigRequestObserver(enigmailKeygenTerminate, null);
 
    try {
       ipcRequest = enigmailSvc.generateKey(window,

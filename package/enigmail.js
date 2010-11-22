@@ -5603,45 +5603,22 @@ EnigCmdLineHandler.prototype = {
 
 
 function enigExtractHashAlgo(msgTxt) {
-  Ec.DEBUG_LOG("enigmailMsgComposeOverlay.js: enigExtractHashAlgo\n");
+  Ec.DEBUG_LOG("enigmail.js: enigExtractHashAlgo\n");
 
   var m = msgTxt.match(/^(Hash: )(.*)$/m);
   if (m.length > 2 && m[1] == "Hash: ") {
     var hashAlgorithm = m[2].toLowerCase();
     for (var i=1; i < gMimeHashAlgorithms.length; i++) {
       if (gMimeHashAlgorithms[i] == hashAlgorithm) {
-        Ec.DEBUG_LOG("enigmailMsgComposeOverlay.js: enigExtractHashAlgo: found hashAlgorithm "+hashAlgorithm+"\n");
+        Ec.DEBUG_LOG("enigmail.js: enigExtractHashAlgo: found hashAlgorithm "+hashAlgorithm+"\n");
         return hashAlgorithm;
       }
     }
   }
 
-  Ec.DEBUG_LOG("enigmailMsgComposeOverlay.js: enigExtractHashAlgo: no hashAlgorithm found\n");
+  Ec.DEBUG_LOG("enigmail.js: enigExtractHashAlgo: no hashAlgorithm found\n");
   return null;
 }
-
-///////////////////////////////////////////////////////////////////////////////
-
-/*
-function IPCContext()
-{
-}
-
-IPCContext.prototype = {
-
-  command: "",
-  pipeTransport: null,
-  stdoutConsole: null,
-  stderrConsole: null,
-
-  QueryInterface: function (iid) {
-    if (!iid.equals(Components.interfaces.nsIIPCContext) &&
-        !iid.equals(Components.interfaces.nsISupports))
-      throw Components.results.NS_ERROR_NO_INTERFACE;
-    return this;
-  }
-}
-*/
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -5652,7 +5629,7 @@ if (XPCOMUtils.generateNSGetFactory) {
 }
 else {
   // Gecko <= 1.9.x
-  var NSGetModule = XPCOMUtils.generateNSGetModule([Enigmail, EnigmailProtocolHandler, EnigCmdLineHandler]);
+  var NSGetModule = XPCOMUtils.generateNSGetModule([Enigmail, EnigmailProtocolHandler, EnigCmdLineHandler, EnigmailPrefService]);
   dump("enigmail.js: Registered components\n");
 }
 
