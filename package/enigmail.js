@@ -5629,7 +5629,7 @@ if (XPCOMUtils.generateNSGetFactory) {
 }
 else {
   // Gecko <= 1.9.x
-  var NSGetModule = XPCOMUtils.generateNSGetModule([Enigmail, EnigmailProtocolHandler, EnigCmdLineHandler, EnigmailPrefService]);
+  var NSGetModule = XPCOMUtils.generateNSGetModule([Enigmail, EnigmailProtocolHandler, EnigCmdLineHandler]);
   dump("enigmail.js: Registered components\n");
 }
 
