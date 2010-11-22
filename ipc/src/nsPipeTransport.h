@@ -261,16 +261,16 @@ public:
     };
 
     nsStreamDispatcher(nsCOMPtr<nsIStreamListener>  aListener, nsCOMPtr<nsISupports> context,
-              nsIRequest* pipeTransport);
+              nsIRequest* request);
     virtual ~nsStreamDispatcher();
 
-    nsresult DispatchOnDataAvailable(nsCOMPtr<nsIInputStream> inputStream,
+    NS_IMETHODIMP DispatchOnDataAvailable(nsCOMPtr<nsIInputStream> inputStream,
                     PRUint32 startOffset,
                     PRUint32 count);
 
-    nsresult DispatchOnStartRequest();
+    NS_IMETHODIMP DispatchOnStartRequest();
 
-    nsresult DispatchOnStopRequest(nsresult status);
+    NS_IMETHODIMP DispatchOnStopRequest(nsresult status);
 
 protected:
 
@@ -279,7 +279,7 @@ protected:
     PRUint32        mCount;
     nsresult        mStatus;
 
-    nsIRequest*                   mPipeTransport;
+    nsIRequest*                   mRequest;
     nsCOMPtr<nsISupports>         mContext;
     nsCOMPtr<nsIInputStream>      mInputStream;
     nsCOMPtr<nsIStreamListener>   mListener;

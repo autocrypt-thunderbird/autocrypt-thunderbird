@@ -2664,7 +2664,7 @@ NS_IMPL_THREADSAFE_ISUPPORTS1 (nsStreamDispatcher,
 // nsStdinWriter implementation
 nsStreamDispatcher::nsStreamDispatcher(nsCOMPtr<nsIStreamListener>  aListener,
                     nsCOMPtr<nsISupports> context,
-                    nsIRequest* pipeTransport)
+                    nsIRequest* request)
   : mListener(nsnull)
 {
     NS_INIT_ISUPPORTS();
@@ -2679,7 +2679,7 @@ nsStreamDispatcher::nsStreamDispatcher(nsCOMPtr<nsIStreamListener>  aListener,
 
   mListener = aListener;
   mContext = context;
-  mPipeTransport = pipeTransport;
+  mRequest = request;
 }
 
 
@@ -2698,7 +2698,7 @@ nsStreamDispatcher::~nsStreamDispatcher()
   mListener = nsnull;
   mContext = nsnull;
   mInputStream = nsnull;
-  mPipeTransport = nsnull;
+  mRequest = nsnull;
 }
 
 NS_IMETHODIMP nsStreamDispatcher::DispatchOnDataAvailable(nsCOMPtr<nsIInputStream> inputStream,
@@ -2748,14 +2748,14 @@ NS_IMETHODIMP nsStreamDispatcher::Run()
 
   switch (mDispatchType) {
   case ON_START_REQUEST:
-    rv = mListener->OnStartRequest(mPipeTransport, mContext);
+    rv = mListener->OnStartRequest(mRequest, mContext);
     break;
   case ON_DATA_AVAILABLE:
-    rv = mListener->OnDataAvailable(mPipeTransport, mContext,
+    rv = mListener->OnDataAvailable(mRequest, mContext,
                                      mInputStream, mStartOffset, mCount);
     break;
   case ON_STOP_REQUEST:
-    rv = mListener->OnStopRequest(mPipeTransport, mContext, mStatus);
+    rv = mListener->OnStopRequest(mRequest, mContext, mStatus);
     break;
   default:
     return NS_ERROR_FAILURE;
