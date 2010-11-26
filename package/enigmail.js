@@ -3986,7 +3986,7 @@ Enigmail.prototype = {
 
     var args = this.getAgentArgs(true);
     args = args.concat(this.passwdCommand());
-    args.push("--list-Ec.packets");
+    args.push("--list-packets");
 
     var passphrase = null;
     var passwdObj = new Object();
