@@ -148,7 +148,6 @@ function enigMatchUidToSender(userId) {
 
 function enigRevealAttachments() {
 
-  var attachmentList = new Array();
   var i;
   for (i in currentAttachments) {
     enigHandleAttachment("revealName", currentAttachments[i]);
