@@ -615,10 +615,7 @@ function enigMessageDecryptCb(event, isAuto, mimeMsg){
       return;
     }
 
-    if (((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) ||
-        (embeddedEncrypted && contentType.search(/^multipart\/mixed(;|$)/i) == 0))
-         && (!embeddedSigned)) {
-      // multipart/encrypted
+    if (contentType.search(/^multipart\/encrypted(;|$)/i) == 0) {
       DEBUG_LOG("enigmailMessengerOverlay.js: multipart/encrypted\n");
       enigmailSvc = GetEnigmailSvc();
       if (!enigmailSvc)
@@ -638,6 +635,16 @@ function enigMessageDecryptCb(event, isAuto, mimeMsg){
         var msgFrame = EnigGetFrame(window, "messagepane");
         messenger.loadURL(msgFrame, "enigmail:dummy");
 
+        return;
+      }
+    }
+
+    if (((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) ||
+        (embeddedEncrypted && contentType.search(/^multipart\/mixed(;|$)/i) == 0))
+         && (!embeddedSigned)) {
+
+      if (!enigmailSvc.mimeInitialized()) {
+        ERROR_LOG("enigmailMessengerOverlay.js: mime service not initialized?!\n");
       }
       else if (! isAuto) {
         enigMessageReload(false);
