@@ -467,6 +467,7 @@
 <!ENTITY enigmail.keyMan.stopTransfer.label        "Stop transfer">
 <!ENTITY enigmail.keyMan.fingerprint.label         "Fingerprint">
 <!ENTITY enigmail.keyMan.selectAll.label           "Select all Keys">
+<!ENTITY enigmail.keyMan.addToPRRule.label         "Add to Per-Recpient Rule">
 <!ENTITY enigmail.keyMan.emptyTree.tooltip         "Enter search terms in the box above">
 <!ENTITY enigmail.keyMan.nothingFound.tooltip      "No keys match your search terms">
 <!ENTITY enigmail.keyMan.pleaseWait.tooltip        "Please wait while keys are being loaded ...">
@@ -732,3 +733,8 @@
 <!ENTITY enigmail.addPhoto.title                     "Add Photo to Key">
 <!ENTITY enigmail.msgViewColumn.label                "OpenPGP">
 <!ENTITY enigmail.msgViewColumn.tooltip              "Sort by the OpenPGP status">
+<!ENTITY enigmail.addToRule.title                    "Add Key to Per-Recipient Rule">
+<!ENTITY enigmail.addToRule.useRuleButton.label      "Add Key to Selected Rule">
+<!ENTITY enigmail.addToRule.useRuleButton.accesskey  "A">
+<!ENTITY enigmail.addToRule.newRuleButton.label      "Create New Rule">
+<!ENTITY enigmail.addToRule.newRuleButton.accesskey  "N">

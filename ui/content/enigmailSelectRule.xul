@@ -115,7 +115,7 @@
         treeChildren.appendChild(treeItem);
       }
     }
-
+    window.close();
   }
 
   function editDlgOnLoad() {

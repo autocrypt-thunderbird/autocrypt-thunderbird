@@ -19,14 +19,14 @@
  * Contributor(s):
  *
  * Alternatively, the contents of this file may be used under the
- * terms of the GNU General Public License (the "GPL") or the GNU 
+ * terms of the GNU General Public License (the "GPL") or the GNU
  * Lesser General Public License (the "LGPL"), in which case
  * the provisions of the GPL or the LGPL are applicable instead of
  * those above. If you wish to allow use of your version of this
  * file only under the terms of the GPL or the LGPL and not to allow
  * others to use your version of this file under the MPL, indicate
  * your decision by deleting the provisions above and replace them
- * with the notice and other provisions required by the GPL or the 
+ * with the notice and other provisions required by the GPL or the
  * LGPL respectively.
  * If you do not delete the provisions above, a recipient
  * may use your version of this file under either the MPL, the
@@ -40,7 +40,7 @@ EnigInitCommon("enigmailRulesEditor");
 
 const INPUT=0;
 const RESULT=1;
- 
+
 var gSearchTimer = null;
 var gSearchInput = null;
 var gClearButton = null;
@@ -55,7 +55,7 @@ function enigmailDlgOnLoad() {
   if (enigmailSvc.getRulesData(rulesListObj)) {
     var treeChildren=document.getElementById("rulesTreeChildren");
     var rulesList=rulesListObj.value;
-        if (rulesList.firstChild.nodeName=="parsererror") {
+    if (rulesList.firstChild.nodeName=="parsererror") {
       EnigAlert("Invalid enigmail.xml file:\n"+ rulesList.firstChild.textContent);
       return;
     }
@@ -65,7 +65,7 @@ function enigmailDlgOnLoad() {
     while (node) {
       if (node.tagName=="pgpRule") {
         //try {
-          var userObj={ 
+          var userObj={
                 email: node.getAttribute("email"),
                 keyId: node.getAttribute("keyId"),
                 sign: node.getAttribute("sign"),
@@ -76,7 +76,7 @@ function enigmailDlgOnLoad() {
           if (node.getAttribute("negateRule")) {
             userObj.negate=node.getAttribute("negateRule");
           }
-          
+
           var treeItem=document.createElement("treeitem");
           createRow(treeItem, userObj);
           treeChildren.appendChild(treeItem);
@@ -98,7 +98,7 @@ function enigmailDlgOnAccept() {
   if (!enigmailSvc)
     return false;
   enigmailSvc.clearRules();
-  
+
   var node=getFirstNode();
   while(node) {
     enigmailSvc.addRule(true,
@@ -112,7 +112,7 @@ function enigmailDlgOnAccept() {
     node = node.nextSibling;
   }
   enigmailSvc.saveRulesFile();
-  
+
   return true;
 }
 
@@ -125,13 +125,13 @@ function createCol(value, label, treeItem, translate) {
   case "encrypt":
   case "pgpMime":
     switch (Number(label)) {
-    case 0: 
+    case 0:
       label=EnigGetString("never");
       break;
-    case 1: 
+    case 1:
       label=EnigGetString("possible");
       break;
-    case 2: 
+    case 2:
       label=EnigGetString("always");
       break;
     }
@@ -168,7 +168,7 @@ function createRow(treeItem, userObj) {
   treeRow.appendChild(encrypt);
   treeRow.appendChild(pgpMime);
   treeRow.setAttribute("rowId", ++gNumRows);
-  
+
   if (treeItem.firstChild) {
     treeItem.replaceChild(treeRow, treeItem.firstChild);
   }
@@ -180,7 +180,7 @@ function createRow(treeItem, userObj) {
 function getFirstNode() {
   return document.getElementById("rulesTreeChildren").firstChild;
 }
-  
+
 function getCurrentNode() {
   var rulesTree=document.getElementById("rulesTree");
   return rulesTree.contentView.getItemAtIndex(rulesTree.currentIndex)
@@ -200,7 +200,7 @@ function enigDoEdit() {
     inputObj.encrypt   = Number(node.getAttribute("encrypt"));
     inputObj.pgpmime   = Number(node.getAttribute("pgpMime"));
     inputObj.negate    = Number(node.getAttribute("negateRule"));
-    
+
     window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     if (resultObj.cancelled==false) {
       createRow(node, resultObj);
@@ -214,7 +214,7 @@ function enigDoAdd() {
   inputObj.options = "nosave";
   inputObj.toAddress = "{}";
   inputObj.command = "add";
-  
+
   window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
   if (resultObj.cancelled==false) {
     var treeItem=document.createElement("treeitem");
@@ -298,7 +298,7 @@ function enigDoResetFilter() {
 
 function onEnterInSearchBar()
 {
-   if (gSearchInput.value == "") 
+   if (gSearchInput.value == "")
    {
      enigDoResetFilter();
      return;
@@ -324,7 +324,7 @@ function onSearchKeyPress(event)
 function onSearchInput(returnKeyHit)
 {
   if (gSearchTimer) {
-    clearTimeout(gSearchTimer); 
+    clearTimeout(gSearchTimer);
     gSearchTimer = null;
   }
 
@@ -342,6 +342,6 @@ function onSearchInput(returnKeyHit)
 function disableQuickSearchClearButton()
 {
  if (gClearButton)
-   gClearButton.setAttribute("disabled", true); 
+   gClearButton.setAttribute("disabled", true);
 }
 

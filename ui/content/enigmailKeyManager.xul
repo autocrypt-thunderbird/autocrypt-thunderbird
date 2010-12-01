@@ -202,6 +202,11 @@
                   accesskey="&enigmail.keyMan.addPhoto.accesskey;"
                   oncommand="enigmailAddPhoto()"/>
 
+        <menuitem id="addToRule"
+                  label="&enigmail.keyMan.addToPRRule.label;"
+                  observes="bcSignKey"
+                  oncommand="addToPRRule()"/>
+
         <menuseparator/>
 
         <menuitem id="selectAll"
@@ -329,6 +334,7 @@
 
       <menuitem id="ctxSign" observes="bcSignKey" label="&enigmail.keyMan.sign.label;" oncommand="enigSignKey()"/>
       <menuitem id="ctxTrust" label="&enigmail.keyMan.setTrust.label;" oncommand="enigEditKeyTrust()"/>
+      <menuitem id="ctxAddToRule" observes="bcSignKey" label="&enigmail.keyMan.addToPRRule.label;" oncommand="addToPRRule()"/>
 
 			<menuseparator/>
 

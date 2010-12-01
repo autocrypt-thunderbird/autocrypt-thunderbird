@@ -995,6 +995,26 @@ function enigmailReceiveKeyCb(exitCode, errorMsg, msgBox) {
   return "";
 }
 
+
+function addToPRRule() {
+  var keyList = enigmailGetSelectedKeys();
+  if (keyList.length==0) {
+    EnigAlert(EnigGetString("noKeySelected"));
+    return;
+  }
+
+  var enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc)
+    return;
+
+  var inputObj = { keyId: keyList[0],
+                   userId: gKeyList[keyList[0]].userId };
+  window.openDialog("chrome://enigmail/content/enigmailSelectRule.xul",
+        "", "dialog,modal,centerscreen", inputObj);
+
+}
+
+
 //
 // ----- key filtering functionality  -----
 //
@@ -1240,46 +1260,3 @@ function getSortColumn() {
   }
 }
 
-/*
-Components.utils.import("resource://enigmail/subprocess.jsm");
-
-function logMsg(str) {
-  try {
-    var consoleSvc = Components.classes["@mozilla.org/consoleservice;1"].
-        getService(Components.interfaces.nsIConsoleService);
-
-    var scriptError = Components.classes["@mozilla.org/scripterror;1"]
-                                .createInstance(Components.interfaces.nsIScriptError);
-    scriptError.init(str, null, null, 0,
-                     0, scriptError.errorFlag, "Enigmail");
-    consoleSvc.logMessage(scriptError);
-
-  }
-  catch (ex) {}
-}
-
-function enigmailKeyManagerLoad() {
-   var p = subprocess.call({
-     command:   '/Users/pbr/enigmail/tmp/test.sh',
-     arguments: ['-v', 'foo'],
-     environment:   [ "XYZ=abc", "MYVAR=def" ],
-     stdin: subprocess.WritablePipe(function() {
-          this.write("Writing example data\n");
-     }),
-
-     stdout: subprocess.ReadablePipe(function(data) {
-       logMsg("*** Got data on stdout: '"+ data+"'\n");
-     }),
-     stderr: subprocess.ReadablePipe(function(data) {
-       logMsg("*** Got data on stderr: '"+data+"'\n");
-     }),
-     onFinished: subprocess.Terminate(function() {
-       logMsg("*** Process finished with result code: " + this.exitCode + "\n");
-       logMsg("got data: "+this.stdoutData);
-     }),
-     mergeStderr: false
-   });
-
-}
-
-/**/
