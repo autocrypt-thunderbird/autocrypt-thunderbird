@@ -529,6 +529,7 @@ function enigEnumerateMimeParts(mimePart, resultObj) {
 function enigMessageDecryptCb(event, isAuto, mimeMsg){
   DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCb:\n");
 
+  var enigmailSvc;
   try {
     var showHeaders = 0;
     var contentType = "";
@@ -639,6 +640,10 @@ function enigMessageDecryptCb(event, isAuto, mimeMsg){
       }
     }
 
+    enigmailSvc = GetEnigmailSvc();
+    if (!enigmailSvc)
+      return;
+
     if (((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) ||
         (embeddedEncrypted && contentType.search(/^multipart\/mixed(;|$)/i) == 0))
          && (!embeddedSigned)) {
@@ -680,10 +685,6 @@ function enigMessageDecryptCb(event, isAuto, mimeMsg){
     if (tryVerify) {
       // multipart/signed
       DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecryptCb: multipart/signed\n");
-
-      enigmailSvc = GetEnigmailSvc();
-      if (!enigmailSvc)
-        return;
 
       var mailNewsUrl = enigGetCurrentMsgUrl();
       if (mailNewsUrl) {
