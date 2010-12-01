@@ -1679,7 +1679,7 @@ function EnigRulesEditor() {
 
 function EnigOpenSetupWizard() {
   window.open("chrome://enigmail/content/enigmailSetupWizard.xul",
-            "", "chrome,modal,centerscreen");
+            "", "chrome,centerscreen");
 }
 
 // get keys from keyserver
@@ -2098,7 +2098,8 @@ function EnigRevokeKey(keyId, userId) {
     EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+errorMsgObj.value);
     return false;
   }
-  r = enigmailSvc.importKeyFromFile(window, revFile, errorMsgObj);
+  var keyList = {};
+  r = enigmailSvc.importKeyFromFile(window, revFile, errorMsgObj, keyList);
   revFile.remove(false);
   if (r != 0) {
     EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+EnigConvertGpgToUnicode(errorMsgObj.value));

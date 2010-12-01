@@ -695,6 +695,18 @@
                                                       encrypt and send to you. It can also encrypt email in your name.
                                                       Because it's secret, it's protected by a passphrase.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat    "Please confirm your passphrase by typing it again">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.title        "No OpenPGP Key Found">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.subtitle     "We could not find any OpenPGP Key">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc         "We could not find any OpenPGP key. Please select below if you want to
+                                                      create a new key pair or if you want to import an existing key.">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey    "I have existing public and private keys that I would like to import">
+<!ENTITY enigmail.setupWiz.pgKeyImport.title         "Import OpenPGP Keys">
+<!ENTITY enigmail.setupWiz.pgKeyImport.subtitle      "Specify the files to import">
+<!ENTITY enigmail.setupWiz.pgKeyImport.desc          "Please specifiy the files containing the public and the private keys to
+                                                      import. The entry for private keys can be left empty if the first file
+                                                      contains both private and public keys.">
+<!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile    "Public key file">
+<!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile    "Private key file">
 <!ENTITY enigmail.setupWiz.pgSummary.title           "Summary">
 <!ENTITY enigmail.setupWiz.pgSummary.subtitle        "Confirm that the wizard shall now commit these changes">
 <!ENTITY enigmail.setupWiz.pgSummary.desc            "You are almost complete! If you click on the 'Next' button, the wizard will perform the following actions:">

@@ -90,7 +90,7 @@
     </description>
 
     <separator/>
-    
+
     <label value="&enigmail.setupWiz.pgSelectId.allIds;" control="activateId"/>
     <radiogroup id="activateId" value="1">
       <radio id="activateId_all"
@@ -219,12 +219,37 @@
 
       <separator/>
 
-      <radio id="createPgpKey_yes"
+      <radio id="createNewPgpKey"
              label="&enigmail.setupWiz.pgKeySel.newKey;"
              oncommand="setNewKey()"
              value="1"/>
+
     </radiogroup>
 
+  </wizardpage>
+
+
+  <wizardpage id="pgNoKeyFound" pageid="pgNoKeyFound"
+              next="pgKeyCreate"
+              onpageshow="disableNext(true)"
+              label="&enigmail.setupWiz.pgNoKeyFound.title;"
+              description="&enigmail.setupWiz.pgNoKeyFound.subtitle;">
+
+    <description id="noPgpKeyFoundLabel">
+      &enigmail.setupWiz.pgNoKeyFound.desc;
+    </description>
+    <radiogroup id="newPgpKey" value="0" aria-labelledby="noPgpKeyFoundLabel">
+
+      <radio id="createNewPgpKey2"
+             label="&enigmail.setupWiz.pgKeySel.newKey;"
+             oncommand="setNewKey()"
+             value="1"/>
+
+      <radio id="importPgpKeys"
+             label="&enigmail.setupWiz.pgNoKeyFound.importKey;"
+             oncommand="setImportKeys()"
+             value="2"/>
+    </radiogroup>
   </wizardpage>
 
   <wizardpage id="pgKeyCreate" pageid="pgKeyCreate"
@@ -242,9 +267,11 @@
     <separator/>
     <vbox>
       <label class="label" value="&enigmail.keyUserId.label;:" control="userIdentity"/>
-      <menulist id="userIdentity" label="..." flex="1">
-        <menupopup id="userIdentityPopup"/>
-      </menulist>
+      <hbox flex="1">
+        <menulist id="userIdentity" label="...">
+          <menupopup id="userIdentityPopup"/>
+        </menulist>
+      </hbox>
     </vbox>
     <label id="userIdentityLabel" value="" collapsed="true"/>
 
@@ -255,7 +282,50 @@
       <textbox id="passphraseRepeat" size="20" type="password" />
     </vbox>
   </wizardpage>
-  
+
+  <wizardpage id="pgKeyImport" pageid="pgKeyImport"
+              next="pgKeySel"
+              label="&enigmail.setupWiz.pgKeyImport.title;"
+              onpageadvanced="return importKeyFiles()"
+              description="&enigmail.setupWiz.pgKeyImport.subtitle;">
+    <description>
+      &enigmail.setupWiz.pgKeyImport.desc;
+    </description>
+
+    <grid>
+      <columns>
+        <column/>
+        <column flex="1"/>
+      </columns>
+
+      <rows autostretch="never">
+        <row>
+          <hbox align="center">
+            <label class="label" value="&enigmail.setupWiz.pgKeyImport.pubkeyFile;" id="publicKeysFileLbl"/>
+          </hbox>
+          <hbox align="center">
+            <textbox id="publicKeysFile" size="30" aria-labelledby="publicKeysFileLbl" readonly="true"/>
+            <button id="browsePubKeyFile"
+                    label="&enigmail.browse.label;"
+              oncommand="browseKeyFile('publicKeysFile', gPubkeyFile);"/>
+          </hbox>
+        </row>
+
+        <row>
+          <hbox align="center">
+            <label class="label" value="&enigmail.setupWiz.pgKeyImport.seckeyFile;" id="privateKeysFileLbl"/>
+          </hbox>
+          <hbox align="center">
+            <textbox id="privateKeysFile" size="30" aria-labelledby="privateKeysFileLbl" readonly="true"/>
+            <button id="browseSecKeyFile"
+                    label="&enigmail.browse.label;"
+              oncommand="browseKeyFile('privateKeysFile', gSeckeyFile);"/>
+          </hbox>
+        </row>
+      </rows>
+    </grid>
+  </wizardpage>
+
   <wizardpage id="pgSummary" pageid="pgSummary"
               onpageshow="displayActions()"
               next="pgComplete"
@@ -277,7 +347,7 @@
       <label id="applyDesc9" collapsed="true"/>
       <label id="applyDesc10" collapsed="true"/>
     </vbox>
-    
+
   </wizardpage>
 
   <wizardpage id="pgKeygen" pageid="pgKeygen"

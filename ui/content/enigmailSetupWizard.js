@@ -34,6 +34,10 @@
 var gEnigModifySettings;
 var gLastDirection=0;
 var gEnigAccountMgr;
+var gPubkeyFile = {value: null};
+var gSeckeyFile = {value: null};
+var gCreateNewKey=false;
+
 
 EnigInitCommon("enigmailSetupWizard");
 
@@ -126,6 +130,66 @@ function countSelectedId() {
   return idCount;
 }
 
+function browseKeyFile(referencedId, referencedVar) {
+  var filePath = EnigFilePicker(EnigGetString("importKeyFile"),
+                               "", false, "*.asc", "",
+                               [EnigGetString("gnupgFile"), "*.asc;*.gpg;*.pgp"]);
+
+  if (filePath) {
+    document.getElementById(referencedId).value = EnigGetFilePath(filePath);
+    referencedVar.value = filePath;
+  }
+}
+
+function importKeyFiles() {
+  if (document.getElementById("publicKeysFile").value.length == 0) {
+    EnigAlert(EnigString("setupWizard.specifyFile"));
+    return false;
+  }
+
+  var importedKeys;
+  var exitCode;
+
+  var enigmailSvc = enigGetSvc();
+  if (! enigmailSvc) return;
+
+  var errorMsgObj = {};
+  var keyListObj = {};
+  var exitCode = enigmailSvc.importKeyFromFile(window, gPubkeyFile.value, errorMsgObj, keyListObj);
+  if (exitCode != 0) {
+    EnigAlert(EnigGetString("importKeysFailed")+"\n\n"+errorMsgObj.value);
+    return false;
+  }
+  importedKeys = keyListObj.value;
+
+  if (document.getElementById("privateKeysFile").value.length > 0) {
+
+    exitCode = enigmailSvc.importKeyFromFile(window, gSeckeyFile.value, errorMsgObj, keyListObj);
+    if (exitCode != 0) {
+      EnigAlert(EnigGetString("importKeysFailed")+"\n\n"+errorMsgObj.value);
+      return false;
+    }
+    importedKeys += keyListObj.value;
+  }
+
+  var exitCode = 0;
+  var keyList=importedKeys.split(/;/);
+  for (var i=0; i<keyList.length; i++) {
+    var aKey = keyList[i].split(/:/);
+    if (Number(aKey[1]) & 16) {
+      // imported key contains secret key
+      exitCode += enigmailSvc.setKeyTrust(window, aKey[0], 5, errorMsgObj);
+    }
+  }
+
+  if (exitCode != 0) {
+    EnigAlert("Could not set trust level for all own keys");
+  }
+
+  loadKeys();
+
+  return true;
+}
 
 function displayKeyCreate() {
   if (gLastDirection == 1) {
@@ -161,6 +225,7 @@ function displayKeyCreate() {
 }
 
 function displayKeySel() {
+  var uidChildren = document.getElementById("uidSelectionChildren");
   if (document.getElementById("createPgpKey").value=="0") {
     setUseKey();
   }
@@ -215,11 +280,11 @@ function loadKeys() {
     return false;
   }
 
+
   if (keyList.length ==0) {
-    setNextPage("pgKeyCreate");
+    setNextPage("pgNoKeyFound");
     return true;
   }
-
 
   var uidChildren = document.getElementById("uidSelectionChildren")
   for (i=0; i < keyList.length; i++) {
@@ -714,13 +779,22 @@ function loadLastPage() {
 function setNewKey() {
   setNextPage('pgKeyCreate');
   disableNext(false);
+  gCreateNewKey = true;
   document.getElementById("uidSelection").boxObject.element.setAttribute("disabled", "true")
 }
 
 function setUseKey() {
   setNextPage('pgSummary');
+  gCreateNewKey = false;
   document.getElementById("uidSelection").boxObject.element.removeAttribute("disabled");
   onKeySelected();
+}
+
+function setImportKeys() {
+  setNextPage('pgKeyImport');
+  gCreateNewKey = false;
+  disableNext(false);
+  document.getElementById("uidSelection").boxObject.element.setAttribute("disabled", "true");
 }
 
 function displayActions() {
@@ -733,16 +807,17 @@ function displayActions() {
     item.removeAttribute("collapsed");
   }
 
-  var createKey=document.getElementById("createPgpKey");
+  var createKey1=document.getElementById("createPgpKey");
+  var createKey2=document.getElementById("newPgpKey");
 
-  if (createKey.value == "1" ||
+  if (gCreateNewKey ||
       document.getElementById("pgSettings").next == "pgKeyCreate") {
     setNextPage('pgKeygen');
     appendDesc(EnigGetString("setupWizard.createKey"));
   }
   else {
     setNextPage('pgComplete');
-    appendDesc(EnigGetString("setupWizard.useKey", gGeneratedKey))
+    appendDesc(EnigGetString("setupWizard.useKey", gGeneratedKey));
   }
 
   var descList=document.getElementById("appliedSettings");

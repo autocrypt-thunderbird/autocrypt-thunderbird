@@ -3556,8 +3556,9 @@ Enigmail.prototype = {
     return fileNameStr;
   },
 
-  importKeyFromFile: function (parent, inputFile, errorMsgObj) {
+  importKeyFromFile: function (parent, inputFile, errorMsgObj, importedKeysObj) {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.importKeyFromFile: fileName="+inputFile.path+"\n");
+    importedKeysObj.value="";
 
     if (!this.initialized) {
       Ec.ERROR_LOG("enigmail.js: Enigmail.importKeyFromFile: not yet initialized\n");
@@ -3580,18 +3581,31 @@ Enigmail.prototype = {
 
     var statusMsg = statusMsgObj.value;
 
-    var pubKeyId;
+    var keyList = new Array();
 
     if (exitCodeObj.value == 0) {
       // Normal return
       this.invalidateUserIdList();
-      if (statusMsg && (statusMsg.search("IMPORTED ") > -1)) {
-        var matches = statusMsg.match(/(^|\n)IMPORTED (\w{8})(\w{8})/);
 
-        if (matches && (matches.length > 3)) {
-          pubKeyId = "0x" + matches[3];
-          Ec.DEBUG_LOG("enigmail.js: Enigmail.importKey: IMPORTED "+pubKeyId+"\n");
+      var statusLines = statusMsg.split(/\r?\n/);
+
+      // Discard last null string, if any
+
+      for (var j=0; j<statusLines.length; j++) {
+        var matches = statusLines[j].match(/IMPORT_OK ([0-9]+) (\w+)/);
+        if (matches && (matches.length > 2)) {
+          if (typeof (keyList[matches[2]]) != "undefined") {
+            keyList[matches[2]] |= new Number(matches[1]);
+          }
+          else
+            keyList[matches[2]] = new Number(matches[1]);
+
+          Ec.DEBUG_LOG("enigmail.js: Enigmail.importKey: imported "+matches[2]+":"+matches[1]+"\n");
         }
+      }
+
+      for (j in keyList) {
+        importedKeysObj.value += j+":"+keyList[j]+";";
       }
     }
 

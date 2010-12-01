@@ -341,7 +341,8 @@ interface nsIEnigmail : nsISupports
 
   long importKeyFromFile(in nsIDOMWindow parent,
                  in nsIFile inputFile,
-                 out string errorMsg);
+                 out string errorMsg,
+                 out wstring importedKeys);
 
   nsIIPCRequest generateKey(in nsIDOMWindow parent,
                             in string name,

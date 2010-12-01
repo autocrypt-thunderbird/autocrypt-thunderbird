@@ -786,13 +786,14 @@ function enigmailImportKeysFromFile() {
   if (!enigmailSvc)
     return;
 
-  var inFile = EnigFilePicker(EnigGetString("importFile"),
+  var inFile = EnigFilePicker(EnigGetString("importKeyFile"),
                                "", false, "*.asc", "",
                                [EnigGetString("gnupgFile"), "*.asc;*.gpg;*.pgp"]);
   if (! inFile) return;
 
   var errorMsgObj = {};
-  var exitCode = enigmailSvc.importKeyFromFile(window, inFile, errorMsgObj);
+  var keyListObj = {};
+  var exitCode = enigmailSvc.importKeyFromFile(window, inFile, errorMsgObj, keyListObj);
   if (exitCode != 0) {
     EnigAlert(EnigGetString("importKeysFailed")+"\n\n"+errorMsgObj.value);
   }
