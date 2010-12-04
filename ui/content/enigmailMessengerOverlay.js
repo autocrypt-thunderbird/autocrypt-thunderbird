@@ -505,6 +505,22 @@ function enigMsgDecryptMimeCb(msg, mimeMsg) {
 }
 
 
+function enigMimeInitialize() {
+  DEBUG_LOG("enigmailMessengerOverlay.js: enigMimeInitialize() - loading enigmail:dummy ...\n");
+
+  // Need to add event listener to gEnigMessagePane to make it work
+  // Adding to msgFrame doesn't seem to work
+  gEnigMessagePane.addEventListener("load", enigMimeInit, true);
+  gEnigRemoveListener = true;
+
+  gEnigNoShowReload = true;
+
+  var msgFrame = EnigGetFrame(window, "messagepane");
+  messenger.loadURL(msgFrame, "enigmail:dummy");
+
+  return;
+}
+
 function enigEnumerateMimeParts(mimePart, resultObj) {
   DEBUG_LOG("enigEnumParts: "+mimePart.partName+" - "+mimePart.headers["content-type"]+"\n");
 
@@ -618,38 +634,29 @@ function enigMessageDecryptCb(event, isAuto, mimeMsg){
 
     if (contentType.search(/^multipart\/encrypted(;|$)/i) == 0) {
       DEBUG_LOG("enigmailMessengerOverlay.js: multipart/encrypted\n");
+
       enigmailSvc = GetEnigmailSvc();
       if (!enigmailSvc)
         return;
 
       if (!enigmailSvc.mimeInitialized()) {
         // Display enigmail:dummy URL in message pane to initialize
-
-        // Need to add event listener to gEnigMessagePane to make it work
-        // Adding to msgFrame doesn't seem to work
-        gEnigMessagePane.addEventListener("load", enigMimeInit, true);
-        gEnigRemoveListener = true;
-
-        DEBUG_LOG("enigmailMessengerOverlay.js: loading enigmail:dummy ...\n");
-        gEnigNoShowReload = true;
-
-        var msgFrame = EnigGetFrame(window, "messagepane");
-        messenger.loadURL(msgFrame, "enigmail:dummy");
-
+        enigMimeInitialize();
         return;
       }
     }
-
-    enigmailSvc = GetEnigmailSvc();
-    if (!enigmailSvc)
-      return;
 
     if (((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) ||
         (embeddedEncrypted && contentType.search(/^multipart\/mixed(;|$)/i) == 0))
          && (!embeddedSigned)) {
 
+      enigmailSvc = GetEnigmailSvc();
+      if (!enigmailSvc)
+        return;
+
       if (!enigmailSvc.mimeInitialized()) {
-        ERROR_LOG("enigmailMessengerOverlay.js: mime service not initialized?!\n");
+        enigMimeInitialize();
+        return;
       }
       else if (! isAuto) {
         enigMessageReload(false);
