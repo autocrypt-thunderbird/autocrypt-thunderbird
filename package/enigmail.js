@@ -4060,7 +4060,7 @@ Enigmail.prototype = {
 
     outputTxt = ipcBuffer.getData();
 
-    var matches = outputTxt.match(/:literal data packet:\n.*name="(.*)",/m);
+    var matches = outputTxt.match(/:literal data packet:\r?\n.*name="(.*)",/m);
     if (matches && (matches.length > 1)) {
       return matches[1];
     }
