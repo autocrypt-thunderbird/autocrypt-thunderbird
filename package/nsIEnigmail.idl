@@ -404,7 +404,7 @@ interface nsIEnigmail : nsISupports
                             out unsigned long statusFlags,
                             out wstring errorMsg);
 
-  string getAttachmentFileName(in nsIDOMWindow parent,
+  wstring getAttachmentFileName(in nsIDOMWindow parent,
                                in nsIIPCBuffer ipcBuffer);
 
   boolean decryptAttachment (in nsIDOMWindow parent,

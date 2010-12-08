@@ -4062,7 +4062,8 @@ Enigmail.prototype = {
 
     var matches = outputTxt.match(/:literal data packet:\r?\n.*name="(.*)",/m);
     if (matches && (matches.length > 1)) {
-      return matches[1];
+      var filename = matches[1].replace(/\\x/g, "%");
+      return Ec.convertToUnicode(unescape(filename), "utf-8")
     }
     else
       return null;
