@@ -338,10 +338,10 @@ function getFilePath (nsFileObj, creationMode) {
         return Ec.convertToUnicode(nsFileObjTmp.QueryInterface(nsILocalFileWin).canonicalPath, "utf-8");
       }
     }
-      return Ec.convertToUnicode(nsFileObj.QueryInterface(nsILocalFileWin).canonicalPath, "utf-8");
+    return Ec.convertToUnicode(nsFileObj.QueryInterface(nsILocalFileWin).canonicalPath, "utf-8");
   }
 
-  return Ec.convertFromUnicode(nsFileObj.path, "utf-8");
+  return nsFileObj.path;
 }
 
 // return the OS string from XUL runtime
@@ -4062,7 +4062,7 @@ Enigmail.prototype = {
 
     var matches = outputTxt.match(/:literal data packet:\r?\n.*name="(.*)",/m);
     if (matches && (matches.length > 1)) {
-      var filename = matches[1].replace(/\\x/g, "%");
+      var filename = escape(matches[1]).replace(/%5Cx/g, "%")
       return Ec.convertToUnicode(unescape(filename), "utf-8")
     }
     else
