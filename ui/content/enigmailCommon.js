@@ -2092,7 +2092,7 @@ function EnigRevokeKey(keyId, userId) {
   revFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
 
   var errorMsgObj = {};
-  var r=enigmailSvc.genRevokeCert(window, "0x"+keyId, revFile.path, "0", "", errorMsgObj);
+  var r=enigmailSvc.genRevokeCert(window, "0x"+keyId, revFile, "0", "", errorMsgObj);
   if (r != 0) {
     revFile.remove(false);
     EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+errorMsgObj.value);
@@ -2167,7 +2167,7 @@ function EnigCreateRevokeCert(keyId, userId) {
     return -1;
 
   var errorMsgObj = {};
-  var r=enigmailSvc.genRevokeCert(window, "0x"+keyId, EnigGetFilePath(outFile), "1", "", errorMsgObj);
+  var r=enigmailSvc.genRevokeCert(window, "0x"+keyId, outFile, "1", "", errorMsgObj);
   if (r != 0) {
     EnigAlert(EnigGetString("revokeCertFailed")+"\n\n"+errorMsgObj.value);
   }

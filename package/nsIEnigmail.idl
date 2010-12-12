@@ -257,7 +257,7 @@ interface nsIEnigmail : nsISupports
 
   long genRevokeCert(in nsIDOMWindow parent,
                 in string keyId,
-                in string outFile,
+                in nsIFile outFile,
                 in string reasonCode,
                 in string reasonText,
                 out wstring errorMsg);

@@ -4626,7 +4626,7 @@ Enigmail.prototype = {
     if (editCmdArr[0] == "revoke") {
       // escape backslashes and ' characters
       args=args.concat(["-a", "-o"]);
-      args.push(this.getEscapedFilename(inputData.outFile));
+      args.push(this.getEscapedFilename(getFilePath(inputData.outFile)));
       args.push("--gen-revoke");
       args=args.concat(keyIdList);
     }
