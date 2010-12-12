@@ -702,9 +702,11 @@ nsEnigMsgCompose::FinishAux(PRBool aAbort,
   }
 
   // Wait for input event queue to be completely processed
-  nsEnigComposeWriter* dispatchWriter = new nsEnigComposeWriter(mPipeTrans, nsnull, 0);
-  dispatchWriter->CompleteEvents();
-  mTargetThread->Dispatch(dispatchWriter, nsIEventTarget::DISPATCH_SYNC);
+  if (mTargetThread) {
+    nsEnigComposeWriter* dispatchWriter = new nsEnigComposeWriter(mPipeTrans, nsnull, 0);
+    dispatchWriter->CompleteEvents();
+    mTargetThread->Dispatch(dispatchWriter, nsIEventTarget::DISPATCH_SYNC);
+  }
 
   // Wait for STDOUT to close
   rv = mPipeTrans->Join();
@@ -901,15 +903,20 @@ nsEnigMsgCompose::WriteToPipe(const char *aBuf, PRInt32 aLen)
   nsresult rv;
   DEBUG_LOG(("nsEnigMsgCompose::WriteToPipe: %d\n", aLen));
 
-  if (! mTargetThread) {
-    rv = NS_NewThread(&mTargetThread);
-    if (NS_FAILED(rv)) return rv;
+  if (mMultipartSigned) {
+    rv = mPipeTrans->WriteSync(aBuf, aLen);
   }
+  else {
+    if (! mTargetThread) {
+      rv = NS_NewThread(&mTargetThread);
+      if (NS_FAILED(rv)) return rv;
+    }
 
-  // dispatch message to different thread to avoid deadlock with input queue
+    // dispatch message to different thread to avoid deadlock with input queue
 
-  nsEnigComposeWriter* dispatchWriter = new nsEnigComposeWriter(mPipeTrans, aBuf, aLen);
-  rv = mTargetThread->Dispatch(dispatchWriter, nsIEventTarget::DISPATCH_NORMAL);
+    nsEnigComposeWriter* dispatchWriter = new nsEnigComposeWriter(mPipeTrans, aBuf, aLen);
+    rv = mTargetThread->Dispatch(dispatchWriter, nsIEventTarget::DISPATCH_NORMAL);
+  }
 
   return rv;
 }
