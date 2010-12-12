@@ -1162,9 +1162,13 @@ NS_IMETHODIMP nsEnigComposeWriter::Run()
   }
   else {
 
+    DEBUG_LOG(("nsEnigComposeWriter::Run: draining event queue\n"));
+
     PRBool pendingEvents;
     rv = myThread->HasPendingEvents(&pendingEvents);
     if (NS_FAILED(rv)) return rv;
+
+    // in theory there should be no pending events here be
 
     while(pendingEvents) {
       myThread->ProcessNextEvent(PR_FALSE, &pendingEvents);
@@ -1175,6 +1179,9 @@ NS_IMETHODIMP nsEnigComposeWriter::Run()
 
 nsresult nsEnigComposeWriter::CompleteEvents() {
   DEBUG_LOG(("nsEnigComposeWriter::CompleteEvents"));
+
+  // dispatching of CompleteEvents needs to be done synchronously: this will ensure that
+  // the event is added at the end of the queue and the queue is emptied automagically
 
   mCompleteEvents = PR_TRUE;
 
