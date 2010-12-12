@@ -39,11 +39,13 @@
 
 #include "nsCOMPtr.h"
 #include "nsIFactory.h"
+#include "nsIRunnable.h"
 #include "nsIMsgComposeSecure.h"
 #include "nsIStreamListener.h"
 #include "nsIPipeTransport.h"
 #include "nsIEnigMimeListener.h"
 #include "nsIEnigmail.h"
+#include "nsIThread.h"
 #include "modmimee2.h"
 #include "enigmail.h"
 #include "nsIEnigMimeWriter.h"
@@ -95,6 +97,8 @@ protected:
 
     nsresult WriteCopy(const char *aBuf, PRInt32 aLen);
 
+    nsresult WriteToPipe(const char *aBuf, PRInt32 aLen);
+
     nsresult FinishAux(PRBool aAbort, nsIMsgSendReport* sendReport);
 
     static const char*                  FromStr;
@@ -133,6 +137,8 @@ protected:
 
     nsCOMPtr<nsIEnigMimeWriter>   mWriter;
     nsCOMPtr<nsIPipeTransport>    mPipeTrans;
+    nsIThread*                    mTargetThread;
+
 };
 
 #define NS_ENIGMSGCOMPOSEFACTORY_CLASSNAME "Enigmail Msg Compose Factory"
@@ -153,4 +159,28 @@ public:
   virtual ~nsEnigMsgComposeFactory();
 };
 
+
+class nsEnigComposeWriter : public nsIRunnable
+{
+public:
+    NS_DECL_ISUPPORTS
+    NS_DECL_NSIRUNNABLE
+
+    nsEnigComposeWriter(nsCOMPtr<nsIPipeTransport> pipeTrans,
+                    const char *buf,
+                    PRUint32 count);
+
+    virtual ~nsEnigComposeWriter();
+
+    nsresult CompleteEvents();
+
+protected:
+
+    PRUint32        mCount;
+    char*           mBuf;
+    PRBool          mCompleteEvents;
+
+    nsCOMPtr<nsIPipeTransport>    mPipeTrans;
+
+};
 #endif

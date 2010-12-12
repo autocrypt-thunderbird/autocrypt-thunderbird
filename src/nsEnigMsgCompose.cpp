@@ -163,7 +163,8 @@ nsEnigMsgCompose::nsEnigMsgCompose()
     mMimeListener(nsnull),
 
     mWriter(nsnull),
-    mPipeTrans(nsnull)
+    mPipeTrans(nsnull),
+    mTargetThread(nsnull)
 {
   nsresult rv;
 
@@ -205,6 +206,11 @@ nsresult
 nsEnigMsgCompose::Finalize()
 {
   DEBUG_LOG(("nsEnigMsgCompose::Finalize:\n"));
+
+  if (mTargetThread) {
+    mTargetThread->Shutdown();
+    mTargetThread = nsnull;
+  }
 
   mMsgComposeSecure = nsnull;
   mMimeListener = nsnull;
@@ -695,6 +701,11 @@ nsEnigMsgCompose::FinishAux(PRBool aAbort,
     if (NS_FAILED(rv)) return rv;
   }
 
+  // Wait for input event queue to be completely processed
+  nsEnigComposeWriter* dispatchWriter = new nsEnigComposeWriter(mPipeTrans, nsnull, 0);
+  dispatchWriter->CompleteEvents();
+  mTargetThread->Dispatch(dispatchWriter, nsIEventTarget::DISPATCH_SYNC);
+
   // Wait for STDOUT to close
   rv = mPipeTrans->Join();
   if (NS_FAILED(rv)) return rv;
@@ -884,6 +895,24 @@ nsEnigMsgCompose::WriteOut(const char *aBuf, PRInt32 aLen)
   return mWriter->Write(aBuf, aLen);
 }
 
+nsresult
+nsEnigMsgCompose::WriteToPipe(const char *aBuf, PRInt32 aLen)
+{
+  nsresult rv;
+  DEBUG_LOG(("nsEnigMsgCompose::WriteToPipe: %d\n", aLen));
+
+  if (! mTargetThread) {
+    rv = NS_NewThread(&mTargetThread);
+    if (NS_FAILED(rv)) return rv;
+  }
+
+  // dispatch message to different thread to avoid deadlock with input queue
+
+  nsEnigComposeWriter* dispatchWriter = new nsEnigComposeWriter(mPipeTrans, aBuf, aLen);
+  rv = mTargetThread->Dispatch(dispatchWriter, nsIEventTarget::DISPATCH_NORMAL);
+
+  return rv;
+}
 
 nsresult
 nsEnigMsgCompose::WriteCopy(const char *aBuf, PRInt32 aLen)
@@ -904,7 +933,7 @@ nsEnigMsgCompose::WriteCopy(const char *aBuf, PRInt32 aLen)
 
   } else if (mPipeTrans) {
     // Write to process and copy if multipart/signed
-    rv = mPipeTrans->WriteSync(aBuf, aLen);
+    rv = WriteToPipe(aBuf, aLen);
     if (NS_FAILED(rv)) return rv;
 
     if (mMultipartSigned) {
@@ -964,7 +993,7 @@ nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
     // RFC2015 crypto encapsulation for headers
 
     // Send headers to crypto processor
-    rv = mPipeTrans->WriteSync(headers.get(), headers.Length());
+    rv = WriteToPipe(headers.get(), headers.Length());
     if (NS_FAILED(rv)) return rv;
 
     if (mMultipartSigned) {
@@ -1044,7 +1073,7 @@ nsEnigMsgCompose::OnDataAvailable(nsIRequest* aRequest,
 
     if (readCount <= 0) return NS_OK;
 
-    rv = mPipeTrans->WriteSync(buf, readCount);
+    rv = WriteToPipe(buf, readCount);
     if (NS_FAILED(rv)) return rv;
 
     if (mMultipartSigned) {
@@ -1054,6 +1083,93 @@ nsEnigMsgCompose::OnDataAvailable(nsIRequest* aRequest,
 
     aLength -= readCount;
   }
+
+  return NS_OK;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// nsEnigComposeWriter
+///////////////////////////////////////////////////////////////////////////////
+
+NS_IMPL_THREADSAFE_ISUPPORTS1 (nsEnigComposeWriter,
+                               nsIRunnable)
+
+
+// nsStdinWriter implementation
+nsEnigComposeWriter::nsEnigComposeWriter(nsCOMPtr<nsIPipeTransport>  pipeTrans,
+                    const char* buf,
+                    PRUint32 count)
+{
+    NS_INIT_ISUPPORTS();
+
+#ifdef FORCE_PR_LOG
+  nsresult rv;
+  nsCOMPtr<nsIThread> myThread;
+  rv = ENIG_GET_THREAD(myThread);
+  DEBUG_LOG(("nsEnigComposeWriter:: <<<<<<<<< CTOR(%p): myThread=%p\n",
+         this, myThread.get()));
+#endif
+
+  mCompleteEvents = PR_FALSE;
+  mPipeTrans = pipeTrans;
+  mCount = count;
+
+  if (count > 0) {
+    mBuf = reinterpret_cast<char*>(nsMemory::Alloc(count));
+    if (!mBuf)
+      return;
+
+    memcpy(mBuf, buf, count);
+  }
+}
+
+
+nsEnigComposeWriter::~nsEnigComposeWriter()
+{
+  nsresult rv;
+#ifdef FORCE_PR_LOG
+  nsCOMPtr<nsIThread> myThread;
+  rv = ENIG_GET_THREAD(myThread);
+  DEBUG_LOG(("nsEnigComposeWriter:: >>>>>>>>> DTOR(%p): myThread=%p\n",
+         this, myThread.get()));
+#endif
+
+
+  // Release references
+  mPipeTrans = nsnull;
+  nsMemory::Free(mBuf);
+}
+
+
+NS_IMETHODIMP nsEnigComposeWriter::Run()
+{
+  nsresult rv;
+
+  nsCOMPtr<nsIThread> myThread;
+  rv = ENIG_GET_THREAD(myThread);
+  DEBUG_LOG(("nsEnigComposeWriter::Run: myThread=%p\n", myThread.get()));
+
+  if (!mCompleteEvents) {
+    return mPipeTrans->WriteSync(mBuf, mCount);
+  }
+  else {
+
+    PRBool pendingEvents;
+    rv = myThread->HasPendingEvents(&pendingEvents);
+    if (NS_FAILED(rv)) return rv;
+
+    while(pendingEvents) {
+      myThread->ProcessNextEvent(PR_FALSE, &pendingEvents);
+    }
+  }
+  return NS_OK;
+}
+
+nsresult nsEnigComposeWriter::CompleteEvents() {
+  DEBUG_LOG(("nsEnigComposeWriter::CompleteEvents"));
+
+  mCompleteEvents = PR_TRUE;
 
   return NS_OK;
 }
