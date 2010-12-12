@@ -2089,7 +2089,6 @@ function EnigRevokeKey(keyId, userId) {
   }
   catch (ex) {}
   revFile.append("revkey.asc");
-  revFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
 
   var errorMsgObj = {};
   var r=enigmailSvc.genRevokeCert(window, "0x"+keyId, revFile, "0", "", errorMsgObj);
