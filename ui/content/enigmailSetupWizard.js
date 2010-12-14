@@ -474,14 +474,18 @@ function fillIdentities(fillType)
 {
   DEBUG_LOG("enigmailSetupWizard.js: fillIdentities\n");
 
+  var defIdentity;
+  var parentElement;
+  var identities = queryISupportsArray(gEnigAccountMgr.allIdentities,
+                                       Components.interfaces.nsIMsgIdentity);
+
   if (fillType == "checkbox") {
-    var parentElement = document.getElementById("idSelection");
+    parentElement = document.getElementById("idSelection");
   }
   else {
     parentElement = document.getElementById("userIdentityPopup");
 
     // Find out default identity
-    var defIdentity;
     var defIdentities = gEnigAccountMgr.defaultAccount.identities;
     if (defIdentities.Count() >= 1) {
       defIdentity = defIdentities.QueryElementAt(0, Components.interfaces.nsIMsgIdentity);
@@ -521,9 +525,6 @@ function fillIdentities(fillType)
     parentElement.removeChild(child);
     child=parentElement.firstChild;
   }
-  var idSupports = gEnigAccountMgr.allIdentities;
-  var identities = queryISupportsArray(idSupports,
-                                       Components.interfaces.nsIMsgIdentity);
 
   DEBUG_LOG("enigmailSetupWizard.js: fillIdentities: "+identities + "\n");
 
