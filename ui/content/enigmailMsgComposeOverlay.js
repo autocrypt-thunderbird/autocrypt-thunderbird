@@ -33,7 +33,14 @@ GPL.
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
-Components.utils.import("resource://app/modules/gloda/mimemsg.js");
+try {
+  // TB with omnijar
+  Components.utils.import("resource:///modules/gloda/mimemsg.js");
+}
+catch (ex) {
+  // "old style" TB
+  Components.utils.import("resource://app/modules/gloda/mimemsg.js");
+}
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailMsgComposeOverlay");

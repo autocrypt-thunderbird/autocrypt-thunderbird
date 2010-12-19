@@ -36,7 +36,14 @@ GPL.
 // Initialize enigmailCommon
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
-Components.utils.import("resource://app/modules/gloda/mimemsg.js");
+try {
+  // TB with omnijar
+  Components.utils.import("resource:///modules/gloda/mimemsg.js");
+}
+catch (ex) {
+  // "old style" TB
+  Components.utils.import("resource://app/modules/gloda/mimemsg.js");
+}
 
 
 var gEnigCreatedURIs = [];
