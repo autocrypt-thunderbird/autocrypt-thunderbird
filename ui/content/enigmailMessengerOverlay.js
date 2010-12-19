@@ -499,8 +499,8 @@ function enigMsgDecryptMimeCb(msg, mimeMsg) {
   var mainThread = Components.classes["@mozilla.org/thread-manager;1"].getService().mainThread;
 
   // dispatch the message parsing back to the main thread
-  mainThread.dispatch(new EnigDecryptCbThread(this.event, this.isAuto, mimeMsg),
-    Components.interfaces.nsIThread.DISPATCH_NORMAL);
+  var t = new EnigDecryptCbThread(this.event, this.isAuto, mimeMsg)
+  mainThread.dispatch(t, Components.interfaces.nsIThread.DISPATCH_NORMAL);
 
 }
 
