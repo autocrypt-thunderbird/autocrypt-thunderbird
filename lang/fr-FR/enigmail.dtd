@@ -503,11 +503,11 @@
                                                       quelques écrans qui suivent, vous devrez répondre à des questions qui permettront de
                                                       tout configurer.
                                                       <html:br/><html:br/>
-                                                      Afin de rester simple, des suppositions sont faîtes concernant la configuration.
+                                                      Afin de rester simple, des suppositions sont faites concernant la configuration.
                                                       Ces suppositions tentent de fournir un haut niveau de sécurité pour l'utilisateur
-                                                      moyen sans toutefois créer de confusion. Bien entendu, il reste possible de modifier 
-                                                      tous ces paramètres à l'issu de l'assistant. Des informations supplémentaires à propos
-                                                      des fonctionnalités d'OpenPGP sont disponibles dans le menu Aide ou sur le 
+                                                      moyen sans toutefois créer de confusion. Bien entendu, il reste possible de modifier
+                                                      tous ces paramètres à l'issue de l'assistant. Des informations supplémentaires à propos
+                                                      des fonctionnalités d'OpenPGP sont disponibles dans le menu Aide ou sur le
                                                       <a class='enigmailLink'><html:a
                                                       href='http://enigmail.mozdev.org/'>site d'Enigmail</html:a></a>.
                                                       <html:br/><html:br/>
