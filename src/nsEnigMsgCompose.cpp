@@ -1111,9 +1111,8 @@ nsEnigComposeWriter::nsEnigComposeWriter(nsCOMPtr<nsIPipeTransport>  pipeTrans,
     NS_INIT_ISUPPORTS();
 
 #ifdef FORCE_PR_LOG
-  nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = ENIG_GET_THREAD(myThread);
+  ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsEnigComposeWriter:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -1129,15 +1128,16 @@ nsEnigComposeWriter::nsEnigComposeWriter(nsCOMPtr<nsIPipeTransport>  pipeTrans,
 
     memcpy(mBuf, buf, count);
   }
+  else
+    mBuf = nsnull;
 }
 
 
 nsEnigComposeWriter::~nsEnigComposeWriter()
 {
-  nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = ENIG_GET_THREAD(myThread);
+  ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsEnigComposeWriter:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -1145,7 +1145,8 @@ nsEnigComposeWriter::~nsEnigComposeWriter()
 
   // Release references
   mPipeTrans = nsnull;
-  nsMemory::Free(mBuf);
+  if (mBuf)
+    nsMemory::Free(mBuf);
 }
 
 
