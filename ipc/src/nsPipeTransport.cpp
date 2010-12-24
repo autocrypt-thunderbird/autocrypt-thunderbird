@@ -263,8 +263,6 @@ NS_IMETHODIMP nsPipeTransport::OpenPipe(const PRUnichar **args,
     timeoutInterval = PR_MillisecondsToInterval(timeoutMS);
   }
 
-
-
   mKillString.Assign(killString);
 
   // Create pipes for stdin/stdout/stderr
@@ -1647,7 +1645,10 @@ nsPipeTransport::OnInputStreamReady(nsIAsyncInputStream* inStr)
 
     PRUint32 available;
     rv = mInputStream->Available(&available);
-    NS_ENSURE_SUCCESS(rv, rv);
+    if (rv != NS_OK) {
+      DEBUG_LOG(("nsPipeTransport::OnInputStreamReady: no data available\n"));
+      return rv;
+    }
 
     DEBUG_LOG(("nsPipeTransport::OnInputStreamReady: available=%d\n",
                available));

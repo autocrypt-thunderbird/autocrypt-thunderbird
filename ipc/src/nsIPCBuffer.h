@@ -70,11 +70,11 @@ public:
     static NS_METHOD
     Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
 
+protected:
     nsresult Finalize(PRBool destructor);
 
     nsresult Init();
 
-protected:
     NS_IMETHOD CreateTempFile();
     NS_IMETHOD CloseTempOutStream();
     NS_IMETHOD WriteTempOutStream(const char* buf, PRUint32 count);
