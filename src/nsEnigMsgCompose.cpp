@@ -1106,7 +1106,9 @@ NS_IMPL_THREADSAFE_ISUPPORTS1 (nsEnigComposeWriter,
 // nsStdinWriter implementation
 nsEnigComposeWriter::nsEnigComposeWriter(nsCOMPtr<nsIPipeTransport>  pipeTrans,
                     const char* buf,
-                    PRUint32 count)
+                    PRUint32 count) :
+  mBuf(nsnull),
+  mCompleteEvents(PR_FALSE)
 {
     NS_INIT_ISUPPORTS();
 
@@ -1117,19 +1119,16 @@ nsEnigComposeWriter::nsEnigComposeWriter(nsCOMPtr<nsIPipeTransport>  pipeTrans,
          this, myThread.get()));
 #endif
 
-  mCompleteEvents = PR_FALSE;
   mPipeTrans = pipeTrans;
   mCount = count;
 
-  if (count > 0) {
+  if (count) {
     mBuf = reinterpret_cast<char*>(nsMemory::Alloc(count));
     if (!mBuf)
       return;
 
     memcpy(mBuf, buf, count);
   }
-  else
-    mBuf = nsnull;
 }
 
 
@@ -1156,6 +1155,7 @@ NS_IMETHODIMP nsEnigComposeWriter::Run()
 
   nsCOMPtr<nsIThread> myThread;
   rv = ENIG_GET_THREAD(myThread);
+  NS_ENSURE_SUCCESS(rv, rv);
   DEBUG_LOG(("nsEnigComposeWriter::Run: myThread=%p\n", myThread.get()));
 
   if (!mCompleteEvents) {
@@ -1167,7 +1167,7 @@ NS_IMETHODIMP nsEnigComposeWriter::Run()
 
     PRBool pendingEvents;
     rv = myThread->HasPendingEvents(&pendingEvents);
-    if (NS_FAILED(rv)) return rv;
+    NS_ENSURE_SUCCESS(rv, rv);
 
     // in theory there should be no pending events here be
 
