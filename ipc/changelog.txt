@@ -33,3 +33,8 @@ command line options and path for Windows
 v1.2.2
 ------
 Fixed errors with stale threads that consume over time all virtual memory.
+
+v1.3
+---
+Reduced version to only contain nsIPCBuffer and nsPipeTransport. Fixed several
+bugs; added lots of checks and test cases
