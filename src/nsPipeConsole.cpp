@@ -35,7 +35,7 @@
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
-#include "ipc.h"
+#include "enigmail.h"
 #include "prlog.h"
 #include "nsCOMPtr.h"
 #include "nsAutoLock.h"
@@ -111,7 +111,7 @@ nsPipeConsole::nsPipeConsole()
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = IPC_GET_THREAD(myThread);
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeConsole:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -123,7 +123,7 @@ nsPipeConsole::~nsPipeConsole()
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = IPC_GET_THREAD(myThread);
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeConsole:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -141,70 +141,9 @@ nsPipeConsole::~nsPipeConsole()
     PR_DestroyLock(mLock);
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
-// nsPipeConsole methods:
+// static functions used here
 ///////////////////////////////////////////////////////////////////////////////
-
-nsresult
-nsPipeConsole::Finalize(PRBool destructor)
-{
-  DEBUG_LOG(("nsPipeConsole::Finalize: \n"));
-
-  if (mFinalized)
-    return NS_OK;
-
-  mFinalized = PR_TRUE;
-
-  nsCOMPtr<nsIPipeConsole> self;
-  if (!destructor) {
-    // Hold a reference to ourselves to prevent our DTOR from being called
-    // while finalizing. Automatically released upon returning.
-    self = this;
-  }
-
-  // Close write pipe
-  if (mPipeWrite) {
-    IPC_Close(mPipeWrite);
-    mPipeWrite = IPC_NULL_HANDLE;
-  }
-
-  // Release owning refs
-  mObserver = nsnull;
-  mObserverContext = nsnull;
-
-  // Clear console
-  mConsoleBuf.Assign("");
-  mConsoleLines = 0;
-  mConsoleLineLen = 0;
-  mConsoleNewChars = 0;
-
-  mConsoleMaxLines = 0;
-  mConsoleMaxCols = 0;
-
-  return NS_OK;
-}
-
-nsresult
-nsPipeConsole::Init()
-{
-  DEBUG_LOG(("nsPipeConsole::Init: \n"));
-
-  if (mLock == nsnull) {
-    mLock = PR_NewLock();
-    if (mLock == nsnull)
-      return NS_ERROR_OUT_OF_MEMORY;
-  }
-
-  // add shutdown observer
-
-  nsCOMPtr<nsIObserverService> observ(do_GetService("@mozilla.org/observer-service;1"));
-  if (observ)
-    observ->AddObserver((nsIObserver*)(this),
-                        NS_XPCOM_SHUTDOWN_OBSERVER_ID, PR_FALSE);
-
-  return NS_OK;
-}
 
 PRStatus CreateInheritablePipe(IPCFileDesc* *readPipe,
                                IPCFileDesc* *writePipe,
@@ -289,6 +228,103 @@ PRStatus CreateInheritablePipe(IPCFileDesc* *readPipe,
   return PR_SUCCESS;
 }
 
+#ifndef XP_WIN
+#define EnigRead PR_Read
+#else // XP_WIN
+PRInt32 EnigRead(IPCFileDesc* fd, void *buf, PRInt32 amount)
+{
+  unsigned long bytes;
+
+  if (ReadFile((HANDLE) fd,
+               (LPVOID) buf,
+               amount,
+               &bytes,
+               NULL)) {
+    return bytes;
+  }
+
+  DWORD dwLastError = GetLastError();
+
+  if (dwLastError == ERROR_BROKEN_PIPE)
+    return 0;
+
+  return -1;
+}
+#endif // XP_WIN
+
+#ifndef XP_WIN
+#define EnigClose PR_Close
+#else // XP_WIN
+PRStatus EnigClose(IPCFileDesc* fd)
+{
+  return (CloseHandle((HANDLE) fd)) ? PR_SUCCESS : PR_FAILURE;
+}
+#endif // XP_WIN
+
+///////////////////////////////////////////////////////////////////////////////
+// nsPipeConsole methods:
+///////////////////////////////////////////////////////////////////////////////
+
+nsresult
+nsPipeConsole::Finalize(PRBool destructor)
+{
+  DEBUG_LOG(("nsPipeConsole::Finalize: \n"));
+
+  if (mFinalized)
+    return NS_OK;
+
+  mFinalized = PR_TRUE;
+
+  nsCOMPtr<nsIPipeConsole> self;
+  if (!destructor) {
+    // Hold a reference to ourselves to prevent our DTOR from being called
+    // while finalizing. Automatically released upon returning.
+    self = this;
+  }
+
+  // Close write pipe
+  if (mPipeWrite) {
+    EnigClose(mPipeWrite);
+    mPipeWrite = IPC_NULL_HANDLE;
+  }
+
+  // Release owning refs
+  mObserver = nsnull;
+  mObserverContext = nsnull;
+
+  // Clear console
+  mConsoleBuf.Assign("");
+  mConsoleLines = 0;
+  mConsoleLineLen = 0;
+  mConsoleNewChars = 0;
+
+  mConsoleMaxLines = 0;
+  mConsoleMaxCols = 0;
+
+  return NS_OK;
+}
+
+nsresult
+nsPipeConsole::Init()
+{
+  DEBUG_LOG(("nsPipeConsole::Init: \n"));
+
+  if (mLock == nsnull) {
+    mLock = PR_NewLock();
+    if (mLock == nsnull)
+      return NS_ERROR_OUT_OF_MEMORY;
+  }
+
+  // add shutdown observer
+
+  nsCOMPtr<nsIObserverService> observ(do_GetService("@mozilla.org/observer-service;1"));
+  if (observ)
+    observ->AddObserver((nsIObserver*)(this),
+                        NS_XPCOM_SHUTDOWN_OBSERVER_ID, PR_FALSE);
+
+  return NS_OK;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // nsIPipeConsole methods (thread-safe)
 ///////////////////////////////////////////////////////////////////////////////
@@ -315,7 +351,7 @@ nsPipeConsole::Open(PRInt32 maxRows, PRInt32 maxCols, PRBool joinable)
   PRStatus status = CreateInheritablePipe(&mPipeRead, &mPipeWrite,
                                               PR_FALSE, PR_TRUE);
   if (status != PR_SUCCESS) {
-    ERROR_LOG(("nsPipeConsole::Open: IPC_CreateInheritablePipe failed\n"));
+    ERROR_LOG(("nsPipeConsole::Open: CreateInheritablePipe failed\n"));
     return NS_ERROR_FAILURE;
   }
 
@@ -442,7 +478,7 @@ nsPipeConsole::Join()
 
     if (mPipeWrite) {
       // Close write pipe before joining
-      IPC_Close(mPipeWrite);
+      EnigClose(mPipeWrite);
       mPipeWrite = IPC_NULL_HANDLE;
     }
 
@@ -730,7 +766,7 @@ nsPipeConsole::Run()
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = IPC_GET_THREAD(myThread);
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeConsole::Run: myThread=%p\n", myThread.get()));
 #endif
 
@@ -740,7 +776,7 @@ nsPipeConsole::Run()
     PRInt32 readCount;
 
     // Read data from pipe (blocking)
-    readCount = IPC_Read(mPipeRead, (char *) buf, kCharMax);
+    readCount = EnigRead(mPipeRead, (char *) buf, kCharMax);
 
     DEBUG_LOG(("nsPipeConsole::Run: Read %d chars\n", readCount));
 
@@ -755,7 +791,7 @@ nsPipeConsole::Run()
   PR_ClearInterrupt();
 
   // Close read pipe
-  IPC_Close(mPipeRead);
+  EnigClose(mPipeRead);
   mPipeRead = IPC_NULL_HANDLE;
 
   return NS_OK;

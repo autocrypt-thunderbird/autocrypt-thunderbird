@@ -35,7 +35,7 @@
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
-#include "ipc.h"
+#include "enigmail.h"
 #include "nspr.h"
 #include "plstr.h"
 #include "nsStringGlue.h"

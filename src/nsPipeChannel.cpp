@@ -37,17 +37,11 @@
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
-#include "ipc.h"
+#include "enigmail.h"
 #include "prlog.h"
 #include "nsAutoLock.h"
 #include "plstr.h"
-
-#ifndef _IPC_FORCE_INTERNAL_API
-#include "nsStringAPI.h"
-#else
-#include "nsString.h"
-#endif
-
+#include "nsStringGlue.h"
 #include "nsIProxyObjectManager.h"
 #include "nsIThread.h"
 #include "nsIURI.h"
@@ -572,7 +566,7 @@ nsPipeChannel::OnStartRequest(nsIRequest *aRequest, nsISupports *aContext)
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = IPC_GET_THREAD(myThread);
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeChannel::OnStartRequest: myThread=%p\n", myThread.get()));
 #endif
 
@@ -600,7 +594,7 @@ nsPipeChannel::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext,
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = IPC_GET_THREAD(myThread);
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeChannel::OnStopRequest: myThread=%p\n", myThread.get()));
 #endif
 
@@ -671,7 +665,7 @@ nsPipeChannel::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
 
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = IPC_GET_THREAD(myThread);
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeChannel::OnDataAvailable: myThread=%p, offset=%d, length=%d\n",
          myThread.get(), aSourceOffset, aLength));
 #endif
@@ -923,11 +917,7 @@ nsPipeChannel::ParseHeader(const char* header, PRUint32 count)
   }
 
   if (headerKey.Equals("content-length")) {
-#if _IPC_FORCE_INTERNAL_API
-    PRInt32 status;
-#else
     PRUint32 status;
-#endif
     mHeaderContentLength = headerValue.ToInteger(&status);
     if (NS_FAILED((nsresult) status))
       return NS_ERROR_FAILURE;

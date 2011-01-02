@@ -46,12 +46,6 @@
 #include "nsIObserverService.h"
 #include "nsIObserver.h"
 
-#ifndef XPWIN
-#define IPCFileDesc PRFileDesc
-#else
-#define IPCFileDesc void
-#endif
-
 // Implementation class for nsIPipeConsole
 class nsPipeConsole : public nsIPipeConsole,
                       public nsIRunnable,

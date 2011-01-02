@@ -35,13 +35,7 @@
 #define nsPipeChannel_h__
 
 #include "nspr.h"
-
-#ifndef _IPC_FORCE_INTERNAL_API
-#include "nsStringAPI.h"
-#else
-#include "nsString.h"
-#endif
-
+#include "nsStringGlue.h"
 #include "nsIPipeChannel.h"
 #include "nsIPipeTransport.h"
 #include "nsILoadGroup.h"

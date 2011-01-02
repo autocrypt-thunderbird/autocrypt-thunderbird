@@ -35,13 +35,9 @@
 // The following define statement should occur before any include statements
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
-#include "ipc.h"
+#include "enigmail.h"
 
-#ifndef _IPC_FORCE_INTERNAL_API
-#include "nsStringAPI.h"
-#else
-#include "nsString.h"
-#endif
+#include "nsStringGlue.h"
 
 #include "prlog.h"
 #include "nsCOMPtr.h"
@@ -125,7 +121,7 @@ nsPipeFilterListener::nsPipeFilterListener()
 #ifdef FORCE_PR_LOG
   nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = IPC_GET_THREAD(myThread);
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeFilterListener:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -137,7 +133,7 @@ nsPipeFilterListener::~nsPipeFilterListener()
   nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = IPC_GET_THREAD(myThread);
+  rv = ENIG_GET_THREAD(myThread);
   DEBUG_LOG(("nsPipeFilterListener:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
