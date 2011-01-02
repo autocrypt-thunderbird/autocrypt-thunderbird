@@ -1887,7 +1887,7 @@ Enigmail.prototype = {
     // Extract exit code and error output from pipeTransport
     var exitCode = pipeTransport.exitValue;
 
-    var errListener = pipeTransport.console.QueryInterface(Components.interfaces.nsIIPCBuffer);
+    var errListener = pipeTransport.stderrConsole.QueryInterface(Components.interfaces.nsIIPCBuffer);
 
     var outLength = new Object();
     var errOutput = errListener.getByteData(outLength);
