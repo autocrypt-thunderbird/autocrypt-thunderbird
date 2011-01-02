@@ -1,4 +1,6 @@
-/*
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
  * The contents of this file are subject to the Mozilla Public
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
@@ -18,18 +20,19 @@
  * Contributor(s):
  * Patrick Brunschwig <patrick@mozilla-enigmail.org>
  *
- * Alternatively, the contents of this file may be used under the
- * terms of the GNU General Public License (the "GPL"), in which case
- * the provisions of the GPL are applicable instead of
- * those above. If you wish to allow use of your version of this
- * file only under the terms of the GPL and not to allow
- * others to use your version of this file under the MPL, indicate
- * your decision by deleting the provisions above and replace them
- * with the notice and other provisions required by the GPL.
- * If you do not delete the provisions above, a recipient
- * may use your version of this file under either the MPL or the
- * GPL.
- */
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ * ***** END LICENSE BLOCK ***** */
+
 
 #ifndef nsPipeTransport_h__
 #define nsPipeTransport_h__
@@ -51,15 +54,9 @@
 #include "nsIStreamListener.h"
 #include "nsIInputStream.h"
 #include "nsIOutputStream.h"
-#include "nsThreadUtils.h"
 #include "nsIProcess.h"
-
-#ifndef _IPC_FORCE_INTERNAL_API
-#include "nsStringAPI.h"
-#else
-#include "nsString.h"
-#endif
-
+#include "nsThreadUtils.h"
+#include "nsStringGlue.h"
 
 #include "nsIAsyncInputStream.h"
 #include "nsIAsyncOutputStream.h"
@@ -70,6 +67,7 @@
 
 class nsStdoutPoller;
 class nsStreamDispatcher;
+class nsStdinWriter;
 
 class nsPipeTransport : public nsIPipeTransport,
                         public nsIPipeTransportListener,
@@ -77,19 +75,20 @@ class nsPipeTransport : public nsIPipeTransport,
                         public nsIStreamListener,
                         public nsIInputStreamCallback,
                         public nsIOutputStreamCallback,
-                        public nsIProcess
+                        public nsIRequest
 {
 public:
     NS_DECL_ISUPPORTS
     NS_DECL_NSIPIPETRANSPORT
     NS_DECL_NSIPIPETRANSPORTHEADERS
     NS_DECL_NSIPIPETRANSPORTLISTENER
-    NS_DECL_NSIREQUEST
     NS_DECL_NSIREQUESTOBSERVER
     NS_DECL_NSIOUTPUTSTREAM
     NS_DECL_NSISTREAMLISTENER
     NS_DECL_NSIINPUTSTREAMCALLBACK
     NS_DECL_NSIOUTPUTSTREAMCALLBACK
+    NS_DECL_NSIREQUEST
+    NS_DECL_NSIPROCESS
 
     // nsPipeTransport methods:
     nsPipeTransport();
@@ -98,12 +97,13 @@ public:
 
     nsresult Finalize(PRBool destructor);
 
-    //void KillProcess(void);
+    void KillProcess(void);
 
     // Define a Create method to be used with a factory:
     static NS_METHOD
     Create(nsISupports* aOuter, const nsIID& aIID, void* *aResult);
 
+protected:
     enum PipeState {
       PIPE_NOT_YET_OPENED,
       PIPE_OPEN,
@@ -117,7 +117,8 @@ public:
       STREAM_CLOSED
     };
 
-protected:
+
+    PRBool                              mInitialized;
     PRBool                              mFinalized;
     PRBool                              mNoProxy;
     PRBool                              mStartedRequest;
@@ -152,8 +153,8 @@ protected:
     // Owning refs
     nsCOMPtr<nsIThread>                 mCreatorThread;
 
-    nsCOMPtr<nsIPipeTransportPoller>    mStdoutPoller;
-    nsCOMPtr<nsIPipeListener>           mConsole;
+    nsCOMPtr<nsStdoutPoller>            mStdoutPoller;
+    nsCOMPtr<nsIPipeListener>           mStderrConsole;
     nsCOMPtr<nsIPipeTransportHeaders>   mHeaderProcessor;
 
     nsCOMPtr<nsIInputStream>            mInputStream;
@@ -162,7 +163,7 @@ protected:
     nsCOMPtr<nsIStreamListener>         mListener;
     nsCOMPtr<nsISupports>               mContext;
     nsCOMPtr<nsILoadGroup>              mLoadGroup;
-    nsCOMPtr<nsIPipeTransportWriter>    mPipeTransportWriter;
+    nsCOMPtr<nsStdinWriter>             mPipeTransportWriter;
 
     nsresult CopyArgsAndCreateProcess(const PRUnichar **args,
                                       PRUint32 argCount,
@@ -173,13 +174,13 @@ protected:
                                       IPCFileDesc* stderrPipe);
 };
 
-// Helper class to handle polling of STDOUT pipe
-class nsStdoutPoller : public nsIPipeTransportPoller,
-                       public nsIRunnable
+/**
+  * nsStdoutPoller is a helper class to handle polling of STDOUT pipe
+  */
+class nsStdoutPoller : public nsIRunnable
 {
 public:
     NS_DECL_ISUPPORTS
-    NS_DECL_NSIPIPETRANSPORTPOLLER
     NS_DECL_NSIRUNNABLE
 
     nsStdoutPoller();
@@ -190,15 +191,77 @@ public:
                   PRIntervalTime          aTimeoutInterval,
                   nsIPipeListener*        aConsole);
 
+    /**
+     * Helper method for destructor
+     * @param destructor  should be set to true if called from destructor,
+     *                    false otherwise
+     */
+
     nsresult Finalize(PRBool destructor);
 
-    PRBool IsInterrupted(void);
+    /**
+     * Determine if pipe is interrupted
+     */
 
+    PRBool IsInterrupted();
+
+    /**
+     * Get the polled file descriptor to a given file descriptor
+     * @param aFileDesc  file descriptor for which to determine the polled
+     *                   descriptor
+     */
     nsresult GetPolledFD(PRFileDesc*& aFileDesc);
 
+    /**
+     * Search for a MIME header in the stream
+     * @param buf           buffer to operate on
+     * @param count         number of bytes in the buffer
+     * @param headerOffset  offset where header starts
+     */
     nsresult HeaderSearch(const char* buf, PRUint32 count,
                           PRUint32 *headerOffset);
+
+
+    /**
+     * Starts polling of STDOUT
+     */
+    NS_IMETHODIMP AsyncStart(nsIOutputStream*  aOutputStream,
+                             nsIPipeTransportListener* aProxyPipeListener,
+                             PRBool joinable,
+                             PRUint32 aMimeHeadersMaxSize);
+
+
+    /**
+     * Interrupts polling thread.
+     */
+    NS_IMETHODIMP Interrupt(PRBool* alreadyInterrupted);
+
+    /**
+     * Returns true if polling thread has been interrupted/
+     */
+    NS_IMETHODIMP IsInterrupted(PRBool* interrupted);
+
+    /**
+     * Joins polling thread, if joinable (blocking until it terminates)
+     */
+    NS_IMETHODIMP Join();
+
+    /**
+     * LoggingEnabled controls stderrConsole logging of STDOUT from process.
+     * This is the getter method to loggingEnabled.
+     */
+
+    NS_IMETHODIMP GetLoggingEnabled(PRBool *aLoggingEnabled);
+
+    /**
+     * LoggingEnabled controls stderrConsole logging of STDOUT from process.
+     * This is the setter method to loggingEnabled.
+     */
+    NS_IMETHODIMP SetLoggingEnabled(PRBool aLoggingEnabled);
+
+
 protected:
+    PRBool                              mInitialized;
     PRBool                              mFinalized;
 
     PRLock*                             mLock;
@@ -228,18 +291,38 @@ protected:
     nsCOMPtr<nsIPipeListener>           mConsole;
 };
 
-// Helper class to handle write to pipe
-class nsStdinWriter : public nsIPipeTransportWriter,
-                      public nsIRunnable
+
+/**
+  * nsStdinWriter is a helper class to write data from a stream
+  * to the subprocess' STDIN pipe.
+  */
+
+class nsStdinWriter : public nsIRunnable
 {
 public:
     NS_DECL_ISUPPORTS
-    NS_DECL_NSIPIPETRANSPORTWRITER
     NS_DECL_NSIRUNNABLE
 
     nsStdinWriter();
     virtual ~nsStdinWriter();
 
+    /**
+     * Writes count bytes from input stream to STDIN pipe (asynchronously)
+     *
+     * @param inStr    inputStream
+     * @param count    number of bytes to write
+     * @param pipe     file descriptor of the STDIN pipe
+     * @param closeAfterWrite  if true, close pipe at end of reading
+     */
+    nsresult WriteFromStream(nsIInputStream *inStr,
+                             PRUint32 count,
+                             IPCFileDesc* pipe,
+                             PRBool closeAfterWrite);
+
+    /**
+     * Joins writer thread, if joinable (blocking until it terminates)
+     */
+    NS_IMETHODIMP Join();
 protected:
     nsCOMPtr<nsIInputStream> mInputStream;
     PRUint32                 mCount;
@@ -248,38 +331,79 @@ protected:
     nsCOMPtr<nsIThread>      mThread;
 };
 
+/**
+ * Helper class to dispatch onStartRequest, onStopRequest and onDataAvailable
+ * back to the thread that opened the nsPipeTransport.
+ * Each instance of nsStreamDispatcher can dispatch exactly 1 event.
+ *
+ * This class is required because it is not possible to access in JavaScript
+ * Strings and Objects from different threads than the one which created the
+ * object.
+ */
+
 class nsStreamDispatcher : public nsIRunnable
 {
 public:
     NS_DECL_ISUPPORTS
     NS_DECL_NSIRUNNABLE
 
+    nsStreamDispatcher();
+    virtual ~nsStreamDispatcher();
+
+    /**
+     * Initializer method
+     *
+     * @param aListener      registered listener that received the event
+     * @param context        user defined context variable as specified in
+     *                       nsIStreamListener.onDataAvailable
+     * @param pipeTransport  the sending pipeTransport object
+     */
+
+    NS_IMETHODIMP Init(nsIStreamListener*  aListener,
+                       nsISupports* context,
+                       nsIRequest* pipeTransport);
+
+    /**
+     * Dispatch an "onDataAvailable" event
+     *
+     * @param inputStream   the input stream containing the data chunk
+     * @param startOffset   total number of bytes sent in all events
+     * @param count         number of bytes available in the stream
+     */
+
+    NS_IMETHODIMP DispatchOnDataAvailable(nsIInputStream* inputStream,
+                                          PRUint32 startOffset,
+                                          PRUint32 count);
+
+    /**
+     * Dispatch an "onStartRequest" event
+     */
+
+    NS_IMETHODIMP DispatchOnStartRequest();
+
+    /**
+     * Dispatch an "onStopRequest" event
+     *
+     * @param aStatusCode reason for stopping (NS_OK if completed successfully)
+     */
+    NS_IMETHODIMP DispatchOnStopRequest(nsresult status);
+
+
+protected:
+
     enum DispatchType {
+      UNDEFINED,
       ON_START_REQUEST,
       ON_DATA_AVAILABLE,
       ON_STOP_REQUEST
     };
-
-    nsStreamDispatcher(nsCOMPtr<nsIStreamListener>  aListener, nsCOMPtr<nsISupports> context,
-              nsIRequest* request);
-    virtual ~nsStreamDispatcher();
-
-    NS_IMETHODIMP DispatchOnDataAvailable(nsCOMPtr<nsIInputStream> inputStream,
-                    PRUint32 startOffset,
-                    PRUint32 count);
-
-    NS_IMETHODIMP DispatchOnStartRequest();
-
-    NS_IMETHODIMP DispatchOnStopRequest(nsresult status);
-
-protected:
 
     PRUint32        mDispatchType;
     PRUint32        mStartOffset;
     PRUint32        mCount;
     nsresult        mStatus;
 
-    nsIRequest*                   mRequest;
+    nsIRequest*                   mPipeTransport;
     nsCOMPtr<nsISupports>         mContext;
     nsCOMPtr<nsIInputStream>      mInputStream;
     nsCOMPtr<nsIStreamListener>   mListener;

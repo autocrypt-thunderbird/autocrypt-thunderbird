@@ -34,19 +34,82 @@
 # ***** END LICENSE BLOCK *****
 
 
-# Makefile for package directory
-
-# Specify these as parameters to the make command
-
-DEPTH		= ../../..
+DEPTH		= ../../../../..
 topsrcdir	= @top_srcdir@
 srcdir		= @srcdir@
 VPATH		= @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
-EXTRA_JS_MODULES =  \
-                   subprocess.jsm \
-                   $(NULL)
+XPI_MODULE	= ipc
+XPI_MODULE_VERS = 1.3.0
+
+MODULE		= ipc
+LIBRARY_NAME	= ipc
+SHORT_LIBNAME	= ipc
+
+IS_COMPONENT	= 1
+FORCE_SHARED_LIB = 1
+EXTRA_BUILD_OPTS =
+
+ifeq ($(OS_ARCH),WINNT)
+  EXPORT_LIBRARY = 0
+  USE_STATIC_LIBS = 1
+  EXTRA_BUILD_OPTS = /NODEFAULTLIB:LIBCMT
+  FORCE_SHARED_LIB = 0
+endif
+
+MOZILLA_VERSION_PARTS = $(subst ., ,$(MOZILLA_VERSION))
+MOZILLA_MAJOR_VERSION = $(firstword $(MOZILLA_VERSION_PARTS))
+TMP_VAR = $(word 2,$(MOZILLA_VERSION_PARTS))
+MOZILLA_MINOR_VERSION = $(shell echo $(TMP_VAR)|sed 's/[a-z].*//')
+
+DEFINES         += -DMOZILLA_MAJOR_VERSION=$(MOZILLA_MAJOR_VERSION)
+DEFINES         += -DMOZILLA_MINOR_VERSION=$(MOZILLA_MINOR_VERSION)
+
+
+ifdef USE_XPCOM_GLUE
+# Ensure that the xpcom classes that we build
+# do not export themselves
+DEFINES		+= -D_IMPL_NS_COM_OFF -DXPCOM_GLUE
+endif
+
+REQUIRES	= xpcom \
+		  string \
+		  js \
+		  caps \
+		  uconv \
+		  necko \
+		  xpconnect \
+		  $(NULL)
+
+MODULE_NAME	= IPCModule
+
+CPPSRCS		= nsIPCModule.cpp
+
+# hack to build non standard library dependent build on unix
+ifeq ($(IPC_STATIC),1)
+BUILD_STATIC       = -nodefaultlibs -Xlinker --unresolved-symbols=ignore-all
+else
+BUILD_STATIC       =
+endif
+
+
+SHARED_LIBRARY_LIBS = \
+		../src/$(LIB_PREFIX)ipc_s.$(LIB_SUFFIX) \
+		$(NULL)
+
+LOCAL_INCLUDES	= \
+		-I$(srcdir)/../src \
+		$(NULL)
+
+EXTRA_DSO_LDOPTS = \
+      $(LIBS_DIR) \
+      $(XPCOM_GLUE_LDOPTS) \
+      $(XPCOM_LIBS) \
+      $(NSPR_LIBS) \
+      $(BUILD_STATIC) \
+      $(EXTRA_BUILD_OPTS) \
+      $(NULL)
 
 include $(topsrcdir)/config/rules.mk

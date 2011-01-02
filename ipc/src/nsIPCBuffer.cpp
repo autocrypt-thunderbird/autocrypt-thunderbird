@@ -46,12 +46,7 @@
 #include "nsDirectoryServiceUtils.h"
 #include "nsDirectoryServiceDefs.h"
 #include "nsNetCID.h"
-
-#ifndef _IPC_FORCE_INTERNAL_API
-#include "nsStringAPI.h"
-#else
-#include "nsString.h"
-#endif
+#include "nsStringGlue.h"
 
 #include "nsIPCBuffer.h"
 
@@ -72,7 +67,8 @@ static const PRUint32 kCharMax = NS_PIPE_CONSOLE_BUFFER_SIZE;
 // nsIPCBuffer implementation
 
 // nsISupports implementation
-NS_IMPL_THREADSAFE_ISUPPORTS5(nsIPCBuffer,
+NS_IMPL_THREADSAFE_ISUPPORTS6(nsIPCBuffer,
+                              nsIRequestObserver,
                               nsIStreamListener,
                               nsIPipeListener,
                               nsIIPCBuffer,
@@ -81,8 +77,9 @@ NS_IMPL_THREADSAFE_ISUPPORTS5(nsIPCBuffer,
 
 
 // nsIPCBuffer implementation
-nsIPCBuffer::nsIPCBuffer()
-  : mFinalized(PR_FALSE),
+nsIPCBuffer::nsIPCBuffer() :
+    mFinalized(PR_FALSE),
+    mInitialized(PR_FALSE),
     mThreadJoined(PR_FALSE),
     mOverflowed(PR_FALSE),
     mOverflowFile(PR_FALSE),
@@ -94,6 +91,7 @@ nsIPCBuffer::nsIPCBuffer()
 
     mMaxBytes(0),
     mByteCount(0),
+    mStreamOffset(0),
 
     mByteBuf(""),
 
@@ -108,18 +106,15 @@ nsIPCBuffer::nsIPCBuffer()
     mObserver(nsnull),
     mObserverContext(nsnull)
 {
-    NS_INIT_ISUPPORTS();
-
 #ifdef PR_LOGGING
-  if (gIPCBufferLog == nsnull) {
+  if (!gIPCBufferLog) {
     gIPCBufferLog = PR_NewLogModule("nsIPCBuffer");
   }
 #endif
 
 #ifdef FORCE_PR_LOG
-  nsresult rv;
   nsCOMPtr<nsIThread> myThread;
-  rv = IPC_GET_THREAD(myThread);
+  IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsIPCBuffer:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -128,10 +123,9 @@ nsIPCBuffer::nsIPCBuffer()
 
 nsIPCBuffer::~nsIPCBuffer()
 {
-  nsresult rv;
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = IPC_GET_THREAD(myThread);
+  IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsIPCBuffer:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
@@ -188,25 +182,30 @@ nsIPCBuffer::Init()
 {
   DEBUG_LOG(("nsIPCBuffer::Init: \n"));
 
-  if (mLock == nsnull) {
+  if (!mLock) {
     mLock = PR_NewLock();
-    if (mLock == nsnull)
+    if (!mLock)
       return NS_ERROR_OUT_OF_MEMORY;
   }
+
+  mInitialized = PR_TRUE;
 
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsIPCBuffer::Open(PRUint32 maxBytes, PRBool overflowFile)
+nsIPCBuffer::Open(PRInt32 maxBytes, PRBool overflowFile)
 {
   nsresult rv;
+
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_FALSE(mInitialized, NS_ERROR_ALREADY_INITIALIZED);
 
   DEBUG_LOG(("nsIPCBuffer::Open: %d, %d\n", maxBytes, (int) overflowFile));
   rv = Init();
   NS_ENSURE_SUCCESS(rv, rv);
 
-  if (maxBytes == -1) {
+  if (maxBytes <= 0) {
     mMaxBytes = PR_INT32_MAX;
   }
   else {
@@ -220,16 +219,29 @@ nsIPCBuffer::Open(PRUint32 maxBytes, PRBool overflowFile)
 
 NS_IMETHODIMP
 nsIPCBuffer::OpenURI(nsIURI* aURI, PRInt32 maxBytes, PRBool synchronous,
-                     nsIRequestObserver* observer, nsISupports* context)
+                     nsIRequestObserver* observer, nsISupports* context,
+                     PRBool overflowFile)
 {
   DEBUG_LOG(("nsIPCBuffer::OpenURI: \n"));
+
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_FALSE(mInitialized, NS_ERROR_ALREADY_INITIALIZED);
+
+  // check input params. observer and context may be null
+  NS_ENSURE_ARG(aURI);
 
   nsresult rv;
 
   rv = Init();
   NS_ENSURE_SUCCESS(rv, rv);
 
-  mMaxBytes = maxBytes;
+  if (maxBytes <= 0) {
+    mMaxBytes = PR_INT32_MAX;
+  }
+  else {
+    mMaxBytes = maxBytes;
+  }
+  mOverflowFile = overflowFile;
 
   mObserver = observer;
   mObserverContext = context;
@@ -286,6 +298,9 @@ nsIPCBuffer::OpenURI(nsIURI* aURI, PRInt32 maxBytes, PRBool synchronous,
 NS_IMETHODIMP
 nsIPCBuffer::GetStopped(PRBool* _retval)
 {
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
   NS_ENSURE_ARG(_retval);
   *_retval = mRequestStopped;
   return NS_OK;
@@ -295,6 +310,9 @@ nsIPCBuffer::GetStopped(PRBool* _retval)
 NS_IMETHODIMP
 nsIPCBuffer::GetTotalBytes(PRUint32* _retval)
 {
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
   NS_ENSURE_ARG(_retval);
   *_retval = mByteCount;
   return NS_OK;
@@ -304,9 +322,12 @@ nsIPCBuffer::GetTotalBytes(PRUint32* _retval)
 NS_IMETHODIMP
 nsIPCBuffer::OpenInputStream(nsIInputStream** result)
 {
-  nsresult rv;
-
   DEBUG_LOG(("nsIPCBuffer::OpenInputStream: \n"));
+
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
+  nsresult rv;
 
   if (!mRequestStopped) {
     ERROR_LOG(("nsIPCBuffer::OpenInputStream: ERROR - request not stopped\n"));
@@ -320,13 +341,14 @@ nsIPCBuffer::OpenInputStream(nsIInputStream** result)
     NS_ENSURE_SUCCESS(rv, rv);
   }
 
-  return this->QueryInterface(NS_GET_IID(nsIInputStream), (void**)result);
+  NS_ADDREF(*result = this);
+  return NS_OK;
 }
 
 
 #define SAFE_TMP_FILENAME "nsenig.tmp"
 
-NS_IMETHODIMP
+nsresult
 nsIPCBuffer::CreateTempFile()
 {
   nsresult rv;
@@ -334,19 +356,21 @@ nsIPCBuffer::CreateTempFile()
   DEBUG_LOG(("nsIPCBuffer::CreateTempFile: \n"));
 
   if (mTempFile)
-    return NS_ERROR_FAILURE;
+    return NS_ERROR_FILE_ALREADY_EXISTS;
 
   nsCOMPtr<nsIProperties> directoryService =
     do_GetService(NS_DIRECTORY_SERVICE_CONTRACTID, &rv);
-  directoryService->Get(NS_OS_TEMP_DIR, NS_GET_IID(nsIFile), getter_AddRefs(mTempFile));
+  directoryService->Get(NS_OS_TEMP_DIR, NS_GET_IID(nsIFile),
+    getter_AddRefs(mTempFile));
+
+  NS_ABORT_IF_FALSE(mTempFile, "No temp folder?");
 
   if (! mTempFile)
-    return NS_ERROR_OUT_OF_MEMORY;
+    return NS_ERROR_UNEXPECTED;
 
   mTempFile->AppendNative(nsDependentCString(SAFE_TMP_FILENAME));
-  if (NS_FAILED(mTempFile->CreateUnique(nsIFile::NORMAL_FILE_TYPE, 00600))) {
-    return NS_ERROR_FAILURE;
-  }
+  rv = mTempFile->CreateUnique(nsIFile::NORMAL_FILE_TYPE, 00600);
+  NS_ENSURE_SUCCESS(rv, rv);
 
   nsCAutoString nativePath;
   mTempFile->GetNativePath(nativePath);
@@ -354,19 +378,22 @@ nsIPCBuffer::CreateTempFile()
   DEBUG_LOG(("nsIPCBuffer::CreateTempFile: %s\n",
             nativePath.get()));
 
-  mTempOutStream  = do_CreateInstance("@mozilla.org/network/file-output-stream;1", &rv);
+  mTempOutStream = do_CreateInstance(
+    "@mozilla.org/network/file-output-stream;1",
+    &rv);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = mTempOutStream->Init(mTempFile, PR_WRONLY | PR_CREATE_FILE | PR_TRUNCATE, 00600, 0);
+  rv = mTempOutStream->Init(mTempFile, PR_WRONLY | PR_CREATE_FILE | PR_TRUNCATE,
+    00600, 0);
   return rv;
 }
 
 
-NS_IMETHODIMP
+nsresult
 nsIPCBuffer::WriteTempOutStream(const char* buf, PRUint32 count)
 {
   if (!mTempOutStream)
-    return NS_ERROR_FAILURE;
+    return NS_ERROR_NOT_AVAILABLE;
 
   if (!count)
     return NS_OK;
@@ -380,7 +407,7 @@ nsIPCBuffer::WriteTempOutStream(const char* buf, PRUint32 count)
   return rv;
 }
 
-NS_IMETHODIMP
+nsresult
 nsIPCBuffer::CloseTempOutStream()
 {
   nsresult rv = NS_OK;
@@ -388,20 +415,18 @@ nsIPCBuffer::CloseTempOutStream()
   DEBUG_LOG(("nsIPCBuffer::CloseTempOutStream: \n"));
 
   if (mTempOutStream) {
-    if (NS_FAILED(mTempOutStream->Flush())) {
-      rv = NS_ERROR_FAILURE;
-    }
+    nsresult flushRV = mTempOutStream->Flush();
+    rv = mTempOutStream->Close();
 
-    if (NS_FAILED(mTempOutStream->Close())) {
-      rv = NS_ERROR_FAILURE;
-    }
+    if (NS_SUCCEEDED(rv) && NS_FAILED(flushRV))
+      rv = flushRV;
     mTempOutStream = nsnull;
   }
 
   return rv;
 }
 
-NS_IMETHODIMP
+nsresult
 nsIPCBuffer::OpenTempInStream()
 {
   nsresult rv;
@@ -409,14 +434,15 @@ nsIPCBuffer::OpenTempInStream()
   DEBUG_LOG(("nsIPCBuffer::OpenTempInStream: \n"));
 
   if (!mTempFile)
-    return NS_ERROR_FAILURE;
+    return NS_ERROR_NOT_AVAILABLE;
 
   if (mTempOutStream) {
     ERROR_LOG(("nsIPCBuffer::OpenTempInStream: ERROR - TempOutStream still open!\n"));
-    return NS_ERROR_FAILURE;
+    return NS_ERROR_UNEXPECTED;
   }
 
-  mTempInStream  = do_CreateInstance("@mozilla.org/network/file-input-stream;1", &rv);
+  mTempInStream  = do_CreateInstance("@mozilla.org/network/file-input-stream;1",
+    &rv);
   NS_ENSURE_SUCCESS(rv, rv);
 
   rv = mTempInStream->Init(mTempFile, PR_RDONLY, 00600, 0);
@@ -424,7 +450,7 @@ nsIPCBuffer::OpenTempInStream()
 }
 
 
-NS_IMETHODIMP
+nsresult
 nsIPCBuffer::CloseTempInStream()
 {
   DEBUG_LOG(("nsIPCBuffer::CloseTempInStream: \n"));
@@ -432,7 +458,6 @@ nsIPCBuffer::CloseTempInStream()
 
   if (mTempInStream) {
     rv = mTempInStream->Close();
-    //delete mTempInStream;
     mTempInStream = nsnull;
   }
 
@@ -441,10 +466,12 @@ nsIPCBuffer::CloseTempInStream()
 
 
 
-NS_IMETHODIMP
+nsresult
 nsIPCBuffer::RemoveTempFile()
 {
   DEBUG_LOG(("nsIPCBuffer::RemoveTempFile: \n"));
+
+  nsresult rv;
 
   if (mTempOutStream) {
     // Close overflow file
@@ -463,9 +490,8 @@ nsIPCBuffer::RemoveTempFile()
     DEBUG_LOG(("nsIPCBuffer::RemoveTempFile: Removing %s\n",
                 nativePath.get()));
 
-    if (NS_FAILED(mTempFile->Remove(PR_FALSE))) {
-      return NS_ERROR_FAILURE;
-    }
+    rv = mTempFile->Remove(PR_FALSE);
+    NS_ENSURE_SUCCESS(rv, rv);
 
     mTempFile = nsnull;
   }
@@ -477,6 +503,9 @@ nsIPCBuffer::RemoveTempFile()
 NS_IMETHODIMP
 nsIPCBuffer::GetData(char** _retval)
 {
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
   nsAutoLock lock(mLock);
 
   if (!_retval)
@@ -510,6 +539,11 @@ nsIPCBuffer::GetData(char** _retval)
 NS_IMETHODIMP
 nsIPCBuffer::Observe(nsIRequestObserver* observer, nsISupports* context)
 {
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
+  NS_ENSURE_ARG(observer);
+
   nsAutoLock lock(mLock);
   DEBUG_LOG(("nsIPCBuffer::Observe: %p, %p\n", observer, context));
 
@@ -534,6 +568,9 @@ nsIPCBuffer::GetJoinable(PRBool *_retval)
 NS_IMETHODIMP
 nsIPCBuffer::Shutdown()
 {
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+  // allow to perform even if mFinalized is true
+
   nsAutoLock lock(mLock);
   DEBUG_LOG(("nsIPCBuffer::Shutdown:\n"));
 
@@ -547,6 +584,9 @@ nsIPCBuffer::Shutdown()
 NS_IMETHODIMP
 nsIPCBuffer::GetByteData(PRUint32 *count, char **data)
 {
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
   nsAutoLock lock(mLock);
 
   DEBUG_LOG(("nsIPCBuffer::GetByteData:\n"));
@@ -572,6 +612,9 @@ nsIPCBuffer::GetByteData(PRUint32 *count, char **data)
 NS_IMETHODIMP
 nsIPCBuffer::GetOverflowed(PRBool *_retval)
 {
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
   nsAutoLock lock(mLock);
 
   DEBUG_LOG(("nsIPCBuffer::GetOverflowed: %d\n", (int) mOverflowed));
@@ -585,6 +628,11 @@ nsIPCBuffer::GetOverflowed(PRBool *_retval)
 NS_IMETHODIMP
 nsIPCBuffer::Write(const char* str)
 {
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
+  NS_ENSURE_ARG(str);
+
   // Note: Locking occurs in WriteBuf
 
   DEBUG_LOG(("nsIPCBuffer::Write: %s\n", str));
@@ -600,10 +648,15 @@ nsIPCBuffer::Write(const char* str)
 NS_IMETHODIMP
 nsIPCBuffer::WriteBuf(const char* buf, PRUint32 count)
 {
+  DEBUG_LOG(("nsIPCBuffer::WriteBuf: %d (%d)\n", count, mByteCount));
+
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
+  NS_ENSURE_ARG(buf);
+
   nsresult rv;
   nsAutoLock lock(mLock);
-
-  DEBUG_LOG(("nsIPCBuffer::WriteBuf: %d (%d)\n", count, mByteCount));
 
   if (count <= 0)
     return NS_OK;
@@ -622,7 +675,7 @@ nsIPCBuffer::WriteBuf(const char* buf, PRUint32 count)
   // Find space available in buffer
   PRInt32 nAvail = mMaxBytes - mByteBuf.Length();
 
-  if (nAvail >= (int) count) {
+  if (nAvail >= (PRInt32) count) {
     mByteBuf.Append(buf, count);
     return NS_OK;
   }
@@ -650,6 +703,9 @@ nsIPCBuffer::WriteBuf(const char* buf, PRUint32 count)
 NS_IMETHODIMP
 nsIPCBuffer::Join()
 {
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
   nsresult rv;
 
   {
@@ -677,16 +733,18 @@ nsIPCBuffer::Join()
 
 
 NS_IMETHODIMP
-nsIPCBuffer::GetFileDesc(IPCFileDesc* *_retval)
+nsIPCBuffer::GetFileDesc(IPCFileDesc **_retval)
 {
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
   nsresult rv;
 
   nsAutoLock lock(mLock);
 
   DEBUG_LOG(("nsIPCBuffer::GetFileDesc:\n"));
 
-  if (!_retval)
-    return NS_ERROR_NULL_POINTER;
+  NS_ENSURE_ARG_POINTER(_retval);
 
   if (!mFinalized && !mPipeThread) {
     // Create pipe pair
@@ -719,8 +777,11 @@ nsIPCBuffer::OnStartRequest(nsIRequest *aRequest, nsISupports *aContext)
 {
   DEBUG_LOG(("nsIPCBuffer::OnStartRequest:\n"));
 
-  nsCOMPtr<nsIRequestObserver> observer;
-  nsCOMPtr<nsISupports> observerContext;
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
+  nsIRequestObserver* observer;
+  nsISupports* observerContext;
   {
     nsAutoLock lock(mLock);
 
@@ -742,8 +803,11 @@ nsIPCBuffer::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext,
 {
   DEBUG_LOG(("nsIPCBuffer::OnStopRequest:\n"));
 
-  nsCOMPtr<nsIRequestObserver> observer;
-  nsCOMPtr<nsISupports> observerContext;
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
+  nsIRequestObserver* observer;
+  nsISupports* observerContext;
   {
     nsAutoLock lock(mLock);
 
@@ -774,14 +838,21 @@ nsIPCBuffer::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
 
   DEBUG_LOG(("nsIPCBuffer::OnDataAVailable: %d\n", aLength));
 
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
+  NS_ENSURE_ARG(aInputStream);
+  NS_ENSURE_ARG_MIN(aLength, 0);
+
   char buf[kCharMax];
   PRUint32 readCount, readMax;
 
   while (aLength > 0) {
     readMax = (aLength < kCharMax) ? aLength : kCharMax;
     rv = aInputStream->Read((char *) buf, readMax, &readCount);
-    if (NS_FAILED(rv)){
-      ERROR_LOG(("nsIPCBuffer::OnDataAvailable: Error in reading from input stream, %x\n", rv));
+    if (NS_FAILED(rv)) {
+      ERROR_LOG(("nsIPCBuffer::OnDataAvailable: Error in reading from input stream, %x\n",
+        rv));
       return rv;
     }
 
@@ -804,13 +875,14 @@ nsIPCBuffer::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
 NS_IMETHODIMP
 nsIPCBuffer::Run()
 {
-  nsresult rv = NS_OK;
-
 #ifdef FORCE_PR_LOG
   nsCOMPtr<nsIThread> myThread;
-  rv = IPC_GET_THREAD(myThread);
+  IPC_GET_THREAD(myThread);
   DEBUG_LOG(("nsIPCBuffer::Run: myThread=%p\n", myThread.get()));
 #endif
+
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
 
   // Blocked read loop
   while (1) {
@@ -854,8 +926,10 @@ nsIPCBuffer::Run()
 NS_IMETHODIMP
 nsIPCBuffer::Available(PRUint32* _retval)
 {
-  if (!_retval)
-    return NS_ERROR_NULL_POINTER;
+  NS_ENSURE_ARG(_retval);
+
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
 
   *_retval = (mByteCount > mStreamOffset) ?
               mByteCount - mStreamOffset : 0;
@@ -870,6 +944,9 @@ nsIPCBuffer::Read(char* buf, PRUint32 count,
                          PRUint32 *readCount)
 {
   DEBUG_LOG(("nsIPCBuffer::Read: %d\n", count));
+
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
 
   nsresult rv;
 
@@ -905,8 +982,12 @@ nsIPCBuffer::ReadSegments(nsWriteSegmentFun writer,
                           void * aClosure, PRUint32 count,
                           PRUint32 *readCount)
 {
-  nsresult rv;
   DEBUG_LOG(("nsIPCBuffer::ReadSegments: %d\n", count));
+
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
+  nsresult rv;
 
   if (!readCount)
     return NS_ERROR_NULL_POINTER;
@@ -976,7 +1057,10 @@ nsIPCBuffer::IsNonBlocking(PRBool *aNonBlocking)
 {
   DEBUG_LOG(("nsIPCBuffer::IsNonBlocking: \n"));
 
-  *aNonBlocking = (mTempInStream == nsnull);
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
+  *aNonBlocking = (!mTempInStream);
   return NS_OK;
 }
 
@@ -984,6 +1068,10 @@ NS_IMETHODIMP
 nsIPCBuffer::Close()
 {
   DEBUG_LOG(("nsIPCBuffer::Close: \n"));
+
+  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
+  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
+
   mStreamOffset = 0;
   mByteCount = 0;
   mByteBuf.Assign("");

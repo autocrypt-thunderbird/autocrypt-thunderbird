@@ -10,7 +10,7 @@
 # implied. See the MPL for the specific language governing
 # rights and limitations under the MPL.
 # 
-# The Original Code is Enigmail.
+# The Original Code is protoZilla.
 # 
 # The Initial Developer of the Original Code is Ramalingam Saravanan.
 # Portions created by Ramalingam Saravanan <svn@xmlterm.org> are
@@ -31,14 +31,18 @@
 # GPL.
 #
 
-# Makefile for public directory
+DEPTH        = ..\..\..
 
-DEPTH=..\..\..
+MODULE       = ipc
+XPIDL_MODULE = ipc
 
-MODULE       = enigmime
-XPIDL_MODULE = enigmime
-
-XPIDLSRCS=  nsIEnigMsgCompFields.idl \
-            $(NULL)
+XPIDLSRCS    =                        \
+               .\nsIProcessInfo.idl   \
+               .\nsIPipeTransport.idl \
+               .\nsIPipeConsole.idl   \
+               .\nsIPipeChannel.idl   \
+               .\nsIPipeFilterListener.idl \
+               .\nsIIPCService.idl    \
+               $(NULL)
 
 include <$(DEPTH)\config\rules.mak>

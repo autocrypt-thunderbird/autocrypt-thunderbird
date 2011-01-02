@@ -1,13 +1,15 @@
-/*
- * The contents of this file are subject to the Mozilla Public
- * License Version 1.1 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of
- * the License at http://www.mozilla.org/MPL/
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Software distributed under the License is distributed on an "AS
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "MPL"); you may not use this file
+ * except in compliance with the MPL. You may obtain a copy of
+ * the MPL at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the MPL is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
- * implied. See the License for the specific language governing
- * rights and limitations under the License.
+ * implied. See the MPL for the specific language governing
+ * rights and limitations under the MPL.
  *
  * The Original Code is the Netscape Portable Runtime (NSPR).
  *
@@ -20,36 +22,22 @@
  *   Ramalingam Saravanan <svn@xmlterm.org>
  *   Patrick Brunschwig <patrick@mozilla-enigmail.org>
  *
- * Alternatively, the contents of this file may be used under the
- * terms of the GNU General Public License Version 2 or later (the
- * "GPL"), in which case the provisions of the GPL are applicable
- * instead of those above.  If you wish to allow use of your
- * version of this file only under the terms of the GPL and not to
- * allow others to use your version of this file under the MPL,
- * indicate your decision by deleting the provisions above and
- * replace them with the notice and other provisions required by
- * the GPL.  If you do not delete the provisions above, a recipient
- * may use your version of this file under either the MPL or the
- * GPL.
- */
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ * ***** END LICENSE BLOCK ***** */
 
-// Logging of debug output
-// The following define statement should occur before any include statements
-#define FORCE_PR_LOG       /* Allow logging even in release build */
 
 #include "ipc.h"
 #include "IPCProcess.h"
-
-#ifdef PR_LOGGING
-extern PRLogModuleInfo* gIPCServiceLog;
-#endif
-
-#define ERROR_LOG(args)    PR_LOG(gIPCServiceLog,PR_LOG_ERROR,args)
-#define WARNING_LOG(args)  PR_LOG(gIPCServiceLog,PR_LOG_WARNING,args)
-#define DEBUG_LOG(args)    PR_LOG(gIPCServiceLog,PR_LOG_DEBUG,args)
-
-///////////////////////////////////////////////////////////////////////////////
-
 #include "nsMemory.h"
 
 #ifdef XP_WIN
@@ -147,21 +135,12 @@ PRStatus IPC_CreateInheritablePipeNSPR(PRFileDesc* *readPipe,
 static PRBool gIPCWinConsoleAllocated = PR_FALSE;
 #endif
 
-void IPC_Shutdown()
-{
-
-#ifdef XP_WIN
-  if (gIPCWinConsoleAllocated) {
-    ::FreeConsole();
-    gIPCWinConsoleAllocated = PR_FALSE;
-  }
-#endif
-
-}
+// Note: it's not necessary to free/close the console, there is (at most) 1
+// console in a parent process
 
 PRStatus IPC_GetProcessIdNSPR(IPCProcess* process, PRInt32 *pid)
 {
-  *pid = -1;
+  *pid = 0;
 
   if (! process)
     return PR_FAILURE;
@@ -186,6 +165,9 @@ PRStatus IPC_GetProcessIdNSPR(IPCProcess* process, PRInt32 *pid)
 
 void IPC_HideConsoleWin32()
 {
+
+  // AllocConsole and SetConsoleTitle et al. are Windows API functions.
+  // See Windows SDK/.../include/WinCon.h, WinBase.h, WinUser.h
 
   if (!gIPCWinConsoleAllocated && ::AllocConsole()) {
     // Set console title
@@ -231,8 +213,10 @@ void IPC_HideConsoleWin32()
 
 #ifdef XP_WIN_IPC
 
-/* Windows specific code adapted from mozilla/xpcom/threads/nsProcessCommon.cpp
-   Out param `wideCmdLine` must be PR_Freed by the caller.
+/*
+ *
+ * Windows specific code adapted from mozilla/xpcom/threads/nsProcessCommon.cpp
+ * Out param `wideCmdLine` must be PR_Freed by the caller.
  */
 
 static int assembleCmdLine(char *const *argv, PRUnichar **wideCmdLine)
@@ -244,21 +228,22 @@ static int assembleCmdLine(char *const *argv, PRUnichar **wideCmdLine)
     int i;
     int argNeedQuotes;
 
-    /*
-     * Find out how large the command line buffer should be.
-     */
+    UINT codePage = CP_UTF8; // the code page to use for the parameter strings
+
+    // Find out how large the command line buffer should be.
+
     cmdLineSize = 0;
     for (arg = argv; *arg; arg++) {
-        /*
-         * \ and " need to be escaped by a \.  In the worst case,
-         * every character is a \ or ", so the string of length
-         * may double.  If we quote an argument, that needs two ".
-         * Finally, we need a space between arguments, and
-         * a null byte at the end of command line.
-         */
-        cmdLineSize += 2 * strlen(*arg)  /* \ and " need to be escaped */
-                + 2                      /* we quote every argument */
-                + 1;                     /* space in between, or final null */
+
+        // \ and " need to be escaped by a \.  In the worst case,
+        // every character is a \ or ", so the string of length
+        // may double.  If we quote an argument, that needs two ".
+        // Finally, we need a space between arguments, and
+        // a null byte at the end of command line.
+
+        cmdLineSize += 2 * strlen(*arg) + // \ and " need to be escaped
+                2+                        // we quote every argument
+                1;                        // space in between, or final null
     }
     p = cmdLine = (char *) PR_MALLOC(cmdLineSize*sizeof(char));
     if (p == NULL) {
@@ -266,7 +251,7 @@ static int assembleCmdLine(char *const *argv, PRUnichar **wideCmdLine)
     }
 
     for (arg = argv; *arg; arg++) {
-        /* Add a space to separates the arguments */
+        // Add a space to separates the arguments
         if (arg != argv) {
             *p++ = ' ';
         }
@@ -274,7 +259,7 @@ static int assembleCmdLine(char *const *argv, PRUnichar **wideCmdLine)
         numBackslashes = 0;
         argNeedQuotes = 0;
 
-        /* If the argument contains white space, it needs to be quoted. */
+        // If the argument contains white space, it needs to be quoted.
         if (strpbrk(*arg, " \f\n\r\t\v")) {
             argNeedQuotes = 1;
         }
@@ -288,24 +273,23 @@ static int assembleCmdLine(char *const *argv, PRUnichar **wideCmdLine)
                 q++;
             } else if (*q == '"') {
                 if (numBackslashes) {
-                    /*
-                     * Double the backslashes since they are followed
-                     * by a quote
-                     */
+
+                    // Double the backslashes since they are followed
+                    // by a quote
                     for (i = 0; i < 2 * numBackslashes; i++) {
                         *p++ = '\\';
                     }
                     numBackslashes = 0;
                 }
-                /* To escape the quote */
+                // To escape the quote
                 *p++ = '\\';
                 *p++ = *q++;
             } else {
                 if (numBackslashes) {
-                    /*
-                     * Backslashes are not followed by a quote, so
-                     * don't need to double the backslashes.
-                     */
+
+                    // Backslashes are not followed by a quote, so
+                    // don't need to double the backslashes.
+
                     for (i = 0; i < numBackslashes; i++) {
                         *p++ = '\\';
                     }
@@ -315,12 +299,12 @@ static int assembleCmdLine(char *const *argv, PRUnichar **wideCmdLine)
             }
         }
 
-        /* Now we are at the end of this argument */
+        // Now we are at the end of this argument
         if (numBackslashes) {
-            /*
-             * Double the backslashes if we have a quote string
-             * delimiter at the end.
-             */
+
+            // Double the backslashes if we have a quote string
+            // delimiter at the end.
+
             if (argNeedQuotes) {
                 numBackslashes *= 2;
             }
@@ -334,9 +318,9 @@ static int assembleCmdLine(char *const *argv, PRUnichar **wideCmdLine)
     }
 
     *p = '\0';
-    PRInt32 numChars = MultiByteToWideChar(CP_ACP, 0, cmdLine, -1, NULL, 0);
+    PRInt32 numChars = MultiByteToWideChar(codePage, 0, cmdLine, -1, NULL, 0);
     *wideCmdLine = (PRUnichar *) PR_MALLOC(numChars*sizeof(PRUnichar));
-    MultiByteToWideChar(CP_ACP, 0, cmdLine, -1, *wideCmdLine, numChars);
+    MultiByteToWideChar(codePage, 0, cmdLine, -1, *wideCmdLine, numChars);
     PR_Free(cmdLine);
     return 0;
 }
@@ -350,68 +334,46 @@ static int assembleCmdLine(char *const *argv, PRUnichar **wideCmdLine)
  * in *envBlock.  Note that if envp is NULL, a NULL pointer is returned
  * in *envBlock.  Returns -1 on failure.
  */
-static int assembleEnvBlock(char *const *envp, char **envBlock)
+static int assembleEnvBlock(char *const *envp, PRUnichar **envBlock)
 {
-    char *p;
-    char *q;
-    char * const *env;
-    char *curEnv;
-    char *cwdStart, *cwdEnd;
-    int envBlockSize;
+  PRUnichar *p, *q;
+  char * const *env;
+  PRInt32 envBlockSize = 0;
 
-    if (envp == NULL) {
-        *envBlock = NULL;
-        return 0;
-    }
+  if (envp == NULL) {
+    *envBlock = NULL;
+    return 0;
+  }
 
-    curEnv = GetEnvironmentStrings();
-
-    cwdStart = curEnv;
-    while (*cwdStart) {
-        if (cwdStart[0] == '=' && cwdStart[1] != '\0'
-                && cwdStart[2] == ':' && cwdStart[3] == '=') {
-            break;
-        }
-        cwdStart += strlen(cwdStart) + 1;
-    }
-    cwdEnd = cwdStart;
-    if (*cwdEnd) {
-        cwdEnd += strlen(cwdEnd) + 1;
-        while (*cwdEnd) {
-            if (cwdEnd[0] != '=' || cwdEnd[1] == '\0'
-                    || cwdEnd[2] != ':' || cwdEnd[3] != '=') {
-                break;
-            }
-            cwdEnd += strlen(cwdEnd) + 1;
-        }
-    }
-    envBlockSize = cwdEnd - cwdStart;
-
-    for (env = envp; *env; env++) {
-        envBlockSize += strlen(*env) + 1;
+  PRInt32 len, maxLen = 0;
+  for (env = envp; *env; env++) {
+    len = MultiByteToWideChar(CP_UTF8, 0, *env, -1, NULL, 0);
+    envBlockSize += len;
+    maxLen = (len > maxLen ? len : maxLen);
     }
     envBlockSize++;
 
-    p = *envBlock = (char*) PR_MALLOC(envBlockSize);
-    if (p == NULL) {
-        FreeEnvironmentStrings(curEnv);
-        return -1;
-    }
-
-    q = cwdStart;
-    while (q < cwdEnd) {
-        *p++ = *q++;
-    }
-    FreeEnvironmentStrings(curEnv);
+    PRUnichar* tempStr = (PRUnichar *) PR_MALLOC(maxLen * sizeof(PRUnichar));
+    p = *envBlock = (PRUnichar *) PR_MALLOC(envBlockSize * sizeof(PRUnichar));
 
     for (env = envp; *env; env++) {
-        q = *env;
-        while (*q) {
-            *p++ = *q++;
-        }
-        *p++ = '\0';
+
+      len = MultiByteToWideChar(CP_UTF8, 0, *env, -1, NULL, 0);
+      MultiByteToWideChar(CP_UTF8, 0, *env, -1, tempStr, len);
+      q = tempStr;
+
+      while (*q) {
+        // copy data (one by one)
+        *p++ = *q++;
+      }
+
+      *p++ = '\0';
     }
+
+    *p++ = '\0';
+    PR_Free(tempStr);
     *p = '\0';
+
     return 0;
 }
 
@@ -426,19 +388,15 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
 {
   BOOL bRetVal;
 
-  DEBUG_LOG(("IPCProcess: createProcess %p, %p, %p\n", std_in,
-                                                       std_out,
-                                                       std_err));
-
   // Determine OS Version
   OSVERSIONINFO osvi;
-  BOOL bIsWindows2KOrLater = FALSE;
+  BOOL bIsWin2KOrLater = FALSE;
 
   ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
   osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
   if (GetVersionEx(&osvi)) {
-    bIsWindows2KOrLater = (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
+    bIsWin2KOrLater = (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
                           (osvi.dwMajorVersion >= 5);
   }
 
@@ -465,48 +423,49 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
 
   // we need to set argv[0] to the program name.
   my_argv[0] = const_cast<char*>(path);
-  PRInt32 numChars = MultiByteToWideChar(CP_ACP, 0, my_argv[0], -1, NULL, 0);
+  PRInt32 numChars = MultiByteToWideChar(CP_UTF8, 0, my_argv[0], -1, NULL, 0);
   PRUnichar* wideFile = (PRUnichar *) PR_MALLOC(numChars * sizeof(PRUnichar));
-  MultiByteToWideChar(CP_ACP, 0, my_argv[0], -1, wideFile, numChars);
+  MultiByteToWideChar(CP_UTF8, 0, my_argv[0], -1, wideFile, numChars);
 
   // null terminate the array
   my_argv[count+1] = NULL;
 
   PRUnichar *cmdLine = NULL;
-  if (assembleCmdLine(argv, &cmdLine) == -1)
+  if (assembleCmdLine(argv, &cmdLine) != 0)
     return IPC_NULL_HANDLE;
 
-  char *envBlock = NULL;
-  if (assembleEnvBlock(envp, &envBlock) == -1)
+  PRUnichar *envBlock = NULL;
+  if (assembleEnvBlock(envp, &envBlock) != 0) {
+    PR_Free(cmdLine);
     return IPC_NULL_HANDLE;
+  }
 
   PRUnichar* wideCwd = NULL;
 
   if (cwd != NULL) {
-    numChars = MultiByteToWideChar(CP_ACP, 0, cwd, -1, NULL, 0);
+    numChars = MultiByteToWideChar(CP_UTF8, 0, cwd, -1, NULL, 0);
     PRUnichar* wideCwd = (PRUnichar *) PR_MALLOC(numChars * sizeof(PRUnichar));
-    MultiByteToWideChar(CP_ACP, 0, cwd, -1, wideCwd, numChars);
-    DEBUG_LOG(("IPCProcess: createProcess converted cwd to %s\n", NS_ConvertUTF16toUTF8(wideCwd).get()));
-	}
+    MultiByteToWideChar(CP_UTF8, 0, cwd, -1, wideCwd, numChars);
+  }
 
   // Fill in the process's startup information
-  STARTUPINFOW startupInfo;
-  memset( &startupInfo, 0, sizeof(STARTUPINFOW) );
-  startupInfo.cb         = sizeof(STARTUPINFOW);
-  startupInfo.dwFlags    = STARTF_USESTDHANDLES;
-  startupInfo.hStdInput  = std_in  ? (HANDLE) std_in  : GetStdHandle(STD_INPUT_HANDLE);
-  startupInfo.hStdOutput = std_out ? (HANDLE) std_out : GetStdHandle(STD_OUTPUT_HANDLE);
-  startupInfo.hStdError  = std_err ? (HANDLE) std_err : GetStdHandle(STD_ERROR_HANDLE);
-  DWORD dwCreationFlags = CREATE_DEFAULT_ERROR_MODE /*| CREATE_UNICODE_ENVIRONMENT */;
+  STARTUPINFOW sInfo;
+  memset( &sInfo, 0, sizeof(STARTUPINFOW) );
+  sInfo.cb         = sizeof(STARTUPINFOW);
+  sInfo.dwFlags    = STARTF_USESTDHANDLES;
+  sInfo.hStdInput  = std_in  ? (HANDLE)std_in  : GetStdHandle(STD_INPUT_HANDLE);
+  sInfo.hStdOutput = std_out ? (HANDLE)std_out : GetStdHandle(STD_OUTPUT_HANDLE);
+  sInfo.hStdError  = std_err ? (HANDLE)std_err : GetStdHandle(STD_ERROR_HANDLE);
+  DWORD dwCreationFlags = CREATE_DEFAULT_ERROR_MODE | CREATE_UNICODE_ENVIRONMENT;
 
   char buf[128];
   BOOL bIsConsoleAttached = (GetConsoleTitle(buf, 127) > 0);
 
-  if (bIsWindows2KOrLater && !bIsConsoleAttached) {
+  if (bIsWin2KOrLater && !bIsConsoleAttached) {
     // Create and hide child process console
     // Does not work from Win2K console (and not at all on Win95!)
-    startupInfo.dwFlags    |= STARTF_USESHOWWINDOW;
-    startupInfo.wShowWindow = SW_HIDE;
+    sInfo.dwFlags    |= STARTF_USESHOWWINDOW;
+    sInfo.wShowWindow = SW_HIDE;
     dwCreationFlags |= CREATE_SHARED_WOW_VDM;
     dwCreationFlags |= CREATE_NEW_CONSOLE;
     if (detach) {
@@ -522,19 +481,17 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
 
   PROCESS_INFORMATION processInfo;
 
-  bRetVal = CreateProcessW(wideFile,		// executable
-                           cmdLine,		// command line
-                           NULL,		// process security
-                           NULL,		// thread security
-                           TRUE,		// inherit handles
-                           dwCreationFlags,     // creation flags
-                           envBlock, 	        // environment
-                           wideCwd,	                // cwd
-                           &startupInfo,	// startup info
-                           &processInfo );	// process info (returned)
+  bRetVal = CreateProcessW(wideFile,    // executable
+                           cmdLine,     // command line
+                           NULL,        // process security
+                           NULL,        // thread security
+                           TRUE,        // inherit handles
+                           dwCreationFlags, // creation flags
+                           envBlock,        // environment
+                           wideCwd,         // cwd
+                           &sInfo,         // startup info
+                           &processInfo );  // process info (returned)
 
-  DEBUG_LOG(("IPCProcess: created process %s (%d) %p: %s\n", NS_ConvertUTF16toUTF8(cmdLine).get(),
-               (int) bRetVal, processInfo.hProcess, envBlock));
 
   if (cmdLine)
     PR_Free(cmdLine);
@@ -547,11 +504,14 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
 
   nsMemory::Free(my_argv);
 
+
   // Close handle to primary thread of process (we don't need it)
   CloseHandle(processInfo.hThread);
 
-  if (!bRetVal)
+
+  if (!bRetVal) {
     return IPC_NULL_HANDLE;
+  }
 
   return processInfo.hProcess;
 }
@@ -618,17 +578,12 @@ PRStatus IPC_CreateInheritablePipeWin32(IPCFileDesc* *readPipe,
   *readPipe  = (void*) hReadPipe;
   *writePipe = (void*) hWritePipe;
 
-  DEBUG_LOG(("IPCProcess: created pipe %p, %p\n", hReadPipe,
-                                                  hWritePipe));
-
   return PR_SUCCESS;
 }
 
 
 PRStatus IPC_WaitProcessWin32(IPCProcess* process, PRInt32 *exitCode)
 {
-  DEBUG_LOG(("IPCProcess: wait for %p\n", process));
-
   DWORD dwRetVal = WaitForSingleObject((HANDLE) process, INFINITE);
   if (dwRetVal == WAIT_FAILED)
     return PR_FAILURE;
@@ -656,12 +611,8 @@ PRStatus IPC_KillProcessWin32(IPCProcess* process)
    * between 0 and 255.  So here on Windows, we use the exit code
    * 256 to indicate that the process is killed.
    */
-  DEBUG_LOG(("IPCProcess: killing %p\n", process));
 
-  if (TerminateProcess((HANDLE) process, 256))
-    return PR_SUCCESS;
-
-  return PR_FAILURE;
+  return TerminateProcess((HANDLE) process, 256) ? PR_SUCCESS : PR_FAILURE;
 }
 
 PRStatus IPC_GetProcessIdWin32(IPCProcess* process, PRInt32 *pid)
@@ -672,7 +623,8 @@ PRStatus IPC_GetProcessIdWin32(IPCProcess* process, PRInt32 *pid)
 
   HMODULE kernelDLL = ::LoadLibraryW(L"kernel32.dll");
   if (kernelDLL) {
-      GetProcessIdPtr getProcessId = (GetProcessIdPtr)GetProcAddress(kernelDLL, "GetProcessId");
+      GetProcessIdPtr getProcessId = (GetProcessIdPtr)GetProcAddress(kernelDLL,
+        "GetProcessId");
       if (getProcessId)
          *pid  = getProcessId((HANDLE) process);
 
@@ -691,14 +643,10 @@ PRInt32 IPC_ReadWin32(IPCFileDesc* fd, void *buf, PRInt32 amount)
                amount,
                &bytes,
                NULL)) {
-    DEBUG_LOG(("IPCProcess: read %d bytes from %p\n", bytes, fd));
     return bytes;
   }
 
   DWORD dwLastError = GetLastError();
-
-  DEBUG_LOG(("IPCProcess: error in reading from %p (code=%d)\n",
-             fd, (int) dwLastError));
 
   if (dwLastError == ERROR_BROKEN_PIPE)
     return 0;
@@ -712,14 +660,10 @@ PRInt32 IPC_WriteWin32(IPCFileDesc* fd, const void *buf, PRInt32 amount)
   unsigned long bytes;
 
   if (WriteFile((HANDLE) fd, buf, amount, &bytes, NULL )) {
-    DEBUG_LOG(("IPCProcess: wrote %d bytes to %p\n", bytes, fd));
     return bytes;
   }
 
   DWORD dwLastError = GetLastError();
-
-  DEBUG_LOG(("IPCProcess: error in writing to %p (code=%d)\n",
-             fd, (int) dwLastError));
 
   return -1;
 
@@ -728,10 +672,7 @@ PRInt32 IPC_WriteWin32(IPCFileDesc* fd, const void *buf, PRInt32 amount)
 
 PRStatus IPC_CloseWin32(IPCFileDesc* fd)
 {
-  if (CloseHandle((HANDLE) fd))
-    return PR_SUCCESS;
-
-  return PR_FAILURE;
+  return (CloseHandle((HANDLE) fd)) ? PR_SUCCESS : PR_FAILURE;
 }
 
 

@@ -119,6 +119,11 @@ foreach $makefile (split(/[ \n\r]+/, $makelist)) {
     $newMakefile=sprintf("%s/%s", $targetDir, basename($newMakefile));
   }
 
+  my $enigMakefile = $makefile;
+  $enigMakefile =~ s/\.in$/.enig/;
+  if (-e $enigMakefile) {
+    $makefile = $enigMakefile;
+  }
   open(INFILE, $makefile) || die ("cannot open input file '$makefile'\n");
   open(OUTFILE, ">$newMakefile") || die ("cannot open output file '$newMakefile'\n");
 

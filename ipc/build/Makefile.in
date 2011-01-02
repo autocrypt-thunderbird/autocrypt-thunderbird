@@ -1,3 +1,6 @@
+# **** BEGIN LICENSE BLOCK *****
+# Version: MPL 1.1/GPL 2.0/LGPL 2.1
+#
 # The contents of this file are subject to the Mozilla Public
 # License Version 1.1 (the "MPL"); you may not use this file
 # except in compliance with the MPL. You may obtain a copy of
@@ -15,40 +18,45 @@
 # Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
 #
 # Contributor(s):
+# Patrick Brunschwig <patrick@mozilla-enigmail.org>
 #
-# Alternatively, the contents of this file may be used under the
-# terms of the GNU General Public License (the "GPL"), in which case
-# the provisions of the GPL are applicable instead of
-# those above. If you wish to allow use of your version of this
-# file only under the terms of the GPL and not to allow
-# others to use your version of this file under the MPL, indicate
-# your decision by deleting the provisions above and replace them
-# with the notice and other provisions required by the GPL.
-# If you do not delete the provisions above, a recipient
-# may use your version of this file under either the MPL or the
-# GPL.
-#
+# Alternatively, the contents of this file may be used under the terms of
+# either the GNU General Public License Version 2 or later (the "GPL"), or
+# the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+# in which case the provisions of the GPL or the LGPL are applicable instead
+# of those above. If you wish to allow use of your version of this file only
+# under the terms of either the GPL or the LGPL, and not to allow others to
+# use your version of this file under the terms of the MPL, indicate your
+# decision by deleting the provisions above and replace them with the notice
+# and other provisions required by the GPL or the LGPL. If you do not delete
+# the provisions above, a recipient may use your version of this file under
+# the terms of any one of the MPL, the GPL or the LGPL.
+# ***** END LICENSE BLOCK *****
 
-DEPTH		= ../../../../..
+
+DEPTH		= ../../..
 topsrcdir	= @top_srcdir@
 srcdir		= @srcdir@
 VPATH		= @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
-XPI_MODULE	= ipc
-XPI_MODULE_VERS = 1.2.2
+XPI_MODULE	= ipc-pipe
+XPI_MODULE_VERS = 1.3.0
 
-MODULE		= ipc
-LIBRARY_NAME	= ipc
-SHORT_LIBNAME	= ipc
+MODULE		= ipc-pipe
+LIBRARY_NAME	= ipc-pipe
+SHORT_LIBNAME	= ipc-pipe
 
 IS_COMPONENT	= 1
 FORCE_SHARED_LIB = 1
+EXTRA_BUILD_OPTS =
 
 ifeq ($(OS_ARCH),WINNT)
   EXPORT_LIBRARY = 0
   USE_STATIC_LIBS = 1
+  EXTRA_BUILD_OPTS = /NODEFAULTLIB:LIBCMT
+  FORCE_SHARED_LIB = 0
 endif
 
 MOZILLA_VERSION_PARTS = $(subst ., ,$(MOZILLA_VERSION))
@@ -72,7 +80,6 @@ REQUIRES	= xpcom \
 		  caps \
 		  uconv \
 		  necko \
-		  mimetype \
 		  xpconnect \
 		  $(NULL)
 
@@ -81,11 +88,12 @@ MODULE_NAME	= IPCModule
 CPPSRCS		= nsIPCModule.cpp
 
 # hack to build non standard library dependent build on unix
-ifeq ($(ENIGMAIL_STATIC),1)
+ifeq ($(IPC_STATIC),1)
 BUILD_STATIC       = -nodefaultlibs -Xlinker --unresolved-symbols=ignore-all
 else
 BUILD_STATIC       =
 endif
+
 
 SHARED_LIBRARY_LIBS = \
 		../src/$(LIB_PREFIX)ipc_s.$(LIB_SUFFIX) \
@@ -101,6 +109,7 @@ EXTRA_DSO_LDOPTS = \
       $(XPCOM_LIBS) \
       $(NSPR_LIBS) \
       $(BUILD_STATIC) \
+      $(EXTRA_BUILD_OPTS) \
       $(NULL)
 
 include $(topsrcdir)/config/rules.mk

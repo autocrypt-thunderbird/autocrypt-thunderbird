@@ -223,9 +223,13 @@ function enigmailCheckPassphrase() {
 function enigmailKeygenStart() {
    DEBUG_LOG("enigmailKeygen.js: Start\n");
 
-   if (gKeygenRequest && gKeygenRequest.isPending()) {
-     EnigAlert(EnigGetString("genGoing"));
-     return;
+
+   if (gKeygenRequest) {
+      let req = gKeygenRequest.QueryInterface(Components.interfaces.nsIRequest);
+      if (req.isPending()) {
+         EnigAlert(EnigGetString("genGoing"));
+         return;
+      }
    }
 
    var enigmailSvc = GetEnigmailSvc();

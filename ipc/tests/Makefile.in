@@ -1,3 +1,5 @@
+# **** BEGIN LICENSE BLOCK *****
+# Version: MPL 1.1/GPL 2.0/LGPL 2.1
 #
 # The contents of this file are subject to the Mozilla Public
 # License Version 1.1 (the "MPL"); you may not use this file
@@ -16,66 +18,45 @@
 # Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
 #
 # Contributor(s):
+# Patrick Brunschwig <patrick@mozilla-enigmail.org>
 #
-# Alternatively, the contents of this file may be used under the
-# terms of the GNU General Public License (the "GPL"), in which case
-# the provisions of the GPL are applicable instead of
-# those above. If you wish to allow use of your version of this
-# file only under the terms of the GPL and not to allow
-# others to use your version of this file under the MPL, indicate
-# your decision by deleting the provisions above and replace them
-# with the notice and other provisions required by the GPL.
-# If you do not delete the provisions above, a recipient
-# may use your version of this file under either the MPL or the
-# GPL.
-#
+# Alternatively, the contents of this file may be used under the terms of
+# either the GNU General Public License Version 2 or later (the "GPL"), or
+# the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+# in which case the provisions of the GPL or the LGPL are applicable instead
+# of those above. If you wish to allow use of your version of this file only
+# under the terms of either the GPL or the LGPL, and not to allow others to
+# use your version of this file under the terms of the MPL, indicate your
+# decision by deleting the provisions above and replace them with the notice
+# and other provisions required by the GPL or the LGPL. If you do not delete
+# the provisions above, a recipient may use your version of this file under
+# the terms of any one of the MPL, the GPL or the LGPL.
+# ***** END LICENSE BLOCK *****
 
-DEPTH		= ../../../../..
-topsrcdir	= @top_srcdir@
-srcdir		= @srcdir@
-VPATH		= @srcdir@
 
-REQUIRES	= xpcom \
-		  string \
-		  js \
-		  caps \
-		  uconv \
-		  necko \
-		  mimetype \
-		  xpconnect \
-		  ipc \
-		  $(NULL)
+DEPTH           = ../../..
+topsrcdir       = @top_srcdir@
+srcdir          = @srcdir@
+VPATH           = @srcdir@
+
+relativesrcdir = extensions/ipc-pipe/tests
 
 include $(DEPTH)/config/autoconf.mk
 
+MODULE          = test_uriloader_exthandler
 
-# extract major and minor version of mozilla
+XPCSHELL_TESTS  = unit
 
-MOZILLA_VERSION_PARTS = $(subst ., ,$(MOZILLA_VERSION))
-MOZILLA_MAJOR_VERSION = $(firstword $(MOZILLA_VERSION_PARTS))
-TMP_VAR = $(word 2,$(MOZILLA_VERSION_PARTS))
-MOZILLA_MINOR_VERSION = $(shell echo $(TMP_VAR)|sed 's/[a-z].*//')
-DEFINES		+= -DMOZILLA_MAJOR_VERSION=$(MOZILLA_MAJOR_VERSION)
-DEFINES		+= -DMOZILLA_MINOR_VERSION=$(MOZILLA_MINOR_VERSION)
+CPPSRCS =     	\
+                IpcCat.cpp \
+                $(NULL)
 
-TESTCPPSRCS = pipetest.cpp
-SIMPLE_PROGRAMS	= $(TESTCPPSRCS:.cpp=$(BIN_SUFFIX))
+SIMPLE_PROGRAMS = $(CPPSRCS:.cpp=$(BIN_SUFFIX))
 
 include $(topsrcdir)/config/config.mk
 
-LIBS		+=            \
-		$(XPCOM_LIBS) \
-		$(NSPR_LIBS)  \
-		$(NULL)
-
-# Needed to resolve __yylex (?)
-ifeq ($(OS_ARCH)$(OS_RELEASE),FreeBSD2)
-LIBS		+= -lpcap
-endif
-
 include $(topsrcdir)/config/rules.mk
 
+# need the executable for running the xpcshell unit tests
 libs::
-	$(INSTALL) $(srcdir)/ipc.js $(DIST)/bin
-	$(INSTALL) $(srcdir)/ipctest.js $(DIST)/bin
-	$(INSTALL) $(srcdir)/buftest.js $(DIST)/bin
+	$(INSTALL) $(SIMPLE_PROGRAMS) $(DEPTH)/_tests/xpcshell/$(relativesrcdir)/unit

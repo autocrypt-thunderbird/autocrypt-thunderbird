@@ -98,6 +98,10 @@ LOCAL_INCLUDES	= \
 		$(NULL)
 
 CPPSRCS		=		         \
+	        nsIPCService.cpp \
+	        nsPipeChannel.cpp \
+	        nsPipeConsole.cpp \
+	        nsPipeFilterListener.cpp \
 	        nsEnigMsgCompose.cpp     \
 	        nsEnigMimeService.cpp    \
 	        nsEnigMimeListener.cpp   \

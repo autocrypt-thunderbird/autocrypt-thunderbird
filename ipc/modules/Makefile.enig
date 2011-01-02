@@ -38,7 +38,7 @@
 
 # Specify these as parameters to the make command
 
-DEPTH		= ../../..
+DEPTH		= ../../../../..
 topsrcdir	= @top_srcdir@
 srcdir		= @srcdir@
 VPATH		= @srcdir@

@@ -1,4 +1,6 @@
-/*
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
  * The contents of this file are subject to the Mozilla Public
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
@@ -18,18 +20,19 @@
  * Contributor(s):
  * Patrick Brunschwig <patrick@mozilla-enigmail.org>
  *
- * Alternatively, the contents of this file may be used under the
- * terms of the GNU General Public License (the "GPL"), in which case
- * the provisions of the GPL are applicable instead of
- * those above. If you wish to allow use of your version of this
- * file only under the terms of the GPL and not to allow
- * others to use your version of this file under the MPL, indicate
- * your decision by deleting the provisions above and replace them
- * with the notice and other provisions required by the GPL.
- * If you do not delete the provisions above, a recipient
- * may use your version of this file under either the MPL or the
- * GPL.
- */
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ * ***** END LICENSE BLOCK ***** */
+
 
 #ifndef nsIPCBuffer_h__
 #define nsIPCBuffer_h__
@@ -42,12 +45,7 @@
 #include "nsIRunnable.h"
 #include "nsIThread.h"
 #include "nsCOMPtr.h"
-
-#ifndef _IPC_FORCE_INTERNAL_API
-#include "nsStringAPI.h"
-#else
-#include "nsString.h"
-#endif
+#include "nsStringGlue.h"
 
 // Implementation class for nsIIPCBuffer
 class nsIPCBuffer : public nsIIPCBuffer,
@@ -72,17 +70,17 @@ public:
 
 protected:
     nsresult Finalize(PRBool destructor);
-
     nsresult Init();
 
-    NS_IMETHOD CreateTempFile();
-    NS_IMETHOD CloseTempOutStream();
-    NS_IMETHOD WriteTempOutStream(const char* buf, PRUint32 count);
-    NS_IMETHOD OpenTempInStream();
-    NS_IMETHOD CloseTempInStream();
-    NS_IMETHOD RemoveTempFile();
+    nsresult CreateTempFile();
+    nsresult CloseTempOutStream();
+    nsresult WriteTempOutStream(const char* buf, PRUint32 count);
+    nsresult OpenTempInStream();
+    nsresult CloseTempInStream();
+    nsresult RemoveTempFile();
 
     PRBool                              mFinalized;
+    PRBool                              mInitialized;
     PRBool                              mThreadJoined;
     PRBool                              mOverflowed;
     PRBool                              mOverflowFile;
@@ -92,7 +90,7 @@ protected:
 
     PRLock*                             mLock;
 
-    PRUint32                            mMaxBytes;
+    PRInt32                             mMaxBytes;
     PRUint32                            mByteCount;
     PRUint32                            mStreamOffset;
 

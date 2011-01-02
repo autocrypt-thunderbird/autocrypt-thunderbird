@@ -49,31 +49,19 @@ TMP_VAR = $(word 2,$(MOZILLA_VERSION_PARTS))
 MOZILLA_MINOR_VERSION = $(shell echo $(TMP_VAR)|sed 's/[a-z].*//')
 ENIG_GECKO_VERSION=$(MOZILLA_MAJOR_VERSION)$(MOZILLA_MINOR_VERSION)
 
-# Gecko 1.8 and Gecko 1.9 have different interfaces for 
-# message composition, thus require different nsIEnigMimeWriter
-# interfaces ...
-
-ifeq ($(ENIG_GECKO_VERSION),18)
-ENIGMIMEWRTMOD = nsIEnigMimeWriter_moz18.idl 
-else
-ENIGMIMEWRTMOD = nsIEnigMimeWriter_moz19.idl 
-endif
-
-nsIEnigMimeWriter.idl:
-	cp $(srcdir)/$(ENIGMIMEWRTMOD) nsIEnigMimeWriter.idl
-
-XPIDLSRCS     = nsIEnigMsgCompFields.idl  \
+XPIDLSRCS     = \
+                nsIEnigMsgCompFields.idl  \
                 nsIEnigMimeService.idl    \
                 nsIEnigMimeDecrypt.idl    \
                 nsIEnigMimeVerify.idl     \
                 nsIEnigMimeWriter.idl     \
                 nsIEnigMimeHeaderSink.idl \
                 nsIEnigMimeListener.idl   \
-                nsIEnigMimeReadCallback.idl
-
-clean::
-	test -f nsIEnigMimeWriter.idl && rm nsIEnigMimeWriter.idl || echo ""
-
-distclean:: clean
+                nsIEnigMimeReadCallback.idl \
+                nsIIPCService.idl \
+                nsIPipeChannel.idl \
+                nsIPipeConsole.idl \
+                nsIPipeFilterListener.idl \
+                $(NULL)
 
 include $(topsrcdir)/config/rules.mk

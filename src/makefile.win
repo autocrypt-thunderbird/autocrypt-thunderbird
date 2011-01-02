@@ -33,8 +33,8 @@
 
 DEPTH        = ..\..\..
 
-MODULE       = enigmime
-LIBRARY_NAME = enigmime_s 
+MODULE       = ipc
+LIBRARY_NAME = ipc_s 
 
 REQUIRES	= xpcom \
 		  string \
@@ -49,10 +49,17 @@ REQUIRES	= xpcom \
 DEFINES      = -D_IMPL_NS_HTML -DWIN32_LEAN_AND_MEAN
 
 EXPORTS     =        \
+        IPCProcess.h \
         $(NULL)
 
 CPP_OBJS     =                          \
-        .\$(OBJDIR)\nsEnigMsgCompose.obj   \
+        .\$(OBJDIR)\nsPipeTransport.obj \
+        .\$(OBJDIR)\nsPipeConsole.obj   \
+        .\$(OBJDIR)\nsPipeChannel.obj   \
+        .\$(OBJDIR)\nsPipeFilterListener.obj \
+        .\$(OBJDIR)\nsIPCService.obj    \
+        .\$(OBJDIR)\IPCProcess.obj    \
+        .\$(OBJDIR)\nsProcessInfo.obj   \
         $(NULL)
 
 LCFLAGS = \

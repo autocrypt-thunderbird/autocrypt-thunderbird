@@ -34,19 +34,56 @@
 # ***** END LICENSE BLOCK *****
 
 
-# Makefile for package directory
-
-# Specify these as parameters to the make command
-
-DEPTH		= ../../..
+DEPTH		= ../../../../..
 topsrcdir	= @top_srcdir@
 srcdir		= @srcdir@
 VPATH		= @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
-EXTRA_JS_MODULES =  \
-                   subprocess.jsm \
-                   $(NULL)
+MODULE		= ipc
+LIBRARY_NAME	= ipc_s
+
+# extract major and minor version of mozilla
+
+MOZILLA_VERSION_PARTS = $(subst ., ,$(MOZILLA_VERSION))
+MOZILLA_MAJOR_VERSION = $(firstword $(MOZILLA_VERSION_PARTS))
+TMP_VAR = $(word 2,$(MOZILLA_VERSION_PARTS))
+MOZILLA_MINOR_VERSION = $(shell echo $(TMP_VAR)|sed 's/[a-z].*//')
+
+ifdef USE_XPCOM_GLUE
+# Ensure that the xpcom classes that we build
+# do not export themselves
+DEFINES		+= -D_IMPL_NS_COM_OFF -DXPCOM_GLUE
+endif
+
+DEFINES		+= -DMOZILLA_MAJOR_VERSION=$(MOZILLA_MAJOR_VERSION)
+DEFINES		+= -DMOZILLA_MINOR_VERSION=$(MOZILLA_MINOR_VERSION)
+
+REQUIRES	= xpcom \
+		  string \
+		  js \
+		  caps \
+		  uconv \
+		  necko \
+		  mimetype \
+		  xpconnect \
+		  $(NULL)
+
+EXPORTS		=		    \
+	        IPCProcess.h        \
+		$(NULL)
+
+LOCAL_INCLUDES	= \
+		-I$(srcdir)/../build \
+		$(NULL)
+
+CPPSRCS		=		    \
+	        nsPipeTransport.cpp \
+	        IPCProcess.cpp      \
+	        nsIPCBuffer.cpp     \
+		$(NULL)
+
+FORCE_STATIC_LIB = 1
 
 include $(topsrcdir)/config/rules.mk

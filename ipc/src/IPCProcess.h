@@ -1,13 +1,15 @@
-/*
- * The contents of this file are subject to the Mozilla Public
- * License Version 1.1 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of
- * the License at http://www.mozilla.org/MPL/
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Software distributed under the License is distributed on an "AS
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "MPL"); you may not use this file
+ * except in compliance with the MPL. You may obtain a copy of
+ * the MPL at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the MPL is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
- * implied. See the License for the specific language governing
- * rights and limitations under the License.
+ * implied. See the MPL for the specific language governing
+ * rights and limitations under the MPL.
  *
  * The Original Code is the Netscape Portable Runtime (NSPR).
  *
@@ -20,18 +22,19 @@
  *   Ramalingam Saravanan <svn@xmlterm.org>
  *   Patrick Brunschwig <patrick@mozilla-enigmail.org>
  *
- * Alternatively, the contents of this file may be used under the
- * terms of the GNU General Public License Version 2 or later (the
- * "GPL"), in which case the provisions of the GPL are applicable
- * instead of those above.  If you wish to allow use of your
- * version of this file only under the terms of the GPL and not to
- * allow others to use your version of this file under the MPL,
- * indicate your decision by deleting the provisions above and
- * replace them with the notice and other provisions required by
- * the GPL.  If you do not delete the provisions above, a recipient
- * may use your version of this file under either the MPL or the
- * GPL.
- */
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ * ***** END LICENSE BLOCK ***** */
+
 
 #ifndef IPCProcess_h__
 #define IPCProcess_h__
@@ -87,6 +90,18 @@ typedef DWORD (WINAPI*GetProcessIdPtr)(HANDLE process);
 #define IPC_GetError PR_GetError
 #endif /* !XP_WIN_IPC */
 
+/**
+  * Creates a process and assigns the stdin/stdout/stderr file descriptors
+  *
+  * @param path      Path to the executable file in native encoding
+  * @param argv      Array of arguments to the process in native encoding
+  * @param envp      Array of environment variables in native encoding
+  * @param cwd       The subprocess' woring directory in native encoding
+  * @param std_in    The STDIN file descriptor of the subprocess
+  * @param std_out   The STDOUT file descriptor of the subprocess
+  * @param std_err   The STDERR file descriptor of the subprocess
+  * @param detach    True if the process should be detached from the parent
+  */
 PRProcess* IPC_CreateProcessRedirectedNSPR(const char *path,
                                            char *const *argv,
                                            char *const *envp,
@@ -96,17 +111,34 @@ PRProcess* IPC_CreateProcessRedirectedNSPR(const char *path,
                                            PRFileDesc* std_err,
                                            PRBool detach);
 
+/**
+  * Set the file descriptors of a pipe, e.g. STDIN, to (not) inheritable
+  * Usually the file descriptor of the intended direction is inheritable (e.g.
+  * "write" for STDIN.
+  *
+  * @param readPipe      File descriptor of the reading pipe
+  * @param writePipe     File descriptor of the writing pipe
+  * @param readInherit   True if reader should be inheritable
+  * @param writeInherit  True if writer should be inheritable
+  */
 PRStatus IPC_CreateInheritablePipeNSPR(PRFileDesc* *readPipe,
                                        PRFileDesc* *writePipe,
                                        PRBool readInherit,
                                        PRBool writeInherit);
 
+/**
+  * Get the process ID of a running subprocess
+  */
 PRStatus IPC_GetProcessIdNSPR(IPCProcess* process, PRInt32 *pid);
 
 
 void IPC_Shutdown();
 
 #ifdef XP_WIN_IPC
+/**
+  * @see IPC_CreateProcessRedirectedNSPR
+  */
+
 IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
                                             char *const *argv,
                                             char *const *envp,
@@ -115,24 +147,48 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
                                             IPCFileDesc* std_out,
                                             IPCFileDesc* std_err,
                                             PRBool detach);
+/**
+  * @see IPC_CreateInheritablePipeNSPR
+  */
 
 PRStatus IPC_CreateInheritablePipeWin32(IPCFileDesc* *readPipe,
                                         IPCFileDesc* *writePipe,
                                         PRBool readInherit,
                                         PRBool writeInherit);
 
+/**
+  * @see PR_WaitProcess in prprocess.h
+  */
 PRStatus IPC_WaitProcessWin32(IPCProcess* process, PRInt32 *exitCode);
 
+/**
+  * @see PR_KillProcess in prprocess.h
+  */
 PRStatus IPC_KillProcessWin32(IPCProcess* process);
 
-PRStatus IPC_GetProcessIdWin32(IPCProcess* process, PRInt32 *pid);
-
+/**
+  * @see PR_Read in prprocess.h
+  */
 PRInt32  IPC_ReadWin32(IPCFileDesc* fd, void *buf, PRInt32 amount);
 
+/**
+  * @see PR_Write in prprocess.h
+  */
 PRInt32  IPC_WriteWin32(IPCFileDesc* fd, const void *buf, PRInt32 amount);
 
+/**
+  * @see PR_Close in prprocess.h
+  */
 PRStatus IPC_CloseWin32(IPCFileDesc* fd);
 
+/**
+  * @see PR_GetProcessId in prprocess.h
+  */
+PRStatus IPC_GetProcessIdWin32(IPCProcess* process, PRInt32 *pid);
+
+/**
+  * @see PR_GetError in prprocess.h
+  */
 PRErrorCode IPC_GetErrorWin32();
 #endif
 
