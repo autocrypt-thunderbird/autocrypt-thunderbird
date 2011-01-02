@@ -1,3 +1,6 @@
+/** 
+ *  Helper framework if tests should be performed within a running app
+ */
 var gTestError=0;
 var gTestPending=0;
 
