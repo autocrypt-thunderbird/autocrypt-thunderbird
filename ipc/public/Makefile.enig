@@ -41,8 +41,8 @@ VPATH		= @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
-MODULE		= ipc-pipe
-XPIDL_MODULE	= ipc-pipe
+MODULE		= ipc
+XPIDL_MODULE	= ipc
 
 XPIDLSRCS	=                      \
                   nsIPipeListener.idl  \
