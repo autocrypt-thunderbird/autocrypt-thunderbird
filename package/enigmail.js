@@ -3847,6 +3847,7 @@ Enigmail.prototype = {
   },
 
   getKeyDetails: function (keyId, uidOnly) {
+      // uidOnly==true also means to only show UIDs with highest trust level
     var args = this.getAgentArgs(true);
     var keyIdList = keyId.split(" ");
     args=args.concat([ "--fixed-list-mode", "--with-colons", "--list-keys"]);
@@ -3864,6 +3865,9 @@ Enigmail.prototype = {
     }
     listText=listText.replace(/(\r\n|\r)/g, "\n");
 
+    const trustLevels = "oidre-qmnfu";
+    var maxTrustLevel = -1;
+
     if (uidOnly) {
       var userList="";
       var hideInvalidUid=true;
@@ -3877,7 +3881,18 @@ Enigmail.prototype = {
           }
         case "uid:":
           var theLine=keyArr[i].split(/:/);
-          if (("idre".indexOf(theLine[1]) < 0) || (! hideInvalidUid)) {
+          if (uidOnly && hideInvalidUid) {
+            var thisTrust = trustLevels.indexOf(theLine[1]);
+            if (thisTrust > maxTrustLevel) {
+              userList = theLine[9] + "\n";
+              maxTrustLevel = thisTrust;
+            }
+            else if (thisTrust == maxTrustLevel) {
+              userList += theLine[9] + "\n";
+            }
+            // else do not add uid
+          }
+          else if (("idre".indexOf(theLine[1]) < 0) || (! hideInvalidUid)) {
             // UID valid or key not valid
             userList += theLine[9] + "\n";
           }
