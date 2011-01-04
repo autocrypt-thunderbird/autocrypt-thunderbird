@@ -65,7 +65,6 @@ enigmail.jar:
 	content/enigmail/enigmailKeyserverDlg.xul      (content/enigmailKeyserverDlg.xul)
 	content/enigmail/enigmailUserSelection.xul     (content/enigmailUserSelection.xul)
 	content/enigmail/enigmailUserSelection.js      (content/enigmailUserSelection.js)
-	content/enigmail/enigmailUninstall.xul         (content/enigmailUninstall.xul)
 	content/enigmail/enigmailNaviConsole.xul       (content/enigmailNaviConsole.xul)
 	content/enigmail/enigmailMsgComposeOverlay.xul (content/enigmailMsgComposeOverlay.xul)
 	content/enigmail/enigmailMsgComposeOverlay.js  (content/enigmailMsgComposeOverlay.js)
