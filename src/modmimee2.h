@@ -1,4 +1,3 @@
-/* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -20,6 +19,8 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ * Ramalingam Saravanan <sarava@sarava.net>
+ * Patrick Brunschwig <patrick@mozilla-enigmail.org>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -34,11 +35,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
- /* -*- Mode: C; tab-width: 4 -*-
-   mimeenc.c --- MIME encoders and decoders, version 2 (see mimei.h)
-   Copyright © 1996 Netscape Communications Corporation, all rights reserved.
-   Created: Jamie Zawinski <jwz@netscape.com>, 15-May-96.
- */
 
 #ifndef _MIMEENC_H_
 #define _MIMEENC_H_

@@ -1,4 +1,6 @@
-/*
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
  * The contents of this file are subject to the Mozilla Public
  * License Version 1.1 (the "MPL"); you may not use this file
  * except in compliance with the MPL. You may obtain a copy of
@@ -31,7 +33,7 @@
  * If you do not delete the provisions above, a recipient
  * may use your version of this file under either the MPL, the
  * GPL or the LGPL.
- */
+ * ***** END LICENSE BLOCK ***** */
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
