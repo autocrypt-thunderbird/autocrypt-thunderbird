@@ -62,14 +62,5 @@ libs::
 	$(INSTALL) $(srcdir)/enigprefs-service.js $(DIST)/bin/components
 	$(INSTALL) $(srcdir)/enigMsgCompFields.js $(DIST)/bin/components
 
-xpi-en-US::
-	cd ../ui; zip -r $(DIST)/bin/$(LANGXPIFILE) \
-               install.js \
-               enigmail-en-US.spec \
-               install.rdf
-	cd $(DIST)/bin/chrome; zip -g ../$(LANGXPIFILE) \
-               $(XPI_MODULE)-en-US.jar
-	echo Created $(DIST)/bin/$(LANGXPIFILE)
-
 install::
 	cp -f $(srcdir)/enig*.js $(DESTDIR)$(mozappdir)/components/

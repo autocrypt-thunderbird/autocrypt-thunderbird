@@ -30,81 +30,6 @@ mkdir -p ${HELPDIR}
 LANGHASH=`echo "${ENIGLANG}" | md5sum | awk '{ print substr($0,1,2)}'`
 export LANGHASH
 
-# create install.js
-cat > ${ENIGLANG}/install.js <<EOT
-// Install script for Enigmail ${ENIGLANG} language pack
-
-var err;
-const APP_VERSION="${ENIGVERSION}";
-
-err = initInstall("Enigmail ${ENIGLANG} Language pack",  // name for install UI
-                  "/enigmail-${ENIGLANG}",   // registered name
-                  APP_VERSION+".0");         // package version
-
-logComment("initInstall: " + err);
-
-var srDest = 15;       // Disk space required for installation (KB)
-
-var fProgram    = getFolder("Program");
-logComment("fProgram: " + fProgram);
-
-if (!verifyDiskSpace(fProgram, srDest)) {
-  cancelInstall(INSUFFICIENT_DISK_SPACE);
-
-} else {
-
-  var fChrome     = getFolder("Chrome");
-
-  // addDirectory: blank, archive_dir, install_dir, install_subdir
-  addDirectory("", "chrome",        fChrome,     "");
-
-  err = getLastError();
-  if (err == ACCESS_DENIED) {
-    alert("Unable to write to components directory "+fChrome+".\n You will need to restart the browser with administrator/root privileges to install this software. After installing as root (or administrator), you will need to restart the browser one more time, as a privileged user, to register the installed software.\n After the second restart, you can go back to running the browser without privileges!");
-
-    cancelInstall(ACCESS_DENIED);
-
-  } else if (err != SUCCESS) {
-    cancelInstall(err);
-
-  } else {
-    // Register chrome
-
-    registerChrome( LOCALE | DELAYED_CHROME, getFolder("Chrome","enigmail-${ENIGLANG}.jar"), "locale/${ENIGLANG}/enigmail/");
-
-    err = getLastError();
-
-    if (err != SUCCESS) {
-      cancelInstall(err);
-
-    } else {
-      performInstall();
-    }
-  }
-}
-
-// this function verifies disk space in kilobytes
-function verifyDiskSpace(dirPath, spaceRequired) {
-  var spaceAvailable;
-
-  // Get the available disk space on the given path
-  spaceAvailable = fileGetDiskSpaceAvailable(dirPath);
-
-  // Convert the available disk space into kilobytes
-  spaceAvailable = parseInt(spaceAvailable / 1024);
-
-  // do the verification
-  if(spaceAvailable < spaceRequired) {
-    logComment("Insufficient disk space: " + dirPath);
-    logComment("  required : " + spaceRequired + " K");
-    logComment("  available: " + spaceAvailable + " K");
-    return false;
-  }
-
-  return true;
-}
-EOT
-
 cat > ${ENIGLANG}/chrome.manifest <<EOT
 locale      enigmail    ${ENIGLANG}       jar:chrome/enigmail-${ENIGLANG}.jar!/locale/${ENIGLANG}/enigmail/
 EOT
@@ -194,7 +119,7 @@ done
 cd ${cwd}/${ENIGLANG}/chrome
 zip -r -D enigmail-${ENIGLANG}.jar locale
 cd ..
-zip ../enigmail-${ENIGLANG}-${ENIGVERSION}.xpi install.js install.rdf chrome.manifest chrome/enigmail-${ENIGLANG}.jar
+zip ../enigmail-${ENIGLANG}-${ENIGVERSION}.xpi install.rdf chrome.manifest chrome/enigmail-${ENIGLANG}.jar
 cd ..
 
 test $DEBUG -eq 0 && rm -rf ${ENIGLANG}
