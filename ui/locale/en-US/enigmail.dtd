@@ -304,6 +304,8 @@
 <!ENTITY enigmail.encDlgSign.accesskey              "S">
 <!ENTITY enigmail.encDlgPgpMime.label               "Use PGP/MIME">
 <!ENTITY enigmail.encDlgPgpMime.accesskey           "U">
+<!ENTITY enigmail.encDlgIgnoreRules.label           "Ignore Per-Recipient Rules">
+<!ENTITY enigmail.encDlgIgnoreRules.accesskey       "I">
 <!ENTITY enigmail.amPrefPgpHeader.label             "Send 'OpenPGP' Header">
 <!ENTITY enigmail.amPrefPgpHeader.none.label        "Do not send any 'OpenPGP' header">
 <!ENTITY enigmail.amPrefPgpHeader.id.label          "Send OpenPGP Key ID">

@@ -18,6 +18,7 @@
  * Copyright (C) 2003 Patrick Brunschwig. All Rights Reserved.
  *
  * Contributor(s):
+ *   Ludwig Hügelschäfer <ludwig@hammernoch.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -59,6 +60,9 @@ function enigmailEncryptionDlgLoad() {
   if (window.arguments[0].usePgpMime) {
     document.getElementById("usePgpMime").setAttribute("checked", true);
   }
+  if (window.arguments[0].disableRules) {
+    document.getElementById("IgnoreRules").setAttribute("checked", true);
+  }
 }
 
 function enigmailEncryptionDlgAccept () {
@@ -72,4 +76,6 @@ function enigmailEncryptionDlgAccept () {
   }
 
   resultObj.usePgpMime = document.getElementById("usePgpMime").getAttribute("checked");
+  resultObj.disableRules = document.getElementById("IgnoreRules").getAttribute("checked");
+
 }

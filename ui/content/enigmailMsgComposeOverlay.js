@@ -18,7 +18,8 @@
  * Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
  *
  * Contributor(s):
- * Patrick Brunschwig <patrick@mozilla-enigmail.org>
+ *   Patrick Brunschwig <patrick@mozilla-enigmail.org>
+ *   Ludwig Hügelschäfer <ludwig@hammernoch.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -857,13 +858,14 @@ function enigDisplaySecuritySettings() {
   DEBUG_LOG("enigmailMsgComposeOverlay.js: enigDisplaySecuritySettings\n");
   var inputObj = { sendFlags: gEnigSendMode,
                    usePgpMime: gEnigSendPGPMime,
-                   disableRules: gEnigEnableRules};
+                   disableRules: !gEnigEnableRules };
   window.openDialog("chrome://enigmail/content/enigmailEncryptionDlg.xul","", "dialog,modal,centerscreen", inputObj);
   if (gEnigSendMode != inputObj.sendFlags) {
     gEnigDirty = 2;
   }
   gEnigSendMode = inputObj.sendFlags;
   gEnigSendPGPMime = inputObj.usePgpMime;
+  gEnigEnableRules = !inputObj.disableRules;
   enigDisplayUi();
 }
 
