@@ -50,13 +50,10 @@ SHORT_LIBNAME	= ipc
 
 IS_COMPONENT	= 1
 FORCE_SHARED_LIB = 1
-EXTRA_BUILD_OPTS =
 
 ifeq ($(OS_ARCH),WINNT)
   EXPORT_LIBRARY = 0
   USE_STATIC_LIBS = 1
-  EXTRA_BUILD_OPTS = /NODEFAULTLIB:LIBCMT
-  FORCE_SHARED_LIB = 0
 endif
 
 MOZILLA_VERSION_PARTS = $(subst ., ,$(MOZILLA_VERSION))
@@ -103,7 +100,16 @@ LOCAL_INCLUDES	= \
 		-I$(srcdir)/../src \
 		$(NULL)
 
-EXTRA_DSO_LDOPTS = \
+ifeq ($(OS_ARCH),WINNT)
+  EXTRA_DSO_LDOPTS = \
+      $(LIBS_DIR) \
+      $(XPCOM_LIBS) \
+      $(XPCOM_GLUE_LDOPTS) \
+      $(NSPR_LIBS) \
+      $(BUILD_STATIC) \
+      $(NULL)
+else
+  EXTRA_DSO_LDOPTS = \
       $(LIBS_DIR) \
       $(XPCOM_GLUE_LDOPTS) \
       $(XPCOM_LIBS) \
@@ -111,5 +117,6 @@ EXTRA_DSO_LDOPTS = \
       $(BUILD_STATIC) \
       $(EXTRA_BUILD_OPTS) \
       $(NULL)
+endif
 
 include $(topsrcdir)/config/rules.mk

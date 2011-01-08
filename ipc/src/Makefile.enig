@@ -44,6 +44,10 @@ include $(DEPTH)/config/autoconf.mk
 MODULE		= ipc
 LIBRARY_NAME	= ipc_s
 
+# added for comm192-win32
+USE_STATIC_LIBS = 1
+FORCE_USE_PIC   = 1
+
 # extract major and minor version of mozilla
 
 MOZILLA_VERSION_PARTS = $(subst ., ,$(MOZILLA_VERSION))
