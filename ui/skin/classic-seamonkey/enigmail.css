@@ -32,7 +32,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-/* Enigmail styles */
+/* Enigmail styles for SeaMonkey */
 
 #button-enigmail-decrypt,
 [typeid="button-enigmail-decrypt"]
@@ -326,8 +326,26 @@ treechildren::-moz-tree-column(enigDontEncrypt) {
 
 }
 
+treechildren::-moz-tree-image(enigSignedEncrypted)
+{
+  list-style-image: url("chrome://enigmail/skin/col-encrypted-signed.png");
+}
 
-/* the following styles are available for the key trust
+treechildren::-moz-tree-image(enigSigned)
+{
+  list-style-image: url("chrome://enigmail/skin/col-encrypted-signed.png");
+    -moz-image-region: rect(0px 24px 12px 12px);
+}
+
+treechildren::-moz-tree-image(enigEncrypted)
+{
+  list-style-image: url("chrome://enigmail/skin/col-encrypted-signed.png");
+    -moz-image-region: rect(0px 12px 12px 0px);
+}
+
+/*
+
+ the following styles are available for the key trust
    columnm in the key manager:
     enigmail_keyValid_unknown
     enigmail_keyValid_invalid

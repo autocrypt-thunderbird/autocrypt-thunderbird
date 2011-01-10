@@ -272,7 +272,23 @@ treechildren::-moz-tree-column(enigDontEncrypt) {
 
 }
 
-/* the following styles are available for the key trust
+treechildren::-moz-tree-image(enigSignedEncrypted)
+{
+  list-style-image: url("chrome://enigmail/skin/col-encrypted-signed.png");
+}
+
+treechildren::-moz-tree-image(enigSigned)
+{
+  list-style-image: url("chrome://enigmail/skin/enigSignOk.png");
+}
+
+treechildren::-moz-tree-image(enigEncrypted)
+{
+  list-style-image: url("chrome://enigmail/skin/enigEncOk.png");
+}
+
+/*
+   the following styles are available for the key trust
    columnm in the key manager:
     enigmail_keyValid_unknown
     enigmail_keyValid_invalid

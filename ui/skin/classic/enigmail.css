@@ -33,7 +33,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Enigmail styles for Windows
+ * Enigmail styles for Windows XP
  */
 
 @import url("chrome://global/skin/");
@@ -281,6 +281,22 @@ treechildren::-moz-tree-column(enigDontEncrypt) {
 
 }
 
+treechildren::-moz-tree-image(enigSignedEncrypted)
+{
+  list-style-image: url("chrome://enigmail/skin/col-encrypted-signed.png");
+}
+
+treechildren::-moz-tree-image(enigSigned)
+{
+  list-style-image: url("chrome://enigmail/skin/col-encrypted-signed.png");
+    -moz-image-region: rect(0px 24px 12px 12px);
+}
+
+treechildren::-moz-tree-image(enigEncrypted)
+{
+  list-style-image: url("chrome://enigmail/skin/col-encrypted-signed.png");
+    -moz-image-region: rect(0px 12px 12px 0px);
+}
 
 /* the following styles are available for the key trust
    columnm in the key manager:
