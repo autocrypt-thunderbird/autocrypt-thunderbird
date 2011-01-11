@@ -44,29 +44,6 @@
     <RDF:li resource="urn:mozilla:package:enigmail"/>
   </RDF:Seq>
 
-  <!-- enigmail package information -->
-  <RDF:Description about="urn:mozilla:package:enigmail"
-        chrome:displayName="Enigmail v1.0.0"
-        chrome:author="Team Enigmail"
-        chrome:authorURL="http://enigmail.mozdev.org/"
-        chrome:name="enigmail"
-        chrome:extension="true"
-        chrome:description="This extension adds support for OpenPGP message encryption."
-        chrome:settingsURL="chrome://enigmail/content/pref-enigmail.xul">
-     <chrome:uninstallInfo>
-      <RDF:Seq>
-        <RDF:li>ComsD:enigmail.js</RDF:li>
-        <RDF:li>ComsD:enigprefs-service.js</RDF:li>
-        <RDF:li>ComsD:libenigmime.so</RDF:li>
-        <RDF:li>ComsD:enigmime.dll</RDF:li>
-        <RDF:li>ComsD:enigmime.xpt</RDF:li>
-        <RDF:li>ComsD:enigmail.xpt</RDF:li>
-        <RDF:li>ComsD:ipc.xpt</RDF:li>
-        <RDF:li>AChrom:enigmail-skin-tbird.jar</RDF:li>
-      </RDF:Seq>
-    </chrome:uninstallInfo>
-  </RDF:Description>
-
   <!-- enigmail overlay information -->
   <RDF:Seq about="urn:mozilla:overlays">
     <RDF:li resource="chrome://messenger/content/messengercompose/messengercompose.xul"/>

@@ -37,40 +37,56 @@
 // Initialize enigmailCommon
 EnigInitCommon("columnOverlay");
 
+
 var EnigmailColumnHandler = {
-   getCellText:         function(row, col) {
-      //get the message's header so that we can extract the reply to field
-      var key = gDBView.getKeyAt(row);
-      var hdr = gDBView.db.GetMsgHdrForKey(key);
-      return this.getCellTextForHdr(hdr);
-   },
-   getSortStringForRow: function(hdr) {return this.getCellTextForHdr(hdr);},
-   isString:            function() {return true;},
-   getCellProperties:   function(row, col, props){},
-   getRowProperties:    function(row, props){},
-   getImageSrc:         function(row, col) {return null;},
-   getSortLongForRow:   function(hdr) {return 0;},
-   getCellTextForHdr:   function(hdr) {
-      var statusFlags = hdr.getUint32Property("enigmail");
-      if ((statusFlags & nsIEnigmail.GOOD_SIGNATURE) &&
-          (statusFlags & nsIEnigmail.DECRYPTION_OKAY))
-        return this.signedEncTxt;
-      else if (statusFlags & nsIEnigmail.GOOD_SIGNATURE)
-        return this.signedTxt;
-      else if (statusFlags & nsIEnigmail.DECRYPTION_OKAY)
-        return this.encryptedTxt;
-      else
-        return "";
-   },
-   signedTxt:           EnigGetString("msgViewColumn.signed"),
-   signedEncTxt:        EnigGetString("msgViewColumn.signedEncrypted"),
-   encryptedTxt:        EnigGetString("msgViewColumn.encrypted")
+  getCellText:         function(row, col) {
+    return null;
+  },
+  getSortStringForRow: function(hdr) { return "" },
+  isString:            function() { return false; },
+  getCellProperties:   function(row, col, props){
+    let key = gDBView.getKeyAt(row);
+    let hdr = gDBView.db.GetMsgHdrForKey(key);
+    let statusFlags = hdr.getUint32Property("enigmail");
+    let newProp = null;
+    if ((statusFlags & nsIEnigmail.GOOD_SIGNATURE) &&
+        (statusFlags & nsIEnigmail.DECRYPTION_OKAY))
+      newProp = "enigSignedEncrypted";
+    else if (statusFlags & nsIEnigmail.GOOD_SIGNATURE)
+      newProp = "enigSigned";
+    else if (statusFlags & nsIEnigmail.DECRYPTION_OKAY)
+      newProp = "enigEncrypted";
+
+    if (newProp) {
+      let atomService = Components.classes["@mozilla.org/atom-service;1"].
+        getService(Components.interfaces.nsIAtomService);
+      var atom = atomService.getAtom(newProp);
+      props.AppendElement(atom);
+    }
+  },
+  getRowProperties:    function(row, props){},
+  getImageSrc:         function(row, col) {},
+  getSortLongForRow:   function(hdr) {
+    var statusFlags = hdr.getUint32Property("enigmail");
+    if ((statusFlags & nsIEnigmail.GOOD_SIGNATURE) &&
+        (statusFlags & nsIEnigmail.DECRYPTION_OKAY))
+      return 3;
+    else if (statusFlags & nsIEnigmail.GOOD_SIGNATURE)
+      return 2;
+    else if (statusFlags & nsIEnigmail.DECRYPTION_OKAY)
+      return 1;
+    else
+      return 0;
+
+    return 0;
+  }
 };
 
 window.addEventListener("load", enigmailColumnOvlOnLoaded, false);
 
 function enigmailColumnOvlOnLoaded() {
-  var ObserverService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
+  var ObserverService = Components.classes["@mozilla.org/observer-service;1"].
+    getService(Components.interfaces.nsIObserverService);
   ObserverService.addObserver(EnigmailCreateDbObserver, "MsgCreateDBView", false);
 }
 
