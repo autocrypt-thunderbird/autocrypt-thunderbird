@@ -217,8 +217,8 @@
 <!ENTITY enigmail.perRecipientsOption.label         "Créer règle(s) par destinataire">
 <!ENTITY enigmail.experimental.label                "Utiliser la signature et le chiffrement à la volée de PGP/MIME (expérimental)">
 <!ENTITY enigmail.enigmailAttachDesc.label          "Ce message contient des pièces jointes. Comment souhaitez-vous les chiffrer/signer ?">
-<!ENTITY enigmail.enigEncryptAttachNone.label       "Chiffrer uniquement le texte du message mais pas les pièces jointes">
-<!ENTITY enigmail.enigEncryptAttachInline.label     "Chiffrer chaque pièce jointe séparément et envoyer le message en utilisant PGP à la volée">
+<!ENTITY enigmail.enigEncryptAttachNone.label       "Chiffrer/signer uniquement le texte du message mais pas les pièces jointes">
+<!ENTITY enigmail.enigEncryptAttachInline.label     "Chiffrer/signer chaque pièce jointe séparément et envoyer le message en utilisant PGP à la volée">
 <!ENTITY enigmail.enigEncryptAttachPgpMime.label    "Chiffer/signer le message en entier et l'envoyer en utilisant PGP/MIME">
 <!ENTITY enigmail.encryptAttachSkipDlg.label        "Utiliser dorénavant la méthode sélectionnée pour toutes les pièces jointes">
 <!ENTITY enigmail.ctxDecryptOpen.label              "Déchiffrer et ouvrir">
