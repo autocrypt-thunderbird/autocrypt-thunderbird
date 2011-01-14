@@ -24,17 +24,18 @@ LANGDIR=${ENIGLANG}/chrome/locale/${ENIGLANG}/enigmail
 HELPDIR=${LANGDIR}/help
 cwd=`pwd`
 rm -rf ${LANGDIR} >/dev/null 2>&1
-mkdir -p ${LANGDIR} 
+mkdir -p ${LANGDIR}
 mkdir -p ${HELPDIR}
 
 LANGHASH=`echo "${ENIGLANG}" | md5sum | awk '{ print substr($0,1,2)}'`
 export LANGHASH
 
+# create chrome.manifest for Thunderbird 3.1 and newer
 cat > ${ENIGLANG}/chrome.manifest <<EOT
 locale      enigmail    ${ENIGLANG}       jar:chrome/enigmail-${ENIGLANG}.jar!/locale/${ENIGLANG}/enigmail/
 EOT
 
-# create install.rdf for Thunderbird 0.7 and newer
+# create install.rdf for Thunderbird 1.0 and newer
 cat > ${ENIGLANG}/install.rdf <<EOT
 <?xml version="1.0"?>
 
@@ -44,38 +45,38 @@ cat > ${ENIGLANG}/install.rdf <<EOT
   <Description about="urn:mozilla:install-manifest">
     <em:id>enigmail-${ENIGLANG}@enigmail.mozdev.org</em:id>
     <em:version>${ENIGVERSION}</em:version>
-    
-    <!-- Target Application (Thunderbird) this extension can install into, 
-        with minimum and maximum supported versions. --> 
+
+    <!-- Target Application (Thunderbird) this extension can install into,
+        with minimum and maximum supported versions. -->
     <em:targetApplication>
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>1.0</em:minVersion>
-        <em:maxVersion>2.0.0.*</em:maxVersion>
+        <em:minVersion>3.1</em:minVersion>
+        <em:maxVersion>3.1.*</em:maxVersion>
       </Description>
       <Description>
         <!-- Seamonkey -->
         <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
-        <em:minVersion>2.0a1</em:minVersion>
-        <em:maxVersion>2.0.*</em:maxVersion>
+        <em:minVersion>2.0</em:minVersion>
+        <em:maxVersion>2.1.*</em:maxVersion>
       </Description>
     </em:targetApplication>
-    
+
     <!-- Front End MetaData -->
     <em:name>Enigmail ${ENIGLANG}</em:name>
     <em:description>Enigmail ${ENIGLANG} language package</em:description>
-    
+
     <!-- Author of the package, replace with your name if you like -->
     <em:creator>Enigmail Team</em:creator>
-    
+
     <em:homepageURL>http://enigmail.mozdev.org/langpack.html</em:homepageURL>
 
     <!-- Front End Integration Hooks (used by Extension Manager)-->
     <em:optionsURL>chrome://enigmail/content/pref-enigmail.xul</em:optionsURL>
     <em:aboutURL>chrome://enigmail/content/enigmailAbout.xul</em:aboutURL>
     <em:iconURL>chrome://enigmail/skin/enigmail-about.png</em:iconURL>
-    
-  </Description>      
+
+  </Description>
 </RDF>
 EOT
 
@@ -113,7 +114,7 @@ fi
 pwd
 
 for f in compose.html messenger.html rulesEditor.html editRcptRule.html initError.html ; do
-  cp ${f} ${cwd}/${HELPDIR} 
+  cp ${f} ${cwd}/${HELPDIR}
 done
 
 cd ${cwd}/${ENIGLANG}/chrome
