@@ -1,4 +1,5 @@
 ar
+bg-BG
 ca
 cs-CZ
 de-AT
