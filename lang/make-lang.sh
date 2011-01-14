@@ -80,30 +80,6 @@ cat > ${ENIGLANG}/install.rdf <<EOT
 </RDF>
 EOT
 
-cat >${LANGDIR}/contents.rdf <<EOT
-<?xml version="1.0"?>
-<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-         xmlns:chrome="http://www.mozilla.org/rdf/chrome#">
-
-  <!-- list all the packages being supplied by this jar -->
-  <RDF:Seq about="urn:mozilla:locale:root">
-    <RDF:li resource="urn:mozilla:locale:${ENIGLANG}"/>
-  </RDF:Seq>
-
-  <!-- locale information -->
-  <RDF:Description about="urn:mozilla:locale:${ENIGLANG}"  chrome:name="${ENIGLANG}">
-
-    <chrome:packages>
-      <RDF:Seq about="urn:mozilla:locale:${ENIGLANG}:packages">
-        <RDF:li resource="urn:mozilla:locale:${ENIGLANG}:enigmail"/>
-      </RDF:Seq>
-    </chrome:packages>
-
-  </RDF:Description>
-
-</RDF:RDF>
-EOT
-
 for f in enigmail.dtd enigmail.properties am-enigprefs.properties upgrade_080.html ; do
   cp ${f} ${LANGDIR}
 done

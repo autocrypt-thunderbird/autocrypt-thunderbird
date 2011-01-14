@@ -50,14 +50,15 @@ open OUTFILE, ">$outdir/jar.mn";
 
 print OUTFILE "enigmail.jar:\n";
 
-my @files = ("contents.rdf",
+my @files = (
   "enigmail.properties",
   "enigmail.dtd",
   "am-enigprefs.properties",
   "help/rulesEditor.html",
   "help/compose.html",
   "help/messenger.html",
-  "help/editRcptRule.html");
+  "help/editRcptRule.html"
+);
 
 while ($_ = <INFILE>) {
   #print STDERR $_;

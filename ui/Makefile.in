@@ -43,6 +43,8 @@ srcdir     = @srcdir@
 
 DIRS = content
 
+MYJARFILE = enigmail.jar
+
 include $(DEPTH)/config/autoconf.mk
 
 include $(topsrcdir)/config/config.mk
@@ -50,7 +52,10 @@ include $(topsrcdir)/config/config.mk
 include $(topsrcdir)/config/rules.mk
 
 libs::
-	@$(REGCHROME) content enigmail enigmail.jar
-	@$(REGCHROME) skin modern/enigmail  enigmail.jar
-	@$(REGCHROME) skin classic/enigmail enigmail.jar
-	@$(REGCHROME) locale en-US/enigmail enigmail.jar
+	@$(REGCHROME) content enigmail $(MYJARFILE)
+	@$(REGCHROME) skin modern/enigmail  $(MYJARFILE)
+	@$(REGCHROME) skin classic/enigmail $(MYJARFILE)
+	@$(REGCHROME) locale en-US/enigmail $(MYJARFILE)
+
+clean::
+	test -f $(DIST)/bin/chrome/$(MYJARFILE) && rm $(DIST)/bin/chrome/$(MYJARFILE) || echo ""
