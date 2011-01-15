@@ -1,5 +1,5 @@
-﻿<!ENTITY enigmail.label                   "Enigmail">
-<!ENTITY enigmail.openpgp.label           "OpenPGP">	
+<!ENTITY enigmail.label                   "Enigmail">
+<!ENTITY enigmail.openpgp.label           "OpenPGP">
 
 <!ENTITY enigmail.keyUserId.label         "Акаунт / User ID">
 <!ENTITY enigmail.keygenTitle.label       "Генериране на OpenPGP Ключ">
@@ -589,14 +589,14 @@
 <!ENTITY enigmail.setupWiz.title                     "OpenPGP Съветник за настройка">
 <!ENTITY enigmail.setupWiz.yes                       "Да">
 <!ENTITY enigmail.setupWiz.no                        "Не, благодаря">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc            "Този помощник ще ви помогне да започнете да използвате OpenPGP веднага. 
-                                                      В следващите няколко екрана ще ви се зададат няколко въпроса, за да се 
+<!ENTITY enigmail.setupWiz.pgWelcome.desc            "Този помощник ще ви помогне да започнете да използвате OpenPGP веднага.
+                                                      В следващите няколко екрана ще ви се зададат няколко въпроса, за да се
 													  направи пълна настройка.
                                                       <html:br/><html:br/>
                                                       За простота ще бъдат направени някой предположения за конфигурацията.
                                                       Те ще се опитат да осигурят високо ниво на сигурност за средния
                                                       потребител без да се създава объркване. Разбира се може
-                                                      да промените тези настройки след края на съветника. 
+                                                      да промените тези настройки след края на съветника.
 													  Можете да разберете повече за функциите на OpenPGP от менюто за помощ или на
                                                       <a class='enigmailLink'><html:a onclick='EnigOpenURL(event, this)'
                                                       href='http://enigmail.mozdev.org/'>Enigmail website</html:a></a>.
@@ -652,7 +652,7 @@
 													  да можете да им изпращате шифровани писма
 													  (публичния ключ е Катинара за който говорим).
                                                       <html:br/><html:br/>
-                                                      Само ако най-комуникативните ви партньори имат публични ключове, 
+                                                      Само ако най-комуникативните ви партньори имат публични ключове,
                                                       е препоръчително да позволявате криптиране по подразбиране.">
 <!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg       "Желаете ли изходящите съобщения да се криптират по подразбиране?">
 <!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt          "Да, имам публични ключове за повечето от контактите ми">
@@ -664,12 +664,12 @@
 													  на вашата машина. Тези промени са най-вече в създаването технически настройки,
 													  който няма да забележите. Много важно е вашата електронната поща да съставя
 													  съобщенията в обикновен текст (plain text) по подразбиране.">
-<!ENTITY enigmail.setupWiz.pgSettings.changePref     "Искате ли да зададете някои от настройките по подразбиране, 
+<!ENTITY enigmail.setupWiz.pgSettings.changePref     "Искате ли да зададете някои от настройките по подразбиране,
                                                       за да може OpenPGP да работи по-добре на вашата машина?">
 <!ENTITY enigmail.setupWiz.pgSettings.details        "Детайли ...">
 <!ENTITY enigmail.setupWiz.pgKeySel.title            "Избор на ключ">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle         "Създаване на ключ за подписване и криптиране">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc             "Установихме че вече притежавате OpenPGP ключ. Можете да използвате някой от 
+<!ENTITY enigmail.setupWiz.pgKeySel.desc             "Установихме че вече притежавате OpenPGP ключ. Можете да използвате някой от
                                                       съществуващите ключове за подписване, криптиране и декриптиране на имейли,
 													  или да създадете нова двойка ключове.">
 <!ENTITY enigmail.setupWiz.pgKeySel.createKey        "Желаете ли да създадете нова двойка ключове?">
