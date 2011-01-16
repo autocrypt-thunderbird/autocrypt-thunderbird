@@ -37,12 +37,12 @@
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
+
 // components defined in this file
 const ENIG_ENIGMSGCOMPFIELDS_CONTRACTID =
     "@mozdev.org/enigmail/composefields;1";
 const ENIG_ENIGMSGCOMPFIELDS_CID =
     Components.ID("{847b3a30-7ab1-11d4-8f02-006008948af5}");
-
 
 function EnigMsgCompFields()
 {
@@ -57,6 +57,7 @@ EnigMsgCompFields.prototype = {
     Components.interfaces.nsIEnigMsgCompFields,
     Components.interfaces.nsEnigMsgCompFields,
     Components.interfaces.nsIMsgSMIMECompFields,
+    Components.interfaces.nsIMsgCompFields,
     Components.interfaces.nsISupports]),
 
   _parent: null,
@@ -118,9 +119,9 @@ EnigMsgCompFields.prototype = {
       "allReply",
       "listReply" ];
     this._parent = smimeCompFields;
+    var mbr;
 
     for (mbr in members) {
-      // dump("enigMsgCompHlp: nsEnigMsgCompFields: init:"+mbr+"\n");
       eval("this."+members[mbr]+" = this._parent."+members[mbr]+";\n");
     }
 
