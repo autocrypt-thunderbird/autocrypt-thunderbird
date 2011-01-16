@@ -233,7 +233,7 @@ function enigUserSelCreateRow (keyObj, subKeyNum) {
     }
     else {
       // secondary user id
-      keyObj.SubUserIds[subKeyNum].userId = EnigConvertGpgToUnicode(keyObj.SubUserIds[subKeyNum].userId);
+      keyObj.SubUserIds[subKeyNum].userId = keyObj.SubUserIds[subKeyNum].userId;
       userCol.setAttribute("label", keyObj.SubUserIds[subKeyNum].userId);
       treeItem.setAttribute("keytype", keyObj.SubUserIds[subKeyNum].type);
       if (keyObj.SubUserIds[subKeyNum].type == "uat") {
