@@ -73,125 +73,7 @@
          oncommand="enigSetSendMode('toggle-encrypt')" modifiers="accel, shift"/>
   </keyset>
 
-<!-- Seamonkey -->
-  <menubar id="compose-menubar">
-
-      <menu id="menu_Enigmail"
-            label="&enigmail.openpgp.label;"
-            accesskey="&enigmail.composemenu.accesskey;"
-            insertbefore="tasksMenu">
-
-        <menupopup id="menu_EnigmailPopup"
-                   onpopupshowing="EnigCollapseAdvanced(this, 'hidden', enigSetMenuSettings(''))">
-
-          <menuitem id="enigmail_signed_send"
-              type="checkbox"
-              label="&enigmail.signedsend.label;"
-              accesskey="&enigmail.signedsend.accesskey;"
-              key="key_enigSign"
-              oncommand="enigDoPgpButton('toggle-sign');" />
-
-          <menuitem id="enigmail_encrypted_send"
-              type="checkbox"
-              label="&enigmail.encryptedsend.label;"
-              accesskey="&enigmail.encryptedsend.accesskey;"
-              key="key_enigEncrypt"
-              oncommand="enigDoPgpButton('toggle-encrypt');" />
-
-          <menuseparator/>
-
-          <menuitem id="enigmail_sendPGPMime"
-              type="checkbox"
-              checked="false"
-              label="&enigmail.sendPGPMime.label;"
-              accesskey="&enigmail.sendPGPMime.accesskey;"
-              oncommand="enigDoPgpButton('togglePGPMime');" />
-
-          <menuitem id="enigmail_disable_rules"
-              type="checkbox"
-              label="&enigmail.disableRules.label;"
-              accesskey="&enigmail.disableRules.accesskey;"
-              advanced="true"
-              key="key_enigDisableRules"
-              oncommand="enigDoPgpButton('toggleRules');" />
-
-          <menuseparator
-             advanced="true"/>
-
-          <menu id="enigmail_compose_options_menu"
-              advanced="true"
-                label="&enigmail.composeOptionsMenu.label;"
-                accesskey="&enigmail.composeOptionsMenu.accesskey;">
-
-            <menupopup>
-
-              <menuitem id="enigmail_accountSettings"
-                label="&enigmail.pgpAccountSettings.label;"
-                accesskey="&enigmail.pgpAccountSettings.accesskey;"
-                oncommand="enigGoAccountManager();" />
-
-              <menuseparator/>
-
-              <menuitem id="enigmail_defaultSendOpts"
-                label="&enigmail.sendOptionsMenu.label;"
-                accesskey="&enigmail.sendOptionsMenu.accesskey;"
-                oncommand="EnigPrefWindow(true, 'seamonkey', 'sendTab');" />
-
-              <menuitem id="enigmail_defaultKeySelOpts"
-                label="&enigmail.defaultKeySelOpts.label;"
-                accesskey="&enigmail.defaultKeySelOpts.accesskey;"
-                oncommand="EnigPrefWindow(true, 'seamonkey', 'keySelTab');" />
-
-            </menupopup>
-          </menu>
-
-          <menuitem id="enigmail_RulesEditor"
-              label="&enigmail.editRules.label;"
-              accesskey="&enigmail.editRules.accesskey;"
-              advanced="true"
-              oncommand="EnigRulesEditor();"/>
-
-          <menuseparator/>
-
-          <menuitem id="enigmail_undo_encryption"
-              label="&enigmail.undoencryption.label;"
-              accesskey="&enigmail.undoencryption.accesskey;"
-              oncommand="enigUndoEncryption();" />
-
-          <menuitem id="enigmail_insert_own_key"
-              label="&enigmail.attachmykey.label;"
-              accesskey="&enigmail.attachmykey.accesskey;"
-              type="checkbox"
-              checked="false"
-              oncommand="enigToggleAttachOwnKey();" />
-
-          <menuitem id="enigmail_insert_key"
-              label="&enigmail.attachkey.label;"
-              accesskey="&enigmail.attachkey.accesskey;"
-              advanced="true"
-              oncommand="enigAttachKey();" />
-
-          <menuitem id="enigmail_clearPassphrase"
-              label="&enigmail.clearPassphrase.label;"
-              accesskey="&enigmail.clearPassphrase.accesskey;"
-              advanced="true"
-              oncommand="EnigClearPassphrase();" />
-
-          <menuseparator/>
-
-          <menuitem id="enigmail_help"
-              label="&enigmail.help.label;"
-              accesskey="&enigmail.help.accesskey;"
-              oncommand="EnigHelpWindow('compose');"/>
-
-        </menupopup>
-      </menu>
-
-  </menubar>
-
-
-
-<!-- Thunderbird -->
+<!-- menu for all apps -->
 
   <menubar id="mail-menubar">
 
@@ -263,6 +145,11 @@
             </menupopup>
           </menu>
 
+        <menuitem id="enigmail_keymgmt"
+             label="&enigmail.keyManWindow.label;"
+             accesskey="&enigmail.keyManWindow.accesskey;"
+             oncommand="EnigKeyManager();" />
+
           <menuitem id="enigmail_RulesEditor"
               label="&enigmail.editRules.label;"
               accesskey="&enigmail.editRules.accesskey;"
@@ -307,53 +194,6 @@
       </menu>
 
   </menubar>
-
-<!-- Seamonkey 1.x -->
-    <hbox id="toolbar_button_box">
-   <!-- for compatibility reasons (themes) the button name is unchanged and doesn't match the action(s) -->
-       <toolbarbutton class="toolbarbutton-1"
-               id="button-enigmail-send"
-               label="&enigmail.securitybutton.label;"
-               tooltiptext="&enigmail.securitybutton.tip;"
-               insertbefore="saveSeparator"
-               buttontype="seamonkey"
-               type="menu-button"
-               oncommand="enigDoPgpButton();">
-
-          <menupopup onpopupshowing="enigSetMenuSettings('2')">
-            <menuitem id="enigmail_signed_send2"
-                type="checkbox"
-                label="&enigmail.signedsend.label;"
-                accesskey="&enigmail.signedsend.accesskey;"
-                key="key_enigSign"
-                oncommand="enigNextCommand('toggle-sign');" />
-
-            <menuitem id="enigmail_encrypted_send2"
-                type="checkbox"
-                label="&enigmail.encryptedsend.label;"
-                accesskey="&enigmail.encryptedsend.accesskey;"
-                key="key_enigEncrypt"
-                oncommand="enigNextCommand('toggle-encrypt');" />
-
-            <menuseparator/>
-
-            <menuitem id="enigmail_sendPGPMime2"
-                type="checkbox"
-                checked="false"
-                label="&enigmail.sendPGPMime.label;"
-                accesskey="&enigmail.sendPGPMime.accesskey;"
-                oncommand="enigNextCommand('togglePGPMime');" />
-
-            <menuitem id="enigmail_disable_rules2"
-                type="checkbox"
-                label="&enigmail.disableRules.label;"
-                accesskey="&enigmail.disableRules.accesskey;"
-                key="key_enigDisableRules"
-                oncommand="enigNextCommand('toggleRules');" />
-
-          </menupopup>
-       </toolbarbutton>
-    </hbox>
 
   <!-- Enigmail toolbar button -->
   <toolbarpalette id="MsgComposeToolbarPalette">
