@@ -89,6 +89,7 @@ var EnigCommon = {
 
   enigmailSvc: null,
   enigStringBundle: null,
+  statusFlags: gStatusFlags,
 
   WRITE_LOG: function (str) {
     function f00(val, digits) {
