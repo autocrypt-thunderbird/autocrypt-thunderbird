@@ -1245,7 +1245,8 @@ function enigEncryptMsg(msgSendType) {
           repeatSelection++;
 
           if (sendFlags & ENIG_ENCRYPT) {
-            // Encrypt test message for default encryption
+            // Encrypt or sign test message for default encryption
+
             var testExitCodeObj    = new Object();
             var testStatusFlagsObj = new Object();
             var testErrorMsgObj    = new Object();
@@ -1253,7 +1254,7 @@ function enigEncryptMsg(msgSendType) {
             var testPlain = "Test Message";
             var testUiFlags   = nsIEnigmail.UI_TEST;
             var testSendFlags = nsIEnigmail.SEND_TEST | ENIG_ENCRYPT |
-                                optSendFlags;
+                                optSendFlags ;
 
             // test recipients
             testCipher = enigmailSvc.encryptMessage(window, testUiFlags, null,
@@ -1264,9 +1265,23 @@ function enigEncryptMsg(msgSendType) {
                                                     testStatusFlagsObj,
                                                     testErrorMsgObj);
 
+            if (testStatusFlagsObj.value) {
+              // check if own key is invalid
+              let errLines = testErrorMsgObj.value.split(/\r?\n/);
+              let s = new RegExp("INV_(RECP|SGNR) [0-9]+ \<?" + fromAddr + "\>?");
+              for (let l=0; l < errLines.length; l++) {
+                if (errLines[l].search(s) == 0) {
+                  EnigAlert(EnigGetString("errorKeyUnusable", fromAddr));
+                  return false;
+                }
+              }
+            }
+
+
             if ((recipientsSelection==4) ||
                 ((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT) &&
                  (recipientsSelection==2 || recipientsSelection==3))) {
+              // check for invalid recipient keys
                 var resultObj = new Object();
                 var inputObj = new Object();
                 inputObj.toAddr = toAddr;
