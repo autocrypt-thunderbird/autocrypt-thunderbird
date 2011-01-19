@@ -32,13 +32,8 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
-
-// Initialize enigmailCommon
-EnigInitCommon("columnOverlay");
-
-
 var EnigmailColumnHandler = {
+  nsIEnigmail: Components.interfaces.nsIEnigmail,
   getCellText:         function(row, col) {
     return null;
   },
@@ -49,12 +44,12 @@ var EnigmailColumnHandler = {
     let hdr = gDBView.db.GetMsgHdrForKey(key);
     let statusFlags = hdr.getUint32Property("enigmail");
     let newProp = null;
-    if ((statusFlags & nsIEnigmail.GOOD_SIGNATURE) &&
-        (statusFlags & nsIEnigmail.DECRYPTION_OKAY))
+    if ((statusFlags & this.nsIEnigmail.GOOD_SIGNATURE) &&
+        (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY))
       newProp = "enigSignedEncrypted";
-    else if (statusFlags & nsIEnigmail.GOOD_SIGNATURE)
+    else if (statusFlags & this.nsIEnigmail.GOOD_SIGNATURE)
       newProp = "enigSigned";
-    else if (statusFlags & nsIEnigmail.DECRYPTION_OKAY)
+    else if (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY)
       newProp = "enigEncrypted";
 
     if (newProp) {
@@ -68,38 +63,33 @@ var EnigmailColumnHandler = {
   getImageSrc:         function(row, col) {},
   getSortLongForRow:   function(hdr) {
     var statusFlags = hdr.getUint32Property("enigmail");
-    if ((statusFlags & nsIEnigmail.GOOD_SIGNATURE) &&
-        (statusFlags & nsIEnigmail.DECRYPTION_OKAY))
+    if ((statusFlags & this.nsIEnigmail.GOOD_SIGNATURE) &&
+        (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY))
       return 3;
-    else if (statusFlags & nsIEnigmail.GOOD_SIGNATURE)
+    else if (statusFlags & this.nsIEnigmail.GOOD_SIGNATURE)
       return 2;
-    else if (statusFlags & nsIEnigmail.DECRYPTION_OKAY)
+    else if (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY)
       return 1;
     else
       return 0;
 
     return 0;
+  },
+
+  createDbObserver: {
+    // Components.interfaces.nsIObserver
+    observe: function(aMsgFolder, aTopic, aData)
+    {
+      gDBView.addColumnHandler("enigmailStatusCol", EnigmailColumnHandler);
+    }
   }
 };
 
-window.addEventListener("load", enigmailColumnOvlOnLoaded, false);
-
-function enigmailColumnOvlOnLoaded() {
-  var ObserverService = Components.classes["@mozilla.org/observer-service;1"].
-    getService(Components.interfaces.nsIObserverService);
-  ObserverService.addObserver(EnigmailCreateDbObserver, "MsgCreateDBView", false);
-}
-
-var EnigmailCreateDbObserver = {
-  // Components.interfaces.nsIObserver
-  observe: function(aMsgFolder, aTopic, aData)
-  {
-     enigmailAddCustomColumnHandler();
-  }
-}
-
-function enigmailAddCustomColumnHandler() {
-
-   gDBView.addColumnHandler("enigmailStatusCol", EnigmailColumnHandler);
-}
-
+window.addEventListener("load",
+  function () {
+    var ObserverService = Components.classes["@mozilla.org/observer-service;1"].
+      getService(Components.interfaces.nsIObserverService);
+    ObserverService.addObserver(EnigmailColumnHandler.createDbObserver, "MsgCreateDBView", false);
+  },
+  false
+);
