@@ -32,7 +32,9 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-var EnigmailColumnHandler = {
+if (! Enigmail) var Enigmail = {};
+
+Enigmail.columnHandler = {
   nsIEnigmail: Components.interfaces.nsIEnigmail,
   getCellText:         function(row, col) {
     return null;
@@ -80,7 +82,7 @@ var EnigmailColumnHandler = {
     // Components.interfaces.nsIObserver
     observe: function(aMsgFolder, aTopic, aData)
     {
-      gDBView.addColumnHandler("enigmailStatusCol", EnigmailColumnHandler);
+      gDBView.addColumnHandler("enigmailStatusCol", Enigmail.columnHandler);
     }
   }
 };
@@ -89,7 +91,7 @@ window.addEventListener("load",
   function () {
     var ObserverService = Components.classes["@mozilla.org/observer-service;1"].
       getService(Components.interfaces.nsIObserverService);
-    ObserverService.addObserver(EnigmailColumnHandler.createDbObserver, "MsgCreateDBView", false);
+    ObserverService.addObserver(Enigmail.columnHandler.createDbObserver, "MsgCreateDBView", false);
   },
   false
 );
