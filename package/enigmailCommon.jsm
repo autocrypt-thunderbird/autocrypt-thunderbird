@@ -35,7 +35,7 @@
 
 /*
  * Import into a JS component using
- * 'Components.utils.import("resource://enigmail/enigmailCommon.jsmm");'
+ * 'Components.utils.import("resource://enigmail/enigmailCommon.jsm");'
  */
 
 

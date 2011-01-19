@@ -635,7 +635,7 @@ function enigMessageDecryptCb(event, isAuto, mimeMsg){
 
         if ((!enigmailSvc.mimeInitialized() && encrypedMsg) || signedMsg ||
             ((!encrypedMsg) && (embeddedSigned || embeddedEncrypted))) {
-          enigUpdateHdrIcons(ENIG_POSSIBLE_PGPMIME, 0, "", "", "", EnigGetString("possiblyPgpMime"));
+          Enigmail.hdrView.updateHdrIcons(ENIG_POSSIBLE_PGPMIME, 0, "", "", "", EnigGetString("possiblyPgpMime"));
         }
       }
       return;
@@ -897,7 +897,7 @@ function enigMessageParseCallback(msgText, contentEncoding, charset, interactive
 
   var displayedUriSpec = enigGetCurrentMsgUriSpec();
   if (!msgUriSpec || (displayedUriSpec == msgUriSpec)) {
-    enigUpdateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsg, null);
+    Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsg, null);
   }
 
   var noSecondTry = nsIEnigmail.GOOD_SIGNATURE |
@@ -1686,6 +1686,13 @@ function enigKeyRequestCallback(callbackArg, ctxt) {
   DEBUG_LOG("enigmailMessengerOverlay.js: enigKeyRequestCallback: ETag: "+eTag+"\n");
 
   // NEED TO EXTRACT KEY ETC.
+}
+
+function enigRevealAttachments () {
+  var i;
+  for (i in currentAttachments) {
+    enigHandleAttachment("revealName", currentAttachments[i]);
+  }
 }
 
 

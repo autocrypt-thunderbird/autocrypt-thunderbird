@@ -51,7 +51,7 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <!-- script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/ -->
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript"  src="chrome://enigmail/content/enigmailMessengerOverlay.js"/>
 
   <commandset id="mailToolbarItems">
@@ -134,7 +134,7 @@
            hidden="false"
            accesskey="&enigmail.sendersKeyMenu.accesskey;">
 
-        <menupopup onpopupshowing="enigUpdateSendersKeyMenu();">
+        <menupopup onpopupshowing="Enigmail.hdrView.updateSendersKeyMenu();">
 
           <menuitem id="enigmail_importpublickey"
                label="&enigmail.importpublickey.label;"
@@ -145,16 +145,16 @@
 
           <menuitem label="&enigmail.displayKeyProperties.label;"
                     id="enigmail_keyMgmtDispKeyDetails"
-                    oncommand="enigDispKeyDetails();"/>
+                    oncommand="Enigmail.hdrView.dispKeyDetails();"/>
           <menuitem label="&enigmail.signSenderKey.label;"
                     id="enigmail_keyMgmtSignKey"
-                    oncommand="enigSignKey();"/>
+                    oncommand="Enigmail.hdrView.signKey();"/>
           <menuitem label="&enigmail.trustSenderKey.label;"
                     id="enigmail_keyMgmtKeyTrust"
-                    oncommand="enigEditKeyTrust();"/>
+                    oncommand="Enigmail.hdrView.editKeyTrust();"/>
           <menuitem label="&enigmail.showPhoto.label;"
                     id="enigmail_keyMgmtShowPhoto"
-                    oncommand="enigShowPhoto();"/>
+                    oncommand="Enigmail.hdrView.showPhoto();"/>
         </menupopup>
       </menu>
 
@@ -279,7 +279,7 @@
 
         <hbox class="headerNameBox" align="start" id="enigmailStatusTextBox" pack="start">
           <image id="enigToggleHeaderView2"
-                 class="enigmailExpandViewButton" onclick="enigToggleHeaderView();"
+                 class="enigmailExpandViewButton" onclick="Enigmail.hdrView.toggleHeaderView();"
                  state="false" persist="state class"/>
           <spacer flex="1"/>
           <label class="enigmailHeaderName"
@@ -307,7 +307,7 @@
                     type="menu"
                     class="enigMsgHdrView-flat-button">
               <menupopup id="enigSecurityContext"
-                     onpopupshowing="enigDispSecurityContext();">
+                     onpopupshowing="Enigmail.hdrView.dispSecurityContext();">
                 <menuitem label="&enigmail.importpublickey.label;"
                           id="enigmail_importKey"
                           hidden="true"
@@ -321,20 +321,20 @@
                           oncommand="enigViewOpenpgpInfo(null, false);"/>
                 <menuitem label="&enigmail.copySecurityInfo.label;"
                           id="enigmail_copySecurityInfo"
-                          oncommand="enigCopyStatusInfo();"/>
+                          oncommand="Enigmail.hdrView.copyStatusInfo();"/>
                 <menuseparator/>
                 <menuitem label="&enigmail.displayKeyProperties.label;"
                           id="enigmail_dispKeyDetails"
-                          oncommand="enigDispKeyDetails();"/>
+                          oncommand="Enigmail.hdrView.dispKeyDetails();"/>
                 <menuitem label="&enigmail.showPhoto.label;"
                           id="enigmail_showPhoto"
-                          oncommand="enigShowPhoto();"/>
+                          oncommand="Enigmail.hdrView.showPhoto();"/>
                 <menuitem label="&enigmail.signSenderKeyPopup.label;"
                           id="enigmail_signSenderKey"
-                          oncommand="enigSignKey();"/>
+                          oncommand="Enigmail.hdrView.signKey();"/>
                 <menuitem label="&enigmail.trustSenderKeyPopup.label;"
                           id="enigmail_editSenderKeyTrust"
-                          oncommand="enigEditKeyTrust();"/>
+                          oncommand="Enigmail.hdrView.editKeyTrust();"/>
               </menupopup>
             </button>
           </vbox>
@@ -353,7 +353,7 @@
 
 
 
-  <popup id="attachmentListContext" onpopupshowing="return enigOnShowAttachmentContextMenu();">
+  <popup id="attachmentListContext" onpopupshowing="return Enigmail.hdrView.enigOnShowAttachmentContextMenu();">
     <menuseparator/>
     <menuitem id="enigmail_ctxImportKey"
       label="&enigmail.ctxImportKey.label;"
