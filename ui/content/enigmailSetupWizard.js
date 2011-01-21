@@ -358,11 +358,6 @@ function enigGetSvc() {
 
   }
 
-  if (gEnigmailSvc.logFileStream) {
-    gEnigDebugLog = true;
-    gEnigLogLevel = 5;
-  }
-
   return gEnigmailSvc.initialized ? gEnigmailSvc : null;
 }
 

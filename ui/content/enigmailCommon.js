@@ -35,8 +35,14 @@
 
 // enigmailCommon.js: shared JS functions for Enigmail
 
+Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+
+
 // The compatible Enigmime version
 var gEnigmimeVersion = "1.2";
+var gEnigmailSvc;
+var gEnigPromptSvc;
+
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_MSG_BUFFER_SIZE = 96000;
@@ -67,7 +73,6 @@ const ENIG_TRANSFERABLE_CONTRACTID = "@mozilla.org/widget/transferable;1"
 const ENIG_LOCALE_SVC_CONTRACTID = "@mozilla.org/intl/nslocaleservice;1";
 const ENIG_DATE_FORMAT_CONTRACTID = "@mozilla.org/intl/scriptabledateformat;1"
 const ENIG_ACCOUNT_MANAGER_CONTRACTID = "@mozilla.org/messenger/account-manager;1";
-const ENIG_XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 const ENIG_THREAD_MANAGER_CID = "@mozilla.org/thread-manager;1";
 const ENIG_SIMPLEURI_CONTRACTID   = "@mozilla.org/network/simple-uri;1";
 const ENIG_SEAMONKEY_ID = "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
@@ -82,14 +87,12 @@ const ENIG_SAVEASCHARSET_CONTRACTID = "@mozilla.org/intl/saveascharset;1";
 
 const ENIG_STREAMCONVERTERSERVICE_CID_STR =
       "{892FFEB0-3F80-11d3-A16C-0050041CAF44}";
-const ENIG_EXTENSION_GUID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
 
 
 const ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
 
 const ENIG_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
-const ENIGMAIL_PREFS_ROOT       = "extensions.enigmail.";
 const ENIG_C = Components;
 
 // Key algorithms
@@ -117,7 +120,6 @@ const ENIG_KEY_NOT_VALID=ENIG_KEY_EXPIRED+ENIG_KEY_REVOKED+ENIG_KEY_INVALID+ENIG
 
 // Interfaces
 const nsIEnigmail               = ENIG_C.interfaces.nsIEnigmail;
-const nsIEnigStrBundle          = ENIG_C.interfaces.nsIStringBundleService;
 
 // Encryption flags
 if (nsIEnigmail) {
@@ -155,53 +157,10 @@ const ENIG_HEADERMODE_KEYID = 0x01;
 const ENIG_HEADERMODE_URL   = 0x10;
 
 
-const ENIG_THREE_BUTTON_STRINGS   = (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_0) +
-                               (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_1) +
-                               (ENIG_BUTTON_TITLE_IS_STRING * ENIG_BUTTON_POS_2);
-
-var gEnigLogLevel = 2;     // Output only errors/warnings by default
-var gEnigDebugLog;
-var gEnigExtensionVersion;
-
-
-var gEnigPrefSvc, gEnigPrefRoot, gPrefEnigmail, gEnigConsoleSvc;
-try {
-  gEnigPrefSvc = enigGetService("@mozilla.org/preferences-service;1", "nsIPrefService");
-
-  gEnigPrefRoot        = gEnigPrefSvc.getBranch(null);
-  gPrefEnigmail = gEnigPrefSvc.getBranch(ENIGMAIL_PREFS_ROOT);
-
-  if (EnigGetPref("logDirectory"))
-    gEnigLogLevel = 5;
-
-} catch (ex) {
-  ERROR_LOG("enigmailCommon.js: Error in instantiating PrefService\n");
-}
-
-try {
-  // Gecko 2.0 only
-  Components.utils.import("resource://gre/modules/AddonManager.jsm");
-  AddonManager.getAddonByID(ENIG_EXTENSION_GUID,
-    function (aAddon) {
-      gEnigExtensionVersion = aAddon.version;
-    }
-  );
-}
-catch (ex) {}
 
 function EnigGetFrame(win, frameName) {
-  DEBUG_LOG("enigmailCommon.js: EnigGetFrame: name="+frameName+"\n");
-  for (var j=0; j<win.frames.length; j++) {
-    if (win.frames[j].name == frameName) {
-      return win.frames[j];
-    }
-  }
-  return null;
+  return EnigmailCommon.getFrame(win, frameName);
 }
-
-var gEnigPromptSvc;
-
-var gEnigStrBundle;
 
 // Initializes enigmailCommon
 function EnigInitCommon(id) {
@@ -231,231 +190,11 @@ function EnigInitCommon(id) {
 
 }
 
-var gEnigmailSvc;
 
 function GetEnigmailSvc() {
-  // Lazy initialization of enigmail JS component (for efficiency)
-
-  if (gEnigmailSvc) {
-    return gEnigmailSvc.initialized ? gEnigmailSvc : null;
-  }
-
-  try {
-    gEnigmailSvc = ENIG_C.classes[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_C.interfaces.nsIEnigmail);
-
-  } catch (ex) {
-    ERROR_LOG("enigmailCommon.js: Error in instantiating EnigmailService\n");
-    return null;
-  }
-
-  DEBUG_LOG("enigmailCommon.js: gEnigmailSvc = "+gEnigmailSvc+"\n");
-
-  if (!gEnigmailSvc.initialized) {
-    // Initialize enigmail
-
-    var firstInitialization = !gEnigmailSvc.initializationAttempted;
-
-    try {
-      // Initialize enigmail
-      gEnigmailSvc.initialize(window, EnigGetVersion(), gPrefEnigmail);
-
-      try {
-        // Reset alert count to default value
-        gPrefEnigmail.clearUserPref("initAlert");
-      } catch(ex) {
-      }
-
-    } catch (ex) {
-
-      if (firstInitialization) {
-        // Display initialization error alert
-        var errMsg = gEnigmailSvc.initializationError ? gEnigmailSvc.initializationError : EnigGetString("accessError");
-
-        errMsg += "\n\n"+EnigGetString("avoidInitErr");
-
-
-        var checkedObj = {value: false};
-        if (EnigGetPref("initAlert")) {
-          var r = EnigLongAlert("Enigmail: "+errMsg, EnigGetString("dlgNoPrompt"), null, ":help", null, checkedObj);
-          if (r >= 0 && checkedObj.value) {
-            EnigSetPref("initAlert", false);
-          }
-          if (r == 1) {
-            EnigHelpWindow("initError");
-          }
-        }
-        if (EnigGetPref("initAlert")) {
-          gEnigmailSvc.initializationAttempted = false;
-          gEnigmailSvc = null;
-        }
-      }
-
-      return null;
-    }
-
-    var configuredVersion = EnigGetPref("configuredVersion");
-
-    DEBUG_LOG("enigmailCommon.js: GetEnigmailSvc: "+configuredVersion+"\n");
-
-    if (firstInitialization && gEnigmailSvc.initialized &&
-        gEnigmailSvc.agentType && gEnigmailSvc.agentType == "pgp") {
-      EnigAlert(EnigGetString("pgpNotSupported"));
-    }
-
-    if (gEnigmailSvc.initialized && (EnigGetVersion() != configuredVersion)) {
-      EnigConfigure();
-    }
-  }
-
-  if (gEnigmailSvc.logFileStream) {
-    gEnigDebugLog = true;
-    gEnigLogLevel = 5;
-  }
-
-  return gEnigmailSvc.initialized ? gEnigmailSvc : null;
-}
-
-
-
-function EnigUpgradeRecipientsSelection () {
-  // Upgrade perRecipientRules and recipientsSelectionOption to
-  // new recipientsSelection
-
-  var  keySel = EnigGetPref("recipientsSelectionOption");
-  var  perRecipientRules = EnigGetPref("perRecipientRules");
-
-  var setVal = 2;
-
-  /*
-  1: rules only
-  2: rules & email addresses (normal)
-  3: email address only (no rules)
-  4: manually (always prompt, no rules)
-  5: no rules, no key selection
-  */
-
-  switch (perRecipientRules) {
-  case 0:
-    switch (keySel) {
-    case 0:
-      setVal = 5;
-      break;
-    case 1:
-      setVal = 3;
-      break;
-    case 2:
-      setVal = 4;
-      break;
-    default:
-      setVal = 2;
-    }
-    break;
-  case 1:
-    setVal = 2;
-    break;
-  case 2:
-    setVal = 1;
-    break;
-  default:
-    setVal = 2;
-  }
-
-  // set new pref
-  EnigSetPref("recipientsSelection", setVal);
-
-  // clear old prefs
-  gPrefEnigmail.clearUserPref("perRecipientRules");
-  gPrefEnigmail.clearUserPref("recipientsSelectionOption");
-}
-
-function EnigUpgradeHeadersView() {
-  // all headers hack removed -> make sure view is correct
-  var hdrMode = null;
-  try {
-    var hdrMode = EnigGetPref("show_headers");
-  }
-  catch (ex) {}
-
-  if (hdrMode == null) hdrMode = 1;
-  try {
-    gPrefEnigmail.clearUserPref("show_headers");
-  }
-  catch (ex) {}
-
-  gEnigPrefRoot.setIntPref("mail.show_headers", hdrMode);
-  try {
-    enigMessageReload(false);
-  }
-  catch (ex) {}
-}
-
-function EnigUpgradeCustomHeaders() {
-  try {
-    var extraHdrs = " " + gEnigPrefRoot.getCharPref("mailnews.headers.extraExpandedHeaders").toLowerCase() + " ";
-
-    var extraHdrList = [
-      "x-enigmail-version",
-      "content-transfer-encoding",
-      "openpgp",
-      "x-mimeole",
-      "x-bugzilla-reason",
-      "x-php-bug" ];
-
-    for (hdr in extraHdrList) {
-      extraHdrs = extraHdrs.replace(" "+extraHdrList[hdr]+" ", " ");
-    }
-
-    extraHdrs = extraHdrs.replace(/^ */, "").replace(/ *$/, "");
-    gEnigPrefRoot.setCharPref("mailnews.headers.extraExpandedHeaders", extraHdrs)
-  }
-  catch(ex) {}
-}
-
-function EnigUpgradePgpMime() {
-  var pgpMimeMode = false;
-  try {
-    var pgpMimeMode = (EnigGetPref("usePGPMimeOption") == 2);
-  }
-  catch (ex) {
-    return;
-  }
-
-  try {
-    if (pgpMimeMode) {
-      var accountManager = Components.classes["@mozilla.org/messenger/account-manager;1"].getService(Components.interfaces.nsIMsgAccountManager);
-      for (var i=0; i < accountManager.allIdentities.Count(); i++) {
-        var id = accountManager.allIdentities.QueryElementAt(i, Components.interfaces.nsIMsgIdentity);
-        if (id.getBoolAttribute("enablePgp")) {
-          id.setBoolAttribute("pgpMimeMode", true);
-        }
-      }
-    }
-    gPrefEnigmail.clearUserPref("usePGPMimeOption");
-  }
-  catch (ex) {}
-}
-
-function EnigConfigure() {
-  var oldVer=EnigGetPref("configuredVersion");
-
-  try {
-    var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"].getService(Components.interfaces.nsIVersionComparator);
-    if (oldVer == "") {
-      EnigOpenSetupWizard();
-    }
-    else if (oldVer < "0.95") {
-      try {
-        EnigUpgradeHeadersView();
-        EnigUpgradePgpMime();
-        EnigUpgradeRecipientsSelection();
-      }
-      catch (ex) {}
-    }
-    else if (vc.compare(oldVer, "1.0") < 0) EnigUpgradeCustomHeaders();
-  }
-  catch(ex) {};
-  EnigSetPref("configuredVersion", EnigGetVersion());
-  EnigSavePrefs();
+  if (! gEnigmailSvc)
+    gEnigmailSvc = EnigmailCommon.getService(window);
+  return gEnigmailSvc;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -574,72 +313,35 @@ function EnigReadFileContents(localFile, maxBytes) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function WRITE_LOG(str) {
-  function f00(val, digits) {
-    return ("0000"+val.toString()).substr(-digits);
-  }
-
-  var d = new Date();
-  var datStr=d.getFullYear()+"-"+f00(d.getMonth()+1, 2)+"-"+f00(d.getDate(),2)+" "+f00(d.getHours(),2)+":"+f00(d.getMinutes(),2)+":"+f00(d.getSeconds(),2)+"."+f00(d.getMilliseconds(),3)+" ";
-  if (gEnigLogLevel >= 4)
-    dump(datStr+str);
-
-  if (gEnigDebugLog && gEnigmailSvc && gEnigmailSvc.logFileStream) {
-    gEnigmailSvc.logFileStream.write(datStr, datStr.length);
-    gEnigmailSvc.logFileStream.write(str, str.length);
-  }
+  EnigmailCommon.WRITE_LOG(str);
 }
 
 function DEBUG_LOG(str) {
-  if (gEnigLogLevel >= 4)
-    WRITE_LOG("[DEBUG] "+str);
+  EnigmailCommon.DEBUG_LOG(str);
 }
 
 function WARNING_LOG(str) {
-  if (gEnigLogLevel >= 3)
-    WRITE_LOG("[WARN] "+str);
+  EnigmailCommon.WARNING_LOG(str);
 }
 
 function ERROR_LOG(str) {
-  try {
-    var consoleSvc = Components.classes["@mozilla.org/consoleservice;1"].
-        getService(Components.interfaces.nsIConsoleService);
-
-    var scriptError = Components.classes["@mozilla.org/scripterror;1"]
-                                .createInstance(Components.interfaces.nsIScriptError);
-    scriptError.init(str, null, null, 0,
-                     0, scriptError.errorFlag, "Enigmail");
-    consoleSvc.logMessage(scriptError);
-
-  }
-  catch (ex) {}
-
-  if (gEnigLogLevel >= 2)
-    WRITE_LOG("[ERROR] "+str);
+  EnigmailCommon.ERROR_LOG(str);
 }
 
 function CONSOLE_LOG(str) {
-  if (gEnigLogLevel >= 3)
-    WRITE_LOG("[CONSOLE] "+str);
-
-  if (gEnigmailSvc && gEnigmailSvc.console)
-    gEnigmailSvc.console.write(str);
+  EnigmailCommon.CONSOLE_LOG(str);
 }
 
 
 // write exception information
 function EnigWriteException(referenceInfo, ex) {
-  ERROR_LOG(referenceInfo+": caught exception: "
-            +ex.name+"\n"
-            +"Message: '"+ex.message+"'\n"
-            +"File:    "+ex.fileName+"\n"
-            +"Line:    "+ex.lineNumber+"\n"
-            +"Stack:   "+ex.stack+"\n");
+  EnigmailCommon.writeException(referenceInfo, ex);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function EnigAlert(mesg) {
-  gEnigPromptSvc.alert(window, EnigGetString("enigAlert"), mesg);
+  return EnigmailCommon.alert(window, mesg);
 }
 
 /**
@@ -653,19 +355,7 @@ function EnigAlert(mesg) {
  *
  */
 function EnigLongAlert(mesg, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj) {
-  var result = {
-    value: -1,
-    checked: false
-  };
-  window.openDialog("chrome://enigmail/content/enigmailAlertDlg.xul", "",
-            "chrome,centerscreen,modal",
-            {msgtext: mesg, checkboxLabel: checkBoxLabel, button1: okLabel, button2: labelButton2, button3: labelButton3},
-            result);
-
-  if (checkBoxLabel) {
-    checkedObj.value=result.checked
-  }
-  return result.value;
+  return EnigmailCommon.longAlert(window, mesg, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj);
 }
 
 function EnigAlertCount(countPrefName, mesg) {
@@ -708,120 +398,12 @@ function EnigAlertPref(mesg, prefText) {
 
 // Confirmation dialog with OK / Cancel buttons (both customizable)
 function EnigConfirm(mesg, okLabel, cancelLabel) {
-  var dummy=new Object();
-
-  var buttonTitles = 0;
-  if (okLabel == null && cancelLabel == null) {
-    buttonTitles = (gEnigPromptSvc.BUTTON_TITLE_YES * ENIG_BUTTON_POS_0) +
-                   (gEnigPromptSvc.BUTTON_TITLE_NO * ENIG_BUTTON_POS_1);
-  }
-  else {
-    if (okLabel != null) {
-      buttonTitles += (gEnigPromptSvc.BUTTON_TITLE_IS_STRING * gEnigPromptSvc.BUTTON_POS_0);
-    }
-    else {
-      buttonTitles += gEnigPromptSvc.BUTTON_TITLE_OK * ENIG_BUTTON_POS_0;
-    }
-
-    if (cancelLabel != null) {
-      buttonTitles += (gEnigPromptSvc.BUTTON_TITLE_IS_STRING * gEnigPromptSvc.BUTTON_POS_1);
-    }
-    else {
-      buttonTitles += gEnigPromptSvc.BUTTON_TITLE_CANCEL * ENIG_BUTTON_POS_1;
-    }
-  }
-
-  var buttonPressed = gEnigPromptSvc.confirmEx(window,
-                        EnigGetString("enigConfirm"),
-                        mesg,
-                        buttonTitles,
-                        okLabel, cancelLabel, null,
-                        null, dummy);
-
-  return (buttonPressed == 0);
+  return EnigmailCommon.confirmDlg(window, mesg, okLabel, cancelLabel);
 }
 
 
 function EnigConfirmPref(mesg, prefText, okLabel, cancelLabel) {
-  const notSet = 0;
-  const yes = 1;
-  const no = 2;
-  const display = true;
-  const dontDisplay = false;
-
-  var buttonTitles = 0;
-  if (okLabel == null && cancelLabel == null) {
-    buttonTitles = (gEnigPromptSvc.BUTTON_TITLE_YES * ENIG_BUTTON_POS_0) +
-                   (gEnigPromptSvc.BUTTON_TITLE_NO * ENIG_BUTTON_POS_1);
-  }
-  else {
-    if (okLabel != null) {
-      buttonTitles += (gEnigPromptSvc.BUTTON_TITLE_IS_STRING * gEnigPromptSvc.BUTTON_POS_0);
-    }
-    else {
-      buttonTitles += gEnigPromptSvc.BUTTON_TITLE_OK * ENIG_BUTTON_POS_0;
-    }
-
-    if (cancelLabel != null) {
-      buttonTitles += (gEnigPromptSvc.BUTTON_TITLE_IS_STRING * gEnigPromptSvc.BUTTON_POS_1);
-    }
-    else {
-      buttonTitles += gEnigPromptSvc.BUTTON_TITLE_CANCEL * ENIG_BUTTON_POS_1;
-    }
-  }
-
-  var prefValue = EnigGetPref(prefText);
-
-  if (typeof(prefValue) != "boolean") {
-    // number: remember user's choice
-    switch (prefValue) {
-    case notSet:
-      var checkBoxObj = { value: false} ;
-      var buttonPressed = gEnigPromptSvc.confirmEx(window,
-                            EnigGetString("enigConfirm"),
-                            mesg,
-                            buttonTitles,
-                            okLabel, cancelLabel, null,
-                            EnigGetString("dlgKeepSetting"), checkBoxObj);
-      if (checkBoxObj.value) {
-        EnigSetPref(prefText, (buttonPressed==0 ? yes : no));
-      }
-      return (buttonPressed==0 ? 1 : 0);
-
-    case yes:
-      return 1;
-
-    case no:
-      return 0;
-
-    default:
-      return -1;
-    }
-  }
-  else {
-    // boolean: "do not show this dialog anymore" (and return default)
-    switch (prefValue) {
-    case display:
-      var checkBoxObj = { value: false} ;
-      var buttonPressed = gEnigPromptSvc.confirmEx(window,
-                            EnigGetString("enigConfirm"),
-                            mesg,
-                            buttonTitles,
-                            okLabel, cancelLabel, null,
-                            EnigGetString("dlgNoPrompt"), checkBoxObj);
-      if (checkBoxObj.value) {
-        EnigSetPref(prefText, false);
-      }
-      return (buttonPressed==0 ? 1 : 0);
-
-    case dontDisplay:
-      return 1;
-
-    default:
-      return -1;
-    }
-
-  }
+  return EnigmailCommon.confirmPref(window, mesg, prefText, okLabel, cancelLabel);
 }
 
 function EnigError(mesg) {
@@ -832,25 +414,6 @@ function EnigPromptValue(mesg, valueObj) {
   var checkObj = new Object();
   return gEnigPromptSvc.prompt(window, EnigGetString("enigPrompt"),
                                mesg, valueObj, "", checkObj);
-}
-
-function EnigOverrideAttribute(elementIdList, attrName, prefix, suffix) {
-  for (var index = 0; index < elementIdList.length; index++) {
-    var elementId = elementIdList[index];
-    var element = document.getElementById(elementId);
-    if (element) {
-      try {
-        var oldValue = element.getAttribute(attrName);
-        var newValue = prefix+elementId+suffix;
-
-        //DEBUG_LOG("enigmailCommon.js: *** overriding id="+ elementId+" "+attrName+"="+oldValue+" with "+newValue+"\n");
-
-        element.setAttribute(attrName, newValue);
-      } catch (ex) {}
-    } else {
-      DEBUG_LOG("enigmailCommon.js: *** UNABLE to override id="+ elementId+"\n");
-    }
-  }
 }
 
 
@@ -918,57 +481,21 @@ function EnigSetRadioPref(prefName, optionElementIds) {
   catch (ex) {}
 }
 
-function EnigSetDefaultPrefs() {
-  DEBUG_LOG("enigmailCommon.js: EnigSetDefaultPrefs\n");
-  // has become obsolete
-}
-
 function EnigSavePrefs() {
-  DEBUG_LOG("enigmailCommon.js: EnigSavePrefs\n");
-  try {
-    gEnigPrefSvc.savePrefFile(null);
-  } catch (ex) {
-  }
+  return EnigmailCommon.savePrefs();
 }
 
 function EnigGetPref(prefName) {
-   var prefValue = null;
-   try {
-      var prefType = gPrefEnigmail.getPrefType(prefName);
-      // Get pref value
-      switch (prefType) {
-      case gPrefEnigmail.PREF_BOOL:
-         prefValue = gPrefEnigmail.getBoolPref(prefName);
-         break;
-
-      case gPrefEnigmail.PREF_INT:
-         prefValue = gPrefEnigmail.getIntPref(prefName);
-         break;
-
-      case gPrefEnigmail.PREF_STRING:
-         prefValue = gPrefEnigmail.getCharPref(prefName);
-         break;
-
-      default:
-         prefValue = undefined;
-         break;
-     }
-
-   } catch (ex) {
-      // Failed to get pref value
-      ERROR_LOG("enigmailCommon.js: EnigGetPref: unknown prefName:"+prefName+" \n");
-   }
-
-   return prefValue;
+  return EnigmailCommon.getPref(prefName);
 }
 
 function EnigGetDefaultPref(prefName) {
   DEBUG_LOG("enigmailCommon.js: EnigGetDefaultPref: prefName="+prefName+"\n");
   var prefValue=null;
   try {
-    gPrefEnigmail.lockPref(prefName);
+    EnigmailCommon.prefBranch.lockPref(prefName);
     prefValue = EnigGetPref(prefName);
-    gPrefEnigmail.unlockPref(prefName);
+    EnigmailCommon.prefBranch.unlockPref(prefName);
   }
   catch (ex) {}
 
@@ -976,58 +503,15 @@ function EnigGetDefaultPref(prefName) {
 }
 
 function EnigSetPref(prefName, value) {
-   DEBUG_LOG("enigmailCommon.js: EnigSetPref: "+prefName+", "+value+"\n");
-   var prefType;
-   try {
-     prefType = gPrefEnigmail.getPrefType(prefName);
-   }
-   catch (ex) {
-     switch (typeof value) {
-       case "boolean":
-         prefType = gPrefEnigmail.PREF_BOOL;
-         break;
-       case "integer":
-         prefType = gPrefEnigmail.PREF_INT;
-         break;
-       case "string":
-         prefType = gPrefEnigmail.PREF_STRING;
-         break;
-       default:
-         prefType = 0;
-         break;
-     }
-   }
-   var retVal = false;
-
-   switch (prefType) {
-      case gPrefEnigmail.PREF_BOOL:
-         gPrefEnigmail.setBoolPref(prefName, value);
-         retVal = true;
-         break;
-
-      case gPrefEnigmail.PREF_INT:
-         gPrefEnigmail.setIntPref(prefName, value);
-         retVal = true;
-         break;
-
-      case gPrefEnigmail.PREF_STRING:
-         gPrefEnigmail.setCharPref(prefName, value);
-         retVal = true;
-         break;
-
-      default:
-         break;
-   }
-
-   return retVal;
+  return EnigmailCommon.setPref(prefName, value);
 }
 
 function EnigGetSignMsg(identity) {
   DEBUG_LOG("enigmailCommon.js: EnigGetSignMsg: identity.key="+identity.key+"\n");
   var sign = null;
 
-  if (gEnigPrefRoot.getPrefType("mail.identity."+identity.key+".pgpSignPlain")==0) {
-    if (gEnigPrefRoot.getPrefType("mail.identity."+identity.key+".pgpSignMsg")==0) {
+  if (EnigmailCommon.prefRoot.getPrefType("mail.identity."+identity.key+".pgpSignPlain")==0) {
+    if (EnigmailCommon.prefRoot.getPrefType("mail.identity."+identity.key+".pgpSignMsg")==0) {
       sign=identity.getBoolAttribute("pgpAlwaysSign");
       identity.setBoolAttribute("pgpSignEncrypted", sign);
       identity.setBoolAttribute("pgpSignPlain", sign);
@@ -1037,8 +521,8 @@ function EnigGetSignMsg(identity) {
       identity.setBoolAttribute("pgpSignEncrypted", sign==1);
       identity.setBoolAttribute("pgpSignPlain", sign>0);
     }
-    gEnigPrefRoot.deleteBranch("mail.identity."+identity.key+".pgpSignMsg");
-    gEnigPrefRoot.deleteBranch("mail.identity."+identity.key+".pgpAlwaysSign");
+    EnigmailCommon.prefRoot.deleteBranch("mail.identity."+identity.key+".pgpSignMsg");
+    EnigmailCommon.prefRoot.deleteBranch("mail.identity."+identity.key+".pgpAlwaysSign");
   }
 
 }
@@ -1284,28 +768,7 @@ function EnigClearPassphrase() {
 }
 
 function EnigOpenWin (winName, spec, winOptions, optList) {
-  var windowManager = ENIG_C.classes[ENIG_APPSHELL_MEDIATOR_CONTRACTID].getService(ENIG_C.interfaces.nsIWindowMediator);
-
-  /* according to the docs, this doesn't seem to work ...
-    var recentWin = windowManager.getMostRecentWindow(winName);
-  */
-  var winEnum=windowManager.getEnumerator(null);
-  var recentWin=null;
-  while (winEnum.hasMoreElements() && ! recentWin) {
-    var thisWin = winEnum.getNext();
-    if (thisWin.location.href==spec) {
-      recentWin = thisWin;
-    }
-  }
-
-  if (recentWin) {
-    recentWin.focus();
-  } else {
-    var appShellSvc = ENIG_C.classes[ENIG_ASS_CONTRACTID].getService(ENIG_C.interfaces.nsIAppShellService);
-    var domWin = appShellSvc.hiddenDOMWindow;
-    //nsIDOMJSWindow
-    domWin.open(spec, winName, "chrome,"+winOptions, optList);
-  }
+  return EnigmailCommon.openWin(winName, spec, winOptions, optList);
 }
 
 // return the options passed to a window
@@ -1445,33 +908,7 @@ function EnigLoadURLInNavigatorWindow(url, aOpenFlag)
 
 // retrieves a localized string from the enigmail.properties stringbundle
 function EnigGetString(aStr) {
-  var restCount = arguments.length - 1;
-  if(!gEnigStrBundle) {
-    try {
-      var strBundleService = ENIG_C.classes[ENIG_STRINGBUNDLE_CONTRACTID].getService();
-      strBundleService = strBundleService.QueryInterface(nsIEnigStrBundle);
-      gEnigStrBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
-    } catch (ex) {
-      ERROR_LOG("enigmailCommon.js: Error in instantiating stringBundleService\n");
-    }
-  }
-  if(gEnigStrBundle) {
-    try {
-      if(restCount > 0) {
-        var subPhrases = new Array();
-        for (var i = 1; i < arguments.length; i++) {
-          subPhrases.push(arguments[i]);
-        }
-        return gEnigStrBundle.formatStringFromName(aStr, subPhrases, subPhrases.length);
-      }
-      else {
-        return gEnigStrBundle.GetStringFromName(aStr);
-      }
-    } catch (ex) {
-      ERROR_LOG("enigmailCommon.js: Error in querying stringBundleService for string '"+aStr+"'\n");
-    }
-  }
-  return null;
+  return EnigmailCommon.getString(aStr);
 }
 
 // Remove all quoted strings (and angle brackets) from a list of email
@@ -1522,43 +959,25 @@ function EnigGetTempDir() {
 
 // get the OS platform
 function EnigGetOS () {
-
-  var xulAppinfo = ENIG_C.classes[ENIG_XPCOM_APPINFO].getService(ENIG_C.interfaces.nsIXULRuntime);
-  return xulAppinfo.OS;
-
+  return EnigmailCommon.getOS();
 }
 
 function EnigGetVersion() {
-  DEBUG_LOG("enigmailCommon.js: EnigGetVersion\n");
-
-  var addonVersion = "?";
-  try {
-    // Gecko 1.9.x
-    addonVersion = Components.classes["@mozilla.org/extensions/manager;1"].
-      getService(Components.interfaces.nsIExtensionManager).
-      getItemForID(ENIG_EXTENSION_GUID).version
-  }
-  catch (ex) {
-    // Gecko 2.0
-    addonVersion = gEnigExtensionVersion;
-  }
-
-  DEBUG_LOG("enigmailCommon.js: installed version: "+addonVersion+"\n");
-  return addonVersion;
+  return EnigmailCommon.getVersion();
 }
 
 function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
   DEBUG_LOG("enigmailCommon.js: EnigDisplayPrefs\n");
 
   var obj = new Object;
-  var prefList = gPrefEnigmail.getChildList("",obj);
+  var prefList = EnigmailCommon.prefBranch.getChildList("",obj);
 
   for (var prefItem in prefList) {
     var prefName=prefList[prefItem];
     var prefElement = document.getElementById("enigmail_"+prefName);
 
     if (prefElement) {
-      var prefType = gPrefEnigmail.getPrefType(prefName);
+      var prefType = EnigmailCommon.prefBranch.getPrefType(prefName);
       var prefValue;
       if (showDefault) {
         prefValue = EnigGetDefaultPref(prefName);
@@ -1570,7 +989,7 @@ function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
       DEBUG_LOG("enigmailCommon.js: EnigDisplayPrefs: "+prefName+"="+prefValue+"\n");
 
       switch (prefType) {
-      case gPrefEnigmail.PREF_BOOL:
+      case EnigmailCommon.prefBranch.PREF_BOOL:
         if (showPrefs) {
           if (prefElement.getAttribute("invert") == "true") {
             prefValue = ! prefValue;
@@ -1603,7 +1022,7 @@ function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
 
         break;
 
-      case gPrefEnigmail.PREF_INT:
+      case EnigmailCommon.prefBranch.PREF_INT:
         if (showPrefs)
           prefElement.value = prefValue;
 
@@ -1614,7 +1033,7 @@ function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
         }
         break;
 
-      case gPrefEnigmail.PREF_STRING:
+      case EnigmailCommon.prefBranch.PREF_STRING:
         if (showPrefs)
           prefElement.value = prefValue;
         if (setPrefs)
@@ -1680,8 +1099,7 @@ function EnigRulesEditor() {
 }
 
 function EnigOpenSetupWizard() {
-  window.open("chrome://enigmail/content/enigmailSetupWizard.xul",
-            "", "chrome,centerscreen");
+  EnigmailCommon.openSetupWizard();
 }
 
 // get keys from keyserver

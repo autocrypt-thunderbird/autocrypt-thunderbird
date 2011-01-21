@@ -18,6 +18,7 @@
  * Copyright (C) 2010 Patrick Brunschwig. All Rights Reserved.
  *
  * Contributor(s):
+ *   Ramalingam Saravanan <svn@xmlterm.org>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -43,14 +44,34 @@ var EXPORTED_SYMBOLS = [ "EnigmailCommon" ];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const nsIEnigmail = Ci.nsIEnigmail;
 
 const NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
-
-const nsIEnigmail = Ci.nsIEnigmail;
+const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
+const ENIG_EXTENSION_GUID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
 
 const hexTable = "0123456789abcdef";
 
+const BUTTON_POS_0           = 1;
+const BUTTON_POS_1           = 1 << 8;
+const BUTTON_POS_2           = 1 << 16;
+
+
 var gLogLevel = 3;
+var gPromptSvc = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
+
+var gEnigExtensionVersion;
+
+try {
+  // Gecko 2.0 only
+  Components.utils.import("resource://gre/modules/AddonManager.jsm");
+  AddonManager.getAddonByID(ENIG_EXTENSION_GUID,
+    function (aAddon) {
+      gEnigExtensionVersion = aAddon.version;
+    }
+  );
+}
+catch (ex) {}
 
 
 var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
@@ -87,11 +108,491 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
 
 var EnigmailCommon = {
 
+  // "constants"
+  POSSIBLE_PGPMIME: -2081,
+  MSG_BUFFER_SIZE: 96000,
+  MSG_HEADER_SIZE: 16000,
+
+  ENIGMIMEVERIFY_CONTRACTID: "@mozilla.org/enigmail/mime-verify;1",
+  IPCBUFFER_CONTRACTID: "@mozilla.org/ipc/ipc-buffer;1",
+  ENIGMIMELISTENER_CONTRACTID: "@mozilla.org/enigmail/mime-listener;1",
+  IOSERVICE_CONTRACTID: "@mozilla.org/network/io-service;1",
+  PIPEFILTERLISTENER_CONTRACTID: "@mozilla.org/process/pipe-filter-listener;1",
+  SIMPLEURI_CONTRACTID: "@mozilla.org/network/simple-uri;1",
+  IPCSERVICE_CONTRACTID: "@mozilla.org/process/ipc-service;1",
+  LOCAL_FILE_CONTRACTID: "@mozilla.org/file/local;1",
+  MIME_CONTRACTID: "@mozilla.org/mime;1",
+  ENIGMAIL_CONTRACTID: "@mozdev.org/enigmail/enigmail;1",
+  APPSHELL_MEDIATOR_CONTRACTID: "@mozilla.org/appshell/window-mediator;1",
+  APPSHSVC_CONTRACTID: "@mozilla.org/appshell/appShellService;1",
+
+
+  // variables
   enigmailSvc: null,
   enigStringBundle: null,
   statusFlags: gStatusFlags,
+  prefBranch: null,
+  prefRoot: null,
+  prefService: null,
 
-  WRITE_LOG: function (str) {
+  getService: function (parentWindow) {
+    // Lazy initialization of enigmail JS component (for efficiency)
+
+    if (this.enigmailSvc) {
+      return this.enigmailSvc.initialized ? this.enigmailSvc : null;
+    }
+
+    try {
+      this.enigmailSvc = Cc[this.ENIGMAIL_CONTRACTID].createInstance(Ci.nsIEnigmail);
+    }
+    catch (ex) {
+      this.ERROR_LOG("enigmailCommon.js: Error in instantiating EnigmailService\n");
+      return null;
+    }
+
+    this.DEBUG_LOG("enigmailCommon.js: this.enigmailSvc = "+this.enigmailSvc+"\n");
+
+    if (!this.enigmailSvc.initialized) {
+      // Initialize enigmail
+
+      var firstInitialization = !this.enigmailSvc.initializationAttempted;
+
+      try {
+        // Initialize enigmail
+        this.enigmailSvc.initialize(parentWindow, this.getVersion(), this.prefBranch);
+
+        try {
+          // Reset alert count to default value
+          this.prefBranch.clearUserPref("initAlert");
+        }
+        catch(ex) { }
+
+      }
+      catch (ex) {
+
+        if (firstInitialization) {
+          // Display initialization error alert
+          var errMsg = this.enigmailSvc.initializationError ? this.enigmailSvc.initializationError : this.getString("accessError");
+
+          errMsg += "\n\n"+this.getString("avoidInitErr");
+
+
+          var checkedObj = {value: false};
+          if (this.getPref("initAlert")) {
+            var r = this.longAlert("Enigmail: "+errMsg, this.getString("dlgNoPrompt"), null, ":help", null, checkedObj);
+            if (r >= 0 && checkedObj.value) {
+              this.setPref("initAlert", false);
+            }
+            if (r == 1) {
+              this.helpWindow("initError");
+            }
+          }
+          if (this.getPref("initAlert")) {
+            this.enigmailSvc.initializationAttempted = false;
+            this.enigmailSvc = null;
+          }
+        }
+
+        return null;
+      }
+
+      var configuredVersion = this.getPref("configuredVersion");
+
+      this.DEBUG_LOG("enigmailCommon.js: getService: "+configuredVersion+"\n");
+
+      if (firstInitialization && this.enigmailSvc.initialized &&
+          this.enigmailSvc.agentType && this.enigmailSvc.agentType == "pgp") {
+        this.alert(this.getString("pgpNotSupported"));
+      }
+
+      if (this.enigmailSvc.initialized && (this.getVersion() != configuredVersion)) {
+        ConfigureEnigmail();
+      }
+    }
+
+    if (this.enigmailSvc.logFileStream) {
+      gLogLevel = 5;
+    }
+
+    return this.enigmailSvc.initialized ? this.enigmailSvc : null;
+  },
+
+  getVersion: function()
+  {
+    this.DEBUG_LOG("enigmailCommon.jsm: getVersion\n");
+
+    var addonVersion = "?";
+    try {
+      // Gecko 1.9.x
+      addonVersion = Components.classes["@mozilla.org/extensions/manager;1"].
+        getService(Components.interfaces.nsIExtensionManager).
+        getItemForID(ENIG_EXTENSION_GUID).version
+    }
+    catch (ex) {
+      // Gecko 2.0
+      addonVersion = gEnigExtensionVersion;
+    }
+
+    this.DEBUG_LOG("enigmailCommon.jsm: installed version: "+addonVersion+"\n");
+    return addonVersion;
+  },
+
+  savePrefs: function ()
+  {
+    this.DEBUG_LOG("enigmailCommon.js: savePrefs\n");
+    try {
+      this.prefService.savePrefFile(null);
+    }
+    catch (ex) {
+    }
+  },
+
+  getPref: function (prefName)
+  {
+    const ENIGMAIL_PREFS_ROOT = "extensions.enigmail.";
+
+    if (! this.prefBranch) {
+      try {
+        this.prefService = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
+
+        this.prefRoot        = this.prefService.getBranch(null);
+        this.prefBranch      = this.prefService.getBranch(ENIGMAIL_PREFS_ROOT);
+
+        if (this.prefBranch.getCharPref("logDirectory"))
+          gLogLevel = 5;
+
+      }
+      catch (ex) {
+        this.ERROR_LOG("enigmailCommon.jsm: Error in instantiating PrefService\n");
+        return null;
+      }
+    }
+
+   var prefValue = null;
+   try {
+      var prefType = this.prefBranch.getPrefType(prefName);
+      // Get pref value
+      switch (prefType) {
+      case this.prefBranch.PREF_BOOL:
+         prefValue = this.prefBranch.getBoolPref(prefName);
+         break;
+
+      case this.prefBranch.PREF_INT:
+         prefValue = this.prefBranch.getIntPref(prefName);
+         break;
+
+      case this.prefBranch.PREF_STRING:
+         prefValue = this.prefBranch.getCharPref(prefName);
+         break;
+
+      default:
+         prefValue = undefined;
+         break;
+     }
+
+   } catch (ex) {
+      // Failed to get pref value
+      this.ERROR_LOG("enigmailCommon.jsm: getPref: unknown prefName:"+prefName+" \n");
+   }
+
+   return prefValue;
+  },
+
+  setPref: function (prefName, value)
+  {
+     this.DEBUG_LOG("enigmailCommon.jsm: setPref: "+prefName+", "+value+"\n");
+     var prefType;
+     try {
+       prefType = this.prefBranch.getPrefType(prefName);
+     }
+     catch (ex) {
+       switch (typeof value) {
+         case "boolean":
+           prefType = this.prefBranch.PREF_BOOL;
+           break;
+         case "integer":
+           prefType = this.prefBranch.PREF_INT;
+           break;
+         case "string":
+           prefType = this.prefBranch.PREF_STRING;
+           break;
+         default:
+           prefType = 0;
+           break;
+       }
+     }
+     var retVal = false;
+
+     switch (prefType) {
+        case this.prefBranch.PREF_BOOL:
+           this.prefBranch.setBoolPref(prefName, value);
+           retVal = true;
+           break;
+
+        case this.prefBranch.PREF_INT:
+           this.prefBranch.setIntPref(prefName, value);
+           retVal = true;
+           break;
+
+        case this.prefBranch.PREF_STRING:
+           this.prefBranch.setCharPref(prefName, value);
+           retVal = true;
+           break;
+
+        default:
+           break;
+     }
+
+     return retVal;
+  },
+
+  alert: function (parent, mesg)
+  {
+    gPromptSvc.alert(parent, this.getString("enigAlert"), mesg);
+  },
+
+  /**
+   * Displays an alert dialog with 3-4 optional buttons.
+   * checkBoxLabel: if not null, display checkbox with text; the checkbox state is returned in checkedObj
+   * button-Labels: use "&" to indicate access key
+   *     use "buttonType:label" or ":buttonType" to indicate special button types
+   *        (buttonType is one of cancel, help, extra1, extra2)
+   * return: 0-2: button Number pressed
+   *          -1: ESC or close window button pressed
+   *
+   */
+  longAlert: function (parent, mesg, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj)
+  {
+    var result = {
+      value: -1,
+      checked: false
+    };
+
+    parent.open("chrome://enigmail/content/enigmailAlertDlg.xul", "",
+              "chrome,dialog,centerscreen,modal",
+              {msgtext: mesg, checkboxLabel: checkBoxLabel, button1: okLabel, button2: labelButton2, button3: labelButton3},
+              result);
+
+    if (checkBoxLabel) {
+      checkedObj.value=result.checked
+    }
+    return result.value;
+  },
+
+  // Confirmation dialog with OK / Cancel buttons (both customizable)
+  confirmDlg: function (parent, mesg, okLabel, cancelLabel)
+  {
+    var dummy=new Object();
+
+    var buttonTitles = 0;
+    if (okLabel == null && cancelLabel == null) {
+      buttonTitles = (gPromptSvc.BUTTON_TITLE_YES * BUTTON_POS_0) +
+                     (gPromptSvc.BUTTON_TITLE_NO * BUTTON_POS_1);
+    }
+    else {
+      if (okLabel != null) {
+        buttonTitles += (gPromptSvc.BUTTON_TITLE_IS_STRING * gPromptSvc.BUTTON_POS_0);
+      }
+      else {
+        buttonTitles += gPromptSvc.BUTTON_TITLE_OK * BUTTON_POS_0;
+      }
+
+      if (cancelLabel != null) {
+        buttonTitles += (gPromptSvc.BUTTON_TITLE_IS_STRING * gPromptSvc.BUTTON_POS_1);
+      }
+      else {
+        buttonTitles += gPromptSvc.BUTTON_TITLE_CANCEL * BUTTON_POS_1;
+      }
+    }
+
+    var buttonPressed = gPromptSvc.confirmEx(parent,
+                          this.getString("enigConfirm"),
+                          mesg,
+                          buttonTitles,
+                          okLabel, cancelLabel, null,
+                          null, dummy);
+
+    return (buttonPressed == 0);
+  },
+
+  confirmPref: function (parent, mesg, prefText, okLabel, cancelLabel)
+  {
+    const notSet = 0;
+    const yes = 1;
+    const no = 2;
+    const display = true;
+    const dontDisplay = false;
+
+    var buttonTitles = 0;
+    if (okLabel == null && cancelLabel == null) {
+      buttonTitles = (gPromptSvc.BUTTON_TITLE_YES * BUTTON_POS_0) +
+                     (gPromptSvc.BUTTON_TITLE_NO * BUTTON_POS_1);
+    }
+    else {
+      if (okLabel != null) {
+        buttonTitles += (gPromptSvc.BUTTON_TITLE_IS_STRING * gPromptSvc.BUTTON_POS_0);
+      }
+      else {
+        buttonTitles += gPromptSvc.BUTTON_TITLE_OK * BUTTON_POS_0;
+      }
+
+      if (cancelLabel != null) {
+        buttonTitles += (gPromptSvc.BUTTON_TITLE_IS_STRING * gPromptSvc.BUTTON_POS_1);
+      }
+      else {
+        buttonTitles += gPromptSvc.BUTTON_TITLE_CANCEL * BUTTON_POS_1;
+      }
+    }
+
+    var prefValue = this.getPref(prefText);
+
+    if (typeof(prefValue) != "boolean") {
+      // number: remember user's choice
+      switch (prefValue) {
+      case notSet:
+        var checkBoxObj = { value: false} ;
+        var buttonPressed = gPromptSvc.confirmEx(parent,
+                              this.getString("enigConfirm"),
+                              mesg,
+                              buttonTitles,
+                              okLabel, cancelLabel, null,
+                              this.getString("dlgKeepSetting"), checkBoxObj);
+        if (checkBoxObj.value) {
+          this.setPref(prefText, (buttonPressed==0 ? yes : no));
+        }
+        return (buttonPressed==0 ? 1 : 0);
+
+      case yes:
+        return 1;
+
+      case no:
+        return 0;
+
+      default:
+        return -1;
+      }
+    }
+    else {
+      // boolean: "do not show this dialog anymore" (and return default)
+      switch (prefValue) {
+      case display:
+        var checkBoxObj = { value: false} ;
+        var buttonPressed = gPromptSvc.confirmEx(parent,
+                              this.getString("enigConfirm"),
+                              mesg,
+                              buttonTitles,
+                              okLabel, cancelLabel, null,
+                              this.getString("dlgNoPrompt"), checkBoxObj);
+        if (checkBoxObj.value) {
+          this.setPref(prefText, false);
+        }
+        return (buttonPressed==0 ? 1 : 0);
+
+      case dontDisplay:
+        return 1;
+
+      default:
+        return -1;
+      }
+
+    }
+  },
+
+  helpWindow: function (source)
+  {
+    this.openWin("enigmail:help",
+                "chrome://enigmail/content/enigmailHelp.xul?src="+source,
+                "centerscreen,resizable");
+  },
+
+  openWin: function (winName, spec, winOptions, optList)
+  {
+    var windowManager = Cc[this.APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
+
+    var winEnum=windowManager.getEnumerator(null);
+    var recentWin=null;
+    while (winEnum.hasMoreElements() && ! recentWin) {
+      var thisWin = winEnum.getNext();
+      if (thisWin.location.href==spec) {
+        recentWin = thisWin;
+      }
+    }
+
+    if (recentWin) {
+      recentWin.focus();
+    } else {
+      var appShellSvc = Cc[this.APPSHSVC_CONTRACTID].getService(Ci.nsIAppShellService);
+      var domWin = appShellSvc.hiddenDOMWindow;
+      //nsIDOMJSWindow
+      domWin.open(spec, winName, "chrome,"+winOptions, optList);
+    }
+  },
+
+  openSetupWizard: function ()
+  {
+     window.open("chrome://enigmail/content/enigmailSetupWizard.xul",
+                "", "chrome,centerscreen");
+  },
+
+  getFrame: function(win, frameName)
+  {
+    this.DEBUG_LOG("enigmailCommon.jsm: getFrame: name="+frameName+"\n");
+    for (var j=0; j<win.frames.length; j++) {
+      if (win.frames[j].name == frameName) {
+        return win.frames[j];
+      }
+    }
+    return null;
+  },
+
+  newRequestObserver: function (terminateFunc, terminateArg)
+  {
+    function requestObserver(terminateFunc, terminateArg)
+    {
+      this._terminateFunc = terminateFunc;
+      this._terminateArg = terminateArg;
+    }
+
+    requestObserver.prototype = {
+
+      _terminateFunc: null,
+      _terminateArg: null,
+
+      QueryInterface: function (iid) {
+        if (!iid.equals(ENIG_C.interfaces.nsIRequestObserver) &&
+            !iid.equals(ENIG_C.interfaces.nsISupports))
+          throw ENIG_C.results.NS_ERROR_NO_INTERFACE;
+        return this;
+      },
+
+      onStartRequest: function (channel, ctxt)
+      {
+        EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: requestObserver.onStartRequest\n");
+      },
+
+      onStopRequest: function (channel, ctxt, status)
+      {
+        EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: requestObserver.onStopRequest: "+ctxt+"\n");
+        this._terminateFunc(this._terminateArg, ctxt);
+      }
+    }
+
+    return new requestObserver(terminateFunc, terminateArg);
+  },
+
+  writeException: function (referenceInfo, ex)
+  {
+    this.ERROR_LOG(referenceInfo+": caught exception: "
+              +ex.name+"\n"
+              +"Message: '"+ex.message+"'\n"
+              +"File:    "+ex.fileName+"\n"
+              +"Line:    "+ex.lineNumber+"\n"
+              +"Stack:   "+ex.stack+"\n");
+  },
+
+
+  WRITE_LOG: function (str)
+  {
     function f00(val, digits) {
       return ("0000"+val.toString()).substr(-digits);
     }
@@ -107,12 +608,14 @@ var EnigmailCommon = {
     }
   },
 
-  DEBUG_LOG: function (str) {
+  DEBUG_LOG: function (str)
+  {
     if ((gLogLevel >= 4) || (this.enigmailSvc && this.enigmailSvc.logFileStream))
       this.WRITE_LOG("[DEBUG] "+str);
   },
 
-  WARNING_LOG: function (str) {
+  WARNING_LOG: function (str)
+  {
     if (gLogLevel >= 3)
       this.WRITE_LOG("[WARN] "+str);
 
@@ -120,7 +623,8 @@ var EnigmailCommon = {
       this.enigmailSvc.console.write(str);
   },
 
-  ERROR_LOG: function (str) {
+  ERROR_LOG: function (str)
+  {
     try {
       var consoleSvc = Cc["@mozilla.org/consoleservice;1"].
           getService(Ci.nsIConsoleService);
@@ -138,7 +642,8 @@ var EnigmailCommon = {
       this.WRITE_LOG("[ERROR] "+str);
   },
 
-  CONSOLE_LOG: function (str) {
+  CONSOLE_LOG: function (str)
+  {
     if (gLogLevel >= 3)
       this.WRITE_LOG("[CONSOLE] "+str);
 
@@ -147,7 +652,8 @@ var EnigmailCommon = {
   },
 
   // retrieves a localized string from the enigmail.properties stringbundle
-  getString: function (aStr) {
+  getString: function (aStr)
+  {
     var restCount = arguments.length - 1;
     if (!this.enigStringBundle) {
       try {
@@ -177,7 +683,13 @@ var EnigmailCommon = {
     return aStr;
   },
 
-  convertToUnicode: function (text, charset) {
+  getOS: function () {
+    var xulAppinfo = Cc[XPCOM_APPINFO].getService(Ci.nsIXULRuntime);
+    return xulAppinfo.OS;
+  },
+
+  convertToUnicode: function (text, charset)
+  {
     this.DEBUG_LOG("enigmailCommon.jsm: convertToUnicode: "+charset+"\n");
 
     if (!text || (charset && (charset.toLowerCase() == "iso-8859-1")))
@@ -219,7 +731,8 @@ var EnigmailCommon = {
     }
   },
 
-  convertFromGpg: function (text) {
+  convertFromGpg: function (text)
+  {
     if (typeof(text)=="string") {
       text = text.replace(/\\x3a/ig, "\\e3A");
       var a=text.search(/\\x[0-9a-fA-F]{2}/);
@@ -237,7 +750,8 @@ var EnigmailCommon = {
     return text;
   },
 
-  parseErrorOutput: function (errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj) {
+  parseErrorOutput: function (errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj)
+  {
 
     this.WRITE_LOG("enigmailCommon.jsm: parseErrorOutput:\n");
     var errLines = errOutput.split(/\r?\n/);
@@ -300,7 +814,7 @@ var EnigmailCommon = {
           if (flag)
             statusFlags |= flag;
 
-          //this.DEBUG_LOG("enigmailCommon.jsm: Enigmail.parseErrorOutput: status match '+matches[1]+"\n");
+          //this.DEBUG_LOG("enigmailCommon.jsm: parseErrorOutput: status match '+matches[1]+"\n");
         }
 
       } else {
@@ -381,7 +895,8 @@ var EnigmailCommon = {
 
   // pack/unpack: Network (big-endian) byte order
 
-  pack: function (value, bytes) {
+  pack: function (value, bytes)
+  {
     var str = '';
     var mask = 0xff;
     for (var j=0; j < bytes; j++) {
@@ -392,7 +907,8 @@ var EnigmailCommon = {
     return str;
   },
 
-  unpack: function (str) {
+  unpack: function (str)
+  {
     var len = str.length;
     var value = 0;
 
@@ -406,7 +922,8 @@ var EnigmailCommon = {
 
 
 
-  bytesToHex: function (str) {
+  bytesToHex: function (str)
+  {
     var len = str.length;
 
     var hex = '';
@@ -419,13 +936,156 @@ var EnigmailCommon = {
     return hex;
   },
 
-  getLogLevel: function() {
+  getLogLevel: function()
+  {
     return gLogLevel;
   },
 
-  initialize: function (enigmailSvc, logLevel) {
+  initialize: function (enigmailSvc, logLevel)
+  {
     this.enigmailSvc = enigmailSvc;
     gLogLevel = logLevel;
   }
 };
 
+
+////////////////////////////////////////////////////////////////////////
+// Local (not exported) functions
+////////////////////////////////////////////////////////////////////////
+
+function upgradeRecipientsSelection () {
+  // Upgrade perRecipientRules and recipientsSelectionOption to
+  // new recipientsSelection
+
+  var  keySel = EnigmailCommon.getPref("recipientsSelectionOption");
+  var  perRecipientRules = EnigmailCommon.getPref("perRecipientRules");
+
+  var setVal = 2;
+
+  /*
+  1: rules only
+  2: rules & email addresses (normal)
+  3: email address only (no rules)
+  4: manually (always prompt, no rules)
+  5: no rules, no key selection
+  */
+
+  switch (perRecipientRules) {
+  case 0:
+    switch (keySel) {
+    case 0:
+      setVal = 5;
+      break;
+    case 1:
+      setVal = 3;
+      break;
+    case 2:
+      setVal = 4;
+      break;
+    default:
+      setVal = 2;
+    }
+    break;
+  case 1:
+    setVal = 2;
+    break;
+  case 2:
+    setVal = 1;
+    break;
+  default:
+    setVal = 2;
+  }
+
+  // set new pref
+  EnigmailCommon.setPref("recipientsSelection", setVal);
+
+  // clear old prefs
+  EnigmailCommon.prefBranch.clearUserPref("perRecipientRules");
+  EnigmailCommon.prefBranch.clearUserPref("recipientsSelectionOption");
+}
+
+function upgradeHeadersView() {
+  // all headers hack removed -> make sure view is correct
+  var hdrMode = null;
+  try {
+    var hdrMode = EnigmailCommon.getPref("show_headers");
+  }
+  catch (ex) {}
+
+  if (hdrMode == null) hdrMode = 1;
+  try {
+    EnigmailCommon.prefBranch.clearUserPref("show_headers");
+  }
+  catch (ex) {}
+
+  EnigmailCommon.prefRoot.setIntPref("mail.show_headers", hdrMode);
+}
+
+function upgradeCustomHeaders() {
+  try {
+    var extraHdrs = " " + EnigmailCommon.prefRoot.getCharPref("mailnews.headers.extraExpandedHeaders").toLowerCase() + " ";
+
+    var extraHdrList = [
+      "x-enigmail-version",
+      "content-transfer-encoding",
+      "openpgp",
+      "x-mimeole",
+      "x-bugzilla-reason",
+      "x-php-bug" ];
+
+    for (hdr in extraHdrList) {
+      extraHdrs = extraHdrs.replace(" "+extraHdrList[hdr]+" ", " ");
+    }
+
+    extraHdrs = extraHdrs.replace(/^ */, "").replace(/ *$/, "");
+    EnigmailCommon.prefRoot.setCharPref("mailnews.headers.extraExpandedHeaders", extraHdrs)
+  }
+  catch(ex) {}
+}
+
+function upgradePgpMime() {
+  var pgpMimeMode = false;
+  try {
+    var pgpMimeMode = (EnigmailCommon.getPref("usePGPMimeOption") == 2);
+  }
+  catch (ex) {
+    return;
+  }
+
+  try {
+    if (pgpMimeMode) {
+      var accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
+      for (var i=0; i < accountManager.allIdentities.Count(); i++) {
+        var id = accountManager.allIdentities.QueryElementAt(i, Ci.nsIMsgIdentity);
+        if (id.getBoolAttribute("enablePgp")) {
+          id.setBoolAttribute("pgpMimeMode", true);
+        }
+      }
+    }
+    EnigmailCommon.prefBranch.clearUserPref("usePGPMimeOption");
+  }
+  catch (ex) {}
+}
+
+function ConfigureEnigmail() {
+  var oldVer=EnigmailCommon.getPref("configuredVersion");
+
+  try {
+    var vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
+    if (oldVer == "") {
+      EnigmailCommon.openSetupWizard();
+    }
+    else if (oldVer < "0.95") {
+      try {
+        upgradeHeadersView();
+        upgradePgpMime();
+        upgradeRecipientsSelection();
+      }
+      catch (ex) {}
+    }
+    else if (vc.compare(oldVer, "1.0") < 0) upgradeCustomHeaders();
+  }
+  catch(ex) {};
+  EnigmailCommon.setPref("configuredVersion", EnigmailCommon.getVersion());
+  EnigmailCommon.savePrefs();
+}
