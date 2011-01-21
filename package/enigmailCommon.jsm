@@ -39,7 +39,7 @@
  */
 
 
-var EXPORTED_SYMBOLS = [ "EnigCommon" ];
+var EXPORTED_SYMBOLS = [ "EnigmailCommon" ];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -85,7 +85,7 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     INV_SGNR:				 0x100000000
 };
 
-var EnigCommon = {
+var EnigmailCommon = {
 
   enigmailSvc: null,
   enigStringBundle: null,

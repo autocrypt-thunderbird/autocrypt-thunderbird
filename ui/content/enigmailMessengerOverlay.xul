@@ -83,19 +83,19 @@
   <menu id="menu_Enigmail">
 
     <menupopup id="menu_EnigmailPopup"
-      onpopupshowing="EnigCollapseAdvanced(this, 'hidden', enigUpdateOptionsDisplay());">
+      onpopupshowing="EnigCollapseAdvanced(this, 'hidden', Enigmail.msg.updateOptionsDisplay());">
 
       <menuitem id="enigmail_decryptverify"
            label="&enigmail.decryptverify.label;"
            accesskey="&enigmail.decryptverify.accesskey;"
            advanced="true"
            hidden="false"
-           oncommand="enigMessageDecrypt();" />
+           oncommand="Enigmail.msg.messageDecrypt();" />
 
       <menuitem id="enigmail_savedecrypted"
            label="&enigmail.savedecrypted.label;"
            accesskey="&enigmail.savedecrypted.accesskey;"
-           oncommand="enigMessageSave();" />
+           oncommand="Enigmail.msg.messageSave();" />
 
       <menuseparator
            advanced="true"
@@ -108,7 +108,7 @@
            hidden="false"
            label="&enigmail.autoDecrypt.label;"
            accesskey="&enigmail.autoDecrypt.accesskey;"
-           oncommand="enigToggleAttribute('autoDecrypt');" />
+           oncommand="Enigmail.msg.toggleAttribute('autoDecrypt');" />
 
       <menuseparator
            advanced="true"
@@ -126,7 +126,7 @@
            accesskey="&enigmail.reload.accesskey;"
            advanced="true"
            hidden="false"
-           oncommand="enigmailReloadCompleteMsg();" />
+           oncommand="Enigmail.msg.reloadCompleteMsg();" />
 
       <menu id="enigmail_sendersKeyMenu"
            label="&enigmail.sendersKeyMenu.label;"
@@ -139,7 +139,7 @@
           <menuitem id="enigmail_importpublickey"
                label="&enigmail.importpublickey.label;"
                accesskey="&enigmail.importpublickey.accesskey;"
-               oncommand="enigMessageImport();" />
+               oncommand="Enigmail.msg.messageImport();" />
 
           <menuseparator/>
 
@@ -235,7 +235,7 @@
               id="button-enigmail-decrypt"
               label="&enigmail.decryptbutton.label;"
               tooltiptext="&enigmail.decryptbutton.tip;"
-              oncommand="enigMessageDecrypt();"
+              oncommand="Enigmail.msg.messageDecrypt();"
               buttontype="thunderbird"
               observes="button_enigmail_decrypt"
               insertafter="button-newmsg"
@@ -248,7 +248,7 @@
               id="button-enigmail-decrypt"
               label="&enigmail.decryptbutton.label;"
               tooltiptext="&enigmail.decryptbutton.tip;"
-              oncommand="enigMessageDecrypt();"
+              oncommand="Enigmail.msg.messageDecrypt();"
               buttontype="thunderbird"
               observes="button_enigmail_decrypt"
               insertafter="button-newmsg"
@@ -311,14 +311,14 @@
                 <menuitem label="&enigmail.importpublickey.label;"
                           id="enigmail_importKey"
                           hidden="true"
-                          oncommand="enigHandleUnknownKey();"/>
+                          oncommand="Enigmail.msg.handleUnknownKey();"/>
                 <menuitem label="&enigmail.reload.label;"
                           id="enigmail_reloadMessage"
                           hidden="true"
                           oncommand="enigmailReloadCompleteMsg();"/>
                 <menuitem label="&enigmail.pgpSecurityInfo.label;"
                           id="enigmail_pgpSecurityInfo"
-                          oncommand="enigViewOpenpgpInfo(null, false);"/>
+                          oncommand="Enigmail.msg.viewOpenpgpInfo(null, false);"/>
                 <menuitem label="&enigmail.copySecurityInfo.label;"
                           id="enigmail_copySecurityInfo"
                           oncommand="Enigmail.hdrView.copyStatusInfo();"/>
@@ -346,7 +346,7 @@
           <textbox flex="1" readonly="true" align="center" class="enigmailHeaderValue" chromedir="ltr"
             value="&enigmail.revealAttachmentsButton.label;"/>
         </vbox>
-        <button class="enigMsgHdrView-flat-button" label="Reveal" oncommand="enigRevealAttachments();"/>
+        <button class="enigMsgHdrView-flat-button" label="Reveal" oncommand="Enigmail.msg.revealAttachments();"/>
       </hbox>
     </vbox>
   </vbox>
@@ -358,15 +358,15 @@
     <menuitem id="enigmail_ctxImportKey"
       label="&enigmail.ctxImportKey.label;"
       accesskey="&enigmail.ctxImportKey.accesskey;"
-      oncommand="enigHandleAttachmentSel('importKey');"/>
+      oncommand="Enigmail.msg.handleAttachmentSel('importKey');"/>
     <menuitem id="enigmail_ctxDecryptOpen"
       label="&enigmail.ctxDecryptOpen.label;"
       accesskey="&enigmail.ctxDecryptOpen.accesskey;"
-      oncommand="enigHandleAttachmentSel('openAttachment');"/>
+      oncommand="Enigmail.msg.handleAttachmentSel('openAttachment');"/>
     <menuitem id="enigmail_ctxDecryptSave"
       label="&enigmail.ctxDecryptSave.label;"
       accesskey="&enigmail.ctxDecryptSave.accesskey;"
-      oncommand="enigHandleAttachmentSel('saveAttachment');"/>
+      oncommand="Enigmail.msg.handleAttachmentSel('saveAttachment');"/>
   </popup>
 
 

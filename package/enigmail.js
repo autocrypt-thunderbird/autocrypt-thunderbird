@@ -669,7 +669,7 @@ function IndexOfArmorDelimiter(text, str, offset) {
 function Enigmail()
 {
   Components.utils.import("resource://enigmail/enigmailCommon.jsm");
-  Ec = EnigCommon;
+  Ec = EnigmailCommon;
 }
 
 Enigmail.prototype = {
