@@ -533,8 +533,8 @@ nsEnigMsgCompose::RequiresCryptoEncapsulation(
 
   if (mUseSMIME) {
     DEBUG_LOG(("nsEnigMsgCompose::RequiresCryptoEncapsulation: Using SMIME\n"));
-   *aRequiresEncryptionWork = PR_TRUE;
-   return NS_OK;
+    *aRequiresEncryptionWork = PR_TRUE;
+    return NS_OK;
   }
 
   // Enigmail stuff
