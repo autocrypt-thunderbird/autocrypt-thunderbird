@@ -34,6 +34,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/commonFuncs.jsm");
 
 if (! Enigmail) var Enigmail = {};
 
@@ -80,14 +81,14 @@ Enigmail.hdrView = {
   {
     var fromAddr = gFolderDisplay.selectedMessage.author;
     try {
-      fromAddr=EnigStripEmail(fromAddr);
+      fromAddr=EnigmailFuncs.stripEmail(fromAddr);
     }
     catch(ex) {}
 
     var userIdList=userId.split(/\n/);
     try {
       for (var i=0; i<userIdList.length; i++) {
-        if (fromAddr.toLowerCase() == EnigStripEmail(userIdList[i]).toLowerCase()) {
+        if (fromAddr.toLowerCase() == EnigmailFuncs.stripEmail(userIdList[i]).toLowerCase()) {
           userId = userIdList[i];
           break;
         }
@@ -139,7 +140,7 @@ Enigmail.hdrView = {
     var errorLines="";
     var fullStatusInfo="";
 
-    if (exitCode == ENIG_POSSIBLE_PGPMIME) {
+    if (exitCode == EnigmailCommon.POSSIBLE_PGPMIME) {
       exitCode = 0;
     }
     else {
@@ -215,16 +216,16 @@ Enigmail.hdrView = {
       if (sigDetails) {
         var detailArr=sigDetails.split(/ /);
 
-        dateTime = EnigGetDateTime(detailArr[2], true, true);
+        dateTime = EnigmailCommon.getDateTime(detailArr[2], true, true);
         var txt = EnigmailCommon.getString("keyAndSigDate", keyId.substr(-8, 8), dateTime);
         statusArr.push(txt);
         statusInfo += "\n" + txt;
         var fpr = "";
         if (detailArr.length >= 10) {
-          fpr = EnigFormatFpr(detailArr[9]);
+          fpr = EnigmailFuncs.formatFpr(detailArr[9]);
         }
         else {
-          EnigFormatFpr(detailArr[0]);
+          EnigmailFuncs.formatFpr(detailArr[0]);
         }
         if (fpr) {
           statusInfo += "\n"+EnigmailCommon.getString("keyFpr", fpr);
@@ -408,7 +409,7 @@ Enigmail.hdrView = {
       }
 
       if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
-        var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
+        var enigMimeService = Components.classes[EnigmailCommon.ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
         if (enigMimeService)
         {
           enigMimeService.rememberEncrypted(this.lastEncryptedMsgKey);
@@ -627,7 +628,8 @@ Enigmail.hdrView = {
   {
     if (Enigmail.hdrView.lastEncryptedMsgKey)
     {
-      var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
+      var enigMimeService = Components.classes[EnigmailCommon.ENIGMIMESERVICE_CONTRACTID].
+                              getService(Components.interfaces.nsIEnigMimeService);
       if (enigMimeService) {
         enigMimeService.forgetEncrypted(Enigmail.hdrView.lastEncryptedMsgKey);
         Enigmail.hdrView.lastEncryptedMsgKey = null;

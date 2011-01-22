@@ -59,7 +59,7 @@ LANGXPIFILE = $(XPI_MODULE)-en-US-$(XPI_MODULE_VERS).xpi
 
 libs::
 	$(INSTALL) $(srcdir)/enigmail.js $(DIST)/bin/components
-	$(INSTALL) $(srcdir)/enigmailCommon.jsm $(DIST)/bin/modules
+	$(INSTALL) $(srcdir)/*.jsm $(DIST)/bin/modules
 	$(INSTALL) $(srcdir)/prefs/enigmail.js $(DIST)/bin/defaults/preferences
 	$(INSTALL) $(srcdir)/enigprefs-service.js $(DIST)/bin/components
 	$(INSTALL) $(srcdir)/enigMsgCompFields.js $(DIST)/bin/components

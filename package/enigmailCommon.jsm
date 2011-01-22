@@ -46,9 +46,17 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const nsIEnigmail = Ci.nsIEnigmail;
 
-const NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
+const DATE_FORMAT_CONTRACTID = "@mozilla.org/intl/scriptabledateformat;1";
+const DIRSERVICE_CONTRACTID = "@mozilla.org/file/directory_service;1";
+const LOCALE_SVC_CONTRACTID = "@mozilla.org/intl/nslocaleservice;1";
+const SCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
+
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 const ENIG_EXTENSION_GUID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
+
+const THUNDERBIRD_ID = "{3550f703-e582-4d05-9a08-453d09bdfdc6}";
+const SEAMONKEY_ID   = "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}";
+
 
 const hexTable = "0123456789abcdef";
 
@@ -110,22 +118,24 @@ var EnigmailCommon = {
 
   // "constants"
   POSSIBLE_PGPMIME: -2081,
-  MSG_BUFFER_SIZE: 96000,
-  MSG_HEADER_SIZE: 16000,
+  PGP_DESKTOP_ATT : -2082,
 
-  ENIGMIMEVERIFY_CONTRACTID: "@mozilla.org/enigmail/mime-verify;1",
-  IPCBUFFER_CONTRACTID: "@mozilla.org/ipc/ipc-buffer;1",
-  ENIGMIMELISTENER_CONTRACTID: "@mozilla.org/enigmail/mime-listener;1",
-  IOSERVICE_CONTRACTID: "@mozilla.org/network/io-service;1",
-  PIPEFILTERLISTENER_CONTRACTID: "@mozilla.org/process/pipe-filter-listener;1",
-  SIMPLEURI_CONTRACTID: "@mozilla.org/network/simple-uri;1",
-  IPCSERVICE_CONTRACTID: "@mozilla.org/process/ipc-service;1",
-  LOCAL_FILE_CONTRACTID: "@mozilla.org/file/local;1",
-  MIME_CONTRACTID: "@mozilla.org/mime;1",
-  ENIGMAIL_CONTRACTID: "@mozdev.org/enigmail/enigmail;1",
+  MSG_BUFFER_SIZE:  96000,
+  MSG_HEADER_SIZE:  16000,
+
   APPSHELL_MEDIATOR_CONTRACTID: "@mozilla.org/appshell/window-mediator;1",
   APPSHSVC_CONTRACTID: "@mozilla.org/appshell/appShellService;1",
-
+  ENIGMAIL_CONTRACTID: "@mozdev.org/enigmail/enigmail;1",
+  ENIGMIMELISTENER_CONTRACTID: "@mozilla.org/enigmail/mime-listener;1",
+  ENIGMIMESERVICE_CONTRACTID: "@mozdev.org/enigmail/enigmimeservice;1",
+  ENIGMIMEVERIFY_CONTRACTID: "@mozilla.org/enigmail/mime-verify;1",
+  IPCBUFFER_CONTRACTID: "@mozilla.org/ipc/ipc-buffer;1",
+  IPCSERVICE_CONTRACTID: "@mozilla.org/process/ipc-service;1",
+  IOSERVICE_CONTRACTID: "@mozilla.org/network/io-service;1",
+  LOCAL_FILE_CONTRACTID: "@mozilla.org/file/local;1",
+  MIME_CONTRACTID: "@mozilla.org/mime;1",
+  PIPEFILTERLISTENER_CONTRACTID: "@mozilla.org/process/pipe-filter-listener;1",
+  SIMPLEURI_CONTRACTID: "@mozilla.org/network/simple-uri;1",
 
   // variables
   enigmailSvc: null,
@@ -179,7 +189,10 @@ var EnigmailCommon = {
 
           var checkedObj = {value: false};
           if (this.getPref("initAlert")) {
-            var r = this.longAlert("Enigmail: "+errMsg, this.getString("dlgNoPrompt"), null, ":help", null, checkedObj);
+            var r = this.longAlert(parentWindow, "Enigmail: "+errMsg,
+                                   this.getString("dlgNoPrompt"),
+                                   null, ":help",
+                                   null, checkedObj);
             if (r >= 0 && checkedObj.value) {
               this.setPref("initAlert", false);
             }
@@ -202,7 +215,7 @@ var EnigmailCommon = {
 
       if (firstInitialization && this.enigmailSvc.initialized &&
           this.enigmailSvc.agentType && this.enigmailSvc.agentType == "pgp") {
-        this.alert(this.getString("pgpNotSupported"));
+        this.alert(parentWindow, this.getString("pgpNotSupported"));
       }
 
       if (this.enigmailSvc.initialized && (this.getVersion() != configuredVersion)) {
@@ -545,6 +558,103 @@ var EnigmailCommon = {
     return null;
   },
 
+
+  getDateTime: function (dateNum, withDate, withTime)
+  {
+    if (dateNum != 0) {
+      var dat=new Date(dateNum * 1000);
+      var appLocale = Cc[LOCALE_SVC_CONTRACTID].getService(Ci.nsILocaleService).getApplicationLocale();
+      var dateTimeFormat = Cc[DATE_FORMAT_CONTRACTID].getService(Ci.nsIScriptableDateFormat);
+
+      var dateFormat = (withDate ? dateTimeFormat.dateFormatShort : dateTimeFormat.dateFormatNone);
+      var timeFormat = (withTime ? dateTimeFormat.timeFormatNoSeconds : dateTimeFormat.timeFormatNone);
+      return dateTimeFormat.FormatDateTime(appLocale.getCategory("NSILOCALE_TIME"),
+                dateFormat,
+                timeFormat,
+                dat.getFullYear(), dat.getMonth()+1, dat.getDate(),
+                dat.getHours(), dat.getMinutes(), 0);
+    }
+    else {
+      return "";
+    }
+  },
+
+  filePicker: function (parent, title, displayDir, save, defaultExtension, defaultName, filterPairs)
+  {
+    this.DEBUG_LOG("enigmailCommon.jsm: filePicker: "+save+"\n");
+
+    var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance();
+    filePicker = filePicker.QueryInterface(Ci.nsIFilePicker);
+
+    var mode = save ? Ci.nsIFilePicker.modeSave : Ci.nsIFilePicker.modeOpen;
+
+    filePicker.init(parent, title, mode);
+
+    if (displayDir) {
+      var localFile = Cc[this.LOCAL_FILE_CONTRACTID].createInstance(Ci.nsILocalFile);
+
+      try {
+        localFile.initWithPath(displayDir);
+        filePicker.displayDirectory = localFile;
+      } catch (ex) {
+      }
+    }
+
+    if (defaultExtension)
+      filePicker.defaultExtension = defaultExtension;
+
+    if (defaultName)
+      filePicker.defaultString=defaultName;
+
+    var nfilters = 0;
+    if (filterPairs && filterPairs.length)
+      nfilters = filterPairs.length / 2;
+
+    for (var index=0; index < nfilters; index++) {
+      filePicker.appendFilter(filterPairs[2*index], filterPairs[2*index+1]);
+    }
+
+    filePicker.appendFilters(Ci.nsIFilePicker.filterAll);
+
+    if (filePicker.show() == Ci.nsIFilePicker.returnCancel)
+      return null;
+
+    var file = filePicker.file.QueryInterface(Ci.nsILocalFile);
+
+    return file;
+  },
+
+  getFilePath: function (nsFileObj)
+  {
+    if (this.getOS() == "WINNT")
+      return this.convertToUnicode(nsFileObj.persistentDescriptor, "utf-8");
+
+    return this.convertFromUnicode(nsFileObj.path, "utf-8");
+  },
+
+
+  getTempDir: function ()
+  {
+    const TEMPDIR_PROP = "TmpD";
+    var tmpDir;
+
+    try {
+      var ds = Cc[DIRSERVICE_CONTRACTID].getService();
+      var dsprops = ds.QueryInterface(Ci.nsIProperties);
+      var tmpDirComp = dsprops.get(TEMPDIR_PROP, Ci.nsILocalFile);
+      tmpDir=tmpDirComp.path;
+    }
+    catch (ex) {
+      // let's guess ...
+      if (this.getOS() == "WINNT") {
+        tmpDir="C:\\TEMP";
+      } else {
+        tmpDir="/tmp";
+      }
+    }
+    return tmpDir;
+  },
+
   newRequestObserver: function (terminateFunc, terminateArg)
   {
     function requestObserver(terminateFunc, terminateArg)
@@ -684,8 +794,14 @@ var EnigmailCommon = {
   },
 
   getOS: function () {
-    var xulAppinfo = Cc[XPCOM_APPINFO].getService(Ci.nsIXULRuntime);
-    return xulAppinfo.OS;
+    var xulRuntime = Cc[XPCOM_APPINFO].getService(Ci.nsIXULRuntime);
+    return xulRuntime.OS;
+  },
+
+  isSuite: function () {
+    // return true if Seamonkey, false otherwise
+    var xulAppinfo = Cc[XPCOM_APPINFO].getService(Ci.nsIXULAppInfo);
+    return (xulAppinfo.ID == SEAMONKEY_ID);
   },
 
   convertToUnicode: function (text, charset)
@@ -699,7 +815,7 @@ var EnigmailCommon = {
 
     // Encode plaintext
     try {
-      var unicodeConv = Cc[NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(Components.interfaces.nsIScriptableUnicodeConverter);
+      var unicodeConv = Cc[SCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(Ci.nsIScriptableUnicodeConverter);
 
       unicodeConv.charset = charset;
       return unicodeConv.ConvertToUnicode(text);
@@ -719,7 +835,7 @@ var EnigmailCommon = {
 
     // Encode plaintext
     try {
-      var unicodeConv = Cc[NS_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(Components.interfaces.nsIScriptableUnicodeConverter);
+      var unicodeConv = Cc[SCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(Ci.nsIScriptableUnicodeConverter);
 
       unicodeConv.charset = charset;
       return unicodeConv.ConvertFromUnicode(text);

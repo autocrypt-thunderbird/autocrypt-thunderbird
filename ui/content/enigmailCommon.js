@@ -36,7 +36,7 @@
 // enigmailCommon.js: shared JS functions for Enigmail
 
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
-
+Components.utils.import("resource://enigmail/commonFuncs.jsm");
 
 // The compatible Enigmime version
 var gEnigmimeVersion = "1.2";
@@ -65,7 +65,6 @@ const ENIG_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const ENIG_DIRSERVICE_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const ENIG_MIME_CONTRACTID = "@mozilla.org/mime;1";
 const ENIG_WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
-const ENIG_APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1"
 const ENIG_ASS_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
 const ENIG_CLIPBOARD_CONTRACTID = "@mozilla.org/widget/clipboard;1";
 const ENIG_CLIPBOARD_HELPER_CONTRACTID = "@mozilla.org/widget/clipboardhelper;1"
@@ -78,8 +77,6 @@ const ENIG_SIMPLEURI_CONTRACTID   = "@mozilla.org/network/simple-uri;1";
 const ENIG_SEAMONKEY_ID = "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
 
 
-const ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID =
-                              "@mozilla.org/network/file-output-stream;1";
 const ENIG_STANDARD_URL_CONTRACTID = "@mozilla.org/network/standard-url;1";
 const ENIG_SCRIPTABLEINPUTSTREAM_CONTRACTID = "@mozilla.org/scriptableinputstream;1";
 const ENIG_BINARYINPUTSTREAM_CONTRACTID = "@mozilla.org/binaryinputstream;1";
@@ -135,9 +132,6 @@ const PGP_MIME_ALWAYS   = 2;
 
 const ENIG_POSSIBLE_PGPMIME = -2081;
 const ENIG_PGP_DESKTOP_ATT  = -2082;
-
-// property name for temporary directory service
-const ENIG_TEMPDIR_PROP = "TmpD";
 
 var gUsePGPMimeOptionList = ["usePGPMimeNever", "usePGPMimePossible",
                              "usePGPMimeAlways"];
@@ -195,74 +189,6 @@ function GetEnigmailSvc() {
   if (! gEnigmailSvc)
     gEnigmailSvc = EnigmailCommon.getService(window);
   return gEnigmailSvc;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// File read/write operations
-
-
-const ENIG_RDONLY      = 0x01;
-const ENIG_WRONLY      = 0x02;
-const ENIG_CREATE_FILE = 0x08;
-const ENIG_TRUNCATE    = 0x20;
-const ENIG_DEFAULT_FILE_PERMS = 0600;
-
-
-function EnigCreateFileStream(filePath, permissions) {
-  //DEBUG_LOG("enigmailCommon.js: EnigCreateFileStream: file="+filePath+"\n");
-
-  try {
-    var localFile = ENIG_C.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(ENIG_C.interfaces.nsILocalFile);
-
-    localFile.initWithPath(filePath);
-
-    if (localFile.exists()) {
-
-      if (localFile.isDirectory() || !localFile.isWritable())
-         throw ENIG_C.results.NS_ERROR_FAILURE;
-
-      if (!permissions)
-        permissions = localFile.permissions;
-    }
-
-    if (!permissions)
-      permissions = ENIG_DEFAULT_FILE_PERMS;
-
-    var flags = ENIG_WRONLY | ENIG_CREATE_FILE | ENIG_TRUNCATE;
-
-    var fileStream = ENIG_C.classes[ENIG_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(ENIG_C.interfaces.nsIFileOutputStream);
-
-    fileStream.init(localFile, flags, permissions, 0);
-
-    return fileStream;
-
-  } catch (ex) {
-    ERROR_LOG("enigmailCommon.js: EnigCreateFileStream: Failed to create "+filePath+"\n");
-    return null;
-  }
-}
-
-function EnigWriteFileContents(filePath, data, permissions) {
-
-  //DEBUG_LOG("enigmailCommon.js: EnigWriteFileContents: file="+filePath+"\n");
-
-  try {
-    var fileOutStream = EnigCreateFileStream(filePath, permissions);
-
-    if (data.length) {
-      if (fileOutStream.write(data, data.length) != data.length)
-        throw ENIG_C.results.NS_ERROR_FAILURE;
-
-      fileOutStream.flush();
-    }
-    fileOutStream.close();
-
-  } catch (ex) {
-    ERROR_LOG("enigmailCommon.js: EnigWriteFileContents: Failed to write to "+filePath+"\n");
-    return false;
-  }
-
-  return true;
 }
 
 // maxBytes == -1 => read everything
@@ -619,17 +545,7 @@ function EnigConvertGpgToUnicode(text) {
 }
 
 function EnigFormatFpr(fingerprint) {
-  // format key fingerprint
-  DEBUG_LOG("enigmailCommon.js: EnigFormatFpr: fingerprint="+fingerprint+"\n");
-
-  var r="";
-  var fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
-  if (fpr && fpr.length > 2) {
-    fpr.shift();
-    r=fpr.join(" ");
-  }
-
-  return r;
+  EnigmailFuncs.formatFpr(fingerprint);
 }
 
 
@@ -867,44 +783,6 @@ function EnigLaunchFile(fileName) {
   }
 }
 
-// retrieves the most recent navigator window (opens one if need be)
-function EnigLoadURLInNavigatorWindow(url, aOpenFlag)
-{
-  DEBUG_LOG("enigmailCommon.js: EnigLoadURLInNavigatorWindow: "+url+", "+aOpenFlag+"\n");
-
-  var navWindow;
-
-  // if this is a browser window, just use it
-  if ("document" in top) {
-    var possibleNavigator = top.document.getElementById("main-window");
-    if (possibleNavigator &&
-        possibleNavigator.getAttribute("windowtype") == "navigator:browser")
-      navWindow = top;
-  }
-
-  // if not, get the most recently used browser window
-  if (!navWindow) {
-    var wm;
-    wm = ENIG_C.classes[ENIG_APPSHELL_MEDIATOR_CONTRACTID].getService(ENIG_C.interfaces.nsIWindowMediator);
-    navWindow = wm.getMostRecentWindow("navigator:browser");
-  }
-
-  if (navWindow) {
-
-    if ("loadURI" in navWindow)
-      navWindow.loadURI(url);
-    else
-      navWindow._content.location.href = url;
-
-  } else if (aOpenFlag) {
-    // if no browser window available and it's ok to open a new one, do so
-    navWindow = window.open(url, "Enigmail");
-  }
-
-  DEBUG_LOG("enigmailCommon.js: EnigLoadURLInNavigatorWindow: navWindow="+navWindow+"\n");
-
-  return navWindow;
-}
 
 // retrieves a localized string from the enigmail.properties stringbundle
 function EnigGetString(aStr) {
@@ -914,47 +792,13 @@ function EnigGetString(aStr) {
 // Remove all quoted strings (and angle brackets) from a list of email
 // addresses, returning a list of pure email addresses
 function EnigStripEmail(mailAddrs) {
-
-  var qStart, qEnd;
-  while ((qStart = mailAddrs.indexOf('"')) != -1) {
-     qEnd = mailAddrs.indexOf('"', qStart+1);
-     if (qEnd == -1) {
-       ERROR_LOG("enigmailMsgComposeOverlay.js: EnigStripEmail: Unmatched quote in mail address: "+mailAddrs+"\n");
-       throw ENIG_C.results.NS_ERROR_FAILURE;
-     }
-
-     mailAddrs = mailAddrs.substring(0,qStart) + mailAddrs.substring(qEnd+1);
-  }
-
-  // Eliminate all whitespace, just to be safe
-  mailAddrs = mailAddrs.replace(/\s+/g,"");
-
-  // Extract pure e-mail address list (stripping out angle brackets)
-  mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*/g,"$1$2");
-
-  return mailAddrs;
+  return EnigmailFuncs.stripEmail(mailAddrs);
 }
 
 
 //get path for temporary directory (e.g. /tmp, C:\TEMP)
 function EnigGetTempDir() {
-  var tmpDir;
-
-  try {
-    var ds = ENIG_C.classes[ENIG_DIRSERVICE_CONTRACTID].getService();
-    var dsprops = ds.QueryInterface(ENIG_C.interfaces.nsIProperties);
-    var tmpDirComp = dsprops.get(ENIG_TEMPDIR_PROP, ENIG_C.interfaces.nsILocalFile);
-    tmpDir=tmpDirComp.path;
-  }
-  catch (ex) {
-    // let's guess ...
-    if (EnigGetOS() == "WINNT") {
-      tmpDir="C:\\TEMP";
-    } else {
-      tmpDir="/tmp";
-    }
-  }
-  return tmpDir;
+  return EnigmailCommon.getTempDir();
 }
 
 // get the OS platform
@@ -1048,48 +892,8 @@ function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
 }
 
 function EnigFilePicker(title, displayDir, save, defaultExtension, defaultName, filterPairs) {
-  DEBUG_LOG("enigmailCommon.js: EnigFilePicker: "+save+"\n");
-
-  const nsIFilePicker = ENIG_C.interfaces.nsIFilePicker;
-  var filePicker = ENIG_C.classes["@mozilla.org/filepicker;1"].createInstance();
-  filePicker = filePicker.QueryInterface(nsIFilePicker);
-
-  var mode = save ? nsIFilePicker.modeSave : nsIFilePicker.modeOpen;
-
-  filePicker.init(window, title, mode);
-
-  if (displayDir) {
-    var localFile = ENIG_C.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(ENIG_C.interfaces.nsILocalFile);
-
-    try {
-      localFile.initWithPath(displayDir);
-      filePicker.displayDirectory = localFile;
-    } catch (ex) {
-    }
-  }
-
-  if (defaultExtension)
-    filePicker.defaultExtension = defaultExtension;
-
-  if (defaultName)
-    filePicker.defaultString=defaultName;
-
-  var nfilters = 0;
-  if (filterPairs && filterPairs.length)
-    nfilters = filterPairs.length / 2;
-
-  for (var index=0; index < nfilters; index++) {
-    filePicker.appendFilter(filterPairs[2*index], filterPairs[2*index+1]);
-  }
-
-  filePicker.appendFilters(nsIFilePicker.filterAll);
-
-  if (filePicker.show() == nsIFilePicker.returnCancel)
-    return null;
-
-  var file = filePicker.file.QueryInterface(ENIG_C.interfaces.nsILocalFile);
-
-  return file;
+  return EnigmailCommon.filePicker(window, title, displayDir, save, defaultExtension,
+                                   defaultName, filterPairs);
 }
 
 function EnigRulesEditor() {
@@ -1104,36 +908,7 @@ function EnigOpenSetupWizard() {
 
 // get keys from keyserver
 function EnigDownloadKeys(inputObj, resultObj) {
-  DEBUG_LOG("enigmailCommon.js: EnigSearchKeys: searchList="+inputObj.searchList+"\n");
-
-  resultObj.importedKeys=0;
-
-  var ioService = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
-  if (ioService && ioService.offline) {
-    EnigAlert(EnigGetString("needOnline"));
-    return;
-  }
-
-  var valueObj = {};
-  if (inputObj.searchList) {
-    valueObj = { keyId: "<"+inputObj.searchList.join("> <")+">" };
-  }
-
-  var keysrvObj = new Object();
-
-  window.openDialog("chrome://enigmail/content/enigmailKeyserverDlg.xul",
-        "", "dialog,modal,centerscreen", valueObj, keysrvObj);
-  if (! keysrvObj.value) {
-    return;
-  }
-
-  inputObj.keyserver = keysrvObj.value;
-  if (! inputObj.searchList) {
-    inputObj.searchList = keysrvObj.email.split(/[,; ]+/);
-  }
-
-  window.openDialog("chrome://enigmail/content/enigmailSearchKey.xul",
-        "", "dialog,modal,centerscreen", inputObj, resultObj);
+  return EnigmailFuncs.downloadKeys(window, inputObj, resultObj);
 }
 
 // create new PGP Rule
@@ -1566,10 +1341,7 @@ function EnigShowPhoto(keyId, userId, photoNumber) {
 }
 
 function EnigGetFilePath (nsFileObj) {
-  if (EnigGetOS() == "WINNT") {
-    return EnigConvertToUnicode(nsFileObj.persistentDescriptor, "utf-8");
-  }
-  return EnigConvertFromUnicode(nsFileObj.path, "utf-8");
+  return EnigmailCommon.getFilePath(nsFileObj);
 }
 
 function EnigCreateRevokeCert(keyId, userId) {
@@ -1648,22 +1420,7 @@ function EnigGetTrustLabel(trustCode) {
 }
 
 function EnigGetDateTime(dateNum, withDate, withTime) {
-  if (dateNum != 0) {
-    var dat=new Date(dateNum * 1000);
-    var appLocale = Components.classes[ENIG_LOCALE_SVC_CONTRACTID].getService(Components.interfaces.nsILocaleService).getApplicationLocale();
-    var dateTimeFormat = Components.classes[ENIG_DATE_FORMAT_CONTRACTID].getService(Components.interfaces.nsIScriptableDateFormat);
-
-    var dateFormat = (withDate ? dateTimeFormat.dateFormatShort : dateTimeFormat.dateFormatNone);
-    var timeFormat = (withTime ? dateTimeFormat.timeFormatNoSeconds : dateTimeFormat.timeFormatNone);
-    return dateTimeFormat.FormatDateTime(appLocale.getCategory("NSILOCALE_TIME"),
-              dateFormat,
-              timeFormat,
-              dat.getFullYear(), dat.getMonth()+1, dat.getDate(),
-              dat.getHours(), dat.getMinutes(), 0);
-  }
-  else {
-    return "";
-  }
+  return EnigmailCommon.getDateTime(dateNum, withDate, withTime);
 }
 
 function enigCreateInstance (aURL, aInterface)
