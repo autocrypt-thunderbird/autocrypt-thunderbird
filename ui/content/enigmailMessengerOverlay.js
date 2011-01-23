@@ -1913,7 +1913,7 @@ Enigmail.msg = {
   {
     var pubKeyId = "0x" + Enigmail.msg.securityInfo.keyId.substr(8, 8);
 
-    var mesg =  EnigmailCommon.getString("pubKeyNeeded") + EnigmailCommon.getString("keyImport",pubKeyId);
+    var mesg =  EnigmailCommon.getString("pubKeyNeeded") + EnigmailCommon.getString("keyImport", [pubKeyId]);
 
     if (EnigmailCommon.confirmDlg(window, mesg, EnigmailCommon.getString("keyMan.button.import"))) {
       var inputObj = {

@@ -595,7 +595,7 @@ function GetPassphrase(domWindow, passwdObj, useAgentObj, rememberXTimes) {
   passwdObj.value = "";
   checkObj.value = true;
 
-  var checkMsg = (maxIdleMinutes>0) ? Ec.getString("rememberPass",maxIdleMinutes) : "";
+  var checkMsg = (maxIdleMinutes>0) ? Ec.getString("rememberPass", [ maxIdleMinutes ]) : "";
 
   var success;
 
@@ -1223,7 +1223,7 @@ Enigmail.prototype = {
         agentPath = pathDir.QueryInterface(Components.interfaces.nsIFile);
 
       } catch (ex) {
-        this.initializationError = Ec.getString("gpgNotFound", agentPath);
+        this.initializationError = Ec.getString("gpgNotFound", [ agentPath ]);
         Ec.ERROR_LOG("enigmail.js: Enigmail.initialize: Error - "+this.initializationError+"\n");
         throw Components.results.NS_ERROR_FAILURE;
       }
@@ -1315,7 +1315,7 @@ Enigmail.prototype = {
     // check GnuPG version number
     var evalVersion = this.agentVersion.match(/^\d+\.\d+/)
     if (evalVersion && evalVersion[0]<"1.2") {
-      this.alertMsg(domWindow, Ec.getString("oldGpgVersion", gpgVersion));
+      this.alertMsg(domWindow, Ec.getString("oldGpgVersion", [ gpgVersion ]));
       throw Components.results.NS_ERROR_FAILURE;
     }
   },
@@ -1434,7 +1434,7 @@ Enigmail.prototype = {
 
         if (command == null) {
           Ec.ERROR_LOG("enigmail.js: detectGpgAgent: gpg-agent not found\n");
-          this.alertMsg(domWindow, Ec.getString("gpgAgentNotStarted", this.agentVersion));
+          this.alertMsg(domWindow, Ec.getString("gpgAgentNotStarted", [ this.agentVersion ]));
           throw Components.results.NS_ERROR_FAILURE;
         }
 
@@ -1476,7 +1476,7 @@ Enigmail.prototype = {
           }
           else {
             Ec.ERROR_LOG("enigmail.js: detectGpgAgent: gpg-agent output: "+errStrObj.value+"\n");
-            this.alertMsg(domWindow, Ec.getString("gpgAgentNotStarted", this.agentVersion));
+            this.alertMsg(domWindow, Ec.getString("gpgAgentNotStarted", [ this.agentVersion ]));
             throw Components.results.NS_ERROR_FAILURE;
           }
         }
@@ -2996,10 +2996,10 @@ Enigmail.prototype = {
         }
 
         if (goodSignature) {
-          errorMsgObj.value = trustPrefix + Ec.getString("prefGood",userId) /* + ", " +
+          errorMsgObj.value = trustPrefix + Ec.getString("prefGood", [userId]) /* + ", " +
                 Ec.getString("keyId") + " 0x" + keyId.substring(8,16); */
         } else {
-          errorMsgObj.value = trustPrefix + Ec.getString("prefBad",userId) /*+ ", " +
+          errorMsgObj.value = trustPrefix + Ec.getString("prefBad", [userId]) /*+ ", " +
                 Ec.getString("keyId") + " 0x" + keyId.substring(8,16); */
           if (!exitCode)
             exitCode = 1;
@@ -3470,7 +3470,7 @@ Enigmail.prototype = {
     if (outputFile) {
       if (! WriteFileContents(outputFile, keyBlock, DEFAULT_FILE_PERMS)) {
         exitCodeObj.value = -1;
-        errorMsgObj.value = Ec.getString("fileWriteFailed", outputFile);
+        errorMsgObj.value = Ec.getString("fileWriteFailed", [ outputFile ]);
       }
       return "";
     }
@@ -4052,7 +4052,8 @@ Enigmail.prototype = {
     if (attachmentHead.match(/\-\-\-\-\-BEGIN PGP \w+ KEY BLOCK\-\-\-\-\-/)) {
       // attachment appears to be a PGP key file
 
-      if (this.confirmMsg(parent, Ec.getString("attachmentPgpKey", displayName), Ec.getString("keyMan.button.import"), Ec.getString("dlg.button.view"))) {
+      if (this.confirmMsg(parent, Ec.getString("attachmentPgpKey", [ displayName ]),
+            Ec.getString("keyMan.button.import"), Ec.getString("dlg.button.view"))) {
         exitCodeObj.value = this.importKey(parent, 0, byteData, "", errorMsgObj);
         statusFlagsObj.value = gStatusFlags.IMPORTED;
       }

@@ -217,7 +217,7 @@ Enigmail.hdrView = {
         var detailArr=sigDetails.split(/ /);
 
         dateTime = EnigmailCommon.getDateTime(detailArr[2], true, true);
-        var txt = EnigmailCommon.getString("keyAndSigDate", keyId.substr(-8, 8), dateTime);
+        var txt = EnigmailCommon.getString("keyAndSigDate", [ keyId.substr(-8, 8), dateTime ] );
         statusArr.push(txt);
         statusInfo += "\n" + txt;
         var fpr = "";
@@ -228,14 +228,14 @@ Enigmail.hdrView = {
           EnigmailFuncs.formatFpr(detailArr[0]);
         }
         if (fpr) {
-          statusInfo += "\n"+EnigmailCommon.getString("keyFpr", fpr);
+          statusInfo += "\n"+EnigmailCommon.getString("keyFpr", [ fpr ]);
         }
       }
       fullStatusInfo = statusInfo;
 
     } else {
       if (keyId) {
-        statusInfo = EnigmailCommon.getString("keyNeeded",keyId);
+        statusInfo = EnigmailCommon.getString("keyNeeded", [ keyId ]);
 
         if (statusFlags & nsIEnigmail.INLINE_KEY) {
           statusLine = statusInfo + EnigmailCommon.getString("clickDecrypt");
@@ -311,15 +311,15 @@ Enigmail.hdrView = {
     if (EnigmailCommon.getPref("displayPartiallySigned")) {
       if (statusFlags & nsIEnigmail.PARTIALLY_PGP) {
         if (msgSigned && msgEncrypted) {
-          statusLine = EnigmailCommon.getString("msgPart", EnigmailCommon.getString("msgSignedAndEnc"));
+          statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSignedAndEnc") ]);
           statusLine += EnigmailCommon.getString("clickPenKeyDetails");
         }
         else if (msgEncrypted) {
-          statusLine = EnigmailCommon.getString("msgPart", EnigmailCommon.getString("msgEncrypted"));
+          statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgEncrypted") ]);
           statusLine += EnigmailCommon.getString("clickQueryKeyDetails");
         }
         else if (msgSigned) {
-          statusLine = EnigmailCommon.getString("msgPart", EnigmailCommon.getString("msgSigned"));
+          statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSigned") ]);
           statusLine += EnigmailCommon.getString("clickQueryPenDetails");
         }
       }

@@ -118,7 +118,8 @@
     }
 
     function resizeDlg() {
-      document.getElementById("enigmailAlertDlg").centerWindowOnScreen();
+      if (EnigGetOS() != "Darwin")
+        document.getElementById("enigmailAlertDlg").centerWindowOnScreen();
     }
 
     function setButton (buttonId, label) {

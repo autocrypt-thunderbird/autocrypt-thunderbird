@@ -145,7 +145,7 @@ var EnigmailCommon = {
   prefRoot: null,
   prefService: null,
 
-  getService: function (parentWindow) {
+  getService: function (win) {
     // Lazy initialization of enigmail JS component (for efficiency)
 
     if (this.enigmailSvc) {
@@ -169,7 +169,7 @@ var EnigmailCommon = {
 
       try {
         // Initialize enigmail
-        this.enigmailSvc.initialize(parentWindow, this.getVersion(), this.prefBranch);
+        this.enigmailSvc.initialize(win, this.getVersion(), this.prefBranch);
 
         try {
           // Reset alert count to default value
@@ -189,7 +189,7 @@ var EnigmailCommon = {
 
           var checkedObj = {value: false};
           if (this.getPref("initAlert")) {
-            var r = this.longAlert(parentWindow, "Enigmail: "+errMsg,
+            var r = this.longAlert(win, "Enigmail: "+errMsg,
                                    this.getString("dlgNoPrompt"),
                                    null, ":help",
                                    null, checkedObj);
@@ -215,7 +215,7 @@ var EnigmailCommon = {
 
       if (firstInitialization && this.enigmailSvc.initialized &&
           this.enigmailSvc.agentType && this.enigmailSvc.agentType == "pgp") {
-        this.alert(parentWindow, this.getString("pgpNotSupported"));
+        this.alert(win, this.getString("pgpNotSupported"));
       }
 
       if (this.enigmailSvc.initialized && (this.getVersion() != configuredVersion)) {
@@ -359,9 +359,9 @@ var EnigmailCommon = {
      return retVal;
   },
 
-  alert: function (parent, mesg)
+  alert: function (win, mesg)
   {
-    gPromptSvc.alert(parent, this.getString("enigAlert"), mesg);
+    gPromptSvc.alert(win, this.getString("enigAlert"), mesg);
   },
 
   /**
@@ -374,16 +374,21 @@ var EnigmailCommon = {
    *          -1: ESC or close window button pressed
    *
    */
-  longAlert: function (parent, mesg, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj)
+  longAlert: function (win, mesg, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj)
   {
     var result = {
       value: -1,
       checked: false
     };
 
-    parent.open("chrome://enigmail/content/enigmailAlertDlg.xul", "",
-              "chrome,dialog,centerscreen,modal",
-              {msgtext: mesg, checkboxLabel: checkBoxLabel, button1: okLabel, button2: labelButton2, button3: labelButton3},
+    win.openDialog("chrome://enigmail/content/enigmailAlertDlg.xul", "",
+              "chrome,dialog,modal,centerscreen",
+              { msgtext: mesg,
+                checkboxLabel: checkBoxLabel,
+                button1: okLabel,
+                button2: labelButton2,
+                button3: labelButton3
+              },
               result);
 
     if (checkBoxLabel) {
@@ -393,7 +398,7 @@ var EnigmailCommon = {
   },
 
   // Confirmation dialog with OK / Cancel buttons (both customizable)
-  confirmDlg: function (parent, mesg, okLabel, cancelLabel)
+  confirmDlg: function (win, mesg, okLabel, cancelLabel)
   {
     var dummy=new Object();
 
@@ -418,7 +423,7 @@ var EnigmailCommon = {
       }
     }
 
-    var buttonPressed = gPromptSvc.confirmEx(parent,
+    var buttonPressed = gPromptSvc.confirmEx(win,
                           this.getString("enigConfirm"),
                           mesg,
                           buttonTitles,
@@ -428,7 +433,7 @@ var EnigmailCommon = {
     return (buttonPressed == 0);
   },
 
-  confirmPref: function (parent, mesg, prefText, okLabel, cancelLabel)
+  confirmPref: function (win, mesg, prefText, okLabel, cancelLabel)
   {
     const notSet = 0;
     const yes = 1;
@@ -464,7 +469,7 @@ var EnigmailCommon = {
       switch (prefValue) {
       case notSet:
         var checkBoxObj = { value: false} ;
-        var buttonPressed = gPromptSvc.confirmEx(parent,
+        var buttonPressed = gPromptSvc.confirmEx(win,
                               this.getString("enigConfirm"),
                               mesg,
                               buttonTitles,
@@ -490,7 +495,7 @@ var EnigmailCommon = {
       switch (prefValue) {
       case display:
         var checkBoxObj = { value: false} ;
-        var buttonPressed = gPromptSvc.confirmEx(parent,
+        var buttonPressed = gPromptSvc.confirmEx(win,
                               this.getString("enigConfirm"),
                               mesg,
                               buttonTitles,
@@ -541,9 +546,9 @@ var EnigmailCommon = {
     }
   },
 
-  openSetupWizard: function ()
+  openSetupWizard: function (win)
   {
-     window.open("chrome://enigmail/content/enigmailSetupWizard.xul",
+     win.open("chrome://enigmail/content/enigmailSetupWizard.xul",
                 "", "chrome,centerscreen");
   },
 
@@ -579,7 +584,7 @@ var EnigmailCommon = {
     }
   },
 
-  filePicker: function (parent, title, displayDir, save, defaultExtension, defaultName, filterPairs)
+  filePicker: function (win, title, displayDir, save, defaultExtension, defaultName, filterPairs)
   {
     this.DEBUG_LOG("enigmailCommon.jsm: filePicker: "+save+"\n");
 
@@ -588,7 +593,7 @@ var EnigmailCommon = {
 
     var mode = save ? Ci.nsIFilePicker.modeSave : Ci.nsIFilePicker.modeOpen;
 
-    filePicker.init(parent, title, mode);
+    filePicker.init(win, title, mode);
 
     if (displayDir) {
       var localFile = Cc[this.LOCAL_FILE_CONTRACTID].createInstance(Ci.nsILocalFile);
@@ -762,9 +767,9 @@ var EnigmailCommon = {
   },
 
   // retrieves a localized string from the enigmail.properties stringbundle
-  getString: function (aStr)
+  getString: function (aStr, subPhrases)
   {
-    var restCount = arguments.length - 1;
+
     if (!this.enigStringBundle) {
       try {
         var strBundleService = Cc["@mozilla.org/intl/stringbundle;1"].getService();
@@ -774,13 +779,10 @@ var EnigmailCommon = {
         this.ERROR_LOG("enigmailCommon.jsm: Error in instantiating stringBundleService\n");
       }
     }
+
     if (this.enigStringBundle) {
       try {
-        if(restCount > 0) {
-          var subPhrases = new Array();
-          for (var i = 1; i < arguments.length; i++) {
-            subPhrases.push(arguments[i]);
-          }
+        if (subPhrases) {
           return this.enigStringBundle.formatStringFromName(aStr, subPhrases, subPhrases.length);
         }
         else {

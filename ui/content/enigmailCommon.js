@@ -786,7 +786,13 @@ function EnigLaunchFile(fileName) {
 
 // retrieves a localized string from the enigmail.properties stringbundle
 function EnigGetString(aStr) {
-  return EnigmailCommon.getString(aStr);
+  var argList = new Array();
+  // unfortunately arguments.shift() doesn't work, so we use a workaround
+
+  if (arguments.length > 1)
+    for (let i=1; i<arguments.length; i++)
+      argList.push(arguments[i]);
+  return EnigmailCommon.getString(aStr, (arguments.length > 1 ? argList : null));
 }
 
 // Remove all quoted strings (and angle brackets) from a list of email
@@ -903,7 +909,7 @@ function EnigRulesEditor() {
 }
 
 function EnigOpenSetupWizard() {
-  EnigmailCommon.openSetupWizard();
+  EnigmailCommon.openSetupWizard(window);
 }
 
 // get keys from keyserver
