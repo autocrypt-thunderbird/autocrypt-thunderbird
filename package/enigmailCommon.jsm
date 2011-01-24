@@ -926,7 +926,7 @@ var EnigmailCommon = {
             statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
             flag = 0;
             this.DEBUG_LOG("enigmailCommon.jsm: detected invalid sender: "+lineSplit[2]+" / code: "+lineSplit[1]+"\n");
-            statusMsgObj.value += this.getString("gnupg.invalidKey.desc", lineSplit[2]);
+            statusMsgObj.value += this.getString("gnupg.invalidKey.desc", [ lineSplit[2] ]);
           }
 
           if (flag)
@@ -988,10 +988,10 @@ var EnigmailCommon = {
       switch (errCode) {
       case 1:
         if (detectedCard) {
-          errorMsg = this.getString("sc.wrongCardAvailable", detectedCard, requestedCard);
+          errorMsg = this.getString("sc.wrongCardAvailable", [ detectedCard, requestedCard ]);
         }
         else
-          errorMsg = this.getString("sc.insertCard", requestedCard);
+          errorMsg = this.getString("sc.insertCard", [ requestedCard ]);
         break;
       case 2:
         errorMsg = this.getString("sc.removeCard");
