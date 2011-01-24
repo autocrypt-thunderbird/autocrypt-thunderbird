@@ -32,6 +32,8 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
+Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+
 var gEnigModifySettings;
 var gLastDirection=0;
 var gEnigAccountMgr;
@@ -621,13 +623,13 @@ function applyWizardSettings() {
 function applyMozSetting(param, preference, newVal) {
   if (gEnigModifySettings[param]) {
     if (typeof(newVal)=="boolean") {
-      gEnigPrefRoot.setBoolPref(preference, newVal);
+      EnigmailCommon.prefRoot.setBoolPref(preference, newVal);
     }
     else if (typeof(newVal)=="number") {
-      gEnigPrefRoot.setIntPref(preference, newVal);
+      EnigmailCommon.prefRoot.setIntPref(preference, newVal);
     }
     else if (typeof(newVal)=="string") {
-      gEnigPrefRoot.setCharPref(preference, newVal);
+      EnigmailCommon.prefRoot.setCharPref(preference, newVal);
     }
   }
 }

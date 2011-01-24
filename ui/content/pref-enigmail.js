@@ -35,6 +35,8 @@
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
+Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail");
 
@@ -85,7 +87,7 @@ function prefOnLoad() {
    gMimePartsElement = document.getElementById("mime_parts_on_demand");
 
    try {
-     gMimePartsValue = gEnigPrefRoot.getBoolPref("mail.server.default.mime_parts_on_demand");
+     gMimePartsValue = EnigmailCommon.prefRoot.getBoolPref("mail.server.default.mime_parts_on_demand");
    } catch (ex) {
      gMimePartsValue = true;
    }
@@ -217,7 +219,7 @@ function prefOnAccept() {
   if (gMimePartsElement &&
       (gMimePartsElement.checked != gMimePartsValue) ) {
 
-    gEnigPrefRoot.setBoolPref("mail.server.default.mime_parts_on_demand", (gMimePartsElement.checked ? true : false));
+    EnigmailCommon.prefRoot.setBoolPref("mail.server.default.mime_parts_on_demand", (gMimePartsElement.checked ? true : false));
   }
 
   EnigSetPref("configuredVersion", EnigGetVersion());
