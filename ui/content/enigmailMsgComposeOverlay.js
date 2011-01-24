@@ -45,6 +45,9 @@ catch (ex) {
   Components.utils.import("resource://app/modules/gloda/mimemsg.js");
 }
 
+Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+
+
 // Initialize enigmailCommon
 EnigInitCommon("enigmailMsgComposeOverlay");
 
@@ -77,12 +80,6 @@ var gEnigModifiedAttach;
 var gEnigLastFocusedWindow = null;
 var gEnigDetermineSendFlagID = null;
 
-try {
-  var appInfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
-  var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"].getService(Components.interfaces.nsIVersionComparator);
-
-}
-catch (ex) {}
 window.addEventListener("load", enigMsgComposeStartup, false);
 window.addEventListener("unload", enigMsgComposeUnload, false);
 
@@ -1604,9 +1601,9 @@ function enigEncryptInline(sendInfo) {
   }
 
   try {
-    if (gEnigPrefRoot.getBoolPref("mail.strictly_mime")) {
+    if (enigGetMailPref("mail.strictly_mime")) {
       if (EnigConfirmPref(EnigGetString("quotedPrintableWarn"), "quotedPrintableWarn")) {
-        gEnigPrefRoot.setBoolPref("mail.strictly_mime", false);
+        EnigmailCommon.prefRoot.setBoolPref("mail.strictly_mime", false);
       }
     }
   } catch (ex) {}
@@ -1614,7 +1611,7 @@ function enigEncryptInline(sendInfo) {
 
   var sendFlowed;
   try {
-    sendFlowed = gEnigPrefRoot.getBoolPref("mailnews.send_plaintext_flowed");
+    sendFlowed = enigGetMailPref("mailnews.send_plaintext_flowed");
   } catch (ex) {
     sendFlowed = true;
   }
@@ -1625,11 +1622,11 @@ function enigEncryptInline(sendInfo) {
     // enforce line wrapping here
     // otherwise the message isn't signed correctly
     try {
-      wrapWidth = gEnigPrefRoot.getIntPref("editor.htmlWrapColumn");
+      wrapWidth = enigGetMailPref("editor.htmlWrapColumn");
 
       if (wrapWidth > 0 && wrapWidth < 68) {
         if (EnigConfirm(EnigGetString("minimalLineWrapping", wrapWidth))) {
-          gEnigPrefRoot.setIntPref("editor.htmlWrapColumn", 68)
+          EnigmailCommon.prefRoot.setIntPref("editor.htmlWrapColumn", 68)
         }
       }
       if (!(sendInfo.sendFlags & ENIG_ENCRYPT) && EnigGetPref("wrapHtmlBeforeSend")) {
@@ -1644,10 +1641,10 @@ function enigEncryptInline(sendInfo) {
   }
   else {
     try {
-      wrapWidth = gEnigPrefRoot.getIntPref("mailnews.wraplength");
+      wrapWidth = enigGetMailPref("mailnews.wraplength");
       if (wrapWidth > 0 && wrapWidth < 68) {
         if (EnigConfirm(EnigGetString("minimalLineWrapping", wrapWidth))) {
-          gEnigPrefRoot.setIntPref("mailnews.wraplength", 68)
+          EnigmailCommon.prefRoot.setIntPref("mailnews.wraplength", 68)
         }
       }
     }
@@ -1782,19 +1779,19 @@ function enigGetMailPref(prefName) {
 
    var prefValue = null;
    try {
-      var prefType = gEnigPrefRoot.getPrefType(prefName);
+      var prefType = EnigmailCommon.prefRoot.getPrefType(prefName);
       // Get pref value
       switch (prefType) {
-      case gPrefEnigmail.PREF_BOOL:
-         prefValue = gEnigPrefRoot.getBoolPref(prefName);
+      case EnigmailCommon.prefBranch.PREF_BOOL:
+         prefValue = EnigmailCommon.prefRoot.getBoolPref(prefName);
          break;
 
-      case gPrefEnigmail.PREF_INT:
-         prefValue = gEnigPrefRoot.getIntPref(prefName);
+      case EnigmailCommon.prefBranch.PREF_INT:
+         prefValue = EnigmailCommon.prefRoot.getIntPref(prefName);
          break;
 
-      case gPrefEnigmail.PREF_STRING:
-         prefValue = gEnigPrefRoot.getCharPref(prefName);
+      case EnigmailCommon.prefBranch.PREF_STRING:
+         prefValue = EnigmailCommon.prefRoot.getCharPref(prefName);
          break;
 
       default:
@@ -1832,10 +1829,7 @@ function enigMessageSendCheck() {
             return false;
         }
         if (checkValue.value) {
-          var branch = Components.classes["@mozilla.org/preferences-service;1"]
-                                .getService(Components.interfaces.nsIPrefBranch);
-
-          branch.setBoolPref("mail.warn_on_send_accel_key", false);
+          EnigmailCommon.prefRoot.setBoolPref("mail.warn_on_send_accel_key", false);
         }
     }
   } catch (ex) {}
@@ -2162,7 +2156,7 @@ function enigDecryptQuote(interactive) {
   // Encode ciphertext from unicode to charset
   var cipherText = EnigConvertFromUnicode(pgpBlock, charset);
 
-  if ((! gEnigPrefRoot.getBoolPref("mailnews.reply_in_default_charset")) && (blockType == "MESSAGE")) {
+  if ((! enigGetMailPref("mailnews.reply_in_default_charset")) && (blockType == "MESSAGE")) {
     // set charset according to PGP block, if available (encrypted messages only)
     cipherText = cipherText.replace(/\r\n/g, "\n");
     cipherText = cipherText.replace(/\r/g,   "\n");
@@ -2383,9 +2377,6 @@ function EnigEditorInsertAsQuotation(plainText) {
       return 0;
 
     DEBUG_LOG("enigmailMsgComposeOverlay.js: EnigEditorInsertAsQuotation: mailEditor="+mailEditor+"\n");
-
-    var appInfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
-    var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"].getService(Components.interfaces.nsIVersionComparator);
 
     mailEditor.insertAsQuotation(plainText);
 
