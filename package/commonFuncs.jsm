@@ -129,5 +129,145 @@ var EnigmailFuncs = {
     mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*/g,"$1$2");
 
     return mailAddrs;
+  },
+
+  collapseAdvanced: function (obj, attribute, dummy)
+  {
+    EnigmailCommon.DEBUG_LOG("commonFuncs.jsm: collapseAdvanced:\n");
+
+    var advancedUser = EnigmailCommon.getPref("advancedUser");
+
+    var obj = obj.firstChild;
+    while (obj) {
+      if (obj.getAttribute("advanced") == "true") {
+        if (advancedUser) {
+          obj.removeAttribute(attribute);
+        }
+        else {
+          obj.setAttribute(attribute, "true");
+        }
+      }
+      else if (obj.getAttribute("advanced") == "reverse") {
+        if (advancedUser) {
+          obj.setAttribute(attribute, "true");
+        }
+        else {
+          obj.removeAttribute(attribute);
+        }
+      }
+
+      obj = obj.nextSibling;
+    }
+  },
+
+  openSetupWizard: function (win)
+  {
+     win.open("chrome://enigmail/content/enigmailSetupWizard.xul",
+                "", "chrome,centerscreen");
+  },
+
+  openHelpWindow: function (source)
+  {
+    EnigmailCommon.openWin("enigmail:help",
+                           "chrome://enigmail/content/enigmailHelp.xul?src="+source,
+                           "centerscreen,resizable");
+  },
+
+  openAboutWindow: function ()
+  {
+    EnigmailCommon.openWin("about:enigmail",
+                           "chrome://enigmail/content/enigmailAbout.xul",
+                           "resizable,centerscreen");
+  },
+
+  openRulesEditor: function ()
+  {
+    EnigmailCommon.openWin("enigmail:rulesEditor",
+                           "chrome://enigmail/content/enigmailRulesEditor.xul",
+                           "dialog,centerscreen,resizable");
+  },
+
+  openKeyManager: function ()
+  {
+    EnigmailCommon.getService();
+
+    EnigmailCommon.openWin("enigmail:KeyManager",
+                           "chrome://enigmail/content/enigmailKeyManager.xul",
+                           "resizable");
+  },
+
+  openCardDetails: function ()
+  {
+    EnigmailCommon.openWin("enigmail:cardDetails",
+                           "chrome://enigmail/content/enigmailCardDetails.xul",
+                           "centerscreen");
+  },
+
+  openConsoleWindow: function ()
+  {
+     EnigmailCommon.openWin("enigmail:console",
+                            "chrome://enigmail/content/enigmailConsole.xul",
+                            "resizable,centerscreen");
+  },
+
+  openDebugLog: function(win) {
+    var logDirectory = EnigmailCommon.getPref("logDirectory");
+
+    if (!logDirectory) {
+      EnigmailCommon.alert(win, EnigmailCommon.getString("noLogDir"));
+      return;
+    }
+
+    var svc = EnigmailCommon.enigmailSvc;
+    if (! svc) {
+      EnigmailCommon.alert(win, EnigmailCommon.getString("noLogFile"));
+      return;
+    }
+
+    if (! svc.logFileStream) {
+      EnigmailCommon.alert(win, EnigmailCommon.getString("restartForLog"));
+      return;
+    }
+
+    svc.logFileStream.flush();
+
+    logDirectory = logDirectory.replace(/\\/g, "/");
+
+    var logFileURL = "file:///" + logDirectory + "/enigdbug.txt";
+    var opts="fileUrl=" + escape(logFileURL) + "&title=" +
+          escape(EnigmailCommon.getString("debugLog.title"));
+
+    EnigmailCommon.openWin("enigmail:logFile",
+                           "chrome://enigmail/content/enigmailViewFile.xul?"+opts,
+                           "resizable,centerscreen");
+  },
+
+  openPrefWindow: function (win, showBasic, selectTab) {
+    EnigmailCommon.DEBUG_LOG("enigmailCommon.js: prefWindow\n");
+
+    EnigmailCommon.getService(win);
+
+    win.openDialog("chrome://enigmail/content/pref-enigmail.xul",
+                   "_blank", "chrome,resizable=yes",
+                   {'showBasic': showBasic,
+                   'clientType': 'thunderbird',
+                   'selectTab': selectTab});
+
+  },
+
+  clearPassphrase: function (win) {
+    EnigmailCommon.DEBUG_LOG("enigmailCommon.js: clearPassphrase:\n");
+
+    var enigmailSvc = EnigmailCommon.getService(win);
+    if (!enigmailSvc)
+      return;
+
+    if (enigmailSvc.useGpgAgent(win)) {
+      EnigmailCommon.alert(win, EnigmailCommon.getString("passphraseCannotBeCleared"))
+    }
+    else {
+      enigmailSvc.clearCachedPassphrase();
+      EnigmailCommon.alertPref(win, EnigmailCommon.getString("passphraseCleared"), "warnClearPassphrase");
+    }
   }
 };

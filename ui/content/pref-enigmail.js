@@ -121,7 +121,7 @@ function prefOnLoad() {
 function enigDetermineGpgPath() {
   if (! gEnigmailSvc) {
     try {
-      gEnigmailSvc = ENIG_C.classes[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_C.interfaces.nsIEnigmail);
+      gEnigmailSvc = ENIG_C[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_I.nsIEnigmail);
       if (! gEnigmailSvc.initialized) {
         // attempt to initialize Enigmail
         gEnigmailSvc.initialize(window, EnigGetVersion(), gPrefEnigmail);
@@ -230,7 +230,7 @@ function prefOnAccept() {
   if (oldAgentPath != newAgentPath) {
     if (! gEnigmailSvc) {
       try {
-        gEnigmailSvc = ENIG_C.classes[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_C.interfaces.nsIEnigmail);
+        gEnigmailSvc = ENIG_C[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_I.nsIEnigmail);
       } catch (ex) {}
     }
 

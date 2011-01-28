@@ -516,11 +516,23 @@ var EnigmailCommon = {
     }
   },
 
-  helpWindow: function (source)
-  {
-    this.openWin("enigmail:help",
-                "chrome://enigmail/content/enigmailHelp.xul?src="+source,
-                "centerscreen,resizable");
+  alertPref: function (win, mesg, prefText) {
+    const display = true;
+    const dontDisplay = false;
+
+    var prefValue = this.getPref(prefText);
+    if (prefValue == display) {
+      var checkBoxObj = { value: false } ;
+      var buttonPressed = gPromptSvc.confirmEx(win,
+                            this.getString("enigAlert"),
+                            mesg,
+                            (gPromptSvc.BUTTON_TITLE_OK * BUTTON_POS_0),
+                            null, null, null,
+                            this.getString("dlgNoPrompt"), checkBoxObj);
+      if (checkBoxObj.value && buttonPressed==0) {
+        this.setPref(prefText, dontDisplay);
+      }
+    }
   },
 
   openWin: function (winName, spec, winOptions, optList)
@@ -544,12 +556,6 @@ var EnigmailCommon = {
       //nsIDOMJSWindow
       domWin.open(spec, winName, "chrome,"+winOptions, optList);
     }
-  },
-
-  openSetupWizard: function (win)
-  {
-     win.open("chrome://enigmail/content/enigmailSetupWizard.xul",
-                "", "chrome,centerscreen");
   },
 
   getFrame: function(win, frameName)
@@ -674,9 +680,9 @@ var EnigmailCommon = {
       _terminateArg: null,
 
       QueryInterface: function (iid) {
-        if (!iid.equals(ENIG_C.interfaces.nsIRequestObserver) &&
-            !iid.equals(ENIG_C.interfaces.nsISupports))
-          throw ENIG_C.results.NS_ERROR_NO_INTERFACE;
+        if (!iid.equals(Ci.nsIRequestObserver) &&
+            !iid.equals(Ci.nsISupports))
+          throw Components.results.NS_ERROR_NO_INTERFACE;
         return this;
       },
 

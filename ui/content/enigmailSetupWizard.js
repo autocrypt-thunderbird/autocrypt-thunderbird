@@ -317,7 +317,7 @@ function enigGetSvc() {
   }
 
   try {
-    gEnigmailSvc = ENIG_C.classes[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_C.interfaces.nsIEnigmail);
+    gEnigmailSvc = ENIG_C[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_I.nsIEnigmail);
 
   } catch (ex) {
     ERROR_LOG("enigmailWizard.js: Error in instantiating EnigmailService\n");

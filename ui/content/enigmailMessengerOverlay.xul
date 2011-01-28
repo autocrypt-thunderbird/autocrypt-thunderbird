@@ -83,7 +83,7 @@
   <menu id="menu_Enigmail">
 
     <menupopup id="menu_EnigmailPopup"
-      onpopupshowing="EnigCollapseAdvanced(this, 'hidden', Enigmail.msg.updateOptionsDisplay());">
+      onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.updateOptionsDisplay());">
 
       <menuitem id="enigmail_decryptverify"
            label="&enigmail.decryptverify.label;"
@@ -119,7 +119,7 @@
            accesskey="&enigmail.clearPassphrase.accesskey;"
            advanced="true"
            hidden="false"
-           oncommand="EnigClearPassphrase();" />
+           oncommand="EnigmailFuncs.clearPassphrase(window);" />
 
       <menuitem id="enigmail_reload_msg"
            label="&enigmail.reload.label;"
@@ -163,7 +163,7 @@
       <menuitem id="enigmail_prefs"
            label="&enigmail.prefs.label;"
            accesskey="&enigmail.prefs.accesskey;"
-           oncommand="EnigPrefWindow(true,'thunderbird');" />
+           oncommand="EnigmailFuncs.openPrefWindow(window, true, null);" />
 
 
       <menuitem id="enigmail_RulesEditor"
@@ -171,20 +171,20 @@
           accesskey="&enigmail.editRules.accesskey;"
           advanced="true"
           hidden="false"
-          oncommand="EnigRulesEditor();"/>
+          oncommand="EnigmailFuncs.openRulesEditor();"/>
 
 
       <menuitem id="enigmail_keymgmt"
            label="&enigmail.keyManWindow.label;"
            accesskey="&enigmail.keyManWindow.accesskey;"
-           oncommand="EnigKeyManager();" />
+           oncommand="EnigmailFuncs.openKeyManager();" />
 
       <menuitem label="&enigmail.adminSmartCard.label;"
               id="enigmail_smartCard"
               accesskey="&enigmail.adminSmartCard.accesskey;"
               advanced="true"
               hidden="false"
-              oncommand="EngmailCardDetails()"/>
+              oncommand="EnigmailFuncs.openCardDetails();"/>
 
       <menuseparator
            advanced="true"
@@ -200,12 +200,12 @@
           <menuitem id="enigmail_console"
                label="&enigmail.viewconsole.label;"
                accesskey="&enigmail.viewconsole.accesskey;"
-               oncommand="EnigViewConsole();" />
+               oncommand="EnigmailFuncs.openConsoleWindow();" />
 
           <menuitem id="enigmail_debug_log"
                label="&enigmail.viewdebuglog.label;"
                accesskey="&enigmail.viewdebuglog.accesskey;"
-               oncommand="EnigViewDebugLog();" />
+               oncommand="EnigmailFuncs.openDebugLog(window);" />
         </menupopup>
       </menu>
 
@@ -214,17 +214,17 @@
       <menuitem id="enigmail_help"
            label="&enigmail.help.label;"
            accesskey="&enigmail.help.accesskey;"
-           oncommand="EnigHelpWindow('messenger');" />
+           oncommand="EnigmailFuncs.openHelpWindow('messenger');" />
 
       <menuitem id="enigmail_wizard"
            label="&enigmail.setupWiz.label;"
            accesskey="&enigmail.setupWiz.accesskey;"
-           oncommand="EnigOpenSetupWizard();" />
+           oncommand="EnigmailFuncs.openSetupWizard(window);" />
 
       <menuitem id="enigmail_about"
            label="&enigmail.about.label;"
            accesskey="&enigmail.about.accesskey;"
-           oncommand="EnigViewAbout();" />
+           oncommand="EnigmailFuncs.openAboutWindow();" />
 
     </menupopup>
   </menu>
@@ -315,7 +315,7 @@
                 <menuitem label="&enigmail.reload.label;"
                           id="enigmail_reloadMessage"
                           hidden="true"
-                          oncommand="enigmailReloadCompleteMsg();"/>
+                          oncommand="Enigmail.msg.reloadCompleteMsg();"/>
                 <menuitem label="&enigmail.pgpSecurityInfo.label;"
                           id="enigmail_pgpSecurityInfo"
                           oncommand="Enigmail.msg.viewOpenpgpInfo(null, false);"/>

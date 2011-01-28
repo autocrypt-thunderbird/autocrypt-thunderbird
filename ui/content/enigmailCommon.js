@@ -66,8 +66,8 @@ const ENIG_DIRSERVICE_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const ENIG_MIME_CONTRACTID = "@mozilla.org/mime;1";
 const ENIG_WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
 const ENIG_ASS_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
-const ENIG_CLIPBOARD_CONTRACTID = "@mozilla.org/widget/clipboard;1";
-const ENIG_CLIPBOARD_HELPER_CONTRACTID = "@mozilla.org/widget/clipboardhelper;1"
+const ComponentsLIPBOARD_CONTRACTID = "@mozilla.org/widget/clipboard;1";
+const ComponentsLIPBOARD_HELPER_CONTRACTID = "@mozilla.org/widget/clipboardhelper;1"
 const ENIG_TRANSFERABLE_CONTRACTID = "@mozilla.org/widget/transferable;1"
 const ENIG_LOCALE_SVC_CONTRACTID = "@mozilla.org/intl/nslocaleservice;1";
 const ENIG_DATE_FORMAT_CONTRACTID = "@mozilla.org/intl/scriptabledateformat;1"
@@ -90,7 +90,8 @@ const ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptabl
 
 const ENIG_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
-const ENIG_C = Components;
+const ENIG_C = Components.classes;
+const ENIG_I = Components.interfaces;
 
 // Key algorithms
 const ENIG_KEYTYPE_DSA = 1;
@@ -100,7 +101,7 @@ const ENIG_KEYTYPE_RSA = 2;
 // field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
 const ENIG_KEY_TRUST=1;
 const ENIG_KEY_ID = 4;
-const ENIG_CREATED = 5;
+const ComponentsREATED = 5;
 const ENIG_EXPIRY = 6;
 const ENIG_UID_ID = 7;
 const ENIG_OWNERTRUST = 8;
@@ -116,7 +117,7 @@ const ENIG_KEY_NOT_VALID=ENIG_KEY_EXPIRED+ENIG_KEY_REVOKED+ENIG_KEY_INVALID+ENIG
 
 
 // Interfaces
-const nsIEnigmail               = ENIG_C.interfaces.nsIEnigmail;
+const nsIEnigmail               = ENIG_I.nsIEnigmail;
 
 // Encryption flags
 if (nsIEnigmail) {
@@ -161,27 +162,6 @@ function EnigInitCommon(id) {
    DEBUG_LOG("enigmailCommon.js: EnigInitCommon: id="+id+"\n");
 
    gEnigPromptSvc = enigGetService("@mozilla.org/embedcomp/prompt-service;1", "nsIPromptService");
-
-   // Do not instantiate ProcessInfo for Prefs
-   if (id && (id.indexOf("pref-") == 0))
-     return;
-
-   try {
-     var processInfo = enigGetService(ENIG_PROCESSINFO_CONTRACTID, "nsIProcessInfo");
-
-     var nspr_log_modules = processInfo.getEnv("NSPR_LOG_MODULES");
-
-     var matches = nspr_log_modules.match(/enigmailCommon:(\d+)/);
-
-     if (matches && (matches.length > 1)) {
-       gEnigLogLevel = matches[1];
-       WARNING_LOG("enigmailCommon.js: gEnigLogLevel="+gEnigLogLevel+"\n");
-     }
-
-   } catch (ex) {
-     dump("enigmailCommon.js: Error in instantiating ProcessInfo\n");
-   }
-
 }
 
 
@@ -198,13 +178,13 @@ function EnigReadURLContents(url, maxBytes) {
 
   var ioServ = enigGetService(ENIG_IOSERVICE_CONTRACTID, "nsIIOService");
   if (!ioServ)
-    throw ENIG_C.results.NS_ERROR_FAILURE;
+    throw Components.results.NS_ERROR_FAILURE;
 
   var fileChannel = ioServ.newChannel(url, null, null)
 
   var rawInStream = fileChannel.open();
 
-  var inStream = ENIG_C.classes[ENIG_BINARYINPUTSTREAM_CONTRACTID].createInstance(ENIG_C.interfaces.nsIBinaryInputStream);
+  var inStream = ENIG_C[ENIG_BINARYINPUTSTREAM_CONTRACTID].createInstance(ENIG_I.nsIBinaryInputStream);
   inStream.setInputStream(rawInStream);
 
   var available = inStream.available()
@@ -225,11 +205,11 @@ function EnigReadFileContents(localFile, maxBytes) {
             ", "+maxBytes+"\n");
 
   if (!localFile.exists() || !localFile.isReadable())
-    throw ENIG_C.results.NS_ERROR_FAILURE;
+    throw Components.results.NS_ERROR_FAILURE;
 
   var ioServ = enigGetService(ENIG_IOSERVICE_CONTRACTID, "nsIIOService");
   if (!ioServ)
-    throw ENIG_C.results.NS_ERROR_FAILURE;
+    throw Components.results.NS_ERROR_FAILURE;
 
   var fileURI = ioServ.newFileURI(localFile);
   return EnigReadURLContents(fileURI.asciiSpec, maxBytes);
@@ -345,33 +325,12 @@ function EnigPromptValue(mesg, valueObj) {
 
 function EnigPrefWindow(showBasic, clientType, selectTab) {
   DEBUG_LOG("enigmailCommon.js: EnigPrefWindow\n");
-
-  GetEnigmailSvc();
-  if (showBasic && clientType == "seamonkey" && selectTab==null) {
-    // Open the seamonkey pref window
-    goPreferences("securityItem",
-                  "chrome://enigmail/content/pref-enigmail.xul",
-                  "enigmail");
-  }
-  else {
-    // open the normal pref window
-    window.openDialog("chrome://enigmail/content/pref-enigmail.xul",
-                      "_blank", "chrome,resizable=yes",
-                      {'showBasic': showBasic,
-                      'clientType': clientType,
-                      'selectTab': selectTab});
-  }
+  EnigmailFuncs.openPrefWindow(window, showBasic, selectTab);
 }
 
-function EnigAdvPrefWindow() {
-  EnigAlert("This function doesn't exist anymore!");
-}
 
 function EnigHelpWindow(source) {
-
-  EnigOpenWin("enigmail:help",
-              "chrome://enigmail/content/enigmailHelp.xul?src="+source,
-              "centerscreen,resizable");
+  EnigmailFuncs.openHelpWindow(source);
 }
 
 
@@ -465,9 +424,9 @@ EnigRequestObserver.prototype = {
   _terminateArg: null,
 
   QueryInterface: function (iid) {
-    if (!iid.equals(ENIG_C.interfaces.nsIRequestObserver) &&
-        !iid.equals(ENIG_C.interfaces.nsISupports))
-      throw ENIG_C.results.NS_ERROR_NO_INTERFACE;
+    if (!iid.equals(ENIG_I.nsIRequestObserver) &&
+        !iid.equals(ENIG_I.nsISupports))
+      throw Components.results.NS_ERROR_NO_INTERFACE;
     return this;
   },
 
@@ -494,7 +453,7 @@ function EnigConvertFromUnicode(text, charset) {
 
   // Encode plaintext
   try {
-    var unicodeConv = ENIG_C.classes[ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(ENIG_C.interfaces.nsIScriptableUnicodeConverter);
+    var unicodeConv = ENIG_C[ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(ENIG_I.nsIScriptableUnicodeConverter);
 
     unicodeConv.charset = charset;
     return unicodeConv.ConvertFromUnicode(text);
@@ -515,7 +474,7 @@ function EnigConvertToUnicode(text, charset) {
 
   // Encode plaintext
   try {
-    var unicodeConv = ENIG_C.classes[ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(ENIG_C.interfaces.nsIScriptableUnicodeConverter);
+    var unicodeConv = ENIG_C[ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID].getService(ENIG_I.nsIScriptableUnicodeConverter);
 
     unicodeConv.charset = charset;
     return unicodeConv.ConvertToUnicode(text);
@@ -669,18 +628,7 @@ function EnigDumpHTML(node)
 
 function EnigClearPassphrase() {
   DEBUG_LOG("enigmailCommon.js: EnigClearPassphrase: \n");
-
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return;
-
-  if (enigmailSvc.useGpgAgent()) {
-    EnigAlert(EnigGetString("passphraseCannotBeCleared"))
-  }
-  else {
-    enigmailSvc.clearCachedPassphrase();
-    EnigAlertPref(EnigGetString("passphraseCleared"), "warnClearPassphrase");
-  }
+  EnigmailFuncs.clearPassphrase(window);
 }
 
 function EnigOpenWin (winName, spec, winOptions, optList) {
@@ -701,76 +649,46 @@ function EnigGetWindowOptions() {
 }
 
 function EnigViewAbout() {
-  DEBUG_LOG("enigmailCommon.js: EnigViewAbout\n");
-
-  EnigOpenWin ("about:enigmail",
-               "chrome://enigmail/content/enigmailAbout.xul",
-               "resizable,centerscreen");
+  EnigmailFuncs.openAboutWindow();
 }
 
 function EnigViewConsole() {
-  DEBUG_LOG("enigmailCommon.js: EnigViewConsole\n");
-
-  EnigOpenWin("enigmail:console",
-              "chrome://enigmail/content/enigmailConsole.xul",
-              "resizable,centerscreen");
+  EnigmailFuncs.openConsoleWindow();
 }
 
 function EnigViewDebugLog() {
-  DEBUG_LOG("enigmailCommon.js: EnigViewDebugLog\n");
+  EnigmailFuncs.openDebugLog(window);
+}
 
-  var logDirectory = EnigGetPref("logDirectory");
+function EnigRulesEditor() {
+  EnigmailFuncs.openRulesEditor();
+}
 
-  if (!logDirectory) {
-    EnigAlert(EnigGetString("noLogDir"));
-    return;
-  }
+function EnigOpenSetupWizard() {
+  EnigmailFuncs.openSetupWizard(window);
+}
 
-  if (!gEnigmailSvc) {
-    EnigAlert(EnigGetString("noLogFile"));
-    return;
-  }
-
-  if (!gEnigmailSvc.logFileStream) {
-    EnigAlert(EnigGetString("restartForLog"));
-    return;
-  }
-
-  gEnigmailSvc.logFileStream.flush();
-
-  logDirectory = logDirectory.replace(/\\/g, "/");
-
-  var logFileURL = "file:///" + logDirectory + "/enigdbug.txt";
-  var opts="fileUrl="+escape(logFileURL)+"&title="+escape("Enigmail Debug Log");
-
-  EnigOpenWin("enigmail:logFile",
-              "chrome://enigmail/content/enigmailViewFile.xul?"+opts,
-              "resizable,centerscreen");
-
-//  window.open(logFileURL, 'Enigmail Debug Log');
+function EngmailCardDetails() {
+  EnigmailFuncs.openCardDetails();
 }
 
 function EnigKeygen() {
   DEBUG_LOG("enigmailCommon.js: EnigKeygen\n");
 
   window.open('chrome://enigmail/content/enigmailKeygen.xul',
-                    "enigmail:generateKey",
-                    'chrome,dialog,modal,resizable=yes');
+              "enigmail:generateKey",
+              'chrome,dialog,modal,resizable=yes');
 
 }
 
 function EnigKeyManager() {
-  DEBUG_LOG("enigmailCommon.js: EnigKeygen\n");
-  GetEnigmailSvc();
-  EnigOpenWin("enigmail:KeyManager",
-              "chrome://enigmail/content/enigmailKeyManager.xul",
-              "resizable");
+  EnigmailFuncs.openKeyManager();
 }
 
 
 function EnigLaunchFile(fileName) {
   try {
-    var mimeService = Components.classes[ENIG_MIME_CONTRACTID].getService(Components.interfaces.nsIMIMEService);
+    var mimeService = ENIG_C[ENIG_MIME_CONTRACTID].getService(ENIG_I.nsIMIMEService);
     var fileMimeType = mimeService.getTypeFromFile(fileName);
     var fileMimeInfo = mimeService.getFromTypeAndExtension(fileMimeType, fileExt);
 
@@ -900,16 +818,6 @@ function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
 function EnigFilePicker(title, displayDir, save, defaultExtension, defaultName, filterPairs) {
   return EnigmailCommon.filePicker(window, title, displayDir, save, defaultExtension,
                                    defaultName, filterPairs);
-}
-
-function EnigRulesEditor() {
-  EnigOpenWin("enigmail:rulesEditor",
-              "chrome://enigmail/content/enigmailRulesEditor.xul",
-              "dialog,centerscreen,resizable");
-}
-
-function EnigOpenSetupWizard() {
-  EnigmailCommon.openSetupWizard(window);
 }
 
 // get keys from keyserver
@@ -1049,7 +957,7 @@ function EnigLoadKeyList(refresh, keyListObj, sortColumn, sortDirection) {
         uatNum = 0;
         keyObj.expiry=EnigGetDateTime(listRow[ENIG_EXPIRY], true, false);
         keyObj.expiryTime = Number(listRow[ENIG_EXPIRY]);
-        keyObj.created=EnigGetDateTime(listRow[ENIG_CREATED], true, false);
+        keyObj.created=EnigGetDateTime(listRow[ComponentsREATED], true, false);
         keyObj.keyId=listRow[ENIG_KEY_ID];
         keyObj.keyTrust=listRow[ENIG_KEY_TRUST];
         keyObj.keyUseFor=listRow[ENIG_KEY_USE_FOR];
@@ -1281,7 +1189,7 @@ function EnigRevokeKey(keyId, userId) {
   var tmpDir=EnigGetTempDir();
 
   try {
-    var revFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+    var revFile = ENIG_C[ENIG_LOCAL_FILE_CONTRACTID].createInstance(ENIG_I.nsILocalFile);
     revFile.initWithPath(tmpDir);
     if (!(revFile.isDirectory() && revFile.isWritable())) {
       EnigAlert(EnigGetString("noTempDir"));
@@ -1319,13 +1227,13 @@ function EnigShowPhoto(keyId, userId, photoNumber) {
     var errorMsgObj = new Object();
     var photoPath = enigmailSvc.showKeyPhoto("0x"+keyId, photoNumber, exitCodeObj, errorMsgObj);
     if (photoPath && exitCodeObj.value==0) {
-      var photoFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+      var photoFile = ENIG_C[ENIG_LOCAL_FILE_CONTRACTID].createInstance(ENIG_I.nsILocalFile);
       photoFile.initWithPath(photoPath);
       if (! (photoFile.isFile() && photoFile.isReadable())) {
         EnigAlert("Photo path '"+photoPath+"' is not readable");
       }
       else {
-        var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+        var ioServ = ENIG_C[ENIG_IOSERVICE_CONTRACTID].getService(ENIG_I.nsIIOService);
         var photoUri = ioServ.newFileURI(photoFile).spec;
         var argsObj = {
           photoUri: photoUri,
@@ -1372,12 +1280,6 @@ function EnigCreateRevokeCert(keyId, userId) {
     EnigAlert(EnigGetString("revokeCertOK"));
   }
   return r;
-}
-
-function EngmailCardDetails() {
-  EnigOpenWin("enigmail:cardDetails",
-              "chrome://enigmail/content/enigmailCardDetails.xul",
-              "centerscreen");
 }
 
 
@@ -1431,11 +1333,11 @@ function EnigGetDateTime(dateNum, withDate, withTime) {
 
 function enigCreateInstance (aURL, aInterface)
 {
-  return ENIG_C.classes[aURL].createInstance(ENIG_C.interfaces[aInterface]);
+  return ENIG_C[aURL].createInstance(ENIG_I[aInterface]);
 }
 
 function enigGetInterface (aInterface) {
-  return rv = ENIG_C.interfaces[aInterface];
+  return rv = ENIG_I[aInterface];
 }
 
 function enigGetService (aURL, aInterface)
@@ -1444,15 +1346,15 @@ function enigGetService (aURL, aInterface)
   switch (typeof(aInterface))
   {
     case "object":
-      return ENIG_C.classes[aURL].getService(aInterface);
+      return ENIG_C[aURL].getService(aInterface);
       break;
 
     case "string":
-      return ENIG_C.classes[aURL].getService(ENIG_C.interfaces[aInterface]);
+      return ENIG_C[aURL].getService(ENIG_I[aInterface]);
       break;
 
     default:
-      return ENIG_C.classes[aURL].getService();
+      return ENIG_C[aURL].getService();
   }
 
   return null;
@@ -1488,15 +1390,15 @@ function EnigCollapseAdvanced(obj, attribute, dummy) {
 
 
 function EnigOpenURL(event, hrefObj) {
-  var xulAppinfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
+  var xulAppinfo = ENIG_C["@mozilla.org/xre/app-info;1"].getService(ENIG_I.nsIXULAppInfo);
   if (xulAppinfo.ID == ENIG_SEAMONKEY_ID) return;
 
   try {
-    var ioservice  = Components.classes["@mozilla.org/network/io-service;1"].
-                  getService(Components.interfaces.nsIIOService);
+    var ioservice  = ENIG_C["@mozilla.org/network/io-service;1"].
+                  getService(ENIG_I.nsIIOService);
     var iUri = ioservice.newURI(hrefObj.href, null, null);
-    var eps  = Components.classes["@mozilla.org/uriloader/external-protocol-service;1"].
-                  getService(Components.interfaces.nsIExternalProtocolService);
+    var eps  = ENIG_C["@mozilla.org/uriloader/external-protocol-service;1"].
+                  getService(ENIG_I.nsIExternalProtocolService);
 
     eps.loadURI(iUri, null);
 
