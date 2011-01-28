@@ -106,6 +106,8 @@ Enigmail.hdrView = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: this.updateHdrIcons: exitCode="+exitCode+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+errorMsg+"\n");
 
+    const nsIEnigmail = Components.interfaces.nsIEnigmail;
+
     this.statusBar = document.getElementById("enigmail-status-bar");
     this.enigmailBox = document.getElementById("enigmailBox");
 
@@ -283,7 +285,7 @@ Enigmail.hdrView = {
       } else if (statusFlags & nsIEnigmail.IMPORTED_KEY) {
         statusLine = "";
         statusInfo = "";
-        EnigAlert(errorMsg);
+        EnigmailCommon.alert(window, errorMsg);
 
       } else {
         statusInfo = EnigmailCommon.getString("failedDecryptVerify");
@@ -434,6 +436,8 @@ Enigmail.hdrView = {
   dispSecurityContext: function ()
   {
 
+    const nsIEnigmail = Components.interfaces.nsIEnigmail;
+
     if (Enigmail.msg.securityInfo) {
       if (Enigmail.msg.securityInfo.keyId &&
           (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) ) {
@@ -476,6 +480,8 @@ Enigmail.hdrView = {
 
   setSenderStatus: function (elemSign, elemTrust, elemPhoto, elemKeyProps)
   {
+    const nsIEnigmail = Components.interfaces.nsIEnigmail;
+
     var photo=false;
     var sign=false;
     var trust=false;
@@ -507,13 +513,13 @@ Enigmail.hdrView = {
 
   editKeyTrust: function ()
   {
-    EnigEditKeyTrust([Enigmail.msg.securityInfo.userId], [Enigmail.msg.securityInfo.keyId]);
+    EnigmailFuncs.editKeyTrust(window, [Enigmail.msg.securityInfo.userId], [Enigmail.msg.securityInfo.keyId]);
     gDBView.reloadMessageWithAllParts();
   },
 
   signKey: function ()
   {
-    EnigSignKey(Enigmail.msg.securityInfo.userId, Enigmail.msg.securityInfo.keyId, null)
+    EnigmailFuncs.signKey(window, Enigmail.msg.securityInfo.userId, Enigmail.msg.securityInfo.keyId, null)
     gDBView.reloadMessageWithAllParts();
   },
 
@@ -602,7 +608,7 @@ Enigmail.hdrView = {
   {
     if (! Enigmail.msg.securityInfo) return;
 
-    EnigShowPhoto(Enigmail.msg.securityInfo.keyId, Enigmail.msg.securityInfo.userId);
+    EnigmailFuncs.showPhoto(window, Enigmail.msg.securityInfo.keyId, Enigmail.msg.securityInfo.userId);
   },
 
 
@@ -610,7 +616,7 @@ Enigmail.hdrView = {
   {
     if (! Enigmail.msg.securityInfo) return;
 
-    EnigDisplayKeyDetails(Enigmail.msg.securityInfo.keyId, false);
+    EnigmailFuncs.openKeyDetails(window, Enigmail.msg.securityInfo.keyId, false);
   },
 
   createRuleFromAddress: function (emailAddressNode)
@@ -620,7 +626,7 @@ Enigmail.hdrView = {
       if (typeof(findEmailNodeFromPopupNode)=="function") {
         emailAddressNode = findEmailNodeFromPopupNode(emailAddressNode, 'emailAddressPopup');
       }
-      EnigNewRule(emailAddressNode.getAttribute("emailAddress"));
+      EnigmailFuncs.createNewRule(window, emailAddressNode.getAttribute("emailAddress"));
     }
   },
 
@@ -744,13 +750,16 @@ Enigmail.hdrView = {
     var msg = gFolderDisplay.selectedMessage;
     var msgHdr = msg.folder.GetMessageHeader(msg.messageKey);
     if (this.statusBar.getAttribute("encrypted") == "ok")
-      Enigmail.msg.securityInfo.statusFlags |= nsIEnigmail.DECRYPTION_OKAY;
+      Enigmail.msg.securityInfo.statusFlags |= Components.interfaces.nsIEnigmail.DECRYPTION_OKAY;
     msgHdr.setUint32Property("enigmail", Enigmail.msg.securityInfo.statusFlags);
   },
 
   enigCanDetachAttachments: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: this.enigCanDetachAttachments\n");
+
+    const nsIEnigmail = Components.interfaces.nsIEnigmail;
+
     var canDetach = true;
     if (Enigmail.msg.securityInfo && (typeof(Enigmail.msg.securityInfo.statusFlags) != "undefined")) {
       canDetach = ((Enigmail.msg.securityInfo.statusFlags &

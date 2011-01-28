@@ -35,6 +35,9 @@
 
 // enigmailCommon.js: shared JS functions for Enigmail
 
+// WARNING: This module functions must not be loaded in overlays to standard
+// functionality!
+
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 Components.utils.import("resource://enigmail/commonFuncs.jsm");
 
@@ -101,7 +104,7 @@ const ENIG_KEYTYPE_RSA = 2;
 // field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
 const ENIG_KEY_TRUST=1;
 const ENIG_KEY_ID = 4;
-const ComponentsREATED = 5;
+const ENIG_CREATED = 5;
 const ENIG_EXPIRY = 6;
 const ENIG_UID_ID = 7;
 const ENIG_OWNERTRUST = 8;
@@ -486,21 +489,7 @@ function EnigConvertToUnicode(text, charset) {
 }
 
 function EnigConvertGpgToUnicode(text) {
-  if (typeof(text)=="string") {
-    text = text.replace(/\\x3a/ig, "\\e3A");
-    var a=text.search(/\\x[0-9a-fA-F]{2}/);
-    while (a>=0) {
-        var ch = unescape('%'+text.substr(a+2,2));
-        var r = new RegExp("\\"+text.substr(a,4));
-        text=text.replace(r, ch);
-
-        a=text.search(/\\x[0-9a-fA-F]{2}/);
-    }
-
-    text = EnigConvertToUnicode(text, "utf-8").replace(/\\e3A/g, ":");
-  }
-
-  return text;
+  return EnigmailCommon.convertGpgToUnicode(text);
 }
 
 function EnigFormatFpr(fingerprint) {
@@ -673,11 +662,7 @@ function EngmailCardDetails() {
 }
 
 function EnigKeygen() {
-  DEBUG_LOG("enigmailCommon.js: EnigKeygen\n");
-
-  window.open('chrome://enigmail/content/enigmailKeygen.xul',
-              "enigmail:generateKey",
-              'chrome,dialog,modal,resizable=yes');
+  EnigmailFuncs.openKeyGen();
 
 }
 
@@ -827,225 +812,23 @@ function EnigDownloadKeys(inputObj, resultObj) {
 
 // create new PGP Rule
 function EnigNewRule(emailAddress) {
-  // make sure the rules database is loaded
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return false;
-   var rulesListObj= new Object;
-
-  // open rule dialog
-  enigmailSvc.getRulesData(rulesListObj);
-  var inputObj=new Object;
-  var resultObj=new Object;
-  inputObj.toAddress="{"+emailAddress+"}";
-  inputObj.options="";
-  inputObj.command = "add";
-  window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","",
-                    "dialog,modal,centerscreen,resizable", inputObj, resultObj);
-  return true;
+  return EnigmailFuncs.createNewRule(window, emailAddress);
 }
 
 // Obtain kay list from GnuPG
 function EnigObtainKeyList(secretOnly, refresh) {
-  DEBUG_LOG("enigmailCommon.js: EnigObtainKeyList\n");
-
-  try {
-    var exitCodeObj = new Object();
-    var statusFlagsObj = new Object();
-    var errorMsgObj = new Object();
-
-    var enigmailSvc = GetEnigmailSvc();
-    if (! enigmailSvc)
-      return null;
-    var userList = enigmailSvc.getUserIdList(secretOnly,
-                                             refresh,
-                                             exitCodeObj,
-                                             statusFlagsObj,
-                                             errorMsgObj);
-    if (exitCodeObj.value != 0) {
-      EnigAlert(errorMsgObj.value);
-      return null;
-    }
-  } catch (ex) {
-    ERROR_LOG("ERROR in enigmailCommon: EnigObtainKeyList\n");
-  }
-
-  if (typeof(userList) == "string") {
-    return userList.split(/\n/);
-  }
-  else {
-    return [];
-  }
+  return EnigmailFuncs.obtainKeyList(window, secretOnly, refresh);
 }
 
 function EnigGetTrustCode(keyObj) {
-  // return a merged value of trust level "key disabled"
-  if (keyObj.keyUseFor.indexOf("D")>=0)
-    return "D";
-  else
-    return keyObj.keyTrust;
+  return EnigmailFunc.getTrustCode(keyObj);
 }
 
 // Load the key list into memory
 // sortDirection: 1 = ascending / -1 = descending
 
 function EnigLoadKeyList(refresh, keyListObj, sortColumn, sortDirection) {
-  DEBUG_LOG("enigmailCommon.js: EnigLoadKeyList\n");
-
-  if (! sortColumn) sortColumn = "userid";
-  if (! sortDirection) sortDirection = 1;
-
-  const TRUSTLEVEL_SORTED="oidreD-qnmfu"; // trust level sorted by increasing level of trust
-
-  var sortByKeyId = function (a, b) {
-    return (a.keyId < b.keyId) ? -sortDirection : sortDirection;
-  }
-
-  var sortByKeyIdShort = function (a, b) {
-    return (a.keyId.substr(-8,8) < b.keyId.substr(-8 ,8)) ? -sortDirection : sortDirection;
-  }
-
-  var sortByUserId = function (a, b) {
-    return (a.userId < b.userId) ? -sortDirection : sortDirection;
-  }
-
-  var sortByFpr = function (a, b) {
-    return (keyListObj.keyList[a.keyId].fpr < keyListObj.keyList[b.keyId].fpr) ? -sortDirection : sortDirection;
-  }
-
-  var sortByKeyType = function (a, b) {
-    return (keyListObj.keyList[a.keyId].secretAvailable < keyListObj.keyList[b.keyId].secretAvailable) ? -sortDirection : sortDirection;
-  }
-
-
-  var sortByValidity = function (a, b) {
-    return (TRUSTLEVEL_SORTED.indexOf(EnigGetTrustCode(keyListObj.keyList[a.keyId])) < TRUSTLEVEL_SORTED.indexOf(EnigGetTrustCode(keyListObj.keyList[b.keyId]))) ? -sortDirection : sortDirection;
-  }
-
-  var sortByTrust = function (a, b) {
-    return (TRUSTLEVEL_SORTED.indexOf(keyListObj.keyList[a.keyId].ownerTrust) < TRUSTLEVEL_SORTED.indexOf(keyListObj.keyList[b.keyId].ownerTrust)) ? -sortDirection : sortDirection;
-  }
-
-  var sortByExpiry = function (a, b) {
-    return (keyListObj.keyList[a.keyId].expiryTime < keyListObj.keyList[b.keyId].expiryTime) ? -sortDirection : sortDirection;
-  }
-
-  var aGpgUserList = EnigObtainKeyList(false, refresh);
-  if (!aGpgUserList) return;
-
-  var aGpgSecretsList = EnigObtainKeyList(true, refresh);
-  if (!aGpgSecretsList && !refresh) {
-    if (EnigConfirm(EnigGetString("noSecretKeys"), EnigGetString("keyMan.button.generateKey"), EnigGetString("keyMan.button.skip"))) {
-      EnigKeygen();
-      EnigLoadKeyList(true, keyListObj);
-    }
-  }
-
-  keyListObj.keyList = new Array();
-  keyListObj.keySortList = new Array();
-
-  var keyObj = new Object();
-  var i;
-  var uatNum=0; // counter for photos (counts per key)
-
-  for (i=0; i<aGpgUserList.length; i++) {
-    var listRow=aGpgUserList[i].split(/:/);
-    if (listRow.length>=0) {
-      switch (listRow[0]) {
-      case "pub":
-        keyObj = new Object();
-        uatNum = 0;
-        keyObj.expiry=EnigGetDateTime(listRow[ENIG_EXPIRY], true, false);
-        keyObj.expiryTime = Number(listRow[ENIG_EXPIRY]);
-        keyObj.created=EnigGetDateTime(listRow[ComponentsREATED], true, false);
-        keyObj.keyId=listRow[ENIG_KEY_ID];
-        keyObj.keyTrust=listRow[ENIG_KEY_TRUST];
-        keyObj.keyUseFor=listRow[ENIG_KEY_USE_FOR];
-        keyObj.ownerTrust=listRow[ENIG_OWNERTRUST];
-        keyObj.SubUserIds=new Array();
-        keyObj.fpr="";
-        keyObj.photoAvailable=false;
-        keyObj.secretAvailable=false;
-        keyListObj.keyList[listRow[ENIG_KEY_ID]] = keyObj;
-        break;
-      case "fpr":
-        keyObj.fpr=listRow[ENIG_USER_ID];
-        break;
-      case "uid":
-        if (listRow[ENIG_USER_ID].length == 0) {
-          listRow[ENIG_USER_ID] = "-";
-        }
-        if (typeof(keyObj.userId) != "string") {
-          keyObj.userId=EnigConvertGpgToUnicode(listRow[ENIG_USER_ID]);
-          keyListObj.keySortList.push({
-            userId: keyObj.userId.toLowerCase(),
-            keyId: keyObj.keyId
-          });
-          if (TRUSTLEVEL_SORTED.indexOf(listRow[ENIG_KEY_TRUST]) < TRUSTLEVEL_SORTED.indexOf(keyObj.keyTrust)) {
-            // reduce key trust if primary UID is less trusted than public key
-            keyObj.keyTrust = listRow[ENIG_KEY_TRUST];
-          }
-        }
-        else {
-          var subUserId = {
-            userId: EnigConvertGpgToUnicode(listRow[ENIG_USER_ID]),
-            keyTrust: listRow[ENIG_KEY_TRUST],
-            type: "uid"
-          }
-          keyObj.SubUserIds.push(subUserId);
-        }
-        break;
-      case "uat":
-        if (listRow[ENIG_USER_ID].indexOf("1 ")==0) {
-          var userId=EnigGetString("userAtt.photo");
-          keyObj.SubUserIds.push({userId: userId,
-                                  keyTrust:listRow[ENIG_KEY_TRUST],
-                                  type: "uat",
-                                  uatNum: uatNum});
-          keyObj.photoAvailable=true;
-          ++uatNum;
-        }
-      }
-    }
-  }
-
-  // search and mark keys that have secret keys
-  for (i=0; i<aGpgSecretsList.length; i++) {
-     listRow=aGpgSecretsList[i].split(/:/);
-     if (listRow.length>=0) {
-       if (listRow[0] == "sec") {
-         if (typeof(keyListObj.keyList[listRow[ENIG_KEY_ID]]) == "object") {
-           keyListObj.keyList[listRow[ENIG_KEY_ID]].secretAvailable=true;
-         }
-       }
-     }
-  }
-
-  switch (sortColumn.toLowerCase()) {
-  case "keyid":
-    keyListObj.keySortList.sort(sortByKeyId);
-    break;
-  case "keyidshort":
-    keyListObj.keySortList.sort(sortByKeyIdShort);
-    break;
-  case "fpr":
-    keyListObj.keySortList.sort(sortByFpr);
-    break;
-  case "keytype":
-    keyListObj.keySortList.sort(sortByKeyType);
-    break;
-  case "validity":
-    keyListObj.keySortList.sort(sortByValidity);
-    break;
-  case "trust":
-    keyListObj.keySortList.sort(sortByTrust);
-    break;
-  case "expiry":
-    keyListObj.keySortList.sort(sortByExpiry);
-    break;
-  default:
-    keyListObj.keySortList.sort(sortByUserId);
-  }
+  return EnigmailFuncs.loadKeyList(window, refresh, keyListObj, sortColumn, sortDirection);
 }
 
 function EnigGetSecretKeys() {
@@ -1110,44 +893,15 @@ function EnigGetSecretKeys() {
 }
 
 function EnigEditKeyTrust(userIdArr, keyIdArr) {
-  var inputObj = {
-    keyId: keyIdArr,
-    userId: userIdArr
-  }
-  var resultObj = { refresh: false };
-  window.openDialog("chrome://enigmail/content/enigmailEditKeyTrustDlg.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
-  return resultObj.refresh;
+  return EnigmailFuncs.editKeyTrust(window, userIdArr, keyIdArr);
 }
 
 function EnigDisplayKeyDetails(keyId, refresh) {
-  var keyListObj = {};
-
-  EnigLoadKeyList(refresh, keyListObj);
-
-  var inputObj = {
-    keyId:  keyId,
-    keyListArr: keyListObj.keyList,
-    secKey: keyListObj.keyList[ keyId ].secretAvailable
-  };
-  var resultObj = { refresh: false };
-  window.openDialog("chrome://enigmail/content/enigmailKeyDetailsDlg.xul",
-        "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
-  if (resultObj.refresh) {
-    enigmailRefreshKeys();
-  }
-
-
+  return EnigmailFuncs.openKeyDetails(window, keyId, refresh);
 }
 
 function EnigSignKey(userId, keyId, signingKeyHint) {
-  var inputObj = {
-    keyId: keyId,
-    userId: userId,
-    signingKeyHint: signingKeyHint
-  }
-  var resultObj = { refresh: false };
-  window.openDialog("chrome://enigmail/content/enigmailSignKeyDlg.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
-  return resultObj.refresh;
+  return EnigmailFuncs.signKey(window, userId, keyId, signingKeyHint);
 }
 
 
@@ -1220,38 +974,7 @@ function EnigRevokeKey(keyId, userId) {
 
 
 function EnigShowPhoto(keyId, userId, photoNumber) {
-  var enigmailSvc = GetEnigmailSvc();
-  if (enigmailSvc) {
-    if (photoNumber==null) photoNumber=0;
-    var exitCodeObj = new Object();
-    var errorMsgObj = new Object();
-    var photoPath = enigmailSvc.showKeyPhoto("0x"+keyId, photoNumber, exitCodeObj, errorMsgObj);
-    if (photoPath && exitCodeObj.value==0) {
-      var photoFile = ENIG_C[ENIG_LOCAL_FILE_CONTRACTID].createInstance(ENIG_I.nsILocalFile);
-      photoFile.initWithPath(photoPath);
-      if (! (photoFile.isFile() && photoFile.isReadable())) {
-        EnigAlert("Photo path '"+photoPath+"' is not readable");
-      }
-      else {
-        var ioServ = ENIG_C[ENIG_IOSERVICE_CONTRACTID].getService(ENIG_I.nsIIOService);
-        var photoUri = ioServ.newFileURI(photoFile).spec;
-        var argsObj = {
-          photoUri: photoUri,
-          userId: userId,
-          keyId: keyId
-        };
-        window.openDialog("chrome://enigmail/content/enigmailDispPhoto.xul",photoUri, "chrome,modal=1,resizable=1,dialog=1,centerscreen", argsObj);
-        try {
-          // delete the photo file
-          photoFile.remove(false);
-        }
-        catch (ex) {}
-     }
-    }
-    else {
-      EnigAlert(EnigGetString("noPhotoAvailable"));
-    }
-  }
+  EnigmailFuncs.showPhoto(window, keyId, userId, photoNumber);
 }
 
 function EnigGetFilePath (nsFileObj) {

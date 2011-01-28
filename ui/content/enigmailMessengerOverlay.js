@@ -822,6 +822,8 @@ Enigmail.msg = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: messageParseCallback: "+interactive+", "+interactive+", importOnly="+importOnly+", charset="+charset+", msgUrl="+messageUrl+", retry="+retry+", signature='"+signature+"'\n");
 
+    const nsIEnigmail = Components.interfaces.nsIEnigmail;
+
     if (!msgText)
       return;
 
@@ -1716,6 +1718,8 @@ Enigmail.msg = {
   decryptAttachmentCallback: function (callbackArg, ctxt)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: decryptAttachmentCallback: "+ctxt+"\n");
+
+    const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
     if (callbackArg.ipcBuffer.overflowed) {
       WARNING_LOG("enigmailMessengerOverlay.js: decryptAttachmentCallback: MESSAGE BUFFER OVERFLOW\n");
