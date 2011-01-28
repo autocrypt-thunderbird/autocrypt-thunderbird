@@ -2873,7 +2873,7 @@ Enigmail.prototype = {
 
     if (exitCode == 0) {
       // Normal return
-      var errLines, goodSignPat, badSignPat, keyExpPat;
+      var errLines, goodSignPat, badSignPat, keyExpPat, revKeyPat, validSigPat;
 
       if (statusMsg) {
           errLines = statusMsg.split(/\r?\n/);
@@ -2961,7 +2961,7 @@ Enigmail.prototype = {
 
       try {
         if (userId && keyId && this.prefBranch.getBoolPref("displaySecondaryUid")) {
-          uids = this.getKeyDetails(keyId, true);
+          let uids = this.getKeyDetails(keyId, true);
           if (uids) {
             userId = uids;
           }

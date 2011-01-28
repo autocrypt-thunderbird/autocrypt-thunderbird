@@ -808,7 +808,7 @@ Enigmail.msg = {
 
     var urlSpec = mailNewsUrl ? mailNewsUrl.spec : "";
 
-    retry = (charset != "UTF-8" ? 1 : 2);
+    let retry = (charset != "UTF-8" ? 1 : 2);
 
     Enigmail.msg.messageParseCallback(msgText, contentEncoding, charset, interactive,
                                       importOnly, urlSpec, "", retry, head, tail,

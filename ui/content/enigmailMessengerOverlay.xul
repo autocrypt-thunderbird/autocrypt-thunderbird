@@ -176,7 +176,7 @@
       <menuitem id="enigmail_keymgmt"
            label="&enigmail.keyManWindow.label;"
            accesskey="&enigmail.keyManWindow.accesskey;"
-           oncommand="EnigmailFuncs.openKeyManager();" />
+           oncommand="EnigmailFuncs.openKeyManager(window);" />
 
       <menuitem label="&enigmail.adminSmartCard.label;"
               id="enigmail_smartCard"

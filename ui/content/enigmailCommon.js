@@ -69,8 +69,8 @@ const ENIG_DIRSERVICE_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const ENIG_MIME_CONTRACTID = "@mozilla.org/mime;1";
 const ENIG_WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
 const ENIG_ASS_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
-const ComponentsLIPBOARD_CONTRACTID = "@mozilla.org/widget/clipboard;1";
-const ComponentsLIPBOARD_HELPER_CONTRACTID = "@mozilla.org/widget/clipboardhelper;1"
+const ENIG_CLIPBOARD_CONTRACTID = "@mozilla.org/widget/clipboard;1";
+const ENIG_CLIPBOARD_HELPER_CONTRACTID = "@mozilla.org/widget/clipboardhelper;1"
 const ENIG_TRANSFERABLE_CONTRACTID = "@mozilla.org/widget/transferable;1"
 const ENIG_LOCALE_SVC_CONTRACTID = "@mozilla.org/intl/nslocaleservice;1";
 const ENIG_DATE_FORMAT_CONTRACTID = "@mozilla.org/intl/scriptabledateformat;1"
@@ -667,7 +667,7 @@ function EnigKeygen() {
 }
 
 function EnigKeyManager() {
-  EnigmailFuncs.openKeyManager();
+  EnigmailFuncs.openKeyManager(window);
 }
 
 
@@ -821,7 +821,7 @@ function EnigObtainKeyList(secretOnly, refresh) {
 }
 
 function EnigGetTrustCode(keyObj) {
-  return EnigmailFunc.getTrustCode(keyObj);
+  return EnigmailFuncs.getTrustCode(keyObj);
 }
 
 // Load the key list into memory

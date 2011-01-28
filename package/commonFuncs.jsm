@@ -197,8 +197,10 @@ var EnigmailFuncs = {
                            "dialog,centerscreen,resizable");
   },
 
-  openKeyManager: function ()
+  openKeyManager: function (win)
   {
+    EnigmailCommon.getService(win);
+
     EnigmailCommon.openWin("enigmail:KeyManager",
                            "chrome://enigmail/content/enigmailKeyManager.xul",
                            "resizable");
@@ -425,10 +427,10 @@ var EnigmailFuncs = {
       return (keyListObj.keyList[a.keyId].expiryTime < keyListObj.keyList[b.keyId].expiryTime) ? -sortDirection : sortDirection;
     }
 
-    var aGpgUserList = this.obtainKeyList(false, refresh);
+    var aGpgUserList = this.obtainKeyList(win, false, refresh);
     if (!aGpgUserList) return;
 
-    var aGpgSecretsList = this.obtainKeyList(true, refresh);
+    var aGpgSecretsList = this.obtainKeyList(win, true, refresh);
     if (!aGpgSecretsList && !refresh) {
       if (EnigmailCommon.confirmDlg(EnigmailCommon.getString("noSecretKeys"),
             EnigmailCommon.getString("keyMan.button.generateKey"),
@@ -560,6 +562,7 @@ var EnigmailFuncs = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailFuncs.jsm: obtainKeyList\n");
 
+    var userList = null;
     try {
       var exitCodeObj = new Object();
       var statusFlagsObj = new Object();
@@ -568,11 +571,11 @@ var EnigmailFuncs = {
       var enigmailSvc = EnigmailCommon.getService(win);
       if (! enigmailSvc) return null;
 
-      var userList = enigmailSvc.getUserIdList(secretOnly,
-                                               refresh,
-                                               exitCodeObj,
-                                               statusFlagsObj,
-                                               errorMsgObj);
+      userList = enigmailSvc.getUserIdList(secretOnly,
+                                           refresh,
+                                           exitCodeObj,
+                                           statusFlagsObj,
+                                           errorMsgObj);
       if (exitCodeObj.value != 0) {
         EnigmailCommon.alert(win, errorMsgObj.value);
         return null;
