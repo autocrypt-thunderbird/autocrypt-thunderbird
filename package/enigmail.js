@@ -4236,7 +4236,7 @@ Enigmail.prototype = {
     var flags = NS_RDONLY;
     var rulesFile = this.getRulesFile();
     if (rulesFile.exists()) {
-      fileContents = EnigReadFile(rulesFile);
+      var fileContents = EnigReadFile(rulesFile);
 
       if (fileContents.length==0 || fileContents.search(/^\s*$/)==0) {
         return false;

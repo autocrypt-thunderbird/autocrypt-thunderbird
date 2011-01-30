@@ -268,41 +268,11 @@ function EnigLongAlert(mesg, checkBoxLabel, okLabel, labelButton2, labelButton3,
 }
 
 function EnigAlertCount(countPrefName, mesg) {
-  var alertCount = EnigGetPref(countPrefName);
-
-  if (alertCount <= 0)
-    return;
-
-  alertCount--;
-  EnigSetPref(countPrefName, alertCount);
-
-  if (alertCount > 0) {
-    mesg += EnigGetString("repeatPrefix",alertCount) + " ";
-    mesg += (alertCount == 1) ? EnigGetString("repeatSuffixSingular") : EnigGetString("repeatSuffixPlural");
-  } else {
-    mesg += EnigGetString("noRepeat");
-  }
-
-  EnigAlert(mesg);
+  EnigmailCommon.alertCount(window, countPrefName, mesg);
 }
 
 function EnigAlertPref(mesg, prefText) {
-  const display = true;
-  const dontDisplay = false;
-
-  var prefValue = EnigGetPref(prefText);
-  if (prefValue == display) {
-    var checkBoxObj = { value: false } ;
-    var buttonPressed = gEnigPromptSvc.confirmEx(window,
-                          EnigGetString("enigAlert"),
-                          mesg,
-                          (gEnigPromptSvc.BUTTON_TITLE_OK * ENIG_BUTTON_POS_0),
-                          null, null, null,
-                          EnigGetString("dlgNoPrompt"), checkBoxObj);
-    if (checkBoxObj.value && buttonPressed==0) {
-      EnigSetPref(prefText, dontDisplay);
-    }
-  }
+  return EnigmailCommon.alertPref(window, mesg, prefText);
 }
 
 // Confirmation dialog with OK / Cancel buttons (both customizable)
@@ -320,9 +290,7 @@ function EnigError(mesg) {
 }
 
 function EnigPromptValue(mesg, valueObj) {
-  var checkObj = new Object();
-  return gEnigPromptSvc.prompt(window, EnigGetString("enigPrompt"),
-                               mesg, valueObj, "", checkObj);
+  return EnigmailCommon.promptValue(window, mesg, valueObj);
 }
 
 
@@ -395,24 +363,7 @@ function EnigSetPref(prefName, value) {
 }
 
 function EnigGetSignMsg(identity) {
-  DEBUG_LOG("enigmailCommon.js: EnigGetSignMsg: identity.key="+identity.key+"\n");
-  var sign = null;
-
-  if (EnigmailCommon.prefRoot.getPrefType("mail.identity."+identity.key+".pgpSignPlain")==0) {
-    if (EnigmailCommon.prefRoot.getPrefType("mail.identity."+identity.key+".pgpSignMsg")==0) {
-      sign=identity.getBoolAttribute("pgpAlwaysSign");
-      identity.setBoolAttribute("pgpSignEncrypted", sign);
-      identity.setBoolAttribute("pgpSignPlain", sign);
-    }
-    else {
-      sign = identity.getIntAttribute("pgpSignMsg");
-      identity.setBoolAttribute("pgpSignEncrypted", sign==1);
-      identity.setBoolAttribute("pgpSignPlain", sign>0);
-    }
-    EnigmailCommon.prefRoot.deleteBranch("mail.identity."+identity.key+".pgpSignMsg");
-    EnigmailCommon.prefRoot.deleteBranch("mail.identity."+identity.key+".pgpAlwaysSign");
-  }
-
+  EnigmailFuncs.getSignMsg(identity);
 }
 
 function EnigRequestObserver(terminateFunc, terminateArg)
@@ -1084,31 +1035,7 @@ function enigGetService (aURL, aInterface)
 }
 
 function EnigCollapseAdvanced(obj, attribute, dummy) {
-  DEBUG_LOG("enigmailCommon.js: EnigCollapseAdvanced: test\n");
-
-  var advancedUser = EnigGetPref("advancedUser");
-
-  var obj = obj.firstChild;
-  while (obj) {
-    if (obj.getAttribute("advanced") == "true") {
-      if (advancedUser) {
-        obj.removeAttribute(attribute);
-      }
-      else {
-        obj.setAttribute(attribute, "true");
-      }
-    }
-    else if (obj.getAttribute("advanced") == "reverse") {
-      if (advancedUser) {
-        obj.setAttribute(attribute, "true");
-      }
-      else {
-        obj.removeAttribute(attribute);
-      }
-    }
-
-    obj = obj.nextSibling;
-  }
+  return EnigmailFuncs.collapseAdvanced(obj, attribute, dummy);
 }
 
 

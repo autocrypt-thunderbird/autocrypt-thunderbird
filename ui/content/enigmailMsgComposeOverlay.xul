@@ -62,15 +62,15 @@
  <commandset id="msgComposeCommandUpdate"
               commandupdater="true"
               events="focus"
-              oncommandupdate="enigFocusChange()"/>
+              oncommandupdate="Enigmail.msg.focusChange()"/>
 
   <popupset id="aTooltipSet"/>
 
   <keyset id="tasksKeys">
     <key id="key_enigSign" key="&enigmail.signedsend.key;"
-         oncommand="enigSetSendMode('toggle-sign')" modifiers="accel, shift"/>
+         oncommand="Enigmail.msg.setSendMode('toggle-sign')" modifiers="accel, shift"/>
     <key id="key_enigEncrypt" key="&enigmail.encryptedsend.key;"
-         oncommand="enigSetSendMode('toggle-encrypt')" modifiers="accel, shift"/>
+         oncommand="Enigmail.msg.setSendMode('toggle-encrypt')" modifiers="accel, shift"/>
   </keyset>
 
 <!-- menu for all apps -->
@@ -83,21 +83,21 @@
             insertbefore="tasksMenu">
 
         <menupopup id="menu_EnigmailPopup"
-                   onpopupshowing="EnigCollapseAdvanced(this, 'hidden', enigSetMenuSettings(''))">
+                   onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.setMenuSettings(''))">
 
           <menuitem id="enigmail_signed_send"
               type="checkbox"
               label="&enigmail.signedsend.label;"
               accesskey="&enigmail.signedsend.accesskey;"
               key="key_enigSign"
-              oncommand="enigDoPgpButton('toggle-sign');" />
+              oncommand="Enigmail.msg.doPgpButton('toggle-sign');" />
 
           <menuitem id="enigmail_encrypted_send"
               type="checkbox"
               label="&enigmail.encryptedsend.label;"
               accesskey="&enigmail.encryptedsend.accesskey;"
               key="key_enigEncrypt"
-              oncommand="enigDoPgpButton('toggle-encrypt');" />
+              oncommand="Enigmail.msg.doPgpButton('toggle-encrypt');" />
 
           <menuseparator/>
 
@@ -106,7 +106,7 @@
               checked="false"
               label="&enigmail.sendPGPMime.label;"
               accesskey="&enigmail.sendPGPMime.accesskey;"
-              oncommand="enigDoPgpButton('togglePGPMime');" />
+              oncommand="Enigmail.msg.doPgpButton('togglePGPMime');" />
 
           <menuitem id="enigmail_disable_rules"
               type="checkbox"
@@ -114,7 +114,7 @@
               label="&enigmail.disableRules.label;"
               accesskey="&enigmail.disableRules.accesskey;"
               key="key_enigDisableRules"
-              oncommand="enigDoPgpButton('toggleRules');" />
+              oncommand="Enigmail.msg.doPgpButton('toggleRules');" />
 
           <menuseparator/>
 
@@ -128,19 +128,19 @@
               <menuitem id="enigmail_accountSettings"
                 label="&enigmail.pgpAccountSettings.label;"
                 accesskey="&enigmail.pgpAccountSettings.accesskey;"
-                oncommand="enigGoAccountManager();" />
+                oncommand="Enigmail.msg.goAccountManager();" />
 
               <menuseparator/>
 
               <menuitem id="enigmail_defaultSendOpts"
                 label="&enigmail.sendOptionsMenu.label;"
                 accesskey="&enigmail.sendOptionsMenu.accesskey;"
-                oncommand="EnigPrefWindow(true, 'thunderbird', 'sendTab');" />
+                oncommand="EnigmailFuncs.openPrefWindow(window, true, 'thunderbird', 'sendTab');" />
 
               <menuitem id="enigmail_defaultKeySelOpts"
                 label="&enigmail.defaultKeySelOpts.label;"
                 accesskey="&enigmail.defaultKeySelOpts.accesskey;"
-                oncommand="EnigPrefWindow(true, 'thunderbird', 'keySelTab');" />
+                oncommand="EnigmailFuncs.openPrefWindow(window, true, 'thunderbird', 'keySelTab');" />
 
             </menupopup>
           </menu>
@@ -148,13 +148,13 @@
         <menuitem id="enigmail_keymgmt"
              label="&enigmail.keyManWindow.label;"
              accesskey="&enigmail.keyManWindow.accesskey;"
-             oncommand="EnigKeyManager();" />
+             oncommand="EnigmailFuncs.openKeyManager(window);" />
 
           <menuitem id="enigmail_RulesEditor"
               label="&enigmail.editRules.label;"
               accesskey="&enigmail.editRules.accesskey;"
               advanced="true"
-              oncommand="EnigRulesEditor();"/>
+              oncommand="EnigmailFuncs.openRulesEditor();"/>
 
           <menuseparator
               advanced="true"/>
@@ -162,33 +162,33 @@
           <menuitem id="enigmail_undo_encryption"
               label="&enigmail.undoencryption.label;"
               accesskey="&enigmail.undoencryption.accesskey;"
-              oncommand="enigUndoEncryption();" />
+              oncommand="Enigmail.msg.undoEncryption();" />
 
           <menuitem id="enigmail_insert_own_key"
               label="&enigmail.attachmykey.label;"
               accesskey="&enigmail.attachmykey.accesskey;"
               type="checkbox"
               checked="false"
-              oncommand="enigToggleAttachOwnKey();" />
+              oncommand="Enigmail.msg.toggleAttachOwnKey();" />
 
           <menuitem id="enigmail_insert_key"
               label="&enigmail.attachkey.label;"
               accesskey="&enigmail.attachkey.accesskey;"
               advanced="true"
-              oncommand="enigAttachKey();" />
+              oncommand="Enigmail.msg.attachKey();" />
 
           <menuitem id="enigmail_clearPassphrase"
               label="&enigmail.clearPassphrase.label;"
               accesskey="&enigmail.clearPassphrase.accesskey;"
               advanced="true"
-              oncommand="EnigClearPassphrase();" />
+              oncommand="EnigmailFuncs.clearPassphrase(window);" />
 
           <menuseparator/>
 
           <menuitem id="enigmail_help"
               label="&enigmail.help.label;"
               accesskey="&enigmail.help.accesskey;"
-              oncommand="EnigHelpWindow('compose');" />
+              oncommand="EnigmailFuncs.openHelpWindow('compose');" />
 
         </menupopup>
       </menu>
@@ -205,22 +205,22 @@
             buttontype="thunderbird"
             tooltip="aTooltipSet"
             tooltiptext="&enigmail.securitybutton.tip;"
-            oncommand="enigDoPgpButton();">
+            oncommand="Enigmail.msg.doPgpButton();">
 
-        <menupopup onpopupshowing="enigSetMenuSettings('3')">
+        <menupopup onpopupshowing="Enigmail.msg.setMenuSettings('3')">
           <menuitem id="enigmail_signed_send3"
               type="checkbox"
               label="&enigmail.signedsend.label;"
               accesskey="&enigmail.signedsend.accesskey;"
               key="key_enigSign"
-              oncommand="enigNextCommand('toggle-sign');" />
+              oncommand="Enigmail.msg.nextCommand('toggle-sign');" />
 
           <menuitem id="enigmail_encrypted_send3"
               type="checkbox"
               label="&enigmail.encryptedsend.label;"
               accesskey="&enigmail.encryptedsend.accesskey;"
               key="key_enigEncrypt"
-              oncommand="enigNextCommand('toggle-encrypt');" />
+              oncommand="Enigmail.msg.nextCommand('toggle-encrypt');" />
 
           <menuseparator/>
 
@@ -229,14 +229,14 @@
               checked="false"
               label="&enigmail.sendPGPMime.label;"
               accesskey="&enigmail.sendPGPMime.accesskey;"
-              oncommand="enigNextCommand('togglePGPMime');" />
+              oncommand="Enigmail.msg.nextCommand('togglePGPMime');" />
 
           <menuitem id="enigmail_disable_rules3"
               type="checkbox"
               label="&enigmail.disableRules.label;"
               accesskey="&enigmail.disableRules.accesskey;"
               key="key_enigDisableRules"
-              oncommand="enigNextCommand('toggleRules');" />
+              oncommand="Enigmail.msg.nextCommand('toggleRules');" />
         </menupopup>
     </toolbarbutton>
   </toolbarpalette>
@@ -257,10 +257,10 @@
        <label id="enigmail-rules-status" value="Enigmail: nothing"/>
       <statusbarpanel id="enigmail-signed-status"
         class="statusbarpanel-iconic"
-        collapsed="true" onclick="enigHandleClick(event,'toggle-sign');"/>
+        collapsed="true" onclick="Enigmail.msg.handleClick(event,'toggle-sign');"/>
       <statusbarpanel id="enigmail-encrypted-status"
         class="statusbarpanel-iconic"
-        collapsed="true" onclick="enigHandleClick(event, 'toggle-encrypt');"/>
+        collapsed="true" onclick="Enigmail.msg.handleClick(event, 'toggle-encrypt');"/>
     </hbox>
   </statusbar>
 

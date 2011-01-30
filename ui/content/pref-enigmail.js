@@ -64,7 +64,6 @@ function prefOnLoad() {
 
       if ((typeof window.arguments[0].selectTab)=="string") {
           selectPrefTabPanel(window.arguments[0].selectTab);
-          prefTabs.selectedTab = selectTab;
       }
 
    }

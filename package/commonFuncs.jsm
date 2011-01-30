@@ -592,6 +592,28 @@ var EnigmailFuncs = {
     }
   },
 
+  getSignMsg: function (identity)
+  {
+    EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: getSignMsg: identity.key="+identity.key+"\n");
+    var sign = null;
+    var prefRoot = EnigmailCommon.prefRoot;
+
+    if (prefRoot.getPrefType("mail.identity."+identity.key+".pgpSignPlain")==0) {
+      if (prefRoot.getPrefType("mail.identity."+identity.key+".pgpSignMsg")==0) {
+        sign=identity.getBoolAttribute("pgpAlwaysSign");
+        identity.setBoolAttribute("pgpSignEncrypted", sign);
+        identity.setBoolAttribute("pgpSignPlain", sign);
+      }
+      else {
+        sign = identity.getIntAttribute("pgpSignMsg");
+        identity.setBoolAttribute("pgpSignEncrypted", sign==1);
+        identity.setBoolAttribute("pgpSignPlain", sign>0);
+      }
+      prefRoot.deleteBranch("mail.identity."+identity.key+".pgpSignMsg");
+      prefRoot.deleteBranch("mail.identity."+identity.key+".pgpAlwaysSign");
+    }
+  },
+
   clearPassphrase: function (win) {
     EnigmailCommon.DEBUG_LOG("enigmailFuncs.jsm: clearPassphrase:\n");
 

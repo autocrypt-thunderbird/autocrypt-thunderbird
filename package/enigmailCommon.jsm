@@ -250,6 +250,10 @@ var EnigmailCommon = {
     return addonVersion;
   },
 
+  getPromptSvc: function() {
+    return gPromptSvc;
+  },
+
   savePrefs: function ()
   {
     this.DEBUG_LOG("enigmailCommon.js: savePrefs\n");
@@ -516,6 +520,13 @@ var EnigmailCommon = {
     }
   },
 
+  promptValue: function (win, mesg, valueObj)
+  {
+    var checkObj = new Object();
+    return gPromptSvc.prompt(win, this.getString("enigPrompt"),
+                                 mesg, valueObj, "", checkObj);
+  },
+
   alertPref: function (win, mesg, prefText) {
     const display = true;
     const dontDisplay = false;
@@ -533,6 +544,26 @@ var EnigmailCommon = {
         this.setPref(prefText, dontDisplay);
       }
     }
+  },
+
+  alertCount: function (win, countPrefName, mesg)
+  {
+    var alertCount = this.getPref(countPrefName);
+
+    if (alertCount <= 0)
+      return;
+
+    alertCount--;
+    this.setPref(countPrefName, alertCount);
+
+    if (alertCount > 0) {
+      mesg += this.getString("repeatPrefix", [ alertCount ]) + " ";
+      mesg += (alertCount == 1) ? this.getString("repeatSuffixSingular") : this.getString("repeatSuffixPlural");
+    } else {
+      mesg += this.getString("noRepeat");
+    }
+
+    this.alert(win, mesg);
   },
 
   openWin: function (winName, spec, winOptions, optList)
@@ -800,7 +831,8 @@ var EnigmailCommon = {
         var strBundleService = Cc["@mozilla.org/intl/stringbundle;1"].getService();
         strBundleService = strBundleService.QueryInterface(Ci.nsIStringBundleService);
         this.enigStringBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
-      } catch (ex) {
+      }
+      catch (ex) {
         this.ERROR_LOG("enigmailCommon.jsm: Error in instantiating stringBundleService\n");
       }
     }
@@ -813,7 +845,8 @@ var EnigmailCommon = {
         else {
           return this.enigStringBundle.GetStringFromName(aStr);
         }
-      } catch (ex) {
+      }
+      catch (ex) {
         this.ERROR_LOG("enigmailCommon.jsm: Error in querying stringBundleService for string '"+aStr+"'\n");
       }
     }
