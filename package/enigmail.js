@@ -1275,9 +1275,6 @@ Enigmail.prototype = {
        args = [ "--version", "--version", "--batch", "--no-tty", "--charset", "utf8", "--display-charset", "utf8" ];
     }
 
-    // This particular command execution seems to be essential on win32
-    // (In particular, this should be the first command executed and
-    //  *should* use the shell, i.e., command.com)
     var outStrObj = new Object();
     var outLenObj = new Object();
     var errStrObj = new Object();
@@ -2025,7 +2022,7 @@ Enigmail.prototype = {
     }
 
     // Error processing
-    Ec.ERROR_LOG("enigmail.js: Enigmail.encryptMessage: command execution exit code: "+exitCodeObj.value+"\n");
+    Ec.DEBUG_LOG("enigmail.js: Enigmail.encryptMessage: command execution exit code: "+exitCodeObj.value+"\n");
 
     return "";
   },
@@ -2083,7 +2080,7 @@ Enigmail.prototype = {
     }
 
     // Error processing
-    Ec.ERROR_LOG("enigmail.js: Enigmail.encryptMessageEnd: command execution exit code: "+exitCode+"\n");
+    Ec.DEBUG_LOG("enigmail.js: Enigmail.encryptMessageEnd: command execution exit code: "+exitCode+"\n");
 
     if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
       // "Unremember" passphrase on error return
@@ -3033,7 +3030,7 @@ Enigmail.prototype = {
 
     if (exitCode != 0) {
       // Error processing
-      Ec.ERROR_LOG("enigmail.js: Enigmail.decryptMessageEnd: command execution exit code: "+exitCode+"\n");
+      Ec.DEBUG_LOG("enigmail.js: Enigmail.decryptMessageEnd: command execution exit code: "+exitCode+"\n");
     }
 
     if (cmdErrorMsgObj.value) {
