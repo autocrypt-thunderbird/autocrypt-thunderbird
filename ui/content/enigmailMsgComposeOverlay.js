@@ -66,7 +66,8 @@ Enigmail.msg = {
   modifiedAttach: null,
   lastFocusedWindow: null,
   determineSendFlagId: null,
-  dummyValue: 0,
+  signRules: 1,
+  encryptRules: 1,
   attachOwnKeyObj: {
       appendAttachment: false,
       attachedObj: null,
@@ -186,7 +187,7 @@ Enigmail.msg = {
 
     if (! this.sendModeDirty) {
       this.setSendDefaultOptions();
-      this.displayUi();
+      this.updateStatusBar();
     }
   },
 
@@ -340,7 +341,7 @@ Enigmail.msg = {
         catch (ex) {}
       }
     }
-    this.displayUi();
+    this.updateStatusBar();
   },
 
   // check if an signature is related to another attachment
@@ -806,12 +807,12 @@ Enigmail.msg = {
     }
     if (this.sendMode != origSendMode && this.sendModeDirty<2)
       this.sendModeDirty=1;
-    this.displayUi();
+    this.updateStatusBar();
   },
 
-  displayUi: function ()
+  updateStatusBar: function ()
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.displayUi:\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.updateStatusBar:\n");
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN    = nsIEnigmail.SEND_SIGNED;
@@ -830,23 +831,92 @@ Enigmail.msg = {
     var encryptedIcon = document.getElementById("enigmail-encrypted-status");
 
     if (this.sendMode & SIGN) {
-      statusBar.setAttribute("signed", "ok");
+      switch (this.signRules) {
+      case 0:
+        statusBar.setAttribute("signed", "activeMinus"); break;
+      case 1:
+        statusBar.setAttribute("signed", "activeNull"); break;
+      case 2:
+        statusBar.setAttribute("signed", "activePlus"); break;
+      }
       signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("signYes"));
     }
     else {
-      statusBar.setAttribute("signed", "inactive");
+      switch (this.signRules) {
+      case 0:
+        statusBar.setAttribute("signed", "inactiveMinus"); break;
+      case 1:
+        statusBar.setAttribute("signed", "inactiveNull"); break;
+      case 2:
+        statusBar.setAttribute("signed", "inactivePlus"); break;
+      }
       signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("signNo"));
     }
 
     if (this.sendMode & ENCRYPT) {
-      statusBar.setAttribute("encrypted", "ok");
+      switch (this.encryptRules) {
+      case 0:
+        statusBar.setAttribute("encrypted", "activeMinus"); break;
+      case 1:
+        statusBar.setAttribute("encrypted", "activeNull"); break;
+      case 2:
+        statusBar.setAttribute("encrypted", "activePlus"); break;
+      }
+
       encryptedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptYes"));
     }
     else {
-      statusBar.setAttribute("encrypted", "inactive");
+      switch (this.encryptRules) {
+      case 0:
+        statusBar.setAttribute("encrypted", "inactiveMinus"); break;
+      case 1:
+        statusBar.setAttribute("encrypted", "inactiveNull"); break;
+      case 2:
+        statusBar.setAttribute("encrypted", "inactivePlus"); break;
+      }
       encryptedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptNo"));
     }
   },
+
+  determineSendFlags: function ()
+  {
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.focusChange: Enigmail.msg.determineSendFlags\n");
+    if (this.getAccDefault("enabled")) {
+      var compFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
+      Recipients2CompFields(compFields);
+      var arrLen = new Object();
+      var matchedKeysObj = new Object();
+      var flagsObj = new Object();
+      var toAddrList = new Array();
+      var recList;
+      if (compFields.to.length > 0) {
+        recList = compFields.splitRecipients(compFields.to, true, arrLen)
+        this.addRecipients(toAddrList, recList);
+      }
+
+      if (compFields.cc.length > 0) {
+        recList = compFields.splitRecipients(compFields.cc, true, arrLen)
+        this.addRecipients(toAddrList, recList);
+      }
+
+      if (compFields.bcc.length > 0) {
+        recList = compFields.splitRecipients(compFields.bcc, true, arrLen)
+        this.addRecipients(toAddrList, recList);
+      }
+
+      this.signRules    = 1;
+      this.encryptRules = 1;
+      if (toAddrList.length > 0) {
+        if (Enigmail.hlp.getRecipientsKeys(toAddrList.join(", "), false, false, matchedKeysObj, flagsObj)) {
+          this.signRules    = flagsObj.sign;
+          this.encryptRules = flagsObj.encrypt;
+        }
+      }
+      this.updateStatusBar();
+    }
+    this.determineSendFlagId = null;
+  },
+
 
   setMenuSettings: function (postfix)
   {
@@ -892,7 +962,7 @@ Enigmail.msg = {
     this.sendMode = inputObj.sendFlags;
     this.sendPgpMime = inputObj.usePgpMime;
     this.enableRules = !inputObj.disableRules;
-    this.displayUi();
+    this.updateStatusBar();
   },
 
   displaySignClickWarn: function ()
@@ -2526,45 +2596,6 @@ Enigmail.msg = {
       }
     }
     catch (ex) {}
-  },
-
-
-  determineSendFlags: function ()
-  {
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.focusChange: Enigmail.msg.determineSendFlags\n");
-    if (this.getAccDefault("enabled")) {
-      var compFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
-      Recipients2CompFields(compFields);
-      var arrLen = new Object();
-      var matchedKeysObj = new Object();
-      var flagsObj = new Object();
-      var toAddrList = new Array();
-      var recList;
-      if (compFields.to.length > 0) {
-        recList = compFields.splitRecipients(compFields.to, true, arrLen)
-        this.addRecipients(toAddrList, recList);
-      }
-
-      if (compFields.cc.length > 0) {
-        recList = compFields.splitRecipients(compFields.cc, true, arrLen)
-        this.addRecipients(toAddrList, recList);
-      }
-
-      if (compFields.bcc.length > 0) {
-        recList = compFields.splitRecipients(compFields.bcc, true, arrLen)
-        this.addRecipients(toAddrList, recList);
-      }
-
-      if (toAddrList.length > 0) {
-        if (Enigmail.hlp.getRecipientsKeys(toAddrList.join(", "), false, false, matchedKeysObj, flagsObj)) {
-          document.getElementById("enigmail-rules-status").setAttribute("value",
-            "sign: "+flagsObj.sign+" encrypt: "+flagsObj.encrypt);
-        }
-      }
-      ++this.dummyValue;
-      //document.getElementById("enigmail-rules-status").setAttribute("value", "changed: "+Enigmail.msg.dummyValue);
-    }
-    this.determineSendFlagId = null;
   }
 };
 

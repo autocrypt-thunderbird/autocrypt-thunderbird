@@ -253,7 +253,6 @@
   <statusbar id="status-bar">
     <hbox id="enigmail-status-bar"
           insertafter="totalMessageCount">
-       <label id="enigmail-rules-status" value="Enigmail: nothing"/>
       <statusbarpanel id="enigmail-signed-status"
         class="statusbarpanel-iconic"
         collapsed="true" onclick="Enigmail.msg.handleClick(event,'toggle-sign');"/>

@@ -232,6 +232,70 @@
   visibility: visible;
 }
 
+/**
+ *  Icons for composer status bar
+ */
+
+#enigmail-status-bar[signed="inactiveNull"] #enigmail-signed-status {
+  list-style-image: url("chrome://enigmail/skin/enigSignNullInactive.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[signed="inactivePlus"] #enigmail-signed-status {
+  list-style-image: url("chrome://enigmail/skin/enigSignPlusInactive.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[signed="inactiveMinus"] #enigmail-signed-status {
+  list-style-image: url("chrome://enigmail/skin/enigSignMinusInactive.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[signed="activeNull"] #enigmail-signed-status {
+  list-style-image: url("chrome://enigmail/skin/enigSignNullActive.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[signed="activePlus"] #enigmail-signed-status {
+  list-style-image: url("chrome://enigmail/skin/enigSignPlusActive.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[signed="activeMinus"] #enigmail-signed-status {
+  list-style-image: url("chrome://enigmail/skin/enigSignMinusActive.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[encrypted="activeNull"] #enigmail-encrypted-status {
+  list-style-image: url("chrome://enigmail/skin/enigEncNullActive.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[encrypted="activePlus"] #enigmail-encrypted-status {
+  list-style-image: url("chrome://enigmail/skin/enigEncPlusActive.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[encrypted="activeMinus"] #enigmail-encrypted-status {
+  list-style-image: url("chrome://enigmail/skin/enigEncMinusActive.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[encrypted="inactiveNull"] #enigmail-encrypted-status {
+  list-style-image: url("chrome://enigmail/skin/enigEncNullInactive.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[encrypted="inactivePlus"] #enigmail-encrypted-status {
+  list-style-image: url("chrome://enigmail/skin/enigEncPlusInactive.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[encrypted="inactiveMinus"] #enigmail-encrypted-status {
+  list-style-image: url("chrome://enigmail/skin/enigEncMinusInactive.png");
+  visibility: visible;
+}
+
 .enigmailPrefsTitle {
   font-weight: bold;
   height: 25px;
