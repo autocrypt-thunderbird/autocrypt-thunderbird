@@ -40,38 +40,38 @@
 
 <!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
 
-<overlay id="enigmailIdentityEditOvl"
+<overlay id="enigmail_IdentityEditOvl"
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <vbox id="enigIdentityEdit">
-    <checkbox id="enablePgp"
+  <vbox id="enigmail_IdentityEdit">
+    <checkbox id="enigmail_enablePgp"
               prefstring="mail.identity.%identitykey%.enablePgp"
               preftype="bool" prefattribute="value"
               label="&enigmail.amPrefEnablePgp.label;"
-              oncommand="enigToggleEnable();"/>
+              oncommand="Enigmail.edit.toggleEnable();"/>
     <vbox>
-      <groupbox id="encryption.titleBox">
-        <radiogroup id="pgpKeyMode" aria-labelledby="enablePgp">
-          <radio id="keymode_useFromAddress"
+      <groupbox id="enigmail_encryption.titleBox">
+        <radiogroup id="enigmail_pgpKeyMode" aria-labelledby="enablePgp">
+          <radio id="enigmail_keymode_useFromAddress"
                  label="&enigmail.amPrefUseFromAddr.label;"
                  value="0"
-                 observes="bcEnablePgp"
-                 oncommand="enigEnableKeySel(false);"/>
+                 observes="enigmail_bcEnablePgp"
+                 oncommand="Enigmail.edit.enableKeySel(false);"/>
           <vbox>
-            <radio id="keymode_usePgpkeyId"
+            <radio id="enigmail_keymode_usePgpkeyId"
                    label="&enigmail.amPrefUseKeyId.label;"
-                   observes="bcEnablePgp"
+                   observes="enigmail_bcEnablePgp"
                    value="1"
-                   oncommand="enigEnableKeySel(true);"/>
+                   oncommand="Enigmail.edit.enableKeySel(true);"/>
             <hbox>
-              <textbox id="identity.pgpkeyId" aria-labelledby="keymode_usePgpkeyId"
+              <textbox id="enigmail_identity.pgpkeyId" aria-labelledby="keymode_usePgpkeyId"
                        prefstring="mail.identity.%identitykey%.pgpkeyId"
-                       observes="bcUseKeyId"
+                       observes="enigmail_bcUseKeyId"
                        preftype="wstring" prefattribute="value"/>
-              <button id="selectPgpKey" label="&enigmail.amPrefSelectKey.label;"
-                      observes="bcUseKeyId"
-                      oncommand="enigSelectKeyId()"/>
+              <button id="enigmail_selectPgpKey" label="&enigmail.amPrefSelectKey.label;"
+                      observes="enigmail_bcUseKeyId"
+                      oncommand="Enigmail.edit.selectKeyId()"/>
             </hbox>
           </vbox>
         </radiogroup>
@@ -79,36 +79,36 @@
 
         <groupbox>
           <caption label="&enigmail.amPrefDefaultEncrypt.label;"/>
-          <checkbox id="sign_notEncrypted"
+          <checkbox id="enigmail_sign_notEncrypted"
                    checked="false"
-                   observes="bcEnablePgp"
+                   observes="enigmail_bcEnablePgp"
                    label="&enigmail.defaultSignPlainMsg.label;"/>
-          <checkbox id="sign_encrypted"
+          <checkbox id="enigmail_sign_encrypted"
                    checked="false"
-                   observes="bcEnablePgp"
+                   observes="enigmail_bcEnablePgp"
                    label="&enigmail.defaultEncryptionSign.label;"/>
 
           <separator/>
 
-          <checkbox id="encrypt_ifPossible" checked="false"
-                    observes="bcEnablePgp"
+          <checkbox id="enigmail_encrypt_ifPossible" checked="false"
+                    observes="enigmail_bcEnablePgp"
                     label="&enigmail.defaultEncryption.label;"/>
 
           <separator/>
 
-          <checkbox id="pgpMimeMode" checked="false"
-                    observes="bcEnablePgp"
+          <checkbox id="enigmail_pgpMimeMode" checked="false"
+                    observes="enigmail_bcEnablePgp"
                     label="&enigmail.usePGPMimeAlways.label;"/>
         </groupbox>
 
-        <hbox autostretch="never" id="enigmailPrefsBox">
+        <hbox autostretch="never" id="enigmail_PrefsBox">
           <spacer flex="1"/>
           <button class="dialog"
-                  id="enigmailPrefs"
-                  observes="bcEnablePgp"
+                  id="enigmail_prefsButton"
+                  observes="enigmail_bcEnablePgp"
                   advanced="true"
                   label="&enigmail.advancedPrefsButton.label; ..."
-                  oncommand="enigAdvancedIdentitySettings()"/>
+                  oncommand="Enigmail.edit.advancedIdentitySettings()"/>
         </hbox>
       </groupbox>
     </vbox>

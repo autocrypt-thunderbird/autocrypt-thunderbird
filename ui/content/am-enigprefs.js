@@ -32,43 +32,45 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
+if (! Enigmail) var Enigmail = {};
+
 var gPref = null;
 
 function onInit()
 {
-  enigOnInit();
+  Enigmail.edit.onInit();
 }
 
 function onAcceptEditor() {
-  enigOnSave();
+  Enigmail.edit.onSave();
 }
 
 function onPreInit(account, accountValues)
 {
-  gEnigIdentity = account.defaultIdentity;
-  gEnigAccount = account;
+  Enigmail.edit.identity = account.defaultIdentity;
+  Enigmail.edit.account = account;
 }
 
 function onSave()
 {
-  enigOnSave();
+  Enigmail.edit.onSave();
 }
 
 function onLockPreference()
 {
-  var i=0;
+  // do nothing
 }
-
 
 // Does the work of disabling an element given the array which contains xul id/prefstring pairs.
 // Also saves the id/locked state in an array so that other areas of the code can avoid
 // stomping on the disabled state indiscriminately.
 function disableIfLocked( prefstrArray )
 {
-  var i=1;
+  // do nothing
 }
 
 function enigmailOnAcceptEditor() {
-  enigOnSave();
-  return true;
+  Enigmail.edit.onSave();
+
+  return true; // allow to close dialog in all cases
 }

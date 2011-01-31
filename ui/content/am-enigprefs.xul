@@ -44,24 +44,23 @@
       class="color-dialog"
       title="&enigmail.amPrefTitle.label;"
       onload="parent.onPanelLoaded('am-enigprefs.xul');"
-      ondialogaccept="enigmailOnAcceptEditor();"
+      ondialogaccept="Enigmail.edit.onAcceptEditor();"
       orient="vertical">
 
   <script type="application/x-javascript" src="chrome://messenger/content/AccountManager.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/am-enigprefs.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailEditIdentity.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/am-enigprefs.js"/>
 
   <broadcasterset>
-    <broadcaster id="bcEnablePgp" disabled="false"/>
-    <broadcaster id="bcUseKeyId" disabled="false"/>
-    <broadcaster id="bcUseUrl" disabled="true"/>
+    <broadcaster id="enigmail_bcEnablePgp" disabled="false"/>
+    <broadcaster id="enigmail_bcUseKeyId" disabled="false"/>
+    <broadcaster id="enigmail_bcUseUrl" disabled="true"/>
   </broadcasterset>
 
   <dialogheader title="&enigmail.amPrefTitle.label;"/>
 
   <description>&enigmail.amPrefDesc.label;</description>
 
-  <vbox flex="1" id="enigIdentityEdit"/>
+  <vbox flex="1" id="enigmail_IdentityEdit"/>
 
 </page>

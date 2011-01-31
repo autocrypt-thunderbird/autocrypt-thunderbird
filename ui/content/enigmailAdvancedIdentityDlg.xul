@@ -51,7 +51,7 @@
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
 
-  <broadcaster id="bcUseUrl" disabled="true"/>
+  <broadcaster id="enigmail_bcUseUrl" disabled="true"/>
 
   <vbox>
     <groupbox>
@@ -65,7 +65,7 @@
                 oncommand="enigEnableUrlName();"
                 checked="false"/>
         <textbox id="openpgpHeaderMode.url.name"
-              observes="bcUseUrl"
+              observes="enigmail_bcUseUrl"
               size="30" aria-labelledby="openpgpHeaderMode.url"/>
       </hbox>
     </groupbox>

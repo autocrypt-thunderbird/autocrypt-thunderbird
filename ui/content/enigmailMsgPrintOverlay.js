@@ -33,20 +33,24 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
+Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 
-// Initialize enigmailCommon
-EnigInitCommon("enigmailMsgPrintOverlay");
 
-window.addEventListener("load", enigMsgPrintLoad, false);
-window.addEventListener("unload", enigMsgPrintUnload, false);
+window.addEventListener("load", function _enigmail_msgPrintLoad()
+  {
+    EnigmailCommon.DEBUG_LOG("enigmailMsgPrintOverlay.js: enigMsgPrintLoad\n");
 
-function enigMsgPrintLoad()
-{
-  DEBUG_LOG("enigmailMsgPrintOverlay.js: enigMsgPrintLoad\n");
-}
+    // functionality to be added ...
+  },
+  false);
 
-function enigMsgPrintUnload()
-{
-  DEBUG_LOG("enigmailMsgPrintOverlay.js: enigMsgPrintUnload\n");
-}
+window.addEventListener("unload", function _enigmail_msgPrintUnload()
+  {
+    EnigmailCommon.DEBUG_LOG("enigmailMsgPrintOverlay.js: enigMsgPrintUnload\n");
+
+    // functionality to be added ...
+  },
+  false);
+
+
+

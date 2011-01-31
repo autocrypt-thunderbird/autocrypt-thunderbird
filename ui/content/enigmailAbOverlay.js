@@ -32,27 +32,30 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
 
-// Initialize enigmailCommon
-EnigInitCommon("enigmailAbOverlay");
+Components.utils.import("resource://enigmail/commonFuncs.jsm");
 
-function enigCreateRuleFromAddress(emailAddressNode) {
-  if (emailAddressNode)
+var Enigmail = {
+
+  createRuleFromAddress: function (emailAddressNode)
   {
-    var r=new RegExp("^"+emailAddressNode.protocol)
-    var emailAddress=emailAddressNode.href.replace(r, "");
-    EnigNewRule(emailAddress);
+    if (emailAddressNode)
+    {
+      var r=new RegExp("^"+emailAddressNode.protocol)
+      var emailAddress=emailAddressNode.href.replace(r, "");
+      EnigmailFuncs.createNewRule(window, emailAddress);
+    }
+  },
+
+  createRuleFromCard: function ()
+  {
+    var emailAddress="";
+    if (DirPaneHasFocus())
+      emailAddress = GetSelectedAddressesFromDirTree();
+    else
+      emailAddress = GetSelectedAddresses();
+
+    if (emailAddress)
+      EnigmailFuncs.createNewRule(window, EnigmailFuncs.stripEmail(emailAddress).replace(/,/g, " "));
   }
-}
-
-function enigCreateRuleFromCard() {
-  var emailAddress="";
-  if (DirPaneHasFocus())
-    emailAddress = GetSelectedAddressesFromDirTree();
-  else
-    emailAddress = GetSelectedAddresses();
-
-  if (emailAddress)
-    EnigNewRule(EnigStripEmail(emailAddress).replace(/,/g, " "));
-}
+};

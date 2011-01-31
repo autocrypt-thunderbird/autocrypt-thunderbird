@@ -48,22 +48,21 @@
 <dialog id="enigmailEditPgpSettings"
         title="&enigmail.amPrefTitle.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        onload="enigOnLoadEditor();"
-        ondialogaccept="enigOnAcceptEditor();">
+        onload="Enigmail.edit.onLoadEditor();"
+        ondialogaccept="Enigmail.edit.onAcceptEditor();">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailEditIdentity.js"/>
 
   <broadcasterset>
-    <broadcaster id="bcEnablePgp" disabled="false"/>
-    <broadcaster id="bcUseKeyId" disabled="false"/>
-    <broadcaster id="bcUseUrl" disabled="true"/>
+    <broadcaster id="enigmail_bcEnablePgp" disabled="false"/>
+    <broadcaster id="enigmail_bcUseKeyId" disabled="false"/>
+    <broadcaster id="enigmail_bcUseUrl" disabled="true"/>
   </broadcasterset>
 
-  <label id="identityName" value="(unknown ID)"/>
+  <label id="enigmail_identityName" value="(unknown ID)"/>
 
   <separator/>
 
-  <vbox id="enigIdentityEdit"/>
+  <vbox id="enigmail_IdentityEdit"/>
 
 </dialog>

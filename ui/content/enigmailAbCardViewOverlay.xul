@@ -44,34 +44,34 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailAbOverlay.js"/>
 
+  <!-- Thunderbird / SeaMonkey -->
   <window id="addressbookWindow">
-    <popup id="enigmailContext" popupanchor="bottomleft">
-      <menuitem id="enigmailCreateCardRule"
+    <popup id="enigmail_contextMenu" popupanchor="bottomleft">
+      <menuitem id="enigmail_createCardRule"
                 label="&enigmail.createRuleFromAddr.label;"
-                oncommand="enigCreateRuleFromAddress(document.popupNode);"/>
+                oncommand="Enigmail.createRuleFromAddress(document.popupNode);"/>
     </popup>
 
   </window>
 
   <!-- Spicebird only -->
   <popupset id="framework-popupset">
-    <popup id="enigmailContext" popupanchor="bottomleft">
-      <menuitem id="enigmailCreateCardRule"
+    <popup id="enigmail_contextMenu" popupanchor="bottomleft">
+      <menuitem id="enigmail_createCardRule"
                 label="&enigmail.createRuleFromAddr.label;"
-                oncommand="enigCreateRuleFromAddress(document.popupNode);"/>
+                oncommand="Enigmail.createRuleFromAddress(document.popupNode);"/>
     </popup>
   </popupset>
 
   <popup id="abResultsTreeContext">
-      <menuitem id="enigmailCreateTreeRule"
+      <menuitem id="enigmail_createTreeRule"
                 label="&enigmail.createRuleFromAddr.label;"
-                oncommand="enigCreateRuleFromCard();"/>
+                oncommand="Enigmail.createRuleFromCard();"/>
   </popup>
-  <description id="cvEmail1Box" context="enigmailContext"/>
-  <description id="cvEmail2Box" context="enigmailContext"/>
-  <vbox id="cvAddresses" context="enigmailContext"/>
+  <description id="cvEmail1Box" context="enigmail_contextMenu"/>
+  <description id="cvEmail2Box" context="enigmail_contextMenu"/>
+  <vbox id="cvAddresses" context="enigmail_contextMenu"/>
 
 </overlay>

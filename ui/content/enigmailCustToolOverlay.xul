@@ -47,4 +47,6 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
+    <!-- no content required, only needed to load the Enigmail CSS -->
+
 </overlay>
