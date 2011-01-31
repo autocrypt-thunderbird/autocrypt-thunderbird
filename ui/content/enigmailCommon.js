@@ -267,10 +267,6 @@ function EnigLongAlert(mesg, checkBoxLabel, okLabel, labelButton2, labelButton3,
   return EnigmailCommon.longAlert(window, mesg, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj);
 }
 
-function EnigAlertCount(countPrefName, mesg) {
-  EnigmailCommon.alertCount(window, countPrefName, mesg);
-}
-
 function EnigAlertPref(mesg, prefText) {
   return EnigmailCommon.alertPref(window, mesg, prefText);
 }
@@ -288,11 +284,6 @@ function EnigConfirmPref(mesg, prefText, okLabel, cancelLabel) {
 function EnigError(mesg) {
   return gEnigPromptSvc.alert(window, EnigGetString("enigError"), mesg);
 }
-
-function EnigPromptValue(mesg, valueObj) {
-  return EnigmailCommon.promptValue(window, mesg, valueObj);
-}
-
 
 function EnigPrefWindow(showBasic, clientType, selectTab) {
   DEBUG_LOG("enigmailCommon.js: EnigPrefWindow\n");
@@ -447,133 +438,10 @@ function EnigFormatFpr(fingerprint) {
   EnigmailFuncs.formatFpr(fingerprint);
 }
 
-
-function EnigGetDeepText(node, findStr) {
-
-  DEBUG_LOG("enigmailCommon.js: EnigDeepText: <" + node.tagName + ">, '"+findStr+"'\n");
-
-  if (findStr) {
-    if (node.innerHTML.replace(/&nbsp;/g, " ").indexOf(findStr) < 0) {
-      // exit immediately if findStr is not found at all
-      return "";
-    }
-  }
-
-  // EnigDumpHTML(node);
-
-  var plainText = EnigParseChildNodes(node);
-  // Replace non-breaking spaces with plain spaces
-  plainText = plainText.replace(/\xA0/g," ");
-
-  if (findStr) {
-     if (plainText.indexOf(findStr) < 0) {
-        return "";
-     }
-  }
-
-  return plainText;
-
-}
-
-// extract the plain text by iterating recursively through all nodes
-function EnigParseChildNodes(node) {
-
-  var plainText="";
-
-  if (node.nodeType == Node.TEXT_NODE) {
-    // text node
-    plainText = plainText.concat(node.data);
-  }
-  else {
-
-    if (node.nodeType == Node.ELEMENT_NODE) {
-      if (node.tagName=="IMG" && node.className=="moz-txt-smily") {
-        // get the "alt" part of graphical smileys to ensure correct
-        // verification of signed messages
-        if (node.getAttribute("alt")) {
-            plainText = plainText.concat(node.getAttribute("alt"));
-        }
-      }
-    }
-
-    var child = node.firstChild;
-    // iterate over child nodes
-    while (child) {
-      if (! (child.nodeType == Node.ELEMENT_NODE &&
-            child.tagName == "BR" &&
-            ! child.hasChildNodes())) {
-        // optimization: don't do an extra loop for the very frequent <BR> elements
-        plainText = plainText.concat(EnigParseChildNodes(child));
-      }
-      child = child.nextSibling;
-    }
-  }
-
-  return plainText;
-}
-
-
-// Dump HTML content as plain text
-function EnigDumpHTML(node)
-{
-    var type = node.nodeType;
-    if (type == Node.ELEMENT_NODE) {
-
-        // open tag
-        DEBUG_LOG("<" + node.tagName)
-
-        // dump the attributes if any
-        attributes = node.attributes;
-        if (null != attributes) {
-            var countAttrs = attributes.length;
-            var index = 0
-            while(index < countAttrs) {
-                att = attributes[index];
-                if (null != att) {
-                    DEBUG_LOG(" "+att.name+"='"+att.value+"'")
-                }
-                index++
-            }
-        }
-
-        // close tag
-        DEBUG_LOG(">")
-
-        // recursively dump the children
-        if (node.hasChildNodes()) {
-            // get the children
-            var children = node.childNodes;
-            var length = children.length;
-            var count = 0;
-            while(count < length) {
-                var child = children[count]
-                EnigDumpHTML(child)
-                count++
-            }
-            DEBUG_LOG("</" + node.tagName + ">");
-        }
-
-
-    }
-    // if it's a piece of text just dump the text
-    else if (type == Node.TEXT_NODE) {
-        DEBUG_LOG(node.data)
-    }
-}
-
 /////////////////////////
 // Console stuff
 /////////////////////////
 
-
-function EnigClearPassphrase() {
-  DEBUG_LOG("enigmailCommon.js: EnigClearPassphrase: \n");
-  EnigmailFuncs.clearPassphrase(window);
-}
-
-function EnigOpenWin (winName, spec, winOptions, optList) {
-  return EnigmailCommon.openWin(winName, spec, winOptions, optList);
-}
 
 // return the options passed to a window
 function EnigGetWindowOptions() {
@@ -588,24 +456,8 @@ function EnigGetWindowOptions() {
   return winOptions;
 }
 
-function EnigViewAbout() {
-  EnigmailFuncs.openAboutWindow();
-}
-
-function EnigViewConsole() {
-  EnigmailFuncs.openConsoleWindow();
-}
-
-function EnigViewDebugLog() {
-  EnigmailFuncs.openDebugLog(window);
-}
-
 function EnigRulesEditor() {
   EnigmailFuncs.openRulesEditor();
-}
-
-function EnigOpenSetupWizard() {
-  EnigmailFuncs.openSetupWizard(window);
 }
 
 function EngmailCardDetails() {
@@ -616,27 +468,6 @@ function EnigKeygen() {
   EnigmailFuncs.openKeyGen();
 
 }
-
-function EnigKeyManager() {
-  EnigmailFuncs.openKeyManager(window);
-}
-
-
-function EnigLaunchFile(fileName) {
-  try {
-    var mimeService = ENIG_C[ENIG_MIME_CONTRACTID].getService(ENIG_I.nsIMIMEService);
-    var fileMimeType = mimeService.getTypeFromFile(fileName);
-    var fileMimeInfo = mimeService.getFromTypeAndExtension(fileMimeType, fileExt);
-
-    fileMimeInfo.launchWithFile(fileName);
-  }
-  catch (ex) {
-    // if the attachment file type is unknown, an exception is thrown,
-    // so let it be handled by a browser window
-    enigLoadExternalURL(outFileUri.asciiSpec);
-  }
-}
-
 
 // retrieves a localized string from the enigmail.properties stringbundle
 function EnigGetString(aStr) {
@@ -764,11 +595,6 @@ function EnigDownloadKeys(inputObj, resultObj) {
 // create new PGP Rule
 function EnigNewRule(emailAddress) {
   return EnigmailFuncs.createNewRule(window, emailAddress);
-}
-
-// Obtain kay list from GnuPG
-function EnigObtainKeyList(secretOnly, refresh) {
-  return EnigmailFuncs.obtainKeyList(window, secretOnly, refresh);
 }
 
 function EnigGetTrustCode(keyObj) {
@@ -924,7 +750,7 @@ function EnigRevokeKey(keyId, userId) {
 }
 
 
-function EnigShowPhoto(keyId, userId, photoNumber) {
+function EnigShowPhoto (keyId, userId, photoNumber) {
   EnigmailFuncs.showPhoto(window, keyId, userId, photoNumber);
 }
 
@@ -1008,10 +834,6 @@ function EnigGetDateTime(dateNum, withDate, withTime) {
 function enigCreateInstance (aURL, aInterface)
 {
   return ENIG_C[aURL].createInstance(ENIG_I[aInterface]);
-}
-
-function enigGetInterface (aInterface) {
-  return rv = ENIG_I[aInterface];
 }
 
 function enigGetService (aURL, aInterface)
