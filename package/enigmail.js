@@ -4630,6 +4630,9 @@ Enigmail.prototype = {
     }
 
     var mimeSvc = Components.classes[NS_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
+    //mimeSvc.sleep(100);
+
+    Ec.DEBUG_LOG("enigmail.js: Enigmail.editKey: terminating with returnCode="+returnCode+"\n");
 
     var exitCode = -1;
     switch(returnCode) {
@@ -4831,6 +4834,7 @@ function signKeyCallback(inputData, keyEdit, ret) {
     GetPin(inputData.parent, Ec.getString("enterCardPin"), ret);
   }
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
+    ret.exitCode = 0;
     ret.quitNow = true;
   }
   else {
@@ -4853,6 +4857,7 @@ function keyTrustCallback(inputData, keyEdit, ret) {
     ret.writeTxt = "Y";
   }
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
+    ret.exitCode = 0;
     ret.quitNow = true;
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
@@ -4907,6 +4912,7 @@ function addUidCallback(inputData, keyEdit, ret) {
     }
   }
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
+    ret.exitCode = 0;
     ret.quitNow = true;
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
@@ -4954,6 +4960,7 @@ function revokeCertCallback(inputData, keyEdit, ret) {
     GetPin(inputData.parent, Ec.getString("enterCardPin"), ret);
   }
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
+    ret.exitCode = 0;
     ret.quitNow = true;
   }
   else {
@@ -5353,6 +5360,7 @@ function cardAdminDataCallback(inputData, keyEdit, ret) {
       }
     default:
       ret.writeTxt = "quit";
+      ret.exitCode = 0;
       ret.quitNow=true;
       break;
     }
