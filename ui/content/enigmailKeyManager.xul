@@ -101,21 +101,27 @@
           accesskey="&enigmail.keyMan.fileMenu.accesskey;">
       <menupopup id="menu_FilePopup" onpopupshowing="enigmailKeyMenu()">
 
-      <menuitem label="&enigmail.keyMan.importFromFile.label;"
-        id="importFromFile"
-        accesskey="&enigmail.keyMan.importFromFile.accesskey;"
-        oncommand="enigmailImportKeysFromFile()"/>
-      <menuitem label="&enigmail.keyMan.exportToFile.label;"
-        id="exportKey"
-        observes="bcNoKey"
-        accesskey="&enigmail.keyMan.exportToFile.accesskey;"
-        oncommand="enigmailExportKeys()"/>
+        <menuitem label="&enigmail.keyMan.importFromFile.label;"
+          id="importFromFile"
+          accesskey="&enigmail.keyMan.importFromFile.accesskey;"
+          oncommand="enigmailImportKeysFromFile()"/>
+        <menuitem label="&enigmail.keyMan.exportToFile.label;"
+          id="exportKey"
+          observes="bcNoKey"
+          accesskey="&enigmail.keyMan.exportToFile.accesskey;"
+          oncommand="enigmailExportKeys()"/>
 
-      <menuitem label="&enigmail.keyMan.sendKeys.label;"
-        id="sendKey"
-        observes="bcNoKey"
-        accesskey="&enigmail.keyMan.sendKeys.accesskey;"
-        oncommand="enigCreateKeyMsg()"/>
+        <menuitem label="&enigmail.keyMan.sendKeys.label;"
+          id="sendKey"
+          observes="bcNoKey"
+          accesskey="&enigmail.keyMan.sendKeys.accesskey;"
+          oncommand="enigCreateKeyMsg()"/>
+
+        <menuitem label="&enigmail.keyMan.createMail.label;"
+          id="createMail"
+          observes="bcNoKey"
+          accesskey="&enigmail.keyMan.createMail.accesskey;"
+          oncommand="createNewMail()"/>
 
         <menuseparator/>
 

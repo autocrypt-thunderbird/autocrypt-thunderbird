@@ -236,6 +236,8 @@ function enigUserSelCreateRow (keyObj, subKeyNum) {
       keyObj.SubUserIds[subKeyNum].userId = keyObj.SubUserIds[subKeyNum].userId;
       userCol.setAttribute("label", keyObj.SubUserIds[subKeyNum].userId);
       treeItem.setAttribute("keytype", keyObj.SubUserIds[subKeyNum].type);
+      if (keyObj.SubUserIds[subKeyNum].type == "uid")
+        treeItem.setAttribute("uidNum", subKeyNum);
       if (keyObj.SubUserIds[subKeyNum].type == "uat") {
         treeItem.setAttribute("uatNum", keyObj.SubUserIds[subKeyNum].uatNum);
       }
@@ -676,6 +678,55 @@ function enigCreateKeyMsg() {
   msgCompSvc.OpenComposeWindowWithParams("", msgCompParam);
 }
 
+function createNewMail() {
+
+  var keyList = enigmailGetSelectedKeys();
+  if (keyList.length==0) {
+    EnigAlert(EnigGetString("noKeySelected"));
+    return;
+  }
+
+  var addresses = [];
+  var rangeCount = gUserList.view.selection.getRangeCount();
+  var start = {};
+  var end = {};
+  var keyType, keyId, r, i;
+
+  for (i=0; i < rangeCount; i++) {
+    gUserList.view.selection.getRangeAt(i, start, end);
+
+    for (r=start.value; r <= end.value; r++) {
+      try {
+        keyType = gUserList.view.getItemAtIndex(r).getAttribute("keytype");
+        keyId = gUserList.view.getItemAtIndex(r).getAttribute("id");
+
+        if (keyType == "uid") {
+          var uidNum = Number(gUserList.view.getItemAtIndex(r).getAttribute("uidNum"));
+          addresses.push(gKeyList[keyId].SubUserIds[uidNum].userId);
+        }
+        else
+          addresses.push(gKeyList[keyId].userId);
+      }
+      catch(ex) {}
+    }
+  }
+
+  // create Msg
+  var msgCompFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
+  msgCompFields.to = addresses.join(", ");
+
+  var acctManager = Components.classes["@mozilla.org/messenger/account-manager;1"].createInstance(Components.interfaces.nsIMsgAccountManager);
+
+  var msgCompSvc = Components.classes["@mozilla.org/messengercompose;1"].getService(Components.interfaces.nsIMsgComposeService);
+
+  var msgCompParam = Components.classes["@mozilla.org/messengercompose/composeparams;1"].createInstance(Components.interfaces.nsIMsgComposeParams);
+  msgCompParam.composeFields = msgCompFields;
+  msgCompParam.identity = acctManager.defaultAccount.defaultIdentity;
+  msgCompParam.type = Components.interfaces.nsIMsgCompType.New;
+  msgCompParam.format = Components.interfaces.nsIMsgCompFormat.Default;
+  msgCompParam.originalMsgURI = "";
+  msgCompSvc.OpenComposeWindowWithParams("", msgCompParam);
+}
 
 function enigEditKeyTrust() {
 

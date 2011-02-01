@@ -436,6 +436,7 @@
 <!ENTITY enigmail.keyMan.importFromClipbrd.label   "Import Keys from Clipboard">
 <!ENTITY enigmail.keyMan.exportToFile.label        "Export Keys to File">
 <!ENTITY enigmail.keyMan.sendKeys.label            "Send Public Keys by Email">
+<!ENTITY enigmail.keyMan.createMail.label          "Compose Mail to Selected Keys">
 <!ENTITY enigmail.keyMan.uploadToServer.label      "Upload Public Keys">
 <!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copy Public Keys to Clipboard">
 <!ENTITY enigmail.keyMan.ctxExportToFile.label     "Export Keys to File">
@@ -512,6 +513,7 @@
 <!ENTITY enigmail.keyMan.refreshAllKeys.accesskey    "A">
 <!ENTITY enigmail.keyMan.selectAll.accesskey         "A">
 <!ENTITY enigmail.keyMan.sendKeys.accesskey          "S">
+<!ENTITY enigmail.keyMan.createMail.accesskey        "C">
 
 <!ENTITY enigmail.keyMan.closeWin.key                "W">
 <!ENTITY enigmail.keyMan.selectAll.key               "A">
