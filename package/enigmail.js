@@ -2949,6 +2949,9 @@ Enigmail.prototype = {
         for (var j=0; j<errLines.length; j++) {
           matches = errLines[j].match(validSigPat);
 
+          if (matches && (matches.length > 4))
+            keyId = matches[4].substr(-16); // in case of several subkeys refer to the main key ID
+
           if (matches && (matches.length > 2)) {
             sigDetails = errLines[j].substr(9);
             break;
