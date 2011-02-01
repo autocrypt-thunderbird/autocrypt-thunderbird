@@ -66,10 +66,31 @@ platform=${osArch}_${xpcomAbi}
 # Pepare install.rdf
 sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${platform}'<\/em:targetPlatform>/' < ${srcDir}/package/install.rdf > ${targetDir}/install.rdf.t1
 
+
+enigmimeDll=${libPrefix}enigmime${dllSuffix}
+ipcDll=${libPrefix}ipc${dllSuffix}
+if [ ${platform} = OS2_x86-gcc3 ]; then
+  # workaround for file name length limit on OS/2
+  enigDllFile=platform/${platform}/components/${enigmimeDll}
+  ipcDllFile=platform/${platform}/components/${ipcDll}
+else
+  enigDllFile=platform/${platform}/components/${libPrefix}enigmime-${xpcomAbi}${dllSuffix}
+  ipcDllFile=platform/${platform}/components/${libPrefix}ipc-${xpcomAbi}${dllSuffix}
+fi
+
+# Prepare chrome.manifest
+cat  ${srcDir}/package/chrome.manifest | \
+sed  's/##ENIGMIMEDLL-PLACEHOLDER##/binary-component platform\/'${platform}'\/components\/'`basename ${enigDllFile}`' ABI='${platform}'/' | \
+sed  's/##IPCDLL-PLACEHOLDER##/binary-component platform\/'${platform}'\/components\/'`basename ${ipcDllFile}`' ABI='${platform}'/' \
+> ${targetDir}/chrome.manifest
+
 # Prepare languages other than en-US
 
 if [ -s ${srcDir}/lang/current-languages.txt ]; then
   localeJar=chrome/${xpiModule}.jar
+
+  echo '' >> ${targetDir}/chrome.manifest
+  echo '# Additional languages' >> ${targetDir}/chrome.manifest
 
   echo '      <Description about="urn:mozilla:extension:file:enigmail.jar">' > ${targetDir}/install.rdf.t2
 
@@ -135,23 +156,6 @@ EOT
 
 chmod 755 "${targetDir}/wrappers/gpg-agent-wrapper.sh"
 cd ${srcDir}/package
-
-enigmimeDll=${libPrefix}enigmime${dllSuffix}
-ipcDll=${libPrefix}ipc${dllSuffix}
-if [ ${platform} = OS2_x86-gcc3 ]; then
-  # workaround for file name length limit on OS/2
-  enigDllFile=platform/${platform}/components/${enigmimeDll}
-  ipcDllFile=platform/${platform}/components/${ipcDll}
-else
-  enigDllFile=platform/${platform}/components/${libPrefix}enigmime-${xpcomAbi}${dllSuffix}
-  ipcDllFile=platform/${platform}/components/${libPrefix}ipc-${xpcomAbi}${dllSuffix}
-fi
-
-# Prepare chrome.manifest
-cat  ${srcDir}/package/chrome.manifest | \
-sed  's/##ENIGMIMEDLL-PLACEHOLDER##/binary-component platform\/'${platform}'\/components\/'`basename ${enigDllFile}`' ABI='${platform}'/' | \
-sed  's/##IPCDLL-PLACEHOLDER##/binary-component platform\/'${platform}'\/components\/'`basename ${ipcDllFile}`' ABI='${platform}'/' \
-> ${targetDir}/chrome.manifest
 
 
 cd "$targetDir"
