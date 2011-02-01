@@ -1001,7 +1001,7 @@ function enigmailUploadKeysCb(exitCode, errorMsg, msgBox) {
     }
   }
   else {
-    return (EnigGetString(exitCode==0 ? "sendKeysOK" : "sendKeysFailed"));
+    return (EnigGetString(exitCode==0 ? "sendKeysOk" : "sendKeysFailed"));
   }
   return "";
 }
