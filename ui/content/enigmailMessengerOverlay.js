@@ -973,7 +973,8 @@ Enigmail.msg = {
     if (blockSeparationObj.value.indexOf(" ")>=0) {
       var blocks = blockSeparationObj.value.split(/ /);
       var blockInfo = blocks[0].split(/:/);
-      plainText = EnigmailCommon.getString("notePartEncrypted") + "\n\n" + plainText.substr(0, blockInfo[1]) + "\n\n" + EnigmailCommon.getString("noteCutMessage");
+      plainText = EnigmailCommon.convertFromUnicode(EnigmailCommon.getString("notePartEncrypted"), charset)
+          + "\n\n" + plainText.substr(0, blockInfo[1]) + "\n\n" + EnigmailCommon.getString("noteCutMessage");
     }
 
     // Save decrypted message status, headers, and content
@@ -1021,15 +1022,15 @@ Enigmail.msg = {
         // quite early in the message
         matches=head.match(/(\n)/g);
         if (matches && matches.length >10) {
-          msgRfc822Text=EnigmailCommon.getString("notePartEncrypted")+"\n\n";
+          msgRfc822Text=EnigmailCommon.convertFromUnicode(EnigmailCommon.getString("notePartEncrypted"), charset)+"\n\n";
         }
         msgRfc822Text+=head+"\n\n";
       }
-      msgRfc822Text += EnigmailCommon.getString("beginPgpPart")+"\n\n";
+      msgRfc822Text += EnigmailCommon.convertFromUnicode(EnigmailCommon.getString("beginPgpPart"), charset)+"\n\n";
     }
     msgRfc822Text+=plainText;
     if (head || tail) {
-      msgRfc822Text+="\n\n"+EnigmailCommon.getString("endPgpPart")+"\n\n"+tail;
+      msgRfc822Text+="\n\n"+ EnigmailCommon.convertFromUnicode(EnigmailCommon.getString("endPgpPart"), charset)+"\n\n"+tail;
     }
 
     Enigmail.msg.decryptedMessage = {url:messageUrl,
@@ -1300,7 +1301,7 @@ Enigmail.msg = {
       contentData += "\r\n";
 
       if (Enigmail.msg.decryptedMessage.hasAttachments && (! Enigmail.msg.decryptedMessage.attachmentsEncrypted)) {
-        contentData += EnigmailCommon.getString("enigContentNote");
+        contentData += EnigmailCommon.convertFromUnicode(EnigmailCommon.getString("enigContentNote"), Enigmail.msg.decryptedMessage.charset);
       }
 
       contentData += Enigmail.msg.decryptedMessage.plainText;
