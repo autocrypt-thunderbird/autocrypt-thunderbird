@@ -417,7 +417,6 @@ Enigmail.msg = {
 
     if (! closing) {
       this.setIdentityDefaults();
-      document.getElementById("enigmail-rules-status").setAttribute("value", "-");
     }
   },
 
