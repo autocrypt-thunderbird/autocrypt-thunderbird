@@ -417,6 +417,12 @@ interface nsIEnigmail : nsISupports
                              out unsigned long statusFlags,
                              out wstring errorMsg);
 
+  long verifyAttachment (in nsIDOMWindow parent,
+                         in nsIFile verifyFile,
+                         in nsIFile sigFile,
+                         out unsigned long statusFlags,
+                         out wstring errorMsg);
+
   /* per-recipient rules */
 
   boolean getRulesData(out nsIDOMDocument rulesList);

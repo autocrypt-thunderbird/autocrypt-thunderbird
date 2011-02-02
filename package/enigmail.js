@@ -3968,7 +3968,7 @@ Enigmail.prototype = {
 
 
   getAttachmentFileName: function (parent, inputBuffer) {
-    Ec.WRITE_LOG("enigmail.js: Enigmail.getAttachmentFileName\n");
+    Ec.DEBUG_LOG("enigmail.js: Enigmail.getAttachmentFileName\n");
 
     var args = this.getAgentArgs(true);
     args = args.concat(this.passwdCommand());
@@ -4041,10 +4041,54 @@ Enigmail.prototype = {
       return null;
   },
 
+  verifyAttachment: function (parent, verifyFile, sigFile,
+                              statusFlagsObj, errorMsgObj) {
+    Ec.DEBUG_LOG("enigmail.js: Enigmail.verifyAttachment:\n");
+
+    var exitCode        = -1;
+    var verifyFilePath  = this.getEscapedFilename(getFilePath(verifyFile.QueryInterface(nsILocalFile)));
+    var sigFilePath     = this.getEscapedFilename(getFilePath(sigFile.QueryInterface(nsILocalFile)));
+
+    var args = this.getAgentArgs(true);
+    args.push("--verify");
+    args.push(sigFilePath);
+    args.push(verifyFilePath);
+
+    var statusMsgObj   = new Object();
+
+    var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+    ipcBuffer.open(MSG_BUFFER_SIZE, false);
+
+    var noProxy = true;
+
+    var pipeTrans = this.execStart(this.agentPath, args, false, parent, 0,
+                                   ipcBuffer, noProxy, statusFlagsObj);
+
+
+    if (!pipeTrans) {
+      return false;
+    }
+
+    // Wait for child STDOUT to close
+    pipeTrans.join();
+
+    exitCode = pipeTrans.exitValue;
+
+    var statusMsgObj = new Object();
+    var cmdLineObj   = new Object();
+
+    try {
+      this.execEnd(pipeTrans, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
+    }
+    catch (ex) {};
+
+    return exitCode;
+  },
+
 
   decryptAttachment: function (parent, outFile, displayName, inputBuffer,
             exitCodeObj, statusFlagsObj, errorMsgObj) {
-    Ec.WRITE_LOG("enigmail.js: Enigmail.decryptAttachment: parent="+parent+", outFileName="+outFile.path+"\n");
+    Ec.DEBUG_LOG("enigmail.js: Enigmail.decryptAttachment: parent="+parent+", outFileName="+outFile.path+"\n");
 
     var dataLength = new Object();
     var byteData = inputBuffer.getByteData(dataLength);

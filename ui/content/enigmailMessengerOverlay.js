@@ -1123,17 +1123,32 @@ Enigmail.msg = {
   },
 
   // check if an attachment could be signed
-  checkSignedAttachment: function (currentAttachments, index)
+  checkSignedAttachment: function (attachmentObj, index)
   {
-
+    var attachmentList;
+    if (index != null) {
+      attachmentList = attachmentObj;
+    }
+    else {
+      attachmentList=currentAttachments;
+      for (var i=0; i < attachmentList.length; i++) {
+        if (attachmentList[i].url == attachmentObj.url) {
+          index = i;
+          break;
+        }
+      }
+      if (index == null) return false;
+    }
     // check if filename ends with .sig
-    if (currentAttachments[index].displayName.search(/\.sig$/i) > 0) return true;
+    if ((attachmentList[index].displayName.search(/\.sig$/i) > 0) ||
+       (attachmentList[index].contentType.match(/^application\/pgp\-signature/i)))
+      return true;
 
     var signed = false;
-    var findFile = currentAttachments[index].displayName.toLowerCase()+".sig";
+    var findFile = attachmentList[index].displayName.toLowerCase()+".sig";
     var i;
-    for (i in currentAttachments) {
-      if (currentAttachments[i].displayName.toLowerCase() == findFile) signed=true;
+    for (i in attachmentList) {
+      if (attachmentList[i].displayName.toLowerCase() == findFile) signed=true;
     }
     return signed;
   },
@@ -1142,7 +1157,8 @@ Enigmail.msg = {
   checkEncryptedAttach: function (attachment)
   {
     return (attachment.displayName.match(/\.(gpg|pgp|asc)$/i) ||
-        attachment.contentType.match(/^application\/pgp(\-.*)?$/i));
+      (attachment.contentType.match(/^application\/pgp(\-.*)?$/i)) &&
+       (attachment.contentType.search(/^application\/pgp\-signature/i) < 0));
   },
 
   escapeTextForHTML: function (text, hyperlink)
@@ -1672,9 +1688,128 @@ Enigmail.msg = {
     case "importKey":
     case "revealName":
       this.handleAttachment(actionType, anAttachment);
+      break;
+    case "verifySig":
+      this.verifyDetachedSignature(anAttachment);
+      break;
     }
   },
 
+  /**
+   * save the original file plus the signature file to disk and then verify the signature
+   */
+  verifyDetachedSignature: function (anAttachment)
+  {
+    EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: verifyDetachedSignature: url="+anAttachment.url+"\n");
+
+    var enigmailSvc = Enigmail.getEnigmailSvc();
+    if (! enigmailSvc) return;
+
+    var origAtt, signatureAtt;
+
+    if ((anAttachment.displayName.search(/\.sig$/i) > 0) ||
+        (anAttachment.contentType.search(/^application\/pgp\-signature/i) == 0)) {
+      // we have the .sig file; need to know the original file;
+
+      signatureAtt = anAttachment;
+      var origName = anAttachment.displayName.replace(/\.sig$/i, "");
+
+      for (let i=0; i < currentAttachments.length; i++) {
+        if (origName == currentAttachments[i].displayName) {
+          origAtt = currentAttachments[i];
+          break;
+        }
+      }
+    }
+    else {
+      // we have a supposedly original file; need to know the .sig file;
+
+      origAtt = anAttachment;
+      var sigName = anAttachment.displayName+".sig";
+
+      for (let i=0; i < currentAttachments.length; i++) {
+        if (sigName == currentAttachments[i].displayName) {
+          signatureAtt = currentAttachments[i];
+          break;
+        }
+      }
+    }
+
+    if (! signatureAtt) {
+      EnigmailCommon.alert(window, EnigmailCommon.getString("attachment.noMatchToSignature", [ origAtt.displayName ]));
+      return;
+    }
+    if (! origAtt) {
+      EnigmailCommon.alert(window, EnigmailCommon.getString("attachment.noMatchFromSignature", [ signatureAtt.displayName ]));
+      return;
+    }
+
+    // open
+    var tmpDir = EnigmailCommon.getTempDir();
+    var outFile1, outFile2;
+    outFile1 = Components.classes[EnigmailCommon.LOCAL_FILE_CONTRACTID].
+      createInstance(Components.interfaces.nsILocalFile);
+    outFile1.initWithPath(tmpDir);
+    if (!(outFile1.isDirectory() && outFile1.isWritable())) {
+      EnigmailCommon.alert(window, EnigmailCommon.getString("noTempDir"));
+      return;
+    }
+    outFile1.append(origAtt.displayName);
+    outFile1.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
+    this.writeUrlToFile(origAtt.url, outFile1);
+
+    outFile2 = Components.classes[EnigmailCommon.LOCAL_FILE_CONTRACTID].
+      createInstance(Components.interfaces.nsILocalFile);
+    outFile2.initWithPath(tmpDir);
+    outFile2.append(signatureAtt.displayName);
+    outFile2.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
+    this.writeUrlToFile(signatureAtt.url, outFile2);
+
+    var statusFlagsObj = {};
+    var errorMsgObj = {};
+    var r = enigmailSvc.verifyAttachment(window, outFile1, outFile2, statusFlagsObj, errorMsgObj);
+
+    if (r == 0)
+      EnigmailCommon.alert(window, EnigmailCommon.getString("signature.verifiedOK", [ origAtt.displayName ]));
+    else
+      EnigmailCommon.alert(window, EnigmailCommon.getString("signature.verifyFailed", [ origAtt.displayName ])+"\n\n"+
+        errorMsgObj.value);
+
+    outFile1.remove(false);
+    outFile2.remove(false);
+  },
+
+  writeUrlToFile: function(srcUrl, outFile) {
+    EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: writeUrlToFile: outFile="+outFile.path+"\n");
+     var ioServ = Components.classes[EnigmailCommon.IOSERVICE_CONTRACTID].
+      getService(Components.interfaces.nsIIOService);
+    var msgUri = ioServ.newURI(srcUrl, null, null);
+    var channel = ioServ.newChannelFromURI(msgUri);
+    var istream = channel.open();
+
+    var fstream = Components.classes["@mozilla.org/network/safe-file-output-stream;1"]
+                          .createInstance(Components.interfaces.nsIFileOutputStream);
+    var buffer  = Components.classes["@mozilla.org/network/buffered-output-stream;1"]
+                            .createInstance(Components.interfaces.nsIBufferedOutputStream);
+    fstream.init(outFile, 0x04 | 0x08 | 0x20, 0600, 0); // write, create, truncate
+    buffer.init(fstream, 8192);
+
+    buffer.writeFrom(istream, istream.available());
+
+    // Close the output streams
+    if (buffer instanceof Components.interfaces.nsISafeOutputStream)
+      buffer.finish();
+    else
+      buffer.close();
+
+    if (fstream instanceof Components.interfaces.nsISafeOutputStream)
+      fstream.finish();
+    else
+      fstream.close();
+
+    // Close the input stream
+    istream.close()
+  },
 
   handleAttachment: function (actionType, anAttachment)
   {
@@ -1763,7 +1898,7 @@ Enigmail.msg = {
           return;
         }
         outFile.append(rawFileName);
-        outFile.createUnique(Components.interfaces.NORMAL_FILE_TYPE, 0600);
+        outFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
       }
       catch (ex) {
         errorMsgObj.value=EnigmailCommon.getString("noTempDir");

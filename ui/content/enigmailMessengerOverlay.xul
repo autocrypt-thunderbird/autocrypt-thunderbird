@@ -366,6 +366,10 @@
       label="&enigmail.ctxDecryptSave.label;"
       accesskey="&enigmail.ctxDecryptSave.accesskey;"
       oncommand="Enigmail.msg.handleAttachmentSel('saveAttachment');"/>
+    <menuitem id="enigmail_ctxVerifyAtt"
+      label="Verify signature"
+      accesskey="&enigmail.ctxDecryptSave.accesskey;"
+      oncommand="Enigmail.msg.handleAttachmentSel('verifySig');"/>
   </popup>
 
 

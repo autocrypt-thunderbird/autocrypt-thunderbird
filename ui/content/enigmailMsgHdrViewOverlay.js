@@ -714,25 +714,35 @@ Enigmail.hdrView = {
     var decryptOpenMenu = document.getElementById('enigmail_ctxDecryptOpen');
     var decryptSaveMenu = document.getElementById('enigmail_ctxDecryptSave');
     var importMenu = document.getElementById('enigmail_ctxImportKey');
+    var verifyMenu = document.getElementById('enigmail_ctxVerifyAtt');
 
     if (selectedAttachments.length > 0) {
       if (selectedAttachments[0].attachment.contentType.search(/^application\/pgp-keys/i) == 0) {
         importMenu.removeAttribute('disabled');
         decryptOpenMenu.setAttribute('disabled', true);
         decryptSaveMenu.setAttribute('disabled', true);
+        verifyMenu.setAttribute('disabled', true);
       }
       else if (Enigmail.msg.checkEncryptedAttach(selectedAttachments[0].attachment)) {
         importMenu.setAttribute('disabled', true);
         decryptOpenMenu.removeAttribute('disabled');
         decryptSaveMenu.removeAttribute('disabled');
+        verifyMenu.setAttribute('disabled', true);
         if (! selectedAttachments[0].attachment.displayName) {
           selectedAttachments[0].attachment.displayName="message.pgp"
         }
+      }
+      else if (Enigmail.msg.checkSignedAttachment(selectedAttachments[0].attachment, null)) {
+        importMenu.setAttribute('disabled', true);
+        decryptOpenMenu.setAttribute('disabled', true);
+        decryptSaveMenu.setAttribute('disabled', true);
+        verifyMenu.removeAttribute('disabled');
       }
       else {
         importMenu.setAttribute('disabled', true);
         decryptOpenMenu.setAttribute('disabled', true);
         decryptSaveMenu.setAttribute('disabled', true);
+        verifyMenu.setAttribute('disabled', true);
       }
     }
     else {
@@ -741,6 +751,7 @@ Enigmail.hdrView = {
       decryptOpenMenu.setAttribute('disabled', true);
       decryptSaveMenu.setAttribute('disabled', true);
       importMenu.setAttribute('disabled', true);
+      verifyMenu.setAttribute('disabled', true);
     }
   },
 
