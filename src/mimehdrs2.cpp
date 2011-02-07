@@ -36,6 +36,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+#include <ctype.h>
+
 #define MOZILLA_INTERNAL_API
 #include "nspr.h"
 #include "nsCOMPtr.h"
