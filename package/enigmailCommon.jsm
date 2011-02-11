@@ -167,6 +167,9 @@ var EnigmailCommon = {
 
       var firstInitialization = !this.enigmailSvc.initializationAttempted;
 
+      if (! this.prefBranch)
+        this.getPrefService();
+
       try {
         // Initialize enigmail
         this.enigmailSvc.initialize(win, this.getVersion(), this.prefBranch);
@@ -264,11 +267,7 @@ var EnigmailCommon = {
     }
   },
 
-  getPref: function (prefName)
-  {
-    const ENIGMAIL_PREFS_ROOT = "extensions.enigmail.";
-
-    if (! this.prefBranch) {
+  getPrefService: function() {
       try {
         this.prefService = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
 
@@ -283,10 +282,17 @@ var EnigmailCommon = {
         this.ERROR_LOG("enigmailCommon.jsm: Error in instantiating PrefService\n");
         return null;
       }
-    }
+  },
 
-   var prefValue = null;
-   try {
+  getPref: function (prefName)
+  {
+    const ENIGMAIL_PREFS_ROOT = "extensions.enigmail.";
+
+    if (! this.prefBranch)
+      this.getPrefService();
+
+    var prefValue = null;
+    try {
       var prefType = this.prefBranch.getPrefType(prefName);
       // Get pref value
       switch (prefType) {
