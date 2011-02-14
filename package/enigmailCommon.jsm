@@ -64,6 +64,8 @@ const BUTTON_POS_0           = 1;
 const BUTTON_POS_1           = 1 << 8;
 const BUTTON_POS_2           = 1 << 16;
 
+const ENIGMAIL_PREFS_ROOT = "extensions.enigmail.";
+
 
 var gLogLevel = 3;
 var gPromptSvc = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
@@ -168,7 +170,7 @@ var EnigmailCommon = {
       var firstInitialization = !this.enigmailSvc.initializationAttempted;
 
       if (! this.prefBranch)
-        this.getPrefService();
+        this.initPrefService();
 
       try {
         // Initialize enigmail
@@ -267,29 +269,27 @@ var EnigmailCommon = {
     }
   },
 
-  getPrefService: function() {
-      try {
-        this.prefService = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
+  initPrefService: function() {
+    try {
+      this.prefService = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
 
-        this.prefRoot        = this.prefService.getBranch(null);
-        this.prefBranch      = this.prefService.getBranch(ENIGMAIL_PREFS_ROOT);
+      this.prefRoot        = this.prefService.getBranch(null);
+      this.prefBranch      = this.prefService.getBranch(ENIGMAIL_PREFS_ROOT);
 
-        if (this.prefBranch.getCharPref("logDirectory"))
-          gLogLevel = 5;
+      if (this.prefBranch.getCharPref("logDirectory"))
+        gLogLevel = 5;
 
-      }
-      catch (ex) {
-        this.ERROR_LOG("enigmailCommon.jsm: Error in instantiating PrefService\n");
-        return null;
-      }
+    }
+    catch (ex) {
+      this.ERROR_LOG("enigmailCommon.jsm: Error in instantiating PrefService\n");
+      this.ERROR_LOG(ex.toString());
+    }
   },
 
   getPref: function (prefName)
   {
-    const ENIGMAIL_PREFS_ROOT = "extensions.enigmail.";
-
     if (! this.prefBranch)
-      this.getPrefService();
+      this.initPrefService();
 
     var prefValue = null;
     try {
@@ -324,6 +324,10 @@ var EnigmailCommon = {
   setPref: function (prefName, value)
   {
      this.DEBUG_LOG("enigmailCommon.jsm: setPref: "+prefName+", "+value+"\n");
+
+     if (! this.prefBranch)
+       this.initPrefService();
+
      var prefType;
      try {
        prefType = this.prefBranch.getPrefType(prefName);
@@ -1253,6 +1257,7 @@ function ConfigureEnigmail() {
   var oldVer=EnigmailCommon.getPref("configuredVersion");
 
   try {
+    EnigmailCommon.initPrefService();
     var vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
     if (oldVer == "") {
       EnigmailCommon.openSetupWizard();
