@@ -148,7 +148,7 @@
 
       if (typeof(inArg.posX)=="number" &&
           typeof(inArg.posY)=="number") {
-        window.setTimeout(setWindowPos, 0, inArg.posX, inArg.posY);
+        EnigmailCommon.dispatchEvent(setWindowPos, 0, inArg.posX, inArg.posY);
       }
 
       keyIdValue.value = gKeyListArr[keyId].userId+" - 0x"+ inArg.keyId.substr(-8,8);

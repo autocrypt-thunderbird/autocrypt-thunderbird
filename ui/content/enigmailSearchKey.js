@@ -116,7 +116,7 @@ function onLoad () {
       document.getElementById("keySelGroup").setAttribute("collapsed", "true");
       window.sizeToContent();
       window.resizeBy(0, -320);
-      window.setTimeout(startDownload, 10);
+      EnigmailCommon.dispatchEvent(startDownload, 10);
   }
   else {
     switch (window.enigRequest.requestType) {

@@ -39,7 +39,7 @@ var gCardData = {};
 function onLoad() {
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {
-    window.setTimeout(failWithError, 0, EnigGetString("accessError"));
+    EnigmailCommon.dispatchEvent(failWithError, 0, EnigGetString("accessError"));
     return;
   }
   var exitCodeObj = new Object();
@@ -93,7 +93,7 @@ function onLoad() {
   }
   else {
     if (! dryRun) {
-      window.setTimeout(failWithError, 0, errorMsgObj.value);
+      EnigmailCommon.dispatchEvent(failWithError, 0, errorMsgObj.value);
     }
   }
   return;

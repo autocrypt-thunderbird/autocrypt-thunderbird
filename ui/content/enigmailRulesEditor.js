@@ -333,7 +333,7 @@ function onSearchInput(returnKeyHit)
     onEnterInSearchBar();
   }
   else {
-    gSearchTimer = setTimeout("onEnterInSearchBar();", 800);
+    gSearchTimer = setTimeout(onEnterInSearchBar, 800);
   }
 }
 

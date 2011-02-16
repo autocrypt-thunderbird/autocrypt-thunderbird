@@ -69,6 +69,8 @@ const ENIGMAIL_PREFS_ROOT = "extensions.enigmail.";
 
 var gLogLevel = 3;
 var gPromptSvc = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
+var gDispatchThread = null;
+
 
 var gEnigExtensionVersion;
 
@@ -1136,6 +1138,80 @@ var EnigmailCommon = {
   {
     this.enigmailSvc = enigmailSvc;
     gLogLevel = logLevel;
+  },
+
+  dispatchEvent: function (callbackFunction, sleepTimeMs, arrayOfArgs)
+  {
+    this.DEBUG_LOG("enigmailCommon.jsm: dispatchEvent f="+callbackFunction.name+"\n");
+
+    // object for dispatching callback back to main thread
+    const mainEvent = function(cbFunc, arrayOfArgs) {
+      this.cbFunc = cbFunc;
+      this.args   = arrayOfArgs;
+    };
+
+    mainEvent.prototype = {
+      QueryInterface: function(iid) {
+        if (iid.equals(Ci.nsIRunnable) ||
+            iid.equals(Ci.nsISupports)) {
+                return this;
+        }
+        throw Components.results.NS_ERROR_NO_INTERFACE;
+      },
+
+      run: function()
+      {
+        EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: dispatchEvent running mainEvent\n");
+        this.cbFunc(this.args);
+      }
+    };
+
+    // object for dispatching callback with sleep time
+    const threadEvent = function(threadManager, event, sleepTimeMs) {
+      this.sleepTimeMs = sleepTimeMs;
+      this.threadManager = threadManager;
+      this.event = event; // need to pass target event because thread cannot access mainEvent directly
+    };
+
+    threadEvent.prototype = {
+      QueryInterface: function(iid) {
+        if (iid.equals(Ci.nsIRunnable) ||
+            iid.equals(Ci.nsISupports)) {
+                return this;
+        }
+        throw Components.results.NS_ERROR_NO_INTERFACE;
+      },
+
+      run: function()
+      {
+        EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: dispatchEvent running threadEvent\n");
+        if (this.sleepTimeMs > 0) {
+          var mimeSvc = Components.classes[EnigmailCommon.ENIGMIMESERVICE_CONTRACTID].
+            getService(Components.interfaces.nsIEnigMimeService);
+          mimeSvc.sleep(this.sleepTimeMs);
+        }
+        this.threadManager.mainThread.dispatch(this.event, Components.interfaces.nsIThread.DISPATCH_NORMAL);
+      }
+    };
+
+    var tm = Cc["@mozilla.org/thread-manager;1"].getService(Ci.nsIThreadManager);
+    var event = new mainEvent(callbackFunction, arrayOfArgs);
+
+    if (sleepTimeMs > 0) {
+      if (! gDispatchThread)
+        gDispatchThread = tm.newThread(0);
+
+      var sleepEvent = new threadEvent(tm, event, sleepTimeMs);
+      gDispatchThread.dispatch(sleepEvent, Ci.nsIThread.DISPATCH_NORMAL);
+    }
+    else {
+
+      var mainThread = tm.mainThread;
+      // dispatch the event to the main thread
+      mainThread.dispatch(event, Ci.nsIThread.DISPATCH_NORMAL);
+    }
+
+    return event;
   }
 };
 

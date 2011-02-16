@@ -2587,8 +2587,8 @@ Enigmail.msg = {
     try {
       EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.fireSendFlags\n");
       if (! this.determineSendFlagId) {
-        this.determineSendFlagId = window.setTimeout(
-          function () {
+        this.determineSendFlagId = EnigmailCommon.dispatchEvent(
+          function _sendFlagWrapper() {
             Enigmail.msg.determineSendFlags()
           },
           0);
@@ -2649,12 +2649,11 @@ Enigmail.composeStateListener = {
           return;
 
         if (!Enigmail.msg.timeoutId && !Enigmail.msg.dirty)
-          Enigmail.msg.timeoutId = window.setTimeout(
-            function (e) {
-              Enigmail.msg.decryptQuote(e)
+          Enigmail.msg.timeoutId = EnigmailCommon.dispatchEvent(
+            function _decryptWrapper () {
+              Enigmail.msg.decryptQuote(false)
             },
-            10,
-            false);
+            10);
       }
     }
 

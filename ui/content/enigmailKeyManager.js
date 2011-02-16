@@ -84,7 +84,8 @@ function enigmailKeyManagerLoad() {
   document.getElementById("pleaseWait").showPopup(gSearchInput, -1, -1, "tooltip", "after_end", "");
   document.getElementById("statusText").value = EnigGetString("keyMan.loadingKeys");
   document.getElementById("progressBar").removeAttribute("collapsed");
-  window.setTimeout(loadkeyList, 100);
+  //window.setTimeout(loadkeyList, 100);
+  EnigmailCommon.dispatchEvent(loadkeyList, 100, null);
   gSearchInput.focus();
 }
 
@@ -1027,18 +1028,18 @@ function enigmailRefreshAllKeys() {
   if (doIt) enigmailKeyServerAcess(nsIEnigmail.REFRESH_KEY, enigmailReceiveKeyCb);
 }
 
-function displayResult(msgText) {
-  EnigLongAlert(msgText);
+function displayResult(arrayOfMsgText) {
+  EnigLongAlert(arrayOfMsgText.join("\n"));
 }
 
 function enigmailReceiveKeyCb(exitCode, errorMsg, msgBox) {
   if (msgBox) {
     if (exitCode==0) {
       enigmailRefreshKeys();
-      window.setTimeout(displayResult, 100, EnigGetString("receiveKeysOk") + "\n"+ errorMsg);
+      EnigmailCommon.dispatchEvent(displayResult, 100, [ EnigGetString("receiveKeysOk"), errorMsg ]);
     }
     else {
-      window.setTimeout(displayResult, 100, EnigGetString("receiveKeysFailed")+"\n"+errorMsg);
+      EnigmailCommon.dispatchEvent(displayResult, 100, [ EnigGetString("receiveKeysFailed"), errorMsg ]);
     }
   }
   else {
@@ -1084,7 +1085,7 @@ function onSearchInput(returnKeyHit)
     onEnterInSearchBar();
   }
   else {
-    gSearchTimer = setTimeout("onEnterInSearchBar();", 600);
+    gSearchTimer = setTimeout(onEnterInSearchBar, 600);
   }
 }
 

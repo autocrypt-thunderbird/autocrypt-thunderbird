@@ -488,41 +488,21 @@ Enigmail.msg = {
 
   msgDecryptMimeCb: function (msg, mimeMsg)
   {
+    var f = function(argList)
+    {
+      var enigmailSvc=Enigmail.getEnigmailSvc();
+      if (!enigmailSvc) return;
 
-
-    // object for dispatching callback from MsgHdrToMimeMessage back to main thread
-    // MsgHdrToMimeMessage is not on the main thread which may lead to problems with accessing DOM
-    var decryptCbThread = function(event, isAuto, mimeMsg) {
-      this.event = event;
-      this.isAuto = isAuto;
-      this.mimeMsg = mimeMsg;
+      var event = argList[0];
+      var isAuto = argList[1];
+      var mimeMsg = argList[2];
+      Enigmail.msg.messageDecryptCb(event, isAuto, mimeMsg);
     };
 
-    decryptCbThread.prototype = {
-      QueryInterface: function(iid) {
-        if (iid.equals(Components.interfaces.nsIRunnable) ||
-            iid.equals(Components.interfaces.nsISupports)) {
-                return this;
-        }
-        throw Components.results.NS_ERROR_NO_INTERFACE;
-      },
+    // MsgHdrToMimeMessage is not on the main thread which may lead to problems with
+    // accessing DOM and debugging
 
-      run: function()
-      {
-        var enigmailSvc=Enigmail.getEnigmailSvc();
-        if (!enigmailSvc) return;
-
-        Enigmail.msg.messageDecryptCb(this.event, this.isAuto, this.mimeMsg);
-      }
-    };
-
-
-    var mainThread = Components.classes["@mozilla.org/thread-manager;1"].getService().mainThread;
-
-    // dispatch the message parsing back to the main thread
-    var t = new decryptCbThread(this.event, this.isAuto, mimeMsg)
-    mainThread.dispatch(t, Components.interfaces.nsIThread.DISPATCH_NORMAL);
-
+    EnigmailCommon.dispatchEvent(f, 0, [this.event, this.isAuto, mimeMsg])
   },
 
 
@@ -1598,44 +1578,22 @@ Enigmail.msg = {
     }
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: msgDirectCallback: msgText='"+msgText+"'\n");
 
+    var f = function (argList) {
+      var msgText = argList[0];
+      var cb = argList[1];
+      cb.callbackFunction(msgText, cb.contentEncoding,
+                           cb.charset,
+                           cb.interactive,
+                           cb.importOnly,
+                           cb.messageUrl,
+                           cb.signature,
+                           3,
+                           cb.head,
+                           cb.tail,
+                           cb.msgUriSpec);
+    }
 
-    // object for dispatching callback  back to main thread
-    var decryptCbThread = function(msgText, callbackArg) {
-      this.msgText = msgText;
-      this.cb      = callbackArg;
-    };
-
-    decryptCbThread.prototype = {
-      QueryInterface: function(iid) {
-        if (iid.equals(Components.interfaces.nsIRunnable) ||
-            iid.equals(Components.interfaces.nsISupports)) {
-                return this;
-        }
-        throw Components.results.NS_ERROR_NO_INTERFACE;
-      },
-
-      run: function()
-      {
-        this.cb.callbackFunction(this.msgText, this.cb.contentEncoding,
-                                 this.cb.charset,
-                                 this.cb.interactive,
-                                 this.cb.importOnly,
-                                 this.cb.messageUrl,
-                                 this.cb.signature,
-                                 3,
-                                 this.cb.head,
-                                 this.cb.tail,
-                                 this.cb.msgUriSpec);
-
-      }
-    };
-
-
-    var mainThread = Components.classes["@mozilla.org/thread-manager;1"].getService().mainThread;
-
-    // dispatch the message parsing back to the main thread
-    var t = new decryptCbThread(msgText, callbackArg)
-    mainThread.dispatch(t, Components.interfaces.nsIThread.DISPATCH_NORMAL);
+    EnigmailCommon.dispatchEvent(f, 0, [msgText, callbackArg ]);
   },
 
 

@@ -114,12 +114,12 @@
       var textbox=document.getElementById("msgtext");
       textbox.setAttribute("value", msgtext);
       textbox.setAttribute("rows", lines);
-      window.setTimeout(resizeDlg, 0);
+      if (EnigGetOS() != "Darwin")
+        EnigmailCommon.dispatchEvent(resizeDlg, 0);
     }
 
     function resizeDlg() {
-      if (EnigGetOS() != "Darwin")
-        document.getElementById("enigmailAlertDlg").centerWindowOnScreen();
+      document.getElementById("enigmailAlertDlg").centerWindowOnScreen();
     }
 
     function setButton (buttonId, label) {
