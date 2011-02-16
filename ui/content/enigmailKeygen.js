@@ -40,8 +40,6 @@ EnigInitCommon("enigmailKeygen");
 
 var gAccountManager = Components.classes[ENIG_ACCOUNT_MANAGER_CONTRACTID].getService(Components.interfaces.nsIMsgAccountManager);
 
-var gAutoCrypto;
-
 var gIdentityList;
 var gIdentityListPopup;
 var gUseForSigning;
@@ -54,8 +52,6 @@ var gConsoleIntervalId;
 
 function enigmailKeygenLoad() {
   DEBUG_LOG("enigmailKeygen.js: Load\n");
-
-  gAutoCrypto = EnigGetPref("autoCrypto");
 
   gIdentityList      = document.getElementById("userIdentity");
   gIdentityListPopup = document.getElementById("userIdentityPopup");
