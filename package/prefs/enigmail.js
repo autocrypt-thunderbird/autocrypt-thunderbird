@@ -55,9 +55,6 @@ pref("extensions.enigmail.alwaysTrustSend",true);
 // allow empty subject line without asking for confirmation
 pref("extensions.enigmail.allowEmptySubject",false);
 
-// not (yet) in use
-pref("extensions.enigmail.autoCrypto",false);
-
 // automatically download missing keys from keyserver
 pref("extensions.enigmail.autoKeyRetrieve","");
 
@@ -199,6 +196,12 @@ pref("extensions.enigmail.warnIso2022jp", 0);
 
 // wrap HTML messages before sending inline PGP messages
 pref("extensions.enigmail.wrapHtmlBeforeSend",true);
+
+// enable experimental features.
+// WARNING: such features may unfinished functions or tests that can break
+// existing functionality in Enigmail and Thunderbird!
+pref("extensions.enigmail.enableExperiments",false);
+
 
 /*
    Default pref values for the enigmail per-identity
