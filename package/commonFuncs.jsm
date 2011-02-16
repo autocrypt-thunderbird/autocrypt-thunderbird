@@ -675,6 +675,7 @@ var EnigmailFuncs = {
     var citeLevel = 0;
     var preface = "";
     var logLineStart = { value: 0 };
+    var isSignature = false;
 
     for (var i=0; i < lines.length; i++) {
       preface = "";
@@ -698,15 +699,20 @@ var EnigmailFuncs = {
           preface += "</blockquote>";
       }
 
-      if (logLineStart.value > 0)
+      if (logLineStart.value > 0) {
         preface += '<span class="moz-txt-citetags">' +
             gTxtConverter.scanTXT(lines[i].substr(0, logLineStart.value), convFlags) +
             '</span>';
+      }
+      else if (lines[i] == "-- ") {
+        preface+='<div class=\"moz-txt-sig\">';
+        isSignature = true;
+      }
       lines[i] = preface + gTxtConverter.scanTXT(lines[i].substr(logLineStart.value), convFlags);
 
     }
 
-    var r='<pre wrap="">'+lines.join("\n")+'</pre>';
+    var r='<pre wrap="">' + lines.join("\n") + (isSignature ? '</div>': '') + '</pre>';
     //EnigmailCommon.DEBUG_LOG("enigmailFuncs.jsm: r='"+r+"'\n");
     return r;
   }
