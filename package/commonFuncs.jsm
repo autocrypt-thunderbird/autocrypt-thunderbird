@@ -60,6 +60,8 @@ const USERID_ID = 9;
 const SIG_TYPE_ID = 10;
 const KEY_USE_FOR_ID = 11;
 
+var gTxtConverter = null;
+
 var EnigmailFuncs = {
 
   /**
@@ -628,5 +630,84 @@ var EnigmailFuncs = {
       enigmailSvc.clearCachedPassphrase();
       EnigmailCommon.alertPref(win, EnigmailCommon.getString("passphraseCleared"), "warnClearPassphrase");
     }
+  },
+
+  // this function tries to mimic the Thunderbird plaintext viewer
+  formatPlaintextMsg: function (plainTxt)
+  {
+    if (! gTxtConverter)
+      gTxtConverter = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
+
+    var prefRoot = EnigmailCommon.prefRoot;
+    var fontStyle = "";
+
+    // set the style stuff according to perferences
+
+    switch (prefRoot.getIntPref("mail.quoted_style")) {
+      case 1:
+        fontStyle="font-weight: bold; "; break;
+      case 2:
+        fontStyle="font-style: italic; "; break;
+      case 3:
+        fontStyle="font-weight: bold; font-style: italic; "; break;
+    }
+
+    switch (prefRoot.getIntPref("mail.quoted_size")) {
+    case 1:
+      fontStyle += "font-size: large; "; break;
+    case 2:
+      fontStyle += "font-size: small; "; break;
+    }
+
+    fontStyle += "color: "+prefRoot.getCharPref("mail.citation_color")+";";
+
+    var convFlags = Ci.mozITXTToHTMLConv.kURLs;
+    if (prefRoot.getBoolPref("mail.display_glyph"))
+        convFlags |= Ci.mozITXTToHTMLConv.kGlyphSubstitution;
+    if (prefRoot.getBoolPref("mail.display_struct"))
+        convFlags |= Ci.mozITXTToHTMLConv.kStructPhrase;
+
+    // start processing the message
+
+    plainTxt = plainTxt.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    var lines = plainTxt.split(/\n/);
+    var oldCiteLevel = 0;
+    var citeLevel = 0;
+    var preface = "";
+    var logLineStart = { value: 0 };
+
+    for (var i=0; i < lines.length; i++) {
+      preface = "";
+      oldCiteLevel = citeLevel;
+      if (lines[i].search(/^[\> \t]*\>$/) == 0)
+        lines[i]+=" ";
+
+      citeLevel = gTxtConverter.citeLevelTXT(lines[i], logLineStart);
+
+      if (citeLevel > oldCiteLevel) {
+
+        preface='</pre>';
+        for (let j=0; j < citeLevel - oldCiteLevel; j++) {
+          preface += '<blockquote type="cite" style="'+fontStyle+'">';
+        }
+        preface += '<pre wrap="">';
+      }
+      else if (citeLevel < oldCiteLevel) {
+        preface='</pre>';
+        for (let j = 0; j < oldCiteLevel - citeLevel; j++)
+          preface += "</blockquote>";
+      }
+
+      if (logLineStart.value > 0)
+        preface += '<span class="moz-txt-citetags">' +
+            gTxtConverter.scanTXT(lines[i].substr(0, logLineStart.value), convFlags) +
+            '</span>';
+      lines[i] = preface + gTxtConverter.scanTXT(lines[i].substr(logLineStart.value), convFlags);
+
+    }
+
+    var r='<pre wrap="">'+lines.join("\n")+'</pre>';
+    //EnigmailCommon.DEBUG_LOG("enigmailFuncs.jsm: r='"+r+"'\n");
+    return r;
   }
 };

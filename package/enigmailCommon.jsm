@@ -84,36 +84,37 @@ try {
 catch (ex) {}
 
 
-var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
-                    BADSIG:          nsIEnigmail.BAD_SIGNATURE,
-                    ERRSIG:          nsIEnigmail.UNVERIFIED_SIGNATURE,
-                    EXPSIG:          nsIEnigmail.EXPIRED_SIGNATURE,
-                    REVKEYSIG:       nsIEnigmail.GOOD_SIGNATURE,
-                    EXPKEYSIG:       nsIEnigmail.EXPIRED_KEY_SIGNATURE,
-                    KEYEXPIRED:      nsIEnigmail.EXPIRED_KEY,
-                    KEYREVOKED:      nsIEnigmail.REVOKED_KEY,
-                    NO_PUBKEY:       nsIEnigmail.NO_PUBKEY,
-                    NO_SECKEY:       nsIEnigmail.NO_SECKEY,
-                    IMPORTED:        nsIEnigmail.IMPORTED_KEY,
-                    INV_RECP:        nsIEnigmail.INVALID_RECIPIENT,
-                    MISSING_PASSPHRASE: nsIEnigmail.MISSING_PASSPHRASE,
-                    BAD_PASSPHRASE:  nsIEnigmail.BAD_PASSPHRASE,
-                    BADARMOR:        nsIEnigmail.BAD_ARMOR,
-                    NODATA:          nsIEnigmail.NODATA,
-                    ERROR:           nsIEnigmail.BAD_SIGNATURE | nsIEnigmail.DECRYPTION_FAILED,
-                    DECRYPTION_FAILED: nsIEnigmail.DECRYPTION_FAILED,
-                    DECRYPTION_OKAY: nsIEnigmail.DECRYPTION_OKAY,
-                    TRUST_UNDEFINED: nsIEnigmail.UNTRUSTED_IDENTITY,
-                    TRUST_NEVER:     nsIEnigmail.UNTRUSTED_IDENTITY,
-                    TRUST_MARGINAL:  nsIEnigmail.UNTRUSTED_IDENTITY,
-                    TRUST_FULLY:     nsIEnigmail.TRUSTED_IDENTITY,
-                    TRUST_ULTIMATE:  nsIEnigmail.TRUSTED_IDENTITY,
-                    CARDCTRL:        nsIEnigmail.CARDCTRL,
-                    SC_OP_FAILURE:   nsIEnigmail.SC_OP_FAILURE,
-                    UNKNOWN_ALGO:    nsIEnigmail.UNKNOWN_ALGO,
-                    SIG_CREATED:     nsIEnigmail.SIG_CREATED,
-                    END_ENCRYPTION : nsIEnigmail.END_ENCRYPTION,
-                    INV_SGNR:				 0x100000000
+var gStatusFlags = {
+  GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
+  BADSIG:          nsIEnigmail.BAD_SIGNATURE,
+  ERRSIG:          nsIEnigmail.UNVERIFIED_SIGNATURE,
+  EXPSIG:          nsIEnigmail.EXPIRED_SIGNATURE,
+  REVKEYSIG:       nsIEnigmail.GOOD_SIGNATURE,
+  EXPKEYSIG:       nsIEnigmail.EXPIRED_KEY_SIGNATURE,
+  KEYEXPIRED:      nsIEnigmail.EXPIRED_KEY,
+  KEYREVOKED:      nsIEnigmail.REVOKED_KEY,
+  NO_PUBKEY:       nsIEnigmail.NO_PUBKEY,
+  NO_SECKEY:       nsIEnigmail.NO_SECKEY,
+  IMPORTED:        nsIEnigmail.IMPORTED_KEY,
+  INV_RECP:        nsIEnigmail.INVALID_RECIPIENT,
+  MISSING_PASSPHRASE: nsIEnigmail.MISSING_PASSPHRASE,
+  BAD_PASSPHRASE:  nsIEnigmail.BAD_PASSPHRASE,
+  BADARMOR:        nsIEnigmail.BAD_ARMOR,
+  NODATA:          nsIEnigmail.NODATA,
+  ERROR:           nsIEnigmail.BAD_SIGNATURE | nsIEnigmail.DECRYPTION_FAILED,
+  DECRYPTION_FAILED: nsIEnigmail.DECRYPTION_FAILED,
+  DECRYPTION_OKAY: nsIEnigmail.DECRYPTION_OKAY,
+  TRUST_UNDEFINED: nsIEnigmail.UNTRUSTED_IDENTITY,
+  TRUST_NEVER:     nsIEnigmail.UNTRUSTED_IDENTITY,
+  TRUST_MARGINAL:  nsIEnigmail.UNTRUSTED_IDENTITY,
+  TRUST_FULLY:     nsIEnigmail.TRUSTED_IDENTITY,
+  TRUST_ULTIMATE:  nsIEnigmail.TRUSTED_IDENTITY,
+  CARDCTRL:        nsIEnigmail.CARDCTRL,
+  SC_OP_FAILURE:   nsIEnigmail.SC_OP_FAILURE,
+  UNKNOWN_ALGO:    nsIEnigmail.UNKNOWN_ALGO,
+  SIG_CREATED:     nsIEnigmail.SIG_CREATED,
+  END_ENCRYPTION : nsIEnigmail.END_ENCRYPTION,
+  INV_SGNR:				 0x100000000
 };
 
 var EnigmailCommon = {
@@ -147,8 +148,9 @@ var EnigmailCommon = {
   prefRoot: null,
   prefService: null,
 
+  // methods
   getService: function (win) {
-    // Lazy initialization of enigmail JS component (for efficiency)
+    // Lazy initialization of Enigmail JS component (for efficiency)
 
     if (this.enigmailSvc) {
       return this.enigmailSvc.initialized ? this.enigmailSvc : null;
@@ -270,6 +272,8 @@ var EnigmailCommon = {
   },
 
   initPrefService: function() {
+    if (this.prefBranch) return;
+
     try {
       this.prefService = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
 
@@ -397,7 +401,8 @@ var EnigmailCommon = {
 
     win.openDialog("chrome://enigmail/content/enigmailAlertDlg.xul", "",
               "chrome,dialog,modal,centerscreen",
-              { msgtext: mesg,
+              {
+                msgtext: mesg,
                 checkboxLabel: checkBoxLabel,
                 button1: okLabel,
                 button2: labelButton2,
