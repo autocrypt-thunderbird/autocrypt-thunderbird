@@ -421,7 +421,7 @@ function getWinRegistryString(keyPath, keyName, rootKey) {
 function ExtractMessageId(uri) {
   var messageId = "";
 
-  var matches = uri.match(/^enigmail:message\?id=(.+)/);
+  var matches = uri.match(/^enigmail:message\/(.+)/);
 
   if (matches && (matches.length > 1)) {
     messageId = matches[1];
@@ -444,8 +444,13 @@ EnigmailProtocolHandler.prototype = {
   classDescription: "Enigmail Protocol Handler",
   classID:          NS_ENIGMAILPROTOCOLHANDLER_CID,
   contractID:       NS_ENIGMAILPROTOCOLHANDLER_CONTRACTID,
-  scheme: "enigmail",
-  defaultPort: -1,
+  scheme:           "enigmail",
+  defaultPort:      -1,
+  protocolFlags:    nsIProtocolHandler.URI_INHERITS_SECURITY_CONTEXT |
+                    nsIProtocolHandler.URI_LOADABLE_BY_ANYONE |
+                    nsIProtocolHandler.URI_NORELATIVE |
+                    nsIProtocolHandler.URI_NOAUTH |
+                    nsIProtocolHandler.URI_OPENING_EXECUTES_SCRIPT,
 
   QueryInterface: XPCOMUtils.generateQI([nsIProtocolHandler]),
 
@@ -464,7 +469,7 @@ EnigmailProtocolHandler.prototype = {
     var messageId = ExtractMessageId(aURI.spec);
 
     if (messageId) {
-      // Handle enigmail:message?id=...
+      // Handle enigmail:message/...
 
       if (!gEnigmailSvc)
         throw Components.results.NS_ERROR_FAILURE;
@@ -549,6 +554,11 @@ EnigmailProtocolHandler.prototype = {
     }
 
     throw Components.results.NS_ERROR_FAILURE;
+  },
+
+  allowPort: function (port, scheme) {
+    // non-standard ports are not allowed
+    return false;
   }
 };
 
@@ -3699,7 +3709,7 @@ Enigmail.prototype = {
                                       contentData:contentData,
                                       persist:persist};
 
-    return "enigmail:message?id="+messageId;
+    return "enigmail:message/"+messageId;
   },
 
   deleteMessageURI: function (uri) {
