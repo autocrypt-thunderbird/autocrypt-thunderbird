@@ -65,6 +65,7 @@ Enigmail.msg = {
   decryptButton:    null,
   savedHeaders:     null,
   removeListener:   false,
+  enableExperiments: false,
   headersList:      ["content-type", "content-transfer-encoding",
                      "x-enigmail-version", "x-pgp-encoding-format" ],
 
@@ -649,7 +650,7 @@ Enigmail.msg = {
 
           if ((!enigmailSvc.mimeInitialized() && encrypedMsg) || signedMsg ||
               ((!encrypedMsg) && (embeddedSigned || embeddedEncrypted))) {
-            Enigmail.hdrView.updateHdrIcons(EnigmaiCommon.POSSIBLE_PGPMIME, 0, "", "", "", EnigmailCommon.getString("possiblyPgpMime"));
+            Enigmail.hdrView.updateHdrIcons(EnigmailCommon.POSSIBLE_PGPMIME, 0, "", "", "", EnigmailCommon.getString("possiblyPgpMime"));
           }
         }
         return;
@@ -757,7 +758,28 @@ Enigmail.msg = {
     var msgText = null;
     var foundIndex = -1;
 
-    if (findStr) {
+
+    if (EnigmailCommon.getPref("enableExperiments")) {
+      if (bodyElement.firstChild) {
+        let node = bodyElement.firstChild
+        while (node) {
+          if (node.nodeName == "DIV") {
+            foundIndex = node.textContent.indexOf(findStr);
+
+            if (foundIndex >= 0) {
+              if (node.textContent.indexOf(findStr+" LICENSE AUTHORIZATION") == foundIndex)
+                foundIndex = -1;
+            }
+            if (foundIndex >= 0) {
+              bodyElement = node;
+              break;
+            }
+          }
+          node = node.nextSibling;
+        }
+      }
+    }
+    else if (findStr) {
       foundIndex = bodyElement.textContent.indexOf(findStr);
       if (foundIndex >= 0) {
         if (bodyElement.textContent.indexOf(findStr+" LICENSE AUTHORIZATION") == foundIndex)
@@ -817,8 +839,8 @@ Enigmail.msg = {
 
 
   messageParseCallback: function (msgText, contentEncoding, charset, interactive,
-                                      importOnly, messageUrl, signature, retry,
-                                      head, tail, msgUriSpec)
+                                  importOnly, messageUrl, signature, retry,
+                                  head, tail, msgUriSpec)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: messageParseCallback: "+interactive+", "+interactive+", importOnly="+importOnly+", charset="+charset+", msgUrl="+messageUrl+", retry="+retry+", signature='"+signature+"'\n");
 
@@ -1048,78 +1070,58 @@ Enigmail.msg = {
     displayedUriSpec = Enigmail.msg.getCurrentMsgUriSpec();
     if (msgUriSpec && displayedUriSpec && (displayedUriSpec != msgUriSpec)) return;
 
-    try {
-      // Create and load one-time message URI
-      var messageContent = Enigmail.msg.getDecryptedMessage("message/rfc822", false);
 
-      Enigmail.msg.noShowReload = true;
+    // Create and load one-time message URI
+    var messageContent = Enigmail.msg.getDecryptedMessage("message/rfc822", false);
 
-      var uri = enigmailSvc.createMessageURI(messageUrl,
-                                             "message/rfc822",
-                                             "",
-                                             messageContent,
-                                             false);
-      Enigmail.msg.createdURIs.push(uri);
+    Enigmail.msg.noShowReload = true;
 
-      //msgFrame.location=uri;
-      messenger.loadURL(msgFrame, uri);
+    if (EnigmailCommon.getPref("enableExperiments")) {
+      EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: messageParseCallback: trying new way\n");
 
+      var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
+      if (bodyElement.firstChild) {
+        var node = bodyElement.firstChild;
+        var foundIndex = -1;
+        var findStr = "-----BEGIN PGP";
+        while (node) {
+          if (node.nodeName == "DIV") {
+            foundIndex = node.textContent.indexOf(findStr);
+
+            if (foundIndex >= 0) {
+              if (node.textContent.indexOf(findStr+" LICENSE AUTHORIZATION") == foundIndex)
+                foundIndex = -1;
+            }
+            if (foundIndex >= 0) {
+              // EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: innerHTML='"+node.innerHTML+"'\n");
+              node.innerHTML = EnigmailFuncs.formatPlaintextMsg(EnigmailCommon.convertToUnicode(messageContent, "UTF-8"));
+              return;
+            }
+          }
+          node = node.nextSibling;
+        }
+      }
     }
-    catch (ex) {
-      // Display plain text with hyperlinks
 
-      // Get selection range for inserting HTML
-      var domSelection = msgFrame._content.getSelection();
+    EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: messageParseCallback: going the old way\n");
 
-      var privateSelection = domSelection.QueryInterface(Components.interfaces.nsISelectionPrivate);
-      var selection = privateSelection.QueryInterface(Components.interfaces.nsISelection);
+    var uri = enigmailSvc.createMessageURI(messageUrl,
+                                           "message/rfc822",
+                                           "",
+                                           messageContent,
+                                           false);
+    Enigmail.msg.createdURIs.push(uri);
 
-      selection.collapse(bodyElement, 0);
-      var selRange = selection.getRangeAt(0);
-
-      // Decode plaintext to unicode
-      tail = EnigmailCommon.convertToUnicode(tail, charset);
-      var uniText = EnigmailCommon.convertToUnicode(plainText, charset);
-
-      var htmlText="";
-      if (head) {
-         htmlText += "<pre>"+Enigmail.msg.escapeTextForHTML(EnigmailCommon.convertToUnicode(head, charset),true)+"</pre><p/>\n";
-      }
-      htmlText += '<table border="0" cellspacing="0" width="100%"><tbody><tr><td bgcolor="#9490FF" width="10"></td>' +
-        '<td bgcolor="#9490FF" width="10"><pre>Begin Signed or Encrypted Text</pre></td></tr>\n'+
-        '<tr><td bgcolor="#9490FF"></td>'+
-        '<td><pre>' +
-        Enigmail.msg.escapeTextForHTML(uniText, true) +
-        '</pre></td></tr>\n' +
-        '<tr><td bgcolor="#9490FF" width="10"></td>' +
-        '<td bgcolor="#9490FF" width="10"><pre>End Signed or Encrypted Text</pre></td></tr>' +
-        '</tbody></table>\n'
-
-      if (tail) {
-         htmlText += "<p/><pre>"+Enigmail.msg.escapeTextForHTML(EnigmailCommon.convertToUnicode(tail, charset),true)+"</pre>";
-      }
-
-      var docFrag = selRange.createContextualFragment(htmlText);
-
-      // Clear HTML body
-      while (bodyElement.hasChildNodes())
-          bodyElement.removeChild(bodyElement.childNodes[0]);
-
-      if (hasAttachments && (! attachmentsEncrypted)) {
-        var newTextNode = msgFrame.document.createTextNode(EnigmailCommon.getString("enigNote"));
-
-        var newEmElement = msgFrame.document.createElement("em");
-        newEmElement.appendChild(newTextNode);
-
-        bodyElement.appendChild(newEmElement);
-        bodyElement.appendChild(msgFrame.document.createElement("p"));
-      }
-
-      bodyElement.appendChild(docFrag.firstChild);
-
-    }
+    //msgFrame.location=uri;
+    messenger.loadURL(msgFrame, uri);
 
     return;
+  },
+
+  // this is an attempt to re-build some of the functionality of mimetpla.cpp in JS
+  displayMessage: function (messageContent, node) {
+
+
   },
 
   // check if an attachment could be signed
@@ -1139,17 +1141,25 @@ Enigmail.msg = {
       }
       if (index == null) return false;
     }
-    // check if filename ends with .sig
-    if ((attachmentList[index].displayName.search(/\.sig$/i) > 0) ||
-       (attachmentList[index].contentType.match(/^application\/pgp\-signature/i)))
-      return true;
 
     var signed = false;
-    var findFile = attachmentList[index].displayName.toLowerCase()+".sig";
+    var findFile;
+
+    // check if filename is a signature
+    if ((attachmentList[index].displayName.search(/\.(sig|asc)$/i) > 0) ||
+       (attachmentList[index].contentType.match(/^application\/pgp\-signature/i))) {
+      findFile = new RegExp(attachmentList[index].displayName.toLowerCase().replace(/\.(sig|asc)$/, ""));
+    }
+    else
+      findFile = new RegExp(attachmentList[index].displayName.toLowerCase()+".(sig|asc)$");
+
     var i;
     for (i in attachmentList) {
-      if (attachmentList[i].displayName.toLowerCase() == findFile) signed=true;
+      if ((i != index) &&
+          (attachmentList[i].displayName.toLowerCase().search(findFile) == 0))
+        signed=true;
     }
+
     return signed;
   },
 
@@ -1588,16 +1598,44 @@ Enigmail.msg = {
     }
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: msgDirectCallback: msgText='"+msgText+"'\n");
 
-    callbackArg.callbackFunction(msgText, callbackArg.contentEncoding,
-                             callbackArg.charset,
-                             callbackArg.interactive,
-                             callbackArg.importOnly,
-                             callbackArg.messageUrl,
-                             callbackArg.signature,
-                             3,
-                             callbackArg.head,
-                             callbackArg.tail,
-                             callbackArg.msgUriSpec);
+
+    // object for dispatching callback  back to main thread
+    var decryptCbThread = function(msgText, callbackArg) {
+      this.msgText = msgText;
+      this.cb      = callbackArg;
+    };
+
+    decryptCbThread.prototype = {
+      QueryInterface: function(iid) {
+        if (iid.equals(Components.interfaces.nsIRunnable) ||
+            iid.equals(Components.interfaces.nsISupports)) {
+                return this;
+        }
+        throw Components.results.NS_ERROR_NO_INTERFACE;
+      },
+
+      run: function()
+      {
+        this.cb.callbackFunction(this.msgText, this.cb.contentEncoding,
+                                 this.cb.charset,
+                                 this.cb.interactive,
+                                 this.cb.importOnly,
+                                 this.cb.messageUrl,
+                                 this.cb.signature,
+                                 3,
+                                 this.cb.head,
+                                 this.cb.tail,
+                                 this.cb.msgUriSpec);
+
+      }
+    };
+
+
+    var mainThread = Components.classes["@mozilla.org/thread-manager;1"].getService().mainThread;
+
+    // dispatch the message parsing back to the main thread
+    var t = new decryptCbThread(msgText, callbackArg)
+    mainThread.dispatch(t, Components.interfaces.nsIThread.DISPATCH_NORMAL);
   },
 
 
