@@ -723,6 +723,12 @@ Enigmail.hdrView = {
         decryptSaveMenu.setAttribute('disabled', true);
         verifyMenu.setAttribute('disabled', true);
       }
+      else if (Enigmail.msg.checkSignedAttachment(selectedAttachments[0].attachment, null)) {
+        importMenu.setAttribute('disabled', true);
+        decryptOpenMenu.setAttribute('disabled', true);
+        decryptSaveMenu.setAttribute('disabled', true);
+        verifyMenu.removeAttribute('disabled');
+      }
       else if (Enigmail.msg.checkEncryptedAttach(selectedAttachments[0].attachment)) {
         importMenu.setAttribute('disabled', true);
         decryptOpenMenu.removeAttribute('disabled');
@@ -731,12 +737,6 @@ Enigmail.hdrView = {
         if (! selectedAttachments[0].attachment.displayName) {
           selectedAttachments[0].attachment.displayName="message.pgp"
         }
-      }
-      else if (Enigmail.msg.checkSignedAttachment(selectedAttachments[0].attachment, null)) {
-        importMenu.setAttribute('disabled', true);
-        decryptOpenMenu.setAttribute('disabled', true);
-        decryptSaveMenu.setAttribute('disabled', true);
-        verifyMenu.removeAttribute('disabled');
       }
       else {
         importMenu.setAttribute('disabled', true);
