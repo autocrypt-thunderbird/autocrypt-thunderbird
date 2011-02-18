@@ -1750,6 +1750,8 @@ Enigmail.msg = {
     }
     var encoderFlags = dce.outputFormatted | dce.outputLFLineBreak;
 
+    var wrapper = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIEditorMailSupport);
+    var editor = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIPlaintextEditor);
     var wrapWidth=72;
     if (gMsgCompose.composeHTML) {
       // enforce line wrapping here
@@ -1763,10 +1765,9 @@ Enigmail.msg = {
           }
         }
         if (!(sendInfo.sendFlags & ENCRYPT) && EnigmailCommon.getPref("wrapHtmlBeforeSend")) {
-          if (wrapWidth > 0) {
-            var editor = gMsgCompose.editor.QueryInterface(nsIPlaintextEditorMail);
-            editor.wrapWidth=wrapWidth-2; // prepare for the worst case: a 72 char's long line starting with '-'
-            editor.rewrap(false);
+          if (wrapWidth) {
+            editor.wrapWidth = wrapWidth-2; // prepare for the worst case: a 72 char's long line starting with '-'
+            wrapper.rewrap(false);
           }
         }
       }
@@ -1777,8 +1778,14 @@ Enigmail.msg = {
         wrapWidth = this.getMailPref("mailnews.wraplength");
         if (wrapWidth > 0 && wrapWidth < 68) {
           if (EnigmailCommon.confirmDlg(window, EnigmailCommon.getString("minimalLineWrapping", [ wrapWidth ] ))) {
-            EnigmailCommon.prefRoot.setIntPref("mailnews.wraplength", 68)
+            wrapWidth = 68;
+            EnigmailCommon.prefRoot.setIntPref("mailnews.wraplength", wrapWidth)
           }
+        }
+
+        if (wrapWidth) {
+          editor.wrapWidth = wrapWidth;
+          wrapper.rewrap(false);
         }
       }
       catch (ex) {}
