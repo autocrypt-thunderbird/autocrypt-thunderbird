@@ -48,11 +48,12 @@ EnigmailPrefService.prototype = {
   QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIMsgAccountManagerExtension]),
   showPanel: function (server)
   {
-    // show Enigmail panel for POP3, IMAP and NNTP account types
+    // show Enigmail panel for POP3, IMAP, NNTP and "movemail" (unix) account types
     switch (server.type) {
     case "nntp":
     case "imap":
     case "pop3":
+    case "movemail":
       return true;
     }
     return false;
