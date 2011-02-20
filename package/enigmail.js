@@ -4004,7 +4004,7 @@ Enigmail.prototype = {
     var errorMsgObj    = new Object();
 
     var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
-    ipcBuffer.open(MSG_BUFFER_SIZE, false);
+    ipcBuffer.open(MSG_BUFFER_SIZE, true);
 
     var noProxy = true;
 
@@ -4013,7 +4013,7 @@ Enigmail.prototype = {
 
 
     if (!pipeTrans) {
-      return false;
+      return null;
     }
 
     try {
@@ -4022,11 +4022,12 @@ Enigmail.prototype = {
         pipeTrans.writeSync("\n", 1);
       }
       pipeTrans.writeSync(byteData, dataLength.value);
-
+      pipeTrans.writeSync("\n", 1);
     }
     catch (ex) {
-      return false;
+      return null;
     }
+
     // Wait for child STDOUT to close
     pipeTrans.join();
 

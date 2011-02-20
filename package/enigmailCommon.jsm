@@ -761,7 +761,8 @@ var EnigmailCommon = {
       onStopRequest: function (channel, ctxt, status)
       {
         EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: requestObserver.onStopRequest: "+ctxt+"\n");
-        this._terminateFunc(this._terminateArg, ctxt);
+        //this._terminateFunc(this._terminateArg, ctxt);
+        EnigmailCommon.dispatchEvent(this._terminateFunc, 0, [ this._terminateArg ]);
       }
     }
 

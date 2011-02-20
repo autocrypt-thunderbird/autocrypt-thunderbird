@@ -1534,10 +1534,11 @@ Enigmail.msg = {
   },
 
 
-  msgDirectCallback: function (callbackArg, ctxt)
+  msgDirectCallback: function (cbArray)
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: msgDirectCallback: "+ctxt+"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: msgDirectCallback: \n");
 
+    var callbackArg = cbArray[0];
     var mailNewsUrl = Enigmail.msg.getCurrentMsgUrl();
     var urlSpec = mailNewsUrl ? mailNewsUrl.spec : "";
     var newBufferSize = 0;
@@ -1624,10 +1625,11 @@ Enigmail.msg = {
     channel.asyncOpen(ipcBuffer, msgUrl);
   },
 
-  verifyEmbeddedCallback: function (callbackArg, ctxt)
+  verifyEmbeddedCallback: function (cbArray)
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: verifyEmbeddedCallback: "+ctxt+"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: verifyEmbeddedCallback: \n");
 
+    var callbackArg = cbArray[0];
     var txt = callbackArg.ipcBuffer.getData();
     callbackArg.ipcBuffer.shutdown();
 
@@ -1847,10 +1849,11 @@ Enigmail.msg = {
     attachment.displayName = newLabel;
   },
 
-  decryptAttachmentCallback: function (callbackArg, ctxt)
+  decryptAttachmentCallback: function (cbArray)
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: decryptAttachmentCallback: "+ctxt+"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: decryptAttachmentCallback:\n");
 
+    var callbackArg = cbArray[0];
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
     if (callbackArg.ipcBuffer.overflowed) {
@@ -1864,11 +1867,13 @@ Enigmail.msg = {
 
     var enigmailSvc =  Enigmail.getEnigmailSvc();
     var outFile;
+    var origFilename;
     var rawFileName=callbackArg.attachment.displayName.replace(/\.(asc|pgp|gpg)$/i,"");
 
-    var origFilename = enigmailSvc.getAttachmentFileName(window, callbackArg.ipcBuffer);
-    if (origFilename && origFilename.length > 0) rawFileName = origFilename;
-
+    if (callbackArg.actionType != "importKey") {
+      origFilename = enigmailSvc.getAttachmentFileName(window, callbackArg.ipcBuffer);
+      if (origFilename && origFilename.length > 0) rawFileName = origFilename;
+    }
 
     if (callbackArg.actionType == "saveAttachment") {
       outFile = EnigmailCommon.filePicker(window, EnigmailCommon.getString("saveAttachmentHeader"),
