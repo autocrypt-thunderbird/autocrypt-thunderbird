@@ -113,10 +113,10 @@
 
   function enigEnableUrlName() {
     if (gOpenPgpHeaderUrl.checked) {
-      document.getElementById("bcUseUrl").removeAttribute("disabled");
+      document.getElementById("enigmail_bcUseUrl").removeAttribute("disabled");
     }
     else {
-      document.getElementById("bcUseUrl").setAttribute("disabled", "true");
+      document.getElementById("enigmail_bcUseUrl").setAttribute("disabled", "true");
     }
   }
 
