@@ -48,6 +48,8 @@ Enigmail.hlp = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys: emailAddrs="+emailAddrs+"\n");
 
+    const nsIEnigmail = Components.interfaces.nsIEnigmail;
+
     function getFlagVal(oldVal, node, type, conflictObj) {
       var newVal = Number(node.getAttribute(type));
 
@@ -211,8 +213,8 @@ Enigmail.hlp = {
     flagsObj.value = 1;
 
     if (interactive && (!EnigmailCommon.getPref("confirmBeforeSend")) && (conflicts.encrypt ||conflicts.sign)) {
-      if (sign<2) sign = (sign & (Enigmail.msg.sendMode & ENIG_SIGN));
-      if (encrypt<2) encrypt = (encrypt & (Enigmail.msg.sendMode & ENIG_ENCRYPT ? 1 : 0));
+      if (sign<2) sign = (sign & (Enigmail.msg.sendMode & nsIEnigmail.SEND_SIGNED));
+      if (encrypt<2) encrypt = (encrypt & (Enigmail.msg.sendMode & nsIEnigmail.SEND_ENCRYPTED ? 1 : 0));
       var msg = "\n"+"- " + EnigmailCommon.getString(sign>0 ? "signYes" : "signNo");
       msg += "\n"+"- " + EnigmailCommon.getString(encrypt>0 ? "encryptYes" : "encryptNo");
       if (EnigmailCommon.getPref("warnOnRulesConflict")==2) {
