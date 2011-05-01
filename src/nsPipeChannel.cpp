@@ -42,7 +42,6 @@
 
 #include "enigmail.h"
 #include "prlog.h"
-#include "nsAutoLock.h"
 #include "plstr.h"
 #include "nsStringGlue.h"
 #include "nsIProxyObjectManager.h"
@@ -427,8 +426,7 @@ nsPipeChannel::SetContentCharset(const nsACString &aContentCharset)
   return NS_OK;
 }
 
-#if MOZILLA_MAJOR_VERSION >= 3
-// backed  out from Firefox 4.0
+#if MOZILLA_MAJOR_VERSION > 5
 NS_IMETHODIMP
 nsPipeChannel::GetContentDisposition(nsACString &aHeaderContentDisposition)
 {

@@ -40,7 +40,6 @@
 #include "enigmail.h"
 #include "prlog.h"
 #include "nsCOMPtr.h"
-#include "nsAutoLock.h"
 #include "nsIInputStream.h"
 #include "nsIThread.h"
 #include "nsStringAPI.h"

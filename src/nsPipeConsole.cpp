@@ -41,7 +41,11 @@
 #include "enigmail.h"
 #include "prlog.h"
 #include "nsCOMPtr.h"
+#if MOZILLA_MAJOR_VERSION < 5
 #include "nsAutoLock.h"
+#else
+#include "mozilla/Mutex.h"
+#endif
 #include "nsIInputStream.h"
 #include "nsIThread.h"
 #include "nsIHttpChannel.h"
@@ -70,6 +74,10 @@ static const PRUint32 kCharMax = NS_PIPE_CONSOLE_BUFFER_SIZE;
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#if MOZILLA_MAJOR_VERSION > 4
+using namespace mozilla;
+#endif
+
 // nsPipeConsole implementation
 
 // nsISupports implementation
@@ -87,7 +95,12 @@ nsPipeConsole::nsPipeConsole()
     mThreadJoined(PR_FALSE),
     mOverflowed(PR_FALSE),
 
+#if MOZILLA_MAJOR_VERSION < 5
     mLock(nsnull),
+#else
+    mLock("nsPipeConsole.lock"),
+#endif
+
 
     mConsoleBuf(""),
     mConsoleMaxLines(0),
@@ -140,8 +153,10 @@ nsPipeConsole::~nsPipeConsole()
 
   Finalize(PR_TRUE);
 
+#if MOZILLA_MAJOR_VERSION < 5
   if (mLock)
     PR_DestroyLock(mLock);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -312,11 +327,13 @@ nsPipeConsole::Init()
 {
   DEBUG_LOG(("nsPipeConsole::Init: \n"));
 
-  if (mLock == nsnull) {
+#if MOZILLA_MAJOR_VERSION < 5
+  if (!mLock) {
     mLock = PR_NewLock();
     if (mLock == nsnull)
       return NS_ERROR_OUT_OF_MEMORY;
   }
+#endif
 
   // add shutdown observer
 
@@ -371,7 +388,7 @@ nsPipeConsole::Open(PRInt32 maxRows, PRInt32 maxCols, PRBool joinable)
 NS_IMETHODIMP
 nsPipeConsole::HasNewData(PRBool *_retval)
 {
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
 
   //DEBUG_LOG(("nsPipeConsole::HasNewData:\n"));
 
@@ -395,7 +412,7 @@ nsPipeConsole::GetData(char** _retval)
 NS_IMETHODIMP
 nsPipeConsole::GetNewData(char** _retval)
 {
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
 
   DEBUG_LOG(("nsPipeConsole::GetNewData:\n"));
 
@@ -442,7 +459,7 @@ nsPipeConsole::GetNewData(char** _retval)
 NS_IMETHODIMP
 nsPipeConsole::Observe(nsIRequestObserver* observer, nsISupports* context)
 {
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
   DEBUG_LOG(("nsPipeConsole::Observe: %p, %p\n", observer, context));
 
   mObserver = observer;
@@ -473,7 +490,7 @@ nsPipeConsole::Join()
 
   {
     // Nested lock to avoid deadlock while waiting for Join
-    nsAutoLock lock(mLock);
+    MutexAutoLock lock(mLock);
     DEBUG_LOG(("nsPipeConsole::Join:\n"));
 
     if (mThreadJoined || !mPipeThread)
@@ -502,7 +519,7 @@ nsPipeConsole::Join()
 NS_IMETHODIMP
 nsPipeConsole::Shutdown()
 {
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
   DEBUG_LOG(("nsPipeConsole::Shutdown:\n"));
 
   Finalize(PR_FALSE);
@@ -522,7 +539,7 @@ nsPipeConsole::Shutdown()
 NS_IMETHODIMP
 nsPipeConsole::GetFileDesc(IPCFileDesc* *_retval)
 {
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
 
   DEBUG_LOG(("nsPipeConsole::GetFileDesc:\n"));
 
@@ -540,7 +557,7 @@ nsPipeConsole::GetFileDesc(IPCFileDesc* *_retval)
 NS_IMETHODIMP
 nsPipeConsole::GetOverflowed(PRBool *_retval)
 {
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
 
   DEBUG_LOG(("nsPipeConsole::GetOverflowed: %d\n", (int) mOverflowed));
 
@@ -553,7 +570,7 @@ nsPipeConsole::GetOverflowed(PRBool *_retval)
 NS_IMETHODIMP
 nsPipeConsole::GetByteData(PRUint32 *count, char **data)
 {
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
 
   DEBUG_LOG(("nsPipeConsole::GetByteData:\n"));
 
@@ -594,7 +611,7 @@ nsPipeConsole::Write(const char* str)
 NS_METHOD
 nsPipeConsole::WriteBuf(const char* buf, PRUint32 count)
 {
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
 
   DEBUG_LOG(("nsPipeConsole::WriteBuf: %d\n", count));
 
@@ -688,7 +705,7 @@ nsPipeConsole::OnStartRequest(nsIRequest *aRequest, nsISupports *aContext)
   nsCOMPtr<nsIRequestObserver> observer;
   nsCOMPtr<nsISupports> observerContext;
   {
-    nsAutoLock lock(mLock);
+    MutexAutoLock lock(mLock);
 
     if (!mObserver)
       return NS_OK;
@@ -709,7 +726,7 @@ nsPipeConsole::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext,
   nsCOMPtr<nsIRequestObserver> observer;
   nsCOMPtr<nsISupports> observerContext;
   {
-    nsAutoLock lock(mLock);
+    MutexAutoLock lock(mLock);
 
     if (!mObserver)
       return NS_OK;

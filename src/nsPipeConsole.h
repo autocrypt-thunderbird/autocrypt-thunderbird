@@ -37,6 +37,7 @@
 #ifndef nsPipeConsole_h__
 #define nsPipeConsole_h__
 
+#include "enigmail.h"
 #include "nspr.h"
 #include "IPCProcess.h"
 
@@ -48,6 +49,10 @@
 #include "nsStringGlue.h"
 #include "nsIObserverService.h"
 #include "nsIObserver.h"
+
+#if MOZILLA_MAJOR_VERSION > 4
+#include "mozilla/Mutex.h"
+#endif
 
 // Implementation class for nsIPipeConsole
 class nsPipeConsole : public nsIPipeConsole,
@@ -80,7 +85,7 @@ protected:
     PRBool                              mThreadJoined;
     PRBool                              mOverflowed;
 
-    PRLock*                             mLock;
+    EnigMutex                           mLock;
 
     nsCString                           mConsoleBuf;
     PRInt32                             mConsoleMaxLines;
