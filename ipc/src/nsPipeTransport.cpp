@@ -41,7 +41,7 @@
 #include "ipc.h"
 #include "nsPipeTransport.h"
 #include "prlog.h"
-#if MOZILLA_MAJOR_VERSION < 2
+#if MOZILLA_MAJOR_VERSION < 5
 #include "nsAutoLock.h"
 #else
 #include "mozilla/Mutex.h"
@@ -95,7 +95,7 @@ static const PRUint32 kCharMax = NS_PIPE_TRANSPORT_DEFAULT_SEGMENT_SIZE;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#if MOZILLA_MAJOR_VERSION > 1
+#if MOZILLA_MAJOR_VERSION > 4
 using namespace mozilla;
 #endif
 
@@ -1854,7 +1854,7 @@ NS_IMPL_THREADSAFE_ISUPPORTS1 (nsStdoutPoller,
 nsStdoutPoller::nsStdoutPoller() :
     mInitialized(PR_FALSE),
     mFinalized(PR_FALSE),
-#if MOZILLA_MAJOR_VERSION > 1
+#if MOZILLA_MAJOR_VERSION > 4
     mLock("nsPipeTransport.lock"),
 #endif
     mInterrupted(PR_FALSE),
@@ -1881,7 +1881,7 @@ nsStdoutPoller::nsStdoutPoller() :
          this, myThread.get()));
 #endif
 
-#if MOZILLA_MAJOR_VERSION < 2
+#if MOZILLA_MAJOR_VERSION < 5
   mLock = PR_NewLock();
 #endif
 }
@@ -1928,7 +1928,7 @@ nsStdoutPoller::~nsStdoutPoller()
   // Clear header buffer
   mHeadersBuf.Assign("");
 
-#if MOZILLA_MAJOR_VERSION < 2
+#if MOZILLA_MAJOR_VERSION < 5
   PR_DestroyLock(mLock);
 #endif
 }

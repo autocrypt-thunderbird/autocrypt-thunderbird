@@ -51,13 +51,13 @@
 #define MOZILLA_INTERNAL_API
 
 #endif
+#endif // MOZILLA_MAJOR_VERSION < 2
 
-#else
-//if MOZILLA_MAJOR_VERSION < 2
+#if MOZILLA_MAJOR_VERSION > 4
 
 #define IPCMutex mozilla::Mutex
 
-#endif // MOZILLA_MAJOR_VERSION
+#endif
 
 #ifdef FORCE_PR_LOG
 #include "nsIThread.h"
