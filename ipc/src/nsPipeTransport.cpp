@@ -41,7 +41,11 @@
 #include "ipc.h"
 #include "nsPipeTransport.h"
 #include "prlog.h"
+#if MOZILLA_MAJOR_VERSION < 2
 #include "nsAutoLock.h"
+#else
+#include "mozilla/Mutex.h"
+#endif
 #include "plstr.h"
 #include "nsAutoPtr.h"
 #include "nsStringGlue.h"
@@ -90,6 +94,8 @@ static const PRUint32 kCharMax = NS_PIPE_TRANSPORT_DEFAULT_SEGMENT_SIZE;
 #define KILL_WAIT_TIME_IN_MS 20
 
 ///////////////////////////////////////////////////////////////////////////////
+
+using namespace mozilla;
 
 nsPipeTransport::nsPipeTransport() :
       mInitialized(PR_FALSE),
@@ -1846,6 +1852,9 @@ NS_IMPL_THREADSAFE_ISUPPORTS1 (nsStdoutPoller,
 nsStdoutPoller::nsStdoutPoller() :
     mInitialized(PR_FALSE),
     mFinalized(PR_FALSE),
+#if MOZILLA_MAJOR_VERSION > 1
+    mLock("nsPipeTransport.lock"),
+#endif
     mInterrupted(PR_FALSE),
     mLoggingEnabled(PR_FALSE),
     mJoinableThread(PR_FALSE),
@@ -1870,7 +1879,9 @@ nsStdoutPoller::nsStdoutPoller() :
          this, myThread.get()));
 #endif
 
+#if MOZILLA_MAJOR_VERSION < 2
   mLock = PR_NewLock();
+#endif
 }
 
 
@@ -1915,7 +1926,9 @@ nsStdoutPoller::~nsStdoutPoller()
   // Clear header buffer
   mHeadersBuf.Assign("");
 
+#if MOZILLA_MAJOR_VERSION < 2
   PR_DestroyLock(mLock);
+#endif
 }
 
 
@@ -2032,7 +2045,7 @@ nsStdoutPoller::Finalize(PRBool destructor)
   mFinalized = PR_TRUE;
 
   {
-    nsAutoLock lock(mLock);
+    MutexAutoLock lock(mLock);
     // Set thread interrupted flag to avoid race conditions
     // when freeing mStdoutThread/mPollableEvent
     mInterrupted = PR_TRUE;
@@ -2059,7 +2072,7 @@ nsStdoutPoller::Finalize(PRBool destructor)
 NS_IMETHODIMP
 nsStdoutPoller::GetLoggingEnabled(PRBool *aLoggingEnabled)
 {
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
 
   DEBUG_LOG(("nsStdoutPoller::GetLoggingEnabled: \n"));
   *aLoggingEnabled = mLoggingEnabled;
@@ -2069,7 +2082,7 @@ nsStdoutPoller::GetLoggingEnabled(PRBool *aLoggingEnabled)
 NS_IMETHODIMP
 nsStdoutPoller::SetLoggingEnabled(PRBool aLoggingEnabled)
 {
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
 
   DEBUG_LOG(("nsStdoutPoller::SetLoggingEnabled: %d\n", aLoggingEnabled));
   mLoggingEnabled = aLoggingEnabled;
@@ -2083,7 +2096,7 @@ nsStdoutPoller::IsInterrupted(PRBool* interrupted)
   NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
 
   {
-    nsAutoLock lock(mLock);
+    MutexAutoLock lock(mLock);
 
 #ifdef FORCE_PR_LOG
     nsCOMPtr<nsIThread> myThread;
@@ -2138,7 +2151,7 @@ nsStdoutPoller::Interrupt(PRBool* alreadyInterrupted)
   NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
 
   {
-    nsAutoLock lock(mLock);
+    MutexAutoLock lock(mLock);
 
     if (!alreadyInterrupted)
       *alreadyInterrupted = mInterrupted;

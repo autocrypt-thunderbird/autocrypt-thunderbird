@@ -38,7 +38,11 @@
 #include "ipc.h"
 #include "prlog.h"
 #include "nsCOMPtr.h"
+#if MOZILLA_MAJOR_VERSION < 2
 #include "nsAutoLock.h"
+#else
+#include "mozilla/Mutex.h"
+#endif
 #include "nsIInputStream.h"
 #include "nsIThread.h"
 #include "nsIHttpChannel.h"
@@ -66,6 +70,8 @@ static const PRUint32 kCharMax = NS_PIPE_CONSOLE_BUFFER_SIZE;
 
 // nsIPCBuffer implementation
 
+using namespace mozilla;
+
 // nsISupports implementation
 NS_IMPL_THREADSAFE_ISUPPORTS6(nsIPCBuffer,
                               nsIRequestObserver,
@@ -87,7 +93,7 @@ nsIPCBuffer::nsIPCBuffer() :
     mRequestStarted(PR_FALSE),
     mRequestStopped(PR_FALSE),
 
-    mLock(nsnull),
+    mLock("nsIPCBuffer.lock"),
 
     mMaxBytes(0),
     mByteCount(0),
@@ -132,8 +138,10 @@ nsIPCBuffer::~nsIPCBuffer()
 
   Finalize(PR_TRUE);
 
+#if MOZILLA_MAJOR_VERSION < 2
   if (mLock)
     PR_DestroyLock(mLock);
+#endif
 }
 
 
@@ -182,12 +190,14 @@ nsIPCBuffer::Init()
 {
   DEBUG_LOG(("nsIPCBuffer::Init: \n"));
 
+#if MOZILLA_MAJOR_VERSION < 2
   if (!mLock) {
     mLock = PR_NewLock();
     if (!mLock)
       return NS_ERROR_OUT_OF_MEMORY;
   }
-
+#endif
+	
   mInitialized = PR_TRUE;
 
   return NS_OK;
@@ -506,7 +516,7 @@ nsIPCBuffer::GetData(char** _retval)
   NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
   NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
 
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
 
   if (!_retval)
     return NS_ERROR_NULL_POINTER;
@@ -544,7 +554,7 @@ nsIPCBuffer::Observe(nsIRequestObserver* observer, nsISupports* context)
 
   NS_ENSURE_ARG(observer);
 
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
   DEBUG_LOG(("nsIPCBuffer::Observe: %p, %p\n", observer, context));
 
   mObserver = observer;
@@ -571,7 +581,7 @@ nsIPCBuffer::Shutdown()
   NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
   // allow to perform even if mFinalized is true
 
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
   DEBUG_LOG(("nsIPCBuffer::Shutdown:\n"));
 
   Finalize(PR_FALSE);
@@ -587,7 +597,7 @@ nsIPCBuffer::GetByteData(PRUint32 *count, char **data)
   NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
   NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
 
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
 
   DEBUG_LOG(("nsIPCBuffer::GetByteData:\n"));
 
@@ -615,7 +625,7 @@ nsIPCBuffer::GetOverflowed(PRBool *_retval)
   NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
   NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
 
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
 
   DEBUG_LOG(("nsIPCBuffer::GetOverflowed: %d\n", (int) mOverflowed));
 
@@ -656,7 +666,7 @@ nsIPCBuffer::WriteBuf(const char* buf, PRUint32 count)
   NS_ENSURE_ARG(buf);
 
   nsresult rv;
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
 
   if (count <= 0)
     return NS_OK;
@@ -710,7 +720,7 @@ nsIPCBuffer::Join()
 
   {
     // Nested lock to avoid deadlock while waiting for Join
-    nsAutoLock lock(mLock);
+    MutexAutoLock lock(mLock);
     DEBUG_LOG(("nsIPCBuffer::Join:\n"));
 
     if (mThreadJoined || !mPipeThread)
@@ -740,7 +750,7 @@ nsIPCBuffer::GetFileDesc(IPCFileDesc **_retval)
 
   nsresult rv;
 
-  nsAutoLock lock(mLock);
+  MutexAutoLock lock(mLock);
 
   DEBUG_LOG(("nsIPCBuffer::GetFileDesc:\n"));
 
@@ -783,7 +793,7 @@ nsIPCBuffer::OnStartRequest(nsIRequest *aRequest, nsISupports *aContext)
   nsIRequestObserver* observer;
   nsISupports* observerContext;
   {
-    nsAutoLock lock(mLock);
+    MutexAutoLock lock(mLock);
 
     mRequestStarted = PR_TRUE;
 
@@ -809,7 +819,7 @@ nsIPCBuffer::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext,
   nsIRequestObserver* observer;
   nsISupports* observerContext;
   {
-    nsAutoLock lock(mLock);
+    MutexAutoLock lock(mLock);
 
     mRequestStopped = PR_TRUE;
     CloseTempOutStream();

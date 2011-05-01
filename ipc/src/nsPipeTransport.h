@@ -37,6 +37,7 @@
 #ifndef nsPipeTransport_h__
 #define nsPipeTransport_h__
 
+#include "ipc.h"
 #include "nspr.h"
 #include "IPCProcess.h"
 
@@ -57,6 +58,9 @@
 #include "nsIProcess.h"
 #include "nsThreadUtils.h"
 #include "nsStringGlue.h"
+#if MOZILLA_MAJOR_VERSION > 1
+#include "mozilla/Mutex.h"
+#endif
 
 #include "nsIAsyncInputStream.h"
 #include "nsIAsyncOutputStream.h"
@@ -264,7 +268,7 @@ protected:
     PRBool                              mInitialized;
     PRBool                              mFinalized;
 
-    PRLock*                             mLock;
+    IPCMutex                            mLock;
     PRBool                              mInterrupted;
     PRBool                              mLoggingEnabled;
     PRBool                              mJoinableThread;

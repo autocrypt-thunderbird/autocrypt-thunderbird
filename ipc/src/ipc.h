@@ -41,12 +41,22 @@
 // for TB 3.1
 
 #if MOZILLA_MAJOR_VERSION < 2
+
+#define IPCMutex PRLock*
+#define MutexAutoLock nsAutoLock
+
 #if MOZ_THUNDERBIRD || MOZ_SUITE || MOZ_STATIC_MAIL_BUILD
 
 #define _IPC_FORCE_INTERNAL_API 1
 #define MOZILLA_INTERNAL_API
 
 #endif
+
+#else
+//if MOZILLA_MAJOR_VERSION < 2
+
+#define IPCMutex mozilla::Mutex
+
 #endif // MOZILLA_MAJOR_VERSION
 
 #ifdef FORCE_PR_LOG

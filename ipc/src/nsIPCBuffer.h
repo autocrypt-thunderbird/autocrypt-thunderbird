@@ -46,6 +46,9 @@
 #include "nsIThread.h"
 #include "nsCOMPtr.h"
 #include "nsStringGlue.h"
+#if MOZILLA_MAJOR_VERSION > 1
+#include "mozilla/Mutex.h"
+#endif
 
 // Implementation class for nsIIPCBuffer
 class nsIPCBuffer : public nsIIPCBuffer,
@@ -88,7 +91,7 @@ protected:
     PRBool                              mRequestStarted;
     PRBool                              mRequestStopped;
 
-    PRLock*                             mLock;
+    IPCMutex                            mLock;
 
     PRInt32                             mMaxBytes;
     PRUint32                            mByteCount;
