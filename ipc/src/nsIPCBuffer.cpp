@@ -70,7 +70,9 @@ static const PRUint32 kCharMax = NS_PIPE_CONSOLE_BUFFER_SIZE;
 
 // nsIPCBuffer implementation
 
+#if MOZILLA_MAJOR_VERSION > 1
 using namespace mozilla;
+#endif
 
 // nsISupports implementation
 NS_IMPL_THREADSAFE_ISUPPORTS6(nsIPCBuffer,
@@ -93,8 +95,11 @@ nsIPCBuffer::nsIPCBuffer() :
     mRequestStarted(PR_FALSE),
     mRequestStopped(PR_FALSE),
 
+#if MOZILLA_MAJOR_VERSION < 2
+    mLock(nsnull),
+#else
     mLock("nsIPCBuffer.lock"),
-
+#endif
     mMaxBytes(0),
     mByteCount(0),
     mStreamOffset(0),
@@ -197,7 +202,7 @@ nsIPCBuffer::Init()
       return NS_ERROR_OUT_OF_MEMORY;
   }
 #endif
-	
+
   mInitialized = PR_TRUE;
 
   return NS_OK;

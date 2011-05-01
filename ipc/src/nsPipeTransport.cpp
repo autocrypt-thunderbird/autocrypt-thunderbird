@@ -95,7 +95,9 @@ static const PRUint32 kCharMax = NS_PIPE_TRANSPORT_DEFAULT_SEGMENT_SIZE;
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#if MOZILLA_MAJOR_VERSION > 1
 using namespace mozilla;
+#endif
 
 nsPipeTransport::nsPipeTransport() :
       mInitialized(PR_FALSE),
