@@ -42,9 +42,6 @@
 
 #if MOZILLA_MAJOR_VERSION < 2
 
-#define IPCMutex PRLock*
-#define MutexAutoLock nsAutoLock
-
 #if MOZ_THUNDERBIRD || MOZ_SUITE || MOZ_STATIC_MAIL_BUILD
 
 #define _IPC_FORCE_INTERNAL_API 1
@@ -53,7 +50,12 @@
 #endif
 #endif // MOZILLA_MAJOR_VERSION < 2
 
-#if MOZILLA_MAJOR_VERSION > 4
+#if MOZILLA_MAJOR_VERSION < 5
+
+#define MutexAutoLock nsAutoLock
+#define IPCMutex PRLock*
+
+#else
 
 #define IPCMutex mozilla::Mutex
 
