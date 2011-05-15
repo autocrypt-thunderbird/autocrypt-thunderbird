@@ -426,7 +426,7 @@ nsPipeChannel::SetContentCharset(const nsACString &aContentCharset)
   return NS_OK;
 }
 
-#if MOZILLA_MAJOR_VERSION > 5
+#if MOZILLA_MAJOR_VERSION > 6
 NS_IMETHODIMP
 nsPipeChannel::GetContentDisposition(nsACString &aHeaderContentDisposition)
 {
