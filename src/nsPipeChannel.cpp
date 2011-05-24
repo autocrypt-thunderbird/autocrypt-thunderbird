@@ -426,7 +426,10 @@ nsPipeChannel::SetContentCharset(const nsACString &aContentCharset)
   return NS_OK;
 }
 
-#if MOZILLA_MAJOR_VERSION > 6
+/*
+ * This was foreseen for some future version of Gecko, but apparently never made it.
+ * To be delete in future
+
 NS_IMETHODIMP
 nsPipeChannel::GetContentDisposition(nsACString &aHeaderContentDisposition)
 {
@@ -434,8 +437,7 @@ nsPipeChannel::GetContentDisposition(nsACString &aHeaderContentDisposition)
   DEBUG_LOG(("nsPipeChannel::GetContentDisposition: content-disposition: %s\n", mHeaderContentDisposition.get()));
   return NS_OK;
 }
-
-#endif
+*/
 
 NS_IMETHODIMP
 nsPipeChannel::GetContentLength(IPCLong *aContentLength)
