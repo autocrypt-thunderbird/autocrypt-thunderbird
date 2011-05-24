@@ -1056,44 +1056,30 @@ Enigmail.msg = {
 
     Enigmail.msg.noShowReload = true;
 
-    if (EnigmailCommon.getPref("enableExperiments")) {
-      EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: messageParseCallback: trying new way\n");
+    var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
+    if (bodyElement.firstChild) {
+      var node = bodyElement.firstChild;
+      var foundIndex = -1;
+      var findStr = "-----BEGIN PGP";
+      while (node) {
+        if (node.nodeName == "DIV") {
+          foundIndex = node.textContent.indexOf(findStr);
 
-      var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
-      if (bodyElement.firstChild) {
-        var node = bodyElement.firstChild;
-        var foundIndex = -1;
-        var findStr = "-----BEGIN PGP";
-        while (node) {
-          if (node.nodeName == "DIV") {
-            foundIndex = node.textContent.indexOf(findStr);
-
-            if (foundIndex >= 0) {
-              if (node.textContent.indexOf(findStr+" LICENSE AUTHORIZATION") == foundIndex)
-                foundIndex = -1;
-            }
-            if (foundIndex >= 0) {
-              // EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: innerHTML='"+node.innerHTML+"'\n");
-              node.innerHTML = EnigmailFuncs.formatPlaintextMsg(EnigmailCommon.convertToUnicode(messageContent, "UTF-8"));
-              return;
-            }
+          if (foundIndex >= 0) {
+            if (node.textContent.indexOf(findStr+" LICENSE AUTHORIZATION") == foundIndex)
+              foundIndex = -1;
           }
-          node = node.nextSibling;
+          if (foundIndex >= 0) {
+            // EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: innerHTML='"+node.innerHTML+"'\n");
+            node.innerHTML = EnigmailFuncs.formatPlaintextMsg(EnigmailCommon.convertToUnicode(messageContent, "UTF-8"));
+            return;
+          }
         }
+        node = node.nextSibling;
       }
     }
 
-    EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: messageParseCallback: going the old way\n");
-
-    var uri = enigmailSvc.createMessageURI(messageUrl,
-                                           "message/rfc822",
-                                           "",
-                                           messageContent,
-                                           false);
-    Enigmail.msg.createdURIs.push(uri);
-
-    //msgFrame.location=uri;
-    messenger.loadURL(msgFrame, uri);
+    EnigmailCommon.ERROR_LOG("enigmailMessengerOverlay.js: no node found to replace message display\n");
 
     return;
   },
