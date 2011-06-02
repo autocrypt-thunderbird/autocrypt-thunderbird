@@ -368,7 +368,7 @@ nsEnigMimeVerify::Finish()
 
   nsCAutoString temBoundary("--");
   temBoundary += mContentBoundary;
-temBoundary += "--";
+  temBoundary += "--";
 
   if (!endBoundary.Equals(temBoundary)) {
     ERROR_LOG(("nsEnigMimeVerify::Finish: ERROR endBoundary=%s\n", endBoundary.get()));
