@@ -94,7 +94,7 @@
 <!ENTITY enigmail.useGpgAgent.label "Zur Passphrasen-Verwaltung die GPG-Agent-Anwendung  verwenden">
 <!ENTITY enigmail.noHushMailSupport.label "Die Zeichen &quot;&lt;&quot; und &quot;&gt;&quot; verwenden, um E-Mail-Adressen zu kennzeichnen.">
 
-<!ENTITY enigmail.keepSettingsForReply.tooltip "Antworten auf verschlüsselte Nachrichten werden, wenn möglich, auch verschlüsselt.">
+<!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "Antworten auf verschlüsselte/unterschriebene Nachrichten werden, wenn möglich, auch verschlüsselt/unterschrieben.">
 <!ENTITY enigmail.doubleDashSeparator.tooltip "Zwei in einer Zeile allein stehende Bindestriche kündigen einen Signaturblock an.">
 <!ENTITY enigmail.useGpgAgent.tooltip "GPG-Agent-Anwendung (Teil von GnuPG 2) für alle Passphrasen-Eingaben verwenden.">
 <!ENTITY enigmail.noHushMailSupport.tooltip "Deaktivieren, wenn Empfänger alte Hushmail-Schlüssel verwenden.">
@@ -223,7 +223,7 @@
 
 <!ENTITY enigmail.usePGPMimeAlways.label "PGP/MIME standardmäßig verwenden">
 
-<!ENTITY enigmail.keepSettingsForReply.label "Verschlüsseln beim Antworten auf verschlüsselte Nachrichten">
+<!ENTITY enigmail.keepCryptoSettingsForReply.label "Verschlüsseln/Unterschreiben beim Antworten auf verschlüsselte/unterschriebene Nachrichten">
 <!ENTITY enigmail.confirmBeforeSend.label "Senden immer bestätigen">
 <!ENTITY enigmail.confirmBeforeSend.tooltip "Zeigt vor jedem Senden eine Information über die Verschlüsselung und/oder Signatur.">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label "Unterschriebenen HTML-Text vor dem Senden umbrechen">
@@ -284,10 +284,13 @@
 <!ENTITY enigmail.ctxDecryptOpen.label "Entschlüsseln und Öffnen">
 <!ENTITY enigmail.ctxDecryptSave.label "Entschlüsseln und Speichern unter…">
 <!ENTITY enigmail.ctxImportKey.label "OpenPGP-Schlüssel importieren">
+<!ENTITY enigmail.ctxVerifyAtt.label "Unterschrift überprüfen">
 <!ENTITY enigmail.ctxDecryptOpen.accesskey "E">
 <!ENTITY enigmail.ctxDecryptSave.accesskey "N">
 <!ENTITY enigmail.ctxImportKey.accesskey "O">
+<!ENTITY enigmail.ctxVerifyAtt.accesskey "U">
 <!ENTITY enigmail.detailsHdrButton.label "Details">
+<!ENTITY enigmail.revealAttachmentsButton.label "Die Namen der angehängten Dateien sind ausgeblendet. Drücken Sie &quot;Anzeigen&quot;, um die Dateinamen zu erhalten.">
 
 <!ENTITY enigmail.amPrefTitle.label "OpenPGP-Sicherheit">
 <!ENTITY enigmail.amPrefDesc.label "OpenPGP-Verschlüsselung und Unterschrift von Nachrichten  wird von Enigmail ermöglicht. GnuPG (GPG) muss installiert sein, um die Funktionen verwenden zu können.">
@@ -303,6 +306,8 @@
 <!ENTITY enigmail.encDlgSign.accesskey "u">
 <!ENTITY enigmail.encDlgPgpMime.label "PGP/MIME verwenden">
 <!ENTITY enigmail.encDlgPgpMime.accesskey "P">
+<!ENTITY enigmail.encDlgIgnoreRules.label "Empfängerregeln ignorieren">
+<!ENTITY enigmail.encDlgIgnoreRules.accesskey "E">
 <!ENTITY enigmail.amPrefPgpHeader.label "OpenPGP-Kopfzeilen">
 <!ENTITY enigmail.amPrefPgpHeader.none.label "Sende keine &quot;OpenPGP&quot;-Kopfzeilen">
 <!ENTITY enigmail.amPrefPgpHeader.id.label "Sende OpenPGP-Schlüssel-ID">
@@ -320,6 +325,8 @@
 <!ENTITY enigmail.pgpSecurityInfo.label "OpenPGP-Sicherheitsinfo…">
 <!ENTITY enigmail.copySecurityInfo.label "OpenPGP-Sicherheitsinfo kopieren">
 <!ENTITY enigmail.showPhoto.label "Foto-ID anzeigen">
+<!ENTITY enigmail.photoViewer.title "OpenPGP-Fotoanzeige">
+<!ENTITY enigmail.displayKeyProperties.label "Schlüsseleigenschaften anzeigen">
 <!ENTITY enigmail.signSenderKey.label "Schlüssel unterschreiben…">
 <!ENTITY enigmail.trustSenderKey.label "Besitzervertrauen festlegen…">
 <!ENTITY enigmail.signSenderKeyPopup.label "Schlüssel unterschreiben…">
@@ -431,6 +438,7 @@
 <!ENTITY enigmail.keyMan.importFromClipbrd.label "Aus Zwischenablage importieren">
 <!ENTITY enigmail.keyMan.exportToFile.label "Exportieren…">
 <!ENTITY enigmail.keyMan.sendKeys.label "Öffentliche Schlüssel per E-Mail senden">
+<!ENTITY enigmail.keyMan.createMail.label "Nachricht an die gewählten Schlüssel verfassen">
 <!ENTITY enigmail.keyMan.uploadToServer.label "Schlüssel hochladen…">
 <!ENTITY enigmail.keyMan.copyToClipbrd.label "In Zwischenablage exportieren">
 <!ENTITY enigmail.keyMan.ctxExportToFile.label "In Datei exportieren…">
@@ -443,6 +451,7 @@
 
 <!ENTITY enigmail.keyMan.reload.label "Schlüsselzwischenspeicher neu laden">
 <!ENTITY enigmail.keyMan.addUid.label "Benutzer-ID hinzufügen…">
+<!ENTITY enigmail.keyMan.addPhoto.label "Foto hinzufügen…">
 <!ENTITY enigmail.keyMan.manageUid.label "Benutzer-IDs verwalten…">
 <!ENTITY enigmail.keyMan.changePwd.label "Passphrase ändern">
 <!ENTITY enigmail.keyMan.delKey.label "Löschen">
@@ -452,6 +461,9 @@
 <!ENTITY enigmail.keyMan.viewPhoto.label "Foto-ID">
 <!ENTITY enigmail.keyMan.ctxViewPhoto.label "Foto-ID anzeigen">
 <!ENTITY enigmail.keyMan.viewSig.label "Unterschriften">
+<!ENTITY enigmail.keyMan.showInvalidKeys.label "Ungültige Schlüssel anzeigen">
+<!ENTITY enigmail.keyMan.showUntrustedKeys.label "Schlüssel ohne Vertrauen anzeigen">
+<!ENTITY enigmail.keyMan.showOthersKeys.label "Schlüssel anderer Personen anzeigen">
 <!ENTITY enigmail.keyMan.ctxViewSig.label "Unterschriften anzeigen">
 <!ENTITY enigmail.keyMan.userId.label "Name">
 <!ENTITY enigmail.keyMan.keyType.label "Typ">
@@ -460,6 +472,7 @@
 <!ENTITY enigmail.keyMan.stopTransfer.label "Übertragung unterbrechen">
 <!ENTITY enigmail.keyMan.fingerprint.label "Fingerabdruck">
 <!ENTITY enigmail.keyMan.selectAll.label "Alle Schlüssel auswählen">
+<!ENTITY enigmail.keyMan.addToPRRule.label "Zu Empfängerregel hinzufügen">
 <!ENTITY enigmail.keyMan.emptyTree.tooltip "Suchbegriffe in das Eingabefeld oberhalb eintippen">
 <!ENTITY enigmail.keyMan.nothingFound.tooltip "Keine Schlüssel entsprechen Ihrer Suche">
 <!ENTITY enigmail.keyMan.pleaseWait.tooltip "Bitte warten, Schlüssel werden geladen…">
@@ -482,9 +495,13 @@
 <!ENTITY enigmail.keyMan.uploadToServer.accesskey "h">
 <!ENTITY enigmail.keyMan.reload.accesskey "n">
 <!ENTITY enigmail.keyMan.addUid.accesskey "B">
+<!ENTITY enigmail.keyMan.addPhoto.accesskey "F">
 <!ENTITY enigmail.keyMan.manageUid.accesskey "B">
 <!ENTITY enigmail.keyMan.changePwd.accesskey "P">
 <!ENTITY enigmail.keyMan.viewSig.accesskey "U">
+<!ENTITY enigmail.keyMan.showInvalidKeys.accesskey   "g">
+<!ENTITY enigmail.keyMan.showUntrustedKeys.accesskey "t">
+<!ENTITY enigmail.keyMan.showOthersKeys.accesskey    "P">
 <!ENTITY enigmail.keyMan.showPhoto.accesskey "F">
 <!ENTITY enigmail.keyMan.importMenu.accesskey "I">
 <!ENTITY enigmail.keyMan.exportMenu.accesskey "x">
@@ -498,6 +515,7 @@
 <!ENTITY enigmail.keyMan.refreshAllKeys.accesskey "A">
 <!ENTITY enigmail.keyMan.selectAll.accesskey "A">
 <!ENTITY enigmail.keyMan.sendKeys.accesskey "f">
+<!ENTITY enigmail.keyMan.createMail.accesskey "N">
 
 <!ENTITY enigmail.keyMan.closeWin.key "W">
 <!ENTITY enigmail.keyMan.selectAll.key "A">
@@ -589,31 +607,26 @@
 <!ENTITY enigmail.setupWiz.title "OpenPGP-Assistent">
 <!ENTITY enigmail.setupWiz.yes "Ja">
 <!ENTITY enigmail.setupWiz.no "Nein, Danke">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "Dieser Assistent hilft Ihnen, um OpenPGP einzurichten. In den nächsten Schritten
+<!ENTITY enigmail.setupWiz.pgWelcome.desc "Dieser Assistent hilft Ihnen OpenPGP einzurichten. In den nächsten Schritten
                                                       werden mit Hilfe von ein paar Fragen die korrekten Einstellungen gemacht.
-                                                      <html:br/><html:br/>
-                                                      Um alles etwas zu vereinfachen, geht der Assistent außerdem von ein
+                                                      Um alles etwas zu vereinfachen, geht der Assistent auch von ein
                                                       paar vermutlich gewünschten Einstellungen aus.
                                                       Dabei wird versucht eine möglichst hohe Sicherheit zu erreichen, ohne
-                                                      dabei den Anwender zu verwirren. Natürlich können Sie alle Einstellungen
-                                                      nach dem Beenden des Assistenten bei Bedarf noch weiter anpassen.
+                                                      Sie zu verwirren. Natürlich können Sie alle Einstellungen
+                                                      nach dem Beenden des Assistenten bei Bedarf noch manuell anpassen.
                                                       <html:br/><html:br/>
-                                                      Weitere Informationen zu den OpenPGP-Funktionen erhalten Sie im Menü
-                                                      OpenPGP > Hilfe oder auf der
-                                                      <a class='enigmailLink'>
-                                                      <html:a onclick='EnigOpenURL(event, this)'
-                                                       href='http://enigmail.mozdev.org/'>Enigmail website</html:a></a>.
-                                                      <html:br/><html:br/>
-                                                      Sollten Sie Probleme mit dem OpenPGP-Assistenten haben, informieren
+                                                      Der OpenPGP-Assistent wird automatisch gezeigt, wenn Sie Enigmail das erste Mal
+                                                      verwenden. Er kann aber auch aus dem Menü OpenPGP heraus aufgerufen
+                                                      werden. Sollten Sie Probleme mit diesem Assistenten haben, informieren
                                                       Sie uns per
                                                       <a class='enigmailLink'>
                                                       <html:a href='mailto:enigmail@mozdev.org'>E-Mail</html:a></a>.
                                                       <html:br/><html:br/>
-                                                      Dieser Assistent wird automatisch gezeigt, wenn Sie Enigmail das erste Mal
-                                                      verwenden. Er kann später aus dem Menü OpenPGP heraus wieder aufgerufen
-                                                      werden.
-                                                      <html:br/><html:br/>
-                                                      Danke für das Verwenden von Enigmail OpenPGP!">
+                                                      Danke für das Verwenden von Enigmail OpenPGP! Weitere Informationen zu den
+                                                      OpenPGP-Funktionen erhalten Sie im Menü OpenPGP > Hilfe oder auf der
+                                                      <a class='enigmailLink'>
+                                                      <html:a onclick='EnigOpenURL(event, this)'
+                                                       href='http://enigmail.mozdev.org/'>Enigmail-Website</html:a></a>.">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "Möchten Sie den Assistenten nun verwenden?">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "Ja, ich möchte vom Assistenten geholfen bekommen">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "Nein Danke, ich werde alles manuell einstellen">
@@ -666,7 +679,7 @@
                                                       Schlüssel geben, bevor Sie ihnen verschlüsselte Nachrichten
                                                       senden können (der öffentliche Schlüssel ist quasi das
                                                       Vorhängeschloss).
-                                                      <html:br/><html:br/>
+                                                      <html:br/>
                                                       Solange nicht die meisten Ihrer E-Mail-Empfänger ein
                                                       OpenPGP-kompatibles E-Mail-Programm verwenden und Ihnen den
                                                       öffentlichen Schlüssel ausgehändigt haben, sollten Sie die
@@ -697,7 +710,7 @@
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Erzeugen eines Schlüssels zum Unterschreiben und Verschlüsseln">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Sie benötigen ein &quot;Schlüsselpaar&quot;, um Nachrichten unterschreiben
                                                       und verschlüsseln zu können. Ein Schlüsselpaar besteht aus einem
-                                                      öffentlichen Schlüssel und einem privaten Schlüssel.">
+                                                      öffentlichen und einem privaten Schlüssel.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Ihren öffentlichen Schlüssel (das Vorhängeschloss) müssen Sie
                                                       allen Personen geben, die Ihre Unterschrift überprüfen und
                                                       Nachrichten verschlüsselt an Sie senden können sollen.
@@ -709,6 +722,19 @@
                                                       Der private Schlüssel wird deshalb von einer Passphrase
                                                       geschützt.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Bitte bestätigen Sie Ihre Passphrase durch erneutes Eingeben">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.title        "Kein OpenPGP-Schlüssel gefunden">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.subtitle     "Es konnte kein OpenPGP-Schlüssel gefunden werden">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc         "Es konnte kein OpenPGP-Schlüssel gefunden werden.
+                                                      Bitte wählen Sie unten, ob Sie ein neues Schlüsselpaar erzeugen
+                                                      möchten oder ob Sie einen existierenden Schlüssel importieren möchten.">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey    "Ich besitze öffentliche und private Schlüssel, die ich importieren möchte.">
+<!ENTITY enigmail.setupWiz.pgKeyImport.title         "OpenPGP-Schlüssel importieren">
+<!ENTITY enigmail.setupWiz.pgKeyImport.subtitle      "Die zu importierenden Dateien auswählen">
+<!ENTITY enigmail.setupWiz.pgKeyImport.desc          "Bitte wählen Sie die Dateien mit öffentlichen und privaten Schlüsseln,
+                                                      die importiert werden sollen. Der Eintrag für private Schlüssel kann leer
+                                                      gelassen werden, falls die erste Datei sowohl private als auch öffentliche Schlüssel enthält.">
+<!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile    "Öffentliche Schlüsseldatei">
+<!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile    "Private Schlüsseldatei">
 <!ENTITY enigmail.setupWiz.pgSummary.title "Zusammenfassung">
 <!ENTITY enigmail.setupWiz.pgSummary.subtitle "Bestätigen Sie, dass der Assistent nun die getroffenen Einstellungen vornehmen soll">
 <!ENTITY enigmail.setupWiz.pgSummary.desc "Sie sind nun fast fertig! Wenn Sie auf die Schaltfläche &quot;Weiter&quot; klicken,
@@ -731,3 +757,12 @@
                                                       <html:br/><html:br/>Danke, dass Sie Enigmail verwenden.">
 <!ENTITY enigmail.advancedIdentityDlg.title "Erweiterte OpenPGP-Identitäten-Einstellungen">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "Öffentlichen Schlüssel an Nachrichten anhängen.">
+<!ENTITY enigmail.addPhoto.question.label            "Soll das folgende Foto zu folgendem Schlüssel hinzugefügt werden?">
+<!ENTITY enigmail.addPhoto.title                     "Foto zu Schlüssel hinzufügen">
+<!ENTITY enigmail.msgViewColumn.label                "OpenPGP">
+<!ENTITY enigmail.msgViewColumn.tooltip              "Nach OpenPGP-Status sortieren">
+<!ENTITY enigmail.addToRule.title                    "Schlüssel zu Empfängerregel hinzufügen">
+<!ENTITY enigmail.addToRule.useRuleButton.label      "Schlüssel zur gewählten Empfängerregel hinzufügen">
+<!ENTITY enigmail.addToRule.useRuleButton.accesskey  "S">
+<!ENTITY enigmail.addToRule.newRuleButton.label      "Neue Empfängerregel erstellen">
+<!ENTITY enigmail.addToRule.newRuleButton.accesskey  "N">
