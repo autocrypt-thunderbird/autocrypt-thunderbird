@@ -268,7 +268,7 @@ protected:
     PRBool                              mInitialized;
     PRBool                              mFinalized;
 
-    IPCMutex                            mLock;
+    mozilla::Mutex                      mLock;
     PRBool                              mInterrupted;
     PRBool                              mLoggingEnabled;
     PRBool                              mJoinableThread;

@@ -38,11 +38,7 @@
 #include "ipc.h"
 #include "prlog.h"
 #include "nsCOMPtr.h"
-#if MOZILLA_MAJOR_VERSION < 5
-#include "nsAutoLock.h"
-#else
 #include "mozilla/Mutex.h"
-#endif
 #include "nsIInputStream.h"
 #include "nsIThread.h"
 #include "nsIHttpChannel.h"
@@ -70,9 +66,7 @@ static const PRUint32 kCharMax = NS_PIPE_CONSOLE_BUFFER_SIZE;
 
 // nsIPCBuffer implementation
 
-#if MOZILLA_MAJOR_VERSION > 2
 using namespace mozilla;
-#endif
 
 // nsISupports implementation
 NS_IMPL_THREADSAFE_ISUPPORTS6(nsIPCBuffer,
@@ -95,11 +89,7 @@ nsIPCBuffer::nsIPCBuffer() :
     mRequestStarted(PR_FALSE),
     mRequestStopped(PR_FALSE),
 
-#if MOZILLA_MAJOR_VERSION < 5
-    mLock(nsnull),
-#else
     mLock("nsIPCBuffer.lock"),
-#endif
     mMaxBytes(0),
     mByteCount(0),
     mStreamOffset(0),
@@ -143,10 +133,6 @@ nsIPCBuffer::~nsIPCBuffer()
 
   Finalize(PR_TRUE);
 
-#if MOZILLA_MAJOR_VERSION < 5
-  if (mLock)
-    PR_DestroyLock(mLock);
-#endif
 }
 
 
@@ -194,14 +180,6 @@ nsresult
 nsIPCBuffer::Init()
 {
   DEBUG_LOG(("nsIPCBuffer::Init: \n"));
-
-#if MOZILLA_MAJOR_VERSION < 5
-  if (!mLock) {
-    mLock = PR_NewLock();
-    if (!mLock)
-      return NS_ERROR_OUT_OF_MEMORY;
-  }
-#endif
 
   mInitialized = PR_TRUE;
 

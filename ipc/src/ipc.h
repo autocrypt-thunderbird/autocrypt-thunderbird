@@ -36,31 +36,6 @@
 #ifndef ipc_h__
 #define ipc_h__
 
-
-// To be removed for final commit, left here because I also (need to) compile it
-// for TB 3.1
-
-#if MOZILLA_MAJOR_VERSION < 2
-
-#if MOZ_THUNDERBIRD || MOZ_SUITE || MOZ_STATIC_MAIL_BUILD
-
-#define _IPC_FORCE_INTERNAL_API 1
-#define MOZILLA_INTERNAL_API
-
-#endif
-#endif // MOZILLA_MAJOR_VERSION < 2
-
-#if MOZILLA_MAJOR_VERSION < 5
-
-#define MutexAutoLock nsAutoLock
-#define IPCMutex PRLock*
-
-#else
-
-#define IPCMutex mozilla::Mutex
-
-#endif
-
 #ifdef FORCE_PR_LOG
 #include "nsIThread.h"
 #include "nsThreadUtils.h"

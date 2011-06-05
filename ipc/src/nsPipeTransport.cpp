@@ -41,11 +41,7 @@
 #include "ipc.h"
 #include "nsPipeTransport.h"
 #include "prlog.h"
-#if MOZILLA_MAJOR_VERSION < 5
-#include "nsAutoLock.h"
-#else
 #include "mozilla/Mutex.h"
-#endif
 #include "plstr.h"
 #include "nsAutoPtr.h"
 #include "nsStringGlue.h"
@@ -95,9 +91,7 @@ static const PRUint32 kCharMax = NS_PIPE_TRANSPORT_DEFAULT_SEGMENT_SIZE;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#if MOZILLA_MAJOR_VERSION > 4
 using namespace mozilla;
-#endif
 
 nsPipeTransport::nsPipeTransport() :
       mInitialized(PR_FALSE),
@@ -1683,7 +1677,6 @@ NS_IMETHODIMP nsPipeTransport::RunAsync(const char **args,
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-#if MOZILLA_MAJOR_VERSION > 1
 NS_IMETHODIMP nsPipeTransport::Runw(PRBool blocking, const PRUnichar **args,
                                     PRUint32 argCount)
 {
@@ -1697,7 +1690,6 @@ NS_IMETHODIMP nsPipeTransport::RunwAsync(const PRUnichar **args,
 {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // nsIOutputStreamCallback methods:
@@ -1854,9 +1846,7 @@ NS_IMPL_THREADSAFE_ISUPPORTS1 (nsStdoutPoller,
 nsStdoutPoller::nsStdoutPoller() :
     mInitialized(PR_FALSE),
     mFinalized(PR_FALSE),
-#if MOZILLA_MAJOR_VERSION > 4
     mLock("nsPipeTransport.lock"),
-#endif
     mInterrupted(PR_FALSE),
     mLoggingEnabled(PR_FALSE),
     mJoinableThread(PR_FALSE),
@@ -1881,9 +1871,6 @@ nsStdoutPoller::nsStdoutPoller() :
          this, myThread.get()));
 #endif
 
-#if MOZILLA_MAJOR_VERSION < 5
-  mLock = PR_NewLock();
-#endif
 }
 
 
@@ -1927,10 +1914,6 @@ nsStdoutPoller::~nsStdoutPoller()
 
   // Clear header buffer
   mHeadersBuf.Assign("");
-
-#if MOZILLA_MAJOR_VERSION < 5
-  PR_DestroyLock(mLock);
-#endif
 }
 
 

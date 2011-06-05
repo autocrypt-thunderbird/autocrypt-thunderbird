@@ -91,7 +91,7 @@ protected:
     PRBool                              mRequestStarted;
     PRBool                              mRequestStopped;
 
-    IPCMutex                            mLock;
+    mozilla::Mutex                      mLock;
 
     PRInt32                             mMaxBytes;
     PRUint32                            mByteCount;
