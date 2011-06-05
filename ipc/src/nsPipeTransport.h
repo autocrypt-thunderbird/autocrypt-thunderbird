@@ -58,9 +58,7 @@
 #include "nsIProcess.h"
 #include "nsThreadUtils.h"
 #include "nsStringGlue.h"
-#if MOZILLA_MAJOR_VERSION > 4
 #include "mozilla/Mutex.h"
-#endif
 
 #include "nsIAsyncInputStream.h"
 #include "nsIAsyncOutputStream.h"

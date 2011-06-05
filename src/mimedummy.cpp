@@ -47,12 +47,7 @@ static int MimeDummy_initialize (MimeObject *);
 static void MimeDummy_finalize (MimeObject *);
 static int MimeDummy_parse_begin (MimeObject *);
 static int MimeDummy_parse_buffer (const char *, PRInt32, MimeObject *);
-#if MOZILLA_MAJOR_VERSION==1 && MOZILLA_MINOR_VERSION<9
-static int MimeDummy_parse_line (char *, PRInt32, MimeObject *);
-#else
-// Mozilla >= 1.9
 static int MimeDummy_parse_line (const char *, PRInt32, MimeObject *);
-#endif
 static int MimeDummy_parse_eof (MimeObject *, PRBool);
 static int MimeDummy_parse_end (MimeObject *, PRBool);
 static int MimeDummy_add_child (MimeObject *, MimeObject *);
@@ -145,11 +140,7 @@ MimeDummy_parse_buffer(const char *buffer, PRInt32 size, MimeObject *obj)
 
 
 static int
-#if MOZILLA_MAJOR_VERSION==1 && MOZILLA_MINOR_VERSION<9
-MimeDummy_parse_line(char *line, PRInt32 length, MimeObject *obj)
-#else
 MimeDummy_parse_line(const char *line, PRInt32 length, MimeObject *obj)
-#endif
 {
   return 0;
 }

@@ -50,17 +50,7 @@
 #include "nsEnigMimeWriter.h"
 #include "nsEnigMimeService.h"
 #include "nsEnigContentHandler.h"
-//#include "nsIMsgComposeSecure.h"
-
-#if MOZILLA_MAJOR_VERSION < 2
-
-#include "nsIGenericFactory.h"
-
-#else
-
 #include "mozilla/ModuleUtils.h"
-
-#endif
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsPipeConsole)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsPipeChannel)
@@ -76,88 +66,6 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeWriter)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeService)
 
 //NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsEnigMimeService, Init)
-
-
-#if MOZILLA_MAJOR_VERSION < 2
-
-
-// CIDs implemented by module
-static const nsModuleComponentInfo components[] =
-{
-
-    { NS_PIPECONSOLE_CLASSNAME,
-      NS_PIPECONSOLE_CID,
-      NS_PIPECONSOLE_CONTRACTID,
-      nsPipeConsoleConstructor,
-    },
-
-    { NS_PIPECHANNEL_CLASSNAME,
-      NS_PIPECHANNEL_CID,
-      NS_PIPECHANNEL_CONTRACTID,
-      nsPipeChannelConstructor,
-    },
-
-    { NS_PIPEFILTERLISTENER_CLASSNAME,
-      NS_PIPEFILTERLISTENER_CID,
-      NS_PIPEFILTERLISTENER_CONTRACTID,
-      nsPipeFilterListenerConstructor,
-    },
-
-    { NS_IPCSERVICE_CLASSNAME,
-      NS_IPCSERVICE_CID,
-      NS_IPCSERVICE_CONTRACTID,
-      nsIPCServiceConstructor,
-    },
-
-    { NS_ENIGMSGCOMPOSE_CLASSNAME,
-      NS_ENIGMSGCOMPOSE_CID,
-      NS_ENIGMSGCOMPOSE_CONTRACTID,
-      nsEnigMsgComposeConstructor,
-    },
-
-    { NS_ENIGMSGCOMPOSEFACTORY_CLASSNAME,
-      NS_ENIGMSGCOMPOSEFACTORY_CID,
-      NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID,
-      nsEnigMsgComposeFactoryConstructor,
-    },
-
-    { NS_ENIGMIMELISTENER_CLASSNAME,
-      NS_ENIGMIMELISTENER_CID,
-      NS_ENIGMIMELISTENER_CONTRACTID,
-      nsEnigMimeListenerConstructor,
-    },
-
-    { NS_ENIGMIMEWRITER_CLASSNAME,
-      NS_ENIGMIMEWRITER_CID,
-      NS_ENIGMIMEWRITER_CONTRACTID,
-      nsEnigMimeWriterConstructor,
-    },
-
-    { NS_ENIGMIMEDECRYPT_CLASSNAME,
-      NS_ENIGMIMEDECRYPT_CID,
-      NS_ENIGMIMEDECRYPT_CONTRACTID,
-      nsEnigMimeDecryptConstructor,
-    },
-
-    { NS_ENIGMIMEVERIFY_CLASSNAME,
-      NS_ENIGMIMEVERIFY_CID,
-      NS_ENIGMIMEVERIFY_CONTRACTID,
-      nsEnigMimeVerifyConstructor,
-    },
-
-    { NS_ENIGMIMESERVICE_CLASSNAME,
-      NS_ENIGMIMESERVICE_CID,
-      NS_ENIGMIMESERVICE_CONTRACTID,
-      nsEnigMimeServiceConstructor,
-    }
-};
-
-// Module entry point
-NS_IMPL_NSGETMODULE(nsEnigModule, components)
-
-#else
-  // Gecko >= 2.0
-
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigContentHandler)
 
@@ -224,4 +132,3 @@ static const mozilla::Module kEnigModule = {
 };
 
 NSMODULE_DEFN(nsEnigModule) = &kEnigModule;
-#endif

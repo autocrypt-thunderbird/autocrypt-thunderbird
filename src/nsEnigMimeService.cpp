@@ -50,16 +50,8 @@
 #include "nsIThread.h"
 #include "nsIComponentManager.h"
 #include "nsIComponentRegistrar.h"
-#if MOZILLA_MAJOR_VERSION < 2
-
-#include "nsIGenericFactory.h"
-
-#else
-
 #include "mozilla/ModuleUtils.h"
 #include "nsXULAppAPI.h"
-
-#endif
 #include "nsEnigContentHandler.h"
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigContentHandler)
@@ -102,37 +94,7 @@ nsEnigMimeService::nsEnigMimeService()
          this, myThread.get()));
 #endif
 
-#if MOZILLA_MAJOR_VERSION < 2
-
-  static const nsModuleComponentInfo info =
-  { NS_ENIGCONTENTHANDLER_CLASSNAME,
-    NS_ENIGCONTENTHANDLER_CID,
-    NS_ENIGDUMMYHANDLER_CONTRACTID,
-    nsEnigContentHandlerConstructor,
-  };
-
-  // Create a generic factory for the dummy content handler
-  nsCOMPtr<nsIGenericFactory> factory;
-  rv = NS_NewGenericFactory(getter_AddRefs(factory), &info);
-
-  if (NS_SUCCEEDED(rv)) {
-    // Register factory for dummy handler
-    nsCOMPtr<nsIComponentRegistrar> registrar;
-    rv = NS_GetComponentRegistrar(getter_AddRefs(registrar));
-    if (NS_FAILED(rv)) return;
-
-    rv = registrar->RegisterFactory(info.mCID, info.mDescription,
-                                             info.mContractID, factory);
-    if (NS_SUCCEEDED(rv)) {
-      mDummyHandler = PR_TRUE;
-    }
-  }
-
-#else
-
   mDummyHandler = PR_TRUE;
-
-#endif
 }
 
 
@@ -168,35 +130,6 @@ nsEnigMimeService::Init()
     ERROR_LOG(("nsEnigContenthandler::Init: ERROR content handler for %s not initialized\n", APPLICATION_XENIGMAIL_DUMMY));
     return NS_ERROR_FAILURE;
   }
-
-#if MOZILLA_MAJOR_VERSION < 2
-
-  static const nsModuleComponentInfo info =
-  { NS_ENIGCONTENTHANDLER_CLASSNAME,
-    NS_ENIGCONTENTHANDLER_CID,
-    NS_ENIGENCRYPTEDHANDLER_CONTRACTID,
-    nsEnigContentHandlerConstructor,
-  };
-
-  // Create a generic factory for the content handler
-  nsCOMPtr<nsIGenericFactory> factory;
-  rv = NS_NewGenericFactory(getter_AddRefs(factory), &info);
-  if (NS_FAILED(rv)) return rv;
-
-  nsCOMPtr<nsIComponentRegistrar> registrar;
-  rv = NS_GetComponentRegistrar(getter_AddRefs(registrar));
-  if (NS_FAILED(rv)) return rv;
-
-  // Register factory
-  rv = registrar->RegisterFactory(info.mCID, info.mDescription,
-                                           info.mContractID, factory);
-
-  if (NS_FAILED(rv)) return rv;
-
-  DEBUG_LOG(("nsEnigMimeService::Init: %s\n", info.mContractID));
-
-#endif
-
 
   mInitialized = PR_TRUE;
 

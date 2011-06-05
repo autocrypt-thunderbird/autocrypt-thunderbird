@@ -46,9 +46,7 @@
 #include "nsIThread.h"
 #include "nsCOMPtr.h"
 #include "nsStringGlue.h"
-#if MOZILLA_MAJOR_VERSION > 4
 #include "mozilla/Mutex.h"
-#endif
 
 // Implementation class for nsIIPCBuffer
 class nsIPCBuffer : public nsIIPCBuffer,

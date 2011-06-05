@@ -43,14 +43,3 @@
 
 #endif
 #endif
-
-#if MOZILLA_MAJOR_VERSION < 5
-
-#define EnigMutex PRLock*
-#define MutexAutoLock nsAutoLock
-
-#else
-
-#define EnigMutex mozilla::Mutex
-
-#endif

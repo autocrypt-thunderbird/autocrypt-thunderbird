@@ -49,10 +49,7 @@
 #include "nsStringGlue.h"
 #include "nsIObserverService.h"
 #include "nsIObserver.h"
-
-#if MOZILLA_MAJOR_VERSION > 4
 #include "mozilla/Mutex.h"
-#endif
 
 // Implementation class for nsIPipeConsole
 class nsPipeConsole : public nsIPipeConsole,
@@ -85,7 +82,7 @@ protected:
     PRBool                              mThreadJoined;
     PRBool                              mOverflowed;
 
-    EnigMutex                           mLock;
+    mozilla::Mutex                      mLock;
 
     nsCString                           mConsoleBuf;
     PRInt32                             mConsoleMaxLines;

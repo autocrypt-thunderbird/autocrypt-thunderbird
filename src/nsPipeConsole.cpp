@@ -41,11 +41,7 @@
 #include "enigmail.h"
 #include "prlog.h"
 #include "nsCOMPtr.h"
-#if MOZILLA_MAJOR_VERSION < 5
-#include "nsAutoLock.h"
-#else
 #include "mozilla/Mutex.h"
-#endif
 #include "nsIInputStream.h"
 #include "nsIThread.h"
 #include "nsIHttpChannel.h"
@@ -74,9 +70,7 @@ static const PRUint32 kCharMax = NS_PIPE_CONSOLE_BUFFER_SIZE;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#if MOZILLA_MAJOR_VERSION > 4
 using namespace mozilla;
-#endif
 
 // nsPipeConsole implementation
 
@@ -95,13 +89,7 @@ nsPipeConsole::nsPipeConsole()
     mThreadJoined(PR_FALSE),
     mOverflowed(PR_FALSE),
 
-#if MOZILLA_MAJOR_VERSION < 5
-    mLock(nsnull),
-#else
     mLock("nsPipeConsole.lock"),
-#endif
-
-
     mConsoleBuf(""),
     mConsoleMaxLines(0),
     mConsoleMaxCols(0),
@@ -153,10 +141,6 @@ nsPipeConsole::~nsPipeConsole()
 
   Finalize(PR_TRUE);
 
-#if MOZILLA_MAJOR_VERSION < 5
-  if (mLock)
-    PR_DestroyLock(mLock);
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -326,14 +310,6 @@ nsresult
 nsPipeConsole::Init()
 {
   DEBUG_LOG(("nsPipeConsole::Init: \n"));
-
-#if MOZILLA_MAJOR_VERSION < 5
-  if (!mLock) {
-    mLock = PR_NewLock();
-    if (mLock == nsnull)
-      return NS_ERROR_OUT_OF_MEMORY;
-  }
-#endif
 
   // add shutdown observer
 

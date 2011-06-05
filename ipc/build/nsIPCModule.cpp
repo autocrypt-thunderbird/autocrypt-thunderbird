@@ -39,39 +39,7 @@
 #include "nsPipeTransport.h"
 #include "nsIPCBuffer.h"
 
-#if MOZILLA_MAJOR_VERSION < 2
-
-#include "nsIGenericFactory.h"
-
-NS_GENERIC_FACTORY_CONSTRUCTOR(nsPipeTransport)
-NS_GENERIC_FACTORY_CONSTRUCTOR(nsIPCBuffer)
-
-
-// CIDs implemented by module
-static const nsModuleComponentInfo components[] =
-{
-
-    { NS_PIPETRANSPORT_CLASSNAME,
-      NS_PIPETRANSPORT_CID,
-      NS_PIPETRANSPORT_CONTRACTID,
-      nsPipeTransportConstructor
-    },
-
-    { NS_IPCBUFFER_CLASSNAME,
-      NS_IPCBUFFER_CID,
-      NS_IPCBUFFER_CONTRACTID,
-      nsIPCBufferConstructor
-    }
-
-};
-
-// Module entry point
-NS_IMPL_NSGETMODULE(nsIPCModule, components)
-
-#else
- // Gecko >= 2.0
-
- #include "mozilla/ModuleUtils.h"
+#include "mozilla/ModuleUtils.h"
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsPipeTransport)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsIPCBuffer)
@@ -99,4 +67,3 @@ static const mozilla::Module kIPCModule = {
 };
 
 NSMODULE_DEFN(nsIPCModule) = &kIPCModule;
-#endif
