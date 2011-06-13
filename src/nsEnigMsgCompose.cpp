@@ -901,6 +901,10 @@ nsEnigMsgCompose::WriteToPipe(const char *aBuf, PRInt32 aLen)
   nsresult rv;
   DEBUG_LOG(("nsEnigMsgCompose::WriteToPipe: %d\n", aLen));
 
+  nsCString tmpStr;
+  tmpStr.Assign(aBuf, aLen);
+  DEBUG_LOG(("nsEnigMimeWriter::WriteToPipe: data: '%s'\n", tmpStr.get()));
+
   if (mMultipartSigned) {
     rv = mPipeTrans->WriteSync(aBuf, aLen);
   }
@@ -1065,7 +1069,7 @@ nsEnigMsgCompose::OnDataAvailable(nsIRequest* aRequest,
     return NS_ERROR_NOT_INITIALIZED;
 
   char buf[kCharMax];
-  PRUint32 readCount, readMax;
+  PRUint32 readCount, readMax, writeCount;
 
   while (aLength > 0) {
     readMax = (aLength < kCharMax) ? aLength : kCharMax;
@@ -1078,11 +1082,50 @@ nsEnigMsgCompose::OnDataAvailable(nsIRequest* aRequest,
 
     if (readCount <= 0) return NS_OK;
 
-    rv = WriteToPipe(buf, readCount);
-    if (NS_FAILED(rv)) return rv;
+    writeCount = readCount;
 
     if (mMultipartSigned) {
+
+      nsCString tmpStr;
+      tmpStr.Assign(buf, readCount);
+
+      nsCString left(tmpStr);
+      left.SetLength(15);
+
+      if (left.LowerCaseEqualsLiteral("x-mozilla-keys:")) {
+        DEBUG_LOG(("nsEnigMimeWriter::OnDataAvailable: workaround for 'X-Mozilla-Keys:' header\n"));
+
+        tmpStr.StripWhitespace();
+        if (left == tmpStr) {
+          if (buf[readCount-2] == '\r' && buf[readCount-1] == '\n') {
+            tmpStr.Append("\r\n");
+          }
+          else
+            tmpStr.Append("\n");
+
+          rv = WriteToPipe(tmpStr.get(), tmpStr.Length());
+          if (NS_FAILED(rv)) return rv;
+
+          rv = WriteOut(tmpStr.get(), tmpStr.Length());
+          if (NS_FAILED(rv)) return rv;
+
+          aLength -= readCount;
+
+          return NS_OK;
+
+        }
+      }
+
+
+      rv = WriteToPipe(buf, readCount);
+      if (NS_FAILED(rv)) return rv;
+
       rv = WriteOut(buf, readCount);
+      if (NS_FAILED(rv)) return rv;
+
+    }
+    else {
+      rv = WriteToPipe(buf, readCount);
       if (NS_FAILED(rv)) return rv;
     }
 
