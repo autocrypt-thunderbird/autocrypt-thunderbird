@@ -2810,7 +2810,7 @@ Enigmail.prototype = {
       args.push("--keyserver-options");
       var keySrvArgs="auto-key-retrieve";
       var srvProxy = this.getHttpProxy(keyserver);
-      if (srvProxy && this.agentVersion>="1.4" ) {
+      if (srvProxy) {
         keySrvArgs += ",http-proxy="+srvProxy;
       }
       args.push(keySrvArgs);
@@ -3101,8 +3101,7 @@ Enigmail.prototype = {
     if (! (recvFlags & nsIEnigmail.SEARCH_KEY)) args = this.getAgentArgs(true);
 
     if (proxyHost) {
-      args = args.concat(["--keyserver-options", "honor-http-proxy"]);
-      envList.push("http_proxy="+proxyHost);
+      args = args.concat(["--keyserver-options", "http-proxy="+proxyHost]);
     }
     args = args.concat(["--keyserver", keyserver]);
 
@@ -3249,138 +3248,29 @@ Enigmail.prototype = {
       proxyHost = this.getHttpProxy(keyserver);
     }
 
-    if (this.agentVersion < "1.4") {
-      var baseCommand = "gpgkeys_" + protocol;
-      if (this.isDosLike) {
-        baseCommand+=".exe";
-      }
-
-      var baseDir = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
-      initPath(baseDir, this.agentPath);
-
-      // try to locate gpgkeys_*
-      if (baseDir)
-        baseDir = baseDir.parent;
-      if (baseDir) {
-        var theCommand=baseDir.clone();
-
-        // first the same dir as gpg executable
-        theCommand.append(baseCommand);
-        if (theCommand.exists() && theCommand.isExecutable())
-          command = theCommand.path;
-
-        if (! command) {
-          // then lib
-          theCommand.append("lib");
-          theCommand.append(baseCommand);
-          if (theCommand.exists() && theCommand.isExecutable())
-            command = theCommand.path;
-        }
-
-        if (!command) {
-          if (baseDir.parent) {
-            baseDir=baseDir.parent;
-            theCommand=baseDir.clone();
-            // then ..\lib\gnupg or ../lib/gnupg
-            theCommand.append("lib");
-            theCommand.append("gnupg");
-            theCommand.append(baseCommand);
-            if (theCommand.exists() && theCommand.isExecutable()) {
-              command = theCommand.path;
-            }
-            else {
-              theCommand=baseDir.clone();
-              // then ..\libexec\gnupg or ../libexec/gnupg
-              theCommand.append("libexec");
-              theCommand.append("gnupg");
-              theCommand.append(baseCommand);
-              if (theCommand.exists() && theCommand.isExecutable())
-                command = theCommand.path;
-            }
-          }
-        }
-      }
-
-      if (! command) {
-        // no gpgkeys_* found
-        return null;
-      }
-
-      // call gpgkeys to check the version number
-
-      var outObj     = new Object();
-      var outLenObj  = new Object();
-      var errObj     = new Object();
-      var errLenObj  = new Object();
-
-      args = [ "-V" ];
-      Ec.CONSOLE_LOG("\nenigmail> "+printCmdLine(command, args)+"\n");
-
-      try {
-        var exitCode = this.ipcService.execPipe(command, args, args.length,
-                                              false,
-                                              "",
-                                              "", 0,
-                                              envList, envList.length,
-                                              outObj, outLenObj,
-                                              errObj, errLenObj);
-      }
-      catch (ex) {
-        Ec.CONSOLE_LOG(printCmdLine(command, args)+" failed\n");
-        return null;
-      }
-
-      if (exitCode !=0) {
-        Ec.CONSOLE_LOG(printCmdLine(command, args)+" not found\n");
-        return null;
-      }
-
-      Ec.CONSOLE_LOG(outObj.value+"\n");
-
-      var ver = outObj.value.split(/[\n\r]+/);
-      if (Number(ver[0])==0 || Number(ver[0])==1) {
-        var inputData="VERSION "+ver[0]+"\nHOST "+keyserver+"\nPORT "+port+"\n";
-      }
-      else {
-        return null;
-      }
-      if (proxyHost) {
-        inputData+="OPTION honor-http-proxy\n";
-        envList.push("http_proxy="+proxyHost);
-      }
-
-      if (recvFlags & nsIEnigmail.SEARCH_KEY) {
-        inputData+="COMMAND search\n\n"+keyValue+"\n\n";
-      }
-      else if (recvFlags & nsIEnigmail.DOWNLOAD_KEY) {
-        inputData+="COMMAND get\n\n+"+keyValue+"\n\n";
-      }
+    // GnuPG >= v1.4.0
+    command = this.agentPath;
+    args= this.getAgentArgs();
+    args = args.concat(["--command-fd", "0", "--no-tty", "--batch", "--fixed-list", "--with-colons"]);
+    if (proxyHost) args = args.concat(["--keyserver-options", "http-proxy="+proxyHost]);
+    args.push("--keyserver");
+    if (! protocol) protocol="hkp";
+    if (port) {
+      args.push(protocol + "://" + keyserver + ":"+port);
     }
     else {
-      // GnuPG >= v1.4.0
-      command = this.agentPath;
-      args= this.getAgentArgs();
-      args = args.concat(["--command-fd", "0", "--no-tty", "--batch", "--fixed-list", "--with-colons"]);
-      if (proxyHost) args = args.concat(["--keyserver-options", "http-proxy="+proxyHost]);
-      args.push("--keyserver");
-      if (! protocol) protocol="hkp";
-      if (port) {
-        args.push(protocol + "://" + keyserver + ":"+port);
-      }
-      else {
-        args.push(protocol + "://" + keyserver);
-      }
-
-      if (recvFlags & nsIEnigmail.SEARCH_KEY) {
-        args.push("--search-keys");
-        inputData = "quit\n";
-      }
-      else if (recvFlags & nsIEnigmail.DOWNLOAD_KEY) {
-        args = args.concat(["--status-fd", "1", "--recv-keys"]);
-        inputData = "";
-      }
-      args.push(keyValue);
+      args.push(protocol + "://" + keyserver);
     }
+
+    if (recvFlags & nsIEnigmail.SEARCH_KEY) {
+      args.push("--search-keys");
+      inputData = "quit\n";
+    }
+    else if (recvFlags & nsIEnigmail.DOWNLOAD_KEY) {
+      args = args.concat(["--status-fd", "1", "--recv-keys"]);
+      inputData = "";
+    }
+    args.push(keyValue);
 
     var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
     // Create joinable console
