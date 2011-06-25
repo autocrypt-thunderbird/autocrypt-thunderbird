@@ -5,7 +5,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>{847b3a00-7ab1-11d4-8f02-006008948af5}</em:id>
-    <em:version>1.2a2pre</em:version>
+    <em:version>1.2pre</em:version>
     <em:type>2</em:type> <!-- type = extension -->
     <em:unpack>true</em:unpack>
 
@@ -15,8 +15,8 @@
       <!-- Thunderbird -->
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>3.1b1</em:minVersion>
-        <em:maxVersion>5.0b2pre</em:maxVersion>
+        <em:minVersion>5.0b1</em:minVersion>
+        <em:maxVersion>5.0.*</em:maxVersion>
       </Description>
     </em:targetApplication>
     <em:targetApplication>
@@ -24,17 +24,17 @@
       <Description>
         <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
         <em:minVersion>2.1a1pre</em:minVersion>
-        <em:maxVersion>2.1b2</em:maxVersion>
+        <em:maxVersion>2.1.*</em:maxVersion>
       </Description>
     </em:targetApplication>
-    <em:targetApplication>
-      <!-- Spicebird -->
+    <!-- em:targetApplication>
+      < ! -- Spicebird -- >
       <Description>
         <em:id>{ee53ece0-255c-4cc6-8a7e-81a8b6e5ba2c}</em:id>
         <em:minVersion>0.7</em:minVersion>
         <em:maxVersion>0.8</em:maxVersion>
       </Description>
-    </em:targetApplication>
+    </em:targetApplication -->
 
 <!-- targetPlatform placeholder -->
 
