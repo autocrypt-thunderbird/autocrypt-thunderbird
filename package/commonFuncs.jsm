@@ -212,7 +212,7 @@ var EnigmailFuncs = {
   {
     EnigmailCommon.openWin("enigmail:generateKey",
                            "chrome://enigmail/content/enigmailKeygen.xul",
-                           "chrome,dialog,modal,resizable=yes");
+                           "chrome,modal,resizable=yes");
   },
 
   openCardDetails: function ()
