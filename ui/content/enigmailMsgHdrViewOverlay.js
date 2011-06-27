@@ -826,12 +826,27 @@ function CanDetachAttachments()
   return canDetach && Enigmail.hdrView.enigCanDetachAttachments();
 }
 
-if (createNewAttachmentInfo.prototype.openAttachment) {
-  createNewAttachmentInfo.prototype.origOpenAttachment = createNewAttachmentInfo.prototype.openAttachment;
-  createNewAttachmentInfo.prototype.openAttachment = function () {
-    this.origOpenAttachment();
-  }
+// Distinction between createNewAttachmentInfo and AttachmentInfo
+// due to renamed function in MsgHdrView.js in TB trunk code.
+// Can be removed in later versions of Enigmail.
+
+try
+{
+     createNewAttachmentInfo.prototype.origOpenAttachment = createNewAttachmentInfo.prototype.openAttachment;
+     createNewAttachmentInfo.prototype.openAttachment = function ()
+     {
+       this.origOpenAttachment();
+     }
 }
+catch (ex)
+{
+    AttachmentInfo.prototype.origOpenAttachment = AttachmentInfo.prototype.openAttachment;
+    AttachmentInfo.prototype.openAttachment = function ()
+    {
+      this.origOpenAttachment();
+    }
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // THE FOLLOWING EXTENDS CODE IN msgHdrViewOverlay.js
