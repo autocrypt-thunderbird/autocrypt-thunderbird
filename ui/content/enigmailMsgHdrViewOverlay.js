@@ -72,6 +72,7 @@ Enigmail.hdrView = {
       this.statusBar.removeAttribute("signed");
       this.statusBar.removeAttribute("encrypted");
       this.enigmailBox.setAttribute("collapsed", "true")
+      Enigmail.msg.setAttachmentReveal(null);
     }
     catch (ex) {}
   },
