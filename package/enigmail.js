@@ -922,10 +922,14 @@ Enigmail.prototype = {
     if (this.gpgAgentProcess != null) {
       Ec.DEBUG_LOG("enigmail.js: Enigmail.finalize: stopping gpg-agent PID="+this.gpgAgentProcess+"\n");
       try {
-        var installLoc = Components.classes[NS_EXTENSION_MANAGER_CONTRACTID]
-                 .getService(Components.interfaces.nsIExtensionManager)
-                 .getInstallLocation(ENIGMAIL_EXTENSION_ID);
-        var extensionLoc = installLoc.getItemFile(ENIGMAIL_EXTENSION_ID, "wrappers");
+        var directoryService =
+          Components.classes["@mozilla.org/file/directory_service;1"].
+          getService(Components.interfaces.nsIProperties);
+
+        var extensionLoc = directoryService.get("ProfD", Components.interfaces.nsIFile);
+        extensionLoc.append("extensions");
+        extensionLoc.append(ENIGMAIL_EXTENSION_ID);
+        extensionLoc.append("wrappers");
         extensionLoc.append("gpg-agent-wrapper.sh");
         try {
           extensionLoc.permissions=0755;
@@ -1452,10 +1456,14 @@ Enigmail.prototype = {
                   "--max-cache-ttl", "999999" ];  // ca. 11 days
 
           try {
-            var installLoc = Components.classes[NS_EXTENSION_MANAGER_CONTRACTID]
-                     .getService(Components.interfaces.nsIExtensionManager)
-                     .getInstallLocation(ENIGMAIL_EXTENSION_ID);
-            var extensionLoc = installLoc.getItemFile(ENIGMAIL_EXTENSION_ID, "wrappers");
+            var directoryService =
+                Components.classes["@mozilla.org/file/directory_service;1"].
+                getService(Components.interfaces.nsIProperties);
+            var extensionLoc =
+                directoryService.get("ProfD", Components.interfaces.nsIFile);
+            extensionLoc.append("extensions");
+            extensionLoc.append(ENIGMAIL_EXTENSION_ID);
+            extensionLoc.append("wrappers");
             extensionLoc.append("gpg-agent-wrapper.sh");
             try {
               extensionLoc.permissions=0755;
