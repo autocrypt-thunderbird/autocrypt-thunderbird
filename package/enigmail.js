@@ -4781,7 +4781,7 @@ function signKeyCallback(inputData, keyEdit, ret) {
   }
   else if (keyEdit.doCheck(GET_LINE, "sign_uid.class" )) {
     ret.exitCode = 0;
-    ret.writeTxt = inputData.trustLevel;
+    ret.writeTxt = new String(inputData.trustLevel);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
     GetPin(inputData.parent, Ec.getString("enterAdminPin"), ret);
@@ -4806,7 +4806,7 @@ function keyTrustCallback(inputData, keyEdit, ret) {
 
   if (keyEdit.doCheck(GET_LINE, "edit_ownertrust.value" )) {
     ret.exitCode = 0;
-    ret.writeTxt = inputData.trustLevel;
+    ret.writeTxt = new String(inputData.trustLevel);
   }
   else if (keyEdit.doCheck(GET_BOOL, "edit_ownertrust.set_ultimate.okay")) {
     ret.exitCode = 0;
@@ -4891,7 +4891,7 @@ function revokeCertCallback(inputData, keyEdit, ret) {
 
   if (keyEdit.doCheck(GET_LINE, "ask_revocation_reason.code" )) {
     ret.exitCode = 0;
-    ret.writeTxt = inputData.reasonCode;
+    ret.writeTxt = new String(inputData.reasonCode);
   }
   else if (keyEdit.doCheck(GET_LINE, "ask_revocation_reason.text" )) {
     ret.exitCode = 0;
@@ -4957,7 +4957,7 @@ function revokeSubkeyCallback(inputData, keyEdit, ret) {
   }
   else if (keyEdit.doCheck(GET_LINE, "ask_revocation_reason.code" )) {
     ret.exitCode = 0;
-    ret.writeTxt = inputData.reasonCode;
+    ret.writeTxt = new String(inputData.reasonCode);
   }
   else if (keyEdit.doCheck(GET_LINE, "ask_revocation_reason.text" )) {
     ret.exitCode = 0;
@@ -5233,7 +5233,7 @@ function genCardKeyCallback(inputData, keyEdit, ret) {
   else if (keyEdit.doCheck(GET_LINE, "cardedit.genkeys.backup_enc") ||
            keyEdit.doCheck(GET_BOOL, "cardedit.genkeys.backup_enc")) {
     ret.exitCode = 0;
-    ret.writeTxt = inputData.backupKey;
+    ret.writeTxt = new String(inputData.backupKey);
   }
   else if (keyEdit.doCheck(GET_BOOL, "cardedit.genkeys.replace_keys")) {
     ret.exitCode = 0;
@@ -5251,7 +5251,7 @@ function genCardKeyCallback(inputData, keyEdit, ret) {
   }
   else if (keyEdit.doCheck(GET_LINE, "keygen.valid")) {
     ret.exitCode = 0;
-    ret.writeTxt = inputData.expiry;
+    ret.writeTxt = new String(inputData.expiry);
   }
   else if (keyEdit.doCheck(GET_LINE, "cardedit.genkeys.size")) {
     ret.exitCode = 0;
