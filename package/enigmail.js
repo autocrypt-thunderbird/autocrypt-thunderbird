@@ -1060,7 +1060,7 @@ Enigmail.prototype = {
 
     if (matches && (matches.length > 1)) {
       gLogLevel = matches[1];
-      WARNING_LOG("enigmail.js: Enigmail: gLogLevel="+gLogLevel+"\n");
+      Ec.WARNING_LOG("enigmail.js: Enigmail: gLogLevel="+gLogLevel+"\n");
     }
 
     // Initialize global environment variables list
@@ -1633,12 +1633,12 @@ Enigmail.prototype = {
       }
     }
     if ((this.agentType == "gpg") && (exitCode == 256)) {
-      WARNING_LOG("enigmail.js: Enigmail.fixExitCode: Using gpg and exit code is 256. You seem to use cygwin-gpg, activating countermeasures.\n");
+      Ec.WARNING_LOG("enigmail.js: Enigmail.fixExitCode: Using gpg and exit code is 256. You seem to use cygwin-gpg, activating countermeasures.\n");
       if (statusFlags & (nsIEnigmail.BAD_PASSPHRASE | nsIEnigmail.UNVERIFIED_SIGNATURE)) {
-        WARNING_LOG("enigmail.js: Enigmail.fixExitCode: Changing exitCode 256->2\n");
+        Ec.WARNING_LOG("enigmail.js: Enigmail.fixExitCode: Changing exitCode 256->2\n");
         exitCode = 2;
       } else {
-        WARNING_LOG("enigmail.js: Enigmail.fixExitCode: Changing exitCode 256->0\n");
+        Ec.WARNING_LOG("enigmail.js: Enigmail.fixExitCode: Changing exitCode 256->0\n");
         exitCode = 0;
       }
     }
@@ -1651,7 +1651,7 @@ Enigmail.prototype = {
                                 nsIEnigmail.DECRYPTION_FAILED |
                                 nsIEnigmail.NO_PUBKEY |
                                 nsIEnigmail.NO_SECKEY)))) {
-        WARNING_LOG("enigmail.js: Enigmail.fixExitCode: Using gpg version "+this.agentVersion+", activating countermeasures for file renaming bug.\n");
+        Ec.WARNING_LOG("enigmail.js: Enigmail.fixExitCode: Using gpg version "+this.agentVersion+", activating countermeasures for file renaming bug.\n");
         exitCode = 0;
       }
     }
