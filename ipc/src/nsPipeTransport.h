@@ -154,6 +154,7 @@ protected:
 
     // Owning refs
     nsCOMPtr<nsIThread>                 mCreatorThread;
+    nsCOMPtr<nsIThread>                 mWriterThread;
 
     nsCOMPtr<nsStdoutPoller>            mStdoutPoller;
     nsCOMPtr<nsIPipeListener>           mStderrConsole;
@@ -410,5 +411,44 @@ protected:
     nsCOMPtr<nsIInputStream>      mInputStream;
     nsCOMPtr<nsIStreamListener>   mListener;
 
+};
+
+/**
+ * Helper class to dispatch the data writing to a separate thread
+ * Each instance of nsPipeWriter can dispatch exactly 1 event.
+ *
+ * This class is required because it is not possible to access in JavaScript
+ * Strings and Objects from different threads than the one which created the
+ * object, which leads to conflicts if writing data to a stream and reading
+ * from the stream is done on the same thread.
+ * This object must be dispatched synchronously only!
+ */
+
+class nsPipeWriter : public nsIRunnable
+{
+public:
+    NS_DECL_ISUPPORTS
+    NS_DECL_NSIRUNNABLE
+
+    nsPipeWriter();
+    virtual ~nsPipeWriter();
+
+    /**
+     * Dispatch the write event
+     *
+     * @param pipe     pointer to the file descriptor
+     * @param buf      data to write
+     * @param count    number of bytes to write
+     */
+
+    NS_IMETHODIMP WriteToPipe(IPCFileDesc* pipe,
+                              const char *buf,
+                              PRUint32 count);
+
+protected:
+
+    PRUint32 mCount;
+    const char *mBuf;
+    IPCFileDesc* mPipe;
 };
 #endif // nsPipeTransport_h__

@@ -122,13 +122,14 @@ nsPipeTransport::nsPipeTransport() :
 
       mExecBuf(""),
       mStdinWrite(IPC_NULL_HANDLE),
+      mCreatorThread(nsnull),
+      mWriterThread(nsnull),
       mStderrConsole(nsnull),
 
       mPipeTransportWriter(nsnull)
 
 {
     mExecutable.AssignLiteral("");
-    mCreatorThread = nsnull;
 
 #ifdef PR_LOGGING
   if (!gPipeTransportLog) {
@@ -161,6 +162,7 @@ nsPipeTransport::~nsPipeTransport()
   mInputStream  = nsnull;
   mOutputStream = nsnull;
   mCreatorThread = nsnull;
+  mWriterThread = nsnull;
 
   DEBUG_LOG(("nsPipeTransport:: ********* DTOR(%p) END\n", this));
 }
@@ -574,6 +576,11 @@ nsPipeTransport::Finalize(PRBool destructor)
 
   // Clear buffer
   mExecBuf.Assign("");
+
+  if (mWriterThread) {
+    mWriterThread->Shutdown();
+    mWriterThread = nsnull;
+  }
 
   return rv;
 }
@@ -1101,7 +1108,49 @@ nsPipeTransport::WriteSync(const char *buf, PRUint32 count)
   NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
   NS_ENSURE_ARG(buf);
 
+  if (mPipeState != PIPE_OPEN) {
+    if (mPipeState == PIPE_NOT_YET_OPENED)
+      return NS_ERROR_NOT_INITIALIZED;
+
+    if (mPipeState == PIPE_CLOSED)
+      return NS_BASE_STREAM_CLOSED;
+
+    return NS_ERROR_FAILURE;
+  }
+
+  if (mStdinWrite == IPC_NULL_HANDLE)
+    return NS_BASE_STREAM_CLOSED;
+
+  if (count == 0) {
+    return NS_OK;
+  }
+
+
   nsresult rv;
+
+  if (mListener) {
+    DEBUG_LOG(("nsPipeTransport::WriteSync: mListener is defined\n"));
+
+    if (!mWriterThread) {
+      DEBUG_LOG(("nsPipeTransport::WriteSync: created mWriterThread\n"));
+      rv = NS_NewThread(getter_AddRefs(mWriterThread), (nsIRunnable*) this);
+      NS_ENSURE_SUCCESS(rv, rv);
+    }
+
+    nsRefPtr<nsPipeWriter> pipeWriter = new nsPipeWriter();
+    if (!pipeWriter) return NS_ERROR_OUT_OF_MEMORY;
+
+    rv = pipeWriter->WriteToPipe(mStdinWrite, buf, count);
+    NS_ENSURE_SUCCESS(rv, rv);
+
+    rv = mWriterThread->Dispatch(pipeWriter, nsIEventTarget::DISPATCH_SYNC);
+
+    return rv;
+  }
+
+
+  DEBUG_LOG(("nsPipeTransport::WriteSync: no mListener\n"));
+
   PRUint32 writeCount;
   rv = Write(buf, count, &writeCount);
   NS_ENSURE_SUCCESS(rv, rv);
@@ -2820,5 +2869,98 @@ nsStreamDispatcher::Run()
     default:
       rv = NS_ERROR_NOT_AVAILABLE;
   }
+  return rv;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+// nsStdinWriter implementation
+
+// nsISupports implementation
+NS_IMPL_THREADSAFE_ISUPPORTS1 (nsPipeWriter,
+                               nsIRunnable)
+
+
+// nsStdinWriter implementation
+nsPipeWriter::nsPipeWriter() :
+    mCount(0),
+    mBuf(nsnull),
+    mPipe(IPC_NULL_HANDLE)
+{
+#ifdef FORCE_PR_LOG
+  nsCOMPtr<nsIThread> myThread;
+  IPC_GET_THREAD(myThread);
+  DEBUG_LOG(("nsPipeWriter:: <<<<<<<<< CTOR(%p): myThread=%p\n",
+         this, myThread.get()));
+#endif
+}
+
+
+nsPipeWriter::~nsPipeWriter()
+{
+#ifdef FORCE_PR_LOG
+  nsCOMPtr<nsIThread> myThread;
+  IPC_GET_THREAD(myThread);
+  DEBUG_LOG(("nsPipeWriter:: >>>>>>>>> DTOR(%p): myThread=%p\n",
+         this, myThread.get()));
+#endif
+
+  // Release ref to output pipe
+  mPipe = nsnull;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// nsStdinWriter methods:
+///////////////////////////////////////////////////////////////////////////////
+
+nsresult
+nsPipeWriter::WriteToPipe(IPCFileDesc* pipe, const char *buf, PRUint32 count)
+{
+  DEBUG_LOG(("nsPipeWriter::WriteToPipe: count=%d\n", count));
+
+  NS_ENSURE_ARG(buf);
+  NS_ENSURE_ARG(pipe);
+
+  mCount = count;
+  mBuf = buf; // the buffer is NOT copied -> synchronous dispatching only!
+  mPipe = pipe;
+
+  return NS_OK;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// nsIRunnable methods:
+// (runs as a new thread)
+///////////////////////////////////////////////////////////////////////////////
+
+NS_IMETHODIMP
+nsPipeWriter::Run()
+{
+  NS_ENSURE_TRUE(mBuf, NS_ERROR_NOT_INITIALIZED);
+
+  nsresult rv = NS_OK;
+
+#ifdef FORCE_PR_LOG
+  nsCOMPtr<nsIThread> myThread;
+  IPC_GET_THREAD(myThread);
+  DEBUG_LOG(("nsPipeWriter::Run: myThread=%p\n", myThread.get()));
+#endif
+
+  DEBUG_LOG(("nsPipeWriter::Run: mCount=%d\n", mCount));
+
+  PRInt32 writeCount = 0;
+  writeCount = IPC_Write(mPipe, mBuf, mCount);
+
+  if (writeCount != (int) mCount) {
+    PRErrorCode errCode = IPC_GetError();
+    ERROR_LOG(("nsPipeWriter::Run: Error in writing to fd %p (writeCount=%d, mCount=%d, error code=%d)\n",
+                 mPipe, writeCount, mCount, (int) errCode));
+
+    rv = NS_ERROR_FAILURE;
+  }
+
+  DEBUG_LOG(("nsPipeWriter::Run: %d bytes written\n", mCount));
   return rv;
 }
