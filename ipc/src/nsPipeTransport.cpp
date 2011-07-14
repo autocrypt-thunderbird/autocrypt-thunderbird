@@ -1133,7 +1133,7 @@ nsPipeTransport::WriteSync(const char *buf, PRUint32 count)
 
     if (!mWriterThread) {
       DEBUG_LOG(("nsPipeTransport::WriteSync: created mWriterThread\n"));
-      rv = NS_NewThread(getter_AddRefs(mWriterThread), (nsIRunnable*) this);
+      rv = NS_NewThread(getter_AddRefs(mWriterThread), nsnull);
       NS_ENSURE_SUCCESS(rv, rv);
     }
 
