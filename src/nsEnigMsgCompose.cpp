@@ -701,7 +701,9 @@ nsEnigMsgCompose::FinishAux(PRBool aAbort,
 
   // Wait for input event queue to be completely processed
   if (mTargetThread) {
-    nsEnigComposeWriter* dispatchWriter = new nsEnigComposeWriter(mPipeTrans, nsnull, 0);
+    nsCOMPtr<nsIOutputStream> outStream = do_QueryInterface(mPipeTrans);
+
+    nsEnigComposeWriter* dispatchWriter = new nsEnigComposeWriter(outStream, nsnull, 0);
     dispatchWriter->CompleteEvents();
     mTargetThread->Dispatch(dispatchWriter, nsIEventTarget::DISPATCH_SYNC);
   }
@@ -916,7 +918,9 @@ nsEnigMsgCompose::WriteToPipe(const char *aBuf, PRInt32 aLen)
 
     // dispatch message to different thread to avoid deadlock with input queue
 
-    nsEnigComposeWriter* dispatchWriter = new nsEnigComposeWriter(mPipeTrans, aBuf, aLen);
+    nsCOMPtr<nsIOutputStream> outStream = do_QueryInterface(mPipeTrans);
+
+    nsEnigComposeWriter* dispatchWriter = new nsEnigComposeWriter(outStream, aBuf, aLen);
     rv = mTargetThread->Dispatch(dispatchWriter, nsIEventTarget::DISPATCH_NORMAL);
   }
 
@@ -1145,7 +1149,7 @@ NS_IMPL_THREADSAFE_ISUPPORTS1 (nsEnigComposeWriter,
 
 
 // nsStdinWriter implementation
-nsEnigComposeWriter::nsEnigComposeWriter(nsCOMPtr<nsIPipeTransport>  pipeTrans,
+nsEnigComposeWriter::nsEnigComposeWriter(nsCOMPtr<nsIOutputStream>  pipeTrans,
                     const char* buf,
                     PRUint32 count) :
   mBuf(nsnull),
@@ -1200,7 +1204,15 @@ NS_IMETHODIMP nsEnigComposeWriter::Run()
   DEBUG_LOG(("nsEnigComposeWriter::Run: myThread=%p\n", myThread.get()));
 
   if (!mCompleteEvents) {
-    return mPipeTrans->WriteSync(mBuf, mCount);
+    PRUint32 writeCount;
+    rv = mPipeTrans->Write(mBuf, mCount, &writeCount);
+    NS_ENSURE_SUCCESS(rv, rv);
+
+    if (writeCount != mCount) {
+      DEBUG_LOG(("nsEnigComposeWriter::Run: written %d instead of %d bytes\n",
+        writeCount, mCount));
+      return NS_ERROR_FAILURE;
+    }
   }
   else {
 
