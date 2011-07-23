@@ -59,3 +59,4 @@ libs::
 
 clean::
 	test -f $(DIST)/bin/chrome/$(MYJARFILE) && rm $(DIST)/bin/chrome/$(MYJARFILE) || echo ""
+	test -d $(DIST)/bin/chrome/enigmail && rm -rf $(DIST)/bin/chrome/enigmail || echo ""
