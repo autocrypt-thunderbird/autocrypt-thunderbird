@@ -1,5 +1,5 @@
 content       enigmail                jar:chrome/enigmail.jar!/content/enigmail/
-locale        enigmail    en-US       jar:chrome/enigmail.jar!/locale/en-US/enigmail/
+locale        enigmail    en-US       jar:chrome/enigmail.jar!/locale/en-US/
 
 # Skin for TBird Mac OS X
 skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-mac/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Darwin

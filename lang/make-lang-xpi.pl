@@ -65,7 +65,7 @@ while ($_ = <INFILE>) {
   chomp();
   $lang = $_;
   foreach $file (@files) {
-    printf OUTFILE "\tlocale/%s/enigmail/%s\t(%s/%s)\n", $lang, $file, $lang, $file;
+    printf OUTFILE "\tlocale/%s/%s\t(%s/%s)\n", $lang, $file, $lang, $file;
   }
 }
 
