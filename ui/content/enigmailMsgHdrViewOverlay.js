@@ -710,33 +710,34 @@ Enigmail.hdrView = {
     onShowAttachmentContextMenu();
 
     // then, do our own additional stuff ...
-    var attachmentList = document.getElementById('attachmentList');
-    var selectedAttachments = attachmentList.selectedItems;
+    var contextMenu = document.getElementById('attachmentListContext');
+    var selectedAttachments = contextMenu.attachments;
+
     var decryptOpenMenu = document.getElementById('enigmail_ctxDecryptOpen');
     var decryptSaveMenu = document.getElementById('enigmail_ctxDecryptSave');
     var importMenu = document.getElementById('enigmail_ctxImportKey');
     var verifyMenu = document.getElementById('enigmail_ctxVerifyAtt');
 
     if (selectedAttachments.length > 0) {
-      if (selectedAttachments[0].attachment.contentType.search(/^application\/pgp-keys/i) == 0) {
+      if (selectedAttachments[0].contentType.search(/^application\/pgp-keys/i) == 0) {
         importMenu.removeAttribute('disabled');
         decryptOpenMenu.setAttribute('disabled', true);
         decryptSaveMenu.setAttribute('disabled', true);
         verifyMenu.setAttribute('disabled', true);
       }
-      else if (Enigmail.msg.checkSignedAttachment(selectedAttachments[0].attachment, null)) {
+      else if (Enigmail.msg.checkSignedAttachment(selectedAttachments[0], null)) {
         importMenu.setAttribute('disabled', true);
         decryptOpenMenu.setAttribute('disabled', true);
         decryptSaveMenu.setAttribute('disabled', true);
         verifyMenu.removeAttribute('disabled');
       }
-      else if (Enigmail.msg.checkEncryptedAttach(selectedAttachments[0].attachment)) {
+      else if (Enigmail.msg.checkEncryptedAttach(selectedAttachments[0])) {
         importMenu.setAttribute('disabled', true);
         decryptOpenMenu.removeAttribute('disabled');
         decryptSaveMenu.removeAttribute('disabled');
         verifyMenu.setAttribute('disabled', true);
-        if (! selectedAttachments[0].attachment.displayName) {
-          selectedAttachments[0].attachment.displayName="message.pgp"
+        if (! selectedAttachments[0].displayName) {
+          selectedAttachments[0].displayName="message.pgp"
         }
       }
       else {
