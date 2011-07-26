@@ -1649,8 +1649,7 @@ Enigmail.msg = {
 
   revealAttachments: function ()
   {
-    var i;
-    for (i in currentAttachments) {
+    for (let i=0; i < currentAttachments.length; i++) {
       this.handleAttachment("revealName", currentAttachments[i]);
     }
   },
@@ -1826,7 +1825,7 @@ Enigmail.msg = {
     if (attList) {
       var attNode = attList.firstChild;
       while (attNode) {
-        if (attNode.getAttribute("label") == attachment.displayName)
+        if (attNode.getAttribute("attachmentUrl") == attachment.url)
           attNode.setAttribute("label", newLabel);
         attNode=attNode.nextSibling;
       }
