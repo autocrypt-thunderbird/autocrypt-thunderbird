@@ -96,7 +96,7 @@ if [ -s ${srcDir}/lang/current-languages.txt ]; then
 
   for lang in `cat ${srcDir}/lang/current-languages.txt`; do
     echo '        <em:locale>locale/'$lang'/enigmail/</em:locale>' >> ${targetDir}/install.rdf.t2
-    echo 'locale        enigmail    '$lang'       jar:chrome/enigmail.jar!/locale/'$lang'/enigmail/' >> ${targetDir}/chrome.manifest
+    echo 'locale        enigmail    '$lang'       jar:chrome/enigmail.jar!/locale/'$lang'/' >> ${targetDir}/chrome.manifest
   done
   echo '      </Description>' >> ${targetDir}/install.rdf.t2
 

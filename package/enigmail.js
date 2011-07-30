@@ -4077,6 +4077,7 @@ Enigmail.prototype = {
     }
     catch (ex) {};
 
+
     return true;
 
   },
