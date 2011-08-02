@@ -1784,8 +1784,9 @@ Enigmail.msg = {
         }
 
         if (wrapWidth) {
+          editor.wrapWidth = wrapWidth - 2;
+          wrapper.rewrap(true);
           editor.wrapWidth = wrapWidth;
-          wrapper.rewrap(false);
         }
       }
       catch (ex) {}
