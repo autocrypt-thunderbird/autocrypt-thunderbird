@@ -40,6 +40,7 @@ var gEnigAccountMgr;
 var gPubkeyFile = {value: null};
 var gSeckeyFile = {value: null};
 var gCreateNewKey=false;
+var gPrefEnigmail;
 
 
 EnigInitCommon("enigmailSetupWizard");
@@ -328,6 +329,11 @@ function enigGetSvc() {
 
   while (!gEnigmailSvc.initialized) {
     // Try to initialize enigmail
+
+    if (! gPrefEnigmail) {
+      EnigmailCommon.initPrefService();
+      gPrefEnigmail = EnigmailCommon.prefBranch;
+    }
 
     try {
       // Initialize enigmail
