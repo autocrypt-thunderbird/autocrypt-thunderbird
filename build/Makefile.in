@@ -35,11 +35,11 @@
 
 # Makefile for build directory
 
-DIRS = 
+DIRS =
 
 # Specify these as parameters to the make command
 XPI_MODULE	= enigmime
-XPI_MODULE_VERS = 1.2
+XPI_MODULE_VERS = 1.4
 
 DEPTH		= ../../../..
 topsrcdir	= @top_srcdir@
