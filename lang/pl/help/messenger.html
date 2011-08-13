@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Enigmail Help: Message Reading</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>Pomoc dla Enigmail: Czytanie wiadomości</title>
   <style type="text/css">
   /*<![CDATA[*/
     dt  { font-weight: bold;  }
@@ -12,45 +13,45 @@
 </head>
 
 <body>
-  <h1>Enigmail Help</h1>
+  <h1>Pomoc dla Enigmail</h1>
 
-  <h3>Using Enigmail when reading messages</h3>
+  <h3>Używanie Enigmail podczas czytania wiadomości</h3>
 
   <dl>
-    <dt>Decrypt button in main Mail window</dt>
+    <dt>Przycisk Deszyfruj w głównym oknie wiadomości</dt>
 
-    <dd>This button can be used for several purposes: decrypt, verify, or import public keys. Normally decryption/verification happens automatically, although this can be disabled through a preference. However, if this fails, usually a short error message will appear in the Enigmail status line. If you click the Decrypt button, you will be able to see a more detailed error message, including the output from the GnuPG command.</dd>
+    <dd>Przycisk ten może być używany do różnych celów: deszyfrowania, weryfikowania lub importowania kluczy publicznych. Normalnie deszyfrowanie/weryfikowanie odbywa się automatycznie i może być wyłączone w ustawieniach. Jeśli automatyczne deszyfrowanie/weryfikowanie się nie powiedzie, w pasku statusu Enigmail zostanie wyświetlona informacja o błędzie. Po naciśnięciu przycisku <strong>Deszyfruj</strong> zostaną wyświetlone szczegółowe informacje dotyczące tego błędu zawierające polecenia z GnuPG.</dd>
 
-    <dt>Pen and Key icons in Message Header display</dt>
+    <dt>Ikony pióra i klucza wyświetlane w nagłówku wiadomości</dt>
 
     <dd>
-      The <em>Pen</em> and <em>Key</em> icons in the Message Header display indicate if the message you are reading was signed and/or encrypted and if the signature is good, i.e. the message has not been changed since it was signed. If the message has been changed, the <em>Pen</em> icon will change to a <em>Broken Pen</em> to indicate that the signature is bad. Right clicking on either the Pen or Key icons will bring up a menu with the following options: 
+      Ikony <em>pióra</em> i <em>klucza</em> wyświetlane w nagłówku wiadomości informują, czy aktualnie czytana wiadomość została podpisana i/lub zaszyfrowana i czy podpis jest prawidłowy, np. że wiadomość nie została zmieniona od czasu jej podpisania. Jeśli wiadomość została zmieniona, kolor ikony <em>pióra</em> zostanie zmieniony na <em>czerwony</em>, informując, że podpis jest nieprawidłowy. Kliknięcie prawym przyciskiem myszy którejś z tych ikon, spowoduje wyświetlenie menu zawierającego następujące opcje: 
 
       <ul>
-        <li><em>OpenPGP Security info</em>: allows you to view the output status from GnuPG for the message.</li>
+        <li><em>Informacje OpenPGP…</em> – umożliwia podgląd statusu elementów wyjściowych z GnuPG dla wiadomości.</li>
 
-        <li><em>Copy OpenPGP Security info</em>: copies the output status from GnuPG to the clipboard; to paste into a reply message, etc.</li>
+        <li><em>Kopiuj informacje OpenPGP</em> – kopiuje status elementów wyjściowych z GnuPG do schowka, by  następnie można było wstawić je do odpowiedzi na wiadomość itp.</li>
 
-        <li><em>View OpenPGP Photo ID</em>: allows you to view the <em>Photo ID</em> of the person who sent the message, if they have a photo embedded in their Public Key. (<em>This option will only be enabled if a Photo ID exists in their key.)</em></li>
+        <li><em>Pokaż zdjęcie</em> – umożliwia podgląd <em>zdjęcia</em> osoby, która wysłała wiadomość, jeśli zdjęcie zostało dołączone do klucza publicznego. (<em>Ta funkcja będzie włączona tylko, jeśli zdjęcie jest w kluczu danego nadawcy).</em></li>
 
-        <li><em>S/MIME Security info</em>: allows you to view the S/MIME Security Info for the message.</li>
+        <li><em>Informacje S/MIME…</em> – umożliwia zobaczenie informacji bezpieczeństwa S/MIME dla wiadomości.</li>
       </ul>
 
-      <p>If you do not have <em>keyserver-options auto-key-retrieve</em> set in your <tt>gpg.conf</tt> file and you read a message which is signed or encrypted, you will see a <em>Pen</em> icon in the headers display area with a <em>Question mark</em> on it, the Enigmail status line in the headers area will say <em>Part of the message signed; click pen icon for details</em> and the message in the Message Pane will show all the OpenPGP message block indicators and the signature block.</p>
+      <p>Jeśli w pliku <tt>gpg.conf</tt> nie są ustawione funkcje <em>keyserver-options auto-key-retrieve</em> i czytasz podpisaną lub zaszyfrowaną wiadomość, w nagłówku czytanej wiadomości będzie widoczna ikona <em>pióra</em> ze <em>znakiem zapytania</em>, a w pasku statusu Enigmail będzie wyświetlana informacja <em>Część wiadomości podpisana; kliknij ikonę pióra, by zobaczyć szczegóły</em> i w wiadomości zostanie wyświetlony blok zawierający wszystkie wskaźniki OpenPGP i blok podpisu.</p>
 
-      <p>You may also see this if you have <em>keyserver-options auto-key-retrieve</em> set in your <tt>gpg.conf</tt> file and the OpenPGP key is not available on the default keyserver.</p>
+      <p>Możesz także zobaczyć tę informację, jeśli w pliku <tt>gpg.conf</tt> są ustawione funkcje <em>keyserver-options auto-key-retrieve</em>, a klucz OpenPGP jest niedostępny na domyślnym serwerze kluczy.</p>
 
-      <p>Clicking on the <em>Pen and Question mark</em> icon will bring up a window advising that the key is unavailable in your keyring. Clicking on OK will bring up another window with a list of keyservers from which you can select to download the sender's public key from.</p>
+      <p>Po kliknięciu ikony <em>pióra ze znakiem zapytania</em>, zostanie wyświetlone okno informujące, że klucz nie jest dostępny w twojej bazie kluczy. Po naciśnięciu przycisku OK, zostanie wyświetlone kolejne okno zawierające listę serwerów kluczy, z której można wybrać do pobrania klucz publiczny nadawcy.</p>
 
-      <p>To configure the list of keyservers you wish to use, go to <strong>Enigmail -&gt; Preferences -&gt; Basic</strong> tab and enter the keyserver addresses in the <em>Keyserver(s):</em> box, separated by a comma. <em>The first keyserver in the list will be used as the default.</em></p>
+      <p>Aby skonfigurować listę serwerów kluczy, których chcesz używać, przejdź na kartę <strong>OpenPGP » Ustawienia » Zaawansowane » Serwery kluczy</strong> i w polu <em>Określ swoje serwery kluczy</em>, wprowadź adresy serwerów kluczy, oddzielając je przecinkami. <em>Pierwszy serwer na liście będzie używany jako domyślny serwer.</em></p>
     </dd>
 
-    <dt>Opening encrypted attachments / importing attached OpenPGP keys</dt>
+    <dt>Otwierania zaszyfrowanych załączników/importowanie załączonych kluczy OpenPGP</dt>
 
-    <dd>Attachments named *.pgp, *.asc and *.gpg are recognized as attachments that can be handled specially by Enigmail. Right clicking on such an attachment enables two special menu items in the context menu: <em>Decrypt and Open</em> and <em>Decrypt and Save</em>. Use these two menu items if you want Enigmail to decrypt an attachment before opening or saving it. If an attachment is recognized as an OpenPGP key file, you are offered to import the keys it into your keyrings.</dd>
+    <dd>Załączniki z rozszerzeniem *.pgp, *.asc i *.gpg są rozpoznawane jako załączniki, które mogą być obsługiwane przez Enigmail specjalnie. Kliknięcie takiego załącznika prawym przyciskiem myszy spowoduje wyświetlenie w menu kontekstowym dwóch specjalnych elementów: <em>Deszyfruj i otwórz</em> i <em>Deszyfruj i zapisz jako…</em> Użyj tych dwóch elementów, jeśli chcesz, by Enigmail deszyfrował załącznik przed otworzeniem lub jego zapisaniem. Jeśli załącznik jest rozpoznany jako plik klucza OpenPGP, zostanie zaoferowane zaimportowanie kluczy do twojej bazy kluczy.</dd>
   </dl>
   <hr />
 
-  <p>Further help is available on the <a href="http://enigmail.mozdev.org/help.html">Enigmail Help web page</a></p>
+  <p>Więcej pomocy można uzyskać na <a href="http://enigmail.mozdev.org/help.html">stronie pomocy</a> Enigmail.</p>
 </body>
 </html>

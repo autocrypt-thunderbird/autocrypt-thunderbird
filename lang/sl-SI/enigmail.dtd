@@ -73,7 +73,6 @@
 <!ENTITY enigmail.doubleDashSeparator.label "'--' obravnavaj kot ločilo podpisa">
 <!ENTITY enigmail.useGpgAgent.label "Za upravljanje s ključi uporabi program gpg-agent">
 <!ENTITY enigmail.noHushMailSupport.label "Uporabi '&lt;' in '&gt;' pri navajanju e-naslovov">
-<!ENTITY enigmail.keepSettingsForReply.tooltip "Ko je možno, šifriraj odgovore na šifrirana sporočila">
 <!ENTITY enigmail.doubleDashSeparator.tooltip "Dva vezaja v vrstici napovedujeta blok podpisa">
 <!ENTITY enigmail.useGpgAgent.tooltip "Uporabi gpg-agent (sestavni del GnuPG 2) za vse vnose gesel">
 <!ENTITY enigmail.noHushMailSupport.tooltip "Uporabi znaka '&lt;' in '&gt;' za določanje e-naslovov za GnuPG. Izključite, če imajo prejemniki stare ključe Hushmail.">
@@ -174,7 +173,6 @@
 <!ENTITY enigmail.defineRules.label "Uredi pravila ...">
 <!ENTITY enigmail.defineRules.tooltip "Kliknite za ogled, dodajanje, odstranitev ali urejanje pravil za izbor ključev.">
 <!ENTITY enigmail.usePGPMimeAlways.label "Privzeto uporabi PGP/MIME">
-<!ENTITY enigmail.keepSettingsForReply.label "Šifriraj odgovor na šifrirano sporočilo">
 <!ENTITY enigmail.confirmBeforeSend.label "Vedno potrdi pošiljanje">
 <!ENTITY enigmail.confirmBeforeSend.tooltip "Vključite za prikaz pogovornega okna z informacijami o podpisovanju/šifriranju pred pošiljanjem sporočila.">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label "Podpisano besedilo HTML pred pošiljanjem razlomi po vrsticah">
@@ -224,9 +222,11 @@
 <!ENTITY enigmail.ctxDecryptOpen.label "Dešifriraj in odpri">
 <!ENTITY enigmail.ctxDecryptSave.label "Dešifriraj in shrani kot ...">
 <!ENTITY enigmail.ctxImportKey.label "Uvozi ključ OpenPGP">
+<!ENTITY enigmail.ctxVerifyAtt.label "Preveri podpis">
 <!ENTITY enigmail.ctxDecryptOpen.accesskey "O">
 <!ENTITY enigmail.ctxDecryptSave.accesskey "D">
 <!ENTITY enigmail.ctxImportKey.accesskey "U">
+<!ENTITY enigmail.ctxVerifyAtt.accesskey "V">
 <!ENTITY enigmail.detailsHdrButton.label "Podrobnosti">
 <!ENTITY enigmail.amPrefTitle.label "Možnosti OpenPGP (Enigmail)">
 <!ENTITY enigmail.amPrefDesc.label "Enigmail omogoča šifriranje in podpisovanje sporočil OpenPGP. Da bi lahko izkoriščali njegove funkcije, mora biti nameščen GnuPG (gpg).">
@@ -242,6 +242,8 @@
 <!ENTITY enigmail.encDlgSign.accesskey "P">
 <!ENTITY enigmail.encDlgPgpMime.label "Uporabi PGP/MIME">
 <!ENTITY enigmail.encDlgPgpMime.accesskey "U">
+<!ENTITY enigmail.encDlgIgnoreRules.label "Prezri pravila po prejemnikih">
+<!ENTITY enigmail.encDlgIgnoreRules.accesskey "I">
 <!ENTITY enigmail.amPrefPgpHeader.label "Pošlji glavo 'OpenPGP'">
 <!ENTITY enigmail.amPrefPgpHeader.none.label "Ne pošiljaj nobenih glav 'OpenPGP'">
 <!ENTITY enigmail.amPrefPgpHeader.id.label "Pošlji ID ključa OpenPGP">
@@ -255,6 +257,7 @@
 <!ENTITY enigmail.pgpSecurityInfo.label "Varnostni podatki OpenPGP ...">
 <!ENTITY enigmail.copySecurityInfo.label "Kopiraj varnostne podatke OpenPGP">
 <!ENTITY enigmail.showPhoto.label "Prikaži foto ID OpenPGP">
+<!ENTITY enigmail.displayKeyProperties.label "Pokaži lastnosti ključa">
 <!ENTITY enigmail.signSenderKey.label "Podpiši ključ ...">
 <!ENTITY enigmail.trustSenderKey.label "Določi zaupanje lastnikom ...">
 <!ENTITY enigmail.signSenderKeyPopup.label "Podpiši ključ pošiljatelja ...">
@@ -355,6 +358,7 @@
 <!ENTITY enigmail.keyMan.importFromClipbrd.label "Prenesi ključe iz odložišča">
 <!ENTITY enigmail.keyMan.exportToFile.label "Izvozi ključe v datoteko">
 <!ENTITY enigmail.keyMan.sendKeys.label "Pošlji javne ključe po e-pošti">
+<!ENTITY enigmail.keyMan.createMail.label "Sestavi sporočilo z izbranimi ključi">
 <!ENTITY enigmail.keyMan.uploadToServer.label "Prenesi javne ključe na strežnik ključev">
 <!ENTITY enigmail.keyMan.copyToClipbrd.label "Kopiraj javne ključe v odložišče">
 <!ENTITY enigmail.keyMan.ctxExportToFile.label "Izvozi ključe v datoteko">
@@ -366,6 +370,7 @@
 <!ENTITY enigmail.keyMan.ctxRefreshKey.label "Osveži javne ključe s strežnika ključev">
 <!ENTITY enigmail.keyMan.reload.label "Ponovno naloži medpomnilnik ključev">
 <!ENTITY enigmail.keyMan.addUid.label "Dodaj uporabniški ID">
+<!ENTITY enigmail.keyMan.addPhoto.label "Dodaj sliko">
 <!ENTITY enigmail.keyMan.manageUid.label "Upravljaj z uporabniškimi ID">
 <!ENTITY enigmail.keyMan.changePwd.label "Spremeni geslo">
 <!ENTITY enigmail.keyMan.delKey.label "Izbriši ključ">
@@ -375,6 +380,9 @@
 <!ENTITY enigmail.keyMan.viewPhoto.label "Fotografska ID">
 <!ENTITY enigmail.keyMan.ctxViewPhoto.label "Ogled fotografske ID">
 <!ENTITY enigmail.keyMan.viewSig.label "Podpisi">
+<!ENTITY enigmail.keyMan.showInvalidKeys.label "Prikaži neveljavne ključe">
+<!ENTITY enigmail.keyMan.showUntrustedKeys.label "Prikaži zaupanja nevredne ključe">
+<!ENTITY enigmail.keyMan.showOthersKeys.label "Prikaži ključe drugih">
 <!ENTITY enigmail.keyMan.ctxViewSig.label "Ogled podpisov">
 <!ENTITY enigmail.keyMan.userId.label "Ime">
 <!ENTITY enigmail.keyMan.keyType.label "Vrsta">
@@ -383,6 +391,7 @@
 <!ENTITY enigmail.keyMan.stopTransfer.label "Ustavi prenos">
 <!ENTITY enigmail.keyMan.fingerprint.label "Prstni odtis">
 <!ENTITY enigmail.keyMan.selectAll.label "Izberi vse ključe">
+<!ENTITY enigmail.keyMan.addToPRRule.label "Dodaj pravilom po prejemniku">
 <!ENTITY enigmail.keyMan.emptyTree.tooltip "V zgornje polje vnesite iskalne pojme">
 <!ENTITY enigmail.keyMan.nothingFound.tooltip "Noben ključ se ne ujema z iskanimi pojmi">
 <!ENTITY enigmail.keyMan.pleaseWait.tooltip "Počakajte trenutek, dokler se ključi nalagajo ...">
@@ -403,9 +412,13 @@
 <!ENTITY enigmail.keyMan.uploadToServer.accesskey "R">
 <!ENTITY enigmail.keyMan.reload.accesskey "Ž">
 <!ENTITY enigmail.keyMan.addUid.accesskey "B">
+<!ENTITY enigmail.keyMan.addPhoto.accesskey "P">
 <!ENTITY enigmail.keyMan.manageUid.accesskey "N">
 <!ENTITY enigmail.keyMan.changePwd.accesskey "G">
 <!ENTITY enigmail.keyMan.viewSig.accesskey "L">
+<!ENTITY enigmail.keyMan.showInvalidKeys.accesskey "D">
+<!ENTITY enigmail.keyMan.showUntrustedKeys.accesskey "U">
+<!ENTITY enigmail.keyMan.showOthersKeys.accesskey "O">
 <!ENTITY enigmail.keyMan.showPhoto.accesskey "F">
 <!ENTITY enigmail.keyMan.importMenu.accesskey "U">
 <!ENTITY enigmail.keyMan.exportMenu.accesskey "I">
@@ -419,6 +432,7 @@
 <!ENTITY enigmail.keyMan.refreshAllKeys.accesskey "v">
 <!ENTITY enigmail.keyMan.selectAll.accesskey "v">
 <!ENTITY enigmail.keyMan.sendKeys.accesskey "P">
+<!ENTITY enigmail.keyMan.createMail.accesskey "C">
 <!ENTITY enigmail.keyMan.closeWin.key "O">
 <!ENTITY enigmail.keyMan.selectAll.key "v">
 <!ENTITY enigmail.viewKeySigDlg.title "Seznam podpisov">
@@ -537,6 +551,13 @@
 <!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Za podpisovanje in šifriranje ter branje šifriranih sporočil potrebujete  'par ključev'. Par ključev sestavljata dva ključa, eden je javen in drug zaseben.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Svoj javni ključ boste morali dati vsem stikom v svojem seznamu, ki bi želeli preverjati vaš podpis ali želeli šifrirati e-sporočila za vas. Z druge strani morate svoj zasebni ključ tajno varovati. Ne smete ga pošiljati, ali puščati nezaščitenega. Z njim lahko tretja oseba prebere vsa e-sporočila, ki vam jih pošiljatelji pošiljajo šifrirana. Prav tako lahko z njim šifrirajo sporočila v vašem imenu. Ker je tajen, je zaščiten z geslom.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Prosimo, potrdite svojo geslo s ponovnim vnosom">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.title "Ključa OpenPGP ni mogoče najti">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.subtitle "Ključa OpenPGP ni mogoče najti">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey "Imam obstoječe javne in zasebne ključe, ki jih želim uvoziti.">
+<!ENTITY enigmail.setupWiz.pgKeyImport.title "Uvozi ključe OpenPGP">
+<!ENTITY enigmail.setupWiz.pgKeyImport.subtitle "Navedite datoteke za uvoz">
+<!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile "Datoteka javnega ključa">
+<!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile "Datoteka javnega ključa">
 <!ENTITY enigmail.setupWiz.pgSummary.title "Povzetek">
 <!ENTITY enigmail.setupWiz.pgSummary.subtitle "Potrdite, da čarovnik upošteva te spremembe">
 <!ENTITY enigmail.setupWiz.pgSummary.desc "Zdaj ste skoraj končali! Če kliknete na gumb 'Naprej', bo čarovnik izvedel naslednja dejanja:">
@@ -556,3 +577,11 @@
 <!ENTITY enigmail.setupWiz.pgNoStart.desc "Za konfiguracijo OpenPGP niste izbrali čarovnika.<html:br></html><html:br></html>Hvala, ker uporabljate Enigmail.">
 <!ENTITY enigmail.advancedIdentityDlg.title "Napredne nastavitve identitete OpenPGP">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "Sporočilom pripni moj javni ključ">
+<!ENTITY enigmail.addPhoto.title "Ključu dodaj sliko">
+<!ENTITY enigmail.msgViewColumn.label "OpenPGP">
+<!ENTITY enigmail.msgViewColumn.tooltip "Razvrsti po stanju OpenPGP">
+<!ENTITY enigmail.addToRule.title "Pravilu po prejemniku dodaj ključ">
+<!ENTITY enigmail.addToRule.useRuleButton.label "Izbranemu pravilu dodaj ključ">
+<!ENTITY enigmail.addToRule.useRuleButton.accesskey "A">
+<!ENTITY enigmail.addToRule.newRuleButton.label "Ustvari novo pravilo">
+<!ENTITY enigmail.addToRule.newRuleButton.accesskey "N">

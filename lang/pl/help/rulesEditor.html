@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Enigmail Help: Rules Editor</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>Pomoc dla Enigmail – Edytor reguł</title>
   <style type="text/css" xml:space="preserve">
   /*<![CDATA[*/
     dt  { font-weight: bold;  }
@@ -12,51 +13,51 @@
 </head>
 
 <body>
-  <h1>Enigmail Help</h1>
+  <h1>Pomoc dla Enigmail</h1>
 
-  <h3>Using the Enigmail Rules Editor</h3>
+  <h3>Użycie edytora reguł</h3>
 
-  <p>In the Rules Editor, you can specify defaults per recipient for enabling encryption, signing and PGP/MIME, and to define what OpenPGP key(s) to use. Each rule consists of 5 fields and is represented on a single line:</p>
+  <p>W edytorze reguł można określić domyślne ustawienia dla każdego adresata: włączyć szyfrowanie, podpisywanie, kodowanie PGP/MIME oraz zdefiniować działanie kluczy OpenPGP. Każda reguła składa się z pięciu,  umieszczonych każde w osobnym wierszu, pól:</p>
 
   <dl>
-    <dt>Email</dt>
+    <dt>E-mail</dt>
 
-    <dd>The e-mail(s) from the To:, Cc: and Bcc: fields to match. The matching works on <span style="font-style: italic;">substrings</span> (Further details can be found in the Edit Rule dialog)</dd>
+    <dd>Pola do dopasowywania wiadomości e-mail – Do:, Kopia: i Ukryta kopia:. Dopasowywanie działa w oparciu o <span style="font-style: italic;">substringi</span>. Więcej szczegółów można znaleźć w oknie dialogowym edytora reguł.</dd>
 
-    <dt>OpenPGP Key(s)</dt>
+    <dt>Klucze OpenPGP</dt>
 
-    <dd>a list of OpenPGP Key ID's to use for the recipient</dd>
+    <dd>Wykaz ID kluczy OpenPGP używanych dla adresata</dd>
 
-    <dt>Sign</dt>
+    <dt>Podpis</dt>
 
     <dd>
-      enable or disable message signing. This either uses or overrides what you have specified in the message composition window. The values are: 
+      Włącza lub wyłącza podpisywanie wiadomości. Ta funkcja używa lub nadpisuje, to co zostało określone w oknie tworzenia wiadomości. Dostępne ustawienia: 
 
       <ul>
-        <li><em>Never</em>: disable signing, even if it was enabled in the message composition window (overrules the other values)</li>
+        <li><em>Nigdy</em> – wyłącza podpisywanie wiadomości, nawet jeśli funkcja była włączona w oknie tworzenia wiadomości – unieważnia inne ustawienia.</li>
 
-        <li><em>Possible</em>: leave signing as specified in the message composition window</li>
+        <li><em>Pozostaw</em> – pozostawia podpis, taki jaki był ustawiony w oknie tworzenia wiadomości,</li>
 
-        <li><em>Always</em>: enable signing, even if it was <span style="font-style: italic;">not</span> enabled in the message composition window</li>
+        <li><em>Zawsze</em> – włącza podpisywanie wiadomości, nawet jeśli <span style="font-style: italic;">nie</span> było włączone w oknie tworzenia wiadomości.</li>
       </ul>
 
-      <p>These signing settings are applied for all rules that match. If one of the rules disables signing, the message will not be signed, regardless of other rules that specify <em>Always</em>.</p>
+      <p>Ustawienia podpisywania są stosowane dla tych wszystkich reguł, które mają włączoną funkcję podpisywania. Jeśli jakaś reguła wyłącza podpisywanie, wiadomość nie będzie podpisywana bez względu na inne reguły, które określają <em>Zawsze</em>.</p>
     </dd>
 
-    <dt>Encrypt</dt>
+    <dt>Szyfrowanie</dt>
 
-    <dd>enable or disable message encryption. The allowed settings and their meaning are the same as for message signing.</dd>
+    <dd>Włącza lub wyłącza szyfrowanie wiadomości. Dostępne ustawienia i znaczenie są takie same, jak dla podpisywania wiadomości.</dd>
 
     <dt>PGP/MIME</dt>
 
-    <dd>enable or disable the use of the PGP/MIME (RFC 3156) message encoding. If PGP/MIME is disabled, the messages are encoded using "inline PGP". The allowed values and their meaning a re the same as for message signing.</dd>
+    <dd>Włącza lub wyłącza używanie kodowania PGP/MIME (RFC 3156) wiadomości. Jeśli PGP/MIME jest wyłączone, wiadomości są kodowane za pomocą „inline PGP”. Dostępne ustawienia i znaczenie są takie same, jak dla podpisywania wiadomości.</dd>
   </dl>
 
-  <p>The rules are processed in the order displayed in the list. Whenever a rule matches a recipient and contains a OpenPGP Key ID, in addition to using the specified Key ID, the recipient is not considered anymore when processing further rules.</p>
+  <p>Reguły są przetwarzane w kolejności, w jakiej są wyświetlane na liście. W przypadku, gdy reguła pasuje do odbiorcy i zawiera ID klucza OpenPGP, oprócz korzystania z określonego ID klucza odbiorcy, nic innego nie jest brane pod uwagę podczas przetwarzania kolejnych reguł.</p>
 
-  <p><em>Note:</em> The rule editor is not yet complete. It is possible to write some more advanced rules by directly editing the rules file (these rules should then not be edited anymore in the rule editor). <a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Further information</a> for directly editing the file is available on the Enigmail Homepage</p>
+  <p><em>Informacja.</em> Proces twórczy edytora reguł nie jest jeszcze zakończony. Bardziej zaawansowane reguły można tworzyć, edytując bezpośrednio plik reguł. Reguły edytowane w ten sposób nie powinny już być nigdy edytowane w edytorze reguł. <a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Więcej informacji</a> na temat bezpośredniego edytowania pliku reguł jest dostępnych na stronie domowej Enigmail.</p>
   <hr />
 
-  <p>Further help is available on the <a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail Help web page</a></p>
+  <p>Więcej pomocy można uzyskać na <a href="http://enigmail.mozdev.org/help.html" target="_blank">stronie pomocy</a> Enigmail.</p>
 </body>
 </html>

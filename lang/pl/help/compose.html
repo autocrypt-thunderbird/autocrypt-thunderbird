@@ -3,7 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Enigmail Help: Message Composition</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>Pomoc dla Enigmail: Tworzenie wiadomości</title>
   <style type="text/css">
   /*<![CDATA[*/
     dt  { font-weight: bold;  }
@@ -12,76 +13,85 @@
 </head>
 
 <body>
-  <h1>Enigmail Help</h1>
+  <h1>Pomoc dla Enigmail</h1>
 
-  <h3>Using Enigmail when composing messages</h3>
+  <h3>Używanie Enigmail w oknie tworzenia wiadomości</h3>
 
   <dl>
-    <dt>Enigmail menu in Mail/Compose window</dt>
+    <dt>
+      <p>Menu Enigmail w oknie tworzenia wiadomości</p>
+    </dt>
+
 
     <dd>
       <dl>
-        <dt>Sign message</dt>
-
-        <dd>Enable/Disable sending signed mail. User is notified, if signing fails.</dd>
-
-        <dt>Encrypt message</dt>
-				<dd>
-					<p>Enable/Disable encryption to all recipient(s) before sending. User is notified, if encryption fails.</p>
-
-          <p>If <em>Display selection when necessary</em> is set in <strong>Preferences -&gt; Key Selection tab</strong>, a list of keys will pop up if there are addresses in the list of recipients for the message for whom you have no public key.</p>
-
-          <p>If <em>Never display OpenPGP key selection dialog</em> is set in <strong>Preferences -&gt; Key Selection tab</strong>, and there are addresses in the list of recipients for the message for whom you have no public key, the message will be sent unencrypted.</p>
-        </dd>
-
-        <dt>Use PGP/MIME for this message</dt>
+        <dt>Podpisz wiadomość</dt>
 
         <dd>
-          Enable/Disable the use of <a href="http://community.roxen.com/developers/idocs/rfc/rfc3156.html" target="_blank">PGP/MIME</a> for this message. 
+          <p>Włącza/wyłącza podpisywanie wiadomości. Użytkownik jest powiadamiany, jeśli podpisywanie się nie powiodło.</p>
+          </dd>
 
-          <p>If you know the recipient(s) can read mail using the PGP/MIME format, you should use it.</p>
+        <dt>Szyfruj wiadomość</dt>
+				<dd>
+					<p>Włącza/wyłącza szyfrowanie dla wszystkich odbiorców przed wysłaniem. Użytkownik jest powiadamiany, jeśli szyfrowanie się nie powiodło.</p>
 
-          <p>This feature is dependent on the settings in <strong>Preferences -&gt; PGP/MIME tab</strong> being set to <em>Allow to use PGP/MIME</em> or <em>Always use PGP/MIME</em>.</p>
+          <p>Jeśli funkcja <em>Wyświetlaj wybór w razie potrzeby</em>, jest ustawiona na karcie <strong>Ustawienia » Zaawansowane » Wybór klucza</strong>, będzie wyświetlana lista kluczy, jeśli na liście odbiorców wiadomości znajdują się adresy dla, których nie masz kluczy publicznych.</p>
+
+          <p>Jeśli funkcja <em>Nigdy nie wyświetlaj wyboru klucza OpenPGP</em>, jest ustawiona na karcie <strong>Ustawienia » Wybór klucza</strong>, wiadomość będzie wysyłana niezaszyfrowana, jeśli na liście odbiorców wiadomości znajdują się adresy dla, których nie masz kluczy publicznych.</p>
         </dd>
 
-        <dt>Default composition options</dt>
+        <dt>Użyj PGP/MIME dla tej wiadomości</dt>
+
+        <dd>
+          <p>Włącza/wyłącza użycie <a href="http://community.roxen.com/developers/idocs/rfc/rfc3156.html" target="_blank">PGP/MIME</a> dla danej wiadomości.</p> 
+
+          <p>Jeśli wiesz, że odbiorca może przeczytać wiadomość za pomocą formatu PGP/MIME, należy go użyć.</p>
+
+          <p>Ta funkcja jest zależna od ustawień na karcie <strong>Ustawienia » PGP/MIME</strong>  <em>Zezwalaj na używanie PGP/MIME</em> lub <em>Zawsze używaj PGP/MIME</em>.</p>
+        </dd>
+
+        <dt>
+          <p>Domyślne opcje tworzenia wiadomości</p>
+        </dt>
 
         <dd>
           <ul>
-            <li><strong>Signing/Encryption Options...</strong>: shortcut to <strong>Account Settings -&gt; OpenPGP Options.</strong></li>
+            <li><strong>Opcje podpisu/szyfrowania…</strong> – skrót do <strong>Konfiguracja kont » OpenPGP.</strong></li>
 
-            <li><strong>Send options...</strong>: shortcut to <strong>Preferences -&gt; Send</strong> tab.</li>
+            <li><strong>Wysyłanie wiadomości…</strong> – skrót do karty <strong>Ustawienia » Wysyłanie</strong>.</li>
 
-            <li><strong>Key selection options...</strong>: shortcut to <strong>Preferences -&gt; Key Selection</strong> tab.</li>
+            <li><strong>Opcje wyboru kluczy…</strong> – skrót do do karty <strong>Ustawienia » Wybór kluczy</strong>.</li>
 
-            <li><strong>PGP/MIME options...</strong>: shortcut to <strong>Preferences -&gt; PGP/MIME</strong> tab.</li>
+            <li><strong>Opcje PGP/MIME…</strong> – skrót do do karty <strong>Ustawienia » PGP/MIME</strong>.</li>
           </ul>
         </dd>
 
-        <dt>Undo encryption</dt>
+        <dt>
+          <p>Cofnij szyfrowanie</p>
+        </dt>
 
         <dd>
-          <p>If there is a failure when actually sending mail, such as the POP server not accepting the request, Enigmail will not know about it, and the encrypted message will continue to be displayed in the Compose window. Choosing this menu item will undo the encryption/signing, reverting the Compose window back to its original text.</p>
+          <p>Jeśli wysyłanie wiadomości się nie powiodło, na przykład z powodu odrzucenia żądania przez serwer POP, Enigmail nie będzie o tym wiedział i zaszyfrowana wiadomość będzie wyświetlana w oknie tworzenia wiadomości. Wybranie tej funkcji spowoduje cofnięcie szyfrowania/podpisywania i w oknie tworzenia wiadomości będzie wyświetlany oryginalny tekst.</p>
 
-          <p><em>As a temporary fix, this option may also be used to decrypt the quoted text when replying to encrypted messages. Enigmail should automatically decrypt the quoted message, but if that fails for some reason, you can use this menu item to force it.</em></p>
+          <p><em>Jako tymczasowe rozwiązanie, funkcja ta może być również używana do odszyfrowania cytowanego tekstu podczas odpowiedzi na zaszyfrowane wiadomości. Enigmail powinien automatycznie rozszyfrować cytowaną wiadomość, ale jeśli z jakiegoś powodu zawiedzie, można za pomocą tej funkcji wymusić deszyfrowanie.</em></p>
         </dd>
 
-        <dt>Insert public key</dt>
+        <dt>Wstaw klucz publiczny</dt>
 
-        <dd>insert ASCII-armored public key block at the current cursor location in the Compose window. You will be prompted for the email addresses of the key(s) to be inserted. Keys inserted in this manner will automatically be recognized at the receiving end by Enigmail. After key insertion, you may still choose to sign/encrypt the mail as needed. Also, do not insert more than one key block in a message; just specify multiple email addresses, separated by commas or spaces, when prompted.</dd>
+        <dd>
+          <p>Wstawia w oknie tworzenia wiadomości blok klucza publicznego w aktualnej pozycji kursora. Użytkownik będzie proszony o podanie adresu e-mail wstawianego klucza. Klucze wstawiane w ten sposób będą u odbiorcy automatycznie rozpoznawane przez Enigmail. Po wstawieniu klucza można nadal wybrać podpisanie/szyfrowanie wiadomości. Nie należy do wiadomości wstawiać więcej niż jeden blok klucza, wystarczy, gdy pojawi się monit, podać wiele adresów e-mail, oddzielając je przecinkami lub spacjami.</p>
+        </dd>
 
-        <dt>Clear save passphrase</dt>
+        <dt>Pomoc</dt>
 
-        <dd>Clears cached passphrase. Useful if you have multiple passphrases.</dd>
-
-        <dt>Help</dt>
-
-        <dd>Displays Help information from the website (this page).</dd>
+        <dd>
+          <p>Wyświetla pomocne informacje z witryny internetowej (tę stronę).</p>
+        </dd>
       </dl>
     </dd>
   </dl>
   <hr />
 
-  <p>Further help is available on the <a href="http://enigmail.mozdev.org/help.html">Enigmail Help web page</a></p>
+  <p>Więcej pomocy można uzyskać na <a href="http://enigmail.mozdev.org/help.html">stronie pomocy</a> Enigmail.</p>
 </body>
 </html>
