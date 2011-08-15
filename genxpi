@@ -64,7 +64,7 @@ if [ "$xpcomAbi" = "" ] ; then
 fi
 platform=${osArch}_${xpcomAbi}
 # Pepare install.rdf
-sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${platform}'<\/em:targetPlatform>/' < ${srcDir}/package/install.rdf > ${targetDir}/install.rdf.t1
+sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${platform}'<\/em:targetPlatform>/' < ${srcDir}/package/install.rdf > ${targetDir}/install.rdf
 
 
 enigmimeDll=${libPrefix}enigmime${dllSuffix}
@@ -92,34 +92,12 @@ if [ -s ${srcDir}/lang/current-languages.txt ]; then
   echo '' >> ${targetDir}/chrome.manifest
   echo '# Additional languages' >> ${targetDir}/chrome.manifest
 
-  echo '      <Description about="urn:mozilla:extension:file:enigmail.jar">' > ${targetDir}/install.rdf.t2
-
   for lang in `cat ${srcDir}/lang/current-languages.txt`; do
-    echo '        <em:locale>locale/'$lang'/enigmail/</em:locale>' >> ${targetDir}/install.rdf.t2
     echo 'locale        enigmail    '$lang'       jar:chrome/enigmail.jar!/locale/'$lang'/' >> ${targetDir}/chrome.manifest
   done
-  echo '      </Description>' >> ${targetDir}/install.rdf.t2
 
-  awk -v langFile=${targetDir}/install.rdf.t2 '
-    BEGIN {
-      lines=0
-      while (getline < langFile) {
-        lineTxt[++lines] = $0
-      }
-    }
-    /<!-- localeFile placeholder -->/ {
-      for (i=0; i<lines; i++) {
-        print lineTxt[i+1]
-      }
-      next;
-    }
-    {
-      print $0
-    }' ${targetDir}/install.rdf.t1 >${targetDir}/install.rdf
-    rm ${targetDir}/install.rdf.t1 ${targetDir}/install.rdf.t2
 else
   localeJar=""
-  mv ${targetDir}/install.rdf.t1 ${targetDir}/install.rdf
 fi
 
 
@@ -167,9 +145,15 @@ cp components/${ipcDll} ${ipcDllFile}
 
 if [ -d chrome/enigmail ]; then
   cd chrome/enigmail
+  for lang in `cat ${srcDir}/lang/current-languages.txt`; do
+      ${srcDir}/util/fixlang.pl locale/en-US locale/$lang
+  done
+  echo "Creating ${xpiModule}.jar file"
   zip -rD ../${xpiModule}.jar *
   cd ../..
 fi
+
+echo "Creating ${xpiFile} file"
 
 zip ${xpiFile} \
     components/${xpiModule}.xpt \
