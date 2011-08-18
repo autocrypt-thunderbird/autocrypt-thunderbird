@@ -36,7 +36,7 @@ sub loaddtd { # ($file)
       $ind=trim($1);
       # print "+ Line  '$ind'\n";
       $val=$2;
-      if ($ind eq = "enigmail.ruleEmail.tooltip"
+      if ($ind eq "enigmail.ruleEmail.tooltip"
           || $ind eq "enigmail.noHushMailSupport.label"
           || $ind eq "enigmail.noHushMailSupport.tooltip") {
         $val =~ s/\</&lt;/g;
