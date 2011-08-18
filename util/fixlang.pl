@@ -19,6 +19,7 @@ sub loaddtd { # ($file)
 
   my $fic;
   my $ind;
+  my $val;
 
   open($fic, $file) || die "Could not open $file";
   my $prev=0;
@@ -31,10 +32,17 @@ sub loaddtd { # ($file)
     if (length(trim($buf)) == 0) {
       # print "+ empty\n";
     }
-    elsif ($buf =~ /^<!ENTITY (.*)"(.*)">$'/i) {
+    elsif ($buf =~ /^<!ENTITY (.*)"(.*)">\s*$'/i) {
       $ind=trim($1);
       # print "+ Line  '$ind'\n";
-      $tab->{$ind} = "$1\"$2\">";
+      $val=$2;
+      if ($ind eq = "enigmail.ruleEmail.tooltip"
+          || $ind eq "enigmail.noHushMailSupport.label"
+          || $ind eq "enigmail.noHushMailSupport.tooltip") {
+        $val =~ s/\</&lt;/g;
+        $val =~ s/\>/&gt;/g;
+      }
+      $tab->{$ind} = "$1\"$val\">";
       $prev=0;
     }
     elsif ($buf =~ /^<!ENTITY (.*)"(.*)$/i) {
