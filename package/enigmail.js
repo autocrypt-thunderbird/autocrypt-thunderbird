@@ -1050,6 +1050,7 @@ Enigmail.prototype = {
     } catch (ex) {
       this.initializationError = Ec.getString("enigmimeNotAvail");
       Ec.ERROR_LOG("enigmail.js: Enigmail.initialize: Error - "+this.initializationError+"\n");
+      Ec.DEBUG_LOG("enigmail.js: Enigmail.initialize: exception="+ex.toString()+"\n");
       throw Components.results.NS_ERROR_FAILURE;
     }
 
@@ -1114,6 +1115,7 @@ Enigmail.prototype = {
     } catch (ex) {
       this.initializationError = Ec.getString("enigmimeNotAvail");
       Ec.ERROR_LOG("enigmail.js: Enigmail.initialize: Error - "+this.initializationError+"\n");
+      Ec.DEBUG_LOG("enigmail.js: Enigmail.initialize: exception="+ex.toString()+"\n");
       throw Components.results.NS_ERROR_FAILURE;
     }
 
@@ -2332,7 +2334,7 @@ Enigmail.prototype = {
       }
 
       var m = msgText.match(/^(Hash: )(.*)$/m);
-      if (m.length > 2 && m[1] == "Hash: ") {
+      if (m && m.length > 2 && m[1] == "Hash: ") {
         var hashAlgorithm = m[2].toLowerCase();
         for (var i=1; i < gMimeHashAlgorithms.length; i++) {
           if (gMimeHashAlgorithms[i] == hashAlgorithm) {
