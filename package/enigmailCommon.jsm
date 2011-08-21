@@ -601,8 +601,13 @@ var EnigmailCommon = {
     } else {
       var appShellSvc = Cc[this.APPSHSVC_CONTRACTID].getService(Ci.nsIAppShellService);
       var domWin = appShellSvc.hiddenDOMWindow;
-      //nsIDOMJSWindow
-      domWin.open(spec, winName, "chrome,"+winOptions, optList);
+      try {
+        domWin.open(spec, winName, "chrome,"+winOptions, optList);
+      }
+      catch (ex) {
+        domWin = windowManager.getMostRecentWindow(null);
+        domWin.open(spec, winName, "chrome,"+winOptions, optList);
+      }
     }
   },
 
