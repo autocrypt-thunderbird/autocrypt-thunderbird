@@ -169,8 +169,6 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     INV_SGNR:				 0x100000000
 };
 
-var gPGPHashNum = {md5:1, sha1:2, ripemd160:3, sha256:4, sha384:5, sha512:6, sha224:7};
-
 var gCachedPassphrase = null;
 var gCacheTimer = null;
 
@@ -205,7 +203,7 @@ const ENC_TYPE_ATTACH_ASCII = 2;
 
 const DUMMY_AGENT_INFO = "none";
 
-var gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512", "sha224"];
+var gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512", "sha224", "md5" ];
 
 var gKeyAlgorithms = [];
 
@@ -2333,21 +2331,25 @@ Enigmail.prototype = {
         return exitCode;
       }
 
+      var hashAlgorithm = "md5"; // default as defined in RFC 4880, section 7
+
       var m = msgText.match(/^(Hash: )(.*)$/m);
-      if (m && m.length > 2 && m[1] == "Hash: ") {
-        var hashAlgorithm = m[2].toLowerCase();
-        for (var i=1; i < gMimeHashAlgorithms.length; i++) {
-          if (gMimeHashAlgorithms[i] == hashAlgorithm) {
-            Ec.DEBUG_LOG("enigmail.js: Enigmail.determineHashAlgorithm: found hashAlgorithm "+hashAlgorithm+"\n");
-            gKeyAlgorithms[fromMailAddr] = hashAlgorithm;
-            hashAlgoObj.value = hashAlgorithm;
-            return 0;
-          }
+      if (m && (m.length > 2) && (m[1] == "Hash: ")) {
+        hashAlgorithm = m[2].toLowerCase();
+      }
+      else
+        Ec.DEBUG_LOG("enigmail.js: Enigmail.determineHashAlgorithm: no hashAlgorithm specified - using MD5\n");
+
+      for (var i=1; i < gMimeHashAlgorithms.length; i++) {
+        if (gMimeHashAlgorithms[i] == hashAlgorithm) {
+          Ec.DEBUG_LOG("enigmail.js: Enigmail.determineHashAlgorithm: found hashAlgorithm "+hashAlgorithm+"\n");
+          gKeyAlgorithms[fromMailAddr] = hashAlgorithm;
+          hashAlgoObj.value = hashAlgorithm;
+          return 0;
         }
       }
 
-      Ec.DEBUG_LOG("enigmail.js: Enigmail.determineHashAlgorithm: no hashAlgorithm found\n");
-
+      Ec.ERROR_LOG("enigmail.js: Enigmail.determineHashAlgorithm: no hashAlgorithm found\n");
       return 2;
     }
     else {
