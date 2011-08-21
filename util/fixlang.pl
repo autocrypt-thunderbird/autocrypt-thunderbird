@@ -4,6 +4,7 @@ sub trim { # ($str)
   my $str = @_[0];
 
   $str =~ s/\s*$//;
+  $str =~ s/^\s*//;
 
   return $str;
 }
