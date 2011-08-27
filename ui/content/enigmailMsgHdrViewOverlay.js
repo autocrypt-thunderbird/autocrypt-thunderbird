@@ -736,9 +736,15 @@ Enigmail.hdrView = {
         decryptOpenMenu.removeAttribute('disabled');
         decryptSaveMenu.removeAttribute('disabled');
         verifyMenu.setAttribute('disabled', true);
-        if (! selectedAttachments[0].displayName) {
-          selectedAttachments[0].displayName="message.pgp"
+        if (typeof(selectedAttachments[0].displayName) == "undefined") {
+          if (! selectedAttachments[0].name) {
+            selectedAttachments[0].name="message.pgp"
+          }
         }
+        else
+          if (! selectedAttachments[0].displayName) {
+            selectedAttachments[0].displayName="message.pgp"
+          }
       }
       else {
         importMenu.setAttribute('disabled', true);
