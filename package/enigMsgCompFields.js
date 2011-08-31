@@ -117,15 +117,14 @@ EnigMsgCompFields.prototype = {
       "securityInfo",
       "senderReply",
       "allReply",
+      "splitRecipients",
       "listReply" ];
     this._parent = smimeCompFields;
-    var mbr;
+    var m;
 
-    for (mbr in members) {
-      eval("this."+members[mbr]+" = this._parent."+members[mbr]+";\n");
+    for (m in members) {
+      this[m]= smimeCompFields[m];
     }
-
-    this.splitRecipients = this._parent.splitRecipients;
   }
 }
 
