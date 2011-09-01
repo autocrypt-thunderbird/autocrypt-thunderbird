@@ -697,6 +697,8 @@ var EnigmailFuncs = {
         preface='</pre>';
         for (let j = 0; j < oldCiteLevel - citeLevel; j++)
           preface += "</blockquote>";
+        
+        preface += '<pre wrap="">';
       }
 
       if (logLineStart.value > 0) {
