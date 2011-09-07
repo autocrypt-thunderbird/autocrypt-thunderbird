@@ -418,7 +418,7 @@ var EnigmailFuncs = {
 
 
     var sortByValidity = function (a, b) {
-      return (TRUSTLEVEL_SORTED.indexOf(this.getTrustCode(keyListObj.keyList[a.keyId])) < TRUSTLEVEL_SORTED.indexOf(this.getTrustCode(keyListObj.keyList[b.keyId]))) ? -sortDirection : sortDirection;
+      return (TRUSTLEVEL_SORTED.indexOf(EnigmailFuncs.getTrustCode(keyListObj.keyList[a.keyId])) < TRUSTLEVEL_SORTED.indexOf(EnigmailFuncs.getTrustCode(keyListObj.keyList[b.keyId]))) ? -sortDirection : sortDirection;
     }
 
     var sortByTrust = function (a, b) {
@@ -697,7 +697,7 @@ var EnigmailFuncs = {
         preface='</pre>';
         for (let j = 0; j < oldCiteLevel - citeLevel; j++)
           preface += "</blockquote>";
-        
+
         preface += '<pre wrap="">';
       }
 
