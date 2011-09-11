@@ -92,7 +92,6 @@ nsPipeChannel::nsPipeChannel()
       mHeaderContentType(UNKNOWN_CONTENT_TYPE),
       mHeaderContentLength(-1),
       mHeaderCharset(""),
-      mHeaderContentDisposition(""),
 
       mContentReceived(0)
 
@@ -426,18 +425,30 @@ nsPipeChannel::SetContentCharset(const nsACString &aContentCharset)
   return NS_OK;
 }
 
-/*
- * This was foreseen for some future version of Gecko, but apparently never made it.
- * To be delete in future
+
+#if MOZILLA_MAJOR_VERSION > 8
+NS_IMETHODIMP
+nsPipeChannel::GetContentDisposition(PRUint32 *)
+{
+  // not available -> throw error as specified in nsIChannel.idl
+  return NS_ERROR_NOT_AVAILABLE;
+}
 
 NS_IMETHODIMP
-nsPipeChannel::GetContentDisposition(nsACString &aHeaderContentDisposition)
+nsPipeChannel::GetContentDispositionHeader(nsACString &dummy)
 {
-  aHeaderContentDisposition = mHeaderContentDisposition;
-  DEBUG_LOG(("nsPipeChannel::GetContentDisposition: content-disposition: %s\n", mHeaderContentDisposition.get()));
-  return NS_OK;
+  // not available -> throw error as specified in nsIChannel.idl
+  return NS_ERROR_NOT_AVAILABLE;
 }
-*/
+
+NS_IMETHODIMP
+nsPipeChannel::GetContentDispositionFilename(nsAString &dummy)
+{
+  // not available -> throw error as specified in nsIChannel.idl
+  return NS_ERROR_NOT_AVAILABLE;
+}
+
+#endif
 
 NS_IMETHODIMP
 nsPipeChannel::GetContentLength(IPCLong *aContentLength)

@@ -108,7 +108,6 @@ protected:
     nsCString                           mHeaderContentType;
     IPCLong                             mHeaderContentLength;
     nsCString                           mHeaderCharset;
-    nsCString                           mHeaderContentDisposition;
 
     PRUint32                            mContentReceived;
 
