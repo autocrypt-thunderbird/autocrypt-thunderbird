@@ -122,7 +122,6 @@ protected:
 
     PRBool                              mInitialized;
     PRBool                              mFinalized;
-    PRBool                              mNoProxy;
     PRBool                              mStartedRequest;
     PRMonitor*                          mMonitor;
 

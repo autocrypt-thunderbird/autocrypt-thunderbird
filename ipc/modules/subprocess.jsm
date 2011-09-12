@@ -386,7 +386,7 @@ PipeObj.prototype = {
 
     this._pipeTransport.openPipe(cmdObj.arguments, cmdObj.arguments.length,
                                  cmdObj.environment, cmdObj.environment.length,
-                                 0, "", true, cmdObj.mergeStderr ? true : false,
+                                 0, "", cmdObj.mergeStderr ? true : false,
                                  this.stderrData);
 
     this._pipeTransport.asyncRead(this.stdoutListener, null, 0, -1, 0);

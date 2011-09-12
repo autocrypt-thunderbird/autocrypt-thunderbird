@@ -125,8 +125,6 @@ interface nsIPipeTransport : nsIProcess
      *                      (if == 0, a default value, usually an hour, is used)
      * @param killString    string to be transmitted to process before it is
      *                      killed (specify null string, if none)
-     * @param noProxy       do not use proxy for async callback
-     *                      (must use join to terminate process, in this case)
      * @param mergeStderr   merge STDERR with STDOUT
      * @param stderrConsole nsIPipeListener object to capture STDERR (required
      *                      if mergeStderr is false)
@@ -137,7 +135,6 @@ interface nsIPipeTransport : nsIProcess
                   in unsigned long envCount,
                   in unsigned long timeoutMS,
                   in string killString,
-                  in boolean noProxy,
                   in boolean mergeStderr,
                   in nsIPipeListener stderrConsole);
 
@@ -208,8 +205,7 @@ interface nsIPipeTransport : nsIProcess
 
     /**
      * Joins STDOUT handling thread (blocking until STDOUT is closed),
-     * (Necessary and only works if noProxy is true)
-     * The process still needs to be terminated to free resources.
+     * the process still needs to be terminated to free resources.
      */
     void join();
 

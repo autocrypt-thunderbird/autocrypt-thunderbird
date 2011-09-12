@@ -211,7 +211,6 @@ nsIPCService::RunCommand(nsIFile *executable,
   nsCOMPtr<nsIPipeTransport> pipeTrans = do_CreateInstance(NS_PIPETRANSPORT_CONTRACTID, &rv);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  PRBool noProxy = PR_FALSE;
   PRBool mergeStderr = PR_FALSE;
 
   nsCOMPtr<nsIPipeListener> console (errConsole);
@@ -225,7 +224,7 @@ nsIPCService::RunCommand(nsIFile *executable,
   rv = pipeTrans->OpenPipe(args, argCount,
                        env, envCount,
                        0, "",
-                       noProxy, mergeStderr,
+                       mergeStderr,
                        console);
   NS_ENSURE_SUCCESS(rv, rv);
 

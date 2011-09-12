@@ -477,7 +477,6 @@ nsEnigMsgCompose::Init()
 
   nsString errorMsg;
   PRUint32 statusFlags;
-  PRBool noProxy = PR_TRUE;
   rv = enigmailSvc->EncryptMessageStart(nsnull, prompter,
                                         mUIFlags,
                                         mSenderEmailAddr.get(),
@@ -486,7 +485,6 @@ nsEnigMsgCompose::Init()
                                         mHashAlgorithm.get(),
                                         mSendFlags,
                                         (nsIStreamListener*)(mWriter),
-                                        noProxy,
                                         &statusFlags,
                                         getter_Copies(errorMsg),
                                         getter_AddRefs(mPipeTrans) );

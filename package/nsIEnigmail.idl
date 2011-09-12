@@ -99,7 +99,6 @@ interface nsIEnigmail : nsISupports
                                        in string  hashAlgorithm,
                                        in unsigned long sendFlags,
                                        in nsIStreamListener listener,
-                                       in boolean noProxy,
                                        out unsigned long statusFlags,
                                        out wstring errorMsg);
 
@@ -117,7 +116,6 @@ interface nsIEnigmail : nsISupports
                                        in boolean verifyOnly,
                                        in boolean noOutput,
                                        in nsIStreamListener listener,
-                                       in boolean noProxy,
                                        out unsigned long statusFlags,
                                        out wstring errorMsg);
 

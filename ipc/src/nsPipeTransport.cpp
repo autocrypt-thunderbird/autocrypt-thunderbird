@@ -96,7 +96,6 @@ using namespace mozilla;
 nsPipeTransport::nsPipeTransport() :
       mInitialized(PR_FALSE),
       mFinalized(PR_FALSE),
-      mNoProxy(PR_FALSE),
       mStartedRequest(PR_FALSE),
 
       mPipeState(PIPE_NOT_YET_OPENED),
@@ -268,7 +267,6 @@ NS_IMETHODIMP nsPipeTransport::OpenPipe(const PRUnichar **args,
                                         PRUint32 envCount,
                                         PRUint32 timeoutMS,
                                         const char *killString,
-                                        PRBool noProxy,
                                         PRBool mergeStderr,
                                         nsIPipeListener* stderrConsole)
 {
@@ -286,8 +284,6 @@ NS_IMETHODIMP nsPipeTransport::OpenPipe(const PRUnichar **args,
 
   if (mPipeState != PIPE_NOT_YET_OPENED)
     return NS_ERROR_ALREADY_INITIALIZED;
-
-  mNoProxy = noProxy;
 
   if (! mergeStderr)
     mStderrConsole = stderrConsole;
@@ -530,7 +526,7 @@ nsPipeTransport::Finalize(PRBool destructor)
       ERROR_LOG(("nsPipeTransport::Finalize: Failed to interrupt Stdout thread, %x\n",
         rv));
     }
-    else if (mNoProxy) {
+    else {
       // Join poller thread to free resources (may block)
       rv = mStdoutPoller->Join();
       if (NS_FAILED(rv)) {
@@ -711,9 +707,6 @@ nsPipeTransport::Join()
 
   nsresult rv;
   DEBUG_LOG(("nsPipeTransport::Join: \n"));
-
-  if (!mNoProxy)
-    return NS_ERROR_FAILURE;
 
   // Close STDIN, if open
   CloseStdin();
@@ -962,7 +955,7 @@ nsPipeTransport::OpenInputStream(PRUint32 offset,
   NS_ENSURE_SUCCESS(rv, rv);
 
   // Spin up a new thread to handle STDOUT polling
-  rv = mStdoutPoller->AsyncStart(mOutputStream, nsnull, PR_FALSE, 0);
+  rv = mStdoutPoller->AsyncStart(mOutputStream, nsnull, PR_TRUE, 0);
   NS_ENSURE_SUCCESS(rv, rv);
 
   NS_ADDREF(*result = mInputStream);
@@ -1064,34 +1057,18 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
 
     nsCOMPtr<nsIThread> eventQ;
 
-    if (!mNoProxy) {
-      rv = NS_GetCurrentThread(getter_AddRefs(eventQ));
-      NS_ENSURE_SUCCESS(rv, rv);
-    }
-
     // Set input stream observer (using event queue, if need be)
     rv = asyncInputStream->AsyncWait((nsIInputStreamCallback*) this,
                                       0, 0, eventQ);
     NS_ENSURE_SUCCESS(rv, rv);
 
-    if (mNoProxy) {
-      pipeListener = this;
-
-    } else {
-      nsIPipeTransportListener* temListener = this;
-      rv = proxyMgr->GetProxyForObject(NS_PROXY_TO_CURRENT_THREAD, //current thread
-                                       NS_GET_IID(nsIPipeTransportListener),
-                                       temListener,
-                                       NS_PROXY_SYNC | NS_PROXY_ALWAYS,
-                                       getter_AddRefs(pipeListener));
-      NS_ENSURE_SUCCESS(rv, rv);
-    }
+    pipeListener = this;
   }
 
   // Spin up a new thread to handle STDOUT polling
   PRUint32 mimeHeadersMaxSize = mHeaderProcessor ? mHeadersMaxSize : 0;
   rv = mStdoutPoller->AsyncStart(mOutputStream, pipeListener,
-                                 (mNoProxy),
+                                 PR_TRUE,
                                  mimeHeadersMaxSize);
   NS_ENSURE_SUCCESS(rv, rv);
 
@@ -1651,8 +1628,6 @@ nsPipeTransport::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
 
 ///////////////////////////////////////////////////////////////////////////////
 // nsIInputStreamCallback methods:
-// (Should be invoked in the thread creating nsIPipeTransport object,
-//  unless mNoProxy is true.)
 ///////////////////////////////////////////////////////////////////////////////
 
 NS_IMETHODIMP
@@ -1696,11 +1671,6 @@ nsPipeTransport::OnInputStreamReady(nsIAsyncInputStream* inStr)
     NS_ENSURE_SUCCESS(rv, rv);
 
     nsCOMPtr<nsIThread> eventQ;
-
-    if (!mNoProxy) {
-      rv = NS_GetCurrentThread(getter_AddRefs(eventQ));
-      NS_ENSURE_SUCCESS(rv, rv);
-    }
 
     // Re-set input stream observer (using event queue, if need be)
     rv = inStr->AsyncWait((nsIInputStreamCallback*) this, 0, 0, eventQ);
@@ -1786,8 +1756,6 @@ nsPipeTransport::ParseMimeHeaders(const char* mimeHeaders, PRUint32 count,
 
 ///////////////////////////////////////////////////////////////////////////////
 // nsIPipeTransportListener methods:
-// (Should be invoked in the thread creating nsIPipeTransport object,
-//  unless mNoProxy is true.)
 ///////////////////////////////////////////////////////////////////////////////
 
 NS_IMETHODIMP
@@ -1875,9 +1843,6 @@ nsPipeTransport::StopRequest(nsresult aStatus)
     rv = mCreatorThread->Dispatch(streamDispatch,
       nsIEventTarget::DISPATCH_SYNC);
   }
-
-  if (!mNoProxy)
-    Finalize(PR_FALSE);
 
   return rv;
 }
@@ -2157,9 +2122,12 @@ nsStdoutPoller::Join()
 
   NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
 
+  DEBUG_LOG(("nsStdoutPoller::Join - is initialized\n"));
+
   if (!mJoinableThread)
     return NS_ERROR_NOT_AVAILABLE;
 
+  DEBUG_LOG(("nsStdoutPoller::Join - is joinable\n"));
 
   if (!mStdoutThread)
     return NS_OK;

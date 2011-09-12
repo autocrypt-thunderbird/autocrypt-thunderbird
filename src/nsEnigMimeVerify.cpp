@@ -586,14 +586,12 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   nsString errorMsg;
   PRBool verifyOnly = PR_TRUE;
   PRBool noOutput = PR_TRUE;
-  PRBool noProxy = PR_TRUE;
   PRUint32 statusFlags;
   rv = enigmailSvc->DecryptMessageStart(nsnull,
                                         prompter,
                                         verifyOnly,
                                         noOutput,
                                         mOutBuffer,
-                                        noProxy,
                                         &statusFlags,
                                         getter_Copies(errorMsg),
                                         getter_AddRefs(mPipeTrans) );

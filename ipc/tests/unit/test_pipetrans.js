@@ -154,7 +154,7 @@ function run_test()
     createInstance(Ci.nsIPipeTransport);
   pipeTrans.init(command);
   pipeTrans.openPipe ([ "dump" ], 1, envList, envList.length,
-                        0, "", true, false,
+                        0, "", false,
                         errorListener);
 
   var myListener = new TestStreamListener(pipeTrans, false);
@@ -188,7 +188,7 @@ function run_test()
     createInstance(Ci.nsIPipeTransport);
   pipeTrans.init(command);
   pipeTrans.openPipe ([ "write", dataFile.path ], 2, envList, envList.length,
-                        0, "", true, true,
+                        0, "", true,
                         null);
 
   myListener = new TestStreamListener(pipeTrans, false);
@@ -216,7 +216,7 @@ function run_test()
     createInstance(Ci.nsIPipeTransport);
   pipeTrans.init(command);
   pipeTrans.openPipe ([ "read", dataFile.path ], 2, envList, envList.length,
-                        0, "", true, false,
+                        0, "", false,
                         errorListener );
 
   var testLines = gTestStr.split(/\r\n|\r|\n/);
@@ -288,7 +288,7 @@ function run_test()
   pipeTrans.init(command);
 
   pipeTrans.openPipe ([ "dump" ], 1, envList, envList.length,
-                        0, "", true, false,
+                        0, "", false,
                         errorListener);
   var myListener = new TestStreamListener(pipeTrans, false);
 
@@ -330,7 +330,7 @@ function run_test()
     createInstance(Ci.nsIPipeTransport);
   pipeTrans.init(command);
   pipeTrans.openPipe ([ "read", dataFile.path ], 2, envList, envList.length,
-                        0, "", false, true,
+                        0, "", true,
                         null );
   var myListener = new TestStreamListener(pipeTrans, true);
 

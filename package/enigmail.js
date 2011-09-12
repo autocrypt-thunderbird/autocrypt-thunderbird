@@ -1811,8 +1811,8 @@ Enigmail.prototype = {
 
 
   execStart: function (command, args, needPassphrase, domWindow, prompter, listener,
-            noProxy, statusFlagsObj) {
-    Ec.WRITE_LOG("enigmail.js: Enigmail.execStart: command = "+printCmdLine(command, args)+", needPassphrase="+needPassphrase+", domWindow="+domWindow+", prompter="+prompter+", listener="+listener+", noProxy="+noProxy+"\n");
+            statusFlagsObj) {
+    Ec.WRITE_LOG("enigmail.js: Enigmail.execStart: command = "+printCmdLine(command, args)+", needPassphrase="+needPassphrase+", domWindow="+domWindow+", prompter="+prompter+", listener="+listener+"\n");
 
     statusFlagsObj.value = 0;
 
@@ -1860,7 +1860,7 @@ Enigmail.prototype = {
       var mergeStderr = false;
       pipetrans.init(command);
       pipetrans.openPipe(args, args.length, envList, envList.length,
-                            0, "", noProxy, mergeStderr,
+                            0, "", mergeStderr,
                             ipcBuffer);
 
       if (listener) {
@@ -1992,7 +1992,6 @@ Enigmail.prototype = {
       plainText = plainText.replace(/\n/g, "\r\n");
     }
 
-    var noProxy = true;
     var startErrorMsgObj = new Object();
 
     var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
@@ -2005,7 +2004,7 @@ Enigmail.prototype = {
     var pipeTrans = this.encryptMessageStart(parent, null, uiFlags,
                                              fromMailAddr, toMailAddr, bccMailAddr,
                                              hashAlgo, sendFlags, ipcBuffer,
-                                             noProxy, statusFlagsObj, startErrorMsgObj);
+                                             statusFlagsObj, startErrorMsgObj);
 
     if (!pipeTrans) {
       errorMsgObj.value = startErrorMsgObj.value;
@@ -2283,7 +2282,6 @@ Enigmail.prototype = {
         return 3;
       }
 
-      var noProxy = true;
       var testUiFlags = nsIEnigmail.UI_TEST;
 
       var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
@@ -2294,7 +2292,7 @@ Enigmail.prototype = {
       var pipeTrans = this.encryptMessageStart(null, prompter, testUiFlags,
                                                fromMailAddr, "", "",
                                                hashAlgo, sendFlags, ipcBuffer,
-                                               noProxy, statusFlagsObj, errorMsgObj);
+                                               statusFlagsObj, errorMsgObj);
       if (!pipeTrans) {
         return 1;
       }
@@ -2362,7 +2360,7 @@ Enigmail.prototype = {
 
 
   encryptMessageStart: function (parent, prompter, uiFlags, fromMailAddr, toMailAddr, bccMailAddr,
-            hashAlgorithm, sendFlags, listener, noProxy, statusFlagsObj, errorMsgObj) {
+            hashAlgorithm, sendFlags, listener, statusFlagsObj, errorMsgObj) {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: prompter="+prompter+", uiFlags="+uiFlags+", from "+fromMailAddr+" to "+toMailAddr+", hashAlgorithm="+hashAlgorithm+" ("+Ec.bytesToHex(Ec.pack(sendFlags,4))+")\n");
 
     var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
@@ -2393,7 +2391,7 @@ Enigmail.prototype = {
     var signMsg     = sendFlags & nsIEnigmail.SEND_SIGNED;
 
     var pipetrans = this.execStart(this.agentPath, encryptArgs, signMsg, parent, prompter,
-                                   listener, noProxy, statusFlagsObj);
+                                   listener, statusFlagsObj);
 
     if (statusFlagsObj.value & nsIEnigmail.MISSING_PASSPHRASE) {
       Ec.ERROR_LOG("enigmail.js: Enigmail.encryptMessageStart: Error - no passphrase supplied\n");
@@ -2635,7 +2633,6 @@ Enigmail.prototype = {
     }
 
     var noOutput = false;
-    var noProxy = true;
     var startErrorMsgObj = new Object();
 
     var readBytes = MSG_BUFFER_SIZE;
@@ -2658,7 +2655,7 @@ Enigmail.prototype = {
       ipcBuffer.open(readBytes, false);
 
       var pipeTrans = this.decryptMessageStart(parent, null, verifyOnly, noOutput,
-                                            ipcBuffer, noProxy, statusFlagsObj, startErrorMsgObj);
+                                            ipcBuffer, statusFlagsObj, startErrorMsgObj);
 
       if (!pipeTrans) {
         errorMsgObj.value = startErrorMsgObj.value;
@@ -2801,7 +2798,7 @@ Enigmail.prototype = {
 
 
   decryptMessageStart: function (parent, prompter, verifyOnly, noOutput,
-            listener, noProxy, statusFlagsObj, errorMsgObj) {
+            listener, statusFlagsObj, errorMsgObj) {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.decryptMessageStart: prompter="+prompter+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
 
     if (!this.initialized) {
@@ -2838,7 +2835,7 @@ Enigmail.prototype = {
     }
 
     var pipetrans = this.execStart(this.agentPath, args, !verifyOnly, parent, prompter,
-                                   listener, noProxy, statusFlagsObj);
+                                   listener, statusFlagsObj);
 
     if (statusFlagsObj.value & nsIEnigmail.MISSING_PASSPHRASE) {
       Ec.ERROR_LOG("enigmail.js: Enigmail.decryptMessageStart: Error - no passphrase supplied\n");
@@ -3908,10 +3905,8 @@ Enigmail.prototype = {
     var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
     ipcBuffer.open(MSG_BUFFER_SIZE, true);
 
-    var noProxy = true;
-
     var pipeTrans = this.execStart(this.agentPath, args, false, parent, 0,
-                                   ipcBuffer, noProxy, statusFlagsObj);
+                                   ipcBuffer, statusFlagsObj);
 
 
     if (!pipeTrans) {
@@ -3972,10 +3967,8 @@ Enigmail.prototype = {
     var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
     ipcBuffer.open(MSG_BUFFER_SIZE, false);
 
-    var noProxy = true;
-
     var pipeTrans = this.execStart(this.agentPath, args, false, parent, 0,
-                                   ipcBuffer, noProxy, statusFlagsObj);
+                                   ipcBuffer, statusFlagsObj);
 
 
     if (!pipeTrans) {
@@ -4044,13 +4037,11 @@ Enigmail.prototype = {
 
     passphrase = passwdObj.value;
 
-    var noProxy = true;
-
     var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
     ipcBuffer.open(MSG_BUFFER_SIZE, false);
 
     var pipeTrans = this.execStart(this.agentPath, args, false, parent, 0,
-                                   ipcBuffer, noProxy, statusFlagsObj);
+                                   ipcBuffer, statusFlagsObj);
 
 
     if (!pipeTrans) {

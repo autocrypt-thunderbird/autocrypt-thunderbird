@@ -289,7 +289,6 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
 
   nsString errorMsg;
   PRBool noOutput = PR_FALSE;
-  PRBool noProxy = PR_FALSE;
   PRUint32 statusFlags;
 
   rv = enigmailSvc->DecryptMessageStart(nsnull,
@@ -297,7 +296,6 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
                                         mVerifyOnly,
                                         noOutput,
                                         nsnull,
-                                        noProxy,
                                         &statusFlags,
                                         getter_Copies(errorMsg),
                                         getter_AddRefs(mPipeTrans) );
