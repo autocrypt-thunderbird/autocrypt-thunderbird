@@ -2591,6 +2591,11 @@ Enigmail.prototype = {
       RegExp.multiline = true;
       var indentRegexp = new RegExp("^"+indentStrObj.value, "g");
       pgpBlock = pgpBlock.replace(indentRegexp, "");
+      if (indentStrObj.value.substr(-1) == " ") {
+         var indentRegexpStr = "^"+indentStrObj.value.replace(/ $/, " $");
+         indentRegexp = new RegExp(indentRegexpStr, "g");
+         pgpBlock = pgpBlock.replace(indentRegexp, "");
+      }
       RegExp.multiline = false;
     }
 
