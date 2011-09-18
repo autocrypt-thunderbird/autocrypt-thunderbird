@@ -1772,7 +1772,7 @@ Enigmail.msg = {
     } catch (ex) {
       sendFlowed = true;
     }
-    var encoderFlags = dce.outputFormatted | dce.outputLFLineBreak;
+    var encoderFlags = dce.OutputFormatted | dce.OutputLFLineBreak;
 
     var wrapper = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIEditorMailSupport);
     var editor = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIPlaintextEditor);
@@ -2067,7 +2067,7 @@ Enigmail.msg = {
 
     const dce = Components.interfaces.nsIDocumentEncoder;
     try {
-      var encoderFlags = dce.outputFormatted | dce.outputLFLineBreak;
+      var encoderFlags = dce.OutputFormatted | dce.OutputLFLineBreak;
       var docText = this.editorGetContentAs("text/plain", encoderFlags);
 
       if (docText.length > 0) {
@@ -2261,7 +2261,7 @@ Enigmail.msg = {
       return;
 
     const dce = Components.interfaces.nsIDocumentEncoder;
-    var encoderFlags = dce.outputFormatted | dce.outputLFLineBreak;
+    var encoderFlags = dce.OutputFormatted | dce.OutputLFLineBreak;
 
     var docText = this.editorGetContentAs("text/plain", encoderFlags);
 
