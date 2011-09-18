@@ -1024,6 +1024,41 @@ Enigmail.msg = {
   },
 
 
+  getSenderUserId: function ()
+  {
+    var userIdValue = null;
+
+    if (this.identity.getIntAttribute("pgpKeyMode")>0) {
+       userIdValue = this.identity.getCharAttribute("pgpkeyId");
+
+      if (!userIdValue) {
+
+        var mesg = EnigmailCommon.getString("composeSpecifyEmail");
+
+        var valueObj = new Object();
+        valueObj.value = userIdValue;
+
+        if (EnigmailCommon.promptValue(window, mesg, valueObj)) {
+          userIdValue = valueObj.value;
+        }
+      }
+
+      if (userIdValue) {
+        this.identity.setCharAttribute("pgpkeyId", userIdValue);
+
+      }
+      else {
+        this.identity.setIntAttribute("pgpKeyMode", 0);
+      }
+    }
+
+    if (typeof(userIdValue) != "string") {
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getSenderUserId: type of userIdValue="+typeof(userIdValue)+"\n");
+      userIdValue = this.identity.email;
+    }
+    return userIdValue;
+  },
+
   keySelection: function (enigmailSvc, sendFlags, optSendFlags, gotSendFlags, fromAddr, toAddrList, bccAddrList)
   {
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
@@ -1336,33 +1371,9 @@ Enigmail.msg = {
 
        sendFlags |= optSendFlags;
 
-       if (this.identity.getIntAttribute("pgpKeyMode")>0) {
-         var userIdValue = this.identity.getCharAttribute("pgpkeyId");
-
-         if (!userIdValue) {
-
-           var mesg = EnigmailCommon.getString("composeSpecifyEmail");
-
-           var valueObj = new Object();
-           valueObj.value = userIdValue;
-
-           if (EnigmailCommon.promptValue(window, mesg, valueObj)) {
-             userIdValue = valueObj.value;
-           }
-         }
-
-         if (userIdValue) {
-           fromAddr = userIdValue;
-           this.identity.setCharAttribute("pgpkeyId", userIdValue);
-
-         } else {
-           this.identity.setIntAttribute("pgpKeyMode", 0);
-         }
-       }
-
-       if (typeof(userIdValue) != "string") {
-         EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: type of userIdValue="+typeof(userIdValue)+"\n");
-         userIdValue = this.identity.email;
+       var userIdValue = this.getSenderUserId();
+       if (userIdValue) {
+         fromAddr = userIdValue;
        }
 
        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg:gMsgCompose="+gMsgCompose+"\n");
