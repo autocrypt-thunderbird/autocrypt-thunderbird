@@ -40,7 +40,7 @@
 // The following define statement should occur before any include statements
 
 #define FORCE_PR_LOG       /* Allow logging even in release build */
-#include "ipc.h"
+//include "ipc.h"
 #include "IPCProcess.h"
 
 #include "nsMemory.h"
