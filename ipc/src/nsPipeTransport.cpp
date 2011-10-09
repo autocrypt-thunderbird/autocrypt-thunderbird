@@ -40,10 +40,10 @@
 // The following define statement should occur before any include statements
 
 #define FORCE_PR_LOG       /* Allow logging even in release build */
+#include "nsPipeTransport.h"
 #include "IPCProcess.h"
 
 #include "nsMemory.h"
-#include "nsPipeTransport.h"
 #include "prlog.h"
 #include "mozilla/Mutex.h"
 #include "plstr.h"
