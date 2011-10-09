@@ -109,6 +109,7 @@ CPPSRCS		= nsEnigModule.cpp
 
 LOCAL_INCLUDES	= \
 		-I$(srcdir)/../src \
+		-I$(srcdir)/../ipc/src \
 		$(NULL)
 
 # hack to build non standard library dependent build on unix

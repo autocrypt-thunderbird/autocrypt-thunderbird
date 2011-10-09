@@ -97,6 +97,7 @@ REQUIRES	= xpcom \
 
 LOCAL_INCLUDES	= \
 		-I$(srcdir)/../build \
+		-I$(srcdir)/../ipc/src \
 		-I$(srcdir)/../../../mime/src \
 		$(NULL)
 
