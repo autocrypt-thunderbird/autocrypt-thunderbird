@@ -43,4 +43,15 @@
 #define IPC_GET_THREAD(myThread) NS_GetCurrentThread(getter_AddRefs(myThread))
 
 #endif  // FORCE_PR_LOG
+
+#if MOZILLA_MAJOR_VERSION > 9
+
+#define PRBool bool
+
+#else
+
+#define IPC_GET_THREAD(myThread)
+
+#endif
+
 #endif // ipc_h__

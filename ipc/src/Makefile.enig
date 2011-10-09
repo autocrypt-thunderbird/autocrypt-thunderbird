@@ -75,7 +75,6 @@ REQUIRES	= xpcom \
 		  $(NULL)
 
 EXPORTS		=		    \
-	        IPCProcess.h        \
 		$(NULL)
 
 LOCAL_INCLUDES	= \
@@ -84,7 +83,6 @@ LOCAL_INCLUDES	= \
 
 CPPSRCS		=		    \
 	        nsPipeTransport.cpp \
-	        IPCProcess.cpp      \
 	        nsIPCBuffer.cpp     \
 		$(NULL)
 
