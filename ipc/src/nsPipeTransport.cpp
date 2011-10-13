@@ -112,7 +112,7 @@ PRProcess* IPC_CreateProcessRedirectedNSPR(const char *path,
                                            PRFileDesc* std_in,
                                            PRFileDesc* std_out,
                                            PRFileDesc* std_err,
-                                           PRBool detach)
+                                           IPCBool detach)
 {
 #ifdef XP_WIN
   // Workaround for Win32
@@ -152,8 +152,8 @@ PRProcess* IPC_CreateProcessRedirectedNSPR(const char *path,
 
 PRStatus IPC_CreateInheritablePipeNSPR(PRFileDesc* *readPipe,
                                        PRFileDesc* *writePipe,
-                                       PRBool readInherit,
-                                       PRBool writeInherit)
+                                       IPCBool readInherit,
+                                       IPCBool writeInherit)
 {
   PRStatus status;
 
@@ -185,7 +185,7 @@ PRStatus IPC_CreateInheritablePipeNSPR(PRFileDesc* *readPipe,
 
 
 #ifdef XP_WIN
-static PRBool gIPCWinConsoleAllocated = PR_FALSE;
+static IPCBool gIPCWinConsoleAllocated = PR_FALSE;
 #endif
 
 // Note: it's not necessary to free/close the console, there is (at most) 1
@@ -437,7 +437,7 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
                                             IPCFileDesc* std_in,
                                             IPCFileDesc* std_out,
                                             IPCFileDesc* std_err,
-                                            PRBool detach)
+                                            IPCBool detach)
 {
   BOOL bRetVal;
 
@@ -572,8 +572,8 @@ IPCProcess* IPC_CreateProcessRedirectedWin32(const char *path,
 
 PRStatus IPC_CreateInheritablePipeWin32(IPCFileDesc* *readPipe,
                                         IPCFileDesc* *writePipe,
-                                        PRBool readInherit,
-                                        PRBool writeInherit)
+                                        IPCBool readInherit,
+                                        IPCBool writeInherit)
 {
   BOOL bRetVal;
 
@@ -854,7 +854,7 @@ NS_IMETHODIMP nsPipeTransport::InitWithWorkDir(nsIFile *executable,
   executable->Normalize();
 
   // check if file is executable
-  PRBool isExecutable;
+  IPCBool isExecutable;
 #ifndef XP_MACOSX
   // Bug 322865 prevents this from working on Mac OS X
   rv = executable->IsExecutable(&isExecutable);
@@ -875,7 +875,7 @@ NS_IMETHODIMP nsPipeTransport::InitWithWorkDir(nsIFile *executable,
     mExecutable.get()));
 
   if (cwd) {
-    PRBool isDirectory;
+    IPCBool isDirectory;
     cwd->Normalize();
     rv = cwd->IsDirectory(&isDirectory);
     NS_ENSURE_SUCCESS(rv, rv);
@@ -914,7 +914,7 @@ NS_IMETHODIMP nsPipeTransport::OpenPipe(const PRUnichar **args,
                                         PRUint32 envCount,
                                         PRUint32 timeoutMS,
                                         const char *killString,
-                                        PRBool mergeStderr,
+                                        IPCBool mergeStderr,
                                         nsIPipeListener* stderrConsole)
 {
   nsresult rv;
@@ -1139,7 +1139,7 @@ nsPipeTransport::CopyArgsAndCreateProcess(const PRUnichar **args,
 
 // Should only be called from the thread that created the nsIPipeTransport
 nsresult
-nsPipeTransport::Finalize(PRBool destructor)
+nsPipeTransport::Finalize(IPCBool destructor)
 {
   if (mFinalized || !mInitialized)
     return NS_OK;
@@ -1163,7 +1163,7 @@ nsPipeTransport::Finalize(PRBool destructor)
   // Close standard output
   mStdoutStream = STREAM_CLOSED;
 
-  PRBool alreadyInterrupted = PR_FALSE;
+  IPCBool alreadyInterrupted = PR_FALSE;
 
   if (mStdoutPoller) {
     // Interrupt Stdout thread
@@ -1323,7 +1323,7 @@ nsPipeTransport::GetStderrConsole(nsIPipeListener* *_retval)
 }
 
 NS_IMETHODIMP
-nsPipeTransport::GetIsRunning(PRBool* attached)
+nsPipeTransport::GetIsRunning(IPCBool* attached)
 {
   DEBUG_LOG(("nsPipeTransport::GetIsRunning: \n"));
 
@@ -1332,7 +1332,7 @@ nsPipeTransport::GetIsRunning(PRBool* attached)
   nsresult rv;
 
   if (mStdoutPoller) {
-    PRBool interrupted;
+    IPCBool interrupted;
     rv = mStdoutPoller->IsInterrupted(&interrupted);
     NS_ENSURE_SUCCESS(rv, rv);
 
@@ -1409,7 +1409,7 @@ nsPipeTransport::GetExitValue(PRInt32* _retval)
 
   if (mStdoutPoller) {
     // Fail if poller has not been interrupted
-    PRBool interrupted;
+    IPCBool interrupted;
     rv = mStdoutPoller->IsInterrupted(&interrupted);
     if (NS_FAILED(rv))
       DEBUG_LOG(("interrupted returned failure\n"));
@@ -1480,7 +1480,7 @@ nsPipeTransport::SetHeadersMaxSize(PRUint32 aHeadersMaxSize)
 
 
 NS_IMETHODIMP
-nsPipeTransport::GetLoggingEnabled(PRBool *aLoggingEnabled)
+nsPipeTransport::GetLoggingEnabled(IPCBool *aLoggingEnabled)
 {
   NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
   NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
@@ -1490,7 +1490,7 @@ nsPipeTransport::GetLoggingEnabled(PRBool *aLoggingEnabled)
 }
 
 NS_IMETHODIMP
-nsPipeTransport::SetLoggingEnabled(PRBool aLoggingEnabled)
+nsPipeTransport::SetLoggingEnabled(IPCBool aLoggingEnabled)
 {
   NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
   NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
@@ -1503,8 +1503,8 @@ nsPipeTransport::SetLoggingEnabled(PRBool aLoggingEnabled)
 nsresult
 IPC_NewPipe2(nsIAsyncInputStream **pipeIn,
             nsIAsyncOutputStream **pipeOut,
-            PRBool nonBlockingInput = PR_FALSE,
-            PRBool nonBlockingOutput = PR_FALSE,
+            IPCBool nonBlockingInput = PR_FALSE,
+            IPCBool nonBlockingOutput = PR_FALSE,
             PRUint32 segmentSize = 0,
             PRUint32 segmentCount = 0,
             nsIMemory *segmentAlloc = nsnull)
@@ -1542,8 +1542,8 @@ IPC_NewPipe(nsIInputStream **pipeIn,
            nsIOutputStream **pipeOut,
            PRUint32 segmentSize = 0,
            PRUint32 maxSize = 0,
-           PRBool nonBlockingInput = PR_FALSE,
-           PRBool nonBlockingOutput = PR_FALSE,
+           IPCBool nonBlockingInput = PR_FALSE,
+           IPCBool nonBlockingOutput = PR_FALSE,
            nsIMemory *segmentAlloc = nsnull)
 {
   if (segmentSize == 0)
@@ -1591,10 +1591,10 @@ nsPipeTransport::OpenInputStream(PRUint32 offset,
   mStdoutStream = STREAM_SYNC_OPEN;
 
   // Blocking input
-  PRBool nonBlockingInput = PR_FALSE;
+  IPCBool nonBlockingInput = PR_FALSE;
 
   // Blocking output
-  PRBool nonBlockingOutput = PR_FALSE;
+  IPCBool nonBlockingOutput = PR_FALSE;
 
   // Open pipe to handle STDOUT
   rv = IPC_NewPipe(getter_AddRefs(mInputStream),
@@ -1681,10 +1681,10 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
     mContext  = ctxt;
 
     // Non-blocking input stream
-    PRBool nonBlockingInput = PR_TRUE;
+    IPCBool nonBlockingInput = PR_TRUE;
 
     // Always block output
-    PRBool nonBlockingOutput = PR_FALSE;
+    IPCBool nonBlockingOutput = PR_FALSE;
 
     // Now generate proxied pipe observer/listener to enable async calling
     // from the polling thread to the current (UI?) thread
@@ -1811,7 +1811,7 @@ nsPipeTransport::CloseStdin(void)
 
 NS_IMETHODIMP
 nsPipeTransport::WriteAsync(nsIInputStream *inStr, PRUint32 count,
-                            PRBool closeAfterWrite)
+                            IPCBool closeAfterWrite)
 {
   DEBUG_LOG(("nsPipeTransport::WriteAsync: %d\n", count));
 
@@ -1913,7 +1913,7 @@ nsPipeTransport::ReadLine(PRInt32 maxOutputLen,
     while (remainingCount > 0) {
       readMax = (remainingCount < kCharMax) ? remainingCount : kCharMax;
 
-      PRBool interrupted = PR_FALSE;
+      IPCBool interrupted = PR_FALSE;
 
       if (mStdoutPoller) {
         // Fail if poller has been interrupted and no more data in buffer
@@ -2017,7 +2017,7 @@ nsPipeTransport::GetName(nsACString &result)
 }
 
 NS_IMETHODIMP
-nsPipeTransport::IsPending(PRBool *result)
+nsPipeTransport::IsPending(IPCBool *result)
 {
 
   DEBUG_LOG(("nsPipeTransport::IsPending: \n"));
@@ -2201,7 +2201,7 @@ nsPipeTransport::WriteSegments(nsReadSegmentFun reader, void * closure,
 }
 
 NS_IMETHODIMP
-nsPipeTransport::IsNonBlocking(PRBool *result)
+nsPipeTransport::IsNonBlocking(IPCBool *result)
 {
   DEBUG_LOG(("nsPipeTransport::IsNonBlocking: \n"));
   *result = PR_TRUE;
@@ -2331,7 +2331,7 @@ nsPipeTransport::OnInputStreamReady(nsIAsyncInputStream* inStr)
   return NS_OK;
 }
 
-NS_IMETHODIMP nsPipeTransport::Run(PRBool blocking, const char **args,
+NS_IMETHODIMP nsPipeTransport::Run(IPCBool blocking, const char **args,
                                     PRUint32 argCount)
 {
   return NS_ERROR_NOT_IMPLEMENTED;
@@ -2340,12 +2340,12 @@ NS_IMETHODIMP nsPipeTransport::Run(PRBool blocking, const char **args,
 NS_IMETHODIMP nsPipeTransport::RunAsync(const char **args,
                                     PRUint32 argCount,
                                     nsIObserver* observer,
-                                    PRBool holdWeak)
+                                    IPCBool holdWeak)
 {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-NS_IMETHODIMP nsPipeTransport::Runw(PRBool blocking, const PRUnichar **args,
+NS_IMETHODIMP nsPipeTransport::Runw(IPCBool blocking, const PRUnichar **args,
                                     PRUint32 argCount)
 {
   return NS_ERROR_NOT_IMPLEMENTED;
@@ -2354,7 +2354,7 @@ NS_IMETHODIMP nsPipeTransport::Runw(PRBool blocking, const PRUnichar **args,
 NS_IMETHODIMP nsPipeTransport::RunwAsync(const PRUnichar **args,
                                     PRUint32 argCount,
                                     nsIObserver* observer,
-                                    PRBool holdWeak)
+                                    IPCBool holdWeak)
 {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -2653,7 +2653,7 @@ nsStdoutPoller::Init(IPCFileDesc*            aStdoutRead,
 NS_IMETHODIMP
 nsStdoutPoller::AsyncStart(nsIOutputStream*  aOutputStream,
                            nsIPipeTransportListener* aProxyPipeListener,
-                           PRBool joinable,
+                           IPCBool joinable,
                            PRUint32 aMimeHeadersMaxSize)
 {
   // Should be invoked in the thread creating nsIPipeTransport object
@@ -2683,7 +2683,7 @@ nsStdoutPoller::AsyncStart(nsIOutputStream*  aOutputStream,
 }
 
 nsresult
-nsStdoutPoller::Finalize(PRBool destructor)
+nsStdoutPoller::Finalize(IPCBool destructor)
 {
   nsresult rv = NS_OK;
 
@@ -2718,7 +2718,7 @@ nsStdoutPoller::Finalize(PRBool destructor)
 
 
 NS_IMETHODIMP
-nsStdoutPoller::GetLoggingEnabled(PRBool *aLoggingEnabled)
+nsStdoutPoller::GetLoggingEnabled(IPCBool *aLoggingEnabled)
 {
   MutexAutoLock lock(mLock);
 
@@ -2728,7 +2728,7 @@ nsStdoutPoller::GetLoggingEnabled(PRBool *aLoggingEnabled)
 }
 
 NS_IMETHODIMP
-nsStdoutPoller::SetLoggingEnabled(PRBool aLoggingEnabled)
+nsStdoutPoller::SetLoggingEnabled(IPCBool aLoggingEnabled)
 {
   MutexAutoLock lock(mLock);
 
@@ -2739,7 +2739,7 @@ nsStdoutPoller::SetLoggingEnabled(PRBool aLoggingEnabled)
 
 
 NS_IMETHODIMP
-nsStdoutPoller::IsInterrupted(PRBool* interrupted)
+nsStdoutPoller::IsInterrupted(IPCBool* interrupted)
 {
   NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
 
@@ -2796,7 +2796,7 @@ nsStdoutPoller::Join()
   * Once interrupted, thread always remains interrupted.
   */
 NS_IMETHODIMP
-nsStdoutPoller::Interrupt(PRBool* alreadyInterrupted)
+nsStdoutPoller::Interrupt(IPCBool* alreadyInterrupted)
 {
 
   NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
@@ -2887,7 +2887,7 @@ nsStdoutPoller::GetPolledFD(PRFileDesc*& aFileDesc)
 
   PRInt32 foundPollEvents = 0;
   // PR_Poll input available (pollRetVal > 0); process it
-  PRBool errFlags = PR_FALSE;
+  IPCBool errFlags = PR_FALSE;
   for (PRInt32 j=0; j<mPollCount; j++) {
 
     DEBUG_LOG(("nsStdoutPoller::GetPolledFD: mPollFD[%d].out_flags=0x%p\n",
@@ -2953,8 +2953,8 @@ nsStdoutPoller::HeaderSearch(const char* buf, PRUint32 count,
   DEBUG_LOG(("nsStdoutPoller::HeaderSearch: count=%d, bufSize=%d\n",
              count, mHeadersBufSize));
 
-  PRBool headerFound = PR_FALSE;
-  PRBool startRequest = PR_FALSE;
+  IPCBool headerFound = PR_FALSE;
+  IPCBool startRequest = PR_FALSE;
 
   if (mHeadersBufSize == 0) {
     // Not looking for MIME headers; start request
@@ -2966,7 +2966,7 @@ nsStdoutPoller::HeaderSearch(const char* buf, PRUint32 count,
     PRUint32 headersAvailable = mHeadersBufSize - mHeadersBuf.Length();
     NS_ASSERTION(headersAvailable != 0, "no header data available");
 
-    PRBool lastSegment = (headersAvailable <= count);
+    IPCBool lastSegment = (headersAvailable <= count);
 
     PRUint32 offset = 0;
 
@@ -3024,7 +3024,7 @@ nsStdoutPoller::HeaderSearch(const char* buf, PRUint32 count,
   }
 
   if (headerFound || startRequest) {
-    PRBool skipHeaders = PR_FALSE;
+    IPCBool skipHeaders = PR_FALSE;
 
     if (mHeadersBufSize > 0) {
       // Try to parse headers
@@ -3146,7 +3146,7 @@ nsStdoutPoller::Run()
       break;
     }
 
-    PRBool interrupted;
+    IPCBool interrupted;
     rv = IsInterrupted(&interrupted);
     if (NS_FAILED(rv)) break;
 
@@ -3186,7 +3186,7 @@ nsStdoutPoller::Run()
   PRUint32 dummy;
   HeaderSearch(nsnull, 0, &dummy);
 
-  PRBool alreadyInterrupted = PR_FALSE;
+  IPCBool alreadyInterrupted = PR_FALSE;
   Interrupt(&alreadyInterrupted);
 
   if (mOutputStream) {
@@ -3266,7 +3266,7 @@ nsStdinWriter::~nsStdinWriter()
 
 nsresult
 nsStdinWriter::WriteFromStream(nsIInputStream *inStr, PRUint32 count,
-                         IPCFileDesc* pipe, PRBool closeAfterWrite)
+                         IPCFileDesc* pipe, IPCBool closeAfterWrite)
 {
   DEBUG_LOG(("nsStdinWriter::WriteFromStream: count=%d\n", count));
 

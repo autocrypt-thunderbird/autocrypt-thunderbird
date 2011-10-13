@@ -141,7 +141,7 @@ nsIPCBuffer::~nsIPCBuffer()
 ///////////////////////////////////////////////////////////////////////////////
 
 nsresult
-nsIPCBuffer::Finalize(PRBool destructor)
+nsIPCBuffer::Finalize(IPCBool destructor)
 {
   DEBUG_LOG(("nsIPCBuffer::Finalize: \n"));
 
@@ -187,7 +187,7 @@ nsIPCBuffer::Init()
 }
 
 NS_IMETHODIMP
-nsIPCBuffer::Open(PRInt32 maxBytes, PRBool overflowFile)
+nsIPCBuffer::Open(PRInt32 maxBytes, IPCBool overflowFile)
 {
   nsresult rv;
 
@@ -211,9 +211,9 @@ nsIPCBuffer::Open(PRInt32 maxBytes, PRBool overflowFile)
 
 
 NS_IMETHODIMP
-nsIPCBuffer::OpenURI(nsIURI* aURI, PRInt32 maxBytes, PRBool synchronous,
+nsIPCBuffer::OpenURI(nsIURI* aURI, PRInt32 maxBytes, IPCBool synchronous,
                      nsIRequestObserver* observer, nsISupports* context,
-                     PRBool overflowFile)
+                     IPCBool overflowFile)
 {
   DEBUG_LOG(("nsIPCBuffer::OpenURI: \n"));
 
@@ -289,7 +289,7 @@ nsIPCBuffer::OpenURI(nsIURI* aURI, PRInt32 maxBytes, PRBool synchronous,
 
 
 NS_IMETHODIMP
-nsIPCBuffer::GetStopped(PRBool* _retval)
+nsIPCBuffer::GetStopped(IPCBool* _retval)
 {
   NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
   NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
@@ -548,7 +548,7 @@ nsIPCBuffer::Observe(nsIRequestObserver* observer, nsISupports* context)
 
 
 NS_IMETHODIMP
-nsIPCBuffer::GetJoinable(PRBool *_retval)
+nsIPCBuffer::GetJoinable(IPCBool *_retval)
 {
   DEBUG_LOG(("nsIPCBuffer::GetJoinable: 1\n"));
 
@@ -603,7 +603,7 @@ nsIPCBuffer::GetByteData(PRUint32 *count, char **data)
 
 
 NS_IMETHODIMP
-nsIPCBuffer::GetOverflowed(PRBool *_retval)
+nsIPCBuffer::GetOverflowed(IPCBool *_retval)
 {
   NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
   NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
@@ -1046,7 +1046,7 @@ nsIPCBuffer::ReadSegments(nsWriteSegmentFun writer,
 }
 
 NS_IMETHODIMP
-nsIPCBuffer::IsNonBlocking(PRBool *aNonBlocking)
+nsIPCBuffer::IsNonBlocking(IPCBool *aNonBlocking)
 {
   DEBUG_LOG(("nsIPCBuffer::IsNonBlocking: \n"));
 

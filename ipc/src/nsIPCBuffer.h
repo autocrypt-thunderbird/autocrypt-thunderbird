@@ -70,7 +70,7 @@ public:
     Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
 
 protected:
-    nsresult Finalize(PRBool destructor);
+    nsresult Finalize(IPCBool destructor);
     nsresult Init();
 
     nsresult CreateTempFile();
@@ -80,14 +80,14 @@ protected:
     nsresult CloseTempInStream();
     nsresult RemoveTempFile();
 
-    PRBool                              mFinalized;
-    PRBool                              mInitialized;
-    PRBool                              mThreadJoined;
-    PRBool                              mOverflowed;
-    PRBool                              mOverflowFile;
+    IPCBool                              mFinalized;
+    IPCBool                              mInitialized;
+    IPCBool                              mThreadJoined;
+    IPCBool                              mOverflowed;
+    IPCBool                              mOverflowFile;
 
-    PRBool                              mRequestStarted;
-    PRBool                              mRequestStopped;
+    IPCBool                              mRequestStarted;
+    IPCBool                              mRequestStopped;
 
     mozilla::Mutex                      mLock;
 

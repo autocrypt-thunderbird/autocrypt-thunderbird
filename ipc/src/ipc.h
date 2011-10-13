@@ -50,7 +50,11 @@
 
 #if MOZILLA_MAJOR_VERSION > 9
 
-#define PRBool bool
+#define IPCBool bool
+
+#else
+
+#define IPCBool PRBool
 
 #endif // MOZILLA_MAJOR_VERSION
 

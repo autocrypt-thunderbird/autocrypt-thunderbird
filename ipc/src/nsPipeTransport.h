@@ -97,7 +97,7 @@ public:
     // Always make the destructor virtual:
     virtual ~nsPipeTransport();
 
-    nsresult Finalize(PRBool destructor);
+    nsresult Finalize(IPCBool destructor);
 
     void KillProcess(void);
 
@@ -120,9 +120,9 @@ protected:
     };
 
 
-    PRBool                              mInitialized;
-    PRBool                              mFinalized;
-    PRBool                              mStartedRequest;
+    IPCBool                              mInitialized;
+    IPCBool                              mFinalized;
+    IPCBool                              mStartedRequest;
     PRMonitor*                          mMonitor;
 
     PipeState                           mPipeState;
@@ -199,13 +199,13 @@ public:
      *                    false otherwise
      */
 
-    nsresult Finalize(PRBool destructor);
+    nsresult Finalize(IPCBool destructor);
 
     /**
      * Determine if pipe is interrupted
      */
 
-    PRBool IsInterrupted();
+    IPCBool IsInterrupted();
 
     /**
      * Get the polled file descriptor to a given file descriptor
@@ -229,19 +229,19 @@ public:
      */
     NS_IMETHODIMP AsyncStart(nsIOutputStream*  aOutputStream,
                              nsIPipeTransportListener* aProxyPipeListener,
-                             PRBool joinable,
+                             IPCBool joinable,
                              PRUint32 aMimeHeadersMaxSize);
 
 
     /**
      * Interrupts polling thread.
      */
-    NS_IMETHODIMP Interrupt(PRBool* alreadyInterrupted);
+    NS_IMETHODIMP Interrupt(IPCBool* alreadyInterrupted);
 
     /**
      * Returns true if polling thread has been interrupted/
      */
-    NS_IMETHODIMP IsInterrupted(PRBool* interrupted);
+    NS_IMETHODIMP IsInterrupted(IPCBool* interrupted);
 
     /**
      * Joins polling thread, if joinable (blocking until it terminates)
@@ -253,30 +253,30 @@ public:
      * This is the getter method to loggingEnabled.
      */
 
-    NS_IMETHODIMP GetLoggingEnabled(PRBool *aLoggingEnabled);
+    NS_IMETHODIMP GetLoggingEnabled(IPCBool *aLoggingEnabled);
 
     /**
      * LoggingEnabled controls stderrConsole logging of STDOUT from process.
      * This is the setter method to loggingEnabled.
      */
-    NS_IMETHODIMP SetLoggingEnabled(PRBool aLoggingEnabled);
+    NS_IMETHODIMP SetLoggingEnabled(IPCBool aLoggingEnabled);
 
 
 protected:
-    PRBool                              mInitialized;
-    PRBool                              mFinalized;
+    IPCBool                              mInitialized;
+    IPCBool                              mFinalized;
 
     mozilla::Mutex                      mLock;
-    PRBool                              mInterrupted;
-    PRBool                              mLoggingEnabled;
-    PRBool                              mJoinableThread;
+    IPCBool                              mInterrupted;
+    IPCBool                              mLoggingEnabled;
+    IPCBool                              mJoinableThread;
 
     PRIntervalTime                      mTimeoutInterval;
 
     nsCString                           mHeadersBuf;
     PRUint32                            mHeadersBufSize;
     PRUint32                            mHeadersLastNewline;
-    PRBool                              mRequestStarted;
+    IPCBool                              mRequestStarted;
     PRInt32                             mContentLength;
 
     IPCFileDesc*                        mStdoutRead;
@@ -319,7 +319,7 @@ public:
     nsresult WriteFromStream(nsIInputStream *inStr,
                              PRUint32 count,
                              IPCFileDesc* pipe,
-                             PRBool closeAfterWrite);
+                             IPCBool closeAfterWrite);
 
     /**
      * Joins writer thread, if joinable (blocking until it terminates)
@@ -329,7 +329,7 @@ protected:
     nsCOMPtr<nsIInputStream> mInputStream;
     PRUint32                 mCount;
     IPCFileDesc*             mPipe;
-    PRBool                   mCloseAfterWrite;
+    IPCBool                   mCloseAfterWrite;
     nsCOMPtr<nsIThread>      mThread;
 };
 
