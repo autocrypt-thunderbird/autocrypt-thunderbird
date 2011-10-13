@@ -80,7 +80,7 @@ protected:
 
     NS_METHOD GetRandomTime (PRUint32 *_retval);
 
-    PRBool                        mInitialized;
+    EMBool                        mInitialized;
     nsCString                     mCookieStr;
 
     // Owning references

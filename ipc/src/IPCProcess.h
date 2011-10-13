@@ -39,6 +39,7 @@
 #ifndef IPCProcess_h__
 #define IPCProcess_h__
 
+#include "ipc.h"
 #include "nspr.h"
 #include "prproces.h"
 

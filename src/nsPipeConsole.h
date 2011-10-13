@@ -72,15 +72,15 @@ public:
     static NS_METHOD
     Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
 
-    nsresult Finalize(PRBool destructor);
+    nsresult Finalize(EMBool destructor);
 
     nsresult Init();
 
 protected:
-    PRBool                              mFinalized;
-    PRBool                              mJoinable;
-    PRBool                              mThreadJoined;
-    PRBool                              mOverflowed;
+    EMBool                              mFinalized;
+    EMBool                              mJoinable;
+    EMBool                              mThreadJoined;
+    EMBool                              mOverflowed;
 
     mozilla::Mutex                      mLock;
 

@@ -49,7 +49,11 @@
 
 #if MOZILLA_MAJOR_VERSION > 9
 
-#define PRBool bool
+#define EMBool bool
+
+#else
+
+#define EMBool PRBool
 
 #endif
 #endif

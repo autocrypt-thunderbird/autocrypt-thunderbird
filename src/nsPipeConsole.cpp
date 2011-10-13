@@ -149,8 +149,8 @@ nsPipeConsole::~nsPipeConsole()
 
 PRStatus CreateInheritablePipe(IPCFileDesc* *readPipe,
                                IPCFileDesc* *writePipe,
-                               PRBool readInherit,
-                               PRBool writeInherit)
+                               EMBool readInherit,
+                               EMBool writeInherit)
 {
 #ifndef XP_WIN
   PRStatus status;
@@ -268,7 +268,7 @@ PRStatus EnigClose(IPCFileDesc* fd)
 ///////////////////////////////////////////////////////////////////////////////
 
 nsresult
-nsPipeConsole::Finalize(PRBool destructor)
+nsPipeConsole::Finalize(EMBool destructor)
 {
   DEBUG_LOG(("nsPipeConsole::Finalize: \n"));
 
@@ -326,7 +326,7 @@ nsPipeConsole::Init()
 ///////////////////////////////////////////////////////////////////////////////
 
 NS_IMETHODIMP
-nsPipeConsole::Open(PRInt32 maxRows, PRInt32 maxCols, PRBool joinable)
+nsPipeConsole::Open(PRInt32 maxRows, PRInt32 maxCols, EMBool joinable)
 {
   nsresult rv;
 
@@ -362,7 +362,7 @@ nsPipeConsole::Open(PRInt32 maxRows, PRInt32 maxCols, PRBool joinable)
 
 
 NS_IMETHODIMP
-nsPipeConsole::HasNewData(PRBool *_retval)
+nsPipeConsole::HasNewData(EMBool *_retval)
 {
   MutexAutoLock lock(mLock);
 
@@ -446,7 +446,7 @@ nsPipeConsole::Observe(nsIRequestObserver* observer, nsISupports* context)
 
 
 NS_IMETHODIMP
-nsPipeConsole::GetJoinable(PRBool *_retval)
+nsPipeConsole::GetJoinable(EMBool *_retval)
 {
   DEBUG_LOG(("nsPipeConsole::GetJoinable: %d\n", (int) mJoinable));
 
@@ -531,7 +531,7 @@ nsPipeConsole::GetFileDesc(IPCFileDesc* *_retval)
 
 
 NS_IMETHODIMP
-nsPipeConsole::GetOverflowed(PRBool *_retval)
+nsPipeConsole::GetOverflowed(EMBool *_retval)
 {
   MutexAutoLock lock(mLock);
 

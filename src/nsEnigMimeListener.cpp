@@ -161,8 +161,8 @@ nsEnigMimeListener::~nsEnigMimeListener()
 
 NS_IMETHODIMP
 nsEnigMimeListener::Init(nsIStreamListener* listener, nsISupports* ctxt,
-                         PRUint32 maxHeaderBytes, PRBool skipHeaders,
-                         PRBool skipBody, PRBool decodeContent)
+                         PRUint32 maxHeaderBytes, EMBool skipHeaders,
+                         EMBool skipBody, EMBool decodeContent)
 {
   DEBUG_LOG(("nsEnigMimeListener::Init: (%p) %d, %d, %d, %d\n", this,
              maxHeaderBytes, skipHeaders, skipBody, decodeContent));
@@ -201,7 +201,7 @@ nsEnigMimeListener::Write(const char* buf, PRUint32 count,
     return Transmit(buf, count, aRequest, aContext);
 
   // Search for headers
-  PRBool startingRequest = HeaderSearch(buf, count);
+  EMBool startingRequest = HeaderSearch(buf, count);
   if (!startingRequest)
     return NS_OK;
 
@@ -517,7 +517,7 @@ nsEnigMimeListener::StartRequest(nsIRequest* aRequest, nsISupports* aContext)
 }
 
 
-PRBool
+EMBool
 nsEnigMimeListener::HeaderSearch(const char* buf, PRUint32 count)
 {
   DEBUG_LOG(("nsEnigMimeListener::HeaderSearch: (%p) count=%d\n", this, count));
@@ -535,11 +535,11 @@ nsEnigMimeListener::HeaderSearch(const char* buf, PRUint32 count)
   PRUint32 bytesAvailable = mMaxHeaderBytes - mDataStr.Length();
   NS_ASSERTION(bytesAvailable > 0, "bytesAvailable <= 0");
 
-  PRBool lastSegment = (bytesAvailable <= count);
+  EMBool lastSegment = (bytesAvailable <= count);
 
   PRUint32 scanLen = lastSegment ? bytesAvailable : count;
 
-  PRBool headersFound = PR_FALSE;
+  EMBool headersFound = PR_FALSE;
   PRUint32 offset = 0;
   PRUint32 startOffset = 0;
   PRUint32 j = 0;
@@ -952,7 +952,7 @@ nsEnigMimeListener::ReadSegments(nsWriteSegmentFun writer,
 }
 
 NS_IMETHODIMP
-nsEnigMimeListener::IsNonBlocking(PRBool *aNonBlocking)
+nsEnigMimeListener::IsNonBlocking(EMBool *aNonBlocking)
 {
   DEBUG_LOG(("nsEnigMimeListener::IsNonBlocking: \n"));
 
@@ -961,14 +961,14 @@ nsEnigMimeListener::IsNonBlocking(PRBool *aNonBlocking)
 }
 
 NS_IMETHODIMP
-nsEnigMimeListener::GetSubPartTreatment(PRBool* aSubPartTreatment)
+nsEnigMimeListener::GetSubPartTreatment(EMBool* aSubPartTreatment)
 {
   *aSubPartTreatment = mSubPartTreatment;
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsEnigMimeListener::SetSubPartTreatment(PRBool aSubPartTreatment)
+nsEnigMimeListener::SetSubPartTreatment(EMBool aSubPartTreatment)
 {
   DEBUG_LOG(("nsEnigMimeListener::SetSubPartTreatment: %d\n", aSubPartTreatment));
 

@@ -156,8 +156,8 @@ nsPipeFilterListener::Init(nsIStreamListener* listener, nsISupports* ctxt,
                            const char *startDelimiter,
                            const char *endDelimiter,
                            PRUint32 skipCount,
-                           PRBool keepDelimiters,
-                           PRBool mimeMultipart,
+                           EMBool keepDelimiters,
+                           EMBool mimeMultipart,
                            nsIStreamListener* tailListener)
 {
   DEBUG_LOG(("nsPipeFilterListener::Init: (%p)\n", this));
@@ -803,7 +803,7 @@ nsPipeFilterListener::ReadSegments(nsWriteSegmentFun writer,
 }
 
 NS_IMETHODIMP
-nsPipeFilterListener::IsNonBlocking(PRBool *aNonBlocking)
+nsPipeFilterListener::IsNonBlocking(EMBool *aNonBlocking)
 {
   DEBUG_LOG(("nsPipeFilterListener::IsNonBlocking: \n"));
 

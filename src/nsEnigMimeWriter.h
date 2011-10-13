@@ -64,10 +64,10 @@ protected:
     nsresult WriteStream(const char* buf, PRUint32 count);
 
     nsIOutputStream*                    mStream;
-    PRBool                              mForceCRLF;
+    EMBool                              mForceCRLF;
 
-    PRBool                              mClosed;
-    PRBool                              mLastCR;
+    EMBool                              mClosed;
+    EMBool                              mLastCR;
 
     PRUint32                            mByteCount;
 };

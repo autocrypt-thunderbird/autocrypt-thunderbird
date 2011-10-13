@@ -78,7 +78,7 @@ public:
     Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
 
 protected:
-    static PRBool mRandomSeeded;
+    static EMBool mRandomSeeded;
 
     nsresult Init();
     nsresult Finalize();
@@ -88,7 +88,7 @@ protected:
 
     nsresult WriteEncryptedHeaders();
 
-    nsresult WriteSignedHeaders1(PRBool isEightBit);
+    nsresult WriteSignedHeaders1(EMBool isEightBit);
     nsresult WriteSignedHeaders2();
 
     nsresult WriteFinalSeparator();
@@ -99,16 +99,16 @@ protected:
 
     nsresult WriteToPipe(const char *aBuf, PRInt32 aLen);
 
-    nsresult FinishAux(PRBool aAbort, nsIMsgSendReport* sendReport);
+    nsresult FinishAux(EMBool aAbort, nsIMsgSendReport* sendReport);
 
     static const char*                  FromStr;
 
-    PRBool                        mInitialized;
-    PRBool                        mUseSMIME;
-    PRBool                        mIsDraft;
-    PRBool                        mRequestStopped;
+    EMBool                        mInitialized;
+    EMBool                        mUseSMIME;
+    EMBool                        mIsDraft;
+    EMBool                        mRequestStopped;
 
-    PRBool                        mLinebreak;
+    EMBool                        mLinebreak;
     PRUint32                      mSpace;
     PRUint32                      mMatchFrom;
 
@@ -118,8 +118,8 @@ protected:
     PRUint32                      mSendFlags;
     PRUint32                      mUIFlags;
 
-    PRBool                        mMultipartSigned;
-    PRBool                        mStripWhitespace;
+    EMBool                        mMultipartSigned;
+    EMBool                        mStripWhitespace;
 
     nsCString                     mSenderEmailAddr;
     nsCString                     mRecipients;
@@ -178,7 +178,7 @@ protected:
 
     PRUint32        mCount;
     char*           mBuf;
-    PRBool          mCompleteEvents;
+    EMBool          mCompleteEvents;
 
     nsCOMPtr<nsIOutputStream>    mPipeTrans;
 

@@ -58,8 +58,8 @@ public:
     Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
 
 protected:
-    PRBool             mDummyHandler;
-    PRBool             mInitialized;
+    EMBool             mDummyHandler;
+    EMBool             mInitialized;
     nsCStringArray     mEncryptedURIs;
 };
 

@@ -123,8 +123,8 @@ nsEnigMimeDecrypt::~nsEnigMimeDecrypt()
 ///////////////////////////////////////////////////////////////////////////////
 
 NS_IMETHODIMP
-nsEnigMimeDecrypt::Init(PRBool verifyOnly,
-                        PRBool rfc2015,
+nsEnigMimeDecrypt::Init(EMBool verifyOnly,
+                        EMBool rfc2015,
                         EnigDecryptCallbackFun outputFun,
                         void* outputClosure)
 {
@@ -288,7 +288,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
     return rv;
 
   nsString errorMsg;
-  PRBool noOutput = PR_FALSE;
+  EMBool noOutput = PR_FALSE;
   PRUint32 statusFlags;
 
   rv = enigmailSvc->DecryptMessageStart(nsnull,

@@ -100,7 +100,7 @@ int MimeEncoderWrite (MimeEncoderData *data, const char *buffer, PRInt32 size);
 int MimeDecoderDestroy(MimeDecoderData *data, bool abort_p);
 int MimeEncoderDestroy(MimeEncoderData *data, bool abort_p);
 #else
-int MimeDecoderDestroy(MimeDecoderData *data, PRBool abort_p);
-int MimeEncoderDestroy(MimeEncoderData *data, PRBool abort_p);
+int MimeDecoderDestroy(MimeDecoderData *data, EMBool abort_p);
+int MimeEncoderDestroy(MimeEncoderData *data, EMBool abort_p);
 #endif
 #endif /* _MODMIMEE_H_ */

@@ -53,7 +53,7 @@ static void *MimeEnig_init(MimeObject *,
                            int (*output_fn) (const char *, PRInt32, void *),
                            void *);
 static int MimeEnig_write (const char *, PRInt32, void *);
-static int MimeEnig_eof (void *, PRBool);
+static int MimeEnig_eof (void *, EMBool);
 static char* MimeEnig_generate (void *);
 static void MimeEnig_free (void *);
 
@@ -128,8 +128,8 @@ MimeEnig_init(MimeObject *obj,
   if (NS_FAILED(rv))
     return NULL;
 
-  PRBool verifyOnly = PR_FALSE;
-  PRBool rfc2015 = PR_TRUE;
+  EMBool verifyOnly = PR_FALSE;
+  EMBool rfc2015 = PR_TRUE;
   rv = data->mimeDecrypt->Init(verifyOnly, rfc2015,
                                output_fn, output_closure);
   if (NS_FAILED(rv))
@@ -163,7 +163,7 @@ MimeEnig_write(const char *buf, PRInt32 buf_size, void *output_closure)
 }
 
 static int
-MimeEnig_eof(void* output_closure, PRBool abort_p)
+MimeEnig_eof(void* output_closure, EMBool abort_p)
 {
   MimeEnigData *data = (MimeEnigData *) output_closure;
 

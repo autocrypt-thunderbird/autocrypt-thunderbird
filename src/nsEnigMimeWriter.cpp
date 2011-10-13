@@ -113,7 +113,7 @@ nsEnigMimeWriter::~nsEnigMimeWriter()
 
 NS_IMETHODIMP
 nsEnigMimeWriter::Init(nsIOutputStream* aStream,
-                         PRBool forceCRLF)
+                         EMBool forceCRLF)
 {
   DEBUG_LOG(("nsEnigMimeWriter::Init: %d\n", forceCRLF));
 

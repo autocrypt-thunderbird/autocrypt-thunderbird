@@ -47,8 +47,8 @@
 typedef struct LineMatchStatus LineMatchStatus;
 struct LineMatchStatus {
   PRUint32 skipCount;
-  PRBool matchedLine;
-  PRBool matchedCR;
+  EMBool matchedLine;
+  EMBool matchedCR;
   PRUint32 matchOffset;
   PRUint32 matchCount;
 };
@@ -97,10 +97,10 @@ protected:
 
     static const char* const LineBreaks[3];
 
-    PRBool                              mInitialized;
-    PRBool                              mRequestStarted;
-    PRBool                              mRequestEnded;
-    PRBool                              mTailRequestStarted;
+    EMBool                              mInitialized;
+    EMBool                              mRequestStarted;
+    EMBool                              mRequestEnded;
+    EMBool                              mTailRequestStarted;
 
     nsCString                           mStartDelimiter;
     nsCString                           mEndDelimiter;
@@ -111,13 +111,13 @@ protected:
     LineMatchStatus                     mStart;
     LineMatchStatus                     mEnd;
 
-    PRBool                              mKeepDelimiters;
-    PRBool                              mMimeMultipart;
+    EMBool                              mKeepDelimiters;
+    EMBool                              mMimeMultipart;
 
-    PRBool                              mAutoMimeBoundary;
-    PRBool                              mFirstMatch;
-    PRBool                              mLastMatch;
-    PRBool                              mSavePartMatch;
+    EMBool                              mAutoMimeBoundary;
+    EMBool                              mFirstMatch;
+    EMBool                              mLastMatch;
+    EMBool                              mSavePartMatch;
 
     nsCString                           mOldPartMatch;
     nsCString                           mPartMatch;

@@ -137,7 +137,7 @@ nsEnigMimeService::Init()
 }
 
 NS_IMETHODIMP
-nsEnigMimeService::GetInitialized(PRBool *_retval)
+nsEnigMimeService::GetInitialized(EMBool *_retval)
 {
   if (!_retval)
     return NS_ERROR_NULL_POINTER;
@@ -257,7 +257,7 @@ nsEnigMimeService::ForgetEncrypted(const nsACString & uri)
 }
 
 NS_IMETHODIMP
-nsEnigMimeService::IsEncrypted(const nsACString & uri, PRBool *_retval)
+nsEnigMimeService::IsEncrypted(const nsACString & uri, EMBool *_retval)
 {
   *_retval = (mEncryptedURIs.IndexOf(nsCString(uri)) != -1);
   return NS_OK;
@@ -285,7 +285,7 @@ nsEnigMimeService::GetRandomHex(PRUint32 nDigits, char **_retval)
 
   // Get random noise
   PRSize nBytes = (nDigits+1)/2;
-  PRBool discardOneDigit = (nBytes*2 == nDigits+1);
+  EMBool discardOneDigit = (nBytes*2 == nDigits+1);
 
   unsigned char *randomBuf = (unsigned char*) PR_Malloc(sizeof(char *)
                                                         * nBytes );

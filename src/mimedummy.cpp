@@ -48,8 +48,8 @@ static void MimeDummy_finalize (MimeObject *);
 static int MimeDummy_parse_begin (MimeObject *);
 static int MimeDummy_parse_buffer (const char *, PRInt32, MimeObject *);
 static int MimeDummy_parse_line (const char *, PRInt32, MimeObject *);
-static int MimeDummy_parse_eof (MimeObject *, PRBool);
-static int MimeDummy_parse_end (MimeObject *, PRBool);
+static int MimeDummy_parse_eof (MimeObject *, EMBool);
+static int MimeDummy_parse_end (MimeObject *, EMBool);
 static int MimeDummy_add_child (MimeObject *, MimeObject *);
 
 static int
@@ -146,14 +146,14 @@ MimeDummy_parse_line(const char *line, PRInt32 length, MimeObject *obj)
 }
 
 static int
-MimeDummy_parse_eof(MimeObject *obj, PRBool abort_p)
+MimeDummy_parse_eof(MimeObject *obj, EMBool abort_p)
 {
   return 0;
 }
 
 
 static int
-MimeDummy_parse_end(MimeObject *obj, PRBool abort_p)
+MimeDummy_parse_end(MimeObject *obj, EMBool abort_p)
 {
   return 0;
 }

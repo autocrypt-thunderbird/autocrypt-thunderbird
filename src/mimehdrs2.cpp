@@ -48,6 +48,8 @@
 #include "mimehdrs2.h"
 #undef MOZILLA_INTERNAL_API
 
+#include "enigmail.h"
+
 #define HEX_ESCAPE '%'
 
 #define UNHEX(C) \
@@ -107,7 +109,7 @@ static char* __nsUnescape(char * str)
 }
 
 
-PRBool MimeHeaders_IsAsciiSpace(PRUnichar aChar) {
+EMBool MimeHeaders_IsAsciiSpace(PRUnichar aChar) {
   return ((aChar == ' ') || (aChar == '\r') ||
           (aChar == '\n') || (aChar == '\t'));
 }
@@ -217,7 +219,7 @@ MimeHeaders_get_parameter (const char *header_value, const char *parm_name,
 			 title*1="There is no charset and language info."
 		   */
 		  const char *cp = token_start+parm_len+1; /* 1st char pass '*' */
-		  PRBool needUnescape = *(token_end-1) == '*';
+		  EMBool needUnescape = *(token_end-1) == '*';
 		  if ((*cp == '0' && needUnescape) || (token_end-token_start == parm_len+1))
 		  {
 			  const char *s_quote1 = PL_strchr(value_start, 0x27);

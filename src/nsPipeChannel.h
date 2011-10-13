@@ -73,7 +73,7 @@ public:
     // Always make the destructor virtual:
     virtual ~nsPipeChannel();
 
-    nsresult Finalize(PRBool destructor);
+    nsresult Finalize(EMBool destructor);
 
     nsresult ParseHeader(const char* header, PRUint32 count);
 
@@ -88,13 +88,13 @@ public:
     };
 
 protected:
-    PRBool                              mFinalized;
-    PRBool                              mRestricted;
+    EMBool                              mFinalized;
+    EMBool                              mRestricted;
     ChannelState                        mChannelState;
-    PRBool                              mPostingData;
+    EMBool                              mPostingData;
     nsresult                            mStatus;
 
-    PRBool                              mNoMimeHeaders;
+    EMBool                              mNoMimeHeaders;
 
     PRInt32                             mBufferSegmentSize;
     PRInt32                             mBufferMaxSize;

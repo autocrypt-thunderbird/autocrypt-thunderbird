@@ -68,10 +68,10 @@ protected:
 
     NS_METHOD Finish();
 
-    PRBool                          mInitialized;
-    PRBool                          mPgpMime;
-    PRBool                          mRequestStopped;
-    PRBool                          mLastLinebreak;
+    EMBool                          mInitialized;
+    EMBool                          mPgpMime;
+    EMBool                          mRequestStopped;
+    EMBool                          mLastLinebreak;
 
     PRUint32                        mStartCount;
 

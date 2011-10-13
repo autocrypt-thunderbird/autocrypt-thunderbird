@@ -70,16 +70,16 @@ protected:
     NS_METHOD Transmit(const char* buf, PRUint32 count,
                        nsIRequest* aRequest, nsISupports* aContext);
 
-    PRBool HeaderSearch(const char* buf, PRUint32 count);
+    EMBool HeaderSearch(const char* buf, PRUint32 count);
 
     void ParseMimeHeaders(const char* mimeHeaders, PRUint32 count);
 
     void ParseHeader(const char* header, PRUint32 count);
 
-    PRBool                              mInitialized;
-    PRBool                              mRequestStarted;
-    PRBool                              mSkipHeaders;
-    PRBool                              mSkipBody;
+    EMBool                              mInitialized;
+    EMBool                              mRequestStarted;
+    EMBool                              mSkipHeaders;
+    EMBool                              mSkipBody;
 
     nsCString                           mContentType;
     nsCString                           mContentCharset;
@@ -91,7 +91,7 @@ protected:
     nsCString                           mContentDisposition;
     PRInt32                             mContentLength;
 
-    PRBool                              mDecodeContent;
+    EMBool                              mDecodeContent;
     MimeDecoderData*                    mDecoderData;
 
     nsCString                           mLinebreak;
@@ -99,7 +99,7 @@ protected:
     nsCString                           mDataStr;
     PRUint32                            mHeaderSearchCounter;
 
-    PRBool                              mHeadersFinalCR;
+    EMBool                              mHeadersFinalCR;
     PRUint32                            mHeadersLinebreak;
 
     PRUint32                            mMaxHeaderBytes;
@@ -108,7 +108,7 @@ protected:
     const char*                         mStreamBuf;
     PRUint32                            mStreamOffset;
     PRUint32                            mStreamLength;
-    PRBool                              mSubPartTreatment;
+    EMBool                              mSubPartTreatment;
 
     // Owning refs
     nsCOMPtr<nsIStreamListener>         mListener;

@@ -109,7 +109,7 @@ nsEnigMsgComposeFactory::CreateInstance(nsISupports *aOuter,
   return rv;
 }
 
-NS_IMETHODIMP nsEnigMsgComposeFactory::LockFactory(PRBool lock)
+NS_IMETHODIMP nsEnigMsgComposeFactory::LockFactory(EMBool lock)
 {
   return NS_OK;
 }
@@ -118,7 +118,7 @@ NS_IMETHODIMP nsEnigMsgComposeFactory::LockFactory(PRBool lock)
 // nsEnigMsgCompose implementation
 
 const char* nsEnigMsgCompose::FromStr = "From ";
-PRBool nsEnigMsgCompose::mRandomSeeded = PR_FALSE;
+EMBool nsEnigMsgCompose::mRandomSeeded = PR_FALSE;
 
 // nsISupports implementation
 NS_IMPL_THREADSAFE_ISUPPORTS3(nsEnigMsgCompose,
@@ -343,7 +343,7 @@ nsEnigMsgCompose::WriteEncryptedHeaders()
 }
 
 nsresult
-nsEnigMsgCompose::WriteSignedHeaders1(PRBool isEightBit)
+nsEnigMsgCompose::WriteSignedHeaders1(EMBool isEightBit)
 {
   nsresult rv;
   DEBUG_LOG(("nsEnigMsgCompose::WriteSignedHeaders1: %d\n", (int) isEightBit));
@@ -428,9 +428,9 @@ nsEnigMsgCompose::Init()
 
   DEBUG_LOG(("nsEnigMsgCompose::Init: sendFlags=%p\n", mSendFlags));
 
-  PRBool signMsg    = mSendFlags & nsIEnigmail::SEND_SIGNED;
-  PRBool encryptMsg = mSendFlags & nsIEnigmail::SEND_ENCRYPTED;
-  PRBool usePgpMime = mSendFlags & nsIEnigmail::SEND_PGP_MIME;
+  EMBool signMsg    = mSendFlags & nsIEnigmail::SEND_SIGNED;
+  EMBool encryptMsg = mSendFlags & nsIEnigmail::SEND_ENCRYPTED;
+  EMBool usePgpMime = mSendFlags & nsIEnigmail::SEND_PGP_MIME;
 
   mMultipartSigned = usePgpMime && signMsg && !encryptMsg;
 
@@ -515,7 +515,7 @@ NS_IMETHODIMP
 nsEnigMsgCompose::RequiresCryptoEncapsulation(
                                         nsIMsgIdentity* aIdentity,
                                         nsIMsgCompFields* aCompFields,
-                                        PRBool* aRequiresEncryptionWork)
+                                        EMBool* aRequiresEncryptionWork)
 {
   nsresult rv;
   DEBUG_LOG(("nsEnigMsgCompose::RequiresCryptoEncapsulation: \n"));
@@ -575,7 +575,7 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
                                         nsIMsgCompFields* aCompFields,
                                         nsIMsgIdentity* aIdentity,
                                         nsIMsgSendReport* sendReport,
-                                        PRBool aIsDraft)
+                                        EMBool aIsDraft)
 {
   nsresult rv;
 
@@ -651,7 +651,7 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
 
 
 NS_IMETHODIMP
-nsEnigMsgCompose::FinishCryptoEncapsulation(PRBool aAbort,
+nsEnigMsgCompose::FinishCryptoEncapsulation(EMBool aAbort,
                                             nsIMsgSendReport* sendReport)
 {
   nsresult rv;
@@ -679,7 +679,7 @@ nsEnigMsgCompose::FinishCryptoEncapsulation(PRBool aAbort,
 }
 
 nsresult
-nsEnigMsgCompose::FinishAux(PRBool aAbort,
+nsEnigMsgCompose::FinishAux(EMBool aAbort,
                             nsIMsgSendReport* sendReport)
 {
   nsresult rv;
@@ -984,7 +984,7 @@ nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
 
   DEBUG_LOG(("nsEnigMsgCompose::OnStartRequest: Content-Type: %s\n", headers.get()));
 
-  PRBool encapsulate = PR_FALSE;
+  EMBool encapsulate = PR_FALSE;
   if (mSendFlags & nsIEnigmail::SEND_PGP_MIME) {
     // RFC2015 crypto encapsulation
     encapsulate = PR_TRUE;
@@ -1216,7 +1216,7 @@ NS_IMETHODIMP nsEnigComposeWriter::Run()
 
     DEBUG_LOG(("nsEnigComposeWriter::Run: draining event queue\n"));
 
-    PRBool pendingEvents;
+    EMBool pendingEvents;
     rv = myThread->HasPendingEvents(&pendingEvents);
     NS_ENSURE_SUCCESS(rv, rv);
 

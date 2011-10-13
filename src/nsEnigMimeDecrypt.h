@@ -62,9 +62,9 @@ protected:
     nsresult Finalize();
     nsresult FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri);
 
-    PRBool                          mInitialized;
-    PRBool                          mVerifyOnly;
-    PRBool                          mRfc2015;
+    EMBool                          mInitialized;
+    EMBool                          mVerifyOnly;
+    EMBool                          mRfc2015;
 
     EnigDecryptCallbackFun          mOutputFun;
     void*                           mOutputClosure;
