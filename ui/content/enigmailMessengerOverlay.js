@@ -582,29 +582,39 @@ Enigmail.msg = {
       var embeddedSigned = null;
       var embeddedEncrypted = null;
 
-/*
       if (mimeMsg.parts != null) {
+        // TB >= 8.0
         var resultObj={ encrypted: "", signed: "" };
         this.enumerateMimeParts(mimeMsg, resultObj);
-        EnigmailCommon.DEBUG_LOG("embedded: "+resultObj.encrypted+" / "+resultObj.signed+"\n");
+        EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: embedded objects: "+resultObj.encrypted+" / "+resultObj.signed+"\n");
+        if (resultObj.encrypted || resultObj.signed) {
+          let mailUrl = this.getCurrentMsgUrl();
+          if (mailUrl) {
+              if (resultObj.signed) embeddedSigned = mailUrl.spec+"&part="+resultObj.signed.replace(/\.\d+$/, "");
+              if (resultObj.encrypted) embeddedEncrypted = mailUrl.spec+"&part="+resultObj.encrypted.replace(/\.\d+$/, "");
+          }
+        }
       }
-*/
-      if (Enigmail.msg.savedHeaders["content-type"] &&
-          ((Enigmail.msg.savedHeaders["content-type"].search(/^multipart\/mixed/i) == 0) ||
-           (Enigmail.msg.savedHeaders["content-type"].search(/^multipart\/encrypted/i) == 0))) {
-        for (var indexb in currentAttachments) {
-          var attachment = currentAttachments[indexb];
 
-          if (attachment) {
-            if (attachment.contentType.search(/^application\/pgp-signature/i) == 0) {
-              if (! attachment.isExternalAttachment)
-                embeddedSigned = attachment.url.replace(/\&filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
+      if (! (embeddedSigned || embeddedEncrypted)) {
+        // TB <= 7.x
+        if (Enigmail.msg.savedHeaders["content-type"] &&
+            ((Enigmail.msg.savedHeaders["content-type"].search(/^multipart\/mixed/i) == 0) ||
+             (Enigmail.msg.savedHeaders["content-type"].search(/^multipart\/encrypted/i) == 0))) {
+          for (var indexb in currentAttachments) {
+            var attachment = currentAttachments[indexb];
+
+            if (attachment) {
+              if (attachment.contentType.search(/^application\/pgp-signature/i) == 0) {
+                if (! attachment.isExternalAttachment)
+                  embeddedSigned = attachment.url.replace(/\&filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
+              }
+              if (attachment.contentType.search(/^application\/pgp-encrypted/i) == 0) {
+                if (! attachment.isExternalAttachment)
+                  embeddedEncrypted = attachment.url.replace(/\&filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
+              }
+              EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: mimePart "+indexb+": "+attachment.contentType+"\n");
             }
-            if (attachment.contentType.search(/^application\/pgp-encrypted/i) == 0) {
-              if (! attachment.isExternalAttachment)
-                embeddedEncrypted = attachment.url.replace(/\&filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
-            }
-            EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: mimePart "+indexb+": "+attachment.contentType+"\n");
           }
         }
       }
@@ -1633,7 +1643,7 @@ Enigmail.msg = {
       msigned=txt.search(/content\-type:[ \t]*multipart\/signed/i);
       if(msigned >= 0) {
         // Real multipart/signed message; let's try to verify it
-        EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: verifyEmbeddedCallback: detected multipart/signed\n");
+        EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: verifyEmbeddedCallback: detected multipart/signed. msigned: "+msigned+"\n");
 
         callbackArg.enableSubpartTreatment=(msigned > 0);
 
