@@ -1836,6 +1836,7 @@ Enigmail.msg = {
     // (Do we need to set the nsIDocumentEncoder.* flags?)
     var origText = this.editorGetContentAs("text/plain",
                                            encoderFlags);
+    if (! origText) origText = "";
 
     if (origText.length > 0) {
       // Sign/encrypt body text
