@@ -587,6 +587,11 @@ Enigmail.msg = {
         var resultObj={ encrypted: "", signed: "" };
         this.enumerateMimeParts(mimeMsg, resultObj);
         EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: embedded objects: "+resultObj.encrypted+" / "+resultObj.signed+"\n");
+
+        // ignore mime parts on top level (regular messages)
+        if (resultObj.signed.indexOf(".") < 0) resultObj.signed = null;
+        if (resultObj.encrypted.indexOf(".") < 0) resultObj.encrypted = null;
+
         if (resultObj.encrypted || resultObj.signed) {
           let mailUrl = this.getCurrentMsgUrl();
           if (mailUrl) {
