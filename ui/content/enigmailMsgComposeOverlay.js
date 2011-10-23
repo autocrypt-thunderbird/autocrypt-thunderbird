@@ -261,7 +261,9 @@ Enigmail.msg = {
     if (mimeMsg && mimeMsg.headers["x-enigmail-draft-status"])
       flags = Number(mimeMsg.headers["x-enigmail-draft-status"]);
 
-    if (flags & SIGN) this.setSendMode('sign');
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getMsgPropertiesCb: draftStatus: "+flags+"\n");
+
+    if (flags & SIGN) Enigmail.msg.setSendMode('sign');
   },
 
 
@@ -336,11 +338,19 @@ Enigmail.msg = {
       if (! bucketList.hasChildNodes()) {
         try {
           // TB only
-        ChangeAttachmentBucketVisibility(true);
+          UpdateAttachmentBucket(false);
         }
         catch (ex) {}
       }
     }
+
+    try {
+      // TB only
+      UpdateAttachmentBucket(bucketList.hasChildNodes());
+    }
+    catch (ex) {}
+
+
     this.updateStatusBar();
   },
 
