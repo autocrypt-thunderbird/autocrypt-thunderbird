@@ -74,6 +74,8 @@ var gDispatchThread = null;
 
 var gEnigExtensionVersion;
 
+var gEncryptedUris = [];
+
 try {
   // Gecko 2.0 only
   Components.utils.import("resource://gre/modules/AddonManager.jsm");
@@ -1187,7 +1189,24 @@ var EnigmailCommon = {
     }
 
     return event;
+  },
+
+  rememberEncryptedUri: function (uri) {
+    if (gEncryptedUris.indexOf(uri) < 0)
+      gEncryptedUris.push(uri);
+  },
+
+  forgetEncryptedUri: function (uri) {
+    var pos = gEncryptedUris.indexOf(uri);
+    if (pos >= 0) {
+      gEncryptedUris.splice(pos, 1);
+    }
+  },
+
+  isEncryptedUri: function (uri) {
+    return gEncryptedUris.indexOf(uri) >= 0;
   }
+
 };
 
 

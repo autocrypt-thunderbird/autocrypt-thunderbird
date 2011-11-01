@@ -60,7 +60,6 @@ public:
 protected:
     EMBool             mDummyHandler;
     EMBool             mInitialized;
-    nsCStringArray     mEncryptedURIs;
 };
 
 #endif

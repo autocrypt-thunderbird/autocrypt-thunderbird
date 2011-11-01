@@ -232,7 +232,8 @@ Enigmail.msg = {
         properties = msgHdr.getUint32Property("enigmail");
         if (draft) {
           try {
-            MsgHdrToMimeMessage(msgHdr , null, this.getMsgPropertiesCb, false);
+            MsgHdrToMimeMessage(msgHdr , null, this.getMsgPropertiesCb, true,
+            { examineEncryptedParts: true });
           }
           catch (ex) {
             EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: Enigmail.msg.getMsgProperties: cannot use MsgHdrToMimeMessage\n");
@@ -242,8 +243,7 @@ Enigmail.msg = {
     }
     catch (ex) {  }
 
-    var enigMimeService = Components.classes[EnigmailCommon.ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
-    if (enigMimeService && enigMimeService.isEncrypted(msgUri)) {
+    if (EnigmailCommon.isEncryptedUri(msgUri)) {
       properties |= nsIEnigmail.DECRYPTION_OKAY;
     }
 

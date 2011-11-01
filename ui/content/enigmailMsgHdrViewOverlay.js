@@ -412,11 +412,7 @@ Enigmail.hdrView = {
       }
 
       if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
-        var enigMimeService = Components.classes[EnigmailCommon.ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
-        if (enigMimeService)
-        {
-          enigMimeService.rememberEncrypted(this.lastEncryptedMsgKey);
-        }
+        EnigmailCommon.rememberEncryptedUri(this.lastEncryptedMsgKey);
 
         // Display encrypted icon
         gEncryptedUINode.setAttribute("encrypted", "ok");
@@ -635,12 +631,8 @@ Enigmail.hdrView = {
   {
     if (Enigmail.hdrView.lastEncryptedMsgKey)
     {
-      var enigMimeService = Components.classes[EnigmailCommon.ENIGMIMESERVICE_CONTRACTID].
-                              getService(Components.interfaces.nsIEnigMimeService);
-      if (enigMimeService) {
-        enigMimeService.forgetEncrypted(Enigmail.hdrView.lastEncryptedMsgKey);
-        Enigmail.hdrView.lastEncryptedMsgKey = null;
-      }
+      EnigmailCommon.forgetEncryptedUri(Enigmail.hdrView.lastEncryptedMsgKey);
+      Enigmail.hdrView.lastEncryptedMsgKey = null;
     }
   },
 

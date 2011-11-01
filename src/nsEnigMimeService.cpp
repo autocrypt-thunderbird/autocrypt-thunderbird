@@ -240,30 +240,6 @@ nsEnigMimeService::GetPlainText(nsIDOMNode* domNode,
 }
 
 NS_IMETHODIMP
-nsEnigMimeService::RememberEncrypted(const nsACString & uri)
-{
-  // Assuming duplicates are allowed.
-  mEncryptedURIs.AppendCString(nsCString(uri));
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsEnigMimeService::ForgetEncrypted(const nsACString & uri)
-{
-  // Assuming, this will only remove one copy of the string, if the array
-  // contains multiple copies of the same string.
-  mEncryptedURIs.RemoveCString(nsCString(uri));
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsEnigMimeService::IsEncrypted(const nsACString & uri, EMBool *_retval)
-{
-  *_retval = (mEncryptedURIs.IndexOf(nsCString(uri)) != -1);
-  return NS_OK;
-}
-
-NS_IMETHODIMP
 nsEnigMimeService::Sleep(PRUint32 miliSeconds)
 {
   // Sleep for the specified amount of miliseconds

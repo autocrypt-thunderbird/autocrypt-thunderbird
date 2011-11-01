@@ -81,6 +81,7 @@ Enigmail.msg = {
         if (element) {
           try {
             var oldValue = element.getAttribute(attrName);
+            EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: overrideAttribute "+attrName+": oldValue="+oldValue+"\n");
             var newValue = prefix+elementId+suffix;
 
             element.setAttribute(attrName, newValue);
