@@ -528,15 +528,18 @@ Enigmail.msg = {
   {
     EnigmailCommon.DEBUG_LOG("enumerateMimeParts: "+mimePart.partName+" - "+mimePart.headers["content-type"]+"\n");
 
-    // does not work properly because MsgHdrToMimeMessage() cannot [yet] handle inner parts of encrypted messages
-
-    var ct = mimePart.headers["content-type"][0];
-    if (typeof(ct) == "string") {
-      if (ct.search(/multipart\/signed.*application\/pgp-signature/i) >= 0) {
-        resultObj.signed=mimePart.partName;
+    try {
+      var ct = mimePart.headers["content-type"][0];
+      if (typeof(ct) == "string") {
+        if (ct.search(/multipart\/signed.*application\/pgp-signature/i) >= 0) {
+          resultObj.signed=mimePart.partName;
+        }
+        else if (ct.search(/application\/pgp-encrypted/i) >= 0)
+          resultObj.encrypted=mimePart.partName;
       }
-      else if (ct.search(/application\/pgp-encrypted/i) >= 0)
-        resultObj.encrypted=mimePart.partName;
+    }
+    catch (ex) {
+      // catch exception if no headers or no content-type defined.
     }
 
     var i;
