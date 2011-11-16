@@ -699,10 +699,12 @@ Enigmail.hdrView = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: this.enigOnShowAttachmentContextMenu\n");
     // first, call the original function ...
-    onShowAttachmentContextMenu();
+
+    // TODO: FIXME
+    onShowAttachmentItemContextMenu();
 
     // then, do our own additional stuff ...
-    var contextMenu = document.getElementById('attachmentListContext');
+    var contextMenu = document.getElementById('attachmentItemContext');
     var selectedAttachments = contextMenu.attachments;
 
     var decryptOpenMenu = document.getElementById('enigmail_ctxDecryptOpen');

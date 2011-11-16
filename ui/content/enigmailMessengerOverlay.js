@@ -1689,7 +1689,7 @@ Enigmail.msg = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: handleAttachmentSel: actionType="+actionType+"\n");
 
-    var contextMenu = document.getElementById('attachmentListContext');
+    var contextMenu = document.getElementById('attachmentItemContext');
     var selectedAttachments = contextMenu.attachments;
 
     var anAttachment = selectedAttachments[0];

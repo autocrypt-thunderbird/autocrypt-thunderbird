@@ -881,7 +881,7 @@ function enigmailListSig() {
   var resultObj = {};
 
   window.openDialog("chrome://enigmail/content/enigmailViewKeySigDlg.xul",
-        "", "dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
+        "", "chrome,dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
 
   if (resultObj.refresh) {
     enigmailRefreshKeys();

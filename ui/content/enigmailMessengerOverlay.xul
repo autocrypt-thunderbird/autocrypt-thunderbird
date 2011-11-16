@@ -352,7 +352,7 @@
 
 
 
-  <popup id="attachmentListContext" onpopupshowing="return Enigmail.hdrView.enigOnShowAttachmentContextMenu();">
+  <popup id="attachmentItemContext" onpopupshowing="return Enigmail.hdrView.enigOnShowAttachmentContextMenu();">
     <menuseparator/>
     <menuitem id="enigmail_ctxImportKey"
       label="&enigmail.ctxImportKey.label;"
