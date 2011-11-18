@@ -34,6 +34,10 @@
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
+Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+
+const Ec = EnigmailCommon;
+
 // Initialize enigmailCommon
 EnigInitCommon("enigmailSearchKey");
 
@@ -520,7 +524,7 @@ function enigNewGpgKeysRequest(requestType, callbackFunction) {
   }
 
   window.enigRequest.callbackFunction = callbackFunction;
-  var requestObserver = new EnigRequestObserver(enigmailGpgkeysTerminate, null);
+  var requestObserver = Ec.newRequestObserver(enigmailGpgkeysTerminate, null);
   var errorMsgObj = new Object();
   var ipcRequest = null;
   window.enigRequest.gpgkeysRequest = null;

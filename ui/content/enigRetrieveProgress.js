@@ -139,7 +139,7 @@ function onLoad() {
   }
 
   msgProgress = Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
-  var requestObserver = new EnigRequestObserver(enigSendKeyTerminate, {'progressBar': msgProgress, 'callType': 1});
+  var requestObserver = Ec.newRequestObserver(enigSendKeyTerminate, {'progressBar': msgProgress, 'callType': 1});
 
   msgProgress.registerListener(progressListener);
   msgProgress.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_START, 0)
@@ -182,8 +182,11 @@ function onCancel ()
   return false;
 }
 
-function enigSendKeyTerminate (terminateArg, ipcRequest) {
+function enigSendKeyTerminate (cbArr) {
   Ec.DEBUG_LOG("enigmailRetrieveProgress.js: enigSendKeyTerminate\n");
+
+  var terminateArg = cbArr[0];
+  var ipcRequest = cbArr[1];
 
   if (gEnigIpcRequest) {
     var cbFunc = gEnigCallbackFunc;

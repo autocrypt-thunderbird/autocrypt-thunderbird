@@ -34,6 +34,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
+Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+
+const Ec = EnigmailCommon;
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailKeygen");
@@ -113,14 +116,15 @@ function enigmailKeygenUpdate(getPrefs, setPrefs) {
   }
 }
 
-function enigmailKeygenTerminate(terminateArg, ipcRequest) {
-   DEBUG_LOG("enigmailKeygen.js: Terminate: "+ipcRequest+"\n");
+function enigmailKeygenTerminate(ipcRequest) {
+   DEBUG_LOG("enigmailKeygen.js: Terminate:\n");
+
+   ipcRequest = ipcRequest[0];
 
    // Give focus to this window
    window.focus();
 
    if (!ipcRequest.pipeTransport) {
-      // changed interface in TB 1.1
       ipcRequest = ipcRequest.QueryInterface(Components.interfaces.nsIIPCRequest);
    }
    var keygenProcess = ipcRequest.pipeTransport;
@@ -163,7 +167,8 @@ function enigmailKeygenTerminate(terminateArg, ipcRequest) {
           EnigCreateRevokeCert(gGeneratedKey, curId.email);
        }
      }
-   } else {
+   }
+   else {
      if (gGeneratedKey) {
        if (EnigConfirm(EnigGetString("genCompleteNoSign")+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"))) {
           EnigCreateRevokeCert(gGeneratedKey, curId.email);
@@ -293,7 +298,7 @@ function enigmailKeygenStart() {
    }
 
    var ipcRequest = null;
-   var requestObserver = new EnigRequestObserver(enigmailKeygenTerminate, null);
+   var requestObserver = Ec.newRequestObserver(enigmailKeygenTerminate, null);
 
    try {
       ipcRequest = enigmailSvc.generateKey(window,
@@ -311,6 +316,7 @@ function enigmailKeygenStart() {
       EnigAlert(EnigGetString("keyGenFailed"));
    }
 
+   requestObserver._terminateArg = ipcRequest;
    gKeygenRequest = ipcRequest;
 
    WRITE_LOG("enigmailKeygen.js: Start: gKeygenRequest = "+gKeygenRequest+"\n");

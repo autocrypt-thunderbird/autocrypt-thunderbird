@@ -357,36 +357,6 @@ function EnigGetSignMsg(identity) {
   EnigmailFuncs.getSignMsg(identity);
 }
 
-function EnigRequestObserver(terminateFunc, terminateArg)
-{
-  this._terminateFunc = terminateFunc;
-  this._terminateArg = terminateArg;
-}
-
-EnigRequestObserver.prototype = {
-
-  _terminateFunc: null,
-  _terminateArg: null,
-
-  QueryInterface: function (iid) {
-    if (!iid.equals(ENIG_I.nsIRequestObserver) &&
-        !iid.equals(ENIG_I.nsISupports))
-      throw Components.results.NS_ERROR_NO_INTERFACE;
-    return this;
-  },
-
-  onStartRequest: function (channel, ctxt)
-  {
-    DEBUG_LOG("enigmailCommon.js: EnigRequestObserver.onStartRequest\n");
-  },
-
-  onStopRequest: function (channel, ctxt, status)
-  {
-    DEBUG_LOG("enigmailCommon.js: EnigRequestObserver.onStopRequest: "+ctxt+"\n");
-    this._terminateFunc(this._terminateArg, ctxt);
-  }
-}
-
 
 function EnigConvertFromUnicode(text, charset) {
   DEBUG_LOG("enigmailCommon.js: EnigConvertFromUnicode: "+charset+"\n");

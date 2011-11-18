@@ -1033,6 +1033,7 @@ function displayResult(arrayOfMsgText) {
 }
 
 function enigmailReceiveKeyCb(exitCode, errorMsg, msgBox) {
+  DEBUG_LOG("enigmailKeyManager.js: enigmailReceiveKeyCb\n");
   if (msgBox) {
     if (exitCode==0) {
       enigmailRefreshKeys();
