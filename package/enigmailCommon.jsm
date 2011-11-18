@@ -891,7 +891,7 @@ var EnigmailCommon = {
 
   convertToUnicode: function (text, charset)
   {
-    this.DEBUG_LOG("enigmailCommon.jsm: convertToUnicode: "+charset+"\n");
+    //this.DEBUG_LOG("enigmailCommon.jsm: convertToUnicode: "+charset+"\n");
 
     if (!text || (charset && (charset.toLowerCase() == "iso-8859-1")))
       return text;
@@ -911,7 +911,7 @@ var EnigmailCommon = {
   },
 
   convertFromUnicode: function (text, charset) {
-    this.DEBUG_LOG("enigmailCommon.jsm: convertFromUnicode: "+charset+"\n");
+    //this.DEBUG_LOG("enigmailCommon.jsm: convertFromUnicode: "+charset+"\n");
 
     if (!text)
       return "";
