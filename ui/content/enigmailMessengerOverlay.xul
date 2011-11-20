@@ -351,7 +351,7 @@
   </vbox>
 
 
-
+  <!-- Thunderbird -->
   <popup id="attachmentItemContext" onpopupshowing="return Enigmail.hdrView.enigOnShowAttachmentContextMenu();">
     <menuseparator/>
     <menuitem id="enigmail_ctxImportKey"
@@ -372,6 +372,26 @@
       oncommand="Enigmail.msg.handleAttachmentSel('verifySig');"/>
   </popup>
 
+  <!-- SeaMonkey -->
+  <popup id="attachmentListContext">
+    <menuseparator/>
+    <menuitem id="enigmail_ctxImportKey_SM"
+      label="&enigmail.ctxImportKey.label;"
+      accesskey="&enigmail.ctxImportKey.accesskey;"
+      oncommand="Enigmail.msg.handleAttachmentSel('importKey');"/>
+    <menuitem id="enigmail_ctxDecryptOpen_SM"
+      label="&enigmail.ctxDecryptOpen.label;"
+      accesskey="&enigmail.ctxDecryptOpen.accesskey;"
+      oncommand="Enigmail.msg.handleAttachmentSel('openAttachment');"/>
+    <menuitem id="enigmail_ctxDecryptSave_SM"
+      label="&enigmail.ctxDecryptSave.label;"
+      accesskey="&enigmail.ctxDecryptSave.accesskey;"
+      oncommand="Enigmail.msg.handleAttachmentSel('saveAttachment');"/>
+    <menuitem id="enigmail_ctxVerifyAtt_SM"
+      label="&enigmail.ctxVerifyAtt.label;"
+      accesskey="&enigmail.ctxVerifyAtt.accesskey;"
+      oncommand="Enigmail.msg.handleAttachmentSel('verifySig');"/>
+  </popup>
 
   <statusbar id="status-bar">
     <hbox id="enigmail-status-bar"

@@ -700,12 +700,26 @@ Enigmail.hdrView = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: this.enigOnShowAttachmentContextMenu\n");
     // first, call the original function ...
 
-    // TODO: FIXME
-    onShowAttachmentItemContextMenu();
+    try {
+      // Thunderbird
+      onShowAttachmentItemContextMenu();
+    }
+    catch (ex) {
+      // SeaMonkey
+      onShowAttachmentContextMenu();
+    }
 
     // then, do our own additional stuff ...
+
+    // Thunderbird
     var contextMenu = document.getElementById('attachmentItemContext');
     var selectedAttachments = contextMenu.attachments;
+
+    if (! contextMenu) {
+      // SeaMonkey
+      contextMenu = document.getElementById('attachmentListContext');
+      selectedAttachments = attachmentList.selectedItems;
+    }
 
     var decryptOpenMenu = document.getElementById('enigmail_ctxDecryptOpen');
     var decryptSaveMenu = document.getElementById('enigmail_ctxDecryptSave');

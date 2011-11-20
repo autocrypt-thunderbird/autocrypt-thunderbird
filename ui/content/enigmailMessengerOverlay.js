@@ -1689,9 +1689,15 @@ Enigmail.msg = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: handleAttachmentSel: actionType="+actionType+"\n");
 
+    // Thunderbird
     var contextMenu = document.getElementById('attachmentItemContext');
     var selectedAttachments = contextMenu.attachments;
 
+    if (! contextMenu) {
+      // SeaMonkey
+      contextMenu = document.getElementById('attachmentListContext');
+      selectedAttachments = attachmentList.selectedItems;
+    }
     var anAttachment = selectedAttachments[0];
 
     switch (actionType) {
