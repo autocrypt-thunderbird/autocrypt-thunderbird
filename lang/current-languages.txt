@@ -19,7 +19,7 @@ pt-BR
 pt-PT
 ru-RU
 sl-SI
-sk
+sk-SK
 sv-SE
 tr-TR
 vi-VN
