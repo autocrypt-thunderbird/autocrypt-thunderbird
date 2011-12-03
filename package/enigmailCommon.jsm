@@ -1152,6 +1152,7 @@ var EnigmailCommon = {
   setTimeout: function( callbackFunction, sleepTimeMs ) {
     var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
     timer.initWithCallback(callbackFunction, sleepTimeMs, Ci.nsITimer.TYPE_ONE_SHOT);
+    return timer;
   },
 
   dispatchEvent: function (callbackFunction, sleepTimeMs, arrayOfArgs)
