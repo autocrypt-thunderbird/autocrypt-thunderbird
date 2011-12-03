@@ -2689,25 +2689,6 @@ Enigmail.composeStateListener = {
 
       NotifyDocumentStateChanged: function (nowDirty)
       {
-        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.NotifyDocumentStateChanged: "+nowDirty+"\n");
-
-        var isEmpty, isEditable;
-
-        isEmpty    = Enigmail.msg.editor.documentIsEmpty;
-        isEditable = Enigmail.msg.editor.isDocumentEditable;
-
-
-        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.NotifyDocumentStateChanged: isEmpty="+isEmpty+", isEditable="+isEditable+"\n");
-
-        if (!isEditable || isEmpty)
-          return;
-
-        if (!Enigmail.msg.timeoutId && !Enigmail.msg.dirty)
-          Enigmail.msg.timeoutId = EnigmailCommon.dispatchEvent(
-            function _decryptWrapper () {
-              Enigmail.msg.decryptQuote(false)
-            },
-            10);
       }
     }
 
@@ -2730,7 +2711,25 @@ Enigmail.composeStateListener = {
 
   NotifyComposeBodyReady: function()
   {
-    //EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady\n");
+
+    var isEmpty, isEditable;
+
+    isEmpty    = Enigmail.msg.editor.documentIsEmpty;
+    isEditable = Enigmail.msg.editor.isDocumentEditable;
+
+
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.NotifyDocumentStateChanged: isEmpty="+isEmpty+", isEditable="+isEditable+"\n");
+
+    if (!isEditable || isEmpty)
+      return;
+
+    if (!Enigmail.msg.timeoutId && !Enigmail.msg.dirty) {
+      Enigmail.msg.timeoutId = EnigmailCommon.setTimeout(function () {
+          Enigmail.msg.decryptQuote(false)
+        },
+        0);
+    }
   },
 
   SaveInFolderDone: function(folderURI)
