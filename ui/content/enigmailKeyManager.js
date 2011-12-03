@@ -1075,7 +1075,7 @@ function addToPRRule() {
 function onSearchInput(returnKeyHit)
 {
   if (gSearchTimer) {
-    clearTimeout(gSearchTimer);
+    gSearchTimer.cancel();
     gSearchTimer = null;
   }
 
@@ -1085,7 +1085,7 @@ function onSearchInput(returnKeyHit)
     onEnterInSearchBar();
   }
   else {
-    gSearchTimer = setTimeout(onEnterInSearchBar, 600);
+    gSearchTimer = EnigmailCommon.setTimeout(onEnterInSearchBar, 600);
   }
 }
 

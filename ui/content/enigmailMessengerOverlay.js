@@ -559,7 +559,12 @@ Enigmail.msg = {
 
       if (mimeMsg == null) {
         EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: messageDecryptCb: mimeMsg is null\n");
-        contentType=currentHeaderData['content-type'].headerValue;
+        try {
+          contentType=currentHeaderData['content-type'].headerValue;
+        }
+        catch (ex) {
+          contentType = "text/plain";
+        }
         mimeMsg = {
           headers: {'content-type': contentType },
           contentType: contentType,

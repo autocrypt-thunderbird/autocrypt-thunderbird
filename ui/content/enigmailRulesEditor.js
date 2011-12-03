@@ -323,7 +323,7 @@ function onSearchKeyPress(event)
 function onSearchInput(returnKeyHit)
 {
   if (gSearchTimer) {
-    clearTimeout(gSearchTimer);
+    gSearchTimer.cancel();
     gSearchTimer = null;
   }
 
@@ -333,7 +333,7 @@ function onSearchInput(returnKeyHit)
     onEnterInSearchBar();
   }
   else {
-    gSearchTimer = setTimeout(onEnterInSearchBar, 800);
+    gSearchTimer = EnigmailCommon.setTimeout(onEnterInSearchBar, 800);
   }
 }
 
