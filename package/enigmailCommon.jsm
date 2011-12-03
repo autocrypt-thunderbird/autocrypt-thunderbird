@@ -1148,6 +1148,12 @@ var EnigmailCommon = {
     gLogLevel = logLevel;
   },
 
+
+  setTimeout: function( callbackFunction, sleepTimeMs ) {
+    var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
+    timer.initWithCallback(callbackFunction, sleepTimeMs, Ci.nsITimer.TYPE_ONE_SHOT);
+  },
+
   dispatchEvent: function (callbackFunction, sleepTimeMs, arrayOfArgs)
   {
     this.DEBUG_LOG("enigmailCommon.jsm: dispatchEvent f="+callbackFunction.name+"\n");
@@ -1172,13 +1178,19 @@ var EnigmailCommon = {
       {
         EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: dispatchEvent running mainEvent\n");
         self.cbFunc(self.args);
+      },
+
+      notify: function()
+      {
+        EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: dispatchEvent got notified\n");
+        self.cbFunc(self.args);
       }
+
     };
 
     var event = new mainEvent(callbackFunction, arrayOfArgs);
     if (sleepTimeMs > 0) {
-      var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-      timer.initWithCallback(event.run, sleepTimeMs, Ci.nsITimer.TYPE_ONE_SHOT);
+      return this.setTimeout(event, sleepTimeMs);
     }
     else {
       var tm = Cc["@mozilla.org/thread-manager;1"].getService(Ci.nsIThreadManager);
