@@ -478,6 +478,7 @@ Enigmail.msg = {
     };
 
     try {
+      if (gFolderDisplay.selectedMessageIsNews) throw "dummy"; // workaround for broken NNTP support in Gloda
       MsgHdrToMimeMessage(gFolderDisplay.selectedMessage , cbObj, Enigmail.msg.msgDecryptMimeCb, true);
     }
     catch (ex) {
@@ -489,21 +490,19 @@ Enigmail.msg = {
 
   msgDecryptMimeCb: function (msg, mimeMsg)
   {
-    var f = function(argList)
-    {
-      var enigmailSvc=Enigmail.getEnigmailSvc();
-      if (!enigmailSvc) return;
-
-      var event = argList[0];
-      var isAuto = argList[1];
-      var mimeMsg = argList[2];
-      Enigmail.msg.messageDecryptCb(event, isAuto, mimeMsg);
-    };
-
     // MsgHdrToMimeMessage is not on the main thread which may lead to problems with
     // accessing DOM and debugging
 
-    EnigmailCommon.dispatchEvent(f, 0, [this.event, this.isAuto, mimeMsg])
+    EnigmailCommon.dispatchEvent(
+      function(argList) {
+        var enigmailSvc=Enigmail.getEnigmailSvc();
+        if (!enigmailSvc) return;
+
+        var event = argList[0];
+        var isAuto = argList[1];
+        var mimeMsg = argList[2];
+        Enigmail.msg.messageDecryptCb(event, isAuto, mimeMsg);
+      }, 0, [this.event, this.isAuto, mimeMsg])
   },
 
 
