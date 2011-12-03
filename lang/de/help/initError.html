@@ -4,7 +4,68 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>OpenPGP-Hilfe: Beheben von Problemen bei der OpenPGP-Initialisierung</title>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>OpenPGP-Hilfe: Lesen von Nachrichten</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <style type="text/css">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+<h1>OpenPGP-Hilfe</h1>
+
+<h3>Verwenden von OpenPGP beim Lesen von Nachrichten</h3>
+
+	<dl>
+	  <dt>Schaltfl&auml;che &quot;Entschl&uuml;sseln&quot; im Hauptfenster</dt>
+
+	  <dd>Diese Schaltfl&auml;che kann f&uuml;r mehrere Zwecke verwendet werden: zum Entschl&uuml;sseln, &Uuml;berpr&uuml;fen, oder Importieren von &ouml;ffentlichen Schl&uuml;sseln. Im Normalfall werden Nachrichten automatisch entschl&uuml;sselt und &uuml;berpr&uuml;ft. Dies kann jedoch in den Einstellungen deaktiviert werden. Sollte das Entschl&uuml;sseln fehlschlagen, dann erscheint im Regelfall eine kurze Fehlermeldung in der Statuszeile von Enigmail. Sie werden dann, wenn Sie die Schaltfl&auml;che &quot;Entschl&uuml;sseln&quot; anklicken, eine detaillierte Fehlermeldung (inklusive der Meldung von der OpenPGP-Kommandozeile) erhalten.</dd>
+
+	  <dt>Schl&uuml;ssel- und/oder Stift-Symbol in der Statusleiste einer Nachricht</dt>
+
+	  <dd>
+	  	Das <em>Stift-</em> und das <em>Schl&uuml;ssel-</em>Symbol in der Statusleiste geben an, ob die Nachricht unterschrieben und/oder verschl&uuml;sselt ist und ob die Unterschrift g&uuml;ltig ist, d.h. dass die Nachricht seit ihrem Senden nicht ge&auml;ndert wurde. Falls die Nachricht ge&auml;ndert wurde, wird der <em>Stift</em> rot dargestellt, um auf die Ung&uuml;ltigkeit der Unterschrift hinzuweisen. Nach einem Klick auf &quot;Details&quot; in der OpenPGP-Zeile im Nachrichtenkopf wird ein Men&uuml; mit den folgenden Optionen angezeigt:
+
+	    <ul>
+			  <li><em>Schl&uuml;ssel importieren</em>: importiert eventuell angeh&auml;ngte &ouml;ffentliche Schl&uuml;ssel in Ihren Schl&uuml;sselring in der Schl&uuml;sselverwaltung.</li>
+
+			  <li><em>OpenPGP-Sichheitsinfo...</em>: erm&ouml;glicht Ihnen, die Statusmeldungen der OpenPGP-Kommandozeile f&uuml;r die Nachricht anzusehen.</li>
+
+			  <li><em>OpenPGP-Sicherheitsinfo kopieren</em>: kopiert die Statusmeldungen von OpenPGP in die Zwischenablage, damit man sie z.B. in eine Antwortnachricht etc. einf&uuml;gen kann.</li>
+
+			  <li><em>Foto-ID anzeigen</em>: erm&ouml;glicht Ihnen, die <em>Foto-ID</em> der Person, die die Nachricht gesendet hat, anzusehen, falls diese ein Foto in dem &ouml;ffentlichen Schl&uuml;ssel eingebettet hat. (<em>Diese Option is nur verf&uuml;gbar wenn ein Foto in dem &ouml;ffentlichen Schl&uuml;ssel eingebettet ist.)</em></li>
+
+			  <li><em>Schl&uuml;ssel unterschreiben</em>: l&auml;sst Sie den Schl&uuml;ssel des Absenders unterschreiben.</li>
+
+			  <li><em>Besitzervertrauen des Absenders festlegen...</em>: l&auml;sst Sie das Besitzervertrauen des Absenders festlegen, falls dessen Schl&uuml;ssel in Ihrem Schl&uuml;sselring vorhanden ist.</li>
+
+	  	</ul>
+
+		  <p>Falls Sie <em>keyserver-options auto-key-retrieve</em> nicht in der Datei <tt>gpg.conf</tt> eingestellt haben, und Sie lesen eine Nachricht, die signiert oder verschl&uuml;sselt ist, dann erscheint ein <em>Stift-</em>Symbol mit einem <em>Fragezeichen</em>. Die OpenPGP-Statuszeile im Kopfzeilenbereich der Nachricht wird melden: <em>Ein Teil der Nachricht ist signiert; klicken Sie auf das Stift-Symbol f&uuml;r Details</em>, und im Nachrichtentext werden alle PGP-Nachrichtenblockanzeiger und Signaturbl&ouml;cke angezeigt.</p>
+
+		  <p>Dies kann au&szlig;erdem angezeigt werden, wenn Sie <em>keyserver-options auto-key-retrieve</em> in der Datei <tt>gpg.conf</tt> eingestellt haben aber der OpenPGP-Schl&uuml;ssel nicht auf dem voreingestellten Schl&uuml;ssel-Server verf&uuml;gbar ist.</p>
+
+		  <p>Wenn Sie auf das <em>Schl&uuml;ssel mit Fragezeichen</em>-Symbol klicken, dann erhalten Sie die Meldung, dass der Schl&uuml;ssel nicht in Ihrem Schl&uuml;sselring verf&uuml;gbar ist. Wenn Sie OK klicken, dann &ouml;ffnet sich ein Fenster mit einer Liste von Schl&uuml;ssel-Servern, aus der Sie einen ausw&auml;hlen k&ouml;nnen, um den &ouml;ffentlichen Schl&uuml;ssel des Absenders herunterzuladen.</p>
+
+		  <p>Um die Liste der Schl&uuml;ssel-Server, die Sie verwenden m&ouml;chten, zu konfigurieren, gehen Sie zu <b>OpenPGP -&gt; Einstellungen... -&gt; Allgemein</b> und geben die Adressen der Schl&uuml;ssel-Server im Feld <em>Schl&uuml;ssel-Server</em> ein (jeweils getrennt durch ein Komma). <em>Der erste Schl&uuml;ssel-Server wird als voreingestellter Server verwendet.</em></p>
+		</dd>
+
+		<dt>&Ouml;ffnen von verschl&uuml;sselten Dateianh&auml;ngen / Importieren von angeh&auml;ngten OpenPGP-Schl&uuml;sseln</dt>
+
+		<dd>Dateianh&auml;nge mit den Endungen *.pgp, *.asc und *.gpg werden von OpenPGP als Anh&auml;nge erkannt, die speziell mit OpenPGP bearbeitet werden k&ouml;nnen. Durch einen Rechtsklick auf solch einen Dateianhang werden zwei spezielle Men&uuml;eintr&auml;ge im Kontextmen&uuml; angezeigt: <em>Entschl&uuml;sseln und &Ouml;ffnen</em>  und <em>Entschl&uuml;sseln und Speichern</em>. Verwenden Sie diese Men&uuml;eintr&auml;ge, falls OpenPGP einen Dateianhang entschl&uuml;sseln soll, bevor Sie ihn &ouml;ffnen oder speichern. Wenn ein Anhang als PGP-Schl&uuml;sseldatei erkannt wird, dann werden Sie gefragt, ob sie diese(n) Schl&uuml;ssel in ihren Schl&uuml;sselring importieren m&ouml;chten.</dd>
+	</dl>
+	<hr />
+
+	<p>Weitere Hilfe ist verf&uuml;gbar unter <a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail Help web page</a></p>
+</body>
+</html>  <style type="text/css">
   /*<![CDATA[*/
     dt  { font-weight: bold;  }
   /*]]>*/
