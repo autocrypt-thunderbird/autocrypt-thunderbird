@@ -84,7 +84,6 @@ function enigmailKeyManagerLoad() {
   document.getElementById("pleaseWait").showPopup(gSearchInput, -1, -1, "tooltip", "after_end", "");
   document.getElementById("statusText").value = EnigGetString("keyMan.loadingKeys");
   document.getElementById("progressBar").removeAttribute("collapsed");
-  //window.setTimeout(loadkeyList, 100);
   EnigmailCommon.dispatchEvent(loadkeyList, 100, null);
   gSearchInput.focus();
 }
