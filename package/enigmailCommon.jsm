@@ -1154,6 +1154,7 @@ var EnigmailCommon = {
 
     // object for dispatching callback back to main thread
     const mainEvent = function(cbFunc, arrayOfArgs) {
+      self = this;
       this.cbFunc = cbFunc;
       this.args   = arrayOfArgs;
     };
@@ -1170,19 +1171,17 @@ var EnigmailCommon = {
       run: function()
       {
         EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: dispatchEvent running mainEvent\n");
-        this.cbFunc(this.args);
+        self.cbFunc(self.args);
       }
     };
 
+    var event = new mainEvent(callbackFunction, arrayOfArgs);
     if (sleepTimeMs > 0) {
-      let w = Cc["@mozilla.org/appshell/window-mediator;1"]
-          .getService(Ci.nsIWindowMediator)
-          .getMostRecentWindow(null);
-       w.setTimeout(callbackFunction, sleepTimeMs, arrayOfArgs);
+      var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
+      timer.initWithCallback(event.run, sleepTimeMs, Ci.nsITimer.TYPE_ONE_SHOT);
     }
     else {
       var tm = Cc["@mozilla.org/thread-manager;1"].getService(Ci.nsIThreadManager);
-      var event = new mainEvent(callbackFunction, arrayOfArgs);
 
       // dispatch the event to the main thread
       tm.mainThread.dispatch(event, Ci.nsIThread.DISPATCH_NORMAL);
