@@ -1,79 +1,80 @@
 <html>
 <head>
-  <title>Enigmail Súgó: Üzenet Olvasása</title>
+  <title>Enigmail SÃºgÃ³: Ãœzenet OlvasÃ¡sa</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 </head>
 <body>
-<h1>Enigmail Súgó</h1>
+<h1>Enigmail SÃºgÃ³</h1>
 
-<h3>Enigmail használata levelek olvasásánál</h3>
+<h3>Enigmail hasznÃ¡lata levelek olvasÃ¡sÃ¡nÃ¡l</h3>
 <ul>
-  <li><b>Visszafejtés gomb a levelezõ fõablakában</b><br>
-    Ez a gomb több funkcióra is használható: visszafejtésre, ellenõrzésre vagy 
-    nyilvános kulcsok importálására. Természetesen a visszafejtés és az ellenõrzés
-    automatikusan történik, de ez a funkció kikapcsoható a Beállításoknál. 
-    Ha mégis történne valamilyen hiba, akkor ez rövid hibaüzenetként jelzésre kerül
-    az Enigmail státuszsorában. Ekkor a Visszafejtés gombra kattintva részletesebb
-    hibajelzés jelenik meg a képernyõn egy ablakban, a GnuPG parancs kimenetével
-    együtt.
+  <li><b>VisszafejtÃ©s gomb a levelezÃµ fÃµablakÃ¡ban</b><br>
+    Ez a gomb tÃ¶bb funkciÃ³ra is hasznÃ¡lhatÃ³: visszafejtÃ©sre, ellenÃµrzÃ©sre vagy
+    nyilvÃ¡nos kulcsok importÃ¡lÃ¡sÃ¡ra. TermÃ©szetesen a visszafejtÃ©s Ã©s az ellenÃµrzÃ©s
+    automatikusan tÃ¶rtÃ©nik, de ez a funkciÃ³ kikapcsohatÃ³ a BeÃ¡llÃ­tÃ¡soknÃ¡l.
+    Ha mÃ©gis tÃ¶rtÃ©nne valamilyen hiba, akkor ez rÃ¶vid hibaÃ¼zenetkÃ©nt jelzÃ©sre kerÃ¼l
+    az Enigmail stÃ¡tuszsorÃ¡ban. Ekkor a VisszafejtÃ©s gombra kattintva rÃ©szletesebb
+    hibajelzÃ©s jelenik meg a kÃ©pernyÃµn egy ablakban, a GnuPG parancs kimenetÃ©vel
+    egyÃ¼tt.
   </li>
-  <li><b>Toll és Kulcs ikonok az Üzenetek Fejlécénél</b><br>
-    A <em>Toll</em> és a <em>Kulcs</em> ikonok az üzenetek fejlécénél jelennek meg, 
-    és azt jelzik, hogy az olvasott üzenet aláírt és/vagy titkosított, és az aláírás
-    is rendben van, vagyis az üzenet nem módosult az aláírás óta. Ha az üzenet módosult,
-    akkor a <em>Toll</em> ikon helyett egy <em>Törött toll</em> jelzi, hogy az aláírás
-    sérült. A Toll vagy Kulcs ikonra jobb egérgombbal kattintva egy menü jelenik meg
-    a következõ lehetõségekkel:
+  <li><b>Toll Ã©s Kulcs ikonok az Ãœzenetek FejlÃ©cÃ©nÃ©l</b><br>
+    A <em>Toll</em> Ã©s a <em>Kulcs</em> ikonok az Ã¼zenetek fejlÃ©cÃ©nÃ©l jelennek meg,
+    Ã©s azt jelzik, hogy az olvasott Ã¼zenet alÃ¡Ã­rt Ã©s/vagy titkosÃ­tott, Ã©s az alÃ¡Ã­rÃ¡s
+    is rendben van, vagyis az Ã¼zenet nem mÃ³dosult az alÃ¡Ã­rÃ¡s Ã³ta. Ha az Ã¼zenet mÃ³dosult,
+    akkor a <em>Toll</em> ikon helyett egy <em>TÃ¶rÃ¶tt toll</em> jelzi, hogy az alÃ¡Ã­rÃ¡s
+    sÃ©rÃ¼lt. A Toll vagy Kulcs ikonra jobb egÃ©rgombbal kattintva egy menÃ¼ jelenik meg
+    a kÃ¶vetkezÃµ lehetÃµsÃ©gekkel:
     <ul>
-      <li><em>OpenPGP Biztonsági információ</em>: lehetõvé teszi a levélre vonatkozó 
-        GnuPG kimeneti állapotának megmutatását.
+      <li><em>OpenPGP BiztonsÃ¡gi informÃ¡ciÃ³</em>: lehetÃµvÃ© teszi a levÃ©lre vonatkozÃ³
+        GnuPG kimeneti Ã¡llapotÃ¡nak megmutatÃ¡sÃ¡t.
       </li>
-      <li><em>OpenPGP Biztonsági információ másolása</em>: a GnuPG kimenetének állapotát 
-        a vágólapra másolja, például azért, hogy egy válasz üzenetben el lehessen küldeni.
+      <li><em>OpenPGP BiztonsÃ¡gi informÃ¡ciÃ³ mÃ¡solÃ¡sa</em>: a GnuPG kimenetÃ©nek Ã¡llapotÃ¡t
+        a vÃ¡gÃ³lapra mÃ¡solja, pÃ©ldÃ¡ul azÃ©rt, hogy egy vÃ¡lasz Ã¼zenetben el lehessen kÃ¼ldeni.
       </li>
-      <li><em>OpenPGP Fénykép azonosító megtekintése</em>: ez a funkció teszi lehetõvé,
-        hogy megjelenjen a levelet küldõ személy <em>Fénykép azonosítója</em>, amennyiben
-        a nyilvános kulcsában elhelyezett magáról fényképet. (<em>Ez a lehetõség csak akkor
-        érhetõ el, ha a Fénykép azonosító szerepel a kulcsában.)</em>
+      <li><em>OpenPGP FÃ©nykÃ©p azonosÃ­tÃ³ megtekintÃ©se</em>: ez a funkciÃ³ teszi lehetÃµvÃ©,
+        hogy megjelenjen a levelet kÃ¼ldÃµ szemÃ©ly <em>FÃ©nykÃ©p azonosÃ­tÃ³ja</em>, amennyiben
+        a nyilvÃ¡nos kulcsÃ¡ban elhelyezett magÃ¡rÃ³l fÃ©nykÃ©pet. (<em>Ez a lehetÃµsÃ©g csak akkor
+        Ã©rhetÃµ el, ha a FÃ©nykÃ©p azonosÃ­tÃ³ szerepel a kulcsÃ¡ban.)</em>
       </li>
-      <li><em>S/MIME Biztonsági információ</em>: ezt választva jeleníthetõ meg a üzenet
-        S/MIME Biztonsági információja.
+      <li><em>S/MIME BiztonsÃ¡gi informÃ¡ciÃ³</em>: ezt vÃ¡lasztva jelenÃ­thetÃµ meg a Ã¼zenet
+        S/MIME BiztonsÃ¡gi informÃ¡ciÃ³ja.
       </li>
     </ul>
-    <p>Ha <tt>gpg.conf</tt> fájlban nincs beállítva a <em>Kulcsok automatikus letöltése a 
-      kulcsszerverrõl</em> lehetõség, és az olvasott üzenet aláírt vagy titkosított, akkor
-      a fejlécben a <em>Toll</em> ikon <em>Kérdõjellel megjelölve</em> jelenik meg.
-      Ekkor a fejlécben az Enigmail státuszsora jelzi, hogy az <em>Az üzenet egy része 
-      aláírt, kattintson a részletekért a Toll ikonra</em>, ilyenkor a levél tartalmi 
-      területén minden OpenPGP adatrész illetve aláírás látható.
+    <p>Ha <tt>gpg.conf</tt> fÃ¡jlban nincs beÃ¡llÃ­tva a <em>Kulcsok automatikus letÃ¶ltÃ©se a
+      kulcsszerverrÃµl</em> lehetÃµsÃ©g, Ã©s az olvasott Ã¼zenet alÃ¡Ã­rt vagy titkosÃ­tott, akkor
+      a fejlÃ©cben a <em>Toll</em> ikon <em>KÃ©rdÃµjellel megjelÃ¶lve</em> jelenik meg.
+      Ekkor a fejlÃ©cben az Enigmail stÃ¡tuszsora jelzi, hogy az <em>Az Ã¼zenet egy rÃ©sze
+      alÃ¡Ã­rt, kattintson a rÃ©szletekÃ©rt a Toll ikonra</em>, ilyenkor a levÃ©l tartalmi
+      terÃ¼letÃ©n minden OpenPGP adatrÃ©sz illetve alÃ¡Ã­rÃ¡s lÃ¡thatÃ³.
     </p>
-    <p>Ez akkor is láthatóvá válik, ha a <em>Kulcsok automatikus letöltése a kulcsszerverrõl</em>
-      lehetõség be van állítva a <tt>gpg.conf</tt> fájlban, de az OpenPGP kulcs nem elérhetõ a
-      beállított kulcsszerveren.
+    <p>Ez akkor is lÃ¡thatÃ³vÃ¡ vÃ¡lik, ha a <em>Kulcsok automatikus letÃ¶ltÃ©se a kulcsszerverrÃµl</em>
+      lehetÃµsÃ©g be van Ã¡llÃ­tva a <tt>gpg.conf</tt> fÃ¡jlban, de az OpenPGP kulcs nem elÃ©rhetÃµ a
+      beÃ¡llÃ­tott kulcsszerveren.
     </p>
-    <p>A <em>Kérdõjellel megjelölt toll</em> ikonra kattintva felnyílik egy ablak, amely
-      tájékoztat arról, hogy a kulcs nem érhetõ el a kulcsgyûjtõben. Majd az OK-ra kattintva
-      egy újabb ablak jelenik meg a beállított kulcsszerverek listájával. Ezek közül ki lehet
-      választani, hogy honnan próbálja meg letölteni az Enigmail a feladó nyilvános kulcsát.
+    <p>A <em>KÃ©rdÃµjellel megjelÃ¶lt toll</em> ikonra kattintva felnyÃ­lik egy ablak, amely
+      tÃ¡jÃ©koztat arrÃ³l, hogy a kulcs nem Ã©rhetÃµ el a kulcsgyÃ»jtÃµben. Majd az OK-ra kattintva
+      egy Ãºjabb ablak jelenik meg a beÃ¡llÃ­tott kulcsszerverek listÃ¡jÃ¡val. Ezek kÃ¶zÃ¼l ki lehet
+      vÃ¡lasztani, hogy honnan prÃ³bÃ¡lja meg letÃ¶lteni az Enigmail a feladÃ³ nyilvÃ¡nos kulcsÃ¡t.
     </p>
-    <p>A kulcsszerverek listájának beállításához nyissa meg az <b>OpenPGP -&gt;
-      Beállítósok -&gt; Alap</b> fület, és adja meg a kulcsszerverek címét a
-      <em>Kulcsszerver(ek):</em> dobozban, vesszõvel elválasztva.<em> A legelsõnek megadott
-      kulccservert fogja a program felhasználni az önálló (alapértelemzettkénti) mûködéshez.</em>
+    <p>A kulcsszerverek listÃ¡jÃ¡nak beÃ¡llÃ­tÃ¡sÃ¡hoz nyissa meg az <b>OpenPGP -&gt;
+      BeÃ¡llÃ­tÃ³sok -&gt; Alap</b> fÃ¼let, Ã©s adja meg a kulcsszerverek cÃ­mÃ©t a
+      <em>Kulcsszerver(ek):</em> dobozban, vesszÃµvel elvÃ¡lasztva.<em> A legelsÃµnek megadott
+      kulccservert fogja a program felhasznÃ¡lni az Ã¶nÃ¡llÃ³ (alapÃ©rtelemzettkÃ©nti) mÃ»kÃ¶dÃ©shez.</em>
     </p>
   </li>
-  <li><b>Titkosított csatolmány megnyitása / Csatolt OpenPGP kulcsok importálása</b><br>
-    A csatolmányok nevében található *.pgp, *.asc vagy *.gpg kiterjesztés jelzi az Enigmail 
-    számára, hogy a csatolmányt neki kell feldolgoznia. Ezekre a csatolmányokra jobb gombbal
-    kattintva két egyedi menüpont jelenik meg a felnyíló gyorsmenüben: <em>Visszafejtés és 
-    Megnyitás</em> valamint a <em>Visszafejtés és Mentés</em>. Ez a két menüpont használható 
-    arra, hogy az Enigmail a megnyitás vagy a mentés elõtt, visszafejtse a csatolmányt.
-    Amennyiben az Enigmail felismeri, hogy a csatolmány egy OpenPGP kulcsállomány, akkor 
-    felajánlja a benne található kulcsok importálását a kulcsgyûjtõbe.
+  <li><b>TitkosÃ­tott csatolmÃ¡ny megnyitÃ¡sa / Csatolt OpenPGP kulcsok importÃ¡lÃ¡sa</b><br>
+    A csatolmÃ¡nyok nevÃ©ben talÃ¡lhatÃ³ *.pgp, *.asc vagy *.gpg kiterjesztÃ©s jelzi az Enigmail
+    szÃ¡mÃ¡ra, hogy a csatolmÃ¡nyt neki kell feldolgoznia. Ezekre a csatolmÃ¡nyokra jobb gombbal
+    kattintva kÃ©t egyedi menÃ¼pont jelenik meg a felnyÃ­lÃ³ gyorsmenÃ¼ben: <em>VisszafejtÃ©s Ã©s
+    MegnyitÃ¡s</em> valamint a <em>VisszafejtÃ©s Ã©s MentÃ©s</em>. Ez a kÃ©t menÃ¼pont hasznÃ¡lhatÃ³
+    arra, hogy az Enigmail a megnyitÃ¡s vagy a mentÃ©s elÃµtt, visszafejtse a csatolmÃ¡nyt.
+    Amennyiben az Enigmail felismeri, hogy a csatolmÃ¡ny egy OpenPGP kulcsÃ¡llomÃ¡ny, akkor
+    felajÃ¡nlja a benne talÃ¡lhatÃ³ kulcsok importÃ¡lÃ¡sÃ¡t a kulcsgyÃ»jtÃµbe.
   </li>
 </ul><hr/>
 <p>
-További segítség található angol nyelven az
-<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail weboldalán</a>
+TovÃ¡bbi segÃ­tsÃ©g talÃ¡lhatÃ³ angol nyelven az
+<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail weboldalÃ¡n</a>
 </p>
 </body>
 </html>

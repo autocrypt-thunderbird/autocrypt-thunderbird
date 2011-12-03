@@ -1,66 +1,67 @@
 <html>
-<head><title>Aide Enigmail&nbsp;: Éditeur de règles</title>
+<head><title>Aide Enigmail&nbsp;: Ã‰diteur de rÃ¨gles</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 </head>
 <body>
 <h1>Aide Enigmail</h1>
 
-<h3>Utilisation de l'éditeur de règles</h3>
-<p>Dans l'éditeur de règles, vous pouvez spécifier les paramètres par défaut par destinataire,
+<h3>Utilisation de l'Ã©diteur de rÃ¨gles</h3>
+<p>Dans l'Ã©diteur de rÃ¨gles, vous pouvez spÃ©cifier les paramÃ¨tres par dÃ©faut par destinataire,
 concernant l'activation du chiffrement, de la signature, de PGP/MIME et de choisir
-quelle(s) clef(s) utiliser. Chaque règle consiste en 5 champs et est représentée sur une seule ligne&nbsp;:
+quelle(s) clef(s) utiliser. Chaque rÃ¨gle consiste en 5 champs et est reprÃ©sentÃ©e sur une seule ligne&nbsp;:
 </p>
 <ul>
-  <li><span style="font-weight: bold;">Adresse</span>&nbsp;: l'adresse électronique
+  <li><span style="font-weight: bold;">Adresse</span>&nbsp;: l'adresse Ã©lectronique
     des champs Pour, Cc et Bcc pour la correspondance. Cette correspondance est faite sur des <span
-    style="font-style: italic;">sous-chaînes</span> (plus de détails se trouvent dans la
-    boite de dialogue d'édition des règles)&nbsp;;
+    style="font-style: italic;">sous-chaÃ®nes</span> (plus de dÃ©tails se trouvent dans la
+    boite de dialogue d'Ã©dition des rÃ¨gles)&nbsp;;
   </li>
-  <li><span style="font-weight: bold;">Clef(s) à utiliser</span>&nbsp;: une liste d'identifiants
-de clefs OpenPGP à utiliser pour le destinataire&nbsp;;</li>
-  <li><span style="font-weight: bold;">Signature</span>&nbsp;: activer ou désactiver
-    la signature des messages. Ceci utilise ou outrepasse les réglages effectués
-    dans la fenêtre de rédaction. Les valeurs possibles sont&nbsp;:
+  <li><span style="font-weight: bold;">Clef(s) Ã  utiliser</span>&nbsp;: une liste d'identifiants
+de clefs OpenPGP Ã  utiliser pour le destinataire&nbsp;;</li>
+  <li><span style="font-weight: bold;">Signature</span>&nbsp;: activer ou dÃ©sactiver
+    la signature des messages. Ceci utilise ou outrepasse les rÃ©glages effectuÃ©s
+    dans la fenÃªtre de rÃ©daction. Les valeurs possibles sont&nbsp;:
   </li>
   <ul>
-    <li><i>Jamais</i>&nbsp;: désactiver la signature, même si elle est activée dans la fenêtre de
-       rédaction du messages (prévaut sur les autres valeurs),<br>
+    <li><i>Jamais</i>&nbsp;: dÃ©sactiver la signature, mÃªme si elle est activÃ©e dans la fenÃªtre de
+       rÃ©daction du messages (prÃ©vaut sur les autres valeurs),<br>
     </li>
-    <li><i>Oui, si sélectionné lors de la composition du message</i>&nbsp;: laisser le réglage
-      de signature tel qu'il est spécifié dans la fenêtre de rédaction,</li>
-    <li><i>Toujours</i>&nbsp;: activer la signature, même si elle n'est <span
-      style="font-style: italic;">pas</span> activée dans la fenêtre de
-      rédaction,
+    <li><i>Oui, si sÃ©lectionnÃ© lors de la composition du message</i>&nbsp;: laisser le rÃ©glage
+      de signature tel qu'il est spÃ©cifiÃ© dans la fenÃªtre de rÃ©daction,</li>
+    <li><i>Toujours</i>&nbsp;: activer la signature, mÃªme si elle n'est <span
+      style="font-style: italic;">pas</span> activÃ©e dans la fenÃªtre de
+      rÃ©daction,
     </li>
   </ul>
 </ul>
-<div style="margin-left: 40px;">Ces paramètres de signature sont appliqués pour
-toutes les règles qui correspondent. Si l'une des règles désactive la signature, le message
-ne sera pas signé, même si d'autres règles spécifiaient <i>Toujours</i>&nbsp;;<br>
+<div style="margin-left: 40px;">Ces paramÃ¨tres de signature sont appliquÃ©s pour
+toutes les rÃ¨gles qui correspondent. Si l'une des rÃ¨gles dÃ©sactive la signature, le message
+ne sera pas signÃ©, mÃªme si d'autres rÃ¨gles spÃ©cifiaient <i>Toujours</i>&nbsp;;<br>
 </div>
 <ul>
   <li><span style="font-weight: bold;">Chiffrement</span>: activer ou
-    désactiver le chiffrement des messages. Les valeurs autorisées ainsi que leur signification
-    sont les mêmes que pour la signature des messages&nbsp;;</li>
+    dÃ©sactiver le chiffrement des messages. Les valeurs autorisÃ©es ainsi que leur signification
+    sont les mÃªmes que pour la signature des messages&nbsp;;</li>
   <li><span style="font-weight: bold;">PGP/MIME</span>: activer ou
-    désactiver l'utilisation du codage de message PGP/MIME (RFC 3156).
-    Si PGP/MIME est désactivé, les
-    messages sont codés en utilisant le format «&nbsp;PGP en ligne&nbsp;». Les valeurs autorisées
-    ainsi que leur signification sont les mêmes que pour la signature des messages.
+    dÃ©sactiver l'utilisation du codage de message PGP/MIME (RFC 3156).
+    Si PGP/MIME est dÃ©sactivÃ©, les
+    messages sont codÃ©s en utilisant le format Â«&nbsp;PGP en ligne&nbsp;Â». Les valeurs autorisÃ©es
+    ainsi que leur signification sont les mÃªmes que pour la signature des messages.
   </li>
 </ul>
-<p>Les règles sont appliquées dans l'ordre d'affichage de la liste. Dès lors qu'une règle
-correspond à un destinataire et contient un identifiant de clef OpenPGP, non seulement l'identifiant 
-de clef spécifié est utilisé, mais le destinataire n'est plus pris en compte dans le traitement
-des règles suivantes.</p>
-<p><i>Note&nbsp;:</i> l'éditeur de règles n'est pas encore terminé. Il est possible d'écrire des
-règles plus avancées en modifiant directement le fichier de règles
-(ces règles ne devront alors plus être modifiées dans l'éditeur de règles). <a 
+<p>Les rÃ¨gles sont appliquÃ©es dans l'ordre d'affichage de la liste. DÃ¨s lors qu'une rÃ¨gle
+correspond Ã  un destinataire et contient un identifiant de clef OpenPGP, non seulement l'identifiant
+de clef spÃ©cifiÃ© est utilisÃ©, mais le destinataire n'est plus pris en compte dans le traitement
+des rÃ¨gles suivantes.</p>
+<p><i>Note&nbsp;:</i> l'Ã©diteur de rÃ¨gles n'est pas encore terminÃ©. Il est possible d'Ã©crire des
+rÃ¨gles plus avancÃ©es en modifiant directement le fichier de rÃ¨gles
+(ces rÃ¨gles ne devront alors plus Ãªtre modifiÃ©es dans l'Ã©diteur de rÃ¨gles). <a
 href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Des informations
-complémentaires</a> pour modifier directement le fichier sont disponibles
+complÃ©mentaires</a> pour modifier directement le fichier sont disponibles
 sur le site Web d'Enigmail</p>
 <hr/>
 <p>
-De l'aide supplémentaire est disponible sur la
+De l'aide supplÃ©mentaire est disponible sur la
 <a href="http://enigmail.mozdev.org/help.html" target="_blank">page Web d'Enigmail</a>
 </p>
 </body>

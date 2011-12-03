@@ -1,91 +1,92 @@
 <html>
-<head><title>Enigmailin ohje: OpenPGP-s‰‰ntˆjen muokkaaminen</title>
+<head><title>Enigmailin ohje: OpenPGP-s√§√§nt√∂jen muokkaaminen</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 </head>
 <body>
 <h1>Enigmailin ohje</h1>
 
-<h3>Enigmailin s‰‰ntˆmuokkaimen k‰yttˆ: OpenPGP-s‰‰ntˆjen muokkaus</h3>
-<p>S‰‰ntˆmuokkaimessa voit asettaa oletukset viestin allekirjoittamiselle, 
-salaamiselle, PGP/MIME-koodauksen k‰ytˆlle, ja m‰‰ritt‰‰ k‰ytett‰v‰t 
-OpenPGP-avaimet vastaanottajakohtaisesti. Oletukset voidaan asettaa yhdelle 
-vastaanottajalle tai usealle vastaanottajalle, jolla on toisensa kaltaiset 
-s‰hkˆpostiosoitteet.
+<h3>Enigmailin s√§√§nt√∂muokkaimen k√§ytt√∂: OpenPGP-s√§√§nt√∂jen muokkaus</h3>
+<p>S√§√§nt√∂muokkaimessa voit asettaa oletukset viestin allekirjoittamiselle,
+salaamiselle, PGP/MIME-koodauksen k√§yt√∂lle, ja m√§√§ritt√§√§ k√§ytett√§v√§t
+OpenPGP-avaimet vastaanottajakohtaisesti. Oletukset voidaan asettaa yhdelle
+vastaanottajalle tai usealle vastaanottajalle, jolla on toisensa kaltaiset
+s√§hk√∂postiosoitteet.
 </p>
 <ul>
-<li><strong>Aseta OpenPGP-s‰‰nnˆt osoitteille</strong>: Kent‰ss‰ on t‰ydelliset 
-s‰hkˆpostiosoitteet (tai osa osoitteista) joille alla olevat s‰‰nnˆt p‰tev‰t 
-suotimen tavoin. Jos osoitesuotimia on useita, ne erotetaan v‰lilyˆnnill‰. 
-Suotimet voivat olla esimerkiksi pelkk‰ verkkoalue <tt>@sposti.fi</tt>, johon 
-t‰sm‰isiv‰t kaikki <tt>@sposti.fi</tt>:n loppuvat osoitteet.</li>
-<li><strong>S‰‰ntˆ p‰tee jos yll‰oleva</strong>: Osoitesuotimen k‰ytt‰ytymisen 
-voi valita. Jos yll‰ olevassa kent‰ss‰ on useita osoitteita, k‰ytt‰ytymisasetus
-p‰tee kaikille osoitteille. Alla olevissa esimerkeiss‰ osoitesuodinkentt‰‰n on
+<li><strong>Aseta OpenPGP-s√§√§nn√∂t osoitteille</strong>: Kent√§ss√§ on t√§ydelliset
+s√§hk√∂postiosoitteet (tai osa osoitteista) joille alla olevat s√§√§nn√∂t p√§tev√§t
+suotimen tavoin. Jos osoitesuotimia on useita, ne erotetaan v√§lily√∂nnill√§.
+Suotimet voivat olla esimerkiksi pelkk√§ verkkoalue <tt>@sposti.fi</tt>, johon
+t√§sm√§isiv√§t kaikki <tt>@sposti.fi</tt>:n loppuvat osoitteet.</li>
+<li><strong>S√§√§nt√∂ p√§tee jos yll√§oleva</strong>: Osoitesuotimen k√§ytt√§ytymisen
+voi valita. Jos yll√§ olevassa kent√§ss√§ on useita osoitteita, k√§ytt√§ytymisasetus
+p√§tee kaikille osoitteille. Alla olevissa esimerkeiss√§ osoitesuodinkentt√§√§n on
 kirjoitettu <tt>nieminen@sposti.fi</tt>.
 <ul>
-<li><em>on t‰sm‰lleen vastaanottajan osoite</em>: T‰ll‰ asetuksella s‰‰ntˆ
-p‰tee viesteille, jotka l‰hetet‰‰n osoitteeseen <tt>nieminen@sposti.fi</tt> 
-(t‰sm‰ys on kirjainkoon huomioiva).</li>
-<li><em>on osa vastaanottajan osoitetta</em>: T‰ll‰ asetuksella s‰‰ntˆ
-p‰tee viesteille, jotka l‰hetet‰‰n esim. osoitteisiin 
+<li><em>on t√§sm√§lleen vastaanottajan osoite</em>: T√§ll√§ asetuksella s√§√§nt√∂
+p√§tee viesteille, jotka l√§hetet√§√§n osoitteeseen <tt>nieminen@sposti.fi</tt>
+(t√§sm√§ys on kirjainkoon huomioiva).</li>
+<li><em>on osa vastaanottajan osoitetta</em>: T√§ll√§ asetuksella s√§√§nt√∂
+p√§tee viesteille, jotka l√§hetet√§√§n esim. osoitteisiin
 <tt>matti.nieminen@sposti.fi</tt>, <tt>nieminen@sposti.fi.com</tt> jne.
 </li>
-<li><em>ja vastaanottajan osoitteen alku t‰sm‰‰v‰t</em>: T‰ll‰ asetuksella 
-s‰‰ntˆ p‰tee viesteille, jotka l‰hetet‰‰n esim. osoitteeseen 
+<li><em>ja vastaanottajan osoitteen alku t√§sm√§√§v√§t</em>: T√§ll√§ asetuksella
+s√§√§nt√∂ p√§tee viesteille, jotka l√§hetet√§√§n esim. osoitteeseen
 <tt>nieminen@sposti.fi.com</tt>
 </li>
-<li><em>ja vastaanottajan osoitteen loppu t‰sm‰‰v‰t</em>: T‰ll‰ asetuksella 
-s‰‰ntˆ p‰tee viesteille, jotka l‰hetet‰‰n esim. osoitteeseen 
+<li><em>ja vastaanottajan osoitteen loppu t√§sm√§√§v√§t</em>: T√§ll√§ asetuksella
+s√§√§nt√∂ p√§tee viesteille, jotka l√§hetet√§√§n esim. osoitteeseen
 <tt>maija.nieminen@sposti.fi</tt>
 </li>
 </ul>
 </li>
-<li><strong>Jatka seuraavaan s‰‰ntˆˆn t‰sm‰‰v‰lle osoitteelle</strong><br>
+<li><strong>Jatka seuraavaan s√§√§nt√∂√∂n t√§sm√§√§v√§lle osoitteelle</strong><br>
 Jos asetus on valittu, Enigmail hakee osoitteeseen kuuluvaa OpenPGP-avainta
-vasta viesti‰ l‰hetett‰ess‰, ja muut s‰‰nnˆt voivat muuttaa t‰sm‰‰vien viestien
-l‰hetysasetuksia.
+vasta viesti√§ l√§hetett√§ess√§, ja muut s√§√§nn√∂t voivat muuttaa t√§sm√§√§vien viestien
+l√§hetysasetuksia.
 </li>
-<li><strong>ƒl‰ tarkista en‰‰ s‰‰ntˆj‰ t‰sm‰‰v‰lle osoitteelle</strong><br>
-Jos asetus on valittu, t‰sm‰‰viin osoitteisiin ei sovelleta muita s‰‰ntˆj‰.
-T‰sm‰‰v‰ osoite j‰tet‰‰n siis huomiotta muita s‰‰ntˆj‰ k‰sitelt‰ess‰.
+<li><strong>√Ñl√§ tarkista en√§√§ s√§√§nt√∂j√§ t√§sm√§√§v√§lle osoitteelle</strong><br>
+Jos asetus on valittu, t√§sm√§√§viin osoitteisiin ei sovelleta muita s√§√§nt√∂j√§.
+T√§sm√§√§v√§ osoite j√§tet√§√§n siis huomiotta muita s√§√§nt√∂j√§ k√§sitelt√§ess√§.
 </li>
-<li><strong>K‰yt‰ seuraavia OpenPGP-avaimia:</strong><br>
-Valitse k‰ytett‰v‰t vastaanottajien avaimet napsauttamalla <em>Valitse 
-avaimet</em>-painiketta. Kuten yll‰, jos asetus on valittu, muita s‰‰ntˆj‰
-ei huomioida t‰sm‰‰ville s‰hkˆpostiosoitteille.
+<li><strong>K√§yt√§ seuraavia OpenPGP-avaimia:</strong><br>
+Valitse k√§ytett√§v√§t vastaanottajien avaimet napsauttamalla <em>Valitse
+avaimet</em>-painiketta. Kuten yll√§, jos asetus on valittu, muita s√§√§nt√∂j√§
+ei huomioida t√§sm√§√§ville s√§hk√∂postiosoitteille.
 </li>
-<li><strong>Allekirjoittaminen</strong>: 
-Allekirjoita tai ‰l‰ allekirjoita viestej‰ t‰lle vastaanottajalle. T‰m‰ asetus 
-joko noudattaa viestin kirjoitusikkunassa antamaasi k‰sky‰ tai muuttaa sen. 
+<li><strong>Allekirjoittaminen</strong>:
+Allekirjoita tai √§l√§ allekirjoita viestej√§ t√§lle vastaanottajalle. T√§m√§ asetus
+joko noudattaa viestin kirjoitusikkunassa antamaasi k√§sky√§ tai muuttaa sen.
 Mahdolliset arvot:
 </li>
-<ul><li><em>Ei koskaan</em>: ƒl‰ ikin‰ allekirjoita viesti‰ 
+<ul><li><em>Ei koskaan</em>: √Ñl√§ ikin√§ allekirjoita viesti√§
 vastaanottajalle, huolimatta viestin kirjoitusikkunan asetuksista.</li>
-<li><em>Vain jos valitaan erikseen viesti‰ kirjoitettaessa</em>: Allekirjoita 
+<li><em>Vain jos valitaan erikseen viesti√§ kirjoitettaessa</em>: Allekirjoita
 viesti jos niin on viestin kirjoitusikkunassa asetettu</li>
-<li><em>Aina</em>: Allekirjoita viestit vastaanottajalle aina, huolimatta 
+<li><em>Aina</em>: Allekirjoita viestit vastaanottajalle aina, huolimatta
 viestin kirjoitusikkunan asetuksista</li></ul>
 </ul>
-<div style="margin-left: 40px;">Jokainen s‰‰ntˆ p‰tee kaikille t‰sm‰‰ville 
-viesteille. Jos jokin s‰‰nnˆist‰ ottaa allekirjoituksen pois p‰‰lt‰, viesti‰ ei
-allekirjoiteta huolimatta siit‰, mit‰ muut s‰‰nnˆt m‰‰r‰isiv‰t.<br>
+<div style="margin-left: 40px;">Jokainen s√§√§nt√∂ p√§tee kaikille t√§sm√§√§ville
+viesteille. Jos jokin s√§√§nn√∂ist√§ ottaa allekirjoituksen pois p√§√§lt√§, viesti√§ ei
+allekirjoiteta huolimatta siit√§, mit√§ muut s√§√§nn√∂t m√§√§r√§isiv√§t.<br>
 </div>
 <ul>
-<li><strong>Salaa</strong>: Salaa tai ‰l‰ 
-salaa viesti‰. Asetusvalinnat ja niiden merkitykset ovat samat kuin viestin 
+<li><strong>Salaa</strong>: Salaa tai √§l√§
+salaa viesti√§. Asetusvalinnat ja niiden merkitykset ovat samat kuin viestin
 allekirjoitukselle.</li>
-<li><strong>PGP/MIME</strong>: Ota k‰yttˆˆn tai poista k‰ytˆst‰ PGP/MIME (RFC 
-3156) -koodaus. Jos PGP/MIME ei ole k‰ytˆss‰, viestit allekirjoitetaan ja 
-salataan k‰ytt‰en viestinsis‰ist‰ PGP:t‰. Asetusvalinnat ja niiden merkitykset
+<li><strong>PGP/MIME</strong>: Ota k√§ytt√∂√∂n tai poista k√§yt√∂st√§ PGP/MIME (RFC
+3156) -koodaus. Jos PGP/MIME ei ole k√§yt√∂ss√§, viestit allekirjoitetaan ja
+salataan k√§ytt√§en viestinsis√§ist√§ PGP:t√§. Asetusvalinnat ja niiden merkitykset
 ovat samat kuin viestin allekirjoitukselle.
 </li>
 </ul>
-<p>S‰‰nnˆt k‰sitell‰‰n niiden listausj‰rjestyksess‰ <em>OpenPGP-s‰‰ntˆmuokkaimessa</em>. 
-Jos s‰‰nnˆss‰ on annettu vastaanottajan OpenPGP-avaintunnus ja osoite t‰sm‰‰ 
-vastaanottajan osoitteeseen, muita viestin kanssa t‰sm‰‰vi‰ s‰‰ntˆj‰ ei en‰‰ 
-k‰sitell‰.</p>
+<p>S√§√§nn√∂t k√§sitell√§√§n niiden listausj√§rjestyksess√§ <em>OpenPGP-s√§√§nt√∂muokkaimessa</em>.
+Jos s√§√§nn√∂ss√§ on annettu vastaanottajan OpenPGP-avaintunnus ja osoite t√§sm√§√§
+vastaanottajan osoitteeseen, muita viestin kanssa t√§sm√§√§vi√§ s√§√§nt√∂j√§ ei en√§√§
+k√§sitell√§.</p>
 <hr/>
 <p>
-Lis‰‰ ohjeita
+Lis√§√§ ohjeita
 <a href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Enigmailin vastaanottajakohtaisten asetusten ohjesivuilta</a>
 </p>
 </body>

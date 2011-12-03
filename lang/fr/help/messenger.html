@@ -1,67 +1,68 @@
 <html>
 <head><title>Aide Enigmail&nbsp;: Lecture de messages</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 </head>
 <body>
 <h1>Aide Enigmail</h1>
 
 <h3>Utiliser Enigmail lors de la lecture de messages</h3>
 <ul>
-  <li><b>Bouton Déchiffrer dans la fenêtre principale</b><br>
-  Ce bouton peut être utilisé pour plusieurs actions&nbsp;: déchiffrer, vérifier ou importer
-  des clefs publiques. En temps normal, bien que cela soit optionnellement désactivable, 
-  le déchiffrement et la vérification seront effectués automatiquement. Toutefois, en cas d'échec,
-  un court message apparaitra dans la barre d'état d'Enigmail. Un clic
-  sur le bouton Déchiffrer permettra d'obtenir un message d'erreur plus détaillé, contenant
+  <li><b>Bouton DÃ©chiffrer dans la fenÃªtre principale</b><br>
+  Ce bouton peut Ãªtre utilisÃ© pour plusieurs actions&nbsp;: dÃ©chiffrer, vÃ©rifier ou importer
+  des clefs publiques. En temps normal, bien que cela soit optionnellement dÃ©sactivable,
+  le dÃ©chiffrement et la vÃ©rification seront effectuÃ©s automatiquement. Toutefois, en cas d'Ã©chec,
+  un court message apparaitra dans la barre d'Ã©tat d'Enigmail. Un clic
+  sur le bouton DÃ©chiffrer permettra d'obtenir un message d'erreur plus dÃ©taillÃ©, contenant
   les messages de sortie de la commande GnuPG.
   </li>
-  <li><b>Icônes stylo et clef dans l'affichage de l'en-tête du message</b><br>
-  Les icônes <em>Stylo</em> et <em>Clef</em> dans l'affichage de l'en-tête du message indique
-  si le message affiché a été signé et/ou chiffré et si la signature est correcte,
-  c.à.d. que le message n'a pas été modifié depuis qu'il a été signé. Si le message
-  a été modifié, l'icône <em>Stylo</em> se changera en un <em>Stylo brisé</em> afin 
-  d'indiquer que la signature est incorrecte. Un clic droit sur l'icône de stylo ou celle de clef
+  <li><b>IcÃ´nes stylo et clef dans l'affichage de l'en-tÃªte du message</b><br>
+  Les icÃ´nes <em>Stylo</em> et <em>Clef</em> dans l'affichage de l'en-tÃªte du message indique
+  si le message affichÃ© a Ã©tÃ© signÃ© et/ou chiffrÃ© et si la signature est correcte,
+  c.Ã .d. que le message n'a pas Ã©tÃ© modifiÃ© depuis qu'il a Ã©tÃ© signÃ©. Si le message
+  a Ã©tÃ© modifiÃ©, l'icÃ´ne <em>Stylo</em> se changera en un <em>Stylo brisÃ©</em> afin
+  d'indiquer que la signature est incorrecte. Un clic droit sur l'icÃ´ne de stylo ou celle de clef
   fera apparaitre un menu contenant les options suivantes&nbsp;:
   <ul>
-  <li><em>Infos de sécurité OpenPGP</em>&nbsp;: permet d'obtenir l'état de sortie de
+  <li><em>Infos de sÃ©curitÃ© OpenPGP</em>&nbsp;: permet d'obtenir l'Ã©tat de sortie de
   GnuPG pour le message&nbsp;;</li>
-  <li><em>Copier les infos de sécurité OpenPGP</em>&nbsp;: copie l'état de sortie de GnuPG dans
-  le presse papier afin de le coller dans un message de réponse par exemple&nbsp;;</li>
-  <li><em>Voir l'ID photo OpenGPG</em>&nbsp;: permet de voir l'<em>ID photo</em> de l'expéditeur
-  du message, uniquement s'il y a une photo intégrée dans sa clef publique
+  <li><em>Copier les infos de sÃ©curitÃ© OpenPGP</em>&nbsp;: copie l'Ã©tat de sortie de GnuPG dans
+  le presse papier afin de le coller dans un message de rÃ©ponse par exemple&nbsp;;</li>
+  <li><em>Voir l'ID photo OpenGPG</em>&nbsp;: permet de voir l'<em>ID photo</em> de l'expÃ©diteur
+  du message, uniquement s'il y a une photo intÃ©grÃ©e dans sa clef publique
   (<em>cette option ne sera active que si un ID photo existe dans la clef</em>)&nbsp;;</li>
-  <li><em>Infos de sécurité S/MIME</em>&nbsp;: permet de visualiser les informations de sécurité S/MIME
+  <li><em>Infos de sÃ©curitÃ© S/MIME</em>&nbsp;: permet de visualiser les informations de sÃ©curitÃ© S/MIME
   du message.</li>
   </ul>
-  <p>Si vous n'avez pas l'option <em>keyserver-options auto-key-retrieve</em> définie dans votre
-  fichier <tt>gpg.conf</tt> et que vous lisez un message signé ou chiffré, 
-  vous verrez une icône de <em>Stylo</em> comportant un <em>point d'interrogation</em>
-  dans la zone d'affichage des en-têtes, la ligne d'état Enigmail affichera <em>Partie du message signée
-  ; cliquez sur l'icône «&nbsp;stylo&nbsp;» pour plus de détails</em>. De plus le message dans le
+  <p>Si vous n'avez pas l'option <em>keyserver-options auto-key-retrieve</em> dÃ©finie dans votre
+  fichier <tt>gpg.conf</tt> et que vous lisez un message signÃ© ou chiffrÃ©,
+  vous verrez une icÃ´ne de <em>Stylo</em> comportant un <em>point d'interrogation</em>
+  dans la zone d'affichage des en-tÃªtes, la ligne d'Ã©tat Enigmail affichera <em>Partie du message signÃ©e
+  ; cliquez sur l'icÃ´ne Â«&nbsp;stylo&nbsp;Â» pour plus de dÃ©tails</em>. De plus le message dans le
   panneau de message affichera tous les blocs de message OpenPGP et le bloc de signature.</p>
-  <p>Il est également possible d'observer ce comportement même si vous l'option <em>keyserver-options auto-key-retrieve</em>
-  est bien définie dans votre fichier <tt>gpg.conf</tt> mais que la clef OpenPGP n'est pas disponible sur le serveur
-  de clefs par défaut.</p>
-  <p>En cliquant sur l'icône <em>Stylo et point d'interrogation</em> apparaitra une fenêtre
-  vous avertissant que la clef n'est pas disponible dans votre trousseau de clefs. Fermer la fenêtre par OK
-  ouvrira une autre fenêtre contenant une liste de serveurs de clefs que vous pouvez sélectionner afin de
-  télécharger la clef publique de l'expéditeur.</p>
-  <p>Pour configurer la liste des serveurs de clefs que vous désirez utiliser, allez dans <b>Enigmail -&gt;
-  Préférences -&gt; onglet Général</b> et saisissez les adresses des serveurs de clefs dans la zone
-  <em>Serveur(s) de clefs&nbsp;:</em> séparées par des virgules. <em>Le premier serveur de la liste
-  sera utilisé comme serveur par défaut.</p></em>
+  <p>Il est Ã©galement possible d'observer ce comportement mÃªme si vous l'option <em>keyserver-options auto-key-retrieve</em>
+  est bien dÃ©finie dans votre fichier <tt>gpg.conf</tt> mais que la clef OpenPGP n'est pas disponible sur le serveur
+  de clefs par dÃ©faut.</p>
+  <p>En cliquant sur l'icÃ´ne <em>Stylo et point d'interrogation</em> apparaitra une fenÃªtre
+  vous avertissant que la clef n'est pas disponible dans votre trousseau de clefs. Fermer la fenÃªtre par OK
+  ouvrira une autre fenÃªtre contenant une liste de serveurs de clefs que vous pouvez sÃ©lectionner afin de
+  tÃ©lÃ©charger la clef publique de l'expÃ©diteur.</p>
+  <p>Pour configurer la liste des serveurs de clefs que vous dÃ©sirez utiliser, allez dans <b>Enigmail -&gt;
+  PrÃ©fÃ©rences -&gt; onglet GÃ©nÃ©ral</b> et saisissez les adresses des serveurs de clefs dans la zone
+  <em>Serveur(s) de clefs&nbsp;:</em> sÃ©parÃ©es par des virgules. <em>Le premier serveur de la liste
+  sera utilisÃ© comme serveur par dÃ©faut.</p></em>
   </li>
-  <li><b>Ouverture de pièces jointes chiffrées / importation de clefs OpenPGP attachées</b><br>
-  Les pièces jointes nommées *.pgp, *.asc et *.gpg sont reconnues par Enigmail comme pouvant être 
-  traitées spécialement. Cliquer droit sur une de ces pièces jointes
-  active deux entrées de menu spéciales dans le menu contextuel&nbsp;: <em>Déchiffrer et ouvrir</em>
-  et <em>Déchiffrer et enregistrer sous</em>. Utilisez ces deux menus si vous désirez qu'Enigmail
-  déchiffre une pièce jointe avant de l'ouvrir ou de l'enregistrer. Si une pièce jointe est
-  reconnue comme un fichier de clef OpenPGP, il vous est proposé d'importer les clefs qu'il contient dans
+  <li><b>Ouverture de piÃ¨ces jointes chiffrÃ©es / importation de clefs OpenPGP attachÃ©es</b><br>
+  Les piÃ¨ces jointes nommÃ©es *.pgp, *.asc et *.gpg sont reconnues par Enigmail comme pouvant Ãªtre
+  traitÃ©es spÃ©cialement. Cliquer droit sur une de ces piÃ¨ces jointes
+  active deux entrÃ©es de menu spÃ©ciales dans le menu contextuel&nbsp;: <em>DÃ©chiffrer et ouvrir</em>
+  et <em>DÃ©chiffrer et enregistrer sous</em>. Utilisez ces deux menus si vous dÃ©sirez qu'Enigmail
+  dÃ©chiffre une piÃ¨ce jointe avant de l'ouvrir ou de l'enregistrer. Si une piÃ¨ce jointe est
+  reconnue comme un fichier de clef OpenPGP, il vous est proposÃ© d'importer les clefs qu'il contient dans
   votre trousseau de clefs.
   </li>
 </ul><hr/>
 <p>
-De l'aide supplémentaire est disponible sur la
+De l'aide supplÃ©mentaire est disponible sur la
 <a href="http://enigmail.mozdev.org/help.html" target="_blank">page web d'Enigmail</a>
 </p>
 </body>

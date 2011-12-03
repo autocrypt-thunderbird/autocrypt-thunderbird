@@ -8,7 +8,7 @@
 <p>En el Editor de Reglas, usted puede especificar valores por defecto por destinatarios para activar cifrado, firmado y PGP/MIME, y para definir qu&eacute; clave(s) OpenPGP utilizar. En este di&aacute;logo, usted puede especificar reglas para un &uacute;nico destinatario, y para un grupo de destinatarios con atributos muy similares.</p>
 <ul>
   <li><span style="font-weight: bold;">Poner Regla OpenPGP para </span>: Contiene la(s) direcci&oacute;n(es) email de el/los destinatario(s) (sin nombres, p.ej. s&oacute;lo una direcci&oacute;n como alguien@email.dom). Usted puede especificar varias direcciones email, separadas por espacios. La direcci&oacute;n especificada aqu&iacute; puede consistir s&oacute;lo de la secci&oacute;n de dominio de modo que cualquier direcci&oacute;n en ese dominio concuerde, p.ej. @email.domain <tt>permitir&aacute; concordancia a body@email.comain, somebody@email.domain, anybody@email.domain, etc.</tt></li>
-  <li><span style="font-weight: bold;">Aplicar regla si el destinatario ...</span>: 
+  <li><span style="font-weight: bold;">Aplicar regla si el destinatario ...</span>:
     Esto modifica la concordancia de las direcciones email. Si se ingresa m&uacute;ltiples direcciones, la configuraci&oacute;n se aplicar&aacute; a todas. Los ejemplos abajo est&aacute;n basados en body@email.domain ingresado en el campo <em>Poner Regla OpenPGP para</em> m&aacute;s arriba.
     <ul>
       <li><i>Es exactamente</i>: con esta configuraci&oacute;n, la regla s&oacute;lo se disparar&aacute; en emails para body@email.domain (comparaci&oacute;n exacta, sin considerar may&uacute;sculas/min&uacute;sculas).      </li>
@@ -19,7 +19,7 @@
 
   </li>
   <li><span style="font-weight: bold;">Continuar con la siguiente regla para la direcci&oacute;n que coincida</span><br>
-      Activar esta funci&oacute;n le permitir&aacute; definir una regla pero no tener que especificar un KeyID en el campo <em>Usar las siguientes claves OpenPGP:</em> 
+      Activar esta funci&oacute;n le permitir&aacute; definir una regla pero no tener que especificar un KeyID en el campo <em>Usar las siguientes claves OpenPGP:</em>
 	  , de modo que la direcci&oacute;n email es usada para buscar una clave al momento de enviar. Adem&aacute;s, reglas adicionales para la(s) misma(s) direcci&oacute;n(es) tambi&eacute;n ser&aacute;(n) procesada(s).  </li>
   <li><span style="font-weight: bold;">No comprobar m&aacute;s reglas para la direcci&oacute;n que coincida</span><br>
   Activar esta funci&oacute;n detiene el procesamiento de cualquier otra regla para la(s) direcci&oacute;n(es) que coincide(n) si es que la regla coincide; p.ej. el procesamiento de reglas contin&uacute;a con el siguiente destinatario.</li>
@@ -38,7 +38,7 @@
 </div>
 <ul>
   <li><span style="font-weight: bold;">Cifrado</span>: activa o desactiva el cifrado de mensaje. Las configuraciones permitidas y su significado son las mismas que para la firma de mensajes.</li>
-  <li><span style="font-weight: bold;">PGP/MIME</span>: activa o desactiva el uso de la codificaci&oacute;n de mensaje PGP/MIME (RFC 3156). 
+  <li><span style="font-weight: bold;">PGP/MIME</span>: activa o desactiva el uso de la codificaci&oacute;n de mensaje PGP/MIME (RFC 3156).
     Si  PGP/MIME est&aacute; desactivado, los mensajes son codificados utilizando "inline PGP". Los valores permitidos y sus significados son los mismos que para la firma de mensajes.  </li>
 </ul>
 <p>Las reglas son procesadas en el orden en que se muestran en la lista en el <em>Editor de Reglas OpenPGP</em>. Siempre que una regla coincide con un destinatario y contiene una KeyID OpenPGP, adicionalmente a usar la KeyID especificada, el destinatario deja de ser considerado al procesar otras reglas adicionales.</p>
