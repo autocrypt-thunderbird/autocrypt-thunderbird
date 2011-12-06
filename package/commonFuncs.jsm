@@ -583,7 +583,7 @@ var EnigmailFuncs = {
         return null;
       }
     } catch (ex) {
-      EnigmailCommon.ERROR_LOG("ERROR in enigmailFuncs: obtainKeyList\n");
+      EnigmailCommon.ERROR_LOG("ERROR in enigmailFuncs: obtainKeyList"+ex.toString()+"\n");
     }
 
     if (typeof(userList) == "string") {
@@ -697,14 +697,14 @@ var EnigmailFuncs = {
         for (let j=0; j < citeLevel - oldCiteLevel; j++) {
           preface += '<blockquote type="cite" style="'+fontStyle+'">';
         }
-        preface += '<pre wrap="">';
+        preface += '<pre wrap="">\n';
       }
       else if (citeLevel < oldCiteLevel) {
         preface='</pre>';
         for (let j = 0; j < oldCiteLevel - citeLevel; j++)
           preface += "</blockquote>";
 
-        preface += '<pre wrap="">';
+        preface += '<pre wrap="">\n';
       }
 
       if (logLineStart.value > 0) {
