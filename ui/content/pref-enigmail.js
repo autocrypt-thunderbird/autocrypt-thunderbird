@@ -135,7 +135,8 @@ function enigDetermineGpgPath() {
         agentPath = EnigGetFilePath(gEnigmailSvc.agentPath).replace(/\\\\/g, "\\");
       }
       else {
-        agentPath = EnigGetFilePath(gEnigmailSvc.agentPath); // .replace(/\\\\/g, "\\");
+        agentPath = gEnigmailSvc.agentPath.path;
+        // EnigGetFilePath(gEnigmailSvc.agentPath); // .replace(/\\\\/g, "\\");
       }
       if (agentPath.length > 50) {
         agentPath = agentPath.substring(0,50)+"..."
@@ -475,6 +476,9 @@ function enigLocateGpg() {
                            "", false, ext,
                            fileName+ext, null);
   if (filePath) {
-    document.getElementById("enigmail_agentPath").value = EnigGetFilePath(filePath);
+//     if (EnigmailCommon.getOS() == "WINNT") {
+//       document.getElementById("enigmail_agentPath").value = EnigGetFilePath(filePath);
+//     }
+    document.getElementById("enigmail_agentPath").value = filePath.path
   }
 }
