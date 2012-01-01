@@ -35,6 +35,7 @@
 
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+Components.utils.import("resource://gre/modules/AddonManager.jsm");
 Components.utils.import("resource://enigmail/subprocess.jsm");
 
 // Maximum size of message directly processed by Enigmail
@@ -432,7 +433,6 @@ function ExtractMessageId(uri) {
   return messageId;
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // Enigmail protocol handler
 ///////////////////////////////////////////////////////////////////////////////
@@ -829,6 +829,27 @@ Enigmail.prototype = {
     return dirPrefix;
   },
 
+  getExtensionBaseDir: function () {
+    var file = null;
+    var isComplete = false;
+    AddonManager.getAddonByID(ENIGMAIL_EXTENSION_ID, function (addon) {
+      try {
+        file = addon.getResourceURI(".").QueryInterface(Ci.nsIFileURL).file;
+      }
+      catch (ex) {
+        Ec.ERROR_LOG("enigmail.js: getExtensionBaseDir: "+ex+"\n");
+      }
+      isComplete = true;
+    });
+    var thread = Cc["@mozilla.org/thread-manager;1"]
+                 .getService(Ci.nsIThreadManager)
+                 .currentThread;
+    while (!isComplete)
+      thread.processNextEvent(true);
+
+    return file;
+  },
+
   stillActive: function () {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.stillActive: \n");
 
@@ -924,13 +945,7 @@ Enigmail.prototype = {
     if (this.gpgAgentProcess != null) {
       Ec.DEBUG_LOG("enigmail.js: Enigmail.finalize: stopping gpg-agent PID="+this.gpgAgentProcess+"\n");
       try {
-        var directoryService =
-          Cc["@mozilla.org/file/directory_service;1"].
-          getService(Ci.nsIProperties);
-
-        var extensionLoc = directoryService.get("ProfD", Ci.nsIFile);
-        extensionLoc.append("extensions");
-        extensionLoc.append(ENIGMAIL_EXTENSION_ID);
+        var extensionLoc = this.getExtensionBaseDir();
         extensionLoc.append("wrappers");
         extensionLoc.append("gpg-agent-wrapper.sh");
         try {
@@ -1460,13 +1475,7 @@ Enigmail.prototype = {
                   "--max-cache-ttl", "999999" ];  // ca. 11 days
 
           try {
-            var directoryService =
-                Cc["@mozilla.org/file/directory_service;1"].
-                getService(Ci.nsIProperties);
-            var extensionLoc =
-                directoryService.get("ProfD", Ci.nsIFile);
-            extensionLoc.append("extensions");
-            extensionLoc.append(ENIGMAIL_EXTENSION_ID);
+            var extensionLoc = this.getExtensionBaseDir();
             extensionLoc.append("wrappers");
             extensionLoc.append("gpg-agent-wrapper.sh");
             try {
