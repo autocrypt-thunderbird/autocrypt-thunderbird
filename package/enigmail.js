@@ -35,6 +35,7 @@
 
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+Components.utils.import("resource://enigmail/subprocess.jsm");
 
 // Maximum size of message directly processed by Enigmail
 const MSG_BUFFER_SIZE = 98304;   // 96 kB
@@ -104,22 +105,25 @@ const NS_XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
 const DIR_SERV_CONTRACTID  = "@mozilla.org/file/directory_service;1"
 
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+
 // Interfaces
-const nsISupports            = Components.interfaces.nsISupports;
-const nsIObserver            = Components.interfaces.nsIObserver;
-const nsILocalFile           = Components.interfaces.nsILocalFile;
-const nsILocalFileWin        = Components.interfaces.nsILocalFileWin;
-const nsIProtocolHandler     = Components.interfaces.nsIProtocolHandler;
-const nsIIPCService          = Components.interfaces.nsIIPCService;
-const nsIPipeConsole         = Components.interfaces.nsIPipeConsole;
-const nsIEnvironment         = Components.interfaces.nsIEnvironment;
-const nsIEnigmail            = Components.interfaces.nsIEnigmail;
-const nsIEnigStrBundle       = Components.interfaces.nsIStringBundleService;
-const nsICmdLineHandler      = Components.interfaces.nsICmdLineHandler;
-const nsIWindowWatcher       = Components.interfaces.nsIWindowWatcher;
-const nsICommandLineHandler  = Components.interfaces.nsICommandLineHandler;
-const nsIWindowsRegKey       = Components.interfaces.nsIWindowsRegKey;
-const nsIFactory             = Components.interfaces.nsIFactory
+const nsISupports            = Ci.nsISupports;
+const nsIObserver            = Ci.nsIObserver;
+const nsILocalFile           = Ci.nsILocalFile;
+const nsILocalFileWin        = Ci.nsILocalFileWin;
+const nsIProtocolHandler     = Ci.nsIProtocolHandler;
+const nsIIPCService          = Ci.nsIIPCService;
+const nsIPipeConsole         = Ci.nsIPipeConsole;
+const nsIEnvironment         = Ci.nsIEnvironment;
+const nsIEnigmail            = Ci.nsIEnigmail;
+const nsIEnigStrBundle       = Ci.nsIStringBundleService;
+const nsICmdLineHandler      = Ci.nsICmdLineHandler;
+const nsIWindowWatcher       = Ci.nsIWindowWatcher;
+const nsICommandLineHandler  = Ci.nsICommandLineHandler;
+const nsIWindowsRegKey       = Ci.nsIWindowsRegKey;
+const nsIFactory             = Ci.nsIFactory
 
 const NS_XPCOM_SHUTDOWN_OBSERVER_ID = "xpcom-shutdown";
 
@@ -214,11 +218,11 @@ function CreateFileStream(filePath, permissions) {
   try {
     var localFile;
     if (typeof filePath == "string") {
-      localFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+      localFile = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsILocalFile);
       initPath(localFile, filePath);
     }
     else {
-      localFile = filePath.QueryInterface(Components.interfaces.nsILocalFile);
+      localFile = filePath.QueryInterface(Ci.nsILocalFile);
     }
 
     if (localFile.exists()) {
@@ -235,7 +239,7 @@ function CreateFileStream(filePath, permissions) {
 
     var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
 
-    var fileStream = Components.classes[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIFileOutputStream);
+    var fileStream = Cc[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Ci.nsIFileOutputStream);
 
     fileStream.init(localFile, flags, permissions, 0);
 
@@ -278,7 +282,7 @@ function EnigReadFile(filePath) {
 
   if (filePath.exists()) {
 
-    var ioServ = Components.classes[NS_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+    var ioServ = Cc[NS_IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
     if (!ioServ)
       throw Components.results.NS_ERROR_FAILURE;
 
@@ -287,7 +291,7 @@ function EnigReadFile(filePath) {
 
     var rawInStream = fileChannel.open();
 
-    var scriptableInStream = Components.classes[NS_SCRIPTABLEINPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIScriptableInputStream);
+    var scriptableInStream = Cc[NS_SCRIPTABLEINPUTSTREAM_CONTRACTID].createInstance(Ci.nsIScriptableInputStream);
     scriptableInStream.init(rawInStream);
     var available = scriptableInStream.available()
     var fileContents = scriptableInStream.read(available);
@@ -346,7 +350,7 @@ function getFilePath (nsFileObj, creationMode) {
 // return the OS string from XUL runtime
 function detectOS () {
 
-  var xulAppinfo = Components.classes[NS_XPCOM_APPINFO].getService(Components.interfaces.nsIXULRuntime);
+  var xulAppinfo = Cc[NS_XPCOM_APPINFO].getService(Ci.nsIXULRuntime);
   return xulAppinfo.OS;
 
 }
@@ -378,7 +382,7 @@ function ResolvePath(filePath, envPath, isDosLike) {
 
   for (var j=0; j<pathDirs.length; j++) {
      try {
-        var pathDir = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
+        var pathDir = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
 
         initPath(pathDir, pathDirs[j]);
 
@@ -403,7 +407,7 @@ function ResolvePath(filePath, envPath, isDosLike) {
 // @ keyName: the name of the key to get (e.g. InstallDir)
 // @ rootKey: HKLM, HKCU, etc. (according to constants in nsIWindowsRegKey)
 function getWinRegistryString(keyPath, keyName, rootKey) {
-  var registry = Components.classes["@mozilla.org/windows-registry-key;1"].createInstance(Components.interfaces.nsIWindowsRegKey);
+  var registry = Cc["@mozilla.org/windows-registry-key;1"].createInstance(Ci.nsIWindowsRegKey);
 
   var retval = "";
   try {
@@ -455,7 +459,7 @@ EnigmailProtocolHandler.prototype = {
   newURI: function (aSpec, originCharset, aBaseURI) {
     Ec.DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.newURI: aSpec='"+aSpec+"'\n");
 
-    var uri = Components.classes[NS_SIMPLEURI_CONTRACTID].createInstance(Components.interfaces.nsIURI);
+    var uri = Cc[NS_SIMPLEURI_CONTRACTID].createInstance(Ci.nsIURI);
     uri.spec = aSpec;
 
     return uri;
@@ -531,7 +535,7 @@ EnigmailProtocolHandler.prototype = {
       spec = "chrome://enigmail/content/enigmailAbout.xul";
     }
 
-    var windowManager = Components.classes[WMEDIATOR_CONTRACTID].getService(Components.interfaces.nsIWindowMediator);
+    var windowManager = Cc[WMEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
 
     var winEnum=windowManager.getEnumerator(null);
     var recentWin=null;
@@ -545,7 +549,7 @@ EnigmailProtocolHandler.prototype = {
     if (recentWin) {
       recentWin.focus();
     } else {
-      var appShellSvc = Components.classes[ASS_CONTRACTID].getService(Components.interfaces.nsIAppShellService);
+      var appShellSvc = Cc[ASS_CONTRACTID].getService(Ci.nsIAppShellService);
       var domWin = appShellSvc.hiddenDOMWindow;
 
       domWin.open(spec, "_blank", "chrome,menubar,toolbar,resizable");
@@ -607,7 +611,7 @@ function GetPassphrase(domWindow, passwdObj, useAgentObj, rememberXTimes) {
 
   var success;
 
-  var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
+  var promptService = Cc[NS_PROMPTSERVICE_CONTRACTID].getService(Ci.nsIPromptService);
   success = promptService.promptPassword(domWindow,
                                          Ec.getString("enigPrompt"),
                                          promptMsg,
@@ -750,13 +754,13 @@ Enigmail.prototype = {
   },
 
   alertMsg: function (domWindow, mesg) {
-    var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
+    var promptService = Cc[NS_PROMPTSERVICE_CONTRACTID].getService(Ci.nsIPromptService);
     return promptService.alert(domWindow, Ec.getString("enigAlert"), mesg);
   },
 
   confirmMsg: function (domWindow, mesg, okLabel, cancelLabel) {
     var dummy={};
-    var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
+    var promptService = Cc[NS_PROMPTSERVICE_CONTRACTID].getService(Ci.nsIPromptService);
 
     var buttonTitles = 0;
     if (okLabel == null && cancelLabel == null) {
@@ -789,14 +793,14 @@ Enigmail.prototype = {
   },
 
   promptValue: function (domWindow, mesg, valueObj) {
-    var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
+    var promptService = Cc[NS_PROMPTSERVICE_CONTRACTID].getService(Ci.nsIPromptService);
     var checkObj = new Object();
     return promptService.prompt(domWindow, Ec.getString("enigPrompt"),
                                  mesg, valueObj, "", checkObj);
   },
 
   errorMsg: function (domWindow, mesg) {
-    var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
+    var promptService = Cc[NS_PROMPTSERVICE_CONTRACTID].getService(Ci.nsIPromptService);
     return promptService.alert(domWindow, Ec.getString("enigError"), mesg);
   },
 
@@ -850,7 +854,7 @@ Enigmail.prototype = {
     var maxIdleMinutes = this.getMaxIdleMinutes();
 
     var createTimerType = null;
-    const nsITimer = Components.interfaces.nsITimer;
+    const nsITimer = Ci.nsITimer;
 
     if (this.haveCachedPassphrase() && (this._passwdAccessTimes > 0) && (maxIdleMinutes <= 0)) {
       // we remember the passphrase for at most 1 minute
@@ -868,7 +872,7 @@ Enigmail.prototype = {
 
       var delayMillisec = maxIdleMinutes*60*1000;
 
-      gCacheTimer = Components.classes[NS_TIMER_CONTRACTID].createInstance(nsITimer);
+      gCacheTimer = Cc[NS_TIMER_CONTRACTID].createInstance(nsITimer);
 
       if (!gCacheTimer) {
         Ec.ERROR_LOG("enigmail.js: Enigmail.setCachedPassphrase: Error - failed to create timer\n");
@@ -921,10 +925,10 @@ Enigmail.prototype = {
       Ec.DEBUG_LOG("enigmail.js: Enigmail.finalize: stopping gpg-agent PID="+this.gpgAgentProcess+"\n");
       try {
         var directoryService =
-          Components.classes["@mozilla.org/file/directory_service;1"].
-          getService(Components.interfaces.nsIProperties);
+          Cc["@mozilla.org/file/directory_service;1"].
+          getService(Ci.nsIProperties);
 
-        var extensionLoc = directoryService.get("ProfD", Components.interfaces.nsIFile);
+        var extensionLoc = directoryService.get("ProfD", Ci.nsIFile);
         extensionLoc.append("extensions");
         extensionLoc.append(ENIGMAIL_EXTENSION_ID);
         extensionLoc.append("wrappers");
@@ -934,7 +938,7 @@ Enigmail.prototype = {
         }
         catch(ex) {}
 
-        agentProcess = Components.classes[NS_PROCESS_UTIL_CONTRACTID].createInstance(Components.interfaces.nsIProcess);
+        agentProcess = Cc[NS_PROCESS_UTIL_CONTRACTID].createInstance(Ci.nsIProcess);
         agentProcess.init(extensionLoc);
         agentProcess.run(true, [ "stop", this.gpgAgentProcess ], 2);
       }
@@ -960,7 +964,7 @@ Enigmail.prototype = {
 
 
   mimeInitialized: function () {
-    var enigMimeService = Components.classes[NS_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
+    var enigMimeService = Cc[NS_ENIGMIMESERVICE_CONTRACTID].getService(Ci.nsIEnigMimeService);
 
     var value = enigMimeService.initialized;
     Ec.DEBUG_LOG("enigmail.js: Enigmail.mimeInitialized: "+value+"\n");
@@ -979,9 +983,9 @@ Enigmail.prototype = {
     try {
       if (XPCOMUtils.generateNSGetModule) {
         // Gecko 1.9.x
-        var enigMsgComposeFactory = Components.classes[NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID].createInstance(Components.interfaces.nsIFactory);
+        var enigMsgComposeFactory = Cc[NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID].createInstance(Ci.nsIFactory);
 
-        var compMgr = Components.manager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
+        var compMgr = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
 
         compMgr.registerFactory(NS_ENIGMSGCOMPOSE_CID,
                                 "Enig Msg Compose",
@@ -999,11 +1003,11 @@ Enigmail.prototype = {
       Ec.ERROR_LOG("could not register Enig Msg Compose handler\n");
     }
 
-    var ioServ = Components.classes[NS_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+    var ioServ = Cc[NS_IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
 
     try {
       var httpHandler = ioServ.getProtocolHandler("http");
-      httpHandler = httpHandler.QueryInterface(Components.interfaces.nsIHttpProtocolHandler);
+      httpHandler = httpHandler.QueryInterface(Ci.nsIHttpProtocolHandler);
     }
     catch (ex) {
       httpHandler = domWindow.navigator;
@@ -1043,7 +1047,7 @@ Enigmail.prototype = {
 
     var environment;
     try {
-      environment = Components.classes["@mozilla.org/process/environment;1"].getService(nsIEnvironment);
+      environment = Cc["@mozilla.org/process/environment;1"].getService(nsIEnvironment);
 
     } catch (ex) {
       this.initializationError = Ec.getString("enigmimeNotAvail");
@@ -1096,13 +1100,13 @@ Enigmail.prototype = {
     try {
       // Access IPC Service
 
-      var ipcService = Components.classes[NS_IPCSERVICE_CONTRACTID].getService();
+      var ipcService = Cc[NS_IPCSERVICE_CONTRACTID].getService();
       ipcService = ipcService.QueryInterface(nsIIPCService);
 
       this.ipcService = ipcService;
 
       // Create a non-joinable console
-      var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(nsIPipeConsole);
+      var pipeConsole = Cc[NS_PIPECONSOLE_CONTRACTID].createInstance(nsIPipeConsole);
 
       pipeConsole.open(499, 0, false);
 
@@ -1130,8 +1134,8 @@ Enigmail.prototype = {
 
 
     // Register to observe XPCOM shutdown
-    var obsServ = Components.classes[NS_OBSERVERSERVICE_CONTRACTID].getService();
-    obsServ = obsServ.QueryInterface(Components.interfaces.nsIObserverService);
+    var obsServ = Cc[NS_OBSERVERSERVICE_CONTRACTID].getService();
+    obsServ = obsServ.QueryInterface(Ci.nsIObserverService);
 
     obsServ.addObserver(this, NS_XPCOM_SHUTDOWN_OBSERVER_ID, false);
 
@@ -1212,13 +1216,13 @@ Enigmail.prototype = {
         agentPath += ".exe";
 
       try {
-        var pathDir = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
+        var pathDir = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
 
         if (! isAbsolutePath(agentPath, this.isDosLike)) {
           // path relative to Mozilla installation dir
-          var ds = Components.classes[DIR_SERV_CONTRACTID].getService();
-          var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
-          pathDir = dsprops.get("CurProcD", Components.interfaces.nsILocalFile);
+          var ds = Cc[DIR_SERV_CONTRACTID].getService();
+          var dsprops = ds.QueryInterface(Ci.nsIProperties);
+          pathDir = dsprops.get("CurProcD", Ci.nsILocalFile);
 
           var dirs=agentPath.split(RegExp(this.isDosLike ? "\\\\" : "/"));
           for (var i=0; i< dirs.length; i++) {
@@ -1234,7 +1238,7 @@ Enigmail.prototype = {
         }
         if (! (pathDir.isFile() /* && pathDir.isExecutable()*/))
           throw Components.results.NS_ERROR_FAILURE;
-        agentPath = pathDir.QueryInterface(Components.interfaces.nsIFile);
+        agentPath = pathDir.QueryInterface(Ci.nsIFile);
 
       } catch (ex) {
         this.initializationError = Ec.getString("gpgNotFound", [ agentPath ]);
@@ -1256,7 +1260,7 @@ Enigmail.prototype = {
 
       if ((! agentPath) && this.isWin32) {
         // Look up in Windows Registry
-        var enigMimeService = Components.classes[NS_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
+        var enigMimeService = Cc[NS_ENIGMIMESERVICE_CONTRACTID].getService(Ci.nsIEnigMimeService);
         try {
           gpgPath = getWinRegistryString("Software\\GNU\\GNUPG", "Install Directory", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
           agentPath = ResolvePath(agentName, gpgPath, this.isDosLike)
@@ -1275,7 +1279,7 @@ Enigmail.prototype = {
         Ec.ERROR_LOG("enigmail.js: Enigmail: Error - "+this.initializationError+"\n");
         throw Components.results.NS_ERROR_FAILURE;
       }
-      agentPath = agentPath.QueryInterface(Components.interfaces.nsIFile);
+      agentPath = agentPath.QueryInterface(Ci.nsIFile);
     }
 
     Ec.CONSOLE_LOG("EnigmailAgentPath="+getFilePathDesc(agentPath)+"\n\n");
@@ -1347,7 +1351,7 @@ Enigmail.prototype = {
 
 
     function resolveAgentPath(fileName) {
-      var filePath = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
+      var filePath = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
 
       if (gEnigmailSvc.isDosLike) {
         fileName += ".exe";
@@ -1367,7 +1371,7 @@ Enigmail.prototype = {
       var foundPath = ResolvePath(fileName, gEnigmailSvc.environment.get("PATH"), gEnigmailSvc.isDosLike)
       if ((! foundPath) && gEnigmailSvc.isWin32) {
         // Look up in Windows Registry
-        var enigMimeService = Components.classes[NS_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
+        var enigMimeService = Cc[NS_ENIGMIMESERVICE_CONTRACTID].getService(Ci.nsIEnigMimeService);
         try {
           var regPath = enigMimeService.getGpgPathFromRegistry();
           foundPath = ResolvePath(fileName, regPath, gEnigmailSvc.isDosLike)
@@ -1406,7 +1410,7 @@ Enigmail.prototype = {
 
           this.gpgAgentInfo.envStr = DUMMY_AGENT_INFO;
 
-          command = gpgConnectAgent.QueryInterface(Components.interfaces.nsIFile);
+          command = gpgConnectAgent.QueryInterface(Ci.nsIFile);
           var exitCode = -1;
 
           Ec.CONSOLE_LOG("enigmail> "+command.path+"\n");
@@ -1440,7 +1444,7 @@ Enigmail.prototype = {
         }
 
         if (commandFile  && commandFile.exists()) {
-          command = commandFile.QueryInterface(Components.interfaces.nsIFile);
+          command = commandFile.QueryInterface(Ci.nsIFile);
         }
 
         if (command == null) {
@@ -1457,10 +1461,10 @@ Enigmail.prototype = {
 
           try {
             var directoryService =
-                Components.classes["@mozilla.org/file/directory_service;1"].
-                getService(Components.interfaces.nsIProperties);
+                Cc["@mozilla.org/file/directory_service;1"].
+                getService(Ci.nsIProperties);
             var extensionLoc =
-                directoryService.get("ProfD", Components.interfaces.nsIFile);
+                directoryService.get("ProfD", Ci.nsIFile);
             extensionLoc.append("extensions");
             extensionLoc.append(ENIGMAIL_EXTENSION_ID);
             extensionLoc.append("wrappers");
@@ -1497,6 +1501,7 @@ Enigmail.prototype = {
         }
         else {
           this.gpgAgentInfo.envStr = DUMMY_AGENT_INFO;
+          var envFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
           initPath(envFile, this.determineGpgHomeDir());
           envFile.append("gpg-agent.conf");
 
@@ -1505,7 +1510,7 @@ Enigmail.prototype = {
           if (! envFile.exists()) {
             try {
               var flags = 0x02 | 0x08 | 0x20;
-              var fileOutStream = Components.classes[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIFileOutputStream);
+              var fileOutStream = Cc[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Ci.nsIFileOutputStream);
               fileOutStream.init(envFile, flags, 0600, 0);
               fileOutStream.write(data, data.length);
               fileOutStream.flush();
@@ -1719,6 +1724,107 @@ Enigmail.prototype = {
     return outputData;
   },
 
+
+/*
+  // New version using subprocess.jsm; not yet in use
+
+  execCmd: function (command, args, passphrase, input, exitCodeObj, statusFlagsObj,
+            statusMsgObj, errorMsgObj) {
+    Ec.WRITE_LOG("enigmail.js: Enigmail.execCmd: subprocess = "+command+"\n");
+
+    if ((typeof input) != "string") input = "";
+    var prependPassphrase = ((typeof passphrase) == "string");
+
+    var envList = [];
+    envList = envList.concat(gEnvList);
+
+    var preInput;
+
+    if (prependPassphrase) {
+      preInput = passphrase;
+      input = "\n" + input;
+
+    } else {
+      preInput = "";
+    }
+
+    var prefix = this.getLogDirectoryPrefix();
+    if (prefix && (gLogLevel >= 4)) {
+
+      if (prependPassphrase) {
+        // Obscure passphrase
+        WriteFileContents(prefix+"eniginp.txt", "<passphrase>"+input);
+      } else {
+        WriteFileContents(prefix+"eniginp.txt", input);
+      }
+
+      WriteFileContents(prefix+"enigcmd.txt", printCmdLine(command, args)+"\n");
+      WriteFileContents(prefix+"enigenv.txt", envList.join(",")+"\n");
+
+      Ec.DEBUG_LOG("enigmail.js: Enigmail.execCmd: copied command line/env/input to files "+prefix+"enigcmd.txt/enigenv.txt/eniginp.txt\n");
+    }
+
+    var blockSeparationObj = new Object();
+
+    Ec.CONSOLE_LOG("\nenigmail> "+printCmdLine(command, args)+"\n");
+
+    var proc = {
+      command:     this.getEscapedFilename(getFilePath(command.QueryInterface(nsILocalFile))),
+      arguments:   args,
+      environment: envList,
+      charset: null,
+      stdin: preInput + input,
+      done: function(result) {
+        this.exitCode = result.exitCode;
+        this.resultData = result.stdout;
+        this.errorData = result.stderr;
+      },
+      mergeStderr: false,
+      resultData: "",
+      errorData: "",
+      exitCode: -1
+    };
+
+    try {
+      subprocess.call(proc).wait()
+      exitCodeObj.value = proc.exitCode;
+
+    } catch (ex) {
+      Ec.ERROR_LOG("enigmail.js: Enigmail.execCmd: subprocess.call failed with '"+ex.toString()+"'\n");
+      exitCodeObj.value = -1;
+    }
+
+    var outputData = "";
+    var errOutput  = "";
+
+    if (proc.resultData) outputData = proc.resultData;
+    if (proc.errorData) errOutput  = proc.errorData;
+
+    if (prefix && (gLogLevel >= 4)) {
+      WriteFileContents(prefix+"enigout.txt", outputData);
+      WriteFileContents(prefix+"enigerr.txt", errOutput);
+      Ec.DEBUG_LOG("enigmail.js: Enigmail.execCmd: copied command out/err data to files "+prefix+"enigout.txt/enigerr.txt\n");
+    }
+
+    Ec.DEBUG_LOG("enigmail.js: Enigmail.execCmd: exitCode = "+exitCodeObj.value+"\n");
+    Ec.DEBUG_LOG("enigmail.js: Enigmail.execCmd: errOutput = "+errOutput+"\n");
+
+
+    errorMsgObj.value = Ec.parseErrorOutput(errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj);
+    exitCodeObj.value = this.fixExitCode(proc.exitCode, statusFlagsObj.value);
+
+    if (blockSeparationObj.value.indexOf(" ") > 0) {
+      exitCodeObj.value = 2;
+    }
+
+    Ec.CONSOLE_LOG(errorMsgObj.value+"\n");
+
+    this.stillActive();
+
+    return outputData;
+  },
+*/
+
   execCmd: function (command, args, passphrase, input, exitCodeObj, statusFlagsObj,
             statusMsgObj, errorMsgObj) {
     Ec.WRITE_LOG("enigmail.js: Enigmail.execCmd: command = "+command+"\n");
@@ -1787,6 +1893,7 @@ Enigmail.prototype = {
 
     if (prefix && (gLogLevel >= 4)) {
       WriteFileContents(prefix+"enigout.txt", outputData);
+      Ec.DEBUG_LOG("** got data:\n"+outputData);
       WriteFileContents(prefix+"enigerr.txt", errOutput);
       Ec.DEBUG_LOG("enigmail.js: Enigmail.execCmd: copied command out/err data to files "+prefix+"enigout.txt/enigerr.txt\n");
     }
@@ -1808,7 +1915,6 @@ Enigmail.prototype = {
 
     return outputData;
   },
-
 
   execStart: function (command, args, needPassphrase, domWindow, prompter, listener,
             statusFlagsObj) {
@@ -1848,13 +1954,13 @@ Enigmail.prototype = {
 
     Ec.CONSOLE_LOG("\nenigmail> "+printCmdLine(command, args)+"\n");
 
-    var pipetrans = Components.classes[NS_PIPETRANSPORT_CONTRACTID].createInstance();
+    var pipetrans = Cc[NS_PIPETRANSPORT_CONTRACTID].createInstance();
 
-    pipetrans = pipetrans.QueryInterface(Components.interfaces.nsIPipeTransport);
+    pipetrans = pipetrans.QueryInterface(Ci.nsIPipeTransport);
     Ec.DEBUG_LOG("enigmail.js: Enigmail.execStart: pipetrans = " + pipetrans + "\n");
 
     try {
-      var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+      var ipcBuffer = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
       ipcBuffer.open(ERROR_BUFFER_SIZE, false);
 
       var mergeStderr = false;
@@ -1893,7 +1999,7 @@ Enigmail.prototype = {
 
     // Extract command line
     try {
-      var request = pipeTransport.QueryInterface(Components.interfaces.nsIRequest);
+      var request = pipeTransport.QueryInterface(Ci.nsIRequest);
 
       cmdLineObj.value = request.name;
     } catch (ex) {
@@ -1903,7 +2009,7 @@ Enigmail.prototype = {
     // Extract exit code and error output from pipeTransport
     var exitCode = pipeTransport.exitValue;
 
-    var errListener = pipeTransport.stderrConsole.QueryInterface(Components.interfaces.nsIIPCBuffer);
+    var errListener = pipeTransport.stderrConsole.QueryInterface(Ci.nsIIPCBuffer);
 
     var outLength = new Object();
     var errOutput = errListener.getByteData(outLength);
@@ -1994,7 +2100,7 @@ Enigmail.prototype = {
 
     var startErrorMsgObj = new Object();
 
-    var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+    var ipcBuffer = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
     var bufferSize = ((plainText.length + 20000)/1024).toFixed(0)*1024;
     if (MSG_BUFFER_SIZE > bufferSize)
       bufferSize=MSG_BUFFER_SIZE;
@@ -2284,7 +2390,7 @@ Enigmail.prototype = {
 
       var testUiFlags = nsIEnigmail.UI_TEST;
 
-      var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+      var ipcBuffer = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
       var bufferSize = 10240;
 
       ipcBuffer.open(bufferSize, false);
@@ -2656,7 +2762,7 @@ Enigmail.prototype = {
     while (tryCount < maxTries) {
       tryCount++;
 
-      var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+      var ipcBuffer = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
       ipcBuffer.open(readBytes, false);
 
       var pipeTrans = this.decryptMessageStart(parent, null, verifyOnly, noOutput,
@@ -3144,7 +3250,7 @@ Enigmail.prototype = {
 
     Ec.CONSOLE_LOG("enigmail> "+printCmdLine(this.agentPath, args)+"\n");
 
-    var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
+    var pipeConsole = Cc[NS_PIPECONSOLE_CONTRACTID].createInstance(Ci.nsIPipeConsole);
     // Create joinable console
     pipeConsole.open(30, 0, true);
 
@@ -3174,7 +3280,7 @@ Enigmail.prototype = {
   getHttpProxy: function (hostName) {
 
     function GetPasswdForHost(hostname, userObj, passwdObj) {
-      var loginmgr = Components.classes["@mozilla.org/login-manager;1"].getService(Components.interfaces.nsILoginManager);
+      var loginmgr = Cc["@mozilla.org/login-manager;1"].getService(Ci.nsILoginManager);
 
       // search HTTP password 1st
       var logins = loginmgr.findLogins({}, "http://"+hostname, "", "");
@@ -3200,7 +3306,7 @@ Enigmail.prototype = {
     //try {
       if (this.prefBranch.getBoolPref("respectHttpProxy")) {
         // determine proxy host
-        var prefsSvc = Components.classes[NS_PREFS_SERVICE_CID].getService(Components.interfaces.nsIPrefService);
+        var prefsSvc = Cc[NS_PREFS_SERVICE_CID].getService(Ci.nsIPrefService);
         var prefRoot = prefsSvc.getBranch(null);
         var useProxy = prefRoot.getIntPref("network.proxy.type");
         if (useProxy==1) {
@@ -3286,11 +3392,11 @@ Enigmail.prototype = {
     }
     args.push(keyValue);
 
-    var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
+    var pipeConsole = Cc[NS_PIPECONSOLE_CONTRACTID].createInstance(Ci.nsIPipeConsole);
     // Create joinable console
     pipeConsole.open(5000, 0, true);
 
-    var errorConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
+    var errorConsole = Cc[NS_PIPECONSOLE_CONTRACTID].createInstance(Ci.nsIPipeConsole);
     errorConsole.open(20, 0, true);
 
     Ec.CONSOLE_LOG("enigmail> "+printCmdLine(command, args)+"\n");
@@ -3534,7 +3640,7 @@ Enigmail.prototype = {
     if (this.keygenProcess)
       throw Components.results.NS_ERROR_FAILURE;
 
-    var pipeConsole = Components.classes[NS_PIPECONSOLE_CONTRACTID].createInstance(Components.interfaces.nsIPipeConsole);
+    var pipeConsole = Cc[NS_PIPECONSOLE_CONTRACTID].createInstance(Ci.nsIPipeConsole);
 
     // Create joinable console
     pipeConsole.open(100, 0, true);
@@ -3907,7 +4013,7 @@ Enigmail.prototype = {
     var statusMsgObj   = new Object();
     var errorMsgObj    = new Object();
 
-    var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+    var ipcBuffer = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
     ipcBuffer.open(MSG_BUFFER_SIZE, true);
 
     var pipeTrans = this.execStart(this.agentPath, args, false, parent, 0,
@@ -3969,7 +4075,7 @@ Enigmail.prototype = {
 
     var statusMsgObj   = new Object();
 
-    var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+    var ipcBuffer = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
     ipcBuffer.open(MSG_BUFFER_SIZE, false);
 
     var pipeTrans = this.execStart(this.agentPath, args, false, parent, 0,
@@ -4042,7 +4148,7 @@ Enigmail.prototype = {
 
     passphrase = passwdObj.value;
 
-    var ipcBuffer = Components.classes[NS_IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
+    var ipcBuffer = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
     ipcBuffer.open(MSG_BUFFER_SIZE, false);
 
     var pipeTrans = this.execStart(this.agentPath, args, false, parent, 0,
@@ -4150,14 +4256,14 @@ Enigmail.prototype = {
       try {
         var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
 
-        var ds = Components.classes[DIR_SERV_CONTRACTID].getService();
-        var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
-        var picFile = dsprops.get("TmpD", Components.interfaces.nsIFile);
+        var ds = Cc[DIR_SERV_CONTRACTID].getService();
+        var dsprops = ds.QueryInterface(Ci.nsIProperties);
+        var picFile = dsprops.get("TmpD", Ci.nsIFile);
 
         picFile.append(keyId+".jpg");
         picFile.createUnique(picFile.NORMAL_FILE_TYPE, DEFAULT_FILE_PERMS);
 
-        var fileStream = Components.classes[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Components.interfaces.nsIFileOutputStream);
+        var fileStream = Cc[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Ci.nsIFileOutputStream);
         fileStream.init(picFile, flags, DEFAULT_FILE_PERMS, 0);
         if (fileStream.write(pictureData, pictureData.length) != pictureData.length)
             throw Components.results.NS_ERROR_FAILURE;
@@ -4178,9 +4284,9 @@ Enigmail.prototype = {
 
   getRulesFile: function () {
     Ec.DEBUG_LOG("enigmail.js: getRulesFile\n");
-    var ds = Components.classes[DIR_SERV_CONTRACTID].getService();
-    var dsprops = ds.QueryInterface(Components.interfaces.nsIProperties);
-    var rulesFile = dsprops.get("ProfD", Components.interfaces.nsILocalFile);
+    var ds = Cc[DIR_SERV_CONTRACTID].getService();
+    var dsprops = ds.QueryInterface(Ci.nsIProperties);
+    var rulesFile = dsprops.get("ProfD", Ci.nsILocalFile);
     rulesFile.append("pgprules.xml");
     return rulesFile;
   },
@@ -4196,7 +4302,7 @@ Enigmail.prototype = {
         return false;
       }
 
-      var domParser=Components.classes[NS_DOMPARSER_CONTRACTID].createInstance(Components.interfaces.nsIDOMParser);
+      var domParser=Cc[NS_DOMPARSER_CONTRACTID].createInstance(Ci.nsIDOMParser);
       this.rulesList = domParser.parseFromString(fileContents, "text/xml");
 
       return true;
@@ -4208,7 +4314,7 @@ Enigmail.prototype = {
     Ec.DEBUG_LOG("enigmail.js: saveRulesFile\n");
 
     var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
-    var domSerializer=Components.classes[NS_DOMSERIALIZER_CONTRACTID].createInstance(Components.interfaces.nsIDOMSerializer);
+    var domSerializer=Cc[NS_DOMSERIALIZER_CONTRACTID].createInstance(Ci.nsIDOMSerializer);
     var rulesFile = this.getRulesFile();
     if (rulesFile) {
       if (this.rulesList) {
@@ -4248,7 +4354,7 @@ Enigmail.prototype = {
   addRule: function (appendToEnd, toAddress, keyList, sign, encrypt, pgpMime, flags) {
     Ec.DEBUG_LOG("enigmail.js: addRule\n");
     if (! this.rulesList) {
-      var domParser=Components.classes[NS_DOMPARSER_CONTRACTID].createInstance(Components.interfaces.nsIDOMParser);
+      var domParser=Cc[NS_DOMPARSER_CONTRACTID].createInstance(Ci.nsIDOMParser);
       this.rulesList = domParser.parseFromString("<pgpRuleList/>", "text/xml");
     }
     var negate = (flags & 1);
@@ -4586,7 +4692,7 @@ Enigmail.prototype = {
       Ec.DEBUG_LOG("enigmail.js: Enigmail.editKey: caught exception from writing to pipeTrans\n");
     }
 
-    var mimeSvc = Components.classes[NS_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
+    var mimeSvc = Cc[NS_ENIGMIMESERVICE_CONTRACTID].getService(Ci.nsIEnigMimeService);
     //mimeSvc.sleep(100);
 
     Ec.DEBUG_LOG("enigmail.js: Enigmail.editKey: terminating with returnCode="+returnCode+"\n");
@@ -4739,7 +4845,7 @@ KeyEditor.prototype = {
   },
 
   QueryInterface: function (iid) {
-    if (!iid.equals(Components.interfaces.nsISupports))
+    if (!iid.equals(Ci.nsISupports))
          throw Components.results.NS_ERROR_NO_INTERFACE;
     return this;
   }
@@ -5189,7 +5295,7 @@ function GetPin(domWindow, promptMsg, ret) {
 
   var success = false;
 
-  var promptService = Components.classes[NS_PROMPTSERVICE_CONTRACTID].getService(Components.interfaces.nsIPromptService);
+  var promptService = Cc[NS_PROMPTSERVICE_CONTRACTID].getService(Ci.nsIPromptService);
   success = promptService.promptPassword(domWindow,
                                          Ec.getString("Enigmail"),
                                          promptMsg,
@@ -5462,8 +5568,8 @@ enigCardAdminObserver.prototype =
 
   QueryInterface : function(iid)
   {
-    if (iid.equals(Components.interfaces.nsIEnigMimeReadCallback) ||
-        iid.equals(Components.interfaces.nsISupports) )
+    if (iid.equals(Ci.nsIEnigMimeReadCallback) ||
+        iid.equals(Ci.nsISupports) )
       return this;
 
     throw Components.results.NS_NOINTERFACE;
@@ -5497,8 +5603,8 @@ enigChangePasswdObserver.prototype =
 
   QueryInterface : function(iid)
   {
-    if (iid.equals(Components.interfaces.nsIEnigMimeReadCallback) ||
-        iid.equals(Components.interfaces.nsISupports) )
+    if (iid.equals(Ci.nsIEnigMimeReadCallback) ||
+        iid.equals(Ci.nsISupports) )
       return this;
 
     throw Components.results.NS_NOINTERFACE;
@@ -5539,8 +5645,8 @@ EnigCmdLineHandler.prototype = {
     if (cmdLine.handleFlag("pgpkeyman", false)) {
       cmdLine.preventDefault = true; // do not open main app window
 
-      var wwatch = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
-                             .getService(Components.interfaces.nsIWindowWatcher);
+      var wwatch = Cc["@mozilla.org/embedcomp/window-watcher;1"]
+                             .getService(Ci.nsIWindowWatcher);
       wwatch.openWindow(null, "chrome://enigmail/content/enigmailKeyManager.xul", "_blank",
                         "chrome,dialog=no,all", cmdLine);
     }
@@ -5572,14 +5678,7 @@ function enigExtractHashAlgo(msgTxt) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-if (XPCOMUtils.generateNSGetFactory) {
-  // Gecko >= 2.0
-  var NSGetFactory = XPCOMUtils.generateNSGetFactory([Enigmail, EnigmailProtocolHandler, EnigCmdLineHandler]);
-  dump("enigmail.js: Registered components\n");
-}
-else {
-  // Gecko <= 1.9.x
-  var NSGetModule = XPCOMUtils.generateNSGetModule([Enigmail, EnigmailProtocolHandler, EnigCmdLineHandler]);
-  dump("enigmail.js: Registered components\n");
-}
+var NSGetFactory = XPCOMUtils.generateNSGetFactory([Enigmail, EnigmailProtocolHandler, EnigCmdLineHandler]);
+dump("enigmail.js: Registered components\n");
+
 

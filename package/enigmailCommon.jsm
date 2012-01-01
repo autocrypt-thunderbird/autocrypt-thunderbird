@@ -646,7 +646,7 @@ var EnigmailCommon = {
 
   getDateTime: function (dateNum, withDate, withTime)
   {
-    if (dateNum != 0) {
+    if (dateNum && dateNum != 0) {
       var dat=new Date(dateNum * 1000);
       var appLocale = Cc[LOCALE_SVC_CONTRACTID].getService(Ci.nsILocaleService).getApplicationLocale();
       var dateTimeFormat = Cc[DATE_FORMAT_CONTRACTID].getService(Ci.nsIScriptableDateFormat);
