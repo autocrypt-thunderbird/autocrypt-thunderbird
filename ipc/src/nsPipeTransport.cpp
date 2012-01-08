@@ -1076,14 +1076,20 @@ nsPipeTransport::CopyArgsAndCreateProcess(const PRUnichar **args,
 
   for (j=0; j < argCount; j++) {
 #ifdef XP_OS2
-    nsCAutoString tmpArg ( args[j] );
+    nsAutoString tmpArg (args[j]);
+    nsAutoString quote;
+    quote.AssignASCII("\"");
     if (tmpArg.FindChar(' ', 0) >= 0) {
-      tmpArg.Insert("\"", 0);
-      tmpArg.Append("\"");
-      args[j] = ToNewUTF8String(tmpArg);
+       tmpArg.Insert(quote, 0);
+       tmpArg.Append(quote);
+       argList[j+1] = ToNewUTF8String(tmpArg);
     }
-#endif
+    else {
+        argList[j+1] = ToNewUTF8String(nsDependentString(args[j]));
+    }
+#else
     argList[j+1] = ToNewUTF8String(nsDependentString(args[j]));
+#endif
     DEBUG_LOG(("nsPipeTransport::CopyArgsAndCreateProcess: arg[%d] = %s\n",
       j+1, argList[j+1]));
   }
