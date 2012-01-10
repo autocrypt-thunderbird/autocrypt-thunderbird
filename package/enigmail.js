@@ -459,6 +459,9 @@ EnigmailProtocolHandler.prototype = {
   newURI: function (aSpec, originCharset, aBaseURI) {
     Ec.DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.newURI: aSpec='"+aSpec+"'\n");
 
+    // cut of any parameters potentially added to the URI; these cannot be handled
+    if (aSpec.substr(0,14) == "enigmail:dummy") aSpec = "enigmail:dummy";
+
     var uri = Cc[NS_SIMPLEURI_CONTRACTID].createInstance(Ci.nsIURI);
     uri.spec = aSpec;
 
