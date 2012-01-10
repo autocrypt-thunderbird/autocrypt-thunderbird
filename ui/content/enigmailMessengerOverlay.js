@@ -1107,11 +1107,6 @@ Enigmail.msg = {
     return;
   },
 
-  // this is an attempt to re-build some of the functionality of mimetpla.cpp in JS
-  displayMessage: function (messageContent, node) {
-
-
-  },
 
   // check if an attachment could be signed
   checkSignedAttachment: function (attachmentObj, index)
@@ -1680,10 +1675,12 @@ Enigmail.msg = {
   },
 
 
-  revealAttachments: function ()
+  revealAttachments: function (index)
   {
-    for (let i=0; i < currentAttachments.length; i++) {
-      this.handleAttachment("revealName", currentAttachments[i]);
+    if (!index) index = 0;
+
+    if (index < currentAttachments.length) {
+      this.handleAttachment("revealName/"+index.toString(), currentAttachments[index]);
     }
   },
 
@@ -1858,14 +1855,20 @@ Enigmail.msg = {
     channel.asyncOpen(ipcBuffer, msgUri);
   },
 
-  setAttachmentName: function (attachment, newLabel)
+  setAttachmentName: function (attachment, newLabel, index)
   {
+    EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: setAttachmentName ("+newLabel+"):\n");
+
     var attList=document.getElementById("attachmentList");
     if (attList) {
       var attNode = attList.firstChild;
       while (attNode) {
+        // TB <= 9
         if (attNode.getAttribute("attachmentUrl") == attachment.url)
           attNode.setAttribute("label", newLabel);
+        // TB >= 10
+        if (attNode.getAttribute("name") == attachment.name)
+          attNode.setAttribute("name", newLabel);
         attNode=attNode.nextSibling;
       }
     }
@@ -1875,6 +1878,10 @@ Enigmail.msg = {
     }
     else
       attachment.displayName = newLabel;
+
+    if (index && index.length > 0) {
+      this.revealAttachments(parseInt(index)+1);
+    }
   },
 
   decryptAttachmentCallback: function (cbArray)
@@ -1909,9 +1916,9 @@ Enigmail.msg = {
                                   rawFileName, null);
       if (! outFile) return;
     }
-    else if (callbackArg.actionType == "revealName") {
+    else if (callbackArg.actionType.substr(0,10) == "revealName") {
       if (origFilename && origFilename.length > 0) {
-        Enigmail.msg.setAttachmentName(callbackArg.attachment, origFilename+".pgp");
+        Enigmail.msg.setAttachmentName(callbackArg.attachment, origFilename+".pgp", callbackArg.actionType.substr(11,10));
       }
       Enigmail.msg.setAttachmentReveal(null);
       return;
