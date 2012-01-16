@@ -54,7 +54,6 @@
 #include "nsComponentManagerUtils.h"
 #include "nsServiceManagerUtils.h"
 #include "nsIServiceManager.h"
-#include "nsIProxyObjectManager.h"
 #include "nsIObserver.h"
 #include "nsIProcess.h"
 #include "nsIURI.h"
@@ -1691,12 +1690,6 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
 
     // Always block output
     IPCBool nonBlockingOutput = PR_FALSE;
-
-    // Now generate proxied pipe observer/listener to enable async calling
-    // from the polling thread to the current (UI?) thread
-    nsCOMPtr<nsIProxyObjectManager> proxyMgr =
-                              do_GetService(NS_XPCOMPROXY_CONTRACTID, &rv);
-    NS_ENSURE_SUCCESS(rv, rv);
 
     // Open pipe to handle STDOUT
     nsCOMPtr<nsIAsyncInputStream> asyncInputStream;
