@@ -742,7 +742,7 @@ var EnigmailCommon = {
 
   newRequestObserver: function (terminateFunc, terminateArg)
   {
-    function requestObserver(terminateFunc, terminateArg)
+    var requestObserver = function (terminateFunc, terminateArg)
     {
       this._terminateFunc = terminateFunc;
       this._terminateArg = terminateArg;
@@ -768,7 +768,6 @@ var EnigmailCommon = {
       onStopRequest: function (channel, ctxt, status)
       {
         EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: requestObserver.onStopRequest: "+ctxt+"\n");
-        //this._terminateFunc(this._terminateArg, ctxt);
         EnigmailCommon.dispatchEvent(this._terminateFunc, 0, [ this._terminateArg ]);
       }
     }
@@ -1160,8 +1159,7 @@ var EnigmailCommon = {
     this.DEBUG_LOG("enigmailCommon.jsm: dispatchEvent f="+callbackFunction.name+"\n");
 
     // object for dispatching callback back to main thread
-    const mainEvent = function(cbFunc, arrayOfArgs) {
-      self = this;
+    var mainEvent = function(cbFunc, arrayOfArgs) {
       this.cbFunc = cbFunc;
       this.args   = arrayOfArgs;
     };
@@ -1178,13 +1176,13 @@ var EnigmailCommon = {
       run: function()
       {
         EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: dispatchEvent running mainEvent\n");
-        self.cbFunc(self.args);
+        this.cbFunc(this.args);
       },
 
       notify: function()
       {
         EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: dispatchEvent got notified\n");
-        self.cbFunc(self.args);
+        this.cbFunc(this.args);
       }
 
     };

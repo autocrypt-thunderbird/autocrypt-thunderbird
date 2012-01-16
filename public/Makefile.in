@@ -62,7 +62,6 @@ XPIDLSRCS     = \
                 nsIEnigMimeListener.idl   \
                 nsIEnigMimeReadCallback.idl \
                 nsIIPCService.idl \
-                nsIPipeChannel.idl \
                 nsIPipeConsole.idl \
                 nsIPipeFilterListener.idl \
                 $(NULL)
