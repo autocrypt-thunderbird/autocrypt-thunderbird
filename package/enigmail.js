@@ -1316,15 +1316,29 @@ Enigmail.prototype = {
     var errStrObj = new Object();
     var errLenObj = new Object();
 
-    var exitCode = this.ipcService.runPipe(command, args, args.length,
-                                  "", "", 0, [], 0,
-                                  outStrObj, outLenObj, errStrObj, errLenObj);
+    var exitCode = -1;
+    var outStr = "";
+    Ec.DEBUG_LOG("enigmail.js: Enigmail.setAgentPath: calling subprocess with '"+command.path+"'\n");
+
+    var proc = {
+      command:     command,
+      arguments:   args,
+      charset: null,
+      done: function(result) {
+        exitCode = result.exitCode;
+        outStr = result.stdout;
+      },
+      mergeStderr: true
+    };
+
+    try {
+      subprocess.call(proc).wait()
+    } catch (ex) {
+      Ec.ERROR_LOG("enigmail.js: Enigmail.setAgentPath: subprocess.call failed with '"+ex.toString()+"'\n");
+      exitCode = -1;
+    }
 
     Ec.CONSOLE_LOG("enigmail> "+printCmdLine(command, args)+"\n");
-
-    var outStr = outStrObj.value;
-    if (errStrObj.value)
-      outStr += errStrObj.value;
 
     Ec.CONSOLE_LOG(outStr+"\n");
 
@@ -1737,12 +1751,9 @@ Enigmail.prototype = {
   },
 
 
-/*
-  // New version using subprocess.jsm; not yet in use
-
   execCmd: function (command, args, passphrase, input, exitCodeObj, statusFlagsObj,
             statusMsgObj, errorMsgObj) {
-    Ec.WRITE_LOG("enigmail.js: Enigmail.execCmd: subprocess = "+command+"\n");
+    Ec.WRITE_LOG("enigmail.js: Enigmail.execCmd: subprocess = '"+command.path+"'\n");
 
     if ((typeof input) != "string") input = "";
     var prependPassphrase = ((typeof passphrase) == "string");
@@ -1824,98 +1835,6 @@ Enigmail.prototype = {
 
     errorMsgObj.value = Ec.parseErrorOutput(errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj);
     exitCodeObj.value = this.fixExitCode(proc.exitCode, statusFlagsObj.value);
-
-    if (blockSeparationObj.value.indexOf(" ") > 0) {
-      exitCodeObj.value = 2;
-    }
-
-    Ec.CONSOLE_LOG(errorMsgObj.value+"\n");
-
-    this.stillActive();
-
-    return outputData;
-  },
-*/
-
-  execCmd: function (command, args, passphrase, input, exitCodeObj, statusFlagsObj,
-            statusMsgObj, errorMsgObj) {
-    Ec.WRITE_LOG("enigmail.js: Enigmail.execCmd: command = "+command+"\n");
-
-    if ((typeof input) != "string") input = "";
-    var prependPassphrase = ((typeof passphrase) == "string");
-
-    var envList = [];
-    envList = envList.concat(gEnvList);
-
-    var preInput;
-
-    if (prependPassphrase) {
-      preInput = passphrase;
-      input = "\n" + input;
-
-    } else {
-      preInput = "";
-    }
-
-    var prefix = this.getLogDirectoryPrefix();
-    if (prefix && (gLogLevel >= 4)) {
-
-      if (prependPassphrase) {
-        // Obscure passphrase
-        WriteFileContents(prefix+"eniginp.txt", "<passphrase>"+input);
-      } else {
-        WriteFileContents(prefix+"eniginp.txt", input);
-      }
-
-      WriteFileContents(prefix+"enigcmd.txt", printCmdLine(command, args)+"\n");
-      WriteFileContents(prefix+"enigenv.txt", envList.join(",")+"\n");
-
-      Ec.DEBUG_LOG("enigmail.js: Enigmail.execCmd: copied command line/env/input to files "+prefix+"enigcmd.txt/enigenv.txt/eniginp.txt\n");
-    }
-
-    var outObj = new Object();
-    var errObj = new Object();
-    var outLenObj = new Object();
-    var errLenObj = new Object();
-    var blockSeparationObj = new Object();
-
-    Ec.CONSOLE_LOG("\nenigmail> "+printCmdLine(command, args)+"\n");
-
-    try {
-      exitCodeObj.value = gEnigmailSvc.ipcService.runPipe(command,
-                                                          args,
-                                                          args.length,
-                                                          preInput,
-                                                          input, input.length,
-                                                          envList, envList.length,
-                                                          outObj, outLenObj,
-                                                          errObj, errLenObj);
-    } catch (ex) {
-      exitCodeObj.value = -1;
-    }
-
-    var outputData = "";
-    var errOutput  = "";
-
-    if (outObj.value)
-       outputData = outObj.value;
-
-    if (errObj.value)
-       errOutput  = errObj.value;
-
-    if (prefix && (gLogLevel >= 4)) {
-      WriteFileContents(prefix+"enigout.txt", outputData);
-      Ec.DEBUG_LOG("** got data:\n"+outputData);
-      WriteFileContents(prefix+"enigerr.txt", errOutput);
-      Ec.DEBUG_LOG("enigmail.js: Enigmail.execCmd: copied command out/err data to files "+prefix+"enigout.txt/enigerr.txt\n");
-    }
-
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.execCmd: exitCode = "+exitCodeObj.value+"\n");
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.execCmd: errOutput = "+errOutput+"\n");
-
-
-    errorMsgObj.value = Ec.parseErrorOutput(errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj);
-    exitCodeObj.value = this.fixExitCode(exitCodeObj.value, statusFlagsObj.value);
 
     if (blockSeparationObj.value.indexOf(" ") > 0) {
       exitCodeObj.value = 2;
