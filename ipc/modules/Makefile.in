@@ -47,6 +47,8 @@ include $(DEPTH)/config/autoconf.mk
 
 EXTRA_JS_MODULES =  \
                    subprocess.jsm \
+                   subprocess_worker_win.js \
+                   subprocess_worker_unix.js \
                    $(NULL)
 
 include $(topsrcdir)/config/rules.mk
