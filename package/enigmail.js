@@ -998,29 +998,6 @@ Enigmail.prototype = {
     if (this.initialized) return;
 
     this.composeSecure = true;
-    try {
-      if (XPCOMUtils.generateNSGetModule) {
-        // Gecko 1.9.x
-        var enigMsgComposeFactory = Cc[NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID].createInstance(Ci.nsIFactory);
-
-        var compMgr = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
-
-        compMgr.registerFactory(NS_ENIGMSGCOMPOSE_CID,
-                                "Enig Msg Compose",
-                                NS_MSGCOMPOSESECURE_CONTRACTID,
-                                enigMsgComposeFactory);
-
-        var msgComposeSecureCID = compMgr.contractIDToCID(NS_MSGCOMPOSESECURE_CONTRACTID);
-
-        this.composeSecure = (msgComposeSecureCID.toString() ==
-                              NS_ENIGMSGCOMPOSE_CID);
-      }
-      else
-        this.composeSecure = true;
-    } catch (ex) {
-      Ec.ERROR_LOG("could not register Enig Msg Compose handler\n");
-    }
-
     var ioServ = Cc[NS_IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
 
     try {
@@ -1278,7 +1255,6 @@ Enigmail.prototype = {
 
       if ((! agentPath) && this.isWin32) {
         // Look up in Windows Registry
-        var enigMimeService = Cc[NS_ENIGMIMESERVICE_CONTRACTID].getService(Ci.nsIEnigMimeService);
         try {
           gpgPath = getWinRegistryString("Software\\GNU\\GNUPG", "Install Directory", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
           agentPath = ResolvePath(agentName, gpgPath, this.isDosLike)
@@ -1401,16 +1377,6 @@ Enigmail.prototype = {
       }
 
       var foundPath = ResolvePath(fileName, gEnigmailSvc.environment.get("PATH"), gEnigmailSvc.isDosLike)
-      if ((! foundPath) && gEnigmailSvc.isWin32) {
-        // Look up in Windows Registry
-        var enigMimeService = Cc[NS_ENIGMIMESERVICE_CONTRACTID].getService(Ci.nsIEnigMimeService);
-        try {
-          var regPath = enigMimeService.getGpgPathFromRegistry();
-          foundPath = ResolvePath(fileName, regPath, gEnigmailSvc.isDosLike)
-        }
-        catch (ex) {}
-      }
-
       if (foundPath != null) { foundPath.normalize(); }
       return foundPath;
     }
@@ -4624,7 +4590,6 @@ Enigmail.prototype = {
     }
 
     var mimeSvc = Cc[NS_ENIGMIMESERVICE_CONTRACTID].getService(Ci.nsIEnigMimeService);
-    //mimeSvc.sleep(100);
 
     Ec.DEBUG_LOG("enigmail.js: Enigmail.editKey: terminating with returnCode="+returnCode+"\n");
 
