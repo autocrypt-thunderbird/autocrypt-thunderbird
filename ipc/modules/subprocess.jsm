@@ -401,9 +401,8 @@ var subprocess = {
         } else {
             options.libc = {
                 'darwin': 'libc.dylib',
-                'freebsd': 'libc.so.7',
-                'openbsd': 'libc.so.61.0',
-            }[xulRuntime.OS.toLowerCase()] || 'libc.so.6';
+                'linux': 'libc.so.6',
+            }[xulRuntime.OS.toLowerCase()] || 'libc.so';
             return subprocess_unix(options);
         }
 
@@ -1058,10 +1057,8 @@ function subprocess_unix(options) {
     //api declarations
     //Darwin/BSD uses 0x0004 Linux 04000 or 2048
     const O_NONBLOCK = {
-        'darwin': 0x0004,
-        'freebsd': 0x0004,
-        'openbsd': 0x0004,
-    }[xulRuntime.OS.toLowerCase()] || 2024;
+        'linux': 2024
+    }[xulRuntime.OS.toLowerCase()] || 0x0004;
 
 
     //pid_t fork(void);
