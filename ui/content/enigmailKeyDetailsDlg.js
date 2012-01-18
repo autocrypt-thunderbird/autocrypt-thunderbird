@@ -157,6 +157,52 @@ function addSubkey(treeChildren, aLine) {
     expire = EnigGetString("keyValid.revoked");
   }
   aRow.appendChild(createCell(expire)); // expiry
+  var usagecodes=aLine[11];
+  var usagetext = "";
+/*  e = encrypt
+    s = sign
+    c = certify
+    a = authentication
+    Capital Letters are ignored, as these reflect summary properties of a key
+*/
+  var singlecode = "";
+  for (i=0; i < aLine[11].length; i++)
+  {
+    singlecode = aLine[11].substr(i, 1);
+    switch (singlecode)
+    {
+    case "e":
+      if (usagetext.length>0)
+      {
+        usagetext = usagetext + ", ";
+      }
+      usagetext = usagetext + EnigGetString("keyUsageEncrypt");
+      break;
+    case "s":
+      if (usagetext.length>0)
+      {
+        usagetext = usagetext + ", ";
+      }
+      usagetext = usagetext + EnigGetString("keyUsageSign");
+      break;
+    case "c":
+      if (usagetext.length>0)
+      {
+        usagetext = usagetext + ", ";
+      }
+      usagetext = usagetext + EnigGetString("keyUsageCertify");
+      break;
+    case "s":
+      if (usagetext.length>0)
+      {
+        usagetext = usagetext + ", ";
+      }
+      usagetext = usagetext + EnigGetString("keyUsageAuthentication");
+      break;
+    } /* case */
+  } /* for */
+
+  aRow.appendChild(createCell(usagetext)); // usage
   treeItem.appendChild(aRow);
   treeChildren.appendChild(treeItem);
 }

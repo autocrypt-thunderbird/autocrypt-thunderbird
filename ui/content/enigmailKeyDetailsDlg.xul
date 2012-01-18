@@ -153,8 +153,12 @@
                  label="&enigmail.keyDetails.created.label;"
                  persist="width"/>
         <splitter class="tree-splitter"/>
-        <treecol id="expiryCol"
+        <treecol id="expiryCol" style="width:70px"
                  label="&enigmail.keyDetails.expiry.label;"
+                 persist="width"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="UsageCol"
+                 label="&enigmail.keyDetails.usage.label;"
                  flex="1"/>
       </treecols>
 

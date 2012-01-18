@@ -543,6 +543,7 @@
 <!ENTITY enigmail.keyDetails.size.label              "Size">
 <!ENTITY enigmail.keyDetails.created.label           "Created">
 <!ENTITY enigmail.keyDetails.expiry.label            "Expiry">
+<!ENTITY enigmail.keyDetails.usage.label             "Usage">
 <!ENTITY enigmail.keyDetails.calcTrust.label         "Key validity">
 <!ENTITY enigmail.keyDetails.ownerTrust.label        "Owner trust">
 <!ENTITY enigmail.keyDetails.fingerprint.label       "Fingerprint">
