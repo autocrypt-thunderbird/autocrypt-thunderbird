@@ -1042,6 +1042,7 @@ function subprocess_unix(options) {
         active = true,
         done = false,
         exitCode = -1,
+        workerExitCode = 0,
         child = {},
         pid = -1,
         stdinWorker = null,
@@ -1059,7 +1060,6 @@ function subprocess_unix(options) {
     const O_NONBLOCK = {
         'linux': 2024
     }[xulRuntime.OS.toLowerCase()] || 0x0004;
-
 
     //pid_t fork(void);
     var fork = libc.declare("fork",
@@ -1261,24 +1261,33 @@ function subprocess_unix(options) {
         debugLog("Creating new stdin worker\n");
         stdinWorker = new ChromeWorker("subprocess_worker_unix.js");
         stdinWorker.onmessage = function(event) {
-            switch(event.data) {
-            case "WriteOK":
-                pendingWriteCount--;
-                debugLog("got OK from stdinWorker - remaining count: "+pendingWriteCount+"\n");
+            switch (event.data.msg) {
+            case "info":
+                switch(event.data.data) {
+                case "WriteOK":
+                    pendingWriteCount--;
+                    debugLog("got OK from stdinWorker - remaining count: "+pendingWriteCount+"\n");
+                    break;
+                case "ClosedOK":
+                    stdinOpenState = CLOSED;
+                    debugLog("Stdin pipe closed\n");
+                    break;
+                default:
+                    debugLog("got msg from stdinWorker: "+event.data.data+"\n");
+                }
                 break;
-            case "ClosedOK":
+            case "debug":
+                debugLog("stdinWorker: "+event.data.msg);
+                break;
+            case "error":
+                LogError("got error from stdinWorker: "+event.data.data+"\n");
+                pendingWriteCount = 0;
                 stdinOpenState = CLOSED;
-                debugLog("Stdin pipe closed\n");
-                break;
-            case "initFailed":
-              throw("Could not start writing to the subprocess");
-              break;
-            default:
-                debugLog("got msg from stdinWorker: "+event.data+"\n");
             }
         }
         stdinWorker.onerror = function(error) {
-            pendingWriteCount--;
+            pendingWriteCount = 0;
+            closeStdinHandle();
             LogError("got error from stdinWorker: "+error.message+"\n");
         }
         stdinWorker.postMessage({msg: "init", libc: options.libc});
@@ -1292,6 +1301,8 @@ function subprocess_unix(options) {
      * ChromeWorker object to write the data).
      */
     function writeStdin(data) {
+        if (stdinOpenState == CLOSED) return; // do not write to closed pipes
+
         ++pendingWriteCount;
         debugLog("sending "+data.length+" bytes to stdinWorker\n");
         var pipe = parseInt(child.stdin);
@@ -1363,6 +1374,7 @@ function subprocess_unix(options) {
                 break;
             case "done":
                 debugLog("Pipe "+name+" closed\n");
+                if (event.data.data != 0) workerExitCode = event.data.data;
                 --readers;
                 if (readers == 0) cleanup();
                 break;
@@ -1377,6 +1389,7 @@ function subprocess_unix(options) {
         worker.postMessage({
                 msg: 'read',
                 pipe: pipe,
+                pid: pid,
                 libc: options.libc,
                 charset: options.charset === null ? "null" : options.charset,
                 name: name
@@ -1422,7 +1435,11 @@ function subprocess_unix(options) {
 
             var result, status = ctypes.int();
             result = waitpid(child.pid, status.address(), 0);
-            exitCode = status.value;
+            if (status.value != 0)
+                exitCode = status.value
+            else
+                exitCode = workerExitCode;
+
             if (stdinWorker)
                 stdinWorker.postMessage({msg: 'stop'})
 
