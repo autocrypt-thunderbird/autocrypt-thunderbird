@@ -1223,6 +1223,7 @@ function subprocess_unix(options) {
                     exit(126);
                 }
             }
+            closeOtherFds(_in[0], _out[1], options.mergeStderr ? _out[1] : _err[1]);
             close(_in[1]);
             close(_out[0]);
             if(!options.mergeStderr)
@@ -1248,6 +1249,56 @@ function subprocess_unix(options) {
             throw("Fatal - failed to create subprocess '"+command+"'");
         }
         return pid;
+    }
+
+
+    // close any file descriptors that are not required for the process
+    function closeOtherFds(fdIn, fdOut, fdErr) {
+
+        var maxFD = 256; // arbitrary max
+
+        var rlim_t = {
+            'darwin': ctypes.uint64_t,
+            'freebsd': ctypes.int64_t,
+        }[xulRuntime.OS.toLowerCase()] || ctypes.unsigned_long;
+
+        const RLIMITS = new ctypes.StructType("RLIMITS", [
+            {"rlim_cur": rlim_t},
+            {"rlim_max": rlim_t}
+        ]);
+
+        const RLIMIT_NOFILE = {
+            'darwin': 8,
+            'linux': 7,
+            'freebsd': 8,
+        }[xulRuntime.OS.toLowerCase()] || 8;
+
+        try {
+            var getrlimit = libc.declare("getrlimit",
+                                  ctypes.default_abi,
+                                  ctypes.int,
+                                  ctypes.int,
+                                  RLIMITS.ptr
+            );
+
+            var rl = new RLIMITS();
+            if (getrlimit(RLIMIT_NOFILE, rl.address()) == 0) {
+                maxFD = rl.rlim_cur;
+            }
+            debugLog("getlimit: maxFD="+maxFD+"\n");
+
+        }
+        catch(ex) {
+            debugLog("getrlimit: no such function on this OS\n");
+            debugLog(ex.toString());
+        }
+
+        // close any file descriptors
+        // fd's 0-2 are already closed
+        for (var i = 3; i < maxFD; i++) {
+            if (i != fdIn && i != fdOut && i != fdErr)
+                close(i);
+        }
     }
 
     /*
@@ -1435,7 +1486,7 @@ function subprocess_unix(options) {
 
             var result, status = ctypes.int();
             result = waitpid(child.pid, status.address(), 0);
-            if (status.value != 0)
+            if (result > 0)
                 exitCode = status.value
             else
                 exitCode = workerExitCode;

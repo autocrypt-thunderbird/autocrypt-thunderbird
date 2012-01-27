@@ -182,15 +182,18 @@ function readPipe(pipe, charset, pid) {
     p[0].events = POLLIN | POLLERR | POLLHUP;
     p[0].revents = 0;
     var pollTimeout = WAITTIME;
+    var exitCode = -1;
     var result, status = ctypes.int();
     result = 0;
+
 
     const i=0;
     while (true) {
         if (result == 0) {
             result = libcFunc.waitpid(pid, status.address(), WNOHANG);
-            if (result != 0) {
+            if (result > 0) {
                 pollTimeout = NOWAIT;
+                exitCode = parseInt(status.value);
                 postMessage({msg: "debug", data: "waitpid signaled subprocess stop, exitcode="+status.value });
             }
         }
@@ -219,7 +222,7 @@ function readPipe(pipe, charset, pid) {
     }
 
     libcFunc.close(pipe);
-    postMessage({msg: "done", data: parseInt(status.value) });
+    postMessage({msg: "done", data: exitCode });
     libc.close();
     close();
 }
