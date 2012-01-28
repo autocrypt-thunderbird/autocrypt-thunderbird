@@ -762,33 +762,25 @@ Enigmail.msg = {
     var foundIndex = -1;
 
 
-    if (EnigmailCommon.getPref("enableExperiments")) {
-      if (bodyElement.firstChild) {
-        let node = bodyElement.firstChild
-        while (node) {
-          if (node.nodeName == "DIV") {
-            foundIndex = node.textContent.indexOf(findStr);
+    if (bodyElement.firstChild) {
+      let node = bodyElement.firstChild
+      while (node) {
+        if (node.nodeName == "DIV") {
+          foundIndex = node.textContent.indexOf(findStr);
 
-            if (foundIndex >= 0) {
-              if (node.textContent.indexOf(findStr+" LICENSE AUTHORIZATION") == foundIndex)
-                foundIndex = -1;
-            }
-            if (foundIndex >= 0) {
-              bodyElement = node;
-              break;
-            }
+          if (foundIndex >= 0) {
+            if (node.textContent.indexOf(findStr+" LICENSE AUTHORIZATION") == foundIndex)
+              foundIndex = -1;
           }
-          node = node.nextSibling;
+          if (foundIndex >= 0) {
+            bodyElement = node;
+            break;
+          }
         }
+        node = node.nextSibling;
       }
     }
-    else if (findStr) {
-      foundIndex = bodyElement.textContent.indexOf(findStr);
-      if (foundIndex >= 0) {
-        if (bodyElement.textContent.indexOf(findStr+" LICENSE AUTHORIZATION") == foundIndex)
-          foundIndex = -1;
-      }
-    }
+
     if (foundIndex >= 0) {
       msgText = bodyElement.textContent;
     }
