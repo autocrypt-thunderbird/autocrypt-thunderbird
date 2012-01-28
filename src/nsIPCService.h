@@ -78,6 +78,16 @@ protected:
                           nsIPipeListener* errConsole,
                           nsIPipeTransport** _retval);
 
+    NS_METHOD RunPipe (nsIFile *executable,
+                       const PRUnichar **args,
+                       PRUint32 argCount,
+                       const char* preInput,
+                       const char* inputData, PRUint32 inputLength,
+                       const PRUnichar** env, PRUint32 envCount,
+                       char** outputData, PRUint32* outputCount,
+                       char** outputError, PRUint32* errorCount,
+                       PRInt32* _retval);
+
     NS_METHOD GetRandomTime (PRUint32 *_retval);
 
     EMBool                        mInitialized;

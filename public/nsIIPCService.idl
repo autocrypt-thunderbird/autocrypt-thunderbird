@@ -83,28 +83,6 @@ interface nsIIPCService : nsISupports
              in unsigned long argCount);
 
   /**
-   * Runs executable with parameters (args[]) and optional data for standard input,
-   * and returns the exit code from the process. The standard output
-   * and standard error strings are returned as "out" arguments.
-   * (If outputError is null, use default console to capture error output.)
-   * PreInput may be used for passphrases etc.
-   * Unquoting the command (stripping quotes/backaslashes) is not done.
-   * This method blocks for the completion of the command.
-   */
-  long runPipe (in nsIFile executable,
-                [array, size_is(argCount)] in wstring args,
-                in unsigned long argCount,
-                in string preInput,
-                in string inputData,
-                in unsigned long inputLength,
-                [array, size_is(envCount)] in wstring env,
-                in unsigned long envCount,
-                [size_is(outputCount)] out string outputData,
-                out unsigned long outputCount,
-                [size_is(errorCount)] out string outputError,
-                out unsigned long errorCount);
-
-  /**
    * Runs executable, with parameters (args[]) and optional data for standard input,
    * and asynchronously captures the standard output (and standard error
    * output) in supplied console(s). This method does not block for
