@@ -291,9 +291,36 @@ const pid_t = ctypes.uint32_t;
 const WNOHANG = 1;
 const F_SETFL = 4;
 
+const LIBNAME       = 0;
+const O_NONBLOCK    = 1;
+const RLIM_T        = 2;
+const RLIMIT_NOFILE = 3;
+
+function getPlatformValue(valueType) {
+
+    if (! gXulRuntime)
+        gXulRuntime = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime);
+
+    const platformDefaults = {
+        // Windows API:
+        'winnt':   [ 'kernel32.dll' ],
+
+        // Unix API:
+        //            library name   O_NONBLOCK RLIM_T                RLIMIT_NOFILE
+        'darwin':  [ 'libc.dylib',   0x04     , ctypes.uint64_t     , 8 ],
+        'linux':   [ 'libc.so.6',    2024     , ctypes.unsigned_long, 7 ],
+        'freebsd': [ 'libc.so.7',    0x04     , ctypes.int64_t      , 8 ],
+        'openbsd': [ 'libc.so.61.0', 0x04     , ctypes.int64_t      , 8 ],
+        'sunos':   [ 'libc.so',      0x80     , ctypes.unsigned_long, 5 ]
+    }
+
+    return platformDefaults[gXulRuntime.OS.toLowerCase()][valueType];
+}
+
 
 var gDebugFunc = null,
-    gLogFunc = null;
+    gLogFunc = null,
+    gXulRuntime = null;
 
 function LogError(s) {
     if (gLogFunc)
@@ -394,15 +421,11 @@ var subprocess = {
             options.arguments = [];
         }
 
-        var xulRuntime = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime);
-        if (xulRuntime.OS.substring(0, 3) == "WIN") {
-            options.libc = "kernel32.dll";
+        options.libc = getPlatformValue(LIBNAME);
+
+        if (gXulRuntime.OS.substring(0, 3) == "WIN") {
             return subprocess_win32(options);
         } else {
-            options.libc = {
-                'darwin': 'libc.dylib',
-                'linux': 'libc.so.6',
-            }[xulRuntime.OS.toLowerCase()] || 'libc.so';
             return subprocess_unix(options);
         }
 
@@ -414,6 +437,8 @@ var subprocess = {
         gLogFunc = func;
     }
 };
+
+
 
 function subprocess_win32(options) {
     var kernel32dll = ctypes.open(options.libc),
@@ -1052,14 +1077,9 @@ function subprocess_unix(options) {
         readers = options.mergeStderr ? 1 : 2,
         stdinOpenState = OPEN,
         error = '',
-        output = '',
-        xulRuntime = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime);
+        output = '';
 
     //api declarations
-    //Darwin/BSD uses 0x0004 Linux 04000 or 2048
-    const O_NONBLOCK = {
-        'linux': 2024
-    }[xulRuntime.OS.toLowerCase()] || 0x0004;
 
     //pid_t fork(void);
     var fork = libc.declare("fork",
@@ -1187,7 +1207,7 @@ function subprocess_unix(options) {
             return -1;
         }
         rc = pipe(_out);
-        fcntl(_out[0], F_SETFL, O_NONBLOCK);
+        fcntl(_out[0], F_SETFL, getPlatformValue(O_NONBLOCK));
         if (rc < 0) {
             close(_in[0]);
             close(_in[1]);
@@ -1195,7 +1215,7 @@ function subprocess_unix(options) {
         }
         if(!options.mergeStderr) {
             rc = pipe(_err);
-            fcntl(_err[0], F_SETFL, O_NONBLOCK);
+            fcntl(_err[0], F_SETFL, getPlatformValue(O_NONBLOCK));
             if (rc < 0) {
                 close(_in[0]);
                 close(_in[1]);
@@ -1257,21 +1277,13 @@ function subprocess_unix(options) {
 
         var maxFD = 256; // arbitrary max
 
-        var rlim_t = {
-            'darwin': ctypes.uint64_t,
-            'freebsd': ctypes.int64_t,
-        }[xulRuntime.OS.toLowerCase()] || ctypes.unsigned_long;
+
+        var rlim_t = getPlatformValue(RLIM_T);
 
         const RLIMITS = new ctypes.StructType("RLIMITS", [
             {"rlim_cur": rlim_t},
             {"rlim_max": rlim_t}
         ]);
-
-        const RLIMIT_NOFILE = {
-            'darwin': 8,
-            'linux': 7,
-            'freebsd': 8,
-        }[xulRuntime.OS.toLowerCase()] || 8;
 
         try {
             var getrlimit = libc.declare("getrlimit",
@@ -1282,7 +1294,7 @@ function subprocess_unix(options) {
             );
 
             var rl = new RLIMITS();
-            if (getrlimit(RLIMIT_NOFILE, rl.address()) == 0) {
+            if (getrlimit(getPlatformValue(RLIMIT_NOFILE), rl.address()) == 0) {
                 maxFD = rl.rlim_cur;
             }
             debugLog("getlimit: maxFD="+maxFD+"\n");
