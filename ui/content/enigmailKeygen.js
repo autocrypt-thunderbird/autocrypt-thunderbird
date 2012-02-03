@@ -49,9 +49,10 @@ var gUseForSigning;
 
 var gKeygenRequest;
 var gAllData = "";
-var gGeneratedKey="";
+var gGeneratedKey= null;
 var gUsedId;
-var gConsoleIntervalId;
+
+const KEYGEN_CANCELLED = "cancelled";
 
 function enigmailKeygenLoad() {
   DEBUG_LOG("enigmailKeygen.js: Load\n");
@@ -79,7 +80,12 @@ function enigmailKeygenLoad() {
 }
 
 function enigmailOnClose() {
-  enigmailKeygenCancel();
+  var closeWin = true;
+  if (gKeygenRequest) {
+    closeWin = EnigConfirm(EnigGetString("keyAbort"), EnigGetString("keyMan.button.generateKeyAbort"), EnigGetString("keyMan.button.generateKeyContinue"));
+  }
+  if (closeWin) abortKeyGeneration();
+  return closeWin;
 }
 
 function enigmailKeygenUnload() {
@@ -116,89 +122,53 @@ function enigmailKeygenUpdate(getPrefs, setPrefs) {
   }
 }
 
-function enigmailKeygenTerminate(ipcRequest) {
+function enigmailKeygenTerminate(exitCode) {
    DEBUG_LOG("enigmailKeygen.js: Terminate:\n");
 
-   ipcRequest = ipcRequest[0];
-
-   // Give focus to this window
-   window.focus();
-
-   if (!ipcRequest.pipeTransport) {
-      ipcRequest = ipcRequest.QueryInterface(Components.interfaces.nsIIPCRequest);
-   }
-   var keygenProcess = ipcRequest.pipeTransport;
-   var enigmailSvc = GetEnigmailSvc();
-   if (!enigmailSvc) {
-     EnigAlert(EnigGetString("accessError"));
-   }
-   if (keygenProcess && !keygenProcess.isRunning) {
-     keygenProcess.terminate();
-     var exitCode = keygenProcess.exitValue;
-     DEBUG_LOG("enigmailKeygenConsole.htm: exitCode = "+exitCode+"\n");
-     if (enigmailSvc) {
-        exitCode = enigmailSvc.fixExitCode(exitCode, 0);
-     }
-   }
-
-   enigRefreshConsole();
-
-   ipcRequest.close(true);
    var curId = gUsedId;
 
-   enigmailKeygenCloseRequest();
+   gKeygenRequest = null;
 
-   if (gUseForSigning.checked) {
-      curId.setBoolAttribute("enablePgp", true);
-      curId.setIntAttribute("pgpKeyMode", 1);
-      if (gGeneratedKey) {
+   if ((! gGeneratedKey) || gGeneratedKey == KEYGEN_CANCELLED) return;
+
+  var progMeter = document.getElementById("keygenProgress");
+  progMeter.setAttribute("value", 100);
+
+  if (gGeneratedKey) {
+     if (gUseForSigning.checked) {
+        curId.setBoolAttribute("enablePgp", true);
+        curId.setIntAttribute("pgpKeyMode", 1);
         curId.setCharAttribute("pgpkeyId", "0x"+gGeneratedKey.substr(-8,8));
-      }
-      else {
-        curId.setCharAttribute("pgpkeyId", curId.email);
-      }
 
-      enigmailKeygenUpdate(false, true);
+        enigmailKeygenUpdate(false, true);
 
-      EnigSavePrefs();
+        EnigSavePrefs();
 
-     if (gGeneratedKey) {
-       if (EnigConfirm(EnigGetString("keygenComplete", curId.email)+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"))) {
-          EnigCreateRevokeCert(gGeneratedKey, curId.email);
-       }
+        if (EnigConfirm(EnigGetString("keygenComplete", curId.email)+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"))) {
+            EnigCreateRevokeCert(gGeneratedKey, curId.email);
+        }
      }
-   }
-   else {
-     if (gGeneratedKey) {
+     else {
        if (EnigConfirm(EnigGetString("genCompleteNoSign")+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"))) {
           EnigCreateRevokeCert(gGeneratedKey, curId.email);
        }
      }
+     enigmailSvc.invalidateUserIdList();
+   }
+   else {
+      EnigAlert(EnigGetString("keyGenFailed"));
    }
 
-   enigmailSvc.invalidateUserIdList();
    window.close();
 }
 
 
-// Cleanup and close window
+// Cleanup
 function enigmailKeygenCloseRequest() {
    DEBUG_LOG("enigmailKeygen.js: CloseRequest\n");
 
-  // Cancel console refresh
-  if (gConsoleIntervalId) {
-    window.clearInterval(gConsoleIntervalId);
-    gConsoleIntervalId = null;
-  }
-
   if (gKeygenRequest) {
-    try {
-      var keygenProcess = gKeygenRequest.pipeTransport;
-      if (keygenProcess)
-        keygenProcess.terminate();
-    } catch(ex) {}
-
-    gKeygenRequest.close(true);
+    gKeygenRequest.kill(false);
     gKeygenRequest = null;
   }
 }
@@ -234,6 +204,9 @@ function enigmailKeygenStart() {
          return;
       }
    }
+
+   gGeneratedKey = null;
+   gAllData = "";
 
    var enigmailSvc = GetEnigmailSvc();
    if (!enigmailSvc) {
@@ -297,70 +270,56 @@ function enigmailKeygenStart() {
      return;
    }
 
-   var ipcRequest = null;
-   var requestObserver = Ec.newRequestObserver(enigmailKeygenTerminate, null);
+   var proc = null;
+
+   var listener = {
+      onStartRequest: function () {},
+      onStopRequest: function(status) {
+        enigmailKeygenTerminate(status);
+      },
+      onDataAvailable: function(data) {
+        DEBUG_LOG("enigmailKeygen.js: onDataAvailable() "+data+"\n");
+
+        gAllData += data;
+        var keyCreatedIndex = gAllData.indexOf("[GNUPG:] KEY_CREATED");
+        if (keyCreatedIndex >0) {
+          gGeneratedKey = gAllData.substr(keyCreatedIndex);
+          gGeneratedKey = gGeneratedKey.replace(/(.*\[GNUPG:\] KEY_CREATED . )([a-fA-F0-9]+)([\n\r].*)*/, "$2");
+          gAllData = gAllData.replace(/\[GNUPG:\] KEY_CREATED . [a-fA-F0-9]+[\n\r]/, "");
+        }
+        gAllData = gAllData.replace(/[\r\n]*\[GNUPG:\] GOOD_PASSPHRASE/g, "").replace(/([\r\n]*\[GNUPG:\] PROGRESS primegen )(.)( \d+ \d+)/g, "$2")
+        var progMeter = document.getElementById("keygenProgress");
+        var progValue = Number(progMeter.value);
+        progValue += (1+(100-progValue)/200);
+        if (progValue >= 95) progValue=10;
+        progMeter.setAttribute("value", progValue);
+      }
+   }
 
    try {
-      ipcRequest = enigmailSvc.generateKey(window,
-                                           EnigConvertFromUnicode(userName),
-                                           EnigConvertFromUnicode(comment),
-                                           userEmail,
-                                           expiryTime,
-                                           keySize,
-                                           keyType,
-                                           passphrase,
-                                           requestObserver);
-   } catch (ex) { }
+      gKeygenRequest = Ec.generateKey(window,
+                         Ec.convertFromUnicode(userName),
+                         Ec.convertFromUnicode(comment),
+                         userEmail,
+                         expiryTime,
+                         keySize,
+                         keyType,
+                         passphrase,
+                         listener);
+   } catch (ex) {
+      Ec.DEBUG_LOG("enigmailKeygen.js: generateKey() failed with "+ex.toString()+"\n"+ex.stack+"\n");
+   }
 
-   if (!ipcRequest) {
+   if (!gKeygenRequest) {
       EnigAlert(EnigGetString("keyGenFailed"));
    }
 
-   requestObserver._terminateArg = ipcRequest;
-   gKeygenRequest = ipcRequest;
-
    WRITE_LOG("enigmailKeygen.js: Start: gKeygenRequest = "+gKeygenRequest+"\n");
-   // Refresh console every 2 seconds
-   gConsoleIntervalId = window.setInterval(enigRefreshConsole, 2000);
-   enigRefreshConsole();
 }
 
-function enigRefreshConsole() {
-  //DEBUG_LOG("enigmailKeygen.js: enigRefreshConsole:\n");
-
-  if (!gKeygenRequest)
-    return;
-
-  var keygenConsole
-
-  try {
-    keygenConsole = gKeygenRequest.stdoutConsole;
-  }
-  catch (ex) {
-    return;
-  }
-
-  try {
-    keygenConsole = keygenConsole.QueryInterface(Components.interfaces.nsIPipeConsole);
-
-    if (keygenConsole && keygenConsole.hasNewData()) {
-      DEBUG_LOG("enigmailKeygen.js: enigRefreshConsole(): hasNewData\n");
-
-      gAllData += keygenConsole.getNewData();
-      var keyCreatedIndex = gAllData.indexOf("[GNUPG:] KEY_CREATED");
-      if (keyCreatedIndex >0) {
-        gGeneratedKey = gAllData.substr(keyCreatedIndex);
-        gGeneratedKey = gGeneratedKey.replace(/(.*\[GNUPG:\] KEY_CREATED . )([a-fA-F0-9]+)([\n\r].*)*/, "$2");
-        gAllData = gAllData.replace(/\[GNUPG:\] KEY_CREATED . [a-fA-F0-9]+[\n\r]/, "");
-      }
-      gAllData = gAllData.replace(/[\r\n]*\[GNUPG:\] GOOD_PASSPHRASE/g, "").replace(/([\r\n]*\[GNUPG:\] PROGRESS primegen )(.)( \d+ \d+)/g, "$2")
-      var progMeter = document.getElementById("keygenProgress");
-      var progValue = Number(progMeter.value);
-      progValue += (1+(100-progValue)/20);
-      if (progValue >= 95) progValue=10;
-      progMeter.setAttribute("value", progValue);
-    }
-  } catch (ex) {}
+function abortKeyGeneration() {
+  gGeneratedKey = KEYGEN_CANCELLED;
+  enigmailKeygenCloseRequest();
 }
 
 function enigmailKeygenCancel() {
@@ -368,15 +327,14 @@ function enigmailKeygenCancel() {
   var closeWin=false;
 
   if (gKeygenRequest) {
-    var closeWin = EnigConfirm(EnigGetString("keyAbort"), EnigGetString("keyMan.button.generateKeyAbort"), EnigGetString("keyMan.button.generateKeyContinue"));
+    closeWin = EnigConfirm(EnigGetString("keyAbort"), EnigGetString("keyMan.button.generateKeyAbort"), EnigGetString("keyMan.button.generateKeyContinue"));
+    if (closeWin) abortKeyGeneration();
   }
   else {
     closeWin=true;
   }
-  if (closeWin) {
-    enigmailKeygenCloseRequest();
-    window.close();
-  }
+
+  if (closeWin) window.close();
 }
 
 function onNoExpiry() {

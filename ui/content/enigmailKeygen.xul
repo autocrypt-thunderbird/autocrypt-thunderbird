@@ -50,8 +50,7 @@
      width="600" height="480"
      orient="vertical"
      onload="enigmailKeygenLoad()"
-     onclose="enigmailOnClose()"
-     onunload="enigmailKeygenUnload()"
+     onclose="return enigmailOnClose();"
      xmlns:html="http://www.w3.org/1999/xhtml"
      xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 

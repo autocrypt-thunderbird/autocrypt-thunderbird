@@ -39,6 +39,7 @@
  * 'Components.utils.import("resource://enigmail/enigmailCommon.jsm");'
  */
 
+Components.utils.import("resource://enigmail/subprocess.jsm");
 
 var EXPORTED_SYMBOLS = [ "EnigmailCommon" ];
 
@@ -64,8 +65,12 @@ const BUTTON_POS_0           = 1;
 const BUTTON_POS_1           = 1 << 8;
 const BUTTON_POS_2           = 1 << 16;
 
+const KEYTYPE_DSA = 1;
+const KEYTYPE_RSA = 2;
+
 const ENIGMAIL_PREFS_ROOT = "extensions.enigmail.";
 
+const GPG_BATCH_OPT_LIST = [ "--batch", "--no-tty", "--status-fd", "2" ];
 
 var gLogLevel = 3;
 var gPromptSvc = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
@@ -120,6 +125,10 @@ var gStatusFlags = {
   END_ENCRYPTION : nsIEnigmail.END_ENCRYPTION,
   INV_SGNR:				 0x100000000
 };
+
+
+// various global variables
+var gKeygenProcess = null;
 
 var EnigmailCommon = {
 
@@ -1215,7 +1224,159 @@ var EnigmailCommon = {
 
   isEncryptedUri: function (uri) {
     return gEncryptedUris.indexOf(uri) >= 0;
+  },
+
+  getAgentArgs: function (withBatchOpts) {
+    // return the arguments to pass to every GnuPG subprocess
+
+    function pushTrimmedStr(arr, str, splitStr) {
+      // Helper function for pushing a string without leading/trailing spaces
+      // to an array
+      str = str.replace(/^ */, "").replace(/ *$/, "");
+      if (str.length > 0) {
+        if (splitStr) {
+          var tmpArr = str.split(/[\t ]+/);
+          for (var i=0; i< tmpArr.length; i++) {
+            arr.push(tmpArr[i]);
+          }
+        }
+        else {
+          arr.push(str);
+        }
+      }
+      return (str.length > 0);
+    }
+
+    var r = [ "--charset", "utf8" ]; // mandatory parameter to add in all cases
+
+    try {
+      var p = "";
+      p = this.getPref("agentAdditionalParam").replace(/\\\\/g, "\\");
+
+      var i = 0;
+      var last = 0;
+      var foundSign="";
+      var startQuote=-1;
+
+      while ((i=p.substr(last).search(/['"]/)) >= 0) {
+        if (startQuote==-1) {
+          startQuote = i;
+          foundSign=p.substr(last).charAt(i);
+          last = i +1;
+        }
+        else if (p.substr(last).charAt(i) == foundSign) {
+          // found enquoted part
+          if (startQuote > 1) pushTrimmedStr(r, p.substr(0, startQuote), true);
+
+          pushTrimmedStr(r, p.substr(startQuote + 1, last + i - startQuote -1), false);
+          p = p.substr(last + i + 1);
+          last = 0;
+          startQuote = -1;
+          foundSign = "";
+        }
+        else {
+          last = last + i + 1;
+        }
+      }
+
+      pushTrimmedStr(r, p, true);
+    }
+    catch (ex) {}
+
+
+    if (withBatchOpts) {
+      r = r.concat(GPG_BATCH_OPT_LIST);
+    }
+
+    return r;
+  },
+
+  getFilePathDesc: function (nsFileObj) {
+    if (this.getOS() == "WINNT")
+      return nsFileObj.persistentDescriptor;
+    else
+      return nsFileObj.path;
+  },
+
+  printCmdLine: function (command, args) {
+    return (this.getFilePathDesc(command)+" "+args.join(" ")).replace(/\\\\/g, "\\")
+  },
+
+  generateKey: function (parent, name, comment, email, expiryDate, keyLength, keyType,
+            passphrase, listener) {
+    this.WRITE_LOG("enigmailCommon.jsm: generateKey:\n");
+
+    if (gKeygenProcess)
+      throw Components.results.NS_ERROR_FAILURE;
+
+    var args = this.getAgentArgs(true);
+    args.push("--gen-key");
+
+    this.CONSOLE_LOG(this.printCmdLine(this.enigmailSvc.agentPath, args));
+
+    var inputData = "%echo Generating key\nKey-Type: "
+
+    switch (keyType) {
+    case KEYTYPE_DSA:
+      inputData += "DSA\nKey-Length: 1024\nSubkey-Type: 16\nSubkey-Length: ";
+      break;
+    case KEYTYPE_RSA:
+      inputData += "RSA\nKey-Usage: sign,auth\nKey-Length: "+keyLength;
+      inputData += "\nSubkey-Type: RSA\nSubkey-Usage: encrypt\nSubkey-Length: ";
+      break;
+    default:
+      return null;
+    }
+
+    inputData += keyLength+"\n";
+    inputData += "Name-Real: "+name+"\n";
+    if (comment)
+      inputData += "Name-Comment: "+comment+"\n";
+    inputData += "Name-Email: "+email+"\n";
+    inputData += "Expire-Date: "+String(expiryDate)+"\n";
+
+    this.CONSOLE_LOG(inputData+" \n");
+
+    if (passphrase.length)
+      inputData += "Passphrase: "+passphrase+"\n";
+
+    inputData += "%commit\n%echo done\n";
+
+    var proc = null;
+
+    try {
+      proc = subprocess.call({
+        command:     this.enigmailSvc.agentPath,
+        arguments:   args,
+        charset: null,
+        stdin: function (pipe) {
+          pipe.write(inputData);
+          pipe.close();
+        },
+        stderr: function(data) {
+          listener.onDataAvailable(data);
+        },
+        done: function(result) {
+          gKeygenProcess = null;
+          try {
+            listener.onStopRequest(result.exitCode);
+          }
+          catch (ex) {}
+        },
+        mergeStderr: false
+      });
+    } catch (ex) {
+      Ec.ERROR_LOG("enigmailCommon.jsm: generateKey: subprocess.call failed with '"+ex.toString()+"'\n");
+      throw ex;
+    }
+
+    gKeygenProcess = proc;
+
+    this.DEBUG_LOG("enigmailCommon.jsm: Enigmail.generateKey: subprocess = "+proc+"\n");
+
+    return proc;
   }
+
 
 };
 
@@ -1361,3 +1522,4 @@ function ConfigureEnigmail() {
   EnigmailCommon.setPref("configuredVersion", EnigmailCommon.getVersion());
   EnigmailCommon.savePrefs();
 }
+

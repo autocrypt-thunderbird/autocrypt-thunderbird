@@ -399,7 +399,6 @@ function checkPassphrase() {
 function wizardGenKey() {
   var wizard = document.getElementById("enigmailSetupWizard");
   var passphrase = document.getElementById("passphrase").value;
-  var enigmailSvc = enigGetSvc();
 
   var curId = wizardGetSelectedIdentity();
 
@@ -407,35 +406,53 @@ function wizardGenKey() {
   var userEmail = curId.email;
 
   var ipcRequest = null;
-  var requestObserver = Ec.newRequestObserver(wizardKeygenTerminate,null);
+  var listener = {
+      onStartRequest: function () {},
+      onStopRequest: function(status) {
+        wizardKeygenTerminate(status);
+      },
+      onDataAvailable: function(data) {
+        DEBUG_LOG("enigmailSetupWizard.js: genKey - onDataAvailable() "+data+"\n");
+
+        gAllData += data;
+        var keyCreatedIndex = gAllData.indexOf("[GNUPG:] KEY_CREATED");
+        if (keyCreatedIndex >0) {
+          gGeneratedKey = gAllData.substr(keyCreatedIndex);
+          gGeneratedKey = gGeneratedKey.replace(/(.*\[GNUPG:\] KEY_CREATED . )([a-fA-F0-9]+)([\n\r].*)*/, "$2");
+          gAllData = gAllData.replace(/\[GNUPG:\] KEY_CREATED . [a-fA-F0-9]+[\n\r]/, "");
+        }
+        gAllData = gAllData.replace(/[\r\n]*\[GNUPG:\] GOOD_PASSPHRASE/g, "").replace(/([\r\n]*\[GNUPG:\] PROGRESS primegen )(.)( \d+ \d+)/g, "$2")
+        var progMeter = document.getElementById("keygenProgress");
+        var progValue = Number(progMeter.value);
+        progValue += (1+(100-progValue)/200);
+        if (progValue >= 95) progValue=10;
+        progMeter.setAttribute("value", progValue);
+      }
+  }
   wizard.getButton("next").disabled = true
   wizard.getButton("back").disabled = true;
 
   try {
-    ipcRequest = enigmailSvc.generateKey(window,
-                                         EnigConvertFromUnicode(userName),
-                                         "",
-                                         userEmail,
-                                         365*5 /* 5 years */,
-                                         2048,
-                                         ENIG_KEYTYPE_RSA,
-                                         passphrase,
-                                         requestObserver);
-  } catch (ex) {}
+    gKeygenRequest = Ec.generateKey(window,
+                       Ec.convertFromUnicode(userName),
+                       "",
+                       userEmail,
+                       365*5 /* 5 years */,
+                       2048,
+                       ENIG_KEYTYPE_RSA,
+                       passphrase,
+                       listener);
+  } catch (ex) {
+    Ec.DEBUG_LOG("enigmailSetupWizard.js: genKey - generateKey() failed with "+ex.toString()+"\n"+ex.stack+"\n");
+  }
 
-  if (!ipcRequest) {
+  if (!gKeygenRequest) {
     EnigAlert(EnigGetString("keyGenFailed"));
     wizard.getButton("back").disabled = false;
     return false;
   }
 
-  requestObserver._terminateArg = ipcRequest;
-  gKeygenRequest = ipcRequest;
-
   WRITE_LOG("enigmailKeygen.js: Start: gKeygenRequest = "+gKeygenRequest+"\n");
-  // Refresh console every 2 seconds
-  window.consoleIntervalId = window.setInterval(wizardRefreshConsole, 2000);
-  wizardRefreshConsole();
   return false;
 }
 
@@ -673,37 +690,19 @@ function wizardApplyId(identity, keyId) {
 }
 
 
-function wizardKeygenTerminate(ipcRequest) {
-  DEBUG_LOG("enigmailSetupWizard.js: Terminate: "+ipcRequest+"\n");
+function wizardKeygenTerminate(exitCode) {
+  DEBUG_LOG("enigmailSetupWizard.js: wizardKeygenTerminate\n");
 
-  ipcRequest = ipcRequest[0];
   // Give focus to this window
   window.focus();
 
-  if (!ipcRequest.pipeTransport) {
-    // changed interface in TB 1.1
-    ipcRequest = ipcRequest.QueryInterface(Components.interfaces.nsIIPCRequest);
-  }
+  gKeygenRequest = null;
 
-  var keygenProcess = ipcRequest.pipeTransport;
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc) {
-    EnigAlert(EnigGetString("accessError"));
-  }
-  if (keygenProcess && !keygenProcess.isRunning) {
-    keygenProcess.terminate();
-    var exitCode = keygenProcess.exitValue;
-    DEBUG_LOG("enigmailSetupWizard.js: exitCode = "+exitCode+"\n");
-    if (enigmailSvc) {
-      exitCode = enigmailSvc.fixExitCode(exitCode, 0);
-    }
-  }
+  if ((! gGeneratedKey) || gGeneratedKey == KEYGEN_CANCELLED) return;
 
-  wizardRefreshConsole();
   var progMeter = document.getElementById("keygenProgress");
   progMeter.setAttribute("value", 100);
 
-  ipcRequest.close(true);
   var curId = wizardGetSelectedIdentity();
 
   if (EnigConfirm(EnigGetString("keygenComplete", curId.email)+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"), EnigGetString("dlg.button.skip"))) {
@@ -711,41 +710,11 @@ function wizardKeygenTerminate(ipcRequest) {
   }
 
   enigmailKeygenCloseRequest();
+  var enigmailSvc = enigGetSvc();
   enigmailSvc.invalidateUserIdList();
 
   var wizard = document.getElementById("enigmailSetupWizard");
   wizard.goTo("pgComplete");
-}
-
-
-function wizardRefreshConsole() {
-  //DEBUG_LOG("enigmailKeygen.js: enigRefreshConsole:\n");
-
-  if (!gKeygenRequest)
-    return;
-
-  var keygenConsole = gKeygenRequest.stdoutConsole;
-
-  try {
-    keygenConsole = keygenConsole.QueryInterface(Components.interfaces.nsIPipeConsole);
-
-    if (keygenConsole && keygenConsole.hasNewData()) {
-      DEBUG_LOG("enigmailKeygen.js: enigRefreshConsole(): hasNewData\n");
-      gAllData += keygenConsole.getNewData();
-      var keyCreatedIndex = gAllData.indexOf("[GNUPG:] KEY_CREATED");
-      if (keyCreatedIndex >0) {
-        gGeneratedKey = gAllData.substr(keyCreatedIndex);
-        gGeneratedKey = gGeneratedKey.replace(/(.*\[GNUPG:\] KEY_CREATED . )([a-fA-F0-9]+)([\n\r].*)*/, "$2");
-        gAllData = gAllData.replace(/\[GNUPG:\] KEY_CREATED . [a-fA-F0-9]+[\n\r]/, "");
-      }
-      gAllData = gAllData.replace(/[\r\n]*\[GNUPG:\] GOOD_PASSPHRASE/g, "").replace(/([\r\n]*\[GNUPG:\] PROGRESS primegen )(.)( \d+ \d+)/g, "$2")
-      var progMeter = document.getElementById("keygenProgress");
-      var progValue = Number(progMeter.value);
-      progValue += (1+(100-progValue)/20);
-      if (progValue >= 95) progValue=10;
-      progMeter.setAttribute("value", progValue);
-    }
-  } catch (ex) {}
 }
 
 

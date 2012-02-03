@@ -129,11 +129,14 @@
  * The object returned by subprocess.call offers a few methods that can be
  * executed:
  *
- * wait():      waits for the subprocess to terminate. It is not required to use
- *              wait; done will be called in any case when the subprocess terminated.
+ * wait():         waits for the subprocess to terminate. It is not required to use
+ *                 wait; done will be called in any case when the subprocess terminated.
  *
- * kill():      kill the subprocess. Any open pipes will be closed and
- *              done will be called.
+ * kill(hardKill): kill the subprocess. Any open pipes will be closed and
+ *                 done will be called.
+ *                 hardKill [ignored on Windows]:
+ *                  - false: signal the process terminate (SIGTERM)
+ *                  - true:  kill the process (SIGKILL)
  *
  *
  * Other methods in subprocess
@@ -1041,7 +1044,8 @@ function subprocess_win32(options) {
         closeStdinHandle();
 
     return {
-        kill: function() {
+        kill: function(hardKill) {
+            // hardKill is currently ignored on Windows
             var r = !!TerminateProcess(child.process, 255);
             cleanup(-1);
             return r;
@@ -1572,8 +1576,8 @@ function subprocess_unix(options) {
             while (! done) thread.processNextEvent(true)
             return exitCode;
         },
-        kill: function() {
-            var rv = kill(pid, 9);
+        kill: function(hardKill) {
+            var rv = kill(pid, (hardKill ? 9: 15));
             cleanup(-1);
             return rv;
         }

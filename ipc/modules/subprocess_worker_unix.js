@@ -183,6 +183,7 @@ function readPipe(pipe, charset, pid) {
     p[0].revents = 0;
     var pollTimeout = WAITTIME;
     var exitCode = -1;
+    var readCount = 0;
     var result, status = ctypes.int();
     result = 0;
 
@@ -201,7 +202,8 @@ function readPipe(pipe, charset, pid) {
         if (r > 0) {
             if (p[i].revents & POLLIN) {
                 postMessage({msg: "debug", data: "reading next chunk"});
-                if (readPolledFd(p[i].fd, charset) == 0) break;
+                readCount = readPolledFd(p[i].fd, charset);
+                if (readCount == 0) break;
             }
 
             if (p[i].revents & POLLHUP) {
@@ -219,6 +221,11 @@ function readPipe(pipe, charset, pid) {
         }
         else
             if (pollTimeout == 0 || r < 0) break;
+    }
+
+    // continue reading until the buffer is empty
+    while (readCount > 0) {
+      readCount = readPolledFd(pipe, charset);
     }
 
     libcFunc.close(pipe);
