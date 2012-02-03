@@ -15,16 +15,16 @@
       <!-- Thunderbird -->
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>8.0</em:minVersion>
-        <em:maxVersion>11.0pre</em:maxVersion>
+        <em:minVersion>10.0</em:minVersion>
+        <em:maxVersion>13.0pre</em:maxVersion>
       </Description>
     </em:targetApplication>
     <em:targetApplication>
       <!-- Seamonkey -->
       <Description>
         <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
-        <em:minVersion>2.5</em:minVersion>
-        <em:maxVersion>2.8pre</em:maxVersion>
+        <em:minVersion>2.7</em:minVersion>
+        <em:maxVersion>2.10pre</em:maxVersion>
       </Description>
     </em:targetApplication>
     <!-- em:targetApplication>
