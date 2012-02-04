@@ -192,7 +192,7 @@ function addSubkey(treeChildren, aLine) {
       }
       usagetext = usagetext + EnigGetString("keyUsageCertify");
       break;
-    case "s":
+    case "a":
       if (usagetext.length>0)
       {
         usagetext = usagetext + ", ";
