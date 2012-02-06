@@ -954,7 +954,7 @@ function subprocess_win32(options) {
 
 
         if (!options.mergeStderr) stderrWorker = createReader(child.stderr, "stderr", function (data) {
-            if(options.stdout) {
+            if(options.stderr) {
                 setTimeout(function() {
                     options.stderr(data);
                 }, 0);
