@@ -168,8 +168,9 @@ function enigmailKeygenCloseRequest() {
    DEBUG_LOG("enigmailKeygen.js: CloseRequest\n");
 
   if (gKeygenRequest) {
-    gKeygenRequest.kill(false);
+    var p = gKeygenRequest;
     gKeygenRequest = null;
+    p.kill(false);
   }
 }
 

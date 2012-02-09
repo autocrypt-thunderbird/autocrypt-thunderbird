@@ -1344,7 +1344,7 @@ function subprocess_unix(options) {
                 }
                 break;
             case "debug":
-                debugLog("stdinWorker: "+event.data.msg);
+                debugLog("stdinWorker: "+event.data.data+"\n");
                 break;
             case "error":
                 LogError("got error from stdinWorker: "+event.data.data+"\n");

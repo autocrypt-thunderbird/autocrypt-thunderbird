@@ -58,7 +58,8 @@ interface nsILocalFile;
 [scriptable, uuid(847b3a00-7ab1-11d4-8f02-006008948af5)]
 interface nsIEnigmail : nsISupports
 {
-  readonly attribute string agentType;        /* "gpg" or "pgp" */
+  readonly attribute string agentType;        /* always "gpg" */
+  readonly attribute string agentVersion;     /* version string */
 
   readonly attribute nsILocalFile agentPath;        /* executable path */
 
@@ -132,9 +133,6 @@ interface nsIEnigmail : nsISupports
                          out wstring blockSeparation);
 
   boolean stripWhitespace(in unsigned long sendFlags);
-
-  long fixExitCode(in long exitCode,
-                   in long statusFlags);
 
   string locateArmoredBlock(in string text,
                             in long offset,
@@ -344,35 +342,11 @@ interface nsIEnigmail : nsISupports
                  out string errorMsg,
                  out wstring importedKeys);
 
-  nsIIPCRequest generateKey(in nsIDOMWindow parent,
-                            in string name,
-                            in string comment,
-                            in string email,
-                            in long   expiryDate,
-                            in long   keyLength,
-                            in long   keyType,
-                            in string passphrase,
-                            in nsIRequestObserver requestObserver);
-
   /* Receive flags */
   const long SEARCH_KEY       = 0x01;
   const long DOWNLOAD_KEY     = 0x02;
   const long UPLOAD_KEY       = 0x04;
   const long REFRESH_KEY      = 0x08;
-
-  nsIIPCRequest searchKey(in unsigned long recvFlags,
-                          in string protocol,
-                          in string keyServer,
-                          in string port,
-                          in string keyValue,
-                          in nsIRequestObserver requestObserver,
-                          out wstring errorMsg);
-
-  nsIIPCRequest receiveKey(in unsigned long recvFlags,
-                           in string keyServer,
-                           in string keyId,
-                           in nsIRequestObserver requestObserver,
-                           out wstring errorMsg);
 
   string createMessageURI(in string originalUrl,
                           in string contentType,

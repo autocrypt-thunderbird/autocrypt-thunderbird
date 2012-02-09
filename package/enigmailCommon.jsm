@@ -51,6 +51,7 @@ const DATE_FORMAT_CONTRACTID = "@mozilla.org/intl/scriptabledateformat;1";
 const DIRSERVICE_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const LOCALE_SVC_CONTRACTID = "@mozilla.org/intl/nslocaleservice;1";
 const SCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
+const NS_PREFS_SERVICE_CID = "@mozilla.org/preferences-service;1";
 
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 const ENIG_EXTENSION_GUID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
@@ -160,6 +161,7 @@ var EnigmailCommon = {
   prefBranch: null,
   prefRoot: null,
   prefService: null,
+  envList: null, // currently filled from enigmail.js
 
   // methods
   getService: function (win) {
@@ -272,6 +274,10 @@ var EnigmailCommon = {
 
   getPromptSvc: function() {
     return gPromptSvc;
+  },
+
+  getEnvList: function() {
+    return this.envList;
   },
 
   savePrefs: function ()
@@ -1302,6 +1308,40 @@ var EnigmailCommon = {
     return (this.getFilePathDesc(command)+" "+args.join(" ")).replace(/\\\\/g, "\\")
   },
 
+  fixExitCode: function (exitCode, statusFlags) {
+    if (exitCode != 0) {
+      if ((statusFlags & (nsIEnigmail.BAD_PASSPHRASE | nsIEnigmail.UNVERIFIED_SIGNATURE)) &&
+          (statusFlags & nsIEnigmail.DECRYPTION_OKAY )) {
+        this.DEBUG_LOG("enigmailCommon.jsm: Enigmail.fixExitCode: Changing exitCode for decrypted msg "+exitCode+"->0\n");
+        exitCode = 0;
+      }
+    }
+    if ((this.enigmailSvc.agentType == "gpg") && (exitCode == 256)) {
+      this.WARNING_LOG("enigmailCommon.jsm: Enigmail.fixExitCode: Using gpg and exit code is 256. You seem to use cygwin-gpg, activating countermeasures.\n");
+      if (statusFlags & (nsIEnigmail.BAD_PASSPHRASE | nsIEnigmail.UNVERIFIED_SIGNATURE)) {
+        this.WARNING_LOG("enigmailCommon.jsm: Enigmail.fixExitCode: Changing exitCode 256->2\n");
+        exitCode = 2;
+      } else {
+        this.WARNING_LOG("enigmailCommon.jsm: Enigmail.fixExitCode: Changing exitCode 256->0\n");
+        exitCode = 0;
+      }
+    }
+    if (((this.enigmailSvc.agentVersion >= "1.3") && (this.enigmailSvc.agentVersion < "1.4.1" )) && (this.enigmailSvc.isDosLike)) {
+        if ((exitCode == 2) && (!(statusFlags & (nsIEnigmail.BAD_PASSPHRASE |
+                                nsIEnigmail.UNVERIFIED_SIGNATURE |
+                                nsIEnigmail.MISSING_PASSPHRASE |
+                                nsIEnigmail.BAD_ARMOR |
+                                nsIEnigmail.DECRYPTION_INCOMPLETE |
+                                nsIEnigmail.DECRYPTION_FAILED |
+                                nsIEnigmail.NO_PUBKEY |
+                                nsIEnigmail.NO_SECKEY)))) {
+        this.WARNING_LOG("enigmailCommon.jsm: Enigmail.fixExitCode: Using gpg version "+this.enigmailSvc.agentVersion+", activating countermeasures for file renaming bug.\n");
+        exitCode = 0;
+      }
+    }
+    return exitCode;
+  },
+
   generateKey: function (parent, name, comment, email, expiryDate, keyLength, keyType,
             passphrase, listener) {
     this.WRITE_LOG("enigmailCommon.jsm: generateKey:\n");
@@ -1348,6 +1388,7 @@ var EnigmailCommon = {
       proc = subprocess.call({
         command:     this.enigmailSvc.agentPath,
         arguments:   args,
+        environment: this.getEnvList(),
         charset: null,
         stdin: function (pipe) {
           pipe.write(inputData);
@@ -1366,18 +1407,254 @@ var EnigmailCommon = {
         mergeStderr: false
       });
     } catch (ex) {
-      Ec.ERROR_LOG("enigmailCommon.jsm: generateKey: subprocess.call failed with '"+ex.toString()+"'\n");
+      this.ERROR_LOG("enigmailCommon.jsm: generateKey: subprocess.call failed with '"+ex.toString()+"'\n");
       throw ex;
     }
 
     gKeygenProcess = proc;
 
-    this.DEBUG_LOG("enigmailCommon.jsm: Enigmail.generateKey: subprocess = "+proc+"\n");
+    this.DEBUG_LOG("enigmailCommon.jsm: generateKey: subprocess = "+proc+"\n");
+
+    return proc;
+  },
+
+
+  getHttpProxy: function (hostName) {
+
+    function GetPasswdForHost(hostname, userObj, passwdObj) {
+      var loginmgr = Cc["@mozilla.org/login-manager;1"].getService(Ci.nsILoginManager);
+
+      // search HTTP password 1st
+      var logins = loginmgr.findLogins({}, "http://"+hostname, "", "");
+      if (logins.length > 0) {
+        userObj.value = logins[0].username;
+        passwdObj.value = logins[0].password;
+        return true;
+      }
+
+      // look for any other password for same host
+      logins = loginmgr.getAllLogins({});
+      for (var i=0; i < logins.lenth; i++) {
+        if (hostname == logins[i].hostname.replace(/^.*:\/\//, "")) {
+          userObj.value = logins[i].username;
+          passwdObj.value = logins[i].password;
+          return true;
+        }
+      }
+      return false;
+    }
+
+    var proxyHost = null;
+    if (this.prefBranch.getBoolPref("respectHttpProxy")) {
+      // determine proxy host
+      var prefsSvc = Cc[NS_PREFS_SERVICE_CID].getService(Ci.nsIPrefService);
+      var prefRoot = prefsSvc.getBranch(null);
+      var useProxy = prefRoot.getIntPref("network.proxy.type");
+      if (useProxy==1) {
+        var proxyHostName = prefRoot.getCharPref("network.proxy.http");
+        var proxyHostPort = prefRoot.getIntPref("network.proxy.http_port");
+        var noProxy = prefRoot.getCharPref("network.proxy.no_proxies_on").split(/[ ,]/);
+        for (var i=0; i<noProxy.length; i++) {
+          var proxySearch=new RegExp(noProxy[i].replace(/\./, "\\.")+"$", "i");
+          if (noProxy[i] && hostName.search(proxySearch)>=0) {
+            i=noProxy.length+1;
+            proxyHostName=null;
+          }
+        }
+
+        if (proxyHostName) {
+          var userObj = new Object();
+          var passwdObj = new Object();
+          if (GetPasswdForHost(proxyHostName, userObj, passwdObj)) {
+            proxyHostName = userObj.value+":"+passwdObj.value+"@"+proxyHostName;
+          }
+        }
+        if (proxyHostName && proxyHostPort) {
+          proxyHost="http://"+proxyHostName+":"+proxyHostPort;
+        }
+      }
+    }
+
+    return proxyHost;
+  },
+
+  receiveKey: function (recvFlags, keyserver, keyId, listener, errorMsgObj) {
+    this.DEBUG_LOG("enigmailCommon.jsm: receiveKey: "+keyId+"\n");
+
+    if (! (this.enigmailSvc && this.enigmailSvc.initialized)) {
+      this.ERROR_LOG("enigmailCommon.jsm: receiveKey: not yet initialized\n");
+      errorMsgObj.value = this.getString("notInit");
+      return null;
+    }
+
+    if (!keyserver) {
+      errorMsgObj.value = this.getString("failNoServer");
+      return null;
+    }
+
+    if (!keyId && ! (recvFlags & nsIEnigmail.REFRESH_KEY)) {
+      errorMsgObj.value = this.getString("failNoID");
+      return null;
+    }
+
+    var proxyHost = this.getHttpProxy(keyserver);
+    var args = this.getAgentArgs(false);
+
+    if (! (recvFlags & nsIEnigmail.SEARCH_KEY)) args = this.getAgentArgs(true);
+
+    if (proxyHost) {
+      args = args.concat(["--keyserver-options", "http-proxy="+proxyHost]);
+    }
+    args = args.concat(["--keyserver", keyserver]);
+
+    var keyIdList = keyId.split(" ");
+
+    if (recvFlags & nsIEnigmail.DOWNLOAD_KEY) {
+      args.push("--recv-keys");
+      args = args.concat(keyIdList);
+    }
+    else if (recvFlags & nsIEnigmail.SEARCH_KEY) {
+      args.push("--search-keys");
+      args = args.concat(keyIdList);
+    }
+    else if (recvFlags & nsIEnigmail.UPLOAD_KEY) {
+      args.push("--send-keys");
+      args = args.concat(keyIdList);
+    }
+    else if (recvFlags & nsIEnigmail.REFRESH_KEY) {
+      args.push("--refresh-keys");
+    }
+
+
+    this.CONSOLE_LOG("enigmail> "+this.printCmdLine(this.enigmailSvc.agentPath, args)+"\n");
+
+    var proc = null;
+
+    try {
+      proc = subprocess.call({
+        command:     this.enigmailSvc.agentPath,
+        arguments:   args,
+        environment: this.getEnvList(),
+        charset: null,
+        stdout: function(data) {
+          listener.onStdoutData(data);
+        },
+        stderr: function(data) {
+          listener.onErrorData(data);
+        },
+        done: function(result) {
+          gKeygenProcess = null;
+          try {
+            listener.onStopRequest(result.exitCode);
+          }
+          catch (ex) {}
+        },
+        mergeStderr: false
+      });
+    }
+    catch (ex) {
+      this.ERROR_LOG("enigmailCommon.jsm: receiveKey: subprocess.call failed with '"+ex.toString()+"'\n");
+      throw ex;
+    }
+
+    if (!proc) {
+      this.ERROR_LOG("enigmailCommon.jsm: receiveKey: subprocess failed due to unknown reasons\n");
+      return null;
+    }
+
+    return proc;
+  },
+
+  searchKey: function (recvFlags, protocol, keyserver, port, keyValue, listener, errorMsgObj) {
+    this.DEBUG_LOG("enigmailCommon.jsm: Enigmail.searchKey: "+keyValue+"\n");
+
+    if (! (this.enigmailSvc && this.enigmailSvc.initialized)) {
+      this.ERROR_LOG("enigmailCommon.jsm: searchKey: not yet initialized\n");
+      errorMsgObj.value = this.getString("notInit");
+      return null;
+    }
+
+    if (!keyserver) {
+      errorMsgObj.value = this.getString("failNoServer");
+      return null;
+    }
+
+    if (!keyValue) {
+      errorMsgObj.value = this.getString("failNoID");
+      return null;
+    }
+
+    var args;
+    var command = null;
+
+    var proxyHost = null;
+    if (protocol=="hkp") {
+      proxyHost = this.getHttpProxy(keyserver);
+    }
+
+    // GnuPG >= v1.4.0
+    command = this.agentPath;
+    args= this.getAgentArgs(false);
+    args = args.concat(["--command-fd", "0", "--no-tty", "--batch", "--fixed-list", "--with-colons"]);
+    if (proxyHost) args = args.concat(["--keyserver-options", "http-proxy="+proxyHost]);
+    args.push("--keyserver");
+    if (! protocol) protocol="hkp";
+    if (port) {
+      args.push(protocol + "://" + keyserver + ":"+port);
+    }
+    else {
+      args.push(protocol + "://" + keyserver);
+    }
+
+    var inputData = null;
+    if (recvFlags & nsIEnigmail.SEARCH_KEY) {
+      args.push("--search-keys");
+      inputData = "quit\n";
+    }
+    else if (recvFlags & nsIEnigmail.DOWNLOAD_KEY) {
+      args = args.concat(["--status-fd", "1", "--recv-keys"]);
+    }
+    args.push(keyValue);
+
+    this.CONSOLE_LOG("enigmail> "+this.printCmdLine(this.enigmailSvc.agentPath, args)+"\n");
+
+    var proc = null;
+
+    try {
+      proc = subprocess.call({
+        command:     this.enigmailSvc.agentPath,
+        arguments:   args,
+        environment: this.getEnvList(),
+        charset: null,
+        stdin: inputData,
+        stdout: function(data) {
+          listener.onStdoutData(data);
+        },
+        stderr: function(data) {
+          listener.onErrorData(data);
+        },
+        done: function(result) {
+          gKeygenProcess = null;
+          try {
+            listener.onStopRequest(result.exitCode);
+          }
+          catch (ex) {}
+        },
+        mergeStderr: false
+      });
+    }
+    catch (ex) {
+      this.ERROR_LOG("enigmailCommon.jsm: searchKey: subprocess.call failed with '"+ex.toString()+"'\n");
+      throw ex;
+    }
+
+    if (!proc) {
+      this.ERROR_LOG("enigmailCommon.jsm: searchKey: subprocess failed due to unknown reasons\n");
+      return null;
+    }
 
     return proc;
   }
-
-
 };
 
 

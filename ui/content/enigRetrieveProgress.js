@@ -49,8 +49,9 @@ var msgProgress = null;
 // random global variables...
 var targetFile;
 var itsASaveOperation = false;
-var gEnigIpcRequest = null;
+var gProcess = null;
 var gEnigCallbackFunc = null;
+var gErrorData = '';
 
 // all progress notifications are done through the nsIWebProgressListener implementation...
 var progressListener = {
@@ -73,7 +74,7 @@ var progressListener = {
       dialog.progress.setAttribute( "mode", "normal" );
 
       if (msgProgress.processCanceledByUser)
-        enigSendKeyCancel(msgProgress);
+        enigSendKeyCancel();
 
       window.close();
     }
@@ -139,15 +140,25 @@ function onLoad() {
   }
 
   msgProgress = Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
-  var requestObserver = Ec.newRequestObserver(enigSendKeyTerminate, {'progressBar': msgProgress, 'callType': 1});
+
+  var procListener = {
+    onStopRequest: function (exitCode) {
+      processEnd(msgProgress, exitCode);
+    },
+    onStdoutData: function(data) {
+    },
+    onErrorData: function(data) {
+      gErrorData += data;
+    }
+  }
 
   msgProgress.registerListener(progressListener);
   msgProgress.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_START, 0)
   gEnigCallbackFunc = inArg.cbFunc;
 
   var errorMsgObj={};
-  gEnigIpcRequest = enigmailSvc.receiveKey(inArg.accessType, inArg.keyServer, inArg.keyList, requestObserver, errorMsgObj);
-  if (gEnigIpcRequest == null) {
+  gProcess = Ec.receiveKey(inArg.accessType, inArg.keyServer, inArg.keyList, procListener, errorMsgObj);
+  if (gProcess == null) {
     EnigAlert(Ec.getString("sendKeysFailed")+"\n"+EnigConvertGpgToUnicode(errorMsgObj.value));
   }
 
@@ -182,71 +193,48 @@ function onCancel ()
   return false;
 }
 
-function enigSendKeyTerminate (cbArr) {
-  Ec.DEBUG_LOG("enigmailRetrieveProgress.js: enigSendKeyTerminate\n");
+function processEnd (progressBar, exitCode) {
+  Ec.DEBUG_LOG("enigmailRetrieveProgress.js: processEnd\n");
 
-  var terminateArg = cbArr[0];
-  var ipcRequest = cbArr[1];
+  if (gProcess) {
+    gProcess = null;
+    Ec.DEBUG_LOG("enigmailRetrieveProgress.js: processEnd: exitCode = "+exitCode+"\n");
 
-  if (gEnigIpcRequest) {
-    var cbFunc = gEnigCallbackFunc;
-    var keyRetrProcess = gEnigIpcRequest.pipeTransport;
-    var exitCode;
-
-    var enigmailSvc = GetEnigmailSvc();
-    if (keyRetrProcess && !keyRetrProcess.isRunning) {
-      keyRetrProcess.terminate();
-      exitCode = keyRetrProcess.exitValue;
-      Ec.DEBUG_LOG("enigmailRetrieveProgress.js: enigSendKeyTerminate: exitCode = "+exitCode+"\n");
-      if (enigmailSvc) {
-        exitCode = enigmailSvc.fixExitCode(exitCode, 0);
-      }
-    }
-
-    var statusText=cbFunc(exitCode, "", false);
+    var statusText=gEnigCallbackFunc(exitCode, "", false);
 
     var errorMsg="";
     try {
-      var gpgConsole = gEnigIpcRequest.stderrConsole.QueryInterface(Components.interfaces.nsIPipeConsole);
-
-      if (gpgConsole && gpgConsole.hasNewData()) {
-        errorMsg = gpgConsole.getByteData(new Object());
-        if (enigmailSvc) {
-          var statusFlagsObj=new Object();
-          var statusMsgObj=new Object();
-          errorMsg=Ec.parseErrorOutput(errorMsg, statusFlagsObj, statusMsgObj);
-        }
+      if (gErrorData.length > 0) {
+        var statusFlagsObj=new Object();
+        var statusMsgObj=new Object();
+        errorMsg=Ec.parseErrorOutput(gErrorData, statusFlagsObj, statusMsgObj);
       }
     } catch (ex) {}
 
-    Ec.DEBUG_LOG("enigmailRetrieveProgress.js: enigSendKeyTerminate: errorMsg="+errorMsg);
+    Ec.DEBUG_LOG("enigmailRetrieveProgress.js: processEnd: errorMsg="+errorMsg);
     if (errorMsg.search(/ec=\d+/i)>=0) {
       exitCode=-1;
     }
-    statusText=cbFunc(exitCode, "", false);
-    cbFunc(exitCode, errorMsg, true);
+    statusText=gEnigCallbackFunc(exitCode, "", false);
+    gEnigCallbackFunc(exitCode, errorMsg, true);
     if (exitCode == 0) {
-        window.arguments[1].result=true;
+      window.arguments[1].result=true;
     }
-
-    gEnigIpcRequest.close(true);
   }
 
-  if (terminateArg && terminateArg.progressBar) {
+  if (progressBar) {
     try {
-      terminateArg.progressBar.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_STOP, 0);
+      progressBar.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_STOP, 0);
     }
     catch (ex) {}
   }
 }
 
 function enigSendKeyCancel() {
-  var keyRetrProcess = gEnigIpcRequest.pipeTransport;
-
-  if (keyRetrProcess && !keyRetrProcess.isRunning) {
-    keyRetrProcess.terminate();
+  if (gProcess) {
+    var p = gProcess;
+    gEnigCallbackFunc=null;
+    gProcess=null;
+    p.kill(false);
   }
-  gEnigIpcRequest.close(true);
-  gEnigIpcRequest=null;
-  gEnigCallbackFunc=null;
 }
