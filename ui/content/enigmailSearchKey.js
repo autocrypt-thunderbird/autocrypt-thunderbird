@@ -566,8 +566,6 @@ function enigNewGpgKeysRequest(requestType, callbackFunction) {
                                  procListener,
                                  errorMsgObj);
 
-  if (! gEnigRequest.gpgkeysRequest ) Ec.alert(window, errorMsgObj.value);
-  return; // TODO remove me!
   if (!gEnigRequest.gpgkeysRequest) {
     // calling gpgkeys_xxx failed, let's try builtin http variant
     switch (gEnigRequest.protocol) {
