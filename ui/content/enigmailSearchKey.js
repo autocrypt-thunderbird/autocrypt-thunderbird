@@ -116,7 +116,7 @@ function onLoad () {
       window.arguments[INPUT].searchList[0].search(/^0x[A-Fa-f0-9]{8,16}$/) == 0) {
       // shrink dialog and start download if just one key ID provided
 
-      gEnigRequest.dlKeyList = [ window.arguments[INPUT].searchList ];
+      gEnigRequest.dlKeyList = window.arguments[INPUT].searchList;
       document.getElementById("keySelGroup").setAttribute("collapsed", "true");
       window.sizeToContent();
       window.resizeBy(0, -320);
