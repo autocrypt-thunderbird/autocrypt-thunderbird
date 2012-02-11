@@ -1573,6 +1573,7 @@ Enigmail.prototype = {
     try {
       subprocess.call({
         command: command,
+        arguments: args,
         charset: null,
         environment: envList,
         done: function(result) {
@@ -3697,7 +3698,7 @@ Enigmail.prototype = {
       return "";
     }
 
-    if (/*this.agentVersion<"1.5" &&*/ this.isDosLike) {
+    if (this.isDosLike) {
       // workaround for error in gpg
       photoDataObj.value=photoDataObj.value.replace(/\r\n/g, "\n");
     }
