@@ -1253,7 +1253,7 @@ var EnigmailCommon = {
       return (str.length > 0);
     }
 
-    var r = [ "--charset", "utf8" ]; // mandatory parameter to add in all cases
+    var r = [ "--charset", "utf-8", "--display-charset", "utf-8" ]; // mandatory parameter to add in all cases
 
     try {
       var p = "";
@@ -1592,7 +1592,6 @@ var EnigmailCommon = {
       proxyHost = this.getHttpProxy(keyserver);
     }
 
-    // GnuPG >= v1.4.0
     command = this.agentPath;
     args= this.getAgentArgs(false);
     args = args.concat(["--command-fd", "0", "--no-tty", "--batch", "--fixed-list", "--with-colons"]);

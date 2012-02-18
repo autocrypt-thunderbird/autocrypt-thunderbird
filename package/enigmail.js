@@ -1273,7 +1273,7 @@ Enigmail.prototype = {
     var command = agentPath;
     var args = [];
     if (agentType == "gpg") {
-       args = [ "--version", "--version", "--batch", "--no-tty", "--charset", "utf8", "--display-charset", "utf8" ];
+       args = [ "--version", "--version", "--batch", "--no-tty", "--charset", "utf-8", "--display-charset", "utf-8" ];
     }
 
     var exitCode = -1;
@@ -1327,7 +1327,7 @@ Enigmail.prototype = {
 
     // check GnuPG version number
     var evalVersion = this.agentVersion.match(/^\d+\.\d+/)
-    if (evalVersion && evalVersion[0]<"1.2") {
+    if (evalVersion && evalVersion[0]<"1.4.0") {
       this.alertMsg(domWindow, Ec.getString("oldGpgVersion", [ gpgVersion ]));
       throw Components.results.NS_ERROR_FAILURE;
     }
