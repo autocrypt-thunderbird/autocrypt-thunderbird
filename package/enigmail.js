@@ -1327,7 +1327,7 @@ Enigmail.prototype = {
 
     // check GnuPG version number
     var evalVersion = this.agentVersion.match(/^\d+\.\d+/)
-    if (evalVersion && evalVersion[0]<"1.4.0") {
+    if (evalVersion && evalVersion[0]< "1.4") {
       if (domWindow) this.alertMsg(domWindow, Ec.getString("oldGpgVersion", [ gpgVersion ]));
       throw Components.results.NS_ERROR_FAILURE;
     }
