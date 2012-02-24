@@ -317,6 +317,7 @@ function initPath(localFileObj, pathStr) {
 function getFilePath (nsFileObj, creationMode) {
   if (creationMode == null) creationMode = NS_RDONLY;
 
+  /*
   if (detectOS() == "WINNT") {
     if (creationMode & NS_WRONLY) {
       // HACK to get a canonical file name
@@ -327,7 +328,7 @@ function getFilePath (nsFileObj, creationMode) {
       }
     }
     return Ec.convertToUnicode(nsFileObj.QueryInterface(nsILocalFileWin).canonicalPath, "utf-8");
-  }
+  } */
 
   return nsFileObj.path;
 }
