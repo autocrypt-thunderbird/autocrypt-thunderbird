@@ -460,6 +460,7 @@
 <!ENTITY enigmail.keyDetails.size.label "鍵長">
 <!ENTITY enigmail.keyDetails.created.label "作成日">
 <!ENTITY enigmail.keyDetails.expiry.label "有効期限">
+<!ENTITY enigmail.keyDetails.usage.label "利用法">
 <!ENTITY enigmail.keyDetails.calcTrust.label "鍵の有効性">
 <!ENTITY enigmail.keyDetails.ownerTrust.label "所有者による信用">
 <!ENTITY enigmail.keyDetails.fingerprint.label "フィンガープリント">
@@ -517,138 +518,43 @@
 <!ENTITY enigmail.setupWiz.title "OpenPGP セットアップ ウィザード">
 <!ENTITY enigmail.setupWiz.yes "はい">
 <!ENTITY enigmail.setupWiz.no "いいえ">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "このウィザードは今すぐ OpenPGP を使い始めるお手伝いをします。
-
-
-
-
-
-
-                                                      以降のいくつかの画面ですべての項目を設定する為にいくつか質問をします。
-
-
-
-">
+<!ENTITY enigmail.setupWiz.pgWelcome.desc "このウィザードは今すぐ OpenPGP を使い始めるお手伝いをします。以降のいくつかの画面ですべての項目を設定する為にいくつか質問をします。<html:br/><html:br/>高度なセキュリティを提供するための設定をデフォルトとしていますが、このウィザードの後に変更することができます。OpenPGP の設定の詳細は <a class='enigmailLink'><html:a onclick='EnigOpenURL(event, this)' href='http://enigmail.mozdev.org/'>Enigmail ウェブサイト</html:a></a> を参照してください。<html:br/><html:br/>このウィザードについて問題がある場合には <a class='enigmailLink'><html:a href='mailto:enigmail@mozdev.org'>E メール</html:a></a> でお知らせください。<html:br/><html:br/>このウィザードは Enigmail のインストール後の初回起動時に自動的に開始されます。OpenPGP メニューからも起動できます。<html:br/><html:br/>Enigmail をご利用いただきありがとうございます。">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "ウィザードを使用して今すぐ設定しますか？">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "はい、ウィザードを使用して利用開始します。">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "いいえ、手動で設定します。">
 <!ENTITY enigmail.setupWiz.pgSelectId.title "ID の選択">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "OpenPGP で使用するアカウントもしくは ID の選択">
-<!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP の設定は、アカウントもしくは ID ごとに設定できます。
-
-
-
-
-
-
-                                                      デフォルトで OpenPGP はあなたのすべてのアカウントおよび ID で動作するように設定します。
-
-
-
-                                                      もし、それを望まないのであれば、OpenPGP で使用したい特定のアカウントもしくは ID を以下から選択してください。">
+<!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP の設定は、アカウントもしくは ID ごとに設定できます。デフォルトで OpenPGP はあなたのすべてのアカウントおよび ID で動作するように設定します。もし、それを望まないのであれば、OpenPGP で使用したい特定のアカウントもしくは ID を以下から選択してください。">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "すべての ID に対して OpenPGP を設定します">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "次の ID にのみ OpenPGP を設定します:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>注意:</a> OpenPGP は、有効無効に関わらずすべての
-
-
-
-
-
-
-                                                      アカウントもしくは ID 宛のメールの署名を検証します。">
+<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>注意:</a> OpenPGP は、有効無効に関わらずすべてのアカウントもしくは ID 宛のメールの署名を検証します。">
 <!ENTITY enigmail.setupWiz.pgSign.title "署名">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "送信メールへのデジタル署名">
-<!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP を使用することにより、電子メールにデジタル署名をする事ができます。これは、手紙にする手書きのサインや署名の電子版のような物であり、第三者が電子メールが送信者本人から送られた事に確信を持てます。すべての送信メールに署名をすることは良い習慣と言えます。
-
-
-
-
-
-
-">
+<!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP を使用することにより、電子メールにデジタル署名をする事ができます。これは、手紙にする手書きのサインや署名の電子版のような物であり、第三者が電子メールが送信者本人から送られた事に確信を持てます。すべての送信メールに署名をすることは良い習慣と言えます。<html:br/><html:br/>あなたが署名したメールを検証するためには、OpenPGP 対応のメールクライアントが必要です。非対応のメールクライアントでは、メッセージ本文は読めますが、署名は添付ファイルあるいはメッセージ末尾に追加された無意味な文字列として表示されるため、これを嫌う人がいるかもしれません。すべての送信メールに署名するか、署名が必要なメールのみに署名するか選択できます。">
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg "すべての送信メールをデフォルトで署名しますか？">
 <!ENTITY enigmail.setupWiz.pgSign.yesSign "はい、すべての送信メールに署名します">
 <!ENTITY enigmail.setupWiz.pgSign.noSign "いいえ、署名が必要なメールには受取人ごとの設定を利用して署名します">
 <!ENTITY enigmail.setupWiz.pgEnc.title "暗号化">
 <!ENTITY enigmail.setupWiz.pgEnc.subtitle "送信メールの暗号化">
-<!ENTITY enigmail.setupWiz.pgEnc.desc "OpenPGP を使用することにより、電子メール本文及び添付ファイルを暗号化する事ができます。
-
-
-
-
-
-
-                                                      暗号化は、手紙を封筒の中に入れるような物です。これにより、非公開にすることができます。
-
-
-
-                                                      つまり暗号化は秘密のメッセージだけに使用するのではなく、
-
-
-
-                                                      はがきで送りたくないようなすべてのメッセージに対しても利用可能です。
-
-
-
-">
+<!ENTITY enigmail.setupWiz.pgEnc.desc "OpenPGP を使用することにより、電子メール本文及び添付ファイルを暗号化する事ができます。暗号化は、手紙を封筒の中に入れるような物です。これにより、非公開にすることができます。つまり暗号化は秘密のメッセージだけに使用するのではなく、はがきで送りたくないようなすべてのメッセージに対しても利用可能です。<html:br/><html:br/>技術的には、暗号化は受取人だけが鍵を持っている南京錠に相当します。署名とは異なり、暗号化では受取人すべてが OpenPGP 対応のメールクライアントを利用している必要があります。暗号化には、受取人の公開鍵を事前に入手しなければいけません (公開鍵が南京錠に相当します)。<html:br/><html:br/>あなたがメールをやり取りする相手のほぼすべてが公開鍵を持っていない限りは、デフォルトで暗号化を有効にするべきではありません。">
 <!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg "デフォルトで送信メールを暗号化しますか？">
 <!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt "はい、ほとんどの受取人の公開鍵を入手済みです">
 <!ENTITY enigmail.setupWiz.pgEnc.noEncrypt "いいえ、公開鍵を入手している受取人ごとにルールを設定をします">
 <!ENTITY enigmail.setupWiz.pgSettings.title "設定">
 <!ENTITY enigmail.setupWiz.pgSettings.subtitle "OpenPGP がより正確に動作するための電子メールの設定">
-<!ENTITY enigmail.setupWiz.pgSettings.desc "このウィザードでは、お使いの PC で署名および暗号化が正しく動作するように、電子メールの設定を変える事ができます。
-
-
-
-
-
-
-                                                      これらの設定は、おそらく注意を払われることのない技術的なことがほとんどですが、
-
-
-
-                                                      一つ重要な設定として、デフォルトで (HTML形式ではなく) テキスト形式でメールを作成する事があげられます。">
+<!ENTITY enigmail.setupWiz.pgSettings.desc "このウィザードでは、お使いの PC で署名および暗号化が正しく動作するように、電子メールの設定を変える事ができます。これらの設定は、おそらく注意を払われることのない技術的なことがほとんどですが、一つ重要な設定として、デフォルトで (HTML形式ではなく) テキスト形式でメールを作成する事があげられます。">
 <!ENTITY enigmail.setupWiz.pgSettings.changePref "お使いの PC で OpenPGP がより正確に動作するように、いくつかのデフォルト設定を変更しますか？">
 <!ENTITY enigmail.setupWiz.pgSettings.details "詳細...">
 <!ENTITY enigmail.setupWiz.pgKeySel.title "鍵の選択">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "電子メールを署名/暗号化に使用する鍵の選択">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc "OpenPGP鍵を既にお持ちのようです。電子メールの署名/暗号化にそれらをご利用していただくことも、
-
-
-
-
-
-
-                                                      新規に作成する事もできます。">
+<!ENTITY enigmail.setupWiz.pgKeySel.desc "OpenPGP鍵を既にお持ちのようです。電子メールの署名/暗号化にそれらを利用することも、新規に作成する事もできます。">
 <!ENTITY enigmail.setupWiz.pgKeySel.createKey "新規に鍵のペアを作成しますか？">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey "電子メール署名/暗号化に使用する鍵のペアを新規に作成します">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "電子メール署名/暗号化に使用する鍵のペアを以下から選択します:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "鍵の生成">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "電子メールの署名/暗号化に使用する鍵の生成">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "電子メールの暗号化もしくは、暗号化された電子メールを読むためには、鍵のペアが必要です。
-
-
-
-
-
-
-                                                      鍵のペアとは、公開鍵と秘密鍵の二つです。">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "公開鍵はすべての電子メールをやりとりする人に公開する必要があります。公開鍵によって、受取人が署名を検証したり、メールを暗号化して送付してもらうことができます。
-
-
-
-
-
-
-                                                      その一方、秘密鍵は非公開にしなければなりません。どこかへやったり、保護されていないところへ放っておいてはいけません。
-
-
-
-                                                      そのような事をすると、暗号化して送付された電子メールを第三者に読まれてしまいますし、またあなたになりすまして誰かが電子メールを送信する事も可能となってしまいます。
-
-
-
-                                                      非公開であるため、パスフレーズによって保護されます。">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "電子メールの暗号化もしくは、暗号化された電子メールを読むためには、鍵のペアが必要です。鍵のペアとは、公開鍵と秘密鍵の二つです。">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "公開鍵はすべての電子メールをやりとりする人に公開する必要があります。公開鍵によって、受取人が署名を検証したり、メールを暗号化して送付してもらうことができます。その一方、秘密鍵は非公開にしなければなりません。どこかへやったり、保護されていないところへ放置してはいけません。そのような事をすると、暗号化して送付された電子メールを第三者に読まれてしまいますし、またあなたになりすまして誰かが電子メールを送信する事も可能となってしまいます。秘密鍵は、パスフレーズによって保護されます。">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "確認のため、もう一度パスフレーズを入力してください">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.title "OpenPGP鍵が見つかりません">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.subtitle "OpenPGP鍵が見つかりません">
@@ -665,7 +571,7 @@
 <!ENTITY enigmail.setupWiz.pgKeygen.title "鍵の生成">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "現在、鍵を生成中です">
 <!ENTITY enigmail.setupWiz.pgComplete.title "お疲れさまでした">
-<!ENTITY enigmail.setupWiz.pgComplete.desc "OpenPGP が利用可能となりました。<html:br></html:br><html:br></html:br>この度は、Enigmail をご利用いただきありがとうございます。">
+<!ENTITY enigmail.setupWiz.pgComplete.desc "OpenPGP が利用可能となりました。<html:br/><html:br/>この度は、Enigmail をご利用いただきありがとうございます。">
 <!ENTITY enigmail.setupWiz.details.title "設定">
 <!ENTITY enigmail.setupWiz.details.subtitle "アプリケーションの設定を変更">
 <!ENTITY enigmail.setupWiz.details.imapOnDemand "MIME パートの個別ダウンロード機能 (IMAP) を無効">
@@ -675,14 +581,7 @@
 <!ENTITY enigmail.setupWiz.details.8bitEncoding "送信メッセージを 8 ビットでエンコーディングする">
 <!ENTITY enigmail.setupWiz.details.noComposeHTML "メッセージ作成に HTML 形式を使用しない">
 <!ENTITY enigmail.setupWiz.pgNoStart.title "ウィザードを中止">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc "OpenPGP の設定にウィザードを使用しません。
-
-
-
-
-
-
-                                                      <html:br></html:br><html:br></html:br>この度は、Enigmail をご利用いただきありがとうございます。">
+<!ENTITY enigmail.setupWiz.pgNoStart.desc "OpenPGP の設定にウィザードを使用しません。<html:br/><html:br/>この度は、Enigmail をご利用いただきありがとうございます。">
 <!ENTITY enigmail.advancedIdentityDlg.title "上級者向け OpenPGP 設定">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "自分の公開鍵をメッセージに添付する">
 <!ENTITY enigmail.addPhoto.question.label "この写真をフォトID として追加しますか？">

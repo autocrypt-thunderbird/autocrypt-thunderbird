@@ -500,7 +500,13 @@
 <!ENTITY enigmail.setupWiz.pgWelcome.desc "Trrọ lý này giúp bạn bắt đầu dùng OpenPGP ngay lập tức. Trong vài màn hình 
 
 
+
+
+
+
 sắp tới chúng tôi sẽ hỏi bạn một vài câu hỏi để thiết lập mọi thứ. 
+
+
 
 ">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "Bạn có muốn dùng trợ lý ngay bây giờ không?">
@@ -511,14 +517,26 @@ sắp tới chúng tôi sẽ hỏi bạn một vài câu hỏi để thiết l�
 <!ENTITY enigmail.setupWiz.pgSelectId.desc "Những thiết lập của OpenPGP dành riêng cho các tài khoản hoặc danh tính. Theo mặc định 
 
 
+
+
+
+
 OpenPGP sẽ cấu hình nó để làm việc với tất cả các tài khoản và danh tính 
 
+
+
 của bạn. Nếu đó không phải là những gì bạn muốn, xin vui lòng chọn tài khoản 
+
+
 
 hoặc danh tính riêng bên dưới mà bạn muốn OpenPGP làm việc với.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "Bạn có muốn thiết lập OpenPGP cho tất cả các danh tính không?">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Tôi muốn thiết lập OpenPGP chỉ cho những danh tính sau đây:">
 <!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Lưu ý:</a> OpenPGP sẽ luôn luôn kiểm chứng chữ ký 
+
+
+
+
 
 
 trên thư điện tử cho tất cả các tài khoản hoặc danh tính, bất kể là nó có được bật hay không">
@@ -527,11 +545,21 @@ trên thư điện tử cho tất cả các tài khoản hoặc danh tính, bấ
 <!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP cho phép bạn ký thuật số các thư điện tử của bạn. Chuyện này giống như 
 
 
+
+
+
+
 ký tên vào thư kiểu điện tử, và nó cho phép người khác biết chắc 
+
+
 
 rằng bạn đúng là người gửi thư điện tử. Ký tên tất cả các thư gửi đi là 
 
+
+
 một thói quen bảo mật tốt. 
+
+
 
 ">
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg "Bạn có muốn ký tên tất cả các thư điện tử gửi đi theo mặc định không?">
@@ -542,11 +570,21 @@ một thói quen bảo mật tốt.
 <!ENTITY enigmail.setupWiz.pgEnc.desc "OpenPGP cho phép bạn mã hóa các thư điện tử của bạn và bất cứ đính kèm nào. 
 
 
+
+
+
+
 Mã hóa là giống như để một lá thư vào một phong bì. Nó biến chuyện trở thành 
+
+
 
 riêng tư. Nó không chỉ cho thư &quot;secret&quot; mà còn cho 
 
+
+
 tất cả mọi thứ mà bạn sẽ không gửi trên bưu thiếp.
+
+
 
 ">
 <!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg "Các thư điện tử gửi đi của bạn được mã hóa theo mặc định không?">
@@ -557,12 +595,24 @@ tất cả mọi thứ mà bạn sẽ không gửi trên bưu thiếp.
 <!ENTITY enigmail.setupWiz.pgSettings.desc "Trợ lý này có thể thay đổi thiết lập thư điện tử của bạn để bảo đảm là không 
 
 
+
+
+
+
 có vấn đề gì với việc ký tên và mã hóa thư đìện tử trong máy của bạn. Những 
+
+
 
 thay đổi thiết lập này đa số là chuyện kỹ thuật mà bạn sẽ không nhận ra, tuy nhiên 
 
+
+
 có một chuyện quan trọng là thư điện tử sẽ được soạn bằng nhập thô theo mặc định.">
 <!ENTITY enigmail.setupWiz.pgSettings.changePref "Bạn có muốn thay đổi một vài thiết lập mặc định để làm cho OpenPGP làm việc tốt hơn 
+
+
+
+
 
 
 trong máy của bạn không?">
@@ -572,7 +622,13 @@ trong máy của bạn không?">
 <!ENTITY enigmail.setupWiz.pgKeySel.desc "Chúng tôi phát hiện là bạn đã có sẵn một khóa cho OpenPGP. Bạn có thể 
 
 
+
+
+
+
 dùng một trong các khóa đã có của bạn để ký tên, mã hóa và giải mã thư điện tử, hoặc 
+
+
 
 bạn có thể tạo một cặp khóa mới.">
 <!ENTITY enigmail.setupWiz.pgKeySel.createKey "Bạn có muốn tạo một cặp khóa mới không?">
@@ -583,19 +639,37 @@ bạn có thể tạo một cặp khóa mới.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Bạn cần có một 'cặp khóa' để ký tên và mã hóa thư điện tử, hoặc để đọc 
 
 
+
+
+
+
 những thư điện tử đã được mã hóa. Một cặp khóa có hai khóa, một cái công và một 
+
+
 
 cái tư.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Bạn cần đưa khóa công của bạn cho tất cả những người trong danh sách liên lạc của bạn mà 
 
 
+
+
+
+
 muốn kiểm chứng chữ ký của bạn, hoặc muốn mã hóa thư điện tử gửi cho bạn. 
+
+
 
 Trong khi đó, bạn cần giữ kín khóa tư của bạn. Bạn không được cho nó đi 
 
+
+
 hay không bảo vệ nó. Nó có thể đọc tất cả các thư điện tử mà người khác 
 
+
+
 mã hóa và gửi cho bạn. Nó cũng có thể mã hóa thư điện tử dùng tên bạn. 
+
+
 
 Vì là bí mật, nó được bảo vệ bởi một cụm từ mật khẩu.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Vui lòng xác nhận cụm từ mật khẩu của bạn bằng cách gõ nó lại">
@@ -616,6 +690,10 @@ Vì là bí mật, nó được bảo vệ bởi một cụm từ mật khẩu."
 <!ENTITY enigmail.setupWiz.details.noComposeHTML "Đừng soạn tin nhắn dạng HTML">
 <!ENTITY enigmail.setupWiz.pgNoStart.title "Bãi bỏ Trợ lý">
 <!ENTITY enigmail.setupWiz.pgNoStart.desc "Bạn đã chọn không dùng Trợ lý để cấu hình OpenPGP. 
+
+
+
+
 
 
 <html:br></html:br><html:br></html:br>Cám ơn bạn đã xử dụng Enigmail.">

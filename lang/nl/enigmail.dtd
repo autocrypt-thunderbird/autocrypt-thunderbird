@@ -49,7 +49,7 @@
 <!ENTITY enigmail.resetPrefs.tooltip "Zet alle OpenPGP voorkeuren terug naar hun oorspronkelijke waarde.">
 <!ENTITY enigmail.prefsHelpButton.label "Help">
 <!ENTITY enigmail.upgradeButton.label "Enigmail upgraden">
-<!ENTITY enigmail.uninstallButton.label "Enigmail deïnstalleren">
+<!ENTITY enigmail.uninstallButton.label "Enigmail de-installeren">
 <!ENTITY enigmail.basic.label "Basis">
 <!ENTITY enigmail.sending.label "Verzenden">
 <!ENTITY enigmail.keySel.label "Sleutelselectie">
@@ -70,13 +70,13 @@
 <!ENTITY enigmail.keyservers.sample "Voorbeeld: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
 <!ENTITY enigmail.searchForKey.label "Zoek naar sleutel">
 <!ENTITY enigmail.disableSMIMEui.label "S/MIME knoppen/menu verbergen">
-<!ENTITY enigmail.doubleDashSeparator.label "'--' als een scheidingsteken voor een handtekening behandelen">
+<!ENTITY enigmail.doubleDashSeparator.label "\'--\' als een scheidingsteken voor een handtekening behandelen">
 <!ENTITY enigmail.useGpgAgent.label "Gpg-agent voor het afhandelen van het wachtwoord gebruiken">
-<!ENTITY enigmail.noHushMailSupport.label "Gebruik '&lt;' en '&gt;' om emailadressen op te geven">
+<!ENTITY enigmail.noHushMailSupport.label "Gebruik \'&lt;\' en \'&gt;\' om emailadressen op te geven">
 <!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "Versleutel/signeer indien mogelijk antwoorden op versleutelde/gesigneerde email">
 <!ENTITY enigmail.doubleDashSeparator.tooltip "Twee streepjes op een regel zijn op zichzelf genoeg om een handtekening blok te bepalen">
 <!ENTITY enigmail.useGpgAgent.tooltip "Gebruik gpg-agent (Onderdeel van GnuPG 2) voor alle wachtwoord invoer">
-<!ENTITY enigmail.noHushMailSupport.tooltip "Gebruik de '&lt;' en '&gt;' tekens om email adressen voor GnuPG op te geven. Schakel het uit als ontvangers oude Hushmail sleutels gebruiken.">
+<!ENTITY enigmail.noHushMailSupport.tooltip "Gebruik de \'&lt;\' en \'&gt;\' tekens om email adressen voor GnuPG op te geven. Schakel het uit als ontvangers oude Hushmail sleutels gebruiken.">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "Zet deze instelling op UIT als u PGP/MIME berichten in IMAP folders ontvangt.">
 <!ENTITY enigmail.disableSMIMEui.tooltip "Verwijder de S/MIME knop van de werkbalk van het berichtopstelvenster">
 <!ENTITY enigmail.logdirectory.label "Log directory">
@@ -192,11 +192,11 @@
 <!ENTITY enigmail.defaultSignMsg.accesskey "l">
 <!ENTITY enigmail.defaultNotSignedsend.accesskey "t">
 <!ENTITY enigmail.confirmBeforeSend.accesskey "b">
-<!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>LET OP: het genereren van een sleutel kan enkele minuten duren.</a> Sluit de toepassing niet terwijl dit proces aan de gang is. Actief browsen of schijfintensieve bewerkingen uitvoeren, vult de 'willekeurigheidsreserve' aan en versnelt het proces. U zal gewaarschuwd worden wanneer het genereren van de sleutel klaar is.">
+<!ENTITY enigmail.keygen.desc "<a class=\'enigmailStrong\'>LET OP: het genereren van een sleutel kan enkele minuten duren.</a> Sluit de toepassing niet terwijl dit proces aan de gang is. Actief browsen of schijfintensieve bewerkingen uitvoeren, vult de \'willekeurigheidsreserve\' aan en versnelt het proces. U zal gewaarschuwd worden wanneer het genereren van de sleutel klaar is.">
 <!ENTITY enigmail.console.label "OpenPGP console bekijken">
 <!ENTITY enigmail.console.tooltip "OpenPGP console bekijken">
-<!ENTITY enigmail.uninstall.label "Enigmail deïnstalleren">
-<!ENTITY enigmail.uninstall.tooltip "Enigmail deïnstalleren">
+<!ENTITY enigmail.uninstall.label "Enigmail de-installeren">
+<!ENTITY enigmail.uninstall.tooltip "Enigmail de-installeren">
 <!ENTITY enigmail.selectpanel.label "OpenPGP paneel selecteren">
 <!ENTITY enigmail.selectpanel.tooltip "OpenPGP paneel selecteren">
 <!ENTITY enigmail.userSelectionList.label "OpenPGP sleutel selectie">
@@ -230,7 +230,7 @@
 <!ENTITY enigmail.ctxImportKey.accesskey "i">
 <!ENTITY enigmail.ctxVerifyAtt.accesskey "C">
 <!ENTITY enigmail.detailsHdrButton.label "Details">
-<!ENTITY enigmail.revealAttachmentsButton.label "De namen van de bijgevoegde bestanden zijn verstopt. Druk op de 'Onthul'  knop om de originele bestandsnamen op te halen.">
+<!ENTITY enigmail.revealAttachmentsButton.label "De namen van de bijgevoegde bestanden zijn verstopt. Druk op de \'Onthul\'  knop om de originele bestandsnamen op te halen.">
 <!ENTITY enigmail.amPrefTitle.label "OpenPGP opties (Enigmail)">
 <!ENTITY enigmail.amPrefDesc.label "Ondersteuning voor OpenPGP versleuteling en ondertekening van berichten wordt voorzien door Enigmail. U moet GnuPG (gpg) geïnstalleerd hebben om deze functie te gebruiken.">
 <!ENTITY enigmail.amPrefEnablePgp.label "OpenPGP ondersteuning (Enigmail) voor deze identiteit inschakelen">
@@ -247,8 +247,8 @@
 <!ENTITY enigmail.encDlgPgpMime.accesskey "P">
 <!ENTITY enigmail.encDlgIgnoreRules.label "Negeer per ontvanger regels">
 <!ENTITY enigmail.encDlgIgnoreRules.accesskey "N">
-<!ENTITY enigmail.amPrefPgpHeader.label "Verstuur 'OpenPGP' berichtkop">
-<!ENTITY enigmail.amPrefPgpHeader.none.label "Geen enkele 'OpenPGP' berichtkop versturen">
+<!ENTITY enigmail.amPrefPgpHeader.label "Verstuur \'OpenPGP\' berichtkop">
+<!ENTITY enigmail.amPrefPgpHeader.none.label "Geen enkele \'OpenPGP\' berichtkop versturen">
 <!ENTITY enigmail.amPrefPgpHeader.id.label "OpenPGP sleutel ID versturen">
 <!ENTITY enigmail.amPrefPgpHeader.url.label "URL voor het ophalen van de sleutel versturen:">
 <!ENTITY enigmail.retrieveKey.label "Sleutels ophalen">
@@ -284,9 +284,9 @@
 <!ENTITY enigmail.never.label "Nooit">
 <!ENTITY enigmail.always.label "Altijd">
 <!ENTITY enigmail.maybe.label "Ja, als het geselecteerd is bij Berichtopstelling">
-<!ENTITY enigmail.singleRcptSettings.desc "(Let op: in geval van conflict domineert 'Nooit' over 'Altijd')">
+<!ENTITY enigmail.singleRcptSettings.desc "(Let op: in geval van conflict domineert \'Nooit\' over \'Altijd\')">
 <!ENTITY enigmail.ruleEmail.label "OpenPGP regels instellen voor">
-<!ENTITY enigmail.ruleEmail.tooltip "Vul enkel het e-mailadres in. NIET de naam van de ontvanger gebruiken\nBv. 'Een Naam <een.naam@adres.net>' is ongeldig">
+<!ENTITY enigmail.ruleEmail.tooltip "Vul enkel het e-mailadres in. NIET de naam van de ontvanger gebruiken\\nBv. \'Een Naam <een.naam@adres.net>\' is ongeldig">
 <!ENTITY enigmail.sepratationDesc.label "(Verschillende e-mailadressen met spaties scheiden)">
 <!ENTITY enigmail.matchDescStart.label "Regel als ontvanger toepassen">
 <!ENTITY enigmail.matchDescEnd.label "één van de bovenstaande adressen">
@@ -375,7 +375,7 @@
 <!ENTITY enigmail.keyMan.reload.label "Sleutelcache herladen">
 <!ENTITY enigmail.keyMan.addUid.label "Gebruiker-ID toevoegen">
 <!ENTITY enigmail.keyMan.addPhoto.label "Voeg foto toe">
-<!ENTITY enigmail.keyMan.manageUid.label "Gebruiker-ID's beheren">
+<!ENTITY enigmail.keyMan.manageUid.label "Gebruiker-ID\'s beheren">
 <!ENTITY enigmail.keyMan.changePwd.label "Wachtwoord wijzigen">
 <!ENTITY enigmail.keyMan.delKey.label "Sleutel verwijderen">
 <!ENTITY enigmail.keyMan.revokeKey.label "Sleutel intrekken">
@@ -444,7 +444,7 @@
 <!ENTITY enigmail.viewKeySigDlg.sigType.label "Ond.tek. type">
 <!ENTITY enigmail.manageUidDlg.title "Primair gebruiker-ID wijzigen">
 <!ENTITY enigmail.manageUidDlg.affectedKey.label "Sleutel om aan te passen:">
-<!ENTITY enigmail.manageUidDlg.availableUid.label "Beschikbare gebruiker-ID's:">
+<!ENTITY enigmail.manageUidDlg.availableUid.label "Beschikbare gebruiker-ID\'s:">
 <!ENTITY enigmail.manageUidDlg.addUid.label "Toevoegen">
 <!ENTITY enigmail.manageUidDlg.deleteUid.label "Verwijderen">
 <!ENTITY enigmail.manageUidDlg.revokeUid.label "Intrekken">
@@ -460,6 +460,7 @@
 <!ENTITY enigmail.keyDetails.size.label "Grootte">
 <!ENTITY enigmail.keyDetails.created.label "Aangemaakt">
 <!ENTITY enigmail.keyDetails.expiry.label "Vervaldag">
+<!ENTITY enigmail.keyDetails.usage.label "Gebruik">
 <!ENTITY enigmail.keyDetails.calcTrust.label "Sleutelvertrouwen">
 <!ENTITY enigmail.keyDetails.ownerTrust.label "Eigenaarsvertrouwen">
 <!ENTITY enigmail.keyDetails.fingerprint.label "Vingerafdruk">
@@ -498,7 +499,7 @@
 <!ENTITY enigmail.cardDetails.editData.accesskey "b">
 <!ENTITY enigmail.genCardKey.title "OpenPGP sleutel genereren">
 <!ENTITY enigmail.genCardKey.backupKey.label "Backup van de sleutel buiten de kaart opslaan">
-<!ENTITY enigmail.genCardKey.desc "<a class='enigmailStrong'>LET OP: Het genereren van een sleutel kan enkele minuten duren.</a> Sluit het programma niet tijdens het aanmaken van de sleutel. U zal gewaarschuwd worden als de sleutel aangemaakt is.">
+<!ENTITY enigmail.genCardKey.desc "<a class=\'enigmailStrong\'>LET OP: Het genereren van een sleutel kan enkele minuten duren.</a> Sluit het programma niet tijdens het aanmaken van de sleutel. U zal gewaarschuwd worden als de sleutel aangemaakt is.">
 <!ENTITY enigmail.cardPin.title "SmartCard PIN wijzigen">
 <!ENTITY enigmail.cardPin.action.label "Wat wilt u doen?">
 <!ENTITY enigmail.cardPin.changePin.label "PIN wijzigen">
@@ -517,38 +518,16 @@
 <!ENTITY enigmail.setupWiz.title "OpenPGP instellingswizard">
 <!ENTITY enigmail.setupWiz.yes "Ja">
 <!ENTITY enigmail.setupWiz.no "Nee, bedankt">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "Deze wizard helpt u OpenPGP gelijk te gebruiken. U krijgt nu enkele
-
-
-
-
-
-
-						      schermen met vragen te zien om de configuratie in orde te brengen.">
+<!ENTITY enigmail.setupWiz.pgWelcome.desc "Deze wizard helpt u OpenPGP gelijk te gebruiken. U krijgt nu enkele\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n						      schermen met vragen te zien om de configuratie in orde te brengen.">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "Wilt u de wizard nu gebruiken?">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "Ja, ik wil dat de wizard me op weg helpt">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "Nee, bedankt, ik verkies om alles handmatig te configureren">
 <!ENTITY enigmail.setupWiz.pgSelectId.title "Identiteiten selecteren">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Selecteer de accounts of identiteiten die met OpenPGP moeten werken">
-<!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP instellingen zijn specifiek voor accounts en identiteiten.
-
-
-
-
-
-
-                                                      Standaard zal OpenPGP zichzelf zo configureren dat het op al uw
-
-
-
-                                                      accounts en identiteiten werkt. Als u dat niet wilt, selecteer dan
-
-
-
-                                                      nu alstublieft de account waar OpenPGP wel op moet werken.">
+<!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP instellingen zijn specifiek voor accounts en identiteiten.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n                                                      Standaard zal OpenPGP zichzelf zo configureren dat het op al uw\n\n\n\n\n\n\n\n                                                      accounts en identiteiten werkt. Als u dat niet wilt, selecteer dan\n\n\n\n\n\n\n\n                                                      nu alstublieft de account waar OpenPGP wel op moet werken.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "Wilt u OpenPGP instellen voor alle identiteiten?">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Ik wil OpenPGP enkel instellen voor de volgende identiteiten:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Opmerking:</a> OpenPGP zal altijd de ondertekeningen van mails controleren, of OpenPGP nu ingeschakeld is voor die account of niet.">
+<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class=\'enigmailStrong\'>Opmerking:</a> OpenPGP zal altijd de ondertekeningen van mails controleren, of OpenPGP nu ingeschakeld is voor die account of niet.">
 <!ENTITY enigmail.setupWiz.pgSign.title "Ondertekenen">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "Uw uitgaande mails digitaal ondertekenen">
 <!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP staat u toe al uw e-mails digitaal te ondertekenen. Dit is net als een elektronische versie van een handtekening en het stelt mensen in staat om er zeker van te zijn dat de e-mail echt van u afkomstig is. Het is een goede veiligheidsoptie om al uw uitgaande mails digitaal te ondertekenen.">
@@ -574,7 +553,7 @@
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Ik wil één van de onderstaande sleutels selecteren om mijn e-mail te ondertekenen en te versleutelen:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "Sleutel aanmaken">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Maak een sleutel aan om e-mail te onderteken en te versleutelen">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "U heeft een 'sleutelpaar' nodig om e-mails te ondertekenen en te versleutelen. Een sleutelpaar heeft twee sleutels, een publieke en een privésleutel.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "U heeft een \'sleutelpaar\' nodig om e-mails te ondertekenen en te versleutelen. Een sleutelpaar heeft twee sleutels, een publieke en een privésleutel.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Uw publieke sleutel moet u aan iedereen in uw contactlijst geven die uw ondertekening wil verifiëren of die een versleutelde mail aan u wil sturen. Uw privésleutel moet u geheim houden. Deze mag u zeker niet weggeven of onbeschermd achterlaten. Met behulp van deze sleutel kan u alle aan u gerichte versleutelde mails lezen. Het kan ook e-mail ondertekenen in uw naam. Omdat deze sleutel privé moet blijven, is de sleutel beschermd door een wachtwoord.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Bevestig uw wachtwoord door het opnieuw in te typen">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.title "Geen OpenPGP sleutel gevonden">
@@ -588,7 +567,7 @@
 <!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile "Privésleutel bestand">
 <!ENTITY enigmail.setupWiz.pgSummary.title "Samenvatting">
 <!ENTITY enigmail.setupWiz.pgSummary.subtitle "Bevestig dat de wizard al deze wijzigingen mag doorvoeren">
-<!ENTITY enigmail.setupWiz.pgSummary.desc "U bent nu bijna op het einde! Als u op de 'Volgende'-knop klikt, zal de wizard de volgende handelingen uitvoeren:">
+<!ENTITY enigmail.setupWiz.pgSummary.desc "U bent nu bijna op het einde! Als u op de \'Volgende\'-knop klikt, zal de wizard de volgende handelingen uitvoeren:">
 <!ENTITY enigmail.setupWiz.pgKeygen.title "Sleutel aanmaken">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "Uw sleutel wordt nu gegenereerd">
 <!ENTITY enigmail.setupWiz.pgComplete.title "Bedankt">

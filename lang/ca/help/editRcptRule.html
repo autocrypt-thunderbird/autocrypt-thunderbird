@@ -1,6 +1,5 @@
 <html>
 <head><title>Ajuda Enigmail: Editar regla OpenPGP</title>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 </head>
 <body>
 <h1>Ajuda Enigmail</h1>
@@ -9,23 +8,23 @@
 <p>A l'editor de regles, podeu indicar, per cada destinatari, el xifratge, la signatura i PGP/MIME i quines claus OpenPGP emprar de manera predeterminada. En aquest di&agrave;leg, podeu indicar les regles per un destinatari individual i per un grup de destinataris amb atributs for&ccedil;a similars.
 </p>
 <ul>
-  <li><span style="font-weight: bold;">Estableix les regles OpenPGP per a</span>: Cont&eacute; l'adre&ccedil;a de
-    correu dels destinataris (sense noms, p.ex. nom&eacute;s una adre&ccedil;a com
-    <tt>algu@correu.domini</tt>). Podeu indicar algunes adreces de correu, separades per espais.
-    L'adre&ccedil;a indicada aqu&iacute; pot consistir de nom&eacute;s la secci&oacute; del domini, aix&iacute; el correu a qualsevol adre&ccedil;a del domini coincidir&agrave; (p.ex.
+  <li><span style="font-weight: bold;">Estableix les regles OpenPGP per a</span>: Cont&eacute; l'adre&ccedil;a de 
+    correu dels destinataris (sense noms, p.ex. nom&eacute;s una adre&ccedil;a com 
+    <tt>algu@correu.domini</tt>). Podeu indicar algunes adreces de correu, separades per espais. 
+    L'adre&ccedil;a indicada aqu&iacute; pot consistir de nom&eacute;s la secci&oacute; del domini, aix&iacute; el correu a qualsevol adre&ccedil;a del domini coincidir&agrave; (p.ex. 
     <tt>@correu.domini</tt> coincideix amb <tt>algu@correu.domini</tt>,
     <tt>algualtre@correu.domini</tt>, <tt>qualsevol@correu.domini</tt>, etc.)
   </li>
-  <li><span style="font-weight: bold;">Aplica la regla si el destinatari ...</span>:
+  <li><span style="font-weight: bold;">Aplica la regla si el destinatari ...</span>: 
     Aix&ograve; modifica la coincid&egrave;ncia de les adreces de correu.
     Si s'ha introdu&iuml;t m&uacute;ltiples adreces de correu, el par&agrave;metre s'aplicar&agrave; a totes.
-
+    
     Els exemples seg&uuml;ents estan basats en les <i>Regles OpenPGP</i> introdu&iuml;des m&eacute;s amunt <tt>algu@correu.domini</tt>.
     <ul>
-      <li><i>Ã‰s exacta</i>: amb aquest par&agrave;metre, la regla nom&eacute;s s'activar&agrave; amb adreces de correus
+      <li><i>És exacta</i>: amb aquest par&agrave;metre, la regla nom&eacute;s s'activar&agrave; amb adreces de correus
       a <tt>algu@correu.domini</tt> (exacta, coincid&egrave;ncia sense distinci&oacute; de maj&uacute;scules).
       </li>
-      <li><i>Cont&eacute;</i>: amb aquest par&agrave;metre, qualsevol adre&ccedil;a de correu que contingui la cadena
+      <li><i>Cont&eacute;</i>: amb aquest par&agrave;metre, qualsevol adre&ccedil;a de correu que contingui la cadena 
       coincidir&agrave; (p.ex. <tt>tambealgu@correu.domini</tt> o <tt>algu@correu.domini.net</tt>)
       </li>
       <li><i>Comen&ccedil;a amb</i>: amb aquest par&agrave;metre, qualsevol adre&ccedil;a de correu que comenci amb la
@@ -38,57 +37,57 @@
 
   </li>
   <li><span style="font-weight: bold;">Continua amb la seg&uuml;ent regla per l'adre&ccedil;a coincident</span><br>
-          L'activaci&oacute; d'aquesta funci&oacute; us permet definir una regla sense
-	  haver d'indicar una identificaci&oacute; de clau en el camp <em>Empra les
-	  claus OpenPGP seg&uuml;ents:</em>, aix&iacute; que l'adre&ccedil;a de correu s'usa per
-	  comprovar la clau en el moment d'enviar. Tamb&eacute; es processaran les
+          L'activaci&oacute; d'aquesta funci&oacute; us permet definir una regla sense 
+	  haver d'indicar una identificaci&oacute; de clau en el camp <em>Empra les 
+	  claus OpenPGP seg&uuml;ents:</em>, aix&iacute; que l'adre&ccedil;a de correu s'usa per 
+	  comprovar la clau en el moment d'enviar. Tamb&eacute; es processaran les 
 	  regles posteriors per a la mateixa adre&ccedil;a(es).
   </li>
   <li><span style="font-weight: bold;">No comprovis m&eacute;s regles per l'adre&ccedil;a coincident</span><br>
-	  L'activaci&oacute; d'aquesta funci&oacute; atura el proc&eacute;s d'altres regles per a
-	  l'adre&ccedil;a(es) coincident amb aquesta regla. El proc&eacute;s de regles
+	  L'activaci&oacute; d'aquesta funci&oacute; atura el proc&eacute;s d'altres regles per a 
+	  l'adre&ccedil;a(es) coincident amb aquesta regla. El proc&eacute;s de regles 
 	  continua amb el seg&uuml;ent destinatari.
   </li>
   <li><span style="font-weight: bold;">Empra les seg&uuml;ents claus OpenPGP:</span><br>
-	  Empreu el bot&oacute; <em>Selecciona clau(s)..</em> per seleccionar les claus
-	  dels destinataris que s'usaran per a xifrar. De la mateixa manera que
+	  Empreu el bot&oacute; <em>Selecciona clau(s)..</em> per seleccionar les claus 
+	  dels destinataris que s'usaran per a xifrar. De la mateixa manera que 
 	  amb l'acci&oacute; anterior, no es processen m&eacute;s regles amb l'adre&ccedil;a coincident.
   </li>
   <li><span style="font-weight: bold;">Signatura per omissi&oacute;</span>: activa o desactiva
-    la signatura del missatge, en funci&oacute; del que s'ha indicat a la finestra de redacci&oacute;
+    la signatura del missatge, en funci&oacute; del que s'ha indicat a la finestra de redacci&oacute; 
     del missatge. El valors s&oacute;n:
   </li>
   <ul>
-    <li><i>Mai</i>: desactiva la signatura, incl&ograve;s si s'ha activat a la finestra
+    <li><i>Mai</i>: desactiva la signatura, incl&ograve;s si s'ha activat a la finestra 
        de redacci&oacute; del missatge (preval sobre els altres valors)<br>
     </li>
-    <li><i>S&iacute;, si s'ha seleccionat a la redacci&oacute; del missatge</i>: deixa la signatura
+    <li><i>S&iacute;, si s'ha seleccionat a la redacci&oacute; del missatge</i>: deixa la signatura 
       tal com s'ha indicat a la finestra de redacci&oacute; del missatge
     </li>
     <li><i>Sempre</i>: activa la signatura, incl&ograve;s si <span
-      style="font-style: italic;">no</span> s'ha activat a la finestra de redacci&oacute; del
+      style="font-style: italic;">no</span> s'ha activat a la finestra de redacci&oacute; del 
       missatge
     </li>
   </ul>
 </ul>
-<div style="margin-left: 40px;">Aquests par&agrave;mtres de signatura s'apliquen a totes les
-regles que coincideixen. Si una de les regles desactiva la signatura, el missatge
+<div style="margin-left: 40px;">Aquests par&agrave;mtres de signatura s'apliquen a totes les 
+regles que coincideixen. Si una de les regles desactiva la signatura, el missatge 
 no es signar&agrave;, a menys que altres regles indiquin <i>Sempre</i>.<br>
 </div>
 <ul>
   <li><span style="font-weight: bold;">Xifratge</span>: activa o desactiva
-    el xifratge del missatge. Els par&agrave;metres admesos i el seu significat s&oacute;n
+    el xifratge del missatge. Els par&agrave;metres admesos i el seu significat s&oacute;n 
     els mateixos que per la signatura de missatge.</li>
-  <li><span style="font-weight: bold;">PGP/MIME</span>: activa o desactiva
+  <li><span style="font-weight: bold;">PGP/MIME</span>: activa o desactiva 
     l'&uacute;s de la codificaci&oacute; PGP/MIME (RFC 3156) del missatge.
-    Si el PGP/MIME est&agrave; desactivat, els missatges es codifiquen usant el "PGP inserit".
-    Els par&agrave;metres admesos i el seu significat s&oacute;n
+    Si el PGP/MIME est&agrave; desactivat, els missatges es codifiquen usant el "PGP inserit". 
+    Els par&agrave;metres admesos i el seu significat s&oacute;n 
     els mateixos que per la signatura de missatge.
   </li>
 </ul>
-<p>Les regles es processen segons l'ordre mostrat a la llista de
-l'<em>editor de regles OpenPGP</em>. Quan una regla coincideix amb un destinatari i
-cont&eacute; una identificaci&oacute; de clau OpenPGP, a m&eacute;s d'usar la identificaci&oacute; de clau
+<p>Les regles es processen segons l'ordre mostrat a la llista de 
+l'<em>editor de regles OpenPGP</em>. Quan una regla coincideix amb un destinatari i 
+cont&eacute; una identificaci&oacute; de clau OpenPGP, a m&eacute;s d'usar la identificaci&oacute; de clau 
 indicada, el destinatari ja no es t&eacute; en compte al processar m&eacute;s regles.
 </p>
 <hr/>

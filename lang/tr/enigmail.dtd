@@ -516,13 +516,25 @@
 <!ENTITY enigmail.setupWiz.pgWelcome.desc "Bu sihirbaz OpenPGP kullanmaya hemen başlamanıza yardım edecek. Göreceğiniz bir kaç                                                         ekranda herşeyi ayarlamak için bir kaç soru soracağız.<html:br/><html:br/>
 
 
+
+
+
+
                                                       Herşeyi basit tutmak için, ayarlarla ilgili bazı genellemeler yapıyoruz.
+
+
 
                                                       Bu genellemeler kafa karıştırmadan, normal bir kullanıcı için yüksek güvenlik
 
+
+
                                                       seviyesi sağlamak amaçlıdır. Tabi ki sihirbazı tamamladıktan sonra tüm bu
 
+
+
                                                       ayarları değiştirebilirsiniz. OpenPGP hakkında daha fazla bilgiyi Yardım
+
+
 
 ">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "Sihirbazı şimdi kullanmak istiyor musunuz ?">
@@ -533,9 +545,17 @@
 <!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP ayarları hesaplara ve kimliklere özeldir. Öntanımlı olarak OpenPGP tüm
 
 
+
+
+
+
                                                       hesaplarınızda ve kimliklerinizde çalışmak üzere yapılandırılır.
 
+
+
                                                       Eğer istediğiniz bu değilse, lütfen OpenPGP'nin çalışmasını istediğiniz hesabı
+
+
 
                                                       ya da kimliği aşağıdan seçin.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "OpenPGP'yi tüm kimlikler için kurmak istiyorum">
@@ -546,7 +566,13 @@
 <!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP postalarınızı dijital imzalamanıza olanak verir. Bu bir mektubu imzalamanın                                                         elektronik eşi gibidir, ve insanların postanın gerçekten sizden geldiğinden emin
 
 
+
+
+
+
                                                       olmalarını sağlar. Yolladığınız tüm postaları imzalamanız iyi bir alışkanlıktır.
+
+
 
 ">
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg "Yolladığınız tüm postaları öntanımlı imzalamak istiyor musunuz ?">
@@ -557,11 +583,21 @@
 <!ENTITY enigmail.setupWiz.pgEnc.desc "OpenPGP postalarınızı ve eklerinizi şifrelemenize olanak verir.
 
 
+
+
+
+
                                                       Şifreleme bir mektubu zarfa koymak gibidir. Yazılarınızın özel olmasını sağlar.
+
+
 
                                                       Sadece &quot;özel&quot; mesajlarınızı değil, bir posta kartı üstüne yazmayacağınız
 
+
+
                                                       herşey için kullanılabilir.
+
+
 
 ">
 <!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg "Posta göndermeden şifreleme öntanımlı olarak açık olmalı mı ?">
@@ -572,9 +608,17 @@
 <!ENTITY enigmail.setupWiz.pgSettings.desc "Bu sihirbaz, posta seçeneklerinizi makinenizde posta şifreleme ya da imzalama
 
 
+
+
+
+
                                                       konusunda sorun olmadığından emin olmanız için değiştirebilir.
 
+
+
                                                       Bu değişiklikler, postanın öntanımlı olarak düz metin şeklinde yazılması dışında 
+
+
 
                                                       çoğunlukla anlamayacağınız teknik şeylerdir.">
 <!ENTITY enigmail.setupWiz.pgSettings.changePref "OpenPGP'nin makinenizde daha iyi çalışabilmesi için bir kaç seçeneği değiştirmek ister misiniz ?">
@@ -584,7 +628,13 @@
 <!ENTITY enigmail.setupWiz.pgKeySel.desc "Zaten bir OpenPGP anahtarınız olduğunu görüyoruz. Postaları imzalama, şifreleme ve
 
 
+
+
+
+
                                                       deşifreleme işleri için bu anahtarı kullanabilir, ya da yeni bir anahtar çifti 
+
+
 
                                                       oluşturabilirsiniz.">
 <!ENTITY enigmail.setupWiz.pgKeySel.createKey "Yeni bir anahtar çifti oluşturmak ister misiniz?">
@@ -595,17 +645,33 @@
 <!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Posta imzalama ve şifreleme, ya da şifreli bir postayı deşifre etmek için bir                                                               'anahtar çifti'ne ihtiyacınız var. Anahtar çiftinin iki anahtarı vardır, biri genel
 
 
+
+
+
+
                                                       biri de özel.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Genel anahtarınızı, imzanızı doğrulamak isteyen ya da sizden şifreli posta almak
 
 
+
+
+
+
                                                       isteyen iletişim listenizdeki herkese vermelisiniz. Bu sırada, özel anahtarınızı
+
+
 
                                                       gizli tutmalısınız. Korumasız bırakmamalı, birilerinin ele geçirmediğinden emin
 
+
+
                                                       olmalısınız. Özel anahtar, insanları şifreleyip size yolladığı tüm postaları
 
+
+
                                                       okuyabilir, hatta sizin adınıza posta şifreleyebilir. Gizli olduğundan, tabi ki
+
+
 
                                                       bir parolayla korunmaktadır.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Lütfen tekrar girerek parolanızı doğrulayın">
@@ -626,6 +692,10 @@
 <!ENTITY enigmail.setupWiz.details.noComposeHTML "Mesaj yazarken HTML kullanma">
 <!ENTITY enigmail.setupWiz.pgNoStart.title "Sihirbazdan vazgeç">
 <!ENTITY enigmail.setupWiz.pgNoStart.desc "OpenPGP ayarlarını sihirbaz ile yapmamayı tercih ettiniz.
+
+
+
+
 
 
                                                       <html:br></html:br><html:br></html:br>Enigmail kullandığınız için teşekkürler.">

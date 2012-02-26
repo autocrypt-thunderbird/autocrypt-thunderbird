@@ -19,10 +19,10 @@ pl
 pt-BR
 pt-PT
 ru-RU
-sl-SI
 sk-SK
+sl-SI
 sv-SE
-tr-TR
-vi-VN
+tr
+vi
 zh-CN
 zh-TW

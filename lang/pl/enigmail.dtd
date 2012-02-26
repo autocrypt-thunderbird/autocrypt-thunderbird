@@ -192,7 +192,7 @@
 <!ENTITY enigmail.defaultSignMsg.accesskey "s">
 <!ENTITY enigmail.defaultNotSignedsend.accesskey "n">
 <!ENTITY enigmail.confirmBeforeSend.accesskey "a">
-<!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>Uwaga! Generowanie klucza może potrwać kilka minut.</a> Nie zamykaj programu w trakcie działania generatora. Aktywne używanie przeglądarki lub wykonywanie intensywnych operacji dyskowych podczas generowania klucza przyspieszy proces generowania. Koniec procesu zostanie zasygnalizowany odpowiednim komunikatem.">
+<!ENTITY enigmail.keygen.desc "<a class=\'enigmailStrong\'>Uwaga! Generowanie klucza może potrwać kilka minut.</a> Nie zamykaj programu w trakcie działania generatora. Aktywne używanie przeglądarki lub wykonywanie intensywnych operacji dyskowych podczas generowania klucza przyspieszy proces generowania. Koniec procesu zostanie zasygnalizowany odpowiednim komunikatem.">
 <!ENTITY enigmail.console.label "Pokaż konsolę OpenGPG">
 <!ENTITY enigmail.console.tooltip "Pokaż konsolę OpenGPG">
 <!ENTITY enigmail.uninstall.label "Odinstaluj Enigmail">
@@ -286,7 +286,7 @@
 <!ENTITY enigmail.maybe.label "Tak, jeśli zaznaczono taką opcję tworzenia wiadomości">
 <!ENTITY enigmail.singleRcptSettings.desc "(Uwaga: w przypadku konfliktów, „Nigdy” ma pierwszeństwo przed „Zawsze”)">
 <!ENTITY enigmail.ruleEmail.label "Określ reguły OpenPGP dla">
-<!ENTITY enigmail.ruleEmail.tooltip "Należy wpisać tylko sam adres e-mail, bez nazwy adresata\nNp. wpis „Jan Kowalski &lt;jakis.adres@poczta.pl&gt;” jest nieprawidłowy">
+<!ENTITY enigmail.ruleEmail.tooltip "Należy wpisać tylko sam adres e-mail, bez nazwy adresata\\nNp. wpis „Jan Kowalski <jakis.adres@poczta.pl>” jest nieprawidłowy">
 <!ENTITY enigmail.sepratationDesc.label "(Przy wpisywaniu kilku adresów należy oddzielić je spacjami)">
 <!ENTITY enigmail.matchDescStart.label "Zastosuj regułę, gdy adresat">
 <!ENTITY enigmail.matchDescEnd.label "jeden z powyższych adresów">
@@ -460,6 +460,7 @@
 <!ENTITY enigmail.keyDetails.size.label "Rozmiar">
 <!ENTITY enigmail.keyDetails.created.label "Utworzony">
 <!ENTITY enigmail.keyDetails.expiry.label "Wygasa">
+<!ENTITY enigmail.keyDetails.usage.label "Użycie">
 <!ENTITY enigmail.keyDetails.calcTrust.label "Zaufanie wyliczone">
 <!ENTITY enigmail.keyDetails.ownerTrust.label "Zaufanie użytkownika">
 <!ENTITY enigmail.keyDetails.fingerprint.label "Odcisk klucza">
@@ -498,7 +499,7 @@
 <!ENTITY enigmail.cardDetails.editData.accesskey "E">
 <!ENTITY enigmail.genCardKey.title "Generowanie klucza OpenPGP">
 <!ENTITY enigmail.genCardKey.backupKey.label "Zapisz kopię klucza poza kartą">
-<!ENTITY enigmail.genCardKey.desc "<a class='enigmailStrong'>Uwaga! Generowanie klucza może potrwać kilka minut.</a> Nie zamykaj programu w trakcie działania generatora. Koniec procesu zostanie zasygnalizowany odpowiednim komunikatem.">
+<!ENTITY enigmail.genCardKey.desc "<a class=\'enigmailStrong\'>Uwaga! Generowanie klucza może potrwać kilka minut.</a> Nie zamykaj programu w trakcie działania generatora. Koniec procesu zostanie zasygnalizowany odpowiednim komunikatem.">
 <!ENTITY enigmail.cardPin.title "Zmień PIN karty SmartCard">
 <!ENTITY enigmail.cardPin.action.label "Wybierz czynność">
 <!ENTITY enigmail.cardPin.changePin.label "Zmień PIN">
@@ -517,107 +518,43 @@
 <!ENTITY enigmail.setupWiz.title "Ustawienia OpenPGP">
 <!ENTITY enigmail.setupWiz.yes "Tak">
 <!ENTITY enigmail.setupWiz.no "Nie, dziękuję">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "Asystent konfiguracji umożliwia szybkie ustawienie opcji Enigmail OpenPGP. W kilku następnych
-
-
-                                                      oknach pojawią się pytania, które pomogą w poprawnej konfiguracji tego rozszerzenia.
-
-">
+<!ENTITY enigmail.setupWiz.pgWelcome.desc "Asystent konfiguracji umożliwia szybkie ustawienie opcji Enigmail OpenPGP. W kilku następnych\n\n\n\n\n\n\n                                                      oknach pojawią się pytania, które pomogą w poprawnej konfiguracji tego rozszerzenia.\n\n\n\n">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "Czy chcesz uruchomić asystenta konfiguracji OpenPGP teraz?">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "Tak, chcę użyć asystenta teraz">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "Nie, dziękuję. Wszystkie opcje ustawię ręcznie">
 <!ENTITY enigmail.setupWiz.pgSelectId.title "Wybór tożsamości">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Wybierz konta lub tożsamości, które będą współpracowały z OpenPGP">
-<!ENTITY enigmail.setupWiz.pgSelectId.desc "Ustawienia OpenPGP są oddzielne dla każdego konta i tożsamości. Domyślnie
-
-
-                                                      obsługa OpenPGP zostanie ustawiona dla każdego konta i tożsamości.
-
-                                                      Jeżeli nie ma takiej potrzeby, wybierz poniżej konta i tożsamości,
-
-                                                      które będą współpracowały z OpenPGP.">
+<!ENTITY enigmail.setupWiz.pgSelectId.desc "Ustawienia OpenPGP są oddzielne dla każdego konta i tożsamości. Domyślnie\n\n\n\n\n\n\n                                                      obsługa OpenPGP zostanie ustawiona dla każdego konta i tożsamości.\n\n\n\n                                                      Jeżeli nie ma takiej potrzeby, wybierz poniżej konta i tożsamości,\n\n\n\n                                                      które będą współpracowały z OpenPGP.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "Czy chcesz włączyć obsługę OpenPGP dla wszystkich tożsamości?">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Chcę włączyć OpenPGP tylko dla wybranych tożsamości:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Uwaga!</a> OpenPGP będzie zawsze weryfikować podpisy w
-
-
-                                                      wiadomościach dla wszystkich tożsamości i kont, niezależnie od tego czy obsługa OpenPGP jest włączona czy nie">
+<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class=\'enigmailStrong\'>Uwaga!</a> OpenPGP będzie zawsze weryfikować podpisy w\n\n\n\n\n\n\n                                                      wiadomościach dla wszystkich tożsamości i kont, niezależnie od tego czy obsługa OpenPGP jest włączona czy nie">
 <!ENTITY enigmail.setupWiz.pgSign.title "Podpisywanie wiadomości">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "Podpis cyfrowy dla wiadomości wychodzących">
-<!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP umożliwia cyfrowe podpisywanie wiadomości. Jest to rodzaj elektronicznej
-
-
-                                                      wersji własnoręcznego podpisu pod listem, który pozwala adresatom stwierdzić, 
-
-                                                      że wiadomość naprawdę pochodzi od tego nadawcy. Podpisywanie wszystkich wychodzących
-
-                                                      wiadomości to dobry zwyczaj poprawiający bezpieczeństwo komunikacji.
-
-">
+<!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP umożliwia cyfrowe podpisywanie wiadomości. Jest to rodzaj elektronicznej\n\n\n\n\n\n\n                                                      wersji własnoręcznego podpisu pod listem, który pozwala adresatom stwierdzić, \n\n\n\n                                                      że wiadomość naprawdę pochodzi od tego nadawcy. Podpisywanie wszystkich wychodzących\n\n\n\n                                                      wiadomości to dobry zwyczaj poprawiający bezpieczeństwo komunikacji.\n\n\n\n">
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg "Czy podpisywać wszystkie wysyłane wiadomości?">
 <!ENTITY enigmail.setupWiz.pgSign.yesSign "Tak, chcę podpisywać wszystkie wiadomości">
 <!ENTITY enigmail.setupWiz.pgSign.noSign "Nie, chcę utworzyć reguły dla adresatów, do których wiadomości mają być podpisywane">
 <!ENTITY enigmail.setupWiz.pgEnc.title "Szyfrowanie wiadomości">
 <!ENTITY enigmail.setupWiz.pgEnc.subtitle "Szyfrowanie wiadomości wychodzących">
-<!ENTITY enigmail.setupWiz.pgEnc.desc "OpenPGP umożliwia zaszyfrowanie treści wiadomości i wszystkich załączników.
-
-
-                                                      Szyfrowanie jest odpowiednikiem umieszczenia listu w kopercie. Zapewnia pewien
-
-                                                      poziom prywatności. Służy nie tylko do wysyłania „tajnych” wiadomości, ale
-
-                                                      też wszystkiego czego nie pisze się, na przykład na zwykłych kartkach pocztowych.
-
-">
+<!ENTITY enigmail.setupWiz.pgEnc.desc "OpenPGP umożliwia zaszyfrowanie treści wiadomości i wszystkich załączników.\n\n\n\n\n\n\n                                                      Szyfrowanie jest odpowiednikiem umieszczenia listu w kopercie. Zapewnia pewien\n\n\n\n                                                      poziom prywatności. Służy nie tylko do wysyłania „tajnych” wiadomości, ale\n\n\n\n                                                      też wszystkiego czego nie pisze się, na przykład na zwykłych kartkach pocztowych.\n\n\n\n">
 <!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg "Czy wszystkie wiadomości wychodzące mają być zaszyfrowane?">
 <!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt "Tak, mam klucze publiczne większości moich kontaktów">
 <!ENTITY enigmail.setupWiz.pgEnc.noEncrypt "Nie, chcę utworzyć reguły dla adresatów, którzy dostarczyli mi swój klucz publiczny">
 <!ENTITY enigmail.setupWiz.pgSettings.title "Ustawienia programu">
 <!ENTITY enigmail.setupWiz.pgSettings.subtitle "Zmiana ustawień programu umożliwiająca bardziej niezawodne działanie OpenPGP">
-<!ENTITY enigmail.setupWiz.pgSettings.desc "Asystent ten pomoże zmienić ustawienia programu pocztowego, tak aby nie powodować problemów
-
-
-                                                      podczas podpisywania, czy szyfrowania wiadomości. Ustawienia te w większości dotyczą
-
-                                                      spraw technicznych, które nie są bezpośrednio widoczne. Ważną i widoczną zmianą
-
-                                                      będzie domyślne ustawienie tworzenia i wysyłania wiadomości jako zwykły tekst.">
-<!ENTITY enigmail.setupWiz.pgSettings.changePref "Czy chcesz zmienić niektóre domyślne opcje programu, tak by poprawić działanie OpenPGP
-
-
-                                                      na tym komputerze?">
+<!ENTITY enigmail.setupWiz.pgSettings.desc "Asystent ten pomoże zmienić ustawienia programu pocztowego, tak aby nie powodować problemów\n\n\n\n\n\n\n                                                      podczas podpisywania, czy szyfrowania wiadomości. Ustawienia te w większości dotyczą\n\n\n\n                                                      spraw technicznych, które nie są bezpośrednio widoczne. Ważną i widoczną zmianą\n\n\n\n                                                      będzie domyślne ustawienie tworzenia i wysyłania wiadomości jako zwykły tekst.">
+<!ENTITY enigmail.setupWiz.pgSettings.changePref "Czy chcesz zmienić niektóre domyślne opcje programu, tak by poprawić działanie OpenPGP\n\n\n\n\n\n\n                                                      na tym komputerze?">
 <!ENTITY enigmail.setupWiz.pgSettings.details "Szczegóły…">
 <!ENTITY enigmail.setupWiz.pgKeySel.title "Wybór klucza">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "Utwórz nowy klucz do podpisywania i szyfrowania wiadomości">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc "Asystent konfiguracji wykrył, że masz już klucz OpenPGP. W takim przypadku można użyć
-
-
-                                                      jednego z istniejących kluczy do podpisu, szyfrowania i odszyfrowywania
-
-                                                      lub można utworzyć nową parę kluczy.">
+<!ENTITY enigmail.setupWiz.pgKeySel.desc "Asystent konfiguracji wykrył, że masz już klucz OpenPGP. W takim przypadku można użyć\n\n\n\n\n\n\n                                                      jednego z istniejących kluczy do podpisu, szyfrowania i odszyfrowywania\n\n\n\n                                                      lub można utworzyć nową parę kluczy.">
 <!ENTITY enigmail.setupWiz.pgKeySel.createKey "Czy utworzyć nową parę kluczy?">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey "Chcę utworzyć nową parę kluczy do podpisywania i szyfrowania wiadomości">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Chcę wybrać jeden z istniejących kluczy:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "Tworzenie klucza">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Utwórz klucz do podpisu i szyfrowania wiadomości">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Aby podpisywać, szyfrować lub czytać zaszyfrowane wiadomości od innych,
-
-
-                                                      potrzebna jest „para kluczy”. Para kluczy to dwa klucze, jeden publiczny
-
-                                                      i jeden prywatny.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Własny klucz publiczny należy przekazać wszystkim z listy kontaktów, którzy
-
-
-                                                      będą chcieli zweryfikować twój podpis lub zaszyfrować wiadomość do Ciebie.
-
-                                                      W międzyczasie należy zabezpieczyć swój klucz prywatny. Nie można go nigdzie
-
-                                                      udostępniać, ani pozostawiać bez zabezpieczenia. Za jego pomocą można odczytać
-
-                                                      wszystkie szyfrowane do Ciebie wiadomości. Można nim także zaszyfrować wiadomość
-
-                                                      w Twoim imieniu. Ponieważ jest to klucz prywatny, jest on zabezpieczony hasłem.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Aby podpisywać, szyfrować lub czytać zaszyfrowane wiadomości od innych,\n\n\n\n\n\n\n                                                      potrzebna jest „para kluczy”. Para kluczy to dwa klucze, jeden publiczny\n\n\n\n                                                      i jeden prywatny.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Własny klucz publiczny należy przekazać wszystkim z listy kontaktów, którzy\n\n\n\n\n\n\n                                                      będą chcieli zweryfikować twój podpis lub zaszyfrować wiadomość do Ciebie.\n\n\n\n                                                      W międzyczasie należy zabezpieczyć swój klucz prywatny. Nie można go nigdzie\n\n\n\n                                                      udostępniać, ani pozostawiać bez zabezpieczenia. Za jego pomocą można odczytać\n\n\n\n                                                      wszystkie szyfrowane do Ciebie wiadomości. Można nim także zaszyfrować wiadomość\n\n\n\n                                                      w Twoim imieniu. Ponieważ jest to klucz prywatny, jest on zabezpieczony hasłem.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Potwierdź hasło, wpisując je jeszcze raz">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.title "Nie znaleziono klucza OpenPGP">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.subtitle "Nie można znaleźć żadnego klucza OpenPGP">
@@ -644,10 +581,7 @@
 <!ENTITY enigmail.setupWiz.details.8bitEncoding "Włącz 8-bitowe kodowanie wysyłanych wiadomości">
 <!ENTITY enigmail.setupWiz.details.noComposeHTML "Wyłącz tworzenie wiadomości w formacie HTML">
 <!ENTITY enigmail.setupWiz.pgNoStart.title "Wyłącz asystenta">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc "Wyłączono asystenta konfiguracji OpenPGP.
-
-
-                                                      <html:br/><html:br/>Dziękujemy za wybór Enigmail OpenPGP!">
+<!ENTITY enigmail.setupWiz.pgNoStart.desc "Wyłączono asystenta konfiguracji OpenPGP.\n\n\n\n\n\n\n                                                      <html:br/><html:br/>Dziękujemy za wybór Enigmail OpenPGP!">
 <!ENTITY enigmail.advancedIdentityDlg.title "Zaawansowane ustawienia tożsamości OpenPGP">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "Dołącz mój klucz publiczny do wiadomości">
 <!ENTITY enigmail.addPhoto.question.label "Czy chcesz dodać ten obrazek do tego klucza?">

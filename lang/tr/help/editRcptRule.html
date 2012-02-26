@@ -1,14 +1,13 @@
 <html>
 <head><title>Enigmail Help: Edit OpenPGP Rule</title>
-<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 </head>
 <body>
 <h1>Enigmail Help</h1>
 
 <h3>Using the Enigmail Rules Editor: Edit OpenPGP Rule</h3>
-<p>In the Rules Editor, you can specify defaults per recipient for enabling
-encryption, signing and PGP/MIME, and to define what OpenPGP key(s) to use. In this
-dialog, you can specify the rules for a single recipient, and for a group
+<p>In the Rules Editor, you can specify defaults per recipient for enabling 
+encryption, signing and PGP/MIME, and to define what OpenPGP key(s) to use. In this 
+dialog, you can specify the rules for a single recipient, and for a group 
 of recipients with very similar attributes.
 </p>
 <ul>
@@ -20,7 +19,7 @@ of recipients with very similar attributes.
     be matched, e.g. <tt>@email.domain will</tt> allow matching to <tt>body@email.domain</tt>,
     <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt>, etc.
   </li>
-  <li><span style="font-weight: bold;">Apply rule if recipient ...</span>:
+  <li><span style="font-weight: bold;">Apply rule if recipient ...</span>: 
     This modifies the matching of the email addresses.
     If multiple addresses are entered, the setting will apply to all.
     The examples below are based on <tt>body@email.domain</tt>
@@ -45,20 +44,20 @@ of recipients with very similar attributes.
 
   </li>
   <li><span style="font-weight: bold;">Continue with the next rule for the matching address</span><br>
-      Enabling this function will allow you to define a rule but not have
-	  to specify a KeyID in the <em>Use the following OpenPGP keys:</em>
-	  field, so that the email address is used to check for a key at the
+      Enabling this function will allow you to define a rule but not have 
+	  to specify a KeyID in the <em>Use the following OpenPGP keys:</em> 
+	  field, so that the email address is used to check for a key at the 
 	  time of sending. Also, further rules for the same address(es) will
-	  be processed as well.
+	  be processed as well. 
   </li>
   <li><span style="font-weight: bold;">Do not check further rules for the matching address</span><br>
-	  Enabling this function stops processing any other rules for the
-	  matching address(es) if this rule is matched; i.e. rule processing
+	  Enabling this function stops processing any other rules for the 
+	  matching address(es) if this rule is matched; i.e. rule processing 
 	  continues with the next recipient.
   </li>
   <li><span style="font-weight: bold;">Use the following OpenPGP keys:</span><br>
-	  Use the <em>Select Key(s)..</em> button to select the recipient
-	  keys to be used for encryption. As in the action above, no further
+	  Use the <em>Select Key(s)..</em> button to select the recipient 
+	  keys to be used for encryption. As in the action above, no further 
 	  rules for the matching address(es) are processed.
   </li>
   <li><span style="font-weight: bold;">Default for Signing</span>: enable or disable
@@ -69,7 +68,7 @@ of recipients with very similar attributes.
     <li><i>Never</i>: disable signing, even if it was enabled in the message
        composition window (overrules the other values)<br>
     </li>
-    <li><i>Yes, if selected from in Message Composition</i>: leave signing
+    <li><i>Yes, if selected from in Message Composition</i>: leave signing 
       as specified in the message composition window
     </li>
     <li><i>Always</i>: enable signing, even if it was <span
@@ -87,16 +86,16 @@ will not be signed, regardless of other rules that specify <i>Always</i>.<br>
     disable message encryption. The allowed settings and their meaning are
     the same as for message signing.</li>
   <li><span style="font-weight: bold;">PGP/MIME</span>: enable or
-    disable the use of the PGP/MIME (RFC 3156) message encoding.
+    disable the use of the PGP/MIME (RFC 3156) message encoding. 
     If PGP/MIME is disabled, the
     messages are encoded using "inline PGP". The allowed values and their
     meaning are the same as for message signing.
   </li>
 </ul>
-<p>The rules are processed in the order displayed in the list in the
-<em>OpenPGP Rules Editor</em>. Whenever a rule
-matches a recipient and contains a OpenPGP Key ID, in addition to using the
-specified Key ID, the recipient is not considered anymore when processing
+<p>The rules are processed in the order displayed in the list in the 
+<em>OpenPGP Rules Editor</em>. Whenever a rule 
+matches a recipient and contains a OpenPGP Key ID, in addition to using the 
+specified Key ID, the recipient is not considered anymore when processing 
 further rules.
 </p>
 <hr/>

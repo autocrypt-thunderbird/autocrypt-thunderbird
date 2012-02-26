@@ -520,6 +520,10 @@
 <!ENTITY enigmail.setupWiz.pgWelcome.desc "Questa procedura guidata ti aiuta a iniziare a usare subito OpenPGP. Nelle prossime
 
 
+
+
+
+
                                                       schermate ti saranno fatte alcune domande per impostare correttamente tutto.">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "Vuoi avviare la procedura guidata adesso?">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "Sì, vorrei che la procedura guidata mi aiutasse a iniziare">
@@ -545,6 +549,8 @@
 <!ENTITY enigmail.setupWiz.pgSettings.title "Impostazioni">
 <!ENTITY enigmail.setupWiz.pgSettings.subtitle "Cambia le impostazioni delle tue email per fare in modo che OpenPGP lavori in modo più affidabile">
 <!ENTITY enigmail.setupWiz.pgSettings.desc "Questa procedura guidata può modificare le impostazioni delle tue email per fare in modo che non ci siano problemi nel cifrare e/o firmare le email sul tuo computer. Questi cambiamenti
+
+
 sono più che altro di natura tecnica e non dovresti neanche notarli, tranne per il fatto che le email saranno composte in testo semplice in modo predefinito.">
 <!ENTITY enigmail.setupWiz.pgSettings.changePref "Vuoi cambiare alcune impostazioni predefinite per fare in modo che OpenPGP funzioni meglio sul tuo computer?">
 <!ENTITY enigmail.setupWiz.pgSettings.details "Dettagli...">
