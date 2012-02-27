@@ -70,13 +70,13 @@
 <!ENTITY enigmail.keyservers.sample "Primer: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
 <!ENTITY enigmail.searchForKey.label "Išči ključ">
 <!ENTITY enigmail.disableSMIMEui.label "Skrij gumbe/menije SMIME">
-<!ENTITY enigmail.doubleDashSeparator.label "\'--\' obravnavaj kot ločilo podpisa">
+<!ENTITY enigmail.doubleDashSeparator.label "'--' obravnavaj kot ločilo podpisa">
 <!ENTITY enigmail.useGpgAgent.label "Za upravljanje s ključi uporabi program gpg-agent">
-<!ENTITY enigmail.noHushMailSupport.label "Uporabi \'&lt;\' in \'&gt;\' pri navajanju e-naslovov">
+<!ENTITY enigmail.noHushMailSupport.label "Uporabi '&lt;' in '&gt;' pri navajanju e-naslovov">
 <!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "Če je možno, šifriraj/podpiši odgovore na šifrirana/podpisana e-sporočila">
 <!ENTITY enigmail.doubleDashSeparator.tooltip "Dva vezaja v vrstici napovedujeta blok podpisa">
 <!ENTITY enigmail.useGpgAgent.tooltip "Uporabi gpg-agent (sestavni del GnuPG 2) za vse vnose gesel">
-<!ENTITY enigmail.noHushMailSupport.tooltip "Uporabi znaka \'&lt;\' in \'&gt;\' za določanje e-naslovov za GnuPG. Izključite, če imajo prejemniki stare ključe Hushmail.">
+<!ENTITY enigmail.noHushMailSupport.tooltip "Uporabi znaka '&lt;' in '&gt;' za določanje e-naslovov za GnuPG. Izključite, če imajo prejemniki stare ključe Hushmail.">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "To IZKLJUČITE, če prejemate sporočila PGP/MIME v mape IMAP.">
 <!ENTITY enigmail.disableSMIMEui.tooltip "Odstrani gumb S/MIME z orodne vrstice okna sestavljanja sporočila.">
 <!ENTITY enigmail.logdirectory.label "Mapa dnevnika">
@@ -192,7 +192,7 @@
 <!ENTITY enigmail.defaultSignMsg.accesskey "s">
 <!ENTITY enigmail.defaultNotSignedsend.accesskey "G">
 <!ENTITY enigmail.confirmBeforeSend.accesskey "b">
-<!ENTITY enigmail.keygen.desc "<a class=\'enigmailStrong\'>POZOR: Ustvarjanje ključa lahko traja več minut.</a> V tem času ne zaprite brskalnika. Ker je generator nakljunčnih števil odvisen od dejavnosti računalnika, je priporočljivo npr. aktivno brskati, da bi pospešili ustvarjanje ključa. Ko bo ključ ustvarjen, boste o tem takoj obveščeni.">
+<!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>POZOR: Ustvarjanje ključa lahko traja več minut.</a> V tem času ne zaprite brskalnika. Ker je generator nakljunčnih števil odvisen od dejavnosti računalnika, je priporočljivo npr. aktivno brskati, da bi pospešili ustvarjanje ključa. Ko bo ključ ustvarjen, boste o tem takoj obveščeni.">
 <!ENTITY enigmail.console.label "Prikaži konzolo OpenPGP">
 <!ENTITY enigmail.console.tooltip "Pokaži konzolo OpenPGP">
 <!ENTITY enigmail.uninstall.label "Odstrani Enigmail">
@@ -230,7 +230,7 @@
 <!ENTITY enigmail.ctxImportKey.accesskey "U">
 <!ENTITY enigmail.ctxVerifyAtt.accesskey "V">
 <!ENTITY enigmail.detailsHdrButton.label "Podrobnosti">
-<!ENTITY enigmail.revealAttachmentsButton.label "Imena pripetih datotek so skrita. Pritisnite gumb \\\'Razkrij\\\', pridobite izvorna imena datotek.">
+<!ENTITY enigmail.revealAttachmentsButton.label "Imena pripetih datotek so skrita. Pritisnite gumb \\'Razkrij\\', pridobite izvorna imena datotek.">
 <!ENTITY enigmail.amPrefTitle.label "Možnosti OpenPGP (Enigmail)">
 <!ENTITY enigmail.amPrefDesc.label "Enigmail omogoča šifriranje in podpisovanje sporočil OpenPGP. Da bi lahko izkoriščali njegove funkcije, mora biti nameščen GnuPG (gpg).">
 <!ENTITY enigmail.amPrefEnablePgp.label "Vklopi podporo OpenPGP (Enigmail) za to identiteto">
@@ -247,8 +247,8 @@
 <!ENTITY enigmail.encDlgPgpMime.accesskey "U">
 <!ENTITY enigmail.encDlgIgnoreRules.label "Prezri pravila po prejemnikih">
 <!ENTITY enigmail.encDlgIgnoreRules.accesskey "I">
-<!ENTITY enigmail.amPrefPgpHeader.label "Pošlji glavo \'OpenPGP\'">
-<!ENTITY enigmail.amPrefPgpHeader.none.label "Ne pošiljaj nobenih glav \'OpenPGP\'">
+<!ENTITY enigmail.amPrefPgpHeader.label "Pošlji glavo 'OpenPGP'">
+<!ENTITY enigmail.amPrefPgpHeader.none.label "Ne pošiljaj nobenih glav 'OpenPGP'">
 <!ENTITY enigmail.amPrefPgpHeader.id.label "Pošlji ID ključa OpenPGP">
 <!ENTITY enigmail.amPrefPgpHeader.url.label "Pošlji URL za pridobitev ključa:">
 <!ENTITY enigmail.retrieveKey.label "Prejemanje ključev">
@@ -284,9 +284,9 @@
 <!ENTITY enigmail.never.label "nikoli">
 <!ENTITY enigmail.always.label "vedno">
 <!ENTITY enigmail.maybe.label "da, če je tako izbrano pri sestavljanju">
-<!ENTITY enigmail.singleRcptSettings.desc "(Napotek: pri konfliktih ima \'nikoli\' prednost pred \'vedno\')">
+<!ENTITY enigmail.singleRcptSettings.desc "(Napotek: pri konfliktih ima 'nikoli' prednost pred 'vedno')">
 <!ENTITY enigmail.ruleEmail.label "Pravila prejemnika za">
-<!ENTITY enigmail.ruleEmail.tooltip "Vnesite le e-poštni naslov - brez imena prejemnika\\nPrimer: \'Janez Kranjski <janez.kranjski@domena.si>\' je neveljavno">
+<!ENTITY enigmail.ruleEmail.tooltip "Vnesite le e-poštni naslov - brez imena prejemnika\\nPrimer: 'Janez Kranjski <janez.kranjski@domena.si>' je neveljavno">
 <!ENTITY enigmail.sepratationDesc.label "(več e-poštnih naslovov loči s presledki)">
 <!ENTITY enigmail.matchDescStart.label "Pravila uporabi, ko uporabnik">
 <!ENTITY enigmail.matchDescEnd.label "enega gornjih naslovov">
@@ -498,7 +498,7 @@
 <!ENTITY enigmail.cardDetails.editData.accesskey "U">
 <!ENTITY enigmail.genCardKey.title "Ustvari ključ OpenPGP">
 <!ENTITY enigmail.genCardKey.backupKey.label "Shrani varnostno kopijo ključa zunaj kartice">
-<!ENTITY enigmail.genCardKey.desc "<a class=\'enigmailStrong\'>OPOMBA: Tvorba ključa lahko traja nekaj minut.</a> Ne zaprite aplikacije, medtem ko je tvorba ključa v teku. Ko bo ključ izdelan, boste o tem obveščeni.">
+<!ENTITY enigmail.genCardKey.desc "<a class='enigmailStrong'>OPOMBA: Tvorba ključa lahko traja nekaj minut.</a> Ne zaprite aplikacije, medtem ko je tvorba ključa v teku. Ko bo ključ izdelan, boste o tem obveščeni.">
 <!ENTITY enigmail.cardPin.title "Spremeni PIN pametne kartice">
 <!ENTITY enigmail.cardPin.action.label "Kaj želite storiti?">
 <!ENTITY enigmail.cardPin.changePin.label "Spremeni PIN">
@@ -526,7 +526,7 @@
 <!ENTITY enigmail.setupWiz.pgSelectId.desc "Nastavitve OpenPGP se ločijo po računih in identitetah. Privzeta nastavitev OpenPGP je delo z vsemi računi in identitetami. Če tega ne želite, izberite določen račun ali identiteto, s katero želite OpenPGP povezati.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "Želite nastaviti OpenPGP za vse identitete?">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "OpenPGP želim nastaviti samo za naslednje identitete:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class=\'enigmailStrong\'>Opomba:</a> OpenPGP bo vedno preverjal podpise e-sporočil za vsak račun ali identiteto, ne glede na to, ali je omogočeno ali ne">
+<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Opomba:</a> OpenPGP bo vedno preverjal podpise e-sporočil za vsak račun ali identiteto, ne glede na to, ali je omogočeno ali ne">
 <!ENTITY enigmail.setupWiz.pgSign.title "Podpisovanje">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "Digitalno podpisujte odhodna e-sporočila">
 <!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP vam omogoča digitalno podpisovanje e-sporočil. To je kot elektronska različica podpisovanja pisem in omogoča ljudem, da so prepričani, da je e-sporočilo resnično vaše.  Dobra varnostna praksa je, da podpisujete vsa odhodna sporočila.">
@@ -552,7 +552,7 @@
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Želim izbrati enega od spodnjih ključev za podpisovanje in šifriranje e-sporočil:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "Ustvari ključ">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Ustvari ključ za podpisovanje in šifriranje e-sporočil">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Za podpisovanje in šifriranje ter branje šifriranih sporočil potrebujete  \'par ključev\'. Par ključev sestavljata dva ključa, eden je javen in drug zaseben.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Za podpisovanje in šifriranje ter branje šifriranih sporočil potrebujete  'par ključev'. Par ključev sestavljata dva ključa, eden je javen in drug zaseben.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Svoj javni ključ boste morali dati vsem stikom v svojem seznamu, ki bi želeli preverjati vaš podpis ali želeli šifrirati e-sporočila za vas. Z druge strani morate svoj zasebni ključ tajno varovati. Ne smete ga pošiljati, ali puščati nezaščitenega. Z njim lahko tretja oseba prebere vsa e-sporočila, ki vam jih pošiljatelji pošiljajo šifrirana. Prav tako lahko z njim šifrirajo sporočila v vašem imenu. Ker je tajen, je zaščiten z geslom.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Prosimo, potrdite svojo geslo s ponovnim vnosom">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.title "Ključa OpenPGP ni mogoče najti">
@@ -566,7 +566,7 @@
 <!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile "Datoteka javnega ključa">
 <!ENTITY enigmail.setupWiz.pgSummary.title "Povzetek">
 <!ENTITY enigmail.setupWiz.pgSummary.subtitle "Potrdite, da čarovnik upošteva te spremembe">
-<!ENTITY enigmail.setupWiz.pgSummary.desc "Zdaj ste skoraj končali! Če kliknete na gumb \'Naprej\', bo čarovnik izvedel naslednja dejanja:">
+<!ENTITY enigmail.setupWiz.pgSummary.desc "Zdaj ste skoraj končali! Če kliknete na gumb 'Naprej', bo čarovnik izvedel naslednja dejanja:">
 <!ENTITY enigmail.setupWiz.pgKeygen.title "Tvorba ključa">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "Vaš ključ se ustvarja">
 <!ENTITY enigmail.setupWiz.pgComplete.title "Hvala">

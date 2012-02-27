@@ -70,13 +70,13 @@
 <!ENTITY enigmail.keyservers.sample "Príklad: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
 <!ENTITY enigmail.searchForKey.label "Hľadanie kľúča">
 <!ENTITY enigmail.disableSMIMEui.label "Skryť SMIME tlačidlá/ponuky">
-<!ENTITY enigmail.doubleDashSeparator.label "\'--\' je oddelovač podpisu">
+<!ENTITY enigmail.doubleDashSeparator.label "'--' je oddelovač podpisu">
 <!ENTITY enigmail.useGpgAgent.label "Použiť gpg-agenta pre heslá">
-<!ENTITY enigmail.noHushMailSupport.label "Použiť \'&lt;\' a \'&gt;\' k určeniu e-mailovej adresy">
+<!ENTITY enigmail.noHushMailSupport.label "Použiť '&lt;' a '&gt;' k určeniu e-mailovej adresy">
 <!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "Ak je to možné, zašifruj/podpíš odpoveď na zašifrovaný/podpísaný email">
 <!ENTITY enigmail.doubleDashSeparator.tooltip "Samotné dve pomlčky na riadku označia blok s podpisom">
 <!ENTITY enigmail.useGpgAgent.tooltip "Použiť gpg-agenta (súčasť GnuPG 2) pre všetky vstupy hesla">
-<!ENTITY enigmail.noHushMailSupport.tooltip "Použiť \'&lt;\' a \'&gt;\' znaky pre určenie e-mailovej adresy pre GnuPG. Zakážte, pokiaľ príjemca používa staré kľúče Hushmail.">
+<!ENTITY enigmail.noHushMailSupport.tooltip "Použiť '&lt;' a '&gt;' znaky pre určenie e-mailovej adresy pre GnuPG. Zakážte, pokiaľ príjemca používa staré kľúče Hushmail.">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "Toto je potrebné vypnúť, ak príjmate PGP/MIME správy v IMAP zložkách.">
 <!ENTITY enigmail.disableSMIMEui.tooltip "Odstrániť tlačidlo S/MIME z menu okna vytvárania správy">
 <!ENTITY enigmail.logdirectory.label "Adresár záznamu">
@@ -192,7 +192,7 @@
 <!ENTITY enigmail.defaultSignMsg.accesskey "S">
 <!ENTITY enigmail.defaultNotSignedsend.accesskey "G">
 <!ENTITY enigmail.confirmBeforeSend.accesskey "A">
-<!ENTITY enigmail.keygen.desc "<a class=\'enigmailStrong\'>Upozornenie: tvorba kľúča môže trvať niekoľko minút.</a> Neukončujte aplikáciu, pokiaľ prebieha vytváranie kľúča. Proces sa urýchli a zlepší, pokiaľ budete aktívne pracovať s prehliadačom a často pristupovať k harddisku. Na to, že je kľúč vytvorený, budete upozornený/á.">
+<!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>Upozornenie: tvorba kľúča môže trvať niekoľko minút.</a> Neukončujte aplikáciu, pokiaľ prebieha vytváranie kľúča. Proces sa urýchli a zlepší, pokiaľ budete aktívne pracovať s prehliadačom a často pristupovať k harddisku. Na to, že je kľúč vytvorený, budete upozornený/á.">
 <!ENTITY enigmail.console.label "Zobraziť konzolu OpenPGP">
 <!ENTITY enigmail.console.tooltip "Zobraziť konzolu OpenPGP">
 <!ENTITY enigmail.uninstall.label "Odinštalovať Enigmail">
@@ -230,7 +230,7 @@
 <!ENTITY enigmail.ctxImportKey.accesskey "I">
 <!ENTITY enigmail.ctxVerifyAtt.accesskey "V">
 <!ENTITY enigmail.detailsHdrButton.label "Podrobnosti">
-<!ENTITY enigmail.revealAttachmentsButton.label "Mená priložených súborov sú skryté. Stlačte \'Reveal\' tlačidlo na zobrazenie pôvodných mien súborov.">
+<!ENTITY enigmail.revealAttachmentsButton.label "Mená priložených súborov sú skryté. Stlačte 'Reveal' tlačidlo na zobrazenie pôvodných mien súborov.">
 <!ENTITY enigmail.amPrefTitle.label "Nastavenie OpenPGP (Enigmail)">
 <!ENTITY enigmail.amPrefDesc.label "Podporu podpisovania a šifrovania pomocou OpenPGP zaisťuje Enigmail. Potrebujete mať nainštalovaný GnuPG (gpg), aby bolo možné túto funkciu použiť.">
 <!ENTITY enigmail.amPrefEnablePgp.label "Povoliť podporu OpenPGP (Enigmail) pre túto identitu">
@@ -284,9 +284,9 @@
 <!ENTITY enigmail.never.label "Nikdy">
 <!ENTITY enigmail.always.label "Vždy">
 <!ENTITY enigmail.maybe.label "Áno, ak je to zvolené pri vytváraní správy">
-<!ENTITY enigmail.singleRcptSettings.desc "(Upozornenie: \'Nikdy\' v prípade konfliktu ruší \'Vždy\')">
+<!ENTITY enigmail.singleRcptSettings.desc "(Upozornenie: 'Nikdy' v prípade konfliktu ruší 'Vždy')">
 <!ENTITY enigmail.ruleEmail.label "Nastaviť pravidla OpenPGP pre">
-<!ENTITY enigmail.ruleEmail.tooltip "Vyplňte iba e-mailové adresy, NIE mená príjemcov\\\\nNapr. \\\'meno <meno@adresa.sk>\\\' je nesprávne">
+<!ENTITY enigmail.ruleEmail.tooltip "Vyplňte iba e-mailové adresy, NIE mená príjemcov\\\\nNapr. \\'meno <meno@adresa.sk>\\' je nesprávne">
 <!ENTITY enigmail.sepratationDesc.label "(Niekoľko e-mailových adries oddeľte medzerami)">
 <!ENTITY enigmail.matchDescStart.label "Použiť pravidlo, ak príjemca">
 <!ENTITY enigmail.matchDescEnd.label "jedna/u z hore uvedených adries">
@@ -499,7 +499,7 @@
 <!ENTITY enigmail.cardDetails.editData.accesskey "E">
 <!ENTITY enigmail.genCardKey.title "Vytvoriť kľúč OpenPGP">
 <!ENTITY enigmail.genCardKey.backupKey.label "Uložiť zálohu kľúča mimo SmartCard">
-<!ENTITY enigmail.genCardKey.desc "<a class=\'enigmailStrong\'>Upozornenie: Vytváranie kľúča môže trvať niekoľko minút.</a> Neukončujte aplikáciu, pokiaľ prebieha vytváranie kľúčov. Na to, že je kľúč vytvorený, budete upozornený/a.">
+<!ENTITY enigmail.genCardKey.desc "<a class='enigmailStrong'>Upozornenie: Vytváranie kľúča môže trvať niekoľko minút.</a> Neukončujte aplikáciu, pokiaľ prebieha vytváranie kľúčov. Na to, že je kľúč vytvorený, budete upozornený/a.">
 <!ENTITY enigmail.cardPin.title "Zmeniť PIN pre SmartCard">
 <!ENTITY enigmail.cardPin.action.label "Čo chcete urobiť">
 <!ENTITY enigmail.cardPin.changePin.label "Zmeniť PIN">
@@ -527,7 +527,7 @@
 <!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP se vždy nastavuje špecificky pre každý účet a identitu. Štandardne sa OpenPGP nakonfiguruje samo pre prácu s všetkými Vašimi účtami a identitami. Ak si toto neprajete, vyberte prosím konkrétny účet alebo identitu, s ktorými má OpenPGP pracovať.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "Chcete nastaviť OpenPGP pre všetky identity?">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Prajem si nastaviť OpenPGP iba pre následujúcu identitu:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class=\'enigmailStrong\'>Upozornenie:</a> OpenPGP bude vždy overovať podpisy v e-mailoch všetkých identít a účtov bez ohľadu na to, či je to v nich povolené">
+<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Upozornenie:</a> OpenPGP bude vždy overovať podpisy v e-mailoch všetkých identít a účtov bez ohľadu na to, či je to v nich povolené">
 <!ENTITY enigmail.setupWiz.pgSign.title "Podpisovanie">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "Elektronické podpisovanie odchádzajúcich e-mailov">
 <!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP umožňuje digitálne podpisovať Vaše e-mailové správy. Je to vlastne elektronická podoba podpisu v dopise a umožní adresátovi byť si istý tím, že e-mailová správa je naozaj od vás. Z hľadiska zabezpečenia je podpisovanie všetkých odchádzajúcich e-mailov dobré.">
@@ -553,7 +553,7 @@
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Prajem si vyberať jeden z nižšie uvedených kľúčov pre podpisovanie a šifrovanie svojich správ:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "Vytvoriť kľúč">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Vytvárať kľúč pre podpisovanie a šifrovanie e-mailov">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Pre podpisovanie a šifrovanie e-mailov alebo čítanie zašifrovaných e-mailov potrebujete \'pár kľúčov\'. Pár kľúčov obsahuje dva kľúče, jeden je verejný a jeden súkromný.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Pre podpisovanie a šifrovanie e-mailov alebo čítanie zašifrovaných e-mailov potrebujete 'pár kľúčov'. Pár kľúčov obsahuje dva kľúče, jeden je verejný a jeden súkromný.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Svoj verejný kľúč by ste mal/a dať všetkým ľudom zo svojho adresára, ktorý budú overovať váš podpis alebo pre Vás budú šifrovať e-maily. Svoj súkromný kľúč musíte zároveň držať v tajnosti. Nesmiete ho stratiť alebo nechať bez ochrany. Iba s ním prečítate e-maily, ktoré Vám ostatní zašifrujú a pošlú. Tajný kľúč je chránený heslom.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Napíšte prosím svoje heslo znovu a potvrďte ho">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.title "Žiadny OpenPGP kľúč nenájdený">
@@ -567,7 +567,7 @@
 <!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile "Súbor so súkromným kľúčom">
 <!ENTITY enigmail.setupWiz.pgSummary.title "Zhrnutie">
 <!ENTITY enigmail.setupWiz.pgSummary.subtitle "Súhlasím, aby sprievodca teraz vykonal tieto zmeny">
-<!ENTITY enigmail.setupWiz.pgSummary.desc "Nastavenie je takmer kompletné! Pokiaľ kliknete na tlačidlo \'Ďalej\', sprievodca vykoná následujúce akcie:">
+<!ENTITY enigmail.setupWiz.pgSummary.desc "Nastavenie je takmer kompletné! Pokiaľ kliknete na tlačidlo 'Ďalej', sprievodca vykoná následujúce akcie:">
 <!ENTITY enigmail.setupWiz.pgKeygen.title "Vytvorenie kľúča">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "Váš kľúč je teraz generovaný">
 <!ENTITY enigmail.setupWiz.pgComplete.title "Ďakujem">

@@ -70,13 +70,13 @@
 <!ENTITY enigmail.keyservers.sample "Eksempel: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
 <!ENTITY enigmail.searchForKey.label "Søk etter nøkkel">
 <!ENTITY enigmail.disableSMIMEui.label "Gjem SMIME knapper/menyer">
-<!ENTITY enigmail.doubleDashSeparator.label "\'--\' er en signaturseparator">
+<!ENTITY enigmail.doubleDashSeparator.label "'--' er en signaturseparator">
 <!ENTITY enigmail.useGpgAgent.label "Bruk gpg-agent for passordhåndtering">
-<!ENTITY enigmail.noHushMailSupport.label "Bruk \'&lt;\' og \'&gt;\' for å spesifisere epostadresser">
+<!ENTITY enigmail.noHushMailSupport.label "Bruk '&lt;' og '&gt;' for å spesifisere epostadresser">
 <!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "Når mulig; krypter/signer svar til krypterte/signerte meldinger">
 <!ENTITY enigmail.doubleDashSeparator.tooltip "To sterker for seg selv denoterer en signaturblokk.">
 <!ENTITY enigmail.useGpgAgent.tooltip "Bruk gpg-agent (del av GnuPG 2) for all passordhåndtering.">
-<!ENTITY enigmail.noHushMailSupport.tooltip "Bruk tegnene \'&lt;\' og \'&gt;\' for å spesifsere epostadresser GnuPG. Deaktver om mottagerne bruker gamle Hushmail nøkler.">
+<!ENTITY enigmail.noHushMailSupport.tooltip "Bruk tegnene '&lt;' og '&gt;' for å spesifsere epostadresser GnuPG. Deaktver om mottagerne bruker gamle Hushmail nøkler.">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "Du bør skru denne av om du motter OpenPGP/MIME meldinger i IMAP-mapper.">
 <!ENTITY enigmail.disableSMIMEui.tooltip "Ta vekk S/MIME knappen fra vinduet for meldingsskrivng">
 <!ENTITY enigmail.logdirectory.label "Loggmappe">
@@ -191,7 +191,7 @@
 <!ENTITY enigmail.defaultSignMsg.accesskey "S">
 <!ENTITY enigmail.defaultNotSignedsend.accesskey "G">
 <!ENTITY enigmail.confirmBeforeSend.accesskey "A">
-<!ENTITY enigmail.keygen.desc "<a class=\'enigmailStrong\'>MERK: Nøkkelgenerering kan ta intill flere minutter å gjennomføre.</a> Ikke avbryt programmet mens høkkelgenerering pågår. Gjennomføring av harddisk-insentive oppgavevr mens nøkkelgenrerering pågår vil gjøre prosessen hurtigere. Du vil få beskjed når nøkkelgenerering er fullført.">
+<!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>MERK: Nøkkelgenerering kan ta intill flere minutter å gjennomføre.</a> Ikke avbryt programmet mens høkkelgenerering pågår. Gjennomføring av harddisk-insentive oppgavevr mens nøkkelgenrerering pågår vil gjøre prosessen hurtigere. Du vil få beskjed når nøkkelgenerering er fullført.">
 <!ENTITY enigmail.console.label "Vis Enigmail konsoll">
 <!ENTITY enigmail.console.tooltip "Vis Enigmail konsoll">
 <!ENTITY enigmail.uninstall.label "Avinstaller Enigmail">
@@ -229,7 +229,7 @@
 <!ENTITY enigmail.ctxImportKey.accesskey "I">
 <!ENTITY enigmail.ctxVerifyAtt.accesskey "V">
 <!ENTITY enigmail.detailsHdrButton.label "Details">
-<!ENTITY enigmail.revealAttachmentsButton.label "The names of the files attached are hidden. Press the \'Reveal\' button to retrieve the original file names.">
+<!ENTITY enigmail.revealAttachmentsButton.label "The names of the files attached are hidden. Press the 'Reveal' button to retrieve the original file names.">
 <!ENTITY enigmail.amPrefTitle.label "OpenPGP Valg (Enigmail)">
 <!ENTITY enigmail.amPrefDesc.label "Støtte for OpenPGP kryptering og signering av meldinger er gitt av Enigmail. Du trenger GnuPG(gpg) for å benytte denne funksjonen.">
 <!ENTITY enigmail.amPrefEnablePgp.label "Aktiver støtte for OpenPGP (Enigmail) for denne identiteten">
@@ -246,8 +246,8 @@
 <!ENTITY enigmail.encDlgPgpMime.accesskey "U">
 <!ENTITY enigmail.encDlgIgnoreRules.label "Ignore Per-Recipient Rules">
 <!ENTITY enigmail.encDlgIgnoreRules.accesskey "I">
-<!ENTITY enigmail.amPrefPgpHeader.label "Send \'OpenPGP\' meldingstopp">
-<!ENTITY enigmail.amPrefPgpHeader.none.label "Ikke send \'OpenPGP\' meldingstopp">
+<!ENTITY enigmail.amPrefPgpHeader.label "Send 'OpenPGP' meldingstopp">
+<!ENTITY enigmail.amPrefPgpHeader.none.label "Ikke send 'OpenPGP' meldingstopp">
 <!ENTITY enigmail.amPrefPgpHeader.id.label "Send OpenPGP NøkkelID">
 <!ENTITY enigmail.amPrefPgpHeader.url.label "Send URL for nøkkelhenting:">
 <!ENTITY enigmail.retrieveKey.label "Mottak av nøkler">
@@ -283,9 +283,9 @@
 <!ENTITY enigmail.never.label "Aldri">
 <!ENTITY enigmail.always.label "Alltid">
 <!ENTITY enigmail.maybe.label "Ja, om valgt i skrive-vindu">
-<!ENTITY enigmail.singleRcptSettings.desc "(MERK: Om konflikt gjelder \'Aldri\' over \'Alltid\')">
+<!ENTITY enigmail.singleRcptSettings.desc "(MERK: Om konflikt gjelder 'Aldri' over 'Alltid')">
 <!ENTITY enigmail.ruleEmail.label "Sett OpenPGP-regel for">
-<!ENTITY enigmail.ruleEmail.tooltip "Skriv bare inn epostadresse\\nFor eksempel \'Some Name <some.name@address.net>\' er ugyldig">
+<!ENTITY enigmail.ruleEmail.tooltip "Skriv bare inn epostadresse\\nFor eksempel 'Some Name <some.name@address.net>' er ugyldig">
 <!ENTITY enigmail.sepratationDesc.label "(Separer flere eposter med mellomrom)">
 <!ENTITY enigmail.matchDescStart.label "Gjør regel gjeldende om mottaker">
 <!ENTITY enigmail.matchDescEnd.label "en av adressene over">
@@ -497,7 +497,7 @@
 <!ENTITY enigmail.cardDetails.editData.accesskey "E">
 <!ENTITY enigmail.genCardKey.title "Generer OpenPGP Nøkkel">
 <!ENTITY enigmail.genCardKey.backupKey.label "Lagre backup utenfor smartcard">
-<!ENTITY enigmail.genCardKey.desc "<a class=\'enigmailStrong\'>MERK: Nøkkelgenerering kan ta flere minutter, ikke avslutt programmet, du vil få beskjed når det er fullført.">
+<!ENTITY enigmail.genCardKey.desc "<a class='enigmailStrong'>MERK: Nøkkelgenerering kan ta flere minutter, ikke avslutt programmet, du vil få beskjed når det er fullført.">
 <!ENTITY enigmail.cardPin.title "Endre SmartCard PIN">
 <!ENTITY enigmail.cardPin.action.label "Hva ønsker du å gjøre?">
 <!ENTITY enigmail.cardPin.changePin.label "Endre PIN">
@@ -516,7 +516,7 @@
 <!ENTITY enigmail.setupWiz.title "Kom igjang med OpenPGP">
 <!ENTITY enigmail.setupWiz.yes "ja">
 <!ENTITY enigmail.setupWiz.no "Nei takk">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "Denne hjelperen vil hjelpe deg med å komme i gang med OpenPGP med en gang. Over de neste stegene vil vi spørre deg noen spørsmål for å få alt ordnet. <html:br/><html:br/> For å gjøre ting enkelt vil vi gjøre noen forutsetninger angående instillingene. Disse forutsetningen prøver å gjøre en høy grad av sikkerhet tilgjengelig for en gjennomsnittlig bruker uten å gjøre ting vanskelig. Du kan endre alle disse instillingene etter hjelperen er ferdig. Du kan finne ut mer om OpenPGP funksjonene i Hjelp-menyen eller på <a class=\'enigmailLink\'><html:a href=\'http://enigmail.mozdev.org/\'>Enigmail websiden</html:a></a>.<html:br/><html:br/>Denne hjelperen er bare tilgjengelig første gang du installerer Enigmail.<html:br/><html:br/>Takk for at du valgte Enigmail OpenPGP!">
+<!ENTITY enigmail.setupWiz.pgWelcome.desc "Denne hjelperen vil hjelpe deg med å komme i gang med OpenPGP med en gang. Over de neste stegene vil vi spørre deg noen spørsmål for å få alt ordnet. <html:br/><html:br/> For å gjøre ting enkelt vil vi gjøre noen forutsetninger angående instillingene. Disse forutsetningen prøver å gjøre en høy grad av sikkerhet tilgjengelig for en gjennomsnittlig bruker uten å gjøre ting vanskelig. Du kan endre alle disse instillingene etter hjelperen er ferdig. Du kan finne ut mer om OpenPGP funksjonene i Hjelp-menyen eller på <a class='enigmailLink'><html:a href='http://enigmail.mozdev.org/'>Enigmail websiden</html:a></a>.<html:br/><html:br/>Denne hjelperen er bare tilgjengelig første gang du installerer Enigmail.<html:br/><html:br/>Takk for at du valgte Enigmail OpenPGP!">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "Ønsker du å benytte deg av hjelperen nå?">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "Ja, Jeg vil bruke hjelperen for å komme i gang">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "Nei, jeg ønsker å gjøre det selv">
@@ -525,7 +525,7 @@
 <!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP instillinger er spesifikke for kontoer og identiteter.  Som standard vil OpenPGP konfigurere seg selv for alle kontoer og identiteter. Om dette ikke er det du ønsker, vennligst velg den spesifikke kontoen eller identiten du vil OpenPGP skal fungere med.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "Jeg ønsker å sette opp OpenPGP for alle identiteter">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Jeg ønsker å sette opp OpenPGP bare for de følgende identiteter:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class=\'enigmailStrong\'>MER:</a> OpenPGP vil alltid prøve å bekrefte signaturer i eposter, om den er aktivert for en konto eller ikke">
+<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>MER:</a> OpenPGP vil alltid prøve å bekrefte signaturer i eposter, om den er aktivert for en konto eller ikke">
 <!ENTITY enigmail.setupWiz.pgSign.title "Signering">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "Digitalt signer dine utgående eposter">
 <!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP lar deg digitalt signere dine eposter. Dette er som en elektronisk versjon av å signere et brev, og det gjør det mulig for folk å bekrefte at eposten kommer fra deg. Det er en god sikkerhetsordning å signere alle utgående eposter. <html:br/><html:br/>For å kunne bekrefte din signerte epost trenger folk en OpenPGP-kompatibel klient. Om de ikke har en kompatibel klient vil de likevel kunne lese eposten, men signaturen vil vises som et vedlegg.">
@@ -565,7 +565,7 @@
 <!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile "Fil for private nøkler">
 <!ENTITY enigmail.setupWiz.pgSummary.title "Sammendrag">
 <!ENTITY enigmail.setupWiz.pgSummary.subtitle "Bekreft at hjelperen skal foreta disse endringene">
-<!ENTITY enigmail.setupWiz.pgSummary.desc "Du er nesten ferdig! Om du trykker \'Neste\' vil hjelperen gjøre følgende:">
+<!ENTITY enigmail.setupWiz.pgSummary.desc "Du er nesten ferdig! Om du trykker 'Neste' vil hjelperen gjøre følgende:">
 <!ENTITY enigmail.setupWiz.pgKeygen.title "Nøkkelgenerering">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "Din nøkkel blir nå laget">
 <!ENTITY enigmail.setupWiz.pgComplete.title "Takk">

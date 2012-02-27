@@ -70,13 +70,13 @@
 <!ENTITY enigmail.keyservers.sample "Příklad: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
 <!ENTITY enigmail.searchForKey.label "Hledání klíčů">
 <!ENTITY enigmail.disableSMIMEui.label "Skrýt SMIME tlačítka/nabídky">
-<!ENTITY enigmail.doubleDashSeparator.label "\'--\' je oddělovač podpisu">
+<!ENTITY enigmail.doubleDashSeparator.label "'--' je oddělovač podpisu">
 <!ENTITY enigmail.useGpgAgent.label "Použít gpg-agenta pro heslo">
-<!ENTITY enigmail.noHushMailSupport.label "Použít \'&lt;\' a \'&gt;\' k určení e-mailové adresy">
+<!ENTITY enigmail.noHushMailSupport.label "Použít '&lt;' a '&gt;' k určení e-mailové adresy">
 <!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "Šifrovat/podepsat odpovědi na šifrované/podepsané emaily, pokud je to možné">
 <!ENTITY enigmail.doubleDashSeparator.tooltip "Samotné dvě pomlčky na řádku označí blok s podpisem">
 <!ENTITY enigmail.useGpgAgent.tooltip "Použít gpg-agenta (součást GnuPG 2) pro všechny vstupy hesla">
-<!ENTITY enigmail.noHushMailSupport.tooltip "Použít \'&lt;\' a \'&gt;\' znaky pro určení e-mailové adresy pro GnuPG. Zakažte, pokud příjemce používá staré klíče Hushmail.">
+<!ENTITY enigmail.noHushMailSupport.tooltip "Použít '&lt;' a '&gt;' znaky pro určení e-mailové adresy pro GnuPG. Zakažte, pokud příjemce používá staré klíče Hushmail.">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "Toto byste měli vypnout, jestliže přijímáte PGP/MIME zprávy v IMAP složkách.">
 <!ENTITY enigmail.disableSMIMEui.tooltip "Odstranit tlačítko S/MIME z menu okna vytváření zprávy">
 <!ENTITY enigmail.logdirectory.label "Adresář s logem">
@@ -192,7 +192,7 @@
 <!ENTITY enigmail.defaultSignMsg.accesskey "S">
 <!ENTITY enigmail.defaultNotSignedsend.accesskey "G">
 <!ENTITY enigmail.confirmBeforeSend.accesskey "A">
-<!ENTITY enigmail.keygen.desc "<a class=\'enigmailStrong\'>Upozornění: tvorba klíče klíče může několik minut trvat.</a> Neukončujte aplikaci, dokud probíhá vytváření klíče. Proces se urychlí a zlepší, když budete aktivně pracovat s prohlížečem a často přistupovat k harddisku. Na to, že je klíč vytvořen, budete upozorněn/a.">
+<!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>Upozornění: tvorba klíče klíče může několik minut trvat.</a> Neukončujte aplikaci, dokud probíhá vytváření klíče. Proces se urychlí a zlepší, když budete aktivně pracovat s prohlížečem a často přistupovat k harddisku. Na to, že je klíč vytvořen, budete upozorněn/a.">
 <!ENTITY enigmail.console.label "Zobrazit konzolu OpenPGP">
 <!ENTITY enigmail.console.tooltip "Zobrazit konzolu OpenPGP">
 <!ENTITY enigmail.uninstall.label "Odinstalovat Enigmail">
@@ -284,9 +284,9 @@
 <!ENTITY enigmail.never.label "Nikdy">
 <!ENTITY enigmail.always.label "Vždy">
 <!ENTITY enigmail.maybe.label "Ano, jestliže je to povoleno při vytváření zprávy">
-<!ENTITY enigmail.singleRcptSettings.desc "(Upozornění: \'Nikdy\' v případě konfliktu ruší \'Vždy\')">
+<!ENTITY enigmail.singleRcptSettings.desc "(Upozornění: 'Nikdy' v případě konfliktu ruší 'Vždy')">
 <!ENTITY enigmail.ruleEmail.label "Nastavit pravidla OpenPGP pro">
-<!ENTITY enigmail.ruleEmail.tooltip "Zadejte pouze e-mailové adresy, NE jména příjemců\\nNapř. \'jmeno <jmeno@adresa.cz>\' je nesprávně">
+<!ENTITY enigmail.ruleEmail.tooltip "Zadejte pouze e-mailové adresy, NE jména příjemců\\nNapř. 'jmeno <jmeno@adresa.cz>' je nesprávně">
 <!ENTITY enigmail.sepratationDesc.label "(Více e-mailových adres oddělte mezerami)">
 <!ENTITY enigmail.matchDescStart.label "Použít pravidlo, jestliže příjemce">
 <!ENTITY enigmail.matchDescEnd.label "jedna/u z výše uvedených adres">
@@ -498,7 +498,7 @@
 <!ENTITY enigmail.cardDetails.editData.accesskey "E">
 <!ENTITY enigmail.genCardKey.title "Vytvořit klíč OpenPGP">
 <!ENTITY enigmail.genCardKey.backupKey.label "Uložit zálohu klíče mimo SmartCard">
-<!ENTITY enigmail.genCardKey.desc "<a class=\'enigmailStrong\'>Upozornění: Vytváření klíče může trvat několik minut.</a> Neukončujte aplikaci, dokud probíhá vytváření klíče. Na to, že je klíč vytvořen, budete upozorněn/a.">
+<!ENTITY enigmail.genCardKey.desc "<a class='enigmailStrong'>Upozornění: Vytváření klíče může trvat několik minut.</a> Neukončujte aplikaci, dokud probíhá vytváření klíče. Na to, že je klíč vytvořen, budete upozorněn/a.">
 <!ENTITY enigmail.cardPin.title "Změnit PIN pro SmartCard">
 <!ENTITY enigmail.cardPin.action.label "Co chcete udělat">
 <!ENTITY enigmail.cardPin.changePin.label "Změnit PIN">
@@ -526,7 +526,7 @@
 <!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP se vždy nastavuje specificky pro každý účet a identitu. Standardně se OpenPGP nakonfiguruje samo pro práci všemi Vašimi účty a identitami. Jestliže si to nepřejete, vyberte prosím konkrétní účet nebo identitu, se kterými má OpenPGP pracovat.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "Chcete nastavit OpenPGP pro všechny identity?">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Přeji si nastavit OpenPGP pouze pro následující identity:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class=\'enigmailStrong\'>Upozornění:</a> OpenPGP bude vždy ověřovat podpisy v e-mailech všech identit a účtů bez ohledu na to, zda je to v nich povoleno">
+<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Upozornění:</a> OpenPGP bude vždy ověřovat podpisy v e-mailech všech identit a účtů bez ohledu na to, zda je to v nich povoleno">
 <!ENTITY enigmail.setupWiz.pgSign.title "Podepisování">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "Elektronické podepisování odchozích e-mailů">
 <!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP umožňuje digitálně podepisovat Vaše e-mailové zprávy. Je to vlastně elektronická podoba podpisu v dopisu a umožní adresátovi být si jistý tím, že e-mailová zpráva je opravdu od vás. Z hlediska zabezpečení je podepisování všech odchozích e-mailů dobré.">
@@ -552,7 +552,7 @@
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Přeji si vybrat jeden z níže uvedených klíčů pro podepisování a šifrování svých zpráv:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "Vytvořit klíč">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Vytvořit klíč pro podepisování a šifrování e-mailů">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Pro podepisování a šifrování e-mailů nebo čtení zašifrovaných e-mailů potřebujete \'pár klíčů\'. Pár klíčů se obsahuje dva klíče, jeden je veřejný a jeden soukromý.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Pro podepisování a šifrování e-mailů nebo čtení zašifrovaných e-mailů potřebujete 'pár klíčů'. Pár klíčů se obsahuje dva klíče, jeden je veřejný a jeden soukromý.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Svůj veřejný klíč byste měl/a dát všem lidem ze svého adresáře, kteří budou ověřovat váš podpis nebo pro Vás budou šifrovat e-maily. Svůj soukromý klíč musíte zároveň držet v tajnosti. Nesmíte ho ztratit nebo nechat bez ochrany. Díky němu přečtete e-maily, které Vám ostatní zašifrují a pošlou. Tajný klíč je chráněn heslem.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Napište prosím své heslo znovu a potvrďte jej">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.title "Nebyl nalezen klíč OpenPGP">
@@ -566,7 +566,7 @@
 <!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile "Soubor se soukromým klíčem">
 <!ENTITY enigmail.setupWiz.pgSummary.title "Shrnutí">
 <!ENTITY enigmail.setupWiz.pgSummary.subtitle "SOuhlasím, aby průvodce nyní provedl tyto změny">
-<!ENTITY enigmail.setupWiz.pgSummary.desc "Nastavení je téměř kompletní! Pokud kliknete na tlačítko \'Další\', průvodce provede následující akce:">
+<!ENTITY enigmail.setupWiz.pgSummary.desc "Nastavení je téměř kompletní! Pokud kliknete na tlačítko 'Další', průvodce provede následující akce:">
 <!ENTITY enigmail.setupWiz.pgKeygen.title "Vytvoření klíče">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "Váš klíč je nyní generován">
 <!ENTITY enigmail.setupWiz.pgComplete.title "Děkuji">

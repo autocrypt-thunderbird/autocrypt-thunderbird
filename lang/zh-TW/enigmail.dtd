@@ -192,7 +192,7 @@
 <!ENTITY enigmail.defaultSignMsg.accesskey "S">
 <!ENTITY enigmail.defaultNotSignedsend.accesskey "G">
 <!ENTITY enigmail.confirmBeforeSend.accesskey "A">
-<!ENTITY enigmail.keygen.desc "<a class=\'enigmailStrong\'>注意：生成密鑰需要數分鍾時間。</a>在此期間請不要退出程式。活跃的网頁瀏覽或磁盤操作可以刷新『隨機池』，從而加快速度。密鑰生成完成時您將會得到提示。">
+<!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>注意：生成密鑰需要數分鍾時間。</a>在此期間請不要退出程式。活跃的网頁瀏覽或磁盤操作可以刷新『隨機池』，從而加快速度。密鑰生成完成時您將會得到提示。">
 <!ENTITY enigmail.console.label "檢視OpenPGP控制台">
 <!ENTITY enigmail.console.tooltip "檢視OpenPGP控制台">
 <!ENTITY enigmail.uninstall.label "移除Enigmail">
@@ -498,7 +498,7 @@
 <!ENTITY enigmail.cardDetails.editData.accesskey "E">
 <!ENTITY enigmail.genCardKey.title "生成OpenPGP密鑰">
 <!ENTITY enigmail.genCardKey.backupKey.label "在智慧卡以外的地方備份">
-<!ENTITY enigmail.genCardKey.desc "<a class=\'enigmailStrong\'>注意：密鑰生成需要數分鐘的時間。</a>密鑰生成過程中請勿退出程式。密鑰生成完成時您將會收到提示。">
+<!ENTITY enigmail.genCardKey.desc "<a class='enigmailStrong'>注意：密鑰生成需要數分鐘的時間。</a>密鑰生成過程中請勿退出程式。密鑰生成完成時您將會收到提示。">
 <!ENTITY enigmail.cardPin.title "修改智慧卡PIN碼">
 <!ENTITY enigmail.cardPin.action.label "您要做什么？">
 <!ENTITY enigmail.cardPin.changePin.label "修改PIN碼">
@@ -526,7 +526,7 @@
 <!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP的設置對應着相應的帳號和身份。默認OpenPGP將會啟用所有帳號和身份的OpenPGP功能。如果您不想這樣，請指定您需要啟用OpenPGP的帳號或身份。">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "您是否要為所有身份啟用OpenPGP？">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "我希望僅為以下帳號啟用OpenPGP：">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class=\'enigmailStrong\'>注意：</a>無論是否啟用，OpenPGP將始終驗證所有帳號或身份的郵件中的簽名。">
+<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>注意：</a>無論是否啟用，OpenPGP將始終驗證所有帳號或身份的郵件中的簽名。">
 <!ENTITY enigmail.setupWiz.pgSign.title "簽名">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "為您發送的信件作數碼簽名">
 <!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP讓您能夠為您的郵件作數位簽名。它就像手動簽名的電子版，並且允許其它人驗證這封信是否真的是你寫的。簽證所有發送的郵件是個好習慣。">

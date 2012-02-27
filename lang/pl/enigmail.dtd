@@ -192,7 +192,7 @@
 <!ENTITY enigmail.defaultSignMsg.accesskey "s">
 <!ENTITY enigmail.defaultNotSignedsend.accesskey "n">
 <!ENTITY enigmail.confirmBeforeSend.accesskey "a">
-<!ENTITY enigmail.keygen.desc "<a class=\'enigmailStrong\'>Uwaga! Generowanie klucza może potrwać kilka minut.</a> Nie zamykaj programu w trakcie działania generatora. Aktywne używanie przeglądarki lub wykonywanie intensywnych operacji dyskowych podczas generowania klucza przyspieszy proces generowania. Koniec procesu zostanie zasygnalizowany odpowiednim komunikatem.">
+<!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>Uwaga! Generowanie klucza może potrwać kilka minut.</a> Nie zamykaj programu w trakcie działania generatora. Aktywne używanie przeglądarki lub wykonywanie intensywnych operacji dyskowych podczas generowania klucza przyspieszy proces generowania. Koniec procesu zostanie zasygnalizowany odpowiednim komunikatem.">
 <!ENTITY enigmail.console.label "Pokaż konsolę OpenGPG">
 <!ENTITY enigmail.console.tooltip "Pokaż konsolę OpenGPG">
 <!ENTITY enigmail.uninstall.label "Odinstaluj Enigmail">
@@ -499,7 +499,7 @@
 <!ENTITY enigmail.cardDetails.editData.accesskey "E">
 <!ENTITY enigmail.genCardKey.title "Generowanie klucza OpenPGP">
 <!ENTITY enigmail.genCardKey.backupKey.label "Zapisz kopię klucza poza kartą">
-<!ENTITY enigmail.genCardKey.desc "<a class=\'enigmailStrong\'>Uwaga! Generowanie klucza może potrwać kilka minut.</a> Nie zamykaj programu w trakcie działania generatora. Koniec procesu zostanie zasygnalizowany odpowiednim komunikatem.">
+<!ENTITY enigmail.genCardKey.desc "<a class='enigmailStrong'>Uwaga! Generowanie klucza może potrwać kilka minut.</a> Nie zamykaj programu w trakcie działania generatora. Koniec procesu zostanie zasygnalizowany odpowiednim komunikatem.">
 <!ENTITY enigmail.cardPin.title "Zmień PIN karty SmartCard">
 <!ENTITY enigmail.cardPin.action.label "Wybierz czynność">
 <!ENTITY enigmail.cardPin.changePin.label "Zmień PIN">
@@ -527,7 +527,7 @@
 <!ENTITY enigmail.setupWiz.pgSelectId.desc "Ustawienia OpenPGP są oddzielne dla każdego konta i tożsamości. Domyślnie\n\n\n\n\n\n\n                                                      obsługa OpenPGP zostanie ustawiona dla każdego konta i tożsamości.\n\n\n\n                                                      Jeżeli nie ma takiej potrzeby, wybierz poniżej konta i tożsamości,\n\n\n\n                                                      które będą współpracowały z OpenPGP.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "Czy chcesz włączyć obsługę OpenPGP dla wszystkich tożsamości?">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Chcę włączyć OpenPGP tylko dla wybranych tożsamości:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class=\'enigmailStrong\'>Uwaga!</a> OpenPGP będzie zawsze weryfikować podpisy w\n\n\n\n\n\n\n                                                      wiadomościach dla wszystkich tożsamości i kont, niezależnie od tego czy obsługa OpenPGP jest włączona czy nie">
+<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Uwaga!</a> OpenPGP będzie zawsze weryfikować podpisy w\n\n\n\n\n\n\n                                                      wiadomościach dla wszystkich tożsamości i kont, niezależnie od tego czy obsługa OpenPGP jest włączona czy nie">
 <!ENTITY enigmail.setupWiz.pgSign.title "Podpisywanie wiadomości">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "Podpis cyfrowy dla wiadomości wychodzących">
 <!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP umożliwia cyfrowe podpisywanie wiadomości. Jest to rodzaj elektronicznej\n\n\n\n\n\n\n                                                      wersji własnoręcznego podpisu pod listem, który pozwala adresatom stwierdzić, \n\n\n\n                                                      że wiadomość naprawdę pochodzi od tego nadawcy. Podpisywanie wszystkich wychodzących\n\n\n\n                                                      wiadomości to dobry zwyczaj poprawiający bezpieczeństwo komunikacji.\n\n\n\n">
