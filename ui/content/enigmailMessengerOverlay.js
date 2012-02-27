@@ -1076,6 +1076,7 @@ Enigmail.msg = {
       var node = bodyElement.firstChild;
       var foundIndex = -1;
       var findStr = "-----BEGIN PGP";
+
       while (node) {
         if (node.nodeName == "DIV") {
           foundIndex = node.textContent.indexOf(findStr);
@@ -1085,13 +1086,32 @@ Enigmail.msg = {
               foundIndex = -1;
           }
           if (foundIndex >= 0) {
-            // EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: innerHTML='"+node.innerHTML+"'\n");
             node.innerHTML = EnigmailFuncs.formatPlaintextMsg(EnigmailCommon.convertToUnicode(messageContent, charset));
             return;
           }
         }
         node = node.nextSibling;
       }
+
+      // if no <DIV> node is found, try with <PRE> (bug 24762)
+      node = bodyElement.firstChild;
+      foundIndex = -1;
+      while (node) {
+        if (node.nodeName == "PRE") {
+          foundIndex = node.textContent.indexOf(findStr);
+
+          if (foundIndex >= 0) {
+            if (node.textContent.indexOf(findStr+" LICENSE AUTHORIZATION") == foundIndex)
+              foundIndex = -1;
+          }
+          if (foundIndex >= 0) {
+            node.innerHTML = EnigmailFuncs.formatPlaintextMsg(EnigmailCommon.convertToUnicode(messageContent, charset));
+            return;
+          }
+        }
+        node = node.nextSibling;
+      }
+
     }
 
     EnigmailCommon.ERROR_LOG("enigmailMessengerOverlay.js: no node found to replace message display\n");
