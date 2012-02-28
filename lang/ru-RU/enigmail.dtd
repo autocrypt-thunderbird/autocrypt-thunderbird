@@ -286,7 +286,7 @@
 <!ENTITY enigmail.maybe.label "Да, если это выбрано при составлении сообщения">
 <!ENTITY enigmail.singleRcptSettings.desc "(Примечание: при конфликте, 'Никогда' имеет больший приоритет чем 'Всегда')">
 <!ENTITY enigmail.ruleEmail.label "Установить правила OpenPGP для">
-<!ENTITY enigmail.ruleEmail.tooltip "Можно указывывать только почтовые адреса, НЕ имена адресатов\\nНапример запись 'Some Name <some.name@address.net>' неверна">
+<!ENTITY enigmail.ruleEmail.tooltip "Можно указывывать только почтовые адреса, НЕ имена адресатов\ Например запись 'Some Name <some.name@address.net>' неверна">
 <!ENTITY enigmail.sepratationDesc.label "(Разделяйте несколько почтовых адресов пробелами)">
 <!ENTITY enigmail.matchDescStart.label "Применить правило если почтовый адрес адресата">
 <!ENTITY enigmail.matchDescEnd.label "одним из вышеуказанных адресов">

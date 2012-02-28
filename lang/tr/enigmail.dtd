@@ -282,7 +282,7 @@
 <!ENTITY enigmail.maybe.label "Mesaj yazarken seçildiyse, Evet">
 <!ENTITY enigmail.singleRcptSettings.desc "(Not: çakışma durumunda, 'Asla', 'Her Zaman' dan önceliklidir)">
 <!ENTITY enigmail.ruleEmail.label "Şunun için OpenPGP kuralı koy">
-<!ENTITY enigmail.ruleEmail.tooltip "Sadece posta adreslerini doldur, alıcıların isimlerini koyma\nÖr: 'Bir isim <bir.isim@adres.net>' yanlış">
+<!ENTITY enigmail.ruleEmail.tooltip "Sadece posta adreslerini doldur, alıcıların isimlerini koyma Ör: 'Bir isim <bir.isim@adres.net>' yanlış">
 <!ENTITY enigmail.sepratationDesc.label "(Birden fazla posta adresini boşluklarla ayır)">
 <!ENTITY enigmail.matchDescStart.label "Kural uygula alıcı eğer">
 <!ENTITY enigmail.matchDescEnd.label "şu adreslerden biriyse">

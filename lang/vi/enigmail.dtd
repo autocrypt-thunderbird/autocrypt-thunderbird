@@ -278,7 +278,7 @@
 <!ENTITY enigmail.maybe.label "Vâng, nếu được chọn trong Soạn Tin nhắn">
 <!ENTITY enigmail.singleRcptSettings.desc "(Lưu ý: trong trường hợp có xung đột, 'Không bao giờ' gạt bỏ 'Luôn luôn')">
 <!ENTITY enigmail.ruleEmail.label "Đặt Quy tắc của OpenPGP cho">
-<!ENTITY enigmail.ruleEmail.tooltip "Chỉ điền địa chỉ thư điện tử, ĐỪNG đặt tên của người nhận\nThí dụ 'Tên Họ <tên.họ@address.net>' là không hợp lệ">
+<!ENTITY enigmail.ruleEmail.tooltip "Chỉ điền địa chỉ thư điện tử, ĐỪNG đặt tên của người nhận Thí dụ 'Tên Họ <tên.họ@address.net>' là không hợp lệ">
 <!ENTITY enigmail.sepratationDesc.label "(Phân biệt nhiều địa chỉ thư điện tử với dấu cách)">
 <!ENTITY enigmail.matchDescStart.label "Áp dụng quy tắc nếu người nhận">
 <!ENTITY enigmail.matchDescEnd.label "một trong những địa chỉ bên trên">

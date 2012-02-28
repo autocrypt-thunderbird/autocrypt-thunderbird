@@ -279,7 +279,7 @@
 <!ENTITY enigmail.maybe.label "Ja, om vald i meddelandekomposition">
 <!ENTITY enigmail.singleRcptSettings.desc "(Notera: i fall av konflikter, 'Aldrig' övertar 'Alltid')">
 <!ENTITY enigmail.ruleEmail.label "Ställ in OpenPGP-regler för">
-<!ENTITY enigmail.ruleEmail.tooltip "Fyll endast i e-mailadresser, INTE namnen hos mottagarna\\nT.ex. 'Vissa namn <vissa.namn@address.net>' är ogiltigt">
+<!ENTITY enigmail.ruleEmail.tooltip "Fyll endast i e-mailadresser, INTE namnen hos mottagarna\ T.ex. 'Vissa namn <vissa.namn@address.net>' är ogiltigt">
 <!ENTITY enigmail.sepratationDesc.label "(Separera flera e-mailadresser med mellanrum)">
 <!ENTITY enigmail.matchDescStart.label "Tillämpa regel för mottagaren om">
 <!ENTITY enigmail.matchDescEnd.label "en av de ovanstående adresserna">
@@ -499,43 +499,43 @@
 <!ENTITY enigmail.setupWiz.title "OpenPGP inställningsguide">
 <!ENTITY enigmail.setupWiz.yes "ja">
 <!ENTITY enigmail.setupWiz.no "Nej, tack">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "Den här guiden hjälper dig att börja använda OpenPGP direkt. Över de kommande\n\n\n\n\n\n\n                                                      skärmarna kommer vi att ställa några få frågar för att ställa in allting.\n\n\n\n">
+<!ENTITY enigmail.setupWiz.pgWelcome.desc "Den här guiden hjälper dig att börja använda OpenPGP direkt. Över de kommande                                                             skärmarna kommer vi att ställa några få frågar för att ställa in allting.    ">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "Vill du använda guiden nu?">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "Ja, jag vill använda guiden för att komma igång">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "Nej, tack. Jag föredrar att konfigurera saker manuellt">
 <!ENTITY enigmail.setupWiz.pgSelectId.title "Välj identiteter">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Välj de konton eller identiteter som du vill att OpenPGP ska arbeta med">
-<!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP-inställningar är specifika för olika konton och identiteter. Som standard\n\n\n\n\n\n\n                                                      kommer OpenPGP att konfigurera sig själv till att arbeta med alla dina konton och\n\n\n\n                                                      identiteter. Om det inte är vad du önskar, var vänlig och välj specifikt\n\n\n\n                                                      konto eller identitet som du vill att OpenPGP skall arbeta med nedanför.">
+<!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP-inställningar är specifika för olika konton och identiteter. Som standard                                                             kommer OpenPGP att konfigurera sig själv till att arbeta med alla dina konton och                                                          identiteter. Om det inte är vad du önskar, var vänlig och välj specifikt                                                          konto eller identitet som du vill att OpenPGP skall arbeta med nedanför.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "Vill du ställa in OpenPGP för alla identiteter?">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Jag vill ställa in OpenPGP enbart för följande identiteter:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Notera:</a> OpenPGP kommer alltid att verifiera signaturer\n\n\n\n\n\n\n                                                      för e-mails för varje konto eller identitet, oberoende om den är aktiverad eller inte">
+<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Notera:</a> OpenPGP kommer alltid att verifiera signaturer                                                             för e-mails för varje konto eller identitet, oberoende om den är aktiverad eller inte">
 <!ENTITY enigmail.setupWiz.pgSign.title "Signering">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "Digitalt signera dina utgående e-mail">
-<!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP tillåter dig att signera dina e-mail digitalt. Detta är som en\n\n\n\n\n\n\n                                                      elektronisk version av signering av brev, och det gör att personer kan vara säkra\n\n\n\n                                                      på att ett e-mail verkligen kommer från dig. Det är god säkerhetspraxis att signera\n\n\n\n                                                      alla utgående e-mail.\n\n\n\n">
+<!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP tillåter dig att signera dina e-mail digitalt. Detta är som en                                                             elektronisk version av signering av brev, och det gör att personer kan vara säkra                                                          på att ett e-mail verkligen kommer från dig. Det är god säkerhetspraxis att signera                                                          alla utgående e-mail.    ">
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg "Vill du signera alla dina utgående e-mail som standard?">
 <!ENTITY enigmail.setupWiz.pgSign.yesSign "Ja, jag vill signera alla mina e-mail">
 <!ENTITY enigmail.setupWiz.pgSign.noSign "Nej, jag vill skapa per-användare regler för e-mail som behöver signeras">
 <!ENTITY enigmail.setupWiz.pgEnc.title "Kryptering">
 <!ENTITY enigmail.setupWiz.pgEnc.subtitle "Kryptera dina utgående e-mail">
-<!ENTITY enigmail.setupWiz.pgEnc.desc "OpenPGP tillåter dig att kryptera dina e-mailmeddelanden och några bilagor.\n\n\n\n\n\n\n                                                      Kryptering fungerar som att lägga dina brev i ett kuvert. Det gör saken\n\n\n\n                                                      privat. Det är inte bara för &quot;hemliga&quot; meddelanden, utan för\n\n\n\n                                                      allt som du inte vill skicka som ett vykort.\n\n\n\n">
+<!ENTITY enigmail.setupWiz.pgEnc.desc "OpenPGP tillåter dig att kryptera dina e-mailmeddelanden och några bilagor.                                                             Kryptering fungerar som att lägga dina brev i ett kuvert. Det gör saken                                                          privat. Det är inte bara för &quot;hemliga&quot; meddelanden, utan för                                                          allt som du inte vill skicka som ett vykort.    ">
 <!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg "Skall dina utgående e-mail krypteras som standard?">
 <!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt "Ja, jag har publika nycklar för de flesta av mina kontakter">
 <!ENTITY enigmail.setupWiz.pgEnc.noEncrypt "Nej, jag vill skapa per-mottagare regler för de som har sänt mig sina publika nycklar">
 <!ENTITY enigmail.setupWiz.pgSettings.title "Egenskaper">
 <!ENTITY enigmail.setupWiz.pgSettings.subtitle "Ändra dina e-mailinställningar för att göra OpenPGP mer pålitligt">
-<!ENTITY enigmail.setupWiz.pgSettings.desc "Den här guiden kan ändra dina e-mailinställningar för att försäkra dig om att inga\n\n\n\n\n\n\n                                                      problem med signering och kryptering av e-mail uppstår på din maskin. Dessa\n\n\n\n                                                      inställningsändringar är mest av teknisk natur som du inte kommer att notera, emellertid\n\n\n\n                                                      en viktig sak är att e-mail kommer att komponeras i ren text som standard.">
-<!ENTITY enigmail.setupWiz.pgSettings.changePref "Vill du ändra några få standardinställningar så att OpenPGP fungerar bättre\n\n\n\n\n\n\n                                                      på din maskin?">
+<!ENTITY enigmail.setupWiz.pgSettings.desc "Den här guiden kan ändra dina e-mailinställningar för att försäkra dig om att inga                                                             problem med signering och kryptering av e-mail uppstår på din maskin. Dessa                                                          inställningsändringar är mest av teknisk natur som du inte kommer att notera, emellertid                                                          en viktig sak är att e-mail kommer att komponeras i ren text som standard.">
+<!ENTITY enigmail.setupWiz.pgSettings.changePref "Vill du ändra några få standardinställningar så att OpenPGP fungerar bättre                                                             på din maskin?">
 <!ENTITY enigmail.setupWiz.pgSettings.details "Detaljer ...">
 <!ENTITY enigmail.setupWiz.pgKeySel.title "Nyckelval">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "Skapa en nyckel för att signera och kryptera e-mail">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc "Vi har upptäckt att du redan har en OpenPGP-nyckel. Du kan antingen\n\n\n\n\n\n\n                                                      använda en av dina existerande nycklar för att signera, kryptera eller dekrypera e-mail, eller\n\n\n\n                                                      kan du skapa ett nytt nyckelpar.">
+<!ENTITY enigmail.setupWiz.pgKeySel.desc "Vi har upptäckt att du redan har en OpenPGP-nyckel. Du kan antingen                                                             använda en av dina existerande nycklar för att signera, kryptera eller dekrypera e-mail, eller                                                          kan du skapa ett nytt nyckelpar.">
 <!ENTITY enigmail.setupWiz.pgKeySel.createKey "Vill du skapa ett nytt nyckelpar?">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey "Jag vill skapa ett nytt nyckelpar för signering och kryptering av e-mail">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Jag vill välja en av nycklarna nedanför för att signera och kryptera mina e-mail:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "Skapa nyckel">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Skapa en nyckel för att signera och kryptera e-mail">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Du måste ha ett 'nyckelpar' för att kunna signera och kryptera e-mail, eller för att läsa\n\n\n\n\n\n\n                                                      e-mail som är kryterade. Ett nyckelpar har två nycklar, en publik och en\n\n\n\n                                                      privat.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Du måste ge din publika nyckel till alla i din kontaktlista som\n\n\n\n\n\n\n                                                      vill kunna verifiera din signatur, eller att kryptera e-mail till dig.\n\n\n\n                                                      Däremot, måste du behålla din privata nyckel hemlig. Du får inte ge bort\n\n\n\n                                                      den, eller lämna den oskyddad. Den kan läsa e-mail som människor har\n\n\n\n                                                      krypterat och sänt till dig. Den kan också kryptera e-mail i ditt namn.\n\n\n\n                                                      Beroende på att den är hemlig, är den skyddad av ett lösenord.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Du måste ha ett 'nyckelpar' för att kunna signera och kryptera e-mail, eller för att läsa                                                             e-mail som är kryterade. Ett nyckelpar har två nycklar, en publik och en                                                          privat.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Du måste ge din publika nyckel till alla i din kontaktlista som                                                             vill kunna verifiera din signatur, eller att kryptera e-mail till dig.                                                          Däremot, måste du behålla din privata nyckel hemlig. Du får inte ge bort                                                          den, eller lämna den oskyddad. Den kan läsa e-mail som människor har                                                          krypterat och sänt till dig. Den kan också kryptera e-mail i ditt namn.                                                          Beroende på att den är hemlig, är den skyddad av ett lösenord.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Var vänlig och bekräfta ditt lösenord genom att skriva den igen">
 <!ENTITY enigmail.setupWiz.pgSummary.title "Summering">
 <!ENTITY enigmail.setupWiz.pgSummary.subtitle "Bekräfta nu att guiden skall utföra dessa ändringar">
@@ -553,7 +553,7 @@
 <!ENTITY enigmail.setupWiz.details.8bitEncoding "Använd 8-bitars kodning för meddelandesändning">
 <!ENTITY enigmail.setupWiz.details.noComposeHTML "Komponera inte HTML-meddelanden">
 <!ENTITY enigmail.setupWiz.pgNoStart.title "Avbryt guiden">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc "Du har valt att inte använda guiden för att konfigurera OpenPGP.\n\n\n\n\n\n\n                                                      <html:br></html:br><html:br></html:br>Tack för att du använder Enigmail.">
+<!ENTITY enigmail.setupWiz.pgNoStart.desc "Du har valt att inte använda guiden för att konfigurera OpenPGP.                                                             <html:br></html:br><html:br></html:br>Tack för att du använder Enigmail.">
 <!ENTITY enigmail.advancedIdentityDlg.title "Avancerade OpenPGP identitetsinställningar">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "Bifoga min publika nyckel till meddelandena">
 <!ENTITY enigmail.msgViewColumn.label "OpenPGP">

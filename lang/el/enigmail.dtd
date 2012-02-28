@@ -279,7 +279,7 @@
 <!ENTITY enigmail.maybe.label "Ναι, αν επιλεγεί στη σύνταξη μηνύματος">
 <!ENTITY enigmail.singleRcptSettings.desc "(Σημείωση: σε περίπτωση σύγκρουσης, το 'Ποτέ' υπερισχύει του 'Πάντα')">
 <!ENTITY enigmail.ruleEmail.label "Ορισμός κανόνων OpenPGP για">
-<!ENTITY enigmail.ruleEmail.tooltip "Συμπληρώστε μόνο διευθύνσεις αλληλογραφίας, όχι τα ονόματα των παραληπτών\\nΠ.χ. το 'Κάποιο Όνομα <some.name@address.net>' δεν είναι έγκυρο">
+<!ENTITY enigmail.ruleEmail.tooltip "Συμπληρώστε μόνο διευθύνσεις αλληλογραφίας, όχι τα ονόματα των παραληπτών\ Π.χ. το 'Κάποιο Όνομα <some.name@address.net>' δεν είναι έγκυρο">
 <!ENTITY enigmail.sepratationDesc.label "(Χωρίστε τις διευθύνσεις με κενό)">
 <!ENTITY enigmail.matchDescStart.label "Εφαρμογή κανόνα αν ο παραλήπτης">
 <!ENTITY enigmail.matchDescEnd.label "μία από τις παραπάνω διευθύνσεις">
@@ -501,7 +501,7 @@
 <!ENTITY enigmail.setupWiz.title "Μάγος ρύθμισης OpenPGP">
 <!ENTITY enigmail.setupWiz.yes "Ναι">
 <!ENTITY enigmail.setupWiz.no "Όχι, ευχαριστώ">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "Αυτός ο Μάγος θα σας βοηθήσει να αρχίσετε να χρησιμοποιείτε το OpenPGP άμεσα. Θα σας κάνει\n\n\n\n\n\n\n                                                      κάποιες ερωτήσεις για να κάνει πλήρη ρύθμιση της εφαρμογής.\n\n\n\n">
+<!ENTITY enigmail.setupWiz.pgWelcome.desc "Αυτός ο Μάγος θα σας βοηθήσει να αρχίσετε να χρησιμοποιείτε το OpenPGP άμεσα. Θα σας κάνει                                                             κάποιες ερωτήσεις για να κάνει πλήρη ρύθμιση της εφαρμογής.    ">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "Θέλετε να χρησιμοποιήσετε το Μάγο τώρα;">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "Ναι, θα ήθελα να με βοηθήσει o Mάγος">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "Όχι, ευχαριστώ. Προτιμώ να κάνω τις ρυθμίσεις χειροκίνητα">
@@ -510,16 +510,16 @@
 <!ENTITY enigmail.setupWiz.pgSelectId.desc "Οι ρυθμίσεις του OpenPGP σχετίζονται με λογαριασμούς και ταυτότητες. Το OpenPGP θα ρυθμιστεί                                                           ώστε να χρησιμοποιεί όλους τους λογαριασμούς σας και τις ταυτότητές σας. Αν δεν το θέλετε αυτό,                                                        επιλέξτε παρακάτω τους λογαριασμούς ή τις ταυτότητες τις οποίες θέλετε να χρησιμοποιήσει.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "Θέλετε το OpenPGP να χρησιμοποιήσει όλες τις ταυτότητες;">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Θέλω το OpenPGP να χρησιμοποιήσει μόνο τις ακόλουθες ταυτότητες:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Σημείωση:</a> Το OpenPGP θα επαληθεύει πάντα τις υπογραφές των\n\n\n\n\n\n\n                                                      μηνυμάτων όλων των λογαριασμών και ταυτοτήτων, ανεξάρτητα αν είναι ενεργοποιημένο για αυτές ή\n\n\n\n                                                      όχι">
+<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Σημείωση:</a> Το OpenPGP θα επαληθεύει πάντα τις υπογραφές των                                                             μηνυμάτων όλων των λογαριασμών και ταυτοτήτων, ανεξάρτητα αν είναι ενεργοποιημένο για αυτές ή                                                          όχι">
 <!ENTITY enigmail.setupWiz.pgSign.title "Υπογραφή">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "Ψηφιακή υπογραφή των εξερχομένων μηνυμάτων σας">
-<!ENTITY enigmail.setupWiz.pgSign.desc "Το OpenPGP σας επιτρέπει να υπογράφετε ψηφιακά τα μηνύματά σας. Αυτή είναι η ηλεκτρονική \n\n\n\n\n\n\n                                                      εκδοχή της υπογραφής ενός γράμματος, και με αυτόν τον τρόπο οι παραλήπτες των μηνυμάτων σας \n\n\n\n                                                      μπορούν να είναι σίγουροι ότι αυτά τα στείλατε πραγματικά εσείς. Είναι πολύ καλή πρακτική\n\n\n\n                                                      να υπογράφετε όλα τα εξερχόμενα μηνύματά σας.\n\n\n\n">
+<!ENTITY enigmail.setupWiz.pgSign.desc "Το OpenPGP σας επιτρέπει να υπογράφετε ψηφιακά τα μηνύματά σας. Αυτή είναι η ηλεκτρονική                                                              εκδοχή της υπογραφής ενός γράμματος, και με αυτόν τον τρόπο οι παραλήπτες των μηνυμάτων σας                                                           μπορούν να είναι σίγουροι ότι αυτά τα στείλατε πραγματικά εσείς. Είναι πολύ καλή πρακτική                                                          να υπογράφετε όλα τα εξερχόμενα μηνύματά σας.    ">
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg "Θέλετε να υπογράφονται τα εξερχόμενα μηνύματά σας;">
 <!ENTITY enigmail.setupWiz.pgSign.yesSign "Ναι, θέλω να υπογράφονται όλα τα μηνύματά μου">
 <!ENTITY enigmail.setupWiz.pgSign.noSign "Όχι, θέλω να δημιουργήσω κανόνες ανά χρήστη για τα μηνύματα που θα πρέπει να υπογραφούν">
 <!ENTITY enigmail.setupWiz.pgEnc.title "Κρυπτογράφηση">
 <!ENTITY enigmail.setupWiz.pgEnc.subtitle "Κρυπτογράφηση των εξερχομένων μηνυμάτων σας">
-<!ENTITY enigmail.setupWiz.pgEnc.desc "Το OpenPGP σας επιτρέπει να κρυπτογραφείτε τα μηνύματά σας συμπεριλαμβανομένων και των\n\n\n\n\n\n\n                                                      επισυνάψεων. Η κρυπτογράφηση είναι σαν να βάζετε ένα γράμμα σε ένα φάκελο. Διατηρεί το \n\n\n\n                                                      προσωπικό σας απόρρητο. Δεν είναι μόνο για &quot;μυστικά&quot; μηνύματα, αλλά για οτιδήποτε δε θα στέλνατε με μία κάρτα.\n\n\n\n">
+<!ENTITY enigmail.setupWiz.pgEnc.desc "Το OpenPGP σας επιτρέπει να κρυπτογραφείτε τα μηνύματά σας συμπεριλαμβανομένων και των                                                             επισυνάψεων. Η κρυπτογράφηση είναι σαν να βάζετε ένα γράμμα σε ένα φάκελο. Διατηρεί το                                                           προσωπικό σας απόρρητο. Δεν είναι μόνο για &quot;μυστικά&quot; μηνύματα, αλλά για οτιδήποτε δε θα στέλνατε με μία κάρτα.    ">
 <!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg "Να κρυπτογρφούνται τα εξερχόμενα μηνύματά σας εξ ορισμού;">
 <!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt "Ναι, έχω δημόσια κλειδιά για τις περισσότερες από τις επαφές μου">
 <!ENTITY enigmail.setupWiz.pgEnc.noEncrypt "Όχι, θα δημιουργήσω κανόνες ανά παραλήπτη για όσους μου στέλνουν το δημόσια κλειδί τους">
@@ -555,7 +555,7 @@
 <!ENTITY enigmail.setupWiz.details.8bitEncoding "Χρήση κωδικοποίησης 8-bit για την αποστολή μηνυμάτων">
 <!ENTITY enigmail.setupWiz.details.noComposeHTML "Να μη γίνεται σύνταξη μηνυμάτων HTML">
 <!ENTITY enigmail.setupWiz.pgNoStart.title "Ακύρωση του Μάγου">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc "Επιλέξατε να χρησιμοποιήσετε το Μάγο για τη ρύθμιση του OpenPGP.\n\n\n\n\n\n\n                                                      <html:br></html:br><html:br></html:br>Ευχαριστούμε που χρησιμοποιείτε το Enigmail.">
+<!ENTITY enigmail.setupWiz.pgNoStart.desc "Επιλέξατε να χρησιμοποιήσετε το Μάγο για τη ρύθμιση του OpenPGP.                                                             <html:br></html:br><html:br></html:br>Ευχαριστούμε που χρησιμοποιείτε το Enigmail.">
 <!ENTITY enigmail.advancedIdentityDlg.title "Προχωρημένες ρυθμίσεις ταυτότητας OpenPGP">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "Προσάρτηση του δημόσιου κλειδιού μου στα μηνύματα">
 <!ENTITY enigmail.addPhoto.title "Add Photo to Key">

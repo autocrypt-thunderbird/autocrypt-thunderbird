@@ -285,7 +285,7 @@
 <!ENTITY enigmail.maybe.label "예, 메시지 작성시에 선택되어 있는 경우">
 <!ENTITY enigmail.singleRcptSettings.desc "(주의: 만약 설정간 충돌이 발생할 경우, '하지 않음'이 '항상'에 우선합니다)">
 <!ENTITY enigmail.ruleEmail.label "OpenPGP 규칙 설정 대상:">
-<!ENTITY enigmail.ruleEmail.tooltip "전자 메일 주소만 입력바라며, 받는 사람의 이름은 입력하지 '마십시오'\\n예를 들어, 'Some Name <some.name@address.net>'은 잘못된 것입니다.">
+<!ENTITY enigmail.ruleEmail.tooltip "전자 메일 주소만 입력바라며, 받는 사람의 이름은 입력하지 '마십시오'\ 예를 들어, 'Some Name <some.name@address.net>'은 잘못된 것입니다.">
 <!ENTITY enigmail.sepratationDesc.label "(복수 메일 주소는 공백 문자로 구분해 주세요)">
 <!ENTITY enigmail.matchDescStart.label "받는 사람이 위의 주소와">
 <!ENTITY enigmail.matchDescEnd.label "일치하면 규칙을 적용합니다">

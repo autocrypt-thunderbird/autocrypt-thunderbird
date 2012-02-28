@@ -286,7 +286,7 @@
 <!ENTITY enigmail.maybe.label "Sì, se selezionato durante la composizione del messaggio">
 <!ENTITY enigmail.singleRcptSettings.desc "(Nota: in caso di contraddizione, 'Mai' ha la precedenza su 'Sempre')">
 <!ENTITY enigmail.ruleEmail.label "Imposta regole OpenPGP per">
-<!ENTITY enigmail.ruleEmail.tooltip "Inserisci solo gli indirizzi di email, NON i nomi dei destinatari\nAd es.: 'Nome Cognome <nome.cognome@indirizzo.net>' non è valido">
+<!ENTITY enigmail.ruleEmail.tooltip "Inserisci solo gli indirizzi di email, NON i nomi dei destinatari Ad es.: 'Nome Cognome <nome.cognome@indirizzo.net>' non è valido">
 <!ENTITY enigmail.sepratationDesc.label "(Separa con uno spazio gli indirizzi email multipli)">
 <!ENTITY enigmail.matchDescStart.label "Applica la regole se il destinatario">
 <!ENTITY enigmail.matchDescEnd.label "uno degli indirizzi qui sopra">

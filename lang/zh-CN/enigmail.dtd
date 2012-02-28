@@ -275,7 +275,7 @@
 <!ENTITY enigmail.maybe.label "在撰写邮件时选择">
 <!ENTITY enigmail.singleRcptSettings.desc "(注意: 在发生冲突的情况下，“从不”将取代“总是”设置)">
 <!ENTITY enigmail.ruleEmail.label "为如下收件人">
-<!ENTITY enigmail.ruleEmail.tooltip "只能使用邮件地址，不要填写收件人姓名\\n例如 '张三 <zhang.san@address.net>' 是无效的">
+<!ENTITY enigmail.ruleEmail.tooltip "只能使用邮件地址，不要填写收件人姓名\ 例如 '张三 <zhang.san@address.net>' 是无效的">
 <!ENTITY enigmail.sepratationDesc.label "设置 OpenPGP 规则(请用空格分隔各邮件地址)">
 <!ENTITY enigmail.matchDescStart.label "如果收件人地址">
 <!ENTITY enigmail.matchDescEnd.label "则应用规则">
@@ -495,43 +495,43 @@
 <!ENTITY enigmail.setupWiz.title "OpenPGP 设置向导">
 <!ENTITY enigmail.setupWiz.yes "是">
 <!ENTITY enigmail.setupWiz.no "不, 谢谢">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "此向导将帮助你开启 OpenPGP 权限之路. 经过下几步的屏幕，我们会通过和你咨询的一些问\n\n\n\n\n\n\n                                                      题来设置相关信息.\n\n\n\n">
+<!ENTITY enigmail.setupWiz.pgWelcome.desc "此向导将帮助你开启 OpenPGP 权限之路. 经过下几步的屏幕，我们会通过和你咨询的一些问                                                             题来设置相关信息.    ">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "你希望现在使用向导吗?">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "是的，我想用向导来帮我开始">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "不用, 谢谢. 我想手动来配置">
 <!ENTITY enigmail.setupWiz.pgSelectId.title "选择身份标识">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "选择 OpenPGP 所工作的帐号或身份标识">
-<!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP 设置是指定帐号和身份标识，按缺省方式，OpenPGP 将配置在你所有的帐号和身份\n\n\n\n\n\n\n                                                      标识上。如果你想有所不同，请选择指定下面的你希望 OpenPGP 工作的帐号或身份标">
+<!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP 设置是指定帐号和身份标识，按缺省方式，OpenPGP 将配置在你所有的帐号和身份                                                             标识上。如果你想有所不同，请选择指定下面的你希望 OpenPGP 工作的帐号或身份标">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "我想你会喜欢为所有的身份标识设置 OpenPGP">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "我想你会喜欢只为以下身份标识设置 OpenPGP:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>注意:</a> OpenPGP 将总是验证每个帐号或身份标识邮件的数\n\n\n\n\n\n\n                                                      字签名，而无论它是否被允许或不">
+<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>注意:</a> OpenPGP 将总是验证每个帐号或身份标识邮件的数                                                             字签名，而无论它是否被允许或不">
 <!ENTITY enigmail.setupWiz.pgSign.title "数字签名">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "数字签名你所发出的电子邮件">
-<!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP 允许你的邮件进行数字签名，它看起来象是电子版的信封签名，同时它也允许人\n\n\n\n\n\n\n                                                      们来确认这个邮件是否真的是你所发出的。这对发送邮件来说是个非常好的安全习惯。\n\n\n\n">
+<!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP 允许你的邮件进行数字签名，它看起来象是电子版的信封签名，同时它也允许人                                                             们来确认这个邮件是否真的是你所发出的。这对发送邮件来说是个非常好的安全习惯。    ">
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg "你想按默认方式对你所有发出的邮件进行数字签名吗?">
 <!ENTITY enigmail.setupWiz.pgSign.yesSign "是的，我想签署我所有的电子邮件">
 <!ENTITY enigmail.setupWiz.pgSign.noSign "不，我想对那些需要签署的邮件创建规则">
 <!ENTITY enigmail.setupWiz.pgEnc.title "加密">
 <!ENTITY enigmail.setupWiz.pgEnc.subtitle "加密你发出的邮件">
-<!ENTITY enigmail.setupWiz.pgEnc.desc "OpenPGP 允许你加密你的电子邮件正文和附件，加密就象是将一个信封放到一个密封袋中。\n\n\n\n\n\n\n                                                      它使一些事情更具有隐私性，它不仅是'加密'消息，对于任何事情你都不再是发明信片了。\n\n\n\n">
+<!ENTITY enigmail.setupWiz.pgEnc.desc "OpenPGP 允许你加密你的电子邮件正文和附件，加密就象是将一个信封放到一个密封袋中。                                                             它使一些事情更具有隐私性，它不仅是'加密'消息，对于任何事情你都不再是发明信片了。    ">
 <!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg "你希望按默认方式加密你发出的邮件吗?">
 <!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt "是的, 我有大部分联系人的公钥">
 <!ENTITY enigmail.setupWiz.pgEnc.noEncrypt "不, 我想那些给我发了公钥的邮件创建规则">
 <!ENTITY enigmail.setupWiz.pgSettings.title "选项">
 <!ENTITY enigmail.setupWiz.pgSettings.subtitle "更改你的邮件设置以使 OpenPGP 工作得更为可靠">
-<!ENTITY enigmail.setupWiz.pgSettings.desc "此向导能改变你的邮件设置以确保你系统中的数字签名和加密的邮件没有问题这些设置会有\n\n\n\n\n\n\n                                                      些你不必了解的技术上的变化，可是按默认设置用纯文本方式来撰写邮件是将稳妥一">
+<!ENTITY enigmail.setupWiz.pgSettings.desc "此向导能改变你的邮件设置以确保你系统中的数字签名和加密的邮件没有问题这些设置会有                                                             些你不必了解的技术上的变化，可是按默认设置用纯文本方式来撰写邮件是将稳妥一">
 <!ENTITY enigmail.setupWiz.pgSettings.changePref "你想更改一些默认选项以使 OpenPGP 在你的系统中运行得更好吗?">
 <!ENTITY enigmail.setupWiz.pgSettings.details "细节...">
 <!ENTITY enigmail.setupWiz.pgKeySel.title "选择密钥">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "创建一个用于数字签名和加密邮件的密钥">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc "我们检测到你已经有一个 OpenPGP 密钥. 你可以使用任何已经存在的密钥对你的电子邮件\n\n\n\n\n\n\n                                                      进行数字签名、加密和解密，也可以创建一个新的密钥">
+<!ENTITY enigmail.setupWiz.pgKeySel.desc "我们检测到你已经有一个 OpenPGP 密钥. 你可以使用任何已经存在的密钥对你的电子邮件                                                             进行数字签名、加密和解密，也可以创建一个新的密钥">
 <!ENTITY enigmail.setupWiz.pgKeySel.createKey "你想创建一个新的密钥对吗?">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey "我想为数字签名和加密邮件创建新的密钥对">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "我想为数字签名和加密邮件选择一个密钥:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "创建密钥">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "创建一个用于数字签名和加密邮件的密钥">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "你需要有一个用于数字签名和加密电子邮件或读那些解密邮件的'密钥对'。\n\n\n\n\n\n\n                                                      一个密钥对有两个密钥, 一个是公钥，另一个是私">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "你需要将你的公钥给你想数字签名或加密邮件给你的联系人。同时，你要将你的私钥安全\n\n\n\n\n\n\n                                                      保存。你不要删除它或没有任何保护地保留它。它用于读取那些人发给你的加密邮件。它同\n\n\n\n                                                      样可用加密你自己的邮件，因为它是安全的，它是由密码保护">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "你需要有一个用于数字签名和加密电子邮件或读那些解密邮件的'密钥对'。                                                             一个密钥对有两个密钥, 一个是公钥，另一个是私">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "你需要将你的公钥给你想数字签名或加密邮件给你的联系人。同时，你要将你的私钥安全                                                             保存。你不要删除它或没有任何保护地保留它。它用于读取那些人发给你的加密邮件。它同                                                          样可用加密你自己的邮件，因为它是安全的，它是由密码保护">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "请再次确认你输入的密码">
 <!ENTITY enigmail.setupWiz.pgSummary.title "总计">
 <!ENTITY enigmail.setupWiz.pgSummary.subtitle "请确认向导将要提交的这些更改">
@@ -549,5 +549,5 @@
 <!ENTITY enigmail.setupWiz.details.8bitEncoding "对发出的邮件使用8位编码">
 <!ENTITY enigmail.setupWiz.details.noComposeHTML "不撰写超文本信息">
 <!ENTITY enigmail.setupWiz.pgNoStart.title "退出向导">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc "你选择了不使用向导来配置 OpenPGP.\n\n\n\n\n\n\n                                                      <html:br></html:br><html:br></html:br>非常感谢你使用 Enigmai">
+<!ENTITY enigmail.setupWiz.pgNoStart.desc "你选择了不使用向导来配置 OpenPGP.                                                             <html:br></html:br><html:br></html:br>非常感谢你使用 Enigmai">
 <!ENTITY enigmail.msgViewColumn.label "OpenPGP">

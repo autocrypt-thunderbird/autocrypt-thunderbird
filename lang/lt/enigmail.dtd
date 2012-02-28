@@ -286,7 +286,7 @@
 <!ENTITY enigmail.maybe.label "Taip, jei pasirinkta laiško kūrimo lange">
 <!ENTITY enigmail.singleRcptSettings.desc "(Pastaba: jei kils nesuderinamumų, bus naudojama „Niekada“, o ne „Visada“)">
 <!ENTITY enigmail.ruleEmail.label "Nustatyti OpenPGP taisykles skirtas">
-<!ENTITY enigmail.ruleEmail.tooltip "Užpildyti tik el. pašto adresus, nenurodyti gavėjų vardų \\npvz. „Vardenis Pavardenis  <vardenis.pavardenis@adresas.lt>“ yra netinkamas">
+<!ENTITY enigmail.ruleEmail.tooltip "Užpildyti tik el. pašto adresus, nenurodyti gavėjų vardų \ pvz. „Vardenis Pavardenis  <vardenis.pavardenis@adresas.lt>“ yra netinkamas">
 <!ENTITY enigmail.sepratationDesc.label "(Atskirkite kelis adresus tarpu)">
 <!ENTITY enigmail.matchDescStart.label "Pritaikyti taisyklę jei gavėjas">
 <!ENTITY enigmail.matchDescEnd.label "vienas iš šių adresų">

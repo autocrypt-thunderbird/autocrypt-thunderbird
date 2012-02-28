@@ -345,7 +345,7 @@
 <!ENTITY enigmail.maybe.label                       "Bai, Mezuaren Idazketa aukeratuta badago.">
 <!ENTITY enigmail.singleRcptSettings.desc           "(Oharra: Arazorik badago, 'Inoiz'ek 'Beti' irabazten du)">
 <!ENTITY enigmail.ruleEmail.label                   "Honentzako OpenPGP Arauak Ezarri">
-<!ENTITY enigmail.ruleEmail.tooltip                 "Helbide elektronikoekin bakarrik bete, EZ jarri hartzaileen izenak.\nHau da: 'Izen Bat &lt;Izen.Bat@helbidea.net&gt;' ez du balio">
+<!ENTITY enigmail.ruleEmail.tooltip                 "Helbide elektronikoekin bakarrik bete, EZ jarri hartzaileen izenak. Hau da: 'Izen Bat &lt;Izen.Bat@helbidea.net&gt;' ez du balio">
 <!ENTITY enigmail.sepratationDesc.label             "(Helbide elektronikoak zuriun bitartez banatu)">
 <!ENTITY enigmail.matchDescStart.label              "Hartzaileak hau betetzen badu araua aplikatu">
 <!ENTITY enigmail.matchDescEnd.label                "goian dauden helbideetako bat">

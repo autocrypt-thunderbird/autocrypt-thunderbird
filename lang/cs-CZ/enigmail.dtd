@@ -286,7 +286,7 @@
 <!ENTITY enigmail.maybe.label "Ano, jestliže je to povoleno při vytváření zprávy">
 <!ENTITY enigmail.singleRcptSettings.desc "(Upozornění: 'Nikdy' v případě konfliktu ruší 'Vždy')">
 <!ENTITY enigmail.ruleEmail.label "Nastavit pravidla OpenPGP pro">
-<!ENTITY enigmail.ruleEmail.tooltip "Zadejte pouze e-mailové adresy, NE jména příjemců\\nNapř. 'jmeno <jmeno@adresa.cz>' je nesprávně">
+<!ENTITY enigmail.ruleEmail.tooltip "Zadejte pouze e-mailové adresy, NE jména příjemců\ Např. 'jmeno <jmeno@adresa.cz>' je nesprávně">
 <!ENTITY enigmail.sepratationDesc.label "(Více e-mailových adres oddělte mezerami)">
 <!ENTITY enigmail.matchDescStart.label "Použít pravidlo, jestliže příjemce">
 <!ENTITY enigmail.matchDescEnd.label "jedna/u z výše uvedených adres">

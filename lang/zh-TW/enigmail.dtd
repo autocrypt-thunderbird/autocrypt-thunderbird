@@ -286,7 +286,7 @@
 <!ENTITY enigmail.maybe.label "是，如果在撰寫郵件時選擇了的話。">
 <!ENTITY enigmail.singleRcptSettings.desc "（注意：『絕不』優先於『始終』）">
 <!ENTITY enigmail.ruleEmail.label "設定OpenPGP策略適用於">
-<!ENTITY enigmail.ruleEmail.tooltip "僅輸入郵件地址，不要輸入收件人名稱\\n例如：『Some Name <some.name@address.net>』是無效的。">
+<!ENTITY enigmail.ruleEmail.tooltip "僅輸入郵件地址，不要輸入收件人名稱\ 例如：『Some Name <some.name@address.net>』是無效的。">
 <!ENTITY enigmail.sepratationDesc.label "（用空格分隔多個郵箱地址）">
 <!ENTITY enigmail.matchDescStart.label "策略適用於收件人">
 <!ENTITY enigmail.matchDescEnd.label "是上述地址中的一個">

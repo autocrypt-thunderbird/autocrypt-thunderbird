@@ -286,7 +286,7 @@
 <!ENTITY enigmail.maybe.label "da, če je tako izbrano pri sestavljanju">
 <!ENTITY enigmail.singleRcptSettings.desc "(Napotek: pri konfliktih ima 'nikoli' prednost pred 'vedno')">
 <!ENTITY enigmail.ruleEmail.label "Pravila prejemnika za">
-<!ENTITY enigmail.ruleEmail.tooltip "Vnesite le e-poštni naslov - brez imena prejemnika\\nPrimer: 'Janez Kranjski <janez.kranjski@domena.si>' je neveljavno">
+<!ENTITY enigmail.ruleEmail.tooltip "Vnesite le e-poštni naslov - brez imena prejemnika\ Primer: 'Janez Kranjski <janez.kranjski@domena.si>' je neveljavno">
 <!ENTITY enigmail.sepratationDesc.label "(več e-poštnih naslovov loči s presledki)">
 <!ENTITY enigmail.matchDescStart.label "Pravila uporabi, ko uporabnik">
 <!ENTITY enigmail.matchDescEnd.label "enega gornjih naslovov">
@@ -557,11 +557,11 @@
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Prosimo, potrdite svojo geslo s ponovnim vnosom">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.title "Ključa OpenPGP ni mogoče najti">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.subtitle "Ključa OpenPGP ni mogoče najti">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc "Nobenega ključa OpenPGP ni mogoče najti. Izberite spodaj, če želite\\n\\n\\nustvariti nov par ključev ali če želite uvoziti obstoječi ključ.">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc "Nobenega ključa OpenPGP ni mogoče najti. Izberite spodaj, če želite\ \ \ ustvariti nov par ključev ali če želite uvoziti obstoječi ključ.">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey "Imam obstoječe javne in zasebne ključe, ki jih želim uvoziti.">
 <!ENTITY enigmail.setupWiz.pgKeyImport.title "Uvozi ključe OpenPGP">
 <!ENTITY enigmail.setupWiz.pgKeyImport.subtitle "Navedite datoteke za uvoz">
-<!ENTITY enigmail.setupWiz.pgKeyImport.desc "Prosimo, navedite datoteke, ki vsebujejo javne in zasebne ključe za uvoz.\\n\\n\\n Vnos za zasebni ključ lahko pustite prazen, če prva datoteka\\n\\n vsebuje tako zasebne kot javne ključe.">
+<!ENTITY enigmail.setupWiz.pgKeyImport.desc "Prosimo, navedite datoteke, ki vsebujejo javne in zasebne ključe za uvoz.\ \ \  Vnos za zasebni ključ lahko pustite prazen, če prva datoteka\ \  vsebuje tako zasebne kot javne ključe.">
 <!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile "Datoteka javnega ključa">
 <!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile "Datoteka javnega ključa">
 <!ENTITY enigmail.setupWiz.pgSummary.title "Povzetek">

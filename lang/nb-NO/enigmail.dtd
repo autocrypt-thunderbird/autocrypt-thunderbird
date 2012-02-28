@@ -285,7 +285,7 @@
 <!ENTITY enigmail.maybe.label "Ja, om valgt i skrive-vindu">
 <!ENTITY enigmail.singleRcptSettings.desc "(MERK: Om konflikt gjelder 'Aldri' over 'Alltid')">
 <!ENTITY enigmail.ruleEmail.label "Sett OpenPGP-regel for">
-<!ENTITY enigmail.ruleEmail.tooltip "Skriv bare inn epostadresse\\nFor eksempel 'Some Name <some.name@address.net>' er ugyldig">
+<!ENTITY enigmail.ruleEmail.tooltip "Skriv bare inn epostadresse\ For eksempel 'Some Name <some.name@address.net>' er ugyldig">
 <!ENTITY enigmail.sepratationDesc.label "(Separer flere eposter med mellomrom)">
 <!ENTITY enigmail.matchDescStart.label "Gjør regel gjeldende om mottaker">
 <!ENTITY enigmail.matchDescEnd.label "en av adressene over">

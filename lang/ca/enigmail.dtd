@@ -277,7 +277,7 @@
 <!ENTITY enigmail.maybe.label "Sí, si es selecciona a la redacció del missatge">
 <!ENTITY enigmail.singleRcptSettings.desc "(Nota: en cas de conflicte, 'Mai' preval sobre 'Sempre')">
 <!ENTITY enigmail.ruleEmail.label "Estableix les regles OpenPGP per a ">
-<!ENTITY enigmail.ruleEmail.tooltip "Ompliu només l'adreça de correu, NO establiu els noms dels recipients \\n Per exemple, \n\n\n\n\n\n\n'Algun nom' <algun.nom@adreça.net>' no és vàlid">
+<!ENTITY enigmail.ruleEmail.tooltip "Ompliu només l'adreça de correu, NO establiu els noms dels recipients \  Per exemple,        'Algun nom' <algun.nom@adreça.net>' no és vàlid">
 <!ENTITY enigmail.sepratationDesc.label "(Cal separar varies adreces de correu amb espais)">
 <!ENTITY enigmail.matchDescStart.label "Aplica la regla si és el destinatari">
 <!ENTITY enigmail.matchDescEnd.label "una de les adreces d'amunt">
@@ -497,7 +497,7 @@
 <!ENTITY enigmail.setupWiz.title "Auxiliar de configuració de l'OpenPGP">
 <!ENTITY enigmail.setupWiz.yes "Sí">
 <!ENTITY enigmail.setupWiz.no "No, gràcies">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "Aquest auxiliar us ajuda a iniciar correctament l'OpenPGP. A les properes pantalles us faré algunes preguntes per configurar-ho tot. \n\n\n\n\n\n\n">
+<!ENTITY enigmail.setupWiz.pgWelcome.desc "Aquest auxiliar us ajuda a iniciar correctament l'OpenPGP. A les properes pantalles us faré algunes preguntes per configurar-ho tot.        ">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "Voleu emprar ara l'auxiliar?">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "Sí, m'agradaria que l'auxiliar m'ajudi a començar">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "No, gràcies. Prefereixo configurar-ho manualment">
@@ -509,13 +509,13 @@
 <!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Nota:</a> L'OpenPGP sempre verificarà les signatures dels correus per cada compte o identitat, sense fer cas a si està habilitat o no.">
 <!ENTITY enigmail.setupWiz.pgSign.title "Signat">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "Signat digital dels vostres correus de sortida">
-<!ENTITY enigmail.setupWiz.pgSign.desc "L'OpenPGP us permet signar digitalment els vostres correus. Això és com la versió electrònica de signar una carta, i permet que els destinataris estiguin segurs de que un correu sigui realment vostre. Signar el correu de sortida és una bona pràctica de seguretat.\n\n\n\n\n\n\n">
+<!ENTITY enigmail.setupWiz.pgSign.desc "L'OpenPGP us permet signar digitalment els vostres correus. Això és com la versió electrònica de signar una carta, i permet que els destinataris estiguin segurs de que un correu sigui realment vostre. Signar el correu de sortida és una bona pràctica de seguretat.       ">
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg "Voleu signar tot el vostre correu de sortida per defecte?">
 <!ENTITY enigmail.setupWiz.pgSign.yesSign "Sí, vull signar tot el meu correu">
 <!ENTITY enigmail.setupWiz.pgSign.noSign "No, vull crear regles per destinatari per als correus que s'han de signar">
 <!ENTITY enigmail.setupWiz.pgEnc.title "Xifrat">
 <!ENTITY enigmail.setupWiz.pgEnc.subtitle "Xifrat dels vostres correus de sortida">
-<!ENTITY enigmail.setupWiz.pgEnc.desc "L'OpenPGP us permet xifrar el vostres missatges de correu i qualsevol fitxer adjunt. El xifrat és com posar una carta dins un sobre. Fa que el contingut esdevingui privat. No serveix només per als missatges &quot;secrets&quot;, sinó també per tot el contingut que no enviaríeu en una postal.\n\n\n\n\n\n\n">
+<!ENTITY enigmail.setupWiz.pgEnc.desc "L'OpenPGP us permet xifrar el vostres missatges de correu i qualsevol fitxer adjunt. El xifrat és com posar una carta dins un sobre. Fa que el contingut esdevingui privat. No serveix només per als missatges &quot;secrets&quot;, sinó també per tot el contingut que no enviaríeu en una postal.       ">
 <!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg "S'ha de xifrar el vostre correu de sortida per defecte?">
 <!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt "Sí, tinc les claus públiques de la majoria dels meus contactes">
 <!ENTITY enigmail.setupWiz.pgEnc.noEncrypt "No, crearé regles per destinatari per aquells que m'han enviat les seves claus públiques">
@@ -551,6 +551,6 @@
 <!ENTITY enigmail.setupWiz.details.8bitEncoding "Empra codificació de 8-bit en enviar el missatge">
 <!ENTITY enigmail.setupWiz.details.noComposeHTML "No redactis missatges HTML">
 <!ENTITY enigmail.setupWiz.pgNoStart.title "Cancel·la l'auxiliar">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc "Heu seleccionat no emprar l'auxiliar per configurar l'OpenPGP. \n\n\n\n\n\n\n<html:br/><html:br/>Gràcies per emprar l'Enigmail.">
+<!ENTITY enigmail.setupWiz.pgNoStart.desc "Heu seleccionat no emprar l'auxiliar per configurar l'OpenPGP.        <html:br/><html:br/>Gràcies per emprar l'Enigmail.">
 <!ENTITY enigmail.advancedIdentityDlg.title "Paràmetres d'identitat OpenPGP avançats">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "Annexa la meva clau pública als missatges">
