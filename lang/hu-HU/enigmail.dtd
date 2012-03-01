@@ -289,10 +289,6 @@
 <!ENTITY enigmail.ruleEmail.tooltip "Csak az e-mail címet szabad beírni, NE állítsa be címzett nevét.
 
 
-
-
-
-
 Például: „Senki Alfonz <alfonz.senki@cime.net>” formátum helytelen.">
 <!ENTITY enigmail.sepratationDesc.label "(Több e-mail címet szóközökkel válassza el.)">
 <!ENTITY enigmail.matchDescStart.label "Szabály alkalmazása, ha a címzett">
@@ -467,6 +463,7 @@ Például: „Senki Alfonz <alfonz.senki@cime.net>” formátum helytelen.">
 <!ENTITY enigmail.keyDetails.size.label "Méret">
 <!ENTITY enigmail.keyDetails.created.label "Létrehozva">
 <!ENTITY enigmail.keyDetails.expiry.label "Lejárat">
+<!ENTITY enigmail.keyDetails.usage.label "Használat">
 <!ENTITY enigmail.keyDetails.calcTrust.label "Kulcs érvényesség">
 <!ENTITY enigmail.keyDetails.ownerTrust.label "Kulcsmegbízhatóság">
 <!ENTITY enigmail.keyDetails.fingerprint.label "Ujjlenyomat">
@@ -527,25 +524,13 @@ Például: „Senki Alfonz <alfonz.senki@cime.net>” formátum helytelen.">
 <!ENTITY enigmail.setupWiz.pgWelcome.desc "A következő néhány lépés a kezdő OpenPGP használók számára nyújt segítséget az első lépésekben, 
 
 
-
-
-
-
  
 
-
-
  
-
-
 
 illetve a kezdeti beállításoknál. A képernyőn kérdések jelennek meg, amelyek megválaszolását 
 
-
-
  
-
-
 
 követően, a beállítások automatikusan végrehajtódnak.">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "El kívánja indítani a Beállítás Tündért?">
@@ -556,33 +541,17 @@ követően, a beállítások automatikusan végrehajtódnak.">
 <!ENTITY enigmail.setupWiz.pgSelectId.desc "Az OpenPGP postafiókokon és azonosítókon működik. Alapesetben az 
 
 
-
-
-
-
  
 
-
-
  
-
-
 
 OpenPGP úgy állítja be önmagát, hogy minden postafiókon és azonosítón működjön. 
 
-
-
  
-
-
 
 Ha mégsem így szeretné, kérem válassza ki, hogy az OpenPGP mely postafiókokon 
 
-
-
  
-
-
 
 (vagy azonosítókon) működjön.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "Be kívánja állítani az OpenPGP-t az összes postafiókhoz?">
@@ -590,17 +559,9 @@ Ha mégsem így szeretné, kérem válassza ki, hogy az OpenPGP mely postafióko
 <!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Megjegyzés:</a> Az OpenPGP minden e-mail esetén ellenőrzi az 
 
 
-
-
-
-
  
 
-
-
  
-
-
 
 aláírást, figyelmen kívül hagyva a postafiókok és azonosítók beállításait.">
 <!ENTITY enigmail.setupWiz.pgSign.title "Aláírás">
@@ -608,25 +569,13 @@ aláírást, figyelmen kívül hagyva a postafiókok és azonosítók beállít�
 <!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP lehetőséget biztosít a levelek digitális aláírására. Ez ahhoz hasonló, mint amikor 
 
 
-
-
-
-
  
 
-
-
  
-
-
 
 egy levelet aláírunk, csak itt digitális formában történik. Ez alapján ellenőrizhető, 
 
-
-
  
-
-
 
 hogy a levél valóban a feladótól érkezett-e. Biztonsági szempontból ajánlott bekapcsolni, ">
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg "Kéri a kimenő üzenetek alapértelmezés szerinti aláírását?">
@@ -637,33 +586,17 @@ hogy a levél valóban a feladótól érkezett-e. Biztonsági szempontból aján
 <!ENTITY enigmail.setupWiz.pgEnc.desc "Az OpenPGP segítségével titkosíthatja az e-mail üzeneteit és bármely mellékletet is.
 
 
-
-
-
-
  
 
-
-
  
-
-
 
 A titkosítás olyan, mint amikor a levelet borítékba teszi. Titkossá teszi a
 
-
-
  
-
-
 
 kommunikációt. Ezt nem csak a „titkos” üzenetek küldésére használhatja,
 
-
-
  
-
-
 
  hanem bármire, amit nem küldene el egy levelezőlapon.">
 <!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg "Kéri a kimenő üzenetek alapértelmezés szerinti titkosítását?">
@@ -675,17 +608,9 @@ kommunikációt. Ezt nem csak a „titkos” üzenetek küldésére használhatj
 <!ENTITY enigmail.setupWiz.pgSettings.changePref "Szeretne változtatni néhány alapértelmezett beállításon, hogy az OpenPGP megbízhatóbban 
 
 
-
-
-
-
  
 
-
-
  
-
-
 
 működjön a számítógépén?">
 <!ENTITY enigmail.setupWiz.pgSettings.details "Részletek…">
