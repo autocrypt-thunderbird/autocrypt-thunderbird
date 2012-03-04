@@ -290,7 +290,7 @@ typedef struct _OVERLAPPED {
 const OVERLAPPED = new ctypes.StructType("OVERLAPPED");
 
 //UNIX definitions
-const pid_t = ctypes.uint32_t;
+const pid_t = ctypes.int32_t;
 const WNOHANG = 1;
 const F_SETFL = 4;
 
@@ -1505,7 +1505,10 @@ function subprocess_unix(options) {
             if (result > 0)
                 exitCode = status.value
             else
-                exitCode = workerExitCode;
+                if (workerExitCode >= 0)
+                    exitCode = workerExitCode
+                else
+                    exitCode = status.value;
 
             if (stdinWorker)
                 stdinWorker.postMessage({msg: 'stop'})
