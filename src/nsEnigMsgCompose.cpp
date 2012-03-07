@@ -44,7 +44,6 @@
 #include "nsMsgBaseCID.h"
 #include "nsMsgCompCID.h"
 #include "nsIMsgMailSession.h"
-#include "nsIIPCService.h"
 #include "nsIEnigMsgCompFields.h"
 #include "nsEnigMsgCompose.h"
 #include "nspr.h"

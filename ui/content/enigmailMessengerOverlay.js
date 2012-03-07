@@ -1670,8 +1670,7 @@ Enigmail.msg = {
         var uri = Components.classes[EnigmailCommon.SIMPLEURI_CONTRACTID].createInstance(Components.interfaces.nsIURI);
         uri.spec = "enigmail:dummy";
 
-        var ipcService = Components.classes[EnigmailCommon.IPCSERVICE_CONTRACTID].getService(Components.interfaces.nsIIPCService);
-        var channel = ipcService.newStringChannel(uri, "", "", txt);
+        var channel = EnigmailCommon.newStringChannel(uri, "", "", txt);
         var verifier = Components.classes[EnigmailCommon.ENIGMIMEVERIFY_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeVerify);
 
         verifier.initWithChannel(callbackArg.window, channel, callbackArg.msgWindow, callbackArg.msgUriSpec,

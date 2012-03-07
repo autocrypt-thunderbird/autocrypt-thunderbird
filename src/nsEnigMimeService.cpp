@@ -251,7 +251,7 @@ nsEnigMimeService::Sleep(PRUint32 miliSeconds)
 NS_IMETHODIMP
 nsEnigMimeService::GetRandomHex(PRUint32 nDigits, char **_retval)
 {
-  DEBUG_LOG(("nsIPCService::GetRandomHex: %d\n", nDigits));
+  DEBUG_LOG(("nsEnigMimeService::GetRandomHex: %d\n", nDigits));
 
   if (!_retval)
     return NS_ERROR_NULL_POINTER;
