@@ -458,7 +458,6 @@ EnigmailProtocolHandler.prototype = {
 
     if (messageId) {
       // Handle enigmail:message/...
-      // I think this piece of code is no more used
 
       if (!gEnigmailSvc)
         throw Components.results.NS_ERROR_FAILURE;
@@ -483,14 +482,14 @@ EnigmailProtocolHandler.prototype = {
         contentData = "Enigmail error: invalid URI "+aURI.spec;
       }
 
-      var channel = Ec.newStringChannel(aURI,contentType, "UTF-8", contentData);
+      var channel =Ec.newStringChannel(aURI, contentType, "UTF-8", contentData);
 
       return channel;
     }
 
     if (aURI.spec == aURI.scheme+":dummy") {
       // Dummy PKCS7 content (to access mimeEncryptedClass)
-      channel = Ec.newStringChannel(aURI,"message/rfc822", "", gDummyPKCS7);
+      channel = Ec.newStringChannel(aURI, "message/rfc822", "", gDummyPKCS7);
       return channel;
     }
 
@@ -1264,11 +1263,6 @@ Enigmail.prototype = {
        args = [ "--version", "--version", "--batch", "--no-tty", "--charset", "utf-8", "--display-charset", "utf-8" ];
     }
 
-<<<<<<< enigmail.js
-    var exitCode = -1;
-    var outStr = "";
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.setAgentPath: calling subprocess with '"+command.path+"'\n");
-=======
     var exitCode = -1;
     var outStr = "";
     Ec.DEBUG_LOG("enigmail.js: Enigmail.setAgentPath: calling subprocess with '"+command.path+"'\n");
@@ -1284,53 +1278,20 @@ Enigmail.prototype = {
       },
       mergeStderr: true
     };
->>>>>>> 1.322
 
-<<<<<<< enigmail.js
-    var proc = {
-      command:     command,
-      arguments:   args,
-      environment: Ec.envList,
-      charset: null,
-      done: function(result) {
-        exitCode = result.exitCode;
-        outStr = result.stdout;
-      },
-      mergeStderr: true
-    };
-=======
     try {
       subprocess.call(proc).wait()
     } catch (ex) {
       Ec.ERROR_LOG("enigmail.js: Enigmail.setAgentPath: subprocess.call failed with '"+ex.toString()+"'\n");
       throw ex;
     }
->>>>>>> 1.322
 
-<<<<<<< enigmail.js
-    try {
-      subprocess.call(proc).wait()
-    } catch (ex) {
-      Ec.ERROR_LOG("enigmail.js: Enigmail.setAgentPath: subprocess.call failed with '"+ex.toString()+"'\n");
-      throw ex;
-    }
-=======
-    Ec.CONSOLE_LOG("enigmail> "+Ec.printCmdLine(command, args)+"\n");
->>>>>>> 1.322
-
-<<<<<<< enigmail.js
     Ec.CONSOLE_LOG("enigmail> "+Ec.printCmdLine(command, args)+"\n");
 
     if (exitCode != 0) {
       Ec.ERROR_LOG("enigmail.js: Enigmail.setAgentPath: gpg failed with '"+outStr+"'\n");
       throw Components.results.NS_ERROR_FAILURE;
     }
-=======
-    if (exitCode != 0) {
-      Ec.ERROR_LOG("enigmail.js: Enigmail.setAgentPath: gpg failed with '"+outStr+"'\n");
-      throw Components.results.NS_ERROR_FAILURE;
-    }
->>>>>>> 1.322
 
     Ec.CONSOLE_LOG(outStr+"\n");
 
