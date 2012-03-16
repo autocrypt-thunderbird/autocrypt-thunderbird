@@ -594,7 +594,7 @@ function enigmailGpgkeysTerminate(exitCode) {
   try {
     if (gErrorData.length > 0) {
       Ec.DEBUG_LOG("enigmailSearchkey.js: Terminate(): stderr has data:\n");
-      CONSOLE_LOG(gErrorData+"\n");
+      Ec.CONSOLE_LOG(gErrorData+"\n");
     }
 
     exitCode = Ec.fixExitCode(exitCode, 0);
