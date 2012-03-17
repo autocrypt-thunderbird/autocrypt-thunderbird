@@ -118,7 +118,7 @@
            accesskey="&enigmail.clearPassphrase.accesskey;"
            advanced="true"
            hidden="false"
-           oncommand="EnigmailFuncs.clearPassphrase(window);" />
+           oncommand="EnigmailCommon.clearPassphrase(window);" />
 
       <menuitem id="enigmail_reload_msg"
            label="&enigmail.reload.label;"

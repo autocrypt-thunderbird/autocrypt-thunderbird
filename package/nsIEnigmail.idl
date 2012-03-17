@@ -84,7 +84,6 @@ interface nsIEnigmail : nsISupports
   boolean useGpgAgent();     /* is gpg-agent used */
 
   void stillActive();
-  void clearCachedPassphrase();
 
   string getLogDirectoryPrefix();
 

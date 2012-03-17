@@ -180,7 +180,7 @@
               label="&enigmail.clearPassphrase.label;"
               accesskey="&enigmail.clearPassphrase.accesskey;"
               advanced="true"
-              oncommand="EnigmailFuncs.clearPassphrase(window);" />
+              oncommand="EnigmailCommon.clearPassphrase(window);" />
 
           <menuseparator/>
 

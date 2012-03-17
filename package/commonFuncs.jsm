@@ -619,22 +619,6 @@ var EnigmailFuncs = {
     }
   },
 
-  clearPassphrase: function (win) {
-    EnigmailCommon.DEBUG_LOG("enigmailFuncs.jsm: clearPassphrase:\n");
-
-    var enigmailSvc = EnigmailCommon.getService(win);
-    if (!enigmailSvc)
-      return;
-
-    if (enigmailSvc.useGpgAgent(win)) {
-      EnigmailCommon.alert(win, EnigmailCommon.getString("passphraseCannotBeCleared"))
-    }
-    else {
-      enigmailSvc.clearCachedPassphrase();
-      EnigmailCommon.alertPref(win, EnigmailCommon.getString("passphraseCleared"), "warnClearPassphrase");
-    }
-  },
-
   // this function tries to mimic the Thunderbird plaintext viewer
   formatPlaintextMsg: function (plainTxt)
   {

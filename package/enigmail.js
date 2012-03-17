@@ -167,9 +167,6 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     INV_SGNR:				 0x100000000
 };
 
-var gCachedPassphrase = null;
-var gCacheTimer = null;
-
 ///////////////////////////////////////////////////////////////////////////////
 // File read/write operations
 
@@ -548,72 +545,6 @@ EnigmailProtocolHandler.prototype = {
 // Enigmail encryption/decryption service
 ///////////////////////////////////////////////////////////////////////////////
 
-function GetPassphrase(domWindow, passwdObj, useAgentObj, rememberXTimes) {
-  Ec.DEBUG_LOG("enigmail.js: GetPassphrase:\n");
-
-  useAgentObj.value = false;
-  try {
-    var noPassphrase = gEnigmailSvc.prefBranch.getBoolPref("noPassphrase");
-    useAgentObj.value = gEnigmailSvc.useGpgAgent();
-
-    if (noPassphrase || useAgentObj.value) {
-      passwdObj.value = "";
-      return true;
-    }
-
-  }
-  catch(ex) {}
-
-  var maxIdleMinutes = gEnigmailSvc.getMaxIdleMinutes();
-
-  if (gEnigmailSvc.haveCachedPassphrase()) {
-    passwdObj.value = gCachedPassphrase;
-
-    if (gEnigmailSvc._passwdAccessTimes > 0) {
-      --gEnigmailSvc._passwdAccessTimes;
-
-      if (gEnigmailSvc._passwdAccessTimes <= 0 && maxIdleMinutes <= 0) {
-        gEnigmailSvc.clearCachedPassphrase();
-      }
-    }
-    return true;
-  }
-
-  // Obtain password interactively
-  var checkObj = new Object();
-
-  var promptMsg = Ec.getString("enterPassOrPin");
-  passwdObj.value = "";
-  checkObj.value = true;
-
-  var checkMsg = (maxIdleMinutes>0) ? Ec.getString("rememberPass", [ maxIdleMinutes ]) : "";
-
-  var success;
-
-  var promptService = Cc[NS_PROMPTSERVICE_CONTRACTID].getService(Ci.nsIPromptService);
-  success = promptService.promptPassword(domWindow,
-                                         Ec.getString("enigPrompt"),
-                                         promptMsg,
-                                         passwdObj,
-                                         checkMsg,
-                                         checkObj);
-
-  if (!success)
-    return false;
-
-  Ec.DEBUG_LOG("enigmail.js: GetPassphrase: got passphrase\n");
-
-  // remember the passphrase for accessing serveral times in a sequence
-
-  if (rememberXTimes) gEnigmailSvc._passwdAccessTimes = rememberXTimes;
-
-  // Remember passphrase only if necessary
-  if ((checkObj.value && (maxIdleMinutes > 0)) || rememberXTimes)
-    gEnigmailSvc.setCachedPassphrase(passwdObj.value, rememberXTimes);
-
-  return true;
-}
-
 // Remove all quoted strings (and angle brackets) from a list of email
 // addresses, returning a list of pure email address
 function EnigStripEmail(mailAddrs) {
@@ -693,8 +624,6 @@ Enigmail.prototype = {
   rulesList: null,
   gpgAgentInfo: {preStarted: false, envStr: ""},
 
-  _lastActiveTime: 0,
-  _passwdAccessTimes: 0,
   _messageIdList: {},
   _xpcom_factory: {
     createInstance: function (aOuter, iid) {
@@ -712,15 +641,7 @@ Enigmail.prototype = {
   observe: function (aSubject, aTopic, aData) {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.observe: topic='"+aTopic+"' \n");
 
-    if (aTopic == "timer-callback") {
-      // Cause cached password to expire, if need be
-      if (!this.haveCachedPassphrase()) {
-        // No cached password; cancel repeating timer
-        if (gCacheTimer)
-          gCacheTimer.cancel();
-      }
-
-    } else if (aTopic == NS_XPCOM_SHUTDOWN_OBSERVER_ID) {
+    if (aTopic == NS_XPCOM_SHUTDOWN_OBSERVER_ID) {
       // XPCOM shutdown
       this.finalize();
 
@@ -781,16 +702,6 @@ Enigmail.prototype = {
     return promptService.alert(domWindow, Ec.getString("enigError"), mesg);
   },
 
-  getMaxIdleMinutes: function () {
-    var maxIdleMinutes = 5;
-    try {
-      maxIdleMinutes = this.prefBranch.getIntPref("maxIdleMinutes");
-    } catch (ex) {
-    }
-
-    return maxIdleMinutes;
-  },
-
   getLogDirectoryPrefix: function () {
     var logDirectory = "";
     try {
@@ -825,93 +736,6 @@ Enigmail.prototype = {
       thread.processNextEvent(true);
 
     return file;
-  },
-
-  stillActive: function () {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.stillActive: \n");
-
-    // Update last active time
-    var curDate = new Date();
-    this._lastActiveTime = curDate.getTime();
-  //  Ec.DEBUG_LOG("enigmail.js: Enigmail.stillActive: _lastActiveTime="+this._lastActiveTime+"\n");
-  },
-
-
-  clearCachedPassphrase: function () {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.clearCachedPassphrase: \n");
-
-    gCachedPassphrase = null;
-  },
-
-  setCachedPassphrase: function (passphrase) {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.setCachedPassphrase: \n");
-
-    gCachedPassphrase = passphrase;
-    this.stillActive();
-
-    var maxIdleMinutes = this.getMaxIdleMinutes();
-
-    var createTimerType = null;
-    const nsITimer = Ci.nsITimer;
-
-    if (this.haveCachedPassphrase() && (this._passwdAccessTimes > 0) && (maxIdleMinutes <= 0)) {
-      // we remember the passphrase for at most 1 minute
-      createTimerType = nsITimer.TYPE_ONE_SHOT;
-      maxIdleMinutes = 1;
-    }
-    else if (this.haveCachedPassphrase() && (maxIdleMinutes > 0)) {
-      createTimerType = nsITimer.TYPE_REPEATING_SLACK;
-    }
-
-    if (createTimerType != null) {
-      // Start timer
-      if (gCacheTimer)
-        gCacheTimer.cancel();
-
-      var delayMillisec = maxIdleMinutes*60*1000;
-
-      gCacheTimer = Cc[NS_TIMER_CONTRACTID].createInstance(nsITimer);
-
-      if (!gCacheTimer) {
-        Ec.ERROR_LOG("enigmail.js: Enigmail.setCachedPassphrase: Error - failed to create timer\n");
-        throw Components.results.NS_ERROR_FAILURE;
-      }
-
-      gCacheTimer.init(this, delayMillisec,
-                        createTimerType);
-
-      Ec.DEBUG_LOG("enigmail.js: Enigmail.setCachedPassphrase: gCacheTimer="+gCacheTimer+"\n");
-    }
-  },
-
-  haveCachedPassphrase: function () {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.haveCachedPassphrase: \n");
-
-    var havePassphrase = ((typeof gCachedPassphrase) == "string");
-
-    if (!havePassphrase)
-      return false;
-
-    var curDate = new Date();
-    var currentTime = curDate.getTime();
-
-    var maxIdleMinutes = this.getMaxIdleMinutes();
-    var delayMillisec = maxIdleMinutes*60*1000;
-
-    var expired = ((currentTime - this._lastActiveTime) >= delayMillisec);
-
-  //  Ec.DEBUG_LOG("enigmail.js: Enigmail.haveCachedPassphrase: ")
-  //  Ec.DEBUG_LOG("currentTime="+currentTime+", _lastActiveTime="+this._lastActiveTime+", expired="+expired+"\n");
-
-    if (expired && (this._passwdAccessTimes <= 0)) {
-      // Too much idle time; forget cached password
-      gCachedPassphrase = null;
-      havePassphrase = false;
-
-      Ec.WRITE_LOG("enigmail.js: Enigmail.haveCachedPassphrase: CACHE IDLED OUT\n");
-    }
-
-    return havePassphrase;
   },
 
 
@@ -1094,7 +918,7 @@ Enigmail.prototype = {
 
     obsServ.addObserver(this, NS_XPCOM_SHUTDOWN_OBSERVER_ID, false);
 
-    this.stillActive();
+    Ec.stillActive();
     this.initialized = true;
 
     Ec.DEBUG_LOG("enigmail.js: Enigmail.initialize: END\n");
@@ -1424,7 +1248,7 @@ Enigmail.prototype = {
         if ((! this.isDosLike) && (this.agentVersion < "2.1" )) {
           args = [ "--sh", "--no-use-standard-socket",
                   "--daemon",
-                  "--default-cache-ttl", (this.getMaxIdleMinutes()*60).toString(),
+                  "--default-cache-ttl", (Ec.getMaxIdleMinutes()*60).toString(),
                   "--max-cache-ttl", "999999" ];  // ca. 11 days
 
           try {
@@ -1464,7 +1288,7 @@ Enigmail.prototype = {
           initPath(envFile, this.determineGpgHomeDir());
           envFile.append("gpg-agent.conf");
 
-          var data="default-cache-ttl " + (this.getMaxIdleMinutes()*60)+"\n";
+          var data="default-cache-ttl " + (Ec.getMaxIdleMinutes()*60)+"\n";
           data += "max-cache-ttl 999999";
           if (! envFile.exists()) {
             try {
@@ -1571,7 +1395,7 @@ Enigmail.prototype = {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.simpleExecCmd: exitCode = "+exitCodeObj.value+"\n");
     Ec.DEBUG_LOG("enigmail.js: Enigmail.simpleExecCmd: errOutput = "+errOutput+"\n");
 
-    this.stillActive();
+    Ec.stillActive();
 
     return outputData;
   },
@@ -1667,7 +1491,7 @@ Enigmail.prototype = {
 
     Ec.CONSOLE_LOG(errorMsgObj.value+"\n");
 
-    this.stillActive();
+    Ec.stillActive();
 
     return outputData;
   },
@@ -1689,7 +1513,7 @@ Enigmail.prototype = {
 
       var passwdObj = new Object();
 
-      if (!GetPassphrase(domWindow, passwdObj, useAgentObj, 0)) {
+      if (!Ec.getPassphrase(domWindow, passwdObj, useAgentObj, 0)) {
          Ec.ERROR_LOG("enigmail.js: Enigmail.execStart: Error - no passphrase supplied\n");
 
          statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
@@ -1796,7 +1620,7 @@ Enigmail.prototype = {
 
     Ec.CONSOLE_LOG(Ec.convertFromUnicode(errorMsgObj.value)+"\n");
 
-    this.stillActive();
+    Ec.stillActive();
 
     return exitCode;
   },
@@ -1963,7 +1787,7 @@ Enigmail.prototype = {
 
     if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
       // "Unremember" passphrase on error return
-      this.clearCachedPassphrase();
+      Ec.clearCachedPassphrase();
     }
 
     if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
@@ -2138,7 +1962,7 @@ Enigmail.prototype = {
       var passwdObj   = new Object();
       var useAgentObj = new Object();
       // Get the passphrase and remember it for the next 2 subsequent calls to gpg
-      if (!GetPassphrase(null, passwdObj, useAgentObj, 2)) {
+      if (!Ec.getPassphrase(null, passwdObj, useAgentObj, 2)) {
         Ec.ERROR_LOG("enigmail.js: Enigmail.determineHashAlgorithm: Error - no passphrase supplied\n");
 
         return 3;
@@ -2184,7 +2008,7 @@ Enigmail.prototype = {
         // Abormal return
         if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
           // "Unremember" passphrase on error return
-          this.clearCachedPassphrase();
+          Ec.clearCachedPassphrase();
           errorMsgObj.value = Ec.getString("badPhrase");
         }
         this.alertMsg(null, errorMsgObj.value);
@@ -2902,7 +2726,7 @@ Enigmail.prototype = {
 
     if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
       // "Unremember" passphrase on decryption failure
-      this.clearCachedPassphrase();
+      Ec.clearCachedPassphrase();
     }
 
     var pubKeyId;
@@ -3395,7 +3219,7 @@ Enigmail.prototype = {
       var passwdObj = new Object();
       var useAgentObj = new Object();
 
-      if (!GetPassphrase(parent, passwdObj, useAgentObj, 0)) {
+      if (!Ec.getPassphrase(parent, passwdObj, useAgentObj, 0)) {
          Ec.ERROR_LOG("enigmail.js: Enigmail.encryptAttachment: Error - no passphrase supplied\n");
 
          statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
@@ -3444,7 +3268,7 @@ Enigmail.prototype = {
     var passwdObj = new Object();
     var useAgentObj = new Object();
 
-    if (!GetPassphrase(parent, passwdObj, useAgentObj, 0)) {
+    if (!Ec.getPassphrase(parent, passwdObj, useAgentObj, 0)) {
       Ec.ERROR_LOG("enigmail.js: Enigmail.getAttachmentFileName: Error - no passphrase supplied\n");
       return null;
     }
@@ -3585,7 +3409,7 @@ Enigmail.prototype = {
     var passwdObj = new Object();
     var useAgentObj = new Object();
 
-    if (!GetPassphrase(parent, passwdObj, useAgentObj, 0)) {
+    if (!Ec.getPassphrase(parent, passwdObj, useAgentObj, 0)) {
       Ec.ERROR_LOG("enigmail.js: Enigmail.decryptAttachment: Error - no passphrase supplied\n");
 
       statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
@@ -3836,7 +3660,7 @@ Enigmail.prototype = {
                         signKeyCallback,
                         null,
                         errorMsgObj);
-    this.stillActive();
+    Ec.stillActive();
 
     return r;
   },
@@ -3861,7 +3685,7 @@ Enigmail.prototype = {
                         revokeCertCallback,
                         null,
                         errorMsgObj);
-    this.stillActive();
+    Ec.stillActive();
 
     return r;
   },
@@ -3877,7 +3701,7 @@ Enigmail.prototype = {
                         addUidCallback,
                         null,
                         errorMsgObj);
-    this.stillActive();
+    Ec.stillActive();
 
     return r;
   },
@@ -3891,7 +3715,7 @@ Enigmail.prototype = {
                         deleteKeyCallback,
                         null,
                         errorMsgObj);
-    this.stillActive();
+    Ec.stillActive();
 
     return r;
   },
@@ -3909,7 +3733,7 @@ Enigmail.prototype = {
                         changePassphraseCallback,
                         pwdObserver,
                         errorMsgObj);
-    this.stillActive();
+    Ec.stillActive();
 
     return r;
   },
@@ -3926,7 +3750,7 @@ Enigmail.prototype = {
                         revokeSubkeyCallback,
                         null,
                         errorMsgObj);
-    this.stillActive();
+    Ec.stillActive();
 
     return r;
   },
@@ -3940,7 +3764,7 @@ Enigmail.prototype = {
                         null,
                         null,
                         errorMsgObj);
-    this.stillActive();
+    Ec.stillActive();
 
     return r;
   },
@@ -3953,7 +3777,7 @@ Enigmail.prototype = {
                         setPrimaryUidCallback,
                         null,
                         errorMsgObj);
-    this.stillActive();
+    Ec.stillActive();
 
     return r;
   },
@@ -3967,7 +3791,7 @@ Enigmail.prototype = {
                         deleteUidCallback,
                         null,
                         errorMsgObj);
-    this.stillActive();
+    Ec.stillActive();
 
     return r;
   },
@@ -3981,7 +3805,7 @@ Enigmail.prototype = {
                         revokeUidCallback,
                         null,
                         errorMsgObj);
-    this.stillActive();
+    Ec.stillActive();
 
     return r;
   },
@@ -3996,7 +3820,7 @@ Enigmail.prototype = {
                         addPhotoCallback,
                         null,
                         errorMsgObj);
-    this.stillActive();
+    Ec.stillActive();
 
     return r;
   },
@@ -4078,7 +3902,7 @@ Enigmail.prototype = {
 
       var passwdObj = new Object();
 
-      if (!GetPassphrase(parent, passwdObj, useAgentObj, 0)) {
+      if (!Ec.getPassphrase(parent, passwdObj, useAgentObj, 0)) {
          Ec.ERROR_LOG("enigmail.js: Enigmail.editKey: Error - no passphrase supplied\n");
 
          errorMsgObj.value = Ec.getString("noPassphrase");
@@ -4162,7 +3986,7 @@ Enigmail.prototype = {
       break;
     case -2:
       errorMsgObj.value=Ec.getString("badPhrase");
-      this.clearCachedPassphrase();
+      Ec.clearCachedPassphrase();
     default:
       exitCode = returnCode;
     }
