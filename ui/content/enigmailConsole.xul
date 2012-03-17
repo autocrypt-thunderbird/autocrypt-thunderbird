@@ -57,13 +57,12 @@
         persist="screenX screenY width height">
 
   <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailConsole.js"/>
 
 <commandset id="tasksCommands"/>
 
 <command id="cmd_copy"
-         oncommand="enigConsoleCopy();"
+         oncommand="enigmailConsoleCopy();"
          disabled="true"/>
 
 <command id="cmd_close" oncommand="window.close()"/>
@@ -95,7 +94,7 @@
       <menuitem id="menu_copy2"
                 label="&copyCmd.label;"
                 accesskey="&copyCmd.accesskey;"
-                oncommand="enigConsoleCopy();"/>
+                oncommand="enigmailConsoleCopy();"/>
     </menupopup>
   </menu>
 

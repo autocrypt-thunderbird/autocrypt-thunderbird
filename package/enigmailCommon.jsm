@@ -40,6 +40,7 @@
  */
 
 Components.utils.import("resource://enigmail/subprocess.jsm");
+Components.utils.import("resource://enigmail/pipeConsole.jsm");
 
 var EXPORTED_SYMBOLS = [ "EnigmailCommon" ];
 
@@ -829,8 +830,7 @@ var EnigmailCommon = {
     if (gLogLevel >= 3)
       this.WRITE_LOG("[WARN] "+str);
 
-    if (this.enigmailSvc && this.enigmailSvc.console)
-      this.enigmailSvc.console.write(str);
+      EnigmailConsole.write(str);
   },
 
   ERROR_LOG: function (str)
@@ -857,8 +857,7 @@ var EnigmailCommon = {
     if (gLogLevel >= 3)
       this.WRITE_LOG("[CONSOLE] "+str);
 
-    if (this.enigmailSvc && this.enigmailSvc.console)
-      this.enigmailSvc.console.write(str);
+    EnigmailConsole.write(str);
   },
 
   // retrieves a localized string from the enigmail.properties stringbundle

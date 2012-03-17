@@ -42,7 +42,6 @@ interface nsIMsgWindow;
 interface nsIPrompt;
 interface nsIPrefBranch;
 interface nsIStreamListener;
-interface nsIPipeConsole;
 interface nsIPipeTransport;
 interface nsIIPCRequest;
 interface nsIRequestObserver;
@@ -62,8 +61,6 @@ interface nsIEnigmail : nsISupports
   readonly attribute string agentVersion;     /* version string */
 
   readonly attribute nsILocalFile agentPath;        /* executable path */
-
-  readonly attribute nsIPipeConsole console;  /* Enigmail console */
 
   readonly attribute boolean isWin32;         /* Win32 system */
   readonly attribute boolean isDosLike;       /* DOS-like system (Win32, OS/2) */

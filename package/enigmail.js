@@ -37,6 +37,7 @@
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/AddonManager.jsm");
 Components.utils.import("resource://enigmail/subprocess.jsm");
+Components.utils.import("resource://enigmail/pipeConsole.jsm");
 
 // Maximum size of message directly processed by Enigmail
 const MSG_BUFFER_SIZE = 98304;   // 96 kB
@@ -75,7 +76,6 @@ const ENIGMAIL_EXTENSION_ID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
 
 // Contract IDs and CIDs used by this module
 const NS_IPCBUFFER_CONTRACTID   = "@mozilla.org/ipc/ipc-buffer;1";
-const NS_PIPECONSOLE_CONTRACTID = "@mozilla.org/process/pipe-console;1";
 const NS_PIPETRANSPORT_CONTRACTID="@mozilla.org/ipc/pipe-transport;1";
 const NS_PROCESS_UTIL_CONTRACTID = "@mozilla.org/process/util;1"
 const NS_MSGCOMPOSESECURE_CONTRACTID = "@mozilla.org/messengercompose/composesecure;1";
@@ -111,7 +111,6 @@ const nsIObserver            = Ci.nsIObserver;
 const nsILocalFile           = Ci.nsILocalFile;
 const nsILocalFileWin        = Ci.nsILocalFileWin;
 const nsIProtocolHandler     = Ci.nsIProtocolHandler;
-const nsIPipeConsole         = Ci.nsIPipeConsole;
 const nsIEnvironment         = Ci.nsIEnvironment;
 const nsIEnigmail            = Ci.nsIEnigmail;
 const nsIEnigStrBundle       = Ci.nsIStringBundleService;
@@ -683,7 +682,6 @@ Enigmail.prototype = {
   isDosLike: false,
 
   prefBranch: null,
-  console:    null,
   keygenProcess: null,  // TODO: remove me
   keygenConsole: null,
 
@@ -945,11 +943,6 @@ Enigmail.prototype = {
       this.logFileStream = null;
     }
 
-    if (this.console) {
-      this.console.shutdown();
-      this.console = null;
-    }
-
     gLogLevel = 3;
     this.initializationError = "";
     this.initializationAttempted = false;
@@ -1074,16 +1067,7 @@ Enigmail.prototype = {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.initialize: Ec.envList = "+Ec.envList+"\n");
 
     try {
-      // Access IPC Service
-
-      // Create a non-joinable console
-      var pipeConsole = Cc[NS_PIPECONSOLE_CONTRACTID].createInstance(nsIPipeConsole);
-
-      pipeConsole.open(499, 0, false);
-
-      this.console = pipeConsole;
-
-      pipeConsole.write("Initializing Enigmail service ...\n");
+      EnigmailConsole.write("Initializing Enigmail service ...\n");
 
     } catch (ex) {
       this.initializationError = Ec.getString("enigmimeNotAvail");
@@ -1136,7 +1120,7 @@ Enigmail.prototype = {
     this.initialized = false;
     this.initializationAttempted = true;
 
-    this.console.write("Reinitializing Enigmail service ...\n");
+    EnigmailConsole.write("Reinitializing Enigmail service ...\n");
     this.setAgentPath();
     this.initialized = true;
   },

@@ -32,27 +32,25 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
+Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/pipeConsole.jsm");
 
-// Initialize enigmailCommon
-EnigInitCommon("enigmailConsole");
+const   Ec = EnigmailCommon;
 
-function enigConsoleLoad() {
-  DEBUG_LOG("enigmailConsole.js: enigConsoleLoad\n");
+function consoleLoad() {
+  Ec.DEBUG_LOG("enigmailConsole.js: consoleLoad\n");
 
   top.controllers.insertControllerAt(0, CommandController);
 
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return;
+  Ec.getService(window);
 
   // Refresh console every 2 seconds
-  window.consoleIntervalId = window.setInterval(enigRefreshConsole, 2000);
-  enigRefreshConsole();
+  window.consoleIntervalId = window.setInterval(refreshConsole, 2000);
+  updateData();
 }
 
-function enigConsoleUnload() {
-  DEBUG_LOG("enigmailConsole.js: enigConsoleUnload\n");
+function consoleUnload() {
+  Ec.DEBUG_LOG("enigmailConsole.js: consoleUnload\n");
 
   // Cancel console refresh
   if (window.consoleIntervalId) {
@@ -61,39 +59,42 @@ function enigConsoleUnload() {
   }
 }
 
-window.onload = enigConsoleLoad;
-window.onunload = enigConsoleUnload;
+window.onload = consoleLoad;
+window.onunload = consoleUnload;
 
-function enigRefreshConsole() {
-  //DEBUG_LOG("enigmailConsole.js: enigRefreshConsole():\n");
+function refreshConsole() {
+  //Ec.DEBUG_LOG("enigmailConsole.js: refreshConsole():\n");
 
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return;
+  if (EnigmailConsole.hasNewData()) {
+    Ec.DEBUG_LOG("enigmailConsole.js: refreshConsole(): hasNewData\n");
 
-  if (enigmailSvc.console.hasNewData()) {
-    DEBUG_LOG("enigmailConsole.js: enigRefreshConsole(): hasNewData\n");
-
-    var contentFrame = EnigGetFrame(window, "contentFrame");
-    if (!contentFrame)
-      return;
-
-    var consoleElement = contentFrame.document.getElementById('console');
-
-    consoleElement.firstChild.data = EnigConvertToUnicode(enigmailSvc.console.getData(), "utf-8");
-
-    if (!contentFrame.mouseDownState)
-       contentFrame.scrollTo(0,9999);
+    updateData();
   }
 
   return false;
 }
 
-function enigConsoleCopy()
-{
-  var selText = enigConsoleGetSelectionStr();
+function updateData() {
+  //Ec.DEBUG_LOG("enigmailConsole.js: updateData():\n");
 
-  DEBUG_LOG("enigmailConsole.js: enigConsoleCopy: selText='"+selText+"'\n");
+    var contentFrame = Ec.getFrame(window, "contentFrame");
+    if (!contentFrame)
+      return;
+
+    var consoleElement = contentFrame.document.getElementById('console');
+
+    consoleElement.firstChild.data = Ec.convertToUnicode(EnigmailConsole.getData(), "utf-8");
+
+    if (!contentFrame.mouseDownState)
+       contentFrame.scrollTo(0,9999);
+}
+
+
+function enigmailConsoleCopy()
+{
+  var selText = getSelectionStr();
+
+  Ec.DEBUG_LOG("enigmailConsole.js: enigmailConsoleCopy: selText='"+selText+"'\n");
 
   if (selText) {
     var clipHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].createInstance(Components.interfaces.nsIClipboardHelper);
@@ -104,10 +105,10 @@ function enigConsoleCopy()
   return true;
 }
 
-function enigConsoleGetSelectionStr()
+function getSelectionStr()
 {
   try {
-    var contentFrame = EnigGetFrame(window, "contentFrame");
+    var contentFrame = Ec.getFrame(window, "contentFrame");
 
     var sel = contentFrame.getSelection();
     return sel.toString();
@@ -119,13 +120,13 @@ function enigConsoleGetSelectionStr()
 
 function isItemSelected()
 {
-  DEBUG_LOG("enigmailConsole.js: isItemSelected\n");
-  return enigConsoleGetSelectionStr() != "";
+  Ec.DEBUG_LOG("enigmailConsole.js: isItemSelected\n");
+  return getSelectionStr() != "";
 }
 
 function UpdateCopyMenu()
 {
-  DEBUG_LOG("enigmailConsole.js: enigConsoleUpdateCopyMenu\n");
+  Ec.DEBUG_LOG("enigmailConsole.js: UpdateCopyMenu\n");
   goUpdateCommand("cmd_copy");
 }
 
@@ -155,7 +156,7 @@ var CommandController =
   {
     switch (aCommand) {
       case "cmd_copy":
-        enigConsoleCopy();
+        enigmailConsoleCopy();
         break;
       default:
         break;

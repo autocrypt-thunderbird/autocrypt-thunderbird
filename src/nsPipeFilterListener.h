@@ -38,6 +38,7 @@
 
 #include "nspr.h"
 
+#include "enigmail.h"
 #include "nsIPipeFilterListener.h"
 #include "nsCOMPtr.h"
 
