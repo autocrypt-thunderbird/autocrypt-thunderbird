@@ -40,6 +40,8 @@
 
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 Components.utils.import("resource://enigmail/commonFuncs.jsm");
+Components.utils.import("resource://enigmail/keyManagement.jsm");
+
 
 // The compatible Enigmime version
 var gEnigmimeVersion = "1.4";

@@ -163,6 +163,7 @@ zip ${xpiFile} \
     defaults/pref/enigmail.js \
     modules/enigmailCommon.jsm \
     modules/pipeConsole.jsm \
+    modules/keyManagement.jsm \
     modules/commonFuncs.jsm \
     modules/subprocess.jsm \
     modules/subprocess_worker_win.js \

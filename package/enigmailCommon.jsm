@@ -1241,6 +1241,32 @@ var EnigmailCommon = {
     return gEncryptedUris.indexOf(uri) >= 0;
   },
 
+  passwdCommand: function () {
+
+    var commandArgs = [];
+
+    try {
+      if (this.enigmailSvc.useGpgAgent()) {
+         commandArgs.push("--use-agent");
+      }
+      else {
+        if (! this.getPref("noPassphrase")) {
+          commandArgs.concat([ "--passphrase-fd", "0", "--no-use-agent"]);
+        }
+      }
+    } catch (ex) {}
+
+    return commandArgs;
+  },
+
+  requirePassword: function () {
+    if (this.enigmailSvc.useGpgAgent()) {
+      return false;
+    }
+
+    return (! this.getPref("noPassphrase"));
+  },
+
   getAgentArgs: function (withBatchOpts) {
     // return the arguments to pass to every GnuPG subprocess
 

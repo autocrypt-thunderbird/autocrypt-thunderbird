@@ -33,6 +33,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/keyManagement.jsm");
 
 // const Ec is already defined in enigmailKeygen.js
 
@@ -178,24 +179,45 @@ function importKeyFiles() {
     importedKeys += keyListObj.value;
   }
 
+
   var exitCode = 0;
   var keyList=importedKeys.split(/;/);
-  for (var i=0; i<keyList.length; i++) {
-    var aKey = keyList[i].split(/:/);
-    if (Number(aKey[1]) & 16) {
-      // imported key contains secret key
-      exitCode += enigmailSvc.setKeyTrust(window, aKey[0], 5, errorMsgObj);
-    }
-  }
-
-  if (exitCode != 0) {
-    EnigAlert("Could not set trust level for all own keys");
-  }
-
-  loadKeys();
+  setKeyTrustNextKey(keyList, 0);
 
   return true;
 }
+
+function setKeyTrustNextKey(keyList, index) {
+  Ec.DEBUG_LOG("enigmailSetupWizard.js: setKeyTrustNextKey("+index+")\n");
+
+  var aKey = keyList[index].split(/:/);
+  if (Number(aKey[1]) & 16) {
+    // imported key contains secret key
+    EnigmailKeyMgmt.setKeyTrust(window, aKey[0], 5,
+      function(exitCode, errorMsg) {
+        if (exitCode != 0) {
+          return;
+        }
+
+        ++index;
+        if (index < keyList.length) {
+          setKeyTrustNextKey(keyList, index);
+        }
+        else
+          loadKeys();
+      }
+    );
+  }
+  else {
+    ++index;
+    if (index < keyList.length) {
+      setKeyTrustNextKey(keyList, index);
+    }
+    else
+      loadKeys();
+  }
+}
+
 
 function displayKeyCreate() {
   if (gLastDirection == 1) {

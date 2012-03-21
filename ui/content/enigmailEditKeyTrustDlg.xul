@@ -50,19 +50,20 @@
         title="&enigmail.keyTrust.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="onLoad();"
-        ondialogaccept="onAccept();"
+        ondialogaccept="return onAccept();"
         >
 
-
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
 
   <script type="application/x-javascript">
   <![CDATA[
 
-    EnigInitCommon("enigmailEditKeyTrustDlg");
+    Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+    Components.utils.import("resource://enigmail/keyManagement.jsm");
+    const Ec = EnigmailCommon;
+
     function onLoad() {
       // set current key trust if only one key is changed
-      var enigmailSvc = GetEnigmailSvc();
+      var enigmailSvc = Ec.getService(window);
       if (!enigmailSvc)
         return;
 
@@ -100,26 +101,36 @@
       }
     }
 
-    function onAccept() {
+    function processNextKey(index) {
+      Ec.DEBUG_LOG("enigmailEditKeyTrust: processNextKey("+index+")\n");
+
       var t=document.getElementById("trustLevelGroup");
-      var enigmailSvc = GetEnigmailSvc();
-      if (!enigmailSvc)
-        return;
+      EnigmailKeyMgmt.setKeyTrust(window,
+        window.arguments[0].keyId[index],
+        Number(t.selectedItem.value),
+        function(exitCode, errorMsg) {
+          if (exitCode != 0) {
+            Ec.alert(window, Ec.getString("setKeyTrustFailed")+"\n\n"+errorMsg);
+            window.close();
+            return;
+          }
+          else {
+            window.arguments[1].refresh = true;
+          }
 
-      var errorMsgObj = new Object();
+          ++index;
+          if (index == window.arguments[0].keyId.length)
+            window.close();
+          else {
+            processNextKey(index);
+          }
+        });
+    }
 
-      for (var i=0; i < window.arguments[0].keyId.length; i++) {
-        var r = enigmailSvc.setKeyTrust(window,
-                                      window.arguments[0].keyId[i],
-                                      Number(t.selectedItem.value),
-                                      errorMsgObj);
-        if (r != 0) {
-          EnigAlert(EnigGetString("setKeyTrustFailed")+"\n\n"+errorMsgObj.value);
-        }
-        else {
-          window.arguments[1].refresh = true;
-        }
-      }
+    function onAccept() {
+      processNextKey(0);
+
+      return false;
     }
   ]]>
   </script>

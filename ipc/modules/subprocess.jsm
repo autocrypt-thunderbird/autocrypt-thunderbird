@@ -1571,6 +1571,9 @@ function subprocess_unix(options) {
             closeStdinHandle();
         }
     }
+    else
+        closeStdinHandle();
+
 
     return {
         wait: function() {
