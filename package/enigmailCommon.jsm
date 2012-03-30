@@ -1242,19 +1242,16 @@ var EnigmailCommon = {
   },
 
   passwdCommand: function () {
-
     var commandArgs = [];
 
-    try {
-      if (this.enigmailSvc.useGpgAgent()) {
-         commandArgs.push("--use-agent");
+    if (this.enigmailSvc.useGpgAgent()) {
+       commandArgs.push("--use-agent");
+    }
+    else {
+      if (! this.getPref("noPassphrase")) {
+        commandArgs = commandArgs.concat([ "--passphrase-fd", "0", "--no-use-agent"]);
       }
-      else {
-        if (! this.getPref("noPassphrase")) {
-          commandArgs.concat([ "--passphrase-fd", "0", "--no-use-agent"]);
-        }
-      }
-    } catch (ex) {}
+    }
 
     return commandArgs;
   },
