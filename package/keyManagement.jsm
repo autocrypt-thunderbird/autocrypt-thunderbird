@@ -147,34 +147,38 @@ KeyEditor.prototype = {
               exitCode: -1 };
     this.errorMsg=Ec.getString("undefinedError");
 
-    if (txt.indexOf("[GNUPG:] GET_") >= 0) {
-      try {
-        Ec.DEBUG_LOG(txt+"\n");
-        if (txt.indexOf("KEYEXPIRED") > 0) {
-          this.errorMsg=Ec.getString("noSignKeyExpired");
-          r.exitCode=-1;
-        }
-        if (txt.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
-          r.exitCode=-2;
-        }
-        if (txt.indexOf("[GNUPG:] NO_CARD_AVAILABLE")>=0) {
-          this.errorMsg=Ec.getString("noCardAvailable");
-          r.exitCode=-3;
-        }
-        if (txt.indexOf("[GNUPG:] ENIGMAIL_FAILURE")==0) {
-          r.exitCode = -3;
-          r.quitNow = true;
-          this.errorMsg = txt.substr(26);
-        }
-        if (txt.indexOf("[GNUPG:] ALREADY_SIGNED")>=0) {
-          this.errorMsg=Ec.getString("keyAlreadySigned");
-          r.exitCode=-1;
-        }
+    try {
+      Ec.DEBUG_LOG(txt+"\n");
+/*
+      if (txt.indexOf("KEYEXPIRED") > 0) {
+        this.errorMsg=Ec.getString("noSignKeyExpired");
+        r.exitCode=-1;
       }
-      catch (ex) {
-        txt="";
-        r.quitNow=true;
+*/
+      if (txt.indexOf("EXPIRED") >= 0) {
+        // ignore "SIG|KEYEXPIRED messages
+        return;
       }
+      if (txt.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
+        r.exitCode=-2;
+      }
+      if (txt.indexOf("[GNUPG:] NO_CARD_AVAILABLE")>=0) {
+        this.errorMsg=Ec.getString("noCardAvailable");
+        r.exitCode=-3;
+      }
+      if (txt.indexOf("[GNUPG:] ENIGMAIL_FAILURE")==0) {
+        r.exitCode = -3;
+        r.quitNow = true;
+        this.errorMsg = txt.substr(26);
+      }
+      if (txt.indexOf("[GNUPG:] ALREADY_SIGNED")>=0) {
+        this.errorMsg=Ec.getString("keyAlreadySigned");
+        r.exitCode=-1;
+      }
+    }
+    catch (ex) {
+      txt="";
+      r.quitNow=true;
     }
 
     if (! r.quitNow) {

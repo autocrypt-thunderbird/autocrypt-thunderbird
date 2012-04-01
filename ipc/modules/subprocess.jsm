@@ -1579,7 +1579,7 @@ function subprocess_unix(options) {
         wait: function() {
             // wait for async operations to complete
             var thread = Cc['@mozilla.org/thread-manager;1'].getService(Ci.nsIThreadManager).currentThread;
-            while (! done) thread.processNextEvent(true)
+            while (! done) thread.processNextEvent(true);
             return exitCode;
         },
         kill: function(hardKill) {

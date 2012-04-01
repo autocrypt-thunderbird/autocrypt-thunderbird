@@ -238,13 +238,6 @@ interface nsIEnigmail : nsISupports
 
 /*** key handling functions ***/
 
-  long signKey(in nsIDOMWindow parent,
-                in string userId,
-                in string keyId,
-                in boolean signLocally,
-                in string trustLevel,
-                out wstring errorMsg);
-
   long genRevokeCert(in nsIDOMWindow parent,
                 in string keyId,
                 in nsIFile outFile,

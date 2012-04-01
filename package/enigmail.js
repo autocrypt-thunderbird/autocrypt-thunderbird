@@ -3627,19 +3627,6 @@ Enigmail.prototype = {
     this.rulesList = null;
   },
 
-  signKey: function (parent, userId, keyId, signLocally, trustLevel, errorMsgObj) {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.signKey: trustLevel="+trustLevel+", userId="+userId+", keyId="+keyId+"\n");
-    var r = this.editKey(parent, true, userId, keyId,
-                        (signLocally ? "lsign" : "sign"),
-                        { trustLevel: trustLevel},
-                        signKeyCallback,
-                        null,
-                        errorMsgObj);
-    Ec.stillActive();
-
-    return r;
-  },
-
   genRevokeCert: function (parent, keyId, outFile, reasonCode, reasonText, errorMsgObj) {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.genRevokeCert: keyId="+keyId+"\n");
 
@@ -4084,62 +4071,6 @@ KeyEditor.prototype = {
     return this;
   }
 };
-
-function signKeyCallback(inputData, keyEdit, ret) {
-
-  ret.writeTxt = "";
-  ret.errorMsg = "";
-
-  if (keyEdit.doCheck(GET_BOOL, "sign_uid.okay" )) {
-    ret.exitCode = 0;
-    ret.writeTxt = "Y";
-  }
-  else if (keyEdit.doCheck(GET_BOOL, "keyedit.sign_all.okay" )) {
-    ret.exitCode = 0;
-    ret.writeTxt = "Y";
-  }
-  else if (keyEdit.doCheck(GET_LINE, "sign_uid.expire" )) {
-    ret.exitCode = 0;
-    ret.writeTxt = "0";
-  }
-  else if (keyEdit.doCheck(GET_LINE, "trustsig_prompt.trust_value" )) {
-    ret.exitCode = 0;
-    ret.writeTxt = "0";
-  }
-  else if (keyEdit.doCheck(GET_LINE, "trustsig_prompt.trust_depth" )) {
-    ret.exitCode = 0;
-    ret.writeTxt = "";}
-  else if (keyEdit.doCheck(GET_LINE, "trustsig_prompt.trust_regexp" )) {
-    ret.exitCode = 0;
-    ret.writeTxt = "0";}
-  else if (keyEdit.doCheck(GET_LINE, "siggen.valid" )) {
-    ret.exitCode = 0;
-    ret.writeTxt = "0";
-  }
-  else if (keyEdit.doCheck(GET_BOOL, "sign_uid.local_promote_okay" )) {
-    ret.exitCode = 0;
-    ret.writeTxt = "Y";
-  }
-  else if (keyEdit.doCheck(GET_LINE, "sign_uid.class" )) {
-    ret.exitCode = 0;
-    ret.writeTxt = new String(inputData.trustLevel);
-  }
-  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
-    GetPin(inputData.parent, Ec.getString("enterAdminPin"), ret);
-  }
-  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
-    GetPin(inputData.parent, Ec.getString("enterCardPin"), ret);
-  }
-  else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
-    ret.exitCode = 0;
-    ret.quitNow = true;
-  }
-  else {
-    ret.quitNow=true;
-    Ec.ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
-    ret.exitCode=-1;
-  }
-}
 
 
 function addUidCallback(inputData, keyEdit, ret) {

@@ -33,20 +33,23 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-EnigInitCommon("enigmailSignKeyDlg");
+Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/keyManagement.jsm");
+const Ec = EnigmailCommon;
 
 
 var gSignatureList = null;
 function onLoad() {
   window.arguments[1].refresh = false;
 
-  var enigmailSvc = GetEnigmailSvc();
+  var enigmailSvc = Ec.getService(window);
   if (!enigmailSvc) {
-    EnigAlert(EnigGetString("accessError"));
+    Ec.alert(window, Ec.getString("accessError"));
     window.close();
     return;
   }
-  var keys = EnigGetSecretKeys();
+  var keys = Ec.getSecretKeys(window);
+  if (! keys) window.close();
   var menulist=document.getElementById("signWithKey");
 
   for each (key in keys) {
@@ -76,7 +79,7 @@ function onLoad() {
           gSignatureList[aLine[4]] = 1;
           break;
         case "fpr":
-          DEBUG_LOG("fpr:"+currKey+" -> "+aLine[9]+"\n");
+          Ec.DEBUG_LOG("fpr:"+currKey+" -> "+aLine[9]+"\n");
           fingerprint = aLine[9];
           break;
         }
@@ -101,28 +104,29 @@ function onAccept() {
   var localSig = document.getElementById("localSig");
   var signWithKey = document.getElementById("signWithKey");
 
-  var enigmailSvc = GetEnigmailSvc();
+  var enigmailSvc = Ec.getService(window);
   if (!enigmailSvc) {
-    EnigAlert(EnigGetString("accessError"));
-    return;
+    Ec.alert(window, Ec.getString("accessError"));
+    return true;
   }
 
-  var errorMsgObj = new Object();
+  EnigmailKeyMgmt.signKey(window,
+    "0x"+signWithKey.selectedItem.value,
+    window.arguments[0].keyId,
+    localSig.checked,
+    trustLevel.selectedItem.value,
+    function (exitCode, errorMsg) {
+      if (exitCode != 0) {
+        Ec.alert(window, Ec.getString("signKeyFailed")+"\n\n"+errorMsg);
+      }
+      else {
+        window.arguments[1].refresh = true;
+      }
+      window.close();
+    }
+  );
 
-  var r = enigmailSvc.signKey(window,
-                            "0x"+signWithKey.selectedItem.value,
-                            window.arguments[0].keyId,
-                            localSig.checked,
-                            trustLevel.selectedItem.value,
-                            errorMsgObj);
-
-  if (r != 0) {
-    EnigAlert(EnigGetString("signKeyFailed")+"\n\n"+errorMsgObj.value);
-    return;
-  }
-  else {
-    window.arguments[1].refresh = true;
-  }
+  return false; // wait with closing until subprocess terminated
 }
 
 function enigKeySelCb() {
@@ -130,7 +134,7 @@ function enigKeySelCb() {
   var alreadySigned = document.getElementById("alreadySigned");
   var acceptButton = document.getElementById("enigmailSignKeyDlg").getButton("accept");
   if (gSignatureList[signWithKey.selectedItem.value]) {
-    alreadySigned.setAttribute("value", EnigGetString("alreadySigned.label", "0x"+ window.arguments[0].keyId.substr(-8,8)));
+    alreadySigned.setAttribute("value", Ec.getString("alreadySigned.label", "0x"+ window.arguments[0].keyId.substr(-8,8)));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = true;
   }

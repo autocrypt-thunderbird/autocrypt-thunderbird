@@ -51,10 +51,9 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="onLoad();"
         buttons="accept,cancel"
-        ondialogaccept="onAccept();">
+        ondialogaccept="return onAccept();">
 
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailSignKeyDlg.js"/>
 
   <vbox orient="vertical">

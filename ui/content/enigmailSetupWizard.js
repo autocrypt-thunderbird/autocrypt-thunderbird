@@ -303,7 +303,7 @@ function loadKeys() {
   var exitCodeObj = {};
   var statusFlagsObj = {};
   var errorMsgObj = {};
-  var keyList = EnigGetSecretKeys();
+  var keyList = Ec.getSecretKeys(window);
   if (keyList == null) {
     return false;
   }
