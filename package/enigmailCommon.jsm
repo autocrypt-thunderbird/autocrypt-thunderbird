@@ -1488,6 +1488,7 @@ var EnigmailCommon = {
 
     return chan;
   },
+
   getHttpProxy: function (hostName) {
 
     function GetPasswdForHost(hostname, userObj, passwdObj) {
@@ -1545,6 +1546,64 @@ var EnigmailCommon = {
     }
 
     return proxyHost;
+  },
+
+  getSecretKeys: function (win) {
+    // return a sorted array containing objects of (valid, usable) secret keys.
+    // @return: [ {name: <userId>, id: 0x1234ABCD, created: YYYY-MM-DD },  { ... } ]
+    var enigmailSvc = this.getService(win);
+    if (!enigmailSvc) {
+      return null;
+    }
+    var exitCodeObj = new Object();
+    var statusFlagsObj = new Object();
+    var errorMsgObj = new Object();
+    var keyList=enigmailSvc.getUserIdList(true, false, exitCodeObj, statusFlagsObj, errorMsgObj);
+
+    if (exitCodeObj.value != 0) {
+      this.alert(errorMsgObj.value);
+      return null;
+    }
+
+    var userList=keyList.split(/\n/);
+    var secretKeyList = new Array();
+    var secretKeyCreated = new Array();
+    var i;
+    var keyId = null;
+
+    var keyId = null;
+    var keys = [];
+    for (i=0; i < userList.length; i++) {
+      if (userList[i].substr(0,4) == "sec:") {
+        var aLine=userList[i].split(/:/);
+        keyId = aLine[4];
+        secretKeyCreated[keyId] = this.getDateTime(aLine[5], true, false);
+        secretKeyList.push(keyId);
+      }
+    }
+
+    keyList = enigmailSvc.getKeyDetails(secretKeyList.join(" "), false);
+    userList=keyList.split(/\n/);
+
+    for (var i=0; i < userList.length; i++) {
+      var aLine = userList[i].split(/:/);
+      switch (aLine[0]) {
+      case "pub":
+        if (aLine[1] == "u") keyId = aLine[4]; // public key is ultimately trusted
+        break;
+      case "uid":
+        if ((keyId != null) && (aLine[1] == 'u')) {
+          // UID is valid and ultimately trusted
+          keys.push({ name: this.convertGpgToUnicode(aLine[9]),
+                      id: keyId,
+                      created: secretKeyCreated[keyId]});
+          keyId = null;
+        }
+      }
+    }
+
+    keys.sort(function(a,b) { return a.name == b.name ? (a.id < b.id ? -1 : 1) : (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1); });
+    return keys;
   },
 
   receiveKey: function (recvFlags, keyserver, keyId, listener, errorMsgObj) {

@@ -578,67 +578,6 @@ function EnigLoadKeyList(refresh, keyListObj, sortColumn, sortDirection) {
   return EnigmailFuncs.loadKeyList(window, refresh, keyListObj, sortColumn, sortDirection);
 }
 
-function EnigGetSecretKeys() {
-  // return a sorted array containing objects of (valid, usable) secret keys.
-  // @return: [ {name: <userId>, id: 0x1234ABCD, created: YYYY-MM-DD },  { ... } ]
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc) {
-    EnigAlert(EnigGetString("accessError"));
-    window.close();
-    return null;
-  }
-  var exitCodeObj = new Object();
-  var statusFlagsObj = new Object();
-  var errorMsgObj = new Object();
-  var keyList=enigmailSvc.getUserIdList(true, false, exitCodeObj, statusFlagsObj, errorMsgObj);
-
-  if (exitCodeObj.value != 0) {
-    EnigAlert(errorMsgObj.value);
-    window.close();
-    return null;
-  }
-
-  var userList=keyList.split(/\n/);
-  var secretKeyList = new Array();
-  var secretKeyCreated = new Array();
-  var i;
-  var keyId = null;
-
-  var keyId = null;
-  var keys = [];
-  for (i=0; i < userList.length; i++) {
-    if (userList[i].substr(0,4) == "sec:") {
-      var aLine=userList[i].split(/:/);
-      keyId = aLine[4];
-      secretKeyCreated[keyId] = EnigGetDateTime(aLine[5], true, false);
-      secretKeyList.push(keyId);
-    }
-  }
-
-  keyList = enigmailSvc.getKeyDetails(secretKeyList.join(" "), false);
-  userList=keyList.split(/\n/);
-
-  for (var i=0; i < userList.length; i++) {
-    var aLine = userList[i].split(/:/);
-    switch (aLine[0]) {
-    case "pub":
-      if (aLine[1] == "u") keyId = aLine[4]; // public key is ultimately trusted
-      break;
-    case "uid":
-      if ((keyId != null) && (aLine[1] == 'u')) {
-        // UID is valid and ultimately trusted
-        keys.push({ name: EnigConvertGpgToUnicode(aLine[9]),
-                    id: keyId,
-                    created: secretKeyCreated[keyId]});
-        keyId = null;
-      }
-    }
-  }
-
-  keys.sort(function(a,b) { return a.name == b.name ? (a.id < b.id ? -1 : 1) : (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1); });
-  return keys;
-}
-
 function EnigEditKeyTrust(userIdArr, keyIdArr) {
   return EnigmailFuncs.editKeyTrust(window, userIdArr, keyIdArr);
 }
