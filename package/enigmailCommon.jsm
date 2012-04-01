@@ -888,7 +888,11 @@ var EnigmailCommon = {
     if (this.enigStringBundle) {
       try {
         if (subPhrases) {
-          return this.enigStringBundle.formatStringFromName(aStr, subPhrases, subPhrases.length);
+          if (typeof(subPhrases) == "string") {
+            return this.enigStringBundle.formatStringFromName(aStr, [ subPhrases ], 1);
+          }
+          else
+            return this.enigStringBundle.formatStringFromName(aStr, subPhrases, subPhrases.length);
         }
         else {
           return this.enigStringBundle.GetStringFromName(aStr);
