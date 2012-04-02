@@ -97,10 +97,6 @@ KeyEditor.prototype = {
   done: function(parentCallback, exitCode) {
     Ec.DEBUG_LOG("keyManagmenent.jsm: KeyEditor.done: exitCode="+exitCode+"\n");
 
-    if (this._exitCode == -2) {
-      this.errorMsg=Ec.getString("badPhrase");
-      Ec.clearCachedPassphrase();
-    }
     if (exitCode == 0) exitCode = this._exitCode;
 
     if (exitCode == 0 && typeof(this._inputData) == "object" && this._inputData.usePassphrase) {
@@ -145,26 +141,19 @@ KeyEditor.prototype = {
     Ec.DEBUG_LOG("keyManagmenent.jsm: KeyEditor.processLine: '"+txt+"'\n");
     var r = { quitNow: false,
               exitCode: -1 };
-    this.errorMsg=Ec.getString("undefinedError");
 
     try {
       Ec.DEBUG_LOG(txt+"\n");
-/*
-      if (txt.indexOf("KEYEXPIRED") > 0) {
-        this.errorMsg=Ec.getString("noSignKeyExpired");
-        r.exitCode=-1;
-      }
-*/
-      if (txt.indexOf("EXPIRED") >= 0) {
-        // ignore "SIG|KEYEXPIRED messages
-        return;
-      }
       if (txt.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
         r.exitCode=-2;
+        r.quitNow=true;
+        this.errorMsg=Ec.getString("badPhrase");
+        Ec.clearCachedPassphrase();
       }
       if (txt.indexOf("[GNUPG:] NO_CARD_AVAILABLE")>=0) {
         this.errorMsg=Ec.getString("noCardAvailable");
         r.exitCode=-3;
+        r.quitNow=true;
       }
       if (txt.indexOf("[GNUPG:] ENIGMAIL_FAILURE")==0) {
         r.exitCode = -3;
@@ -174,6 +163,11 @@ KeyEditor.prototype = {
       if (txt.indexOf("[GNUPG:] ALREADY_SIGNED")>=0) {
         this.errorMsg=Ec.getString("keyAlreadySigned");
         r.exitCode=-1;
+        r.quitNow = true;
+      }
+      if (txt.indexOf("[GNUPG:] GET_") < 0) {
+        // return if no "GET" statement
+        return;
       }
     }
     catch (ex) {
@@ -205,7 +199,7 @@ KeyEditor.prototype = {
     if (r.quitNow) {
       try {
         this.writeLine("save");
-        this.closeStin();
+        this.closeStdin();
       }
       catch (ex) {
         Ec.DEBUG_LOG("no more data\n");
