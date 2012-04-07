@@ -1301,7 +1301,8 @@ function subprocess_unix(options) {
 
             var rl = new RLIMITS();
             if (getrlimit(getPlatformValue(RLIMIT_NOFILE), rl.address()) == 0) {
-                maxFD = rl.rlim_cur;
+                if (rl.rlim_cur <  Math.pow(2,20)) // ignore too high numbers
+                  maxFD = rl.rlim_cur;
             }
             debugLog("getlimit: maxFD="+maxFD+"\n");
 
