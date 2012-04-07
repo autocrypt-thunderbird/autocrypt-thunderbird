@@ -438,7 +438,9 @@ var subprocess = {
     },
     registerLogHandler: function(func) {
         gLogFunc = func;
-    }
+    },
+
+    getPlatformValue: getPlatformValue
 };
 
 
