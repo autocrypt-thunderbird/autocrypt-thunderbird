@@ -230,7 +230,7 @@
 <!ENTITY enigmail.ctxImportKey.accesskey "U">
 <!ENTITY enigmail.ctxVerifyAtt.accesskey "V">
 <!ENTITY enigmail.detailsHdrButton.label "Podrobnosti">
-<!ENTITY enigmail.revealAttachmentsButton.label "Imena pripetih datotek so skrita. Pritisnite gumb \\'Razkrij\\', pridobite izvorna imena datotek.">
+<!ENTITY enigmail.revealAttachmentsButton.label "Imena pripetih datotek so skrita. Pritisnite gumb 'Razkrij', pridobite izvorna imena datotek.">
 <!ENTITY enigmail.amPrefTitle.label "Možnosti OpenPGP (Enigmail)">
 <!ENTITY enigmail.amPrefDesc.label "Enigmail omogoča šifriranje in podpisovanje sporočil OpenPGP. Da bi lahko izkoriščali njegove funkcije, mora biti nameščen GnuPG (gpg).">
 <!ENTITY enigmail.amPrefEnablePgp.label "Vklopi podporo OpenPGP (Enigmail) za to identiteto">

@@ -286,7 +286,7 @@
 <!ENTITY enigmail.maybe.label "Ja, wenn beim Verfassen ausgewählt">
 <!ENTITY enigmail.singleRcptSettings.desc "(Hinweis: Bei Konflikten hat &quot;Nie&quot; Vorrang vor &quot;Immer&quot;)">
 <!ENTITY enigmail.ruleEmail.label "Regel für:">
-<!ENTITY enigmail.ruleEmail.tooltip "Geben Sie nur die E-Mail-Adresse ein - nicht den Namen des Empfängers Beispiel: &quot;Max Mustermann <max.mustermann@domain.de>&quot; ist ungültig">
+<!ENTITY enigmail.ruleEmail.tooltip "Geben Sie nur die E-Mail-Adresse ein - nicht den Namen des Empfängers\nBeispiel: &quot;Max Mustermann <max.mustermann@domain.de>&quot; ist ungültig">
 <!ENTITY enigmail.sepratationDesc.label "(Mehrere E-Mail-Adressen mit Leerzeichen trennen)">
 <!ENTITY enigmail.matchDescStart.label "Anwenden, wenn Empfänger">
 <!ENTITY enigmail.matchDescEnd.label "eine(r) der obigen Adressen">

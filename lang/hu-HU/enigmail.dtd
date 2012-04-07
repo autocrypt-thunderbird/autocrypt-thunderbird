@@ -604,7 +604,7 @@ kommunikációt. Ezt nem csak a „titkos” üzenetek küldésére használhatj
 <!ENTITY enigmail.setupWiz.pgEnc.noEncrypt "Nem, címzettek szerinti szabályokat készít azoknak, akik elküldték a nyilvános kulcsaikat">
 <!ENTITY enigmail.setupWiz.pgSettings.title "Beállítások">
 <!ENTITY enigmail.setupWiz.pgSettings.subtitle "E-mail beállítások megváltoztatása az OpenPGP megbízhatóbb működésének érdekében">
-<!ENTITY enigmail.setupWiz.pgSettings.desc "Ez a Tündér megváltoztathatja a postafiók beállításait. Kérem bizonyosodjon meg róla, hogy a                                                         az e-mail üzenetek aláírása és titkosítása jól működik ezen a számítógépen.                                                        Az alkalmazandó beállítások elsősorban technikai jellegűek, az egyetlen                                                        észrevehető változás, hogy az üzenetírás alapértelmezett formátuma sima szöveg lesz.">
+<!ENTITY enigmail.setupWiz.pgSettings.desc "Ez a Tündér megváltoztathatja a postafiók beállításait. Kérem bizonyosodjon meg róla, hogy a\n\n\n                                                      az e-mail üzenetek aláírása és titkosítása jól működik ezen a számítógépen.\n\n                                                      Az alkalmazandó beállítások elsősorban technikai jellegűek, az egyetlen\n\n                                                      észrevehető változás, hogy az üzenetírás alapértelmezett formátuma sima szöveg lesz.">
 <!ENTITY enigmail.setupWiz.pgSettings.changePref "Szeretne változtatni néhány alapértelmezett beállításon, hogy az OpenPGP megbízhatóbban 
 
 
@@ -616,22 +616,22 @@ működjön a számítógépén?">
 <!ENTITY enigmail.setupWiz.pgSettings.details "Részletek…">
 <!ENTITY enigmail.setupWiz.pgKeySel.title "Kulcsválasztás">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "Kulcs létrehozása e-mail üzenetek aláírásához és titkosításához">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc "OpenPGP-kulcs található a számítógépen. Ön használhatja                                                          aláírásra, titkosításra és visszafejtésre ezt a kulcsot, vagy                                                         létrehozhat egy új kulcspárt.">
+<!ENTITY enigmail.setupWiz.pgKeySel.desc "OpenPGP-kulcs található a számítógépen. Ön használhatja\n\n\n                                                       aláírásra, titkosításra és visszafejtésre ezt a kulcsot, vagy\n\n                                                       létrehozhat egy új kulcspárt.">
 <!ENTITY enigmail.setupWiz.pgKeySel.createKey "Valóban létre kíván hozni egy új kulcspárt?">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey "Szeretnék készíteni egy új kulcspárt az e-mail üzenetek aláírásához és titkosításához">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Szeretnék kiválasztani egy kulcsot az alábbiak közül az e-mail üzenetek aláírásához és titkosításához:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "Kulcs létrehozása">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Kulcs létrehozása e-mail üzenetek aláírásához és titkosításához">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Létre kell hoznia egy „kulcspárt” az e-mailek aláírásához és titkosításához, valamint a titkosított                                                         e-mailek olvasásához. A kulcspár két kulcsból áll, egy nyilvános kulcsból és                                                        titkos kulcsból.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Adja oda a nyilvános kulcsát minden partnerének, akik az                                                         aláírását ellenőrizhetik, vagy titkosított e-mail üzenetet küldhetnek Önnek.                                                        A titkos kulcsot tartsa biztonságban. Soha ne adja oda senkinek a titkos kulcsát,                                                        és soha ne hagyja védtelenül. Segítségével az összes Önnek küldött titkosított                                                        e-mail olvashatóvá válik. Ráadásul az Ön nevében titkosított e-maileket készíthetnek.                                                        A titkos kulcs – mivel ez egy titok – egy jelmondat védi.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Létre kell hoznia egy „kulcspárt” az e-mailek aláírásához és titkosításához, valamint a titkosított\n\n\n                                                      e-mailek olvasásához. A kulcspár két kulcsból áll, egy nyilvános kulcsból és\n\n                                                      titkos kulcsból.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Adja oda a nyilvános kulcsát minden partnerének, akik az\n\n\n                                                      aláírását ellenőrizhetik, vagy titkosított e-mail üzenetet küldhetnek Önnek.\n\n                                                      A titkos kulcsot tartsa biztonságban. Soha ne adja oda senkinek a titkos kulcsát,\n\n                                                      és soha ne hagyja védtelenül. Segítségével az összes Önnek küldött titkosított\n\n                                                      e-mail olvashatóvá válik. Ráadásul az Ön nevében titkosított e-maileket készíthetnek.\n\n                                                      A titkos kulcs – mivel ez egy titok – egy jelmondat védi.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Írja be ismét a most megadott jelmondatot">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.title "Nem található OpenPGP-kulcs">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.subtitle "Nem található egyetlen OpenPGP-kulcs sem.">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc "Nem található egyetlen OpenPGP-kulcs sem. Válassza ki, hogy                       új kulcspárt szeretne készíteni, vagy egy meglévő kulcsot szeretne importálni.">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc "Nem található egyetlen OpenPGP-kulcs sem. Válassza ki, hogy\n\n\n                    új kulcspárt szeretne készíteni, vagy egy meglévő kulcsot szeretne importálni.">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey "Importálni kívánok egy – már létező – nyilvános és titkos kulcspárt">
 <!ENTITY enigmail.setupWiz.pgKeyImport.title "OpenPGP-kulcsok importálása">
 <!ENTITY enigmail.setupWiz.pgKeyImport.subtitle "Adja meg az importálni kívánt fájlokat">
-<!ENTITY enigmail.setupWiz.pgKeyImport.desc "Adja meg az importálni kívánt nyilvános és titkos kulcsokat tartalmazó fájlokat.                                                         A nyilvános kulcs megadására szolgáló mezőt üresen is hagyhatja, ha az első fájl                                                        már tartalmazza a titkos és a nyilvános kulcsot is.">
+<!ENTITY enigmail.setupWiz.pgKeyImport.desc "Adja meg az importálni kívánt nyilvános és titkos kulcsokat tartalmazó fájlokat.\n\n\n                                                      A nyilvános kulcs megadására szolgáló mezőt üresen is hagyhatja, ha az első fájl\n\n                                                      már tartalmazza a titkos és a nyilvános kulcsot is.">
 <!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile "Nyilvános kulcs fájl">
 <!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile "Titkos kulcs fájl">
 <!ENTITY enigmail.setupWiz.pgSummary.title "Összegzés">
@@ -650,7 +650,7 @@ működjön a számítógépén?">
 <!ENTITY enigmail.setupWiz.details.8bitEncoding " 8 bites karakterkódolás használata az üzenetek küldéséhez">
 <!ENTITY enigmail.setupWiz.details.noComposeHTML "Ne hozzon létre HTML üzeneteket">
 <!ENTITY enigmail.setupWiz.pgNoStart.title "Kilépés">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc "Úgy döntött, hogy nem veszi igénybe az OpenPGP Beállítás Tündért.     <html:br></html:br><html:br></html:br>Köszönjük, hogy az Enigmail programot használja.">
+<!ENTITY enigmail.setupWiz.pgNoStart.desc "Úgy döntött, hogy nem veszi igénybe az OpenPGP Beállítás Tündért. \n\n \n<html:br></html:br><html:br></html:br>Köszönjük, hogy az Enigmail programot használja.">
 <!ENTITY enigmail.advancedIdentityDlg.title "Haladó OpenPGP postafiók beállítások">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "Nyilvános kulcs csatolása az üzenetekhez">
 <!ENTITY enigmail.addPhoto.question.label "Hozzá kívánja adni a következő képet a kiválasztott kulcshoz?">
