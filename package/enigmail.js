@@ -38,6 +38,7 @@ Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/AddonManager.jsm");
 Components.utils.import("resource://enigmail/subprocess.jsm");
 Components.utils.import("resource://enigmail/pipeConsole.jsm");
+Components.utils.import("resource://gre/modules/ctypes.jsm");
 
 // Maximum size of message directly processed by Enigmail
 const MSG_BUFFER_SIZE = 98304;   // 96 kB
@@ -717,27 +718,6 @@ Enigmail.prototype = {
     return dirPrefix;
   },
 
-  getExtensionBaseDir: function () {
-    var file = null;
-    var isComplete = false;
-    AddonManager.getAddonByID(ENIGMAIL_EXTENSION_ID, function (addon) {
-      try {
-        file = addon.getResourceURI(".").QueryInterface(Ci.nsIFileURL).file;
-      }
-      catch (ex) {
-        Ec.ERROR_LOG("enigmail.js: getExtensionBaseDir: "+ex+"\n");
-      }
-      isComplete = true;
-    });
-    var thread = Cc["@mozilla.org/thread-manager;1"]
-                 .getService(Ci.nsIThreadManager)
-                 .currentThread;
-    while (!isComplete)
-      thread.processNextEvent(true);
-
-    return file;
-  },
-
 
   finalize: function () {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.finalize:\n");
@@ -746,19 +726,20 @@ Enigmail.prototype = {
     if (this.gpgAgentProcess != null) {
       Ec.DEBUG_LOG("enigmail.js: Enigmail.finalize: stopping gpg-agent PID="+this.gpgAgentProcess+"\n");
       try {
-        var extensionLoc = this.getExtensionBaseDir();
-        extensionLoc.append("wrappers");
-        extensionLoc.append("gpg-agent-wrapper.sh");
-        try {
-          extensionLoc.permissions=0755;
-        }
-        catch(ex) {}
+        var libName=subprocess.getPlatformValue(0);
+        var libc = ctypes.open(libName);
 
-        agentProcess = Cc[NS_PROCESS_UTIL_CONTRACTID].createInstance(Ci.nsIProcess);
-        agentProcess.init(extensionLoc);
-        agentProcess.run(true, [ "stop", this.gpgAgentProcess ], 2);
+        //int kill(pid_t pid, int sig);
+        var kill = libc.declare("kill",
+                              ctypes.default_abi,
+                              ctypes.int,
+                              ctypes.int32_t,
+                              ctypes.int);
+
+        kill(parseInt(this.gpgAgentProcess), 15);
       }
       catch (ex) {
+        Ec.ERROR_LOG("enigmail.js: Enigmail.finalize ERROR: "+ex+"\n");
       }
     }
 
