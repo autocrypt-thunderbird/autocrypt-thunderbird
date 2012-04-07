@@ -101,40 +101,7 @@ else
 fi
 
 
-mkdir -p "${targetDir}/wrappers"
-cat << EOT > "${targetDir}/wrappers/gpg-wrapper.sh"
-#!/bin/sh
-
-GPG="\$1"
-shift
-
-\$GPG "\$@"
-exitCode=\$?
-
-sleep 1
-exit \$exitCode
-EOT
-
-cat << EOT > "${targetDir}/wrappers/gpg-agent-wrapper.sh"
-#!/bin/sh
-
-action=\$1
-shift
-
-if [ \$action = "start" ]; then
-  GPGAGENT="\$1"
-  exec "\$GPGAGENT" "\$@"
-fi
-
-if [ \$action = "stop" ]; then
-  kill \$1
-fi
-EOT
-
-chmod 755 "${targetDir}/wrappers/gpg-agent-wrapper.sh"
 cd ${srcDir}/package
-
-
 cd "$targetDir"
 
 
@@ -169,8 +136,6 @@ zip ${xpiFile} \
     modules/subprocess_worker_win.js \
     modules/subprocess_worker_unix.js \
     chrome/${xpiModule}.jar \
-    wrappers/gpg-wrapper.sh \
-    wrappers/gpg-agent-wrapper.sh \
     ${localeJar} \
     components/ipc.xpt \
     components/enigmime.xpt \
