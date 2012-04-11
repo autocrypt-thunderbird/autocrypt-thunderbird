@@ -366,13 +366,18 @@
           msg += "\n"+EnigGetString("keygen.keyBackup", generateObserver.backupLocation);
         }
         if (EnigConfirm(msg+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"))) {
-          EnigCreateRevokeCert(generateObserver.keyId, curId.email);
+          EnigCreateRevokeCert(generateObserver.keyId, curId.email, closeWin);
         }
-        window.close();
+        else
+          closeWin();
       }
       else {
         EnigAlert(errorMsgObj.value);
       }
+    }
+
+    function closeWin() {
+      window.close();
     }
 
   ]]>

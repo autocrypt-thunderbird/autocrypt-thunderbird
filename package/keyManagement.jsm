@@ -110,7 +110,7 @@ KeyEditor.prototype = {
 
   writeLine: function (inputData) {
     Ec.DEBUG_LOG("keyManagmenent.jsm: KeyEditor.writeLine: '"+inputData+"'\n");
-    if (inputData.length > 0) this._stdin.write(inputData+"\n");
+    this._stdin.write(inputData+"\n");
   },
 
   nextLine: function(txt) {
@@ -216,6 +216,13 @@ KeyEditor.prototype = {
   }
 };
 
+/*
+ * NOTE: the callbackFunc used in every call to the key editor needs to be implemented like this:
+ * callbackFunc(returnCode, errorMsg)
+ * returnCode = 0 in case of success
+ * returnCode != 0 and errorMsg set in case of failure
+*/
+
 var EnigmailKeyMgmt = {
 
   editKey: function (parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFunc, requestObserver, parentCallback) {
@@ -268,7 +275,7 @@ var EnigmailKeyMgmt = {
     if (editCmdArr[0] == "revoke") {
       // escape backslashes and ' characters
       args=args.concat(["-a", "-o"]);
-      args.push(this.getEscapedFilename(getFilePath(inputData.outFile)));
+      args.push(Ec.getEscapedFilename(inputData.outFile.path));
       args.push("--gen-revoke");
       args=args.concat(keyIdList);
     }

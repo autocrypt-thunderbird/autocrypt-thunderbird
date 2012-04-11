@@ -728,9 +728,15 @@ function wizardKeygenTerminate(exitCode) {
   var curId = wizardGetSelectedIdentity();
 
   if (EnigConfirm(EnigGetString("keygenComplete", curId.email)+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"), EnigGetString("dlg.button.skip"))) {
-    EnigCreateRevokeCert(gGeneratedKey, curId.email);
+    EnigCreateRevokeCert(gGeneratedKey, curId.email, wizardKeygenCleanup);
   }
+  else
+    wizardKeygenCleanup();
 
+}
+
+function wizardKeygenCleanup() {
+  DEBUG_LOG("enigmailSetupWizard.js: wizardKeygenCleanup\n");
   enigmailKeygenCloseRequest();
   var enigmailSvc = enigGetSvc();
   enigmailSvc.invalidateUserIdList();

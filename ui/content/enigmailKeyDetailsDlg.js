@@ -294,10 +294,12 @@ function changePassword() {
 }
 
 function revokeKey() {
-  if (EnigRevokeKey(gKeyId, gUserId)) {
-    enableRefresh();
-    reloadData();
-  }
+  EnigRevokeKey(gKeyId, gUserId, function _revokeKeyCb(success) {
+    if (success) {
+      enableRefresh();
+      reloadData();
+    }
+  });
 }
 
 function genRevocationCert() {

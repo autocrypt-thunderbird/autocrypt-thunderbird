@@ -238,31 +238,12 @@ interface nsIEnigmail : nsISupports
 
 /*** key handling functions ***/
 
-  long genRevokeCert(in nsIDOMWindow parent,
-                in string keyId,
-                in nsIFile outFile,
-                in string reasonCode,
-                in string reasonText,
-                out wstring errorMsg);
-
   long revokeSubey (in nsIDOMWindow parent,
                     in string keyId,
                     in string subkeys,
                     in string reasonCode,
                     in string reasonText,
                     out wstring errorMsgObj);
-
-  long addUid(in nsIDOMWindow parent,
-                in string keyId,
-                in string name,
-                in string email,
-                in string comment,
-                out wstring errorMsg);
-
-  long deleteKey(in nsIDOMWindow parent,
-                 in string keyId,
-                 in boolean deleteSecretKey,
-                 out wstring errorMsg);
 
   long enableDisableKey(in nsIDOMWindow parent,
                         in string keyId,

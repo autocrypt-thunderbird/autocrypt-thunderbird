@@ -145,23 +145,30 @@ function enigmailKeygenTerminate(exitCode) {
         EnigSavePrefs();
 
         if (EnigConfirm(EnigGetString("keygenComplete", curId.email)+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"))) {
-            EnigCreateRevokeCert(gGeneratedKey, curId.email);
+            EnigCreateRevokeCert(gGeneratedKey, curId.email, closeAndReset);
         }
+        else
+          closeAndReset();
      }
      else {
        if (EnigConfirm(EnigGetString("genCompleteNoSign")+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"))) {
-          EnigCreateRevokeCert(gGeneratedKey, curId.email);
+          EnigCreateRevokeCert(gGeneratedKey, curId.email, closeAndReset);
        }
+       else
+          closeAndReset();
      }
-     enigmailSvc.invalidateUserIdList();
    }
    else {
       EnigAlert(EnigGetString("keyGenFailed"));
+      window.close();
    }
-
-   window.close();
 }
 
+function closeAndReset() {
+  var enigmailSvc = GetEnigmailSvc();
+  enigmailSvc.invalidateUserIdList();
+  window.close();
+}
 
 // Cleanup
 function enigmailKeygenCloseRequest() {

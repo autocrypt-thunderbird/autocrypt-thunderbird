@@ -34,6 +34,8 @@
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
+Components.utils.import("resource://enigmail/keyManagement.jsm");
+
 // Initialize enigmailCommon
 EnigInitCommon("enigmailKeyManager");
 
@@ -493,13 +495,14 @@ function enigmailDeleteKey() {
     }
   }
 
-  var errorMsgObj = {};
-  var r=enigmailSvc.deleteKey(window, "0x"+keyList.join(" 0x"), deleteSecret, errorMsgObj);
-  if (r != 0) {
-    EnigAlert(EnigGetString("deleteKeyFailed")+"\n\n"+errorMsgObj.value);
-    return;
-  }
-  enigmailRefreshKeys();
+  EnigmailKeyMgmt.deleteKey(window, "0x"+keyList.join(" 0x"), deleteSecret,
+    function(exitCode, errorMsg) {
+      if (exitCode != 0) {
+        EnigAlert(EnigGetString("deleteKeyFailed")+"\n\n"+errorMsg);
+        return;
+      }
+      enigmailRefreshKeys();
+    });
 }
 
 
@@ -759,9 +762,9 @@ function enigSignKey() {
 
 function enigmailRevokeKey() {
   var keyList = enigmailGetSelectedKeys();
-  if (EnigRevokeKey(keyList[0], gKeyList[keyList[0]].userId)) {
-    enigmailRefreshKeys();
-  }
+  EnigRevokeKey(keyList[0], gKeyList[keyList[0]].userId, function _revokeKeyCb(success) {
+    if (success) enigmailRefreshKeys();
+  });
 }
 
 function enigCreateRevokeCert() {

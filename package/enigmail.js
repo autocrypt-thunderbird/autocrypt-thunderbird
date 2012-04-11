@@ -2870,11 +2870,7 @@ Enigmail.prototype = {
   },
 
   getEscapedFilename: function (fileNameStr) {
-    if (this.isDosLike) {
-      // escape the backslashes and the " character (for Windows and OS/2)
-      fileNameStr = fileNameStr.replace(/([\\\"])/g, "\\$1");
-    }
-    return fileNameStr;
+    return Ec.getEscapedFilename(fileNameStr);
   },
 
   importKeyFromFile: function (parent, inputFile, errorMsgObj, importedKeysObj) {
@@ -3606,51 +3602,6 @@ Enigmail.prototype = {
 
   clearRules: function () {
     this.rulesList = null;
-  },
-
-  genRevokeCert: function (parent, keyId, outFile, reasonCode, reasonText, errorMsgObj) {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.genRevokeCert: keyId="+keyId+"\n");
-
-    var r= this.editKey(parent, true, null, keyId, "revoke",
-                        { outFile: outFile,
-                          reasonCode: reasonCode,
-                          reasonText: Ec.convertFromUnicode(reasonText) },
-                        revokeCertCallback,
-                        null,
-                        errorMsgObj);
-    Ec.stillActive();
-
-    return r;
-  },
-
-  addUid: function (parent, keyId, name, email, comment, errorMsgObj) {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.addUid: keyId="+keyId+", name="+name+", email="+email+"\n");
-    var r= this.editKey(parent, true, null, keyId, "adduid",
-                        { email: email,
-                          name: name,
-                          comment: comment,
-                          nameAsked: 0,
-                          emailAsked: 0 },
-                        addUidCallback,
-                        null,
-                        errorMsgObj);
-    Ec.stillActive();
-
-    return r;
-  },
-
-  deleteKey: function (parent, keyId, deleteSecretKey, errorMsgObj) {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.addUid: keyId="+keyId+", deleteSecretKey="+deleteSecretKey+"\n");
-
-    var cmd = (deleteSecretKey ? "--delete-secret-and-public-key" : "--delete-key");
-    var r= this.editKey(parent, false, null, keyId, cmd,
-                        {},
-                        deleteKeyCallback,
-                        null,
-                        errorMsgObj);
-    Ec.stillActive();
-
-    return r;
   },
 
   changePassphrase: function (parent, keyId, oldPw, newPw, errorMsgObj) {

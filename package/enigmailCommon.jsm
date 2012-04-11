@@ -743,6 +743,13 @@ var EnigmailCommon = {
     return this.convertFromUnicode(nsFileObj.path, "utf-8");
   },
 
+  getEscapedFilename: function (fileNameStr) {
+    if (this.enigmailSvc.isDosLike) {
+      // escape the backslashes and the " character (for Windows and OS/2)
+      fileNameStr = fileNameStr.replace(/([\\\"])/g, "\\$1");
+    }
+    return fileNameStr;
+  },
 
   getTempDir: function ()
   {
