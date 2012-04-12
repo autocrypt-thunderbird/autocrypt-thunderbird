@@ -592,28 +592,29 @@ function EnigSignKey(userId, keyId, signingKeyHint) {
 
 
 function EnigChangeKeyPwd(keyId, userId) {
-  var inputObj = {
-    keyId: keyId,
-    userId: userId
-  };
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return;
 
   if (! enigmailSvc.useGpgAgent()) {
+    // no gpg-agent: open dialog to enter new passphrase
+    var inputObj = {
+      keyId: keyId,
+      userId: userId
+    };
+
     window.openDialog("chrome://enigmail/content/enigmailChangePasswd.xul",
         "", "dialog,modal,centerscreen", inputObj);
   }
   else {
-    // gpg-agent will handle everything
-    var errorMsgObj = new Object();
-    var r = enigmailSvc.changePassphrase(window, "0x"+keyId, "", "", errorMsgObj);
-
-
-    if (r != 0) {
-      EnigAlert(EnigGetString("changePassFailed")+"\n\n"+errorMsgObj.value);
-    }
+    // gpg-agent used: gpg-agent will handle everything
+    EnigmailKeyMgmt.changePassphrase(window, "0x"+keyId, "", "",
+      function _changePwdCb(exitCode, errorMsg) {
+        if (exitCode != 0) {
+          EnigAlert(EnigGetString("changePassFailed")+"\n\n"+errorMsg);
+        }
+      });
   }
 }
 

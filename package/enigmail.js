@@ -3604,25 +3604,6 @@ Enigmail.prototype = {
     this.rulesList = null;
   },
 
-  changePassphrase: function (parent, keyId, oldPw, newPw, errorMsgObj) {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.changePassphrase: keyId="+keyId+"\n");
-
-    var pwdObserver = new enigChangePasswdObserver();
-    var r= this.editKey(parent, false, null, keyId, "passwd",
-                        { oldPw: oldPw,
-                          newPw: newPw,
-                          useAgent: this.useGpgAgent(),
-                          step: 0,
-                          observer: pwdObserver },
-                        changePassphraseCallback,
-                        pwdObserver,
-                        errorMsgObj);
-    Ec.stillActive();
-
-    return r;
-  },
-
-
   revokeSubkey: function (parent, keyId, subkeys, reasonCode, reasonText, errorMsgObj) {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.revokeSubkey: keyId="+keyId+"\n");
 

@@ -114,15 +114,13 @@ KeyEditor.prototype = {
   },
 
   nextLine: function(txt) {
-    if (txt.indexOf("[GNUPG:]") < 0) {
+    if (txt.indexOf("[GNUPG:]") >= 0) {
       if (this._reqObserver) {
         var newTxt = this._reqObserver.onDataAvailable(txt);
-        if (newTxt) {
+        if (newTxt.length > 0) {
           txt = newTxt;
         }
       }
-    }
-    if (txt.indexOf("[GNUPG:]") >= 0) {
       this._txt = txt;
       this.processLine(txt);
     }
@@ -143,24 +141,27 @@ KeyEditor.prototype = {
               exitCode: -1 };
 
     try {
-      Ec.DEBUG_LOG(txt+"\n");
       if (txt.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
+        Ec.DEBUG_LOG("keyManagmenent.jsm: KeyEditor.processLine: detected bad passphrase\n");
         r.exitCode=-2;
         r.quitNow=true;
         this.errorMsg=Ec.getString("badPhrase");
         Ec.clearCachedPassphrase();
       }
       if (txt.indexOf("[GNUPG:] NO_CARD_AVAILABLE")>=0) {
+        Ec.DEBUG_LOG("keyManagmenent.jsm: KeyEditor.processLine: detected missing card\n");
         this.errorMsg=Ec.getString("noCardAvailable");
         r.exitCode=-3;
         r.quitNow=true;
       }
       if (txt.indexOf("[GNUPG:] ENIGMAIL_FAILURE")==0) {
+        Ec.DEBUG_LOG("keyManagmenent.jsm: KeyEditor.processLine: detected general failure\n");
         r.exitCode = -3;
         r.quitNow = true;
         this.errorMsg = txt.substr(26);
       }
       if (txt.indexOf("[GNUPG:] ALREADY_SIGNED")>=0) {
+        Ec.DEBUG_LOG("keyManagmenent.jsm: KeyEditor.processLine: detected key already signed\n");
         this.errorMsg=Ec.getString("keyAlreadySigned");
         r.exitCode=-1;
         r.quitNow = true;
@@ -183,7 +184,8 @@ KeyEditor.prototype = {
             this.writeLine(r.writeTxt);
           }
           else {
-            this.errorMsg = r.errorMsg;
+            if (r.errorMsg && r.errorMsg.length > 0)
+              this.errorMsg = r.errorMsg;
           }
         }
         else {
@@ -206,7 +208,8 @@ KeyEditor.prototype = {
       }
     }
 
-    this._exitCode = r.exitCode;
+    if (r.exitCode != null)
+      this._exitCode = r.exitCode;
   },
 
   QueryInterface: function (iid) {
@@ -386,11 +389,11 @@ var EnigmailKeyMgmt = {
   changePassphrase: function (parent, keyId, oldPw, newPw, callbackFunc) {
     Ec.DEBUG_LOG("keyManagmenent.jsm: Enigmail.changePassphrase: keyId="+keyId+"\n");
 
-    var pwdObserver = new enigChangePasswdObserver();
+    var pwdObserver = new ChangePasswdObserver();
     var r= this.editKey(parent, false, null, keyId, "passwd",
                         { oldPw: oldPw,
                           newPw: newPw,
-                          useAgent: this.useGpgAgent(),
+                          useAgent: Ec.enigmailSvc.useGpgAgent(),
                           step: 0,
                           observer: pwdObserver,
                           usePassphrase: true },
@@ -833,7 +836,11 @@ function changePassphraseCallback(inputData, keyEdit, ret) {
     ret.exitCode = 0;
   }
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
-    if (inputData.useAgent) ret.exitCode=0;
+    if (inputData.useAgent) {
+      ret.exitCode=0;
+    }
+    else
+      ret.exitCode = null;
     ret.quitNow = true;
   }
   else {
@@ -1281,9 +1288,9 @@ enigCardAdminObserver.prototype =
   }
 }
 
-function enigChangePasswdObserver() {}
+function ChangePasswdObserver() {}
 
-enigChangePasswdObserver.prototype =
+ChangePasswdObserver.prototype =
 {
   _failureCode: 0,
   passphraseStatus: 0,
@@ -1299,7 +1306,7 @@ enigChangePasswdObserver.prototype =
 
   onDataAvailable: function (data) {
     var ret="";
-    Ec.DEBUG_LOG("keyManagmenent.jsm: enigChangePasswdObserver.onDataAvailable: data="+data+"\n");
+    Ec.DEBUG_LOG("keyManagmenent.jsm: ChangePasswdObserver.onDataAvailable: data="+data+"\n");
     if (this._failureCode) {
       ret = "[GNUPG:] ENIGMAIL_FAILURE "+data;
     }

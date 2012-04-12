@@ -52,8 +52,6 @@
         ondialogaccept="return onAccept();">
 
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-
   <vbox>
     <label id="userId" value="..."/>
     <separator/>
@@ -82,7 +80,10 @@
   <script type="application/x-javascript">
   <![CDATA[
 
-  EnigInitCommon("enigmailSetCardPinDlg");
+  Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+  Components.utils.import("resource://enigmail/keyManagement.jsm");
+
+  const Ec = EnigmailCommon;
 
   function onLoad() {
     var uid = window.window.arguments[0].userId +" - 0x"+ window.arguments[0].keyId.substr(-8,8);
@@ -90,7 +91,7 @@
   }
 
   function onAccept() {
-    var enigmailSvc = GetEnigmailSvc();
+    var enigmailSvc = Ec.getService();
     if (!enigmailSvc)
       return false;
 
@@ -99,106 +100,35 @@
     var newPasswd = document.getElementById("newPasswd").value;
     var repeatPasswd = document.getElementById("repeatPasswd").value;
     if (newPasswd.length == 0 && repeatPasswd.length == 0) {
-      if (! EnigConfirm(EnigGetString("removePassphrase"), EnigGetString("keyMan.button.removePass"))) {
+      if (! Ec.confirmDlg(window, Ec.getString("removePassphrase"), Ec.getString("keyMan.button.removePass"))) {
         return false;
       }
     }
     else {
       if (newPasswd.length < 8) {
-        EnigAlert(EnigGetString("passphrase.min8keys"));
+        Ec.alert(window, Ec.getString("passphrase.min8keys"));
         return false;
       }
       if (newPasswd != repeatPasswd) {
-        EnigAlert(EnigGetString("passNoMatch"));
+        Ec.alert(window, Ec.getString("passNoMatch"));
         return false;
       }
       if (newPasswd.search(/[\x80-\xFF]/)>=0) {
-        EnigAlert(EnigGetString("passCharProblem"));
+        Ec.alert(window, Ec.getString("passCharProblem"));
         return false;
       }
     }
 
-    var errorMsgObj = new Object();
+    EnigmailKeyMgmt.changePassphrase(window, window.arguments[0].keyId, currPasswd, newPasswd,
+      function _changePwdCb(exitCode, errorMsg) {
+        if (exitCode != 0) {
+          Ec.alert(window, Ec.getString("changePassFailed")+"\n\n"+errorMsg);
+        }
+        else
+          window.close();
+      });
 
-    var r = enigmailSvc.changePassphrase(window,
-                                         window.arguments[0].keyId,
-                                         currPasswd,
-                                         newPasswd,
-                                         errorMsgObj);
-
-    if (r != 0) {
-      EnigAlert(EnigGetString("changePassFailed")+"\n"+errorMsgObj.value);
-      return false;
-    }
-    return true;
-  }
-
-  function dlgEnable(item) {
-    document.getElementById(item).removeAttribute("collapsed");
-  }
-
-  function dlgDisable(item) {
-    document.getElementById(item).setAttribute("collapsed", "true");
-  }
-
-  function setDlgContent(sel) {
-    gAction = sel;
-    switch(sel) {
-    case 'P':
-      dlgDisable("currAdminPinRow");
-      dlgDisable("adminPinRow");
-      dlgDisable("adminPinRepeatRow");
-      dlgEnable("currPinRow");
-      dlgEnable("pinRow");
-      dlgEnable("pinRepeatRow");
-      break;
-    case 'A':
-      dlgEnable("currAdminPinRow");
-      dlgEnable("adminPinRow");
-      dlgEnable("adminPinRepeatRow");
-      dlgDisable("currPinRow");
-      dlgDisable("pinRow");
-      dlgDisable("pinRepeatRow");
-      break;
-    case 'U':
-      dlgEnable("currAdminPinRow");
-      dlgDisable("adminPinRow");
-      dlgDisable("adminPinRepeatRow");
-      dlgDisable("currPinRow");
-      dlgEnable("pinRow");
-      dlgEnable("pinRepeatRow");
-      break;
-    }
-  }
-
-  function changePinObserver() {
-  }
-
-  changePinObserver.prototype =
-  {
-    _data: "",
-    result: "",
-
-    QueryInterface : function(iid)
-    {
-      if (iid.equals(Components.interfaces.nsIEnigMimeReadCallback) ||
-          iid.equals(Components.interfaces.nsISupports) )
-        return this;
-
-      throw Components.results.NS_NOINTERFACE;
-    },
-
-    onDataAvailable: function (data) {
-      var ret="";
-      DEBUG_LOG("enigmailSetCardPin: changePinObserver.onDataAvailable: data="+data+"\n");
-      if (data.indexOf("[GNUPG:] SC_OP_FAILURE")>=0) {
-        this.result = this._data;
-      }
-      else {
-        this._data = data
-      }
-      return "";
-    }
+    return false;
   }
 
   ]]>
