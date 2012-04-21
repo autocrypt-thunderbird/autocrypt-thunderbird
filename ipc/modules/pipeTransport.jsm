@@ -43,6 +43,8 @@ let EXPORTED_SYMBOLS = [ "PipeTransport" ];
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
+const DEFAULT_BUF_SIZE = 2048;
+
 var PipeTransport = {
   createInstance: function() {
     return new PipeObj();
@@ -54,7 +56,6 @@ var PipeTransport = {
 }
 
 var gDebugFunc = null;
-var gRequestId = 0;
 
 function DEBUG_LOG (str) {
   if (gDebugFunc) gDebugFunc(str);
@@ -73,7 +74,10 @@ PipeObj.prototype = {
   _readBytes: 0,
   _outputPipe: null,
   _inputPipe: null,
+  _tmpStream: null,
   _writeThread: null,
+  _writeBuffer: "",
+  _readBuffer: "",
 
   QueryInterface: XPCOMUtils.generateQI( [Ci.nsIPipeTransport,
                                           Ci.nsIProcess,
@@ -88,9 +92,9 @@ PipeObj.prototype = {
   // nsIPipeTransport API
   stderrConsole: null,
   listener: null,
-  bufferSegmentSize: 2048,
-  bufferMaxSize: 8192,
-  headersMaxSize: 4098,
+  bufferSegmentSize: DEFAULT_BUF_SIZE,
+  bufferMaxSize: DEFAULT_BUF_SIZE * 4,
+  headersMaxSize: DEFAULT_BUF_SIZE * 2,
 
   initWithWorkDir: function(command, cwd, startupFlags) {
     DEBUG_LOG("initWithWorkDir");
@@ -98,7 +102,7 @@ PipeObj.prototype = {
     // startup flags are ignred
     this._command = command;
     this._cwd = cwd;
-    this.name = command;
+    this.name = command.leafName;
   },
 
   openPipe: function(args, argCount, env, envCount, timeoutMS, killString, mergeStderr, stderrConsole) {
@@ -111,9 +115,6 @@ PipeObj.prototype = {
     if (typeof(killString) == "string" && killString.length > 0) throw "ERROR_NOT_SUPPORTED";
     if (timeoutMS != null && timeoutMS > 0) throw "ERROR_NOT_SUPPORTED";
     this.stderrConsole = stderrConsole;
-
-    ++gRequestId;
-    this.name="pipe-" + gRequestId;
 
     var callObj = {
       command:     this._command,
@@ -129,25 +130,26 @@ PipeObj.prototype = {
         }
       },
       stdout: function(data) {
-        DEBUG_LOG("got data on stdout:" + data);
+        DEBUG_LOG("got data on stdout: " + data.length);
         try {
 
           if (self._readStream) {
             var readStart = self._readBytes + data.length - self._readOffset;
             if ( readStart > 0 ) {
-              DEBUG_LOG("writing to reader Stream");
-
-              let istream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
-              istream.setData(data, data.length);
-              self._readStream.onDataAvailable(self, self._readCtxt, istream, self._readBytes, data.length);
+              DEBUG_LOG("writing to reader stream");
+              if (! self._tmpStream)
+                self._tmpStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
+              self._tmpStream.setData(data, data.length);
+              self._readStream.onDataAvailable(self, self._readCtxt, self._tmpStream, self._readBytes, data.length);
             }
           }
 
           if (self._outputPipe) {
             DEBUG_LOG("writing to output stream");
-            let istream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
-            istream.setData(data, data.length);
-            self._outputPipe.onDataAvailable(self, self._outputCtxt, istream, self._readBytes, data.length);
+            if (! self._tmpStream)
+              self._tmpStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
+            self._tmpStream.setData(data, data.length);
+            self._outputPipe.onDataAvailable(self, self._outputCtxt, self._tmpStream, self._readBytes, data.length);
           }
           self._readBytes += data.length;
         }
@@ -238,7 +240,6 @@ PipeObj.prototype = {
   },
 
   writeSync: function(inputData,  inputLength) {
-    DEBUG_LOG("writeSync");
     this.write(inputData, inputLength);
   },
 
@@ -257,7 +258,7 @@ PipeObj.prototype = {
     while (count > 0) {
       let data = stream.readBytes(aCount);
       count -= data.length;
-      DEBUG_LOG("writeAsync: got "+data.length+" bytes - remaining: "+count);
+      //DEBUG_LOG("writeAsync: got "+data.length+" bytes - remaining: "+count);
       this.write(data, data.length);
     }
 
@@ -314,8 +315,14 @@ PipeObj.prototype = {
 
   write: function(str, length) {
     if (this._stdinPipe) {
-      DEBUG_LOG("write "+length+" bytes");
-      this._stdinPipe.write(str.substr(0, length));
+      if (this._writeBuffer.length + length >= DEFAULT_BUF_SIZE) {
+        DEBUG_LOG("write "+ (this._writeBuffer.length + length) +" bytes");
+        this._stdinPipe.write(this._writeBuffer+str.substr(0, length));
+        this._writeBuffer = "";
+      }
+      else {
+        this._writeBuffer += str.substr(0, length);
+      }
     }
     else {
       DEBUG_LOG("write pending "+length+" bytes");
@@ -325,11 +332,18 @@ PipeObj.prototype = {
 
   close: function() {
     DEBUG_LOG("close");
-    if(this._stdinPipe) this._stdinPipe.close();
+    if(this._stdinPipe) {
+      this.flush();
+      this._stdinPipe.close();
+    }
   },
 
   flush: function () {
-    // do nothing
+    DEBUG_LOG("flush "+this._writeBuffer.length+" bytes");
+    if(this._stdinPipe && this._writeBuffer.length > 0) {
+      this._stdinPipe.write(this._writeBuffer);
+      this._writeBuffer = "";
+    }
   },
 
   writeFrom: function(aFromStream, aCount) {
@@ -376,7 +390,7 @@ PipeObj.prototype = {
   },
 
   // nsIRequest API
-  name: null,
+  name: "null",
   status: 0,
   loadGroup: null,
   loadFlags: Ci.nsIRequest.LOAD_NORMAL,
