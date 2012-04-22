@@ -904,6 +904,8 @@ nsEnigMsgCompose::WriteToPipe(const char *aBuf, PRInt32 aLen)
   tmpStr.Assign(aBuf, aLen);
   DEBUG_LOG(("nsEnigMimeWriter::WriteToPipe: data: '%s'\n", tmpStr.get()));
 
+  rv = mPipeTrans->WriteSync(aBuf, aLen);
+/*
   if (mMultipartSigned) {
     rv = mPipeTrans->WriteSync(aBuf, aLen);
   }
@@ -920,7 +922,7 @@ nsEnigMsgCompose::WriteToPipe(const char *aBuf, PRInt32 aLen)
     nsEnigComposeWriter* dispatchWriter = new nsEnigComposeWriter(outStream, aBuf, aLen);
     rv = mTargetThread->Dispatch(dispatchWriter, nsIEventTarget::DISPATCH_NORMAL);
   }
-
+*/
   return rv;
 }
 

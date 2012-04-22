@@ -38,6 +38,7 @@ Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/AddonManager.jsm");
 Components.utils.import("resource://enigmail/subprocess.jsm");
 Components.utils.import("resource://enigmail/pipeConsole.jsm");
+Components.utils.import("resource://enigmail/pipeTransport.jsm");
 Components.utils.import("resource://gre/modules/ctypes.jsm");
 
 // Maximum size of message directly processed by Enigmail
@@ -77,7 +78,6 @@ const ENIGMAIL_EXTENSION_ID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
 
 // Contract IDs and CIDs used by this module
 const NS_IPCBUFFER_CONTRACTID   = "@mozilla.org/ipc/ipc-buffer;1";
-const NS_PIPETRANSPORT_CONTRACTID="@mozilla.org/ipc/pipe-transport;1";
 const NS_PROCESS_UTIL_CONTRACTID = "@mozilla.org/process/util;1"
 const NS_MSGCOMPOSESECURE_CONTRACTID = "@mozilla.org/messengercompose/composesecure;1";
 const NS_ENIGMSGCOMPOSE_CONTRACTID   = "@mozilla.org/enigmail/composesecure;1";
@@ -842,6 +842,11 @@ Enigmail.prototype = {
       if (matches[1] > 2) subprocess.registerDebugHandler(function(txt) { Ec.DEBUG_LOG("subprocess.jsm: "+txt) });
     }
 
+    matches = nspr_log_modules.match(/nsPipeTransport:(\d+)/);
+    if (matches && (matches.length > 1)) {
+      if (matches[1] > 2) PipeTransport.registerDebugHandler(function(txt) { Ec.DEBUG_LOG("pipeTransport.jsm: "+txt+"\n") });
+    }
+
 
     // Initialize global environment variables list
     var passEnv = [ "GNUPGHOME", "GPGDIR", "ETC",
@@ -1484,7 +1489,7 @@ Enigmail.prototype = {
 
     Ec.CONSOLE_LOG("enigmail> "+Ec.printCmdLine(command, args)+"\n");
 
-    var pipetrans = Cc[NS_PIPETRANSPORT_CONTRACTID].createInstance();
+    var pipetrans = PipeTransport.createInstance();
 
     pipetrans = pipetrans.QueryInterface(Ci.nsIPipeTransport);
     Ec.DEBUG_LOG("enigmail.js: Enigmail.execStart: pipetrans = " + pipetrans + "\n");
@@ -1518,6 +1523,7 @@ Enigmail.prototype = {
 
     } catch (ex) {
       Ec.CONSOLE_LOG("enigmail.js: Enigmail.execStart: Error - Failed to start PipeTransport\n");
+      Ec.ERROR_LOG(ex.toString());
       return null;
     }
   },
@@ -4729,5 +4735,3 @@ function enigExtractHashAlgo(msgTxt) {
 
 var NSGetFactory = XPCOMUtils.generateNSGetFactory([Enigmail, EnigmailProtocolHandler, EnigCmdLineHandler]);
 dump("enigmail.js: Registered components\n");
-
-

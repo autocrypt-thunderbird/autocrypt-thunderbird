@@ -1529,7 +1529,6 @@ IPC_NewPipe(nsIInputStream **pipeIn,
 
 NS_IMETHODIMP
 nsPipeTransport::ReadInputStream(nsIPipeReader *listener,
-                           nsISupports* ctxt,
                            nsIRequest **_retval)
 {
   return NS_ERROR_NOT_IMPLEMENTED;

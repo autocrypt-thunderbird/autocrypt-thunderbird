@@ -178,8 +178,7 @@ interface nsIPipeTransport : nsIProcess
                                      in unsigned long count,
                                      in unsigned long flags);
 
-    nsIRequest readInputStream(in nsIPipeReader reader,
-                         in nsISupports ctxt);
+    nsIRequest readInputStream(in nsIPipeReader reader);
 
     /**
      * Asynchronously read data from the transport.

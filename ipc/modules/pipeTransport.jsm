@@ -174,7 +174,7 @@ PipeObj.prototype = {
             self._readStream.onStopRequest(self, self._readCtxt, result.exitCode);
           }
           if (self._outputPipe) {
-            self._outputPipe.onStop(result.exitCode);
+            self._outputPipe.stopRequest(result.exitCode);
           }
           self._outputPipe = null;
           self._readStream = null;
@@ -212,15 +212,11 @@ PipeObj.prototype = {
     this._readStream.onStartRequest(this, this._readCtxt);
   },
 
-  readInputStream: function (listener, ctxt) {
+  readInputStream: function (listener) {
     DEBUG_LOG("asyncRead");
     if (! this._proc) throw "ERROR_NOT_AVAILABLE";
 
     this._outputPipe = listener;
-    this._outputCtxt = ctxt;
-    this._readOffset = 0;
-
-    this._outputPipe.onStartRequest(this, this._outputCtxt);
   },
 
   join: function() {

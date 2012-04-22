@@ -327,8 +327,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
 
   // read via pipeTransport.jsm
   nsCOMPtr<nsIRequest> request;
-  rv = mPipeTrans->ReadInputStream(this, nsnull,
-                                  getter_AddRefs(request));
+  rv = mPipeTrans->ReadInputStream(this, getter_AddRefs(request));
   if (NS_FAILED(rv)) {
     // read via nsPipeTransport.cpp
     rv = mPipeTrans->OpenInputStream(0, PRUint32(-1),
