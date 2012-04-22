@@ -157,7 +157,6 @@ protected:
 
     nsCOMPtr<nsStdoutPoller>            mStdoutPoller;
     nsCOMPtr<nsIPipeListener>           mStderrConsole;
-    nsCOMPtr<nsIPipeTransportHeaders>   mHeaderProcessor;
 
     nsCOMPtr<nsIInputStream>            mInputStream;
     nsCOMPtr<nsIOutputStream>           mOutputStream;

@@ -132,6 +132,7 @@ zip ${xpiFile} \
     modules/pipeConsole.jsm \
     modules/keyManagement.jsm \
     modules/commonFuncs.jsm \
+    modules/pipeTransport.jsm \
     modules/subprocess.jsm \
     modules/subprocess_worker_win.js \
     modules/subprocess_worker_unix.js \

@@ -1217,7 +1217,6 @@ nsPipeTransport::Finalize(IPCBool destructor)
 
   // Release owning refs
   mStderrConsole    = nsnull;
-  mHeaderProcessor  = nsnull;
 
   // Release refs to objects that hold strong refs to this
   mStdoutPoller = nsnull;
@@ -1281,33 +1280,6 @@ nsPipeTransport::Kill(void)
   mProcess = IPC_NULL_HANDLE;
 
   return status;
-}
-
-NS_IMETHODIMP
-nsPipeTransport::GetHeaderProcessor(nsIPipeTransportHeaders* *_retval)
-{
-  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
-  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
-
-  if (!_retval)
-    return NS_ERROR_NULL_POINTER;
-
-  NS_IF_ADDREF(*_retval = mHeaderProcessor.get());
-
-  return NS_OK;
-}
-
-
-NS_IMETHODIMP
-nsPipeTransport::SetHeaderProcessor(nsIPipeTransportHeaders* aHeaderProcessor)
-{
-  DEBUG_LOG(("nsPipeTransport::SetHeaderProcessor: \n"));
-
-  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
-  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
-
-  mHeaderProcessor = aHeaderProcessor;
-  return NS_OK;
 }
 
 
@@ -1484,26 +1456,6 @@ nsPipeTransport::SetHeadersMaxSize(PRUint32 aHeadersMaxSize)
 }
 
 
-NS_IMETHODIMP
-nsPipeTransport::GetLoggingEnabled(IPCBool *aLoggingEnabled)
-{
-  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
-  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
-  NS_ENSURE_TRUE(mStdoutPoller, NS_ERROR_NOT_INITIALIZED);
-
-  return mStdoutPoller->GetLoggingEnabled(aLoggingEnabled);
-}
-
-NS_IMETHODIMP
-nsPipeTransport::SetLoggingEnabled(IPCBool aLoggingEnabled)
-{
-  NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
-  NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
-  NS_ENSURE_TRUE(mStdoutPoller, NS_ERROR_NOT_INITIALIZED);
-
-  return mStdoutPoller->SetLoggingEnabled(aLoggingEnabled);
-}
-
 #ifndef _IPC_FORCE_INTERNAL_API
 nsresult
 IPC_NewPipe2(nsIAsyncInputStream **pipeIn,
@@ -1574,10 +1526,19 @@ IPC_NewPipe(nsIInputStream **pipeIn,
 
 #endif
 
+
+NS_IMETHODIMP
+nsPipeTransport::ReadInputStream(nsIPipeReader *listener,
+                           nsISupports* ctxt,
+                           nsIRequest **_retval)
+{
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 NS_IMETHODIMP
 nsPipeTransport::OpenInputStream(PRUint32 offset,
                                  PRUint32 count,
-                                 PRUint32 flags,
+                                 //PRUint32 flags,
                                  nsIInputStream **result)
 {
   DEBUG_LOG(("nsPipeTransport::OpenInputStream: \n"));
@@ -1714,7 +1675,7 @@ nsPipeTransport::AsyncRead(nsIStreamListener *listener,
   }
 
   // Spin up a new thread to handle STDOUT polling
-  PRUint32 mimeHeadersMaxSize = mHeaderProcessor ? mHeadersMaxSize : 0;
+  PRUint32 mimeHeadersMaxSize = 0;
   rv = mStdoutPoller->AsyncStart(mOutputStream, pipeListener,
                                  PR_TRUE,
                                  mimeHeadersMaxSize);
@@ -1866,7 +1827,7 @@ nsPipeTransport::ReadLine(PRInt32 maxOutputLen,
 
   if (!mInputStream) {
     nsCOMPtr<nsIInputStream> inputStream;
-    rv = OpenInputStream(0, PRUint32(-1), 0, getter_AddRefs(inputStream));
+    rv = OpenInputStream(0, PRUint32(-1), getter_AddRefs(inputStream));
     NS_ENSURE_SUCCESS(rv, rv);
   }
 
@@ -2394,10 +2355,6 @@ nsPipeTransport::ParseMimeHeaders(const char* mimeHeaders, PRUint32 count,
 
   NS_ENSURE_FALSE(mFinalized, NS_ERROR_NOT_AVAILABLE);
   NS_ENSURE_TRUE(mInitialized, NS_ERROR_NOT_INITIALIZED);
-
-
-  if (mHeaderProcessor)
-    return mHeaderProcessor->ParseMimeHeaders(mimeHeaders, count, retval);
 
   return NS_ERROR_FAILURE;
 }

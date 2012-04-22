@@ -49,7 +49,9 @@
 #include "nsIMsgMailSession.h"
 #include "nsIMimeMiscStatus.h"
 #include "nsIEnigMimeHeaderSink.h"
+#include "nsIAsyncInputStream.h"
 #include "nsIThread.h"
+#include "nsIEventTarget.h"
 #include "nsEnigMimeDecrypt.h"
 #include "nsIPipeTransport.h"
 #include "nsIIPCBuffer.h"
@@ -69,21 +71,27 @@ static const PRUint32 kCharMax = 1024;
 // nsEnigMimeDecrypt implementation
 
 // nsISupports implementation
-NS_IMPL_THREADSAFE_ISUPPORTS1(nsEnigMimeDecrypt,
-                              nsIEnigMimeDecrypt)
+NS_IMPL_THREADSAFE_ISUPPORTS2(nsEnigMimeDecrypt,
+                              nsIEnigMimeDecrypt,
+                              nsIPipeReader)
 
 // nsEnigMimeDecrypt implementation
 nsEnigMimeDecrypt::nsEnigMimeDecrypt()
   : mInitialized(PR_FALSE),
     mVerifyOnly(PR_FALSE),
     mRfc2015(PR_FALSE),
+    mDone(PR_FALSE),
 
     mInputLen(0),
     mOutputLen(0),
+    mIterations(0),
+    mCtFound(-1),
 
     mBuffer(nsnull),
     mListener(nsnull),
-    mPipeTrans(nsnull)
+    mPipeTrans(nsnull),
+    mSecurityInfo(nsnull),
+    mUri(nsnull)
 {
   nsresult rv;
 
@@ -234,6 +242,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   nsCOMPtr<nsIThread> myThread;
   rv = ENIG_GET_THREAD(myThread);
 
+  mUri = uri;
   nsCAutoString uriSpec("");
 
   if (mListener) {
@@ -257,14 +266,13 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   if (NS_FAILED(rv))
     return rv;
 
-  nsCOMPtr<nsISupports> securityInfo;
   if (msgWindow) {
     nsCOMPtr<nsIMsgHeaderSink> headerSink;
     msgWindow->GetMsgHeaderSink(getter_AddRefs(headerSink));
     if (headerSink)
-        headerSink->GetSecurityInfo(getter_AddRefs(securityInfo));
+        headerSink->GetSecurityInfo(getter_AddRefs(mSecurityInfo));
   }
-  DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: securityInfo=%p\n", securityInfo.get()));
+  DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: securityInfo=%p\n", mSecurityInfo.get()));
 
   nsCOMPtr<nsIPrompt> prompter;
   if (msgWindow) {
@@ -302,21 +310,31 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   if (NS_FAILED(rv)) return rv;
 
   if (!mPipeTrans) {
-    if (securityInfo) {
-      nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
+    if (mSecurityInfo) {
+      nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(mSecurityInfo);
       if (enigHeaderSink) {
         NS_NAMED_LITERAL_STRING(nullString, "");
-        rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, -1, statusFlags, nullString.get(), nullString.get(), nullString.get(), errorMsg.get(), nullString.get(), uri);
+        rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, -1, statusFlags, nullString.get(), nullString.get(), nullString.get(), errorMsg.get(), nullString.get(), mUri);
       }
     }
 
     return NS_ERROR_FAILURE;
   }
 
-  nsCOMPtr<nsIInputStream> plainStream;
-  rv = mPipeTrans->OpenInputStream(0, PRUint32(-1), 0,
-                                  getter_AddRefs(plainStream));
-  if (NS_FAILED(rv)) return rv;
+  mIterations = 0;
+  mCtFound = -1;
+  nsCOMPtr<nsIInputStream> plainStream = nsnull;
+
+  // read via pipeTransport.jsm
+  nsCOMPtr<nsIRequest> request;
+  rv = mPipeTrans->ReadInputStream(this, nsnull,
+                                  getter_AddRefs(request));
+  if (NS_FAILED(rv)) {
+    // read via nsPipeTransport.cpp
+    rv = mPipeTrans->OpenInputStream(0, PRUint32(-1),
+                                    getter_AddRefs(plainStream));
+    NS_ENSURE_SUCCESS(rv, rv);
+  }
 
   // Write buffered data asyncronously to process
   nsCOMPtr<nsIInputStream> bufStream;
@@ -332,70 +350,130 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   rv = mPipeTrans->WriteAsync(bufStream, available, PR_TRUE);
   if (NS_FAILED(rv)) return rv;
 
-  PRUint32 readCount, iterations;
-  int ctFound = -1;
+  if (! plainStream) {
+    // read via pipeTransport.jsm
+
+    nsCOMPtr<nsIThread> currentThread;
+    rv = ENIG_GET_THREAD(currentThread);
+    NS_ENSURE_SUCCESS(rv, rv);
+
+    mDone = PR_FALSE;
+
+    // wait with returning until message is completely processed
+    // (simulate synchronous function)
+    while (! mDone) {
+      EMBool pendingEvents;
+      rv = currentThread->ProcessNextEvent(PR_TRUE, &pendingEvents);
+      NS_ENSURE_SUCCESS(rv, rv);
+    }
+
+    return NS_OK;
+  }
+
+  // read via nsPipeTransport.cpp
+  DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: plainStream - old method\n"));
+
+  PRUint32 readCount;
   char buf[kCharMax];
-  iterations = 0;
-  int status;
   while (1) {
-    ++iterations;
     // Read synchronously
 
     rv = plainStream->Read((char *) buf, kCharMax, &readCount);
-    if (NS_FAILED(rv)) return rv;
+    if (NS_FAILED(rv)) {
+      DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: Read failed\n"));
+      return rv;
+    }
+    DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: Read count=%d\n", readCount));
 
     if (!readCount) break;
 
-    if (iterations==1 && readCount > 25) {
-      // add mime boundaries around text/plain message (bug 6627)
-      if (PL_strncasecmp("content-type:", buf, 13)==0) {
-        PRUint32 whitespace=13;
-        while((whitespace<readCount) && buf[whitespace] &&
-              ((buf[whitespace]==' ') || (buf[whitespace]=='\t'))) { whitespace++; }
-        if (buf[whitespace] && (whitespace<readCount)) {
-          ctFound=PL_strncasecmp(buf + whitespace, "text/plain", 10);
-          if (ctFound != 0) {
-            ctFound=PL_strncasecmp(buf + whitespace, "text/html", 9);
-          }
-        }
-        if (ctFound==0) {
-          char* header = PR_smprintf(
-          "Content-Type: multipart/mixed; boundary=\"enigDummy\""
-          "\n\n--enigDummy\n");
-          PR_SetError(0,0);
-          status = mOutputFun(header, strlen(header), mOutputClosure);
-          if (status < 0) {
-            PR_SetError(status, 0);
-            mOutputFun = NULL;
-            mOutputClosure = NULL;
-
-            return NS_ERROR_FAILURE;
-          }
-          mOutputLen += strlen(header);
-        }
-      }
-    }
-
-    if (readCount < kCharMax) {
-      // make sure we can continue to write later
-      if (buf[readCount-1]==0) --readCount;
-    }
-
-    PR_SetError(0,0);
-    status = mOutputFun(buf, readCount, mOutputClosure);
-    if (status < 0) {
-      PR_SetError(status, 0);
-      mOutputFun = NULL;
-      mOutputClosure = NULL;
-
-      return NS_ERROR_FAILURE;
-    }
-
-    mOutputLen += readCount;
+    rv = ProcessPlainData(buf, readCount);
+    NS_ENSURE_SUCCESS(rv, rv);
   }
 
 
-  if (ctFound==0) {
+  return ProcessEnd(plainStream);
+}
+
+nsresult
+nsEnigMimeDecrypt::ProcessPlainData(char* buf, PRUint32 readCount)
+{
+  DEBUG_LOG(("nsEnigMimeDecrypt::ProcessPlainData: readCount=%d\n", readCount));
+
+  int status;
+  ++mIterations;
+  // Read synchronously
+
+
+  if (mIterations == 1 && readCount > 25) {
+    // add mime boundaries around text/plain message (bug 6627)
+    if (PL_strncasecmp("content-type:", buf, 13)==0) {
+      PRUint32 whitespace=13;
+      while((whitespace<readCount) && buf[whitespace] &&
+            ((buf[whitespace]==' ') || (buf[whitespace]=='\t'))) { whitespace++; }
+      if (buf[whitespace] && (whitespace<readCount)) {
+        mCtFound = PL_strncasecmp(buf + whitespace, "text/plain", 10);
+        if (mCtFound != 0) {
+          mCtFound=PL_strncasecmp(buf + whitespace, "text/html", 9);
+        }
+      }
+      if (mCtFound == 0) {
+        char* header = PR_smprintf(
+        "Content-Type: multipart/mixed; boundary=\"enigDummy\""
+        "\n\n--enigDummy\n");
+        PR_SetError(0,0);
+        status = mOutputFun(header, strlen(header), mOutputClosure);
+        if (status < 0) {
+          PR_SetError(status, 0);
+          mOutputFun = NULL;
+          mOutputClosure = NULL;
+
+          return NS_ERROR_FAILURE;
+        }
+        mOutputLen += strlen(header);
+      }
+    }
+  }
+
+  if (readCount < kCharMax) {
+    // make sure we can continue to write later
+    if (buf[readCount-1]==0) --readCount;
+  }
+
+  PR_SetError(0,0);
+  status = mOutputFun(buf, readCount, mOutputClosure);
+  if (status < 0) {
+    PR_SetError(status, 0);
+    mOutputFun = NULL;
+    mOutputClosure = NULL;
+
+    return NS_ERROR_FAILURE;
+  }
+
+  mOutputLen += readCount;
+
+  return NS_OK;
+} // loop end
+
+
+nsresult
+nsEnigMimeDecrypt::ProcessEnd(nsIInputStream* plainStream)
+{
+  DEBUG_LOG(("nsEnigMimeDecrypt::ProcessEnd:\n"));
+
+  char buf[kCharMax];
+  nsresult rv;
+  nsString errorMsg;
+  nsCAutoString uriSpec("");
+
+
+  nsCOMPtr<nsIEnigmail> enigmailSvc = do_GetService(NS_ENIGMAIL_CONTRACTID, &rv);
+  if (NS_FAILED(rv))
+    return rv;
+
+DEBUG_LOG(("nsEnigMimeDecrypt::ProcessEnd: got Enigmail Svc\n"));
+
+  if (mCtFound==0) {
     // add mime boundaries around text/plain message (bug 6627)
     PR_SetError(0,0);
     strcpy(buf, "\n\n--enigDummy--\n");
@@ -405,6 +483,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
       PR_SetError(status, 0);
       mOutputFun = NULL;
       mOutputClosure = NULL;
+DEBUG_LOG(("nsEnigMimeDecrypt::ProcessEnd: error 1\n"));
 
       return NS_ERROR_FAILURE;
     }
@@ -424,7 +503,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   PR_SetError(0,0);
 
   // Close input stream
-  plainStream->Close();
+  if (plainStream) plainStream->Close();
 
   // Close buffer
   mBuffer->Shutdown();
@@ -434,8 +513,10 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   nsString userId;
   nsString sigDate;
   nsString blockSeparation;
+  PRUint32 statusFlags;
 
   PRUint32 uiFlags = nsIEnigmail::UI_PGP_MIME;
+  EMBool noOutput = PR_FALSE;
 
   rv = enigmailSvc->DecryptMessageEnd(uiFlags,
                                       mOutputLen,
@@ -449,19 +530,60 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
                                       getter_Copies(errorMsg),
                                       getter_Copies(blockSeparation),
                                       &exitCode);
-  if (NS_FAILED(rv)) return rv;
+DEBUG_LOG(("nsEnigMimeDecrypt::ProcessEnd: location 2\n"));
 
-  if (securityInfo) {
-    nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(securityInfo);
+  if (NS_FAILED(rv)) return rv;
+DEBUG_LOG(("nsEnigMimeDecrypt::ProcessEnd: location 3\n"));
+
+  if (mSecurityInfo) {
+    nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(mSecurityInfo);
     if (enigHeaderSink) {
-      rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, exitCode, statusFlags, keyId.get(), userId.get(), sigDate.get(), errorMsg.get(), blockSeparation.get(), uri);
+      rv = enigHeaderSink->UpdateSecurityStatus(uriSpec, exitCode, statusFlags, keyId.get(), userId.get(), sigDate.get(), errorMsg.get(), blockSeparation.get(), mUri);
     }
   }
 
   if (exitCode != 0) {
-    DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: ERROR EXIT %d\n", exitCode));
+    DEBUG_LOG(("nsEnigMimeDecrypt::ProcessEnd: ERROR EXIT %d\n", exitCode));
     return NS_ERROR_FAILURE;
   }
+
+  return NS_OK;
+}
+
+
+NS_IMETHODIMP
+nsEnigMimeDecrypt::ReadData(const char* buf,
+                            PRUint32 count)
+{
+  nsresult rv;
+  DEBUG_LOG(("nsEnigMimeDecrypt::ReadData: count=%d\n", count));
+
+  NS_ENSURE_ARG(buf);
+
+/*
+  PRUint32 readCount;
+  char buf[count + 1];
+
+  rv = stream->Read((char*) buf, count, &readCount);
+  NS_ENSURE_SUCCESS(rv, rv);
+*/
+  if (count) {
+    rv = ProcessPlainData((char *) buf, count);
+    return rv;
+  }
+
+  return NS_OK;
+
+}
+
+
+NS_IMETHODIMP
+nsEnigMimeDecrypt::StopRequest(PRUint32 status)
+{
+  DEBUG_LOG(("nsEnigMimeDecrypt::StopRequest:\n"));
+
+  ProcessEnd(nsnull);
+  mDone = PR_TRUE;
 
   return NS_OK;
 }

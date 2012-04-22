@@ -45,6 +45,7 @@ interface nsIStreamListener;
 interface nsIPipeTransportHeaders;
 interface nsIPipeTransportListener;
 interface nsIProcess;
+interface nsIPipeReader;
 
 %{C++
 
@@ -156,16 +157,6 @@ interface nsIPipeTransport : nsIProcess
     readonly attribute nsIStreamListener listener;
 
     /**
-     * Specifies interface to handle MIME headers read from STDOUT
-     */
-    attribute nsIPipeTransportHeaders headerProcessor;
-
-    /**
-     * Controls console logging of STDOUT from process
-     */
-    attribute boolean loggingEnabled;
-
-    /**
      * Open an input stream on this transport.
      *
      * @param offset - read starting at this offset
@@ -173,8 +164,7 @@ interface nsIPipeTransport : nsIProcess
      * @param flags  - optional transport specific flags
      */
     nsIInputStream openInputStream(in unsigned long offset,
-                                   in unsigned long count,
-                                   in unsigned long flags);
+                                   in unsigned long count);
 
     /**
      * Open an output stream on this transport.
@@ -187,6 +177,9 @@ interface nsIPipeTransport : nsIProcess
     nsIOutputStream openOutputStream(in unsigned long offset,
                                      in unsigned long count,
                                      in unsigned long flags);
+
+    nsIRequest readInputStream(in nsIPipeReader reader,
+                         in nsISupports ctxt);
 
     /**
      * Asynchronously read data from the transport.
@@ -287,4 +280,14 @@ interface nsIPipeTransportListener : nsIPipeTransportHeaders
 };
 
 
+
+[scriptable, uuid(8441e110-7ab1-11d4-8f02-007658948af5)]
+interface nsIPipeReader : nsISupports
+{
+  // Process data
+  void readData(in string data, in unsigned long count);
+
+  void stopRequest(in unsigned long status);
+
+};
 ///////////////////////////////////////////////////////////////////////////////

@@ -40,16 +40,21 @@
 #include "nsIEnigMimeDecrypt.h"
 #include "nsIPipeFilterListener.h"
 #include "nsIPipeTransport.h"
+#include "nsIRunnable.h"
+#include "nsIThread.h"
 #include "nsIIPCBuffer.h"
+#include "nsIAsyncInputStream.h"
 #include "nsIMsgWindow.h"
 #include "nsIURI.h"
 
 // Implementation class for nsIEnigMimeDecrypt
-class nsEnigMimeDecrypt : public nsIEnigMimeDecrypt
+class nsEnigMimeDecrypt : public nsIEnigMimeDecrypt,
+                          public nsIPipeReader
 {
 public:
     NS_DECL_ISUPPORTS
     NS_DECL_NSIENIGMIMEDECRYPT
+    NS_DECL_NSIPIPEREADER
 
     nsEnigMimeDecrypt();
     virtual ~nsEnigMimeDecrypt();
@@ -61,20 +66,29 @@ public:
 protected:
     nsresult Finalize();
     nsresult FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri);
+    nsresult ProcessPlainData(char* buf, PRUint32 readCount);
+    nsresult ProcessEnd(nsIInputStream* plainStream);
 
     EMBool                          mInitialized;
     EMBool                          mVerifyOnly;
     EMBool                          mRfc2015;
+    EMBool                          mDone;
 
     EnigDecryptCallbackFun          mOutputFun;
     void*                           mOutputClosure;
 
     PRUint32                        mInputLen;
     PRUint32                        mOutputLen;
+    PRUint32                        mIterations;
+    PRInt32                         mCtFound;
 
     nsCOMPtr<nsIIPCBuffer>          mBuffer;
     nsCOMPtr<nsIPipeFilterListener> mListener;
     nsCOMPtr<nsIPipeTransport>      mPipeTrans;
+    nsCOMPtr<nsISupports>           mSecurityInfo;
+
+    nsIURI*                         mUri;
+
 };
 
 #endif // nsEnigMimeDecrypt_h__

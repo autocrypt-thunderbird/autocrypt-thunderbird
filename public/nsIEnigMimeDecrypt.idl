@@ -37,6 +37,7 @@
 
 interface nsIMsgWindow;
 interface nsIURI;
+interface nsIInputStreamCallback;
 
 %{C++
 typedef int (*EnigDecryptCallbackFun)(const char *buf, PRInt32 buf_size, void *output_closure);

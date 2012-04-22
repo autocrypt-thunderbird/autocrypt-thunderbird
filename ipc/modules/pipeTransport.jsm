@@ -146,10 +146,7 @@ PipeObj.prototype = {
 
           if (self._outputPipe) {
             DEBUG_LOG("writing to output stream");
-            if (! self._tmpStream)
-              self._tmpStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
-            self._tmpStream.setData(data, data.length);
-            self._outputPipe.onDataAvailable(self, self._outputCtxt, self._tmpStream, self._readBytes, data.length);
+            self._outputPipe.readData(data, data.length);
           }
           self._readBytes += data.length;
         }
@@ -177,7 +174,7 @@ PipeObj.prototype = {
             self._readStream.onStopRequest(self, self._readCtxt, result.exitCode);
           }
           if (self._outputPipe) {
-            self._outputPipe.onStopRequest(self, self._outputCtxt, result.exitCode);
+            self._outputPipe.onStop(result.exitCode);
           }
           self._outputPipe = null;
           self._readStream = null;
