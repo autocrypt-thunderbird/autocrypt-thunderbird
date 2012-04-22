@@ -78,7 +78,6 @@ LOCAL_INCLUDES	= \
 		$(NULL)
 
 CPPSRCS		=		    \
-	        nsPipeTransport.cpp \
 	        nsIPCBuffer.cpp     \
 		$(NULL)
 
