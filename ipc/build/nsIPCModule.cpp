@@ -36,25 +36,20 @@
 #include "ipc.h"
 #include "nsIClassInfoImpl.h"
 
-#include "nsPipeTransport.h"
 #include "nsIPCBuffer.h"
 
 #include "mozilla/ModuleUtils.h"
 
-NS_GENERIC_FACTORY_CONSTRUCTOR(nsPipeTransport)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsIPCBuffer)
 
-NS_DEFINE_NAMED_CID(NS_PIPETRANSPORT_CID);
 NS_DEFINE_NAMED_CID(NS_IPCBUFFER_CID);
 
 const mozilla::Module::CIDEntry kIPCModuleCIDs[] = {
-  { &kNS_PIPETRANSPORT_CID, false, NULL, nsPipeTransportConstructor },
   { &kNS_IPCBUFFER_CID, false, NULL, nsIPCBufferConstructor },
   { NULL }
 };
 
 const mozilla::Module::ContractIDEntry kIPCModuleContracts[] = {
-  { NS_PIPETRANSPORT_CONTRACTID, &kNS_PIPETRANSPORT_CID },
   { NS_IPCBUFFER_CONTRACTID, &kNS_IPCBUFFER_CID },
   { NULL }
 };
