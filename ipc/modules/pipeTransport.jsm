@@ -149,6 +149,10 @@ PipeObj.prototype = {
             self._outputPipe.readData(data, data.length);
           }
           self._readBytes += data.length;
+
+          if (!self._outputPipe && !self._readStream) {
+            self._readBuffer += data;
+          }
         }
         catch(ex) {
           DEBUG_LOG("ERROR in stdout: "+ex.toString());
@@ -221,7 +225,6 @@ PipeObj.prototype = {
 
   join: function() {
     DEBUG_LOG("join");
-    //if (! this._proc) throw "ERROR_NOT_AVAILABLE";
     this.close();
     if (this._proc) this._proc.wait();
   },
@@ -234,6 +237,7 @@ PipeObj.prototype = {
 
   writeSync: function(inputData,  inputLength) {
     this.write(inputData, inputLength);
+    this.flush();
   },
 
   closeStdin: function() {
@@ -259,7 +263,17 @@ PipeObj.prototype = {
   },
 
   readLine: function(maxOutputLen) {
-    throw "ERROR_NOT_IMPLEMENTED";
+      DEBUG_LOG("readLine");
+    let thread = Cc['@mozilla.org/thread-manager;1'].getService(Ci.nsIThreadManager).currentThread;
+    while (this._stdinPipe && (this._readBuffer.length == 0)) thread.processNextEvent(true);
+
+    this._readBuffer = this._readBuffer.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    let index = this._readBuffer.indexOf("\n");
+    if (index < 0) index = this._readBuffer.length;
+
+    let retStr = (index > 0 ? this._readBuffer.substr(0, index) : "");
+    this._readBuffer = this._readBuffer.substr(index+1, this._readBuffer.length - index);
+    return retStr;
   },
 
   // nsIProcess API
@@ -307,6 +321,7 @@ PipeObj.prototype = {
   // nsIOutputStream API
 
   write: function(str, length) {
+    DEBUG_LOG("write");
     if (this._stdinPipe) {
       if (this._writeBuffer.length + length >= DEFAULT_BUF_SIZE) {
         DEBUG_LOG("write "+ (this._writeBuffer.length + length) +" bytes");
