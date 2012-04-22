@@ -404,48 +404,6 @@ PipeObj.prototype = {
 
   resume: function() {
     throw "ERROR_NOT_IMPLEMENTED";
-  },
-
-  openInputStream: function (offset, count, flags) {
-    throw "ERROR_NOT_AVAILABLE";
-
-  }
-
-}
-
-/*
-function WriteDispatcher (outPipe) {
-  this._outPipe = outPipe
-}
-
-WriteDispatcher.prototype = {
-  QueryInterface: XPCOMUtils.generateQI( [Ci.nsIInputStreamCallback ] ),
-  onInputStreamReady: function (aStream) {
-    dump("** got here\n");
-    // aStream is nsIAsyncInputStream
-
-    try {
-      var numBytes = aStream.available();
-    }
-    catch (ex) {
-      // stream is closed
-      this._outPipe.outputStream.close();
-      return
-    }
-    let inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
-    inStream.init(aStream);
-    var data = inStream.readBytes(numBytes);
-    //this._outPipe.outputStream.write(data, numBytes);
   }
 }
 
-/*
-
-might be useful:
-let errPipe = Cc["@mozilla.org/pipe;1"].createInstance(Ci.nsIPipe);
-errPipe.init(false, false, 0, 0;
-let ouputStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
-ouputStream.init(stderrConsole);
-// link with:
-nsIStreamTransportService
-*/

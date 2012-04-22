@@ -37,8 +37,6 @@
 #include "nsIStreamListener.idl"
 
 %{C++
-#include "IPCProcess.h"
-
 #define NS_PIPELISTENER_CLASSNAME "IPC PipeListener"
 #define NS_PIPELISTENER_CONTRACTID "@mozilla.org/ipc/pipe-listener;1"
 %}
@@ -46,8 +44,6 @@
 /* nsIPipeListener provides a StreamListener sink.
  * Its implementations should be thread-safe.
  */
-
-[ptr] native IPCFileDescStar(IPCFileDesc);
 
 [scriptable, uuid(8431e1d0-7ab1-11d4-8f02-a06008948af5)]
 interface nsIPipeListener : nsIStreamListener
@@ -103,11 +99,6 @@ interface nsIPipeListener : nsIStreamListener
    * NUL characters.
    */
   [noscript] void writeBuf(in string buf, in unsigned long count);
-
-  /**
-   * Returns pipe file descriptor associated with listener.
-   */
-  [noscript] IPCFileDescStar GetFileDesc();
 
 };
 

@@ -48,6 +48,23 @@
 #include "nsStringGlue.h"
 #include "mozilla/Mutex.h"
 
+#ifdef XP_WIN_IPC
+// Windows
+#define IPCFileDesc void
+#define IPC_NULL_HANDLE NULL
+#define IPC_Read IPC_ReadWin32
+#define IPC_Close IPC_CloseWin32
+
+#else
+
+// not Windows
+#define IPCFileDesc PRFileDesc
+#define IPC_NULL_HANDLE nsnull
+#define IPC_Read PR_Read
+#define IPC_Close PR_Close
+
+#endif
+
 // Implementation class for nsIIPCBuffer
 class nsIPCBuffer : public nsIIPCBuffer,
                     public nsIInputStream,
@@ -108,6 +125,8 @@ protected:
     nsCOMPtr<nsIThread>                 mPipeThread;
     nsCOMPtr<nsIRequestObserver>        mObserver;
     nsCOMPtr<nsISupports>               mObserverContext;
+
+    NS_IMETHODIMP GetFileDesc(IPCFileDesc **_retval);
 };
 
 #endif // nsIPCBuffer_h__

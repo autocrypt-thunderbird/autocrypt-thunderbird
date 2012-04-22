@@ -328,12 +328,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   // read via pipeTransport.jsm
   nsCOMPtr<nsIRequest> request;
   rv = mPipeTrans->ReadInputStream(this, getter_AddRefs(request));
-  if (NS_FAILED(rv)) {
-    // read via nsPipeTransport.cpp
-    rv = mPipeTrans->OpenInputStream(0, PRUint32(-1),
-                                    getter_AddRefs(plainStream));
-    NS_ENSURE_SUCCESS(rv, rv);
-  }
+  NS_ENSURE_SUCCESS(rv, rv);
 
   // Write buffered data asyncronously to process
   nsCOMPtr<nsIInputStream> bufStream;
@@ -349,49 +344,23 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   rv = mPipeTrans->WriteAsync(bufStream, available, PR_TRUE);
   if (NS_FAILED(rv)) return rv;
 
-  if (! plainStream) {
-    // read via pipeTransport.jsm
+  // read via pipeTransport.jsm
 
-    nsCOMPtr<nsIThread> currentThread;
-    rv = ENIG_GET_THREAD(currentThread);
-    NS_ENSURE_SUCCESS(rv, rv);
+  nsCOMPtr<nsIThread> currentThread;
+  rv = ENIG_GET_THREAD(currentThread);
+  NS_ENSURE_SUCCESS(rv, rv);
 
-    mDone = PR_FALSE;
+  mDone = PR_FALSE;
 
-    // wait with returning until message is completely processed
-    // (simulate synchronous function)
-    while (! mDone) {
-      EMBool pendingEvents;
-      rv = currentThread->ProcessNextEvent(PR_TRUE, &pendingEvents);
-      NS_ENSURE_SUCCESS(rv, rv);
-    }
-
-    return NS_OK;
-  }
-
-  // read via nsPipeTransport.cpp
-  DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: plainStream - old method\n"));
-
-  PRUint32 readCount;
-  char buf[kCharMax];
-  while (1) {
-    // Read synchronously
-
-    rv = plainStream->Read((char *) buf, kCharMax, &readCount);
-    if (NS_FAILED(rv)) {
-      DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: Read failed\n"));
-      return rv;
-    }
-    DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: Read count=%d\n", readCount));
-
-    if (!readCount) break;
-
-    rv = ProcessPlainData(buf, readCount);
+  // wait with returning until message is completely processed
+  // (simulate synchronous function)
+  while (! mDone) {
+    EMBool pendingEvents;
+    rv = currentThread->ProcessNextEvent(PR_TRUE, &pendingEvents);
     NS_ENSURE_SUCCESS(rv, rv);
   }
 
-
-  return ProcessEnd(plainStream);
+  return NS_OK;
 }
 
 nsresult

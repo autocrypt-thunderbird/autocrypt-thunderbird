@@ -137,7 +137,6 @@ protected:
 
     nsCOMPtr<nsIEnigMimeWriter>   mWriter;
     nsCOMPtr<nsIPipeTransport>    mPipeTrans;
-    nsIThread*                    mTargetThread;
 
 };
 
@@ -160,27 +159,4 @@ public:
 };
 
 
-class nsEnigComposeWriter : public nsIRunnable
-{
-public:
-    NS_DECL_ISUPPORTS
-    NS_DECL_NSIRUNNABLE
-
-    nsEnigComposeWriter(nsCOMPtr<nsIOutputStream> pipeTrans,
-                    const char *buf,
-                    PRUint32 count);
-
-    virtual ~nsEnigComposeWriter();
-
-    nsresult CompleteEvents();
-
-protected:
-
-    PRUint32        mCount;
-    char*           mBuf;
-    EMBool          mCompleteEvents;
-
-    nsCOMPtr<nsIOutputStream>    mPipeTrans;
-
-};
 #endif

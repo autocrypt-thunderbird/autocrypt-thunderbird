@@ -135,6 +135,11 @@ nsIPCBuffer::~nsIPCBuffer()
 
 }
 
+// forward declaration
+PRStatus IPC_CreateInheritablePipe(PRFileDesc* *readPipe,
+                                       PRFileDesc* *writePipe,
+                                       IPCBool readInherit,
+                                       IPCBool writeInherit);
 
 ///////////////////////////////////////////////////////////////////////////////
 // nsIPCBuffer methods:
@@ -1072,3 +1077,130 @@ nsIPCBuffer::Close()
   RemoveTempFile();
   return NS_OK;
 }
+
+
+#ifdef XP_WIN_IPC
+PRStatus IPC_CreateInheritablePipe(IPCFileDesc* *readPipe,
+                                        IPCFileDesc* *writePipe,
+                                        IPCBool readInherit,
+                                        IPCBool writeInherit)
+{
+  BOOL bRetVal;
+
+  // Security attributes for inheritable handles
+  SECURITY_ATTRIBUTES securityAttr;
+  securityAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
+  securityAttr.lpSecurityDescriptor = NULL;
+  securityAttr.bInheritHandle = TRUE;
+
+  // Create pipe
+  HANDLE hReadPipe, hWritePipe;
+  bRetVal = CreatePipe( &hReadPipe, &hWritePipe,
+                        &securityAttr, 0);
+  if (!bRetVal)
+    return PR_FAILURE;
+
+  HANDLE hPipeTem;
+
+  if (!readInherit) {
+    // Make read handle uninheritable
+    bRetVal = DuplicateHandle( GetCurrentProcess(),
+                               hReadPipe,
+                               GetCurrentProcess(),
+                               &hPipeTem,
+                               0,
+                               FALSE,
+                               DUPLICATE_SAME_ACCESS);
+    CloseHandle(hReadPipe);
+
+    if (!bRetVal) {
+      CloseHandle(hWritePipe);
+      return PR_FAILURE;
+    }
+    hReadPipe = hPipeTem;
+  }
+
+  if (!writeInherit) {
+    // Make write handle uninheritable
+    bRetVal = DuplicateHandle( GetCurrentProcess(),
+                               hWritePipe,
+                               GetCurrentProcess(),
+                               &hPipeTem,
+                               0,
+                               FALSE,
+                               DUPLICATE_SAME_ACCESS);
+    CloseHandle(hWritePipe);
+
+    if (!bRetVal) {
+      CloseHandle(hReadPipe);
+      return PR_FAILURE;
+    }
+    hWritePipe = hPipeTem;
+  }
+
+  *readPipe  = (void*) hReadPipe;
+  *writePipe = (void*) hWritePipe;
+
+  return PR_SUCCESS;
+}
+
+
+PRInt32 IPC_ReadWin32(IPCFileDesc* fd, void *buf, PRInt32 amount)
+{
+  unsigned long bytes;
+
+  if (ReadFile((HANDLE) fd,
+               (LPVOID) buf,
+               amount,
+               &bytes,
+               NULL)) {
+    return bytes;
+  }
+
+  DWORD dwLastError = GetLastError();
+
+  if (dwLastError == ERROR_BROKEN_PIPE)
+    return 0;
+
+  return -1;
+}
+
+PRStatus IPC_CloseWin32(IPCFileDesc* fd)
+{
+  return (CloseHandle((HANDLE) fd)) ? PR_SUCCESS : PR_FAILURE;
+}
+
+#else
+PRStatus IPC_CreateInheritablePipe(PRFileDesc* *readPipe,
+                                       PRFileDesc* *writePipe,
+                                       IPCBool readInherit,
+                                       IPCBool writeInherit)
+{
+  PRStatus status;
+
+  //status = PR_NewTCPSocketPair(fd);
+  status = PR_CreatePipe(readPipe, writePipe);
+  if (status != PR_SUCCESS)
+    return status;
+
+  // Hack to handle Win32 problem: PR_SetFDInheritable returns error
+  // when we try to return off inheritability. However, inheritability is
+  // supposed to be off by default, so it shouldn't really matter.
+  status = PR_SUCCESS;
+#ifdef XP_WIN
+  if (readInherit)
+#endif
+    status = PR_SetFDInheritable(*readPipe, readInherit);
+  if (status != PR_SUCCESS)
+    return status;
+
+#ifdef XP_WIN
+  if (writeInherit)
+#endif
+    status = PR_SetFDInheritable(*writePipe, writeInherit);
+  if (status != PR_SUCCESS)
+    return status;
+
+  return PR_SUCCESS;
+}
+#endif

@@ -160,8 +160,7 @@ nsEnigMsgCompose::nsEnigMsgCompose()
     mMimeListener(nsnull),
 
     mWriter(nsnull),
-    mPipeTrans(nsnull),
-    mTargetThread(nsnull)
+    mPipeTrans(nsnull)
 {
   nsresult rv;
 
@@ -203,11 +202,6 @@ nsresult
 nsEnigMsgCompose::Finalize()
 {
   DEBUG_LOG(("nsEnigMsgCompose::Finalize:\n"));
-
-  if (mTargetThread) {
-    mTargetThread->Shutdown();
-    mTargetThread = nsnull;
-  }
 
   mMsgComposeSecure = nsnull;
   mMimeListener = nsnull;
@@ -696,15 +690,6 @@ nsEnigMsgCompose::FinishAux(EMBool aAbort,
     if (NS_FAILED(rv)) return rv;
   }
 
-  // Wait for input event queue to be completely processed
-  if (mTargetThread) {
-    nsCOMPtr<nsIOutputStream> outStream = do_QueryInterface(mPipeTrans);
-
-    nsEnigComposeWriter* dispatchWriter = new nsEnigComposeWriter(outStream, nsnull, 0);
-    dispatchWriter->CompleteEvents();
-    mTargetThread->Dispatch(dispatchWriter, nsIEventTarget::DISPATCH_SYNC);
-  }
-
   // Wait for STDOUT to close
   rv = mPipeTrans->Join();
   if (NS_FAILED(rv)) return rv;
@@ -905,24 +890,6 @@ nsEnigMsgCompose::WriteToPipe(const char *aBuf, PRInt32 aLen)
   DEBUG_LOG(("nsEnigMimeWriter::WriteToPipe: data: '%s'\n", tmpStr.get()));
 
   rv = mPipeTrans->WriteSync(aBuf, aLen);
-/*
-  if (mMultipartSigned) {
-    rv = mPipeTrans->WriteSync(aBuf, aLen);
-  }
-  else {
-    if (! mTargetThread) {
-      rv = NS_NewThread(&mTargetThread);
-      if (NS_FAILED(rv)) return rv;
-    }
-
-    // dispatch message to different thread to avoid deadlock with input queue
-
-    nsCOMPtr<nsIOutputStream> outStream = do_QueryInterface(mPipeTrans);
-
-    nsEnigComposeWriter* dispatchWriter = new nsEnigComposeWriter(outStream, aBuf, aLen);
-    rv = mTargetThread->Dispatch(dispatchWriter, nsIEventTarget::DISPATCH_NORMAL);
-  }
-*/
   return rv;
 }
 
@@ -1134,109 +1101,6 @@ nsEnigMsgCompose::OnDataAvailable(nsIRequest* aRequest,
 
     aLength -= readCount;
   }
-
-  return NS_OK;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-// nsEnigComposeWriter
-///////////////////////////////////////////////////////////////////////////////
-
-NS_IMPL_THREADSAFE_ISUPPORTS1 (nsEnigComposeWriter,
-                               nsIRunnable)
-
-
-// nsStdinWriter implementation
-nsEnigComposeWriter::nsEnigComposeWriter(nsCOMPtr<nsIOutputStream>  pipeTrans,
-                    const char* buf,
-                    PRUint32 count) :
-  mBuf(nsnull),
-  mCompleteEvents(PR_FALSE)
-{
-    NS_INIT_ISUPPORTS();
-
-#ifdef FORCE_PR_LOG
-  nsCOMPtr<nsIThread> myThread;
-  ENIG_GET_THREAD(myThread);
-  DEBUG_LOG(("nsEnigComposeWriter:: <<<<<<<<< CTOR(%p): myThread=%p\n",
-         this, myThread.get()));
-#endif
-
-  mPipeTrans = pipeTrans;
-  mCount = count;
-
-  if (count) {
-    mBuf = reinterpret_cast<char*>(nsMemory::Alloc(count));
-    if (!mBuf)
-      return;
-
-    memcpy(mBuf, buf, count);
-  }
-}
-
-
-nsEnigComposeWriter::~nsEnigComposeWriter()
-{
-#ifdef FORCE_PR_LOG
-  nsCOMPtr<nsIThread> myThread;
-  ENIG_GET_THREAD(myThread);
-  DEBUG_LOG(("nsEnigComposeWriter:: >>>>>>>>> DTOR(%p): myThread=%p\n",
-         this, myThread.get()));
-#endif
-
-
-  // Release references
-  mPipeTrans = nsnull;
-  if (mBuf)
-    nsMemory::Free(mBuf);
-}
-
-
-NS_IMETHODIMP nsEnigComposeWriter::Run()
-{
-  nsresult rv;
-
-  nsCOMPtr<nsIThread> myThread;
-  rv = ENIG_GET_THREAD(myThread);
-  NS_ENSURE_SUCCESS(rv, rv);
-  DEBUG_LOG(("nsEnigComposeWriter::Run: myThread=%p\n", myThread.get()));
-
-  if (!mCompleteEvents) {
-    PRUint32 writeCount;
-    rv = mPipeTrans->Write(mBuf, mCount, &writeCount);
-    NS_ENSURE_SUCCESS(rv, rv);
-
-    if (writeCount != mCount) {
-      DEBUG_LOG(("nsEnigComposeWriter::Run: written %d instead of %d bytes\n",
-        writeCount, mCount));
-      return NS_ERROR_FAILURE;
-    }
-  }
-  else {
-
-    DEBUG_LOG(("nsEnigComposeWriter::Run: draining event queue\n"));
-
-    EMBool pendingEvents;
-    rv = myThread->HasPendingEvents(&pendingEvents);
-    NS_ENSURE_SUCCESS(rv, rv);
-
-    // in theory there should be no pending events here be
-
-    while(pendingEvents) {
-      myThread->ProcessNextEvent(PR_FALSE, &pendingEvents);
-    }
-  }
-  return NS_OK;
-}
-
-nsresult nsEnigComposeWriter::CompleteEvents() {
-  DEBUG_LOG(("nsEnigComposeWriter::CompleteEvents"));
-
-  // dispatching of CompleteEvents needs to be done synchronously: this will ensure that
-  // the event is added at the end of the queue and the queue is emptied automagically
-
-  mCompleteEvents = PR_TRUE;
 
   return NS_OK;
 }

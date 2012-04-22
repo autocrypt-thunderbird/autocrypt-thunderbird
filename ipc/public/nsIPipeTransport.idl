@@ -49,8 +49,6 @@ interface nsIPipeReader;
 
 %{C++
 
-#include "IPCProcess.h"
-
 #define NS_PIPETRANSPORT_CLASSNAME "Pipe Transport"
 #define NS_PIPETRANSPORT_CONTRACTID "@mozilla.org/ipc/pipe-transport;1"
 
@@ -155,16 +153,6 @@ interface nsIPipeTransport : nsIProcess
      * (call to OnStopRequest closes STDIN)
      */
     readonly attribute nsIStreamListener listener;
-
-    /**
-     * Open an input stream on this transport.
-     *
-     * @param offset - read starting at this offset
-     * @param count  - read this many bytes (pass PRUint32(-1) if unlimited)
-     * @param flags  - optional transport specific flags
-     */
-    nsIInputStream openInputStream(in unsigned long offset,
-                                   in unsigned long count);
 
     /**
      * Open an output stream on this transport.
