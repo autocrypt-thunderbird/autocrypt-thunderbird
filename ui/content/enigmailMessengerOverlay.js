@@ -72,7 +72,7 @@ Enigmail.msg = {
   messengerStartup: function ()
   {
 
-    // private function to overwrit attributes
+    // private function to overwrite attributes
     function overrideAttribute (elementIdList, attrName, prefix, suffix)
     {
       for (var index = 0; index < elementIdList.length; index++) {
@@ -1141,13 +1141,15 @@ Enigmail.msg = {
     var signed = false;
     var findFile;
 
+    var attName = this.getAttachmentName(attachmentList[index]).toLowerCase().replace(/\+/g, "\\+");
+
     // check if filename is a signature
     if ((this.getAttachmentName(attachmentList[index]).search(/\.(sig|asc)$/i) > 0) ||
        (attachmentList[index].contentType.match(/^application\/pgp\-signature/i))) {
-      findFile = new RegExp(this.getAttachmentName(attachmentList[index]).toLowerCase().replace(/\.(sig|asc)$/, ""));
+      findFile = new RegExp(attName.replace(/\.(sig|asc)$/, ""));
     }
     else
-      findFile = new RegExp(this.getAttachmentName(attachmentList[index]).toLowerCase()+".(sig|asc)$");
+      findFile = new RegExp(attName+".(sig|asc)$");
 
     var i;
     for (i in attachmentList) {
@@ -2087,11 +2089,10 @@ Enigmail.msg = {
     if (this.checkEncryptedAttach(attachment)) {
       if (event.button != 0) return;
 
-      if (event.detail == 2) // double click
+      if (event.detail == 2) { // double click
         this.handleAttachment("openAttachment", attachment);
-    }
-    else {
-      attachmentListClick(event);
+        event.stopPropagation();
+      }
     }
   },
 
