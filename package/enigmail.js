@@ -3833,22 +3833,12 @@ Enigmail.prototype = {
       Ec.DEBUG_LOG("enigmail.js: Enigmail.editKey: caught exception from writing to pipeTrans\n");
     }
 
-    var mimeSvc = Cc[NS_ENIGMIMESERVICE_CONTRACTID].getService(Ci.nsIEnigMimeService);
-
+    pipeTrans.join();
     Ec.DEBUG_LOG("enigmail.js: Enigmail.editKey: terminating with returnCode="+returnCode+"\n");
 
     var exitCode = -1;
     switch(returnCode) {
     case 0:
-      for (var retryCount = 100; retryCount > 0; retryCount--) {
-        if (pipeTrans.isRunning) {
-          Ec.DEBUG_LOG("enigmail.js: Enigmail.editKey: sleeping 100 ms\n");
-          mimeSvc.sleep(100);
-        }
-        else {
-          retryCount = -1;
-        }
-      }
       try{
         exitCode = pipeTrans.exitValue;
       } catch (ex) {
