@@ -889,7 +889,7 @@ nsEnigMsgCompose::WriteToPipe(const char *aBuf, PRInt32 aLen)
   tmpStr.Assign(aBuf, aLen);
   DEBUG_LOG(("nsEnigMimeWriter::WriteToPipe: data: '%s'\n", tmpStr.get()));
 
-  rv = mPipeTrans->WriteSync(aBuf, aLen);
+  rv = mPipeTrans->Write(aBuf, aLen);
   return rv;
 }
 

@@ -195,12 +195,21 @@ interface nsIPipeTransport : nsIProcess
     void terminate();
 
     /**
-     * Writes string to process STDIN (synchronously)
+     * Writes string to process STDIN and flush internal buffers.
      * (Note: child process may exit for valid reasons even before
      *  the first call to writeSync, causing an an exception to be
      *  thrown because STDIN has been closed by the child.)
      */
     void writeSync(in string inputData, in unsigned long inputLength);
+
+    /**
+     * Writes string to process STDIN, allowing to buffer the data internally.
+     * I.e. it is not guaranteed that writing is performed immediately.
+     * (Note: child process may exit for valid reasons even before
+     *  the first call to writeSync, causing an an exception to be
+     *  thrown because STDIN has been closed by the child.)
+     */
+    void write(in string inputData, in unsigned long inputLength);
 
     /**
      * closes process STDIN (required even if no data is being transmitted)

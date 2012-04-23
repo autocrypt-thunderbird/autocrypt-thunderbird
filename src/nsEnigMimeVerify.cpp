@@ -469,7 +469,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
     if (mLinebreak.IsEmpty())
       return NS_ERROR_FAILURE;
 
-    mPipeTrans->WriteSync(mLinebreak.get(), mLinebreak.Length());
+    mPipeTrans->Write(mLinebreak.get(), mLinebreak.Length());
 
     return NS_OK;
   }
@@ -620,25 +620,25 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   // Write clearsigned message header
   const char* clearsignHeader = "-----BEGIN PGP SIGNED MESSAGE-----";
 
-  rv = mPipeTrans->WriteSync(clearsignHeader, strlen(clearsignHeader));
+  rv = mPipeTrans->Write(clearsignHeader, strlen(clearsignHeader));
   if (NS_FAILED(rv)) return rv;
 
-  rv = mPipeTrans->WriteSync(linebreak.get(), linebreak.Length());
+  rv = mPipeTrans->Write(linebreak.get(), linebreak.Length());
   if (NS_FAILED(rv)) return rv;
 
   // Write out hash symbol
   const char* hashHeader = "Hash: ";
 
-  rv = mPipeTrans->WriteSync(hashHeader, strlen(hashHeader));
+  rv = mPipeTrans->Write(hashHeader, strlen(hashHeader));
   if (NS_FAILED(rv)) return rv;
 
-  rv = mPipeTrans->WriteSync(hashSymbol.get(), hashSymbol.Length());
+  rv = mPipeTrans->Write(hashSymbol.get(), hashSymbol.Length());
   if (NS_FAILED(rv)) return rv;
 
-  rv = mPipeTrans->WriteSync(linebreak.get(), linebreak.Length());
+  rv = mPipeTrans->Write(linebreak.get(), linebreak.Length());
   if (NS_FAILED(rv)) return rv;
 
-  rv = mPipeTrans->WriteSync(linebreak.get(), linebreak.Length());
+  rv = mPipeTrans->Write(linebreak.get(), linebreak.Length());
   if (NS_FAILED(rv)) return rv;
 
   // Initialize for dash-escaping
@@ -717,11 +717,11 @@ nsEnigMimeVerify::OnDataAvailable(nsIRequest* aRequest,
       for (PRUint32 j=0; j < readCount; j++) {
         char ch = buf[j];
         if ((ch == '-') && mLastLinebreak) {
-          rv = mPipeTrans->WriteSync(buf+offset, j-offset+1);
+          rv = mPipeTrans->Write(buf+offset, j-offset+1);
           if (NS_FAILED(rv)) return rv;
           offset = j+1;
 
-          rv = mPipeTrans->WriteSync(dashEscape, strlen(dashEscape));
+          rv = mPipeTrans->Write(dashEscape, strlen(dashEscape));
           if (NS_FAILED(rv)) return rv;
 
           DEBUG_LOG(("nsEnigMimeVerify::OnDataAvailable: DASH ESCAPED\n"));
@@ -731,13 +731,13 @@ nsEnigMimeVerify::OnDataAvailable(nsIRequest* aRequest,
       }
 
       if (offset < readCount) {
-        rv = mPipeTrans->WriteSync(buf+offset, readCount-offset);
+        rv = mPipeTrans->Write(buf+offset, readCount-offset);
         if (NS_FAILED(rv)) return rv;
       }
 
     } else {
       // No dash escaping
-      rv = mPipeTrans->WriteSync(buf, readCount);
+      rv = mPipeTrans->Write(buf, readCount);
       if (NS_FAILED(rv)) return rv;
     }
 

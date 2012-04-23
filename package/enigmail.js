@@ -1657,7 +1657,7 @@ Enigmail.prototype = {
     // Write to child STDIN
     // (ignore errors, because child may have exited already, closing STDIN)
     try {
-      pipeTrans.writeSync(plainText, plainText.length);
+      pipeTrans.write(plainText, plainText.length);
     } catch (ex) {}
 
     // Wait for child STDOUT to close
@@ -1944,7 +1944,7 @@ Enigmail.prototype = {
       // Write to child STDIN
       // (ignore errors, because child may have exited already, closing STDIN)
       try {
-        pipeTrans.writeSync(plainText, plainText.length);
+        pipeTrans.write(plainText, plainText.length);
       } catch (ex) {}
 
       // Wait for child STDOUT to close
@@ -2320,7 +2320,7 @@ Enigmail.prototype = {
       // Write to child STDIN
       // (ignore errors, because child may have exited already, closing STDIN)
       try {
-        pipeTrans.writeSync(pgpBlock, pgpBlock.length);
+        pipeTrans.write(pgpBlock, pgpBlock.length);
       } catch (ex) {}
 
       // Wait for child STDOUT to close
@@ -3257,8 +3257,8 @@ Enigmail.prototype = {
         pipeTrans.writeSync(passphrase, passphrase.length);
         pipeTrans.writeSync("\n", 1);
       }
-      pipeTrans.writeSync(byteData, dataLength.value);
-      pipeTrans.writeSync("\n", 1);
+      pipeTrans.write(byteData, dataLength.value);
+      pipeTrans.write("\n", 1);
     }
     catch (ex) {
       return null;
@@ -3392,7 +3392,7 @@ Enigmail.prototype = {
         pipeTrans.writeSync(passphrase, passphrase.length);
         pipeTrans.writeSync("\n", 1);
       }
-      pipeTrans.writeSync(byteData, dataLength.value);
+      pipeTrans.write(byteData, dataLength.value);
 
     }
     catch (ex) {
