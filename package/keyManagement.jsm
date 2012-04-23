@@ -404,23 +404,8 @@ var EnigmailKeyMgmt = {
   },
 
 
-  revokeSubkey: function (parent, keyId, subkeys, reasonCode, reasonText, callbackFunc) {
-    Ec.DEBUG_LOG("keyManagmenent.jsm: Enigmail.revokeSubkey: keyId="+keyId+"\n");
-
-    var r= this.editKey(parent, true, null, keyId, "",
-                        { step: 0,
-                          subkeys: subkeys.split(/,/),
-                          reasonCode: reasonCode,
-                          reasonText: Ec.convertFromUnicode(reasonText),
-                          usePassphrase: true },
-                        revokeSubkeyCallback,
-                        null,
-                        callbackFunc);
-    return r;
-  },
-
   enableDisableKey: function (parent, keyId, disableKey, callbackFunc) {
-    Ec.DEBUG_LOG("keyManagmenent.jsm: Enigmail.addUid: keyId="+keyId+", disableKey="+disableKey+"\n");
+    Ec.DEBUG_LOG("keyManagmenent.jsm: Enigmail.enableDisableKey: keyId="+keyId+", disableKey="+disableKey+"\n");
 
     var cmd = (disableKey ? "disable" : "enable");
     var r= this.editKey(parent, false, null, keyId, cmd,
@@ -723,60 +708,6 @@ function revokeCertCallback(inputData, keyEdit, ret) {
   }
 }
 
-function revokeSubkeyCallback(inputData, keyEdit, ret) {
-  ret.writeTxt = "";
-  ret.errorMsg = "";
-
-  if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
-    if (inputData.step < inputData.subkeys.length) {
-      ret.exitCode = 0;
-      ret.writeTxt = "key "+inputData.subkeys[inputData.step];
-      ++inputData.step;
-    }
-    else if (inputData.step == inputData.subkeys.length) {
-      ret.exitCode = 0;
-      ret.writeTxt = "revkey";
-      ++inputData.step;
-    }
-    else {
-      if (inputData.step == (inputData.subkeys.length+1)) {
-        ret.exitCode = 0;
-      }
-      else {
-        ret.exitCode = -1;
-      }
-      ret.quitNow = true;
-    }
-  }
-  else if (keyEdit.doCheck(GET_BOOL, "keyedit.revoke.subkey.okay")) {
-    ret.exitCode = 0;
-    ret.writeTxt = "Y";
-  }
-  else if (keyEdit.doCheck(GET_LINE, "ask_revocation_reason.code" )) {
-    ret.exitCode = 0;
-    ret.writeTxt = new String(inputData.reasonCode);
-  }
-  else if (keyEdit.doCheck(GET_LINE, "ask_revocation_reason.text" )) {
-    ret.exitCode = 0;
-    ret.writeTxt = "";
-  }
-  else if (keyEdit.doCheck(GET_BOOL, "ask_revocation_reason.okay" )) {
-    ++inputData.step;
-    ret.exitCode = 0;
-    ret.writeTxt = "Y";
-  }
-  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
-    GetPin(inputData.parent, Ec.getString("enterAdminPin"), ret);
-  }
-  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
-    GetPin(inputData.parent, Ec.getString("enterCardPin"), ret);
-  }
-  else {
-    ret.quitNow=true;
-    Ec.ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
-    ret.exitCode=-1;
-  }
-}
 
 function setPrimaryUidCallback(inputData, keyEdit, ret) {
   ret.writeTxt = "";

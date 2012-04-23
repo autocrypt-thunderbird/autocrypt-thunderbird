@@ -507,23 +507,35 @@ function enigmailDeleteKey() {
 
 
 function enigmailEnableKey() {
-  var keyList = enigmailGetSelectedKeys();
-  var disableKey = (gKeyList[keyList[0]].keyUseFor.indexOf("D")<0 &&
-                     gKeyList[keyList[0]].keyTrust.indexOf(ENIG_KEY_DISABLED)<0);
-
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return;
 
-  for (var i=0; i<keyList.length; i++) {
-    var errorMsgObj = {};
-    var r=enigmailSvc.enableDisableKey(window, "0x"+keyList[i], disableKey, errorMsgObj);
-    if (r != 0) {
-      EnigAlert(EnigGetString("enableKeyFailed")+"\n\n"+errorMsgObj.value);
-      break;
-    }
+  var keyList = enigmailGetSelectedKeys();
+  var disableKey = (gKeyList[keyList[0]].keyUseFor.indexOf("D")<0 &&
+                     gKeyList[keyList[0]].keyTrust.indexOf(ENIG_KEY_DISABLED)<0);
+
+  var keyIndex = 0;
+  function processNextKey() {
+    EnigmailKeyMgmt.enableDisableKey(window, "0x"+keyList[keyIndex], disableKey, function _enDisCb(exitCode, errorMsg) {
+      if (exitCode == 0) {
+        ++keyIndex;
+        if (keyIndex < keyList.length) {
+          processNextKey();
+          return;
+        }
+        else {
+          enigmailRefreshKeys();
+        }
+      }
+      else {
+        EnigAlert(EnigGetString("enableKeyFailed")+"\n\n"+errorMsg);
+        if (keyIndex > 0) enigmailRefreshKeys();
+      }
+    });
   }
-  enigmailRefreshKeys();
+
+  processNextKey();
 }
 
 function enigShowPhoto() {
