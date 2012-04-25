@@ -3610,47 +3610,6 @@ Enigmail.prototype = {
     this.rulesList = null;
   },
 
-  setPrimaryUid: function (parent, keyId, idNumber, errorMsgObj) {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.setPrimaryUid: keyId="+keyId+", idNumber="+idNumber+"\n");
-    var r = this.editKey(parent, true, null, keyId, "",
-                        { idNumber: idNumber,
-                          step: 0 },
-                        setPrimaryUidCallback,
-                        null,
-                        errorMsgObj);
-    Ec.stillActive();
-
-    return r;
-  },
-
-
-  deleteUid: function (parent, keyId, idNumber, errorMsgObj) {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.deleteUid: keyId="+keyId+", idNumber="+idNumber+"\n");
-    var r = this.editKey(parent, true, null, keyId, "",
-                        { idNumber: idNumber,
-                          step: 0 },
-                        deleteUidCallback,
-                        null,
-                        errorMsgObj);
-    Ec.stillActive();
-
-    return r;
-  },
-
-
-  revokeUid: function (parent, keyId, idNumber, errorMsgObj) {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.revokeUid: keyId="+keyId+", idNumber="+idNumber+"\n");
-    var r = this.editKey(parent, true, null, keyId, "",
-                        { idNumber: idNumber,
-                          step: 0 },
-                        revokeUidCallback,
-                        null,
-                        errorMsgObj);
-    Ec.stillActive();
-
-    return r;
-  },
-
   addPhoto: function (parent, keyId, photoFile, errorMsgObj) {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.addPhoto: keyId="+keyId+"\n");
 

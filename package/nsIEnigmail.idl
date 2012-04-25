@@ -238,33 +238,6 @@ interface nsIEnigmail : nsISupports
 
 /*** key handling functions ***/
 
-  long revokeSubey (in nsIDOMWindow parent,
-                    in string keyId,
-                    in string subkeys,
-                    in string reasonCode,
-                    in string reasonText,
-                    out wstring errorMsgObj);
-
-  long enableDisableKey(in nsIDOMWindow parent,
-                        in string keyId,
-                        in boolean disableKey,
-                        out wstring errorMsgObj);
-
-  long setPrimaryUid (in nsIDOMWindow parent,
-                      in string keyId,
-                      in string idNumber,
-                      out wstring errorMsg);
-
-  long deleteUid (in nsIDOMWindow parent,
-                  in string keyId,
-                  in string idNumber,
-                  out wstring errorMsg);
-
-  long revokeUid (in nsIDOMWindow parent,
-                  in string keyId,
-                  in string idNumber,
-                  out wstring errorMsg);
-
   long addPhoto (in nsIDOMWindow parent,
                   in string keyId,
                   in nsIFile photoFile,
