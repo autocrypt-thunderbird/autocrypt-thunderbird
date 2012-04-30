@@ -32,14 +32,18 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-EnigInitCommon("enigmailCardDetails");
+Components.utils.import("resource://enigmail/commonFuncs.jsm");
+Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/keyManagement.jsm");
+
+const Ec = EnigmailCommon;
 
 var gCardData = {};
 
 function onLoad() {
-  var enigmailSvc = GetEnigmailSvc();
+  var enigmailSvc = Ec.getService(window);
   if (!enigmailSvc) {
-    EnigmailCommon.dispatchEvent(failWithError, 0, EnigGetString("accessError"));
+    Ec.dispatchEvent(failWithError, 0, Ec.getString("accessError"));
     return;
   }
   var exitCodeObj = new Object();
@@ -47,7 +51,7 @@ function onLoad() {
 
   var dryRun=false;
   try {
-    dryRun = EnigGetPref("dryRun");
+    dryRun = Ec.getPref("dryRun");
   }
   catch(ex) {}
 
@@ -58,11 +62,11 @@ function onLoad() {
       var l=statusList[i].split(/:/);
       switch (l[0]) {
       case "name":
-        setValue("firstname", EnigConvertGpgToUnicode(l[1]));
-        setValue(l[0], EnigConvertGpgToUnicode(l[2]));
+        setValue("firstname", Ec.convertGpgToUnicode(l[1]));
+        setValue(l[0], Ec.convertGpgToUnicode(l[2]));
         break;
       case "vendor":
-        setValue(l[0], EnigConvertGpgToUnicode(l[2].replace(/\\x3a/ig, ":")));
+        setValue(l[0], Ec.convertGpgToUnicode(l[2].replace(/\\x3a/ig, ":")));
         break;
       case "sex":
       case "forcepin":
@@ -75,32 +79,32 @@ function onLoad() {
         setValue(l[0], l[1]+" / "+l[2]+" / "+l[3]);
         break;
       case "fpr":
-        setValue("key_fpr_1", EnigFormatFpr(l[1]));
-        setValue("key_fpr_2", EnigFormatFpr(l[2]));
-        setValue("key_fpr_3", EnigFormatFpr(l[3]));
+        setValue("key_fpr_1", EnigmailFuncs.formatFpr(l[1]));
+        setValue("key_fpr_2", EnigmailFuncs.formatFpr(l[2]));
+        setValue("key_fpr_3", EnigmailFuncs.formatFpr(l[3]));
         break;
       case "fprtime":
-        setValue("card_key_created_1", EnigGetDateTime(l[1]), true, false);
-        setValue("card_key_created_2", EnigGetDateTime(l[2]), true, false);
-        setValue("card_key_created_3", EnigGetDateTime(l[3]), true, false);
+        setValue("card_key_created_1", Ec.getDateTime(l[1]), true, false);
+        setValue("card_key_created_2", Ec.getDateTime(l[2]), true, false);
+        setValue("card_key_created_3", Ec.getDateTime(l[3]), true, false);
         break;
       default:
         if (l[0]) {
-          setValue(l[0], EnigConvertGpgToUnicode(l[1].replace(/\\x3a/ig, ":")));
+          setValue(l[0], Ec.convertGpgToUnicode(l[1].replace(/\\x3a/ig, ":")));
         }
       }
     }
   }
   else {
     if (! dryRun) {
-      EnigmailCommon.dispatchEvent(failWithError, 0, errorMsgObj.value);
+      Ec.dispatchEvent(failWithError, 0, errorMsgObj.value);
     }
   }
   return;
 }
 
 function failWithError(errorMsg) {
-  EnigAlert(errorMsg);
+  Ec.alert(window, errorMsg);
   window.close();
 }
 
@@ -148,36 +152,36 @@ function doSaveChanges() {
   document.getElementById("bcEditMode").setAttribute("readonly", "true");
   document.getElementById("bcEnableMode").setAttribute("disabled", "true");
 
-  var enigmailSvc = GetEnigmailSvc();
+  var enigmailSvc = Ec.getService(window);
   if (!enigmailSvc) {
-    EnigAlert(EnigGetString("accessError"));
+    Ec.alert(window, Ec.getString("accessError"));
     window.close();
     return;
   }
 
   var forcepin = (getSelection("forcepin") == gCardData.forcepin ? 0 : 1);
-  var errorMsgObj = new Object();
-  var r = enigmailSvc.cardAdminData(window,
-                                    EnigConvertFromUnicode(getValue("name")),
-                                    EnigConvertFromUnicode(getValue("firstname")),
-                                    getValue("lang"),
-                                    getSelection("sex"),
-                                    EnigConvertFromUnicode(getValue("url")),
-                                    getValue("login"),
-                                    forcepin,
-                                    errorMsgObj);
-  if (r != 0) {
-    EnigAlert(errorMsgObj.value);
-  }
+  EnigmailKeyMgmt.cardAdminData(window,
+                                  Ec.convertFromUnicode(getValue("name")),
+                                  Ec.convertFromUnicode(getValue("firstname")),
+                                  getValue("lang"),
+                                  getSelection("sex"),
+                                  Ec.convertFromUnicode(getValue("url")),
+                                  getValue("login"),
+                                  forcepin,
+    function _cardAdminCb(exitCode, errorMsg) {
+      if (exitCode != 0) {
+        Ec.alert(window, errorMsg);
+      }
 
-  onLoad();
+      onLoad();
+    });
 }
 
 function engmailGenerateCardKey() {
   window.openDialog("chrome://enigmail/content/enigmailGenCardKey.xul",
         "", "dialog,modal,centerscreen");
 
-  var enigmailSvc = GetEnigmailSvc();
+  var enigmailSvc = Ec.getService(window);
   if (enigmailSvc) {
     enigmailSvc.invalidateUserIdList();
   }

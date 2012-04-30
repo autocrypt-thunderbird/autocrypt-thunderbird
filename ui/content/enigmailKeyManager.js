@@ -618,13 +618,14 @@ function keyMgrAddPhoto(userId, keyId) {
 
   if (!argsObj.okPressed) return;
 
-  var errorMsgObj = {};
-  var r=enigmailSvc.addPhoto(window, "0x"+keyId, inFile, errorMsgObj);
-  if (r != 0) {
-    EnigAlert(EnigGetString("keyMan.addphoto.failed")+"\n\n"+errorMsgObj.value);
-    return;
-  }
-  enigmailRefreshKeys();
+  EnigmailKeyMgmt.addPhoto(window, "0x"+keyId, inFile,
+    function(exitCode, errorMsg) {
+      if (exitCode != 0) {
+        EnigAlert(EnigGetString("keyMan.addphoto.failed")+"\n\n"+errorMsg);
+        return;
+      }
+      enigmailRefreshKeys();
+    });
 
 }
 

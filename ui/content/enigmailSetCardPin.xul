@@ -53,9 +53,6 @@
         >
 
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-
-
   <vbox>
     <hbox align="center">
       <label value="&enigmail.cardPin.action.label;" control="actionMenu"/>
@@ -112,7 +109,12 @@
   <script type="application/x-javascript">
   <![CDATA[
 
-  EnigInitCommon("enigmailSetCardPinDlg");
+  Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+  Components.utils.import("resource://enigmail/keyManagement.jsm");
+
+  const Ec = EnigmailCommon;
+  const nsIEnigmail = Components.interfaces.nsIEnigmail;
+  const Ci = Components.interfaces;
 
   const CHANGE_PIN  = 'P';
   const ADMIN_PIN   = 'A';
@@ -125,7 +127,7 @@
   }
 
   function onAccept() {
-    var enigmailSvc = GetEnigmailSvc();
+    var enigmailSvc = Ec.getService(window);
     if (!enigmailSvc)
       return false;
 
@@ -154,34 +156,42 @@
         action = nsIEnigmail.CARD_ADMIN_PIN_CHANGE;
         break;
     }
-    var adminPin = document.getElementById("currAdmPinTxt").value;
-    var oldPin = document.getElementById("currPinTxt").value;
-    var newPin = document.getElementById(pinItem1).value;
-    if (newPin.length < minLen) {
-      EnigAlert(EnigGetString("cardPin.minLength", minLen));
-      return false;
-    }
-    if (newPin != document.getElementById(pinItem2).value) {
-      EnigAlert(EnigGetString("cardPin.dontMatch"));
-      return false;
+    var adminPin = "";
+    var oldPin = "";
+    var newPin = "";
+
+    if (! enigmailSvc.useGpgAgent()) {
+      adminPin = document.getElementById("currAdmPinTxt").value;
+      oldPin = document.getElementById("currPinTxt").value;
+      newPin = document.getElementById(pinItem1).value;
+
+      if (newPin.length < minLen) {
+        Ec.alert(window, Ec.getString("cardPin.minLength", minLen));
+        return false;
+      }
+      if (newPin != document.getElementById(pinItem2).value) {
+        Ec.alert(window, Ec.getString("cardPin.dontMatch"));
+        return false;
+      }
     }
 
-    var errorMsgObj = new Object();
     var pinObserver = new changePinObserver();
 
-    var r = enigmailSvc.cardChangePin(window,
-                                     action,
-                                     oldPin,
-                                     newPin,
-                                     adminPin,
-                                     pinObserver,
-                                     errorMsgObj);
+    EnigmailKeyMgmt.cardChangePin(window,
+                                 action,
+                                 oldPin,
+                                 newPin,
+                                 adminPin,
+                                 pinObserver,
+      function _ChangePinCb(exitCode, errorMsg) {
+        if (exitCode != 0) {
+          Ec.alert(window, Ec.getString("cardPin.processFailed")+"\n"+pinObserver.result);
+        }
+        else
+          window.close();
+      });
 
-    if (r != 0) {
-      EnigAlert(EnigGetString("cardPin.processFailed")+"\n"+pinObserver.result);
-      return false;
-    }
-    return true;
+    return false;
   }
 
   function dlgEnable(item) {
@@ -193,7 +203,22 @@
   }
 
   function setDlgContent(sel) {
+    var enigmailSvc = Ec.getService(window);
+    if (!enigmailSvc)
+      return false;
+
     gAction = sel;
+
+    if (enigmailSvc.useGpgAgent()) {
+      dlgDisable("currAdminPinRow");
+      dlgDisable("adminPinRow");
+      dlgDisable("adminPinRepeatRow");
+      dlgDisable("currPinRow");
+      dlgDisable("pinRow");
+      dlgDisable("pinRepeatRow");
+      return;
+    }
+
     switch(sel) {
     case 'P':
       dlgDisable("currAdminPinRow");
@@ -232,8 +257,8 @@
 
     QueryInterface : function(iid)
     {
-      if (iid.equals(Components.interfaces.nsIEnigMimeReadCallback) ||
-          iid.equals(Components.interfaces.nsISupports) )
+      if (iid.equals(Ci.nsIEnigMimeReadCallback) ||
+          iid.equals(Ci.nsISupports) )
         return this;
 
       throw Components.results.NS_NOINTERFACE;
@@ -241,7 +266,7 @@
 
     onDataAvailable: function (data) {
       var ret="";
-      DEBUG_LOG("enigmailSetCardPin: changePinObserver.onDataAvailable: data="+data+"\n");
+      Ec.DEBUG_LOG("enigmailSetCardPin: changePinObserver.onDataAvailable: data="+data+"\n");
       if (data.indexOf("[GNUPG:] SC_OP_FAILURE")>=0) {
         this.result = this._data;
       }

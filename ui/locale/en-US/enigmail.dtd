@@ -586,7 +586,7 @@
 
 <!ENTITY enigmail.genCardKey.title                   "Generate OpenPGP Key">
 <!ENTITY enigmail.genCardKey.backupKey.label         "Save backup of key outside the card">
-<!ENTITY enigmail.genCardKey.desc                    "<a class='enigmailStrong'>NOTE: Key generation may take up to several minutes to complete.</a> Do not exit the application while key generation is in progress.You will be alerted when key generation is completed.">
+<!ENTITY enigmail.genCardKey.desc                    "<a class='enigmailStrong'>NOTE: Key generation may take up to several minutes to complete.</a> Do not exit the application while key generation is in progress. You will be alerted when key generation is completed.">
 
 <!ENTITY enigmail.cardPin.title                      "Change SmartCard PIN">
 <!ENTITY enigmail.cardPin.action.label               "What do you want to do">

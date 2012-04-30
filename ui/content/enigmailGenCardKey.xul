@@ -55,7 +55,6 @@
         minwidth="450px"
         maxwidth="600px">
 
-
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeygen.js"/>
 
@@ -163,12 +162,16 @@
 
   <script type="application/x-javascript">
   <![CDATA[
+    Components.utils.import("resource://enigmail/commonFuncs.jsm");
+    Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+    Components.utils.import("resource://enigmail/keyManagement.jsm");
+
+    // Ec is predefined by enigmailCommon.js
+
     var gIdentityList;
     var gIdentityListPopup;
     var gUseForSigning;
     var gUsedId;
-
-    EnigInitCommon("enigmailGenCardKey");
 
     function onLoad() {
       gIdentityList      = document.getElementById("userIdentity");
@@ -230,7 +233,7 @@
         var aLine = data.split(/ +/);
         if (aLine[0] == "[GNUPG:]") {
          if (aLine[1]=="GET_LINE" && aLine[2]=="keygen.comment") {
-            txt=EnigGetString("keygen.started")+"\n";
+            txt=Ec.getString("keygen.started")+"\n";
             this._state=1;
           }
           else if (aLine[1]=="PROGRESS" && aLine[2]=="primegen") {
@@ -247,7 +250,7 @@
           txt=data+"\n";
         }
         if (txt) {
-          var contentFrame = EnigGetFrame(window, "keygenConsole");
+          var contentFrame = Ec.getFrame(window, "keygenConsole");
           if (contentFrame) {
             var consoleElement = contentFrame.document.getElementById('console');
             consoleElement.firstChild.data += txt;
@@ -262,9 +265,9 @@
     function startKeyGen() {
       DEBUG_LOG("enigmailGenCardKey: startKeyGen(): Start\n");
 
-      var enigmailSvc = GetEnigmailSvc();
+      var enigmailSvc = Ec.getService(window);
       if (!enigmailSvc) {
-        EnigAlert(EnigGetString("accessError"));
+        Ec.alert(window,Ec.getString("accessError"));
         return;
       }
 
@@ -279,17 +282,17 @@
       }
       else {
         if (passphrase != passphrase2Element.value) {
-          EnigAlert(EnigGetString("passNoMatch"));
+          Ec.alert(window,Ec.getString("passNoMatch"));
           return;
         }
 
         if (passphrase.search(/[\x80-\xFF]/)>=0) {
-          EnigAlert(EnigGetString("passCharProblem"));
+          Ec.alert(window,Ec.getString("passCharProblem"));
           return;
         }
 
         if (!passphrase) {
-          EnigAlert(EnigGetString("keygen.passRequired"));
+          Ec.alert(window,Ec.getString("keygen.passRequired"));
           return;
         }
       }
@@ -306,11 +309,11 @@
       if (! noExpiry.checked) {
         expiryTime = Number(expireInput.value) * (timeScale.value == "y" ? 365 : (timeScale.value == "m" ? 30 : 1));
         if (expiryTime > 36500) {
-          EnigAlert(EnigGetString("expiryTooLong"));
+          Ec.alert(window,Ec.getString("expiryTooLong"));
           return;
         }
         if (! (expiryTime > 0)) {
-          EnigAlert(EnigGetString("expiryTooShort"));
+          Ec.alert(window,Ec.getString("expiryTooShort"));
           return;
         }
         valid = String(Number(expireInput.value));
@@ -323,7 +326,7 @@
       var userEmail = curId.email;
 
       if (!userName) {
-        EnigAlert(EnigGetString("passUserName"));
+        Ec.alert(window,Ec.getString("passUserName"));
         return;
       }
 
@@ -334,46 +337,46 @@
 
       idString += " <" + userEmail + ">";
 
-      var confirmMsg = EnigGetString("keyConfirm",idString);
+      var confirmMsg = Ec.getString("keyConfirm",idString);
 
-      if (!EnigConfirm(confirmMsg, EnigGetString("keyMan.button.generateKey"))) {
+      if (!EnigConfirm(confirmMsg, Ec.getString("keyMan.button.generateKey"))) {
        return;
       }
-      var contentFrame = EnigGetFrame(window, "keygenConsole");
+      var contentFrame = Ec.getFrame(window, "keygenConsole");
       if (contentFrame) {
         var consoleElement = contentFrame.document.getElementById('console');
         consoleElement.firstChild.data = "";
       }
 
       var generateObserver = new enigGenKeyObserver();
-      var errorMsgObj={};
-      var r = enigmailSvc.genCardKey(window,
-                             userName,
-                             userEmail,
-                             comment,
-                             valid,
-                             passphrase,
-                             generateObserver,
-                             errorMsgObj);
-      if (r == 0 && generateObserver.keyId) {
-        if (document.getElementById("useForSigning").checked && generateObserver.keyId) {
-          gUsedId.setBoolAttribute("enablePgp", true);
-          gUsedId.setIntAttribute("pgpKeyMode", 1);
-          gUsedId.setCharAttribute("pgpkeyId", "0x"+generateObserver.keyId.substr(-8,8));
-        }
-        var msg=EnigGetString("keygen.completed", generateObserver.keyId);
-        if (generateObserver.backupLocation) {
-          msg += "\n"+EnigGetString("keygen.keyBackup", generateObserver.backupLocation);
-        }
-        if (EnigConfirm(msg+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"))) {
-          EnigCreateRevokeCert(generateObserver.keyId, curId.email, closeWin);
-        }
-        else
-          closeWin();
-      }
-      else {
-        EnigAlert(errorMsgObj.value);
-      }
+      EnigmailKeyMgmt.genCardKey(window,
+                               userName,
+                               userEmail,
+                               comment,
+                               valid,
+                               passphrase,
+                               generateObserver,
+        function _keyGenCb(exitCode, errorMsg) {
+          if (exitCode == 0 && generateObserver.keyId) {
+            if (document.getElementById("useForSigning").checked && generateObserver.keyId) {
+              gUsedId.setBoolAttribute("enablePgp", true);
+              gUsedId.setIntAttribute("pgpKeyMode", 1);
+              gUsedId.setCharAttribute("pgpkeyId", "0x"+generateObserver.keyId.substr(-8,8));
+            }
+            var msg=Ec.getString("keygen.completed", generateObserver.keyId);
+            if (generateObserver.backupLocation) {
+              msg += "\n"+Ec.getString("keygen.keyBackup", generateObserver.backupLocation);
+            }
+            if (Ec.confirmDlg(window, msg+"\n\n"+Ec.getString("revokeCertRecommended"), Ec.getString("keyMan.button.generateCert"))) {
+              EnigCreateRevokeCert(generateObserver.keyId, curId.email, closeWin);
+            }
+            else
+              closeWin();
+          }
+          else {
+            Ec.alert(window, errorMsg);
+          }
+        });
     }
 
     function closeWin() {

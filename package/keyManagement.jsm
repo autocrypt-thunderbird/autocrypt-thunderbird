@@ -39,6 +39,8 @@ Components.utils.import("resource://enigmail/subprocess.jsm");
 var EXPORTED_SYMBOLS = [ "EnigmailKeyMgmt" ];
 
 const Ec = EnigmailCommon;
+const Cc = Components.classes;
+const Ci = Components.interfaces;
 
 const GET_BOOL = "GET_BOOL";
 const GET_LINE = "GET_LINE";
@@ -49,6 +51,12 @@ function KeyEditor(reqObserver, callbackFunc, inputData) {
   this._reqObserver = reqObserver;
   this._callbackFunc = callbackFunc;
   this._inputData = inputData;
+
+  if (this._inputData && this._inputData.cardAdmin) {
+    this._saveCmd = "quit";
+  }
+  else
+    this._saveCmd = "save";
 }
 
 KeyEditor.prototype = {
@@ -200,7 +208,7 @@ KeyEditor.prototype = {
 
     if (r.quitNow) {
       try {
-        this.writeLine("save");
+        this.writeLine(this._saveCmd);
         this.closeStdin();
       }
       catch (ex) {
@@ -298,7 +306,7 @@ var EnigmailKeyMgmt = {
     var keyEdit = new KeyEditor(requestObserver, callbackFunc, inputData);
 
     try {
-      subprocess.call({
+      var proc = subprocess.call({
         command: command,
         arguments: args,
         charset: null,
@@ -317,7 +325,7 @@ var EnigmailKeyMgmt = {
           keyEdit.done(parentCallback, result.exitCode);
         },
         mergeStderr: false,
-      })
+      });
     } catch (ex) {
       Ec.ERROR_LOG("keyManagement.jsm: editKey: "+command.path+" failed\n");
       parentCallback(-1, "");
@@ -457,7 +465,7 @@ var EnigmailKeyMgmt = {
   addPhoto: function (parent, keyId, photoFile, callbackFunc) {
     Ec.DEBUG_LOG("keyManagmenent.jsm: Enigmail.addPhoto: keyId="+keyId+"\n");
 
-    var photoFileName = this.getEscapedFilename(getFilePath(photoFile.QueryInterface(nsILocalFile)));
+    var photoFileName = Ec.getEscapedFilename(Ec.getFilePath(photoFile.QueryInterface(Ci.nsILocalFile)));
 
     var r = this.editKey(parent, true, null, keyId, "addphoto",
                         { file: photoFileName,
@@ -480,6 +488,7 @@ var EnigmailKeyMgmt = {
                           comment: Ec.convertFromUnicode(comment),
                           expiry: expiry,
                           backupPasswd: backupPasswd,
+                          cardAdmin: true,
                           backupKey: (backupPasswd.length > 0 ? "Y" : "N"),
                           parent: parent },
                         genCardKeyCallback,
@@ -499,6 +508,7 @@ var EnigmailKeyMgmt = {
               sex: sex,
               url: url,
               login: login,
+              cardAdmin: true,
               forcepin: forcepin },
              cardAdminDataCallback,
              adminObserver,
@@ -509,9 +519,12 @@ var EnigmailKeyMgmt = {
   cardChangePin: function (parent, action, oldPin, newPin, adminPin, pinObserver, callbackFunc) {
     Ec.DEBUG_LOG("keyManagmenent.jsm: Enigmail.cardChangePin: parent="+parent+", action="+action+"\n");
     var adminObserver = new enigCardAdminObserver(pinObserver, this.isDosLike);
-    var r = this.editKey(parent, false, null, "", ["--with-colons", "--card-edit"],
+    var enigmailSvc = Ec.getService(parent);
+
+    var r = this.editKey(parent, enigmailSvc.useGpgAgent(), null, "", ["--with-colons", "--card-edit"],
             { step: 0,
               pinStep: 0,
+              cardAdmin: true,
               action: action,
               oldPin: oldPin,
               newPin: newPin,
