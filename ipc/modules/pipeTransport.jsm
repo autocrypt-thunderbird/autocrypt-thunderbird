@@ -262,20 +262,6 @@ PipeObj.prototype = {
     if(closeAfterWrite) this.close();
   },
 
-  readLine: function(maxOutputLen) {
-      DEBUG_LOG("readLine");
-    let thread = Cc['@mozilla.org/thread-manager;1'].getService(Ci.nsIThreadManager).currentThread;
-    while (this._stdinPipe && (this._readBuffer.length == 0)) thread.processNextEvent(true);
-
-    this._readBuffer = this._readBuffer.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-    let index = this._readBuffer.indexOf("\n");
-    if (index < 0) index = this._readBuffer.length;
-
-    let retStr = (index > 0 ? this._readBuffer.substr(0, index) : "");
-    this._readBuffer = this._readBuffer.substr(index+1, this._readBuffer.length - index);
-    return retStr;
-  },
-
   // nsIProcess API
 
   pid: -1,        // PID is not supported

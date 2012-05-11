@@ -224,15 +224,6 @@ interface nsIPipeTransport : nsIProcess
                     in unsigned long aCount,
                     in boolean closeAfterWrite);
 
-    /**
-     * Blocks for output and returns the first line from STDOUT
-     * as a string, up to maxChars (=-1 for unlimited) long.
-     * NOTE: This method is intended for short output; for longer
-     * output, reading using a stream is the better method.
-     */
-
-    string readLine(in long maxOutputLen);
-
     attribute unsigned long bufferSegmentSize;
     attribute unsigned long bufferMaxSize;
     attribute unsigned long headersMaxSize;
