@@ -126,6 +126,7 @@ KeyEditor.prototype = {
       if (this._reqObserver) {
         var newTxt = this._reqObserver.onDataAvailable(txt);
         if (newTxt.length > 0) {
+
           txt = newTxt;
         }
       }
@@ -149,7 +150,8 @@ KeyEditor.prototype = {
               exitCode: -1 };
 
     try {
-      if (txt.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
+      if (txt.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0 ||
+          txt.indexOf("[GNUPG:] SC_OP_FAILURE 2") >= 0) {
         Ec.DEBUG_LOG("keyManagmenent.jsm: KeyEditor.processLine: detected bad passphrase\n");
         r.exitCode=-2;
         r.quitNow=true;
@@ -1219,11 +1221,17 @@ enigCardAdminObserver.prototype =
     if (this.isDosLike && data.indexOf("[GNUPG:] BACKUP_KEY_CREATED") == 0) {
       data=data.replace(/\//g, "\\");
     }
-    if (this._failureCode) {
-      ret = "[GNUPG:] ENIGMAIL_FAILURE "+data;
-    }
     if (data.indexOf("[GNUPG:] SC_OP_FAILURE")>=0) {
-      this._failureCode = 1;
+      data=data.substr(23);
+      if (data == "2") {
+        data = "[GNUPG:] BAD_PASSPHRASE 0";
+        this._failureCode = 2;
+      }
+      else
+        this._failureCode = 1;
+    }
+    if (this._failureCode == 1) {
+      ret = "[GNUPG:] ENIGMAIL_FAILURE "+data;
     }
     if (this._guiObserver) {
       this._guiObserver.onDataAvailable(data);

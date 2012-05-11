@@ -270,6 +270,10 @@
       if (data.indexOf("[GNUPG:] SC_OP_FAILURE")>=0) {
         this.result = this._data;
       }
+      else if (data.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
+        this.result = Ec.getString("badPhrase");
+        return data;
+      }
       else {
         this._data = data
       }
