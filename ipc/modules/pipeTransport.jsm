@@ -42,6 +42,7 @@ let EXPORTED_SYMBOLS = [ "PipeTransport" ];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cr = Components.results;
 
 const DEFAULT_BUF_SIZE = 2048;
 
@@ -98,7 +99,7 @@ PipeObj.prototype = {
 
   initWithWorkDir: function(command, cwd, startupFlags) {
     DEBUG_LOG("initWithWorkDir");
-    if (this._command) throw "ERROR_ALREADY_INITIALIZED";
+    if (this._command) throw Cr.NS_ERROR_ALREADY_INITIALIZED;
     // startup flags are ignred
     this._command = command;
     this._cwd = cwd;
@@ -110,10 +111,10 @@ PipeObj.prototype = {
 
     var self = this;
 
-    if (this._command == null) throw "ERROR_NOT_INITIALIZED";
-    if (this._proc) throw "ERROR_ALREADY_INITIALIZED";
-    if (typeof(killString) == "string" && killString.length > 0) throw "ERROR_NOT_SUPPORTED";
-    if (timeoutMS != null && timeoutMS > 0) throw "ERROR_NOT_SUPPORTED";
+    if (this._command == null) throw Cr.NS_ERROR_NOT_INITIALIZED;
+    if (this._proc) throw Cr.NS_ERROR_ALREADY_INITIALIZED;
+    if (typeof(killString) == "string" && killString.length > 0) throw Cr.NS_ERROR_NOT_AVAILABLE;
+    if (timeoutMS != null && timeoutMS > 0) throw Cr.NS_ERROR_NOT_AVAILABLE;
     this.stderrConsole = stderrConsole;
 
     var callObj = {
@@ -202,12 +203,12 @@ PipeObj.prototype = {
 
   openOutputStream: function (offset, count, flags) {
     DEBUG_LOG("openOutputStream NOT IMPLEMENTED");
-    throw "ERROR_NOT_IMPLEMENTED";
+    throw Cr.NS_ERROR_NOT_IMPLEMENTED;
   },
 
   asyncRead: function (listener, ctxt, offset, count, flags) {
     DEBUG_LOG("asyncRead");
-    if (! this._proc) throw "ERROR_NOT_AVAILABLE";
+    if (! this._proc) throw Cr.NS_ERROR_NOT_AVAILABLE;
     this._readStream = listener;
     this._readCtxt = ctxt;
     this._readOffset = offset || 0;
@@ -218,7 +219,7 @@ PipeObj.prototype = {
 
   readInputStream: function (listener) {
     DEBUG_LOG("asyncRead");
-    if (! this._proc) throw "ERROR_NOT_AVAILABLE";
+    if (! this._proc) throw Cr.NS_ERROR_NOT_AVAILABLE;
 
     this._outputPipe = listener;
   },
@@ -275,21 +276,21 @@ PipeObj.prototype = {
 
   kill: function() {
     DEBUG_LOG("terminate");
-    if (! this._proc) throw "ERROR_NOT_AVAILABLE";
+    if (! this._proc) throw Cr.NS_ERROR_NOT_AVAILABLE;
     return this._proc.kill(false);
   },
 
   run: function(blocking, args, count) {
-    throw "ERROR_NOT_IMPLEMENTED";
+    throw Cr.NS_ERROR_NOT_IMPLEMENTED;
   },
   runAsync: function(args, count, observer, holdWeak) {
-    throw "ERROR_NOT_IMPLEMENTED";
+    throw Cr.NS_ERROR_NOT_IMPLEMENTED;
   },
   runw: function(blocking, args, count) {
-    throw "ERROR_NOT_IMPLEMENTED";
+    throw Cr.NS_ERROR_NOT_IMPLEMENTED;
   },
   runwAsync: function(args, count, observer, holdWeak) {
-    throw "ERROR_NOT_IMPLEMENTED";
+    throw Cr.NS_ERROR_NOT_IMPLEMENTED;
   },
 
   // nsIPipeListener API
@@ -341,7 +342,7 @@ PipeObj.prototype = {
   },
 
   writeFrom: function(aFromStream, aCount) {
-    throw "ERROR_NOT_IMPLEMENTED";
+    throw Cr.NS_ERROR_NOT_IMPLEMENTED;
   },
 
   isNonBlocking: function() {
@@ -380,7 +381,7 @@ PipeObj.prototype = {
   // nsIOutputStreamCallback API
   asyncWait: function(aCallback, aFlags, aRequestedCount, aEventTarget) {
     DEBUG_LOG("asyncWait  NOT IMPLEMENTED");
-    throw "ERROR_NOT_IMPLEMENTED";
+    throw Cr.NS_ERROR_NOT_IMPLEMENTED;
   },
 
   // nsIRequest API
@@ -395,16 +396,16 @@ PipeObj.prototype = {
   },
 
   cancel: function(aStatus) {
-    if (! this._proc) throw "ERROR_NOT_AVAILABLE";
+    if (! this._proc) throw Cr.NS_ERROR_NOT_AVAILABLE;
     this.close();
   },
 
   suspend: function() {
-    throw "ERROR_NOT_IMPLEMENTED";
+    throw Cr.NS_ERROR_NOT_IMPLEMENTED;
   },
 
   resume: function() {
-    throw "ERROR_NOT_IMPLEMENTED";
+    throw Cr.NS_ERROR_NOT_IMPLEMENTED;
   }
 }
 
