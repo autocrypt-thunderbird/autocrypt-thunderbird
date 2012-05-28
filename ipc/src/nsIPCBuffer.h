@@ -117,7 +117,7 @@ protected:
     IPCFileDesc*                        mPipeWrite;
     IPCFileDesc*                        mPipeRead;
 
-    nsCOMPtr<nsILocalFile>              mTempFile;
+    nsCOMPtr<nsIFile>                   mTempFile;
     nsCOMPtr<nsIFileOutputStream>       mTempOutStream;
     nsCOMPtr<nsIFileInputStream>        mTempInStream;
 
