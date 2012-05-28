@@ -290,4 +290,3 @@ nsEnigMimeService::GetRandomHex(PRUint32 nDigits, char **_retval)
 
   return NS_OK;
 }
-

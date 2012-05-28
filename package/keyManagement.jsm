@@ -467,7 +467,7 @@ var EnigmailKeyMgmt = {
   addPhoto: function (parent, keyId, photoFile, callbackFunc) {
     Ec.DEBUG_LOG("keyManagmenent.jsm: Enigmail.addPhoto: keyId="+keyId+"\n");
 
-    var photoFileName = Ec.getEscapedFilename(Ec.getFilePath(photoFile.QueryInterface(Ci.nsILocalFile)));
+    var photoFileName = Ec.getEscapedFilename(Ec.getFilePath(photoFile.QueryInterface(Ec.getLocalFileApi())));
 
     var r = this.editKey(parent, true, null, keyId, "addphoto",
                         { file: photoFileName,

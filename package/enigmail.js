@@ -95,7 +95,6 @@ const NS_SCRIPTABLEINPUTSTREAM_CONTRACTID = "@mozilla.org/scriptableinputstream;
 const ENIG_STRINGBUNDLE_CONTRACTID = "@mozilla.org/intl/stringbundle;1";
 const NS_DOMPARSER_CONTRACTID = "@mozilla.org/xmlextras/domparser;1";
 const NS_DOMSERIALIZER_CONTRACTID = "@mozilla.org/xmlextras/xmlserializer;1";
-const NS_CATMAN_CONTRACTID = "@mozilla.org/categorymanager;1";
 const NS_CLINE_SERVICE_CONTRACTID = "@mozilla.org/enigmail/cline-handler;1";
 const NS_EXTENSION_MANAGER_CONTRACTID = "@mozilla.org/extensions/manager;1"
 const NS_XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
@@ -109,8 +108,6 @@ const Ci = Components.interfaces;
 // Interfaces
 const nsISupports            = Ci.nsISupports;
 const nsIObserver            = Ci.nsIObserver;
-const nsILocalFile           = Ci.nsILocalFile;
-const nsILocalFileWin        = Ci.nsILocalFileWin;
 const nsIProtocolHandler     = Ci.nsIProtocolHandler;
 const nsIEnvironment         = Ci.nsIEnvironment;
 const nsIEnigmail            = Ci.nsIEnigmail;
@@ -203,6 +200,14 @@ var gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha51
 
 var gKeyAlgorithms = [];
 
+function getLocalFileApi() {
+  if ("nsILocalFile" in Ci) {
+    return Ci.nsILocalFile;
+  }
+  else
+    return Ci.nsIFile;
+}
+
 function CreateFileStream(filePath, permissions) {
 
   //Ec.DEBUG_LOG("enigmail.js: CreateFileStream: file="+filePath+"\n");
@@ -210,11 +215,11 @@ function CreateFileStream(filePath, permissions) {
   try {
     var localFile;
     if (typeof filePath == "string") {
-      localFile = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsILocalFile);
+      localFile = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(getLocalFileApi());
       initPath(localFile, filePath);
     }
     else {
-      localFile = filePath.QueryInterface(Ci.nsILocalFile);
+      localFile = filePath.QueryInterface(getLocalFileApi());
     }
 
     if (localFile.exists()) {
@@ -270,7 +275,7 @@ function WriteFileContents(filePath, data, permissions) {
 
 function EnigReadFile(filePath) {
 
-// @filePath: nsILocalFile
+// @filePath: nsIFile
 
   if (filePath.exists()) {
 
@@ -312,19 +317,6 @@ function initPath(localFileObj, pathStr) {
 function getFilePath (nsFileObj, creationMode) {
   if (creationMode == null) creationMode = NS_RDONLY;
 
-  /*
-  if (detectOS() == "WINNT") {
-    if (creationMode & NS_WRONLY) {
-      // HACK to get a canonical file name
-      if (!nsFileObj.exists()) {
-        nsFileObj.create(nsFileObj.NORMAL_FILE_TYPE, DEFAULT_FILE_PERMS);
-        var nsFileObjTmp=nsFileObj.clone();
-        return Ec.convertToUnicode(nsFileObjTmp.QueryInterface(nsILocalFileWin).canonicalPath, "utf-8");
-      }
-    }
-    return Ec.convertToUnicode(nsFileObj.QueryInterface(nsILocalFileWin).canonicalPath, "utf-8");
-  } */
-
   return nsFileObj.path;
 }
 
@@ -363,7 +355,7 @@ function ResolvePath(filePath, envPath, isDosLike) {
 
   for (var j=0; j<pathDirs.length; j++) {
      try {
-        var pathDir = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
+        var pathDir = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(getLocalFileApi());
 
         initPath(pathDir, pathDirs[j]);
 
@@ -984,13 +976,13 @@ Enigmail.prototype = {
         agentPath += ".exe";
 
       try {
-        var pathDir = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
+        var pathDir = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(getLocalFileApi());
 
         if (! isAbsolutePath(agentPath, this.isDosLike)) {
           // path relative to Mozilla installation dir
           var ds = Cc[DIR_SERV_CONTRACTID].getService();
           var dsprops = ds.QueryInterface(Ci.nsIProperties);
-          pathDir = dsprops.get("CurProcD", Ci.nsILocalFile);
+          pathDir = dsprops.get("CurProcD", getLocalFileApi());
 
           var dirs=agentPath.split(RegExp(this.isDosLike ? "\\\\" : "/"));
           for (var i=0; i< dirs.length; i++) {
@@ -1133,7 +1125,7 @@ Enigmail.prototype = {
 
 
     function resolveAgentPath(fileName) {
-      var filePath = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
+      var filePath = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(getLocalFileApi());
 
       if (gEnigmailSvc.isDosLike) {
         fileName += ".exe";
@@ -1273,7 +1265,7 @@ Enigmail.prototype = {
         }
         else {
           this.gpgAgentInfo.envStr = DUMMY_AGENT_INFO;
-          var envFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(nsILocalFile);
+          var envFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(getLocalFileApi());
           initPath(envFile, this.determineGpgHomeDir());
           envFile.append("gpg-agent.conf");
 
@@ -2889,7 +2881,7 @@ Enigmail.prototype = {
       return 1;
     }
 
-    var fileName=this.getEscapedFilename(getFilePath(inputFile.QueryInterface(nsILocalFile)));
+    var fileName=this.getEscapedFilename(getFilePath(inputFile.QueryInterface(getLocalFileApi())));
 
     var args = Ec.getAgentArgs(true);
     args.push("--import");
@@ -3187,8 +3179,8 @@ Enigmail.prototype = {
       passphrase = passwdObj.value;
     }
 
-    var inFilePath  = this.getEscapedFilename(getFilePath(inFile.QueryInterface(nsILocalFile)));
-    var outFilePath = this.getEscapedFilename(getFilePath(outFile.QueryInterface(nsILocalFile)));
+    var inFilePath  = this.getEscapedFilename(getFilePath(inFile.QueryInterface(getLocalFileApi())));
+    var outFilePath = this.getEscapedFilename(getFilePath(outFile.QueryInterface(getLocalFileApi())));
 
     args = args.concat(["--yes", "-o", outFilePath, inFilePath ]);
 
@@ -3293,8 +3285,8 @@ Enigmail.prototype = {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.verifyAttachment:\n");
 
     var exitCode        = -1;
-    var verifyFilePath  = this.getEscapedFilename(getFilePath(verifyFile.QueryInterface(nsILocalFile)));
-    var sigFilePath     = this.getEscapedFilename(getFilePath(sigFile.QueryInterface(nsILocalFile)));
+    var verifyFilePath  = this.getEscapedFilename(getFilePath(verifyFile.QueryInterface(getLocalFileApi())));
+    var sigFilePath     = this.getEscapedFilename(getFilePath(sigFile.QueryInterface(getLocalFileApi())));
 
     var args = Ec.getAgentArgs(true);
     args.push("--verify");
@@ -3353,7 +3345,7 @@ Enigmail.prototype = {
       return true;
     }
 
-    var outFileName = this.getEscapedFilename(getFilePath(outFile.QueryInterface(nsILocalFile), NS_WRONLY));
+    var outFileName = this.getEscapedFilename(getFilePath(outFile.QueryInterface(getLocalFileApi()), NS_WRONLY));
 
     var args = Ec.getAgentArgs(true);
     args = args.concat(["-o", outFileName, "--yes"]);
@@ -3514,7 +3506,7 @@ Enigmail.prototype = {
     Ec.DEBUG_LOG("enigmail.js: getRulesFile\n");
     var ds = Cc[DIR_SERV_CONTRACTID].getService();
     var dsprops = ds.QueryInterface(Ci.nsIProperties);
-    var rulesFile = dsprops.get("ProfD", Ci.nsILocalFile);
+    var rulesFile = dsprops.get("ProfD", getLocalFileApi());
     rulesFile.append("pgprules.xml");
     return rulesFile;
   },

@@ -131,6 +131,7 @@ zip ${xpiFile} \
     modules/enigmailCommon.jsm \
     modules/pipeConsole.jsm \
     modules/keyManagement.jsm \
+    modules/mimeDecrypt.jsm \
     modules/commonFuncs.jsm \
     modules/pipeTransport.jsm \
     modules/subprocess.jsm \

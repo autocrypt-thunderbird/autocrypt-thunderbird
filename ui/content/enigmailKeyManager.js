@@ -643,7 +643,7 @@ function enigCreateKeyMsg() {
   var tmpDir=EnigGetTempDir();
 
   try {
-    var tmpFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+    var tmpFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(EnigGetLocalFileApi());
     tmpFile.initWithPath(tmpDir);
     if (!(tmpFile.isDirectory() && tmpFile.isWritable())) {
       EnigAlert(EnigGetString("noTempDir"));

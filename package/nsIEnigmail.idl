@@ -49,7 +49,7 @@ interface nsIFileOutputStream;
 interface nsIIPCBuffer;
 interface nsIEnigMimeReadCallback;
 interface nsIFile;
-interface nsILocalFile;
+interface nsIFile;
 
 /**
  * The nsIEnigmail provides an openPGP-based encryption/decryption service
@@ -60,7 +60,7 @@ interface nsIEnigmail : nsISupports
   readonly attribute string agentType;        /* always "gpg" */
   readonly attribute string agentVersion;     /* version string */
 
-  readonly attribute nsILocalFile agentPath;        /* executable path */
+  readonly attribute nsIFile agentPath;        /* executable path */
 
   readonly attribute boolean isWin32;         /* Win32 system */
   readonly attribute boolean isDosLike;       /* DOS-like system (Win32, OS/2) */

@@ -630,7 +630,7 @@ function EnigRevokeKey(keyId, userId, callbackFunc) {
   var tmpDir=EnigGetTempDir();
 
   try {
-    var revFile = ENIG_C[ENIG_LOCAL_FILE_CONTRACTID].createInstance(ENIG_I.nsILocalFile);
+    var revFile = ENIG_C[ENIG_LOCAL_FILE_CONTRACTID].createInstance(EnigGetLocalFileApi());
     revFile.initWithPath(tmpDir);
     if (!(revFile.isDirectory() && revFile.isWritable())) {
       EnigAlert(EnigGetString("noTempDir"));
@@ -663,6 +663,9 @@ function EnigRevokeKey(keyId, userId, callbackFunc) {
     });
 }
 
+function EnigGetLocalFileApi() {
+  return EnigmailCommon.getLocalFileApi();
+}
 
 function EnigShowPhoto (keyId, userId, photoNumber) {
   EnigmailFuncs.showPhoto(window, keyId, userId, photoNumber);

@@ -1780,7 +1780,7 @@ Enigmail.msg = {
     var tmpDir = EnigmailCommon.getTempDir();
     var outFile1, outFile2;
     outFile1 = Components.classes[EnigmailCommon.LOCAL_FILE_CONTRACTID].
-      createInstance(Components.interfaces.nsILocalFile);
+      createInstance(EnigmailCommon.getLocalFileApi());
     outFile1.initWithPath(tmpDir);
     if (!(outFile1.isDirectory() && outFile1.isWritable())) {
       EnigmailCommon.alert(window, EnigmailCommon.getString("noTempDir"));
@@ -1791,7 +1791,7 @@ Enigmail.msg = {
     this.writeUrlToFile(origAtt.url, outFile1);
 
     outFile2 = Components.classes[EnigmailCommon.LOCAL_FILE_CONTRACTID].
-      createInstance(Components.interfaces.nsILocalFile);
+      createInstance(EnigmailCommon.getLocalFileApi());
     outFile2.initWithPath(tmpDir);
     outFile2.append(this.getAttachmentName(signatureAtt));
     outFile2.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
@@ -1940,7 +1940,7 @@ Enigmail.msg = {
       // open
       var tmpDir = EnigmailCommon.getTempDir();
       try {
-        outFile = Components.classes[EnigmailCommon.LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsILocalFile);
+        outFile = Components.classes[EnigmailCommon.LOCAL_FILE_CONTRACTID].createInstance(EnigmailCommon.getLocalFileApi());
         outFile.initWithPath(tmpDir);
         if (!(outFile.isDirectory() && outFile.isWritable())) {
           errorMsgObj.value=EnigmailCommon.getString("noTempDir");
@@ -2126,7 +2126,7 @@ Enigmail.msg = {
 
     try {
       var localFile = Components.classes[EnigmailCommon.LOCAL_FILE_CONTRACTID].
-        createInstance(Components.interfaces.nsILocalFile);
+        createInstance(EnigmailCommon.getLocalFileApi());
 
       localFile.initWithPath(filePath);
 

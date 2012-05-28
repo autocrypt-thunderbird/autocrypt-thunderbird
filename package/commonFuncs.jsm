@@ -333,7 +333,8 @@ var EnigmailFuncs = {
 
       if (photoPath && exitCodeObj.value==0) {
 
-        var photoFile = Cc[EnigmailCommon.LOCAL_FILE_CONTRACTID].createInstance(Ci.nsILocalFile);
+        var photoFile = Cc[EnigmailCommon.LOCAL_FILE_CONTRACTID].
+          createInstance("nsILocalFile" in Ci ? Ci.nsILocalFile: Ci.nsIFile);
         photoFile.initWithPath(photoPath);
         if (! (photoFile.isFile() && photoFile.isReadable())) {
           EnigmailCommon.alert(win, EnigmailCommon.getString("error.photoPathNotReadable", photoPath));

@@ -702,7 +702,7 @@ var EnigmailCommon = {
     filePicker.init(win, title, mode);
 
     if (displayDir) {
-      var localFile = Cc[this.LOCAL_FILE_CONTRACTID].createInstance(Ci.nsILocalFile);
+      var localFile = Cc[this.LOCAL_FILE_CONTRACTID].createInstance(this.getLocalFileApi());
 
       try {
         localFile.initWithPath(displayDir);
@@ -730,7 +730,7 @@ var EnigmailCommon = {
     if (filePicker.show() == Ci.nsIFilePicker.returnCancel)
       return null;
 
-    var file = filePicker.file.QueryInterface(Ci.nsILocalFile);
+    var file = filePicker.file.QueryInterface(this.getLocalFileApi());
 
     return file;
   },
@@ -759,7 +759,7 @@ var EnigmailCommon = {
     try {
       var ds = Cc[DIRSERVICE_CONTRACTID].getService();
       var dsprops = ds.QueryInterface(Ci.nsIProperties);
-      var tmpDirComp = dsprops.get(TEMPDIR_PROP, Ci.nsILocalFile);
+      var tmpDirComp = dsprops.get(TEMPDIR_PROP, this.getLocalFileApi());
       tmpDir=tmpDirComp.path;
     }
     catch (ex) {
@@ -1969,6 +1969,14 @@ var EnigmailCommon = {
       this.clearCachedPassphrase();
       this.alertPref(win, this.getString("passphraseCleared"), "warnClearPassphrase");
     }
+  },
+
+  getLocalFileApi: function () {
+    if ("nsILocalFile" in Ci) {
+      return Ci.nsILocalFile;
+    }
+    else
+      return Ci.nsIFile;
   }
 };
 
