@@ -106,8 +106,8 @@ Enigmail.msg = {
   composeUnload: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeUnload\n");
-    if (gMsgCompose)
-      gMsgCompose.UnregisterStateListener(Enigmail.composeStateListener);
+    //if (gMsgCompose)
+    //  gMsgCompose.UnregisterStateListener(Enigmail.composeStateListener);
 
   },
 
@@ -278,7 +278,6 @@ Enigmail.msg = {
     var msgFlags;
     var msgUri = null;
     var msgIsDraft = false;
-    gMsgCompose.RegisterStateListener(Enigmail.composeStateListener);
     this.determineSendFlagId = null;
 
     var toobarElem = document.getElementById("composeToolbar2");
@@ -2742,6 +2741,8 @@ Enigmail.composeStateListener = {
 window.addEventListener("load",
   function _enigmail_composeStartup (event)
   {
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: got load event\n");
+
     Enigmail.msg.composeStartup(event);
   },
   false);
@@ -2762,7 +2763,7 @@ window.addEventListener('compose-window-close',
   true);
 
 window.addEventListener('compose-window-reopen',
-  function _enigmial_msgComposeReopen (event)
+  function _enigmail_msgComposeReopen (event)
   {
     Enigmail.msg.msgComposeReopen(event);
   },
@@ -2770,8 +2771,16 @@ window.addEventListener('compose-window-reopen',
 
 // Listen to message sending event
 window.addEventListener('compose-send-message',
-  function _enigmial_sendMessageListener (event)
+  function _enigmail_sendMessageListener (event)
   {
     Enigmail.msg.sendMessageListener(event);
+  },
+  true);
+
+window.addEventListener('compose-window-init',
+  function _enigmail_composeWindowInit (event)
+  {
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: _enigmail_composeWindowInit\n");
+    gMsgCompose.RegisterStateListener(Enigmail.composeStateListener);
   },
   true);
