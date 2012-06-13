@@ -107,6 +107,7 @@ EXTRA_DSO_LDOPTS = \
       $(XPCOM_GLUE_LDOPTS) \
       $(XPCOM_LIBS) \
       $(NSPR_LIBS) \
+      $(WIN32_CRT_LIBS) \
       $(BUILD_STATIC) \
       $(EXTRA_BUILD_OPTS) \
       $(NULL)

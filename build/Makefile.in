@@ -128,7 +128,8 @@ ifeq ($(OS_ARCH),WINNT)
 		  $(LIBS_DIR) \
 		  $(XPCOM_GLUE_LDOPTS) \
 		  $(NSPR_LIBS) \
-		  $(BUILD_STATIC) \
+		  $(NSPR_LIBS) \
+		  $(WIN32_CRT_LIBS) \
 		  $(NULL)
 else
     EXTRA_DSO_LDOPTS = \
