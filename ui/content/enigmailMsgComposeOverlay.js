@@ -1803,7 +1803,7 @@ Enigmail.msg = {
       try {
         wrapWidth = this.getMailPref("editor.htmlWrapColumn");
 
-        if (wrapWidth > 0 && wrapWidth < 68) {
+        if (wrapWidth > 0 && wrapWidth < 68 && gMsgCompose.wrapLength > 0) {
           if (EnigmailCommon.confirmDlg(window, EnigmailCommon.getString("minimalLineWrapping", [ wrapWidth ] ))) {
             EnigmailCommon.prefRoot.setIntPref("editor.htmlWrapColumn", 68)
           }
@@ -1820,14 +1820,14 @@ Enigmail.msg = {
     else {
       try {
         wrapWidth = this.getMailPref("mailnews.wraplength");
-        if (wrapWidth > 0 && wrapWidth < 68) {
+        if (wrapWidth > 0 && wrapWidth < 68 && editor.wrapWidth > 0) {
           if (EnigmailCommon.confirmDlg(window, EnigmailCommon.getString("minimalLineWrapping", [ wrapWidth ] ))) {
             wrapWidth = 68;
             EnigmailCommon.prefRoot.setIntPref("mailnews.wraplength", wrapWidth)
           }
         }
 
-        if (wrapWidth) {
+        if (wrapWidth && editor.wrapWidth > 0) {
           editor.wrapWidth = wrapWidth - 2;
           wrapper.rewrap(true);
           editor.wrapWidth = wrapWidth;
