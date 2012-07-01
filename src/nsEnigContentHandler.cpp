@@ -40,6 +40,7 @@
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
 #include "enigmail.h"
+#include "pgpmime.h"
 #include "nsEnigContentHandler.h"
 #include "mimedummy.h"
 #include "mimeenig.h"
@@ -127,6 +128,7 @@ nsEnigContentHandler::CreateContentTypeHandlerClass(
 {
   DEBUG_LOG(("nsEnigContenthandler::CreateContentTypeHandlerClass: %s\n", content_type));
 
+#ifdef EM_OLD_MIME
   mContentType = content_type;
 
   *objClass = NULL;
@@ -184,4 +186,9 @@ nsEnigContentHandler::CreateContentTypeHandlerClass(
   }
 
   return NS_ERROR_FAILURE;
+#else
+  DEBUG_LOG(("nsEnigContenthandler::CreateContentTypeHandlerClass: with nsIPgpMime\n"));
+
+  return NS_OK;
+#endif
 }

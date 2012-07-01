@@ -47,13 +47,6 @@
 
 #endif // FORCE_PR_LOG
 
-#if MOZILLA_MAJOR_VERSION > 9
-
 #define EMBool bool
 
-#else
-
-#define EMBool PRBool
-
-#endif
 #endif
