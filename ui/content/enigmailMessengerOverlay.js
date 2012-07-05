@@ -528,6 +528,18 @@ Enigmail.msg = {
     EnigmailCommon.DEBUG_LOG("enumerateMimeParts: "+mimePart.partName+" - "+mimePart.headers["content-type"]+"\n");
 
     try {
+      if (typeof(mimePart.contentType) == "string" &&
+          mimePart.contentType == "multipart/fake-container") {
+        // workaround for wrong content type of signed message
+        let signedPart = mimePart.parts[1];
+        if (typeof(signedPart.headers["content-type"][0]) == "string") {
+          if (signedPart.headers["content-type"][0].search(/application\/pgp-signature/i) >= 0) {
+            resultObj.signed=signedPart.partName.replace(/\.[0-9]+$/, "");
+            EnigmailCommon.DEBUG_LOG("enumerateMimeParts: found signed subpart "+resultObj.signed + "\n");
+          }
+        }
+      }
+
       var ct = mimePart.headers["content-type"][0];
       if (typeof(ct) == "string") {
         if (ct.search(/multipart\/signed.*application\/pgp-signature/i) >= 0) {
