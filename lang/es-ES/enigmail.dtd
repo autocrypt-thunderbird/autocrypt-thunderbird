@@ -286,7 +286,7 @@
 <!ENTITY enigmail.maybe.label "Sí, si está seleccionado en la redacción del mensaje">
 <!ENTITY enigmail.singleRcptSettings.desc "(Nota: en caso de conflicto, 'Nunca' precede a 'Siempre')">
 <!ENTITY enigmail.ruleEmail.label "Poner reglas OpenPGP para">
-<!ENTITY enigmail.ruleEmail.tooltip "Rellenar sólo direcciones de correo electrónico, NO poner los nombre en los destinatarios\ .Ej: 'Nombre <usuario@ejemplo.net>' no es válido.">
+<!ENTITY enigmail.ruleEmail.tooltip "Rellenar sólo direcciones de correo electrónico, NO poner los nombre en los destinatarios\n.Ej: 'Nombre <usuario@ejemplo.net>' no es válido.">
 <!ENTITY enigmail.sepratationDesc.label "(separar varias direcciones con espacios)">
 <!ENTITY enigmail.matchDescStart.label "Aplicar regla si el destinatario">
 <!ENTITY enigmail.matchDescEnd.label "una de las direcciones de arriba">
@@ -535,7 +535,7 @@
 <!ENTITY enigmail.setupWiz.pgSign.noSign "No, deseo crear reglas por destinatario para los correos que necesiten estar firmado">
 <!ENTITY enigmail.setupWiz.pgEnc.title "Cifrado">
 <!ENTITY enigmail.setupWiz.pgEnc.subtitle "Cifrar los correos salientes">
-<!ENTITY enigmail.setupWiz.pgEnc.desc "OpenPGP le permite cifrar sus mensajes de correo y cualquier adjunto. El cifrado es como poner una carta                                                     dentro de un sobre. Hace que las cosas sean privadas.                                              No es para mensajes &quot;secretos&quot;, sino para todo lo que no enviaria en una postal.        ">
+<!ENTITY enigmail.setupWiz.pgEnc.desc "OpenPGP le permite cifrar sus mensajes de correo y cualquier adjunto. El cifrado es como poner una carta\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n                                      dentro de un sobre. Hace que las cosas sean privadas.\n\n\n\n\n\n\n\n                                      No es para mensajes &quot;secretos&quot;, sino para todo lo que no enviaria en una postal.\n\n\n\n\n\n\n\n">
 <!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg "¿Debe cifrarse por defecto el correo saliente?">
 <!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt "Sí, tengo claves públicas para la mayoría de mis contactos">
 <!ENTITY enigmail.setupWiz.pgEnc.noEncrypt "No, crearé reglas por destinatario para aquéllos que me envíen su clave pública">
