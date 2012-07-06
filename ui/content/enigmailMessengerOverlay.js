@@ -479,7 +479,7 @@ Enigmail.msg = {
 
     try {
       if (gFolderDisplay.selectedMessageIsNews) throw "dummy"; // workaround for broken NNTP support in Gloda
-      MsgHdrToMimeMessage(gFolderDisplay.selectedMessage , cbObj, Enigmail.msg.msgDecryptMimeCb, true);
+      MsgHdrToMimeMessage(gFolderDisplay.selectedMessage , cbObj, Enigmail.msg.msgDecryptMimeCb, true, {examineEncryptedParts: true, partsOnDemand: false});
     }
     catch (ex) {
       EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: enigMessageDecrypt: cannot use MsgHdrToMimeMessage\n");
