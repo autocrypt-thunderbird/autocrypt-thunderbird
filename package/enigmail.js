@@ -362,7 +362,7 @@ function ResolvePath(filePath, envPath, isDosLike) {
         if (pathDir.exists() && pathDir.isDirectory()) {
            pathDir.appendRelativePath(filePath);
 
-           if (pathDir.exists()) {
+           if (pathDir.exists() && !pathDir.isDirectory()) {
               return pathDir;
            }
         }
