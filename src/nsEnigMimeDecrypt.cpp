@@ -498,10 +498,8 @@ DEBUG_LOG(("nsEnigMimeDecrypt::ProcessEnd: error 1\n"));
                                       getter_Copies(errorMsg),
                                       getter_Copies(blockSeparation),
                                       &exitCode);
-DEBUG_LOG(("nsEnigMimeDecrypt::ProcessEnd: location 2\n"));
 
   if (NS_FAILED(rv)) return rv;
-DEBUG_LOG(("nsEnigMimeDecrypt::ProcessEnd: location 3\n"));
 
   if (mSecurityInfo) {
     nsCOMPtr<nsIEnigMimeHeaderSink> enigHeaderSink = do_QueryInterface(mSecurityInfo);
@@ -511,7 +509,6 @@ DEBUG_LOG(("nsEnigMimeDecrypt::ProcessEnd: location 3\n"));
   }
 
   if (exitCode != 0) {
-    DEBUG_LOG(("nsEnigMimeDecrypt::ProcessEnd: ERROR EXIT %d\n", exitCode));
     return NS_ERROR_FAILURE;
   }
 

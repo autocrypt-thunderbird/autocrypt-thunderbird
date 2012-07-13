@@ -373,13 +373,8 @@ function convertBytes(bytes, charset) {
     return string;
 }
 
-// temporary solution for removal of nsILocalFile
 function getLocalFileApi() {
-  if ("nsILocalFile" in Ci) {
-    return Ci.nsILocalFile;
-  }
-  else
-    return Ci.nsIFile;
+  return Ci.nsIFile;
 }
 
 function getCommandStr(command) {

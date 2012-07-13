@@ -77,7 +77,11 @@ NS_IMPL_THREADSAFE_ISUPPORTS1(nsEnigMimeService,
 // nsEnigMimeService implementation
 nsEnigMimeService::nsEnigMimeService()
   : mDummyHandler(PR_FALSE),
+#ifdef EM_OLD_MIME
     mInitialized(PR_FALSE)
+#else
+    mInitialized(PR_TRUE)
+#endif
 {
   nsresult rv;
 

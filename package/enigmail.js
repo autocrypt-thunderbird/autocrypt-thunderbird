@@ -201,11 +201,7 @@ var gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha51
 var gKeyAlgorithms = [];
 
 function getLocalFileApi() {
-  if ("nsILocalFile" in Ci) {
-    return Ci.nsILocalFile;
-  }
-  else
-    return Ci.nsIFile;
+ return Ci.nsIFile;
 }
 
 function CreateFileStream(filePath, permissions) {
@@ -1440,8 +1436,12 @@ Enigmail.prototype = {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.execCmd: exitCode = "+exitCodeObj.value+"\n");
     Ec.DEBUG_LOG("enigmail.js: Enigmail.execCmd: errOutput = "+errOutput+"\n");
 
+    var retObj = {};
+    errorMsgObj.value = Ec.parseErrorOutput(errOutput, retObj);
+    statusFlagsObj.value = retObj.statusFlags;
+    statusMsgObj.value = retObj.statusMsg;
+    blockSeparationObj.value = retObj.blockSeparation;
 
-    errorMsgObj.value = Ec.parseErrorOutput(errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj);
     exitCodeObj.value = Ec.fixExitCode(proc.exitCode, statusFlagsObj.value);
 
     if (blockSeparationObj.value.indexOf(" ") > 0) {
@@ -1569,7 +1569,12 @@ Enigmail.prototype = {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.execEnd: errOutput = "+errOutput+"\n");
 
 
-    errorMsgObj.value = Ec.parseErrorOutput(errOutput, statusFlagsObj, statusMsgObj, blockSeparationObj);
+    var retObj = {};
+    errorMsgObj.value = Ec.parseErrorOutput(errOutput, retObj);
+    statusFlagsObj.value = retObj.statusFlags;
+    statusMsgObj.value = retObj.statusMsg;
+    if (! blockSeparationObj) blockSeparationObj = {};
+    blockSeparationObj.value = retObj.blockSeparation;
 
     if (errOutput.search(/jpeg image of size \d+/)>-1) {
       statusFlagsObj.value |= nsIEnigmail.PHOTO_AVAILABLE;
@@ -2683,7 +2688,7 @@ Enigmail.prototype = {
       }
 
       if (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE) {
-        keyIdObj.value = this.extractPubkey(statusMsg)
+        keyIdObj.value = Ec.extractPubkey(statusMsg)
       }
 
       return exitCode;
@@ -2699,7 +2704,7 @@ Enigmail.prototype = {
 
     if (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE) {
       // Unverified signature
-      keyIdObj.value = this.extractPubkey(statusMsg);
+      keyIdObj.value = Ec.extractPubkey(statusMsg);
 
       if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_OKAY) {
         exitCode=0;
@@ -2719,20 +2724,6 @@ Enigmail.prototype = {
     }
 
     return exitCode;
-  },
-
-
-  // Extract public key from Status Message
-  extractPubkey: function (statusMsg) {
-    var keyId = null;
-    var matchb = statusMsg.match(/(^|\n)NO_PUBKEY (\w{8})(\w{8})/);
-
-    if (matchb && (matchb.length > 3)) {
-      Ec.DEBUG_LOG("enigmail.js: Enigmail.extractPubkey: NO_PUBKEY 0x"+matchb[3]+"\n");
-      keyId = matchb[2]+matchb[3];
-    }
-
-    return keyId;
   },
 
   extractKey: function (parent, exportFlags, userId, outputFile, exitCodeObj, errorMsgObj) {

@@ -1,4 +1,4 @@
-/** 
+/**
  *  Helper framework if tests should be performed within a running app
  */
 var gTestError=0;
@@ -44,7 +44,7 @@ function do_get_cwd() {
   var fn="/Users/pbr/enigmail/tmp";
 
   var localfile = Components.classes["@mozilla.org/file/local;1"].createInstance(
-        Components.interfaces.nsILocalFile);
+        Components.interfaces.nsIFile);
   localfile.initWithPath(fn);
 
   return localfile;

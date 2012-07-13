@@ -37,6 +37,7 @@
 
 #include "nsEnigModule.h"
 #include "nsIClassInfoImpl.h"
+#include "pgpmime.h"
 
 #include "nsPipeFilterListener.h"
 
@@ -48,6 +49,7 @@
 #include "nsEnigMimeService.h"
 #include "nsEnigContentHandler.h"
 #include "mozilla/ModuleUtils.h"
+#include "nsIMimeContentTypeHandler.h"
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsPipeFilterListener)
 
@@ -84,7 +86,9 @@ const mozilla::Module::CIDEntry kEnigModuleCIDs[] = {
   { &kNS_ENIGMIMEDECRYPT_CID, false, NULL, nsEnigMimeDecryptConstructor },
   { &kNS_ENIGMIMEVERIFY_CID, false, NULL, nsEnigMimeVerifyConstructor },
   { &kNS_ENIGMIMESERVICE_CID, false, NULL, nsEnigMimeServiceConstructor },
+#ifdef EM_OLD_MIME
   { &kNS_ENIGCONTENTHANDLER_CID, false, NULL, nsEnigContentHandlerConstructor },
+#endif
   { &kNS_ENIGCONTENTHANDLER_CID, false, NULL, nsEnigContentHandlerConstructor },
   { NULL }
 };
@@ -99,7 +103,9 @@ const mozilla::Module::ContractIDEntry kEnigModuleContracts[] = {
   { NS_ENIGMIMEDECRYPT_CONTRACTID, &kNS_ENIGMIMEDECRYPT_CID },
   { NS_ENIGMIMEVERIFY_CONTRACTID, &kNS_ENIGMIMEVERIFY_CID },
   { NS_ENIGMIMESERVICE_CONTRACTID, &kNS_ENIGMIMESERVICE_CID },
+#ifdef EM_OLD_MIME
   { NS_ENIGENCRYPTEDHANDLER_CONTRACTID, &kNS_ENIGCONTENTHANDLER_CID },
+#endif
   { NS_ENIGDUMMYHANDLER_CONTRACTID, &kNS_ENIGCONTENTHANDLER_CID },
   { NULL }
 

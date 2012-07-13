@@ -46,6 +46,7 @@ catch (ex) {
 
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 Components.utils.import("resource://enigmail/commonFuncs.jsm");
+Components.utils.import("resource://enigmail/mimeDecrypt.jsm");
 
 if (! Enigmail) var Enigmail = {};
 
@@ -255,46 +256,51 @@ Enigmail.msg = {
     // "this" is not Enigmail.msg here
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit\n");
 
-    try {
-      const enigContenthanderCid =
-        Components.ID("{847b3a51-7ab1-11d4-8f02-006008948af5}");
-
-      const enigEncryptedHanderContract = "@mozilla.org/mimecth;1?type=multipart/encrypted";
-
-      var compMgr = Components.manager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
-
-      var enigContentHandlerCID = compMgr.contractIDToCID(enigEncryptedHanderContract);
-
-      var handlePGPMime = (enigContentHandlerCID.toString() ==
-                       enigContenthanderCid);
-
-      EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit: handlePGPMime="+handlePGPMime+"\n");
-
-    } catch (ex) {}
-
-
-
-    if (Enigmail.msg.removeListener) {
-      Enigmail.msg.messagePane.removeEventListener("load", Enigmail.msg.enigMimeInit, true);
-      Enigmail.msg.removeListener = false;
+    if ("nsIPgpMimeProxy" in Components.interfaces) {
+      // new interface
     }
+    else {
+      try {
+        const enigContenthanderCid =
+          Components.ID("{847b3a51-7ab1-11d4-8f02-006008948af5}");
 
-    var enigmailSvc = Enigmail.getEnigmailSvc();
-    if (!enigmailSvc)
-       return;
+        const enigEncryptedHanderContract = "@mozilla.org/mimecth;1?type=multipart/encrypted";
 
-    if (enigmailSvc.mimeInitialized()) {
-      // Reload message ONLY if enigMimeService has been initialized;
-      // enigMimeInit is only called if enigMimeService was not initialized;
-      // this prevents looping.
-      EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit: RELOADING MESSAGE\n");
+        var compMgr = Components.manager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
 
-      Enigmail.msg.messageReload(false);
+        var enigContentHandlerCID = compMgr.contractIDToCID(enigEncryptedHanderContract);
 
-    } else {
-      // Error in MIME initialization; forget saved headers (to avoid looping)
-      Enigmail.msg.savedHeaders = null;
-      EnigmailCommon.ERROR_LOG("enigmailMessengerOverlay.js: *****enigMimeInit: Error in MIME initialization\n");
+        var handlePGPMime = (enigContentHandlerCID.toString() ==
+                         enigContenthanderCid);
+
+        EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit: handlePGPMime="+handlePGPMime+"\n");
+
+      } catch (ex) {}
+
+
+
+      if (Enigmail.msg.removeListener) {
+        Enigmail.msg.messagePane.removeEventListener("load", Enigmail.msg.enigMimeInit, true);
+        Enigmail.msg.removeListener = false;
+      }
+
+      var enigmailSvc = Enigmail.getEnigmailSvc();
+      if (!enigmailSvc)
+         return;
+
+      if (enigmailSvc.mimeInitialized()) {
+        // Reload message ONLY if enigMimeService has been initialized;
+        // enigMimeInit is only called if enigMimeService was not initialized;
+        // this prevents looping.
+        EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit: RELOADING MESSAGE\n");
+
+        Enigmail.msg.messageReload(false);
+
+      } else {
+        // Error in MIME initialization; forget saved headers (to avoid looping)
+        Enigmail.msg.savedHeaders = null;
+        EnigmailCommon.ERROR_LOG("enigmailMessengerOverlay.js: *****enigMimeInit: Error in MIME initialization\n");
+      }
     }
   },
 
@@ -508,18 +514,22 @@ Enigmail.msg = {
 
   enigMimeInitialize: function ()
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: enigMimeInitialize() - loading enigmail:dummy ...\n");
+    if ("nsIPgpMimeProxy" in Components.interfaces) {
+      EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: enigMimeInitialize() - detected nsIPgpMimeProxy\n");
+    }
+    else {
+      EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: enigMimeInitialize() - loading enigmail:dummy ...\n");
 
-    // Need to add event listener to Enigmail.msg.messagePane to make it work
-    // Adding to msgFrame doesn't seem to work
-    Enigmail.msg.messagePane.addEventListener("load", Enigmail.msg.enigMimeInit, true);
-    Enigmail.msg.removeListener = true;
+      // Need to add event listener to Enigmail.msg.messagePane to make it work
+      // Adding to msgFrame doesn't seem to work
+      Enigmail.msg.messagePane.addEventListener("load", Enigmail.msg.enigMimeInit, true);
+      Enigmail.msg.removeListener = true;
 
-    Enigmail.msg.noShowReload = true;
+      Enigmail.msg.noShowReload = true;
 
-    var msgFrame = EnigmailCommon.getFrame(window, "messagepane");
-    messenger.loadURL(msgFrame, "enigmail:dummy");
-
+      var msgFrame = EnigmailCommon.getFrame(window, "messagepane");
+      messenger.loadURL(msgFrame, "enigmail:dummy");
+    }
     return;
   },
 
@@ -547,6 +557,7 @@ Enigmail.msg = {
         }
         else if (ct.search(/application\/pgp-encrypted/i) >= 0)
           resultObj.encrypted=mimePart.partName;
+          EnigmailDecrypt.setMsgWindow(msgWindow, this.getCurrentMsgUriSpec());
       }
     }
     catch (ex) {
@@ -621,29 +632,6 @@ Enigmail.msg = {
         }
       }
 
-      if (! (embeddedSigned || embeddedEncrypted)) {
-        // TB <= 7.x
-        if (Enigmail.msg.savedHeaders["content-type"] &&
-            ((Enigmail.msg.savedHeaders["content-type"].search(/^multipart\/mixed/i) == 0) ||
-             (Enigmail.msg.savedHeaders["content-type"].search(/^multipart\/encrypted/i) == 0))) {
-          for (var indexb in currentAttachments) {
-            var attachment = currentAttachments[indexb];
-
-            if (attachment) {
-              if (attachment.contentType.search(/^application\/pgp-signature/i) == 0) {
-                if (! attachment.isExternalAttachment)
-                  embeddedSigned = attachment.url.replace(/\&filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
-              }
-              if (attachment.contentType.search(/^application\/pgp-encrypted/i) == 0) {
-                if (! attachment.isExternalAttachment)
-                  embeddedEncrypted = attachment.url.replace(/\&filename=.*$/,"").replace(/\.\d+\.\d+$/, "");
-              }
-              EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: mimePart "+indexb+": "+attachment.contentType+"\n");
-            }
-          }
-        }
-      }
-
       var contentEncoding = "";
       var xEnigmailVersion = "";
       var msgUriSpec = this.getCurrentMsgUriSpec();
@@ -674,14 +662,19 @@ Enigmail.msg = {
       if (contentType.search(/^multipart\/encrypted(;|$)/i) == 0) {
         EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: multipart/encrypted\n");
 
-        enigmailSvc = Enigmail.getEnigmailSvc();
-        if (!enigmailSvc)
-          return;
+        if ("nsIPgpMimeProxy" in Components.interfaces) {
+          EnigmailDecrypt.setMsgWindow(msgWindow, msgUriSpec);
+        }
+        else {
+          enigmailSvc = Enigmail.getEnigmailSvc();
+          if (!enigmailSvc)
+            return;
 
-        if (!enigmailSvc.mimeInitialized()) {
-          // Display enigmail:dummy URL in message pane to initialize
-          this.enigMimeInitialize();
-          return;
+          if (!enigmailSvc.mimeInitialized()) {
+            // Display enigmail:dummy URL in message pane to initialize
+            this.enigMimeInitialize();
+            return;
+          }
         }
       }
 
