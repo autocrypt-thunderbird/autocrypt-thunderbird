@@ -125,7 +125,7 @@ var Ec = null;
 ///////////////////////////////////////////////////////////////////////////////
 // Global variables
 
-const GPG_COMMENT_OPT = "Using GnuPG with %s - http://enigmail.mozdev.org/";
+const GPG_COMMENT_OPT = "Using GnuPG with %s - http://www.enigmail.net/";
 
 var gLogLevel = 3;            // Output only errors/warnings by default
 
