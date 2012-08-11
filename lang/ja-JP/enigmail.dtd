@@ -518,7 +518,7 @@
 <!ENTITY enigmail.setupWiz.title "OpenPGP セットアップ ウィザード">
 <!ENTITY enigmail.setupWiz.yes "はい">
 <!ENTITY enigmail.setupWiz.no "いいえ">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "このウィザードは今すぐ OpenPGP を使い始めるお手伝いをします。以降のいくつかの画面ですべての項目を設定する為にいくつか質問をします。<html:br/><html:br/>高度なセキュリティを提供するための設定をデフォルトとしていますが、このウィザードの後に変更することができます。OpenPGP の設定の詳細は <a class='enigmailLink'><html:a onclick='EnigOpenURL(event, this)' href='http://enigmail.mozdev.org/'>Enigmail ウェブサイト</html:a></a> を参照してください。<html:br/><html:br/>このウィザードについて問題がある場合には <a class='enigmailLink'><html:a href='mailto:enigmail@mozdev.org'>E メール</html:a></a> でお知らせください。<html:br/><html:br/>このウィザードは Enigmail のインストール後の初回起動時に自動的に開始されます。OpenPGP メニューからも起動できます。<html:br/><html:br/>Enigmail をご利用いただきありがとうございます。">
+<!ENTITY enigmail.setupWiz.pgWelcome.desc "このウィザードは今すぐ OpenPGP を使い始めるお手伝いをします。以降のいくつかの画面ですべての項目を設定する為にいくつか質問をします。<html:br/><html:br/>高度なセキュリティを提供するための設定をデフォルトとしていますが、このウィザードの後に変更することができます。OpenPGP の設定の詳細は <a class='enigmailLink'><html:a onclick='EnigOpenURL(event, this)' href='http://www.enigmail.net/'>Enigmail ウェブサイト</html:a></a> を参照してください。<html:br/><html:br/>このウィザードについて問題がある場合には <a class='enigmailLink'><html:a href='mailto:www.enigmail.net'>E メール</html:a></a> でお知らせください。<html:br/><html:br/>このウィザードは Enigmail のインストール後の初回起動時に自動的に開始されます。OpenPGP メニューからも起動できます。<html:br/><html:br/>Enigmail をご利用いただきありがとうございます。">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "ウィザードを使用して今すぐ設定しますか？">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "はい、ウィザードを使用して利用開始します。">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "いいえ、手動で設定します。">

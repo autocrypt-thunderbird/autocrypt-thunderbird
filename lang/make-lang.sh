@@ -43,7 +43,7 @@ cat > ${ENIGLANG}/install.rdf <<EOT
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
   <Description about="urn:mozilla:install-manifest">
-    <em:id>enigmail-${ENIGLANG}@enigmail.mozdev.org</em:id>
+    <em:id>enigmail-${ENIGLANG}@www.enigmail.net</em:id>
     <em:version>${ENIGVERSION}</em:version>
 
     <!-- Target Application (Thunderbird) this extension can install into,
@@ -69,7 +69,7 @@ cat > ${ENIGLANG}/install.rdf <<EOT
     <!-- Author of the package, replace with your name if you like -->
     <em:creator>Enigmail Team</em:creator>
 
-    <em:homepageURL>http://enigmail.mozdev.org/langpack.html</em:homepageURL>
+    <em:homepageURL>http://www.enigmail.net/langpack.html</em:homepageURL>
 
     <!-- Front End Integration Hooks (used by Extension Manager)-->
     <em:optionsURL>chrome://enigmail/content/pref-enigmail.xul</em:optionsURL>

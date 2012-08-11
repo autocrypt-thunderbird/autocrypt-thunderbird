@@ -498,8 +498,8 @@
 <!ENTITY enigmail.setupWiz.no "No, gracias">
 <!ENTITY enigmail.setupWiz.pgWelcome.desc "Este asistente le ayuda a empezar a usar OpenPGP directamente. En las pr\u00F3ximas pantallas le haremos algunas preguntas para tener todo configurado.<html:br /><html:br />
 Para hacerlo todo sencillo, asumimos ciertos valores sobre la configuraci\u00F3n. Estos valores intentar\u00E1n proporcionar un alto nivel de seguridad para el usuario medio sin crear confusi\u00F3n. Por supuesto, puede cambiar todas estas opciones despu\u00E9s de que termine el asistente. Puede averiguar m\u00E1s acerca de las caracter\u00EDsticas de OpenPGP en el men\u00FA Ayuda o en el
-<a class='enigmailLink'><html:a href='http://enigmail.mozdev.org/'>sitio Web de Enigmail</html:a></a>.<html:br /><html:br />Si tiene alg\u00FAn problema con este asistente, por favor, h\u00E1ganoslo saber
-<a class='enigmailLink'><html:a href='mailto:enigmail@mozdev.org'>por correo electr\u00F3nico</html:a></a>.<html:br /><html:br />
+<a class='enigmailLink'><html:a href='http://www.enigmail.net/'>sitio Web de Enigmail</html:a></a>.<html:br /><html:br />Si tiene alg\u00FAn problema con este asistente, por favor, h\u00E1ganoslo saber
+<a class='enigmailLink'><html:a href='mailto:www.enigmail.net'>por correo electr\u00F3nico</html:a></a>.<html:br /><html:br />
 Este asistente s\u00F3lo se invoca al instalar Enigmail por primera vez. No se volver\u00E1 a mostrar y no se puede ejecutar desde el men\u00FA.<html:br /><html:br />\u00A1Gracias por elegir Enigmail OpenPGP!">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "\u00BFDesea usar ahora el asistente?">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "S\u00ED, deseo que me ayude el asistente">

@@ -598,10 +598,10 @@
                                                       laguntzailea bukatu eta gero ezarpen guztiak aldatu ahal ditzakezu. OpenPGP-k
                                                       dituen ezaugarriei buruz gehiago jakin nahi baduzu Laguntza menuan edo 
                                                       <a class='enigmailLink'><html:a onclick='EnigOpenURL(event, this)'
-                                                      href='http://enigmail.mozdev.org/'>Enigmail-en weborrian</html:a></a>.
+                                                      href='http://www.enigmail.net/'>Enigmail-en weborrian</html:a></a>.
                                                       <html:br/><html:br/>begiratu dezakezu.
                                                       Laguntzaile hau erabiltzerakoan arazorik baldin baduzu, mesedez, 
-                                                      <a class='enigmailLink'><html:a href='mailto:enigmail@mozdev.org'>
+                                                      <a class='enigmailLink'><html:a href='mailto:www.enigmail.net'>
                                                       posta elektroniko</html:a></a>bidez kontaiguzu.<html:br/><html:br/>
                                                       Lagunzaile hau automatikoki agertzen da Enigmail lehendabiziko aldiz
                                                       instalatzerakoan. Nahi izanez gero eskuz OpenPGP menutik exekutatu
