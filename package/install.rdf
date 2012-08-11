@@ -42,7 +42,7 @@
     <em:name>Enigmail</em:name>
     <em:description>OpenPGP message encryption and authentication</em:description>
     <em:creator>Enigmail Team</em:creator>
-    <em:homepageURL>http://enigmail.mozdev.org/</em:homepageURL>
+    <em:homepageURL>http://www.enigmail.net/</em:homepageURL>
     <!-- use the default updateURL (on AMO) -->
     <!-- <em:updateURL>http://www.mozilla-enigmail.org/update/update-%APP_OS%_%APP_ABI%.rdf</em:updateURL> -->
 
