@@ -626,8 +626,8 @@ Enigmail.msg = {
         if (resultObj.encrypted || resultObj.signed) {
           let mailUrl = this.getCurrentMsgUrl();
           if (mailUrl) {
-              if (resultObj.signed) embeddedSigned = mailUrl.spec+"&part="+resultObj.signed.replace(/\.\d+$/, "");
-              if (resultObj.encrypted) embeddedEncrypted = mailUrl.spec+"&part="+resultObj.encrypted.replace(/\.\d+$/, "");
+            if (resultObj.signed) embeddedSigned = mailUrl.spec+"?part="+resultObj.signed.replace(/\.\d+$/, "");
+            if (resultObj.encrypted) embeddedEncrypted = mailUrl.spec+"?part="+resultObj.encrypted.replace(/\.\d+$/, "");
           }
         }
       }
