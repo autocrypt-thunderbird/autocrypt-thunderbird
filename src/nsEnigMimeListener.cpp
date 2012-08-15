@@ -877,7 +877,11 @@ nsEnigMimeListener::ParseHeader(const char* header, PRUint32 count)
 ///////////////////////////////////////////////////////////////////////////////
 
 NS_IMETHODIMP
+#if MOZILLA_MAJOR_VERSION < 17
 nsEnigMimeListener::Available(PRUint32* _retval)
+#else
+nsEnigMimeListener::Available(PRUint64* _retval)
+#endif
 {
   if (!_retval)
     return NS_ERROR_NULL_POINTER;

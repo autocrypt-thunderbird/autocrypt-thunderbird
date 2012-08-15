@@ -722,7 +722,11 @@ nsPipeFilterListener::OnDataAvailable(nsIRequest* aRequest,
 ///////////////////////////////////////////////////////////////////////////////
 
 NS_IMETHODIMP
+#if MOZILLA_MAJOR_VERSION < 17
 nsPipeFilterListener::Available(PRUint32* _retval)
+#else
+nsPipeFilterListener::Available(PRUint64* _retval)
+#endif
 {
   if (!_retval)
     return NS_ERROR_NULL_POINTER;
