@@ -335,13 +335,18 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   rv = mBuffer->OpenInputStream(getter_AddRefs(bufStream));
   if (NS_FAILED(rv)) return rv;
 
+#if MOZILLA_MAJOR_VERSION < 17
   PRUint32 available;
+#else
+  PRUint64 available;
+#endif
+
   rv = bufStream->Available(&available);
   if (NS_FAILED(rv)) return rv;
 
   DEBUG_LOG(("nsEnigMimeDecrypt::FinishAux: available=%d\n", available));
 
-  rv = mPipeTrans->WriteAsync(bufStream, available, PR_TRUE);
+  rv = mPipeTrans->WriteAsync(bufStream, (PRUint32) available, PR_TRUE);
   if (NS_FAILED(rv)) return rv;
 
   // read via pipeTransport.jsm
