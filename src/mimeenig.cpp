@@ -87,14 +87,14 @@ typedef struct MimeEnigData
   nsCOMPtr<nsIEnigMimeDecrypt> mimeDecrypt;
 
   MimeEnigData()
-    :output_fn(nsnull),
-     output_closure(nsnull)
+    :output_fn(NULL),
+     output_closure(NULL)
   {
   }
 
   ~MimeEnigData()
   {
-    mimeDecrypt = nsnull;
+    mimeDecrypt = NULL;
   }
 } MimeEnigData;
 
@@ -217,7 +217,7 @@ MimeEnig_eof(void* output_closure, EMBool abort_p)
   if (NS_FAILED(rv))
     return -1;
 
-  data->mimeDecrypt = nsnull;
+  data->mimeDecrypt = NULL;
   return 0;
 }
 

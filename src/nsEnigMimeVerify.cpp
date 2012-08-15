@@ -90,23 +90,23 @@ nsEnigMimeVerify::nsEnigMimeVerify()
     mLinebreak(""),
 
     mURISpec(""),
-    mMsgWindow(nsnull),
+    mMsgWindow(NULL),
 
-    mOutBuffer(nsnull),
-    mPipeTrans(nsnull),
+    mOutBuffer(NULL),
+    mPipeTrans(NULL),
 
-    mArmorListener(nsnull),
-    mSecondPartListener(nsnull),
-    mFirstPartListener(nsnull),
-    mOuterMimeListener(nsnull),
-    mInnerMimeListener(nsnull)
+    mArmorListener(NULL),
+    mSecondPartListener(NULL),
+    mFirstPartListener(NULL),
+    mOuterMimeListener(NULL),
+    mInnerMimeListener(NULL)
 {
   nsresult rv;
 
   NS_INIT_ISUPPORTS();
 
 #ifdef PR_LOGGING
-  if (gEnigMimeVerifyLog == nsnull) {
+  if (gEnigMimeVerifyLog == NULL) {
     gEnigMimeVerifyLog = PR_NewLogModule("nsEnigMimeVerify");
   }
 #endif
@@ -172,16 +172,16 @@ nsEnigMimeVerify::Init(nsIDOMWindow* window,
   const char* pgpHeader = "-----BEGIN PGP ";
   const char* pgpFooter = "-----END PGP ";
 
-  rv = mArmorListener->Init((nsIStreamListener*) this, nsnull,
+  rv = mArmorListener->Init((nsIStreamListener*) this, NULL,
                             pgpHeader, pgpFooter,
-                            0, PR_TRUE, PR_FALSE, nsnull);
+                            0, PR_TRUE, PR_FALSE, NULL);
   if (NS_FAILED(rv)) return rv;
 
   // Inner mime listener to parse second part
   mInnerMimeListener = do_CreateInstance(NS_ENIGMIMELISTENER_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
 
-  rv = mInnerMimeListener->Init(mArmorListener, nsnull,
+  rv = mInnerMimeListener->Init(mArmorListener, NULL,
                                 MAX_HEADER_BYTES, PR_TRUE, PR_FALSE, PR_FALSE);
   if (NS_FAILED(rv)) return rv;
 
@@ -194,7 +194,7 @@ nsEnigMimeVerify::Init(nsIDOMWindow* window,
   if (NS_FAILED(rv)) return rv;
 
   rv = mFirstPartListener->Init((nsIStreamListener*) this,
-                               nsnull, "", "", 0, PR_FALSE, PR_TRUE,
+                               NULL, "", "", 0, PR_FALSE, PR_TRUE,
                                mSecondPartListener);
   if (NS_FAILED(rv)) return rv;
 
@@ -205,13 +205,13 @@ nsEnigMimeVerify::Init(nsIDOMWindow* window,
   if (isSubPart)
     mOuterMimeListener->SetSubPartTreatment(PR_TRUE);
 
-  rv = mOuterMimeListener->Init(mFirstPartListener, nsnull,
+  rv = mOuterMimeListener->Init(mFirstPartListener, NULL,
                                 MAX_HEADER_BYTES, PR_TRUE, PR_FALSE, PR_FALSE);
 
   if (NS_FAILED(rv)) return rv;
 
   // Initiate asynchronous loading of URI
-  rv = channel->AsyncOpen( mOuterMimeListener, nsnull );
+  rv = channel->AsyncOpen( mOuterMimeListener, NULL );
   if (NS_FAILED(rv))
     return rv;
 
@@ -246,16 +246,16 @@ nsEnigMimeVerify::InitWithChannel(nsIDOMWindow* window,
   const char* pgpHeader = "-----BEGIN PGP ";
   const char* pgpFooter = "-----END PGP ";
 
-  rv = mArmorListener->Init((nsIStreamListener*) this, nsnull,
+  rv = mArmorListener->Init((nsIStreamListener*) this, NULL,
                             pgpHeader, pgpFooter,
-                            0, PR_TRUE, PR_FALSE, nsnull);
+                            0, PR_TRUE, PR_FALSE, NULL);
   if (NS_FAILED(rv)) return rv;
 
   // Inner mime listener to parse second part
   mInnerMimeListener = do_CreateInstance(NS_ENIGMIMELISTENER_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
 
-  rv = mInnerMimeListener->Init(mArmorListener, nsnull,
+  rv = mInnerMimeListener->Init(mArmorListener, NULL,
                                 MAX_HEADER_BYTES, PR_TRUE, PR_FALSE, PR_FALSE);
   if (NS_FAILED(rv)) return rv;
 
@@ -268,7 +268,7 @@ nsEnigMimeVerify::InitWithChannel(nsIDOMWindow* window,
   if (NS_FAILED(rv)) return rv;
 
   rv = mFirstPartListener->Init((nsIStreamListener*) this,
-                               nsnull, "", "", 0, PR_FALSE, PR_TRUE,
+                               NULL, "", "", 0, PR_FALSE, PR_TRUE,
                                mSecondPartListener);
   if (NS_FAILED(rv)) return rv;
 
@@ -279,13 +279,13 @@ nsEnigMimeVerify::InitWithChannel(nsIDOMWindow* window,
   if (isSubPart)
     mOuterMimeListener->SetSubPartTreatment(PR_TRUE);
 
-  rv = mOuterMimeListener->Init(mFirstPartListener, nsnull,
+  rv = mOuterMimeListener->Init(mFirstPartListener, NULL,
                                 MAX_HEADER_BYTES, PR_TRUE, PR_FALSE, PR_FALSE);
 
   if (NS_FAILED(rv)) return rv;
 
   // Initiate asynchronous loading of URI
-  rv = aChannel->AsyncOpen( mOuterMimeListener, nsnull );
+  rv = aChannel->AsyncOpen( mOuterMimeListener, NULL );
   if (NS_FAILED(rv))
     return rv;
 
@@ -301,21 +301,21 @@ nsEnigMimeVerify::Finalize()
 
   if (mPipeTrans) {
     mPipeTrans->Terminate();
-    mPipeTrans = nsnull;
+    mPipeTrans = NULL;
   }
 
   if (mOutBuffer) {
     mOutBuffer->Shutdown();
-    mOutBuffer = nsnull;
+    mOutBuffer = NULL;
   }
 
-  mMsgWindow = nsnull;
+  mMsgWindow = NULL;
 
-  mArmorListener = nsnull;
-  mFirstPartListener = nsnull;
-  mSecondPartListener = nsnull;
-  mOuterMimeListener = nsnull;
-  mInnerMimeListener = nsnull;
+  mArmorListener = NULL;
+  mFirstPartListener = NULL;
+  mSecondPartListener = NULL;
+  mOuterMimeListener = NULL;
+  mInnerMimeListener = NULL;
 
   return NS_OK;
 }
@@ -561,8 +561,8 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
 
   // Initialize second part listener with content boundary
   rv = mSecondPartListener->Init(mInnerMimeListener,
-                                 nsnull, "", mimeSeparator.get(),
-                                 0, PR_FALSE, PR_FALSE, nsnull);
+                                 NULL, "", mimeSeparator.get(),
+                                 0, PR_FALSE, PR_FALSE, NULL);
   if (NS_FAILED(rv)) return rv;
 
 
@@ -587,7 +587,7 @@ nsEnigMimeVerify::OnStartRequest(nsIRequest *aRequest,
   EMBool verifyOnly = PR_TRUE;
   EMBool noOutput = PR_TRUE;
   PRUint32 statusFlags;
-  rv = enigmailSvc->DecryptMessageStart(nsnull,
+  rv = enigmailSvc->DecryptMessageStart(NULL,
                                         prompter,
                                         verifyOnly,
                                         noOutput,

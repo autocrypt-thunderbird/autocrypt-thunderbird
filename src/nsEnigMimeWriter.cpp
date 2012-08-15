@@ -68,7 +68,7 @@ NS_IMPL_THREADSAFE_ISUPPORTS3(nsEnigMimeWriter,
 
 // nsEnigMimeWriter implementation
 nsEnigMimeWriter::nsEnigMimeWriter()
-  : mStream(nsnull),
+  : mStream(NULL),
     mForceCRLF(PR_FALSE),
 
     mClosed(PR_FALSE),
@@ -79,7 +79,7 @@ nsEnigMimeWriter::nsEnigMimeWriter()
     NS_INIT_ISUPPORTS();
 
 #ifdef PR_LOGGING
-  if (gEnigMimeWriterLog == nsnull) {
+  if (gEnigMimeWriterLog == NULL) {
     gEnigMimeWriterLog = PR_NewLogModule("nsEnigMimeWriter");
   }
 #endif
@@ -103,7 +103,7 @@ nsEnigMimeWriter::~nsEnigMimeWriter()
   DEBUG_LOG(("nsEnigMimeWriter:: >>>>>>>>> DTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
-  mStream = nsnull;
+  mStream = NULL;
 }
 
 
@@ -230,7 +230,7 @@ nsEnigMimeWriter::Close()
 
   mClosed = PR_TRUE;
 
-  mStream = nsnull;
+  mStream = NULL;
 
   return NS_OK;
 }

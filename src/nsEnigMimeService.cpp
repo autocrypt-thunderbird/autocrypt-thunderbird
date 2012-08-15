@@ -88,7 +88,7 @@ nsEnigMimeService::nsEnigMimeService()
   NS_INIT_ISUPPORTS();
 
 #ifdef PR_LOGGING
-  if (gEnigMimeServiceLog == nsnull) {
+  if (gEnigMimeServiceLog == NULL) {
     gEnigMimeServiceLog = PR_NewLogModule("nsEnigMimeService");
   }
 #endif
@@ -218,7 +218,7 @@ nsEnigMimeService::GetPlainText(nsIDOMNode* domNode,
 
     while (child) {
       nsAutoString temStr;
-      rv = GetPlainText(child, nsnull, temStr);
+      rv = GetPlainText(child, NULL, temStr);
       if (NS_FAILED(rv)) return rv;
 
       outStr.Append(temStr);

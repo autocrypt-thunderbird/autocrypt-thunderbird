@@ -85,7 +85,7 @@ nsIPCService::nsIPCService()
   NS_INIT_ISUPPORTS();
 
 #ifdef PR_LOGGING
-  if (gIPCServiceLog == nsnull) {
+  if (gIPCServiceLog == NULL) {
     gIPCServiceLog = PR_NewLogModule("nsIPCService");
     PR_LOG(gIPCServiceLog,PR_LOG_ALWAYS,("Logging nsIPCService...\n"));
   }
@@ -148,7 +148,7 @@ nsIPCService::Shutdown()
 
   if (mConsole) {
     mConsole->Shutdown();
-    mConsole = nsnull;
+    mConsole = NULL;
   }
 
   nsCOMPtr<nsIObserverService> observerSvc =
@@ -205,7 +205,7 @@ nsIPCService::RunCommand(nsIFile *executable,
   if (!_retval || !executable)
     return NS_ERROR_NULL_POINTER;
 
-  *_retval = nsnull;
+  *_retval = NULL;
 
   // Create a pipetransport instance
   nsCOMPtr<nsIPipeTransport> pipeTrans = do_CreateInstance(NS_PIPETRANSPORT_CONTRACTID, &rv);
@@ -294,9 +294,9 @@ NS_IMPL_THREADSAFE_ISUPPORTS1 (nsIPCRequest, nsIIPCRequest)
 // nsIPCRequest implementation
 nsIPCRequest::nsIPCRequest()
   : mExecutable(""),
-    mPipeTransport(nsnull),
-    mStdoutConsole(nsnull),
-    mStderrConsole(nsnull)
+    mPipeTransport(NULL),
+    mStdoutConsole(NULL),
+    mStderrConsole(NULL)
 {
     NS_INIT_ISUPPORTS();
 
@@ -307,9 +307,9 @@ nsIPCRequest::nsIPCRequest()
 nsIPCRequest::~nsIPCRequest()
 {
   DEBUG_LOG(("nsIPCRequest:: >>>>>>>>> DTOR(%p)\n", this));
-  mPipeTransport = nsnull;
-  mStdoutConsole = nsnull;
-  mStderrConsole = nsnull;
+  mPipeTransport = NULL;
+  mStdoutConsole = NULL;
+  mStderrConsole = NULL;
 }
 
 NS_IMETHODIMP
@@ -337,15 +337,15 @@ nsIPCRequest::Close(EMBool closeConsoles)
 
   if (mPipeTransport)
     mPipeTransport->Terminate();
-  mPipeTransport = nsnull;
+  mPipeTransport = NULL;
 
   if (mStdoutConsole && closeConsoles)
     mStdoutConsole->Shutdown();
-  mStdoutConsole = nsnull;
+  mStdoutConsole = NULL;
 
   if (mStderrConsole && closeConsoles)
     mStderrConsole->Shutdown();
-  mStderrConsole = nsnull;
+  mStderrConsole = NULL;
 
   return NS_OK;
 }

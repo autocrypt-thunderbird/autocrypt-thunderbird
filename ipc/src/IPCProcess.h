@@ -77,7 +77,7 @@ typedef DWORD (WINAPI*GetProcessIdPtr)(HANDLE process);
 
 #define IPCProcess PRProcess
 #define IPCFileDesc PRFileDesc
-#define IPC_NULL_HANDLE nsnull
+#define IPC_NULL_HANDLE NULL
 
 #define IPC_CreateProcessRedirected IPC_CreateProcessRedirectedNSPR
 #define IPC_CreateInheritablePipe IPC_CreateInheritablePipeNSPR

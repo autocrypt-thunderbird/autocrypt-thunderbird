@@ -99,13 +99,13 @@ nsIPCBuffer::nsIPCBuffer() :
     mPipeWrite(IPC_NULL_HANDLE),
     mPipeRead(IPC_NULL_HANDLE),
 
-    mTempFile(nsnull),
-    mTempOutStream(nsnull),
-    mTempInStream(nsnull),
+    mTempFile(NULL),
+    mTempOutStream(NULL),
+    mTempInStream(NULL),
 
-    mPipeThread(nsnull),
-    mObserver(nsnull),
-    mObserverContext(nsnull)
+    mPipeThread(NULL),
+    mObserver(NULL),
+    mObserverContext(NULL)
 {
 #ifdef PR_LOGGING
   if (!gIPCBufferLog) {
@@ -169,9 +169,9 @@ nsIPCBuffer::Finalize(IPCBool destructor)
   }
 
   // Release owning refs
-  mPipeThread = nsnull;
-  mObserver = nsnull;
-  mObserverContext = nsnull;
+  mPipeThread = NULL;
+  mObserver = NULL;
+  mObserverContext = NULL;
 
   RemoveTempFile();
 
@@ -268,7 +268,7 @@ nsIPCBuffer::OpenURI(nsIURI* aURI, PRInt32 maxBytes, IPCBool synchronous,
   rv = channel->Open(getter_AddRefs(inputStream));
   NS_ENSURE_SUCCESS(rv, rv);
 
-  OnStartRequest(nsnull, mObserverContext);
+  OnStartRequest(NULL, mObserverContext);
 
   PRUint32 readCount;
   char buf[1024];
@@ -287,7 +287,7 @@ nsIPCBuffer::OpenURI(nsIURI* aURI, PRInt32 maxBytes, IPCBool synchronous,
   // Close input stream
   inputStream->Close();
 
-  OnStopRequest(nsnull, mObserverContext, 0);
+  OnStopRequest(NULL, mObserverContext, 0);
 
   return NS_OK;
 }
@@ -418,7 +418,7 @@ nsIPCBuffer::CloseTempOutStream()
 
     if (NS_SUCCEEDED(rv) && NS_FAILED(flushRV))
       rv = flushRV;
-    mTempOutStream = nsnull;
+    mTempOutStream = NULL;
   }
 
   return rv;
@@ -456,7 +456,7 @@ nsIPCBuffer::CloseTempInStream()
 
   if (mTempInStream) {
     rv = mTempInStream->Close();
-    mTempInStream = nsnull;
+    mTempInStream = NULL;
   }
 
   return rv;
@@ -491,7 +491,7 @@ nsIPCBuffer::RemoveTempFile()
     rv = mTempFile->Remove(PR_FALSE);
     NS_ENSURE_SUCCESS(rv, rv);
 
-    mTempFile = nsnull;
+    mTempFile = NULL;
   }
 
   return NS_OK;
@@ -922,7 +922,11 @@ nsIPCBuffer::Run()
 ///////////////////////////////////////////////////////////////////////////////
 
 NS_IMETHODIMP
+#if MOZILLA_MAJOR_VERSION < 17
 nsIPCBuffer::Available(PRUint32* _retval)
+#else
+nsIPCBuffer::Available(PRUint64* _retval)
+#endif
 {
   NS_ENSURE_ARG(_retval);
 

@@ -154,20 +154,20 @@ nsEnigMsgCompose::nsEnigMsgCompose()
 
     mStream(0),
 
-    mEncoderData(nsnull),
+    mEncoderData(NULL),
 
-    mMsgComposeSecure(nsnull),
-    mMimeListener(nsnull),
+    mMsgComposeSecure(NULL),
+    mMimeListener(NULL),
 
-    mWriter(nsnull),
-    mPipeTrans(nsnull)
+    mWriter(NULL),
+    mPipeTrans(NULL)
 {
   nsresult rv;
 
   NS_INIT_ISUPPORTS();
 
 #ifdef PR_LOGGING
-  if (gEnigMsgComposeLog == nsnull) {
+  if (gEnigMsgComposeLog == NULL) {
     gEnigMsgComposeLog = PR_NewLogModule("nsEnigMsgCompose");
   }
 #endif
@@ -203,23 +203,23 @@ nsEnigMsgCompose::Finalize()
 {
   DEBUG_LOG(("nsEnigMsgCompose::Finalize:\n"));
 
-  mMsgComposeSecure = nsnull;
-  mMimeListener = nsnull;
+  mMsgComposeSecure = NULL;
+  mMimeListener = NULL;
 
   if (mPipeTrans) {
     mPipeTrans->Terminate();
-    mPipeTrans = nsnull;
+    mPipeTrans = NULL;
   }
 
   if (mWriter) {
     mWriter->Close();
-    mWriter = nsnull;
+    mWriter = NULL;
   }
 
   if (mEncoderData) {
     // Clear encoder buffer
     MimeEncoderDestroy(mEncoderData, PR_FALSE);
-    mEncoderData = nsnull;
+    mEncoderData = NULL;
   }
 
   return NS_OK;
@@ -470,7 +470,7 @@ nsEnigMsgCompose::Init()
 
   nsString errorMsg;
   PRUint32 statusFlags;
-  rv = enigmailSvc->EncryptMessageStart(nsnull, prompter,
+  rv = enigmailSvc->EncryptMessageStart(NULL, prompter,
                                         mUIFlags,
                                         mSenderEmailAddr.get(),
                                         mRecipients.get(),
@@ -635,7 +635,7 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
   mMimeListener = do_CreateInstance(NS_ENIGMIMELISTENER_CONTRACTID, &rv);
   if (NS_FAILED(rv)) return rv;
 
-  rv = mMimeListener->Init((nsIStreamListener*) this, nsnull,
+  rv = mMimeListener->Init((nsIStreamListener*) this, NULL,
                            MAX_HEADER_BYTES, PR_TRUE, PR_FALSE, PR_FALSE);
   if (NS_FAILED(rv)) return rv;
 
@@ -697,7 +697,7 @@ nsEnigMsgCompose::FinishAux(EMBool aAbort,
   if (aAbort) {
     // Terminate process
     mPipeTrans->Terminate();
-    mPipeTrans = nsnull;
+    mPipeTrans = NULL;
 
     return NS_ERROR_FAILURE;
   }
@@ -715,7 +715,7 @@ nsEnigMsgCompose::FinishAux(EMBool aAbort,
 
   // Close STDOUT writer
   mWriter->Close();
-  mWriter = nsnull;
+  mWriter = NULL;
 
   nsCOMPtr<nsIPrompt> prompter;
   nsCOMPtr <nsIMsgMailSession> mailSession (do_GetService(NS_MSGMAILSESSION_CONTRACTID));
@@ -732,7 +732,7 @@ nsEnigMsgCompose::FinishAux(EMBool aAbort,
   PRInt32 exitCode;
   PRUint32 statusFlags;
   nsString errorMsg;
-  rv = enigmailSvc->EncryptMessageEnd(nsnull,
+  rv = enigmailSvc->EncryptMessageEnd(NULL,
                                       prompter,
                                       mUIFlags,
                                       mSendFlags,
@@ -907,7 +907,7 @@ nsEnigMsgCompose::WriteCopy(const char *aBuf, PRInt32 aLen)
 
   if (mMimeListener) {
     // Write to listener
-    rv = mMimeListener->Write(aBuf, aLen, nsnull, nsnull);
+    rv = mMimeListener->Write(aBuf, aLen, NULL, NULL);
     if (NS_FAILED(rv)) return rv;
 
   } else if (mPipeTrans) {

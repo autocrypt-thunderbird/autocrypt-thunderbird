@@ -82,7 +82,7 @@ nsEnigContentHandler::nsEnigContentHandler()
   NS_INIT_ISUPPORTS();
 
 #ifdef PR_LOGGING
-  if (gEnigContentHandlerLog == nsnull) {
+  if (gEnigContentHandlerLog == NULL) {
     gEnigContentHandlerLog = PR_NewLogModule("nsEnigContentHandler");
   }
 #endif

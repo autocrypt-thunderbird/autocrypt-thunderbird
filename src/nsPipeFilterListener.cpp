@@ -104,18 +104,18 @@ nsPipeFilterListener::nsPipeFilterListener()
     mPartMatch(""),
     mLinebreak(0),
 
-    mStreamBuf(nsnull),
+    mStreamBuf(NULL),
     mStreamOffset(0),
     mStreamLength(0),
 
-    mListener(nsnull),
-    mTailListener(nsnull),
-    mContext(nsnull)
+    mListener(NULL),
+    mTailListener(NULL),
+    mContext(NULL)
 {
     NS_INIT_ISUPPORTS();
 
 #ifdef PR_LOGGING
-  if (gPipeFilterListenerLog == nsnull) {
+  if (gPipeFilterListenerLog == NULL) {
     gPipeFilterListenerLog = PR_NewLogModule("nsPipeFilterListener");
   }
 #endif
@@ -141,9 +141,9 @@ nsPipeFilterListener::~nsPipeFilterListener()
 #endif
 
   // Release owning refs
-  mListener = nsnull;
-  mTailListener = nsnull;
-  mContext = nsnull;
+  mListener = NULL;
+  mTailListener = NULL;
+  mContext = NULL;
 }
 
 
@@ -663,9 +663,9 @@ nsPipeFilterListener::OnStopRequest(nsIRequest* aRequest,
   }
 
   // Release owning refs
-  mListener = nsnull;
-  mTailListener = nsnull;
-  mContext = nsnull;
+  mListener = NULL;
+  mTailListener = NULL;
+  mContext = NULL;
 
   return (aStatus == NS_BINDING_ABORTED) ? NS_ERROR_FAILURE : NS_OK;
 }
@@ -815,7 +815,7 @@ NS_IMETHODIMP
 nsPipeFilterListener::Close()
 {
   DEBUG_LOG(("nsPipeFilterListener::Close: (%p)\n", this));
-  mStreamBuf = nsnull;
+  mStreamBuf = NULL;
   mStreamOffset = 0;
   mStreamLength = 0;
   return NS_OK;

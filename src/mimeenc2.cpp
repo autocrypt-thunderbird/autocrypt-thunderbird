@@ -795,7 +795,7 @@ mime_decoder_init (mime_encoding which,
   data->write_buffer = output_fn;
   data->closure = closure;
   data->line_buffer_size = 0;
-  data->line_buffer = nsnull;
+  data->line_buffer = NULL;
 
   return data;
 }

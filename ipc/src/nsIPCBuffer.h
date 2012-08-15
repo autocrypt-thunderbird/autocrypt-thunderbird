@@ -59,7 +59,7 @@
 
 // not Windows
 #define IPCFileDesc PRFileDesc
-#define IPC_NULL_HANDLE nsnull
+#define IPC_NULL_HANDLE NULL
 #define IPC_Read PR_Read
 #define IPC_Close PR_Close
 

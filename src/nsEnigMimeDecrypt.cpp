@@ -87,18 +87,18 @@ nsEnigMimeDecrypt::nsEnigMimeDecrypt()
     mIterations(0),
     mCtFound(-1),
 
-    mBuffer(nsnull),
-    mListener(nsnull),
-    mPipeTrans(nsnull),
-    mSecurityInfo(nsnull),
-    mUri(nsnull)
+    mBuffer(NULL),
+    mListener(NULL),
+    mPipeTrans(NULL),
+    mSecurityInfo(NULL),
+    mUri(NULL)
 {
   nsresult rv;
 
   NS_INIT_ISUPPORTS();
 
 #ifdef PR_LOGGING
-  if (gEnigMimeDecryptLog == nsnull) {
+  if (gEnigMimeDecryptLog == NULL) {
     gEnigMimeDecryptLog = PR_NewLogModule("nsEnigMimeDecrypt");
   }
 #endif
@@ -160,7 +160,7 @@ nsEnigMimeDecrypt::Init(EMBool verifyOnly,
     if (NS_FAILED(rv)) return rv;
 
     rv = mListener->Init((nsIStreamListener*)(mBuffer),
-                         nsnull, "", "", 1, PR_FALSE, PR_TRUE, nsnull);
+                         NULL, "", "", 1, PR_FALSE, PR_TRUE, NULL);
     if (NS_FAILED(rv)) return rv;
   }
 
@@ -180,16 +180,16 @@ nsEnigMimeDecrypt::Finalize()
 
   if (mPipeTrans) {
     mPipeTrans->Terminate();
-    mPipeTrans = nsnull;
+    mPipeTrans = NULL;
   }
 
   if (mListener) {
-    mListener = nsnull;
+    mListener = NULL;
   }
 
   if (mBuffer) {
     mBuffer->Shutdown();
-    mBuffer = nsnull;
+    mBuffer = NULL;
   }
 
   return NS_OK;
@@ -203,7 +203,7 @@ nsEnigMimeDecrypt::Write(const char *buf, PRUint32 buf_size)
     return NS_ERROR_NOT_INITIALIZED;
 
   if (mListener)
-    mListener->Write(buf, buf_size, nsnull, nsnull);
+    mListener->Write(buf, buf_size, NULL, NULL);
   else
     mBuffer->WriteBuf(buf, buf_size);
 
@@ -246,7 +246,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   nsCAutoString uriSpec("");
 
   if (mListener) {
-    rv = mListener->OnStopRequest(nsnull, nsnull, 0);
+    rv = mListener->OnStopRequest(NULL, NULL, 0);
     if (NS_FAILED(rv))
       return rv;
 
@@ -259,10 +259,10 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
       return NS_ERROR_FAILURE;
     }
 
-    mListener = nsnull;
+    mListener = NULL;
   }
 
-  rv = mBuffer->OnStopRequest(nsnull, nsnull, 0);
+  rv = mBuffer->OnStopRequest(NULL, NULL, 0);
   if (NS_FAILED(rv))
     return rv;
 
@@ -299,11 +299,11 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   EMBool noOutput = PR_FALSE;
   PRUint32 statusFlags;
 
-  rv = enigmailSvc->DecryptMessageStart(nsnull,
+  rv = enigmailSvc->DecryptMessageStart(NULL,
                                         prompter,
                                         mVerifyOnly,
                                         noOutput,
-                                        nsnull,
+                                        NULL,
                                         &statusFlags,
                                         getter_Copies(errorMsg),
                                         getter_AddRefs(mPipeTrans) );
@@ -323,7 +323,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
 
   mIterations = 0;
   mCtFound = -1;
-  nsCOMPtr<nsIInputStream> plainStream = nsnull;
+  nsCOMPtr<nsIInputStream> plainStream = NULL;
 
   // read via pipeTransport.jsm
   nsCOMPtr<nsIRequest> request;
@@ -547,7 +547,7 @@ nsEnigMimeDecrypt::StopRequest(PRUint32 status)
 {
   DEBUG_LOG(("nsEnigMimeDecrypt::StopRequest:\n"));
 
-  ProcessEnd(nsnull);
+  ProcessEnd(NULL);
   mDone = PR_TRUE;
 
   return NS_OK;

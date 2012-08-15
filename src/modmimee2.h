@@ -61,7 +61,7 @@ MimeDecoderData *MimeB64DecoderInit(nsresult (*output_fn) (const char *buf,PRInt
                   void *closure);
 
 MimeDecoderData *MimeQPDecoderInit (nsresult (*output_fn) (const char *buf, PRInt32 size, void *closure),
-                  void *closure, MimeObject *object = nsnull);
+                  void *closure, MimeObject *object = NULL);
 
 MimeDecoderData *MimeUUDecoderInit (nsresult (*output_fn) (const char *buf,
                             PRInt32 size,
