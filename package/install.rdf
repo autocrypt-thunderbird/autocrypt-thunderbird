@@ -5,7 +5,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>{847b3a00-7ab1-11d4-8f02-006008948af5}</em:id>
-    <em:version>1.5a1pre</em:version>
+    <em:version>1.4.4</em:version>
     <em:type>2</em:type> <!-- type = extension -->
     <em:unpack>true</em:unpack>
 
@@ -43,8 +43,6 @@
     <em:description>OpenPGP message encryption and authentication</em:description>
     <em:creator>Enigmail Team</em:creator>
     <em:homepageURL>http://www.enigmail.net/</em:homepageURL>
-    <!-- use the default updateURL (on AMO) -->
-    <!-- <em:updateURL>http://www.mozilla-enigmail.org/update/update-%APP_OS%_%APP_ABI%.rdf</em:updateURL> -->
 
     <!-- Front End Integration Hooks (used by Extension Manager)-->
     <em:optionsURL>chrome://enigmail/content/pref-enigmail.xul</em:optionsURL>
