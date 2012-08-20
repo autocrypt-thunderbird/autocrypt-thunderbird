@@ -43,7 +43,7 @@ var EnigmailDecrypt = {
     proc: null,
     QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener]),
 
-    onStartRequest: function() {
+    onStartRequest: function(request, channel) {
       if (!Ec.getService()) // Ensure Enigmail is initialized
         return;
       this.initOk = true;
@@ -55,6 +55,15 @@ var EnigmailDecrypt = {
       this.foundPgp = false;
       this.msgWindow = null;
       this.msgUriSpec = null;
+      if (channel) {
+        try {
+          channel = channel.QueryInterface(Ci.nsIChannel);
+          this.msgUriSpec = channel.URI.spec;
+        }
+        catch (ex) {
+          DEBUG_LOG("mimeDecrypt.jsm: onStartRequest: failed to extract urispec from channel");
+        }
+      }
       this.returnStatus = null;
       this.dataLength = 0;
       this.mimePartCount = 0;
@@ -73,7 +82,7 @@ var EnigmailDecrypt = {
     onDataAvailable: function(req, sup, stream, offset, count) {
       // get data from libmime
       if (! this.initOk) return;
-      //DEBUG_LOG("mimeDecrypt.jsm: onDataAvailable: "+count+"\n");
+      DEBUG_LOG("mimeDecrypt.jsm: onDataAvailable: "+count+"\n");
       this.inStream.init(stream);
       var data = this.inStream.read(count);
       if (count > 0) {
@@ -122,9 +131,20 @@ var EnigmailDecrypt = {
       this.outqueue = "";
     },
 
-    onStopRequest: function() {
+    onStopRequest: function(request, win, status) {
       if (! this.initOk) return;
       DEBUG_LOG("mimeDecrypt.jsm: onStopRequest\n");
+
+      if (win) {
+        try {
+          var msgWin = win.QueryInterface(Ci.nsIMsgWindow);
+          DEBUG_LOG("mimeDecrypt.jsm: onStopRequest: win="+msgWin+"\n");
+          EnigmailDecrypt.setMsgWindow(msgWin, this.msgUriSpec);
+        }
+        catch(ex) {
+          Ec.writeException("mimeDecrypt.jsm", ex);
+        }
+      }
 
       if (! this.proc) return;
       this.flushInput();
@@ -138,7 +158,7 @@ var EnigmailDecrypt = {
 
       this.proc.wait();
 
-      this.returnStatus = {}
+      this.returnStatus = {};
       Ec.decryptMessageEnd(this.statusStr,
             this.exitCode,
             this.dataLength,
@@ -246,7 +266,6 @@ function getBoundary(contentType) {
 function DEBUG_LOG(str) {
   if (gDebugLog) Ec.DEBUG_LOG(str);
 }
-
 
 function registerDecryptor() {
   try {
