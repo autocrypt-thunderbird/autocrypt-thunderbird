@@ -483,6 +483,13 @@ Enigmail.msg = {
       isAuto: isAuto
     };
 
+    let contentType=currentHeaderData['content-type'].headerValue;
+
+    if (((contentType.search(/^multipart\/signed(;|$)/i) == 0) && (contentType.search(/application\/pgp-signature/i)>0)) ||
+        ((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) && (contentType.search(/application\/pgp-encrypted/i)>0))) {
+      EnigmailDecrypt.setMsgWindow(msgWindow, this.getCurrentMsgUriSpec());
+    }
+
     try {
       if (gFolderDisplay.selectedMessageIsNews) throw "dummy"; // workaround for broken NNTP support in Gloda
       MsgHdrToMimeMessage(gFolderDisplay.selectedMessage , cbObj, Enigmail.msg.msgDecryptMimeCb, true, {examineEncryptedParts: true, partsOnDemand: false});
@@ -613,7 +620,7 @@ Enigmail.msg = {
       var embeddedSigned = null;
       var embeddedEncrypted = null;
 
-      if (mimeMsg.parts != null) {
+      if (mimeMsg.parts != null) { // LATER: && Enigmail.msg.savedHeaders["content-type"].search(/^multipart\/encrypted(;|$)/i) != 0) {
         // TB >= 8.0
         var resultObj={ encrypted: "", signed: "" };
         this.enumerateMimeParts(mimeMsg, resultObj);
