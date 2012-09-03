@@ -49,4 +49,10 @@
 
 #define EMBool bool
 
+#if MOZILLA_MAJOR_VERSION > 17
+
+#define nsCAutoString nsAutoCString
+
+#endif // MOZILLA_MAJOR_VERSION
+
 #endif
