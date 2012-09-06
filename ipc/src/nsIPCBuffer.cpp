@@ -829,7 +829,11 @@ nsIPCBuffer::OnStopRequest(nsIRequest* aRequest, nsISupports* aContext,
 NS_IMETHODIMP
 nsIPCBuffer::OnDataAvailable(nsIRequest* aRequest, nsISupports* aContext,
                               nsIInputStream *aInputStream,
+#if MOZILLA_MAJOR_VERSION < 18
                               PRUint32 aSourceOffset,
+#else
+                              PRUint64 aSourceOffset,
+#endif
                               PRUint32 aLength)
 {
   nsresult rv = NS_OK;

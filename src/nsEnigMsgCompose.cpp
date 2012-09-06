@@ -1028,7 +1028,11 @@ NS_IMETHODIMP
 nsEnigMsgCompose::OnDataAvailable(nsIRequest* aRequest,
                                   nsISupports* aContext,
                                   nsIInputStream *aInputStream,
+#if MOZILLA_MAJOR_VERSION < 18
                                   PRUint32 aSourceOffset,
+#else
+                                  PRUint64 aSourceOffset,
+#endif
                                   PRUint32 aLength)
 {
   nsresult rv;
