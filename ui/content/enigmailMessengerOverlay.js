@@ -483,11 +483,19 @@ Enigmail.msg = {
       isAuto: isAuto
     };
 
-    let contentType=currentHeaderData['content-type'].headerValue;
+    let contentType = currentHeaderData['content-type'].headerValue;
 
-    if (((contentType.search(/^multipart\/signed(;|$)/i) == 0) && (contentType.search(/application\/pgp-signature/i)>0)) ||
-        ((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) && (contentType.search(/application\/pgp-encrypted/i)>0))) {
+    // TODO: remove if (...) for TB 17
+    if ("nsIPgpMimeProxy" in Components.interfaces) {
+
       EnigmailDecrypt.setMsgWindow(msgWindow, this.getCurrentMsgUriSpec());
+
+      // don't parse message if we know it's a PGP/MIME message
+      if (((contentType.search(/^multipart\/signed(;|$)/i) == 0) && (contentType.search(/application\/pgp-signature/i)>0)) ||
+        ((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) && (contentType.search(/application\/pgp-encrypted/i)>0))) {
+        this.messageDecryptCb(event, isAuto, null);
+        return;
+      }
     }
 
     try {
@@ -564,7 +572,6 @@ Enigmail.msg = {
         }
         else if (ct.search(/application\/pgp-encrypted/i) >= 0)
           resultObj.encrypted=mimePart.partName;
-          EnigmailDecrypt.setMsgWindow(msgWindow, this.getCurrentMsgUriSpec());
       }
     }
     catch (ex) {
@@ -620,7 +627,7 @@ Enigmail.msg = {
       var embeddedSigned = null;
       var embeddedEncrypted = null;
 
-      if (mimeMsg.parts != null) { // LATER: && Enigmail.msg.savedHeaders["content-type"].search(/^multipart\/encrypted(;|$)/i) != 0) {
+      if (mimeMsg.parts != null && Enigmail.msg.savedHeaders["content-type"].search(/^multipart\/encrypted(;|$)/i) != 0) {
         // TB >= 8.0
         var resultObj={ encrypted: "", signed: "" };
         this.enumerateMimeParts(mimeMsg, resultObj);
@@ -669,19 +676,14 @@ Enigmail.msg = {
       if (contentType.search(/^multipart\/encrypted(;|$)/i) == 0) {
         EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: multipart/encrypted\n");
 
-        if ("nsIPgpMimeProxy" in Components.interfaces) {
-          EnigmailDecrypt.setMsgWindow(msgWindow, msgUriSpec);
-        }
-        else {
-          enigmailSvc = Enigmail.getEnigmailSvc();
-          if (!enigmailSvc)
-            return;
+        enigmailSvc = Enigmail.getEnigmailSvc();
+        if (!enigmailSvc)
+          return;
 
-          if (!enigmailSvc.mimeInitialized()) {
-            // Display enigmail:dummy URL in message pane to initialize
-            this.enigMimeInitialize();
-            return;
-          }
+        if (!enigmailSvc.mimeInitialized()) {
+          // Display enigmail:dummy URL in message pane to initialize
+          this.enigMimeInitialize();
+          return;
         }
       }
 
