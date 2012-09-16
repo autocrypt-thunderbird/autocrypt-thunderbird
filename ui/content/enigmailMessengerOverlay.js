@@ -483,7 +483,8 @@ Enigmail.msg = {
       isAuto: isAuto
     };
 
-    let contentType = currentHeaderData['content-type'].headerValue;
+    let contentType = "text/plain";
+    if ('content-type' in currentHeaderData) contentType=currentHeaderData['content-type'].headerValue;
 
     // TODO: remove if (...) for TB 17
     if ("nsIPgpMimeProxy" in Components.interfaces) {
@@ -743,11 +744,8 @@ Enigmail.msg = {
             Enigmail.msg.verifyEmbeddedMsg(window, mailNewsUrl, msgWindow, msgUriSpec, contentEncoding, event);
           }
           else {
-
-            var verifier = Components.classes[EnigmailCommon.ENIGMIMEVERIFY_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeVerify);
-
-            verifier.init(window, mailNewsUrl, msgWindow, msgUriSpec,
-                          true, enableSubpartTreatment);
+            var verifier = EnigmailDecrypt.newVerfier(false, mailNewsUrl);
+            verifier.startStreaming(window, msgWindow, msgUriSpec);
 
           }
           return;
@@ -1676,21 +1674,17 @@ Enigmail.msg = {
     callbackArg.ipcBuffer.shutdown();
 
     if (txt.length > 0) {
-      msigned=txt.search(/content\-type:[ \t]*multipart\/signed/i);
+      let msigned=txt.search(/content\-type:[ \t]*multipart\/signed/i);
       if(msigned >= 0) {
+
         // Real multipart/signed message; let's try to verify it
         EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: verifyEmbeddedCallback: detected multipart/signed. msigned: "+msigned+"\n");
 
-        callbackArg.enableSubpartTreatment=(msigned > 0);
+        let enableSubpartTreatment=(msigned > 0);
 
-        var uri = Components.classes[EnigmailCommon.SIMPLEURI_CONTRACTID].createInstance(Components.interfaces.nsIURI);
-        uri.spec = "enigmail:dummy";
+        var verifier = EnigmailDecrypt.newVerfier(enableSubpartTreatment, callbackArg.mailNewsUrl);
+        verifier.verifyData(callbackArg.window, callbackArg.msgWindow, callbackArg.msgUriSpec, txt);
 
-        var channel = EnigmailCommon.newStringChannel(uri, "", "", txt);
-        var verifier = Components.classes[EnigmailCommon.ENIGMIMEVERIFY_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeVerify);
-
-        verifier.initWithChannel(callbackArg.window, channel, callbackArg.msgWindow, callbackArg.msgUriSpec,
-                        true, callbackArg.enableSubpartTreatment);
         return;
       }
     }

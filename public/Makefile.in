@@ -56,7 +56,6 @@ XPIDLSRCS     = \
                 nsIEnigMsgCompFields.idl  \
                 nsIEnigMimeService.idl    \
                 nsIEnigMimeDecrypt.idl    \
-                nsIEnigMimeVerify.idl     \
                 nsIEnigMimeWriter.idl     \
                 nsIEnigMimeHeaderSink.idl \
                 nsIEnigMimeListener.idl   \

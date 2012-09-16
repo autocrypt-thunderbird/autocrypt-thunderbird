@@ -157,7 +157,6 @@ var EnigmailCommon = {
   ENIGMAIL_CONTRACTID: "@mozdev.org/enigmail/enigmail;1",
   ENIGMIMELISTENER_CONTRACTID: "@mozilla.org/enigmail/mime-listener;1",
   ENIGMIMESERVICE_CONTRACTID: "@mozdev.org/enigmail/enigmimeservice;1",
-  ENIGMIMEVERIFY_CONTRACTID: "@mozilla.org/enigmail/mime-verify;1",
   IPCBUFFER_CONTRACTID: "@mozilla.org/ipc/ipc-buffer;1",
   IOSERVICE_CONTRACTID: "@mozilla.org/network/io-service;1",
   LOCAL_FILE_CONTRACTID: "@mozilla.org/file/local;1",

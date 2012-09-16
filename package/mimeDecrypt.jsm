@@ -22,15 +22,15 @@ var gConv = Cc["@mozilla.org/intl/scriptableunicodeconverter"]
 gConv.charset = "utf-8";
 
 
-function EnigmailVerify(verifyEmbedded)
+function EnigmailVerify(verifyEmbedded, msgUrl)
 {
   this.verifyEmbedded = verifyEmbedded;
+  this.msgUrl = msgUrl;
 }
 
 
 // verify the signature of PGP/MIME signed messages
 EnigmailVerify.prototype = {
-  //verifyEmbedded: false,
   dataCount: 0,
   foundMsg: false,
   startMsgStr: "",
@@ -38,6 +38,41 @@ EnigmailVerify.prototype = {
   msgUriSpec: null,
   statusDisplayed: false,
   exitCode: null,
+  window: null,
+  inStream: null,
+
+  QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener]),
+
+  startStreaming: function(window, msgWindow, msgUriSpec) {
+    DEBUG_LOG("mimeDecrypt.jsm: v-startStreaming\n");
+
+    this.msgWindow = msgWindow;
+    this.msgUriSpec = msgUriSpec;
+    this.window = window;
+    var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
+    var msgSvc = messenger.messageServiceFromURI(this.msgUriSpec);
+
+    this.inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
+
+    msgSvc.streamMessage(this.msgUriSpec,
+                    this,
+                    this.msgWindow,
+                    null,
+                    false,
+                    null,
+                    false);
+  },
+
+  verifyData: function(window, msgWindow, msgUriSpec, data) {
+    DEBUG_LOG("mimeDecrypt.jsm: v-streamFromChannel\n");
+
+    this.msgWindow = msgWindow;
+    this.msgUriSpec = msgUriSpec;
+    this.window = window;
+    this.onStartRequest();
+    this.onTextData(data);
+    this.onStopRequest();
+  },
 
   onStartRequest: function() {
     DEBUG_LOG("mimeDecrypt.jsm: v-onStartRequest\n");
@@ -59,20 +94,27 @@ EnigmailVerify.prototype = {
     if (!this.verifyEmbedded) this.startVerification();
   },
 
-  onDataAvailable: function(data) {
-    DEBUG_LOG("mimeDecrypt.jsm: v-onDataAvailable\n");
-    if (this.verifyEmbedded && !this.foundMsg) {
+  onDataAvailable: function(req, sup, stream, offset, count) {
+    DEBUG_LOG("mimeDecrypt.jsm: v-onDataAvailable: "+count+"\n");
+    this.inStream.init(stream);
+    var data = this.inStream.read(count);
+    this.onTextData(data);
+  },
+
+  onTextData: function(data) {
+    DEBUG_LOG("mimeDecrypt.jsm: v-onTextData\n");
+    if (!this.foundMsg) {
       // check if mime part could be pgp/mime signed message
       if (this.dataCount > 10240) return;
       this.startMsgStr += data;
-      let  i = this.startMsgStr.search(/^content-type:/i);
+      let  i = this.startMsgStr.search(/^content-type:/im);
       if (i >= 0) {
         let s = data.substr(i).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
         if (s.search(/multipart\/signed/i) > 0 &&
           s.search(/micalg\s*=\s*pgp-/i) > 0 &&
           s.search(/protocol\s*=\s*[\'\"]application\/pgp-signature[\"\']/i) > 0) {
 
-          DEBUG_LOG("mimeDecrypt.jsm: v-onDataAvailable: found PGP/MIME signed message\n");
+          DEBUG_LOG("mimeDecrypt.jsm: v-onTextData: found PGP/MIME signed message\n");
           this.foundMsg = true;
           let hdr = getHeaderData(s);
           this.boundary = hdr["boundary"].replace(/[\'\"]/g, "");
@@ -82,7 +124,7 @@ EnigmailVerify.prototype = {
     }
     this.dataCount += data.length;
 
-    if (!this.verifyEmbedded || this.foundMsg) {
+    if (this.verifyEmbedded && this.foundMsg) {
       // process data as signed message
       if (! this.proc) {
         this.startVerification();
@@ -172,7 +214,7 @@ EnigmailVerify.prototype = {
   },
 
   writeToPipe: function(str) {
-    // DEBUG_LOG("mimeDecrypt.jsm: v-writeToPipe: "+str+"\n");
+    //DEBUG_LOG("mimeDecrypt.jsm: v-writeToPipe: "+str+"\n");
 
     if (this.pipe) {
       this.outQueue += str;
@@ -472,7 +514,7 @@ var EnigmailDecrypt = {
       //DEBUG_LOG("mimeDecrypt.jsm: d-stdout:"+s.length+"\n");
       this.dataLength += s.length;
       this.mimeSvc.onDataAvailable(null, null, gConv.convertToInputStream(s), 0, s.length);
-      this.verifier.onDataAvailable(s);
+      this.verifier.onTextData(s);
     },
 
     stderr: function(s) {
@@ -502,8 +544,8 @@ var EnigmailDecrypt = {
       this.mimeDecryptor.verifier.setMsgWindow(msgWindow, msgUriSpec);
   },
 
-  newVerfier: function (embedded) {
-    let v = new EnigmailVerify(embedded);
+  newVerfier: function (embedded, msgUrl) {
+    let v = new EnigmailVerify(embedded, msgUrl);
 
     if (this.msgWindow || this.msgUriSpec) {
       v.setMsgWindow(this.msgWindow, this.msgUriSpec);
