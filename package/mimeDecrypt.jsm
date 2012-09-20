@@ -103,6 +103,7 @@ EnigmailVerify.prototype = {
 
   onTextData: function(data) {
     DEBUG_LOG("mimeDecrypt.jsm: v-onTextData\n");
+    DEBUG_LOG("...  "+data+"\n");
     if (!this.foundMsg) {
       // check if mime part could be pgp/mime signed message
       if (this.dataCount > 10240) return;
@@ -111,14 +112,14 @@ EnigmailVerify.prototype = {
       if (i >= 0) {
         let s = data.substr(i).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
         if (s.search(/multipart\/signed/i) > 0 &&
-          s.search(/micalg\s*=\s*pgp-/i) > 0 &&
+          s.search(/micalg\s*=\s*[\"\']?pgp-[\"\']?/i) > 0 &&
           s.search(/protocol\s*=\s*[\'\"]application\/pgp-signature[\"\']/i) > 0) {
 
           DEBUG_LOG("mimeDecrypt.jsm: v-onTextData: found PGP/MIME signed message\n");
           this.foundMsg = true;
           let hdr = getHeaderData(s);
           this.boundary = hdr["boundary"].replace(/[\'\"]/g, "");
-          this.hash = hdr["micalg"].replace(/^pgp-/, "").toUpperCase();
+          this.hash = hdr["micalg"].replace(/[\'\"]/g, "").toUpperCase().replace(/^PGP-/, "");
         }
       }
     }
@@ -134,7 +135,7 @@ EnigmailVerify.prototype = {
     this.keepData += data;
     if (this.writeMode == 0) {
       // header data
-      let i = this.keepData.search(RegExp("^--"+this.boundary+"$", "m"));
+      let i = this.findNextMimePart();
       if (i >= 0) {
         i += 2 + this.boundary.length;
         if (this.keepData[i] == "\n") {
@@ -161,7 +162,7 @@ EnigmailVerify.prototype = {
 
     if (this.writeMode == 1) {
       // "real data"
-      let i = this.keepData.search(RegExp("^--"+this.boundary+"$", "m"));
+      let i = this.findNextMimePart();
       if (i >= 0) {
         data = this.keepData.substr(0, i);
         this.keepData = this.keepData.substr(i);
@@ -191,6 +192,29 @@ EnigmailVerify.prototype = {
       this.keepData = "";
     }
 
+  },
+
+  findNextMimePart: function() {
+    let startOk = false;
+    let endOk = false;
+
+    let i = this.keepData.indexOf("--"+this.boundary);
+    if (i == 0) startOk = true;
+    if (i > 0) {
+      if (this.keepData[i-1] == '\r' || this.keepData[i-1] == '\n') startOk = true;
+    }
+
+    if (i + this.boundary.length + 2 < this.keepData) {
+      if (this.keepData[i + this.boundary.length + 2] == '\r' ||
+        this.keepData[i + this.boundary.length + 2] == '\n') endOk = true;
+    }
+    else
+      endOk = true;
+
+    if (i >= 0 && startOk && endOk) {
+      return i;
+    }
+    return -1;
   },
 
   startVerification: function() {
