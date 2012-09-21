@@ -103,7 +103,6 @@ EnigmailVerify.prototype = {
 
   onTextData: function(data) {
     DEBUG_LOG("mimeDecrypt.jsm: v-onTextData\n");
-    DEBUG_LOG("...  "+data+"\n");
     if (!this.foundMsg) {
       // check if mime part could be pgp/mime signed message
       if (this.dataCount > 10240) return;
@@ -297,8 +296,10 @@ EnigmailVerify.prototype = {
   setMsgWindow: function(msgWindow, msgUriSpec) {
     DEBUG_LOG("mimeDecrypt.jsm: v-setMsgWindow:\n");
 
-    this.msgWindow = msgWindow;
-    this.msgUriSpec = msgUriSpec;
+    if (! this.msgWindow) {
+      this.msgWindow = msgWindow;
+      this.msgUriSpec = msgUriSpec;
+    }
   },
 
   displayStatus: function() {
@@ -357,7 +358,7 @@ var EnigmailDecrypt = {
     statusDisplayed: false,
     QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener]),
 
-    onStartRequest: function(request, channel) {
+    onStartRequest: function() {
       if (!Ec.getService()) // Ensure Enigmail is initialized
         return;
       this.initOk = true;
@@ -371,15 +372,6 @@ var EnigmailDecrypt = {
       this.msgUriSpec = null;
       this.verifier = null;
       this.statusDisplayed = false;
-      if (channel) {
-        try {
-          channel = channel.QueryInterface(Ci.nsIChannel);
-          this.msgUriSpec = channel.URI.spec;
-        }
-        catch (ex) {
-          DEBUG_LOG("mimeDecrypt.jsm: d-onStartRequest: failed to extract urispec from channel");
-        }
-      }
       this.returnStatus = null;
       this.dataLength = 0;
       this.mimePartCount = 0;
@@ -405,7 +397,6 @@ var EnigmailDecrypt = {
       var data = this.inStream.read(count);
       if (count > 0) {
         // detect MIME part boundary
-        //DEBUG_LOG("mimeDecrypt.jsm: d-onDataAvailable: >"+data+"<\n");
         if (data.indexOf(this.boundary) >= 0) {
           DEBUG_LOG("mimeDecrypt.jsm: d-onDataAvailable: found boundary\n");
           ++this.mimePartCount;
