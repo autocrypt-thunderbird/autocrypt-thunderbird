@@ -294,7 +294,7 @@ EnigmailVerify.prototype = {
   },
 
   setMsgWindow: function(msgWindow, msgUriSpec) {
-    DEBUG_LOG("mimeDecrypt.jsm: v-setMsgWindow:\n");
+    DEBUG_LOG("mimeDecrypt.jsm: v-setMsgWindow: "+msgUriSpec+"\n");
 
     if (! this.msgWindow) {
       this.msgWindow = msgWindow;
@@ -304,7 +304,6 @@ EnigmailVerify.prototype = {
 
   displayStatus: function() {
     DEBUG_LOG("mimeDecrypt.jsm: v-displayStatus\n");
-    DEBUG_LOG("mimeDecrypt.jsm: v-displayStatus: "+this.msgWindow+"\n");
     if (this.exitCode == null || this.msgWindow == null || this.statusDisplayed)
       return;
 
@@ -335,6 +334,8 @@ EnigmailVerify.prototype = {
 // handler for PGP/MIME encrypted messages
 // data is processed from libmime -> nsPgpMimeProxy
 var EnigmailDecrypt = {
+  lastMsgWindow: null,
+  lastMsgUri: null,
   mimeDecryptor: {
     mimeSvc: null,
     inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
@@ -368,12 +369,13 @@ var EnigmailDecrypt = {
       this.closePipe = false;
       this.exitCode = null;
       this.foundPgp = false;
-      this.msgWindow = null;
-      this.msgUriSpec = null;
+      this.msgWindow = EnigmailDecrypt.lastMsgWindow;
+      this.msgUriSpec = EnigmailDecrypt.lastMsgUri;
       this.verifier = null;
       this.statusDisplayed = false;
       this.returnStatus = null;
       this.dataLength = 0;
+      this.decryptedData = "";
       this.mimePartCount = 0;
       this.matchedPgpDelimiter = 0;
       this.outQueue = "";
@@ -384,6 +386,7 @@ var EnigmailDecrypt = {
       var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
       var win = windowManager.getMostRecentWindow(null);
       this.verifier = EnigmailDecrypt.newVerfier(true);
+      this.verifier.setMsgWindow(this.msgWindow, this.msgUriSpec);
       this.verifier.onStartRequest(true);
       this.proc = Ec.decryptMessageStart(win, false, this,
                       statusFlagsObj, errorMsgObj);
@@ -443,19 +446,6 @@ var EnigmailDecrypt = {
     onStopRequest: function(request, win, status) {
       if (! this.initOk) return;
       DEBUG_LOG("mimeDecrypt.jsm: d-onStopRequest\n");
-
-/*
-      if (win) {
-        try {
-          var msgWin = win.QueryInterface(Ci.nsIMsgWindow);
-          DEBUG_LOG("mimeDecrypt.jsm: d-onStopRequest: win="+msgWin+"\n");
-          EnigmailDecrypt.setMsgWindow(msgWin, this.msgUriSpec);
-        }
-        catch(ex) {
-          Ec.writeException("mimeDecrypt.jsm", ex);
-        }
-      }
-*/
 
       if (! this.proc) return;
       this.flushInput();
@@ -528,8 +518,7 @@ var EnigmailDecrypt = {
       // write data back to libmime
       //DEBUG_LOG("mimeDecrypt.jsm: d-stdout:"+s.length+"\n");
       this.dataLength += s.length;
-      this.mimeSvc.onDataAvailable(null, null, gConv.convertToInputStream(s), 0, s.length);
-      this.verifier.onTextData(s);
+      this.decryptedData += s;
     },
 
     stderr: function(s) {
@@ -539,33 +528,22 @@ var EnigmailDecrypt = {
 
     done: function(exitCode) {
       DEBUG_LOG("mimeDecrypt.jsm: d-done: "+exitCode+"\n");
+      this.mimeSvc.onDataAvailable(null, null, gConv.convertToInputStream(this.decryptedData), 0, this.dataLength);
+      this.verifier.onTextData(this.decryptedData);
       this.verifier.onStopRequest();
       this.exitCode = exitCode;
     }
   },
 
   setMsgWindow: function(msgWindow, msgUriSpec) {
-    DEBUG_LOG("mimeDecrypt.jsm: d-setMsgWindow:\n");
+    DEBUG_LOG("mimeDecrypt.jsm: setMsgWindow: "+msgUriSpec+"\n");
 
-    if (this.mimeDecryptor.msgWindow != null) {
-      DEBUG_LOG("mimeDecrypt.jsm: d-setMsgWindow: status already displayed\n");
-      return;
-    }
-
-    this.mimeDecryptor.msgWindow = msgWindow;
-    this.mimeDecryptor.msgUriSpec = msgUriSpec;
-    this.mimeDecryptor.displayStatus();
-    if (this.mimeDecryptor.verifier)
-      this.mimeDecryptor.verifier.setMsgWindow(msgWindow, msgUriSpec);
+    this.lastMsgWindow = msgWindow;
+    this.lastMsgUri = msgUriSpec;
   },
 
   newVerfier: function (embedded, msgUrl) {
     let v = new EnigmailVerify(embedded, msgUrl);
-
-    if (this.msgWindow || this.msgUriSpec) {
-      v.setMsgWindow(this.msgWindow, this.msgUriSpec);
-    }
-
     return v;
   }
 }

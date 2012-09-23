@@ -35,6 +35,7 @@
 
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 Components.utils.import("resource://enigmail/commonFuncs.jsm");
+Components.utils.import("resource://enigmail/mimeDecrypt.jsm");
 
 if (! Enigmail) var Enigmail = {};
 
@@ -534,6 +535,7 @@ Enigmail.hdrView = {
         try {
 
           Enigmail.hdrView.statusBarHide();
+          EnigmailDecrypt.setMsgWindow(msgWindow, Enigmail.msg.getCurrentMsgUriSpec());
 
           var statusText = document.getElementById("enigmailStatusText");
           if (statusText) statusText.value="";

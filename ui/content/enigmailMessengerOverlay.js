@@ -489,7 +489,7 @@ Enigmail.msg = {
     // TODO: remove if (...) for TB 17
     if ("nsIPgpMimeProxy" in Components.interfaces) {
 
-      EnigmailDecrypt.setMsgWindow(msgWindow, this.getCurrentMsgUriSpec());
+      //EnigmailDecrypt.setMsgWindow(msgWindow, this.getCurrentMsgUriSpec());
 
       // don't parse message if we know it's a PGP/MIME message
       if (((contentType.search(/^multipart\/signed(;|$)/i) == 0) && (contentType.search(/application\/pgp-signature/i)>0)) ||
