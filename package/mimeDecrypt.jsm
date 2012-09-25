@@ -15,6 +15,8 @@ const Ec = EnigmailCommon;
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 
+const maxBufferLen = 102400;
+
 var gDebugLog = false;
 
 var gConv = Cc["@mozilla.org/intl/scriptableunicodeconverter"]
@@ -241,7 +243,7 @@ EnigmailVerify.prototype = {
 
     if (this.pipe) {
       this.outQueue += str;
-      if (this.outQueue.length > 920)
+      if (this.outQueue.length > maxBufferLen)
         this.flushInput();
     }
     else
@@ -429,7 +431,7 @@ var EnigmailDecrypt = {
     writeToPipe: function(str) {
       if (this.pipe) {
         this.outQueue += str;
-        if (this.outQueue.length > 920)
+        if (this.outQueue.length > maxBufferLen)
           this.flushInput();
       }
       else
@@ -531,6 +533,7 @@ var EnigmailDecrypt = {
       this.mimeSvc.onDataAvailable(null, null, gConv.convertToInputStream(this.decryptedData), 0, this.dataLength);
       this.verifier.onTextData(this.decryptedData);
       this.verifier.onStopRequest();
+      this.decryptedData = "";
       this.exitCode = exitCode;
     }
   },
