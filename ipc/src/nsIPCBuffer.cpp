@@ -287,7 +287,7 @@ nsIPCBuffer::OpenURI(nsIURI* aURI, PRInt32 maxBytes, IPCBool synchronous,
   // Close input stream
   inputStream->Close();
 
-  OnStopRequest(NULL, mObserverContext, 0);
+  OnStopRequest(NULL, mObserverContext, NS_OK);
 
   return NS_OK;
 }

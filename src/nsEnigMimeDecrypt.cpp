@@ -246,7 +246,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
   nsCAutoString uriSpec("");
 
   if (mListener) {
-    rv = mListener->OnStopRequest(NULL, NULL, 0);
+    rv = mListener->OnStopRequest(NULL, NULL, NS_OK);
     if (NS_FAILED(rv))
       return rv;
 
@@ -262,7 +262,7 @@ nsEnigMimeDecrypt::FinishAux(nsIMsgWindow* msgWindow, nsIURI* uri)
     mListener = NULL;
   }
 
-  rv = mBuffer->OnStopRequest(NULL, NULL, 0);
+  rv = mBuffer->OnStopRequest(NULL, NULL, NS_OK);
   if (NS_FAILED(rv))
     return rv;
 
