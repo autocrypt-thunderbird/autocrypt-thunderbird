@@ -358,12 +358,14 @@ var EnigmailDecrypt = {
     returnStatus: null,
     verifier: null,
     proc: null,
+    disabled: true,
     statusDisplayed: false,
     QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener]),
 
     onStartRequest: function() {
       if (!Ec.getService()) // Ensure Enigmail is initialized
         return;
+      if (this.disabled) return;
       this.initOk = true;
       DEBUG_LOG("mimeDecrypt.jsm: d-onStartRequest\n");
       this.lineNum = 0;
@@ -396,6 +398,7 @@ var EnigmailDecrypt = {
 
     onDataAvailable: function(req, sup, stream, offset, count) {
       // get data from libmime
+      if (this.disabled) return;
       if (! this.initOk) return;
       DEBUG_LOG("mimeDecrypt.jsm: d-onDataAvailable: "+count+"\n");
       this.inStream.init(stream);
@@ -498,6 +501,7 @@ var EnigmailDecrypt = {
               null);
         }
         this.statusDisplayed = true;
+        this.disabled = true; // disable until re-enabled via GUI trigger
       }
       catch(ex) {
         Ec.writeException("mimeDecrypt.jsm", ex);
@@ -541,8 +545,20 @@ var EnigmailDecrypt = {
   setMsgWindow: function(msgWindow, msgUriSpec) {
     DEBUG_LOG("mimeDecrypt.jsm: setMsgWindow: "+msgUriSpec+"\n");
 
+    if (! this.mimeDecryptor.disabled) {
+      // detected multi-message selection --> disable decryption
+      this.disableDecrypt();
+      return;
+    }
+
+    this.mimeDecryptor.disabled = false;
     this.lastMsgWindow = msgWindow;
     this.lastMsgUri = msgUriSpec;
+  },
+
+  disableDecrypt: function() {
+    DEBUG_LOG("mimeDecrypt.jsm: disableDecrypt\n");
+    this.mimeDecryptor.disabled = true;
   },
 
   newVerfier: function (embedded, msgUrl) {
@@ -624,5 +640,5 @@ function registerDecryptor() {
   }
 }
 
-registerDecryptor();
-dump("mimeDecrypt.jsm: MimeDecryptor registration done");
+// registerDecryptor();
+// dump("mimeDecrypt.jsm: MimeDecryptor registration done");

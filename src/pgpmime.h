@@ -37,10 +37,10 @@
 
 #include "nsIMimeContentTypeHandler.h"
 
-#ifndef NS_PGPMIME_CONTENT_TYPE_HANDLER_CID
+// ifndef NS_PGPMIME_CONTENT_TYPE_HANDLER_CID -- always on
 
-// define EM_OLD_MIME 1 -- disabled
+#define EM_OLD_MIME 1
 
-#endif
+// endif
 
 #endif

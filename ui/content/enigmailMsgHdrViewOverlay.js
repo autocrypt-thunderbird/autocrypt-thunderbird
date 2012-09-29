@@ -535,7 +535,11 @@ Enigmail.hdrView = {
         try {
 
           Enigmail.hdrView.statusBarHide();
-          EnigmailDecrypt.setMsgWindow(msgWindow, Enigmail.msg.getCurrentMsgUriSpec());
+          if (gFolderDisplay.selectedMessages.length != 1) {
+            EnigmailDecrypt.disableDecrypt();
+          }
+          else
+            EnigmailDecrypt.setMsgWindow(msgWindow, Enigmail.msg.getCurrentMsgUriSpec());
 
           var statusText = document.getElementById("enigmailStatusText");
           if (statusText) statusText.value="";
