@@ -39,7 +39,7 @@
 
 #ifndef NS_PGPMIME_CONTENT_TYPE_HANDLER_CID
 
-#define EM_OLD_MIME 1
+// define EM_OLD_MIME 1 -- disabled
 
 #endif
 
