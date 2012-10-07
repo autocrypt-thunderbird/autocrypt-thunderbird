@@ -46,7 +46,7 @@ catch (ex) {
 
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 Components.utils.import("resource://enigmail/commonFuncs.jsm");
-Components.utils.import("resource://enigmail/mimeDecrypt.jsm");
+Components.utils.import("resource://enigmail/mimeVerify.jsm");
 
 if (! Enigmail) var Enigmail = {};
 
@@ -256,10 +256,10 @@ Enigmail.msg = {
     // "this" is not Enigmail.msg here
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: *****enigMimeInit\n");
 
-//     if ("nsIPgpMimeProxy" in Components.interfaces) {
-//       // new interface
-//     }
-//     else {
+    if ("nsIPgpMimeProxy" in Components.interfaces) {
+      // new interface
+    }
+    else {
       try {
         const enigContenthanderCid =
           Components.ID("{847b3a51-7ab1-11d4-8f02-006008948af5}");
@@ -301,7 +301,7 @@ Enigmail.msg = {
         Enigmail.msg.savedHeaders = null;
         EnigmailCommon.ERROR_LOG("enigmailMessengerOverlay.js: *****enigMimeInit: Error in MIME initialization\n");
       }
-//     }
+     }
   },
 
   messageFrameUnload: function ()
@@ -486,7 +486,6 @@ Enigmail.msg = {
     let contentType = "text/plain";
     if ('content-type' in currentHeaderData) contentType=currentHeaderData['content-type'].headerValue;
 
-/*
     if ("nsIPgpMimeProxy" in Components.interfaces) {
 
       // don't parse message if we know it's a PGP/MIME message
@@ -496,7 +495,7 @@ Enigmail.msg = {
         return;
       }
     }
-*/
+
     try {
       if (gFolderDisplay.selectedMessageIsNews) throw "dummy"; // workaround for broken NNTP support in Gloda
       MsgHdrToMimeMessage(gFolderDisplay.selectedMessage , cbObj, Enigmail.msg.msgDecryptMimeCb, true, {examineEncryptedParts: true, partsOnDemand: false});
@@ -528,10 +527,10 @@ Enigmail.msg = {
 
   enigMimeInitialize: function ()
   {
-//     if ("nsIPgpMimeProxy" in Components.interfaces) {
-//       EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: enigMimeInitialize() - detected nsIPgpMimeProxy\n");
-//     }
-//     else {
+    if ("nsIPgpMimeProxy" in Components.interfaces) {
+      EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: enigMimeInitialize() - detected nsIPgpMimeProxy\n");
+    }
+    else {
       EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: enigMimeInitialize() - loading enigmail:dummy ...\n");
 
       // Need to add event listener to Enigmail.msg.messagePane to make it work
@@ -543,7 +542,7 @@ Enigmail.msg = {
 
       var msgFrame = EnigmailCommon.getFrame(window, "messagepane");
       messenger.loadURL(msgFrame, "enigmail:dummy");
-//     }
+    }
     return;
   },
 
@@ -626,7 +625,7 @@ Enigmail.msg = {
       var embeddedSigned = null;
       var embeddedEncrypted = null;
 
-      if (mimeMsg.parts != null) { // && Enigmail.msg.savedHeaders["content-type"].search(/^multipart\/encrypted(;|$)/i) != 0) {
+      if (mimeMsg.parts != null && Enigmail.msg.savedHeaders["content-type"].search(/^multipart\/encrypted(;|$)/i) != 0) {
         // TB >= 8.0
         var resultObj={ encrypted: "", signed: "" };
         this.enumerateMimeParts(mimeMsg, resultObj);
@@ -742,7 +741,7 @@ Enigmail.msg = {
             Enigmail.msg.verifyEmbeddedMsg(window, mailNewsUrl, msgWindow, msgUriSpec, contentEncoding, event);
           }
           else {
-            var verifier = EnigmailDecrypt.newVerfier(false, mailNewsUrl);
+            var verifier = EnigmailVerify.newVerfier(false, mailNewsUrl);
             verifier.startStreaming(window, msgWindow, msgUriSpec);
 
           }
@@ -1680,7 +1679,7 @@ Enigmail.msg = {
 
         let enableSubpartTreatment=(msigned > 0);
 
-        var verifier = EnigmailDecrypt.newVerfier(enableSubpartTreatment, callbackArg.mailNewsUrl);
+        var verifier = EnigmailVerify.newVerfier(enableSubpartTreatment, callbackArg.mailNewsUrl);
         verifier.verifyData(callbackArg.window, callbackArg.msgWindow, callbackArg.msgUriSpec, txt);
 
         return;

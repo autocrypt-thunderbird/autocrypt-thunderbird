@@ -2,12 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+
+/**
+ *  Module for handling PGP/MIME signed messages
+ *  implemented as JS module
+ */
+
 'use strict';
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 
-var EXPORTED_SYMBOLS = [ "EnigmailDecrypt" ];
+var EXPORTED_SYMBOLS = [ "EnigmailVerify" ];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -19,12 +25,7 @@ const maxBufferLen = 102400;
 
 var gDebugLog = false;
 
-var gConv = Cc["@mozilla.org/intl/scriptableunicodeconverter"]
-                        .getService(Ci.nsIScriptableUnicodeConverter);
-gConv.charset = "utf-8";
-
-
-function EnigmailVerify(verifyEmbedded, msgUrl)
+function MimeVerify(verifyEmbedded, msgUrl)
 {
   this.verifyEmbedded = verifyEmbedded;
   this.msgUrl = msgUrl;
@@ -32,7 +33,7 @@ function EnigmailVerify(verifyEmbedded, msgUrl)
 
 
 // verify the signature of PGP/MIME signed messages
-EnigmailVerify.prototype = {
+MimeVerify.prototype = {
   dataCount: 0,
   foundMsg: false,
   startMsgStr: "",
@@ -46,7 +47,7 @@ EnigmailVerify.prototype = {
   QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener]),
 
   startStreaming: function(window, msgWindow, msgUriSpec) {
-    DEBUG_LOG("mimeDecrypt.jsm: v-startStreaming\n");
+    DEBUG_LOG("mimeVerify.jsm: startStreaming\n");
 
     this.msgWindow = msgWindow;
     this.msgUriSpec = msgUriSpec;
@@ -66,7 +67,7 @@ EnigmailVerify.prototype = {
   },
 
   verifyData: function(window, msgWindow, msgUriSpec, data) {
-    DEBUG_LOG("mimeDecrypt.jsm: v-streamFromChannel\n");
+    DEBUG_LOG("mimeVerify.jsm: streamFromChannel\n");
 
     this.msgWindow = msgWindow;
     this.msgUriSpec = msgUriSpec;
@@ -77,7 +78,7 @@ EnigmailVerify.prototype = {
   },
 
   onStartRequest: function() {
-    DEBUG_LOG("mimeDecrypt.jsm: v-onStartRequest\n");
+    DEBUG_LOG("mimeVerify.jsm: onStartRequest\n");
     this.dataCount = 0;
     this.foundMsg = false;
     this.startMsgStr = "";
@@ -97,14 +98,14 @@ EnigmailVerify.prototype = {
   },
 
   onDataAvailable: function(req, sup, stream, offset, count) {
-    DEBUG_LOG("mimeDecrypt.jsm: v-onDataAvailable: "+count+"\n");
+    DEBUG_LOG("mimeVerify.jsm: onDataAvailable: "+count+"\n");
     this.inStream.init(stream);
     var data = this.inStream.read(count);
     this.onTextData(data);
   },
 
   onTextData: function(data) {
-    DEBUG_LOG("mimeDecrypt.jsm: v-onTextData\n");
+    DEBUG_LOG("mimeVerify.jsm: onTextData\n");
     if (!this.foundMsg) {
       // check if mime part could be pgp/mime signed message
       if (this.dataCount > 10240) return;
@@ -116,7 +117,7 @@ EnigmailVerify.prototype = {
           s.search(/micalg\s*=\s*[\"\']?pgp-[\"\']?/i) > 0 &&
           s.search(/protocol\s*=\s*[\'\"]application\/pgp-signature[\"\']/i) > 0) {
 
-          DEBUG_LOG("mimeDecrypt.jsm: v-onTextData: found PGP/MIME signed message\n");
+          DEBUG_LOG("mimeVerify.jsm: onTextData: found PGP/MIME signed message\n");
           this.foundMsg = true;
           let hdr = getHeaderData(s);
           this.boundary = hdr["boundary"].replace(/[\'\"]/g, "");
@@ -219,7 +220,7 @@ EnigmailVerify.prototype = {
   },
 
   startVerification: function() {
-    DEBUG_LOG("mimeDecrypt.jsm: v-startVerification\n");
+    DEBUG_LOG("mimeVerify.jsm: startVerification\n");
       var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
       var win = windowManager.getMostRecentWindow(null);
       var statusFlagsObj = {};
@@ -229,7 +230,7 @@ EnigmailVerify.prototype = {
   },
 
   onStopRequest: function() {
-    DEBUG_LOG("mimeDecrypt.jsm: v-onStopRequest\n");
+    DEBUG_LOG("mimeVerify.jsm: onStopRequest\n");
     this.flushInput();
     if (this.pipe) {
       this.pipe.close()
@@ -239,7 +240,7 @@ EnigmailVerify.prototype = {
   },
 
   writeToPipe: function(str) {
-    //DEBUG_LOG("mimeDecrypt.jsm: v-writeToPipe: "+str+"\n");
+    //DEBUG_LOG("mimeVerify.jsm: writeToPipe: "+str+"\n");
 
     if (this.pipe) {
       this.outQueue += str;
@@ -251,7 +252,7 @@ EnigmailVerify.prototype = {
   },
 
   flushInput: function() {
-    DEBUG_LOG("mimeDecrypt.jsm: v-flushInput\n");
+    DEBUG_LOG("mimeVerify.jsm: flushInput\n");
     if (! this.pipe) return;
     this.pipe.write(this.outQueue);
     this.outQueue = "";
@@ -259,7 +260,7 @@ EnigmailVerify.prototype = {
 
   // API for decryptMessage Listener
   stdin: function(pipe) {
-    DEBUG_LOG("mimeDecrypt.jsm: v-stdin\n");
+    DEBUG_LOG("mimeVerify.jsm: stdin\n");
     if (this.outQueue.length > 0) {
       pipe.write(this.outQueue);
       this.outQueue = "";
@@ -269,19 +270,19 @@ EnigmailVerify.prototype = {
   },
 
   stdout: function(s) {
-    DEBUG_LOG("mimeDecrypt.jsm:v-stdout:"+s.length+"\n");
+    DEBUG_LOG("mimeVerify.jsm: stdout:"+s.length+"\n");
     this.dataLength += s.length;
   },
 
   stderr: function(s) {
-    DEBUG_LOG("mimeDecrypt.jsm: v-stderr\n");
+    DEBUG_LOG("mimeVerify.jsm: stderr\n");
     this.statusStr += s;
   },
 
   done: function(exitCode) {
-    DEBUG_LOG("mimeDecrypt.jsm: v-done: "+exitCode+"\n");
+    DEBUG_LOG("mimeVerify.jsm: done: "+exitCode+"\n");
     this.exitCode = exitCode;
-    //DEBUG_LOG("mimeDecrypt.jsm: "+this.statusStr+"\n");
+    //DEBUG_LOG("mimeVerify.jsm: "+this.statusStr+"\n");
 
     this.returnStatus = {};
     Ec.decryptMessageEnd(this.statusStr,
@@ -296,7 +297,7 @@ EnigmailVerify.prototype = {
   },
 
   setMsgWindow: function(msgWindow, msgUriSpec) {
-    DEBUG_LOG("mimeDecrypt.jsm: v-setMsgWindow: "+msgUriSpec+"\n");
+    DEBUG_LOG("mimeVerify.jsm: setMsgWindow: "+msgUriSpec+"\n");
 
     if (! this.msgWindow) {
       this.msgWindow = msgWindow;
@@ -305,12 +306,12 @@ EnigmailVerify.prototype = {
   },
 
   displayStatus: function() {
-    DEBUG_LOG("mimeDecrypt.jsm: v-displayStatus\n");
+    DEBUG_LOG("mimeVerify.jsm: displayStatus\n");
     if (this.exitCode == null || this.msgWindow == null || this.statusDisplayed)
       return;
 
     try {
-      DEBUG_LOG("mimeDecrypt.jsm: v-displayStatus displaying result\n");
+      DEBUG_LOG("mimeVerify.jsm: displayStatus displaying result\n");
       let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
 
       if (headerSink) {
@@ -327,242 +328,24 @@ EnigmailVerify.prototype = {
       this.statusDisplayed = true;
     }
     catch(ex) {
-      Ec.writeException("mimeDecrypt.jsm", ex);
+      Ec.writeException("mimeVerify.jsm", ex);
     }
   }
 }
 
-
-// handler for PGP/MIME encrypted messages
-// data is processed from libmime -> nsPgpMimeProxy
-var EnigmailDecrypt = {
+var EnigmailVerify = {
   lastMsgWindow: null,
   lastMsgUri: null,
-  mimeDecryptor: {
-    mimeSvc: null,
-    inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
-    lineNum: 0,
-    initOk: false,
-    foundPgp: false,
-    boundary: "",
-    pipe: null,
-    closePipe: false,
-    statusStr: "",
-    outqueue: "",
-    dataLength: 0,
-    mimePartCount: 0,
-    matchedPgpDelimiter: 0,
-    exitCode: null,
-    msgWindow: null,
-    msgUriSpec: null,
-    returnStatus: null,
-    verifier: null,
-    proc: null,
-    disabled: true,
-    statusDisplayed: false,
-    QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener]),
-
-    onStartRequest: function() {
-      if (!Ec.getService()) // Ensure Enigmail is initialized
-        return;
-      if (this.disabled) return;
-      this.initOk = true;
-      DEBUG_LOG("mimeDecrypt.jsm: d-onStartRequest\n");
-      this.lineNum = 0;
-      this.pipe = null;
-      this.closePipe = false;
-      this.exitCode = null;
-      this.foundPgp = false;
-      this.msgWindow = EnigmailDecrypt.lastMsgWindow;
-      this.msgUriSpec = EnigmailDecrypt.lastMsgUri;
-      this.verifier = null;
-      this.statusDisplayed = false;
-      this.returnStatus = null;
-      this.dataLength = 0;
-      this.decryptedData = "";
-      this.mimePartCount = 0;
-      this.matchedPgpDelimiter = 0;
-      this.outQueue = "";
-      this.statusStr = "";
-      this.boundary = getBoundary(this.mimeSvc.contentType);
-      var statusFlagsObj = {};
-      var errorMsgObj = {};
-      var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
-      var win = windowManager.getMostRecentWindow(null);
-      this.verifier = EnigmailDecrypt.newVerfier(true);
-      this.verifier.setMsgWindow(this.msgWindow, this.msgUriSpec);
-      this.verifier.onStartRequest(true);
-      this.proc = Ec.decryptMessageStart(win, false, this,
-                      statusFlagsObj, errorMsgObj);
-    },
-
-    onDataAvailable: function(req, sup, stream, offset, count) {
-      // get data from libmime
-      if (this.disabled) return;
-      if (! this.initOk) return;
-      DEBUG_LOG("mimeDecrypt.jsm: d-onDataAvailable: "+count+"\n");
-      this.inStream.init(stream);
-      var data = this.inStream.read(count);
-      if (count > 0) {
-        // detect MIME part boundary
-        if (data.indexOf(this.boundary) >= 0) {
-          DEBUG_LOG("mimeDecrypt.jsm: d-onDataAvailable: found boundary\n");
-          ++this.mimePartCount;
-          return;
-        }
-
-        // found PGP/MIME "body"
-        if (this.mimePartCount == 2) {
-          if (!this.matchedPgpDelimiter) {
-            if (data.indexOf("-----BEGIN PGP MESSAGE-----") == 0)
-              this.matchedPgpDelimiter = 1;
-          }
-
-          if (this.matchedPgpDelimiter == 1) {
-            this.writeToPipe(data);
-
-            if (data.indexOf("-----END PGP MESSAGE-----") == 0) {
-              this.writeToPipe("\n");
-              this.matchedPgpDelimiter = 2;
-            }
-          }
-        }
-      }
-    },
-
-    // (delayed) writing to subprocess
-    writeToPipe: function(str) {
-      if (this.pipe) {
-        this.outQueue += str;
-        if (this.outQueue.length > maxBufferLen)
-          this.flushInput();
-      }
-      else
-        this.outQueue += str;
-    },
-
-    flushInput: function() {
-      DEBUG_LOG("mimeDecrypt.jsm: d-flushInput\n");
-      if (! this.pipe) return;
-      this.pipe.write(this.outQueue);
-      this.outQueue = "";
-    },
-
-    onStopRequest: function(request, win, status) {
-      if (! this.initOk) return;
-      DEBUG_LOG("mimeDecrypt.jsm: d-onStopRequest\n");
-
-      if (! this.proc) return;
-      this.flushInput();
-
-      var thread = Cc['@mozilla.org/thread-manager;1'].getService(Ci.nsIThreadManager).currentThread;
-      if (! this.pipe) {
-        this.closePipe = true;
-      }
-      else
-        this.pipe.close();
-
-      this.proc.wait();
-
-      this.returnStatus = {};
-      Ec.decryptMessageEnd(this.statusStr,
-            this.exitCode,
-            this.dataLength,
-            false,
-            false,
-            Ci.nsIEnigmail.UI_PGP_MIME,
-            this.returnStatus);
-
-      this.displayStatus();
-
-      DEBUG_LOG("mimeDecrypt.jsm: d-onStopRequest: process terminated\n");
-      this.proc = null;
-      return 0;
-    },
-
-    displayStatus: function() {
-      DEBUG_LOG("mimeDecrypt.jsm: d-displayStatus\n");
-      if (this.exitCode == null || this.msgWindow == null || this.statusDisplayed)
-        return;
-
-      try {
-        DEBUG_LOG("mimeDecrypt.jsm: d-displayStatus displaying result\n");
-        let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
-
-        if (headerSink) {
-          headerSink.updateSecurityStatus(this.msgUriSpec,
-              this.exitCode,
-              this.returnStatus.statusFlags,
-              this.returnStatus.keyId,
-              this.returnStatus.userId,
-              this.returnStatus.sigDetails,
-              this.returnStatus.errorMsg,
-              this.returnStatus.blockSeparation,
-              null);
-        }
-        this.statusDisplayed = true;
-        this.disabled = true; // disable until re-enabled via GUI trigger
-      }
-      catch(ex) {
-        Ec.writeException("mimeDecrypt.jsm", ex);
-      }
-      DEBUG_LOG("mimeDecrypt.jsm: d-displayStatus done\n");
-    },
-
-    // API for decryptMessage Listener
-    stdin: function(pipe) {
-      DEBUG_LOG("mimeDecrypt.jsm: d-stdin\n");
-      if (this.outQueue.length > 0) {
-        pipe.write(this.outQueue);
-        this.outQueue = "";
-        if (this.closePipe) pipe.close();
-      }
-      this.pipe = pipe;
-    },
-
-    stdout: function(s) {
-      // write data back to libmime
-      //DEBUG_LOG("mimeDecrypt.jsm: d-stdout:"+s.length+"\n");
-      this.dataLength += s.length;
-      this.decryptedData += s;
-    },
-
-    stderr: function(s) {
-      DEBUG_LOG("mimeDecrypt.jsm: d-stderr\n");
-      this.statusStr += s;
-    },
-
-    done: function(exitCode) {
-      DEBUG_LOG("mimeDecrypt.jsm: d-done: "+exitCode+"\n");
-      this.mimeSvc.onDataAvailable(null, null, gConv.convertToInputStream(this.decryptedData), 0, this.dataLength);
-      this.verifier.onTextData(this.decryptedData);
-      this.verifier.onStopRequest();
-      this.decryptedData = "";
-      this.exitCode = exitCode;
-    }
-  },
 
   setMsgWindow: function(msgWindow, msgUriSpec) {
-    DEBUG_LOG("mimeDecrypt.jsm: setMsgWindow: "+msgUriSpec+"\n");
+    DEBUG_LOG("mimeVerify.jsm: setMsgWindow: "+msgUriSpec+"\n");
 
-    if (! this.mimeDecryptor.disabled) {
-      // detected multi-message selection --> disable decryption
-      this.disableDecrypt();
-      return;
-    }
-
-    this.mimeDecryptor.disabled = false;
     this.lastMsgWindow = msgWindow;
     this.lastMsgUri = msgUriSpec;
   },
 
-  disableDecrypt: function() {
-    DEBUG_LOG("mimeDecrypt.jsm: disableDecrypt\n");
-    this.mimeDecryptor.disabled = true;
-  },
-
   newVerfier: function (embedded, msgUrl) {
-    let v = new EnigmailVerify(embedded, msgUrl);
+    let v = new MimeVerify(embedded, msgUrl);
     return v;
   }
 }
@@ -571,29 +354,11 @@ var EnigmailDecrypt = {
 ////////////////////////////////////////////////////////////////////
 // General-purpose functions, not exported
 
-function getBoundary(contentType) {
-  DEBUG_LOG("mimeDecrypt.jsm: getBoundary: "+contentType+"\n");
-
-  contentType = contentType.replace(/[\r\n]/g, "");
-  let boundary = "";
-  let ct = contentType.split(/;/);
-  for (let i=0; i < ct.length; i++) {
-    if (ct[i].search(/[ \t]*boundary[ \t]*=/i) >= 0) {
-      boundary = ct[i];
-      break;
-    }
-  }
-  boundary = boundary.replace(/\s*boundary\s*=/i, "").replace(/[\'\"]/g, "");
-  DEBUG_LOG("mimeDecrypt.jsm: getBoundary: found '"+ boundary+"'\n");
-  return boundary;
-}
-
-
 // extract the data fields following a header.
 // e.g. ContentType: xyz; Aa=b; cc=d
 // returns aa=b and cc=d in an array of arrays
 function getHeaderData(data) {
-  DEBUG_LOG("mimeDecrypt.jsm: getHeaderData: "+data.substr(0, 100)+"\n");
+  DEBUG_LOG("mimeVerify.jsm: getHeaderData: "+data.substr(0, 100)+"\n");
   var a = data.split(/\n/);
   var res = [];
   for (let i = 0; i < a.length; i++) {
@@ -606,7 +371,7 @@ function getHeaderData(data) {
       if (m) {
         // m[2]: identifier / m[6]: data
         res[m[2].toLowerCase()] = m[6].replace(/\s*$/, "");
-        DEBUG_LOG("mimeDecrypt.jsm: getHeaderData: "+m[2].toLowerCase()+" = "+res[m[2].toLowerCase()] +"\n");
+        DEBUG_LOG("mimeVerify.jsm: getHeaderData: "+m[2].toLowerCase()+" = "+res[m[2].toLowerCase()] +"\n");
       }
     }
     if (i == 0 && a[i].indexOf(";") < 0) break;
@@ -620,19 +385,15 @@ function DEBUG_LOG(str) {
   if (gDebugLog) Ec.DEBUG_LOG(str);
 }
 
-function registerDecryptor() {
+function initModule() {
   try {
-    var svc = Cc["@mozilla.org/mime/pgp-mime-decrypt;1"].getService(Ci.nsIPgpMimeProxy);
-    svc.decryptor = EnigmailDecrypt.mimeDecryptor;
-    EnigmailDecrypt.mimeDecryptor.mimeSvc = svc;
-
     var env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
     var nspr_log_modules = env.get("NSPR_LOG_MODULES");
-    var matches = nspr_log_modules.match(/mimeDecrypt:(\d+)/);
+    var matches = nspr_log_modules.match(/mimeVerify:(\d+)/);
 
     if (matches && (matches.length > 1)) {
       if (matches[1] > 2) gDebugLog = true;
-      dump("mimeDecrypt.jsm: enabled debug logging\n");
+      dump("mimeVerify.jsm: enabled debug logging\n");
     }
   }
   catch (ex) {
@@ -640,5 +401,5 @@ function registerDecryptor() {
   }
 }
 
-// registerDecryptor();
-// dump("mimeDecrypt.jsm: MimeDecryptor registration done");
+initModule();
+dump("mimeVerify.jsm: module initialized\n");

@@ -126,12 +126,13 @@ zip ${xpiFile} \
     components/${xpiModule}.js \
     components/enigprefs-service.js \
     components/enigMsgCompFields.js \
+    components/mimeDecrypt.js \
     defaults/preferences/enigmail.js \
     defaults/pref/enigmail.js \
     modules/enigmailCommon.jsm \
     modules/pipeConsole.jsm \
     modules/keyManagement.jsm \
-    modules/mimeDecrypt.jsm \
+    modules/mimeVerify.jsm \
     modules/commonFuncs.jsm \
     modules/pipeTransport.jsm \
     modules/subprocess.jsm \

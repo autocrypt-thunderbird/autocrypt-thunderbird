@@ -38,6 +38,9 @@ overlay chrome://communicator/content/pref/preftree.xul chrome://enigmail/conten
 overlay chrome://enigmail/content/am-enigprefs.xul chrome://enigmail/content/enigmailEditIdentity.xul
 overlay chrome://enigmail/content/am-enigprefs-edit.xul chrome://enigmail/content/enigmailEditIdentity.xul
 
+# Resource module registration
+resource enigmail modules/
+
 ## Gecko 2.0 JavaScript component registration
 # Enigmail
 component {847b3a01-7ab1-11d4-8f02-006008948af5} components/enigmail.js
@@ -56,13 +59,14 @@ category command-line-handler cline-enigmail @mozilla.org/enigmail/cline-handler
 component {847b3a30-7ab1-11d4-8f02-006008948af5} components/enigMsgCompFields.js
 contract @mozdev.org/enigmail/composefields;1 {847b3a30-7ab1-11d4-8f02-006008948af5}
 
+# PgpMimeDecrypt
+component {7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8} components/mimeDecrypt.js
+contract @mozilla.org/mime/pgp-mime-js-decrypt;1 {7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8}
+
 # Preference Service
 component {847b3ab0-7ab1-11d4-8f02-006008948af5} components/enigprefs-service.js
 contract @mozilla.org/accountmanager/extension;1?name=enigprefs {847b3ab0-7ab1-11d4-8f02-006008948af5}
 category mailnews-accountmanager-extensions enigmail-account-manager-extension @mozilla.org/accountmanager/extension;1?name=enigprefs
-
-# Resource module registration
-resource enigmail modules/
 
 ## Gecko 2.0 interface specifiacations
 interfaces  components/ipc.xpt
