@@ -1,0 +1,295 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+/**
+ *  Module for handling PGP/MIME encrypted messages
+ *  implemented as an XPCOM object
+ */
+
+'use strict';
+
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/mimeVerify.jsm");
+
+
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+const Ec = EnigmailCommon;
+
+const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
+const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
+const PGPMIME_JS_DECRYPTOR_CID = Components.ID("{7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8}");
+
+
+const maxBufferLen = 102400;
+
+var gDebugLog = false;
+
+var gConv = Cc["@mozilla.org/intl/scriptableunicodeconverter"]
+                        .getService(Ci.nsIScriptableUnicodeConverter);
+gConv.charset = "utf-8";
+
+var gNumProc = 0;
+
+////////////////////////////////////////////////////////////////////
+// handler for PGP/MIME encrypted messages
+// data is processed from libmime -> nsPgpMimeProxy
+
+function PgpMimeDecrypt() {
+}
+
+PgpMimeDecrypt.prototype = {
+  classDescription: "Enigmail JS Decryption Handler",
+  classID:  PGPMIME_JS_DECRYPTOR_CID,
+  contractID: PGPMIME_JS_DECRYPTOR_CONTRACTID,
+  QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener]),
+  mimeSvc: null,
+  inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
+  initOk: false,
+  boundary: "",
+  pipe: null,
+  closePipe: false,
+  statusStr: "",
+  outqueue: "",
+  dataLength: 0,
+  mimePartCount: 0,
+  matchedPgpDelimiter: 0,
+  exitCode: null,
+  msgWindow: null,
+  msgUriSpec: null,
+  returnStatus: null,
+  verifier: null,
+  proc: null,
+  statusDisplayed: false,
+
+  onStartRequest: function(request) {
+    if (!Ec.getService()) // Ensure Enigmail is initialized
+      return;
+    DEBUG_LOG("mimeDecrypt.js: onStartRequest\n");
+
+    ++gNumProc;
+    if (gNumProc > 2) {
+      DEBUG_LOG("mimeDecrypt.js: number of parallel requests above threshold - ignoring requst\n");
+      return;
+    }
+
+    this.initOk = true;
+    this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
+    this.pipe = null;
+    this.closePipe = false;
+    this.exitCode = null;
+    this.msgWindow = EnigmailVerify.lastMsgWindow;
+    this.msgUriSpec = EnigmailVerify.lastMsgUri;
+    this.verifier = null;
+    this.statusDisplayed = false;
+    this.returnStatus = null;
+    this.dataLength = 0;
+    this.decryptedData = "";
+    this.mimePartCount = 0;
+    this.matchedPgpDelimiter = 0;
+    this.outQueue = "";
+    this.statusStr = "";
+    this.boundary = getBoundary(this.mimeSvc.contentType);
+    var statusFlagsObj = {};
+    var errorMsgObj = {};
+    var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
+    var win = windowManager.getMostRecentWindow(null);
+    this.verifier = EnigmailVerify.newVerfier(true);
+    this.verifier.setMsgWindow(this.msgWindow, this.msgUriSpec);
+    this.verifier.onStartRequest(true);
+    this.proc = Ec.decryptMessageStart(win, false, this,
+                    statusFlagsObj, errorMsgObj);
+  },
+
+  onDataAvailable: function(req, sup, stream, offset, count) {
+    // get data from libmime
+    if (! this.initOk) return;
+    //DEBUG_LOG("mimeDecrypt.js: onDataAvailable: "+count+"\n");
+    this.inStream.init(stream);
+    var data = this.inStream.read(count);
+    if (count > 0) {
+      // detect MIME part boundary
+      if (data.indexOf(this.boundary) >= 0) {
+        DEBUG_LOG("mimeDecrypt.js: onDataAvailable: found boundary\n");
+        ++this.mimePartCount;
+        return;
+      }
+
+      // found PGP/MIME "body"
+      if (this.mimePartCount == 2) {
+        if (!this.matchedPgpDelimiter) {
+          if (data.indexOf("-----BEGIN PGP MESSAGE-----") == 0)
+            this.matchedPgpDelimiter = 1;
+        }
+
+        if (this.matchedPgpDelimiter == 1) {
+          this.writeToPipe(data);
+
+          if (data.indexOf("-----END PGP MESSAGE-----") == 0) {
+            this.writeToPipe("\n");
+            this.matchedPgpDelimiter = 2;
+          }
+        }
+      }
+    }
+  },
+
+  // (delayed) writing to subprocess
+  writeToPipe: function(str) {
+    if (this.pipe) {
+      this.outQueue += str;
+      if (this.outQueue.length > maxBufferLen)
+        this.flushInput();
+    }
+    else
+      this.outQueue += str;
+  },
+
+  flushInput: function() {
+    DEBUG_LOG("mimeDecrypt.js: flushInput\n");
+    if (! this.pipe) return;
+    this.pipe.write(this.outQueue);
+    this.outQueue = "";
+  },
+
+  onStopRequest: function(request, win, status) {
+    DEBUG_LOG("mimeDecrypt.js: onStopRequest\n");
+    --gNumProc;
+    if (! this.initOk) return;
+
+    if (! this.proc) return;
+    this.flushInput();
+
+    if (! this.pipe) {
+      this.closePipe = true;
+    }
+    else
+      this.pipe.close();
+
+    this.proc.wait();
+
+    this.returnStatus = {};
+    Ec.decryptMessageEnd(this.statusStr,
+          this.exitCode,
+          this.dataLength,
+          false,
+          false,
+          Ci.nsIEnigmail.UI_PGP_MIME,
+          this.returnStatus);
+
+    this.displayStatus();
+
+    DEBUG_LOG("mimeDecrypt.js: onStopRequest: process terminated\n");
+    this.proc = null;
+    return 0;
+  },
+
+  displayStatus: function() {
+    DEBUG_LOG("mimeDecrypt.js: displayStatus\n");
+    if (this.exitCode == null || this.msgWindow == null || this.statusDisplayed)
+      return;
+
+    try {
+      DEBUG_LOG("mimeDecrypt.js: displayStatus displaying result\n");
+      let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
+
+      if (headerSink) {
+        headerSink.updateSecurityStatus(this.msgUriSpec,
+            this.exitCode,
+            this.returnStatus.statusFlags,
+            this.returnStatus.keyId,
+            this.returnStatus.userId,
+            this.returnStatus.sigDetails,
+            this.returnStatus.errorMsg,
+            this.returnStatus.blockSeparation,
+            null);
+      }
+      this.statusDisplayed = true;
+    }
+    catch(ex) {
+      Ec.writeException("mimeDecrypt.js", ex);
+    }
+    DEBUG_LOG("mimeDecrypt.js: displayStatus done\n");
+  },
+
+  // API for decryptMessage Listener
+  stdin: function(pipe) {
+    DEBUG_LOG("mimeDecrypt.js: stdin\n");
+    if (this.outQueue.length > 0) {
+      pipe.write(this.outQueue);
+      this.outQueue = "";
+      if (this.closePipe) pipe.close();
+    }
+    this.pipe = pipe;
+  },
+
+  stdout: function(s) {
+    // write data back to libmime
+    //DEBUG_LOG("mimeDecrypt.js: stdout:"+s.length+"\n");
+    this.dataLength += s.length;
+    this.decryptedData += s;
+  },
+
+  stderr: function(s) {
+    DEBUG_LOG("mimeDecrypt.js: stderr\n");
+    this.statusStr += s;
+  },
+
+  done: function(exitCode) {
+    DEBUG_LOG("mimeDecrypt.js: done: "+exitCode+"\n");
+    this.mimeSvc.onDataAvailable(null, null, gConv.convertToInputStream(this.decryptedData), 0, this.dataLength);
+    this.verifier.onTextData(this.decryptedData);
+    this.verifier.onStopRequest();
+    this.decryptedData = "";
+    this.exitCode = exitCode;
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////
+// General-purpose functions, not exported
+
+function getBoundary(contentType) {
+  DEBUG_LOG("mimeDecrypt.js: getBoundary: "+contentType+"\n");
+
+  contentType = contentType.replace(/[\r\n]/g, "");
+  let boundary = "";
+  let ct = contentType.split(/;/);
+  for (let i=0; i < ct.length; i++) {
+    if (ct[i].search(/[ \t]*boundary[ \t]*=/i) >= 0) {
+      boundary = ct[i];
+      break;
+    }
+  }
+  boundary = boundary.replace(/\s*boundary\s*=/i, "").replace(/[\'\"]/g, "");
+  DEBUG_LOG("mimeDecrypt.js: getBoundary: found '"+ boundary+"'\n");
+  return boundary;
+}
+
+
+function DEBUG_LOG(str) {
+  if (gDebugLog) Ec.DEBUG_LOG(str);
+}
+
+function initModule() {
+  try {
+    var env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+    var nspr_log_modules = env.get("NSPR_LOG_MODULES");
+    var matches = nspr_log_modules.match(/mimeDecrypt:(\d+)/);
+
+    if (matches && (matches.length > 1)) {
+      if (matches[1] > 2) gDebugLog = true;
+      dump("mimeDecrypt.js: enabled debug logging\n");
+    }
+  }
+  catch (ex) {
+    dump("caught error "+ex);
+  }
+}
+
+var NSGetFactory = XPCOMUtils.generateNSGetFactory([PgpMimeDecrypt]);
+initModule();
+dump("mimeDecrypt.js: MimeDecrypt - registration done\n");
