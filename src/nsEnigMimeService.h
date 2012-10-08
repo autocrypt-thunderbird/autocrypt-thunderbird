@@ -58,7 +58,6 @@ public:
     Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
 
 protected:
-    EMBool             mDummyHandler;
     EMBool             mInitialized;
 };
 

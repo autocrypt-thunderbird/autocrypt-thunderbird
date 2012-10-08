@@ -107,12 +107,8 @@ CPPSRCS		=		         \
 	        nsEnigMimeService.cpp    \
 	        nsEnigMimeListener.cpp   \
 	        nsEnigMimeWriter.cpp     \
-	        nsEnigMimeDecrypt.cpp    \
-	        nsEnigContentHandler.cpp \
 	        mimeenc2.cpp \
 	        mimehdrs2.cpp \
-	        mimedummy.cpp \
-	        mimeenig.cpp  \
 		$(NULL)
 
 FORCE_STATIC_LIB = 1

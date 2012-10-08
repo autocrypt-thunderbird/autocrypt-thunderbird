@@ -38,8 +38,6 @@
 #define FORCE_PR_LOG       /* Allow logging even in release build */
 
 #include "enigmail.h"
-#include "pgpmime.h"
-#include "mimeenig.h"
 #include "nsEnigModule.h"
 #include "nsEnigMimeService.h"
 #include "nspr.h"
@@ -54,9 +52,6 @@
 #include "mozilla/ModuleUtils.h"
 #include "nsXULAppAPI.h"
 #include "nsServiceManagerUtils.h"
-#include "nsEnigContentHandler.h"
-
-NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigContentHandler)
 
 #ifdef PR_LOGGING
 PRLogModuleInfo* gEnigMimeServiceLog = NULL;
@@ -76,12 +71,7 @@ NS_IMPL_THREADSAFE_ISUPPORTS1(nsEnigMimeService,
 
 // nsEnigMimeService implementation
 nsEnigMimeService::nsEnigMimeService()
-  : mDummyHandler(PR_FALSE),
-#ifdef EM_OLD_MIME
-    mInitialized(PR_FALSE)
-#else
-    mInitialized(PR_TRUE)
-#endif
+  : mInitialized(PR_TRUE)
 {
   nsresult rv;
 
@@ -99,8 +89,6 @@ nsEnigMimeService::nsEnigMimeService()
   DEBUG_LOG(("nsEnigMimeService:: <<<<<<<<< CTOR(%p): myThread=%p\n",
          this, myThread.get()));
 #endif
-
-  mDummyHandler = PR_TRUE;
 }
 
 
@@ -126,20 +114,6 @@ nsEnigMimeService::Init()
 {
   nsresult rv;
   DEBUG_LOG(("nsEnigMimeService::Init:\n"));
-
-#ifdef EM_OLD_MIME
-  if (!mimeEncryptedClassP) {
-    ERROR_LOG(("nsEnigMimeService::Init: ERROR mimeEncryptedClassPis null\n"));
-    return NS_ERROR_FAILURE;
-  }
-
-  if (!mDummyHandler) {
-    ERROR_LOG(("nsEnigMimeService::Init: ERROR content handler for %s not initialized\n", APPLICATION_XENIGMAIL_DUMMY));
-    return NS_ERROR_FAILURE;
-  }
-
-  mInitialized = PR_TRUE;
-#endif
 
   return NS_OK;
 }
