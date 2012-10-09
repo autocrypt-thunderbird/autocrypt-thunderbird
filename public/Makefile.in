@@ -59,7 +59,6 @@ XPIDLSRCS     = \
                 nsIEnigMimeHeaderSink.idl \
                 nsIEnigMimeListener.idl   \
                 nsIEnigMimeReadCallback.idl \
-                nsIPipeFilterListener.idl \
                 $(NULL)
 
 include $(topsrcdir)/config/rules.mk

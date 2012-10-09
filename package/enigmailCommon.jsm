@@ -161,7 +161,6 @@ var EnigmailCommon = {
   IOSERVICE_CONTRACTID: "@mozilla.org/network/io-service;1",
   LOCAL_FILE_CONTRACTID: "@mozilla.org/file/local;1",
   MIME_CONTRACTID: "@mozilla.org/mime;1",
-  PIPEFILTERLISTENER_CONTRACTID: "@mozilla.org/process/pipe-filter-listener;1",
   SIMPLEURI_CONTRACTID: "@mozilla.org/network/simple-uri;1",
 
   // variables

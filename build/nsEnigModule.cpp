@@ -38,16 +38,12 @@
 #include "nsEnigModule.h"
 #include "nsIClassInfoImpl.h"
 
-#include "nsPipeFilterListener.h"
-
 #include "nsEnigMsgCompose.h"
 #include "nsEnigMimeListener.h"
 #include "nsEnigMimeWriter.h"
 #include "nsEnigMimeService.h"
 #include "mozilla/ModuleUtils.h"
 #include "nsIMimeContentTypeHandler.h"
-
-NS_GENERIC_FACTORY_CONSTRUCTOR(nsPipeFilterListener)
 
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgCompose)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgComposeFactory)
@@ -57,8 +53,6 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeService)
 
 //NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsEnigMimeService, Init)
 
-NS_DEFINE_NAMED_CID(NS_PIPEFILTERLISTENER_CID);
-
 NS_DEFINE_NAMED_CID(NS_ENIGMSGCOMPOSE_CID);
 NS_DEFINE_NAMED_CID(NS_ENIGMSGCOMPOSEFACTORY_CID);
 NS_DEFINE_NAMED_CID(NS_ENIGMIMELISTENER_CID);
@@ -66,7 +60,6 @@ NS_DEFINE_NAMED_CID(NS_ENIGMIMEWRITER_CID);
 NS_DEFINE_NAMED_CID(NS_ENIGMIMESERVICE_CID);
 
 const mozilla::Module::CIDEntry kEnigModuleCIDs[] = {
-  { &kNS_PIPEFILTERLISTENER_CID, false, NULL, nsPipeFilterListenerConstructor },
   { &kNS_ENIGMSGCOMPOSE_CID, false, NULL, nsEnigMsgComposeConstructor },
   { &kNS_ENIGMSGCOMPOSEFACTORY_CID, false, NULL, nsEnigMsgComposeFactoryConstructor },
   { &kNS_ENIGMSGCOMPOSE_CID, false, NULL, nsEnigMsgComposeFactoryConstructor },
@@ -77,7 +70,6 @@ const mozilla::Module::CIDEntry kEnigModuleCIDs[] = {
 };
 
 const mozilla::Module::ContractIDEntry kEnigModuleContracts[] = {
-  { NS_PIPEFILTERLISTENER_CONTRACTID, &kNS_PIPEFILTERLISTENER_CID },
   { NS_ENIGMSGCOMPOSE_CONTRACTID, &kNS_ENIGMSGCOMPOSE_CID },
   { NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID, &kNS_ENIGMSGCOMPOSEFACTORY_CID },
   { "@mozilla.org/messengercompose/composesecure;1", &kNS_ENIGMSGCOMPOSE_CID },
