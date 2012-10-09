@@ -1455,49 +1455,70 @@ Enigmail.msg = {
                         messageUrl:mailNewsUrl.spec,
                         msgUriSpec:msgUriSpec,
                         signature:signature,
-                        ipcBuffer:ipcBuffer,
-                        expectedBufferSize: bufferSize,
+                        data: "",
                         head:head,
                         tail:tail,
                         mimeListener: mimeListener,
                         callbackFunction: callbackFunction };
 
-    var requestObserver = EnigmailCommon.newRequestObserver(Enigmail.msg.msgDirectCallback,
-                                                            callbackArg);
+    var msgSvc = messenger.messageServiceFromURI(msgUriSpec);
 
-    ipcBuffer.observe(requestObserver, mailNewsUrl);
+    var listener = {
+      QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIStreamListener]),
+      onStartRequest: function() {
+        this.data = "";
+        this.inStream = Components.classes["@mozilla.org/scriptableinputstream;1"].
+          createInstance(Components.interfaces.nsIScriptableInputStream);
 
-    var ioServ = Components.classes[EnigmailCommon.IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+      },
+      onDataAvailable: function(req, sup, stream, offset, count) {
+        this.inStream.init(stream);
+        this.data += this.inStream.read(count);
+      },
+      onStopRequest: function() {
+        var start = this.data.indexOf("-----BEGIN PGP");
+        var end = this.data.indexOf("-----END PGP");
 
-    var channel = ioServ.newChannelFromURI(mailNewsUrl);
+        if (start >= 0 && end > start) {
+          var tStr = this.data.substr(end);
+          var n = tStr.indexOf("\n");
+          var r = tStr.indexOf("\r");
+          var lEnd = -1;
+          if (n >= 0 && r >= 0) {
+            lEnd = Math.min(r, n);
+          }
+          else if (r >= 0) {
+            lEnd = r;
+          }
+          else if (n >= 0)
+            lEnd = n;
 
-    var pipeFilter = Components.classes[EnigmailCommon.PIPEFILTERLISTENER_CONTRACTID].createInstance(Components.interfaces.nsIPipeFilterListener);
-    pipeFilter.init(ipcBuffer, null,
-                  "-----BEGIN PGP",
-                  "-----END PGP",
-                  0, true, false, null);
+          if (lEnd >= 0) {
+            end += lEnd;
+          }
 
-    var listener;
+          callbackArg.data = this.data.substring(start, end+1);
+          EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: data: >"+callbackArg.data+"<\n");
+          Enigmail.msg.msgDirectCallback(callbackArg);
+        }
+      }
+    };
 
-    try {
+    msgSvc.streamMessage(msgUriSpec,
+                    listener,
+                    msgWindow,
+                    null,
+                    false,
+                    null,
+                    false);
 
-      mimeListener.init(pipeFilter, null, EnigmailCommon.MSG_HEADER_SIZE, true, false, true);
-
-      listener = mimeListener;
-
-    } catch (ex) {
-      listener = pipeFilter;
-    }
-
-    channel.asyncOpen(pipeFilter, mailNewsUrl);
   },
 
 
-  msgDirectCallback: function (cbArray)
+  msgDirectCallback: function (callbackArg)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: msgDirectCallback: \n");
 
-    var callbackArg = cbArray[0];
     var mailNewsUrl = Enigmail.msg.getCurrentMsgUrl();
     var urlSpec = mailNewsUrl ? mailNewsUrl.spec : "";
     var newBufferSize = 0;
@@ -1509,33 +1530,9 @@ Enigmail.msg = {
       return;
     }
 
-    if (callbackArg.ipcBuffer.overflowed) {
-      WARNING_LOG("enigmailMessengerOverlay.js: msgDirectCallback: MESSAGE BUFFER OVERFLOW\n");
-      if (! callbackArg.expectedBufferSize) {
-        // set correct buffer size
-        newBufferSize=((callbackArg.ipcBuffer.totalBytes+1500)/1024).toFixed(0)*1024;
-      }
-    }
-
-    var msgText = callbackArg.ipcBuffer.getData();
+    var msgText = callbackArg.data;
     msgText = EnigmailCommon.convertFromUnicode(msgText, "UTF-8");
 
-    callbackArg.ipcBuffer.shutdown();
-
-    if (newBufferSize > 0) {
-      // retry with correct buffer size
-      Enigmail.msg.msgDirectDecrypt(callbackArg.interactive,
-                                    callbackArg.importOnly,
-                                    callbackArg.contentEncoding,
-                                    callbackArg.charset,
-                                    callbackArg.signature,
-                                    newBufferSize,
-                                    callbackArg.head,
-                                    callbackArg.tail,
-                                    callbackArg.msgUriSpec,
-                                    callbackArg.callbackFunction);
-
-    }
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: msgDirectCallback: msgText='"+msgText+"'\n");
 
     var f = function (argList) {
