@@ -170,6 +170,9 @@ nsEnigMimeListener::Init(nsIStreamListener* listener, nsISupports* ctxt,
   if (!listener)
     return NS_ERROR_NULL_POINTER;
 
+  if (decodeContent)
+    return NS_ERROR_NOT_IMPLEMENTED;
+
   mListener = listener;
   mContext = ctxt;
 
@@ -740,17 +743,6 @@ nsEnigMimeListener::ParseMimeHeaders(const char* mimeHeaders, PRUint32 count)
     offset = lineEnd+1;
   }
 
-  if (mDecodeContent) {
-    // Decode data
-    if (mContentEncoding.Equals("base64", CaseInsensitiveCompare)) {
-
-      mDecoderData = MimeB64DecoderInit(EnigMimeListener_write, (void*) this);
-
-    } else if (mContentEncoding.Equals("quoted-printable", CaseInsensitiveCompare)) {
-
-      mDecoderData = MimeQPDecoderInit(EnigMimeListener_write, (void*) this);
-    }
-  }
   return;
 }
 

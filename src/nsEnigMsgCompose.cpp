@@ -529,7 +529,11 @@ nsEnigMsgCompose::RequiresCryptoEncapsulation(
   }
 
   // Enigmail stuff
+#ifdef __gen_nsIMsgSecurityInfo_h__
+  nsCOMPtr<nsIMsgSecurityInfo> securityInfo;
+#else
   nsCOMPtr<nsISupports> securityInfo;
+#endif
 
   rv = aCompFields->GetSecurityInfo(getter_AddRefs(securityInfo));
   if (NS_FAILED(rv))
@@ -592,7 +596,11 @@ nsEnigMsgCompose::BeginCryptoEncapsulation(
   mStream = aStream;
   mIsDraft = aIsDraft;
 
+#ifdef __gen_nsIMsgSecurityInfo_h__
+  nsCOMPtr<nsIMsgSecurityInfo> securityInfo;
+#else
   nsCOMPtr<nsISupports> securityInfo;
+#endif
 
   rv = aCompFields->GetSecurityInfo(getter_AddRefs(securityInfo));
   if (NS_FAILED(rv))
@@ -995,6 +1003,8 @@ nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
     rv = WriteOut(headers.get(), headers.Length());
     if (NS_FAILED(rv)) return rv;
 
+/*
+ *  not supported anymore
     if (contentEncoding.Equals("base64", CaseInsensitiveCompare)) {
 
       mEncoderData = MimeB64EncoderInit(EnigMsgCompose_write, (void*) mWriter);
@@ -1003,6 +1013,7 @@ nsEnigMsgCompose::OnStartRequest(nsIRequest *aRequest,
 
       mEncoderData = MimeQPEncoderInit(EnigMsgCompose_write, (void*) mWriter);
     }
+*/
   }
 
   return NS_OK;
