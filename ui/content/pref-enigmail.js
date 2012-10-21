@@ -331,46 +331,6 @@ function activateRulesButton(radioListObj, buttonId) {
 }
 
 
-function EnigMimeTest() {
-  CONSOLE_LOG("\n\nEnigMimeTest: START ********************************\n");
-
-  var lines = ["content-type: multipart/mixed;\r",
-               "\n boundary=\"ABCD\"",
-               "\r\n\r\nmultipart\r\n--ABCD\r",
-               "\ncontent-type: text/html \r\n",
-               "\r\n<html><body><b>TEST CONTENT1<b></body></html>\r\n\r",
-               "\n--ABCD\r\ncontent-type: text/plain\r\ncontent-disposition:",
-               " attachment; filename=\"abcd.txt\"\r\n",
-               "\r\nFILE CONTENTS\r\n--ABCD--\r\n"];
-
-  var linebreak = ["CRLF", "LF", "CR"];
-
-  for (var j=0; j<linebreak.length; j++) {
-    var listener = enigCreateInstance(ENIG_IPCBUFFER_CONTRACTID, "nsIIPCBuffer");
-
-    listener.open(2000, false);
-
-    var mimeFilter = enigCreateInstance(ENIG_ENIGMIMELISTENER_CONTRACTID, "nsIEnigMimeListener");
-
-    mimeFilter.init(listener, null, 4000, j != 1, j == 1, false);
-
-    for (var k=0; k<lines.length; k++) {
-      var line = lines[k];
-      if (j == 1) line = line.replace(/\r/g, "");
-      if (j == 2) line = line.replace(/\n/g, "");
-      mimeFilter.write(line, line.length, null, null);
-    }
-
-    mimeFilter.onStopRequest(null, null, 0);
-
-    CONSOLE_LOG(linebreak[j]+" mimeFilter.contentType='"+mimeFilter.contentType+"'\n");
-    CONSOLE_LOG(linebreak[j]+" listener.getData()='"+listener.getData().replace(/\r/g, "\\r")+"'\n");
-  }
-
-  CONSOLE_LOG("************************************************\n");
-}
-
-
 function EnigTest() {
   var plainText = "TEST MESSAGE 123\nTEST MESSAGE 345\n";
   var testEmailElement = document.getElementById("enigmail_test_email");
@@ -383,10 +343,6 @@ function EnigTest() {
   }
 
   if (!toMailAddr) {
-
-    try {
-      EnigMimeTest();
-    } catch (ex) {}
 
     EnigAlert(EnigGetString("testNoEmail"));
     return;
