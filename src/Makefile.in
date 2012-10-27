@@ -53,6 +53,8 @@ MOZILLA_MAJOR_VERSION = $(firstword $(MOZILLA_VERSION_PARTS))
 TMP_VAR = $(word 2,$(MOZILLA_VERSION_PARTS))
 MOZILLA_MINOR_VERSION = $(shell echo $(TMP_VAR)|sed 's/[a-z].*//')
 
+GECKO18 = $(shell test $(MOZILLA_MAJOR_VERSION) -lt 19 && echo 1)
+
 ifdef USE_XPCOM_GLUE
 # Ensure that the xpcom classes that we build
 # do not export themselves
@@ -102,13 +104,17 @@ LOCAL_INCLUDES	= \
 		$(NULL)
 
 CPPSRCS		=		         \
-	        nsEnigMsgCompose.cpp     \
 	        nsEnigMimeService.cpp    \
 	        nsEnigMimeListener.cpp   \
 	        nsEnigMimeWriter.cpp     \
 	        mimeenc2.cpp \
-	        mimehdrs2.cpp \
-		$(NULL)
+	        mimehdrs2.cpp
+
+ifeq ($(GECKO18),1)
+  CPPSRCS += nsEnigMsgCompose.cpp
+endif
+
+CPPSRCS += $(NULL)
 
 FORCE_STATIC_LIB = 1
 
