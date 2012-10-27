@@ -286,9 +286,9 @@ Enigmail.msg = {
     }
 
     if (EnigmailCommon.getPref("keepSettingsForReply") && (!(this.sendMode & ENCRYPT))) {
-      var enigMimeService = Components.classes[EnigmailCommon.ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
-      if (enigMimeService)
-      {
+//       var enigMimeService = Components.classes[EnigmailCommon.ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
+//       if (enigMimeService)
+//       {
         var draftId = gMsgCompose.compFields.draftId;
         if (typeof(draftId)=="string" && draftId.length>0) {
           msgUri = draftId.replace(/\?.*$/, "");
@@ -313,7 +313,7 @@ Enigmail.msg = {
             this.removeAttachedKey();
           }
         }
-      }
+//       }
     }
 
     // check for attached signature files and remove them
@@ -706,6 +706,7 @@ Enigmail.msg = {
   doPgpButton: function (what)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.doPgpButton: what="+what+"\n");
+
     if (! what)
       what = this.nextCommandId;
     this.nextCommandId = "";

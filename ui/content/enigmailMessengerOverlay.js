@@ -1438,16 +1438,6 @@ Enigmail.msg = {
     if (!mailNewsUrl)
       return;
 
-    var ipcBuffer = Components.classes[EnigmailCommon.IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
-    var mimeListener = Components.classes[EnigmailCommon.ENIGMIMELISTENER_CONTRACTID].createInstance(Components.interfaces.nsIEnigMimeListener);
-
-    if (bufferSize > 0) {
-      ipcBuffer.open(bufferSize, false);
-    }
-    else {
-      ipcBuffer.open(EnigmailCommon.MSG_BUFFER_SIZE, false);
-    }
-
     var callbackArg = { interactive:interactive,
                         importOnly:importOnly,
                         contentEncoding:contentEncoding,
@@ -1458,7 +1448,6 @@ Enigmail.msg = {
                         data: "",
                         head:head,
                         tail:tail,
-                        mimeListener: mimeListener,
                         callbackFunction: callbackFunction };
 
     var msgSvc = messenger.messageServiceFromURI(msgUriSpec);
