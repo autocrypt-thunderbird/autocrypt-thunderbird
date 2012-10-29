@@ -37,7 +37,6 @@
 #define _nsEnigMsgCompose_h_
 
 #include "nsCOMPtr.h"
-#include "nsIFactory.h"
 #include "nsIRunnable.h"
 #include "nsIMsgComposeSecure.h"
 #include "nsIStreamListener.h"
@@ -139,24 +138,5 @@ protected:
     nsCOMPtr<nsIPipeTransport>    mPipeTrans;
 
 };
-
-#define NS_ENIGMSGCOMPOSEFACTORY_CLASSNAME "Enigmail Msg Compose Factory"
-
-#define NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID "@mozilla.org/enigmail/composesecure-factory;1"
-
-#define NS_ENIGMSGCOMPOSEFACTORY_CID             \
-{ /* 847b3a22-7ab1-11d4-8f02-006008948af5 */     \
-   0x847b3a22, 0x7ab1, 0x11d4,                   \
-{0x8f, 0x02, 0x00, 0x60, 0x08, 0x94, 0x8a, 0xf5} }
-
-class nsEnigMsgComposeFactory : public nsIFactory {
-public:
-  NS_DECL_ISUPPORTS
-  NS_DECL_NSIFACTORY
-
-  nsEnigMsgComposeFactory();
-  virtual ~nsEnigMsgComposeFactory();
-};
-
 
 #endif

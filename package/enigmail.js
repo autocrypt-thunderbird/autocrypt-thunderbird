@@ -68,9 +68,6 @@ const NS_PGP_MODULE_CID =
 const NS_ENIGMSGCOMPOSE_CID =
   Components.ID("{847b3a21-7ab1-11d4-8f02-006008948af5}");
 
-const NS_ENIGMSGCOMPOSEFACTORY_CID =
-  Components.ID("{847b3a22-7ab1-11d4-8f02-006008948af5}");
-
 const NS_ENIGCLINE_SERVICE_CID =
   Components.ID("{847b3ab1-7ab1-11d4-8f02-006008948af5}");
 
@@ -81,7 +78,6 @@ const NS_IPCBUFFER_CONTRACTID   = "@mozilla.org/ipc/ipc-buffer;1";
 const NS_PROCESS_UTIL_CONTRACTID = "@mozilla.org/process/util;1"
 const NS_MSGCOMPOSESECURE_CONTRACTID = "@mozilla.org/messengercompose/composesecure;1";
 const NS_ENIGMSGCOMPOSE_CONTRACTID   = "@mozilla.org/enigmail/composesecure;1";
-const NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID   = "@mozilla.org/enigmail/composesecure-factory;1";
 const NS_ENIGMIMESERVICE_CONTRACTID = "@mozdev.org/enigmail/enigmimeservice;1";
 const NS_SIMPLEURI_CONTRACTID   = "@mozilla.org/network/simple-uri;1";
 const NS_TIMER_CONTRACTID       = "@mozilla.org/timer;1";

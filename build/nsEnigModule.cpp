@@ -47,7 +47,7 @@
 
 #if MOZILLA_MAJOR_VERSION < 19
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgCompose)
-NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgComposeFactory)
+// NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMsgComposeFactory)
 #endif
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeListener)
 NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeWriter)
@@ -57,7 +57,6 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nsEnigMimeService)
 
 #if MOZILLA_MAJOR_VERSION < 19
 NS_DEFINE_NAMED_CID(NS_ENIGMSGCOMPOSE_CID);
-NS_DEFINE_NAMED_CID(NS_ENIGMSGCOMPOSEFACTORY_CID);
 #endif
 NS_DEFINE_NAMED_CID(NS_ENIGMIMELISTENER_CID);
 NS_DEFINE_NAMED_CID(NS_ENIGMIMEWRITER_CID);
@@ -65,9 +64,7 @@ NS_DEFINE_NAMED_CID(NS_ENIGMIMESERVICE_CID);
 
 const mozilla::Module::CIDEntry kEnigModuleCIDs[] = {
 #if MOZILLA_MAJOR_VERSION < 19
-  { &kNS_ENIGMSGCOMPOSE_CID, false, NULL, nsEnigMsgComposeConstructor },
-  { &kNS_ENIGMSGCOMPOSEFACTORY_CID, false, NULL, nsEnigMsgComposeFactoryConstructor },
-  { &kNS_ENIGMSGCOMPOSE_CID, false, NULL, nsEnigMsgComposeFactoryConstructor },
+   { &kNS_ENIGMSGCOMPOSE_CID, false, NULL, nsEnigMsgComposeConstructor },
 #endif
   { &kNS_ENIGMIMELISTENER_CID, false, NULL, nsEnigMimeListenerConstructor },
   { &kNS_ENIGMIMEWRITER_CID, false, NULL, nsEnigMimeWriterConstructor },
@@ -77,8 +74,6 @@ const mozilla::Module::CIDEntry kEnigModuleCIDs[] = {
 
 const mozilla::Module::ContractIDEntry kEnigModuleContracts[] = {
 #if MOZILLA_MAJOR_VERSION < 19
-  { NS_ENIGMSGCOMPOSE_CONTRACTID, &kNS_ENIGMSGCOMPOSE_CID },
-  { NS_ENIGMSGCOMPOSEFACTORY_CONTRACTID, &kNS_ENIGMSGCOMPOSEFACTORY_CID },
   { "@mozilla.org/messengercompose/composesecure;1", &kNS_ENIGMSGCOMPOSE_CID },
 #endif
   { NS_ENIGMIMELISTENER_CONTRACTID, &kNS_ENIGMIMELISTENER_CID },
