@@ -8,7 +8,7 @@
  *  implemented as XPCOM component
  */
 
-//'use strict';
+'use strict';
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
@@ -27,6 +27,8 @@ const kMsgComposeSecureCID = "{dd753201-9a23-4e08-957f-b3616bf7e012}";
 const maxBufferLen = 102400;
 const MIME_SIGNED = 1;
 const MIME_ENCRYPTED = 2;
+
+var gDebugLog = false;
 
 function PgpMimeEncrypt() {
 }
