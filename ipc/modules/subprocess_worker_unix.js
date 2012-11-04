@@ -165,18 +165,18 @@ function writePipe(pipe, data) {
 
 
 function readString(data, length, charset) {
-    var string = '', bytes = [];
-    for(var i = 0;i < length; i++) {
+    var r = '';
+    for(var i = 0; i < length; i++) {
         if(data[i] == 0 && charset != "null") // stop on NULL character for non-binary data
            break;
 
-        bytes.push(data[i]);
+        r += String.fromCharCode(data[i]);
     }
 
-    return bytes;
+    return r;
 }
 
-function readPipe(pipe, charset, pid) {
+function readPipe(pipe, charset, pid, bufferedOutput) {
     var p = new libcFunc.pollFds;
     p[0].fd = pipe;
     p[0].events = POLLIN | POLLERR | POLLHUP;
@@ -187,6 +187,8 @@ function readPipe(pipe, charset, pid) {
     var result, status = ctypes.int();
     result = 0;
 
+    var dataStr = "";
+    var dataObj = {};
 
     const i=0;
     while (true) {
@@ -201,8 +203,14 @@ function readPipe(pipe, charset, pid) {
         var r = libcFunc.poll(p, 1, pollTimeout);
         if (r > 0) {
             if (p[i].revents & POLLIN) {
-                postMessage({msg: "debug", data: "reading next chunk"});
-                readCount = readPolledFd(p[i].fd, charset);
+                // postMessage({msg: "debug", data: "reading next chunk"});
+
+                readCount = readPolledFd(p[i].fd, charset, dataObj);
+                if (! bufferedOutput)
+                  postMessage({msg: "data", data: dataObj.value, count: dataObj.value.length});
+                else
+                  dataStr += dataObj.value;
+
                 if (readCount == 0) break;
             }
 
@@ -225,9 +233,17 @@ function readPipe(pipe, charset, pid) {
 
     // continue reading until the buffer is empty
     while (readCount > 0) {
-      readCount = readPolledFd(pipe, charset);
+      readCount = readPolledFd(pipe, charset, dataObj);
+      if (! bufferedOutput)
+        postMessage({msg: "data", data: dataObj.value, count: dataObj.value.length})
+      else
+        dataStr += dataObj.value;
+
       let r = libcFunc.poll(p, 1, NOWAIT);
     }
+
+    if (bufferedOutput)
+      postMessage({msg: "data", data: dataStr, count: dataStr.length})
 
     libcFunc.close(pipe);
     postMessage({msg: "done", data: exitCode });
@@ -235,14 +251,17 @@ function readPipe(pipe, charset, pid) {
     close();
 }
 
-function readPolledFd(pipe, charset) {
+function readPolledFd(pipe, charset, dataObj) {
     var line = new ReadBuffer();
     var r = libcFunc.read(pipe, line, BufferSize);
 
     if (r > 0) {
         var c = readString(line, r, charset);
-        postMessage({msg: "data", data: c, count: c.length});
+        dataObj.value = c;
     }
+    else
+       dataObj.value = "";
+
     return r;
 }
 
@@ -253,7 +272,7 @@ onmessage = function (event) {
         break;
     case "read":
         initLibc(event.data.libc);
-        readPipe(event.data.pipe, event.data.charset, event.data.pid);
+        readPipe(event.data.pipe, event.data.charset, event.data.pid, event.data.bufferedOutput);
         break;
     case "write":
         // data contents:

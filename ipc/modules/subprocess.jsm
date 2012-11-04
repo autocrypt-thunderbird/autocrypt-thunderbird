@@ -123,6 +123,12 @@
  * mergeStderr: optional boolean value. If true, stderr is merged with stdout;
  *              no data will be provided to stderr.
  *
+ * bufferedOutput: optional boolean value. If true, stderr and stdout are buffered
+ *              and will only deliver data when a certain amount of output is
+ *              available. Enabling the option will give you some performance
+ *              benefits if your read a lot of data. Don't enable this if your
+ *              application works in a conversation-like mode.
+ *
  *
  * Description of object returned by subprocess.call(...)
  * ------------------------------------------------------
@@ -342,29 +348,14 @@ function setTimeout(callback, timeout) {
     timer.initWithCallback(callback, timeout, Ci.nsITimer.TYPE_ONE_SHOT);
 };
 
-function readString(data, length, charset) {
-    var string = '', bytes = [];
-    for(var i = 0;i < length; i++) {
-        if(data[i] == 0 && charset !== null) // stop on NULL character for non-binary data
-           break
-        bytes.push(data[i]);
-    }
-    if (!bytes || bytes.length == 0)
-        return string;
-    if(charset === null) {
-        return bytes;
-    }
-    return convertBytes(bytes, charset);
-}
-
-function convertBytes(bytes, charset) {
+function convertBytes(data, charset) {
     var string = '';
     charset = charset || 'UTF-8';
     var unicodeConv = Cc["@mozilla.org/intl/scriptableunicodeconverter"]
                         .getService(Ci.nsIScriptableUnicodeConverter);
     try {
         unicodeConv.charset = charset;
-        string = unicodeConv.convertFromByteArray(bytes, bytes.length);
+        string = unicodeConv.ConvertToUnicode(data);
     } catch (ex) {
         LogError("String conversion failed: "+ex.toString()+"\n")
         string = '';
@@ -373,14 +364,10 @@ function convertBytes(bytes, charset) {
     return string;
 }
 
-function getLocalFileApi() {
-  return Ci.nsIFile;
-}
-
 function getCommandStr(command) {
     let commandStr = null;
     if (typeof(command) == "string") {
-        let file = Cc[NS_LOCAL_FILE].createInstance(getLocalFileApi());
+        let file = Cc[NS_LOCAL_FILE].createInstance(Ci.nsIFile);
         file.initWithPath(command);
         if (! (file.isExecutable() && file.isFile()))
             throw("File '"+command+"' is not an executable file");
@@ -398,7 +385,7 @@ function getCommandStr(command) {
 function getWorkDir(workdir) {
     let workdirStr = null;
     if (typeof(workdir) == "string") {
-        let file = Cc[NS_LOCAL_FILE].createInstance(getLocalFileApi());
+        let file = Cc[NS_LOCAL_FILE].createInstance(Ci.nsIFile);
         file.initWithPath(workdir);
         if (! (file.isDirectory()))
             throw("Directory '"+workdir+"' does not exist");
@@ -416,6 +403,7 @@ function getWorkDir(workdir) {
 var subprocess = {
     call: function(options) {
         options.mergeStderr = options.mergeStderr || false;
+        options.bufferedOutput = options.bufferedOutput || false;
         options.workdir = options.workdir ||  null;
         options.environment = options.environment ||  [];
         if (options.arguments) {
@@ -835,6 +823,7 @@ function subprocess_win32(options) {
         }
         stdinWorker.onerror = function(error) {
             pendingWriteCount--;
+            exitCode = -2;
             LogError("got error from stdinWorker: "+error.message+"\n");
         }
 
@@ -907,7 +896,7 @@ function subprocess_win32(options) {
                 debugLog("got "+event.data.count+" bytes from "+name+"\n");
                 var data = '';
                 if (options.charset === null) {
-                    event.data.data.forEach(function(x) { data += String.fromCharCode(x < 0 ? x + 256 : x) })
+                    data = event.data.data;
                 }
                 else
                     data = convertBytes(event.data.data, options.charset);
@@ -919,6 +908,10 @@ function subprocess_win32(options) {
                 --readers;
                 if (readers == 0) cleanup();
                 break;
+            case "error":
+                exitCode = -2;
+				LogError("Got msg from "+name+": "+event.data.data+"\n");
+                break;
             default:
                 debugLog("Got msg from "+name+": "+event.data.data+"\n");
             }
@@ -926,6 +919,7 @@ function subprocess_win32(options) {
 
         worker.onerror = function(errorMsg) {
             LogError("Got error from "+name+": "+errorMsg.message);
+            exitCode = -2;
         }
 
         var pipePtr = parseInt(ctypes.cast(pipe.address(), ctypes.uintptr_t).value);
@@ -935,6 +929,7 @@ function subprocess_win32(options) {
                 pipe: pipePtr,
                 libc: options.libc,
                 charset: options.charset === null ? "null" : options.charset,
+                bufferedOutput: options.bufferedOutput,
                 name: name
             });
 
@@ -988,7 +983,9 @@ function subprocess_win32(options) {
 
             var exit = new DWORD();
             GetExitCodeProcess(child.process, exit.address());
-            exitCode = exit.value;
+
+            if (exitCode > -2)
+              exitCode = exit.value;
 
             if (stdinWorker)
                 stdinWorker.postMessage({msg: 'stop'})
@@ -1357,10 +1354,12 @@ function subprocess_unix(options) {
                 LogError("got error from stdinWorker: "+event.data.data+"\n");
                 pendingWriteCount = 0;
                 stdinOpenState = CLOSED;
+                exitCode = -2;
             }
         }
         stdinWorker.onerror = function(error) {
             pendingWriteCount = 0;
+            exitCode = -2;
             closeStdinHandle();
             LogError("got error from stdinWorker: "+error.message+"\n");
         }
@@ -1439,7 +1438,7 @@ function subprocess_unix(options) {
                 debugLog("got "+event.data.count+" bytes from "+name+"\n");
                 var data = '';
                 if (options.charset === null) {
-                    event.data.data.forEach(function(x) { data += String.fromCharCode(x < 0 ? x + 256 : x) })
+                    data = event.data.data;
                 }
                 else
                     data = convertBytes(event.data.data, options.charset);
@@ -1452,12 +1451,17 @@ function subprocess_unix(options) {
                 --readers;
                 if (readers == 0) cleanup();
                 break;
+            case "error":
+                LogError("Got error from "+name+": "+event.data.data);
+                exitCode = -2;
+                break;
             default:
                 debugLog("Got msg from "+name+": "+event.data.data+"\n");
             }
         }
         worker.onerror = function(error) {
             LogError("Got error from "+name+": "+error.message);
+            exitCode = -2;
         }
 
         worker.postMessage({
@@ -1466,6 +1470,7 @@ function subprocess_unix(options) {
                 pid: pid,
                 libc: options.libc,
                 charset: options.charset === null ? "null" : options.charset,
+                bufferedOutput: options.bufferedOutput,
                 name: name
             });
 
@@ -1509,13 +1514,16 @@ function subprocess_unix(options) {
 
             var result, status = ctypes.int();
             result = waitpid(child.pid, status.address(), 0);
-            if (result > 0)
-                exitCode = status.value
-            else
-                if (workerExitCode >= 0)
-                    exitCode = workerExitCode
-                else
-                    exitCode = status.value;
+
+            if (exitCode > -2) {
+              if (result > 0)
+                  exitCode = status.value
+              else
+                  if (workerExitCode >= 0)
+                      exitCode = workerExitCode
+                  else
+                      exitCode = status.value;
+            }
 
             if (stdinWorker)
                 stdinWorker.postMessage({msg: 'stop'})
