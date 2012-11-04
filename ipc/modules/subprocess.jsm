@@ -88,8 +88,8 @@
  *
  * charset:     Output is decoded with given charset and a string is returned.
  *              If charset is undefined, "UTF-8" is used as default.
- *              To get binary data, set this to null and the returned string
- *              is not decoded in any way.
+ *              To get binary data, set this explicitly to null and the
+ *              returned string is not decoded in any way.
  *
  * workdir:     optional; String containing the platform-dependent path to a
  *              directory to become the current working directory of the subprocess.
@@ -121,13 +121,13 @@
  *              via result.stdout. stderr data is in result.stderr
  *
  * mergeStderr: optional boolean value. If true, stderr is merged with stdout;
- *              no data will be provided to stderr.
+ *              no data will be provided to stderr. Default is false.
  *
  * bufferedOutput: optional boolean value. If true, stderr and stdout are buffered
  *              and will only deliver data when a certain amount of output is
  *              available. Enabling the option will give you some performance
  *              benefits if your read a lot of data. Don't enable this if your
- *              application works in a conversation-like mode.
+ *              application works in a conversation-like mode. Default is false.
  *
  *
  * Description of object returned by subprocess.call(...)
