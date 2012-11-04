@@ -123,6 +123,7 @@ PipeObj.prototype = {
       environment: env,
       charset: null,
       workdir: this._cwd,
+      bufferedOutput: true,
       stdin: function(stdin) {
         self._stdinPipe = stdin;
         if (self._pendingWriteData.length > 0) {

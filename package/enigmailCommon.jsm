@@ -2032,6 +2032,7 @@ var EnigmailCommon = {
         arguments:   args,
         environment: this.getEnvList(),
         charset: null,
+        bufferedOutput: true,
         stdin: function (pipe) {
           if (needPassphrase) {
             // Write to child STDIN
