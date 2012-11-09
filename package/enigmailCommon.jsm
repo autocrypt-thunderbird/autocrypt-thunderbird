@@ -163,7 +163,6 @@ var EnigmailCommon = {
   APPSHELL_MEDIATOR_CONTRACTID: "@mozilla.org/appshell/window-mediator;1",
   APPSHSVC_CONTRACTID: "@mozilla.org/appshell/appShellService;1",
   ENIGMAIL_CONTRACTID: "@mozdev.org/enigmail/enigmail;1",
-  ENIGMIMELISTENER_CONTRACTID: "@mozilla.org/enigmail/mime-listener;1",
   ENIGMIMESERVICE_CONTRACTID: "@mozdev.org/enigmail/enigmimeservice;1",
   IPCBUFFER_CONTRACTID: "@mozilla.org/ipc/ipc-buffer;1",
   IOSERVICE_CONTRACTID: "@mozilla.org/network/io-service;1",

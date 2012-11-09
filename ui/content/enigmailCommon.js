@@ -59,7 +59,6 @@ const ENIG_KEY_BUFFER_SIZE = 64000;
 const ENIG_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
 const ENIG_IPCBUFFER_CONTRACTID   = "@mozilla.org/ipc/ipc-buffer;1";
 const ENIG_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
-const ENIG_ENIGMIMELISTENER_CONTRACTID = "@mozilla.org/enigmail/mime-listener;1";
 const ENIG_ENIGMIMESERVICE_CONTRACTID = "@mozdev.org/enigmail/enigmimeservice;1";
 const ENIG_STRINGBUNDLE_CONTRACTID = "@mozilla.org/intl/stringbundle;1";
 const ENIG_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";

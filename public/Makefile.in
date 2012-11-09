@@ -56,9 +56,7 @@ XPIDLSRCS     = \
                 nsIEnigMsgCompFields.idl  \
                 nsIEnigScriptableMsgCompose.idl  \
                 nsIEnigMimeService.idl    \
-                nsIEnigMimeWriter.idl     \
                 nsIEnigMimeHeaderSink.idl \
-                nsIEnigMimeListener.idl   \
                 nsIEnigMimeReadCallback.idl \
                 $(NULL)
 

@@ -112,7 +112,6 @@ nsEnigMimeService::~nsEnigMimeService()
 NS_IMETHODIMP
 nsEnigMimeService::Init()
 {
-  nsresult rv;
   DEBUG_LOG(("nsEnigMimeService::Init:\n"));
 
   return NS_OK;
@@ -142,16 +141,6 @@ nsEnigMimeService::GetVersion(char **_retval)
   return NS_OK;
 }
 
-
-static void
-__ReplaceSubstring (nsAString &string, nsAString &replace, nsAString &with)
-{
-  PRInt32 i = string.Find (replace);
-  while (i >= 0) {
-    string.Replace (i, replace.Length(), with);
-    i = string.Find (replace);
-  }
-}
 
 static void
 __ReplaceChar (nsAString &string, const PRUnichar replace, const PRUnichar with)
