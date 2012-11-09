@@ -9,7 +9,7 @@
 
 
 [scriptable, uuid(847b3a21-7ab1-11d4-8f02-006008948af5)]
-interface nsIEnigMsgCompose : nsIMsgComposeSecure
+interface nsIEnigScriptableMsgCompose : nsIMsgComposeSecure
 {
-    readonly attribute string version;
+    void disableSMimeCheck();
 };

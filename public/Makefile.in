@@ -54,7 +54,7 @@ ENIG_GECKO_VERSION=$(MOZILLA_MAJOR_VERSION)$(MOZILLA_MINOR_VERSION)
 
 XPIDLSRCS     = \
                 nsIEnigMsgCompFields.idl  \
-                nsIEnigMsgCompose.idl  \
+                nsIEnigScriptableMsgCompose.idl  \
                 nsIEnigMimeService.idl    \
                 nsIEnigMimeWriter.idl     \
                 nsIEnigMimeHeaderSink.idl \

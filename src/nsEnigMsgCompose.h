@@ -37,18 +37,9 @@
 #define _nsEnigMsgCompose_h_
 
 #include "nsCOMPtr.h"
-#include "nsIRunnable.h"
+#include "nsIEnigScriptableMsgCompose.h"
 #include "nsIMsgComposeSecure.h"
-#include "nsIStreamListener.h"
-#include "nsIPipeTransport.h"
-#include "nsIEnigMimeListener.h"
-#include "nsIOutputStream.h"
-#include "nsIEnigmail.h"
-#include "nsIThread.h"
-#include "modmimee2.h"
 #include "enigmail.h"
-#include "nsIEnigMimeWriter.h"
-#include "nsStringAPI.h"
 
 
 #define NS_ENIGMSGCOMPOSE_CLASSNAME "Enigmail Msg Compose"
@@ -60,83 +51,23 @@
    0x847b3a21, 0x7ab1, 0x11d4,                   \
 {0x8f, 0x02, 0x00, 0x60, 0x08, 0x94, 0x8a, 0xf5} }
 
-class nsEnigMsgCompose : public nsIMsgComposeSecure,
-                         public nsIStreamListener
+class nsEnigMsgCompose : public nsIMsgComposeSecure
 {
 public:
     NS_DECL_ISUPPORTS
     NS_DECL_NSIMSGCOMPOSESECURE
-    NS_DECL_NSIREQUESTOBSERVER
-    NS_DECL_NSISTREAMLISTENER
 
     nsEnigMsgCompose();
     virtual ~nsEnigMsgCompose();
 
-    // Define a Create method to be used with a factory:
-    static NS_METHOD
-    Create(nsISupports *aOuter, REFNSIID aIID, void **aResult);
-
 protected:
-    static EMBool mRandomSeeded;
+    bool mInitialized;
+    bool mUseSMIME;
 
-    nsresult Init();
+    nsCOMPtr<nsIEnigScriptableMsgCompose> mEnigMsgComposeJS;
+    nsCOMPtr<nsIMsgComposeSecure>         mMsgComposeSecure;
+
     nsresult Finalize();
-
-    nsresult GetRandomTime(PRUint32 *_retval);
-    nsresult MakeBoundary(const char *prefix);
-
-    nsresult WriteEncryptedHeaders();
-
-    nsresult WriteSignedHeaders1(EMBool isEightBit);
-    nsresult WriteSignedHeaders2();
-
-    nsresult WriteFinalSeparator();
-
-    nsresult WriteOut(const char *aBuf, PRInt32 aLen);
-
-    nsresult WriteCopy(const char *aBuf, PRInt32 aLen);
-
-    nsresult WriteToPipe(const char *aBuf, PRInt32 aLen);
-
-    nsresult FinishAux(EMBool aAbort, nsIMsgSendReport* sendReport);
-
-    static const char*                  FromStr;
-
-    EMBool                        mInitialized;
-    EMBool                        mUseSMIME;
-    EMBool                        mIsDraft;
-    EMBool                        mRequestStopped;
-
-    EMBool                        mLinebreak;
-    PRUint32                      mSpace;
-    PRUint32                      mMatchFrom;
-
-    PRUint32                      mInputLen;
-    PRUint32                      mOutputLen;
-
-    PRUint32                      mSendFlags;
-    PRUint32                      mUIFlags;
-
-    EMBool                        mMultipartSigned;
-    EMBool                        mStripWhitespace;
-
-    nsCString                     mSenderEmailAddr;
-    nsCString                     mRecipients;
-    nsCString                     mBccAddr;
-    nsCString                     mHashAlgorithm;
-
-    nsCString                     mBoundary;
-
-    nsIOutputStream*              mStream;
-
-    MimeEncoderData*              mEncoderData;
-
-    nsCOMPtr<nsIMsgComposeSecure> mMsgComposeSecure;
-    nsCOMPtr<nsIEnigMimeListener> mMimeListener;
-
-    nsCOMPtr<nsIEnigMimeWriter>   mWriter;
-    nsCOMPtr<nsIPipeTransport>    mPipeTrans;
-
 };
 
 #endif

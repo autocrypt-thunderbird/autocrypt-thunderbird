@@ -24,6 +24,7 @@ const PGPMIME_JS_ENCRYPT_CID = Components.ID("{1b040e64-e704-42b9-b05a-942e569af
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 
 const kMsgComposeSecureCID = "{dd753201-9a23-4e08-957f-b3616bf7e012}";
+
 const maxBufferLen = 102400;
 const MIME_SIGNED = 1;
 const MIME_ENCRYPTED = 2;
@@ -37,7 +38,7 @@ PgpMimeEncrypt.prototype = {
   classDescription: "Enigmail JS Encryption Handler",
   classID: PGPMIME_JS_ENCRYPT_CID,
   contractID: PGPMIME_JS_ENCRYPT_CONTRACTID,
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIMsgComposeSecure, Ci.nsIStreamListener]),
+  QueryInterface: XPCOMUtils.generateQI([Ci.nsIMsgComposeSecure, Ci.nsIStreamListener, Ci.nsIEnigScriptableMsgCompose]),
 
   // private variables
 
@@ -62,6 +63,7 @@ PgpMimeEncrypt.prototype = {
   closePipe: false,
   cryptoMode: 0,
   exitCode : -1,
+  checkSMime: true,
 
   // nsIStreamListener interface
   onStartRequest: function(request) {
@@ -80,14 +82,22 @@ PgpMimeEncrypt.prototype = {
     DEBUG_LOG("mimeEncrypt.js: onStopRequest\n");
   },
 
+  disableSMimeCheck: function() {
+    this.useSmime = false;
+    this.checkSMime = false;
+  },
+
   // nsIMsgComposeSecure interface
   requiresCryptoEncapsulation: function (msgIdentity, msgCompFields) {
     DEBUG_LOG("mimeEncrypt.js: requiresCryptoEncapsulation\n");
     try {
 
-      // Remember to use original CID, not CONTRACTID, to avoid infinite looping!
-      this.smimeCompose = Components.classesByID[kMsgComposeSecureCID].createInstance(Ci.nsIMsgComposeSecure),
-      this.useSmime = this.smimeCompose.requiresCryptoEncapsulation(msgIdentity, msgCompFields);
+      if (this.checkSMime) {
+        // Remember to use original CID, not CONTRACTID, to avoid infinite looping!
+        this.smimeCompose = Components.classesByID[kMsgComposeSecureCID].createInstance(Ci.nsIMsgComposeSecure),
+        this.useSmime = this.smimeCompose.requiresCryptoEncapsulation(msgIdentity, msgCompFields);
+      }
+
       if (this.useSmime) return true;
 
       var securityInfo = msgCompFields.securityInfo;
@@ -109,9 +119,8 @@ PgpMimeEncrypt.prototype = {
 
   beginCryptoEncapsulation: function (outStream, recipientList, msgCompFields, msgIdentity, sendReport, isDraft) {
     DEBUG_LOG("mimeEncrypt.js: beginCryptoEncapsulation\n");
-    DEBUG_LOG("mimeEncrypt.js: recipientList="+recipientList+"\n");
 
-    if (! this.smimeCompose) {
+    if (this.checkSMime && (! this.smimeCompose)) {
       DEBUG_LOG("mimeEncrypt.js: beginCryptoEncapsulation: ERROR MsgComposeSecure not instantiated\n");
       throw Cr.NS_ERROR_FAILURE;
     }
@@ -241,7 +250,8 @@ PgpMimeEncrypt.prototype = {
   finishCryptoEncapsulation: function (abort, sendReport) {
     DEBUG_LOG("mimeEncrypt.js: finishCryptoEncapsulation\n");
 
-    if (! this.smimeCompose) throw Cr.NS_ERROR_NOT_INITIALIZED;
+    if (this.checkSMime && (! this.smimeCompose))
+      throw Cr.NS_ERROR_NOT_INITIALIZED;
 
     if (this.useSmime) return this.smimeCompose.finishCryptoEncapsulation(abort, sendReport);
 
@@ -277,7 +287,8 @@ PgpMimeEncrypt.prototype = {
   mimeCryptoWriteBlock: function (buffer, length) {
     DEBUG_LOG("mimeEncrypt.js: mimeCryptoWriteBlock: "+length+"\n");
 
-    if (! this.smimeCompose) throw Cr.NS_ERROR_NOT_INITIALIZED;
+    if (this.checkSMime && (! this.smimeCompose))
+      throw Cr.NS_ERROR_NOT_INITIALIZED;
 
     if (this.useSmime) return this.smimeCompose.mimeCryptoWriteBlock(buffer, length);
 
