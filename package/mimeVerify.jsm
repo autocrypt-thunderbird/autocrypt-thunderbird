@@ -8,6 +8,10 @@
  *  implemented as JS module
  */
 
+
+// TODO: Missing features
+//   - don't attempt to validate forwarded messages unless message is being viewed
+
 'use strict';
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
@@ -120,6 +124,8 @@ MimeVerify.prototype = {
           DEBUG_LOG("mimeVerify.jsm: onTextData: found PGP/MIME signed message\n");
           this.foundMsg = true;
           let hdr = getHeaderData(s);
+          hdr["boundary"] = hdr["boundary"] || "";
+          hdr["micalg"] = hdr["micalg"] || "";
           this.boundary = hdr["boundary"].replace(/[\'\"]/g, "");
           this.hash = hdr["micalg"].replace(/[\'\"]/g, "").toUpperCase().replace(/^PGP-/, "");
         }

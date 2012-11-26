@@ -316,6 +316,11 @@ PgpMimeEncrypt.prototype = {
 
       }
       else if (this.inputMode == 1) {
+        if (line.substr(0, 5) == "From ") {
+          DEBUG_LOG("mimeEncrypt.js: added >From\n");
+          this.writeToPipe(">");
+        }
+
         this.writeToPipe(line);
         if (this.cryptoMode == MIME_SIGNED) this.writeOut(line);
       }
