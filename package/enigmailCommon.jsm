@@ -268,6 +268,12 @@ var EnigmailCommon = {
     return this.enigmailSvc.initialized ? this.enigmailSvc : null;
   },
 
+  getAppName: function() {
+    var xulAppinfo = Cc[XPCOM_APPINFO].getService(Ci.nsIXULAppInfo);
+
+    return xulAppinfo.name;
+  },
+
   getVersion: function()
   {
     this.DEBUG_LOG("enigmailCommon.jsm: getVersion\n");
@@ -2351,7 +2357,7 @@ var EnigmailCommon = {
     var encryptArgs = this.getAgentArgs(true);
 
     if (!useDefaultComment)
-      encryptArgs = encryptArgs.concat(["--comment", GPG_COMMENT_OPT.replace(/\%s/, this.vendor)]);
+      encryptArgs = encryptArgs.concat(["--comment", GPG_COMMENT_OPT.replace(/\%s/, this.getAppName())]);
 
     var angledFromMailAddr = ((fromMailAddr.search(/^0x/) == 0) || hushMailSupport)
                            ? fromMailAddr : "<" + fromMailAddr + ">";
