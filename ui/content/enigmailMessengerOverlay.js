@@ -126,7 +126,7 @@ Enigmail.msg = {
 
     // Need to add event listener to Enigmail.msg.messagePane to make it work
     // Adding to msgFrame doesn't seem to work
-    Enigmail.msg.messagePane.addEventListener("unload", Enigmail.msg.messageFrameUnload, true);
+    Enigmail.msg.messagePane.addEventListener("unload", Enigmail.msg.messageFrameUnload.bind(Enigmail.msg), true);
 
     if (EnigmailCommon.getPref("handleDoubleClick")) {
       // ovveride function for double clicking an attachment
@@ -303,7 +303,7 @@ Enigmail.msg = {
     ChangeMailLayout(viewType);
 
     // This event requires that we re-subscribe to these events!
-    Enigmail.msg.messagePane.addEventListener("unload", Enigmail.msg.messageFrameUnload, true);
+    Enigmail.msg.messagePane.addEventListener("unload", Enigmail.msg.messageFrameUnload.bind(Enigmail.msg), true);
     this.messageReload(false);
   },
 
@@ -377,6 +377,10 @@ Enigmail.msg = {
     for (var j=0; j<optList.length; j++) {
       var menuElement = document.getElementById("enigmail_"+optList[j]);
       menuElement.setAttribute("checked", EnigmailCommon.getPref(optList[j]) ? "true" : "false");
+
+      menuElement = document.getElementById("enigmail_"+optList[j]+"2");
+      if (menuElement)
+        menuElement.setAttribute("checked", EnigmailCommon.getPref(optList[j]) ? "true" : "false");
     }
 
     optList = ["decryptverify", "importpublickey", "savedecrypted"];
@@ -388,9 +392,54 @@ Enigmail.msg = {
       else {
          menuElement.removeAttribute("disabled");
       }
+
+      menuElement = document.getElementById("enigmail_"+optList[j]+"2");
+      if (menuElement) {
+        if (Enigmail.msg.decryptButton && Enigmail.msg.decryptButton.disabled) {
+           menuElement.setAttribute("disabled", "true");
+        }
+        else {
+           menuElement.removeAttribute("disabled");
+        }
+      }
     }
   },
 
+  displayMainMenu: function(menuPopup) {
+
+    function traverseTree(currentElement, func)
+    {
+      if (currentElement)
+      {
+        func(currentElement);
+        if (currentElement.id)
+          EnigmailCommon.DEBUG_LOG("traverseTree: "+currentElement.id+"\n");
+
+        // Traverse the tree
+        var i=0;
+        var currentElementChild=currentElement.childNodes[i];
+        while (currentElementChild)
+        {
+          // Recursively traverse the tree structure of the child node
+          traverseTree(currentElementChild, func);
+          i++;
+          currentElementChild=currentElement.childNodes[i];
+        }
+      }
+    }
+
+    var p = menuPopup.parentNode;
+    var a = document.getElementById("menu_EnigmailPopup");
+    var c = a.cloneNode(true);
+    p.removeChild(menuPopup);
+
+
+    traverseTree(c, function _updNode(node) {
+       if (node.id && node.id.length > 0) node.id += "2";
+    });
+    p.appendChild(c);
+
+  },
 
   toggleAttribute: function (attrName)
   {
@@ -2093,5 +2142,5 @@ Enigmail.msg = {
   }
 };
 
-window.addEventListener("load",   Enigmail.msg.messengerStartup, false);
+window.addEventListener("load",   Enigmail.msg.messengerStartup.bind(Enigmail.msg), false);
 

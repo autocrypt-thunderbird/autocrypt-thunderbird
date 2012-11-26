@@ -1798,45 +1798,48 @@ Enigmail.msg = {
     var wrapper = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIEditorMailSupport);
     var editor = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIPlaintextEditor);
     var wrapWidth=72;
-    if (gMsgCompose.composeHTML) {
-      // enforce line wrapping here
-      // otherwise the message isn't signed correctly
-      try {
-        wrapWidth = this.getMailPref("editor.htmlWrapColumn");
 
-        if (wrapWidth > 0 && wrapWidth < 68 && gMsgCompose.wrapLength > 0) {
-          if (EnigmailCommon.confirmDlg(window, EnigmailCommon.getString("minimalLineWrapping", [ wrapWidth ] ))) {
-            EnigmailCommon.prefRoot.setIntPref("editor.htmlWrapColumn", 68)
+    if (! (sendInfo.sendFlags & ENCRYPT)) {
+      // signed messages only
+      if (gMsgCompose.composeHTML) {
+        // enforce line wrapping here
+        // otherwise the message isn't signed correctly
+        try {
+          wrapWidth = this.getMailPref("editor.htmlWrapColumn");
+
+          if (wrapWidth > 0 && wrapWidth < 68 && gMsgCompose.wrapLength > 0) {
+            if (EnigmailCommon.confirmDlg(window, EnigmailCommon.getString("minimalLineWrapping", [ wrapWidth ] ))) {
+              EnigmailCommon.prefRoot.setIntPref("editor.htmlWrapColumn", 68)
+            }
+          }
+          if (EnigmailCommon.getPref("wrapHtmlBeforeSend")) {
+            if (wrapWidth) {
+              editor.wrapWidth = wrapWidth-2; // prepare for the worst case: a 72 char's long line starting with '-'
+              wrapper.rewrap(false);
+            }
           }
         }
-        if (!(sendInfo.sendFlags & ENCRYPT) && EnigmailCommon.getPref("wrapHtmlBeforeSend")) {
-          if (wrapWidth) {
-            editor.wrapWidth = wrapWidth-2; // prepare for the worst case: a 72 char's long line starting with '-'
-            wrapper.rewrap(false);
-          }
-        }
+        catch (ex) {}
       }
-      catch (ex) {}
-    }
-    else {
-      try {
-        wrapWidth = this.getMailPref("mailnews.wraplength");
-        if (wrapWidth > 0 && wrapWidth < 68 && editor.wrapWidth > 0) {
-          if (EnigmailCommon.confirmDlg(window, EnigmailCommon.getString("minimalLineWrapping", [ wrapWidth ] ))) {
-            wrapWidth = 68;
-            EnigmailCommon.prefRoot.setIntPref("mailnews.wraplength", wrapWidth)
+      else {
+        try {
+          wrapWidth = this.getMailPref("mailnews.wraplength");
+          if (wrapWidth > 0 && wrapWidth < 68 && editor.wrapWidth > 0) {
+            if (EnigmailCommon.confirmDlg(window, EnigmailCommon.getString("minimalLineWrapping", [ wrapWidth ] ))) {
+              wrapWidth = 68;
+              EnigmailCommon.prefRoot.setIntPref("mailnews.wraplength", wrapWidth)
+            }
+          }
+
+          if (wrapWidth && editor.wrapWidth > 0) {
+            editor.wrapWidth = wrapWidth - 2;
+            wrapper.rewrap(true);
+            editor.wrapWidth = wrapWidth;
           }
         }
-
-        if (wrapWidth && editor.wrapWidth > 0) {
-          editor.wrapWidth = wrapWidth - 2;
-          wrapper.rewrap(true);
-          editor.wrapWidth = wrapWidth;
-        }
+        catch (ex) {}
       }
-      catch (ex) {}
-    }
-
+    }https://addons.mozilla.org/en-US/developers/addon/enigmail/versions/1394284
     var exitCodeObj    = new Object();
     var statusFlagsObj = new Object();
     var errorMsgObj    = new Object();

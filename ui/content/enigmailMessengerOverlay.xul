@@ -78,6 +78,16 @@
           app="mailnews"/>
   </menubar>
 
+  <!-- Thunderbird secondary pane -->
+	<popup id="appmenuSecondaryPane">
+  	<splitmenu id="menu_Enigmail2ndPane"
+          label="&enigmail.openpgp.label;"
+          accesskey="&enigmail.messengermenu.accesskey;"
+          insertafter="appmenu_customize">
+        <menupopup id="enigmail_2ndPanePopup" onpopupshowing="Enigmail.msg.displayMainMenu(this)"/>
+    </splitmenu>
+	</popup>
+
   <!-- Menu content for all apps -->
   <menu id="menu_Enigmail">
 

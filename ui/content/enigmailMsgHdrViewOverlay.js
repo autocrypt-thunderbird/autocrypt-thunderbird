@@ -547,8 +547,8 @@ Enigmail.hdrView = {
           if (msgFrame) {
             EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: msgFrame="+msgFrame+"\n");
 
-            msgFrame.addEventListener("unload", Enigmail.hdrView.messageUnload, true);
-            msgFrame.addEventListener("load", Enigmail.msg.messageAutoDecrypt, false);
+            msgFrame.addEventListener("unload", Enigmail.hdrView.messageUnload.bind(Enigmail.hdrView), true);
+            msgFrame.addEventListener("load", Enigmail.msg.messageAutoDecrypt.bind(Enigmail.msg), false);
           }
 
           Enigmail.hdrView.forgetEncryptedMsgKey();
@@ -818,11 +818,11 @@ Enigmail.hdrView = {
   }
 };
 
-window.addEventListener("load", Enigmail.hdrView.hdrViewLoad, false);
-addEventListener('messagepane-loaded', Enigmail.hdrView.msgHdrViewLoad, true);
-addEventListener('messagepane-unloaded', Enigmail.hdrView.hdrViewUnload, true);
-addEventListener('messagepane-hide', Enigmail.hdrView.msgHdrViewHide, true);
-addEventListener('messagepane-unhide', Enigmail.hdrView.msgHdrViewUnide, true);
+window.addEventListener("load", Enigmail.hdrView.hdrViewLoad.bind(Enigmail.hdrView), false)
+addEventListener('messagepane-loaded', Enigmail.hdrView.msgHdrViewLoad.bind(Enigmail.hdrView), true);
+addEventListener('messagepane-unloaded', Enigmail.hdrView.hdrViewUnload.bind(Enigmail.hdrView), true);
+addEventListener('messagepane-hide', Enigmail.hdrView.msgHdrViewHide.bind(Enigmail.hdrView), true);
+addEventListener('messagepane-unhide', Enigmail.hdrView.msgHdrViewUnide.bind(Enigmail.hdrView), true);
 
 ////////////////////////////////////////////////////////////////////////////////
 // THE FOLLOWING OVERRIDES CODE IN msgHdrViewOverlay.js
