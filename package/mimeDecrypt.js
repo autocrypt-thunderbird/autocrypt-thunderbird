@@ -27,11 +27,9 @@ const PGPMIME_JS_DECRYPTOR_CID = Components.ID("{7514cbeb-2bfd-4b2c-829b-1a4691f
 const maxBufferLen = 102400;
 
 var gDebugLog = false;
+var gDebugLogLevel = 0;
 
-var gConv = Cc["@mozilla.org/intl/scriptableunicodeconverter"]
-                        .getService(Ci.nsIScriptableUnicodeConverter);
-gConv.charset = "utf-8";
-
+var gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
 var gNumProc = 0;
 
 ////////////////////////////////////////////////////////////////////
@@ -240,7 +238,13 @@ PgpMimeDecrypt.prototype = {
 
   done: function(exitCode) {
     DEBUG_LOG("mimeDecrypt.js: done: "+exitCode+"\n");
-    this.mimeSvc.onDataAvailable(null, null, gConv.convertToInputStream(this.decryptedData), 0, this.dataLength);
+
+    if (gDebugLogLevel > 4)
+      DEBUG_LOG("mimeDecrypt.js: done: decrypted data='"+this.decryptedData+"'\n");
+
+    gConv.setData(this.decryptedData, this.dataLength);
+    this.mimeSvc.onDataAvailable(null, null, gConv, 0, this.dataLength);
+
     this.verifier.onTextData(this.decryptedData);
     this.verifier.onStopRequest();
     this.decryptedData = "";
@@ -281,6 +285,7 @@ function initModule() {
     var matches = nspr_log_modules.match(/mimeDecrypt:(\d+)/);
 
     if (matches && (matches.length > 1)) {
+      gDebugLogLevel = matches[1];
       if (matches[1] > 2) gDebugLog = true;
       dump("mimeDecrypt.js: enabled debug logging\n");
     }
