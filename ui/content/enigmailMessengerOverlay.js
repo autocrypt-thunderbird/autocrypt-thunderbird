@@ -128,10 +128,14 @@ Enigmail.msg = {
     // Adding to msgFrame doesn't seem to work
     Enigmail.msg.messagePane.addEventListener("unload", Enigmail.msg.messageFrameUnload.bind(Enigmail.msg), true);
 
-    if (EnigmailCommon.getPref("handleDoubleClick")) {
-      // ovveride function for double clicking an attachment
-      overrideAttribute(["attachmentList"], "onclick",
-                        "Enigmail.msg.enigAttachmentListClick('", "', event);");
+    // override double clicking attachments, but fall back to existing handler if present
+    var attListElem = document.getElementById("attachmentList");
+    if (attListElem) {
+      var newHandler = "Enigmail.msg.enigAttachmentListClick('attachmentList', event)";
+      var oldHandler = attListElem.getAttribute("onclick");
+      if (oldHandler)
+        newHandler = "if (!" + newHandler + ") {" + oldHandler + "}";
+      attListElem.setAttribute("onclick", newHandler);
     }
 
     var treeController = {
@@ -2049,13 +2053,13 @@ Enigmail.msg = {
 
     var attachment=event.target.attachment;
     if (this.checkEncryptedAttach(attachment)) {
-      if (event.button != 0) return;
-
-      if (event.detail == 2) { // double click
+      if (event.button == 0 && event.detail == 2) { // double click
         this.handleAttachment("openAttachment", attachment);
         event.stopPropagation();
+        return true;
       }
     }
+    return false;
   },
 
   // download keys
