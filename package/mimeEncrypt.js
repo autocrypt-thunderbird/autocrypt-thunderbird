@@ -74,7 +74,7 @@ PgpMimeEncrypt.prototype = {
     DEBUG_LOG("mimeEncrypt.js: onDataAvailable\n");
     this.inStream.init(stream);
     var data = this.inStream.read(count);
-    DEBUG_LOG("mimeEncrypt.js: >"+data+"<\n");
+    //DEBUG_LOG("mimeEncrypt.js: >"+data+"<\n");
 
   },
 
@@ -273,6 +273,8 @@ PgpMimeEncrypt.prototype = {
       if (this.exitCode != 0) throw Cr.NS_ERROR_FAILURE;
 
       if (this.cryptoMode == MIME_SIGNED) this.signedHeaders2();
+
+      this.encryptedData = this.encryptedData.replace(/\r/g, "").replace(/\n/g, "\r\n"); // force CRLF
       this.writeOut(this.encryptedData);
       this.finishCryptoHeaders();
       this.flushOutput();
@@ -340,6 +342,14 @@ PgpMimeEncrypt.prototype = {
 
   flushOutput: function() {
     DEBUG_LOG("mimeEncrypt.js: flushOutput\n");
+
+    // check for output errors
+    // TODO: remove check
+    let i = this.outQueue.search(/[^\r]\n/);
+    if (i != -1) {
+      DEBUG_LOG("mimeEncrypt.js: flushOutput -- ERROR: found \\n without \\r at pos. "+i+"\n");
+      DEBUG_LOG("mimeEncrypt.js: flushOutput: data= '"+this.outQueue.substr(i-10 < 0 ? 0 : i-10, 20)+"'\n");
+    }
     this.outStringStream.setData(this.outQueue, this.outQueue.length);
     var writeCount = this.outStream.writeFrom(this.outStringStream, this.outQueue.length);
     if (writeCount < this.outQueue.length) {
