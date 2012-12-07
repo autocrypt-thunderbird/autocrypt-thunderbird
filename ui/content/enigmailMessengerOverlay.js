@@ -486,14 +486,12 @@ Enigmail.msg = {
     let contentType = "text/plain";
     if ('content-type' in currentHeaderData) contentType=currentHeaderData['content-type'].headerValue;
 
-    if ("nsIPgpMimeProxy" in Components.interfaces) {
 
-      // don't parse message if we know it's a PGP/MIME message
-      if (((contentType.search(/^multipart\/signed(;|$)/i) == 0) && (contentType.search(/application\/pgp-signature/i)>0)) ||
-        ((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) && (contentType.search(/application\/pgp-encrypted/i)>0))) {
-        this.messageDecryptCb(event, isAuto, null);
-        return;
-      }
+    // don't parse message if we know it's a PGP/MIME message
+    if (((contentType.search(/^multipart\/signed(;|$)/i) == 0) && (contentType.search(/application\/pgp-signature/i)>0)) ||
+      ((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) && (contentType.search(/application\/pgp-encrypted/i)>0))) {
+      this.messageDecryptCb(event, isAuto, null);
+      return;
     }
 
     try {

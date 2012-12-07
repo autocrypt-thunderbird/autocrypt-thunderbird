@@ -26,7 +26,6 @@ const PGPMIME_JS_DECRYPTOR_CID = Components.ID("{7514cbeb-2bfd-4b2c-829b-1a4691f
 
 const maxBufferLen = 102400;
 
-var gDebugLog = false;
 var gDebugLogLevel = 0;
 
 var gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
@@ -120,6 +119,7 @@ PgpMimeDecrypt.prototype = {
       if (this.mimePartCount == 2) {
         if (!this.matchedPgpDelimiter) {
           if (data.indexOf("-----BEGIN PGP MESSAGE-----") == 0)
+            DEBUG_LOG("mimeDecrypt.js: onDataAvailable: found PGP begin delimiter\n");
             this.matchedPgpDelimiter = 1;
         }
 
@@ -127,6 +127,7 @@ PgpMimeDecrypt.prototype = {
           this.writeToPipe(data);
 
           if (data.indexOf("-----END PGP MESSAGE-----") == 0) {
+            DEBUG_LOG("mimeDecrypt.js: onDataAvailable: found PGP end delimiter\n");
             this.writeToPipe("\n");
             this.matchedPgpDelimiter = 2;
           }
@@ -137,6 +138,9 @@ PgpMimeDecrypt.prototype = {
 
   // (delayed) writing to subprocess
   writeToPipe: function(str) {
+    if (gDebugLogLevel > 4)
+      DEBUG_LOG("mimeDecrypt.js: writeToPipe: "+str.length+"\n");
+
     if (this.pipe) {
       this.outQueue += str;
       if (this.outQueue.length > maxBufferLen)
@@ -147,8 +151,11 @@ PgpMimeDecrypt.prototype = {
   },
 
   flushInput: function() {
-    DEBUG_LOG("mimeDecrypt.js: flushInput\n");
-    if (! this.pipe) return;
+    DEBUG_LOG("mimeDecrypt.js: flushInput: "+this.outQueue.length+" bytes\n");
+    if (! this.pipe) {
+      DEBUG_LOG("mimeDecrypt.js: flushInput: no pipe\n");
+      return;
+    }
     this.pipe.write(this.outQueue);
     this.outQueue = "";
   },
@@ -275,7 +282,7 @@ function getBoundary(contentType) {
 
 
 function DEBUG_LOG(str) {
-  if (gDebugLog) Ec.DEBUG_LOG(str);
+  if (gDebugLogLevel) Ec.DEBUG_LOG(str);
 }
 
 function initModule() {
@@ -286,7 +293,6 @@ function initModule() {
 
     if (matches && (matches.length > 1)) {
       gDebugLogLevel = matches[1];
-      if (matches[1] > 2) gDebugLog = true;
       dump("mimeDecrypt.js: enabled debug logging\n");
     }
   }
