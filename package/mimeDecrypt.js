@@ -97,7 +97,7 @@ PgpMimeDecrypt.prototype = {
     this.verifier = EnigmailVerify.newVerfier(true);
     this.verifier.setMsgWindow(this.msgWindow, this.msgUriSpec);
     this.verifier.onStartRequest(true);
-    this.proc = Ec.decryptMessageStart(win, false, this,
+    this.proc = Ec.decryptMessageStart(win, false, false, this,
                     statusFlagsObj, errorMsgObj);
   },
 

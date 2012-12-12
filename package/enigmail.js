@@ -1608,307 +1608,63 @@ Enigmail.prototype = {
       plainText = plainText.replace(/\r\n/g, "\n");
       plainText = plainText.replace(/\r/g,   "\n");
 
-      // Using platform-specific linebreaks confuses some windows mail clients,
-      // so we convert everything to windows like good old PGP worked anyway.
+      // we need all data in CRLF according to RFC 4880
       plainText = plainText.replace(/\n/g, "\r\n");
     }
 
-    var startErrorMsgObj = new Object();
+    var listener = {
+      stdoutData: "",
+      stderrData: "",
+      exitCode: -1,
+      stdin: function(pipe) {
+          pipe.write(plainText);
+          pipe.close();
+      },
+      stdout: function(data) {
+        this.stdoutData += data;
+      },
+      stderr: function (data) {
+        this.stderrData += data;
+      },
+      done: function(exitCode) {
+        this.exitCode = exitCode;
+      }
+    };
 
-    var ipcBuffer = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
-    var bufferSize = ((plainText.length + 20000)/1024).toFixed(0)*1024;
-    if (MSG_BUFFER_SIZE > bufferSize)
-      bufferSize=MSG_BUFFER_SIZE;
+    var proc = Ec.encryptMessageStart(parent, uiFlags, fromMailAddr, toMailAddr,
+                          bccMailAddr, hashAlgorithm, sendFlags,
+                          listener, statusFlagsObj, errorMsgObj);
 
-    ipcBuffer.open(bufferSize, false);
-
-    var pipeTrans = this.encryptMessageStart(parent, null, uiFlags,
-                                             fromMailAddr, toMailAddr, bccMailAddr,
-                                             hashAlgo, sendFlags, ipcBuffer,
-                                             statusFlagsObj, startErrorMsgObj);
-
-    if (!pipeTrans) {
-      errorMsgObj.value = startErrorMsgObj.value;
-
+    if (! proc) {
+      exitCodeObj.value = -1;
       return "";
     }
 
-    // Write to child STDIN
-    // (ignore errors, because child may have exited already, closing STDIN)
-    try {
-      pipeTrans.write(plainText, plainText.length);
-    } catch (ex) {}
-
     // Wait for child STDOUT to close
-    pipeTrans.join();
+    proc.wait();
 
-    var cipherText = ipcBuffer.getData();
-    ipcBuffer.shutdown();
+    var retStatusObj = {};
+    exitCodeObj.value = Ec.encryptMessageEnd(listener.stderrData, listener.exitCode,
+                                        uiFlags, sendFlags,
+                                        listener.stdoutData.length,
+                                        retStatusObj);
 
-    var exitCode = this.encryptMessageEnd(parent, null, uiFlags, sendFlags,
-                                          plainText.length, pipeTrans,
-                                          statusFlagsObj, errorMsgObj);
+    statusFlagsObj.value = retStatusObj.statusFlags;
+    errorMsgObj.value = retStatusObj.errorMsg;
 
-    exitCodeObj.value = exitCode;
 
-    if ((exitCodeObj.value == 0) && !cipherText)
+    if ((exitCodeObj.value == 0) && listener.stdoutData.length == 0)
       exitCodeObj.value = -1;
 
     if (exitCodeObj.value == 0) {
       // Normal return
-      return cipherText;
+      return listener.stdoutData;
     }
 
     // Error processing
     Ec.DEBUG_LOG("enigmail.js: Enigmail.encryptMessage: command execution exit code: "+exitCodeObj.value+"\n");
 
     return "";
-  },
-
-
-  encryptMessageEnd: function (parent, prompter, uiFlags, sendFlags, outputLen, pipeTransport,
-            statusFlagsObj, errorMsgObj)
-  {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.encryptMessageEnd: uiFlags="+uiFlags+", sendFlags="+Ec.bytesToHex(Ec.pack(sendFlags,4))+", outputLen="+outputLen+", pipeTransport="+pipeTransport+"\n");
-
-    var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
-    var defaultSend = sendFlags & nsIEnigmail.SEND_DEFAULT;
-    var signMsg     = sendFlags & nsIEnigmail.SEND_SIGNED;
-    var encryptMsg  = sendFlags & nsIEnigmail.SEND_ENCRYPTED;
-
-    statusFlagsObj.value = 0;
-    errorMsgObj.value    = "";
-
-    if (!this.initialized) {
-       Ec.ERROR_LOG("enigmail.js: Enigmail.encryptMessageEnd: not yet initialized\n");
-       errorMsgObj.value = Ec.getString("notInit");
-       return -1;
-    }
-
-    // Terminate job and parse error output
-    var statusMsgObj   = new Object();
-    var cmdLineObj     = new Object();
-    var cmdErrorMsgObj = new Object();
-
-    var exitCode = this.execEnd(pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, cmdErrorMsgObj);
-    var statusMsg = statusMsgObj.value;
-    exitCode = Ec.fixExitCode(exitCode, statusFlagsObj.value);
-    if ((exitCode == 0) && !outputLen) {
-      exitCode = -1;
-    }
-
-    if (exitCode != 0 && (signMsg || encryptMsg)) {
-      // GnuPG might return a non-zero exit code, even though the message was correctly
-      // signed or encryped -> try to fix the exit code
-
-      var correctedExitCode = 0;
-      if (signMsg) {
-        if (! (statusFlagsObj.value & nsIEnigmail.SIG_CREATED)) correctedExitCode = exitCode;
-      }
-      if (encryptMsg) {
-        if (! (statusFlagsObj.value & nsIEnigmail.END_ENCRYPTION)) correctedExitCode = exitCode;
-      }
-      exitCode = correctedExitCode;
-    }
-
-    if (exitCode == 0) {
-      // Normal return
-      errorMsgObj.value = cmdErrorMsgObj.value;
-      return 0;
-    }
-
-    // Error processing
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.encryptMessageEnd: command execution exit code: "+exitCode+"\n");
-
-    if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
-      // "Unremember" passphrase on error return
-      Ec.clearCachedPassphrase();
-    }
-
-    if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
-      errorMsgObj.value = Ec.getString("badPhrase");
-    }
-    else if (statusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT) {
-      errorMsgObj.value = statusMsg;
-      cmdErrorMsgObj.value = null;
-    }
-    else if (statusFlagsObj.value & nsIEnigmail.DISPLAY_MESSAGE) {
-      errorMsgObj.value = statusMsg;
-
-    }
-    else {
-      errorMsgObj.value = Ec.getString("badCommand");
-    }
-
-    if (cmdErrorMsgObj.value) {
-      errorMsgObj.value += "\n\n" + this.agentType + " "+Ec.getString("cmdLine");
-      errorMsgObj.value += "\n" + cmdLineObj.value;
-      errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
-    }
-
-    if (pgpMime && errorMsgObj.value) {
-      if (prompter)
-        prompter.alert(Ec.getString("enigAlert"), errorMsgObj.value);
-      else
-        this.alertMsg(parent, errorMsgObj.value);
-    }
-
-    return exitCode;
-  },
-
-  determineHashAlgorithm: function (prompter, uiFlags, fromMailAddr, hashAlgoObj) {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.determineHashAlgorithm: from "+fromMailAddr+"\n");
-
-    var exitCodeObj    = new Object();
-    var statusFlagsObj = new Object();
-    var errorMsgObj    = new Object();
-
-    var sendFlags = nsIEnigmail.SEND_TEST | nsIEnigmail.SEND_SIGNED;
-
-    var hashAlgo = gMimeHashAlgorithms[this.prefBranch.getIntPref("mimeHashAlgorithm")];
-
-    if (!this.initialized) {
-      Ec.ERROR_LOG("enigmail.js: Enigmail.determineHashAlgorithm: Enigmail not initialized\n")
-      this.alertMsg(null, Ec.getString("notInit"));
-      return 2;
-    }
-
-    if (typeof(gKeyAlgorithms[fromMailAddr]) != "string") {
-      // hash algorithm not yet known
-      var passwdObj   = new Object();
-      var useAgentObj = new Object();
-      // Get the passphrase and remember it for the next 2 subsequent calls to gpg
-      if (!Ec.getPassphrase(null, passwdObj, useAgentObj, 2)) {
-        Ec.ERROR_LOG("enigmail.js: Enigmail.determineHashAlgorithm: Error - no passphrase supplied\n");
-
-        return 3;
-      }
-
-      var testUiFlags = nsIEnigmail.UI_TEST;
-
-      var ipcBuffer = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
-      var bufferSize = 10240;
-
-      ipcBuffer.open(bufferSize, false);
-
-      var pipeTrans = this.encryptMessageStart(null, prompter, testUiFlags,
-                                               fromMailAddr, "", "",
-                                               hashAlgo, sendFlags, ipcBuffer,
-                                               statusFlagsObj, errorMsgObj);
-      if (!pipeTrans) {
-        return 1;
-      }
-
-      var plainText = "Dummy Test";
-
-      // Write to child STDIN
-      // (ignore errors, because child may have exited already, closing STDIN)
-      try {
-        pipeTrans.write(plainText, plainText.length);
-      } catch (ex) {}
-
-      // Wait for child STDOUT to close
-      pipeTrans.join();
-
-      var msgText = ipcBuffer.getData();
-      ipcBuffer.shutdown();
-
-      var exitCode = this.encryptMessageEnd(null, prompter, testUiFlags, sendFlags,
-                                            plainText.length, pipeTrans,
-                                            statusFlagsObj, errorMsgObj);
-
-      if ((exitCode == 0) && !msgText) exitCode = 1;
-      // if (exitCode > 0) exitCode = -exitCode;
-
-      if (exitCode != 0) {
-        // Abormal return
-        if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
-          // "Unremember" passphrase on error return
-          Ec.clearCachedPassphrase();
-          errorMsgObj.value = Ec.getString("badPhrase");
-        }
-        this.alertMsg(null, errorMsgObj.value);
-        return exitCode;
-      }
-
-      var hashAlgorithm = "md5"; // default as defined in RFC 4880, section 7
-
-      var m = msgText.match(/^(Hash: )(.*)$/m);
-      if (m && (m.length > 2) && (m[1] == "Hash: ")) {
-        hashAlgorithm = m[2].toLowerCase();
-      }
-      else
-        Ec.DEBUG_LOG("enigmail.js: Enigmail.determineHashAlgorithm: no hashAlgorithm specified - using MD5\n");
-
-      for (var i=1; i < gMimeHashAlgorithms.length; i++) {
-        if (gMimeHashAlgorithms[i] == hashAlgorithm) {
-          Ec.DEBUG_LOG("enigmail.js: Enigmail.determineHashAlgorithm: found hashAlgorithm "+hashAlgorithm+"\n");
-          gKeyAlgorithms[fromMailAddr] = hashAlgorithm;
-          hashAlgoObj.value = hashAlgorithm;
-          return 0;
-        }
-      }
-
-      Ec.ERROR_LOG("enigmail.js: Enigmail.determineHashAlgorithm: no hashAlgorithm found\n");
-      return 2;
-    }
-    else {
-      Ec.DEBUG_LOG("enigmail.js: Enigmail.determineHashAlgorithm: hashAlgorithm "+gKeyAlgorithms[fromMailAddr]+" is cached\n");
-      hashAlgoObj.value = gKeyAlgorithms[fromMailAddr];
-    }
-
-    return 0;
-  },
-
-
-  encryptMessageStart: function (parent, prompter, uiFlags, fromMailAddr, toMailAddr, bccMailAddr,
-            hashAlgorithm, sendFlags, listener, statusFlagsObj, errorMsgObj) {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: prompter="+prompter+", uiFlags="+uiFlags+", from "+fromMailAddr+" to "+toMailAddr+", hashAlgorithm="+hashAlgorithm+" ("+Ec.bytesToHex(Ec.pack(sendFlags,4))+")\n");
-
-    var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
-
-    errorMsgObj.value = "";
-
-    if (!sendFlags) {
-      Ec.DEBUG_LOG("enigmail.js: Enigmail.encryptMessageStart: NO ENCRYPTION!\n");
-      errorMsgObj.value = Ec.getString("notRequired");
-      return null;
-    }
-
-    if (!this.initialized) {
-      Ec.ERROR_LOG("enigmail.js: Enigmail.encryptMessageStart: not yet initialized\n");
-      errorMsgObj.value = Ec.getString("notInit");
-      return null;
-    }
-
-    if (this.keygenProcess) {
-      errorMsgObj.value = Ec.getString("notComplete");
-      return null;
-    }
-
-    var encryptArgs = Ec.getEncryptCommand(fromMailAddr, toMailAddr, bccMailAddr, hashAlgorithm, sendFlags, ENC_TYPE_MSG, errorMsgObj);
-    if (! encryptArgs)
-      return null;
-
-    var signMsg     = sendFlags & nsIEnigmail.SEND_SIGNED;
-
-    var pipetrans = this.execStart(this.agentPath, encryptArgs, signMsg, parent, prompter,
-                                   listener, statusFlagsObj);
-
-    if (statusFlagsObj.value & nsIEnigmail.MISSING_PASSPHRASE) {
-      Ec.ERROR_LOG("enigmail.js: Enigmail.encryptMessageStart: Error - no passphrase supplied\n");
-
-      errorMsgObj.value = "";
-    }
-
-    if (pgpMime && errorMsgObj.value) {
-      if (prompter)
-        prompter.alert(Ec.getString("enigAlert"), errorMsgObj.value);
-      else
-        this.alertMsg(parent, errorMsgObj.value);
-    }
-
-    return pipetrans;
   },
 
 
@@ -2145,66 +1901,57 @@ Enigmail.prototype = {
       }
     }
 
+    var startErrorMsgObj = {};
     var noOutput = false;
-    var startErrorMsgObj = new Object();
 
-    var readBytes = MSG_BUFFER_SIZE;
-    if (verifyOnly && pgpBlock.length > MSG_BUFFER_SIZE) {
-      readBytes = ((pgpBlock.length+1500)/1024).toFixed(0)*1024;
-    }
-    if (readBytes > MAX_MSG_BUFFER_SIZE) {
-      errorMsgObj.value = Ec.getString("messageSizeError");
-      statusFlagsObj.value |= nsIEnigmail.OVERFLOWED;
-      exitCodeObj.value = 1;
+    var listener = {
+      stdoutData: "",
+      stderrData: "",
+      exitCode: -1,
+      stdin: function(pipe) {
+          pipe.write(pgpBlock);
+          pipe.close();
+      },
+      stdout: function(data) {
+        this.stdoutData += data;
+      },
+      stderr: function (data) {
+        this.stderrData += data;
+      },
+      done: function(exitCode) {
+        this.exitCode = exitCode;
+      }
+    };
+
+    var proc = Ec.decryptMessageStart(parent, verifyOnly, noOutput, listener,
+                                      statusFlagsObj, startErrorMsgObj);
+
+    if (!proc) {
+      errorMsgObj.value = startErrorMsgObj.value;
+      statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
+
       return "";
     }
 
-    const maxTries = 2;
-    var tryCount = 0;
-    while (tryCount < maxTries) {
-      tryCount++;
+    // Wait for child to close
+    proc.wait();
 
-      var ipcBuffer = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
-      ipcBuffer.open(readBytes, false);
+    var plainText = listener.stdoutData;
+    Ec.DEBUG_LOG("enigmail.js: decryptMessage: got plaintext: '"+plainText+"'\n");
 
-      var pipeTrans = this.decryptMessageStart(parent, null, verifyOnly, noOutput,
-                                            ipcBuffer, statusFlagsObj, startErrorMsgObj);
+    var retStatusObj = {};
+    var exitCode = Ec.decryptMessageEnd(listener.stderrData, listener.exitCode,
+                                        plainText.length, verifyOnly, noOutput,
+                                        uiFlags, retStatusObj);
+    exitCodeObj.value = exitCode;
+    statusFlagsObj.value = retStatusObj.statusFlags;
+    errorMsgObj.value = retStatusObj.errorMsg;
 
-      if (!pipeTrans) {
-        errorMsgObj.value = startErrorMsgObj.value;
-        statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
+    userIdObj.value = retStatusObj.userId;
+    keyIdObj.value = retStatusObj.keyId;
+    sigDetailsObj.value = retStatusObj.sigDetails;
+    blockSeparationObj.value = retStatusObj.blockSeparation;
 
-        return "";
-      }
-
-      // Write to child STDIN
-      // (ignore errors, because child may have exited already, closing STDIN)
-      try {
-        pipeTrans.write(pgpBlock, pgpBlock.length);
-      } catch (ex) {}
-
-      // Wait for child STDOUT to close
-      pipeTrans.join();
-
-      var overflowed = ipcBuffer.overflowed;
-      var plainText = ipcBuffer.getData();
-      if (ipcBuffer.overflowed && plainText.length < ipcBuffer.totalBytes) {
-        readBytes = ((ipcBuffer.totalBytes+1500)/1024).toFixed(0)*1024;
-        Ec.WRITE_LOG("enigmail.js: Enigmail.decryptMessage: decrypted text too big for standard buffer, retrying with buffer size="+readBytes+"\n");
-      }
-      else {
-        tryCount = maxTries;
-      }
-
-      ipcBuffer.shutdown();
-      ipcBuffer = null; // make sure the object gets freed
-
-      var exitCode = this.decryptMessageEnd(uiFlags, plainText.length, pipeTrans,
-                                          verifyOnly, noOutput,
-                                          statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj,
-                                          errorMsgObj, blockSeparationObj);
-      exitCodeObj.value = exitCode;
-    }
 
     if ((head.search(/\S/) >= 0) ||
         (tail.search(/\S/) >= 0)) {
@@ -2310,272 +2057,6 @@ Enigmail.prototype = {
   },
 
 
-  decryptMessageStart: function (parent, prompter, verifyOnly, noOutput,
-            listener, statusFlagsObj, errorMsgObj) {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.decryptMessageStart: prompter="+prompter+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
-
-    if (!this.initialized) {
-      Ec.ERROR_LOG("enigmail.js: Enigmail.decryptMessageStart: not yet initialized\n");
-      errorMsgObj.value = Ec.getString("notInit");
-      return null;
-    }
-
-    if (this.keygenProcess) {
-      errorMsgObj.value = Ec.getString("notComplete");
-      return null;
-    }
-
-    var args = Ec.getAgentArgs(true);
-
-    var keyserver = this.prefBranch.getCharPref("autoKeyRetrieve");
-    if (keyserver != "") {
-      args.push("--keyserver-options");
-      var keySrvArgs="auto-key-retrieve";
-      var srvProxy = Ec.getHttpProxy(keyserver);
-      if (srvProxy) {
-        keySrvArgs += ",http-proxy="+srvProxy;
-      }
-      args.push(keySrvArgs);
-      args.push("--keyserver");
-      args.push(keyserver);
-    }
-
-    if (noOutput) {
-      args.push("--verify");
-
-    } else {
-      args.push("--decrypt");
-    }
-
-    var pipetrans = this.execStart(this.agentPath, args, !verifyOnly, parent, prompter,
-                                   listener, statusFlagsObj);
-
-    if (statusFlagsObj.value & nsIEnigmail.MISSING_PASSPHRASE) {
-      Ec.ERROR_LOG("enigmail.js: Enigmail.decryptMessageStart: Error - no passphrase supplied\n");
-
-      errorMsgObj.value = Ec.getString("noPassphrase");
-      return null;
-    }
-
-    return pipetrans;
-  },
-
-
-  decryptMessageEnd: function (uiFlags, outputLen, pipeTransport, verifyOnly, noOutput,
-            statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj) {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.decryptMessageEnd: uiFlags="+uiFlags+", outputLen="+outputLen+", pipeTransport="+pipeTransport+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
-
-    var interactive = uiFlags & nsIEnigmail.UI_INTERACTIVE;
-    var pgpMime     = uiFlags & nsIEnigmail.UI_PGP_MIME;
-    var allowImport = uiFlags & nsIEnigmail.UI_ALLOW_KEY_IMPORT;
-    var unverifiedEncryptedOK = uiFlags & nsIEnigmail.UI_UNVERIFIED_ENC_OK;
-    var j;
-
-    statusFlagsObj.value = 0;
-    errorMsgObj.value    = "";
-    blockSeparationObj.value = "";
-
-    if (!this.initialized) {
-      Ec.ERROR_LOG("enigmail.js: Enigmail.decryptMessageEnd: not yet initialized\n");
-      errorMsgObj.value = Ec.getString("notInit");
-      return -1;
-    }
-
-    // Terminate job and parse error output
-    var statusMsgObj   = new Object();
-    var cmdLineObj     = new Object();
-    var cmdErrorMsgObj = new Object();
-
-    var exitCode = this.execEnd(pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, cmdErrorMsgObj, blockSeparationObj);
-
-    if (pgpMime) {
-      statusFlagsObj.value |= verifyOnly ? nsIEnigmail.PGP_MIME_SIGNED
-                                         : nsIEnigmail.PGP_MIME_ENCRYPTED;
-    }
-
-    var statusMsg = statusMsgObj.value;
-    exitCode = Ec.fixExitCode(exitCode, statusFlagsObj.value);
-    if ((exitCode == 0) && !noOutput && !outputLen &&
-        ((statusFlagsObj.value & (gStatusFlags.DECRYPTION_OKAY | gStatusFlags.GOODSIG)) == 0)) {
-      exitCode = -1;
-    }
-
-    if (exitCode == 0) {
-      // Normal return
-      var errLines, goodSignPat, badSignPat, keyExpPat, revKeyPat, validSigPat;
-
-      if (statusMsg) {
-          errLines = statusMsg.split(/\r?\n/);
-
-          goodSignPat =   /GOODSIG (\w{16}) (.*)$/i;
-          badSignPat  =    /BADSIG (\w{16}) (.*)$/i;
-          keyExpPat   = /EXPKEYSIG (\w{16}) (.*)$/i
-          revKeyPat   = /REVKEYSIG (\w{16}) (.*)$/i;
-          validSigPat =  /VALIDSIG (\w+) (.*) (\d+) (.*)/i;
-
-      } else {
-          errLines = cmdErrorMsgObj.value.split(/\r?\n/);
-
-          goodSignPat = /Good signature from (user )?"(.*)"\.?/i;
-          badSignPat  =  /BAD signature from (user )?"(.*)"\.?/i;
-          keyExpPat   = /This key has expired/i;
-          revKeyPat   = /This key has been revoked/i;
-          validSigPat = /dummy-not-used/i;
-      }
-
-      errorMsgObj.value = "";
-
-      var matches;
-
-      var signed = false;
-      var goodSignature;
-
-      var userId = "";
-      var keyId = "";
-      var sigDetails = "";
-
-      for (j=0; j<errLines.length; j++) {
-        matches = errLines[j].match(badSignPat);
-
-        if (matches && (matches.length > 2)) {
-          signed = true;
-          goodSignature = false;
-          userId = matches[2];
-          keyId = matches[1];
-          break;
-        }
-
-        matches = errLines[j].match(revKeyPat);
-
-        if (matches && (matches.length > 2)) {
-          signed = true;
-          goodSignature = true;
-          userId = matches[2];
-          keyId = matches[1];
-          break;
-        }
-
-        matches = errLines[j].match(goodSignPat);
-
-        if (matches && (matches.length > 2)) {
-          signed = true;
-          goodSignature = true;
-          userId = matches[2];
-          keyId = matches[1];
-          break;
-        }
-
-        matches = errLines[j].match(keyExpPat);
-
-        if (matches && (matches.length > 2)) {
-          signed = true;
-          goodSignature = true;
-          userId = matches[2];
-          keyId = matches[1];
-
-          break;
-        }
-      }
-
-      if (goodSignature) {
-        for (var j=0; j<errLines.length; j++) {
-          matches = errLines[j].match(validSigPat);
-
-          if (matches && (matches.length > 4))
-            keyId = matches[4].substr(-16); // in case of several subkeys refer to the main key ID
-
-          if (matches && (matches.length > 2)) {
-            sigDetails = errLines[j].substr(9);
-            break;
-          }
-        }
-      }
-
-      try {
-        if (userId && keyId && this.prefBranch.getBoolPref("displaySecondaryUid")) {
-          let uids = this.getKeyDetails(keyId, true);
-          if (uids) {
-            userId = uids;
-          }
-        }
-      }
-      catch (ex) {}
-
-      if (userId) {
-        userId = Ec.convertToUnicode(userId, "UTF-8");
-      }
-
-      userIdObj.value = userId;
-      keyIdObj.value = keyId;
-      sigDetailsObj.value = sigDetails;
-
-      if (signed) {
-        var trustPrefix = "";
-
-        if (statusFlagsObj.value & nsIEnigmail.UNTRUSTED_IDENTITY) {
-          trustPrefix += Ec.getString("prefUntrusted")+" ";
-        }
-
-        if (statusFlagsObj.value & nsIEnigmail.REVOKED_KEY) {
-          trustPrefix += Ec.getString("prefRevoked")+" ";
-        }
-
-        if (statusFlagsObj.value & nsIEnigmail.EXPIRED_KEY_SIGNATURE) {
-          trustPrefix += Ec.getString("prefExpiredKey")+" ";
-
-        } else if (statusFlagsObj.value & nsIEnigmail.EXPIRED_SIGNATURE) {
-          trustPrefix += Ec.getString("prefExpired")+" ";
-        }
-
-        if (goodSignature) {
-          errorMsgObj.value = trustPrefix + Ec.getString("prefGood", [userId]) /* + ", " +
-                Ec.getString("keyId") + " 0x" + keyId.substring(8,16); */
-        } else {
-          errorMsgObj.value = trustPrefix + Ec.getString("prefBad", [userId]) /*+ ", " +
-                Ec.getString("keyId") + " 0x" + keyId.substring(8,16); */
-          if (!exitCode)
-            exitCode = 1;
-        }
-      }
-
-      if (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE) {
-        keyIdObj.value = Ec.extractPubkey(statusMsg)
-      }
-
-      return exitCode;
-    }
-
-
-    if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
-      // "Unremember" passphrase on decryption failure
-      Ec.clearCachedPassphrase();
-    }
-
-    var pubKeyId;
-
-    if (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE) {
-      // Unverified signature
-      keyIdObj.value = Ec.extractPubkey(statusMsg);
-
-      if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_OKAY) {
-        exitCode=0;
-      }
-
-    }
-
-    if (exitCode != 0) {
-      // Error processing
-      Ec.DEBUG_LOG("enigmail.js: Enigmail.decryptMessageEnd: command execution exit code: "+exitCode+"\n");
-    }
-
-    if (cmdErrorMsgObj.value) {
-      errorMsgObj.value = this.agentType + " " + Ec.getString("cmdLine");
-      errorMsgObj.value += "\n" + cmdLineObj.value;
-      errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
-    }
-
-    return exitCode;
-  },
 
   extractKey: function (parent, exportFlags, userId, outputFile, exitCodeObj, errorMsgObj) {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.extractKey: "+userId+"\n");
@@ -3082,50 +2563,40 @@ Enigmail.prototype = {
 
     passphrase = passwdObj.value;
 
-    var exitCodeObj    = new Object();
-    var statusFlagsObj = new Object();
-    var statusMsgObj   = new Object();
-    var errorMsgObj    = new Object();
-
-    var ipcBuffer = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
-    ipcBuffer.open(MSG_BUFFER_SIZE, true);
-
-    var pipeTrans = this.execStart(this.agentPath, args, false, parent, 0,
-                                   ipcBuffer, statusFlagsObj);
-
-
-    if (!pipeTrans) {
-      return null;
-    }
-
-    try {
-      if (Ec.requirePassword()) {
-        pipeTrans.writeSync(passphrase, passphrase.length);
-        pipeTrans.writeSync("\n", 1);
+    var listener = {
+      stdoutData: "",
+      stderrData: "",
+      exitCode: -1,
+      stdin: function(pipe) {
+          if (Ec.requirePassword()) {
+            pipe.write(passphrase+"\n");
+          }
+          pipe.write(byteData);
+          pipe.write("\n");
+          pipe.close();
+      },
+      stdout: function(data) {
+        this.stdoutData += data;
+      },
+      stderr: function (data) {
+        this.stderrData += data;
+      },
+      done: function(exitCode) {
+        this.exitCode = exitCode;
       }
-      pipeTrans.write(byteData, dataLength.value);
-      pipeTrans.write("\n", 1);
-    }
-    catch (ex) {
+    };
+
+    var statusFlagsObj = {};
+    var proc = Ec.execStart(this.agentPath, args, false, parent,
+                              listener, statusFlagsObj);
+
+    if (!proc) {
       return null;
     }
 
-    // Wait for child STDOUT to close
-    pipeTrans.join();
+    proc.wait();
 
-    exitCodeObj.value = pipeTrans.exitValue;
-
-    var statusMsgObj = new Object();
-    var cmdLineObj   = new Object();
-
-    try {
-      this.execEnd(pipeTrans, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
-    }
-    catch (ex) {};
-
-    outputTxt = ipcBuffer.getData();
-
-    var matches = outputTxt.match(/:literal data packet:\r?\n.*name="(.*)",/m);
+    var matches = listener.stdoutData.match(/:literal data packet:\r?\n.*name="(.*)",/m);
     if (matches && (matches.length > 1)) {
       var filename = escape(matches[1]).replace(/%5Cx/g, "%")
       return Ec.convertToUnicode(unescape(filename), "utf-8")

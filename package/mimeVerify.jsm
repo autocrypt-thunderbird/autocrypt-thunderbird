@@ -231,7 +231,7 @@ MimeVerify.prototype = {
       var win = windowManager.getMostRecentWindow(null);
       var statusFlagsObj = {};
       var errorMsgObj = {};
-      this.proc = Ec.decryptMessageStart(win, true, this,
+      this.proc = Ec.decryptMessageStart(win, true, true, this,
                       statusFlagsObj, errorMsgObj);
   },
 

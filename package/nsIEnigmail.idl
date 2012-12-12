@@ -87,46 +87,6 @@ interface nsIEnigmail : nsISupports
 
   string getLogDirectoryPrefix();
 
-  nsIPipeTransport encryptMessageStart(in nsIDOMWindow parent,
-                                       in nsIPrompt prompter,
-                                       in unsigned long uiFlags,
-                                       in string  fromMailAddr,
-                                       in string  toMailAddr,
-                                       in string  bccMailAddr,
-                                       in string  hashAlgorithm,
-                                       in unsigned long sendFlags,
-                                       in nsIStreamListener listener,
-                                       out unsigned long statusFlags,
-                                       out wstring errorMsg);
-
-  long encryptMessageEnd(in nsIDOMWindow parent,
-                         in nsIPrompt prompter,
-                         in unsigned long uiFlags,
-                         in unsigned long sendFlags,
-                         in unsigned long outputLen,
-                         in nsIPipeTransport pipeTransport,
-                         out unsigned long statusFlags,
-                         out wstring errorMsg);
-
-  nsIPipeTransport decryptMessageStart(in nsIDOMWindow parent,
-                                       in nsIPrompt prompter,
-                                       in boolean verifyOnly,
-                                       in boolean noOutput,
-                                       in nsIStreamListener listener,
-                                       out unsigned long statusFlags,
-                                       out wstring errorMsg);
-
-  long decryptMessageEnd(in unsigned long uiFlags,
-                         in unsigned long outputLen,
-                         in nsIPipeTransport pipeTransport,
-                         in boolean verifyOnly,
-                         in boolean noOutput,
-                         out unsigned long statusFlags,
-                         out wstring keyId,
-                         out wstring userId,
-                         out wstring sigDetails,
-                         out wstring errorMsg,
-                         out wstring blockSeparation);
 
   boolean stripWhitespace(in unsigned long sendFlags);
 
@@ -136,11 +96,6 @@ interface nsIEnigmail : nsISupports
                             out long beginIndex,
                             out long endIndex,
                             out string foundIndentStr);
-
-  long determineHashAlgorithm(in nsIPrompt prompter,
-                              in unsigned long uiFlags,
-                              in string  fromMailAddr,
-                              out wstring hashAlgorithm);
 
   /* Cleartext signature parts */
   const long SIGNATURE_TEXT    = 1;
