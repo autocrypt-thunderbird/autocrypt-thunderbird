@@ -77,7 +77,7 @@ fi
 
 # Prepare chrome.manifest
 cat  ${srcDir}/package/chrome.manifest | \
-sed  's/##ENIGMIMEDLL-PLACEHOLDER##/binary-component platform\/'${platform}'\/components\/'`basename ${enigDllFile}`' ABI='${platform}'/' | \
+sed  's/##ENIGMIMEDLL-PLACEHOLDER##/binary-component platform\/'${platform}'\/components\/'`basename ${enigDllFile}`' ABI='${platform}'/' \
 > ${targetDir}/chrome.manifest
 
 # Prepare languages other than en-US
