@@ -44,7 +44,20 @@ VPATH		= @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
-DIRS = ipc public src build ui package lang
+MOZILLA_VERSION_PARTS = $(subst ., ,$(MOZILLA_VERSION))
+MOZILLA_MAJOR_VERSION = $(firstword $(MOZILLA_VERSION_PARTS))
+TMP_VAR = $(word 2,$(MOZILLA_VERSION_PARTS))
+MOZILLA_MINOR_VERSION = $(shell echo $(TMP_VAR)|sed 's/[a-z].*//')
+
+GECKO18 = $(shell test $(MOZILLA_MAJOR_VERSION) -lt 19 && echo 1)
+
+DIRS = ipc public
+
+ifeq ($(GECKO18),1)
+  DIRS += src build
+endif
+
+DIRS += ui package lang
 
 include $(topsrcdir)/config/config.mk
 

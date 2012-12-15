@@ -47,7 +47,6 @@ include $(DEPTH)/config/autoconf.mk
 
 EXTRA_JS_MODULES =  \
                    subprocess.jsm \
-                   pipeTransport.jsm \
                    subprocess_worker_win.js \
                    subprocess_worker_unix.js \
                    $(NULL)

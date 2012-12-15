@@ -41,9 +41,6 @@ VPATH		= @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
-DIRS            = public \
-                  src \
-                  build \
-                  modules
+DIRS            = modules
 
 include $(topsrcdir)/config/rules.mk

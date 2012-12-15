@@ -68,20 +68,16 @@ sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${platform}'<\/em
 
 
 enigmimeDll=${libPrefix}enigmime${dllSuffix}
-ipcDll=${libPrefix}ipc${dllSuffix}
 if [ ${platform} = OS2_x86-gcc3 ]; then
   # workaround for file name length limit on OS/2
   enigDllFile=platform/${platform}/components/${enigmimeDll}
-  ipcDllFile=platform/${platform}/components/${ipcDll}
 else
   enigDllFile=platform/${platform}/components/${libPrefix}enigmime-${xpcomAbi}${dllSuffix}
-  ipcDllFile=platform/${platform}/components/${libPrefix}ipc-${xpcomAbi}${dllSuffix}
 fi
 
 # Prepare chrome.manifest
 cat  ${srcDir}/package/chrome.manifest | \
 sed  's/##ENIGMIMEDLL-PLACEHOLDER##/binary-component platform\/'${platform}'\/components\/'`basename ${enigDllFile}`' ABI='${platform}'/' | \
-sed  's/##IPCDLL-PLACEHOLDER##/binary-component platform\/'${platform}'\/components\/'`basename ${ipcDllFile}`' ABI='${platform}'/' \
 > ${targetDir}/chrome.manifest
 
 # Prepare languages other than en-US
@@ -107,7 +103,6 @@ cd "$targetDir"
 
 mkdir -p platform/${platform}/components
 cp components/${enigmimeDll} ${enigDllFile}
-cp components/${ipcDll} ${ipcDllFile}
 
 if [ -d chrome/enigmail ]; then
   cd chrome/enigmail
@@ -135,16 +130,13 @@ zip ${xpiFile} \
     modules/keyManagement.jsm \
     modules/mimeVerify.jsm \
     modules/commonFuncs.jsm \
-    modules/pipeTransport.jsm \
     modules/subprocess.jsm \
     modules/subprocess_worker_win.js \
     modules/subprocess_worker_unix.js \
     chrome/${xpiModule}.jar \
     ${localeJar} \
-    components/ipc.xpt \
     components/enigmime.xpt \
     ${enigDllFile} \
-    ${ipcDllFile} \
     chrome.manifest \
     install.rdf
 

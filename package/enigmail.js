@@ -38,7 +38,6 @@ Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/AddonManager.jsm");
 Components.utils.import("resource://enigmail/subprocess.jsm");
 Components.utils.import("resource://enigmail/pipeConsole.jsm");
-Components.utils.import("resource://enigmail/pipeTransport.jsm");
 Components.utils.import("resource://gre/modules/ctypes.jsm");
 
 // Maximum size of message directly processed by Enigmail
@@ -792,11 +791,6 @@ Enigmail.prototype = {
     matches = nspr_log_modules.match(/subprocess:(\d+)/);
     if (matches && (matches.length > 1)) {
       if (matches[1] > 2) subprocess.registerDebugHandler(function(txt) { Ec.DEBUG_LOG("subprocess.jsm: "+txt) });
-    }
-
-    matches = nspr_log_modules.match(/nsPipeTransport:(\d+)/);
-    if (matches && (matches.length > 1)) {
-      if (matches[1] > 2) PipeTransport.registerDebugHandler(function(txt) { Ec.DEBUG_LOG("pipeTransport.jsm: "+txt+"\n") });
     }
 
 

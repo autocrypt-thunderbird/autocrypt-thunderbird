@@ -104,11 +104,7 @@ LOCAL_INCLUDES	= \
 		$(NULL)
 
 CPPSRCS		=		         \
-	        nsEnigMimeService.cpp
-
-ifeq ($(GECKO18),1)
-  CPPSRCS += nsEnigMsgCompose.cpp
-endif
+	        nsEnigMsgCompose.cpp
 
 CPPSRCS += $(NULL)
 

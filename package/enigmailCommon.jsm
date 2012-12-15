@@ -2106,7 +2106,6 @@ var EnigmailCommon = {
         mergeStderr: false
       });
     } catch (ex) {
-      this.CONSOLE_LOG("enigmailCommon.jsm:m: execStart: Error - Failed to start PipeTransport\n");
       this.ERROR_LOG("enigmailCommon.jsm: execStart: subprocess.call failed with '"+ex.toString()+"'\n");
       return null;
     }
@@ -2125,7 +2124,6 @@ var EnigmailCommon = {
 
     cmdLineObj.value = listener.command;
 
-    // Extract exit code and error output from pipeTransport
     var exitCode = listener.exitCode;
     var errOutput = listener.stderrData;
 
