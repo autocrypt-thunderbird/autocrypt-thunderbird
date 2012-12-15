@@ -74,11 +74,9 @@ const NS_ENIGCLINE_SERVICE_CID =
 const ENIGMAIL_EXTENSION_ID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
 
 // Contract IDs and CIDs used by this module
-const NS_IPCBUFFER_CONTRACTID   = "@mozilla.org/ipc/ipc-buffer;1";
 const NS_PROCESS_UTIL_CONTRACTID = "@mozilla.org/process/util;1"
 const NS_MSGCOMPOSESECURE_CONTRACTID = "@mozilla.org/messengercompose/composesecure;1";
 const NS_ENIGMSGCOMPOSE_CONTRACTID   = "@mozilla.org/enigmail/composesecure;1";
-const NS_ENIGMIMESERVICE_CONTRACTID = "@mozdev.org/enigmail/enigmimeservice;1";
 const NS_SIMPLEURI_CONTRACTID   = "@mozilla.org/network/simple-uri;1";
 const NS_TIMER_CONTRACTID       = "@mozilla.org/timer;1";
 const NS_OBSERVERSERVICE_CONTRACTID = "@mozilla.org/observer-service;1";
@@ -714,11 +712,7 @@ Enigmail.prototype = {
 
 
   mimeInitialized: function () {
-    var enigMimeService = Cc[NS_ENIGMIMESERVICE_CONTRACTID].getService(Ci.nsIEnigMimeService);
-
-    var value = enigMimeService.initialized;
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.mimeInitialized: "+value+"\n");
-    return value;
+    return true;
   },
 
   initialize: function (domWindow, version, prefBranch) {
@@ -1425,153 +1419,6 @@ Enigmail.prototype = {
     return outputData;
   },
 
-  execStart: function (command, args, needPassphrase, domWindow, prompter, listener,
-            statusFlagsObj) {
-    Ec.WRITE_LOG("enigmail.js: Enigmail.execStart: command = "+Ec.printCmdLine(command, args)+", needPassphrase="+needPassphrase+", domWindow="+domWindow+", prompter="+prompter+", listener="+listener+"\n");
-
-    statusFlagsObj.value = 0;
-
-    var envList = [];
-    envList = envList.concat(Ec.envList);
-
-    var passphrase = null;
-    var useAgentObj = {value: false};
-
-    if (needPassphrase) {
-      args = args.concat(Ec.passwdCommand());
-
-      var passwdObj = new Object();
-
-      if (!Ec.getPassphrase(domWindow, passwdObj, useAgentObj, 0)) {
-         Ec.ERROR_LOG("enigmail.js: Enigmail.execStart: Error - no passphrase supplied\n");
-
-         statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
-         return null;
-      }
-
-      passphrase = passwdObj.value;
-    }
-
-    var prefix = this.getLogDirectoryPrefix();
-    if (prefix && (gLogLevel >= 4)) {
-
-      WriteFileContents(prefix+"enigcmd.txt", Ec.printCmdLine(command, args)+"\n");
-      WriteFileContents(prefix+"enigenv.txt", envList.join(",")+"\n");
-
-      Ec.DEBUG_LOG("enigmail.js: Enigmail.execStart: copied command line/env to files "+prefix+"enigcmd.txt/enigenv.txt\n");
-    }
-
-    Ec.CONSOLE_LOG("enigmail> "+Ec.printCmdLine(command, args)+"\n");
-
-    var pipetrans = PipeTransport.createInstance();
-
-    pipetrans = pipetrans.QueryInterface(Ci.nsIPipeTransport);
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.execStart: pipetrans = " + pipetrans + "\n");
-
-    try {
-      var ipcBuffer = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
-      ipcBuffer.open(ERROR_BUFFER_SIZE, false);
-
-      var mergeStderr = false;
-      pipetrans.init(command);
-      pipetrans.openPipe(args, args.length, envList, envList.length,
-                            0, "", mergeStderr,
-                            ipcBuffer);
-
-      if (listener) {
-        pipetrans.asyncRead(listener, null, 0, -1, 0);
-      }
-
-      if (needPassphrase) {
-        // Write to child STDIN
-        // (ignore errors, because child may have exited already, closing STDIN)
-        try {
-          if (Ec.requirePassword()) {
-             pipetrans.writeSync(passphrase, passphrase.length);
-             pipetrans.writeSync("\n", 1);
-          }
-        } catch (ex) {}
-      }
-
-      return pipetrans;
-
-    } catch (ex) {
-      Ec.CONSOLE_LOG("enigmail.js: Enigmail.execStart: Error - Failed to start PipeTransport\n");
-      Ec.ERROR_LOG(ex.toString());
-      return null;
-    }
-  },
-
-
-  execEnd: function (pipeTransport, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj, blockSeparationObj) {
-
-    Ec.WRITE_LOG("enigmail.js: Enigmail.execEnd: \n");
-
-    // Extract command line
-    try {
-      var request = pipeTransport.QueryInterface(Ci.nsIRequest);
-
-      cmdLineObj.value = request.name;
-    } catch (ex) {
-      cmdLineObj.value = "unknown-command";
-    }
-
-    // Extract exit code and error output from pipeTransport
-    var exitCode = pipeTransport.exitValue;
-
-    var errListener = pipeTransport.stderrConsole.QueryInterface(Ci.nsIIPCBuffer);
-
-    var outLength = new Object();
-    var errOutput = errListener.getByteData(outLength);
-
-    // Terminate pipeTransport
-    errListener.shutdown();
-
-    pipeTransport.terminate();
-
-    var prefix = this.getLogDirectoryPrefix();
-    if (prefix && (gLogLevel >= 4)) {
-      WriteFileContents(prefix+"enigerr.txt", errOutput);
-      Ec.DEBUG_LOG("enigmail.js: Enigmail.execEnd: copied command err output to file "+prefix+"enigerr.txt\n");
-    }
-
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.execEnd: exitCode = "+exitCode+"\n");
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.execEnd: errOutput = "+errOutput+"\n");
-
-
-    var retObj = {};
-    errorMsgObj.value = Ec.parseErrorOutput(errOutput, retObj);
-    statusFlagsObj.value = retObj.statusFlags;
-    statusMsgObj.value = retObj.statusMsg;
-    if (! blockSeparationObj) blockSeparationObj = {};
-    blockSeparationObj.value = retObj.blockSeparation;
-
-    if (errOutput.search(/jpeg image of size \d+/)>-1) {
-      statusFlagsObj.value |= nsIEnigmail.PHOTO_AVAILABLE;
-    }
-    if (blockSeparationObj && blockSeparationObj.value.indexOf(" ") > 0) {
-      exitCode = 2;
-    }
-
-    Ec.CONSOLE_LOG(Ec.convertFromUnicode(errorMsgObj.value)+"\n");
-
-    Ec.stillActive();
-
-    return exitCode;
-  },
-
-
-  stripWhitespace: function(sendFlags) {
-    var stripThem=false;
-    if ((sendFlags & nsIEnigmail.SEND_SIGNED) &&
-        (!(sendFlags & nsIEnigmail.SEND_ENCRYPTED))) {
-      if (this.agentVersion >= "1.4.0" && this.agentVersion < "1.4.1") {
-        stripThem = true;
-      }
-    }
-
-    return stripThem;
-  },
 
   encryptMessage: function (parent, uiFlags, hashAlgorithm, plainText, fromMailAddr, toMailAddr, bccMailAddr,
             sendFlags, exitCodeObj, statusFlagsObj, errorMsgObj) {
@@ -1612,24 +1459,12 @@ Enigmail.prototype = {
       plainText = plainText.replace(/\n/g, "\r\n");
     }
 
-    var listener = {
-      stdoutData: "",
-      stderrData: "",
-      exitCode: -1,
-      stdin: function(pipe) {
-          pipe.write(plainText);
-          pipe.close();
-      },
-      stdout: function(data) {
-        this.stdoutData += data;
-      },
-      stderr: function (data) {
-        this.stderrData += data;
-      },
-      done: function(exitCode) {
-        this.exitCode = exitCode;
-      }
-    };
+    var listener = Ec.newSimpleListener(
+      function _stdin (pipe) {
+        pipe.write(plainText);
+        pipe.close();
+      });
+
 
     var proc = Ec.encryptMessageStart(parent, uiFlags, fromMailAddr, toMailAddr,
                           bccMailAddr, hashAlgorithm, sendFlags,
@@ -1904,24 +1739,11 @@ Enigmail.prototype = {
     var startErrorMsgObj = {};
     var noOutput = false;
 
-    var listener = {
-      stdoutData: "",
-      stderrData: "",
-      exitCode: -1,
-      stdin: function(pipe) {
+    var listener = Ec.newSimpleListener(
+      function _stdin (pipe) {
           pipe.write(pgpBlock);
           pipe.close();
-      },
-      stdout: function(data) {
-        this.stdoutData += data;
-      },
-      stderr: function (data) {
-        this.stderrData += data;
-      },
-      done: function(exitCode) {
-        this.exitCode = exitCode;
-      }
-    };
+      });
 
     var proc = Ec.decryptMessageStart(parent, verifyOnly, noOutput, listener,
                                       statusFlagsObj, startErrorMsgObj);
@@ -2542,69 +2364,6 @@ Enigmail.prototype = {
   },
 
 
-  getAttachmentFileName: function (parent, inputBuffer) {
-    Ec.DEBUG_LOG("enigmail.js: Enigmail.getAttachmentFileName\n");
-
-    var args = Ec.getAgentArgs(true);
-    args = args.concat(Ec.passwdCommand());
-    args.push("--list-packets");
-
-    var passphrase = null;
-    var passwdObj = new Object();
-    var useAgentObj = new Object();
-
-    if (!Ec.getPassphrase(parent, passwdObj, useAgentObj, 0)) {
-      Ec.ERROR_LOG("enigmail.js: Enigmail.getAttachmentFileName: Error - no passphrase supplied\n");
-      return null;
-    }
-
-    var dataLength = new Object();
-    var byteData = inputBuffer.getByteData(dataLength);
-
-    passphrase = passwdObj.value;
-
-    var listener = {
-      stdoutData: "",
-      stderrData: "",
-      exitCode: -1,
-      stdin: function(pipe) {
-          if (Ec.requirePassword()) {
-            pipe.write(passphrase+"\n");
-          }
-          pipe.write(byteData);
-          pipe.write("\n");
-          pipe.close();
-      },
-      stdout: function(data) {
-        this.stdoutData += data;
-      },
-      stderr: function (data) {
-        this.stderrData += data;
-      },
-      done: function(exitCode) {
-        this.exitCode = exitCode;
-      }
-    };
-
-    var statusFlagsObj = {};
-    var proc = Ec.execStart(this.agentPath, args, false, parent,
-                              listener, statusFlagsObj);
-
-    if (!proc) {
-      return null;
-    }
-
-    proc.wait();
-
-    var matches = listener.stdoutData.match(/:literal data packet:\r?\n.*name="(.*)",/m);
-    if (matches && (matches.length > 1)) {
-      var filename = escape(matches[1]).replace(/%5Cx/g, "%")
-      return Ec.convertToUnicode(unescape(filename), "utf-8")
-    }
-    else
-      return null;
-  },
-
   verifyAttachment: function (parent, verifyFile, sigFile,
                               statusFlagsObj, errorMsgObj) {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.verifyAttachment:\n");
@@ -2618,42 +2377,29 @@ Enigmail.prototype = {
     args.push(sigFilePath);
     args.push(verifyFilePath);
 
-    var statusMsgObj   = new Object();
+    var listener = Ec.newSimpleListener();
 
-    var ipcBuffer = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
-    ipcBuffer.open(MSG_BUFFER_SIZE, false);
+    var proc = Ec.execStart(this.agentPath, args, false, parent,
+                              listener, statusFlagsObj);
 
-    var pipeTrans = this.execStart(this.agentPath, args, false, parent, 0,
-                                   ipcBuffer, statusFlagsObj);
-
-
-    if (!pipeTrans) {
+    if (!proc) {
       return false;
     }
+    proc.wait();
 
-    // Wait for child STDOUT to close
-    pipeTrans.join();
+    var statusMsgObj = {};
+    var cmdLineObj   = {};
 
-    exitCode = pipeTrans.exitValue;
-
-    var statusMsgObj = new Object();
-    var cmdLineObj   = new Object();
-
-    try {
-      this.execEnd(pipeTrans, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
-    }
-    catch (ex) {};
+    exitCode = Ec.execEnd(listener, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
 
     return exitCode;
   },
 
 
-  decryptAttachment: function (parent, outFile, displayName, inputBuffer,
+  decryptAttachment: function (parent, outFile, displayName, byteData,
             exitCodeObj, statusFlagsObj, errorMsgObj) {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.decryptAttachment: parent="+parent+", outFileName="+outFile.path+"\n");
 
-    var dataLength = new Object();
-    var byteData = inputBuffer.getByteData(dataLength);
     var attachmentHead = byteData.substr(0,200);
     if (attachmentHead.match(/\-\-\-\-\-BEGIN PGP \w+ KEY BLOCK\-\-\-\-\-/)) {
       // attachment appears to be a PGP key file
@@ -2693,41 +2439,32 @@ Enigmail.prototype = {
 
     passphrase = passwdObj.value;
 
-    var ipcBuffer = Cc[NS_IPCBUFFER_CONTRACTID].createInstance(Ci.nsIIPCBuffer);
-    ipcBuffer.open(MSG_BUFFER_SIZE, false);
+    var listener = Ec.newSimpleListener(
+      function _stdin(pipe) {
+        if (Ec.requirePassword()) {
+          pipe.write(passphrase+"\n");
+        }
+        pipe.write(byteData);
+        pipe.close();
+      });
 
-    var pipeTrans = this.execStart(this.agentPath, args, false, parent, 0,
-                                   ipcBuffer, statusFlagsObj);
 
+    var proc = Ec.execStart(this.agentPath, args, false, parent,
+                            listener, statusFlagsObj);
 
-    if (!pipeTrans) {
+    if (!proc) {
       return false;
     }
 
-    try {
-      if (Ec.requirePassword()) {
-        pipeTrans.writeSync(passphrase, passphrase.length);
-        pipeTrans.writeSync("\n", 1);
-      }
-      pipeTrans.write(byteData, dataLength.value);
-
-    }
-    catch (ex) {
-      return false;
-    }
     // Wait for child STDOUT to close
-    pipeTrans.join();
+    proc.wait();
 
-    exitCodeObj.value = pipeTrans.exitValue;
+    exitCodeObj.value = listener.exitValue;
 
     var statusMsgObj = new Object();
     var cmdLineObj   = new Object();
 
-    try {
-      this.execEnd(pipeTrans, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
-    }
-    catch (ex) {};
-
+    Ec.execEnd(listener, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
 
     return true;
 
@@ -2959,6 +2696,8 @@ EnigCmdLineHandler.prototype = {
 
   lockFactory: function (lock) {}
 };
+
+
 
 
 function enigExtractHashAlgo(msgTxt) {

@@ -51,26 +51,6 @@ function enigAboutLoad() {
   if (versionElement)
     versionElement.firstChild.data = EnigGetString("usingVersion", enigVersion);
 
-  var enigmimeElement = contentFrame.document.getElementById('enigmime');
-
-  try {
-    var enigMimeService = Components.classes[ENIG_ENIGMIMESERVICE_CONTRACTID].getService(Components.interfaces.nsIEnigMimeService);
-
-    var binaryVersion = enigMimeService.version.replace(/^(\d+\.\d+)(\..*|[a-z]*)/, "$1");
-    var textVersion = gEnigmimeVersion.replace(/^(\d+\.\d+)(\..*|[a-z]*)/, "$1");
-
-    if (binaryVersion != textVersion) {
-      if (enigmimeElement)
-        enigmimeElement.firstChild.data = EnigGetString("versionWarning",enigMimeService.version);
-    }
-
-    DEBUG_LOG("enigmailAbout.js: enigAboutLoad: EnigMime: "+binaryVersion+", "+textVersion+"\n");
-
-  } catch (ex) {
-    if (enigmimeElement)
-      enigmimeElement.firstChild.data = EnigGetString("enigmimeWarning");
-  }
-
   var enigmailSvc = GetEnigmailSvc();
 
   var agentStr;

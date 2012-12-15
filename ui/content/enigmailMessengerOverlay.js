@@ -1598,10 +1598,7 @@ Enigmail.msg = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: verifyEmbeddedMsg: msgUrl"+msgUrl+"\n");
 
-    var ipcBuffer = Components.classes[EnigmailCommon.IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
-    ipcBuffer.open(-1, false);
-
-    var callbackArg = { ipcBuffer: ipcBuffer,
+    var callbackArg = { data: "",
                         window: window,
                         msgUrl: msgUrl,
                         msgWindow: msgWindow,
@@ -1609,28 +1606,26 @@ Enigmail.msg = {
                         contentEncoding: contentEncoding,
                         event: event };
 
-    var requestObserver = EnigmailCommon.newRequestObserver(Enigmail.msg.verifyEmbeddedCallback,
-                                                            callbackArg);
+    var requestCallback = function _cb (data) {
+      callbackArg.data = data;
+      Enigmail.msg.verifyEmbeddedCallback(callbackArg);
+    }
 
-    ipcBuffer.observe(requestObserver, msgUrl);
+    var bufferListener = EnigmailCommon.newStringStreamListener(requestCallback);
 
     var ioServ = Components.classes[EnigmailCommon.IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
 
     var channel = ioServ.newChannelFromURI(msgUrl);
 
-    channel.asyncOpen(ipcBuffer, msgUrl);
+    channel.asyncOpen(bufferListener, msgUrl);
   },
 
-  verifyEmbeddedCallback: function (cbArray)
+  verifyEmbeddedCallback: function (callbackArg)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: verifyEmbeddedCallback: \n");
 
-    var callbackArg = cbArray[0];
-    var txt = callbackArg.ipcBuffer.getData();
-    callbackArg.ipcBuffer.shutdown();
-
-    if (txt.length > 0) {
-      let msigned=txt.search(/content\-type:[ \t]*multipart\/signed/i);
+    if (callbackArg.data.length > 0) {
+      let msigned=callbackArg.data.search(/content\-type:[ \t]*multipart\/signed/i);
       if(msigned >= 0) {
 
         // Real multipart/signed message; let's try to verify it
@@ -1639,7 +1634,7 @@ Enigmail.msg = {
         let enableSubpartTreatment=(msigned > 0);
 
         var verifier = EnigmailVerify.newVerfier(enableSubpartTreatment, callbackArg.mailNewsUrl);
-        verifier.verifyData(callbackArg.window, callbackArg.msgWindow, callbackArg.msgUriSpec, txt);
+        verifier.verifyData(callbackArg.window, callbackArg.msgWindow, callbackArg.msgUriSpec, callbackArg.data);
 
         return;
       }
@@ -1679,15 +1674,15 @@ Enigmail.msg = {
     var anAttachment = selectedAttachments[0];
 
     switch (actionType) {
-    case "saveAttachment":
-    case "openAttachment":
-    case "importKey":
-    case "revealName":
-      this.handleAttachment(actionType, anAttachment);
-      break;
-    case "verifySig":
-      this.verifyDetachedSignature(anAttachment);
-      break;
+      case "saveAttachment":
+      case "openAttachment":
+      case "importKey":
+      case "revealName":
+        this.handleAttachment(actionType, anAttachment);
+        break;
+      case "verifySig":
+        this.verifyDetachedSignature(anAttachment);
+        break;
     }
   },
 
@@ -1811,25 +1806,23 @@ Enigmail.msg = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: handleAttachment: actionType="+actionType+", anAttachment(url)="+anAttachment.url+"\n");
 
-    var ipcBuffer = Components.classes[EnigmailCommon.IPCBUFFER_CONTRACTID].createInstance(Components.interfaces.nsIIPCBuffer);
-
     var argumentsObj = { actionType: actionType,
                          attachment: anAttachment,
                          forceBrowser: false,
-                         ipcBuffer: ipcBuffer
+                         data: "",
                        };
 
-    var requestObserver = EnigmailCommon.newRequestObserver(Enigmail.msg.decryptAttachmentCallback,
-                                                            argumentsObj);
+    var f = function _cb(data) {
+      argumentsObj.data = data;
+      Enigmail.msg.decryptAttachmentCallback([argumentsObj]);
+    }
 
+    var bufferListener = EnigmailCommon.newStringStreamListener(f);
     var ioServ = Components.classes[EnigmailCommon.IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
-
-    ipcBuffer.open(-1, false);
     var msgUri = ioServ.newURI(argumentsObj.attachment.url, null, null);
 
-    ipcBuffer.observe(requestObserver, msgUri);
     var channel = ioServ.newChannelFromURI(msgUri);
-    channel.asyncOpen(ipcBuffer, msgUri);
+    channel.asyncOpen(bufferListener, msgUri);
   },
 
   setAttachmentName: function (attachment, newLabel, index)
@@ -1868,10 +1861,6 @@ Enigmail.msg = {
     var callbackArg = cbArray[0];
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
-    if (callbackArg.ipcBuffer.overflowed) {
-      WARNING_LOG("enigmailMessengerOverlay.js: decryptAttachmentCallback: MESSAGE BUFFER OVERFLOW\n");
-    }
-
     var exitCodeObj = new Object();
     var statusFlagsObj = new Object();
     var errorMsgObj= new Object();
@@ -1883,7 +1872,7 @@ Enigmail.msg = {
     var rawFileName=Enigmail.msg.getAttachmentName(callbackArg.attachment).replace(/\.(asc|pgp|gpg)$/i,"");
 
     if (callbackArg.actionType != "importKey") {
-      origFilename = enigmailSvc.getAttachmentFileName(window, callbackArg.ipcBuffer);
+      origFilename = EnigmailCommon.getAttachmentFileName(window, callbackArg.data);
       if (origFilename && origFilename.length > rawFileName.length) rawFileName = origFilename;
     }
 
@@ -1921,9 +1910,7 @@ Enigmail.msg = {
 
     if (callbackArg.actionType == "importKey") {
       try {
-        var dataLength = new Object();
-        var byteData = callbackArg.ipcBuffer.getByteData(dataLength);
-        exitStatus = enigmailSvc.importKey(parent, 0, byteData, "", errorMsgObj);
+        exitStatus = enigmailSvc.importKey(parent, 0, callbackArg.data, "", errorMsgObj);
       }
       catch (ex) {}
       if (exitStatus == 0) {
@@ -1938,11 +1925,10 @@ Enigmail.msg = {
 
     exitStatus=enigmailSvc.decryptAttachment(window, outFile,
                                   Enigmail.msg.getAttachmentName(callbackArg.attachment),
-                                  callbackArg.ipcBuffer,
+                                  callbackArg.data,
                                   exitCodeObj, statusFlagsObj,
                                   errorMsgObj);
 
-    callbackArg.ipcBuffer.shutdown();
     if ((! exitStatus) || exitCodeObj.value != 0) {
       exitStatus=false;
       if (statusFlagsObj.value &

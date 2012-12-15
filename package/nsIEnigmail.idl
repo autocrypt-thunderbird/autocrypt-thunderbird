@@ -34,7 +34,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "nsISupports.idl"
-#include "nsIIPCBuffer.idl"
 
 interface nsIDOMWindow;
 interface nsIDOMDocument;
@@ -87,8 +86,6 @@ interface nsIEnigmail : nsISupports
 
   string getLogDirectoryPrefix();
 
-
-  boolean stripWhitespace(in unsigned long sendFlags);
 
   string locateArmoredBlock(in string text,
                             in long offset,
@@ -266,13 +263,10 @@ interface nsIEnigmail : nsISupports
                             out unsigned long statusFlags,
                             out wstring errorMsg);
 
-  wstring getAttachmentFileName(in nsIDOMWindow parent,
-                               in nsIIPCBuffer ipcBuffer);
-
   boolean decryptAttachment (in nsIDOMWindow parent,
                              in nsIFile outFile,
                              in string displayName,
-                             in nsIIPCBuffer ipcBuffer,
+                             in wstring byteData,
                              out long exitCode,
                              out unsigned long statusFlags,
                              out wstring errorMsg);

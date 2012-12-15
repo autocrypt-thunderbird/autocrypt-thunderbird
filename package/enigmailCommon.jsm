@@ -166,8 +166,6 @@ var EnigmailCommon = {
   APPSHELL_MEDIATOR_CONTRACTID: "@mozilla.org/appshell/window-mediator;1",
   APPSHSVC_CONTRACTID: "@mozilla.org/appshell/appShellService;1",
   ENIGMAIL_CONTRACTID: "@mozdev.org/enigmail/enigmail;1",
-  ENIGMIMESERVICE_CONTRACTID: "@mozdev.org/enigmail/enigmimeservice;1",
-  IPCBUFFER_CONTRACTID: "@mozilla.org/ipc/ipc-buffer;1",
   IOSERVICE_CONTRACTID: "@mozilla.org/network/io-service;1",
   LOCAL_FILE_CONTRACTID: "@mozilla.org/file/local;1",
   MIME_CONTRACTID: "@mozilla.org/mime;1",
@@ -785,6 +783,45 @@ var EnigmailCommon = {
       }
     }
     return tmpDir;
+  },
+
+  newStringStreamListener: function (onStopCallback)
+  {
+    this.DEBUG_LOG("enigmailCommon.jsm: newStreamListener\n");
+
+    var simpleStreamListener = {
+      data: "",
+      inStream: Cc["@mozilla.org/binaryinputstream;1"].createInstance(Ci.nsIBinaryInputStream),
+      _onStopCallback: onStopCallback,
+      QueryInterface: XPCOMUtils.generateQI([ Ci.nsIStreamListener, Ci.nsIRequestObserver ]),
+
+      onStartRequest: function (channel, ctxt)
+      {
+        // EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: stringListener.onStartRequest\n");
+      },
+
+      onStopRequest: function (channel, ctxt, status)
+      {
+        // EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: stringListener.onStopRequest: "+ctxt+"\n");
+        this.inStream = null;
+        var cbFunc = this._onStopCallback
+        var cbData = this.data;
+
+        EnigmailCommon.setTimeout(function _cb() {
+          cbFunc(cbData);
+        });
+      },
+
+      onDataAvailable: function(req, sup, stream, offset, count)
+      {
+        // get data from stream
+        // EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: stringListener.onDataAvailable: "+count+"\n");
+        this.inStream.setInputStream(stream);
+        this.data += this.inStream.readBytes(count);
+      }
+    };
+
+    return simpleStreamListener;
   },
 
   newRequestObserver: function (terminateFunc, terminateArg)
@@ -2078,7 +2115,7 @@ var EnigmailCommon = {
   },
 
   /*
-     listener object:
+     requirements for listener object:
       exitCode
       stderrData
     */
@@ -2110,7 +2147,7 @@ var EnigmailCommon = {
       exitCode = 2;
     }
 
-    this.CONSOLE_LOG(Ec.convertFromUnicode(errorMsgObj.value)+"\n");
+    this.CONSOLE_LOG(this.convertFromUnicode(errorMsgObj.value)+"\n");
 
     this.stillActive();
 
@@ -2717,6 +2754,80 @@ var EnigmailCommon = {
     }
 
     return exitCode;
+  },
+
+
+  // simple listener for using with execStart
+  newSimpleListener: function(stdinFunc) {
+    var simpleListener = {
+      stdoutData: "",
+      stderrData: "",
+      exitCode: -1,
+      stdin: function(pipe) {
+          pipe.close();
+      },
+      stdout: function(data) {
+        this.stdoutData += data;
+      },
+      stderr: function (data) {
+        this.stderrData += data;
+      },
+      done: function(exitCode) {
+        this.exitCode = exitCode;
+      }
+    };
+
+    if (stdinFunc) simpleListener.stdin = stdinFunc;
+    return simpleListener;
+  },
+
+
+  getAttachmentFileName: function (parent, byteData) {
+    this.DEBUG_LOG("enigmailCommon.jsm: getAttachmentFileName\n");
+
+    var args = this.getAgentArgs(true);
+    args = args.concat(this.passwdCommand());
+    args.push("--list-packets");
+
+    var passphrase = null;
+    var passwdObj = new Object();
+    var useAgentObj = new Object();
+
+    if (!this.getPassphrase(parent, passwdObj, useAgentObj, 0)) {
+      this.ERROR_LOG("enigmailCommon.jsm: getAttachmentFileName: Error - no passphrase supplied\n");
+      return null;
+    }
+
+    passphrase = passwdObj.value;
+
+    var listener = this.newSimpleListener(
+      function _stdin (pipe) {
+          EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: getAttachmentFileName: _stdin\n");
+          if (this.requirePassword()) {
+            pipe.write(passphrase+"\n");
+          }
+          pipe.write(byteData);
+          pipe.write("\n");
+          pipe.close();
+      });
+
+    var statusFlagsObj = {};
+    var proc = this.execStart(this.enigmailSvc.agentPath, args, false, parent,
+                              listener, statusFlagsObj);
+
+    if (!proc) {
+      return null;
+    }
+
+    proc.wait();
+
+    var matches = listener.stdoutData.match(/:literal data packet:\r?\n.*name="(.*)",/m);
+    if (matches && (matches.length > 1)) {
+      var filename = escape(matches[1]).replace(/%5Cx/g, "%")
+      return this.convertToUnicode(unescape(filename), "utf-8")
+    }
+    else
+      return null;
   }
 
 };
