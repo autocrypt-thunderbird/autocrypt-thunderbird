@@ -75,6 +75,9 @@ else
   enigDllFile=platform/${platform}/components/${libPrefix}enigmime-${xpcomAbi}${dllSuffix}
 fi
 
+subprocessDll=${libPrefix}subprocess${dllSuffix}
+spDllFile=platform/${platform}/lib/${libPrefix}subprocess-${xpcomAbi}${dllSuffix}
+
 # Prepare chrome.manifest
 cat  ${srcDir}/package/chrome.manifest | \
 sed  's/##ENIGMIMEDLL-PLACEHOLDER##/binary-component platform\/'${platform}'\/components\/'`basename ${enigDllFile}`' ABI='${platform}'/' \
@@ -102,15 +105,19 @@ cd "$targetDir"
 
 
 mkdir -p platform/${platform}/components
+mkdir -p platform/${platform}/lib
+
+cp $cwd/ipc/src/${subprocessDll} ${spDllFile}
 cp components/${enigmimeDll} ${enigDllFile}
 
 if [ -d chrome/enigmail ]; then
+  echo "Fixing translations"
   cd chrome/enigmail
   for lang in `cat ${srcDir}/lang/current-languages.txt`; do
-      ${srcDir}/util/fixlang.pl locale/en-US locale/$lang
+      ${srcDir}/util/fixlang.pl locale/en-US locale/$lang > /dev/null
   done
   echo "Creating ${xpiModule}.jar file"
-  zip -rD ../${xpiModule}.jar *
+  zip -rD ../${xpiModule}.jar * > /dev/null
   cd ../..
 fi
 
@@ -137,6 +144,7 @@ zip ${xpiFile} \
     ${localeJar} \
     components/enigmime.xpt \
     ${enigDllFile} \
+    ${spDllFile} \
     chrome.manifest \
     install.rdf
 

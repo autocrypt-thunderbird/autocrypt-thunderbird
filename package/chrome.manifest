@@ -75,11 +75,9 @@ component {847b3ab0-7ab1-11d4-8f02-006008948af5} components/enigprefs-service.js
 contract @mozilla.org/accountmanager/extension;1?name=enigprefs {847b3ab0-7ab1-11d4-8f02-006008948af5}
 category mailnews-accountmanager-extensions enigmail-account-manager-extension @mozilla.org/accountmanager/extension;1?name=enigprefs
 
-## Gecko 2.0 interface specifiacations
-interfaces  components/ipc.xpt
+## interface specifiacations
 interfaces  components/enigmime.xpt
 interfaces  components/enigmail.xpt
 
-## Gecko 2.0 binary components
+## binary components
 ##ENIGMIMEDLL-PLACEHOLDER##
-##IPCDLL-PLACEHOLDER##

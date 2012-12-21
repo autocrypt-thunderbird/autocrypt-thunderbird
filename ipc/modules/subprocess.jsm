@@ -329,7 +329,8 @@ function getPlatformValue(valueType) {
 
 var gDebugFunc = null,
     gLogFunc = null,
-    gXulRuntime = null;
+    gXulRuntime = null,
+    gLibcWrapper = null;
 
 function LogError(s) {
     if (gLogFunc)
@@ -430,6 +431,9 @@ var subprocess = {
     },
     registerLogHandler: function(func) {
         gLogFunc = func;
+    },
+    registerLibcWrapper: function(dllName) {
+        gLibcWrapper = dllName;
     },
 
     getPlatformValue: getPlatformValue
@@ -1187,6 +1191,32 @@ function subprocess_unix(options) {
                           ctypes.int
     );
 
+    var libcWrapper = null,
+        launchProcess = null;
+
+    if (gLibcWrapper) {
+      try {
+        libcWrapper = ctypes.open(gLibcWrapper);
+
+        launchProcess = libcWrapper.declare("launchProcess",
+                           ctypes.default_abi,
+                           pid_t,
+                           ctypes.char.ptr,
+                           argv,
+                           envp,
+                           ctypes.char.ptr,
+                           pipefd,
+                           pipefd,
+                           pipefd);
+
+      }
+      catch (ex) {
+        LogError("could not initialize libc wrapper "+gLibcWrapper+"\n");
+        LogError(ex+"\n");
+        gLibcWrapper = null;
+      }
+    }
+
     function popen(command, workdir, args, environment, child) {
         var _in,
             _out,
@@ -1206,7 +1236,6 @@ function subprocess_unix(options) {
         var _envp = envp();
         for(var i=0;i<environment.length;i++) {
             _envp[i] = ctypes.char.array()(environment[i]);
-            // LogError(_envp);
         }
 
         rc = pipe(_in);
@@ -1232,49 +1261,68 @@ function subprocess_unix(options) {
             }
         }
 
-        pid = fork();
-        if (pid > 0) { // parent
-            close(_in[0]);
-            close(_out[1]);
-            if(!options.mergeStderr)
-                close(_err[1]);
-            child.stdin  = _in[1];
-            child.stdinFd = _in;
-            child.stdout = _out[0];
-            child.stderr = options.mergeStderr ? undefined : _err[0];
-            child.pid = pid;
-            return pid;
-        } else if (pid == 0) { // child
-            if (workdir) {
-                if (chdir(workdir) < 0) {
-                    exit(126);
-                }
-            }
-            closeOtherFds(_in[0], _out[1], options.mergeStderr ? _out[1] : _err[1]);
-            close(_in[1]);
-            close(_out[0]);
-            if(!options.mergeStderr)
-                close(_err[0]);
-            close(0);
-            dup(_in[0]);
-            close(1);
-            dup(_out[1]);
-            close(2);
-            dup(options.mergeStderr ? _out[1] : _err[1]);
-            execve(command, _args, _envp);
-            exit(1);
-        } else {
-            // we should not really end up here
-            if(!options.mergeStderr) {
-                close(_err[0]);
-                close(_err[1]);
-            }
-            close(_out[0]);
-            close(_out[1]);
-            close(_in[0]);
-            close(_in[1]);
-            throw("Fatal - failed to create subprocess '"+command+"'");
+        if (launchProcess) {
+          pid = launchProcess(command, _args, _envp, workdir,
+            _in, _out, options.mergeStderr ? null : _err);
+
+          if (pid > 0) { // parent
+              close(_in[0]);
+              close(_out[1]);
+              if(!options.mergeStderr)
+                  close(_err[1]);
+              child.stdin  = _in[1];
+              child.stdinFd = _in;
+              child.stdout = _out[0];
+              child.stderr = options.mergeStderr ? undefined : _err[0];
+              child.pid = pid;
+          }
         }
+        else {
+          pid = fork();
+          if (pid > 0) { // parent
+              close(_in[0]);
+              close(_out[1]);
+              if(!options.mergeStderr)
+                  close(_err[1]);
+              child.stdin  = _in[1];
+              child.stdinFd = _in;
+              child.stdout = _out[0];
+              child.stderr = options.mergeStderr ? undefined : _err[0];
+              child.pid = pid;
+              return pid;
+          } else if (pid == 0) { // child
+              if (workdir) {
+                  if (chdir(workdir) < 0) {
+                      exit(126);
+                  }
+              }
+              closeOtherFds(_in[0], _out[1], options.mergeStderr ? _out[1] : _err[1]);
+              close(_in[1]);
+              close(_out[0]);
+              if(!options.mergeStderr)
+                  close(_err[0]);
+              close(0);
+              dup(_in[0]);
+              close(1);
+              dup(_out[1]);
+              close(2);
+              dup(options.mergeStderr ? _out[1] : _err[1]);
+              execve(command, _args, _envp);
+              exit(1);
+          } else {
+              // we should not really end up here
+              if(!options.mergeStderr) {
+                  close(_err[0]);
+                  close(_err[1]);
+              }
+              close(_out[0]);
+              close(_out[1]);
+              close(_in[0]);
+              close(_in[1]);
+              throw("Fatal - failed to create subprocess '"+command+"'");
+          }
+        }
+
         return pid;
     }
 

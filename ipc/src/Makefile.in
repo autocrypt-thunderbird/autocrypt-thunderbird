@@ -1,0 +1,69 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+
+DEPTH		= ../../../..
+topsrcdir       = @top_srcdir@
+srcdir          = @srcdir@
+VPATH           = @srcdir@
+
+include $(DEPTH)/config/autoconf.mk
+
+OBJ_SUFF = o
+LDFLAGS =
+
+ifeq ($(OS_ARCH),Darwin)
+LDFLAGS	+= -dynamiclib -install_name @executable_path/$(SHARED_LIBRARY) -compatibility_version 1 -current_version 1 -single_module
+endif
+
+ifeq ($(OS_ARCH),NetBSD)
+ifeq ($(DLL_SUFFIX),.so.1.0)
+LDFLAGS += -Wl,-Bsymbolic
+endif
+endif
+
+ifeq ($(OS_ARCH),FreeBSD)
+LDFLAGS += -Wl,-Bsymbolic
+endif
+
+ifeq ($(OS_ARCH),HP-UX)
+ifeq ($(GNU_CC)$(GNU_CXX),)
+LDFLAGS += -Wl,-Bsymbolic
+endif
+endif
+
+ifeq ($(OS_ARCH),OSF1)
+ifeq ($(GNU_CC)$(GNU_CXX),)
+LDFLAGS += -B symbolic
+endif
+endif
+
+ifeq ($(OS_ARCH),Linux)
+LDFLAGS += -Wl,-Bsymbolic
+endif
+
+ifeq ($(OS_ARCH),WINNT)
+OBJ_SUFF = obj
+endif
+
+source = subprocess.c
+objfiles = subprocess.$(OBJ_SUFF)
+libname = $(DLL_PREFIX)subprocess$(DLL_SUFFIX)
+
+all: libs
+
+libs: $(objfiles)
+	$(CC) $(LDFLAGS) -o $(libname) $(objfiles)
+
+$(objfiles): source
+
+source: $(source)
+	$(CC) -Wno-return-type-c-linkage -c -o $(objfiles) $^
+
+
+clean:
+	rm -f $(objfiles) $(libname)
+
+tools:
+
+export:

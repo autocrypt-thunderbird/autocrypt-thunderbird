@@ -39,6 +39,7 @@
  * 'Components.utils.import("resource://enigmail/enigmailCommon.jsm");'
  */
 
+Components.utils.import("resource://gre/modules/AddonManager.jsm");
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://enigmail/subprocess.jsm");
 Components.utils.import("resource://enigmail/pipeConsole.jsm");
@@ -100,17 +101,6 @@ var gEncryptedUris = [];
 
 var gKeyAlgorithms = [];
 
-
-try {
-  // Gecko 2.0 only
-  Components.utils.import("resource://gre/modules/AddonManager.jsm");
-  AddonManager.getAddonByID(ENIG_EXTENSION_GUID,
-    function (aAddon) {
-      gEnigExtensionVersion = aAddon.version;
-    }
-  );
-}
-catch (ex) {}
 
 
 var gStatusFlags = {
@@ -279,17 +269,7 @@ var EnigmailCommon = {
   {
     this.DEBUG_LOG("enigmailCommon.jsm: getVersion\n");
 
-    var addonVersion = "?";
-    try {
-      // Gecko 1.9.x
-      addonVersion = Components.classes["@mozilla.org/extensions/manager;1"].
-        getService(Components.interfaces.nsIExtensionManager).
-        getItemForID(ENIG_EXTENSION_GUID).version
-    }
-    catch (ex) {
-      // Gecko 2.0
-      addonVersion = gEnigExtensionVersion;
-    }
+    var addonVersion = gEnigExtensionVersion;
 
     this.DEBUG_LOG("enigmailCommon.jsm: installed version: "+addonVersion+"\n");
     return addonVersion;
@@ -3020,5 +3000,34 @@ function ConfigureEnigmail() {
   catch(ex) {};
   EnigmailCommon.setPref("configuredVersion", EnigmailCommon.getVersion());
   EnigmailCommon.savePrefs();
+}
+
+
+function initSubrocess(aFile) {
+  var xulRuntime = Cc[XPCOM_APPINFO].getService(Ci.nsIXULRuntime);
+  var dllSuffix = xulRuntime.OS == "Darwin" ? ".dylib" : ".so";
+
+  if (xulRuntime.OS != "WINNT") {
+    var installLocation = aFile.clone();
+    installLocation.append("platform");
+    installLocation.append(xulRuntime.OS+"_"+xulRuntime.XPCOMABI);
+    installLocation.append("lib");
+    installLocation.append("libsubprocess-"+xulRuntime.XPCOMABI+dllSuffix);
+    subprocess.registerLibcWrapper(installLocation.path);
+  }
+}
+
+try {
+  AddonManager.getAddonByID(ENIG_EXTENSION_GUID,
+    function (addon) {
+      gEnigExtensionVersion = addon.version;
+      var installLocation = addon.getResourceURI("").QueryInterface(Ci.nsIFileURL).file;
+      initSubrocess(installLocation);
+    }
+  );
+
+}
+catch (ex) {
+  dump("enigmailCommon.jsm: init error: "+ex+"\n");
 }
 
