@@ -11,6 +11,7 @@ include $(DEPTH)/config/autoconf.mk
 
 OBJ_SUFF = o
 LDFLAGS =
+CFLAGS =
 
 ifeq ($(OS_ARCH),Darwin)
 LDFLAGS	+= -dynamiclib -install_name @executable_path/$(SHARED_LIBRARY) -compatibility_version 1 -current_version 1 -single_module
@@ -19,27 +20,32 @@ endif
 ifeq ($(OS_ARCH),NetBSD)
 ifeq ($(DLL_SUFFIX),.so.1.0)
 LDFLAGS += -Wl,-Bsymbolic
+CFLAGS += -fPIC
 endif
 endif
 
 ifeq ($(OS_ARCH),FreeBSD)
 LDFLAGS += -Wl,-Bsymbolic
+CFLAGS += -fPIC
 endif
 
 ifeq ($(OS_ARCH),HP-UX)
 ifeq ($(GNU_CC)$(GNU_CXX),)
 LDFLAGS += -Wl,-Bsymbolic
+CFLAGS += -fPIC
 endif
 endif
 
 ifeq ($(OS_ARCH),OSF1)
 ifeq ($(GNU_CC)$(GNU_CXX),)
 LDFLAGS += -B symbolic
+CFLAGS += -fPIC
 endif
 endif
 
 ifeq ($(OS_ARCH),Linux)
-LDFLAGS += -Wl,-Bsymbolic
+LDFLAGS += -shared -Wl,-Bsymbolic
+CFLAGS += -fPIC
 endif
 
 ifeq ($(OS_ARCH),WINNT)
@@ -52,13 +58,11 @@ libname = $(DLL_PREFIX)subprocess$(DLL_SUFFIX)
 
 all: libs
 
-libs: $(objfiles)
+libs: source
 	$(CC) $(LDFLAGS) -o $(libname) $(objfiles)
 
-$(objfiles): source
-
 source: $(source)
-	$(CC) -Wno-return-type-c-linkage -c -o $(objfiles) $^
+	$(CC) $(CFLAGS) -Wno-return-type-c-linkage -c -o $(objfiles) $^
 
 
 clean:

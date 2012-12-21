@@ -9,17 +9,17 @@
 void closeOtherFds(int fdIn, int fdOut, int fdErr) {
 
   int maxFD = 256; // arbitrary max
-
+  int i;
   struct rlimit rl;
 
   if (getrlimit(RLIMIT_NOFILE, &rl) == 0) {
       if (rl.rlim_cur <  999999) // ignore too high numbers
         maxFD = rl.rlim_cur;
   }
-  printf("getlimit: maxFD=%d\n", maxFD);
-  // close any file descriptors
-  // fd's 0-2 are already closed
-  for (int i = 3; i < maxFD; i++) {
+
+  /* close any file descriptors */
+  /* fd's 0-2 are already closed */
+  for (i = 3; i < maxFD; i++) {
     if (i != fdIn && i != fdOut && i != fdErr)
       close(i);
   }
