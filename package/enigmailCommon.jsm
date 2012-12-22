@@ -1073,7 +1073,7 @@ var EnigmailCommon = {
             lineSplit = statusLine.split(/ +/);
             statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
             flag = 0;
-            this.DEBUG_LOG("enigmailCommon.jsm: detected invalid sender: "+lineSplit[2]+" / code: "+lineSplit[1]+"\n");
+            this.DEBUG_LOG("enigmailCommon.jsm: parseErrorOutput: detected invalid sender: "+lineSplit[2]+" / code: "+lineSplit[1]+"\n");
             retStatusObj.statusMsg += this.getString("gnupg.invalidKey.desc", [ lineSplit[2] ]);
           }
 
@@ -2724,10 +2724,10 @@ var EnigmailCommon = {
       retStatusObj.errorMsg = this.getString("badPhrase");
     }
     else if (retStatusObj.statusFlags & nsIEnigmail.INVALID_RECIPIENT) {
-      retStatusObj.errorMsg = stderrStr;
+      retStatusObj.errorMsg = retStatusObj.statusMsg;
     }
     else if (retStatusObj.statusFlags & nsIEnigmail.DISPLAY_MESSAGE) {
-      retStatusObj.errorMsg = stderrStr;
+      retStatusObj.errorMsg = retStatusObj.statusMsg;
     }
     else {
       retStatusObj.errorMsg = this.getString("badCommand");

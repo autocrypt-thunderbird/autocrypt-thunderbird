@@ -1067,6 +1067,7 @@ Enigmail.msg = {
 
   keySelection: function (enigmailSvc, sendFlags, optSendFlags, gotSendFlags, fromAddr, toAddrList, bccAddrList)
   {
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection\n");
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN    = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
@@ -1080,7 +1081,7 @@ Enigmail.msg = {
 
     if (toAddr.length>=1) {
 
-       EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: toAddr="+toAddr+"\n");
+       EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection: toAddr="+toAddr+"\n");
        var repeatSelection=0;
        while (repeatSelection<2) {
          if (recipientsSelection != 3 && recipientsSelection != 4
@@ -1158,15 +1159,13 @@ Enigmail.msg = {
                                                    testStatusFlagsObj,
                                                    testErrorMsgObj);
 
+
            if (testStatusFlagsObj.value) {
              // check if own key is invalid
-             let errLines = testErrorMsgObj.value.split(/\r?\n/);
-             let s = new RegExp("INV_(RECP|SGNR) [0-9]+ \<?" + fromAddr + "\>?");
-             for (let l=0; l < errLines.length; l++) {
-               if (errLines[l].search(s) == 0) {
-                 EnigmailCommon.alert(window, EnigmailCommon.getString("errorKeyUnusable", [ fromAddr ]));
-                 return null;
-               }
+             let s = new RegExp("^\\[GNUPG:\\] INV_(RECP|SGNR) [0-9]+ \\<?" + fromAddr + "\\>?", "m");
+             if (testErrorMsgObj.value.search(s) >= 0)  {
+               EnigmailCommon.alert(window, EnigmailCommon.getString("errorKeyUnusable", [ fromAddr ]));
+               return null;
              }
            }
 
@@ -1222,7 +1221,7 @@ Enigmail.msg = {
            if ((!testCipher || (testExitCodeObj.value != 0)) && recipientsSelection==5) {
                // Test encryption failed; turn off default encryption
                sendFlags &= ~ENCRYPT;
-               EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: No default encryption because test failed\n");
+               EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection: No default encryption because test failed\n");
            }
          }
          repeatSelection=2;
@@ -1929,6 +1928,16 @@ Enigmail.msg = {
 
         if (sendInfo.sendFlags & (ENCRYPT | SIGN)) {
           // Encryption/signing failed
+
+           if (errorMsgObj.value) {
+             // check if own key is invalid
+             let s = new RegExp("^\\[GNUPG:\\] INV_(RECP|SGNR) [0-9]+ \\<?" + sendInfo.fromAddr + "\\>?", "m");
+             if (errorMsgObj.value.search(s) >= 0)  {
+               EnigmailCommon.alert(window, EnigmailCommon.getString("errorKeyUnusable", [ sendInfo.fromAddr ]));
+               return false;
+             }
+           }
+
           EnigmailCommon.alert(window, EnigmailCommon.getString("sendAborted")+errorMsgObj.value);
           return false;
         }
