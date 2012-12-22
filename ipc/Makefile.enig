@@ -41,6 +41,10 @@ VPATH		= @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
-DIRS            = modules src
+DIRS            = modules
+
+ifneq ($(OS_ARCH),WINNT)
+  DIRS += src
+endif
 
 include $(topsrcdir)/config/rules.mk
