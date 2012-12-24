@@ -393,10 +393,21 @@ function fillIdentityListPopup()
   // Default identity
   var defIdentity;
   var defIdentities = gAccountManager.defaultAccount.identities;
-  if (defIdentities.Count() >= 1) {
-    defIdentity = defIdentities.QueryElementAt(0, Components.interfaces.nsIMsgIdentity);
-  } else {
-    defIdentity = identities[0];
+  try {
+    // Gecko >= 20
+    if (defIdentities.length >= 1) {
+      defIdentity = defIdentities.queryElementAt(0, Components.interfaces.nsIMsgIdentity);
+    } else {
+      defIdentity = identities[0];
+    }
+  }
+  catch (ex) {
+    // Gecko < 20
+    if (defIdentities.Count() >= 1) {
+      defIdentity = defIdentities.QueryElementAt(0, Components.interfaces.nsIMsgIdentity);
+    } else {
+      defIdentity = identities[0];
+    }
   }
 
   DEBUG_LOG("enigmailKeygen.js: fillIdentityListPopup: default="+defIdentity.key+"\n");
@@ -409,7 +420,15 @@ function fillIdentityListPopup()
     if (!identity.valid || !identity.email)
       continue;
 
-    var serverSupports = gAccountManager.GetServersForIdentity(identity);
+    var serverSupports;
+    try {
+      // Gecko >= 20
+      serverSupports = gAccountManager.getServersForIdentity(identity);
+    }
+    catch (ex) {
+      // Gecko < 20
+      serverSupports = gAccountManager.GetServersForIdentity(identity);
+    }
 
     if (serverSupports.GetElementAt(0)) {
       var inServer = serverSupports.GetElementAt(0).QueryInterface(Components.interfaces.nsIMsgIncomingServer);

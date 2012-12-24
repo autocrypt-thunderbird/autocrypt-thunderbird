@@ -2968,10 +2968,22 @@ function upgradePgpMime() {
   try {
     if (pgpMimeMode) {
       var accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
-      for (var i=0; i < accountManager.allIdentities.Count(); i++) {
-        var id = accountManager.allIdentities.QueryElementAt(i, Ci.nsIMsgIdentity);
-        if (id.getBoolAttribute("enablePgp")) {
-          id.setBoolAttribute("pgpMimeMode", true);
+      try {
+        // Gecko >= 20
+        for (var i=0; i < accountManager.allIdentities.length; i++) {
+          var id = accountManager.allIdentities.queryElementAt(i, Ci.nsIMsgIdentity);
+          if (id.getBoolAttribute("enablePgp")) {
+            id.setBoolAttribute("pgpMimeMode", true);
+          }
+        }
+      }
+      catch(ex) {
+        // Gecko < 20
+        for (var i=0; i < accountManager.allIdentities.Count(); i++) {
+          var id = accountManager.allIdentities.QueryElementAt(i, Ci.nsIMsgIdentity);
+          if (id.getBoolAttribute("enablePgp")) {
+            id.setBoolAttribute("pgpMimeMode", true);
+          }
         }
       }
     }
@@ -3009,14 +3021,12 @@ function initSubrocess(aFile) {
   var xulRuntime = Cc[XPCOM_APPINFO].getService(Ci.nsIXULRuntime);
   var dllSuffix = xulRuntime.OS == "Darwin" ? ".dylib" : ".so";
 
-  if (xulRuntime.OS != "WINNT") {
-    var installLocation = aFile.clone();
-    installLocation.append("platform");
-    installLocation.append(xulRuntime.OS+"_"+xulRuntime.XPCOMABI);
-    installLocation.append("lib");
-    installLocation.append("libsubprocess-"+xulRuntime.XPCOMABI+dllSuffix);
-    subprocess.registerLibcWrapper(installLocation.path);
-  }
+  var installLocation = aFile.clone();
+  installLocation.append("platform");
+  installLocation.append(xulRuntime.OS+"_"+xulRuntime.XPCOMABI);
+  installLocation.append("lib");
+  installLocation.append("libsubprocess-"+xulRuntime.XPCOMABI+dllSuffix);
+  subprocess.registerLibcWrapper(installLocation.path);
 }
 
 try {

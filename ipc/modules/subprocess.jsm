@@ -1195,6 +1195,8 @@ function subprocess_unix(options) {
         launchProcess = null;
 
     if (gLibcWrapper) {
+      debugLog("Trying to use LibcWrapper\n");
+
       try {
         libcWrapper = ctypes.open(gLibcWrapper);
 

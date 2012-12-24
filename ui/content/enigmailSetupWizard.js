@@ -231,7 +231,8 @@ function displayKeyCreate() {
         var identity = gEnigAccountMgr.getIdentity(node.getAttribute("account-id"));
         var idName = identity.identityName;
 
-        var serverSupports = gEnigAccountMgr.GetServersForIdentity(identity);
+        var serverSupports = getServersForIdentity(gEnigAccountMgr, identity);
+
         if (serverSupports.GetElementAt(0)) {
           var inServer = serverSupports.GetElementAt(0).QueryInterface(Components.interfaces.nsIMsgIncomingServer);
 
@@ -251,6 +252,7 @@ function displayKeyCreate() {
     document.getElementById("userIdentity").removeAttribute("collapsed");
   }
 }
+
 
 function displayKeySel() {
   var uidChildren = document.getElementById("uidSelectionChildren");
@@ -534,10 +536,21 @@ function fillIdentities(fillType)
 
     // Find out default identity
     var defIdentities = gEnigAccountMgr.defaultAccount.identities;
-    if (defIdentities.Count() >= 1) {
-      defIdentity = defIdentities.QueryElementAt(0, Components.interfaces.nsIMsgIdentity);
-    } else {
-      defIdentity = identities[0];
+    try {
+      // Gecko >= 20
+      if (defIdentities.length >= 1) {
+        defIdentity = defIdentities.queryElementAt(0, Components.interfaces.nsIMsgIdentity);
+      } else {
+        defIdentity = identities[0];
+      }
+    }
+    catch (ex) {
+      // Gecko < 20
+      if (defIdentities.Count() >= 1) {
+        defIdentity = defIdentities.QueryElementAt(0, Components.interfaces.nsIMsgIdentity);
+      } else {
+        defIdentity = identities[0];
+      }
     }
 
     if (document.getElementById("activateId").value == "0") {
@@ -584,7 +597,7 @@ function fillIdentities(fillType)
     if (!identity.valid || !identity.email)
       continue;
 
-    var serverSupports = gEnigAccountMgr.GetServersForIdentity(identity);
+    var serverSupports = getServersForIdentity(gEnigAccountMgr, identity);
 
     if (serverSupports.GetElementAt(0)) {
       var inServer = serverSupports.GetElementAt(0).QueryInterface(Components.interfaces.nsIMsgIncomingServer);
@@ -686,7 +699,7 @@ function applyMozSetting(param, preference, newVal) {
 function wizardApplyId(identity, keyId) {
   DEBUG_LOG("enigmailSetupWizard.js: wizardApplyId: identity.Key="+identity.key+"\n");
   var accountManager = Components.classes[ENIG_ACCOUNT_MANAGER_CONTRACTID].getService(Components.interfaces.nsIMsgAccountManager);
-  var idServers = accountManager.GetServersForIdentity(identity);
+  var idServers = getServersForIdentity(accountManager, identity);
   var servers = queryISupportsArray(idServers ,Components.interfaces.nsIMsgIncomingServer);
 
   var newsServer = false;
@@ -885,5 +898,17 @@ function displayActions() {
   }
   else {
     appendDesc(EnigGetString("setupWizard.setNoPrefs"));
+  }
+}
+
+// Helper function
+function getServersForIdentity(accMgr, identity) {
+  try {
+    // Gecko >= 20
+    return accMgr.getServersForIdentity(identity);
+  }
+  catch(ex) {
+    // Gecko < 20
+    return accMgr.GetServersForIdentity(identity);
   }
 }

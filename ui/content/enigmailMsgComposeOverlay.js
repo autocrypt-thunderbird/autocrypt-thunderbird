@@ -691,7 +691,14 @@ Enigmail.msg = {
     try {
         var currentId=getCurrentIdentity();
         var amService=Components.classes["@mozilla.org/messenger/account-manager;1"].getService();
-        var servers=amService.GetServersForIdentity(currentId);
+        var servers;
+        try {
+          // Gecko >= 20
+          servers=amService.getServersForIdentity(currentId);
+        }
+        catch(ex) {
+          servers=amService.GetServersForIdentity(currentId);
+        }
         var folderURI=servers.GetElementAt(0).QueryInterface(Components.interfaces.nsIMsgIncomingServer).serverURI;
         server=GetMsgFolderFromUri(folderURI, true).server
     } catch (ex) {}
