@@ -268,7 +268,7 @@
   <!-- override default set to include enigmail decryption icon -->
   <!-- Thunderbird 3.0 and newer -->
   <toolbar id="mail-bar3"
-           defaultset="button-getmsg,button-newmsg,button-address,separator,button-tag,button-enigmail-decrypt,qfb-show-filter-bar,spring,gloda-search">
+          defaultset="button-getmsg,button-newmsg,button-chat,button-address,spacer,button-tag,button-enigmail-decrypt,qfb-show-filter-bar,spring,gloda-search,button-appmenu">
   </toolbar>
 
   <!-- SeaMonkey 2.0 and newer -->

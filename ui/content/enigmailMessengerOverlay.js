@@ -119,11 +119,6 @@ Enigmail.msg = {
 
     Enigmail.msg.decryptButton = document.getElementById("button-enigmail-decrypt");
 
-    var toolbarElem = document.getElementById("mail-bar2");
-    if (toolbarElem && EnigmailCommon.getOS() == "Darwin") {
-      toolbarElem.setAttribute("platform", "macos");
-    }
-
     // Need to add event listener to Enigmail.msg.messagePane to make it work
     // Adding to msgFrame doesn't seem to work
     Enigmail.msg.messagePane.addEventListener("unload", Enigmail.msg.messageFrameUnload.bind(Enigmail.msg), true);
