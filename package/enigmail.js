@@ -2333,6 +2333,11 @@ Enigmail.prototype = {
     var inFilePath  = this.getEscapedFilename(getFilePath(inFile.QueryInterface(getLocalFileApi())));
     var outFilePath = this.getEscapedFilename(getFilePath(outFile.QueryInterface(getLocalFileApi())));
 
+    if (Ec.getOS() == "WINNT") {
+      inFilePath = inFilePath.replace(/^\\\\*/, "//");
+      outFilePath = outFilePath.replace(/^\\\\*/, "//");;
+    }
+
     args = args.concat(["--yes", "-o", outFilePath, inFilePath ]);
 
     var statusMsgObj   = new Object();
@@ -2365,6 +2370,11 @@ Enigmail.prototype = {
     var exitCode        = -1;
     var verifyFilePath  = this.getEscapedFilename(getFilePath(verifyFile.QueryInterface(getLocalFileApi())));
     var sigFilePath     = this.getEscapedFilename(getFilePath(sigFile.QueryInterface(getLocalFileApi())));
+
+    if (Ec.getOS() == "WINNT") {
+      verifyFilePath = verifyFilePath.replace(/^\\\\*/, "//");
+      sigFilePath = sigFilePath.replace(/^\\\\*/, "//");;
+    }
 
     var args = Ec.getAgentArgs(true);
     args.push("--verify");
@@ -2412,6 +2422,10 @@ Enigmail.prototype = {
 
     var outFileName = this.getEscapedFilename(getFilePath(outFile.QueryInterface(getLocalFileApi()), NS_WRONLY));
 
+    if (Ec.getOS() == "WINNT") {
+      outFileName = outFileName.replace(/^\\\\*/, "//");
+    }
+
     var args = Ec.getAgentArgs(true);
     args = args.concat(["-o", outFileName, "--yes"]);
     args = args.concat(Ec.passwdCommand());
@@ -2453,12 +2467,10 @@ Enigmail.prototype = {
     // Wait for child STDOUT to close
     proc.wait();
 
-    exitCodeObj.value = listener.exitValue;
-
     var statusMsgObj = new Object();
     var cmdLineObj   = new Object();
 
-    Ec.execEnd(listener, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
+    exitCodeObj.value = Ec.execEnd(listener, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
 
     return true;
 

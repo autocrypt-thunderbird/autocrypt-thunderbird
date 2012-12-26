@@ -1926,8 +1926,9 @@ Enigmail.msg = {
 
     if ((! exitStatus) || exitCodeObj.value != 0) {
       exitStatus=false;
-      if (statusFlagsObj.value &
-          (nsIEnigmail.DECRYPTION_OKAY | nsIEnigmail.UNVERIFIED_SIGNATURE)) {
+      if ((statusFlagsObj.value & nsIEnigmail.DECRYPTION_OKAY) &&
+         (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE)) {
+
         if (callbackArg.actionType == "openAttachment") {
           exitStatus = EnigmailCommon.confirmDlg(window, EnigmailCommon.getString("decryptOkNoSig"), EnigmailCommon.getString("msgOvl.button.contAnyway"));
         }

@@ -2783,7 +2783,7 @@ var EnigmailCommon = {
     var listener = this.newSimpleListener(
       function _stdin (pipe) {
           EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: getAttachmentFileName: _stdin\n");
-          if (this.requirePassword()) {
+          if (EnigmailCommon.requirePassword()) {
             pipe.write(passphrase+"\n");
           }
           pipe.write(byteData);
