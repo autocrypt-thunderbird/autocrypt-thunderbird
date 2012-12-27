@@ -176,6 +176,13 @@ KeyEditor.prototype = {
         r.exitCode=-1;
         r.quitNow = true;
       }
+      if (txt.indexOf("[GNUPG:] MISSING_PASSPHRASE")>=0) {
+        Ec.DEBUG_LOG("keyManagmenent.jsm: KeyEditor.processLine: detected missing passphrase\n");
+        this.errorMsg=Ec.getString("noPassphrase");
+        r.exitCode = -2;
+        this._exitCode = -2;
+        r.quitNow = true;
+      }
       if (txt.indexOf("[GNUPG:] GET_") < 0) {
         // return if no "GET" statement
         return;
