@@ -33,6 +33,8 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
+'use strict;'
+
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 Components.utils.import("resource://enigmail/commonFuncs.jsm");
 Components.utils.import("resource://enigmail/mimeVerify.jsm");
@@ -74,6 +76,10 @@ Enigmail.hdrView = {
       this.statusBar.removeAttribute("encrypted");
       this.enigmailBox.setAttribute("collapsed", "true")
       Enigmail.msg.setAttachmentReveal(null);
+      if (Enigmail.msg.securityInfo) {
+        Enigmail.msg.securityInfo.statusFlags = 0;
+      }
+
     }
     catch (ex) {}
   },
@@ -535,6 +541,7 @@ Enigmail.hdrView = {
         try {
 
           Enigmail.hdrView.statusBarHide();
+
           EnigmailVerify.setMsgWindow(msgWindow, Enigmail.msg.getCurrentMsgUriSpec());
 
           var statusText = document.getElementById("enigmailStatusText");
@@ -574,6 +581,7 @@ Enigmail.hdrView = {
         }
         catch (ex) {}
       },
+
       beforeStartHeaders: function _listener_beforeStartHeaders ()
       {
         return true;
@@ -652,9 +660,9 @@ Enigmail.hdrView = {
 
   },
 
-  msgHdrViewUnide: function ()
+  msgHdrViewUnhide: function (event)
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: this.msgHdrViewUnide\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: this.msgHdrViewUnhide:\n");
 
     if (Enigmail.msg.securityInfo.statusFlags != 0) {
       this.enigmailBox.removeAttribute("collapsed");
@@ -822,7 +830,7 @@ window.addEventListener("load", Enigmail.hdrView.hdrViewLoad.bind(Enigmail.hdrVi
 addEventListener('messagepane-loaded', Enigmail.hdrView.msgHdrViewLoad.bind(Enigmail.hdrView), true);
 addEventListener('messagepane-unloaded', Enigmail.hdrView.hdrViewUnload.bind(Enigmail.hdrView), true);
 addEventListener('messagepane-hide', Enigmail.hdrView.msgHdrViewHide.bind(Enigmail.hdrView), true);
-addEventListener('messagepane-unhide', Enigmail.hdrView.msgHdrViewUnide.bind(Enigmail.hdrView), true);
+addEventListener('messagepane-unhide', Enigmail.hdrView.msgHdrViewUnhide.bind(Enigmail.hdrView), true);
 
 ////////////////////////////////////////////////////////////////////////////////
 // THE FOLLOWING OVERRIDES CODE IN msgHdrViewOverlay.js
