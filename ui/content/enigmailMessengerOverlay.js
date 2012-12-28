@@ -634,7 +634,7 @@ Enigmail.msg = {
           if (!enigmailSvc)
             return;
 
-          if ((!enigmailSvc.mimeInitialized() && encrypedMsg) || signedMsg ||
+          if (signedMsg ||
               ((!encrypedMsg) && (embeddedSigned || embeddedEncrypted))) {
             Enigmail.hdrView.updateHdrIcons(EnigmailCommon.POSSIBLE_PGPMIME, 0, "", "", "", EnigmailCommon.getString("possiblyPgpMime"));
           }
@@ -648,10 +648,6 @@ Enigmail.msg = {
         enigmailSvc = Enigmail.getEnigmailSvc();
         if (!enigmailSvc)
           return;
-
-        if (!enigmailSvc.mimeInitialized()) {
-          return;
-        }
       }
 
       if (((contentType.search(/^multipart\/encrypted(;|$)/i) == 0) ||
@@ -662,10 +658,7 @@ Enigmail.msg = {
         if (!enigmailSvc)
           return;
 
-        if (!enigmailSvc.mimeInitialized()) {
-          return;
-        }
-        else if (! isAuto) {
+        if (! isAuto) {
           Enigmail.msg.messageReload(false);
         }
         else if (embeddedEncrypted && (! encrypedMsg)) {
@@ -1360,7 +1353,7 @@ Enigmail.msg = {
         contentData += "\r\n"+Enigmail.msg.decryptedMessage.plainText;
       }
 
-      if (!(enigmailSvc.isDosLike)) {
+      if (!(EnigmailCommon.isDosLike())) {
         contentData = contentData.replace(/\r\n/g, "\n");
       }
     }

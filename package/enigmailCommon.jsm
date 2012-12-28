@@ -735,10 +735,22 @@ var EnigmailCommon = {
     return this.convertFromUnicode(nsFileObj.path, "utf-8");
   },
 
+  isDosLike: function() {
+    if (this.isDosLikeVal === undefined) {
+      this.isDosLikeVal = (this.getOS() == "WINNT" || this.getOS() == "OS2");
+    }
+    return this.isDosLikeVal;
+  },
+
   getEscapedFilename: function (fileNameStr) {
-    if (this.enigmailSvc.isDosLike) {
+    if (this.isDosLike()) {
       // escape the backslashes and the " character (for Windows and OS/2)
       fileNameStr = fileNameStr.replace(/([\\\"])/g, "\\$1");
+    }
+
+    if (this.getOS() == "WINNT") {
+      // replace leading "\\" with "//"
+      fileNameStr = fileNameStr.replace(/^\\\\*/, "//");
     }
     return fileNameStr;
   },
@@ -1397,7 +1409,7 @@ var EnigmailCommon = {
         exitCode = 0;
       }
     }
-    if ((this.enigmailSvc.agentVersion < "1.4.1") && this.enigmailSvc.isDosLike) {
+    if ((this.enigmailSvc.agentVersion < "1.4.1") && this.isDosLike()) {
         if ((exitCode == 2) && (!(statusFlags & (nsIEnigmail.BAD_PASSPHRASE |
                                 nsIEnigmail.UNVERIFIED_SIGNATURE |
                                 nsIEnigmail.MISSING_PASSPHRASE |
