@@ -51,7 +51,6 @@ if (! Enigmail) var Enigmail = {};
 
 Enigmail.msg = {
 // List of hash algorithms for PGP/MIME signatures
-  mimeHashAlgo: [null, "sha1", "ripemd160", "sha256", "sha384", "sha512", "sha224"],
   editor: null,
   dirty: null,
   processed: null,
@@ -1048,8 +1047,9 @@ Enigmail.msg = {
 
         var mesg = EnigmailCommon.getString("composeSpecifyEmail");
 
-        var valueObj = new Object();
-        valueObj.value = userIdValue;
+        var valueObj = {
+          value: userIdValue
+        };
 
         if (EnigmailCommon.promptValue(window, mesg, valueObj)) {
           userIdValue = valueObj.value;
@@ -1158,7 +1158,7 @@ Enigmail.msg = {
                                optSendFlags ;
 
            // test recipients
-           testCipher = enigmailSvc.encryptMessage(window, testUiFlags, null,
+           testCipher = enigmailSvc.encryptMessage(window, testUiFlags,
                                                    testPlain,
                                                    fromAddr, toAddr, bccAddr,
                                                    testSendFlags,
@@ -1522,13 +1522,13 @@ Enigmail.msg = {
 
        if ( hasAttachments &&
           (sendFlags & (ENCRYPT | SIGN)) &&
-          !(sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
-          enigmailSvc.composeSecure) {
+          !(sendFlags & nsIEnigmail.SEND_PGP_MIME)) {
 
-          inputObj = new Object();
-          inputObj.pgpMimePossible = true;
-          inputObj.inlinePossible = true;
-          inputObj.restrictedScenario = false;
+          inputObj = {
+            pgpMimePossible: true,
+            inlinePossible: true,
+            restrictedScenario: false
+          };
 
           // determine if attachments are all local files (currently the only
           // supported kind of attachments)
@@ -1541,8 +1541,9 @@ Enigmail.msg = {
           }
 
           if (inputObj.pgpMimePossible || inputObj.inlinePossible) {
-            resultObj = new Object();
-            resultObj.selected = EnigmailCommon.getPref("encryptAttachments");
+            resultObj = {
+              selected: EnigmailCommon.getPref("encryptAttachments")
+            };
 
             //skip or not
             var skipCheck=EnigmailCommon.getPref("encryptAttachmentsSkipDlg");
@@ -1582,16 +1583,6 @@ Enigmail.msg = {
 
        var usingPGPMime = (sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
                           (sendFlags & (ENCRYPT | SIGN));
-
-       if (usingPGPMime && !enigmailSvc.composeSecure) {
-         if (!EnigmailCommon.confirmDlg(window, EnigmailCommon.getString("noPGPMIME"),
-                EnigmailCommon.getString("msgCompose.button.useInlinePGP"))) {
-            throw Components.results.NS_ERROR_FAILURE;
-
-         }
-
-         usingPGPMime = false;
-       }
 
        // Detect PGP/MIME and S/MIME
        if (usingPGPMime) {
@@ -1671,7 +1662,6 @@ Enigmail.msg = {
          newSecurityInfo.senderEmailAddr = fromAddr;
          newSecurityInfo.recipients = toAddr;
          newSecurityInfo.bccRecipients = bccAddr;
-         newSecurityInfo.hashAlgorithm = this.mimeHashAlgo[EnigmailCommon.getPref("mimeHashAlgorithm")];
 
          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: securityInfo = "+newSecurityInfo+"\n");
 
@@ -1897,7 +1887,7 @@ Enigmail.msg = {
                      ? EnigmailCommon.convertFromUnicode(origText, charset)
                      : EnigmailCommon.convertFromUnicode(escText, charset);
 
-      var cipherText = enigmailSvc.encryptMessage(window, sendInfo.uiFlags, null, plainText,
+      var cipherText = enigmailSvc.encryptMessage(window, sendInfo.uiFlags, plainText,
                                             sendInfo.fromAddr, sendInfo.toAddr, sendInfo.bccAddr,
                                             sendInfo.sendFlags,
                                             exitCodeObj, statusFlagsObj,
@@ -2210,12 +2200,13 @@ Enigmail.msg = {
         return exitCodeObj.value;
       }
 
-      var fileInfo = new Object();
-      fileInfo.origFile  = origFile;
-      fileInfo.origUrl   = node.attachment.url;
-      fileInfo.origName  = node.attachment.name;
-      fileInfo.origTemp  = node.attachment.temporary;
-      fileInfo.origCType = node.attachment.contentType;
+      var fileInfo = {
+        origFile  : origFile,
+        origUrl   : node.attachment.url,
+        origName  : node.attachment.name,
+        origTemp  : node.attachment.temporary,
+        origCType : node.attachment.contentType
+      };
 
       // transform platform specific new file name to file:// URL
       var newUri = ioServ.newFileURI(newFile);

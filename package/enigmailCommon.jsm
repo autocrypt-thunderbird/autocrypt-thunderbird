@@ -1858,7 +1858,7 @@ var EnigmailCommon = {
 
     var expired = ((currentTime - _lastActiveTime) >= delayMillisec);
 
-  //  this.DEBUG_LOG("enigmailCommon.jsm:m: haveCachedPassphrase: ")
+  //  this.DEBUG_LOG("enigmailCommon.jsm: haveCachedPassphrase: ")
   //  this.DEBUG_LOG("currentTime="+currentTime+", _lastActiveTime="+this._lastActiveTime+", expired="+expired+"\n");
 
     if (expired && (_passwdAccessTimes <= 0)) {
@@ -1878,11 +1878,11 @@ var EnigmailCommon = {
     // Update last active time
     var curDate = new Date();
     _lastActiveTime = curDate.getTime();
-    // this.DEBUG_LOG("enigmailCommon.jsm:m: stillActive: _lastActiveTime="+this._lastActiveTime+"\n");
+    // this.DEBUG_LOG("enigmailCommon.jsm: stillActive: _lastActiveTime="+this._lastActiveTime+"\n");
   },
 
   clearCachedPassphrase: function () {
-    this.DEBUG_LOG("enigmailCommon.jsm:m: clearCachedPassphrase: \n");
+    this.DEBUG_LOG("enigmailCommon.jsm: clearCachedPassphrase: \n");
 
     gCachedPassphrase = null;
   },
@@ -1924,7 +1924,7 @@ var EnigmailCommon = {
       gCacheTimer.init(this, delayMillisec,
                         createTimerType);
 
-      this.DEBUG_LOG("enigmailCommon.jsm:m: setCachedPassphrase: gCacheTimer="+gCacheTimer+"\n");
+      this.DEBUG_LOG("enigmailCommon.jsm: setCachedPassphrase: gCacheTimer="+gCacheTimer+"\n");
     }
   },
 
@@ -2151,7 +2151,7 @@ var EnigmailCommon = {
 
     this.getService(win);
     if (! (this.enigmailSvc)) {
-      this.ERROR_LOG("enigmailCommon.jsm:m: decryptMessageStart: not yet initialized\n");
+      this.ERROR_LOG("enigmailCommon.jsm: decryptMessageStart: not yet initialized\n");
       errorMsgObj.value = this.getString("notInit");
       return null;
     }
@@ -2197,9 +2197,9 @@ var EnigmailCommon = {
   },
 
   decryptMessageEnd: function (stderrStr, exitCode, outputLen, verifyOnly, noOutput, uiFlags, retStatusObj) {
-    this.DEBUG_LOG("enigmailCommon.jsm:m: decryptMessageEnd: uiFlags="+uiFlags+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
+    this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: uiFlags="+uiFlags+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
 
-    this.DEBUG_LOG("enigmailCommon.jsm:m: decryptMessageEnd: stderrStr="+stderrStr+"\n");
+    this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: stderrStr="+stderrStr+"\n");
     var interactive = uiFlags & nsIEnigmail.UI_INTERACTIVE;
     var pgpMime     = uiFlags & nsIEnigmail.UI_PGP_MIME;
     var allowImport = uiFlags & nsIEnigmail.UI_ALLOW_KEY_IMPORT;
@@ -2391,13 +2391,15 @@ var EnigmailCommon = {
 
     if (exitCode != 0) {
       // Error processing
-      this.DEBUG_LOG("enigmailCommon.jsm:m: decryptMessageEnd: command execution exit code: "+exitCode+"\n");
+      this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: command execution exit code: "+exitCode+"\n");
     }
 
     return exitCode;
   },
 
   getEncryptCommand: function (fromMailAddr, toMailAddr, bccMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgObj) {
+    this.DEBUG_LOG("enigmailCommon.jsm: getEncryptCommand: hashAlgorithm="+hashAlgorithm+"\n");
+
     try {
       fromMailAddr = stripEmailAdr(fromMailAddr);
       toMailAddr = stripEmailAdr(toMailAddr);
@@ -2636,6 +2638,12 @@ var EnigmailCommon = {
 
     var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
 
+    var hashAlgo = gMimeHashAlgorithms[this.prefBranch.getIntPref("mimeHashAlgorithm")];
+
+    if (hashAlgorithm) {
+      hashAlgo = hashAlgorithm;
+    }
+
     errorMsgObj.value = "";
 
     if (!sendFlags) {
@@ -2656,7 +2664,7 @@ var EnigmailCommon = {
       return null;
     }
 
-    var encryptArgs = this.getEncryptCommand(fromMailAddr, toMailAddr, bccMailAddr, hashAlgorithm, sendFlags, ENC_TYPE_MSG, errorMsgObj);
+    var encryptArgs = this.getEncryptCommand(fromMailAddr, toMailAddr, bccMailAddr, hashAlgo, sendFlags, ENC_TYPE_MSG, errorMsgObj);
     if (! encryptArgs)
       return null;
 

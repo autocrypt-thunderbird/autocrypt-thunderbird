@@ -57,7 +57,7 @@ PgpMimeEncrypt.prototype = {
   proc: null,
   statusStr: "",
   encryptedData: "",
-  hashAlgorithm: "sha1",
+  hashAlgorithm: null,
   pipeQueue: "",
   outQueue: "",
   closePipe: false,

@@ -35,7 +35,11 @@
  * GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
+'use strict;'
+
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+
+const Ci = Components.interfaces;
 
 
 // components defined in this file
@@ -54,11 +58,11 @@ EnigMsgCompFields.prototype = {
   classID:  ENIG_ENIGMSGCOMPFIELDS_CID,
   contractID: ENIG_ENIGMSGCOMPFIELDS_CONTRACTID,
   QueryInterface: XPCOMUtils.generateQI([
-    Components.interfaces.nsIEnigMsgCompFields,
-    Components.interfaces.nsEnigMsgCompFields,
-    Components.interfaces.nsIMsgSMIMECompFields,
-    Components.interfaces.nsIMsgCompFields,
-    Components.interfaces.nsISupports]),
+    Ci.nsIEnigMsgCompFields,
+    Ci.nsEnigMsgCompFields,
+    Ci.nsIMsgSMIMECompFields,
+    Ci.nsIMsgCompFields,
+    Ci.nsISupports]),
 
   _parent: null,
 
@@ -69,8 +73,6 @@ EnigMsgCompFields.prototype = {
   senderEmailAddr: "",
 
   recipients: "",
-
-  hashAlgorithm: "",
 
   msgSMIMECompFields: null,
 
@@ -120,17 +122,13 @@ EnigMsgCompFields.prototype = {
       "splitRecipients",
       "listReply" ];
     this._parent = smimeCompFields;
-    var m;
 
+    var m;
     for (m in members) {
       this[m]= smimeCompFields[m];
     }
   }
 }
 
-if (XPCOMUtils.generateNSGetFactory)
-  // Gecko >= 2.0
-  var NSGetFactory = XPCOMUtils.generateNSGetFactory([EnigMsgCompFields]);
-else
-  // Gecko <= 1.9.x
-  var NSGetModule = XPCOMUtils.generateNSGetModule([EnigMsgCompFields]);
+
+var NSGetFactory = XPCOMUtils.generateNSGetFactory([EnigMsgCompFields]);

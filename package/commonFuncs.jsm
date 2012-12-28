@@ -34,7 +34,7 @@
 
 
 /*
- * Common Enigmail crypto-related functionality
+ * Common Enigmail crypto-related GUI functionality
  *
  * Import into a JS component using
  * 'Components.utils.import("resource://enigmail/commonFuncs.jsm");'

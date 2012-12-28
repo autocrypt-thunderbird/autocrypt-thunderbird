@@ -64,8 +64,6 @@ interface nsIEnigmail : nsISupports
   void finalize();
   boolean useGpgAgent();     /* is gpg-agent used */
 
-  string getLogDirectoryPrefix();
-
 
   string locateArmoredBlock(in string text,
                             in long offset,
@@ -106,7 +104,6 @@ interface nsIEnigmail : nsISupports
 
   wstring encryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,
-                        in string hashAlgorithm,
                         in string  plainText,
                         in string  fromMailAddr,
                         in string  toMailAddr,
