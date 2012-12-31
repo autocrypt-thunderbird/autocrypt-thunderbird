@@ -290,23 +290,32 @@ function ResolvePath(filePath, envPath, isDosLike) {
   if (!envPath)
      return null;
 
+  var fileNames = filePath.split(";");
+
   var pathDirs = envPath.split(isDosLike ? ";" : ":");
 
   for (var j=0; j<pathDirs.length; j++) {
      try {
         var pathDir = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
 
-        initPath(pathDir, pathDirs[j]);
+        for (var i=0; i < fileNames.length; i++) {
+          Ec.DEBUG_LOG("enigmail.js: ResolvePath: checking for "+pathDirs[j]+"/"+fileNames[i]+"\n");
 
-        if (pathDir.exists() && pathDir.isDirectory()) {
-           pathDir.appendRelativePath(filePath);
+          initPath(pathDir, pathDirs[j]);
 
-           if (pathDir.exists() && !pathDir.isDirectory()) {
-              return pathDir;
-           }
+          try {
+            if (pathDir.exists() && pathDir.isDirectory()) {
+               pathDir.appendRelativePath(fileNames[i]);
+
+               if (pathDir.exists() && !pathDir.isDirectory()) {
+                  return pathDir;
+               }
+            }
+          }
+          catch (ex) {}
         }
-     } catch (ex) {
      }
+     catch (ex) {}
   }
 
   return null;
@@ -813,7 +822,16 @@ Enigmail.prototype = {
     } catch (ex) {}
 
     var agentType = "gpg";
-    var agentName = Ec.isDosLike() ? agentType+".exe" : agentType;
+
+    var agentName = "";
+
+    if (Ec.isDosLike()) {
+      agentName = "gpg.exe"
+    }
+    else {
+      agentName = "gpg;gpg2;gpg1";
+    }
+
 
     if (agentPath) {
       // Locate GnuPG executable
