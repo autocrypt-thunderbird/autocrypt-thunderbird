@@ -198,6 +198,10 @@ function enigmailCheckPassphrase() {
     EnigAlert(EnigGetString("passCharProblem"));
     return null;
   }
+  if ((passphrase.search(/^\s/)==0) || (passphrase.search(/\s$/)>=0)) {
+    EnigAlert(EnigGetString("passSpaceProblem"));
+    return null;
+  }
   return passphrase;
 }
 
