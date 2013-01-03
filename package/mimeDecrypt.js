@@ -249,6 +249,11 @@ PgpMimeDecrypt.prototype = {
     if (gDebugLogLevel > 4)
       DEBUG_LOG("mimeDecrypt.js: done: decrypted data='"+this.decryptedData+"'\n");
 
+    // ensure newline at the end of the stream
+    if (! this.decryptedData.endsWith("\n")) {
+      this.decryptedData +="\r\n";
+      this.dataLength += 2;
+    }
     gConv.setData(this.decryptedData, this.dataLength);
     this.mimeSvc.onDataAvailable(null, null, gConv, 0, this.dataLength);
 
