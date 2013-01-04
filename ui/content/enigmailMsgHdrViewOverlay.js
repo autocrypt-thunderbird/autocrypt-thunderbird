@@ -379,7 +379,8 @@ Enigmail.hdrView = {
       gSignedUINode.collapsed = false;
       gEncryptedUINode.collapsed = false;
 
-      if (statusFlags & nsIEnigmail.BAD_SIGNATURE) {
+      if ((statusFlags & nsIEnigmail.BAD_SIGNATURE) &&
+          !(statusFlags & nsIEnigmail.GOOD_SIGNATURE)){
         // Display untrusted/bad signature icon
         gSignedUINode.setAttribute("signed", "notok");
         this.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureNotOk");
