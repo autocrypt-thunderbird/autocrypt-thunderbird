@@ -1650,7 +1650,7 @@ Enigmail.prototype = {
     // Wait for child to close
     proc.wait();
 
-    var plainText = listener.stdoutData;
+    var plainText = Ec.convertToUnicode(listener.stdoutData, 'ASCII');
     Ec.DEBUG_LOG("enigmail.js: decryptMessage: got plaintext: '"+plainText+"'\n");
 
     var retStatusObj = {};
