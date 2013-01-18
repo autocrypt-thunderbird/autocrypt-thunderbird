@@ -1650,7 +1650,13 @@ Enigmail.prototype = {
     // Wait for child to close
     proc.wait();
 
-    var plainText = Ec.convertToUnicode(listener.stdoutData, 'ASCII');
+    // convert the output to Unicode
+    var tmpStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
+    tmpStream.setData(listener.stdoutData, listener.stdoutData.length);
+    var inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
+    inStream.init(tmpStream);
+    var plainText = inStream.read(tmpStream.available())
+
     Ec.DEBUG_LOG("enigmail.js: decryptMessage: got plaintext: '"+plainText+"'\n");
 
     var retStatusObj = {};
