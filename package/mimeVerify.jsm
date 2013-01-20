@@ -16,6 +16,7 @@
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/commonFuncs.jsm");
 
 var EXPORTED_SYMBOLS = [ "EnigmailVerify" ];
 
@@ -123,7 +124,7 @@ MimeVerify.prototype = {
 
           DEBUG_LOG("mimeVerify.jsm: onTextData: found PGP/MIME signed message\n");
           this.foundMsg = true;
-          let hdr = getHeaderData(s);
+          let hdr = EnigmailFuncs.getHeaderData(s);
           hdr["boundary"] = hdr["boundary"] || "";
           hdr["micalg"] = hdr["micalg"] || "";
           this.boundary = hdr["boundary"].replace(/[\'\"]/g, "");
@@ -359,33 +360,6 @@ var EnigmailVerify = {
 
 ////////////////////////////////////////////////////////////////////
 // General-purpose functions, not exported
-
-// extract the data fields following a header.
-// e.g. ContentType: xyz; Aa=b; cc=d
-// returns aa=b and cc=d in an array of arrays
-function getHeaderData(data) {
-  DEBUG_LOG("mimeVerify.jsm: getHeaderData: "+data.substr(0, 100)+"\n");
-  var a = data.split(/\n/);
-  var res = [];
-  for (let i = 0; i < a.length; i++) {
-    if (a[i].length == 0) break;
-    let b = a[i].split(/;/);
-
-    // extract "abc = xyz" tuples
-    for (let j=0; j < b.length; j++) {
-      let m = b[j].match(/^(\s*)([^=\s;]+)(\s*)(=)(\s*)(.*)(\s*)$/);
-      if (m) {
-        // m[2]: identifier / m[6]: data
-        res[m[2].toLowerCase()] = m[6].replace(/\s*$/, "");
-        DEBUG_LOG("mimeVerify.jsm: getHeaderData: "+m[2].toLowerCase()+" = "+res[m[2].toLowerCase()] +"\n");
-      }
-    }
-    if (i == 0 && a[i].indexOf(";") < 0) break;
-    if (i > 0 && a[i].search(/^\s/) < 0) break;
-  }
-  return res;
-}
-
 
 function DEBUG_LOG(str) {
   if (gDebugLog) Ec.DEBUG_LOG(str);

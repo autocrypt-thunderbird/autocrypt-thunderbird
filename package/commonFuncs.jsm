@@ -708,5 +708,35 @@ var EnigmailFuncs = {
     var r='<pre wrap="">' + lines.join("\n") + (isSignature ? '</div>': '') + '</pre>';
     //EnigmailCommon.DEBUG_LOG("enigmailFuncs.jsm: r='"+r+"'\n");
     return r;
+  },
+
+
+  /***
+   * extract the data fields following a header.
+   * e.g. ContentType: xyz; Aa=b; cc=d
+   * returns aa=b and cc=d in an array of arrays
+   */
+  getHeaderData: function (data) {
+    EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: getHeaderData: "+data.substr(0, 100)+"\n");
+    var a = data.split(/\n/);
+    var res = [];
+    for (let i = 0; i < a.length; i++) {
+      if (a[i].length == 0) break;
+      let b = a[i].split(/;/);
+
+      // extract "abc = xyz" tuples
+      for (let j=0; j < b.length; j++) {
+        let m = b[j].match(/^(\s*)([^=\s;]+)(\s*)(=)(\s*)(.*)(\s*)$/);
+        if (m) {
+          // m[2]: identifier / m[6]: data
+          res[m[2].toLowerCase()] = m[6].replace(/\s*$/, "");
+          EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: getHeaderData: "+m[2].toLowerCase()+" = "+res[m[2].toLowerCase()] +"\n");
+        }
+      }
+      if (i == 0 && a[i].indexOf(";") < 0) break;
+      if (i > 0 && a[i].search(/^\s/) < 0) break;
+    }
+    return res;
   }
 };
+
