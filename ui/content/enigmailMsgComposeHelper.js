@@ -182,7 +182,7 @@ Enigmail.hlp = {
             // create a getAttribute() function for getFlagVal to work normally
             resultObj.getAttribute = function(attrName) {
               return this[attrName];
-            }
+            };
             if (!resultObj.negate) {
               sign   =getFlagVal(sign,    resultObj, "sign",    conflicts);
               encrypt=getFlagVal(encrypt, resultObj, "encrypt", conflicts);

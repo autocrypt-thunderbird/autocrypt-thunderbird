@@ -82,7 +82,7 @@ const pid_t = ctypes.int32_t;
 
 const INDEFINITE = -1;
 const NOWAIT     = 0;
-const WAITTIME   = 200  // wait time for poll() in ms
+const WAITTIME   = 200;  // wait time for poll() in ms
 
 function initLibc(libName) {
     postMessage({msg: "debug", data: "initialising library with "+ libName});
@@ -235,7 +235,7 @@ function readPipe(pipe, charset, pid, bufferedOutput) {
     while (readCount > 0) {
       readCount = readPolledFd(pipe, charset, dataObj);
       if (! bufferedOutput)
-        postMessage({msg: "data", data: dataObj.value, count: dataObj.value.length})
+        postMessage({msg: "data", data: dataObj.value, count: dataObj.value.length});
       else
         dataStr += dataObj.value;
 
@@ -243,7 +243,7 @@ function readPipe(pipe, charset, pid, bufferedOutput) {
     }
 
     if (bufferedOutput)
-      postMessage({msg: "data", data: dataStr, count: dataStr.length})
+      postMessage({msg: "data", data: dataStr, count: dataStr.length});
 
     libcFunc.close(pipe);
     postMessage({msg: "done", data: exitCode });

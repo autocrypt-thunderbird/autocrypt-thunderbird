@@ -39,7 +39,7 @@ Enigmail.columnHandler = {
   getCellText:         function(row, col) {
     return null;
   },
-  getSortStringForRow: function(hdr) { return "" },
+  getSortStringForRow: function(hdr) { return ""; },
   isString:            function() { return false; },
   getCellProperties:   function(row, col, props){
     let key = gDBView.getKeyAt(row);

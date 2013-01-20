@@ -198,7 +198,7 @@ function readPipe(pipe, charset, bufferedOutput) {
         if (bytesRead.value > 0) {
             var c = readString(line, bytesRead.value, charset);
             if (!bufferedOutput)
-              postMessage({msg: "data", data: c, count: c.length})
+              postMessage({msg: "data", data: c, count: c.length});
             else
               dataStr += c;
         }
@@ -208,7 +208,7 @@ function readPipe(pipe, charset, bufferedOutput) {
     }
 
     if (bufferedOutput)
-      postMessage({msg: "data", data: dataStr, count: dataStr.length})
+      postMessage({msg: "data", data: dataStr, count: dataStr.length});
 
     libFunc.CloseHandle(pipe);
     postMessage({msg: "done"});

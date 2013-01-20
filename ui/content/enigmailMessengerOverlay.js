@@ -175,11 +175,11 @@ Enigmail.msg = {
       return;
 
     if (gSignatureStatus >= 0 || gEncryptionStatus >= 0) {
-      showMessageReadSecurityInfo()
+      showMessageReadSecurityInfo();
     }
     else {
       if (Enigmail.msg.securityInfo)
-        this.viewOpenpgpInfo()
+        this.viewOpenpgpInfo();
       else
         showMessageReadSecurityInfo();
     }
@@ -272,7 +272,8 @@ Enigmail.msg = {
     var viewTypeElementIds = ["messagePaneVertical",
                               "messagePaneClassic",
                               "messagePaneWide"];
-    for (var i = 0; i < viewTypeElementIds.length; i++) {
+    var i;
+    for (i = 0; i < viewTypeElementIds.length; i++) {
       var elementId = viewTypeElementIds[i];
       var element = document.getElementById(elementId);
       if (element) {
@@ -285,7 +286,7 @@ Enigmail.msg = {
     }
 
     var toggleMsgPaneElementIds = ["cmd_toggleMessagePane"];
-    for (var i = 0; i < toggleMsgPaneElementIds.length; i++) {
+    for (i = 0; i < toggleMsgPaneElementIds.length; i++) {
       var elementId = toggleMsgPaneElementIds[i];
       var element = document.getElementById(elementId);
       if (element) {
@@ -310,7 +311,7 @@ Enigmail.msg = {
     Enigmail.hdrView.statusBarHide();
     MsgToggleMessagePane(true);
 
-    var button=document.getElementById("button_enigmail_decrypt")
+    var button=document.getElementById("button_enigmail_decrypt");
     if (gFolderDisplay.messageDisplay.visible) {
       button.removeAttribute("disabled");
     }
@@ -514,7 +515,7 @@ Enigmail.msg = {
         var isAuto = argList[1];
         var mimeMsg = argList[2];
         Enigmail.msg.messageDecryptCb(event, isAuto, mimeMsg);
-      }, 0, [this.event, this.isAuto, mimeMsg])
+      }, 0, [this.event, this.isAuto, mimeMsg]);
   },
 
   enumerateMimeParts: function (mimePart, resultObj)
@@ -575,7 +576,7 @@ Enigmail.msg = {
           headers: {'content-type': contentType },
           contentType: contentType,
           parts: null
-        }
+        };
       }
 
       // Copy selected headers
@@ -733,7 +734,7 @@ Enigmail.msg = {
 
 
     if (bodyElement.firstChild) {
-      let node = bodyElement.firstChild
+      let node = bodyElement.firstChild;
       while (node) {
         if (node.nodeName == "DIV") {
           foundIndex = node.textContent.indexOf(findStr);
@@ -851,7 +852,7 @@ Enigmail.msg = {
           if (endOffset > 0) {
             subText = subText.substr(0,endOffset) + "\n";
 
-            var matches = subText.match(/\nCharset: *(.*) *\n/i)
+            var matches = subText.match(/\nCharset: *(.*) *\n/i);
             if (matches && (matches.length > 1)) {
               // Override character set
               charset = matches[1];
@@ -942,7 +943,7 @@ Enigmail.msg = {
         msgText = EnigmailCommon.convertToUnicode(msgText, "UTF-8");
         Enigmail.msg.messageParseCallback(msgText, contentEncoding, charset, interactive,
                                           importOnly, messageUrl, null, retry + 1,
-                                          head, tail, msgUriSpec)
+                                          head, tail, msgUriSpec);
         return;
       }
     }
@@ -1041,7 +1042,7 @@ Enigmail.msg = {
 
     Enigmail.msg.noShowReload = true;
 
-    var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
+    bodyElement = msgFrame.document.getElementsByTagName("body")[0];
     if (bodyElement.firstChild) {
       var node = bodyElement.firstChild;
       var foundIndex = -1;
@@ -1153,16 +1154,16 @@ Enigmail.msg = {
   {
     // Escape special characters
     if (text.indexOf("&") > -1)
-      text = text.replace(/&/g, "&amp;")
+      text = text.replace(/&/g, "&amp;");
 
     if (text.indexOf("<") > -1)
-      text = text.replace(/</g, "&lt;")
+      text = text.replace(/</g, "&lt;");
 
     if (text.indexOf(">") > -1)
-      text = text.replace(/>/g, "&gt;")
+      text = text.replace(/>/g, "&gt;");
 
     if (text.indexOf("\"") > -1)
-      text = text.replace(/"/g, "&quot;")
+      text = text.replace(/"/g, "&quot;");
 
     if (!hyperlink)
       return text;
@@ -1384,7 +1385,7 @@ Enigmail.msg = {
 
     if (!mailNewsUrl) {
       this.msgDefaultPrint(elementId);
-      return
+      return;
     }
 
     if (Enigmail.msg.decryptedMessage.url != mailNewsUrl.spec) {
@@ -1576,7 +1577,7 @@ Enigmail.msg = {
                            cb.head,
                            cb.tail,
                            cb.msgUriSpec);
-    }
+    };
 
     EnigmailCommon.dispatchEvent(f, 0, [msgText, callbackArg ]);
   },
@@ -1597,7 +1598,7 @@ Enigmail.msg = {
     var requestCallback = function _cb (data) {
       callbackArg.data = data;
       Enigmail.msg.verifyEmbeddedCallback(callbackArg);
-    }
+    };
 
     var bufferListener = EnigmailCommon.newStringStreamListener(requestCallback);
 
@@ -1787,7 +1788,7 @@ Enigmail.msg = {
       fstream.close();
 
     // Close the input stream
-    istream.close()
+    istream.close();
   },
 
   handleAttachment: function (actionType, anAttachment)
@@ -1797,13 +1798,13 @@ Enigmail.msg = {
     var argumentsObj = { actionType: actionType,
                          attachment: anAttachment,
                          forceBrowser: false,
-                         data: "",
+                         data: ""
                        };
 
     var f = function _cb(data) {
       argumentsObj.data = data;
       Enigmail.msg.decryptAttachmentCallback([argumentsObj]);
-    }
+    };
 
     var bufferListener = EnigmailCommon.newStringStreamListener(f);
     var ioServ = Components.classes[EnigmailCommon.IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
@@ -1945,7 +1946,7 @@ Enigmail.msg = {
                (callbackArg.actionType == "openAttachment")) {
         var ioServ = Components.classes[EnigmailCommon.IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
         var outFileUri = ioServ.newFileURI(outFile);
-        var fileExt = outFile.leafName.replace(/(.*\.)(\w+)$/, "$2")
+        var fileExt = outFile.leafName.replace(/(.*\.)(\w+)$/, "$2");
         if (fileExt && ! callbackArg.forceBrowser) {
           var extAppLauncher = Components.classes[EnigmailCommon.MIME_CONTRACTID].getService(Components.interfaces.nsPIExternalAppLauncher);
           extAppLauncher.deleteTemporaryFileOnExit(outFile);

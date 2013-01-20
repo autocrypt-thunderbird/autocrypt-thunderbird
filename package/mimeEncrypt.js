@@ -469,7 +469,7 @@ PgpMimeEncrypt.prototype = {
     if (this.exitCode != 0)
       Ec.alert(this.win, retStatusObj.errorMsg);
   }
-}
+};
 
 
 

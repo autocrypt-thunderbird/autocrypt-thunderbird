@@ -182,12 +182,12 @@ function getFirstNode() {
 
 function getCurrentNode() {
   var rulesTree=document.getElementById("rulesTree");
-  return rulesTree.contentView.getItemAtIndex(rulesTree.currentIndex)
+  return rulesTree.contentView.getItemAtIndex(rulesTree.currentIndex);
 }
 
 
 function enigDoEdit() {
-  var node=getCurrentNode()
+  var node=getCurrentNode();
   if (node) {
     var inputObj  = new Object;
     var resultObj = new Object;

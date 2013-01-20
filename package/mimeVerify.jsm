@@ -239,7 +239,7 @@ MimeVerify.prototype = {
     DEBUG_LOG("mimeVerify.jsm: onStopRequest\n");
     this.flushInput();
     if (this.pipe) {
-      this.pipe.close()
+      this.pipe.close();
     }
     else
       this.closePipe = true;
@@ -337,7 +337,7 @@ MimeVerify.prototype = {
       Ec.writeException("mimeVerify.jsm", ex);
     }
   }
-}
+};
 
 var EnigmailVerify = {
   lastMsgWindow: null,
@@ -354,7 +354,7 @@ var EnigmailVerify = {
     let v = new MimeVerify(embedded, msgUrl);
     return v;
   }
-}
+};
 
 
 ////////////////////////////////////////////////////////////////////

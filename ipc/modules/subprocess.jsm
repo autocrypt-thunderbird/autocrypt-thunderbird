@@ -218,7 +218,7 @@ typedef struct _SECURITY_ATTRIBUTES {
 const SECURITY_ATTRIBUTES = new ctypes.StructType("SECURITY_ATTRIBUTES", [
     {"nLength": DWORD},
     {"lpSecurityDescriptor": LPVOID},
-    {"bInheritHandle": BOOL},
+    {"bInheritHandle": BOOL}
 ]);
 
 /*
@@ -261,7 +261,7 @@ const STARTUPINFO = new ctypes.StructType("STARTUPINFO", [
     {"lpReserved2": LPBYTE},
     {"hStdInput": HANDLE},
     {"hStdOutput": HANDLE},
-    {"hStdError": HANDLE},
+    {"hStdError": HANDLE}
 ]);
 
 /*
@@ -276,7 +276,7 @@ const PROCESS_INFORMATION = new ctypes.StructType("PROCESS_INFORMATION", [
     {"hProcess": HANDLE},
     {"hThread": HANDLE},
     {"dwProcessId": DWORD},
-    {"dwThreadId": DWORD},
+    {"dwThreadId": DWORD}
 ]);
 
 /*
@@ -321,7 +321,7 @@ function getPlatformValue(valueType) {
         'freebsd': [ 'libc.so.7',    0x04     , ctypes.int64_t      , 8 ],
         'openbsd': [ 'libc.so.61.0', 0x04     , ctypes.int64_t      , 8 ],
         'sunos':   [ 'libc.so',      0x80     , ctypes.unsigned_long, 5 ]
-    }
+    };
 
     return platformDefaults[gXulRuntime.OS.toLowerCase()][valueType];
 }
@@ -358,7 +358,7 @@ function convertBytes(data, charset) {
         unicodeConv.charset = charset;
         string = unicodeConv.ConvertToUnicode(data);
     } catch (ex) {
-        LogError("String conversion failed: "+ex.toString()+"\n")
+        LogError("String conversion failed: "+ex.toString()+"\n");
         string = '';
     }
     string += unicodeConv.Finish();
@@ -675,7 +675,7 @@ function subprocess_win32(options) {
         }
         command = args.join(' ');
 
-        var environment = environment || [];
+        environment = environment || [];
         if(environment.length) {
             //An environment block consists of
             //a null-terminated block of null-terminated strings.
@@ -824,12 +824,12 @@ function subprocess_win32(options) {
             default:
                 debugLog("got msg from stdinWorker: "+event.data+"\n");
             }
-        }
+        };
         stdinWorker.onerror = function(error) {
             pendingWriteCount--;
             exitCode = -2;
             LogError("got error from stdinWorker: "+error.message+"\n");
-        }
+        };
 
         stdinWorker.postMessage({msg: "init", libc: options.libc});
     }
@@ -919,12 +919,12 @@ function subprocess_win32(options) {
             default:
                 debugLog("Got msg from "+name+": "+event.data.data+"\n");
             }
-        }
+        };
 
         worker.onerror = function(errorMsg) {
             LogError("Got error from "+name+": "+errorMsg.message);
             exitCode = -2;
-        }
+        };
 
         var pipePtr = parseInt(ctypes.cast(pipe.address(), ctypes.uintptr_t).value);
 
@@ -992,7 +992,7 @@ function subprocess_win32(options) {
               exitCode = exit.value;
 
             if (stdinWorker)
-                stdinWorker.postMessage({msg: 'stop'})
+                stdinWorker.postMessage({msg: 'stop'});
 
             setTimeout(function _done() {
                 if (options.done) {
@@ -1000,7 +1000,7 @@ function subprocess_win32(options) {
                         options.done({
                             exitCode: exitCode,
                             stdout: output,
-                            stderr: error,
+                            stderr: error
                         });
                     }
                     catch (ex) {
@@ -1064,7 +1064,7 @@ function subprocess_win32(options) {
 
             return exitCode;
         }
-    }
+    };
 }
 
 
@@ -1224,7 +1224,8 @@ function subprocess_unix(options) {
             _out,
             _err,
             pid,
-            rc;
+            rc,
+            i;
         _in = new pipefd();
         _out = new pipefd();
         if(!options.mergeStderr)
@@ -1232,11 +1233,11 @@ function subprocess_unix(options) {
 
         var _args = argv();
         args.unshift(command);
-        for(var i=0;i<args.length;i++) {
+        for(i=0;i<args.length;i++) {
             _args[i] = ctypes.char.array()(args[i]);
         }
         var _envp = envp();
-        for(var i=0;i<environment.length;i++) {
+        for(i=0;i<environment.length;i++) {
             _envp[i] = ctypes.char.array()(environment[i]);
         }
 
@@ -1249,7 +1250,7 @@ function subprocess_unix(options) {
         if (rc < 0) {
             close(_in[0]);
             close(_in[1]);
-            return -1
+            return -1;
         }
         if(!options.mergeStderr) {
             rc = pipe(_err);
@@ -1259,7 +1260,7 @@ function subprocess_unix(options) {
                 close(_in[1]);
                 close(_out[0]);
                 close(_out[1]);
-                return -1
+                return -1;
             }
         }
 
@@ -1406,13 +1407,13 @@ function subprocess_unix(options) {
                 stdinOpenState = CLOSED;
                 exitCode = -2;
             }
-        }
+        };
         stdinWorker.onerror = function(error) {
             pendingWriteCount = 0;
             exitCode = -2;
             closeStdinHandle();
             LogError("got error from stdinWorker: "+error.message+"\n");
-        }
+        };
         stdinWorker.postMessage({msg: "init", libc: options.libc});
     }
 
@@ -1508,11 +1509,11 @@ function subprocess_unix(options) {
             default:
                 debugLog("Got msg from "+name+": "+event.data.data+"\n");
             }
-        }
+        };
         worker.onerror = function(error) {
             LogError("Got error from "+name+": "+error.message);
             exitCode = -2;
-        }
+        };
 
         worker.postMessage({
                 msg: 'read',
@@ -1567,16 +1568,16 @@ function subprocess_unix(options) {
 
             if (exitCode > -2) {
               if (result > 0)
-                  exitCode = status.value
+                  exitCode = status.value;
               else
                   if (workerExitCode >= 0)
-                      exitCode = workerExitCode
+                      exitCode = workerExitCode;
                   else
                       exitCode = status.value;
             }
 
             if (stdinWorker)
-                stdinWorker.postMessage({msg: 'stop'})
+                stdinWorker.postMessage({msg: 'stop'});
 
             setTimeout(function _done() {
                 if (options.done) {
@@ -1584,7 +1585,7 @@ function subprocess_unix(options) {
                         options.done({
                             exitCode: exitCode,
                             stdout: output,
-                            stderr: error,
+                            stderr: error
                         });
                     }
                     catch(ex) {
@@ -1652,5 +1653,5 @@ function subprocess_unix(options) {
             cleanup(-1);
             return rv;
         }
-    }
+    };
 }

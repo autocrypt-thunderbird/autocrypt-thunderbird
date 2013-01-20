@@ -41,7 +41,7 @@ var Enigmail = {
   {
     if (emailAddressNode)
     {
-      var r=new RegExp("^"+emailAddressNode.protocol)
+      var r=new RegExp("^"+emailAddressNode.protocol);
       var emailAddress=emailAddressNode.href.replace(r, "");
       EnigmailFuncs.createNewRule(window, emailAddress);
     }

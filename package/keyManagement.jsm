@@ -137,7 +137,7 @@ KeyEditor.prototype = {
 
   doCheck: function(inputType, promptVal) {
     var a=this._txt.split(/ /);
-    return ((a[1] == inputType) && (a[2] == promptVal))
+    return ((a[1] == inputType) && (a[2] == promptVal));
   },
 
   getText: function() {
@@ -333,7 +333,7 @@ var EnigmailKeyMgmt = {
           Ec.DEBUG_LOG("keyManagmenent.jsm: Enigmail.editKey: GnuPG terminated with code="+result.exitCode+"\n");
           keyEdit.done(parentCallback, result.exitCode);
         },
-        mergeStderr: false,
+        mergeStderr: false
       });
     } catch (ex) {
       Ec.ERROR_LOG("keyManagement.jsm: editKey: "+command.path+" failed\n");
@@ -544,7 +544,7 @@ var EnigmailKeyMgmt = {
     return r;
   }
 
-} // EnigmailKeyMgmt
+}; // EnigmailKeyMgmt
 
 
 function signKeyCallback(inputData, keyEdit, ret) {
@@ -1245,7 +1245,7 @@ enigCardAdminObserver.prototype =
     }
     return ret;
   }
-}
+};
 
 function ChangePasswdObserver() {}
 
@@ -1277,5 +1277,5 @@ ChangePasswdObserver.prototype =
     }
     return ret;
   }
-}
+};
 

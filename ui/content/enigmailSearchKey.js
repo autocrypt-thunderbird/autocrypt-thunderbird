@@ -145,7 +145,7 @@ function onAccept () {
   gEnigRequest.dlKeyList = [];
   var item=treeChildren.firstChild;
   while (item) {
-    var aRows = item.getElementsByAttribute("id","indicator")
+    var aRows = item.getElementsByAttribute("id","indicator");
     if (aRows.length) {
       var elem=aRows[0];
       if (elem.getAttribute("active") == "1") {
@@ -547,7 +547,7 @@ function enigNewGpgKeysRequest(requestType, callbackFunction) {
     onErrorData: function(data) {
       gErrorData += data;
     }
-  }
+  };
 
   if (requestType == nsIEnigmail.SEARCH_KEY) {
     var keyValue = gEnigRequest.searchList[gEnigRequest.keyNum];
@@ -613,7 +613,7 @@ function enigPopulateList(keyList) {
 
   var sortUsers = function (a,b) {
      if (a.uid[0]<b.uid[0]) { return -1; } else {return 1; }
-  }
+  };
 
   keyList.sort(sortUsers);
 
@@ -696,7 +696,7 @@ function enigmailKeySelCallback(event) {
   if (col.value.id != "selectionCol")
     return;
 
-  var aRows = treeItem.getElementsByAttribute("id","indicator")
+  var aRows = treeItem.getElementsByAttribute("id","indicator");
 
   if (aRows.length) {
     var elem=aRows[0];

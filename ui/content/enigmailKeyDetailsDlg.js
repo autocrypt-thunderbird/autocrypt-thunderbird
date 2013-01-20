@@ -146,7 +146,7 @@ function createUidRow(aLine) {
 function addSubkey(treeChildren, aLine) {
   var aRow=document.createElement("treerow");
   var treeItem=document.createElement("treeitem");
-  var subkey=EnigGetString(aLine[0]=="sub" ? "keyTypeSubkey" : "keyTypePrimary")
+  var subkey=EnigGetString(aLine[0]=="sub" ? "keyTypeSubkey" : "keyTypePrimary");
   aRow.appendChild(createCell(subkey)); // subkey type
   aRow.appendChild(createCell("0x"+aLine[4].substr(-8,8))); // key id
   aRow.appendChild(createCell(EnigGetString("keyAlgorithm_"+aLine[3]))); // algorithm
@@ -235,7 +235,7 @@ function enableRefresh() {
 // ------------------ onCommand Functions  -----------------
 
 function showPhoto() {
-  EnigShowPhoto(gKeyId, gUserId, 0)
+  EnigShowPhoto(gKeyId, gUserId, 0);
 }
 
 function viewSignatures() {

@@ -189,7 +189,6 @@ PgpMimeDecrypt.prototype = {
 
     DEBUG_LOG("mimeDecrypt.js: onStopRequest: process terminated\n");
     this.proc = null;
-    return 0;
   },
 
   displayStatus: function() {
@@ -262,7 +261,7 @@ PgpMimeDecrypt.prototype = {
     this.decryptedData = "";
     this.exitCode = exitCode;
   }
-}
+};
 
 
 ////////////////////////////////////////////////////////////////////

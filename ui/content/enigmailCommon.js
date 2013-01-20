@@ -65,14 +65,14 @@ const ENIG_MIME_CONTRACTID = "@mozilla.org/mime;1";
 const ENIG_WMEDIATOR_CONTRACTID = "@mozilla.org/rdf/datasource;1?name=window-mediator";
 const ENIG_ASS_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
 const ENIG_CLIPBOARD_CONTRACTID = "@mozilla.org/widget/clipboard;1";
-const ENIG_CLIPBOARD_HELPER_CONTRACTID = "@mozilla.org/widget/clipboardhelper;1"
-const ENIG_TRANSFERABLE_CONTRACTID = "@mozilla.org/widget/transferable;1"
+const ENIG_CLIPBOARD_HELPER_CONTRACTID = "@mozilla.org/widget/clipboardhelper;1";
+const ENIG_TRANSFERABLE_CONTRACTID = "@mozilla.org/widget/transferable;1";
 const ENIG_LOCALE_SVC_CONTRACTID = "@mozilla.org/intl/nslocaleservice;1";
-const ENIG_DATE_FORMAT_CONTRACTID = "@mozilla.org/intl/scriptabledateformat;1"
+const ENIG_DATE_FORMAT_CONTRACTID = "@mozilla.org/intl/scriptabledateformat;1";
 const ENIG_ACCOUNT_MANAGER_CONTRACTID = "@mozilla.org/messenger/account-manager;1";
 const ENIG_THREAD_MANAGER_CID = "@mozilla.org/thread-manager;1";
 const ENIG_SIMPLEURI_CONTRACTID   = "@mozilla.org/network/simple-uri;1";
-const ENIG_SEAMONKEY_ID = "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
+const ENIG_SEAMONKEY_ID = "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}";
 
 
 const ENIG_STANDARD_URL_CONTRACTID = "@mozilla.org/network/standard-url;1";
@@ -178,14 +178,14 @@ function EnigReadURLContents(url, maxBytes) {
   if (!ioServ)
     throw Components.results.NS_ERROR_FAILURE;
 
-  var fileChannel = ioServ.newChannel(url, null, null)
+  var fileChannel = ioServ.newChannel(url, null, null);
 
   var rawInStream = fileChannel.open();
 
   var inStream = ENIG_C[ENIG_BINARYINPUTSTREAM_CONTRACTID].createInstance(ENIG_I.nsIBinaryInputStream);
   inStream.setInputStream(rawInStream);
 
-  var available = inStream.available()
+  var available = inStream.available();
   if ((maxBytes < 0) || (maxBytes > available))
     maxBytes = available;
 
@@ -620,7 +620,8 @@ function EnigRevokeKey(keyId, userId, callbackFunc) {
     return false;
 
   var userDesc="0x"+keyId.substr(-8,8)+" - "+userId;
-  if (!EnigConfirm(EnigGetString("revokeKeyAsk", userDesc), EnigGetString("keyMan.button.revokeKey"))) return;
+  if (!EnigConfirm(EnigGetString("revokeKeyAsk", userDesc), EnigGetString("keyMan.button.revokeKey")))
+      return false;
 
   var tmpDir=EnigGetTempDir();
 
@@ -656,6 +657,7 @@ function EnigRevokeKey(keyId, userId, callbackFunc) {
         callbackFunc(r == 0);
       }
     });
+    return true;
 }
 
 function EnigGetLocalFileApi() {
@@ -672,7 +674,7 @@ function EnigGetFilePath (nsFileObj) {
 
 function EnigCreateRevokeCert(keyId, userId, callbackFunc) {
   var defaultFileName = userId.replace(/[\<\>]/g, "");
-  defaultFileName += " (0x"+keyId.substr(-8,8)+") rev.asc"
+  defaultFileName += " (0x"+keyId.substr(-8,8)+") rev.asc";
   var outFile = EnigFilePicker(EnigGetString("saveRevokeCertAs"),
                                "", true, "*.asc",
                                defaultFileName,
@@ -695,6 +697,7 @@ function EnigCreateRevokeCert(keyId, userId, callbackFunc) {
 
       if (callbackFunc) callbackFunc(exitCode == 0);
     });
+  return 0;
 }
 
 

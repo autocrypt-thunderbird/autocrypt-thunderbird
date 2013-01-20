@@ -115,7 +115,7 @@ function enigmailKeygenUpdate(getPrefs, setPrefs) {
   passphrase1.disabled = noPassphraseChecked;
   passphrase2.disabled = noPassphraseChecked;
 
-  var commentElement = document.getElementById("keyComment")
+  var commentElement = document.getElementById("keyComment");
   if (noPassphraseChecked) {
     if (commentElement.value == "") commentElement.value = EnigGetString("keyGenNoPassphrase");
   }
@@ -306,14 +306,14 @@ function enigmailKeygenStart() {
           gGeneratedKey = gGeneratedKey.replace(/(.*\[GNUPG:\] KEY_CREATED . )([a-fA-F0-9]+)([\n\r].*)*/, "$2");
           gAllData = gAllData.replace(/\[GNUPG:\] KEY_CREATED . [a-fA-F0-9]+[\n\r]/, "");
         }
-        gAllData = gAllData.replace(/[\r\n]*\[GNUPG:\] GOOD_PASSPHRASE/g, "").replace(/([\r\n]*\[GNUPG:\] PROGRESS primegen )(.)( \d+ \d+)/g, "$2")
+        gAllData = gAllData.replace(/[\r\n]*\[GNUPG:\] GOOD_PASSPHRASE/g, "").replace(/([\r\n]*\[GNUPG:\] PROGRESS primegen )(.)( \d+ \d+)/g, "$2");
         var progMeter = document.getElementById("keygenProgress");
         var progValue = Number(progMeter.value);
         progValue += (1+(100-progValue)/200);
         if (progValue >= 95) progValue=10;
         progMeter.setAttribute("value", progValue);
       }
-   }
+   };
 
    try {
       gKeygenRequest = Ec.generateKey(window,

@@ -63,7 +63,7 @@ function setDisables(initializing) {
   var noPassphrase = initializing ? EnigGetPref("noPassphrase")
                               : noPassphraseElement.checked;
 
-  var overrideGpg = document.getElementById("enigOverrideGpg")
+  var overrideGpg = document.getElementById("enigOverrideGpg");
   if (EnigGetPref("agentPath")) {
     overrideGpg.checked = true;
   }

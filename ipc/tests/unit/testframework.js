@@ -98,7 +98,7 @@ function run_test_wrapper() {
 
   try {
     run_test();
-    if (! gTestPending) do_test_finished()
+    if (! gTestPending) do_test_finished();
   }
   catch (ex) {
     dumperr(ex.toString());

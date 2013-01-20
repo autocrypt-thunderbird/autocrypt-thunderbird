@@ -74,7 +74,7 @@ Enigmail.hdrView = {
     try {
       this.statusBar.removeAttribute("signed");
       this.statusBar.removeAttribute("encrypted");
-      this.enigmailBox.setAttribute("collapsed", "true")
+      this.enigmailBox.setAttribute("collapsed", "true");
       Enigmail.msg.setAttachmentReveal(null);
       if (Enigmail.msg.securityInfo) {
         Enigmail.msg.securityInfo.statusFlags = 0;
@@ -524,7 +524,7 @@ Enigmail.hdrView = {
 
   signKey: function ()
   {
-    EnigmailFuncs.signKey(window, Enigmail.msg.securityInfo.userId, Enigmail.msg.securityInfo.keyId, null)
+    EnigmailFuncs.signKey(window, Enigmail.msg.securityInfo.userId, Enigmail.msg.securityInfo.keyId, null);
     gDBView.reloadMessageWithAllParts();
   },
 
@@ -757,12 +757,12 @@ Enigmail.hdrView = {
         verifyMenu.setAttribute('disabled', true);
         if (typeof(selectedAttachments[0].displayName) == "undefined") {
           if (! selectedAttachments[0].name) {
-            selectedAttachments[0].name="message.pgp"
+            selectedAttachments[0].name="message.pgp";
           }
         }
         else
           if (! selectedAttachments[0].displayName) {
-            selectedAttachments[0].displayName="message.pgp"
+            selectedAttachments[0].displayName="message.pgp";
           }
       }
       else {
@@ -827,7 +827,7 @@ Enigmail.hdrView = {
   }
 };
 
-window.addEventListener("load", Enigmail.hdrView.hdrViewLoad.bind(Enigmail.hdrView), false)
+window.addEventListener("load", Enigmail.hdrView.hdrViewLoad.bind(Enigmail.hdrView), false);
 addEventListener('messagepane-loaded', Enigmail.hdrView.msgHdrViewLoad.bind(Enigmail.hdrView), true);
 addEventListener('messagepane-unloaded', Enigmail.hdrView.hdrViewUnload.bind(Enigmail.hdrView), true);
 addEventListener('messagepane-hide', Enigmail.hdrView.msgHdrViewHide.bind(Enigmail.hdrView), true);
@@ -863,7 +863,7 @@ try
      createNewAttachmentInfo.prototype.openAttachment = function ()
      {
        this.origOpenAttachment();
-     }
+     };
 }
 catch (ex)
 {
@@ -871,7 +871,7 @@ catch (ex)
     AttachmentInfo.prototype.openAttachment = function ()
     {
       this.origOpenAttachment();
-    }
+    };
 }
 
 
@@ -960,5 +960,5 @@ if (messageHeaderSink) {
     if (!enigmailHeaderSink) {
       this.securityInfo = new EnigMimeHeaderSink(innerSMIMEHeaderSink);
     }
-  }
+  };
 }

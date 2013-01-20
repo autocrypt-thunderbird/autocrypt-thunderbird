@@ -128,7 +128,7 @@ EnigMsgCompFields.prototype = {
       this[m]= smimeCompFields[m];
     }
   }
-}
+};
 
 
 var NSGetFactory = XPCOMUtils.generateNSGetFactory([EnigMsgCompFields]);

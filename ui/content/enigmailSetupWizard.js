@@ -158,11 +158,11 @@ function importKeyFiles() {
   var exitCode;
 
   var enigmailSvc = enigGetSvc();
-  if (! enigmailSvc) return;
+  if (! enigmailSvc) return false;
 
   var errorMsgObj = {};
   var keyListObj = {};
-  var exitCode = enigmailSvc.importKeyFromFile(window, gPubkeyFile.value, errorMsgObj, keyListObj);
+  exitCode = enigmailSvc.importKeyFromFile(window, gPubkeyFile.value, errorMsgObj, keyListObj);
   if (exitCode != 0) {
     EnigAlert(EnigGetString("importKeysFailed")+"\n\n"+errorMsgObj.value);
     return false;
@@ -180,7 +180,7 @@ function importKeyFiles() {
   }
 
 
-  var exitCode = 0;
+  exitCode = 0;
   var keyList=importedKeys.split(/;/);
   setKeyTrustNextKey(keyList, 0);
 
@@ -278,7 +278,7 @@ function onSetStartNow(doStart) {
     setNextPage("pgSelectId");
   }
   else {
-    setNextPage("pgNoStart")
+    setNextPage("pgNoStart");
   }
 }
 
@@ -316,12 +316,12 @@ function loadKeys() {
     return true;
   }
 
-  var uidChildren = document.getElementById("uidSelectionChildren")
+  var uidChildren = document.getElementById("uidSelectionChildren");
   for (i=0; i < keyList.length; i++) {
     var item = uidChildren.appendChild( document.createElement('treeitem') );
     item.setAttribute("keyId", keyList[i].id);
     var row = item.appendChild(document.createElement('treerow'));
-    var cell = row.appendChild( document.createElement('treecell') )
+    var cell = row.appendChild( document.createElement('treecell') );
     cell.setAttribute('label', keyList[i].name);
     cell.setAttribute('observes', "bcKeyEnabled");
     cell = row.appendChild( document.createElement('treecell') );
@@ -445,15 +445,15 @@ function wizardGenKey() {
           gGeneratedKey = gGeneratedKey.replace(/(.*\[GNUPG:\] KEY_CREATED . )([a-fA-F0-9]+)([\n\r].*)*/, "$2");
           gAllData = gAllData.replace(/\[GNUPG:\] KEY_CREATED . [a-fA-F0-9]+[\n\r]/, "");
         }
-        gAllData = gAllData.replace(/[\r\n]*\[GNUPG:\] GOOD_PASSPHRASE/g, "").replace(/([\r\n]*\[GNUPG:\] PROGRESS primegen )(.)( \d+ \d+)/g, "$2")
+        gAllData = gAllData.replace(/[\r\n]*\[GNUPG:\] GOOD_PASSPHRASE/g, "").replace(/([\r\n]*\[GNUPG:\] PROGRESS primegen )(.)( \d+ \d+)/g, "$2");
         var progMeter = document.getElementById("keygenProgress");
         var progValue = Number(progMeter.value);
         progValue += (1+(100-progValue)/200);
         if (progValue >= 95) progValue=10;
         progMeter.setAttribute("value", progValue);
       }
-  }
-  wizard.getButton("next").disabled = true
+  };
+  wizard.getButton("next").disabled = true;
   wizard.getButton("back").disabled = true;
 
   try {
@@ -628,7 +628,7 @@ function fillIdentities(fillType)
 
       if (fillType != "checkbox") {
         // pre-select default ID
-        var idList = document.getElementById("userIdentity")
+        var idList = document.getElementById("userIdentity");
         if (!selected)
           idList.selectedItem = item;
         if (identity.key == defIdentity.key) {
@@ -673,7 +673,7 @@ function applyWizardSettings() {
   }
 
   applyMozSetting("imapOnDemand", "mail.server.default.mime_parts_on_demand", false);
-  applyMozSetting("flowedText" ,"mailnews.send_plaintext_flowed", false)
+  applyMozSetting("flowedText" ,"mailnews.send_plaintext_flowed", false);
   applyMozSetting("quotedPrintable", "mail.strictly_mime", false);
   applyMozSetting("viewPlainText", "mailnews.display.html_as", 1);
   applyMozSetting("viewPlainText", "mailnews.display.prefer_plaintext", true);
@@ -704,7 +704,7 @@ function wizardApplyId(identity, keyId) {
 
   var newsServer = false;
   for (var i=0; i<servers.length; i++) {
-    newsServer = (servers[i].localStoreType == "news")
+    newsServer = (servers[i].localStoreType == "news");
   }
 
   identity.setBoolAttribute("enablePgp", true);
@@ -800,7 +800,7 @@ function setNewKey() {
   setNextPage('pgKeyCreate');
   disableNext(false);
   gCreateNewKey = true;
-  document.getElementById("uidSelection").boxObject.element.setAttribute("disabled", "true")
+  document.getElementById("uidSelection").boxObject.element.setAttribute("disabled", "true");
 }
 
 function setUseKey() {
@@ -852,7 +852,7 @@ function displayActions() {
       while (node) {
         if (node.checked) {
           var identity = gEnigAccountMgr.getIdentity(node.getAttribute("account-id"));
-          idList+="<"+identity.email+"> "
+          idList+="<"+identity.email+"> ";
         }
         node = node.nextSibling;
       }

@@ -97,7 +97,7 @@ function prefOnLoad() {
      gMimePartsElement.removeAttribute("checked");
    }
 
-   var overrideGpg = document.getElementById("enigOverrideGpg")
+   var overrideGpg = document.getElementById("enigOverrideGpg");
    if (EnigGetPref("agentPath")) {
       overrideGpg.checked = true;
    }
@@ -139,7 +139,7 @@ function enigDetermineGpgPath() {
         // EnigGetFilePath(gEnigmailSvc.agentPath); // .replace(/\\\\/g, "\\");
       }
       if (agentPath.length > 50) {
-        agentPath = agentPath.substring(0,50)+"..."
+        agentPath = agentPath.substring(0,50)+"...";
       }
       document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgFound", agentPath));
     }
@@ -435,6 +435,6 @@ function enigLocateGpg() {
 //     if (EnigmailCommon.getOS() == "WINNT") {
 //       document.getElementById("enigmail_agentPath").value = EnigGetFilePath(filePath);
 //     }
-    document.getElementById("enigmail_agentPath").value = filePath.path
+    document.getElementById("enigmail_agentPath").value = filePath.path;
   }
 }

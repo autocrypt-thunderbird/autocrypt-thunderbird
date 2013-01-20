@@ -150,10 +150,10 @@ function onLoad() {
     onErrorData: function(data) {
       gErrorData += data;
     }
-  }
+  };
 
   msgProgress.registerListener(progressListener);
-  msgProgress.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_START, 0)
+  msgProgress.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_START, 0);
   gEnigCallbackFunc = inArg.cbFunc;
 
   var errorMsgObj={};

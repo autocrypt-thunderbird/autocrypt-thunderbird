@@ -137,7 +137,7 @@ function run_test()
   /////////////////////////////////////////////////////////////////
 
   gResultData = "";
-  var p = subprocess.call({
+  p = subprocess.call({
     command:     cmd,
     arguments:   [ 'dump' ],
     environment: envList,
@@ -162,7 +162,7 @@ function run_test()
   /////////////////////////////////////////////////////////////////
 
   gResultData = "";
-  var p = subprocess.call({
+  p = subprocess.call({
     command:     cmd,
     arguments:   [ 'wrong', 'arguments' ],
     environment: envList,
@@ -188,7 +188,7 @@ function run_test()
   /////////////////////////////////////////////////////////////////
 
   gResultData = "";
-  var p = subprocess.call({
+  p = subprocess.call({
     command:     cmd,
     arguments:   [ 'write', dataFile.path ],
     stdin: gTestLines.join("")
@@ -196,7 +196,7 @@ function run_test()
 
   p.wait();
 
-  var p = subprocess.call({
+  p = subprocess.call({
     command:     cmd,
     arguments:   [ 'read', dataFile.path ],
     environment: envList,
@@ -212,7 +212,7 @@ function run_test()
   // Test minimal scenario with onFinished only
   /////////////////////////////////////////////////////////////////
 
-  var p = subprocess.call({
+  p = subprocess.call({
     command:     cmd,
     arguments:   [ 'read', dataFile.path ],
     environment: envList,
@@ -234,7 +234,7 @@ function run_test()
   envList.push("TESTVAR="+gTestLines[0]);
 
   gResultData = "";
-  var p = subprocess.call({
+  p = subprocess.call({
     command:     cmd.path,
     arguments:   [ 'getenv', 'TESTVAR' ],
     cwd: do_get_file(".", true),
