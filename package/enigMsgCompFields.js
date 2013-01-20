@@ -35,7 +35,7 @@
  * GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-'use strict;'
+'use strict';
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
