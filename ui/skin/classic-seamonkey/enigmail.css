@@ -231,7 +231,7 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
   margin-top: 0px;
   margin-bottom: 0px;
   padding: 0 2px;
-  -moz-border-radius: 2px;
+  border-radius: 2px;
   -moz-border-top-colors: none;
   -moz-border-right-colors: none;
   -moz-border-bottom-colors: none;
