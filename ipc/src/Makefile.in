@@ -12,40 +12,17 @@ include $(DEPTH)/config/autoconf.mk
 OBJ_SUFF = o
 LDFLAGS =
 CFLAGS =
+CC_BASE = $(shell basename $(CC))
 
-ifeq ($(OS_ARCH),Darwin)
+ifeq ($(CC_BASE),clang)
 LDFLAGS	+= -dynamiclib -install_name @executable_path/$(SHARED_LIBRARY) -compatibility_version 1 -current_version 1 -single_module
-endif
-
-ifeq ($(OS_ARCH),NetBSD)
-ifeq ($(DLL_SUFFIX),.so.1.0)
-LDFLAGS += -Wl,-Bsymbolic
-CFLAGS += -fPIC
-endif
-endif
-
-ifeq ($(OS_ARCH),FreeBSD)
-LDFLAGS += -Wl,-Bsymbolic
-CFLAGS += -fPIC
-endif
-
-ifeq ($(OS_ARCH),HP-UX)
-ifeq ($(GNU_CC)$(GNU_CXX),)
-LDFLAGS += -Wl,-Bsymbolic
-CFLAGS += -fPIC
-endif
-endif
-
-ifeq ($(OS_ARCH),OSF1)
-ifeq ($(GNU_CC)$(GNU_CXX),)
-LDFLAGS += -B symbolic
-CFLAGS += -fPIC
-endif
-endif
-
-ifeq ($(OS_ARCH),Linux)
+else
+ifeq ($(CC_BASE),gcc)
 LDFLAGS += -shared -Wl,-Bsymbolic
 CFLAGS += -fPIC
+else
+$(error "Unknown compiler. please specify compiler and linker options (CFLAGS and LDFLAGS)")
+endif
 endif
 
 ifeq ($(OS_ARCH),WINNT)
