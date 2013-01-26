@@ -1385,7 +1385,13 @@ Enigmail.prototype = {
 
     if (exitCodeObj.value == 0) {
       // Normal return
-      return listener.stdoutData;
+
+      // convert the output to Unicode
+      var tmpStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
+      tmpStream.setData(listener.stdoutData, listener.stdoutData.length);
+      var inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
+      inStream.init(tmpStream);
+      return inStream.read(tmpStream.available());
     }
 
     // Error processing
@@ -1655,9 +1661,7 @@ Enigmail.prototype = {
     tmpStream.setData(listener.stdoutData, listener.stdoutData.length);
     var inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
     inStream.init(tmpStream);
-    var plainText = inStream.read(tmpStream.available())
-
-    Ec.DEBUG_LOG("enigmail.js: decryptMessage: got plaintext: '"+plainText+"'\n");
+    var plainText = inStream.read(tmpStream.available());
 
     var retStatusObj = {};
     var exitCode = Ec.decryptMessageEnd(listener.stderrData, listener.exitCode,
