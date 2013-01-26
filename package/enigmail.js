@@ -341,6 +341,17 @@ function getWinRegistryString(keyPath, keyName, rootKey) {
   return retval;
 }
 
+function getUnicodeData(data) {
+  // convert output from subprocess to Unicode
+
+  var tmpStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
+  tmpStream.setData(data, data.length);
+  var inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
+  inStream.init(tmpStream);
+  return inStream.read(tmpStream.available());
+}
+
+
 function ExtractMessageId(uri) {
   var messageId = "";
 
@@ -1371,7 +1382,7 @@ Enigmail.prototype = {
     proc.wait();
 
     var retStatusObj = {};
-    exitCodeObj.value = Ec.encryptMessageEnd(listener.stderrData, listener.exitCode,
+    exitCodeObj.value = Ec.encryptMessageEnd(getUnicodeData(listener.stderrData), listener.exitCode,
                                         uiFlags, sendFlags,
                                         listener.stdoutData.length,
                                         retStatusObj);
@@ -1386,12 +1397,7 @@ Enigmail.prototype = {
     if (exitCodeObj.value == 0) {
       // Normal return
 
-      // convert the output to Unicode
-      var tmpStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
-      tmpStream.setData(listener.stdoutData, listener.stdoutData.length);
-      var inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
-      inStream.init(tmpStream);
-      return inStream.read(tmpStream.available());
+      return getUnicodeData(listener.stdoutData);
     }
 
     // Error processing
@@ -1656,15 +1662,10 @@ Enigmail.prototype = {
     // Wait for child to close
     proc.wait();
 
-    // convert the output to Unicode
-    var tmpStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
-    tmpStream.setData(listener.stdoutData, listener.stdoutData.length);
-    var inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
-    inStream.init(tmpStream);
-    var plainText = inStream.read(tmpStream.available());
+    var plainText = getUnicodeData(listener.stdoutData);
 
     var retStatusObj = {};
-    var exitCode = Ec.decryptMessageEnd(listener.stderrData, listener.exitCode,
+    var exitCode = Ec.decryptMessageEnd(getUnicodeData(listener.stderrData), listener.exitCode,
                                         plainText.length, verifyOnly, noOutput,
                                         uiFlags, retStatusObj);
     exitCodeObj.value = exitCode;
