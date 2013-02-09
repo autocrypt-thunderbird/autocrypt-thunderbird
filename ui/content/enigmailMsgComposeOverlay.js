@@ -1685,8 +1685,9 @@ Enigmail.msg = {
          }
        }
 
+       var ioService = EnigmailCommon.getIoService();
        // EnigSend: Handle both plain and encrypted messages below
-       var isOffline = (gIOService && gIOService.offline);
+       var isOffline = (ioService && ioService.offline);
        window.enigmailSendFlags=sendFlags;
 
        // update the list of attachments
