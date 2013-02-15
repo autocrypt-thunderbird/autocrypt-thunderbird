@@ -51,7 +51,7 @@
         onload="return onLoad();"
         ondialogaccept="return onAccept();"
         ondialogcancel="onCancel();"
-        minheight="400">
+        minheight="50">
 
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
