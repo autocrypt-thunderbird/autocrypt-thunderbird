@@ -690,15 +690,17 @@ Enigmail.msg = {
     try {
         var currentId=getCurrentIdentity();
         var amService=Components.classes["@mozilla.org/messenger/account-manager;1"].getService();
-        var servers;
+        var servers, folderURI;
         try {
           // Gecko >= 20
           servers=amService.getServersForIdentity(currentId);
+          folderURI=servers.queryElementAt(0, Components.interfaces.nsIMsgIncomingServer).serverURI;
         }
         catch(ex) {
           servers=amService.GetServersForIdentity(currentId);
+          folderURI=servers.GetElementAt(0).QueryInterface(Components.interfaces.nsIMsgIncomingServer).serverURI;
         }
-        var folderURI=servers.GetElementAt(0).QueryInterface(Components.interfaces.nsIMsgIncomingServer).serverURI;
+
         server=GetMsgFolderFromUri(folderURI, true).server;
     } catch (ex) {}
     window.openDialog("chrome://enigmail/content/am-enigprefs-edit.xul", "", "dialog,modal,centerscreen", {identity: currentId, account: server});

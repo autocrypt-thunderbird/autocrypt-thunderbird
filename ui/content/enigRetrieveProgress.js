@@ -113,6 +113,7 @@ var progressListener = {
 
 function onLoad() {
   // Set global variables.
+  Ec.DEBUG_LOG("enigRetrieveProgress: onLoad\n");
   var inArg = window.arguments[0];
   window.arguments[1].result=false;
 

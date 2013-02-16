@@ -367,11 +367,22 @@ function onNoExpiry() {
 
 
 function queryISupportsArray(supportsArray, iid) {
-    var result = new Array;
-    for (var i=0; i<supportsArray.Count(); i++) {
-      result[i] = supportsArray.GetElementAt(i).QueryInterface(iid);
+  var result = [];
+  var i;
+  try {
+    // Gecko <= 20
+    for (i=0; i<supportsArray.Count(); i++) {
+      result.push(supportsArray.GetElementAt(i).QueryInterface(iid));
     }
-    return result;
+  }
+  catch(ex) {
+    // Gecko > 20
+    for (i=0; i<supportsArray.length; i++) {
+      result.push(supportsArray.queryElementAt(i, iid));
+    }
+  }
+
+  return result;
 }
 
 function getCurrentIdentity()
@@ -424,19 +435,23 @@ function fillIdentityListPopup()
     if (!identity.valid || !identity.email)
       continue;
 
-    var serverSupports;
+    var serverSupports, inServer;
     try {
       // Gecko >= 20
       serverSupports = gAccountManager.getServersForIdentity(identity);
+      if (serverSupports.length > 0) {
+        inServer = serverSupports.queryElementAt(0, Components.interfaces.nsIMsgIncomingServer);
+      }
     }
     catch (ex) {
       // Gecko < 20
       serverSupports = gAccountManager.GetServersForIdentity(identity);
+      if (serverSupports.GetElementAt(0)) {
+        inServer = serverSupports.GetElementAt(0).QueryInterface(Components.interfaces.nsIMsgIncomingServer);
+      }
     }
 
-    if (serverSupports.GetElementAt(0)) {
-      var inServer = serverSupports.GetElementAt(0).QueryInterface(Components.interfaces.nsIMsgIncomingServer);
-
+    if (inServer) {
       var accountName = " - "+inServer.prettyName;
 
       DEBUG_LOG("enigmailKeygen.js: accountName="+accountName+"\n");
