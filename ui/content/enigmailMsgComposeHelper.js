@@ -86,7 +86,7 @@ Enigmail.hlp = {
       var rulesList=rulesListObj.value;
 
       if (rulesList.firstChild.nodeName=="parsererror") {
-        EnigmailCommon.alert(window, "Invalid enigmail.xml file:\n"+ rulesList.firstChild.textContent);
+        EnigmailCommon.alert(window, "Invalid pgprules.xml file:\n"+ rulesList.firstChild.textContent);
         return true;
       }
       EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys: keys loaded\n");

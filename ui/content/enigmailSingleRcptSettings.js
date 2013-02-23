@@ -146,6 +146,8 @@ function enigmailDlgOnAccept() {
     break;
   }
 
+  // Remove trailing whitespace
+  ruleEmail.value = ruleEmail.value.replace(/\s+$/,"").replace(/^\s+/,"");
   if (ruleEmail.value.length==0) {
     EnigAlert(EnigGetString("noEmptyRule"));
     return false;

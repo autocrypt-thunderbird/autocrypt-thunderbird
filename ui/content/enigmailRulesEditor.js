@@ -55,7 +55,7 @@ function enigmailDlgOnLoad() {
     var treeChildren=document.getElementById("rulesTreeChildren");
     var rulesList=rulesListObj.value;
     if (rulesList.firstChild.nodeName=="parsererror") {
-      EnigAlert("Invalid enigmail.xml file:\n"+ rulesList.firstChild.textContent);
+      EnigAlert("Invalid pgprules.xml file:\n"+ rulesList.firstChild.textContent);
       return;
     }
     DEBUG_LOG("enigmailRulesEditor.js: dlgOnLoad: keys loaded\n");
