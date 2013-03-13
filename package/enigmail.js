@@ -1003,7 +1003,7 @@ Enigmail.prototype = {
     function resolveAgentPath(fileName) {
       var filePath = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
 
-      if (gEnigmailSvc.isDosLike) {
+      if (Ec.isDosLike()) {
         fileName += ".exe";
       }
 
@@ -1018,7 +1018,7 @@ Enigmail.prototype = {
         }
       }
 
-      var foundPath = ResolvePath(fileName, gEnigmailSvc.environment.get("PATH"), gEnigmailSvc.isDosLike);
+      var foundPath = ResolvePath(fileName, gEnigmailSvc.environment.get("PATH"), Ec.isDosLike());
       if (foundPath != null) { foundPath.normalize(); }
       return foundPath;
     }
