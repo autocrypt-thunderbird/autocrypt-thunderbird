@@ -621,7 +621,7 @@
                                                       <html:br/><html:br/>
                                                       If you have any trouble using this wizard, please let us know by
                                                       <a class='enigmailLink'><html:a
-                                                      href='mailto:www.enigmail.net'>emailing us</html:a></a>.
+                                                      href='mailto:enigmail-users@enigmail.net'>emailing us</html:a></a>.
                                                       <html:br/><html:br/>
                                                       This wizard is automatically invoked when you first install Enigmail. You can also launch it
                                                       manually from the OpenPGP menu.
