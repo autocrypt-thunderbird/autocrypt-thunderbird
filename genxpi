@@ -131,7 +131,6 @@ zip ${xpiFile} \
     components/mimeDecrypt.js \
     components/mimeEncrypt.js \
     defaults/preferences/enigmail.js \
-    defaults/pref/enigmail.js \
     modules/enigmailCommon.jsm \
     modules/pipeConsole.jsm \
     modules/keyManagement.jsm \
