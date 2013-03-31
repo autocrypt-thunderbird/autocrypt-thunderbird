@@ -25,10 +25,16 @@ xpidl-preqs = \
   $(call mkdir_deps,$(MDDEPDIR)) \
   $(NULL)
 
+XPIDL_HEADERS_FILES := $(patsubst %.idl,$(XPIDL_GEN_DIR)/%.h, $(XPIDLSRCS))
+XPIDL_HEADERS_DEST := $(DIST)/include
+XPT_MODULE_DEST := $(DIST)/bin/components
+
+
 # generate intermediate .xpt files into $(XPIDL_GEN_DIR), then link
 # into $(XPIDL_MODULE).xpt and export it to $(FINAL_TARGET)/components.
 $(XPIDL_GEN_DIR)/%.xpt: %.idl $(XPIDL_DEPS) $(xpidl-preqs)
-	 $(srcdir)/../util/xptgen $(topsrcdir) $(srcdir) $(DEPTH) $@
+	 $(srcdir)/../util/xptgen $(topsrcdir) $(srcdir) $(DEPTH) $@ ; \
+	 $(INSTALL) $(patsubst %.idl,$(XPIDL_GEN_DIR)/%.h, $@) $(XPIDL_HEADERS_DEST)
 
 XPT_PY = $(filter %/xpt.py,$(XPIDL_LINK))
 
@@ -37,5 +43,7 @@ xpidl-module-deps = $(xpidl-idl2xpt) $(GLOBAL_DEPS) $(XPT_PY)
 
 $(XPIDL_GEN_DIR)/$(XPIDL_MODULE).xpt: $(xpidl-module-deps)
 	$(XPIDL_LINK) $@ $(xpidl-idl2xpt) ; \
-	$(XPIDL_LINK) $@ $(xpidl-idl2xpt)
+	$(XPIDL_LINK) $@ $(xpidl-idl2xpt) ; \
+	$(INSTALL) $@ $(XPT_MODULE_DEST)
+
 endif
