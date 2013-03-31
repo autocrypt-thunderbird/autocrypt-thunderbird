@@ -44,7 +44,7 @@ while [ $# -gt 0 ]; do
     -I../../../../mozilla/dist/idl \
     ${SRCDIR}/${XPTBASE}.idl \
     -d .deps/${XPTBASE}.pp \
-    -o ${XPTFILE}.h
+    -o ${HDRFILE}
 
   shift
 done

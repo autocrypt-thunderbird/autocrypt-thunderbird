@@ -26,8 +26,11 @@ include $(topsrcdir)/config/config.mk
 
 include $(srcdir)/../util/build.mk
 
-all: $(XPIDLSRCS) libs
+all: $(XPIDLSRCS) export libs
 	$(srcdir)/../util/xptgen $(topsrcdir) $(DEPTH) $^
+
+export:
+	$(INSTALL) -l _xpidlgen/*.h $(DIST)/include
 
 libs:
 	$(INSTALL) _xpidlgen/enigmail.xpt $(DIST)/bin/components
