@@ -25,6 +25,7 @@ shift 3
 while [ $# -gt 0 ]; do
   XPTFILE=$1
   XPTBASE=`basename $1 | sed s/.xpt$//`
+  HDRFILE=`echo $1 | sed s/.xpt$/.h/`
 
 
   python -u ${TOPDIR}/mozilla/config/pythonpath.py \
@@ -35,6 +36,15 @@ while [ $# -gt 0 ]; do
     ${SRCDIR}/${XPTBASE}.idl \
     -d .deps/${XPTBASE}.pp \
     -o ${XPTFILE}
+
+  python -u ${TOPDIR}/mozilla/config/pythonpath.py \
+    -I${TOPDIR}/mozilla/xpcom/typelib/xpt/tools \
+    ${DEPTH}/mozilla/dist/sdk/bin/header.py \
+    -I${TOPDIR}/mailnews/extensions/enigmail/public \
+    -I../../../../mozilla/dist/idl \
+    ${SRCDIR}/${XPTBASE}.idl \
+    -d .deps/${XPTBASE}.pp \
+    -o ${XPTFILE}.h
 
   shift
 done

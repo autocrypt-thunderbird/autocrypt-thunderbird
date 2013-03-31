@@ -25,14 +25,6 @@ xpidl-preqs = \
   $(call mkdir_deps,$(MDDEPDIR)) \
   $(NULL)
 
-$(XPIDL_GEN_DIR)/%.h: %.idl $(XPIDL_DEPS) $(xpidl-preqs)
-	$(REPORT_BUILD)
-	$(PYTHON_PATH) \
-	  $(PLY_INC_PATH) \
-	  $(LIBXUL_DIST)/sdk/bin/header.py $(XPIDL_FLAGS) $(_VPATH_SRCS) -d $(MDDEPDIR)/$(@F).pp -o $@
-	@if test -n "$(findstring $*.h, $(EXPORTS))"; \
-	  then echo "*** WARNING: file $*.h generated from $*.idl overrides $(srcdir)/$*.h"; else true; fi
-
 # generate intermediate .xpt files into $(XPIDL_GEN_DIR), then link
 # into $(XPIDL_MODULE).xpt and export it to $(FINAL_TARGET)/components.
 $(XPIDL_GEN_DIR)/%.xpt: %.idl $(XPIDL_DEPS) $(xpidl-preqs)
@@ -44,5 +36,6 @@ xpidl-idl2xpt = $(patsubst %.idl,$(XPIDL_GEN_DIR)/%.xpt,$(XPIDLSRCS))
 xpidl-module-deps = $(xpidl-idl2xpt) $(GLOBAL_DEPS) $(XPT_PY)
 
 $(XPIDL_GEN_DIR)/$(XPIDL_MODULE).xpt: $(xpidl-module-deps)
+	$(XPIDL_LINK) $@ $(xpidl-idl2xpt) ; \
 	$(XPIDL_LINK) $@ $(xpidl-idl2xpt)
 endif
