@@ -34,7 +34,7 @@ XPT_MODULE_DEST := $(DIST)/bin/components
 # into $(XPIDL_MODULE).xpt and export it to $(FINAL_TARGET)/components.
 $(XPIDL_GEN_DIR)/%.xpt: %.idl $(XPIDL_DEPS) $(xpidl-preqs)
 	 $(srcdir)/../util/xptgen $(topsrcdir) $(srcdir) $(DEPTH) $@ ; \
-	 $(INSTALL) $(patsubst %.idl,$(XPIDL_GEN_DIR)/%.h, $@) $(XPIDL_HEADERS_DEST)
+	 $(INSTALL) $(patsubst %.xpt,%.h, $@) $(XPIDL_HEADERS_DEST)
 
 XPT_PY = $(filter %/xpt.py,$(XPIDL_LINK))
 
