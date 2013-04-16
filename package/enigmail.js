@@ -990,9 +990,9 @@ Enigmail.prototype = {
 
     function extractAgentInfo(fullStr) {
       if (fullStr) {
+        fullStr = fullStr.replace(/[\r\n]/g, "");
         fullStr = fullStr.replace(/^.*\=/,"");
-        fullStr = fullStr.replace(/^\;.*$/,"");
-        fullStr = fullStr.replace(/[\n\r]*/g,"");
+        fullStr = fullStr.replace(/\;.*$/,"");
         return fullStr;
       }
       else
@@ -1108,34 +1108,44 @@ Enigmail.prototype = {
         }
 
         if ((! Ec.isDosLike()) && (this.agentVersion < "2.0.16" )) {
-          args = [ "--sh", "--no-use-standard-socket",
+
+          // create unique tmp file
+          var ds = Cc[DIR_SERV_CONTRACTID].getService();
+          var dsprops = ds.QueryInterface(Ci.nsIProperties);
+          var tmpFile = dsprops.get("TmpD", Ci.nsIFile);
+          tmpFile.append("gpg-wrapper.tmp");
+          tmpFile.createUnique(tmpFile.NORMAL_FILE_TYPE, DEFAULT_FILE_PERMS);
+          args = [ command.path,
+                   tmpFile.path,
+                  "--sh", "--no-use-standard-socket",
                   "--daemon",
                   "--default-cache-ttl", (Ec.getMaxIdleMinutes()*60).toString(),
                   "--max-cache-ttl", "999999" ];  // ca. 11 days
 
           try {
-            var p = subprocess.call({
-              command: command,
-              charset: null,
-              arguments: args,
-              environment: Ec.envList,
-              stdin: null,
-              done: function(result) {
-                Ec.DEBUG_LOG("detectGpgAgent start terminated with "+result.exitCode+"\n");
-                exitCode = result.exitCode;
-                outStr = result.stdout;
-              },
-              mergeStderr: true
-            });
-            p.wait();
+            var process = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
+            var exec = Ec.getInstallLocation().clone();
+            exec.append("wrappers");
+            exec.append("gpg-agent-wrapper.sh");
+            process.init(exec);
+            process.run(true, args, args.length);
+
+            if (! tmpFile.exists()) {
+              Ec.ERROR_LOG("enigmail.js: detectGpgAgent no temp file created\n");
+            }
+            else {
+              outStr = readFile(tmpFile);
+              tmpFile.remove(false);
+              exitCode = 0;
+            }
           } catch (ex) {
-            Ec.ERROR_LOG("enigmail.js: detectGpgAgent: "+command.path+" failed\n");
+            Ec.ERROR_LOG("enigmail.js: detectGpgAgent: failed with '"+ex+"'\n");
             exitCode = -1;
           }
 
           if (exitCode == 0) {
             this.gpgAgentInfo.envStr = extractAgentInfo(outStr);
-            Ec.DEBUG_LOG("enigmail.js: detectGpgAgent: started -> "+outStr+"\n");
+            Ec.DEBUG_LOG("enigmail.js: detectGpgAgent: started -> "+this.gpgAgentInfo.envStr+"\n");
             this.gpgAgentProcess = this.gpgAgentInfo.envStr.split(":")[1];
           }
           else {

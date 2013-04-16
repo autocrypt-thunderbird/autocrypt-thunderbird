@@ -91,6 +91,7 @@ var gDispatchThread = null;
 
 
 var gEnigExtensionVersion;
+var gEnigInstallLocation;
 var gCachedPassphrase = null;
 var gCacheTimer = null;
 
@@ -2827,6 +2828,10 @@ var EnigmailCommon = {
     }
     else
       return null;
+  },
+
+  getInstallLocation: function() {
+    return gEnigInstallLocation;
   }
 
 };
@@ -3052,8 +3057,8 @@ try {
   AddonManager.getAddonByID(ENIG_EXTENSION_GUID,
     function (addon) {
       gEnigExtensionVersion = addon.version;
-      var installLocation = addon.getResourceURI("").QueryInterface(Ci.nsIFileURL).file;
-      initSubrocess(installLocation);
+      gEnigInstallLocation = addon.getResourceURI("").QueryInterface(Ci.nsIFileURL).file;
+      initSubrocess(gEnigInstallLocation);
     }
   );
 

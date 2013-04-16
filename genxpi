@@ -106,6 +106,9 @@ cd "$targetDir"
 
 mkdir -p platform/${platform}/components
 mkdir -p platform/${platform}/lib
+mkdir -p wrappers
+
+cp ${srcDir}/util/gpg-agent-wrapper.sh wrappers
 
 cp $cwd/ipc/src/${subprocessDll} ${spDllFile}
 cp components/${enigmimeDll} ${enigDllFile}
@@ -139,6 +142,7 @@ zip ${xpiFile} \
     modules/subprocess.jsm \
     modules/subprocess_worker_win.js \
     modules/subprocess_worker_unix.js \
+    wrappers/gpg-agent-wrapper.sh \
     chrome/${xpiModule}.jar \
     ${localeJar} \
     components/enigmime.xpt \
