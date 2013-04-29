@@ -61,8 +61,9 @@ PgpMimeDecrypt.prototype = {
   verifier: null,
   proc: null,
   statusDisplayed: false,
+  uri: null,
 
-  onStartRequest: function(request) {
+  onStartRequest: function(request, uri) {
     if (!Ec.getService()) // Ensure Enigmail is initialized
       return;
     DEBUG_LOG("mimeDecrypt.js: onStartRequest\n");
@@ -99,6 +100,8 @@ PgpMimeDecrypt.prototype = {
     this.verifier.onStartRequest(true);
     this.proc = Ec.decryptMessageStart(win, false, false, this,
                     statusFlagsObj, errorMsgObj);
+    if (uri != null)
+      this.uri = uri.QueryInterface(Ci.nsIURI).clone();
   },
 
   onDataAvailable: function(req, sup, stream, offset, count) {
@@ -209,7 +212,7 @@ PgpMimeDecrypt.prototype = {
             this.returnStatus.sigDetails,
             this.returnStatus.errorMsg,
             this.returnStatus.blockSeparation,
-            null);
+            this.uri);
       }
       this.statusDisplayed = true;
     }
