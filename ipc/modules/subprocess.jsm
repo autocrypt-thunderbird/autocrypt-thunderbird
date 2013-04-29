@@ -842,8 +842,14 @@ function subprocess_win32(options) {
      * ChromeWorker object to write the data).
      */
     function writeStdin(data) {
+        if (stdinOpenState == CLOSED) {
+          LogError("trying to write data to closed stdin");
+          return;
+        }
+
         ++pendingWriteCount;
         debugLog("sending "+data.length+" bytes to stdinWorker\n");
+
         var pipePtr = parseInt(ctypes.cast(child.stdin.address(), ctypes.uintptr_t).value);
 
         stdinWorker.postMessage({
@@ -1425,7 +1431,10 @@ function subprocess_unix(options) {
      * ChromeWorker object to write the data).
      */
     function writeStdin(data) {
-        if (stdinOpenState == CLOSED) return; // do not write to closed pipes
+        if (stdinOpenState == CLOSED) {
+          LogError("trying to write data to closed stdin");
+          return;
+        }
 
         ++pendingWriteCount;
         debugLog("sending "+data.length+" bytes to stdinWorker\n");
@@ -1616,6 +1625,7 @@ function subprocess_unix(options) {
 
     if (options.stdin) {
         createStdinWriter();
+
         if(typeof(options.stdin) == 'function') {
             try {
                 options.stdin({

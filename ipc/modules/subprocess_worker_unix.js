@@ -137,7 +137,25 @@ function initLibc(libName) {
                                   ctypes.int);
 }
 
+function createNpeError() {
+    let e = new Error("NULL Poiner", "npeError", 1);
+    try {
+        // throw an error and catch it to get a stack trace
+        throw e;
+    }
+    catch (ex) {
+        postMessage({msg: "error", data: "Got NULL pointer error\n" + ex.stack});
+    }
+
+    return;
+}
+
 function closePipe(pipe) {
+    if (pipe == null) {
+        createNpeError()
+        return;
+    }
+
     libcFunc.close(pipe);
 }
 
@@ -156,7 +174,7 @@ function writePipe(pipe, data) {
 
         let bytesWritten = libcFunc.write(pipe, pData, numBytes);
         if (bytesWritten != numBytes) {
-            closePipe();
+            closePipe(pipe);
             libc.close();
             postMessage({ msg: "error", data: "error: wrote "+bytesWritten+" instead of "+numBytes+" bytes"});
             close();
@@ -283,6 +301,11 @@ onmessage = function (event) {
         initLibc(event.data.libc);
         break;
     case "read":
+        if (event.data.pipe == null) {
+          createNpeError();
+          return;
+        }
+
         initLibc(event.data.libc);
         readPipe(event.data.pipe, event.data.charset, event.data.pid, event.data.bufferedOutput);
         break;
@@ -291,11 +314,21 @@ onmessage = function (event) {
         //   msg: 'write'
         //   data: the data (string) to write
         //   pipe: ptr to pipe
+
+        if (event.data.pipe == null) {
+          createNpeError();
+          return;
+        }
         writePipe(event.data.pipe, event.data.data);
         postMessage({msg: "info", data: "WriteOK"});
         break;
     case "close":
         postMessage({msg: "debug", data: "closing stdin\n"});
+
+        if (event.data.pipe == null) {
+          createNpeError();
+          return;
+        }
 
         closePipe(event.data.pipe);
         postMessage({msg: "info", data: "ClosedOK"});
