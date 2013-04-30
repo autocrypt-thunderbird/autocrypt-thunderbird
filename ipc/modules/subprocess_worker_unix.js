@@ -299,6 +299,7 @@ onmessage = function (event) {
     switch (event.data.msg) {
     case "init":
         initLibc(event.data.libc);
+        postMessage({msg: "info", data: "InitOK"});
         break;
     case "read":
         if (event.data.pipe == null) {

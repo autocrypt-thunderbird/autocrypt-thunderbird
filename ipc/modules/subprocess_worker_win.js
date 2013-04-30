@@ -221,6 +221,7 @@ onmessage = function (event) {
     switch (event.data.msg) {
     case "init":
         initLib(event.data.libc);
+        postMessage("InitOK");
         break;
     case "write":
         // data contents:
