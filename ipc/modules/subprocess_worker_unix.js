@@ -78,7 +78,12 @@ const POLLNVAL   = 0x0020;         // requested events "invalid"
 
 const WNOHANG    = 0x01;
 
-const ECHILD = 10;
+const ECHILD       =   10;
+const EPIPE        =   32;         /* Broken pipe */
+
+const EAGAIN       =   35;         /* Resource temporarily unavailable */
+const EINPROGRESS  =   36;         /* Operation now in progress */
+const EALREADY     =   37;         /* Operation already in progress */
 
 const pid_t = ctypes.int32_t;
 
@@ -173,6 +178,10 @@ function writePipe(pipe, data) {
         }
 
         let bytesWritten = libcFunc.write(pipe, pData, numBytes);
+        if (bytesWritten == -1) {
+            postMessage({ msg: "error", data: "error: write failed, errno=" + ctypes.errno });
+        }
+
         if (bytesWritten != numBytes) {
             closePipe(pipe);
             libc.close();
