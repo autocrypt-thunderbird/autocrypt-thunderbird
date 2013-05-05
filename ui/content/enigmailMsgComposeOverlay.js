@@ -988,7 +988,7 @@ Enigmail.msg = {
     }
   },
 
-  confirmBeforeSend: function (toAddr, gpgKeys, sendFlags, isOffline, msgSendType)
+  confirmBeforeSend: function (toAddr, gpgKeys, sendFlags, isOffline)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.confirmBeforeSend: sendFlags="+sendFlags+"\n");
     // get confirmation before sending message
@@ -1034,6 +1034,7 @@ Enigmail.msg = {
 
   setDraftStatus: function (sendFlags)
   {
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.setDraftStatus - enabling draft mode\n");
     gMsgCompose.compFields.otherRandomHeaders += "X-Enigmail-Draft-Status: "+sendFlags+"\r\n";
   },
 
@@ -1258,19 +1259,23 @@ Enigmail.msg = {
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN    = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
+    const CiMsgCompDeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
     var promptSvc = EnigmailCommon.getPromptSvc();
 
     var gotSendFlags = this.sendMode;
     var sendFlags=0;
     window.enigmailSendFlags=0;
 
+
     switch (msgSendType) {
-    case nsIMsgCompDeliverMode.Later:
+    case CiMsgCompDeliverMode.Later:
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: adding SEND_LATER\n")
       sendFlags |= nsIEnigmail.SEND_LATER;
       break;
-    case nsIMsgCompDeliverMode.SaveAsDraft:
-    case nsIMsgCompDeliverMode.SaveAsTemplate:
-    case nsIMsgCompDeliverMode.AutoSaveAsDraft:
+    case CiMsgCompDeliverMode.SaveAsDraft:
+    case CiMsgCompDeliverMode.SaveAsTemplate:
+    case CiMsgCompDeliverMode.AutoSaveAsDraft:
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: adding SAVE_MESSAGE\n")
       sendFlags |= nsIEnigmail.SAVE_MESSAGE;
       break;
     }
@@ -2038,8 +2043,8 @@ Enigmail.msg = {
   modifyCompFields: function (msgCompFields)
   {
 
-  const HEADERMODE_KEYID = 0x01;
-  const HEADERMODE_URL   = 0x10;
+    const HEADERMODE_KEYID = 0x01;
+    const HEADERMODE_URL   = 0x10;
 
     try {
       if (this.identity.getBoolAttribute("enablePgp")) {
