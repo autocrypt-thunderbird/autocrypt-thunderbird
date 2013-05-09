@@ -178,14 +178,11 @@ function writePipe(pipe, data) {
         }
 
         let bytesWritten = libcFunc.write(pipe, pData, numBytes);
-        if (bytesWritten == -1) {
-            postMessage({ msg: "error", data: "error: write failed, errno=" + ctypes.errno });
-        }
 
         if (bytesWritten != numBytes) {
+            postMessage({ msg: "error", data: "error: write failed, errno=" + ctypes.errno });
             closePipe(pipe);
             libc.close();
-            postMessage({ msg: "error", data: "error: wrote "+bytesWritten+" instead of "+numBytes+" bytes"});
             close();
         }
     }
