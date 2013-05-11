@@ -58,6 +58,7 @@ Enigmail.msg = {
   sendPgpMime: false,
   sendMode: null,
   sendModeDirty: 0,
+  sendProcess: false,
   nextCommandId: null,
   docaStateListener: null,
   identity: null,
@@ -418,6 +419,7 @@ Enigmail.msg = {
     this.sendMode = 0;
     this.enableRules = true;
     this.identity = null;
+    this.sendProcess = false;
 
     if (! closing) {
       this.setIdentityDefaults();
@@ -2084,16 +2086,25 @@ Enigmail.msg = {
   sendMessageListener: function (event)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.sendMessageListener\n");
-    try {
-      var msgcomposeWindow = document.getElementById("msgcomposeWindow");
-      this.modifyCompFields(gMsgCompose.compFields);
-      if (! this.encryptMsg(Number(msgcomposeWindow.getAttribute("msgtype")))) {
-        this.removeAttachedKey();
-        event.preventDefault();
-        event.stopPropagation();
+    let msgcomposeWindow = document.getElementById("msgcomposeWindow");
+    let sendMsgType = Number(msgcomposeWindow.getAttribute("msgtype"));
+
+    if (! (this.sendProcess && sendMsgType == Components.interfaces.nsIMsgCompDeliverMode.AutoSaveAsDraft)) {
+      this.sendProcess = true;
+      try {
+        this.modifyCompFields(gMsgCompose.compFields);
+        if (! this.encryptMsg(sendMsgType)) {
+          this.removeAttachedKey();
+          event.preventDefault();
+          event.stopPropagation();
+        }
       }
+      catch (ex) {}
     }
-    catch (ex) {}
+    else
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.sendMessageListener: ignoring autosave\n");
+
+    this.sendProcess = false;
   },
 
   // Replacement for wrong charset conversion detection of Thunderbird
