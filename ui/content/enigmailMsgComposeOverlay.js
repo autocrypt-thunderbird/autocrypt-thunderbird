@@ -2091,6 +2091,7 @@ Enigmail.msg = {
 
     if (! (this.sendProcess && sendMsgType == Components.interfaces.nsIMsgCompDeliverMode.AutoSaveAsDraft)) {
       this.sendProcess = true;
+
       try {
         this.modifyCompFields(gMsgCompose.compFields);
         if (! this.encryptMsg(sendMsgType)) {
@@ -2101,9 +2102,11 @@ Enigmail.msg = {
       }
       catch (ex) {}
     }
-    else
-      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.sendMessageListener: ignoring autosave\n");
-
+    else {
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.sendMessageListener: sending in progress - autosave aborted\n");
+      event.preventDefault();
+      event.stopPropagation();
+    }
     this.sendProcess = false;
   },
 
