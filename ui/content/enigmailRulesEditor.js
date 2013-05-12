@@ -40,9 +40,7 @@ EnigInitCommon("enigmailRulesEditor");
 const INPUT=0;
 const RESULT=1;
 
-var gSearchTimer = null;
 var gSearchInput = null;
-var gClearButton = null;
 var gNumRows = null;
 
 function enigmailDlgOnLoad() {
@@ -87,7 +85,6 @@ function enigmailDlgOnLoad() {
   }
   var rulesTree=document.getElementById("rulesTree");
   gSearchInput = document.getElementById("filterEmail");
-  gClearButton = document.getElementById("clearButton");
 
 }
 
@@ -292,10 +289,9 @@ function enigDoResetFilter() {
     node.hidden=false;
     node = node.nextSibling;
   }
-  gClearButton.setAttribute("disabled", true);
 }
 
-function onEnterInSearchBar()
+function onSearchInput()
 {
    if (gSearchInput.value == "")
    {
@@ -303,44 +299,6 @@ function onEnterInSearchBar()
      return;
    }
 
-   gClearButton.setAttribute("disabled", false);
-
    enigDoSearch();
-}
-
-
-
-function onSearchKeyPress(event)
-{
-  // 13 == return
-  if (event && event.keyCode == 13) {
-    event.stopPropagation(); // make sure the dialog is not closed...
-    onSearchInput(true);
-  }
-}
-
-
-function onSearchInput(returnKeyHit)
-{
-  if (gSearchTimer) {
-    gSearchTimer.cancel();
-    gSearchTimer = null;
-  }
-
-  // only select the text when the return key was hit
-  if (returnKeyHit) {
-    gSearchInput.select();
-    onEnterInSearchBar();
-  }
-  else {
-    gSearchTimer = EnigmailCommon.setTimeout(onEnterInSearchBar, 800);
-  }
-}
-
-
-function disableQuickSearchClearButton()
-{
- if (gClearButton)
-   gClearButton.setAttribute("disabled", true);
 }
 

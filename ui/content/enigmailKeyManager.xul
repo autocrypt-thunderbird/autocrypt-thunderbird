@@ -370,15 +370,10 @@
 
   <hbox flex="0" align="center">
     <label value="&enigmail.keyMan.filter.label;" control="filterKey"/>
-    <textbox id="filterKey" type="text" size="30"
-             onfocus="this.select();"
-             onclick="this.select();"
-             oninput="onSearchInput(false);"
-             onkeypress="onSearchKeyPress(event);"/>
-    <button label="&enigmail.keyMan.clearFilter.label;"
-            id="clearFilter" disabled="true"
-            accesskey="&enigmail.keyMan.clearFilter.accesskey;"
-            oncommand="onResetFilter();"/>
+    <textbox id="filterKey" size="30"
+             type="search"
+             timeout="500"
+             oncommand="onSearchInput();"/>
     <separator orient="vertical"/>
     <checkbox label="&enigmail.keyMan.showAllKeys.label;"
           checked="false"

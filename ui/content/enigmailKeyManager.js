@@ -52,9 +52,6 @@ var gEnigLastSelectedKeys = null;
 var gKeySortList = null;
 var gEnigIpcRequest = null;
 var gEnigCallbackFunc = null;
-var gClearButton = null;
-var gFilterBox = null;
-var gSearchTimer = null;
 var gSearchInput = null;
 var gShowAllKeysElement = null;
 var gTreeChildren = null;
@@ -65,8 +62,6 @@ var gShowOthersKeys = null;
 function enigmailKeyManagerLoad() {
   DEBUG_LOG("enigmailKeyManager.js: enigmailKeyManagerLoad\n");
   gUserList = document.getElementById("pgpKeyList");
-  gFilterBox = document.getElementById("filterKey");
-  gClearButton = document.getElementById("clearFilter");
   gSearchInput = document.getElementById("filterKey");
   gShowAllKeysElement = document.getElementById("showAllKeys");
   gTreeChildren = document.getElementById("pgpKeyListChildren");
@@ -1088,39 +1083,13 @@ function addToPRRule() {
 // ----- key filtering functionality  -----
 //
 
-function onSearchInput(returnKeyHit)
-{
-  if (gSearchTimer) {
-    gSearchTimer.cancel();
-    gSearchTimer = null;
-  }
 
-  // only select the text when the return key was hit
-  if (returnKeyHit) {
-    gSearchInput.select();
-    onEnterInSearchBar();
-  }
-  else {
-    gSearchTimer = EnigmailCommon.setTimeout(onEnterInSearchBar, 600);
-  }
-}
-
-function onSearchKeyPress(event)
-{
-  // 13 == return
-  if (event && event.keyCode == 13) {
-    event.stopPropagation(); // make sure the dialog is not closed...
-    onSearchInput(true);
-  }
-}
-
-function onEnterInSearchBar() {
+function onSearchInput() {
    if (gSearchInput.value == "")
    {
      onResetFilter();
      return;
    }
-   gClearButton.setAttribute("disabled", false);
    enigApplyFilter();
 }
 
@@ -1129,9 +1098,8 @@ function getFirstNode() {
 }
 
 function onResetFilter() {
-  gFilterBox.value="";
+  gSearchInput.value="";
   showOrHideAllKeys();
-  gClearButton.setAttribute("disabled", true);
 }
 
 function enigmailToggleShowAll() {
