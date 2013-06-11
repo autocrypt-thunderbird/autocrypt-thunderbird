@@ -2238,7 +2238,7 @@ var EnigmailCommon = {
           validSigPat =  /VALIDSIG (\w+) (.*) (\d+) (.*)/i;
 
       } else {
-          errLines = stderrStr.value.split(/\r?\n/);
+          errLines = stderrStr.split(/\r?\n/);
 
           goodSignPat = /Good signature from (user )?"(.*)"\.?/i;
           badSignPat  =  /BAD signature from (user )?"(.*)"\.?/i;
