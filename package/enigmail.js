@@ -2298,25 +2298,25 @@ Enigmail.prototype = {
                               listener, statusFlagsObj);
 
     if (!proc) {
-      return false;
+      return -1;
     }
     proc.wait();
-
-    var statusMsgObj = {};
-    var cmdLineObj   = {};
-
-//    exitCode = Ec.execEnd(listener, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
 
     var retObj = {};
 
     Ec.decryptMessageEnd (listener.stderrData, listener.exitCode, 1, true, true, nsIEnigmail.UI_INTERACTIVE, retObj);
 
-    var detailArr = retObj.sigDetails.split(/ /);
-    var dateTime = Ec.getDateTime(detailArr[2], true, true);
-    var msg1 = retObj.errorMsg.split(/\n/)[0];
+    if (listener.exitCode == 0) {
+      var detailArr = retObj.sigDetails.split(/ /);
+      var dateTime = Ec.getDateTime(detailArr[2], true, true);
+      var msg1 = retObj.errorMsg.split(/\n/)[0];
 
-    var msg2 = Ec.getString("keyAndSigDate", ["0x"+retObj.keyId.substr(-8, 8), dateTime ]);
-    errorMsgObj.value = msg1 + "\n" + msg2;
+      var msg2 = Ec.getString("keyAndSigDate", ["0x"+retObj.keyId.substr(-8, 8), dateTime ]);
+      errorMsgObj.value = msg1 + "\n" + msg2;
+    }
+    else {
+      errorMsgObj.value = retObj.errorMsg;
+    }
 
     return listener.exitCode;
   },
