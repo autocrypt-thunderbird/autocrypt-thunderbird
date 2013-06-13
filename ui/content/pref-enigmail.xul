@@ -254,8 +254,7 @@
                     tooltip="alwaysTrustSend.tooltip"/>
 
 				  <checkbox id="enigmail_allowEmptySubject"
-                    label="&enigmail.allowEmptySubject.label;"
-                    tooltip="allowEmptySubject.tooltip"/>
+                    hidden="true"/>
 
           <checkbox id="enigmail_confirmBeforeSend"
                     label="&enigmail.confirmBeforeSend.label;"
