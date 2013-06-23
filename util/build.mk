@@ -6,7 +6,7 @@ MDDEPDIR = .deps
 
 REPORT_BUILD = $(info $(notdir $<))
 
-PYTHON_PATH = python $(topsrcdir)/mozilla/config/pythonpath.py
+PYTHON_PATH = $(PYTHON) $(topsrcdir)/mozilla/config/pythonpath.py
 
 MAKEJAR = $(PYTHON) $(topsrcdir)/mozilla/config/JarMaker.py \
 	$(QUIET) -j $(FINAL_TARGET)/chrome \
@@ -33,7 +33,7 @@ XPT_MODULE_DEST := $(DIST)/bin/components
 # generate intermediate .xpt files into $(XPIDL_GEN_DIR), then link
 # into $(XPIDL_MODULE).xpt and export it to $(FINAL_TARGET)/components.
 $(XPIDL_GEN_DIR)/%.xpt: %.idl $(XPIDL_DEPS) $(xpidl-preqs)
-	 $(srcdir)/../util/xptgen $(topsrcdir) $(srcdir) $(DEPTH) $@ ; \
+	 $(srcdir)/../util/xptgen $(PYTHON) $(topsrcdir) $(srcdir) $(DEPTH) $@ ; \
 	 $(INSTALL) $(patsubst %.xpt,%.h, $@) $(XPIDL_HEADERS_DEST)
 
 XPT_PY = $(filter %/xpt.py,$(XPIDL_LINK))
