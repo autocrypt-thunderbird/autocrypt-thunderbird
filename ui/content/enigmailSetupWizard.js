@@ -231,7 +231,7 @@ function displayKeyCreate() {
         var identity = gEnigAccountMgr.getIdentity(node.getAttribute("account-id"));
         var idName = identity.identityName;
 
-        var serverList = queryISupportsArray(
+        var serverList = queryISupArray(
                 getServersForIdentity(gEnigAccountMgr, identity),
                 Components.interfaces.nsIMsgIncomingServer);
 
@@ -494,7 +494,7 @@ function wizardSelKey() {
 }
 
 
-function queryISupportsArray(supportsArray, iid) {
+function queryISupArray(supportsArray, iid) {
   var result = [];
   var i;
   try {
@@ -516,7 +516,7 @@ function queryISupportsArray(supportsArray, iid) {
 function countIdentities() {
   var accountManager = Components.classes[ENIG_ACCOUNT_MANAGER_CONTRACTID].getService(Components.interfaces.nsIMsgAccountManager);
   var idSupports = accountManager.allIdentities;
-  var identities = queryISupportsArray(idSupports,
+  var identities = queryISupArray(idSupports,
                                        Components.interfaces.nsIMsgIdentity);
   return identities.length;
 }
@@ -538,7 +538,7 @@ function fillIdentities(fillType)
 
   var defIdentity;
   var parentElement;
-  var identities = queryISupportsArray(gEnigAccountMgr.allIdentities,
+  var identities = queryISupArray(gEnigAccountMgr.allIdentities,
                                        Components.interfaces.nsIMsgIdentity);
 
   if (fillType == "checkbox") {
@@ -610,7 +610,7 @@ function fillIdentities(fillType)
     if (!identity.valid || !identity.email)
       continue;
 
-    var serverList = queryISupportsArray(
+    var serverList = queryISupArray(
             getServersForIdentity(gEnigAccountMgr, identity),
             Components.interfaces.nsIMsgIncomingServer);
 
@@ -670,7 +670,7 @@ function applyWizardSettings() {
 
   if (document.getElementById("activateId").value == "1") {
     var idSupports = gEnigAccountMgr.allIdentities;
-    var identities = queryISupportsArray(idSupports,
+    var identities = queryISupArray(idSupports,
                                        Components.interfaces.nsIMsgIdentity);
     for (var i=0; i<identities.length; i++) {
       wizardApplyId(identities[i], gGeneratedKey);
@@ -715,7 +715,7 @@ function wizardApplyId(identity, keyId) {
   DEBUG_LOG("enigmailSetupWizard.js: wizardApplyId: identity.Key="+identity.key+"\n");
   var accountManager = Components.classes[ENIG_ACCOUNT_MANAGER_CONTRACTID].getService(Components.interfaces.nsIMsgAccountManager);
   var idServers = getServersForIdentity(accountManager, identity);
-  var servers = queryISupportsArray(idServers ,Components.interfaces.nsIMsgIncomingServer);
+  var servers = queryISupArray(idServers ,Components.interfaces.nsIMsgIncomingServer);
 
   var newsServer = false;
   for (var i=0; i<servers.length; i++) {

@@ -43,8 +43,8 @@ EnigInitCommon("enigmailKeygen");
 
 var gAccountManager = Components.classes[ENIG_ACCOUNT_MANAGER_CONTRACTID].getService(Components.interfaces.nsIMsgAccountManager);
 
-var gIdentityList;
-var gIdentityListPopup;
+var gUserIdentityList;
+var gUserIdentityListPopup;
 var gUseForSigning;
 
 var gKeygenRequest;
@@ -59,14 +59,14 @@ const KEYTYPE_RSA = 2;
 function enigmailKeygenLoad() {
   DEBUG_LOG("enigmailKeygen.js: Load\n");
 
-  gIdentityList      = document.getElementById("userIdentity");
-  gIdentityListPopup = document.getElementById("userIdentityPopup");
+  gUserIdentityList      = document.getElementById("userIdentity");
+  gUserIdentityListPopup = document.getElementById("userIdentityPopup");
   gUseForSigning     = document.getElementById("useForSigning");
 
-  if (gIdentityListPopup) {
+  if (gUserIdentityListPopup) {
     fillIdentityListPopup();
   }
-  gIdentityList.focus();
+  gUserIdentityList.focus();
 
   enigmailKeygenUpdate(true, false);
 
@@ -366,7 +366,7 @@ function onNoExpiry() {
 }
 
 
-function queryISupportsArray(supportsArray, iid) {
+function queryISupArray(supportsArray, iid) {
   var result = [];
   var i;
   try {
@@ -387,7 +387,7 @@ function queryISupportsArray(supportsArray, iid) {
 
 function getCurrentIdentity()
 {
-  var item = gIdentityList.selectedItem;
+  var item = gUserIdentityList.selectedItem;
   var identityKey = item.getAttribute('id');
 
   var identity = gAccountManager.getIdentity(identityKey);
@@ -400,7 +400,7 @@ function fillIdentityListPopup()
   DEBUG_LOG("enigmailKeygen.js: fillIdentityListPopup\n");
 
   var idSupports = gAccountManager.allIdentities;
-  var identities = queryISupportsArray(idSupports,
+  var identities = queryISupArray(idSupports,
                                        Components.interfaces.nsIMsgIdentity);
 
   DEBUG_LOG("enigmailKeygen.js: fillIdentityListPopup: "+identities + "\n");
@@ -465,13 +465,13 @@ function fillIdentityListPopup()
       item.setAttribute('id', identity.key);
       item.setAttribute('email', identity.email);
 
-      gIdentityListPopup.appendChild(item);
+      gUserIdentityListPopup.appendChild(item);
 
       if (!selected)
-        gIdentityList.selectedItem = item;
+        gUserIdentityList.selectedItem = item;
 
       if (identity.key == defIdentity.key) {
-        gIdentityList.selectedItem = item;
+        gUserIdentityList.selectedItem = item;
         selected = true;
       }
     }
