@@ -25,12 +25,14 @@ Activar esta funci&oacute;n permitir&aacute; definir una regla pero no tener que
 Activar esta funci&oacute;n detiene el procesamiento de cualquier otra regla para las direcciones que cumplan la regla. Es decir, las reglas se reanudan procesando el pr&oacute;ximo destinatario.</li>
 <li><strong>Usar las siguientes claves OpenPGP:</strong><br />
 Use el bot&oacute;n <em>Seleccionar clave(s)...</em> para seleccionar las claves del destinatario que se usen para el cifrado. Al igual que la acci&oacute;n anterior, no se contin&uacute;an procesando las reglas para las direcciones que cumplan la regla.</li>
-<li><strong>Predeterminada para firmar</strong>: Activa o desactiva la firma del mensaje. Esta opci&oacute;n usa o ignora lo especificado en la ventana de redacci&oacute;n de mensajes. Los valores son:</li>
+<li><strong>Predeterminada para firmar</strong>: Activa o desactiva la firma del mensaje. Esta opci&oacute;n usa o ignora lo especificado en la ventana de redacci&oacute;n de mensajes. Los valores son:
 <br /><ul>
 <li><em>Nunca</em>: Desactiva la firma, incluso si se activ&oacute; en la ventana de redacci&oacute;n de mensajes (tiene preferencia sobre los otros valores).</li>
 <li><em>S&iacute;, si est&aacute; seleccionada en la redacci&oacute;n del mensaje</em>: Deja la firma como se haya especificado en la ventana de redacci&oacute;n de mensajes.</li>
 <li><em>Siempre</em>: Activa la firma, incluso si <strong>no</strong> estaba activada en la ventana de redacci&oacute;n de mensajes.</li>
-</ul></ul>
+</ul>
+</li>
+</ul>
 <div style="margin-left: 40px;">Estas opciones de firma se aplican a todas las reglas que coincidan con el criterio. Si una de las reglas desactiva la firma, el mensaje no se firmar&aacute;, independientemente de que otras especifiquen <em>Siempre</em>.<br /></div>
 <ul><li><strong>Cifrar</strong>: Activa o desactiva el cifrado del mensaje. Las opciones permitidas y su significado son las mismas que para la firma de mensajes.</li>
 <li><strong>PGP/MIME</strong>: Activa o desactiva el uso de la codificaci&oacute;n PGP/MIME (RFC 3156) en el mensaje. Si PGP/MIME est&aacute; desactivado, los mensajes se codifican usando "PGP integrado". Los valores permitidos y su significado son los mismos que para la firma de mensajes.</li>
