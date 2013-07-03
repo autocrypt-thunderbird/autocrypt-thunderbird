@@ -6,8 +6,8 @@
 
 <h3>Utiliser l'éditeur de règles d'Enigmail&nbsp;: modifier les règles OpenPGP</h3>
 <p>Avec l'éditeur de règles, il est possible de définir les paramètres par défaut
-par destinataire concernant l'activation du chiffrement, de la signature, de PGP/MIME 
-et de choisir quelle(s) clef(s) utiliser. Dans cette boite de dialogue, vous pouvez 
+par destinataire concernant l'activation du chiffrement, de la signature, de PGP/MIME
+et de choisir quelle(s) clef(s) utiliser. Dans cette boite de dialogue, vous pouvez
 spécifier les règles pour un destinataire unique ou pour un groupe de destinataires
 ayant des attributs très proches.
 </p>
@@ -20,7 +20,7 @@ ayant des attributs très proches.
     <tt>@adresse.domaine</tt> correspondra à <tt>nafnaf@adresse.domaine</tt>,
     <tt>nifnif@adresse.domaine</tt>, <tt>noufnouf@adresse.domaine</tt>, etc&nbsp;;
   </li>
-  <li><span style="font-weight: bold;">Appliquer la règle si le destinataire...</span>&nbsp;: 
+  <li><span style="font-weight: bold;">Appliquer la règle si le destinataire...</span>&nbsp;:
     Ceci modifie la correspondance des adresses.
     Si plusieurs adresses sont saisies, le réglages s'applique à toutes.
     Les exemples ci-dessous sont basés sur le fait que <tt>naf@adresse.domaine</tt>
@@ -45,12 +45,12 @@ ayant des attributs très proches.
   </li>
   <li><span style="font-weight: bold;">Continuer avec la prochaine règle pour l'adresse correspondante</span><br>
       Activer cette fonctionnalité vous permettra de définir une règle sans avoir à spécifier
-	  un ID de clef dans le champ <em>Utiliser les clefs OpenPGP suivantes :</em> 
+	  un ID de clef dans le champ <em>Utiliser les clefs OpenPGP suivantes :</em>
 	  , de ce fait l'adresse électronique est utilisée pour trouver une clef au moment de
 	  l'envoi. De plus, les règles suivantes pour la (les) même(s) adresse(s) seront traitées également.
   </li>
   <li><span style="font-weight: bold;">Ne pas vérifier les prochaines règles pour l'adresse correspondante</span><br>
-	  Activer cette fonctionnalité interrompra le traitement des autres règles pour l'adresse correspondante 
+	  Activer cette fonctionnalité interrompra le traitement des autres règles pour l'adresse correspondante
           si la règle en cours correspond&nbsp;; c.à.d. que le traitement des règles continu avec le destinataire
           suivant.
   </li>
@@ -62,19 +62,19 @@ ayant des attributs très proches.
   <li><span style="font-weight: bold;">Par défaut pour signature</span>&nbsp;: activer ou désactiver
     la signature des messages. Ceci utilise ou outrepasse les réglages effectués
     dans la fenêtre de rédaction. Les valeurs possibles sont&nbsp;:
+    <ul>
+      <li><i>Jamais</i>: désactiver la signature, même si elle est activée dans la fenêtre de
+         rédaction du messages (prévaut sur les autres valeurs),<br>
+      </li>
+      <li><i>Oui, si sélectionné lors de la composition du message</i>: laisser le réglage
+        de signature tel qu'il est spécifié dans la fenêtre de rédaction,
+      </li>
+      <li><i>Toujours</i>: activer la signature, même si elle n'est <span
+        style="font-style: italic;">pas</span> activée dans la fenêtre de
+        rédaction,
+      </li>
+    </ul>
   </li>
-  <ul>
-    <li><i>Jamais</i>: désactiver la signature, même si elle est activée dans la fenêtre de
-       rédaction du messages (prévaut sur les autres valeurs),<br>
-    </li>
-    <li><i>Oui, si sélectionné lors de la composition du message</i>: laisser le réglage
-      de signature tel qu'il est spécifié dans la fenêtre de rédaction,
-    </li>
-    <li><i>Toujours</i>: activer la signature, même si elle n'est <span
-      style="font-style: italic;">pas</span> activée dans la fenêtre de
-      rédaction,
-    </li>
-  </ul>
 </ul>
 <div style="margin-left: 40px;">Ces paramètres de signature sont appliqués pour
 toutes les règles qui correspondent. Si l'une des règles désactive la signature, le message
@@ -85,7 +85,7 @@ ne sera pas signé, même si d'autres règles spécifiaient <i>Toujours</i>&nbsp;;<b
     désactiver le chiffrement des messages. Les valeurs autorisées ainsi que leur signification
     sont les mêmes que pour la signature des messages&nbsp;;</li>
   <li><span style="font-weight: bold;">PGP/MIME</span>&nbsp;: activer ou
-    désactiver l'utilisation du codage de message PGP/MIME (RFC 3156). 
+    désactiver l'utilisation du codage de message PGP/MIME (RFC 3156).
     Si PGP/MIME est désactivé, les
     messages sont codés en utilisant le format «&nbsp;PGP en ligne&nbsp;». Les valeurs autorisées
     ainsi que leur signification sont les mêmes que pour la signature des messages.
@@ -93,7 +93,7 @@ ne sera pas signé, même si d'autres règles spécifiaient <i>Toujours</i>&nbsp;;<b
 </ul>
 <p>Les règles sont appliquées dans l'ordre d'affichage de la liste de
 <em>l'éditeur de règles OpenPGP</em>. Dès lors qu'une règle
-correspond à un destinataire et contient un identifiant de clef OpenPGP, non seulement l'identifiant 
+correspond à un destinataire et contient un identifiant de clef OpenPGP, non seulement l'identifiant
 de clef spécifié est utilisé, mais le destinataire n'est plus pris en compte dans le traitement
 des règles suivantes.</p>
 <hr/>

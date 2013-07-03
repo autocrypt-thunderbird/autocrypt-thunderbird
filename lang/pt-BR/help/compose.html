@@ -12,23 +12,19 @@
     <li><b>Assinar mensagem</b>: Habilitar/Desabilitar o envio de mensagens assinadas. O usu&aacute;rio ser&aacute; notificado se a assinatura falhar.
     </li>
     <li><b>Criptografar mensagem</b>: Habilitar/Desabilitar criptografia para todos os destinat&aacute;rio(s) antes de enviar a mensagem. O usu&aacute;rio ser&aacute; notificado caso a criptografia falhe.
-	<ul>
 	<p>Caso a op&ccedil;&atilde;o <em>Mostrar sele&ccedil;&atilde;o quanto necess&aacute;rio</em> estiver habilitada na aba <b>Prefer&ecirc;ncias -&gt; Sele&ccedil;&atilde;o de Chaves
 	 </b>, uma lista de chaves ser&aacute; mostrada caso existam endere&ccedil;os na lista de destinat&aacute;rios da mensagem para os quais voc&ecirc; n&atilde;o possua uma chave p&uacute;blica correspondente.</p>
-	<p>Caso a op&ccedil;&atilde;o <em>Nunca mostrar di&aacute;logo de sele&ccedil;&atilde;o de chaves OpenPGP</em> estiver habilitada na aba <b>Prefer&ecirc;encias -&gt; Sele&ccedil;&atilde;o de Chaves</b>, e existam 
+	<p>Caso a op&ccedil;&atilde;o <em>Nunca mostrar di&aacute;logo de sele&ccedil;&atilde;o de chaves OpenPGP</em> estiver habilitada na aba <b>Prefer&ecirc;encias -&gt; Sele&ccedil;&atilde;o de Chaves</b>, e existam
 	endere&ccedil;os na lista de destinat&aacute;rios para os quais voc&ecirc; n&atilde;o possua a chave p&uacute;blica correspondente, a mensagem ser&aacute; enviada sem criptografia.</p>
-	</ul>
     </li>
-    <li><b>Utilizar PGP/MIME para esta mensagem</b>: Habilitar/Desabilitar o uso de  
-	<a href="http://community.roxen.com/developers/idocs/rfc/rfc3156.html" target="_blank">PGP/MIME</a> 
+    <li><b>Utilizar PGP/MIME para esta mensagem</b>: Habilitar/Desabilitar o uso de
+	<a href="http://community.roxen.com/developers/idocs/rfc/rfc3156.html" target="_blank">PGP/MIME</a>
 	para esta mensagem.
-	<ul>
 	<p>Se voc&ecirc; sabe que o(s) destinat&aacute;rio(s) consegue(m) ler mensagens utilizando o formato PGP/MIME format,
 	voc&ecirc; deve utilizar esta op&ccedil;&atilde;o.</p>
 	<p>Esta facilidade depende de ter a op&ccedil;&atilde;o da aba <b>Prefer&ecirc;ncias -&gt; PGP/MIME </b> configurada para <em>Permitir o uso de PGP/MIME</em> ou <em>Sempre usar PGP/MIME</em>.</p>
-	</ul></li>
+	</li>
     <li><b>Op&ccedil;&otilde;es padr&atilde;o para composi&ccedil;&atilde;o</b>: Submenu.
-    </p>
     <ul>
       <li><b>Op&ccedil;&otilde;es de Assinatura/Criptografia...</b>: atalho para <b>Configura&ccedil;&otilde;es de Conta -&gt; Op&ccedil;&otilde;es do OpenPGP.</b>
       </li>
@@ -38,21 +34,20 @@
       </li>
       <li><b>Op&ccedil;&otilde;es de PGP/MIME...</b>: atalho para a aba <b>Prefer&ecirc;ncias -&gt;  PGP/MIME</b>.
       </li>
-	  </li>
     </ul>
     <li><b>Desfazer criptografia</b>: Casa haja uma falha ao enviar a mensagem,
     tal como um servidor POP n&atilde;o aceitar o pedido, o Enigmail n&atilde;o saber&aacute; sobre o ocorrido,
-    e a mensagem criptografada continuar&aacute; a ser mostrada na janela de Composi&ccedil;&atilde;o de Mensagem. 
+    e a mensagem criptografada continuar&aacute; a ser mostrada na janela de Composi&ccedil;&atilde;o de Mensagem.
 	Escolhendo este item de menu far&aacute; com que a criptografia/assinatura seja desfeita,
     revertendo a janela de Composi&ccedil;&atilde;o de Mensagem de volta ao seu texto original.<br>
-    <em>Como uma solu&ccedil;&atilde;o tempor&aacute;ria, esta op&ccedil;&atilde;o  tamb&eacute;m pode ser utilizada para descriptografar a 
-	o texto de cita&ccedil;&atilde;o da mensagem anterior (quote) quando estiver respondendo mensagens criptografadas. 
+    <em>Como uma solu&ccedil;&atilde;o tempor&aacute;ria, esta op&ccedil;&atilde;o  tamb&eacute;m pode ser utilizada para descriptografar a
+	o texto de cita&ccedil;&atilde;o da mensagem anterior (quote) quando estiver respondendo mensagens criptografadas.
 	O Enigmail deve automaticamente descriptografar a cita&ccedil;&atilde;o, mas caso isto falhe por alguma raz&atilde;o, voc&ecirc; pode
 	utilizar este item do menu para for&ccedil;&aacute;-lo.</em>
     </li>
     <li><b>Inserir chave p&uacute;blica</b>: inserir o bloco ASCII com a chave p&uacute;blica na posi&ccedil;&atilde;o
      atual do cursor na janela de Composi&ccedil;&atilde;o. Voc&ecirc; ser&aacute; perguntado sobre os endere&ccedil;os das chaves a serem inseridas.
-     Chaves inseridas desta maneira ser&atilde;o reconhecidas pelo Enigmail do destinat&aacute;rio. Ap&oacute;s a inser&ccedil;&atilde;o da chave, voc&ecirc; 
+     Chaves inseridas desta maneira ser&atilde;o reconhecidas pelo Enigmail do destinat&aacute;rio. Ap&oacute;s a inser&ccedil;&atilde;o da chave, voc&ecirc;
 	 ainda pode escolher assinar/criptografar a mensagem como for necess&aacute;rio. N&atilde;o insira mais de um bloco de chave por mensagem; apenas especifique
 	 m&uacute;ltiplos endere&ccedil;os de email, separados por v&iacute;rgulas ou espa&ccedil;os, quando for solicitado.
     </li>
@@ -60,12 +55,12 @@
     </li>
     <li><b>Ajuda</b>: Mostra informa&ccedil;&oacute;es de Ajuda (esta p&aacute;gina).
     </li>
-	</li>
   </ul>
+	</li>
 </ul>
 <hr/>
 <p>
-Mais ajuda pode ser encontrada na 
+Mais ajuda pode ser encontrada na
 <a href="http://www.enigmail.net/support/" target="_blank">p&aacute;gina web de Ajuda do Enigmail</a>
 </p>
 </body>

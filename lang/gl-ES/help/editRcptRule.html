@@ -5,25 +5,25 @@
 <h1>Axuda de Enigmail</h1>
 
 <h3>Usando o Editor de regras de Enigmail Rules Editor: Editar regra OpenPGP</h3>
-<p>No Editor de regras, pode especificar configuraci&oacute;ns predeterminadas por 
-destinatario/a para a activaci&oacute;n de cifrado, sinatura e PGP/MIME, e definir que 
+<p>No Editor de regras, pode especificar configuraci&oacute;ns predeterminadas por
+destinatario/a para a activaci&oacute;n de cifrado, sinatura e PGP/MIME, e definir que
 chave(s) OpenPGP utilizar. Neste di&aacute;logo, pode especificar as regras para un &uacute;nico
-ou unha &uacute;nica destinataria, e para un grupo de destinatarios/as con atributos 
+ou unha &uacute;nica destinataria, e para un grupo de destinatarios/as con atributos
 mois similares.
 </p>
 <ul>
   <li><span style="font-weight: bold;">Definiar regras OpenPGP para</span>: Cont&eacute;n os
   enderezos de correo dos destinos (sen nomes, p.e. so un enderezo como
     <tt>alguen@correo.dominio</tt>). Pode especificar varios enderezos de correo,
-    separados por espazos. O enderezo especificado aqu&iacute; pode consistir s&oacute; na parte do 
-    dominio de xeito que calquera enderezo deste dominio coincidir&aacute;, 
+    separados por espazos. O enderezo especificado aqu&iacute; pode consistir s&oacute; na parte do
+    dominio de xeito que calquera enderezo deste dominio coincidir&aacute;,
     p.e. <tt>@correo.dominio</tt> funcionar&aacute; con <tt>calquera@correo.dominio</tt>,
     <tt>algun@correo.dominio</tt>, <tt>algunha@correo.dominio</tt>, etc.
   </li>
-  <li><span style="font-weight: bold;">Aplicar regra se o/a destinatario/a ...</span>: 
+  <li><span style="font-weight: bold;">Aplicar regra se o/a destinatario/a ...</span>:
 	Isto modifica a coincidencia dos enderezos de correo. Se se introducen m&uacute;ltiples
-	enderezos, a configuraci&oacute;n aplicar&aacute;selles a todos eles. Os seguintes exemplos est&aacute;n 
-	baseados en <tt>calquera@correo.dominio</tt> introducidos no seguinte campo de 
+	enderezos, a configuraci&oacute;n aplicar&aacute;selles a todos eles. Os seguintes exemplos est&aacute;n
+	baseados en <tt>calquera@correo.dominio</tt> introducidos no seguinte campo de
 	<i>Regras OpenPGP</i>.
     <ul>
       <li><i>&Eacute; exactamente</i>: con esta configuraci&oacute;n, a regra s&oacute; se dispara con
@@ -32,7 +32,7 @@ mois similares.
       <li><i>Cont&eacute;n</i>: con esta configuraci&oacute;n, calquera correo que conte&ntilde;a a cadea coincide
       p.e  <tt>son.calquera@correo.dominio</tt> ou <tt>calquera@correo.dominio.net</tt>
       </li>
-      <li><i>Comeza por</i>: con esta configuraci&oacute;n, calquera correo que comece coa cadea 
+      <li><i>Comeza por</i>: con esta configuraci&oacute;n, calquera correo que comece coa cadea
       coincidir&aacute;, p.e. <tt>calquera@correo.dominio.net</tt>,
         <tt>calquera@correo.dominio-nome.com</tt>.
       </li>
@@ -49,7 +49,7 @@ mois similares.
   procesar&aacute;n outras regras para o(s) mesmo(s) enderezos igualmente.
   </li>
   <li><span style="font-weight: bold;">Non comprobar outras regras para os enderezos que coinciden</span><br>
-	Activando esta funci&oacute;n p&aacute;rase o procesamento de outras regras para un enderezo que xa 
+	Activando esta funci&oacute;n p&aacute;rase o procesamento de outras regras para un enderezo que xa
 	coincidiu; p.e. o procesado de regras contin&uacute;a co seguinte destinatario
   </li>
   <li><span style="font-weight: bold;">Usar as seguintes chaves OpenPGP:</span><br>
@@ -57,21 +57,21 @@ mois similares.
 	  destinatarios/as que utilizar para o cifrado. Como na anterior acci&oacute;n, non se
 	  procesan m&aacute;is regras para enderezos que xa coincidiron.
   </li>
-  <li><span style="font-weight: bold;">Predeterminado para sinatura</span>: 
+  <li><span style="font-weight: bold;">Predeterminado para sinatura</span>:
   activa ou desactiva a sinatura de mensaxes. Isto afirmar ou anula o que especificou na vent&aacute;
   de composici&oacute;n de mensaxe. Os valores son:
+    <ul>
+      <li><i>Nunca</i>: desactiva a sintaura, a&iacute;nda que estea activada na vent&aacute; de composici&oacute;n
+      da mensaxe (anula outros valores)<br>
+      </li>
+      <li><i>Si, se est&aacute; seleccionado na Composici&oacute;n da mensaxe</i>: deixa a sinatura
+      tal e como se especificou na vent&aacute; de composici&oacute;n da mensaxe
+      </li>
+      <li><i>Sempre</i>: activa a sinatura, a&iacute;nda que <span
+        style="font-style: italic;">non</span> estea activada na vent&aacute; de composici&oacute;n da mensaxe
+      </li>
+    </ul>
   </li>
-  <ul>
-    <li><i>Nunca</i>: desactiva a sintaura, a&iacute;nda que estea activada na vent&aacute; de composici&oacute;n
-    da mensaxe (anula outros valores)<br>
-    </li>
-    <li><i>Si, se est&aacute; seleccionado na Composici&oacute;n da mensaxe</i>: deixa a sinatura
-    tal e como se especificou na vent&aacute; de composici&oacute;n da mensaxe
-    </li>
-    <li><i>Sempre</i>: activa a sinatura, a&iacute;nda que <span
-      style="font-style: italic;">non</span> estea activada na vent&aacute; de composici&oacute;n da mensaxe
-    </li>
-  </ul>
 </ul>
 <div style="margin-left: 40px;">Esta configuraci&oacute; de sinatura apl&iacute;case para todas
 as regras que coincidan. Se unha das regras desactiva a sinatura, a mensaxe non se
@@ -79,11 +79,11 @@ asina, a pesar do que especifiquen outras regras <i>Sempre</i>.<br>
 </div>
 <ul>
   <li><span style="font-weight: bold;">Cifrado</span>: activa ou desactiva o cifrado
-  de mensaxes. As configuraci&oacute;ns permitidas e o seu significado &eacute; o mesmo que para 
+  de mensaxes. As configuraci&oacute;ns permitidas e o seu significado &eacute; o mesmo que para
   a sinatura.</li>
   <li><span style="font-weight: bold;">PGP/MIME</span>: activar ou desactivar o uso
-  da codificaci&oacute;n de mensaxes PGP/MIME (RFC 3156). 
-    Se PGP/MIME est&aacute; desactivado, as mensaxes codif&iacute;canse usando "PGP en li&ntilde;a". Os valores 
+  da codificaci&oacute;n de mensaxes PGP/MIME (RFC 3156).
+    Se PGP/MIME est&aacute; desactivado, as mensaxes codif&iacute;canse usando "PGP en li&ntilde;a". Os valores
     permitidos e os seus significados son os mesmos que para a sinatura.
   </li>
 </ul>
@@ -93,7 +93,7 @@ de utilizar o ID de chave especificado, o destinatario non se utiliza para proce
 </p>
 <hr/>
 <p>
-Pode atopar m&aacute;is informaci&oacute;n de axuda dispo&ntilde;&iacute;bel na 
+Pode atopar m&aacute;is informaci&oacute;n de axuda dispo&ntilde;&iacute;bel na
 <a href="http://www.enigmail.net/documentation/pgprules_file.php" target="_blank">p&aacute;xina de configuraci&oacute;ns por-destinatario/a de Enigmail</a>
 </p>
 </body>

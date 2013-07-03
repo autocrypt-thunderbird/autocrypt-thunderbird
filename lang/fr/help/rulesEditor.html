@@ -20,18 +20,18 @@ de clefs OpenPGP à utiliser pour le destinataire&nbsp;;</li>
   <li><span style="font-weight: bold;">Signature</span>&nbsp;: activer ou désactiver
     la signature des messages. Ceci utilise ou outrepasse les réglages effectués
     dans la fenêtre de rédaction. Les valeurs possibles sont&nbsp;:
+    <ul>
+      <li><i>Jamais</i>&nbsp;: désactiver la signature, même si elle est activée dans la fenêtre de
+         rédaction du messages (prévaut sur les autres valeurs),<br>
+      </li>
+      <li><i>Oui, si sélectionné lors de la composition du message</i>&nbsp;: laisser le réglage
+        de signature tel qu'il est spécifié dans la fenêtre de rédaction,</li>
+      <li><i>Toujours</i>&nbsp;: activer la signature, même si elle n'est <span
+        style="font-style: italic;">pas</span> activée dans la fenêtre de
+        rédaction,
+      </li>
+    </ul>
   </li>
-  <ul>
-    <li><i>Jamais</i>&nbsp;: désactiver la signature, même si elle est activée dans la fenêtre de
-       rédaction du messages (prévaut sur les autres valeurs),<br>
-    </li>
-    <li><i>Oui, si sélectionné lors de la composition du message</i>&nbsp;: laisser le réglage
-      de signature tel qu'il est spécifié dans la fenêtre de rédaction,</li>
-    <li><i>Toujours</i>&nbsp;: activer la signature, même si elle n'est <span
-      style="font-style: italic;">pas</span> activée dans la fenêtre de
-      rédaction,
-    </li>
-  </ul>
 </ul>
 <div style="margin-left: 40px;">Ces paramètres de signature sont appliqués pour
 toutes les règles qui correspondent. Si l'une des règles désactive la signature, le message
@@ -49,12 +49,12 @@ ne sera pas signé, même si d'autres règles spécifiaient <i>Toujours</i>&nbsp;;<b
   </li>
 </ul>
 <p>Les règles sont appliquées dans l'ordre d'affichage de la liste. Dès lors qu'une règle
-correspond à un destinataire et contient un identifiant de clef OpenPGP, non seulement l'identifiant 
+correspond à un destinataire et contient un identifiant de clef OpenPGP, non seulement l'identifiant
 de clef spécifié est utilisé, mais le destinataire n'est plus pris en compte dans le traitement
 des règles suivantes.</p>
 <p><i>Note&nbsp;:</i> l'éditeur de règles n'est pas encore terminé. Il est possible d'écrire des
 règles plus avancées en modifiant directement le fichier de règles
-(ces règles ne devront alors plus être modifiées dans l'éditeur de règles). <a 
+(ces règles ne devront alors plus être modifiées dans l'éditeur de règles). <a
 href="http://www.enigmail.net/documentation/pgprules_file.php" target="_blank">Des informations
 complémentaires</a> pour modifier directement le fichier sont disponibles
 sur le site Web d'Enigmail</p>
