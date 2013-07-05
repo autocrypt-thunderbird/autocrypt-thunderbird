@@ -537,6 +537,7 @@ Enigmail.msg = {
 
       var ct = mimePart.headers["content-type"][0];
       if (typeof(ct) == "string") {
+        ct = ct.replace(/[\r\n]/g, " ");
         if (ct.search(/multipart\/signed.*application\/pgp-signature/i) >= 0) {
           resultObj.signed=mimePart.partName;
         }
