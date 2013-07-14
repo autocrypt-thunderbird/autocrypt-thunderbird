@@ -355,7 +355,7 @@
           <textbox flex="1" readonly="true" align="center" class="enigmailHeaderValue" chromedir="ltr"
             value="&enigmail.revealAttachmentsButton.label;"/>
         </vbox>
-        <button class="enigMsgHdrView-flat-button" label="Reveal" oncommand="Enigmail.msg.revealAttachments();"/>
+        <button class="enigMsgHdrView-flat-button" label="&enigmail.revealAttachments.button;" oncommand="Enigmail.msg.revealAttachments();"/>
       </hbox>
     </vbox>
   </vbox>
