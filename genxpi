@@ -79,6 +79,7 @@ subprocessDll=${libPrefix}subprocess${dllSuffix}
 spDllFile=platform/${platform}/lib/${libPrefix}subprocess-${xpcomAbi}${dllSuffix}
 
 # Prepare chrome.manifest
+cp  ${targetDir}/chrome.manifest{,.save}
 cat  ${srcDir}/package/chrome.manifest | \
 sed  's/##ENIGMIMEDLL-PLACEHOLDER##/binary-component platform\/'${platform}'\/components\/'`basename ${enigDllFile}`' ABI='${platform}'/' \
 > ${targetDir}/chrome.manifest
@@ -152,3 +153,4 @@ zip ${xpiFile} \
     install.rdf
 
 rm install.rdf chrome.manifest
+mv chrome.manifest{.save,}
