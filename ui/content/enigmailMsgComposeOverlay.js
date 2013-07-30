@@ -159,7 +159,7 @@ Enigmail.msg = {
         r=this.identity.getBoolAttribute(value);
         break;
       }
-      EnigmailCommon.DEBUG_LOG("  "+value+"="+r+"\n");
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getAccDefault: "+value+"="+r+"\n");
       return r;
     }
     else {
@@ -899,6 +899,8 @@ Enigmail.msg = {
     if (this.getAccDefault("enabled")) {
       var compFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
       Recipients2CompFields(compFields);
+      recipientsSelection = EnigmailCommon.getPref("recipientsSelection");
+
       var arrLen = new Object();
       var matchedKeysObj = new Object();
       var flagsObj = new Object();
@@ -921,7 +923,7 @@ Enigmail.msg = {
 
       this.signRules    = 1;
       this.encryptRules = 1;
-      if (toAddrList.length > 0) {
+      if (toAddrList.length > 0 && recipientsSelection != 3 && recipientsSelection != 4) {
         if (Enigmail.hlp.getRecipientsKeys(toAddrList.join(", "), false, false, matchedKeysObj, flagsObj)) {
           this.signRules    = flagsObj.sign;
           this.encryptRules = flagsObj.encrypt;
@@ -1085,6 +1087,7 @@ Enigmail.msg = {
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
 
     var recipientsSelection = EnigmailCommon.getPref("recipientsSelection");
+
     var toAddr = toAddrList.join(", ");
     var bccAddr = bccAddrList.join(", ");
     var testCipher = null;
@@ -1093,7 +1096,7 @@ Enigmail.msg = {
 
     if (toAddr.length>=1) {
 
-       EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection: toAddr="+toAddr+"\n");
+       EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection: recipientsSelection= " + recipientsSelection + " / toAddr="+toAddr+"\n");
        var repeatSelection=0;
        while (repeatSelection<2) {
          if (recipientsSelection != 3 && recipientsSelection != 4
@@ -1174,7 +1177,7 @@ Enigmail.msg = {
 
            if (testStatusFlagsObj.value) {
              // check if own key is invalid
-             let s = new RegExp("^\\[GNUPG:\\] INV_(RECP|SGNR) [0-9]+ \\<?" + fromAddr + "\\>?", "m");
+             let s = new RegExp("^INV_(RECP|SGNR) [0-9]+ \\<?" + fromAddr + "\\>?", "m");
              if (testErrorMsgObj.value.search(s) >= 0)  {
                EnigmailCommon.alert(window, EnigmailCommon.getString("errorKeyUnusable", [ fromAddr ]));
                return null;
