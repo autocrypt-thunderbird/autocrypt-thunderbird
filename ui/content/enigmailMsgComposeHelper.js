@@ -44,26 +44,29 @@ if (! Enigmail) var Enigmail = {};
 
 Enigmail.hlp = {
 
+  getFlagVal: function (oldVal, node, type, conflictObj)
+  {
+
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValFlag\n");
+    var newVal = Number(node.getAttribute(type));
+
+    if ((oldVal==2 && newVal==0) || (oldVal==0 && newVal==2)) {
+      conflictObj[type] = 1;
+    }
+
+    if (oldVal==0 || newVal==0) {
+      return 0;
+    }
+    else {
+      return (oldVal < newVal ? newVal: oldVal);
+    }
+  },
+
   getRecipientsKeys: function (emailAddrs, forceSelection, interactive, matchedKeysObj, flagsObj)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys: emailAddrs="+emailAddrs+"\n");
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
-
-    function getFlagVal(oldVal, node, type, conflictObj) {
-      var newVal = Number(node.getAttribute(type));
-
-      if ((oldVal==2 && newVal==0) || (oldVal==0 && newVal==2)) {
-        conflictObj[type] = 1;
-      }
-
-      if (oldVal==0 || newVal==0) {
-        return 0;
-      }
-      else {
-        return (oldVal < newVal ? newVal: oldVal);
-      }
-    }
 
     var enigmailSvc = EnigmailCommon.getService();
     if (!enigmailSvc)
@@ -109,9 +112,11 @@ Enigmail.hlp = {
                   var email=addrList[addrIndex];
                   var i=addresses.indexOf(email);
                   while (i>=0) {
-                    sign    = getFlagVal(sign,    node, "sign", conflicts);
-                    encrypt = getFlagVal(encrypt, node, "encrypt", conflicts);
-                    pgpMime = getFlagVal(pgpMime, node, "pgpMime", conflicts);
+                    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys: got matching rule for "+email+"\n");
+
+                    sign    = this.getFlagVal(sign,    node, "sign", conflicts);
+                    encrypt = this.getFlagVal(encrypt, node, "encrypt", conflicts);
+                    pgpMime = this.getFlagVal(pgpMime, node, "pgpMime", conflicts);
 
                     // extract found address
                     var keyIds=node.getAttribute("keyId");
@@ -145,9 +150,9 @@ Enigmail.hlp = {
                 }
                 if (i==addrList.length) {
                   // no matching address; apply rule
-                  sign    = getFlagVal(sign,    node, "sign", conflicts);
-                  encrypt = getFlagVal(encrypt, node, "encrypt", conflicts);
-                  pgpMime = getFlagVal(pgpMime, node, "pgpMime", conflicts);
+                  sign    = this.getFlagVal(sign,    node, "sign", conflicts);
+                  encrypt = this.getFlagVal(encrypt, node, "encrypt", conflicts);
+                  pgpMime = this.getFlagVal(pgpMime, node, "pgpMime", conflicts);
                   keyIds=node.getAttribute("keyId");
                   if (keyIds) {
                     if (keyIds != ".") {
@@ -184,9 +189,9 @@ Enigmail.hlp = {
               return this[attrName];
             };
             if (!resultObj.negate) {
-              sign   =getFlagVal(sign,    resultObj, "sign",    conflicts);
-              encrypt=getFlagVal(encrypt, resultObj, "encrypt", conflicts);
-              pgpMime=getFlagVal(pgpMime, resultObj, "pgpMime", conflicts);
+              sign    = this.getFlagVal(sign,    resultObj, "sign",    conflicts);
+              encrypt = this.getFlagVal(encrypt, resultObj, "encrypt", conflicts);
+              pgpMime = this.getFlagVal(pgpMime, resultObj, "pgpMime", conflicts);
               if (resultObj.keyId.length>0) {
                 keyList.push(resultObj.keyId);
                 var replaceAddr=new RegExp("{"+addrList[i]+"}", "g");
