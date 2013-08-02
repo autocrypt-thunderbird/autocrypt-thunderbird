@@ -73,15 +73,38 @@ function getTempDir() {
   return tmpFile;
 }
 
+function toHexString(charCode)
+{
+  return ("0" + charCode.toString(16)).slice(-2);
+}
+
+
 function installer(progressListener) {
   this.progressListener = progressListener;
 }
 
 installer.prototype = {
 
-
   installMacOs: function() {
+    Ec.DEBUG_LOG("installGnuPG.jsm: installMacOs\n");
     var proc = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
+
+    var mountPath = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
+    mountPath.initWithPath("/Volumes/"+this.mount);
+    if (mountPath.exists()) {
+      let p = mountPath.path +" ";
+      let i = 1;
+      mountPath.initWithPath(p+i);
+      while (mountPath.exists() && i < 10) {
+        ++i;
+        mountPath.initWithPath(p+i);
+      }
+      if (mountPath.exists()) {
+        throw "Error - cannot mount package";
+      }
+    }
+
+    Ec.DEBUG_LOG("installGnuPG.jsm: installMacOs - mount Package\n");
 
     var cmd = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
     cmd.initWithPath("/usr/bin/open");
@@ -90,17 +113,68 @@ installer.prototype = {
     proc.init(cmd);
     proc.run(true, args, args.length);
 
-    args = [ "-W", this.command ];
+    if (proc.exitValue) throw "Installer failed";
+
+    Ec.DEBUG_LOG("installGnuPG.jsm: installMacOs - run installer\n");
+
+    args = [ "-W", mountPath.path+"/"+this.command ];
     proc = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
     proc.init(cmd);
 
     proc.run(true, args, args.length);
+    if (proc.exitValue) throw "Installer failed";
+
+    Ec.DEBUG_LOG("installGnuPG.jsm: installMacOs - unmount package\n");
+
+    cmd.initWithPath("/sbin/umount");
+    proc = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
+    proc.init(cmd);
+    args = [ mountPath.path ];
+    proc.run(true, args, args.length);
+    if (proc.exitValue) throw "Installer failed";
+
+    Ec.DEBUG_LOG("installGnuPG.jsm: installMacOs - remove package\n");
+    this.installerFile.remove(false);
+
+
   },
 
-  installWindows: function(file) {
+  installWindows: function() {
+    Ec.DEBUG_LOG("installGnuPG.jsm: installWindows\n");
+    var proc = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
+
+    proc.init(this.installerFile);
+    proc.runW(true, [], 0);
+    if (proc.exitValue) throw "Installer failed";
   },
 
-  installUnix: function(file) {
+  installUnix: function() {
+  },
+
+  checkHashSum: function() {
+    Ec.DEBUG_LOG("installGnuPG.jsm: checkHashSum\n");
+    var istream = Components.classes["@mozilla.org/network/file-input-stream;1"]
+                            .createInstance(Components.interfaces.nsIFileInputStream);
+    // open for reading
+    istream.init(this.installerFile, 0x01, 0444, 0);
+
+    var ch = Components.classes["@mozilla.org/security/hash;1"]
+                       .createInstance(Components.interfaces.nsICryptoHash);
+    ch.init(ch.SHA1);
+    const PR_UINT32_MAX = 0xffffffff;     // read entire file
+    ch.updateFromStream(istream, PR_UINT32_MAX);
+    var gotHash = ch.finish(false);
+
+    // convert the binary hash data to a hex string.
+    var hashStr = [toHexString(gotHash.charCodeAt(i)) for (i in gotHash)].join("");
+
+    if (this.hash != hashStr) {
+      Ec.DEBUG_LOG("installGnuPG.jsm: checkHashSum - hash sums don't match: "+hashStr+"\n");
+    }
+    else
+      Ec.DEBUG_LOG("installGnuPG.jsm: checkHashSum - hash sum OK\n");
+
+    return this.hash == hashStr;
   },
 
   getDownloadUrl: function() {
@@ -114,6 +188,7 @@ installer.prototype = {
         self.url = doc.getAttribute("url");
         self.hash = doc.getAttribute("hash");
         self.command = doc.getAttribute("command");
+        self.mount = doc.getAttribute("mount");
         deferred.resolve();
       }
     }
@@ -187,10 +262,10 @@ installer.prototype = {
 
         switch (Ec.getOS()) {
         case "Darwin":
-          self.installerFile.append("gpg-installer.dmg");
+          self.installerFile.append("gpgtools.dmg");
           break;
         case "WINNT":
-          self.installerFile.append("gpg-installer.exe");
+          self.installerFile.append("gpg4win.exe");
           break;
         default:
           self.installerFile.append("gpg-installer.bin");
@@ -211,6 +286,19 @@ installer.prototype = {
         binStr.flush();
         binStr.close();
         fileOutStream.close();
+
+        if (!self.checkHashSum()) {
+          var cont = true;
+          if (self.progressListener) {
+            cont = self.progressListener.onWarning("Hash sum don't match");
+          }
+
+          if (! cont) {
+            deferred.reject("Aborted due to hash sum error");
+            return;
+          }
+
+        }
 
         switch (Ec.getOS()) {
         case "Darwin":
@@ -233,7 +321,6 @@ installer.prototype = {
 
         if (self.progressListener)
           self.progressListener.onError(ex);
-
       }
 
     }
