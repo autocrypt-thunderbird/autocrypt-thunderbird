@@ -139,6 +139,7 @@ zip ${xpiFile} \
     modules/pipeConsole.jsm \
     modules/keyManagement.jsm \
     modules/mimeVerify.jsm \
+    modules/installGnuPG.jsm \
     modules/commonFuncs.jsm \
     modules/subprocess.jsm \
     modules/subprocess_worker_win.js \
