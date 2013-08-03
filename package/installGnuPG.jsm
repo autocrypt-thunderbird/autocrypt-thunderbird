@@ -60,6 +60,7 @@ const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID =
                               "@mozilla.org/network/file-output-stream;1";
 const DIR_SERV_CONTRACTID  = "@mozilla.org/file/directory_service;1";
 const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
+const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
 
 var EXPORTED_SYMBOLS = [ "InstallGnuPG" ];
@@ -144,7 +145,7 @@ installer.prototype = {
     var proc = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
 
     proc.init(this.installerFile);
-    proc.runW(true, [], 0);
+    proc.runw(true, [], 0);
     if (proc.exitValue) throw "Installer failed";
   },
 
@@ -205,12 +206,17 @@ installer.prototype = {
     var self = this;
 
     try {
+      var xulRuntime = Cc[XPCOM_APPINFO].getService(Ci.nsIXULRuntime);
+      var platform = xulRuntime.XPCOMABI.toLowerCase()
+      var os = Ec.getOS().toLowerCase();
+
       // create a  XMLHttpRequest object
       var oReq = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
       oReq.onload = reqListener;
       oReq.addEventListener("error", onError, false);
 
-      oReq.open("get", "http://localhost:7080/~pbr/enigmail/download/get_gnupg_dl.php?os=darwin", true);
+      oReq.open("get", "http://www.enigmail.net/download/get_gnupg_dl.php?os=" + os + "&platform=" +
+                platform, true);
       oReq.send();
     }
     catch(ex) {
