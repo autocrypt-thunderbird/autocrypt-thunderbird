@@ -901,6 +901,11 @@ Enigmail.prototype = {
           agentPath = ResolvePath(agentName, gpgPath, Ec.isDosLike());
         }
         catch (ex) {}
+
+        if (! agentPath) {
+          gpgPath = gpgPath + "\\pub";
+          agentPath = ResolvePath(agentName, gpgPath, Ec.isDosLike());
+        }
       }
 
       if (!agentPath && !Ec.isDosLike()) {
@@ -930,6 +935,7 @@ Enigmail.prototype = {
 
     var exitCode = -1;
     var outStr = "";
+    var errStr = "";
     Ec.DEBUG_LOG("enigmail.js: Enigmail.setAgentPath: calling subprocess with '"+command.path+"'\n");
 
     var proc = {
@@ -940,6 +946,7 @@ Enigmail.prototype = {
       done: function(result) {
         exitCode = result.exitCode;
         outStr = result.stdout;
+        errStr = result.stderr;
       },
       mergeStderr: true
     };
@@ -954,7 +961,7 @@ Enigmail.prototype = {
     Ec.CONSOLE_LOG("enigmail> "+Ec.printCmdLine(command, args)+"\n");
 
     if (exitCode != 0) {
-      Ec.ERROR_LOG("enigmail.js: Enigmail.setAgentPath: gpg failed with '"+outStr+"'\n");
+      Ec.ERROR_LOG("enigmail.js: Enigmail.setAgentPath: gpg failed with exitCode "+exitCode+" msg='"+outStr+" "+errStr+"'\n");
       throw Components.results.NS_ERROR_FAILURE;
     }
 
