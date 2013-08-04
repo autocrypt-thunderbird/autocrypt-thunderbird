@@ -183,7 +183,7 @@
                 <textbox id="enigmail_maxIdleMinutes"
                         aria-labelledby="maxIdleMinutesHeadLabel enigmail_maxIdleMinutes maxIdleMinutesTailLabel"
                         type="number"
-                        min="0" max="9999"
+                        min="0" max="1440"
                         size="4"
                         maxlength="4"
                         pref="true"
