@@ -140,13 +140,46 @@ installer.prototype = {
 
   },
 
-  installWindows: function() {
+  installWindows: function(deferred) {
     Ec.DEBUG_LOG("installGnuPG.jsm: installWindows\n");
     var proc = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
 
+    var self = this;
+
+    var obs = {
+      QueryInterface: XPCOMUtils.generateQI([ Ci.nsIObserver, Ci.nsISupports ]),
+
+      observe: function (proc, aTopic, aData) {
+        Ec.DEBUG_LOG("installGnuPG.jsm: installWindows.observe: topic='"+aTopic+"' \n");
+
+        if (aTopic == "process-finished") {
+          Ec.DEBUG_LOG("installGnuPG.jsm: installWindows - remove package\n");
+          self.installerFile.remove(false);
+
+          var r = proc.exitValue;
+          if (typeof(r) == "undefined") r = 0;
+
+          if (r == 0) {
+            deferred.resolve();
+            if (self.progressListener)
+              self.progressListener.onLoaded("Installation OK");
+          }
+          else {
+            deferred.reject("Installer failed");
+            if (self.progressListener)
+              self.progressListener.onError("Installer failed with exit code "+ r);
+          }
+        }
+        else if (aTopic == "process-failed") {
+          deferred.reject("Installer could not be started");
+          if (self.progressListener)
+            self.progressListener.onError("Installer failed");
+        }
+      }
+    };
+
     proc.init(this.installerFile);
-    proc.runw(true, [], 0);
-    if (proc.exitValue) throw "Installer failed";
+    proc.runAsync([], 0, obs, false);
   },
 
   installUnix: function() {
@@ -167,6 +200,7 @@ installer.prototype = {
     var gotHash = ch.finish(false);
 
     // convert the binary hash data to a hex string.
+    var i;
     var hashStr = [toHexString(gotHash.charCodeAt(i)) for (i in gotHash)].join("");
 
     if (this.hash != hashStr) {
@@ -311,8 +345,8 @@ installer.prototype = {
           self.installMacOs();
           break;
         case "WINNT":
-          self.installWindows();
-          break;
+          self.installWindows(deferred);
+          return;
         default:
           self.installUnix();
         }
