@@ -1388,7 +1388,22 @@ var EnigmailCommon = {
   },
 
   printCmdLine: function (command, args) {
-    return (this.getFilePathDesc(command)+" "+args.join(" ")).replace(/\\\\/g, "\\");
+
+    function getQuoted(str) {
+      let i = str.indexOf(" ");
+      if (i>=0) {
+        return '"' + str +'"'
+      }
+      else
+        return str;
+    }
+
+    var rStr = getQuoted(this.getFilePathDesc(command));
+
+    let i;
+    rStr += [getQuoted(args[i]) for (i in args)].join(" ").replace(/\\\\/g, '\\');
+
+    return rStr;
   },
 
   fixExitCode: function (exitCode, statusFlags) {
@@ -2840,8 +2855,8 @@ var EnigmailCommon = {
 ////////////////////////////////////////////////////////////////////////
 // Local (not exported) functions & objects
 ////////////////////////////////////////////////////////////////////////
-
 var timerObserver = {
+
   QueryInterface: XPCOMUtils.generateQI([ Ci.nsIObserver, Ci.nsISupports ]),
 
   observe: function (aSubject, aTopic, aData) {
