@@ -34,6 +34,7 @@
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/subprocess.jsm");
 
 // Import promise API
 try {
@@ -62,8 +63,10 @@ const DIR_SERV_CONTRACTID  = "@mozilla.org/file/directory_service;1";
 const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
+const queryUrl = "http://www.enigmail.net/download/get_gnupg_dl.php";
 
 var EXPORTED_SYMBOLS = [ "InstallGnuPG" ];
+
 
 
 function getTempDir() {
@@ -80,6 +83,117 @@ function toHexString(charCode)
 }
 
 
+// Adapted from the patch for mozTCPSocket error reporting (bug 861196).
+
+function createTCPErrorFromFailedXHR(xhr) {
+  let status = xhr.channel.QueryInterface(Ci.nsIRequest).status;
+
+  let errType;
+  let errName;
+
+  if ((status & 0xff0000) === 0x5a0000) { // Security module
+    const nsINSSErrorsService = Ci.nsINSSErrorsService;
+    let nssErrorsService = Cc['@mozilla.org/nss_errors_service;1'].getService(nsINSSErrorsService);
+    let errorClass;
+    // getErrorClass will throw a generic NS_ERROR_FAILURE if the error code is
+    // somehow not in the set of covered errors.
+    try {
+      errorClass = nssErrorsService.getErrorClass(status);
+    } catch (ex) {
+      errorClass = 'SecurityProtocol';
+    }
+    if (errorClass == nsINSSErrorsService.ERROR_CLASS_BAD_CERT) {
+      errType = 'SecurityCertificate';
+    }
+    else {
+      errType = 'SecurityProtocol';
+    }
+
+    // NSS_SEC errors (happen below the base value because of negative vals)
+    if ((status & 0xffff) < Math.abs(nsINSSErrorsService.NSS_SEC_ERROR_BASE)) {
+      // The bases are actually negative, so in our positive numeric space, we
+      // need to subtract the base off our value.
+      let nssErr = Math.abs(nsINSSErrorsService.NSS_SEC_ERROR_BASE)
+                       - (status & 0xffff);
+      switch (nssErr) {
+        case 11: // SEC_ERROR_EXPIRED_CERTIFICATE, sec(11)
+          errName = 'SecurityExpiredCertificateError';
+          break;
+        case 12: // SEC_ERROR_REVOKED_CERTIFICATE, sec(12)
+          errName = 'SecurityRevokedCertificateError';
+          break;
+
+        // per bsmith, we will be unable to tell these errors apart very soon,
+        // so it makes sense to just folder them all together already.
+        case 13: // SEC_ERROR_UNKNOWN_ISSUER, sec(13)
+        case 20: // SEC_ERROR_UNTRUSTED_ISSUER, sec(20)
+        case 21: // SEC_ERROR_UNTRUSTED_CERT, sec(21)
+        case 36: // SEC_ERROR_CA_CERT_INVALID, sec(36)
+          errName = 'SecurityUntrustedCertificateIssuerError';
+          break;
+        case 90: // SEC_ERROR_INADEQUATE_KEY_USAGE, sec(90)
+          errName = 'SecurityInadequateKeyUsageError';
+          break;
+        case 176: // SEC_ERROR_CERT_SIGNATURE_ALGORITHM_DISABLED, sec(176)
+          errName = 'SecurityCertificateSignatureAlgorithmDisabledError';
+          break;
+        default:
+          errName = 'SecurityError';
+          break;
+      }
+    }
+    else {
+      let sslErr = Math.abs(nsINSSErrorsService.NSS_SSL_ERROR_BASE)
+                       - (status & 0xffff);
+      switch (sslErr) {
+        case 3: // SSL_ERROR_NO_CERTIFICATE, ssl(3)
+          errName = 'SecurityNoCertificateError';
+          break;
+        case 4: // SSL_ERROR_BAD_CERTIFICATE, ssl(4)
+          errName = 'SecurityBadCertificateError';
+          break;
+        case 8: // SSL_ERROR_UNSUPPORTED_CERTIFICATE_TYPE, ssl(8)
+          errName = 'SecurityUnsupportedCertificateTypeError';
+          break;
+        case 9: // SSL_ERROR_UNSUPPORTED_VERSION, ssl(9)
+          errName = 'SecurityUnsupportedTLSVersionError';
+          break;
+        case 12: // SSL_ERROR_BAD_CERT_DOMAIN, ssl(12)
+          errName = 'SecurityCertificateDomainMismatchError';
+          break;
+        default:
+          errName = 'SecurityError';
+          break;
+      }
+    }
+  }
+  else {
+    errType = 'Network';
+    switch (status) {
+      // connect to host:port failed
+      case 0x804B000C: // NS_ERROR_CONNECTION_REFUSED, network(13)
+        errName = 'ConnectionRefusedError';
+        break;
+      // network timeout error
+      case 0x804B000E: // NS_ERROR_NET_TIMEOUT, network(14)
+        errName = 'NetworkTimeoutError';
+        break;
+      // hostname lookup failed
+      case 0x804B001E: // NS_ERROR_UNKNOWN_HOST, network(30)
+        errName = 'DomainNotFoundError';
+        break;
+      case 0x804B0047: // NS_ERROR_NET_INTERRUPT, network(71)
+        errName = 'NetworkInterruptError';
+        break;
+      default:
+        errName = 'NetworkError';
+        break;
+    }
+  }
+
+  return {name: errName, type: errType};
+}
+
 function installer(progressListener) {
   this.progressListener = progressListener;
 }
@@ -88,8 +202,8 @@ installer.prototype = {
 
   installMacOs: function() {
     Ec.DEBUG_LOG("installGnuPG.jsm: installMacOs\n");
-    var proc = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
 
+    var exitCode = -1;
     var mountPath = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
     mountPath.initWithPath("/Volumes/"+this.mount);
     if (mountPath.exists()) {
@@ -111,75 +225,90 @@ installer.prototype = {
     cmd.initWithPath("/usr/bin/open");
 
     var args = [ "-W", this.installerFile.path ];
-    proc.init(cmd);
-    proc.run(true, args, args.length);
 
-    if (proc.exitValue) throw "Installer failed";
+    var proc = {
+      command:     cmd,
+      arguments:   args,
+      charset: null,
+      done: function(result) {
+        exitCode = result.exitCode;
+      }
+    };
+
+    try {
+      subprocess.call(proc).wait();
+      if (exitCode) throw "Installer failed with exit code "+exitCode;
+    } catch (ex) {
+      Ec.ERROR_LOG("enigmail.js: installGnuPG.jsm.installMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
+      throw ex;
+    }
 
     Ec.DEBUG_LOG("installGnuPG.jsm: installMacOs - run installer\n");
 
     args = [ "-W", mountPath.path+"/"+this.command ];
-    proc = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
-    proc.init(cmd);
 
-    proc.run(true, args, args.length);
-    if (proc.exitValue) throw "Installer failed";
+    proc = {
+      command:     cmd,
+      arguments:   args,
+      charset: null,
+      done: function(result) {
+        exitCode = result.exitCode;
+      }
+    };
+
+    try {
+      subprocess.call(proc).wait();
+      if (exitCode) throw "Installer failed with exit code "+exitCode;
+    } catch (ex) {
+      Ec.ERROR_LOG("enigmail.js: installGnuPG.jsm.installMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
+      throw ex;
+    }
 
     Ec.DEBUG_LOG("installGnuPG.jsm: installMacOs - unmount package\n");
 
     cmd.initWithPath("/sbin/umount");
-    proc = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
-    proc.init(cmd);
     args = [ mountPath.path ];
-    proc.run(true, args, args.length);
-    if (proc.exitValue) throw "Installer failed";
+    proc = {
+      command:     cmd,
+      arguments:   args,
+      charset: null,
+      done: function(result) {
+        exitCode = result.exitCode;
+      }
+    };
+
+    try {
+      subprocess.call(proc).wait();
+      if (exitCode) throw "Installer failed with exit code "+exitCode;
+    } catch (ex) {
+      Ec.ERROR_LOG("enigmail.js: installGnuPG.jsm.installMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
+      throw ex;
+    }
 
     Ec.DEBUG_LOG("installGnuPG.jsm: installMacOs - remove package\n");
     this.installerFile.remove(false);
-
-
   },
 
   installWindows: function(deferred) {
     Ec.DEBUG_LOG("installGnuPG.jsm: installWindows\n");
-    var proc = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
 
-    var self = this;
-
-    var obs = {
-      QueryInterface: XPCOMUtils.generateQI([ Ci.nsIObserver, Ci.nsISupports ]),
-
-      observe: function (proc, aTopic, aData) {
-        Ec.DEBUG_LOG("installGnuPG.jsm: installWindows.observe: topic='"+aTopic+"' \n");
-
-        if (aTopic == "process-finished") {
-          Ec.DEBUG_LOG("installGnuPG.jsm: installWindows - remove package\n");
-          self.installerFile.remove(false);
-
-          var r = proc.exitValue;
-          if (typeof(r) == "undefined") r = 0;
-
-          if (r == 0) {
-            deferred.resolve();
-            if (self.progressListener)
-              self.progressListener.onLoaded("Installation OK");
-          }
-          else {
-            deferred.reject("Installer failed");
-            if (self.progressListener)
-              self.progressListener.onError("Installer failed with exit code "+ r);
-          }
-        }
-        else if (aTopic == "process-failed") {
-          deferred.reject("Installer could not be started");
-          if (self.progressListener)
-            self.progressListener.onError("Installer failed");
-        }
+    proc = {
+      command:     this.installerFile,
+      arguments:   [],
+      charset: null,
+      done: function(result) {
+        exitCode = result.exitCode;
       }
     };
 
-    proc.init(this.installerFile);
-    proc.runAsync([], 0, obs, false);
+    try {
+      subprocess.call(proc).wait();
+      if (exitCode) throw "Installer failed with exit code "+exitCode;
+    } catch (ex) {
+      Ec.ERROR_LOG("enigmail.js: installGnuPG.jsm.installMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
+      throw ex;
+    }
+
   },
 
   installUnix: function() {
@@ -228,10 +357,10 @@ installer.prototype = {
       }
     }
 
-    function onError(event) {
+    function onError(event, error) {
       deferred.reject("error");
       if (self.progressListener)
-        self.progressListener.onError(event);
+        self.progressListener.onError(event, error);
     }
 
 
@@ -247,9 +376,14 @@ installer.prototype = {
       // create a  XMLHttpRequest object
       var oReq = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
       oReq.onload = reqListener;
-      oReq.addEventListener("error", onError, false);
+      oReq.addEventListener("error",
+                       function(e) {
+                         var error = createTCPErrorFromFailedXHR(oReq);
+                         onError(e, error);
+                       },
+                       false);
 
-      oReq.open("get", "http://www.enigmail.net/download/get_gnupg_dl.php?os=" + os + "&platform=" +
+      oReq.open("get", queryUrl + "?os=" + os + "&platform=" +
                 platform, true);
       oReq.send();
     }
@@ -283,10 +417,10 @@ installer.prototype = {
         self.progressListener.onProgress(event);
     }
 
-    function onError(event) {
+    function onError(event, error) {
       deferred.reject("error");
       if (self.progressListener)
-        self.progressListener.onError(event);
+        self.progressListener.onError(event, error);
     }
 
     function onLoaded(event) {
@@ -346,7 +480,7 @@ installer.prototype = {
           break;
         case "WINNT":
           self.installWindows(deferred);
-          return;
+          break;
         default:
           self.installUnix();
         }
@@ -370,7 +504,13 @@ installer.prototype = {
       var oReq = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
 
       oReq.addEventListener("load", onLoaded, false);
-      oReq.addEventListener("error", onError, false);
+      oReq.addEventListener("error",
+                       function(e) {
+                         var error = createTCPErrorFromFailedXHR(oReq);
+                         onError(e, error);
+                       },
+                       false);
+
       oReq.addEventListener("progress", onProgress, false);
       oReq.open("get", this.url, true);
       oReq.responseType = "arraybuffer";
@@ -387,8 +527,6 @@ installer.prototype = {
 
 
 var InstallGnuPG = {
-
-
 
   start: function(progressListener) {
 
