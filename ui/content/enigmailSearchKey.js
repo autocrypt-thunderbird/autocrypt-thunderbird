@@ -41,6 +41,7 @@ const INPUT = 0;
 const RESULT = 1;
 
 const ENIG_DEFAULT_HKP_PORT  = "11371";
+const ENIG_DEFAULT_HKPS_PORT  = "443";
 const ENIG_DEFAULT_LDAP_PORT = "389";
 
 const ENIG_IMG_NOT_SELECTED = "chrome://enigmail/content/check0.png";
@@ -70,11 +71,8 @@ function onLoad () {
 
   var keyserver = window.arguments[INPUT].keyserver;
   var protocol="";
-  if (keyserver.search(/[a-zA-Z0-9\-\_\.]+:\/\//)==0) {
+  if (keyserver.search(/^[a-zA-Z0-9\-\_\.]+:\/\//)==0) {
     protocol=keyserver.replace(/^([a-zA-Z0-9\-\_\.]+)(:\/\/.*)/, "$1");
-    if (protocol.search(/hkp/i) >= 0) {
-      protocol="hkp";
-    }
     keyserver=keyserver.replace(/^[a-zA-Z0-9\-\_\.]+:\/\//, "");
   }
   else {
@@ -85,6 +83,9 @@ function onLoad () {
   switch (protocol) {
   case "hkp":
     port = ENIG_DEFAULT_HKP_PORT;
+    break;
+  case "hkps":
+    port = ENIG_DEFAULT_HKPS_PORT;
     break;
   case "ldap":
     port = ENIG_DEFAULT_LDAP_PORT;
@@ -308,6 +309,8 @@ function enigNewHttpRequest(requestType, requestCallbackFunc) {
   switch (gEnigRequest.protocol) {
   case "hkp":
     gEnigRequest.protocol = "http";
+  case "hkps":
+    gEnigRequest.protocol = "https";
   case "http":
   case "https":
     break;
