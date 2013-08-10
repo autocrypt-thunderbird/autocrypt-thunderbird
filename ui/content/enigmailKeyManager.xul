@@ -199,12 +199,6 @@
                   accesskey="&enigmail.keyMan.manageUid.accesskey;"
                   oncommand="enigmailManageUids()"/>
 
-        <menuitem id="changeExpiry"
-                  label="&enigmail.keyMan.changeExpiry.label;"
-                  observes="bcOneKey"
-                  accesskey="&enigmail.keyMan.changeExpiry.accesskey;"
-                  oncommand="enigEditKeyExpiry()"/>
-
         <menuitem id="changePwd"
                   label="&enigmail.keyMan.changePwd.label;"
                   observes="bcEditKey"
@@ -361,7 +355,6 @@
       <menuseparator/>
 
       <menuitem id="ctxManageUid" observes="bcOneKey" label="&enigmail.keyMan.manageUid.label;" oncommand="enigmailManageUids()"/>
-      <menuitem id="ctxChangeExpiry" observes="bcEditKey" label="&enigmail.keyMan.changeExpiry.label;" oncommand="enigEditKeyExpiry()"/>
       <menuitem id="ctxChangePwd" observes="bcEditKey" label="&enigmail.keyMan.changePwd.label;" oncommand="enigmailChangePwd()"/>
       <menuitem id="ctxRevokationCert" observes="bcRevoke" label="&enigmail.keyMan.ctxGenRevoke.label;" oncommand="enigCreateRevokeCert()"/>
       <menuitem id="ctxAddPhoto" observes="bcRevoke" label="&enigmail.keyMan.addPhoto.label;" oncommand="enigmailAddPhoto()"/>

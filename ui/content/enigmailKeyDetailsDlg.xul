@@ -179,7 +179,6 @@
         <menuitem label="&enigmail.keyMan.setTrust.label;" oncommand="setOwnerTrust()"/>
         <menuseparator observes="ownKeyCommands" />
         <menuitem label="&enigmail.keyMan.manageUid.label;" observes="ownKeyCommands" oncommand="manageUids()"/>
-        <menuitem label="&enigmail.keyMan.changeExpiry.label;" observes="ownKeyCommands" oncommand="changeExpirationDate()"/>
         <menuitem label="&enigmail.keyMan.addPhoto.label;" observes="ownKeyCommands" oncommand="keyDetailsAddPhoto()"/>
         <menuitem label="&enigmail.keyMan.changePwd.label;" observes="ownKeyCommands" oncommand="changePassword()"/>
         <menuitem label="&enigmail.keyMan.revokeKey.label;" observes="ownKeyCommands" oncommand="revokeKey()"/>

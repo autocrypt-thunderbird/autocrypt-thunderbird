@@ -19,7 +19,6 @@
  *
  * Contributor(s):
  * Patrick Brunschwig <patrick@mozilla-enigmail.org>
- * Marius Stübs <marius.stuebs@riseup.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -113,12 +112,6 @@ const ENIG_KEY_REVOKED="r";
 const ENIG_KEY_INVALID="i";
 const ENIG_KEY_DISABLED="d";
 const ENIG_KEY_NOT_VALID=ENIG_KEY_EXPIRED+ENIG_KEY_REVOKED+ENIG_KEY_INVALID+ENIG_KEY_DISABLED;
-
-
-// GUI List: The corresponding image to set the "active" flag / checkbox
-const ENIG_IMG_NOT_SELECTED = "chrome://enigmail/content/check0.png";
-const ENIG_IMG_SELECTED     = "chrome://enigmail/content/check1.png";
-const ENIG_IMG_DISABLED     = "chrome://enigmail/content/check2.png";
 
 
 // Interfaces
@@ -584,11 +577,6 @@ function EnigEditKeyTrust(userIdArr, keyIdArr) {
   return EnigmailFuncs.editKeyTrust(window, userIdArr, keyIdArr);
 }
 
-
-function EnigEditKeyExpiry(userIdArr, keyIdArr) {
-  return EnigmailFuncs.editKeyExpiry(window, userIdArr, keyIdArr);
-}
-
 function EnigDisplayKeyDetails(keyId, refresh) {
   return EnigmailFuncs.openKeyDetails(window, keyId, refresh);
 }
@@ -808,235 +796,5 @@ function EnigOpenURL(event, hrefObj) {
     event.stopPropagation();
   }
   catch (ex) {}
-}
-
-
-/**
- * GUI List: Set the "active" flag and the corresponding image
- */
-function EnigSetActive(element, status) {
-  if (status >= 0) {
-    element.setAttribute("active", status.toString());
-  }
-
-  switch (status)
-  {
-  case 0:
-    element.setAttribute("src", ENIG_IMG_NOT_SELECTED);
-    break;
-  case 1:
-    element.setAttribute("src", ENIG_IMG_SELECTED);
-    break;
-  case 2:
-    element.setAttribute("src", ENIG_IMG_DISABLED);
-    break;
-  default:
-    element.setAttribute("active", -1);
-  }
-}
-
-
-/**
- * Add each subkey to the GUI list. Use this function if there is a preceeding column with checkboxes.
- *
- * @param  XML-DOM  GUI element, where the keys will be listed.
- * @param  Array    Informations of the current key
- * @param  Integer  Count of all keys (primary + subkeys)
- *
- * The internal logic of this function works so, that the main key is always selected.
- * Also all valid (not expired, not revoked) subkeys are selected. If there is only
- * one subkey, it is also always pre-selected.
- *
- */
-function EnigAddSubkeyWithSelectboxes(treeChildren, aLine, keyCount) {
-  DEBUG_LOG("enigmailCommon.js: EnigAddSubkeyWithSelectboxes("+aLine+")\n");
-
-  var preSelected;
-  // Pre-Selection logic:
-  if (aLine[1] === "r") {
-     // Revoked keys can not be changed.
-     preSelected = -1;
-  } else {
-    if (aLine[0]==="pub") {
-      // The primary key is ALWAYS selected.
-      preSelected = 1;
-    } else if (keyCount === 2) {
-      // If only 2 keys are here (primary + 1 subkey) then preSelect them anyway.
-      preSelected = 1;
-    } else if (aLine[1]==="e") {
-      // Expired keys are normally un-selected.
-      preSelected = 0;
-    } else {
-      // A valid subkey is pre-selected.
-      preSelected = 1;
-    }
-  }
-  var selectCol=document.createElement("treecell");
-  selectCol.setAttribute("id", "indicator");
-  EnigSetActive(selectCol, preSelected);
-
-
-  EnigAddSubkey(treeChildren, aLine, selectCol);
-}
-
-/**
- * Add each subkey to the GUI list.
- *
- * @param  XML-DOM          GUI element, where the keys will be listed.
- * @param  Array            Informations of the current key
- * @param  Optional Object  If set, it defines if the row is pre-selected
- *                          (assumed, there is a preceeding select column)
- */
-function EnigAddSubkey(treeChildren, aLine, selectCol=false) {
-  DEBUG_LOG("enigmailCommon.js: EnigAddSubkey("+aLine+")\n");
-
-  // Get expiry state of this subkey
-  var expire;
-  if (aLine[1]==="r") {
-    expire = EnigGetString("keyValid.revoked");
-  } else if (aLine[6].length==0) {
-    expire = EnigGetString("keyExpiryNever");
-  } else {
-    expire = EnigGetDateTime(aLine[6], true, false);
-  }
-
-  var aRow=document.createElement("treerow");
-  var treeItem=document.createElement("treeitem");
-  var subkey=EnigGetString(aLine[0]==="sub" ? "keyTypeSubkey" : "keyTypePrimary");
-  if (selectCol !== false) {
-    aRow.appendChild(selectCol);
-  }
-  aRow.appendChild(createCell(subkey)); // subkey type
-  aRow.appendChild(createCell("0x"+aLine[4].substr(-8,8))); // key id
-  aRow.appendChild(createCell(EnigGetString("keyAlgorithm_"+aLine[3]))); // algorithm
-  aRow.appendChild(createCell(aLine[2])); // size
-  aRow.appendChild(createCell(EnigGetDateTime(aLine[5], true, false))); // created
-  aRow.appendChild(createCell(expire)); // expiry
-
-  var usagecodes=aLine[11];
-  var usagetext = "";
-//  e = encrypt
-//  s = sign
-//  c = certify
-//  a = authentication
-//  Capital Letters are ignored, as these reflect summary properties of a key
-
-  var singlecode = "";
-  for (i=0; i < aLine[11].length; i++) {
-    singlecode = aLine[11].substr(i, 1);
-    switch (singlecode) {
-      case "e":
-        if (usagetext.length>0) {
-          usagetext = usagetext + ", ";
-        }
-        usagetext = usagetext + EnigGetString("keyUsageEncrypt");
-        break;
-      case "s":
-        if (usagetext.length>0) {
-          usagetext = usagetext + ", ";
-        }
-        usagetext = usagetext + EnigGetString("keyUsageSign");
-        break;
-      case "c":
-        if (usagetext.length>0) {
-          usagetext = usagetext + ", ";
-        }
-        usagetext = usagetext + EnigGetString("keyUsageCertify");
-        break;
-      case "a":
-        if (usagetext.length>0) {
-          usagetext = usagetext + ", ";
-        }
-        usagetext = usagetext + EnigGetString("keyUsageAuthentication");
-        break;
-    } // * case *
-  } // * for *
-
-  aRow.appendChild(createCell(usagetext)); // usage
-  treeItem.appendChild(aRow);
-  treeChildren.appendChild(treeItem);
-}
-
-/**
- * Receive a GUI List and remove all entries
- *
- * @param  XML-DOM  (it will be changed!)
- */
-function EnigCleanGuiList(guiList) {
-  while (guiList.firstChild) {
-    guiList.removeChild(guiList.firstChild);
-  }
-}
-
-
-
-/**
- * Process the output of GPG and return the key details
- *
- * @param   String  Values separated by colons and linebreaks
- *
- * @return  Object with the following keys:
- *    gUserId: Main user ID
- *    calcTrust,
- *    ownerTrust,
- *    fingerprint,
- *    showPhoto,
- *    uidList: List of Pseudonyms and E-Mail-Addresses,
- *    subkeyList: List of Subkeys
- */
-function EnigGetKeyDetails(sigListStr) {
-  var gUserId;
-  var calcTrust;
-  var ownerTrust;
-  var fingerprint;
-  var uidList = [];
-  var subkeyList = [];
-  var showPhoto = false;
-
-  var sigList = sigListStr.split(/[\n\r]+/);
-  for (var i=0; i < sigList.length; i++) {
-    var aLine=sigList[i].split(/:/);
-    switch (aLine[0]) {
-    case "pub":
-      gUserId=EnigConvertGpgToUnicode(aLine[9]);
-      var calcTrust=aLine[1];
-      if (aLine[11].indexOf("D")>=0) {
-        calcTrust="d";
-      }
-      var ownerTrust=aLine[8];
-      subkeyList.push(aLine);
-    case "uid":
-      if (! gUserId) {
-        gUserId=EnigConvertGpgToUnicode(aLine[9]);
-      }
-      else if (uidList !== false) {
-        uidList.push(aLine);
-      }
-      break;
-    case "uat":
-      // @TODO document what that means
-      if (aLine[9].search("1 ") == 0) {
-        showPhoto = true;
-      }
-      break;
-    case "sub":
-      subkeyList.push(aLine);
-      break;
-    case "fpr":
-      fingerprint = aLine[9];
-      break;
-    }
-  }
-
-  var keyDetails = {
-    gUserId: gUserId,
-    calcTrust: calcTrust,
-    ownerTrust: ownerTrust,
-    fingerprint: fingerprint,
-    showPhoto: showPhoto,
-    uidList: uidList,
-    subkeyList: subkeyList
-  };
-  return keyDetails;
 }
 

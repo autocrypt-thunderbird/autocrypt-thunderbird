@@ -44,6 +44,10 @@ const ENIG_DEFAULT_HKP_PORT  = "11371";
 const ENIG_DEFAULT_HKPS_PORT  = "443";
 const ENIG_DEFAULT_LDAP_PORT = "389";
 
+const ENIG_IMG_NOT_SELECTED = "chrome://enigmail/content/check0.png";
+const ENIG_IMG_SELECTED     = "chrome://enigmail/content/check1.png";
+const ENIG_IMG_DISABLED     = "chrome://enigmail/content/check2.png";
+
 const ENIG_CONN_TYPE_HTTP    = 1;
 const ENIG_CONN_TYPE_GPGKEYS = 2;
 
@@ -636,7 +640,7 @@ function enigPopulateList(keyList) {
 
   if (keyList.length == 1) {
     // activate found item if just one key found
-    EnigSetActive(treeItem.firstChild.firstChild, 1);
+    enigSetActive(treeItem.firstChild.firstChild, 1);
   }
 }
 
@@ -658,11 +662,11 @@ function enigUserSelCreateRow (keyId, subKey, userId, dateField, trustStatus) {
     var keyCol=document.createElement("treecell");
     keyCol.setAttribute("id", "keyid");
     if (subKey) {
-      EnigSetActive(selectCol, -1);
+      enigSetActive(selectCol, -1);
       keyCol.setAttribute("label", "");
     }
     else  {
-      EnigSetActive(selectCol, 0);
+      enigSetActive(selectCol, 0);
       keyCol.setAttribute("label", keyId.substr(-8));
     }
 
@@ -700,10 +704,32 @@ function enigmailKeySelCallback(event) {
   if (aRows.length) {
     var elem=aRows[0];
     if (elem.getAttribute("active") == "1") {
-      EnigSetActive(elem, 0);
+      enigSetActive(elem, 0);
     } else if (elem.getAttribute("active") == "0") {
-      EnigSetActive(elem, 1);
+      enigSetActive(elem, 1);
     }
+  }
+}
+
+// set the "active" flag and the corresponding image
+function enigSetActive(element, status) {
+
+  if (status>=0)
+    element.setAttribute("active", status.toString());
+
+  switch (status)
+  {
+  case 0:
+    element.setAttribute("src", ENIG_IMG_NOT_SELECTED);
+    break;
+  case 1:
+    element.setAttribute("src", ENIG_IMG_SELECTED);
+    break;
+  case 2:
+    element.setAttribute("src", ENIG_IMG_DISABLED);
+    break;
+  default:
+    element.setAttribute("active", -1);
   }
 }
 

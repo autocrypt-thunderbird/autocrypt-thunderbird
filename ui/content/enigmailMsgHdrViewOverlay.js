@@ -516,12 +516,6 @@ Enigmail.hdrView = {
 
   },
 
-  editKeyExpiry: function ()
-  {
-    EnigmailFuncs.editKeyExpiry(window, [Enigmail.msg.securityInfo.userId], [Enigmail.msg.securityInfo.keyId]);
-    gDBView.reloadMessageWithAllParts();
-  },
-
   editKeyTrust: function ()
   {
     EnigmailFuncs.editKeyTrust(window, [Enigmail.msg.securityInfo.userId], [Enigmail.msg.securityInfo.keyId]);

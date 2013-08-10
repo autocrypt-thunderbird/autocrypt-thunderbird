@@ -73,6 +73,29 @@ var gEnigRemoveListener = false;
 const EMPTY_UID = " -";
 
 
+
+// set the "active" flag and the corresponding image
+function enigSetActive(element, status) {
+
+  if (status>=0)
+    element.setAttribute("active", status.toString());
+
+  switch (status)
+  {
+  case 0:
+    element.setAttribute("src", ENIG_IMG_NOT_SELECTED);
+    break;
+  case 1:
+    element.setAttribute("src", ENIG_IMG_SELECTED);
+    break;
+  case 2:
+    element.setAttribute("src", ENIG_IMG_DISABLED);
+    break;
+  default:
+    element.setAttribute("active", -1);
+  }
+}
+
 function enigmailUserSelLoad() {
   DEBUG_LOG("enigmailUserSelection.js: Load\n");
   window.enigIpcRequest = null;
@@ -567,7 +590,7 @@ function enigUserSelCreateRow (userObj, activeState, userId, keyValue, dateField
     if (!gAllowExpired && activeState>=0) activeState=2;
   }
 
-  EnigSetActive(selectCol, activeState);
+  enigSetActive(selectCol, activeState);
   trustCol.setAttribute("label", trust);
   var userRow=document.createElement("treerow");
   userRow.appendChild(selectCol);
@@ -702,9 +725,9 @@ function enigmailUserSelCallback(event) {
   if (aRows.length) {
     var elem=aRows[0];
     if (elem.getAttribute("active") == "1") {
-      EnigSetActive(elem, 0);
+      enigSetActive(elem, 0);
     } else if (elem.getAttribute("active") == "0") {
-      EnigSetActive(elem, 1);
+      enigSetActive(elem, 1);
     }
   }
 }

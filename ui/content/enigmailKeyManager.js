@@ -756,23 +756,6 @@ function enigEditKeyTrust() {
   }
 }
 
-function enigEditKeyExpiry() {
-
-  var keyList = enigmailGetSelectedKeys();
-  if (keyList.length==0) {
-    EnigAlert(EnigGetString("noKeySelected"));
-    return;
-  }
-  var userIdList = [];
-  for (var i=0; i < keyList.length; i++) {
-    userIdList.push(gKeyList[keyList[i]].userId);
-  }
-
-  if (EnigEditKeyExpiry(userIdList, keyList)) {
-    enigmailRefreshKeys();
-  }
-}
-
 
 function enigSignKey() {
   var keyList = enigmailGetSelectedKeys();
