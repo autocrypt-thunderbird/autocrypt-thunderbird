@@ -32,6 +32,21 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
+
+ /* Usage:
+  InstallGnuPG.start(progressListener).
+
+  progressListener needs to implement the following methods:
+  boolean onError    (event, errorMessage)
+  boolean onWarning  (message)
+  void    onProgress (event)
+  void    onLoaded   (event)
+  void    onDownloaded ()
+
+  onError and onWarning return true if the error should be ignored, false otherwise
+
+*/
+
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 Components.utils.import("resource://enigmail/subprocess.jsm");
@@ -359,8 +374,11 @@ installer.prototype = {
 
     function onError(event, error) {
       deferred.reject("error");
-      if (self.progressListener)
-        self.progressListener.onError(event, error);
+      if (self.progressListener) {
+        return self.progressListener.onError(event, error);
+      }
+
+      return false;
     }
 
 
@@ -390,7 +408,7 @@ installer.prototype = {
     catch(ex) {
       deferred.reject(ex);
       if (self.progressListener)
-        self.progressListener.onError(event);
+        self.progressListener.onError(event, null);
     }
 
     return deferred.promise;
@@ -425,6 +443,9 @@ installer.prototype = {
 
     function onLoaded(event) {
       Ec.DEBUG_LOG("installGnuPG.jsm: performDownload: downloaded "+ event.loaded+"bytes\n");
+
+      if (self.progressListener)
+        self.progressListener.onDownloaded();
 
       var arraybuffer = this.response; // not responseText
       Ec.DEBUG_LOG("installGnuPG.jsm: performDownload: bytes "+arraybuffer.byteLength +"\n");
@@ -528,7 +549,19 @@ installer.prototype = {
 
 var InstallGnuPG = {
 
-  start: function(progressListener) {
+  // check if there is a downloadable item for the given platform
+  // returns true if item available
+  checkAvailability: function() {
+    switch (Ec.getOS()) {
+    case "Darwin":
+    case "WINNT":
+      return true;
+    }
+
+    return false;
+  },
+
+  startInstaller: function(progressListener) {
 
     var i = new installer(progressListener);
     i.getDownloadUrl().

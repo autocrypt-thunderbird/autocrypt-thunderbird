@@ -1032,7 +1032,8 @@ var EnigmailCommon = {
   parseErrorOutput: function (errOutput, retStatusObj)
   {
 
-    this.WRITE_LOG("enigmailCommon.jsm: parseErrorOutput:\n");
+    this.DEBUG_LOG("enigmailCommon.jsm: parseErrorOutput: status message: "+errOutput+"\n");
+
     var errLines = errOutput.split(/\r?\n/);
 
     // Discard last null string, if any
