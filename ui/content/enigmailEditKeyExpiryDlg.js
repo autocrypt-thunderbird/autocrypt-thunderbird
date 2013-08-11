@@ -36,6 +36,9 @@ Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 Components.utils.import("resource://enigmail/keyManagement.jsm");
 const Ec = EnigmailCommon;
 
+var gAlertPopUpIsOpen = false;
+
+
 /**
  * The function for when the popup window for changing the key expiry is loaded.
  */
@@ -178,7 +181,6 @@ function onAccept() {
   return false; /* don't close the window now. Wait for calling window.close() explicitly. */
 }
 
-alertPopUpisOpen = false;
 function checkExpirationDate() {
   Ec.DEBUG_LOG("enigmailEditKeyExpiryDlg.js: checkExpirationDate()\n");
 
@@ -192,22 +194,22 @@ function checkExpirationDate() {
     if (expiryTime > 90*365) {
       /* alert("You cannot create a key that expires in more than 100 years."); */
       /* @TODO GPG throws an error already when using 95 years (multiplying 365 and 95) */
-      if (alertPopUpisOpen !== true) {
-        alertPopUpisOpen = true
+      if (gAlertPopUpIsOpen !== true) {
+        gAlertPopUpIsOpen = true
         Ec.setTimeout(function () {
           Ec.alert(window, Ec.getString("expiryTooLongShorter")+"\n");
-          alertPopUpisOpen = false
+          gAlertPopUpIsOpen = false
         }, 10);
       }
       return false;
     }
     else if (! (expiryTime > 0)) {
       /* alert("Your key must be valid for at least one day."); */
-      if (alertPopUpisOpen !== true) {
-        alertPopUpisOpen = true
+      if (gAlertPopUpIsOpen !== true) {
+        gAlertPopUpIsOpen = true
         Ec.setTimeout(function () {
           Ec.alert(window, Ec.getString("expiryTooShort")+"\n");
-          alertPopUpisOpen = false
+          gAlertPopUpIsOpen = false
         }, 10);
       }
       return false;
