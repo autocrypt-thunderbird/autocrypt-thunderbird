@@ -76,57 +76,35 @@ function reloadData() {
   var uidList = document.getElementById("uidListChildren");
 
   // clean lists
-  while (treeChildren.firstChild) {
-    treeChildren.removeChild(treeChildren.firstChild);
-  }
-  while (uidList.firstChild) {
-    uidList.removeChild(uidList.firstChild);
-  }
+  EnigCleanGuiList(treeChildren);
+  EnigCleanGuiList(uidList);
 
   var sigListStr = enigmailSvc.getKeySig("0x"+gKeyId, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value == 0) {
-    var sigList = sigListStr.split(/[\n\r]+/);
-    for (var i=0; i < sigList.length; i++) {
-      var aLine=sigList[i].split(/:/);
-      switch (aLine[0]) {
-      case "pub":
-        gUserId=EnigConvertGpgToUnicode(aLine[9]);
-        var calcTrust=aLine[1];
-        if (aLine[11].indexOf("D")>=0) calcTrust="d";
-        calcTrust=getTrustLabel(calcTrust);
-        var ownerTrust=getTrustLabel(aLine[8]);
-        addSubkey(treeChildren, aLine);
-      case "uid":
-        if (! gUserId) {
-          gUserId=EnigConvertGpgToUnicode(aLine[9]);
-        }
-        else {
-          uidList.appendChild(createUidRow(aLine));
-        }
-        break;
-      case "uat":
-        if (aLine[9].search("1 ") == 0) {
-          document.getElementById("showPhoto").removeAttribute("disabled");
-        }
-        break;
-      case "sub":
-        addSubkey(treeChildren, aLine);
-        break;
-      case "fpr":
-        fingerprint = aLine[9];
-        break;
-      }
+    var keyDetails = EnigGetKeyDetails(sigListStr);
+ 
+    if (keyDetails.showPhoto === true) {
+      document.getElementById("showPhoto").removeAttribute("disabled");
+    }
+  
+    for (var i=0; i < keyDetails.uidList.length; i++) {
+      uidList.appendChild(createUidRow(keyDetails.uidList[i]));
+    }
+    for (var i=0; i < keyDetails.subkeyList.length; i++) {
+      EnigAddSubkey(treeChildren, keyDetails.subkeyList[i]);
+    }
+
+    gUserId = keyDetails.gUserId
+    setAttr("userId", gUserId);
+    setAttr("keyId", "0x"+ gKeyId.substr(-8,8));
+    setAttr("calcTrust", getTrustLabel(keyDetails.calcTrust));
+    setAttr("ownerTrust", getTrustLabel(keyDetails.ownerTrust));
+    if (keyDetails.fingerprint) {
+      setAttr("fingerprint", EnigFormatFpr(keyDetails.fingerprint));
     }
   }
-
-  setAttr("userId", gUserId);
-  setAttr("keyId", "0x"+ gKeyId.substr(-8,8));
-  setAttr("calcTrust", calcTrust);
-  setAttr("ownerTrust", ownerTrust);
-  if (fingerprint) {
-    setAttr("fingerprint", EnigFormatFpr(fingerprint));
-  }
 }
+
 
 function createUidRow(aLine) {
   var treeItem = document.createElement("treeitem");
@@ -141,70 +119,6 @@ function createUidRow(aLine) {
   treeRow.appendChild(validCol);
   treeItem.appendChild(treeRow);
   return treeItem;
-}
-
-function addSubkey(treeChildren, aLine) {
-  var aRow=document.createElement("treerow");
-  var treeItem=document.createElement("treeitem");
-  var subkey=EnigGetString(aLine[0]=="sub" ? "keyTypeSubkey" : "keyTypePrimary");
-  aRow.appendChild(createCell(subkey)); // subkey type
-  aRow.appendChild(createCell("0x"+aLine[4].substr(-8,8))); // key id
-  aRow.appendChild(createCell(EnigGetString("keyAlgorithm_"+aLine[3]))); // algorithm
-  aRow.appendChild(createCell(aLine[2])); // size
-  aRow.appendChild(createCell(EnigGetDateTime(aLine[5], true, false))); // created
-  var expire=(aLine[6].length==0 ? EnigGetString("keyExpiryNever") : EnigGetDateTime(aLine[6], true, false));
-  if (aLine[1]=="r") {
-    expire = EnigGetString("keyValid.revoked");
-  }
-  aRow.appendChild(createCell(expire)); // expiry
-  var usagecodes=aLine[11];
-  var usagetext = "";
-/*  e = encrypt
-    s = sign
-    c = certify
-    a = authentication
-    Capital Letters are ignored, as these reflect summary properties of a key
-*/
-  var singlecode = "";
-  for (i=0; i < aLine[11].length; i++)
-  {
-    singlecode = aLine[11].substr(i, 1);
-    switch (singlecode)
-    {
-    case "e":
-      if (usagetext.length>0)
-      {
-        usagetext = usagetext + ", ";
-      }
-      usagetext = usagetext + EnigGetString("keyUsageEncrypt");
-      break;
-    case "s":
-      if (usagetext.length>0)
-      {
-        usagetext = usagetext + ", ";
-      }
-      usagetext = usagetext + EnigGetString("keyUsageSign");
-      break;
-    case "c":
-      if (usagetext.length>0)
-      {
-        usagetext = usagetext + ", ";
-      }
-      usagetext = usagetext + EnigGetString("keyUsageCertify");
-      break;
-    case "a":
-      if (usagetext.length>0)
-      {
-        usagetext = usagetext + ", ";
-      }
-      usagetext = usagetext + EnigGetString("keyUsageAuthentication");
-      break;
-    } /* case */
-  } /* for */
-
-  aRow.appendChild(createCell(usagetext)); // usage
-  treeItem.appendChild(aRow);
-  treeChildren.appendChild(treeItem);
 }
 
 function createCell(label) {
@@ -265,6 +179,15 @@ function signKey() {
     reloadData();
   }
 }
+
+
+function changeExpirationDate() {
+  if (EnigEditKeyExpiry([gUserId], [gKeyId])) {
+    enableRefresh();
+    reloadData();
+  }
+}
+
 
 function setOwnerTrust() {
 

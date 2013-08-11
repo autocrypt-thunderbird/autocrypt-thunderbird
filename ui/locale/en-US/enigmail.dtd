@@ -414,6 +414,9 @@
 <!ENTITY enigmail.keyTrust.fullTrust.label         "I trust fully">
 <!ENTITY enigmail.keyTrust.ultimateTrust.label     "I trust ultimately">
 
+<!ENTITY enigmail.keyExpiry.title                   "OpenPGP - Change Expiration Date">
+<!ENTITY enigmail.keyExpiry.expiryKey.label         "Keys to change expiration date:">
+
 <!ENTITY enigmail.keyMan.title                     "OpenPGP Key Management">
 <!ENTITY enigmail.keyMan.close.label               "Close Window">
 <!ENTITY enigmail.keyMan.generate.label            "New Key Pair">
@@ -454,6 +457,7 @@
 <!ENTITY enigmail.keyMan.addUid.label              "Add User ID">
 <!ENTITY enigmail.keyMan.addPhoto.label            "Add Photo">
 <!ENTITY enigmail.keyMan.manageUid.label           "Manage User IDs">
+<!ENTITY enigmail.keyMan.changeExpiry.label        "Change Expiration Date">
 <!ENTITY enigmail.keyMan.changePwd.label           "Change Passphrase">
 <!ENTITY enigmail.keyMan.delKey.label              "Delete Key">
 <!ENTITY enigmail.keyMan.revokeKey.label           "Revoke Key">
@@ -498,6 +502,7 @@
 <!ENTITY enigmail.keyMan.addUid.accesskey            "A">
 <!ENTITY enigmail.keyMan.addPhoto.accesskey          "P">
 <!ENTITY enigmail.keyMan.manageUid.accesskey         "M">
+<!ENTITY enigmail.keyMan.changeExpiry.accesskey      "E">
 <!ENTITY enigmail.keyMan.changePwd.accesskey         "P">
 <!ENTITY enigmail.keyMan.viewSig.accesskey           "S">
 <!ENTITY enigmail.keyMan.showInvalidKeys.accesskey   "D">

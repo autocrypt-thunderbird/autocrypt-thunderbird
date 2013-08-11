@@ -18,6 +18,7 @@
  * Copyright (C) 2012 Patrick Brunschwig. All Rights Reserved.
  *
  * Contributor(s):
+ * Marius Stübs <marius.stuebs@riseup.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -351,6 +352,55 @@ var EnigmailKeyMgmt = {
                         callbackFunc);
   },
 
+
+  /**
+   * Call editKey() to set the expiration date of the chosen key and subkeys
+   * 
+   * @param  Object    parent
+   * @param  String    keyId         e.g. 8D18EB22FDF633A2
+   * @param  Array     subKeys       List of Integer values, e.g. [0,1,3]
+   *                                 "0" should allways be set because it's the main key. 
+   * @param  Integer   expiryLength  A number between 1 and 100
+   * @param  Integer   timeScale     1 or 30 or 365 meaning days, months, years
+   * @param  Boolean   noExpiry      True: Expire never. False: Use expiryLength.
+   * @param  Function  callbackFunc  will be executed by editKey()
+   * @return  Integer
+   *          returnCode = 0 in case of success
+   *          returnCode != 0 and errorMsg set in case of failure
+   */
+  setKeyExpiration: function (parent, keyId, subKeys, expiryLength, timeScale, noExpiry, callbackFunc) { 
+    Ec.DEBUG_LOG("keyManagmenent.jsm: Enigmail.setKeyExpiry: keyId="+keyId+"\n");
+    
+    expiryLength = "" + expiryLength;
+    if (noExpiry == true) {
+      expiryLength = "0";
+    } else {
+      switch (parseInt(timeScale)) {
+        case 365:
+          expiryLength += "y";
+          break;
+        case 30:
+          expiryLength += "m";
+          break;
+        case 7:
+          expiryLength += "w";
+          break;
+      }
+    }
+
+    r = this.editKey(parent, 
+                     true, 
+                     null, 
+                     keyId, 
+                     "",    /* "expire", */
+                     {expiryLength: expiryLength, subKeys: subKeys, currentSubKey: false},
+                     keyExpiryCallback, /* contains the gpg communication logic */
+                     null,
+                     callbackFunc);
+    return r;
+  },
+
+
   signKey: function (parent, userId, keyId, signLocally, trustLevel, callbackFunc) {
     Ec.DEBUG_LOG("keyManagmenent.jsm: Enigmail.signKey: trustLevel="+trustLevel+", userId="+userId+", keyId="+keyId+"\n");
     return this.editKey(parent, true, userId, keyId,
@@ -633,6 +683,67 @@ function keyTrustCallback(inputData, keyEdit, ret) {
   }
 }
 
+/**
+ *
+ * @param  Array   inputData  Has the keys ...
+ *                        expiryLength (String): e.g. 8m = 8 month, 5 = 5 days, 3y = 3 years, 0 = never
+ *                        subKeys (array): list of still unprocessed subkeys
+ *                        currentSubKey (Integer or false): current subkey in progress
+ * @param  Object  keyEdit    Readonly messages from GPG.
+ * @param  Object  ret
+ */
+function keyExpiryCallback(inputData, keyEdit, ret) {
+  Ec.DEBUG_LOG("keyManagmenent.jsm: keyExpiryCallback()\n");
+
+  ret.writeTxt = "";
+  ret.errorMsg = "";
+    
+  if (inputData.subKeys.length == 0) {
+    // zero keys are submitted to edit: this must be a mistake.
+    ret.exitCode = -1;
+    ret.quitNow = true;
+  } else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
+    if (inputData.currentSubKey === false) {
+      // currently no subkey is selected. Chose the first subkey.
+      inputData.currentSubKey = inputData.subKeys[0];
+      ret.exitCode = 0;
+      ret.writeTxt = "key " + inputData.currentSubKey;
+    } else if (inputData.currentSubKey === inputData.subKeys[0]) {
+      // a subkey is selected. execute command "expire"
+      ret.exitCode = 0;
+      ret.writeTxt = "expire";    
+    } else {
+      // if (inputData.currentSubKey === inputData.subKeys[0])
+      // unselect the previous used subkey
+      ret.exitCode = 0;
+      ret.writeTxt = "key " + inputData.currentSubKey;
+      inputData.currentSubKey = false;      
+    } 
+  }
+  else if (keyEdit.doCheck(GET_LINE, "keygen.valid")) {
+    // submit the expiry length. 
+    ret.exitCode = 0;
+    ret.writeTxt = inputData.expiryLength;
+    // processing of the current subkey is through.
+    // remove current subkey from list of "to be processed keys".
+    inputData.subKeys.splice(0, 1);
+    // if the list of "to be processed keys" is empty, then quit.
+    if (inputData.subKeys.length == 0) {
+      ret.quitNow = true;
+    }
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
+    GetPin(inputData.parent, Ec.getString("enterAdminPin"), ret);
+  }
+  else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
+    GetPin(inputData.parent, Ec.getString("enterCardPin"), ret);
+  }
+  else {
+    ret.quitNow = true;
+    Ec.ERROR_LOG("Unknown command prompt: "+keyEdit.getText()+"\n");
+    ret.exitCode = -1;
+  }
+}
 
 function addUidCallback(inputData, keyEdit, ret) {
   ret.writeTxt = "";

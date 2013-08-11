@@ -59,10 +59,6 @@ const KEY_IS_GROUP="g";
 // HKP related stuff
 const ENIG_DEFAULT_HKP_PORT="11371";
 
-const ENIG_IMG_NOT_SELECTED ="chrome://enigmail/content/check0.png";
-const ENIG_IMG_SELECTED     ="chrome://enigmail/content/check1.png";
-const ENIG_IMG_DISABLED     ="chrome://enigmail/content/check2.png";
-
 var gUserList;
 var gResult;
 var gAlwaysTrust=false;

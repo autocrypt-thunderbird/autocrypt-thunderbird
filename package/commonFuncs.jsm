@@ -18,6 +18,7 @@
  * Copyright (C) 2011 Patrick Brunschwig. All Rights Reserved.
  *
  * Contributor(s):
+ * Marius Stübs <marius.stuebs@riseup.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -293,6 +294,18 @@ var EnigmailFuncs = {
     win.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","",
                    "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     return true;
+  },
+
+  editKeyExpiry: function (win, userIdArr, keyIdArr)
+  {
+    var inputObj = {
+      keyId: keyIdArr,
+      userId: userIdArr
+    };
+    var resultObj = { refresh: false };
+    win.openDialog("chrome://enigmail/content/enigmailEditKeyExpiryDlg.xul","",
+                   "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+    return resultObj.refresh;
   },
 
   editKeyTrust: function (win, userIdArr, keyIdArr)
