@@ -814,7 +814,7 @@ function EnigOpenURL(event, hrefObj) {
 /**
  * GUI List: Set the "active" flag and the corresponding image
  */
-function enigSetActive(element, status) {
+function EnigSetActive(element, status) {
   if (status >= 0) {
     element.setAttribute("active", status.toString());
   }
@@ -862,7 +862,7 @@ function EnigAddSubkeyWithSelectboxes(treeChildren, aLine, keyCount) {
       preSelected = 1;
     } else if (keyCount === 2) {
       // If only 2 keys are here (primary + 1 subkey) then preSelect them anyway.
-      preSelected = 1;    
+      preSelected = 1;
     } else if (aLine[1]==="e") {
       // Expired keys are normally un-selected.
       preSelected = 0;
@@ -870,10 +870,10 @@ function EnigAddSubkeyWithSelectboxes(treeChildren, aLine, keyCount) {
       // A valid subkey is pre-selected.
       preSelected = 1;
     }
-  }   
+  }
   var selectCol=document.createElement("treecell");
   selectCol.setAttribute("id", "indicator");
-  enigSetActive(selectCol, preSelected);
+  EnigSetActive(selectCol, preSelected);
 
 
   EnigAddSubkey(treeChildren, aLine, selectCol);
@@ -890,7 +890,7 @@ function EnigAddSubkeyWithSelectboxes(treeChildren, aLine, keyCount) {
 function EnigAddSubkey(treeChildren, aLine, selectCol=false) {
   DEBUG_LOG("enigmailCommon.js: EnigAddSubkey("+aLine+")\n");
 
-  // Get expiry state of this subkey 
+  // Get expiry state of this subkey
   var expire;
   if (aLine[1]==="r") {
     expire = EnigGetString("keyValid.revoked");
@@ -899,7 +899,7 @@ function EnigAddSubkey(treeChildren, aLine, selectCol=false) {
   } else {
     expire = EnigGetDateTime(aLine[6], true, false);
   }
-  
+
   var aRow=document.createElement("treerow");
   var treeItem=document.createElement("treeitem");
   var subkey=EnigGetString(aLine[0]==="sub" ? "keyTypeSubkey" : "keyTypePrimary");
@@ -950,7 +950,7 @@ function EnigAddSubkey(treeChildren, aLine, selectCol=false) {
         usagetext = usagetext + EnigGetString("keyUsageAuthentication");
         break;
     } // * case *
-  } // * for * 
+  } // * for *
 
   aRow.appendChild(createCell(usagetext)); // usage
   treeItem.appendChild(aRow);
@@ -959,7 +959,7 @@ function EnigAddSubkey(treeChildren, aLine, selectCol=false) {
 
 /**
  * Receive a GUI List and remove all entries
- * 
+ *
  * @param  XML-DOM  (it will be changed!)
  */
 function EnigCleanGuiList(guiList) {
@@ -1000,7 +1000,7 @@ function EnigGetKeyDetails(sigListStr) {
     case "pub":
       gUserId=EnigConvertGpgToUnicode(aLine[9]);
       var calcTrust=aLine[1];
-      if (aLine[11].indexOf("D")>=0) { 
+      if (aLine[11].indexOf("D")>=0) {
         calcTrust="d";
       }
       var ownerTrust=aLine[8];

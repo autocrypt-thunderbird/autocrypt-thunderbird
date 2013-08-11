@@ -636,7 +636,7 @@ function enigPopulateList(keyList) {
 
   if (keyList.length == 1) {
     // activate found item if just one key found
-    enigSetActive(treeItem.firstChild.firstChild, 1);
+    EnigSetActive(treeItem.firstChild.firstChild, 1);
   }
 }
 
@@ -658,11 +658,11 @@ function enigUserSelCreateRow (keyId, subKey, userId, dateField, trustStatus) {
     var keyCol=document.createElement("treecell");
     keyCol.setAttribute("id", "keyid");
     if (subKey) {
-      enigSetActive(selectCol, -1);
+      EnigSetActive(selectCol, -1);
       keyCol.setAttribute("label", "");
     }
     else  {
-      enigSetActive(selectCol, 0);
+      EnigSetActive(selectCol, 0);
       keyCol.setAttribute("label", keyId.substr(-8));
     }
 
@@ -700,9 +700,9 @@ function enigmailKeySelCallback(event) {
   if (aRows.length) {
     var elem=aRows[0];
     if (elem.getAttribute("active") == "1") {
-      enigSetActive(elem, 0);
+      EnigSetActive(elem, 0);
     } else if (elem.getAttribute("active") == "0") {
-      enigSetActive(elem, 1);
+      EnigSetActive(elem, 1);
     }
   }
 }

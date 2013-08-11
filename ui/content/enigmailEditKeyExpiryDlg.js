@@ -31,7 +31,7 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
- 
+
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 Components.utils.import("resource://enigmail/keyManagement.jsm");
 const Ec = EnigmailCommon;
@@ -45,7 +45,7 @@ function onLoad() {
   reloadData();
 }
 
-/** 
+/**
  * Display all the subkeys in XUL element "keyListChildren"
  */
 function reloadData() {
@@ -66,7 +66,7 @@ function reloadData() {
   var keyListStr = enigmailSvc.getKeySig("0x"+gKeyId, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value == 0) {
     var keyDetails = EnigGetKeyDetails(keyListStr);
-    
+
     for (var i=0; i < keyDetails.subkeyList.length; i++) {
       EnigAddSubkeyWithSelectboxes(treeChildren, keyDetails.subkeyList[i]);
     }
@@ -95,9 +95,9 @@ function enigmailKeySelCallback(event) {
   if (aRows.length) {
     var elem=aRows[0];
     if (elem.getAttribute("active") == "1") {
-      enigSetActive(elem, 0);
+      EnigSetActive(elem, 0);
     } else if (elem.getAttribute("active") == "0") {
-      enigSetActive(elem, 1);
+      EnigSetActive(elem, 1);
     }
   }
 }
@@ -105,7 +105,7 @@ function enigmailKeySelCallback(event) {
 
 function processKey(subKeys) {
   Ec.DEBUG_LOG("enigmailEditKeyExpiryDlg.js: processKey()\n");
-  
+
   var noExpiry = document.getElementById("noExpiry").checked;
   var expiryTime = Number(document.getElementById("expireInput").value);
   var timeScale = document.getElementById("timeScale").value;
@@ -136,14 +136,14 @@ function processKey(subKeys) {
  */
 function getSelectedSubkeys() {
   Ec.DEBUG_LOG("enigmailEditKeyExpiryDlg.js: getSelectedSubkeys()\n");
-  
+
   var keySelList   = document.getElementById("subkeyList");
   var treeChildren = keySelList.getElementsByAttribute("id", "keyListChildren")[0];
   var item=treeChildren.firstChild;
   var selectedSubKeys = [];
-  
+
   var subkeyNumber = 0;
-  
+
   while (item) {
     var aRows = item.getElementsByAttribute("id","indicator");
     if (aRows.length) {
@@ -155,7 +155,7 @@ function getSelectedSubkeys() {
     subkeyNumber += 1;
     item = item.nextSibling;
   }
-  
+
   return selectedSubKeys;
 }
 
@@ -181,11 +181,11 @@ function onAccept() {
 alertPopUpisOpen = false;
 function checkExpirationDate() {
   Ec.DEBUG_LOG("enigmailEditKeyExpiryDlg.js: checkExpirationDate()\n");
-  
+
   var noExpiry = document.getElementById("noExpiry");
   var expireInput = document.getElementById("expireInput");
   var timeScale = document.getElementById("timeScale");
-  
+
   var expiryTime = 0;
   if (! noExpiry.checked) {
     expiryTime = Number(expireInput.value) * Number(timeScale.value);
@@ -193,7 +193,7 @@ function checkExpirationDate() {
       /* alert("You cannot create a key that expires in more than 100 years."); */
       /* @TODO GPG throws an error already when using 95 years (multiplying 365 and 95) */
       if (alertPopUpisOpen !== true) {
-        alertPopUpisOpen = true      
+        alertPopUpisOpen = true
         Ec.setTimeout(function () {
           Ec.alert(window, Ec.getString("expiryTooLongShorter")+"\n");
           alertPopUpisOpen = false
@@ -204,7 +204,7 @@ function checkExpirationDate() {
     else if (! (expiryTime > 0)) {
       /* alert("Your key must be valid for at least one day."); */
       if (alertPopUpisOpen !== true) {
-        alertPopUpisOpen = true      
+        alertPopUpisOpen = true
         Ec.setTimeout(function () {
           Ec.alert(window, Ec.getString("expiryTooShort")+"\n");
           alertPopUpisOpen = false
@@ -218,7 +218,7 @@ function checkExpirationDate() {
 
 function onNoExpiry() {
   Ec.DEBUG_LOG("enigmailEditKeyExpiryDlg.js: onNoExpiry()\n");
-  
+
   var noExpiry = document.getElementById("noExpiry");
   var expireInput = document.getElementById("expireInput");
   var timeScale = document.getElementById("timeScale");
