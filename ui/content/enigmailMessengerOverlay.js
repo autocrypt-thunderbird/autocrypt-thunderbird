@@ -704,7 +704,7 @@ Enigmail.msg = {
             Enigmail.msg.verifyEmbeddedMsg(window, mailNewsUrl, msgWindow, msgUriSpec, contentEncoding, event);
           }
           else {
-            var verifier = EnigmailVerify.newVerfier(false, mailNewsUrl);
+            var verifier = EnigmailVerify.newVerifier(false, mailNewsUrl, false);
             verifier.startStreaming(window, msgWindow, msgUriSpec);
 
           }
@@ -1623,7 +1623,7 @@ Enigmail.msg = {
 
         let enableSubpartTreatment=(msigned > 0);
 
-        var verifier = EnigmailVerify.newVerfier(enableSubpartTreatment, callbackArg.mailNewsUrl);
+        var verifier = EnigmailVerify.newVerifier(enableSubpartTreatment, callbackArg.mailNewsUrl, true);
         verifier.verifyData(callbackArg.window, callbackArg.msgWindow, callbackArg.msgUriSpec, callbackArg.data);
 
         return;

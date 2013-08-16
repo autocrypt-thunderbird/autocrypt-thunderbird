@@ -30,10 +30,11 @@ const maxBufferLen = 102400;
 
 var gDebugLog = false;
 
-function MimeVerify(verifyEmbedded, msgUrl)
+function MimeVerify(verifyEmbedded, msgUrl, partiallySigned)
 {
   this.verifyEmbedded = verifyEmbedded;
   this.msgUrl = msgUrl;
+  this.partiallySigned = partiallySigned;
 }
 
 
@@ -299,6 +300,10 @@ MimeVerify.prototype = {
           true,
           Ci.nsIEnigmail.UI_PGP_MIME,
           this.returnStatus);
+
+    if (this.partiallySigned)
+      this.returnStatus.statusFlags |= Ci.nsIEnigmail.PARTIALLY_PGP;
+
     this.displayStatus();
 
   },
@@ -351,8 +356,8 @@ var EnigmailVerify = {
     this.lastMsgUri = msgUriSpec;
   },
 
-  newVerfier: function (embedded, msgUrl) {
-    let v = new MimeVerify(embedded, msgUrl);
+  newVerifier: function (embedded, msgUrl, partiallySigned) {
+    let v = new MimeVerify(embedded, msgUrl, partiallySigned);
     return v;
   }
 };
