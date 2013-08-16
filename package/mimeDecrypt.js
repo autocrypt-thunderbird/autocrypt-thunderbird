@@ -95,7 +95,7 @@ PgpMimeDecrypt.prototype = {
     var errorMsgObj = {};
     var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
     var win = windowManager.getMostRecentWindow(null);
-    this.verifier = EnigmailVerify.newVerfier(true);
+    this.verifier = EnigmailVerify.newVerifier(true, undefined, false);
     this.verifier.setMsgWindow(this.msgWindow, this.msgUriSpec);
     this.verifier.onStartRequest(true);
     this.proc = Ec.decryptMessageStart(win, false, false, this,
@@ -273,11 +273,15 @@ PgpMimeDecrypt.prototype = {
           break;
         }
       }
-
     }
 
     gConv.setData(this.decryptedData, this.decryptedData.length);
-    this.mimeSvc.onDataAvailable(null, null, gConv, 0, this.decryptedData.length);
+    try {
+      this.mimeSvc.onDataAvailable(null, null, gConv, 0, this.decryptedData.length);
+    }
+    catch(ex) {
+      Ec.ERROR_LOG("mimeDecrypt.js: mimeSvc.onDataAvailable failed:\n"+ex.toString());
+    }
 
     this.verifier.onTextData(verifyData);
     this.verifier.onStopRequest();
