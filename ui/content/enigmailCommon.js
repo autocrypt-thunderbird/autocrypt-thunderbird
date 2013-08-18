@@ -476,6 +476,8 @@ function EnigGetVersion() {
 function EnigDisplayPrefs(showDefault, showPrefs, setPrefs) {
   DEBUG_LOG("enigmailCommon.js: EnigDisplayPrefs\n");
 
+  var s = GetEnigmailSvc();
+
   var obj = new Object;
   var prefList = EnigmailCommon.prefBranch.getChildList("",obj);
 
