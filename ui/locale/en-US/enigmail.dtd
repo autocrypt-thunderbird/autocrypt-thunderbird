@@ -646,6 +646,21 @@
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds      "I would like to set up OpenPGP only for the following identities:">
 <!ENTITY enigmail.setupWiz.pgSelectId.note           "<a class='enigmailStrong'>Note:</a> OpenPGP will always verify signatures
                                                       on emails for every account or identity, regardless of whether it is enabled or not">
+<!ENTITY enigmail.setupWiz.pgInstall.title           "GnuPG Required">
+<!ENTITY enigmail.setupWiz.pgInstall.subtitle        "You need to install GnuPG in order to use OpenPGP">
+<!ENTITY enigmail.setupWiz.pgInstall.desc            "In order to use OpenPGP, GnuPG is required as additional component for doing the cryptographic work.
+                                                      The wizard tried to locate GnuPG, but it could not be found.">
+<!ENTITY enigmail.setupWiz.pgInstall.installDesc     "OpenPGP can download GnuPG and launch the installer for you.
+                                                      If you wish to do so, click on the install button to download and install GnuPG.
+                                                      <html:br/><html:br/>
+                                                      Alternatively, if you already installed GnuPG, use the Browse button to locate GnuPG for the wizard.">
+<!ENTITY enigmail.setupWiz.pgInstall.locateDesc      "Please locate GnuPG using the Browse button.">
+<!ENTITY enigmail.setupWiz.pgInstall.installButton   "Install ...">
+<!ENTITY enigmail.setupWiz.pgInstall.locateButton    "Browse ...">
+<!ENTITY enigmail.setupWiz.pgInstall.downloadLabel   "Downloading GnuPG ...">
+<!ENTITY enigmail.setupWiz.pgInstall.installLabel    "Starting the installer. Please follow the steps of the GnuPG installer wizard.">
+<!ENTITY enigmail.setupWiz.pgInstall.installDone     "Installation complete. Please click on Next to continue the setup process.">
+<!ENTITY enigmail.setupWiz.pgInstall.gnupgFound      "Valid GnuPG installation found.">
 <!ENTITY enigmail.setupWiz.pgSign.title              "Signing">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle           "Digitally Sign Your Outgoing Emails">
 <!ENTITY enigmail.setupWiz.pgSign.desc               "OpenPGP allows you to digitally sign your emails. This is like the

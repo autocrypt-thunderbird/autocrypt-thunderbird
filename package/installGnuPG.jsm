@@ -37,13 +37,17 @@
   InstallGnuPG.start(progressListener).
 
   progressListener needs to implement the following methods:
-  boolean onError    (event, errorMessage)
+  void    onError    (event, errorMessage)
   boolean onWarning  (message)
   void    onProgress (event)
   void    onLoaded   (event)
   void    onDownloaded ()
+  void    onStart    (requestObj)
 
-  onError and onWarning return true if the error should be ignored, false otherwise
+  requestObj:
+    abort():  cancel download
+
+  onWarning can return true if the warning should be ignored, false otherwise
 
 */
 
@@ -78,7 +82,7 @@ const DIR_SERV_CONTRACTID  = "@mozilla.org/file/directory_service;1";
 const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
-const queryUrl = "http://www.enigmail.net/download/get_gnupg_dl.php";
+const queryUrl = "https://www.enigmail.net/download/get_gnupg_dl.php";
 
 var EXPORTED_SYMBOLS = [ "InstallGnuPG" ];
 
@@ -97,6 +101,14 @@ function toHexString(charCode)
   return ("0" + charCode.toString(16)).slice(-2);
 }
 
+function sanitizeFileName(str) {
+  // remove shell escape, #, ! and / from string
+  return str.replace(/[`\/\#\!]/g, "");
+}
+
+function sanitizeHash(str) {
+  return str.replace(/[^a-hA-H0-9]/g, "");
+}
 
 // Adapted from the patch for mozTCPSocket error reporting (bug 861196).
 
@@ -364,10 +376,10 @@ installer.prototype = {
       if (typeof(this.responseXML) == "object") {
         Ec.DEBUG_LOG("installGnuPG.jsm: getDownloadUrl.reqListener: got: "+this.responseText+"\n");
         let doc = this.responseXML.firstChild;
-        self.url = doc.getAttribute("url");
-        self.hash = doc.getAttribute("hash");
-        self.command = doc.getAttribute("command");
-        self.mount = doc.getAttribute("mount");
+        self.url = unescape(doc.getAttribute("url"));
+        self.hash = sanitizeHash(doc.getAttribute("hash"));
+        self.command = sanitizeFileName(doc.getAttribute("command"));
+        self.mount = sanitizeFileName(doc.getAttribute("mount"));
         deferred.resolve();
       }
     }
@@ -401,8 +413,8 @@ installer.prototype = {
                        },
                        false);
 
-      oReq.open("get", queryUrl + "?os=" + os + "&platform=" +
-                platform, true);
+      oReq.open("get", queryUrl + "?vEnigmail="+escape(Ec.getVersion())+ "&os=" + escape(os) + "&platform=" +
+                escape(platform), true);
       oReq.send();
     }
     catch(ex) {
@@ -429,7 +441,6 @@ installer.prototype = {
       else {
         Ec.DEBUG_LOG("installGnuPG.jsm: performDownload: got "+ event.loaded+"bytes\n");
       }
-
 
       if (self.progressListener)
         self.progressListener.onProgress(event);
@@ -485,7 +496,7 @@ installer.prototype = {
         if (!self.checkHashSum()) {
           var cont = true;
           if (self.progressListener) {
-            cont = self.progressListener.onWarning("Hash sum don't match");
+            cont = self.progressListener.onWarning("hashSumMismatch");
           }
 
           if (! cont) {
@@ -520,6 +531,7 @@ installer.prototype = {
 
     }
 
+
     try {
       // create a  XMLHttpRequest object
       var oReq = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
@@ -535,6 +547,12 @@ installer.prototype = {
       oReq.addEventListener("progress", onProgress, false);
       oReq.open("get", this.url, true);
       oReq.responseType = "arraybuffer";
+      if (self.progressListener)
+        self.progressListener.onStart({
+          abort: function() {
+            oReq.abort();
+          }
+        });
       oReq.send();
     }
     catch(ex) {
@@ -565,7 +583,7 @@ var InstallGnuPG = {
 
     var i = new installer(progressListener);
     i.getDownloadUrl().
-    then(function _dl() { i.performDownload() });
+      then(function _dl() { i.performDownload() });
     return i;
   }
 }

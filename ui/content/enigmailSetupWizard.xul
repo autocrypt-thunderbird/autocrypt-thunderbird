@@ -65,7 +65,7 @@
   </broadcasterset>
 
   <wizardpage id="pgWelcome" pageid="pgWelcome"
-              next="pgSelectId"
+              next="pgInstallGnuPG"
               onpageshow="wizardSetFocus()">
     <description>
       &enigmail.setupWiz.pgWelcome.desc;
@@ -84,6 +84,51 @@
              oncommand="onSetStartNow(false)"
              value="0"/>
     </radiogroup>
+  </wizardpage>
+
+
+  <wizardpage id="pgInstallGnuPG" pageid="pgInstallGnuPG"
+              next="pgSelectId"
+              label="&enigmail.setupWiz.pgInstall.title;"
+              description="&enigmail.setupWiz.pgInstall.title;"
+              onpageshow="onShowPgInstallGnuPG()">
+
+    <description>
+      &enigmail.setupWiz.pgInstall.desc;
+    </description>
+
+    <vbox id="installBox" collapsed="true">
+      <description>
+        &enigmail.setupWiz.pgInstall.installDesc;
+      </description>
+      <hbox>
+        <button id="btnInstallGnupg" label="&enigmail.setupWiz.pgInstall.installButton;" oncommand="installGnuPG()"/>
+        <button id="btnLocateGnuPG" label="&enigmail.setupWiz.pgInstall.locateButton;" oncommand="wizardLocateGpg()"/>
+      </hbox>
+    </vbox>
+
+    <vbox id="findGpgBox" collapsed="true">
+      <description>
+        &enigmail.setupWiz.pgInstall.locateDesc;
+      </description>
+      <hbox>
+        <button label="&enigmail.setupWiz.pgInstall.locateButton;" oncommand="wizardLocateGpg()"/>
+      </hbox>
+    </vbox>
+
+    <vbox id="progressBox" collapsed="true">
+      <label id="downloadLabel" value="&enigmail.setupWiz.pgInstall.downloadLabel;" control="progressBar"/>
+      <progressmeter id="downloadProgress" mode="determined" value="0"/>
+      <label value=""/>
+      <label id="installLabel" value="&enigmail.setupWiz.pgInstall.installLabel;" collapsed="true"/>
+      <progressmeter id="installProgress" mode="undetermined" collapsed="true"/>
+      <label value=""/>
+      <label id="installComplete" value="&enigmail.setupWiz.pgInstall.installDone;" collapsed="true"/>
+    </vbox>
+
+    <vbox id="gpgFoundBox" collapsed="true">
+      <label value="&enigmail.setupWiz.pgInstall.gnupgFound;"/>
+    </vbox>
   </wizardpage>
 
   <wizardpage id="pgSelectId" pageid="pgSelectId" next="pgSign"
