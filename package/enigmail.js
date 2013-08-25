@@ -948,7 +948,7 @@ Enigmail.prototype = {
         outStr = result.stdout;
         errStr = result.stderr;
       },
-      mergeStderr: true
+      mergeStderr: false
     };
 
     try {
