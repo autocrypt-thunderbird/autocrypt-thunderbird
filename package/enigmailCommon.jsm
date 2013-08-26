@@ -1988,12 +1988,25 @@ var EnigmailCommon = {
     var success;
 
     var promptService = Cc[NS_PROMPTSERVICE_CONTRACTID].getService(Ci.nsIPromptService);
-    success = promptService.promptPassword(domWindow,
+
+    try {
+      success = promptService.promptPassword(domWindow,
                                            this.getString("enigPrompt"),
                                            promptMsg,
                                            passwdObj,
                                            checkMsg,
                                            checkObj);
+    }
+    catch(ex) {
+      // domWindow is not always available
+      success = promptService.promptPassword(null,
+                                           this.getString("enigPrompt"),
+                                           promptMsg,
+                                           passwdObj,
+                                           checkMsg,
+                                           checkObj);
+
+    }
 
     if (!success)
       return false;
