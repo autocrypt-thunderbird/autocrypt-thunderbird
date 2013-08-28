@@ -62,7 +62,6 @@ const ENIGMAIL_EXTENSION_ID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
 // Contract IDs and CIDs used by this module
 const NS_SIMPLEURI_CONTRACTID   = "@mozilla.org/network/simple-uri;1";
 const NS_OBSERVERSERVICE_CONTRACTID = "@mozilla.org/observer-service;1";
-const NS_PROMPTSERVICE_CONTRACTID = "@mozilla.org/embedcomp/prompt-service;1";
 const ASS_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
 const WMEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const NS_IOSERVICE_CONTRACTID       = "@mozilla.org/network/io-service;1";

@@ -251,7 +251,7 @@ function installGnuPG() {
       installProgress.setAttribute("collapsed", "true");
     },
 
-    onLoaded: function(event) {
+    onLoaded: function() {
       installProgress.setAttribute("value", 100);
       installProgress.setAttribute("mode", "determined");
 

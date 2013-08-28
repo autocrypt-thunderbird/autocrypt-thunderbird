@@ -227,7 +227,7 @@ function installer(progressListener) {
 
 installer.prototype = {
 
-  installMacOs: function() {
+  installMacOs: function(deferred) {
     Ec.DEBUG_LOG("installGnuPG.jsm: installMacOs\n");
 
     var exitCode = -1;
@@ -246,6 +246,7 @@ installer.prototype = {
       }
     }
 
+    this.mountPath = mountPath;
     Ec.DEBUG_LOG("installGnuPG.jsm: installMacOs - mount Package\n");
 
     var cmd = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
@@ -272,70 +273,82 @@ installer.prototype = {
 
     Ec.DEBUG_LOG("installGnuPG.jsm: installMacOs - run installer\n");
 
-    args = [ "-W", mountPath.path+"/"+this.command ];
+    args = [ "-W", this.mountPath.path+"/"+this.command ];
 
     proc = {
       command:     cmd,
       arguments:   args,
       charset: null,
       done: function(result) {
-        exitCode = result.exitCode;
+        if (result.exitCode != 0) {
+          deferred.reject("Installer failed with exit code "+result.exitCode);
+        }
+        else
+          deferred.resolve();
       }
     };
 
     try {
-      subprocess.call(proc).wait();
-      if (exitCode) throw "Installer failed with exit code "+exitCode;
+      subprocess.call(proc);
     } catch (ex) {
       Ec.ERROR_LOG("enigmail.js: installGnuPG.jsm.installMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
       throw ex;
     }
+  },
 
-    Ec.DEBUG_LOG("installGnuPG.jsm: installMacOs - unmount package\n");
+  cleanupMacOs: function () {
+    Ec.DEBUG_LOG("installGnuPG.jsm.cleanupMacOs: unmount package\n");
 
-    cmd.initWithPath("/sbin/umount");
-    args = [ mountPath.path ];
-    proc = {
+    var cmd = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
+    cmd.initWithPath("/usr/sbin/diskutil");
+    var args = [ "eject", this.mountPath.path ];
+    var proc = {
       command:     cmd,
       arguments:   args,
       charset: null,
       done: function(result) {
-        exitCode = result.exitCode;
+        if (exitCode) Ec.ERROR_LOG("Installer failed with exit code "+result.exitCode);
       }
     };
 
     try {
       subprocess.call(proc).wait();
-      if (exitCode) throw "Installer failed with exit code "+exitCode;
     } catch (ex) {
-      Ec.ERROR_LOG("enigmail.js: installGnuPG.jsm.installMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
-      throw ex;
+      Ec.ERROR_LOG("installGnuPG.jsm.cleanupMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
     }
 
-    Ec.DEBUG_LOG("installGnuPG.jsm: installMacOs - remove package\n");
+    Ec.DEBUG_LOG("installGnuPG.jsm: cleanupMacOs - remove package\n");
     this.installerFile.remove(false);
   },
 
   installWindows: function(deferred) {
     Ec.DEBUG_LOG("installGnuPG.jsm: installWindows\n");
 
-    proc = {
+    var proc = {
       command:     this.installerFile,
       arguments:   [],
       charset: null,
       done: function(result) {
-        exitCode = result.exitCode;
+        if (result.exitCode) {
+          deferred.reject("Installer failed with exit code "+result.exitCode);
+        }
+        else
+          deferred.resolve();
       }
     };
 
     try {
-      subprocess.call(proc).wait();
-      if (exitCode) throw "Installer failed with exit code "+exitCode;
+      subprocess.call(proc);
     } catch (ex) {
       Ec.ERROR_LOG("enigmail.js: installGnuPG.jsm.installMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
       throw ex;
     }
 
+  },
+
+  cleanupWindows: function() {
+    Ec.DEBUG_LOG("installGnuPG.jsm: cleanupWindows - remove package\n");
+    this.installerFile.remove(false);
   },
 
   installUnix: function() {
@@ -430,7 +443,7 @@ installer.prototype = {
     Ec.DEBUG_LOG("installGnuPG.jsm: performDownload: "+ this.url+"\n");
 
     var self = this;
-    let deferred = Promise.defer();
+    var deferred = Promise.defer();
 
     function onProgress(event) {
 
@@ -458,7 +471,17 @@ installer.prototype = {
       if (self.progressListener)
         self.progressListener.onDownloaded();
 
-      var arraybuffer = this.response; // not responseText
+      try {
+        performInstall(this.response).then(function _f() { performCleanup(); });
+      }
+      catch (ex) {
+        if (self.progressListener)
+          self.progressListener.onError(ex);
+      }
+    }
+
+    function performInstall(response) {
+      var arraybuffer = response; // not responseText
       Ec.DEBUG_LOG("installGnuPG.jsm: performDownload: bytes "+arraybuffer.byteLength +"\n");
 
       try {
@@ -469,12 +492,15 @@ installer.prototype = {
         switch (Ec.getOS()) {
         case "Darwin":
           self.installerFile.append("gpgtools.dmg");
+          self.performCleanup = self.cleanupMacOs;
           break;
         case "WINNT":
           self.installerFile.append("gpg4win.exe");
+          self.performCleanup = self.cleanupWindows;
           break;
         default:
           self.installerFile.append("gpg-installer.bin");
+          self.performCleanup = null;
         }
 
         self.installerFile.createUnique(self.installerFile.NORMAL_FILE_TYPE, EXEC_FILE_PERMS);
@@ -508,18 +534,15 @@ installer.prototype = {
 
         switch (Ec.getOS()) {
         case "Darwin":
-          self.installMacOs();
+          self.installMacOs(deferred);
           break;
         case "WINNT":
           self.installWindows(deferred);
           break;
         default:
-          self.installUnix();
+          self.installUnix(deferred);
         }
 
-        deferred.resolve();
-        if (self.progressListener)
-          self.progressListener.onLoaded(event);
       }
       catch(ex) {
         Ec.DEBUG_LOG("installGnuPG.jsm: performDownload: failed "+ ex.toString() +"\n");
@@ -529,8 +552,16 @@ installer.prototype = {
           self.progressListener.onError(ex);
       }
 
+      return deferred.promise;
     }
 
+    function performCleanup() {
+      Ec.DEBUG_LOG("installGnuPG.jsm: performCleanup:\n");
+      if (self.performCleanup) self.performCleanup();
+
+      if (self.progressListener)
+        self.progressListener.onLoaded();
+    }
 
     try {
       // create a  XMLHttpRequest object
