@@ -14,7 +14,7 @@
  * The Original Code is Enigmail.
  *
  * The Initial Developer of this code is Patrick Brunschwig.
- * Portions created by Patrick Brunschwig <patrick@mozilla-enigmail.org>
+ * Portions created by Patrick Brunschwig <patrick@enigmail.net>
  * are Copyright (C) 2008 Patrick Brunschwig.
  * All Rights Reserved.
  *

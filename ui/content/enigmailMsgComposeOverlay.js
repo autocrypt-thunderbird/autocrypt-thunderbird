@@ -18,7 +18,7 @@
  * Copyright (C) 2001 Ramalingam Saravanan. All Rights Reserved.
  *
  * Contributor(s):
- *   Patrick Brunschwig <patrick@mozilla-enigmail.org>
+ *   Patrick Brunschwig <patrick@enigmail.net>
  *   Ludwig Hügelschäfer <ludwig@hammernoch.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
