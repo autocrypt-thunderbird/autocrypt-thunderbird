@@ -152,7 +152,9 @@ function countSelectedId() {
 }
 
 function onShowPgInstallGnuPG() {
-  disableNext(true);
+  var ok = enigGetSvc(true);
+  disableNext(!ok);
+
   if (InstallGnuPG.checkAvailability()) {
     document.getElementById("installBox").removeAttribute("collapsed");
   }
@@ -165,7 +167,7 @@ function checkGnupgInstallation() {
   var wizard = getWizard();
   if (wizard.currentPage.next != "pgNoStart") {
 
-    var s = enigGetSvc();
+    var s = enigGetSvc(true);
     if (s) {
       setNextPage("pgSelectId");
       checkIdentities();
@@ -194,8 +196,8 @@ function installGnuPG() {
       gDownoadObj = reqObj;
     },
 
-    onError: function (event, errorMessage) {
-      if (errorMessage) {
+    onError: function (errorMessage) {
+      if (typeof(errorMessage) == "object") {
         var s = EnigGetString("errorType."+errorMessage.type);
         if (errorMessage.type.startsWith("Security")) {
           s += "\n"+ EnigGetString("setupWizard.downloadForbidden");
@@ -206,7 +208,7 @@ function installGnuPG() {
         EnigAlert(s);
       }
       else {
-        EnigAlert(event);
+        EnigAlert(EnigGetString(errorMessage));
       }
 
       this.returnToDownload();
@@ -260,8 +262,7 @@ function installGnuPG() {
       var origPath = EnigGetPref("agentPath");
       EnigSetPref("agentPath", "");
 
-      gEnigmailSvc = null;
-      var s = enigGetSvc();
+      var s = enigGetSvc(true);
       if (s) {
         disableNext(false);
       }
@@ -294,7 +295,7 @@ function importKeyFiles() {
   var importedKeys;
   var exitCode;
 
-  var enigmailSvc = enigGetSvc();
+  var enigmailSvc = enigGetSvc(false);
   if (! enigmailSvc) return false;
 
   var errorMsgObj = {};
@@ -434,7 +435,7 @@ function wizardSetFocus() {
 function loadKeys() {
   var wizard = document.getElementById("enigmailSetupWizard");
 
-  var enigmailSvc = enigGetSvc();
+  var enigmailSvc = enigGetSvc(false);
 
   if (!enigmailSvc) {
     return false;
@@ -474,9 +475,11 @@ function loadKeys() {
   return true;
 }
 
-function enigGetSvc() {
+function enigGetSvc(resetCheck) {
   // Lazy initialization of enigmail JS component (for efficiency)
   // variant of GetEnigmailSvc function
+
+  if (resetCheck) gEnigmailSvc = null;
 
   if (gEnigmailSvc) {
     return gEnigmailSvc.initialized ? gEnigmailSvc : null;
@@ -537,8 +540,7 @@ function wizardLocateGpg() {
 
   if (filePath) {
     EnigSetPref("agentPath", EnigGetFilePath(filePath));
-    gEnigmailSvc = null;
-    var svc = enigGetSvc();
+    var svc = enigGetSvc(true);
 
     if (! svc) {
       EnigAlert(EnigGetString("setupWizard.invalidGpg"));
@@ -908,7 +910,7 @@ function wizardKeygenTerminate(exitCode) {
 function wizardKeygenCleanup() {
   DEBUG_LOG("enigmailSetupWizard.js: wizardKeygenCleanup\n");
   enigmailKeygenCloseRequest();
-  var enigmailSvc = enigGetSvc();
+  var enigmailSvc = enigGetSvc(false);
   enigmailSvc.invalidateUserIdList();
 
   var wizard = document.getElementById("enigmailSetupWizard");

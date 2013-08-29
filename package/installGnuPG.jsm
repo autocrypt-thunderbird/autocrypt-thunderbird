@@ -37,7 +37,7 @@
   InstallGnuPG.start(progressListener).
 
   progressListener needs to implement the following methods:
-  void    onError    (event, errorMessage)
+  void    onError    (errorMessage)
   boolean onWarning  (message)
   void    onProgress (event)
   void    onLoaded   (event)
@@ -397,10 +397,10 @@ installer.prototype = {
       }
     }
 
-    function onError(event, error) {
+    function onError(error) {
       deferred.reject("error");
       if (self.progressListener) {
-        return self.progressListener.onError(event, error);
+        return self.progressListener.onError(error);
       }
 
       return false;
@@ -422,7 +422,7 @@ installer.prototype = {
       oReq.addEventListener("error",
                        function(e) {
                          var error = createTCPErrorFromFailedXHR(oReq);
-                         onError(e, error);
+                         onError(error);
                        },
                        false);
 
@@ -432,8 +432,10 @@ installer.prototype = {
     }
     catch(ex) {
       deferred.reject(ex);
+      Ec.writeException("installGnuPG.jsm", ex);
+
       if (self.progressListener)
-        self.progressListener.onError(event, null);
+        self.progressListener.onError("installGnuPG.downloadFailed");
     }
 
     return deferred.promise;
@@ -459,10 +461,10 @@ installer.prototype = {
         self.progressListener.onProgress(event);
     }
 
-    function onError(event, error) {
+    function onError(error) {
       deferred.reject("error");
       if (self.progressListener)
-        self.progressListener.onError(event, error);
+        self.progressListener.onError(error);
     }
 
     function onLoaded(event) {
@@ -475,8 +477,10 @@ installer.prototype = {
         performInstall(this.response).then(function _f() { performCleanup(); });
       }
       catch (ex) {
+        Ec.writeException("installGnuPG.jsm", ex);
+
         if (self.progressListener)
-          self.progressListener.onError(ex);
+          self.progressListener.onError("installGnuPG.installFailed");
       }
     }
 
@@ -545,11 +549,11 @@ installer.prototype = {
 
       }
       catch(ex) {
-        Ec.DEBUG_LOG("installGnuPG.jsm: performDownload: failed "+ ex.toString() +"\n");
         deferred.reject(ex);
+        Ec.writeException("installGnuPG.jsm", ex);
 
         if (self.progressListener)
-          self.progressListener.onError(ex);
+          self.progressListener.onError("installGnuPG.installFailed");
       }
 
       return deferred.promise;
@@ -571,7 +575,7 @@ installer.prototype = {
       oReq.addEventListener("error",
                        function(e) {
                          var error = createTCPErrorFromFailedXHR(oReq);
-                         onError(e, error);
+                         onError(error);
                        },
                        false);
 
@@ -588,8 +592,10 @@ installer.prototype = {
     }
     catch(ex) {
       deferred.reject(ex);
+      Ec.writeException("installGnuPG.jsm", ex);
+
       if (self.progressListener)
-        self.progressListener.onError(ex);
+        self.progressListener.onError("installGnuPG.downloadFailed");
     }
 
   }

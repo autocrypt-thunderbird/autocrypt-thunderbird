@@ -659,7 +659,7 @@
 <!ENTITY enigmail.setupWiz.pgInstall.locateButton    "Browse ...">
 <!ENTITY enigmail.setupWiz.pgInstall.downloadLabel   "Downloading GnuPG ...">
 <!ENTITY enigmail.setupWiz.pgInstall.installLabel    "Starting the installer. Please follow the steps of the GnuPG installer wizard.">
-<!ENTITY enigmail.setupWiz.pgInstall.installDone     "Installation complete. Please click on Next to continue the setup process.">
+<!ENTITY enigmail.setupWiz.pgInstall.installDone     "Installation complete. Please proceed to the next page of the wizard to continue the setup process.">
 <!ENTITY enigmail.setupWiz.pgInstall.gnupgFound      "Valid GnuPG installation found.">
 <!ENTITY enigmail.setupWiz.pgSign.title              "Signing">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle           "Digitally Sign Your Outgoing Emails">
