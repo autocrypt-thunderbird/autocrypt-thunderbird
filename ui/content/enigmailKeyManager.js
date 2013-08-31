@@ -39,6 +39,9 @@ Components.utils.import("resource://enigmail/keyManagement.jsm");
 // Initialize enigmailCommon
 EnigInitCommon("enigmailKeyManager");
 
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+
 const INPUT = 0;
 const RESULT = 1;
 
@@ -638,7 +641,7 @@ function enigCreateKeyMsg() {
   var tmpDir=EnigGetTempDir();
 
   try {
-    var tmpFile = Components.classes[ENIG_LOCAL_FILE_CONTRACTID].createInstance(EnigGetLocalFileApi());
+    var tmpFile = Cc[ENIG_LOCAL_FILE_CONTRACTID].createInstance(EnigGetLocalFileApi());
     tmpFile.initWithPath(tmpDir);
     if (!(tmpFile.isDirectory() && tmpFile.isWritable())) {
       EnigAlert(EnigGetString("noTempDir"));
@@ -647,7 +650,7 @@ function enigCreateKeyMsg() {
   }
   catch (ex) {}
   tmpFile.append("key.asc");
-  tmpFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
+  tmpFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0600);
 
   // save file
   var exitCodeObj= {};
@@ -659,9 +662,9 @@ function enigCreateKeyMsg() {
   }
 
   // create attachment
-  var ioServ = Components.classes[ENIG_IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+  var ioServ = Cc[ENIG_IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
   var tmpFileURI = ioServ.newFileURI(tmpFile);
-  var keyAttachment = Components.classes["@mozilla.org/messengercompose/attachment;1"].createInstance(Components.interfaces.nsIMsgAttachment);
+  var keyAttachment = Cc["@mozilla.org/messengercompose/attachment;1"].createInstance(Ci.nsIMsgAttachment);
   keyAttachment.url = tmpFileURI.spec;
   if (keyList.length == 1) {
     keyAttachment.name = "0x"+keyList[0].substr(-8,8)+".asc";
@@ -673,18 +676,18 @@ function enigCreateKeyMsg() {
   keyAttachment.contentType = "application/pgp-keys";
 
   // create Msg
-  var msgCompFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
+  var msgCompFields = Cc["@mozilla.org/messengercompose/composefields;1"].createInstance(Ci.nsIMsgCompFields);
   msgCompFields.addAttachment(keyAttachment);
 
-  var acctManager = Components.classes["@mozilla.org/messenger/account-manager;1"].createInstance(Components.interfaces.nsIMsgAccountManager);
+  var acctManager = Cc["@mozilla.org/messenger/account-manager;1"].createInstance(Ci.nsIMsgAccountManager);
 
-  var msgCompSvc = Components.classes["@mozilla.org/messengercompose;1"].getService(Components.interfaces.nsIMsgComposeService);
+  var msgCompSvc = Cc["@mozilla.org/messengercompose;1"].getService(Ci.nsIMsgComposeService);
 
-  var msgCompParam = Components.classes["@mozilla.org/messengercompose/composeparams;1"].createInstance(Components.interfaces.nsIMsgComposeParams);
+  var msgCompParam = Cc["@mozilla.org/messengercompose/composeparams;1"].createInstance(Ci.nsIMsgComposeParams);
   msgCompParam.composeFields = msgCompFields;
   msgCompParam.identity = acctManager.defaultAccount.defaultIdentity;
-  msgCompParam.type = Components.interfaces.nsIMsgCompType.New;
-  msgCompParam.format = Components.interfaces.nsIMsgCompFormat.Default;
+  msgCompParam.type = Ci.nsIMsgCompType.New;
+  msgCompParam.format = Ci.nsIMsgCompFormat.Default;
   msgCompParam.originalMsgURI = "";
   msgCompSvc.OpenComposeWindowWithParams("", msgCompParam);
 }
@@ -723,18 +726,18 @@ function createNewMail() {
   }
 
   // create Msg
-  var msgCompFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
+  var msgCompFields = Cc["@mozilla.org/messengercompose/composefields;1"].createInstance(Ci.nsIMsgCompFields);
   msgCompFields.to = addresses.join(", ");
 
-  var acctManager = Components.classes["@mozilla.org/messenger/account-manager;1"].createInstance(Components.interfaces.nsIMsgAccountManager);
+  var acctManager = Cc["@mozilla.org/messenger/account-manager;1"].createInstance(Ci.nsIMsgAccountManager);
 
-  var msgCompSvc = Components.classes["@mozilla.org/messengercompose;1"].getService(Components.interfaces.nsIMsgComposeService);
+  var msgCompSvc = Cc["@mozilla.org/messengercompose;1"].getService(Ci.nsIMsgComposeService);
 
-  var msgCompParam = Components.classes["@mozilla.org/messengercompose/composeparams;1"].createInstance(Components.interfaces.nsIMsgComposeParams);
+  var msgCompParam = Cc["@mozilla.org/messengercompose/composeparams;1"].createInstance(Ci.nsIMsgComposeParams);
   msgCompParam.composeFields = msgCompFields;
   msgCompParam.identity = acctManager.defaultAccount.defaultIdentity;
-  msgCompParam.type = Components.interfaces.nsIMsgCompType.New;
-  msgCompParam.format = Components.interfaces.nsIMsgCompFormat.Default;
+  msgCompParam.type = Ci.nsIMsgCompType.New;
+  msgCompParam.format = Ci.nsIMsgCompFormat.Default;
   msgCompParam.originalMsgURI = "";
   msgCompSvc.OpenComposeWindowWithParams("", msgCompParam);
 }
@@ -939,16 +942,16 @@ function enigmailChangePwd() {
 function enigGetClipboard() {
   DEBUG_LOG("enigmailKeyManager.js: enigGetClipboard:\n");
   var cBoardContent = "";
-  var clipBoard = Components.classes[ENIG_CLIPBOARD_CONTRACTID].getService(Components.interfaces.nsIClipboard);
+  var clipBoard = Cc[ENIG_CLIPBOARD_CONTRACTID].getService(Ci.nsIClipboard);
   try {
-    var transferable = Components.classes[ENIG_TRANSFERABLE_CONTRACTID].createInstance(Components.interfaces.nsITransferable);
+    var transferable = Cc[ENIG_TRANSFERABLE_CONTRACTID].createInstance(Ci.nsITransferable);
     transferable.addDataFlavor("text/unicode");
     clipBoard.getData(transferable, clipBoard.kGlobalClipboard);
     var flavour = {};
     var data = {};
     var length = {};
     transferable.getAnyTransferData(flavour, data, length);
-    cBoardContent=data.value.QueryInterface(Components.interfaces.nsISupportsString).data;
+    cBoardContent=data.value.QueryInterface(Ci.nsISupportsString).data;
     DEBUG_LOG("enigmailKeyManager.js: enigGetClipboard: got data\n");
   }
   catch(ex) {}
@@ -988,9 +991,9 @@ function enigmailCopyToClipbrd() {
     EnigAlert(EnigGetString("copyToClipbrdFailed")+"\n\n"+errorMsgObj.value);
     return;
   }
-  var clipBoard = Components.classes[ENIG_CLIPBOARD_CONTRACTID].getService(Components.interfaces.nsIClipboard);
+  var clipBoard = Cc[ENIG_CLIPBOARD_CONTRACTID].getService(Ci.nsIClipboard);
   try {
-    clipBoardHlp = Components.classes[ENIG_CLIPBOARD_HELPER_CONTRACTID].getService(Components.interfaces.nsIClipboardHelper);
+    clipBoardHlp = Cc[ENIG_CLIPBOARD_HELPER_CONTRACTID].getService(Ci.nsIClipboardHelper);
     clipBoardHlp.copyStringToClipboard(keyData, clipBoard.kGlobalClipboard);
     if (clipBoard.supportsSelectionClipboard()) {
       clipBoardHlp.copyStringToClipboard(keyData, clipBoard.kSelectionClipboard);
@@ -1053,6 +1056,67 @@ function enigmailRefreshAllKeys() {
   }
 
   if (doIt) enigmailKeyServerAcess(nsIEnigmail.REFRESH_KEY, enigmailReceiveKeyCb);
+}
+
+// Iterate through contact emails and download them
+function enigmailDowloadContactKeysEngine() {
+  let abManager = Cc["@mozilla.org/abmanager;1"].getService(Ci.nsIAbManager);
+
+  let allAddressBooks = abManager.directories;
+  let emails = new Array();
+
+  while (allAddressBooks.hasMoreElements()) {
+    let addressBook = allAddressBooks.getNext().QueryInterface(Ci.nsIAbDirectory);
+
+    if (addressBook instanceof Ci.nsIAbDirectory) { // or nsIAbItem or nsIAbCollection
+
+      let allChildCards = addressBook.childCards;
+
+      while (allChildCards.hasMoreElements()) {
+
+	      let card = allChildCards.getNext().QueryInterface(Ci.nsIAbCard);
+
+        try {
+	        let email = card.getPropertyAsAString("PrimaryEmail");
+	        if (email) {
+	          emails.push(email);
+          }
+        }
+        catch (e) {}
+
+        try {
+	        let email = card.getPropertyAsAString("SecondEmail");
+	        if (email) {
+	          emails.push(email);
+          }
+        }
+        catch (e) {}
+
+      }
+    }
+  }
+
+  var inputObj = {
+    searchList : emails
+  }
+  var resultObj = new Object();
+
+  EnigmailFuncs.downloadKeys(window, inputObj, resultObj);
+
+  if (resultObj.importedKeys > 0) {
+    enigmailRefreshKeys();
+  }
+}
+
+function enigmailDownloadContactKeys() {
+
+  var doIt = EnigmailCommon.confirmPref(window,
+    EnigGetString("downloadContactsKeys.warn"),
+    "warnDownloadContactKeys",
+    EnigGetString("dlg.button.continue"),
+    EnigGetString("dlg.button.cancel"));
+
+  if (doIt) enigmailDowloadContactKeysEngine();
 }
 
 function displayResult(arrayOfMsgText) {

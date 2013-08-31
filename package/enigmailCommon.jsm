@@ -1399,7 +1399,7 @@ var EnigmailCommon = {
         return str;
     }
 
-    var rStr = getQuoted(this.getFilePathDesc(command));
+    var rStr = getQuoted(this.getFilePathDesc(command)) +" ";
 
     let i;
     rStr += [getQuoted(args[i]) for (i in args)].join(" ").replace(/\\\\/g, '\\');

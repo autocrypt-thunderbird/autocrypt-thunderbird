@@ -183,6 +183,7 @@ function resetRememberedValues() {
              "warnGpgAgentAndIdleTime",
              "warnClearPassphrase",
              "warnOnSendingNewsgroups",
+             "warnDownloadContactKeys",
              "warnIso2022jp",
              "warnRefreshAll"];
 

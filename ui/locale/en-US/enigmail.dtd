@@ -451,6 +451,7 @@
 <!ENTITY enigmail.keyMan.refreshKey.label          "Refresh Public Keys">
 <!ENTITY enigmail.keyMan.refreshSelKeys.label      "Refresh Selected Public Keys">
 <!ENTITY enigmail.keyMan.refreshAllKeys.label      "Refresh All Public Keys">
+<!ENTITY enigmail.keyMan.downloadContactKeys.label "Find keys for all contacts">
 <!ENTITY enigmail.keyMan.ctxRefreshKey.label       "Refresh Public Keys From Keyserver">
 
 <!ENTITY enigmail.keyMan.reload.label              "Reload Key Cache">
@@ -522,6 +523,7 @@
 <!ENTITY enigmail.keyMan.selectAll.accesskey         "A">
 <!ENTITY enigmail.keyMan.sendKeys.accesskey          "S">
 <!ENTITY enigmail.keyMan.createMail.accesskey        "C">
+<!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "F">
 
 <!ENTITY enigmail.keyMan.closeWin.key                "W">
 <!ENTITY enigmail.keyMan.selectAll.key               "A">

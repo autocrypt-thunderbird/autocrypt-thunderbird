@@ -302,6 +302,10 @@
 									id="refreshAllKeys"
 									accesskey="&enigmail.keyMan.refreshAllKeys.accesskey;"
 									oncommand="enigmailRefreshAllKeys()"/>
+				<menuitem label="&enigmail.keyMan.downloadContactKeys.label;"
+				          accesskey="&enigmail.keyMan.downloadContactKeys.accesskey;"
+									id="downloadContactKeys"
+									oncommand="enigmailDownloadContactKeys()"/>
 			</menupopup>
 		</menu>
 
