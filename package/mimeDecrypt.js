@@ -161,12 +161,13 @@ PgpMimeDecrypt.prototype = {
     if (this.uri) {
       // return if not decrypting currently displayed message
       try {
+        var currUriSpec = this.uri.spec.replace(/[\&\?]header=[a-zA-Z0-9]*$/, "");
         var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
         var msgSvc = messenger.messageServiceFromURI(this.msgUriSpec);
 
         var url= {};
         msgSvc.GetUrlForUri(this.msgUriSpec, url, null)
-        if (url.value.spec != this.uri.spec)
+        if (url.value.spec != currUriSpec)
           return;
       }
       catch(ex) {
