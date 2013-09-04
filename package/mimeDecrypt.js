@@ -159,16 +159,24 @@ PgpMimeDecrypt.prototype = {
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
 
     if (this.uri) {
-      // return if not decrypting currently displayed message
+      // return if not decrypting currently displayed message (except if
+      // printing, replying, etc)
       try {
-        var currUriSpec = this.uri.spec.replace(/[\&\?]header=[a-zA-Z0-9]*$/, "");
-        var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
-        var msgSvc = messenger.messageServiceFromURI(this.msgUriSpec);
+        if (this.uri.spec.search(/[\&\?]header=[a-zA-Z0-9]*$/) < 0) {
 
-        var url= {};
-        msgSvc.GetUrlForUri(this.msgUriSpec, url, null)
-        if (url.value.spec != currUriSpec)
-          return;
+          if (this.uri.spec.search(/[\&\?]header=[a-zA-Z0-9]*\&emitter=js$/) > 0)
+            return;
+
+          if (this.msgUriSpec) {
+            var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
+            var msgSvc = messenger.messageServiceFromURI(this.msgUriSpec);
+
+            var url= {};
+            msgSvc.GetUrlForUri(this.msgUriSpec, url, null)
+            if (url.value.spec != this.uri.spec)
+              return;
+          }
+        }
       }
       catch(ex) {
         Ec.writeException("mimeDecrypt.js", ex);
