@@ -164,7 +164,7 @@ PgpMimeDecrypt.prototype = {
       try {
         if (this.uri.spec.search(/[\&\?]header=[a-zA-Z0-9]*$/) < 0) {
 
-          if (this.uri.spec.search(/[\&\?]header=[a-zA-Z0-9]*\&emitter=js$/) > 0)
+          if (this.uri.spec.search(/[\&\?]header=filter\&.*$/) > 0)
             return;
 
           if (this.msgUriSpec) {
