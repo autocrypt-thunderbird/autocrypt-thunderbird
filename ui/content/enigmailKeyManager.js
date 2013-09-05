@@ -1222,7 +1222,7 @@ function determineHiddenKeys(keyObj, showInvalidKeys, showUntrustedKeys, showOth
   var show = true;
 
   const INVALID_KEYS = "ierdD";
-  const UNTRUSTED_KEYS = "n";
+  const UNTRUSTED_KEYS = "n-";
 
   if ((!showInvalidKeys) && INVALID_KEYS.indexOf(EnigGetTrustCode(keyObj))>=0) show = false;
   if ((!showUntrustedKeys) && UNTRUSTED_KEYS.indexOf(keyObj.ownerTrust)>=0) show = false;
