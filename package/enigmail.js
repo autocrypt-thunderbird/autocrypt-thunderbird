@@ -38,6 +38,7 @@ Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/AddonManager.jsm");
 Components.utils.import("resource://enigmail/subprocess.jsm");
 Components.utils.import("resource://enigmail/pipeConsole.jsm");
+Components.utils.import("resource://enigmail/gpgAgentHandler.jsm");
 Components.utils.import("resource://gre/modules/ctypes.jsm");
 
 const gDummyPKCS7 = 'Content-Type: multipart/mixed;\r\n boundary="------------060503030402050102040303\r\n\r\nThis is a multi-part message in MIME format.\r\n--------------060503030402050102040303\r\nContent-Type: application/x-pkcs7-mime\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303\r\nContent-Type: application/x-enigmail-dummy\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303--\r\n';
@@ -270,57 +271,6 @@ function getFilePath (nsFileObj, creationMode) {
 // Utility functions
 ///////////////////////////////////////////////////////////////////////////////
 
-function isAbsolutePath(filePath, isDosLike) {
-  // Check if absolute path
-  if (isDosLike) {
-    return ((filePath.search(/^\w+:\\/) == 0) || (filePath.search(/^\\\\/) == 0)
-            || (filePath.search(/^\/\//) == 0));
-  } else {
-    return (filePath.search(/^\//) == 0);
-  }
-}
-
-function ResolvePath(filePath, envPath, isDosLike) {
-  Ec.DEBUG_LOG("enigmail.js: ResolvePath: filePath="+filePath+"\n");
-
-  if (isAbsolutePath(filePath, isDosLike))
-    return filePath;
-
-  if (!envPath)
-     return null;
-
-  var fileNames = filePath.split(";");
-
-  var pathDirs = envPath.split(isDosLike ? ";" : ":");
-
-  for (var j=0; j<pathDirs.length; j++) {
-     try {
-        var pathDir = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
-
-        for (var i=0; i < fileNames.length; i++) {
-          Ec.DEBUG_LOG("enigmail.js: ResolvePath: checking for "+pathDirs[j]+"/"+fileNames[i]+"\n");
-
-          initPath(pathDir, pathDirs[j]);
-
-          try {
-            if (pathDir.exists() && pathDir.isDirectory()) {
-               pathDir.appendRelativePath(fileNames[i]);
-
-               if (pathDir.exists() && !pathDir.isDirectory()) {
-                  return pathDir;
-               }
-            }
-          }
-          catch (ex) {}
-        }
-     }
-     catch (ex) {}
-  }
-
-  return null;
-}
-
-
 
 // get a Windows registry value (string)
 // @ keyPath: the path of the registry (e.g. Software\\GNU\\GnuPG)
@@ -519,6 +469,8 @@ function Enigmail()
 {
   Components.utils.import("resource://enigmail/enigmailCommon.jsm");
   Ec = EnigmailCommon;
+  EnigmailGpgAgent.setEnigmailCommon(Ec);
+
 }
 
 Enigmail.prototype = {
@@ -539,7 +491,9 @@ Enigmail.prototype = {
   keygenConsole: null,
 
   agentType: "",
-  agentPath: "",
+  agentPath: null,
+  connGpgAgentPath: null,
+  gpgconfPath: null,
   agentVersion: "",
   gpgAgentProcess: null,
   userIdList: null,
@@ -835,6 +789,8 @@ Enigmail.prototype = {
 
     var agentName = "";
 
+    EnigmailGpgAgent.resetGpgAgent();
+
     if (Ec.isDosLike()) {
       agentName = "gpg.exe";
     }
@@ -853,7 +809,7 @@ Enigmail.prototype = {
       try {
         var pathDir = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
 
-        if (! isAbsolutePath(agentPath, Ec.isDosLike())) {
+        if (! EnigmailGpgAgent.isAbsolutePath(agentPath, Ec.isDosLike())) {
           // path relative to Mozilla installation dir
           var ds = Cc[DIR_SERV_CONTRACTID].getService();
           var dsprops = ds.QueryInterface(Ci.nsIProperties);
@@ -885,32 +841,32 @@ Enigmail.prototype = {
       // Resolve relative path using PATH environment variable
       var envPath = this.environment.get("PATH");
 
-      agentPath = ResolvePath(agentName, envPath, Ec.isDosLike());
+      agentPath = EnigmailGpgAgent.resolvePath(agentName, envPath, Ec.isDosLike());
 
       if (!agentPath && Ec.isDosLike()) {
         // DOS-like systems: search for GPG in c:\gnupg, c:\gnupg\bin, d:\gnupg, d:\gnupg\bin
         var gpgPath = "c:\\gnupg;c:\\gnupg\\bin;d:\\gnupg;d:\\gnupg\\bin";
-        agentPath = ResolvePath(agentName, gpgPath, Ec.isDosLike());
+        agentPath = EnigmailGpgAgent.resolvePath(agentName, gpgPath, Ec.isDosLike());
       }
 
       if ((! agentPath) && this.isWin32) {
         // Look up in Windows Registry
         try {
           gpgPath = getWinRegistryString("Software\\GNU\\GNUPG", "Install Directory", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
-          agentPath = ResolvePath(agentName, gpgPath, Ec.isDosLike());
+          agentPath = EnigmailGpgAgent.resolvePath(agentName, gpgPath, Ec.isDosLike());
         }
         catch (ex) {}
 
         if (! agentPath) {
           gpgPath = gpgPath + "\\pub";
-          agentPath = ResolvePath(agentName, gpgPath, Ec.isDosLike());
+          agentPath = EnigmailGpgAgent.resolvePath(agentName, gpgPath, Ec.isDosLike());
         }
       }
 
       if (!agentPath && !Ec.isDosLike()) {
         // Unix-like systems: check /usr/bin and /usr/local/bin
         gpgPath = "/usr/bin:/usr/local/bin";
-        agentPath = ResolvePath(agentName, gpgPath, Ec.isDosLike());
+        agentPath = EnigmailGpgAgent.resolvePath(agentName, gpgPath, Ec.isDosLike());
       }
 
       if (!agentPath) {
@@ -989,6 +945,38 @@ Enigmail.prototype = {
       if (domWindow) Ec.alert(domWindow, Ec.getString("oldGpgVersion", [ gpgVersion ]));
       throw Components.results.NS_ERROR_FAILURE;
     }
+
+    this.gpgconfPath = this.resolveToolPath("gpgconf");
+    this.connGpgAgentPath = this.resolveToolPath("gpg-connect-agent");
+
+    Ec.DEBUG_LOG("enigmail.js: Enigmail.setAgentPath: gpgconf found: "+ (this.gpgconfPath ? "yes" : "no") +"\n");
+
+  },
+
+  // resolve the path for GnuPG helper tools
+  resolveToolPath: function(fileName) {
+    var filePath = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
+
+    if (Ec.isDosLike()) {
+      fileName += ".exe";
+    }
+
+    filePath = gEnigmailSvc.agentPath.clone();
+
+    filePath.normalize(); // resolve symlinks; remove . / .. etc.
+
+    if (filePath) filePath = filePath.parent;
+    if (filePath) {
+      filePath.append(fileName);
+      if (filePath.exists()) {
+        filePath.normalize();
+        return filePath;
+      }
+    }
+
+    var foundPath = EnigmailGpgAgent.resolvePath(fileName, gEnigmailSvc.environment.get("PATH"), Ec.isDosLike());
+    if (foundPath != null) { foundPath.normalize(); }
+    return foundPath;
   },
 
   detectGpgAgent: function (domWindow) {
@@ -1003,30 +991,6 @@ Enigmail.prototype = {
       }
       else
         return "";
-    }
-
-
-    function resolveAgentPath(fileName) {
-      var filePath = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
-
-      if (Ec.isDosLike()) {
-        fileName += ".exe";
-      }
-
-      filePath = gEnigmailSvc.agentPath.clone();
-
-      if (filePath) filePath = filePath.parent;
-      if (filePath) {
-        filePath.append(fileName);
-        if (filePath.exists()) {
-          filePath.normalize();
-          return filePath;
-        }
-      }
-
-      var foundPath = ResolvePath(fileName, gEnigmailSvc.environment.get("PATH"), Ec.isDosLike());
-      if (foundPath != null) { foundPath.normalize(); }
-      return foundPath;
     }
 
     var gpgAgentInfo = this.environment.get("GPG_AGENT_INFO");
@@ -1046,20 +1010,19 @@ Enigmail.prototype = {
         }
         else {
           var command = null;
-          var gpgConnectAgent = resolveAgentPath("gpg-connect-agent");
 
           var outStr = "";
           var errorStr = "";
           var exitCode = -1;
 
-          if (gpgConnectAgent && gpgConnectAgent.isExecutable()) {
+          if (this.connGpgAgentPath && this.connGpgAgentPath.isExecutable()) {
             // try to connect to a running gpg-agent
 
             Ec.DEBUG_LOG("enigmail.js: detectGpgAgent: gpg-connect-agent is executable\n");
 
             this.gpgAgentInfo.envStr = DUMMY_AGENT_INFO;
 
-            command = gpgConnectAgent.QueryInterface(Ci.nsIFile);
+            command = this.connGpgAgentPath.QueryInterface(Ci.nsIFile);
 
             Ec.CONSOLE_LOG("enigmail> "+command.path+"\n");
 
@@ -1095,11 +1058,11 @@ Enigmail.prototype = {
 
           // and finally try to start gpg-agent
           var args = [];
-          var commandFile = resolveAgentPath("gpg-agent");
+          var commandFile = this.resolveToolPath("gpg-agent");
           var agentProcess = null;
 
           if ((! commandFile) || (! commandFile.exists())) {
-            commandFile = resolveAgentPath("gpg-agent2");
+            commandFile = this.resolveToolPath("gpg-agent2");
           }
 
           if (commandFile  && commandFile.exists()) {

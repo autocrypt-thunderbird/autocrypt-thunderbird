@@ -558,6 +558,7 @@ var EnigmailCommon = {
     }
   },
 
+
   promptValue: function (win, mesg, valueObj)
   {
     var checkObj = new Object();
