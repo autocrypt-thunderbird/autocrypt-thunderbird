@@ -267,7 +267,7 @@ installer.prototype = {
       subprocess.call(proc).wait();
       if (exitCode) throw "Installer failed with exit code "+exitCode;
     } catch (ex) {
-      Ec.ERROR_LOG("enigmail.js: installGnuPG.jsm.installMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
+      Ec.ERROR_LOG("installGnuPG.jsm: installMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
       throw ex;
     }
 
@@ -291,7 +291,7 @@ installer.prototype = {
     try {
       subprocess.call(proc);
     } catch (ex) {
-      Ec.ERROR_LOG("enigmail.js: installGnuPG.jsm.installMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
+      Ec.ERROR_LOG("installGnuPG.jsm: installMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
       throw ex;
     }
   },
@@ -329,10 +329,7 @@ installer.prototype = {
       arguments:   [],
       charset: null,
       done: function(result) {
-        if (result.exitCode) {
-          deferred.reject("Installer failed with exit code "+result.exitCode);
-        }
-        else
+        if (!result.exitCode)
           deferred.resolve();
       }
     };
@@ -340,8 +337,30 @@ installer.prototype = {
     try {
       subprocess.call(proc);
     } catch (ex) {
-      Ec.ERROR_LOG("enigmail.js: installGnuPG.jsm.installMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
-      throw ex;
+      // Installation can fail on Windows 7 / 8 if UAC is required, trying
+      // alternative method second
+
+      Ec.DEBUG_LOG("installGnuPG.jsm: installWindows: subprocess.call failed with '"+ex.toString()+"'\n");
+
+      var obs = {
+        QueryInterface: XPCOMUtils.generateQI([ Ci.nsIObserver, Ci.nsISupports ]),
+
+        observe: function (proc, aTopic, aData) {
+          Ec.DEBUG_LOG("installGnuPG.jsm: installWindows.observe: topic='"+aTopic+"' \n");
+
+          if (aTopic == "process-finished") {
+            Ec.DEBUG_LOG("installGnuPG.jsm: installWindows finished\n");
+            deferred.resolve();
+          }
+          else if (aTopic == "process-failed") {
+            deferred.reject("Installer could not be started");
+          }
+        }
+      };
+
+      var p = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
+      p.init(this.installerFile);
+      p.runwAsync([], 0, obs, false);
     }
 
   },
@@ -563,8 +582,10 @@ installer.prototype = {
       Ec.DEBUG_LOG("installGnuPG.jsm: performCleanup:\n");
       if (self.performCleanup) self.performCleanup();
 
-      if (self.progressListener)
+      if (self.progressListener) {
+        Ec.DEBUG_LOG("installGnuPG.jsm: performCleanup - onLoaded()\n");
         self.progressListener.onLoaded();
+      }
     }
 
     try {
