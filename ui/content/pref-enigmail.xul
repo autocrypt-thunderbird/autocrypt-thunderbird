@@ -176,12 +176,12 @@
             <groupbox orient="vertical" flex="1">
               <caption label="&enigmail.passwordSettings.label;"/>
               <hbox autostretch="never" align="center">
-                <label control="enigmail_maxIdleMinutes"
+                <label control="maxIdleMinutes"
                        tooltip="maxIdleMinutes.tooltip"
                        value="&enigmail.maxIdleMinutesHead.label;" id="maxIdleMinutesHeadLabel"/>
 
-                <textbox id="enigmail_maxIdleMinutes"
-                        aria-labelledby="maxIdleMinutesHeadLabel enigmail_maxIdleMinutes maxIdleMinutesTailLabel"
+                <textbox id="maxIdleMinutes"
+                        aria-labelledby="maxIdleMinutesHeadLabel maxIdleMinutes maxIdleMinutesTailLabel"
                         type="number"
                         min="0" max="1440"
                         size="4"
@@ -223,10 +223,6 @@
           <separator/>
           <vbox autostretch="never" align="end">
             <hbox>
-              <button id="uninstall"
-                      class="dialog"
-                      label="&enigmail.uninstallButton.label;"
-                      oncommand="enigUninstall()"/>
               <button id="resetPrefs"
                       label="&enigmail.resetPrefsButton.label;"
                       tooltip="resetPrefs.tooltip"
@@ -337,10 +333,6 @@
                     invert="true"
                     tooltip="noHushMailSupport.tooltip"
                     label="&enigmail.noHushMailSupport.label;" />
-
-          <checkbox id="enigmail_disableSMIMEui"
-                    tooltip="disableSMIMEui.tooltip"
-                    label="&enigmail.disableSMIMEui.label;" />
 
           <checkbox id="mime_parts_on_demand"
                     tooltip="mime_parts_on_demand.tooltip"

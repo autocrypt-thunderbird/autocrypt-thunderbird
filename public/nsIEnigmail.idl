@@ -50,7 +50,9 @@ interface nsIEnigmail : nsISupports
   readonly attribute string agentType;        /* always "gpg" */
   readonly attribute string agentVersion;     /* version string */
 
-  readonly attribute nsIFile agentPath;        /* executable path */
+  readonly attribute nsIFile agentPath;        /* executable path for gpg */
+  readonly attribute nsIFile gpgconfPath;      /* executable path for gpgconf */
+  readonly attribute nsIFile connGpgAgentPath; /* executable path for connect-gpg-agent */
 
   readonly attribute boolean initialized;
   attribute boolean initializationAttempted;

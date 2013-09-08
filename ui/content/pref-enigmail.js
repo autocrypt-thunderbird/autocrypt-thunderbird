@@ -36,17 +36,111 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/gpgAgentHandler.jsm");
 
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail");
 
 var gMimePartsElement, gMimePartsValue, gAdvancedMode;
 
+function displayPrefs(showDefault, showPrefs, setPrefs) {
+  DEBUG_LOG("pref-enigmail.js displayPrefs\n");
+
+  var s = gEnigmailSvc;
+
+  var obj = new Object;
+  var prefList = EnigmailCommon.prefBranch.getChildList("",obj);
+
+  for (var prefItem in prefList) {
+    var prefName=prefList[prefItem];
+    var prefElement = document.getElementById("enigmail_"+prefName);
+
+    if (prefElement) {
+      var prefType = EnigmailCommon.prefBranch.getPrefType(prefName);
+      var prefValue;
+      if (showDefault) {
+        prefValue = EnigGetDefaultPref(prefName);
+      }
+      else {
+        prefValue = EnigGetPref(prefName);
+      }
+
+      DEBUG_LOG("pref-enigmail.js displayPrefs: "+prefName+"="+prefValue+"\n");
+
+      switch (prefType) {
+      case EnigmailCommon.prefBranch.PREF_BOOL:
+        if (showPrefs) {
+          if (prefElement.getAttribute("invert") == "true") {
+            prefValue = ! prefValue;
+          }
+
+          if (prefValue) {
+            prefElement.setAttribute("checked", "true");
+          } else {
+            prefElement.removeAttribute("checked");
+          }
+        }
+
+        if (setPrefs) {
+
+          if (prefElement.getAttribute("invert") == "true") {
+            if (prefElement.checked) {
+              EnigSetPref(prefName, false);
+            } else {
+              EnigSetPref(prefName, true);
+            }
+          }
+          else {
+            if (prefElement.checked) {
+              EnigSetPref(prefName, true);
+            } else {
+              EnigSetPref(prefName, false);
+            }
+          }
+        }
+
+        break;
+
+      case EnigmailCommon.prefBranch.PREF_INT:
+        if (showPrefs)
+          prefElement.value = prefValue;
+
+        if (setPrefs) {
+          try {
+            EnigSetPref(prefName, 0+prefElement.value);
+          } catch (ex) {}
+        }
+        break;
+
+      case EnigmailCommon.prefBranch.PREF_STRING:
+        if (showPrefs)
+          prefElement.value = prefValue;
+        if (setPrefs)
+          EnigSetPref(prefName, prefElement.value);
+        break;
+
+      default:
+        DEBUG_LOG("pref-enigmail.js displayPrefs: "+prefName+" does not have a type?!\n");
+      }
+    }
+  }
+}
+
 function prefOnLoad() {
 
-   EnigDisplayPrefs(false, true, false);
+   GetEnigmailSvc();
+   displayPrefs(false, true, false);
+
    document.getElementById("enigmail_agentPath").value = EnigConvertToUnicode(EnigGetPref("agentPath"), "utf-8");
 
+   var maxIdle = -1;
+   if (! gEnigmailSvc) {
+     maxIdle = EnigmailCommon.getPref("maxIdleMinutes");
+   }
+   else
+     maxIdle = EnigmailGpgAgent.getMaxIdlePref(window);
+
+   document.getElementById("maxIdleMinutes").value = maxIdle;
    gAdvancedMode = EnigGetPref("advancedUser");
 
    if (window.arguments) {
@@ -71,10 +165,12 @@ function prefOnLoad() {
     enigShowUserModeButtons(gAdvancedMode);
    }
 
+   if (gEnigmailSvc && gEnigmailSvc.useGpgAgent()) {
+      document.getElementById("enigmail_noPassphrase").setAttribute("disabled", true);
+      document.getElementById("enigmail_useGpgAgent").setAttribute("disabled", true);
+   }
+
    if ((! window.arguments) || (window.arguments[0].clientType!="seamonkey")) {
-      document.getElementById("enigmail_disableSMIMEui").setAttribute("collapsed", true);
-      var uninst = document.getElementById("uninstall");
-      if (uninst) uninst.setAttribute("collapsed", "true");
       EnigCollapseAdvanced(document.getElementById("prefTabBox"), "collapsed", null);
       EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
 
@@ -161,7 +257,7 @@ function selectPrefTabPanel(panelName) {
 function resetPrefs() {
   DEBUG_LOG("pref-enigmail.js: resetPrefs\n");
 
-  EnigDisplayPrefs(true, true, false);
+  displayPrefs(true, true, false);
 
   EnigSetPref("configuredVersion", EnigGetVersion());
 
@@ -211,7 +307,7 @@ function prefOnAccept() {
   }
   var newAgentPath = document.getElementById("enigmail_agentPath").value;
 
-  EnigDisplayPrefs(false, false, true);
+  displayPrefs(false, false, true);
   EnigSetPref("agentPath", EnigConvertFromUnicode(newAgentPath, "utf-8"));
 
   //setRecipientsSelectionPref(document.getElementById("enigmail_recipientsSelection").value);
@@ -225,6 +321,7 @@ function prefOnAccept() {
 
   EnigSetPref("configuredVersion", EnigGetVersion());
   EnigSetPref("advancedUser", gAdvancedMode);
+  EnigmailGpgAgent.setMaxIdlePref(document.getElementById("maxIdleMinutes").value);
 
   EnigSavePrefs();
 
@@ -252,9 +349,11 @@ function prefOnAccept() {
   // detect use of gpg-agent and warn if needed
   var enigmailSvc = GetEnigmailSvc();
   if (enigmailSvc && enigmailSvc.useGpgAgent()) {
-    if ((document.getElementById("enigmail_maxIdleMinutes").value > 0) &&
-        (! document.getElementById("enigmail_noPassphrase").checked)) {
-      EnigAlertPref(EnigGetString("prefs.warnIdleTimeWithGpgAgent"), "warnGpgAgentAndIdleTime");
+    if (!  EnigmailGpgAgent.isAgentTypeGpgAgent()) {
+      if ((document.getElementById("maxIdleMinutes").value > 0) &&
+          (! document.getElementById("enigmail_noPassphrase").checked)) {
+        EnigAlertPref(EnigGetString("prefs.warnIdleTimeWithGpgAgent"), "warnGpgAgentAndIdleTime");
+      }
     }
   }
 
