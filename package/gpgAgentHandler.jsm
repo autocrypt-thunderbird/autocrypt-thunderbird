@@ -145,6 +145,7 @@ var EnigmailGpgAgent = {
     var proc = {
       command:     psCmd,
       arguments:   [ "-o", "comm", "-p", pid ],
+      environment: Ec.envList,
       charset: null,
       done: function(result) {
         DEBUG_LOG("gpgAgentHandler.jsm: isCmdGpgAgent: got data: '"+result.stdout+"'\n");
@@ -183,6 +184,7 @@ var EnigmailGpgAgent = {
       command:     svc.connGpgAgentPath,
       arguments:   [],
       charset: null,
+      environment: Ec.envList,
       stdin: function(pipe) {
         pipe.write("/subst\n");
         pipe.write("/serverpid\n");
@@ -233,6 +235,7 @@ var EnigmailGpgAgent = {
       command:     svc.gpgconfPath,
       arguments:   [ "--list-options", "gpg-agent" ],
       charset: null,
+      environment: Ec.envList,
       done: function(result) {
         var lines = result.stdout.split(/[\r\n]/);
         var i;
@@ -270,6 +273,7 @@ var EnigmailGpgAgent = {
     var proc = {
       command:     svc.gpgconfPath,
       arguments:   [ "--change-options", "gpg-agent" ],
+      environment: Ec.envList,
       charset: null,
       stdin: function(pipe) {
         pipe.write("default-cache-ttl:"+ RUNTIME +":" + (idleMinutes * 60) +"\n");

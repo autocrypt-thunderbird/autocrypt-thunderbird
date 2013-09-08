@@ -352,7 +352,7 @@ function prefOnAccept() {
     if (!  EnigmailGpgAgent.isAgentTypeGpgAgent()) {
       if ((document.getElementById("maxIdleMinutes").value > 0) &&
           (! document.getElementById("enigmail_noPassphrase").checked)) {
-        EnigAlertPref(EnigGetString("prefs.warnIdleTimeWithGpgAgent"), "warnGpgAgentAndIdleTime");
+        EnigAlertPref(EnigGetString("prefs.warnIdleTimeForUnknownAgent"), "warnGpgAgentAndIdleTime");
       }
     }
   }
