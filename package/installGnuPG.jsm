@@ -82,7 +82,7 @@ const DIR_SERV_CONTRACTID  = "@mozilla.org/file/directory_service;1";
 const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
-const queryUrl = "https://www.enigmail.net/download/get_gnupg_dl.php";
+const queryUrl = "https://www.enigmail.net/service/getGnupdDownload.svc";
 
 var EXPORTED_SYMBOLS = [ "InstallGnuPG" ];
 
@@ -324,23 +324,8 @@ installer.prototype = {
   installWindows: function(deferred) {
     Ec.DEBUG_LOG("installGnuPG.jsm: installWindows\n");
 
-    var proc = {
-      command:     this.installerFile,
-      arguments:   [],
-      charset: null,
-      done: function(result) {
-        if (!result.exitCode)
-          deferred.resolve();
-      }
-    };
-
     try {
-      subprocess.call(proc);
-    } catch (ex) {
-      // Installation can fail on Windows 7 / 8 if UAC is required, trying
-      // alternative method second
-
-      Ec.DEBUG_LOG("installGnuPG.jsm: installWindows: subprocess.call failed with '"+ex.toString()+"'\n");
+      // use runwAsync in order to get UAC approval on Windows 7 / 8 if required
 
       var obs = {
         QueryInterface: XPCOMUtils.generateQI([ Ci.nsIObserver, Ci.nsISupports ]),
@@ -358,9 +343,12 @@ installer.prototype = {
         }
       };
 
-      var p = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
-      p.init(this.installerFile);
-      p.runwAsync([], 0, obs, false);
+      var proc = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
+      proc.init(this.installerFile);
+      proc.runwAsync([], 0, obs, false);
+    }
+    catch(ex) {
+      deferred.reject("Installer could not be started");
     }
 
   },
@@ -407,6 +395,10 @@ installer.prototype = {
     function reqListener () {
       if (typeof(this.responseXML) == "object") {
         Ec.DEBUG_LOG("installGnuPG.jsm: getDownloadUrl.reqListener: got: "+this.responseText+"\n");
+        if (! this.responseXML) {
+          onError({type: "Network" });
+          return;
+        }
         let doc = this.responseXML.firstChild;
         self.url = unescape(doc.getAttribute("url"));
         self.hash = sanitizeHash(doc.getAttribute("hash"));
