@@ -572,7 +572,10 @@ installer.prototype = {
 
     function performCleanup() {
       Ec.DEBUG_LOG("installGnuPG.jsm: performCleanup:\n");
-      if (self.performCleanup) self.performCleanup();
+      try {
+        if (self.performCleanup) self.performCleanup();
+      }
+      catch(ex) {}
 
       if (self.progressListener) {
         Ec.DEBUG_LOG("installGnuPG.jsm: performCleanup - onLoaded()\n");
