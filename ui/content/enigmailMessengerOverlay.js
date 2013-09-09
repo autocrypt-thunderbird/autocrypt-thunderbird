@@ -165,6 +165,12 @@ Enigmail.msg = {
     };
 
     top.controllers.appendController(treeController);
+
+    EnigmailCommon.initPrefService();
+    if (EnigmailCommon.getPref("configuredVersion") == "") {
+      EnigmailCommon.setPref("configuredVersion", EnigmailCommon.getVersion());
+      EnigmailFuncs.openSetupWizard(window);
+    }
   },
 
   viewSecurityInfo: function (event, displaySmimeMsg)
