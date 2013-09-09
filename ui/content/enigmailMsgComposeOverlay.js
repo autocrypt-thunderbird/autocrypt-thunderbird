@@ -1874,7 +1874,7 @@ Enigmail.msg = {
         }
         catch (ex) {}
       }
-    }https://addons.mozilla.org/en-US/developers/addon/enigmail/versions/1394284
+    }
     var exitCodeObj    = new Object();
     var statusFlagsObj = new Object();
     var errorMsgObj    = new Object();
