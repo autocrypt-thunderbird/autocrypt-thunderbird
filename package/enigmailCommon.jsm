@@ -348,23 +348,33 @@ var EnigmailCommon = {
    return prefValue;
   },
 
+  /**
+   * Store a user preference.
+   *
+   * @param  String  prefName  An identifier.
+   * @param  any     value     The value to be stored. Allowed types: Boolean OR Integer OR String.
+   *
+   * @return Boolean Was the value stored successfully?
+   */
   setPref: function (prefName, value)
   {
      this.DEBUG_LOG("enigmailCommon.jsm: setPref: "+prefName+", "+value+"\n");
 
-     if (! this.prefBranch)
+     if (! this.prefBranch) {
        this.initPrefService();
-
-     var prefType;
-     try {
-       prefType = this.prefBranch.getPrefType(prefName);
      }
-     catch (ex) {
+
+     // Discover the type of the preference, as stored in the user preferences.
+     // If the preference identifier doesn't exist yet, it returns 0. In that
+     // case the type depends on the argument "value".
+     var prefType;
+     prefType = this.prefBranch.getPrefType(prefName);
+     if (prefType === 0) {
        switch (typeof value) {
          case "boolean":
            prefType = this.prefBranch.PREF_BOOL;
            break;
-         case "integer":
+         case "number":
            prefType = this.prefBranch.PREF_INT;
            break;
          case "string":
@@ -377,6 +387,7 @@ var EnigmailCommon = {
      }
      var retVal = false;
 
+     // Save the preference only and if only the type is bool, int or string.
      switch (prefType) {
         case this.prefBranch.PREF_BOOL:
            this.prefBranch.setBoolPref(prefName, value);
