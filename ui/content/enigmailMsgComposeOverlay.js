@@ -261,7 +261,6 @@ Enigmail.msg = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getMsgPropertiesCb\n");
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
-    const SIGN    = nsIEnigmail.SEND_SIGNED;
 
     var flags = 0;
     if (mimeMsg && mimeMsg.headers["x-enigmail-draft-status"])
@@ -269,7 +268,9 @@ Enigmail.msg = {
 
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getMsgPropertiesCb: draftStatus: "+flags+"\n");
 
-    if (flags & SIGN) Enigmail.msg.setSendMode('sign');
+    if (flags & nsIEnigmail.SEND_SIGNED) Enigmail.msg.setSendMode('sign');
+    if (flags & nsIEnigmail.SEND_ENCRYPTED) Enigmail.msg.setSendMode('encrypt');
+
   },
 
 
