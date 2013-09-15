@@ -166,8 +166,8 @@ function prefOnLoad() {
    }
 
    if (gEnigmailSvc && gEnigmailSvc.useGpgAgent()) {
-      document.getElementById("enigmail_noPassphrase").setAttribute("disabled", true);
-      document.getElementById("enigmail_useGpgAgent").setAttribute("disabled", true);
+      document.getElementById("enigmail_noPassphrase").setAttribute("collapsed", true);
+      document.getElementById("enigmail_useGpgAgent").setAttribute("collapsed", true);
    }
 
    if ((! window.arguments) || (window.arguments[0].clientType!="seamonkey")) {
