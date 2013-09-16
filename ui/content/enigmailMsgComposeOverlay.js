@@ -1336,6 +1336,8 @@ Enigmail.msg = {
     }
     var encryptIfPossible = false;
     if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
+      this.setDraftStatus(sendFlags);
+
       if (!((sendFlags & ENCRYPT) && EnigmailCommon.confirmPref(window, EnigmailCommon.getString("savingMessage"), "saveEncrypted",
               EnigmailCommon.getString("msgCompose.button.encrypt"),
               EnigmailCommon.getString("msgCompose.button.dontEncrypt")))) {
@@ -1343,7 +1345,6 @@ Enigmail.msg = {
 
         if (this.attachOwnKeyObj.appendAttachment) this.attachOwnKey();
 
-        if (sendFlags & SIGN) this.setDraftStatus(sendFlags);
         return true;
       }
     }
