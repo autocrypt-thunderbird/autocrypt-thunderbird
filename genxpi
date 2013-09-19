@@ -79,6 +79,7 @@ subprocessDll=${libPrefix}subprocess${dllSuffix}
 spDllFile=platform/${platform}/lib/${libPrefix}subprocess-${xpcomAbi}${dllSuffix}
 
 # Prepare chrome.manifest
+touch ${targetDir}/chrome.manifest
 cp  ${targetDir}/chrome.manifest ${targetDir}/chrome.manifest.save
 cat  ${srcDir}/package/chrome.manifest | \
 sed  's/##ENIGMIMEDLL-PLACEHOLDER##/binary-component platform\/'${platform}'\/components\/'`basename ${enigDllFile}`' ABI='${platform}'/' \
