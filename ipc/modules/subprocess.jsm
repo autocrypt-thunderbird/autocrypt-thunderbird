@@ -1002,6 +1002,8 @@ function subprocess_win32(options) {
             if (exitCode > -2)
               exitCode = exit.value;
 
+            exitCode = exitCode % 0xFF;
+
             if (stdinWorker)
                 stdinWorker.postMessage({msg: 'stop'});
 
@@ -1609,6 +1611,8 @@ function subprocess_unix(options) {
                   else
                       exitCode = status.value;
             }
+
+            exitCode = exitCode % 0xFF;
 
             if (stdinWorker)
                 stdinWorker.postMessage({msg: 'stop'});
