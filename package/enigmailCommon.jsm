@@ -1289,21 +1289,55 @@ var EnigmailCommon = {
     return event;
   },
 
+  /*
+   * remember the fact a URI is encrypted
+   *
+   * @param String msgUri
+   *
+   * @return null
+   */
+
   rememberEncryptedUri: function (uri) {
+    this.DEBUG_LOG("enigmailCommon.jsm: rememberEncryptedUri: uri="+uri+"\n");
     if (gEncryptedUris.indexOf(uri) < 0)
       gEncryptedUris.push(uri);
   },
 
+  /*
+   * unremember the fact a URI is encrypted
+   *
+   * @param String msgUri
+   *
+   * @return null
+   */
+
   forgetEncryptedUri: function (uri) {
+    this.DEBUG_LOG("enigmailCommon.jsm: forgetEncryptedUri: uri="+uri+"\n");
     var pos = gEncryptedUris.indexOf(uri);
     if (pos >= 0) {
       gEncryptedUris.splice(pos, 1);
     }
   },
 
+  /*
+   * determine if a URI was remebered as encrypted
+   *
+   * @param String msgUri
+   *
+   * @return: Boolean true if yes, false otherwise
+   */
+
   isEncryptedUri: function (uri) {
+    this.DEBUG_LOG("enigmailCommon.jsm: isEncryptedUri: uri="+uri+"\n");
     return gEncryptedUris.indexOf(uri) >= 0;
   },
+
+  /*
+   * Get GnuPG command line options for receiving the password depending
+   * on the various user and system settings (gpg-agent/no passphrase)
+   *
+   * @return: Array the GnuPG command line options
+   */
 
   passwdCommand: function () {
     var commandArgs = [];
