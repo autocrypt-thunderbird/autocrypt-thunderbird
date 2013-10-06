@@ -62,7 +62,7 @@
              multiline="true"
              readonly="true"
              class="plain"
-             minwidth="600px"
+             minwidth="400px"
              maxwidth="750px"
              maxheigth="500px"
              value=""/>
