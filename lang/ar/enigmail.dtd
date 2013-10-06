@@ -286,7 +286,7 @@
 <!ENTITY enigmail.maybe.label "نعم، إن اختير في تحرير الرسائل">
 <!ENTITY enigmail.singleRcptSettings.desc "(لاحظ: عند التضارب، 'أبدًا' تسود على 'دائمًا')">
 <!ENTITY enigmail.ruleEmail.label "اضبط قواعد OpenPGP لأجل">
-<!ENTITY enigmail.ruleEmail.tooltip "أدخل عناوين البريد و حسب؛ لا تضع أسماء المتلقين\nمثلا: 'اسم ما <some.name@address.net>' غير مقبول">
+<!ENTITY enigmail.ruleEmail.tooltip "أدخل عناوين البريد و حسب؛ لا تضع أسماء المتلقين مثلا: 'اسم ما <some.name@address.net>' غير مقبول">
 <!ENTITY enigmail.sepratationDesc.label "(افصل ما بين عناوين البريد بمسافات)">
 <!ENTITY enigmail.matchDescStart.label "طبق القاعدة إن كان المتلقي">
 <!ENTITY enigmail.matchDescEnd.label "أحد العناوين أعلاه">
@@ -557,11 +557,11 @@
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "من فضلك أكد كلمة السر بإعادة إدخالها">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.title "No OpenPGP Key Found">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.subtitle "We could not find any OpenPGP Key">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc "We could not find any OpenPGP key. Please select below if you want to\n\n\n\n\n\n\n                                                      create a new key pair or if you want to import an existing key.">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc "We could not find any OpenPGP key. Please select below if you want to                                                             create a new key pair or if you want to import an existing key.">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey "I have existing public and private keys that I would like to import">
 <!ENTITY enigmail.setupWiz.pgKeyImport.title "Import OpenPGP Keys">
 <!ENTITY enigmail.setupWiz.pgKeyImport.subtitle "Specify the files to import">
-<!ENTITY enigmail.setupWiz.pgKeyImport.desc "Please specifiy the files containing the public and the private keys to\n\n\n\n\n\n\n                                                      import. The entry for private keys can be left empty if the first file\n\n\n\n                                                      contains both private and public keys.">
+<!ENTITY enigmail.setupWiz.pgKeyImport.desc "Please specifiy the files containing the public and the private keys to                                                             import. The entry for private keys can be left empty if the first file                                                          contains both private and public keys.">
 <!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile "Public key file">
 <!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile "Private key file">
 <!ENTITY enigmail.setupWiz.pgSummary.title "الملخّص">

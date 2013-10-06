@@ -287,7 +287,7 @@
 <!ENTITY enigmail.maybe.label "Ja, om det valts i meddelandekomposition">
 <!ENTITY enigmail.singleRcptSettings.desc "(Obs: vid konflikter, 'Aldrig' åsidorätter 'Alltid')">
 <!ENTITY enigmail.ruleEmail.label "Ställ in OpenPGP regler för">
-<!ENTITY enigmail.ruleEmail.tooltip "Fyll endast i e-postadresser, INTE namnen hos mottagarna\nT.ex. 'Vissa namn <vissa.namn@address.net>' är ogiltig">
+<!ENTITY enigmail.ruleEmail.tooltip "Fyll endast i e-postadresser, INTE namnen hos mottagarna T.ex. 'Vissa namn <vissa.namn@address.net>' är ogiltig">
 <!ENTITY enigmail.sepratationDesc.label "(Separera flera e-postadresser med mellanslag)">
 <!ENTITY enigmail.matchDescStart.label "Tillämpa regel om mottagare">
 <!ENTITY enigmail.matchDescEnd.label "en av ovanstående adresser">

@@ -275,7 +275,7 @@
 <!ENTITY enigmail.maybe.label "Vain jos valitaan erikseen viestiä kirjoitettaessa">
 <!ENTITY enigmail.singleRcptSettings.desc "(Huom: ristiriitatilanteissa valinta &quot;Ei koskaan&quot; on etusijalla)">
 <!ENTITY enigmail.ruleEmail.label "Aseta OpenPGP-säännöt osoitteille">
-<!ENTITY enigmail.ruleEmail.tooltip "Kirjoita kenttään vain sähköpostiosoitteita. Älä kirjoita vastaanottajien nimiä\nEsim. &quot;Joku Nimi <joku.nimi@osoite.fi>&quot; on virheellinen">
+<!ENTITY enigmail.ruleEmail.tooltip "Kirjoita kenttään vain sähköpostiosoitteita. Älä kirjoita vastaanottajien nimiä Esim. &quot;Joku Nimi <joku.nimi@osoite.fi>&quot; on virheellinen">
 <!ENTITY enigmail.sepratationDesc.label "(Erota sähköpostiosoitteet väleillä)">
 <!ENTITY enigmail.matchDescStart.label "Sääntö pätee jos ylläoleva">
 <!ENTITY enigmail.matchExact.label "on täsmälleen vastaanottajan osoite">

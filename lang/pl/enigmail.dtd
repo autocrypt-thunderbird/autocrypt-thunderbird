@@ -287,7 +287,7 @@
 <!ENTITY enigmail.maybe.label "Tak, jeśli zaznaczono taką opcję tworzenia wiadomości">
 <!ENTITY enigmail.singleRcptSettings.desc "(Uwaga: w przypadku konfliktów, „Nigdy” ma pierwszeństwo przed „Zawsze”)">
 <!ENTITY enigmail.ruleEmail.label "Określ reguły OpenPGP dla">
-<!ENTITY enigmail.ruleEmail.tooltip "Należy wpisać tylko sam adres e-mail, bez nazwy adresata\nNp. wpis „Jan Kowalski <jakis.adres@poczta.pl>” jest nieprawidłowy">
+<!ENTITY enigmail.ruleEmail.tooltip "Należy wpisać tylko sam adres e-mail, bez nazwy adresata Np. wpis „Jan Kowalski <jakis.adres@poczta.pl>” jest nieprawidłowy">
 <!ENTITY enigmail.sepratationDesc.label "(Przy wpisywaniu kilku adresów, należy oddzielić je spacjami)">
 <!ENTITY enigmail.matchDescStart.label "Zastosuj regułę, gdy adresat">
 <!ENTITY enigmail.matchDescEnd.label "jeden z powyższych adresów">
