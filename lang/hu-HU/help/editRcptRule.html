@@ -3,7 +3,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Enigmail Help: Edit OpenPGP Rule</title>
+  <title>Enigmail Súgó: OpenPGP szabály szerkesztése</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <style type="text/css">
   /*<![CDATA[*/
@@ -13,71 +13,73 @@
 </head>
 
 <body>
-  <h1>Enigmail Help</h1>
+  <h1>Enigmail Súgó</h1>
 
-  <h3>Using the Enigmail Rules Editor: Edit OpenPGP Rule</h3>
+  <h3>Az Enigmail Szabályszerkesztő használata: OpenPGP szabály szerkesztése</h3>
 
-  <p>In the Rules Editor, you can specify defaults per recipient for enabling encryption, signing and PGP/MIME, and to define what OpenPGP key(s) to use. In this dialog, you can specify the rules for a single recipient, and for a group of recipients with very similar attributes.</p>
+  <p>A Szabályszerkesztőben címzettenként megadhatja a titkosítás, az aláírás és a PGP/MIME beállításokat, valamint a használni kívánt OpenPGP kulcs(ok)at. A párbeszédablakban egy címzett vagy – azonos tulajdonságokkal rendelkező – címzettek egy csoportja számára adhat meg szabályokat.</p>
 
   <dl>
-    <dt>Set OpenPGP Rules for</dt>
+    <dt>Szabályok szerkesztése címzettekhez</dt>
 
-    <dd>Contains the email addresses of the recipients (without names, i.e. just an address like <tt>somebody@email.domain</tt>). You can specify several email addresses, separated by spaces. The address specified here can consist of only the domain section so that mail to any address at that domain will be matched, e.g. <tt>@email.domain will</tt> allow matching to <tt>body@email.domain</tt>, <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt>, etc.</dd>
+A címzettek e-mail címét tartalmazza (név nélkül, például a következő formában: valaki@email.cim). Vesszővel elválasztva több e-mail címet is megadhat. Ha az itt megadott cím csak egy tartománynévből áll, akkor a szabály az összes egyező e-mail címre érvényes lesz. Például: A @email.cim megadása esetén a szabály érvényes lesz a valaki@email.cim és a masvalaki@email.cim valamint a barki@email.cim, stb. e-mail címekre is
 
-    <dt>Apply rule if recipient ...</dt>
+    <dd>A címzettek e-mail címét tartalmazza (név nélkül, például a következő formában: <tt>valaki@email.cim</tt>). Vesszővel elválasztva több e-mail címet is megadhat. Ha az itt megadott cím csak egy tartománynévből áll, akkor a szabály az összes egyező e-mail címre érvényes lesz. Például: a <tt>@email.cim</tt>megadása esetén a szabály érvényes lesz a <tt>valaki@email.cim</tt> és a  <tt>masvalaki@email.cim</tt> valamint a <tt>barki@email.cim</tt>, stb. e-mail címekre is.</dd>
+
+    <dt>Szabály alkalmazása, ha a címzett címe</dt>
 
     <dd>
-      This modifies the matching of the email addresses. If multiple addresses are entered, the setting will apply to all. The examples below are based on <tt>body@email.domain</tt> entered in the <em>OpenPGP Rules</em> field above.
-
+      Ez a beállítás az e-mail címekkel történő egyezés kiértékelésének módját befolyásolja. Ha több e-mail cím van megadva akkor a beállítás az összesre érvényes lesz. Az alábbi példák az <em>OpenPGP Szabályok</em> részben megadott <tt>valaki@email.hu</tt> címre érvényesek.
       <ul>
-        <li><em>Is exactly</em>: with this setting, the rule will only trigger on emails to <tt>body@email.domain</tt> (exact, case insensitive matching).</li>
+        <li><em>Pontosan megegyezik</em>: beállításával a szabály csak teljes egyezés esetén lép működésbe, azaz például: a <tt>valaki@email.hu</tt> címnél (tökéletes egyezés, a kis- és nagybetűk egyezése nélkül).</li>
 
-        <li><em>Contains</em>: with this setting, any email address containing the string is matched, e.g. <tt>anybody@email.domain</tt> or <tt>body@email.domain.net</tt></li>
+        <li><em>Részben megegyezik</em>: beállításával a szabály a megadott karakterláncot tartalmazó egyezés estén lép működésbe, azaz például: a <tt>masvalaki@email.hu</tt> és a <tt>valaki@email.humor.hu</tt> címeknél.</li>
 
-        <li><em>Begins with</em>: with this setting, any email address starting with the string is matched, e.g. <tt>body@email.domain.net</tt>, <tt>body@email.domain-name.com</tt>.</li>
+        <li><em>Azonosan kezdődik</em>: beállításával a szabály a megadott karakterlánccal kezdődő esetekben lép működésbe, azaz például: a <tt>valaki@email.hu</tt> és a <tt>valaki@email.hurrikan.hu</tt> címeknél.</li>
 
-        <li><em>Ends with</em>: with this setting, any email address ending with the string is matched, e.g. <tt>anybody@email.domain</tt> , <tt>somebody@email.domain</tt>.</li>
+        <li><em>Azonosan végződik</em>: beállításával a szabály a megadott karakterlánccal végződő esetekben lép működésbe, azaz például: a<tt>masvalaki@email.hu</tt> és az <tt>egyvalaki@email.hu</tt>címeknél.</li>
       </ul>
     </dd>
 
-    <dt>Continue with the next rule for the matching address</dt>
+    <dt>A cím egyezéséig folytatás a következő szabállyal</dt>
 
-    <dd>Enabling this function will allow you to define a rule but not have to specify a KeyID in the <em>Use the following OpenPGP keys:</em> field, so that the email address is used to check for a key at the time of sending. Also, further rules for the same address(es) will be processed as well.</dd>
+    <dd>A beállítás segítségével a szabály megadása mellet nem kell megadnia Kulcsazonosítót a <em>A következő OpenPGP-kulcsok használata:</em> mezőben. Ehhez a címhez a küldéskor kell a kulcsot kiválasztani. A további szabályok ugyanehhez a címhez szintén végrehajtásra kerülnek.</dd>
 
-    <dt>Do not check further rules for the matching address</dt>
+    <dt>A további szabályok figyelmen kívül hagyása</dt>
 
-    <dd>Enabling this function stops processing any other rules for the matching address(es) if this rule is matched; i.e. rule processing continues with the next recipient.</dd>
+    <dd>A beállítás engedélyezésével ha a szabály egyezik, a további szabályok kiértékelése nem folytatódik ehhez a címhez. A kiértékelés a következő e-mail címmel folytatódik.</dd>
 
-    <dt>Use the following OpenPGP keys:</dt>
+    <dt>A következő OpenPGP-kulcsok használata:</dt>
 
-    <dd>Use the <em>Select Key(s)..</em> button to select the recipient keys to be used for encryption. As in the action above, no further rules for the matching address(es) are processed.</dd>
+    <dd>A <em>Kulcs kiválasztása…</em> gomb lenyomásával kiválaszthatja a címzettnek szánt titkosítókulcsot. A kiértékelés a következő e-mail címmel folytatódik.</dd>
 
-    <dt>Default for Signing</dt>
+    <dt>Alapértelmezett aláírás</dt>
 
     <dd>
-      Enable or disable message signing. This either uses or overrides what you have specified in the message composition window. The values are:
+      Engedélyezi vagy letiltja az üzenet aláírását. Ez a beállítás használja vagy felülbírálhatja az üzenetszerkesztő ablakban megadott beállításokat. Értékei a következők lehetnek:
 
       <ul>
-        <li><em>Never</em>: disable signing, even if it was enabled in the message composition window (overrules the other values)</li>
+        <li><em>Soha</em>: aláírás letiltása akkor is, ha a üzenetszerkesztő ablakban engedélyezve volt. (Felülbírálja a többi értéket is.)</li>
 
-        <li><em>Yes, if selected from in Message Composition</em>: leave signing as specified in the message composition window</li>
+        <li><em>Igen, ha ki van választva az üzenetszerkesztőben</em>: aláírás elvégzése az üzenetszerkesztő ablakban beállításainak megfelelően.</li>
 
-        <li><em>Always</em>: enable signing, even if it was <span style="font-style: italic;">not</span> enabled in the message composition window</li>
-      </ul>These signing settings are applied for all rules that match. If one of the rules disables signing, the message will not be signed, regardless of other rules that specify <em>Always</em>.
+        <li><em>Mindig</em>: aláírás engedélyezése akkor is ha a üzenetszerkesztő ablakban le volt<span style="font-style: italic;">tiltva</span>.</li>
+      </ul>
+    <p>Az aláírási beállítások az összes egyező szabály alapján kerülnek meghatározásra. Ha egy szabály letiltja az aláírást, az üzenet nem lesz aláírva függetlenül attól, hogy a többi egyező szabály akár a <em>Mindig</em> beállítással rendelkezik.
     </dd>
 
-    <dt>Encryption</dt>
+    <dt>Titkosítás</dt>
 
-    <dd>Enable or disable message encryption. The allowed settings and their meaning are the same as for message signing.</dd>
+    <dd>Engedélyezi vagy letiltja az üzenet titkosítását. A lehetséges beállítások és jelentésük megegyezik az üzenet aláírásnál ismertetettel.</dd>
 
     <dt>PGP/MIME</dt>
 
-    <dd>Enable or disable the use of the PGP/MIME (RFC 3156) message encoding. If PGP/MIME is disabled, the messages are encoded using "inline PGP". The allowed values and their meaning are the same as for message signing.</dd>
+    <dd>Engedélyezi vagy letiltja az üzenet PGP/MIME (RFC 3156) szerinti titkosítását. Ha a PGP/MIME le van tiltva, akkor az üzenet a „beágyazott PGP” titkosítással kerül elküldésre. A lehetséges beállítások és jelentésük megegyezik az üzenet aláírásnál ismertetettel.</dd>
   </dl>
 
-  <p>The rules are processed in the order displayed in the list in the <em>OpenPGP Rules Editor</em>. Whenever a rule matches a recipient and contains a OpenPGP Key ID, in addition to using the specified Key ID, the recipient is not considered anymore when processing further rules.</p>
+  <p>A szabályok végrehajtási rendje megegyezik az <em>Enigmail Szabályszerkesztő</em> listájában található sorrenddel. Amikor egy szabály egyezik a címzett e-mail címével és a szabály OpenPGP Kulcsazonosító is tartalmaz, akkor a megadott Kulcsazonosító használata mellett a címzettre már további szabályok nem fognak vonatkozni.</p>
   <hr />
 
-  <p>Further help is available on the <a href="http://www.enigmail.net/documentation/pgprules_file.php" target="_blank">Enigmail Per-Recipient Settings page</a></p>
+<p>További segítség található angol nyelven az <a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail weboldalán</a></p>
 </body>
 </html>
