@@ -583,11 +583,16 @@ Enigmail.msg = {
   addAttachment: function (attachment)
   {
     if (typeof(AddAttachment) == "undefined") {
-      // TB >= 3.0
-      AddUrlAttachment(attachment);
+      if (typeof(AddUrlAttachment) == "undefined") {
+        // TB >= 24
+        AddAttachments([attachment]);
+      }
+      else
+        // TB 17
+        AddUrlAttachment(attachment);
     }
     else {
-      // SeaMonkey and TB <= 3.0
+      // SeaMonkey
       AddAttachment(attachment);
     }
   },
