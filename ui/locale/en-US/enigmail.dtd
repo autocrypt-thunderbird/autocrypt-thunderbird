@@ -75,8 +75,6 @@
 <!ENTITY enigmail.whenSending.label       "When sending mail">
 <!ENTITY enigmail.moreOptions.label       "More options">
 
-<!ENTITY enigmail.encryptToSelf.label     "Add my own key to the recipients list">
-<!ENTITY enigmail.encryptToSelf.tooltip   "If enabled, you will always be able to decrypt messages you have sent.">
 <!ENTITY enigmail.alwaysTrustSend.label   "Always trust people's keys">
 <!ENTITY enigmail.alwaysTrustSend.tooltip "Do not use the Web of Trust to determine the validity of keys">
 <!ENTITY enigmail.useNonDefaultComment.label "Add Enigmail comment in OpenPGP signature">

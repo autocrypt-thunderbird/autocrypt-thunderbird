@@ -77,9 +77,6 @@
     <tooltip id="resetPrefs.tooltip">
       <description>&enigmail.resetPrefs.tooltip;</description>
     </tooltip>
-    <tooltip id="encryptToSelf.tooltip">
-      <description>&enigmail.encryptToSelf.tooltip;</description>
-    </tooltip>
     <tooltip id="wrapHtmlBeforeSend.tooltip">
       <description>&enigmail.wrapHtmlBeforeSend.tooltip;</description>
     </tooltip>
@@ -236,10 +233,6 @@
       <vbox id="sending" flex="1"
             advanced="true">
           <description class="enigmailPrefsTitle">&enigmail.whenSending.label; ...</description>
-
-          <checkbox id="enigmail_encryptToSelf"
-                    label="&enigmail.encryptToSelf.label;"
-                    tooltip="encryptToSelf.tooltip"/>
 
           <checkbox id="enigmail_wrapHtmlBeforeSend"
                     label="&enigmail.wrapHtmlBeforeSend.label;"
