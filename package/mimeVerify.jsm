@@ -116,21 +116,28 @@ MimeVerify.prototype = {
       // check if mime part could be pgp/mime signed message
       if (this.dataCount > 10240) return;
       this.startMsgStr += data;
-      let  i = this.startMsgStr.search(/^content-type:/im);
-      if (i >= 0) {
-        let s = data.substr(i).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-        if (s.search(/multipart\/signed/i) > 0 &&
-          s.search(/micalg\s*=\s*[\"\']?pgp-[\"\']?/i) > 0 &&
-          s.search(/protocol\s*=\s*[\'\"]application\/pgp-signature[\"\']/i) > 0) {
 
-          DEBUG_LOG("mimeVerify.jsm: onTextData: found PGP/MIME signed message\n");
-          this.foundMsg = true;
-          let hdr = EnigmailFuncs.getHeaderData(s);
-          hdr["boundary"] = hdr["boundary"] || "";
-          hdr["micalg"] = hdr["micalg"] || "";
-          this.boundary = hdr["boundary"].replace(/[\'\"]/g, "");
-          this.hash = hdr["micalg"].replace(/[\'\"]/g, "").toUpperCase().replace(/^PGP-/, "");
-        }
+      var msgs = this.startMsgStr.split("\n");
+      var msg;
+      for(msg in msgs)
+      {
+          if(msg.search(/^content-type:/im) >= 0)
+          {
+              if (msg.search(/multipart\/signed/i) > 0 &&
+                  msg.search(/micalg\s*=\s*[\"\']?pgp-[\"\']?/i) > 0 &&
+                  msg.search(/protocol\s*=\s*[\'\"]application\/pgp-signature[\"\']/i) > 0) {
+
+                DEBUG_LOG("mimeVerify.jsm: onTextData: found PGP/MIME signed message\n");
+                this.foundMsg = true;
+                let s = data.substr(i).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+                let hdr = EnigmailFuncs.getHeaderData(s);
+                hdr["boundary"] = hdr["boundary"] || "";
+                hdr["micalg"] = hdr["micalg"] || "";
+                this.boundary = hdr["boundary"].replace(/[\'\"]/g, "");
+                this.hash = hdr["micalg"].replace(/[\'\"]/g, "").toUpperCase().replace(/^PGP-/, "");
+              }
+          }
+          break;
       }
     }
     this.dataCount += data.length;
