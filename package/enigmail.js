@@ -2084,8 +2084,20 @@ Enigmail.prototype = {
     return listText;
   },
 
-  getKeyDetails: function (keyId, uidOnly) {
-      // uidOnly==true also means to only show UIDs with highest trust level
+  /**
+   * Return details of given keys.
+   *
+   * @param  String  keyId              List of keys, separated by spaces.
+   * @param  Boolean uidOnly            false:
+   *                                      return all key details (full output of GnuPG)
+   *                                    true:
+   *                                      return only the user ID fields. Only UIDs with highest trust
+   *                                      level are returned.
+   * @param  Boolean withUserAttributes true: include "uat:jpegPhoto" + subkey ID
+   *
+   * @return String       List of user IDs separated by \n.
+   */
+  getKeyDetails: function (keyId, uidOnly, withUserAttributes) {
     var args = Ec.getAgentArgs(true);
     var keyIdList = keyId.split(" ");
     args=args.concat([ "--fixed-list-mode", "--with-colons", "--list-keys"]);
@@ -2105,6 +2117,7 @@ Enigmail.prototype = {
 
     const trustLevels = "oidre-qmnfu";
     var maxTrustLevel = -1;
+    var theLine;
 
     if (uidOnly) {
       var userList="";
@@ -2118,7 +2131,7 @@ Enigmail.prototype = {
             hideInvalidUid = false;
           }
         case "uid:":
-          var theLine=keyArr[i].split(/:/);
+          theLine=keyArr[i].split(/:/);
           if (uidOnly && hideInvalidUid) {
             var thisTrust = trustLevels.indexOf(theLine[1]);
             if (thisTrust > maxTrustLevel) {
@@ -2133,6 +2146,13 @@ Enigmail.prototype = {
           else if (("idre".indexOf(theLine[1]) < 0) || (! hideInvalidUid)) {
             // UID valid or key not valid
             userList += theLine[9] + "\n";
+          }
+          break;
+        case "uat:":
+          if (withUserAttributes) {
+            if (("idre".indexOf(theLine[1]) < 0) || (! hideInvalidUid)) {
+              userList += "uat:jpegPhoto:" + theLine[4] + "\n";
+            }
           }
         }
       }

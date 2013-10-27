@@ -2392,15 +2392,15 @@ var EnigmailCommon = {
         }
       }
 
-      //try {
-        if (userId && keyId && this.prefBranch.getBoolPref("displaySecondaryUid")) {
-          let uids = this.enigmailSvc.getKeyDetails(keyId, true);
-          if (uids) {
-            userId = uids;
-          }
+      if (userId && keyId && this.prefBranch.getBoolPref("displaySecondaryUid")) {
+        let uids = this.enigmailSvc.getKeyDetails(keyId, true, true);
+        if (uids) {
+          userId = uids;
         }
-      //}
-      //catch (ex) {}
+        if (uids.indexOf("uat:jpegPhoto:") >= 0) {
+          retStatusObj.statusFlags |= nsIEnigmail.PHOTO_AVAILABLE;
+        }
+      }
 
       if (userId) {
         userId = this.convertToUnicode(userId, "UTF-8");

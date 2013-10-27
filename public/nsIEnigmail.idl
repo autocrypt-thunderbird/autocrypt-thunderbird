@@ -172,7 +172,8 @@ interface nsIEnigmail : nsISupports
                     out wstring errorMsg);
 
   string getKeyDetails (in string keyId,
-                        in boolean uidOnly);
+                        in boolean uidOnly,
+                        in boolean withUserAttr);
 
   string showKeyPhoto (in string keyId,
                        in long photoNumber,
