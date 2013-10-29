@@ -332,7 +332,7 @@ function enigmailBuildList(refresh) {
 
    var invalidAddr = "";
    try{
-     if (typeof(window.arguments[INPUT].invalidAddr)=="string") {
+     if (typeof(window.arguments[INPUT].invalidAddr)=="string" && !refresh) {
         invalidAddr=" "+window.arguments[INPUT].invalidAddr+" ";
      }
    }
@@ -351,7 +351,7 @@ function enigmailBuildList(refresh) {
 
    var d = new Date();
    var now=d.valueOf() / 1000;
-   var aValidUsers = new Array();
+   var aValidUsers = [];
 
    var mailAddr, escapedMailAddr;
    var s1, s2;
@@ -481,7 +481,7 @@ function enigmailBuildList(refresh) {
    }
 
    // Build up list of not found recipients
-   var aNotFound=new Array();
+   var aNotFound = [];
    toAddrList = toAddr.split(/[, ]+/);
    var j;
    for (i=0; i<toAddrList.length; i++) {
