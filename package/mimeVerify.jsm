@@ -116,20 +116,44 @@ MimeVerify.prototype = {
       // check if mime part could be pgp/mime signed message
       if (this.dataCount > 10240) return;
       this.startMsgStr += data;
-      let  i = this.startMsgStr.search(/^content-type:/im);
-      if (i >= 0) {
-        let s = data.substr(i).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-        if (s.search(/multipart\/signed/i) > 0 &&
-          s.search(/micalg\s*=\s*[\"\']?pgp-[\"\']?/i) > 0 &&
-          s.search(/protocol\s*=\s*[\'\"]application\/pgp-signature[\"\']/i) > 0) {
 
-          DEBUG_LOG("mimeVerify.jsm: onTextData: found PGP/MIME signed message\n");
-          this.foundMsg = true;
-          let hdr = EnigmailFuncs.getHeaderData(s);
-          hdr["boundary"] = hdr["boundary"] || "";
-          hdr["micalg"] = hdr["micalg"] || "";
-          this.boundary = hdr["boundary"].replace(/[\'\"]/g, "");
-          this.hash = hdr["micalg"].replace(/[\'\"]/g, "").toUpperCase().replace(/^PGP-/, "");
+      var msgs = this.startMsgStr.split("\n");
+      for(var i = 0; i < msgs.length; i++) {
+        if(msgs[i].search(/^content-type:/i) >= 0) {
+          // Join the rest of the content type lines together. 
+          // See RFC2425 5.8.1
+          var content_type_line = msgs[i];
+          i++;
+          while (i < msgs.length) {
+              // Does the line start with a space or a tab, followed by something else?
+              if(msgs[i].search(/^[ \t]+?/) == 0) {
+                  content_type_line += msgs[i];
+                  i++;
+              }
+              else {
+                  break;
+              }
+          }
+
+          // Eat up CRLF's.
+          content_type_line = content_type_line.replace(/[\r\n]/g, "");
+          DEBUG_LOG("mimeVerify.jsm: onTextData: " + content_type_line + "\n");
+
+          if (content_type_line.search(/multipart\/signed/i) > 0 &&
+              content_type_line.search(/micalg\s*=\s*[\"\']?pgp-[\"\']?/i) > 0 &&
+              content_type_line.search(/protocol\s*=\s*[\'\"]application\/pgp-signature[\"\']/i) > 0) {
+
+            DEBUG_LOG("mimeVerify.jsm: onTextData: found PGP/MIME signed message\n");
+            this.foundMsg = true;
+            let hdr = EnigmailFuncs.getHeaderData(content_type_line);
+            hdr["boundary"] = hdr["boundary"] || "";
+            hdr["micalg"] = hdr["micalg"] || "";
+            this.boundary = hdr["boundary"].replace(/[\'\"]/g, "");
+            this.hash = hdr["micalg"].replace(/[\'\"]/g, "").toUpperCase().replace(/^PGP-/, "");
+          }
+
+          // Break after finding the first Content-Type
+          break;
         }
       }
     }
