@@ -18,10 +18,8 @@ LDFLAGS	+= -dynamiclib -install_name @executable_path/$(SHARED_LIBRARY) -compati
 endif
 
 ifeq ($(OS_ARCH),NetBSD)
-ifeq ($(DLL_SUFFIX),.so.1.0)
-LDFLAGS += -Wl,-Bsymbolic
+LDFLAGS += -shared -Wl,-Bsymbolic
 CFLAGS += -fPIC
-endif
 endif
 
 ifeq ($(OS_ARCH),FreeBSD)
