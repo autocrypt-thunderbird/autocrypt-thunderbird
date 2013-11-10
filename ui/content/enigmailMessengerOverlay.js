@@ -1657,17 +1657,23 @@ Enigmail.msg = {
   handleAttachmentSel: function (actionType)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: handleAttachmentSel: actionType="+actionType+"\n");
+    var selectedAttachments;
+    var anAttachment;
 
     // Thunderbird
     var contextMenu = document.getElementById('attachmentItemContext');
-    var selectedAttachments = contextMenu.attachments;
 
-    if (! contextMenu) {
+    if (contextMenu) {
+      // Thunderbird
+      selectedAttachments = contextMenu.attachments;
+      anAttachment = selectedAttachments[0];
+    }
+    else {
       // SeaMonkey
       contextMenu = document.getElementById('attachmentListContext');
-      selectedAttachments = attachmentList.selectedItems;
+      selectedAttachments = document.getElementById('attachmentList').selectedItems;
+      anAttachment = selectedAttachments[0].attachment;
     }
-    var anAttachment = selectedAttachments[0];
 
     switch (actionType) {
       case "saveAttachment":
