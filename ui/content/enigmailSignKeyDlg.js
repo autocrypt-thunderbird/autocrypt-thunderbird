@@ -39,7 +39,12 @@ const Ec = EnigmailCommon;
 
 
 var gSignatureList = null;
+var gUidCount = null;
+
 function onLoad() {
+  var key;
+  var i;
+
   window.arguments[1].refresh = false;
 
   var enigmailSvc = Ec.getService(window);
@@ -64,24 +69,51 @@ function onLoad() {
     var exitCodeObj = new Object();
     var errorMsgObj = new Object();
     gSignatureList = new Array();
+    gUidCount = new Array();
+    var keyId = null;
     var fingerprint = "";
     var sigListStr = enigmailSvc.getKeySig("0x"+window.arguments[0].keyId, exitCodeObj, errorMsgObj);
+
     if (exitCodeObj.value == 0) {
       var sigList = sigListStr.split(/[\n\r]+/);
       var currKey = null;
+      var currUID = null;
+
       for (i=0; i < sigList.length; i++) {
         var aLine=sigList[i].split(/:/);
+
+        // Now inspect the splitted key packets
         switch (aLine[0]) {
+        case "pub":
+          keyId = aLine[4];
+          break;
+
         case "uid":
           if (typeof(currKey) != "string") currKey = aLine[4];
+          // Count all UIDs
+          if (gUidCount[keyId]==undefined) {
+            gUidCount[keyId]=1;
+          }
+          else {
+            gUidCount[keyId]=gUidCount[keyId]+1;
+          }
           break;
+
         case "sig":
-          gSignatureList[aLine[4]] = 1;
+          // Count signatures separately for each signing key
+          if (gSignatureList[aLine[4]]==undefined) {
+            gSignatureList[aLine[4]]=1;
+          }
+          else {
+            gSignatureList[aLine[4]]=gSignatureList[aLine[4]]+1;
+          }
           break;
+
         case "fpr":
-          Ec.DEBUG_LOG("fpr:"+currKey+" -> "+aLine[9]+"\n");
+          Ec.DEBUG_LOG("enigmailSignKeyDlg.js: fpr:"+currKey+" -> "+aLine[9]+"\n");
           fingerprint = aLine[9];
           break;
+        default:
         }
       }
     }
@@ -130,15 +162,34 @@ function onAccept() {
 }
 
 function enigKeySelCb() {
+  var KeyToBeSigned = window.arguments[0].keyId;
+  var KeyToBeSigned32 = KeyToBeSigned.substr(-8,8);
   var signWithKey = document.getElementById("signWithKey");
+  var signWithKeyId = signWithKey.selectedItem.value;
   var alreadySigned = document.getElementById("alreadySigned");
   var acceptButton = document.getElementById("enigmailSignKeyDlg").getButton("accept");
-  if (gSignatureList[signWithKey.selectedItem.value]) {
-    alreadySigned.setAttribute("value", Ec.getString("alreadySigned.label", "0x"+ window.arguments[0].keyId.substr(-8,8)));
+
+  if (gSignatureList[signWithKeyId] == undefined){
+    // No signature yet, Hide hint field and ENable OK button
+    alreadySigned.setAttribute("collapsed", "true");
+    acceptButton.disabled = false;
+  }
+  else if (gSignatureList[signWithKeyId]==gUidCount[KeyToBeSigned]) {
+    // Signature count == UID count, so key is already fully signed and another signing operation makes no more sense
+    // Here, we display a hint and DISable the OK button
+    alreadySigned.setAttribute("value", Ec.getString("alreadySigned.label", "0x"+ KeyToBeSigned32));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = true;
   }
+  else if (gSignatureList[signWithKeyId] > 0) {
+    // Signature count != UID count, so key is partly signed and another sign operation makes sense
+    // Here, we display a hint and ENable the OK button
+    alreadySigned.setAttribute("value", Ec.getString("partlySigned.label", "0x"+ KeyToBeSigned32));
+    alreadySigned.removeAttribute("collapsed");
+    acceptButton.disabled = false;
+  }
   else {
+    // Default catch for unforeseen cases. Hide hint field and enable OK button
     alreadySigned.setAttribute("collapsed", "true");
     acceptButton.disabled = false;
   }
