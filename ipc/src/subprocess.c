@@ -8,12 +8,12 @@
 
 void closeOtherFds(int fdIn, int fdOut, int fdErr) {
 
-  int maxFD = 256; // arbitrary max
+  int maxFD = 256; /* arbitrary max */
   int i;
   struct rlimit rl;
 
   if (getrlimit(RLIMIT_NOFILE, &rl) == 0) {
-      if (rl.rlim_cur <  999999) // ignore too high numbers
+      if (rl.rlim_cur <  999999) /* ignore too high numbers */
         maxFD = rl.rlim_cur;
   }
 
@@ -37,7 +37,7 @@ pid_t launchProcess(const char *path, char *const argv[], char *const envp[],
 
   pid = fork();
   if (pid == 0) {
-    // child
+    /* child */
     if (workdir) {
       if (chdir(workdir) < 0) {
         _exit(126);
@@ -60,6 +60,6 @@ pid_t launchProcess(const char *path, char *const argv[], char *const envp[],
     _exit(1);
   }
 
-  // parent
+  /* parent */
   return pid;
 }
