@@ -115,6 +115,14 @@
  *              something like 'data.replace(/\0/g, "\\0");'.
  *              (on windows it only gets called once right now)
  *
+ * moreFd:      optional argmuent containing an |array| of the following objects:
+ *               - readFd: function(data)  - working identically to stdout()
+ *               - writeFd: function(pipe) - working identically to stdin()
+ *              The array is treated as an ordered list.
+ *              For every element in the array, a new file descriptor is opened
+ *              to read and/or write from/to. The file descriptor numbers start
+ *              with 3 and are incremented by 1 for each element in the array.
+ *
  * done:        optional function that is called when the process has terminated.
  *              The exit code from the process available via result.exitCode. If
  *              stdout is not defined, then the output from stdout is available
@@ -1238,7 +1246,8 @@ function subprocess_unix(options) {
                            ctypes.char.ptr,
                            pipefd,
                            pipefd,
-                           pipefd);
+                           pipefd,
+                           ctypes.int);
 
       }
       catch (ex) {
@@ -1260,6 +1269,7 @@ function subprocess_unix(options) {
         if(!options.mergeStderr)
             _err = new pipefd();
 
+        var additionalFds = 0;
         var _args = argv();
         args.unshift(command);
         for(i=0;i<args.length;i++) {
@@ -1293,9 +1303,14 @@ function subprocess_unix(options) {
             }
         }
 
+        if (options.moreFd) {
+          additionalFds = options.moreFd.length;
+        }
+
         if (launchProcess) {
           pid = launchProcess(command, _args, _envp, workdir,
-            _in, _out, options.mergeStderr ? null : _err);
+            _in, _out, options.mergeStderr ? null : _err,
+            additionalFds);
 
           if (pid > 0) { // parent
               close(_in[0]);

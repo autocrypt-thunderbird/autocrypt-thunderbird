@@ -6,7 +6,7 @@
 #include <sys/resource.h>
 #include <stdio.h>
 
-void closeOtherFds(int fdIn, int fdOut, int fdErr) {
+void closeOtherFds(int fdIn, int fdOut, int fdErr, int skipFd) {
 
   int maxFD = 256; /* arbitrary max */
   int i;
@@ -19,17 +19,31 @@ void closeOtherFds(int fdIn, int fdOut, int fdErr) {
 
   /* close any file descriptors */
   /* fd's 0-2 are already closed */
-  for (i = 3; i < maxFD; i++) {
+  for (i = 3 + skipFd; i < maxFD; i++) {
     if (i != fdIn && i != fdOut && i != fdErr)
       close(i);
   }
 }
 
+/**
+  * Launch a new process by forking it and close unused file descriptors.
+  * All file descriptors after stderr are closed.
+  *
+  * @path: full path to the executable file
+  * @argv: array of arguments as defined by execve
+  * @argv: array of environment variables as defined by execve
+  * @fd_in: array of 2 integers containing the stdin file descriptors
+  * @fd_out: array of 2 integers containing the stdout file descriptors
+  * @fd_err: array of 2 integers containing the stderr file descriptors
+  * @skipFd: number of file descriptors to skip when closing FDs.
+  */
+
 pid_t launchProcess(const char *path, char *const argv[], char *const envp[],
                     const char* workdir,
                     const int fd_in[2],
                     const int fd_out[2],
-                    const int fd_err[2])
+                    const int fd_err[2],
+                    int skipFd)
 {
   pid_t pid;
 
@@ -44,7 +58,7 @@ pid_t launchProcess(const char *path, char *const argv[], char *const envp[],
       }
     }
 
-    closeOtherFds(fd_in[0], fd_out[1], fd_err ? fd_err[1] : 0);
+    closeOtherFds(fd_in[0], fd_out[1], fd_err ? fd_err[1] : 0, skipFd);
     close(fd_in[1]);
     close(fd_out[0]);
     if (!mergeStderr)
