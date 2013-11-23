@@ -1515,8 +1515,9 @@ var EnigmailCommon = {
     }
 
     inputData += keyLength+"\n";
-    inputData += "Name-Real: "+name+"\n";
-    if (comment)
+    if (name.replace(/ /g, "").length)
+      inputData += "Name-Real: "+name+"\n";
+    if (comment && comment.replace(/ /g, "").length)
       inputData += "Name-Comment: "+comment+"\n";
     inputData += "Name-Email: "+email+"\n";
     inputData += "Expire-Date: "+String(expiryDate)+"\n";
