@@ -16,12 +16,12 @@ include $(topsrcdir)/config/config.mk
 
 include $(srcdir)/../util/build.mk
 
-all: export jar
+all: jar
 
 export:
 	$(PERL) $(srcdir)/make-lang-xpi.pl $(srcdir)/current-languages.txt $(srcdir)
 
-jar:
+jar: export
 	$(MAKEJAR)
 
 clean:

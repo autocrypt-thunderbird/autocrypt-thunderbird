@@ -28,7 +28,7 @@ include $(topsrcdir)/config/config.mk
 
 include $(srcdir)/../util/build.mk
 
-jar:
+jar: dirs
 	$(MAKEJAR)
 
 clean:
