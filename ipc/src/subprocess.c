@@ -18,7 +18,6 @@ void closeOtherFds(int fdIn, int fdOut, int fdErr, const int dupFds[], int skipF
         maxFD = rl.rlim_cur;
   }
 
-  maxFD = 50;
   /* close any file descriptors */
   /* fd's 0-2 + skipFds are already closed */
   for (i = 3 + skipFd; i < maxFD; i++) {

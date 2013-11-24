@@ -115,15 +115,17 @@
  *              something like 'data.replace(/\0/g, "\\0");'.
  *              (on windows it only gets called once right now)
  *
- * pipes:       optional argmuent containing an |array| of the following objects:
- *               - readFd: function(data)  - working identically to stdout()
+ * pipes:       optional argmuent containing an |array| of the objects with the
+ *              following structure:
+ *               - readFd: function(data) or string - working identically to stdout()
  *               - writeFd: function(pipe) - working identically to stdin()
  *              The array is treated as an ordered list.
  *              For every element in the array, a new file descriptor is opened
- *              to read and write from/to. The file descriptor numbers start
- *              with 3 for reading and 4 for writing and are incremented by 2
- *              for every read/write pair. I.e. the child process can read from
- *              even file descriptors and write to uneven file descriptors.
+ *              to read from or and write to. The file descriptors are numbered
+ *              sequentially starting by 3, i.e. the child process can read or
+ *              write from/to file descriptors 3, 4, etc.
+ *              NOTE: pipes are directed; you can only specify either readFd OR
+ *              writeFd for any element of the array.
  *
  * done:        optional function that is called when the process has terminated.
  *              The exit code from the process available via result.exitCode. If
@@ -432,6 +434,17 @@ var subprocess = {
             });
         } else {
             options.arguments = [];
+        }
+
+        if (options.pipes) {
+            for (let i in options.pipes) {
+                if (options.pipes[i].writeFd && options.pipes[i].readFd) {
+                    throw("Fatal - pipe "+i+": readFd and writeFd specified");
+                }
+                if (!options.pipes[i].writeFd && !options.pipes[i].readFd) {
+                    throw("Fatal - pipe "+i+": neither readFd nor writeFd specified");
+                }
+            }
         }
 
         options.libc = getPlatformValue(LIBNAME);
@@ -1210,14 +1223,6 @@ function subprocess_unix(options) {
     );
 
     var WriteBuffer = ctypes.uint8_t.array(256);
-
-    //int printf(const void *format, int num);
-    var printf = libc.declare("printf",
-                          ctypes.default_abi,
-                          ctypes.int,
-                          ctypes.uint8_t.ptr,
-                          ctypes.int
-    );
 
     //ssize_t write(int fd, const void *buf, size_t count);
     var write = libc.declare("write",
