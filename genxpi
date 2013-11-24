@@ -63,8 +63,9 @@ if [ "$xpcomAbi" = "" ] ; then
   xpcomAbi="unknown"
 fi
 platform=${osArch}_${xpcomAbi}
+escplatform="$(printf "%s" "${platform}" | sed 's_/_\\/_g')"
 # Pepare install.rdf
-sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${platform}'<\/em:targetPlatform>/' < ${srcDir}/package/install.rdf > ${targetDir}/install.rdf
+sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${escplatform}'<\/em:targetPlatform>/' < ${srcDir}/package/install.rdf > ${targetDir}/install.rdf
 
 
 enigmimeDll=${libPrefix}enigmime${dllSuffix}
@@ -82,7 +83,7 @@ spDllFile=platform/${platform}/lib/${libPrefix}subprocess-${xpcomAbi}${dllSuffix
 touch ${targetDir}/chrome.manifest
 cp  ${targetDir}/chrome.manifest ${targetDir}/chrome.manifest.save
 cat  ${srcDir}/package/chrome.manifest | \
-sed  's/##ENIGMIMEDLL-PLACEHOLDER##/binary-component platform\/'${platform}'\/components\/'`basename ${enigDllFile}`' ABI='${platform}'/' \
+sed  's/##ENIGMIMEDLL-PLACEHOLDER##/binary-component platform\/'${escplatform}'\/components\/'`basename ${enigDllFile}`' ABI='${escplatform}'/' \
 > ${targetDir}/chrome.manifest
 
 # Prepare languages other than en-US
