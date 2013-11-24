@@ -6,10 +6,11 @@
 #include <sys/resource.h>
 #include <stdio.h>
 
-void closeOtherFds(int fdIn, int fdOut, int fdErr, int skipFd) {
+
+void closeOtherFds(int fdIn, int fdOut, int fdErr, const int dupFds[], int skipFd) {
 
   int maxFD = 256; /* arbitrary max */
-  int i;
+  int i, j;
   struct rlimit rl;
 
   if (getrlimit(RLIMIT_NOFILE, &rl) == 0) {
@@ -17,13 +18,20 @@ void closeOtherFds(int fdIn, int fdOut, int fdErr, int skipFd) {
         maxFD = rl.rlim_cur;
   }
 
+  maxFD = 50;
   /* close any file descriptors */
-  /* fd's 0-2 are already closed */
+  /* fd's 0-2 + skipFds are already closed */
   for (i = 3 + skipFd; i < maxFD; i++) {
-    if (i != fdIn && i != fdOut && i != fdErr)
-      close(i);
+    int closeFd = 1;
+    if (i != fdIn && i != fdOut && i != fdErr) {
+      for (j = 0; j < skipFd; j++) {
+        if (i == dupFds[j]) closeFd = 0;
+      }
+      if (closeFd) close(i);
+    }
   }
 }
+
 
 /**
   * Launch a new process by forking it and close unused file descriptors.
@@ -38,16 +46,19 @@ void closeOtherFds(int fdIn, int fdOut, int fdErr, int skipFd) {
   * @skipFd: number of file descriptors to skip when closing FDs.
   */
 
-pid_t launchProcess(const char *path, char *const argv[], char *const envp[],
+pid_t launchProcess(const char *path,
+                    char *const argv[],
+                    char *const envp[],
                     const char* workdir,
                     const int fd_in[2],
                     const int fd_out[2],
                     const int fd_err[2],
-                    int skipFd)
+                    const int dupFds[])
 {
   pid_t pid;
 
   int mergeStderr = (fd_err ? 0 : 1);
+  int *const *fd;
 
   pid = fork();
   if (pid == 0) {
@@ -58,18 +69,32 @@ pid_t launchProcess(const char *path, char *const argv[], char *const envp[],
       }
     }
 
-    closeOtherFds(fd_in[0], fd_out[1], fd_err ? fd_err[1] : 0, skipFd);
+    int countFd = 0;
+    while (dupFds[countFd] > 0) {
+      ++countFd;
+    }
+
+    closeOtherFds(fd_in[0], fd_out[1], fd_err ? fd_err[1] : 0, dupFds, countFd);
+
     close(fd_in[1]);
     close(fd_out[0]);
     if (!mergeStderr)
       close(fd_err[0]);
     close(0);
-    dup(fd_in[0]);
+    dup2(fd_in[0], 0);
     close(1);
-    dup(fd_out[1]);
+    dup2(fd_out[1], 1);
     close(2);
 
     dup(mergeStderr ? fd_out[1] : fd_err[1]);
+
+
+    int i;
+    for (i=0; i<countFd; i++) {
+      dup2(dupFds[i], 3 + i);
+    }
+
+
     execve(path, argv, envp);
     _exit(1);
   }

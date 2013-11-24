@@ -49,6 +49,7 @@ const BufferSize = 1024;
 
 var libc = null;
 var libcFunc = {};
+var WritePipeHandle = null;
 
 
 /*
@@ -304,6 +305,11 @@ function readPolledFd(pipe, charset, dataObj) {
 onmessage = function (event) {
     switch (event.data.msg) {
     case "init":
+        if (event.data.pipe == null) {
+          createNpeError();
+          return;
+        }
+        WritePipeHandle = event.data.pipe;
         initLibc(event.data.libc);
         postMessage({msg: "info", data: "InitOK"});
         break;
@@ -322,22 +328,13 @@ onmessage = function (event) {
         //   data: the data (string) to write
         //   pipe: ptr to pipe
 
-        if (event.data.pipe == null) {
-          createNpeError();
-          return;
-        }
-        writePipe(event.data.pipe, event.data.data);
+        writePipe(WritePipeHandle, event.data.data);
         postMessage({msg: "info", data: "WriteOK"});
         break;
     case "close":
-        postMessage({msg: "debug", data: "closing stdin\n"});
+        postMessage({msg: "debug", data: "closing input pipe\n"});
 
-        if (event.data.pipe == null) {
-          createNpeError();
-          return;
-        }
-
-        closePipe(event.data.pipe);
+        closePipe(WritePipeHandle);
         postMessage({msg: "info", data: "ClosedOK"});
         break;
     case "stop":

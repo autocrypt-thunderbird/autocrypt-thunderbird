@@ -115,13 +115,15 @@
  *              something like 'data.replace(/\0/g, "\\0");'.
  *              (on windows it only gets called once right now)
  *
- * moreFd:      optional argmuent containing an |array| of the following objects:
+ * pipes:       optional argmuent containing an |array| of the following objects:
  *               - readFd: function(data)  - working identically to stdout()
  *               - writeFd: function(pipe) - working identically to stdin()
  *              The array is treated as an ordered list.
  *              For every element in the array, a new file descriptor is opened
- *              to read and/or write from/to. The file descriptor numbers start
- *              with 3 and are incremented by 1 for each element in the array.
+ *              to read and write from/to. The file descriptor numbers start
+ *              with 3 for reading and 4 for writing and are incremented by 2
+ *              for every read/write pair. I.e. the child process can read from
+ *              even file descriptors and write to uneven file descriptors.
  *
  * done:        optional function that is called when the process has terminated.
  *              The exit code from the process available via result.exitCode. If
@@ -312,6 +314,7 @@ const OVERLAPPED = new ctypes.StructType("OVERLAPPED");
 //UNIX definitions
 const pid_t = ctypes.int32_t;
 const WNOHANG = 1;
+const F_GETFL = 3;
 const F_SETFL = 4;
 
 const LIBNAME       = 0;
@@ -1036,6 +1039,7 @@ function subprocess_win32(options) {
         }
     }
 
+
     function startWriting() {
         debugLog("startWriting called\n");
 
@@ -1111,12 +1115,13 @@ function subprocess_unix(options) {
         workerExitCode = 0,
         child = {},
         pid = -1,
-        stdinWorker = null,
+        writeWorker = [],
         stdoutWorker = null,
         stderrWorker = null,
+        readFdWorker = [],
         pendingWriteCount = 0,
         readers = options.mergeStderr ? 1 : 2,
-        stdinOpenState = PIPE_STATE_NOT_INIT,
+        stdinOpenState = [ PIPE_STATE_NOT_INIT ],
         error = '',
         output = '';
 
@@ -1139,6 +1144,14 @@ function subprocess_unix(options) {
     //int dup(int oldfd);
     var dup= libc.declare("dup",
                           ctypes.default_abi,
+                          ctypes.int,
+                          ctypes.int
+    );
+
+    //int dup2(int oldfd, int newfd);
+    var dup2 = libc.declare("dup2",
+                          ctypes.default_abi,
+                          ctypes.int,
                           ctypes.int,
                           ctypes.int
     );
@@ -1196,12 +1209,22 @@ function subprocess_unix(options) {
                           ctypes.int
     );
 
+    var WriteBuffer = ctypes.uint8_t.array(256);
+
+    //int printf(const void *format, int num);
+    var printf = libc.declare("printf",
+                          ctypes.default_abi,
+                          ctypes.int,
+                          ctypes.uint8_t.ptr,
+                          ctypes.int
+    );
+
     //ssize_t write(int fd, const void *buf, size_t count);
     var write = libc.declare("write",
                           ctypes.default_abi,
                           ctypes.int,
                           ctypes.int,
-                          ctypes.char.ptr,
+                          WriteBuffer,
                           ctypes.int
     );
 
@@ -1231,6 +1254,14 @@ function subprocess_unix(options) {
     var libcWrapper = null,
         launchProcess = null;
 
+    var additionalFds = 0;
+
+    if ( options.pipes ) {
+      additionalFds = options.pipes.length;
+    }
+
+    var fdArr = ctypes.int.array(additionalFds + 2);
+
     if (gLibcWrapper) {
       debugLog("Trying to use LibcWrapper\n");
 
@@ -1247,7 +1278,7 @@ function subprocess_unix(options) {
                            pipefd,
                            pipefd,
                            pipefd,
-                           ctypes.int);
+                           fdArr);
 
       }
       catch (ex) {
@@ -1269,7 +1300,6 @@ function subprocess_unix(options) {
         if(!options.mergeStderr)
             _err = new pipefd();
 
-        var additionalFds = 0;
         var _args = argv();
         args.unshift(command);
         for(i=0;i<args.length;i++) {
@@ -1303,79 +1333,116 @@ function subprocess_unix(options) {
             }
         }
 
-        if (options.moreFd) {
-          additionalFds = options.moreFd.length;
+        child.otherFdChild = fdArr();  // FD's to use in the subprocess (close in parent)
+        child.otherFdParent = fdArr(); // FD's to use in the parent process (close in child)
+
+        if (additionalFds > 0) {
+            debugLog("adding Fds: " + additionalFds + "\n");
+
+            for (i=0; i < additionalFds; i++) {
+                var fd = new pipefd();
+                rc = pipe(fd);
+                if (rc < 0) {
+                    close(_in[0]);
+                    close(_in[1]);
+                    close(_out[0]);
+                    close(_out[1]);
+                    return -1;
+                }
+
+                if (options.pipes[i].readFd != undefined) {
+                    debugLog("adding input fd: " +fd[1] + "\n");
+                    child.otherFdChild[i] = fd[1];
+                    child.otherFdParent[i] = fd[0];
+                }
+                else if (options.pipes[i].writeFd != undefined) {
+                    debugLog("adding output fd: " +fd[0] + "\n");
+                    child.otherFdChild[i] = fd[0];
+                    child.otherFdParent[i] = fd[1];
+                }
+            }
         }
+
+        child.otherFdChild[additionalFds] = 0;
 
         if (launchProcess) {
           pid = launchProcess(command, _args, _envp, workdir,
             _in, _out, options.mergeStderr ? null : _err,
-            additionalFds);
+            child.otherFdChild);
 
-          if (pid > 0) { // parent
-              close(_in[0]);
-              close(_out[1]);
-              if(!options.mergeStderr)
-                  close(_err[1]);
-              child.stdin  = _in[1];
-              child.stdinFd = _in;
-              child.stdout = _out[0];
-              child.stderr = options.mergeStderr ? undefined : _err[0];
-              child.pid = pid;
-          }
+          if (pid == 0) return -1; // child, should not happen
         }
         else {
-          pid = fork();
-          if (pid > 0) { // parent
-              close(_in[0]);
-              close(_out[1]);
-              if(!options.mergeStderr)
-                  close(_err[1]);
-              child.stdin  = _in[1];
-              child.stdinFd = _in;
-              child.stdout = _out[0];
-              child.stderr = options.mergeStderr ? undefined : _err[0];
-              child.pid = pid;
-              return pid;
-          } else if (pid == 0) { // child
-              if (workdir) {
-                  if (chdir(workdir) < 0) {
-                      exit(126);
-                  }
-              }
-              closeOtherFds(_in[0], _out[1], options.mergeStderr ? _out[1] : _err[1]);
-              close(_in[1]);
-              close(_out[0]);
-              if(!options.mergeStderr)
-                  close(_err[0]);
-              close(0);
-              dup(_in[0]);
-              close(1);
-              dup(_out[1]);
-              close(2);
-              dup(options.mergeStderr ? _out[1] : _err[1]);
-              execve(command, _args, _envp);
-              exit(1);
-          } else {
-              // we should not really end up here
-              if(!options.mergeStderr) {
-                  close(_err[0]);
-                  close(_err[1]);
-              }
-              close(_out[0]);
-              close(_out[1]);
-              close(_in[0]);
-              close(_in[1]);
-              throw("Fatal - failed to create subprocess '"+command+"'");
-          }
+            debugLog("not using libc-wrapper\n");
+            pid = fork();
+
+            if (pid == 0) {
+                // child
+                if (workdir) {
+                    if (chdir(workdir) < 0) {
+                        exit(126);
+                    }
+                }
+
+                close(_in[1]);
+                close(_out[0]);
+                if(!options.mergeStderr)
+                    close(_err[0]);
+                close(0);
+                dup2(_in[0], 0);
+                close(1);
+                dup2(_out[1], 1);
+                close(2);
+                dup(options.mergeStderr ? _out[1] : _err[1]);
+
+                closeOtherFds(_in[0], _out[1], options.mergeStderr ? _out[1] : _err[1],
+                     child.otherFdChild, additionalFds);
+
+                for (i=0; i < additionalFds; i++) {
+                    dup2(child.otherFdChild[i], 3 + i );
+                    close(child.otherFdParent[i]);
+                }
+
+                execve(command, _args, _envp);
+                exit(1);
+            }
+            else if (pid < 0) {
+                // we should not really end up here
+                if(!options.mergeStderr) {
+                    close(_err[0]);
+                    close(_err[1]);
+                }
+                close(_out[0]);
+                close(_out[1]);
+                close(_in[0]);
+                close(_in[1]);
+                throw("Fatal - failed to create subprocess '"+command+"'");
+            }
         }
 
+        if (pid > 0) {
+            // parent
+            close(_in[0]);
+            close(_out[1]);
+            if(!options.mergeStderr)
+                close(_err[1]);
+            child.stdin  = _in[1];
+            child.stdinFd = _in;
+            child.stdout = _out[0];
+            child.stderr = options.mergeStderr ? undefined : _err[0];
+            child.pid = pid;
+
+            // close unused ends of additional pipes (opposite of child)
+            for (i=0; i < additionalFds; i++) {
+               close(child.otherFdChild[i]);
+            }
+        }
         return pid;
     }
 
 
     // close any file descriptors that are not required for the process
-    function closeOtherFds(fdIn, fdOut, fdErr) {
+    function closeOtherFds(fdIn, fdOut, fdErr, otherFd, additionalFds) {
 
         var maxFD = 256; // arbitrary max
 
@@ -1409,82 +1476,97 @@ function subprocess_unix(options) {
         }
 
         // close any file descriptors
-        // fd's 0-2 are already closed
-        for (var i = 3; i < maxFD; i++) {
-            if (i != fdIn && i != fdOut && i != fdErr)
-                close(i);
+        // fd's 0-2 + additional FDs are already closed
+
+        for (var i = 3 + additionalFds; i < maxFD; i++) {
+            let doClose = true;
+
+            if (i != fdIn && i != fdOut && i != fdErr) {
+                for (var j = 0; j < additionalFds; j++) {
+                    if (i == otherFd[j]) doClose = false;
+                }
+                if (doClose) close(i);
+            }
         }
     }
 
     /*
-     * createStdinWriter ()
+     * createWriter ()
      *
      * Create a ChromeWorker object for writing data to the subprocess' stdin
      * pipe. The ChromeWorker object lives on a separate thread; this avoids
      * internal deadlocks.
      */
-    function createStdinWriter() {
-        debugLog("Creating new stdin worker\n");
-        stdinWorker = new ChromeWorker("subprocess_worker_unix.js");
-        stdinWorker.onmessage = function(event) {
+    function createWriter(fileDesc, workerNum) {
+        debugLog("Creating new writing worker " + workerNum +" for pipe "+  fileDesc + "\n");
+        let wrk = new ChromeWorker("subprocess_worker_unix.js");
+        wrk.onmessage = function(event) {
             switch (event.data.msg) {
             case "info":
                 switch(event.data.data) {
                 case "WriteOK":
                     pendingWriteCount--;
-                    debugLog("got OK from stdinWorker - remaining count: "+pendingWriteCount+"\n");
+                    debugLog("got OK from writing Worker "+ workerNum +" - remaining count: "+pendingWriteCount+"\n");
                     break;
                 case "InitOK":
-                    stdinOpenState = PIPE_STATE_OPEN;
-                    debugLog("Stdin pipe opened\n");
+                    stdinOpenState[workerNum] = PIPE_STATE_OPEN;
+                    debugLog("write pipe "+ workerNum +" opened\n");
                     break;
                 case "ClosedOK":
-                    stdinOpenState = PIPE_STATE_CLOSED;
-                    debugLog("Stdin pipe closed\n");
+                    stdinOpenState[workerNum] = PIPE_STATE_CLOSED;
+                    debugLog("write pipe "+ workerNum +" closed\n");
                     break;
                 default:
-                    debugLog("got msg from stdinWorker: "+event.data.data+"\n");
+                    debugLog("got msg from write Worker: "+event.data.data+"\n");
                 }
                 break;
             case "debug":
-                debugLog("stdinWorker: "+event.data.data+"\n");
+                debugLog("write Worker "+ workerNum +": "+event.data.data+"\n");
                 break;
             case "error":
-                LogError("got error from stdinWorker: "+event.data.data+"\n");
+                LogError("got error from write Worker "+ workerNum +": "+event.data.data+"\n");
                 pendingWriteCount = 0;
-                stdinOpenState = PIPE_STATE_CLOSED;
+                stdinOpenState[workerNum] = PIPE_STATE_CLOSED;
                 exitCode = -2;
             }
         };
-        stdinWorker.onerror = function(error) {
+        wrk.onerror = function(error) {
             pendingWriteCount = 0;
             exitCode = -2;
-            closeStdinHandle();
-            LogError("got error from stdinWorker: "+error.message+"\n");
+            closeWriteHandle(wrk);
+            LogError("got error from write Worker "+ workerNum +": "+error.message+"\n");
         };
-        stdinWorker.postMessage({msg: "init", libc: options.libc});
+
+        var pipePtr = parseInt(fileDesc);
+
+        wrk.postMessage({
+            msg: "init",
+            libc: options.libc,
+            pipe: pipePtr
+        });
+
+        return wrk;
     }
 
     /*
-     * writeStdin()
+     * writeToPipe()
+     * @writeWorker: worker object that processes the data
      * @data: String containing the data to write
      *
      * Write data to the subprocess' stdin (equals to sending a request to the
      * ChromeWorker object to write the data).
      */
-    function writeStdin(data) {
-        if (stdinOpenState == PIPE_STATE_CLOSED) {
+    function writeToPipe(workerNum, data) {
+        if (stdinOpenState[workerNum] == PIPE_STATE_CLOSED) {
           LogError("trying to write data to closed stdin");
           return;
         }
 
         ++pendingWriteCount;
-        debugLog("sending "+data.length+" bytes to stdinWorker\n");
-        var pipe = parseInt(child.stdin);
+        debugLog("sending "+data.length+" bytes to writing Worker "+workerNum+"\n");
 
-        stdinWorker.postMessage({
+        writeWorker[workerNum].postMessage({
             msg: 'write',
-            pipe: pipe,
             data: data
         });
     }
@@ -1498,30 +1580,40 @@ function subprocess_unix(options) {
      * request process is done.
      */
 
-    function closeStdinHandle() {
-        debugLog("trying to close stdin\n");
-        if (stdinOpenState != PIPE_STATE_OPEN) return;
-        stdinOpenState = PIPE_STATE_CLOSEABLE;
+    function closeWriteHandle(workerNum) {
+        debugLog("trying to close input pipe for worker "+workerNum+"\n");
+        if (stdinOpenState[workerNum] != PIPE_STATE_OPEN) return;
+        stdinOpenState[workerNum] = PIPE_STATE_CLOSEABLE;
 
-        if (stdinWorker) {
-            debugLog("sending close stdin to worker\n");
-            var pipePtr = parseInt(child.stdin);
+        if (writeWorker[workerNum]) {
+            debugLog("sending close stdin to worker "+workerNum+"\n");
 
-            stdinWorker.postMessage({
-                msg: 'close',
-                pipe: pipePtr
+            writeWorker[workerNum].postMessage({
+                msg: 'close'
             });
         }
         else {
-            stdinOpenState = PIPE_STATE_CLOSED;
-            debugLog("Closing Stdin\n");
-            close(child.stdin) && LogError("CloseHandle stdin failed");
+            stdinOpenState[workerNum] = PIPE_STATE_CLOSED;
+            debugLog("Closing Stdin for "+workerNum+"\n");
+            if (!workerNum)
+                close(child.stdin) && LogError("CloseHandle stdin failed");
+            else {
+                let wrk = 0;
+                for (let i = 0; i < options.pipes.length; i++) {
+                    if (options.pipes[i].writeFd != undefined) {
+                        ++wrk;
+                        if (wrk == workerNum) {
+                            close(child.writeFdParent[i]) && LogError("CloseHandle stdin failed");
+                        }
+                    }
+                }
+            }
         }
     }
 
 
     /*
-     * createReader(pipe, name)
+     * createReader(pipe, name, callbackFunc)
      *
      * @pipe: handle to the pipe
      * @name: String containing the pipe name (stdout or stderr)
@@ -1533,6 +1625,7 @@ function subprocess_unix(options) {
      *
      */
     function createReader(pipe, name, callbackFunc) {
+        debugLog("Opening pipe: "+pipe+"\n");
         var worker = new ChromeWorker("subprocess_worker_unix.js");
         worker.onmessage = function(event) {
             switch(event.data.msg) {
@@ -1605,14 +1698,36 @@ function subprocess_unix(options) {
                 error += data;
             }
         });
+
+        if (options.pipes) {
+          for (let i = 0; i < options.pipes.length; i++) {
+
+            if (typeof(options.pipes[i].readFd) == "function") {
+                let pipe = options.pipes[i];
+                let wrk = createReader(child.otherFdParent[i], "fd_"+ (i+3) , function (data) {
+                    setTimeout(function() {
+                        pipe.readFd(data);
+                    }, 0);
+                });
+
+                readFdWorker.push(wrk);
+            }
+          }
+        }
     }
 
     function cleanup() {
         debugLog("Cleanup called\n");
-        if(active) {
+
+        var i;
+
+        if (active) {
             active = false;
 
-            closeStdinHandle(); // should only be required in case of errors
+            for (i=0; i < writeWorker.length; i++) {
+                if (writeWorker[i])
+                    closeWriteHandle(i); // should only be required in case of errors
+            }
 
             var result, status = ctypes.int();
             result = waitpid(child.pid, status.address(), 0);
@@ -1629,8 +1744,10 @@ function subprocess_unix(options) {
 
             exitCode = exitCode % 0xFF;
 
-            if (stdinWorker)
-                stdinWorker.postMessage({msg: 'stop'});
+            for (i=0; i < writeWorker.length; i++) {
+              if (writeWorker[i])
+                writeWorker[i].postMessage({msg: 'stop'});
+            }
 
             setTimeout(function _done() {
                 if (options.done) {
@@ -1656,37 +1773,46 @@ function subprocess_unix(options) {
     }
 
 
-    function startWriting() {
-        debugLog("startWriting called\n");
+    /**
+     *  Start wrinting on a pipe. The corresponding worker needs to exist.
+     *  @workerNum:     Number of the worker (0 = stdin)
+     *  @pipeWriteFunc: Function or String that writes data to the pipe
+     */
 
-        if (stdinOpenState == PIPE_STATE_NOT_INIT) {
+    function startWriting(workerNum, pipeWriteFunc) {
+        debugLog("startWriting called for " + workerNum + "\n");
+
+        if (stdinOpenState[workerNum] == PIPE_STATE_NOT_INIT) {
           setTimeout(function _f() {
-              startWriting();
-            }, 2);
+              startWriting(workerNum, pipeWriteFunc);
+            }, 2 );
           return;
         }
 
-        if(typeof(options.stdin) == 'function') {
+        if (typeof(pipeWriteFunc) == 'function') {
             try {
-                options.stdin({
+                pipeWriteFunc({
                     write: function(data) {
-                        writeStdin(data);
+                        writeToPipe(workerNum, data);
                     },
                     close: function() {
-                        closeStdinHandle();
+                        closeWriteHandle(workerNum);
                     }
                 });
             }
             catch(ex) {
                 // prevent from failing if options.stdin() throws an exception
-                closeStdinHandle();
+                closeWriteHandle(workerNum);
                 throw ex;
             }
         } else {
-            writeStdin(options.stdin);
-            closeStdinHandle();
+            debugLog("writing <" + pipeWriteFunc +"> to " + workerNum + "\n");
+            writeToPipe(workerNum, pipeWriteFunc);
+            closeWriteHandle(workerNum);
         }
+
     }
+
     //main
 
     var cmdStr = getCommandStr(options.command);
@@ -1699,13 +1825,27 @@ function subprocess_unix(options) {
 
     readPipes();
 
+    var workerNum = 0;
+
     if (options.stdin) {
-        createStdinWriter();
-        startWriting();
+        writeWorker[0] = createWriter(child.stdin, 0);
+        startWriting(0, options.stdin);
+        ++workerNum;
     }
     else
-        closeStdinHandle();
+        closeWriteHandle(0);
 
+    if (options.pipes) {
+        for (let i = 0; i < options.pipes.length; i++) {
+
+            if (options.pipes[i].writeFd != undefined) {
+                stdinOpenState.push(PIPE_STATE_NOT_INIT);
+                writeWorker.push(createWriter(child.otherFdParent[i], workerNum));
+                startWriting(workerNum, options.pipes[i].writeFd);
+                ++workerNum;
+            }
+        }
+    }
 
     return {
         wait: function() {
