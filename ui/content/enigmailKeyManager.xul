@@ -74,6 +74,19 @@
   <keyset id="winKeys">
     <key id="key_selectAll" key="&enigmail.keyMan.selectAll.key;"
          oncommand="enigmailSelectAllKeys()" modifiers="accel"/>
+
+    <key id="key_keyDetails" key="&enigmail.keyMan.keyDetails.key;"
+         oncommand="enigmailKeyDetails()" modifiers="accel"
+         observes="bcOneKey"/>
+
+    <key id="key_refreshKey" key="&enigmail.keyMan.refreshKey.key;"
+         oncommand="enigmailReceiveKey()" modifiers="accel"
+         observes="bcNoKey"/>
+
+    <key id="key_viewSig" key="&enigmail.keyMan.viewSig.key;"
+         oncommand="enigmailListSig()" modifiers="accel"
+         observes="bcViewSig"/>
+
     <key id="key_enigDelete"
          keycode="VK_DELETE"
          command="cmd_enigmailDeleteKey"/>
@@ -240,6 +253,7 @@
         <menuitem label="&enigmail.keyMan.viewSig.label;"
                   id="viewSig"
                   observes="bcViewSig"
+                  key="key_viewSig"
                   accesskey="&enigmail.keyMan.viewSig.accesskey;"
                   oncommand="enigmailListSig()"/>
         <menuitem label="&enigmail.keyMan.viewPhoto.label;"
@@ -251,6 +265,7 @@
                   id="keyDetails"
                   observes="bcOneKey"
                   accesskey="&enigmail.keyMan.keyDetails.accesskey;"
+                  key="key_keyDetails"
                   oncommand="enigmailKeyDetails()"/>
         <menuseparator/>
         <menuitem label="&enigmail.keyMan.showInvalidKeys.label;"
@@ -287,6 +302,7 @@
 									id="refreshKey"
 									observes="bcNoKey"
 									accesskey="&enigmail.keyMan.refreshSelKeys.accesskey;"
+									key="key_refreshKey"
 									oncommand="enigmailReceiveKey()"/>
 				<menuitem label="&enigmail.keyMan.importFromServer.label;"
 									id="importFromServer"
