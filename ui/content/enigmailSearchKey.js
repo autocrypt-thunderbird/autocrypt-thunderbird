@@ -56,6 +56,7 @@ const KEY_NOT_VALID=KEY_EXPIRED+KEY_REVOKED+KEY_INVALID+KEY_DISABLED;
 var gErrorData = "";
 var gOutputData = "";
 var gEnigRequest;
+var gAllKeysSelected = 0;
 
 function trim(str) {
   return str.replace(/^(\s*)(.*)/, "$2").replace(/\s+$/,"");
@@ -130,6 +131,28 @@ function onLoad () {
     }
   }
   return true;
+}
+
+
+function selectAllKeys () {
+  Ec.DEBUG_LOG("enigmailSearchKey.js: selectAllkeys\n");
+  var keySelList = document.getElementById("enigmailKeySel");
+  var treeChildren=keySelList.getElementsByAttribute("id", "enigmailKeySelChildren")[0];
+
+  gEnigRequest.dlKeyList = [];
+
+  // Toggle flag to select/deselect all when hotkey is pressed repeatedly
+  gAllKeysSelected ^= 1;
+
+  var item=treeChildren.firstChild;
+  while (item) {
+    var aRows = item.getElementsByAttribute("id","indicator");
+    if (aRows.length) {
+      var elem=aRows[0];
+      EnigSetActive(elem, gAllKeysSelected);
+    }
+    item = item.nextSibling;
+  }
 }
 
 

@@ -382,6 +382,8 @@
 
 <!ENTITY enigmail.searchKeyDlg.label               "Download OpenPGP Keys">
 <!ENTITY enigmail.searchKeyDlgCapt.label           "Found Keys - Select to Import">
+<!ENTITY enigmail.searchKeyDlgSelAll.label         "Select/Deselect all">
+
 <!ENTITY enigmail.created.label                    "Created">
 <!ENTITY enigmail.valid.label                      "Valid">
 
@@ -525,6 +527,8 @@
 
 <!ENTITY enigmail.keyMan.closeWin.key                "W">
 <!ENTITY enigmail.keyMan.selectAll.key               "A">
+
+<!ENTITY enigmail.keySearch.selectAll.key            "A">
 
 <!ENTITY enigmail.viewKeySigDlg.title                "Signature List">
 <!ENTITY enigmail.viewKeySigDlg.sigForKey.label      "Signatures for Key:">

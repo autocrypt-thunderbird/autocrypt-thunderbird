@@ -68,6 +68,11 @@
       style="height:350px"
       onclick="enigmailKeySelCallback(event);">
 
+      <keyset id="winKeys">
+        <key id="key_selectAll" key="&enigmail.keySearch.selectAll.key;"
+             oncommand="selectAllKeys()" modifiers="accel"/>
+      </keyset>
+
       <treecols>
         <treecol id="selectionCol" style="width:25px"
                  label="&enigmail.keySelection.label;"
@@ -98,8 +103,14 @@
     <progressmeter id="dialog.progress" mode="determined" value="0"/>
   </hbox>
 
+    <vbox align="start">
+      <button id="selall-button"
+              label="&enigmail.searchKeyDlgSelAll.label;"
+              oncommand="selectAllKeys()"/>
+    </vbox>
+
   <vbox align="end">
-    <hbox>
+    <hbox align="end">
       <button id="dialog.accept" dlgtype="accept" disabled="true"/>
       <button dlgtype="cancel"/>
     </hbox>
