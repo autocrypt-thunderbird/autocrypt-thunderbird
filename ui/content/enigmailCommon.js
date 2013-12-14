@@ -709,24 +709,89 @@ function EnigCollapseAdvanced(obj, attribute, dummy) {
   return EnigmailFuncs.collapseAdvanced(obj, attribute, dummy);
 }
 
+/**
+ * EnigOpenUrlExternally
+ *
+ * forces a uri to be loaded in an external browser
+ *
+ * @uri nsIUri object
+ */
+function EnigOpenUrlExternally(uri) {
+  let eps  = ENIG_C["@mozilla.org/uriloader/external-protocol-service;1"].
+                getService(ENIG_I.nsIExternalProtocolService);
+
+  eps.loadUrl(uri, null);
+}
 
 function EnigOpenURL(event, hrefObj) {
   var xulAppinfo = ENIG_C["@mozilla.org/xre/app-info;1"].getService(ENIG_I.nsIXULAppInfo);
   if (xulAppinfo.ID == ENIG_SEAMONKEY_ID) return;
 
+
+
   try {
     var ioservice  = ENIG_C["@mozilla.org/network/io-service;1"].
                   getService(ENIG_I.nsIIOService);
     var iUri = ioservice.newURI(hrefObj.href, null, null);
-    var eps  = ENIG_C["@mozilla.org/uriloader/external-protocol-service;1"].
-                  getService(ENIG_I.nsIExternalProtocolService);
 
-    eps.loadURI(iUri, null);
-
+    EnigOpenUrlExternally(iUri);
     event.preventDefault();
     event.stopPropagation();
   }
   catch (ex) {}
+}
+
+function EnigGetHttpUri (aEvent) {
+
+    function hRefForClickEvent(aEvent, aDontCheckInputElement)
+    {
+      var href;
+      var isKeyCommand = (aEvent.type == "command");
+      var target =
+        isKeyCommand ? document.commandDispatcher.focusedElement : aEvent.target;
+
+      if (target instanceof HTMLAnchorElement ||
+          target instanceof HTMLAreaElement   ||
+          target instanceof HTMLLinkElement)
+      {
+        if (target.hasAttribute("href"))
+          href = target.href;
+      }
+      else if (!aDontCheckInputElement && target instanceof HTMLInputElement)
+      {
+        if (target.form && target.form.action)
+          href = target.form.action;
+      }
+      else
+      {
+        // we may be nested inside of a link node
+        var linkNode = aEvent.originalTarget;
+        while (linkNode && !(linkNode instanceof HTMLAnchorElement))
+          linkNode = linkNode.parentNode;
+
+        if (linkNode)
+          href = linkNode.href;
+      }
+
+      return href;
+    }
+
+  // getHttpUri main function
+
+  let href = hRefForClickEvent(aEvent);
+
+  EnigmailCommon.DEBUG_LOG("enigmailAbout.js: interpretHtmlClick: href='"+href+"'\n");
+
+  var ioServ = EnigmailCommon.getIoService();
+  var uri = ioServ.newURI(href, null, null);
+
+  if (Components.classes["@mozilla.org/uriloader/external-protocol-service;1"]
+                .getService(Components.interfaces.nsIExternalProtocolService)
+                .isExposedProtocol(uri.scheme) &&
+      (uri.schemeIs("http") || uri.schemeIs("https")))
+    return uri;
+
+  return null;
 }
 
 

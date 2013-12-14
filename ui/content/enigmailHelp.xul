@@ -58,9 +58,14 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailHelp.js"/>
 
-
-<iframe id="contentFrame" type="content" name="contentFrame"
+<browser id="contentFrame" type="content" name="contentFrame"
         src=""
-        flex="100%"/>
+        flex="100%"
+        disablehistory="true"
+        autofind="false"
+        context="mailContext"
+        disablesecurity="true"
+        onclick="return contentAreaClick(event);"
+        clickthrough="never"/>
 
 </window>

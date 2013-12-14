@@ -36,6 +36,8 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
 //       chrome://enigmail/content/enigmailBuildDate.js
 
+Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+
 // Initialize enigmailCommon
 EnigInitCommon("enigmailAbout");
 
@@ -69,5 +71,20 @@ function enigAboutLoad() {
     agentElement.firstChild.data = agentStr;
 
 }
+
+
+function contentAreaClick(event)
+{
+  let uri = EnigGetHttpUri(event);
+  if (uri) {
+    EnigOpenUrlExternally(uri);
+    event.preventDefault();
+
+    return false;
+  }
+
+  return true;
+}
+
 
 window.onload = enigAboutLoad;

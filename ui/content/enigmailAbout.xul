@@ -71,7 +71,14 @@
   <key id="key_quit"/>
 </keyset>
 
-<iframe id="contentFrame" type="content" name="contentFrame"
-        src="chrome://enigmail/content/enigmailAbout.htm" flex="100%"/>
+<browser id="contentFrame" type="content" name="contentFrame"
+        src="chrome://enigmail/content/enigmailAbout.htm"
+        flex="1"
+        disablehistory="true"
+        autofind="false"
+        context="mailContext"
+        disablesecurity="true"
+        onclick="return contentAreaClick(event);"
+        clickthrough="never"/>
 
 </window>

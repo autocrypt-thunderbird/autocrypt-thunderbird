@@ -50,4 +50,18 @@ function enigHelpLoad() {
   contentFrame.document.location.href="chrome://enigmail/locale/help/"+helpFile+".html";
 }
 
+function contentAreaClick(event)
+{
+  let uri = EnigGetHttpUri(event);
+  if (uri) {
+    EnigOpenUrlExternally(uri);
+    event.preventDefault();
+
+    return false;
+  }
+
+  return true;
+}
+
+
 window.onload = enigHelpLoad;
