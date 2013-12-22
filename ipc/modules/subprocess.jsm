@@ -1155,13 +1155,6 @@ function subprocess_unix(options) {
                          pipefd
     );
 
-    //int dup(int oldfd);
-    var dup= libc.declare("dup",
-                          ctypes.default_abi,
-                          ctypes.int,
-                          ctypes.int
-    );
-
     //int dup2(int oldfd, int newfd);
     var dup2 = libc.declare("dup2",
                           ctypes.default_abi,
@@ -1399,7 +1392,7 @@ function subprocess_unix(options) {
                 close(1);
                 dup2(_out[1], 1);
                 close(2);
-                dup(options.mergeStderr ? _out[1] : _err[1]);
+                dup2(options.mergeStderr ? _out[1] : _err[1], 2);
 
                 closeOtherFds(_in[0], _out[1], options.mergeStderr ? _out[1] : _err[1],
                      child.otherFdChild, additionalFds);

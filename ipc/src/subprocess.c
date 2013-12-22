@@ -85,7 +85,7 @@ pid_t launchProcess(const char *path,
     dup2(fd_out[1], 1);
     close(2);
 
-    dup(mergeStderr ? fd_out[1] : fd_err[1]);
+    dup2(mergeStderr ? fd_out[1] : fd_err[1], 2);
 
 
     int i;
