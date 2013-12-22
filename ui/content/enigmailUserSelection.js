@@ -518,16 +518,16 @@ function enigmailBuildList(refresh) {
 
 
 // create a (sub) row for the user tree
-function enigUserSelCreateRow (userObj, activeState, userId, keyValue, dateField, trustStatus, uidValid) {
+function enigUserSelCreateRow (userObj, activeState, userId, keyValue, dateField, uidValidityStatus, uidValid) {
   var selectCol=document.createElement("treecell");
   selectCol.setAttribute("id", "indicator");
-  var trustCol=document.createElement("treecell");
+  var uidValidityCol=document.createElement("treecell");
   var expCol=document.createElement("treecell");
   var userCol=document.createElement("treecell");
 
   userCol.setAttribute("id", "name");
   expCol.setAttribute("id", "expiry");
-  trustCol.setAttribute("id", "trust");
+  uidValidityCol.setAttribute("id", "validity");
 
   userCol.setAttribute("label", userId);
   expCol.setAttribute("label", EnigGetDateTime(dateField,true, false));
@@ -540,36 +540,36 @@ function enigUserSelCreateRow (userObj, activeState, userId, keyValue, dateField
     keyCol.setAttribute("label", EnigGetString("keyTrust.group"));
   keyCol.setAttribute("id", "keyid");
 
-  var trust=EnigGetTrustLabel(trustStatus.charAt(0));
+  var validity=EnigGetTrustLabel(uidValidityStatus.charAt(0));
   if (!uidValid) {
     userCol.setAttribute("properties", "enigKeyInactive");
-    trustCol.setAttribute("properties", "enigKeyInactive");
+    uidValidityCol.setAttribute("properties", "enigKeyInactive");
     expCol.setAttribute("properties", "enigKeyInactive");
     keyCol.setAttribute("properties", "enigKeyInactive");
-    trust=EnigGetString("keyTrust.untrusted");
+    validity=EnigGetString("keyTrust.untrusted");
   }
-  if (!userObj.subkeyOK && KEY_NOT_VALID.indexOf(trustStatus.charAt(0))<0) {
-    trust=EnigGetString("keyValid.noSubkey");
+  if (!userObj.subkeyOK && KEY_NOT_VALID.indexOf(uidValidityStatus.charAt(0))<0) {
+    validity=EnigGetString("keyValid.noSubkey");
   }
   if (((userObj.keyTrust.length>0) &&
       (KEY_NOT_VALID.indexOf(userObj.keyTrust.charAt(0))>=0)) ||
       (!userObj.subkeyOK) ||
       ((!gAlwaysTrust) && ("mfu".indexOf(userObj.keyTrust.charAt(0))<0)) ||
-      ((!gAlwaysTrust) && trustStatus.length>0 &&
-        ("o-qn".indexOf(trustStatus.charAt(0))>=0))) {
+      ((!gAlwaysTrust) && uidValidityStatus.length>0 &&
+        ("o-qn".indexOf(uidValidityStatus.charAt(0))>=0))) {
     userCol.setAttribute("properties", "enigKeyInactive");
-    trustCol.setAttribute("properties", "enigKeyInactive");
+    uidValidityCol.setAttribute("properties", "enigKeyInactive");
     expCol.setAttribute("properties", "enigKeyInactive");
     keyCol.setAttribute("properties", "enigKeyInactive");
     if (!gAllowExpired && activeState>=0) activeState=2;
   }
 
   EnigSetActive(selectCol, activeState);
-  trustCol.setAttribute("label", trust);
+  uidValidityCol.setAttribute("label", validity);
   var userRow=document.createElement("treerow");
   userRow.appendChild(selectCol);
   userRow.appendChild(userCol);
-  userRow.appendChild(trustCol);
+  userRow.appendChild(uidValidityCol);
   userRow.appendChild(expCol);
   userRow.appendChild(keyCol);
   var treeItem=document.createElement("treeitem");
@@ -676,7 +676,7 @@ function enigmailUserSelCallback(event) {
     if ((event.detail == 1) && (col.value.id != "selectionCol"))
       return; // single clicks are only relvant for the selection column
 
-    if ((event.detail == 2)  && ("selectionCol,enigUserNameCol,trustCol,expCol,keyCol".indexOf(col.value.id) < 0))
+    if ((event.detail == 2)  && ("selectionCol,enigUserNameCol,uidValidityCol,expCol,keyCol".indexOf(col.value.id) < 0))
       return;
 
     event.stopPropagation();

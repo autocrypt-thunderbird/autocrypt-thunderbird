@@ -119,7 +119,7 @@ pref("extensions.enigmail.logDirectory","");
 pref("extensions.enigmail.keepSettingsForReply",true);
 
 // display all or no keys by default in the key manager
-pref("extensions.enigmail.keyManShowAllKeys",false);
+pref("extensions.enigmail.keyManShowAllKeys",true);
 
 
 // list of keyservers to use

@@ -258,6 +258,7 @@
 <!ENTITY enigmail.usersNotFound.label               "Recipients not valid, not trusted or not found">
 <!ENTITY enigmail.keyExpiry.label                   "Expiry">
 <!ENTITY enigmail.keyTrust.label                    "Trust">
+<!ENTITY enigmail.uidValidity.label                 "Validity">
 <!ENTITY enigmail.keySelection.label                "Selection">
 <!ENTITY enigmail.keyId.label                       "Key ID">
 <!ENTITY enigmail.userSelPlainText.label            "Send mail unencrypted">

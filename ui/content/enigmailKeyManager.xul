@@ -403,7 +403,7 @@
              oncommand="onSearchInput();"/>
     <separator orient="vertical"/>
     <checkbox label="&enigmail.keyMan.showAllKeys.label;"
-          checked="false"
+          checked="true"
           id="showAllKeys"
           accesskey="&enigmail.keyMan.showAllKeys.accesskey;"
           oncommand="enigmailToggleShowAll(this)"/>

@@ -57,10 +57,11 @@ pid_t launchProcess(const char *path,
   pid_t pid;
 
   int mergeStderr = (fd_err ? 0 : 1);
-  int *const *fd;
 
   pid = fork();
   if (pid == 0) {
+    int countFd = 0;
+    int i;
     /* child */
     if (workdir) {
       if (chdir(workdir) < 0) {
@@ -68,7 +69,6 @@ pid_t launchProcess(const char *path,
       }
     }
 
-    int countFd = 0;
     while (dupFds[countFd] > 0) {
       ++countFd;
     }
@@ -87,12 +87,9 @@ pid_t launchProcess(const char *path,
 
     dup2(mergeStderr ? fd_out[1] : fd_err[1], 2);
 
-
-    int i;
     for (i=0; i<countFd; i++) {
       dup2(dupFds[i], 3 + i);
     }
-
 
     execve(path, argv, envp);
     _exit(1);
