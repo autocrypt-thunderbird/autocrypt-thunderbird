@@ -184,6 +184,7 @@ function startDownload() {
     gEnigRequest.progressMeter.value = 0;
     gEnigRequest.progressMeter.mode = "undetermined";
     document.getElementById("progress.box").removeAttribute("hidden");
+    document.getElementById("selall-button").setAttribute("hidden", "true");
     document.getElementById("dialog.accept").setAttribute("disabled", "true");
     gEnigRequest.keyNum = 0;
     gEnigRequest.errorTxt="";
@@ -409,6 +410,7 @@ function enigScanKeys(connType, htmlTxt) {
   gEnigRequest.httpInProgress=false;
   enigPopulateList(gEnigRequest.keyList);
   document.getElementById("progress.box").setAttribute("hidden", "true");
+  document.getElementById("selall-button").removeAttribute("hidden");
   if (gEnigRequest.keyList.length == 0) {
     Ec.alert(window, Ec.getString("noKeyFound"));
     enigCloseDialog();
