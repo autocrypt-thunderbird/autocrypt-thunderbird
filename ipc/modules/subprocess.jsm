@@ -115,7 +115,8 @@
  *              something like 'data.replace(/\0/g, "\\0");'.
  *              (on windows it only gets called once right now)
  *
- * pipes:       optional argmuent containing an |array| of the objects with the
+ * pipes:       **NOT AVAILABLE ON WINDOWS**
+ *              optional argmuent containing an |array| of the objects with the
  *              following structure:
  *               - readFd: function(data) or string - working identically to stdout()
  *               - writeFd: function(pipe) - working identically to stdin()
@@ -1087,6 +1088,8 @@ function subprocess_win32(options) {
     }
 
     //main
+
+    if (options.pipes) throw "Error - additional pipes are not supported on this OS";
 
     var cmdStr = getCommandStr(options.command);
     var workDir = getWorkDir(options.workdir);
