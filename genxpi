@@ -67,23 +67,18 @@ escplatform="$(printf "%s" "${platform}" | sed 's_/_\\/_g')"
 # Pepare install.rdf
 sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${escplatform}'<\/em:targetPlatform>/' < ${srcDir}/package/install.rdf > ${targetDir}/install.rdf
 
-
-enigmimeDll=${libPrefix}enigmime${dllSuffix}
-if [ ${platform} = OS2_x86-gcc3 ]; then
-  # workaround for file name length limit on OS/2
-  enigDllFile=platform/${platform}/components/${enigmimeDll}
-else
-  enigDllFile=platform/${platform}/components/${libPrefix}enigmime-${xpcomAbi}${dllSuffix}
-fi
-
 subprocessDll=${libPrefix}subprocess${dllSuffix}
 spDllFile=platform/${platform}/lib/${libPrefix}subprocess-${xpcomAbi}${dllSuffix}
+if [ ${osArch} = "WINNT" ]; then
+  # there is no DLL file on Windows
+  subprocessDll=
+  spDllFile=
+fi
 
 # Prepare chrome.manifest
 touch ${targetDir}/chrome.manifest
 cp  ${targetDir}/chrome.manifest ${targetDir}/chrome.manifest.save
 cat  ${srcDir}/package/chrome.manifest | \
-sed  's/##ENIGMIMEDLL-PLACEHOLDER##/binary-component platform\/'${escplatform}'\/components\/'`basename ${enigDllFile}`' ABI='${escplatform}'/' \
 > ${targetDir}/chrome.manifest
 
 # Prepare languages other than en-US
@@ -113,8 +108,9 @@ mkdir -p wrappers
 
 cp ${srcDir}/util/gpg-agent-wrapper.sh wrappers
 
-cp $cwd/ipc/src/${subprocessDll} ${spDllFile}
-cp components/${enigmimeDll} ${enigDllFile}
+if [ ${osArch} != "WINNT" ]; then
+  cp $cwd/ipc/src/${subprocessDll} ${spDllFile}
+fi
 
 if [ -d chrome/enigmail ]; then
   echo "Fixing translations"
@@ -129,7 +125,7 @@ fi
 
 echo "Creating ${xpiFile} file"
 
-zip ${xpiFile} \
+zip --must-match ${xpiFile} \
     components/${xpiModule}.xpt \
     components/${xpiModule}.js \
     components/enigprefs-service.js \
@@ -150,8 +146,6 @@ zip ${xpiFile} \
     wrappers/gpg-agent-wrapper.sh \
     chrome/${xpiModule}.jar \
     ${localeJar} \
-    components/enigmime.xpt \
-    ${enigDllFile} \
     ${spDllFile} \
     chrome.manifest \
     install.rdf

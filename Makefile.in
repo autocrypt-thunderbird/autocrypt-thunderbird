@@ -17,13 +17,7 @@ MOZILLA_MAJOR_VERSION = $(firstword $(MOZILLA_VERSION_PARTS))
 TMP_VAR = $(word 2,$(MOZILLA_VERSION_PARTS))
 MOZILLA_MINOR_VERSION = $(shell echo $(TMP_VAR)|sed 's/[a-z].*//')
 
-GECKO18 = $(shell test $(MOZILLA_MAJOR_VERSION) -lt 19 && echo 1)
-
 DIRS = ipc public
-
-ifeq ($(GECKO18),1)
-  DIRS += src build
-endif
 
 DIRS += ui package lang
 
