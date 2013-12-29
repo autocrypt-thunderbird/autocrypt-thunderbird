@@ -78,7 +78,7 @@ fi
 # Prepare chrome.manifest
 touch ${targetDir}/chrome.manifest
 cp  ${targetDir}/chrome.manifest ${targetDir}/chrome.manifest.save
-cat  ${srcDir}/package/chrome.manifest | \
+cat  ${srcDir}/package/chrome.manifest \
 > ${targetDir}/chrome.manifest
 
 # Prepare languages other than en-US
