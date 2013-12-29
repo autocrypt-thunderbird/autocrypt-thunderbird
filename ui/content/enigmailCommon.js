@@ -512,8 +512,8 @@ function EnigDisplayKeyDetails(keyId, refresh) {
   return EnigmailFuncs.openKeyDetails(window, keyId, refresh);
 }
 
-function EnigSignKey(userId, keyId, signingKeyHint) {
-  return EnigmailFuncs.signKey(window, userId, keyId, signingKeyHint);
+function EnigSignKey(userId, keyId) {
+  return EnigmailFuncs.signKey(window, userId, keyId);
 }
 
 
