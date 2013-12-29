@@ -1933,6 +1933,7 @@ Enigmail.prototype = {
 
   invalidateUserIdList: function () {
     // clean the userIdList to force reloading the list at next usage
+    Ec.DEBUG_LOG("enigmail.js: Enigmail.invalidateUserIdList\n");
     this.userIdList= null;
   },
 

@@ -240,6 +240,11 @@ function enigStatusError () {
 }
 
 function enigCloseDialog() {
+  if (window.arguments[RESULT].importedKeys > 0) {
+    var enigmailSvc = GetEnigmailSvc();
+    enigmailSvc.invalidateUserIdList();
+  }
+
   document.getElementById("enigmailSearchKeyDlg").cancelDialog();
   window.close();
 }
