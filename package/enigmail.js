@@ -2086,6 +2086,7 @@ Enigmail.prototype = {
           }
           break;
         case "uat:":
+          theLine=keyArr[i].split(/:/);
           if (withUserAttributes) {
             if (("idre".indexOf(theLine[1]) < 0) || (! hideInvalidUid)) {
               userList += "uat:jpegPhoto:" + theLine[4] + "\n";
