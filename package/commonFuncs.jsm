@@ -48,6 +48,11 @@ var EXPORTED_SYMBOLS = [ "EnigmailFuncs" ];
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
+const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
+
+const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID =
+                              "@mozilla.org/network/file-output-stream;1";
+
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
 // field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
@@ -61,13 +66,26 @@ const USERID_ID = 9;
 const SIG_TYPE_ID = 10;
 const KEY_USE_FOR_ID = 11;
 
+const NS_RDONLY      = 0x01;
+const NS_WRONLY      = 0x02;
+const NS_CREATE_FILE = 0x08;
+const NS_TRUNCATE    = 0x20;
+const DEFAULT_FILE_PERMS = 0x180; // equals 0600
+
 var gTxtConverter = null;
 
 var EnigmailFuncs = {
 
   /**
-   * download key(s) from a keyserver
+   * Display the dialog to search and/or download key(s) from a keyserver
+   *
+   * @win        - |object| holding the parent window for the dialog
+   * @inputObj   - |object| with member searchList (|string| containing the keys to search)
+   * @resultObj  - |object| with member importedKeys (|number| containing the number of imporeted keys)
+   *
+   * no return value
    */
+
   downloadKeys: function (win, inputObj, resultObj)
   {
     EnigmailCommon.DEBUG_LOG("commonFuncs.jsm: downloadKeys: searchList="+inputObj.searchList+"\n");
@@ -104,6 +122,9 @@ var EnigmailFuncs = {
 
   /**
    * Format a key fingerprint
+   * @fingerprint |string|  -  unformated OpenPGP fingerprint
+   *
+   * @return |string| - formatted string
    */
   formatFpr: function (fingerprint)
   {
@@ -120,6 +141,10 @@ var EnigmailFuncs = {
 
   /**
    * get a list of plain email addresses without name or surrounding <>
+   * @mailAddrs |string| - address-list as specified in RFC 2822, 3.4
+   *                       separated by ","
+   *
+   * @return |string|    - list of pure email addresses separated by ","
    */
   stripEmail: function (mailAddrs)
   {
@@ -143,6 +168,19 @@ var EnigmailFuncs = {
 
     return mailAddrs;
   },
+
+  /**
+   * Hide all menu entries and other XUL elements that are considered for
+   * advanced users. The XUL items must contain 'advanced="true"' or
+   * 'advanced="reverse"'.
+   *
+   * @obj:       |object| - XUL tree element
+   * @attribute: |string| - attribute to set or remove (i.e. "hidden" or "collapsed")
+   * @dummy:     |object| - anything
+   *
+   * no return value
+   */
+
 
   collapseAdvanced: function (obj, attribute, dummy)
   {
@@ -173,11 +211,25 @@ var EnigmailFuncs = {
     }
   },
 
+  /**
+   * Display the OpenPGP setup wizard window
+   *
+   * no return value
+   */
+
   openSetupWizard: function (win)
   {
      win.open("chrome://enigmail/content/enigmailSetupWizard.xul",
                 "", "chrome,centerscreen");
   },
+
+  /**
+   * Display the key help window
+   *
+   * @source - |string| containing the name of the file to display
+   *
+   * no return value
+   */
 
   openHelpWindow: function (source)
   {
@@ -186,6 +238,12 @@ var EnigmailFuncs = {
                            "centerscreen,resizable");
   },
 
+  /**
+   * Display the "About Enigmail" window
+   *
+   * no return value
+   */
+
   openAboutWindow: function ()
   {
     EnigmailCommon.openWin("about:enigmail",
@@ -193,12 +251,25 @@ var EnigmailFuncs = {
                            "resizable,centerscreen");
   },
 
+  /**
+   * Display the Per-Recipient Rules editor window
+   *
+   * no return value
+   */
+
   openRulesEditor: function ()
   {
     EnigmailCommon.openWin("enigmail:rulesEditor",
                            "chrome://enigmail/content/enigmailRulesEditor.xul",
                            "dialog,centerscreen,resizable");
   },
+
+
+  /**
+   * Display the OpenPGP key manager window
+   *
+   * no return value
+   */
 
   openKeyManager: function (win)
   {
@@ -209,12 +280,24 @@ var EnigmailFuncs = {
                            "resizable");
   },
 
+  /**
+   * Display the key creation window
+   *
+   * no return value
+   */
+
   openKeyGen: function ()
   {
     EnigmailCommon.openWin("enigmail:generateKey",
                            "chrome://enigmail/content/enigmailKeygen.xul",
                            "chrome,modal,resizable=yes");
   },
+
+  /**
+   * Display the card details window
+   *
+   * no return value
+   */
 
   openCardDetails: function ()
   {
@@ -223,6 +306,13 @@ var EnigmailFuncs = {
                            "centerscreen");
   },
 
+  /**
+   * Display the console log window
+   *
+   * @win       - |object| holding the parent window for the dialog
+   *
+   * no return value
+   */
   openConsoleWindow: function ()
   {
      EnigmailCommon.openWin("enigmail:console",
@@ -230,6 +320,13 @@ var EnigmailFuncs = {
                             "resizable,centerscreen");
   },
 
+  /**
+   * Display the window for the debug log file
+   *
+   * @win       - |object| holding the parent window for the dialog
+   *
+   * no return value
+   */
   openDebugLog: function(win)
   {
     var logDirectory = EnigmailCommon.getPref("logDirectory");
@@ -263,6 +360,16 @@ var EnigmailFuncs = {
                            "resizable,centerscreen");
   },
 
+  /**
+   * Display the preferences dialog
+   *
+   * @win       - |object| holding the parent window for the dialog
+   * @showBasic - |boolean| true if only the 1st page of the preferences window
+   *              should be displayed / false otherwise
+   * @selectTab - |string| ID of the tab element (in XUL) to display when opening
+   *
+   * no return value
+   */
   openPrefWindow: function (win, showBasic, selectTab)
   {
     EnigmailCommon.DEBUG_LOG("enigmailCommon.js: prefWindow\n");
@@ -275,6 +382,15 @@ var EnigmailFuncs = {
                    'clientType': 'thunderbird',
                    'selectTab': selectTab});
   },
+
+  /**
+   * Display the dialog for creating a new per-recipient rule
+   *
+   * @win          - |object| holding the parent window for the dialog
+   * @emailAddress - |string| containing the email address for the rule
+   *
+   * @return       - always true
+   */
 
   createNewRule: function (win, emailAddress)
   {
@@ -296,6 +412,15 @@ var EnigmailFuncs = {
     return true;
   },
 
+  /**
+   * Display the dialog for changing the expiry date of one or several keys
+   *
+   * @win        - |object| holding the parent window for the dialog
+   * @userIdArr  - |array| of |strings| containing the User IDs
+   * @keyIdArr   - |array| of |strings| containing the key IDs (eg. "0x12345678") to change
+   * no return value
+   */
+
   editKeyExpiry: function (win, userIdArr, keyIdArr)
   {
     var inputObj = {
@@ -307,6 +432,15 @@ var EnigmailFuncs = {
                    "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     return resultObj.refresh;
   },
+
+  /**
+   * Display the dialog for changing key trust of one or several keys
+   *
+   * @win        - |object| holding the parent window for the dialog
+   * @userIdArr  - |array| of |strings| containing the User IDs
+   * @keyIdArr   - |array| of |strings| containing the key IDs (eg. "0x12345678") to change
+   * no return value
+   */
 
   editKeyTrust: function (win, userIdArr, keyIdArr)
   {
@@ -320,18 +454,36 @@ var EnigmailFuncs = {
     return resultObj.refresh;
   },
 
-  signKey: function (win, userId, keyId, signingKeyHint)
+  /**
+   * Display the dialog for signing a key
+   *
+   * @win        - |object| holding the parent window for the dialog
+   * @userId     - |string| containing the User ID (for displaing in the dialog only)
+   * @keyId      - |string| containing the key ID (eg. "0x12345678")
+   * no return value
+   */
+
+  signKey: function (win, userId, keyId)
   {
     var inputObj = {
       keyId: keyId,
-      userId: userId,
-      signingKeyHint: signingKeyHint
+      userId: userId
     };
     var resultObj = { refresh: false };
     win.openDialog("chrome://enigmail/content/enigmailSignKeyDlg.xul","",
                    "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     return resultObj.refresh;
   },
+
+  /**
+   * Display the photo ID associated with a key
+   *
+   * @win        - |object| holding the parent window for the dialog
+   * @keyId      - |string| containing the key ID (eg. "0x12345678")
+   * @userId     - |string| containing the User ID (for displaing in the dialog only)
+   * @photoNumber - |number| UAT entry in the squence of appearance in the key listing, starting with 0
+   * no return value
+   */
 
   showPhoto: function (win, keyId, userId, photoNumber)
   {
@@ -378,6 +530,16 @@ var EnigmailFuncs = {
     }
   },
 
+  /**
+   * Display the OpenPGP Key Details window
+   *
+   * @win        - |object| holding the parent window for the dialog
+   * @keyId      - |string| containing the key ID (eg. "0x12345678")
+   * @refresh    - |boolean| if true, cache is cleared and the key data is loaded from GnuPG
+   *
+   * no return value
+   */
+
   openKeyDetails: function (win, keyId, refresh)
   {
     var keyListObj = {};
@@ -398,8 +560,16 @@ var EnigmailFuncs = {
   },
 
   /**
-   * Load the key list into memory
-   * sortDirection: 1 = ascending / -1 = descending
+   * Load the key list into memory and return it sorted by a specified column
+   *
+   * @win        - |object|  holding the parent window for displaying error messages
+   * @refresh    - |boolean| if true, cache is cleared and all keys are loaded from GnuPG
+   * @keyListObj - |object|  holding the resulting key list
+   * @sortColumn - |string|  containing the column name for sorting. One of:
+   *                         userid, keyid, keyidshort, fpr, keytype, validity, trust, expiry
+   * @sortDirection - |number| 1 = ascending / -1 = descending
+   *
+   * no return value
    */
   loadKeyList: function (win, refresh, keyListObj, sortColumn, sortDirection)
   {
@@ -563,9 +733,16 @@ var EnigmailFuncs = {
     }
   },
 
+  /**
+   * return a merged value of trust level "key disabled"
+   *
+   * @keyObj - |object| containing the key data
+   *
+   * @return - |string| containing the trust value or "D" for disabled keys
+   */
+
   getTrustCode: function (keyObj)
   {
-    // return a merged value of trust level "key disabled"
     if (keyObj.keyUseFor.indexOf("D")>=0)
       return "D";
     else
@@ -573,7 +750,15 @@ var EnigmailFuncs = {
   },
 
 
-  // Obtain kay list from GnuPG
+  /**
+   * Get key list from GnuPG. If the keys may be pre-cached already
+   *
+   * @win        - |object| parent window for displaying error messages
+   * @secretOnly - |boolean| true: get secret keys / false: get public keys
+   * @refresh    - |boolean| if true, cache is cleared and all keys are loaded from GnuPG
+   *
+   * @return - |array| of : separated key list entries as specified in GnuPG doc/DETAILS
+   */
   obtainKeyList: function (win, secretOnly, refresh)
   {
     EnigmailCommon.DEBUG_LOG("enigmailFuncs.jsm: obtainKeyList\n");
@@ -608,9 +793,17 @@ var EnigmailFuncs = {
     }
   },
 
+  /**
+   * determine default values for signing and encryption. Translates "old-style"
+   * defaults (pre-Enigmail v1.0) to "current" defaults
+   *
+   * @identiy - nsIMsgIdentity object
+   *
+   * no return values
+   */
   getSignMsg: function (identity)
   {
-    EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: getSignMsg: identity.key="+identity.key+"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailFuncs.jsm: getSignMsg: identity.key="+identity.key+"\n");
     var sign = null;
 
     EnigmailCommon.getPref("configuredVersion"); // dummy call to getPref to ensure initialization
@@ -633,7 +826,15 @@ var EnigmailFuncs = {
     }
   },
 
-  // this function tries to mimic the Thunderbird plaintext viewer
+
+  /**
+   * this function tries to mimic the Thunderbird plaintext viewer
+   *
+   * @plainTxt - |string| containing the plain text data
+   *
+   * @ return HTML markup to display mssage
+   */
+
   formatPlaintextMsg: function (plainTxt)
   {
     if (! gTxtConverter)
@@ -724,13 +925,15 @@ var EnigmailFuncs = {
   },
 
 
-  /***
+  /**
    * extract the data fields following a header.
    * e.g. ContentType: xyz; Aa=b; cc=d
-   * returns aa=b and cc=d in an array of arrays
+   * @data: |string| containing a single header
+   *
+   * @return |array| of |arrays| containing pairs of aa/b and cc/d
    */
   getHeaderData: function (data) {
-    EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: getHeaderData: "+data.substr(0, 100)+"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailFuncs.jsm: getHeaderData: "+data.substr(0, 100)+"\n");
     var a = data.split(/\n/);
     var res = [];
     for (let i = 0; i < a.length; i++) {
@@ -743,13 +946,106 @@ var EnigmailFuncs = {
         if (m) {
           // m[2]: identifier / m[6]: data
           res[m[2].toLowerCase()] = m[6].replace(/\s*$/, "");
-          EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: getHeaderData: "+m[2].toLowerCase()+" = "+res[m[2].toLowerCase()] +"\n");
+          EnigmailCommon.DEBUG_LOG("enigmailFuncs.jsm: getHeaderData: "+m[2].toLowerCase()+" = "+res[m[2].toLowerCase()] +"\n");
         }
       }
       if (i == 0 && a[i].indexOf(";") < 0) break;
       if (i > 0 && a[i].search(/^\s/) < 0) break;
     }
     return res;
+  },
+
+  /**
+   *  Write data to a file
+   *  @filePath |string| or |nsIFile| object - the file to be created
+   *  @data     |string|       - the data to write to the file
+   *  @permissions  |number|   - file permissions according to Unix spec (0600 by default)
+   *
+   *  @return true if data was written successfully, false otherwise
+   */
+
+  writeFileContents: function(filePath, data, permissions) {
+
+    // EnigmailCommon.DEBUG_LOG("enigmailFuncs.jsm: WriteFileContents: file="+filePath.toString()+"\n");
+
+    try {
+      var fileOutStream = this.createFileStream(filePath, permissions);
+
+      if (data.length) {
+        if (fileOutStream.write(data, data.length) != data.length)
+          throw Components.results.NS_ERROR_FAILURE;
+
+        fileOutStream.flush();
+      }
+      fileOutStream.close();
+
+    } catch (ex) {
+      EnigmailCommon.ERROR_LOG("enigmailFuncs.jsm: writeFileContents: Failed to write to "+filePath+"\n");
+      return false;
+    }
+
+    return true;
+  },
+
+  /**
+   *  Create an nsIFileOutputStream object associated with a file to
+   *  allow for writing data via the stream to the file
+   *  @filePath |string| or |nsIFile| object - the file to be written
+   *  @permissions  |number|                 - file permissions according to Unix spec (0600 by default)
+   *
+   *  @return nsIFileOutputStream object or null if creation failed
+   */
+
+  createFileStream: function(filePath, permissions) {
+    //EnigmailCommon.DEBUG_LOG("enigmailFuncs.jsm: createFileStream: file="+filePath+"\n");
+
+    try {
+      var localFile;
+      if (typeof filePath == "string") {
+        localFile = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
+        initPath(localFile, filePath);
+      }
+      else {
+        localFile = filePath.QueryInterface(Ci.nsIFile);
+      }
+
+      if (localFile.exists()) {
+
+        if (localFile.isDirectory() || !localFile.isWritable())
+           throw Components.results.NS_ERROR_FAILURE;
+
+        if (!permissions)
+          permissions = localFile.permissions;
+      }
+
+      if (!permissions)
+        permissions = DEFAULT_FILE_PERMS;
+
+      var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
+
+      var fileStream = Cc[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Ci.nsIFileOutputStream);
+
+      fileStream.init(localFile, flags, permissions, 0);
+
+      return fileStream;
+
+    } catch (ex) {
+      EnigmailCommon.ERROR_LOG("enigmailFuncs.jsm: CreateFileStream: Failed to create "+filePath+"\n");
+      return null;
+    }
   }
+
 };
+
+
+function initPath(localFileObj, pathStr) {
+  localFileObj.initWithPath(pathStr);
+
+  if (! localFileObj.exists()) {
+    localFileObj.persistentDescriptor = pathStr;
+  }
+}
+
+
+
 

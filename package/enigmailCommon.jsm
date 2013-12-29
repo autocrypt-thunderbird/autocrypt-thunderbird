@@ -768,26 +768,41 @@ var EnigmailCommon = {
     return fileNameStr;
   },
 
-  getTempDir: function ()
+  /**
+   *  Get the temp directory as nsIFile Object
+   *  @return nsIFile object to the temporary directory
+   */
+  getTempDirObj: function ()
   {
     const TEMPDIR_PROP = "TmpD";
-    var tmpDir;
+    var tmpDirObj;
 
     try {
       var ds = Cc[DIRSERVICE_CONTRACTID].getService();
       var dsprops = ds.QueryInterface(Ci.nsIProperties);
-      var tmpDirComp = dsprops.get(TEMPDIR_PROP, this.getLocalFileApi());
-      tmpDir=tmpDirComp.path;
+      var tmpDirObj = dsprops.get(TEMPDIR_PROP, this.getLocalFileApi());
     }
     catch (ex) {
       // let's guess ...
+      tmpDirObj = Cc[this.LOCAL_FILE_CONTRACTID].createInstance(this.getLocalFileApi());
       if (this.getOS() == "WINNT") {
-        tmpDir="C:\\TEMP";
+        tmpDirObj.initWithPath("C:/TEMP");
       } else {
-        tmpDir="/tmp";
+        tmpDirObj.initWithPath("/tmp");
       }
     }
-    return tmpDir;
+    return tmpDirObj;
+  },
+
+  /**
+   *  Get the temp directory as string
+   *  @return |String| containing the temporary directory name
+   */
+
+  getTempDir: function ()
+  {
+    let tmpDir = this.getTempDirObj();
+    return tmpDir.path;
   },
 
   newStringStreamListener: function (onStopCallback)
@@ -2222,7 +2237,7 @@ var EnigmailCommon = {
 
 
   decryptMessageStart: function (win, verifyOnly, noOutput, listener,
-                                 statusFlagsObj, errorMsgObj) {
+                                 statusFlagsObj, errorMsgObj, mimeSignatureFile) {
     this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageStart: verifyOnly="+verifyOnly+"\n");
 
     this.getService(win);
@@ -2254,6 +2269,11 @@ var EnigmailCommon = {
 
     if (noOutput) {
       args.push("--verify");
+
+      if (mimeSignatureFile) {
+        args.push(mimeSignatureFile);
+        args.push("-");
+      }
 
     } else {
       args.push("--decrypt");
