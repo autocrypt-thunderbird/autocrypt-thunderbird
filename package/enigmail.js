@@ -1464,6 +1464,45 @@ Enigmail.prototype = {
     return "";
   },
 
+  statusObjectFrom: function (signatureObj, exitCodeObj, statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj) {
+    return {
+      signature: signatureObj,
+      exitCode: exitCodeObj,
+      statusFlags: statusFlagsObj,
+      keyId: keyIdObj,
+      userId: userIdObj,
+      signatureDetails: sigDetailsObj,
+      message: errorMsgObj,
+      blockSeparation: blockSeparationObj
+    };
+  },
+
+  newStatusObject: function () {
+    return this.statusObjectFrom({value: ""}, {}, {}, {}, {}, {}, {}, {});
+  },
+
+  mergeStatusInto: function(left, right) {
+    left.statusFlags.value = left.statusFlags.value | right.statusFlags.value;
+    left.keyId.value = right.keyId.value;
+    left.userId.value = right.userId.value;
+    left.signatureDetails.value = right.signatureDetails.value;
+    left.message.value = right.message.value;
+  },
+
+  inlineInnerVerification: function (parent, uiFlags, text, statusObject) {
+    Ec.DEBUG_LOG("enigmail.js: Enigmail.inlineInnerVerification\n");
+
+    if (text && text.indexOf("-----BEGIN PGP SIGNED MESSAGE-----") == 0) {
+      var status = this.newStatusObject();
+      var newText = this.decryptMessage(parent, uiFlags, text, status.signature, status.exitCode, status.statusFlags, status.keyId, status.userId, status.signatureDetails, status.message, status.blockSeparation);
+      if (status.exitCode.value == 0) {
+        text = newText;
+        this.mergeStatusInto(statusObject, status);
+      }
+    }
+
+    return text;
+  },
 
   decryptMessage: function (parent, uiFlags, cipherText, signatureObj, exitCodeObj,
             statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj,
@@ -1626,7 +1665,9 @@ Enigmail.prototype = {
         plainText = plainText.replace(/^/g, indentStrObj.value);
         RegExp.multiline = false;
       }
-      return plainText;
+
+      return this.inlineInnerVerification(parent, uiFlags, plainText,
+                        this.statusObjectFrom(signatureObj, exitCodeObj, statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj));
     }
 
     var pubKeyId = keyIdObj.value;
