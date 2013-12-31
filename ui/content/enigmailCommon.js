@@ -899,6 +899,7 @@ function EnigAddSubkey(treeChildren, aLine, selectCol=false) {
 
   var usagecodes=aLine[11];
   var usagetext = "";
+  var i;
 //  e = encrypt
 //  s = sign
 //  c = certify
