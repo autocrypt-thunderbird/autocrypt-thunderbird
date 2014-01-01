@@ -169,7 +169,8 @@ var EnigmailCommon = {
   prefBranch: null,
   prefRoot: null,
   prefService: null,
-  envList: null, // currently filled from enigmailCommon.jsm:
+  envList: null, // currently filled from enigmailCommon.jsm
+  gpgAgentIsOptional: true,
 
   // methods
   getService: function (win) {

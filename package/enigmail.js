@@ -936,12 +936,14 @@ Enigmail.prototype = {
       // env. variable suggests running gpg-agent
       this.gpgAgentInfo.preStarted = true;
       this.gpgAgentInfo.envStr = gpgAgentInfo;
+      Ec.gpgAgentIsOptional = false;
     }
     else {
       Ec.DEBUG_LOG("enigmail.js: detectGpgAgent: no GPG_AGENT_INFO variable set\n");
       this.gpgAgentInfo.preStarted = false;
 
       if (this.agentVersion >= "2.0") {
+        Ec.gpgAgentIsOptional = false;
         if (this.agentVersion >= "2.0.16") {
           Ec.DEBUG_LOG("enigmail.js: detectGpgAgent: gpg 2.0.16 or newer - not starting agent\n");
         }
