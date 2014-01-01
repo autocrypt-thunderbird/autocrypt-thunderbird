@@ -68,6 +68,7 @@
               <textbox id="enigmail_identity.pgpkeyId" aria-labelledby="keymode_usePgpkeyId"
                        prefstring="mail.identity.%identitykey%.pgpkeyId"
                        observes="enigmail_bcUseKeyId"
+                       readonly="true"
                        preftype="wstring" prefattribute="value"/>
               <button id="enigmail_selectPgpKey" label="&enigmail.amPrefSelectKey.label;"
                       observes="enigmail_bcUseKeyId"
