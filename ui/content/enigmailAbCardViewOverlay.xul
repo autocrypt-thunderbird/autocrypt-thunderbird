@@ -48,8 +48,10 @@
 
   <!-- Thunderbird / SeaMonkey -->
   <window id="addressbookWindow">
-    <popup id="enigmail_contextMenu" popupanchor="bottomleft">
+    <popup id="enigmail_contextMenu" popupanchor="bottomleft"
+           onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden')">
       <menuitem id="enigmail_createCardRule"
+                advanced="true"
                 label="&enigmail.createRuleFromAddr.label;"
                 oncommand="Enigmail.createRuleFromAddress(document.popupNode);"/>
     </popup>
@@ -58,15 +60,19 @@
 
   <!-- Spicebird only -->
   <popupset id="framework-popupset">
-    <popup id="enigmail_contextMenu" popupanchor="bottomleft">
+    <popup id="enigmail_contextMenu" popupanchor="bottomleft"
+           onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden')">
       <menuitem id="enigmail_createCardRule"
                 label="&enigmail.createRuleFromAddr.label;"
+                advanced="true"
                 oncommand="Enigmail.createRuleFromAddress(document.popupNode);"/>
     </popup>
   </popupset>
 
-  <popup id="abResultsTreeContext">
+  <popup id="abResultsTreeContext"
+         onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden')">
       <menuitem id="enigmail_createTreeRule"
+                advanced="true"
                 label="&enigmail.createRuleFromAddr.label;"
                 oncommand="Enigmail.createRuleFromCard();"/>
   </popup>

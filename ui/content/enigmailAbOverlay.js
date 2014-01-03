@@ -36,7 +36,6 @@
 Components.utils.import("resource://enigmail/commonFuncs.jsm");
 
 var Enigmail = {
-
   createRuleFromAddress: function (emailAddressNode)
   {
     if (emailAddressNode)

@@ -51,6 +51,7 @@
 
   <popup id="emailAddressPopup">
     <menuitem label="&enigmail.createRuleFromAddr.label;"
+              advanced="true"
               oncommand="Enigmail.hdrView.createRuleFromAddress(document.popupNode);"/>
   </popup>
 </overlay>

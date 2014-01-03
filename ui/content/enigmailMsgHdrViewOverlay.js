@@ -67,7 +67,14 @@ Enigmail.hdrView = {
     this.statusBar = document.getElementById("enigmail-status-bar");
     this.enigmailBox = document.getElementById("enigmailBox");
 
+    var addrPopup = document.getElementById("emailAddressPopup");
+    if (addrPopup) {
+      var attr = addrPopup.getAttribute("onpopupshowing");
+      attr = "EnigmailFuncs.collapseAdvanced(this, 'hidden'); "+attr;
+      addrPopup.setAttribute("onpopupshowing", attr);
+    }
   },
+
 
   statusBarHide: function ()
   {
@@ -831,6 +838,7 @@ Enigmail.hdrView = {
       }
     }
   }
+
 };
 
 window.addEventListener("load", Enigmail.hdrView.hdrViewLoad.bind(Enigmail.hdrView), false);
