@@ -206,12 +206,12 @@
 
           <hbox autostretch="never" align="center">
             <button id="enigmail_advancedUser"
-                  label="&enigmail.expertUser.label;"
+                  label="&enigmail.expertUserMenus.label;"
                   oncommand="enigSwitchAdvancedMode(true)"
                   tooltip="expertUser.tooltip"/>
 
             <button id="enigmail_basicUser"
-                  label="&enigmail.basicUser.label;"
+                  label="&enigmail.basicUserMenus.label;"
                   oncommand="enigSwitchAdvancedMode(false)"
                   tooltip="basicUser.tooltip"
                   hidden="true"/>
