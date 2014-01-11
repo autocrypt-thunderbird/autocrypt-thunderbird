@@ -74,3 +74,4 @@ clean:
 
 distclean: clean
 	rm -rf build/*
+	rm -f config/autoconf.mk config.log config.status
