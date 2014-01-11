@@ -1,0 +1,19 @@
+# @configure_input@
+
+CC = @CC@
+PERL = @PERL@
+PYTHON = @PYTHON@
+CFLAGS = @CFLAGS@
+LDFLAGS = @LDFLAGS@
+
+OS_TARGET = @BUILD_OS_ARCH@
+CPU_ARCH = @BUILD_TARGET_CPU@
+
+DLL_PREFIX = @DLL_PREFIX@
+DLL_SUFFIX = @DLL_SUFFIX@
+
+srcdir = @srcdir@
+
+DIST = $(DEPTH)/build/dist
+BUILD = $(DEPTH)/build
+

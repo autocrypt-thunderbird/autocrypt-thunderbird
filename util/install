@@ -1,0 +1,54 @@
+#!/bin/sh
+
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# install files at a target place
+#
+# usage:
+# install [ -m xxx] [-u] target_dir source_files ...
+#
+# -m exec mode of files
+# -u uninstall
+
+# files
+
+TARGETMODE=""
+INSTALLMODE="i"
+
+if [ "$1" = "-m" ]; then
+  TARGETMODE=$2
+  shift 2
+fi
+
+if [ "$1" = "-u" ]; then
+  INSTALLMODE="u"
+  shift
+fi
+
+TARGETDIR=$1
+mkdir -p ${TARGETDIR}
+
+shift
+
+while [ $# -gt 0 ]; do
+
+  SRCFILE=$1
+  BASEFILE=`basename $1`
+
+  if [ $INSTALLMODE = "i" ]; then
+    # install files
+    cp ${SRCFILE} ${TARGETDIR}/${BASEFILE} || exit 1
+
+    if [ "$TARGETMODE" != "" ]; then
+      chmod $TARGETMODE ${TARGETDIR}/${BASEFILE} || exit 1
+    fi
+
+  else
+    # uninstall files
+    rm -f ${TARGETDIR}/${BASEFILE}
+  fi
+
+  shift
+done

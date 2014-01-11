@@ -121,7 +121,7 @@ my $endtd = loaddtd("$from/enigmail.dtd");
 my $frdtd = loaddtd("$dest/enigmail.dtd");
 
 print "+ Writing $dest/enigmail.dtd\n";
-open(OUT, ">$dest/enigmail.dtd")  || die "Cannot write to $dest/enigmail.dtd";
+open(OUT, ">$dest/enigmail.dtd.gen")  || die "Cannot write to $dest/enigmail.dtd";
 
 for my $ind (keys %$endtd) {
 
@@ -140,7 +140,7 @@ my $enprop = loadprop("$from/enigmail.properties");
 my $frprop = loadprop("$dest/enigmail.properties");
 
 print "+ Writing $dest/enigmail.properties\n";
-open(OUT, ">$dest/enigmail.properties") || die "Cannot write to $dest/enigmail.properties";
+open(OUT, ">$dest/enigmail.properties.gen") || die "Cannot write to $dest/enigmail.properties";
 for my $ind (keys %$enprop) {
   if ($frprop->{$ind}) {
     print OUT "$frprop->{$ind}\n";

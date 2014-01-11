@@ -1,0 +1,132 @@
+#!/bin/sh -x
+
+# **** BEGIN LICENSE BLOCK *****
+# Version: MPL 1.1/GPL 2.0/LGPL 2.1
+#
+# The contents of this file are subject to the Mozilla Public
+# License Version 1.1 (the "MPL"); you may not use this file
+# except in compliance with the MPL. You may obtain a copy of
+# the MPL at http://www.mozilla.org/MPL/
+#
+# Software distributed under the MPL is distributed on an "AS
+# IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+# implied. See the MPL for the specific language governing
+# rights and limitations under the MPL.
+#
+# The Original Code is Enigmail.
+#
+# The Initial Developer of the Original Code is Patrick Brunschwig.
+# Portions created by Patrick Brunschwig <patrick@enigmail.net> are
+# Copyright (C) 2004 Patrick Brunschwig. All Rights Reserved.
+#
+# Contributor(s):
+#
+# Alternatively, the contents of this file may be used under the terms of
+# either the GNU General Public License Version 2 or later (the "GPL"), or
+# the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+# in which case the provisions of the GPL or the LGPL are applicable instead
+# of those above. If you wish to allow use of your version of this file only
+# under the terms of either the GPL or the LGPL, and not to allow others to
+# use your version of this file under the terms of the MPL, indicate your
+# decision by deleting the provisions above and replace them with the notice
+# and other provisions required by the GPL or the LGPL. If you do not delete
+# the provisions above, a recipient may use your version of this file under
+# the terms of any one of the MPL, the GPL or the LGPL.
+# ***** END LICENSE BLOCK *****
+
+#
+# This script generates the Enigmail XPI
+#
+
+echo "genxpi: Generating $1 in $5"
+
+if [ $# -lt 8 ]; then
+  echo "Wrong number of parameters"
+  exit 1
+fi
+
+xpiFile=$1
+xpiVersion="$2"
+osArch=$3
+xpcomAbi=$4
+srcDir=$6
+xpiModule=$7
+dllSuffix=$8
+libPrefix=${9}
+
+cd ${srcDir}
+cwd=`pwd`
+cd "$5"
+targetDir=`pwd`
+cd "$cwd"
+
+if [ "$xpcomAbi" = "" ] ; then
+  xpcomAbi="unknown"
+fi
+platform=${osArch}_${xpcomAbi}
+escplatform="$(printf "%s" "${platform}" | sed 's_/_\\/_g')"
+# Pepare install.rdf
+sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${escplatform}'<\/em:targetPlatform>/' < ${srcDir}/package/install.rdf > ${targetDir}/install.rdf
+
+subprocessDll=${libPrefix}subprocess${dllSuffix}
+spDllFile=platform/${platform}/lib/${libPrefix}subprocess-${xpcomAbi}${dllSuffix}
+
+if [ ${osArch} = "WINNT" ]; then
+  # there is no DLL file on Windows
+  subprocessDll=
+  spDllFile=
+fi
+
+# Prepare chrome.manifest
+cat  ${srcDir}/package/chrome.manifest \
+> ${targetDir}/chrome.manifest
+
+# Prepare languages other than en-US
+
+if [ -s ${srcDir}/lang/current-languages.txt ]; then
+  echo '' >> ${targetDir}/chrome.manifest
+  echo '# Additional languages' >> ${targetDir}/chrome.manifest
+
+  for lang in `cat ${srcDir}/lang/current-languages.txt`; do
+    echo 'locale        enigmail    '$lang'       jar:chrome/enigmail.jar!/locale/'$lang'/' >> ${targetDir}/chrome.manifest
+  done
+
+fi
+
+
+# cd ${srcDir}/package
+cd "$targetDir"
+
+
+mkdir -p "${targetDir}/wrappers"
+
+cp ${cwd}/util/gpg-agent-wrapper.sh wrappers
+
+echo "Creating ${xpiFile} file"
+
+zip --must-match\
+    ../${xpiFile} \
+    components/${xpiModule}.xpt \
+    components/${xpiModule}.js \
+    components/enigprefs-service.js \
+    components/enigMsgCompFields.js \
+    components/mimeDecrypt.js \
+    components/mimeEncrypt.js \
+    defaults/preferences/enigmail.js \
+    modules/enigmailCommon.jsm \
+    modules/pipeConsole.jsm \
+    modules/keyManagement.jsm \
+    modules/mimeVerify.jsm \
+    modules/installGnuPG.jsm \
+    modules/gpgAgentHandler.jsm \
+    modules/commonFuncs.jsm \
+    modules/subprocess.jsm \
+    modules/subprocess_worker_win.js \
+    modules/subprocess_worker_unix.js \
+    wrappers/gpg-agent-wrapper.sh \
+    chrome/${xpiModule}.jar \
+    ${spDllFile} \
+    chrome.manifest \
+    install.rdf
+
+
