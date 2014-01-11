@@ -1977,9 +1977,10 @@ Enigmail.msg = {
             Enigmail.msg.loadExternalURL(outFileUri.asciiSpec);
           }
         }
-
-        // open the attachment using an external application
-        Enigmail.msg.loadExternalURL(outFileUri.asciiSpec);
+        else {
+          // open the attachment using an external application
+          Enigmail.msg.loadExternalURL(outFileUri.asciiSpec);
+        }
       }
     }
   },
