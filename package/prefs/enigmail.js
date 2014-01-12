@@ -123,7 +123,7 @@ pref("extensions.enigmail.keyManShowAllKeys",true);
 
 
 // list of keyservers to use
-pref("extensions.enigmail.keyserver","pool.sks-keyservers.net, keys.gnupg.net, sks.mit.edu, ldap://certserver.pgp.com");
+pref("extensions.enigmail.keyserver","pool.sks-keyservers.net, keys.gnupg.net, pgp.mit.edu");
 
 // keep passphrase for ... minutes
 pref("extensions.enigmail.maxIdleMinutes",5);
