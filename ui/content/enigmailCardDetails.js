@@ -84,9 +84,9 @@ function onLoad() {
         setValue("key_fpr_3", EnigmailFuncs.formatFpr(l[3]));
         break;
       case "fprtime":
-        setValue("card_key_created_1", Ec.getDateTime(l[1]), true, false);
-        setValue("card_key_created_2", Ec.getDateTime(l[2]), true, false);
-        setValue("card_key_created_3", Ec.getDateTime(l[3]), true, false);
+        setValue("key_created_1", Ec.getDateTime(l[1], true, false));
+        setValue("key_created_2", Ec.getDateTime(l[2], true, false));
+        setValue("key_created_3", Ec.getDateTime(l[3], true, false));
         break;
       default:
         if (l[0]) {
