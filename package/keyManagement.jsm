@@ -1194,11 +1194,11 @@ function cardAdminDataCallback(inputData, keyEdit, ret) {
   }
   else if (keyEdit.doCheck(GET_LINE, "keygen.smartcard.surname")) {
     ret.exitCode = 0;
-    ret.writeTxt = inputData.firstname.replace(/^$/, "-");;
+    ret.writeTxt = inputData.name.replace(/^$/, "-");;
   }
   else if (keyEdit.doCheck(GET_LINE, "keygen.smartcard.givenname")) {
     ret.exitCode = 0;
-    ret.writeTxt = inputData.name.replace(/^$/, "-");;
+    ret.writeTxt = inputData.firstname.replace(/^$/, "-");;
   }
   else if (keyEdit.doCheck(GET_LINE, "cardedit.change_sex")) {
     ret.exitCode = 0;
