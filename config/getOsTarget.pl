@@ -55,7 +55,7 @@ elsif ($srcOs =~ /irix/i) {
 elsif ($srcOs =~ /hpux/i) {
   $targetOs = "HP-UX";
 }
-elsif ($srcOs =~ /sun/i) {
+elsif ($srcOs =~ /(sun|solaris)/i) {
   $targetOs = "SunOS";
 }
 elsif ($srcOs =~ /(mingw|win)/i) {
