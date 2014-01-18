@@ -139,7 +139,7 @@
  * bufferedOutput: optional boolean value. If true, stderr and stdout are buffered
  *              and will only deliver data when a certain amount of output is
  *              available. Enabling the option will give you some performance
- *              benefits if your read a lot of data. Don't enable this if your
+ *              benefits if you read a lot of data. Don't enable this if your
  *              application works in a conversation-like mode. Default is false.
  *
  *

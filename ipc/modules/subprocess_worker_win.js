@@ -46,6 +46,7 @@
 'use strict';
 
 const BufferSize = 1024;
+const MaxBufferLen = 102400;
 
 const BOOL = ctypes.bool;
 const HANDLE = ctypes.size_t;
@@ -199,8 +200,13 @@ function readPipe(pipe, charset, bufferedOutput) {
             var c = readString(line, bytesRead.value, charset);
             if (!bufferedOutput)
               postMessage({msg: "data", data: c, count: c.length});
-            else
+            else {
               dataStr += c;
+              if (dataStr.length > MaxBufferLen) {
+                postMessage({msg: "data", data: dataStr, count: dataStr.length});
+                dataStr = "";
+              }
+            }
         }
         else {
             break;

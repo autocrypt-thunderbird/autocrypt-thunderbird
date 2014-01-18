@@ -46,6 +46,7 @@
 'use strict';
 
 const BufferSize = 1024;
+const MaxBufferLen = 102400;
 
 var libc = null;
 var libcFunc = {};
@@ -245,9 +246,13 @@ function readPipe(pipe, charset, pid, bufferedOutput) {
                 readCount = readPolledFd(p[i].fd, charset, dataObj);
                 if (! bufferedOutput)
                   postMessage({msg: "data", data: dataObj.value, count: dataObj.value.length});
-                else
+                else {
                   dataStr += dataObj.value;
-
+                  if (dataStr.length > MaxBufferLen) {
+                    postMessage({msg: "data", data: dataStr, count: dataStr.length});
+                    dataStr = "";
+                  }
+                }
                 if (readCount == 0) break;
             }
 
