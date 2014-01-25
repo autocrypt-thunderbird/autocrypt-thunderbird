@@ -114,14 +114,6 @@ function enigmailKeygenUpdate(getPrefs, setPrefs) {
   var passphrase2 = document.getElementById("passphraseRepeat");
   passphrase1.disabled = noPassphraseChecked;
   passphrase2.disabled = noPassphraseChecked;
-
-  var commentElement = document.getElementById("keyComment");
-  if (noPassphraseChecked) {
-    if (commentElement.value == "") commentElement.value = EnigGetString("keyGenNoPassphrase");
-  }
-  else {
-    if (commentElement.value == EnigGetString("keyGenNoPassphrase")) commentElement.value = "";
-  }
 }
 
 function enigmailKeygenTerminate(exitCode) {
