@@ -112,7 +112,6 @@
               advanced="true"
               label="&enigmail.disableRules.label;"
               accesskey="&enigmail.disableRules.accesskey;"
-              key="key_enigDisableRules"
               oncommand="Enigmail.msg.doPgpButton('toggleRules');" />
 
           <menuseparator/>
@@ -157,6 +156,14 @@
 
           <menuseparator
               advanced="true"/>
+
+          <menuitem id="enigmail_trust_all_keys"
+              label="&enigmail.tempTrustAllKeys.label;"
+              accesskey="&enigmail.tempTrustAllKeys.accesskey;"
+              type="checkbox"
+              checked="false"
+              advanced="true"
+              oncommand="Enigmail.msg.tempTrustAllKeys();" />
 
           <menuitem id="enigmail_undo_encryption"
               label="&enigmail.undoencryption.label;"
@@ -206,7 +213,7 @@
             tooltiptext="&enigmail.securitybutton.tip;"
             oncommand="Enigmail.msg.doPgpButton();">
 
-        <menupopup onpopupshowing="Enigmail.msg.setMenuSettings('3')">
+        <menupopup onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.setMenuSettings('3'))">
           <menuitem id="enigmail_signed_send3"
               type="checkbox"
               label="&enigmail.signedsend.label;"
@@ -225,7 +232,6 @@
 
           <menuitem id="enigmail_sendPGPMime3"
               type="checkbox"
-              checked="false"
               label="&enigmail.sendPGPMime.label;"
               accesskey="&enigmail.sendPGPMime.accesskey;"
               oncommand="Enigmail.msg.nextCommand('togglePGPMime');" />
@@ -234,8 +240,16 @@
               type="checkbox"
               label="&enigmail.disableRules.label;"
               accesskey="&enigmail.disableRules.accesskey;"
-              key="key_enigDisableRules"
               oncommand="Enigmail.msg.nextCommand('toggleRules');" />
+
+          <menuseparator advanced="true"/>
+
+          <menuitem id="enigmail_trust_all_keys3"
+              label="&enigmail.tempTrustAllKeys.label;"
+              type="checkbox"
+              advanced="true"
+              oncommand="Enigmail.msg.nextCommand('trustKeys')" />
+
         </menupopup>
     </toolbarbutton>
   </toolbarpalette>

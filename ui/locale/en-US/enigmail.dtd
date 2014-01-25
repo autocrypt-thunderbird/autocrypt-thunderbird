@@ -173,6 +173,7 @@
 <!ENTITY enigmail.defaultKeySelOpts.label      "Key Selection Options...">
 <!ENTITY enigmail.sendPGPMime.label            "Use PGP/MIME for This Message">
 
+<!ENTITY enigmail.tempTrustAllKeys.label       "Trust the keys of all recpients">
 <!ENTITY enigmail.undoencryption.label         "Undo Encryption">
 <!ENTITY enigmail.insertkey.label              "Insert Public Key">
 <!ENTITY enigmail.attachkey.label              "Attach Public Key ...">
@@ -193,6 +194,7 @@
 <!ENTITY enigmail.mimeOptionsMenu.accesskey    "P">
 <!ENTITY enigmail.sendPGPMime.accesskey        "P">
 
+<!ENTITY enigmail.tempTrustAllKeys.accesskey   "T">
 <!ENTITY enigmail.undoencryption.accesskey     "U">
 <!ENTITY enigmail.insertkey.accesskey          "K">
 <!ENTITY enigmail.attachkey.accesskey          "A">

@@ -175,15 +175,20 @@ function enigmailBuildList(refresh) {
 
    window.arguments[RESULT].cancelled=true;
 
+   gAlwaysTrust = EnigGetPref("alwaysTrustSend");
+
    var secretOnly = (window.arguments[INPUT].options.indexOf("private")>= 0);
    var hideExpired = (window.arguments[INPUT].options.indexOf("hidexpired")>= 0);
    gAllowExpired = (window.arguments[INPUT].options.indexOf("allowexpired")>= 0);
+
+   if (window.arguments[INPUT].options.indexOf("trustallkeys")>= 0) {
+     gAlwaysTrust = true;
+   }
 
    var aGpgUserList = enigGetUserList(secretOnly, refresh);
 
    if (!aGpgUserList) return;
 
-   gAlwaysTrust = EnigGetPref("alwaysTrustSend");
    if (gAlwaysTrust) {
      var uidNotValid="";
    }

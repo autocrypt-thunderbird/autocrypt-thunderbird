@@ -72,6 +72,7 @@ Enigmail.msg = {
   modifiedAttach: null,
   lastFocusedWindow: null,
   determineSendFlagId: null,
+  trustAllKeys: false,
   signRules: 1,
   encryptRules: 1,
   attachOwnKeyObj: {
@@ -427,6 +428,7 @@ Enigmail.msg = {
     this.enableRules = true;
     this.identity = null;
     this.sendProcess = false;
+    this.trustAllKeys = false;
 
     if (! closing) {
       this.setIdentityDefaults();
@@ -465,6 +467,10 @@ Enigmail.msg = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.togglePgpMime\n");
 
     this.sendPgpMime = !this.sendPgpMime;
+  },
+
+  tempTrustAllKeys: function() {
+    this.trustAllKeys = !this.trustAllKeys;
   },
 
   toggleAttachOwnKey: function ()
@@ -509,6 +515,7 @@ Enigmail.msg = {
     var inputObj = new Object();
     inputObj.dialogHeader = EnigmailCommon.getString("keysToExport");
     inputObj.options = "multisel,allowexpired,nosending";
+    if (this.trustAllKeys) inputObj.options += ",trustallkeys"
     var userIdValue="";
 
     window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
@@ -786,6 +793,10 @@ Enigmail.msg = {
         this.toggleRules();
         break;
 
+      case 'trustKeys':
+        this.tempTrustAllKeys();
+        break;
+
       default:
         this.displaySecuritySettings();
     }
@@ -969,6 +980,16 @@ Enigmail.msg = {
     this.determineSendFlagId = null;
   },
 
+  setChecked: function(elementId, checked) {
+    let elem = document.getElementById(elementId);
+    if (elem) {
+      if (checked) {
+        elem.setAttribute("checked", "true");
+      }
+      else
+        elem.removeAttribute("checked");
+    }
+  },
 
   setMenuSettings: function (postfix)
   {
@@ -978,18 +999,13 @@ Enigmail.msg = {
     const SIGN    = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
 
-    document.getElementById("enigmail_encrypted_send"+postfix).setAttribute("checked", this.sendMode & ENCRYPT ? "true": "false");
-    document.getElementById("enigmail_signed_send"+postfix).setAttribute("checked", this.sendMode & SIGN ? "true" : "false");
+    this.setChecked("enigmail_encrypted_send"+postfix, this.sendMode & ENCRYPT);
+    this.setChecked("enigmail_signed_send"+postfix, this.sendMode & SIGN);
+    this.setChecked("enigmail_trust_all_keys"+postfix, this.trustAllKeys);
+    this.setChecked("enigmail_sendPGPMime"+postfix, this.sendPgpMime);
+    this.setChecked("enigmail_disable_rules"+postfix, !this.enableRules);
 
-    var menuElement = document.getElementById("enigmail_sendPGPMime"+postfix);
-    if (menuElement)
-      menuElement.setAttribute("checked", this.sendPgpMime.toString());
-
-    menuElement = document.getElementById("enigmail_disable_rules"+postfix);
-    if (menuElement)
-      menuElement.setAttribute("checked", (!this.enableRules).toString());
-
-    menuElement = document.getElementById("enigmail_insert_own_key");
+    let menuElement = document.getElementById("enigmail_insert_own_key");
     if (menuElement) {
       if (this.identity.getIntAttribute("pgpKeyMode")>0) {
         menuElement.setAttribute("checked", this.attachOwnKeyObj.appendAttachment.toString());
@@ -1235,6 +1251,9 @@ Enigmail.msg = {
                  inputObj.options += ",notsigned";
                if (recipientsSelection == 4)
                  inputObj.options += ",noforcedisp";
+
+               if (this.trustAllKeys)
+                inputObj.options += ",trustallkeys"
                inputObj.dialogHeader = EnigmailCommon.getString("recipientsSelectionHdr");
 
                window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
@@ -1428,7 +1447,7 @@ Enigmail.msg = {
        var optSendFlags = 0;
        var inlineEncAttach=false;
 
-       if (EnigmailCommon.getPref("alwaysTrustSend")) {
+       if (EnigmailCommon.getPref("alwaysTrustSend") || this.trustAllKeys) {
          optSendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
        }
 
