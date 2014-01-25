@@ -274,7 +274,6 @@ function resetRememberedValues() {
              "initAlert",
              "mimePreferPgp",
              "quotedPrintableWarn",
-             "saveEncrypted",
              "warnOnRulesConflict",
              "warnGpgAgentAndIdleTime",
              "warnClearPassphrase",

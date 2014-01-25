@@ -153,13 +153,6 @@ pref("extensions.enigmail.respectHttpProxy",true);
 // 5: no rules, no key selection
 pref("extensions.enigmail.recipientsSelection",2);
 
-// show "save draft encrypted" message (and remember selected state)
-pref("extensions.enigmail.saveEncrypted",0);
-
-// replacement of Mozilla's show all headers (because the original value is overriden)
-// OBSOLETE
-// pref("extensions.enigmail.show_headers",1);
-
 // support different passwords for each key (not yet available)
 pref("extensions.enigmail.supportMultiPass",false);
 
@@ -221,6 +214,7 @@ pref("mail.identity.default.openPgpHeaderMode", 0);
 pref("mail.identity.default.openPgpUrlName", "");
 pref("mail.identity.default.pgpMimeMode", false);
 pref("mail.identity.default.attachPgpKey", false);
+pref("mail.identity.default.autoEncryptDrafts", true);
 
 /*
    Other settings (change Mozilla behaviour)

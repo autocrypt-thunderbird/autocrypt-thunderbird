@@ -100,6 +100,13 @@
           <checkbox id="enigmail_pgpMimeMode" checked="false"
                     observes="enigmail_bcEnablePgp"
                     label="&enigmail.usePGPMimeAlways.label;"/>
+
+          <separator/>
+
+          <checkbox id="enigmail_autoEncryptDrafts" checked="false"
+                    observes="enigmail_bcEnablePgp"
+                    label="&enigmail.autoEncryptDrafts.label;"/>
+
         </groupbox>
 
         <hbox autostretch="never" id="enigmail_PrefsBox">

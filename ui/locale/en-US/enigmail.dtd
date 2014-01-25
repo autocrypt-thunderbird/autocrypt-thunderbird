@@ -220,6 +220,7 @@
 <!ENTITY enigmail.defineRules.tooltip             "Click to view, add, remove or edit the key selection rules.">
 
 <!ENTITY enigmail.usePGPMimeAlways.label          "Use PGP/MIME by default">
+<!ENTITY enigmail.autoEncryptDrafts.label         "Encrypt draft messages on saving">
 
 <!ENTITY enigmail.keepCryptoSettingsForReply.label      "Encrypt/sign replies to encrypted/signed message">
 <!ENTITY enigmail.confirmBeforeSend.label         "Always confirm before sending">

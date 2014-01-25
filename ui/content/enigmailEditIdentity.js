@@ -48,6 +48,7 @@ Enigmail.edit = {
   pgpSignEncPolicy: null,
   encryptionPolicy: null,
   pgpMimeMode: null,
+  autoEncryptDrafts: null,
   advancedSettings: null,
 
   onInit: function ()
@@ -62,6 +63,7 @@ Enigmail.edit = {
     this.pgpSignPlainPolicy = document.getElementById("enigmail_sign_notEncrypted");
     this.encryptionPolicy   = document.getElementById("enigmail_encrypt_ifPossible");
     this.pgpMimeMode        = document.getElementById("enigmail_pgpMimeMode");
+    this.autoEncryptDrafts  = document.getElementById("enigmail_autoEncryptDrafts");
 
     if (this.identity) {
       this.enablePgp.checked  = this.identity.getBoolAttribute("enablePgp");
@@ -85,6 +87,8 @@ Enigmail.edit = {
       this.pgpSignEncPolicy.checked = this.identity.getBoolAttribute("pgpSignEncrypted");
       this.pgpSignPlainPolicy.checked = this.identity.getBoolAttribute("pgpSignPlain");
       this.pgpMimeMode.checked = this.identity.getBoolAttribute("pgpMimeMode");
+      this.autoEncryptDrafts.checked = this.identity.getBoolAttribute("autoEncryptDrafts");
+
       this.encryptionPolicy.checked = (this.identity.getIntAttribute("defaultEncryptionPolicy")>0);
       this.advancedSettings = {
         openPgpHeaderMode: this.identity.getIntAttribute("openPgpHeaderMode"),
@@ -160,6 +164,7 @@ Enigmail.edit = {
       this.identity.setBoolAttribute("pgpSignEncrypted", this.pgpSignEncPolicy.checked);
       this.identity.setBoolAttribute("pgpSignPlain", this.pgpSignPlainPolicy.checked);
       this.identity.setBoolAttribute("pgpMimeMode", this.pgpMimeMode.checked);
+      this.identity.setBoolAttribute("autoEncryptDrafts", this.autoEncryptDrafts.checked);
       this.identity.setIntAttribute("defaultEncryptionPolicy", (this.encryptionPolicy.checked ? 1 : 0));
       this.identity.setIntAttribute("openPgpHeaderMode", this.advancedSettings.openPgpHeaderMode);
       this.identity.setCharAttribute("openPgpUrlName", this.advancedSettings.openPgpUrlName);

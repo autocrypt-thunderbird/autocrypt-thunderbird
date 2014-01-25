@@ -1339,15 +1339,22 @@ Enigmail.msg = {
     if (gotSendFlags & ENCRYPT) {
       sendFlags |= ENCRYPT;
     }
+
+    this.identity = getCurrentIdentity();
     var encryptIfPossible = false;
     if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
       this.setDraftStatus(sendFlags);
 
-      if (!((sendFlags & ENCRYPT) && EnigmailCommon.confirmPref(window, EnigmailCommon.getString("savingMessage"), "saveEncrypted",
-              EnigmailCommon.getString("msgCompose.button.encrypt"),
-              EnigmailCommon.getString("msgCompose.button.dontEncrypt")))) {
+      if (! this.identity.getBoolAttribute("autoEncryptDrafts")) {
+        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: drafts disabled\n");
         sendFlags &= ~ENCRYPT;
 
+        try {
+          if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIEnigMsgCompFields) {
+            gMsgCompose.compFields.securityInfo.sendFlags &= ~ENCRYPT;
+          }
+        }
+        catch(ex) {}
         if (this.attachOwnKeyObj.appendAttachment) this.attachOwnKey();
 
         return true;
