@@ -168,17 +168,17 @@
 
     // Ec is predefined by enigmailCommon.js
 
-    var gIdentityList;
-    var gIdentityListPopup;
+    var gUserIdentityList;
+    var gUserIdentityListPopup;
     var gUseForSigning;
     var gUsedId;
 
     function onLoad() {
-      gIdentityList      = document.getElementById("userIdentity");
-      gIdentityListPopup = document.getElementById("userIdentityPopup");
+      gUserIdentityList      = document.getElementById("userIdentity");
+      gUserIdentityListPopup = document.getElementById("userIdentityPopup");
       gUseForSigning     = document.getElementById("useForSigning");
       //document.getElementById("bcNoExpiry")
-      if (gIdentityListPopup) {
+      if (gUserIdentityListPopup) {
         fillIdentityListPopup();
       }
     }
