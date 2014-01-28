@@ -11,7 +11,8 @@ OBJ_SUFF = o
 #CFLAGS =
 
 ifeq ($(OS_TARGET),Darwin)
-LDFLAGS	+= -dynamiclib -install_name @executable_path/$(SHARED_LIBRARY) -compatibility_version 1 -current_version 1 -single_module
+#LDFLAGS	+= -dynamiclib -install_name @executable_path/$(SHARED_LIBRARY) -compatibility_version 1 -current_version 1 -single_module
+LDFLAGS += -shared
 endif
 
 ifeq ($(OS_TARGET),NetBSD)
