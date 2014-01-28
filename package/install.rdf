@@ -36,6 +36,9 @@
       </Description>
     </em:targetApplication -->
 
+    <em:targetPlatform>WINNT_x86-msvc</em:targetPlatform>
+    <em:targetPlatform>WINNT_x86_64-msvc</em:targetPlatform>
+
 <!-- targetPlatform placeholder -->
 
     <!-- Front End MetaData -->
