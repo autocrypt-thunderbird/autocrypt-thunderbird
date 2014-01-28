@@ -9,13 +9,15 @@
 # -c : CPU and compiler type
 # -o : OS type
 
+use File::Basename;
+
 if ($#ARGV != 3) {
   exit (1);
 }
 
 my $srcOs = $ARGV[1];
 my $srcCpu = $ARGV[2];
-my $srcComp = $ARGV[3];
+my $srcComp = basename($ARGV[3]);
 
 my $targetOs = "";
 my $targetCpu = "";
@@ -95,10 +97,10 @@ else {
 if ($targetOs eq "WINNT") {
   $targetComp = "msvc";
 }
-if ($srcComp =~ /^gcc/) {
+elsif ($srcComp =~ /gcc/) {
   $targetComp = "gcc3";
 }
-elsif ($srcComp =~ /^cc/) {
+elsif ($srcComp =~ /cc/) {
   if ($targetOs eq "SunOS") {
     $targetComp = "sunc";
   }
