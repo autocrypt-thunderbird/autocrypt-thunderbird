@@ -26,9 +26,9 @@
 <!ENTITY enigmail.passwordSettings.label "Passphrasen-Einstellungen">
 <!ENTITY enigmail.userNoPassphrase.label "Nie nach einer Passphrase fragen">
 <!ENTITY enigmail.userNoPassphrase.tooltip "Aktivieren, wenn Ihr OpenPGP-Schlüssel nicht durch eine Passphrase geschützt ist.">
-<!ENTITY enigmail.expertUser.label "Experten-Optionen anzeigen">
+<!ENTITY enigmail.expertUserMenus.label "Experten-Optionen und -Menüpunkte anzeigen">
 <!ENTITY enigmail.expertUser.tooltip "Auswählen, um Optionen für fortgeschrittene Anwender anzuzeigen.">
-<!ENTITY enigmail.basicUser.label "Experten-Optionen ausblenden">
+<!ENTITY enigmail.basicUserMenus.label "Experten-Optionen und -Menüpunkte ausblenden">
 <!ENTITY enigmail.basicUser.tooltip "Auswählen, um Optionen für fortgeschrittene Anwender auszublenden.">
 <!ENTITY enigmail.defaultEncryptionOption.label "Standard-Verschlüsselungsoptionen wählen">
 <!ENTITY enigmail.usePGPMimeOption.label "PGP/MIME-Einstellungen">
@@ -542,7 +542,7 @@
 
 ">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "Möchten Sie den Assistenten nun verwenden?">
-<!ENTITY enigmail.setupWiz.pgWelcome.yes "Ja, ich möchte vom Assistenten geholfen werden">
+<!ENTITY enigmail.setupWiz.pgWelcome.yes "Ja, ich möchte mir vom Assistenten helfen lassen">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "Nein Danke, ich werde alles manuell einstellen">
 <!ENTITY enigmail.setupWiz.pgSelectId.title "Identitäten auswählen">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Wählen Sie die Konten oder Identitäten, mit der Sie OpenPGP verwenden möchten">
