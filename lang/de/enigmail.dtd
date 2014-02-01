@@ -315,6 +315,7 @@
 <!ENTITY enigmail.clearSearch.label "Alle zeigen">
 <!ENTITY enigmail.clearSearch.accesskey "z">
 <!ENTITY enigmail.searchKeyDlg.label "OpenPGP-Schlüssel herunterladen">
+<!ENTITY enigmail.searchKeyDlgSelAll.label "alle selektieren/deselektieren">
 <!ENTITY enigmail.searchKeyDlgCapt.label "Schlüssel gefunden - Auswählen zum Importieren">
 <!ENTITY enigmail.created.label "Erstellt">
 <!ENTITY enigmail.valid.label "Gültig">

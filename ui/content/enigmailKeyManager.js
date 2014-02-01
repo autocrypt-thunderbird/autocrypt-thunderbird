@@ -1069,25 +1069,33 @@ function enigmailDowloadContactKeysEngine() {
     let addressBook = allAddressBooks.getNext().QueryInterface(Ci.nsIAbDirectory);
 
     if (addressBook instanceof Ci.nsIAbDirectory) { // or nsIAbItem or nsIAbCollection
+      // ask for confirmation for each address book:
+      var doIt = EnigmailCommon.confirmDlg(window,
+                   EnigGetString("downloadContactsKeys.importFrom", " '" + addressBook.dirName + "'"),
+                   EnigGetString("dlgYes"),
+                   EnigGetString("dlg.button.skip"));
+      if (!doIt) {
+        continue;  // SKIP this address book
+      }
 
       let allChildCards = addressBook.childCards;
 
       while (allChildCards.hasMoreElements()) {
 
-	      let card = allChildCards.getNext().QueryInterface(Ci.nsIAbCard);
+        let card = allChildCards.getNext().QueryInterface(Ci.nsIAbCard);
 
         try {
-	        let email = card.getPropertyAsAString("PrimaryEmail");
-	        if (email && email.indexOf("@")>=0) {
-	          emails.push(email);
+          let email = card.getPropertyAsAString("PrimaryEmail");
+          if (email && email.indexOf("@")>=0) {
+            emails.push(email);
           }
         }
         catch (e) {}
 
         try {
-	        let email = card.getPropertyAsAString("SecondEmail");
-	        if (email && email.indexOf("@")>=0) {
-	          emails.push(email);
+          let email = card.getPropertyAsAString("SecondEmail");
+          if (email && email.indexOf("@")>=0) {
+            emails.push(email);
           }
         }
         catch (e) {}
@@ -1354,27 +1362,27 @@ function getSortDirection() {
 
 function sortTree(column) {
 
-	var columnName;
-	var order = getSortDirection();
+  var columnName;
+  var order = getSortDirection();
 
-	//if the column is passed and it's already sorted by that column, reverse sort
-	if (column) {
-		columnName = column.id;
-		if (gUserList.getAttribute("sortResource") == columnName) {
-			order *= -1;
-		}
-		else {
-  		document.getElementById(gUserList.getAttribute("sortResource")).removeAttribute("sortDirection");
-  		order = 1;
-		}
-	} else {
-		columnName = gUserList.getAttribute("sortResource");
-	}
-	gUserList.setAttribute("sortDirection", order == 1 ? "ascending" : "descending");
-	gUserList.setAttribute("sortResource", columnName);
-	document.getElementById(columnName).setAttribute("sortDirection", order == 1 ? "ascending" : "descending");
+  //if the column is passed and it's already sorted by that column, reverse sort
+  if (column) {
+    columnName = column.id;
+    if (gUserList.getAttribute("sortResource") == columnName) {
+      order *= -1;
+    }
+    else {
+      document.getElementById(gUserList.getAttribute("sortResource")).removeAttribute("sortDirection");
+      order = 1;
+    }
+  } else {
+    columnName = gUserList.getAttribute("sortResource");
+  }
+  gUserList.setAttribute("sortDirection", order == 1 ? "ascending" : "descending");
+  gUserList.setAttribute("sortResource", columnName);
+  document.getElementById(columnName).setAttribute("sortDirection", order == 1 ? "ascending" : "descending");
   enigmailClearTree();
-	enigmailBuildList(false);
+  enigmailBuildList(false);
   enigApplyFilter();
 }
 
