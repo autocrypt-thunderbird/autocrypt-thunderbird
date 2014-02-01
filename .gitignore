@@ -1,0 +1,15 @@
+# generated files:
+*.pyc
+*.dtd.gen
+*.properties.gen
+
+# vi tmp files:
+*.swp
+*.swo
+
+# emacs tmp files:
+\#*\#
+
+# backup files:
+*~
+
