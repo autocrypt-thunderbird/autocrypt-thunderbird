@@ -616,7 +616,7 @@ function enigNewGpgKeysRequest(requestType, callbackFunction) {
 
 
 function enigmailGpgkeysTerminate(exitCode) {
-  Ec.DEBUG_LOG("enigmailSearchkey.js: Terminate: exitCode="+exitCode+"\n");
+  Ec.DEBUG_LOG("enigmailSearchkey.js: enigmailGpgkeysTerminate: exitCode="+exitCode+"\n");
 
   gEnigRequest.gpgkeysRequest = null;
 
@@ -643,6 +643,23 @@ function enigPopulateList(keyList) {
   var sortUsers = function (a,b) {
      if (a.uid[0]<b.uid[0]) { return -1; } else {return 1; }
   };
+
+  var sortKeyIds = function (c,d) {
+       if (c.keyId<d.keyId) { return -1; } else {return 1; }
+  };
+
+  keyList.sort(sortKeyIds);
+
+  // remove duplicates
+  var z = 0;
+  while (z<keyList.length-1) {
+    if (keyList[z].keyId == keyList[z+1].keyId) {
+      keyList.splice(z,1);
+    }
+    else {
+      z = z + 1;
+    }
+  }
 
   keyList.sort(sortUsers);
 
@@ -671,6 +688,7 @@ function enigPopulateList(keyList) {
 }
 
 function enigUserSelCreateRow (keyId, subKey, userId, dateField, trustStatus) {
+    Ec.DEBUG_LOG("enigmailSearchKey.js: enigUserSelCreateRow\n");
     var selectCol=document.createElement("treecell");
     selectCol.setAttribute("id", "indicator");
     var expCol=document.createElement("treecell");

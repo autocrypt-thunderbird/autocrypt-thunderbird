@@ -1078,7 +1078,7 @@ function enigmailDowloadContactKeysEngine() {
 
         try {
 	        let email = card.getPropertyAsAString("PrimaryEmail");
-	        if (email) {
+	        if (email && email.indexOf("@")>=0) {
 	          emails.push(email);
           }
         }
@@ -1086,13 +1086,27 @@ function enigmailDowloadContactKeysEngine() {
 
         try {
 	        let email = card.getPropertyAsAString("SecondEmail");
-	        if (email) {
+	        if (email && email.indexOf("@")>=0) {
 	          emails.push(email);
           }
         }
         catch (e) {}
 
       }
+    }
+  }
+
+  // sort the e-mail array
+  emails.sort();
+
+  //remove duplicates
+  var i = 0;
+  while (i<emails.length-1) {
+    if (emails[i] == emails[i+1]) {
+      emails.splice(i,1);
+    }
+    else {
+      i = i + 1;
     }
   }
 
