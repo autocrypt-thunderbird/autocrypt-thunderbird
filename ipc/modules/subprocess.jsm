@@ -951,7 +951,7 @@ function subprocess_win32(options) {
                 break;
             case "error":
                 exitCode = -2;
-				LogError("Got msg from "+name+": "+event.data.data+"\n");
+                LogError("Got msg from "+name+": "+event.data.data+"\n");
                 break;
             default:
                 debugLog("Got msg from "+name+": "+event.data.data+"\n");

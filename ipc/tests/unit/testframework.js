@@ -6,9 +6,9 @@ var gTestPending=0;
 
 function dumperr(str) {
   gTestError = 1;
-	var consoleSvc = Components.classes["@mozilla.org/consoleservice;1"].
-			getService(Components.interfaces.nsIConsoleService);
-	consoleSvc.logStringMessage("IPC-Pipe Test: "+str);
+  var consoleSvc = Components.classes["@mozilla.org/consoleservice;1"].
+      getService(Components.interfaces.nsIConsoleService);
+  consoleSvc.logStringMessage("IPC-Pipe Test: "+str);
 }
 
 function do_check_true(boolValue)

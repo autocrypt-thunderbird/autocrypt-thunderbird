@@ -73,7 +73,7 @@
                 oncommand="listSig()"/>
       <menuitem id="ctxDetails" observes="bcViewDetails"
                 label="&enigmail.keyMan.keyProps.label;"
-								oncommand="viewKeyDetails()"/>
+                oncommand="viewKeyDetails()"/>
       <menuitem id="ctxImportKey"
                 label="&enigmail.importpublickey.label;"
                 oncommand="importKey()"/>

@@ -71,7 +71,7 @@
       </menupopup>
     </menu>
 
-		<menu id="cardMenu"
+    <menu id="cardMenu"
           label="&enigmail.cardDetails.cardMenu.label;"
           accesskey="&enigmail.cardDetails.cardMenu.accesskey;">
       <menupopup>
@@ -88,7 +88,7 @@
                   accesskey="&enigmail.cardDetails.adminPin.accesskey;"
                   oncommand="enigmailAdminPin()"/>
       </menupopup>
-		</menu>
+    </menu>
   </menubar>
 
   <vbox orient="vertical">
@@ -200,9 +200,9 @@
       </rows>
     </grid>
 
-	</vbox>
+  </vbox>
 
-	<vbox align="end">
+  <vbox align="end">
     <hbox>
       <button id="saveChanges"
               label="&enigmail.cardDetails.save.label;"
@@ -213,7 +213,7 @@
               oncommand="doReset()"
               observes="bcEnableMode"/>
     </hbox>
-	</vbox>
+  </vbox>
 
 </window>
 

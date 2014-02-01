@@ -229,7 +229,7 @@
 
       </vbox>
 
-			<!-- "Sending" Tab -->
+      <!-- "Sending" Tab -->
       <vbox id="sending" flex="1"
             advanced="true">
           <description class="enigmailPrefsTitle">&enigmail.whenSending.label; ...</description>
@@ -242,7 +242,7 @@
                     label="&enigmail.alwaysTrustSend.label;"
                     tooltip="alwaysTrustSend.tooltip"/>
 
-				  <checkbox id="enigmail_allowEmptySubject"
+          <checkbox id="enigmail_allowEmptySubject"
                     hidden="true"/>
 
           <checkbox id="enigmail_confirmBeforeSend"
@@ -250,7 +250,7 @@
                     tooltip="confirmBeforeSend.tooltip"/>
       </vbox>
 
-			<!-- "Key Selection" Tab -->
+      <!-- "Key Selection" Tab -->
       <vbox id="keySel" flex="1"
             advanced="true">
           <groupbox>
