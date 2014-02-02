@@ -1071,7 +1071,7 @@ function enigmailDowloadContactKeysEngine() {
     if (addressBook instanceof Ci.nsIAbDirectory) { // or nsIAbItem or nsIAbCollection
       // ask for confirmation for each address book:
       var doIt = EnigmailCommon.confirmDlg(window,
-                   EnigGetString("downloadContactsKeys.importFrom", " '" + addressBook.dirName + "'"),
+                   EnigGetString("downloadContactsKeys.importFrom", addressBook.dirName),
                    EnigGetString("dlgYes"),
                    EnigGetString("dlg.button.skip"));
       if (!doIt) {
@@ -1102,6 +1102,11 @@ function enigmailDowloadContactKeysEngine() {
 
       }
     }
+  }
+
+  // list of emails might be emoty here, in which case we do nothing
+  if (emails.length <= 0) {
+    return;
   }
 
   // sort the e-mail array

@@ -135,6 +135,7 @@
 <!ENTITY enigmail.sendOptionsMenu.label "Senden…">
 <!ENTITY enigmail.defaultKeySelOpts.label "Schlüsselauswahl…">
 <!ENTITY enigmail.sendPGPMime.label "PGP/MIME verwenden">
+<!ENTITY enigmail.tempTrustAllKeys.label "Temporär den Schlüsseln aller Empfänger vertrauen">
 <!ENTITY enigmail.undoencryption.label "Verschlüsselung rückgängig machen">
 <!ENTITY enigmail.insertkey.label "Öffentlichen Schlüssel einfügen">
 <!ENTITY enigmail.attachkey.label "Öffentlichen Schlüssel anhängen…">
@@ -174,6 +175,7 @@
 <!ENTITY enigmail.defineRules.label "Empfängerregeln bearbeiten…">
 <!ENTITY enigmail.defineRules.tooltip "Regeln zur Schlüsselauswahl anzeigen, bearbeiten oder entfernen.">
 <!ENTITY enigmail.usePGPMimeAlways.label "PGP/MIME standardmäßig verwenden">
+<!ENTITY enigmail.autoEncryptDrafts.label "Nachrichten-Entwürfe verschlüsselt speichern">
 <!ENTITY enigmail.keepCryptoSettingsForReply.label "Verschlüsseln/Unterschreiben beim Antworten auf verschlüsselte/unterschriebene Nachrichten">
 <!ENTITY enigmail.confirmBeforeSend.label "Senden immer bestätigen">
 <!ENTITY enigmail.confirmBeforeSend.tooltip "Zeigt vor jedem Senden eine Information über die Verschlüsselung und/oder Signatur.">
@@ -238,7 +240,7 @@
 <!ENTITY enigmail.amPrefUseFromAddr.label "E-Mail-Adresse dieses Kontos verwenden, um OpenPGP-Schlüssel zu identifizieren">
 <!ENTITY enigmail.amPrefUseKeyId.label "Spezielle OpenPGP-Schlüsselkennung verwenden (0x1234ABCD):">
 <!ENTITY enigmail.amPrefSelectKey.label "Schlüssel auswählen…">
-<!ENTITY enigmail.amPrefDefaultEncrypt.label "Nachrichten Verfassen Standard-Einstellungen">
+<!ENTITY enigmail.amPrefDefaultEncrypt.label "Standard-Einstellungen für das Verfassen von Nachrichten">
 <!ENTITY enigmail.encryptionDlg.label "OpenPGP-Sendeoptionen">
 <!ENTITY enigmail.encDlgEncrypt.label "Nachricht verschlüsseln">
 <!ENTITY enigmail.encDlgEncrypt.accesskey "V">
