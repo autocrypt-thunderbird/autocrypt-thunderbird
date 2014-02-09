@@ -110,8 +110,10 @@ function onLoad() {
           break;
 
         case "fpr":
-          Ec.DEBUG_LOG("enigmailSignKeyDlg.js: fpr:"+currKey+" -> "+aLine[9]+"\n");
-          fingerprint = aLine[9];
+          if (fingerprint=="") {
+            Ec.DEBUG_LOG("enigmailSignKeyDlg.js: fpr:"+currKey+" -> "+aLine[9]+"\n");
+            fingerprint = aLine[9];
+          }
           break;
         default:
         }
@@ -122,7 +124,7 @@ function onLoad() {
 
   var keyDesc = window.arguments[0].userId+" - 0x"+ window.arguments[0].keyId.substr(-8,8);
   document.getElementById("keyId").value=keyDesc;
-  if (fingerprint) {
+  if (fingerprint && fingerprint.length > 0) {
     var fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
     if (fpr && fpr.length > 2) {
       fpr.shift();

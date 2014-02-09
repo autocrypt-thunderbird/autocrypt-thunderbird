@@ -654,7 +654,10 @@ var EnigmailFuncs = {
           keyListObj.keyList[listRow[KEY_ID]] = keyObj;
           break;
         case "fpr":
-          keyObj.fpr=listRow[USERID_ID];
+          // only take first fpr line, this is the fingerprint of the primary key and what we want
+          if (keyObj.fpr=="") {
+            keyObj.fpr=listRow[USERID_ID];
+          }
           break;
         case "uid":
           if (listRow[USERID_ID].length == 0) {
