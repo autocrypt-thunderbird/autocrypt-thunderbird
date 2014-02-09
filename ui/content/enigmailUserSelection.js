@@ -678,6 +678,11 @@ function enigmailUserSelCallback(event) {
     Tree = document.getElementById("enigmailUserIdSelection");
     Tree.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, elt);
 
+    if (!col.value) // not clicked on a valid column (e.g. scrollbar)
+      return;
+
+    if (event.detail > 2) return;
+
     if ((event.detail == 1) && (col.value.id != "selectionCol"))
       return; // single clicks are only relvant for the selection column
 
