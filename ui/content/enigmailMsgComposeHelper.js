@@ -44,55 +44,94 @@ if (! Enigmail) var Enigmail = {};
 
 Enigmail.hlp = {
 
+  /**
+    *  check for the attribute of type "sign"/"encrypt"/"pgpMime" of the passed node
+    *  and combine its value with oldVal and check for conflicts
+    *    values might be: 0='never', 1='maybe', 2='always'
+    *  @oldVal:      original input value
+    *  @node:        node of the rule in the DOM tree
+    *  @type:        rule type name
+    *  @conflictObj: if a conflict is found, returns 1 for the corresponding type.
+    *
+    *  @return: result value after applying the rule (0/1/2)
+    */
   getFlagVal: function (oldVal, node, type, conflictObj)
   {
-
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValFlag\n");
     var newVal = Number(node.getAttribute(type));
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js:   getFlagVal(): oldVal="+oldVal+" newVal="+newVal+" type=\""+type+"\"\n");
 
+    // 'never' and 'always' triggers conflict:
+    // - NOTE: we return 'never' on conflicts
     if ((oldVal==2 && newVal==0) || (oldVal==0 && newVal==2)) {
       conflictObj[type] = 1;
+      return 0;
     }
 
+    // if there is any 'never' return 'never'
+    // - thus: 'never' and 'maybe' => 'never'
     if (oldVal==0 || newVal==0) {
       return 0;
     }
-    else {
-      return (oldVal < newVal ? newVal: oldVal);
+
+    // if there is any 'always' return 'always'
+    // - thus: 'always' and 'maybe' => 'always'
+    if (oldVal==2 || newVal==2) {
+      return 2;
     }
+
+    // here, both values are 'maybe', which we return then
+    return 1;
   },
 
-  getRecipientsKeys: function (emailAddrs, forceSelection, interactive, matchedKeysObj, flagsObj)
+
+  /**
+    * get keys and resulting sign/encryp/pgpMime mode for passed emailAddrs
+    * Input parameters:
+    *  @interactive:            false: skip all interaction
+    *  @forceRecipientSettings: force recipients settings for each missing key (if interactive==true)
+    *
+    * output parameters:
+    *   @matchedKeysObj: return value for matched keys
+    *   @flagsObj:       return value for combined sign/encrype/pgpMime mode
+    *
+    * @return:  true, if keys found without error;  false if error occurred or processing was canceled
+    */
+
+  getRecipientsKeys: function (emailAddrs, interactive, forceRecipientSettings, matchedKeysObj, flagsObj)
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys: emailAddrs="+emailAddrs+"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys(): emailAddrs=\""+emailAddrs+"\" interactive="+interactive+" forceRecipientSettings="+forceRecipientSettings+"\n");
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
     var enigmailSvc = EnigmailCommon.getService();
-    if (!enigmailSvc)
+    if (!enigmailSvc) {
       return false;
+    }
 
-    flagsObj.value = 0;
+    // initialize return value and the helper variables for them:
     matchedKeysObj.value = "";
-    var encrypt=1;
-    var sign   =1;
-    var pgpMime=1;
-    var conflicts = { sign: 0, encrypt: 0, pgpMime: 0};
+    flagsObj.value = 0;
+    var sign   =1;  // default sign flag is: maybe
+    var encrypt=1;  // default encrypt flag is: maybe
+    var pgpMime=1;  // default pgpMime flag is: maybe
+    var conflicts = { sign: 0, encrypt: 0, pgpMime: 0};  // no conflicts yet
+
     var addresses="{"+EnigmailFuncs.stripEmail(emailAddrs.toLowerCase()).replace(/[, ]+/g, "}{")+"}";
     var keyList=new Array;
 
     var rulesListObj= new Object;
     var foundAddresses="";
 
+    // process recipient rules
     if (enigmailSvc.getRulesData(rulesListObj)) {
 
       var rulesList=rulesListObj.value;
 
       if (rulesList.firstChild.nodeName=="parsererror") {
         EnigmailCommon.alert(window, "Invalid pgprules.xml file:\n"+ rulesList.firstChild.textContent);
-        return true;
+        return false;
       }
-      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys: keys loaded\n");
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys(): rules successfully loaded; now process them\n");
 
       // go through all rules to find match with email addresses
       var node=rulesList.firstChild.firstChild;
@@ -112,7 +151,7 @@ Enigmail.hlp = {
                   var email=addrList[addrIndex];
                   var i=addresses.indexOf(email);
                   while (i>=0) {
-                    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys: got matching rule for "+email+"\n");
+                    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys(): got matching rule for \""+email+"\"\n");
 
                     sign    = this.getFlagVal(sign,    node, "sign", conflicts);
                     encrypt = this.getFlagVal(encrypt, node, "encrypt", conflicts);
@@ -169,7 +208,8 @@ Enigmail.hlp = {
       }
     }
 
-    if (interactive && (EnigmailCommon.getPref("recipientsSelection")==1 || forceSelection)) {
+    // if interactive and requested: start individual recipient settings dialog for each missing key
+    if (interactive && forceRecipientSettings) {
       var addrList=emailAddrs.split(/,/);
       var inputObj=new Object;
       var resultObj=new Object;
@@ -182,7 +222,9 @@ Enigmail.hlp = {
             inputObj.options="";
             inputObj.command = "add";
             window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
-            if (resultObj.cancelled==true) return false;
+            if (resultObj.cancelled==true) {
+              return false;
+            }
 
             // create a getAttribute() function for getFlagVal to work normally
             resultObj.getAttribute = function(attrName) {
@@ -212,12 +254,16 @@ Enigmail.hlp = {
       matchedKeysObj.value = keyList.join(", ");
       matchedKeysObj.value += addresses.replace(/\{/g, ", ").replace(/\}/g, "");
     }
+
+    // return result from combining flags
     flagsObj.sign = sign;
     flagsObj.encrypt = encrypt;
     flagsObj.pgpMime = pgpMime;
     flagsObj.value = 1;
 
-    if (interactive && (!EnigmailCommon.getPref("confirmBeforeSend")) && (conflicts.encrypt ||conflicts.sign)) {
+    // handle encrypt and sign conflicts
+    // - NOTE: pgpMime conflicts silently return into pgpMime = 'never' (see getFlagVal())
+    if (interactive && (!EnigmailCommon.getPref("confirmBeforeSend")) && (conflicts.encrypt || conflicts.sign)) {
       if (sign<2) sign = (sign & (Enigmail.msg.sendMode & nsIEnigmail.SEND_SIGNED));
       if (encrypt<2) encrypt = (encrypt & (Enigmail.msg.sendMode & nsIEnigmail.SEND_ENCRYPTED ? 1 : 0));
       var msg = "\n"+"- " + EnigmailCommon.getString(sign>0 ? "signYes" : "signNo");
@@ -225,13 +271,21 @@ Enigmail.hlp = {
       if (EnigmailCommon.getPref("warnOnRulesConflict")==2) {
         EnigmailCommon.setPref("warnOnRulesConflict", 0);
       }
-      if (!EnigmailCommon.confirmPref(window, EnigmailCommon.getString("rulesConflict", [ msg ]), "warnOnRulesConflict"))
+      if (!EnigmailCommon.confirmPref(window, EnigmailCommon.getString("rulesConflict", [ msg ]), "warnOnRulesConflict")) {
         return false;
+      }
     }
     return true;
   },
 
-  // determine invalid recipients returned from GnuPG
+
+  /**
+   * determine invalid recipients as returned from GnuPG
+   *
+   * @gpgMsg: output from GnuPG
+   *
+   * @return: space separated list of invalid addresses
+   */
   getInvalidAddress: function (gpgMsg)
   {
     var invalidAddr = [];
@@ -244,4 +298,5 @@ Enigmail.hlp = {
     }
     return invalidAddr.join(" ");
   }
+
 };
