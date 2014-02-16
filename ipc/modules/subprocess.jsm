@@ -733,7 +733,7 @@ function subprocess_win32(options) {
         // Create output pipe.
 
         if(!CreatePipe(hOutputReadTmp.address(), hOutputWrite.address(), sa.address(), 0))
-            LogError('CreatePipe hOutputReadTmp failed');
+            LogError("CreatePipe hOutputReadTmp failed");
 
         if(options.mergeStderr) {
           // Create a duplicate of the output write handle for the std error
@@ -746,7 +746,7 @@ function subprocess_win32(options) {
         } else {
             // Create error pipe.
             if(!CreatePipe(hErrorReadTmp.address(), hErrorWrite.address(), sa.address(), 0))
-                LogError('CreatePipe hErrorReadTmp failed');
+                LogError("CreatePipe hErrorReadTmp failed");
         }
 
         // Create input pipe.
