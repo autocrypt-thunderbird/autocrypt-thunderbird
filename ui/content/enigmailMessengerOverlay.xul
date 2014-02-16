@@ -178,8 +178,6 @@
       <menuitem id="enigmail_RulesEditor"
           label="&enigmail.editRules.label;"
           accesskey="&enigmail.editRules.accesskey;"
-          advanced="true"
-          hidden="false"
           oncommand="EnigmailFuncs.openRulesEditor();"/>
 
 

@@ -151,7 +151,6 @@
           <menuitem id="enigmail_RulesEditor"
               label="&enigmail.editRules.label;"
               accesskey="&enigmail.editRules.accesskey;"
-              advanced="true"
               oncommand="EnigmailFuncs.openRulesEditor();"/>
 
           <menuseparator

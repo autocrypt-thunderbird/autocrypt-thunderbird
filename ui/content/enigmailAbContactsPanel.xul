@@ -45,11 +45,9 @@
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailAbOverlay.js"/>
 
-  <popup id="cardProperties"
-         onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden')">
+  <popup id="cardProperties">
     <menuseparator/>
     <menuitem id="enigmail_createContactsRule"
-              advanced="true"
               label="&enigmail.createRuleFromAddr.label;"
               oncommand="Enigmail.createRuleFromCard();"/>
   </popup>
