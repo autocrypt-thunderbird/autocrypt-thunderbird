@@ -4,10 +4,12 @@
 # based on input from autoconf / configure
 
 # usage:
-# -c|-o  target_os target_cpu compiler
+# -c|-o|-dp|-ds  target_os target_cpu compiler
 #
-# -c : CPU and compiler type
-# -o : OS type
+# -c  : CPU and compiler type
+# -o  : OS type
+# -dp : DLL prefix (e.g. "lib" on many Unix systems)
+# -ds : DLL suffix (e.g. ".so" on many Unix systems)
 
 use File::Basename;
 
@@ -97,7 +99,7 @@ else {
 if ($targetOs eq "WINNT") {
   $targetComp = "msvc";
 }
-elsif ($srcComp =~ /gcc/) {
+elsif ($srcComp =~ /gcc/ || $srcComp =~ /clang/) {
   $targetComp = "gcc3";
 }
 elsif ($srcComp =~ /cc/) {
@@ -106,6 +108,9 @@ elsif ($srcComp =~ /cc/) {
   }
   elsif ($targetOs eq "AIX") {
     $targetComp = "ibmc";
+  }
+  else {
+    $targetComp = "gcc3";
   }
 }
 else {
