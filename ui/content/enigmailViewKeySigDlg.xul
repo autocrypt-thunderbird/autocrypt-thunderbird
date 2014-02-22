@@ -170,14 +170,100 @@
 
       var keySigList=document.getElementById("keySigList");
       var treeChildren=keySigList.getElementsByAttribute("id", "keySigListChildren")[0];
+      
+      // aSigList holds all signature packets, each line per element
       var aSigList = sigList.split(/\n/);
-      var aRevSig = [];
+
+      // aSigSort holds an index (for use within aSigList) and the creation time of the picked signature lines for one uid, separated by a comma
+      var aSigSort = [];
+
+      // Indices for aSigSort elements when splitted at the comma
+      const aSigSort_index=0;
+      const aSigSort_creation_time=1;
+
+      // store the last encountered Uid record
       var currUid="";
+      
+      // This function sorts by date (second part of a aSigSort element)
+      var sortSigbyDate = function (a,b) {
+        var a_sortlistRow=a.split(/,/);
+        var b_sortlistRow=b.split(/,/);
+        if (a_sortlistRow[aSigSort_creation_time]<b_sortlistRow[aSigSort_creation_time]) { return -1; } else {return 1; }
+      };
+
+
+      /**
+        * converts all collected signatures (by their indices in aSigSort) to dialog cells
+        *
+        * input parameters: none (expects aSigSort filled or empty)
+        * output parameters: signatures displayed in window
+        *
+        * @return:  nothing
+       **/
+
+      function put_all_signatures() {
+        // First sort the signature packets by date
+        aSigSort.sort(sortSigbyDate);
+        
+        // now process all sig/rev lines
+        for (var i=0; i<aSigSort.length; i++) {
+          var SortRow=aSigSort[i].split(/,/);
+          var listRow=aSigList[SortRow[aSigSort_index]].split(/:/);
+          if (listRow[0] == "rev") {
+            var nodes = document.getElementsByAttribute("sigID", currUid+"-"+listRow[ENIG_KEY_ID]);
+            for (var node=0; node < nodes.length; node++) {
+              try {
+                nodes[node].childNodes[3].setAttribute("label", EnigGetString("keyValid.revoked"));
+                var cNode=nodes[node].firstChild;
+                while (cNode) {
+                  cNode.setAttribute("properties", "enigKeyInactive");
+                  cNode=cNode.nextSibling;
+                }
+              }
+              catch (ex){}
+            }
+          }
+          else {
+            userRow=document.createElement("treerow");
+            if (typeof(gKeyListArr[listRow[ENIG_KEY_ID]]) == "object") {
+              addCell(userRow, "   "+EnigConvertGpgToUnicode(listRow[ENIG_USER_ID]));
+            }
+            else {
+              addCell(userRow, "   "+EnigGetString("userIdNotFound"));
+            }
+            addCell(userRow, listRow[ENIG_KEY_ID].substr(-8,8));
+            if (listRow[ENIG_SIG_TYPE].substr(2,1) == "x") {
+              addCell(userRow, EnigGetString("keySignatureExportable"));
+            }
+            else {
+              addCell(userRow, EnigGetString("keySignatureLocal"));
+            }
+            if (typeof(gKeyListArr[listRow[ENIG_KEY_ID]]) == "object") {
+              addCell(userRow, EnigGetString("signatureValid"));
+            }
+            else {
+              addCell(userRow, EnigGetString("keySignatureNoKey"));
+              userRow.setAttribute("noKey", "true");
+            }
+
+            userRow.setAttribute("keyID", listRow[ENIG_KEY_ID]);
+            userRow.setAttribute("sigID", currUid+"-"+listRow[ENIG_KEY_ID]);
+            addCell(userRow, EnigGetDateTime(listRow[ENIG_CREATED], true, false));
+            treeItem=document.createElement("treeitem");
+            treeItem.appendChild(userRow);
+            treeChildren.appendChild(treeItem);
+          }
+        }
+        aSigSort=[];
+      }
 
       for (var i=0; i<aSigList.length; i++) {
         var listRow=aSigList[i].split(/:/);
         if (listRow.length>=0) {
           if ((listRow[0] == "uid" || listRow[0] == "pub" || listRow[0] == "uat") && (listRow[ENIG_USER_ID].length>0)) {
+            // First put all collected signatures in the dialog
+            put_all_signatures();
+            
             var userRow=document.createElement("treerow");
             if (typeof(listRow[ENIG_KEY_USE_FOR])!="string") {
               listRow[ENIG_KEY_USE_FOR]="";
@@ -202,62 +288,22 @@
             }
             if (listRow[ENIG_SIG_TYPE].substr(0,2).toLowerCase()!="1f") {
               // ignore "revoker" signatures
-              userRow=document.createElement("treerow");
-              if (typeof(gKeyListArr[listRow[ENIG_KEY_ID]]) == "object") {
-                addCell(userRow, "   "+EnigConvertGpgToUnicode(listRow[ENIG_USER_ID]));
-              }
-              else {
-                addCell(userRow, "   "+EnigGetString("userIdNotFound"));
-              }
-              addCell(userRow, listRow[ENIG_KEY_ID].substr(-8,8));
-              if (listRow[ENIG_SIG_TYPE].substr(2,1) == "x") {
-                addCell(userRow, EnigGetString("keySignatureExportable"));
-              }
-              else {
-                addCell(userRow, EnigGetString("keySignatureLocal"));
-              }
-              if (typeof(gKeyListArr[listRow[ENIG_KEY_ID]]) == "object") {
-                addCell(userRow, EnigGetString("signatureValid"));
-              }
-              else {
-                addCell(userRow, EnigGetString("keySignatureNoKey"));
-                userRow.setAttribute("noKey", "true");
-              }
-
-              userRow.setAttribute("keyID", listRow[ENIG_KEY_ID]);
-              userRow.setAttribute("sigID", currUid+"-"+listRow[ENIG_KEY_ID]);
-              addCell(userRow, EnigGetDateTime(listRow[ENIG_CREATED], true, false));
-              treeItem=document.createElement("treeitem");
-              treeItem.appendChild(userRow);
-              treeChildren.appendChild(treeItem);
+              aSigSort.push(i+","+listRow[ENIG_CREATED]);
             }
           }
           else if (listRow[0] == "sub") {
+            // subkeys do not carry signature packets -> discard
             break;
           }
           else if (listRow[0] == "rev") {
-            aRevSig.push(currUid+"-"+listRow[ENIG_KEY_ID]);
+            aSigSort.push(i+","+listRow[ENIG_CREATED]);
           }
         }
       }
 
-      // mark revoked signatures
-      for (i=0; i<aRevSig.length; i++) {
-        var nodes = document.getElementsByAttribute("sigID", aRevSig[i]);
-        for (var node=0; node < nodes.length; node++) {
-          try {
-            nodes[node].childNodes[3].setAttribute("label", EnigGetString("keyValid.revoked"));
-
-            var cNode=nodes[node].firstChild;
-            while (cNode) {
-              cNode.setAttribute("properties", "enigKeyInactive");
-              cNode=cNode.nextSibling;
-            }
-          }
-          catch (ex){}
-        }
-      }
-
+      // put all collected signatures in the dialog
+      put_all_signatures();
+      // append created window structure
       keySigList.appendChild(treeChildren);
       return;
     }
