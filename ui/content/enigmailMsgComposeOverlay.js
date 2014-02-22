@@ -1142,6 +1142,7 @@ Enigmail.msg = {
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
 
     var recipientsSelection = EnigmailCommon.getPref("recipientsSelection");
+    if (sendFlags & nsIEnigmail.SAVE_MESSAGE) recipientsSelection = false;
 
     var toAddr = toAddrList.join(", ");
     var bccAddr = bccAddrList.join(", ");
