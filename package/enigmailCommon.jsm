@@ -2136,6 +2136,7 @@ var EnigmailCommon = {
     statusFlagsObj.value = 0;
 
     var passphrase = null;
+    var proc = null;
     var useAgentObj = {value: false};
 
     if (needPassphrase) {
@@ -2537,7 +2538,7 @@ var EnigmailCommon = {
         encryptArgs.push("--sign");
 
       if (sendFlags & nsIEnigmail.SEND_ALWAYS_TRUST) {
-        if (this.agentVersion >= "1.4") {
+        if (this.enigmailSvc.agentVersion >= "1.4") {
           encryptArgs.push("--trust-model");
           encryptArgs.push("always");
         }
