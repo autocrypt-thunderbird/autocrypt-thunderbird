@@ -604,12 +604,24 @@ Enigmail.msg = {
     }
   },
 
-  undoEncryption: function ()
+  /**
+   *  undo the encryption or signing; get back the original (unsigned/unencrypted) text
+   *
+   * useEditorUndo |Number|:   > 0  use undo function of editor |n| times
+   *                           0: replace text with original text
+   */
+  undoEncryption: function (useEditorUndo)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.undoEncryption:\n");
     if (this.processed) {
-      this.replaceEditorText(this.processed.origText);
-
+      if (useEditorUndo) {
+        EnigmailCommon.setTimeout(function _f() {
+            Enigmail.msg.editor.undo(useEditorUndo);
+          }, 10);
+      }
+      else {
+        this.replaceEditorText(this.processed.origText);
+      }
       this.processed = null;
 
     } else {
@@ -1816,7 +1828,7 @@ Enigmail.msg = {
        if ((!(sendFlags & nsIEnigmail.SAVE_MESSAGE)) && EnigmailCommon.getPref("confirmBeforeSend")) {
          if (!this.confirmBeforeSend(toAddrList.join(", "), toAddr+", "+bccAddr, sendFlags, isOffline)) {
            if (this.processed) {
-             this.undoEncryption();
+             this.undoEncryption(0);
            }
            else {
              this.removeAttachedKey();
@@ -1828,7 +1840,7 @@ Enigmail.msg = {
                    !this.messageSendCheck() ) {
          // Abort send
          if (this.processed) {
-            this.undoEncryption();
+            this.undoEncryption(0);
          }
          else {
             this.removeAttachedKey();
@@ -2078,7 +2090,7 @@ Enigmail.msg = {
           EnigmailCommon.alert(window, EnigmailCommon.getString("sendAborted")+"an internal error has occurred");
         }
         if (this.processed) {
-          this.undoEncryption();
+          this.undoEncryption(0);
         }
         else {
           this.removeAttachedKey();
@@ -2843,7 +2855,9 @@ Enigmail.composeStateListener = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: ECSL.ComposeProcessDone: "+aResult+"\n");
 
     if (aResult != Components.results.NS_OK) {
-      if (Enigmail.msg.processed) Enigmail.msg.undoEncryption();
+      if (Enigmail.msg.processed) {
+        Enigmail.msg.undoEncryption(4);
+      }
       Enigmail.msg.removeAttachedKey();
     }
 
