@@ -1108,6 +1108,7 @@ function subprocess_win32(options) {
 
     return {
         kill: function(hardKill) {
+            if (!active) return true;
             // hardKill is currently ignored on Windows
             var r = !!TerminateProcess(child.process, 255);
             cleanup(-1);
@@ -1857,6 +1858,7 @@ function subprocess_unix(options) {
             return exitCode;
         },
         kill: function(hardKill) {
+            if (!active) return true;
             var rv = kill(pid, (hardKill ? 9: 15));
             cleanup(-1);
             return rv;
