@@ -271,6 +271,7 @@ Enigmail.msg = {
 
     if (flags & nsIEnigmail.SEND_SIGNED) Enigmail.msg.setSendMode('sign');
     if (flags & nsIEnigmail.SEND_ENCRYPTED) Enigmail.msg.setSendMode('encrypt');
+    if (flags & nsIEnigmail.SEND_ATTACHMENT) Enigmail.msg.attachOwnKeyObj.appendAttachment = true;
 
   },
 
@@ -1105,6 +1106,9 @@ Enigmail.msg = {
   setDraftStatus: function (sendFlags)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.setDraftStatus - enabling draft mode\n");
+    if (this.attachOwnKeyObj.appendAttachment) {
+      sendFlags |= Components.interfaces.nsIEnigmail.SEND_ATTACHMENT;
+    }
     gMsgCompose.compFields.otherRandomHeaders += "X-Enigmail-Draft-Status: "+sendFlags+"\r\n";
   },
 
@@ -1433,7 +1437,6 @@ Enigmail.msg = {
           }
         }
         catch(ex) {}
-        if (this.attachOwnKeyObj.appendAttachment) this.attachOwnKey();
 
         return true;
       }
@@ -1645,8 +1648,9 @@ Enigmail.msg = {
          // always enable PGP/MIME if message is saved
          sendFlags |= nsIEnigmail.SEND_PGP_MIME;
        }
-
-       if (this.attachOwnKeyObj.appendAttachment) this.attachOwnKey();
+       else {
+         if (this.attachOwnKeyObj.appendAttachment) this.attachOwnKey();
+       }
 
        var bucketList = document.getElementById("attachmentBucket");
        var hasAttachments = ((bucketList && bucketList.hasChildNodes()) || gMsgCompose.compFields.attachVCard);
