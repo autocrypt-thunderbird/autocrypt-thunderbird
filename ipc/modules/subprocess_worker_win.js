@@ -71,7 +71,7 @@ typedef struct _OVERLAPPED {
 */
 const OVERLAPPED = new ctypes.StructType("OVERLAPPED");
 
-var ReadFileBuffer = ctypes.char.array(BufferSize);
+var ReadFileBuffer = ctypes.uint8_t.array(BufferSize);
 var WriteFileBuffer = ctypes.uint8_t.array(BufferSize);
 
 var kernel32dll = null;
@@ -170,17 +170,61 @@ function readString(data, length, charset) {
 
         r += String.fromCharCode(data[i]);
     }
+    // For non-UTF-8 strings, the next read always starts at the beginning.
+    data[0] = 0;
 
     return r;
 }
 
+function readUtf8(data, length) {
+    // This function provides better performance for UTF-8 strings by using
+    // the readStringReplaceMalformed() method available on CData string
+    // objects. Before we can call it, though, we have to check the end of
+    // the string to see if we only read part of a multi-byte character.
+    var endChar = [];
+    if (data[length - 1] >= 0x80) {
+        // Collect all bytes from the last character if it's a non-ASCII.
+        for (var i = length - 1; i >= 0; i--) {
+            endChar.unshift(data[i]);
+            if (data[i] >= 0xc0) break;
+        }
+        // Find out how long the character should be from the first byte.
+        var leadingOne = 0x20;
+        var numBytes = 2;
+        while (endChar[0] & leadingOne) {
+            numBytes++;
+            leadingOne >>= 1;
+        }
+        // If we read the full character, we don't need to do anything special.
+        if (endChar.length == numBytes) endChar = [];
+    }
+    // Mark the end of the string, excluding any trailing partial character.
+    data[length - endChar.length] = 0;
+    var r = data.readStringReplaceMalformed();
+    // Place the partial character at the beginning for the next read.
+    var i = 0;
+    endChar.forEach(function (v) {
+        data[i++] = v;
+    });
+    // Place a null character to mark where the next read should start.
+    data[i] = 0;
+    return r;
+}
 
 function readPipe(pipe, charset, bufferedOutput) {
     var dataStr = "";
+    var bytesRead = DWORD(0);
+    var line = new ReadFileBuffer();
+    var readStringFunc = charset == "UTF-8" ? readUtf8 : readString;
     while (true) {
-        var bytesRead = DWORD(0);
-        var line = new ReadFileBuffer();
-        var r = libFunc.ReadFile(pipe, line, BufferSize, bytesRead.address(), null);
+        // Start reading at first null byte (line might begin with an
+        // incomplete UTF-8 character from the previous read).
+        var offset = 0;
+        while (line[offset] != 0) offset++;
+        var r = libFunc.ReadFile(
+            pipe, line.addressOfElement(offset), BufferSize-offset-1,
+            bytesRead.address(), null
+        );
 
         if (!r) {
             // stop if we get an error (such as EOF reached)
@@ -197,7 +241,7 @@ function readPipe(pipe, charset, bufferedOutput) {
         }
 
         if (bytesRead.value > 0) {
-            var c = readString(line, bytesRead.value, charset);
+            var c = readStringFunc(line, bytesRead.value + offset, charset);
             if (!bufferedOutput)
               postMessage({msg: "data", data: c, count: c.length});
             else {

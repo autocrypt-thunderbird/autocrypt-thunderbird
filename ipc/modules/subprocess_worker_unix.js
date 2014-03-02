@@ -68,7 +68,7 @@ var pollfd = new ctypes.StructType("pollfd",
                         ]);
 
 var WriteBuffer = ctypes.uint8_t.array(BufferSize);
-var ReadBuffer = ctypes.char.array(BufferSize);
+var ReadBuffer = ctypes.uint8_t.array(BufferSize);
 
 
 const POLLIN     = 0x0001;
@@ -201,6 +201,43 @@ function readString(data, length, charset) {
         r += String.fromCharCode(data[i]);
     }
 
+    // For non-UTF-8 strings, the next read always starts at the beginning.
+    data[0] = 0;
+    return r;
+}
+
+function readUtf8(data, length) {
+    // This function provides better performance for UTF-8 strings by using
+    // the readStringReplaceMalformed() method available on CData string
+    // objects. Before we can call it, though, we have to check the end of
+    // the string to see if we only read part of a multi-byte character.
+    var endChar = [];
+    if (data[length - 1] >= 0x80) {
+        // Collect all bytes from the last character if it's a non-ASCII.
+        for (var i = length - 1; i >= 0; i--) {
+            endChar.unshift(data[i]);
+            if (data[i] >= 0xc0) break;
+        }
+        // Find out how long the character should be from the first byte.
+        var leadingOne = 0x20;
+        var numBytes = 2;
+        while (endChar[0] & leadingOne) {
+            numBytes++;
+            leadingOne >>= 1;
+        }
+        // If we read the full character, we don't need to do anything special.
+        if (endChar.length == numBytes) endChar = [];
+    }
+    // Mark the end of the string, excluding any trailing partial character.
+    data[length - endChar.length] = 0;
+    var r = data.readStringReplaceMalformed();
+    // Place the partial character at the beginning for the next read.
+    var i = 0;
+    endChar.forEach(function (v) {
+        data[i++] = v;
+    });
+    // Place a null character to mark where the next read should start.
+    data[i] = 0;
     return r;
 }
 
@@ -217,6 +254,7 @@ function readPipe(pipe, charset, pid, bufferedOutput) {
 
     var dataStr = "";
     var dataObj = {};
+    var line = new ReadBuffer();
 
     const i=0;
     while (true) {
@@ -243,7 +281,7 @@ function readPipe(pipe, charset, pid, bufferedOutput) {
             if (p[i].revents & POLLIN) {
                 // postMessage({msg: "debug", data: "reading next chunk"});
 
-                readCount = readPolledFd(p[i].fd, charset, dataObj);
+                readCount = readPolledFd(p[i].fd, line, charset, dataObj);
                 if (! bufferedOutput)
                   postMessage({msg: "data", data: dataObj.value, count: dataObj.value.length});
                 else {
@@ -275,7 +313,7 @@ function readPipe(pipe, charset, pid, bufferedOutput) {
 
     // continue reading until the buffer is empty
     while (readCount > 0) {
-      readCount = readPolledFd(pipe, charset, dataObj);
+      readCount = readPolledFd(pipe, line, charset, dataObj);
       if (! bufferedOutput)
         postMessage({msg: "data", data: dataObj.value, count: dataObj.value.length});
       else
@@ -293,12 +331,16 @@ function readPipe(pipe, charset, pid, bufferedOutput) {
     close();
 }
 
-function readPolledFd(pipe, charset, dataObj) {
-    var line = new ReadBuffer();
-    var r = libcFunc.read(pipe, line, BufferSize);
+function readPolledFd(pipe, line, charset, dataObj) {
+    // Start reading at first null byte (line might begin with an
+    // incomplete UTF-8 character from the previous read).
+    var offset = 0;
+    while (line[offset] != 0) offset++;
+    var r = libcFunc.read(pipe, line.addressOfElement(offset), BufferSize-offset-1);
 
     if (r > 0) {
-        var c = readString(line, r, charset);
+        var readStringFunc = charset == "UTF-8" ? readUtf8 : readString;
+        var c = readStringFunc(line, r + offset, charset);
         dataObj.value = c;
     }
     else

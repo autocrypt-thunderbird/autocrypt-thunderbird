@@ -371,18 +371,10 @@ function setTimeout(callback, timeout) {
 };
 
 function convertBytes(data, charset) {
-    var string = '';
-    charset = charset || 'UTF-8';
-    var unicodeConv = Cc["@mozilla.org/intl/scriptableunicodeconverter"]
-                        .getService(Ci.nsIScriptableUnicodeConverter);
-    try {
-        unicodeConv.charset = charset;
-        string = unicodeConv.ConvertToUnicode(data);
-    } catch (ex) {
-        LogError("String conversion failed: "+ex.toString()+"\n");
-        string = '';
-    }
-    string += unicodeConv.Finish();
+    var string = charset == "null" || charset == "UTF-8" ? data
+        : Cc["@mozilla.org/intl/utf8converterservice;1"]
+            .getService(Ci.nsIUTF8ConverterService)
+            .convertStringToUTF8(data, charset, false, true);
     return string;
 }
 
@@ -428,6 +420,7 @@ var subprocess = {
         options.bufferedOutput = options.bufferedOutput || false;
         options.workdir = options.workdir ||  null;
         options.environment = options.environment ||  [];
+        options.charset = options.charset === null ? "null" : options.charset || "UTF-8";
         if (options.arguments) {
             var args = options.arguments;
             options.arguments = [];
@@ -935,13 +928,7 @@ function subprocess_win32(options) {
             switch(event.data.msg) {
             case "data":
                 debugLog("got "+event.data.count+" bytes from "+name+"\n");
-                var data = '';
-                if (options.charset === null) {
-                    data = event.data.data;
-                }
-                else
-                    data = convertBytes(event.data.data, options.charset);
-
+                var data = convertBytes(event.data.data, options.charset);
                 callbackFunc(data);
                 break;
             case "done":
@@ -1634,13 +1621,7 @@ function subprocess_unix(options) {
             switch(event.data.msg) {
             case "data":
                 debugLog("got "+event.data.count+" bytes from "+name+"\n");
-                var data = '';
-                if (options.charset === null) {
-                    data = event.data.data;
-                }
-                else
-                    data = convertBytes(event.data.data, options.charset);
-
+                var data = convertBytes(event.data.data, options.charset);
                 callbackFunc(data);
                 break;
             case "done":
