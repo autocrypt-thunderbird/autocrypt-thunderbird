@@ -38,7 +38,7 @@ void closeOtherFds(int fdIn, int fdOut, int fdErr, const int dupFds[], int skipF
   *
   * @path: full path to the executable file
   * @argv: array of arguments as defined by execve
-  * @argv: array of environment variables as defined by execve
+  * @envp: array of environment variables as defined by execve
   * @fd_in: array of 2 integers containing the stdin file descriptors
   * @fd_out: array of 2 integers containing the stdout file descriptors
   * @fd_err: array of 2 integers containing the stderr file descriptors
