@@ -62,8 +62,8 @@ Enigmail.msg = {
   processed: null,
   timeoutId: null,
   sendPgpMime: false,
-  sendMode: null,
-  sendModeDirty: 0,
+  sendMode: null,    // the current default for sending a message (0, SIGN, ENCRYPT, or SIGN|ENCRYPT)
+  sendModeDirty: 0,  // 0: no change, 2: signing toggled (has/had corresponding warning), 1: other change
   sendProcess: false,
   nextCommandId: null,
   docaStateListener: null,
@@ -101,7 +101,6 @@ Enigmail.msg = {
       msgId.setAttribute("oncommand", "Enigmail.msg.setIdentityCallback();");
 
     var subj = document.getElementById("msgSubject");
-
     subj.setAttribute('onfocus', "Enigmail.msg.fireSendFlags()");
 
     this.setIdentityDefaults();
@@ -142,37 +141,39 @@ Enigmail.msg = {
     this.setIdentityDefaults();
   },
 
-  getAccDefault: function (value)
+  /* return whether the account specific setting key is enabled or disabled
+   */ 
+  getAccDefault: function (key)
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getAccDefault: identity="+this.identity.key+" value="+value+"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getAccDefault: identity="+this.identity.key+"("+this.identity.email+") key="+key+"\n");
 
     var enabled = this.identity.getBoolAttribute("enablePgp");
-    if (value == "enabled")
+    if (key == "enabled")
       return enabled;
+
     if (enabled) {
-      var r=null;
-      switch (value) {
+      var res=null;
+      switch (key) {
       case 'encrypt':
-        r=this.identity.getIntAttribute("defaultEncryptionPolicy");
+        res=(this.identity.getIntAttribute("defaultEncryptionPolicy") > 0); // converts int property to bool property
         break;
       case 'signPlain':
-        r=this.identity.getBoolAttribute("pgpSignPlain");
+        res=this.identity.getBoolAttribute("pgpSignPlain");
         break;
       case 'signEnc':
-        r=this.identity.getBoolAttribute("pgpSignEncrypted");
+        res=this.identity.getBoolAttribute("pgpSignEncrypted");
         break;
       case 'pgpMimeMode':
       case 'attachPgpKey':
-        r=this.identity.getBoolAttribute(value);
+        res=this.identity.getBoolAttribute(key);
         break;
       }
-      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getAccDefault: "+value+"="+r+"\n");
-      return r;
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getAccDefault:   "+key+"="+res+"\n");
+      return res;
     }
     else {
-      switch (value) {
+      switch (key) {
       case 'encrypt':
-        return 0;
       case 'signPlain':
       case 'signEnc':
       case 'pgpMimeMode':
@@ -180,6 +181,8 @@ Enigmail.msg = {
         return false;
       }
     }
+    // should not be reached
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getAccDefault:   internal error: invalid key '"+key+"'\n");
     return null;
   },
 
@@ -192,7 +195,8 @@ Enigmail.msg = {
       EnigmailFuncs.getSignMsg(this.identity);
     }
 
-    if (! this.sendModeDirty) {
+    // reset default send settings, unless we have changed them already
+    if (this.sendModeDirty==0) {
       this.setSendDefaultOptions();
       this.updateStatusBar();
     }
@@ -213,7 +217,7 @@ Enigmail.msg = {
     if (! this.getAccDefault("enabled")) {
       return;
     }
-    if (this.getAccDefault("encrypt")>0) {
+    if (this.getAccDefault("encrypt")) {
       this.sendMode |= ENCRYPT;
       if (this.getAccDefault("signEnc")) this.sendMode |= SIGN;
     }
@@ -879,6 +883,7 @@ Enigmail.msg = {
         EnigmailCommon.alert(window, "Enigmail.msg.setSendMode - Strange value: "+sendMode);
         break;
     }
+    // other sendMode change than toggle-sign?
     if (this.sendMode != origSendMode && this.sendModeDirty<2)
       this.sendModeDirty=1;
     this.updateStatusBar();
@@ -984,8 +989,8 @@ Enigmail.msg = {
       this.encryptRules = 1;
       if (toAddrList.length > 0 && recipientsSelection != 3 && recipientsSelection != 4) {
         if (Enigmail.hlp.getRecipientsKeys(toAddrList.join(", "),
-                                           false,                  // not interactive
-                                           recipientsSelection==1, // forceRecipientSettings
+                                           false,    // not interactive
+                                           false,    // forceRecipientSettings (ignored due to not interactive)
                                            matchedKeysObj, flagsObj)) {
           this.signRules    = flagsObj.sign;
           this.encryptRules = flagsObj.encrypt;
@@ -1053,8 +1058,7 @@ Enigmail.msg = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.displaySignClickWarn\n");
     if ((this.sendModeDirty<2) &&
-        (this.getAccDefault("signPlain") ||
-         this.getAccDefault("signEnc"))) {
+        (this.getAccDefault("signPlain") || this.getAccDefault("signEnc"))) {
       EnigmailCommon.alertPref(window, EnigmailCommon.getString("signIconClicked"), "displaySignWarn");
     }
   },
@@ -1150,6 +1154,15 @@ Enigmail.msg = {
   },
 
 
+  /*
+   *
+   * @sendFlags:    all current combined/processed send flags (incl. optSendFlags)
+   * @optSendFlags: may only be SEND_ALWAYS_TRUST or SEND_ENCRYPT_TO_SELF
+   * @gotSendFlags: initial sendMode of encryptMsg() (0 or SIGN or ENCRYPT or SIGN|ENCRYPT)
+   *
+   * @toAddrList:   both to and cc receivers
+   * @bccAddrList:  bcc receivers
+   */
   keySelection: function (enigmailSvc, sendFlags, optSendFlags, gotSendFlags, fromAddr, toAddrList, bccAddrList)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection()\n");
@@ -1167,7 +1180,7 @@ Enigmail.msg = {
     var notSignedIfNotEnc= (this.sendModeDirty<2 && (! this.getAccDefault("signPlain")));
 
     // NOTE: If we only have bcc addresses, we currently do NOT select keys at all
-    //       THUS, we disable encryption even though all bcc receivbers want to have it encrypted.
+    //       THUS, we disable encryption even though all bcc receivers might want to have it encrypted.
     if (toAddr.length == 0) {
        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): skip key selection because we neither have \"to\" nor \"cc\" addresses\n");
     }
@@ -1196,6 +1209,7 @@ Enigmail.msg = {
            var flagsObj=new Object;         // returned value for flags
 
            // get keys for to and cc addresses:
+           // - matchedKeysObj will contain the keys and the remaining toAddr elements
            if (!Enigmail.hlp.getRecipientsKeys(toAddr,
                                                true,           // interactive
                                                forceRecipientSettings,
@@ -1205,6 +1219,7 @@ Enigmail.msg = {
            }
            if (matchedKeysObj.value) {
              toAddr=matchedKeysObj.value;
+             EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): after getRecipientsKeys() toAddr=\""+toAddr+"\"\n");
            }
 
            // process resulting flags
@@ -1239,6 +1254,7 @@ Enigmail.msg = {
            }
 
            // get keys for bcc addresses:
+           // - matchedKeysObj will contain the keys and the remaining toAddr elements
            if (!Enigmail.hlp.getRecipientsKeys(bccAddr,
                                                true,           // interactive
                                                forceRecipientSettings,
@@ -1248,6 +1264,7 @@ Enigmail.msg = {
            }
            if (matchedKeysObj.value) {
              bccAddr=matchedKeysObj.value;
+             EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): after getRecipientsKeys() bccAddr=\""+bccAddr+"\"\n");
            }
            // NOTE: bcc recipients are ignored when in general computing whether to sign or encrypt or pgpMime
 
@@ -1268,6 +1285,7 @@ Enigmail.msg = {
                                optSendFlags ;
 
            // test recipients
+           EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): call test encryptMessage() for fromAddr=\""+fromAddr+"\" toAddr=\""+toAddr+"\" bccAddr=\""+bccAddr+"\" recipientsSelection="+recipientsSelection+"\n");
            testCipher = enigmailSvc.encryptMessage(window, testUiFlags,
                                                    testPlain,
                                                    fromAddr, toAddr, bccAddr,
@@ -1632,7 +1650,10 @@ Enigmail.msg = {
          sendFlags |= nsIEnigmail.SEND_PGP_MIME;
        }
 
-       var result = this.keySelection(enigmailSvc, sendFlags, optSendFlags, gotSendFlags,
+       var result = this.keySelection(enigmailSvc,
+                                      sendFlags,    // all current combined/processed send flags (incl. optSendFlags)
+                                      optSendFlags, // may only be SEND_ALWAYS_TRUST or SEND_ENCRYPT_TO_SELF
+                                      gotSendFlags, // initial sendMode (0 or SIGN or ENCRYPT or SIGN|ENCRYPT)
                                       fromAddr, toAddrList, bccAddrList);
        if (!result) {
          return false;
@@ -2943,3 +2964,4 @@ window.addEventListener('compose-window-init',
     gMsgCompose.RegisterStateListener(Enigmail.composeStateListener);
   },
   true);
+

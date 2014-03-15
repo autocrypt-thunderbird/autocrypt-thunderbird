@@ -51,9 +51,10 @@ Enigmail.hlp = {
     *  @oldVal:      original input value
     *  @node:        node of the rule in the DOM tree
     *  @type:        rule type name
-    *  @conflictObj: if a conflict is found, returns 1 for the corresponding type.
+    *  @conflictObj: if a conflict is found, sets true here for the corresponding type
     *
     *  @return: result value after applying the rule (0/1/2)
+    *           if a conflict is found, returns 0/never
     */
   getFlagVal: function (oldVal, node, type, conflictObj)
   {
@@ -63,7 +64,7 @@ Enigmail.hlp = {
     // 'never' and 'always' triggers conflict:
     // - NOTE: we return 'never' on conflicts
     if ((oldVal==2 && newVal==0) || (oldVal==0 && newVal==2)) {
-      conflictObj[type] = 1;
+      conflictObj[type] = true;
       return 0;
     }
 
@@ -85,16 +86,17 @@ Enigmail.hlp = {
 
 
   /**
-    * get keys and resulting sign/encryp/pgpMime mode for passed emailAddrs
+    * process resulting sign/encryp/pgpMime mode for passed emailAddrs and
+    * use rules and interactive dialog to replace emailAddrs by known keys
     * Input parameters:
     *  @interactive:            false: skip all interaction
     *  @forceRecipientSettings: force recipients settings for each missing key (if interactive==true)
     *
     * output parameters:
-    *   @matchedKeysObj: return value for matched keys
+    *   @matchedKeysObj: return value for matched keys and remaining email addresses for which no key was found
     *   @flagsObj:       return value for combined sign/encrype/pgpMime mode
     *
-    * @return:  true, if keys found without error;  false if error occurred or processing was canceled
+    * @return:  true, if rules processed and keys found without error;  false if error occurred or processing was canceled
     */
 
   getRecipientsKeys: function (emailAddrs, interactive, forceRecipientSettings, matchedKeysObj, flagsObj)
@@ -114,7 +116,7 @@ Enigmail.hlp = {
     var sign   =1;  // default sign flag is: maybe
     var encrypt=1;  // default encrypt flag is: maybe
     var pgpMime=1;  // default pgpMime flag is: maybe
-    var conflicts = { sign: 0, encrypt: 0, pgpMime: 0};  // no conflicts yet
+    var conflicts = { sign: false, encrypt: false, pgpMime: false};  // no conflicts yet
 
     var addresses="{"+EnigmailFuncs.stripEmail(emailAddrs.toLowerCase()).replace(/[, ]+/g, "}{")+"}";
     var keyList=new Array;
@@ -153,7 +155,7 @@ Enigmail.hlp = {
                   while (i>=0) {
                     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys(): got matching rule for \""+email+"\"\n");
 
-                    sign    = this.getFlagVal(sign,    node, "sign", conflicts);
+                    sign    = this.getFlagVal(sign,    node, "sign",    conflicts);
                     encrypt = this.getFlagVal(encrypt, node, "encrypt", conflicts);
                     pgpMime = this.getFlagVal(pgpMime, node, "pgpMime", conflicts);
 
@@ -189,7 +191,7 @@ Enigmail.hlp = {
                 }
                 if (i==addrList.length) {
                   // no matching address; apply rule
-                  sign    = this.getFlagVal(sign,    node, "sign", conflicts);
+                  sign    = this.getFlagVal(sign,    node, "sign",    conflicts);
                   encrypt = this.getFlagVal(encrypt, node, "encrypt", conflicts);
                   pgpMime = this.getFlagVal(pgpMime, node, "pgpMime", conflicts);
                   keyIds=node.getAttribute("keyId");
@@ -262,7 +264,10 @@ Enigmail.hlp = {
     flagsObj.value = 1;
 
     // handle encrypt and sign conflicts
-    // - NOTE: pgpMime conflicts silently return into pgpMime = 'never' (see getFlagVal())
+    // - NOTE: the default for any conflict is to turn the feature off (0/'never', see getFlagVal())
+    // - Thus:
+    //   - encrypt/sign conflicts without interaction always result 0/'never'
+    //   - pgpMime conflicts always result into pgpMime = 0/'never'
     if (interactive && (!EnigmailCommon.getPref("confirmBeforeSend")) && (conflicts.encrypt || conflicts.sign)) {
       if (sign<2) sign = (sign & (Enigmail.msg.sendMode & nsIEnigmail.SEND_SIGNED));
       if (encrypt<2) encrypt = (encrypt & (Enigmail.msg.sendMode & nsIEnigmail.SEND_ENCRYPTED ? 1 : 0));
