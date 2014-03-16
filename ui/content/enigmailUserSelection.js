@@ -213,7 +213,7 @@ function enigmailBuildList(refresh) {
 
    if (window.arguments[INPUT].options.indexOf("notsigned")>= 0) {
       var plainText = document.getElementById("enigmailUserSelPlainText");
-      plainText.setAttribute("label", plainText.getAttribute("noSignLabel"));
+      plainText.setAttribute("label", plainText.getAttribute("data-noSignLabel"));
    }
    if ((window.arguments[INPUT].options.indexOf("rulesOption") < 0)) {
       // var rulesOption = document.getElementById("perRecipientsOption");

@@ -61,15 +61,35 @@
 
     <radio id="enigEncryptAttachNone"
           value="0"
-          label="&enigmail.enigEncryptAttachNone.label;"/>
+          label="&enigmail.enigEncryptAttachNone.label;"
+          data-signLabel="&enigmail.enigAttachNoneSign.label;"
+          data-encryptLabel="&enigmail.enigAttachNoneEncrypt.label;"
+          data-encryptAndSignLabel="&enigmail.enigAttachNoneEncryptAndSign.label;"
+          />
 
     <radio id="enigEncryptAttachInline"
           value="1"
-          label="&enigmail.enigEncryptAttachInline.label;"/>
+          label="&enigmail.enigEncryptAttachInline.label;"
+          data-signLabel="&enigmail.enigAttachInlineSign.label;"
+          data-encryptLabel="&enigmail.enigAttachInlineEncrypt.label;"
+          data-encryptAndSignLabel="&enigmail.enigAttachInlineEncryptAndSign.label;"
+          />
 
     <radio id="enigEncryptAttachPgpMime"
           value="2"
-          label="&enigmail.enigEncryptAttachPgpMime.label;"/>
+          label="&enigmail.enigEncryptAttachPgpMime.label;"
+          data-signLabel="&enigmail.enigAttachPgpMimeSign.label;"
+          data-encryptLabel="&enigmail.enigAttachPgpMimeEncrypt.label;"
+          data-encryptAndSignLabel="&enigmail.enigAttachPgpMimeEncryptAndSign.label;"
+          />
+
+    <radio id="enigEncryptAttachDontEncryptMsg"
+          value="3"
+          label="&enigmail.enigEncryptAttachDontEncryptMsg.label;"
+          data-signLabel="&enigmail.enigAttachDontEncryptMsgSign.label;"
+          data-encryptLabel="&enigmail.enigAttachDontEncryptMsgEncrypt.label;"
+          data-encryptAndSignLabel="&enigmail.enigAttachDontEncryptMsgEncryptAndSign.label;"
+          />
 
   </radiogroup>
 

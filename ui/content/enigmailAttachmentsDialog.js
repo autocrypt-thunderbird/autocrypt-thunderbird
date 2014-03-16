@@ -57,6 +57,38 @@ function enigmailAttachDlgLoad() {
      descNotFound.firstChild.data = EnigGetString("pgpMimeNote", EnigGetString("first"));
    }
 
+   // set radiobutton labels according to whether we ask for sign and/or encrypt policy
+   if (window.arguments[ENIG_INPUT].reasonForCheck == "sign") {
+       var rb = document.getElementById("enigEncryptAttachNone");
+       rb.setAttribute("label", rb.getAttribute("data-signLabel"));
+       rb = document.getElementById("enigEncryptAttachInline");
+       rb.setAttribute("label", rb.getAttribute("data-signLabel"));
+       rb = document.getElementById("enigEncryptAttachPgpMime");
+       rb.setAttribute("label", rb.getAttribute("data-signLabel"));
+       rb = document.getElementById("enigEncryptAttachDontEncryptMsg");
+       rb.setAttribute("label", rb.getAttribute("data-signLabel"));
+   }
+   else if (window.arguments[ENIG_INPUT].reasonForCheck == "encrypt") {
+       var rb = document.getElementById("enigEncryptAttachNone");
+       rb.setAttribute("label", rb.getAttribute("data-encryptLabel"));
+       rb = document.getElementById("enigEncryptAttachInline");
+       rb.setAttribute("label", rb.getAttribute("data-encryptLabel"));
+       rb = document.getElementById("enigEncryptAttachPgpMime");
+       rb.setAttribute("label", rb.getAttribute("data-encryptLabel"));
+       rb = document.getElementById("enigEncryptAttachDontEncryptMsg");
+       rb.setAttribute("label", rb.getAttribute("data-encryptLabel"));
+   }
+   else if (window.arguments[ENIG_INPUT].reasonForCheck == "encryptAndSign") {
+       var rb = document.getElementById("enigEncryptAttachNone");
+       rb.setAttribute("label", rb.getAttribute("data-encryptAndSignLabel"));
+       rb = document.getElementById("enigEncryptAttachInline");
+       rb.setAttribute("label", rb.getAttribute("data-encryptAndSignLabel"));
+       rb = document.getElementById("enigEncryptAttachPgpMime");
+       rb.setAttribute("label", rb.getAttribute("data-encryptAndSignLabel"));
+       rb = document.getElementById("enigEncryptAttachDontEncryptMsg");
+       rb.setAttribute("label", rb.getAttribute("data-encryptAndSignLabel"));
+   }
+
    var selected=EnigGetPref("encryptAttachments");
    if (! selected)
       selected=0;

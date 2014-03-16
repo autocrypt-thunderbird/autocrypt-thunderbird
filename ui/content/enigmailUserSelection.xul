@@ -113,7 +113,7 @@
 
     <checkbox id="enigmailUserSelPlainText"
               label="&enigmail.userSelPlainText.label;"
-              noSignLabel="&enigmail.userSelPlainTextNotSigned.label;"
+              data-noSignLabel="&enigmail.userSelPlainTextNotSigned.label;"
               accesskey="&enigmail.userSelPlainText.accesskey;"
               oncommand="plainTextCallback();"/>
     <checkbox id="displayNoLonger"

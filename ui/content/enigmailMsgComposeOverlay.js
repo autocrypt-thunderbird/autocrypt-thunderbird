@@ -73,8 +73,8 @@ Enigmail.msg = {
   lastFocusedWindow: null,
   determineSendFlagId: null,
   trustAllKeys: false,
-  signRules: 1,
-  encryptRules: 1,
+  signRules: 1,     // shall we sign according to rules? (0:never, 1:maybe, 2:always)
+  encryptRules: 1,  // shall we encrypt according to rules? (0:never, 1:maybe, 2:always)
   attachOwnKeyObj: {
       appendAttachment: false,
       attachedObj: null,
@@ -142,7 +142,7 @@ Enigmail.msg = {
   },
 
   /* return whether the account specific setting key is enabled or disabled
-   */ 
+   */
   getAccDefault: function (key)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getAccDefault: identity="+this.identity.key+"("+this.identity.email+") key="+key+"\n");
@@ -1504,9 +1504,6 @@ Enigmail.msg = {
 
     try {
 
-       var exitCodeObj    = new Object();
-       var statusFlagsObj = new Object();
-       var errorMsgObj    = new Object();
        this.modifiedAttach = null;
 
        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: currentId="+this.identity+
@@ -1685,8 +1682,23 @@ Enigmail.msg = {
           inputObj = {
             pgpMimePossible: true,
             inlinePossible: true,
-            restrictedScenario: false
+            restrictedScenario: false,
+            reasonForCheck: ""
           };
+          // init reason for dialog to be able to use the right labels
+          if (sendFlags & ENCRYPT) {
+            if (sendFlags & SIGN) {
+              inputObj.reasonForCheck = "encryptAndSign";
+            }
+            else {
+              inputObj.reasonForCheck = "encrypt";
+            }
+          }
+          else {
+            if (sendFlags & SIGN) {
+              inputObj.reasonForCheck = "sign";
+            }
+          }
 
           // determine if attachments are all local files (currently the only
           // supported kind of attachments)
@@ -1727,6 +1739,11 @@ Enigmail.msg = {
             else if (resultObj.selected == 2) {
               // send as PGP/MIME
               sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+            }
+            else if (resultObj.selected == 3) {
+              // cancel the encryption/signing for the whole message
+              sendFlags &= ~ENCRYPT;
+              sendFlags &= ~SIGN;
             }
           }
           else {
@@ -1991,10 +2008,10 @@ Enigmail.msg = {
         catch (ex) {}
       }
     }
+
     var exitCodeObj    = new Object();
     var statusFlagsObj = new Object();
     var errorMsgObj    = new Object();
-
 
     // Get plain text
     // (Do we need to set the nsIDocumentEncoder.* flags?)

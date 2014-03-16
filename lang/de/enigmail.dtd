@@ -218,11 +218,26 @@
 <!ENTITY enigmail.refreshKeys.accesskey "L">
 <!ENTITY enigmail.perRecipientsOption.label "Empfängerregeln erstellen">
 <!ENTITY enigmail.experimental.label "Experimentelles Inline-Unterschreiben/Verschlüsseln für PGP/MIME verwenden">
+
 <!ENTITY enigmail.enigmailAttachDesc.label "Diese Nachricht enthält Anhänge. Wie sollen diese verschlüsselt/unterschrieben werden?">
-<!ENTITY enigmail.enigEncryptAttachNone.label "Nur den Haupttext verschlüsseln/unterschreiben, Anhänge unverändert lassen">
-<!ENTITY enigmail.enigEncryptAttachInline.label "Jeden Anhang einzeln verschlüsseln/unterschreiben und Nachricht mittels Inline-PGP senden">
-<!ENTITY enigmail.enigEncryptAttachPgpMime.label "Nachricht als Ganzes verschlüsseln/unterschreiben und mittels PGP/MIME senden">
+<!ENTITY enigmail.enigEncryptAttachNone.label           "Nur den Haupttext verschlüsseln/unterschreiben, Anhänge unverändert lassen">
+<!ENTITY enigmail.enigAttachNoneSign.label              "Nur den Haupttext unterschreiben, Anhänge unverändert lassen">
+<!ENTITY enigmail.enigAttachNoneEncrypt.label           "Nur den Haupttext verschlüsseln, Anhänge unverändert lassen">
+<!ENTITY enigmail.enigAttachNoneEncryptAndSign.label    "Nur den Haupttext verschlüsseln und unterschreiben, Anhänge unverändert lassen">
+<!ENTITY enigmail.enigEncryptAttachInline.label         "Jeden Anhang einzeln verschlüsseln/unterschreiben und Nachricht mittels Inline-PGP senden">
+<!ENTITY enigmail.enigAttachInlineSign.label            "Jeden Anhang einzeln unterschreiben und Nachricht mittels Inline-PGP senden">
+<!ENTITY enigmail.enigAttachInlineEncrypt.label         "Jeden Anhang einzeln verschlüsseln und Nachricht mittels Inline-PGP senden">
+<!ENTITY enigmail.enigAttachInlineEncryptAndSign.label  "Jeden Anhang einzeln verschlüsseln und unterschreiben und Nachricht mittels Inline-PGP senden">
+<!ENTITY enigmail.enigEncryptAttachPgpMime.label        "Nachricht als Ganzes verschlüsseln/unterschreiben und mittels PGP/MIME senden">
+<!ENTITY enigmail.enigAttachPgpMimeSign.label           "Nachricht als Ganzes unterschreiben und mittels PGP/MIME senden">
+<!ENTITY enigmail.enigAttachPgpMimeEncrypt.label        "Nachricht als Ganzes verschlüsseln und mittels PGP/MIME senden">
+<!ENTITY enigmail.enigAttachPgpMimeEncryptAndSign.label "Nachricht als Ganzes verschlüsseln und unterschreiben und mittels PGP/MIME senden">
+<!ENTITY enigmail.enigEncryptAttachDontEncryptMsg.label        "Nachricht doch nicht verschlüsseln/unterschreiben">
+<!ENTITY enigmail.enigAttachDontEncryptMsgSign.label           "Nachricht doch nicht unterschreiben">
+<!ENTITY enigmail.enigAttachDontEncryptMsgEncrypt.label        "Nachricht doch nicht verschlüsseln">
+<!ENTITY enigmail.enigAttachDontEncryptMsgEncryptAndSign.label "Nachricht doch nicht verschlüsseln und unterschreiben">
 <!ENTITY enigmail.encryptAttachSkipDlg.label "Die gewählte Methode für alle zukünftigen Anhänge verwenden">
+
 <!ENTITY enigmail.ctxDecryptOpen.label "Entschlüsseln und Öffnen">
 <!ENTITY enigmail.ctxDecryptSave.label "Entschlüsseln und Speichern unter…">
 <!ENTITY enigmail.ctxImportKey.label "OpenPGP-Schlüssel importieren">
