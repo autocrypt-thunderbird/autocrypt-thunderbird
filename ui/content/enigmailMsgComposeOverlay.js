@@ -73,8 +73,8 @@ Enigmail.msg = {
   lastFocusedWindow: null,
   determineSendFlagId: null,
   trustAllKeys: false,
-  signRules: 1,     // shall we sign according to rules? (0:never, 1:maybe, 2:always)
-  encryptRules: 1,  // shall we encrypt according to rules? (0:never, 1:maybe, 2:always)
+  signRules: 1,     // shall we sign according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
+  encryptRules: 1,  // shall we encrypt according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
   attachOwnKeyObj: {
       appendAttachment: false,
       attachedObj: null,
@@ -357,7 +357,6 @@ Enigmail.msg = {
       UpdateAttachmentBucket(bucketList.hasChildNodes());
     }
     catch (ex) {}
-
 
     this.updateStatusBar();
   },
@@ -912,51 +911,93 @@ Enigmail.msg = {
     if (this.sendMode & SIGN) {
       switch (this.signRules) {
       case 0:
-        statusBar.setAttribute("signed", "activeMinus"); break;
+        statusBar.setAttribute("signed", "activeMinus");
+        signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("signNo"));
+	break;
       case 1:
-        statusBar.setAttribute("signed", "activeNull"); break;
+	// only tooltip will show resulting behavior
+        statusBar.setAttribute("signed", "activeNull");
+        signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("signYes"));
+	break;
       case 2:
-        statusBar.setAttribute("signed", "activePlus"); break;
+        statusBar.setAttribute("signed", "activePlus");
+        signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("signYes"));
+	break;
+      case 3:
+        statusBar.setAttribute("signed", "activeConflict");
+        signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("signConflict"));
+	break;
       }
-      signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("signYes"));
     }
     else {
       switch (this.signRules) {
       case 0:
-        statusBar.setAttribute("signed", "inactiveMinus"); break;
+        statusBar.setAttribute("signed", "inactiveMinus");
+        signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("signNo"));
+	break;
       case 1:
-        statusBar.setAttribute("signed", "inactiveNull"); break;
+	// only tooltip will show resulting behavior
+        statusBar.setAttribute("signed", "inactiveNull");
+        signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("signNo"));
+	break;
       case 2:
-        statusBar.setAttribute("signed", "inactivePlus"); break;
+        statusBar.setAttribute("signed", "inactivePlus");
+        signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("signYes"));
+	break;
+      case 3:
+        statusBar.setAttribute("signed", "inactiveConflict");
+        signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("signConflict"));
+	break;
       }
-      signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("signNo"));
     }
 
     if (this.sendMode & ENCRYPT) {
       switch (this.encryptRules) {
       case 0:
-        statusBar.setAttribute("encrypted", "activeMinus"); break;
+        statusBar.setAttribute("encrypted", "activeMinus");
+        encryptedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptNo"));
+	break;
       case 1:
-        statusBar.setAttribute("encrypted", "activeNull"); break;
+	// only tooltip will show resulting behavior
+        statusBar.setAttribute("encrypted", "activeNull");
+        encryptedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptYes"));
+	break;
       case 2:
-        statusBar.setAttribute("encrypted", "activePlus"); break;
+        statusBar.setAttribute("encrypted", "activePlus");
+        encryptedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptYes"));
+	break;
+      case 3:
+        statusBar.setAttribute("encrypted", "activeConflict");
+        encryptedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptConflict"));
+	break;
       }
-
-      encryptedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptYes"));
     }
     else {
       switch (this.encryptRules) {
       case 0:
-        statusBar.setAttribute("encrypted", "inactiveMinus"); break;
+        statusBar.setAttribute("encrypted", "inactiveMinus");
+        encryptedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptNo"));
+	break;
       case 1:
-        statusBar.setAttribute("encrypted", "inactiveNull"); break;
+	// only tooltip will show resulting behavior
+        statusBar.setAttribute("encrypted", "inactiveNull");
+        encryptedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptNo"));
+	break;
       case 2:
-        statusBar.setAttribute("encrypted", "inactivePlus"); break;
+        statusBar.setAttribute("encrypted", "inactivePlus");
+        encryptedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptYes"));
+	break;
+      case 3:
+        statusBar.setAttribute("encrypted", "inactiveConflict");
+        encryptedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptConflict"));
+	break;
       }
-      encryptedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptNo"));
     }
   },
 
+  /* compute whether to sign/encrypt according to currtent rules and sendMode
+   * - without any interaction, just to process resulting status bar icons
+   */
   determineSendFlags: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.focusChange: Enigmail.msg.determineSendFlags\n");
@@ -965,37 +1006,36 @@ Enigmail.msg = {
       Recipients2CompFields(compFields);
       var recipientsSelection = EnigmailCommon.getPref("recipientsSelection");
 
-      var arrLen = new Object();
-      var matchedKeysObj = new Object();
-      var flagsObj = new Object();
+      // process list of to/cc email addresses
+      // - bcc email addresses are ignored, when processing whether to sign/encrypt
       var toAddrList = new Array();
+      var arrLen = new Object();
       var recList;
       if (compFields.to.length > 0) {
         recList = compFields.splitRecipients(compFields.to, true, arrLen);
         this.addRecipients(toAddrList, recList);
       }
-
       if (compFields.cc.length > 0) {
         recList = compFields.splitRecipients(compFields.cc, true, arrLen);
-        this.addRecipients(toAddrList, recList);
-      }
-
-      if (compFields.bcc.length > 0) {
-        recList = compFields.splitRecipients(compFields.bcc, true, arrLen);
         this.addRecipients(toAddrList, recList);
       }
 
       this.signRules    = 1;
       this.encryptRules = 1;
       if (toAddrList.length > 0 && recipientsSelection != 3 && recipientsSelection != 4) {
+        var matchedKeysObj = new Object();
+        var flagsObj = new Object();
         if (Enigmail.hlp.getRecipientsKeys(toAddrList.join(", "),
                                            false,    // not interactive
                                            false,    // forceRecipientSettings (ignored due to not interactive)
-                                           matchedKeysObj, flagsObj)) {
+                                           matchedKeysObj, // resulting matching keys (ignored)
+					   flagsObj)) {    // resulting flags (0/1/2/3 for each type)
           this.signRules    = flagsObj.sign;
           this.encryptRules = flagsObj.encrypt;
         }
       }
+
+      // signal new resulting state (maybe will use the current sendMode as tooltip)
       this.updateStatusBar();
     }
     this.determineSendFlagId = null;
@@ -1217,6 +1257,10 @@ Enigmail.msg = {
                                                flagsObj)) {
              return null;
            }
+	   // process conflicts (3/conflict will become 0/never)
+	   if (!Enigmail.hlp.processConflicts(flagsObj, true)) {
+             return null;
+           }
            if (matchedKeysObj.value) {
              toAddr=matchedKeysObj.value;
              EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): after getRecipientsKeys() toAddr=\""+toAddr+"\"\n");
@@ -1254,7 +1298,8 @@ Enigmail.msg = {
            }
 
            // get keys for bcc addresses:
-           // - matchedKeysObj will contain the keys and the remaining toAddr elements
+           // - matchedKeysObj will contain the keys and the remaining bccAddr elements
+           // - NOTE: bcc recipients are ignored when in general computing whether to sign or encrypt or pgpMime
            if (!Enigmail.hlp.getRecipientsKeys(bccAddr,
                                                true,           // interactive
                                                forceRecipientSettings,
@@ -1266,7 +1311,6 @@ Enigmail.msg = {
              bccAddr=matchedKeysObj.value;
              EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): after getRecipientsKeys() bccAddr=\""+bccAddr+"\"\n");
            }
-           // NOTE: bcc recipients are ignored when in general computing whether to sign or encrypt or pgpMime
 
          } // end of process rules
 
