@@ -353,10 +353,10 @@
 <!ENTITY enigmail.addUidDlg.comment.label "Kommentar">
 <!ENTITY enigmail.keyTrust.title "OpenPGP - Besitzervertrauen festlegen">
 <!ENTITY enigmail.keyTrust.trustKey.label "Zu bewertender Schlüssel:">
-<!ENTITY enigmail.keyTrust.trustLevel.label "Wie hoch ist Ihr Vertrauen in den Schlüssel?">
+<!ENTITY enigmail.keyTrust.trustLevel.label "Wie weit trauen Sie diesem User zu, Schlüssel anderer User korrekt zu prüfen?">
 <!ENTITY enigmail.keyTrust.dontKnow.label "Ich weiß es nicht">
 <!ENTITY enigmail.keyTrust.noTrust.label "Ich vertraue ihm NICHT">
-<!ENTITY enigmail.keyTrust.marginalTrust.label "Ich vertraue ihm nur gering">
+<!ENTITY enigmail.keyTrust.marginalTrust.label "Ich vertraue ihm marginal">
 <!ENTITY enigmail.keyTrust.fullTrust.label "Ich vertraue ihm voll">
 <!ENTITY enigmail.keyTrust.ultimateTrust.label "Ich vertraue ihm absolut">
 <!ENTITY enigmail.keyExpiry.title "OpenPGP - Ablaufdatum ändern">
