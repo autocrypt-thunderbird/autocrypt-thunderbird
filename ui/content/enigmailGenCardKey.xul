@@ -53,7 +53,7 @@
         onload="onLoad()"
         buttons="accept,cancel"
         minwidth="450px"
-        maxwidth="600px">
+        width="600px">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeygen.js"/>
