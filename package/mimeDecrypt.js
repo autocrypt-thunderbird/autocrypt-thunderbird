@@ -190,8 +190,11 @@ PgpMimeDecrypt.prototype = {
     var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
     var win = windowManager.getMostRecentWindow(null);
     this.verifier.onStartRequest(true);
+
+    var maxOutput = this.outQueue.length * 100; // limit output to 100 times message size
+                                                // to avoid DoS attack
     this.proc = Ec.decryptMessageStart(win, false, false, this,
-                    statusFlagsObj, errorMsgObj);
+                    statusFlagsObj, errorMsgObj, null, maxOutput);
 
     if (! this.proc) return;
     this.flushInput();

@@ -1612,8 +1612,11 @@ Enigmail.prototype = {
           pipe.close();
       });
 
+    var maxOutput = pgpBlock.length * 100;  // limit output to 100 times message size
+                                            // to avoid DoS attack
     var proc = Ec.decryptMessageStart(parent, verifyOnly, noOutput, listener,
-                                      statusFlagsObj, startErrorMsgObj);
+                                      statusFlagsObj, startErrorMsgObj,
+                                      null, maxOutput);
 
     if (!proc) {
       errorMsgObj.value = startErrorMsgObj.value;

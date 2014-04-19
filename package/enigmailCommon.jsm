@@ -2238,8 +2238,21 @@ var EnigmailCommon = {
   },
 
 
+  /***
+   * Start decryption by launching gpg
+   * win:               window object for password prompt
+   * verifyOnly:        Boolean: true if message is to be verified; false if message is
+   *                    decrypted and result is returned
+   * listener:          listener object for getting results from process (see execStart)
+   * statusFlagsObj:    object for getting status flags in .value property
+   * errorMsgObj:       object for getting error message text in .value property
+   * mimeSignatureFile: file name for separate signature file
+   * maxOutputLength:   maximum output length for GnuPG; 0 for infinite
+   */
+
   decryptMessageStart: function (win, verifyOnly, noOutput, listener,
-                                 statusFlagsObj, errorMsgObj, mimeSignatureFile) {
+                                 statusFlagsObj, errorMsgObj, mimeSignatureFile,
+                                 maxOutputLength) {
     this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageStart: verifyOnly="+verifyOnly+"\n");
 
     this.getService(win);
@@ -2278,6 +2291,11 @@ var EnigmailCommon = {
       }
 
     } else {
+      if (maxOutputLength) {
+        args.push("--max-output");
+        args.push(String(maxOutputLength));
+      }
+
       args.push("--decrypt");
     }
 
