@@ -176,6 +176,8 @@ function prefOnLoad() {
 
    }
 
+   EnigDisplayRadioPref("confirmBeforeSending", EnigGetPref("confirmBeforeSending"),
+                        gEnigConfirmBeforeSending);
    EnigDisplayRadioPref("recipientsSelection", EnigGetPref("recipientsSelection"),
                         gEnigRecipientsSelection);
 
@@ -261,8 +263,11 @@ function resetPrefs() {
 
   EnigSetPref("configuredVersion", EnigGetVersion());
 
+  EnigDisplayRadioPref("confirmBeforeSending", EnigGetPref("confirmBeforeSending"),
+                       gEnigconfirmBeforeSending);
+
   EnigDisplayRadioPref("recipientsSelection", EnigGetPref("recipientsSelection"),
-                      gEnigRecipientsSelection);
+                       gEnigRecipientsSelection);
 
 }
 

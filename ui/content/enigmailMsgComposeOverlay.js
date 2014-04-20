@@ -2004,7 +2004,26 @@ Enigmail.msg = {
        // update the list of attachments
        Attachments2CompFields(msgCompFields);
 
-       if ((!(sendFlags & nsIEnigmail.SAVE_MESSAGE)) && EnigmailCommon.getPref("confirmBeforeSend")) {
+       var confirm = false;
+       var conf = EnigmailCommon.getPref("confirmBeforeSending");
+       switch (conf) {
+         case 0:  // never
+           confirm = false;
+           break;
+         case 1:  // always
+           confirm = true;
+           break;
+         case 2:  // if send encrypted
+           confirm = ((sendFlags&ENCRYPT) == ENCRYPT);
+           break;
+         case 3:  // if send unencrypted
+           confirm = ((sendFlags&ENCRYPT) == 0);
+           break;
+         case 4:  // if encryption changed due to rules
+           confirm = ((sendFlags&ENCRYPT) != (this.sendMode&ENCRYPT));
+           break;
+       }
+       if ((!(sendFlags & nsIEnigmail.SAVE_MESSAGE)) && confirm) {
          if (!this.confirmBeforeSend(toAddrList.join(", "), toAddr+", "+bccAddr, sendFlags, isOffline)) {
            if (this.processed) {
              this.undoEncryption(0);

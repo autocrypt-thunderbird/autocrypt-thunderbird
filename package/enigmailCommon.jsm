@@ -134,7 +134,7 @@ var gStatusFlags = {
   UNKNOWN_ALGO:    nsIEnigmail.UNKNOWN_ALGO,
   SIG_CREATED:     nsIEnigmail.SIG_CREATED,
   END_ENCRYPTION : nsIEnigmail.END_ENCRYPTION,
-  INV_SGNR:				 0x100000000
+  INV_SGNR:        0x100000000
 };
 
 const gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512", "sha224", "md5" ];
@@ -3129,7 +3129,9 @@ function ConfigureEnigmail() {
       }
       catch (ex) {}
     }
-    else if (vc.compare(oldVer, "1.0") < 0) upgradeCustomHeaders();
+    else if (vc.compare(oldVer, "1.0") < 0) {
+      upgradeCustomHeaders();
+    }
   }
   catch(ex) {};
   EnigmailCommon.setPref("configuredVersion", EnigmailCommon.getVersion());
