@@ -146,11 +146,11 @@
               <label value="&enigmail.keyGen.keySize.label;" control="keySize"/>
             </hbox>
             <hbox flex="0">
-              <menulist id="keySize" label="2048" value="2048" >
+              <menulist id="keySize" label="4096" value="4096" >
                 <menupopup id="keySizePopup">
                   <menuitem id="keySize_1024" value="1024" label="1024"/>
-                  <menuitem id="keySize_2048" value="2048" label="2048" selected="true"/>
-                  <menuitem id="keySize_4096" value="4096" label="4096"/>
+                  <menuitem id="keySize_2048" value="2048" label="2048"/>
+                  <menuitem id="keySize_4096" value="4096" label="4096" selected="true"/>
                 </menupopup>
               </menulist>
             </hbox>

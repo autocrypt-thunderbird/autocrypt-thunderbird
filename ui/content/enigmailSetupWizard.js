@@ -608,7 +608,7 @@ function wizardGenKey() {
                        "",
                        userEmail,
                        365*5 /* 5 years */,
-                       2048,
+                       4096,
                        ENIG_KEYTYPE_RSA,
                        passphrase,
                        listener);
