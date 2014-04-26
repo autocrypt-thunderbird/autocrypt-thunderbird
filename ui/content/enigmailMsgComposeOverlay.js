@@ -298,12 +298,18 @@ Enigmail.msg = {
       toobarElem.setAttribute("platform", "macos");
     }
 
-    var adrCol = document.getElementById("addressCol2#1");
+    // check rules for status bar icons on each change of the recipients 
+    var adrCol = document.getElementById("addressCol2#1");  // recipients field
     if (adrCol) {
       var attr = adrCol.getAttribute("oninput");
       adrCol.setAttribute("oninput", attr+"; Enigmail.msg.addressOnChange().bind(Enigmail.msg);");
       attr = adrCol.getAttribute("onchange");
       adrCol.setAttribute("onchange", attr+"; Enigmail.msg.addressOnChange().bind(Enigmail.msg);");
+    }
+    adrCol = document.getElementById("addressCol1#1");      // to/cc/bcc/... field
+    if (adrCol) {
+      var attr = adrCol.getAttribute("oncommand");
+      adrCol.setAttribute("oncommand", attr+"; Enigmail.msg.addressOnChange().bind(Enigmail.msg);");
     }
 
     if (EnigmailCommon.getPref("keepSettingsForReply") && (!(this.sendMode & ENCRYPT))) {
