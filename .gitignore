@@ -2,6 +2,11 @@
 *.pyc
 *.dtd.gen
 *.properties.gen
+/config.log
+/config.status
+/config/autoconf.mk
+/build
+/ui/content/enigmailBuildDate.js
 
 # vi tmp files:
 *.swp
