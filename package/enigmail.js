@@ -1780,7 +1780,7 @@ Enigmail.prototype = {
       errorMsgObj.value = Ec.getString("failKeyExtract");
 
       if (cmdErrorMsgObj.value) {
-        errorMsgObj.value += "\n" + command;
+        errorMsgObj.value += "\n" + Ec.printCmdLine(this.agentPath, args);
         errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
       }
 
@@ -1802,7 +1802,7 @@ Enigmail.prototype = {
         errorMsgObj.value = Ec.getString("failKeyExtract");
 
         if (cmdErrorMsgObj.value) {
-          errorMsgObj.value += "\n" + command;
+          errorMsgObj.value += "\n" + Ec.printCmdLine(this.agentPath, args);;
           errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
         }
 
