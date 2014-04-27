@@ -7,6 +7,10 @@
 /config/autoconf.mk
 /build
 /ui/content/enigmailBuildDate.js
+/ipc/src/subprocess.o
+/public/_xpidlgen
+ipc/src/libsubprocess-*.dylib
+ipc/src/libsubprocess-*.so
 
 # vi tmp files:
 *.swp
