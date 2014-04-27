@@ -62,7 +62,7 @@ pref("extensions.enigmail.autoKeyRetrieve","");
 pref("extensions.enigmail.autoDecrypt",true);
 
 // enable X-Enigmail-xxx headers
-pref("extensions.enigmail.addHeaders",true);
+pref("extensions.enigmail.addHeaders",false);
 
 // countdown for alerts when composing inline PGP HTML msgs
 pref("extensions.enigmail.composeHtmlAlertCount",3);
@@ -156,8 +156,8 @@ pref("extensions.enigmail.recipientsSelection",2);
 // support different passwords for each key (not yet available)
 pref("extensions.enigmail.supportMultiPass",false);
 
-// use GnuPG's default comment for signed messages
-pref("extensions.enigmail.useDefaultComment",false);
+// use GnuPG's default instead of Enigmail/Mozilla comment of for signed messages
+pref("extensions.enigmail.useDefaultComment",true);
 
 // allow encryption to newsgroups
 pref("extensions.enigmail.encryptToNews", false);
