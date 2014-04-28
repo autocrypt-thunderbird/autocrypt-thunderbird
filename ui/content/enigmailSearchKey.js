@@ -444,7 +444,8 @@ function enigScanHtmlKeys (txt) {
         key={
           keyId: m[2],
           created: m[3],
-          uid: []
+          uid: [],
+          status: ""
         };
         if (m[4].search(/.+<.+@.+>/)>=0) {
           if (! ignoreUid(m[4])) key.uid.push(trim(m[4]));
@@ -508,7 +509,9 @@ function enigScanGpgKeys(txt) {
           key={
             keyId: m[0],
             created: dat.getFullYear()+"-"+month+"-"+day,
-            uid: []
+            uid: [],
+            status: ""
+
           };
           if (! ignoreUid(m[1])) key.uid.push(m[1]);
         }
@@ -529,7 +532,8 @@ function enigScanGpgKeys(txt) {
         key={
           keyId: m[1],
           created: dat.getFullYear()+"-"+month+"-"+day,
-          uid: []
+          uid: [],
+          status: (m.length >= 5 ? m[6] : "")
         };
       }
     }
@@ -668,12 +672,12 @@ function enigPopulateList(keyList) {
   var treeItem;
 
   for (var i=0; i<keyList.length; i++) {
-    treeItem = enigUserSelCreateRow(keyList[i].keyId, false, keyList[i].uid[0], keyList[i].created, "");
+    treeItem = enigUserSelCreateRow(keyList[i].keyId, false, keyList[i].uid[0], keyList[i].created, keyList[i].status);
     if (keyList[i].uid.length>1) {
       treeItem.setAttribute("container", "true");
       var subChildren=document.createElement("treechildren");
       for (j=1; j<keyList[i].uid.length; j++) {
-        var subItem=enigUserSelCreateRow(keyList[i].keyId, true, keyList[i].uid[j], "", "");
+        var subItem=enigUserSelCreateRow(keyList[i].keyId, true, keyList[i].uid[j], "", keyList[i].status);
         subChildren.appendChild(subItem);
       }
       treeItem.appendChild(subChildren);
@@ -694,7 +698,7 @@ function enigUserSelCreateRow (keyId, subKey, userId, dateField, trustStatus) {
     var expCol=document.createElement("treecell");
     var userCol=document.createElement("treecell");
     userCol.setAttribute("id", "name");
-    if (trustStatus.charAt(0)==KEY_EXPIRED) {
+    if (trustStatus.indexOf(KEY_EXPIRED)>=0) {
       expCol.setAttribute("label", Ec.getString("selKeyExpired", dateField));
     }
     else {
@@ -722,6 +726,20 @@ function enigUserSelCreateRow (keyId, subKey, userId, dateField, trustStatus) {
     userRow.appendChild(keyCol);
     var treeItem=document.createElement("treeitem");
     treeItem.setAttribute("id", "0x"+keyId);
+
+    if (trustStatus.length > 0 && KEY_NOT_VALID.indexOf(trustStatus.charAt(0))>=0) {
+      // key invalid, mark it in grey
+      for (var node=userRow.firstChild; node; node=node.nextSibling) {
+        var attr=node.getAttribute("properties");
+        if (typeof(attr)=="string") {
+          node.setAttribute("properties", attr+" enigKeyInactive");
+        }
+        else {
+          node.setAttribute("properties", "enigKeyInactive");
+        }
+      }
+    }
+
     treeItem.appendChild(userRow);
     return treeItem;
 }
