@@ -279,6 +279,10 @@
 <!ENTITY enigmail.userSelPlainText.label            "Send mail unencrypted">
 <!ENTITY enigmail.userSelPlainTextNotSigned.label   "Send mail unencrypted and not signed">
 <!ENTITY enigmail.userSelPlainText.accesskey        "S">
+<!ENTITY enigmail.userSelSendSigned.label           "Send signed">
+<!ENTITY enigmail.userSelSendSigned.accesskey       "S">
+<!ENTITY enigmail.userSelSendEncrypted.label        "Send encrypted">
+<!ENTITY enigmail.userSelSendEncrypted.accesskey    "E">
 <!ENTITY enigmail.displayNoLonger.label             "Do not display this dialog again if encryption is not possible">
 <!ENTITY enigmail.importMissingKeys.label           "Download missing keys">
 <!ENTITY enigmail.importMissingKeys.accesskey       "D">

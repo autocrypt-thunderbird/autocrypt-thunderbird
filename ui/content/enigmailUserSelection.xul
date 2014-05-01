@@ -111,11 +111,17 @@
       </tree>
     </groupbox>
 
-    <checkbox id="enigmailUserSelPlainText"
-              label="&enigmail.userSelPlainText.label;"
-              data-noSignLabel="&enigmail.userSelPlainTextNotSigned.label;"
-              accesskey="&enigmail.userSelPlainText.accesskey;"
-              oncommand="plainTextCallback();"/>
+    <checkbox id="enigmailUserSelSendSigned"
+              label="&enigmail.userSelSendSigned.label;"
+              accesskey="&enigmail.userSelSendSigned.accesskey;"
+              checked="true"
+              oncommand="switchSendSignedCallback();"/>
+    <checkbox id="enigmailUserSelSendEncrypted"
+              label="&enigmail.userSelSendEncrypted.label;"
+              accesskey="&enigmail.userSelSendEncrypted.accesskey;"
+              checked="true"
+              oncommand="switchSendEncryptedCallback();"/>
+
     <checkbox id="displayNoLonger"
               label="&enigmail.displayNoLonger.label;"
               checked="false"
