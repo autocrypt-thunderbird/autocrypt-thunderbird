@@ -49,8 +49,9 @@
         title="&enigmail.userSelectionList.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="enigmailUserSelLoad();"
-        ondialogaccept="return enigmailUserSelAccept();"
         buttons="accept,cancel,extra1"
+        buttonlabelaccept="&enigmail.send.label;"
+        ondialogaccept="return enigmailUserSelAccept();"
         buttonlabelextra1="&enigmail.perRecipientsOption.label;"
         ondialogextra1="enigmailNewRecipientRule();"
         minheight="450">
