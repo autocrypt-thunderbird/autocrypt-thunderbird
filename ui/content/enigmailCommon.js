@@ -139,8 +139,15 @@ const PGP_MIME_ALWAYS   = 2;
 const ENIG_POSSIBLE_PGPMIME = -2081;
 const ENIG_PGP_DESKTOP_ATT  = -2082;
 
-var gUsePGPMimeOptionList = ["usePGPMimeNever", "usePGPMimePossible",
+var gUsePGPMimeOptionList = ["usePGPMimeNever",
+                             "usePGPMimePossible",
                              "usePGPMimeAlways"];
+
+var gEnigConfirmBeforeSending = ["confirmBeforeSendingNever",
+                                 "confirmBeforeSendingAlways",
+                                 "confirmBeforeSendingIfEncrypted",
+                                 "confirmBeforeSendingIfNotEncrypted",
+                                 "confirmBeforeSendingIfRules"];
 
 var gEnigRecipientsSelection = ["-",
                                 "perRecipientRules",

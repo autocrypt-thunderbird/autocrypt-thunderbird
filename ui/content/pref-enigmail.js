@@ -314,9 +314,6 @@ function prefOnAccept() {
   displayPrefs(false, false, true);
   EnigSetPref("agentPath", EnigConvertFromUnicode(newAgentPath, "utf-8"));
 
-  //setRecipientsSelectionPref(document.getElementById("enigmail_recipientsSelection").value);
-  //EnigSetRadioPref("recipientsSelection", gEnigRecipientsSelection);
-
   if (gMimePartsElement &&
       (gMimePartsElement.checked != gMimePartsValue) ) {
 
