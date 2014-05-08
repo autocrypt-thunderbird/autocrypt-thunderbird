@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Enigmail Help: Edit OpenPGP Rule</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <style type="text/css">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <h1>OpenPGP Hilfe</h1>
+
+  <h3>Optionen zum Verschlüsselten Senden</h3>
+
+  <p>In den Senden Einstellungen can man prinzipiell das Modell und die prinzipiellen Einstellungen zum Verschlüsseln einstellen. </p>
+  <dl>
+<dt>Bequeme Verschlüsselung</dt>
+  <dd>Mit diesen Einstellungen wird möglichst immer ohne Rückfragen verschlüsselt. 
+    <p>Diese Einstellungen sind vor allem dann angemessen, wenn man einfach nur seine Privatsphäre erhöhen will, indem man Emails möglichst verschlüsselt statt unverschlüsselt verschickt.    
+    <p>Der Effekt ist wie wenn man Emails statt als Postkarten als Briefe versendet. Im Gegensatz zu Postkarten kann damit unterwges nicht mehr jder den Inhalt der Email einfach so mitlesen.    
+    <p>Wie bei Briefen bietet das aber keine absolute Garantie, dass die Emails unterwegs nicht von anderen gelesen werden können (auch wenn dazu ein gewisser technischer Aufwand notwendig ist).    
+<p>Ein ganz konkretes Risiko besteht darin, aus Versehen &quot;gefälschte Schlüssel&quot; zu verwenden, die man von irgendjemanden oder irgendwo bekommen hat und nur behauptet wurde, dass der Schlüssel zur angegebenen Email-Adresse gehört. Um dieses Risiko zu vermeiden, sollte man nur Schlüssel akzeptieren, denen man vetrauen kann (siehe unten), oder immer selbst einen Schlüssel anhand des Fingerabdrucks mit dem Eigentümer abgleichen (und unterschreiben).</dd>
+  
+  <dt>Manuelle Verschlüsselung</dt>
+  <dd>Mit dieser Option kann man die verschiedenen Einstellungen zur Verschlüsselung nach den eignenen Vorstellungen anpassen. Man kann festlegen
+    <ul>
+      <li>ob auf verschlüsselte/signierte Emails automatisch verschlüsselt/signiert geantwortet werden soll.</li>
+      <li>ob man nur Schlüssel akzeptieren will, denen man auch vertrauen kann (dies aktiviert das OpenPGP Vertrauensmodell, durch das man nur Schlüsseln vertraut, die von einem selbst oder Personen, denen man trauen kann, unterschrieben wurden).</li>
+      <li>ob man möglichst immer automatisch verschlüsseln will.</li>
+      <li>ob und unter welchen Umständen eine ausgehende Email (und deren Verschlüsselung) final bestätigt werden muss.</li>
+    </ul>
+  </dd>
+
+Falls es wichtig ist, dass der Inhalt von verschlüsselten Emails nicht von anderen Personen oder Organisationen gelesen werden können, sollte man zumindest bei den manuellen Einstellungen die Option einschalten, mit der nur vertrauenswürdige Schlüssel akzeptiert werden. Während dies das Risiko der Verwendung von &quot;gefälschten Schlüsseln&quot; reduziert, muss man dazu aber in der Schlüsselverwaltung Schlüssel aktiv unterschreiben und/oder aktiv bestätigen, welchen Email-Adressen (Personen/Organizationen) man trauen kann, wenn diese die Gültigkeit von Schlüssel bestätigen.
+  
+</body>
+</html>

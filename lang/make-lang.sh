@@ -89,7 +89,7 @@ if [ -d help ]; then
 fi
 pwd
 
-for f in compose.html messenger.html rulesEditor.html editRcptRule.html initError.html ; do
+for f in compose.html editRcptRule.html initError.html messenger.html rulesEditor.html sendingPrefs ; do
   cp ${f} ${cwd}/${HELPDIR}
 done
 

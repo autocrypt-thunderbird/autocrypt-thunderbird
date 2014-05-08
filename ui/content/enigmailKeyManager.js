@@ -128,7 +128,6 @@ function enigmailBuildList(refresh) {
 
   var keyListObj = {};
 
-
   EnigLoadKeyList(refresh, keyListObj, getSortColumn(), getSortDirection());
 
   gKeyList = keyListObj.keyList;
@@ -1398,7 +1397,7 @@ function getSortColumn() {
   case "keyCol": return "keyidshort";
   case "typeCol": return "keytype";
   case "validityCol": return "validity";
-  case "trustCol": return "trust";
+  case "trustCol": return "trust";  // ownerTrust
   case "expCol": return "expiry";
   case "fprCol": return "fpr";
   default: return "?";

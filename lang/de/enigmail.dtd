@@ -61,8 +61,8 @@
 <!ENTITY enigmail.moreOptions.label "Weitere Einstellungen">
 <!ENTITY enigmail.encryptToSelf.label "Zusätzlich mit eigenem Schlüssel verschlüsseln">
 <!ENTITY enigmail.encryptToSelf.tooltip "Auch Sie selbst können die Nachrichten wieder entschlüsseln und lesen.">
-<!ENTITY enigmail.alwaysTrustSend.label "Schlüsseln immer vertrauen">
-<!ENTITY enigmail.alwaysTrustSend.tooltip "Das &quot;Web of Trust&quot; nicht verwenden, um die Gültigkeit der Schlüssel zu bestimmen.">
+<!ENTITY enigmail.alwaysTrustSend.label "Gültigen Schlüsseln immer vertrauen">
+<!ENTITY enigmail.alwaysTrustSend.tooltip "Das &quot;Web of Trust&quot; nicht verwenden, um die Gültigkeit der Schlüssel zu bestimmen (außer für abgelaufene/widerrufene Schlüssel).">
 <!ENTITY enigmail.useNonDefaultComment.label "Enigmail-Information zur OpenPGP-Signatur hinzufügen">
 <!ENTITY enigmail.keyserver.label "Schlüsselserver">
 <!ENTITY enigmail.keyserverDlg.label "Schlüsselserver auswählen">
@@ -161,6 +161,34 @@
 <!ENTITY enigmail.defaultSignPlainMsg.label "Unverschlüsselte Nachrichten standardmäßig unterschreiben">
 <!ENTITY enigmail.defaultEncryptionNone.label "Keine automatische Verschlüsselung">
 <!ENTITY enigmail.defaultNotSignedsend.label "Nachrichten nicht unterschreiben">
+
+<!ENTITY enigmail.encryptionModelConvenient.label "Bequeme Verschluesselungs-Einstellungen">
+<!ENTITY enigmail.encryptionModelManually.label   "Manuelle Verschluesselungs-Einstellungen">
+
+<!ENTITY enigmail.acceptedKeysOption.label    "Zum verschluesselten Senden akzeptiere">
+<!ENTITY enigmail.acceptedKeysValid.label     "nur Schluessel, denen ich trauen kann">
+<!ENTITY enigmail.acceptedKeysValid.tooltip   "This option is provided to deal with the danger of faked keys using the Web-of-Trust. You only accept keys that are signed by yourself or by other people you trust. Technically, you only accept keys 'valid' for encryption.">
+<!ENTITY enigmail.acceptedKeysAll.label       "alle Schluessel  (sofern nicht abgelaufen, zurueckgezogen oder deaktiviert)">
+<!ENTITY enigmail.acceptedKeysAll.tooltip     "This option allows encryption whenever you have a key that is neither disabled by you nor revoked/expired by the owner. Because these keys are not necessarily validated/signed, there is a risk that you use faked keys, so that others than the requested recipients can read the content of the encrypted email. However, that's still better than sending emails unencrypted. Technically, this uses the GPG option '--trust-model always'.">
+
+<!ENTITY enigmail.autoSendEncryptedOption.label   "Sende automatisch verschluesselt">
+<!ENTITY enigmail.autoSendEncryptedNever.label    "nie">
+<!ENTITY enigmail.autoSendEncryptedNever.tooltip  "Don't automatically send encrypted except explicitly triggered by per-recipient rules">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.label   "wenn moeglich">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.tooltip "Automatically send encrypted when for each recipient at least one keys is known and accepted (see above) and no recipient rule forces not to encrypt.">
+
+<!ENTITY enigmail.confirmBeforeSendingOption.label           "Senden bestätigen">
+<!ENTITY enigmail.confirmBeforeSendingNever.label            "nie">
+<!ENTITY enigmail.confirmBeforeSendingNever.tooltip          "Dont't display information dialog about signing/encryption before sending a message">
+<!ENTITY enigmail.confirmBeforeSendingAlways.label           "immer">
+<!ENTITY enigmail.confirmBeforeSendingAlways.tooltip         "Always display information dialog about signing/encryption before sending a message">
+<!ENTITY enigmail.confirmBeforeSendingIfEncrypted.label      "falls verschluesselt">
+<!ENTITY enigmail.confirmBeforeSendingIfEncrypted.tooltip    "Display information dialog about signing/encryption before sending an ENCRYPTED message">
+<!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.label   "falls nicht verschluesselt">
+<!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.tooltip "Display information dialog about signing/encryption before sending an UNENCRYPTED message">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.label          "wenn Regeln die Standard-Einstellung zum Verschluesseln geaendert haben">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.tooltip        "Display information dialog about signing/encryption before sending, if your preference regarding encryption was changed by a per-recipient rule or auto encryption">
+
 <!ENTITY enigmail.recipientsSelectionOption.label "Wahl der Schlüssel von Nachrichten-Empfängern">
 <!ENTITY enigmail.perRecipientRules.label "Durch Empfängerregeln">
 <!ENTITY enigmail.perRecipientRules.tooltip "Sie werden bei Bedarf aufgefordert eine neue Empfängerregel zu erstellen.">

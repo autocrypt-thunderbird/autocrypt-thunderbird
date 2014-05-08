@@ -42,6 +42,9 @@ Components.utils.import("resource://enigmail/commonFuncs.jsm");
 
 if (! Enigmail) var Enigmail = {};
 
+var enigValidityKeyList = null;
+var enigValidityKeySortList = null;
+
 Enigmail.hlp = {
 
   /**
@@ -265,6 +268,153 @@ Enigmail.hlp = {
     return true;
   },
 
+  /* try to find valid key to passed email address
+   * @return: list of all found key (with leading "0x") or null
+   */
+  validKeysForAllRecipients: function (emailAddrs, refresh)
+  {
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): emailAddrs=\""+emailAddrs+"\" refresh=\""+refresh+"\"\n");
+    if (emailAddrs.indexOf('@') < 0) {
+      return null;
+    }
+
+    // check whether and how auto-encryption is enabled
+    var autoSendEncrypted = EnigmailCommon.getPref("autoSendEncrypted");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: validKeysForAllRecipients(): autoSendEncrypted=\""+autoSendEncrypted+"\"\n");
+    if (!autoSendEncrypted) {
+      return null;
+    }
+    var acceptedKeys = EnigmailCommon.getPref("acceptedKeys");
+    var minTrustLevel;
+    switch (autoSendEncrypted) {
+      case 0:  // EncNever
+        return null;
+        break;
+      case 1:  // EncIfValid
+        switch (acceptedKeys) {
+          case 0: // accept valid/authenticated keys only
+            minTrustLevel = "f";
+            break; 
+          case 1: // accept all but revoked/disabled/expired keys
+            minTrustLevel = "-";
+            break; 
+          default:
+            EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: validKeysForAllRecipients(): INVALID VALUE for acceptedKeys: \""+acceptedKeys+"\"\n");
+            return null;
+            break;
+        }
+        break;
+      default:
+        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: validKeysForAllRecipients(): INVALID VALUE for autoSendEncrypted: \""+autoSendEncrypted+"\"\n");
+        return null;
+        break;
+    }
+
+    const TRUSTLEVEL_SORTED="indDrego-qmfu"; // trust level sorted by increasing level of trust (see commonFuncs.jsm)
+    var minTrustLevelIndex = TRUSTLEVEL_SORTED.indexOf(minTrustLevel);
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): with minTrustLevel=\""+minTrustLevel+"\"\n");
+
+    var resultingArray = new Array;  // resulting key list (if all valid)
+    try {
+      // get list of known keys
+      if (!keyList || refresh) {
+        var keyListObj = {};
+        EnigmailFuncs.loadKeyList(window, 
+                                  false,        // do not refresh key infos,
+                                  keyListObj,   // returned list
+                                  "validity",   // sorted acc. to key validity
+                                  -1);          // descending
+        enigValidityKeyList = keyListObj.keyList;
+        enigValidityKeySortList = keyListObj.keySortList;
+      }
+      var keyList = enigValidityKeyList;
+      var keySortList = enigValidityKeySortList;
+
+      // create array of address elements (email or key)
+      var addresses=EnigmailFuncs.stripEmail(emailAddrs).split(',');
+
+      // check whether each address is or has a key:
+      for (var i=0; i < addresses.length; i++) {
+        var addr = addresses[i];
+        // try to find current address in key list: 
+        var found = false;
+        if (addr.indexOf('@') >= 0) {
+          // try email match:
+          var key = this.getValidKeyForRecipient (addr, minTrustLevelIndex, keyList, keySortList);
+          if (key) {
+            found = true;
+            resultingArray.push("0x"+key);
+          }
+        }
+        else {
+          // try key match:
+          var key = addr.substring(2);  // key list has elements without leading "0x"
+          var keyObj = keyList[key];
+          //var userId = keyObj.userId;
+          var keyTrust = keyObj.keyTrust;
+          //var ownerTrust = keyObj.ownerTrust;
+          // if found, check whether the trust level is enough
+          if (TRUSTLEVEL_SORTED.indexOf(keyTrust) >= minTrustLevelIndex) {
+            found = true;
+            resultingArray.push(addr);
+          }
+        }
+        if (! found) {
+          // no key for this address found
+          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): no valid key found for=\""+addr+"\" with minTrustLevel=\""+minTrustLevel+"\"\n");
+          return null;
+        }
+      }
+    }
+    catch (ex) {
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): exception: "+ex.description+"\n");
+      return null;
+    }
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): return: resultingArray=\""+resultingArray+"\"\n");
+    return resultingArray;
+  },
+
+  /* try to find valid key to passed email address
+   * @return: found key (without leading "0x") or null
+   */
+  getValidKeyForRecipient: function (emailAddr, minTrustLevelIndex, keyList, keySortList)
+  {
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): emailAddr=\""+emailAddr+"\"\n");
+    const TRUSTLEVEL_SORTED="oidreDn-qmfu"; // trust level sorted by increasing level of trust (see commonFuncs.jsm)
+
+    for (var idx=0; idx<keySortList.length; idx++) { // note: we have sorted acc. to validity
+      var keyObj = keyList[keySortList[idx].keyId];
+      var keyTrust = keyObj.keyTrust;
+      // end of loop: key trust (our sort criterion) too low?
+      if (TRUSTLEVEL_SORTED.indexOf(keyTrust) < minTrustLevelIndex) {
+        return null;  // NOT FOUND (below requested trust level)
+      }
+
+      //var ownerTrust = keyObj.ownerTrust;
+      //var expired = keyObj.expiry;
+      var userId = keyObj.userId;
+      if (userId && userId.indexOf(emailAddr) >= 0 
+          && TRUSTLEVEL_SORTED.indexOf(keyTrust) >= minTrustLevelIndex) { 
+        return keyObj.keyId; // FOUND 
+      }
+
+      // check whether matching subkeys exist
+      // - Note: subkeys have NO owner trust
+      for (var subkey=0; subkey<keyObj.SubUserIds.length; subkey++) {
+        var subKeyObj = keyObj.SubUserIds[subkey];
+        var subUserId = subKeyObj.userId;
+        var subKeyTrust = subKeyObj.keyTrust;
+        //var subExpired = subKeyObj.expiry;
+        if (subUserId && subUserId.indexOf(emailAddr) >= 0) {
+          if (TRUSTLEVEL_SORTED.indexOf(subKeyTrust) >= minTrustLevelIndex) {
+            return keyObj.keyId; // FOUND 
+          }
+        }
+      }
+    }
+    return null;  // not found
+  },
+
   /**
     * processConflicts
     * - handle sign/encrypt/pgpMime conflicts if any
@@ -295,7 +445,7 @@ Enigmail.hlp = {
       flagsObj.encrypt = 0;
       conflictFound = true;
     }
-    if (interactive && conflictFound && (!EnigmailCommon.getPref("confirmBeforeSend"))) {
+    if (interactive && conflictFound) {
       var sign = flagsObj.sign;
       var encrypt = flagsObj.encrypt;
       // process message about whether we still sign/encrypt
@@ -325,6 +475,7 @@ Enigmail.hlp = {
    */
   getInvalidAddress: function (gpgMsg)
   {
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getInvalidAddress(): gpgMsg=\""+gpgMsg+"\"\n\n");
     var invalidAddr = [];
     var lines = gpgMsg.split(/[\n\r]+/);
     for (var i=0; i < lines.length; i++) {

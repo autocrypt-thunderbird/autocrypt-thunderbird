@@ -90,6 +90,23 @@
       <description>&enigmail.confirmBeforeSend.tooltip;</description>
     </tooltip>
 
+    <!-- sending preferences: accepted keys -->
+    <tooltip id="acceptedKeysValid.tooltip">
+      <description>&enigmail.acceptedKeysValid.tooltip;</description>
+    </tooltip>
+    <tooltip id="acceptedKeysAll.tooltip">
+      <description>&enigmail.acceptedKeysAll.tooltip;</description>
+    </tooltip>
+
+    <!-- sending preferences: auto send encrypted -->
+    <tooltip id="autoSendEncryptedNever.tooltip">
+      <description>&enigmail.autoSendEncryptedNever.tooltip;</description>
+    </tooltip>
+    <tooltip id="autoSendEncryptedIfKeys.tooltip">
+      <description>&enigmail.autoSendEncryptedIfKeys.tooltip;</description>
+    </tooltip>
+
+    <!-- basic: confirm before sending -->
     <tooltip id="confirmBeforeSendingNever.tooltip">
       <description>&enigmail.confirmBeforeSendingNever.tooltip;</description>
     </tooltip>
@@ -157,7 +174,7 @@
   <tabbox flex="1" style="margin:5px" id="prefTabs">
     <tabs id="prefTabBox">
       <tab id="basicTab"    label="&enigmail.basic.label;"/>
-      <tab id="sendTab"     label="&enigmail.sending.label;" advanced="true"/>
+      <tab id="sendTab"     label="&enigmail.sending.label;"/>
       <tab id="keySelTab"   label="&enigmail.keySel.label;" advanced="true"/>
       <tab id="advancedTab" label="&enigmail.advancedPrefsButton.label;" advanced="true"/>
       <tab id="keyserverTab" label="&enigmail.keyserver.label;" advanced="true"/>
@@ -247,27 +264,81 @@
       </vbox>
 
       <!-- "Sending" Tab -->
-      <vbox id="sending" flex="1"
-            advanced="true">
+      <vbox id="sending" flex="1">
           <description class="enigmailPrefsTitle">&enigmail.whenSending.label; ...</description>
 
-          <checkbox id="enigmail_wrapHtmlBeforeSend"
-                    label="&enigmail.wrapHtmlBeforeSend.label;"
-                    tooltip="wrapHtmlBeforeSend.tooltip"/>
+          <hbox flex="1" align="end">
+            <radiogroup id="enigmail_encryptionModel"
+                        flex="1"
+                        pref="true"
+                        preftype="int"
+                        prefstring="extensions.enigmail.encryptionModel">
+              <radio id="encryptionModelConvenient"
+                     value="0"
+                     label="&enigmail.encryptionModelConvenient.label;"
+                     oncommand="resetSendingPrefsConvenient();"/>
+              <radio id="encryptionModelManually"
+                     value="1"
+                     label="&enigmail.encryptionModelManually.label;"
+                     oncommand="resetSendingPrefsManually();"/>
+            </radiogroup>
+            <vbox align="end">
+              <button id="sendingPrefsHelp"
+                      label="&enigmail.help.label;"
+                      oncommand="EnigHelpWindow('sendingPrefs');"/>
+            </vbox>
+          </hbox>
 
-          <checkbox id="enigmail_alwaysTrustSend"
-                    label="&enigmail.alwaysTrustSend.label;"
-                    tooltip="alwaysTrustSend.tooltip"/>
+        <!-- elements for manual settings: -->
+        <groupbox id="enigmail_pref_sending_manually">
+          <checkbox id="enigmail_keepSettingsForReply"
+                    tooltip="keepCryptoSettingsForReply.tooltip"
+                    label="&enigmail.keepCryptoSettingsForReply.label;" />
+
+          <groupbox>
+            <caption label="&enigmail.acceptedKeysOption.label;"/>
+            <radiogroup id="enigmail_acceptedKeys"
+                        pref="true"
+                        preftype="int"
+                        prefstring="extensions.enigmail.acceptedKeys">
+              <radio id="acceptedKeysValid"
+                    value="0"
+                    label="&enigmail.acceptedKeysValid.label;"
+                    tooltip="acceptedKeysValid.tooltip"/>
+              <radio id="acceptedKeysAll"
+                    value="1"
+                    label="&enigmail.acceptedKeysAll.label;"
+                    tooltip="acceptedKeysAll.tooltip"/>
+            </radiogroup>
+          </groupbox>
 
           <checkbox id="enigmail_allowEmptySubject"
                     hidden="true"/>
+
+          <!-- sending preferences: auto send encrypted -->
+          <groupbox>
+            <caption label="&enigmail.autoSendEncryptedOption.label;"/>
+            <radiogroup id="enigmail_autoSendEncrypted"
+                        pref="true"
+                        preftype="int"
+                        prefstring="extensions.enigmail.autoSendEncrypted">
+              <radio id="autoSendEncryptedNever"
+                    value="0"
+                    label="&enigmail.autoSendEncryptedNever.label;"
+                    tooltip="autoSendEncryptedNever.tooltip"/>
+              <radio id="autoSendEncryptedIfKeys"
+                    value="1"
+                    label="&enigmail.autoSendEncryptedIfKeys.label;"
+                    tooltip="autoSendEncryptedIfKeys.tooltip"/>
+            </radiogroup>
+          </groupbox>
 
           <!--
           <checkbox id="enigmail_confirmBeforeSend"
                     label="&enigmail.confirmBeforeSend.label;"
                     tooltip="confirmBeforeSend.tooltip"/>
-          -->
-          <!-- options to automatically send encrypted -->
+	  -->
+	  <!-- options to confirm before sending -->
           <groupbox>
             <caption label="&enigmail.confirmBeforeSendingOption.label;"/>
             <radiogroup id="enigmail_confirmBeforeSending"
@@ -301,6 +372,7 @@
                     tooltip="confirmBeforeSendingIfRules.tooltip"/>
             </radiogroup>
           </groupbox>
+        </groupbox>
       </vbox>
 
       <!-- "Key Selection" Tab -->
@@ -359,9 +431,9 @@
           <description class="enigmailPrefsTitle">&enigmail.moreOptions.label;</description>
           <spacer flex="0"/>
 
-          <checkbox id="enigmail_keepSettingsForReply"
-                    tooltip="keepCryptoSettingsForReply.tooltip"
-                    label="&enigmail.keepCryptoSettingsForReply.label;" />
+          <checkbox id="enigmail_wrapHtmlBeforeSend"
+                    label="&enigmail.wrapHtmlBeforeSend.label;"
+                    tooltip="wrapHtmlBeforeSend.tooltip"/>
 
           <checkbox id="enigmail_useDefaultComment"
                     invert="true"

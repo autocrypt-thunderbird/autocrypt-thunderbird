@@ -160,7 +160,7 @@ function getPubkeysFromSecretKeys(keyString) {
 function enigmailBuildList(refresh) {
    DEBUG_LOG("enigmailUserSelection.js: enigmailBuildList\n");
 
-   const TRUSTLEVEL_SORTED="oidre-qnmfu"; // trust level sorted by increasing level of trust
+   const TRUSTLEVEL_SORTED="indDrego-qmfu"; // trust level sorted by increasing level of trust (see commonFuncs.jsm)
 
    // sorting criterion for dialog entries
    // - note: for active state we have values:
@@ -422,9 +422,17 @@ function enigmailBuildList(refresh) {
               escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
               s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
               s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
-              if ((mailAddr != EMPTY_UID) && (invalidAddr.indexOf(" "+mailAddr+" ")<0)) {
-                aValidUsers.push(mailAddr);
-                aUserList[i].activeState =(toAddr.search(s1)>=0 || toAddr.search(s2)>=0) ? 1 : 0;
+              if (mailAddr != EMPTY_UID) {
+                if (invalidAddr.indexOf(" "+mailAddr+" ")<0) {
+                  aValidUsers.push(mailAddr);
+                  aUserList[i].activeState =(toAddr.search(s1)>=0 || toAddr.search(s2)>=0) ? 1 : 0;
+                }
+                else {
+                  // mail address found as invalid address: marks that to sort them to the beginning
+                  aUserList[i].uidMatchInvalid = true;
+                  aUserList[i].uidValid = false;
+                  aUserList[i].activeState = 0;
+                }
               }
               else {
                 aUserList[i].uidValid = false;

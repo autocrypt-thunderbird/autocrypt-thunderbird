@@ -57,10 +57,11 @@ my @genFiles = (
 
 my @files = (
   "am-enigprefs.properties",
-  "help/rulesEditor.html",
   "help/compose.html",
+  "help/editRcptRule.html",
   "help/messenger.html",
-  "help/editRcptRule.html"
+  "help/rulesEditor.html",
+  "help/sendingPrefs.html",
 );
 
 

@@ -207,6 +207,21 @@
 <!ENTITY enigmail.defaultEncryptionNone.label     "No default encryption">
 <!ENTITY enigmail.defaultNotSignedsend.label      "Do not sign messages by default">
 
+<!ENTITY enigmail.encryptionModelConvenient.label "Convenient encryption settings">
+<!ENTITY enigmail.encryptionModelManually.label   "Manual encryption settings">
+
+<!ENTITY enigmail.acceptedKeysOption.label    "To send encrypted, accept">
+<!ENTITY enigmail.acceptedKeysValid.label     "only keys I can trust">
+<!ENTITY enigmail.acceptedKeysValid.tooltip   "This option is provided to deal with the danger of faked keys using the Web-of-Trust. You only accept keys that are signed by yourself or by other people you trust. Technically, you only accept keys 'valid' for encryption.">
+<!ENTITY enigmail.acceptedKeysAll.label       "all keys  (except disabled, revoked, or expired)">
+<!ENTITY enigmail.acceptedKeysAll.tooltip     "This option allows encryption whenever you have a key that is neither disabled by you nor revoked/expired by the owner. Because these keys are not necessarily validated/signed, there is a risk that you use faked keys, so that others than the requested recipients can read the content of the encrypted email. However, that's still better than sending emails unencrypted. Technically, this uses the GPG option '--trust-model always'.">
+
+<!ENTITY enigmail.autoSendEncryptedOption.label   "Automatically send encrypted">
+<!ENTITY enigmail.autoSendEncryptedNever.label    "Never">
+<!ENTITY enigmail.autoSendEncryptedNever.tooltip  "Don't automatically send encrypted except explicitly triggered by per-recipient rules">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.label   "If possible">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.tooltip "Automatically send encrypted when for each recipient at least one keys is known and accepted (see above) and no recipient rule forces not to encrypt.">
+
 <!ENTITY enigmail.confirmBeforeSendingOption.label           "Confirm before sending">
 <!ENTITY enigmail.confirmBeforeSendingNever.label            "Never">
 <!ENTITY enigmail.confirmBeforeSendingNever.tooltip          "Dont't display information dialog about signing/encryption before sending a message">
@@ -216,8 +231,8 @@
 <!ENTITY enigmail.confirmBeforeSendingIfEncrypted.tooltip    "Display information dialog about signing/encryption before sending an ENCRYPTED message">
 <!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.label   "If unencrypted">
 <!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.tooltip "Display information dialog about signing/encryption before sending an UNENCRYPTED message">
-<!ENTITY enigmail.confirmBeforeSendingIfRules.label          "If rules changed encryption">
-<!ENTITY enigmail.confirmBeforeSendingIfRules.tooltip        "Display information dialog about signing/encryption before sending, if encryption was changed by a per-recipient rule">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.label          "If rules changed the default encryption setting">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.tooltip        "Display information dialog about signing/encryption before sending, if your preference regarding encryption was changed by a per-recipient rule or auto encryption">
 
 <!ENTITY enigmail.recipientsSelectionOption.label "How should we choose the keys?">
 <!ENTITY enigmail.perRecipientRules.label         "By pre-set rules only">
@@ -236,7 +251,7 @@
 <!ENTITY enigmail.usePGPMimeAlways.label          "Use PGP/MIME by default">
 <!ENTITY enigmail.autoEncryptDrafts.label         "Encrypt draft messages on saving">
 
-<!ENTITY enigmail.keepCryptoSettingsForReply.label      "Encrypt/sign replies to encrypted/signed message">
+<!ENTITY enigmail.keepCryptoSettingsForReply.label      "Encrypt/sign replies to encrypted/signed messages">
 <!ENTITY enigmail.confirmBeforeSend.label         "Always confirm before sending">
 <!ENTITY enigmail.confirmBeforeSend.tooltip       "Activate to display information dialog about signing/encryption before sending a message">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label        "Re-wrap signed HTML text before sending">

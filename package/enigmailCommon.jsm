@@ -3011,6 +3011,51 @@ function upgradeRecipientsSelection () {
 }
 
 
+function upgradePrefsSending ()
+{
+  DEBUG_LOG("enigmailCommon.jsm: upgradePrefsSending()\n");
+
+  var  cbs = EnigmailCommon.getPref("confirmBeforeSend");
+  var  ats = EnigmailCommon.getPref("alwaysTrustSend");
+  var  ksfr = EnigmailCommon.getPref("keepSettingsForReply");
+  DEBUG_LOG("enigmailCommon.jsm: upgradePrefsSending cbs="+cbs+" ats="+ats+" ksfr="+ksfr+"\n");
+
+  // Upgrade confirmBeforeSend (bool) to confirmBeforeSending (int)
+  switch (cbs) {
+    case false:
+      EnigmailCommon.setPref("confirmBeforeSending", 0); // never
+      break;
+    case true:
+      EnigmailCommon.setPref("confirmBeforeSending", 1); // always
+      break;
+  }
+
+  // Upgrade alwaysTrustSend (bool)   to acceptedKeys (int)
+  switch (ats) {
+    case false:
+      EnigmailCommon.setPref("acceptedKeys", 0); // valid
+      break;
+    case true:
+      EnigmailCommon.setPref("acceptedKeys", 1); // all
+      break;
+  }
+
+  // if all settings are default settings, use convenient encryption
+  if (cbs==false && ats==true && ksfr==true) {
+    EnigmailCommon.setPref("encryptionModel", 0); // convenient
+    DEBUG_LOG("enigmailCommon.jsm: upgradePrefsSending() encryptionModel=0 (convenient)\n");
+  }
+  else {
+    EnigmailCommon.setPref("encryptionModel", 1); // manually
+    DEBUG_LOG("enigmailCommon.jsm: upgradePrefsSending() encryptionModel=1 (manually)\n");
+  }
+
+  // clear old prefs
+  EnigmailCommon.prefBranch.clearUserPref("confirmBeforeSend");
+  EnigmailCommon.prefBranch.clearUserPref("alwaysTrustSend");
+}
+
+
 // Remove all quoted strings (and angle brackets) from a list of email
 // addresses, returning a list of pure email address
 function stripEmailAdr(mailAddrs) {
@@ -3121,16 +3166,21 @@ function ConfigureEnigmail() {
     if (oldVer == "") {
       EnigmailCommon.openSetupWizard();
     }
-    else if (oldVer < "0.95") {
-      try {
-        upgradeHeadersView();
-        upgradePgpMime();
-        upgradeRecipientsSelection();
+    else {
+      if (oldVer < "0.95") {
+        try {
+          upgradeHeadersView();
+          upgradePgpMime();
+          upgradeRecipientsSelection();
+        }
+        catch (ex) {}
       }
-      catch (ex) {}
-    }
-    else if (vc.compare(oldVer, "1.0") < 0) {
-      upgradeCustomHeaders();
+      if (vc.compare(oldVer, "1.0") < 0) {
+        upgradeCustomHeaders();
+      }
+      if (vc.compare(oldVer, "1.7a1pre") < 0) {
+        upgradePrefsSending();
+      }
     }
   }
   catch(ex) {};

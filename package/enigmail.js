@@ -128,8 +128,8 @@ var gStatusFlags = {GOODSIG:         nsIEnigmail.GOOD_SIGNATURE,
                     SC_OP_FAILURE:   nsIEnigmail.SC_OP_FAILURE,
                     UNKNOWN_ALGO:    nsIEnigmail.UNKNOWN_ALGO,
                     SIG_CREATED:     nsIEnigmail.SIG_CREATED,
-                    END_ENCRYPTION : nsIEnigmail.END_ENCRYPTION,
-                    INV_SGNR:				 0x100000000
+                    END_ENCRYPTION:  nsIEnigmail.END_ENCRYPTION,
+                    INV_SGNR:        0x100000000,
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1253,8 +1253,9 @@ Enigmail.prototype = {
   },
 
 
-  encryptMessage: function (parent, uiFlags, plainText, fromMailAddr, toMailAddr, bccMailAddr,
-            sendFlags, exitCodeObj, statusFlagsObj, errorMsgObj) {
+  encryptMessage: function (parent, uiFlags, plainText, fromMailAddr, toMailAddr, bccMailAddr, sendFlags,
+                            exitCodeObj, statusFlagsObj, errorMsgObj)
+  {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.encryptMessage: "+plainText.length+" bytes from "+fromMailAddr+" to "+toMailAddr+" ("+sendFlags+")\n");
 
     exitCodeObj.value    = -1;
@@ -1293,10 +1294,10 @@ Enigmail.prototype = {
       });
 
 
-    var proc = Ec.encryptMessageStart(parent, uiFlags, fromMailAddr, toMailAddr,
-                          bccMailAddr, null, sendFlags,
-                          listener, statusFlagsObj, errorMsgObj);
-
+    var proc = Ec.encryptMessageStart(parent, uiFlags,
+                                      fromMailAddr, toMailAddr, bccMailAddr,
+                                      null, sendFlags,
+                                      listener, statusFlagsObj, errorMsgObj);
     if (! proc) {
       exitCodeObj.value = -1;
       return "";
@@ -1307,9 +1308,9 @@ Enigmail.prototype = {
 
     var retStatusObj = {};
     exitCodeObj.value = Ec.encryptMessageEnd(getUnicodeData(listener.stderrData), listener.exitCode,
-                                        uiFlags, sendFlags,
-                                        listener.stdoutData.length,
-                                        retStatusObj);
+                                             uiFlags, sendFlags,
+                                             listener.stdoutData.length,
+                                             retStatusObj);
 
     statusFlagsObj.value = retStatusObj.statusFlags;
     errorMsgObj.value = retStatusObj.errorMsg;
@@ -1320,13 +1321,11 @@ Enigmail.prototype = {
 
     if (exitCodeObj.value == 0) {
       // Normal return
-
       return getUnicodeData(listener.stdoutData);
     }
 
     // Error processing
     Ec.DEBUG_LOG("enigmail.js: Enigmail.encryptMessage: command execution exit code: "+exitCodeObj.value+"\n");
-
     return "";
   },
 
