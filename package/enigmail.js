@@ -2098,7 +2098,7 @@ Enigmail.prototype = {
     }
     listText=listText.replace(/(\r\n|\r)/g, "\n");
 
-    const trustLevels = "oidre-qmnfu";
+    const trustLevels = "indDreg?o-qmfu";
     var maxTrustLevel = -1;
     var theLine;
 
@@ -2109,7 +2109,7 @@ Enigmail.prototype = {
       for (var i=0; i<keyArr.length; i++) {
         switch (keyArr[i].substr(0,4)) {
         case "pub:":
-          if ("idre".indexOf(keyArr[i].split(/:/)[1]) >= 0) {
+          if ("indDreg".indexOf(keyArr[i].split(/:/)[1]) >= 0) {
             // pub key not valid (anymore)-> display all UID's
             hideInvalidUid = false;
           }
@@ -2126,7 +2126,7 @@ Enigmail.prototype = {
             }
             // else do not add uid
           }
-          else if (("idre".indexOf(theLine[1]) < 0) || (! hideInvalidUid)) {
+          else if (("indDreg".indexOf(theLine[1]) < 0) || (! hideInvalidUid)) {
             // UID valid or key not valid
             userList += theLine[9] + "\n";
           }
@@ -2134,7 +2134,7 @@ Enigmail.prototype = {
         case "uat:":
           theLine=keyArr[i].split(/:/);
           if (withUserAttributes) {
-            if (("idre".indexOf(theLine[1]) < 0) || (! hideInvalidUid)) {
+            if (("indDreg".indexOf(theLine[1]) < 0) || (! hideInvalidUid)) {
               userList += "uat:jpegPhoto:" + theLine[4] + "\n";
             }
           }

@@ -380,22 +380,28 @@ Enigmail.hlp = {
   getValidKeyForRecipient: function (emailAddr, minTrustLevelIndex, keyList, keySortList)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): emailAddr=\""+emailAddr+"\"\n");
-    const TRUSTLEVEL_SORTED="oidreDn-qmfu"; // trust level sorted by increasing level of trust (see commonFuncs.jsm)
+    const TRUSTLEVEL_SORTED="indDrego-qmfu"; // trust level sorted by increasing level of trust (see commonFuncs.jsm)
 
     for (var idx=0; idx<keySortList.length; idx++) { // note: we have sorted acc. to validity
       var keyObj = keyList[keySortList[idx].keyId];
       var keyTrust = keyObj.keyTrust;
       // end of loop: key trust (our sort criterion) too low?
       if (TRUSTLEVEL_SORTED.indexOf(keyTrust) < minTrustLevelIndex) {
+        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): not found (below requested trust level)\n");
         return null;  // NOT FOUND (below requested trust level)
       }
 
       //var ownerTrust = keyObj.ownerTrust;
       //var expired = keyObj.expiry;
       var userId = keyObj.userId;
-      if (userId && userId.indexOf(emailAddr) >= 0 
-          && TRUSTLEVEL_SORTED.indexOf(keyTrust) >= minTrustLevelIndex) { 
-        return keyObj.keyId; // FOUND 
+      if (userId && userId.indexOf(emailAddr) >= 0) { 
+        if (TRUSTLEVEL_SORTED.indexOf(keyTrust) >= minTrustLevelIndex) { 
+          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): key="+keyObj.keyId+" found\n");
+          return keyObj.keyId; // FOUND 
+        }
+        else {
+          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): matching key="+keyObj.keyId+" found but not enough trust\n");
+        }
       }
 
       // check whether matching subkeys exist
@@ -407,11 +413,16 @@ Enigmail.hlp = {
         //var subExpired = subKeyObj.expiry;
         if (subUserId && subUserId.indexOf(emailAddr) >= 0) {
           if (TRUSTLEVEL_SORTED.indexOf(subKeyTrust) >= minTrustLevelIndex) {
+            EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): subkey in key="+keyObj.keyId+" found\n");
             return keyObj.keyId; // FOUND 
+          }
+          else {
+            EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): matching subkey="+keyObj.keyId+" found but not enough trust\n");
           }
         }
       }
     }
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): not found\n");
     return null;  // not found
   },
 
