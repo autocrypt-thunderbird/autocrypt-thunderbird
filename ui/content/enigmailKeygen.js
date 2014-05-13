@@ -68,6 +68,16 @@ function enigmailKeygenLoad() {
   }
   gUserIdentityList.focus();
 
+  // restore safe setting, which you ALWAYS explicitly have to overrule,
+  // if you don't want them:
+  // - specify passphrase
+  // - specify expiry date
+  var noPassphrase = document.getElementById("noPassphrase");
+  noPassphrase.checked = false;
+  EnigSetPref("noPassphrase", noPassphrase.checked);
+  var noExpiry = document.getElementById("noExpiry");
+  noExpiry.checked = false;
+
   enigmailKeygenUpdate(true, false);
 
   var enigmailSvc = GetEnigmailSvc();
