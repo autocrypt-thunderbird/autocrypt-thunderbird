@@ -2098,7 +2098,7 @@ Enigmail.prototype = {
     }
     listText=listText.replace(/(\r\n|\r)/g, "\n");
 
-    const trustLevels = "indDreg?o-qmfu";
+    const TRUSTLEVELS_SORTED = EnigmailFuncs.trustlevelsSorted();
     var maxTrustLevel = -1;
     var theLine;
 
@@ -2107,37 +2107,45 @@ Enigmail.prototype = {
       var hideInvalidUid=true;
       var keyArr=listText.split(/\n/);
       for (var i=0; i<keyArr.length; i++) {
-        switch (keyArr[i].substr(0,4)) {
-        case "pub:":
-          if ("indDreg".indexOf(keyArr[i].split(/:/)[1]) >= 0) {
-            // pub key not valid (anymore)-> display all UID's
-            hideInvalidUid = false;
-          }
-        case "uid:":
-          theLine=keyArr[i].split(/:/);
-          if (uidOnly && hideInvalidUid) {
-            var thisTrust = trustLevels.indexOf(theLine[1]);
-            if (thisTrust > maxTrustLevel) {
-              userList = theLine[9] + "\n";
-              maxTrustLevel = thisTrust;
+        // process lines such as:
+        //  tru::1:1395895453:1442881280:3:1:5
+        //  pub:f:4096:1:C1B875ED336XX959:2299509307:1546189300::f:::scaESCA:
+        //  fpr:::::::::102A1C8CC524A966849C33D7C8B157EA336XX959:
+        //  uid:f::::1388511201::67D5B96DC564598D4D4D9E0E89F5B83C9931A154::Joe Fox <joe@fox.com>:
+        //  sig:::1:C8B157EA336XX959:2299509307::::Joe Fox <joe@fox.com>:13x:::::2:
+        theLine=keyArr[i].split(/:/);
+        switch (theLine[0]) {
+          case "pub:":
+            if (EnigmailFuncs.isInvalid(theLine[1])) {
+              // pub key not valid (anymore)-> display all UID's
+              hideInvalidUid = false;
             }
-            else if (thisTrust == maxTrustLevel) {
+            break;
+          case "uid:":
+            if (uidOnly && hideInvalidUid) {
+              var thisTrust = TRUSTLEVELS_SORTED.indexOf(theLine[1]);
+              if (thisTrust > maxTrustLevel) {
+                userList = theLine[9] + "\n";
+                maxTrustLevel = thisTrust;
+              }
+              else if (thisTrust == maxTrustLevel) {
+                userList += theLine[9] + "\n";
+              }
+              // else do not add uid
+            }
+            else if (!EnigmailFuncs.isInvalid(theLine[1]) || !hideInvalidUid) {
+              // UID valid  OR  key not valid, but invalid keys allowed
               userList += theLine[9] + "\n";
             }
-            // else do not add uid
-          }
-          else if (("indDreg".indexOf(theLine[1]) < 0) || (! hideInvalidUid)) {
-            // UID valid or key not valid
-            userList += theLine[9] + "\n";
-          }
-          break;
-        case "uat:":
-          theLine=keyArr[i].split(/:/);
-          if (withUserAttributes) {
-            if (("indDreg".indexOf(theLine[1]) < 0) || (! hideInvalidUid)) {
-              userList += "uat:jpegPhoto:" + theLine[4] + "\n";
+            break;
+          case "uat:":
+            if (withUserAttributes) {
+              if (!EnigmailFuncs.isInvalid(theLine[1]) || !hideInvalidUid) {
+                // UID valid  OR  key not valid, but invalid keys allowed
+                userList += "uat:jpegPhoto:" + theLine[4] + "\n";
+              }
             }
-          }
+            break;
         }
       }
       return userList.replace(/^\n+/, "").replace(/\n+$/, "").replace(/\n\n+/g, "\n");

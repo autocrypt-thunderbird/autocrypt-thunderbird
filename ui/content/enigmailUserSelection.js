@@ -160,7 +160,7 @@ function getPubkeysFromSecretKeys(keyString) {
 function enigmailBuildList(refresh) {
    DEBUG_LOG("enigmailUserSelection.js: enigmailBuildList\n");
 
-   const TRUSTLEVEL_SORTED="indDrego-qmfu"; // trust level sorted by increasing level of trust (see commonFuncs.jsm)
+   const TRUSTLEVELS_SORTED = EnigmailFuncs.trustlevelsSorted();
 
    // sorting criterion for dialog entries
    // - note: for active state we have values:
@@ -323,7 +323,7 @@ function enigmailBuildList(refresh) {
          if (typeof(userObj.userId) != "string") {
            // primary UID
            userObj.userId=EnigConvertGpgToUnicode(listRow[USER_ID]).replace(/\\e3A/g, ":");
-            if (TRUSTLEVEL_SORTED.indexOf(listRow[KEY_TRUST]) < TRUSTLEVEL_SORTED.indexOf(userObj.keyTrust)) {
+            if (TRUSTLEVELS_SORTED.indexOf(listRow[KEY_TRUST]) < TRUSTLEVELS_SORTED.indexOf(userObj.keyTrust)) {
             // reduce key trust if primary UID is less trusted than public key
             userObj.keyTrust = listRow[KEY_TRUST];
           }

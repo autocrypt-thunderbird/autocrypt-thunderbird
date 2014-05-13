@@ -293,10 +293,10 @@ Enigmail.hlp = {
       case 1:  // EncIfValid
         switch (acceptedKeys) {
           case 0: // accept valid/authenticated keys only
-            minTrustLevel = "f";
+            minTrustLevel = "f";  // first value for trusted keys
             break; 
           case 1: // accept all but revoked/disabled/expired keys
-            minTrustLevel = "-";
+            minTrustLevel = "?";  // value between invalid and unknown keys
             break; 
           default:
             EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: validKeysForAllRecipients(): INVALID VALUE for acceptedKeys: \""+acceptedKeys+"\"\n");
@@ -310,8 +310,8 @@ Enigmail.hlp = {
         break;
     }
 
-    const TRUSTLEVEL_SORTED="indDrego-qmfu"; // trust level sorted by increasing level of trust (see commonFuncs.jsm)
-    var minTrustLevelIndex = TRUSTLEVEL_SORTED.indexOf(minTrustLevel);
+    const TRUSTLEVELS_SORTED = EnigmailFuncs.trustlevelsSorted();
+    var minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf(minTrustLevel);
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): with minTrustLevel=\""+minTrustLevel+"\"\n");
 
     var resultingArray = new Array;  // resulting key list (if all valid)
@@ -354,7 +354,7 @@ Enigmail.hlp = {
           var keyTrust = keyObj.keyTrust;
           //var ownerTrust = keyObj.ownerTrust;
           // if found, check whether the trust level is enough
-          if (TRUSTLEVEL_SORTED.indexOf(keyTrust) >= minTrustLevelIndex) {
+          if (TRUSTLEVELS_SORTED.indexOf(keyTrust) >= minTrustLevelIndex) {
             found = true;
             resultingArray.push(addr);
           }
@@ -380,13 +380,13 @@ Enigmail.hlp = {
   getValidKeyForRecipient: function (emailAddr, minTrustLevelIndex, keyList, keySortList)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): emailAddr=\""+emailAddr+"\"\n");
-    const TRUSTLEVEL_SORTED="indDrego-qmfu"; // trust level sorted by increasing level of trust (see commonFuncs.jsm)
+    const TRUSTLEVELS_SORTED = EnigmailFuncs.trustlevelsSorted();
 
     for (var idx=0; idx<keySortList.length; idx++) { // note: we have sorted acc. to validity
       var keyObj = keyList[keySortList[idx].keyId];
       var keyTrust = keyObj.keyTrust;
       // end of loop: key trust (our sort criterion) too low?
-      if (TRUSTLEVEL_SORTED.indexOf(keyTrust) < minTrustLevelIndex) {
+      if (TRUSTLEVELS_SORTED.indexOf(keyTrust) < minTrustLevelIndex) {
         EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): not found (below requested trust level)\n");
         return null;  // NOT FOUND (below requested trust level)
       }
@@ -395,7 +395,7 @@ Enigmail.hlp = {
       //var expired = keyObj.expiry;
       var userId = keyObj.userId;
       if (userId && userId.indexOf(emailAddr) >= 0) { 
-        if (TRUSTLEVEL_SORTED.indexOf(keyTrust) >= minTrustLevelIndex) { 
+        if (TRUSTLEVELS_SORTED.indexOf(keyTrust) >= minTrustLevelIndex) { 
           EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): key="+keyObj.keyId+" found\n");
           return keyObj.keyId; // FOUND 
         }
@@ -412,7 +412,7 @@ Enigmail.hlp = {
         var subKeyTrust = subKeyObj.keyTrust;
         //var subExpired = subKeyObj.expiry;
         if (subUserId && subUserId.indexOf(emailAddr) >= 0) {
-          if (TRUSTLEVEL_SORTED.indexOf(subKeyTrust) >= minTrustLevelIndex) {
+          if (TRUSTLEVELS_SORTED.indexOf(subKeyTrust) >= minTrustLevelIndex) {
             EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): subkey in key="+keyObj.keyId+" found\n");
             return keyObj.keyId; // FOUND 
           }
