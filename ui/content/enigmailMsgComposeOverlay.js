@@ -931,7 +931,7 @@ Enigmail.msg = {
     switch (sendMode) {
       case 'force-toggle-sign':
         this.displaySignClickWarn();
-        this.sendModeDirty=2;
+        this.sendModeDirty = 2;
         if (this.forceSign == 0) {  // forced not to sign?
           this.forceSign = 2;  // force to sign
         }
@@ -977,6 +977,9 @@ Enigmail.msg = {
             this.forceEncrypt = (this.sendMode & ENCRYPT) ? 2 : 0;
             break;
           }
+        }
+        if (this.sendModeDirty<2) {
+          this.forceSign = this.forceEncrypt;
         }
         break;
       case 'force-encrypt':
@@ -1483,6 +1486,32 @@ Enigmail.msg = {
       return null;
     }
 
+    // forces overrule rules and automatic encryption:
+    if (this.forceSign == 0) {
+      sendFlags &= ~SIGN;
+      if (flagsObj.value) {
+        flagsObj.sign = 0;
+      }
+    }
+    else if (this.forceSign == 2) {
+      sendFlags |= SIGN;
+      if (flagsObj.value) {
+        flagsObj.sign = 2;
+      }
+    }
+    if (this.forceEncrypt == 0) {
+      sendFlags &= ~ENCRYPT;
+      if (flagsObj.value) {
+        flagsObj.encrypt = 0;
+      }
+    }
+    else if (this.forceEncrypt == 2) {
+      sendFlags |= ENCRYPT;
+      if (flagsObj.value) {
+        flagsObj.encrypt = 2;
+      }
+    }
+
     // process conflicts (3/conflict will become 0/never)
     if (!Enigmail.hlp.processConflicts(flagsObj, true)) {
       return null;
@@ -1545,7 +1574,9 @@ Enigmail.msg = {
                                                                 true);  // refresh key list
       if (validKeyList != null) {
         toAddr = validKeyList.join(", ");
-        sendFlags |= ENCRYPT;
+        if (this.forceEncrypt != 0) {
+          sendFlags |= ENCRYPT;
+        }
       }
     }
 

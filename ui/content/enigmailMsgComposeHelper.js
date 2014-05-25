@@ -115,7 +115,7 @@ Enigmail.hlp = {
 
     // initialize return value and the helper variables for them:
     matchedKeysObj.value = "";
-    flagsObj.value = 0;
+    flagsObj.value = false;
     var sign   =1;  // default sign flag is: maybe
     var encrypt=1;  // default encrypt flag is: maybe
     var pgpMime=1;  // default pgpMime flag is: maybe
@@ -263,7 +263,7 @@ Enigmail.hlp = {
     flagsObj.sign = sign;
     flagsObj.encrypt = encrypt;
     flagsObj.pgpMime = pgpMime;
-    flagsObj.value = 1;
+    flagsObj.value = true;
 
     return true;
   },
