@@ -236,6 +236,16 @@
  *  Icons for composer status bar
  */
 
+#enigmail-status-bar[signed="forceYes"] #enigmail-signed-status {
+  list-style-image: url("chrome://enigmail/skin/enigSignGreen.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[signed="forceNo"] #enigmail-signed-status {
+  list-style-image: url("chrome://enigmail/skin/enigSignNo.png");
+  visibility: visible;
+}
+
 #enigmail-status-bar[signed="inactiveNull"] #enigmail-signed-status {
   list-style-image: url("chrome://enigmail/skin/enigSignNullInactive.png");
   visibility: visible;
@@ -273,6 +283,16 @@
 
 #enigmail-status-bar[signed="activeConflict"] #enigmail-signed-status {
   list-style-image: url("chrome://enigmail/skin/enigSignNotOk.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[encrypted="forceYes"] #enigmail-encrypted-status {
+  list-style-image: url("chrome://enigmail/skin/enigEncGreen.png");
+  visibility: visible;
+}
+
+#enigmail-status-bar[encrypted="forceNo"] #enigmail-encrypted-status {
+  list-style-image: url("chrome://enigmail/skin/enigEncNo.png");
   visibility: visible;
 }
 
