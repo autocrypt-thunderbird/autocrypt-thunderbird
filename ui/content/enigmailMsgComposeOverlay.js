@@ -64,6 +64,8 @@ Enigmail.msg = {
   sendPgpMime: false,
   sendMode: null,    // the current default for sending a message (0, SIGN, ENCRYPT, or SIGN|ENCRYPT)
   sendModeDirty: 0,  // 0: no change, 2: signing toggled (has/had corresponding warning), 1: other change
+  signRules: 1,      // shall we sign according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
+  encryptRules: 1,   // shall we encrypt according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
   sendProcess: false,
   nextCommandId: null,
   docaStateListener: null,
@@ -73,8 +75,6 @@ Enigmail.msg = {
   lastFocusedWindow: null,
   determineSendFlagId: null,
   trustAllKeys: false,
-  signRules: 1,     // shall we sign according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
-  encryptRules: 1,  // shall we encrypt according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
   attachOwnKeyObj: {
       appendAttachment: false,
       attachedObj: null,
@@ -441,8 +441,10 @@ Enigmail.msg = {
     this.timeoutId = null;
 
     this.modifiedAttach=null;
-    this.sendModeDirty = 0;
     this.sendMode = 0;
+    this.sendModeDirty = 0;
+    this.signRules = 1;
+    this.encryptRules = 1;
     this.enableRules = true;
     this.identity = null;
     this.sendProcess = false;
