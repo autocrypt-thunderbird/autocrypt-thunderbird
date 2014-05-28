@@ -69,6 +69,7 @@ Enigmail.msg = {
   enableExperiments: false,
   headersList:      ["content-type", "content-transfer-encoding",
                      "x-enigmail-version", "x-pgp-encoding-format" ],
+  buggyExchangeEmailContent: null, // for HACK for MS-EXCHANGE-Server Problem
 
   messengerStartup: function ()
   {
@@ -526,7 +527,15 @@ Enigmail.msg = {
 
   enumerateMimeParts: function (mimePart, resultObj)
   {
-    EnigmailCommon.DEBUG_LOG("enumerateMimeParts: "+mimePart.partName+" - "+mimePart.headers["content-type"]+"\n");
+    EnigmailCommon.DEBUG_LOG("enumerateMimeParts: partName=\""+mimePart.partName+"\"\n");
+    EnigmailCommon.DEBUG_LOG("                    "+mimePart.headers["content-type"]+"\n");
+    EnigmailCommon.DEBUG_LOG("                    "+mimePart+"\n");
+    if (mimePart.parts) {
+      EnigmailCommon.DEBUG_LOG("                    "+mimePart.parts.length+" subparts\n");
+    }
+    else {
+      EnigmailCommon.DEBUG_LOG("                    0 subparts\n");
+    }
 
     try {
       if (typeof(mimePart.contentType) == "string" &&
@@ -565,6 +574,8 @@ Enigmail.msg = {
   messageDecryptCb: function (event, isAuto, mimeMsg)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: messageDecryptCb:\n");
+
+    buggyExchangeEmailContent = null; // reinit HACK for MS-EXCHANGE-Server Problem
 
     var enigmailSvc;
     try {
@@ -609,6 +620,27 @@ Enigmail.msg = {
         var resultObj={ encrypted: "", signed: "" };
         this.enumerateMimeParts(mimeMsg, resultObj);
         EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: embedded objects: "+resultObj.encrypted+" / "+resultObj.signed+"\n");
+
+        // HACK for MS-EXCHANGE-Server Problem:
+        // check for possible bad mime structure due to buggy exchange server:
+        // - multipart/mixed Container with
+        //   - application/pgp-encrypted Attachment with name "PGPMIME Versions Identification"
+        //   - application/octet-stream Attachment with name "encrypted.asc" having the encrypted content in base64
+        // - see:
+        //   - http://www.mozilla-enigmail.org/forum/viewtopic.php?f=4&t=425
+        //   - http://sourceforge.net/p/enigmail/forum/support/thread/4add2b69/
+        if (mimeMsg.parts && mimeMsg.parts.length && mimeMsg.parts.length == 1 &&
+            mimeMsg.parts[0].parts && mimeMsg.parts[0].parts.length && mimeMsg.parts[0].parts.length == 3 &&
+            mimeMsg.parts[0].headers["content-type"][0].indexOf("multipart/mixed") >= 0 &&
+            mimeMsg.parts[0].parts[0].size == 0 &&
+            mimeMsg.parts[0].parts[0].headers["content-type"][0].indexOf("text/plain") >= 0 &&
+            mimeMsg.parts[0].parts[1].headers["content-type"][0].indexOf("application/pgp-encrypted") >= 0 &&
+            mimeMsg.parts[0].parts[1].headers["content-type"][0].indexOf("PGPMIME Versions Identification") >= 0 &&
+            mimeMsg.parts[0].parts[2].headers["content-type"][0].indexOf("application/octet-stream") >= 0 &&
+            mimeMsg.parts[0].parts[2].headers["content-type"][0].indexOf("encrypted.asc") >= 0) {
+          // signal that the structure matches to save the content later on
+          buggyExchangeEmailContent = "???";
+        }
 
         // ignore mime parts on top level (regular messages)
         if (resultObj.signed.indexOf(".") < 0) resultObj.signed = null;
@@ -739,7 +771,6 @@ Enigmail.msg = {
     var msgText = null;
     var foundIndex = -1;
 
-
     if (bodyElement.firstChild) {
       let node = bodyElement.firstChild;
       while (node) {
@@ -765,7 +796,51 @@ Enigmail.msg = {
 
     if (!msgText) {
       // No PGP content
-      return;
+
+      // but this might be caused by the HACK for MS-EXCHANGE-Server Problem
+      // - so return only if:
+      if (buggyExchangeEmailContent == null || buggyExchangeEmailContent == "???") {
+        return;
+      }
+
+      // fix the whole invalid email by replacing the contents by the decoded text
+      // as plain inline format
+      msgText = buggyExchangeEmailContent;
+      msgText = msgText.replace(/\r\n/g, "\n");
+      msgText = msgText.replace(/\r/g,   "\n");
+
+      // content is in encrypted.asc part:
+      var idx = msgText.search(/Content-Type: application\/octet\-stream; name=\"encrypted.asc\"/i);
+      if (idx >= 0) {
+        msgText = msgText.slice(idx);
+      }
+      // check whether we have base64 encoding
+      var isBase64 = false;
+      var idx = msgText.search(/Content-Transfer-Encoding: base64/i);
+      if (idx >= 0) {
+        isBase64 = true;
+      }
+      // find content behind part header
+      var idx = msgText.search(/\n\n/);
+      if (idx >= 0) {
+        msgText = msgText.slice(idx);
+      }
+      // remove stuff behind content block (usually a final boundary row)
+      var idx = msgText.search(/\n\n--/);
+      if (idx >= 0) {
+        msgText = msgText.slice(0,idx+1);
+      }
+      // decrypt base64 if it is encoded that way
+      if (isBase64) {
+        msgText = msgText.replace(/\n/g,   "");
+        //EnigmailCommon.DEBUG_LOG("vor base64 decode: \n" + msgText + "\n");
+        try {
+          msgText = window.atob(msgText);
+        } catch (ex) {
+          EnigmailCommon.writeException("enigmailMessengerOverlay.js: calling atob() ", ex);
+        }
+        //EnigmailCommon.DEBUG_LOG("nach base64 decode: \n" + msgText + "\n");
+      }
     }
 
     var charset = msgWindow ? msgWindow.mailCharacterSet : "";
@@ -1088,6 +1163,20 @@ Enigmail.msg = {
           }
         }
         node = node.nextSibling;
+      }
+
+      // HACK for MS-EXCHANGE-Server Problem:
+      // missing: signal in statusFlags so that we warn in Enigmail.hdrView.updateHdrIcons()
+      if (buggyExchangeEmailContent != null) {
+        messageContent = messageContent.replace(/^\s{0,2}Content-Transfer-Encoding: quoted-printable\s*Content-Type: text\/plain;\s*charset=windows-1252/i, "");
+        var node = bodyElement.firstChild;
+        while (node) {
+          if (node.nodeName == "DIV") {
+            node.innerHTML = EnigmailFuncs.formatPlaintextMsg(EnigmailCommon.convertToUnicode(messageContent, charset));
+            return;
+          }
+          node = node.nextSibling;
+        }
       }
 
     }
@@ -1634,6 +1723,12 @@ Enigmail.msg = {
 
         return;
       }
+    }
+
+    // HACK for MS-EXCHANGE-Server Problem:
+    // - now let's save the mail content for later processing
+    if (buggyExchangeEmailContent = "???") {
+      buggyExchangeEmailContent = callbackArg.data;
     }
 
     // try inline PGP
