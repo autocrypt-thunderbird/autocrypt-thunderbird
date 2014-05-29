@@ -157,7 +157,7 @@ function prefOnLoad()
          // hide basic tab
          document.getElementById("basic").setAttribute("collapsed", true);
          document.getElementById("basicTab").setAttribute("collapsed", true);
-         selectPrefTabPanel("sendTab");
+         selectPrefTabPanel("sendingTab");
      }
      else {
        EnigCollapseAdvanced(document.getElementById("prefTabBox"), "collapsed", null);

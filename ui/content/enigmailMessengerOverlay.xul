@@ -80,7 +80,7 @@
 
   <!-- Thunderbird secondary pane -->
   <popup id="appmenuSecondaryPane">
-  	<splitmenu id="menu_Enigmail2ndPane"
+        <splitmenu id="menu_Enigmail2ndPane"
           label="&enigmail.openpgp.label;"
           accesskey="&enigmail.messengermenu.accesskey;"
           insertafter="appmenu_customize">
@@ -169,18 +169,6 @@
 
       <menuseparator/>
 
-      <menuitem id="enigmail_prefs"
-           label="&enigmail.prefs.label;"
-           accesskey="&enigmail.prefs.accesskey;"
-           oncommand="EnigmailFuncs.openPrefWindow(window, true, null);" />
-
-
-      <menuitem id="enigmail_RulesEditor"
-          label="&enigmail.editRules.label;"
-          accesskey="&enigmail.editRules.accesskey;"
-          oncommand="EnigmailFuncs.openRulesEditor();"/>
-
-
       <menuitem id="enigmail_keymgmt"
            label="&enigmail.keyManWindow.label;"
            accesskey="&enigmail.keyManWindow.accesskey;"
@@ -193,9 +181,22 @@
               hidden="false"
               oncommand="EnigmailFuncs.openCardDetails();"/>
 
-      <menuseparator
-           advanced="true"
-           hidden="false"/>
+      <menuitem id="enigmail_RulesEditor"
+          label="&enigmail.editRules.label;"
+          accesskey="&enigmail.editRules.accesskey;"
+          oncommand="EnigmailFuncs.openRulesEditor();"/>
+
+      <menuseparator/>
+
+      <menuitem id="enigmail_prefs"
+           label="&enigmail.prefs.label;"
+           accesskey="&enigmail.prefs.accesskey;"
+           oncommand="EnigmailFuncs.openPrefWindow(window, true, null);" />
+
+      <menuitem id="enigmail_help"
+           label="&enigmail.help.label;"
+           accesskey="&enigmail.help.accesskey;"
+           oncommand="EnigmailFuncs.openHelpWindow('messenger');" />
 
       <menu id="enigmail_debugMenu"
            label="&enigmail.debugMenu.label;"
@@ -215,13 +216,6 @@
                oncommand="EnigmailFuncs.openDebugLog(window);" />
         </menupopup>
       </menu>
-
-      <menuseparator/>
-
-      <menuitem id="enigmail_help"
-           label="&enigmail.help.label;"
-           accesskey="&enigmail.help.accesskey;"
-           oncommand="EnigmailFuncs.openHelpWindow('messenger');" />
 
       <menuitem id="enigmail_wizard"
            label="&enigmail.setupWiz.label;"

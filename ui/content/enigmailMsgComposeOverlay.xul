@@ -116,19 +116,6 @@
 
           <menuseparator/>
 
-          <menuitem id="enigmail_keymgmt"
-             label="&enigmail.keyManWindow.label;"
-             accesskey="&enigmail.keyManWindow.accesskey;"
-             oncommand="EnigmailFuncs.openKeyManager(window);" />
-
-          <menuitem id="enigmail_RulesEditor"
-              label="&enigmail.editRules.label;"
-              accesskey="&enigmail.editRules.accesskey;"
-              oncommand="EnigmailFuncs.openRulesEditor();"/>
-
-          <menuseparator
-              advanced="true"/>
-
           <menuitem id="enigmail_trust_all_keys"
               label="&enigmail.tempTrustAllKeys.label;"
               accesskey="&enigmail.tempTrustAllKeys.accesskey;"
@@ -163,28 +150,39 @@
 
           <menuseparator/>
 
+          <menuitem id="enigmail_keymgmt"
+             label="&enigmail.keyManWindow.label;"
+             accesskey="&enigmail.keyManWindow.accesskey;"
+             oncommand="EnigmailFuncs.openKeyManager(window);" />
+
+          <menuitem id="enigmail_RulesEditor"
+              label="&enigmail.editRules.label;"
+              accesskey="&enigmail.editRules.accesskey;"
+              oncommand="EnigmailFuncs.openRulesEditor();"/>
+
+          <menuseparator/>
+
           <menu id="enigmail_compose_options_menu"
                 label="&enigmail.composeOptionsMenu.label;"
                 accesskey="&enigmail.composeOptionsMenu.accesskey;">
 
-            <menupopup>
+            <menupopup onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.setMenuSettings(''))">
 
               <menuitem id="enigmail_accountSettings"
                 label="&enigmail.pgpAccountSettings.label;"
                 accesskey="&enigmail.pgpAccountSettings.accesskey;"
                 oncommand="Enigmail.msg.goAccountManager();" />
 
-              <menuseparator/>
-
               <menuitem id="enigmail_defaultSendOpts"
                 label="&enigmail.sendOptionsMenu.label;"
                 accesskey="&enigmail.sendOptionsMenu.accesskey;"
-                oncommand="EnigmailFuncs.openPrefWindow(window, true, 'thunderbird', 'sendTab');" />
+                oncommand="EnigmailFuncs.openPrefWindow(window, true, 'sendingTab');" />
 
               <menuitem id="enigmail_defaultKeySelOpts"
                 label="&enigmail.defaultKeySelOpts.label;"
                 accesskey="&enigmail.defaultKeySelOpts.accesskey;"
-                oncommand="EnigmailFuncs.openPrefWindow(window, true, 'thunderbird', 'keySelTab');" />
+                advanced="true"
+                oncommand="EnigmailFuncs.openPrefWindow(window, true, 'keySelTab');" />
 
             </menupopup>
           </menu>
