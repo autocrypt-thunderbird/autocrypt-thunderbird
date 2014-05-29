@@ -116,34 +116,7 @@
 
           <menuseparator/>
 
-          <menu id="enigmail_compose_options_menu"
-                label="&enigmail.composeOptionsMenu.label;"
-                advanced="true"
-                accesskey="&enigmail.composeOptionsMenu.accesskey;">
-
-            <menupopup>
-
-              <menuitem id="enigmail_accountSettings"
-                label="&enigmail.pgpAccountSettings.label;"
-                accesskey="&enigmail.pgpAccountSettings.accesskey;"
-                oncommand="Enigmail.msg.goAccountManager();" />
-
-              <menuseparator/>
-
-              <menuitem id="enigmail_defaultSendOpts"
-                label="&enigmail.sendOptionsMenu.label;"
-                accesskey="&enigmail.sendOptionsMenu.accesskey;"
-                oncommand="EnigmailFuncs.openPrefWindow(window, true, 'thunderbird', 'sendTab');" />
-
-              <menuitem id="enigmail_defaultKeySelOpts"
-                label="&enigmail.defaultKeySelOpts.label;"
-                accesskey="&enigmail.defaultKeySelOpts.accesskey;"
-                oncommand="EnigmailFuncs.openPrefWindow(window, true, 'thunderbird', 'keySelTab');" />
-
-            </menupopup>
-          </menu>
-
-        <menuitem id="enigmail_keymgmt"
+          <menuitem id="enigmail_keymgmt"
              label="&enigmail.keyManWindow.label;"
              accesskey="&enigmail.keyManWindow.accesskey;"
              oncommand="EnigmailFuncs.openKeyManager(window);" />
@@ -190,6 +163,32 @@
 
           <menuseparator/>
 
+          <menu id="enigmail_compose_options_menu"
+                label="&enigmail.composeOptionsMenu.label;"
+                accesskey="&enigmail.composeOptionsMenu.accesskey;">
+
+            <menupopup>
+
+              <menuitem id="enigmail_accountSettings"
+                label="&enigmail.pgpAccountSettings.label;"
+                accesskey="&enigmail.pgpAccountSettings.accesskey;"
+                oncommand="Enigmail.msg.goAccountManager();" />
+
+              <menuseparator/>
+
+              <menuitem id="enigmail_defaultSendOpts"
+                label="&enigmail.sendOptionsMenu.label;"
+                accesskey="&enigmail.sendOptionsMenu.accesskey;"
+                oncommand="EnigmailFuncs.openPrefWindow(window, true, 'thunderbird', 'sendTab');" />
+
+              <menuitem id="enigmail_defaultKeySelOpts"
+                label="&enigmail.defaultKeySelOpts.label;"
+                accesskey="&enigmail.defaultKeySelOpts.accesskey;"
+                oncommand="EnigmailFuncs.openPrefWindow(window, true, 'thunderbird', 'keySelTab');" />
+
+            </menupopup>
+          </menu>
+
           <menuitem id="enigmail_help"
               label="&enigmail.help.label;"
               accesskey="&enigmail.help.accesskey;"
@@ -213,6 +212,39 @@
             oncommand="Enigmail.msg.doPgpButton();">
 
         <menupopup onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.setMenuSettings('3'))">
+
+          <menuitem id="enigmail_final_signYes"
+              type="checkbox"
+              label="&enigmail.finalSignYes.label;"
+              oncommand="Enigmail.msg.nextCommand('toggle-final-signYes');" />
+          <menuitem id="enigmail_final_signNo"
+              type="checkbox"
+              label="&enigmail.finalSignNo.label;"
+              oncommand="Enigmail.msg.nextCommand('toggle-final-signNo');" />
+          <menuseparator/>
+          <menuitem id="enigmail_final_encryptYes"
+              type="checkbox"
+              label="&enigmail.finalEncryptYes.label;"
+              oncommand="Enigmail.msg.nextCommand('toggle-final-encryptYes');" />
+          <menuitem id="enigmail_final_encryptNo"
+              type="checkbox"
+              label="&enigmail.finalEncryptNo.label;"
+              oncommand="Enigmail.msg.nextCommand('toggle-final-encryptNo');" />
+          <menuseparator advanced="true"/>
+          <menuitem id="enigmail_final_pgpmimeYes"
+              type="checkbox"
+              advanced="true"
+              label="&enigmail.finalPGPMimeYes.label;"
+              oncommand="Enigmail.msg.nextCommand('toggle-final-pgpmimeYes');" />
+          <menuitem id="enigmail_final_pgpmimeNo"
+              type="checkbox"
+              advanced="true"
+              label="&enigmail.finalPGPMimeNo.label;"
+              oncommand="Enigmail.msg.nextCommand('toggle-final-pgpmimeNo');" />
+
+          <!--
+          <menuseparator/>
+
           <menuitem id="enigmail_signed_send3"
               type="checkbox"
               label="&enigmail.signedsend.label;"
@@ -240,6 +272,7 @@
               label="&enigmail.disableRules.label;"
               accesskey="&enigmail.disableRules.accesskey;"
               oncommand="Enigmail.msg.nextCommand('toggleRules');" />
+          -->
 
           <menuseparator advanced="true"/>
 
