@@ -56,7 +56,6 @@ catch(ex) {}
 if (! Enigmail) var Enigmail = {};
 
 Enigmail.msg = {
-// List of hash algorithms for PGP/MIME signatures
   editor: null,
   dirty: null,
   processed: null,
@@ -64,10 +63,10 @@ Enigmail.msg = {
   sendPgpMime: false,
   sendMode: null,    // the current default for sending a message (0, SIGN, ENCRYPT, or SIGN|ENCRYPT)
   sendModeDirty: 0,  // 0: no change, 2: signing toggled (has/had corresponding warning), 1: other change
-  signRules: 1,      // shall we sign according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
+  signRules:    1,   // shall we sign according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
   encryptRules: 1,   // shall we encrypt according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
-  forceSign: 1,      // force to sign (0: most not sign, 1: no force, 2: must sign) 
-  forceEncrypt: 1,   // force to encrypt (0: most not encrypt, 1: no force, 2: must encrypt) 
+  finalSign:    1,   // finally force to sign (0: most not sign, 1: no force, 2: must sign) 
+  finalEncrypt: 1,   // finally force to encrypt (0: most not encrypt, 1: no force, 2: must encrypt) 
   sendProcess: false,
   nextCommandId: null,
   docaStateListener: null,
@@ -447,8 +446,8 @@ Enigmail.msg = {
     this.sendModeDirty = 0;
     this.signRules = 1;
     this.encryptRules = 1;
-    this.forceSign = 1;
-    this.forceEncrypt = 1;
+    this.finalSign =    1;
+    this.finalEncrypt = 1;
     this.enableRules = true;
     this.identity = null;
     this.sendProcess = false;
@@ -823,13 +822,13 @@ Enigmail.msg = {
         this.setSendMode(what);
         break;
 
-      case 'force-sign':
-      case 'force-no-sign':
-      case 'force-encrypt':
-      case 'force-no-encrypt':
-      case 'force-toggle-sign':
-      case 'force-toggle-encrypt':
-        this.forceSendMode(what);
+      case 'final-sign':
+      case 'final-nosign':
+      case 'final-encrypt':
+      case 'final-noencrypt':
+      case 'toggle-final-sign':
+      case 'toggle-final-encrypt':
+        this.setFinalSendMode(what);
         break;
 
       case 'togglePGPMime':
@@ -868,7 +867,7 @@ Enigmail.msg = {
     switch (sendMode) {
       case 'toggle-sign':
         this.displaySignClickWarn();
-        this.sendModeDirty=2;
+        this.sendModeDirty=2;  // sign and encrypt default no longer bundled
         if (this.sendMode & SIGN) {
           this.sendMode &= ~SIGN;
         }
@@ -886,7 +885,7 @@ Enigmail.msg = {
         break;
       case 'encrypt':
         this.sendMode |= ENCRYPT;
-        if (this.sendModeDirty<2) {
+        if (this.sendModeDirty<2) {  // if sign and encrypt default bundled
           if (this.getAccDefault("signEnc")) {
             this.sendMode |= SIGN;
           }
@@ -900,7 +899,7 @@ Enigmail.msg = {
         break;
       case 'plain':
         this.sendMode &= ~ENCRYPT;
-        if (this.sendModeDirty<2) {
+        if (this.sendModeDirty<2) {  // if sign and encrypt default bundled
           if (this.getAccDefault("signPlain")) {
             this.sendMode |= SIGN;
           }
@@ -910,97 +909,90 @@ Enigmail.msg = {
         }
         break;
       default:
-        EnigmailCommon.alert(window, "Enigmail.msg.setSendMode - Strange value: "+sendMode);
+        EnigmailCommon.alert(window, "Enigmail.msg.setSendMode - unexpected value: "+sendMode);
         break;
     }
-    // other sendMode change than toggle-sign?
-    if (this.sendMode != origSendMode && this.sendModeDirty<2)
+    // sendMode change (and no change marked yet)?
+    if (this.sendModeDirty == 0 && this.sendMode != origSendMode) {
       this.sendModeDirty=1;
+    }
     this.updateStatusBar();
   },
 
-  forceSendMode: function (sendMode)
+  setFinalSendMode: function (sendMode)
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.forceSendMode: sendMode="+sendMode+"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.setFinalSendMode: sendMode="+sendMode+"\n");
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN    = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
 
-    var origSendMode=this.sendMode;
     switch (sendMode) {
-      case 'force-toggle-sign':
-        this.displaySignClickWarn();
-        this.sendModeDirty = 2;
-        if (this.forceSign == 0) {  // forced not to sign?
-          this.forceSign = 2;  // force to sign
+      case 'final-sign':
+        this.finalSign = 2;  // force to sign
+        break;
+      case 'final-nosign':
+        this.finalSign = 0;  // force not to sign
+        break;
+      case 'toggle-final-sign':
+        if (this.finalSign == 0) {  // forced not to sign?
+          this.finalSign = 2;  // force to sign
         }
-        else if (this.forceSign == 2) {  // forced to sign?
-          this.forceSign = 0;  // force not to sign
+        else if (this.finalSign == 2) {  // forced to sign?
+          this.finalSign = 0;  // force not to sign
         }
         else {
           switch (this.signRules) {
            case 0:  // don't sign => force to sign
-            this.forceSign = 2;  // force to sign
+            this.finalSign = 2;  // force to sign
             break;
            case 1:  // maybe => toggle send mode
-            this.forceSign = (this.sendMode & SIGN) ? 0 : 2;
+            this.finalSign = (this.sendMode & SIGN) ? 0 : 2;
             break;
            case 2:  // do sign => force not to sign
-            this.forceSign = 0;  // force not to sign
+            this.finalSign = 0;  // force not to sign
             break;
            case 3:  // conflict => use send mode
-            this.forceSign = (this.sendMode & SIGN) ? 2 : 0;
+            this.finalSign = (this.sendMode & SIGN) ? 2 : 0;
             break;
           }
         }
         break;
-      case 'force-toggle-encrypt':
-        if (this.forceEncrypt == 0) {  // forced not to encrypt?
-          this.forceEncrypt = 2;  // force to encrypt
+      case 'final-encrypt':
+        this.finalEncrypt = 2;  // force to encrypt
+        break;
+      case 'final-noencrypt':
+        this.finalEncrypt = 0;  // force not to encrypt
+        break;
+      case 'toggle-final-encrypt':
+        if (this.finalEncrypt == 0) {  // forced not to encrypt?
+          this.finalEncrypt = 2;  // force to encrypt
         }
-        else if (this.forceEncrypt == 2) {  // forced to encrypt?
-          this.forceEncrypt = 0;  // force not to encrypt
+        else if (this.finalEncrypt == 2) {  // forced to encrypt?
+          this.finalEncrypt = 0;  // force not to encrypt
         }
         else {
           switch (this.encryptRules) {
            case 0:  // don't encrypt => force to encrypt
-            this.forceEncrypt = 2;  // force to encrypt
+            this.finalEncrypt = 2;  // force to encrypt
             break;
            case 1:  // maybe => toggle send mode
-            this.forceEncrypt = (this.sendMode & ENCRYPT) ? 0 : 2;
+            this.finalEncrypt = (this.sendMode & ENCRYPT) ? 0 : 2;
             break;
            case 2:  // do encrypt => force not to encrypt
-            this.forceEncrypt = 0;  // force not to encrypt
+            this.finalEncrypt = 0;  // force not to encrypt
             break;
            case 3:  // conflict => use send mode
-            this.forceEncrypt = (this.sendMode & ENCRYPT) ? 2 : 0;
+            this.finalEncrypt = (this.sendMode & ENCRYPT) ? 2 : 0;
             break;
           }
         }
-        if (this.sendModeDirty<2) {
-          this.forceSign = this.forceEncrypt;
-        }
-        break;
-      case 'force-encrypt':
-        this.forceEncrypt = 2;  // force to encrypt
-        break;
-      case 'force-no-encrypt':
-        this.forceEncrypt = 0;  // force not to encrypt
-        break;
-      case 'force-sign':
-        this.forceSign = 2;  // force to sign
-        break;
-      case 'force-no-sign':
-        this.forceSign = 0;  // force not to sign
         break;
       default:
-        EnigmailCommon.alert(window, "Enigmail.msg.forceSendMode - Strange value: "+sendMode);
+        EnigmailCommon.alert(window, "Enigmail.msg.setFinalSendMode - unexpected value: "+sendMode);
         break;
     }
     // other sendMode change than toggle-sign?
-    if (this.sendMode != origSendMode && this.sendModeDirty<2)
-      this.sendModeDirty=1;
     this.updateStatusBar();
   },
 
@@ -1025,11 +1017,11 @@ Enigmail.msg = {
     var encryptedIcon = document.getElementById("enigmail-encrypted-status");
 
     // process icon/tooltip for sign button
-    if (this.forceSign == 0) {  // force not to sign?
+    if (this.finalSign == 0) {  // force not to sign?
       statusBar.setAttribute("signed", "forceNo");
       signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("signNo"));
     }
-    else if (this.forceSign == 2) {  // force to sign?
+    else if (this.finalSign == 2) {  // force to sign?
       statusBar.setAttribute("signed", "forceYes");
       signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("signYes"));
     }
@@ -1077,11 +1069,11 @@ Enigmail.msg = {
     }
 
     // process icon/tooltip for encrypt button
-    if (this.forceEncrypt == 0) {  // force not to encrypt?
+    if (this.finalEncrypt == 0) {  // force not to encrypt?
       statusBar.setAttribute("encrypted", "forceNo");
       signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptNo"));
     }
-    else if (this.forceEncrypt == 2) {  // force to encrypt?
+    else if (this.finalEncrypt == 2) {  // force to encrypt?
       statusBar.setAttribute("encrypted", "forceYes");
       signedIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptYes"));
     }
@@ -1487,25 +1479,25 @@ Enigmail.msg = {
     }
 
     // forces overrule rules and automatic encryption:
-    if (this.forceSign == 0) {
+    if (this.finalSign == 0) {
       sendFlags &= ~SIGN;
       if (flagsObj.value) {
         flagsObj.sign = 0;
       }
     }
-    else if (this.forceSign == 2) {
+    else if (this.finalSign == 2) {
       sendFlags |= SIGN;
       if (flagsObj.value) {
         flagsObj.sign = 2;
       }
     }
-    if (this.forceEncrypt == 0) {
+    if (this.finalEncrypt == 0) {
       sendFlags &= ~ENCRYPT;
       if (flagsObj.value) {
         flagsObj.encrypt = 0;
       }
     }
-    else if (this.forceEncrypt == 2) {
+    else if (this.finalEncrypt == 2) {
       sendFlags |= ENCRYPT;
       if (flagsObj.value) {
         flagsObj.encrypt = 2;
@@ -1574,7 +1566,7 @@ Enigmail.msg = {
                                                                 true);  // refresh key list
       if (validKeyList != null) {
         toAddr = validKeyList.join(", ");
-        if (this.forceEncrypt != 0) {
+        if (this.finalEncrypt != 0) {
           sendFlags |= ENCRYPT;
         }
       }

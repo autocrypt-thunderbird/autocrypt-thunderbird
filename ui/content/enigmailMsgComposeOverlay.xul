@@ -268,10 +268,10 @@
           insertafter="totalMessageCount">
       <statusbarpanel id="enigmail-signed-status"
         class="statusbarpanel-iconic"
-        collapsed="true" onclick="Enigmail.msg.handleClick(event,'force-toggle-sign');"/>
+        collapsed="true" onclick="Enigmail.msg.handleClick(event,'toggle-final-sign');"/>
       <statusbarpanel id="enigmail-encrypted-status"
         class="statusbarpanel-iconic"
-        collapsed="true" onclick="Enigmail.msg.handleClick(event, 'force-toggle-encrypt');"/>
+        collapsed="true" onclick="Enigmail.msg.handleClick(event, 'toggle-final-encrypt');"/>
     </hbox>
   </statusbar>
 
