@@ -156,12 +156,6 @@ var gEnigConfirmBeforeSending = ["confirmBeforeSendingNever",
                                  "confirmBeforeSendingIfNotEncrypted",
                                  "confirmBeforeSendingIfRules"];
 
-var gEnigRecipientsSelection = ["-",
-                                "perRecipientRules",
-                                "perRecipientRulesAndEmail",
-                                "perEmailAddress",
-                                "askRecipientsAlways"];
-
 const ENIG_BUTTON_POS_0           = 1;
 const ENIG_BUTTON_POS_1           = 1 << 8;
 const ENIG_BUTTON_POS_2           = 1 << 16;

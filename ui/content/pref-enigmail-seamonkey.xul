@@ -71,9 +71,6 @@
   </script>
 
   <popupset>
-    <tooltip id="neverAsk.tooltip">
-        <description>&enigmail.neverAsk.tooltip;</description>
-    </tooltip>
     <tooltip id="prefs.overrideGpg.tooltip">
       <description>&enigmail.prefs.overrideGpg.tooltip;</description>
     </tooltip>

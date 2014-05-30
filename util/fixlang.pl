@@ -1,4 +1,6 @@
 #!/usr/bin/perl
+# check for missing entries in language specific dtd and properties files
+# and add the english default for them
 
 sub trim { # ($str)
   my $str = @_[0];
@@ -31,11 +33,14 @@ sub loaddtd { # ($file)
     $buf =~ s/\n//;
     $buf =~ s/\r//;
     if (length(trim($buf)) == 0) {
-      # print "+ empty\n";
+      #print "+ empty\n";
+    }
+    elsif ($buf =~ /^<!--.*-->$'/i) {
+      #print "+ comment\n";
     }
     elsif ($buf =~ /^<!ENTITY (.*)"(.*)">\s*$'/i) {
       $ind=trim($1);
-      # print "+ Line  '$ind'\n";
+      #print "+ Line  '$ind'\n";
       $val=$2;
       if ($ind eq "enigmail.ruleEmail.tooltip"
           || $ind eq "enigmail.noHushMailSupport.label"
@@ -48,21 +53,21 @@ sub loaddtd { # ($file)
     }
     elsif ($buf =~ /^<!ENTITY (.*)"(.*)$/i) {
       $ind=trim($1);
-      # print "+ Start '$ind'\n";
+      #print "+ Start '$ind'\n";
       $tab->{$ind} = "$1\"$2";
       $prev=$ind;
     }
     elsif ($prev && $buf =~ /^(.*)">$/) {
-      # print "+ End   '$prev'\n";
+      #print "+ End   '$prev'\n";
       $tab->{$prev} .= "\n$1\">";
       $prev=0;
     }
     elsif ($prev) {
-      # print "+ Cont. '$prev'\n";
+      #print "+ Cont. '$prev'\n";
       $tab->{$prev} .= "\n$buf";
     }
     else {
-      die ("- in $file on line $line: unknown ($buf) !\n");
+      die ("- in $file on line $line: unknown ($buf). ABORT!\n");
     }
   }
   close($fic);

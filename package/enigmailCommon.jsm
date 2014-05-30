@@ -3179,6 +3179,20 @@ function ConfigureEnigmail() {
         upgradeCustomHeaders();
       }
       if (vc.compare(oldVer, "1.7a1pre") < 0) {
+        // MISSING:
+        // - upgrade extensions.enigmail.recipientsSelection
+        //   to      extensions.enigmail.assignKeys*
+        // 1: rules only
+        //     => assignKeysByRules true; rest false
+        // 2: rules & email addresses (normal)
+        //     => assignKeysByRules/assignKeysByEmailAddr/assignKeysManuallyIfMissing true
+        // 3: email address only (no rules)
+        //     => assignKeysByEmailAddr/assignKeysManuallyIfMissing true
+        // 4: manually (always prompt, no rules)
+        //     => assignKeysManuallyAlways true
+        // 5: no rules, no key selection
+        //     => assignKeysByRules/assignKeysByEmailAddr true
+
         upgradePrefsSending();
       }
     }

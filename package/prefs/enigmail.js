@@ -55,6 +55,16 @@ pref("extensions.enigmail.alwaysTrustSend",true);
 // allow empty subject line without asking for confirmation
 pref("extensions.enigmail.allowEmptySubject",false);
 
+// ** enigmail keySel preferences:
+// use rules to assign keys
+pref("extensions.enigmail.assignKeysByRules",true);
+// use email addresses to assign keys
+pref("extensions.enigmail.assignKeysByEmailAddr",true);
+// use manual dialog to assign missing keys
+pref("extensions.enigmail.assignKeysManuallyIfMissing",true);
+// always srats manual dialog for keys
+pref("extensions.enigmail.assignKeysManuallyAlways",false);
+
 // automatically download missing keys from keyserver
 pref("extensions.enigmail.autoKeyRetrieve","");
 
@@ -167,14 +177,6 @@ pref("extensions.enigmail.autoSendEncrypted",1);
 // 3: if send unencrypted
 // 4: if send (un)encrypted due to rules
 pref("extensions.enigmail.confirmBeforeSending",0);
-
-// selection of keys for unkown recipients
-// 1: rules only
-// 2: rules & email addresses (normal)
-// 3: email address only (no rules)
-// 4: manually (always prompt, no rules)
-// 5: no rules, no key selection
-pref("extensions.enigmail.recipientsSelection",2);
 
 // support different passwords for each key (not yet available)
 pref("extensions.enigmail.supportMultiPass",false);

@@ -108,6 +108,7 @@ Enigmail.msg = {
     this.setIdentityDefaults();
     this.msgComposeReset(false);
     this.composeOpen();
+    this.updateStatusBar();
   },
 
 
@@ -1175,7 +1176,6 @@ Enigmail.msg = {
     if (this.getAccDefault("enabled")) {
       var compFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
       Recipients2CompFields(compFields);
-      var recipientsSelection = EnigmailCommon.getPref("recipientsSelection");
 
       // process list of to/cc email addresses
       // - bcc email addresses are ignored, when processing whether to sign/encrypt
@@ -1193,7 +1193,7 @@ Enigmail.msg = {
 
       this.signRules    = 1;
       this.encryptRules = 1;
-      if (toAddrList.length > 0 && recipientsSelection != 3 && recipientsSelection != 4) {
+      if (toAddrList.length > 0 && EnigmailCommon.getPref("assignKeysByRules")) {
         var matchedKeysObj = new Object();
         var flagsObj = new Object();
         if (Enigmail.hlp.getRecipientsKeys(toAddrList.join(", "),
@@ -1414,9 +1414,6 @@ Enigmail.msg = {
     const SIGN    = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
 
-    var recipientsSelection = EnigmailCommon.getPref("recipientsSelection");
-    if (sendFlags & nsIEnigmail.SAVE_MESSAGE) recipientsSelection = false;
-
     var toAddr = toAddrList.join(", ");
     var bccAddr = bccAddrList.join(", ");
 
@@ -1433,12 +1430,16 @@ Enigmail.msg = {
        };
     }
 
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): toAddr=\""+toAddr+"\" bccAddr=\""+bccAddr+"\" recipientsSelection="+recipientsSelection+"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): toAddr=\""+toAddr+"\" bccAddr=\""+bccAddr+"\"\n");
 
-    // force dialog for each missing key?:
-    var forceRecipientSettings=false;
-    // key selection pref "by pre-set rules only" forces dialog for missing keys:
-    if (recipientsSelection == 1) {
+    // force add-rule dialog for each missing key?:
+    var forceRecipientSettings = false;
+    // if keys are ONLY assigned by rules, force add-rule dialog for each missing key
+    if (! (sendFlags & nsIEnigmail.SAVE_MESSAGE) &&
+        EnigmailCommon.getPref("assignKeysByRules") &&
+        ! EnigmailCommon.getPref("assignKeysByEmailAddr") &&
+        ! EnigmailCommon.getPref("assignKeysManuallyIfMissing") &&
+        ! EnigmailCommon.getPref("assignKeysManuallyAlways")) {
       forceRecipientSettings = true;
     }
 
@@ -1450,11 +1451,9 @@ Enigmail.msg = {
       doRulesProcessingAgain=false;
 
       // process rules if not disabled
-      // - recipientsSelection = 3: select key per EmailAddress only
-      // - recipientsSelection = 4: ask always manually
       // - enableRules: rules not temporarily disabled
       // REPLACES email addresses by keys in its result !!!
-      if (recipientsSelection != 3 && recipientsSelection != 4 && this.enableRules) {
+      if (EnigmailCommon.getPref("assignKeysByRules") && this.enableRules) {
         var result = this.processRules (forceRecipientSettings, sendFlags, optSendFlags, toAddr, bccAddr)
         if (!result) {
           return null;
@@ -1662,7 +1661,6 @@ Enigmail.msg = {
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN    = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
-    var recipientsSelection = EnigmailCommon.getPref("recipientsSelection");
     var notSignedIfNotEnc= (this.sendModeDirty<2 && (! this.getAccDefault("signPlain")));
 
     var testCipher = null;
@@ -1685,7 +1683,7 @@ Enigmail.msg = {
     var testPlain = "Test Message";
     var testUiFlags   = nsIEnigmail.UI_TEST;
     var testSendFlags = nsIEnigmail.SEND_TEST | ENCRYPT | optSendFlags ;
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptTestMessage(): call encryptMessage() for fromAddr=\""+fromAddr+"\" toAddr=\""+toAddr+"\" bccAddr=\""+bccAddr+"\" recipientsSelection="+recipientsSelection+"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptTestMessage(): call encryptMessage() for fromAddr=\""+fromAddr+"\" toAddr=\""+toAddr+"\" bccAddr=\""+bccAddr+"\"\n");
     testCipher = enigmailSvc.encryptMessage(window, testUiFlags, testPlain,
                                             fromAddr, toAddr, bccAddr,
                                             testSendFlags,
@@ -1702,11 +1700,11 @@ Enigmail.msg = {
       }
     }
 
-    // if "always ask" (even if all keys were found) or we have an invalid recipient,
+    // if "always ask/manually" (even if all keys were found) or we have an invalid recipient,
     // start the dialog for user selected keys
-    if ((recipientsSelection==4) ||
-        ((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT) &&
-         (recipientsSelection==2 || recipientsSelection==3))) {
+    if (EnigmailCommon.getPref("assignKeysManuallyAlways")
+        || ((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT)
+            && EnigmailCommon.getPref("assignKeysManuallyIfMissing"))) {
 
       // check for invalid recipient keys
       var resultObj = new Object();
@@ -1716,17 +1714,17 @@ Enigmail.msg = {
 
       // prepare dialog options:
       inputObj.options = "multisel";
-      if (recipientsSelection==2) {
+      if (EnigmailCommon.getPref("assignKeysByRules")) {
         inputObj.options += ",rulesOption"; // enable button to create per-recipient rule
+      }
+      if (EnigmailCommon.getPref("assignKeysManuallyAlways")) {
+        inputObj.options += ",noforcedisp";
       }
       if (!(sendFlags&SIGN)) {
         inputObj.options += ",unsigned";
       }
       if (notSignedIfNotEnc) {
         inputObj.options += ",notSignedIfNotEnc";
-      }
-      if (recipientsSelection == 4) {
-        inputObj.options += ",noforcedisp";
       }
       if (this.trustAllKeys) {
        inputObj.options += ",trustallkeys"
@@ -1784,8 +1782,10 @@ Enigmail.msg = {
         return null;
       }
     }
-    if ((!testCipher || (testExitCodeObj.value != 0)) && recipientsSelection==5) {
-      // Test encryption failed; turn off default encryption
+    // If test encryption failed and never ask manually, turn off default encryption
+    if ((!testCipher || (testExitCodeObj.value != 0)) &&
+        !EnigmailCommon.getPref("assignKeysManuallyIfMissing") &&
+        !EnigmailCommon.getPref("assignKeysManuallyAlways")) {
       sendFlags &= ~ENCRYPT;
       EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection: No default encryption because test failed\n");
     }

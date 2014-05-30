@@ -241,19 +241,21 @@
 <!ENTITY enigmail.confirmBeforeSendingIfRules.label          "If rules changed the default encryption setting">
 <!ENTITY enigmail.confirmBeforeSendingIfRules.tooltip        "Display information dialog about signing/encryption before sending, if your preference regarding encryption was changed by a per-recipient rule or auto encryption">
 
+
+<!-- keySel Preferences -->
+
 <!ENTITY enigmail.recipientsSelectionOption.label "How should we choose the keys?">
-<!ENTITY enigmail.perRecipientRules.label         "By pre-set rules only">
-<!ENTITY enigmail.perRecipientRules.tooltip       "Choose keys according to rules; prompt for creating new rules recipients without rules.">
-<!ENTITY enigmail.perRecipientRulesAndEmail.label "By rules and email addresses">
-<!ENTITY enigmail.perRecipientRulesAndEmail.tooltip "Choose keys manually, if GnuPG can't decide after having applied rules and checked email addresses.">
-<!ENTITY enigmail.perEmailAddress.label           "By email addresses">
-<!ENTITY enigmail.perEmailAddress.tooltip         "Choose keys manually, if GnuPG can't decide after having checked email addresses (no rules used).">
-<!ENTITY enigmail.askRecipientsAlways.label       "Manually">
-<!ENTITY enigmail.askRecipientsAlways.tooltip     "GnuPG will never decide which keys to use. The decision will always be up to you.">
-<!ENTITY enigmail.neverAsk.label                  "No manual key selection">
-<!ENTITY enigmail.neverAsk.tooltip                "If no valid key is found for all recipients, automatically send the message unencrypted.">
+<!ENTITY enigmail.assignKeysByRules.label             "By Per-Recipient Rules">
+<!ENTITY enigmail.assignKeysByRules.tooltip           "Assign keys according to pre-recipient rules. Force to prompt for creating new rules if this is the only selected option.">
+<!ENTITY enigmail.assignKeysByEmailAddr.label         "By Email Adresses according to Key Manager">
+<!ENTITY enigmail.assignKeysByEmailAddr.tooltip       "Assign keys according to keys accociated with the email addresses in the key manager.">
+<!ENTITY enigmail.assignKeysManuallyIfMissing.label   "Manually if Keys are Missing">
+<!ENTITY enigmail.assignKeysManuallyIfMissing.tooltip "Open dialog to manually assign keys if keys are missing.">
+<!ENTITY enigmail.assignKeysManuallyAlways.label      "Always (also) Manually">
+<!ENTITY enigmail.assignKeysManuallyAlways.tooltip    "Always finally open the dialog to manually assign keys.">
 <!ENTITY enigmail.defineRules.label               "Edit Rules ...">
 <!ENTITY enigmail.defineRules.tooltip             "Click to view, add, remove or edit the key selection rules.">
+
 
 <!ENTITY enigmail.usePGPMimeAlways.label          "Use PGP/MIME by default">
 <!ENTITY enigmail.autoEncryptDrafts.label         "Encrypt draft messages on saving">

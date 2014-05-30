@@ -197,9 +197,6 @@ function prefOnLoad()
     resetSendingPrefsManually();
   }
 
-  EnigDisplayRadioPref("recipientsSelection", EnigGetPref("recipientsSelection"),
-                       gEnigRecipientsSelection);
-
   gMimePartsElement = document.getElementById("mime_parts_on_demand");
 
   try {
@@ -223,7 +220,6 @@ function prefOnLoad()
     overrideGpg.checked = false;
   }
   enigActivateDependent(overrideGpg, "enigmail_agentPath enigmail_browsePath");
-  activateRulesButton(document.getElementById("enigmail_recipientsSelection"), "openRulesEditor");
 
   var testEmailElement = document.getElementById("enigmail_test_email");
   var userIdValue = EnigGetPref("userIdValue");
@@ -296,9 +292,6 @@ function resetPrefs() {
   else {
     resetSendingPrefsManually();
   }
-
-  EnigDisplayRadioPref("recipientsSelection", EnigGetPref("recipientsSelection"),
-                       gEnigRecipientsSelection);
 }
 
 function disableManually (disable)
@@ -476,6 +469,9 @@ function prefOnAccept() {
     }
   }
 
+  // update status bar because whether/how to process rules might have changed
+  // NO EFFECT, TB hangs:
+  //Enigmail.msg.updateStatusBar();
 
   return true;
 }

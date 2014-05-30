@@ -677,7 +677,9 @@ function enigmailUserSelAccept() {
   }
 
   if (document.getElementById("displayNoLonger").checked) {
-    EnigSetPref("recipientsSelection", 2);
+    // NJ: WHY? (was: EnigSetPref("recipientsSelection", 2) )
+    EnigSetPref("assignKeysByRules", true);
+    EnigSetPref("assignKeysByEmailAddr", true);
   }
   if (resultObj.userList.length == 0 && gSendEncrypted) {
     EnigAlert(EnigGetString("atLeastOneKey"));
@@ -814,9 +816,8 @@ function disableList() {
 }
 
 function enigmailNewRecipientRule () {
-  if (EnigGetPref("recipientsSelection")>2) {
-    EnigSetPref("recipientsSelection", 2);
-  }
+  // enable rules to ensure that the new rule gets processed
+  EnigSetPref("assignKeysByRules", true);
 
   var resultObj=window.arguments[RESULT];
   resultObj.userList = new Array();

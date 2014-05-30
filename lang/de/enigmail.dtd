@@ -189,7 +189,7 @@
 <!ENTITY enigmail.confirmBeforeSendingIfRules.label          "wenn Regeln die Standard-Einstellung zum Verschluesseln geaendert haben">
 <!ENTITY enigmail.confirmBeforeSendingIfRules.tooltip        "Display information dialog about signing/encryption before sending, if your preference regarding encryption was changed by a per-recipient rule or auto encryption">
 
-<!ENTITY enigmail.recipientsSelectionOption.label "Wahl der Schlüssel von Nachrichten-Empfängern">
+<!ENTITY enigmail.recipientsSelectionOption.label "Ermittlung der Schlüssel von Nachrichten-Empfängern">
 <!ENTITY enigmail.perRecipientRules.label "Durch Empfängerregeln">
 <!ENTITY enigmail.perRecipientRules.tooltip "Sie werden bei Bedarf aufgefordert eine neue Empfängerregel zu erstellen.">
 <!ENTITY enigmail.perRecipientRulesAndEmail.label "Durch Empfängerregeln oder E-Mail-Adressen">

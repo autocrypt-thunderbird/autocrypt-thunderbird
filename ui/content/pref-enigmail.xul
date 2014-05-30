@@ -56,9 +56,6 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail.js"/>
 
   <popupset>
-    <tooltip id="neverAsk.tooltip">
-        <description>&enigmail.neverAsk.tooltip;</description>
-    </tooltip>
     <tooltip id="prefs.overrideGpg.tooltip">
       <description>&enigmail.prefs.overrideGpg.tooltip;</description>
     </tooltip>
@@ -86,6 +83,7 @@
     <tooltip id="allowEmptySubject.tooltip">
       <description>&enigmail.allowEmptySubject.tooltip;</description>
     </tooltip>
+    <!-- old: -->
     <tooltip id="confirmBeforeSend.tooltip">
       <description>&enigmail.confirmBeforeSend.tooltip;</description>
     </tooltip>
@@ -106,7 +104,7 @@
       <description>&enigmail.autoSendEncryptedIfKeys.tooltip;</description>
     </tooltip>
 
-    <!-- basic: confirm before sending -->
+    <!-- sending preferences: confirm before sending -->
     <tooltip id="confirmBeforeSendingNever.tooltip">
       <description>&enigmail.confirmBeforeSendingNever.tooltip;</description>
     </tooltip>
@@ -123,21 +121,20 @@
       <description>&enigmail.confirmBeforeSendingIfRules.tooltip;</description>
     </tooltip>
 
-    <tooltip id="perRecipientRules.tooltip">
-      <description>&enigmail.perRecipientRules.tooltip;</description>
+    <!-- keySel preferences -->
+    <tooltip id="assignKeysByRules.tooltip">
+      <description>&enigmail.assignKeysByRules.tooltip;</description>
     </tooltip>
-    <tooltip id="perRecipientRulesAndEmail.tooltip">
-      <description>&enigmail.perRecipientRulesAndEmail.tooltip;</description>
+    <tooltip id="assignKeysByEmailAddr.tooltip">
+      <description>&enigmail.assignKeysByEmailAddr.tooltip;</description>
     </tooltip>
-    <tooltip id="perEmailAddress.tooltip">
-      <description>&enigmail.perEmailAddress.tooltip;</description>
+    <tooltip id="assignKeysManuallyIfMissing.tooltip">
+      <description>&enigmail.assignKeysManuallyIfMissing.tooltip;</description>
     </tooltip>
-    <tooltip id="askRecipientsAlways.tooltip">
-      <description>&enigmail.askRecipientsAlways.tooltip;</description>
+    <tooltip id="assignKeysManuallyAlways.tooltip">
+      <description>&enigmail.assignKeysManuallyAlways.tooltip;</description>
     </tooltip>
-    <tooltip id="defineRules.tooltip">
-      <description>&enigmail.defineRules.tooltip;</description>
-    </tooltip>
+
     <tooltip id="keepCryptoSettingsForReply.tooltip">
       <description>&enigmail.keepCryptoSettingsForReply.tooltip;</description>
     </tooltip>
@@ -378,43 +375,23 @@
       <!-- "Key Selection" Tab -->
       <vbox id="keySel" flex="1"
             advanced="true">
+
           <groupbox>
             <caption label="&enigmail.recipientsSelectionOption.label;"/>
-            <radiogroup id="enigmail_recipientsSelection"
-                        oncommand="activateRulesButton(this, 'openRulesEditor')"
-                        pref="true"
-                        preftype="int"
-                        prefstring="extensions.enigmail.recipientsSelection">
 
-              <radio id="perRecipientRules"
-                    value="1"
-                    label="&enigmail.perRecipientRules.label;"
-                    tooltip="perRecipientRules.tooltip"/>
+              <checkbox id="enigmail_assignKeysByRules"
+                        label="&enigmail.assignKeysByRules.label;"
+                        tooltip="assignKeysByRules.tooltip" />
+              <checkbox id="enigmail_assignKeysByEmailAddr"
+                        label="&enigmail.assignKeysByEmailAddr.label;"
+                        tooltip="assignKeysByEmailAddr.tooltip" />
+              <checkbox id="enigmail_assignKeysManuallyIfMissing"
+                        label="&enigmail.assignKeysManuallyIfMissing.label;"
+                        tooltip="assignKeysManuallyIfMissing.tooltip" />
+              <checkbox id="enigmail_assignKeysManuallyAlways"
+                        label="&enigmail.assignKeysManuallyAlways.label;"
+                        tooltip="assignKeysManuallyAlways.tooltip" />
 
-              <radio id="perRecipientRulesAndEmail"
-                    value="2"
-                    label="&enigmail.perRecipientRulesAndEmail.label;"
-                    tooltip="perRecipientRulesAndEmail.tooltip"/>
-
-              <radio id="perEmailAddress"
-                    value="3"
-                    label="&enigmail.perEmailAddress.label;"
-                    tooltip="perEmailAddress.tooltip"/>
-
-              <radio id="askRecipientsAlways"
-                    value="4"
-                    label="&enigmail.askRecipientsAlways.label;"
-                    tooltip="askRecipientsAlways.tooltip"/>
-
-              <separator/>
-              <radio id="neverAsk"
-                    value="5"
-                    label="&enigmail.neverAsk.label;"
-                    oncommand="enigAlertAskNever()"
-                    tooltip="neverAsk.tooltip"/>
-
-            </radiogroup>
-            <separator/>
             <vbox autostretch="always" align="end">
               <button id="openRulesEditor"
                       label="&enigmail.defineRules.label;"
