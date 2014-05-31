@@ -1193,6 +1193,8 @@ Enigmail.msg = {
 
       this.signRules    = 1;
       this.encryptRules = 1;
+
+      // process rules
       if (toAddrList.length > 0 && EnigmailCommon.getPref("assignKeysByRules")) {
         var matchedKeysObj = new Object();
         var flagsObj = new Object();
@@ -1205,8 +1207,9 @@ Enigmail.msg = {
           this.encryptRules = flagsObj.encrypt;
         }
       }
-      // if allowed, try to send automatically if all keys known
-      if (toAddrList.length > 0 && this.encryptRules == 1) {
+
+      // if not clear whether to encrypr yet, check whether automatically-send-encrypted applies
+      if (toAddrList.length > 0 && this.encryptRules == 1 && EnigmailCommon.getPref("autoSendEncrypted") == 1) {
         var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrList.join(", "),
                                                                   false);  // don't refresh key list
         if (validKeyList != null) {
@@ -1624,8 +1627,11 @@ Enigmail.msg = {
       EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): after getRecipientsKeys() bccAddr=\""+bccAddr+"\"\n");
     }
 
-    // if allowed, try to send automatically if all keys known
-    if (((sendFlags&ENCRYPT) == 0) && (!flagsObj.value || flagsObj.encrypt == 1) && bccAddr.length == 0) {
+    // automatically send encrypted if
+    // - option enabled
+    // - not encrypt yet
+    // - no bcc addresses
+    if (((sendFlags&ENCRYPT) == 0) && bccAddr.length == 0 && EnigmailCommon.getPref("autoSendEncrypted") == 1) {
       var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddr,
                                                                 true);  // refresh key list
       if (validKeyList != null) {
@@ -1673,10 +1679,12 @@ Enigmail.msg = {
     //         Only the first key found for an email is used.
     //         If this is invalid, no other keys are tested.
     //         Thus, WE make it better here in enigmail until the bug is fixed.
-    var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddr,
-                                                              true);  // refresh key list
-    if (validKeyList != null) {
-      toAddr = validKeyList.join(", ");
+    if (EnigmailCommon.getPref("assignKeysByEmailAddr")) {
+      var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddr,
+                                                                true);  // refresh key list
+      if (validKeyList != null) {
+        toAddr = validKeyList.join(", ");
+      }
     }
 
     // encrypt test message for test recipients
@@ -1940,7 +1948,7 @@ Enigmail.msg = {
              optSendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
              break; 
            default:
-             EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: validKeysForAllRecipients(): INVALID VALUE for acceptedKeys: \""+acceptedKeys+"\"\n");
+             EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: INVALID VALUE for acceptedKeys: \""+acceptedKeys+"\"\n");
              break;
          }
        }
@@ -2006,8 +2014,8 @@ Enigmail.msg = {
              if (encryptIfPossible) {
                sendFlags &= ~ENCRYPT;
                EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: No default encryption because of BCC\n");
-
-             } else {
+             }
+             else {
                var dummy={value: null};
 
                var hideBccUsers = promptSvc.confirmEx(window,

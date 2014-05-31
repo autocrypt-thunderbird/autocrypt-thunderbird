@@ -1166,7 +1166,10 @@ Enigmail.msg = {
       }
 
       // HACK for MS-EXCHANGE-Server Problem:
-      // missing: signal in statusFlags so that we warn in Enigmail.hdrView.updateHdrIcons()
+      // - remove empty text/plain part
+      //   and set message content as inner text
+      // - missing:
+      //   - signal in statusFlags so that we warn in Enigmail.hdrView.updateHdrIcons()
       if (buggyExchangeEmailContent != null) {
         messageContent = messageContent.replace(/^\s{0,2}Content-Transfer-Encoding: quoted-printable\s*Content-Type: text\/plain;\s*charset=windows-1252/i, "");
         var node = bodyElement.firstChild;

@@ -677,9 +677,8 @@ function enigmailUserSelAccept() {
   }
 
   if (document.getElementById("displayNoLonger").checked) {
-    // NJ: WHY? (was: EnigSetPref("recipientsSelection", 2) )
-    EnigSetPref("assignKeysByRules", true);
-    EnigSetPref("assignKeysByEmailAddr", true);
+    // no longer force manual disalog even if no keys missing
+    EnigSetPref("assignKeysByManuallyAlways", false);
   }
   if (resultObj.userList.length == 0 && gSendEncrypted) {
     EnigAlert(EnigGetString("atLeastOneKey"));

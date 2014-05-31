@@ -91,7 +91,7 @@ Enigmail.hlp = {
 
   /**
     * process resulting sign/encryp/pgpMime mode for passed emailAddrs and
-    * use rules and interactive dialog to replace emailAddrs by known keys
+    * use rules and interactive rule dialog to replace emailAddrs by known keys
     * Input parameters:
     *  @interactive:            false: skip all interaction
     *  @forceRecipientSettings: force recipients settings for each missing key (if interactive==true)
@@ -268,6 +268,7 @@ Enigmail.hlp = {
     return true;
   },
 
+
   /* try to find valid key to passed email address
    * @return: list of all found key (with leading "0x") or null
    */
@@ -278,34 +279,18 @@ Enigmail.hlp = {
       return null;
     }
 
-    // check whether and how auto-encryption is enabled
-    var autoSendEncrypted = EnigmailCommon.getPref("autoSendEncrypted");
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: validKeysForAllRecipients(): autoSendEncrypted=\""+autoSendEncrypted+"\"\n");
-    if (!autoSendEncrypted) {
-      return null;
-    }
-    var acceptedKeys = EnigmailCommon.getPref("acceptedKeys");
+    // check which keys are accepted
     var minTrustLevel;
-    switch (autoSendEncrypted) {
-      case 0:  // EncNever
-        return null;
-        break;
-      case 1:  // EncIfValid
-        switch (acceptedKeys) {
-          case 0: // accept valid/authenticated keys only
-            minTrustLevel = "f";  // first value for trusted keys
-            break; 
-          case 1: // accept all but revoked/disabled/expired keys
-            minTrustLevel = "?";  // value between invalid and unknown keys
-            break; 
-          default:
-            EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: validKeysForAllRecipients(): INVALID VALUE for acceptedKeys: \""+acceptedKeys+"\"\n");
-            return null;
-            break;
-        }
-        break;
+    var acceptedKeys = EnigmailCommon.getPref("acceptedKeys");
+    switch (acceptedKeys) {
+      case 0: // accept valid/authenticated keys only
+        minTrustLevel = "f";  // first value for trusted keys
+        break; 
+      case 1: // accept all but revoked/disabled/expired keys
+        minTrustLevel = "?";  // value between invalid and unknown keys
+        break; 
       default:
-        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: validKeysForAllRecipients(): INVALID VALUE for autoSendEncrypted: \""+autoSendEncrypted+"\"\n");
+        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: validKeysForAllRecipients(): INVALID VALUE for acceptedKeys: \""+acceptedKeys+"\"\n");
         return null;
         break;
     }

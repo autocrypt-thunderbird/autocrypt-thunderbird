@@ -350,7 +350,7 @@ function resetSendingPrefsConvenient()
   // update GUI elements and corresponding setting variables:
   var keepSettingsForReply = true;  // reply encrypted on encrypted emails
   gEnigAcceptedKeys = 1;            // all keys accepted
-  gEnigAutoSendEncrypted = 1;       // auto.sedn-encrypted if accepted keys exist
+  gEnigAutoSendEncrypted = 1;       // auto.send-encrypted if accepted keys exist
   gEnigConfirmBeforeSending = 0;    // never confirm before sending
   EnigSetPref("keepSettingsForReply", keepSettingsForReply);
   EnigSetPref("acceptedKeys", gEnigAcceptedKeys);
