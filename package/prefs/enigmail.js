@@ -234,6 +234,7 @@ pref("mail.identity.default.pgpkeyId",  "");
 pref("mail.identity.default.pgpKeyMode", 0);
 pref("mail.identity.default.pgpSignPlain", false);
 pref("mail.identity.default.pgpSignEncrypted", false);
+pref("mail.identity.default.defaultSigningPolicy", 0);
 pref("mail.identity.default.defaultEncryptionPolicy", 0);
 pref("mail.identity.default.openPgpHeaderMode", 0);
 pref("mail.identity.default.openPgpUrlName", "");

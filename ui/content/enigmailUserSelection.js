@@ -229,10 +229,6 @@ function enigmailBuildList(refresh) {
    gUserList = document.getElementById("enigmailUserIdSelection");
    gUserList.currentItem=null;
 
-   // TODO: process notSignedIfNotEncrypted (if useful)
-   //if (window.arguments[INPUT].options.indexOf("notSignedIfNotEnc")>= 0) {
-      //...
-   //}
    if (window.arguments[INPUT].options.indexOf("unsigned")>= 0) {
       gSendSigned = false;
       var sendSignedCheckbox = document.getElementById("enigmailUserSelSendSigned");

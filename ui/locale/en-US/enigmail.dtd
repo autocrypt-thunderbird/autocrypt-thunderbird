@@ -207,9 +207,15 @@
 <!ENTITY enigmail.attachkey.accesskey          "A">
 <!ENTITY enigmail.attachmykey.accesskey        "M">
 
+
+<!-- account specific options -->
+<!ENTITY enigmail.defaultSigning.label            "Sign messages by default">
 <!ENTITY enigmail.defaultEncryption.label         "Encrypt messages by default">
+<!ENTITY enigmail.usePGPMimeAlways.label          "Use PGP/MIME by default">
 <!ENTITY enigmail.defaultEncryptionSign.label     "Sign encrypted messages by default">
 <!ENTITY enigmail.defaultSignPlainMsg.label       "Sign non-encrypted messages by default">
+<!ENTITY enigmail.autoEncryptDrafts.label         "Encrypt draft messages on saving">
+
 
 <!ENTITY enigmail.defaultEncryptionNone.label     "No default encryption">
 <!ENTITY enigmail.defaultNotSignedsend.label      "Do not sign messages by default">
@@ -256,9 +262,6 @@
 <!ENTITY enigmail.defineRules.label               "Edit Rules ...">
 <!ENTITY enigmail.defineRules.tooltip             "Click to view, add, remove or edit the key selection rules.">
 
-
-<!ENTITY enigmail.usePGPMimeAlways.label          "Use PGP/MIME by default">
-<!ENTITY enigmail.autoEncryptDrafts.label         "Encrypt draft messages on saving">
 
 <!ENTITY enigmail.keepCryptoSettingsForReply.label      "Encrypt/sign replies to encrypted/signed messages">
 <!ENTITY enigmail.confirmBeforeSend.label         "Always confirm before sending">

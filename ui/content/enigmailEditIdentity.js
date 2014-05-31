@@ -44,10 +44,11 @@ Enigmail.edit = {
   pgpKeyMode: null,
   pgpKeyId: null,
   cryptoChoicesEnabled: null,
+  signingPolicy: null,     // account specific: by default sign
+  encryptionPolicy: null,  // account specific: by default encrypt
+  pgpMimeMode: null,       // account specific: by default pgp/mime
   pgpSignPlainPolicy: null,
   pgpSignEncPolicy: null,
-  encryptionPolicy: null,
-  pgpMimeMode: null,
   autoEncryptDrafts: null,
   advancedSettings: null,
 
@@ -59,10 +60,11 @@ Enigmail.edit = {
     this.enablePgp          = document.getElementById("enigmail_enablePgp");
     this.pgpKeyMode         = document.getElementById("enigmail_pgpKeyMode");
     this.pgpKeyId           = document.getElementById("enigmail_identity.pgpkeyId");
-    this.pgpSignEncPolicy   = document.getElementById("enigmail_sign_encrypted");
-    this.pgpSignPlainPolicy = document.getElementById("enigmail_sign_notEncrypted");
+    this.signingPolicy      = document.getElementById("enigmail_sign_ifPossible");
     this.encryptionPolicy   = document.getElementById("enigmail_encrypt_ifPossible");
     this.pgpMimeMode        = document.getElementById("enigmail_pgpMimeMode");
+    this.pgpSignEncPolicy   = document.getElementById("enigmail_sign_encrypted");
+    this.pgpSignPlainPolicy = document.getElementById("enigmail_sign_notEncrypted");
     this.autoEncryptDrafts  = document.getElementById("enigmail_autoEncryptDrafts");
 
     if (this.identity) {
@@ -84,12 +86,12 @@ Enigmail.edit = {
 
       this.pgpKeyId.value = this.identity.getCharAttribute("pgpkeyId");
       EnigmailFuncs.getSignMsg(this.identity);
+      this.signingPolicy.checked = (this.identity.getIntAttribute("defaultSigningPolicy")>0);
+      this.encryptionPolicy.checked = (this.identity.getIntAttribute("defaultEncryptionPolicy")>0);
+      this.pgpMimeMode.checked = this.identity.getBoolAttribute("pgpMimeMode");
       this.pgpSignEncPolicy.checked = this.identity.getBoolAttribute("pgpSignEncrypted");
       this.pgpSignPlainPolicy.checked = this.identity.getBoolAttribute("pgpSignPlain");
-      this.pgpMimeMode.checked = this.identity.getBoolAttribute("pgpMimeMode");
       this.autoEncryptDrafts.checked = this.identity.getBoolAttribute("autoEncryptDrafts");
-
-      this.encryptionPolicy.checked = (this.identity.getIntAttribute("defaultEncryptionPolicy")>0);
       this.advancedSettings = {
         openPgpHeaderMode: this.identity.getIntAttribute("openPgpHeaderMode"),
         openPgpUrlName: this.identity.getCharAttribute("openPgpUrlName"),
@@ -161,11 +163,12 @@ Enigmail.edit = {
       // PGP is enabled
       this.identity.setIntAttribute("pgpKeyMode", this.pgpKeyMode.selectedItem.value);
       this.identity.setCharAttribute("pgpkeyId", this.pgpKeyId.value);
+      this.identity.setIntAttribute("defaultSigningPolicy", (this.signingPolicy.checked ? 1 : 0));
+      this.identity.setIntAttribute("defaultEncryptionPolicy", (this.encryptionPolicy.checked ? 1 : 0));
+      this.identity.setBoolAttribute("pgpMimeMode", this.pgpMimeMode.checked);
       this.identity.setBoolAttribute("pgpSignEncrypted", this.pgpSignEncPolicy.checked);
       this.identity.setBoolAttribute("pgpSignPlain", this.pgpSignPlainPolicy.checked);
-      this.identity.setBoolAttribute("pgpMimeMode", this.pgpMimeMode.checked);
       this.identity.setBoolAttribute("autoEncryptDrafts", this.autoEncryptDrafts.checked);
-      this.identity.setIntAttribute("defaultEncryptionPolicy", (this.encryptionPolicy.checked ? 1 : 0));
       this.identity.setIntAttribute("openPgpHeaderMode", this.advancedSettings.openPgpHeaderMode);
       this.identity.setCharAttribute("openPgpUrlName", this.advancedSettings.openPgpUrlName);
       this.identity.setBoolAttribute("attachPgpKey", this.advancedSettings.attachPgpKey);

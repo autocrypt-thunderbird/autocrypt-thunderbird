@@ -840,8 +840,8 @@ var EnigmailFuncs = {
   },
 
   /**
-   * determine default values for signing and encryption. Translates "old-style"
-   * defaults (pre-Enigmail v1.0) to "current" defaults
+   * determine default values for signing and encryption.
+   * Translates "old-style" defaults (pre-Enigmail v1.0) to "current" defaults
    *
    * @identiy - nsIMsgIdentity object
    *
