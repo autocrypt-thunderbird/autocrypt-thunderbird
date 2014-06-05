@@ -413,6 +413,7 @@ Enigmail.msg = {
     this.msgComposeReset(false);  // calls setIdentityDefaults()
 
     this.composeOpen();
+    this.updateStatusBar();
   },
 
   msgComposeClose: function ()
@@ -885,7 +886,7 @@ Enigmail.msg = {
     const SIGN    = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
 
-    var origSendMode=this.sendMode;
+    var origSendMode = this.sendMode;
     switch (sendMode) {
       case 'sign':
         this.sendMode |= SIGN;
@@ -914,7 +915,7 @@ Enigmail.msg = {
         break;
     }
     // sendMode change (and no change marked yet)?
-    if (!sendModeDirty && (this.sendMode != origSendMode)) {
+    if (!this.sendModeDirty && (this.sendMode != origSendMode)) {
       this.sendModeDirty = true;
     }
     this.updateStatusBar();

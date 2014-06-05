@@ -212,9 +212,13 @@
 <!ENTITY enigmail.defaultSigning.label            "Sign messages by default">
 <!ENTITY enigmail.defaultEncryption.label         "Encrypt messages by default">
 <!ENTITY enigmail.usePGPMimeAlways.label          "Use PGP/MIME by default">
-<!ENTITY enigmail.defaultEncryptionSign.label     "Sign encrypted messages by default">
+<!ENTITY enigmail.finallySignEncrypted.label      "Finally sign encrypted messages">
+<!ENTITY enigmail.finallySignNotEncrypted.label   "Finally sign non-encrypted messages">
 <!ENTITY enigmail.defaultSignPlainMsg.label       "Sign non-encrypted messages by default">
 <!ENTITY enigmail.autoEncryptDrafts.label         "Encrypt draft messages on saving">
+<!-- old: -->
+<!ENTITY enigmail.defaultEncryptionSign.label     "Sign encrypted messages by default">
+<!ENTITY enigmail.defaultSignPlainMsg.label       "Sign non-encrypted messages by default">
 
 
 <!ENTITY enigmail.defaultEncryptionNone.label     "No default encryption">
