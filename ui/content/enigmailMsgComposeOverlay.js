@@ -69,6 +69,9 @@ Enigmail.msg = {
   finalEncrypt: 1,   // finally force to encrypt (0: must not encrypt, 1: no force, 2: must encrypt) 
   finalPGPMime: 1,   // finally use PGP Mime (0: must not use PGP/Mime, 1: no force, 2: must use PGP/Mime) 
   finalSignDependsOnEncrypt: false,
+  statusSigned: '???',    // last processed final sign state
+  statusEncrypted: '???', // last processed final encryption state
+  statusPgpMime: '???', // last processed final PGP/Mime state
   sendProcess: false,
   nextCommandId: null,
   docaStateListener: null,
@@ -809,8 +812,12 @@ Enigmail.msg = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.doPgpButton: what="+what+"\n");
 
-    if (! what)
+    // Note: For the toolbar button this is indirectly triggered:
+    //       - the menu items trigger nextCommand()
+    //       - because afterwards doPgpButton('') is always called (for whatever reason)
+    if (! what) {
       what = this.nextCommandId;
+    }
     this.nextCommandId = "";
     EnigmailCommon.getService(window); // try to access Enigmail to launch the wizard if needed
 
@@ -841,6 +848,15 @@ Enigmail.msg = {
         break;
 
       // menu entries:
+      case 'final-signDefault':
+      case 'final-signYes':
+      case 'final-signNo':
+      case 'final-encryptDefault':
+      case 'final-encryptYes':
+      case 'final-encryptNo':
+      case 'final-pgpmimeDefault':
+      case 'final-pgpmimeYes':
+      case 'final-pgpmimeNo':
       case 'toggle-final-signYes':
       case 'toggle-final-signNo':
       case 'toggle-final-encryptYes':
@@ -865,6 +881,10 @@ Enigmail.msg = {
         this.tempTrustAllKeys();
         break;
 
+      case 'nothing':
+        break;
+
+      case 'displaySecuritySettings':
       default:
         this.displaySecuritySettings();
     }
@@ -934,9 +954,26 @@ Enigmail.msg = {
 
     switch (sendMode) {
 
-      // menu entries:
-      // - can enable and disable both to force or not to force:
+      // menu entries for final settings:
 
+      case 'final-signDefault':
+        if (this.finalSign != 1) {  // if sign/nosign forced
+          this.signingNoLongerDependsOnEnc();
+          this.finalSign = 1;       // back to defaults/rules
+        }
+        break;
+      case 'final-signYes':
+        if (this.finalSign != 2) {  // if not forced to sign
+          this.signingNoLongerDependsOnEnc();
+          this.finalSign = 2;       // force to sign
+        }
+        break;
+      case 'final-signNo':
+        if (this.finalSign != 0) {  // if not forced not to sign
+          this.signingNoLongerDependsOnEnc();
+          this.finalSign = 0;       // force not to sign
+        }
+        break;
       case 'toggle-final-signYes':
         this.signingNoLongerDependsOnEnc();
         if (this.finalSign == 2) {  // forced to sign?
@@ -955,6 +992,22 @@ Enigmail.msg = {
           this.finalSign = 0;  // force not to sign
         }
         break;
+
+      case 'final-encryptDefault':
+        if (this.finalEncrypt != 1) {  // if encrypt/noencrypt forced
+          this.finalEncrypt = 1;       // back to defaults/rules
+        }
+        break;
+      case 'final-encryptYes':
+        if (this.finalEncrypt != 2) {  // if not forced to encrypt
+          this.finalEncrypt = 2;       // force to encrypt
+        }
+        break;
+      case 'final-encryptNo':
+        if (this.finalEncrypt != 0) {  // if not forced not to encrypt
+          this.finalEncrypt = 0;       // force not to encrypt
+        }
+        break;
       case 'toggle-final-encryptYes':
         if (this.finalEncrypt == 2) {  // forced to encrypt?
           this.finalEncrypt = 1;  // no longer force to encrypt
@@ -969,6 +1022,22 @@ Enigmail.msg = {
         }
         else {
           this.finalEncrypt = 0;  // force not to encrypt
+        }
+        break;
+
+      case 'final-pgpmimeDefault':
+        if (this.finalPGPMime != 1) {  // if any PGP mode forced
+          this.finalPGPMime = 1;       // back to defaults/rules
+        }
+        break;
+      case 'final-pgpmimeYes':
+        if (this.finalPGPMime != 2) {  // if not forced to PGP/Mime
+          this.finalPGPMime = 2;       // force to PGP/Mime
+        }
+        break;
+      case 'final-pgpmimeNo':
+        if (this.finalPGPMime != 0) {  // if not forced not to PGP/Mime
+          this.finalPGPMime = 0;       // force not to PGP/Mime
         }
         break;
       case 'toggle-final-pgpmimeYes':
@@ -1210,21 +1279,25 @@ Enigmail.msg = {
     }
     var signIcon = document.getElementById("enigmail-signed-status");
     signIcon.setAttribute("tooltiptext", signStr);
+    this.statusSigned = signStr;
 
     // update encrypt icon and tooltip
     statusBar.setAttribute("encrypted", encSymbol);
-    var encIcon = document.getElementById("enigmail-encrypted-status");
+    var encStr = null;
     switch (encFinally) {
      case 0:
-      encIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptNo"));
+      encStr = EnigmailCommon.getString("encryptNo");
       break;
      case 1:
-      encIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptYes"));
+      encStr = EnigmailCommon.getString("encryptYes");
       break;
      case 99:
-      encIcon.setAttribute("tooltiptext", EnigmailCommon.getString("encryptConflict"));
+      encStr = EnigmailCommon.getString("encryptConflict");
       break;
     }
+    var encIcon = document.getElementById("enigmail-encrypted-status");
+    encIcon.setAttribute("tooltiptext", encStr);
+    this.statusEncrypted = encStr;
   },
 
 
@@ -1303,15 +1376,15 @@ Enigmail.msg = {
     const SIGN    = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
 
-    var elem = document.getElementById("enigmail_final_currentMode"+postfix);
+    var elem = document.getElementById("enigmail_compose_sign_menu"+postfix);
     if (elem) {
-      if (this.finalSign == 2) {
-        elem.setAttribute("label","finalsign: YES");
-      }
-      else {
-        elem.setAttribute("label","finalsign: NO");
-      }
+      elem.setAttribute("label",this.statusSigned);
     }
+    elem = document.getElementById("enigmail_compose_encrypt_menu"+postfix);
+    if (elem) {
+      elem.setAttribute("label",this.statusEncrypted);
+    }
+
     // old buttons (may be disabled in UI):
     this.setChecked("enigmail_encrypted_send"+postfix, this.sendMode & ENCRYPT);
     this.setChecked("enigmail_signed_send"+postfix, this.sendMode & SIGN);
@@ -1319,10 +1392,13 @@ Enigmail.msg = {
     this.setChecked("enigmail_sendPGPMime"+postfix, this.sendPgpMime);
     this.setChecked("enigmail_disable_rules"+postfix, !this.enableRules);
     // new buttons:
+    this.setChecked("enigmail_final_signDefault"+postfix, this.finalSign == 1);
     this.setChecked("enigmail_final_signYes"+postfix, this.finalSign == 2);
     this.setChecked("enigmail_final_signNo"+postfix, this.finalSign == 0);
+    this.setChecked("enigmail_final_encryptDefault"+postfix, this.finalEncrypt == 1);
     this.setChecked("enigmail_final_encryptYes"+postfix, this.finalEncrypt == 2);
     this.setChecked("enigmail_final_encryptNo"+postfix, this.finalEncrypt == 0);
+    this.setChecked("enigmail_final_pgpmimeDefault"+postfix, this.finalPGPMime == 1);
     this.setChecked("enigmail_final_pgpmimeYes"+postfix, this.finalPGPMime == 2);
     this.setChecked("enigmail_final_pgpmimeNo"+postfix, this.finalPGPMime == 0);
 

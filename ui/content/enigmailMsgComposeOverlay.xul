@@ -84,6 +84,7 @@
         <menupopup id="menu_EnigmailPopup"
                    onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.setMenuSettings(''))">
 
+
           <menuitem id="enigmail_final_signYes"
               type="checkbox"
               label="&enigmail.finalSignYes.label;"
@@ -238,16 +239,75 @@
             buttontype="thunderbird"
             tooltip="aTooltipSet"
             tooltiptext="&enigmail.securitybutton.tip;"
-            oncommand="Enigmail.msg.doPgpButton();">
+            oncommand="Enigmail.msg.doPgpButton('');">
+            <!-- NOTE: this oncommand is empty because it is always triggered AFTER
+                       the oncommand commands below.
+                       Therefor THOSE use nextCommand() instead of doPgpButton() -->
 
         <menupopup onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.setMenuSettings('3'))">
 
-          <!--
-          <menuitem id="enigmail_final_currentMode3"
-              type="checkbo"
-              label="&enigmail.finalSignYes.label;"
-              oncommand="" />
-              -->
+          <!-- signing state and entries to change it: -->
+          <menu id="enigmail_compose_sign_menu3"
+                label="&enigmail.signing.label;">
+            <menupopup id="menu_EnigmailSignPopup3"
+                   onpopupshowing="Enigmail.msg.setMenuSettings('3a')">
+              <menuitem id="enigmail_final_signDefault3a"
+                  type="checkbox"
+                  label="&enigmail.finalSignDefault.label;"
+                  oncommand="Enigmail.msg.nextCommand('final-signDefault');" />
+              <menuitem id="enigmail_final_signYes3a"
+                  type="checkbox"
+                  label="&enigmail.finalSignYes.label;"
+                  oncommand="Enigmail.msg.nextCommand('final-signYes');" />
+              <menuitem id="enigmail_final_signNo3a"
+                  type="checkbox"
+                  label="&enigmail.finalSignNo.label;"
+                  oncommand="Enigmail.msg.nextCommand('final-signNo');" />
+            </menupopup>
+          </menu>
+
+          <!-- encryption state and entries to change it: -->
+          <menu id="enigmail_compose_encrypt_menu3"
+                label="&enigmail.encryption.label;">
+            <menupopup id="menu_EnigmailEncryptPopup3"
+                   onpopupshowing="Enigmail.msg.setMenuSettings('3a')">
+              <menuitem id="enigmail_final_encryptDefault3a"
+                  type="checkbox"
+                  label="&enigmail.finalEncryptDefault.label;"
+                  oncommand="Enigmail.msg.nextCommand('final-encryptDefault');" />
+              <menuitem id="enigmail_final_encryptYes3a"
+                  type="checkbox"
+                  label="&enigmail.finalEncryptYes.label;"
+                  oncommand="Enigmail.msg.nextCommand('final-encryptYes');" />
+              <menuitem id="enigmail_final_encryptNo3a"
+                  type="checkbox"
+                  label="&enigmail.finalEncryptNo.label;"
+                  oncommand="Enigmail.msg.nextCommand('final-encryptNo');" />
+            </menupopup>
+          </menu>
+
+          <!-- PGP/Mime state and entries to change it: -->
+          <menu id="enigmail_compose_pgpmime_menu3"
+                label="&enigmail.pgpMime.label;">
+            <menupopup id="menu_EnigmailPgpMimePopup3"
+                   onpopupshowing="Enigmail.msg.setMenuSettings('3a')">
+              <menuitem id="enigmail_final_pgpmimeDefault3a"
+                  type="checkbox"
+                  label="&enigmail.finalPGPMimeDefault.label;"
+                  oncommand="Enigmail.msg.nextCommand('final-pgpmimeDefault');" />
+              <menuitem id="enigmail_final_pgpmimeYes3a"
+                  type="checkbox"
+                  label="&enigmail.finalPGPMimeYes.label;"
+                  oncommand="Enigmail.msg.nextCommand('final-pgpmimeYes');" />
+              <menuitem id="enigmail_final_pgpmimeNo3a"
+                  type="checkbox"
+                  label="&enigmail.finalPGPMimeNo.label;"
+                  oncommand="Enigmail.msg.nextCommand('final-pgpmimeNo');" />
+            </menupopup>
+          </menu>
+
+
+<!--
           <menuitem id="enigmail_final_signYes3"
               type="checkbox"
               label="&enigmail.finalSignYes.label;"
@@ -276,6 +336,7 @@
               advanced="true"
               label="&enigmail.finalPGPMimeNo.label;"
               oncommand="Enigmail.msg.nextCommand('toggle-final-pgpmimeNo');" />
+              -->
 
           <!--
           <menuseparator/>
