@@ -84,7 +84,70 @@
         <menupopup id="menu_EnigmailPopup"
                    onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.setMenuSettings(''))">
 
+          <!-- signing state and entries to change it: -->
+          <menu id="enigmail_compose_sign_menu"
+                label="&enigmail.signing.label;">
+            <menupopup id="menu_EnigmailSignPopup"
+                   onpopupshowing="Enigmail.msg.setMenuSettings('a')">
+              <menuitem id="enigmail_final_signDefaulta"
+                  type="checkbox"
+                  label="&enigmail.finalSignDefault.label;"
+                  oncommand="Enigmail.msg.doPgpButton('final-signDefault');" />
+              <menuitem id="enigmail_final_signYesa"
+                  type="checkbox"
+                  label="&enigmail.finalSignYes.label;"
+                  oncommand="Enigmail.msg.doPgpButton('final-signYes');" />
+              <menuitem id="enigmail_final_signNoa"
+                  type="checkbox"
+                  label="&enigmail.finalSignNo.label;"
+                  oncommand="Enigmail.msg.doPgpButton('final-signNo');" />
+            </menupopup>
+          </menu>
 
+          <!-- encryption state and entries to change it: -->
+          <menu id="enigmail_compose_encrypt_menu"
+                label="&enigmail.encryption.label;">
+            <menupopup id="menu_EnigmailEncryptPopup"
+                   onpopupshowing="Enigmail.msg.setMenuSettings('b')">
+              <menuitem id="enigmail_final_encryptDefaultb"
+                  type="checkbox"
+                  label="&enigmail.finalEncryptDefault.label;"
+                  oncommand="Enigmail.msg.doPgpButton('final-encryptDefault');" />
+              <menuitem id="enigmail_final_encryptYesb"
+                  type="checkbox"
+                  label="&enigmail.finalEncryptYes.label;"
+                  oncommand="Enigmail.msg.doPgpButton('final-encryptYes');" />
+              <menuitem id="enigmail_final_encryptNob"
+                  type="checkbox"
+                  label="&enigmail.finalEncryptNo.label;"
+                  oncommand="Enigmail.msg.doPgpButton('final-encryptNo');" />
+            </menupopup>
+          </menu>
+
+          <!-- PGP/Mime state and entries to change it: -->
+          <menuseparator advanced="true"/>
+          <menu id="enigmail_compose_pgpmime_menu"
+                advanced="true"
+                label="&enigmail.pgpMime.label;">
+            <menupopup id="menu_EnigmailPgpMimePopup"
+                   advanced="true"
+                   onpopupshowing="Enigmail.msg.setMenuSettings('c')">
+              <menuitem id="enigmail_final_pgpmimeDefaultc"
+                  type="checkbox"
+                  label="&enigmail.finalPGPMimeDefault.label;"
+                  oncommand="Enigmail.msg.doPgpButton('final-pgpmimeDefault');" />
+              <menuitem id="enigmail_final_pgpmimeYesc"
+                  type="checkbox"
+                  label="&enigmail.finalPGPMimeYes.label;"
+                  oncommand="Enigmail.msg.doPgpButton('final-pgpmimeYes');" />
+              <menuitem id="enigmail_final_pgpmimeNoc"
+                  type="checkbox"
+                  label="&enigmail.finalPGPMimeNo.label;"
+                  oncommand="Enigmail.msg.doPgpButton('final-pgpmimeNo');" />
+            </menupopup>
+          </menu>
+
+<!--
           <menuitem id="enigmail_final_signYes"
               type="checkbox"
               label="&enigmail.finalSignYes.label;"
@@ -113,6 +176,7 @@
               advanced="true"
               label="&enigmail.finalPGPMimeNo.label;"
               oncommand="Enigmail.msg.doPgpButton('toggle-final-pgpmimeNo');" />
+              -->
 
           <!--
           <menuitem id="enigmail_signed_send"
@@ -287,7 +351,7 @@
           </menu>
 
           <!-- PGP/Mime state and entries to change it: -->
-          <menuseparator/>
+          <menuseparator advanced="true"/>
           <menu id="enigmail_compose_pgpmime_menu3"
                 advanced="true"
                 label="&enigmail.pgpMime.label;">
