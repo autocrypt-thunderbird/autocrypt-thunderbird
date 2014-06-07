@@ -1263,21 +1263,22 @@ Enigmail.msg = {
     }
 
     // update sign icon and tooltip/menu-text
+    var details = [""];
+    if (derivedFromEncMode) {
+      details = EnigmailCommon.getString("signDueToEncryptionMode");
+    }
     statusBar.setAttribute("signed", signSymbol);
     var signStr = null;
     switch (signFinally) {
      case 0:
-      signStr = EnigmailCommon.getString("signNo");
+      signStr = EnigmailCommon.getString("signNo", details);
       break;
      case 1:
-      signStr = EnigmailCommon.getString("signYes");
+      signStr = EnigmailCommon.getString("signYes", details);
       break;
      case 99:
       signStr = EnigmailCommon.getString("signConflict");
       break;
-    }
-    if (derivedFromEncMode) {
-      signStr += " (" + EnigmailCommon.getString("signingDerivedFromEncryptionMode")+")";
     }
     var signIcon = document.getElementById("enigmail-signed-status");
     signIcon.setAttribute("tooltiptext", signStr);
