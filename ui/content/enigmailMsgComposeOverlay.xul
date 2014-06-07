@@ -270,16 +270,16 @@
           <menu id="enigmail_compose_encrypt_menu3"
                 label="&enigmail.encryption.label;">
             <menupopup id="menu_EnigmailEncryptPopup3"
-                   onpopupshowing="Enigmail.msg.setMenuSettings('3a')">
-              <menuitem id="enigmail_final_encryptDefault3a"
+                   onpopupshowing="Enigmail.msg.setMenuSettings('3b')">
+              <menuitem id="enigmail_final_encryptDefault3b"
                   type="checkbox"
                   label="&enigmail.finalEncryptDefault.label;"
                   oncommand="Enigmail.msg.nextCommand('final-encryptDefault');" />
-              <menuitem id="enigmail_final_encryptYes3a"
+              <menuitem id="enigmail_final_encryptYes3b"
                   type="checkbox"
                   label="&enigmail.finalEncryptYes.label;"
                   oncommand="Enigmail.msg.nextCommand('final-encryptYes');" />
-              <menuitem id="enigmail_final_encryptNo3a"
+              <menuitem id="enigmail_final_encryptNo3b"
                   type="checkbox"
                   label="&enigmail.finalEncryptNo.label;"
                   oncommand="Enigmail.msg.nextCommand('final-encryptNo');" />
@@ -287,19 +287,22 @@
           </menu>
 
           <!-- PGP/Mime state and entries to change it: -->
+          <menuseparator/>
           <menu id="enigmail_compose_pgpmime_menu3"
+                advanced="true"
                 label="&enigmail.pgpMime.label;">
             <menupopup id="menu_EnigmailPgpMimePopup3"
-                   onpopupshowing="Enigmail.msg.setMenuSettings('3a')">
-              <menuitem id="enigmail_final_pgpmimeDefault3a"
+                   advanced="true"
+                   onpopupshowing="Enigmail.msg.setMenuSettings('3c')">
+              <menuitem id="enigmail_final_pgpmimeDefault3c"
                   type="checkbox"
                   label="&enigmail.finalPGPMimeDefault.label;"
                   oncommand="Enigmail.msg.nextCommand('final-pgpmimeDefault');" />
-              <menuitem id="enigmail_final_pgpmimeYes3a"
+              <menuitem id="enigmail_final_pgpmimeYes3c"
                   type="checkbox"
                   label="&enigmail.finalPGPMimeYes.label;"
                   oncommand="Enigmail.msg.nextCommand('final-pgpmimeYes');" />
-              <menuitem id="enigmail_final_pgpmimeNo3a"
+              <menuitem id="enigmail_final_pgpmimeNo3c"
                   type="checkbox"
                   label="&enigmail.finalPGPMimeNo.label;"
                   oncommand="Enigmail.msg.nextCommand('final-pgpmimeNo');" />

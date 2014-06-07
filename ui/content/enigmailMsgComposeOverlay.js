@@ -65,13 +65,14 @@ Enigmail.msg = {
   sendModeDirty: false,  // send mode or final send options changed?
   signRules:    1,   // shall we sign according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
   encryptRules: 1,   // shall we encrypt according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
+  pgpmimeRules: 1,   // shall we PGP/Mime according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
   finalSign:    1,   // finally force to sign (0: must not sign, 1: no force, 2: must sign) 
   finalEncrypt: 1,   // finally force to encrypt (0: must not encrypt, 1: no force, 2: must encrypt) 
   finalPGPMime: 1,   // finally use PGP Mime (0: must not use PGP/Mime, 1: no force, 2: must use PGP/Mime) 
   finalSignDependsOnEncrypt: false,
   statusSigned: '???',    // last processed final sign state
   statusEncrypted: '???', // last processed final encryption state
-  statusPgpMime: '???', // last processed final PGP/Mime state
+  statusPGPMime: '???', // last processed final PGP/Mime state
   sendProcess: false,
   nextCommandId: null,
   docaStateListener: null,
@@ -464,6 +465,7 @@ Enigmail.msg = {
     this.sendModeDirty = false;
     this.signRules = 1;
     this.encryptRules = 1;
+    this.pgpmimeRules = 1;
     this.finalSign =    1;
     this.finalEncrypt = 1;
     this.finalPGPMime = 1;
@@ -1260,7 +1262,7 @@ Enigmail.msg = {
       }
     }
 
-    // update sign icon and tooltip
+    // update sign icon and tooltip/menu-text
     statusBar.setAttribute("signed", signSymbol);
     var signStr = null;
     switch (signFinally) {
@@ -1281,7 +1283,7 @@ Enigmail.msg = {
     signIcon.setAttribute("tooltiptext", signStr);
     this.statusSigned = signStr;
 
-    // update encrypt icon and tooltip
+    // update encrypt icon and tooltip/menu-text
     statusBar.setAttribute("encrypted", encSymbol);
     var encStr = null;
     switch (encFinally) {
@@ -1298,6 +1300,46 @@ Enigmail.msg = {
     var encIcon = document.getElementById("enigmail-encrypted-status");
     encIcon.setAttribute("tooltiptext", encStr);
     this.statusEncrypted = encStr;
+
+    // -------------------------------------------------------
+    // process resulting PGP/MIME mode
+    var pgpmimeFinally = null; // 0: No, 1: Yes, 99: Conflict
+    if (this.finalPGPMime == 0) {  // force not to PGP/Mime?
+      pgpmimeFinally = 0;
+    }
+    else if (this.finalPGPMime == 2) {  // force to PGP/Mime?
+      pgpmimeFinally = 1;
+    }
+    else switch (this.pgpmimeRules) {
+      case 0:
+        pgpmimeFinally = 0;
+        break;
+      case 1:
+        pgpmimeFinally = ((this.sendPgpMime || (sendMode & nsIEnigmail.SEND_PGP_MIME)) ? 1 : 0);
+        break;
+      case 2:
+        pgpmimeFinally = 1;
+        break;
+      case 3:
+        pgpmimeFinally = 99;
+        break;
+    }
+    // update pgpmime menu-text
+    var pgpmimeStr = null;
+    switch (pgpmimeFinally) {
+     case 0:
+      pgpmimeStr = EnigmailCommon.getString("pgpmimeNo");
+      break;
+     case 1:
+      pgpmimeStr = EnigmailCommon.getString("pgpmimeYes");
+      break;
+     case 99:
+      pgpmimeStr = EnigmailCommon.getString("pgpmimeConflict");
+      break;
+    }
+    this.statusPGPMime = pgpmimeStr;
+
+
   },
 
 
@@ -1327,6 +1369,7 @@ Enigmail.msg = {
 
       this.signRules    = 1;
       this.encryptRules = 1;
+      this.pgpmimeRules = 1;
 
       // process rules
       if (toAddrList.length > 0 && EnigmailCommon.getPref("assignKeysByRules")) {
@@ -1339,6 +1382,7 @@ Enigmail.msg = {
                                            flagsObj)) {    // resulting flags (0/1/2/3 for each type)
           this.signRules    = flagsObj.sign;
           this.encryptRules = flagsObj.encrypt;
+          this.pgpmimeRules = flagsObj.pgpMime;
         }
       }
 
@@ -1383,6 +1427,10 @@ Enigmail.msg = {
     elem = document.getElementById("enigmail_compose_encrypt_menu"+postfix);
     if (elem) {
       elem.setAttribute("label",this.statusEncrypted);
+    }
+    elem = document.getElementById("enigmail_compose_pgpmime_menu"+postfix);
+    if (elem) {
+      elem.setAttribute("label",this.statusPGPMime);
     }
 
     // old buttons (may be disabled in UI):
