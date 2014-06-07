@@ -1303,19 +1303,28 @@ Enigmail.msg = {
     const SIGN    = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
 
+    var elem = document.getElementById("enigmail_final_currentMode"+postfix);
+    if (elem) {
+      if (this.finalSign == 2) {
+        elem.setAttribute("label","finalsign: YES");
+      }
+      else {
+        elem.setAttribute("label","finalsign: NO");
+      }
+    }
+    // old buttons (may be disabled in UI):
     this.setChecked("enigmail_encrypted_send"+postfix, this.sendMode & ENCRYPT);
     this.setChecked("enigmail_signed_send"+postfix, this.sendMode & SIGN);
     this.setChecked("enigmail_trust_all_keys"+postfix, this.trustAllKeys);
     this.setChecked("enigmail_sendPGPMime"+postfix, this.sendPgpMime);
     this.setChecked("enigmail_disable_rules"+postfix, !this.enableRules);
-    if (postfix == '3') {  // second menu
-      this.setChecked("enigmail_final_signYes", this.finalSign == 2);
-      this.setChecked("enigmail_final_signNo", this.finalSign == 0);
-      this.setChecked("enigmail_final_encryptYes", this.finalEncrypt == 2);
-      this.setChecked("enigmail_final_encryptNo", this.finalEncrypt == 0);
-      this.setChecked("enigmail_final_pgpmimeYes", this.finalPGPMime == 2);
-      this.setChecked("enigmail_final_pgpmimeNo", this.finalPGPMime == 0);
-    }
+    // new buttons:
+    this.setChecked("enigmail_final_signYes"+postfix, this.finalSign == 2);
+    this.setChecked("enigmail_final_signNo"+postfix, this.finalSign == 0);
+    this.setChecked("enigmail_final_encryptYes"+postfix, this.finalEncrypt == 2);
+    this.setChecked("enigmail_final_encryptNo"+postfix, this.finalEncrypt == 0);
+    this.setChecked("enigmail_final_pgpmimeYes"+postfix, this.finalPGPMime == 2);
+    this.setChecked("enigmail_final_pgpmimeNo"+postfix, this.finalPGPMime == 0);
 
     let menuElement = document.getElementById("enigmail_insert_own_key");
     if (menuElement) {
