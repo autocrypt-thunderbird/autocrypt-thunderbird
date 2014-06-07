@@ -751,8 +751,10 @@
                                                       need to choose if you want to sign all outgoing email, or if you want to
                                                       avoid sending signed email to some people.">
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg         "Do you want to sign all your outgoing email by default?">
-<!ENTITY enigmail.setupWiz.pgSign.yesSign            "Yes, I want to sign all of my email">
+<!ENTITY enigmail.setupWiz.pgSign.yesSign            "Yes, I want to sign all of my emails">
 <!ENTITY enigmail.setupWiz.pgSign.noSign             "No, I want to create per-recipient rules for emails that need to be signed">
+
+<!-- wizard: OLD encryption dialog -->
 <!ENTITY enigmail.setupWiz.pgEnc.title               "Encryption">
 <!ENTITY enigmail.setupWiz.pgEnc.subtitle            "Encrypt Your Outgoing Emails">
 <!ENTITY enigmail.setupWiz.pgEnc.desc                "OpenPGP allows you to encrypt your email messages and any attachments.
@@ -771,6 +773,34 @@
 <!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg       "Shall your outgoing email be encrypted by default?">
 <!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt          "Yes, I have public keys for most of my contacts">
 <!ENTITY enigmail.setupWiz.pgEnc.noEncrypt           "No, I will create per-recipient rules for those that sent me their public key">
+
+<!-- wizard: NEW encryption dialog -->
+<!ENTITY enigmail.setupWiz.pgEncConv.title           "Encryption">
+<!ENTITY enigmail.setupWiz.pgEncConv.subtitle        "Encrypt Your Outgoing Emails">
+<!ENTITY enigmail.setupWiz.pgEncConv.desc            "OpenPGP allows you to encrypt your email messages and any attachments.
+                                                      Encryption is like putting a letter in an envelope. It makes things
+                                                      private.  It's not just for &quot;secret&quot; messages, but for
+                                                      everything that you would not send on a postcard.
+                                                      <html:br/><html:br/>
+                                                      On a technical level, encryption works like a padlock that only the
+                                                      recipient has the key for. Unlike signing, to use encryption all the
+                                                      recipients of an email need to use OpenPGP. People need to give you
+                                                      their public key before you can send them encrypted email (the public
+                                                      key is the pad lock we were talking about).
+                                                      <html:br/><html:br/>
+                                                      Usually people want to encrypt emails to some but not all recipients.
+                                                      For this reason, enigmail provides a convenient encryption mode,
+                                                      which automatically encrypts emails whenever possible.
+                                                      This mode is highly recommended, if you no longer want to send
+                                                      emails as postcards rather than as letters.
+                                                      If privacy is a critical issue for you, you should
+                                                      choose by default always to encrypt.
+                                                      For each email you can still explicitly choose whether to encrypt.">
+<!ENTITY enigmail.setupWiz.pgEncConv.convEncMsg      "Which general mode do you prefer to encrypt outgoing emails?">
+<!ENTITY enigmail.setupWiz.pgEncConv.convYes         "I prefer convenient auto encryption">
+<!ENTITY enigmail.setupWiz.pgEncConv.convEncYes      "I prefer always to encrypt by default because privacy is critical for me">
+<!ENTITY enigmail.setupWiz.pgEncConv.convEncNo       "I prefer never to encrypt by default (using explicit encryption and per-recipient rules)">
+
 <!ENTITY enigmail.setupWiz.pgSettings.title          "Preferences">
 <!ENTITY enigmail.setupWiz.pgSettings.subtitle       "Change Your Email Settings To Make OpenPGP Work More Reliably">
 <!ENTITY enigmail.setupWiz.pgSettings.desc           "This wizard can change your email settings to make sure there are no

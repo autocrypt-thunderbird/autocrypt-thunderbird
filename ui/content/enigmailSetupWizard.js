@@ -812,6 +812,9 @@ function applyWizardSettings() {
 
   loadLastPage();
 
+  var convEnc = (document.getElementById("convEncryptMsg").value == "0" ? 0 : 1);
+  EnigSetPref("encryptionModel", convEnc);
+
   if (document.getElementById("activateId").value == "1") {
     var idSupports = gEnigAccountMgr.allIdentities;
     var identities = queryISupArray(idSupports,
@@ -872,7 +875,7 @@ function wizardApplyId(identity, keyId) {
   identity.setIntAttribute("openPgpHeaderMode", 0);
 
   var signMsg = (document.getElementById("signMsg").value== "1");
-  var encryptMsg = ((!newsServer) && (document.getElementById("encryptMsg").value== "1"));
+  var encryptMsg = ((!newsServer) && (document.getElementById("convEncryptMsg").value == "1"));
 
   identity.setBoolAttribute("pgpSignEncrypted", signMsg);
   identity.setBoolAttribute("pgpSignPlain", signMsg);
@@ -1029,11 +1032,17 @@ function displayActions() {
     appendDesc(EnigGetString("setupWizard.signNone"));
   }
 
-  if (document.getElementById("encryptMsg").value== "1") {
-    appendDesc(EnigGetString("setupWizard.encryptAll"));
-  }
-  else {
-    appendDesc(EnigGetString("setupWizard.encryptNone"));
+  // convenient encryption wizard step:
+  switch (document.getElementById("convEncryptMsg").value) {
+    case "0": // convYes
+      appendDesc(EnigGetString("setupWizard.convEncrypt"));
+      break;
+    case "1": // convEncYes
+      appendDesc(EnigGetString("setupWizard.encryptAll"));
+      break;
+    case "0": // convEncNo
+      appendDesc(EnigGetString("setupWizard.encryptNone"));
+      break;
   }
 
   if (document.getElementById("changeSettings").value == "1") {
