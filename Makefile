@@ -66,6 +66,11 @@ $(DIRS):
 xpi:
 	$(srcdir)/util/genxpi $(XPIFILE) $(XPI_MODULE_VERS) $(OS_TARGET) $(CPU_ARCH) $(DIST) $(srcdir) $(XPI_MODULE) $(DLL_SUFFIX) $(DLL_PREFIX)
 
+check:
+	util/checkFiles.py
+
+nico: dirs check xpi
+
 clean:
 	rm -f build/$(XPIFILE)
 	for dir in $(DIRS); do \
