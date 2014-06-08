@@ -56,6 +56,9 @@ def checkXUL (file):
       #print "  " + label
       global numLabels
       numLabels += 1
+      # special handling of used thunderbird labels:
+      if label.startswith("copyCmd."):
+        continue
       if allLabelLines.find(label) < 0:
         print "MISSING LABEL: " + label
         global allMissingLabels
@@ -71,13 +74,9 @@ for path, dirs, files in os.walk(path):
       checkXUL(filename)
 
 # we currently have:
-#   copyCmd.label  (defined in ./ui/content/enigmailConsole.xul)
-#   copyCmd.accesskey  (defined in ./ui/content/enigmailConsole.xul)
-#   copyCmd.label  (defined in ./ui/content/enigmailConsole.xul)
-#   copyCmd.accesskey  (defined in ./ui/content/enigmailConsole.xul)
 #   enigmail.expertUser.label  (defined in ./ui/content/pref-enigmail-seamonkey.xul)
 #   enigmail.basicUser.label  (defined in ./ui/content/pref-enigmail-seamonkey.xul)
-if len(allMissingLabels) != 6:
+if len(allMissingLabels) != 2:
   print ""
   print "All Missing Labels:"
   print "==================="
