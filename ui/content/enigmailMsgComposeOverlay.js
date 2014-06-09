@@ -213,6 +213,12 @@ Enigmail.msg = {
     if (this.getAccDefault("enabled")) {
       EnigmailFuncs.getSignMsg(this.identity); // convert old acc specific to new acc specific options
     }
+    else {
+      // reset status strings in menu to useful defaults
+      this.statusSignedStr = EnigmailCommon.getString("signNo", [""]);
+      this.statusEncryptedStr = EnigmailCommon.getString("encryptNo");
+      this.statusPGPMimeStr = EnigmailCommon.getString("pgpmimeNo");
+    }
 
     // reset default send settings, unless we have changed them already
     if (!this.sendModeDirty) {
@@ -1296,7 +1302,7 @@ Enigmail.msg = {
         pgpmimeFinally = 0;
         break;
       case 1:
-        pgpmimeFinally = ((this.sendPgpMime || (sendMode & nsIEnigmail.SEND_PGP_MIME)) ? 1 : 0);
+        pgpmimeFinally = ((this.sendPgpMime || (this.sendMode & nsIEnigmail.SEND_PGP_MIME)) ? 1 : 0);
         break;
       case 2:
         pgpmimeFinally = 1;
