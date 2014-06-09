@@ -56,7 +56,7 @@ XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS)-$(PLATFORM_STR)-$(CPU_ARCH).xpi
 
 .PHONY: dirs $(DIRS)
 
-all: dirs
+all: dirs check xpi
 
 dirs: $(DIRS)
 
@@ -68,8 +68,6 @@ xpi:
 
 check:
 	util/checkFiles.py
-
-nico: dirs check xpi
 
 clean:
 	rm -f build/$(XPIFILE)
