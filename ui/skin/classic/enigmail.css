@@ -77,7 +77,11 @@ toolbar[iconsize="small"] #button-enigmail-decrypt[disabled]
     -moz-image-region: rect(32px 16px 48px 0px);
   }
 
-#button-enigmail-send,
+#button-enigmail-send {
+  -moz-image-region: rect(0px 24px 24px 0px);
+   list-style-image      : url("chrome://enigmail/skin/enigmail-settings.png");
+}
+
 #button-enigmail-send:hover {
   -moz-image-region: rect(0px 24px 24px 0px);
    list-style-image      : url("chrome://enigmail/skin/enigmail-settings.png");
@@ -160,7 +164,6 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
  color: black;
 }
 
-
 .enigmailLink {
   text-decoration: underline;
   color: blue;
@@ -203,11 +206,14 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
 }
 
 
+/***************************************************
+ *  Icons for messenger status bar
+ ***************************************************/
+
 #enigmail-status-bar #enigmail-signed-status {
   list-style-image: none;
   visibility: collapse;
 }
-
 
 #enigmail-status-bar[signed="ok"] #enigmail-signed-status {
   list-style-image: url("chrome://enigmail/skin/enigSignOk.png");
@@ -409,7 +415,8 @@ treechildren::-moz-tree-image(enigEncrypted)
     -moz-image-region: rect(0px 12px 12px 0px);
 }
 
-/* the following styles are available for the key trust
+/*
+   the following styles are available for the key trust
    columnm in the key manager:
     enigmail_keyValid_unknown
     enigmail_keyValid_invalid
@@ -426,5 +433,3 @@ They can be applied using:
 treechildren::-moz-tree-cell(STYLE) {}
 treechildren::-moz-tree-cell-text(STYLE) {}
 */
-
-

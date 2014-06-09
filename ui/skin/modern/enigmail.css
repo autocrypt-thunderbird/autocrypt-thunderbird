@@ -187,6 +187,11 @@
   -moz-border-left-colors: transparent threedhighlight threedlightshadow;
 }
 
+
+/***************************************************
+ *  Icons for messenger status bar
+ ***************************************************/
+
 #enigmail-status-bar #enigmail-signed-status {
   list-style-image: none;
   visibility: collapse;

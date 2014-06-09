@@ -203,6 +203,10 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
 }
 
 
+/***************************************************
+ *  Icons for messenger status bar
+ ***************************************************/
+
 #enigmail-status-bar #enigmail-signed-status {
   list-style-image: none;
   visibility: collapse;

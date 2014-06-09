@@ -60,7 +60,6 @@ toolbar[iconsize="small"] #button-enigmail-decrypt[disabled]
     list-style-image : url("chrome://enigmail/skin/enigmail-decrypt-small-inactive.png");
   }
 
-
 #button-enigmail-send {
    list-style-image : url("chrome://enigmail/skin/enigmail-options.png");
 }
@@ -90,6 +89,13 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
  color: black;
 }
 
+.enigmailHeaderName {
+  color: #888a85; /* lower contrast, TB3 */
+  text-align: right;
+  background-color: transparent;
+  -moz-margin-end: 2px;
+}
+
 .enigmailHeaderNameBox {
   width: 7.7em;
   background-color:#d8e0e8;
@@ -110,6 +116,10 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
   -moz-margin-start: 3px !important;
   border: none !important;
   background-color: transparent;
+}
+
+.enigmailHeaderSpacer {
+  width: 2px;
 }
 
 .enigmailHeaderBoxLabelNoSignature {
@@ -152,17 +162,6 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
   font-style: italic;
 }
 
-.enigmailHeaderName {
-  color: #888a85; /* lower contrast, TB3 */
-  text-align: right;
-  background-color: transparent;
-  -moz-margin-end: 2px;
-}
-
-.enigmailHeaderSpacer {
-  width: 2px;
-}
-
 .enigMsgHdrView-flat-button {
   min-width: 1px !important;
   -moz-appearance: none;
@@ -193,9 +192,10 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
   color: red;
 }
 
-/**
- *  Icons for messenger window status bar
- */
+
+/***************************************************
+ *  Icons for messenger status bar
+ ***************************************************/
 
 #enigmail-status-bar #enigmail-signed-status {
   list-style-image: none;

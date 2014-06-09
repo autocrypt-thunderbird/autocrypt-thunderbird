@@ -111,7 +111,7 @@ def checkCSS (filename):
       row = match.group()
       #print "  " + row
       response += [row.strip().replace(' ','')]
-    match = re.search('list-style-image.*enig[SE].*;', line)
+    match = re.search('list-style-image.*enig[ES];', line)
     if match:
       row = match.group()
       #print "  " + row
@@ -144,24 +144,46 @@ for file in otherFiles:
     print " and"
     print "   ", file
     print " differ"
-    #print len(rows)
-    #print len(otherRows)
-    print " first difference:"
-    for i in range(0,max(len(rows),len(otherRows))):
+    print len(rows)
+    print rows[-4]
+    print rows[-3]
+    print rows[-2]
+    print rows[-1]
+    print len(otherRows)
+    print otherRows[-4]
+    print otherRows[-3]
+    print otherRows[-2]
+    print otherRows[-1]
+    print " first differences:"
+    diffs = 0;
+    for i in range(0,min(len(rows),len(otherRows))):
+      print "-------"
+      print rows[i]
+      print otherRows[i]
+      if rows[i] != otherRows[i]:
+        diffs += 1
+        # this difference is OK:
+        if rows[i].find("enigmail-settings.png") and otherRows[i].find("enigmail-send.png"):
+          continue
+        print rows[i]
+        print otherRows[i]
+        if diffs > 10:
+          print "..."
+          print "ERROR => ABORT"
+          sys.exit(1)
+    if diffs > 10:
+      print "ERROR => ABORT"
+      sys.exit(1)
+    for i in range(min(len(rows),len(otherRows)),max(len(rows),len(otherRows))):
       if i >= len(rows):
         print "   only in", file + ":"
         print "     " + otherRows[i]
         # this is NOT an error
       elif i >= len(otherRows):
         print "   only in", classicCSS + ":"
-        print "     " + otherRows[i]
+        print "     " + rows[i]
+      if len(rows) != len(otherRows):
         print "ERROR => ABORT"
         sys.exit(1)
-      elif rows[i] != otherRows[i]:
-        print rows[i]
-        print otherRows[i]
-        print "ERROR => ABORT"
-        sys.exit(1)
-        break
 
   
