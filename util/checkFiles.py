@@ -111,7 +111,7 @@ def checkCSS (filename):
       row = match.group()
       #print "  " + row
       response += [row.strip().replace(' ','')]
-    match = re.search('list-style-image.*enig[ES];', line)
+    match = re.search('list-style-image.*enig[ES].*;', line)
     if match:
       row = match.group()
       #print "  " + row
@@ -182,7 +182,6 @@ for file in otherFiles:
       elif i >= len(otherRows):
         print "   only in", classicCSS + ":"
         print "     " + rows[i]
-      if len(rows) != len(otherRows):
         print "ERROR => ABORT"
         sys.exit(1)
 
