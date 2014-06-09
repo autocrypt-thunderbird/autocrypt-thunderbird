@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 XPI_MODULE	= enigmail
-XPI_MODULE_VERS = 1.6
+XPI_MODULE_VERS = 1.7
 
 DEPTH		= .
 
