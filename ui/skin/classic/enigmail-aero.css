@@ -248,9 +248,10 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
   visibility: visible;
 }
 
-/**
- *  Icons for composer status bar
- */
+
+/***************************************************
+ *  Icons for compose status bar: signed states
+ ***************************************************/
 
 #enigmail-status-bar[signed="forceYes"] #enigmail-signed-status {
   list-style-image: url("chrome://enigmail/skin/enigSignForceYes.png");
@@ -302,6 +303,9 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
   visibility: visible;
 }
 
+/***************************************************
+ *  Icons for compose status bar: encrypted states
+ ***************************************************/
 
 #enigmail-status-bar[encrypted="forceYes"] #enigmail-encrypted-status {
   list-style-image: url("chrome://enigmail/skin/enigEncForceYes.png");
@@ -352,6 +356,7 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
   list-style-image: url("chrome://enigmail/skin/enigEncInactiveConflict.png");
   visibility: visible;
 }
+
 
 .enigmailPrefsTitle {
   font-weight: bold;
