@@ -155,13 +155,18 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
 }
 
 .enigmailHeaderBoxLabelSignatureNotOk {
- background-color:#FFD8FE;
- color: black;
+  background-color:#FFD8FE;
+  color: black;
 }
 
 .enigmailHeaderBoxLabelSignatureUnknown {
- background-color:#FFFFC9;
- color: black;
+  background-color:#FFFFC9;
+  color: black;
+}
+
+.enigmailHeaderBoxLabelBuggyMailFormat {
+  background-color:#FFD8FE;
+  color: black;
 }
 
 .enigmailLink {

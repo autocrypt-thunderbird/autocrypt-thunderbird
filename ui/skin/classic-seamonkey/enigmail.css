@@ -207,6 +207,11 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
   color: black;
 }
 
+.enigmailHeaderBoxLabelBuggyMailFormat {
+  background-color:#FFD8FE;
+  color: black;
+}
+
 .enigmailLink {
   text-decoration: underline;
   color: blue;

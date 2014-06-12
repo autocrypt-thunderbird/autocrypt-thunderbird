@@ -117,7 +117,7 @@ Enigmail.hdrView = {
   },
 
 
-  updateHdrIcons: function (exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation)
+  updateHdrIcons: function (exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, xtraStatus)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: this.updateHdrIcons: exitCode="+exitCode+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+errorMsg+"\n");
 
@@ -311,17 +311,24 @@ Enigmail.hdrView = {
 
     if (statusFlags & nsIEnigmail.DECRYPTION_OKAY ||
         (this.statusBar.getAttribute("encrypted")=="ok")) {
-      if (!statusInfo) {
-        statusInfo = EnigmailCommon.getString("decryptedMsg");
+      var statusMsg;
+      if (xtraStatus && xtraStatus == "buggyMailFormat") {
+        statusMsg = EnigmailCommon.getString("decryptedMsgWithFormatError");
       }
       else {
-        statusInfo = EnigmailCommon.getString("decryptedMsg")+"\n"+statusInfo;
+        statusMsg = EnigmailCommon.getString("decryptedMsg");
+      }
+      if (!statusInfo) {
+        statusInfo = statusMsg;
+      }
+      else {
+        statusInfo = statusMsg + "\n" + statusInfo;
       }
       if (!statusLine) {
-        statusLine=statusInfo;
+        statusLine = statusInfo;
       }
       else {
-        statusLine=EnigmailCommon.getString("decryptedMsg")+"; "+statusLine;
+        statusLine = statusMsg + "; " + statusLine;
       }
     }
 
@@ -440,7 +447,14 @@ Enigmail.hdrView = {
         this.statusBar.setAttribute("encrypted", "notok");
         this.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureNotOk");
       }
+
+      // special handling after trying to fix buggy mail format (see buggyExchangeEmailContent in code)
+      if (xtraStatus && xtraStatus == "buggyMailFormat") {
+        this.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelBuggyMailFormat");
+      }
+
       this.updateMsgDb();
+
 
     } catch (ex) {}
   },

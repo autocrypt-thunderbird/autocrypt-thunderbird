@@ -676,7 +676,7 @@ Enigmail.msg = {
 
           if (signedMsg ||
               ((!encrypedMsg) && (embeddedSigned || embeddedEncrypted))) {
-            Enigmail.hdrView.updateHdrIcons(EnigmailCommon.POSSIBLE_PGPMIME, 0, "", "", "", EnigmailCommon.getString("possiblyPgpMime"));
+            Enigmail.hdrView.updateHdrIcons(EnigmailCommon.POSSIBLE_PGPMIME, 0, "", "", "", EnigmailCommon.getString("possiblyPgpMime"), null);
           }
         }
         return;
@@ -985,7 +985,7 @@ Enigmail.msg = {
 
     var displayedUriSpec = Enigmail.msg.getCurrentMsgUriSpec();
     if (!msgUriSpec || (displayedUriSpec == msgUriSpec)) {
-      Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsg, null);
+      Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsg, null, null);
     }
 
     var noSecondTry = nsIEnigmail.GOOD_SIGNATURE |
@@ -1176,6 +1176,7 @@ Enigmail.msg = {
         while (node) {
           if (node.nodeName == "DIV") {
             node.innerHTML = EnigmailFuncs.formatPlaintextMsg(EnigmailCommon.convertToUnicode(messageContent, charset));
+            Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsg, null, "buggyMailFormat" );
             return;
           }
           node = node.nextSibling;
