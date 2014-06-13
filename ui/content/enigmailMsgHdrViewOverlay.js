@@ -204,25 +204,26 @@ Enigmail.hdrView = {
     }
 
     var msgSigned = (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
-              nsIEnigmail.GOOD_SIGNATURE |
-              nsIEnigmail.EXPIRED_KEY_SIGNATURE |
-              nsIEnigmail.EXPIRED_SIGNATURE |
-              nsIEnigmail.UNVERIFIED_SIGNATURE |
-              nsIEnigmail.REVOKED_KEY |
-              nsIEnigmail.EXPIRED_KEY_SIGNATURE |
-              nsIEnigmail.EXPIRED_SIGNATURE));
+                                    nsIEnigmail.GOOD_SIGNATURE |
+                                    nsIEnigmail.EXPIRED_KEY_SIGNATURE |
+                                    nsIEnigmail.EXPIRED_SIGNATURE |
+                                    nsIEnigmail.UNVERIFIED_SIGNATURE |
+                                    nsIEnigmail.REVOKED_KEY |
+                                    nsIEnigmail.EXPIRED_KEY_SIGNATURE |
+                                    nsIEnigmail.EXPIRED_SIGNATURE));
     var msgEncrypted = (statusFlags & (nsIEnigmail.DECRYPTION_OKAY |
-              nsIEnigmail.DECRYPTION_INCOMPLETE |
-              nsIEnigmail.DECRYPTION_FAILED));
+                                       nsIEnigmail.DECRYPTION_INCOMPLETE |
+                                       nsIEnigmail.DECRYPTION_FAILED));
 
     if (msgSigned && (statusFlags & nsIEnigmail.IMPORTED_KEY)) {
       statusFlags &= (~nsIEnigmail.IMPORTED_KEY);
     }
 
     if (((!(statusFlags & (nsIEnigmail.DECRYPTION_INCOMPLETE |
-              nsIEnigmail.DECRYPTION_FAILED |
-              nsIEnigmail.UNVERIFIED_SIGNATURE |
-              nsIEnigmail.BAD_SIGNATURE))) ||
+                           nsIEnigmail.DECRYPTION_FAILED |
+                           nsIEnigmail.UNVERIFIED_SIGNATURE |
+                           nsIEnigmail.BAD_SIGNATURE)))
+         ||
          (statusFlags & nsIEnigmail.DISPLAY_MESSAGE) &&
           !(statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE)) &&
             !(statusFlags & nsIEnigmail.IMPORTED_KEY)) {

@@ -1057,6 +1057,7 @@ var EnigmailCommon = {
     return text;
   },
 
+
   parseErrorOutput: function (errOutput, retStatusObj)
   {
 
@@ -1065,8 +1066,9 @@ var EnigmailCommon = {
     var errLines = errOutput.split(/\r?\n/);
 
     // Discard last null string, if any
-    if ((errLines.length > 1) && !errLines[errLines.length-1])
-      errLines.pop();
+    if ((errLines.length > 1) && !errLines[errLines.length-1]) {
+        errLines.pop();
+    }
 
     var errArray    = new Array();
     var statusArray = new Array();
@@ -1080,17 +1082,27 @@ var EnigmailCommon = {
     var statusPat = /^\[GNUPG:\] /;
     var statusFlags = 0;
 
+    // parse all error lines
+    var inDecryptionFailed = false;  // to save details of encryption failed messages
     for (var j=0; j<errLines.length; j++) {
       if (errLines[j].search(statusPat) == 0) {
+        // status line
         var statusLine = errLines[j].replace(statusPat,"");
+        if (inDecryptionFailed) {
+          inDecryptionFailed = false;
+        }
         statusArray.push(statusLine);
 
+        // extract first word as flag
         var matches = statusLine.match(/^(\w+)\b/);
 
         if (matches && (matches.length > 1)) {
-          var flag = gStatusFlags[matches[1]];
+          var flag = gStatusFlags[matches[1]];  // yields known flag or undefined
 
-          if (flag == Ci.nsIEnigmail.NODATA) {
+          if (flag == Ci.nsIEnigmail.DECRYPTION_FAILED) {
+            inDecryptionFailed = true;
+          }
+          else if (flag == Ci.nsIEnigmail.NODATA) {
             // Recognize only "NODATA 1"
             if (statusLine.search(/NODATA 1\b/) < 0)
               flag = 0;
@@ -1119,13 +1131,19 @@ var EnigmailCommon = {
             retStatusObj.statusMsg += this.getString("gnupg.invalidKey.desc", [ lineSplit[2] ]);
           }
 
-          if (flag)
+          // if known flag, story it in our status
+          if (flag) {
             statusFlags |= flag;
-
+          }
         }
-
-      } else {
+      }
+      else {
+        // non-status line (details of previous status command)
         errArray.push(errLines[j]);
+        // save details of DECRYPTION_FAILED message ass error message
+        if (inDecryptionFailed) {
+          errorMsg += errLines[j];
+        }
       }
     }
 
@@ -1161,14 +1179,16 @@ var EnigmailCommon = {
       }
     }
 
-    if (plaintextCount > 1) statusFlags |= (Ci.nsIEnigmail.PARTIALLY_PGP | Ci.nsIEnigmail.DECRYPTION_FAILED | Ci.nsIEnigmail.BAD_SIGNATURE);
+    if (plaintextCount > 1) {
+      statusFlags |= (Ci.nsIEnigmail.PARTIALLY_PGP | Ci.nsIEnigmail.DECRYPTION_FAILED | Ci.nsIEnigmail.BAD_SIGNATURE);
+    }
 
     retStatusObj.blockSeparation = retStatusObj.blockSeparation.replace(/ $/, "");
     retStatusObj.statusFlags = statusFlags;
     if (retStatusObj.statusMsg.length == 0) retStatusObj.statusMsg = statusArray.join("\n");
-    if (errorMsg.length == 0)
+    if (errorMsg.length == 0) {
       errorMsg = errArray.map(this.convertFromGpg, this).join("\n");
-
+    }
 
     if ((statusFlags & Ci.nsIEnigmail.CARDCTRL) && errCode >0) {
       switch (errCode) {
@@ -1176,8 +1196,9 @@ var EnigmailCommon = {
         if (detectedCard) {
           errorMsg = this.getString("sc.wrongCardAvailable", [ detectedCard, requestedCard ]);
         }
-        else
+        else {
           errorMsg = this.getString("sc.insertCard", [ requestedCard ]);
+        }
         break;
       case 2:
         errorMsg = this.getString("sc.removeCard");
@@ -1191,11 +1212,11 @@ var EnigmailCommon = {
       statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
     }
 
-
     this.DEBUG_LOG("enigmailCommon.jsm: parseErrorOutput: statusFlags = "+this.bytesToHex(this.pack(statusFlags,4))+"\n");
 
     return errorMsg;
   },
+
 
   // pack/unpack: Network (big-endian) byte order
 
@@ -2312,6 +2333,7 @@ var EnigmailCommon = {
     return proc;
   },
 
+
   decryptMessageEnd: function (stderrStr, exitCode, outputLen, verifyOnly, noOutput, uiFlags, retStatusObj) {
     this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: uiFlags="+uiFlags+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
 
@@ -2327,10 +2349,16 @@ var EnigmailCommon = {
     retStatusObj.blockSeparation  = "";
 
     var errorMsg = this.parseErrorOutput(stderrStr, retStatusObj);
+    if (retStatusObj.statusFlags & gStatusFlags.ERROR) {
+      retStatusObj.errorMsg = errorMsg;
+    }
+    else {
+      retStatusObj.errorMsg = "";
+    }
 
     if (pgpMime) {
       retStatusObj.statusFlags |= verifyOnly ? nsIEnigmail.PGP_MIME_SIGNED
-                                         : nsIEnigmail.PGP_MIME_ENCRYPTED;
+                                             : nsIEnigmail.PGP_MIME_ENCRYPTED;
     }
 
     var statusMsg = retStatusObj.statusMsg;
@@ -2346,6 +2374,7 @@ var EnigmailCommon = {
     var keyExpPat   = /EXPKEYSIG (\w{16}) (.*)$/i;
     var revKeyPat   = /REVKEYSIG (\w{16}) (.*)$/i;
     var validSigPat =  /VALIDSIG (\w+) (.*) (\d+) (.*)/i;
+    var userIdHintPat =  /USERID_HINT (\w{16}) (.*)$/i;
 
     if (statusMsg) {
       errLines = statusMsg.split(/\r?\n/);
@@ -2355,58 +2384,60 @@ var EnigmailCommon = {
       errLines = stderrStr.split(/\r?\n/);
     }
 
-    retStatusObj.errorMsg = "";
-
     var matches;
 
     var signed = false;
     var goodSignature;
-
-    var userId = "";
     var keyId = "";
+    var userId = "";
     var sigDetails = "";
 
     for (j=0; j<errLines.length; j++) {
-      matches = errLines[j].match(badSignPat);
 
+      matches = errLines[j].match(badSignPat);
       if (matches && (matches.length > 2)) {
         signed = true;
         goodSignature = false;
-        userId = matches[2];
         keyId = matches[1];
+        userId = matches[2];
         break;
       }
 
       matches = errLines[j].match(revKeyPat);
-
       if (matches && (matches.length > 2)) {
         signed = true;
         goodSignature = true;
-        userId = matches[2];
         keyId = matches[1];
+        userId = matches[2];
         break;
       }
 
       matches = errLines[j].match(goodSignPat);
-
       if (matches && (matches.length > 2)) {
         signed = true;
         goodSignature = true;
-        userId = matches[2];
         keyId = matches[1];
+        userId = matches[2];
         break;
       }
 
       matches = errLines[j].match(keyExpPat);
-
       if (matches && (matches.length > 2)) {
         signed = true;
         goodSignature = true;
-        userId = matches[2];
         keyId = matches[1];
-
+        userId = matches[2];
         break;
       }
+
+      // var userIdHintPat =  /USERID_HINT (\w{16}) (.*)$/i;
+      // NO END of loop
+      matches = errLines[j].match(userIdHintPat);
+      if (matches && (matches.length > 2)) {
+        keyId = matches[1];
+        userId = matches[2];
+      }
+      // NO break;
     }
 
     if (goodSignature) {
@@ -2492,6 +2523,7 @@ var EnigmailCommon = {
 
     return exitCode;
   },
+
 
   getEncryptCommand: function (fromMailAddr, toMailAddr, bccMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgObj) {
     this.DEBUG_LOG("enigmailCommon.jsm: getEncryptCommand: hashAlgorithm="+hashAlgorithm+"\n");
