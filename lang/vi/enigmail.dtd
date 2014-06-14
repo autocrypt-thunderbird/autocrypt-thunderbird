@@ -54,7 +54,8 @@
 <!ENTITY enigmail.sending.label "Đang gửi">
 <!ENTITY enigmail.keySel.label "Chọn lọc Khóa">
 <!ENTITY enigmail.pgpMime.label "PGP/MIME">
-<!ENTITY enigmail.advancedPrefsButton.label "Nâng cao">
+<!ENTITY enigmail.advanced.label "Nâng cao">
+<!ENTITY enigmail.advancedPrefsButton.label "Nâng cao...">
 <!ENTITY enigmail.debug.label "Gỡ lỗi">
 <!ENTITY enigmail.basicPrefs.label "Thiết lập Căn bản">
 <!ENTITY enigmail.whenSending.label "Khi gửi thư">

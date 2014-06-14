@@ -162,7 +162,7 @@
     <hbox id="enigmailPrefsBox">
       <button class="dialog"
           id="enigmailPrefs"
-          label="&enigmail.advancedPrefsButton.label; ..."
+          label="&enigmail.advancedPrefsButton.label;"
           advanced="true"
           oncommand="EnigPrefWindow(false,'seamonkey')"/>
       <button id="uninstall"

@@ -259,8 +259,12 @@
           <menuseparator/>
 
           <menu id="enigmail_compose_options_menu"
+                label="&enigmail.prefs.label;"
+                accesskey="&enigmail.prefs.accesskey;">
+                <!--
                 label="&enigmail.composeOptionsMenu.label;"
-                accesskey="&enigmail.composeOptionsMenu.accesskey;">
+                accesskey="&enigmail.composeOptionsMenu.accesskey;"
+                -->
 
             <menupopup onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.setMenuSettings(''))">
 

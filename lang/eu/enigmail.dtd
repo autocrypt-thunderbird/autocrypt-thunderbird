@@ -67,7 +67,8 @@
 <!ENTITY enigmail.sending.label          "Bidaltzen">
 <!ENTITY enigmail.keySel.label           "Gako Aukeraketa">
 <!ENTITY enigmail.pgpMime.label          "PGP/MIME">
-<!ENTITY enigmail.advancedPrefsButton.label "Aurreratua">
+<!ENTITY enigmail.advanced.label         "Aurreratua">
+<!ENTITY enigmail.advancedPrefsButton.label "Aurreratua...">
 <!ENTITY enigmail.debug.label            "Araztatzen">
 
 <!ENTITY enigmail.basicPrefs.label       "Ezarpen Orokorrak">

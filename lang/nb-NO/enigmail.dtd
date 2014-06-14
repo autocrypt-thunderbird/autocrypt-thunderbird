@@ -54,7 +54,8 @@
 <!ENTITY enigmail.sending.label "Sender">
 <!ENTITY enigmail.keySel.label "Nøkkelvalg">
 <!ENTITY enigmail.pgpMime.label "PGP/MIME">
-<!ENTITY enigmail.advancedPrefsButton.label "Avansert">
+<!ENTITY enigmail.advanced.label "Avansert">
+<!ENTITY enigmail.advancedPrefsButton.label "Avansert...">
 <!ENTITY enigmail.debug.label "Feilsøking">
 <!ENTITY enigmail.basicPrefs.label "Grunnleggende instillinger">
 <!ENTITY enigmail.whenSending.label "Når en sender epost">

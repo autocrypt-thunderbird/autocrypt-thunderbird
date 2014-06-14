@@ -54,7 +54,8 @@
 <!ENTITY enigmail.sending.label "보내기">
 <!ENTITY enigmail.keySel.label "키 선택">
 <!ENTITY enigmail.pgpMime.label "PGP/MIME">
-<!ENTITY enigmail.advancedPrefsButton.label "고급">
+<!ENTITY enigmail.advanced.label "고급">
+<!ENTITY enigmail.advancedPrefsButton.label "고급...">
 <!ENTITY enigmail.debug.label "디버그">
 <!ENTITY enigmail.basicPrefs.label "기본 설정">
 <!ENTITY enigmail.whenSending.label "메일을 보낼 때">

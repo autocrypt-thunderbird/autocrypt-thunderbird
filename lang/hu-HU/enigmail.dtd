@@ -54,6 +54,7 @@
 <!ENTITY enigmail.sending.label "Küldés">
 <!ENTITY enigmail.keySel.label "Kulcsválasztás">
 <!ENTITY enigmail.pgpMime.label "PGP/MIME">
+<!ENTITY enigmail.advanced.label "Speciális">
 <!ENTITY enigmail.advancedPrefsButton.label "Speciális">
 <!ENTITY enigmail.debug.label "Hibakeresés">
 <!ENTITY enigmail.basicPrefs.label "Alapvető beállítások">

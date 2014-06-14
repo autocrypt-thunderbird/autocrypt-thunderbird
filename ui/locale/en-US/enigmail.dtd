@@ -67,7 +67,7 @@
 <!ENTITY enigmail.sending.label          "Sending">
 <!ENTITY enigmail.keySel.label           "Key Selection">
 <!ENTITY enigmail.pgpMime.label          "PGP/MIME">
-<!ENTITY enigmail.advancedPrefsButton.label "Advanced">
+<!ENTITY enigmail.advanced.label         "Advanced">
 <!ENTITY enigmail.debug.label            "Debugging">
 
 <!ENTITY enigmail.basicPrefs.label       "Basic Settings">
@@ -219,6 +219,10 @@
 <!ENTITY enigmail.finallySignNotEncrypted.label   "Automatically sign finally non-encrypted messages">
 <!ENTITY enigmail.defaultSignPlainMsg.label       "Sign non-encrypted messages by default">
 <!ENTITY enigmail.autoEncryptDrafts.label         "Encrypt draft messages on saving">
+
+<!ENTITY enigmail.advancedPrefsButton.label       "Advanced...">
+<!ENTITY enigmail.globalPrefsButton.label         "Global Preferences...">
+
 <!-- old: -->
 <!ENTITY enigmail.defaultEncryptionSign.label     "Sign encrypted messages by default">
 <!ENTITY enigmail.defaultSignPlainMsg.label       "Sign non-encrypted messages by default">

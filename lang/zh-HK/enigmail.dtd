@@ -27,6 +27,7 @@
 <!ENTITY enigmail.maxIdleMinutesHead.label "記憶密碼">
 <!ENTITY enigmail.maxIdleMinutesTail.label "分鐘">
 
+<!ENTITY enigmail.advanced.label "進階">
 <!ENTITY enigmail.advancedPrefsButton.label "進階">
 <!ENTITY enigmail.resetPrefsButton.label  "重設">
 <!ENTITY enigmail.prefsHelpButton.label	  "說明">

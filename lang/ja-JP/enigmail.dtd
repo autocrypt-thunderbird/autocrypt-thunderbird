@@ -54,7 +54,8 @@
 <!ENTITY enigmail.sending.label "送信">
 <!ENTITY enigmail.keySel.label "鍵の選択">
 <!ENTITY enigmail.pgpMime.label "PGP/MIME">
-<!ENTITY enigmail.advancedPrefsButton.label "詳細">
+<!ENTITY enigmail.advanced.label "詳細">
+<!ENTITY enigmail.advancedPrefsButton.label "詳細...">
 <!ENTITY enigmail.debug.label "デバッグ">
 <!ENTITY enigmail.basicPrefs.label "基本設定">
 <!ENTITY enigmail.whenSending.label "送信時の設定">

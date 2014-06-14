@@ -173,7 +173,7 @@
       <tab id="basicTab"     label="&enigmail.basic.label;"/>
       <tab id="sendingTab"   label="&enigmail.sending.label;"/>
       <tab id="keySelTab"    label="&enigmail.keySel.label;" advanced="true"/>
-      <tab id="advancedTab"  label="&enigmail.advancedPrefsButton.label;" advanced="true"/>
+      <tab id="advancedTab"  label="&enigmail.advanced.label;" advanced="true"/>
       <tab id="keyserverTab" label="&enigmail.keyserver.label;" advanced="true"/>
       <tab id="debugTab"     label="&enigmail.debug.label;" advanced="true"/>
     </tabs>
@@ -249,6 +249,7 @@
           </hbox>
 
           <separator/>
+
           <vbox autostretch="never" align="end">
             <hbox>
               <button id="resetPrefs"

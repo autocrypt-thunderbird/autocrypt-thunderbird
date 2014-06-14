@@ -54,7 +54,8 @@
 <!ENTITY enigmail.sending.label "發送">
 <!ENTITY enigmail.keySel.label "密鑰選擇">
 <!ENTITY enigmail.pgpMime.label "PGP/MIME">
-<!ENTITY enigmail.advancedPrefsButton.label "進階">
+<!ENTITY enigmail.advanced.label "進階">
+<!ENTITY enigmail.advancedPrefsButton.label "進階...">
 <!ENTITY enigmail.debug.label "調試">
 <!ENTITY enigmail.basicPrefs.label "一般設定">
 <!ENTITY enigmail.whenSending.label "當發送郵件時">

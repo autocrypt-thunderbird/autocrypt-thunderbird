@@ -445,7 +445,8 @@ sono più che altro di natura tecnica e non dovresti neanche notarli, tranne per
 <!ENTITY enigmail.keyMan.sendKeys.label "Invia chiavi pubbliche via email">
 <!ENTITY enigmail.basicPrefs.label "Impostazioni base">
 <!ENTITY enigmail.securitybutton.label "OpenPGP">
-<!ENTITY enigmail.advancedPrefsButton.label "Avanzate">
+<!ENTITY enigmail.advanced.label "Avanzate">
+<!ENTITY enigmail.advancedPrefsButton.label "Avanzate...">
 <!ENTITY enigmail.keyTrust.ultimateTrust.label "Mi fido definitivamente">
 <!ENTITY enigmail.keyDetails.fingerprint.label "Impronta digitale">
 <!ENTITY enigmail.cardDetails.cardMenu.accesskey "S">

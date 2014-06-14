@@ -794,13 +794,15 @@ Enigmail.msg = {
     return msgfolder;
   },
 
+
   goAccountManager: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.goAccountManager:\n");
     EnigmailCommon.getService(window);
+    var currentId=null;
     var server=null;
     try {
-        var currentId=getCurrentIdentity();
+        currentId=getCurrentIdentity();
         var amService=Components.classes["@mozilla.org/messenger/account-manager;1"].getService();
         var servers, folderURI;
         try {
@@ -818,6 +820,7 @@ Enigmail.msg = {
     window.openDialog("chrome://enigmail/content/am-enigprefs-edit.xul", "", "dialog,modal,centerscreen", {identity: currentId, account: server});
     this.setIdentityDefaults();
   },
+
 
   doPgpButton: function (what)
   {

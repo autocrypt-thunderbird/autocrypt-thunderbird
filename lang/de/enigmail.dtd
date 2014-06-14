@@ -54,7 +54,8 @@
 <!ENTITY enigmail.sending.label "Senden">
 <!ENTITY enigmail.keySel.label "Schlüsselauswahl">
 <!ENTITY enigmail.pgpMime.label "PGP/MIME">
-<!ENTITY enigmail.advancedPrefsButton.label "Erweitert">
+<!ENTITY enigmail.advanced.label "Erweitert">
+<!ENTITY enigmail.advancedPrefsButton.label "Erweitert ...">
 <!ENTITY enigmail.debug.label "Fehlersuche">
 <!ENTITY enigmail.basicPrefs.label "Allgemeine Einstellungen">
 <!ENTITY enigmail.whenSending.label "Beim Senden von Nachrichten">

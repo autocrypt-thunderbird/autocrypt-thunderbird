@@ -54,7 +54,8 @@
 <!ENTITY enigmail.sending.label "Gönderme">
 <!ENTITY enigmail.keySel.label "Anahtar Seçimi">
 <!ENTITY enigmail.pgpMime.label "PGP/MIME">
-<!ENTITY enigmail.advancedPrefsButton.label "Gelişmiş">
+<!ENTITY enigmail.advanced.label "Gelişmiş">
+<!ENTITY enigmail.advancedPrefsButton.label "Gelişmiş...">
 <!ENTITY enigmail.debug.label "Hata ayıklama">
 <!ENTITY enigmail.basicPrefs.label "Temel Ayarlar">
 <!ENTITY enigmail.whenSending.label "Posta gönderirken">

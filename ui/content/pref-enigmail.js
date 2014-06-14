@@ -653,3 +653,4 @@ function enigLocateGpg() {
     document.getElementById("enigmail_agentPath").value = filePath.path;
   }
 }
+

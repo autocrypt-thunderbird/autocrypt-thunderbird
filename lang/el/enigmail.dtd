@@ -54,7 +54,8 @@
 <!ENTITY enigmail.sending.label "Ρυθμίσεις">
 <!ENTITY enigmail.keySel.label "Επιλογή κλειδιού">
 <!ENTITY enigmail.pgpMime.label "PGP/MIME">
-<!ENTITY enigmail.advancedPrefsButton.label "Για προχωρημένους">
+<!ENTITY enigmail.advanced.label "Για προχωρημένους">
+<!ENTITY enigmail.advancedPrefsButton.label "Για προχωρημένους ...">
 <!ENTITY enigmail.debug.label "Αποσφαλμάτωση">
 <!ENTITY enigmail.basicPrefs.label "Βασικές ρυθμίσεις">
 <!ENTITY enigmail.whenSending.label "Κατά την αποστολή αλληλογραφίας">

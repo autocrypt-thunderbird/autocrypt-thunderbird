@@ -54,7 +54,8 @@
 <!ENTITY enigmail.sending.label "Odosielanie">
 <!ENTITY enigmail.keySel.label "Výber kľúča">
 <!ENTITY enigmail.pgpMime.label "PGP/MIME">
-<!ENTITY enigmail.advancedPrefsButton.label "Rozšírené">
+<!ENTITY enigmail.advanced.label "Rozšírené">
+<!ENTITY enigmail.advancedPrefsButton.label "Rozšírené...">
 <!ENTITY enigmail.debug.label "Ladenie">
 <!ENTITY enigmail.basicPrefs.label "Základné nastavenia">
 <!ENTITY enigmail.whenSending.label "Pri odosielaní správy">

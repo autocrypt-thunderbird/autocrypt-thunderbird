@@ -115,11 +115,16 @@
         <hbox autostretch="never" id="enigmail_PrefsBox">
           <spacer flex="1"/>
           <button class="dialog"
-                  id="enigmail_prefsButton"
+                  id="enigmail_advancedAccountPrefsButton"
                   observes="enigmail_bcEnablePgp"
                   advanced="true"
-                  label="&enigmail.advancedPrefsButton.label; ..."
+                  label="&enigmail.advancedPrefsButton.label;"
                   oncommand="Enigmail.edit.advancedIdentitySettings()"/>
+          <button class="dialog"
+                  id="enigmail_globalPrefsButton"
+                  observes="enigmail_bcEnablePgp"
+                  label="&enigmail.globalPrefsButton.label;"
+                  oncommand="EnigmailFuncs.openPrefWindow(window, true, 'sendingTab');"/>
         </hbox>
       </groupbox>
     </vbox>

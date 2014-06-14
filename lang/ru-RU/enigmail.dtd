@@ -54,7 +54,8 @@
 <!ENTITY enigmail.sending.label "Отправка">
 <!ENTITY enigmail.keySel.label "Выбор ключа">
 <!ENTITY enigmail.pgpMime.label "PGP/MIME">
-<!ENTITY enigmail.advancedPrefsButton.label "Дополнительно">
+<!ENTITY enigmail.advanced.label "Дополнительно">
+<!ENTITY enigmail.advancedPrefsButton.label "Дополнительно...">
 <!ENTITY enigmail.debug.label "Отладка">
 <!ENTITY enigmail.basicPrefs.label "Основные параметры">
 <!ENTITY enigmail.whenSending.label "При отправке почты">
