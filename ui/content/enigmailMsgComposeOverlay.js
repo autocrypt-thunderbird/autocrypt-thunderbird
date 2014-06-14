@@ -1530,6 +1530,9 @@ Enigmail.msg = {
       if (this.trustAllKeys) {
        inputObj.options += ",trustallkeys"
       }
+      if (sendFlags&nsIEnigmail.SEND_LATER) {
+       inputObj.options += ",sendlater"
+      }
       inputObj.dialogHeader = EnigmailCommon.getString("recipientsSelectionHdr");
 
       // perform key selection dialog:

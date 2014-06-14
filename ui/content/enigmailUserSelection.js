@@ -274,6 +274,12 @@ function enigmailBuildList(refresh) {
       descNotFound.firstChild.data=EnigGetString("keysToUse", window.arguments[INPUT].forUser);
       notFoundCapt.setAttribute("collapsed", "true");
    }
+
+   if (window.arguments[INPUT].options.indexOf("sendlater")>=0) {
+      var acceptButton = document.getElementById("enigmailUserSelectionList").getButton("accept");
+      acceptButton.setAttribute("label", EnigGetString("sendLaterCmd.label"));
+   }
+
    var aUserList = new Array();
    var userObj = new Object();
    userObj.uidMatchInvalid = false;  // by default don't match list of invalid emails
