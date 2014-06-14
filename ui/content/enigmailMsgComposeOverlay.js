@@ -1451,16 +1451,38 @@ Enigmail.msg = {
   displaySecuritySettings: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.displaySecuritySettings\n");
-    var inputObj = { sendFlags: this.sendMode,
-                     usePgpMime: this.sendPgpMime,
-                     disableRules: !this.enableRules };
+    var inputObj = { //sendFlags: this.sendMode,
+                     //usePgpMime: this.sendPgpMime,
+                     //disableRules: !this.enableRules,
+                     finalSign: this.finalSign,
+                     finalEncrypt: this.finalEncrypt,
+                     finalPGPMime: this.finalPGPMime,
+                     statusSignedStr: this.statusSignedStr,
+                     statusEncryptedStr: this.statusEncryptedStr,
+                     statusPGPMimeStr: this.statusPGPMimeStr,
+                   };
     window.openDialog("chrome://enigmail/content/enigmailEncryptionDlg.xul","", "dialog,modal,centerscreen", inputObj);
+    /*
     if (this.sendMode != inputObj.sendFlags) {
       this.dirty = 2;
     }
     this.sendMode = inputObj.sendFlags;
     this.sendPgpMime = inputObj.usePgpMime;
     this.enableRules = !inputObj.disableRules;
+    */
+
+    if (this.finalSign != inputObj.finalSign) {
+      this.dirty = 2;
+      this.signingNoLongerDependsOnEnc();
+      this.finalSign = inputObj.finalSign;
+    }
+    if (this.finalEncrypt != inputObj.finalEncrypt) {
+      this.dirty = 2;
+      this.finalEncrypt = inputObj.finalEncrypt;
+    }
+    if (this.finalPGPMime != inputObj.finalPGPMime) {
+      this.finalPGPMime = inputObj.finalPGPMime;
+    }
     this.updateStatusBar();
   },
 
