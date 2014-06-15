@@ -1258,10 +1258,10 @@ Enigmail.msg = {
     var signStr = null;
     switch (signFinally) {
      case 0:
-      signStr = EnigmailCommon.getString("signNo", details);
+      signStr = EnigmailCommon.getString("signNoWithOptionalDetails", details);
       break;
      case 1:
-      signStr = EnigmailCommon.getString("signYes", details);
+      signStr = EnigmailCommon.getString("signYesWithOptionalDetails", details);
       break;
      case 99:
       signStr = EnigmailCommon.getString("signConflict");
