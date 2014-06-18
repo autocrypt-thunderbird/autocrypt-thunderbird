@@ -167,7 +167,7 @@ function enigmailBuildList(refresh) {
    //         0: not active
    //         1: active
    //         2: not selectable (red because invalid)
-   var sortUsers = function (a,b) {
+   var sortUsersCallback = function (a,b) {
      var r = 0;
      // 1st: sort active keys in front of not active keys
      if ((a.activeState != b.activeState) && (a.activeState == 1 || b.activeState == 1)) {
@@ -367,7 +367,7 @@ function enigmailBuildList(refresh) {
      // However, that's confusing because with the after refreshing keys
      // with no change in the key set, different items are selected.
      // Thus, this is disabled until there is a reprocessing of validity.
-     if (typeof(window.arguments[INPUT].invalidAddr)=="string") { //  && !refresh) {
+     if (typeof(window.arguments[INPUT].invalidAddr)=="string") { //  && !refresh)
         invalidAddr=" "+window.arguments[INPUT].invalidAddr+" ";
      }
    }
@@ -393,14 +393,15 @@ function enigmailBuildList(refresh) {
    // Replace any non-text character c with \\c
    var escapeRegExp = new RegExp("([^a-zA-Z0-9])","g");
 
+   // delete "empty" entries
+   for (i=0; i<aUserList.length; i++) {
+     if (typeof(aUserList[i].userId) != "string") {
+       aUserList.splice(i, 1);
+     }
+   }
+
+   // find and activate keys
    try {
-      // delete "empty" entries
-      for (i=0; i<aUserList.length; i++) {
-        if (typeof(aUserList[i].userId) != "string") {
-          aUserList.splice(i, 1);
-        }
-      }
-      // find and activate keys
       for (i=0; i<aUserList.length; i++) {
         aUserList[i].activeState = (gAllowExpired ? 0 : 2);  // default: not activated/activateable
         if (aUserList[i].keyTrust != KEY_IS_GROUP) {
@@ -495,10 +496,11 @@ function enigmailBuildList(refresh) {
       }
    }
 
-   aUserList.sort(sortUsers);
+   // sort items according to sorting criterion 
+   aUserList.sort(sortUsersCallback);
 
-  // Build up key treeView
-  for (i=0; i<aUserList.length; i++) {
+   // Build up key treeView
+   for (i=0; i<aUserList.length; i++) {
       var treeItem=null;
       if (! hideExpired || aUserList[i].activeState<2) {
         // do not show if expired keys are hidden
@@ -522,8 +524,9 @@ function enigmailBuildList(refresh) {
           }
         }
       }
-      if (treeItem)
+      if (treeItem) {
         treeChildren.appendChild(treeItem);
+      }
    }
 
    // Build up list of not found recipients
@@ -565,6 +568,7 @@ function enigmailBuildList(refresh) {
      descNotFound.firstChild.data = aNotFound.join(", ");
    }
 }
+
 
 
 // create a (sub) row for the user tree
@@ -745,7 +749,7 @@ function enigmailUserSelCallback(event) {
     if (event.detail > 2) return;
 
     if ((event.detail == 1) && (col.value.id != "selectionCol"))
-      return; // single clicks are only relvant for the selection column
+      return; // single clicks are only relevant for the selection column
 
     if ((event.detail == 2)  && ("selectionCol,enigUserNameCol,uidValidityCol,expCol,keyCol".indexOf(col.value.id) < 0))
       return;
@@ -830,7 +834,6 @@ function enigmailNewRecipientRule () {
 }
 
 function enigmailSearchMissingKeys () {
-
   var inputObj = {
     searchList : window.arguments[INPUT].notFoundList
   };
@@ -841,5 +844,58 @@ function enigmailSearchMissingKeys () {
   if (resultObj.importedKeys > 0) {
     enigmailRefreshKeys();
   }
-
 }
+
+function onSearchInput() {
+  gSearchInput = document.getElementById("filterKey");
+  var searchValue = gSearchInput.value.toLowerCase();
+  var userTreeList = document.getElementById("enigmailUserIdSelection");
+  var treeChildren = userTreeList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
+
+  if (searchValue == "") {
+    // unhide all items
+    for (var item=treeChildren.firstChild; item; item = item.nextSibling) {
+      item.setAttribute("hidden",false);
+    }
+  }
+  else {
+    // hide items that are
+    // - not active
+    // - and do not match the search string in all names/emails or key
+    for (var item=treeChildren.firstChild; item; item = item.nextSibling) {
+      var showItem = false;
+      // check active
+      var aRows = item.getElementsByAttribute("id","indicator");
+      if (aRows.length) {
+        var elem=aRows[0];
+        if (elem.getAttribute("active") == "1") {
+          showItem = true;
+        }
+      }
+      if (!showItem) {
+        // check all names/emails
+        var str = "";
+        aRows = item.getElementsByAttribute("id","name");
+        for (var r=0; r<aRows.length; ++r) {
+          str += aRows[r].getAttribute("label");
+        }
+        if (str.toLowerCase().indexOf(searchValue) >= 0) {
+          showItem = true;
+        }
+      }
+      if (!showItem) {
+        // check all keys
+        var str = "";
+        aRows = item.getElementsByAttribute("id","keyid");
+        for (var r=0; r<aRows.length; ++r) {
+          str += aRows[r].getAttribute("label");
+        }
+        if (str.toLowerCase().indexOf(searchValue) >= 0) {
+          showItem = true;
+        }
+      }
+      item.setAttribute("hidden",!showItem);
+    }
+  }
+}
+

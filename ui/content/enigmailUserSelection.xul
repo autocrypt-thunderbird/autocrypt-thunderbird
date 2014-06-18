@@ -73,6 +73,14 @@
       <caption id="dialogHeader"
                label="..." collapsed="true"/>
 
+      <hbox flex="0" align="center">
+        <label value="&enigmail.keyMan.filter.label;" control="filterKey"/>
+        <textbox id="filterKey" size="30"
+                 type="search"
+                 timeout="500"
+                 oncommand="onSearchInput();"/>
+      </hbox>
+
       <tree  id="enigmailUserIdSelection" flex="1"
         hidecolumnpicker="false"
         seltype="single"
