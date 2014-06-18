@@ -29,10 +29,16 @@ def checkLabel (label, fromFilename):
   # special handling of used thunderbird labels:
   if label.startswith("copyCmd."):
     return
-  if allLabelLines.find(label) < 0:
+  pos = allLabelLines.find(label)
+  if pos < 0:
     print "MISSING LABEL: " + label
     global allMissingLabels
     allMissingLabels += [ (label, fromFilename) ]
+  elif allLabelLines.find(label,pos+1) > 0:
+    print "LABEL TWICE: " + label
+    sys.exit(1)
+
+
 
 def checkProperty (label, fromFilename):
   global numLabels
@@ -40,10 +46,24 @@ def checkProperty (label, fromFilename):
   # special handling of used thunderbird labels:
   if label.startswith("copyCmd."):
     return
-  if propLabels.find(label) < 0:
+  label = label + '='
+  pos = propLabels.find(label)
+  print "found: ", propLabels[pos-1:pos+20]
+  while pos > 0 and (propLabels[pos-1] == '.' or propLabels[pos-1].isalnum()):
+    pos = propLabels.find(label,pos+1)
+    print "*found: ", propLabels[pos-1:pos+20]
+  if pos < 0:
     print "MISSING PROPERTY LABEL: " + label
     global allMissingLabels
     allMissingLabels += [ (label, fromFilename) ]
+  else:
+    pos2 = propLabels.find(label,pos+1)
+    while pos2 > 0 and (propLabels[pos2-1] == '.' or propLabels[pos2-1].isalnum()):
+      pos2 = propLabels.find(label,pos2+1)
+      print "*found: ", propLabels[pos2-1:pos2+20]
+    if pos2 >= 0:
+      print "LABEL TWICE: " + label
+      sys.exit(1)
 
 
 def checkXUL (filename):
@@ -262,22 +282,24 @@ def processLabelResults():
   #   enigmail.expertUser.label  (defined in ./ui/content/pref-enigmail-seamonkey.xul)
   #   enigmail.basicUser.label  (defined in ./ui/content/pref-enigmail-seamonkey.xul)
   # missing properties:
-  #   keyMan.button.skip  (defined in ./build/dist/modules/commonFuncs.jsm)
-  #   keyMan.button.skip  (defined in ./package/commonFuncs.jsm)
-  #   setKeyExpirationDateFailed  (defined in ./ui/content/enigmailEditKeyExpiryDlg.js)
-  #   12511  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
-  #   sendMessageCheckWindowTitle  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
-  #   sendMessageCheckLabel  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
-  #   sendMessageCheckSendButtonLabel  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
-  #   CheckMsg  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
-  knownLabelBugs=10
+  #   keyMan.button.skip=  (defined in ./build/dist/modules/commonFuncs.jsm)
+  #   noCardAvailable=  (defined in ./build/dist/modules/keyManagement.jsm)
+  #   keyMan.button.skip=  (defined in ./package/commonFuncs.jsm)
+  #   noCardAvailable=  (defined in ./package/keyManagement.jsm)
+  #   setKeyExpirationDateFailed=  (defined in ./ui/content/enigmailEditKeyExpiryDlg.js)
+  #   12511=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
+  #   sendMessageCheckWindowTitle=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
+  #   sendMessageCheckLabel=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
+  #   sendMessageCheckSendButtonLabel=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
+  #   CheckMsg=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
+  knownLabelBugs=12
   if len(allMissingLabels) != knownLabelBugs:
     print ""
     print "All Missing Labels:"
     print "==================="
     for missing in allMissingLabels:
       print "  ", missing[0], " (defined in " + missing[1] + ")"
-    print "out of", numLabels, "labels"
+    print "missinn ", len(allMissingLabels), "out of", numLabels, "labels"
     sys.exit(1)
   else:
     print "all", numLabels, "labels (except the", knownLabelBugs, "standard errors) are fine"
