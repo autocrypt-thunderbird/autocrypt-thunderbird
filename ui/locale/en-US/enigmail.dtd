@@ -221,7 +221,7 @@
 <!ENTITY enigmail.autoEncryptDrafts.label         "Encrypt draft messages on saving">
 
 <!ENTITY enigmail.advancedPrefsButton.label       "Advanced...">
-<!ENTITY enigmail.globalPrefsButton.label         "Global Preferences...">
+<!ENTITY enigmail.openpgpPrefsButton.label        "OpenPGP Preferences...">
 
 <!-- old: -->
 <!ENTITY enigmail.defaultEncryptionSign.label     "Sign encrypted messages by default">

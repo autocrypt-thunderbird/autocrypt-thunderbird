@@ -121,9 +121,9 @@
                   label="&enigmail.advancedPrefsButton.label;"
                   oncommand="Enigmail.edit.advancedIdentitySettings()"/>
           <button class="dialog"
-                  id="enigmail_globalPrefsButton"
+                  id="enigmail_openpgpPrefsButton"
                   observes="enigmail_bcEnablePgp"
-                  label="&enigmail.globalPrefsButton.label;"
+                  label="&enigmail.openpgpPrefsButton.label;"
                   oncommand="EnigmailFuncs.openPrefWindow(window, true, 'sendingTab');"/>
         </hbox>
       </groupbox>
