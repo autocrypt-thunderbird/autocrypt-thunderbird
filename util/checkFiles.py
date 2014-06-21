@@ -46,6 +46,12 @@ def checkProperty (label, fromFilename):
   # special handling of used thunderbird labels:
   if label.startswith("copyCmd."):
     return
+  # in messengercompose.dtd of thunderbird:
+  if label == "12511":
+    return
+  # thunderbird labels:
+  if label == "setKeyExpirationDateFailed" or label == "sendMessageCheckWindowTitle" or label == "sendMessageCheckLabel" or label == "sendMessageCheckSendButtonLabel" or label == "CheckMsg":
+    return
   label = label + '='
   pos = propLabels.find(label)
   print "found: ", propLabels[pos-1:pos+20]
@@ -292,14 +298,14 @@ def processLabelResults():
   #   sendMessageCheckLabel=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
   #   sendMessageCheckSendButtonLabel=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
   #   CheckMsg=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
-  knownLabelBugs=10
+  knownLabelBugs=0
   if len(allMissingLabels) != knownLabelBugs:
     print ""
     print "All Missing Labels:"
     print "==================="
     for missing in allMissingLabels:
       print "  ", missing[0], " (defined in " + missing[1] + ")"
-    print "missinn ", len(allMissingLabels), "out of", numLabels, "labels"
+    print "missing ", len(allMissingLabels), "out of", numLabels, "labels"
     sys.exit(1)
   else:
     print "all", numLabels, "labels (except the", knownLabelBugs, "standard errors) are fine"
