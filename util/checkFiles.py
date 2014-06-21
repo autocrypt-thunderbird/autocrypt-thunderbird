@@ -109,7 +109,7 @@ def checkXUL (filename):
       label = match.group(1)
       #print "  " + label
       checkProperty(label,filename)
-        
+
 def checkJS (filename):
   print "----------------------------------------"
   print " checkJS() " + filename
@@ -158,7 +158,7 @@ def checkJS (filename):
       label = match.group(1)
       print "  " + label
       checkProperty(label,filename)
-        
+
 
 #---------------------------------------------
 # check icons
@@ -182,7 +182,7 @@ def checkCSS (filename):
       row = match.group()
       #print "  " + row
       response += [row.strip().replace(' ','')]
-  return response      
+  return response
 
 def checkAllCSSFiles ():
 
@@ -194,7 +194,7 @@ def checkAllCSSFiles ():
   #print "-----------"
 
   # other CSS files:
-  otherFiles = [ 
+  otherFiles = [
       os.path.join(root,"ui","skin","classic-seamonkey","enigmail.css"),
       os.path.join(root,"ui","skin","classic","enigmail-aero.css"),
       os.path.join(root,"ui","skin","modern","enigmail.css"),
@@ -205,7 +205,7 @@ def checkAllCSSFiles ():
   # find critical differences between CSS files:
   for file in otherFiles:
     otherRows = checkCSS (file)
-    if rows != otherRows: 
+    if rows != otherRows:
       if len(rows) > len(otherRows):
         print "ERROR:"
       else:
@@ -255,8 +255,8 @@ def checkAllCSSFiles ():
           print "     " + rows[i]
           print "ERROR => ABORT"
           sys.exit(1)
-  
-  
+
+
 def checkAllXULFiles():
   # check XUL files:
   path = os.path.join(root)
@@ -292,7 +292,7 @@ def processLabelResults():
   #   sendMessageCheckLabel=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
   #   sendMessageCheckSendButtonLabel=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
   #   CheckMsg=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
-  knownLabelBugs=12
+  knownLabelBugs=10
   if len(allMissingLabels) != knownLabelBugs:
     print ""
     print "All Missing Labels:"
