@@ -161,7 +161,7 @@ KeyEditor.prototype = {
       }
       if (txt.indexOf("[GNUPG:] NO_CARD_AVAILABLE")>=0) {
         Ec.DEBUG_LOG("keyManagmenent.jsm: KeyEditor.processLine: detected missing card\n");
-        this.errorMsg=Ec.getString("noCardAvailable");
+        this.errorMsg=Ec.getString("sc.noCardAvailable");
         r.exitCode=-3;
         r.quitNow=true;
       }
@@ -355,11 +355,11 @@ var EnigmailKeyMgmt = {
 
   /**
    * Call editKey() to set the expiration date of the chosen key and subkeys
-   * 
+   *
    * @param  Object    parent
    * @param  String    keyId         e.g. 8D18EB22FDF633A2
    * @param  Array     subKeys       List of Integer values, e.g. [0,1,3]
-   *                                 "0" should allways be set because it's the main key. 
+   *                                 "0" should allways be set because it's the main key.
    * @param  Integer   expiryLength  A number between 1 and 100
    * @param  Integer   timeScale     1 or 30 or 365 meaning days, months, years
    * @param  Boolean   noExpiry      True: Expire never. False: Use expiryLength.
@@ -368,9 +368,9 @@ var EnigmailKeyMgmt = {
    *          returnCode = 0 in case of success
    *          returnCode != 0 and errorMsg set in case of failure
    */
-  setKeyExpiration: function (parent, keyId, subKeys, expiryLength, timeScale, noExpiry, callbackFunc) { 
+  setKeyExpiration: function (parent, keyId, subKeys, expiryLength, timeScale, noExpiry, callbackFunc) {
     Ec.DEBUG_LOG("keyManagmenent.jsm: Enigmail.setKeyExpiry: keyId="+keyId+"\n");
-    
+
     expiryLength = "" + expiryLength;
     if (noExpiry == true) {
       expiryLength = "0";
@@ -388,10 +388,10 @@ var EnigmailKeyMgmt = {
       }
     }
 
-    r = this.editKey(parent, 
-                     true, 
-                     null, 
-                     keyId, 
+    r = this.editKey(parent,
+                     true,
+                     null,
+                     keyId,
                      "",    /* "expire", */
                      {expiryLength: expiryLength, subKeys: subKeys, currentSubKey: false},
                      keyExpiryCallback, /* contains the gpg communication logic */
@@ -697,7 +697,7 @@ function keyExpiryCallback(inputData, keyEdit, ret) {
 
   ret.writeTxt = "";
   ret.errorMsg = "";
-    
+
   if (inputData.subKeys.length == 0) {
     // zero keys are submitted to edit: this must be a mistake.
     ret.exitCode = -1;
@@ -711,17 +711,17 @@ function keyExpiryCallback(inputData, keyEdit, ret) {
     } else if (inputData.currentSubKey === inputData.subKeys[0]) {
       // a subkey is selected. execute command "expire"
       ret.exitCode = 0;
-      ret.writeTxt = "expire";    
+      ret.writeTxt = "expire";
     } else {
       // if (inputData.currentSubKey === inputData.subKeys[0])
       // unselect the previous used subkey
       ret.exitCode = 0;
       ret.writeTxt = "key " + inputData.currentSubKey;
-      inputData.currentSubKey = false;      
-    } 
+      inputData.currentSubKey = false;
+    }
   }
   else if (keyEdit.doCheck(GET_LINE, "keygen.valid")) {
-    // submit the expiry length. 
+    // submit the expiry length.
     ret.exitCode = 0;
     ret.writeTxt = inputData.expiryLength;
     // processing of the current subkey is through.
