@@ -786,19 +786,11 @@
                                                       private.  It's not just for &quot;secret&quot; messages, but for
                                                       everything that you would not send on a postcard.
                                                       <html:br/><html:br/>
-                                                      On a technical level, encryption works like a padlock that only the
-                                                      recipient has the key for. Unlike signing, to use encryption all the
-                                                      recipients of an email need to use OpenPGP. People need to give you
-                                                      their public key before you can send them encrypted email (the public
-                                                      key is the pad lock we were talking about).
-                                                      <html:br/><html:br/>
-                                                      Usually people want to encrypt emails to some but not all recipients.
-                                                      For this reason, enigmail provides a convenient encryption mode,
+                                                      To be able to send encrypted emails you need the key of each recipient.
+                                                      However, because OpenPGP is not common everywhere, it is typical
+                                                      that you only have the keys of some recipients.
+                                                      To support this situation, OpenPGP provides a convenient encryption mode,
                                                       which automatically encrypts emails whenever possible.
-                                                      This mode is highly recommended, if you no longer want to send
-                                                      emails as postcards rather than as letters.
-                                                      If privacy is a critical issue for you, you should
-                                                      choose by default always to encrypt.
                                                       For each email you can still explicitly choose whether to encrypt.">
 <!ENTITY enigmail.setupWiz.pgEncConv.convEncMsg      "Which general mode do you prefer to encrypt outgoing emails?">
 <!ENTITY enigmail.setupWiz.pgEncConv.convYes         "I prefer convenient auto encryption">
