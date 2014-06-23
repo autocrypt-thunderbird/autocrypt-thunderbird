@@ -276,10 +276,11 @@ def checkAllJSFiles():
   # check JS/JSM files:
   path = os.path.join(root)
   for path, dirs, files in os.walk(path):
-    for name in files:
-      if name.endswith(".js") or name.endswith(".jsm"):
-        filename = os.path.join(path,name)
-        checkJS(filename)
+    if str(path).find("build") < 0:
+      for name in files:
+        if name.endswith(".js") or name.endswith(".jsm"):
+          filename = os.path.join(path,name)
+          checkJS(filename)
 
 
 def processLabelResults():

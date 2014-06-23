@@ -419,7 +419,7 @@ var EnigmailFuncs = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailCommon.js: prefWindow\n");
 
-    EnigmailCommon.getService(win);
+    EnigmailCommon.getService(win,true);  // true: starting preferences dialog
 
     win.openDialog("chrome://enigmail/content/pref-enigmail.xul",
                    "_blank", "chrome,resizable=yes",

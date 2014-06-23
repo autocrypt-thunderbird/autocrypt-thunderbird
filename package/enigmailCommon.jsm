@@ -173,7 +173,14 @@ var EnigmailCommon = {
   gpgAgentIsOptional: true,
 
   // methods
-  getService: function (win) {
+
+  // init enigmail service
+  // - including handling for switching to new versions
+  // - input:
+  //   - parent window (optional)
+  //   - called while switching to preferences
+  //     (to avoid asking to check for preferences then)
+  getService: function (win, startingPreferences) {
     // Lazy initialization of Enigmail JS component (for efficiency)
 
     if (this.enigmailSvc) {
@@ -217,7 +224,6 @@ var EnigmailCommon = {
 
           errMsg += "\n\n"+this.getString("avoidInitErr");
 
-
           var checkedObj = {value: false};
           if (this.getPref("initAlert")) {
             var r = this.longAlert(win, "Enigmail: "+errMsg,
@@ -250,7 +256,7 @@ var EnigmailCommon = {
       }
 
       if (this.enigmailSvc.initialized && (this.getVersion() != configuredVersion)) {
-        ConfigureEnigmail();
+        ConfigureEnigmail(win, startingPreferences);
       }
     }
 
@@ -3045,12 +3051,12 @@ function upgradeRecipientsSelection () {
 
 function upgradePrefsSending ()
 {
-  DEBUG_LOG("enigmailCommon.jsm: upgradePrefsSending()\n");
+  EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: upgradePrefsSending()\n");
 
   var  cbs = EnigmailCommon.getPref("confirmBeforeSend");
   var  ats = EnigmailCommon.getPref("alwaysTrustSend");
   var  ksfr = EnigmailCommon.getPref("keepSettingsForReply");
-  DEBUG_LOG("enigmailCommon.jsm: upgradePrefsSending cbs="+cbs+" ats="+ats+" ksfr="+ksfr+"\n");
+  EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: upgradePrefsSending cbs="+cbs+" ats="+ats+" ksfr="+ksfr+"\n");
 
   // Upgrade confirmBeforeSend (bool) to confirmBeforeSending (int)
   switch (cbs) {
@@ -3075,11 +3081,11 @@ function upgradePrefsSending ()
   // if all settings are default settings, use convenient encryption
   if (cbs==false && ats==true && ksfr==true) {
     EnigmailCommon.setPref("encryptionModel", 0); // convenient
-    DEBUG_LOG("enigmailCommon.jsm: upgradePrefsSending() encryptionModel=0 (convenient)\n");
+    EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: upgradePrefsSending() encryptionModel=0 (convenient)\n");
   }
   else {
     EnigmailCommon.setPref("encryptionModel", 1); // manually
-    DEBUG_LOG("enigmailCommon.jsm: upgradePrefsSending() encryptionModel=1 (manually)\n");
+    EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: upgradePrefsSending() encryptionModel=1 (manually)\n");
   }
 
   // clear old prefs
@@ -3189,7 +3195,8 @@ function upgradePgpMime() {
   catch (ex) {}
 }
 
-function ConfigureEnigmail() {
+
+function ConfigureEnigmail(window, startingPreferences) {
   var oldVer=EnigmailCommon.getPref("configuredVersion");
 
   try {
@@ -3227,9 +3234,27 @@ function ConfigureEnigmail() {
 
         upgradePrefsSending();
       }
+      if (vc.compare(oldVer, "1.8") < 0) {
+        var doIt = EnigmailCommon.confirmDlg(window,
+                               EnigmailCommon.getString("enigmailCommon.versionSignificantlyChanged"),
+                               EnigmailCommon.getString("enigmailCommon.checkPreferences"));
+        if (!startingPreferences && doIt) {
+            // same as:
+            // - EnigmailFuncs.openPrefWindow(window, true, 'sendingTab');
+            // but 
+            // - without starting the service again because we do that right now
+            // - and modal (waiting for its end)
+            window.openDialog("chrome://enigmail/content/pref-enigmail.xul",
+                              "_blank", "chrome,resizable=yes,modal",
+                              {'showBasic': true,
+                               'clientType': 'thunderbird',
+                               'selectTab': 'sendingTab'});
+        }
+      }
     }
   }
   catch(ex) {};
+
   EnigmailCommon.setPref("configuredVersion", EnigmailCommon.getVersion());
   EnigmailCommon.savePrefs();
 }
