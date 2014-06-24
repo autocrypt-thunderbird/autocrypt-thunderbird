@@ -99,7 +99,7 @@ def checkProperty (label, fromFilename):
   # ignore "keyAlgorithm_..."
   if label.find("keyAlgorithm_") == 0:
     return
-  # ignore "keyAlgorithm_..."
+  # ignore "errorType..."
   if label.find("errorType") == 0:
     return
   if label in propLabels:
@@ -116,10 +116,14 @@ def checkProperty (label, fromFilename):
 # check XUL files:
 #################################################################
 
+allLines = ""
 
 def checkXUL (filename):
   print "----------------------------------------"
   print " checkXUL() " + filename
+
+  global allLines
+  allLines += open(filename, 'r').read()
 
   inComment = False
   for line in open(filename, 'r'):
@@ -177,6 +181,9 @@ def checkXUL (filename):
 def checkJS (filename):
   print "----------------------------------------"
   print " checkJS() " + filename
+
+  global allLines
+  allLines += open(filename, 'r').read()
 
   inComment = False
   for line in open(filename, 'r'):
@@ -286,48 +293,52 @@ def processLabelResults():
   unusedFile = open('unused.txt',"w")
   print ""
   print "============================================="
-  print "dtdLabels:    ", len(dtdLabels)
-  print "found Labels: ", len(allFoundLabels)
-  print "unused labels in 'unused.txt' (noch ist double check notwendig)"
+  print "dtdLabels:     ", len(dtdLabels)
+  print "found Labels:  ", len(allFoundLabels)
   unusedFile.write('unused labels:\n')
+  numUnusedLabels=0
   for label in dtdLabels:
     if not label in allFoundLabels:
       #print "  ", label
-      unusedFile.write('  '+label+'\n')
-      #print "grep -r "+ label + " . | egrep 'xul|js'"
-      #print os.popen("grep -r "+ label + " . | egrep 'xul|js'").read()
-      ##grepresult = os.popen("grep -r "+ label + " . | egrep 'xul|js'").read()
-      ##if len(grepresult.strip()) >= 0:
-      ##  unusedFile.write('  '+label+'\n')
-      ##else:
-      ##  print "unused label in comment?: ", label
-      ##  print "  ", grepresult
+      if allLines.find(label) >= 0:
+        print "false positive (or correct because in comment)?: ", label
+      else:
+        numUnusedLabels += 1
+        unusedFile.write('  '+label+'\n')
+  print "unused labels in 'unused.txt'"
 
   print ""
   print "============================================="
-  print "propLabels:   ", len(propLabels)
-  print "found Props:  ", len(allFoundProps)
-  print "unused props in 'unused.txt' (noch ist double check notwendig)"
+  print "propLabels:    ", len(propLabels)
+  print "found Props:   ", len(allFoundProps)
   unusedFile.write('\nunused properties:\n')
+  numUnusedProps=0
   for label in propLabels:
     # ignore "keyAlgorithm_..."
     if label.find("keyAlgorithm_") == 0:
       continue
-    # ignore "keyAlgorithm_..."
+    # ignore "errorType..."
     if label.find("errorType") == 0:
       continue
     if not label in allFoundProps:
       #print "  ", label
-      unusedFile.write('  '+label+'\n')
-      #print "grep -r "+ label + " . | egrep 'xul|js'"
-      #print os.popen("grep -r "+ label + " . | egrep 'xul|js'").read()
-      ##grepresult = os.popen("grep -r "+ label + " . | egrep 'xul|js'").read()
-      ##if len(grepresult.strip()) >= 0:
-      ##  unusedFile.write('  '+label+'\n')
-      ##else:
-      ##  print "unused label in comment?: ", label
-      ##  print "  ", grepresult
+      if allLines.find(label) >= 0:
+        print "false positive (or correct because in comment)?: ", label
+      else:
+        numUnusedProps += 1
+        unusedFile.write('  '+label+'\n')
+  print "unused props in 'unused.txt'"
 
+  print ""
+  print "============================================="
+  print "dtdLabels:     ", len(dtdLabels)
+  print "found Labels:  ", len(allFoundLabels)
+  print "UNUSED Labels: ", numUnusedLabels, "  (after double check)"
+  print "============================================="
+  print "propLabels:    ", len(propLabels)
+  print "found Props:   ", len(allFoundProps)
+  print "UNUSED Props:  ", numUnusedProps, "  (after double check)"
+   
 
 #---------------------------------------------
 # check icons
