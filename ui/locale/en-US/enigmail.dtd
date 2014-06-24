@@ -385,28 +385,28 @@
 <!ENTITY enigmail.amPrefPgpHeader.id.label          "Send OpenPGP Key ID">
 <!ENTITY enigmail.amPrefPgpHeader.url.label         "Send URL for key retrieval:">
 
-<!ENTITY  enigmail.retrieveKey.label                "Retrieving keys">
-<!ENTITY  enigmail.progressText.label               "Progress:">
-<!ENTITY  enigmail.retrieveKey.retrieveMsg.label    "Retrieving key, please wait ...">
+<!ENTITY enigmail.retrieveKey.label                "Retrieving keys">
+<!ENTITY enigmail.progressText.label               "Progress:">
+<!ENTITY enigmail.retrieveKey.retrieveMsg.label    "Retrieving key, please wait ...">
 
-<!ENTITY  enigmail.editPgpSecurity.label            "OpenPGP Security ...">
-<!ENTITY  enigmail.editPgpSecurity.accesskey        "O">
+<!ENTITY enigmail.editPgpSecurity.label            "OpenPGP Security ...">
+<!ENTITY enigmail.editPgpSecurity.accesskey        "O">
 
-<!ENTITY  enigmail.openPgpSecurity.label            "OpenPGP Security">
+<!ENTITY enigmail.openPgpSecurity.label            "OpenPGP Security">
 
-<!ENTITY  enigmail.pgpSecurityInfo.label            "OpenPGP Security Info ...">
-<!ENTITY  enigmail.copySecurityInfo.label           "Copy OpenPGP Security Info">
-<!ENTITY  enigmail.showPhoto.label                  "View OpenPGP Photo ID">
-<!ENTITY  enigmail.photoViewer.title                "OpenPGP Photo Viewer">
-<!ENTITY  enigmail.displayKeyProperties.label       "View Key Properties">
-<!ENTITY  enigmail.signSenderKey.label              "Sign Key ...">
-<!ENTITY  enigmail.trustSenderKey.label             "Set Owner Trust ...">
-<!ENTITY  enigmail.signSenderKeyPopup.label         "Sign Sender's Key ...">
-<!ENTITY  enigmail.trustSenderKeyPopup.label        "Set Owner Trust of Sender's Key...">
-<!ENTITY  enigmail.smimeSecurityInfo.label          "S/MIME Security Info ...">
-<!ENTITY  enigmail.createRuleFromAddr.label         "Create OpenPGP Rule from Address...">
-<!ENTITY  enigmail.keyManWindow.label               "Key Management">
-<!ENTITY  enigmail.keyManWindow.accesskey           "y">
+<!ENTITY enigmail.pgpSecurityInfo.label            "OpenPGP Security Info ...">
+<!ENTITY enigmail.copySecurityInfo.label           "Copy OpenPGP Security Info">
+<!ENTITY enigmail.showPhoto.label                  "View OpenPGP Photo ID">
+<!ENTITY enigmail.photoViewer.title                "OpenPGP Photo Viewer">
+<!ENTITY enigmail.displayKeyProperties.label       "View Key Properties">
+<!ENTITY enigmail.signSenderKey.label              "Sign Key ...">
+<!ENTITY enigmail.trustSenderKey.label             "Set Owner Trust ...">
+<!ENTITY enigmail.signSenderKeyPopup.label         "Sign Sender's Key ...">
+<!ENTITY enigmail.trustSenderKeyPopup.label        "Set Owner Trust of Sender's Key...">
+<!ENTITY enigmail.smimeSecurityInfo.label          "S/MIME Security Info ...">
+<!ENTITY enigmail.createRuleFromAddr.label         "Create OpenPGP Rule from Address...">
+<!ENTITY enigmail.keyManWindow.label               "Key Management">
+<!ENTITY enigmail.keyManWindow.accesskey           "y">
 
 <!ENTITY enigmail.singleRcptSettings.label          "OpenPGP - Recipient Settings">
 <!ENTITY enigmail.keysToUse.label                   "Key(s) to use:">

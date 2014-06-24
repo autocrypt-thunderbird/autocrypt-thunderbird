@@ -288,7 +288,7 @@ function browseKeyFile(referencedId, referencedVar) {
 
 function importKeyFiles() {
   if (document.getElementById("publicKeysFile").value.length == 0) {
-    EnigAlert(EnigString("setupWizard.specifyFile"));
+    EnigAlert(EnigGetString("setupWizard.specifyFile"));
     return false;
   }
 

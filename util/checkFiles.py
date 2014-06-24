@@ -9,67 +9,112 @@ if len(sys.argv) > 1:
   root = sys.argv[1]
 #print "root: ", root
 
-#---------------------------------------------
-# check labels
-#---------------------------------------------
 
-dtdFile = open(os.path.join(root,"ui","locale","en-US","enigmail.dtd"),"r")
-propFile = open(os.path.join(root,"ui","locale","en-US","enigmail.properties"),"r")
-dtdLabels = dtdFile.read()
-propLabels = propFile.read()
-allLabelLines = dtdLabels + propLabels
+#################################################################
+# read in label and property files:
+#################################################################
+
+# read in dtd labels and check for duplicates:
+dtdFilename = os.path.join(root,"ui","locale","en-US","enigmail.dtd")
+dtdLabels = re.findall(r'ENTITY[ \t]*(enigmail[^ \t"]*)[ \t]*"', open(dtdFilename).read())
+#print dtdLabels
+#print len(dtdLabels)
+dtdLabels.sort()
+prev=None
+for label in dtdLabels:
+  if label == prev:
+    print "DUPLICATE label in enigmail.dtd file:", label 
+    sys.exit(1)
+
+# read in property labels and check for duplicates:
+propFilename = os.path.join(root,"ui","locale","en-US","enigmail.properties")
+propLabels = []
+for line in open(propFilename, 'r'):
+  if re.match('[ \t]*#.*', line):
+    continue
+  match = re.match('[ \t]*([^ \t=]+)[ \t]*=.*', line)
+  if match:
+    label = match.group(1)
+    #print label
+    propLabels += [label]
+#print propLabels
+#print len(propLabels)
+propLabels.sort()
+prev=None
+for label in propLabels:
+  if label == prev:
+    print "DUPLICATE property in enigmail.properties file:", label 
+    sys.exit(1)
 
 
+#################################################################
+# used thunderbird labels and properties:
+#################################################################
+
+tbLabels = [
+             "12511",
+             "copyCmd.accesskey",
+             "copyCmd.label",
+             "sendMessageCheckWindowTitle",
+             "sendMessageCheckLabel",
+             "sendMessageCheckSendButtonLabel",
+             "CheckMsg",
+           ]
+
+
+#################################################################
+# read in label and property files:
+#################################################################
+
+  
 allMissingLabels = []
+allFoundLabels = []
 numLabels = 0
 
 def checkLabel (label, fromFilename):
   global numLabels
   numLabels += 1
-  # special handling of used thunderbird labels:
-  if label.startswith("copyCmd."):
+  # ignore used thunderbird labels:
+  if label in tbLabels:
     return
-  pos = allLabelLines.find(label)
-  if pos < 0:
+  if label in dtdLabels:
+    global allFoundLabels
+    if not label in allFoundLabels:
+      allFoundLabels += [label]
+  else:
     print "MISSING LABEL: " + label
     global allMissingLabels
     allMissingLabels += [ (label, fromFilename) ]
-  elif allLabelLines.find(label,pos+1) > 0:
-    print "LABEL TWICE: " + label
-    sys.exit(1)
 
-
+allMissingProps = []
+allFoundProps = []
+numProps = 0
 
 def checkProperty (label, fromFilename):
-  global numLabels
-  numLabels += 1
-  # special handling of used thunderbird labels:
-  if label.startswith("copyCmd."):
+  global numProps
+  numProps += 1
+  # ignore used thunderbird labels:
+  if label in tbLabels:
     return
-  # in messengercompose.dtd of thunderbird:
-  if label == "12511":
+  # ignore "keyAlgorithm_..."
+  if label.find("keyAlgorithm_") == 0:
     return
-  # thunderbird labels:
-  if label == "setKeyExpirationDateFailed" or label == "sendMessageCheckWindowTitle" or label == "sendMessageCheckLabel" or label == "sendMessageCheckSendButtonLabel" or label == "CheckMsg":
+  # ignore "keyAlgorithm_..."
+  if label.find("errorType") == 0:
     return
-  label = label + '='
-  pos = propLabels.find(label)
-  print "found: ", propLabels[pos-1:pos+20]
-  while pos > 0 and (propLabels[pos-1] == '.' or propLabels[pos-1].isalnum()):
-    pos = propLabels.find(label,pos+1)
-    print "*found: ", propLabels[pos-1:pos+20]
-  if pos < 0:
-    print "MISSING PROPERTY LABEL: " + label
-    global allMissingLabels
-    allMissingLabels += [ (label, fromFilename) ]
+  if label in propLabels:
+    global allFoundProps
+    if not label in allFoundProps:
+      allFoundProps += [label]
   else:
-    pos2 = propLabels.find(label,pos+1)
-    while pos2 > 0 and (propLabels[pos2-1] == '.' or propLabels[pos2-1].isalnum()):
-      pos2 = propLabels.find(label,pos2+1)
-      print "*found: ", propLabels[pos2-1:pos2+20]
-    if pos2 >= 0:
-      print "LABEL TWICE: " + label
-      sys.exit(1)
+    print "MISSING PROPERTY: " + label
+    global allMissingProps
+    allMissingProps += [ (label, fromFilename) ]
+
+
+#################################################################
+# check XUL files:
+#################################################################
 
 
 def checkXUL (filename):
@@ -105,16 +150,29 @@ def checkXUL (filename):
         inComment = True
 
     # extract and check labels:
-    match = re.search('"&([^;"]*);"', line)
+    match = re.search('&([^;"<]*);', line)
     if match:
       label = match.group(1)
       #print "  " + label
       checkLabel(label,filename)
-    match = re.search('[csn]\.getString\("([^;"]*)"', line)
+    match = re.search('[csn]\.getString *\("([^;"]*)"', line)
     if match:
       label = match.group(1)
       #print "  " + label
       checkProperty(label,filename)
+    matches = re.findall('EnigGetString *\("([^;"]*)"', line)
+    for label in matches:
+      #print "  " + label
+      checkProperty(label,filename)
+    matches = re.findall("EnigGetString *\('([^;']*)'", line)
+    for label in matches:
+      #print "  " + label
+      checkProperty(label,filename)
+    matches = re.findall('\.onError *\("([^;"]*)"', line)
+    for label in matches:
+      #print "  " + label
+      checkProperty(label,filename)
+
 
 def checkJS (filename):
   print "----------------------------------------"
@@ -152,18 +210,123 @@ def checkJS (filename):
       line = line[0:commentBeg]
 
     # extract and check labels:
-    #if re.search('getString\(', line):
-    #  print line
-    match = re.search('\.getString\("([^;"]*)"', line)
-    if match:
-      label = match.group(1)
-      print "  " + label
+    matches = re.findall('\.getString *\("([^;"]*)"', line)
+    for label in matches:
+      #print "  " + label
       checkProperty(label,filename)
-    match = re.search("\.getString\('([^;']*)'", line)
-    if match:
-      label = match.group(1)
-      print "  " + label
+    matches = re.findall("\.getString *\('([^;']*)'", line)
+    for label in matches:
+      #print "  " + label
       checkProperty(label,filename)
+    matches = re.findall('EnigGetString *\("([^;"]*)"', line)
+    for label in matches:
+      #print "  " + label
+      checkProperty(label,filename)
+    matches = re.findall("EnigGetString *\('([^;']*)'", line)
+    for label in matches:
+      #print "  " + label
+      checkProperty(label,filename)
+    matches = re.findall('\.onError *\("([^;"]*)"', line)
+    for label in matches:
+      #print "  " + label
+      checkProperty(label,filename)
+
+
+def checkAllXULFiles():
+  # check XUL files:
+  path = os.path.join(root)
+  for path, dirs, files in os.walk(path):
+    for name in files:
+      #if name.endswith(".xul"):
+      if name.endswith(".xul"):
+        filename = os.path.join(path,name)
+        checkXUL(filename)
+
+
+def checkAllJSFiles():
+  # check JS/JSM files:
+  path = os.path.join(root)
+  for path, dirs, files in os.walk(path):
+    if str(path).find("build") < 0:
+      for name in files:
+        if name.endswith(".js") or name.endswith(".jsm"):
+          filename = os.path.join(path,name)
+          checkJS(filename)
+
+
+def processLabelResults():
+  # Labels:
+  knownLabelBugs=0
+  if len(allMissingLabels) != knownLabelBugs:
+    print ""
+    print "All Missing Labels:"
+    print "==================="
+    for missing in allMissingLabels:
+      print "  ", missing[0], " (defined in " + missing[1] + ")"
+    print "missing ", len(allMissingLabels), "out of", numLabels, "labels"
+    sys.exit(1)
+  else:
+    #print "all", numLabels, "labels (except the", knownLabelBugs, "standard errors) are defined"
+    print "all", numLabels, "labels usages are defined"
+
+  # Properties:
+  knownPropBugs=0
+  if len(allMissingProps) != knownPropBugs:
+    print ""
+    print "All Missing Properties:"
+    print "======================="
+    for missing in allMissingProps:
+      print "  ", missing[0], " (defined in " + missing[1] + ")"
+    print "missing ", len(allMissingProps), "out of", numProps, "properties"
+    sys.exit(1)
+  else:
+    #print "all", numProps, "properties (except the", knownPropBugs, "standard errors) are defined"
+    print "all", numProps, "property usages are defined"
+
+  unusedFile = open('unused.txt',"w")
+  print ""
+  print "============================================="
+  print "dtdLabels:    ", len(dtdLabels)
+  print "found Labels: ", len(allFoundLabels)
+  print "unused labels in 'unused.txt' (noch ist double check notwendig)"
+  unusedFile.write('unused labels:\n')
+  for label in dtdLabels:
+    if not label in allFoundLabels:
+      #print "  ", label
+      unusedFile.write('  '+label+'\n')
+      #print "grep -r "+ label + " . | egrep 'xul|js'"
+      #print os.popen("grep -r "+ label + " . | egrep 'xul|js'").read()
+      ##grepresult = os.popen("grep -r "+ label + " . | egrep 'xul|js'").read()
+      ##if len(grepresult.strip()) >= 0:
+      ##  unusedFile.write('  '+label+'\n')
+      ##else:
+      ##  print "unused label in comment?: ", label
+      ##  print "  ", grepresult
+
+  print ""
+  print "============================================="
+  print "propLabels:   ", len(propLabels)
+  print "found Props:  ", len(allFoundProps)
+  print "unused props in 'unused.txt' (noch ist double check notwendig)"
+  unusedFile.write('\nunused properties:\n')
+  for label in propLabels:
+    # ignore "keyAlgorithm_..."
+    if label.find("keyAlgorithm_") == 0:
+      continue
+    # ignore "keyAlgorithm_..."
+    if label.find("errorType") == 0:
+      continue
+    if not label in allFoundProps:
+      #print "  ", label
+      unusedFile.write('  '+label+'\n')
+      #print "grep -r "+ label + " . | egrep 'xul|js'"
+      #print os.popen("grep -r "+ label + " . | egrep 'xul|js'").read()
+      ##grepresult = os.popen("grep -r "+ label + " . | egrep 'xul|js'").read()
+      ##if len(grepresult.strip()) >= 0:
+      ##  unusedFile.write('  '+label+'\n')
+      ##else:
+      ##  print "unused label in comment?: ", label
+      ##  print "  ", grepresult
 
 
 #---------------------------------------------
@@ -191,14 +354,12 @@ def checkCSS (filename):
   return response
 
 def checkAllCSSFiles ():
-
   # reference is classic/enigmail.css:
   classicCSS = os.path.join(root,"ui","skin","classic","enigmail.css")
   rows = checkCSS (classicCSS)
   #print "-----------"
   #print rows
   #print "-----------"
-
   # other CSS files:
   otherFiles = [
       os.path.join(root,"ui","skin","classic-seamonkey","enigmail.css"),
@@ -221,16 +382,6 @@ def checkAllCSSFiles ():
       print " and"
       print "   ", file
       print " differ"
-      #print len(rows)
-      #print rows[-4]
-      #print rows[-3]
-      #print rows[-2]
-      #print rows[-1]
-      #print len(otherRows)
-      #print otherRows[-4]
-      #print otherRows[-3]
-      #print otherRows[-2]
-      #print otherRows[-1]
       print " first differences:"
       diffs = 0;
       for i in range(0,min(len(rows),len(otherRows))):
@@ -263,64 +414,6 @@ def checkAllCSSFiles ():
           sys.exit(1)
 
 
-def checkAllXULFiles():
-  # check XUL files:
-  path = os.path.join(root)
-  for path, dirs, files in os.walk(path):
-    for name in files:
-      if name.endswith(".xul"):
-        filename = os.path.join(path,name)
-        checkXUL(filename)
-
-def checkAllJSFiles():
-  # check JS/JSM files:
-  path = os.path.join(root)
-  for path, dirs, files in os.walk(path):
-    if str(path).find("build") < 0:
-      for name in files:
-        if name.endswith(".js") or name.endswith(".jsm"):
-          filename = os.path.join(path,name)
-          checkJS(filename)
-
-
-def processLabelResults():
-  # we currently have the following known
-  # missing labels:
-  #   enigmail.expertUser.label  (defined in ./ui/content/pref-enigmail-seamonkey.xul)
-  #   enigmail.basicUser.label  (defined in ./ui/content/pref-enigmail-seamonkey.xul)
-  # missing properties:
-  #   keyMan.button.skip=  (defined in ./build/dist/modules/commonFuncs.jsm)
-  #   noCardAvailable=  (defined in ./build/dist/modules/keyManagement.jsm)
-  #   keyMan.button.skip=  (defined in ./package/commonFuncs.jsm)
-  #   noCardAvailable=  (defined in ./package/keyManagement.jsm)
-  #   setKeyExpirationDateFailed=  (defined in ./ui/content/enigmailEditKeyExpiryDlg.js)
-  #   12511=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
-  #   sendMessageCheckWindowTitle=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
-  #   sendMessageCheckLabel=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
-  #   sendMessageCheckSendButtonLabel=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
-  #   CheckMsg=  (defined in ./ui/content/enigmailMsgComposeOverlay.js)
-  knownLabelBugs=0
-  if len(allMissingLabels) != knownLabelBugs:
-    print ""
-    print "All Missing Labels:"
-    print "==================="
-    for missing in allMissingLabels:
-      print "  ", missing[0], " (defined in " + missing[1] + ")"
-    print "missing ", len(allMissingLabels), "out of", numLabels, "labels"
-    sys.exit(1)
-  else:
-    print "all", numLabels, "labels (except the", knownLabelBugs, "standard errors) are fine"
-
-    # check lables loaded with getString()
-    # for each file with suffix js|jsm/xul
-    path = os.path.join(root)
-    for path, dirs, files in os.walk(path):
-      for name in files:
-        if name.endswith((".xul")):
-          filename = os.path.join(path,name)
-          checkXUL(filename)
-
-
 #---------------------------------------------
 # main()
 #---------------------------------------------
@@ -334,5 +427,5 @@ checkAllJSFiles()
 print ""
 processLabelResults()
 print ""
-checkAllCSSFiles()
+#checkAllCSSFiles()
 
