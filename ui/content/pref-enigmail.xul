@@ -265,7 +265,7 @@
       <vbox id="sending" flex="1">
           <description class="enigmailPrefsTitle">&enigmail.whenSending.label; ...</description>
 
-          <hbox flex="1" align="end">
+          <hbox>
             <radiogroup id="enigmail_encryptionModel"
                         flex="1"
                         pref="true"
