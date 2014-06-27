@@ -1946,11 +1946,13 @@ Enigmail.msg = {
         inputObj.options += ",unsigned";
       }
       if (this.trustAllKeys) {
-       inputObj.options += ",trustallkeys"
+        inputObj.options += ",trustallkeys";
       }
       if (sendFlags&nsIEnigmail.SEND_LATER) {
-       inputObj.options += ",sendlater"
+        sendLaterLabel = EnigmailCommon.getString("sendLaterCmd.label");
+        inputObj.options += ",sendlabel=" + sendLaterLabel;
       }
+      inputObj.options += ",";
       inputObj.dialogHeader = EnigmailCommon.getString("recipientsSelectionHdr");
 
       // perform key selection dialog:

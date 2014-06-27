@@ -234,7 +234,10 @@ function enigmailDlgKeySelection() {
   }
 
   inputObj.options = "multisel,forUser,noplaintext";
-  var userIdValue="";
+  var button = document.getElementById("encryptionListButton");
+  var label = button.getAttribute("label");
+  inputObj.options += ",sendlabel=" + label;
+  inputObj.options += ",";
 
   window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
   try {

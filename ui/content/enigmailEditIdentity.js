@@ -212,7 +212,10 @@ Enigmail.edit = {
     var inputObj = new Object();
     inputObj.dialogHeader = EnigmailCommon.getString("encryptKeyHeader");
     inputObj.options = "single,hidexpired,private,nosending";
-
+    var button = document.getElementById("enigmail_selectPgpKey");
+    var label = button.getAttribute("label");
+    inputObj.options += ",sendlabel=" + label;
+    inputObj.options += ",";
 
     window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
     try {

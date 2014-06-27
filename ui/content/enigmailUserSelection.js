@@ -243,37 +243,40 @@ function enigmailBuildList(refresh) {
    var notFoundCapt = document.getElementById("usersNotFoundCapt");
    var treeChildren=gUserList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
 
-   if (window.arguments[INPUT].options.indexOf("multisel")< 0) {
+   if (window.arguments[INPUT].options.indexOf("multisel") < 0) {
      // single key selection -> hide selection col
      var selColumn=document.getElementById("selectionCol");
      selColumn.setAttribute("collapsed", "true");
      gUserList.setAttribute("hidecolumnpicker", "true");
    }
 
-   if (window.arguments[INPUT].options.indexOf("nosending")>= 0) {
+   if (window.arguments[INPUT].options.indexOf("nosending") >= 0) {
       // hide not found recipients, hide "send unencrypted"
       document.getElementById("dialogHeadline").setAttribute("collapsed", "true");
       document.getElementById("enigmailUserSelSendSigned").setAttribute("collapsed", "true");
       document.getElementById("enigmailUserSelSendEncrypted").setAttribute("collapsed", "true");
       document.getElementById("importMissingKeys").setAttribute("collapsed", "true");
    }
-   else if (window.arguments[INPUT].options.indexOf("noforcedisp")>=0) {
+   else if (window.arguments[INPUT].options.indexOf("noforcedisp") >= 0) {
       document.getElementById("displayNoLonger").removeAttribute("collapsed");
    }
 
-   if (window.arguments[INPUT].options.indexOf("noplaintext")>= 0) {
+   if (window.arguments[INPUT].options.indexOf("noplaintext") >= 0) {
       // hide "send unencrypted"
       document.getElementById("enigmailUserSelSendEncrypted").setAttribute("collapsed", "true");
    }
 
-   if (window.arguments[INPUT].options.indexOf("forUser")>=0) {
+   if (window.arguments[INPUT].options.indexOf("forUser") >=0 ) {
       descNotFound.firstChild.data=EnigGetString("keysToUse", window.arguments[INPUT].forUser);
       notFoundCapt.setAttribute("collapsed", "true");
    }
 
-   if (window.arguments[INPUT].options.indexOf("sendlater")>=0) {
+   if (window.arguments[INPUT].options.indexOf(",sendlabel=") >= 0) {
+      var pos1 = window.arguments[INPUT].options.indexOf(",sendlabel=");
+      pos1 = window.arguments[INPUT].options.indexOf("=",pos1);
+      var pos2 = window.arguments[INPUT].options.indexOf(",",pos1);
       var acceptButton = document.getElementById("enigmailUserSelectionList").getButton("accept");
-      acceptButton.setAttribute("label", EnigGetString("sendLaterCmd.label"));
+      acceptButton.setAttribute("label", window.arguments[INPUT].options.substring(pos1+1,pos2));
    }
 
    var aUserList = new Array();
