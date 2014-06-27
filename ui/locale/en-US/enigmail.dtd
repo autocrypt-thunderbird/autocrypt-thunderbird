@@ -34,7 +34,6 @@
 <!ENTITY enigmail.basicUserMenus.label     "Hide Expert Settings and Menus">
 <!ENTITY enigmail.basicUser.tooltip        "Press if you do not want to see menu items and options for advanced users.">
 
-<!ENTITY enigmail.defaultEncryptionOption.label "Choose default encryption options">
 <!ENTITY enigmail.usePGPMimeOption.label  "Choose PGP/MIME option">
 <!ENTITY enigmail.mimeHashAlgorithm.label "Hash algorithm">
 
@@ -72,8 +71,7 @@
 
 <!ENTITY enigmail.basicPrefs.label       "Basic Settings">
 
-<!ENTITY enigmail.whenSending.label       "When sending mail">
-<!ENTITY enigmail.moreOptions.label       "More options">
+<!ENTITY enigmail.moreOptions.label       "More Options">
 
 <!ENTITY enigmail.alwaysTrustSend.label   "Always trust people's keys">
 <!ENTITY enigmail.alwaysTrustSend.tooltip "Do not use the Web of Trust to determine the validity of keys">
@@ -92,7 +90,6 @@
 <!ENTITY enigmail.useGpgAgent.label         "Use gpg-agent for passphrases">
 <!ENTITY enigmail.noHushMailSupport.label   "Use '&lt;' and '&gt;' to specify email addresses">
 
-<!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "When possible, encrypt/sign responses to encrypted/signed email">
 <!ENTITY enigmail.doubleDashSeparator.tooltip  "Two dashes by themselves on a line will denote a signature block">
 <!ENTITY enigmail.useGpgAgent.tooltip          "Use gpg-agent (part of GnuPG 2) for all passphrase input">
 <!ENTITY enigmail.noHushMailSupport.tooltip    "Use the '&lt;' and '&gt;' characters to specify email addresses for GnuPG. Disable if recipients have old Hushmail keys.">
@@ -215,36 +212,39 @@
 <!ENTITY enigmail.defaultSigning.label            "Sign messages by default">
 <!ENTITY enigmail.defaultEncryption.label         "Encrypt messages by default">
 <!ENTITY enigmail.usePGPMimeAlways.label          "Use PGP/MIME by default">
-<!ENTITY enigmail.finallySignEncrypted.label      "Automatically sign finally encrypted messages">
-<!ENTITY enigmail.finallySignNotEncrypted.label   "Automatically sign finally non-encrypted messages">
-<!ENTITY enigmail.defaultSignPlainMsg.label       "Sign non-encrypted messages by default">
+
+<!ENTITY enigmail.afterDefaultsAndRules.label     "After application of defaults and rules:">
+<!ENTITY enigmail.finallySignEncrypted.label      "sign encrypted messages">
+<!ENTITY enigmail.finallySignNotEncrypted.label   "sign non-encrypted messages">
+
 <!ENTITY enigmail.autoEncryptDrafts.label         "Encrypt draft messages on saving">
 
 <!ENTITY enigmail.advancedPrefsButton.label       "Advanced...">
 <!ENTITY enigmail.openpgpPrefsButton.label        "OpenPGP Preferences...">
 
-<!-- old: -->
-<!ENTITY enigmail.defaultEncryptionSign.label     "Sign encrypted messages by default">
-<!ENTITY enigmail.defaultSignPlainMsg.label       "Sign non-encrypted messages by default">
 
+<!-- Sending Preferences -->
 
-<!ENTITY enigmail.defaultEncryptionNone.label     "No default encryption">
-<!ENTITY enigmail.defaultNotSignedsend.label      "Do not sign messages by default">
+<!ENTITY enigmail.SendingPrefs.label              "General Preferences for Sending">
+<!ENTITY enigmail.seeAccountSettings.label        "See also the account specific OpenPGP settings (Extras -> Account Settings)">
 
 <!ENTITY enigmail.encryptionModelConvenient.label "Convenient encryption settings">
 <!ENTITY enigmail.encryptionModelManually.label   "Manual encryption settings">
 
-<!ENTITY enigmail.acceptedKeysOption.label    "To send encrypted, accept">
-<!ENTITY enigmail.acceptedKeysValid.label     "only keys I can trust">
-<!ENTITY enigmail.acceptedKeysValid.tooltip   "This option is provided to deal with the danger of faked keys using the Web-of-Trust. You only accept keys that are signed by yourself or by other people you trust. Technically, you only accept keys 'valid' for encryption.">
-<!ENTITY enigmail.acceptedKeysAll.label       "all keys  (except disabled, revoked, or expired)">
-<!ENTITY enigmail.acceptedKeysAll.tooltip     "This option allows encryption whenever you have a key that is neither disabled by you nor revoked/expired by the owner. Because these keys are not necessarily validated/signed, there is a risk that you use faked keys, so that others than the requested recipients can read the content of the encrypted email. However, that's still better than sending emails unencrypted. Technically, this uses the GPG option '--trust-model always'.">
+<!ENTITY enigmail.keepCryptoSettingsForReply.label   "Encrypt/sign replies to encrypted/signed messages">
+<!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "When possible, encrypt/sign responses to encrypted/signed email">
 
 <!ENTITY enigmail.autoSendEncryptedOption.label   "Automatically send encrypted">
 <!ENTITY enigmail.autoSendEncryptedNever.label    "Never">
 <!ENTITY enigmail.autoSendEncryptedNever.tooltip  "Don't automatically send encrypted except explicitly triggered by per-recipient rules">
 <!ENTITY enigmail.autoSendEncryptedIfKeys.label   "If possible">
 <!ENTITY enigmail.autoSendEncryptedIfKeys.tooltip "Automatically send encrypted when for each recipient at least one keys is known and accepted (see above) and no recipient rule forces not to encrypt.">
+
+<!ENTITY enigmail.acceptedKeysOption.label    "To send encrypted, accept">
+<!ENTITY enigmail.acceptedKeysValid.label     "Only keys I explicitly trust">
+<!ENTITY enigmail.acceptedKeysValid.tooltip   "Accept only keys that are signed by yourself or by other people you trust. Technically, you only accept keys 'valid' for encryption.">
+<!ENTITY enigmail.acceptedKeysAll.label       "All valid keys I have">
+<!ENTITY enigmail.acceptedKeysAll.tooltip     "Accept all keys that are neither disabled by you nor revoked/expired by the owner. Technically, this uses the GPG option '--trust-model always'.">
 
 <!ENTITY enigmail.confirmBeforeSendingOption.label           "Confirm before sending">
 <!ENTITY enigmail.confirmBeforeSendingNever.label            "Never">
@@ -274,9 +274,6 @@
 <!ENTITY enigmail.defineRules.tooltip             "Click to view, add, remove or edit the key selection rules.">
 
 
-<!ENTITY enigmail.keepCryptoSettingsForReply.label      "Encrypt/sign replies to encrypted/signed messages">
-<!ENTITY enigmail.confirmBeforeSend.label         "Always confirm before sending">
-<!ENTITY enigmail.confirmBeforeSend.tooltip       "Activate to display information dialog about signing/encryption before sending a message">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label        "Re-wrap signed HTML text before sending">
 <!ENTITY enigmail.wrapHtmlBeforeSend.tooltip      "Rearrange the text to ensure that the signature will remain intact.">
 <!ENTITY enigmail.autoKeyRetrieve.label           "Automatically download keys for signature verification">
@@ -284,16 +281,11 @@
 <!ENTITY enigmail.resetRememberedValues.label     "Reset Warnings">
 <!ENTITY enigmail.resetRememberedValues.tooltip   "Re-display all warning dialogs and questions that you have hidden in the past.">
 
-<!ENTITY enigmail.defaultEncryptionSign.accesskey "E">
-<!ENTITY enigmail.defaultEncryptionOnly.accesskey "c">
-<!ENTITY enigmail.defaultEncryptionNone.accesskey "N">
-
 <!ENTITY enigmail.usePGPMimeAlways.accesskey      "A">
 <!ENTITY enigmail.usePGPMimePossible.accesskey    "U">
 <!ENTITY enigmail.usePGPMimeNever.accesskey       "v">
 
 <!ENTITY enigmail.defaultSignMsg.accesskey        "S">
-<!ENTITY enigmail.defaultNotSignedsend.accesskey  "G">
 <!ENTITY enigmail.confirmBeforeSend.accesskey     "A">
 
 <!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>NOTE: Key generation may take up to several minutes to complete.</a> Do not exit the application while key generation is in progress. Actively browsing or performing disk-intensive operations during key generation will replenish the 'randomness pool' and speed-up the process. You will be alerted when key generation is completed.">

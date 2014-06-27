@@ -83,10 +83,6 @@
     <tooltip id="allowEmptySubject.tooltip">
       <description>&enigmail.allowEmptySubject.tooltip;</description>
     </tooltip>
-    <!-- old: -->
-    <tooltip id="confirmBeforeSend.tooltip">
-      <description>&enigmail.confirmBeforeSend.tooltip;</description>
-    </tooltip>
 
     <!-- sending preferences: accepted keys -->
     <tooltip id="acceptedKeysValid.tooltip">
@@ -263,55 +259,39 @@
 
       <!-- "Sending" Tab -->
       <vbox id="sending" flex="1">
-          <description class="enigmailPrefsTitle">&enigmail.whenSending.label; ...</description>
+        <description class="enigmailPrefsTitle">&enigmail.SendingPrefs.label;</description>
 
-          <hbox>
-            <radiogroup id="enigmail_encryptionModel"
-                        flex="1"
-                        pref="true"
-                        preftype="int"
-                        prefstring="extensions.enigmail.encryptionModel">
-              <radio id="encryptionModelConvenient"
-                     value="0"
-                     label="&enigmail.encryptionModelConvenient.label;"
-                     oncommand="resetSendingPrefsConvenient();"/>
-              <radio id="encryptionModelManually"
-                     value="1"
-                     label="&enigmail.encryptionModelManually.label;"
-                     oncommand="resetSendingPrefsManually();"/>
-            </radiogroup>
-            <vbox align="end">
-              <button id="sendingPrefsHelp"
-                      label="&enigmail.help.label;"
-                      oncommand="EnigHelpWindow('sendingPrefs');"/>
-            </vbox>
-          </hbox>
+        <!-- sending preferences: choose between convenient and manual settings -->
+        <hbox>
+          <radiogroup id="enigmail_encryptionModel"
+                      flex="1"
+                      pref="true"
+                      preftype="int"
+                      prefstring="extensions.enigmail.encryptionModel">
+            <radio id="encryptionModelConvenient"
+                   value="0"
+                   label="&enigmail.encryptionModelConvenient.label;"
+                   oncommand="resetSendingPrefsConvenient();"/>
+            <radio id="encryptionModelManually"
+                   value="1"
+                   label="&enigmail.encryptionModelManually.label;"
+                   oncommand="resetSendingPrefsManually();"/>
+          </radiogroup>
+          <!-- sending preferences: help button for convenient settings -->
+          <vbox align="end">
+            <button id="sendingPrefsHelp"
+                    label="&enigmail.help.label;"
+                    oncommand="EnigHelpWindow('sendingPrefs');"/>
+          </vbox>
+        </hbox>
 
         <!-- elements for manual settings: -->
         <groupbox id="enigmail_pref_sending_manually">
+        
+          <!-- sending preferences: keep sign/enc settings for reply -->
           <checkbox id="enigmail_keepSettingsForReply"
                     tooltip="keepCryptoSettingsForReply.tooltip"
                     label="&enigmail.keepCryptoSettingsForReply.label;" />
-
-          <groupbox>
-            <caption label="&enigmail.acceptedKeysOption.label;"/>
-            <radiogroup id="enigmail_acceptedKeys"
-                        pref="true"
-                        preftype="int"
-                        prefstring="extensions.enigmail.acceptedKeys">
-              <radio id="acceptedKeysValid"
-                    value="0"
-                    label="&enigmail.acceptedKeysValid.label;"
-                    tooltip="acceptedKeysValid.tooltip"/>
-              <radio id="acceptedKeysAll"
-                    value="1"
-                    label="&enigmail.acceptedKeysAll.label;"
-                    tooltip="acceptedKeysAll.tooltip"/>
-            </radiogroup>
-          </groupbox>
-
-          <checkbox id="enigmail_allowEmptySubject"
-                    hidden="true"/>
 
           <!-- sending preferences: auto send encrypted -->
           <groupbox>
@@ -331,11 +311,24 @@
             </radiogroup>
           </groupbox>
 
-          <!--
-          <checkbox id="enigmail_confirmBeforeSend"
-                    label="&enigmail.confirmBeforeSend.label;"
-                    tooltip="confirmBeforeSend.tooltip"/>
-          -->
+          <!-- sending preferences: accepted keys -->
+          <groupbox>
+            <caption label="&enigmail.acceptedKeysOption.label;"/>
+            <radiogroup id="enigmail_acceptedKeys"
+                        pref="true"
+                        preftype="int"
+                        prefstring="extensions.enigmail.acceptedKeys">
+              <radio id="acceptedKeysValid"
+                    value="0"
+                    label="&enigmail.acceptedKeysValid.label;"
+                    tooltip="acceptedKeysValid.tooltip"/>
+              <radio id="acceptedKeysAll"
+                    value="1"
+                    label="&enigmail.acceptedKeysAll.label;"
+                    tooltip="acceptedKeysAll.tooltip"/>
+            </radiogroup>
+          </groupbox>
+
           <!-- options to confirm before sending -->
           <groupbox>
             <caption label="&enigmail.confirmBeforeSendingOption.label;"/>
@@ -371,6 +364,7 @@
             </radiogroup>
           </groupbox>
         </groupbox>
+        <description>&enigmail.seeAccountSettings.label;</description>
       </vbox>
 
       <!-- "Key Selection" Tab -->
@@ -408,6 +402,9 @@
             advanced="true">
           <description class="enigmailPrefsTitle">&enigmail.moreOptions.label;</description>
           <spacer flex="0"/>
+
+          <checkbox id="enigmail_allowEmptySubject"
+                    hidden="true"/>
 
           <checkbox id="enigmail_wrapHtmlBeforeSend"
                     label="&enigmail.wrapHtmlBeforeSend.label;"
