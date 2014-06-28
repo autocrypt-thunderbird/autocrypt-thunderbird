@@ -58,14 +58,7 @@ Enigmail.columnHandler = {
       let atomService = Components.classes["@mozilla.org/atom-service;1"].
         getService(Components.interfaces.nsIAtomService);
       var atom = atomService.getAtom(newProp);
-      if (typeof(props) == "undefined") {
-        // TB >= 22
-        return newProp;
-      }
-      else {
-        // TB < 22
-        props.AppendElement(atom);
-      }
+      return newProp;
     }
   },
   getRowProperties:    function(row, props){},
