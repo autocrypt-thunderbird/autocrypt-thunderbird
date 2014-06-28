@@ -67,9 +67,9 @@
 
   <keyset id="tasksKeys">
     <key id="key_enigSign" key="&enigmail.signedsend.key;"
-         oncommand="Enigmail.msg.setSendMode('toggle-sign')" modifiers="accel, shift"/>
+         oncommand="Enigmail.msg.setFinalSendMode('toggle-final-sign')" modifiers="accel, shift"/>
     <key id="key_enigEncrypt" key="&enigmail.encryptedsend.key;"
-         oncommand="Enigmail.msg.setSendMode('toggle-encrypt')" modifiers="accel, shift"/>
+         oncommand="Enigmail.msg.setFinalSendMode('toggle-final-encrypt')" modifiers="accel, shift"/>
   </keyset>
 
 <!-- menu for all apps -->
@@ -95,10 +95,14 @@
                   oncommand="Enigmail.msg.doPgpButton('final-signDefault');" />
               <menuitem id="enigmail_final_signYesa"
                   type="checkbox"
+                  accesskey="&enigmail.signedsend.accesskey;"
+                  key="key_enigSign"
                   label="&enigmail.finalSignYes.label;"
                   oncommand="Enigmail.msg.doPgpButton('final-signYes');" />
               <menuitem id="enigmail_final_signNoa"
                   type="checkbox"
+                  accesskey="&enigmail.signedsend.accesskey;"
+                  key="key_enigSign"
                   label="&enigmail.finalSignNo.label;"
                   oncommand="Enigmail.msg.doPgpButton('final-signNo');" />
             </menupopup>
@@ -106,8 +110,10 @@
 
           <!-- encryption state and entries to change it: -->
           <menu id="enigmail_compose_encrypt_menu"
+                  accesskey="&enigmail.encryptedsend.accesskey;"
                 label="&enigmail.encryption.label;">
             <menupopup id="menu_EnigmailEncryptPopup"
+                  accesskey="&enigmail.encryptedsend.accesskey;"
                    onpopupshowing="Enigmail.msg.setMenuSettings('b')">
               <menuitem id="enigmail_final_encryptDefaultb"
                   type="checkbox"
@@ -115,10 +121,14 @@
                   oncommand="Enigmail.msg.doPgpButton('final-encryptDefault');" />
               <menuitem id="enigmail_final_encryptYesb"
                   type="checkbox"
+                  accesskey="&enigmail.encryptedsend.accesskey;"
+                  key="key_enigEncrypt"
                   label="&enigmail.finalEncryptYes.label;"
                   oncommand="Enigmail.msg.doPgpButton('final-encryptYes');" />
               <menuitem id="enigmail_final_encryptNob"
                   type="checkbox"
+                  accesskey="&enigmail.encryptedsend.accesskey;"
+                  key="key_enigEncrypt"
                   label="&enigmail.finalEncryptNo.label;"
                   oncommand="Enigmail.msg.doPgpButton('final-encryptNo');" />
             </menupopup>
@@ -325,10 +335,12 @@
                   oncommand="Enigmail.msg.nextCommand('final-signDefault');" />
               <menuitem id="enigmail_final_signYes3a"
                   type="checkbox"
+                  accesskey="&enigmail.signedsend.accesskey;"
                   label="&enigmail.finalSignYes.label;"
                   oncommand="Enigmail.msg.nextCommand('final-signYes');" />
               <menuitem id="enigmail_final_signNo3a"
                   type="checkbox"
+                  accesskey="&enigmail.signedsend.accesskey;"
                   label="&enigmail.finalSignNo.label;"
                   oncommand="Enigmail.msg.nextCommand('final-signNo');" />
             </menupopup>
@@ -345,10 +357,12 @@
                   oncommand="Enigmail.msg.nextCommand('final-encryptDefault');" />
               <menuitem id="enigmail_final_encryptYes3b"
                   type="checkbox"
+                  accesskey="&enigmail.encryptedsend.accesskey;"
                   label="&enigmail.finalEncryptYes.label;"
                   oncommand="Enigmail.msg.nextCommand('final-encryptYes');" />
               <menuitem id="enigmail_final_encryptNo3b"
                   type="checkbox"
+                  accesskey="&enigmail.encryptedsend.accesskey;"
                   label="&enigmail.finalEncryptNo.label;"
                   oncommand="Enigmail.msg.nextCommand('final-encryptNo');" />
             </menupopup>
