@@ -336,10 +336,12 @@
               <menuitem id="enigmail_final_signYes3a"
                   type="checkbox"
                   accesskey="&enigmail.signedsend.accesskey;"
+                  key="key_enigSign"
                   label="&enigmail.finalSignYes.label;"
                   oncommand="Enigmail.msg.nextCommand('final-signYes');" />
               <menuitem id="enigmail_final_signNo3a"
                   type="checkbox"
+                  key="key_enigSign"
                   accesskey="&enigmail.signedsend.accesskey;"
                   label="&enigmail.finalSignNo.label;"
                   oncommand="Enigmail.msg.nextCommand('final-signNo');" />
@@ -358,11 +360,13 @@
               <menuitem id="enigmail_final_encryptYes3b"
                   type="checkbox"
                   accesskey="&enigmail.encryptedsend.accesskey;"
+                  key="key_enigEncrypt"
                   label="&enigmail.finalEncryptYes.label;"
                   oncommand="Enigmail.msg.nextCommand('final-encryptYes');" />
               <menuitem id="enigmail_final_encryptNo3b"
                   type="checkbox"
                   accesskey="&enigmail.encryptedsend.accesskey;"
+                  key="key_enigEncrypt"
                   label="&enigmail.finalEncryptNo.label;"
                   oncommand="Enigmail.msg.nextCommand('final-encryptNo');" />
             </menupopup>
