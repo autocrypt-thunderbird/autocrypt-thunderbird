@@ -91,7 +91,7 @@
 <!ENTITY enigmail.decryptbutton.label     "Decrypt">
 <!ENTITY enigmail.decryptbutton.tip       "Decrypt or verify the message with Enigmail">
 
-<!ENTITY enigmail.messengermenu.accesskey "o">
+<!ENTITY enigmail.messengermenu.accesskey "a">
 
 <!ENTITY enigmail.decryptverify.label    "Decrypt/Verify">
 <!ENTITY enigmail.importpublickey.label  "Import Public Key">
@@ -707,7 +707,7 @@
                                                       To verify your signed email, people need an OpenPGP-aware mail program.
                                                       If they don't have an OpenPGP-aware mail program they will be able to
                                                       read your email, but the signature will be displayed as an attachment or
-                                                      as text around the email message, which might annoy some people. 
+                                                      as text around the email message, which might annoy some people.
                                                       In any case you can still explicitly choose whether or not to sign.">
 <!ENTITY enigmail.setupWiz.pgSign.signMsg            "Which general mode do you prefer to sign outgoing emails?">
 <!ENTITY enigmail.setupWiz.pgSign.signYes            "Sign all of my messages by default">
