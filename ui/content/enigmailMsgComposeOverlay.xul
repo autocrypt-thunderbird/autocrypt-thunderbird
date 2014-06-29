@@ -77,7 +77,7 @@
   <menubar id="mail-menubar">
 
       <menu id="menu_Enigmail"
-            label="&enigmail.openpgp.label;"
+            label="&enigmail.label;"
             accesskey="&enigmail.composemenu.accesskey;"
             insertbefore="tasksMenu">
 

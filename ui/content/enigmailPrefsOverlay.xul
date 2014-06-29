@@ -46,7 +46,7 @@
     <treeitem id="enigmail" position="1">
       <treerow>
         <treecell url="chrome://enigmail/content/pref-enigmail-seamonkey.xul"
-                      label="&enigmail.openpgp.label;"
+                      label="&enigmail.label;"
                       id="enigmailCell"/>
       </treerow>
     </treeitem>

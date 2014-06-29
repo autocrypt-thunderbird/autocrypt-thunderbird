@@ -64,7 +64,7 @@
   <!-- Menu insert point for Thunderbird & SeaMonkey -->
   <menubar id="mail-menubar">
     <menu id="menu_Enigmail"
-          label="&enigmail.openpgp.label;"
+          label="&enigmail.label;"
           accesskey="&enigmail.messengermenu.accesskey;"
           insertbefore="tasksMenu" />
   </menubar>
@@ -72,7 +72,7 @@
   <!-- Menu insert point for Spicebird -->
   <menubar id="framework-menubar">
     <menu id="menu_Enigmail"
-          label="&enigmail.openpgp.label;"
+          label="&enigmail.label;"
           accesskey="&enigmail.messengermenu.accesskey;"
           insertafter="messageMenu,go-menu,view-menu" insertbefore="tools-menu"
           app="mailnews"/>
@@ -81,7 +81,7 @@
   <!-- Thunderbird secondary pane -->
   <popup id="appmenuSecondaryPane">
         <splitmenu id="menu_Enigmail2ndPane"
-          label="&enigmail.openpgp.label;"
+          label="&enigmail.label;"
           accesskey="&enigmail.messengermenu.accesskey;"
           insertafter="appmenu_customize">
         <menupopup id="enigmail_2ndPanePopup" onpopupshowing="Enigmail.msg.displayMainMenu(this)"/>
@@ -285,7 +285,7 @@
           <spacer flex="1"/>
           <label class="enigmailHeaderName"
                 id="enigmailStatusHdr" flex="1"
-                value="&enigmail.openpgp.label;" control="enigmailStatusText"/>
+                value="&enigmail.label;" control="enigmailStatusText"/>
         </hbox>
 
         <hbox flex="1" pack="start" class="headerValueBox">
