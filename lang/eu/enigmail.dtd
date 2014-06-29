@@ -24,7 +24,7 @@
 <!ENTITY enigmail.keyGen.keyType.dsa      "DSA &amp; El Gamal">
 <!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
 
-<!ENTITY enigmail.preferences.label       "OpenPGP Lehentasunak">
+<!ENTITY enigmail.preferences.label       "Enigmail Lehentasunak">
 
 <!ENTITY enigmail.passwordSettings.label   "Pasahitzen ezarpenak">
 <!ENTITY enigmail.userNoPassphrase.label   "Ez eskatu inoiz pasahitzik">
@@ -57,7 +57,7 @@
 <!ENTITY enigmail.maxIdleMinutes.tooltip   "Pasahitza memorian gorde denbora mugatu bat.">
 
 <!ENTITY enigmail.resetPrefsButton.label "Berrezarri">
-<!ENTITY enigmail.resetPrefs.tooltip     "OpenPGP-ren lehentasunak euren lehenetsitako balioetara aldatu.">
+<!ENTITY enigmail.resetPrefs.tooltip     "Enigmail-ren lehentasunak euren lehenetsitako balioetara aldatu.">
 <!ENTITY enigmail.prefsHelpButton.label  "Laguntza">
 
 <!ENTITY enigmail.upgradeButton.label    "Enigmail Eguneratu">
@@ -129,8 +129,8 @@
 <!ENTITY enigmail.generatekey.label        "Gakoa Sortu">
 <!ENTITY enigmail.upgrade.label            "Eguneratu">
 <!ENTITY enigmail.help.label               "Laguntza">
-<!ENTITY enigmail.about.title              "OpenPGP-ri Buruz">
-<!ENTITY enigmail.about.label              "OpenPGP-ri Buruz">
+<!ENTITY enigmail.about.title              "Enigmail-ri Buruz">
+<!ENTITY enigmail.about.label              "Enigmail-ri Buruz">
 <!ENTITY enigmail.reload.label             "Mezua Berriz Kargatu">
 <!ENTITY enigmail.browse.label             "Nabigatu...">
 <!ENTITY enigmail.sendersKeyMenu.label     "Igorlearen Gakoa">
@@ -161,8 +161,8 @@
 <!ENTITY enigmail.about.accesskey           "b">
 <!ENTITY enigmail.sendersKeyMenu.accesskey  "K">
 
-<!ENTITY enigmail.securitybutton.label       "OpenPGP">
-<!ENTITY enigmail.securitybutton.tip         "OpenPGP (Enigmail) sekurtasun ezarpenak">
+<!ENTITY enigmail.securitybutton.label       "Enigmail">
+<!ENTITY enigmail.securitybutton.tip         "Enigmail sekurtasun ezarpenak">
 
 <!ENTITY enigmail.signedsend.label            "Mezua Sinatu">
 <!ENTITY enigmail.encryptedsend.label         "Mezua Zifratu">
@@ -257,7 +257,7 @@
 <!ENTITY enigmail.selectpanel.label                 "OpenPGP Panela Aukeratu">
 <!ENTITY enigmail.selectpanel.tooltip               "OpenPGP Panela Aukeratu">
 
-<!ENTITY enigmail.userSelectionList.label           "OpenPGP Gako Aukeraketa">
+<!ENTITY enigmail.userSelectionList.label           "Enigmail Gako Aukeraketa">
 <!ENTITY enigmail.usersNotFound.label               "Hartzaileak ez daude onartuta, ez dira fidagarriak edo ez dira aurkitu">
 <!ENTITY enigmail.keyExpiry.label                   "Iraungi">
 <!ENTITY enigmail.keyTrust.label                    "Fidagarria">
@@ -290,14 +290,14 @@
 <!ENTITY enigmail.ctxImportKey.accesskey            "I">
 <!ENTITY enigmail.detailsHdrButton.label            "Xehetasunak">
 
-<!ENTITY enigmail.amPrefTitle.label                 "OpenPGP Aukerak (Enigmail)">
+<!ENTITY enigmail.amPrefTitle.label                 "OpenPGP Aukerak">
 <!ENTITY enigmail.amPrefDesc.label                  "Mezuak OpenPGP bidez sinatzeko eta zifratzeko aukera Enigmailek ematen dizu. Hau erabiltzeko GnuPG (gpg) instalatuta izan behar duzu">
 <!ENTITY enigmail.amPrefEnablePgp.label             "Nortasun honentzat OpenPGP (Enigmail) gaitu">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "Nortasun honen posta elektronikoaren helbidea erabili OpenPGP gakoa identifikatzeko">
 <!ENTITY enigmail.amPrefUseKeyId.label              "OpenPGP gakoaren ID espezifikoa erabili (0x1234ABCD):">
 <!ENTITY enigmail.amPrefSelectKey.label             "Gakoa aukeratu ...">
 <!ENTITY enigmail.amPrefDefaultEncrypt.label        "Mezua Idazteko Lehenetsitako Aukerak">
-<!ENTITY enigmail.encryptionDlg.label               "OpenPGP Zifraketa &amp; Sinadura Ezarpenak">
+<!ENTITY enigmail.encryptionDlg.label               "Enigmail Zifraketa &amp; Sinadura Ezarpenak">
 <!ENTITY enigmail.encDlgEncrypt.label               "Mezua Zifratu">
 <!ENTITY enigmail.encDlgEncrypt.accesskey           "E">
 <!ENTITY enigmail.encDlgSign.label                  "Mezua Sinatu">
@@ -316,21 +316,21 @@
 <!ENTITY  enigmail.editPgpSecurity.label            "OpenPGP Segurtasuna ...">
 <!ENTITY  enigmail.editPgpSecurity.accesskey        "O">
 
-<!ENTITY  enigmail.openPgpSecurity.label            "OpenPGP Segurtasuna">
+<!ENTITY  enigmail.openPgpSecurity.label            "Enigmail Segurtasuna">
 
-<!ENTITY  enigmail.pgpSecurityInfo.label            "OpenPGP Segurtasun Informazioa ...">
-<!ENTITY  enigmail.copySecurityInfo.label           "OpenPGP Segurtasun Informazioa Kopiatu">
+<!ENTITY  enigmail.pgpSecurityInfo.label            "Enigmail Segurtasun Informazioa ...">
+<!ENTITY  enigmail.copySecurityInfo.label           "Enigmail Segurtasun Informazioa Kopiatu">
 <!ENTITY  enigmail.showPhoto.label                  "OpenPGP-ren argazki ID-a Ikusi">
 <!ENTITY  enigmail.signSenderKey.label              "Gakoa Sinatu ...">
 <!ENTITY  enigmail.trustSenderKey.label             "Jabearen Konfidantza Jarri ...">
 <!ENTITY  enigmail.signSenderKeyPopup.label         "Igorlearen Gakoa Sinatu ...">
 <!ENTITY  enigmail.trustSenderKeyPopup.label        "Igorlearen Gakoari Jabearen Konfidantza Jarri ...">
 <!ENTITY  enigmail.smimeSecurityInfo.label          "S/MIME Segurtasun Informazioa ...">
-<!ENTITY  enigmail.createRuleFromAddr.label         "Helbidetik OpenPGP Araua Sortu...">
+<!ENTITY  enigmail.createRuleFromAddr.label         "Helbidetik Enigmail Araua Sortu...">
 <!ENTITY  enigmail.keyManWindow.label               "Gako Kudeaketa">
 <!ENTITY  enigmail.keyManWindow.accesskey           "y">
 
-<!ENTITY enigmail.singleRcptSettings.label          "OpenPGP - Hartzailearen Ezarpenak">
+<!ENTITY enigmail.singleRcptSettings.label          "Enigmail - Hartzailearen Ezarpenak">
 <!ENTITY enigmail.keysToUse.label                   "Erabiliko den/diren gakoa(k):">
 <!ENTITY enigmail.selKeysButton.label               "Gakoak Aukeratu...">
 <!ENTITY enigmail.action.label                      "Akzioa">
@@ -345,7 +345,7 @@
 <!ENTITY enigmail.always.label                      "Beti">
 <!ENTITY enigmail.maybe.label                       "Bai, Mezuaren Idazketa aukeratuta badago.">
 <!ENTITY enigmail.singleRcptSettings.desc           "(Oharra: Arazorik badago, 'Inoiz'ek 'Beti' irabazten du)">
-<!ENTITY enigmail.ruleEmail.label                   "Honentzako OpenPGP Arauak Ezarri">
+<!ENTITY enigmail.ruleEmail.label                   "Honentzako Enigmail Arauak Ezarri">
 <!ENTITY enigmail.ruleEmail.tooltip                 "Helbide elektronikoekin bakarrik bete, EZ jarri hartzaileen izenak. Hau da: 'Izen Bat &lt;Izen.Bat@helbidea.net&gt;' ez du balio">
 <!ENTITY enigmail.sepratationDesc.label             "(Helbide elektronikoak zuriun bitartez banatu)">
 <!ENTITY enigmail.matchDescStart.label              "Hartzaileak hau betetzen badu araua aplikatu">
@@ -356,7 +356,7 @@
 <!ENTITY enigmail.matchEnd.label                    "Honekin bukatzen bada">
 <!ENTITY enigmail.not.label                         "Ez">
 
-<!ENTITY enigmail.rulesEditor.label                 "OpenPGP - Hartzaile Bakoitzeko Arauen Editoriea">
+<!ENTITY enigmail.rulesEditor.label                 "Enigmail - Hartzaile Bakoitzeko Arauen Editoriea">
 <!ENTITY enigmail.email.label                       "Posta Elektronikoa">
 <!ENTITY enigmail.pgpKeys.label                     "OpenPGP Gakoa(k)">
 <!ENTITY enigmail.sign.label                        "Sinatu">
@@ -382,7 +382,7 @@
 
 <!ENTITY enigmail.progress.label                   "Aurrerapena">
 
-<!ENTITY enigmail.sKeyDlg.title                    "OpenPGP - Gakoa Sinatu">
+<!ENTITY enigmail.sKeyDlg.title                    "Enigmail - Gakoa Sinatu">
 <!ENTITY enigmail.sKeyDlg.signKey.label            "Sinatuko Den Gakoa:">
 <!ENTITY enigmail.sKeyDlg.fingerprint.label        "Hatz-Marka:">
 <!ENTITY enigmail.sKeyDlg.signWithKey.label        "Sinatzeko Gakoa:">
@@ -393,12 +393,12 @@
 <!ENTITY enigmail.sKeyDlg.carefulCheck.label       "Kontu handiz egiaztatu dut">
 <!ENTITY enigmail.sKeyDlg.createLocal.label        "Sinadura Lokala (ezin da esportatu)">
 
-<!ENTITY enigmail.addUidDlg.title                  "OpenPGP - Erabiltzaile ID-a Gehitu">
+<!ENTITY enigmail.addUidDlg.title                  "Enigmail - Erabiltzaile ID-a Gehitu">
 <!ENTITY enigmail.addUidDlg.name.label             "Izena">
 <!ENTITY enigmail.addUidDlg.email.label            "Helbide Elektronikoa">
 <!ENTITY enigmail.addUidDlg.comment.label          "Oharra (aukerakoa)">
 
-<!ENTITY enigmail.keyTrust.title                   "OpenPGP - Jabearekiko Fidagarritasuna Ezarri">
+<!ENTITY enigmail.keyTrust.title                   "Enigmail - Jabearekiko Fidagarritasuna Ezarri">
 <!ENTITY enigmail.keyTrust.trustKey.label          "Fidatuko zaren gakoa:">
 <!ENTITY enigmail.keyTrust.trustLevel.label        "Gakoaz, zenbat fidatzen zara?">
 <!ENTITY enigmail.keyTrust.dontKnow.label          "Ez dakit">
@@ -407,7 +407,7 @@
 <!ENTITY enigmail.keyTrust.fullTrust.label         "Asko fidatzen naiz">
 <!ENTITY enigmail.keyTrust.ultimateTrust.label     "Ziur nago gakoaren fidagarritasunaz">
 
-<!ENTITY enigmail.keyMan.title                     "OpenPGP Gako Kudeaketa">
+<!ENTITY enigmail.keyMan.title                     "Enigmail Gako Kudeaketa">
 <!ENTITY enigmail.keyMan.close.label               "Lehioa Itxi">
 <!ENTITY enigmail.keyMan.generate.label            "Gako Bikote Berria">
 <!ENTITY enigmail.keyMan.sign.label                "Gakoa Sinatu">
@@ -587,16 +587,16 @@
 <!ENTITY enigmail.changePasswd.newPasswd.label       "Pasahitz Berria">
 <!ENTITY enigmail.changePasswd.repeatPasswd.label    "Pasahitza Errepikatu">
 
-<!ENTITY enigmail.setupWiz.title                     "OpenPGP Konfigurazio Laguntzailea">
+<!ENTITY enigmail.setupWiz.title                     "Enigmail Konfigurazio Laguntzailea">
 <!ENTITY enigmail.setupWiz.yes                       "Bai">
 <!ENTITY enigmail.setupWiz.no                        "Ez, mila eskar">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc            "Laguntzaile honek OpenPGP erabiltzen hastera laguntduko zaitu. Hurrengo
+<!ENTITY enigmail.setupWiz.pgWelcome.desc            "Laguntzaile honek Enigmail erabiltzen hastera laguntduko zaitu. Hurrengo
                                                      lehioetan galera batzuk egingo dizkizugu guztia martxan jartzeko. 
                                                       <html:br/><html:br/>
                                                       Gauzak sinpleak izan daitezen, konfigurazioari buruzko suposizio batzuk
                                                       egingo ditugu. Suposizio hauek erabiltzaile arrunt batentzako segurtasun
                                                       maila altua lortzen saiatzen dira nahasketarik sortu gabe. Edozein modutan
-                                                      laguntzailea bukatu eta gero ezarpen guztiak aldatu ahal ditzakezu. OpenPGP-k
+                                                      laguntzailea bukatu eta gero ezarpen guztiak aldatu ahal ditzakezu. Enigmail-k
                                                       dituen ezaugarriei buruz gehiago jakin nahi baduzu Laguntza menuan edo 
                                                       <a class='enigmailLink'><html:a onclick='EnigOpenURL(event, this)'
                                                       href='http://www.enigmail.net/'>Enigmail-en weborrian</html:a></a>.
@@ -605,26 +605,26 @@
                                                       <a class='enigmailLink'><html:a href='mailto:www.enigmail.net'>
                                                       posta elektroniko</html:a></a>bidez kontaiguzu.<html:br/><html:br/>
                                                       Lagunzaile hau automatikoki agertzen da Enigmail lehendabiziko aldiz
-                                                      instalatzerakoan. Nahi izanez gero eskuz OpenPGP menutik exekutatu
+                                                      instalatzerakoan. Nahi izanez gero eskuz Enigmail menutik exekutatu
                                                       daiteke ere.
                                                       <html:br/><html:br/>
-                                                      Mila esker Enigmail OpenPGP aukeratzeagatik!">
+                                                      Mila esker Enigmail Enigmail aukeratzeagatik!">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow        "Laguntzeilea orain erabili nahi al duzu?">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes             "Bai, laguntzailea martxan jartzen laguntzea nahi dut">
 <!ENTITY enigmail.setupWiz.pgWelcome.no              "Ez, eskerrik asko. Nahiago dut gauzak eskuz konfiguratzea">
 <!ENTITY enigmail.setupWiz.pgSelectId.title          "Nortasunak aukeratu">
-<!ENTITY enigmail.setupWiz.pgSelectId.subtitle       "OpenPGP-k erabiliko dituen kontu edo nortasunak aukeratu itzazu.">
-<!ENTITY enigmail.setupWiz.pgSelectId.desc           "OpenPGP-ren ezarpenak kontu eta nortasun bakoitzarenak dira. Lehenetsita
-                                                      OpenPGP-k kontu eta nortasun guztiekin lan egiteko konfiguratuko da. 
+<!ENTITY enigmail.setupWiz.pgSelectId.subtitle       "Enigmail-k erabiliko dituen kontu edo nortasunak aukeratu itzazu.">
+<!ENTITY enigmail.setupWiz.pgSelectId.desc           "Enigmail-ren ezarpenak kontu eta nortasun bakoitzarenak dira. Lehenetsita
+                                                      Enigmail-k kontu eta nortasun guztiekin lan egiteko konfiguratuko da. 
                                                       Hau ez baduzu nahi, mesedez, azpian dauden nortasun eta kontuetatik 
                                                       zeinekin lan egin nahi duzun aukeratu ezazu.">
-<!ENTITY enigmail.setupWiz.pgSelectId.allIds         "OpenPGP nortasun guztietarako martxan jartzea nahi al duzu?">
-<!ENTITY enigmail.setupWiz.pgSelectId.selectIds      "OpenPGP hurrengo nortasunekin bakarrik lan egitea nahi dut:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note           "<a class='enigmailStrong'>Oharra:</a> OpenPGP-k sinadurak kontu
+<!ENTITY enigmail.setupWiz.pgSelectId.allIds         "Enigmail nortasun guztietarako martxan jartzea nahi al duzu?">
+<!ENTITY enigmail.setupWiz.pgSelectId.selectIds      "Enigmail hurrengo nortasunekin bakarrik lan egitea nahi dut:">
+<!ENTITY enigmail.setupWiz.pgSelectId.note           "<a class='enigmailStrong'>Oharra:</a> Enigmail-k sinadurak kontu
                                                       eta nortasun guztientzat egiaztatuko ditu, gaituta egon ez arren.">
 <!ENTITY enigmail.setupWiz.pgSign.title              "Sinatzen">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle           "Bidalitako e-Postak Digitalki Sinatu">
-<!ENTITY enigmail.setupWiz.pgSign.desc               "OpenPGP-k zure e-postak digitalki sinatzeko aukera ematen dizu. Hau eskutiztz
+<!ENTITY enigmail.setupWiz.pgSign.desc               "Enigmail-k zure e-postak digitalki sinatzeko aukera ematen dizu. Hau eskutiztz
                                                       baten sinaduraren baliokide elektronikoa da, jendeari eskutizta zurea dela
                                                       ziurtarazten dio. Sekurtasun jardunbide ona da bidalitako e-posta guztia
                                                       sinatzea.
@@ -658,12 +658,12 @@
 <!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt          "Bai, nere kontaktuen gehiengoaren gako publikoak ditut.">
 <!ENTITY enigmail.setupWiz.pgEnc.noEncrypt           "Ez, euren gako publikoak bidaltzen dizkidaten hartzaileentzat arauak ezarriko ditut.">
 <!ENTITY enigmail.setupWiz.pgSettings.title          "Lehentasunak">
-<!ENTITY enigmail.setupWiz.pgSettings.subtitle       "Zure E-Postaren Ezarpenak Aldatu OpenPGP Modu Fidagarriago Batean Funtzionatu Dezan">
+<!ENTITY enigmail.setupWiz.pgSettings.subtitle       "Zure E-Postaren Ezarpenak Aldatu Enigmail Modu Fidagarriago Batean Funtzionatu Dezan">
 <!ENTITY enigmail.setupWiz.pgSettings.desc           "Laguntzaile honek zure e-postaren ezarpenak aldatu ditzake e-posta sinatu edo zifratzerakoan
                                                       arazorik izan ez ditzazun. Aldaketa hauek orokorrean gauza teknikoak dira eta ez duzu
                                                       aldaketarik nabarituko. Aldaketa nabarmen bat lehenetsita e-postak testu huts bezela 
                                                       idatziko direla da.">
-<!ENTITY enigmail.setupWiz.pgSettings.changePref     "Lehenetsitako ezarpen batzuk aldatu nahi dituzu OpenPGP zure ordenagailuan hobeto
+<!ENTITY enigmail.setupWiz.pgSettings.changePref     "Lehenetsitako ezarpen batzuk aldatu nahi dituzu Enigmail zure ordenagailuan hobeto
                                                       ibili dadin?">
 <!ENTITY enigmail.setupWiz.pgSettings.details        "Xehetasunak ...">
 <!ENTITY enigmail.setupWiz.pgKeySel.title            "Gako Aukeraketa">
@@ -691,7 +691,7 @@
 <!ENTITY enigmail.setupWiz.pgKeygen.title            "Gako Sorketa">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle         "Zure gakoa orain sortzen ari da">
 <!ENTITY enigmail.setupWiz.pgComplete.title          "Mila esker">
-<!ENTITY enigmail.setupWiz.pgComplete.desc           "OpenPGP erabiltzeko prest dago.<html:br/><html:br/>Mila esker Enigmail erabiltzeagatik.">
+<!ENTITY enigmail.setupWiz.pgComplete.desc           "Enigmail erabiltzeko prest dago.<html:br/><html:br/>Mila esker Enigmail erabiltzeagatik.">
 <!ENTITY enigmail.setupWiz.details.title             "Lehentasunak">
 <!ENTITY enigmail.setupWiz.details.subtitle          "Aplikazioaren Ezarpenak Aldatu">
 <!ENTITY enigmail.setupWiz.details.imapOnDemand      "Eskaera bidez IMAP zatien kargatzea ezgaitu">
@@ -701,7 +701,7 @@
 <!ENTITY enigmail.setupWiz.details.8bitEncoding      "8-biteko kodifikazioa erabili mezuak bidaltzeko">
 <!ENTITY enigmail.setupWiz.details.noComposeHTML     "Ez idatzi HTML mezurik">
 <!ENTITY enigmail.setupWiz.pgNoStart.title           "Laguntzailea Utzi">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc            "OpenPGP konfiguratzeko laguntzailea ez erabiltzea aukeratu duzu.
+<!ENTITY enigmail.setupWiz.pgNoStart.desc            "Enigmail konfiguratzeko laguntzailea ez erabiltzea aukeratu duzu.
                                                       <html:br/><html:br/>Mila esker Enigmail erabiltzeagatik.">
-<!ENTITY enigmail.advancedIdentityDlg.title          "OpenPGP Nortasun Ezarpen Aurreratuak">
+<!ENTITY enigmail.advancedIdentityDlg.title          "Enigmail Nortasun Ezarpen Aurreratuak">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label     "Nere gako publikoa mezuetan erantsi">

@@ -22,7 +22,7 @@
 <!ENTITY enigmail.keyGen.keyType.label "Anahtar tipi">
 <!ENTITY enigmail.keyGen.keyType.dsa "DSA &amp; El Gamal">
 <!ENTITY enigmail.keyGen.keyType.rsa "RSA">
-<!ENTITY enigmail.preferences.label "OpenPGP Seçenekleri">
+<!ENTITY enigmail.preferences.label "Enigmail Seçenekleri">
 <!ENTITY enigmail.passwordSettings.label "Parola ayarları">
 <!ENTITY enigmail.userNoPassphrase.label "Asla parola sorma">
 <!ENTITY enigmail.userNoPassphrase.tooltip "OpenPGP anahtarınız bir parolayla korunmuyorsa aktif edin.">
@@ -46,7 +46,7 @@
 <!ENTITY enigmail.maxIdleMinutesTail.label "kullanılmayan dakika">
 <!ENTITY enigmail.maxIdleMinutes.tooltip "Parolaları bir süreliğine hafızada tut.">
 <!ENTITY enigmail.resetPrefsButton.label "Temizle">
-<!ENTITY enigmail.resetPrefs.tooltip "Tüm OpenPGP seçeneklerini ilk hallerine getir.">
+<!ENTITY enigmail.resetPrefs.tooltip "Tüm Enigmail seçeneklerini ilk hallerine getir.">
 <!ENTITY enigmail.prefsHelpButton.label "Yardım">
 <!ENTITY enigmail.upgradeButton.label "Enigmail'i güncelle">
 <!ENTITY enigmail.uninstallButton.label "Enigmail'i kaldır">
@@ -99,8 +99,8 @@
 <!ENTITY enigmail.generatekey.label "Anahtar üret">
 <!ENTITY enigmail.upgrade.label "Güncelle">
 <!ENTITY enigmail.help.label "Yardım">
-<!ENTITY enigmail.about.title "OpenPGP Hakkında">
-<!ENTITY enigmail.about.label "OpenPGP Hakkında">
+<!ENTITY enigmail.about.title "Enigmail Hakkında">
+<!ENTITY enigmail.about.label "Enigmail Hakkında">
 <!ENTITY enigmail.reload.label "Mesajı tekrar yükle">
 <!ENTITY enigmail.browse.label "Göz at...">
 <!ENTITY enigmail.sendersKeyMenu.label "Gönderenin Anahtarı">
@@ -124,8 +124,8 @@
 <!ENTITY enigmail.help.accesskey "Y">
 <!ENTITY enigmail.about.accesskey "P">
 <!ENTITY enigmail.sendersKeyMenu.accesskey "K">
-<!ENTITY enigmail.securitybutton.label "OpenPGP">
-<!ENTITY enigmail.securitybutton.tip "OpenPGP (Enigmail) güvenlik ayarları">
+<!ENTITY enigmail.securitybutton.label "Enigmail">
+<!ENTITY enigmail.securitybutton.tip "Enigmail güvenlik ayarları">
 <!ENTITY enigmail.signedsend.label "Mesajı İmzala">
 <!ENTITY enigmail.encryptedsend.label "Mesajı Şifrele">
 <!ENTITY enigmail.disableRules.label "Kullanıci başına kuralları gözardı et">
@@ -198,7 +198,7 @@
 <!ENTITY enigmail.uninstall.tooltip "Enigmail'i kaldır">
 <!ENTITY enigmail.selectpanel.label "OpenPGP Paneli Seç">
 <!ENTITY enigmail.selectpanel.tooltip "OpenPGP Paneli Seç">
-<!ENTITY enigmail.userSelectionList.label "OpenPGP Anahtar Seçimi">
+<!ENTITY enigmail.userSelectionList.label "Enigmail Anahtar Seçimi">
 <!ENTITY enigmail.usersNotFound.label "Alıcılar doğru değil, güvenilir değil ya da bulunamadı">
 <!ENTITY enigmail.keyExpiry.label "Son kullanım">
 <!ENTITY enigmail.keyTrust.label "Güven">
@@ -228,14 +228,14 @@
 <!ENTITY enigmail.ctxImportKey.accesskey "I">
 <!ENTITY enigmail.ctxVerifyAtt.accesskey "V">
 <!ENTITY enigmail.detailsHdrButton.label "Ayrıntılar">
-<!ENTITY enigmail.amPrefTitle.label "OpenPGP Ayarları (Enigmail)">
+<!ENTITY enigmail.amPrefTitle.label "OpenPGP Ayarları">
 <!ENTITY enigmail.amPrefDesc.label "Mesajları OpenPGP ile şifreleme ve imzalama Enigmail tarafından sunulmaktadır. Bu özelliği kullanmak için GnuPG (gpg) kurmuş olmalısınız.">
 <!ENTITY enigmail.amPrefEnablePgp.label "Bu kimlik için OpenPGP desteğini (Enigmail) aç">
 <!ENTITY enigmail.amPrefUseFromAddr.label "OpenPGP anahtarını tanımlamak için bu kimliğin e-posta adresini kullan">
 <!ENTITY enigmail.amPrefUseKeyId.label "Belirli bir OpenPGP anahtar ID'si kullan (0x1234ABCD):">
 <!ENTITY enigmail.amPrefSelectKey.label "Anahtar Seç ...">
 <!ENTITY enigmail.amPrefDefaultEncrypt.label "Mesaj Yazma Öntanımlı Ayarları">
-<!ENTITY enigmail.encryptionDlg.label "OpenPGP Şifreleme &amp; İmzalama Ayarları">
+<!ENTITY enigmail.encryptionDlg.label "Enigmail Şifreleme &amp; İmzalama Ayarları">
 <!ENTITY enigmail.encDlgEncrypt.label "Mesajı Şifrele">
 <!ENTITY enigmail.encDlgEncrypt.accesskey "E">
 <!ENTITY enigmail.encDlgSign.label "Mesajı İmzala">
@@ -253,9 +253,9 @@
 <!ENTITY enigmail.retrieveKey.retrieveMsg.label "Anahtar alınıyor, lütfen bekleyin ...">
 <!ENTITY enigmail.editPgpSecurity.label "OpenPGP Güvenliği ...">
 <!ENTITY enigmail.editPgpSecurity.accesskey "O">
-<!ENTITY enigmail.openPgpSecurity.label "OpenPGP Güvenliği">
-<!ENTITY enigmail.pgpSecurityInfo.label "OpenPGP Güvenlik Bilgisi ...">
-<!ENTITY enigmail.copySecurityInfo.label "OpenPGP Güvenlik Bilgisini Kopyala">
+<!ENTITY enigmail.openPgpSecurity.label "Enigmail Güvenliği">
+<!ENTITY enigmail.pgpSecurityInfo.label "Enigmail Güvenlik Bilgisi ...">
+<!ENTITY enigmail.copySecurityInfo.label "Enigmail Güvenlik Bilgisini Kopyala">
 <!ENTITY enigmail.showPhoto.label "OpenPGP Fotoğraf ID'sini göster">
 <!ENTITY enigmail.photoViewer.title "OpenPGP Photo Viewer">
 <!ENTITY enigmail.displayKeyProperties.label "View Key Properties">
@@ -264,10 +264,10 @@
 <!ENTITY enigmail.signSenderKeyPopup.label "Gönderenin Anahtarını İmzala ...">
 <!ENTITY enigmail.trustSenderKeyPopup.label "Gönderenin Anahtarının Güvenilirliğini Belirle ...">
 <!ENTITY enigmail.smimeSecurityInfo.label "S/MIME Güvenlik Bilgisi ...">
-<!ENTITY enigmail.createRuleFromAddr.label "Adresten OpenPGP Kuralı Oluştur...">
+<!ENTITY enigmail.createRuleFromAddr.label "Adresten Enigmail Kuralı Oluştur...">
 <!ENTITY enigmail.keyManWindow.label "Anahtar Yönetimi">
 <!ENTITY enigmail.keyManWindow.accesskey "y">
-<!ENTITY enigmail.singleRcptSettings.label "OpenPGP - Alıcı Ayarları">
+<!ENTITY enigmail.singleRcptSettings.label "Enigmail - Alıcı Ayarları">
 <!ENTITY enigmail.keysToUse.label "Kullanılacak Anahtar(lar):">
 <!ENTITY enigmail.selKeysButton.label "Anahtar(lar) Seç...">
 <!ENTITY enigmail.action.label "Hareket">
@@ -282,7 +282,7 @@
 <!ENTITY enigmail.always.label "Her Zaman">
 <!ENTITY enigmail.maybe.label "Mesaj yazarken seçildiyse, Evet">
 <!ENTITY enigmail.singleRcptSettings.desc "(Not: çakışma durumunda, 'Asla', 'Her Zaman' dan önceliklidir)">
-<!ENTITY enigmail.ruleEmail.label "Şunun için OpenPGP kuralı koy">
+<!ENTITY enigmail.ruleEmail.label "Şunun için Enigmail kuralı koy">
 <!ENTITY enigmail.ruleEmail.tooltip "Sadece posta adreslerini doldur, alıcıların isimlerini koyma Ör: 'Bir isim <bir.isim@adres.net>' yanlış">
 <!ENTITY enigmail.sepratationDesc.label "(Birden fazla posta adresini boşluklarla ayır)">
 <!ENTITY enigmail.matchDescStart.label "Kural uygula alıcı eğer">
@@ -292,7 +292,7 @@
 <!ENTITY enigmail.matchBegin.label "Başlıyorsa">
 <!ENTITY enigmail.matchEnd.label "Bitiyorsa">
 <!ENTITY enigmail.not.label "Değilse">
-<!ENTITY enigmail.rulesEditor.label "OpenPGP - Alıcı başına Kural Düzenleyici">
+<!ENTITY enigmail.rulesEditor.label "Enigmail - Alıcı başına Kural Düzenleyici">
 <!ENTITY enigmail.email.label "EPosta">
 <!ENTITY enigmail.pgpKeys.label "OpenPGP Anahtar(lar)">
 <!ENTITY enigmail.sign.label "İmzala">
@@ -315,7 +315,7 @@
 <!ENTITY enigmail.created.label "Oluşturuldu">
 <!ENTITY enigmail.valid.label "Doğru">
 <!ENTITY enigmail.progress.label "İşlem">
-<!ENTITY enigmail.sKeyDlg.title "OpenPGP - Anahtar İmzala">
+<!ENTITY enigmail.sKeyDlg.title "Enigmail - Anahtar İmzala">
 <!ENTITY enigmail.sKeyDlg.signKey.label "İmzalanacak Anahtar:">
 <!ENTITY enigmail.sKeyDlg.fingerprint.label "Parmak izi:">
 <!ENTITY enigmail.sKeyDlg.signWithKey.label "İmzalanacak anahtar:">
@@ -325,11 +325,11 @@
 <!ENTITY enigmail.sKeyDlg.casualCheck.label "Dikkatsizce kontrol ettim">
 <!ENTITY enigmail.sKeyDlg.carefulCheck.label "Çok dikkatli kontrol ettim">
 <!ENTITY enigmail.sKeyDlg.createLocal.label "Yerel imza (gönderilemez)">
-<!ENTITY enigmail.addUidDlg.title "OpenPGP - Kullanıcı ID'si ekle">
+<!ENTITY enigmail.addUidDlg.title "Enigmail - Kullanıcı ID'si ekle">
 <!ENTITY enigmail.addUidDlg.name.label "İsim">
 <!ENTITY enigmail.addUidDlg.email.label "E-Posta">
 <!ENTITY enigmail.addUidDlg.comment.label "Yorum (isteğe bağlı)">
-<!ENTITY enigmail.keyTrust.title "OpenPGP - Anahtar Sahibi Güvenilirliği Koy">
+<!ENTITY enigmail.keyTrust.title "Enigmail - Anahtar Sahibi Güvenilirliği Koy">
 <!ENTITY enigmail.keyTrust.trustKey.label "Güvenilecek Anahtar:">
 <!ENTITY enigmail.keyTrust.trustLevel.label "Anahtara ne kadar güveniyorsunuz?">
 <!ENTITY enigmail.keyTrust.dontKnow.label "Bilmiyorum">
@@ -337,7 +337,7 @@
 <!ENTITY enigmail.keyTrust.marginalTrust.label "Bilmeden güveniyorum">
 <!ENTITY enigmail.keyTrust.fullTrust.label "Tam güveniyorum">
 <!ENTITY enigmail.keyTrust.ultimateTrust.label "Acayip süper güveniyorum :)">
-<!ENTITY enigmail.keyMan.title "OpenPGP Anahtar Yönetimi">
+<!ENTITY enigmail.keyMan.title "Enigmail Anahtar Yönetimi">
 <!ENTITY enigmail.keyMan.close.label "Pencereyi Kapat">
 <!ENTITY enigmail.keyMan.generate.label "Yeni Anahtar Çifti">
 <!ENTITY enigmail.keyMan.sign.label "Anahtarı İmzala">
@@ -511,10 +511,10 @@
 <!ENTITY enigmail.changePasswd.currPasswd.label "Şimdiki Parola">
 <!ENTITY enigmail.changePasswd.newPasswd.label "Yeni Parola">
 <!ENTITY enigmail.changePasswd.repeatPasswd.label "Parolayı Tekrarla">
-<!ENTITY enigmail.setupWiz.title "OpenPGP Kurulum Sihirbazı">
+<!ENTITY enigmail.setupWiz.title "Enigmail Kurulum Sihirbazı">
 <!ENTITY enigmail.setupWiz.yes "Evet">
 <!ENTITY enigmail.setupWiz.no "Hayır, teşekkürler">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "Bu sihirbaz OpenPGP kullanmaya hemen başlamanıza yardım edecek. Göreceğiniz bir kaç                                                         ekranda herşeyi ayarlamak için bir kaç soru soracağız.<html:br/><html:br/>
+<!ENTITY enigmail.setupWiz.pgWelcome.desc "Bu sihirbaz Enigmail kullanmaya hemen başlamanıza yardım edecek. Göreceğiniz bir kaç                                                         ekranda herşeyi ayarlamak için bir kaç soru soracağız.<html:br/><html:br/>
 
 
 
@@ -553,7 +553,7 @@
 
 
 
-                                                      ayarları değiştirebilirsiniz. OpenPGP hakkında daha fazla bilgiyi Yardım
+                                                      ayarları değiştirebilirsiniz. Enigmail hakkında daha fazla bilgiyi Yardım
 
 
 
@@ -566,8 +566,8 @@
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "Evet, Sihirbazı başlat">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "Teşekkürler, ayarları elle yapmak istiyorum">
 <!ENTITY enigmail.setupWiz.pgSelectId.title "Kimlik seçin">
-<!ENTITY enigmail.setupWiz.pgSelectId.subtitle "OpenPGP ile çalışmasını istediğiniz hesap ya da kimliği seçin">
-<!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP ayarları hesaplara ve kimliklere özeldir. Öntanımlı olarak OpenPGP tüm
+<!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Enigmail ile çalışmasını istediğiniz hesap ya da kimliği seçin">
+<!ENTITY enigmail.setupWiz.pgSelectId.desc "Enigmail ayarları hesaplara ve kimliklere özeldir. Öntanımlı olarak Enigmail tüm
 
 
 
@@ -590,7 +590,7 @@
 
 
 
-                                                      Eğer istediğiniz bu değilse, lütfen OpenPGP'nin çalışmasını istediğiniz hesabı
+                                                      Eğer istediğiniz bu değilse, lütfen Enigmail'nin çalışmasını istediğiniz hesabı
 
 
 
@@ -599,12 +599,12 @@
 
 
                                                       ya da kimliği aşağıdan seçin.">
-<!ENTITY enigmail.setupWiz.pgSelectId.allIds "OpenPGP'yi tüm kimlikler için kurmak istiyorum">
-<!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Sadece şu kimlikler için OpenPGP kullanılmasını istiyorum:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Not:</a> OpenPGP ayarlarda etkin olup olmamasına bakmadan                                                         herzaman her kimlikteki ya da hesaptaki imzaları doğrulayacaktır.">
+<!ENTITY enigmail.setupWiz.pgSelectId.allIds "Enigmail'yi tüm kimlikler için kurmak istiyorum">
+<!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Sadece şu kimlikler için Enigmail kullanılmasını istiyorum:">
+<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Not:</a> Enigmail ayarlarda etkin olup olmamasına bakmadan                                                         herzaman her kimlikteki ya da hesaptaki imzaları doğrulayacaktır.">
 <!ENTITY enigmail.setupWiz.pgSign.title "İmzalama">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "Postalarınızı dijital imzalayın">
-<!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP postalarınızı dijital imzalamanıza olanak verir. Bu bir mektubu imzalamanın                                                         elektronik eşi gibidir, ve insanların postanın gerçekten sizden geldiğinden emin
+<!ENTITY enigmail.setupWiz.pgSign.desc "Enigmail postalarınızı dijital imzalamanıza olanak verir. Bu bir mektubu imzalamanın                                                         elektronik eşi gibidir, ve insanların postanın gerçekten sizden geldiğinden emin
 
 
 
@@ -677,7 +677,7 @@
 <!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt "Evet, listemdeki insanların çoğunun genel anahtarı var">
 <!ENTITY enigmail.setupWiz.pgEnc.noEncrypt "Hayır, bana genel anahtarını gönderenlere özel kurallar koymak istiyorum">
 <!ENTITY enigmail.setupWiz.pgSettings.title "Seçenekler">
-<!ENTITY enigmail.setupWiz.pgSettings.subtitle "OpenPGP'nin daha emin çalışabilmesi için posta seçeneklerinizi değiştirin">
+<!ENTITY enigmail.setupWiz.pgSettings.subtitle "Enigmail'nin daha emin çalışabilmesi için posta seçeneklerinizi değiştirin">
 <!ENTITY enigmail.setupWiz.pgSettings.desc "Bu sihirbaz, posta seçeneklerinizi makinenizde posta şifreleme ya da imzalama
 
 
@@ -710,7 +710,7 @@
 
 
                                                       çoğunlukla anlamayacağınız teknik şeylerdir.">
-<!ENTITY enigmail.setupWiz.pgSettings.changePref "OpenPGP'nin makinenizde daha iyi çalışabilmesi için bir kaç seçeneği değiştirmek ister misiniz ?">
+<!ENTITY enigmail.setupWiz.pgSettings.changePref "Enigmail'nin makinenizde daha iyi çalışabilmesi için bir kaç seçeneği değiştirmek ister misiniz ?">
 <!ENTITY enigmail.setupWiz.pgSettings.details "Detaylar ...">
 <!ENTITY enigmail.setupWiz.pgKeySel.title "Anahtar SeçimiKey Selection">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "Posta İmzalama ve Şifreleme için bir Anahtar Oluştur">
@@ -814,7 +814,7 @@
 <!ENTITY enigmail.setupWiz.pgKeygen.title "Anahtar Oluşturma">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "Anahtarınızı şu an üretiliyor">
 <!ENTITY enigmail.setupWiz.pgComplete.title "Teşekkürler">
-<!ENTITY enigmail.setupWiz.pgComplete.desc "OpenPGP kullanıma hazır.<html:br></html:br><html:br></html:br>Enigmail kullandığınız için teşekkürler.">
+<!ENTITY enigmail.setupWiz.pgComplete.desc "Enigmail kullanıma hazır.<html:br></html:br><html:br></html:br>Enigmail kullandığınız için teşekkürler.">
 <!ENTITY enigmail.setupWiz.details.title "Seçenekler">
 <!ENTITY enigmail.setupWiz.details.subtitle "Uygulama Seçeneklerini Düzelt">
 <!ENTITY enigmail.setupWiz.details.imapOnDemand "İstek durumunda IMAP bölümlerini yüklemeyi kapat">
@@ -824,7 +824,7 @@
 <!ENTITY enigmail.setupWiz.details.8bitEncoding "Mesaj gönderirken 8-bit kodlama kullan">
 <!ENTITY enigmail.setupWiz.details.noComposeHTML "Mesaj yazarken HTML kullanma">
 <!ENTITY enigmail.setupWiz.pgNoStart.title "Sihirbazdan vazgeç">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc "OpenPGP ayarlarını sihirbaz ile yapmamayı tercih ettiniz.
+<!ENTITY enigmail.setupWiz.pgNoStart.desc "Enigmail ayarlarını sihirbaz ile yapmamayı tercih ettiniz.
 
 
 
@@ -840,7 +840,7 @@
 
 
                                                       <html:br></html:br><html:br></html:br>Enigmail kullandığınız için teşekkürler.">
-<!ENTITY enigmail.advancedIdentityDlg.title "Gelişmiş OpenPGP Kimlik Ayarları">
+<!ENTITY enigmail.advancedIdentityDlg.title "Gelişmiş Enigmail Kimlik Ayarları">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "Genel anahtarımı mesajlara ekle">
 <!ENTITY enigmail.msgViewColumn.label "OpenPGP">
 <!ENTITY enigmail.addToRule.useRuleButton.accesskey "A">

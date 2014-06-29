@@ -22,7 +22,7 @@
 <!ENTITY enigmail.keyGen.keyType.label "키 형식">
 <!ENTITY enigmail.keyGen.keyType.dsa "DSA &amp; El Gamal">
 <!ENTITY enigmail.keyGen.keyType.rsa "RSA">
-<!ENTITY enigmail.preferences.label "OpenPGP 설정">
+<!ENTITY enigmail.preferences.label "Enigmail 설정">
 <!ENTITY enigmail.passwordSettings.label "패스프레이즈 설정">
 <!ENTITY enigmail.userNoPassphrase.label "사용자에게 어떤 패스프레이즈도 묻지 않음">
 <!ENTITY enigmail.userNoPassphrase.tooltip "OpenPGP 키가 패스프레이즈로 보호되어 있지 않은 경우에 활성화 하세요.">
@@ -46,7 +46,7 @@
 <!ENTITY enigmail.maxIdleMinutesTail.label "분 동안 기억">
 <!ENTITY enigmail.maxIdleMinutes.tooltip "제한 시간 동안 패스프레이즈를 메모리에 일시 저장합니다.">
 <!ENTITY enigmail.resetPrefsButton.label "초기화">
-<!ENTITY enigmail.resetPrefs.tooltip "모든 OpenPGP 설정을 기본값으로 설정합니다.">
+<!ENTITY enigmail.resetPrefs.tooltip "모든 Enigmail 설정을 기본값으로 설정합니다.">
 <!ENTITY enigmail.prefsHelpButton.label "도움말">
 <!ENTITY enigmail.upgradeButton.label "Enigmail 업그레이드">
 <!ENTITY enigmail.uninstallButton.label "Enigmail 설치 제거">
@@ -83,7 +83,7 @@
 <!ENTITY enigmail.testemail.label "테스트 메일">
 <!ENTITY enigmail.test.label "테스트">
 <!ENTITY enigmail.decryptbutton.label "복호화">
-<!ENTITY enigmail.decryptbutton.tip "OpenPGP (Enigmail)로 된 메시지를 복호화 또는 검증">
+<!ENTITY enigmail.decryptbutton.tip "Enigmail로 된 메시지를 복호화 또는 검증">
 <!ENTITY enigmail.messengermenu.accesskey "n">
 <!ENTITY enigmail.decryptverify.label "복호화/검증">
 <!ENTITY enigmail.importpublickey.label "공개키 가져오기">
@@ -99,8 +99,8 @@
 <!ENTITY enigmail.generatekey.label "키 생성">
 <!ENTITY enigmail.upgrade.label "업그레이드">
 <!ENTITY enigmail.help.label "도움말">
-<!ENTITY enigmail.about.title "OpenPGP에 대하여">
-<!ENTITY enigmail.about.label "OpenPGP에 대하여">
+<!ENTITY enigmail.about.title "Enigmail에 대하여">
+<!ENTITY enigmail.about.label "Enigmail에 대하여">
 <!ENTITY enigmail.reload.label "메시지 다시 읽기">
 <!ENTITY enigmail.browse.label "찾아보기...">
 <!ENTITY enigmail.sendersKeyMenu.label "보내는 사람의 키">
@@ -124,8 +124,8 @@
 <!ENTITY enigmail.help.accesskey "H">
 <!ENTITY enigmail.about.accesskey "b">
 <!ENTITY enigmail.sendersKeyMenu.accesskey "K">
-<!ENTITY enigmail.securitybutton.label "OpenPGP">
-<!ENTITY enigmail.securitybutton.tip "OpenPGP (Enigmail) 보안 설정">
+<!ENTITY enigmail.securitybutton.label "Enigmail">
+<!ENTITY enigmail.securitybutton.tip "Enigmail 보안 설정">
 <!ENTITY enigmail.signedsend.label "메시지 서명">
 <!ENTITY enigmail.encryptedsend.label "메시지 암호화">
 <!ENTITY enigmail.disableRules.label "받는 사람별 규칙을 무시">
@@ -199,7 +199,7 @@
 <!ENTITY enigmail.uninstall.tooltip "Enigmail 설치 제거">
 <!ENTITY enigmail.selectpanel.label "OpenPGP 패널 선택">
 <!ENTITY enigmail.selectpanel.tooltip "OpenPGP 패널 선택">
-<!ENTITY enigmail.userSelectionList.label "OpenPGP 키 선택">
+<!ENTITY enigmail.userSelectionList.label "Enigmail 키 선택">
 <!ENTITY enigmail.usersNotFound.label "유효하지 않거나, 신뢰할 수 없거나, 찾을 수 없는 받는 사람">
 <!ENTITY enigmail.keyExpiry.label "만료">
 <!ENTITY enigmail.keyTrust.label "신뢰">
@@ -231,14 +231,14 @@
 <!ENTITY enigmail.ctxVerifyAtt.accesskey "V">
 <!ENTITY enigmail.detailsHdrButton.label "자세히">
 <!ENTITY enigmail.revealAttachmentsButton.label "The names of the files attached are hidden. Press the 'Reveal' button to retrieve the original file names.">
-<!ENTITY enigmail.amPrefTitle.label "OpenPGP 옵션 (Enigmail)">
+<!ENTITY enigmail.amPrefTitle.label "OpenPGP 옵션">
 <!ENTITY enigmail.amPrefDesc.label "OpenPGP 암호화와 서명 메시지 지원은 Enigmail이 지원하고 있습니다. 이 기능을 사용하려면 GnuPG (gpg)를 설치하셔야 합니다.">
 <!ENTITY enigmail.amPrefEnablePgp.label "이 신원에 대하여 OpenPGP 지원 (enigmail)을 활성화">
 <!ENTITY enigmail.amPrefUseFromAddr.label "OpenPGP 키 식별을 위해 이 신원의 전자 메일 주소를 사용">
 <!ENTITY enigmail.amPrefUseKeyId.label "지정한 OpenPGP 키 ID (예:0x1234ABCD)를 사용:">
 <!ENTITY enigmail.amPrefSelectKey.label "키 선택 ...">
 <!ENTITY enigmail.amPrefDefaultEncrypt.label "메시지 작성 기본 옵션">
-<!ENTITY enigmail.encryptionDlg.label "OpenPGP 암호화 &amp; 서명 설정">
+<!ENTITY enigmail.encryptionDlg.label "Enigmail 암호화 &amp; 서명 설정">
 <!ENTITY enigmail.encDlgEncrypt.label "메시지 암호화">
 <!ENTITY enigmail.encDlgEncrypt.accesskey "E">
 <!ENTITY enigmail.encDlgSign.label "메시지 서명">
@@ -256,9 +256,9 @@
 <!ENTITY enigmail.retrieveKey.retrieveMsg.label "키 검색하는 중, 기다려 주세요 ...">
 <!ENTITY enigmail.editPgpSecurity.label "OpenPGP 보안 ...">
 <!ENTITY enigmail.editPgpSecurity.accesskey "O">
-<!ENTITY enigmail.openPgpSecurity.label "OpenPGP 보안">
-<!ENTITY enigmail.pgpSecurityInfo.label "OpenPGP 보안 정보 ...">
-<!ENTITY enigmail.copySecurityInfo.label "OpenPGP 보안 정보 복사">
+<!ENTITY enigmail.openPgpSecurity.label "Enigmail 보안">
+<!ENTITY enigmail.pgpSecurityInfo.label "Enigmail 보안 정보 ...">
+<!ENTITY enigmail.copySecurityInfo.label "Enigmail 보안 정보 복사">
 <!ENTITY enigmail.showPhoto.label "OpenPGP 사진 ID 보기">
 <!ENTITY enigmail.photoViewer.title "OpenPGP Photo Viewer">
 <!ENTITY enigmail.displayKeyProperties.label "View Key Properties">
@@ -267,10 +267,10 @@
 <!ENTITY enigmail.signSenderKeyPopup.label "보낸 사람의 키에 서명 ...">
 <!ENTITY enigmail.trustSenderKeyPopup.label "보낸 사람의 키에 대한 소유자의 신뢰 설정...">
 <!ENTITY enigmail.smimeSecurityInfo.label "S/MIME 보안 정보 ...">
-<!ENTITY enigmail.createRuleFromAddr.label "주소로부터 OpenPGP 규칙 생성 ...">
+<!ENTITY enigmail.createRuleFromAddr.label "주소로부터 Enigmail 규칙 생성 ...">
 <!ENTITY enigmail.keyManWindow.label "키 관리">
 <!ENTITY enigmail.keyManWindow.accesskey "y">
-<!ENTITY enigmail.singleRcptSettings.label "OpenPGP - 받는 사람 설정">
+<!ENTITY enigmail.singleRcptSettings.label "Enigmail - 받는 사람 설정">
 <!ENTITY enigmail.keysToUse.label "사용할 키:">
 <!ENTITY enigmail.selKeysButton.label "키 선택...">
 <!ENTITY enigmail.action.label "동작">
@@ -285,7 +285,7 @@
 <!ENTITY enigmail.always.label "항상">
 <!ENTITY enigmail.maybe.label "예, 메시지 작성시에 선택되어 있는 경우">
 <!ENTITY enigmail.singleRcptSettings.desc "(주의: 만약 설정간 충돌이 발생할 경우, '하지 않음'이 '항상'에 우선합니다)">
-<!ENTITY enigmail.ruleEmail.label "OpenPGP 규칙 설정 대상:">
+<!ENTITY enigmail.ruleEmail.label "Enigmail 규칙 설정 대상:">
 <!ENTITY enigmail.ruleEmail.tooltip "전자 메일 주소만 입력바라며, 받는 사람의 이름은 입력하지 '마십시오' 예를 들어, 'Some Name <some.name@address.net>'은 잘못된 것입니다.">
 <!ENTITY enigmail.sepratationDesc.label "(복수 메일 주소는 공백 문자로 구분해 주세요)">
 <!ENTITY enigmail.matchDescStart.label "받는 사람이 위의 주소와">
@@ -295,7 +295,7 @@
 <!ENTITY enigmail.matchBegin.label "시작부분이">
 <!ENTITY enigmail.matchEnd.label "끝부분이">
 <!ENTITY enigmail.not.label "안">
-<!ENTITY enigmail.rulesEditor.label "OpenPGP - 받는 사람별 규칙 편집기">
+<!ENTITY enigmail.rulesEditor.label "Enigmail - 받는 사람별 규칙 편집기">
 <!ENTITY enigmail.email.label "전자 메일">
 <!ENTITY enigmail.pgpKeys.label "OpenPGP 키">
 <!ENTITY enigmail.sign.label "서명">
@@ -318,7 +318,7 @@
 <!ENTITY enigmail.created.label "발급일">
 <!ENTITY enigmail.valid.label "유효">
 <!ENTITY enigmail.progress.label "진행">
-<!ENTITY enigmail.sKeyDlg.title "OpenPGP - 키에 서명하기">
+<!ENTITY enigmail.sKeyDlg.title "Enigmail - 키에 서명하기">
 <!ENTITY enigmail.sKeyDlg.signKey.label "서명될 키:">
 <!ENTITY enigmail.sKeyDlg.fingerprint.label "지문:">
 <!ENTITY enigmail.sKeyDlg.signWithKey.label "서명에 사용할 키:">
@@ -328,11 +328,11 @@
 <!ENTITY enigmail.sKeyDlg.casualCheck.label "대략 확인 했습니다">
 <!ENTITY enigmail.sKeyDlg.carefulCheck.label "매우 주의깊게 확인했습니다">
 <!ENTITY enigmail.sKeyDlg.createLocal.label "로컬 서명 (내보내기 할 수 없음. 이 컴퓨터에서만 사용)">
-<!ENTITY enigmail.addUidDlg.title "OpenPGP - 사용자 ID 추가">
+<!ENTITY enigmail.addUidDlg.title "Enigmail - 사용자 ID 추가">
 <!ENTITY enigmail.addUidDlg.name.label "이름">
 <!ENTITY enigmail.addUidDlg.email.label "전자 메일">
 <!ENTITY enigmail.addUidDlg.comment.label "주석 (선택 사양)">
-<!ENTITY enigmail.keyTrust.title "OpenPGP - 소유자 신뢰 설정">
+<!ENTITY enigmail.keyTrust.title "Enigmail - 소유자 신뢰 설정">
 <!ENTITY enigmail.keyTrust.trustKey.label "신뢰할 키:">
 <!ENTITY enigmail.keyTrust.trustLevel.label "키를 얼마나 신뢰합니까? (해당 키가 유효한 경우)">
 <!ENTITY enigmail.keyTrust.dontKnow.label "모르겠습니다: 다른 사람의 키를 유효화하는데 이 키를 얼마나 신뢰해도 될지 모를 경우 선택해 주십시오.">
@@ -340,7 +340,7 @@
 <!ENTITY enigmail.keyTrust.marginalTrust.label "최소한 신뢰합니다: 이 키로 서명된 다른 키는 부분 유효화 됩니다. 추가로 2이상의 최소 신뢰하는 키로 서명되면 충분 유효화 됩니다.">
 <!ENTITY enigmail.keyTrust.fullTrust.label "충분히 신뢰합니다: 이 키로 서명된 다른 사람의 키는 모두 유효화 됩니다.">
 <!ENTITY enigmail.keyTrust.ultimateTrust.label "완전히 신뢰합니다: (※ 본인 소유의 키에만 사용!) 스스로 유효화되며 이 키로 서명된 다른 사람의 키도 모두 유효화 됩니다.">
-<!ENTITY enigmail.keyMan.title "OpenPGP 키 관리">
+<!ENTITY enigmail.keyMan.title "Enigmail 키 관리">
 <!ENTITY enigmail.keyMan.close.label "윈도우 닫기">
 <!ENTITY enigmail.keyMan.generate.label "새로운 키 쌍">
 <!ENTITY enigmail.keyMan.sign.label "키에 서명">
@@ -514,22 +514,22 @@
 <!ENTITY enigmail.changePasswd.currPasswd.label "현재 패스프레이즈">
 <!ENTITY enigmail.changePasswd.newPasswd.label "새로운 패스프레이즈">
 <!ENTITY enigmail.changePasswd.repeatPasswd.label "새로운 패스프레이즈 (다시)">
-<!ENTITY enigmail.setupWiz.title "OpenPGP 설정 마법사">
+<!ENTITY enigmail.setupWiz.title "Enigmail 설정 마법사">
 <!ENTITY enigmail.setupWiz.yes "네">
 <!ENTITY enigmail.setupWiz.no "아니오, 그대로 두십시오">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "이 마법사는 OpenPGP를 바로 시작할 수 있도록 도와드립니다. 다음 몇 화면을 지나는 동안 모든 설정에 필요한 몇 가지 질문을 드릴 것입니다. <html:br/><html:br/> 진행하기 앞서, 일반 사용자가 높은 보안 수준을 유지하려고 한다는 가정하에 마법사의 설문이 진행됨을 알려드립니다. 물론 마법사가 끝난 후 모든 설정에 대해 변경할 수 있습니다. OpenPGP에 대한 더 자세한 사항은 도움말 메뉴나 <a class='enigmailLink'><html:a href='http://enigmail.mozdev.org/'>Enigmail 웹사이트</html:a></a>에서 찾으실 수 있을 것입니다. <html:br/><html:br/> 이 마법사를 사용하는데 불편한 점이 있다면, <a class='enigmailLink'><html:a href='mailto:enigmail@mozdev.org'>전자 메일 보내기(영문)</html:a></a>를 통해 저희에게 알려주십시오. <html:br/><html:br/> 이 마법사는 Enigmail을 처음 설치했을 때만 나타납니다. 다시 나타나지 않고 메뉴에도 따로 나타나지 않습니다. <html:br/><html:br/> Enigmail OpenPGP를 선택해주셔서 감사합니다!">
+<!ENTITY enigmail.setupWiz.pgWelcome.desc "이 마법사는 Enigmail를 바로 시작할 수 있도록 도와드립니다. 다음 몇 화면을 지나는 동안 모든 설정에 필요한 몇 가지 질문을 드릴 것입니다. <html:br/><html:br/> 진행하기 앞서, 일반 사용자가 높은 보안 수준을 유지하려고 한다는 가정하에 마법사의 설문이 진행됨을 알려드립니다. 물론 마법사가 끝난 후 모든 설정에 대해 변경할 수 있습니다. Enigmail에 대한 더 자세한 사항은 도움말 메뉴나 <a class='enigmailLink'><html:a href='http://enigmail.mozdev.org/'>Enigmail 웹사이트</html:a></a>에서 찾으실 수 있을 것입니다. <html:br/><html:br/> 이 마법사를 사용하는데 불편한 점이 있다면, <a class='enigmailLink'><html:a href='mailto:enigmail@mozdev.org'>전자 메일 보내기(영문)</html:a></a>를 통해 저희에게 알려주십시오. <html:br/><html:br/> 이 마법사는 Enigmail을 처음 설치했을 때만 나타납니다. 다시 나타나지 않고 메뉴에도 따로 나타나지 않습니다. <html:br/><html:br/> Enigmail Enigmail를 선택해주셔서 감사합니다!">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "마법사를 사용하겠습니까?">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "네, 마법사가 도움을 줄 수 있도록 합니다">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "아니오, 수동으로 설정하겠습니다">
 <!ENTITY enigmail.setupWiz.pgSelectId.title "신원 선택">
-<!ENTITY enigmail.setupWiz.pgSelectId.subtitle "OpenPGP가 동작하기를 원하는 계정이나 신원을 선택">
-<!ENTITY enigmail.setupWiz.pgSelectId.desc "OpenPGP 설정은 계정과 신원 별로 따로 설정됩니다. 기본적으로 OpenPGP는 모든 계정과 신원에 대하여 동작하도록 되어있습니다. 만약 그렇게 하는 것을 원하지 않으신다면, 아래에서 OpenPGP가 동작할 계정이나 신원을 선택해주시기 바랍니다.">
-<!ENTITY enigmail.setupWiz.pgSelectId.allIds "모든 신원에 대하여 OpenPGP를 설정하시겠습니까?">
-<!ENTITY enigmail.setupWiz.pgSelectId.selectIds "다음 신원에 대해서만 OpenPGP를 설정:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>주의:</a> OpenPGP는 모든 계정 또는 신원에 대하여, OpenPGP가 설정된 상태이든 아니든 관계없이, 전자 메일에 있는 서명을 검증하게 된다는 점을 주의하십시오">
+<!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Enigmail가 동작하기를 원하는 계정이나 신원을 선택">
+<!ENTITY enigmail.setupWiz.pgSelectId.desc "Enigmail 설정은 계정과 신원 별로 따로 설정됩니다. 기본적으로 Enigmail는 모든 계정과 신원에 대하여 동작하도록 되어있습니다. 만약 그렇게 하는 것을 원하지 않으신다면, 아래에서 Enigmail가 동작할 계정이나 신원을 선택해주시기 바랍니다.">
+<!ENTITY enigmail.setupWiz.pgSelectId.allIds "모든 신원에 대하여 Enigmail를 설정하시겠습니까?">
+<!ENTITY enigmail.setupWiz.pgSelectId.selectIds "다음 신원에 대해서만 Enigmail를 설정:">
+<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>주의:</a> Enigmail는 모든 계정 또는 신원에 대하여, Enigmail가 설정된 상태이든 아니든 관계없이, 전자 메일에 있는 서명을 검증하게 된다는 점을 주의하십시오">
 <!ENTITY enigmail.setupWiz.pgSign.title "서명하기">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "외부로 전달되는 메일에 대하여 디지털 서명하기">
-<!ENTITY enigmail.setupWiz.pgSign.desc "OpenPGP는 전자 메일에 디지털로 서명할 수 있게합니다. 이는 실제로 편지를 주고 받을 때 편지에 사인 하는 것과 같고, 다른 사람들에게 서명된 전자 메일이 실제로 여러분이 보낸 전자 메일임을 확신할 수 있도록 합니다. 실질적인 보안 효과를 거두기 위해서는 외부로 전달되는 모든 메시지에 대하여 서명하는 것이 좋습니다. <html:br/><html:br/> 여러분이 서명한 전자 메일을 검증하기 위해서는 메시지를 받게되는 다른 사람들도 OpenPGP 기능이 들어있는 메일 프로그램이 필요합니다. OpenPGP 기능이 들어있는 메일 프로그램이 아니더라도, 여러분이 보낸 전자 메일을 읽을 수는 있겠지만, 서명은 첨부파일로 나타나던지 혹은 전자 메일 메시지 내용에 둘러쳐진 텍스트로 나타나게 됩니다. 이런 증상은 어떤 사람에게는 좀 짜증이 나는 일이 될 수 있습니다. 외부로 나가는 모든 전자 메일에 대하여 서명을 할지 혹은 서명된 전자 메일을 원치않는 사람에게 보내게되는 일을 미리 피할 것인지 선택해 주셔야합니다.">
+<!ENTITY enigmail.setupWiz.pgSign.desc "Enigmail는 전자 메일에 디지털로 서명할 수 있게합니다. 이는 실제로 편지를 주고 받을 때 편지에 사인 하는 것과 같고, 다른 사람들에게 서명된 전자 메일이 실제로 여러분이 보낸 전자 메일임을 확신할 수 있도록 합니다. 실질적인 보안 효과를 거두기 위해서는 외부로 전달되는 모든 메시지에 대하여 서명하는 것이 좋습니다. <html:br/><html:br/> 여러분이 서명한 전자 메일을 검증하기 위해서는 메시지를 받게되는 다른 사람들도 Enigmail 기능이 들어있는 메일 프로그램이 필요합니다. Enigmail 기능이 들어있는 메일 프로그램이 아니더라도, 여러분이 보낸 전자 메일을 읽을 수는 있겠지만, 서명은 첨부파일로 나타나던지 혹은 전자 메일 메시지 내용에 둘러쳐진 텍스트로 나타나게 됩니다. 이런 증상은 어떤 사람에게는 좀 짜증이 나는 일이 될 수 있습니다. 외부로 나가는 모든 전자 메일에 대하여 서명을 할지 혹은 서명된 전자 메일을 원치않는 사람에게 보내게되는 일을 미리 피할 것인지 선택해 주셔야합니다.">
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg "기본으로 모든 전자 메일에 서명합니까?">
 <!ENTITY enigmail.setupWiz.pgSign.yesSign "네, 제 모든 전자 메일에 서명하겠습니다">
 <!ENTITY enigmail.setupWiz.pgSign.noSign "아니오, 서명이 필요한 전자 메일에 대해서는 받는 사람별로 규칙을 만들겠습니다">
@@ -540,9 +540,9 @@
 <!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt "네, 받는 사람 대부분의 공개키를 가지고 있습니다.">
 <!ENTITY enigmail.setupWiz.pgEnc.noEncrypt "아니오, 공개키를 보낸 사람들에 대해 따로 규칙을 만들어 암호화 합니다">
 <!ENTITY enigmail.setupWiz.pgSettings.title "응용프로그램 설정">
-<!ENTITY enigmail.setupWiz.pgSettings.subtitle "전자 메일 프로그램의 설정을 변경하면 OpenPGP가 더 빈틈없는 보안을 유지할 수 있습니다">
+<!ENTITY enigmail.setupWiz.pgSettings.subtitle "전자 메일 프로그램의 설정을 변경하면 Enigmail가 더 빈틈없는 보안을 유지할 수 있습니다">
 <!ENTITY enigmail.setupWiz.pgSettings.desc "이 마법사는 전자 메일 프로그램의 설정을 변경해서 전자 메일에 서명하거나 암호화하는데 특별한 문제가 발생하지 않도록 해줍니다. 변경되는 설정들은, 기본적으로 텍스트로 전자 메일 메시지가 작성된다는 점을 제외하고, 대부분 사용자가 반드시 알 필요는 없는 기술적인 사항들로 이뤄져있습니다.">
-<!ENTITY enigmail.setupWiz.pgSettings.changePref "OpenPGP가 당신의 컴퓨터에서 더 잘 동작할 수 있도록 몇 가지 기본 설정을 변경하시겠습니까?">
+<!ENTITY enigmail.setupWiz.pgSettings.changePref "Enigmail가 당신의 컴퓨터에서 더 잘 동작할 수 있도록 몇 가지 기본 설정을 변경하시겠습니까?">
 <!ENTITY enigmail.setupWiz.pgSettings.details "자세히 ...">
 <!ENTITY enigmail.setupWiz.pgKeySel.title "키 선택">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "전자 메일을 서명하고 암호화할 키 생성하기">
@@ -561,7 +561,7 @@
 <!ENTITY enigmail.setupWiz.pgKeygen.title "키 생성">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "키가 생성되고 있습니다">
 <!ENTITY enigmail.setupWiz.pgComplete.title "감사합니다">
-<!ENTITY enigmail.setupWiz.pgComplete.desc "OpenPGP를 사용 준비가 완료되었습니다.<html:br></html:br><html:br></html:br>Enigmail을 선택해주셔서 감사합니다.">
+<!ENTITY enigmail.setupWiz.pgComplete.desc "Enigmail를 사용 준비가 완료되었습니다.<html:br></html:br><html:br></html:br>Enigmail을 선택해주셔서 감사합니다.">
 <!ENTITY enigmail.setupWiz.details.title "설정">
 <!ENTITY enigmail.setupWiz.details.subtitle "응용프로그램 설정 변경">
 <!ENTITY enigmail.setupWiz.details.imapOnDemand "항상 IMAP 첨부파일 다운로드 활성화">
@@ -571,7 +571,7 @@
 <!ENTITY enigmail.setupWiz.details.8bitEncoding "보내는 메시지에 대해 8-bit 인코딩을 사용">
 <!ENTITY enigmail.setupWiz.details.noComposeHTML "HTML 메시지를 작성하지 않음">
 <!ENTITY enigmail.setupWiz.pgNoStart.title "마법사 취소">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc "OpenPGP 설정 마법사를 사용하지 않기를 선택하셨습니다.<html:br></html:br><html:br></html:br>Enigmail을 선택해주셔서 감사합니다.">
-<!ENTITY enigmail.advancedIdentityDlg.title "고급 OpenPGP 신원 설정">
+<!ENTITY enigmail.setupWiz.pgNoStart.desc "Enigmail 설정 마법사를 사용하지 않기를 선택하셨습니다.<html:br></html:br><html:br></html:br>Enigmail을 선택해주셔서 감사합니다.">
+<!ENTITY enigmail.advancedIdentityDlg.title "고급 Enigmail 신원 설정">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "메시지에 내 공개키를 첨부">
 <!ENTITY enigmail.msgViewColumn.label "OpenPGP">
