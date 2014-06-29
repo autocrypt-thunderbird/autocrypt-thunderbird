@@ -191,11 +191,11 @@ var EnigmailCommon = {
       this.enigmailSvc = Cc[this.ENIGMAIL_CONTRACTID].createInstance(Ci.nsIEnigmail);
     }
     catch (ex) {
-      this.ERROR_LOG("enigmailCommon.js: Error in instantiating EnigmailService\n");
+      this.ERROR_LOG("enigmailCommon.jsm: Error in instantiating EnigmailService\n");
       return null;
     }
 
-    this.DEBUG_LOG("enigmailCommon.js: this.enigmailSvc = "+this.enigmailSvc+"\n");
+    this.DEBUG_LOG("enigmailCommon.jsm: this.enigmailSvc = "+this.enigmailSvc+"\n");
 
     if (!this.enigmailSvc.initialized) {
       // Initialize enigmail
@@ -248,7 +248,7 @@ var EnigmailCommon = {
 
       var configuredVersion = this.getPref("configuredVersion");
 
-      this.DEBUG_LOG("enigmailCommon.js: getService: "+configuredVersion+"\n");
+      this.DEBUG_LOG("enigmailCommon.jsm: getService: "+configuredVersion+"\n");
 
       if (firstInitialization && this.enigmailSvc.initialized &&
           this.enigmailSvc.agentType && this.enigmailSvc.agentType == "pgp") {
@@ -3197,6 +3197,7 @@ function upgradePgpMime() {
 
 
 function ConfigureEnigmail(window, startingPreferences) {
+  EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: ConfigureEnigmail\n");
   var oldVer=EnigmailCommon.getPref("configuredVersion");
 
   try {
@@ -3235,21 +3236,28 @@ function ConfigureEnigmail(window, startingPreferences) {
         upgradePrefsSending();
       }
       if (vc.compare(oldVer, "1.7") < 0) {
-        var doIt = EnigmailCommon.confirmDlg(window,
-                               EnigmailCommon.getString("enigmailCommon.versionSignificantlyChanged"),
-                               EnigmailCommon.getString("enigmailCommon.checkPreferences"));
-        if (!startingPreferences && doIt) {
-            // same as:
-            // - EnigmailFuncs.openPrefWindow(window, true, 'sendingTab');
-            // but 
-            // - without starting the service again because we do that right now
-            // - and modal (waiting for its end)
-            window.openDialog("chrome://enigmail/content/pref-enigmail.xul",
-                              "_blank", "chrome,resizable=yes,modal",
-                              {'showBasic': true,
-                               'clientType': 'thunderbird',
-                               'selectTab': 'sendingTab'});
-        }
+        // open a modal dialog. Since this might happen during the opening of another
+        // window, we have to do this asynchronously
+        EnigmailCommon.setTimeout(
+          function _cb() {
+            var doIt = EnigmailCommon.confirmDlg(window,
+                                   EnigmailCommon.getString("enigmailCommon.versionSignificantlyChanged"),
+                                   EnigmailCommon.getString("enigmailCommon.checkPreferences"),
+                                   EnigmailCommon.getString("dlg.button.close"));
+            if (!startingPreferences && doIt) {
+                // same as:
+                // - EnigmailFuncs.openPrefWindow(window, true, 'sendingTab');
+                // but
+                // - without starting the service again because we do that right now
+                // - and modal (waiting for its end)
+                window.openDialog("chrome://enigmail/content/pref-enigmail.xul",
+                                  "_blank", "chrome,resizable=yes,modal",
+                                  {'showBasic': true,
+                                   'clientType': 'thunderbird',
+                                   'selectTab': 'sendingTab'});
+            }
+          }, 100);
+
       }
     }
   }
