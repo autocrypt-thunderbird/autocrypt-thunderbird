@@ -622,6 +622,7 @@
 <!ENTITY enigmail.changePasswd.newPasswd.label       "New Passphrase">
 <!ENTITY enigmail.changePasswd.repeatPasswd.label    "Repeat Passphrase">
 
+<!-- wizard: welcome step -->
 <!ENTITY enigmail.setupWiz.title                     "Enigmail Setup Wizard">
 <!ENTITY enigmail.setupWiz.yes                       "Yes">
 <!ENTITY enigmail.setupWiz.no                        "No, thanks">
@@ -640,13 +641,15 @@
                                                       <a class='enigmailLink'><html:a
                                                       href='mailto:enigmail-users@enigmail.net'>emailing us</html:a></a>.
                                                       <html:br/><html:br/>
-                                                      This wizard is automatically invoked when you first install Enigmail. You can also launch it
-                                                      manually from the Enigmail menu.
+                                                      This wizard is automatically invoked when you first install Enigmail.
+                                                      You can also launch it manually from the Enigmail menu.
                                                       <html:br/><html:br/>
-                                                      Thank you for choosing Enigmail Enigmail!">
+                                                      Thank you for choosing Enigmail!">
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow        "Would you like to use the wizard now?">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes             "Yes, I would like the wizard to get me started">
 <!ENTITY enigmail.setupWiz.pgWelcome.no              "No, thanks. I prefer to configure things manually">
+
+<!-- wizard: select account IDs step -->
 <!ENTITY enigmail.setupWiz.pgSelectId.title          "Select Identities">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle       "Select the accounts or identities you want Enigmail to work with">
 <!ENTITY enigmail.setupWiz.pgSelectId.desc           "Enigmail settings are specific to accounts and identities. By default
@@ -657,6 +660,8 @@
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds      "I would like to set up Enigmail only for the following identities:">
 <!ENTITY enigmail.setupWiz.pgSelectId.note           "<a class='enigmailStrong'>Note:</a> Enigmail will always verify signatures
                                                       on emails for every account or identity, regardless of whether it is enabled or not">
+
+<!-- wizard: install GnuPG step -->
 <!ENTITY enigmail.setupWiz.pgInstall.title           "GnuPG Required">
 <!ENTITY enigmail.setupWiz.pgInstall.desc            "In order to use Enigmail, GnuPG is required as additional component for doing the cryptographic work.
                                                       The wizard tried to locate GnuPG, but it could not be found.">
@@ -671,24 +676,8 @@
 <!ENTITY enigmail.setupWiz.pgInstall.installLabel    "Starting the installer. Please follow the steps of the GnuPG installer wizard.">
 <!ENTITY enigmail.setupWiz.pgInstall.installDone     "Installation complete. Please proceed to the next page of the wizard to continue the setup process.">
 <!ENTITY enigmail.setupWiz.pgInstall.gnupgFound      "Valid GnuPG installation found.">
-<!ENTITY enigmail.setupWiz.pgSign.title              "Signing">
-<!ENTITY enigmail.setupWiz.pgSign.subtitle           "Digitally Sign Your Outgoing Emails">
-<!ENTITY enigmail.setupWiz.pgSign.desc               "Enigmail allows you to digitally sign your emails. This is like the
-                                                      electronic version of signing a letter, and it allows people to be sure
-                                                      that an email is really from you.  It's good security practice to sign
-                                                      all outgoing email.
-                                                      <html:br/><html:br/>
-                                                      To verify your signed email, people need an OpenPGP-aware mail program.
-                                                      If they don't have an OpenPGP-aware mail program they will be able to
-                                                      read your email, but the signature will be displayed as an attachment or
-                                                      as text around the email message. This might annoy some people. You
-                                                      need to choose if you want to sign all outgoing email, or if you want to
-                                                      avoid sending signed email to some people.">
-<!ENTITY enigmail.setupWiz.pgSign.signAllMsg         "Do you want to sign all your outgoing email by default?">
-<!ENTITY enigmail.setupWiz.pgSign.yesSign            "Yes, I want to sign all of my emails">
-<!ENTITY enigmail.setupWiz.pgSign.noSign             "No, I want to create per-recipient rules for emails that need to be signed">
 
-<!-- wizard: new encryption dialog -->
+<!-- wizard: encryption step (replaces pgEnc with v1.7) -->
 <!ENTITY enigmail.setupWiz.pgEncConv.title           "Encryption">
 <!ENTITY enigmail.setupWiz.pgEncConv.subtitle        "Encrypt Your Outgoing Emails">
 <!ENTITY enigmail.setupWiz.pgEncConv.desc            "Enigmail allows you to encrypt your email messages and any attachments.
@@ -698,15 +687,37 @@
                                                       <html:br/><html:br/>
                                                       To be able to send encrypted emails you need the key of each recipient.
                                                       However, because OpenPGP is not common everywhere, it is typical
-                                                      that you only have the keys of some recipients.
+                                                      that you only have the keys of <html:i>some</html:i> recipients.
                                                       To support this situation, Enigmail provides a convenient encryption mode,
                                                       which automatically encrypts emails whenever possible.
-                                                      For each email you can still explicitly choose whether to encrypt.">
+                                                      For each email you can still explicitly choose whether or not to encrypt.">
 <!ENTITY enigmail.setupWiz.pgEncConv.convEncMsg      "Which general mode do you prefer to encrypt outgoing emails?">
-<!ENTITY enigmail.setupWiz.pgEncConv.convYes         "I prefer convenient auto encryption">
-<!ENTITY enigmail.setupWiz.pgEncConv.convEncYes      "I prefer to encrypt all of my messages by default because privacy is critical to me">
-<!ENTITY enigmail.setupWiz.pgEncConv.convEncNo       "I prefer not to encrypt my messages by default">
+<!ENTITY enigmail.setupWiz.pgEncConv.convYes         "Convenient auto encryption">
+<!ENTITY enigmail.setupWiz.pgEncConv.convEncYes      "Encrypt all of my messages by default, because privacy is critical to me">
+<!ENTITY enigmail.setupWiz.pgEncConv.convEncNo       "Don't encrypt my messages by default">
 
+<!-- wizard: signing step -->
+<!ENTITY enigmail.setupWiz.pgSign.title              "Signing">
+<!ENTITY enigmail.setupWiz.pgSign.subtitle           "Digitally Sign Your Outgoing Emails">
+<!ENTITY enigmail.setupWiz.pgSign.desc               "Enigmail allows you to digitally sign your emails. This is like the
+                                                      electronic version of signing a letter, and it allows people to be sure
+                                                      that an email is really from you.  It's a good security practice to sign
+                                                      all outgoing email.
+                                                      <html:br/><html:br/>
+                                                      To verify your signed email, people need an OpenPGP-aware mail program.
+                                                      If they don't have an OpenPGP-aware mail program they will be able to
+                                                      read your email, but the signature will be displayed as an attachment or
+                                                      as text around the email message, which might annoy some people. 
+                                                      In any case you can still explicitly choose whether or not to sign.">
+<!ENTITY enigmail.setupWiz.pgSign.signMsg            "Which general mode do you prefer to sign outgoing emails?">
+<!ENTITY enigmail.setupWiz.pgSign.signYes            "Sign all of my messages by default">
+<!ENTITY enigmail.setupWiz.pgSign.signNo             "Don't sign my messages by default">
+<!-- old labels: -->
+<!ENTITY enigmail.setupWiz.pgSign.signAllMsg         "Do you want to sign all your outgoing email by default?">
+<!ENTITY enigmail.setupWiz.pgSign.yesSign            "Yes, I want to sign all of my emails">
+<!ENTITY enigmail.setupWiz.pgSign.noSign             "No, I want to create per-recipient rules for emails that need to be signed">
+
+<!-- wizard: other settings step -->
 <!ENTITY enigmail.setupWiz.pgSettings.title          "Preferences">
 <!ENTITY enigmail.setupWiz.pgSettings.subtitle       "Change Your Email Settings To Make Enigmail Work More Reliably">
 <!ENTITY enigmail.setupWiz.pgSettings.desc           "This wizard can change your email settings to make sure there are no

@@ -64,6 +64,8 @@
     <broadcaster id="bcKeyEnabled" properties=""/>
   </broadcasterset>
 
+
+  <!-- Welcome Page -->
   <wizardpage id="pgWelcome" pageid="pgWelcome"
               next="pgInstallGnuPG"
               onpageshow="wizardSetFocus()">
@@ -87,6 +89,7 @@
   </wizardpage>
 
 
+  <!-- Optional Install GnuPG Page -->
   <wizardpage id="pgInstallGnuPG" pageid="pgInstallGnuPG"
               next="pgSelectId"
               label="&enigmail.setupWiz.pgInstall.title;"
@@ -131,7 +134,9 @@
     </vbox>
   </wizardpage>
 
-  <wizardpage id="pgSelectId" pageid="pgSelectId" next="pgSign"
+
+  <!-- Select Account IDs Page -->
+  <wizardpage id="pgSelectId" pageid="pgSelectId" next="pgEncConv"
               label="&enigmail.setupWiz.pgSelectId.title;"
               description="&enigmail.setupWiz.pgSelectId.subtitle;">
     <description>
@@ -163,27 +168,8 @@
   </wizardpage>
 
 
-  <wizardpage id="pgSign" pageid="pgSign" next="pgEncConv"
-              label="&enigmail.setupWiz.pgSign.title;"
-              description="&enigmail.setupWiz.pgSign.subtitle;">
-    <description>
-      &enigmail.setupWiz.pgSign.desc;
-    </description>
-    <separator/>
-    <label value="&enigmail.setupWiz.pgSign.signAllMsg;" control="signMsg"/>
-    <radiogroup id="signMsg" value="1">
-      <radio id="signMsg_yes"
-             label="&enigmail.setupWiz.pgSign.yesSign;"
-             selected="true"
-             value="1"/>
-      <radio id="signMsg_no"
-             label="&enigmail.setupWiz.pgSign.noSign;"
-             value="0"/>
-    </radiogroup>
-  </wizardpage>
-
-
-  <wizardpage id="pgEncConv" pageid="pgEncConv" next="pgSettings"
+  <!-- Encryption Prefs Page -->
+  <wizardpage id="pgEncConv" pageid="pgEncConv" next="pgSign"
               label="&enigmail.setupWiz.pgEncConv.title;"
               description="&enigmail.setupWiz.pgEncConv.subtitle;">
     <description>
@@ -206,6 +192,28 @@
   </wizardpage>
 
 
+  <!-- Signing Prefs Page -->
+  <wizardpage id="pgSign" pageid="pgSign" next="pgSettings"
+              label="&enigmail.setupWiz.pgSign.title;"
+              description="&enigmail.setupWiz.pgSign.subtitle;">
+    <description>
+      &enigmail.setupWiz.pgSign.desc;
+    </description>
+    <separator/>
+    <label value="&enigmail.setupWiz.pgSign.signMsg;" control="signMsg"/>
+    <radiogroup id="signMsg" value="1">
+      <radio id="signMsg_yes"
+             label="&enigmail.setupWiz.pgSign.signYes;"
+             selected="true"
+             value="1"/>
+      <radio id="signMsg_no"
+             label="&enigmail.setupWiz.pgSign.signNo;"
+             value="0"/>
+    </radiogroup>
+  </wizardpage>
+
+
+  <!-- Other Settings Page -->
   <wizardpage id="pgSettings" pageid="pgSettings" next="pgKeySel"
               label="&enigmail.setupWiz.pgSettings.title;"
               description="&enigmail.setupWiz.pgSettings.subtitle;"
@@ -232,6 +240,8 @@
     </radiogroup>
   </wizardpage>
 
+
+  <!-- Select Keys Page -->
   <wizardpage id="pgKeySel" pageid="pgKeySel"
               next="pgSummary"
               onpageshow="displayKeySel()"
@@ -282,6 +292,7 @@
   </wizardpage>
 
 
+  <!-- Optional NoKeyFound Page -->
   <wizardpage id="pgNoKeyFound" pageid="pgNoKeyFound"
               next="pgKeyCreate"
               onpageshow="disableNext(true)"
@@ -305,6 +316,8 @@
     </radiogroup>
   </wizardpage>
 
+
+  <!-- Optional Create Key Page -->
   <wizardpage id="pgKeyCreate" pageid="pgKeyCreate"
               next="pgSummary"
               onpageshow="displayKeyCreate()"
@@ -336,6 +349,8 @@
     </vbox>
   </wizardpage>
 
+
+  <!-- Optional Import Key Page -->
   <wizardpage id="pgKeyImport" pageid="pgKeyImport"
               next="pgKeySel"
               label="&enigmail.setupWiz.pgKeyImport.title;"
@@ -379,6 +394,8 @@
     </grid>
   </wizardpage>
 
+
+  <!-- Summary Page -->
   <wizardpage id="pgSummary" pageid="pgSummary"
               onpageshow="displayActions()"
               next="pgComplete"
@@ -400,9 +417,10 @@
       <label id="applyDesc9" collapsed="true"/>
       <label id="applyDesc10" collapsed="true"/>
     </vbox>
-
   </wizardpage>
 
+
+  <!-- ??? Page -->
   <wizardpage id="pgKeygen" pageid="pgKeygen"
               onpageshow="wizardGenKey()"
               next="pgComplete"
@@ -421,6 +439,8 @@
     </groupbox>
   </wizardpage>
 
+
+  <!-- ??? Page -->
   <wizardpage id="pgComplete" pageid="pgComplete"
               onpageshow="applyWizardSettings()"
               label="&enigmail.setupWiz.pgComplete.title;">
@@ -429,6 +449,8 @@
     </description>
   </wizardpage>
 
+
+  <!-- ??? Page -->
   <wizardpage id="pgNoStart" pageid="pgNoStart"
               label="&enigmail.setupWiz.pgNoStart.title;">
     <description>

@@ -670,7 +670,7 @@ function checkIdentities() {
 
   if (wizard.currentPage.next != "pgNoStart") {
     if (countIdentities() <= 1) {
-      setNextPage("pgSign");
+      setNextPage("pgEncConv");
     }
   }
 }
@@ -812,6 +812,10 @@ function applyWizardSettings() {
 
   loadLastPage();
 
+  // process encryption settings:
+  //  0: convenient encryption
+  //  1: by default encrypt (account preference)
+  //  2: by default don't encrypt (account preference)
   var convEnc = (document.getElementById("convEncryptMsg").value == "0" ? 0 : 1);
   EnigSetPref("encryptionModel", convEnc);
 
@@ -844,7 +848,8 @@ function applyWizardSettings() {
   EnigSavePrefs();
 }
 
-function applyMozSetting(param, preference, newVal) {
+function applyMozSetting(param, preference, newVal)
+{
   if (gEnigModifySettings[param]) {
     if (typeof(newVal)=="boolean") {
       EnigmailCommon.prefRoot.setBoolPref(preference, newVal);
@@ -858,7 +863,9 @@ function applyMozSetting(param, preference, newVal) {
   }
 }
 
-function wizardApplyId(identity, keyId) {
+
+function wizardApplyId(identity, keyId)
+{
   DEBUG_LOG("enigmailSetupWizard.js: wizardApplyId: identity.Key="+identity.key+"\n");
   var accountManager = Components.classes[ENIG_ACCOUNT_MANAGER_CONTRACTID].getService(Components.interfaces.nsIMsgAccountManager);
   var idServers = getServersForIdentity(accountManager, identity);
@@ -874,12 +881,21 @@ function wizardApplyId(identity, keyId) {
   identity.setCharAttribute("pgpkeyId", "0x"+keyId.substr(-8,8));
   identity.setIntAttribute("openPgpHeaderMode", 0);
 
+  // process signing settings:
+  // NOTE: option defaultSigningPolicy is an INT
   var signMsg = (document.getElementById("signMsg").value== "1");
-  var encryptMsg = ((!newsServer) && (document.getElementById("convEncryptMsg").value == "1"));
+  identity.setIntAttribute("defaultSigningPolicy", (signMsg ? 1 : 0));
+  identity.setBoolAttribute("pgpSignEncrypted", false);
+  identity.setBoolAttribute("pgpSignPlain", false);
 
-  identity.setBoolAttribute("pgpSignEncrypted", signMsg);
-  identity.setBoolAttribute("pgpSignPlain", signMsg);
+  // process encryption settings:
+  //  0: convenient encryption (global preference)
+  //  1: by default encrypt (account preference)
+  //  2: by default don't encrypt (account preference)
+  // NOTE: option defaultEncryptionPolicy is an INT
+  var encryptMsg = ((!newsServer) && (document.getElementById("convEncryptMsg").value == "1"));
   identity.setIntAttribute("defaultEncryptionPolicy", (encryptMsg ? 1 : 0));
+
   if ((document.getElementById("changeSettings").value == "1") &&
       gEnigModifySettings["composeHTML"]) {
     identity.setBoolAttribute("compose_html", false);
@@ -887,7 +903,8 @@ function wizardApplyId(identity, keyId) {
 }
 
 
-function wizardKeygenTerminate(exitCode) {
+function wizardKeygenTerminate(exitCode)
+{
   DEBUG_LOG("enigmailSetupWizard.js: wizardKeygenTerminate\n");
 
   // Give focus to this window
@@ -979,8 +996,10 @@ function setImportKeys() {
   document.getElementById("uidSelection").boxObject.element.setAttribute("disabled", "true");
 }
 
-function displayActions() {
 
+// display summary of all wizard actions
+function displayActions()
+{
   var currItem=0;
   function appendDesc(what) {
     ++currItem;
@@ -1025,14 +1044,7 @@ function displayActions() {
     appendDesc(EnigGetString("setupWizard.applySingleId", idList));
   }
 
-  if (document.getElementById("signMsg").value== "1") {
-    appendDesc(EnigGetString("setupWizard.signAll"));
-  }
-  else {
-    appendDesc(EnigGetString("setupWizard.signNone"));
-  }
-
-  // convenient encryption wizard step:
+  // preferences from convenient encryption wizard step:
   switch (document.getElementById("convEncryptMsg").value) {
     case "0": // convYes
       appendDesc(EnigGetString("setupWizard.convEncrypt"));
@@ -1043,6 +1055,14 @@ function displayActions() {
     case "0": // convEncNo
       appendDesc(EnigGetString("setupWizard.encryptNone"));
       break;
+  }
+
+  // signing preferences:
+  if (document.getElementById("signMsg").value== "1") {
+    appendDesc(EnigGetString("setupWizard.signAll"));
+  }
+  else {
+    appendDesc(EnigGetString("setupWizard.signNone"));
   }
 
   if (document.getElementById("changeSettings").value == "1") {

@@ -3234,7 +3234,7 @@ function ConfigureEnigmail(window, startingPreferences) {
 
         upgradePrefsSending();
       }
-      if (vc.compare(oldVer, "1.8") < 0) {
+      if (vc.compare(oldVer, "1.7") < 0) {
         var doIt = EnigmailCommon.confirmDlg(window,
                                EnigmailCommon.getString("enigmailCommon.versionSignificantlyChanged"),
                                EnigmailCommon.getString("enigmailCommon.checkPreferences"));
