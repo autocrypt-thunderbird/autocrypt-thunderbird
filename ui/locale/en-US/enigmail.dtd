@@ -704,8 +704,8 @@
                                                       For each email you can still explicitly choose whether to encrypt.">
 <!ENTITY enigmail.setupWiz.pgEncConv.convEncMsg      "Which general mode do you prefer to encrypt outgoing emails?">
 <!ENTITY enigmail.setupWiz.pgEncConv.convYes         "I prefer convenient auto encryption">
-<!ENTITY enigmail.setupWiz.pgEncConv.convEncYes      "I prefer to always encrypt by default because privacy is critical for me">
-<!ENTITY enigmail.setupWiz.pgEncConv.convEncNo       "I prefer to never encrypt by default (using explicit encryption and per-recipient rules)">
+<!ENTITY enigmail.setupWiz.pgEncConv.convEncYes      "I prefer to encrypt all of my messages by default because privacy is critical to me">
+<!ENTITY enigmail.setupWiz.pgEncConv.convEncNo       "I prefer not to encrypt my messages by default">
 
 <!ENTITY enigmail.setupWiz.pgSettings.title          "Preferences">
 <!ENTITY enigmail.setupWiz.pgSettings.subtitle       "Change Your Email Settings To Make Enigmail Work More Reliably">
