@@ -1143,7 +1143,7 @@ Enigmail.msg = {
       switch (this.signRules) {
       case 0:
         signFinally = 0;
-        signSymbol = "activeMinus";
+        signSymbol = "inactiveNone"; // "activeMinus";
         break;
       case 1:
         signFinally = 1;
@@ -1151,7 +1151,7 @@ Enigmail.msg = {
         break;
       case 2:
         signFinally = 1;
-        signSymbol = "activePlus";
+        signSymbol = "activeNone"; // "activePlus";
         break;
       case 3:
         signFinally = 99;
@@ -1163,7 +1163,7 @@ Enigmail.msg = {
       switch (this.signRules) {
       case 0:
         signFinally = 0;
-        signSymbol = "inactiveMinus";
+        signSymbol = "inactiveNone"; // "inactiveMinus";
         break;
       case 1:
         signFinally = 0;
@@ -1171,7 +1171,7 @@ Enigmail.msg = {
         break;
       case 2:
         signFinally = 1;
-        signSymbol = "inactivePlus";
+        signSymbol = "activeNone"; // "inactivePlus";
         break;
       case 3:
         signFinally = 99;
@@ -1195,7 +1195,7 @@ Enigmail.msg = {
       switch (this.encryptRules) {
       case 0:
         encFinally = 0;
-        encSymbol = "activeMinus";
+        encSymbol = "inactiveNone"; // "activeMinus";
         break;
       case 1:
         encFinally = 1;
@@ -1203,7 +1203,7 @@ Enigmail.msg = {
         break;
       case 2:
         encFinally = 1;
-        encSymbol = "activePlus";
+        encSymbol = "activeNone"; // "activePlus";
         break;
       case 3:
         encFinally = 99;
@@ -1215,7 +1215,7 @@ Enigmail.msg = {
       switch (this.encryptRules) {
       case 0:
         encFinally = 0;
-        encSymbol = "inactiveMinus";
+        encSymbol = "inactiveNone"; // "inactiveMinus";
         break;
       case 1:
         encFinally = 0;
@@ -1223,7 +1223,7 @@ Enigmail.msg = {
         break;
       case 2:
         encFinally = 1;
-        encSymbol = "inactivePlus";
+        encSymbol = "activeNone"; // "inactivePlus";
         break;
       case 3:
         encFinally = 99;
@@ -1233,19 +1233,22 @@ Enigmail.msg = {
     }
 
     // process option to finally sign if encrypted/unencrypted
+    // (unless rules force not to sign)
     var derivedFromEncMode = false;
     if (this.finalSignDependsOnEncrypt) {
-      if ((encFinally == 1 && this.getAccDefault("signIfEnc"))
-          ||
-          (encFinally == 0 && this.getAccDefault("signIfNotEnc"))) {
-        signFinally = 1;
-        if (this.sendMode & SIGN) {
-          signSymbol = "activePlus";
+      if (this.signRules != 0) {  // if not forced not to sign
+        if ((encFinally == 1 && this.getAccDefault("signIfEnc"))
+            ||
+            (encFinally == 0 && this.getAccDefault("signIfNotEnc"))) {
+          signFinally = 1;
+          if (this.sendMode & SIGN) {
+            signSymbol = "activeNone"; // "activePlus";
+          }
+          else {
+            signSymbol = "activeNone"; // "inactivePlus";
+          }
+          derivedFromEncMode = true;
         }
-        else {
-          signSymbol = "inactivePlus";
-        }
-        derivedFromEncMode = true;
       }
     }
 
@@ -1813,21 +1816,6 @@ Enigmail.msg = {
       }
     }
 
-    // get keys according to rules for bcc addresses:
-    // - matchedKeysObj will contain the keys and the remaining bccAddr elements
-    // - NOTE: bcc recipients are ignored when in general computing whether to sign or encrypt or pgpMime
-    if (!Enigmail.hlp.getRecipientsKeys(bccAddr,
-                                        true,           // interactive
-                                        forceRecipientSettings,
-                                        matchedKeysObj,
-                                        flagsObj)) {
-      return null;
-    }
-    if (matchedKeysObj.value) {
-      bccAddr=matchedKeysObj.value;
-      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): after getRecipientsKeys() bccAddr=\""+bccAddr+"\"\n");
-    }
-
     // automatically send encrypted if
     // - option enabled
     // - not encrypt yet
@@ -1845,16 +1833,33 @@ Enigmail.msg = {
 
     // process option to finally sign if encrypted/unencrypted
     if (this.finalSignDependsOnEncrypt) {
-      if (sendFlags & ENCRYPT) {
-        if (this.getAccDefault("signIfEnc")) {
-          sendFlags |= SIGN;
+      if (flagsObj.value && flagsObj.sign != 0) {  // if not forced not to sign
+        if (sendFlags & ENCRYPT) {
+          if (this.getAccDefault("signIfEnc")) {
+            sendFlags |= SIGN;
+          }
+        }
+        else {
+          if (this.getAccDefault("signIfNotEnc")) {
+            sendFlags |= SIGN;
+          }
         }
       }
-      else {
-        if (this.getAccDefault("signIfNotEnc")) {
-          sendFlags |= SIGN;
-        }
-      }
+    }
+
+    // get keys according to rules for bcc addresses:
+    // - matchedKeysObj will contain the keys and the remaining bccAddr elements
+    // - NOTE: bcc recipients are ignored when in general computing whether to sign or encrypt or pgpMime
+    if (!Enigmail.hlp.getRecipientsKeys(bccAddr,
+                                        true,           // interactive
+                                        forceRecipientSettings,
+                                        matchedKeysObj,
+                                        flagsObj)) {
+      return null;
+    }
+    if (matchedKeysObj.value) {
+      bccAddr=matchedKeysObj.value;
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): after getRecipientsKeys() bccAddr=\""+bccAddr+"\"\n");
     }
 
     return {
