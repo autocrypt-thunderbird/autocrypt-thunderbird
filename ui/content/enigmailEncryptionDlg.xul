@@ -76,22 +76,6 @@
    -->
 
    <groupbox>
-     <caption id="enigmail_compose_popup_sign_caption"
-              label="???"/>
-     <radiogroup id="enigmail_compose_popup_sign">
-       <radio id="enigmail_final_signDefault"
-              value="1"
-              label="&enigmail.finalSignDefault.label;"/>
-       <radio id="enigmail_final_signYes"
-              value="2"
-              label="&enigmail.finalSignYes.label;"/>
-       <radio id="enigmail_final_signNo"
-              value="0"
-              label="&enigmail.finalSignNo.label;"/>
-     </radiogroup>
-   </groupbox>
-
-   <groupbox>
      <caption id="enigmail_compose_popup_encrypt_caption"
               label="???"/>
      <radiogroup id="enigmail_compose_popup_encrypt">
@@ -104,6 +88,22 @@
        <radio id="enigmail_final_encryptNo"
               value="0"
               label="&enigmail.finalEncryptNo.label;"/>
+     </radiogroup>
+   </groupbox>
+
+   <groupbox>
+     <caption id="enigmail_compose_popup_sign_caption"
+              label="???"/>
+     <radiogroup id="enigmail_compose_popup_sign">
+       <radio id="enigmail_final_signDefault"
+              value="1"
+              label="&enigmail.finalSignDefault.label;"/>
+       <radio id="enigmail_final_signYes"
+              value="2"
+              label="&enigmail.finalSignYes.label;"/>
+       <radio id="enigmail_final_signNo"
+              value="0"
+              label="&enigmail.finalSignNo.label;"/>
      </radiogroup>
    </groupbox>
 

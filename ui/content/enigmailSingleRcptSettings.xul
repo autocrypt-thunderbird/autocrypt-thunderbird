@@ -132,10 +132,10 @@
         <rows>
           <row>
             <hbox align="center">
-              <label value="&enigmail.signing.label;" control="sign"/>
+              <label value="&enigmail.encryption.label;" control="encrypt"/>
             </hbox>
             <hbox>
-              <menulist id="sign">
+              <menulist id="encrypt">
                 <menupopup>
                   <menuitem value="0" label="&enigmail.never.label;"/>
                   <menuitem value="1" label="&enigmail.maybe.label;"/>
@@ -146,10 +146,10 @@
           </row>
           <row>
             <hbox align="center">
-              <label value="&enigmail.encryption.label;" control="encrypt"/>
+              <label value="&enigmail.signing.label;" control="sign"/>
             </hbox>
             <hbox>
-              <menulist id="encrypt">
+              <menulist id="sign">
                 <menupopup>
                   <menuitem value="0" label="&enigmail.never.label;"/>
                   <menuitem value="1" label="&enigmail.maybe.label;"/>

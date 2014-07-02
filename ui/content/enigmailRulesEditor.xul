@@ -78,9 +78,9 @@
             <splitter class="tree-splitter"/>
             <treecol style="width:140px" id="keys" flex="1" label="&enigmail.pgpKeys.label;" persist="width"/>
             <splitter class="tree-splitter"/>
-            <treecol style="width:70px" id="sign" flex="0" label="&enigmail.sign.label;" persist="width"/>
-            <splitter class="tree-splitter"/>
             <treecol style="width:70px" id="encrypt" flex="0" label="&enigmail.encrypt.label;" persist="width"/>
+            <splitter class="tree-splitter"/>
+            <treecol style="width:70px" id="sign" flex="0" label="&enigmail.sign.label;" persist="width"/>
             <splitter class="tree-splitter"/>
             <treecol style="width:70px" id="pgpMime" flex="0" label="&enigmail.pgpMime.label;" persist="width"/>
           </treecols>

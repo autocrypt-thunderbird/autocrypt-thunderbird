@@ -80,14 +80,14 @@
         <groupbox>
           <caption label="&enigmail.amPrefDefaultEncrypt.label;"/>
 
-          <checkbox id="enigmail_sign_ifPossible"
-                    checked="false"
-                    observes="enigmail_bcEnablePgp"
-                    label="&enigmail.defaultSigning.label;"/>
           <checkbox id="enigmail_encrypt_ifPossible"
                     checked="false"
                     observes="enigmail_bcEnablePgp"
                     label="&enigmail.defaultEncryption.label;"/>
+          <checkbox id="enigmail_sign_ifPossible"
+                    checked="false"
+                    observes="enigmail_bcEnablePgp"
+                    label="&enigmail.defaultSigning.label;"/>
           <checkbox id="enigmail_pgpMimeMode"
                     checked="false"
                     observes="enigmail_bcEnablePgp"

@@ -66,10 +66,10 @@
   <popupset id="aTooltipSet"/>
 
   <keyset id="tasksKeys">
-    <key id="key_enigSign" key="&enigmail.signedsend.key;"
-         oncommand="Enigmail.msg.setFinalSendMode('toggle-final-sign')" modifiers="accel, shift"/>
     <key id="key_enigEncrypt" key="&enigmail.encryptedsend.key;"
          oncommand="Enigmail.msg.setFinalSendMode('toggle-final-encrypt')" modifiers="accel, shift"/>
+    <key id="key_enigSign" key="&enigmail.signedsend.key;"
+         oncommand="Enigmail.msg.setFinalSendMode('toggle-final-sign')" modifiers="accel, shift"/>
   </keyset>
 
 <!-- menu for all apps -->
@@ -83,30 +83,6 @@
 
         <menupopup id="menu_EnigmailPopup"
                    onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.setMenuSettings(''))">
-
-          <!-- signing state and entries to change it: -->
-          <menu id="enigmail_compose_sign_menu"
-                label="&enigmail.signing.label;">
-            <menupopup id="menu_EnigmailSignPopup"
-                   onpopupshowing="Enigmail.msg.setMenuSettings('a')">
-              <menuitem id="enigmail_final_signDefaulta"
-                  type="checkbox"
-                  label="&enigmail.finalSignDefault.label;"
-                  oncommand="Enigmail.msg.doPgpButton('final-signDefault');" />
-              <menuitem id="enigmail_final_signYesa"
-                  type="checkbox"
-                  accesskey="&enigmail.signedsend.accesskey;"
-                  key="key_enigSign"
-                  label="&enigmail.finalSignYes.label;"
-                  oncommand="Enigmail.msg.doPgpButton('final-signYes');" />
-              <menuitem id="enigmail_final_signNoa"
-                  type="checkbox"
-                  accesskey="&enigmail.signedsend.accesskey;"
-                  key="key_enigSign"
-                  label="&enigmail.finalSignNo.label;"
-                  oncommand="Enigmail.msg.doPgpButton('final-signNo');" />
-            </menupopup>
-          </menu>
 
           <!-- encryption state and entries to change it: -->
           <menu id="enigmail_compose_encrypt_menu"
@@ -131,6 +107,30 @@
                   key="key_enigEncrypt"
                   label="&enigmail.finalEncryptNo.label;"
                   oncommand="Enigmail.msg.doPgpButton('final-encryptNo');" />
+            </menupopup>
+          </menu>
+
+          <!-- signing state and entries to change it: -->
+          <menu id="enigmail_compose_sign_menu"
+                label="&enigmail.signing.label;">
+            <menupopup id="menu_EnigmailSignPopup"
+                   onpopupshowing="Enigmail.msg.setMenuSettings('a')">
+              <menuitem id="enigmail_final_signDefaulta"
+                  type="checkbox"
+                  label="&enigmail.finalSignDefault.label;"
+                  oncommand="Enigmail.msg.doPgpButton('final-signDefault');" />
+              <menuitem id="enigmail_final_signYesa"
+                  type="checkbox"
+                  accesskey="&enigmail.signedsend.accesskey;"
+                  key="key_enigSign"
+                  label="&enigmail.finalSignYes.label;"
+                  oncommand="Enigmail.msg.doPgpButton('final-signYes');" />
+              <menuitem id="enigmail_final_signNoa"
+                  type="checkbox"
+                  accesskey="&enigmail.signedsend.accesskey;"
+                  key="key_enigSign"
+                  label="&enigmail.finalSignNo.label;"
+                  oncommand="Enigmail.msg.doPgpButton('final-signNo');" />
             </menupopup>
           </menu>
 
@@ -324,30 +324,6 @@
 
         <menupopup onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.setMenuSettings('3'))">
 
-          <!-- signing state and entries to change it: -->
-          <menu id="enigmail_compose_sign_menu3"
-                label="&enigmail.signing.label;">
-            <menupopup id="menu_EnigmailSignPopup3"
-                   onpopupshowing="Enigmail.msg.setMenuSettings('3a')">
-              <menuitem id="enigmail_final_signDefault3a"
-                  type="checkbox"
-                  label="&enigmail.finalSignDefault.label;"
-                  oncommand="Enigmail.msg.nextCommand('final-signDefault');" />
-              <menuitem id="enigmail_final_signYes3a"
-                  type="checkbox"
-                  accesskey="&enigmail.signedsend.accesskey;"
-                  key="key_enigSign"
-                  label="&enigmail.finalSignYes.label;"
-                  oncommand="Enigmail.msg.nextCommand('final-signYes');" />
-              <menuitem id="enigmail_final_signNo3a"
-                  type="checkbox"
-                  key="key_enigSign"
-                  accesskey="&enigmail.signedsend.accesskey;"
-                  label="&enigmail.finalSignNo.label;"
-                  oncommand="Enigmail.msg.nextCommand('final-signNo');" />
-            </menupopup>
-          </menu>
-
           <!-- encryption state and entries to change it: -->
           <menu id="enigmail_compose_encrypt_menu3"
                 label="&enigmail.encryption.label;">
@@ -369,6 +345,30 @@
                   key="key_enigEncrypt"
                   label="&enigmail.finalEncryptNo.label;"
                   oncommand="Enigmail.msg.nextCommand('final-encryptNo');" />
+            </menupopup>
+          </menu>
+
+          <!-- signing state and entries to change it: -->
+          <menu id="enigmail_compose_sign_menu3"
+                label="&enigmail.signing.label;">
+            <menupopup id="menu_EnigmailSignPopup3"
+                   onpopupshowing="Enigmail.msg.setMenuSettings('3a')">
+              <menuitem id="enigmail_final_signDefault3a"
+                  type="checkbox"
+                  label="&enigmail.finalSignDefault.label;"
+                  oncommand="Enigmail.msg.nextCommand('final-signDefault');" />
+              <menuitem id="enigmail_final_signYes3a"
+                  type="checkbox"
+                  accesskey="&enigmail.signedsend.accesskey;"
+                  key="key_enigSign"
+                  label="&enigmail.finalSignYes.label;"
+                  oncommand="Enigmail.msg.nextCommand('final-signYes');" />
+              <menuitem id="enigmail_final_signNo3a"
+                  type="checkbox"
+                  key="key_enigSign"
+                  accesskey="&enigmail.signedsend.accesskey;"
+                  label="&enigmail.finalSignNo.label;"
+                  oncommand="Enigmail.msg.nextCommand('final-signNo');" />
             </menupopup>
           </menu>
 
@@ -484,12 +484,12 @@
   <statusbar id="status-bar">
     <hbox id="enigmail-status-bar"
           insertafter="totalMessageCount">
-      <statusbarpanel id="enigmail-signed-status"
-        class="statusbarpanel-iconic"
-        collapsed="true" onclick="Enigmail.msg.handleClick(event,'toggle-final-sign');"/>
       <statusbarpanel id="enigmail-encrypted-status"
         class="statusbarpanel-iconic"
         collapsed="true" onclick="Enigmail.msg.handleClick(event, 'toggle-final-encrypt');"/>
+      <statusbarpanel id="enigmail-signed-status"
+        class="statusbarpanel-iconic"
+        collapsed="true" onclick="Enigmail.msg.handleClick(event,'toggle-final-sign');"/>
     </hbox>
   </statusbar>
 

@@ -399,10 +399,10 @@
     <hbox id="enigmail-status-bar"
           insertafter="totalMessageCount"
           app="mailnews">
-      <statusbarpanel id="enigmail-signed-status"
+      <statusbarpanel id="enigmail-encrypted-status"
         class="statusbarpanel-iconic"
         collapsed="true"/>
-      <statusbarpanel id="enigmail-encrypted-status"
+      <statusbarpanel id="enigmail-signed-status"
         class="statusbarpanel-iconic"
         collapsed="true"/>
     </hbox>
