@@ -34,6 +34,11 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
+const ENIG_NEVER = 0;
+const ENIG_UNDEF = 1;
+const ENIG_ALWAYS = 2;
+const ENIG_CONFLICT = 3;
+
 
 try {
   // TB with omnijar
@@ -63,12 +68,12 @@ Enigmail.msg = {
   sendPgpMime: false,
   sendMode: null,    // the current default for sending a message (0, SIGN, ENCRYPT, or SIGN|ENCRYPT)
   sendModeDirty: false,  // send mode or final send options changed?
-  signRules:    1,   // shall we sign according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
-  encryptRules: 1,   // shall we encrypt according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
-  pgpmimeRules: 1,   // shall we PGP/Mime according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
-  finalSign:    1,   // finally force to sign (0: must not sign, 1: no force, 2: must sign) 
-  finalEncrypt: 1,   // finally force to encrypt (0: must not encrypt, 1: no force, 2: must encrypt) 
-  finalPGPMime: 1,   // finally use PGP Mime (0: must not use PGP/Mime, 1: no force, 2: must use PGP/Mime) 
+  signByRules:    ENIG_UNDEF,   // shall we sign according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
+  encryptByRules: ENIG_UNDEF,   // shall we encrypt according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
+  pgpmimeByRules: ENIG_UNDEF,   // shall we PGP/Mime according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
+  signForced:    1,   // finally force to sign (0: must not sign, 1: no force, 2: must sign) 
+  encryptForced: 1,   // finally force to encrypt (0: must not encrypt, 1: no force, 2: must encrypt) 
+  pgpmimeForced: 1,   // finally use PGP Mime (0: must not use PGP/Mime, 1: no force, 2: must use PGP/Mime) 
   finalSignDependsOnEncrypt: false,
   statusSigned:    0,  // last processed final sign state (0: off, 1: on, 99:conflict)
   statusEncrypted: 0,  // last processed final encryption state (0: off, 1: on, 99:conflict)
@@ -472,12 +477,12 @@ Enigmail.msg = {
     this.modifiedAttach=null;
     this.sendMode = 0;
     this.sendModeDirty = false;
-    this.signRules = 1;
-    this.encryptRules = 1;
-    this.pgpmimeRules = 1;
-    this.finalSign =    1;
-    this.finalEncrypt = 1;
-    this.finalPGPMime = 1;
+    this.signByRules =    ENIG_UNDEF;
+    this.encryptByRules = ENIG_UNDEF;
+    this.pgpmimeByRules = ENIG_UNDEF;
+    this.signForced =    1;
+    this.encryptForced = 1;
+    this.pgpmimeForced = 1;
     this.finalSignDependsOnEncrypt = false;
     this.enableRules = true;
     this.identity = null;
@@ -972,103 +977,103 @@ Enigmail.msg = {
       // menu entries for final settings:
 
       case 'final-signDefault':
-        if (this.finalSign != 1) {  // if sign/nosign forced
+        if (this.signForced != 1) {  // if sign/nosign forced
           this.signingNoLongerDependsOnEnc();
-          this.finalSign = 1;       // back to defaults/rules
+          this.signForced = 1;       // back to defaults/rules
         }
         break;
       case 'final-signYes':
-        if (this.finalSign != 2) {  // if not forced to sign
+        if (this.signForced != 2) {  // if not forced to sign
           this.signingNoLongerDependsOnEnc();
-          this.finalSign = 2;       // force to sign
+          this.signForced = 2;       // force to sign
         }
         break;
       case 'final-signNo':
-        if (this.finalSign != 0) {  // if not forced not to sign
+        if (this.signForced != 0) {  // if not forced not to sign
           this.signingNoLongerDependsOnEnc();
-          this.finalSign = 0;       // force not to sign
+          this.signForced = 0;       // force not to sign
         }
         break;
       case 'toggle-final-signYes':
         this.signingNoLongerDependsOnEnc();
-        if (this.finalSign == 2) {  // forced to sign?
-          this.finalSign = 1;  // no longer force to sign
+        if (this.signForced == 2) {  // forced to sign?
+          this.signForced = 1;  // no longer force to sign
         }
         else {
-          this.finalSign = 2;  // force to sign
+          this.signForced = 2;  // force to sign
         }
         break;
       case 'toggle-final-signNo':
         this.signingNoLongerDependsOnEnc();
-        if (this.finalSign == 0) {  // forced not to sign?
-          this.finalSign = 1;  // no longer force not to sign
+        if (this.signForced == 0) {  // forced not to sign?
+          this.signForced = 1;  // no longer force not to sign
         }
         else {
-          this.finalSign = 0;  // force not to sign
+          this.signForced = 0;  // force not to sign
         }
         break;
 
       case 'final-encryptDefault':
-        if (this.finalEncrypt != 1) {  // if encrypt/noencrypt forced
-          this.finalEncrypt = 1;       // back to defaults/rules
+        if (this.encryptForced != 1) {  // if encrypt/noencrypt forced
+          this.encryptForced = 1;       // back to defaults/rules
         }
         break;
       case 'final-encryptYes':
-        if (this.finalEncrypt != 2) {  // if not forced to encrypt
-          this.finalEncrypt = 2;       // force to encrypt
+        if (this.encryptForced != 2) {  // if not forced to encrypt
+          this.encryptForced = 2;       // force to encrypt
         }
         break;
       case 'final-encryptNo':
-        if (this.finalEncrypt != 0) {  // if not forced not to encrypt
-          this.finalEncrypt = 0;       // force not to encrypt
+        if (this.encryptForced != 0) {  // if not forced not to encrypt
+          this.encryptForced = 0;       // force not to encrypt
         }
         break;
       case 'toggle-final-encryptYes':
-        if (this.finalEncrypt == 2) {  // forced to encrypt?
-          this.finalEncrypt = 1;  // no longer force to encrypt
+        if (this.encryptForced == 2) {  // forced to encrypt?
+          this.encryptForced = 1;  // no longer force to encrypt
         }
         else {
-          this.finalEncrypt = 2;  // force to encrypt
+          this.encryptForced = 2;  // force to encrypt
         }
         break;
       case 'toggle-final-encryptNo':
-        if (this.finalEncrypt == 0) {  // forced not to encrypt?
-          this.finalEncrypt = 1;  // no longer force not to encrypt
+        if (this.encryptForced == 0) {  // forced not to encrypt?
+          this.encryptForced = 1;  // no longer force not to encrypt
         }
         else {
-          this.finalEncrypt = 0;  // force not to encrypt
+          this.encryptForced = 0;  // force not to encrypt
         }
         break;
 
       case 'final-pgpmimeDefault':
-        if (this.finalPGPMime != 1) {  // if any PGP mode forced
-          this.finalPGPMime = 1;       // back to defaults/rules
+        if (this.pgpmimeForced != 1) {  // if any PGP mode forced
+          this.pgpmimeForced = 1;       // back to defaults/rules
         }
         break;
       case 'final-pgpmimeYes':
-        if (this.finalPGPMime != 2) {  // if not forced to PGP/Mime
-          this.finalPGPMime = 2;       // force to PGP/Mime
+        if (this.pgpmimeForced != 2) {  // if not forced to PGP/Mime
+          this.pgpmimeForced = 2;       // force to PGP/Mime
         }
         break;
       case 'final-pgpmimeNo':
-        if (this.finalPGPMime != 0) {  // if not forced not to PGP/Mime
-          this.finalPGPMime = 0;       // force not to PGP/Mime
+        if (this.pgpmimeForced != 0) {  // if not forced not to PGP/Mime
+          this.pgpmimeForced = 0;       // force not to PGP/Mime
         }
         break;
       case 'toggle-final-pgpmimeYes':
-        if (this.finalPGPMime == 2) {  // forced to use PGP/Mime?
-          this.finalPGPMime = 1;  // no longer force to use PGP/Mime
+        if (this.pgpmimeForced == 2) {  // forced to use PGP/Mime?
+          this.pgpmimeForced = 1;  // no longer force to use PGP/Mime
         }
         else {
-          this.finalPGPMime = 2;  // force to use PGP/Mime
+          this.pgpmimeForced = 2;  // force to use PGP/Mime
         }
         break;
       case 'toggle-final-pgpmimeNo':
-        if (this.finalPGPMime == 0) {  // forced not to use PGP/Mime?
-          this.finalPGPMime = 1;  // no longer force not to use PGP/Mime
+        if (this.pgpmimeForced == 0) {  // forced not to use PGP/Mime?
+          this.pgpmimeForced = 1;  // no longer force not to use PGP/Mime
         }
         else {
-          this.finalPGPMime = 0;  // force not to use PGP/Mime
+          this.pgpmimeForced = 0;  // force not to use PGP/Mime
         }
         break;
 
@@ -1078,24 +1083,24 @@ Enigmail.msg = {
       case 'toggle-final-sign':
         this.signingNoLongerDependsOnEnc();
         if (this.statusSigned == 0) {  // if finally not signed
-          this.finalSign = 2;          // force to sign
+          this.signForced = 2;          // force to sign
         }
         else if (this.statusSigned == 1) {  // if finally signed
-          this.finalSign = 0;          // force not to sign
+          this.signForced = 0;          // force not to sign
         }
         else {                         // if conflict => use send mode
-          this.finalSign = (this.sendMode & SIGN) ? 2 : 0;
+          this.signForced = (this.sendMode & SIGN) ? 2 : 0;
         }
         break;
       case 'toggle-final-encrypt':
         if (this.statusEncrypted == 0) {  // if finally not encrypted
-          this.finalEncrypt = 2;          // force to encrypt
+          this.encryptForced = 2;          // force to encrypt
         }
         else if (this.statusEncrypted == 1) {  // if finally encrypted
-          this.finalEncrypt = 0;          // force not to encrypt
+          this.encryptForced = 0;          // force not to encrypt
         }
         else {                            // if conflict => use send mode
-          this.finalEncrypt = (this.sendMode & ENCRYPT) ? 2 : 0;
+          this.encryptForced = (this.sendMode & ENCRYPT) ? 2 : 0;
         }
         break;
 
@@ -1131,49 +1136,49 @@ Enigmail.msg = {
     // process resulting sign mode and icon symbol for it
     var signFinally = null; // 0: No, 1: Yes, 99: Conflict
     var signSymbol = null;
-    if (this.finalSign == 0) {  // force not to sign?
+    if (this.signForced == 0) {  // force not to sign?
       signFinally = 0;
       signSymbol = "forceNo";
     }
-    else if (this.finalSign == 2) {  // force to sign?
+    else if (this.signForced == 2) {  // force to sign?
       signFinally = 1;
       signSymbol = "forceYes";
     }
     else if (this.sendMode & SIGN) {
-      switch (this.signRules) {
-      case 0:
+      switch (this.signByRules) {
+      case ENIG_NEVER:
         signFinally = 0;
         signSymbol = "inactiveNone"; // "activeMinus";
         break;
-      case 1:
+      case ENIG_UNDEF:
         signFinally = 1;
         signSymbol = "activeNone";
         break;
-      case 2:
+      case ENIG_ALWAYS:
         signFinally = 1;
         signSymbol = "activeNone"; // "activePlus";
         break;
-      case 3:
+      case ENIG_CONFLICT:
         signFinally = 99;
         signSymbol = "activeConflict";
         break;
       }
     }
     else {
-      switch (this.signRules) {
-      case 0:
+      switch (this.signByRules) {
+      case ENIG_NEVER:
         signFinally = 0;
         signSymbol = "inactiveNone"; // "inactiveMinus";
         break;
-      case 1:
+      case ENIG_UNDEF:
         signFinally = 0;
         signSymbol = "inactiveNone";
         break;
-      case 2:
+      case ENIG_ALWAYS:
         signFinally = 1;
         signSymbol = "activeNone"; // "inactivePlus";
         break;
-      case 3:
+      case ENIG_CONFLICT:
         signFinally = 99;
         signSymbol = "inactiveConflict";
         break;
@@ -1183,49 +1188,49 @@ Enigmail.msg = {
     // process resulting encrypt mode and icon symbol for it
     var encFinally = null; // 0: No, 1: Yes, 99: Conflict
     var encSymbol = null;
-    if (this.finalEncrypt == 0) {  // force not to encrypt?
+    if (this.encryptForced == 0) {  // force not to encrypt?
       encFinally = 0;
       encSymbol = "forceNo";
     }
-    else if (this.finalEncrypt == 2) {  // force to encrypt?
+    else if (this.encryptForced == 2) {  // force to encrypt?
       encFinally = 1;
       encSymbol = "forceYes";
     }
     else if (this.sendMode & ENCRYPT) {
-      switch (this.encryptRules) {
-      case 0:
+      switch (this.encryptByRules) {
+      case ENIG_NEVER:
         encFinally = 0;
         encSymbol = "inactiveNone"; // "activeMinus";
         break;
-      case 1:
+      case ENIG_UNDEF:
         encFinally = 1;
         encSymbol = "activeNone";
         break;
-      case 2:
+      case ENIG_ALWAYS:
         encFinally = 1;
         encSymbol = "activeNone"; // "activePlus";
         break;
-      case 3:
+      case ENIG_CONFLICT:
         encFinally = 99;
         encSymbol = "activeConflict";
         break;
       }
     }
     else {
-      switch (this.encryptRules) {
-      case 0:
+      switch (this.encryptByRules) {
+      case ENIG_NEVER:
         encFinally = 0;
         encSymbol = "inactiveNone"; // "inactiveMinus";
         break;
-      case 1:
+      case ENIG_UNDEF:
         encFinally = 0;
         encSymbol = "inactiveNone";
         break;
-      case 2:
+      case ENIG_ALWAYS:
         encFinally = 1;
         encSymbol = "activeNone"; // "inactivePlus";
         break;
-      case 3:
+      case ENIG_CONFLICT:
         encFinally = 99;
         encSymbol = "inactiveConflict";
         break;
@@ -1236,7 +1241,7 @@ Enigmail.msg = {
     // (unless rules force not to sign)
     var derivedFromEncMode = false;
     if (this.finalSignDependsOnEncrypt) {
-      if (this.signRules != 0) {  // if not forced not to sign
+      if (this.signByRules != ENIG_NEVER) {  // if not forced not to sign
         if ((encFinally == 1 && this.getAccDefault("signIfEnc"))
             ||
             (encFinally == 0 && this.getAccDefault("signIfNotEnc"))) {
@@ -1297,23 +1302,23 @@ Enigmail.msg = {
     // -------------------------------------------------------
     // process resulting PGP/MIME mode
     var pgpmimeFinally = null; // 0: No, 1: Yes, 99: Conflict
-    if (this.finalPGPMime == 0) {  // force not to PGP/Mime?
+    if (this.pgpmimeForced == 0) {  // force not to PGP/Mime?
       pgpmimeFinally = 0;
     }
-    else if (this.finalPGPMime == 2) {  // force to PGP/Mime?
+    else if (this.pgpmimeForced == 2) {  // force to PGP/Mime?
       pgpmimeFinally = 1;
     }
-    else switch (this.pgpmimeRules) {
-      case 0:
+    else switch (this.pgpmimeByRules) {
+      case ENIG_NEVER:
         pgpmimeFinally = 0;
         break;
-      case 1:
+      case ENIG_UNDEF:
         pgpmimeFinally = ((this.sendPgpMime || (this.sendMode & nsIEnigmail.SEND_PGP_MIME)) ? 1 : 0);
         break;
-      case 2:
+      case ENIG_ALWAYS:
         pgpmimeFinally = 1;
         break;
-      case 3:
+      case ENIG_CONFLICT:
         pgpmimeFinally = 99;
         break;
     }
@@ -1359,9 +1364,9 @@ Enigmail.msg = {
         this.addRecipients(toAddrList, recList);
       }
 
-      this.signRules    = 1;
-      this.encryptRules = 1;
-      this.pgpmimeRules = 1;
+      this.signByRules    = ENIG_UNDEF;
+      this.encryptByRules = ENIG_UNDEF;
+      this.pgpmimeByRules = ENIG_UNDEF;
 
       // process rules
       if (toAddrList.length > 0 && EnigmailCommon.getPref("assignKeysByRules")) {
@@ -1372,18 +1377,18 @@ Enigmail.msg = {
                                            false,    // forceRecipientSettings (ignored due to not interactive)
                                            matchedKeysObj, // resulting matching keys (ignored)
                                            flagsObj)) {    // resulting flags (0/1/2/3 for each type)
-          this.signRules    = flagsObj.sign;
-          this.encryptRules = flagsObj.encrypt;
-          this.pgpmimeRules = flagsObj.pgpMime;
+          this.signByRules    = flagsObj.sign;
+          this.encryptByRules = flagsObj.encrypt;
+          this.pgpmimeByRules = flagsObj.pgpMime;
         }
       }
 
       // if not clear whether to encrypt yet, check whether automatically-send-encrypted applies
-      if (toAddrList.length > 0 && this.encryptRules == 1 && EnigmailCommon.getPref("autoSendEncrypted") == 1) {
+      if (toAddrList.length > 0 && this.encryptByRules == 1 && EnigmailCommon.getPref("autoSendEncrypted") == 1) {
         var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrList.join(", "),
                                                                   false);  // don't refresh key list
         if (validKeyList != null) {
-          this.encryptRules = 2;
+          this.encryptByRules = ENIG_ALWAYS;
         }
       }
 
@@ -1425,22 +1430,15 @@ Enigmail.msg = {
       elem.setAttribute("label",this.statusPGPMimeStr);
     }
 
-    // old buttons (may be disabled in UI):
-    this.setChecked("enigmail_encrypted_send"+postfix, this.sendMode & ENCRYPT);
-    this.setChecked("enigmail_signed_send"+postfix, this.sendMode & SIGN);
-    this.setChecked("enigmail_trust_all_keys"+postfix, this.trustAllKeys);
-    this.setChecked("enigmail_sendPGPMime"+postfix, this.sendPgpMime);
-    this.setChecked("enigmail_disable_rules"+postfix, !this.enableRules);
-    // new buttons:
-    this.setChecked("enigmail_final_signDefault"+postfix, this.finalSign == 1);
-    this.setChecked("enigmail_final_signYes"+postfix, this.finalSign == 2);
-    this.setChecked("enigmail_final_signNo"+postfix, this.finalSign == 0);
-    this.setChecked("enigmail_final_encryptDefault"+postfix, this.finalEncrypt == 1);
-    this.setChecked("enigmail_final_encryptYes"+postfix, this.finalEncrypt == 2);
-    this.setChecked("enigmail_final_encryptNo"+postfix, this.finalEncrypt == 0);
-    this.setChecked("enigmail_final_pgpmimeDefault"+postfix, this.finalPGPMime == 1);
-    this.setChecked("enigmail_final_pgpmimeYes"+postfix, this.finalPGPMime == 2);
-    this.setChecked("enigmail_final_pgpmimeNo"+postfix, this.finalPGPMime == 0);
+    this.setChecked("enigmail_final_encryptDefault"+postfix, this.encryptForced == 1);
+    this.setChecked("enigmail_final_encryptYes"+postfix, this.encryptForced == 2);
+    this.setChecked("enigmail_final_encryptNo"+postfix, this.encryptForced == 0);
+    this.setChecked("enigmail_final_signDefault"+postfix, this.signForced == 1);
+    this.setChecked("enigmail_final_signYes"+postfix, this.signForced == 2);
+    this.setChecked("enigmail_final_signNo"+postfix, this.signForced == 0);
+    this.setChecked("enigmail_final_pgpmimeDefault"+postfix, this.pgpmimeForced == 1);
+    this.setChecked("enigmail_final_pgpmimeYes"+postfix, this.pgpmimeForced == 2);
+    this.setChecked("enigmail_final_pgpmimeNo"+postfix, this.pgpmimeForced == 0);
 
     let menuElement = document.getElementById("enigmail_insert_own_key");
     if (menuElement) {
@@ -1457,37 +1455,27 @@ Enigmail.msg = {
   displaySecuritySettings: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.displaySecuritySettings\n");
-    var inputObj = { //sendFlags: this.sendMode,
-                     //usePgpMime: this.sendPgpMime,
-                     //disableRules: !this.enableRules,
-                     finalSign: this.finalSign,
-                     finalEncrypt: this.finalEncrypt,
-                     finalPGPMime: this.finalPGPMime,
+    var inputObj = {
+                     encryptForced: this.encryptForced,
+                     signForced: this.signForced,
+                     pgpmimeForced: this.pgpmimeForced,
                      statusSignedStr: this.statusSignedStr,
                      statusEncryptedStr: this.statusEncryptedStr,
                      statusPGPMimeStr: this.statusPGPMimeStr,
                    };
     window.openDialog("chrome://enigmail/content/enigmailEncryptionDlg.xul","", "dialog,modal,centerscreen", inputObj);
-    /*
-    if (this.sendMode != inputObj.sendFlags) {
-      this.dirty = 2;
-    }
-    this.sendMode = inputObj.sendFlags;
-    this.sendPgpMime = inputObj.usePgpMime;
-    this.enableRules = !inputObj.disableRules;
-    */
 
-    if (this.finalSign != inputObj.finalSign) {
+    if (this.signForced != inputObj.signForced) {
       this.dirty = 2;
       this.signingNoLongerDependsOnEnc();
-      this.finalSign = inputObj.finalSign;
+      this.signForced = inputObj.signForced;
     }
-    if (this.finalEncrypt != inputObj.finalEncrypt) {
+    if (this.encryptForced != inputObj.encryptForced) {
       this.dirty = 2;
-      this.finalEncrypt = inputObj.finalEncrypt;
+      this.encryptForced = inputObj.encryptForced;
     }
-    if (this.finalPGPMime != inputObj.finalPGPMime) {
-      this.finalPGPMime = inputObj.finalPGPMime;
+    if (this.pgpmimeForced != inputObj.pgpmimeForced) {
+      this.pgpmimeForced = inputObj.pgpmimeForced;
     }
     this.updateStatusBar();
   },
@@ -1738,37 +1726,37 @@ Enigmail.msg = {
     }
 
     // forces overrule rules and automatic encryption:
-    if (this.finalSign == 0) {
-      sendFlags &= ~SIGN;
-      if (flagsObj.value) {
-        flagsObj.sign = 0;
-      }
-    }
-    else if (this.finalSign == 2) {
-      sendFlags |= SIGN;
-      if (flagsObj.value) {
-        flagsObj.sign = 2;
-      }
-    }
-    if (this.finalEncrypt == 0) {
+    if (this.encryptForced == 0) {
       sendFlags &= ~ENCRYPT;
       if (flagsObj.value) {
         flagsObj.encrypt = 0;
       }
     }
-    else if (this.finalEncrypt == 2) {
+    else if (this.encryptForced == 2) {
       sendFlags |= ENCRYPT;
       if (flagsObj.value) {
         flagsObj.encrypt = 2;
       }
     }
-    if (this.finalPGPMime == 0) {
+    if (this.signForced == 0) {
+      sendFlags &= ~SIGN;
+      if (flagsObj.value) {
+        flagsObj.sign = 0;
+      }
+    }
+    else if (this.signForced == 2) {
+      sendFlags |= SIGN;
+      if (flagsObj.value) {
+        flagsObj.sign = 2;
+      }
+    }
+    if (this.pgpmimeForced == 0) {
       sendFlags &= ~nsIEnigmail.SEND_PGP_MIME;
       if (flagsObj.value) {
         flagsObj.pgpMime = 0;
       }
     }
-    else if (this.finalPGPMime == 2) {
+    else if (this.pgpmimeForced == 2) {
       sendFlags |= nsIEnigmail.SEND_PGP_MIME;
       if (flagsObj.value) {
         flagsObj.pgpMime = 2;
@@ -1825,7 +1813,7 @@ Enigmail.msg = {
                                                                 true);  // refresh key list
       if (validKeyList != null) {
         toAddr = validKeyList.join(", ");
-        if (this.finalEncrypt != 0) {
+        if (this.encryptForced != 0) {
           sendFlags |= ENCRYPT;
         }
       }

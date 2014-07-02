@@ -63,29 +63,29 @@ Enigmail.hlp = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js:   getFlagVal(): oldVal="+oldVal+" newVal="+newVal+" type=\""+type+"\"\n");
 
     // conflict remains conflict
-    if (oldVal==3) {
-      return 3;  // conflict
+    if (oldVal==ENIG_CONFLICT) {
+      return ENIG_CONFLICT;  // conflict
     }
 
     // 'never' and 'always' triggers conflict:
-    if ((oldVal==2 && newVal==0) || (oldVal==0 && newVal==2)) {
-      return 3;  // conflict
+    if ((oldVal==ENIG_NEVER && newVal==ENIG_ALWAYS) || (oldVal==ENIG_ALWAYS && newVal==ENIG_NEVER)) {
+      return ENIG_CONFLICT;  // conflict
     }
 
     // if there is any 'never' return 'never'
     // - thus: 'never' and 'maybe' => 'never'
-    if (oldVal==0 || newVal==0) {
-      return 0;  // never
+    if (oldVal==ENIG_NEVER || newVal==ENIG_NEVER) {
+      return ENIG_NEVER;  // never
     }
 
     // if there is any 'always' return 'always'
     // - thus: 'always' and 'maybe' => 'always'
-    if (oldVal==2 || newVal==2) {
-      return 2;  // always
+    if (oldVal==ENIG_ALWAYS || newVal==ENIG_ALWAYS) {
+      return ENIG_ALWAYS;  // always
     }
 
     // here, both values are 'maybe', which we return then
-    return 1;  // maybe
+    return ENIG_UNDEF;  // maybe
   },
 
 
@@ -116,9 +116,9 @@ Enigmail.hlp = {
     // initialize return value and the helper variables for them:
     matchedKeysObj.value = "";
     flagsObj.value = false;
-    var sign   =1;  // default sign flag is: maybe
-    var encrypt=1;  // default encrypt flag is: maybe
-    var pgpMime=1;  // default pgpMime flag is: maybe
+    var sign    = ENIG_UNDEF;  // default sign flag is: maybe
+    var encrypt = ENIG_UNDEF;  // default encrypt flag is: maybe
+    var pgpMime = ENIG_UNDEF;  // default pgpMime flag is: maybe
 
     var addresses="{"+EnigmailFuncs.stripEmail(emailAddrs.toLowerCase()).replace(/[, ]+/g, "}{")+"}";
     var keyList=new Array;
@@ -427,18 +427,18 @@ Enigmail.hlp = {
   processConflicts: function (flagsObj, interactive)
   {
     // - pgpMime conflicts always result into pgpMime = 0/'never'
-    if (flagsObj.pgpMime == 3) {
-      flagsObj.pgpMime = 0;
+    if (flagsObj.pgpMime == ENIG_CONFLICT) {
+      flagsObj.pgpMime = ENIG_NEVER;
     }
     // - encrypt/sign conflicts result into result 0/'never'
     //   with possible dialog to give a corresponding feedback
     var conflictFound = false;
-    if (flagsObj.sign == 3) {
-      flagsObj.sign = 0;
+    if (flagsObj.sign == ENIG_CONFLICT) {
+      flagsObj.sign = ENIG_NEVER;
       conflictFound = true;
     }
-    if (flagsObj.encrypt == 3) {
-      flagsObj.encrypt = 0;
+    if (flagsObj.encrypt == ENIG_CONFLICT) {
+      flagsObj.encrypt = ENIG_NEVER;
       conflictFound = true;
     }
     if (interactive && conflictFound) {
@@ -446,9 +446,13 @@ Enigmail.hlp = {
       var encrypt = flagsObj.encrypt;
       // process message about whether we still sign/encrypt
       // - if the sign flag is 1/maybe, signing depends on the general setting
-      if (sign==1) sign = (Enigmail.msg.sendMode & nsIEnigmail.SEND_SIGNED ? 2 : 0);
+      if (sign==ENIG_UNDEF) {
+        sign = (Enigmail.msg.sendMode & nsIEnigmail.SEND_SIGNED ? ENIG_ALWAYS : ENIG_NEVER);
+      }
       // - if the encrypt flag is 1/maybe, encrypting depends on the general setting
-      if (encrypt==1) encrypt = (Enigmail.msg.sendMode & nsIEnigmail.SEND_ENCRYPTED ? 2 : 0);
+      if (encrypt==ENIG_UNDEF) {
+        encrypt = (Enigmail.msg.sendMode & nsIEnigmail.SEND_ENCRYPTED ? ENIG_ALWAYS : ENIG_NEVER);
+      }
       var msg = "\n"+"- " + EnigmailCommon.getString(sign>0 ? "signYes" : "signNo");
       msg += "\n"+"- " + EnigmailCommon.getString(encrypt>0 ? "encryptYes" : "encryptNo");
       if (EnigmailCommon.getPref("warnOnRulesConflict")==2) {

@@ -50,53 +50,37 @@ function enigmailEncryptionDlgLoad() {
     return;
   }
 
-  /*
-  var sendFlags = window.arguments[0].sendFlags;
-  if (sendFlags & ENIG_ENCRYPT) {
-    document.getElementById("encryptMsg").setAttribute("checked", true);
-  }
-  if (sendFlags & ENIG_SIGN) {
-    document.getElementById("signMsg").setAttribute("checked", true);
-  }
-  if (window.arguments[0].usePgpMime) {
-    document.getElementById("usePgpMime").setAttribute("checked", true);
-  }
-  if (window.arguments[0].disableRules) {
-    document.getElementById("IgnoreRules").setAttribute("checked", true);
-  }
-  */
-
   var inputObj = window.arguments[0];
-
-  var statusSignedStr = inputObj.statusSignedStr;
-  if (statusSignedStr) {
-    document.getElementById("enigmail_compose_popup_sign_caption").setAttribute("label", statusSignedStr);
-  }
-  var signGroupElement = document.getElementById("enigmail_compose_popup_sign");
-  if (inputObj.finalSign == 0) {
-    signGroupElement.selectedItem = document.getElementById("enigmail_final_signNo");
-  }
-  else if (inputObj.finalSign == 1) {
-    signGroupElement.selectedItem = document.getElementById("enigmail_final_signDefault");
-  }
-  else if (inputObj.finalSign == 2) {
-    signGroupElement.selectedItem = document.getElementById("enigmail_final_signYes");
-  }
 
   var statusEncryptedStr = inputObj.statusEncryptedStr;
   if (statusEncryptedStr) {
     document.getElementById("enigmail_compose_popup_encrypt_caption").setAttribute("label", statusEncryptedStr);
   }
   var encGroupElement = document.getElementById("enigmail_compose_popup_encrypt");
-  // note: for whatever reason a switch over inputObj.finalEncrypt does not work
-  if (inputObj.finalEncrypt == 0) {
+  // note: for whatever reason a switch over inputObj.encryptForced does not work
+  if (inputObj.encryptForced == 0) {
     encGroupElement.selectedItem = document.getElementById("enigmail_final_encryptNo");
   }
-  else if (inputObj.finalEncrypt == 1) {
+  else if (inputObj.encryptForced == 1) {
     encGroupElement.selectedItem = document.getElementById("enigmail_final_encryptDefault");
   }
-  else if (inputObj.finalEncrypt == 2) {
+  else if (inputObj.encryptForced == 2) {
     encGroupElement.selectedItem = document.getElementById("enigmail_final_encryptYes");
+  }
+
+  var statusSignedStr = inputObj.statusSignedStr;
+  if (statusSignedStr) {
+    document.getElementById("enigmail_compose_popup_sign_caption").setAttribute("label", statusSignedStr);
+  }
+  var signGroupElement = document.getElementById("enigmail_compose_popup_sign");
+  if (inputObj.signForced == 0) {
+    signGroupElement.selectedItem = document.getElementById("enigmail_final_signNo");
+  }
+  else if (inputObj.signForced == 1) {
+    signGroupElement.selectedItem = document.getElementById("enigmail_final_signDefault");
+  }
+  else if (inputObj.signForced == 2) {
+    signGroupElement.selectedItem = document.getElementById("enigmail_final_signYes");
   }
 
   var statusPGPMimeStr = inputObj.statusPGPMimeStr;
@@ -104,13 +88,13 @@ function enigmailEncryptionDlgLoad() {
     document.getElementById("enigmail_compose_popup_pgpmime_caption").setAttribute("label", statusPGPMimeStr);
   }
   var pgpmimeGroupElement = document.getElementById("enigmail_compose_popup_pgpmime");
-  if (inputObj.finalPGPMime == 0) {
+  if (inputObj.pgpmimeForced == 0) {
     pgpmimeGroupElement.selectedItem = document.getElementById("enigmail_final_pgpmimeNo");
   }
-  else if (inputObj.finalPGPMime == 1) {
+  else if (inputObj.pgpmimeForced == 1) {
     pgpmimeGroupElement.selectedItem = document.getElementById("enigmail_final_pgpmimeDefault");
   }
-  else if (inputObj.finalPGPMime == 2) {
+  else if (inputObj.pgpmimeForced == 2) {
     pgpmimeGroupElement.selectedItem = document.getElementById("enigmail_final_pgpmimeYes");
   }
 }
@@ -118,20 +102,8 @@ function enigmailEncryptionDlgLoad() {
 
 function enigmailEncryptionDlgAccept () {
   var resultObj = window.arguments[0];
-  /*
-  resultObj.sendFlags = 0;
-  if (document.getElementById("encryptMsg").getAttribute("checked")) {
-    resultObj.sendFlags |= ENIG_ENCRYPT;
-  }
-  if (document.getElementById("signMsg").getAttribute("checked")) {
-    resultObj.sendFlags |= ENIG_SIGN;
-  }
-
-  resultObj.usePgpMime = document.getElementById("usePgpMime").getAttribute("checked");
-  resultObj.disableRules = document.getElementById("IgnoreRules").getAttribute("checked");
-  */
-
-  resultObj.finalSign = document.getElementById("enigmail_compose_popup_sign").value;
-  resultObj.finalEncrypt = document.getElementById("enigmail_compose_popup_encrypt").value;
-  resultObj.finalPGPMime = document.getElementById("enigmail_compose_popup_pgpmime").value;
+  resultObj.signForced = document.getElementById("enigmail_compose_popup_sign").value;
+  resultObj.encryptForced = document.getElementById("enigmail_compose_popup_encrypt").value;
+  resultObj.pgpmimeForced = document.getElementById("enigmail_compose_popup_pgpmime").value;
 }
+
