@@ -85,7 +85,7 @@
 <!ENTITY enigmail.test.label "Test">
 <!ENTITY enigmail.decryptbutton.label "Entschlüsseln">
 <!ENTITY enigmail.decryptbutton.tip "Nachricht mit OpenPGP entschlüsseln/überprüfen">
-<!ENTITY enigmail.messengermenu.accesskey "O">
+<!ENTITY enigmail.messengermenu.accesskey "a">
 <!ENTITY enigmail.decryptverify.label "Entschlüsseln/Überprüfen">
 <!ENTITY enigmail.importpublickey.label "Schlüssel importieren">
 <!ENTITY enigmail.savedecrypted.label "Entschlüsselte Nachricht speichern">
@@ -141,6 +141,17 @@
 <!ENTITY enigmail.insertkey.label "Öffentlichen Schlüssel einfügen">
 <!ENTITY enigmail.attachkey.label "Öffentlichen Schlüssel anhängen…">
 <!ENTITY enigmail.attachmykey.label "Meinen öffentlichen Schlüssel anhängen">
+
+<!ENTITY enigmail.finalEncryptDefault.label    "Verwende Standardeinstellungen und Regeln zum Verschlüsseln">
+<!ENTITY enigmail.finalEncryptYes.label        "Erzwinge Verschlüsseln">
+<!ENTITY enigmail.finalEncryptNo.label         "Erzwinge, dass nicht verschlüsselt wird">
+<!ENTITY enigmail.finalSignDefault.label       "Verwende Standardeinstellungen und Regeln zum Unterschreiben">
+<!ENTITY enigmail.finalSignYes.label           "Erzwinge Unterschreiben">
+<!ENTITY enigmail.finalSignNo.label            "Erzwinge, dass nicht unterschrieben wird">
+<!ENTITY enigmail.finalPGPMimeDefault.label    "Verwende Standardeinstellungen und Regeln zur Klärung des PGP-Modes">
+<!ENTITY enigmail.finalPGPMimeYes.label        "Erzwinge PGP/MIME">
+<!ENTITY enigmail.finalPGPMimeNo.label         "Erzwinge Inline-PGP">
+
 <!ENTITY enigmail.composemenu.accesskey "n">
 <!ENTITY enigmail.signedsend.accesskey "U">
 <!ENTITY enigmail.signedsend.key "S">

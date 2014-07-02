@@ -158,12 +158,12 @@
 <!ENTITY enigmail.attachkey.label              "Attach Public Key ...">
 <!ENTITY enigmail.attachmykey.label            "Attach My Public Key">
 
-<!ENTITY enigmail.finalSignDefault.label       "Use Defaults and Rules for Signing">
-<!ENTITY enigmail.finalSignYes.label           "Force Signing">
-<!ENTITY enigmail.finalSignNo.label            "Force Not to Sign">
 <!ENTITY enigmail.finalEncryptDefault.label    "Use Defaults and Rules for Encryption">
 <!ENTITY enigmail.finalEncryptYes.label        "Force Encryption">
 <!ENTITY enigmail.finalEncryptNo.label         "Force Not to Encrypt">
+<!ENTITY enigmail.finalSignDefault.label       "Use Defaults and Rules for Signing">
+<!ENTITY enigmail.finalSignYes.label           "Force Signing">
+<!ENTITY enigmail.finalSignNo.label            "Force Not to Sign">
 <!ENTITY enigmail.finalPGPMimeDefault.label    "Use Defaults and Rules for PGP format">
 <!ENTITY enigmail.finalPGPMimeYes.label        "Force PGP/MIME">
 <!ENTITY enigmail.finalPGPMimeNo.label         "Force Inline PGP">
