@@ -276,6 +276,7 @@ Enigmail.hlp = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): emailAddrs=\""+emailAddrs+"\" refresh=\""+refresh+"\"\n");
     if (emailAddrs.indexOf('@') < 0) {
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): return null (no '@' found)\n");
       return null;
     }
 
@@ -290,14 +291,14 @@ Enigmail.hlp = {
         minTrustLevel = "?";  // value between invalid and unknown keys
         break; 
       default:
-        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: validKeysForAllRecipients(): INVALID VALUE for acceptedKeys: \""+acceptedKeys+"\"\n");
+        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: validKeysForAllRecipients(): return null (INVALID VALUE for acceptedKeys: \""+acceptedKeys+"\")\n");
         return null;
         break;
     }
 
     const TRUSTLEVELS_SORTED = EnigmailFuncs.trustlevelsSorted();
     var minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf(minTrustLevel);
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): with minTrustLevel=\""+minTrustLevel+"\"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): find keys with minTrustLevel=\""+minTrustLevel+"\"\n");
 
     var resultingArray = new Array;  // resulting key list (if all valid)
     try {
@@ -346,18 +347,19 @@ Enigmail.hlp = {
         }
         if (! found) {
           // no key for this address found
-          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): no valid key found for=\""+addr+"\" with minTrustLevel=\""+minTrustLevel+"\"\n");
+          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): return null (no valid key found for=\""+addr+"\" with minTrustLevel=\""+minTrustLevel+"\")\n");
           return null;
         }
       }
     }
     catch (ex) {
-      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): exception: "+ex.description+"\n");
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): return null (exception: "+ex.description+")\n");
       return null;
     }
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): return: resultingArray=\""+resultingArray+"\"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): return \""+resultingArray+"\"\n");
     return resultingArray;
   },
+
 
   /* try to find valid key to passed email address
    * @return: found key (without leading "0x") or null

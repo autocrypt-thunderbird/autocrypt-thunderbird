@@ -119,7 +119,7 @@ Enigmail.msg = {
     var subj = document.getElementById("msgSubject");
     subj.setAttribute('onfocus', "Enigmail.msg.fireSendFlags()");
 
-    this.msgComposeReset(false);  // calls setIdentityDefaults()
+    this.msgComposeReset(false);   // false => not closing => call setIdentityDefaults()
     this.composeOpen();
     this.updateStatusBar();
   },
@@ -161,7 +161,7 @@ Enigmail.msg = {
    */
   getAccDefault: function (key)
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getAccDefault: identity="+this.identity.key+"("+this.identity.email+") key="+key+"\n");
+    //EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getAccDefault: identity="+this.identity.key+"("+this.identity.email+") key="+key+"\n");
 
     var enabled = this.identity.getBoolAttribute("enablePgp");
     if (key == "enabled") {
@@ -190,7 +190,7 @@ Enigmail.msg = {
         res=this.identity.getBoolAttribute(key);
         break;
       }
-      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getAccDefault:   "+key+"="+res+"\n");
+      //EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getAccDefault:   "+key+"="+res+"\n");
       return res;
     }
     else {
@@ -408,6 +408,7 @@ Enigmail.msg = {
     this.updateStatusBar();
   },
 
+
   // check if an signature is related to another attachment
   findRelatedAttachment: function (bucketList, node)
   {
@@ -428,11 +429,13 @@ Enigmail.msg = {
   msgComposeReopen: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.msgComposeReopen\n");
-    this.msgComposeReset(false);  // calls setIdentityDefaults()
-
-    this.composeOpen();
-    this.updateStatusBar();
+    this.msgComposeReset(false);   // false => not closing => call setIdentityDefaults()
+    //this.composeOpen();
+    this.fireSendFlags();
+    //this.determineSendFlags();
+    //this.updateStatusBar();
   },
+
 
   msgComposeClose: function ()
   {
@@ -463,8 +466,9 @@ Enigmail.msg = {
       EnigmailCommon.ERROR_LOG("enigmailMsgComposeOverlay.js: ECSL.ComposeProcessDone: could not delete all files:\n"+ex.toString()+"\n");
     }
 
-    this.msgComposeReset(true);
+    this.msgComposeReset(true);  // true => closing => don't call setIdentityDefaults()
   },
+
 
   msgComposeReset: function (closing)
   {
@@ -484,6 +488,12 @@ Enigmail.msg = {
     this.encryptForced = 1;
     this.pgpmimeForced = 1;
     this.finalSignDependsOnEncrypt = false;
+    this.statusSigned =    0;
+    this.statusEncrypted = 0;
+    this.statusPGPMime =   0;
+    this.statusSignedStr =    '???';
+    this.statusEncryptedStr = '???';
+    this.statusPGPMimeStr =   '???';
     this.enableRules = true;
     this.identity = null;
     this.sendProcess = false;
@@ -1118,7 +1128,7 @@ Enigmail.msg = {
 
   updateStatusBar: function ()
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.updateStatusBar:\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.updateStatusBar()\n");
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN    = nsIEnigmail.SEND_SIGNED;
@@ -1144,46 +1154,31 @@ Enigmail.msg = {
       signFinally = 1;
       signSymbol = "forceYes";
     }
-    else if (this.sendMode & SIGN) {
-      switch (this.signByRules) {
+    else switch (this.signByRules) {
       case ENIG_NEVER:
-        signFinally = 0;
-        signSymbol = "inactiveNone"; // "activeMinus";
-        break;
-      case ENIG_UNDEF:
-        signFinally = 1;
-        signSymbol = "activeNone";
-        break;
-      case ENIG_ALWAYS:
-        signFinally = 1;
-        signSymbol = "activeNone"; // "activePlus";
-        break;
-      case ENIG_CONFLICT:
-        signFinally = 99;
-        signSymbol = "inactiveConflict";
-        break;
-      }
-    }
-    else {
-      switch (this.signByRules) {
-      case ENIG_NEVER:
-        signFinally = 0;
-        signSymbol = "inactiveNone"; // "inactiveMinus";
-        break;
-      case ENIG_UNDEF:
         signFinally = 0;
         signSymbol = "inactiveNone";
         break;
+      case ENIG_UNDEF:
+        if (this.sendMode & SIGN) {
+          signFinally = 1;
+          signSymbol = "activeNone";
+        }
+        else {
+          signFinally = 0;
+          signSymbol = "inactiveNone";
+        }
+        break;
       case ENIG_ALWAYS:
         signFinally = 1;
-        signSymbol = "activeNone"; // "inactivePlus";
+        signSymbol = "activeNone";
         break;
       case ENIG_CONFLICT:
         signFinally = 99;
         signSymbol = "inactiveConflict";
         break;
-      }
     }
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: signByRules="+this.signByRules+" signFinally="+signFinally+"\n");
 
     // process resulting encrypt mode and icon symbol for it
     var encFinally = null; // 0: No, 1: Yes, 99: Conflict
@@ -1196,46 +1191,31 @@ Enigmail.msg = {
       encFinally = 1;
       encSymbol = "forceYes";
     }
-    else if (this.sendMode & ENCRYPT) {
-      switch (this.encryptByRules) {
+    else switch (this.encryptByRules) {
       case ENIG_NEVER:
-        encFinally = 0;
-        encSymbol = "inactiveNone"; // "activeMinus";
-        break;
-      case ENIG_UNDEF:
-        encFinally = 1;
-        encSymbol = "activeNone";
-        break;
-      case ENIG_ALWAYS:
-        encFinally = 1;
-        encSymbol = "activeNone"; // "activePlus";
-        break;
-      case ENIG_CONFLICT:
-        encFinally = 99;
-        encSymbol = "inactiveConflict";
-        break;
-      }
-    }
-    else {
-      switch (this.encryptByRules) {
-      case ENIG_NEVER:
-        encFinally = 0;
-        encSymbol = "inactiveNone"; // "inactiveMinus";
-        break;
-      case ENIG_UNDEF:
         encFinally = 0;
         encSymbol = "inactiveNone";
         break;
+      case ENIG_UNDEF:
+        if (this.sendMode & ENCRYPT) {
+          encFinally = 1;
+          encSymbol = "activeNone";
+        }
+        else {
+          encFinally = 0;
+          encSymbol = "inactiveNone";
+        }
+        break;
       case ENIG_ALWAYS:
         encFinally = 1;
-        encSymbol = "activeNone"; // "inactivePlus";
+        encSymbol = "activeNone";
         break;
       case ENIG_CONFLICT:
         encFinally = 99;
         encSymbol = "inactiveConflict";
         break;
-      }
     }
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: encryptByRules="+this.encryptByRules+" encFinally="+encFinally+"\n");
 
     // process option to finally sign if encrypted/unencrypted
     // (unless rules force not to sign)
@@ -1244,15 +1224,12 @@ Enigmail.msg = {
       if (this.signByRules != ENIG_NEVER) {  // if not forced not to sign
         if ((encFinally == 1 && this.getAccDefault("signIfEnc"))
             ||
-            (encFinally == 0 && this.getAccDefault("signIfNotEnc"))) {
-          signFinally = 1;
-          if (this.sendMode & SIGN) {
-            signSymbol = "activeNone"; // "activePlus";
-          }
-          else {
-            signSymbol = "activeNone"; // "inactivePlus";
-          }
-          derivedFromEncMode = true;
+            (encFinally == 0 && this.getAccDefault("signIfNotEnc"))
+           ) {
+              signFinally = 1;
+              signSymbol = "activeNone";
+              derivedFromEncMode = true;
+              EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: derived signFinally="+signFinally+"\n");
         }
       }
     }
@@ -1322,6 +1299,7 @@ Enigmail.msg = {
         pgpmimeFinally = 99;
         break;
     }
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: pgpmimeByRules="+this.pgpmimeByRules+" pgpmimeFinally="+pgpmimeFinally+"\n");
     // update pgpmime menu-text
     var pgpmimeStr = null;
     switch (pgpmimeFinally) {
@@ -3467,7 +3445,8 @@ Enigmail.msg = {
     }
   },
 
-  addressOnChange: function(element) {
+  addressOnChange: function(element)
+  {
      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.addressOnChange\n");
      this.fireSendFlags();
   },
