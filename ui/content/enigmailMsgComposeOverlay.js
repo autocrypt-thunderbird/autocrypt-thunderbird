@@ -1160,7 +1160,7 @@ Enigmail.msg = {
         break;
       case ENIG_CONFLICT:
         signFinally = 99;
-        signSymbol = "activeConflict";
+        signSymbol = "inactiveConflict";
         break;
       }
     }
@@ -1212,7 +1212,7 @@ Enigmail.msg = {
         break;
       case ENIG_CONFLICT:
         encFinally = 99;
-        encSymbol = "activeConflict";
+        encSymbol = "inactiveConflict";
         break;
       }
     }
