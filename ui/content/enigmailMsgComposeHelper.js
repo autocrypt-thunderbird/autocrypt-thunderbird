@@ -60,28 +60,28 @@ Enigmail.hlp = {
   getFlagVal: function (oldVal, node, type)
   {
     var newVal = Number(node.getAttribute(type));
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js:   getFlagVal(): oldVal="+oldVal+" newVal="+newVal+" type=\""+type+"\"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js:    getFlagVal(): oldVal="+oldVal+" newVal="+newVal+" type=\""+type+"\"\n");
 
     // conflict remains conflict
     if (oldVal==ENIG_CONFLICT) {
-      return ENIG_CONFLICT;  // conflict
+      return ENIG_CONFLICT;
     }
 
     // 'never' and 'always' triggers conflict:
     if ((oldVal==ENIG_NEVER && newVal==ENIG_ALWAYS) || (oldVal==ENIG_ALWAYS && newVal==ENIG_NEVER)) {
-      return ENIG_CONFLICT;  // conflict
+      return ENIG_CONFLICT;
     }
 
     // if there is any 'never' return 'never'
     // - thus: 'never' and 'maybe' => 'never'
     if (oldVal==ENIG_NEVER || newVal==ENIG_NEVER) {
-      return ENIG_NEVER;  // never
+      return ENIG_NEVER;
     }
 
     // if there is any 'always' return 'always'
     // - thus: 'always' and 'maybe' => 'always'
     if (oldVal==ENIG_ALWAYS || newVal==ENIG_ALWAYS) {
-      return ENIG_ALWAYS;  // always
+      return ENIG_ALWAYS;
     }
 
     // here, both values are 'maybe', which we return then
@@ -420,49 +420,22 @@ Enigmail.hlp = {
     * Input parameters:
     *  @flagsObj:       combined sign/encrype/pgpMime mode
     *                   values might be: 0='never', 1='maybe', 2='always', 3='conflict'
-    *  @interactive:    false: skip all interaction
     * Output parameters:
     *  @flagsObj:       resulting sign/encrype/pgpMime mode
     *
     * @return:  false if error occurred or processing was canceled
     */
-  processConflicts: function (flagsObj, interactive)
+  processConflicts: function (encrypt, sign)
   {
-    // - pgpMime conflicts always result into pgpMime = 0/'never'
-    if (flagsObj.pgpMime == ENIG_CONFLICT) {
-      flagsObj.pgpMime = ENIG_NEVER;
+    // process message about whether we still sign/encrypt
+    var msg = "";
+    msg += "\n"+"- " + EnigmailCommon.getString(encrypt ? "encryptYes" : "encryptNo");
+    msg += "\n"+"- " + EnigmailCommon.getString(sign ? "signYes" : "signNo");
+    if (EnigmailCommon.getPref("warnOnRulesConflict")==2) {
+      EnigmailCommon.setPref("warnOnRulesConflict", 0);
     }
-    // - encrypt/sign conflicts result into result 0/'never'
-    //   with possible dialog to give a corresponding feedback
-    var conflictFound = false;
-    if (flagsObj.sign == ENIG_CONFLICT) {
-      flagsObj.sign = ENIG_NEVER;
-      conflictFound = true;
-    }
-    if (flagsObj.encrypt == ENIG_CONFLICT) {
-      flagsObj.encrypt = ENIG_NEVER;
-      conflictFound = true;
-    }
-    if (interactive && conflictFound) {
-      var sign = flagsObj.sign;
-      var encrypt = flagsObj.encrypt;
-      // process message about whether we still sign/encrypt
-      // - if the sign flag is 1/maybe, signing depends on the general setting
-      if (sign==ENIG_UNDEF) {
-        sign = (Enigmail.msg.sendMode & nsIEnigmail.SEND_SIGNED ? ENIG_ALWAYS : ENIG_NEVER);
-      }
-      // - if the encrypt flag is 1/maybe, encrypting depends on the general setting
-      if (encrypt==ENIG_UNDEF) {
-        encrypt = (Enigmail.msg.sendMode & nsIEnigmail.SEND_ENCRYPTED ? ENIG_ALWAYS : ENIG_NEVER);
-      }
-      var msg = "\n"+"- " + EnigmailCommon.getString(sign>0 ? "signYes" : "signNo");
-      msg += "\n"+"- " + EnigmailCommon.getString(encrypt>0 ? "encryptYes" : "encryptNo");
-      if (EnigmailCommon.getPref("warnOnRulesConflict")==2) {
-        EnigmailCommon.setPref("warnOnRulesConflict", 0);
-      }
-      if (!EnigmailCommon.confirmPref(window, EnigmailCommon.getString("rulesConflict", [ msg ]), "warnOnRulesConflict")) {
-        return false;
-      }
+    if (!EnigmailCommon.confirmPref(window, EnigmailCommon.getString("rulesConflict", [ msg ]), "warnOnRulesConflict")) {
+      return false;
     }
     return true;
   },
