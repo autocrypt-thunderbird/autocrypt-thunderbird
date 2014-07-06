@@ -79,12 +79,15 @@
      <caption id="enigmail_compose_popup_encrypt_caption"
               label="???"/>
      <radiogroup id="enigmail_compose_popup_encrypt">
+       <!-- ENIG_UNDEF == 1  -->
        <radio id="enigmail_final_encryptDefault"
               value="1"
               label="&enigmail.finalEncryptDefault.label;"/>
+       <!-- ENIG_ALWAYS == 2  -->
        <radio id="enigmail_final_encryptYes"
               value="2"
               label="&enigmail.finalEncryptYes.label;"/>
+       <!-- ENIG_NEVER == 0  -->
        <radio id="enigmail_final_encryptNo"
               value="0"
               label="&enigmail.finalEncryptNo.label;"/>
@@ -95,12 +98,15 @@
      <caption id="enigmail_compose_popup_sign_caption"
               label="???"/>
      <radiogroup id="enigmail_compose_popup_sign">
+       <!-- ENIG_UNDEF == 1  -->
        <radio id="enigmail_final_signDefault"
               value="1"
               label="&enigmail.finalSignDefault.label;"/>
+       <!-- ENIG_ALWAYS == 2  -->
        <radio id="enigmail_final_signYes"
               value="2"
               label="&enigmail.finalSignYes.label;"/>
+       <!-- ENIG_NEVER == 0  -->
        <radio id="enigmail_final_signNo"
               value="0"
               label="&enigmail.finalSignNo.label;"/>
@@ -111,12 +117,15 @@
      <caption id="enigmail_compose_popup_pgpmime_caption"
               label="???"/>
      <radiogroup id="enigmail_compose_popup_pgpmime">
+       <!-- ENIG_UNDEF : 1 -->
        <radio id="enigmail_final_pgpmimeDefault"
               value="1"
               label="&enigmail.finalPGPMimeDefault.label;"/>
+       <!-- ENIG_ALWAYS : 2 -->
        <radio id="enigmail_final_pgpmimeYes"
               value="2"
               label="&enigmail.finalPGPMimeYes.label;"/>
+       <!-- ENIG_NEVER : 0 -->
        <radio id="enigmail_final_pgpmimeNo"
               value="0"
               label="&enigmail.finalPGPMimeNo.label;"/>

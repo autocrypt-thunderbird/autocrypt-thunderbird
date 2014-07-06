@@ -418,11 +418,8 @@ Enigmail.hlp = {
     * - handle sign/encrypt/pgpMime conflicts if any
     * - NOTE: conflicts result into disabling the feature (0/never)
     * Input parameters:
-    *  @flagsObj:       combined sign/encrype/pgpMime mode
-    *                   values might be: 0='never', 1='maybe', 2='always', 3='conflict'
-    * Output parameters:
-    *  @flagsObj:       resulting sign/encrype/pgpMime mode
-    *
+    *  @encrypt: email would currently get encrypted
+    *  @sign:    email would currently get signed
     * @return:  false if error occurred or processing was canceled
     */
   processConflicts: function (encrypt, sign)

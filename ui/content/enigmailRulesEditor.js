@@ -160,8 +160,8 @@ function createRow(treeItem, userObj) {
   treeRow.appendChild(negate);
   treeRow.appendChild(email);
   treeRow.appendChild(keyId);
-  treeRow.appendChild(sign);
   treeRow.appendChild(encrypt);
+  treeRow.appendChild(sign);
   treeRow.appendChild(pgpMime);
   treeRow.setAttribute("rowId", ++gNumRows);
 

@@ -34,10 +34,16 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
+// possible values for 
+// - encryptByRule, signByRules, pgpmimeByRules
+// - encryptForced, signForced, pgpmimeForced (except CONFLICT)
+// NOTE:
+// - values 0/1/2 are used with this fixed semantics in the persistent rules
+// - see also enigmailEncryptionDlg.xul
 const ENIG_NEVER = 0;
 const ENIG_UNDEF = 1;
 const ENIG_ALWAYS = 2;
-const ENIG_CONFLICT = 3;
+const ENIG_CONFLICT = 99;
 
 const ENIG_FINAL_UNDEF = -1;
 const ENIG_FINAL_NO = 0;
@@ -75,19 +81,32 @@ Enigmail.msg = {
   sendPgpMime: false,
   sendMode: null,    // the current default for sending a message (0, SIGN, ENCRYPT, or SIGN|ENCRYPT)
   sendModeDirty: false,  // send mode or final send options changed?
-  signByRules:    ENIG_UNDEF,   // shall we sign according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
-  encryptByRules: ENIG_UNDEF,   // shall we encrypt according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
-  pgpmimeByRules: ENIG_UNDEF,   // shall we PGP/Mime according to rules? (0:never, 1:maybe, 2:always, 3:conflict)
-  signForced:    1,   // finally force to sign (0: must not sign, 1: no force, 2: must sign) 
-  encryptForced: 1,   // finally force to encrypt (0: must not encrypt, 1: no force, 2: must encrypt) 
-  pgpmimeForced: 1,   // finally use PGP Mime (0: must not use PGP/Mime, 1: no force, 2: must use PGP/Mime) 
-  finalSignDependsOnEncrypt: false,
-  statusSigned:    ENIG_FINAL_UNDEF,  // last processed final sign state (0: off, 1: on, 99:conflict)
-  statusEncrypted: ENIG_FINAL_UNDEF,  // last processed final encryption state (0: off, 1: on, 99:conflict)
-  statusPGPMime:   ENIG_FINAL_UNDEF,  // last processed final PGP/Mime state (0: off, 1: on, 99:conflict)
-  statusSignedStr:    '???', // status string of last processed final sign state
-  statusEncryptedStr: '???', // status string of last processed final encryption state
-  statusPGPMimeStr:   '???', // status string of last processed final PGP/Mime state
+
+  // encrypt/sign/pgpmime according to rules?
+  // (-1:undef/maybe, 0:never/forceNo, 1:always/forceYes, 99:conflict)
+  encryptByRules: ENIG_UNDEF,
+  signByRules:    ENIG_UNDEF,
+  pgpmimeByRules: ENIG_UNDEF,
+
+  // forced to encrypt/sign/pgpmime?
+  // (-1:undef/maybe, 0:never/forceNo, 1:always/forceYes)
+  encryptForced: ENIG_UNDEF,
+  signForced:    ENIG_UNDEF,
+  pgpmimeForced: ENIG_UNDEF,
+
+  finalSignDependsOnEncrypt: false,  // does signing finally depends on encryption mode?
+
+  // resulting final encrypt/sign/pgpmime mode: 
+  //  (-1:undef, 0:no, 1:yes, 10:forceNo, 11:forceYes, 99:conflict)
+  statusEncrypted: ENIG_FINAL_UNDEF,
+  statusSigned:    ENIG_FINAL_UNDEF,
+  statusPGPMime:   ENIG_FINAL_UNDEF,
+
+  // processed strings to signal final encrypt/sign/pgpmime state:
+  statusSignedStr:    '???',
+  statusEncryptedStr: '???',
+  statusPGPMimeStr:   '???',
+
   sendProcess: false,
   nextCommandId: null,
   docaStateListener: null,
@@ -104,6 +123,7 @@ Enigmail.msg = {
   },
 
   compFieldsEnig_CID: "@mozdev.org/enigmail/composefields;1",
+
 
   composeStartup: function ()
   {
@@ -138,7 +158,6 @@ Enigmail.msg = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeUnload\n");
     //if (gMsgCompose)
     //  gMsgCompose.UnregisterStateListener(Enigmail.composeStateListener);
-
   },
 
 
@@ -164,6 +183,7 @@ Enigmail.msg = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.setIdentityCallback: elementId="+elementId+"\n");
     this.setIdentityDefaults();
   },
+
 
   /* return whether the account specific setting key is enabled or disabled
    */
@@ -202,6 +222,7 @@ Enigmail.msg = {
       return res;
     }
     else {
+      // every detail is disabled if OpenPGP in general is disabled:
       switch (key) {
        case 'sign':
        case 'encrypt':
@@ -217,6 +238,7 @@ Enigmail.msg = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.getAccDefault:   internal error: invalid key '"+key+"'\n");
     return null;
   },
+
 
   setIdentityDefaults: function ()
   {
@@ -495,9 +517,9 @@ Enigmail.msg = {
     this.signByRules =    ENIG_UNDEF;
     this.encryptByRules = ENIG_UNDEF;
     this.pgpmimeByRules = ENIG_UNDEF;
-    this.signForced =    1;
-    this.encryptForced = 1;
-    this.pgpmimeForced = 1;
+    this.signForced =    ENIG_UNDEF;
+    this.encryptForced = ENIG_UNDEF;
+    this.pgpmimeForced = ENIG_UNDEF;
     this.finalSignDependsOnEncrypt = false;
     this.statusSigned =    ENIG_FINAL_UNDEF;
     this.statusEncrypted = ENIG_FINAL_UNDEF;
@@ -750,6 +772,7 @@ Enigmail.msg = {
     this.removeAttachedKey();
   },
 
+
   removeAttachedKey: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.removeAttachedKey: \n");
@@ -783,6 +806,7 @@ Enigmail.msg = {
       }
     }
   },
+
 
   replaceEditorText: function (text)
   {
@@ -897,12 +921,6 @@ Enigmail.msg = {
       case 'final-pgpmimeDefault':
       case 'final-pgpmimeYes':
       case 'final-pgpmimeNo':
-      case 'toggle-final-signYes':
-      case 'toggle-final-signNo':
-      case 'toggle-final-encryptYes':
-      case 'toggle-final-encryptNo':
-      case 'toggle-final-pgpmimeYes':
-      case 'toggle-final-pgpmimeNo':
       // status bar buttons:
       case 'toggle-final-sign':
       case 'toggle-final-encrypt':
@@ -931,11 +949,13 @@ Enigmail.msg = {
 
   },
 
+
   nextCommand: function (what)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.nextCommand: what="+what+"\n");
     this.nextCommandId=what;
   },
+
 
   // changes the DEFAULT sendMode 
   // - also called internally for saved emails
@@ -974,7 +994,7 @@ Enigmail.msg = {
         EnigmailCommon.alert(window, "Enigmail.msg.setSendMode - unexpected value: "+sendMode);
         break;
     }
-    // sendMode change ?
+    // sendMode changed ?
     // - sign and send are internal initializations
     if (!this.sendModeDirty && (this.sendMode != origSendMode) && sendMode != 'sign' && sendMode != 'encrypt') {
       this.sendModeDirty = true;
@@ -998,104 +1018,58 @@ Enigmail.msg = {
 
       // menu entries for final settings:
 
-      case 'final-signDefault':
-        if (this.signForced != 1) {  // if sign/nosign forced
-          this.signingNoLongerDependsOnEnc();
-          this.signForced = 1;       // back to defaults/rules
-        }
-        break;
-      case 'final-signYes':
-        if (this.signForced != 2) {  // if not forced to sign
-          this.signingNoLongerDependsOnEnc();
-          this.signForced = 2;       // force to sign
-        }
-        break;
-      case 'final-signNo':
-        if (this.signForced != 0) {  // if not forced not to sign
-          this.signingNoLongerDependsOnEnc();
-          this.signForced = 0;       // force not to sign
-        }
-        break;
-      case 'toggle-final-signYes':
-        this.signingNoLongerDependsOnEnc();
-        if (this.signForced == 2) {  // forced to sign?
-          this.signForced = 1;  // no longer force to sign
-        }
-        else {
-          this.signForced = 2;  // force to sign
-        }
-        break;
-      case 'toggle-final-signNo':
-        this.signingNoLongerDependsOnEnc();
-        if (this.signForced == 0) {  // forced not to sign?
-          this.signForced = 1;  // no longer force not to sign
-        }
-        else {
-          this.signForced = 0;  // force not to sign
-        }
-        break;
-
       case 'final-encryptDefault':
-        if (this.encryptForced != 1) {  // if encrypt/noencrypt forced
-          this.encryptForced = 1;       // back to defaults/rules
+        // switch encryption to "use defaults & rules"
+        if (this.encryptForced != ENIG_UNDEF) {  // if encrypt/noencrypt forced
+          this.encryptForced = ENIG_UNDEF;       // back to defaults/rules
         }
         break;
       case 'final-encryptYes':
-        if (this.encryptForced != 2) {  // if not forced to encrypt
-          this.encryptForced = 2;       // force to encrypt
+        // switch encryption to "force encryption"
+        if (this.encryptForced != ENIG_ALWAYS) {  // if not forced to encrypt
+          this.encryptForced = ENIG_ALWAYS;       // force to encrypt
         }
         break;
       case 'final-encryptNo':
-        if (this.encryptForced != 0) {  // if not forced not to encrypt
-          this.encryptForced = 0;       // force not to encrypt
+        // switch encryption to "force no to encrypt"
+        if (this.encryptForced != ENIG_NEVER) {  // if not forced not to encrypt
+          this.encryptForced = ENIG_NEVER;       // force not to encrypt
         }
         break;
-      case 'toggle-final-encryptYes':
-        if (this.encryptForced == 2) {  // forced to encrypt?
-          this.encryptForced = 1;  // no longer force to encrypt
-        }
-        else {
-          this.encryptForced = 2;  // force to encrypt
+
+      case 'final-signDefault':
+        // switch signing to "use defaults & rules"
+        if (this.signForced != ENIG_UNDEF) {  // if sign/nosign forced
+          this.signingNoLongerDependsOnEnc();
+          this.signForced = ENIG_UNDEF;       // back to defaults/rules
         }
         break;
-      case 'toggle-final-encryptNo':
-        if (this.encryptForced == 0) {  // forced not to encrypt?
-          this.encryptForced = 1;  // no longer force not to encrypt
+      case 'final-signYes':
+        if (this.signForced != ENIG_ALWAYS) {  // if not forced to sign
+          this.signingNoLongerDependsOnEnc();
+          this.signForced = ENIG_ALWAYS;       // force to sign
         }
-        else {
-          this.encryptForced = 0;  // force not to encrypt
+        break;
+      case 'final-signNo':
+        if (this.signForced != ENIG_NEVER) {  // if not forced not to sign
+          this.signingNoLongerDependsOnEnc();
+          this.signForced = ENIG_NEVER;       // force not to sign
         }
         break;
 
       case 'final-pgpmimeDefault':
-        if (this.pgpmimeForced != 1) {  // if any PGP mode forced
-          this.pgpmimeForced = 1;       // back to defaults/rules
+        if (this.pgpmimeForced != ENIG_UNDEF) {  // if any PGP mode forced
+          this.pgpmimeForced = ENIG_UNDEF;       // back to defaults/rules
         }
         break;
       case 'final-pgpmimeYes':
-        if (this.pgpmimeForced != 2) {  // if not forced to PGP/Mime
-          this.pgpmimeForced = 2;       // force to PGP/Mime
+        if (this.pgpmimeForced != ENIG_ALWAYS) {  // if not forced to PGP/Mime
+          this.pgpmimeForced = ENIG_ALWAYS;       // force to PGP/Mime
         }
         break;
       case 'final-pgpmimeNo':
-        if (this.pgpmimeForced != 0) {  // if not forced not to PGP/Mime
-          this.pgpmimeForced = 0;       // force not to PGP/Mime
-        }
-        break;
-      case 'toggle-final-pgpmimeYes':
-        if (this.pgpmimeForced == 2) {  // forced to use PGP/Mime?
-          this.pgpmimeForced = 1;  // no longer force to use PGP/Mime
-        }
-        else {
-          this.pgpmimeForced = 2;  // force to use PGP/Mime
-        }
-        break;
-      case 'toggle-final-pgpmimeNo':
-        if (this.pgpmimeForced == 0) {  // forced not to use PGP/Mime?
-          this.pgpmimeForced = 1;  // no longer force not to use PGP/Mime
-        }
-        else {
-          this.pgpmimeForced = 0;  // force not to use PGP/Mime
+        if (this.pgpmimeForced != ENIG_NEVER) {  // if not forced not to PGP/Mime
+          this.pgpmimeForced = ENIG_NEVER;       // force not to PGP/Mime
         }
         break;
 
@@ -1107,14 +1081,14 @@ Enigmail.msg = {
         switch (this.statusSigned) {
           case ENIG_FINAL_NO:
           case ENIG_FINAL_FORCENO:
-            this.signForced = 2;          // force to sign
+            this.signForced = ENIG_ALWAYS;          // force to sign
             break;
           case ENIG_FINAL_YES:
           case ENIG_FINAL_FORCEYES:
-            this.signForced = 0;          // force not to sign
+            this.signForced = ENIG_NEVER;          // force not to sign
             break;
           case ENIG_FINAL_CONFLICT:
-            this.signForced = ((this.sendMode & SIGN) ? 2 : 0); // use send mode
+            this.signForced = ((this.sendMode & SIGN) ? ENIG_ALWAYS : ENIG_NEVER); // use send mode
             break;
         }
         break;
@@ -1122,14 +1096,14 @@ Enigmail.msg = {
         switch (this.statusEncrypted) {
           case ENIG_FINAL_NO:
           case ENIG_FINAL_FORCENO:
-            this.encryptForced = 2;          // force to encrypt
+            this.encryptForced = ENIG_ALWAYS;          // force to encrypt
             break;
           case ENIG_FINAL_YES:
           case ENIG_FINAL_FORCEYES:
-            this.encryptForced = 0;          // force not to encrypt
+            this.encryptForced = ENIG_NEVER;          // force not to encrypt
             break;
           case ENIG_FINAL_CONFLICT:
-            this.encryptForced = ((this.sendMode & ENCRYPT) ? 2 : 0); // use send mode
+            this.encryptForced = ((this.sendMode & ENCRYPT) ? ENIG_ALWAYS : ENIG_NEVER); // use send mode
             break;
         }
         break;
@@ -1147,6 +1121,13 @@ Enigmail.msg = {
   },
 
 
+  // key function to process the final encrypt/sign/pgpmime state from all settings
+  // - uses as INPUT: 
+  //   - this.sendMode
+  //   - this.encryptByRules, this.signByRules, pgpmimeByRules
+  //   - this.encryptForced, this.encryptSigned
+  // - uses as OUTPUT: 
+  //   - this.statusEncrypt, this.statusSign, this.statusPGPMime
   processFinalState: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.processFinalState()\n");
@@ -1156,10 +1137,10 @@ Enigmail.msg = {
 
     // process resulting encrypt mode
     var encFinally = null;
-    if (this.encryptForced == 0) {  // force not to encrypt?
+    if (this.encryptForced == ENIG_NEVER) {  // force not to encrypt?
       encFinally = ENIG_FINAL_FORCENO;
     }
-    else if (this.encryptForced == 2) {  // force to encrypt?
+    else if (this.encryptForced == ENIG_ALWAYS) {  // force to encrypt?
       encFinally = ENIG_FINAL_FORCEYES;
     }
     else switch (this.encryptByRules) {
@@ -1179,11 +1160,11 @@ Enigmail.msg = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js:   encrypt="+((this.sendMode&ENCRYPT)!=0)+" encryptByRules="+this.encryptByRules+" encFinally="+encFinally+"\n");
 
     // process resulting sign mode
-    var signFinally = ENIG_FINAL_UNDEF;
-    if (this.signForced == 0) {  // force not to sign?
+    var signFinally = null;
+    if (this.signForced == ENIG_NEVER) {  // force not to sign?
       signFinally = ENIG_FINAL_FORCENO;
     }
-    else if (this.signForced == 2) {  // force to sign?
+    else if (this.signForced == ENIG_ALWAYS) {  // force to sign?
       signFinally = ENIG_FINAL_FORCEYES;
     }
     else switch (this.signByRules) {
@@ -1235,11 +1216,11 @@ Enigmail.msg = {
     }
 
     // process resulting PGP/MIME mode
-    var pgpmimeFinally = null; // 0: No, 1: Yes, 99: Conflict
-    if (this.pgpmimeForced == 0) {  // force not to PGP/Mime?
+    var pgpmimeFinally = null;
+    if (this.pgpmimeForced == ENIG_NEVER) {  // force not to PGP/Mime?
       pgpmimeFinally = ENIG_FINAL_FORCENO;
     }
-    else if (this.pgpmimeForced == 2) {  // force to PGP/Mime?
+    else if (this.pgpmimeForced == ENIG_ALWAYS) {  // force to PGP/Mime?
       pgpmimeFinally = ENIG_FINAL_FORCEYES;
     }
     else switch (this.pgpmimeByRules) {
@@ -1264,6 +1245,12 @@ Enigmail.msg = {
   },
 
 
+  // process icon/strings of status bar buttons and menu entries according to final encrypt/sign/pgpmime status
+  // - uses as INPUT: 
+  //   - this.statusEncrypt, this.statusSign, this.statusPGPMime
+  // - uses as OUTPUT: 
+  //   - resulting icon symbols
+  //   - this.statusEncryptStr, this.statusSignStr, this.statusPGPMimeStr
   updateStatusBar: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.updateStatusBar()\n");
@@ -1422,7 +1409,7 @@ Enigmail.msg = {
         }
       }
 
-      // process and signal new resulting state (maybe will use the current sendMode as tooltip)
+      // process and signal new resulting state
       this.processFinalState();
       this.updateStatusBar();
     }
@@ -1461,15 +1448,15 @@ Enigmail.msg = {
       elem.setAttribute("label",this.statusPGPMimeStr);
     }
 
-    this.setChecked("enigmail_final_encryptDefault"+postfix, this.encryptForced == 1);
-    this.setChecked("enigmail_final_encryptYes"+postfix, this.encryptForced == 2);
-    this.setChecked("enigmail_final_encryptNo"+postfix, this.encryptForced == 0);
-    this.setChecked("enigmail_final_signDefault"+postfix, this.signForced == 1);
-    this.setChecked("enigmail_final_signYes"+postfix, this.signForced == 2);
-    this.setChecked("enigmail_final_signNo"+postfix, this.signForced == 0);
-    this.setChecked("enigmail_final_pgpmimeDefault"+postfix, this.pgpmimeForced == 1);
-    this.setChecked("enigmail_final_pgpmimeYes"+postfix, this.pgpmimeForced == 2);
-    this.setChecked("enigmail_final_pgpmimeNo"+postfix, this.pgpmimeForced == 0);
+    this.setChecked("enigmail_final_encryptDefault"+postfix, this.encryptForced == ENIG_UNDEF);
+    this.setChecked("enigmail_final_encryptYes"+postfix, this.encryptForced == ENIG_ALWAYS);
+    this.setChecked("enigmail_final_encryptNo"+postfix, this.encryptForced == ENIG_NEVER);
+    this.setChecked("enigmail_final_signDefault"+postfix, this.signForced == ENIG_UNDEF);
+    this.setChecked("enigmail_final_signYes"+postfix, this.signForced == ENIG_ALWAYS);
+    this.setChecked("enigmail_final_signNo"+postfix, this.signForced == ENIG_NEVER);
+    this.setChecked("enigmail_final_pgpmimeDefault"+postfix, this.pgpmimeForced == ENIG_UNDEF);
+    this.setChecked("enigmail_final_pgpmimeYes"+postfix, this.pgpmimeForced == ENIG_ALWAYS);
+    this.setChecked("enigmail_final_pgpmimeNo"+postfix, this.pgpmimeForced == ENIG_NEVER);
 
     let menuElement = document.getElementById("enigmail_insert_own_key");
     if (menuElement) {
@@ -1807,31 +1794,31 @@ Enigmail.msg = {
     //  ENIG_FINAL_CONFLICT no longer possible
     switch (this.statusEncrypted) {
       case ENIG_FINAL_NO:
-      case ENIG_FINAL_FINALNO:
+      case ENIG_FINAL_FORCENO:
         sendFlags &= ~ENCRYPT;
         break;
       case ENIG_FINAL_YES:
-      case ENIG_FINAL_FINALYES:
+      case ENIG_FINAL_FORCEYES:
         sendFlags |= ENCRYPT;
         break;
     }
     switch (this.statusSigned) {
       case ENIG_FINAL_NO:
-      case ENIG_FINAL_FINALNO:
+      case ENIG_FINAL_FORCENO:
         sendFlags &= ~SIGN;
         break;
       case ENIG_FINAL_YES:
-      case ENIG_FINAL_FINALYES:
+      case ENIG_FINAL_FORCEYES:
         sendFlags |= SIGN;
         break;
     }
     switch (this.statusPGPMime) {
       case ENIG_FINAL_NO:
-      case ENIG_FINAL_FINALNO:
+      case ENIG_FINAL_FORCENO:
         sendFlags &= ~nsIEnigmail.SEND_PGP_MIME;
         break;
       case ENIG_FINAL_YES:
-      case ENIG_FINAL_FINALYES:
+      case ENIG_FINAL_FORCEYES:
         sendFlags |= nsIEnigmail.SEND_PGP_MIME;
         break;
     }
@@ -2109,7 +2096,7 @@ Enigmail.msg = {
         }
       }
     }
-    this.dirty = true;
+    this.dirty = 1;
 
     var enigmailSvc = EnigmailCommon.getService(window);
     if (!enigmailSvc) {
