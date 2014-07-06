@@ -1088,7 +1088,7 @@ Enigmail.msg = {
             this.signForced = ENIG_NEVER;          // force not to sign
             break;
           case ENIG_FINAL_CONFLICT:
-            this.signForced = ((this.sendMode & SIGN) ? ENIG_ALWAYS : ENIG_NEVER); // use send mode
+            this.signForced = ENIG_ALWAYS;
             break;
         }
         break;
@@ -1103,7 +1103,7 @@ Enigmail.msg = {
             this.encryptForced = ENIG_NEVER;          // force not to encrypt
             break;
           case ENIG_FINAL_CONFLICT:
-            this.encryptForced = ((this.sendMode & ENCRYPT) ? ENIG_ALWAYS : ENIG_NEVER); // use send mode
+            this.encryptForced = ENIG_ALWAYS;
             break;
         }
         break;
