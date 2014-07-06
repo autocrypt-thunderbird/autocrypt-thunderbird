@@ -1776,11 +1776,11 @@ Enigmail.msg = {
     //   with possible dialog to give a corresponding feedback
     var conflictFound = false;
     if (this.statusEncrypted == ENIG_FINAL_CONFLICT) {
-      this.statusEncrypted = (Enigmail.msg.sendMode & nsIEnigmail.SEND_ENCRYPTED ? ENIG_FINAL_YES : ENIG_FINAL_NO);
+      this.statusEncrypted = ENIG_FINAL_NO;
       conflictFound = true;
     }
     if (this.statusSigned == ENIG_FINAL_CONFLICT) {
-      this.statusSigned = (Enigmail.msg.sendMode & nsIEnigmail.SEND_SIGNED ? ENIG_FINAL_YES : ENIG_FINAL_NO);
+      this.statusSigned = ENIG_FINAL_NO;
       conflictFound = true;
     }
     if (conflictFound) {
