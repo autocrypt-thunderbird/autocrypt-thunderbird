@@ -1511,7 +1511,7 @@ Enigmail.msg = {
   },
 
 
-  confirmBeforeSend: function (toAddr, gpgKeys, sendFlags, isOffline)
+  confirmBeforeSend: function (toAddrStr, gpgKeys, sendFlags, isOffline)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.confirmBeforeSend: sendFlags="+sendFlags+"\n");
     // get confirmation before sending message
@@ -1540,10 +1540,10 @@ Enigmail.msg = {
     // create message
     var msgConfirm = ""
     if (isOffline || sendFlags & nsIEnigmail.SEND_LATER) {
-      msgConfirm = EnigmailCommon.getString("offlineSave", [ msgStatus, EnigmailFuncs.stripEmail(toAddr).replace(/,/g, ", ") ])
+      msgConfirm = EnigmailCommon.getString("offlineSave", [ msgStatus, EnigmailFuncs.stripEmail(toAddrStr).replace(/,/g, ", ") ])
     }
     else {
-      msgConfirm = EnigmailCommon.getString("onlineSend", [ msgStatus, EnigmailFuncs.stripEmail(toAddr).replace(/,/g, ", ") ]);
+      msgConfirm = EnigmailCommon.getString("onlineSend", [ msgStatus, EnigmailFuncs.stripEmail(toAddrStr).replace(/,/g, ", ") ]);
     }
     
     // add list of keys
@@ -1624,8 +1624,8 @@ Enigmail.msg = {
    * @toAddrList:   both to and cc receivers
    * @bccAddrList:  bcc receivers
    * @return:       sendFlags
-   *                toAddr  comma separated string of unprocessed to/cc emails
-   *                bccAddr comma separated string of unprocessed to/cc emails
+   *                toAddrStr  comma separated string of unprocessed to/cc emails
+   *                bccAddrStr comma separated string of unprocessed to/cc emails
    *                or null (cancel sending the email)
    */
   keySelection: function (enigmailSvc, sendFlags, optSendFlags, gotSendFlags, fromAddr, toAddrList, bccAddrList)
@@ -1635,23 +1635,23 @@ Enigmail.msg = {
     const SIGN    = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
 
-    var toAddr = toAddrList.join(", ");
-    var bccAddr = bccAddrList.join(", ");
+    var toAddrStr = toAddrList.join(", ");
+    var bccAddrStr = bccAddrList.join(", ");
 
     // NOTE: If we only have bcc addresses, we currently do NOT process rules and select keys at all
     //       This is GOOD because sending keys for bcc addresses makes bcc addresses visible
     //       (thus compromising the concept of bcc)
     //       THUS, we disable encryption even though all bcc receivers might want to have it encrypted.
-    if (toAddr.length == 0) {
+    if (toAddrStr.length == 0) {
        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): skip key selection because we neither have \"to\" nor \"cc\" addresses\n");
        return {
          sendFlags: sendFlags,
-         toAddr: toAddr,
-         bccAddr: bccAddr
+         toAddrStr: toAddrStr,
+         bccAddrStr: bccAddrStr,
        };
     }
 
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): toAddr=\""+toAddr+"\" bccAddr=\""+bccAddr+"\"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): toAddrStr=\""+toAddrStr+"\" bccAddrStr=\""+bccAddrStr+"\"\n");
 
     // force add-rule dialog for each missing key?:
     var forceRecipientSettings = false;
@@ -1675,14 +1675,14 @@ Enigmail.msg = {
       // - enableRules: rules not temporarily disabled
       // REPLACES email addresses by keys in its result !!!
       if (EnigmailCommon.getPref("assignKeysByRules") && this.enableRules) {
-        var result = this.processRules (forceRecipientSettings, sendFlags, optSendFlags, toAddr, bccAddr)
+        var result = this.processRules (forceRecipientSettings, sendFlags, optSendFlags, toAddrStr, bccAddrStr)
         if (!result) {
           return null;
         }
         sendFlags = result.sendFlags;
         optSendFlags = result.optSendFlags;
-        toAddr = result.toAddr;    // replace email addresses with rules by the corresponding keys
-        bccAddr = result.bccAddr;  // replace email addresses with rules by the corresponding keys
+        toAddrStr = result.toAddr;    // replace email addresses with rules by the corresponding keys
+        bccAddrStr = result.bccAddr;  // replace email addresses with rules by the corresponding keys
       }
 
       // if encryption is requested for the email:
@@ -1692,13 +1692,13 @@ Enigmail.msg = {
       //   to force manual settings for missing keys
       // LEAVES remaining email addresses not covered by rules as they are
       if (sendFlags & ENCRYPT) {
-        var result = this.encryptTestMessage (enigmailSvc, sendFlags, optSendFlags, fromAddr, toAddr, bccAddr, bccAddrList)
+        var result = this.encryptTestMessage (enigmailSvc, sendFlags, optSendFlags, fromAddr, toAddrStr, bccAddrStr, bccAddrList)
         if (!result) {
           return null;
         }
         sendFlags = result.sendFlags;
-        toAddr = result.toAddr;
-        bccAddr = result.bccAddr;
+        toAddrStr = result.toAddrStr;
+        bccAddrStr = result.bccAddrStr;
         if (result.doRulesProcessingAgain) {  // start rule processing again ?
           doRulesProcessingAgain=true;
           forceRecipientSettings=true;
@@ -1706,11 +1706,11 @@ Enigmail.msg = {
       }
     } while (doRulesProcessingAgain);
 
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): return toAddr=\""+toAddr+"\" bccAddr=\""+bccAddr+"\"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): return toAddrStr=\""+toAddrStr+"\" bccAddrStr=\""+bccAddrStr+"\"\n");
     return {
       sendFlags: sendFlags,
-      toAddr: toAddr,
-      bccAddr: bccAddr
+      toAddrStr: toAddrStr,
+      bccAddrStr: bccAddrStr,
     };
   },
 
@@ -1719,15 +1719,15 @@ Enigmail.msg = {
    *
    * @forceRecipientSetting: force manual selection for each missing key?
    * @sendFlags:    INPUT/OUTPUT all current combined/processed send flags (incl. optSendFlags)
-   * @optSendFlags: INOUT/OUTPUT may only be SEND_ALWAYS_TRUST or SEND_ENCRYPT_TO_SELF
-   * @toAddr:       INPUT/OUTPUT comma separated string of keys and unprocessed to/cc emails
-   * @bccAddr:      INPUT/OUTPUT comma separated string of keys and unprocessed bcc emails
+   * @optSendFlags: INPUT/OUTPUT may only be SEND_ALWAYS_TRUST or SEND_ENCRYPT_TO_SELF
+   * @toAddrStr:    INPUT/OUTPUT comma separated string of keys and unprocessed to/cc emails
+   * @bccAddrStr:   INPUT/OUTPUT comma separated string of keys and unprocessed bcc emails
    * @return:       { sendFlags, toAddr, bccAddr }
    *                or null (cancel sending the email)
    */
-  processRules: function (forceRecipientSettings, sendFlags, optSendFlags, toAddr, bccAddr)
+  processRules: function (forceRecipientSettings, sendFlags, optSendFlags, toAddrStr, bccAddrStr)
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): toAddr=\""+toAddr+"\" bccAddr=\""+bccAddr+"\" forceRecipientSettings="+forceRecipientSettings+"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): toAddrStr=\""+toAddrStr+"\" bccAddrStr=\""+bccAddrStr+"\" forceRecipientSettings="+forceRecipientSettings+"\n");
 
     // process defaults
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
@@ -1735,10 +1735,10 @@ Enigmail.msg = {
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
 
     // get keys for to and cc addresses:
-    // - matchedKeysObj will contain the keys and the remaining toAddr elements
+    // - matchedKeysObj will contain the keys and the remaining toAddrStr elements
     var matchedKeysObj = new Object;  // returned value for matched keys
     var flagsObj = new Object;        // returned value for flags
-    if (!Enigmail.hlp.getRecipientsKeys(toAddr,
+    if (!Enigmail.hlp.getRecipientsKeys(toAddrStr,
                                         true,           // interactive
                                         forceRecipientSettings,
                                         matchedKeysObj,
@@ -1746,21 +1746,21 @@ Enigmail.msg = {
       return null;
     }
     if (matchedKeysObj.value) {
-      toAddr=matchedKeysObj.value;
-      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): after getRecipientsKeys() toAddr=\""+toAddr+"\"\n");
+      toAddrStr = matchedKeysObj.value;
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): after getRecipientsKeys() toAddrStr=\""+toAddrStr+"\"\n");
     }
     this.signByRules    = flagsObj.sign;
     this.encryptByRules = flagsObj.encrypt;
     this.pgpmimeByRules = flagsObj.pgpMime;
 
     // if not clear whether to encrypt yet, check whether automatically-send-encrypted applies
-    // - check whether bcc is empty here? if (bccAddr.length == 0) {
-    if (toAddr.length == 0 && this.encryptByRules == ENIG_UNDEF && EnigmailCommon.getPref("autoSendEncrypted") == 1) {
-      var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrList.join(", "),
+    // - check whether bcc is empty here? if (bccAddrStr.length == 0)
+    if (toAddrStr.length > 0 && this.encryptByRules == ENIG_UNDEF && EnigmailCommon.getPref("autoSendEncrypted") == 1) {
+      var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrStr,
                                                                 true);  // refresh key list
       if (validKeyList != null) {
         this.encryptByRules = ENIG_ALWAYS;
-        toAddr = validKeyList.join(", ");
+        toAddrStr = validKeyList.join(", ");
       }
     }
   
@@ -1770,7 +1770,7 @@ Enigmail.msg = {
     // final handling of conflicts:
     // - pgpMime conflicts always result into pgpMime = 0/'never'
     if (this.statusPGPMime == ENIG_FINAL_CONFLICT) {
-      flagsObj.pgpMime = ENIG_FINAL_NO;
+      this.statusPGPMime = ENIG_FINAL_NO;
     }
     // - encrypt/sign conflicts result into result 0/'never'
     //   with possible dialog to give a corresponding feedback
@@ -1824,9 +1824,9 @@ Enigmail.msg = {
     }
 
     // get keys according to rules for bcc addresses:
-    // - matchedKeysObj will contain the keys and the remaining bccAddr elements
+    // - matchedKeysObj will contain the keys and the remaining bccAddrStr elements
     // - NOTE: bcc recipients are ignored when in general computing whether to sign or encrypt or pgpMime
-    if (!Enigmail.hlp.getRecipientsKeys(bccAddr,
+    if (!Enigmail.hlp.getRecipientsKeys(bccAddrStr,
                                         true,           // interactive
                                         forceRecipientSettings,
                                         matchedKeysObj,
@@ -1834,15 +1834,15 @@ Enigmail.msg = {
       return null;
     }
     if (matchedKeysObj.value) {
-      bccAddr=matchedKeysObj.value;
-      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): after getRecipientsKeys() bccAddr=\""+bccAddr+"\"\n");
+      bccAddrStr = matchedKeysObj.value;
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): after getRecipientsKeys() bccAddrStr=\""+bccAddrStr+"\"\n");
     }
 
     return {
       sendFlags: sendFlags,
       optSendFlags: optSendFlags,
-      toAddr: toAddr,
-      bccAddr: bccAddr
+      toAddr: toAddrStr,
+      bccAddr: bccAddrStr,
     };
   },
 
@@ -1852,13 +1852,13 @@ Enigmail.msg = {
    * @sendFlags:    all current combined/processed send flags (incl. optSendFlags)
    * @optSendFlags: may only be SEND_ALWAYS_TRUST or SEND_ENCRYPT_TO_SELF
    * @fromAddr:     from email
-   * @toAddr:       comma separated string of keys and unprocessed to/cc emails
-   * @bccAddr:      comma separated string of keys and unprocessed bcc emails
+   * @toAddrStr:    comma separated string of keys and unprocessed to/cc emails
+   * @bccAddrStr:   comma separated string of keys and unprocessed bcc emails
    * @bccAddrList:  bcc receivers
    * @return:       doRulesProcessingAgain: start with rule processing once more
    *                or null (cancel sending the email)
    */
-  encryptTestMessage: function (enigmailSvc, sendFlags, optSendFlags, fromAddr, toAddr, bccAddr, bccAddrList)
+  encryptTestMessage: function (enigmailSvc, sendFlags, optSendFlags, fromAddr, toAddrStr, bccAddrStr, bccAddrList)
   {
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN    = nsIEnigmail.SEND_SIGNED;
@@ -1875,10 +1875,10 @@ Enigmail.msg = {
     //         If this is invalid, no other keys are tested.
     //         Thus, WE make it better here in enigmail until the bug is fixed.
     if (EnigmailCommon.getPref("assignKeysByEmailAddr")) {
-      var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddr,
+      var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrStr,
                                                                 true);  // refresh key list
       if (validKeyList != null) {
-        toAddr = validKeyList.join(", ");
+        toAddrStr = validKeyList.join(", ");
       }
     }
 
@@ -1886,9 +1886,9 @@ Enigmail.msg = {
     var testPlain = "Test Message";
     var testUiFlags   = nsIEnigmail.UI_TEST;
     var testSendFlags = nsIEnigmail.SEND_TEST | ENCRYPT | optSendFlags ;
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptTestMessage(): call encryptMessage() for fromAddr=\""+fromAddr+"\" toAddr=\""+toAddr+"\" bccAddr=\""+bccAddr+"\"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptTestMessage(): call encryptMessage() for fromAddr=\""+fromAddr+"\" toAddrStr=\""+toAddrStr+"\" bccAddrStr=\""+bccAddrStr+"\"\n");
     testCipher = enigmailSvc.encryptMessage(window, testUiFlags, testPlain,
-                                            fromAddr, toAddr, bccAddr,
+                                            fromAddr, toAddrStr, bccAddrStr,
                                             testSendFlags,
                                             testExitCodeObj,
                                             testStatusFlagsObj,
@@ -1912,7 +1912,7 @@ Enigmail.msg = {
       // check for invalid recipient keys
       var resultObj = new Object();
       var inputObj = new Object();
-      inputObj.toAddr = toAddr;
+      inputObj.toAddr = toAddrStr;
       inputObj.invalidAddr = Enigmail.hlp.getInvalidAddress(testErrorMsgObj.value);
 
       // prepare dialog options:
@@ -1953,8 +1953,8 @@ Enigmail.msg = {
           return {
             doRulesProcessingAgain : true,
             sendFlags : sendFlags,
-            toAddr : toAddr,
-            bccAddr : bccAddr,
+            toAddrStr : toAddrStr,
+            bccAddrStr : bccAddrStr,
           }
         }
 
@@ -1971,12 +1971,12 @@ Enigmail.msg = {
         }
         else {
           if (bccAddrList.length > 0) {
-            bccAddr=resultObj.userList.join(", ");
-            toAddr="";
+            toAddrStr = "";
+            bccAddrStr = resultObj.userList.join(", ");
           }
           else {
-            toAddr = resultObj.userList.join(", ");
-            bccAddr="";
+            toAddrStr = resultObj.userList.join(", ");
+            bccAddrStr = "";
           }
         }
         testCipher="ok";
@@ -1996,8 +1996,8 @@ Enigmail.msg = {
     return {
       doRulesProcessingAgain : false,
       sendFlags : sendFlags,
-      toAddr : toAddr,
-      bccAddr : bccAddr,
+      toAddrStr : toAddrStr,
+      bccAddrStr : bccAddrStr,
     };
   },
 
@@ -2280,11 +2280,11 @@ Enigmail.msg = {
          return false;
        }
 
-       var toAddr;
-       var bccAddr;
+       var toAddrStr;
+       var bccAddrStr;
        sendFlags = result.sendFlags;
-       toAddr = result.toAddr;
-       bccAddr = result.bccAddr;
+       toAddrStr = result.toAddrStr;
+       bccAddrStr = result.bccAddrStr;
 
        if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
          // always enable PGP/MIME if message is saved
@@ -2459,8 +2459,8 @@ Enigmail.msg = {
          newSecurityInfo.sendFlags = sendFlags;
          newSecurityInfo.UIFlags = uiFlags;
          newSecurityInfo.senderEmailAddr = fromAddr;
-         newSecurityInfo.recipients = toAddr;
-         newSecurityInfo.bccRecipients = bccAddr;
+         newSecurityInfo.recipients = toAddrStr;
+         newSecurityInfo.bccRecipients = bccAddrStr;
 
          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: securityInfo = "+newSecurityInfo+"\n");
 
@@ -2472,8 +2472,8 @@ Enigmail.msg = {
            sendFlags: sendFlags,
            inlineEncAttach: inlineEncAttach,
            fromAddr: fromAddr,
-           toAddr: toAddr,
-           bccAddr: bccAddr,
+           toAddr: toAddrStr,
+           bccAddr: bccAddrStr,
            uiFlags: uiFlags,
            bucketList: bucketList
          };
@@ -2511,7 +2511,7 @@ Enigmail.msg = {
            break;
        }
        if ((!(sendFlags & nsIEnigmail.SAVE_MESSAGE)) && confirm) {
-         if (!this.confirmBeforeSend(toAddrList.join(", "), toAddr+", "+bccAddr, sendFlags, isOffline)) {
+         if (!this.confirmBeforeSend(toAddrList.join(", "), toAddrStr+", "+bccAddrStr, sendFlags, isOffline)) {
            if (this.processed) {
              this.undoEncryption(0);
            }
@@ -2707,10 +2707,10 @@ Enigmail.msg = {
                      : EnigmailCommon.convertFromUnicode(escText, charset);
 
       var cipherText = enigmailSvc.encryptMessage(window, sendInfo.uiFlags, plainText,
-                                            sendInfo.fromAddr, sendInfo.toAddr, sendInfo.bccAddr,
-                                            sendInfo.sendFlags,
-                                            exitCodeObj, statusFlagsObj,
-                                            errorMsgObj);
+                                                  sendInfo.fromAddr, sendInfo.toAddr, sendInfo.bccAddr,
+                                                  sendInfo.sendFlags,
+                                                  exitCodeObj, statusFlagsObj,
+                                                  errorMsgObj);
 
       var exitCode = exitCodeObj.value;
 
