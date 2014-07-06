@@ -168,9 +168,16 @@
 <!ENTITY enigmail.insertkey.accesskey "f">
 <!ENTITY enigmail.attachkey.accesskey "Ö">
 <!ENTITY enigmail.attachmykey.accesskey "M">
+
+<!-- account specific options -->
+<!ENTITY enigmail.defaultSigning.label "Nachrichten standardmäßig unterschreiben">
 <!ENTITY enigmail.defaultEncryption.label "Nachrichten standardmäßig verschlüsseln">
-<!ENTITY enigmail.defaultEncryptionSign.label "Verschlüsselte Nachrichten standardmäßig unterschreiben">
-<!ENTITY enigmail.defaultSignPlainMsg.label "Unverschlüsselte Nachrichten standardmäßig unterschreiben">
+<!ENTITY enigmail.usePGPMimeAlways.label "PGP/MIME standardmäßig verwenden">
+
+<!ENTITY enigmail.afterDefaultsAndRules.label   "Nach Anwendung von Voreinstellungen und Regeln:">
+<!ENTITY enigmail.finallySignEncrypted.label    "verschlüsselte Nachrichten unterschreiben">
+<!ENTITY enigmail.finallySignNotEncrypted.label "unverschlüsselte Nachrichten unterschreiben">
+
 <!ENTITY enigmail.defaultEncryptionNone.label "Keine automatische Verschlüsselung">
 <!ENTITY enigmail.defaultNotSignedsend.label "Nachrichten nicht unterschreiben">
 
@@ -214,7 +221,6 @@
 <!ENTITY enigmail.neverAsk.tooltip "Eventuell werden Nachrichten dann unverschlüsselt gesendet!">
 <!ENTITY enigmail.defineRules.label "Empfängerregeln bearbeiten…">
 <!ENTITY enigmail.defineRules.tooltip "Regeln zur Schlüsselauswahl anzeigen, bearbeiten oder entfernen.">
-<!ENTITY enigmail.usePGPMimeAlways.label "PGP/MIME standardmäßig verwenden">
 <!ENTITY enigmail.autoEncryptDrafts.label "Nachrichten-Entwürfe verschlüsselt speichern">
 <!ENTITY enigmail.keepCryptoSettingsForReply.label "Verschlüsseln/Unterschreiben beim Antworten auf verschlüsselte/unterschriebene Nachrichten">
 <!ENTITY enigmail.confirmBeforeSend.label "Senden immer bestätigen">
