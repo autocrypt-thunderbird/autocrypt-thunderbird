@@ -63,29 +63,29 @@ Enigmail.hlp = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js:    getFlagVal(): oldVal="+oldVal+" newVal="+newVal+" type=\""+type+"\"\n");
 
     // conflict remains conflict
-    if (oldVal==ENIG_CONFLICT) {
-      return ENIG_CONFLICT;
+    if (oldVal==EnigmailCommon.ENIG_CONFLICT) {
+      return EnigmailCommon.ENIG_CONFLICT;
     }
 
     // 'never' and 'always' triggers conflict:
-    if ((oldVal==ENIG_NEVER && newVal==ENIG_ALWAYS) || (oldVal==ENIG_ALWAYS && newVal==ENIG_NEVER)) {
-      return ENIG_CONFLICT;
+    if ((oldVal==EnigmailCommon.ENIG_NEVER && newVal==EnigmailCommon.ENIG_ALWAYS) || (oldVal==EnigmailCommon.ENIG_ALWAYS && newVal==EnigmailCommon.ENIG_NEVER)) {
+      return EnigmailCommon.ENIG_CONFLICT;
     }
 
     // if there is any 'never' return 'never'
     // - thus: 'never' and 'maybe' => 'never'
-    if (oldVal==ENIG_NEVER || newVal==ENIG_NEVER) {
-      return ENIG_NEVER;
+    if (oldVal==EnigmailCommon.ENIG_NEVER || newVal==EnigmailCommon.ENIG_NEVER) {
+      return EnigmailCommon.ENIG_NEVER;
     }
 
     // if there is any 'always' return 'always'
     // - thus: 'always' and 'maybe' => 'always'
-    if (oldVal==ENIG_ALWAYS || newVal==ENIG_ALWAYS) {
-      return ENIG_ALWAYS;
+    if (oldVal==EnigmailCommon.ENIG_ALWAYS || newVal==EnigmailCommon.ENIG_ALWAYS) {
+      return EnigmailCommon.ENIG_ALWAYS;
     }
 
     // here, both values are 'maybe', which we return then
-    return ENIG_UNDEF;  // maybe
+    return EnigmailCommon.ENIG_UNDEF;  // maybe
   },
 
 
@@ -116,9 +116,9 @@ Enigmail.hlp = {
     // initialize return value and the helper variables for them:
     matchedKeysObj.value = "";
     flagsObj.value = false;
-    var sign    = ENIG_UNDEF;  // default sign flag is: maybe
-    var encrypt = ENIG_UNDEF;  // default encrypt flag is: maybe
-    var pgpMime = ENIG_UNDEF;  // default pgpMime flag is: maybe
+    var sign    = EnigmailCommon.ENIG_UNDEF;  // default sign flag is: maybe
+    var encrypt = EnigmailCommon.ENIG_UNDEF;  // default encrypt flag is: maybe
+    var pgpMime = EnigmailCommon.ENIG_UNDEF;  // default pgpMime flag is: maybe
 
     var addresses="{"+EnigmailFuncs.stripEmail(emailAddrs.toLowerCase()).replace(/[, ]+/g, "}{")+"}";
     var keyList=new Array;

@@ -162,6 +162,24 @@ var EnigmailCommon = {
   MIME_CONTRACTID: "@mozilla.org/mime;1",
   SIMPLEURI_CONTRACTID: "@mozilla.org/network/simple-uri;1",
 
+  // possible values for 
+  // - encryptByRule, signByRules, pgpmimeByRules
+  // - encryptForced, signForced, pgpmimeForced (except CONFLICT)
+  // NOTE:
+  // - values 0/1/2 are used with this fixed semantics in the persistent rules
+  // - see also enigmailEncryptionDlg.xul
+  ENIG_NEVER:     0,
+  ENIG_UNDEF:     1,
+  ENIG_ALWAYS:    2,
+  ENIG_CONFLICT: 99,
+
+  ENIG_FINAL_UNDEF:    -1,
+  ENIG_FINAL_NO:        0,
+  ENIG_FINAL_YES:       1,
+  ENIG_FINAL_FORCENO:  10,
+  ENIG_FINAL_FORCEYES: 11,
+  ENIG_FINAL_CONFLICT: 99,
+
   // variables
   enigmailSvc: null,
   enigStringBundle: null,
