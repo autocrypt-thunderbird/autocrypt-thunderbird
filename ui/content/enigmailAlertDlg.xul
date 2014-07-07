@@ -64,7 +64,6 @@
              class="plain"
              minwidth="400px"
              maxwidth="750px"
-             maxheigth="500px"
              value=""/>
   </vbox>
 
@@ -89,11 +88,17 @@
       var button3=window.arguments[0].button3;
       var checkboxLabel=window.arguments[0].checkboxLabel;
       var m=msgtext.match(/(\n)/g);
-      try {
-        var lines=(m.length > 20 ? 20: m.length+1);
+      var lines = 2;
+      if (m == null) {
+        lines = (msgtext.length / 80) + 2; 
       }
-      catch (ex) {
-        lines=1;
+      else {
+        try {
+          var lines = (m.length > 20 ? 20 : m.length+2);
+        }
+        catch (ex) {
+          lines = 2;
+        }
       }
       if (button1) {
         setButton(0, button1)

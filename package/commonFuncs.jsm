@@ -158,7 +158,16 @@ var EnigmailFuncs = {
 
     inputObj.keyserver = keysrvObj.value;
     if (! inputObj.searchList) {
-      inputObj.searchList = keysrvObj.email.split(/[,; ]+/);
+      // special handling to add the required leading 0x when searching for keys
+      if (keysrvObj.email.length == 8 && keysrvObj.email.match(/^[0-9a-fA-F]*$/)) {
+        inputObj.searchList = [ "0x"+keysrvObj.email ];
+      }
+      else if (keysrvObj.email.length == 16 && keysrvObj.email.match(/^[0-9a-fA-F]*$/)) {
+        inputObj.searchList = [ "0x"+keysrvObj.email ];
+      }
+      else {
+        inputObj.searchList = keysrvObj.email.split(/[,; ]+/);
+      }
     }
 
     win.openDialog("chrome://enigmail/content/enigmailSearchKey.xul",
