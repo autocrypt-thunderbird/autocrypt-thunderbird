@@ -86,7 +86,7 @@
 
           <!-- encryption state and entries to change it: -->
           <menu id="enigmail_compose_encrypt_menu"
-                  accesskey="&enigmail.encryptedsend.accesskey;"
+                accesskey="&enigmail.encryptedsend.accesskey;"
                 label="&enigmail.encryption.label;">
             <menupopup id="menu_EnigmailEncryptPopup"
                   accesskey="&enigmail.encryptedsend.accesskey;"
@@ -112,6 +112,7 @@
 
           <!-- signing state and entries to change it: -->
           <menu id="enigmail_compose_sign_menu"
+                accesskey="&enigmail.signedsend.accesskey;"
                 label="&enigmail.signing.label;">
             <menupopup id="menu_EnigmailSignPopup"
                    onpopupshowing="Enigmail.msg.setMenuSettings('a')">
@@ -138,6 +139,7 @@
           <menuseparator advanced="true"/>
           <menu id="enigmail_compose_pgpmime_menu"
                 advanced="true"
+                accesskey="&enigmail.sendPGPMime.accesskey;"
                 label="&enigmail.pgpMime.label;">
             <menupopup id="menu_EnigmailPgpMimePopup"
                    advanced="true"
@@ -265,6 +267,7 @@
 
           <!-- encryption state and entries to change it: -->
           <menu id="enigmail_compose_encrypt_menu3"
+                accesskey="&enigmail.encryptedsend.accesskey;"
                 label="&enigmail.encryption.label;">
             <menupopup id="menu_EnigmailEncryptPopup3"
                    onpopupshowing="Enigmail.msg.setMenuSettings('3b')">
@@ -289,6 +292,7 @@
 
           <!-- signing state and entries to change it: -->
           <menu id="enigmail_compose_sign_menu3"
+                accesskey="&enigmail.signedsend.accesskey;"
                 label="&enigmail.signing.label;">
             <menupopup id="menu_EnigmailSignPopup3"
                    onpopupshowing="Enigmail.msg.setMenuSettings('3a')">
@@ -315,6 +319,7 @@
           <menuseparator advanced="true"/>
           <menu id="enigmail_compose_pgpmime_menu3"
                 advanced="true"
+                accesskey="&enigmail.sendPGPMime.accesskey;"
                 label="&enigmail.pgpMime.label;">
             <menupopup id="menu_EnigmailPgpMimePopup3"
                    advanced="true"
