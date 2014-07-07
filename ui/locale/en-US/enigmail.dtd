@@ -335,7 +335,7 @@
 
 <!ENTITY enigmail.progressText.label               "Progress:">
 
-<!ENTITY enigmail.openPgpSecurity.label            "Enigmail Security">
+<!ENTITY enigmail.openPgpSecurity.label            "OpenPGP Security">
 
 <!ENTITY enigmail.pgpSecurityInfo.label            "Enigmail Security Info ...">
 <!ENTITY enigmail.copySecurityInfo.label           "Copy Enigmail Security Info">

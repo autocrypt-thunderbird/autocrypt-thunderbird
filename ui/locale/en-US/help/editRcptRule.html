@@ -3,7 +3,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Enigmail Help: Edit OpenPGP Rule</title>
+  <title>Enigmail Help: Edit Per-Recipient Rule</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <style type="text/css">
   /*<![CDATA[*/
@@ -15,19 +15,19 @@
 <body>
   <h1>Enigmail Help</h1>
 
-  <h3>Using the Enigmail Rules Editor: Edit OpenPGP Rule</h3>
+  <h3>Using the Enigmail Rules Editor: Edit Per-Recipient Rule</h3>
 
   <p>In the Rules Editor, you can specify defaults per recipient for enabling encryption, signing and PGP/MIME, and to define what OpenPGP key(s) to use. In this dialog, you can specify the rules for a single recipient, and for a group of recipients with very similar attributes.</p>
 
   <dl>
-    <dt>Set OpenPGP Rules for</dt>
+    <dt>Set Enigmail Rules for</dt>
 
     <dd>Contains the email addresses of the recipients (without names, i.e. just an address like <tt>somebody@email.domain</tt>). You can specify several email addresses, separated by spaces. The address specified here can consist of only the domain section so that mail to any address at that domain will be matched, e.g. <tt>@email.domain will</tt> allow matching to <tt>body@email.domain</tt>, <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt>, etc.</dd>
 
     <dt>Apply rule if recipient ...</dt>
 
     <dd>
-      This modifies the matching of the email addresses. If multiple addresses are entered, the setting will apply to all. The examples below are based on <tt>body@email.domain</tt> entered in the <em>OpenPGP Rules</em> field above.
+      This modifies the matching of the email addresses. If multiple addresses are entered, the setting will apply to all. The examples below are based on <tt>body@email.domain</tt> entered in the <em>Enigmail Rules</em> field above.
 
       <ul>
         <li><em>Is exactly</em>: with this setting, the rule will only trigger on emails to <tt>body@email.domain</tt> (exact, case insensitive matching).</li>
@@ -75,7 +75,7 @@
     <dd>Enable or disable the use of the PGP/MIME (RFC 3156) message encoding. If PGP/MIME is disabled, the messages are encoded using "inline PGP". The allowed values and their meaning are the same as for message signing.</dd>
   </dl>
 
-  <p>The rules are processed in the order displayed in the list in the <em>OpenPGP Rules Editor</em>. Whenever a rule matches a recipient and contains a OpenPGP Key ID, in addition to using the specified Key ID, the recipient is not considered anymore when processing further rules.</p>
+  <p>The rules are processed in the order displayed in the list in the <em>Per-Recipient Rules Editor</em>. Whenever a rule matches a recipient and contains a OpenPGP Key ID, in addition to using the specified Key ID, the recipient is not considered anymore when processing further rules.</p>
   <hr />
 
   <p>Further help is available on the <a href="http://www.enigmail.net/documentation/pgprules_file.php" target="_blank">Enigmail Per-Recipient Settings page</a></p>
