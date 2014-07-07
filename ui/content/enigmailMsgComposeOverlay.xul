@@ -148,10 +148,12 @@
                   oncommand="Enigmail.msg.doPgpButton('final-pgpmimeDefault');" />
               <menuitem id="enigmail_final_pgpmimeYesc"
                   type="checkbox"
+                  accesskey="&enigmail.sendPGPMime.accesskey;"
                   label="&enigmail.finalPGPMimeYes.label;"
                   oncommand="Enigmail.msg.doPgpButton('final-pgpmimeYes');" />
               <menuitem id="enigmail_final_pgpmimeNoc"
                   type="checkbox"
+                  accesskey="&enigmail.sendPGPMime.accesskey;"
                   label="&enigmail.finalPGPMimeNo.label;"
                   oncommand="Enigmail.msg.doPgpButton('final-pgpmimeNo');" />
             </menupopup>
@@ -323,10 +325,12 @@
                   oncommand="Enigmail.msg.nextCommand('final-pgpmimeDefault');" />
               <menuitem id="enigmail_final_pgpmimeYes3c"
                   type="checkbox"
+                  accesskey="&enigmail.sendPGPMime.accesskey;"
                   label="&enigmail.finalPGPMimeYes.label;"
                   oncommand="Enigmail.msg.nextCommand('final-pgpmimeYes');" />
               <menuitem id="enigmail_final_pgpmimeNo3c"
                   type="checkbox"
+                  accesskey="&enigmail.sendPGPMime.accesskey;"
                   label="&enigmail.finalPGPMimeNo.label;"
                   oncommand="Enigmail.msg.nextCommand('final-pgpmimeNo');" />
             </menupopup>
