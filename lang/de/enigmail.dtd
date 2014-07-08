@@ -119,8 +119,8 @@
 <!ENTITY enigmail.undoencryption.label "Verschlüsselung rückgängig machen">
 <!ENTITY enigmail.attachkey.label "Öffentlichen Schlüssel anhängen…">
 <!ENTITY enigmail.attachmykey.label "Meinen öffentlichen Schlüssel anhängen">
-<!ENTITY enigmail.finalSignDefault.label "Standard-Einstellungen und Regeln für Unterschriften verwenden">
-<!ENTITY enigmail.finalSignYes.label "Zwingen Unterschreiben">
+<!ENTITY enigmail.finalSignDefault.label "Standards und Regeln für Unterschriften verwenden">
+<!ENTITY enigmail.finalSignYes.label "Zwingend unterschreiben">
 <!ENTITY enigmail.finalSignNo.label "Zwingend nicht unterschreiben">
 <!ENTITY enigmail.finalEncryptDefault.label "Standards und Regeln für Verschlüsselung verwenden">
 <!ENTITY enigmail.finalEncryptYes.label "Zwingend verschlüsseln">
@@ -156,8 +156,8 @@
 <!-- Sending Preferences -->
 <!ENTITY enigmail.SendingPrefs.label "Allgemeine Versandeinstellungen">
 <!ENTITY enigmail.seeAccountSettings.label "Siehe auch Konto-Spezifische Enigmail Einstellungen (Konten-Einstellungen -&gt; OpenPGP Sicherheit)">
-<!ENTITY enigmail.encryptionModelConvenient.label "Bequeme Verschluesselungs-Einstellungen">
-<!ENTITY enigmail.encryptionModelManually.label "Manuelle Verschluesselungs-Einstellungen">
+<!ENTITY enigmail.encryptionModelConvenient.label "Bequeme Verschlüsselungs-Einstellungen">
+<!ENTITY enigmail.encryptionModelManually.label "Manuelle Verschlüsselungs-Einstellungen">
 <!ENTITY enigmail.keepCryptoSettingsForReply.label "Verschlüsseln/Unterschreiben beim Antworten auf verschlüsselte/unterschriebene Nachrichten">
 <!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "Antworten auf verschlüsselte/unterschriebene Nachrichten werden, wenn möglich, auch verschlüsselt/unterschrieben.">
 <!ENTITY enigmail.autoSendEncryptedOption.label "Sende automatisch verschlüsselt">
@@ -582,9 +582,18 @@
 <!-- wizard: encryption step (replaces pgEnc with v1.7) -->
 <!ENTITY enigmail.setupWiz.pgEncConv.title "Verschlüsselung">
 <!ENTITY enigmail.setupWiz.pgEncConv.subtitle "Verschlüsseln Sie Ihre versendeten Nachrichten">
-<!ENTITY enigmail.setupWiz.pgEncConv.desc "Enigmail erlaubt Ihnen, Nachrichten und Anhänge dazu zu verschlüsseln. Die Verschlüsselung ist vergleichbar mit einem Brief der in einen Umschlag gesteckt wird. Damit werden Konversationen privat. Dies gilt nicht nur für 'geheime' Nachrichten, sondern für alles was nicht auf einer Postkarte geschrieben würde.<html:br/><html:br/>
-Um verschlüsselte Nachrichten verschicken zu können, werden die Schlüssel von allen Empfängern benötigt. Leider ist OpenPGP-Verschlüsselung aber nicht überall im Einsatz, so dass Sie typischerweise nur die Schlüssel von <html:i>einigen</html:i> Empfängern haben. Um diese Situation zu unterstützen, enthält Enigmail einen bequemen Modus, in welchem immer dann verschlüsselt wird, wenn es möglich ist. Sie können immer noch für jede Nachricht entscheiden, ob sie verschlüsselt werden soll, oder nicht.">
-<!ENTITY enigmail.setupWiz.pgEncConv.convEncMsg "Welchen generellen Arbeitsmodus wünschen Sie für das Verschlüsseln von ausgehenden Nachrichten?">
+<!ENTITY enigmail.setupWiz.pgEncConv.desc "Enigmail erlaubt Ihnen, Nachrichten und Anhänge dazu zu verschlüsseln.
+Die Verschlüsselung<html:br/>ist vergleichbar mit einem Brief der in einen Umschlag gesteckt wird. Damit werden<html:br/>
+Konversationen privat. Dies gilt nicht nur für 'geheime' Nachrichten, sondern für alles was
+nicht auf einer Postkarte<html:br/>geschrieben würde.<html:br/><html:br/>
+Um verschlüsselte Nachrichten verschicken zu können, werden die Schlüssel von allen<html:br/>
+Empfängern benötigt. Leider ist die OpenPGP-Verschlüsselung aber nicht überall im Einsatz, so dass Sie<html:br/>
+typischerweise nur die Schlüssel von <html:i>einigen</html:i> Empfängern haben.
+Um diese Situation zu unterstützen,<html:br/>enthält Enigmail einen bequemen Modus, in welchem
+immer dann verschlüsselt wird, wenn es möglich ist. Sie können immer noch für jede<html:br/>
+Nachricht entscheiden, ob sie verschlüsselt werden soll, oder nicht.">
+<!ENTITY enigmail.setupWiz.pgEncConv.convEncMsg "Welchen generellen Arbeitsmodus wünschen Sie für das Verschlüsseln
+        von ausgehenden Nachrichten?">
 <!ENTITY enigmail.setupWiz.pgEncConv.convYes "Bequeme automatische Verschlüsselung">
 <!ENTITY enigmail.setupWiz.pgEncConv.convEncYes "Verschlüssle alle meine Nachrichten, weil mir meine Privatsphäre wichtig ist">
 <!ENTITY enigmail.setupWiz.pgEncConv.convEncNo "Meine Nachrichten sollen nicht standardmässig verschlüsselt werden">
@@ -601,7 +610,8 @@ Um verschlüsselte Nachrichten verschicken zu können, werden die Schlüssel von
                                                       Nachrichten tatsächlich von Ihnen stammen und nicht verändert
 
                                                       wurden.">
-<!ENTITY enigmail.setupWiz.pgSign.signMsg "Welchen generellen Arbeitsmodus wünschen Sie für das Unterschreiben von ausgehenden Nachrichten?">
+<!ENTITY enigmail.setupWiz.pgSign.signMsg "Welchen generellen Arbeitsmodus wünschen Sie für das Unterschreiben
+von ausgehenden Nachrichten?">
 <!ENTITY enigmail.setupWiz.pgSign.signYes "Alle meine Nachrichten sollen standardmässig unterschrieben werden">
 <!ENTITY enigmail.setupWiz.pgSign.signNo "Meine Nachrichten sollen nicht standardmässig unterschrieben werden">
 <!-- old labels: -->
