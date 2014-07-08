@@ -56,7 +56,7 @@ XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS)-$(PLATFORM_STR)-$(CPU_ARCH).xpi
 
 .PHONY: dirs $(DIRS)
 
-all: dirs check xpi
+all: dirs xpi
 
 dirs: $(DIRS)
 
