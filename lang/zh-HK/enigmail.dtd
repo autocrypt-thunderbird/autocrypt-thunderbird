@@ -1,164 +1,58 @@
-<!ENTITY enigmail.label	                  "Enigmail">
-
-<!ENTITY enigmail.keyUserId.label         "使用者電郵">
-<!ENTITY enigmail.useForSigning.label     "使用鑰匙簽證">
-<!ENTITY enigmail.keyComment.label        "簡介">
-<!ENTITY enigmail.keyNoPassphrase.label   "不用密碼">
-<!ENTITY enigmail.keyPassphrase.label     "密碼">
+<!ENTITY enigmail.label "Enigmail">
+<!ENTITY enigmail.keyUserId.label "使用者電郵">
+<!ENTITY enigmail.useForSigning.label "使用鑰匙簽證">
+<!ENTITY enigmail.keyComment.label "簡介">
+<!ENTITY enigmail.keyNoPassphrase.label "不用密碼">
+<!ENTITY enigmail.keyPassphrase.label "密碼">
 <!ENTITY enigmail.keyPassphraseRepeat.label "重複密碼">
-<!ENTITY enigmail.generateKey.label       "產生新的鑰匙">
-<!ENTITY enigmail.cancelKey.label         "取消">
-
-<!ENTITY enigmail.preferences.label	  "偏好設定">
-
-<!ENTITY enigmail.userIdValue.label       "使用者的電郵">
-<!ENTITY enigmail.userNoPassphrase.label  "使用者沒有設定使用密碼">
-
-<!ENTITY enigmail.userIdFromAddr.label    "使用此電郵簽證">
-
-<!ENTITY enigmail.defaultEncryptionOption.label "請選用加密的方式">
-<!ENTITY enigmail.usePGPMimeOption.label  "請選用PGP/MIME的方式">
-<!ENTITY enigmail.mimeHashAlgorithm.label "Hash 加密法">
-
-<!ENTITY enigmail.agentPath.label         "GPG/PGP 程式所在路徑">
-
-<!ENTITY enigmail.send_plaintext_flowed.label "允許 flowed text (RFC 2646)">
-
+<!ENTITY enigmail.cancelKey.label "取消">
+<!ENTITY enigmail.preferences.label "偏好設定">
+<!ENTITY enigmail.userNoPassphrase.label "使用者沒有設定使用密碼">
 <!ENTITY enigmail.maxIdleMinutesHead.label "記憶密碼">
 <!ENTITY enigmail.maxIdleMinutesTail.label "分鐘">
-
+<!ENTITY enigmail.resetPrefsButton.label "重設">
 <!ENTITY enigmail.advanced.label "進階">
-<!ENTITY enigmail.advancedPrefsButton.label "進階">
-<!ENTITY enigmail.resetPrefsButton.label  "重設">
-<!ENTITY enigmail.prefsHelpButton.label	  "說明">
-
-<!ENTITY enigmail.upgradeButton.label	  "更新 Enigmail">
-<!ENTITY enigmail.uninstallButton.label	  "刪除 Enigmail">
-
-<!ENTITY enigmail.advancedPrefs.label	  "Enigmail 進階偏好設定">
-
-<!ENTITY enigmail.whenSending.label       "每當寄出電郵時">
-<!ENTITY enigmail.moreOptions.label       "其它選項">
-
-<!ENTITY enigmail.encryptToSelf.label     "Encrypt to self">
-<!ENTITY enigmail.alwaysTrustSend.label   "默認使用者編號 ID">
-<!ENTITY enigmail.defaultSignNewsMsg.label "為新聞電郵簽證">
-<!ENTITY enigmail.useDefaultComment.label "在簽證時使用預置簡介">
-
-<!ENTITY enigmail.keyserver.label         "鑰匙伺服器">
-
-<!ENTITY enigmail.disableSMIMEui.label	  "隱藏 SMIME 圖案與選項">
-<!ENTITY enigmail.captureWebMail.label	  "Capture webmail (experimental)">
-<!ENTITY enigmail.hushMailSupport.label   "Support for Hushmail (turn off unless needed)">
-
-<!ENTITY enigmail.debugging.label	  "為 Enigmail 進行除虫">
-<!ENTITY enigmail.logdirectory.label	  "日誌路徑">
-<!ENTITY enigmail.testemail.label	  "測試電郵">
-<!ENTITY enigmail.test.label    	  "測試">
-
-<!ENTITY enigmail.decryptbutton.label	  "解碼">
-<!ENTITY enigmail.decryptbutton.tip	  "Enigmail 解碼與簽名認證">
-
-<!ENTITY enigmail.messengermenu.accesskey   "n">
-
-<!ENTITY enigmail.decryptverify.label	    "解碼與簽名認證">
-<!ENTITY enigmail.importpublickey.label	    "匯入公匙">
-<!ENTITY enigmail.savedecrypted.label	    "儲存解碼的訊息">
-
-<!ENTITY enigmail.autoDecrypt.label         "自動進行解碼與簽名認證">
-<!ENTITY enigmail.clearPassphrase.label	    "清除記億中的密碼">
-
-<!ENTITY enigmail.prefs.label	            "偏好設定">
-<!ENTITY enigmail.advprefs.label	    "進階偏好設定">
-<!ENTITY enigmail.viewconsole.label	    "觀看 console">
-<!ENTITY enigmail.viewdebuglog.label	    "觀看日誌">
-
-<!ENTITY enigmail.generatekey.label	    "產生新的鑰匙">
-<!ENTITY enigmail.upgrade.label	            "更新">
-<!ENTITY enigmail.help.label	            "說明">
-<!ENTITY enigmail.about.label	            "有關 Enigmail">
-
-<!ENTITY enigmail.decryptverify.accesskey   "D">
+<!ENTITY enigmail.moreOptions.label "其它選項">
+<!ENTITY enigmail.alwaysTrustSend.label "默認使用者編號 ID">
+<!ENTITY enigmail.keyserver.label "鑰匙伺服器">
+<!ENTITY enigmail.logdirectory.label "日誌路徑">
+<!ENTITY enigmail.testemail.label "測試電郵">
+<!ENTITY enigmail.test.label "測試">
+<!ENTITY enigmail.decryptbutton.label "解碼">
+<!ENTITY enigmail.decryptbutton.tip "Enigmail 解碼與簽名認證">
+<!ENTITY enigmail.messengermenu.accesskey "n">
+<!ENTITY enigmail.decryptverify.label "解碼與簽名認證">
+<!ENTITY enigmail.importpublickey.label "匯入公匙">
+<!ENTITY enigmail.savedecrypted.label "儲存解碼的訊息">
+<!ENTITY enigmail.autoDecrypt.label "自動進行解碼與簽名認證">
+<!ENTITY enigmail.clearPassphrase.label "清除記億中的密碼">
+<!ENTITY enigmail.prefs.label "偏好設定">
+<!ENTITY enigmail.viewconsole.label "觀看 console">
+<!ENTITY enigmail.viewdebuglog.label "觀看日誌">
+<!ENTITY enigmail.generateKey.label "產生新的鑰匙">
+<!ENTITY enigmail.help.label "說明">
+<!ENTITY enigmail.about.label "有關 Enigmail">
+<!ENTITY enigmail.decryptverify.accesskey "D">
 <!ENTITY enigmail.importpublickey.accesskey "I">
-<!ENTITY enigmail.savedecrypted.accesskey   "S">
-
-<!ENTITY enigmail.autoDecrypt.accesskey     "A">
-
+<!ENTITY enigmail.savedecrypted.accesskey "S">
+<!ENTITY enigmail.autoDecrypt.accesskey "A">
 <!ENTITY enigmail.clearPassphrase.accesskey "l">
-
-<!ENTITY enigmail.prefs.accesskey           "P">
-<!ENTITY enigmail.advprefs.accesskey        "v">
-<!ENTITY enigmail.viewconsole.accesskey	    "c">
-<!ENTITY enigmail.viewdebuglog.accesskey    "g">
-
-<!ENTITY enigmail.generatekey.accesskey     "k">
-<!ENTITY enigmail.upgrade.accesskey         "U">
-<!ENTITY enigmail.help.accesskey            "H">
-<!ENTITY enigmail.about.accesskey           "b">
-
-<!ENTITY enigmail.sendbutton.label	  "加密或簽證寄出">
-<!ENTITY enigmail.sendbutton.tip	  "加密或簽證寄出">
-
-<!ENTITY enigmail.defaultsend.label	       "預置寄出">
-<!ENTITY enigmail.signedsend.label	       "簽證寄出">
-<!ENTITY enigmail.encryptedsend.label	       "加密寄出">
-<!ENTITY enigmail.encryptsignsend.label	       "加密和簽證寄出">
-<!ENTITY enigmail.plainsend.label	       "純文字寄出">
-
-<!ENTITY enigmail.sendOptionsMenu.label        "預置的寄出方式">
-<!ENTITY enigmail.mimeOptionsMenu.label        "預置的MIME選項">
-<!ENTITY enigmail.sendPGPMime.label            "在此電郵中使用 PGP/MIME">
-
-<!ENTITY enigmail.undoencryption.label	       "取消加密">
-<!ENTITY enigmail.insertkey.label	       "附上公匙">
-
-<!ENTITY enigmail.composemenu.accesskey        "n">
-
-<!ENTITY enigmail.defaultsend.accesskey	       "D">
-<!ENTITY enigmail.signedsend.accesskey	       "S">
-<!ENTITY enigmail.encryptedsend.accesskey      "c">
-<!ENTITY enigmail.encryptsignsend.accesskey    "E">
-<!ENTITY enigmail.plainsend.accesskey	       "P">
-
-<!ENTITY enigmail.sendOptionsMenu.accesskey    "o">
-<!ENTITY enigmail.mimeOptionsMenu.accesskey    "M">
-<!ENTITY enigmail.sendPGPMime.accesskey        "g">
-
-<!ENTITY enigmail.undoencryption.accesskey     "U">
-<!ENTITY enigmail.insertkey.accesskey          "I">
-
-<!ENTITY enigmail.defaultEncryptionSign.label     "如有可能則加密和簽證">
-<!ENTITY enigmail.defaultEncryptionOnly.label     "如有可能則加密">
-<!ENTITY enigmail.defaultEncryptionNone.label     "不用加密和簽證">
-
-<!ENTITY enigmail.usePGPMimeAlways.label          "總是使用 PGP/MIME">
-<!ENTITY enigmail.usePGPMimePossible.label        "如有可能則使用 PGP/MIME">
-<!ENTITY enigmail.usePGPMimeNever.label           "不用 PGP/MIME">
-
-<!ENTITY enigmail.defaultSignMsg.label            "為電郵簽證">
-<!ENTITY enigmail.confirmBeforeSend.label         "確認後才寄出">
-
-<!ENTITY enigmail.defaultEncryptionSign.accesskey "E">
-<!ENTITY enigmail.defaultEncryptionOnly.accesskey "c">
-<!ENTITY enigmail.defaultEncryptionNone.accesskey "N">
-
-<!ENTITY enigmail.usePGPMimeAlways.accesskey      "A">
-<!ENTITY enigmail.usePGPMimePossible.accesskey    "U">
-<!ENTITY enigmail.usePGPMimeNever.accesskey       "v">
-
-<!ENTITY enigmail.defaultSignMsg.accesskey        "S">
-<!ENTITY enigmail.confirmBeforeSend.accesskey     "A">
-
+<!ENTITY enigmail.prefs.accesskey "P">
+<!ENTITY enigmail.viewconsole.accesskey "c">
+<!ENTITY enigmail.viewdebuglog.accesskey "g">
+<!ENTITY enigmail.help.accesskey "H">
+<!ENTITY enigmail.about.accesskey "b">
+<!ENTITY enigmail.signedsend.label "簽證寄出">
+<!ENTITY enigmail.encryptedsend.label "加密寄出">
+<!ENTITY enigmail.sendOptionsMenu.label "預置的寄出方式">
+<!ENTITY enigmail.sendPGPMime.label "在此電郵中使用 PGP/MIME">
+<!ENTITY enigmail.undoencryption.label "取消加密">
+<!ENTITY enigmail.composemenu.accesskey "n">
+<!ENTITY enigmail.signedsend.accesskey "S">
+<!ENTITY enigmail.encryptedsend.accesskey "c">
+<!ENTITY enigmail.sendOptionsMenu.accesskey "o">
+<!ENTITY enigmail.sendPGPMime.accesskey "g">
+<!ENTITY enigmail.undoencryption.accesskey "U">
+<!ENTITY enigmail.usePGPMimeAlways.label "總是使用 PGP/MIME">
+<!ENTITY enigmail.advancedPrefsButton.label "進階">
 <!ENTITY enigmail.keygen.desc "注意：您可能會花費數分鐘的時間才能完整的產生新的鑰匙，請不要離開您的瀏覽器。在產生新的鑰匙的過程中瀏覽網頁或使用電腦可能會增加亂數的生產從而減少所須的時間。當產生完成後您會收到通知。">
-
-<!ENTITY enigmail.console.label                     "觀看 Enigmail console">
-<!ENTITY enigmail.console.tooltip                   "觀看 Enigmail console">
-
-<!ENTITY enigmail.uninstall.label                   "刪除 Enigmail">
-<!ENTITY enigmail.uninstall.tooltip                 "刪除 Enigmail">
-
-<!ENTITY enigmail.selectpanel.label                 "選擇 Enigmail 板面">
-<!ENTITY enigmail.selectpanel.tooltip               "選擇 Enigmail 板面">
-
-<!ENTITY enigmail.experimental.label                "使用實驗性的嵌入加密與簽證">
-

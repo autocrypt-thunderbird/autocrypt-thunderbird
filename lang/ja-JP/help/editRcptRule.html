@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="content-type" content="text/html; charset='UTF-8'">
-  <title>Enigmail ヘルプ: 受取人ごとのルール設定</title>
+  <title>Enigmail ヘルプ: 受取人ごとの設定の編集</title>
   <style type="text/css">
   /*<![CDATA[*/
     dt  { font-weight: bold;  }
@@ -15,20 +15,20 @@
 <body>
   <h1>Enigmail ヘルプ</h1>
 
-  <h3>受取人ごとのルール設定</h3>
+  <h3>受取人ごとの設定の編集</h3>
 
-  <p>受取人ごとのルール設定で、受取人毎の初期設定 (署名、暗号化、PGP/MIME を使用する/しない) および使用する OpenPGP鍵を指定できます。このダイアログで 1 人の受取人、および同様な方法でグループに対して設定できます。</p>
+  <p>受取人ごとの設定の編集で、受取人ごとに署名、暗号化、PGP/MIME の可否および使用する OpenPGP鍵を指定できます。このダイアログで 1 人の受取人、および同様な方法でグループに対して設定できます。</p>
 
   <dl>
-    <dt>OpenPGP ルールの設定</dt>
+    <dt>メールアドレス</dt>
 
     <dd>受取人のメールアドレスが表示されます (名前は表示されずアドレスだけです 例: <tt>somebody@email.domain</tt>)。半角スペースで区切って複数のアドレスを入力することもできます。ここで指定するアドレスは、ドメインセクション (@ の右側) だけを指定できます。そうすることにより、同じドメインの (@ マークの右側が同じ) どんなアドレスにもルールを適用することができます。例えば <tt>@email.domain</tt> と入力した場合、<tt>body@email.domain</tt>, <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt> などにもルールが適用されます。</dd>
 
     <dt>受取人が上記アドレス ... とき、ルールを適用</dt>
 
-    <dd>電子メールアドレスの適用方法を指定します。もし、複数のアドレスが入力されている場合、この設定は全員に対して適用されます。以下は <tt>body@email.domain</tt> が <em>OpenPGP ルール</em> 欄に入力された場合の例です。
+    <dd>電子メールアドレスの適用方法を指定します。もし、複数のアドレスが入力されている場合、この設定は全員に対して適用されます。以下は <tt>body@email.domain</tt> が <em>メールアドレス</em> 欄に入力された場合の例です。
       <ul>
-        <li><em>と同一な</em>: 指定したメールアドレスと同一の場合のみマッチします。<tt>body@email.domain</tt> (大文字小文字の違いは無視されます)</li>
+        <li><em>と同一の</em>: 指定したメールアドレスと同一の場合のみマッチします。<tt>body@email.domain</tt> (大文字小文字の違いは無視されます)</li>
 
         <li><em>を含む</em>: 指定した文字列を含むメールアドレスがマッチします。例: <tt>anybody@email.domain</tt>, <tt>body@email.domain.net</tt></li>
 
@@ -74,7 +74,7 @@
     <dd>PGP/MIME (RFC 3156) を用いてメッセージをエンコードするかどうかを決定します。PGP/MIME が無効の場合、メッセージはインライン PGP を用いて行われます。設定可能な項目と意味は、署名と同一です。</dd>
   </dl>
 
-  <p>こららのルールは <em>受取人ごとのルール設定</em> に表示されている順に処理されます。ルールに受取人がマッチし、OpenPGP鍵の ID を含み、加えて設定された鍵ID を使用している場合には、その受取人に関してはそれ以上のルールは考慮されません。</p>
+  <p>これらのルールは <em>受取人ごとの設定</em> に表示されている順に処理されます。ルールに受取人がマッチし、OpenPGP鍵の ID を含み、加えて設定された鍵ID を使用している場合には、その受取人に関してはそれ以上のルールは考慮されません。</p>
   <hr />
 
   <p>更なるヘルプは以下のサイトで利用できます (英語): <a href="http://www.enigmail.net/documentation/pgprules_file.php" target="_blank">Enigmail Per-Recipient Settings page</a></p>

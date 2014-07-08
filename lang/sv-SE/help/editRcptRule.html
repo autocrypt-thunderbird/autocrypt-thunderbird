@@ -1,91 +1,83 @@
-<html>
-<head><title>Enigmail hj&auml;lp: Redigera OpenPGP regler</title>
-</head>
-<body>
-<h1>Enigmail hj&auml;lp</h1>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<h3>Anv&auml;nda Enigmail regelredigerare: Redigera OpenPGP-regler</h3>
-<p>I regelredigeraren, kan du specifiera standard per-mottagare f&ouml;r att aktivera kryptering,
-signering och PGP/MIME, och att definiera vilken OpenPGP-nyckel(ar) som skall anv&auml;ndas. I den h&auml;r
-dialogen, kan du specificera regler f&ouml;r en enstaka mottagare, och f&ouml;r en grupp av mottagare
-med v&auml;ldigt likartade attribut.
-</p>
-<ul>
-  <li><span style="font-weight: bold;">St&auml;ll in OpenPGP-regler f&ouml;r</span>: Inneh&aring;ller e-mailadresser
-  f&ouml;r mottagarna (utan namn, dvs. en adress som
-  <tt>somebody@email.domain</tt>). Du kan specificera &aring;tskilliga e-mailadresser, separerade av mellanrum.
-    De adresser som specificeras h&auml;r kan best&aring; av enbart dom&auml;nsektionen s&aring; att mail till n&aring;gon som helst
-    adress i den dom&auml;nen kommer att matchas, t.ex. <tt>@email.domain kommer</tt> att till&aring;ta
-    matching till <tt>body@email.domain</tt>,
-    <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt>, etc.
-  </li>
-  <li><span style="font-weight: bold;">Till&auml;mpa regler om mottagaren ...</span>:
-    Detta modifierar matchningen hos e-mailadresser. Om multipla adresser anges, kommer
-    inst&auml;llningarna att g&auml;lla alla. Exemplen nedanf&ouml;r &auml;r baserade p&aring; <tt>body@email.domain</tt>
-    som angetts i <i>OpenPGP regel</i> f&auml;ltet ovanf&ouml;r.
-    <ul>
-      <li><i>&Auml;r exakt</i>: med den h&auml;r inst&auml;llningen, kommer regeln endast att triggas av e-mail till
-      <tt>body@email.domain</tt> (exakt matchning, obeoende av stora eller sm&aring; bokst&auml;ver).
-      </li>
-      <li><i>Inneh&aring;ller</i>: med den h&auml;r inst&auml;llningen, kommer n&aring;gon e-mailadress som inneh&aring;ller str&auml;ngen
-        att matcha,
-        t.ex. <tt>anybody@email.domain</tt> eller <tt>body@email.domain.net</tt>
-      </li>
-      <li><i>B&ouml;rjar med</i>: med den h&auml;r inst&auml;llningen kommer n&aring;gon e-mailadress startande med str&auml;ngen att
-        matchas, t.ex. <tt>body@email.domain.net</tt>,
-        <tt>body@email.domain-name.com</tt>.
-      </li>
-      <li><i>Slutar med</i>: med den h&auml;r inst&auml;llningen, kommer n&aring;gon e-mailadress slutande med str&auml;ngen
-        att matchas, t.ex. <tt>anybody@email.domain</tt>,
-        <tt>somebody@email.domain</tt>.
-      </li>
-    </ul>
-  </li>
-  <li><span style="font-weight: bold;">Forts&auml;tt med f&ouml;ljande regel f&ouml;r den matchande adressen</span><br>
-      Aktivering av den h&auml;r funktionen kommer att till&aring;ta dig att definiera en regel utan att beh&ouml;va uppge nyckel-ID i
-      <em>Anv&auml;nd f&ouml;ljande OpenPGP-nycklar:</em> f&auml;ltet, s&aring; att e-mailadressen anv&auml;nds f&ouml;r att
-      leta efter en nyckel vid tidpunkten f&ouml;r avs&auml;ndningen. Dessutom, kommer ytterligare regler f&ouml;r samma
-      adress(er) ocks&aring; att behandlas.
-  </li>
-  <li><span style="font-weight: bold;">Kontrollera inte ytterligare regler f&ouml;r matchande adresser</span><br>
-	  Aktivering av den h&auml;r funktionen avbryter behandling av ytterligare regler f&ouml;r matchande adress(er) om regeln
-	  matchas; t.ex. behandling av regler forts&auml;tter med n&auml;sta mottagare.
-  </li>
-  <li><span style="font-weight: bold;">Anv&auml;nd f&ouml;ljande OpenPGP-nyckar:</span><br>
-	  Anv&auml;nd <em>V&auml;lj nyckel(ar)..</em> knappen f&ouml;r att v&auml;lja mottagarens nyckel som skall anv&auml;ndas f&ouml;r kryptering.
-	  P&aring; samma s&auml;tt som i ovanst&aring;ende fall, kommer inga ytterligare regler f&ouml;r matchande adress(er) att behandlas.
-  </li>
-  <li><span style="font-weight: bold;">Standard f&ouml;r Signering</span>: aktiverar eller avaktiverar meddelandesignering.
-  Detta antingen anv&auml;nder eller &ouml;vertar vad du har specificerat i meddelandekompositionsf&ouml;nstret. V&auml;rdena &auml;r:
-    <ul>
-      <li><i>Aldrig</i>: avaktiverar signering, &auml;ven om den var aktiverad i meddelandekompositionsf&ouml;nstret
-      (&ouml;vertar alla andra v&auml;rden)<br>
-      </li>
-      <li><i>Ja, om vald fr&aring;n Meddelandekomposition</i>: l&auml;mna signering som specificerats i
-      meddelandekompositionsf&ouml;nstret</li>
-      <li><i>Alltid</i>: aktivera signering, &auml;ven om den <span
-        style="font-style: italic;">inte</span> av aktiverad i meddelandekompositionsf&ouml;nstret</li>
-    </ul>
-  </li>
-</ul>
-<div style="margin-left: 40px;">Dessa signeringsinst&auml;llningar till&auml;mpas f&ouml;r alla regler som matchar. Om en av
-reglerna avaktiverar signering, kommer meddelandet inte att signeras, oberoende av andra regler som specificerar <i>Alltid</i>.<br>
-</div>
-<ul>
-  <li><span style="font-weight: bold;">Kryptering</span>: aktiverar eller avaktiverar meddelandekryptering. De till&aring;tna
-    inst&auml;llningarna och deras betydelse &auml;r samma som f&ouml;r meddelandesignering.</li>
-  <li><span style="font-weight: bold;">PGP/MIME</span>: aktiverar eller avaktiverar anv&auml;ndningen av PGP/MIME (RFC 3156)
-    meddelandekodning. Om PGP/MIME &auml;r avaktiverad, kommer meddelanden att som kodade att anv&auml;nda "inline-PGP".
-    De till&aring;tna v&auml;rdena och deras betydelse &auml;r samma som f&ouml;r meddelandesignering.
-  </li>
-</ul>
-<p>Reglerna till&auml;mpas i den ordning som dom visas p&aring; listan i <i>OpenPGP-regelredigeraren</i>. N&auml;rhelst en regel
-matchar en mottagare och inneh&aring;ller ett OpenPGP nyckel-ID, som till&auml;gg till att anv&auml;nda
-det specificerade nyckel-ID, kommer inte n&aring;gon h&auml;nsyn att tas f&ouml;r mottagaren vid
-behandling av ytterligare regler.</p>
-<hr/>
-<p>
-Ytterligare hj&auml;lp &auml;r tillg&auml;nglig p&aring;
-<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmails hj&auml;lpwebbsajt</a>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Enigmail Hjälp: Redigera OpenPGP regel</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <style type="text/css">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <h1>Enigmail Hjälp</h1>
+
+  <h3>Använda Enigmail's regelredigerare: Redigera OpenPGP regel</h3>
+
+  <p>I regelredigeraren kan du ange standardinställningar per mottagare för att aktivera kryptering, signering och PGP/MIME, och för att definiera vilken OpenPGP-nyckel som ska användas. I det här fönstret kan du ange regler för en enda mottagare, och för en grupp av mottagare med mycket liknande egenskaper.</p>
+
+  <dl>
+    <dt>Ange Enigmail-regler för</dt>
+
+    <dd>Innehåller e-postadresserna till mottagarna (utan namn, det vill säga endast en adress som <tt>somebody@email.domain</tt>). Du kan ange flera e-postadresser, separerade med mellanslag. Adressen som anges här kan endast bestå av domändelen så att e-post till en adress på den domänen kommer att matchas, t.ex. <tt>@email.domain</tt> tillåter matchning till <tt>body@email.domain</tt>, <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt>, etc.</dd>
+
+    <dt>Tillämpa regel om mottagare ...</dt>
+
+    <dd>
+      Detta ändrar matchning av e-postadresser. Om flera adresser anges kommer inställningen gälla för alla. Exemplen nedan är baserade på <tt>body@email.domain</tt> som angetts i <em>OpenPGP regler</em>fältet ovan.
+
+      <ul>
+        <li><em>Är exakt</em>: med denna inställning, kommer regeln endast trigga på e-post till <tt>body@email.domain</tt> (exakt, fall okänsliga matchning).</li>
+
+        <li><em>Innehåller</em>: med denna inställning, kommer en e-postadress som innehåller strängen matchas, t.ex. <tt>anybody@email.domain</tt> eller <tt>body@email.domain.net</tt></li>
+
+        <li><em>Startar med</em>: med denna inställning, kommer en e-postadress som börjar med strängen matchas, t.ex. <tt>body@email.domain.net</tt>, <tt>body@email.domain-name.com</tt>. </li>
+
+        <li><em>Slutar med</em>: med denna inställning, kommer en e-postadress som slutar med strängen matchas, t.ex. <tt>anybody@email.domain</tt>, <tt>somebody@email.domain</tt>.</li>
+      </ul>
+    </dd>
+
+    <dt>Fortsätt med nästa regel för matchande adress</dt>
+
+    <dd>Aktivera den här funktionen kan du definiera en regel, men inte ange en nyckel-ID i <em>Använd följande OpenPGP nycklar:</em> fältet, så att e-postadressen används för att kontrollera en nyckel när du skickar. Dessutom kommer ytterligare regler för samma adress behandlas också.</dd>
+
+    <dt>Kontrollera inte ytterligare regler för matchande adress</dt>
+
+    <dd>Aktivera den här funktionen stoppar bearbetning av andra regler för matchande adress, om denna regel matchas; dvs regelbearbetningen fortsätter med nästa mottagare.</dd>
+
+    <dt>Använd följande OpenPGP nycklar:</dt>
+
+    <dd>Använd <em>Välj nyckel...</em> knappen för att välja mottagarens nycklar som ska användas för kryptering. Som i åtgärden ovan, inga ytterligare regler för matchande adress behandlas.</dd>
+
+    <dt>Standardvärden för...</dt>
+
+    <dd>
+		Aktivera eller inaktivera signering för meddelanden. Detta använder eller åsidosätter vad du har specificerat i meddelandefönstret. Värdena är:
+
+      <ul>
+        <li><em>Aldrig</em>: avaktivera signering, även om den var aktiverad i meddelandefönstret(upphäver de andra värdena)</li>
+
+        <li><em>Ja, om det valts i meddelandekompositionen</em>: lämna signering som anges i meddelandefönstret</li>
+
+        <li><em>Alltid</em>: aktivera signering, även om det var <span style="font-style: italic;"> inte</span> aktiverad i meddelandefönstret</li>
+	</ul> Dessa signeringsinställningar tillämpas för alla regler som matchar. Om en av reglerna inaktiverar signering kommer meddelandet inte signeras, oberoende av andra regler som anger <em>Alltid</em>.
+    </dd>
+
+    <dt>Kryptering</dt>
+
+    <dd>Aktivera eller inaktivera meddelandekryptering. Tillåtna inställningar och deras betydelse är de samma som för meddelandesignering.</dd>
+
+    <dt>PGP/MIME</dt>
+
+    <dd>Aktivera eller inaktivera användning av PGP/MIME (RFC 3156) meddelandekodning. Om PGP/MIME är inaktiverad kodas meddelandena med "inline PGP". Tillåtna värden och deras betydelse är de samma som för meddelandesignering.</dd>
+  </dl>
+
+  <p>Reglerna behandlas i den ordning de visas i listan i <em>OpenPGP regelredigerare</em>. När en regel matchar en mottagare och innehåller en OpenPGP nyckel-ID, utöver att använda den angivna Nyckel-ID, mottagaren räknas inte längre vid behandling av ytterligare regler.</p>
+  <hr />
+
+  <p>Ytterligare hjälp finns på <a href="http://www.enigmail.net/documentation/pgprules_file.php" target="_blank">Enigmail Per-Recipient Settings page</a></p>
 </body>
 </html>

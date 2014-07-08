@@ -1,79 +1,81 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><title>Enigmail hjälp: Skriva meddelande</title></head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Enigmail HjÃ¤lp: Skriva meddelanden</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <style type="text/css">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
 <body>
-<h1>Enigmail hjälp</h1>
+  <h1>Enigmail HjÃ¤lp</h1>
 
-<h3>Använda Enigmail vid komposition av meddelanden</h3>
+  <h3>AnvÃ¤nda Enigmail nÃ¤r du skriver meddelanden</h3>
 
-<ul>
-  <li><b>Enigmailmeny i Mail/Skrivfönstret</b>
-  <ul>
-    <li><b>Signera meddelande</b>: Aktivera/Avaktivera sändning av signerad mail. Användaren uppmärksammas
-    om signering misslyckas.
-    </li>
-    <li><b>Kryptera meddelande</b>: Aktivera/Avaktivera kryptering till&nbsp;mottagaren(na) innan sändning. Användaren
-    uppmärksammas om kryptering misslyckas.
-	<p>Om <em>Visa val vid nödvändigt</em> är inställd på <b>Inställningar
-	-&gt; Nyckelvalsfliken</b>, kommer en lista med nycklar att poppa upp om det finns adresser i listan
-	över meddelandets&nbsp;mottagare för vilka du inte har någon publik nyckel.</p>
-	<p>Om <em>Visa aldrig OpenPGP nyckelvalsdialogen</em> är inställd på <b>Inställningar
-	-&gt; Nyckelvalsfliken</b>, och det finns adresser i listan över meddelandets mottagare&nbsp;för
-	vilka du inte har någon publik nyckel, kommer meddelandet att sändas okrypterat.</p>
-    </li>
-    <li><b>Använd PGP/MIME för detta meddelande</b>: Aktivera/Avaktivera användningen av
-    <a href="http://community.roxen.com/developers/idocs/rfc/rfc3156.html" target="_blank">PGP/MIME</a>
-	for detta meddelande.
-	<p>Om du känner till att mottagaren(na) kan läsa e-mail som använder PGP/MIME format, bör
-	du använda det.</p>
-	<p>Den här funktionen är beroende av inställningarna på menyn<b> Inställningar
-	-&gt; PGP/MIME fliken</b> är satta till <em>Tillåt användning av PGP/MIME</em> eller <em>Använd alltid
-	PGP/MIME</em>.</p>
-	</li>
-    <li><b>Standard skrivalternativ</b>: Undermeny.
-    <ul>
-      <li><b>Signering/Kryptering alternativ...</b>: genväg till <b>Kontoinställningar -&gt;
-	  OpenPGP alternativ.</b>
-      </li>
-      <li><b>Sänd alternativ...</b>: genväg till <b>Inställningar -&gt;
-	  Sändnings</b><span style="font-weight: bold;">flik</span>.
-      </li>
-      <li><b>Nyckelval alternativ...</b>: genväg till <b>Inställningar -&gt;
-	  Nyckelvalsflik</b>.
-      </li>
-      <li><b>PGP/MIME alternativ...</b>: genväg till <b>Inställningar -&gt;
-	  PGP/MIME</b> fliken.
-      </li>
+  <dl>
+    <dt>Enigmail's meny i skrivfÃ¶nstret</dt>
 
-    </ul>
-    </li><li><b>Ångra kryptering</b>: Om det uppstår ett problem vid sändandet av e-mail,
-    som att POP servern inte accepterar förfrågan, kommer Enigmail inte att känna till
-    något om det, och det krypterade meddelandet kommer fortfarande att visas i Skrivfönstret.
-    Att välja det här menyalternativet kommer att ångra kryptering/signering, och återta Skrivfönstret
-    till sin originaltext.<br>
-    <em>Som en temporär fix, kan det här alternativet också användas för att dekryptera den citerade
-    texten vid svar på krypterade meddelanden. Enigmail skall dekryptera det citerade meddelandet
-    automatiskt, men om det misslyckas av någon orsak, kan du använda det här alternativet för
-    att tvinga den.</em>
-    </li>
-    <li><b>Infoga publik nyckel</b>: infoga ASCII-armerat publikt nyckelblock vid den aktuella
-     cursorpositionen i Skrivfönstret. Du kommer att bli tillfrågad om e-mailadresser hos den
-     nyckel(lar) som skall infogas. Nycklar som är infogade på det här sättet kommer automatiskt
-     att bli igenkända vid slutet av mottagandet av Enigmail. Efter att nyckeln infogats,
-     kan du fortfarande välja att signera/kryptera mailet om nödvändigt. Dessutom, infoga inte
-     mer än ett nyckelblock i meddelandet; specificera endast multipla e-mailadresser, separerade
-     av kommatecken, när du blir tillfrågad.
-    </li>
-    <li><b>Rensa sparad lösenordsfras</b>: Rensar cachad lösenordsfras. Användbart om du har
-     multipla lösenordsfraser.
-    </li>
-    <li><b>Hjälp</b>: Visa hjälpinformation från webbsajten (den här sidan).
-    </li>
+    <dd>
+      <dl>
+        <dt>Signera meddelande</dt>
+			<dd>Aktivera/inaktivera skicka signerad e-post. AnvÃ¤ndaren meddelas, om signering misslyckas.</dd>
 
-  </ul>
-</li></ul>
-<hr>
-<p>
-Ytterligare hjälp är tillgänglig på
-<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmails hjälpwebbsajt</a>
-</p>
-</body></html>
+        <dt>Kryptera meddelande</dt>
+			<dd>Aktivera/inaktivera kryptering till alla mottagare innan du skickar. AnvÃ¤ndaren meddelas, om kryptering misslyckas.</dd>
+
+        <dt>AnvÃ¤nd PGP/MIME fÃ¶r detta meddelande</dt>
+
+        <dd>
+          Aktivera/inaktivera anvÃ¤ndning av  <a href="http://www.ietf.org/rfc/rfc3156.txt">PGP/MIME</a> fÃ¶r detta meddelande.
+
+          <p>Om du vet att mottagaren kan lÃ¤sa e-post med hjÃ¤lp av PGP/MIME-formatet, ska du anvÃ¤nda det.</p>
+
+          <p>Den hÃ¤r funktionen Ã¤r beroende av instÃ¤llningarna i <strong>InstÃ¤llningar -&gt; PGP/MIME -fliken</strong> Ã¤r satta till <em>TillÃ¥t att anvÃ¤nda PGP/MIME</em> eller <em>Alltid anvÃ¤nda PGP/MIME</em>.</p>
+        </dd>
+
+        <dt>Standard kompositionsalternativ</dt>
+
+        <dd>
+          <ul>
+            <li><strong>Signering/Kryptering alternativ...</strong>: genvÃ¤g till <strong>KontoinstÃ¤llningar -&gt; OpenPGP alternativ.</strong></li>
+
+            <li><strong>Skicka alternativ...</strong>: genvÃ¤g till <strong>InstÃ¤llningar -&gt; skicka</strong> fliken.</li>
+
+            <li><strong>Nyckelval alternativ...</strong>: genvÃ¤g till <strong>InstÃ¤llningar -&gt; Nyckelval</strong> fliken.</li>
+
+            <li><strong>PGP/MIME alternativ...</strong>: genvÃ¤g till <strong>InstÃ¤llningar -&gt; PGP/MIME</strong> fliken.</li>
+          </ul>
+        </dd>
+
+        <dt>Ã…ngra kryptering</dt>
+
+        <dd>
+          <p>Om det uppstÃ¥r ett fel nÃ¤r du skickar mail, till exempel POP-servern inte accepterar begÃ¤ran, kommer Enigmail inte vet om det, och det krypterade meddelandet fortsÃ¤tter att visas i meddelandefÃ¶nstret. Att vÃ¤lja detta menyalternativ kommer att Ã¥ngra kryptering/signering, dÃ¥ Ã¥tergÃ¥r skrivfÃ¶nstret tillbaka till sin ursprungliga text.</p>
+
+          <p><em>Som en temporÃ¤r fix, kan detta alternativ ocksÃ¥ anvÃ¤ndas fÃ¶r att dekryptera den citerade texten nÃ¤r du svarar pÃ¥ krypterade meddelanden. Enigmail bÃ¶r automatiskt dekryptera det citerade meddelandet, men om det misslyckas av nÃ¥gon anledning, kan du anvÃ¤nda det hÃ¤r menyalternativet fÃ¶r att tvinga det.</em></p>
+        </dd>
+
+        <dt>Bifoga publik nyckel</dt>
+
+        <dd>Infoga ASCII-armerade publika nyckelblock vid nuvarande markÃ¶rposition i skrivfÃ¶nstret. Du kommer att bli tillfrÃ¥gad om e-postadresser till nyckeln som ska infogas. Nycklar som infogats pÃ¥ detta sÃ¤tt kommer automatiskt att redovisas vid den mottagande Ã¤nden av Enigmail. Efter nyckelinsÃ¤ttning, kan du fortfarande vÃ¤lja att signera/kryptera mail efter behov. OcksÃ¥, infoga inte mer Ã¤n ett nyckelblock i ett meddelande; ange flera e-postadresser, avgrÃ¤nsade med kommatecken eller mellanslag, nÃ¤r det efterfrÃ¥gas.</dd>
+
+        <dt>Rensa sparad lÃ¶senfras</dt>
+
+        <dd>Rensar cachade lÃ¶senfraser. AnvÃ¤ndbart om du har flera lÃ¶senfraser.</dd>
+
+        <dt>HjÃ¤lp</dt>
+
+        <dd>Visar hjÃ¤lpinformation frÃ¥n webbplatsen (denna sida).</dd>
+      </dl>
+    </dd>
+  </dl>
+  <hr />
+
+  <p>Ytterligare hjÃ¤lp finns pÃ¥ <a href="http://www.enigmail.net/support/">Enigmail's Supportwebbplats</a></p>
+</body>
+</html>

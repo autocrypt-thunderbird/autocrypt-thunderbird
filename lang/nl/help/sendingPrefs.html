@@ -3,7 +3,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Enigmail Help: Edit OpenPGP Rule</title>
+  <title>Enigmail help: OpenPGP regel bewerken</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <style type="text/css">
   /*<![CDATA[*/
@@ -13,30 +13,30 @@
 </head>
 
 <body>
-  <h1>Enigmail Help</h1>
+  <h1>Enigmail help</h1>
 
-  <h3>Defining Preferences to Send Encrypted</h3>
+  <h3>Voorkeuren instellen om versleutelde e-mail te versturen</h3>
 
-  <p>In the Sending Preferences you can choose the general model and preferences for encryption.</p>
+  <p>Bij de Verzenden voorkeuren kunt u het algemene model en de voorkeuren voor versleuteling kiezen.</p>
   <dl>
-<dt>Convenient Encryption</dt>
-  <dd>With these settings, emails are encrypted without confirmation whenever possible. 
-    <p>This setup is appropriate, if you just want to improve your privacy by sending emails encyrpted instead of unencrypted if that's possible.     
-    <p>The effect is like sending emails as letters instead of postcards. Unlike postcards, letters usually hide their contents while in transit.     
-<p>Note however that as with letters you can't be sure that nobody is opening the letter while it is in transit (although, some technical effort is necessary for that).
-<p>A concrete  risk is that you accidentally use &quot;faked keys&quot; you got from somewhere or somebody claiming that the key belongs to the person you want to send emails to. To avoid this risk, you can either use the trust model of PGP (see below) or you should always verify, whether the fingerprint of a public key is correct.</dd>
+  <dt>Handige versleuteling</dt>
+  <dd>Met deze instellingen worden e-mails zonder bevestiging versleuteld, indien mogelijk.
+    <p>Deze instelling is geschikt als u uw privacy wilt vergroten door versleutelde e-mails te versturen in plaats van onversleutelde e-mails als dat mogelijk is.
+    <p>Het effect is alsof u vrieven stuurt in plaats van ansichtkaarten. In tegenstelling tot bij ansichtkaarten, kunnen brieven normaal gesproken niet gelezen worden tijdens het transport.
+    <p>Het is echter net als bij brieven niet zeker, dat niemand de brief tijdens het transport opent (hoewel daar wel technische inspanning voor nodig is).
+    <p>Een concreet risico is dat u per ongeluk &lsquo;vervalste sleutels&rsquo; gebruikt, die u van iemand heeft gekregen die beweert dat de sleutel eigendom is van de persoon die u wilt e-mailen. Om dit risico te voorkomen kunt u ofwel het vertrouwensmodel van OpenPGP gebruiken (zie onder) of u moet altijd controleren of de vingerafdruk van de publieke sleutel juist is.</dd>
   
-  <dt>Manual Encryption</dt>
-  <dd>This option allows you to specify the different preferences for encryption according to your needs. You can specify
-    <ul>
-   <li>whether replies to encrypted/signed emails should automatically also be encrypted/signed-</li>
-   <li>whether to use the trust model of OpenPGP to accept keys (this means that to use a key you either have to sign the key or have enough other people you trust having signed the key).</li>
-   <li>whether you want to automatically send emails encrypted if all keys are accepted.</li>
-   <li>whether and when you want to finally confirm sending an email.</li>
+  <dt>Handmatige versleuteling</dt>
+  <dd>Met deze instellingen kunt u de verschillende voorkeuren voor versleuteling handmatig aan uw behoefte aanpassen. U kunt opgeven:
+   <ul>
+   <li>of antwoorden op versleutelde/ondertekende e-mails ook automatisch versleuteld/ondertekend moeten worden;</li>
+   <li>of u het vertrouwensmodel van OpenPGP wilt gebruiken om sleutels te accepteren (dit betekent dat u om een sleutel te kunnen gebruiken, u deze sleutel moet ondertekenen, of dat er genoeg andere personen zijn die u vertrouwt die de sleutel ondertekend hebben);</li>
+   <li>of u automatisch alle e-mails versleuteld wilt versturen als alle sleutels geaccepteerd zijn;</li>
+   <li>of en wanneer u eindelijk wilt bevestigen dat u een e-mail wilt versturen.</li>
   </ul>
  </dd>
   
-  If it is important for you that content you send encrypted can't be read by other people or organizations, you should use the manual preferences at least choose the option to accept keys only if you or other people signed them. While this model reduces the risk of using faked keys, it requires that you actively sign keys and declare owner trust using the key managament dialog.
+  Als u het belangrijk vindt dat inhoud die u versleutelt niet door andere personen of organisaties gelezen kan worden, dan dient u de handmatige instellingen te kiezen en op zijn minst de optie te selecteren om alleen sleutels te accepteren als u of andere mensen ze ondertekend hebben. Hoewel dit model het risico op vervalste sleutels vermindert, moet u wel actief sleutels ondertekenen en het eigenaarsvertrouwen aangeven via sleutelbeheer.
   
 </body>
 </html>

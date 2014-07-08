@@ -1,63 +1,63 @@
-<html>
-<head><title>Enigmail hj&auml;lp: Regelredigerare</title>
-</head>
-<body>
-<h1>Enigmail hj&auml;lp</h1>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<h3>Anv&auml;nda Enigmail Regelredigerare</h3>
-<p>I Regelredigeraren, kan du specificera standard per-mottagare f&ouml;r att aktivera kryptering,
-signering och PGP/MIME, och att definiera vilken OpenPGP nyckel(ar) som skall anv&auml;ndas. Varje regel best&aring;r
-av 5 f&auml;lt och representeras av en enstaka rad:
-</p>
-<ul>
-  <li><span style="font-weight: bold;">Email</span>: e-mail fr&aring;n To:, Cc: och Bcc: f&auml;lt att matcha.
-  Matchningen fungerar p&aring; <span
-    style="font-style: italic;">substr&auml;ngar</span> (Ytterligare detaljer kan
-    hittas i dialogen Redigera regler)
-  </li>
-  <li><span style="font-weight: bold;">OpenPGP nyckel(ar)</span>: en lista &ouml;ver OpenPGP nyckel-ID's att anv&auml;nda
-  f&ouml;r mottagare</li>
-  <li><span style="font-weight: bold;">Signera</span>: aktiverar eller avaktiverar
-  meddelandesignering. Detta antingen anv&auml;nder eller &ouml;vertar vad du har specificerat i meddelandekompositionsf&ouml;nstret.
-  V&auml;rden &auml;r:
-    <ul>
-      <li><i>Aldrig</i>: avaktivera signering, &auml;ven  om det var aktiverat i meddelandekompositionsf&ouml;nstret
-      (&ouml;vertar de andra v&auml;rdena)<br>
-      </li>
-      <li><i>M&ouml;jlig</i>: l&auml;mnar signering som specificerades i meddelandekompositionsf&ouml;nstret</li>
-      <li><i>Alltid</i>: aktiverar signering, &auml;ven om det <span
-        style="font-style: italic;">inte</span> var aktiverat i meddelandekompositionsf&ouml;nstret
-      </li>
-    </ul>
-  </li>
-</ul>
-<div style="margin-left: 40px;">Dessa signeringsinst&auml;llningar till&auml;mpas p&aring; alla regler som matchar. Om en av
-reglerna avaktiverar signering, kommer meddelandet inte att signeras, oberoende av de andra reglerna som
-specificerar <i>Alltid</i>.<br>
-</div>
-<ul>
-  <li><span style="font-weight: bold;">Kryptera</span>: aktiverar eller avaktiverar meddelandekryptering. De till&aring;tna
-  inst&auml;llningarna och deras betydelse &auml;r samma som f&ouml;r meddelandesignering.</li>
-  <li><span style="font-weight: bold;">PGP/MIME</span>: aktiverar eller avaktiverar anv&auml;ndningen av
-    PGP/MIME (RFC 3156) meddelandekodning.
-    Om PGP/MIME &auml;r avaktiverat, kommer meddelanden som &auml;r
-    kodade att anv&auml;nda "inline-PGP". De till&aring;tna v&auml;rden och deras
-    betydelse &auml;r likadana som f&ouml;r meddelandesignering.
-  </li>
-</ul>
-<p>Reglerna till&auml;mpas i den ordning som dom visas p&aring; listan. N&auml;rhelst en regel
-matchar en mottagare och inneh&aring;ller ett OpenPGP nyckel-ID, som till&auml;gg till att anv&auml;nda
-det specificerade nyckel-ID, kommer inte n&aring;gon h&auml;nsyn att tas f&ouml;r mottagaren vid
-behandling av ytterligare regler.</p>
-<p><i>Notera:</i> Regelredigeraren &auml;r &auml;nnu inte komplett. Det &auml;r m&ouml;jligt att skriva
-vissa mera avancerade regler genom att direkt redigera regelfilen (dessa regler
-skall sedan inte redigeras mera i regelredigeraren). <a
-href="http://enigmail.mozdev.org/pgprules_file.html" target="_blank">Ytterligare
-information</a> f&ouml;r direkt redigering av filen &auml;r tillg&auml;nglig p&aring; Enigmails hemsida</p>
-<hr/>
-<p>
-Ytterligare hj&auml;lp finns tillg&auml;nglig p&aring;
-<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmail hj&auml;lpwebbsajt</a>
-</p>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Enigmail Hjälp: Regelredigeraren</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <style type="text/css" xml:space="preserve">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <h1>Enigmail Hjälp</h1>
+
+  <h3>Använda Enigmail's regelredigerare</h3>
+
+  <p>I regelredigeraren kan du ange standardinställningar per mottagare för att möjliggöra kryptering, signering och PGP/MIME, och ange vilken OpenPGP nyckel som ska användas. Varje regel består av fem områden och är representerade på en rad:</p>
+
+  <dl>
+    <dt>E-post</dt>
+
+    <dd>E-post att matcha i fälten Till:, Kopia: och Hemlig kopia:. Matchningen fungerar på <span style="font-style: italic;">delsträngar</span> (Ytterligare information finns i fönstret redigera regler.)</dd>
+
+    <dt>OpenPGP nyckel</dt>
+
+    <dd>en lista med OpenPGP nyckel-ID för att använda för mottagaren</dd>
+
+    <dt>Signera</dt>
+
+    <dd>
+      aktivera eller inaktivera signering av meddelanden. Detta använder eller åsidosätter vad du har specificerat i meddelandefönstret. Värdena är:
+
+      <ul>
+        <li><em>Aldrig</em>: inaktivera signering, även om den var aktiverad i meddelandefönstret (upphäver de andra värdena)</li>
+
+        <li><em>Möjlig</em>: lämna signering som angetts i meddelandefönstret</li>
+
+        <li><em>Alltid</em>: aktivera signering, även om den <span style="font-style: italic;">inte</span> var aktiverad i meddelandefönstret</li>
+      </ul>
+
+      <p>Dessa signeringsinställningar tillämpas för alla regler som matchar. Om en av reglerna inaktiverar signering kommer meddelandet inte signeras, oberoende av andra regler som anger <em>Alltid</em>.</p>
+    </dd>
+
+    <dt>Kryptera</dt>
+
+    <dd>aktivera eller inaktivera kryptering av meddelande. Tillåtna inställningar och deras betydelse är de samma som för signering av meddelande.</dd>
+
+    <dt>PGP/MIME</dt>
+
+    <dd>aktivera eller inaktivera användning av PGP/MIME (RFC 3156) meddelandekodning. Om PGP/MIME är inaktiverad kodas meddelandena med "inline PGP". Tillåtna värden och deras betydelse är de samma som för signering av meddelande.</dd>
+  </dl>
+
+  <p>Reglerna behandlas i den ordning som visas i listan. När en regel matchar en mottagare och innehåller en OpenPGP nyckel-ID, utöver att använda den angivna nyckel-ID, mottagaren räknas inte längre vid behandling av ytterligare regler.</p>
+
+  <p><em>OBS:</em> Regelredigeraren är ännu inte klar. Det är möjligt att skriva några mer avancerade regler genom att direkt redigera filen rules (dessa regler bör då inte redigeras längre i regelredigeraren). <a href="http://www.enigmail.net/documentation/pgprules_file.php" target="_blank">Mer information</a> för att direkt redigera filen finns tillgänglig på Enigmail's hemsida</p>
+  <hr/>
+
+  <p>Ytterligare hjälp finns på <a href="http://www.enigmail.net/support/" target="_blank">Enigmail's Supportwebbplats</a></p>
 </body>
 </html>

@@ -1,60 +1,57 @@
-<html>
-<head><title>Enigmail hj&auml;lp: L&auml;sa meddelanden</title>
-</head>
-<body>
-<h1>Enigmail hj&auml;lp</h1>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<h3>Anv&auml;nda Enigmail vid l&auml;sning av meddelanden</h3>
-<ul>
-  <li><b>Dekrypteringsknapp i Mailens huvudf&ouml;nster</b><br>
-  Denna knapp kan anv&auml;ndas f&ouml;r flera &auml;ndam&aring;l: dekryptera, verifiera, eller importera
-  publika nycklar. Normalt utf&ouml;rs dekryptering/verifiering automatiskt, emedan detta kan
-  vara avaktiverat av en inst&auml;llning. Emellertid, om detta misslyckas, kommer vanligtvis
-  ett kort felmeddelande att upptr&auml;da p&aring; Enigmails statusrad. Om du klickar p&aring; knappen
-  Dekryptera, kommer du att kunna se ett mer detaljerat felmeddelande, inkluderande resultatet
-  fr&aring;n GnuPG-kommandot.
-  </li>
-  <li><b>Penn- och nyckelikoner som visas i meddelandets header</b><br>
-  <em>Penn-</em> och <em>Nyckel</em>ikonerna i meddelandets header indikerar om meddelandet
-  som du l&auml;ser var signerat och/eller krypterat och om signaturen &auml;r godk&auml;nd, t.ex. att
-  meddelandet inte har &auml;ndrats sedan det signerades. Om meddelandet har &auml;ndrats,
-  kommer <em>Penn</em>ikonen att &auml;ndras till en <em>Bruten penna</em> f&ouml;r att indikera att
-  signaturen &auml;r felaktig. H&ouml;gerklickning p&aring; antingen Penn- eller Nyckelikonerna kommer att ta fram
-  en meny med f&ouml;ljande alternativ:
-  <ul>
-  <li><em>OpenPGP s&auml;kerhetsinfo</em>: till&aring;ter dig att visa resultatet fr&aring;n GnuPG f&ouml;r meddelandet.</li>
-  <li><em>Kopiera OpenPGP s&auml;kerhetsinfo</em>: kopierar resultatet fr&aring;n GnuPG till klippbordet; f&ouml;r
-  att klistra in i ett replikmeddelande, etc.</li>
-  <li><em>Visa OpenPGP Photo-ID</em>: till&aring;ter dig att visa <em>Photo-ID</em> hos den person som har
-  s&auml;nt meddelandet, om de har ett fotografi inb&auml;ddat i sin publika nyckel.
-  (<em>Det h&auml;r alternativet kommer endast att vara aktiverat om ett Photo-ID existerar i deras nyckel.)</em></li>
-  <li><em>S/MIME s&auml;kerhetsinfo</em>: till&aring;ter dig att visa S/MIME s&auml;kerhetsinfo f&ouml;r meddelandet.</li>
-  </ul>
-  <p>Om du inte har <em>nyckelserver-alternativet automatisk-nyckelh&auml;mtning</em> inst&auml;llt i din
-  <tt>gpg.conf</tt> fil och du kan l&auml;sa ett meddelande som &auml;r signerat eller krypterat, kommer du att se
-  en <em>Penn</em>ikon i meddelandeheadern med ett <em>Fr&aring;getecken</em> &ouml;ver sig, och Enigmails statusrad i
-  headern kommer att s&auml;ga <em>Del av meddelandet var signerat; klicka p&aring; pennikonen f&ouml;r detaljer</em> och
-  meddelandet i en p&aring;minnelseruta kommer att visa alla OpenPGP meddelandeblocksindikatorer och signaturblock.</p>
-    <p>Du kommer ocks&aring; att se detta om du har <em>nyckelserver-alternativet automatisk-nyckelh&auml;mtning</em>
-  inst&auml;llt i din <tt>gpg.conf</tt> fil och OpenPGP nyckeln inte &auml;r tillg&auml;nglig p&aring; standard nyckelserver.</p>
-  <p>Klickning p&aring; <em>Penn- och fr&aring;geteckens</em>ikonen kommer att ta fram ett f&ouml;nster som talar om att
-  nyckeln inte &auml;r tillg&auml;nglig i din nyckelring. Klickning p&aring; OK kommer att ta fram ett annat f&ouml;nster med
-  en lista &ouml;ver nyckelservrar fr&aring;n vilka du kan v&auml;lja att ladda ner avs&auml;ndarens publika nyckel.</p>
-  <p>F&ouml;r att konfigurera listan &ouml;ver nyckelservrar som du vill anv&auml;nda, g&aring; till <b>Enigmail -&gt;
-  Inst&auml;llningar -&gt; Grundl&auml;ggande</b>-fliken och ange nyckelserveradresser i boxen <em>Nyckelserver(ar):</em>,
-  separerade av ett kommatecken. <em>Den f&ouml;rsta nyckelservern i listan kommer att anv&auml;ndas som standard.</em></p>
-  </li>
-  <li><b>&Ouml;ppna krypterade bilagor / importera bifogade OpenPGP-nycklar</b><br> Bilagor som kallas *.pgp, *.asc och *.gpg
-  k&auml;nns igen som bilagor som kan hanteras speciellt av Enigmail. H&ouml;gerklickning p&aring; en s&aring;dan bilaga kommer att aktivera
-  tv&aring; nya specialalternativ i kontextmenyn: <em>Dekryptera och &ouml;ppna</em> och <em>Dekryptera och Spara</em>.
-  Anv&auml;nd dessa b&aring;da alternativ om du vill att Enigmail skall dekryptera en bilaga innan den &ouml;ppnar eller sparar
-  den. Om bilagan k&auml;nns igen som en OpenPGP-nyckelfil, kommer du att erbjudas att importera nyckeln till dina
-  nyckelringar.
-  </li>
-</ul><hr/>
-<p>
-Ytterligare hj&auml;lp &auml;r tillg&auml;nglig p&aring;
-<a href="http://enigmail.mozdev.org/help.html" target="_blank">Enigmails hj&auml;lpwebbsajt</a>
-</p>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Enigmail Hjälp: Läsa meddelanden</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <style type="text/css">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <h1>Enigmail Hjälp</h1>
+
+  <h3>Använda Enigmail när du läser meddelanden </h3>
+
+  <dl>
+    <dt>Dekryptera knappen i mailets huvudfönster</dt>
+
+    <dd>Denna knapp kan användas för flera ändamål: dekryptera, verifiera, eller importera allmänna nycklar. Normalt dekryptering/verifiering sker automatiskt, även om detta kan inaktiveras genom en inställning. Om detta misslyckas, kommer vanligtvis en kort felmeddelande i Enigmail's statusrad. Om du klickar på Dekryptera knappen, kommer du att kunna se ett mer detaljerat felmeddelande, inklusive utdata från kommandot GnuPG.</dd>
+
+    <dt>Penn- och nyckelikoner som visas i meddelandehuvudet</dt>
+
+    <dd>
+      <em>Penn-</em> och <em>Nyckel</em>ikoner i meddelandehuvudet visar om meddelandet som du läser signerats och/eller krypterats och om signaturen är bra, det vill säga meddelandet har inte förändrats sedan det signerades. Om meddelandet har ändrats, <em>Penn</em>ikonen ändras till en <em>bruten penna</em> för att indikera att signaturen är dålig. Högerklicka på antingen penn- eller nyckelikonen visar en meny med följande alternativ:
+
+      <ul>
+        <li><em>OpenPGP säkerhetsinfo</em>: låter dig se utdata från GnuPG för meddelandet.</li>
+
+        <li><em>Kopiera OpenPGP säkerhetsinfo</em>: kopierar utdata från GnuPG till urklipp; för att klistra in ett svarsmeddelande, etc.</li>
+
+        <li><em>Visa OpenPGP foto-ID</em>: låter dig se <em>foto-ID</em> för den person som skickade meddelandet, om de har ett foto inbäddad i sin publika nyckel. (<em>Detta alternativ kommer endast att aktiveras om ett foto-ID finns i deras nyckel.)</em></li>
+
+        <li><em>S/MIME säkerhetsinfo</em>: låter dig se på S/MIME säkerhetsinfo för meddelandet.</li>
+      </ul>
+
+      <p>Om du inte har angett <em>keyserver-options auto-key-retrieve</em> i din <tt>gpg.conf</tt> fil och du läser ett meddelande som är signerat eller krypterat, kommer du att se en <em>Penn-</em>ikon i huvudområdet med ett <em>Frågetecken</em> på den, Enigmail's statusrad i huvudområdet visar <em>del av meddelandet signerat; klicka på pennikonen för detaljer</em> och meddelandet i meddelandefönstret visar alla OpenPGP meddelandeblocksindikatorer och signaturblock.</p>
+
+      <p>Du kan också se detta om du har angett <em>keyserver-options auto-key-retrieve</em> i din <tt>gpg.conf</tt> fil och OpenPGP nyckeln inte finns på standardnyckelservern.</p>
+
+      <p>Genom att klicka på <em>Penn och frågetecknet</em>-ikonen kommer ett fönster upp som meddelar att nyckeln inte är tillgänglig i din nyckelring. Om du klickar på OK kommer att ett nytt fönster upp med en lista över nyckelservrar där du kan välja att hämta avsändarens publika nyckel från.</p>
+
+      <p>För att konfigurera listan med nyckelservrar som du vill använda, gå till <strong>Enigmail-> Inställningar->grundläggande</strong> fliken och ange nyckelserverns adress i <em>nyckelserver: </em> rutan, separerade med ett kommatecken. <em>Den första nyckelservern i listan kommer att användas som standard.</em></p>
+    </dd>
+
+    <dt>Öppna krypterade bilagor/importera bifogade OpenPGP nycklar</dt>
+
+    <dd>Bifogade filer som slutar på *.Pgp, *.Asc och *.Gpg känns igen som bilagor som kan hanteras speciellt av Enigmail. Genom att högerklicka på en sådan bilaga möjliggörs två speciella menyalternativ i snabbmenyn: <em>Dekryptera och öppna</em> och <em>Dekryptera och spara</em>. Använd dessa två menyalternativ om du vill att Enigmail ska dekryptera en bifogad fil innan du öppnar eller sparar den. Om en bilaga känns igen som en OpenPGP nyckelfil, erbjuds du att importera nycklarna till din nyckelring.</dd>
+  </dl>
+  <hr />
+
+  <p>Ytterligare hjälp finns på <a href="http://www.enigmail.net/support/" target="_new">Enigmail's Supportwebbplats</a></p>
 </body>
 </html>

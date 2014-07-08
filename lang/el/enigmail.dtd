@@ -7,7 +7,6 @@
 <!ENTITY enigmail.keyNoPassphrase.label "Χωρίς φράση πρόσβασης">
 <!ENTITY enigmail.keyPassphrase.label "Φράση πρόσβασης">
 <!ENTITY enigmail.keyPassphraseRepeat.label "Φράση πρόσβασης (επανάληψη)">
-<!ENTITY enigmail.generateKey.label "Δημιουργία κλειδιού">
 <!ENTITY enigmail.generateKey.tooltip "Δημιουργεί ένα νέο κλειδί συμβατό με OpenPGP για κρυπτογράφηση ή/και υπογραφή">
 <!ENTITY enigmail.cancelKey.label "Ακύρωση">
 <!ENTITY enigmail.cancelKey.tooltip "Ακύρωση της δημιουργίας κλειδιού">
@@ -26,42 +25,27 @@
 <!ENTITY enigmail.passwordSettings.label "Ρυθμίσεις φράσης πρόσβασης">
 <!ENTITY enigmail.userNoPassphrase.label "Να μη ζητείται καμία φράση πρόσβασης">
 <!ENTITY enigmail.userNoPassphrase.tooltip "Ενεργοποιήστε το αν το OpenPGP κλειδί σας δεν προστατεύεται από μια φράση πρόσβασης.">
-<!ENTITY enigmail.expertUser.label "Εμφάνιση προχωρημένων ρυθμίσεων">
 <!ENTITY enigmail.expertUser.tooltip "Πατήστε το αν θέλετε να δείτε μενού και επιλογές για προχωρημένους χρήστες.">
-<!ENTITY enigmail.basicUser.label "Απόκρυψη προχωρημένων ρυθμίσεων">
 <!ENTITY enigmail.basicUser.tooltip "Πατήστε το αν δε θέλετε να εμφανίζονται τα μενού και οι επιλογές για προχωρημένους χρήστες.">
-<!ENTITY enigmail.defaultEncryptionOption.label "Ρύθμιση των προκαθορισμένων επιλογών κρυπτογράφησης">
-<!ENTITY enigmail.usePGPMimeOption.label "Ρύθμιση επιλογών PGP/MIME">
-<!ENTITY enigmail.mimeHashAlgorithm.label "Αλγόριθμος Hash">
 <!ENTITY enigmail.prefs.pathsTitle.label "Αρχεία και κατάλογοι">
 <!ENTITY enigmail.prefs.overrideGpg.label "Χρήση του">
 <!ENTITY enigmail.prefs.overrideGpg.tooltip "Κάντε κλικ για να καθορίσετε την τοποθεσία του GnuPG">
-<!ENTITY enigmail.agentPath.label "Διαδρομή του εκτελέσιμου του GnuPG">
 <!ENTITY enigmail.agentAdditionalParam.label "Επιπρόσθετες παράμετροι για το GnuPG">
 <!ENTITY enigmail.agentAdditionalParam.tooltip "Καθορίστε επιλογές που θα χρησιμοποιηθούν από το GnuPG.">
 <!ENTITY enigmail.mime_parts_on_demand.label "Λήψη των συνημμένων μόνο όταν ανοιχτούν (μόνο IMAP)">
-<!ENTITY enigmail.allowEmptySubject.label "Να μην ειδοποιούμαι όταν το θέμα είναι κενό">
-<!ENTITY enigmail.allowEmptySubject.tooltip "Κάντε κλικ για απενεργοποίηση της ειδοποίησης όταν στέλνετε μήνυμα χωρίς να καθορίσετε το θέμα.">
 <!ENTITY enigmail.maxIdleMinutesHead.label "Απομνημόνευση της φράσης πρόσβασης για">
 <!ENTITY enigmail.maxIdleMinutesTail.label "λεπτά αδράνειας">
 <!ENTITY enigmail.maxIdleMinutes.tooltip "Απομνημόνευση της φράσης πρόσβασης για περιορισμένο χρονικό διάστημα.">
 <!ENTITY enigmail.resetPrefsButton.label "Μηδενισμός">
 <!ENTITY enigmail.resetPrefs.tooltip "Επαναφορά όλων των ρυθμίσεων του Enigmail στις προκαθορισμένες τους τιμές.">
-<!ENTITY enigmail.prefsHelpButton.label "Βοήθεια">
-<!ENTITY enigmail.upgradeButton.label "Ενημέρωση του Enigmail">
-<!ENTITY enigmail.uninstallButton.label "Απεγκατάσταση του Enigmail">
 <!ENTITY enigmail.basic.label "Βασικές">
 <!ENTITY enigmail.sending.label "Ρυθμίσεις">
 <!ENTITY enigmail.keySel.label "Επιλογή κλειδιού">
 <!ENTITY enigmail.pgpMime.label "PGP/MIME">
 <!ENTITY enigmail.advanced.label "Για προχωρημένους">
-<!ENTITY enigmail.advancedPrefsButton.label "Για προχωρημένους ...">
 <!ENTITY enigmail.debug.label "Αποσφαλμάτωση">
 <!ENTITY enigmail.basicPrefs.label "Βασικές ρυθμίσεις">
-<!ENTITY enigmail.whenSending.label "Κατά την αποστολή αλληλογραφίας">
 <!ENTITY enigmail.moreOptions.label "Περισσότερες επιλογές">
-<!ENTITY enigmail.encryptToSelf.label "Προσθήκη του κλειδιού μου στη λίστα παραληπτών">
-<!ENTITY enigmail.encryptToSelf.tooltip "Αν ενεργοποιηθεί, θα μπορείτε πάντα να αποκρυπτογραφείτε μηνύματα που έχετε στείλει.">
 <!ENTITY enigmail.alwaysTrustSend.label "Να θεωρούνται έμπιστα όλα τα κλειδιά">
 <!ENTITY enigmail.alwaysTrustSend.tooltip "Να μη χρησιμοποιείται το Web of Trust για τον καθορισμό της εγκυρότητας των κλειδιών">
 <!ENTITY enigmail.useNonDefaultComment.label "Προσθήκη σχολίων του Enigmail στην υπογραφή OpenPGP">
@@ -70,11 +54,9 @@
 <!ENTITY enigmail.keyservers.label "Ορίστε τους εξυπηρετητές κλειδιών σας">
 <!ENTITY enigmail.keyservers.sample "Παράδειγμα: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
 <!ENTITY enigmail.searchForKey.label "Αναζήτηση για κλειδί">
-<!ENTITY enigmail.disableSMIMEui.label "Απόκρυψη κουμπιών/μενού SMIME">
 <!ENTITY enigmail.doubleDashSeparator.label "Το '--' είναι το διαχωριστικό της υπογραφής">
 <!ENTITY enigmail.useGpgAgent.label "Χρήση του gpg-agent για τις φράσεις πρόσβασης">
 <!ENTITY enigmail.noHushMailSupport.label "Χρήση των '&lt;' και '&gt;' στις διευθύνσεις email">
-<!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "Όταν είναι δυνατό, να κρυπτογραφούνται/υπογράφονται οι απαντήσεις σε κρυπτογραφημένα ή υπογεγραμμένα emails">
 <!ENTITY enigmail.doubleDashSeparator.tooltip "Δύο παύλες σε μία γραμμή (μόνες τους) ορίζουν ένα τμήμα υπογραφής">
 <!ENTITY enigmail.useGpgAgent.tooltip "Χρήση του gpg-agent (περιλαμβάνεται στο GnuPG 2) για την είσοδο όλων των φράσεων πρόσβασης">
 <!ENTITY enigmail.noHushMailSupport.tooltip "Χρήση των χαρακτήρων '&lt;' και '&gt;' στις διευθύνσεις email του GnuPG. Απενεργοποίηση αν ο παραλήπτης χρησιμοποιεί κλειδιά Hushmail.">
@@ -93,12 +75,10 @@
 <!ENTITY enigmail.clearPassphrase.label "Εκκαθάριση αποθηκευμένης φράσης πρόσβασης">
 <!ENTITY enigmail.editRules.label "Επεξεργασία κανόνων ανά χρήστη">
 <!ENTITY enigmail.prefs.label "Προτιμήσεις">
-<!ENTITY enigmail.advprefs.label "Προχωρημένες προτιμήσεις">
 <!ENTITY enigmail.debugMenu.label "Επιλογές αποσφαλμάτωσης">
 <!ENTITY enigmail.viewconsole.label "Εμφάνιση κονσόλας">
 <!ENTITY enigmail.viewdebuglog.label "Εμφάνιση αρχείου καταγραφής">
-<!ENTITY enigmail.generatekey.label "Δημιουργία κλειδιού">
-<!ENTITY enigmail.upgrade.label "Αναβάθμιση">
+<!ENTITY enigmail.generateKey.label "Δημιουργία κλειδιού">
 <!ENTITY enigmail.help.label "Βοήθεια">
 <!ENTITY enigmail.about.title "Σχετικά με το Enigmail">
 <!ENTITY enigmail.about.label "Σχετικά με το Enigmail">
@@ -120,8 +100,6 @@
 <!ENTITY enigmail.prefs.accesskey "Π">
 <!ENTITY enigmail.viewconsole.accesskey "μ">
 <!ENTITY enigmail.viewdebuglog.accesskey "φ">
-<!ENTITY enigmail.generatekey.accesskey "Δ">
-<!ENTITY enigmail.upgrade.accesskey "ν">
 <!ENTITY enigmail.help.accesskey "Β">
 <!ENTITY enigmail.about.accesskey "Σ">
 <!ENTITY enigmail.sendersKeyMenu.accesskey "Κ">
@@ -132,12 +110,10 @@
 <!ENTITY enigmail.disableRules.label "Παράβλεψη των κανόνων ανά χρήστη">
 <!ENTITY enigmail.composeOptionsMenu.label "Προκαθορισμένες επιλογές σύνταξης">
 <!ENTITY enigmail.pgpAccountSettings.label "Επιλογές υπογραφής/κρυπτογράφησης...">
-<!ENTITY enigmail.mimeOptionsMenu.label "Επιλογές PGP/MIME...">
 <!ENTITY enigmail.sendOptionsMenu.label "Επιλογές αποστολής...">
 <!ENTITY enigmail.defaultKeySelOpts.label "Ρυθμίσεις επιλογής κλειδιού...">
 <!ENTITY enigmail.sendPGPMime.label "Χρήση PGP/MIME για αυτό το μήνυμα">
 <!ENTITY enigmail.undoencryption.label "Αφαίρεση κρυπτογράφησης">
-<!ENTITY enigmail.insertkey.label "Εισαγωγή δημόσιου κλειδιού">
 <!ENTITY enigmail.attachkey.label "Επισύναψη δημόσιου κλειδιού...">
 <!ENTITY enigmail.attachmykey.label "Επισύναψη του δημόσιου κλειδιού μου">
 <!ENTITY enigmail.composemenu.accesskey "n">
@@ -150,65 +126,29 @@
 <!ENTITY enigmail.sendOptionsMenu.accesskey "α">
 <!ENTITY enigmail.defaultKeySelOpts.accesskey "ε">
 <!ENTITY enigmail.pgpAccountSettings.accesskey "υ">
-<!ENTITY enigmail.mimeOptionsMenu.accesskey "P">
 <!ENTITY enigmail.sendPGPMime.accesskey "M">
 <!ENTITY enigmail.undoencryption.accesskey "φ">
-<!ENTITY enigmail.insertkey.accesskey "δ">
 <!ENTITY enigmail.attachkey.accesskey "η">
 <!ENTITY enigmail.attachmykey.accesskey "η">
 <!ENTITY enigmail.defaultEncryption.label "Εξ ορισμού κρυπτογράφηση μηνυμάτων">
-<!ENTITY enigmail.defaultEncryptionSign.label "Εξ ορισμού υπογραφή μηνυμάτων">
-<!ENTITY enigmail.defaultSignPlainMsg.label "Εξ ορισμού υπογραφή μη κρυπτογραφημένων μηνυμάτων">
-<!ENTITY enigmail.defaultEncryptionNone.label "Χωρίς κρυπτογράφηση εξ ορισμού">
-<!ENTITY enigmail.defaultNotSignedsend.label "Να μην υπογράφονται τα μηνύματα εξ ορισμού">
-<!ENTITY enigmail.recipientsSelectionOption.label "Πως να επιλέγονται τα κλειδιά;">
-<!ENTITY enigmail.perRecipientRules.label "Μόνο από τους ορισμένους κανόνες">
-<!ENTITY enigmail.perRecipientRules.tooltip "Επιλογή κλειδιών σύμφωνα με τους κανόνες. Να ζητείται η δημιουργία νέου κανόνα, όταν δεν υπάρχει κάποιος για τον παραλήπτη.">
-<!ENTITY enigmail.perRecipientRulesAndEmail.label "Από τους κανόνες και τις διευθύνσεις email">
-<!ENTITY enigmail.perRecipientRulesAndEmail.tooltip "Χειροκίνητη επιλογή των κλειδιών, αν το OpenPG δεν μπορεί να επιλέξει κάποιο, μετά την εφαρμογή των κανόνων και τον έλεγχο των διευθύνσεων email.">
-<!ENTITY enigmail.perEmailAddress.label "Από τις διευθύνσεις email">
-<!ENTITY enigmail.perEmailAddress.tooltip "Χειροκίνητη επιλογή των κλειδιών, αν το OpenPG δεν μπορεί να επιλέξει κάποιο, μετά τον έλεγχο των διευθύνσεων email (χωρίς χρήση κανόνων).">
-<!ENTITY enigmail.askRecipientsAlways.label "Χειροκίνητα">
-<!ENTITY enigmail.askRecipientsAlways.tooltip "Το OpenPG δε θα επιλέγει ποτέ το κλειδί που θα χρησιμοποιηθεί. Η επιλογή θα γίνεται από εμένα.">
-<!ENTITY enigmail.neverAsk.label "Χωρίς χειροκίνητη επιλογή κλειδιών">
-<!ENTITY enigmail.neverAsk.tooltip "Αν δε βρεθεί κανένα έγκυρο κλειδί, το μήνυμα θα αποστέλλεται αυτόματα μη κρυπτογραφημένο.">
-<!ENTITY enigmail.defineRules.label "Επεξεργασία κανόνων...">
-<!ENTITY enigmail.defineRules.tooltip "Κάντε κλικ για να δείτε, να προσθέσετε, να διαγράψετε ή να επεξεργαστείτε τους κανόνες επιλογής κλειδιών.">
 <!ENTITY enigmail.usePGPMimeAlways.label "Να χρησιμοποιείται PGP/MIME εξ ορισμού">
+<!ENTITY enigmail.advancedPrefsButton.label "Για προχωρημένους ...">
 <!ENTITY enigmail.keepCryptoSettingsForReply.label "Κρυπτογράφηση/υπογραφή απαντήσεων σε κρυπτογραφημένα/υπογεγραμμένα μηνήματα">
-<!ENTITY enigmail.confirmBeforeSend.label "Επιβεβαίωση πάντα πριν την αποστολή">
-<!ENTITY enigmail.confirmBeforeSend.tooltip "Ενεργοποιήστε το για να εμφανίζεται μήνυμα πληροφοριών σχετικά με την υπογραφή/κρυπτογράφηση πριν την αποστολή του μηνύματος">
+<!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "Όταν είναι δυνατό, να κρυπτογραφούνται/υπογράφονται οι απαντήσεις σε κρυπτογραφημένα ή υπογεγραμμένα emails">
+<!ENTITY enigmail.recipientsSelectionOption.label "Πως να επιλέγονται τα κλειδιά;">
+<!ENTITY enigmail.defineRules.label "Επεξεργασία κανόνων...">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label "Επαναμορφοποίηση υπογεγραμμένου HTML κειμένου πριν την αποστολή">
 <!ENTITY enigmail.wrapHtmlBeforeSend.tooltip "Αλλαγή της δομής του κειμένου ώστε να παραμείνει ακέραια η υπογραφή.">
 <!ENTITY enigmail.autoKeyRetrieve.label "Αυτόματη λήψη κλειδιών για επαλήθευση υπογραφής">
 <!ENTITY enigmail.autoKeyRetrieve2.label "από τον ακόλουθο εξυπηρετητή κλειδιών:">
 <!ENTITY enigmail.resetRememberedValues.label "Επαναφορά προειδοποιήσεων">
 <!ENTITY enigmail.resetRememberedValues.tooltip "Ενεργοποίηση όλων των μηνυμάτων και ερωτημάτων που έχετε απενεργοποιήσει στο παρελθόν.">
-<!ENTITY enigmail.defaultEncryptionSign.accesskey "υ">
-<!ENTITY enigmail.defaultEncryptionOnly.accesskey "κ">
-<!ENTITY enigmail.defaultEncryptionNone.accesskey "Χ">
-<!ENTITY enigmail.usePGPMimeAlways.accesskey "P">
-<!ENTITY enigmail.usePGPMimePossible.accesskey "G">
-<!ENTITY enigmail.usePGPMimeNever.accesskey "M">
-<!ENTITY enigmail.defaultSignMsg.accesskey "S">
-<!ENTITY enigmail.defaultNotSignedsend.accesskey "υ">
-<!ENTITY enigmail.confirmBeforeSend.accesskey "α">
 <!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>ΣΗΜΕΙΩΣΗ: Η δημιουργία του κλειδιού μπορεί να διαρκέσει αρκετά λεπτά. </a> Μην τερματίσετε την εφαρμογή κατά τη διάρκεια της δημιουργίας του κλειδιού. Κατά τη διάρκεια της δημιουργίας του κλειδιού θα ήταν καλό να κάνετε κάποιες εργασίες που χρησιμοποιούν τους πόρους του συστήματος (επεξεργαστή, μνήμη, δίσκο) για να αυξηθεί η εντροπία και να επισπευσθεί η δημιουργία του κλειδιού. Θα ειδοποιηθείτε όταν ολοκληρωθεί η δημιουργία του κλειδιού.">
-<!ENTITY enigmail.console.label "Εμφάνιση κονσόλας OpenPGP">
-<!ENTITY enigmail.console.tooltip "Εμφάνιση κονσόλας OpenPGP">
-<!ENTITY enigmail.uninstall.label "Απεγκατάσταση του Enigmail">
-<!ENTITY enigmail.uninstall.tooltip "Απεγκατάσταση του Enigmail">
-<!ENTITY enigmail.selectpanel.label "Επιλογή πίνακα OpenPGP">
-<!ENTITY enigmail.selectpanel.tooltip "Επιλογή πίνακα OpenPGP">
 <!ENTITY enigmail.userSelectionList.label "Επιλογή κλειδιού Enigmail">
 <!ENTITY enigmail.usersNotFound.label "Οι παραλήπτες δεν είναι έγκυροι, δεν είναι έμπιστοι ή δε βρέθηκαν">
 <!ENTITY enigmail.keyExpiry.label "Λήψη">
-<!ENTITY enigmail.keyTrust.label "Εμπιστοσύνη">
 <!ENTITY enigmail.keySelection.label "Επιλογή">
 <!ENTITY enigmail.keyId.label "ID κλειδιού">
-<!ENTITY enigmail.userSelPlainText.label "Αποστολή χωρίς κρυπτογράφηση">
-<!ENTITY enigmail.userSelPlainTextNotSigned.label "Αποστολή χωρίς κρυπτογράφηση και υπογραφή">
-<!ENTITY enigmail.userSelPlainText.accesskey "Α">
 <!ENTITY enigmail.displayNoLonger.label "Να μην εμφανιστεί αυτό το μήνυμα ξανά αν δεν είναι δυνατή η κρυπτογράφηση">
 <!ENTITY enigmail.importMissingKeys.label "Λήψη κλειδιών που λείπουν">
 <!ENTITY enigmail.importMissingKeys.accesskey "Λ">
@@ -216,7 +156,6 @@
 <!ENTITY enigmail.refreshKeys.label "Ανανέωση λίστας κλειδιών">
 <!ENTITY enigmail.refreshKeys.accesskey "ν">
 <!ENTITY enigmail.perRecipientsOption.label "Δημιουργία κανόνων ανά χρήστη">
-<!ENTITY enigmail.experimental.label "Χρήση της πειραματικής εμβόλιμης υπογραφής/κρυπτογράφησης για PGP/MIME">
 <!ENTITY enigmail.enigmailAttachDesc.label "Αυτό το μήνυμα περιέχει επισυνάψεις. Θέλετε να υπογραφούν/κρυπτογραφηθούν;">
 <!ENTITY enigmail.enigEncryptAttachNone.label "Υπογραφή/Κρυπτογράφηση μόνο του κειμένου, όχι των επισυνάψεων">
 <!ENTITY enigmail.enigEncryptAttachInline.label "Υπογραφή/Κρυπτογράφηση κάθε επισύναψης ξεχωριστά και αποστολή του μηνύματος με χρήση inline-PGP">
@@ -250,15 +189,10 @@
 <!ENTITY enigmail.encDlgIgnoreRules.label "Αγνόηση κανόνων παραλήπτη">
 <!ENTITY enigmail.encDlgIgnoreRules.accesskey "I">
 <!ENTITY enigmail.amPrefPgpHeader.label "Αποστολή κεφαλίδας 'OpenPGP'">
-<!ENTITY enigmail.amPrefPgpHeader.none.label "Να μην αποσταλεί καμία κεφαλίδα 'OpenPGP'">
 <!ENTITY enigmail.amPrefPgpHeader.id.label "Αποστολή του ID του κλειδιού OpenPGP">
 <!ENTITY enigmail.amPrefPgpHeader.url.label "Αποστολή URL για λήψη του κλειδιού:">
-<!ENTITY enigmail.retrieveKey.label "Λήψη κλειδιών">
 <!ENTITY enigmail.progressText.label "Πρόοδος:">
-<!ENTITY enigmail.retrieveKey.retrieveMsg.label "Λήψη κλειδιού, παρακαλώ περιμένετε...">
-<!ENTITY enigmail.editPgpSecurity.label "Ασφάλεια OpenPGP...">
-<!ENTITY enigmail.editPgpSecurity.accesskey "O">
-<!ENTITY enigmail.openPgpSecurity.label "Ασφάλεια Enigmail">
+<!ENTITY enigmail.openPgpSecurity.label "Ασφάλεια OpenPGP">
 <!ENTITY enigmail.pgpSecurityInfo.label "Πληροφορίες ασφαλείας Enigmail...">
 <!ENTITY enigmail.copySecurityInfo.label "Αντιγραφή πληροφοριών ασφαλείας Enigmail">
 <!ENTITY enigmail.showPhoto.label "Εμφάνιση ID φωτογραφίας OpenPGP">
@@ -268,12 +202,10 @@
 <!ENTITY enigmail.trustSenderKey.label "Ορισμός εμπιστοσύνης ιδιοκτήτη...">
 <!ENTITY enigmail.signSenderKeyPopup.label "Υπογραφή του κλειδιού του αποστολέα...">
 <!ENTITY enigmail.trustSenderKeyPopup.label "Ορισμός εμπιστοσύνης του αποστολέα του κλειδιού...">
-<!ENTITY enigmail.smimeSecurityInfo.label "Πληροφορίες ασφαλείας S/MIME...">
 <!ENTITY enigmail.createRuleFromAddr.label "Δημιουργία κανόνα Enigmail από τη διεύθυνση...">
 <!ENTITY enigmail.keyManWindow.label "Διαχείριση κλειδιών">
 <!ENTITY enigmail.keyManWindow.accesskey "Δ">
 <!ENTITY enigmail.singleRcptSettings.label "Enigmail - Ρυθμίσεις παραληπτών">
-<!ENTITY enigmail.keysToUse.label "Κλειδί(ά) για χρήση:">
 <!ENTITY enigmail.selKeysButton.label "Επιλογή κλειδιού(ών)...">
 <!ENTITY enigmail.action.label "Ενέργεια">
 <!ENTITY enigmail.nextRule.label "Συνέχιση με τον επόμενο κανόνα για τη διεύθυνση">
@@ -372,13 +304,11 @@
 <!ENTITY enigmail.keyMan.ctxExportToFile.label "Εξαγωγή κλειδιών σε αρχείο">
 <!ENTITY enigmail.keyMan.ctxUploadToServer.label "Αποστολή δημόσιων κλειδιών σε εξυπηρετητή κλειδιών">
 <!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label "Αντιγραφή δημόσιων κλειδιών σε εξυπηρετητή κλειδιών">
-<!ENTITY enigmail.keyMan.refreshKey.label "Ανανέωση δημόσιων κλειδιών">
 <!ENTITY enigmail.keyMan.refreshSelKeys.label "Ανανέωση των επιλεγμένων δημόσιων κλειδιών">
 <!ENTITY enigmail.keyMan.refreshAllKeys.label "Ανανέωση όλων των δημόσιων κλειδιών">
 <!ENTITY enigmail.keyMan.downloadContactKeys.label "Εύρεση κλειδιών όλων των επαφών">
 <!ENTITY enigmail.keyMan.ctxRefreshKey.label "Ανανέωση δημόσιων κλειδιών από εξυπηρετητή κλειδιών">
 <!ENTITY enigmail.keyMan.reload.label "Επαναφόρτωση λανθάνουσας μνήμης κλειδιών">
-<!ENTITY enigmail.keyMan.addUid.label "Προσθήκη ID χρήστη">
 <!ENTITY enigmail.keyMan.addPhoto.label "Προσθήκη εικόνας">
 <!ENTITY enigmail.keyMan.manageUid.label "Διαχείριση ID χρηστών">
 <!ENTITY enigmail.keyMan.changeExpiry.label "Αλλαγή Ημερομηνίας Λήξης">
@@ -406,9 +336,6 @@
 <!ENTITY enigmail.keyMan.nothingFound.tooltip "Κανένα κλειδί δεν ταιριάζει στους όρους αναζήτησης">
 <!ENTITY enigmail.keyMan.pleaseWait.tooltip "Παρακαλώ περιμένετε όσο φορτώνονται τα κλειδιά...">
 <!ENTITY enigmail.keyMan.filter.label "Αναζήτηση για:">
-<!ENTITY enigmail.keyMan.clearFilter.label "Καθαρισμός">
-<!ENTITY enigmail.keyMan.clearFilter.accesskey "Κ">
-<!ENTITY enigmail.keyMan.window.accesskey "Π">
 <!ENTITY enigmail.keyMan.close.accesskey "Κ">
 <!ENTITY enigmail.keyMan.generate.accesskey "ζ">
 <!ENTITY enigmail.keyMan.sign.accesskey "Υ">
@@ -421,7 +348,6 @@
 <!ENTITY enigmail.keyMan.importFromServer.accesskey "ν">
 <!ENTITY enigmail.keyMan.uploadToServer.accesskey "π">
 <!ENTITY enigmail.keyMan.reload.accesskey "Ε">
-<!ENTITY enigmail.keyMan.addUid.accesskey "I">
 <!ENTITY enigmail.keyMan.addPhoto.accesskey "P">
 <!ENTITY enigmail.keyMan.manageUid.accesskey "I">
 <!ENTITY enigmail.keyMan.changeExpiry.accesskey "Ε">
@@ -431,21 +357,17 @@
 <!ENTITY enigmail.keyMan.showUntrustedKeys.accesskey "U">
 <!ENTITY enigmail.keyMan.showOthersKeys.accesskey "O">
 <!ENTITY enigmail.keyMan.showPhoto.accesskey "I">
-<!ENTITY enigmail.keyMan.importMenu.accesskey "I">
-<!ENTITY enigmail.keyMan.exportMenu.accesskey "X">
 <!ENTITY enigmail.keyMan.importFromClipbrd.accesskey "ι">
 <!ENTITY enigmail.keyMan.copyToClipbrd.accesskey "Α">
 <!ENTITY enigmail.keyMan.keyDetails.accesskey "Ι">
 <!ENTITY enigmail.keyMan.showAllKeys.accesskey "δ">
 <!ENTITY enigmail.keyMan.enableKey.accesskey "κ">
-<!ENTITY enigmail.keyMan.refreshKey.accesskey "ν">
 <!ENTITY enigmail.keyMan.refreshSelKeys.accesskey "Α">
 <!ENTITY enigmail.keyMan.refreshAllKeys.accesskey "δ">
 <!ENTITY enigmail.keyMan.selectAll.accesskey "π">
 <!ENTITY enigmail.keyMan.sendKeys.accesskey "Α">
 <!ENTITY enigmail.keyMan.createMail.accesskey "C">
 <!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "Φ">
-<!ENTITY enigmail.keyMan.closeWin.key "Κ">
 <!ENTITY enigmail.keyMan.selectAll.key "A">
 <!ENTITY enigmail.viewKeySigDlg.title "Λίστα υπογραφών">
 <!ENTITY enigmail.viewKeySigDlg.sigForKey.label "Υπογραφές για το κλειδί:">
@@ -537,7 +459,6 @@
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Θέλω το Enigmail να χρησιμοποιήσει μόνο τις ακόλουθες ταυτότητες:">
 <!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Σημείωση:</a> Το Enigmail θα επαληθεύει πάντα τις υπογραφές των                                                             μηνυμάτων όλων των λογαριασμών και ταυτοτήτων, ανεξάρτητα αν είναι ενεργοποιημένο για αυτές ή                                                          όχι">
 <!ENTITY enigmail.setupWiz.pgInstall.title "Απαιτείται το GnuPG">
-<!ENTITY enigmail.setupWiz.pgInstall.subtitle "Πρέπει να εγκαταστήσετε το GnuPG για να χρησιμοποιήσετε το OpenPGP">
 <!ENTITY enigmail.setupWiz.pgInstall.desc "Για να χρησιμοποιήσετε το Enigmail, απαιτείται να είναι εγκατεστημένο το GnuPG για τις λειτουργίες κρυπτογράφησης. Το GnuPG δεν βρέθηκε.">
 <!ENTITY enigmail.setupWiz.pgInstall.installDesc "Το Enigmail μπορεί να λάβει το GnuPG και να τρέξει το πρόγραμμα εγκατάστασής του. Εάν το θέλετε αυτό, πατήστε στο κουμπί εγκατάστασης.">
 <!ENTITY enigmail.setupWiz.pgInstall.locateDesc "Παρακαλώ ορίστε το GnuPG χρησιμοποιώντας το κουμπί Εύρεση">
@@ -553,12 +474,6 @@
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg "Θέλετε να υπογράφονται τα εξερχόμενα μηνύματά σας;">
 <!ENTITY enigmail.setupWiz.pgSign.yesSign "Ναι, θέλω να υπογράφονται όλα τα μηνύματά μου">
 <!ENTITY enigmail.setupWiz.pgSign.noSign "Όχι, θέλω να δημιουργήσω κανόνες ανά χρήστη για τα μηνύματα που θα πρέπει να υπογραφούν">
-<!ENTITY enigmail.setupWiz.pgEnc.title "Κρυπτογράφηση">
-<!ENTITY enigmail.setupWiz.pgEnc.subtitle "Κρυπτογράφηση των εξερχομένων μηνυμάτων σας">
-<!ENTITY enigmail.setupWiz.pgEnc.desc "Το OpenPGP σας επιτρέπει να κρυπτογραφείτε τα μηνύματά σας συμπεριλαμβανομένων και των                                                             επισυνάψεων. Η κρυπτογράφηση είναι σαν να βάζετε ένα γράμμα σε ένα φάκελο. Διατηρεί το                                                           προσωπικό σας απόρρητο. Δεν είναι μόνο για &quot;μυστικά&quot; μηνύματα, αλλά για οτιδήποτε δε θα στέλνατε με μία κάρτα.    ">
-<!ENTITY enigmail.setupWiz.pgEnc.encryptAllMsg "Να κρυπτογρφούνται τα εξερχόμενα μηνύματά σας εξ ορισμού;">
-<!ENTITY enigmail.setupWiz.pgEnc.yesEncrypt "Ναι, έχω δημόσια κλειδιά για τις περισσότερες από τις επαφές μου">
-<!ENTITY enigmail.setupWiz.pgEnc.noEncrypt "Όχι, θα δημιουργήσω κανόνες ανά παραλήπτη για όσους μου στέλνουν το δημόσια κλειδί τους">
 <!ENTITY enigmail.setupWiz.pgSettings.title "Προτιμήσεις">
 <!ENTITY enigmail.setupWiz.pgSettings.subtitle "Αλλάξτε τις ρυθμίσεις αλληλογραφίας σας ώστε το Enigmail να λειτουργεί πιο αξιόπιστα">
 <!ENTITY enigmail.setupWiz.pgSettings.desc "Αυτός ο Μάγος μπορεί να κάνει αλλαγές στις ρυθμίσεις αλληλογραφίας σας ώστε να μην παρουσιαστεί κάποιο πρόβλημα κατά την υπογραφή και κρυπτογράφηση μηνυμάτων στο μηχάνημά σας. Αυτές οι αλλαγές είναι κυρίως τεχνικής φύσης, αλλά ένα σημαντικό πράγμα που πρέπει να γνωρίζετε είναι ότι η σύνταξη των μηνυμάτων θα γίνεται εξ ορισμού σε απλό κείμενο.">
@@ -567,7 +482,6 @@
 <!ENTITY enigmail.setupWiz.pgKeySel.title "Επιλογή κλειδιού">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "Δημιουργία ενός νέου κλειδιού για κρυπτογράφηση και υπογραφή αλληλογραφίας">
 <!ENTITY enigmail.setupWiz.pgKeySel.desc "Διαπιστώθηκε ότι έχετε ήδη ένα κλειδί OpenPGP.  Μπορείτε να χρησιμοποιήσετε ένα από τα υπάρχοντα κλειδιά σας για υπογραφή, κρυπτογράφηση και αποκρυπτογράφηση αλληλογραφίας, ή να δημιουργήσετε ένα νέο ζεύγος κλειδιών.">
-<!ENTITY enigmail.setupWiz.pgKeySel.createKey "Θέλετε να δημιουργήσετε ένα νέο ζεύγος κλειδιών;">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey "Θέλω να δημιουργήσω ένα νέο ζεύγος κλειδιών για την υπογραφή και κρυπτογράφηση της αλληλογραφίας μου">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Θέλω να επιλέξω ένα από τα παρακάτω κλειδιά για την υπογραφή και κρυπτογράφηση της αλληλογραφίας μου:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "Δημιουργία κλειδιού">

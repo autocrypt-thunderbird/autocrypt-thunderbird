@@ -3,7 +3,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Enigmail Help: Edit OpenPGP Rule</title>
+  <title>Enigmail ヘルプ: 送信時の暗号化設定</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <style type="text/css">
   /*<![CDATA[*/
@@ -13,30 +13,30 @@
 </head>
 
 <body>
-  <h1>Enigmail Help</h1>
+  <h1>Enigmail ヘルプ</h1>
 
-  <h3>Defining Preferences to Send Encrypted</h3>
+  <h3>暗号化して送信する設定</h3>
 
-  <p>In the Sending Preferences you can choose the general model and preferences for encryption.</p>
+  <p>送信設定において、暗号化に関する一般的なモデルとルールを選択することができます。</p>
   <dl>
-<dt>Convenient Encryption</dt>
-  <dd>With these settings, emails are encrypted without confirmation whenever possible. 
-    <p>This setup is appropriate, if you just want to improve your privacy by sending emails encyrpted instead of unencrypted if that's possible.     
-    <p>The effect is like sending emails as letters instead of postcards. Unlike postcards, letters usually hide their contents while in transit.     
-<p>Note however that as with letters you can't be sure that nobody is opening the letter while it is in transit (although, some technical effort is necessary for that).
-<p>A concrete  risk is that you accidentally use &quot;faked keys&quot; you got from somewhere or somebody claiming that the key belongs to the person you want to send emails to. To avoid this risk, you can either use the trust model of PGP (see below) or you should always verify, whether the fingerprint of a public key is correct.</dd>
-  
-  <dt>Manual Encryption</dt>
-  <dd>This option allows you to specify the different preferences for encryption according to your needs. You can specify
+<dt>標準の暗号化設定</dt>
+  <dd>この設定では、可能であれば確認なしに自動的に暗号化して送信します。 
+    <p>単に暗号化することでプライバシーを強化したいのであれば、この設定が適しています。
+    <p>これは、葉書ではなく封書を用いることと類似しています。葉書とは異なり、封書であれば配送の過程でメッセージの内容が第三者の目に触れることはありません。
+<p>しかしながら封書を用いた場合と同様に、この設定では配送過程で第三者によってメッセージの内容が解読される可能性を完全に否定することはできません (そのために特別な技術を必要とするとしても)。
+<p>具体的なリスクとしては、正規の受取人を装った第三者による「偽物の鍵」に対して暗号化してしまうことが挙げられます。これを避けるためには、PGP の信頼モデルを利用するか (下記参照)、公開鍵のフィンガープリントが正しいか常に確認する必要があります。</dd>
+
+  <dt>手動の暗号化設定</dt>
+  <dd>この設定では、必要に応じて暗号化の設定を変更することができます。
     <ul>
-   <li>whether replies to encrypted/signed emails should automatically also be encrypted/signed-</li>
-   <li>whether to use the trust model of OpenPGP to accept keys (this means that to use a key you either have to sign the key or have enough other people you trust having signed the key).</li>
-   <li>whether you want to automatically send emails encrypted if all keys are accepted.</li>
-   <li>whether and when you want to finally confirm sending an email.</li>
+   <li>署名/暗号化されたメッセージに対して自分も署名/暗号化して返信するか否か</li>
+   <li>暗号化の際に受け入れる鍵の選定に OpenPGP の信頼モデル (Web of Trust) を用いるか否か (自分自身による署名あるいは、自分が信用する鍵による十分な数の署名を必要とします)</li>
+   <li>鍵が受け入れられる場合に、自動的に暗号化して送信するか否か</li>
+   <li>送信前に暗号化について確認するか否か</li>
   </ul>
  </dd>
-  
-  If it is important for you that content you send encrypted can't be read by other people or organizations, you should use the manual preferences at least choose the option to accept keys only if you or other people signed them. While this model reduces the risk of using faked keys, it requires that you actively sign keys and declare owner trust using the key managament dialog.
-  
+
+  正規の受取人以外の第三者によって暗号化したメッセージの内容が解読されることを防ぐためには、手動設定で「自分が信用できる鍵のみ」を選択する必要があります。OpenPGP の信頼モデル (Web of Trust) を用いることで、偽物の鍵に対するリスクを軽減することができますが、このモデルを適切に利用するためには、自分自身による署名を行い、「所有者による信用度」を明示する必要があります。
+
 </body>
 </html>
