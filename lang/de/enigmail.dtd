@@ -152,10 +152,10 @@
 <!ENTITY enigmail.finallySignNotEncrypted.label "Unverschlüsselte Nachrichten unterschreiben">
 <!ENTITY enigmail.autoEncryptDrafts.label "Nachrichten-Entwürfe verschlüsselt speichern">
 <!ENTITY enigmail.advancedPrefsButton.label "Erweitert ...">
-<!ENTITY enigmail.openpgpPrefsButton.label "Eingmail Einstellungen">
+<!ENTITY enigmail.openpgpPrefsButton.label "Enigmail Einstellungen">
 <!-- Sending Preferences -->
 <!ENTITY enigmail.SendingPrefs.label "Allgemeine Versandeinstellungen">
-<!ENTITY enigmail.seeAccountSettings.label "Siehe auch Konto-Spezifische Enigmail Einstellungen (Konten-Einstellungen -&gt; OpenPGP Sicherheit)">
+<!ENTITY enigmail.seeAccountSettings.label "Siehe auch kontospezifische Enigmail Einstellungen (Konten-Einstellungen -&gt; OpenPGP Sicherheit)">
 <!ENTITY enigmail.encryptionModelConvenient.label "Bequeme Verschlüsselungs-Einstellungen">
 <!ENTITY enigmail.encryptionModelManually.label "Manuelle Verschlüsselungs-Einstellungen">
 <!ENTITY enigmail.keepCryptoSettingsForReply.label "Verschlüsseln/Unterschreiben beim Antworten auf verschlüsselte/unterschriebene Nachrichten">
