@@ -75,8 +75,4 @@ contract @mozilla.org/accountmanager/extension;1?name=enigprefs {847b3ab0-7ab1-1
 category mailnews-accountmanager-extensions enigmail-account-manager-extension @mozilla.org/accountmanager/extension;1?name=enigprefs
 
 ## interface specifiacations
-interfaces  components/enigmime.xpt platformversion<19.0a1
 interfaces  components/enigmail.xpt
-
-## binary components
-##ENIGMIMEDLL-PLACEHOLDER##  platformversion<19.0a1
