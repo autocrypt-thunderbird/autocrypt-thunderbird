@@ -11,7 +11,7 @@ include $(DEPTH)/config/autoconf.mk
 
 DIRS = ipc public
 
-DIRS += ui package lang
+DIRS += ui package check lang
 
 PLATFORM_STR = unknown
 
