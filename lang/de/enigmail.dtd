@@ -69,7 +69,7 @@
 <!ENTITY enigmail.test.label "Test">
 <!ENTITY enigmail.decryptbutton.label "Entschlüsseln">
 <!ENTITY enigmail.decryptbutton.tip "Nachricht mit OpenPGP entschlüsseln/überprüfen">
-<!ENTITY enigmail.messengermenu.accesskey "O">
+<!ENTITY enigmail.messengermenu.accesskey "M">
 <!ENTITY enigmail.decryptverify.label "Entschlüsseln/Überprüfen">
 <!ENTITY enigmail.importpublickey.label "Schlüssel importieren">
 <!ENTITY enigmail.savedecrypted.label "Entschlüsselte Nachricht speichern">
