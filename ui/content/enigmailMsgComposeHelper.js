@@ -368,6 +368,7 @@ Enigmail.hlp = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): emailAddr=\""+emailAddr+"\"\n");
     const TRUSTLEVELS_SORTED = EnigmailFuncs.trustlevelsSorted();
+    embeddedEmailAddr = "<" + emailAddr + ">";
 
     for (var idx=0; idx<keySortList.length; idx++) { // note: we have sorted acc. to validity
       var keyObj = keyList[keySortList[idx].keyId];
@@ -381,7 +382,7 @@ Enigmail.hlp = {
       //var ownerTrust = keyObj.ownerTrust;
       //var expired = keyObj.expiry;
       var userId = keyObj.userId;
-      if (userId && userId.indexOf(emailAddr) >= 0) { 
+      if (userId && (userId == emailAddr || userId.indexOf(embeddedEmailAddr) >= 0)) { 
         if (TRUSTLEVELS_SORTED.indexOf(keyTrust) >= minTrustLevelIndex) { 
           EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): key="+keyObj.keyId+" found\n");
           return keyObj.keyId; // FOUND 
@@ -398,7 +399,7 @@ Enigmail.hlp = {
         var subUserId = subKeyObj.userId;
         var subKeyTrust = subKeyObj.keyTrust;
         //var subExpired = subKeyObj.expiry;
-        if (subUserId && subUserId.indexOf(emailAddr) >= 0) {
+        if (subUserId && (subUserId == emailAddr || subUserId.indexOf(embeddedEmailAddr) >= 0)) {
           if (TRUSTLEVELS_SORTED.indexOf(subKeyTrust) >= minTrustLevelIndex) {
             EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): subkey in key="+keyObj.keyId+" found\n");
             return keyObj.keyId; // FOUND 
