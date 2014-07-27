@@ -36,7 +36,7 @@ ifeq ($(OS_TARGET),Darwin)
 PLATFORM_STR = darwin
 endif
 
-ifeq ($(OS_TARGET),DragonFly)
+ifeq ($(OS_TARGET),dragonfly)
 PLATFORM_STR = DragonFly
 endif
 
