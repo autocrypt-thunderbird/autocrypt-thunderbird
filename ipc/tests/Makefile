@@ -10,7 +10,7 @@ UNITTEST =
 
 ifneq ($(TB_PATH),"")
 
-UNITTEST = $(DEPTH)/util/run-jsunit $(PERL) $(TB_PATH) $(TB_ARGS) -jsunit main.js
+UNITTEST = $(JSUNIT) main.js
 
 endif
 
