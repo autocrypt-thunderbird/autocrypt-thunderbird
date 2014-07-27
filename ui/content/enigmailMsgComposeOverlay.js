@@ -1022,7 +1022,8 @@ Enigmail.msg = {
       case 'final-signDefault':
         // switch signing to "use defaults & rules"
         if (this.signForced != EnigmailCommon.ENIG_UNDEF) {  // if sign/nosign forced
-          this.signingNoLongerDependsOnEnc();
+          // re-init if signing depends on encryption if this was broken before
+          this.finalSignDependsOnEncrypt = (this.getAccDefault("signIfEnc") || this.getAccDefault("signIfNotEnc"));
           this.signForced = EnigmailCommon.ENIG_UNDEF;       // back to defaults/rules
         }
         break;
@@ -1467,8 +1468,14 @@ Enigmail.msg = {
 
     if (this.signForced != inputObj.signForced) {
       this.dirty = 2;
-      this.signingNoLongerDependsOnEnc();
       this.signForced = inputObj.signForced;
+      if (this.signForced == EnigmailCommon.ENIG_UNDEF) {       // back to defaults/rules
+        // re-init if signing depends on encryption if this was broken before
+        this.finalSignDependsOnEncrypt = (this.getAccDefault("signIfEnc") || this.getAccDefault("signIfNotEnc"));
+      }
+      else {
+        this.signingNoLongerDependsOnEnc();
+      }
     }
     if (this.encryptForced != inputObj.encryptForced) {
       this.dirty = 2;
