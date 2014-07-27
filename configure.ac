@@ -2,10 +2,10 @@
 AC_PREREQ(2.61)
 min_automake_version="1.10"
 
-AC_INIT([enigmail],[1.7], [https://www.enigmail.net])
+AC_INIT([enigmail],[1.8], [https://www.enigmail.net])
 
 
-AC_PATH_PROG(PYTHON, "python2")
+AC_PATH_PROG(PYTHON, "python")
 if test "x$PYTHON" = "x" ; then
   AC_MSG_ERROR([[python not found.]])
 fi
@@ -22,6 +22,13 @@ fi
 
 AC_CANONICAL_TARGET
 
+# Enable running of unit test during build
+#
+AC_ARG_ENABLE(tests,
+    AC_HELP_STRING([--enable-tests],[run unit tests during build process]),
+    enable_tests=$enableval)
+
+
 changequote(,)dnl
 BUILD_OS_ARCH=`$PERL config/getOsTarget.pl -o "$target_os" "$target_cpu" "$CC"`
 BUILD_TARGET_CPU=`$PERL config/getOsTarget.pl -c "$target_os" "$target_cpu" "$CC"`
@@ -33,6 +40,28 @@ AC_SUBST(BUILD_OS_ARCH)
 AC_SUBST(BUILD_TARGET_CPU)
 AC_SUBST(DLL_PREFIX)
 AC_SUBST(DLL_SUFFIX)
+AC_SUBST(enable_tests)
+
+
+AC_ARG_WITH(tb-path,
+        [  --with-tb-path=/path/to/thunderbird  set the path to an installed Thunderbird],
+        [if test "$withval" = yes ; then
+           withval=no
+        elif test "$withval" != no ; then
+           TB_PATH="$withval"
+        fi],withval=no)
+
+AC_SUBST(TB_PATH)
+
+AC_ARG_WITH(tb-args,
+        [  --with-tb-args="-P profilename"  set additional arguments for Thunderbird],
+        [if test "$withval" = yes ; then
+           withval=no
+        elif test "$withval" != no ; then
+           TB_ARGS="$withval"
+        fi],withval=no)
+
+AC_SUBST(TB_ARGS)
 
 AC_CONFIG_FILES([config/autoconf.mk])
 
