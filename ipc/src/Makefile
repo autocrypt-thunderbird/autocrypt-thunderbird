@@ -25,6 +25,11 @@ LDFLAGS += -shared -Wl,-Bsymbolic
 CFLAGS += -fPIC
 endif
 
+ifeq ($(OS_TARGET),DragonFly)
+LDFLAGS += -shared -Wl,-Bsymbolic
+CFLAGS += -fPIC
+endif
+
 ifeq ($(OS_TARGET),OpenBSD)
 LDFLAGS += -shared -Wl,-Bsymbolic
 CFLAGS += -fPIC

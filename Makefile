@@ -36,6 +36,10 @@ ifeq ($(OS_TARGET),Darwin)
 PLATFORM_STR = darwin
 endif
 
+ifeq ($(OS_TARGET),DragonFly)
+PLATFORM_STR = DragonFly
+endif
+
 ifeq ($(OS_TARGET),FreeBSD)
 PLATFORM_STR = freebsd
 endif

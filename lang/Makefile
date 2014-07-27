@@ -16,7 +16,7 @@ languages = $(shell cat current-languages.txt)
 
 prepFiles: 
 	for l in $(languages); do \
-	   $(DEPTH)/util/fixlang.pl $(DEPTH)/ui/locale/en-US $$l; \
+	   $(PERL) $(DEPTH)/util/fixlang.pl $(DEPTH)/ui/locale/en-US $$l; \
 	done
 	
 

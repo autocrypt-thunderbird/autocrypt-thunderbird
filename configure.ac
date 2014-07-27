@@ -5,7 +5,7 @@ min_automake_version="1.10"
 AC_INIT([enigmail],[1.7], [https://www.enigmail.net])
 
 
-AC_PATH_PROG(PYTHON, "python")
+AC_PATH_PROG(PYTHON, "python2")
 if test "x$PYTHON" = "x" ; then
   AC_MSG_ERROR([[python not found.]])
 fi
