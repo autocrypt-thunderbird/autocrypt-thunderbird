@@ -91,18 +91,18 @@ interface nsIEnigmail : nsISupports
   const long UI_RESTORE_STRICTLY_MIME = 0x20;
 
   /* Send message flags */
-  const long SEND_SIGNED           = 0x001;
-  const long SEND_ENCRYPTED        = 0x002;
-  const long SEND_DEFAULT          = 0x004;
-  const long SEND_LATER            = 0x008;
-  const long SEND_WITH_CHECK       = 0x010;
-  const long SEND_ALWAYS_TRUST     = 0x020;
-  const long SEND_ENCRYPT_TO_SELF  = 0x040;
-  const long SEND_PGP_MIME         = 0x080;
-  const long SEND_TEST             = 0x100;
-  const long SAVE_MESSAGE          = 0x200;
-  const long SEND_STRIP_WHITESPACE = 0x400;
-  const long SEND_ATTACHMENT       = 0x800;
+  const long SEND_SIGNED           = 0x001;  //    1
+  const long SEND_ENCRYPTED        = 0x002;  //    2
+  const long SEND_DEFAULT          = 0x004;  //    4
+  const long SEND_LATER            = 0x008;  //    8
+  const long SEND_WITH_CHECK       = 0x010;  //   16
+  const long SEND_ALWAYS_TRUST     = 0x020;  //   32
+  const long SEND_ENCRYPT_TO_SELF  = 0x040;  //   64
+  const long SEND_PGP_MIME         = 0x080;  //  128
+  const long SEND_TEST             = 0x100;  //  256
+  const long SAVE_MESSAGE          = 0x200;  //  512
+  const long SEND_STRIP_WHITESPACE = 0x400;  // 1024
+  const long SEND_ATTACHMENT       = 0x800;  // 2048
 
   wstring encryptMessage(in nsIDOMWindow parent,
                         in unsigned long uiFlags,

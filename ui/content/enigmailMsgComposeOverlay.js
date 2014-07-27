@@ -444,7 +444,7 @@ Enigmail.msg = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.msgComposeReopen\n");
     this.msgComposeReset(false);   // false => not closing => call setIdentityDefaults()
-    //this.composeOpen();
+    this.composeOpen();
     this.fireSendFlags();
     //this.determineSendFlags();
     //this.processFinalState();
@@ -1390,11 +1390,11 @@ Enigmail.msg = {
           this.encryptByRules = EnigmailCommon.ENIG_ALWAYS;
         }
       }
-
-      // process and signal new resulting state
-      this.processFinalState();
-      this.updateStatusBar();
     }
+
+    // process and signal new resulting state
+    this.processFinalState();
+    this.updateStatusBar();
     this.determineSendFlagId = null;
   },
 
