@@ -38,6 +38,9 @@ elsif ($srcOs =~ /linux/i) {
 elsif ($srcOs =~ /FreeBSD/i) {
   $targetOs = "FreeBSD";
 }
+elsif ($srcOs =~ /DragonFly/i) {
+  $targetOs = "DragonFly";
+}
 elsif ($srcOs =~ /OpenBSD/i) {
   $targetOs = "OpenBSD";
 }

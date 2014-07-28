@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# Wrapper script for running jsunit test
+
+# 1: path to perl exe
+# 2: to perl thunderbird exe
+# 3 - n parameters to thunderbird
+
+TMPFILE=jsunit.result
+perlpath=$1
+tbpath=$2
+shift 2
+
+PL_PATH=${perlpath} ${tbpath} "$@" | tee ${TMPFILE}
+
+if [ `grep -c "^TestResult: failed   : 0" ${TMPFILE}` -eq 0 ]; then
+  echo "Tests failed"
+  res=1
+else
+  echo "All tests succeeded"
+  res=0
+fi
+
+rm -f ${TMPFILE}
+
+exit ${res}
+

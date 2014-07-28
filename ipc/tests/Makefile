@@ -6,7 +6,13 @@ DEPTH		= ../..
 
 include $(DEPTH)/config/autoconf.mk
 
-TB_CMD = tb-beta -P "TB Development" -jsunit
+UNITTEST = 
+
+ifneq ($(TB_PATH),"")
+
+UNITTEST = $(JSUNIT) main.js
+
+endif
 
 all:
-	PL_PATH=$(PERL) $(TB_CMD) main.js
+	$(UNITTEST)

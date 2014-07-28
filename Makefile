@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 XPI_MODULE	= enigmail
-XPI_MODULE_VERS = 1.7
+XPI_MODULE_VERS = 1.8
 
 DEPTH		= .
 
@@ -11,7 +11,13 @@ include $(DEPTH)/config/autoconf.mk
 
 DIRS = ipc public
 
-DIRS += ui package check lang
+DIRS += ui package lang
+
+ifeq ($(TESTS),yes)
+DIRS += check
+endif
+
+DIRS += lang
 
 PLATFORM_STR = unknown
 
@@ -34,6 +40,10 @@ endif
 
 ifeq ($(OS_TARGET),Darwin)
 PLATFORM_STR = darwin
+endif
+
+ifeq ($(OS_TARGET),dragonfly)
+PLATFORM_STR = DragonFly
 endif
 
 ifeq ($(OS_TARGET),FreeBSD)

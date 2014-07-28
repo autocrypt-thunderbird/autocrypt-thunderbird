@@ -12,6 +12,10 @@ ifneq ($(OS_TARGET),WINNT)
   DIRS += src
 endif
 
+ifeq ($(TESTS),yes)
+  DIRS += tests
+endif
+
 .PHONY: dirs $(DIRS)
 
 all: dirs
