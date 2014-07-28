@@ -1993,7 +1993,7 @@ Enigmail.msg = {
 
   encryptMsg: function (msgSendType)
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: msgType="+msgSendType+", Enigmail.msg.sendMode="+this.sendMode+"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: msgSendType="+msgSendType+", Enigmail.msg.sendMode="+this.sendMode+", Enigmail.msg.statusEncrypted="+this.statusEncrypted+"\n");
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN    = nsIEnigmail.SEND_SIGNED;
@@ -2002,9 +2002,18 @@ Enigmail.msg = {
     var promptSvc = EnigmailCommon.getPromptSvc();
 
     var gotSendFlags = this.sendMode;
+    // here we process the final state:
+    if (this.statusEncrypted == EnigmailCommon.ENIG_FINAL_YES ||
+        this.statusEncrypted == EnigmailCommon.ENIG_FINAL_FORCEYES) {
+      gotSendFlags |= ENCRYPT;
+    }
+    if (this.statusSigned == EnigmailCommon.ENIG_FINAL_YES ||
+        this.statusSigned == EnigmailCommon.ENIG_FINAL_FORCEYES) {
+      gotSendFlags |= SIGN;
+    }
+
     var sendFlags=0;
     window.enigmailSendFlags=0;
-
 
     switch (msgSendType) {
     case CiMsgCompDeliverMode.Later:
@@ -2193,7 +2202,8 @@ Enigmail.msg = {
              EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: Self BCC\n");
              this.addRecipients(toAddrList, recList);
 
-           } else if (sendFlags & ENCRYPT) {
+           }
+           else if (sendFlags & ENCRYPT) {
              // BCC and encryption
 
              if (encryptIfPossible) {
