@@ -42,6 +42,9 @@ if ($#ARGV < 0) {
 
 #$| = 1; # disable buffering of output
 
+# wait a little before doing anything
+select(undef, undef, undef, 0.1);
+
 if ($ARGV[0] =~ /^dump$/i) {
   print STDERR "Starting dump\n";
 
