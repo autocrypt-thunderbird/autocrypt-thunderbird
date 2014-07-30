@@ -8,7 +8,16 @@ define copyLang =
 mkdir -p $(BUILD)/lang/$^
 endef
 
+DO_FIX_LANG = 
+NO_GEN_FILES = 
+
 include ../config/autoconf.mk
+
+ifneq ($(FIX_LANGUAGES),no)
+DO_FIX_LANG = prepFiles
+else
+NO_GEN_FILES = -ng
+endif
 
 all: jar
 
@@ -20,9 +29,9 @@ prepFiles:
 	done
 	
 
-export: prepFiles
+export: $(DO_FIX_LANG)
 	mkdir -p $(BUILD)/lang
-	$(PERL) $(DEPTH)/util/make-lang-xpi.pl current-languages.txt $(BUILD)/lang 
+	$(PERL) $(DEPTH)/util/make-lang-xpi.pl $(NO_GEN_FILES) current-languages.txt $(BUILD)/lang 
 
 jar: export
 	$(PYTHON) ../util/JarMaker.py -j $(DIST)/chrome -t . -f jar $(BUILD)/lang/jar.mn

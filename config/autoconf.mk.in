@@ -16,6 +16,7 @@ TB_PATH = "@TB_PATH@"
 TB_ARGS = @TB_ARGS@
 
 TESTS = @enable_tests@
+FIX_LANGUAGES = @enable_fix_lang@
 
 srcdir = @srcdir@
 

@@ -558,6 +558,7 @@ PACKAGE_URL=''
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+enable_fix_lang
 TB_ARGS
 TB_PATH
 enable_tests
@@ -630,6 +631,7 @@ enable_option_checking
 enable_tests
 with_tb_path
 with_tb_args
+enable_fix_lang
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1255,6 +1257,8 @@ Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-tests          run unit tests during build process
+  --disable-fix-lang      disable replacing of missing strings in
+                          localizations with en-US
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -2850,6 +2854,18 @@ if test "${with_tb_args+set}" = set; then :
         fi
 else
   withval=no
+fi
+
+
+
+
+
+# Check whether --enable-fix-lang was given.
+if test "${enable_fix_lang+set}" = set; then :
+  enableval=$enable_fix_lang; enable_fix_lang=$enableval
+else
+  enable_fix_lang=yes
+
 fi
 
 

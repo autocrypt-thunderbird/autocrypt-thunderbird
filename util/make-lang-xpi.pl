@@ -38,12 +38,25 @@
 # generate jar.mn from a list of language packs
 #
 
-if (@ARGV != 2) {
-    print "Usage: make-lang-xpi.pl <input-file> <output-dir>\n";
+
+sub usage() {
+    print "Usage: make-lang-xpi.pl [-ng] <input-file> <output-dir>\n";
+}
+
+if (@ARGV != 2 && @ARGV != 3) {
+    usage();
     exit -1;
 }
 
-my ($inputfile, $outdir) = @ARGV;
+my $useGen = "+";
+my ($inputfile, $outdir);
+
+if ($ARGV[0] eq "-ng") {
+  ($useGen, $inputfile, $outdir)= @ARGV;
+}
+else {
+  ($inputfile, $outdir) = @ARGV;
+}
 
 open INFILE, "$inputfile";
 open OUTFILE, ">$outdir/jar.mn";
@@ -70,7 +83,12 @@ while ($_ = <INFILE>) {
   chomp();
   $lang = $_;
   foreach $file (@genFiles) {
-    printf OUTFILE "\tlocale/%s/%s\t(%s/%s.gen)\n", $lang, $file, $lang, $file;
+    if ($useGen eq "+") {
+      printf OUTFILE "\tlocale/%s/%s\t(%s/%s.gen)\n", $lang, $file, $lang, $file;
+    }
+    else {
+      printf OUTFILE "\tlocale/%s/%s\t(%s/%s)\n", $lang, $file, $lang, $file;
+    }
   }
 
   foreach $file (@files) {
