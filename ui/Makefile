@@ -10,6 +10,10 @@ include ../config/autoconf.mk
 
 DIRS = content
 
+ifeq ($(TESTS),yes)
+  DIRS += tests
+endif
+
 .PHONY: dirs $(DIRS)
 
 all: dirs jar
