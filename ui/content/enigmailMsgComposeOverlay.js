@@ -78,7 +78,7 @@ Enigmail.msg = {
 
   finalSignDependsOnEncrypt: false,  // does signing finally depends on encryption mode?
 
-  // resulting final encrypt/sign/pgpmime mode: 
+  // resulting final encrypt/sign/pgpmime mode:
   //  (-1:ENIG_FINAL_UNDEF, 0:ENIG_FINAL_NO, 1:ENIG_FINAL_YES, 10:ENIG_FINAL_FORCENO, 11:ENIG_FINAL_FORCEYES, 99:ENIG_FINAL_CONFLICT)
   statusEncrypted: EnigmailCommon.ENIG_FINAL_UNDEF,
   statusSigned:    EnigmailCommon.ENIG_FINAL_UNDEF,
@@ -344,7 +344,7 @@ Enigmail.msg = {
       toobarElem.setAttribute("platform", "macos");
     }
 
-    // check rules for status bar icons on each change of the recipients 
+    // check rules for status bar icons on each change of the recipients
     var adrCol = document.getElementById("addressCol2#1");  // recipients field
     if (adrCol) {
       var attr = adrCol.getAttribute("oninput");
@@ -676,13 +676,8 @@ Enigmail.msg = {
   addAttachment: function (attachment)
   {
     if (typeof(AddAttachment) == "undefined") {
-      if (typeof(AddUrlAttachment) == "undefined") {
-        // TB >= 24
-        AddAttachments([attachment]);
-      }
-      else
-        // TB 17
-        AddUrlAttachment(attachment);
+      // TB >= 24
+      AddAttachments([attachment]);
     }
     else {
       // SeaMonkey
@@ -939,7 +934,7 @@ Enigmail.msg = {
   },
 
 
-  // changes the DEFAULT sendMode 
+  // changes the DEFAULT sendMode
   // - also called internally for saved emails
   setSendMode: function (sendMode)
   {
@@ -986,7 +981,7 @@ Enigmail.msg = {
   },
 
 
-  // changes the FINAL sendMode 
+  // changes the FINAL sendMode
   // - triggered by the user interface
   setFinalSendMode: function (sendMode)
   {
@@ -1105,11 +1100,11 @@ Enigmail.msg = {
 
 
   // key function to process the final encrypt/sign/pgpmime state from all settings
-  // - uses as INPUT: 
+  // - uses as INPUT:
   //   - this.sendMode
   //   - this.encryptByRules, this.signByRules, pgpmimeByRules
   //   - this.encryptForced, this.encryptSigned
-  // - uses as OUTPUT: 
+  // - uses as OUTPUT:
   //   - this.statusEncrypt, this.statusSign, this.statusPGPMime
   processFinalState: function ()
   {
@@ -1229,9 +1224,9 @@ Enigmail.msg = {
 
 
   // process icon/strings of status bar buttons and menu entries according to final encrypt/sign/pgpmime status
-  // - uses as INPUT: 
+  // - uses as INPUT:
   //   - this.statusEncrypt, this.statusSign, this.statusPGPMime
-  // - uses as OUTPUT: 
+  // - uses as OUTPUT:
   //   - resulting icon symbols
   //   - this.statusEncryptStr, this.statusSignStr, this.statusPGPMimeStr
   updateStatusBar: function ()
@@ -1534,7 +1529,7 @@ Enigmail.msg = {
     else {
       msgConfirm = EnigmailCommon.getString("onlineSend", [ msgStatus, EnigmailFuncs.stripEmail(toAddrStr).replace(/,/g, ", ") ]);
     }
-    
+
     // add list of keys
     if (sendFlags & ENCRYPT) {
       gpgKeys=gpgKeys.replace(/^, /, "").replace(/, $/,"");
@@ -1752,7 +1747,7 @@ Enigmail.msg = {
         toAddrStr = validKeyList.join(", ");
       }
     }
-  
+
     // process final state
     this.processFinalState();
 
@@ -2137,10 +2132,10 @@ Enigmail.msg = {
          var acceptedKeys = EnigmailCommon.getPref("acceptedKeys");
          switch (acceptedKeys) {
            case 0: // accept valid/authenticated keys only
-             break; 
+             break;
            case 1: // accept all but revoked/disabled/expired keys
              optSendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
-             break; 
+             break;
            default:
              EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: INVALID VALUE for acceptedKeys: \""+acceptedKeys+"\"\n");
              break;

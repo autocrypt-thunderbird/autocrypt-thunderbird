@@ -375,17 +375,9 @@ function onNoExpiry() {
 function queryISupArray(supportsArray, iid) {
   var result = [];
   var i;
-  try {
-    // Gecko <= 20
-    for (i=0; i<supportsArray.Count(); i++) {
-      result.push(supportsArray.GetElementAt(i).QueryInterface(iid));
-    }
-  }
-  catch(ex) {
-    // Gecko > 20
-    for (i=0; i<supportsArray.length; i++) {
-      result.push(supportsArray.queryElementAt(i, iid));
-    }
+  // Gecko > 20
+  for (i=0; i<supportsArray.length; i++) {
+    result.push(supportsArray.queryElementAt(i, iid));
   }
 
   return result;
