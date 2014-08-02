@@ -808,18 +808,31 @@ function enigmailExportKeys() {
     return;
   }
 
-  var exportFlags = 0;
-  if (gKeyList[keyList[0]].secretAvailable) {
-    var r=EnigLongAlert(EnigGetString("exportSecretKey"), null, EnigGetString("keyMan.button.exportPubKey"), EnigGetString("keyMan.button.exportSecKey"), ":cancel");
-    switch (r) {
-    case 1:
-      exportFlags |= nsIEnigmail.EXTRACT_SECRET_KEY;
-      break;
-    case 2:
-      return;
+  // check whether we want to export a private key anywhere in the key list
+  var secretFound = false;
+  for (var i=0; i<keyList.length && !secretFound; ++i) {
+    if (gKeyList[keyList[i]].secretAvailable) {
+      secretFound = true;
     }
   }
 
+  var exportFlags = 0;
+  if (secretFound) {
+    // double check that also the pivate keys shall be exportet
+    var r=EnigLongAlert(EnigGetString("exportSecretKey"), null,
+                        EnigGetString("keyMan.button.exportPubKey"),
+                        EnigGetString("keyMan.button.exportSecKey"),
+                        ":cancel");
+    switch (r) {
+      case 0: // export pub key only
+        break;
+      case 1: // export secret key
+        exportFlags |= nsIEnigmail.EXTRACT_SECRET_KEY;
+        break;
+      case 2: // cancel
+        return;
+      }
+  }
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
