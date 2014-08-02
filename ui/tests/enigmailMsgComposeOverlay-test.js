@@ -1,4 +1,7 @@
-function trustAllKeys() {
+var window;
+var document;
+
+function trustAllKeys_test() {
   // test functionality of trustAllKeys
   Enigmail.msg.trustAllKeys = true;
   Enigmail.msg.tempTrustAllKeys();
@@ -11,10 +14,11 @@ function trustAllKeys() {
 }
 
 function run_test() {
-  window = JSUnit.createHiddenWindow();
+  window = JSUnit.createStubWindow();
+  window.document = JSUnit.createDOMDocument();
   document = window.document;
 
   do_load_module("chrome://enigmail/content/enigmailMsgComposeOverlay.js");
 
-  trustAllKeys();
+  trustAllKeys_test();
 }
