@@ -18,12 +18,8 @@ var gTestLines;
 var gResultData;
 var gResultStdErr;
 
-function test1() {
-}
-
 function run_test()
 {
-  do_test_pending();
   var isWindows = ("@mozilla.org/windows-registry-key;1" in Components.classes);
   var dataFile = do_get_file("ipc-data.txt" , true);
 
@@ -273,8 +269,6 @@ function run_test()
 
   p.wait();
   Assert.equal(gTestLines.join(""), gResultData, "variable comparison");
-
-  do_test_finished();
 
 }
 
