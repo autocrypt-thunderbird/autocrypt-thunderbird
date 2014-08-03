@@ -7,6 +7,12 @@ DEPTH		= ..
 
 include $(DEPTH)/config/autoconf.mk
 
+TST = 
+
+ifeq ($(TESTS),yes)
+  TST = tst
+endif
+
 PREF_JS_EXPORTS = $(srcdir)/prefs/enigmail.js
 
 COMPFILES = \
@@ -27,7 +33,12 @@ MODFILES = \
            installGnuPG.jsm \
            mimeVerify.jsm
 
-all: $(PREFFILES) $(COMPFILES) $(MODFILES)
+all: deploy $(TST)
+
+tst:
+	$(MAKE) -C tests
+
+deploy: $(PREFFILES) $(COMPFILES) $(MODFILES)
 	$(DEPTH)/util/install -m 644 $(DIST)/components $(COMPFILES)
 	$(DEPTH)/util/install -m 644 $(DIST)/defaults/preferences $(PREFFILES)
 	$(DEPTH)/util/install -m 644 $(DIST)/modules $(MODFILES)
