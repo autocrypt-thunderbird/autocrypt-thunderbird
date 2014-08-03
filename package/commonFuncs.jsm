@@ -157,16 +157,29 @@ var EnigmailFuncs = {
     }
 
     inputObj.keyserver = keysrvObj.value;
+
     if (! inputObj.searchList) {
-      // special handling to add the required leading 0x when searching for keys
-      if (keysrvObj.email.length == 8 && keysrvObj.email.match(/^[0-9a-fA-F]*$/)) {
-        inputObj.searchList = [ "0x"+keysrvObj.email ];
+      var searchval = keysrvObj.email;
+      searchval = searchval.replace(/^(\s*)(.*)/, "$2").replace(/\s+$/,"");  // trim spaces
+      // special handling to convert fingerprints with spaces into fingerprint without spaces
+      if (searchval.length == 49 && searchval.match(/^[0-9a-fA-F ]*$/) 
+          && searchval[4]==' ' && searchval[9]==' ' && searchval[14]==' '
+          && searchval[19]==' ' && searchval[24]==' ' && searchval[29]==' '
+          && searchval[34]==' ' && searchval[39]==' ' && searchval[44]==' ') {
+        inputObj.searchList = [ "0x" + searchval.replace(/ /g,"") ];
       }
-      else if (keysrvObj.email.length == 16 && keysrvObj.email.match(/^[0-9a-fA-F]*$/)) {
-        inputObj.searchList = [ "0x"+keysrvObj.email ];
+      else if (searchval.length == 40 && searchval.match(/^[0-9a-fA-F ]*$/)) {
+        inputObj.searchList = [ "0x" + searchval ];
+      }
+      // special handling to add the required leading 0x when searching for keys
+      else if (searchval.length == 8 && searchval.match(/^[0-9a-fA-F]*$/)) {
+        inputObj.searchList = [ "0x" + searchval ];
+      }
+      else if (searchval.length == 16 && searchval.match(/^[0-9a-fA-F]*$/)) {
+        inputObj.searchList = [ "0x" + searchval ];
       }
       else {
-        inputObj.searchList = keysrvObj.email.split(/[,; ]+/);
+        inputObj.searchList = searchval.split(/[,; ]+/);
       }
     }
 
