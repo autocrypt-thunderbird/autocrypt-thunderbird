@@ -162,7 +162,7 @@ var EnigmailCommon = {
   MIME_CONTRACTID: "@mozilla.org/mime;1",
   SIMPLEURI_CONTRACTID: "@mozilla.org/network/simple-uri;1",
 
-  // possible values for 
+  // possible values for
   // - encryptByRule, signByRules, pgpmimeByRules
   // - encryptForced, signForced, pgpmimeForced (except CONFLICT)
   // NOTE:
@@ -1660,6 +1660,46 @@ var EnigmailCommon = {
 
     return chan;
   },
+
+  /**
+    * return an array containing the aliases and the email addresses
+    * of groups defined in gpg.conf
+    *
+    * @return: array of objects with the following properties:
+    *  - alias: group name as used by GnuPG
+    *  - keylist: list of keys (any form that GnuPG accepts), separated by ";"
+    *
+    * (see docu for gnupg parameter --group)
+    */
+  getGpgGroups: function() {
+    if (!this.enigmailSvc) return [];
+
+    let exitCodeObj = {};
+    let errorMsgObj = {};
+
+    let cfgStr = this.enigmailSvc.getGnupgConfig(exitCodeObj, errorMsgObj);
+
+    if (exitCodeObj.value != 0) {
+      this.aelrt(errorMsgObj.value);
+      return null;
+    }
+
+    let groups = [];
+    let cfg = cfgStr.split(/\n/);
+
+    for (let i=0; i < cfg.length;i++) {
+      if (cfg[i].indexOf("cfg:group") == 0) {
+        let groupArr = cfg[i].split(/:/);
+        groups.push({
+          alias: groupArr[2],
+          keylist: groupArr[3]
+        });
+      }
+    }
+
+    return groups;
+  },
+
 
   getHttpProxy: function (hostName) {
 

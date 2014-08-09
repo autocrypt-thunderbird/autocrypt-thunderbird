@@ -34,6 +34,8 @@
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
+Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+
 // Initialize enigmailCommon
 EnigInitCommon("enigmailUserSelection");
 
@@ -114,17 +116,10 @@ function enigGetUserList(secretOnly, refresh) {
     }
 
     if (! secretOnly) {
-      var configString = enigmailSvc.getGnupgConfig(exitCodeObj, errorMsgObj);
-      if (exitCodeObj.value != 0) {
-        EnigAlert(errorMsgObj.value);
-        return null;
-      }
-      var configList = configString.split(/\n/);
-      for (var i=0; i<configList.length;i++) {
-        if (configList[i].indexOf("cfg:group") == 0) {
-          var groupArr=configList[i].split(/:/);
-          userList += "grp:"+groupArr[2]+":"+groupArr[3]+"\n";
-        }
+      let groups = EnigmailCommon.getGpgGroups();
+
+      for (var i=0; i < groups.length; i++) {
+        userList += "grp:"+groups[i].alias+":"+groups[i].keylist+"\n";
       }
     }
     else {
@@ -499,7 +494,7 @@ function enigmailBuildList(refresh) {
       }
    }
 
-   // sort items according to sorting criterion 
+   // sort items according to sorting criterion
    aUserList.sort(sortUsersCallback);
 
    // Build up key treeView
