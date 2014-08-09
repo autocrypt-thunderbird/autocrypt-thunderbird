@@ -642,6 +642,7 @@ Enigmail.msg = {
             mimeMsg.parts[0].parts[2].headers["content-type"][0].indexOf("application/octet-stream") >= 0 &&
             mimeMsg.parts[0].parts[2].headers["content-type"][0].indexOf("encrypted.asc") >= 0) {
           // signal that the structure matches to save the content later on
+          EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay: messageDecryptCb: enabling MS-Exchange hack\n");
           buggyExchangeEmailContent = "???";
         }
 
@@ -806,6 +807,7 @@ Enigmail.msg = {
         return;
       }
 
+      EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: messageParse: got buggyExchangeEmailContent = "+ buggyExchangeEmailContent.substr(0, 50) +"\n");
       // fix the whole invalid email by replacing the contents by the decoded text
       // as plain inline format
       msgText = buggyExchangeEmailContent;
@@ -1734,7 +1736,7 @@ Enigmail.msg = {
 
     // HACK for MS-EXCHANGE-Server Problem:
     // - now let's save the mail content for later processing
-    if (buggyExchangeEmailContent = "???") {
+    if (buggyExchangeEmailContent == "???") {
       buggyExchangeEmailContent = callbackArg.data;
     }
 
