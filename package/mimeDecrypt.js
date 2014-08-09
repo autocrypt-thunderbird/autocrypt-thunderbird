@@ -100,10 +100,10 @@ PgpMimeDecrypt.prototype = {
   onDataAvailable: function(req, sup, stream, offset, count) {
     // get data from libmime
     if (! this.initOk) return;
-    //DEBUG_LOG("mimeDecrypt.js: onDataAvailable: "+count+"\n");
     this.inStream.init(stream);
-    var data = this.inStream.read(count);
+
     if (count > 0) {
+      var data = this.inStream.read(count);
       // detect MIME part boundary
       if (data.indexOf(this.boundary) >= 0) {
         DEBUG_LOG("mimeDecrypt.js: onDataAvailable: found boundary\n");
