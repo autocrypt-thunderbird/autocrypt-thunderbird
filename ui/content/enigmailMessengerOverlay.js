@@ -629,12 +629,15 @@ Enigmail.msg = {
         // - see:
         //   - http://www.mozilla-enigmail.org/forum/viewtopic.php?f=4&t=425
         //   - http://sourceforge.net/p/enigmail/forum/support/thread/4add2b69/
+
         if (mimeMsg.parts && mimeMsg.parts.length && mimeMsg.parts.length == 1 &&
             mimeMsg.parts[0].parts && mimeMsg.parts[0].parts.length && mimeMsg.parts[0].parts.length == 3 &&
             mimeMsg.parts[0].headers["content-type"][0].indexOf("multipart/mixed") >= 0 &&
             mimeMsg.parts[0].parts[0].size == 0 &&
+            mimeMsg.parts[0].parts[0].headers["content-type"][0].search(/multipart\/encrypted/i) < 0 &&
             mimeMsg.parts[0].parts[0].headers["content-type"][0].indexOf("text/plain") >= 0 &&
             mimeMsg.parts[0].parts[1].headers["content-type"][0].indexOf("application/pgp-encrypted") >= 0 &&
+            mimeMsg.parts[0].parts[1].headers["content-type"][0].search(/multipart\/encrypted/i) < 0 &&
             mimeMsg.parts[0].parts[1].headers["content-type"][0].indexOf("PGPMIME Versions Identification") >= 0 &&
             mimeMsg.parts[0].parts[2].headers["content-type"][0].indexOf("application/octet-stream") >= 0 &&
             mimeMsg.parts[0].parts[2].headers["content-type"][0].indexOf("encrypted.asc") >= 0) {
