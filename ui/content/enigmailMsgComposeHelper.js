@@ -42,10 +42,10 @@ Components.utils.import("resource://enigmail/commonFuncs.jsm");
 
 if (! Enigmail) var Enigmail = {};
 
-var enigValidityKeyList = null;
-var enigValidityKeySortList = null;
-
 Enigmail.hlp = {
+
+  enigValidityKeyList: null,
+  enigValidityKeySortList: null,
 
   /**
     *  check for the attribute of type "sign"/"encrypt"/"pgpMime" of the passed node
@@ -286,10 +286,10 @@ Enigmail.hlp = {
     switch (acceptedKeys) {
       case 0: // accept valid/authenticated keys only
         minTrustLevel = "f";  // first value for trusted keys
-        break; 
+        break;
       case 1: // accept all but revoked/disabled/expired keys
         minTrustLevel = "?";  // value between invalid and unknown keys
-        break; 
+        break;
       default:
         EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: validKeysForAllRecipients(): return null (INVALID VALUE for acceptedKeys: \""+acceptedKeys+"\")\n");
         return null;
@@ -305,24 +305,40 @@ Enigmail.hlp = {
       // get list of known keys
       if (!keyList || refresh) {
         var keyListObj = {};
-        EnigmailFuncs.loadKeyList(window, 
+        EnigmailFuncs.loadKeyList(window,
                                   false,        // do not refresh key infos,
                                   keyListObj,   // returned list
                                   "validity",   // sorted acc. to key validity
                                   -1);          // descending
-        enigValidityKeyList = keyListObj.keyList;
-        enigValidityKeySortList = keyListObj.keySortList;
+        this.enigValidityKeyList = keyListObj.keyList;
+        this.enigValidityKeySortList = keyListObj.keySortList;
       }
-      var keyList = enigValidityKeyList;
-      var keySortList = enigValidityKeySortList;
+      var keyList = this.enigValidityKeyList;
+      var keySortList = this.enigValidityKeySortList;
 
       // create array of address elements (email or key)
       var addresses=EnigmailFuncs.stripEmail(emailAddrs).split(',');
 
+      var gpgGroups = EnigmailCommon.getGpgGroups();
+
+      // resolve GnuPG groups
+      for (i=0; i < addresses.length; i++) {
+        for (var j = 0; j < gpgGroups.length; j++) {
+          if (addresses[i] == gpgGroups[j].alias) {
+            // replace address with keylist
+            var grpList = gpgGroups[j].keylist.split(/;/);
+            addresses[i] = grpList[0];
+            for (var k = 1; k < grpList.length; k++) {
+              addresses.push(grpList[k]);
+            }
+          }
+        }
+      }
+
       // check whether each address is or has a key:
-      for (var i=0; i < addresses.length; i++) {
-        var addr = addresses[i];
-        // try to find current address in key list: 
+      for (i=0; i < addresses.length; i++) {
+        addr = addresses[i];
+        // try to find current address in key list:
         var found = false;
         if (addr.indexOf('@') >= 0) {
           // try email match:
@@ -382,10 +398,10 @@ Enigmail.hlp = {
       //var ownerTrust = keyObj.ownerTrust;
       //var expired = keyObj.expiry;
       var userId = keyObj.userId;
-      if (userId && (userId == emailAddr || userId.indexOf(embeddedEmailAddr) >= 0)) { 
-        if (TRUSTLEVELS_SORTED.indexOf(keyTrust) >= minTrustLevelIndex) { 
+      if (userId && (userId == emailAddr || userId.indexOf(embeddedEmailAddr) >= 0)) {
+        if (TRUSTLEVELS_SORTED.indexOf(keyTrust) >= minTrustLevelIndex) {
           EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): key="+keyObj.keyId+" found\n");
-          return keyObj.keyId; // FOUND 
+          return keyObj.keyId; // FOUND
         }
         else {
           EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): matching key="+keyObj.keyId+" found but not enough trust\n");
@@ -402,7 +418,7 @@ Enigmail.hlp = {
         if (subUserId && (subUserId == emailAddr || subUserId.indexOf(embeddedEmailAddr) >= 0)) {
           if (TRUSTLEVELS_SORTED.indexOf(subKeyTrust) >= minTrustLevelIndex) {
             EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): subkey in key="+keyObj.keyId+" found\n");
-            return keyObj.keyId; // FOUND 
+            return keyObj.keyId; // FOUND
           }
           else {
             EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): matching subkey="+keyObj.keyId+" found but not enough trust\n");
