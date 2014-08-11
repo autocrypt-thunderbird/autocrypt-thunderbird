@@ -153,7 +153,7 @@
 <!ENTITY enigmail.defaultKeySelOpts.label      "Key Selection Options...">
 <!ENTITY enigmail.sendPGPMime.label            "Use PGP/MIME for This Message">
 
-<!ENTITY enigmail.tempTrustAllKeys.label       "Trust the keys of all recpients">
+<!ENTITY enigmail.tempTrustAllKeys.label       "Trust the keys of all recipients">
 <!ENTITY enigmail.undoencryption.label         "Undo Encryption">
 <!ENTITY enigmail.attachkey.label              "Attach Public Key ...">
 <!ENTITY enigmail.attachmykey.label            "Attach My Public Key">
@@ -228,7 +228,7 @@
 
 <!ENTITY enigmail.confirmBeforeSendingOption.label           "Confirm before sending">
 <!ENTITY enigmail.confirmBeforeSendingNever.label            "Never">
-<!ENTITY enigmail.confirmBeforeSendingNever.tooltip          "Dont't display information dialog about signing/encryption before sending a message">
+<!ENTITY enigmail.confirmBeforeSendingNever.tooltip          "Don't display information dialog about signing/encryption before sending a message">
 <!ENTITY enigmail.confirmBeforeSendingAlways.label           "Always">
 <!ENTITY enigmail.confirmBeforeSendingAlways.tooltip         "Always display information dialog about signing/encryption before sending a message">
 <!ENTITY enigmail.confirmBeforeSendingIfEncrypted.label      "If encrypted">
@@ -244,8 +244,8 @@
 <!ENTITY enigmail.recipientsSelectionOption.label "How should we choose the keys?">
 <!ENTITY enigmail.assignKeysByRules.label             "By Per-Recipient Rules">
 <!ENTITY enigmail.assignKeysByRules.tooltip           "Assign keys according to pre-recipient rules. Force to prompt for creating new rules if this is the only selected option.">
-<!ENTITY enigmail.assignKeysByEmailAddr.label         "By Email Adresses according to Key Manager">
-<!ENTITY enigmail.assignKeysByEmailAddr.tooltip       "Assign keys according to keys accociated with the email addresses in the key manager.">
+<!ENTITY enigmail.assignKeysByEmailAddr.label         "By Email Addresses according to Key Manager">
+<!ENTITY enigmail.assignKeysByEmailAddr.tooltip       "Assign keys according to keys associated with the email addresses in the key manager.">
 <!ENTITY enigmail.assignKeysManuallyIfMissing.label   "Manually if Keys are Missing">
 <!ENTITY enigmail.assignKeysManuallyIfMissing.tooltip "Open dialog to manually assign keys if keys are missing.">
 <!ENTITY enigmail.assignKeysManuallyAlways.label      "Always (also) Manually">
@@ -753,7 +753,7 @@
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey    "I have existing public and private keys that I would like to import">
 <!ENTITY enigmail.setupWiz.pgKeyImport.title         "Import OpenPGP Keys">
 <!ENTITY enigmail.setupWiz.pgKeyImport.subtitle      "Specify the files to import">
-<!ENTITY enigmail.setupWiz.pgKeyImport.desc          "Please specifiy the files containing the public and the private keys to
+<!ENTITY enigmail.setupWiz.pgKeyImport.desc          "Please specify the files containing the public and the private keys to
                                                       import. The entry for private keys can be left empty if the first file
                                                       contains both private and public keys.">
 <!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile    "Public key file">
