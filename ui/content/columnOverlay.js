@@ -82,7 +82,10 @@ Enigmail.columnHandler = {
     // Components.interfaces.nsIObserver
     observe: function(aMsgFolder, aTopic, aData)
     {
-      gDBView.addColumnHandler("enigmailStatusCol", Enigmail.columnHandler);
+      try {
+        gDBView.addColumnHandler("enigmailStatusCol", Enigmail.columnHandler);
+      }
+      catch(ex) {}
     }
   }
 };
