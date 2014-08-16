@@ -172,12 +172,19 @@ function enigmailBuildList(refresh) {
      else if (a.uidMatchInvalid != b.uidMatchInvalid) {
        r = (a.uidMatchInvalid == 1 ? -1 : 1);
      }
-     // 3rd: sort not activateable keys to the end
+     // 3rd: sort non-activateable keys to the end
      else if ((a.activeState != b.activeState) && (a.activeState == 2 || b.activeState == 2)) {
        r = (a.activeState == 0 ? -1 : 1);
      }
      // 4th: sort according to user IDs
-     else if (a.userId.toLowerCase()<b.userId.toLowerCase()) {
+     else if (a.userId.toLowerCase() < b.userId.toLowerCase()) {
+       r = -1;
+     }
+     else if (a.userId.toLowerCase() > b.userId.toLowerCase()) {
+       r = 1;
+     }
+     // 5th: sort according to trust level (higher index value in front)
+     else if (TRUSTLEVELS_SORTED.indexOf(a.keyTrust) > TRUSTLEVELS_SORTED.indexOf(b.keyTrust)) {
        r = -1;
      }
      else {

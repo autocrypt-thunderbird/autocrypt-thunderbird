@@ -1968,11 +1968,16 @@ Enigmail.msg = {
       }
     }
 
-    // if "always ask/manually" (even if all keys were found) or we have an invalid recipient,
+    // if
+    // - "always ask/manually" (even if all keys were found) or
+    // - we have an invalid recipient or
+    // - we could not resolve any/all keys
+    //   (due to disabled "assignKeysByEmailAddr"" or multiple keys with same trust for a recipient)
     // start the dialog for user selected keys
     if (EnigmailCommon.getPref("assignKeysManuallyAlways")
         || ((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT)
-            && EnigmailCommon.getPref("assignKeysManuallyIfMissing"))) {
+            && EnigmailCommon.getPref("assignKeysManuallyIfMissing"))
+        || toAddrStr.indexOf('@') >= 0) {
 
       // check for invalid recipient keys
       var resultObj = new Object();
