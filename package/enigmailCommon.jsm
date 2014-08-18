@@ -1084,8 +1084,7 @@ var EnigmailCommon = {
 
   parseErrorOutput: function (errOutput, retStatusObj)
   {
-
-    this.DEBUG_LOG("enigmailCommon.jsm: parseErrorOutput: status message: "+errOutput+"\n");
+    this.DEBUG_LOG("enigmailCommon.jsm: parseErrorOutput: status message: \n"+errOutput+"\n");
 
     var errLines = errOutput.split(/\r?\n/);
 
@@ -1096,6 +1095,7 @@ var EnigmailCommon = {
 
     var errArray    = new Array();
     var statusArray = new Array();
+    var encryptToArray = new Array();
     var lineSplit = null;
     var errCode = 0;
     var detectedCard = null;
@@ -1158,6 +1158,12 @@ var EnigmailCommon = {
           // if known flag, story it in our status
           if (flag) {
             statusFlags |= flag;
+          }
+          else {
+            var words = statusLine.split(" ")
+            if (words.length >= 2 && words[0] == "ENC_TO") {
+              encryptToArray.push("0x"+words[1]);
+            }
           }
         }
       }
@@ -1238,6 +1244,10 @@ var EnigmailCommon = {
 
     this.DEBUG_LOG("enigmailCommon.jsm: parseErrorOutput: statusFlags = "+this.bytesToHex(this.pack(statusFlags,4))+"\n");
 
+    if (encryptToArray.length > 0) {
+      var gpgKeys = encryptToArray.join(", ");
+      errorMsg += "\n\n" + EnigmailCommon.getString("encryptKeysNote", [ gpgKeys ]);
+    }
     return errorMsg;
   },
 
@@ -2398,10 +2408,12 @@ var EnigmailCommon = {
   },
 
 
-  decryptMessageEnd: function (stderrStr, exitCode, outputLen, verifyOnly, noOutput, uiFlags, retStatusObj) {
+  decryptMessageEnd: function (stderrStr, exitCode, outputLen, verifyOnly, noOutput, uiFlags, retStatusObj)
+  {
     this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: uiFlags="+uiFlags+", verifyOnly="+verifyOnly+", noOutput="+noOutput+"\n");
 
-    this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: stderrStr="+stderrStr+"\n");
+    stderrStr = stderrStr.replace(/\r\n/g,"\n");
+    this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: stderrStr=\n"+stderrStr+"\n");
     var interactive = uiFlags & nsIEnigmail.UI_INTERACTIVE;
     var pgpMime     = uiFlags & nsIEnigmail.UI_PGP_MIME;
     var allowImport = uiFlags & nsIEnigmail.UI_ALLOW_KEY_IMPORT;
