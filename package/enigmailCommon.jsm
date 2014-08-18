@@ -1095,7 +1095,7 @@ var EnigmailCommon = {
 
     var errArray    = new Array();
     var statusArray = new Array();
-    var encryptToArray = new Array();
+    var encryptToArray = new Array();  // collect ENC_TO lines here
     var lineSplit = null;
     var errCode = 0;
     var detectedCard = null;
@@ -1244,8 +1244,38 @@ var EnigmailCommon = {
 
     this.DEBUG_LOG("enigmailCommon.jsm: parseErrorOutput: statusFlags = "+this.bytesToHex(this.pack(statusFlags,4))+"\n");
 
+    // add used keys (and their user IDs if known) to the details error message
+    // - note: ID 00000000 signals hidden keys
+    // Status Messages are something like (here the German version):
+    //    [GNUPG:] ENC_TO AAAAAAAAAAAAAAAA 1 0
+    //    [GNUPG:] ENC_TO 5B820D2D4553884F 16 0
+    //    [GNUPG:] ENC_TO 37904DF2E631552F 1 0
+    //    [GNUPG:] ENC_TO BBBBBBBBBBBBBBBB 1 0
+    //    gpg: verschlüsselt mit 3072-Bit RSA Schlüssel, ID BBBBBBBB, erzeugt 2009-11-28
+    //          "Joe Doo <joe.doo@domain.de>"
+    //    [GNUPG:] NO_SECKEY E71712DF47BBCC40
+    //    gpg: verschlüsselt mit RSA Schlüssel, ID AAAAAAAA
+    //    [GNUPG:] NO_SECKEY AAAAAAAAAAAAAAAA
+    // So we check for "ID BBBBBBBB" and following email address to print
+    // userIDs for keys
     if (encryptToArray.length > 0) {
-      var gpgKeys = encryptToArray.join(", ");
+      for (var encIdx=0; encIdx<encryptToArray.length; ++encIdx) {
+        var userId = null;
+        var shortid = encryptToArray[encIdx].substring(10);
+        if (shortid != "00000000") {
+          for (var idx=0; idx<errLines.length-1; ++idx) {
+            if (errLines[idx].indexOf("ID "+shortid) >= 0 && errLines[idx+1].indexOf("@") >= 0) {
+              userId = errLines[idx+1];
+            }
+          }
+        }
+        if (userId != null) {
+          // add found user ID in parantheses:
+          userId = userId.replace(/^(\s*)(.*)/, "$2").replace(/\s+$/,"");  // trim spaces
+          encryptToArray[encIdx] += " (" + userId + ")";
+        }
+      }
+      var gpgKeys = "\n  " + encryptToArray.join(",\n  ") + "\n";
       errorMsg += "\n\n" + EnigmailCommon.getString("encryptKeysNote", [ gpgKeys ]);
     }
     return errorMsg;
