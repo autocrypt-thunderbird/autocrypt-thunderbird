@@ -1245,7 +1245,6 @@ var EnigmailCommon = {
     this.DEBUG_LOG("enigmailCommon.jsm: parseErrorOutput: statusFlags = "+this.bytesToHex(this.pack(statusFlags,4))+"\n");
 
     // add used keys (and their user IDs if known) to the details error message
-    // - note: ID 00000000 signals hidden keys
     // Status Messages are something like (here the German version):
     //    [GNUPG:] ENC_TO AAAAAAAAAAAAAAAA 1 0
     //    [GNUPG:] ENC_TO 5B820D2D4553884F 16 0
@@ -1256,23 +1255,17 @@ var EnigmailCommon = {
     //    [GNUPG:] NO_SECKEY E71712DF47BBCC40
     //    gpg: verschlüsselt mit RSA Schlüssel, ID AAAAAAAA
     //    [GNUPG:] NO_SECKEY AAAAAAAAAAAAAAAA
-    // So we check for "ID BBBBBBBB" and following email address to print
-    // userIDs for keys
+    // Note:
+    // - ID 00000000 signals hidden keys
     if (encryptToArray.length > 0) {
       for (var encIdx=0; encIdx<encryptToArray.length; ++encIdx) {
-        var userId = null;
-        var shortid = encryptToArray[encIdx].substring(10);
-        if (shortid != "00000000") {
-          for (var idx=0; idx<errLines.length-1; ++idx) {
-            if (errLines[idx].indexOf("ID "+shortid) >= 0 && errLines[idx+1].indexOf("@") >= 0) {
-              userId = errLines[idx+1];
-            }
+        var keyId = encryptToArray[encIdx];
+        if (keyId != "0x00000000") {
+          var userId = this.enigmailSvc.getFirstUserIdOfKey(keyId);
+          if (userId) {
+            userId = this.convertToUnicode(userId, "UTF-8");
+            encryptToArray[encIdx] += " (" + userId + ")";
           }
-        }
-        if (userId != null) {
-          // add found user ID in parantheses:
-          userId = userId.replace(/^(\s*)(.*)/, "$2").replace(/\s+$/,"");  // trim spaces
-          encryptToArray[encIdx] += " (" + userId + ")";
         }
       }
       var gpgKeys = "\n  " + encryptToArray.join(",\n  ") + "\n";
@@ -2567,7 +2560,7 @@ var EnigmailCommon = {
       if (uids) {
         userId = uids;
       }
-      if (uids.indexOf("uat:jpegPhoto:") >= 0) {
+      if (uids && uids.indexOf("uat:jpegPhoto:") >= 0) {
         retStatusObj.statusFlags |= nsIEnigmail.PHOTO_AVAILABLE;
       }
     }

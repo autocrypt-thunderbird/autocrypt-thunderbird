@@ -1270,7 +1270,8 @@ function determineHiddenKeys(keyObj, showInvalidKeys, showUntrustedKeys, showOth
   return show;
 }
 
-function enigApplyFilter() {
+function enigApplyFilter()
+{
   var searchTxt=gSearchInput.value;
   var nothingFoundElem = document.getElementById("nothingFound");
   nothingFoundElem.hidePopup();
@@ -1329,6 +1330,7 @@ function enigApplyFilter() {
         hideNode = false;
         foundResult = true;
       }
+      // ideally we should check also the sub-key-ids
     }
     node.hidden=hideNode;
     node = node.nextSibling;

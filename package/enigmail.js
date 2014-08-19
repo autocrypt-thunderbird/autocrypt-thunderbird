@@ -2092,7 +2092,7 @@ Enigmail.prototype = {
     var exitCodeObj = {};
 
     var listText = this.execCmd(this.agentPath, args, null, "",
-                      exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
+                                exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
     if (exitCodeObj.value != 0) {
       return "";
     }
@@ -2105,15 +2105,15 @@ Enigmail.prototype = {
     if (uidOnly) {
       var userList="";
       var hideInvalidUid=true;
-      var keyArr=listText.split(/\n/);
-      for (var i=0; i<keyArr.length; i++) {
+      var lineArr=listText.split(/\n/);
+      for (var i=0; i<lineArr.length; i++) {
         // process lines such as:
         //  tru::1:1395895453:1442881280:3:1:5
         //  pub:f:4096:1:C1B875ED336XX959:2299509307:1546189300::f:::scaESCA:
         //  fpr:::::::::102A1C8CC524A966849C33D7C8B157EA336XX959:
         //  uid:f::::1388511201::67D5B96DC564598D4D4D9E0E89F5B83C9931A154::Joe Fox <joe@fox.com>:
         //  sig:::1:C8B157EA336XX959:2299509307::::Joe Fox <joe@fox.com>:13x:::::2:
-        theLine=keyArr[i].split(/:/);
+        theLine=lineArr[i].split(/:/);
         switch (theLine[0]) {
           case "pub:":
             if (EnigmailFuncs.isInvalid(theLine[1])) {
@@ -2152,6 +2152,53 @@ Enigmail.prototype = {
     }
 
     return listText;
+  },
+
+  /**
+   * Return userId of given keys.
+   *
+   * @param  String  keyId              keys with leading 0x
+   *
+   * @return String       First found of user IDs or null if none
+   */
+  getFirstUserIdOfKey: function (keyId) {
+    var args = Ec.getAgentArgs(true);
+    args=args.concat([ "--fixed-list-mode", "--with-colons", "--list-keys"]);
+    args=args.concat([keyId]);
+
+    var statusMsgObj   = {};
+    var cmdErrorMsgObj = {};
+    var statusFlagsObj = {};
+    var exitCodeObj = {};
+
+    var listText = this.execCmd(this.agentPath, args, null, "",
+                                exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
+    if (exitCodeObj.value != 0) {
+      return null;
+    }
+    listText=listText.replace(/(\r\n|\r)/g, "\n");
+
+    var lineArr=listText.split(/\n/);
+    for (var i=0; i<lineArr.length; i++) {
+        // process lines such as:
+        //  tru::1:1395895453:1442881280:3:1:5
+        //  pub:f:4096:1:C1B875ED336XX959:2299509307:1546189300::f:::scaESCA:
+        //  fpr:::::::::102A1C8CC524A966849C33D7C8B157EA336XX959:
+        //  uid:f::::1388511201::67D5B96DC564598D4D4D9E0E89F5B83C9931A154::Joe Fox <joe@fox.com>:
+        //  sig:::1:C8B157EA336XX959:2299509307::::Joe Fox <joe@fox.com>:13x:::::2:
+        //Ec.DEBUG_LOG("enigmail.js: Enigmail.firstUserIdOfKey line="+lineArr[i]+"\n");
+        var theLine = lineArr[i].split(/:/);
+        switch (theLine[0]) {
+          case "uid":
+            {
+              var userId = theLine[9];
+              //Ec.DEBUG_LOG("enigmail.js: Enigmail.firstUserIdOfKey return \""+userId+"\"\n");
+              return userId;
+            }
+            break;
+        }
+    }
+    return null;
   },
 
   // returns the output of --with-colons --list-config
