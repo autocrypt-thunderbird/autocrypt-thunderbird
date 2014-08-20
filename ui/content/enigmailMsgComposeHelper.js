@@ -377,7 +377,7 @@ Enigmail.hlp = {
   },
 
 
-  /* try to find valid key to passed email address
+  /* try to find valid key for encryption to passed email address
    * @return: found key (without leading "0x") or null
    */
   getValidKeyForRecipient: function (emailAddr, minTrustLevelIndex, keyList, keySortList)
@@ -406,6 +406,15 @@ Enigmail.hlp = {
         return foundKeyId;  // END OF LOOP (return NULL or found single key)
       }
 
+      // valid for encryption?
+      if (keyObj.keyUseFor.indexOf("E") < 0) {
+        continue;  // not valid for encryption => CONTINUE the LOOP
+      }
+      // disabled?
+      if (keyObj.keyUseFor.indexOf("D") >= 0) {
+        continue;  // disabled => CONTINUE the LOOP
+      }
+       
       //var ownerTrust = keyObj.ownerTrust;
       //var expired = keyObj.expiry;
       var userId = keyObj.userId;
