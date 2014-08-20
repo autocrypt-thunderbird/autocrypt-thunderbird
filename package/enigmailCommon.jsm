@@ -1255,12 +1255,12 @@ var EnigmailCommon = {
     //    [GNUPG:] NO_SECKEY E71712DF47BBCC40
     //    gpg: verschlüsselt mit RSA Schlüssel, ID AAAAAAAA
     //    [GNUPG:] NO_SECKEY AAAAAAAAAAAAAAAA
-    // Note:
-    // - ID 00000000 signals hidden keys
     if (encryptToArray.length > 0) {
+      // for each private key also show an associated user ID if known:
       for (var encIdx=0; encIdx<encryptToArray.length; ++encIdx) {
         var keyId = encryptToArray[encIdx];
-        if (keyId != "0x00000000") {
+        // except for ID 00000000, which signals hidden keys
+        if (keyId != "0x0000000000000000") {
           var userId = this.enigmailSvc.getFirstUserIdOfKey(keyId);
           if (userId) {
             userId = this.convertToUnicode(userId, "UTF-8");
@@ -1271,6 +1271,7 @@ var EnigmailCommon = {
       var gpgKeys = "\n  " + encryptToArray.join(",\n  ") + "\n";
       errorMsg += "\n\n" + EnigmailCommon.getString("encryptKeysNote", [ gpgKeys ]);
     }
+
     return errorMsg;
   },
 

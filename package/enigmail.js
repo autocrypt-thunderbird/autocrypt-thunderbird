@@ -2070,17 +2070,18 @@ Enigmail.prototype = {
   /**
    * Return details of given keys.
    *
-   * @param  String  keyId              List of keys, separated by spaces.
+   * @param  String  keyId              List of keys with 0x, separated by spaces.
    * @param  Boolean uidOnly            false:
    *                                      return all key details (full output of GnuPG)
    *                                    true:
    *                                      return only the user ID fields. Only UIDs with highest trust
    *                                      level are returned.
-   * @param  Boolean withUserAttributes true: include "uat:jpegPhoto" + subkey ID
+   * @param  Boolean withUserAttributes true: if uidOnly include "uat:jpegPhoto" (but not subkey IDs)
    *
-   * @return String       List of user IDs separated by \n.
+   * @return String all key details or list of user IDs separated by \n.
    */
-  getKeyDetails: function (keyId, uidOnly, withUserAttributes) {
+  getKeyDetails: function (keyId, uidOnly, withUserAttributes)
+  {
     var args = Ec.getAgentArgs(true);
     var keyIdList = keyId.split(" ");
     args=args.concat([ "--fixed-list-mode", "--with-colons", "--list-keys"]);
@@ -2100,7 +2101,6 @@ Enigmail.prototype = {
 
     const TRUSTLEVELS_SORTED = EnigmailFuncs.trustlevelsSorted();
     var maxTrustLevel = -1;
-    var theLine;
 
     if (uidOnly) {
       var userList="";
@@ -2113,36 +2113,38 @@ Enigmail.prototype = {
         //  fpr:::::::::102A1C8CC524A966849C33D7C8B157EA336XX959:
         //  uid:f::::1388511201::67D5B96DC564598D4D4D9E0E89F5B83C9931A154::Joe Fox <joe@fox.com>:
         //  sig:::1:C8B157EA336XX959:2299509307::::Joe Fox <joe@fox.com>:13x:::::2:
-        theLine=lineArr[i].split(/:/);
-        switch (theLine[0]) {
+        //  sub:e:2048:1:B214734F0F5C7041:1316219469:1199912694:::::e:
+        //  sub:f:2048:1:70E7A471DABE08B0:1316221524:1546189300:::::s:
+        var lineTokens = lineArr[i].split(/:/);
+        switch (lineTokens[0]) {
           case "pub":
-            if (EnigmailFuncs.isInvalid(theLine[1])) {
+            if (EnigmailFuncs.isInvalid(lineTokens[1])) {
               // pub key not valid (anymore)-> display all UID's
               hideInvalidUid = false;
             }
             break;
           case "uid":
             if (uidOnly && hideInvalidUid) {
-              var thisTrust = TRUSTLEVELS_SORTED.indexOf(theLine[1]);
+              var thisTrust = TRUSTLEVELS_SORTED.indexOf(lineTokens[1]);
               if (thisTrust > maxTrustLevel) {
-                userList = theLine[9] + "\n";
+                userList = lineTokens[9] + "\n";
                 maxTrustLevel = thisTrust;
               }
               else if (thisTrust == maxTrustLevel) {
-                userList += theLine[9] + "\n";
+                userList += lineTokens[9] + "\n";
               }
               // else do not add uid
             }
-            else if (!EnigmailFuncs.isInvalid(theLine[1]) || !hideInvalidUid) {
+            else if (!EnigmailFuncs.isInvalid(lineTokens[1]) || !hideInvalidUid) {
               // UID valid  OR  key not valid, but invalid keys allowed
-              userList += theLine[9] + "\n";
+              userList += lineTokens[9] + "\n";
             }
             break;
           case "uat":
             if (withUserAttributes) {
-              if (!EnigmailFuncs.isInvalid(theLine[1]) || !hideInvalidUid) {
-                // UID valid  OR  key not valid, but invalid keys allowed
-                userList += "uat:jpegPhoto:" + theLine[4] + "\n";
+              if (!EnigmailFuncs.isInvalid(lineTokens[1]) || !hideInvalidUid) {
+                // IF  UID valid  OR  key not valid and invalid keys allowed
+                userList += "uat:jpegPhoto:" + lineTokens[4] + "\n";
               }
             }
             break;
@@ -2154,14 +2156,14 @@ Enigmail.prototype = {
     return listText;
   },
 
+
   /**
-   * Return userId of given keys.
-   *
-   * @param  String  keyId              keys with leading 0x
-   *
-   * @return String       First found of user IDs or null if none
+   * Return first found userId of given keys.
+   * @param  String  keyId key with leading 0x
+   * @return String  First found of user IDs or null if none
    */
-  getFirstUserIdOfKey: function (keyId) {
+  getFirstUserIdOfKey: function (keyId)
+  {
     var args = Ec.getAgentArgs(true);
     args=args.concat([ "--fixed-list-mode", "--with-colons", "--list-keys"]);
     args=args.concat([keyId]);
@@ -2180,30 +2182,29 @@ Enigmail.prototype = {
 
     var lineArr=listText.split(/\n/);
     for (var i=0; i<lineArr.length; i++) {
-        // process lines such as:
-        //  tru::1:1395895453:1442881280:3:1:5
-        //  pub:f:4096:1:C1B875ED336XX959:2299509307:1546189300::f:::scaESCA:
-        //  fpr:::::::::102A1C8CC524A966849C33D7C8B157EA336XX959:
-        //  uid:f::::1388511201::67D5B96DC564598D4D4D9E0E89F5B83C9931A154::Joe Fox <joe@fox.com>:
-        //  sig:::1:C8B157EA336XX959:2299509307::::Joe Fox <joe@fox.com>:13x:::::2:
-        //Ec.DEBUG_LOG("enigmail.js: Enigmail.firstUserIdOfKey line="+lineArr[i]+"\n");
-        var theLine = lineArr[i].split(/:/);
-        switch (theLine[0]) {
-          case "uid":
-            {
-              var userId = theLine[9];
-              //Ec.DEBUG_LOG("enigmail.js: Enigmail.firstUserIdOfKey return \""+userId+"\"\n");
-              return userId;
-            }
-            break;
-        }
+      // process lines such as:
+      //  tru::1:1395895453:1442881280:3:1:5
+      //  pub:f:4096:1:C1B875ED336XX959:2299509307:1546189300::f:::scaESCA:
+      //  fpr:::::::::102A1C8CC524A966849C33D7C8B157EA336XX959:
+      //  uid:f::::1388511201::67D5B96DC564598D4D4D9E0E89F5B83C9931A154::Joe Fox <joe@fox.com>:
+      //  sig:::1:C8B157EA336XX959:2299509307::::Joe Fox <joe@fox.com>:13x:::::2:
+      var lineTokens = lineArr[i].split(/:/);
+      switch (lineTokens[0]) {
+        case "uid":
+          {
+            var userId = lineTokens[9];
+            return userId;
+          }
+          break;
+      }
     }
     return null;
   },
 
-  // returns the output of --with-colons --list-config
-  getGnupgConfig: function  (exitCodeObj, errorMsgObj) {
 
+  // returns the output of --with-colons --list-config
+  getGnupgConfig: function  (exitCodeObj, errorMsgObj)
+  {
     var args = Ec.getAgentArgs(true);
 
     args=args.concat(["--fixed-list-mode", "--with-colons", "--list-config"]);
