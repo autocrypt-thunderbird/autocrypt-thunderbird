@@ -2825,16 +2825,16 @@ Enigmail.msg = {
         if (sendInfo.sendFlags & (ENCRYPT | SIGN)) {
           // Encryption/signing failed
 
-           if (errorMsgObj.value) {
-             // check if own key is invalid
-             let s = new RegExp("^\\[GNUPG:\\] INV_(RECP|SGNR) [0-9]+ \\<?" + sendInfo.fromAddr + "\\>?", "m");
-             if (errorMsgObj.value.search(s) >= 0)  {
-               EnigmailCommon.alert(window, EnigmailCommon.getString("errorKeyUnusable", [ sendInfo.fromAddr ]));
-               return false;
-             }
-           }
+          if (errorMsgObj.value) {
+            // check if own key is invalid
+            let s = new RegExp("^\\[GNUPG:\\] INV_(RECP|SGNR) [0-9]+ \\<?" + sendInfo.fromAddr + "\\>?", "m");
+            if (errorMsgObj.value.search(s) >= 0)  {
+              EnigmailCommon.alert(window, EnigmailCommon.getString("errorKeyUnusable", [ sendInfo.fromAddr ]));
+              return false;
+            }
+          }
 
-          EnigmailCommon.alert(window, EnigmailCommon.getString("sendAborted")+errorMsgObj.value);
+          this.sendAborted(window, errorMsgObj);
           return false;
         }
       }
@@ -2848,12 +2848,7 @@ Enigmail.msg = {
                               sendInfo.sendFlags, errorMsgObj);
       if (exitCode != 0) {
         this.modifiedAttach = null;
-        if (errorMsgObj.value) {
-          EnigmailCommon.alert(window, EnigmailCommon.getString("sendAborted")+errorMsgObj.value);
-        }
-        else {
-          EnigmailCommon.alert(window, EnigmailCommon.getString("sendAborted")+"an internal error has occurred");
-        }
+        this.sendAborted(window, errorMsgObj);
         if (this.processed) {
           this.undoEncryption(0);
         }
@@ -2865,6 +2860,45 @@ Enigmail.msg = {
     }
     return true;
   },
+
+
+  sendAborted: function (window, errorMsgObj)
+  {
+    if (errorMsgObj && errorMsgObj.value) {
+      var txt = errorMsgObj.value;
+      var txtLines = txt.split(/\r?\n/);
+      var errorMsg = "";
+      for (var i = 0; i < txtLines.length; ++i) {
+        var line = txtLines[i];
+        var tokens = line.split(/ /);
+        // process most important business reasons for invalid recipient (and sender) errors:
+        if (tokens.length == 3 && (tokens[0] == "INV_RECP" || tokens[0] == "INV_SGNR")) {
+          var reason = tokens[1];
+          var key = tokens[2];
+          if (reason == "10") {
+            errorMsg += EnigmailCommon.getString("keyNotTrusted", [ key ]) + "\n";
+          }
+          else if (reason == "1") {
+            errorMsg += EnigmailCommon.getString("keyNotFound", [ key ]) + "\n";
+          }
+          else if (reason == "4") {
+            errorMsg += EnigmailCommon.getString("keyRevoked", [ key ]) + "\n";
+          }
+          else if (reason == "5") {
+            errorMsg += EnigmailCommon.getString("keyExpired", [ key ]) + "\n";
+          }
+        }
+      }
+      if (errorMsg != "") {
+        txt = errorMsg + "\n" + txt;
+      }
+      EnigmailCommon.alert(window, EnigmailCommon.getString("sendAborted") + txt);
+    }
+    else {
+      EnigmailCommon.alert(window, EnigmailCommon.getString("sendAborted") + "an internal error has occurred");
+    }
+  },
+
 
   getMailPref: function (prefName)
   {
