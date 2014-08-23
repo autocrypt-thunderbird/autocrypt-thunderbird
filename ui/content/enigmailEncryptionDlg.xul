@@ -76,8 +76,7 @@
    -->
 
    <groupbox>
-     <caption id="enigmail_compose_popup_encrypt_caption"
-              label="???"/>
+     <caption label="&enigmail.encryption.label;"/>
      <radiogroup id="enigmail_compose_popup_encrypt">
        <!-- ENIG_UNDEF == 1  -->
        <radio id="enigmail_final_encryptDefault"
@@ -92,11 +91,11 @@
               value="0"
               label="&enigmail.finalEncryptNo.label;"/>
      </radiogroup>
+
    </groupbox>
 
    <groupbox>
-     <caption id="enigmail_compose_popup_sign_caption"
-              label="???"/>
+     <caption label="&enigmail.signing.label;"/>
      <radiogroup id="enigmail_compose_popup_sign">
        <!-- ENIG_UNDEF == 1  -->
        <radio id="enigmail_final_signDefault"
@@ -111,11 +110,11 @@
               value="0"
               label="&enigmail.finalSignNo.label;"/>
      </radiogroup>
+
    </groupbox>
 
    <groupbox>
-     <caption id="enigmail_compose_popup_pgpmime_caption"
-              label="???"/>
+     <caption label="&enigmail.pgpMime.label;"/>
      <radiogroup id="enigmail_compose_popup_pgpmime">
        <!-- ENIG_UNDEF : 1 -->
        <radio id="enigmail_final_pgpmimeDefault"
@@ -130,8 +129,18 @@
               value="0"
               label="&enigmail.finalPGPMimeNo.label;"/>
      </radiogroup>
+
    </groupbox>
 
+   <groupbox>
+     <caption label="&enigmail.afterDefaultsAndRules.label;"/>
+     <label id="enigmail_compose_popup_encrypt_label"
+              value="???"/>
+     <label id="enigmail_compose_popup_sign_label"
+              value="???"/>
+     <label id="enigmail_compose_popup_pgpmime_label"
+        value="???"/>
+   </groupbox>
   </vbox>
 </dialog>
 

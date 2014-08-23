@@ -54,7 +54,7 @@ function enigmailEncryptionDlgLoad() {
 
   var statusEncryptedStr = inputObj.statusEncryptedStr;
   if (statusEncryptedStr) {
-    document.getElementById("enigmail_compose_popup_encrypt_caption").setAttribute("label", statusEncryptedStr);
+    document.getElementById("enigmail_compose_popup_encrypt_label").setAttribute("value", statusEncryptedStr);
   }
   var encGroupElement = document.getElementById("enigmail_compose_popup_encrypt");
   // note: for whatever reason a switch over inputObj.encryptForced does not work
@@ -70,7 +70,7 @@ function enigmailEncryptionDlgLoad() {
 
   var statusSignedStr = inputObj.statusSignedStr;
   if (statusSignedStr) {
-    document.getElementById("enigmail_compose_popup_sign_caption").setAttribute("label", statusSignedStr);
+    document.getElementById("enigmail_compose_popup_sign_label").setAttribute("value", statusSignedStr);
   }
   var signGroupElement = document.getElementById("enigmail_compose_popup_sign");
   if (inputObj.signForced == 0) {
@@ -85,7 +85,7 @@ function enigmailEncryptionDlgLoad() {
 
   var statusPGPMimeStr = inputObj.statusPGPMimeStr;
   if (statusPGPMimeStr) {
-    document.getElementById("enigmail_compose_popup_pgpmime_caption").setAttribute("label", statusPGPMimeStr);
+    document.getElementById("enigmail_compose_popup_pgpmime_label").setAttribute("value", statusPGPMimeStr);
   }
   var pgpmimeGroupElement = document.getElementById("enigmail_compose_popup_pgpmime");
   if (inputObj.pgpmimeForced == 0) {
