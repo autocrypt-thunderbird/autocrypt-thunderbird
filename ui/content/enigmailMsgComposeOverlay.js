@@ -1779,6 +1779,61 @@ Enigmail.msg = {
     };
   },
 
+  /* Determine if S/MIME or OpenPGP should be used
+   *
+   * return: Boolean:
+   *   - true:  use OpenPGP
+   *   - false: use SMIME
+   *   - null:  dialog aborted - cancel sending
+   */
+
+  preferPgpOverSmime: function(sendFlags) {
+
+    const nsIEnigmail = Components.interfaces.nsIEnigmail;
+
+    if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields &&
+        (sendFlags & (nsIEnigmail.SEND_SIGNED | nsIEnigmail.SEND_ENCRYPTED))) {
+
+      if (gMsgCompose.compFields.securityInfo.requireEncryptMessage ||
+         gMsgCompose.compFields.securityInfo.signMessage) {
+
+         var promptSvc = EnigmailCommon.getPromptSvc();
+         var prefAlgo = EnigmailCommon.getPref("mimePreferPgp");
+         if (prefAlgo == 1) {
+           var checkedObj={ value: null};
+           prefAlgo = promptSvc.confirmEx(window,
+                      EnigmailCommon.getString("enigConfirm"),
+                      EnigmailCommon.getString("pgpMime_sMime.dlg.text"),
+                      (promptSvc. BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_0) +
+                      (promptSvc. BUTTON_TITLE_CANCEL * promptSvc.BUTTON_POS_1) +
+                      (promptSvc. BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_2),
+                      EnigmailCommon.getString("pgpMime_sMime.dlg.pgpMime.button"),
+                      null,
+                      EnigmailCommon.getString("pgpMime_sMime.dlg.sMime.button"),
+                      EnigmailCommon.getString("dlgKeepSetting"),
+                      checkedObj);
+           if (checkedObj.value && (prefAlgo==0 || prefAlgo==2)) EnigmailCommon.setPref("mimePreferPgp", prefAlgo);
+         }
+         switch (prefAlgo) {
+         case 0:
+            // use OpenPGP and not S/MIME
+            gMsgCompose.compFields.securityInfo.requireEncryptMessage = false;
+            gMsgCompose.compFields.securityInfo.signMessage = false;
+            return true;
+         case 2:
+            // use S/MIME and not OpenPGP
+            return false;
+         case 1:
+         default:
+            // cancel or ESC pressed
+            return null;
+         }
+      }
+    }
+
+    return true;
+  },
+
 
   /* process rules
    *
@@ -2138,6 +2193,7 @@ Enigmail.msg = {
         try {
           if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIEnigMsgCompFields) {
             gMsgCompose.compFields.securityInfo.sendFlags &= ~ENCRYPT;
+
           }
         }
         catch(ex) {}
@@ -2366,6 +2422,15 @@ Enigmail.msg = {
        toAddrStr = result.toAddrStr;
        bccAddrStr = result.bccAddrStr;
 
+       var useEnigmail = this.preferPgpOverSmime(sendFlags);
+
+       if (useEnigmail == null) return false; // dialog aborted
+       if (useEnigmail == false) {
+          // use S/MIME
+          sendFlags = 0;
+          return true;
+        }
+
        if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
          // always enable PGP/MIME if message is saved
          sendFlags |= nsIEnigmail.SEND_PGP_MIME;
@@ -2462,45 +2527,6 @@ Enigmail.msg = {
 
        var usingPGPMime = (sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
                           (sendFlags & (ENCRYPT | SIGN));
-
-       // Detect PGP/MIME and S/MIME
-       if (usingPGPMime) {
-          if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields) {
-
-              if (gMsgCompose.compFields.securityInfo.requireEncryptMessage ||
-                 gMsgCompose.compFields.securityInfo.signMessage) {
-                 var prefAlgo = EnigmailCommon.getPref("mimePreferPgp");
-                 if (prefAlgo == 1) {
-                   var checkedObj={ value: null};
-                   prefAlgo = promptSvc.confirmEx(window,
-                              EnigmailCommon.getString("enigConfirm"),
-                              EnigmailCommon.getString("pgpMime_sMime.dlg.text"),
-                              (promptSvc. BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_0) +
-                              (promptSvc. BUTTON_TITLE_CANCEL * promptSvc.BUTTON_POS_1) +
-                              (promptSvc. BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_2),
-                              EnigmailCommon.getString("pgpMime_sMime.dlg.pgpMime.button"),
-                              null,
-                              EnigmailCommon.getString("pgpMime_sMime.dlg.sMime.button"),
-                              EnigmailCommon.getString("dlgKeepSetting"),
-                              checkedObj);
-                   if (checkedObj.value && (prefAlgo==0 || prefAlgo==2)) EnigmailCommon.setPref("mimePreferPgp", prefAlgo);
-                 }
-                 switch (prefAlgo) {
-                 case 0:
-                    gMsgCompose.compFields.securityInfo.requireEncryptMessage = false;
-                    gMsgCompose.compFields.securityInfo.signMessage = false;
-                    break;
-                 case 1:
-                    return false;
-                 case 2:
-                    return true;
-                    break;
-                 default:
-                   return false;
-                 }
-              }
-          }
-       }
 
        var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
