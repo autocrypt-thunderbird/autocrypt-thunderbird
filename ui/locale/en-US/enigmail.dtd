@@ -243,7 +243,7 @@
 
 <!ENTITY enigmail.recipientsSelectionOption.label "How should we choose the keys?">
 <!ENTITY enigmail.assignKeysByRules.label             "By Per-Recipient Rules">
-<!ENTITY enigmail.assignKeysByRules.tooltip           "Assign keys according to pre-recipient rules. Force to prompt for creating new rules if this is the only selected option.">
+<!ENTITY enigmail.assignKeysByRules.tooltip           "Assign keys according to per-recipient rules. Force to prompt for creating new rules if this is the only selected option.">
 <!ENTITY enigmail.assignKeysByEmailAddr.label         "By Email Addresses according to the key manager">
 <!ENTITY enigmail.assignKeysByEmailAddr.tooltip       "Assign keys according to keys associated with the email addresses in the key manager.">
 <!ENTITY enigmail.assignKeysManuallyIfMissing.label   "Manually if Keys are Missing">
