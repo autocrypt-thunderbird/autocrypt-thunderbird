@@ -386,7 +386,7 @@ Enigmail.hlp = {
     const TRUSTLEVELS_SORTED = EnigmailFuncs.trustlevelsSorted();
     embeddedEmailAddr = "<" + emailAddr + ">";
 
-    // note: we can't take the first matched because we might have faked keys as duplicates
+    // note: we can't take just the first matched because we might have faked keys as duplicates
     var foundKeyId = null;
     var foundTrustLevel = null;
 
@@ -398,20 +398,22 @@ Enigmail.hlp = {
       // end of loop: key trust (our sort criterion) too low?
       if (keyTrustIndex < minTrustLevelIndex) {
         if (foundKeyId == null) {
-          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): no key with enough trust level found\n");
+          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): no key with enough trust level for '" + emailAddr + "' found\n");
         }
         else {
-          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): single key with valid gtrust level found\n");
+          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): single key with valid trust level for '" + emailAddr + "' found\n");
         }
         return foundKeyId;  // END OF LOOP (return NULL or found single key)
       }
 
       // valid for encryption?
       if (keyObj.keyUseFor.indexOf("E") < 0) {
+        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): key " + keyObj.keyId + " found but not provided for encryption\n");
         continue;  // not valid for encryption => CONTINUE the LOOP
       }
       // disabled?
       if (keyObj.keyUseFor.indexOf("D") >= 0) {
+        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): key " + keyObj.keyId + " found but disabled\n");
         continue;  // disabled => CONTINUE the LOOP
       }
        
@@ -425,7 +427,8 @@ Enigmail.hlp = {
             if (foundKeyTrustIndex > keyTrustIndex) {
               return foundKeyId;   // OK first key has higher trust level
             }
-            EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): multiple matching keys with trust level \"" + keyTrust + "\" found for \"" + emailAddr + "\" (0x" + foundKeyId + " and 0x"+keyObj.keyId+")\n");
+            EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): multiple matching keys with trust level \"" + keyTrust
+                                       + "\" found for \"" + emailAddr + "\" (0x" + foundKeyId + " and 0x" + keyObj.keyId + ")\n");
             return null;
           }
           foundKeyId = keyObj.keyId; // FOUND
@@ -464,10 +467,11 @@ Enigmail.hlp = {
       }
     }
     if (foundKeyId == null) {
-      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): no key found\n");
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): no key for '" + emailAddr + "' found\n");
     }
     return foundKeyId;
   },
+
 
   /**
     * processConflicts
