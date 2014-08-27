@@ -306,7 +306,7 @@ Enigmail.hlp = {
       if (!keyList || refresh) {
         var keyListObj = {};
         EnigmailFuncs.loadKeyList(window,
-                                  false,        // do not refresh key infos,
+                                  refresh,      // refresh key infos if required,
                                   keyListObj,   // returned list
                                   "validity",   // sorted acc. to key validity
                                   -1);          // descending
@@ -416,7 +416,7 @@ Enigmail.hlp = {
         EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): key " + keyObj.keyId + " found but disabled\n");
         continue;  // disabled => CONTINUE the LOOP
       }
-       
+
       //var ownerTrust = keyObj.ownerTrust;
       //var expired = keyObj.expiry;
       var userId = keyObj.userId;
