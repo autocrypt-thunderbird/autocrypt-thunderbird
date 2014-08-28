@@ -25,7 +25,9 @@
 <!ENTITY enigmail.passwordSettings.label "Paramètres phrase secrète">
 <!ENTITY enigmail.userNoPassphrase.label "Ne jamais demander de phrase secrète">
 <!ENTITY enigmail.userNoPassphrase.tooltip "Activez si votre clef OpenPGP n'est pas protégée par une phrase secrète.">
+<!ENTITY enigmail.expertUserMenus.label "Afficher les menus et paramètres expert">
 <!ENTITY enigmail.expertUser.tooltip "Activez si vous désirez afficher les options pour les utilisateurs avancés.">
+<!ENTITY enigmail.basicUserMenus.label "Cacher les menus et paramètres expert">
 <!ENTITY enigmail.basicUser.tooltip "Cliquez pour ne pas afficher les menus et les options pour les utilisateurs avancés.">
 <!ENTITY enigmail.prefs.pathsTitle.label "Fichiers et répertoires">
 <!ENTITY enigmail.prefs.overrideGpg.label "Outrepasser avec">
@@ -117,12 +119,12 @@
 <!ENTITY enigmail.undoencryption.label "Annuler le chiffrement">
 <!ENTITY enigmail.attachkey.label "Attacher une clef publique...">
 <!ENTITY enigmail.attachmykey.label "Attacher ma clef publique">
-<!ENTITY enigmail.finalSignDefault.label "Utiliser les défauts et règles pour signer">
-<!ENTITY enigmail.finalSignYes.label "Forcer la signature">
-<!ENTITY enigmail.finalSignNo.label "Forcer à ne pas signer">
 <!ENTITY enigmail.finalEncryptDefault.label "Utiliser les défauts et règles pour chiffrer">
 <!ENTITY enigmail.finalEncryptYes.label "Forcer les chiffrement">
 <!ENTITY enigmail.finalEncryptNo.label "Forcer à ne pas chiffrer">
+<!ENTITY enigmail.finalSignDefault.label "Utiliser les défauts et règles pour signer">
+<!ENTITY enigmail.finalSignYes.label "Forcer la signature">
+<!ENTITY enigmail.finalSignNo.label "Forcer à ne pas signer">
 <!ENTITY enigmail.finalPGPMimeDefault.label "Utiliser les défauts et règles pour le format PGP">
 <!ENTITY enigmail.finalPGPMimeYes.label "Forcer PGP/MIME">
 <!ENTITY enigmail.finalPGPMimeNo.label "Forcer PGP en ligne (inline PGP)">
@@ -141,6 +143,7 @@
 <!ENTITY enigmail.undoencryption.accesskey "f">
 <!ENTITY enigmail.attachkey.accesskey "A">
 <!ENTITY enigmail.attachmykey.accesskey "m">
+<!-- account specific options -->
 <!ENTITY enigmail.defaultSigning.label "Signer les messages par défaut">
 <!ENTITY enigmail.defaultEncryption.label "Chiffrer les messages par défaut">
 <!ENTITY enigmail.usePGPMimeAlways.label "Toujours utiliser PGP/MIME">
@@ -150,6 +153,7 @@
 <!ENTITY enigmail.autoEncryptDrafts.label "Chiffrer les brouillons lors de l'enregistrement">
 <!ENTITY enigmail.advancedPrefsButton.label "Avancé...">
 <!ENTITY enigmail.openpgpPrefsButton.label "Préférences Enigmail">
+<!-- Sending Preferences -->
 <!ENTITY enigmail.SendingPrefs.label "Préférences générales pour l'envoi">
 <!ENTITY enigmail.seeAccountSettings.label "Voir aussi les paramètres Enigmail des comptes (cf. Paramètres des comptes -&gt; OpenPGP)">
 <!ENTITY enigmail.encryptionModelConvenient.label "Paramètres de chiffrement pratiques">
@@ -177,6 +181,7 @@
 <!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.tooltip "Afficher la boîte de dialogue d'information sur signature/chiffrement avant d'envoyer un message NON CHIFFRÉ">
 <!ENTITY enigmail.confirmBeforeSendingIfRules.label "Si les règles ont changé le paramètre de chiffrement par défaut">
 <!ENTITY enigmail.confirmBeforeSendingIfRules.tooltip "Afficher la boîte de dialogue d'information sur signature/chiffrement avant d'envoyer, si votre préférence concernant le chiffrement a été changé par une règle par destinataire ou par un chiffrement automatique">
+<!-- keySel Preferences -->
 <!ENTITY enigmail.recipientsSelectionOption.label "Comportement du choix des clefs">
 <!ENTITY enigmail.assignKeysByRules.label "Par règles par destinataire">
 <!ENTITY enigmail.assignKeysByRules.tooltip "Assigner les clefs selon les règles pré-destinataire. Forcer à demander pour créer de nouvelles règles si c'est la seule option sélectionnée.">
@@ -439,6 +444,10 @@
 <!ENTITY enigmail.keyMan.createMail.accesskey "é">
 <!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "T">
 <!ENTITY enigmail.keyMan.selectAll.key "A">
+<!ENTITY enigmail.keyMan.keyDetails.key "D">
+<!ENTITY enigmail.keyMan.refreshKey.key "R">
+<!ENTITY enigmail.keyMan.viewSig.key "S">
+<!ENTITY enigmail.keySearch.selectAll.key "T">
 <!ENTITY enigmail.viewKeySigDlg.title "Liste des signatures">
 <!ENTITY enigmail.viewKeySigDlg.sigForKey.label "Signatures pour la clef :">
 <!ENTITY enigmail.viewKeySigDlg.sigType.label "Type de signature">
@@ -515,6 +524,7 @@
 <!ENTITY enigmail.changePasswd.currPasswd.label "Phrase secrète actuelle">
 <!ENTITY enigmail.changePasswd.newPasswd.label "Nouvelle phrase secrète">
 <!ENTITY enigmail.changePasswd.repeatPasswd.label "Répétez la nouvelle phrase secrète">
+<!-- wizard: welcome step -->
 <!ENTITY enigmail.setupWiz.title "Assistant de configuration Enigmail">
 <!ENTITY enigmail.setupWiz.yes "Oui">
 <!ENTITY enigmail.setupWiz.no "Non, merci">
@@ -522,12 +532,14 @@
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "Désirez-vous utiliser l'assistant maintenant ?">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "Oui, je désire que l'assistant m'aide à démarrer">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "Non merci. Je préfère configurer manuellement">
+<!-- wizard: select account IDs step -->
 <!ENTITY enigmail.setupWiz.pgSelectId.title "Sélectionnez une identité">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Sélectionnez le compte ou l'identité avec lequel vous désirez que Enigmail fonctionne">
 <!ENTITY enigmail.setupWiz.pgSelectId.desc "Les paramètres Enigmail sont spécifiques aux comptes et identités. Par défaut,                                                             Enigmail se configure pour fonctionner avec tous les comptes et identités.                                                          Si ce n'est pas ce que vous désirez, veuillez sélectionner ci-dessous le compte ou l'identité                                                          spécifique pour lequel configurer Enigmail.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "Configurer Enigmail pour toutes les identités">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Configurer Enigmail pour les identités suivantes seulement :">
 <!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Note :</a> Enigmail vérifiera toujours les signatures                                                             des messages pour tous les comptes et identités, qu'il y soit actif ou pas.">
+<!-- wizard: install GnuPG step -->
 <!ENTITY enigmail.setupWiz.pgInstall.title "GnuPG est requis">
 <!ENTITY enigmail.setupWiz.pgInstall.desc "Afin d'utiliser Enigmail, il est nécessaire d'installer GnuPG, outil prenant en charge les aspects cryptographiques. L'assistant a tenté de localiser GnuPG mais ne l'a pas trouvé.">
 <!ENTITY enigmail.setupWiz.pgInstall.installDesc "Enigmail peut télécharger GnuPG et lancer l'installation pour vous. Si vous le souhaitez, cliquez sur le bouton Installer pour télécharger et installer GnuPG.">
@@ -538,6 +550,7 @@
 <!ENTITY enigmail.setupWiz.pgInstall.installLabel "Démarrage de l'installeur. Suivez les indications de l'assistant d'installation GnuPG.">
 <!ENTITY enigmail.setupWiz.pgInstall.installDone "Installation terminée. Passer à l'étape suivante de l'assistant pour continuer le processus.">
 <!ENTITY enigmail.setupWiz.pgInstall.gnupgFound "Installation correcte de GnuPG trouvée.">
+<!-- wizard: encryption step (replaces pgEnc with v1.7) -->
 <!ENTITY enigmail.setupWiz.pgEncConv.title "Chiffrement">
 <!ENTITY enigmail.setupWiz.pgEncConv.subtitle "Chiffrez vos emails sortant">
 <!ENTITY enigmail.setupWiz.pgEncConv.desc "Enigmail vous permet de chiffrer vos messages électroniques et leurs pièces jointes. Le chiffrement est comme mettre une lettre dans une enveloppe. Il rend les choses privées. Ce n'est pas que pour des messages &quot;secrets&quot; mais pour tout ce que vous n'enverriez pas sur une carte postale.">
@@ -545,15 +558,18 @@
 <!ENTITY enigmail.setupWiz.pgEncConv.convYes "Chiffrement automatique pratique">
 <!ENTITY enigmail.setupWiz.pgEncConv.convEncYes "Chiffrer tous mes messages par défaut car la vie privée est critique pour moi">
 <!ENTITY enigmail.setupWiz.pgEncConv.convEncNo "Ne pas chiffrer mes messages par défaut">
+<!-- wizard: signing step -->
 <!ENTITY enigmail.setupWiz.pgSign.title "Signature">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "Signer numériquement vos messages sortants">
 <!ENTITY enigmail.setupWiz.pgSign.desc "Enigmail permet de signer numériquement vos messages. C'est en quelque sorte l'équivalent                                                             électronique de la signature sur une lettre manuscrite, cela permet aux gens d'être certains                                                          que le message provient bien de vous. Du point de vue de la sécurité, c'est une bonne                                                          habitude de toujours signer vos messages sortants.">
 <!ENTITY enigmail.setupWiz.pgSign.signMsg "Quel mode général préférez-vous pour signer vos messages sortants ?">
 <!ENTITY enigmail.setupWiz.pgSign.signYes "Signer tous mes messages par défaut">
 <!ENTITY enigmail.setupWiz.pgSign.signNo "Ne pas signer mes messages par défaut">
+<!-- old labels: -->
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg "Désirez-vous signer tous les messages sortants par défaut ?">
 <!ENTITY enigmail.setupWiz.pgSign.yesSign "Oui, je veux signer tous mes messages">
 <!ENTITY enigmail.setupWiz.pgSign.noSign "Non, je préfère créer des règles par destinataire pour les messages devant être signés">
+<!-- wizard: other settings step -->
 <!ENTITY enigmail.setupWiz.pgSettings.title "Préférences">
 <!ENTITY enigmail.setupWiz.pgSettings.subtitle "Modifier vos paramètres de messagerie pour que le fonctionnement d'Enigmail soit plus fiable">
 <!ENTITY enigmail.setupWiz.pgSettings.desc "Cet assistant peut changer vos paramètres de messagerie afin d'être certain qu'il ne subsiste                                                             aucun problème pour signer ou chiffrer les messages sur votre machine. Ces modifications de paramètres                                                          sont essentiellement de nature technique et ne se remarquent pas. Une chose importante néanmoins                                                          est que les messages seront rédigés en texte brut par défaut.">

@@ -135,6 +135,7 @@
 <!ENTITY enigmail.advancedPrefsButton.label "Avançado...">
 <!ENTITY enigmail.keepCryptoSettingsForReply.label "Criptografar/assinar respostas a mensagens criptografadas/assinadas">
 <!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "Quando possível, criptografe/assine as respostas de emails já criptografados/assinados">
+<!-- keySel Preferences -->
 <!ENTITY enigmail.recipientsSelectionOption.label "Como devemos escolher as chaves?">
 <!ENTITY enigmail.defineRules.label "Editar Regras ...">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label "Reencapsular o texto HTML assinado antes de enviar">
@@ -445,6 +446,7 @@
 <!ENTITY enigmail.changePasswd.currPasswd.label "Senha Atual">
 <!ENTITY enigmail.changePasswd.newPasswd.label "Nova Senha">
 <!ENTITY enigmail.changePasswd.repeatPasswd.label "Repita a Senha">
+<!-- wizard: welcome step -->
 <!ENTITY enigmail.setupWiz.title "Assistente de Configuração Enigmail">
 <!ENTITY enigmail.setupWiz.yes "Sim">
 <!ENTITY enigmail.setupWiz.no "Não, obrigado">
@@ -452,12 +454,14 @@
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "Você gostaria de usar o assistente agora?">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "Sim, eu gostaria de usar o assistente para me ajudar a configurar">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "Não, obrigado. Eu prefiro configurar tudo manualmente">
+<!-- wizard: select account IDs step -->
 <!ENTITY enigmail.setupWiz.pgSelectId.title "Selecionar Identidade">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Selecione a conta ou identidade que o Enigmail deverá usar para trabalhar">
 <!ENTITY enigmail.setupWiz.pgSelectId.desc "As configurações do Enigmail são específicas para contas e identidades. Por padrão o Enigmail será configurado para funcionar com todas as suas contas e identidades.       						     Se isto não for o que você deseja, por favor escolha a conta ou identidade específica que você deseja utilizar com o Enigmail abaixo.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "Eu gostaria de configurar o Enigmail para todas as identidades disponíveis">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Eu gostaria de configurar o Enigmail apenas para as seguintes identidades:">
 <!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Nota:</a> O Enigmail irá sempre verificar assinaturas, caso existam, em mensagens de todas as contas e identidades                                                             não importando se o Enigmail está especificamente configurado ou não">
+<!-- wizard: install GnuPG step -->
 <!ENTITY enigmail.setupWiz.pgInstall.title "GnuPG Necessário">
 <!ENTITY enigmail.setupWiz.pgInstall.desc "Para usar o Enigmail, é necessário ter o GnuPG instalado como componente adicional para realizar o trabalho criptográfico. O assistente tentou localizar o GnuPG, mas não o encontrou.">
 <!ENTITY enigmail.setupWiz.pgInstall.installDesc "O Enigmail pode baixar o GnuPG e iniciar a instalação para você. Se você deseja fazer isto, clique no botão &quot;Instalar&quot;.">
@@ -468,12 +472,15 @@
 <!ENTITY enigmail.setupWiz.pgInstall.installLabel "Iniciando a instalação. Siga os passos do assistente de instalação do GnuPG.">
 <!ENTITY enigmail.setupWiz.pgInstall.installDone "Instalação completa. Proceda para a página seguinte do assistente para continuar o processo de configuração.">
 <!ENTITY enigmail.setupWiz.pgInstall.gnupgFound "Instalação válida do GnuPG encontrada.">
+<!-- wizard: signing step -->
 <!ENTITY enigmail.setupWiz.pgSign.title "Assinatura">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "Assinar Digitalmente Suas Mensagens Enviadas">
 <!ENTITY enigmail.setupWiz.pgSign.desc "O Enigmail permite que você assine digitalmente todas as suas mensagens. Esta é a versão eletrônica do ato de assinar uma carta, e permite que as pessoas tenham certeza de que uma mensagem realmente veio de você.  É uma boa prática de segurança assinar todas as mensagens enviadas.       ">
+<!-- old labels: -->
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg "Você deseja assinar todas as suas mensagens a serem enviadas como padrão?">
 <!ENTITY enigmail.setupWiz.pgSign.yesSign "Sim, eu desejo assinar todas as minhas mensagens">
 <!ENTITY enigmail.setupWiz.pgSign.noSign "Não, eu quero criar regras por destinatário especificando quais mensagens precisam ser assinadas">
+<!-- wizard: other settings step -->
 <!ENTITY enigmail.setupWiz.pgSettings.title "Preferências">
 <!ENTITY enigmail.setupWiz.pgSettings.subtitle "Altere Suas Configurações de Mensagem Para Fazer o Enigmail Funcionar Melhor">
 <!ENTITY enigmail.setupWiz.pgSettings.desc "Este assistente pode alterar suas configurações de mensagem para certificar que não existem problemas com assinatura e criptografia de mensagens em sua máquina. Estas configurações são em sua maioria detalhes técnicos que você não notará, embora um detalhe importante é que as mensagens serão compostas em texto puro como padrão.">

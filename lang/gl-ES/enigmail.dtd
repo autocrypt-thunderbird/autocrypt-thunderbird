@@ -9,7 +9,7 @@
 <!ENTITY enigmail.keyPassphraseRepeat.label "Contrasinal (repita)">
 <!ENTITY enigmail.generateKey.tooltip "Xera unha nova chave OpenPGP compatíbel para cifrar e/ou asinar">
 <!ENTITY enigmail.cancelKey.label "Cancelar">
-<!ENTITY enigmail.cancelKey.tooltip "Cancelar xeración da chave">
+<!ENTITY enigmail.cancelKey.tooltip "Cancelar a xeración da chave">
 <!ENTITY enigmail.keyGen.expiry.title "Caducidade da chave">
 <!ENTITY enigmail.keyGen.expire.label "A chave caduca en">
 <!ENTITY enigmail.keyGen.days.label "días">
@@ -25,7 +25,9 @@
 <!ENTITY enigmail.passwordSettings.label "Configuración do contrasinal">
 <!ENTITY enigmail.userNoPassphrase.label "Non preguntar nunca polo contrasinal">
 <!ENTITY enigmail.userNoPassphrase.tooltip "Activar se a súa chave OpenPGP non está protexida por contrasinal">
+<!ENTITY enigmail.expertUserMenus.label "Mostrar os axustes e menús para expertos">
 <!ENTITY enigmail.expertUser.tooltip "Activar para ver os elementos do menú e opcións avanzadas.">
+<!ENTITY enigmail.basicUserMenus.label "Ocultar os axustes e menús para expertos">
 <!ENTITY enigmail.basicUser.tooltip "Prema se non quere ver os elementos e opcións para usuarios avanzados.">
 <!ENTITY enigmail.prefs.pathsTitle.label "Ficheiros e directorios">
 <!ENTITY enigmail.prefs.overrideGpg.label "Sobreescribir con">
@@ -117,12 +119,12 @@
 <!ENTITY enigmail.undoencryption.label "Desfacer cifrado">
 <!ENTITY enigmail.attachkey.label "Anexar chave pública ...">
 <!ENTITY enigmail.attachmykey.label "Anexar a miña chave pública">
-<!ENTITY enigmail.finalSignDefault.label "Usar as predeterminacións e as regras para asinar">
-<!ENTITY enigmail.finalSignYes.label "Forzar sinatura">
-<!ENTITY enigmail.finalSignNo.label "Non forzar sinatura">
 <!ENTITY enigmail.finalEncryptDefault.label "Usar as predefinicións e as regras para cifrado">
 <!ENTITY enigmail.finalEncryptYes.label "Forzar o cifrado">
 <!ENTITY enigmail.finalEncryptNo.label "Non forzar o cifrado">
+<!ENTITY enigmail.finalSignDefault.label "Usar as predeterminacións e as regras para asinar">
+<!ENTITY enigmail.finalSignYes.label "Forzar sinatura">
+<!ENTITY enigmail.finalSignNo.label "Non forzar sinatura">
 <!ENTITY enigmail.finalPGPMimeDefault.label "Usar as predefinicións e as regras para o formato PGP">
 <!ENTITY enigmail.finalPGPMimeYes.label "Forzar PGP/MME">
 <!ENTITY enigmail.finalPGPMimeNo.label "Porzar PGP inserido">
@@ -141,38 +143,97 @@
 <!ENTITY enigmail.undoencryption.accesskey "U">
 <!ENTITY enigmail.attachkey.accesskey "A">
 <!ENTITY enigmail.attachmykey.accesskey "M">
+<!-- account specific options -->
 <!ENTITY enigmail.defaultSigning.label "Asinar as mensaxes de forma predeterminada">
 <!ENTITY enigmail.defaultEncryption.label "Cifrar as mensaxes de forma predeterminada">
 <!ENTITY enigmail.usePGPMimeAlways.label "Usar sempre PGP/MIME">
 <!ENTITY enigmail.afterDefaultsAndRules.label "Despois de aplicar as predefinicións e as regras:">
+<!ENTITY enigmail.finallySignEncrypted.label "asinar as mensaxes cifradas">
+<!ENTITY enigmail.finallySignNotEncrypted.label "asinar as mensaxes non cifradas">
+<!ENTITY enigmail.autoEncryptDrafts.label "Cifrar os borradores ao gardar">
 <!ENTITY enigmail.advancedPrefsButton.label "Avanzado...">
+<!ENTITY enigmail.openpgpPrefsButton.label "Preferencias de Enigmail">
+<!-- Sending Preferences -->
+<!ENTITY enigmail.SendingPrefs.label "Preferencias xerais de envío">
+<!ENTITY enigmail.seeAccountSettings.label "Ver tamén os axustes de Enigmail específicos da conta (ver Preferencias de conta -> Seguranza OpenPGP)">
+<!ENTITY enigmail.encryptionModelConvenient.label "Axustes de cifrado apropiados">
+<!ENTITY enigmail.encryptionModelManually.label "Axustes do cifrado manual">
 <!ENTITY enigmail.keepCryptoSettingsForReply.label "Cifrar/asinar respostas a mensaxes cifradas/asinadas">
 <!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "Cando sexa posíbel, cifrar/asinar respostas a correos cifrados/asinados">
+<!ENTITY enigmail.autoSendEncryptedOption.label "Enviar cifrado automaticamente">
+<!ENTITY enigmail.autoSendEncryptedNever.label "Nunca">
+<!ENTITY enigmail.autoSendEncryptedNever.tooltip "Non enviar os correos cifrados automaticamente excepto que o especifiquen as regras por-destinatario">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.label "Se é posíbel">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.tooltip "Os correos cífranse automaticamente para enviar cando todos os destinatarios teñen polo menos unha chave coñecida e aceptada (ver arriba) e ningunha regra de destinatario impide o cifrado.">
+<!ENTITY enigmail.acceptedKeysOption.label "Aceptar para envialo cifrado">
+<!ENTITY enigmail.acceptedKeysValid.label "Só chaves nas que confío explicitamente">
+<!ENTITY enigmail.acceptedKeysValid.tooltip "Aceptar só as chaves que están asinadas por vostede ou por persoas nas que confía. Tecnicamente, vostede só acepta chaves «válidas» para cifrado.">
+<!ENTITY enigmail.acceptedKeysAll.label "Todas as chaves válidas que teño">
+<!ENTITY enigmail.acceptedKeysAll.tooltip "Aceptar todas as chaves que non fosen desactivadas por min nin revogadas/caducadas polo propietario. Tecnicamente usa a opción «--trust-model always».">
+<!ENTITY enigmail.confirmBeforeSendingOption.label "Confirmar antes de enviar">
+<!ENTITY enigmail.confirmBeforeSendingNever.label "Nunca">
+<!ENTITY enigmail.confirmBeforeSendingNever.tooltip "Non mostrar o diálogo sobre asinar/cifrar antes de enviar unha mensaxe">
+<!ENTITY enigmail.confirmBeforeSendingAlways.label "Sempre">
+<!ENTITY enigmail.confirmBeforeSendingAlways.tooltip "Mostrar sempre o diálogo de asinar/cifrar antes de enviar unha mensaxe">
+<!ENTITY enigmail.confirmBeforeSendingIfEncrypted.label "Se é cifrado">
+<!ENTITY enigmail.confirmBeforeSendingIfEncrypted.tooltip "Mostrar o diálogo de asinar/cifrar antes de enviar unha mensaxe CIFRADA.">
+<!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.label "Se non é cifrado">
+<!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.tooltip "Mostrar o diálogo de asinar/cifrar antes de enviar unha mensaxe SEN CIFRAR.">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.label "Se as regras cambiaron o axuste predeterminado do cifrado">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.tooltip "Mostrar o diálogo de asinar/cifrar antes do envío, se a súa preferencia respecto ao cifrado cambiou por unha regra por-destinatario ou por un cifrado automático">
+<!-- keySel Preferences -->
 <!ENTITY enigmail.recipientsSelectionOption.label "Como deberiamos escoller as chaves?">
+<!ENTITY enigmail.assignKeysByRules.label "Polas regras por-destinatario">
+<!ENTITY enigmail.assignKeysByRules.tooltip "Asinar as chaves de acordo ás regras por-destinatario. Mostrar o diálogo de creación de novas regras se esta é a única opción seleccionada.">
+<!ENTITY enigmail.assignKeysByEmailAddr.label "Polos enderezos de correo electrónico de acordo ao Xestor de chaves">
+<!ENTITY enigmail.assignKeysByEmailAddr.tooltip "Asignar as chaves de acordo coas chaves asociadas aos enderezos de correo electrónico no Xestor de chaves.">
+<!ENTITY enigmail.assignKeysManuallyIfMissing.label "Manualmente se as chaves non existen">
+<!ENTITY enigmail.assignKeysManuallyIfMissing.tooltip "Abrir o diálogo de asignación manual de chaves se estas non existen.">
+<!ENTITY enigmail.assignKeysManuallyAlways.label "Sempre (tamén) manualmente">
+<!ENTITY enigmail.assignKeysManuallyAlways.tooltip "Abrir sempre o diálogo de asignación manual de chaves">
 <!ENTITY enigmail.defineRules.label "Editar regras ...">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label "Re-axustar texto HTML asinado antes do envío">
 <!ENTITY enigmail.wrapHtmlBeforeSend.tooltip "Reordenar o texto para asegurar que a sinatura permanece intacta.">
 <!ENTITY enigmail.autoKeyRetrieve.label "Descargar automaticamente as chaves para a verificación de sinaturas">
 <!ENTITY enigmail.autoKeyRetrieve2.label "desde o seguinte servidor de chaves:">
 <!ENTITY enigmail.resetRememberedValues.label "Restablecer alertas">
-<!ENTITY enigmail.resetRememberedValues.tooltip "Volver a mostrar todos os diálogos de alerta e preguntas que se ocultaron no pasado.">
+<!ENTITY enigmail.resetRememberedValues.tooltip "Volver a mostrar todos os diálogos de alerta e as preguntas que se ocultaron no pasado.">
 <!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>NOTA: A xeración de chaves pode levar varios minutos.</a> Non saia da aplicación mentres se xera a chave. Unha navegación activa ou realizar operacións intensivas co disco durante a xeración das chaves acelerará o proceso e beneficiará a aleatoriedade. Recibirá un aviso cando se complete a xeración das chaves.">
 <!ENTITY enigmail.userSelectionList.label "Selección de chave Enigmail">
 <!ENTITY enigmail.usersNotFound.label "Destinatarios non válidos, non confiábeis ou non atopados">
 <!ENTITY enigmail.keyExpiry.label "Caducidade">
+<!ENTITY enigmail.uidValidity.label "Validez">
 <!ENTITY enigmail.keySelection.label "Selección">
 <!ENTITY enigmail.keyId.label "ID da chave">
+<!ENTITY enigmail.userSelSendSigned.label "Enviar asinado">
+<!ENTITY enigmail.userSelSendSigned.accesskey "E">
+<!ENTITY enigmail.userSelSendEncrypted.label "Enviar cifrado">
+<!ENTITY enigmail.userSelSendEncrypted.accesskey "E">
 <!ENTITY enigmail.displayNoLonger.label "Non mostrar este diálogo de novo se o cifrado non é posíbel">
 <!ENTITY enigmail.importMissingKeys.label "Descargar chaves que faltan">
 <!ENTITY enigmail.importMissingKeys.accesskey "I">
 <!ENTITY enigmail.importMissingKeys.tooltip "Tentar importar as chaves que faltan desde un servidor de chaves">
 <!ENTITY enigmail.refreshKeys.label "Actualizar listaxe de chaves">
 <!ENTITY enigmail.refreshKeys.accesskey "R">
+<!ENTITY enigmail.send.label "Enviar">
 <!ENTITY enigmail.perRecipientsOption.label "Crear regra(s) por-destinatario/a">
 <!ENTITY enigmail.enigmailAttachDesc.label "Esta mensaxe contén anexos. Como lle gustaría cifralos/asinalos?">
 <!ENTITY enigmail.enigEncryptAttachNone.label "Só cifrar/asinar o texto da mensaxe, mais non os anexos">
+<!ENTITY enigmail.enigAttachNoneSign.label "Asinar a mensaxe de texto pero non os anexos">
+<!ENTITY enigmail.enigAttachNoneEncrypt.label "Cifrar o texto da mensaxe pero non os anexos">
+<!ENTITY enigmail.enigAttachNoneEncryptAndSign.label "Cifrar e asinar o texto da mensaxe pero non os anexos">
 <!ENTITY enigmail.enigEncryptAttachInline.label "Cifrar cada anexo por separado e enviar a mensaxe utilizando PGP en liña">
-<!ENTITY enigmail.enigEncryptAttachPgpMime.label "Cifrar/asinar a mensaxe como un todo e enviala utilizando PGP/MIME">
+<!ENTITY enigmail.enigAttachInlineSign.label "Asinar cada anexo por separado e enviar a mensaxe usando  o PGP inserido">
+<!ENTITY enigmail.enigAttachInlineEncrypt.label "Cifrar cada anexo por separado e enviar a mensaxe usando o PGP inserido">
+<!ENTITY enigmail.enigAttachInlineEncryptAndSign.label "Cifrar e asinar cada anexo por separado e enviar a mensaxe usando o PGP inserido">
+<!ENTITY enigmail.enigEncryptAttachPgpMime.label "Cifrar/asinar a mensaxe completa e enviala utilizando PGP/MIME">
+<!ENTITY enigmail.enigAttachPgpMimeSign.label "Asinar a mensaxe completa e enviala usando PGP/MIME">
+<!ENTITY enigmail.enigAttachPgpMimeEncrypt.label "Cifrar a mensaxe compelta e enviala usando PGP/MIME">
+<!ENTITY enigmail.enigAttachPgpMimeEncryptAndSign.label "Cifrar e asinar a mensaxe completa e enviala usando PGP/MIME">
+<!ENTITY enigmail.enigEncryptAttachDontEncryptMsg.label "Non cifrar/asinar as mensaxes nunca">
+<!ENTITY enigmail.enigAttachDontEncryptMsgSign.label "Non asinar a mensaxe">
+<!ENTITY enigmail.enigAttachDontEncryptMsgEncrypt.label "Non cifrar a mensaxe">
+<!ENTITY enigmail.enigAttachDontEncryptMsgEncryptAndSign.label "Non cifrar nin asinar a mensaxe">
 <!ENTITY enigmail.encryptAttachSkipDlg.label "Usar o método seleccionado para todos os anexos no futuro">
 <!ENTITY enigmail.ctxDecryptOpen.label "Descifrar e abrir">
 <!ENTITY enigmail.ctxDecryptSave.label "Descifrar e Gardar como...">
@@ -262,6 +323,7 @@
 <!ENTITY enigmail.clearSearch.accesskey "L">
 <!ENTITY enigmail.searchKeyDlg.label "Descargar chaves OpenPGP">
 <!ENTITY enigmail.searchKeyDlgCapt.label "Atopáronse chaves - Seleccione para importar">
+<!ENTITY enigmail.searchKeyDlgSelAll.label "Seleccionar/Deseleccionar todo">
 <!ENTITY enigmail.created.label "Creado">
 <!ENTITY enigmail.valid.label "Válido">
 <!ENTITY enigmail.progress.label "Progreso">
@@ -382,6 +444,10 @@
 <!ENTITY enigmail.keyMan.createMail.accesskey "C">
 <!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "F">
 <!ENTITY enigmail.keyMan.selectAll.key "A">
+<!ENTITY enigmail.keyMan.keyDetails.key "I">
+<!ENTITY enigmail.keyMan.refreshKey.key "R">
+<!ENTITY enigmail.keyMan.viewSig.key "S">
+<!ENTITY enigmail.keySearch.selectAll.key "A">
 <!ENTITY enigmail.viewKeySigDlg.title "Listaxe de sinaturas">
 <!ENTITY enigmail.viewKeySigDlg.sigForKey.label "Sinaturas para a chave:">
 <!ENTITY enigmail.viewKeySigDlg.sigType.label "Tipo de sinatura">
@@ -458,6 +524,7 @@
 <!ENTITY enigmail.changePasswd.currPasswd.label "Contrasinal actual">
 <!ENTITY enigmail.changePasswd.newPasswd.label "Novo contrasinal">
 <!ENTITY enigmail.changePasswd.repeatPasswd.label "Repetir contrasinal">
+<!-- wizard: welcome step -->
 <!ENTITY enigmail.setupWiz.title "Asistente de Enigmail">
 <!ENTITY enigmail.setupWiz.yes "Si">
 <!ENTITY enigmail.setupWiz.no "Non, grazas">
@@ -465,12 +532,14 @@
 <!ENTITY enigmail.setupWiz.pgWelcome.startNow "Desexa usar o asistente agora?">
 <!ENTITY enigmail.setupWiz.pgWelcome.yes "Si, gustaríame comezar co asistente">
 <!ENTITY enigmail.setupWiz.pgWelcome.no "Non, grazas. Prefiro facer unha configuración manual">
+<!-- wizard: select account IDs step -->
 <!ENTITY enigmail.setupWiz.pgSelectId.title "Seleccionar identidade">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Selecionar a conta ou identidade coa que quere que traballe Enigmail">
 <!ENTITY enigmail.setupWiz.pgSelectId.desc "A configuración de Enigmail é específica para contas e identidades. De xeito        predeterminado Enigmail configurarase para traballar con todas as súas contas     e identidades. Se isto non é o que quere, seleccione a conta ou identidade     específica coa que quere que traballe Enigmail.">
 <!ENTITY enigmail.setupWiz.pgSelectId.allIds "Gustaríame usar Enigmail para todas as identidades">
 <!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Gustaríame usar Enigmail só para as seguintes identidades:">
 <!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Nota:</a> Enigmail verificará sempre sinaturas        nos correos para todas as contas ou identidades, estean ou non activadas">
+<!-- wizard: install GnuPG step -->
 <!ENTITY enigmail.setupWiz.pgInstall.title "Precísase GnuPG">
 <!ENTITY enigmail.setupWiz.pgInstall.desc "Para usar Enigmail, GnuPG é necesario como compoñente adicional para realizar o traballo de cifrado. O asistente tentará localizar GnuPG, pero é posíbel que non o atope.">
 <!ENTITY enigmail.setupWiz.pgInstall.installDesc "Enigmail pode descargar GnuPG e iniciar o instalador. Se desexa facelo así, prema no botón de instalación para descargar e instalar GnuPG.">
@@ -481,12 +550,47 @@
 <!ENTITY enigmail.setupWiz.pgInstall.installLabel "Iniciando o instalador. Siga os pasos do asistente de instalación de GnuPG.">
 <!ENTITY enigmail.setupWiz.pgInstall.installDone "Completouse a instalación. Avance á seguinte páxina do asistente para contiuar o proceso.">
 <!ENTITY enigmail.setupWiz.pgInstall.gnupgFound "Encontrouse unha instalación válida de GnuPG.">
+<!-- wizard: encryption step (replaces pgEnc with v1.7) -->
+<!ENTITY enigmail.setupWiz.pgEncConv.title "Cifrado">
+<!ENTITY enigmail.setupWiz.pgEncConv.subtitle "Cifrar os correos saíntes">
+<!ENTITY enigmail.setupWiz.pgEncConv.desc "Enigmail permítelle cifrar as mensaxes de correo electrónico e os seus anexos.
+
+Cifrar é como introducir unha carta dentro dun sobre. Fai as
+ 
+cousas privadas.  Non é só para mensaxes «secretas», 
+
+tamén é para todo o que vostede non enviaría nunha postal.
+
+<html:br/><html:br/>
+
+Para poder enviar correos cifrados precisa as chaves de todos os destinatarios.
+
+Con todo, debido a que non todo o mundo usa OpenPGP, é 
+habitual que vostede só teña as chaves de
+ 
+ <html:i>algúns</html:i> destinatarios.
+
+Para este caso, Enigmail proporciona un modo de cifrado práctico,
+
+que cifra os correos automaticamente sempre que é posíbel.
+
+Aínda así, vostede poderá decidir explicitamente se desexa cifrar ou non cada correo electrónico. ">
+<!ENTITY enigmail.setupWiz.pgEncConv.convEncMsg "Que modo xeral prefire para cifrar os correos saíntes?">
+<!ENTITY enigmail.setupWiz.pgEncConv.convYes "Cifrado automático adecuado">
+<!ENTITY enigmail.setupWiz.pgEncConv.convEncYes "Cifrar de forma predeterminada as miñas mensaxes porque a privacidade é vital para min">
+<!ENTITY enigmail.setupWiz.pgEncConv.convEncNo "Non cifrar de forma preterminada as miñas mensaxes">
+<!-- wizard: signing step -->
 <!ENTITY enigmail.setupWiz.pgSign.title "Sinatura">
 <!ENTITY enigmail.setupWiz.pgSign.subtitle "Asinar dixitalmente os correos saíntes">
 <!ENTITY enigmail.setupWiz.pgSign.desc "Enigmail permite asinar dixitalmente os seus correos. Isto é como a        versión electrónica de asinar unha carta, e permite que a xente estea     segura de que un correo procede realmente de vostede. É unha boa     práctica de seguridade asinar todo o correo saínte.     ">
+<!ENTITY enigmail.setupWiz.pgSign.signMsg "Que modo xeral prefire para asinar os correos saíntes?">
+<!ENTITY enigmail.setupWiz.pgSign.signYes "Asinar de forma predeterminada as miñas mensaxes">
+<!ENTITY enigmail.setupWiz.pgSign.signNo "Non asinar de forma predeterminada as miñas mensaxes">
+<!-- old labels: -->
 <!ENTITY enigmail.setupWiz.pgSign.signAllMsg "Quere asinar todo o seu correo saínte de xeito predeterminado?">
 <!ENTITY enigmail.setupWiz.pgSign.yesSign "Si, quero asinar todo o meu correo">
 <!ENTITY enigmail.setupWiz.pgSign.noSign "Non, quero crear regras por-destinatario/a para os correos que se teñen que asinar">
+<!-- wizard: other settings step -->
 <!ENTITY enigmail.setupWiz.pgSettings.title "Preferencias">
 <!ENTITY enigmail.setupWiz.pgSettings.subtitle "Cambiar a configuración de correo para facer que Enigmail traballe dun xeito máis confiábel">
 <!ENTITY enigmail.setupWiz.pgSettings.desc "Este asistente pode cambiar a configuración do seu correo para asegurar        que non hai problemas coa sinatura e cifrado de correo na súa máquina.     Estes cambios son maiormente cuestións técnicas que non vai notar,     mais unha das cousas importantes é que o correo se vai a compoñer     en texto plano de xeito predeterminado.">
