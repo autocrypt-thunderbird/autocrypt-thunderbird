@@ -84,7 +84,7 @@ const DEFAULT_FILE_PERMS = 0x180; // equals 0600
 //  e = The key has expired
 //  g = group (???)
 //  ---------------------------------------------------------
-//  ? = INTERNAL VALUE to separaten invalid from unknown keys
+//  ? = INTERNAL VALUE to separate invalid from unknown keys
 //      see validKeysForAllRecipients() in enigmailMsgComposeHelper.js
 //  ---------------------------------------------------------
 //  o = Unknown (this key is new to the system)
