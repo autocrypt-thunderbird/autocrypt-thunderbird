@@ -3595,10 +3595,18 @@ Enigmail.msg = {
     }
   },
 
+  addrOnChangeTimer: null,
+
   addressOnChange: function(element)
   {
      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.addressOnChange\n");
-     this.fireSendFlags();
+     if (! this.addrOnChangeTimer) {
+        var self = this;
+        this.addrOnChangeTimer = EnigmailCommon.setTimeout(function _f() {
+           self.fireSendFlags();
+           self.addrOnChangeTimer = null;
+        }, 200);
+     }
   },
 
   focusChange: function ()
