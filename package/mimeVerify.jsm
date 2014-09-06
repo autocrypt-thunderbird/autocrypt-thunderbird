@@ -184,6 +184,9 @@ MimeVerify.prototype = {
       // "real data"
       let i = this.findNextMimePart();
       if (i >= 0) {
+        if (this.keepData[i-2] == '\r' && this.keepData[i-1] == '\n') {
+          --i;
+        }
         data = this.keepData.substr(0, i - 1);
 
         this.keepData = this.keepData.substr(i);
@@ -322,7 +325,6 @@ MimeVerify.prototype = {
       this.outQueue = this.outQueue.replace(/\r\n/g, "\n").replace(/\n/g, "\r\n");
 
       pipe.write(this.outQueue);
-      this.outQueue = "";
       if (this.closePipe) pipe.close();
     }
     this.pipe = pipe;
