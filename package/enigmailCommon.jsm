@@ -1019,6 +1019,19 @@ var EnigmailCommon = {
     return (xulAppinfo.ID == SEAMONKEY_ID);
   },
 
+
+  /***
+    * decode text encoded with quoted-printable
+    * @str: String - encoded input data
+    *
+    * @return: String - decoded output data
+    */
+
+  decodeQuotedPrintable: function(str) {
+    return unescape(str.replace(/%/g, "=25").replace(/=/g,'%'));
+  },
+
+
   convertToUnicode: function (text, charset)
   {
     //this.DEBUG_LOG("enigmailCommon.jsm: convertToUnicode: "+charset+"\n");

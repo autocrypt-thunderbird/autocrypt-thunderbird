@@ -197,23 +197,60 @@ MimeVerify.prototype = {
     }
 
     if (this.writeMode == 2) {
-      // signature data "header"
-      let i = this.keepData.search(/^-----BEGIN PGP /m);
-      if (i>=0) {
-        this.keepData = this.keepData.substr(i);
+      if (this.keepData.indexOf("--"+this.boundary+"--") >= 0) {
+        // ensure that we keep everything until we got the "end" boundary
         this.writeMode = 3;
       }
+
     }
 
     if (this.writeMode == 3) {
       // signature data
-      let i = this.keepData.search(/^-----END PGP /m);
-      if (i >= 0) this.writeMode = 4;
-      this.sigData += this.keepData.substr(0, i + 30);
+      let xferEnc = this.getContentTransferEncoding();
+      if (xferEnc.search(/base64/i) >= 0) {
+        let bound = this.getBodyPart();
+        let b64 = this.keepData.substring(bound.start, bound.end).replace(/[\s\r\n]*/g, "");
+        this.keepData = atob(b64)+"\n";
+      }
+      else if (xferEnc.search(/quoted-printable/i) >= 0) {
+        let bound = this.getBodyPart();
+        let qp = this.keepData.substring(bound.start, bound.end);
+        this.keepData = EnigmailCommon.decodeQuotedPrintable(qp)+"\n";
+      }
+
+
+      // extract signature data
+      let s = Math.max(this.keepData.search(/^-----BEGIN PGP /m), 0);
+      let e = Math.max(this.keepData.search(/^-----END PGP /m), this.keepData.length - 30);
+      this.sigData = this.keepData.substring(s, e + 30);
       this.keepData = "";
+      this.writeMode = 4; // ignore any further data
     }
 
   },
+
+  getBodyPart: function() {
+    let start = this.keepData.search(/(\n\n|\r\n\r\n)/);
+    if (start < 0) {
+      start = 0;
+    }
+    let end = this.keepData.indexOf("--"+this.boundary+"--") - 1;
+
+    return {start: start, end: end};
+  },
+
+  // determine content-transfer encoding of mime part, assuming that whole
+  // message is in this.keepData
+  getContentTransferEncoding: function() {
+    let enc = "7bit";
+    let m = this.keepData.match(/^(content-transfer-encoding:)(.*)$/mi);
+    if (m && m.length > 2) {
+      enc = m[2].trim().toLowerCase();
+    }
+
+    return enc;
+  },
+
 
   findNextMimePart: function() {
     let startOk = false;

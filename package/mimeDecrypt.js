@@ -23,6 +23,9 @@ const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
 const PGPMIME_JS_DECRYPTOR_CID = Components.ID("{7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8}");
 
+const ENCODING_DEFAULT = 0;
+const ENCODING_BASE64 = 1;
+const ENCODING_QP = 2;
 
 const maxBufferLen = 102400;
 
@@ -53,6 +56,8 @@ PgpMimeDecrypt.prototype = {
   outqueue: "",
   dataLength: 0,
   mimePartCount: 0,
+  headerMode: 0,
+  xferEncoding: ENCODING_DEFAULT,
   matchedPgpDelimiter: 0,
   exitCode: null,
   msgWindow: null,
@@ -90,6 +95,8 @@ PgpMimeDecrypt.prototype = {
     this.matchedPgpDelimiter = 0;
     this.outQueue = "";
     this.statusStr = "";
+    this.headerMode = 0;
+    this.xferEncoding = ENCODING_DEFAULT;
     this.boundary = getBoundary(this.mimeSvc.contentType);
     this.verifier = EnigmailVerify.newVerifier(true, undefined, false);
     this.verifier.setMsgWindow(this.msgWindow, this.msgUriSpec);
@@ -108,26 +115,46 @@ PgpMimeDecrypt.prototype = {
       if (data.indexOf(this.boundary) >= 0) {
         DEBUG_LOG("mimeDecrypt.js: onDataAvailable: found boundary\n");
         ++this.mimePartCount;
+        this.headerMode = 1;
         return;
       }
 
+
       // found PGP/MIME "body"
       if (this.mimePartCount == 2) {
-        if (!this.matchedPgpDelimiter) {
-          if (data.indexOf("-----BEGIN PGP MESSAGE-----") == 0)
-            DEBUG_LOG("mimeDecrypt.js: onDataAvailable: found PGP begin delimiter\n");
-            this.matchedPgpDelimiter = 1;
-        }
 
-        if (this.matchedPgpDelimiter == 1) {
-          this.cacheData(data);
+        if (this.headerMode == 1) {
+          // we are in PGP/MIME main part headers
+          if (data.search(/\r|\n/) == 0) {
+            // end of Mime-part headers reached
+            this.headerMode = 2;
+            return;
+          }
+          else {
+            if (data.search(/^content-transfer-encoding:\s*/i) >= 0) {
+              // extract content-transfer-encoding
+              data = data.replace(/^content-transfer-encoding:\s*/i, "");
+              data = data.replace(/;.*/, "").toLowerCase().trim();
+              if (data.search(/base64/i) >= 0) {
+                this.xferEncoding = ENCODING_BASE64;
+              }
+              else if (data.search(/quoted-printable/i) >= 0) {
+                this.xferEncoding = ENCODING_QP;
+              }
 
-          if (data.indexOf("-----END PGP MESSAGE-----") == 0) {
-            DEBUG_LOG("mimeDecrypt.js: onDataAvailable: found PGP end delimiter\n");
-            this.cacheData("\n");
-            this.matchedPgpDelimiter = 2;
+            }
           }
         }
+        else {
+          // PGP/MIME main part body
+          if (this.xferEncoding == ENCODING_QP) {
+            this.cacheData(EnigmailCommon.decodeQuotedPrintable(data));
+          }
+          else {
+            this.cacheData(data);
+          }
+        }
+
       }
     }
   },
@@ -146,6 +173,7 @@ PgpMimeDecrypt.prototype = {
       DEBUG_LOG("mimeDecrypt.js: flushInput: no pipe\n");
       return;
     }
+
     this.pipe.write(this.outQueue);
     this.outQueue = "";
   },
@@ -183,6 +211,11 @@ PgpMimeDecrypt.prototype = {
       catch(ex) {
         Ec.writeException("mimeDecrypt.js", ex);
       }
+    }
+
+
+    if (this.xferEncoding == ENCODING_BASE64) {
+      this.outQueue = atob(this.outQueue.replace(/[\s\r\n]*/g, ""))+ "\n";
     }
 
     var statusFlagsObj = {};

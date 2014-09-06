@@ -162,7 +162,7 @@ var EnigmailFuncs = {
       var searchval = keysrvObj.email;
       searchval = searchval.replace(/^(\s*)(.*)/, "$2").replace(/\s+$/,"");  // trim spaces
       // special handling to convert fingerprints with spaces into fingerprint without spaces
-      if (searchval.length == 49 && searchval.match(/^[0-9a-fA-F ]*$/) 
+      if (searchval.length == 49 && searchval.match(/^[0-9a-fA-F ]*$/)
           && searchval[4]==' ' && searchval[9]==' ' && searchval[14]==' '
           && searchval[19]==' ' && searchval[24]==' ' && searchval[29]==' '
           && searchval[34]==' ' && searchval[39]==' ' && searchval[44]==' ') {
