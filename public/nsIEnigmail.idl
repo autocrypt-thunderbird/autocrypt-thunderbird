@@ -200,6 +200,8 @@ interface nsIEnigmail : nsISupports
                  out string errorMsg,
                  out wstring importedKeys);
 
+  string getFirstUserIdOfKey(in string keyId);
+
   /* Receive flags */
   const long SEARCH_KEY       = 0x01;
   const long DOWNLOAD_KEY     = 0x02;
