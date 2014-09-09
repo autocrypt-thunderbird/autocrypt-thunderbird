@@ -1982,7 +1982,7 @@ Enigmail.prototype = {
     this.userIdList= null;
   },
 
-  // returns the output of -with-colons --list[-secret]-keys
+  // returns the output of --with-colons --list[-secret]-keys
   getUserIdList: function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
 
     if (secretOnly || refresh || this.userIdList == null) {
@@ -2164,40 +2164,63 @@ Enigmail.prototype = {
    */
   getFirstUserIdOfKey: function (keyId)
   {
-    var args = Ec.getAgentArgs(true);
-    args=args.concat([ "--fixed-list-mode", "--with-colons", "--list-keys"]);
-    args=args.concat([keyId]);
+    Ec.DEBUG_LOG("enigmail.js: Enigmail.getFirstUserIdOfKey "+ keyId +"\n");
 
-    var statusMsgObj   = {};
-    var cmdErrorMsgObj = {};
-    var statusFlagsObj = {};
-    var exitCodeObj = {};
+    keyId = keyId.replace(/^0x/, "");
 
-    var listText = this.execCmd(this.agentPath, args, null, "",
-                                exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
-    if (exitCodeObj.value != 0) {
-      return null;
-    }
-    listText=listText.replace(/(\r\n|\r)/g, "\n");
+    let statusFlags = {};
+    let errorMsg = {};
+    let exitCodeObj = {};
+    let listText = this.getUserIdList(false, false, exitCodeObj, statusFlags, errorMsg)
 
-    var lineArr=listText.split(/\n/);
-    for (var i=0; i<lineArr.length; i++) {
-      // process lines such as:
-      //  tru::1:1395895453:1442881280:3:1:5
-      //  pub:f:4096:1:C1B875ED336XX959:2299509307:1546189300::f:::scaESCA:
-      //  fpr:::::::::102A1C8CC524A966849C33D7C8B157EA336XX959:
-      //  uid:f::::1388511201::67D5B96DC564598D4D4D9E0E89F5B83C9931A154::Joe Fox <joe@fox.com>:
-      //  sig:::1:C8B157EA336XX959:2299509307::::Joe Fox <joe@fox.com>:13x:::::2:
-      var lineTokens = lineArr[i].split(/:/);
-      switch (lineTokens[0]) {
-        case "uid":
-          {
-            var userId = lineTokens[9];
-            return userId;
-          }
-          break;
+    // process lines such as:
+    // tru::0:1407688184:1424970931:3:1:5
+    // pub:f:1024:17:D581C6F8EBB80E50:1107251639:::-:::scESC:
+    // fpr:::::::::492A198AEA5EBE5574A1CE00D581C6F8EBB80E50:
+    // uid:f::::1107251639::2D505D1F6E744365B3B35FF11F32A19779E3A417::Giosue Vitaglione <gvi@whitestein.com>:
+    // sub:f:2048:16:2223D7E0301A66C6:1107251647::::::e:
+
+    // search for subkey
+    let s = new RegExp("^(pub|sub):[^:]*:[^:]*:[^:]*:[A-Fa-f0-9]*" + keyId, "m");
+
+    let found = listText.search(s);
+    if (found >= 0) {
+
+      // search for pub: entries to find start and end position
+      let i = -1;
+      let startPos = -1;
+      let endPos = -1;
+      let r = RegExp("^pub:", "ym");
+      let match = r.exec(listText.substr(0, found));
+
+      while (match && match.index < found) {
+        i = match.index;
+        match = r.exec(listText)
+      }
+      startPos = i;
+
+      if (match && match.index) {
+        endPos = match.index
+      }
+      else {
+        endPos = listText.length;
+      }
+
+      var lineArr=listText.substring(startPos, endPos).split(/\n/);
+      for (i=0; i<lineArr.length; i++) {
+        var lineTokens = lineArr[i].split(/:/);
+        switch (lineTokens[0]) {
+          case "uid":
+            {
+              let userId = lineTokens[9];
+              Ec.DEBUG_LOG("found: "+userId+"\n");
+              return userId;
+            }
+            break;
+        }
       }
     }
+
     return null;
   },
 
