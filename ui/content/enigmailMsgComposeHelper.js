@@ -384,7 +384,7 @@ Enigmail.hlp = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): emailAddr=\""+emailAddr+"\"\n");
     const TRUSTLEVELS_SORTED = EnigmailFuncs.trustlevelsSorted();
-    var embeddedEmailAddr = new RegExp("<" + emailAddr + ">", "i");
+    var embeddedEmailAddr = new RegExp("<" + emailAddr.replace(/([\.\\])/g,"\\$1") + ">", "i");
 
     // note: we can't take just the first matched because we might have faked keys as duplicates
     var foundKeyId = null;
