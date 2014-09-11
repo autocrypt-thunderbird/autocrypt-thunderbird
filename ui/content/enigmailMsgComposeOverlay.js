@@ -2126,6 +2126,114 @@ Enigmail.msg = {
     };
   },
 
+  /* Manage the wrapping of inline signed mails
+   *
+   * @wrapresultObj: Result:
+   * @wrapresultObj.cancelled, true if send operation is to be cancelled, else false
+   * @wrapresultObj.usePpgMime, true if message send option was changed to PGP/MIME, else false
+   */
+
+  wrapInLine: function (wrapresultObj)
+  {
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: WrapInLine\n");
+    wrapresultObj.cancelled = false;
+    wrapresultObj.usePpgMime = false;
+    {
+      try {
+        const dce = Components.interfaces.nsIDocumentEncoder;
+        var wrapper = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIEditorMailSupport);
+        var editor = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIPlaintextEditor);
+        var encoderFlags = dce.OutputFormatted | dce.OutputLFLineBreak;
+
+        var wrapWidth = this.getMailPref("mailnews.wraplength");
+        if (wrapWidth > 0 && wrapWidth < 68 && editor.wrapWidth > 0) {
+          if (EnigmailCommon.confirmDlg(window, EnigmailCommon.getString("minimalLineWrapping", [ wrapWidth ] ))) {
+            wrapWidth = 68;
+            EnigmailCommon.prefRoot.setIntPref("mailnews.wraplength", wrapWidth);
+          }
+        }
+
+        if (wrapWidth && editor.wrapWidth > 0) {
+          // First use standard editor wrap mechanism:
+          editor.wrapWidth = wrapWidth - 2;
+          wrapper.rewrap(true);
+          editor.wrapWidth = wrapWidth;
+
+          // Now get plaintext from editor
+          var wrapText = this.editorGetContentAs("text/plain", encoderFlags);
+
+          // split the lines into an array
+          wrapText = wrapText.split(/\r\n|\r|\n/g);
+
+          var i = 0;
+          var excess = 0;
+          // inspect all lines of mail text to detect if we still have excessive lines which the "standard" editor wrapper leaves
+          for (i=0;i<wrapText.length;i++) {
+            if (wrapText[i].length > wrapWidth) {
+              excess = 1;
+            }
+          }
+
+          if (excess) {
+            EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Excess lines detected\n");
+            var resultObj = new Object();
+            window.openDialog("chrome://enigmail/content/enigmailWrapSelection.xul","", "dialog,modal,centerscreen", resultObj);
+            try {
+              if (resultObj.cancelled) {
+                // cancel pressed -> do not send, return instead.
+                wrapresultObj.cancelled = true;
+                return;
+              }
+            }
+            catch (ex) {
+              // cancel pressed -> do not send, return instead.
+              wrapresultObj.cancelled = true;
+              return;
+            }
+
+            var quote = "";
+            var limitedLine = "";
+            var restOfLine = "";
+
+            var WrapSelect=resultObj.Select;
+            switch (WrapSelect) {
+              case "0":  // Selection: Force rewrap
+                for (i=0;i<wrapText.length;i++) {
+                  if (wrapText[i].length > wrapWidth) {
+
+                    // If the current line is too long, limit it hard to wrapWidth and insert the rest as the next line into wrapText array
+                    limitedLine = wrapText[i].slice(0, wrapWidth);
+                    restOfLine = wrapText[i].slice(wrapWidth);
+
+                    // We should add quotes at the beginning of "restOfLine", if limitedLine is a quoted line
+                    // However, this would be purely academic, because limitedLine will always be "standard"-wrapped
+                    // by the editor-rewrapper at the space between quote sign (>) and the quoted text.
+
+                    wrapText.splice(i,1,limitedLine,restOfLine);
+                  }
+                }
+                break;
+              case "1":  // Selection: Send as is
+                break;
+              case "2":  // Selection: Use MIME
+                wrapresultObj.usePpgMime = true;
+                break;
+              case "3":  // Selection: Edit manually -> do not send, return instead.
+                wrapresultObj.cancelled = true;
+                return;
+                break;
+            } //switch
+          }
+          // Now join all lines together again and feed it back into the compose editor.
+          var newtext = wrapText.join("\n");
+          this.replaceEditorText(newtext);
+        }
+      }
+      catch (ex) {
+        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Exception while wrapping="+ex+"\n");
+      }
+    }
+  },
 
   encryptMsg: function (msgSendType)
   {
@@ -2528,6 +2636,23 @@ Enigmail.msg = {
        var usingPGPMime = (sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
                           (sendFlags & (ENCRYPT | SIGN));
 
+       // ----------------------- Rewrapping code, taken from function "encryptInline"
+
+       // Check wrapping, if sign only and inline and plaintext
+       if ((sendFlags & SIGN) && !(sendFlags & ENCRYPT) && !(usingPGPMime) && !(gMsgCompose.composeHTML)) {
+         var wrapresultObj = new Object();
+
+         this.wrapInLine(wrapresultObj);
+
+         if (wrapresultObj.usePpgMime) {
+           sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+           usingPGPMime = nsIEnigmail.SEND_PGP_MIME;
+         }
+         if (wrapresultObj.cancelled) {
+           return;
+         }
+       }
+
        var uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
        if (usingPGPMime)
@@ -2739,22 +2864,7 @@ Enigmail.msg = {
         catch (ex) {}
       }
       else {
-        try {
-          wrapWidth = this.getMailPref("mailnews.wraplength");
-          if (wrapWidth > 0 && wrapWidth < 68 && editor.wrapWidth > 0) {
-            if (EnigmailCommon.confirmDlg(window, EnigmailCommon.getString("minimalLineWrapping", [ wrapWidth ] ))) {
-              wrapWidth = 68;
-              EnigmailCommon.prefRoot.setIntPref("mailnews.wraplength", wrapWidth);
-            }
-          }
-
-          if (wrapWidth && editor.wrapWidth > 0) {
-            editor.wrapWidth = wrapWidth - 2;
-            wrapper.rewrap(true);
-            editor.wrapWidth = wrapWidth;
-          }
-        }
-        catch (ex) {}
+        // plaintext: Wrapping code has been moved to superordinate function encryptMsg to enable interactive format switch
       }
     }
 

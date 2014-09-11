@@ -77,6 +77,8 @@ enigmail.jar:
 	content/enigmail/enigmailSetupWizard.js        (content/enigmailSetupWizard.js)
 	content/enigmail/enigmailSetupWizard.xul       (content/enigmailSetupWizard.xul)
 	content/enigmail/enigmailWizardPrefs.xul       (content/enigmailWizardPrefs.xul)
+	content/enigmail/enigmailWrapSelection.xul     (content/enigmailWrapSelection.xul)
+	content/enigmail/enigmailWrapSelection.js      (content/enigmailWrapSelection.js)
 	content/enigmail/enigmailViewFile.xul          (content/enigmailViewFile.xul)
 	content/enigmail/enigmailViewKeySigDlg.xul     (content/enigmailViewKeySigDlg.xul)
 	content/enigmail/enigRetrieveProgress.xul      (content/enigRetrieveProgress.xul)
