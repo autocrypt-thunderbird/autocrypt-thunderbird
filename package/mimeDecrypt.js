@@ -86,6 +86,7 @@ PgpMimeDecrypt.prototype = {
     this.exitCode = null;
     this.msgWindow = EnigmailVerify.lastMsgWindow;
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
+
     this.verifier = null;
     this.statusDisplayed = false;
     this.returnStatus = null;
@@ -100,8 +101,9 @@ PgpMimeDecrypt.prototype = {
     this.boundary = getBoundary(this.mimeSvc.contentType);
     this.verifier = EnigmailVerify.newVerifier(true, undefined, false);
     this.verifier.setMsgWindow(this.msgWindow, this.msgUriSpec);
-    if (uri != null)
+    if (uri != null) {
       this.uri = uri.QueryInterface(Ci.nsIURI).clone();
+    }
   },
 
   onDataAvailable: function(req, sup, stream, offset, count) {
@@ -118,7 +120,6 @@ PgpMimeDecrypt.prototype = {
         this.headerMode = 1;
         return;
       }
-
 
       // found PGP/MIME "body"
       if (this.mimePartCount == 2) {
@@ -186,10 +187,45 @@ PgpMimeDecrypt.prototype = {
     this.msgWindow = EnigmailVerify.lastMsgWindow;
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
 
+    let backgroundJob = false;
+
     if (this.uri) {
       // return if not decrypting currently displayed message (except if
       // printing, replying, etc)
+
+      backgroundJob = (this.uri.spec.search(/[\&\?]header=(print|quotebody)/) >= 0);
+
       try {
+        var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
+
+        if (! Ec.getPref("autoDecrypt")) {
+          // "decrypt manually" mode
+          let manUrl= {};
+
+          if (EnigmailVerify.getManualUri()) {
+            let msgSvc = messenger.messageServiceFromURI(EnigmailVerify.getManualUri());
+
+            msgSvc.GetUrlForUri(EnigmailVerify.getManualUri(), manUrl, null)
+          }
+          else {
+            manUrl.value = { spec: "enigmail://invalid/message" };
+          }
+
+          // print a message if not message explicitly decrypted
+          let currUrlSpec = this.uri.spec.replace(/(\?.*)(number=[0-9]*)(&.*)?$/, "?$2");
+          let manUrlSpec = manUrl.value.spec.replace(/(\?.*)(number=[0-9]*)(&.*)?$/, "?$2");
+
+
+          if ((! backgroundJob) && currUrlSpec != manUrlSpec) {
+            return this.handleManualDecrypt(backgroundJob);
+          }
+        }
+
+        let msgSvc = messenger.messageServiceFromURI(this.msgUriSpec);
+
+        let url= {};
+        msgSvc.GetUrlForUri(this.msgUriSpec, url, null)
+
         if (this.uri.spec.search(/[\&\?]header=[a-zA-Z0-9]*$/) < 0 &&
             this.uri.spec.search(/[\&\?]part=[\.0-9]+/) < 0 &&
             this.uri.spec.search(/[\&\?]examineEncryptedParts=true/) < 0) {
@@ -198,11 +234,7 @@ PgpMimeDecrypt.prototype = {
             return;
 
           if (this.msgUriSpec) {
-            var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
-            var msgSvc = messenger.messageServiceFromURI(this.msgUriSpec);
 
-            var url= {};
-            msgSvc.GetUrlForUri(this.msgUriSpec, url, null)
             if (url.value.spec != this.uri.spec)
               return;
           }
@@ -249,13 +281,13 @@ PgpMimeDecrypt.prototype = {
           Ci.nsIEnigmail.UI_PGP_MIME,
           this.returnStatus);
 
-    this.displayStatus();
+    this.displayStatus(backgroundJob);
 
     DEBUG_LOG("mimeDecrypt.js: onStopRequest: process terminated\n");
     this.proc = null;
   },
 
-  displayStatus: function() {
+  displayStatus: function(backgroundJob) {
     DEBUG_LOG("mimeDecrypt.js: displayStatus\n");
 
     if (this.exitCode == null || this.msgWindow == null || this.statusDisplayed)
@@ -265,7 +297,7 @@ PgpMimeDecrypt.prototype = {
       DEBUG_LOG("mimeDecrypt.js: displayStatus displaying result\n");
       let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
 
-      if (headerSink) {
+      if (headerSink && this.uri && !backgroundJob) {
         headerSink.updateSecurityStatus(this.msgUriSpec,
             this.exitCode,
             this.returnStatus.statusFlags,
@@ -337,18 +369,46 @@ PgpMimeDecrypt.prototype = {
       }
     }
 
-    gConv.setData(this.decryptedData, this.decryptedData.length);
-    try {
-      this.mimeSvc.onDataAvailable(null, null, gConv, 0, this.decryptedData.length);
-    }
-    catch(ex) {
-      Ec.ERROR_LOG("mimeDecrypt.js: mimeSvc.onDataAvailable failed:\n"+ex.toString());
-    }
+    this.returnData(this.decryptedData);
 
     this.verifier.onTextData(verifyData);
     this.verifier.onStopRequest();
     this.decryptedData = "";
     this.exitCode = exitCode;
+  },
+
+  // return data to libMime
+  returnData: function(data) {
+
+    gConv.setData(data, data.length);
+    try {
+      this.mimeSvc.onDataAvailable(null, null, gConv, 0, data.length);
+    }
+    catch(ex) {
+      Ec.ERROR_LOG("mimeDecrypt.js: returnData(): mimeSvc.onDataAvailable failed:\n"+ex.toString());
+    }
+  },
+
+  handleManualDecrypt: function(backgroundJob) {
+
+    try {
+      let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
+
+      if (headerSink && this.uri && !backgroundJob) {
+        headerSink.updateSecurityStatus(this.msgUriSpec,
+            Ec.POSSIBLE_PGPMIME,
+            0,
+            "",
+            "",
+            "",
+            EnigmailCommon.getString("possiblyPgpMime"),
+            "",
+            this.uri);
+      }
+    }
+    catch (ex) {}
+
+    return 0;
   }
 };
 

@@ -2213,7 +2213,6 @@ Enigmail.prototype = {
           case "uid":
             {
               let userId = lineTokens[9];
-              Ec.DEBUG_LOG("found: "+userId+"\n");
               return userId;
             }
             break;

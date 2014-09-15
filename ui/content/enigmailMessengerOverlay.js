@@ -486,6 +486,10 @@ Enigmail.msg = {
       isAuto: isAuto
     };
 
+    if (! isAuto) {
+      EnigmailVerify.setManualUri(this.getCurrentMsgUriSpec());
+    }
+
     let contentType = "text/plain";
     if ('content-type' in currentHeaderData) contentType=currentHeaderData['content-type'].headerValue;
 

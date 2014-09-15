@@ -402,6 +402,7 @@ MimeVerify.prototype = {
 var EnigmailVerify = {
   lastMsgWindow: null,
   lastMsgUri: null,
+  manualMsgUri: null,
 
   setMsgWindow: function(msgWindow, msgUriSpec) {
     DEBUG_LOG("mimeVerify.jsm: setMsgWindow: "+msgUriSpec+"\n");
@@ -413,6 +414,15 @@ var EnigmailVerify = {
   newVerifier: function (embedded, msgUrl, partiallySigned) {
     let v = new MimeVerify(embedded, msgUrl, partiallySigned);
     return v;
+  },
+
+  setManualUri: function(msgUriSpec) {
+    DEBUG_LOG("mimeVerify.jsm: setManualUri: "+msgUriSpec+"\n");
+    this.manualMsgUri = msgUriSpec;
+  },
+
+  getManualUri: function() {
+    return this.manualMsgUri;
   }
 };
 
