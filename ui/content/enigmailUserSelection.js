@@ -161,6 +161,7 @@ function getPubkeysFromSecretKeys(keyString)
 
 function enigmailBuildList(refresh)
 {
+   DEBUG_LOG("=====> enigmailBuildList()\n");
    DEBUG_LOG("enigmailUserSelection.js: enigmailBuildList\n");
 
    const TRUSTLEVELS_SORTED = EnigmailFuncs.trustlevelsSorted();
@@ -580,6 +581,7 @@ function enigmailBuildList(refresh)
    if (window.arguments[INPUT].options.indexOf("forUser")<0) {
      descNotFound.firstChild.data = aNotFound.join(", ");
    }
+   DEBUG_LOG("  <=== enigmailBuildList()\n");
 }
 
 

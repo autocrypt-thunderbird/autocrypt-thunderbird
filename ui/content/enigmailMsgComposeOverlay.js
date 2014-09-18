@@ -1695,6 +1695,7 @@ Enigmail.msg = {
    */
   keySelection: function (enigmailSvc, sendFlags, optSendFlags, gotSendFlags, fromAddr, toAddrList, bccAddrList)
   {
+    EnigmailCommon.DEBUG_LOG("=====> keySelection()\n");
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection()\n");
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN    = nsIEnigmail.SEND_SIGNED;
@@ -1739,6 +1740,7 @@ Enigmail.msg = {
       // process rules if not disabled
       // - enableRules: rules not temporarily disabled
       // REPLACES email addresses by keys in its result !!!
+      var refreshKeyList = true;
       if (EnigmailCommon.getPref("assignKeysByRules") && this.enableRules) {
         var result = this.processRules (forceRecipientSettings, sendFlags, optSendFlags, toAddrStr, bccAddrStr)
         if (!result) {
@@ -1748,6 +1750,7 @@ Enigmail.msg = {
         optSendFlags = result.optSendFlags;
         toAddrStr = result.toAddr;    // replace email addresses with rules by the corresponding keys
         bccAddrStr = result.bccAddr;  // replace email addresses with rules by the corresponding keys
+        refreshKeyList = !result.didRefreshKeyList;  // if key list refreshed we don't have to do it again
       }
 
       // if encryption is requested for the email:
@@ -1757,7 +1760,8 @@ Enigmail.msg = {
       //   to force manual settings for missing keys
       // LEAVES remaining email addresses not covered by rules as they are
       if (sendFlags & ENCRYPT) {
-        var result = this.encryptTestMessage (enigmailSvc, sendFlags, optSendFlags, fromAddr, toAddrStr, bccAddrStr, bccAddrList)
+        var result = this.encryptTestMessage (enigmailSvc, sendFlags, optSendFlags,
+                                              fromAddr, toAddrStr, bccAddrStr, bccAddrList, refreshKeyList)
         if (!result) {
           return null;
         }
@@ -1772,6 +1776,7 @@ Enigmail.msg = {
     } while (doRulesProcessingAgain);
 
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): return toAddrStr=\""+toAddrStr+"\" bccAddrStr=\""+bccAddrStr+"\"\n");
+    EnigmailCommon.DEBUG_LOG("  <=== keySelection()");
     return {
       sendFlags: sendFlags,
       toAddrStr: toAddrStr,
@@ -1847,12 +1852,14 @@ Enigmail.msg = {
    */
   processRules: function (forceRecipientSettings, sendFlags, optSendFlags, toAddrStr, bccAddrStr)
   {
+    EnigmailCommon.DEBUG_LOG("=====> processRules()\n");
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): toAddrStr=\""+toAddrStr+"\" bccAddrStr=\""+bccAddrStr+"\" forceRecipientSettings="+forceRecipientSettings+"\n");
 
     // process defaults
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN    = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
+    var didRefreshKeyList = false;    // return value to signal whether the key list was refreshed
 
     // get keys for to and cc addresses:
     // - matchedKeysObj will contain the keys and the remaining toAddrStr elements
@@ -1882,6 +1889,7 @@ Enigmail.msg = {
         this.encryptByRules = EnigmailCommon.ENIG_ALWAYS;
         toAddrStr = validKeyList.join(", ");
       }
+      didRefreshKeyList = true;
     }
 
     // process final state
@@ -1958,11 +1966,13 @@ Enigmail.msg = {
       EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): after getRecipientsKeys() bccAddrStr=\""+bccAddrStr+"\"\n");
     }
 
+    EnigmailCommon.DEBUG_LOG("  <=== processRules()\n");
     return {
       sendFlags: sendFlags,
       optSendFlags: optSendFlags,
       toAddr: toAddrStr,
       bccAddr: bccAddrStr,
+      didRefreshKeyList: didRefreshKeyList,
     };
   },
 
@@ -1978,8 +1988,9 @@ Enigmail.msg = {
    * @return:       doRulesProcessingAgain: start with rule processing once more
    *                or null (cancel sending the email)
    */
-  encryptTestMessage: function (enigmailSvc, sendFlags, optSendFlags, fromAddr, toAddrStr, bccAddrStr, bccAddrList)
+  encryptTestMessage: function (enigmailSvc, sendFlags, optSendFlags, fromAddr, toAddrStr, bccAddrStr, bccAddrList, refresh)
   {
+    EnigmailCommon.DEBUG_LOG("=====> encryptTestMessage()\n");
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN    = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
@@ -1996,7 +2007,7 @@ Enigmail.msg = {
     //         Thus, WE make it better here in enigmail until the bug is fixed.
     if (EnigmailCommon.getPref("assignKeysByEmailAddr")) {
       var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrStr,
-                                                                true);  // refresh key list
+                                                                refresh); //true);  // refresh key list
       if (validKeyList != null) {
         toAddrStr = validKeyList.join(", ");
       }
@@ -2118,6 +2129,7 @@ Enigmail.msg = {
       sendFlags &= ~ENCRYPT;
       EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptTestMessage: No default encryption because test failed\n");
     }
+    EnigmailCommon.DEBUG_LOG("  <=== encryptTestMessage()");
     return {
       doRulesProcessingAgain : false,
       sendFlags : sendFlags,

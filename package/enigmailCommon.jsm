@@ -2324,8 +2324,10 @@ var EnigmailCommon = {
       });
     } catch (ex) {
       this.ERROR_LOG("enigmailCommon.jsm: execStart: subprocess.call failed with '"+ex.toString()+"'\n");
+      this.DEBUG_LOG("  enigmail> DONE with FAILURE\n");
       return null;
     }
+    this.DEBUG_LOG("  enigmail> DONE\n");
 
     return proc;
   },

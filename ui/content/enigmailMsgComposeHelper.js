@@ -46,6 +46,9 @@ Enigmail.hlp = {
 
   enigValidityKeyList: null,
   enigValidityKeySortList: null,
+  // for cache to avoid unnecessary calls of validKeysForAllRecipients():
+  validKeysForAllRecipients_oldEmailAddrs: null,
+  validKeysForAllRecipients_oldResultingArray: null,
 
   /**
     *  check for the attribute of type "sign"/"encrypt"/"pgpMime" of the passed node
@@ -274,9 +277,32 @@ Enigmail.hlp = {
    */
   validKeysForAllRecipients: function (emailAddrs, refresh)
   {
+    EnigmailCommon.DEBUG_LOG("=====> validKeysForAllRecipients()\n");
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): emailAddrs=\""+emailAddrs+"\" refresh=\""+refresh+"\"\n");
+
+    // check whether to use our internal cache
+    var resultingArray = null;
+    if (!refresh && emailAddrs != null && validKeysForAllRecipients_oldEmailAddrs == emailAddrs) {
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): use cached result\n");
+      resultingArray = validKeysForAllRecipients_oldResultingArray;
+    }
+    else {
+      resultingArray = this.doValidKeysForAllRecipients(emailAddrs, refresh);
+      validKeysForAllRecipients_oldEmailAddrs = emailAddrs;
+      validKeysForAllRecipients_oldResultingArray = resultingArray;
+    }
+
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): return \""+resultingArray+"\"\n");
+    EnigmailCommon.DEBUG_LOG("  <=== validKeysForAllRecipients()\n");
+    return resultingArray;
+  },
+
+  doValidKeysForAllRecipients: function (emailAddrs, refresh)
+  {
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): emailAddrs=\""+emailAddrs+"\" refresh=\""+refresh+"\"\n");
+
     if (emailAddrs.indexOf('@') < 0) {
-      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): return null (no '@' found)\n");
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): return null (no '@' found)\n");
       return null;
     }
 
@@ -291,14 +317,14 @@ Enigmail.hlp = {
         minTrustLevel = "?";  // value between invalid and unknown keys
         break;
       default:
-        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: validKeysForAllRecipients(): return null (INVALID VALUE for acceptedKeys: \""+acceptedKeys+"\")\n");
+        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: doValidKeysForAllRecipients(): return null (INVALID VALUE for acceptedKeys: \""+acceptedKeys+"\")\n");
         return null;
         break;
     }
 
     const TRUSTLEVELS_SORTED = EnigmailFuncs.trustlevelsSorted();
     var minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf(minTrustLevel);
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): find keys with minTrustLevel=\""+minTrustLevel+"\"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): find keys with minTrustLevel=\""+minTrustLevel+"\"\n");
 
     var resultingArray = new Array;  // resulting key list (if all valid)
     try {
@@ -381,16 +407,16 @@ Enigmail.hlp = {
         }
         if (! found) {
           // no key for this address found
-          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): return null (no single valid key found for=\""+addr+"\" with minTrustLevel=\""+minTrustLevel+"\")\n");
+          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): return null (no single valid key found for=\""+addr+"\" with minTrustLevel=\""+minTrustLevel+"\")\n");
           return null;
         }
       }
     }
     catch (ex) {
-      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): return null (exception: "+ex.description+")\n");
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): return null (exception: "+ex.description+")\n");
       return null;
     }
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): return \""+resultingArray+"\"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): return \""+resultingArray+"\"\n");
     return resultingArray;
   },
 

@@ -830,6 +830,8 @@ Enigmail.prototype = {
     var errStr = "";
     Ec.DEBUG_LOG("enigmail.js: Enigmail.setAgentPath: calling subprocess with '"+command.path+"'\n");
 
+    Ec.CONSOLE_LOG("enigmail> "+Ec.printCmdLine(command, args)+"\n");
+
     var proc = {
       command:     command,
       arguments:   args,
@@ -847,10 +849,10 @@ Enigmail.prototype = {
       subprocess.call(proc).wait();
     } catch (ex) {
       Ec.ERROR_LOG("enigmail.js: Enigmail.setAgentPath: subprocess.call failed with '"+ex.toString()+"'\n");
+      Ec.DEBUG_LOG("  enigmail> DONE with FAILURE\n");
       throw ex;
     }
-
-    Ec.CONSOLE_LOG("enigmail> "+Ec.printCmdLine(command, args)+"\n");
+    Ec.DEBUG_LOG("  enigmail> DONE\n");
 
     if (exitCode != 0) {
       Ec.ERROR_LOG("enigmail.js: Enigmail.setAgentPath: gpg failed with exitCode "+exitCode+" msg='"+outStr+" "+errStr+"'\n");
@@ -982,8 +984,10 @@ Enigmail.prototype = {
               }).wait();
             } catch (ex) {
               Ec.ERROR_LOG("enigmail.js: detectGpgAgent: "+command.path+" failed\n");
+              Ec.DEBUG_LOG("  enigmail> DONE with FAILURE\n");
               exitCode = -1;
             }
+            Ec.DEBUG_LOG("  enigmail> DONE\n");
 
             if (exitCode == 0) {
               Ec.DEBUG_LOG("enigmail.js: detectGpgAgent: found running gpg-agent\n");
@@ -1091,7 +1095,8 @@ Enigmail.prototype = {
   },
 
 
-  simpleExecCmd: function (command, args, exitCodeObj, errorMsgObj) {
+  simpleExecCmd: function (command, args, exitCodeObj, errorMsgObj)
+  {
     Ec.WRITE_LOG("enigmail.js: Enigmail.simpleExecCmd: command = "+command+" "+args.join(" ")+"\n");
 
     var envList = [];
@@ -1126,8 +1131,10 @@ Enigmail.prototype = {
       }).wait();
     } catch (ex) {
       Ec.ERROR_LOG("enigmail.js: simpleExecCmd: "+command.path+" failed\n");
+      Ec.DEBUG_LOG("  enigmail> DONE with FAILURE\n");
       exitCodeObj.value = -1;
     }
+    Ec.DEBUG_LOG("  enigmail> DONE\n");
 
     if (errOutput)
        errorMsgObj.value  = errOutput;
@@ -1146,8 +1153,10 @@ Enigmail.prototype = {
     return outputData;
   },
 
+
   execCmd: function (command, args, passphrase, input, exitCodeObj, statusFlagsObj,
-            statusMsgObj, errorMsgObj) {
+            statusMsgObj, errorMsgObj)
+  {
     Ec.WRITE_LOG("enigmail.js: Enigmail.execCmd: subprocess = '"+command.path+"'\n");
 
     if ((typeof input) != "string") input = "";
@@ -1214,8 +1223,10 @@ Enigmail.prototype = {
 
     } catch (ex) {
       Ec.ERROR_LOG("enigmail.js: Enigmail.execCmd: subprocess.call failed with '"+ex.toString()+"'\n");
+      Ec.DEBUG_LOG("  enigmail> DONE with FAILURE\n");
       exitCodeObj.value = -1;
     }
+    Ec.DEBUG_LOG("  enigmail> DONE\n");
 
     var outputData = "";
     var errOutput  = "";
@@ -1256,6 +1267,7 @@ Enigmail.prototype = {
   encryptMessage: function (parent, uiFlags, plainText, fromMailAddr, toMailAddr, bccMailAddr, sendFlags,
                             exitCodeObj, statusFlagsObj, errorMsgObj)
   {
+    EnigmailCommon.DEBUG_LOG("=====> encryptMessage()\n");
     Ec.DEBUG_LOG("enigmail.js: Enigmail.encryptMessage: "+plainText.length+" bytes from "+fromMailAddr+" to "+toMailAddr+" ("+sendFlags+")\n");
 
     exitCodeObj.value    = -1;
@@ -1265,12 +1277,14 @@ Enigmail.prototype = {
     if (!plainText) {
       Ec.DEBUG_LOG("enigmail.js: Enigmail.encryptMessage: NO ENCRYPTION!\n");
       exitCodeObj.value = 0;
+      EnigmailCommon.DEBUG_LOG("  <=== encryptMessage()\n");
       return plainText;
     }
 
     if (!this.initialized) {
       Ec.ERROR_LOG("enigmail.js: Enigmail.encryptMessage: not yet initialized\n");
       errorMsgObj.value = Ec.getString("notInit");
+      EnigmailCommon.DEBUG_LOG("  <=== encryptMessage()\n");
       return "";
     }
 
@@ -1300,6 +1314,7 @@ Enigmail.prototype = {
                                       listener, statusFlagsObj, errorMsgObj);
     if (! proc) {
       exitCodeObj.value = -1;
+      EnigmailCommon.DEBUG_LOG("  <=== encryptMessage()\n");
       return "";
     }
 
@@ -1321,11 +1336,13 @@ Enigmail.prototype = {
 
     if (exitCodeObj.value == 0) {
       // Normal return
+      EnigmailCommon.DEBUG_LOG("  <=== encryptMessage()\n");
       return getUnicodeData(listener.stdoutData);
     }
 
     // Error processing
     Ec.DEBUG_LOG("enigmail.js: Enigmail.encryptMessage: command execution exit code: "+exitCodeObj.value+"\n");
+    EnigmailCommon.DEBUG_LOG("  <=== encryptMessage()\n");
     return "";
   },
 
