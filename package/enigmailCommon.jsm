@@ -39,8 +39,11 @@
  * 'Components.utils.import("resource://enigmail/enigmailCommon.jsm");'
  */
 
+
+Components.utils.import("resource://enigmail/pipeConsole.jsm");
 Components.utils.import("resource://gre/modules/AddonManager.jsm");
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+Components.utils.import("resource://enigmail/enigmailCore.jsm");
 Components.utils.import("resource://enigmail/subprocess.jsm");
 Components.utils.import("resource://enigmail/pipeConsole.jsm");
 
@@ -182,7 +185,6 @@ var EnigmailCommon = {
 
   // variables
   enigmailSvc: null,
-  enigStringBundle: null,
   statusFlags: gStatusFlags,
   prefBranch: null,
   prefRoot: null,
@@ -773,12 +775,7 @@ var EnigmailCommon = {
     return this.convertFromUnicode(nsFileObj.path, "utf-8");
   },
 
-  isDosLike: function() {
-    if (this.isDosLikeVal === undefined) {
-      this.isDosLikeVal = (this.getOS() == "WINNT" || this.getOS() == "OS2");
-    }
-    return this.isDosLikeVal;
-  },
+  isDosLike: EnigmailCore.isDosLike.bind(EnigmailCore),
 
   getEscapedFilename: function (fileNameStr) {
     if (this.isDosLike()) {
@@ -915,109 +912,21 @@ var EnigmailCommon = {
   },
 
 
-  WRITE_LOG: function (str)
-  {
-    function f00(val, digits) {
-      return ("0000"+val.toString()).substr(-digits);
-    }
+  WRITE_LOG: EnigmailCore.WRITE_LOG.bind(EnigmailCore),
 
-    var d = new Date();
-    var datStr=d.getFullYear()+"-"+f00(d.getMonth()+1, 2)+"-"+f00(d.getDate(),2)+" "+f00(d.getHours(),2)+":"+f00(d.getMinutes(),2)+":"+f00(d.getSeconds(),2)+"."+f00(d.getMilliseconds(),3)+" ";
-    if (gLogLevel >= 4)
-      dump(datStr+str);
+  DEBUG_LOG: EnigmailCore.DEBUG_LOG.bind(EnigmailCore),
 
-    if (this.enigmailSvc && this.enigmailSvc.logFileStream) {
-      this.enigmailSvc.logFileStream.write(datStr, datStr.length);
-      this.enigmailSvc.logFileStream.write(str, str.length);
-    }
-  },
+  WARNING_LOG: EnigmailCore.WARNING_LOG.bind(EnigmailCore),
 
-  DEBUG_LOG: function (str)
-  {
-    if ((gLogLevel >= 4) || (this.enigmailSvc && this.enigmailSvc.logFileStream))
-      this.WRITE_LOG("[DEBUG] "+str);
-  },
+  ERROR_LOG: EnigmailCore.ERROR_LOG.bind(EnigmailCore),
 
-  WARNING_LOG: function (str)
-  {
-    if (gLogLevel >= 3)
-      this.WRITE_LOG("[WARN] "+str);
+  CONSOLE_LOG: EnigmailCore.CONSOLE_LOG.bind(EnigmailCore),
 
-      EnigmailConsole.write(str);
-  },
+  getString: EnigmailCore.getString.bind(EnigmailCore),
 
-  ERROR_LOG: function (str)
-  {
-    try {
-      var consoleSvc = Cc["@mozilla.org/consoleservice;1"].
-          getService(Ci.nsIConsoleService);
+  getOS: EnigmailCore.getOS.bind(EnigmailCore),
 
-      var scriptError = Cc["@mozilla.org/scripterror;1"]
-                                  .createInstance(Ci.nsIScriptError);
-      scriptError.init(str, null, null, 0,
-                       0, scriptError.errorFlag, "Enigmail");
-      consoleSvc.logMessage(scriptError);
-
-    }
-    catch (ex) {}
-
-    if (gLogLevel >= 2)
-      this.WRITE_LOG("[ERROR] "+str);
-  },
-
-  CONSOLE_LOG: function (str)
-  {
-    if (gLogLevel >= 3)
-      this.WRITE_LOG("[CONSOLE] "+str);
-
-    EnigmailConsole.write(str);
-  },
-
-  // retrieves a localized string from the enigmail.properties stringbundle
-  getString: function (aStr, subPhrases)
-  {
-
-    if (!this.enigStringBundle) {
-      try {
-        var strBundleService = Cc["@mozilla.org/intl/stringbundle;1"].getService();
-        strBundleService = strBundleService.QueryInterface(Ci.nsIStringBundleService);
-        this.enigStringBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
-      }
-      catch (ex) {
-        this.ERROR_LOG("enigmailCommon.jsm: Error in instantiating stringBundleService\n");
-      }
-    }
-
-    if (this.enigStringBundle) {
-      try {
-        if (subPhrases) {
-          if (typeof(subPhrases) == "string") {
-            return this.enigStringBundle.formatStringFromName(aStr, [ subPhrases ], 1);
-          }
-          else
-            return this.enigStringBundle.formatStringFromName(aStr, subPhrases, subPhrases.length);
-        }
-        else {
-          return this.enigStringBundle.GetStringFromName(aStr);
-        }
-      }
-      catch (ex) {
-        this.ERROR_LOG("enigmailCommon.jsm: Error in querying stringBundleService for string '"+aStr+"'\n");
-      }
-    }
-    return aStr;
-  },
-
-  getOS: function () {
-    var xulRuntime = Cc[XPCOM_APPINFO].getService(Ci.nsIXULRuntime);
-    return xulRuntime.OS;
-  },
-
-  isSuite: function () {
-    // return true if Seamonkey, false otherwise
-    var xulAppinfo = Cc[XPCOM_APPINFO].getService(Ci.nsIXULAppInfo);
-    return (xulAppinfo.ID == SEAMONKEY_ID);
-  },
+  isSuite: EnigmailCore.isSuite.bind(EnigmailCore),
 
 
   /***
@@ -1535,31 +1444,9 @@ var EnigmailCommon = {
     return r;
   },
 
-  getFilePathDesc: function (nsFileObj) {
-    if (this.getOS() == "WINNT")
-      return nsFileObj.persistentDescriptor;
-    else
-      return nsFileObj.path;
-  },
+  getFilePathDesc: EnigmailCore.getFilePathDesc.bind(EnigmailCore),
 
-  printCmdLine: function (command, args) {
-
-    function getQuoted(str) {
-      let i = str.indexOf(" ");
-      if (i>=0) {
-        return '"' + str +'"'
-      }
-      else
-        return str;
-    }
-
-    var rStr = getQuoted(this.getFilePathDesc(command)) +" ";
-
-    let i;
-    rStr += [getQuoted(args[i]) for (i in args)].join(" ").replace(/\\\\/g, '\\');
-
-    return rStr;
-  },
+  printCmdLine: EnigmailCore.printCmdLine.bind(EnigmailCore),
 
   fixExitCode: function (exitCode, statusFlags) {
     if (exitCode != 0) {

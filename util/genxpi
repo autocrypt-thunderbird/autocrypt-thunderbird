@@ -114,6 +114,7 @@ zip --must-match\
     components/mimeEncrypt.js \
     defaults/preferences/enigmail.js \
     modules/enigmailCommon.jsm \
+    modules/enigmailCore.jsm \
     modules/enigmailConvert.jsm \
     modules/pipeConsole.jsm \
     modules/keyManagement.jsm \

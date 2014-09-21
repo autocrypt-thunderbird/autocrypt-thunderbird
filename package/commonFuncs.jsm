@@ -41,6 +41,7 @@
  * 'Components.utils.import("resource://enigmail/commonFuncs.jsm");'
  */
 
+Components.utils.import("resource://enigmail/enigmailCore.jsm");
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 
 var EXPORTED_SYMBOLS = [ "EnigmailFuncs" ];
@@ -48,10 +49,6 @@ var EXPORTED_SYMBOLS = [ "EnigmailFuncs" ];
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
-
-const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID =
-                              "@mozilla.org/network/file-output-stream;1";
 
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
@@ -66,11 +63,6 @@ const USERID_ID = 9;
 const SIG_TYPE_ID = 10;
 const KEY_USE_FOR_ID = 11;
 
-const NS_RDONLY      = 0x01;
-const NS_WRONLY      = 0x02;
-const NS_CREATE_FILE = 0x08;
-const NS_TRUNCATE    = 0x20;
-const DEFAULT_FILE_PERMS = 0x180; // equals 0600
 
 // trust flags according to GPG documentation:
 // - http://www.gnupg.org/documentation/manuals/gnupg.pdf
@@ -1064,56 +1056,8 @@ var EnigmailFuncs = {
    *  @return nsIFileOutputStream object or null if creation failed
    */
 
-  createFileStream: function(filePath, permissions) {
-    //EnigmailCommon.DEBUG_LOG("enigmailFuncs.jsm: createFileStream: file="+filePath+"\n");
-
-    try {
-      var localFile;
-      if (typeof filePath == "string") {
-        localFile = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
-        initPath(localFile, filePath);
-      }
-      else {
-        localFile = filePath.QueryInterface(Ci.nsIFile);
-      }
-
-      if (localFile.exists()) {
-
-        if (localFile.isDirectory() || !localFile.isWritable())
-           throw Components.results.NS_ERROR_FAILURE;
-
-        if (!permissions)
-          permissions = localFile.permissions;
-      }
-
-      if (!permissions)
-        permissions = DEFAULT_FILE_PERMS;
-
-      var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
-
-      var fileStream = Cc[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Ci.nsIFileOutputStream);
-
-      fileStream.init(localFile, flags, permissions, 0);
-
-      return fileStream;
-
-    } catch (ex) {
-      EnigmailCommon.ERROR_LOG("enigmailFuncs.jsm: CreateFileStream: Failed to create "+filePath+"\n");
-      return null;
-    }
-  }
+  createFileStream: EnigmailCore.createFileStream.bind(EnigmailCore),
 
 };
-
-
-function initPath(localFileObj, pathStr) {
-  localFileObj.initWithPath(pathStr);
-
-  if (! localFileObj.exists()) {
-    localFileObj.persistentDescriptor = pathStr;
-  }
-}
-
-
 
 

@@ -29,6 +29,7 @@ MODFILES = \
            gpgAgentHandler.jsm \
            keyManagement.jsm \
            pipeConsole.jsm \
+           enigmailCore.jsm \
            enigmailCommon.jsm \
            enigmailConvert.jsm \
            installGnuPG.jsm \
