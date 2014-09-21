@@ -74,7 +74,9 @@
     </description>
     <separator/>
 
-    <label value="&enigmail.setupWiz.pgWelcome.startNow;" control="startNow"/>
+    <label control="startNow">
+      &enigmail.setupWiz.pgWelcome.startNow;
+    </label>
     <radiogroup id="startNow" value="1">
       <radio id="startNow_yes"
              label="&enigmail.setupWiz.pgWelcome.yes;"
@@ -145,7 +147,9 @@
 
     <separator/>
 
-    <label value="&enigmail.setupWiz.pgSelectId.allIds;" control="activateId"/>
+    <label control="activateId">
+      &enigmail.setupWiz.pgWelcome.startNow;
+    </label>
     <radiogroup id="activateId" value="1">
       <radio id="activateId_all"
              label="&enigmail.setupWiz.yes;"
@@ -176,7 +180,9 @@
       &enigmail.setupWiz.pgEncConv.desc;
     </description>
     <separator/>
-    <label value="&enigmail.setupWiz.pgEncConv.convEncMsg;" control="convEncryptMsg"/>
+    <label control="convEncryptMsg">
+      &enigmail.setupWiz.pgEncConv.convEncMsg;
+    </label>
     <radiogroup id="convEncryptMsg" value="0">
       <radio id="convEncryptMsg_yes"
              label="&enigmail.setupWiz.pgEncConv.convYes;"
@@ -200,7 +206,9 @@
       &enigmail.setupWiz.pgSign.desc;
     </description>
     <separator/>
-    <label value="&enigmail.setupWiz.pgSign.signMsg;" control="signMsg"/>
+    <label control="signMsg">
+      &enigmail.setupWiz.pgSign.signMsg;
+    </label>
     <radiogroup id="signMsg" value="1">
       <radio id="signMsg_yes"
              label="&enigmail.setupWiz.pgSign.signYes;"
