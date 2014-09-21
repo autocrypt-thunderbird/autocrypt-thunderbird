@@ -350,7 +350,8 @@ Enigmail.hlp = {
       // resolve GnuPG groups
       for (i=0; i < addresses.length; i++) {
         for (var j = 0; j < gpgGroups.length; j++) {
-          if (addresses[i] == gpgGroups[j].alias.toLowerCase()) {
+          if (addresses[i] == gpgGroups[j].alias.toLowerCase() ||
+              "<" + addresses[i] + ">" == gpgGroups[j].alias.toLowerCase()) {
             // replace address with keylist
             var grpList = gpgGroups[j].keylist.split(/;/);
             addresses[i] = grpList[0];
