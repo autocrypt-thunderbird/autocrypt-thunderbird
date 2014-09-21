@@ -72,6 +72,7 @@ enigmail.jar:
 	content/enigmail/enigmailMessengerOverlay.js   (content/enigmailMessengerOverlay.js)
 	content/enigmail/enigmailMsgHdrViewOverlay.xul (content/enigmailMsgHdrViewOverlay.xul)
 	content/enigmail/enigmailMsgHdrViewOverlay.js  (content/enigmailMsgHdrViewOverlay.js)
+	content/enigmail/enigmailFilterEditorOverlay.xul (content/enigmailFilterEditorOverlay.xul)
 	content/enigmail/enigmailMsgPrintOverlay.xul   (content/enigmailMsgPrintOverlay.xul)
 	content/enigmail/enigmailMsgPrintOverlay.js    (content/enigmailMsgPrintOverlay.js)
 	content/enigmail/enigmailSetupWizard.js        (content/enigmailSetupWizard.js)

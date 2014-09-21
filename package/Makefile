@@ -30,6 +30,7 @@ MODFILES = \
            keyManagement.jsm \
            pipeConsole.jsm \
            enigmailCommon.jsm \
+           enigmailConvert.jsm \
            installGnuPG.jsm \
            mimeVerify.jsm
 

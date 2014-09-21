@@ -209,7 +209,7 @@ var EnigmailCommon = {
       this.enigmailSvc = Cc[this.ENIGMAIL_CONTRACTID].createInstance(Ci.nsIEnigmail);
     }
     catch (ex) {
-      this.ERROR_LOG("enigmailCommon.jsm: Error in instantiating EnigmailService\n");
+      this.ERROR_LOG("enigmailCommon.jsm: Error in instantiating EnigmailService: "+ex+"\n");
       return null;
     }
 
@@ -3076,7 +3076,6 @@ var EnigmailCommon = {
   getInstallLocation: function() {
     return gEnigInstallLocation;
   }
-
 };
 
 

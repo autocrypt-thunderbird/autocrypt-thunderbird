@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  * Patrick Brunschwig <patrick@enigmail.net>
+ * Janosch Rux <rux@informatik.uni-luebeck.de>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -33,13 +34,27 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-
+Components.utils.import("resource:///modules/iteratorUtils.jsm");
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/AddonManager.jsm");
 Components.utils.import("resource://enigmail/subprocess.jsm");
 Components.utils.import("resource://enigmail/pipeConsole.jsm");
 Components.utils.import("resource://enigmail/gpgAgentHandler.jsm");
 Components.utils.import("resource://gre/modules/ctypes.jsm");
+Components.utils.import("resource://gre/modules/Timer.jsm");
+Components.utils.import("resource://enigmail/enigmailConvert.jsm");
+
+try {
+  // TB with omnijar
+  Components.utils.import("resource:///modules/gloda/mimemsg.js");
+}
+catch (ex) {
+  // "old style" TB
+  Components.utils.import("resource://app/modules/gloda/mimemsg.js");
+}
+
+Components.utils.import("resource:///modules/MailUtils.js");
+
 
 const gDummyPKCS7 = 'Content-Type: multipart/mixed;\r\n boundary="------------060503030402050102040303\r\n\r\nThis is a multi-part message in MIME format.\r\n--------------060503030402050102040303\r\nContent-Type: application/x-pkcs7-mime\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303\r\nContent-Type: application/x-enigmail-dummy\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303--\r\n';
 
@@ -641,8 +656,6 @@ Enigmail.prototype = {
     }
 
 
-
-
     // Register to observe XPCOM shutdown
     var obsServ = Cc[NS_OBSERVERSERVICE_CONTRACTID].getService();
     obsServ = obsServ.QueryInterface(Ci.nsIObserverService);
@@ -654,6 +667,7 @@ Enigmail.prototype = {
 
     Ec.DEBUG_LOG("enigmail.js: Enigmail.initialize: END\n");
   },
+
 
   useGpgAgent: function() {
     var useAgent = false;
@@ -1419,6 +1433,42 @@ Enigmail.prototype = {
     return blockType;
   },
 
+/*
+ *     locateArmoredBlocks returns an array with GPGBlock positions
+ *
+ *      Struct:
+ *        int obj.begin
+ *        int obj.end
+ *        string obj.blocktype
+ *
+ *
+ *     @param string text
+ *
+ *     @return empty array if no block was found
+ *
+ */
+
+  locateArmoredBlocks: function(text) {
+    var indentStr = "";
+    var indentStrObj = new Object();
+    var beginObj = new Object();
+    var endObj   = new Object();
+    var blocks = [];
+    var i = 0;
+
+    while (( b = this.locateArmoredBlock(text, i, indentStr, beginObj, endObj, indentStrObj)) != "") {
+      e = new Object();
+      e.begin = beginObj.value;
+      e.end = endObj.value;
+      e.blocktype = b;
+      blocks.push(e);
+
+      i = e.end;
+    }
+
+    Ec.DEBUG_LOG("enigmail.js: locateArmorBlocks: Found " + blocks.length + " Blocks\n");
+    return blocks;
+  },
 
   extractSignaturePart: function (signatureBlock, part) {
     Ec.DEBUG_LOG("enigmail.js: Enigmail.extractSignaturePart: part="+part+"\n");
@@ -1522,6 +1572,24 @@ Enigmail.prototype = {
     return text;
   },
 
+/**
+  *  Decrypts a PGP ciphertext and returns the the plaintext
+  *
+  *in  @parent a window object
+  *in  @uiFlags see flag options in nsIEnigmail.idl, UI_INTERACTIVE, UI_ALLOW_KEY_IMPORT
+  *in  @cipherText a string containing a PGP Block
+  *out @signatureObj
+  *out @exitCodeObj contains the exit code
+  *out @statusFlagsObj see status flags in nslEnigmail.idl, GOOD_SIGNATURE, BAD_SIGNATURE
+  *out @keyIdObj holds the key id
+  *out @userIdObj holds the user id
+  *out @sigDetailsObj
+  *out @errorMsgObj  error string
+  *out @blockSeparationObj
+  *
+  * @return string plaintext
+  *
+  */
   decryptMessage: function (parent, uiFlags, cipherText, signatureObj, exitCodeObj,
             statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj,
             blockSeparationObj) {
@@ -2689,8 +2757,134 @@ EnigCmdLineHandler.prototype = {
   lockFactory: function (lock) {}
 };
 
+function getEnigmailString(aStr) {
+  try {
+    var strBundleService = Cc["@mozilla.org/intl/stringbundle;1"].getService();
+    strBundleService = strBundleService.QueryInterface(Ci.nsIStringBundleService);
+    var enigStringBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
+    return enigStringBundle.GetStringFromName(aStr);
+  }
+  catch (ex) {
+    return aStr;
+  }
+}
+
+
+/*****
+ *  Because thunderbird throws all messages at once at us thus we have to rate limit the dispatching
+ *  of the message processing. Because there is only a negligible performance gain when dispatching
+ *  several message at once we serialize to not overwhelm low power devices.
+ *
+ *****/
+
+function dispatchMessages(aMsgHdrs, aActionValue, move) {
+  if (aMsgHdrs.length < 1) {
+    return;
+  }
+
+  var promise = enigmailDecryptMessageIntoFolder(aMsgHdrs[0], aActionValue, move);
+
+  aMsgHdrs.splice(0,1);
+
+  promise.then(function (data) {
+    dispatchMessages(aMsgHdrs, aActionValue, move);
+  });
+
+}
+
+
+var filterActionMoveDecrypt = {
+  id: "enigmail@enigmail.net#filterActionMoveDecrypt",
+  name: getEnigmailString("filter.decryptMove.label"),
+  value: "movemessage",
+  apply: function (aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
+
+    if (Ec == null) {
+      Enigmail();
+    }
+
+    Ec.DEBUG_LOG("enigmail.js: Move to: " + aActionValue + "\n");
+
+    var msgHdrs = [];
+
+    for(var i=0; i < aMsgHdrs.length; i++) {
+      msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
+    }
+
+    dispatchMessages(msgHdrs, aActionValue, true);
+
+    return;
+  },
+
+  isValidForType: function (type, scope) {return true;},
+  validateActionValue: function (value, folder, type) {
+    if (Ec == null) {
+      Enigmail();
+      Ec.getService();
+    }
+
+    if (value == "") {
+      return Ec.getString("selectFolder");
+    }
+
+    return null;
+  },
+
+  allowDuplicates: false,
+  isAsync: true,
+  needsBody: true
+};
+
+var filterActionCopyDecrypt = {
+  id: "enigmail@enigmail.net#filterActionCopyDecrypt",
+  name: getEnigmailString("filter.decryptCopy.label"),
+  value: "copymessage",
+  apply: function (aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
+    if (Ec == null) {
+      Enigmail();
+      Ec.getService();
+    }
+
+    Ec.DEBUG_LOG("enigmail.js: Copy to: " + aActionValue + "\n");
+
+    var msgHdrs = [];
+
+    for(var i=0; i < aMsgHdrs.length; i++) {
+      msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
+    }
+
+    dispatchMessages(msgHdrs, aActionValue, false);
+    return;
+  },
+
+  isValidForType: function (type, scope) {
+    return true;
+  },
+
+  validateActionValue: function (value, folder, type) {
+    if(Ec == null) {
+      Enigmail();
+    }
+
+    if( value == "") {
+      return Ec.getString("selectFolder");
+    }
+
+    return null;
+  },
+
+  allowDuplicates: false,
+  isAsync: true,
+  needsBody: true
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 
 var NSGetFactory = XPCOMUtils.generateNSGetFactory([Enigmail, EnigmailProtocolHandler, EnigCmdLineHandler]);
+
+var filterService = Cc["@mozilla.org/messenger/services/filters;1"].getService(Ci.nsIMsgFilterService);
+filterService.addCustomAction(filterActionMoveDecrypt);
+filterService.addCustomAction(filterActionCopyDecrypt);
+
 dump("enigmail.js: Registered components\n");
+

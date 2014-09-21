@@ -435,4 +435,14 @@ treechildren::-moz-tree-cell(STYLE) {}
 treechildren::-moz-tree-cell-text(STYLE) {}
 */
 
+/******************************
+ *  Rules for filter actions 
+ ******************************/
 
+.ruleactiontarget[type="enigmail@enigmail.net#filterActionMoveDecrypt"] {
+  -moz-binding: url("chrome://messenger/content/searchWidgets.xml#ruleactiontarget-folder");
+}
+
+.ruleactiontarget[type="enigmail@enigmail.net#filterActionCopyDecrypt"] {
+  -moz-binding: url("chrome://messenger/content/searchWidgets.xml#ruleactiontarget-folder");
+}
