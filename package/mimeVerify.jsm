@@ -86,7 +86,7 @@ MimeVerify.prototype = {
   },
 
   onStartRequest: function() {
-    DEBUG_LOG("mimeVerify.jsm: onStartRequest\n");
+    Ec.DEBUG_LOG("mimeVerify.jsm: onStartRequest\n"); // always log this one
     this.dataCount = 0;
     this.foundMsg = false;
     this.startMsgStr = "";
@@ -302,7 +302,7 @@ MimeVerify.prototype = {
                 Ec.getEscapedFilename(Ec.getFilePath(this.sigFile)));
 
     if (this.pipe) {
-      DEBUG_LOG("Closing pipe\n");
+      Ec.DEBUG_LOG("Closing pipe\n"); // always log this one
       this.pipe.close();
     }
     else

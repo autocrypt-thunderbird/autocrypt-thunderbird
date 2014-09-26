@@ -71,7 +71,7 @@ PgpMimeDecrypt.prototype = {
   onStartRequest: function(request, uri) {
     if (!Ec.getService()) // Ensure Enigmail is initialized
       return;
-    DEBUG_LOG("mimeDecrypt.js: onStartRequest\n");
+    Ec.DEBUG_LOG("mimeDecrypt.js: onStartRequest\n");   // always log this one
 
     ++gNumProc;
     if (gNumProc > 2) {
@@ -283,7 +283,7 @@ PgpMimeDecrypt.prototype = {
 
     this.displayStatus(backgroundJob);
 
-    DEBUG_LOG("mimeDecrypt.js: onStopRequest: process terminated\n");
+    Ec.DEBUG_LOG("mimeDecrypt.js: onStopRequest: process terminated\n");  // always log this one
     this.proc = null;
   },
 
