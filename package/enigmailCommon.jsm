@@ -477,7 +477,16 @@ var EnigmailCommon = {
     return result.value;
   },
 
-  // Confirmation dialog with OK / Cancel buttons (both customizable)
+  /***
+   * Confirmation dialog with OK / Cancel buttons (both customizable)
+   *
+   * @win:         nsIWindow - parent window to display modal dialog; can be null
+   * @mesg:        String    - message text
+   * @okLabel:     String    - OPTIONAL label for OK button
+   * @cancelLabel: String    - OPTIONAL label for cancel button
+   *
+   * @return:      Boolean   - true: OK pressed / false: Cancel pressed
+   */
   confirmDlg: function (win, mesg, okLabel, cancelLabel)
   {
     var dummy=new Object();

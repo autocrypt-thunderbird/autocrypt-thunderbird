@@ -2697,7 +2697,7 @@ EnigCmdLineHandler.prototype = {
   contractID: NS_CLINE_SERVICE_CONTRACTID,
   _xpcom_categories: [{
     category: "command-line-handler",
-    entry: "cline-enigmail",
+    entry: "m-cline-enigmail",
     service: false
   }],
   QueryInterface: XPCOMUtils.generateQI([nsICommandLineHandler, nsIFactory, nsISupports]),

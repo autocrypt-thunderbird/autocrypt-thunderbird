@@ -17,6 +17,8 @@
  * Portions created by Janosch Rux <rux@informatik.uni-luebeck.de> are
  * Copyright (C) 2014 Janosch Rux. All Rights Reserved.
  *
+ * Contributors:
+ *  Patrick Brunschwig <patrick@enigmail.net>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -44,10 +46,12 @@ Components.utils.import("resource://enigmail/pipeConsole.jsm");
 try {
   // TB with omnijar
   Components.utils.import("resource:///modules/gloda/mimemsg.js");
+  Components.utils.import("resource:///modules/gloda/utils.js");
 }
 catch (ex) {
   // "old style" TB
   Components.utils.import("resource://app/modules/gloda/mimemsg.js");
+  Components.utils.import("resource://app/modules/gloda/utils.js");
 }
 
 try {
@@ -69,7 +73,9 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
-
+const STATUS_OK = 0;
+const STATUS_FAILURE = 1;
+const STATUS_NOT_REQUIRED = 2;
 /*
  *  Decrypt a message and copy it to a folder
  *
@@ -117,9 +123,10 @@ function decryptMessageIntoFolderCb(hdr, mime) {
 
   var ct = getContentType(mime.headers['content-type']);
   var pt = getProtocol(mime.headers['content-type']);
+  var subject = GlodaUtils.deMime(mime.headers['subject'].join(" "));
 
   if (ct == null) {
-    Ec.DEBUG_LOG("enigmailConvert.jsm: Contentype is null");
+    Ec.DEBUG_LOG("enigmailConvert.jsm: content-type is null");
     resolve(true);
     return;
   }
@@ -130,7 +137,11 @@ function decryptMessageIntoFolderCb(hdr, mime) {
     foundPGP = 1;
   }
   else {
-    foundPGP = decryptINLINE(mime);
+    foundPGP = decryptINLINE(mime, subject);
+    if (foundPGP < 0) {
+      // decryption failed
+      return;
+    }
   }
 
 
@@ -142,38 +153,56 @@ function decryptMessageIntoFolderCb(hdr, mime) {
       suffixIndexEnd = a.name.toLowerCase().lastIndexOf('.asc');
     }
 
-    if (suffixIndexEnd < 0) {
-      let p = readAttachment(a.url, a.name);
+    if (suffixIndexEnd > 0 &&
+        a.contentType.search(/application\/pgp-signature/i) < 0) {
+
+      // possible OpenPGP attachment
+      p = decryptAttachment(a.url, subject, a.name.substring(0, suffixIndexEnd), a.name)
       attachments.push(p);
     }
     else {
-      let p = decryptAttachment(a.url, a.name.substring(0, suffixIndexEnd));
+      let p = readAttachment(a.url, a.name);
       attachments.push(p);
-      foundPGP += 1;
     }
-  }
-
-  if (foundPGP == 0) {
-    Ec.DEBUG_LOG("enigmailConvert.jsm: Appears to be no PGP message\n");
-    resolve(true);
-    return;
   }
 
 
   Promise.all(attachments).then(
     function (attachments) {
+      Ec.DEBUG_LOG("enigmailConvert.jsm: all attachments done\n");
+
 
       for (let a in attachments) {
-        //Some attachment did not decrypt successful
-        if(attachments[a].status == 0) {
+
+        switch (attachments[a].status) {
+        case STATUS_NOT_REQUIRED:
+          attachments[a].name = attachments[a].origName;
+          break;
+        case STATUS_OK:
+          ++foundPGP;
+          break;
+        case STATUS_FAILURE:
+          // attachment did not decrypt successfully
           resolve(true);
+          return;
+        default:
+          // no valid result?!
+          attachments[a].name = attachments[a].origName;
         }
+      }
+
+      if (foundPGP == 0) {
+        Ec.DEBUG_LOG("enigmailConvert.jsm: Appears to be no PGP message\n");
+        resolve(true);
+        return;
       }
 
 
       var msg = mimeToString(mime, attachments);
 
-      if(msg == null) {
+      if (msg == null) {
+        // no message data found
+        resolve(true);
         return;
       }
 
@@ -201,8 +230,8 @@ function decryptMessageIntoFolderCb(hdr, mime) {
       var fileSpec = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
       fileSpec.initWithPath(tempFile.path);
       var extService = Cc['@mozilla.org/uriloader/external-helper-app-service;1'].getService(Ci.nsPIExternalAppLauncher);
-      // Moved in copyListener.onStopCopy
-      const cs = Cc["@mozilla.org/messenger/messagecopyservice;1"].getService(Ci.nsIMsgCopyService);
+
+      const copySvc = Cc["@mozilla.org/messenger/messagecopyservice;1"].getService(Ci.nsIMsgCopyService);
 
       var copyListener = {
         QueryInterface : function(iid) {
@@ -217,16 +246,17 @@ function decryptMessageIntoFolderCb(hdr, mime) {
         OnProgress: function (progress, progressMax) {},
         OnStartCopy: function () {},
         SetMessageKey: function (key) {},
-        OnStopCopy: function (status) {
-          if (status != 0) {
+        OnStopCopy: function (statusCode) {
+          if (statusCode != 0) {
             //XXX complain?
-            Ec.DEBUG_LOG("enigmailConvert.jsm: Error copying message: "+ status + "\n");
+            Ec.DEBUG_LOG("enigmailConvert.jsm: Error copying message: "+ statusCode + "\n");
+            tempFile.remove(false);
             resolve(true);
             return;
           }
           Ec.DEBUG_LOG("enigmailConvert.jsm: Copy complete\n");
 
-          if(move) {
+          if (move) {
             Ec.DEBUG_LOG("enigmailConvert.jsm: Delete original\n");
             var folderInfoObj = new Object();
             hdr.folder.getDBFolderInfoAndDB(folderInfoObj).DeleteMessage(hdr.messageKey, null, true);
@@ -237,21 +267,26 @@ function decryptMessageIntoFolderCb(hdr, mime) {
           resolve(true);
         }
       };
-      cs.CopyFileMessage(fileSpec, MailUtils.getFolderForURI(destFolder, false), hdr, false, 0, null, copyListener, null);
+
+      copySvc.CopyFileMessage(fileSpec, MailUtils.getFolderForURI(destFolder, false), hdr,
+          false, 0, null, copyListener, null);
     }
   );
 
 };
 
-function readAttachment(msgUrl, name) {
+function readAttachment(msgUrl, name, origName) {
   return new Promise(
     function(resolve, reject) {
       Ec.DEBUG_LOG("enigmailConvert.jsm: readAttachment\n");
       var f = function _cb(data) {
-          var o = new Object();
-          o.data = data;
-          o.name = name;
-          o.status = 0;
+          Ec.DEBUG_LOG("enigmailConvert.jsm: readAttachment - got data ("+ data.length+")\n");
+          var o = {
+            data: data,
+            name: name,
+            origName: origName ? origName : name,
+            status: STATUS_NOT_REQUIRED
+          }
           resolve(o);
       };
 
@@ -265,21 +300,21 @@ function readAttachment(msgUrl, name) {
   );
 };
 
-function decryptAttachment(msgUrl, name) {
+
+function decryptAttachment(msgUrl, subject, name, origName) {
   return new Promise(
     function(resolve, reject) {
       Ec.DEBUG_LOG("enigmailConvert.jsm: decryptAttachment\n");
-      readAttachment(msgUrl, name).then(
+      readAttachment(msgUrl, name, origName).then(
         function (o) {
           var attachmentHead = o.data.substr(0,30);
-            if (attachmentHead.match(/\-\-\-\-\-BEGIN PGP \w+ KEY BLOCK\-\-\-\-\-/)) {
+          if (attachmentHead.match(/\-\-\-\-\-BEGIN PGP \w+ KEY BLOCK\-\-\-\-\-/)) {
             // attachment appears to be a PGP key file, we just go-a-head
             resolve(o);
             return;
           }
           var enigmailSvc = Ec.getService();
           var args = Ec.getAgentArgs(true);
-          //args = args.concat(["-o", outFileName, "--yes"]);
           args = args.concat(Ec.passwdCommand());
           args.push("-d");
 
@@ -288,7 +323,7 @@ function decryptAttachment(msgUrl, name) {
           var useAgentObj = {};
           var statusMsgObj = {};
           var cmdLineObj   = {};
-          var exitCodeObj  = {};
+          var exitCode = -1;
           var statusFlagsObj = {};
           var errorMsgObj = {};
           statusFlagsObj.value = 0;
@@ -303,10 +338,12 @@ function decryptAttachment(msgUrl, name) {
             }
           );
 
+
           do {
 
             if (!Ec.getPassphrase(null, passwdObj, useAgentObj, 0)) {
               Ec.ERROR_LOG("enigmailConvert.jsm:  Error - no passphrase supplied\n");
+              o.status = STATUS_FAILURE;
               resolve(o);
               return;
             }
@@ -320,17 +357,56 @@ function decryptAttachment(msgUrl, name) {
             }
             // Wait for child STDOUT to close
             proc.wait();
-            exitCodeObj.value = Ec.execEnd(listener, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
+            Ec.execEnd(listener, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
 
-            if (exitCodeObj.value != 0) {
-              Ec.clearCachedPassphrase();
+            if ((listener.stdoutData && listener.stdoutData.length > 0) ||
+                (statusFlagsObj.value & nsIEnigmail.DECRYPTION_OKAY)) {
+              Ec.DEBUG_LOG("enigmailConvert.jsm: decryptAttachment: decryption OK\n");
+              exitCode = 0;
+            }
+            else if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_FAILED) {
+              Ec.DEBUG_LOG("enigmailConvert.jsm: decryptAttachment: decryption failed\n");
+              if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
+                Ec.clearCachedPassphrase();
+              }
+              if (enigmailSvc.useGpgAgent()) {
+                // since we cannot find out via getPassphrase if the user wants to cancel
+                // we should ask
+                let msg = Ec.getString("converter.decryptAtt.failed", [ origName , subject ]);
+
+                if (!Ec.confirmDlg(null, msg,
+                    Ec.getString("dlg.button.retry"), Ec.getString("dlg.button.skip"))) {
+                  o.status = STATUS_FAILURE;
+                  resolve(o);
+                  return;
+                }
+              }
+
+            }
+            else if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_INCOMPLETE) {
+              // failure; message not complete
+              Ec.DEBUG_LOG("enigmailConvert.jsm: decryptAttachment: decryption incomplete\n");
+              o.status = STATUS_FAILURE;
+              resolve(o);
+              return;
+            }
+            else {
+              // there is nothing to be decrypted
+              Ec.DEBUG_LOG("enigmailConvert.jsm: decryptAttachment: no decryption required\n");
+              o.status = STATUS_NOT_REQUIRED;
+              resolve(o);
+              return;
             }
 
-          } while (exitCodeObj.value != 0);
+          } while (exitCode != 0);
 
+
+          Ec.DEBUG_LOG("enigmailConvert.jsm: decryptAttachment: decrypted to "+listener.stdoutData.length +" bytes\n");
 
           o.data = listener.stdoutData;
-          o.status = 1;
+          o.status = STATUS_OK;
+
+          // TODO: try to get real attachment name
           resolve(o);
         }
       );
@@ -345,11 +421,13 @@ function decryptAttachment(msgUrl, name) {
 
 function decryptPGPMIME(mime) {
   var boundary = getBoundary(mime.headers['content-type']);
-  mime.headers['content-type'] = "multipart/mixed; boundary=\""+boundary+"\"";
+  if (boundary != null) {
+    mime.headers['content-type'] = "multipart/mixed; boundary=\""+boundary+"\"";
+  }
 };
 
 //inline wonderland
-function decryptINLINE(mime) {
+function decryptINLINE(mime, subject) {
 
   if (typeof mime.body !== 'undefined') {
     var ct = getContentType(mime.headers['content-type']);
@@ -372,9 +450,7 @@ function decryptINLINE(mime) {
     var signatureObj = new Object();
     signatureObj.value = "";
 
-    var uiFlags = true ? (nsIEnigmail.UI_INTERACTIVE |
-                     nsIEnigmail.UI_ALLOW_KEY_IMPORT |
-                     nsIEnigmail.UI_UNVERIFIED_ENC_OK) : 0;
+    var uiFlags = nsIEnigmail.UI_INTERACTIVE | nsIEnigmail.UI_UNVERIFIED_ENC_OK;
 
     var plaintexts = [];
     var blocks = enigmailSvc.locateArmoredBlocks(mime.body);
@@ -389,7 +465,7 @@ function decryptINLINE(mime) {
     blocks = tmp;
 
     if (blocks.length < 1) {
-    return 0;
+      return 0;
     }
 
 
@@ -398,25 +474,53 @@ function decryptINLINE(mime) {
       do {
         let ciphertext = mime.body.substring(blocks[i].begin, blocks[i].end+1);
 
+        if (ciphertext.length == 0) {
+          break;
+        }
+
         if (!Ec.getPassphrase(null, passwdObj, useAgentObj, 0)) {
           Ec.ERROR_LOG("enigmailConvert.jsm:  Error - no passphrase supplied\n");
           resolve(o);
-          return 0;
+          return -1;
         }
 
         plaintext = enigmailSvc.decryptMessage(null, uiFlags, ciphertext, signatureObj, exitCodeObj, statusFlagsObj,
                                                            keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj);
-        if (plaintext == null) {
-          Ec.clearCachedPassphrase();
-          break;
+        if (!plaintext || plaintext.length == 0) {
+          if (statusFlagsObj.value & nsIEnigmail.DISPLAY_MESSAGE) {
+            Ec.alert(null, errorMsgObj.value);
+            return -1;
+          }
+
+          if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_FAILED) {
+            if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
+              Ec.clearCachedPassphrase();
+            }
+
+            if (enigmailSvc.useGpgAgent()) {
+              // since we cannot find out via getPassphrase if the user wants to cancel
+              // we should ask
+              let msg = Ec.getString("converter.decryptBody.failed", subject);
+
+              if (!Ec.confirmDlg(null, msg,
+                  Ec.getString("dlg.button.retry"), Ec.getString("dlg.button.skip"))) {
+                return -1;
+              }
+            }
+          }
+          else if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_INCOMPLETE) {
+            return -1;
+          }
         }
 
         if (ct == "text/html") {
-          plaintext = plaintext.replace(/\n/ig,"\n<br/>");
+          plaintext = plaintext.replace(/\n/ig,"<br/>\n");
         }
 
-        plaintexts.push(plaintext);
-      } while (plaintext == null);
+        if (plaintext) {
+          plaintexts.push(plaintext);
+        }
+      } while (plaintext == null || plaintext == "");
     }
 
 
@@ -438,7 +542,7 @@ function decryptINLINE(mime) {
   if (typeof mime.parts !== 'undefined'  && mime.parts.length > 0) {
     var ret = 0;
     for (let part in mime.parts) {
-      ret += decryptINLINE(mime.parts[part]);
+      ret += decryptINLINE(mime.parts[part], subject);
     }
 
     return ret;
@@ -473,7 +577,7 @@ function stripHTMLFromArmoredBlocks(text) {
 }
 
 
-
+// Helper function, currently not used
 function dumpMIME(mime) {
 
   for( var i in mime) {
@@ -535,7 +639,7 @@ function getContentType(shdr) {
     return shdr.match(/([A-z-]+\/[A-z-]+)/)[1].toLowerCase();
   }
   catch (e) {
-    Ec.DEBUG_LOG(e+"\n");
+    Ec.DEBUG_LOG("enigmailConvert.jsm: getContentType: "+e+"\n");
     return null;
   }
 };
@@ -546,7 +650,7 @@ function getBoundary(shdr) {
     return shdr.match(/boundary="?([A-z0-9'()+_,-.\/:=?]+)"?/)[1].toLowerCase();
   }
   catch (e) {
-    Ec.DEBUG_LOG(e+"\n");
+    Ec.DEBUG_LOG("enigmailConvert.jsm: getBoundary: "+e+"\n");
     return null;
   }
 };
@@ -557,8 +661,8 @@ function getProtocol(shdr) {
     return shdr.match(/protocol="?([A-z0-9'()+_,-.\/:=?]+)"?/)[1].toLowerCase();
   }
   catch (e) {
-    Ec.DEBUG_LOG(e+"\n");
-    return null;
+    Ec.DEBUG_LOG("enigmailConvert.jsm: getProtocol: "+e+"\n");
+    return "";
   }
 }
 
