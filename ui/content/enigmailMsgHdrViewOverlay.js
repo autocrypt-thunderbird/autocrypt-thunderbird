@@ -302,7 +302,12 @@ Enigmail.hdrView = {
         //} else {
         //  statusLine = statusInfo + EnigmailCommon.getString("clickPen");
         //}
-        statusInfo += "\n" + EnigmailCommon.getString("keyUsed", [ keyId ]);  // "public key ... needed"
+        if (statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
+          statusInfo += "\n" + EnigmailCommon.getString("keyNeeded", [ keyId ]);  // "public key ... needed"
+        }
+        else {
+          statusInfo += "\n" + EnigmailCommon.getString("keyUsed", [ keyId ]);  // "public key ... used"
+        }
       }
       statusInfo += "\n\n" + errorMsg;
     }
