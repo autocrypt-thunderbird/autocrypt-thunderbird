@@ -2744,7 +2744,7 @@ function dispatchMessages(aMsgHdrs, aActionValue, move) {
     return;
   }
 
-  var promise = enigmailDecryptMessageIntoFolder(aMsgHdrs[0], aActionValue, move);
+  var promise = EnigmailDecryptPermanently(aMsgHdrs[0], aActionValue, move);
 
   aMsgHdrs.splice(0,1);
 
@@ -2761,7 +2761,7 @@ var filterActionMoveDecrypt = {
   value: "movemessage",
   apply: function (aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
 
-    EC.DEBUG_LOG("enigmail.js: Move to: " + aActionValue + "\n");
+    EC.DEBUG_LOG("enigmail.js: filterActionMoveDecrypt: Move to: " + aActionValue + "\n");
 
     var msgHdrs = [];
 
@@ -2803,7 +2803,7 @@ var filterActionCopyDecrypt = {
       Ec.getService();
     }
 
-    Ec.DEBUG_LOG("enigmail.js: Copy to: " + aActionValue + "\n");
+    Ec.DEBUG_LOG("enigmail.js: filterActionCopyDecrypt: Copy to: " + aActionValue + "\n");
 
     var msgHdrs = [];
 
