@@ -360,10 +360,11 @@ PgpMimeDecrypt.prototype = {
         if (hdr[j].search(/^\s*content-type:\s+text\/(plain|html)/i) >= 0) {
           DEBUG_LOG("mimeDecrypt.js: done: adding multipart/mixed around "+ hdr[j]+"\n");
 
-          this.decryptedData = 'Content-Type: multipart/mixed; boundary="enigmailWrapper"\r\n\r\n'+
-            '--enigmailWrapper\r\n' +
+          let wrapper = this.createBoundary();
+          this.decryptedData = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n\r\n'+
+            '--'+ wrapper + '\r\n' +
             this.decryptedData +
-            '--enigmailWrapper--\r\n';
+            '--' + wrapper + '--\r\n';
           break;
         }
       }
@@ -375,6 +376,16 @@ PgpMimeDecrypt.prototype = {
     this.verifier.onStopRequest();
     this.decryptedData = "";
     this.exitCode = exitCode;
+  },
+
+  createBoundary: function() {
+    let b = "";
+    let r = 0;
+    for (let i=0; i<33; i++) {
+      r = Math.floor(Math.random() * 58);
+      b += String.fromCharCode((r < 10 ? 48 : (r < 34 ? 55 :  63)) + r);
+    }
+    return b;
   },
 
   // return data to libMime
