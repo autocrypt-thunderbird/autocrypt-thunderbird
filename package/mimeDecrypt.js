@@ -39,6 +39,29 @@ var gNumProc = 0;
 // data is processed from libmime -> nsPgpMimeProxy
 
 function PgpMimeDecrypt() {
+
+  Ec.DEBUG_LOG("mimeDecrypt.js: PgpMimeDecrypt()\n");   // always log this one
+  this.mimeSvc = null;
+  this.initOk = false;
+  this.boundary = "";
+  this.pipe = null;
+  this.closePipe = false;
+  this.statusStr = "";
+  this.outqueue = "";
+  this.dataLength = 0;
+  this.mimePartCount = 0;
+  this.headerMode = 0;
+  this.xferEncoding = ENCODING_DEFAULT;
+  this.matchedPgpDelimiter = 0;
+  this.exitCode = null;
+  this.msgWindow = null;
+  this.msgUriSpec = null;
+  this.returnStatus = null;
+  this.verifier = null;
+  this.proc = null;
+  this.statusDisplayed = false;
+  this.uri = null;
+
 }
 
 PgpMimeDecrypt.prototype = {
@@ -46,27 +69,7 @@ PgpMimeDecrypt.prototype = {
   classID:  PGPMIME_JS_DECRYPTOR_CID,
   contractID: PGPMIME_JS_DECRYPTOR_CONTRACTID,
   QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener]),
-  mimeSvc: null,
   inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
-  initOk: false,
-  boundary: "",
-  pipe: null,
-  closePipe: false,
-  statusStr: "",
-  outqueue: "",
-  dataLength: 0,
-  mimePartCount: 0,
-  headerMode: 0,
-  xferEncoding: ENCODING_DEFAULT,
-  matchedPgpDelimiter: 0,
-  exitCode: null,
-  msgWindow: null,
-  msgUriSpec: null,
-  returnStatus: null,
-  verifier: null,
-  proc: null,
-  statusDisplayed: false,
-  uri: null,
 
   onStartRequest: function(request, uri) {
     if (!Ec.getService()) // Ensure Enigmail is initialized
