@@ -224,10 +224,12 @@ PgpMimeDecrypt.prototype = {
           }
         }
 
-        let msgSvc = messenger.messageServiceFromURI(this.msgUriSpec);
+        if (this.msgUriSpec) {
+          let msgSvc = messenger.messageServiceFromURI(this.msgUriSpec);
 
-        let url= {};
-        msgSvc.GetUrlForUri(this.msgUriSpec, url, null)
+          let url= {};
+          msgSvc.GetUrlForUri(this.msgUriSpec, url, null)
+        }
 
         if (this.uri.spec.search(/[\&\?]header=[a-zA-Z0-9]*$/) < 0 &&
             this.uri.spec.search(/[\&\?]part=[\.0-9]+/) < 0 &&
@@ -245,6 +247,7 @@ PgpMimeDecrypt.prototype = {
       }
       catch(ex) {
         Ec.writeException("mimeDecrypt.js", ex);
+        Ec.DEBUG_LOG("mimeDecrypt.js: error while processing "+this.msgUriSpec+"\n");
       }
     }
 
