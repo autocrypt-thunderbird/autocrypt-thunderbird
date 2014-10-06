@@ -61,7 +61,7 @@ function PgpMimeDecrypt() {
   this.proc = null;
   this.statusDisplayed = false;
   this.uri = null;
-
+  this.backgroundJob = false;
 }
 
 PgpMimeDecrypt.prototype = {
@@ -190,13 +190,13 @@ PgpMimeDecrypt.prototype = {
     this.msgWindow = EnigmailVerify.lastMsgWindow;
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
 
-    let backgroundJob = false;
+    this.backgroundJob = false;
 
     if (this.uri) {
       // return if not decrypting currently displayed message (except if
       // printing, replying, etc)
 
-      backgroundJob = (this.uri.spec.search(/[\&\?]header=(print|quotebody)/) >= 0);
+      this.backgroundJob = (this.uri.spec.search(/[\&\?]header=(print|quotebody|enigmailConvert)/) >= 0);
 
       try {
         var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
@@ -219,8 +219,8 @@ PgpMimeDecrypt.prototype = {
           let manUrlSpec = manUrl.value.spec.replace(/(\?.*)(number=[0-9]*)(&.*)?$/, "?$2");
 
 
-          if ((! backgroundJob) && currUrlSpec != manUrlSpec) {
-            return this.handleManualDecrypt(backgroundJob);
+          if ((! this.backgroundJob) && currUrlSpec != manUrlSpec) {
+            return this.handleManualDecrypt();
           }
         }
 
@@ -260,7 +260,10 @@ PgpMimeDecrypt.prototype = {
     var errorMsgObj = {};
     var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
     var win = windowManager.getMostRecentWindow(null);
-    this.verifier.onStartRequest(true);
+
+    if (!this.backgroundJob) {
+      this.verifier.onStartRequest(true);
+    }
 
     var maxOutput = this.outQueue.length * 100; // limit output to 100 times message size
                                                 // to avoid DoS attack
@@ -287,13 +290,13 @@ PgpMimeDecrypt.prototype = {
           Ci.nsIEnigmail.UI_PGP_MIME,
           this.returnStatus);
 
-    this.displayStatus(backgroundJob);
+    this.displayStatus();
 
     Ec.DEBUG_LOG("mimeDecrypt.js: onStopRequest: process terminated\n");  // always log this one
     this.proc = null;
   },
 
-  displayStatus: function(backgroundJob) {
+  displayStatus: function() {
     DEBUG_LOG("mimeDecrypt.js: displayStatus\n");
 
     if (this.exitCode == null || this.msgWindow == null || this.statusDisplayed)
@@ -303,7 +306,7 @@ PgpMimeDecrypt.prototype = {
       DEBUG_LOG("mimeDecrypt.js: displayStatus displaying result\n");
       let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
 
-      if (headerSink && this.uri && !backgroundJob) {
+      if (headerSink && this.uri && !this.backgroundJob) {
         headerSink.updateSecurityStatus(this.msgUriSpec,
             this.exitCode,
             this.returnStatus.statusFlags,
@@ -378,8 +381,11 @@ PgpMimeDecrypt.prototype = {
 
     this.returnData(this.decryptedData);
 
-    this.verifier.onTextData(verifyData);
-    this.verifier.onStopRequest();
+    if (! this.backgroundJob) {
+      this.verifier.onTextData(verifyData);
+      this.verifier.onStopRequest();
+    }
+
     this.decryptedData = "";
     this.exitCode = exitCode;
   },
@@ -406,12 +412,12 @@ PgpMimeDecrypt.prototype = {
     }
   },
 
-  handleManualDecrypt: function(backgroundJob) {
+  handleManualDecrypt: function() {
 
     try {
       let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
 
-      if (headerSink && this.uri && !backgroundJob) {
+      if (headerSink && this.uri && !this.backgroundJob) {
         headerSink.updateSecurityStatus(this.msgUriSpec,
             Ec.POSSIBLE_PGPMIME,
             0,
