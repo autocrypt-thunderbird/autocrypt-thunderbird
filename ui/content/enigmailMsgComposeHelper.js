@@ -47,8 +47,8 @@ Enigmail.hlp = {
   enigValidityKeyList: null,
   enigValidityKeySortList: null,
   // for cache to avoid unnecessary calls of validKeysForAllRecipients():
-  validKeysForAllRecipients_oldEmailAddrs: null,
-  validKeysForAllRecipients_oldResultingArray: null,
+  //validKeysForAllRecipients_oldEmailAddrs: null,
+  //validKeysForAllRecipients_oldResultingArray: null,
 
   /**
     *  check for the attribute of type "sign"/"encrypt"/"pgpMime" of the passed node
@@ -282,15 +282,15 @@ Enigmail.hlp = {
 
     // check whether to use our internal cache
     var resultingArray = null;
-    if (!refresh && emailAddrs != null && validKeysForAllRecipients_oldEmailAddrs == emailAddrs) {
-      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): use cached result\n");
-      resultingArray = validKeysForAllRecipients_oldResultingArray;
-    }
-    else {
+    //if (!refresh && emailAddrs != null && validKeysForAllRecipients_oldEmailAddrs == emailAddrs) {
+      //EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): use cached result\n");
+      //resultingArray = validKeysForAllRecipients_oldResultingArray;
+    //}
+    //else {
       resultingArray = this.doValidKeysForAllRecipients(emailAddrs, refresh);
-      validKeysForAllRecipients_oldEmailAddrs = emailAddrs;
-      validKeysForAllRecipients_oldResultingArray = resultingArray;
-    }
+      //validKeysForAllRecipients_oldEmailAddrs = emailAddrs;
+      //validKeysForAllRecipients_oldResultingArray = resultingArray;
+    //}
 
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): return \""+resultingArray+"\"\n");
     EnigmailCommon.DEBUG_LOG("  <=== validKeysForAllRecipients()\n");
