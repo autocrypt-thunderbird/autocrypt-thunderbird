@@ -47,7 +47,7 @@ Enigmail.hlp = {
   enigValidityKeyList: null,
   enigValidityKeySortList: null,
   // for cache to avoid unnecessary calls of validKeysForAllRecipients():
-  //validKeysForAllRecipients_oldEmailAddrs: null,
+  //validKeysForAllRecipients_oldEmailsOrKeys: null,
   //validKeysForAllRecipients_oldResultingArray: null,
 
   /**
@@ -275,20 +275,20 @@ Enigmail.hlp = {
   /* try to find valid key to passed email address
    * @return: list of all found key (with leading "0x") or null
    */
-  validKeysForAllRecipients: function (emailAddrs, refresh)
+  validKeysForAllRecipients: function (emailsOrKeys, refresh)
   {
     EnigmailCommon.DEBUG_LOG("=====> validKeysForAllRecipients()\n");
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): emailAddrs=\""+emailAddrs+"\" refresh=\""+refresh+"\"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): emailsOrKeys=\""+emailsOrKeys+"\" refresh=\""+refresh+"\"\n");
 
     // check whether to use our internal cache
     var resultingArray = null;
-    //if (!refresh && emailAddrs != null && validKeysForAllRecipients_oldEmailAddrs == emailAddrs) {
+    //if (!refresh && emailsOrKeys != null && validKeysForAllRecipients_oldEmailsOrKeys == emailsOrKeys) {
       //EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): use cached result\n");
       //resultingArray = validKeysForAllRecipients_oldResultingArray;
     //}
     //else {
-      resultingArray = this.doValidKeysForAllRecipients(emailAddrs, refresh);
-      //validKeysForAllRecipients_oldEmailAddrs = emailAddrs;
+      resultingArray = this.doValidKeysForAllRecipients(emailsOrKeys, refresh);
+      //validKeysForAllRecipients_oldEmailsOrKeys = emailsOrKeys;
       //validKeysForAllRecipients_oldResultingArray = resultingArray;
     //}
 
@@ -297,14 +297,9 @@ Enigmail.hlp = {
     return resultingArray;
   },
 
-  doValidKeysForAllRecipients: function (emailAddrs, refresh)
+  doValidKeysForAllRecipients: function (emailsOrKeys, refresh)
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): emailAddrs=\""+emailAddrs+"\" refresh=\""+refresh+"\"\n");
-
-    if (emailAddrs.indexOf('@') < 0) {
-      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): return null (no '@' found)\n");
-      return null;
-    }
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): emailsOrKeys=\""+emailsOrKeys+"\" refresh=\""+refresh+"\"\n");
 
     // check which keys are accepted
     var minTrustLevel;
@@ -352,12 +347,13 @@ Enigmail.hlp = {
       //} 
 
       // create array of address elements (email or key)
-      var addresses=EnigmailFuncs.stripEmail(emailAddrs).toLowerCase().split(',');
+      var addresses=EnigmailFuncs.stripEmail(emailsOrKeys).split(',');
 
       var gpgGroups = EnigmailCommon.getGpgGroups();
 
       // resolve GnuPG groups
       for (i=0; i < addresses.length; i++) {
+        var addr = addresses[i].toLowerCase();
         for (var j = 0; j < gpgGroups.length; j++) {
           if (addresses[i] == gpgGroups[j].alias.toLowerCase() ||
               "<" + addresses[i] + ">" == gpgGroups[j].alias.toLowerCase()) {
@@ -373,7 +369,7 @@ Enigmail.hlp = {
 
       // check whether each address is or has a key:
       for (i=0; i < addresses.length; i++) {
-        addr = addresses[i];
+        var addr = addresses[i];
         // try to find current address in key list:
         var found = false;
         if (addr.indexOf('@') >= 0) {
@@ -381,16 +377,16 @@ Enigmail.hlp = {
           var key = this.getValidKeyForRecipient (addr, minTrustLevelIndex, keyList, keySortList);
           if (key) {
             found = true;
-            resultingArray.push("0x"+key);
+            resultingArray.push("0x"+key.toUpperCase());
           }
         }
         else {
           // try key match:
           var key = addr;
-          if (addr.search(/^0x/) == 0) {
+          if (addr.search(/^0x/i) == 0) {
             key = addr.substring(2);  // key list has elements without leading "0x"
           }
-          var keyObj = keyList[key.toUpperCase()];  // keylist has keys in uppercase
+          var keyObj = keyList[key.toUpperCase()];  // note: keylist has keys with uppercase only
 
           if (! keyObj && addr.search(/^0x[A-F0-9]{8}([A-F0-9]{8})*$/i) == 0) {
             // we got a key ID, probably from gpg.conf?

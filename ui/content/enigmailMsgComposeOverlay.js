@@ -83,6 +83,8 @@ Enigmail.msg = {
   statusEncrypted: EnigmailCommon.ENIG_FINAL_UNDEF,
   statusSigned:    EnigmailCommon.ENIG_FINAL_UNDEF,
   statusPGPMime:   EnigmailCommon.ENIG_FINAL_UNDEF,
+  statusEncryptedInStatusBar: null, // to double check signaled state before final send
+                                    // if true, ensure emails are send encrypted
 
   // processed strings to signal final encrypt/sign/pgpmime state:
   statusSignedStr:    '???',
@@ -1305,6 +1307,7 @@ Enigmail.msg = {
   updateStatusBar: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.updateStatusBar()\n");
+    this.statusEncryptedInStatusBar = this.statusEncrypted; // to double check signaled state before final send
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
@@ -1414,6 +1417,7 @@ Enigmail.msg = {
   determineSendFlags: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.focusChange: Enigmail.msg.determineSendFlags\n");
+    this.statusEncryptedInStatusBar = null; // to double check signaled state before final send
     if (this.getAccDefault("enabled")) {
       var compFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
       Recipients2CompFields(compFields);
@@ -2095,17 +2099,8 @@ Enigmail.msg = {
         }
 
         // process OK button:
-        if (resultObj.sign) {
-          sendFlags |= SIGN;
-        }
-        else {
-          sendFlags &= ~SIGN;
-        }
-        if (! resultObj.encrypt) {
-          // encryption explicitely turned off
-          sendFlags &= ~ENCRYPT;
-        }
-        else {
+        if (resultObj.encrypt) {
+          sendFlags |= ENCRYPT;  // should anyway be set
           if (bccAddrList.length > 0) {
             toAddrStr = "";
             bccAddrStr = resultObj.userList.join(", ");
@@ -2114,6 +2109,19 @@ Enigmail.msg = {
             toAddrStr = resultObj.userList.join(", ");
             bccAddrStr = "";
           }
+        }
+        else {
+          // encryption explicitely turned off
+          sendFlags &= ~ENCRYPT;
+          // counts as forces non-encryption (no errors if different state was processed before)
+          this.statusEncrypted = EnigmailCommon.ENIG_FINAL_NO;
+          this.statusEncryptedInStatusBar = EnigmailCommon.ENIG_FINAL_NO;
+        }
+        if (resultObj.sign) {
+          sendFlags |= SIGN;
+        }
+        else {
+          sendFlags &= ~SIGN;
         }
         testCipher="ok";
         testExitCodeObj.value = 0;
@@ -2362,7 +2370,6 @@ Enigmail.msg = {
 
        return EnigmailCommon.confirmDlg(window, msg, EnigmailCommon.getString("msgCompose.button.send"));
     }
-
 
     try {
 
@@ -2753,6 +2760,24 @@ Enigmail.msg = {
            confirm = ((sendFlags&ENCRYPT) != (this.sendMode&ENCRYPT));
            break;
        }
+       // double check that no internal logic did result in sending unencrypted if
+       // encrypted sending was signaled
+       // - if NOT send encrypted
+       //   - although encryption was
+       //     - the recent processed resulting encryption status or
+       //     - was signaled in the status bar but is not the outcome now
+       if ((sendFlags&ENCRYPT) == 0
+           && (this.statusEncrypted == EnigmailCommon.ENIG_FINAL_YES
+               || this.statusEncrypted == EnigmailCommon.ENIG_FINAL_FORCEYES
+               || this.statusEncryptedInStatusBar == EnigmailCommon.ENIG_FINAL_YES
+               || this.statusEncryptedInStatusBar == EnigmailCommon.ENIG_FINAL_FORCEYES)) {
+         var res = EnigmailCommon.confirmDlg(window, msg, "INTERNAL ENIGMAIL ERROR: promised encryption disabled");
+         if (!res) {
+           return false;
+         }
+         confirm = true;
+       }
+
        if ((!(sendFlags & nsIEnigmail.SAVE_MESSAGE)) && confirm) {
          if (!this.confirmBeforeSend(toAddrList.join(", "), toAddrStr+", "+bccAddrStr, sendFlags, isOffline)) {
            if (this.processed) {
