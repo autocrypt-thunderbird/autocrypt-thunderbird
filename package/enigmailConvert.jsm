@@ -95,56 +95,68 @@ function EnigmailDecryptPermanently(hdr, destFolder, move) {
       var messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
       var msgSvc = messenger.messageServiceFromURI(msgUriSpec);
 
-      var obj = new Object();
-      obj.destFolder = destFolder;
-      obj.move = move;
-      obj.resolve = resolve;
+      var decrypt = new decryptMessageIntoFolder(destFolder, move, resolve);
 
       Ec.DEBUG_LOG("enigmailConvert.jsm: EnigmailDecryptPermanently: Calling MsgHdrToMimeMessage\n");
-      MsgHdrToMimeMessage(hdr, obj, decryptMessageIntoFolder, true, {examineEncryptedParts: false});
+      MsgHdrToMimeMessage(hdr, decrypt, decrypt.messageParseCallback, true, {examineEncryptedParts: false});
       return;
     }
   );
 };
 
 
-function decryptMessageIntoFolder(hdr, mime) {
+function decryptMessageIntoFolder(destFolder, move, resolve) {
+  this.destFolder = destFolder;
+  this.move = move;
+  this.resolve = resolve;
+
+  this.foundPGP = 0;
+  this.mime = null;
+  this.hdr = null;
+  this.decryptionTasks = [];
+  this.subject = "";
+}
+
+decryptMessageIntoFolder.prototype = {
+};
+
+decryptMessageIntoFolder.prototype.
+messageParseCallback = function (hdr, mime) {
+  this.hdr = hdr;
+  this.mime = mime;
+  var self = this;
+
   var enigmailSvc = Ec.getService();
-  var move = this.move;
-  var destFolder = this.destFolder;
-  var resolve = this.resolve;
-  var foundPGP = 0;
 
   if (mime == null) {
-    Ec.DEBUG_LOG("enigmailConvert.jsm: decryptMessageIntoFolder: MimeMessage is null");
-    resolve(true);
+    Ec.DEBUG_LOG("enigmailConvert.jsm: messageParseCallback: MimeMessage is null");
+    this.resolve(true);
     return;
   }
 
   var ct = getContentType(mime.headers['content-type']);
   var pt = getProtocol(mime.headers['content-type']);
-  var subject = GlodaUtils.deMime(mime.headers['subject'].join(" "));
+  this.subject = GlodaUtils.deMime(mime.headers['subject'].join(" "));
 
   if (ct == null) {
-    Ec.DEBUG_LOG("enigmailConvert.jsm: content-type is null");
-    resolve(true);
+    Ec.DEBUG_LOG("enigmailConvert.jsm: messageParseCallback: content-type is null");
+    this.resolve(true);
     return;
   }
 
 
-  var attachments = [];
+  this.walkMimeTree(this.mime, this.mime);
 
-  walkMimeTree(attachments, hdr, mime, "", 1, mime);
-
-  foundPGP = decryptINLINE(mime, subject);
-  if (foundPGP < 0) {
+  this.decryptINLINE(this.mime);
+  if (this.foundPGP < 0) {
     // decryption failed
+    this.resolve(true);
     return;
   }
 
 
-  for (let i in mime.allAttachments) {
-    let a =  mime.allAttachments[i];
+  for (let i in this.mime.allAttachments) {
+    let a =  this.mime.allAttachments[i];
     let suffixIndexEnd = a.name.toLowerCase().lastIndexOf('.pgp');
     if (suffixIndexEnd < 0) {
       suffixIndexEnd = a.name.toLowerCase().lastIndexOf('.asc');
@@ -154,52 +166,51 @@ function decryptMessageIntoFolder(hdr, mime) {
         a.contentType.search(/application\/pgp-signature/i) < 0) {
 
       // possible OpenPGP attachment
-      let p = decryptAttachment(a.url, subject, a.name.substring(0, suffixIndexEnd), a.name)
-      attachments.push(p);
+      let p = self.decryptAttachment(a, a.name.substring(0, suffixIndexEnd));
+      this.decryptionTasks.push(p);
     }
     else {
-      let p = readAttachment(a.url, a.name);
-      attachments.push(p);
+      let p = this.readAttachment(a);
+      this.decryptionTasks.push(p);
     }
   }
 
-
-  Promise.all(attachments).then(
-    function (attachments) {
+  Promise.all(this.decryptionTasks).then(
+    function (tasks) {
       Ec.DEBUG_LOG("enigmailConvert.jsm: all attachments done\n");
 
+      self.allTasks = tasks;
+      for (let a in tasks) {
 
-      for (let a in attachments) {
-
-        switch (attachments[a].status) {
+        switch (tasks[a].status) {
         case STATUS_NOT_REQUIRED:
-          attachments[a].name = attachments[a].origName;
+          tasks[a].name = tasks[a].origName;
           break;
         case STATUS_OK:
-          ++foundPGP;
+          ++self.foundPGP;
           break;
         case STATUS_FAILURE:
           // attachment did not decrypt successfully
-          resolve(true);
+          self.resolve(true);
           return;
         default:
           // no valid result?!
-          attachments[a].name = attachments[a].origName;
+          tasks[a].name = tasks[a].origName;
         }
       }
 
-      if (foundPGP == 0) {
+      if (self.foundPGP == 0) {
         Ec.DEBUG_LOG("enigmailConvert.jsm: Appears to be no PGP message\n");
-        resolve(true);
+        self.resolve(true);
         return;
       }
 
 
-      var msg = mimeToString(mime, attachments);
+      var msg = self.mimeToString(self.mime, true);
 
-      if (msg == null) {
+      if (msg == null || msg == "") {
         // no message data found
-        resolve(true);
+        self.resolve(true);
         return;
       }
 
@@ -248,12 +259,12 @@ function decryptMessageIntoFolder(hdr, mime) {
             //XXX complain?
             Ec.DEBUG_LOG("enigmailConvert.jsm: Error copying message: "+ statusCode + "\n");
             tempFile.remove(false);
-            resolve(true);
+            self.resolve(true);
             return;
           }
           Ec.DEBUG_LOG("enigmailConvert.jsm: Copy complete\n");
 
-          if (move) {
+          if (self.move) {
             Ec.DEBUG_LOG("enigmailConvert.jsm: Delete original\n");
             var folderInfoObj = new Object();
             hdr.folder.getDBFolderInfoAndDB(folderInfoObj).DeleteMessage(hdr.messageKey, null, true);
@@ -261,18 +272,19 @@ function decryptMessageIntoFolder(hdr, mime) {
 
           tempFile.remove(false);
           Ec.DEBUG_LOG("enigmailConvert.jsm: Cave Johnson. We're done\n");
-          resolve(true);
+          self.resolve(true);
         }
       };
 
-      copySvc.CopyFileMessage(fileSpec, MailUtils.getFolderForURI(destFolder, false), hdr,
+      copySvc.CopyFileMessage(fileSpec, MailUtils.getFolderForURI(self.destFolder, false), self.hdr,
           false, 0, null, copyListener, null);
     }
   );
 
-};
+}
 
-function readAttachment(msgUrl, name, origName) {
+decryptMessageIntoFolder.prototype.
+readAttachment = function (attachment, strippedName) {
   return new Promise(
     function(resolve, reject) {
       Ec.DEBUG_LOG("enigmailConvert.jsm: readAttachment\n");
@@ -281,29 +293,38 @@ function readAttachment(msgUrl, name, origName) {
           var o = {
             type: "attachment",
             data: data,
-            name: name,
-            origName: origName ? origName : name,
+            name: strippedName ? strippedName : attachment.name,
+            partName: attachment.partName,
+            origName: attachment.name,
             status: STATUS_NOT_REQUIRED
           }
           resolve(o);
       };
 
-      var bufferListener = EnigmailCommon.newStringStreamListener(f);
-      var ioServ = Cc[EnigmailCommon.IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
-      var msgUri = ioServ.newURI(msgUrl, null, null);
+      try {
+        var bufferListener = EnigmailCommon.newStringStreamListener(f);
+        var ioServ = Cc[EnigmailCommon.IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+        var msgUri = ioServ.newURI(attachment.url, null, null);
 
-      var channel = ioServ.newChannelFromURI(msgUri);
-      channel.asyncOpen(bufferListener, msgUri);
+        var channel = ioServ.newChannelFromURI(msgUri);
+        channel.asyncOpen(bufferListener, msgUri);
+      }
+      catch(ex) {
+        reject(o);
+      }
     }
   );
 };
 
 
-function decryptAttachment(msgUrl, subject, name, origName) {
+decryptMessageIntoFolder.prototype.
+decryptAttachment = function(attachment, strippedName) {
+  var self = this;
+
   return new Promise(
     function(resolve, reject) {
       Ec.DEBUG_LOG("enigmailConvert.jsm: decryptAttachment\n");
-      readAttachment(msgUrl, name, origName).then(
+      self.readAttachment(attachment, strippedName).then(
         function (o) {
           var attachmentHead = o.data.substr(0,30);
           if (attachmentHead.match(/\-\-\-\-\-BEGIN PGP \w+ KEY BLOCK\-\-\-\-\-/)) {
@@ -370,7 +391,7 @@ function decryptAttachment(msgUrl, subject, name, origName) {
               if (enigmailSvc.useGpgAgent()) {
                 // since we cannot find out via getPassphrase if the user wants to cancel
                 // we should ask
-                let msg = Ec.getString("converter.decryptAtt.failed", [ origName , subject ]);
+                let msg = Ec.getString("converter.decryptAtt.failed", [ attachment.name , self.subject ]);
 
                 if (!Ec.confirmDlg(null, msg,
                     Ec.getString("dlg.button.retry"), Ec.getString("dlg.button.skip"))) {
@@ -419,22 +440,33 @@ function decryptAttachment(msgUrl, subject, name, origName) {
 
 // the sunny world of PGP/MIME
 
-function walkMimeTree(promiseArray, hdr, mime, prefix, level, parent) {
-  Ec.DEBUG_LOG("enigmailConvert.jsm: walkMimeTree: part="+prefix+"."+level+" - "+ mime.contentType+"\n");
+decryptMessageIntoFolder.prototype.
+walkMimeTree = function(mime, parent) {
+  let ct = getContentType(mime.headers['content-type'].join(" "));
 
-  var partId = prefix+"."+level;
-  if (isPgpMime(mime)) {
-    var p = decryptPGPMIME(hdr, parent, partId.substr(3));
-    promiseArray.push(p);
+  Ec.DEBUG_LOG("enigmailConvert.jsm: walkMimeTree: part="+mime.partName+" - "+ ct+"\n");
+
+  // assign part name on lowest possible level -> that's where the attachment
+  // really belongs to
+  for (let i in mime.allAttachments) {
+    mime.allAttachments[i].partName = mime.partName;
+  }
+  if (this.isPgpMime(mime)) {
+    var p = this.decryptPGPMIME(parent, mime.partName);
+    this.decryptionTasks.push(p);
+  }
+  else if (typeof(mime.body) == "string") {
+    Ec.DEBUG_LOG("    body size: " + mime.body.length +"\n");
+
   }
 
   for (var i in mime.parts) {
-    walkMimeTree(promiseArray, hdr, mime.parts[i], partId, Number(i)+1, mime);
+    this.walkMimeTree(mime.parts[i], mime);
   }
 }
 
-
-function isPgpMime(mime) {
+decryptMessageIntoFolder.prototype.
+isPgpMime = function(mime) {
   try {
     var ct = mime.contentType;
     if (!ct || ct == undefined) return false;
@@ -452,17 +484,20 @@ function isPgpMime(mime) {
   return false;
 }
 
-function decryptPGPMIME(hdr, mime, part) {
+decryptMessageIntoFolder.prototype.
+decryptPGPMIME = function (mime, part) {
   Ec.DEBUG_LOG("enigmailConvert.jsm: decryptPGPMIME: part="+part+"\n");
+
+  var self = this;
 
   return new Promise(
     function(resolve, reject) {
       var m = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
 
       var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
-      let msgSvc = messenger.messageServiceFromURI(hdr.folder.getUriForMsg(hdr));
+      let msgSvc = messenger.messageServiceFromURI(self.hdr.folder.getUriForMsg(self.hdr));
       let u = {}
-      msgSvc.GetUrlForUri(hdr.folder.getUriForMsg(hdr), u, null)
+      msgSvc.GetUrlForUri(self.hdr.folder.getUriForMsg(self.hdr), u, null)
       let url = u.value.spec+'&part=' + part;
 
       let s = Ec.newStringStreamListener(
@@ -476,6 +511,7 @@ function decryptPGPMIME(hdr, mime, part) {
             name: "",
             origName: "",
             data: "",
+            partName: part,
             status: STATUS_OK
           }
 
@@ -535,13 +571,14 @@ function decryptPGPMIME(hdr, mime, part) {
 
 
 //inline wonderland
-function decryptINLINE(mime, subject) {
+decryptMessageIntoFolder.prototype.
+decryptINLINE = function (mime) {
 
   if (typeof mime.body !== 'undefined') {
     var ct = getContentType(mime.headers['content-type']);
 
     if (ct == "text/html") {
-      mime.body = stripHTMLFromArmoredBlocks(mime.body);
+      mime.body = this.stripHTMLFromArmoredBlocks(mime.body);
     }
 
 
@@ -576,6 +613,7 @@ function decryptINLINE(mime, subject) {
       return 0;
     }
 
+    let charset = "utf-8";
 
     for (var i = 0; i < blocks.length; i++) {
       let plaintext = null;
@@ -586,9 +624,15 @@ function decryptINLINE(mime, subject) {
           break;
         }
 
+        let hdr = ciphertext.search(/(\r\r|\n\n|\r\n\r\n)/);
+        let chset= ciphertext.substr(0, hdr).match(/^(charset:)(.*)$/mi);
+        if (chset && chset.length == 3) {
+          charset = chset[2].trim();
+        }
+
         if (!Ec.getPassphrase(null, passwdObj, useAgentObj, 0)) {
           Ec.ERROR_LOG("enigmailConvert.jsm:  Error - no passphrase supplied\n");
-          resolve(o);
+          this.foundPGP = -1;
           return -1;
         }
 
@@ -597,6 +641,7 @@ function decryptINLINE(mime, subject) {
         if (!plaintext || plaintext.length == 0) {
           if (statusFlagsObj.value & nsIEnigmail.DISPLAY_MESSAGE) {
             Ec.alert(null, errorMsgObj.value);
+            this.foundPGP = -1;
             return -1;
           }
 
@@ -608,15 +653,17 @@ function decryptINLINE(mime, subject) {
             if (enigmailSvc.useGpgAgent()) {
               // since we cannot find out via getPassphrase if the user wants to cancel
               // we should ask
-              let msg = Ec.getString("converter.decryptBody.failed", subject);
+              let msg = Ec.getString("converter.decryptBody.failed", this.subject);
 
               if (!Ec.confirmDlg(null, msg,
                   Ec.getString("dlg.button.retry"), Ec.getString("dlg.button.skip"))) {
+                this.foundPGP = -1;
                 return -1;
               }
             }
           }
           else if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_INCOMPLETE) {
+            this.foundPGP = -1;
             return -1;
           }
         }
@@ -640,8 +687,26 @@ function decryptINLINE(mime, subject) {
 
     decryptedMessage += mime.body.substring(blocks[(blocks.length-1)].end);
 
-    mime.body = decryptedMessage;
+    // enable base64 encoding if non-ASCII character(s) found
+    let j = decryptedMessage.search(/[^\x01-\x7F]/);
+    if (j >= 0) {
+      mime.headers['content-transfer-encoding'] = [ 'base64' ];
+      mime.body = base64WithWidthCompliance(decryptedMessage);
+    }
+    else {
+      mime.body = decryptedMessage;
+      mime.headers['content-transfer-encoding'] = [ '8bit' ];
+    }
 
+    let origCharset = getCharset(mime.headers['content-type']);
+    if (origCharset) {
+      mime.headers['content-type'] = (mime.headers['content-type']+"").replace(origCharset, charset);
+    }
+    else {
+      mime.headers['content-type'] = mime.headers['content-type']+"; charset=" + charset;
+    }
+
+    this.foundPGP = 1;
     return 1;
   }
 
@@ -650,7 +715,7 @@ function decryptINLINE(mime, subject) {
   if (typeof mime.parts !== 'undefined'  && mime.parts.length > 0) {
     var ret = 0;
     for (let part in mime.parts) {
-      ret += decryptINLINE(mime.parts[part], subject);
+      ret += this.decryptINLINE(mime.parts[part]);
     }
 
     return ret;
@@ -662,7 +727,8 @@ function decryptINLINE(mime, subject) {
   return 0;
 }
 
-function stripHTMLFromArmoredBlocks(text) {
+decryptMessageIntoFolder.prototype.
+stripHTMLFromArmoredBlocks = function(text) {
 
   var index = 0;
   var begin = text.indexOf("-----BEGIN PGP");
@@ -689,37 +755,157 @@ function stripHTMLFromArmoredBlocks(text) {
  *
  *    We have the technology we can rebuild.
  *
- *    Functions to reassemble the message from the MIME Tree
+ *    Function to reassemble the message from the MIME Tree
  *    into a String.
  *
  ******/
 
-//Thunderbird 'fucks up' the header and removes \r\n<space>
-function fixHeader(header) {
-  header = header+""; //Trololol
-  header = header.split(" ");
-  var line = "";
-  var lines = [];
+decryptMessageIntoFolder.prototype.
+mimeToString = function (mime, topLevel) {
+  Ec.DEBUG_LOG("enigmailConvert.jsm: mimeToString: part: '"+mime.partName+"'\n");
 
-  for(let i = 0; i < header.length; i++) {
-    if(line.length + header[i].length >= 72) {
-      lines.push(line+"\r\n");
-      line = " "+header[i];
-    }
-    else {
-      line +=  " " + header[i];
-    }
+  let ct = getContentType(mime.headers['content-type']);
 
+  if (ct == null) {
+    return "";
   }
 
-  lines.push(line);
+  let boundary = getBoundary(mime.headers['content-type']);
 
-  header = "";
-  for(let i in lines) {
-    header += lines[i];
+  let msg = "";
+
+
+  if (mime instanceof MimeMessageAttachment) {
+    for (let j in this.allTasks) {
+      if (this.allTasks[j].partName == mime.partName) {
+
+        let a = this.allTasks[j];
+        Ec.DEBUG_LOG("enigmailConvert.jsm: mimeToString: attaching "+ j + " as '"+ a.name +"'\n");
+
+        for (let header in mime.headers) {
+          if (! (a.status == STATUS_OK && header == "content-type")) {
+            msg += prettyPrintHeader(header, mime.headers[header]) + "\r\n";
+          }
+        }
+
+
+        if (a.type == "attachment") {
+          if (a.status == STATUS_OK) {
+            msg += "Content-Type: application/octet-stream; name=\""+a.name+"\"\r\n";
+            msg += "Content-Disposition: attachment; filename\""+a.name+"\"\r\n";
+          }
+
+          msg += "Content-Transfer-Encoding: base64\r\n\r\n";
+          msg += base64WithWidthCompliance(a.data)+"\r\n";
+
+        }
+      }
+    }
+  }
+  else if (mime instanceof MimeContainer) {
+    for (let j in this.allTasks) {
+      if (this.allTasks[j].partName == mime.partName
+          && this.allTasks[j].type == "mime") {
+        let a = this.allTasks[j];
+        msg += a.data;
+      }
+    }
+  }
+  else if (mime instanceof MimeMessage && ct.substr(0, 5) == "text/") {
+    let subct = mime.parts[0].headers['content-type'];
+    if (subct) {
+      mime.headers['content-type'] = subct;
+    }
+
+    subct = mime.parts[0].headers['content-transfer-encoding'];
+    if (subct) {
+      mime.headers['content-transfer-encoding'] = subct;
+    }
+
+    for (let header in mime.headers) {
+      msg += prettyPrintHeader(header, mime.headers[header]) + "\r\n";
+    }
+
+    msg +="\r\n" + mime.parts[0].body + "\r\n";
+
+    return msg;
+  }
+  else {
+    if (!topLevel && (mime instanceof MimeMessage)) {
+      let mimeName = mime.name;
+      if (! mimeName || mimeName == "") {
+        mimeName = mime.headers['subject'].join(" ")+".eml";
+      }
+
+      msg += 'Content-Type: message/rfc822; name="'+ encodeUtf8(mimeName) + '\r\n';
+      msg += 'Content-Transfer-Encoding: 7bit\r\n';
+      msg += 'Content-Disposition: attachment; filename="' + encodeUtf8(mimeName) + '"\r\n\r\n';
+    }
+
+
+
+    for (let header in mime.headers) {
+      msg += prettyPrintHeader(header, mime.headers[header]) + "\r\n";
+    }
+
+    msg +="\r\n";
+
+    if (mime.body != undefined) {
+      msg += mime.body + "\r\n";
+    }
+    else if ((mime instanceof MimeMessage) && ct.substr(0,5) != "text/") {
+      msg += "This is a multi-part message in MIME format.\r\n";
+    }
   }
 
-  return header;
+  for (let i in mime.parts) {
+    let subPart = this.mimeToString(mime.parts[i], false);
+    if (subPart.length > 0) {
+      if(boundary && !(mime instanceof MimeMessage)) {
+        msg += "--" + boundary + "\r\n";
+      }
+      msg += subPart +"\r\n";
+    }
+  }
+
+  if (ct.indexOf("multipart/") == 0 && ! (mime instanceof MimeContainer)) {
+    msg += "--" + boundary + "--\r\n";
+  }
+  return msg;
+}
+
+
+
+/**
+  * Format a mime header
+  *
+  * e.g. content-type -> Content-Type
+  */
+
+function formatHeader(headerLabel)
+{
+  function upperToHyphenLower(match)
+  {
+    return match.toUpperCase();
+  }
+  return headerLabel.replace(/^.|(\-.)/g, upperToHyphenLower);
+}
+
+function prettyPrintHeader(headerLabel, headerData) {
+
+  let hdrData = "";
+  if (Array.isArray(headerData)) {
+    let h=[];
+    for (let i in headerData) {
+      h.push(GlodaUtils.deMime(headerData[i]));
+    }
+    hdrData = h.join("\r\n  ");
+  }
+  else {
+    hdrData = GlodaUtils.deMime(String(headerData));
+  }
+
+  return formatHeader(headerLabel) +": "+ encodeUtf8(hdrData);
 }
 
 function base64WithWidthCompliance(data) {
@@ -749,6 +935,18 @@ function getBoundary(shdr) {
   }
 };
 
+function getCharset(shdr) {
+  try {
+    shdr += "";
+    return shdr.match(/charset="?([A-z0-9'()+_,-.\/:=?]+)"?/)[1].toLowerCase();
+  }
+  catch (e) {
+    Ec.DEBUG_LOG("enigmailConvert.jsm: getCharset: "+e+"\n");
+    return null;
+  }
+};
+
+
 function getProtocol(shdr) {
   try {
     shdr += "";
@@ -760,7 +958,33 @@ function getProtocol(shdr) {
   }
 }
 
-function mimeToString(mime, attachments) {
+/**
+  * Get UTF-8 encoded header value
+ */
+function encodeUtf8 (aStr) {
+  let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"].
+                    createInstance(Ci.nsIScriptableUnicodeConverter);
+  let needConversion = false;
+  let trash = {};
+  converter.charset = "UTF-8";
+  let data = converter.convertToByteArray(aStr, trash);
+  let ret = "";
+
+  for (j in data) {
+    if (data[j] > 127) needConversion = true;
+    ret += String.fromCharCode(data[j]);
+  }
+
+  if (needConversion) {
+    ret = "=?UTF-8?Q?"+escape(ret).replace(/%/g, "=")+"?=";
+  }
+  else {
+    ret = aStr;
+  }
+  return ret;
+}
+
+function orig_mimeToString(mime, attachments) {
   var ct = getContentType(mime.headers['content-type']);
 
   if (ct == null) {
@@ -836,7 +1060,7 @@ function mimeToStringRec(mime, boundary) {
     }
 
     for (let header in mime.headers) {
-      msg += header + ":"+fixHeader(mime.headers[header])+"\r\n";
+      msg += prettyPrintHeader(header, mime.headers[header])+"\r\n";
     }
 
     msg +=  "\r\n"+mime.body+"\r\n";
@@ -846,7 +1070,7 @@ function mimeToStringRec(mime, boundary) {
 
   if (typeof mime.parts !== 'undefined'  && mime.parts.length > 0) {
     for (let header in mime.headers) {
-      msg += header + ":"+fixHeader(mime.headers[header])+"\r\n";
+      msg += prettyPrintHeader(header, mime.headers[header])+"\r\n";
     }
 
     for (let part in mime.parts) {
