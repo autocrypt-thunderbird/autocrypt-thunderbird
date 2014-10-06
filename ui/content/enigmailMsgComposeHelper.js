@@ -342,6 +342,15 @@ Enigmail.hlp = {
       var keyList = this.enigValidityKeyList;
       var keySortList = this.enigValidityKeySortList;
 
+      // ****** DEBUG ************** print keyList (debug issue)
+      //EnigmailCommon.DEBUG_LOG("                   keyList:\n");
+      //EnigmailCommon.DEBUG_LOG("                   length:  "+ keySortList.length + "\n");
+      //for (var idx=0; idx<keySortList.length; idx++) { // note: we have sorted acc. to validity
+      //  var keyObj = keyList[keySortList[idx].keyId];
+      //  EnigmailCommon.DEBUG_LOG("                   [" + idx + "].keyId:  "+ keyObj.keyId + "\n");
+      //  EnigmailCommon.DEBUG_LOG("                   [" + idx + "].userId: "+ keyObj.userId + "\n");
+      //} 
+
       // create array of address elements (email or key)
       var addresses=EnigmailFuncs.stripEmail(emailAddrs).toLowerCase().split(',');
 
@@ -381,7 +390,7 @@ Enigmail.hlp = {
           if (addr.search(/^0x/) == 0) {
             key = addr.substring(2);  // key list has elements without leading "0x"
           }
-          var keyObj = keyList[key];
+          var keyObj = keyList[key.toUpperCase()];  // keylist has keys in uppercase
 
           if (! keyObj && addr.search(/^0x[A-F0-9]{8}([A-F0-9]{8})*$/i) == 0) {
             // we got a key ID, probably from gpg.conf?
