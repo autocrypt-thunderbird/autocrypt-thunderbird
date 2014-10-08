@@ -2771,13 +2771,14 @@ Enigmail.msg = {
                || this.statusEncrypted == EnigmailCommon.ENIG_FINAL_FORCEYES
                || this.statusEncryptedInStatusBar == EnigmailCommon.ENIG_FINAL_YES
                || this.statusEncryptedInStatusBar == EnigmailCommon.ENIG_FINAL_FORCEYES)) {
-         var res = EnigmailCommon.confirmDlg(window, msg, "INTERNAL ENIGMAIL ERROR: promised encryption disabled");
-         if (!res) {
-           return false;
+         if (!EnigmailCommon.confirmDlg(window,
+                                        EnigmailCommon.getString("msgCompose.internalEncryptionError"),
+                                        EnigmailCommon.getString("msgCompose.button.sendAnyway"))) {
+           return false; // cancel sending
          }
+         // without canceling sending, force firnal confirmation
          confirm = true;
        }
-
        if ((!(sendFlags & nsIEnigmail.SAVE_MESSAGE)) && confirm) {
          if (!this.confirmBeforeSend(toAddrList.join(", "), toAddrStr+", "+bccAddrStr, sendFlags, isOffline)) {
            if (this.processed) {
@@ -2847,8 +2848,9 @@ Enigmail.msg = {
     try {
       var convert = DetermineConvertibility();
       if (convert == nsIMsgCompConvertible.No) {
-        if (!EnigmailCommon.confirmDlg(window, EnigmailCommon.getString("strippingHTML"),
-              EnigmailCommon.getString("msgCompose.button.sendAnyway"))) {
+        if (!EnigmailCommon.confirmDlg(window,
+                                       EnigmailCommon.getString("strippingHTML"),
+                                       EnigmailCommon.getString("msgCompose.button.sendAnyway"))) {
           return false;
         }
       }
