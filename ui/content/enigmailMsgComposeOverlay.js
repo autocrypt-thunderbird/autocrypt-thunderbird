@@ -83,8 +83,8 @@ Enigmail.msg = {
   statusEncrypted: EnigmailCommon.ENIG_FINAL_UNDEF,
   statusSigned:    EnigmailCommon.ENIG_FINAL_UNDEF,
   statusPGPMime:   EnigmailCommon.ENIG_FINAL_UNDEF,
-  statusEncryptedInStatusBar: null, // to double check signaled state before final send
-                                    // if true, ensure emails are send encrypted
+  statusEncryptedInStatusBar: null, // last statusEncyrpted when processing status buttons
+                                    // to find possible broken promise of encryption
 
   // processed strings to signal final encrypt/sign/pgpmime state:
   statusSignedStr:    '???',
@@ -1307,7 +1307,7 @@ Enigmail.msg = {
   updateStatusBar: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.updateStatusBar()\n");
-    this.statusEncryptedInStatusBar = this.statusEncrypted; // to double check signaled state before final send
+    this.statusEncryptedInStatusBar = this.statusEncrypted; // to double check broken promise for encryption
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
@@ -1417,7 +1417,8 @@ Enigmail.msg = {
   determineSendFlags: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.focusChange: Enigmail.msg.determineSendFlags\n");
-    this.statusEncryptedInStatusBar = null; // to double check signaled state before final send
+    this.statusEncryptedInStatusBar = null; // to double check broken promise for encryption
+
     if (this.getAccDefault("enabled")) {
       var compFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
       Recipients2CompFields(compFields);
@@ -2113,7 +2114,8 @@ Enigmail.msg = {
         else {
           // encryption explicitely turned off
           sendFlags &= ~ENCRYPT;
-          // counts as forces non-encryption (no errors if different state was processed before)
+          // counts as forced non-encryption
+          // (no internal error if different state was processed before)
           this.statusEncrypted = EnigmailCommon.ENIG_FINAL_NO;
           this.statusEncryptedInStatusBar = EnigmailCommon.ENIG_FINAL_NO;
         }
@@ -2741,6 +2743,7 @@ Enigmail.msg = {
        // update the list of attachments
        Attachments2CompFields(msgCompFields);
 
+       // process whether final confirmation is necessary
        var confirm = false;
        var conf = EnigmailCommon.getPref("confirmBeforeSending");
        switch (conf) {
@@ -2760,8 +2763,8 @@ Enigmail.msg = {
            confirm = ((sendFlags&ENCRYPT) != (this.sendMode&ENCRYPT));
            break;
        }
-       // double check that no internal logic did result in sending unencrypted if
-       // encrypted sending was signaled
+
+       // double check that no internal error did result in broken promise of encryption
        // - if NOT send encrypted
        //   - although encryption was
        //     - the recent processed resulting encryption status or
@@ -2779,6 +2782,8 @@ Enigmail.msg = {
          // without canceling sending, force firnal confirmation
          confirm = true;
        }
+
+       // perform confirmation dialog if necessary/requested
        if ((!(sendFlags & nsIEnigmail.SAVE_MESSAGE)) && confirm) {
          if (!this.confirmBeforeSend(toAddrList.join(", "), toAddrStr+", "+bccAddrStr, sendFlags, isOffline)) {
            if (this.processed) {
