@@ -183,7 +183,7 @@ PgpMimeEncrypt.prototype = {
                       errorMsgObj);
       if (! this.proc) throw Cr.NS_ERROR_FAILURE;
 
-      this.cryptoBoundary = this.createBoundary();
+      this.cryptoBoundary = Ec.createMimeBoundary();
       this.startCryptoHeaders();
 
     }
@@ -307,7 +307,7 @@ PgpMimeEncrypt.prototype = {
           if (this.cryptoMode == MIME_ENCRYPTED) {
             let ct = this.getHeader("content-type", false);
             if ((ct.search(/text\/plain/i) == 0) || (ct.search(/text\/html/i) == 0)) {
-              this.encapsulate = this.createBoundary();
+              this.encapsulate = Ec.createMimeBoundary();
               this.writeToPipe('Content-Type: multipart/mixed; boundary="'+
                 this.encapsulate+'"\r\n\r\n');
               this.writeToPipe("--"+this.encapsulate+"\r\n");
@@ -422,16 +422,6 @@ PgpMimeEncrypt.prototype = {
     }
 
     return res;
-  },
-
-  createBoundary: function() {
-    let b = "";
-    let r = 0;
-    for (let i=0; i<33; i++) {
-      r = Math.floor(Math.random() * 58);
-      b += String.fromCharCode((r < 10 ? 48 : (r < 34 ? 55 :  63)) + r);
-    }
-    return b;
   },
 
 

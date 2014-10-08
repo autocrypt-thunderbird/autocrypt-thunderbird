@@ -395,7 +395,7 @@ function enigScanKeys(connType, htmlTxt) {
       enigScanHtmlKeys(htmlNode.firstChild.firstChild.data);
       break;
     case ENIG_CONN_TYPE_GPGKEYS:
-      enigScanGpgKeys(Ec.convertGpgToUnicode(unescape(htmlTxt)));
+      enigScanGpgKeys(Ec.convertGpgToUnicode(htmlTxt));
       break;
     default:
       Ec.ERROR_LOG("Unkonwn connType: "+connType+"\n");
@@ -491,7 +491,7 @@ function enigScanGpgKeys(txt) {
     if (outputType==1 && (lines[i].search(/^([a-fA-F0-9]{8}){1,2}:/))==0) {
       // output from gpgkeys_* protocol version 0
       // new key
-      var m=lines[i].split(/:/);
+      var m=lines[i].split(/:/).map(unescape);
       if (m && m.length>0 ) {
         if (key) {
           if (key.keyId == m[0]) {
@@ -520,7 +520,7 @@ function enigScanGpgKeys(txt) {
     if (outputType==2 && (lines[i].search(/^pub:/))==0) {
       // output from gpgkeys_* protocol version 1
       // new key
-      m=lines[i].split(/:/);
+      m=lines[i].split(/:/).map(unescape);
       if (m && m.length>1 ) {
         if (key) {
           gEnigRequest.keyList.push(key);
@@ -540,7 +540,7 @@ function enigScanGpgKeys(txt) {
     if (outputType==2 && (lines[i].search(/^uid:.+/))==0) {
       // output from gpgkeys_* protocol version 1
       // uid for key
-      m=lines[i].split(/:/);
+      m=lines[i].split(/:/).map(unescape);
       if (m && m.length>1 ) {
         if (key && ! ignoreUid(m[1])) key.uid.push(trim(m[1]));
       }

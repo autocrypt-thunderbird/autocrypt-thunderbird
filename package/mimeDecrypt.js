@@ -190,6 +190,8 @@ PgpMimeDecrypt.prototype = {
     this.msgWindow = EnigmailVerify.lastMsgWindow;
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
 
+    let url = {};
+
     this.backgroundJob = false;
 
     if (this.uri) {
@@ -227,7 +229,6 @@ PgpMimeDecrypt.prototype = {
         if (this.msgUriSpec) {
           let msgSvc = messenger.messageServiceFromURI(this.msgUriSpec);
 
-          let url= {};
           msgSvc.GetUrlForUri(this.msgUriSpec, url, null)
         }
 
@@ -238,7 +239,7 @@ PgpMimeDecrypt.prototype = {
           if (this.uri.spec.search(/[\&\?]header=filter\&.*$/) > 0)
             return;
 
-          if (this.msgUriSpec) {
+          if (this.uri && url) {
 
             if (url.value.spec != this.uri.spec)
               return;
@@ -369,7 +370,7 @@ PgpMimeDecrypt.prototype = {
         if (hdr[j].search(/^\s*content-type:\s+text\/(plain|html)/i) >= 0) {
           DEBUG_LOG("mimeDecrypt.js: done: adding multipart/mixed around "+ hdr[j]+"\n");
 
-          let wrapper = this.createBoundary();
+          let wrapper = Ec.createMimeBoundary();
           this.decryptedData = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n\r\n'+
             '--'+ wrapper + '\r\n' +
             this.decryptedData +
@@ -388,16 +389,6 @@ PgpMimeDecrypt.prototype = {
 
     this.decryptedData = "";
     this.exitCode = exitCode;
-  },
-
-  createBoundary: function() {
-    let b = "";
-    let r = 0;
-    for (let i=0; i<33; i++) {
-      r = Math.floor(Math.random() * 58);
-      b += String.fromCharCode((r < 10 ? 48 : (r < 34 ? 55 :  63)) + r);
-    }
-    return b;
   },
 
   // return data to libMime
