@@ -2971,7 +2971,26 @@ var EnigmailCommon = {
 
   getInstallLocation: function() {
     return gEnigInstallLocation;
-  }
+  },
+
+  /***
+   * create a string of random characters suitable to use for a boundary in a
+   * MIME message following RFC 2045
+   *
+   * @return: string of 33 random characters and digits
+   */
+  createMimeBoundary: function() {
+    let b = "";
+    let r = 0;
+    for (let i=0; i<33; i++) {
+      r = Math.floor(Math.random() * 58);
+      b += String.fromCharCode((r < 10 ? 48 : (r < 34 ? 55 :  63)) + r);
+    }
+    return b;
+  },
+
+
+
 };
 
 
