@@ -425,7 +425,6 @@ decryptAttachment = function(attachment, strippedName) {
           o.data = listener.stdoutData;
           o.status = STATUS_OK;
 
-          // TODO: try to get real attachment name
           resolve(o);
         }
       );
@@ -451,13 +450,12 @@ walkMimeTree = function(mime, parent) {
   for (let i in mime.allAttachments) {
     mime.allAttachments[i].partName = mime.partName;
   }
-  if (this.isPgpMime(mime)) {
+  if (this.isPgpMime(mime) || this.isSMime(mime)) {
     var p = this.decryptPGPMIME(parent, mime.partName);
     this.decryptionTasks.push(p);
   }
   else if (typeof(mime.body) == "string") {
     Ec.DEBUG_LOG("    body size: " + mime.body.length +"\n");
-
   }
 
   for (var i in mime.parts) {
@@ -479,7 +477,27 @@ isPgpMime = function(mime) {
     }
   }
   catch(ex) {
-    Ec.DEBUG_LOG("enigmailConvert.jsm: walkMimeTree:"+ex+"\n");
+    Ec.DEBUG_LOG("enigmailConvert.jsm: isPgpMime:"+ex+"\n");
+  }
+  return false;
+}
+
+// smime-type=enveloped-data
+decryptMessageIntoFolder.prototype.
+isSMime = function(mime) {
+  try {
+    var ct = mime.contentType;
+    if (!ct || ct == undefined) return false;
+
+    var pt = getSMimeProtocol(mime.headers['content-type'].join(" "));
+    if (!pt || pt == undefined) return false;
+
+    if (ct.toLowerCase() == "application/pkcs7-mime" && pt == "enveloped-data") {
+      return true;
+    }
+  }
+  catch(ex) {
+    Ec.DEBUG_LOG("enigmailConvert.jsm: isSMime:"+ex+"\n");
   }
   return false;
 }
@@ -498,7 +516,7 @@ decryptPGPMIME = function (mime, part) {
       let msgSvc = messenger.messageServiceFromURI(self.hdr.folder.getUriForMsg(self.hdr));
       let u = {}
       msgSvc.GetUrlForUri(self.hdr.folder.getUriForMsg(self.hdr), u, null)
-      let url = u.value.spec+'&part=' + part;
+      let url = u.value.spec+'&part=' + part+"&header=enigmailConvert";
 
       let s = Ec.newStringStreamListener(
         function analyzeDecryptedData(data) {
@@ -518,7 +536,7 @@ decryptPGPMIME = function (mime, part) {
 
           let bodyIndex = data.search(/\n\s*\r?\n/);
           if (bodyIndex < 0) {
-            bodyIndex = data.length;
+            bodyIndex = 0;
           }
           else {
             ++bodyIndex;
@@ -534,6 +552,7 @@ decryptPGPMIME = function (mime, part) {
           let ct = m.extractHeader("content-type", false) || "";
 
           let boundary = getBoundary(mime.headers['content-type']);
+          if (! boundary) boundary = Ec.createMimeBoundary();
 
           // append relevant headers
           mime.headers['content-type'] = "multipart/mixed; boundary=\""+boundary+"\"";
@@ -625,9 +644,11 @@ decryptINLINE = function (mime) {
         }
 
         let hdr = ciphertext.search(/(\r\r|\n\n|\r\n\r\n)/);
-        let chset= ciphertext.substr(0, hdr).match(/^(charset:)(.*)$/mi);
-        if (chset && chset.length == 3) {
-          charset = chset[2].trim();
+        if (hdr > 0) {
+          let chset= ciphertext.substr(0, hdr).match(/^(charset:)(.*)$/mi);
+          if (chset && chset.length == 3) {
+            charset = chset[2].trim();
+          }
         }
 
         if (!Ec.getPassphrase(null, passwdObj, useAgentObj, 0)) {
@@ -685,7 +706,7 @@ decryptINLINE = function (mime) {
       decryptedMessage +=  mime.body.substring(blocks[i-1].end+1, blocks[i].begin+1) + plaintexts[i];
     }
 
-    decryptedMessage += mime.body.substring(blocks[(blocks.length-1)].end);
+    decryptedMessage += mime.body.substring(blocks[(blocks.length-1)].end+1);
 
     // enable base64 encoding if non-ASCII character(s) found
     let j = decryptedMessage.search(/[^\x01-\x7F]/);
@@ -777,7 +798,8 @@ mimeToString = function (mime, topLevel) {
 
   if (mime instanceof MimeMessageAttachment) {
     for (let j in this.allTasks) {
-      if (this.allTasks[j].partName == mime.partName) {
+      if (this.allTasks[j].partName == mime.partName &&
+           this.allTasks[j].origName == mime.name) {
 
         let a = this.allTasks[j];
         Ec.DEBUG_LOG("enigmailConvert.jsm: mimeToString: attaching "+ j + " as '"+ a.name +"'\n");
@@ -802,12 +824,13 @@ mimeToString = function (mime, topLevel) {
       }
     }
   }
-  else if (mime instanceof MimeContainer) {
+  else if (mime instanceof MimeContainer || mime instanceof MimeUnknown) {
     for (let j in this.allTasks) {
       if (this.allTasks[j].partName == mime.partName
           && this.allTasks[j].type == "mime") {
         let a = this.allTasks[j];
         msg += a.data;
+        mime.noBottomBoundary = true;
       }
     }
   }
@@ -837,9 +860,9 @@ mimeToString = function (mime, topLevel) {
         mimeName = mime.headers['subject'].join(" ")+".eml";
       }
 
-      msg += 'Content-Type: message/rfc822; name="'+ encodeUtf8(mimeName) + '\r\n';
+      msg += 'Content-Type: message/rfc822; name="'+ encodeHeaderValue(mimeName) + '\r\n';
       msg += 'Content-Transfer-Encoding: 7bit\r\n';
-      msg += 'Content-Disposition: attachment; filename="' + encodeUtf8(mimeName) + '"\r\n\r\n';
+      msg += 'Content-Disposition: attachment; filename="' + encodeHeaderValue(mimeName) + '"\r\n\r\n';
     }
 
 
@@ -869,7 +892,9 @@ mimeToString = function (mime, topLevel) {
   }
 
   if (ct.indexOf("multipart/") == 0 && ! (mime instanceof MimeContainer)) {
-    msg += "--" + boundary + "--\r\n";
+    if (mime.noBottomBoundary == undefined) {
+      msg += "--" + boundary + "--\r\n";
+    }
   }
   return msg;
 }
@@ -891,6 +916,32 @@ function formatHeader(headerLabel)
   return headerLabel.replace(/^.|(\-.)/g, upperToHyphenLower);
 }
 
+function formatHeaderData(hdrValue) {
+  if (Array.isArray(hdrValue)) {
+    header = hdrValue.join("").split(" ");
+  }
+  else {
+    header = hdrValue.split(" ");
+  }
+
+  let line = "";
+  let lines = [];
+
+  for (let i = 0; i < header.length; i++) {
+    if(line.length + header[i].length >= 72) {
+      lines.push(line+"\r\n");
+      line = "  "+header[i];
+    }
+    else {
+      line +=  " " + header[i];
+    }
+  }
+
+  lines.push(line);
+
+  return lines.join("");
+}
+
 function prettyPrintHeader(headerLabel, headerData) {
 
   let hdrData = "";
@@ -899,13 +950,13 @@ function prettyPrintHeader(headerLabel, headerData) {
     for (let i in headerData) {
       h.push(GlodaUtils.deMime(headerData[i]));
     }
-    hdrData = h.join("\r\n  ");
+    hdrData = h.join("");
   }
   else {
     hdrData = GlodaUtils.deMime(String(headerData));
   }
 
-  return formatHeader(headerLabel) +": "+ encodeUtf8(hdrData);
+  return formatHeader(headerLabel) +": "+ formatHeaderData(encodeHeaderValue(hdrData));
 }
 
 function base64WithWidthCompliance(data) {
@@ -958,130 +1009,50 @@ function getProtocol(shdr) {
   }
 }
 
+function getSMimeProtocol(shdr) {
+  try {
+    shdr += "";
+    return shdr.match(/smime-type="?([A-z0-9'()+_,-.\/:=?]+)"?/)[1].toLowerCase();
+  }
+  catch (e) {
+    Ec.DEBUG_LOG("enigmailConvert.jsm: getSMimeProtocol: "+e+"\n");
+    return "";
+  }
+}
+
 /**
-  * Get UTF-8 encoded header value
+  * Get UTF-8 encoded header value following RFC 2047
  */
-function encodeUtf8 (aStr) {
-  let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"].
-                    createInstance(Ci.nsIScriptableUnicodeConverter);
-  let needConversion = false;
-  let trash = {};
-  converter.charset = "UTF-8";
-  let data = converter.convertToByteArray(aStr, trash);
+function encodeHeaderValue (aStr) {
   let ret = "";
 
-  for (j in data) {
-    if (data[j] > 127) needConversion = true;
-    ret += String.fromCharCode(data[j]);
-  }
+  if (aStr.search(/[^\x01-\x7F]/) >= 0) {
+    let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"].
+                      createInstance(Ci.nsIScriptableUnicodeConverter);
 
-  if (needConversion) {
+    let trash = {};
+    converter.charset = "UTF-8";
+    let data = converter.convertToByteArray(aStr, trash);
+
+    for (j in data) {
+      ret += String.fromCharCode(data[j]);
+    }
+
     ret = "=?UTF-8?Q?"+escape(ret).replace(/%/g, "=")+"?=";
   }
   else {
     ret = aStr;
   }
+
   return ret;
 }
 
-function orig_mimeToString(mime, attachments) {
-  var ct = getContentType(mime.headers['content-type']);
 
-  if (ct == null) {
-    return null;
-  }
+/*
 
-  //text/*
-  if ( ct.indexOf("text/") == 0) {
-    return mimeToStringRec(mime, null);
-  //multipart/*
-  }
-  else if (ct.indexOf("multipart/") == 0) {
-    let msg = "";
-    let boundary = getBoundary(mime.headers['content-type']);
-    if(boundary == null) {
-      Ec.DEBUG_LOG("enigmailConvert.jsm: Mutlipart with no boundary\n");
-      return null;
-    }
+  TODO:
+  - support for Outlook modified PGP/MIME messages
+  - get attachment name if no suffix
+  - support for S/MIME
 
-    if (typeof mime.parts !== 'undefined') {
-      delete mime.parts[0].headers['content-type'];
-    }
-
-
-    msg =  mimeToStringRec(mime, boundary) + "\r\n";
-
-    for (let i in attachments) {
-      let a = attachments[i];
-      if (a.type == "attachment") {
-        msg +=  "\r\n--"+boundary+"\r\n";
-        msg += "Content-Type: application/octet-stream; name=\""+a.name+"\"\r\n";
-        msg += "Content-Transfer-Encoding: base64\r\n";
-        msg += "Content-Disposition: attachment; filename\""+a.name+"\"\r\n\r\n";
-
-        msg += base64WithWidthCompliance(a.data)+"\r\n";
-      }
-      else {
-        msg += a.data;
-      }
-
-    }
-
-    return msg + "--" + boundary +"--\r\n";
-
-
-
-  }
-  else {
-    Ec.DEBUG_LOG("enigmailConvert.jsm: Unkown root content-type: "+ct+"\n");
-  }
-
-
-  return null;
-};
-
-function mimeToStringRec(mime, boundary) {
-  var msg = "";
-  var tmp = null;
-
-  if (boundary != null) {
-
-    tmp  = getBoundary(mime.headers['content-type']);
-    if (tmp != null && tmp != boundary) {
-      msg += "\r\n--" + boundary + "\r\n";
-      boundary = tmp;
-    }
-  }
-
-  if (typeof mime.body !== 'undefined') {
-
-    if (boundary) {
-      msg += "\r\n--"+ boundary + "\r\n";
-    }
-
-    for (let header in mime.headers) {
-      msg += prettyPrintHeader(header, mime.headers[header])+"\r\n";
-    }
-
-    msg +=  "\r\n"+mime.body+"\r\n";
-
-    return msg;
-  }
-
-  if (typeof mime.parts !== 'undefined'  && mime.parts.length > 0) {
-    for (let header in mime.headers) {
-      msg += prettyPrintHeader(header, mime.headers[header])+"\r\n";
-    }
-
-    for (let part in mime.parts) {
-      msg += mimeToStringRec(mime.parts[part], boundary);
-    }
-
-    return msg;
-  }
-
-  var ct = getContentType(mime.headers['content-type']);
-  Ec.DEBUG_LOG("enigmailConvert.jsm:  Serialization skipped: "+ct+"\n");
-
-  return "";
-};
+*/
