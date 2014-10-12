@@ -857,7 +857,15 @@ function enigmailExportKeys() {
     }
   }
 
-  var outFile = EnigFilePicker(EnigGetString("exportToFile"),
+  var FilePickerLabel="";
+  
+  if (exportFlags & nsIEnigmail.EXTRACT_SECRET_KEY) {
+    FilePickerLabel = EnigGetString("exportKeypairToFile");
+  }
+  else {
+    FilePickerLabel = EnigGetString("exportToFile");
+  }
+  var outFile = EnigFilePicker(FilePickerLabel,
                                "", true, "*.asc",
                                defaultFileName,
                                [EnigGetString("asciiArmorFile"), "*.asc"]);
