@@ -98,7 +98,7 @@ function EnigmailDecryptPermanently(hdr, destFolder, move) {
       var decrypt = new decryptMessageIntoFolder(destFolder, move, resolve);
 
       Ec.DEBUG_LOG("enigmailConvert.jsm: EnigmailDecryptPermanently: Calling MsgHdrToMimeMessage\n");
-      MsgHdrToMimeMessage(hdr, decrypt, decrypt.messageParseCallback, true, {examineEncryptedParts: false});
+      MsgHdrToMimeMessage(hdr, decrypt, decrypt.messageParseCallback, true, {examineEncryptedParts: false, partsOnDemand: false});
       return;
     }
   );
@@ -349,11 +349,19 @@ decryptAttachment = function(attachment, strippedName) {
 
           var listener = Ec.newSimpleListener(
             function _stdin(pipe) {
+
+              // try to get original file name if file does not contain suffix
+              if (strippedName.indexOf(".") < 0) {
+                let s = Ec.getAttachmentFileName(null, o.data);
+                if (s) o.name = s;
+              }
+
               if (Ec.requirePassword()) {
                 pipe.write(passphrase+"\n");
               }
               pipe.write(o.data);
               pipe.close();
+
             }
           );
 
@@ -451,7 +459,13 @@ walkMimeTree = function(mime, parent) {
     mime.allAttachments[i].partName = mime.partName;
   }
   if (this.isPgpMime(mime) || this.isSMime(mime)) {
-    var p = this.decryptPGPMIME(parent, mime.partName);
+    let p = this.decryptPGPMIME(parent, mime.partName);
+    this.decryptionTasks.push(p);
+  }
+  else if (this.isBrokenByExchange(mime)) {
+    let p = this.decryptAttachment(mime.parts[0].parts[2], "decrypted.txt");
+    mime.isBrokenByExchange = true;
+    mime.parts[0].parts[2].name = "ignore.txt";
     this.decryptionTasks.push(p);
   }
   else if (typeof(mime.body) == "string") {
@@ -462,6 +476,40 @@ walkMimeTree = function(mime, parent) {
     this.walkMimeTree(mime.parts[i], mime);
   }
 }
+
+/***
+ *
+ * Detect if mime part is PGP/MIME message that got modified by MS-Exchange:
+ *
+ * - multipart/mixed Container with
+ *   - application/pgp-encrypted Attachment with name "PGPMIME Version Identification"
+ *   - application/octet-stream Attachment with name "encrypted.asc" having the encrypted content in base64
+ * - see:
+ *   - http://www.mozilla-enigmail.org/forum/viewtopic.php?f=4&t=425
+ *  - http://sourceforge.net/p/enigmail/forum/support/thread/4add2b69/
+ */
+
+decryptMessageIntoFolder.prototype.
+isBrokenByExchange = function(mime) {
+  if (mime.parts && mime.parts.length && mime.parts.length == 1 &&
+      mime.parts[0].parts && mime.parts[0].parts.length && mime.parts[0].parts.length == 3 &&
+      mime.parts[0].headers["content-type"][0].indexOf("multipart/mixed") >= 0 &&
+      mime.parts[0].parts[0].size == 0 &&
+      mime.parts[0].parts[0].headers["content-type"][0].search(/multipart\/encrypted/i) < 0 &&
+      mime.parts[0].parts[0].headers["content-type"][0].indexOf("text/plain") >= 0 &&
+      mime.parts[0].parts[1].headers["content-type"][0].indexOf("application/pgp-encrypted") >= 0 &&
+      mime.parts[0].parts[1].headers["content-type"][0].search(/multipart\/encrypted/i) < 0 &&
+      mime.parts[0].parts[1].headers["content-type"][0].search(/PGPMIME Versions? Identification/i) >= 0 &&
+      mime.parts[0].parts[2].headers["content-type"][0].indexOf("application/octet-stream") >= 0 &&
+      mime.parts[0].parts[2].headers["content-type"][0].indexOf("encrypted.asc") >= 0) {
+
+    Ec.DEBUG_LOG("enigmailConvert.jsm: isBrokenByExchange: found message broken by MS-Exchange\n");
+    return true;
+  }
+
+  return false;
+}
+
 
 decryptMessageIntoFolder.prototype.
 isPgpMime = function(mime) {
@@ -796,7 +844,29 @@ mimeToString = function (mime, topLevel) {
   let msg = "";
 
 
-  if (mime instanceof MimeMessageAttachment) {
+  if (mime.isBrokenByExchange != undefined) {
+    Ec.DEBUG_LOG("enigmailConvert.jsm: mimeToString: MS-Exchange fix\n");
+    for (let j in this.allTasks) {
+      if (this.allTasks[j].partName == mime.parts[0].partName) {
+
+        boundary = Ec.createMimeBoundary();
+        for (let header in mime.headers) {
+          if (header != "content-type") {
+            msg += prettyPrintHeader(header, mime.headers[header]) + "\r\n";
+          }
+        }
+        msg += 'Content-Type: multipart/mixed; boundary="'+boundary+'"\r\n\r\n';
+
+        msg += "This is a multi-part message in MIME format.";
+        msg += "\r\n--" + boundary + "\r\n";
+        msg += this.allTasks[j].data;
+        msg += "\r\n--" + boundary + "--\r\n";
+
+        return msg;
+      }
+    }
+  }
+  else if (mime instanceof MimeMessageAttachment) {
     for (let j in this.allTasks) {
       if (this.allTasks[j].partName == mime.partName &&
            this.allTasks[j].origName == mime.name) {
@@ -809,7 +879,6 @@ mimeToString = function (mime, topLevel) {
             msg += prettyPrintHeader(header, mime.headers[header]) + "\r\n";
           }
         }
-
 
         if (a.type == "attachment") {
           if (a.status == STATUS_OK) {
@@ -939,7 +1008,7 @@ function formatHeaderData(hdrValue) {
 
   lines.push(line);
 
-  return lines.join("");
+  return lines.join("").trim();
 }
 
 function prettyPrintHeader(headerLabel, headerData) {
@@ -1052,7 +1121,5 @@ function encodeHeaderValue (aStr) {
 
   TODO:
   - support for Outlook modified PGP/MIME messages
-  - get attachment name if no suffix
-  - support for S/MIME
 
 */
