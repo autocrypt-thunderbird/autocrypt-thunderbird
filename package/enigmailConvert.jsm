@@ -844,17 +844,15 @@ mimeToString = function (mime, topLevel) {
   let msg = "";
 
 
+
   if (mime.isBrokenByExchange != undefined) {
     Ec.DEBUG_LOG("enigmailConvert.jsm: mimeToString: MS-Exchange fix\n");
     for (let j in this.allTasks) {
       if (this.allTasks[j].partName == mime.parts[0].partName) {
 
         boundary = Ec.createMimeBoundary();
-        for (let header in mime.headers) {
-          if (header != "content-type") {
-            msg += prettyPrintHeader(header, mime.headers[header]) + "\r\n";
-          }
-        }
+
+        msg += getRfc822Headers(mime.headers, ct, "content-type");
         msg += 'Content-Type: multipart/mixed; boundary="'+boundary+'"\r\n\r\n';
 
         msg += "This is a multi-part message in MIME format.";
@@ -914,9 +912,7 @@ mimeToString = function (mime, topLevel) {
       mime.headers['content-transfer-encoding'] = subct;
     }
 
-    for (let header in mime.headers) {
-      msg += prettyPrintHeader(header, mime.headers[header]) + "\r\n";
-    }
+    msg += getRfc822Headers(mime.headers, ct);
 
     msg +="\r\n" + mime.parts[0].body + "\r\n";
 
@@ -934,11 +930,7 @@ mimeToString = function (mime, topLevel) {
       msg += 'Content-Disposition: attachment; filename="' + encodeHeaderValue(mimeName) + '"\r\n\r\n';
     }
 
-
-
-    for (let header in mime.headers) {
-      msg += prettyPrintHeader(header, mime.headers[header]) + "\r\n";
-    }
+    msg += getRfc822Headers(mime.headers, ct);
 
     msg +="\r\n";
 
@@ -1026,6 +1018,37 @@ function prettyPrintHeader(headerLabel, headerData) {
   }
 
   return formatHeader(headerLabel) +": "+ formatHeaderData(encodeHeaderValue(hdrData));
+}
+
+/***
+ * get the formatted headers for MimeMessage objects
+ *
+ * @headerArr:        Array of headers (key/value pairs), such as mime.headers
+ * @ignoreHeadersArr: Array of headers to exclude from returning
+ *
+ * @return:   String containing formatted header list
+ */
+function getRfc822Headers(headerArr, contentType, ignoreHeadersArr) {
+  let hdrs = "";
+
+  let ignore = [];
+  if (contentType.indexOf("multipart/") >= 0)  {
+    ignore = [ 'content-transfer-encoding',
+      'content-disposition',
+      'content-description' ];
+  }
+
+  if (ignoreHeadersArr) {
+    ignore = ignore.concat(ignoreHeadersArr);
+  }
+
+  for (let i in headerArr) {
+    if (ignore.indexOf(i) < 0) {
+      hdrs += prettyPrintHeader(i, headerArr[i]) + "\r\n";
+    }
+  }
+
+  return hdrs;
 }
 
 function base64WithWidthCompliance(data) {
