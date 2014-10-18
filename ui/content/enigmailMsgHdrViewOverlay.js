@@ -338,26 +338,20 @@ Enigmail.hdrView = {
     if (EnigmailCommon.getPref("displayPartiallySigned")) {
       if (statusFlags & nsIEnigmail.PARTIALLY_PGP) {
         if (msgSigned && msgEncrypted) {
-          if (statusLine == "") {
-            statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSignedAndEnc") ]);
-            statusLine += EnigmailCommon.getString("clickPenKeyDetails");
-          }
+          statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSignedAndEnc") ]);
+          statusLine += EnigmailCommon.getString("clickPenKeyDetails");
           statusInfo = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSigned") ])
                         + "\n" + statusInfo;
         }
         else if (msgEncrypted) {
-          if (statusLine == "") {
-            statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgEncrypted") ]);
-            statusLine += EnigmailCommon.getString("clickQueryKeyDetails");
-          }
+          statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgEncrypted") ]);
+          statusLine += EnigmailCommon.getString("clickQueryKeyDetails");
           statusInfo = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSigned") ])
                         + "\n" + statusInfo;
         }
         else if (msgSigned) {
-          if (statusLine == "") {
-            statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSigned") ]);
-            statusLine += EnigmailCommon.getString("clickQueryPenDetails");
-          }
+          statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSigned") ]);
+          statusLine += EnigmailCommon.getString("clickQueryPenDetails");
           statusInfo = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSigned") ])
                         + "\n" + statusInfo;
         }
