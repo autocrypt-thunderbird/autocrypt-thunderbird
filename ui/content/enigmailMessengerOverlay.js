@@ -2162,20 +2162,14 @@ Enigmail.msg = {
   handleUnknownKey: function ()
   {
     var pubKeyId = "0x" + Enigmail.msg.securityInfo.keyId.substr(8, 8);
+    var inputObj = {
+      searchList : [ pubKeyId ]
+    };
+    var resultObj = new Object();
+    EnigmailFuncs.downloadKeys(window, inputObj, resultObj);
 
-    var mesg =  EnigmailCommon.getString("pubKeyNeeded") + EnigmailCommon.getString("keyImport", [pubKeyId]);
-
-    if (EnigmailCommon.confirmDlg(window, mesg, EnigmailCommon.getString("keyMan.button.import"))) {
-      var inputObj = {
-        searchList : [ pubKeyId ]
-      };
-      var resultObj = new Object();
-
-      EnigmailFuncs.downloadKeys(window, inputObj, resultObj);
-
-      if (resultObj.importedKeys > 0) {
-        this.messageReload(false);
-      }
+    if (resultObj.importedKeys > 0) {
+      this.messageReload(false);
     }
   },
 

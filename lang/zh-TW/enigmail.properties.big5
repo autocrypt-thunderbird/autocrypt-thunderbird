@@ -53,8 +53,6 @@ keyConfirm=要為'%S'產生的公開和隱密的鑰匙嗎？
 keyAbort=中止鑰匙產生嗎？
 
 # Strings in enigmailMessengerOverlay.js
-keyImport=\n\n按下確定以從鑰匙伺服器中匯入鑰匙編號 %S。
-keyImportError=鑰匙伺服器中搜尋不到公開鑰匙\n\n
 securityInfo=OpenPGP 安全資訊\n\n
 
 enigHeader=Enigmail:
