@@ -50,6 +50,11 @@ LDFLAGS += -shared -Wl,-Bsymbolic
 CFLAGS += -fPIC
 endif
 
+ifeq ($(OS_TARGET),gnu)
+LDFLAGS += -shared -Wl,-Bsymbolic
+CFLAGS += -fPIC
+endif
+
 ifeq ($(OS_TARGET),WINNT)
 OBJ_SUFF = obj
 endif
