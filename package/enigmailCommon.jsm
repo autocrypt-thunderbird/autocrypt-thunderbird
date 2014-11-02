@@ -280,7 +280,7 @@ var EnigmailCommon = {
       }
     }
 
-    if (this.enigmailSvc.logFileStream) {
+    if (EnigmailCore.getLogFileStream()) {
       gLogLevel = 5;
     }
 
@@ -1963,7 +1963,7 @@ var EnigmailCommon = {
     var maxIdleMinutes = this.getMaxIdleMinutes();
     var delayMillisec = maxIdleMinutes*60*1000;
 
-    var expired = ((currentTime - _lastActiveTime) >= delayMillisec);
+    var expired = ((currentTime - getLastActiveTime()) >= delayMillisec);
 
   //  this.DEBUG_LOG("enigmailCommon.jsm: haveCachedPassphrase: ")
   //  this.DEBUG_LOG("currentTime="+currentTime+", _lastActiveTime="+this._lastActiveTime+", expired="+expired+"\n");
@@ -1984,7 +1984,7 @@ var EnigmailCommon = {
 
     // Update last active time
     var curDate = new Date();
-    _lastActiveTime = curDate.getTime();
+    setLastActiveTime(curDate.getTime());
     // this.DEBUG_LOG("enigmailCommon.jsm: stillActive: _lastActiveTime="+this._lastActiveTime+"\n");
   },
 
@@ -3288,6 +3288,14 @@ function ConfigureEnigmail(window, startingPreferences) {
 
   EnigmailCommon.setPref("configuredVersion", EnigmailCommon.getVersion());
   EnigmailCommon.savePrefs();
+}
+
+function getLastActiveTime() {
+  return _lastActiveTime;
+}
+
+function setLastActiveTime(timeVal) {
+  _lastActiveTime = timeVal;
 }
 
 

@@ -401,12 +401,12 @@ var EnigmailFuncs = {
       return;
     }
 
-    if (! svc.logFileStream) {
+    if (! EnigmailCore.getLogFileStream()) {
       EnigmailCommon.alert(win, EnigmailCommon.getString("restartForLog"));
       return;
     }
 
-    svc.logFileStream.flush();
+    EnigmailCore.getLogFileStream().flush();
 
     logDirectory = logDirectory.replace(/\\/g, "/");
 

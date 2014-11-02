@@ -183,6 +183,10 @@ var EnigmailCore = {
     EnigmailConsole.write(str);
   },
 
+  getLogFileStream: function() {
+    return this._logFileStream;
+  },
+
   // retrieves a localized string from the enigmail.properties stringbundle
   getString: function (aStr, subPhrases)
   {
