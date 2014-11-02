@@ -1549,6 +1549,7 @@ var EnigmailCommon = {
     inputData += "%commit\n%echo done\n";
 
     var proc = null;
+    var self = this;
 
     try {
       proc = subprocess.call({
@@ -1566,6 +1567,9 @@ var EnigmailCommon = {
         done: function(result) {
           gKeygenProcess = null;
           try {
+            if (result.exitCode == 0) {
+              self.enigmailSvc.invalidateUserIdList();
+            }
             listener.onStopRequest(result.exitCode);
           }
           catch (ex) {}
@@ -1822,10 +1826,12 @@ var EnigmailCommon = {
       args.push("--refresh-keys");
     }
 
+    var isDownload = recvFlags & (nsIEnigmail.REFRESH_KEY | nsIEnigmail.DOWNLOAD_KEY);
 
     this.CONSOLE_LOG("enigmail> "+this.printCmdLine(this.enigmailSvc.agentPath, args)+"\n");
 
     var proc = null;
+    var self = this;
 
     try {
       proc = subprocess.call({
@@ -1842,6 +1848,9 @@ var EnigmailCommon = {
         done: function(result) {
           gKeygenProcess = null;
           try {
+            if (result.exitCode == 0 && isDownload) {
+              self.enigmailSvc.invalidateUserIdList();
+            }
             listener.onStopRequest(result.exitCode);
           }
           catch (ex) {}

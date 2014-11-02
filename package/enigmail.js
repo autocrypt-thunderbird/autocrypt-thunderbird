@@ -449,6 +449,7 @@ Enigmail.prototype = {
   agentVersion: "",
   gpgAgentProcess: null,
   userIdList: null,
+  secretKeyList: null,
   rulesList: null,
   gpgAgentInfo: {preStarted: false, envStr: ""},
 
@@ -2026,13 +2027,16 @@ Enigmail.prototype = {
   invalidateUserIdList: function () {
     // clean the userIdList to force reloading the list at next usage
     EC.DEBUG_LOG("enigmail.js: Enigmail.invalidateUserIdList\n");
-    this.userIdList= null;
+    this.userIdList = null;
+    this.secretKeyList = null;
   },
 
   // returns the output of --with-colons --list[-secret]-keys
   getUserIdList: function  (secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
 
-    if (secretOnly || refresh || this.userIdList == null) {
+    if (refresh ||
+        (secretOnly && this.secretKeyList == null) ||
+        ((! secretOnly) && this.userIdList == null)) {
       var args = Ec.getAgentArgs(true);
 
       if (secretOnly) {
@@ -2068,6 +2072,7 @@ Enigmail.prototype = {
 
       listText=listText.replace(/(\r\n|\r)/g, "\n");
       if (secretOnly) {
+        this.secretKeyList = listText;
         return listText;
       }
       this.userIdList = listText;
@@ -2076,6 +2081,10 @@ Enigmail.prototype = {
       exitCodeObj.value=0;
       statusFlagsObj.value=0;
       errorMsgObj.value="";
+    }
+
+    if (secretOnly) {
+      return this.secretKeyList;
     }
 
     return this.userIdList;
