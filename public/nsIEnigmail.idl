@@ -58,8 +58,6 @@ interface nsIEnigmail : nsISupports
   attribute boolean initializationAttempted;
   readonly attribute string initializationError;
 
-  readonly attribute nsIFileOutputStream logFileStream;
-
   void initialize(in nsIDOMWindow domWindow, in string version,
                   in nsIPrefBranch enigmailPrefs);
   void reinitialize();
