@@ -1458,8 +1458,7 @@ Enigmail.msg = {
 
       // if not clear whether to encrypt yet, check whether automatically-send-encrypted applies
       if (toAddrList.length > 0 && this.encryptByRules == EnigmailCommon.ENIG_UNDEF && EnigmailCommon.getPref("autoSendEncrypted") == 1) {
-        var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrList.join(", "),
-                                                                  false);  // don't refresh key list
+        var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrList.join(", "));
         if (validKeyList != null) {
           this.encryptByRules = EnigmailCommon.ENIG_ALWAYS;
         }
@@ -1888,13 +1887,11 @@ Enigmail.msg = {
     // if not clear whether to encrypt yet, check whether automatically-send-encrypted applies
     // - check whether bcc is empty here? if (bccAddrStr.length == 0)
     if (toAddrStr.length > 0 && this.encryptByRules == EnigmailCommon.ENIG_UNDEF && EnigmailCommon.getPref("autoSendEncrypted") == 1) {
-      var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrStr,
-                                                                true);  // refresh key list
+      var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrStr);
       if (validKeyList != null) {
         this.encryptByRules = EnigmailCommon.ENIG_ALWAYS;
         toAddrStr = validKeyList.join(", ");
       }
-      didRefreshKeyList = true;
     }
 
     // process final state

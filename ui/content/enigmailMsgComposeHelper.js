@@ -275,10 +275,10 @@ Enigmail.hlp = {
   /* try to find valid key to passed email address
    * @return: list of all found key (with leading "0x") or null
    */
-  validKeysForAllRecipients: function (emailsOrKeys, refresh)
+  validKeysForAllRecipients: function (emailsOrKeys)
   {
     EnigmailCommon.DEBUG_LOG("=====> validKeysForAllRecipients()\n");
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): emailsOrKeys=\""+emailsOrKeys+"\" refresh=\""+refresh+"\"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): emailsOrKeys='"+emailsOrKeys+"'\n");
 
     // check whether to use our internal cache
     var resultingArray = null;
@@ -287,19 +287,19 @@ Enigmail.hlp = {
       //resultingArray = validKeysForAllRecipients_oldResultingArray;
     //}
     //else {
-      resultingArray = this.doValidKeysForAllRecipients(emailsOrKeys, refresh);
+      resultingArray = this.doValidKeysForAllRecipients(emailsOrKeys);
       //validKeysForAllRecipients_oldEmailsOrKeys = emailsOrKeys;
       //validKeysForAllRecipients_oldResultingArray = resultingArray;
     //}
 
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): return \""+resultingArray+"\"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): return '"+resultingArray+"'\n");
     EnigmailCommon.DEBUG_LOG("  <=== validKeysForAllRecipients()\n");
     return resultingArray;
   },
 
-  doValidKeysForAllRecipients: function (emailsOrKeys, refresh)
+  doValidKeysForAllRecipients: function (emailsOrKeys)
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): emailsOrKeys=\""+emailsOrKeys+"\" refresh=\""+refresh+"\"\n");
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): emailsOrKeys='"+emailsOrKeys+"'\n");
 
     // check which keys are accepted
     var minTrustLevel;
@@ -324,10 +324,10 @@ Enigmail.hlp = {
     var resultingArray = new Array;  // resulting key list (if all valid)
     try {
       // get list of known keys
-      if (!keyList || refresh) {
+      if (!keyList) {
         var keyListObj = {};
         EnigmailFuncs.loadKeyList(window,
-                                  refresh,      // refresh key infos if required,
+                                  false,      // refresh key infos if required
                                   keyListObj,   // returned list
                                   "validity",   // sorted acc. to key validity
                                   -1);          // descending
@@ -344,7 +344,7 @@ Enigmail.hlp = {
       //  var keyObj = keyList[keySortList[idx].keyId];
       //  EnigmailCommon.DEBUG_LOG("                   [" + idx + "].keyId:  "+ keyObj.keyId + "\n");
       //  EnigmailCommon.DEBUG_LOG("                   [" + idx + "].userId: "+ keyObj.userId + "\n");
-      //} 
+      //}
 
       // create array of address elements (email or key)
       var addresses=EnigmailFuncs.stripEmail(emailsOrKeys).split(',');
@@ -474,6 +474,7 @@ Enigmail.hlp = {
       if (userId && (userId == emailAddr || userId.indexOf(embeddedEmailAddr) >= 0)) {
         if (keyTrustIndex >= minTrustLevelIndex) {
           EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): key="+keyObj.keyId+" keyTrust=\""+keyTrust+"\" found\n");
+
           if (foundKeyId != null) {  // multiple entries found
             if (foundKeyTrustIndex > keyTrustIndex) {
               return foundKeyId;   // OK first key has higher trust level
@@ -501,6 +502,7 @@ Enigmail.hlp = {
         if (subUserId && (subUserId == emailAddr || subUserId.indexOf(embeddedEmailAddr) >= 0)) {
           if (subKeyTrustIndex >= minTrustLevelIndex) {
             EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): subkey in key="+keyObj.keyId+" keyTrust=\""+keyTrust+"\" found\n");
+
             if (foundKeyId != null) {  // multiple entries found
               if (foundKeyTrustIndex > subKeyTrustIndex) {
                 return foundKeyId;   // OK first key has higher trust level
