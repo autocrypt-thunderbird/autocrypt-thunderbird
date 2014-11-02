@@ -137,7 +137,8 @@ var gStatusFlags = {
   UNKNOWN_ALGO:    nsIEnigmail.UNKNOWN_ALGO,
   SIG_CREATED:     nsIEnigmail.SIG_CREATED,
   END_ENCRYPTION : nsIEnigmail.END_ENCRYPTION,
-  INV_SGNR:        0x100000000
+  INV_SGNR:        0x100000000,
+  IMPORT_OK:       0x200000000
 };
 
 const gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512", "sha224", "md5" ];
@@ -1049,7 +1050,7 @@ var EnigmailCommon = {
         statusArray.push(statusLine);
 
         // extract first word as flag
-        var matches = statusLine.match(/^(\w+)\b/);
+        var matches = statusLine.match(/^((\w+)\b)/);
 
         if (matches && (matches.length > 1)) {
           var flag = gStatusFlags[matches[1]];  // yields known flag or undefined
@@ -1076,6 +1077,20 @@ var EnigmailCommon = {
             lineSplit = statusLine.split(/ +/);
             if (lineSplit.length > 7 && lineSplit[7] == "4") {
               flag = Ci.nsIEnigmail.UNKNOWN_ALGO;
+            }
+          }
+          else if (flag == gStatusFlags["IMPORT_OK"]) {
+            lineSplit = statusLine.split(/ +/);
+            if (lineSplit.length > 1) {
+              this.DEBUG_LOG("enigmailCommon.jsm: parseErrorOutput: key imported: "+ lineSplit[2]+ "\n");
+            }
+            else {
+              this.DEBUG_LOG("enigmailCommon.jsm: parseErrorOutput: key without FPR imported\n");
+            }
+
+            let importFlag = Number(lineSplit[1]);
+            if (importFlag & (1 | 2 | 8)) {
+              this.enigmailSvc.invalidateUserIdList();
             }
           }
           else if (flag == gStatusFlags["INV_SGNR"]) {
