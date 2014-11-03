@@ -157,7 +157,8 @@ interface nsIEnigmail : nsISupports
                         out wstring userId,
                         out wstring sigDetails,
                         out wstring errorMsg,
-                        out wstring blockSeparation);
+                        out wstring blockSeparation,
+                        out wstring encToDetails);
 
   boolean deleteMessageURI(in string uri);
 

@@ -1396,6 +1396,7 @@ Enigmail.prototype = {
     return blockType;
   },
 
+
 /*
  *     locateArmoredBlocks returns an array with GPGBlock positions
  *
@@ -1410,7 +1411,6 @@ Enigmail.prototype = {
  *     @return empty array if no block was found
  *
  */
-
   locateArmoredBlocks: function(text) {
     var indentStr = "";
     var indentStrObj = new Object();
@@ -1495,45 +1495,50 @@ Enigmail.prototype = {
     return "";
   },
 
-  statusObjectFrom: function (signatureObj, exitCodeObj, statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj) {
+
+  statusObjectFrom: function (signatureObj, exitCodeObj, statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj, encToDetailsObj) {
     return {
       signature: signatureObj,
       exitCode: exitCodeObj,
       statusFlags: statusFlagsObj,
       keyId: keyIdObj,
       userId: userIdObj,
-      signatureDetails: sigDetailsObj,
+      sigDetails: sigDetailsObj,
       message: errorMsgObj,
-      blockSeparation: blockSeparationObj
+      blockSeparation: blockSeparationObj,
+      encToDetails: encToDetailsObj
     };
   },
 
+
   newStatusObject: function () {
-    return this.statusObjectFrom({value: ""}, {}, {}, {}, {}, {}, {}, {});
+    return this.statusObjectFrom({value: ""}, {}, {}, {}, {}, {}, {}, {}, {});
   },
 
-  mergeStatusInto: function(left, right) {
-    left.statusFlags.value = left.statusFlags.value | right.statusFlags.value;
-    left.keyId.value = right.keyId.value;
-    left.userId.value = right.userId.value;
-    left.signatureDetails.value = right.signatureDetails.value;
-    left.message.value = right.message.value;
-  },
 
   inlineInnerVerification: function (parent, uiFlags, text, statusObject) {
     EC.DEBUG_LOG("enigmail.js: Enigmail.inlineInnerVerification\n");
 
     if (text && text.indexOf("-----BEGIN PGP SIGNED MESSAGE-----") == 0) {
       var status = this.newStatusObject();
-      var newText = this.decryptMessage(parent, uiFlags, text, status.signature, status.exitCode, status.statusFlags, status.keyId, status.userId, status.signatureDetails, status.message, status.blockSeparation);
+      var newText = this.decryptMessage(parent, uiFlags, text,
+                                        status.signature, status.exitCode, status.statusFlags, status.keyId, status.userId,
+                                        status.sigDetails, status.message, status.blockSeparation, status.encToDetails);
       if (status.exitCode.value == 0) {
         text = newText;
-        this.mergeStatusInto(statusObject, status);
+        // merge status into status object:
+        statusObject.statusFlags.value = statusObject.statusFlags.value | status.statusFlags.value;
+        statusObject.keyId.value = status.keyId.value;
+        statusObject.userId.value = status.userId.value;
+        statusObject.sigDetails.value = status.sigDetails.value;
+        statusObject.message.value = status.message.value;
+        // we don't merge encToDetails
       }
     }
 
     return text;
   },
+
 
 /**
   *  Decrypts a PGP ciphertext and returns the the plaintext
@@ -1549,13 +1554,15 @@ Enigmail.prototype = {
   *out @sigDetailsObj
   *out @errorMsgObj  error string
   *out @blockSeparationObj
+  *out @encToDetailsObj  returns in details, which keys the mesage was encrypted for (ENC_TO entries)
   *
-  * @return string plaintext
+  * @return string plaintext ("" if error)
   *
   */
-  decryptMessage: function (parent, uiFlags, cipherText, signatureObj, exitCodeObj,
-            statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj,
-            blockSeparationObj) {
+  decryptMessage: function (parent, uiFlags, cipherText,
+                            signatureObj, exitCodeObj,
+                            statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj,
+                            blockSeparationObj, encToDetailsObj) {
     EC.DEBUG_LOG("enigmail.js: Enigmail.decryptMessage: "+cipherText.length+" bytes, "+uiFlags+"\n");
 
     if (! cipherText)
@@ -1688,8 +1695,10 @@ Enigmail.prototype = {
     userIdObj.value = retStatusObj.userId;
     keyIdObj.value = retStatusObj.keyId;
     sigDetailsObj.value = retStatusObj.sigDetails;
+    if (encToDetailsObj) {
+      encToDetailsObj.value = retStatusObj.encToDetails;
+    }
     blockSeparationObj.value = retStatusObj.blockSeparation;
-
 
     if ((head.search(/\S/) >= 0) ||
         (tail.search(/\S/) >= 0)) {
@@ -1719,7 +1728,8 @@ Enigmail.prototype = {
       }
 
       return this.inlineInnerVerification(parent, uiFlags, plainText,
-                        this.statusObjectFrom(signatureObj, exitCodeObj, statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj));
+                                          this.statusObjectFrom(signatureObj, exitCodeObj, statusFlagsObj, keyIdObj, userIdObj,
+                                                                sigDetailsObj, errorMsgObj, blockSeparationObj, encToDetailsObj));
     }
 
     var pubKeyId = keyIdObj.value;
@@ -2214,68 +2224,96 @@ Enigmail.prototype = {
 
 
   /**
-   * Return first found userId of given keys.
-   * @param  String  keyId key with leading 0x
-   * @return String  First found of user IDs or null if none
+   * Return string with all colon-separated data of key list entry of given key.
+   * - key may be pub or sub key.
+   * @param  String  keyId of 8 or 16 chars key with optionally leading 0x
+   * @return String  entry of first found user IDs with keyId or null if none
    */
-  getFirstUserIdOfKey: function (keyId)
+  getKeyListEntryOfKey: function (keyId)
   {
-    EC.DEBUG_LOG("enigmail.js: Enigmail.getFirstUserIdOfKey "+ keyId +"\n");
-
+    //EC.DEBUG_LOG("enigmail.js: Enigmail.getKeyListEntryOfKey() keyId='"+ keyId +"'\n");
     keyId = keyId.replace(/^0x/, "");
 
     let statusFlags = {};
     let errorMsg = {};
     let exitCodeObj = {};
     let listText = this.getUserIdList(false, false, exitCodeObj, statusFlags, errorMsg)
+    //EC.DEBUG_LOG("enigmail.js: Enigmail.getKeyListEntryOfKey(): listText "+ listText +"\n");
 
-    // process lines such as:
+    // listeText contains lines such as:
     // tru::0:1407688184:1424970931:3:1:5
     // pub:f:1024:17:D581C6F8EBB80E50:1107251639:::-:::scESC:
     // fpr:::::::::492A198AEA5EBE5574A1CE00D581C6F8EBB80E50:
     // uid:f::::1107251639::2D505D1F6E744365B3B35FF11F32A19779E3A417::Giosue Vitaglione <gvi@whitestein.com>:
     // sub:f:2048:16:2223D7E0301A66C6:1107251647::::::e:
 
-    // search for subkey
-    let s = new RegExp("^(pub|sub):[^:]*:[^:]*:[^:]*:[A-Fa-f0-9]*" + keyId, "m");
-
-    let found = listText.search(s);
-    if (found >= 0) {
-
-      // search for pub: entries to find start and end position
-      let i = -1;
-      let startPos = -1;
-      let endPos = -1;
-      let r = RegExp("^pub:", "ym");
-      let match = r.exec(listText.substr(0, found));
-
-      while (match && match.index < found) {
-        i = match.index;
-        match = r.exec(listText)
-      }
-      startPos = i;
-
-      if (match && match.index) {
-        endPos = match.index
-      }
-      else {
-        endPos = listText.length;
-      }
-
-      var lineArr=listText.substring(startPos, endPos).split(/\n/);
-      for (i=0; i<lineArr.length; i++) {
-        var lineTokens = lineArr[i].split(/:/);
-        switch (lineTokens[0]) {
-          case "uid":
-            {
-              let userId = lineTokens[9];
-              return userId;
-            }
-            break;
-        }
-      }
+    // search for key or subkey
+    let regexKey = new RegExp("^(pub|sub):[^:]*:[^:]*:[^:]*:[A-Fa-f0-9]*" + keyId + ":", "m");
+    let foundPos = listText.search(regexKey);
+    //EC.DEBUG_LOG("enigmail.js: Enigmail.getKeyListEntryOfKey(): foundPos="+ foundPos +"\n");
+    if (foundPos < 0) {
+      return null;
     }
 
+    // find area of key entries in key list
+    // note: if subkey matches, key entry starts before
+    let regexPub = RegExp("^pub:", "ym");
+    let startPos = -1;
+    if (listText[foundPos] == "p") {  // ^pub:
+      // KEY matches
+      startPos = foundPos;
+    }
+    else {
+      // SUBKEY matches
+      // search for pub entry right before sub entry
+      startPos = 0;
+      let match = regexPub.exec(listText.substr(0, foundPos));
+      while (match && match.index < foundPos) {
+        startPos = match.index;
+        match = regexPub.exec(listText)
+      }
+    }
+    // find end of entry (next pub entry or end):
+    let endPos = -1;
+    let match = regexPub.exec(listText.substr(startPos+1));
+    if (match && match.index) {
+      endPos = startPos+1 + match.index;
+    }
+    else {
+      endPos = listText.length;
+    }
+    return listText.substring(startPos, endPos);
+  },
+
+
+  /**
+   * Return first found userId of given key.
+   * - key may be pub or sub key.
+   * @param  String  keyId key with leading 0x
+   * @return String  First found of user IDs or null if none
+   */
+  getFirstUserIdOfKey: function (keyId)
+  {
+    EC.DEBUG_LOG("enigmail.js: Enigmail.getFirstUserIdOfKey() keyId='"+ keyId +"'\n");
+
+    var entry = this.getKeyListEntryOfKey(keyId);
+    if (entry == null) {
+      return null;
+    }
+
+    var lineArr = entry.split(/\n/);
+    //EC.DEBUG_LOG("enigmail.js: Enigmail.getFirstUserIdOfKey(): lineArr: "+ lineArr +"\n");
+    for (i=0; i<lineArr.length; ++i) {
+      var lineTokens = lineArr[i].split(/:/);
+      switch (lineTokens[0]) {
+        case "uid":
+          {
+            let userId = lineTokens[9];
+            return userId;
+          }
+          break;
+      }
+    }
     return null;
   },
 

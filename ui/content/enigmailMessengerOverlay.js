@@ -684,7 +684,13 @@ Enigmail.msg = {
 
           if (signedMsg ||
               ((!encrypedMsg) && (embeddedSigned || embeddedEncrypted))) {
-            Enigmail.hdrView.updateHdrIcons(EnigmailCommon.POSSIBLE_PGPMIME, 0, "", "", "", EnigmailCommon.getString("possiblyPgpMime"), null);
+            Enigmail.hdrView.updateHdrIcons(EnigmailCommon.POSSIBLE_PGPMIME, 0, // exitCode, statusFlags
+                                            "", "",       // keyId, userId
+                                            "",           // sigDetails
+                                            EnigmailCommon.getString("possiblyPgpMime"),  // errorMsg
+                                            null,         // blockSeparation
+                                            "",           // encToDetails
+                                            null);        // xtraStatus
           }
         }
         return;
@@ -917,8 +923,10 @@ Enigmail.msg = {
 
     var errorMsgObj = new Object();
     var keyIdObj    = new Object();
+    var userIdObj   = new Object();
+    var sigDetailsObj  = new Object();
+    var encToDetailsObj  = new Object();
     var blockSeparationObj = { value: "" };
-
 
     if (importOnly) {
       // Import public key
@@ -955,8 +963,6 @@ Enigmail.msg = {
 
       var exitCodeObj    = new Object();
       var statusFlagsObj = new Object();
-      var userIdObj      = new Object();
-      var sigDetailsObj  = new Object();
 
       var signatureObj = new Object();
       signatureObj.value = signature;
@@ -967,8 +973,9 @@ Enigmail.msg = {
 
 
       plainText = enigmailSvc.decryptMessage(window, uiFlags, msgText,
-                                   signatureObj, exitCodeObj, statusFlagsObj,
-                                   keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj);
+                                             signatureObj, exitCodeObj, statusFlagsObj,
+                                             keyIdObj, userIdObj, sigDetailsObj,
+                                             errorMsgObj, blockSeparationObj, encToDetailsObj);
 
       //EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: messageParseCallback: plainText='"+plainText+"'\n");
 
@@ -994,7 +1001,12 @@ Enigmail.msg = {
 
     var displayedUriSpec = Enigmail.msg.getCurrentMsgUriSpec();
     if (!msgUriSpec || (displayedUriSpec == msgUriSpec)) {
-      Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsg, null, null);
+      Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value,
+                                      sigDetailsObj.value,
+                                      errorMsg,
+                                      null,    // blockSeparation
+                                      encToDetailsObj.value,
+                                      null);   // xtraStatus
     }
 
     var noSecondTry = nsIEnigmail.GOOD_SIGNATURE |
@@ -1185,7 +1197,12 @@ Enigmail.msg = {
         while (node) {
           if (node.nodeName == "DIV") {
             node.innerHTML = EnigmailFuncs.formatPlaintextMsg(EnigmailCommon.convertToUnicode(messageContent, charset));
-            Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsg, null, "buggyMailFormat" );
+            Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value,
+                                            sigDetailsObj.value,
+                                            errorMsg,
+                                            null,         // blockSeparation
+                                            encToDetailsObj.value,
+                                            "buggyMailFormat" );
             return;
           }
           node = node.nextSibling;

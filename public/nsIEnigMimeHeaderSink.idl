@@ -53,7 +53,8 @@ interface nsIEnigMimeHeaderSink : nsISupports
                             in wstring sigDetails,
                             in wstring errorMsg,
                             in wstring blockSeparation,
-                            in nsIURI uri);
+                            in nsIURI uri,
+                            in wstring encToDetails);
 };
 
 

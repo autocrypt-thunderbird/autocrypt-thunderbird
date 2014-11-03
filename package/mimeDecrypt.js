@@ -284,12 +284,12 @@ PgpMimeDecrypt.prototype = {
 
     this.returnStatus = {};
     Ec.decryptMessageEnd(this.statusStr,
-          this.exitCode,
-          this.dataLength,
-          false,
-          false,
-          Ci.nsIEnigmail.UI_PGP_MIME,
-          this.returnStatus);
+                         this.exitCode,
+                         this.dataLength,
+                         false,
+                         false,
+                         Ci.nsIEnigmail.UI_PGP_MIME,
+                         this.returnStatus);
 
     this.displayStatus();
 
@@ -316,7 +316,8 @@ PgpMimeDecrypt.prototype = {
             this.returnStatus.sigDetails,
             this.returnStatus.errorMsg,
             this.returnStatus.blockSeparation,
-            this.uri);
+            this.uri,
+            this.returnStatus.encToDetails);
       }
       this.statusDisplayed = true;
     }
@@ -417,7 +418,8 @@ PgpMimeDecrypt.prototype = {
             "",
             EnigmailCommon.getString("possiblyPgpMime"),
             "",
-            this.uri);
+            this.uri,
+            null);
       }
     }
     catch (ex) {}

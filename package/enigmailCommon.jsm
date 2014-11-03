@@ -1027,7 +1027,6 @@ var EnigmailCommon = {
 
     var errArray    = new Array();
     var statusArray = new Array();
-    var encryptToArray = new Array();  // collect ENC_TO lines here
     var lineSplit = null;
     var errCode = 0;
     var detectedCard = null;
@@ -1104,12 +1103,6 @@ var EnigmailCommon = {
           // if known flag, story it in our status
           if (flag) {
             statusFlags |= flag;
-          }
-          else {
-            var words = statusLine.split(" ")
-            if (words.length >= 2 && words[0] == "ENC_TO") {
-              encryptToArray.push("0x"+words[1]);
-            }
           }
         }
       }
@@ -1190,34 +1183,7 @@ var EnigmailCommon = {
 
     this.DEBUG_LOG("enigmailCommon.jsm: parseErrorOutput: statusFlags = "+this.bytesToHex(this.pack(statusFlags,4))+"\n");
 
-    // add used keys (and their user IDs if known) to the details error message
-    // Status Messages are something like (here the German version):
-    //    [GNUPG:] ENC_TO AAAAAAAAAAAAAAAA 1 0
-    //    [GNUPG:] ENC_TO 5B820D2D4553884F 16 0
-    //    [GNUPG:] ENC_TO 37904DF2E631552F 1 0
-    //    [GNUPG:] ENC_TO BBBBBBBBBBBBBBBB 1 0
-    //    gpg: verschlüsselt mit 3072-Bit RSA Schlüssel, ID BBBBBBBB, erzeugt 2009-11-28
-    //          "Joe Doo <joe.doo@domain.de>"
-    //    [GNUPG:] NO_SECKEY E71712DF47BBCC40
-    //    gpg: verschlüsselt mit RSA Schlüssel, ID AAAAAAAA
-    //    [GNUPG:] NO_SECKEY AAAAAAAAAAAAAAAA
-    if (encryptToArray.length > 0) {
-      // for each private key also show an associated user ID if known:
-      for (var encIdx=0; encIdx<encryptToArray.length; ++encIdx) {
-        var keyId = encryptToArray[encIdx];
-        // except for ID 00000000, which signals hidden keys
-        if (keyId != "0x0000000000000000") {
-          var userId = this.enigmailSvc.getFirstUserIdOfKey(keyId);
-          if (userId) {
-            userId = this.convertToUnicode(userId, "UTF-8");
-            encryptToArray[encIdx] += " (" + userId + ")";
-          }
-        }
-      }
-      var gpgKeys = "\n  " + encryptToArray.join(",\n  ") + "\n";
-      errorMsg += "\n\n" + EnigmailCommon.getString("encryptKeysNote", [ gpgKeys ]);
-    }
-
+    this.DEBUG_LOG("enigmailCommon.jsm: parseErrorOutput(): return with errorMsg = "+errorMsg+"\n");
     return errorMsg;
   },
 
@@ -2410,6 +2376,7 @@ var EnigmailCommon = {
     var revKeyPat   = /REVKEYSIG (\w{16}) (.*)$/i;
     var validSigPat =  /VALIDSIG (\w+) (.*) (\d+) (.*)/i;
     var userIdHintPat =  /USERID_HINT (\w{16}) (.*)$/i;
+    var encToPat    =    /ENC_TO (\w{16}) (.*)$/i;
 
     if (statusMsg) {
       errLines = statusMsg.split(/\r?\n/);
@@ -2426,43 +2393,16 @@ var EnigmailCommon = {
     var keyId = "";
     var userId = "";
     var sigDetails = "";
+    var encToDetails = "";
+    var encToArray = new Array();  // collect ENC_TO lines here
 
     for (j=0; j<errLines.length; j++) {
+      this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: process: "+errLines[j]+"\n");
 
-      matches = errLines[j].match(badSignPat);
+      // ENC_TO 
+      matches = errLines[j].match(encToPat);
       if (matches && (matches.length > 2)) {
-        signed = true;
-        goodSignature = false;
-        keyId = matches[1];
-        userId = matches[2];
-        break;
-      }
-
-      matches = errLines[j].match(revKeyPat);
-      if (matches && (matches.length > 2)) {
-        signed = true;
-        goodSignature = true;
-        keyId = matches[1];
-        userId = matches[2];
-        break;
-      }
-
-      matches = errLines[j].match(goodSignPat);
-      if (matches && (matches.length > 2)) {
-        signed = true;
-        goodSignature = true;
-        keyId = matches[1];
-        userId = matches[2];
-        break;
-      }
-
-      matches = errLines[j].match(keyExpPat);
-      if (matches && (matches.length > 2)) {
-        signed = true;
-        goodSignature = true;
-        keyId = matches[1];
-        userId = matches[2];
-        break;
+        encToArray.push("0x"+matches[1]);
       }
 
       // var userIdHintPat =  /USERID_HINT (\w{16}) (.*)$/i;
@@ -2472,7 +2412,56 @@ var EnigmailCommon = {
         keyId = matches[1];
         userId = matches[2];
       }
-      // NO break;
+
+      // BADSIG entry => signature found but bad
+      matches = errLines[j].match(badSignPat);
+      if (matches && (matches.length > 2)) {
+        if (signed) {
+          this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+        }
+        signed = true;
+        goodSignature = false;
+        keyId = matches[1];
+        userId = matches[2];
+        //break;
+      }
+
+      // REVKEYSIG entry => signature found but bad
+      matches = errLines[j].match(revKeyPat);
+      if (matches && (matches.length > 2)) {
+        if (signed) {
+          this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+        }
+        signed = true;
+        goodSignature = true;
+        keyId = matches[1];
+        userId = matches[2];
+        //break;
+      }
+
+      matches = errLines[j].match(goodSignPat);
+      if (matches && (matches.length > 2)) {
+        if (signed) {
+          this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+        }
+        signed = true;
+        goodSignature = true;
+        keyId = matches[1];
+        userId = matches[2];
+        //break;
+      }
+
+      matches = errLines[j].match(keyExpPat);
+      if (matches && (matches.length > 2)) {
+        if (signed) {
+          this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+        }
+        signed = true;
+        goodSignature = true;
+        keyId = matches[1];
+        userId = matches[2];
+        break;
+      }
     }
 
     if (goodSignature) {
@@ -2505,9 +2494,40 @@ var EnigmailCommon = {
       userId = this.convertToUnicode(userId, "UTF-8");
     }
 
+    // add list of keys used for encryption if known (and their user IDs) if known
+    // Parsed status messages are something like (here the German version):
+    //    [GNUPG:] ENC_TO AAAAAAAAAAAAAAAA 1 0
+    //    [GNUPG:] ENC_TO 5B820D2D4553884F 16 0
+    //    [GNUPG:] ENC_TO 37904DF2E631552F 1 0
+    //    [GNUPG:] ENC_TO BBBBBBBBBBBBBBBB 1 0
+    //    gpg: verschlüsselt mit 3072-Bit RSA Schlüssel, ID BBBBBBBB, erzeugt 2009-11-28
+    //          "Joe Doo <joe.doo@domain.de>"
+    //    [GNUPG:] NO_SECKEY E71712DF47BBCC40
+    //    gpg: verschlüsselt mit RSA Schlüssel, ID AAAAAAAA
+    //    [GNUPG:] NO_SECKEY AAAAAAAAAAAAAAAA
+    if (encToArray.length > 0) {
+      // for each key also show an associated user ID if known:
+      for (var encIdx=0; encIdx<encToArray.length; ++encIdx) {
+        var keyId = encToArray[encIdx];
+        // except for ID 00000000, which signals hidden keys
+        if (keyId != "0x0000000000000000") {
+          var userId = EnigmailCommon.enigmailSvc.getFirstUserIdOfKey(keyId);
+          if (userId) {
+            userId = EnigmailCommon.convertToUnicode(userId, "UTF-8");
+            encToArray[encIdx] += " (" + userId + ")";
+          }
+        }
+        else {
+            encToArray[encIdx] = EnigmailCommon.getString("hiddenKey");
+        }
+      }
+      encToDetails = "\n  " + encToArray.join(",\n  ") + "\n"; 
+    }
+
     retStatusObj.userId = userId;
     retStatusObj.keyId = keyId;
     retStatusObj.sigDetails = sigDetails;
+    retStatusObj.encToDetails = encToDetails;
 
     if (signed) {
       var trustPrefix = "";

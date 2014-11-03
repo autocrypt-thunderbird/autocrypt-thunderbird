@@ -117,7 +117,7 @@ Enigmail.hdrView = {
   },
 
 
-  updateHdrIcons: function (exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, xtraStatus)
+  updateHdrIcons: function (exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, encToDetails, xtraStatus)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: this.updateHdrIcons: exitCode="+exitCode+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+errorMsg+"\n");
 
@@ -125,7 +125,6 @@ Enigmail.hdrView = {
 
     this.statusBar = document.getElementById("enigmail-status-bar");
     this.enigmailBox = document.getElementById("enigmailBox");
-
 
     if (gFolderDisplay.selectedMessageUris.length > 0) {
       this.lastEncryptedMsgKey = gFolderDisplay.selectedMessageUris[0];
@@ -167,7 +166,6 @@ Enigmail.hdrView = {
         fullStatusInfo=errorMsg;
       }
     }
-
 
     if (errorLines && (errorLines.length > 22) ) {
       // Retain only first twenty lines and last two lines of error message
@@ -356,6 +354,11 @@ Enigmail.hdrView = {
                         + "\n" + statusInfo;
         }
       }
+    }
+
+    // if we have parsed ENC_TO entries, add them as status info 
+    if (encToDetails && encToDetails.length > 0) {
+      statusInfo += "\n\n" + EnigmailCommon.getString("encryptKeysNote", [ encToDetails ]);
     }
 
     Enigmail.msg.securityInfo = { statusFlags: statusFlags,
@@ -925,7 +928,7 @@ if (messageHeaderSink) {
         throw Components.results.NS_NOINTERFACE;
       },
 
-      updateSecurityStatus: function (uriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri)
+      updateSecurityStatus: function (uriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, encToDetails)
       {
         // uri is not used here; added for compatibility to other addons
         EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: uriSpec="+uriSpec+"\n");
@@ -935,7 +938,9 @@ if (messageHeaderSink) {
         EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: msgUriSpec="+msgUriSpec+"\n");
 
         if (!uriSpec || (uriSpec == msgUriSpec)) {
-          Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation);
+          Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
+                                          errorMsg, blockSeparation, encToDetails,
+                                          null);   // xtraStatus
         }
 
         return;

@@ -3512,16 +3512,17 @@ Enigmail.msg = {
     var statusFlagsObj = new Object();
     var userIdObj      = new Object();
     var keyIdObj       = new Object();
-    var sigDateObj     = new Object();
+    var sigDetailsObj  = new Object();
     var errorMsgObj    = new Object();
     var blockSeparationObj  = new Object();
+    var encToDetailsObj     = new Object();
 
     var uiFlags = nsIEnigmail.UI_UNVERIFIED_ENC_OK;
 
     var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
-                                   signatureObj, exitCodeObj, statusFlagsObj,
-                                   keyIdObj, userIdObj, sigDateObj,
-                                   errorMsgObj, blockSeparationObj);
+                                               signatureObj, exitCodeObj, statusFlagsObj,
+                                               keyIdObj, userIdObj, sigDetailsObj,
+                                               errorMsgObj, blockSeparationObj, encToDetailsObj);
 
     // Decode plaintext from charset to unicode
     plainText = EnigmailCommon.convertToUnicode(plainText, charset);

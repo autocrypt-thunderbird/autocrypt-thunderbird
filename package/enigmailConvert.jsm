@@ -659,6 +659,7 @@ decryptINLINE = function (mime) {
     var errorMsgObj = new Object();
     var keyIdObj    = new Object();
     var blockSeparationObj = { value: "" };
+    var encToDetailsObj  = new Object();
     var signatureObj = new Object();
     signatureObj.value = "";
 
@@ -706,7 +707,7 @@ decryptINLINE = function (mime) {
         }
 
         plaintext = enigmailSvc.decryptMessage(null, uiFlags, ciphertext, signatureObj, exitCodeObj, statusFlagsObj,
-                                                           keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj);
+                                               keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj, encToDetailsObj);
         if (!plaintext || plaintext.length == 0) {
           if (statusFlagsObj.value & nsIEnigmail.DISPLAY_MESSAGE) {
             Ec.alert(null, errorMsgObj.value);

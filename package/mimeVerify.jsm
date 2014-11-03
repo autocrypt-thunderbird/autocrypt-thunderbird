@@ -382,14 +382,15 @@ MimeVerify.prototype = {
 
       if (headerSink) {
         headerSink.updateSecurityStatus(this.msgUriSpec,
-            this.exitCode,
-            this.returnStatus.statusFlags,
-            this.returnStatus.keyId,
-            this.returnStatus.userId,
-            this.returnStatus.sigDetails,
-            this.returnStatus.errorMsg,
-            this.returnStatus.blockSeparation,
-            null);
+                                        this.exitCode,
+                                        this.returnStatus.statusFlags,
+                                        this.returnStatus.keyId,
+                                        this.returnStatus.userId,
+                                        this.returnStatus.sigDetails,
+                                        this.returnStatus.errorMsg,
+                                        this.returnStatus.blockSeparation,
+                                        null,
+                                        this.returnStatus.encToDetails);
       }
       this.statusDisplayed = true;
     }
