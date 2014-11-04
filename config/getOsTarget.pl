@@ -82,6 +82,9 @@ elsif ($srcCpu =~ /i[3456]86/i) {
 elsif ($srcCpu =~ /ppc/i) {
   $targetCpu = "ppc";
 }
+elsif ($srcCpu =~ /powerpc/i) {
+  $targetCpu = "ppc";
+}
 elsif ($srcCpu =~ /alpha/i) {
   $targetCpu = "Alpha";
 }
@@ -92,7 +95,10 @@ elsif ($srcCpu =~ /ia64/i) {
   $targetCpu = "ia64";
 }
 elsif ($srcCpu =~ /arm/i) {
-  $targetCpu = "arm";
+  $targetCpu = "arm-eabi";
+}
+elsif ($srcCpu =~ /mips/i) {
+  $targetCpu = "mips";
 }
 else {
   $targetCpu = $srcCpu;
