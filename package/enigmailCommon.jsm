@@ -2399,7 +2399,7 @@ var EnigmailCommon = {
     for (j=0; j<errLines.length; j++) {
       this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: process: "+errLines[j]+"\n");
 
-      // ENC_TO 
+      // ENC_TO
       matches = errLines[j].match(encToPat);
       if (matches && (matches.length > 2)) {
         encToArray.push("0x"+matches[1]);
@@ -2426,7 +2426,7 @@ var EnigmailCommon = {
         //break;
       }
 
-      // REVKEYSIG entry => signature found but bad
+      // REVKEYSIG entry => signature found but key revoked
       matches = errLines[j].match(revKeyPat);
       if (matches && (matches.length > 2)) {
         if (signed) {
@@ -2451,6 +2451,7 @@ var EnigmailCommon = {
         //break;
       }
 
+      // EXPKEYSIG entry => signature found but key expired
       matches = errLines[j].match(keyExpPat);
       if (matches && (matches.length > 2)) {
         if (signed) {
@@ -2521,7 +2522,7 @@ var EnigmailCommon = {
             encToArray[encIdx] = EnigmailCommon.getString("hiddenKey");
         }
       }
-      encToDetails = "\n  " + encToArray.join(",\n  ") + "\n"; 
+      encToDetails = "\n  " + encToArray.join(",\n  ") + "\n";
     }
 
     retStatusObj.userId = userId;
