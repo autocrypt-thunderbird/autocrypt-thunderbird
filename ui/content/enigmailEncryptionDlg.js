@@ -33,18 +33,16 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
+Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 
-// Initialize enigmailCommon
-EnigInitCommon("enigmailEncryptionDlg");
-
+const Ec = EnigmailCommon;
 
 function enigmailEncryptionDlgLoad() {
-  DEBUG_LOG("enigmailEncryptionDlgLoad.js: Load\n");
+  Ec.DEBUG_LOG("enigmailEncryptionDlgLoad.js: Load\n");
 
   // Get Enigmail service, such that e.g. the wizard can be executed
   // if needed.
-  var enigmailSvc = GetEnigmailSvc();
+  var enigmailSvc = Ec.getService();
   if (!enigmailSvc) {
     window.close();
     return;
@@ -52,58 +50,83 @@ function enigmailEncryptionDlgLoad() {
 
   var inputObj = window.arguments[0];
 
-  var statusEncryptedStr = inputObj.statusEncryptedStr;
-  if (statusEncryptedStr) {
-    document.getElementById("enigmail_compose_popup_encrypt_label").setAttribute("value", statusEncryptedStr);
-  }
-  var encGroupElement = document.getElementById("enigmail_compose_popup_encrypt");
-  // note: for whatever reason a switch over inputObj.encryptForced does not work
-  if (inputObj.encryptForced == 0) {
-    encGroupElement.selectedItem = document.getElementById("enigmail_final_encryptNo");
-  }
-  else if (inputObj.encryptForced == 1) {
-    encGroupElement.selectedItem = document.getElementById("enigmail_final_encryptDefault");
-  }
-  else if (inputObj.encryptForced == 2) {
-    encGroupElement.selectedItem = document.getElementById("enigmail_final_encryptYes");
+  var signElement = document.getElementById("signMsg");
+  switch(inputObj.statusSigned) {
+    case EnigmailCommon.ENIG_FINAL_FORCEYES:
+    case EnigmailCommon.ENIG_FINAL_YES:
+      signElement.setAttribute("checked", true);
+      break;
+    default:
+      signElement.removeAttribute("checked");
   }
 
-  var statusSignedStr = inputObj.statusSignedStr;
-  if (statusSignedStr) {
-    document.getElementById("enigmail_compose_popup_sign_label").setAttribute("value", statusSignedStr);
-  }
-  var signGroupElement = document.getElementById("enigmail_compose_popup_sign");
-  if (inputObj.signForced == 0) {
-    signGroupElement.selectedItem = document.getElementById("enigmail_final_signNo");
-  }
-  else if (inputObj.signForced == 1) {
-    signGroupElement.selectedItem = document.getElementById("enigmail_final_signDefault");
-  }
-  else if (inputObj.signForced == 2) {
-    signGroupElement.selectedItem = document.getElementById("enigmail_final_signYes");
+  var encElement = document.getElementById("encryptMsg");
+  switch(inputObj.statusEncrypted) {
+    case EnigmailCommon.ENIG_FINAL_FORCEYES:
+    case EnigmailCommon.ENIG_FINAL_YES:
+      encElement.setAttribute("checked", true);
+      break;
+    default:
+      encElement.removeAttribute("checked");
   }
 
-  var statusPGPMimeStr = inputObj.statusPGPMimeStr;
-  if (statusPGPMimeStr) {
-    document.getElementById("enigmail_compose_popup_pgpmime_label").setAttribute("value", statusPGPMimeStr);
-  }
-  var pgpmimeGroupElement = document.getElementById("enigmail_compose_popup_pgpmime");
-  if (inputObj.pgpmimeForced == 0) {
-    pgpmimeGroupElement.selectedItem = document.getElementById("enigmail_final_pgpmimeNo");
-  }
-  else if (inputObj.pgpmimeForced == 1) {
-    pgpmimeGroupElement.selectedItem = document.getElementById("enigmail_final_pgpmimeDefault");
-  }
-  else if (inputObj.pgpmimeForced == 2) {
-    pgpmimeGroupElement.selectedItem = document.getElementById("enigmail_final_pgpmimeYes");
+  var pgpmimeElement = document.getElementById("pgpmimeGroup");
+  switch(inputObj.statusPGPMime) {
+    case EnigmailCommon.ENIG_FINAL_FORCEYES:
+    case EnigmailCommon.ENIG_FINAL_YES:
+      pgpmimeElement.selectedItem = document.getElementById("usePgpMime");
+      break;
+    default:
+      pgpmimeElement.selectedItem = document.getElementById("useInlinePgp");
   }
 }
 
+// Reset to defaults and close dialog
+function resetDefaults() {
+  var resultObj = window.arguments[0];
+
+  resultObj.success = true;
+  resultObj.sign = EnigmailCommon.ENIG_UNDEF;
+  resultObj.encrypt = EnigmailCommon.ENIG_UNDEF;
+  resultObj.pgpmime = EnigmailCommon.ENIG_UNDEF;
+  window.close();
+}
+
+
+function getResultStatus(origStatus, newStatus) {
+
+
+  switch(origStatus) {
+    case EnigmailCommon.ENIG_FINAL_FORCEYES:
+    case EnigmailCommon.ENIG_FINAL_YES:
+      if (newStatus) {
+        return origStatus;
+      }
+      else {
+        return EnigmailCommon.ENIG_NEVER;
+      }
+      break;
+    default:
+      if (!newStatus) {
+        return origStatus;
+      }
+      else {
+        return EnigmailCommon.ENIG_ALWAYS;
+      }
+  }
+}
 
 function enigmailEncryptionDlgAccept () {
   var resultObj = window.arguments[0];
-  resultObj.signForced = document.getElementById("enigmail_compose_popup_sign").value;
-  resultObj.encryptForced = document.getElementById("enigmail_compose_popup_encrypt").value;
-  resultObj.pgpmimeForced = document.getElementById("enigmail_compose_popup_pgpmime").value;
+  var sign = document.getElementById("signMsg").checked;
+  var encrypt = document.getElementById("encryptMsg").checked;
+  var pgpmimeElement = document.getElementById("pgpmimeGroup");
+  var usePgpMime = (pgpmimeElement.selectedItem.getAttribute("value") == "1");
+
+  resultObj.sign = getResultStatus(resultObj.statusSigned, sign);
+  resultObj.encrypt = getResultStatus(resultObj.statusSigned, encrypt);
+  resultObj.pgpmime = getResultStatus(resultObj.statusPGPMime, usePgpMime);
+
+  resultObj.success = true;
 }
 

@@ -326,9 +326,11 @@
 <!ENTITY enigmail.encDlgSign.label                  "Sign Message">
 <!ENTITY enigmail.encDlgSign.accesskey              "S">
 <!ENTITY enigmail.encDlgPgpMime.label               "Use PGP/MIME">
-<!ENTITY enigmail.encDlgPgpMime.accesskey           "U">
-<!ENTITY enigmail.encDlgIgnoreRules.label           "Ignore Per-Recipient Rules">
-<!ENTITY enigmail.encDlgIgnoreRules.accesskey       "I">
+<!ENTITY enigmail.encDlgPgpMime.accesskey           "P">
+<!ENTITY enigmail.encDlgInlinePgp.label             "Use Inline PGP">
+<!ENTITY enigmail.encDlgInlinePgp.accesskey         "I">
+<!ENTITY enigmail.encDlgReset.label                 "Reset to Defaults">
+<!ENTITY enigmail.encDlgReset.accesskey             "R">
 <!ENTITY enigmail.amPrefPgpHeader.label             "Send 'OpenPGP' Header">
 <!ENTITY enigmail.amPrefPgpHeader.id.label          "Send OpenPGP Key ID">
 <!ENTITY enigmail.amPrefPgpHeader.url.label         "Send URL for key retrieval:">
