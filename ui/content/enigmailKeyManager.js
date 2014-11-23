@@ -492,7 +492,12 @@ function enigmailDeleteKey() {
     }
   }
 
-  EnigmailKeyMgmt.deleteKey(window, "0x"+keyList.join(" 0x"), deleteSecret,
+  let fprArr = [];
+  for (let j in keyList) {
+    fprArr.push("0x" + gKeyList[keyList[0]].fpr);
+  }
+
+  EnigmailKeyMgmt.deleteKey(window, fprArr.join(" "), deleteSecret,
     function(exitCode, errorMsg) {
       if (exitCode != 0) {
         EnigAlert(EnigGetString("deleteKeyFailed")+"\n\n"+errorMsg);
@@ -858,7 +863,7 @@ function enigmailExportKeys() {
   }
 
   var FilePickerLabel="";
-  
+
   if (exportFlags & nsIEnigmail.EXTRACT_SECRET_KEY) {
     FilePickerLabel = EnigGetString("exportKeypairToFile");
   }
@@ -1301,9 +1306,9 @@ function enigApplyFilter()
   searchTxt = searchTxt.toLowerCase();
   searchTxt = searchTxt.replace(/^(\s*)(.*)/, "$2").replace(/\s+$/,"");  // trim spaces
 
-  // check if we search for a fingerprint 
+  // check if we search for a fingerprint
   var fpr = null;
-  if (searchTxt.length == 49) { // possible fingerprint with spaces? 
+  if (searchTxt.length == 49) { // possible fingerprint with spaces?
     if (searchTxt.search(/^[0-9a-f ]*$/)>=0 && searchTxt[4]==' ' && searchTxt[9]==' ' && searchTxt[14]==' '
                                             && searchTxt[19]==' ' && searchTxt[24]==' ' && searchTxt[29]==' '
                                             && searchTxt[34]==' ' && searchTxt[39]==' ' && searchTxt[44]==' ') {
