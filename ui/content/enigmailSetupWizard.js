@@ -362,6 +362,11 @@ function displayKeyCreate() {
     fillIdentities('menulist');
   }
 
+  // gpg >= 2.1 queries passphrase using gpg-agent only
+  if (! Ec.getGpgFeature("keygen-passphrase")) {
+    document.getElementById("passphraseBox").setAttribute("collapsed", "true");
+  }
+
   if (countSelectedId() == 1) {
     var node = document.getElementById("idSelection").firstChild;
     while (node) {
@@ -555,13 +560,18 @@ function wizardLocateGpg() {
 
 function checkPassphrase() {
 
-  var passphrase = enigmailCheckPassphrase();
-  if (passphrase == null) return false;
+  // gpg >= 2.1 queries passphrase using gpg-agent only
 
-  if (passphrase.length < 8) {
-    EnigAlert(EnigGetString("passphrase.min8keys"));
-    return false;
+  if (Ec.getGpgFeature("keygen-passphrase")) {
+    var passphrase = enigmailCheckPassphrase();
+    if (passphrase == null) return false;
+
+    if (passphrase.length < 8) {
+      EnigAlert(EnigGetString("passphrase.min8keys"));
+      return false;
+    }
   }
+
   return true;
 
 }
@@ -569,6 +579,11 @@ function checkPassphrase() {
 function wizardGenKey() {
   var wizard = document.getElementById("enigmailSetupWizard");
   var passphrase = document.getElementById("passphrase").value;
+
+  // gpg >= 2.1 queries passphrase using gpg-agent only
+  if (! Ec.getGpgFeature("keygen-passphrase")) {
+    passphrase = "";
+  }
 
   var curId = wizardGetSelectedIdentity();
 

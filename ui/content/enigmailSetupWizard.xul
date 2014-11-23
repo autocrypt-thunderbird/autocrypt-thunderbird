@@ -428,7 +428,7 @@
   </wizardpage>
 
 
-  <!-- ??? Page -->
+  <!-- Key Create Progress Page -->
   <wizardpage id="pgKeygen" pageid="pgKeygen"
               onpageshow="wizardGenKey()"
               next="pgComplete"

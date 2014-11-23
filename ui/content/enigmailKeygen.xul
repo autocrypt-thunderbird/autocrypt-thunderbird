@@ -87,7 +87,7 @@
   </columns>
 
   <rows>
-    <row>
+    <row id="passphraseRow">
       <hbox id="passphraseBox" align="center">
         <label control="passphrase" value="&enigmail.keyPassphrase.label;" />
       </hbox>

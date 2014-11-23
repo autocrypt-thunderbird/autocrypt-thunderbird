@@ -63,6 +63,13 @@ function enigmailKeygenLoad() {
   gUserIdentityListPopup = document.getElementById("userIdentityPopup");
   gUseForSigning     = document.getElementById("useForSigning");
 
+  var noPassphrase = document.getElementById("noPassphrase");
+
+  if (! Ec.getGpgFeature("keygen-passphrase")) {
+    document.getElementById("passphraseRow").setAttribute("collapsed", "true");
+    noPassphrase.setAttribute("collapsed", "true");
+  }
+
   if (gUserIdentityListPopup) {
     fillIdentityListPopup();
   }
@@ -72,7 +79,6 @@ function enigmailKeygenLoad() {
   // if you don't want them:
   // - specify passphrase
   // - specify expiry date
-  var noPassphrase = document.getElementById("noPassphrase");
   noPassphrase.checked = false;
   EnigSetPref("noPassphrase", noPassphrase.checked);
   var noExpiry = document.getElementById("noExpiry");
@@ -234,14 +240,21 @@ function enigmailKeygenStart() {
       return;
    }
 
-   var passphrase = enigmailCheckPassphrase();
-   if (passphrase == null) return;
 
-   var noPassphraseElement = document.getElementById("noPassphrase");
+   // gpg >= 2.1 queries passphrase using gpg-agent only
+   if (Ec.getGpgFeature("keygen-passphrase")) {
+     var passphrase = enigmailCheckPassphrase();
+     if (passphrase == null) return;
 
-   if (!passphrase && !noPassphraseElement.checked) {
-      EnigAlert(EnigGetString("passCheckBox"));
-      return;
+     var noPassphraseElement = document.getElementById("noPassphrase");
+
+     if (!passphrase && !noPassphraseElement.checked) {
+        EnigAlert(EnigGetString("passCheckBox"));
+        return;
+     }
+   }
+   else {
+     passphrase = "";
    }
 
    var commentElement = document.getElementById("keyComment");
