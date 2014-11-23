@@ -669,12 +669,12 @@ Enigmail.prototype = {
     var useAgent = false;
 
     try {
-      if (EC.isDosLike() && this.agentVersion < "2.0") {
+      if (EC.isDosLike() && !Ec.getGpgFeature("supports-gpg-agent")) {
         useAgent = false;
       }
       else {
         // gpg version >= 2.0.16 launches gpg-agent automatically
-        if (this.agentVersion >= "2.0.16") {
+        if (Ec.getGpgFeature("autostart-gpg-agent")) {
           useAgent = true;
           EC.DEBUG_LOG("enigmail.js: Setting useAgent to "+useAgent+" for gpg2 >= 2.0.16\n");
         }
@@ -888,9 +888,7 @@ Enigmail.prototype = {
     EC.DEBUG_LOG("enigmail.js: detected GnuPG version '"+gpgVersion+"'\n");
     this.agentVersion = gpgVersion;
 
-    // check GnuPG version number
-    var evalVersion = this.agentVersion.match(/^\d+\.\d+/);
-    if (evalVersion && evalVersion[0]< "1.4") {
+    if (!Ec.getGpgFeature("version-supported")) {
       if (domWindow) Ec.alert(domWindow, EC.getString("oldGpgVersion", [ gpgVersion ]));
       throw Components.results.NS_ERROR_FAILURE;
     }
@@ -954,9 +952,9 @@ Enigmail.prototype = {
       EC.DEBUG_LOG("enigmail.js: detectGpgAgent: no GPG_AGENT_INFO variable set\n");
       this.gpgAgentInfo.preStarted = false;
 
-      if (this.agentVersion >= "2.0") {
+      if (Ec.getGpgFeature("supports-gpg-agent")) {
         Ec.gpgAgentIsOptional = false;
-        if (this.agentVersion >= "2.0.16") {
+        if (Ec.getGpgFeature("autostart-gpg-agent")) {
           EC.DEBUG_LOG("enigmail.js: detectGpgAgent: gpg 2.0.16 or newer - not starting agent\n");
         }
         else {
@@ -1029,7 +1027,7 @@ Enigmail.prototype = {
           }
         }
 
-        if ((! EC.isDosLike()) && (this.agentVersion < "2.0.16" )) {
+        if ((! EC.isDosLike()) && (! Ec.getGpgFeature("autostart-gpg-agent"))) {
 
           // create unique tmp file
           var ds = Cc[DIR_SERV_CONTRACTID].getService();

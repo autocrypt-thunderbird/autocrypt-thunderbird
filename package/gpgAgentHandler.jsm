@@ -291,7 +291,7 @@ var EnigmailGpgAgent = {
     try {
       var svc = Ec.getService(win);
       if (svc) {
-        if (svc.agentVersion >= "2.0" &&
+        if (Ec.getGpgFeature("supports-gpg-agent") &&
            svc.gpgconfPath &&
            svc.connGpgAgentPath) {
 

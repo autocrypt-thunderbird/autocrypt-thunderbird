@@ -1457,19 +1457,7 @@ var EnigmailCommon = {
         exitCode = 0;
       }
     }
-    if ((this.enigmailSvc.agentVersion < "1.4.1") && this.isDosLike()) {
-        if ((exitCode == 2) && (!(statusFlags & (nsIEnigmail.BAD_PASSPHRASE |
-                                nsIEnigmail.UNVERIFIED_SIGNATURE |
-                                nsIEnigmail.MISSING_PASSPHRASE |
-                                nsIEnigmail.BAD_ARMOR |
-                                nsIEnigmail.DECRYPTION_INCOMPLETE |
-                                nsIEnigmail.DECRYPTION_FAILED |
-                                nsIEnigmail.NO_PUBKEY |
-                                nsIEnigmail.NO_SECKEY)))) {
-        this.WARNING_LOG("enigmailCommon.jsm: Enigmail.fixExitCode: Using gpg version "+this.enigmailSvc.agentVersion+", activating countermeasures for file renaming bug.\n");
-        exitCode = 0;
-      }
-    }
+
     return exitCode;
   },
 
@@ -1925,6 +1913,50 @@ var EnigmailCommon = {
     }
 
     return proc;
+  },
+
+  /***
+    determine if a specific feature is available in the GnuPG version used
+
+    @featureName:  String; one of the following values:
+      version-supported    - is the gpg version supported at all (true for gpg >= 1.4.2)
+      supports-gpg-agent   - is gpg-agent is usually provided (true for gpg >= 2.0)
+      autostart-gpg-agent  - is gpg-agent started automatically by gpg (true for gpg >= 2.0.16)
+      keygen-passphrase    - can the passphrase be specified when generating keys (false for gpg >= 2.1)
+
+    @return: depending on featureName - Boolean unless specified differently:
+      (true if feature is available / false otherwise)
+      If the feature cannot be found, undefined is returned
+   */
+
+  getGpgFeature: function(featureName) {
+    let gpgVersion = this.enigmailSvc.agentVersion;
+
+    if (! gpgVersion || typeof(gpgVersion) != "string" || gpgVersion.length == 0) {
+      return undefined;
+    }
+
+    gpgVersion = gpgVersion.replace(/\-.*$/, "");
+    if (gpgVersion.search(/^\d+\.\d+/) < 0) {
+      // not a valid version number
+      return undefined;
+    }
+
+    var vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
+
+    switch(featureName) {
+    case 'version-supported':
+      return (vc.compare(gpgVersion, "1.4.2") >= 0);
+    case 'supports-gpg-agent':
+      return (vc.compare(gpgVersion, "2.0") >= 0);
+    case 'autostart-gpg-agent':
+      return (vc.compare(gpgVersion, "2.0.16") >= 0);
+    case 'keygen-passphrase':
+      return (vc.compare(gpgVersion, "2.1") < 0);
+    }
+
+    return undefined;
+
   },
 
 
@@ -2644,13 +2676,8 @@ var EnigmailCommon = {
         encryptArgs.push("--sign");
 
       if (sendFlags & nsIEnigmail.SEND_ALWAYS_TRUST) {
-        if (this.enigmailSvc.agentVersion >= "1.4") {
-          encryptArgs.push("--trust-model");
-          encryptArgs.push("always");
-        }
-        else {
-          encryptArgs.push("--always-trust");
-        }
+        encryptArgs.push("--trust-model");
+        encryptArgs.push("always");
       }
       if ((sendFlags & nsIEnigmail.SEND_ENCRYPT_TO_SELF) && fromMailAddr)
         encryptArgs = encryptArgs.concat(["--encrypt-to", angledFromMailAddr]);
