@@ -79,6 +79,9 @@ if ($srcCpu =~ /x86[_-]64/i) {
 elsif ($srcCpu =~ /i[3456]86/i) {
   $targetCpu = "x86";
 }
+elsif ($srcCpu =~ /p(?:ower)?pc64/i) {
+  $targetCpu = "ppc64";
+}
 elsif ($srcCpu =~ /ppc/i) {
   $targetCpu = "ppc";
 }
