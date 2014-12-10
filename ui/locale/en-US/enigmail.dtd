@@ -142,6 +142,9 @@
 <!ENTITY enigmail.securitybutton.label       "Enigmail">
 <!ENTITY enigmail.securitybutton.tip         "Enigmail security settings">
 
+<!ENTITY enigmail.composetoolbar.label        "Enigmail Toolbar">
+<!ENTITY enigmail.composetoolbar.desc         "Enigmail Encryption Info">
+
 <!ENTITY enigmail.signedsend.label            "Sign Message">
 <!ENTITY enigmail.encryptedsend.label         "Encrypt Message">
 <!ENTITY enigmail.disableRules.label          "Ignore Per-Recipient Rules">

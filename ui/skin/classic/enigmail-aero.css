@@ -41,7 +41,7 @@
 
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
-
+/*
 #button-enigmail-decrypt,
 [typeid="button-enigmail-decrypt"]
   {
@@ -60,45 +60,79 @@
   {
     -moz-image-region: rect(48px 24px 72px 0px);
   }
+*/
 
-toolbar[iconsize="small"]  #button-enigmail-decrypt
+#button-enigmail-decrypt
   {
     -moz-image-region: rect(0px 16px 16px 0px);
     list-style-image      : url("chrome://enigmail/skin/enigmail-toolbar-small.png");
   }
 
-toolbar[iconsize="small"] #button-enigmail-decrypt:hover
+#button-enigmail-decrypt:hover
   {
     -moz-image-region: rect(16px 16px 32px 0px);
   }
 
-toolbar[iconsize="small"] #button-enigmail-decrypt[disabled]
+#button-enigmail-decrypt[disabled]
   {
     -moz-image-region: rect(32px 16px 48px 0px);
   }
 
-#button-enigmail-send,
-#button-enigmail-send:hover {
-  -moz-image-region: rect(0px 24px 24px 0px);
-   list-style-image      : url("chrome://enigmail/skin/enigmail-settings.png");
+/***************************************************
+ *  Icons for compose toolbar: encrytion
+ ***************************************************/
+
+#button-enigmail-encrypt
+{
+  list-style-image : url("chrome://enigmail/skin/encrypt-inactive-16.png");
 }
 
-#button-enigmail-send[disabled] {
-  -moz-image-region: rect(24px 24px 48px 0px);
+#button-enigmail-encrypt[disabled] {
+  list-style-image : url("chrome://enigmail/skin/encrypt-disabled-16.png");
+}
+
+#button-enigmail-encrypt[encrypted="activeNone"]
+{
+  list-style-image : url("chrome://enigmail/skin/encrypt-active-16.png");
+}
+
+#button-enigmail-encrypt[encrypted="forceYes"]
+{
+  list-style-image : url("chrome://enigmail/skin/encrypt-active-force-16.png");
+}
+
+#button-enigmail-encrypt[encrypted="forceNo"]
+{
+  list-style-image : url("chrome://enigmail/skin/encrypt-inactive-force-16.png");
 }
 
 
-toolbar[iconsize="small"] #button-enigmail-send {
-  -moz-image-region: rect(0px 16px 16px 0px);
-   list-style-image      : url("chrome://enigmail/skin/enigmail-settings-small.png");
+/***************************************************
+ *  Icons for compose toolbar: signing
+ ***************************************************/
+
+#button-enigmail-sign
+{
+  list-style-image : url("chrome://enigmail/skin/sign-inactive-16.png");
 }
 
-toolbar[iconsize="small"] #button-enigmail-send:hover {
-  -moz-image-region: rect(16px 16px 32px 0px);
+#button-enigmail-sign[disabled] {
+  list-style-image : url("chrome://enigmail/skin/sign-disabled-16.png");
 }
 
-toolbar[iconsize="small"] #button-enigmail-send[disabled] {
-  -moz-image-region: rect(32px 16px 48px 0px);
+#button-enigmail-sign[signed="activeNone"]
+{
+  list-style-image : url("chrome://enigmail/skin/sign-active-16.png");
+}
+
+#button-enigmail-sign[signed="forceYes"]
+{
+  list-style-image : url("chrome://enigmail/skin/sign-active-force-16.png");
+}
+
+#button-enigmail-sign[signed="forceNo"]
+{
+  list-style-image : url("chrome://enigmail/skin/sign-inactive-force-16.png");
 }
 
 .action-box { width: 100px }
@@ -118,7 +152,7 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
 .enigmailHeaderValue {
   min-width: 50px;
   white-space: normal;
-  color: WindowText;
+  color: black;
   line-height: 1.4em;
 
   -moz-appearance: none !important;
@@ -206,6 +240,10 @@ toolbar[iconsize="small"] #button-enigmail-send[disabled] {
   -moz-border-left-colors: transparent threedhighlight threedlightshadow;
 }
 
+.enigmailToolbar {
+  min-height: 24px;
+  -moz-appearance: none;
+}
 
 /***************************************************
  *  Icons for messenger status bar
@@ -436,7 +474,7 @@ treechildren::-moz-tree-cell-text(STYLE) {}
 */
 
 /******************************
- *  Rules for filter actions 
+ *  Rules for filter actions
  ******************************/
 
 .ruleactiontarget[type="enigmail@enigmail.net#filterActionMoveDecrypt"] {

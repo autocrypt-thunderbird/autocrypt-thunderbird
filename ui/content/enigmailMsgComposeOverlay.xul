@@ -63,6 +63,10 @@
               events="focus"
               oncommandupdate="Enigmail.msg.focusChange()"/>
 
+  <broadcasterset id="composeBroadcasters">
+    <broadcaster id="enigmail-broadcaster"/>
+  </broadcasterset>
+
   <popupset id="aTooltipSet"/>
 
   <keyset id="tasksKeys">
@@ -193,73 +197,54 @@
 
   <!-- Enigmail toolbar button -->
   <toolbarpalette id="MsgComposeToolbarPalette">
-   <!-- for compatibility reasons (themes) the button name is unchanged and doesn't match the action(s) -->
-    <toolbarbutton class="toolbarbutton-1"
-            id="button-enigmail-send"
-            type="menu-button"
-            label="&enigmail.securitybutton.label;"
+  <toolbarbutton class="toolbarbutton-1"
+            id="button-enigmail-sign"
+            label="&enigmail.signedsend.label;"
             buttontype="thunderbird"
             tooltip="aTooltipSet"
-            tooltiptext="&enigmail.securitybutton.tip;"
-            oncommand="Enigmail.msg.doPgpButton('');">
-            <!-- NOTE: this oncommand is empty because it is always triggered AFTER
-                       the oncommand commands below.
-                       Therefor THOSE use nextCommand() instead of doPgpButton() -->
+            observes="enigmail-broadcaster"
+            oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"/>
 
-        <menupopup onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.setMenuSettings('3'))">
+    <toolbarbutton class="toolbarbutton-1"
+            id="button-enigmail-encrypt"
+            label="&enigmail.encryptedsend.label;"
+            buttontype="thunderbird"
+            tooltip="aTooltipSet"
+            observes="enigmail-broadcaster"
+            oncommand="Enigmail.msg.doPgpButton('toggle-final-encrypt');"/>
 
-          <menuitem id="enigmail_compose_encrypt_item3"
-                accesskey="&enigmail.encryptedsend.accesskey;"
-                label="&enigmail.encryption.label;"
-                oncommand="Enigmail.msg.doPgpButton('toggle-final-encrypt');"/>
-
-          <!-- signing state / toggle menu -->
-          <menuitem id="enigmail_compose_sign_item3"
-                accesskey="&enigmail.signedsend.accesskey;"
-                label="&enigmail.signing.label;"
-                oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"/>
-
-          <!-- PGP/MIME state / toggle menu -->
-          <menuseparator advanced="true"/>
-          <menuitem id="enigmail_compose_pgpmime_item3"
-                advanced="true"
-                accesskey="&enigmail.sendPGPMime.accesskey;"
-                label="&enigmail.pgpMime.label;"
-                oncommand="Enigmail.msg.doPgpButton('toggle-final-mime');"/>
-
-
-          <menuseparator advanced="true"/>
-
-          <menuitem id="enigmail_trust_all_keys3"
-              label="&enigmail.tempTrustAllKeys.label;"
-              type="checkbox"
-              advanced="true"
-              oncommand="Enigmail.msg.nextCommand('trustKeys')" />
-
-        </menupopup>
+    <toolbarbutton id="enigmail-toolbar-text-button"
+      label="&enigmail.composetoolbar.desc;">
+      <label id="enigmail-toolbar-text" value="&enigmail.composetoolbar.desc;"/>
     </toolbarbutton>
+
   </toolbarpalette>
 
-  <!-- Thunderbird & Spicebird -->
+  <!-- Thunderbird & Spicebird - - >
   <toolbar id="composeToolbar2"
-           defaultset="button-send,separator,button-address,spellingButton,button-attach,button-enigmail-send,button-security,button-save">
+           defaultset="button-send,separator,button-address,spellingButton,button-attach,button-security,button-save">
   </toolbar>
 
-  <!-- Seamonkey 2.x -->
+  <!- - Seamonkey 2.x - ->
   <toolbar id="composeToolbar"
-           defaultset="button-send,separator,button-address,button-attach,spellingButton,button-enigmail-send,button-security,separator,button-save,spring,throbber-box">
+           defaultset="button-send,separator,button-address,button-attach,spellingButton,button-security,separator,button-save,spring,throbber-box">
   </toolbar>
+  -->
 
-  <statusbar id="status-bar">
-    <hbox id="enigmail-status-bar"
-          insertafter="totalMessageCount">
-      <statusbarpanel id="enigmail-encrypted-status"
-        class="statusbarpanel-iconic"
-        collapsed="true" onclick="Enigmail.msg.handleClick(event, 'toggle-final-encrypt');"/>
-      <statusbarpanel id="enigmail-signed-status"
-        class="statusbarpanel-iconic"
-        collapsed="true" onclick="Enigmail.msg.handleClick(event,'toggle-final-sign');"/>
-    </hbox>
-  </statusbar>
+  <!-- Enigmail bar above text editor field -->
+
+  <toolbox id="compose-toolbox">
+    <toolbar id="enigmail-toolbar"
+            insertafter="composeToolbar2"
+            defaultset="enigmail-toolbar-text-button,spring,button-enigmail-sign,button-enigmail-encrypt"
+            toolbarname="&enigmail.composetoolbar.label;"
+            customizable="true"
+            class="enigmailToolbar"
+            fullscreentoolbar="true"
+            mode="full"
+            context="toolbar-context-menu">
+    </toolbar>
+  </toolbox>
+
 
 </overlay>

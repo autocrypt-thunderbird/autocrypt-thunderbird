@@ -1327,19 +1327,23 @@ Enigmail.msg = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.updateStatusBar()\n");
     this.statusEncryptedInStatusBar = this.statusEncrypted; // to double check broken promise for encryption
 
-    const nsIEnigmail = Components.interfaces.nsIEnigmail;
-    const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
-    const SIGN    = nsIEnigmail.SEND_SIGNED;
+    var sign = false;
+    var encrypt = false;
 
-    var statusBar = document.getElementById("enigmail-status-bar");
+    var toolbarTxt = document.getElementById("enigmail-toolbar-text");
+    var broadcaster = document.getElementById("enigmail-broadcaster");
 
     if (!this.getAccDefault("enabled")) {
       // hide icons if enigmail not enabled
-      statusBar.removeAttribute("encrypted");
-      statusBar.removeAttribute("signed");
+      broadcaster.setAttribute("disabled", "true");
+      broadcaster.removeAttribute("encrypted");
+      broadcaster.removeAttribute("signed");
+      toolbarTxt.value = EnigmailCommon.getString("msgCompose.toolbarTxt.disabled");
+
       return;
     }
 
+    broadcaster.removeAttribute("disabled");
     // process resulting icon symbol for encrypt mode
     var encSymbol = null;
     var encStr = null;
@@ -1351,6 +1355,7 @@ Enigmail.msg = {
       case EnigmailCommon.ENIG_FINAL_FORCEYES:
         encSymbol = "forceYes";
         encStr = EnigmailCommon.getString("encryptForceYes");
+        encrypt = true;
         break;
       case EnigmailCommon.ENIG_FINAL_NO:
         encSymbol = "inactiveNone";
@@ -1359,6 +1364,7 @@ Enigmail.msg = {
       case EnigmailCommon.ENIG_FINAL_YES:
         encSymbol = "activeNone";
         encStr = EnigmailCommon.getString("encryptAutoYes");
+        encrypt = true;
         break;
       case EnigmailCommon.ENIG_FINAL_CONFLICT:
         encSymbol = "inactiveConflict";
@@ -1368,8 +1374,8 @@ Enigmail.msg = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js:   encSymbol="+encSymbol+"\n");
 
     // update encrypt icon and tooltip/menu-text
-    statusBar.setAttribute("encrypted", encSymbol);
-    var encIcon = document.getElementById("enigmail-encrypted-status");
+    broadcaster.setAttribute("encrypted", encSymbol);
+    var encIcon = document.getElementById("button-enigmail-encrypt");
     encIcon.setAttribute("tooltiptext", encStr);
     this.statusEncryptedStr = encStr;
 
@@ -1388,6 +1394,7 @@ Enigmail.msg = {
       case EnigmailCommon.ENIG_FINAL_FORCEYES:
         signSymbol = "forceYes";
         signStr = EnigmailCommon.getString("signForceYes");
+        sign = true;
         break;
       case EnigmailCommon.ENIG_FINAL_NO:
         signSymbol = "inactiveNone";
@@ -1396,6 +1403,7 @@ Enigmail.msg = {
       case EnigmailCommon.ENIG_FINAL_YES:
         signSymbol = "activeNone";
         signStr = EnigmailCommon.getString("signAutoYes");
+        sign = true;
         break;
       case EnigmailCommon.ENIG_FINAL_CONFLICT:
         signSymbol = "inactiveConflict";
@@ -1405,10 +1413,36 @@ Enigmail.msg = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js:   signSymbol="+signSymbol+"\n");
 
     // update sign icon and tooltip/menu-text
-    statusBar.setAttribute("signed", signSymbol);
-    var signIcon = document.getElementById("enigmail-signed-status");
+    broadcaster.setAttribute("signed", signSymbol);
+    var signIcon = document.getElementById("button-enigmail-sign");
     signIcon.setAttribute("tooltiptext", signStr);
     this.statusSignedStr = signStr;
+
+    var toolbarMsg = "";
+    if (sign && encrypt) {
+      toolbarMsg = EnigmailCommon.getString("msgCompose.toolbarTxt.signAndEncrypt");
+    }
+    else if (sign) {
+      toolbarMsg = EnigmailCommon.getString("msgCompose.toolbarTxt.signOnly");
+    }
+    else if (encrypt) {
+      toolbarMsg = EnigmailCommon.getString("msgCompose.toolbarTxt.encryptOnly");
+    }
+    else {
+      toolbarMsg = EnigmailCommon.getString("msgCompose.toolbarTxt.noEncryption");
+    }
+
+    if ((sign || encrypt) &&
+       (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields)) {
+
+       if (gMsgCompose.compFields.securityInfo.signMessage ||
+          gMsgCompose.compFields.securityInfo.requireEncryptMessage) {
+
+        toolbarMsg += " - " + EnigmailCommon.getString("msgCompose.toolbarTxt.smime");
+      }
+    }
+
+    toolbarTxt.value = EnigmailCommon.getString("msgCompose.toolbarTxt.toolbarMsg", toolbarMsg);
 
     // update pgpmime menu-text
     var pgpmimeStr = null;
