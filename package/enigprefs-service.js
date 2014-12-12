@@ -60,17 +60,8 @@ EnigmailPrefService.prototype = {
   }
 };
 
-if (XPCOMUtils.generateNSGetFactory) {
-  // Gecko >= 2.0
-  var components = [EnigmailPrefService];
-  const NSGetFactory = XPCOMUtils.generateNSGetFactory(components);
-}
-else {
-  // Gecko <= 1.9.x
-  var NSGetModule = XPCOMUtils.generateNSGetModule([EnigmailPrefService], postModuleRegisterCallback);
+var components = [EnigmailPrefService];
+const NSGetFactory = XPCOMUtils.generateNSGetFactory(components);
 
-}
+dump("Enigmail account manager extension registered\n");
 
-function postModuleRegisterCallback (compMgr, fileSpec, componentsArray) {
-  dump("Enigmail account manager extension registered\n");
-}
