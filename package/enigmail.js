@@ -2776,13 +2776,18 @@ function getEnigmailString(aStr) {
   }
 }
 
+/********************************************************************************
+  Filter actions for decrypting messages permanently
+ ********************************************************************************/
 
-/*****
+/***
+ *  dispatchMessages
+ *
  *  Because thunderbird throws all messages at once at us thus we have to rate limit the dispatching
  *  of the message processing. Because there is only a negligible performance gain when dispatching
  *  several message at once we serialize to not overwhelm low power devices.
  *
- *****/
+ **/
 
 function dispatchMessages(aMsgHdrs, aActionValue, move) {
   if (aMsgHdrs.length < 1) {
@@ -2799,6 +2804,10 @@ function dispatchMessages(aMsgHdrs, aActionValue, move) {
 
 }
 
+/**
+ * filter action for creating a decrypted version of the mail and
+ * deleting the original mail at the same time
+ */
 
 var filterActionMoveDecrypt = {
   id: "enigmail@enigmail.net#filterActionMoveDecrypt",
@@ -2819,12 +2828,18 @@ var filterActionMoveDecrypt = {
     return;
   },
 
-  isValidForType: function (type, scope) {return true;},
+  isValidForType: function (type, scope) {
+    return true;
+  },
+
   validateActionValue: function (value, folder, type) {
+
     if (Ec == null) {
       Enigmail();
       Ec.getService();
     }
+
+    Ec.alert(null, EC.getString("filter.decryptMove.warnExperimental"));
 
     if (value == "") {
       return EC.getString("filter.folderRequired");
@@ -2838,6 +2853,10 @@ var filterActionMoveDecrypt = {
   needsBody: true
 };
 
+/**
+ * filter action for creating a decrypted copy of the mail, leaving the original
+ * message untouched
+ */
 var filterActionCopyDecrypt = {
   id: "enigmail@enigmail.net#filterActionCopyDecrypt",
   name: EC.getString("filter.decryptCopy.label"),
