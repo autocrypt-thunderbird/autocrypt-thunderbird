@@ -1504,11 +1504,16 @@ Enigmail.msg = {
         if (Enigmail.hlp.getRecipientsKeys(toAddrList.join(", "),
                                            false,    // not interactive
                                            false,    // forceRecipientSettings (ignored due to not interactive)
-                                           matchedKeysObj, // resulting matching keys (ignored)
+                                           matchedKeysObj, // resulting matching keys
                                            flagsObj)) {    // resulting flags (0/1/2/3 for each type)
           this.signByRules    = flagsObj.sign;
           this.encryptByRules = flagsObj.encrypt;
           this.pgpmimeByRules = flagsObj.pgpMime;
+
+          if (matchedKeysObj.value && matchedKeysObj.value.length > 0) {
+            // replace addresses with results from rules
+            toAddrList = matchedKeysObj.value.split(", ");
+          }
         }
       }
 
