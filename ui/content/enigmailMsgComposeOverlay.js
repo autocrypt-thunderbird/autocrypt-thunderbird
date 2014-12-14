@@ -2101,14 +2101,16 @@ Enigmail.msg = {
 
     // if
     // - "always ask/manually" (even if all keys were found) or
-    // - we have an invalid recipient or
-    // - we could not resolve any/all keys
-    //   (due to disabled "assignKeysByEmailAddr"" or multiple keys with same trust for a recipient)
+    // - unless "ask for missing keys":
+    //   - we have an invalid recipient or
+    //   - we could not resolve any/all keys
+    //     (due to disabled "assignKeysByEmailAddr"" or multiple keys with same trust for a recipient)
     // start the dialog for user selected keys
     if (EnigmailCommon.getPref("assignKeysManuallyAlways")
-        || ((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT)
+        || (((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT)
+            || toAddrStr.indexOf('@') >= 0)
             && EnigmailCommon.getPref("assignKeysManuallyIfMissing"))
-        || toAddrStr.indexOf('@') >= 0) {
+        ) {
 
       // check for invalid recipient keys
       var resultObj = new Object();
@@ -2197,6 +2199,8 @@ Enigmail.msg = {
         !EnigmailCommon.getPref("assignKeysManuallyIfMissing") &&
         !EnigmailCommon.getPref("assignKeysManuallyAlways")) {
       sendFlags &= ~ENCRYPT;
+      this.statusEncrypted = EnigmailCommon.ENIG_FINAL_NO;
+      this.statusEncryptedInStatusBar = EnigmailCommon.ENIG_FINAL_NO;
       EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptTestMessage: No default encryption because test failed\n");
     }
     EnigmailCommon.DEBUG_LOG("  <=== encryptTestMessage()");
