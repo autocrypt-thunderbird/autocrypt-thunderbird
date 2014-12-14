@@ -293,6 +293,10 @@ PgpMimeDecrypt.prototype = {
 
     this.displayStatus();
 
+    if (! this.backgroundJob) {
+      this.verifier.onStopRequest();
+    }
+
     Ec.DEBUG_LOG("mimeDecrypt.js: onStopRequest: process terminated\n");  // always log this one
     this.proc = null;
   },
@@ -385,7 +389,6 @@ PgpMimeDecrypt.prototype = {
 
     if (! this.backgroundJob) {
       this.verifier.onTextData(verifyData);
-      this.verifier.onStopRequest();
     }
 
     this.decryptedData = "";
