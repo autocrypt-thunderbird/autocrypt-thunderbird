@@ -132,7 +132,7 @@
 .enigmailHeaderValue {
   min-width: 50px;
   white-space: normal;
-  color: WindowText;
+  color: black;
   line-height: 1.4em;
 
   -moz-appearance: none !important;
