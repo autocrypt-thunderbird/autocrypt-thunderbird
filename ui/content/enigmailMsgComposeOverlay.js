@@ -1777,6 +1777,18 @@ Enigmail.msg = {
     //       THUS, we disable encryption even though all bcc receivers might want to have it encrypted.
     if (toAddrStr.length == 0) {
        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): skip key selection because we neither have \"to\" nor \"cc\" addresses\n");
+
+       if (this.statusPGPMime == EnigmailCommon.ENIG_FINAL_YES ||
+           this.statusPGPMime == EnigmailCommon.ENIG_FINAL_FORCEYES) {
+          sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+       }
+       else if (this.statusPGPMime == EnigmailCommon.ENIG_FINAL_NO ||
+           this.statusPGPMime == EnigmailCommon.ENIG_FINAL_FORCENO ||
+           this.statusPGPMime == EnigmailCommon.ENIG_FINAL_CONFLICT)
+       {
+          sendFlags &= ~nsIEnigmail.SEND_PGP_MIME;
+       }
+
        return {
          sendFlags: sendFlags,
          toAddrStr: toAddrStr,
