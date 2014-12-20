@@ -272,6 +272,7 @@ Enigmail.msg = {
 
     this.sendPgpMime = this.getAccDefault("pgpMimeMode");
     this.attachOwnKeyObj.appendAttachment = this.getAccDefault("attachPgpKey");
+    this.setOwnKeyStatus();
     this.attachOwnKeyObj.attachedObj = null;
     this.attachOwnKeyObj.attachedKey = null;
 
@@ -372,7 +373,7 @@ Enigmail.msg = {
       if (flags & nsIEnigmail.SEND_ENCRYPTED) Enigmail.msg.setFinalSendMode('final-encryptYes');
       if (flags & nsIEnigmail.SEND_ATTACHMENT) Enigmail.msg.attachOwnKeyObj.appendAttachment = true;
     }
-
+    Enigmail.msg.setOwnKeyStatus();
   },
 
 
@@ -614,6 +615,24 @@ Enigmail.msg = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.toggleAttachOwnKey\n");
     EnigmailCommon.getService(window); // make sure Enigmail is loaded and working
     this.attachOwnKeyObj.appendAttachment = !this.attachOwnKeyObj.appendAttachment;
+
+    this.setOwnKeyStatus();
+  },
+
+  /***
+   * set broadcaster to display whether the own key is attached or not
+   */
+
+  setOwnKeyStatus: function ()
+  {
+    let bc = document.getElementById("enigmail-broadcaster");
+
+    if (this.attachOwnKeyObj.appendAttachment) {
+      bc.setAttribute("addPubkey", "true");
+    }
+    else {
+      bc.setAttribute("addPubkey", "false");
+    }
   },
 
   attachOwnKey: function ()

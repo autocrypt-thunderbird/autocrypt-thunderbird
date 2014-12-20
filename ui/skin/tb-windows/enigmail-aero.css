@@ -135,6 +135,39 @@
   list-style-image : url("chrome://enigmail/skin/sign-inactive-force-16.png");
 }
 
+/***************************************************
+ *  Icons for compose toolbar: attach own key
+ ***************************************************/
+
+#button-enigmail-attach
+{
+  list-style-image : url("chrome://enigmail/skin/attach-inactive-16.png");
+}
+
+#button-enigmail-attach[disabled] {
+  list-style-image : url("chrome://enigmail/skin/attach-disabled-16.png");
+}
+
+#button-enigmail-attach[addPubkey="true"]
+{
+  list-style-image : url("chrome://enigmail/skin/attach-active-16.png");
+}
+
+toolbar[iconsize="small"] #button-enigmail-attach
+{
+  list-style-image : url("chrome://enigmail/skin/attach-inactive-16.png");
+}
+
+toolbar[iconsize="small"] #button-enigmail-attach[disabled] {
+  list-style-image : url("chrome://enigmail/skin/attach-disabled-16.png");
+}
+
+toolbar[iconsize="small"] #button-enigmail-attach[addPubkey="true"]
+{
+  list-style-image : url("chrome://enigmail/skin/attach-active-16.png");
+}
+
+
 .action-box { width: 100px }
 
 #expandedEnigmailBox {

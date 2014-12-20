@@ -115,6 +115,25 @@
   list-style-image : url("chrome://enigmail/skin/modern-sign-inactive-force.png");
 }
 
+/***************************************************
+ *  Icons for compose toolbar: attach own key
+ ***************************************************/
+
+#button-enigmail-attach
+{
+  list-style-image : url("chrome://enigmail/skin/modern-attach-inactive.png");
+}
+
+#button-enigmail-attach[disabled] {
+  list-style-image : url("chrome://enigmail/skin/modern-attach-disabled.png");
+}
+
+#button-enigmail-attach[addPubkey="true"]
+{
+  list-style-image : url("chrome://enigmail/skin/modern-attach-active.png");
+}
+
+
 
 .action-box { width: 100px }
 
