@@ -553,7 +553,11 @@ var EnigmailFuncs = {
 
       var exitCodeObj = new Object();
       var errorMsgObj = new Object();
-      var photoPath = enigmailSvc.showKeyPhoto("0x"+keyId, photoNumber, exitCodeObj, errorMsgObj);
+      if (keyId.search(/^0x/) < 0) {
+        keyId = "0x" + keyId;
+      }
+
+      var photoPath = enigmailSvc.showKeyPhoto(keyId, photoNumber, exitCodeObj, errorMsgObj);
 
       if (photoPath && exitCodeObj.value==0) {
 

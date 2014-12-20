@@ -1139,6 +1139,7 @@ Enigmail.prototype = {
     if (errOutput)
        errorMsgObj.value  = errOutput;
 
+    var prefix = this.getLogDirectoryPrefix();
     if (prefix && (EC.getLogLevel() >= 4)) {
       EnigmailFuncs.writeFileContents(prefix+"enigout.txt", outputData);
       EnigmailFuncs.writeFileContents(prefix+"enigerr.txt", errOutput);
@@ -2619,13 +2620,15 @@ Enigmail.prototype = {
 
         fileStream.flush();
         fileStream.close();
+        return picFile.path;
+
       }
       catch (ex) {
         exitCodeObj.value = -1;
         return "";
       }
     }
-    return picFile.path;
+    return "";
   },
 
 
