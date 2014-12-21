@@ -94,17 +94,18 @@
     <menupopup id="menu_EnigmailPopup"
       onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.updateOptionsDisplay());">
 
+      <menuitem id="enigmail_wizard_basic"
+           label="&enigmail.setupWiz.label;"
+           advanced="reverse"
+           accesskey="&enigmail.setupWiz.accesskey;"
+           oncommand="EnigmailFuncs.openSetupWizard(window);" />
+
       <menuitem id="enigmail_decryptverify"
            label="&enigmail.decryptverify.label;"
            accesskey="&enigmail.decryptverify.accesskey;"
            advanced="true"
            hidden="false"
            oncommand="Enigmail.msg.messageDecrypt();" />
-
-      <menuitem id="enigmail_savedecrypted"
-           label="&enigmail.savedecrypted.label;"
-           accesskey="&enigmail.savedecrypted.accesskey;"
-           oncommand="Enigmail.msg.messageSave();" />
 
       <menuseparator
            advanced="true"
@@ -217,8 +218,9 @@
         </menupopup>
       </menu>
 
-      <menuitem id="enigmail_wizard"
+      <menuitem id="enigmail_wizard_advanced"
            label="&enigmail.setupWiz.label;"
+           advanced="true"
            accesskey="&enigmail.setupWiz.accesskey;"
            oncommand="EnigmailFuncs.openSetupWizard(window);" />
 
