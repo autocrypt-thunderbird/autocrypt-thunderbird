@@ -64,7 +64,9 @@
               oncommandupdate="Enigmail.msg.focusChange()"/>
 
   <broadcasterset id="composeBroadcasters">
-    <broadcaster id="enigmail-broadcaster"/>
+    <broadcaster id="enigmail-bc-encrypt" checked="false"/>
+    <broadcaster id="enigmail-bc-sign" checked="false"/>
+    <broadcaster id="enigmail-bc-attach" checked="false"/>
   </broadcasterset>
 
   <popupset id="aTooltipSet"/>
@@ -204,7 +206,7 @@
             label="&enigmail.attachmykey.label;"
             buttontype="thunderbird"
             tooltip="aTooltipSet"
-            observes="enigmail-broadcaster"
+            observes="enigmail-bc-attach"
             oncommand="Enigmail.msg.toggleAttachOwnKey();"/>
 
     <toolbarbutton class="toolbarbutton-1"
@@ -212,7 +214,7 @@
             label="&enigmail.signedsend.label;"
             buttontype="thunderbird"
             tooltip="aTooltipSet"
-            observes="enigmail-broadcaster"
+            observes="enigmail-bc-sign"
             oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"/>
 
     <toolbarbutton class="toolbarbutton-1"
@@ -220,7 +222,7 @@
             label="&enigmail.encryptedsend.label;"
             buttontype="thunderbird"
             tooltip="aTooltipSet"
-            observes="enigmail-broadcaster"
+            observes="enigmail-bc-encrypt"
             oncommand="Enigmail.msg.doPgpButton('toggle-final-encrypt');"/>
 
     <toolbarbutton id="enigmail-toolbar-text-button"

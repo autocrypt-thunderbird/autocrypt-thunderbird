@@ -625,13 +625,15 @@ Enigmail.msg = {
 
   setOwnKeyStatus: function ()
   {
-    let bc = document.getElementById("enigmail-broadcaster");
+    let bc = document.getElementById("enigmail-bc-attach");
 
     if (this.attachOwnKeyObj.appendAttachment) {
       bc.setAttribute("addPubkey", "true");
+      bc.setAttribute("checked", "true");
     }
     else {
       bc.setAttribute("addPubkey", "false");
+      bc.removeAttribute("checked");
     }
   },
 
@@ -1350,7 +1352,7 @@ Enigmail.msg = {
     var encrypt = false;
 
     var toolbarTxt = document.getElementById("enigmail-toolbar-text");
-    var broadcaster = document.getElementById("enigmail-broadcaster");
+    var broadcaster = document.getElementById("enigmail-bc-encrypt");
 
     if (!this.getAccDefault("enabled")) {
       // hide icons if enigmail not enabled
@@ -1397,6 +1399,10 @@ Enigmail.msg = {
     var encIcon = document.getElementById("button-enigmail-encrypt");
     encIcon.setAttribute("tooltiptext", encStr);
     this.statusEncryptedStr = encStr;
+    this.setChecked("enigmail-bc-encrypt", encrypt);
+
+    broadcaster = document.getElementById("enigmail-bc-sign");
+
 
     // process resulting icon symbol for sign mode
     var signSymbol = null;
@@ -1436,6 +1442,8 @@ Enigmail.msg = {
     var signIcon = document.getElementById("button-enigmail-sign");
     signIcon.setAttribute("tooltiptext", signStr);
     this.statusSignedStr = signStr;
+    this.setChecked("enigmail-bc-sign", sign);
+
 
     var toolbarMsg = "";
     if (sign && encrypt) {
