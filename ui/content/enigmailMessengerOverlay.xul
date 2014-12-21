@@ -271,7 +271,7 @@
   </toolbar>
 
 
-  <-- enigmailBox is defined in messengerOverlay-(tbird|sm).xul -->
+  <!-- enigmailBox is defined in messengerOverlay-(tbird|sm).xul -->
 
   <hbox id="enigmailBox" class="expandedEnigmailBox"
         collapsed="true" align="center">
