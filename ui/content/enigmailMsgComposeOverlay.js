@@ -2478,14 +2478,7 @@ Enigmail.msg = {
 
        var pgpEnabled = this.getAccDefault("enabled");
 
-       if (! pgpEnabled) {
-          if ((sendFlags & (ENCRYPT | SIGN)) || this.attachOwnKeyObj.appendAttachment) {
-            if (!EnigmailCommon.confirmDlg(window, EnigmailCommon.getString("acctNotConfigured"),
-                  EnigmailCommon.getString("msgCompose.button.send")))
-                return false;
-          }
-          return true;
-       }
+       if (! pgpEnabled) return true;
 
        var optSendFlags = 0;
        var inlineEncAttach=false;
