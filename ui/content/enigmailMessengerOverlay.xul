@@ -271,84 +271,86 @@
   </toolbar>
 
 
-      <hbox id="enigmailBox" class="expandedEnigmailBox"
-            collapsed="true" align="center">
+  <-- enigmailBox is defined in messengerOverlay-(tbird|sm).xul -->
 
-        <vbox>
-          <spacer class="enigmailHeaderSpacer"/>
-        </vbox>
+  <hbox id="enigmailBox" class="expandedEnigmailBox"
+        collapsed="true" align="center">
 
-        <hbox class="headerNameBox" align="start" id="enigmailStatusTextBox" pack="start">
-          <image id="enigToggleHeaderView2"
-                 class="enigmailExpandViewButton" onclick="Enigmail.hdrView.toggleHeaderView();"
-                 state="false" persist="state class"/>
-          <spacer flex="1"/>
-          <label class="enigmailHeaderName"
-                id="enigmailStatusHdr" flex="1"
-                value="&enigmail.label;" control="enigmailStatusText"/>
-        </hbox>
+    <vbox>
+      <spacer class="enigmailHeaderSpacer"/>
+    </vbox>
 
-        <hbox flex="1" pack="start" class="headerValueBox">
-          <vbox flex="1" pack="start">
-            <textbox flex="1" readonly="true" align="center"
-                 id="enigmailStatusText" chromedir="ltr"
-                 class="enigmailHeaderValue"/>
-            <textbox flex="1" readonly="true"
-                   id="expandedEnigmailStatusText"
-                   class="enigmailHeaderValue"
-                   observes="enigmailStatusText"
-                   chromedir="ltr"
-                   collapsed="true" display="false" state="false"
-                   persist="display" aria-labelledby="enigmailStatusHdr"/>
-          </vbox>
-          <vbox class="enigmailHeaderNameBox" flex="0" pack="center">
-            <observes element="enigmailStatusText" attribute="class"/>
-            <button id="enigmailStatusHdrDetails" pack="center"
-                    label="&enigmail.detailsHdrButton.label;"
-                    type="menu"
-                    class="enigMsgHdrView-flat-button">
-              <menupopup id="enigSecurityContext"
-                     onpopupshowing="Enigmail.hdrView.dispSecurityContext();">
-                <menuitem label="&enigmail.importpublickey.label;"
-                          id="enigmail_importKey"
-                          hidden="true"
-                          oncommand="Enigmail.msg.handleUnknownKey();"/>
-                <menuitem label="&enigmail.reload.label;"
-                          id="enigmail_reloadMessage"
-                          hidden="true"
-                          oncommand="Enigmail.msg.reloadCompleteMsg();"/>
-                <menuitem label="&enigmail.pgpSecurityInfo.label;"
-                          id="enigmail_pgpSecurityInfo"
-                          oncommand="Enigmail.msg.viewOpenpgpInfo(null, false);"/>
-                <menuitem label="&enigmail.copySecurityInfo.label;"
-                          id="enigmail_copySecurityInfo"
-                          oncommand="Enigmail.hdrView.copyStatusInfo();"/>
-                <menuseparator/>
-                <menuitem label="&enigmail.displayKeyProperties.label;"
-                          id="enigmail_dispKeyDetails"
-                          oncommand="Enigmail.hdrView.dispKeyDetails();"/>
-                <menuitem label="&enigmail.showPhoto.label;"
-                          id="enigmail_showPhoto"
-                          oncommand="Enigmail.hdrView.showPhoto();"/>
-                <menuitem label="&enigmail.signSenderKeyPopup.label;"
-                          id="enigmail_signSenderKey"
-                          oncommand="Enigmail.hdrView.signKey();"/>
-                <menuitem label="&enigmail.trustSenderKeyPopup.label;"
-                          id="enigmail_editSenderKeyTrust"
-                          oncommand="Enigmail.hdrView.editKeyTrust();"/>
-              </menupopup>
-            </button>
-          </vbox>
-        </hbox>
-      </hbox>
+    <hbox class="headerNameBox" align="start" id="enigmailStatusTextBox" pack="start">
+      <image id="enigToggleHeaderView2"
+             class="enigmailExpandViewButton" onclick="Enigmail.hdrView.toggleHeaderView();"
+             state="false" persist="state class"/>
+      <spacer flex="1"/>
+      <label class="enigmailHeaderName"
+            id="enigmailStatusHdr" flex="1"
+            value="&enigmail.label;" control="enigmailStatusText"/>
+    </hbox>
 
-      <hbox id="enigmailRevealAttachments" hidden="true" class="enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureUnknown" flex="0" pack="center">
-        <vbox flex="1" pack="start">
-          <textbox flex="1" readonly="true" align="center" class="enigmailHeaderValue" chromedir="ltr"
-            value="&enigmail.revealAttachmentsButton.label;"/>
-        </vbox>
-        <button class="enigMsgHdrView-flat-button" label="&enigmail.revealAttachments.button;" oncommand="Enigmail.msg.revealAttachments();"/>
-      </hbox>
+    <hbox flex="1" pack="start" class="headerValueBox">
+      <vbox flex="1" pack="start">
+        <textbox flex="1" readonly="true" align="center"
+             id="enigmailStatusText" chromedir="ltr"
+             class="enigmailHeaderValue"/>
+        <textbox flex="1" readonly="true"
+               id="expandedEnigmailStatusText"
+               class="enigmailHeaderValue"
+               observes="enigmailStatusText"
+               chromedir="ltr"
+               collapsed="true" display="false" state="false"
+               persist="display" aria-labelledby="enigmailStatusHdr"/>
+      </vbox>
+      <vbox class="enigmailHeaderNameBox" flex="0" pack="center">
+        <observes element="enigmailStatusText" attribute="class"/>
+        <button id="enigmailStatusHdrDetails" pack="center"
+                label="&enigmail.detailsHdrButton.label;"
+                type="menu"
+                class="enigMsgHdrView-flat-button">
+          <menupopup id="enigSecurityContext"
+                 onpopupshowing="Enigmail.hdrView.dispSecurityContext();">
+            <menuitem label="&enigmail.importpublickey.label;"
+                      id="enigmail_importKey"
+                      hidden="true"
+                      oncommand="Enigmail.msg.handleUnknownKey();"/>
+            <menuitem label="&enigmail.reload.label;"
+                      id="enigmail_reloadMessage"
+                      hidden="true"
+                      oncommand="Enigmail.msg.reloadCompleteMsg();"/>
+            <menuitem label="&enigmail.pgpSecurityInfo.label;"
+                      id="enigmail_pgpSecurityInfo"
+                      oncommand="Enigmail.msg.viewOpenpgpInfo(null, false);"/>
+            <menuitem label="&enigmail.copySecurityInfo.label;"
+                      id="enigmail_copySecurityInfo"
+                      oncommand="Enigmail.hdrView.copyStatusInfo();"/>
+            <menuseparator/>
+            <menuitem label="&enigmail.displayKeyProperties.label;"
+                      id="enigmail_dispKeyDetails"
+                      oncommand="Enigmail.hdrView.dispKeyDetails();"/>
+            <menuitem label="&enigmail.showPhoto.label;"
+                      id="enigmail_showPhoto"
+                      oncommand="Enigmail.hdrView.showPhoto();"/>
+            <menuitem label="&enigmail.signSenderKeyPopup.label;"
+                      id="enigmail_signSenderKey"
+                      oncommand="Enigmail.hdrView.signKey();"/>
+            <menuitem label="&enigmail.trustSenderKeyPopup.label;"
+                      id="enigmail_editSenderKeyTrust"
+                      oncommand="Enigmail.hdrView.editKeyTrust();"/>
+          </menupopup>
+        </button>
+      </vbox>
+    </hbox>
+  </hbox>
+
+  <hbox id="enigmailRevealAttachments" hidden="true" class="enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureUnknown" flex="0" pack="center">
+    <vbox flex="1" pack="start">
+      <textbox flex="1" readonly="true" align="center" class="enigmailHeaderValue" chromedir="ltr"
+        value="&enigmail.revealAttachmentsButton.label;"/>
+    </vbox>
+    <button class="enigMsgHdrView-flat-button" label="&enigmail.revealAttachments.button;" oncommand="Enigmail.msg.revealAttachments();"/>
+  </hbox>
 
 
 
