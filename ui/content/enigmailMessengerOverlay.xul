@@ -271,8 +271,6 @@
   </toolbar>
 
 
-  <vbox id="messagepanebox">
-    <vbox position="1">
       <hbox id="enigmailBox" class="expandedEnigmailBox"
             collapsed="true" align="center">
 
@@ -351,8 +349,7 @@
         </vbox>
         <button class="enigMsgHdrView-flat-button" label="&enigmail.revealAttachments.button;" oncommand="Enigmail.msg.revealAttachments();"/>
       </hbox>
-    </vbox>
-  </vbox>
+
 
 
   <!-- Thunderbird -->
