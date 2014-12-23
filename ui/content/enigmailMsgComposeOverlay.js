@@ -247,6 +247,7 @@ Enigmail.msg = {
     // reset default send settings, unless we have changed them already
     if (!this.sendModeDirty) {
       this.processAccountSpecificDefaultOptions();
+      this.determineSendFlags();  // important to use identity specific settings
       this.processFinalState();
       this.updateStatusBar();
     }
@@ -1397,19 +1398,24 @@ Enigmail.msg = {
     this.statusEncryptedInStatusBar = this.statusEncrypted; // to double check broken promise for encryption
 
     var toolbarTxt = document.getElementById("enigmail-toolbar-text");
-    var broadcaster = document.getElementById("enigmail-bc-encrypt");
+    var encBroadcaster = document.getElementById("enigmail-bc-encrypt");
+    var signBroadcaster = document.getElementById("enigmail-bc-sign");
+    var attachBroadcaster = document.getElementById("enigmail-bc-attach");
 
+    // enigmail disabled for this identity?:
     if (!this.getAccDefault("enabled")) {
       // hide icons if enigmail not enabled
-      broadcaster.setAttribute("disabled", "true");
-      broadcaster.removeAttribute("encrypted");
-      broadcaster.removeAttribute("signed");
+      encBroadcaster.removeAttribute("encrypted");
+      encBroadcaster.setAttribute("disabled", "true");
+      signBroadcaster.removeAttribute("signed");
+      signBroadcaster.setAttribute("disabled", "true");
+      attachBroadcaster.setAttribute("disabled", "true");
       toolbarTxt.value = EnigmailCommon.getString("msgCompose.toolbarTxt.disabled");
-
       return;
     }
-
-    broadcaster.removeAttribute("disabled");
+    encBroadcaster.removeAttribute("disabled");
+    signBroadcaster.removeAttribute("disabled");
+    attachBroadcaster.removeAttribute("disabled");
 
     // process resulting icon symbol and status strings for encrypt mode
     var encSymbol = null;
@@ -1456,13 +1462,11 @@ Enigmail.msg = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js:   encSymbol="+encSymbol+"  encReasonStr="+encReasonStr+"\n");
 
     // update encrypt icon and tooltip/menu-text
-    broadcaster.setAttribute("encrypted", encSymbol);
+    encBroadcaster.setAttribute("encrypted", encSymbol);
     var encIcon = document.getElementById("button-enigmail-encrypt");
     encIcon.setAttribute("tooltiptext", encReasonStr);
     this.statusEncryptedStr = encStr;
     this.setChecked("enigmail-bc-encrypt", doEncrypt);
-
-    broadcaster = document.getElementById("enigmail-bc-sign");
 
     // process resulting icon symbol for sign mode
     var signSymbol = null;
@@ -1519,7 +1523,7 @@ Enigmail.msg = {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js:   signSymbol="+signSymbol+"  signReasonStr="+signReasonStr+"\n");
 
     // update sign icon and tooltip/menu-text
-    broadcaster.setAttribute("signed", signSymbol);
+    signBroadcaster.setAttribute("signed", signSymbol);
     var signIcon = document.getElementById("button-enigmail-sign");
     signIcon.setAttribute("tooltiptext", signReasonStr);
     this.statusSignedStr = signStr;
