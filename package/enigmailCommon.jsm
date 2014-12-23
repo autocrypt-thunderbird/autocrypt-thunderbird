@@ -172,10 +172,11 @@ var EnigmailCommon = {
   // NOTE:
   // - values 0/1/2 are used with this fixed semantics in the persistent rules
   // - see also enigmailEncryptionDlg.xul
-  ENIG_NEVER:     0,
-  ENIG_UNDEF:     1,
-  ENIG_ALWAYS:    2,
-  ENIG_CONFLICT: 99,
+  ENIG_NEVER:        0,
+  ENIG_UNDEF:        1,
+  ENIG_ALWAYS:       2,
+  ENIG_AUTO_ALWAYS: 22,
+  ENIG_CONFLICT:    99,
 
   ENIG_FINAL_UNDEF:    -1,
   ENIG_FINAL_NO:        0,
