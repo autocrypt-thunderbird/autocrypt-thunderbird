@@ -202,28 +202,30 @@
   <!-- Enigmail toolbar button -->
   <toolbarpalette id="MsgComposeToolbarPalette">
     <toolbarbutton class="toolbarbutton-1"
+            id="button-enigmail-encrypt"
+            label=""
+            buttontype="thunderbird"
+            tooltip="aTooltipSet"
+            observes="enigmail-bc-encrypt"
+            oncommand="Enigmail.msg.doPgpButton('toggle-final-encrypt');"/>
+            <!-- label="&enigmail.encryptedsend.label;" -->
+
+    <toolbarbutton class="toolbarbutton-1"
+            id="button-enigmail-sign"
+            label=""
+            buttontype="thunderbird"
+            tooltip="aTooltipSet"
+            observes="enigmail-bc-sign"
+            oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"/>
+            <!-- label="&enigmail.signedsend.label;" -->
+
+    <toolbarbutton class="toolbarbutton-1"
             id="button-enigmail-attach"
             label="&enigmail.attachmykey.label;"
             buttontype="thunderbird"
             tooltip="aTooltipSet"
             observes="enigmail-bc-attach"
             oncommand="Enigmail.msg.toggleAttachOwnKey();"/>
-
-    <toolbarbutton class="toolbarbutton-1"
-            id="button-enigmail-sign"
-            label="&enigmail.signedsend.label;"
-            buttontype="thunderbird"
-            tooltip="aTooltipSet"
-            observes="enigmail-bc-sign"
-            oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"/>
-
-    <toolbarbutton class="toolbarbutton-1"
-            id="button-enigmail-encrypt"
-            label="&enigmail.encryptedsend.label;"
-            buttontype="thunderbird"
-            tooltip="aTooltipSet"
-            observes="enigmail-bc-encrypt"
-            oncommand="Enigmail.msg.doPgpButton('toggle-final-encrypt');"/>
 
     <toolbarbutton id="enigmail-toolbar-text-button"
       label="&enigmail.composetoolbar.desc;">
@@ -237,7 +239,7 @@
   <toolbox id="compose-toolbox">
     <toolbar id="enigmail-toolbar"
             insertafter="composeToolbar2"
-            defaultset="enigmail-toolbar-text-button,spring,button-enigmail-attach,button-enigmail-sign,button-enigmail-encrypt"
+            defaultset="enigmail-toolbar-text-button,button-enigmail-encrypt,button-enigmail-sign,button-enigmail-attach"
             toolbarname="&enigmail.composetoolbar.label;"
             customizable="true"
             class="enigmailToolbar"
