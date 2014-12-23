@@ -216,6 +216,10 @@ var EnigmailCommon = {
       return null;
     }
 
+    if (! win) {
+      win = this.getBestParentWin();
+    }
+
     this.DEBUG_LOG("enigmailCommon.jsm: this.enigmailSvc = "+this.enigmailSvc+"\n");
 
     if (!this.enigmailSvc.initialized) {
@@ -243,19 +247,22 @@ var EnigmailCommon = {
           // Display initialization error alert
           var errMsg = this.enigmailSvc.initializationError ? this.enigmailSvc.initializationError : this.getString("accessError");
 
-          errMsg += "\n\n"+this.getString("avoidInitErr");
+          errMsg += "\n\n"+this.getString("initErr.howToFixIt");
 
           var checkedObj = {value: false};
           if (this.getPref("initAlert")) {
             var r = this.longAlert(win, "Enigmail: "+errMsg,
                                    this.getString("dlgNoPrompt"),
-                                   null, ":help",
+                                   null, this.getString("initErr.setupWizard.button"),
                                    null, checkedObj);
             if (r >= 0 && checkedObj.value) {
               this.setPref("initAlert", false);
             }
             if (r == 1) {
-              this.helpWindow("initError");
+              // start setup wizard
+              win.open("chrome://enigmail/content/enigmailSetupWizard.xul",
+                  "", "chrome,centerscreen");
+              return this.getService(win);
             }
           }
           if (this.getPref("initAlert")) {
@@ -651,6 +658,30 @@ var EnigmailCommon = {
     }
 
     this.alert(win, mesg);
+  },
+
+  getBestParentWin: function() {
+    var windowManager = Cc[this.APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
+
+    var bestFit = null;
+    var winEnum=windowManager.getEnumerator(null);
+
+    while (winEnum.hasMoreElements()) {
+      var thisWin = winEnum.getNext();
+      if (thisWin.location.href.search(/\/messenger.xul$/) > 0) {
+        bestFit = thisWin
+      };
+      if (! bestFit && thisWin.location.href.search(/\/messengercompose.xul$/) > 0) {
+        bestFit = thisWin
+      };
+    }
+
+    if (! bestFit) {
+      winEnum=windowManager.getEnumerator(null);
+      bestFit = winEnum.getNext();
+    }
+
+    return bestFit;
   },
 
   openWin: function (winName, spec, winOptions, optList)

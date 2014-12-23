@@ -39,31 +39,33 @@
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 
 // Initialize enigmailCommon
-EnigInitCommon("enigmailAbout");
+const Ec = EnigmailCommon;
+
+
 
 function enigAboutLoad() {
   DEBUG_LOG("enigmailAbout.js: enigAboutLoad\n");
 
-  var contentFrame = EnigGetFrame(window, "contentFrame");
+  var contentFrame = Ec.getFrame(window, "contentFrame");
   if (!contentFrame)
     return;
 
-  var enigVersion=EnigGetVersion()+" ("+EnigBuildDate+")";
+  var enigVersion=Ec.getVersion()+" ("+EnigBuildDate+")";
   var versionElement = contentFrame.document.getElementById('version');
   if (versionElement)
-    versionElement.firstChild.data = EnigGetString("usingVersion", enigVersion);
+    versionElement.firstChild.data = Ec.getString("usingVersion", enigVersion);
 
-  var enigmailSvc = GetEnigmailSvc();
+  var enigmailSvc = Ec.getService();
 
   var agentStr;
   if (enigmailSvc) {
-    agentStr = EnigGetString("usingAgent", enigmailSvc.agentType, enigmailSvc.agentPath.path);
+    agentStr = Ec.getString("usingAgent", [enigmailSvc.agentType, enigmailSvc.agentPath.path]);
 
   } else {
-    agentStr = EnigGetString("agentError");
+    agentStr = Ec.getString("agentError");
 
-    if (gEnigmailSvc && gEnigmailSvc.initializationError)
-      agentStr += "\n" + gEnigmailSvc.initializationError;
+    if (enigmailSvc && enigmailSvc.initializationError)
+      agentStr += "\n" + enigmailSvc.initializationError;
   }
 
   var agentElement = contentFrame.document.getElementById('agent');
@@ -86,5 +88,3 @@ function contentAreaClick(event)
   return true;
 }
 
-
-window.onload = enigAboutLoad;

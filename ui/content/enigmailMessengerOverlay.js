@@ -221,7 +221,10 @@ Enigmail.msg = {
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: setAttachmentReveal\n");
 
     var revealBox = document.getElementById("enigmailRevealAttachments");
-    revealBox.setAttribute("hidden", attachmentList == null ? "true" : "false");
+    if (revealBox) {
+      // there are situations when evealBox is not yet present
+      revealBox.setAttribute("hidden", attachmentList == null ? "true" : "false");
+    }
   },
 
 
