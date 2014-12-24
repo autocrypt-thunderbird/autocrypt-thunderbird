@@ -607,6 +607,8 @@ var EnigmailFuncs = {
   {
     var keyListObj = {};
 
+    keyId = keyId.replace(/^0x/, "");
+
     this.loadKeyList(win, refresh, keyListObj);
 
     var inputObj = {
@@ -683,7 +685,7 @@ var EnigmailFuncs = {
             EnigmailCommon.getString("keyMan.button.generateKey"),
             EnigmailCommon.getString("keyMan.button.skip"))) {
         this.openKeyGen();
-        this.loadKeyList(true, keyListObj);
+        this.loadKeyList(win, true, keyListObj);
       }
     }
 

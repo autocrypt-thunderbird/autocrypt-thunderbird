@@ -356,7 +356,7 @@ Enigmail.hdrView = {
       }
     }
 
-    // if we have parsed ENC_TO entries, add them as status info 
+    // if we have parsed ENC_TO entries, add them as status info
     if (encToDetails && encToDetails.length > 0) {
       statusInfo += "\n\n" + EnigmailCommon.getString("encryptKeysNote", [ encToDetails ]);
     }
@@ -557,13 +557,19 @@ Enigmail.hdrView = {
 
   editKeyTrust: function ()
   {
-    EnigmailFuncs.editKeyTrust(window, [Enigmail.msg.securityInfo.userId], [Enigmail.msg.securityInfo.keyId]);
+    let enigmailSvc = EnigmailCommon.getService();
+    let keyId = enigmailSvc.getPubKeyIdForSubkey(Enigmail.msg.securityInfo.keyId);
+
+    EnigmailFuncs.editKeyTrust(window, [Enigmail.msg.securityInfo.userId], [keyId]);
     gDBView.reloadMessageWithAllParts();
   },
 
   signKey: function ()
   {
-    EnigmailFuncs.signKey(window, Enigmail.msg.securityInfo.userId, Enigmail.msg.securityInfo.keyId, null);
+    let enigmailSvc = EnigmailCommon.getService();
+    let keyId = enigmailSvc.getPubKeyIdForSubkey(Enigmail.msg.securityInfo.keyId);
+
+    EnigmailFuncs.signKey(window, Enigmail.msg.securityInfo.userId, keyId, null);
     gDBView.reloadMessageWithAllParts();
   },
 
@@ -655,7 +661,10 @@ Enigmail.hdrView = {
   {
     if (! Enigmail.msg.securityInfo) return;
 
-    EnigmailFuncs.showPhoto(window, Enigmail.msg.securityInfo.keyId, Enigmail.msg.securityInfo.userId);
+    let enigmailSvc = EnigmailCommon.getService();
+    let keyId = enigmailSvc.getPubKeyIdForSubkey(Enigmail.msg.securityInfo.keyId);
+
+    EnigmailFuncs.showPhoto(window, keyId, Enigmail.msg.securityInfo.userId);
   },
 
 
@@ -663,7 +672,10 @@ Enigmail.hdrView = {
   {
     if (! Enigmail.msg.securityInfo) return;
 
-    EnigmailFuncs.openKeyDetails(window, Enigmail.msg.securityInfo.keyId, false);
+    let enigmailSvc = EnigmailCommon.getService();
+    let keyId = enigmailSvc.getPubKeyIdForSubkey(Enigmail.msg.securityInfo.keyId);
+
+    EnigmailFuncs.openKeyDetails(window, keyId, false);
   },
 
   createRuleFromAddress: function (emailAddressNode)
