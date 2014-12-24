@@ -201,6 +201,8 @@ interface nsIEnigmail : nsISupports
 
   string getFirstUserIdOfKey(in string keyId);
 
+  string getPubKeyIdForSubkey(in string keyId);
+
   /* Receive flags */
   const long SEARCH_KEY       = 0x01;
   const long DOWNLOAD_KEY     = 0x02;

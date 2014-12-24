@@ -203,21 +203,19 @@
   <toolbarpalette id="MsgComposeToolbarPalette">
     <toolbarbutton class="toolbarbutton-1"
             id="button-enigmail-encrypt"
-            label=""
             buttontype="thunderbird"
             tooltip="aTooltipSet"
             observes="enigmail-bc-encrypt"
-            oncommand="Enigmail.msg.doPgpButton('toggle-final-encrypt');"/>
-            <!-- label="&enigmail.encryptedsend.label;" -->
+            oncommand="Enigmail.msg.doPgpButton('toggle-final-encrypt');"
+            label="&enigmail.encryptedsend.label;"/>
 
     <toolbarbutton class="toolbarbutton-1"
             id="button-enigmail-sign"
-            label=""
             buttontype="thunderbird"
             tooltip="aTooltipSet"
             observes="enigmail-bc-sign"
-            oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"/>
-            <!-- label="&enigmail.signedsend.label;" -->
+            oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"
+            label="&enigmail.signedsend.label;"/>
 
     <toolbarbutton class="toolbarbutton-1"
             id="button-enigmail-attach"
@@ -226,6 +224,11 @@
             tooltip="aTooltipSet"
             observes="enigmail-bc-attach"
             oncommand="Enigmail.msg.toggleAttachOwnKey();"/>
+
+    <toolbarbutton id="enigmail-toolbar-header-button"
+      label="&enigmail.composetoolbar.header;">
+      <label id="enigmail-toolbar-hdr-text" value="&enigmail.label;:"/>
+    </toolbarbutton>
 
     <toolbarbutton id="enigmail-toolbar-text-button"
       label="&enigmail.composetoolbar.desc;">
@@ -239,7 +242,7 @@
   <toolbox id="compose-toolbox">
     <toolbar id="enigmail-toolbar"
             insertafter="composeToolbar2"
-            defaultset="enigmail-toolbar-text-button,button-enigmail-encrypt,button-enigmail-sign,button-enigmail-attach"
+            defaultset="enigmail-toolbar-header-button,button-enigmail-encrypt,button-enigmail-sign,button-enigmail-attach,enigmail-toolbar-text-button"
             toolbarname="&enigmail.composetoolbar.label;"
             customizable="true"
             class="enigmailToolbar"

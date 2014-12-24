@@ -17,8 +17,6 @@ ifeq ($(TESTS),yes)
 DIRS += check
 endif
 
-DIRS += lang
-
 PLATFORM_STR = unknown
 
 # Edit the lines below as needed, depending upon your platform(s)

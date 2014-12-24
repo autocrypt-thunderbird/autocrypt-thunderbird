@@ -2317,6 +2317,33 @@ Enigmail.prototype = {
   },
 
 
+  /**
+   * return key ID of public key for subkey
+   *
+   * @param  String  keyId key with or without leading 0x
+   * @return String  public key ID, or null if key not found
+   */
+  getPubKeyIdForSubkey: function (keyId) {
+    var entry = this.getKeyListEntryOfKey(keyId);
+    if (entry == null) {
+      return null;
+    }
+
+    var lineArr = entry.split(/\n/);
+    for (i=0; i<lineArr.length; ++i) {
+      var lineTokens = lineArr[i].split(/:/);
+      switch (lineTokens[0]) {
+        case "pub":
+          {
+            let keyId = lineTokens[4];
+            return keyId;
+          }
+          break;
+      }
+    }
+    return null;
+  },
+
   // returns the output of --with-colons --list-config
   getGnupgConfig: function  (exitCodeObj, errorMsgObj)
   {

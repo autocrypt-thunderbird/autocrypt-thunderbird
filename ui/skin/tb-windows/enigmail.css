@@ -86,6 +86,12 @@ toolbar[iconsize="small"] #button-enigmail-decrypt[disabled]
   list-style-image : url("chrome://enigmail/skin/encrypt-inactive-30.png");
 }
 
+/* hide label unless text-only mode is enabled */
+toolbar:not([mode="text"]) #button-enigmail-encrypt .toolbarbutton-text {
+  display: none;
+}
+
+
 #button-enigmail-encrypt[disabled] {
   list-style-image : url("chrome://enigmail/skin/encrypt-disabled-30.png");
 }
@@ -138,6 +144,11 @@ toolbar[iconsize="small"] #button-enigmail-encrypt[encrypted="forceNo"]
 #button-enigmail-sign
 {
   list-style-image : url("chrome://enigmail/skin/sign-inactive-30.png");
+}
+
+/* hide label unless text-only mode is enabled */
+toolbar:not([mode="text"]) #button-enigmail-sign .toolbarbutton-text {
+  display: none;
 }
 
 #button-enigmail-sign[disabled] {
