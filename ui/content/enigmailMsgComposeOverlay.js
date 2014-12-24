@@ -1550,7 +1550,7 @@ Enigmail.msg = {
       }
     }
 
-    toolbarTxt.value = EnigmailCommon.getString("msgCompose.toolbarTxt.toolbarMsg", toolbarMsg);
+    toolbarTxt.value = toolbarMsg;
 
     // update pgpmime menu-text
     var pgpmimeStr = null;

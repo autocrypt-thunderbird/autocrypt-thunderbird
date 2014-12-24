@@ -142,6 +142,7 @@
 <!ENTITY enigmail.securitybutton.label       "Enigmail">
 <!ENTITY enigmail.securitybutton.tip         "Enigmail security settings">
 
+<!ENTITY enigmail.composetoolbar.header       "Enigmail Header">
 <!ENTITY enigmail.composetoolbar.label        "Enigmail Toolbar">
 <!ENTITY enigmail.composetoolbar.desc         "Enigmail Encryption Info">
 
