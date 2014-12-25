@@ -52,36 +52,83 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         title="enigmailViewFile"
         width="600" height="400"
+        onload="return enigLoadPage();"
         persist="screenX screenY width height">
 
   <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
 
 
-<iframe id="contentFrame" type="content" name="contentFrame"
+  <iframe id="contentFrame" type="content" name="contentFrame"
         src=""
-        flex="100%"/>
+        collapsed="true"
+        flex="1"/>
+
+  <vbox id="logFileBox" collapsed="false" flex="1">
+
+    <textbox id="contentBox" readonly="true"
+        multiline="true"
+        flex="1"
+        value=""/>
+
+    <hbox align="center" flex="0">
+      <button label="&enigmail.savelogfile.label;" oncommand="saveLogFile()"/>
+    </hbox>
+  </vbox>
+
 
   <script type="application/x-javascript">
   <![CDATA[
 
+    Components.utils.import("resource://enigmail/enigmailCore.jsm");
+    Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+    Components.utils.import("resource://enigmail/commonFuncs.jsm");
+
+    const Ec = EnigmailCommon;
+
     EnigInitCommon("enigmailViewFile");
 
-    function enigLoadPage() {
-      DEBUG_LOG("enigmailHelp.js: enigLoadPage\n");
+    var logFileData; // global definition of log file data to be able to save
+                     // same data as displayed
 
-      var contentFrame = EnigGetFrame(window, "contentFrame");
+    function saveLogFile() {
+      let fileObj = Ec.filePicker(window, Ec.getString("saveLogFile.title"), null,
+        true, "txt");
+
+      EnigmailFuncs.writeFileContents(fileObj, logFileData, null);
+
+    }
+
+    function enigLoadPage() {
+      Ec.DEBUG_LOG("enigmailHelp.js: enigLoadPage\n");
+      Ec.getService();
+
+      var contentFrame = Ec.getFrame(window, "contentFrame");
       if (!contentFrame)
         return;
 
       var winOptions=EnigGetWindowOptions();
-      contentFrame.document.location.href=winOptions["fileUrl"];
-      if (typeof(winOptions["title"])=="string") {
+
+      if ("fileUrl" in winOptions) {
+        contentFrame.document.location.href=winOptions["fileUrl"];
+      }
+
+      if ("viewLog" in winOptions) {
+        let cf = document.getElementById("contentFrame");
+        cf.setAttribute("collapsed", "true");
+
+        let cb = document.getElementById("contentBox");
+        logFileData = EnigmailCore.getLogData();
+        cb.value = logFileData;
+
+        let cfb = document.getElementById("logFileBox");
+        cfb.removeAttribute("collapsed");
+      }
+
+      if ("title" in winOptions) {
         document.getElementById("EnigmailViewFile").setAttribute("title", winOptions["title"]);
       }
     }
-
-    window.onload = enigLoadPage;
 
   ]]>
   </script>

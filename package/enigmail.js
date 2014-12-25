@@ -537,26 +537,8 @@ Enigmail.prototype = {
 
     var ioServ = Cc[NS_IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
 
-    try {
-      var httpHandler = ioServ.getProtocolHandler("http");
-      httpHandler = httpHandler.QueryInterface(Ci.nsIHttpProtocolHandler);
-    }
-    catch (ex) {
-      httpHandler = domWindow.navigator;
-    }
-
-    this.oscpu = httpHandler.oscpu;
-
-    this.platform = httpHandler.platform;
-
-    if (httpHandler.vendor) {
-      this.vendor = httpHandler.vendor;
-    } else {
-      this.vendor = "Mozilla";
-    }
 
     this.isWin32 = (EC.getOS() == "WINNT");
-
 
     var prefix = this.getLogDirectoryPrefix();
     if (prefix) {
@@ -566,11 +548,6 @@ Enigmail.prototype = {
     }
 
     Ec.initialize(this, EC.getLogLevel());
-    this.version = version;
-
-    EC.DEBUG_LOG("enigmail.js: Enigmail version "+this.version+"\n");
-    EC.DEBUG_LOG("enigmail.js: OS/CPU="+this.oscpu+"\n");
-    EC.DEBUG_LOG("enigmail.js: Platform="+this.platform+"\n");
 
     var environment;
     try {
@@ -1138,13 +1115,6 @@ Enigmail.prototype = {
 
     if (errOutput)
        errorMsgObj.value  = errOutput;
-
-    var prefix = this.getLogDirectoryPrefix();
-    if (prefix && (EC.getLogLevel() >= 4)) {
-      EnigmailFuncs.writeFileContents(prefix+"enigout.txt", outputData);
-      EnigmailFuncs.writeFileContents(prefix+"enigerr.txt", errOutput);
-      EC.DEBUG_LOG("enigmail.js: Enigmail.simpleExecCmd: copied command out/err data to files "+prefix+"enigout.txt/enigerr.txt\n");
-    }
 
     EC.DEBUG_LOG("enigmail.js: Enigmail.simpleExecCmd: exitCode = "+exitCodeObj.value+"\n");
     EC.DEBUG_LOG("enigmail.js: Enigmail.simpleExecCmd: errOutput = "+errOutput+"\n");

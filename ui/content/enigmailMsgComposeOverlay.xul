@@ -225,13 +225,19 @@
             observes="enigmail-bc-attach"
             oncommand="Enigmail.msg.toggleAttachOwnKey();"/>
 
-    <toolbarbutton id="enigmail-toolbar-header-button"
-      label="&enigmail.composetoolbar.header;">
+    <toolbarbutton class="toolbarbutton-1"
+            id="enigmail-toolbar-header-button"
+            label="&enigmail.composetoolbar.header;"
+            buttontype="thunderbird"
+            oncommand="Enigmail.msg.displaySecuritySettings()">
       <label id="enigmail-toolbar-hdr-text" value="&enigmail.label;:"/>
     </toolbarbutton>
 
-    <toolbarbutton id="enigmail-toolbar-text-button"
-      label="&enigmail.composetoolbar.desc;">
+    <toolbarbutton class="toolbarbutton-1"
+            id="enigmail-toolbar-text-button"
+            label="&enigmail.composetoolbar.desc;"
+            buttontype="thunderbird"
+            oncommand="Enigmail.msg.displaySecuritySettings()">
       <label id="enigmail-toolbar-text" value="&enigmail.composetoolbar.desc;"/>
     </toolbarbutton>
 
