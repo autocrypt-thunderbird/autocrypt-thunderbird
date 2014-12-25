@@ -212,8 +212,8 @@
                oncommand="EnigmailFuncs.openConsoleWindow();" />
 
           <menuitem id="enigmail_debug_log"
-               label="&enigmail.viewdebuglog.label;"
-               accesskey="&enigmail.viewdebuglog.accesskey;"
+               label="&enigmail.viewlog.label;"
+               accesskey="&enigmail.viewlog.accesskey;"
                oncommand="EnigmailFuncs.openDebugLog(window);" />
         </menupopup>
       </menu>

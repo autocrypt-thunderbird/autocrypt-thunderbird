@@ -102,7 +102,7 @@
 
 <!ENTITY enigmail.debugMenu.label        "Debugging Options">
 <!ENTITY enigmail.viewconsole.label      "View Console">
-<!ENTITY enigmail.viewdebuglog.label     "View Logfile">
+<!ENTITY enigmail.viewlog.label          "View Log">
 
 <!ENTITY enigmail.generateKey.label        "Generate key">
 <!ENTITY enigmail.help.label               "Help">
@@ -130,7 +130,7 @@
 
 <!ENTITY enigmail.prefs.accesskey           "P">
 <!ENTITY enigmail.viewconsole.accesskey     "c">
-<!ENTITY enigmail.viewdebuglog.accesskey    "g">
+<!ENTITY enigmail.viewlog.accesskey         "g">
 
 <!ENTITY enigmail.help.accesskey            "H">
 <!ENTITY enigmail.about.accesskey           "b">
@@ -801,4 +801,4 @@
 <!ENTITY enigmail.addToRule.newRuleButton.label      "Create New Rule">
 <!ENTITY enigmail.addToRule.newRuleButton.accesskey  "N">
 
-<!ENTITY enigmail.savelogfile.label                   "Save Log File ...">
+<!ENTITY enigmail.savelogfile.label                   "Save Log to File ...">
