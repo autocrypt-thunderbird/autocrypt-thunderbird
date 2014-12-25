@@ -61,12 +61,12 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailEncryptionDlg.js"/>
 
   <vbox orient="vertical">
-   <checkbox id="signMsg"
-             label="&enigmail.encDlgSign.label;"
-             accesskey="&enigmail.encDlgSign.accesskey;"/>
    <checkbox id="encryptMsg"
              label="&enigmail.encDlgEncrypt.label;"
              accesskey="&enigmail.encDlgEncrypt.accesskey;"/>
+   <checkbox id="signMsg"
+             label="&enigmail.encDlgSign.label;"
+             accesskey="&enigmail.encDlgSign.accesskey;"/>
 
    <separator/>
 
