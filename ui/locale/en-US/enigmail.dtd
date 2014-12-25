@@ -84,9 +84,6 @@
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "You should turn this OFF if you are receiving PGP/MIME messages on IMAP folders.">
 <!ENTITY enigmail.disableSMIMEui.tooltip       "Remove the S/MIME button from the message composition window toolbar">
 
-<!ENTITY enigmail.logdirectory.label      "Log directory">
-<!ENTITY enigmail.testemail.label         "Test email">
-<!ENTITY enigmail.test.label              "Test">
 
 <!ENTITY enigmail.decryptbutton.label     "Decrypt">
 <!ENTITY enigmail.decryptbutton.tip       "Decrypt or verify the message with Enigmail">
@@ -803,3 +800,5 @@
 <!ENTITY enigmail.addToRule.useRuleButton.accesskey  "A">
 <!ENTITY enigmail.addToRule.newRuleButton.label      "Create New Rule">
 <!ENTITY enigmail.addToRule.newRuleButton.accesskey  "N">
+
+<!ENTITY enigmail.savelogfile.label                   "Save Log File ...">

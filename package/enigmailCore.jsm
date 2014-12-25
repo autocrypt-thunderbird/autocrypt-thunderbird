@@ -65,6 +65,8 @@ const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID =
                               "@mozilla.org/network/file-output-stream;1";
 
+const NS_IOSERVICE_CONTRACTID       = "@mozilla.org/network/io-service;1";
+
 const NS_RDONLY      = 0x01;
 const NS_WRONLY      = 0x02;
 const NS_CREATE_FILE = 0x08;
@@ -74,16 +76,23 @@ const DEFAULT_FILE_PERMS = 0x180; // equals 0600
 
 var gLogLevel = 3;
 
+var gLogData = "";
+
 var EnigmailCore = {
 
   _logDirectory: null,
   _logFileStream: null,
   enigStringBundle: null,
+  prefBranch: null,
+  version: "",
+
+  init: function(enigmailVersion, prefBranch) {
+    this.version = enigmailVersion;
+    this.prefBranch = prefBranch;
+  },
 
   setLogLevel: function(newLogLevel) {
     gLogLevel = newLogLevel;
-
-    this.createLogFiles();
   },
 
   getLogLevel: function() {
@@ -136,6 +145,13 @@ var EnigmailCore = {
     if (gLogLevel >= 4)
       dump(datStr+str);
 
+    // truncate first part of log data if it grow too much
+    if (gLogData.length > 128000) {
+      gLogData = gLogData.substr(-72000);
+    }
+
+    gLogData += datStr + str;
+
     if (this._logFileStream) {
       this._logFileStream.write(datStr, datStr.length);
       this._logFileStream.write(str, str.length);
@@ -144,16 +160,14 @@ var EnigmailCore = {
 
   DEBUG_LOG: function (str)
   {
-    if ((gLogLevel >= 4) || (this.enigmailSvc && this.enigmailSvc.logFileStream))
-      this.WRITE_LOG("[DEBUG] "+str);
+    this.WRITE_LOG("[DEBUG] "+str);
   },
 
   WARNING_LOG: function (str)
   {
-    if (gLogLevel >= 3)
-      this.WRITE_LOG("[WARN] "+str);
+    this.WRITE_LOG("[WARN] "+str);
 
-      EnigmailConsole.write(str);
+    EnigmailConsole.write(str);
   },
 
   ERROR_LOG: function (str)
@@ -171,8 +185,7 @@ var EnigmailCore = {
     }
     catch (ex) {}
 
-    if (gLogLevel >= 2)
-      this.WRITE_LOG("[ERROR] "+str);
+    this.WRITE_LOG("[ERROR] "+str);
   },
 
   CONSOLE_LOG: function (str)
@@ -186,6 +199,72 @@ var EnigmailCore = {
   getLogFileStream: function() {
     return this._logFileStream;
   },
+
+  getLogData: function() {
+
+    let ioServ = Cc[NS_IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
+
+    let oscpu = "";
+    let platform = "";
+
+    try {
+      let httpHandler = ioServ.getProtocolHandler("http");
+      httpHandler = httpHandler.QueryInterface(Ci.nsIHttpProtocolHandler);
+      oscpu = httpHandler.oscpu;
+      platform = httpHandler.platform;
+    }
+    catch (ex) {
+    }
+
+    let data = "Enigmail version "+this.version+"\n" +
+      "OS/CPU="+oscpu+"\n" +
+      "Platform="+platform+"\n" +
+      "Non-default preference values:\n";
+
+    let p = this.prefBranch.getChildList("");
+
+    for (let i in p) {
+      if (this.prefBranch.prefHasUserValue(p[i])) {
+        data += p[i] +": "+ this.getPref(p[i])+"\n";
+      }
+    }
+
+    return data +"\n" + gLogData;
+
+  },
+
+  getPref: function (prefName)
+  {
+    if (! this.prefBranch) return;
+
+    var prefValue = null;
+    try {
+      var prefType = this.prefBranch.getPrefType(prefName);
+      // Get pref value
+      switch (prefType) {
+      case this.prefBranch.PREF_BOOL:
+         prefValue = this.prefBranch.getBoolPref(prefName);
+         break;
+
+      case this.prefBranch.PREF_INT:
+         prefValue = this.prefBranch.getIntPref(prefName);
+         break;
+
+      case this.prefBranch.PREF_STRING:
+         prefValue = this.prefBranch.getCharPref(prefName);
+         break;
+
+      default:
+         prefValue = "undefined";
+         break;
+     }
+
+   } catch (ex) {
+   }
+
+   return prefValue;
+  },
+
 
   // retrieves a localized string from the enigmail.properties stringbundle
   getString: function (aStr, subPhrases)

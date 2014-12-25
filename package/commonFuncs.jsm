@@ -388,30 +388,9 @@ var EnigmailFuncs = {
    */
   openDebugLog: function(win)
   {
-    var logDirectory = EnigmailCommon.getPref("logDirectory");
 
-    if (!logDirectory) {
-      EnigmailCommon.alert(win, EnigmailCommon.getString("noLogDir"));
-      return;
-    }
 
-    var svc = EnigmailCommon.enigmailSvc;
-    if (! svc) {
-      EnigmailCommon.alert(win, EnigmailCommon.getString("noLogFile"));
-      return;
-    }
-
-    if (! EnigmailCore.getLogFileStream()) {
-      EnigmailCommon.alert(win, EnigmailCommon.getString("restartForLog"));
-      return;
-    }
-
-    EnigmailCore.getLogFileStream().flush();
-
-    logDirectory = logDirectory.replace(/\\/g, "/");
-
-    var logFileURL = "file:///" + logDirectory + "/enigdbug.txt";
-    var opts="fileUrl=" + escape(logFileURL) + "&title=" +
+    var opts="viewLog=1&title=" +
           escape(EnigmailCommon.getString("debugLog.title"));
 
     EnigmailCommon.openWin("enigmail:logFile",

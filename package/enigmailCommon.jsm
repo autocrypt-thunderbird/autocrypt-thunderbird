@@ -233,6 +233,7 @@ var EnigmailCommon = {
 
       try {
         // Initialize enigmail
+        EnigmailCore.init(this.getVersion(), this.prefBranch);
         this.enigmailSvc.initialize(win, this.getVersion(), this.prefBranch);
 
         try {
@@ -764,6 +765,20 @@ var EnigmailCommon = {
     }
   },
 
+  /**
+   *  Display a "open file" or "save file" dialog
+   *
+   *  win:              nsIWindow - parent window
+   *  title:            String    - window title
+   *  displayDir:       String    - optional: directory to be displayed
+   *  save:             Boolean   - true = Save file / false = Open file
+   *  defaultExtension: String    - optional: extension for the type of files to work with, e.g. "asc"
+   *  defaultName:      String    - optional: filename, incl. extension, that should be suggested to
+   *                                the user as default, e.g. "keys.asc"
+   *  filterPairs:      Array     - optional: [title, extension], e.g. ["Pictures", "*.jpg; *.png"]
+   *
+   *  return value:     nsIFile object representing the file to load or save
+   */
   filePicker: function (win, title, displayDir, save, defaultExtension, defaultName, filterPairs)
   {
     this.DEBUG_LOG("enigmailCommon.jsm: filePicker: "+save+"\n");
