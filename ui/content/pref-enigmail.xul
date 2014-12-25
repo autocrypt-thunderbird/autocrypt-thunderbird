@@ -168,7 +168,6 @@
       <tab id="keySelTab"    label="&enigmail.keySel.label;" advanced="true"/>
       <tab id="advancedTab"  label="&enigmail.advanced.label;" advanced="true"/>
       <tab id="keyserverTab" label="&enigmail.keyserver.label;" advanced="true"/>
-      <tab id="debugTab"     label="&enigmail.debug.label;" advanced="true"/>
     </tabs>
 
     <tabpanels flex="1" id="enigPrefTabPanel">
@@ -473,43 +472,6 @@
 
       </vbox>
 
-      <!-- "Debugging" Tab -->
-      <vbox id="debug" flex="1"
-            advanced="true">
-        <description class="enigmailPrefsTitle">&enigmail.debugMenu.label;</description>
-        <spacer flex="0"/>
-
-        <grid>
-          <columns>
-            <column/>
-            <column flex="1"/>
-          </columns>
-
-          <rows autostretch="never">
-            <row>
-              <hbox align="center">
-                <label control="enigmail_logDirectory"
-                    value="&enigmail.logdirectory.label;" />
-              </hbox>
-              <textbox id="enigmail_logDirectory" />
-            </row>
-            <row>
-              <hbox align="center">
-                <label control="enigmail_test_email"
-                    value="&enigmail.testemail.label;" />
-              </hbox>
-              <hbox autostretch="never">
-                <textbox id="enigmail_test_email"/>
-
-                <button class="dialog"
-                        id="enigmail_test"
-                        label="&enigmail.test.label;"
-                        oncommand="EnigTest();"/>
-              </hbox>
-            </row>
-          </rows>
-        </grid>
-      </vbox>
     </tabpanels>
   </tabbox>
 
