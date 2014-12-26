@@ -563,7 +563,7 @@ Enigmail.prototype = {
     this.environment = environment;
 
     var nspr_log_modules = environment.get("NSPR_LOG_MODULES");
-    var matches = nspr_log_modules.match(/enigmail:(\d+)/);
+    var matches = nspr_log_modules.match(/enigmail.js:(\d+)/);
 
     if (matches && (matches.length > 1)) {
       EC.setLogLevel(Number(matches[1]));

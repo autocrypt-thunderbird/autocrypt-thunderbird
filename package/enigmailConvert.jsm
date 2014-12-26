@@ -62,6 +62,7 @@ try {
 
 
 Components.utils.import("resource:///modules/MailUtils.js");
+Components.utils.import("resource://enigmail/enigmailCore.jsm");
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 Components.utils.import("resource://enigmail/commonFuncs.jsm");
 var Ec = EnigmailCommon;
@@ -569,6 +570,11 @@ decryptPGPMIME = function (mime, part) {
       let s = Ec.newStringStreamListener(
         function analyzeDecryptedData(data) {
           Ec.DEBUG_LOG("enigmailConvert.jsm: analyzeDecryptedData: got " + data.length +" bytes\n");
+
+          if (EnigmailCore.getLogLevel() > 5) {
+            Ec.DEBUG_LOG("*** start data ***\n'" + data +"'\n***end data***\n");
+          }
+
 
           let subpart = mime.parts[0];
 
