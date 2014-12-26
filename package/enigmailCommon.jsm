@@ -77,8 +77,6 @@ const BUTTON_POS_0           = 1;
 const BUTTON_POS_1           = 1 << 8;
 const BUTTON_POS_2           = 1 << 16;
 
-const ENIGMAIL_PREFS_ROOT = "extensions.enigmail.";
-
 const GPG_BATCH_OPT_LIST = [ "--batch", "--no-tty", "--status-fd", "2" ];
 
 const KEYTYPE_DSA = 1;
@@ -88,7 +86,6 @@ const ENC_TYPE_MSG = 0;
 const ENC_TYPE_ATTACH_BINARY = 1;
 const ENC_TYPE_ATTACH_ASCII = 2;
 
-var gLogLevel = 3;
 var gPromptSvc = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
 var gDispatchThread = null;
 
@@ -188,9 +185,6 @@ var EnigmailCommon = {
   // variables
   enigmailSvc: null,
   statusFlags: gStatusFlags,
-  prefBranch: null,
-  prefRoot: null,
-  prefService: null,
   envList: null, // currently filled from enigmailCommon.jsm
   gpgAgentIsOptional: true,
 
@@ -228,17 +222,14 @@ var EnigmailCommon = {
 
       var firstInitialization = !this.enigmailSvc.initializationAttempted;
 
-      if (! this.prefBranch)
-        this.initPrefService();
-
       try {
         // Initialize enigmail
-        EnigmailCore.init(this.getVersion(), this.prefBranch);
-        this.enigmailSvc.initialize(win, this.getVersion(), this.prefBranch);
+        EnigmailCore.init(this.getVersion());
+        this.enigmailSvc.initialize(win, this.getVersion(), EnigmailCore.prefBranch);
 
         try {
           // Reset alert count to default value
-          this.prefBranch.clearUserPref("initAlert");
+          EnigmailCore.prefBranch.clearUserPref("initAlert");
         }
         catch(ex) { }
 
@@ -290,10 +281,6 @@ var EnigmailCommon = {
       }
     }
 
-    if (EnigmailCore.getLogFileStream()) {
-      gLogLevel = 5;
-    }
-
     return this.enigmailSvc.initialized ? this.enigmailSvc : null;
   },
 
@@ -325,128 +312,17 @@ var EnigmailCommon = {
   {
     this.DEBUG_LOG("enigmailCommon.js: savePrefs\n");
     try {
-      this.prefService.savePrefFile(null);
+      EnigmailCore.prefService.savePrefFile(null);
     }
     catch (ex) {
     }
   },
 
-  initPrefService: function() {
-    if (this.prefBranch) return;
+  initPrefService: EnigmailCore.initPrefService.bind(EnigmailCore),
 
-    try {
-      this.prefService = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
+  getPref: EnigmailCore.getPref.bind(EnigmailCore),
 
-      this.prefRoot        = this.prefService.getBranch(null);
-      this.prefBranch      = this.prefService.getBranch(ENIGMAIL_PREFS_ROOT);
-
-      if (this.prefBranch.getCharPref("logDirectory"))
-        gLogLevel = 5;
-
-    }
-    catch (ex) {
-      this.ERROR_LOG("enigmailCommon.jsm: Error in instantiating PrefService\n");
-      this.ERROR_LOG(ex.toString());
-    }
-  },
-
-  getPref: function (prefName)
-  {
-    if (! this.prefBranch)
-      this.initPrefService();
-
-    var prefValue = null;
-    try {
-      var prefType = this.prefBranch.getPrefType(prefName);
-      // Get pref value
-      switch (prefType) {
-      case this.prefBranch.PREF_BOOL:
-         prefValue = this.prefBranch.getBoolPref(prefName);
-         break;
-
-      case this.prefBranch.PREF_INT:
-         prefValue = this.prefBranch.getIntPref(prefName);
-         break;
-
-      case this.prefBranch.PREF_STRING:
-         prefValue = this.prefBranch.getCharPref(prefName);
-         break;
-
-      default:
-         prefValue = undefined;
-         break;
-     }
-
-   } catch (ex) {
-      // Failed to get pref value
-      this.ERROR_LOG("enigmailCommon.jsm: getPref: unknown prefName:"+prefName+" \n");
-   }
-
-   return prefValue;
-  },
-
-  /**
-   * Store a user preference.
-   *
-   * @param  String  prefName  An identifier.
-   * @param  any     value     The value to be stored. Allowed types: Boolean OR Integer OR String.
-   *
-   * @return Boolean Was the value stored successfully?
-   */
-  setPref: function (prefName, value)
-  {
-     this.DEBUG_LOG("enigmailCommon.jsm: setPref: "+prefName+", "+value+"\n");
-
-     if (! this.prefBranch) {
-       this.initPrefService();
-     }
-
-     // Discover the type of the preference, as stored in the user preferences.
-     // If the preference identifier doesn't exist yet, it returns 0. In that
-     // case the type depends on the argument "value".
-     var prefType;
-     prefType = this.prefBranch.getPrefType(prefName);
-     if (prefType === 0) {
-       switch (typeof value) {
-         case "boolean":
-           prefType = this.prefBranch.PREF_BOOL;
-           break;
-         case "number":
-           prefType = this.prefBranch.PREF_INT;
-           break;
-         case "string":
-           prefType = this.prefBranch.PREF_STRING;
-           break;
-         default:
-           prefType = 0;
-           break;
-       }
-     }
-     var retVal = false;
-
-     // Save the preference only and if only the type is bool, int or string.
-     switch (prefType) {
-        case this.prefBranch.PREF_BOOL:
-           this.prefBranch.setBoolPref(prefName, value);
-           retVal = true;
-           break;
-
-        case this.prefBranch.PREF_INT:
-           this.prefBranch.setIntPref(prefName, value);
-           retVal = true;
-           break;
-
-        case this.prefBranch.PREF_STRING:
-           this.prefBranch.setCharPref(prefName, value);
-           retVal = true;
-           break;
-
-        default:
-           break;
-     }
-
-     return retVal;
-  },
+  setPref: EnigmailCore.setPref.bind(EnigmailCore),
 
   alert: function (win, mesg)
   {
@@ -1278,15 +1154,11 @@ var EnigmailCommon = {
     return hex;
   },
 
-  getLogLevel: function()
-  {
-    return gLogLevel;
-  },
+  getLogLevel: EnigmailCore.getLogLevel.bind(EnigmailCore),
 
   initialize: function (enigmailSvc, logLevel)
   {
     this.enigmailSvc = enigmailSvc;
-    gLogLevel = logLevel;
   },
 
 
@@ -1690,7 +1562,7 @@ var EnigmailCommon = {
     }
 
     var proxyHost = null;
-    if (this.prefBranch.getBoolPref("respectHttpProxy")) {
+    if (EnigmailCore.getPref("respectHttpProxy")) {
       // determine proxy host
       var prefsSvc = Cc[NS_PREFS_SERVICE_CID].getService(Ci.nsIPrefService);
       var prefRoot = prefsSvc.getBranch(null);
@@ -2560,7 +2432,7 @@ var EnigmailCommon = {
       }
     }
 
-    if (userId && keyId && this.prefBranch.getBoolPref("displaySecondaryUid")) {
+    if (userId && keyId && EnigmailCore.getPref("displaySecondaryUid")) {
       let uids = this.enigmailSvc.getKeyDetails(keyId, true, true);
       if (uids) {
         userId = uids;
@@ -2680,12 +2552,12 @@ var EnigmailCommon = {
 
     var useDefaultComment = false;
     try {
-       useDefaultComment = this.prefBranch.getBoolPref("useDefaultComment");
+       useDefaultComment = EnigmailCore.getPref("useDefaultComment");
     } catch(ex) { }
 
     var hushMailSupport = false;
     try {
-       hushMailSupport = this.prefBranch.getBoolPref("hushMailSupport");
+       hushMailSupport = EnigmailCore.getPref("hushMailSupport");
     } catch(ex) { }
 
     var detachedSig = (usePgpMime || (sendFlags & nsIEnigmail.SEND_ATTACHMENT)) && signMsg && !encryptMsg;
@@ -2896,7 +2768,7 @@ var EnigmailCommon = {
 
     var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
 
-    var hashAlgo = gMimeHashAlgorithms[this.prefBranch.getIntPref("mimeHashAlgorithm")];
+    var hashAlgo = gMimeHashAlgorithms[EnigmailCore.getPref("mimeHashAlgorithm")];
 
     if (hashAlgorithm) {
       hashAlgo = hashAlgorithm;
@@ -3186,8 +3058,8 @@ function upgradeRecipientsSelection () {
   EnigmailCommon.setPref("recipientsSelection", setVal);
 
   // clear old prefs
-  EnigmailCommon.prefBranch.clearUserPref("perRecipientRules");
-  EnigmailCommon.prefBranch.clearUserPref("recipientsSelectionOption");
+  EnigmailCore.prefBranch.clearUserPref("perRecipientRules");
+  EnigmailCore.prefBranch.clearUserPref("recipientsSelectionOption");
 }
 
 
@@ -3231,8 +3103,8 @@ function upgradePrefsSending ()
   }
 
   // clear old prefs
-  EnigmailCommon.prefBranch.clearUserPref("confirmBeforeSend");
-  EnigmailCommon.prefBranch.clearUserPref("alwaysTrustSend");
+  EnigmailCore.prefBranch.clearUserPref("confirmBeforeSend");
+  EnigmailCore.prefBranch.clearUserPref("alwaysTrustSend");
 }
 
 
@@ -3272,16 +3144,16 @@ function upgradeHeadersView() {
 
   if (hdrMode == null) hdrMode = 1;
   try {
-    EnigmailCommon.prefBranch.clearUserPref("show_headers");
+    EnigmailCore.prefBranch.clearUserPref("show_headers");
   }
   catch (ex) {}
 
-  EnigmailCommon.prefRoot.setIntPref("mail.show_headers", hdrMode);
+  EnigmailCore.prefRoot.setIntPref("mail.show_headers", hdrMode);
 }
 
 function upgradeCustomHeaders() {
   try {
-    var extraHdrs = " " + EnigmailCommon.prefRoot.getCharPref("mailnews.headers.extraExpandedHeaders").toLowerCase() + " ";
+    var extraHdrs = " " + EnigmailCore.prefRoot.getCharPref("mailnews.headers.extraExpandedHeaders").toLowerCase() + " ";
 
     var extraHdrList = [
       "x-enigmail-version",
@@ -3296,7 +3168,7 @@ function upgradeCustomHeaders() {
     }
 
     extraHdrs = extraHdrs.replace(/^ */, "").replace(/ *$/, "");
-    EnigmailCommon.prefRoot.setCharPref("mailnews.headers.extraExpandedHeaders", extraHdrs);
+    EnigmailCore.prefRoot.setCharPref("mailnews.headers.extraExpandedHeaders", extraHdrs);
   }
   catch(ex) {}
 }
@@ -3332,7 +3204,7 @@ function upgradePgpMime() {
         }
       }
     }
-    EnigmailCommon.prefBranch.clearUserPref("usePGPMimeOption");
+    EnigmailCore.prefBranch.clearUserPref("usePGPMimeOption");
   }
   catch (ex) {}
 }
@@ -3343,7 +3215,7 @@ function ConfigureEnigmail(window, startingPreferences) {
   var oldVer=EnigmailCommon.getPref("configuredVersion");
 
   try {
-    EnigmailCommon.initPrefService();
+    EnigmailCore.initPrefService();
     var vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
     if (oldVer == "") {
       EnigmailCommon.openSetupWizard();

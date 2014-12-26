@@ -40,6 +40,7 @@
 // functionality!
 
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/enigmailCore.jsm");
 Components.utils.import("resource://enigmail/commonFuncs.jsm");
 Components.utils.import("resource://enigmail/keyManagement.jsm");
 
@@ -350,9 +351,9 @@ function EnigGetDefaultPref(prefName) {
   DEBUG_LOG("enigmailCommon.js: EnigGetDefaultPref: prefName="+prefName+"\n");
   var prefValue=null;
   try {
-    EnigmailCommon.prefBranch.lockPref(prefName);
+    EnigmailCore.prefBranch.lockPref(prefName);
     prefValue = EnigGetPref(prefName);
-    EnigmailCommon.prefBranch.unlockPref(prefName);
+    EnigmailCore.prefBranch.unlockPref(prefName);
   }
   catch (ex) {}
 

@@ -73,6 +73,7 @@ const NS_CREATE_FILE = 0x08;
 const NS_TRUNCATE    = 0x20;
 const DEFAULT_FILE_PERMS = 0x180; // equals 0600
 
+const ENIGMAIL_PREFS_ROOT = "extensions.enigmail.";
 
 var gLogLevel = 3;
 
@@ -83,12 +84,15 @@ var EnigmailCore = {
   _logDirectory: null,
   _logFileStream: null,
   enigStringBundle: null,
+  prefService: null,
   prefBranch: null,
+  prefRoot: null,
   version: "",
 
-  init: function(enigmailVersion, prefBranch) {
+  init: function(enigmailVersion) {
     this.version = enigmailVersion;
-    this.prefBranch = prefBranch;
+
+    if(! this.prefBranch) this.initPrefService;
   },
 
   setLogLevel: function(newLogLevel) {
@@ -233,39 +237,6 @@ var EnigmailCore = {
 
   },
 
-  getPref: function (prefName)
-  {
-    if (! this.prefBranch) return;
-
-    var prefValue = null;
-    try {
-      var prefType = this.prefBranch.getPrefType(prefName);
-      // Get pref value
-      switch (prefType) {
-      case this.prefBranch.PREF_BOOL:
-         prefValue = this.prefBranch.getBoolPref(prefName);
-         break;
-
-      case this.prefBranch.PREF_INT:
-         prefValue = this.prefBranch.getIntPref(prefName);
-         break;
-
-      case this.prefBranch.PREF_STRING:
-         prefValue = this.prefBranch.getCharPref(prefName);
-         break;
-
-      default:
-         prefValue = "undefined";
-         break;
-     }
-
-   } catch (ex) {
-   }
-
-   return prefValue;
-  },
-
-
   // retrieves a localized string from the enigmail.properties stringbundle
   getString: function (aStr, subPhrases)
   {
@@ -363,7 +334,124 @@ var EnigmailCore = {
       return nsFileObj.persistentDescriptor;
     else
       return nsFileObj.path;
-  }
+  },
+
+  initPrefService: function() {
+    if (this.prefBranch) return;
+
+    try {
+      this.prefService = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
+
+      this.prefRoot        = this.prefService.getBranch(null);
+      this.prefBranch      = this.prefService.getBranch(ENIGMAIL_PREFS_ROOT);
+
+      if (this.prefBranch.getCharPref("logDirectory"))
+        gLogLevel = 5;
+
+    }
+    catch (ex) {
+      this.ERROR_LOG("enigmailCore.jsm: Error in instantiating PrefService\n");
+      this.ERROR_LOG(ex.toString());
+    }
+  },
+
+  getPref: function (prefName)
+  {
+    if (! this.prefBranch)
+      this.initPrefService();
+
+    var prefValue = null;
+    try {
+      var prefType = this.prefBranch.getPrefType(prefName);
+      // Get pref value
+      switch (prefType) {
+      case this.prefBranch.PREF_BOOL:
+         prefValue = this.prefBranch.getBoolPref(prefName);
+         break;
+
+      case this.prefBranch.PREF_INT:
+         prefValue = this.prefBranch.getIntPref(prefName);
+         break;
+
+      case this.prefBranch.PREF_STRING:
+         prefValue = this.prefBranch.getCharPref(prefName);
+         break;
+
+      default:
+         prefValue = undefined;
+         break;
+     }
+
+   } catch (ex) {
+      // Failed to get pref value
+      this.ERROR_LOG("enigmailCommon.jsm: getPref: unknown prefName:"+prefName+" \n");
+   }
+
+   return prefValue;
+  },
+
+  /**
+   * Store a user preference.
+   *
+   * @param  String  prefName  An identifier.
+   * @param  any     value     The value to be stored. Allowed types: Boolean OR Integer OR String.
+   *
+   * @return Boolean Was the value stored successfully?
+   */
+  setPref: function (prefName, value)
+  {
+     this.DEBUG_LOG("enigmailCommon.jsm: setPref: "+prefName+", "+value+"\n");
+
+     if (! this.prefBranch) {
+       this.initPrefService();
+     }
+
+     // Discover the type of the preference, as stored in the user preferences.
+     // If the preference identifier doesn't exist yet, it returns 0. In that
+     // case the type depends on the argument "value".
+     var prefType;
+     prefType = this.prefBranch.getPrefType(prefName);
+     if (prefType === 0) {
+       switch (typeof value) {
+         case "boolean":
+           prefType = this.prefBranch.PREF_BOOL;
+           break;
+         case "number":
+           prefType = this.prefBranch.PREF_INT;
+           break;
+         case "string":
+           prefType = this.prefBranch.PREF_STRING;
+           break;
+         default:
+           prefType = 0;
+           break;
+       }
+     }
+     var retVal = false;
+
+     // Save the preference only and if only the type is bool, int or string.
+     switch (prefType) {
+        case this.prefBranch.PREF_BOOL:
+           this.prefBranch.setBoolPref(prefName, value);
+           retVal = true;
+           break;
+
+        case this.prefBranch.PREF_INT:
+           this.prefBranch.setIntPref(prefName, value);
+           retVal = true;
+           break;
+
+        case this.prefBranch.PREF_STRING:
+           this.prefBranch.setCharPref(prefName, value);
+           retVal = true;
+           break;
+
+        default:
+           break;
+     }
+
+     return retVal;
+  },
 
 }
 

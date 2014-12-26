@@ -36,6 +36,7 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/enigmailCore.jsm");
 Components.utils.import("resource://enigmail/gpgAgentHandler.jsm");
 
 // Initialize enigmailCommon
@@ -57,14 +58,14 @@ function displayPrefs(showDefault, showPrefs, setPrefs) {
   var s = gEnigmailSvc;
 
   var obj = new Object;
-  var prefList = EnigmailCommon.prefBranch.getChildList("",obj);
+  var prefList = EnigmailCore.prefBranch.getChildList("",obj);
 
   for (var prefItem in prefList) {
     var prefName=prefList[prefItem];
     var prefElement = document.getElementById("enigmail_"+prefName);
 
     if (prefElement) {
-      var prefType = EnigmailCommon.prefBranch.getPrefType(prefName);
+      var prefType = EnigmailCore.prefBranch.getPrefType(prefName);
       var prefValue;
       if (showDefault) {
         prefValue = EnigGetDefaultPref(prefName);
@@ -76,7 +77,7 @@ function displayPrefs(showDefault, showPrefs, setPrefs) {
       DEBUG_LOG("pref-enigmail.js displayPrefs: "+prefName+"="+prefValue+"\n");
 
       switch (prefType) {
-      case EnigmailCommon.prefBranch.PREF_BOOL:
+      case EnigmailCore.prefBranch.PREF_BOOL:
         if (showPrefs) {
           if (prefElement.getAttribute("invert") == "true") {
             prefValue = ! prefValue;
@@ -105,7 +106,7 @@ function displayPrefs(showDefault, showPrefs, setPrefs) {
         }
         break;
 
-      case EnigmailCommon.prefBranch.PREF_INT:
+      case EnigmailCore.prefBranch.PREF_INT:
         if (showPrefs) {
           prefElement.value = prefValue;
         }
@@ -116,7 +117,7 @@ function displayPrefs(showDefault, showPrefs, setPrefs) {
         }
         break;
 
-      case EnigmailCommon.prefBranch.PREF_STRING:
+      case EnigmailCore.prefBranch.PREF_STRING:
         if (showPrefs) {
           prefElement.value = prefValue;
         }
@@ -200,7 +201,7 @@ function prefOnLoad()
   gMimePartsElement = document.getElementById("mime_parts_on_demand");
 
   try {
-    gMimePartsValue = EnigmailCommon.prefRoot.getBoolPref("mail.server.default.mime_parts_on_demand");
+    gMimePartsValue = EnigmailCore.prefRoot.getBoolPref("mail.server.default.mime_parts_on_demand");
   } catch (ex) {
     gMimePartsValue = true;
   }
@@ -428,7 +429,7 @@ function prefOnAccept() {
   if (gMimePartsElement &&
       (gMimePartsElement.checked != gMimePartsValue) ) {
 
-    EnigmailCommon.prefRoot.setBoolPref("mail.server.default.mime_parts_on_demand", (gMimePartsElement.checked ? true : false));
+    EnigmailCore.prefRoot.setBoolPref("mail.server.default.mime_parts_on_demand", (gMimePartsElement.checked ? true : false));
   }
 
   EnigSetPref("configuredVersion", EnigGetVersion());

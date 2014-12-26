@@ -33,6 +33,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/enigmailCore.jsm");
 Components.utils.import("resource://enigmail/keyManagement.jsm");
 Components.utils.import("resource://enigmail/installGnuPG.jsm");
 
@@ -504,8 +505,8 @@ function enigGetSvc(resetCheck) {
     // Try to initialize enigmail
 
     if (! gPrefEnigmail) {
-      EnigmailCommon.initPrefService();
-      gPrefEnigmail = EnigmailCommon.prefBranch;
+      EnigmailCore.initPrefService();
+      gPrefEnigmail = EnigmailCore.prefBranch;
     }
 
     try {
@@ -867,13 +868,13 @@ function applyMozSetting(param, preference, newVal)
 {
   if (gEnigModifySettings[param]) {
     if (typeof(newVal)=="boolean") {
-      EnigmailCommon.prefRoot.setBoolPref(preference, newVal);
+      EnigmailCore.prefRoot.setBoolPref(preference, newVal);
     }
     else if (typeof(newVal)=="number") {
-      EnigmailCommon.prefRoot.setIntPref(preference, newVal);
+      EnigmailCore.prefRoot.setIntPref(preference, newVal);
     }
     else if (typeof(newVal)=="string") {
-      EnigmailCommon.prefRoot.setCharPref(preference, newVal);
+      EnigmailCore.prefRoot.setCharPref(preference, newVal);
     }
   }
 }

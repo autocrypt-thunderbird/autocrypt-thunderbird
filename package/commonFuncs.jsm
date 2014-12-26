@@ -853,7 +853,7 @@ var EnigmailFuncs = {
 
     EnigmailCommon.getPref("configuredVersion"); // dummy call to getPref to ensure initialization
 
-    var prefRoot = EnigmailCommon.prefRoot;
+    var prefRoot = EnigmailCore.prefRoot;
 
     if (prefRoot.getPrefType("mail.identity."+identity.key+".pgpSignPlain")==0) {
       if (prefRoot.getPrefType("mail.identity."+identity.key+".pgpSignMsg")==0) {
@@ -885,10 +885,10 @@ var EnigmailFuncs = {
     if (! gTxtConverter)
       gTxtConverter = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
 
-    if (! EnigmailCommon.prefRoot)
-      EnigmailCommon.getPref("configuredVersion");
+    if (! EnigmailCore.prefRoot)
+      EnigmailCore.getPref("configuredVersion");
 
-    var prefRoot = EnigmailCommon.prefRoot;
+    var prefRoot = EnigmailCore.prefRoot;
     var fontStyle = "";
 
     // set the style stuff according to perferences

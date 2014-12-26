@@ -2360,7 +2360,7 @@ Enigmail.msg = {
         if (wrapWidth > 0 && wrapWidth < 68 && editor.wrapWidth > 0) {
           if (EnigmailCommon.confirmDlg(window, EnigmailCommon.getString("minimalLineWrapping", [ wrapWidth ] ))) {
             wrapWidth = 68;
-            EnigmailCommon.prefRoot.setIntPref("mailnews.wraplength", wrapWidth);
+            EnigmailCore.prefRoot.setIntPref("mailnews.wraplength", wrapWidth);
           }
         }
 
@@ -3049,7 +3049,7 @@ Enigmail.msg = {
       if (this.getMailPref("mail.strictly_mime")) {
         if (EnigmailCommon.confirmPref(window,
               EnigmailCommon.getString("quotedPrintableWarn"), "quotedPrintableWarn")) {
-          EnigmailCommon.prefRoot.setBoolPref("mail.strictly_mime", false);
+          EnigmailCore.prefRoot.setBoolPref("mail.strictly_mime", false);
         }
       }
     } catch (ex) {}
@@ -3077,7 +3077,7 @@ Enigmail.msg = {
 
           if (wrapWidth > 0 && wrapWidth < 68 && gMsgCompose.wrapLength > 0) {
             if (EnigmailCommon.confirmDlg(window, EnigmailCommon.getString("minimalLineWrapping", [ wrapWidth ] ))) {
-              EnigmailCommon.prefRoot.setIntPref("editor.htmlWrapColumn", 68);
+              EnigmailCore.prefRoot.setIntPref("editor.htmlWrapColumn", 68);
             }
           }
           if (EnigmailCommon.getPref("wrapHtmlBeforeSend")) {
@@ -3267,19 +3267,19 @@ Enigmail.msg = {
 
      var prefValue = null;
      try {
-        var prefType = EnigmailCommon.prefRoot.getPrefType(prefName);
+        var prefType = EnigmailCore.prefRoot.getPrefType(prefName);
         // Get pref value
         switch (prefType) {
-        case EnigmailCommon.prefBranch.PREF_BOOL:
-           prefValue = EnigmailCommon.prefRoot.getBoolPref(prefName);
+        case EnigmailCore.prefBranch.PREF_BOOL:
+           prefValue = EnigmailCore.prefRoot.getBoolPref(prefName);
            break;
 
-        case EnigmailCommon.prefBranch.PREF_INT:
-           prefValue = EnigmailCommon.prefRoot.getIntPref(prefName);
+        case EnigmailCore.prefBranch.PREF_INT:
+           prefValue = EnigmailCore.prefRoot.getIntPref(prefName);
            break;
 
-        case EnigmailCommon.prefBranch.PREF_STRING:
-           prefValue = EnigmailCommon.prefRoot.getCharPref(prefName);
+        case EnigmailCore.prefBranch.PREF_STRING:
+           prefValue = EnigmailCore.prefRoot.getCharPref(prefName);
            break;
 
         default:
@@ -3318,7 +3318,7 @@ Enigmail.msg = {
               return false;
           }
           if (checkValue.value) {
-            EnigmailCommon.prefRoot.setBoolPref("mail.warn_on_send_accel_key", false);
+            EnigmailCore.prefRoot.setBoolPref("mail.warn_on_send_accel_key", false);
           }
       }
     } catch (ex) {}
