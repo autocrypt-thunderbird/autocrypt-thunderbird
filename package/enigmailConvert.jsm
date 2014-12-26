@@ -565,7 +565,7 @@ decryptPGPMIME = function (mime, part) {
       let msgSvc = messenger.messageServiceFromURI(self.hdr.folder.getUriForMsg(self.hdr));
       let u = {}
       msgSvc.GetUrlForUri(self.hdr.folder.getUriForMsg(self.hdr), u, null)
-      let url = u.value.spec+'&part=' + part+"&header=enigmailConvert";
+      let url = u.value.spec+'?part=' + part+"&header=enigmailConvert";
 
       let s = Ec.newStringStreamListener(
         function analyzeDecryptedData(data) {
