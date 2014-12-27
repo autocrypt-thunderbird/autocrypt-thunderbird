@@ -437,11 +437,12 @@ function enigmailBuildList(refresh)
               // key still valid
               aUserList[i].valid=true;
               escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
+
               s1 = new RegExp("<"+escapedMailAddr+">","i");
               if (mailAddr != EMPTY_UID) {
                 if (invalidAddr.indexOf(" "+mailAddr+" ")<0) {
                   aValidUsers.push(mailAddr);
-                  aUserList[i].activeState = (toAddr.search(s1)==0 ? 1 : 0);
+                  aUserList[i].activeState = (toAddr.search(s1)>=0 ? 1 : 0);
                 }
                 else {
                   // mail address found as invalid address: marks that to sort them to the beginning
@@ -489,7 +490,7 @@ function enigmailBuildList(refresh)
                     aUserList[i].valid=true;
                     escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
                     s1=new RegExp("<"+escapedMailAddr+">","i");
-                    if ((mailAddr != EMPTY_UID) && (toAddr.search(s1)==0)) {
+                    if ((mailAddr != EMPTY_UID) && (toAddr.search(s1)>=0)) {
                       aUserList[i].activeState = 1;
                     }
                   }
