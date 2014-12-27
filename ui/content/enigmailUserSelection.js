@@ -396,14 +396,14 @@ function enigmailBuildList(refresh)
       i--;
     }
    }
-   var toAddr=toAddrList.join(",")+" ";
+   var toAddr="<"+toAddrList.join("><")+">";
 
    var d = new Date();
    var now=d.valueOf() / 1000;
    var aValidUsers = [];
 
    var mailAddr, escapedMailAddr;
-   var s1, s2;
+   var s1;
    // Replace any non-text character c with \\c
    var escapeRegExp = new RegExp("([^a-zA-Z0-9])","g");
 
@@ -437,12 +437,11 @@ function enigmailBuildList(refresh)
               // key still valid
               aUserList[i].valid=true;
               escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
-              s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
-              s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
+              s1 = new RegExp("<"+escapedMailAddr+">","i");
               if (mailAddr != EMPTY_UID) {
                 if (invalidAddr.indexOf(" "+mailAddr+" ")<0) {
                   aValidUsers.push(mailAddr);
-                  aUserList[i].activeState =(toAddr.search(s1)>=0 || toAddr.search(s2)>=0) ? 1 : 0;
+                  aUserList[i].activeState = (toAddr.search(s1)==0 ? 1 : 0);
                 }
                 else {
                   // mail address found as invalid address: marks that to sort them to the beginning
@@ -489,9 +488,8 @@ function enigmailBuildList(refresh)
                     aValidUsers.push(mailAddr);
                     aUserList[i].valid=true;
                     escapedMailAddr=mailAddr.replace(escapeRegExp, "\\$1");
-                    s1=new RegExp("[, ]?"+escapedMailAddr+"[, ]","i");
-                    s2=new RegExp("[, ]"+escapedMailAddr+"[, ]?","i");
-                    if ((mailAddr != EMPTY_UID) && (toAddr.search(s1)>=0 || toAddr.search(s2)>=0)) {
+                    s1=new RegExp("<"+escapedMailAddr+">","i");
+                    if ((mailAddr != EMPTY_UID) && (toAddr.search(s1)==0)) {
                       aUserList[i].activeState = 1;
                     }
                   }
@@ -545,7 +543,6 @@ function enigmailBuildList(refresh)
 
    // Build up list of not found recipients
    var aNotFound = [];
-   toAddrList = toAddr.split(/[, ]+/);
    var j;
    for (i=0; i<toAddrList.length; i++) {
      if (toAddrList[i].length>0) {
