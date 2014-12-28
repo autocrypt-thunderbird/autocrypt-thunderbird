@@ -2787,21 +2787,51 @@ function getEnigmailString(aStr) {
  *  of the message processing. Because there is only a negligible performance gain when dispatching
  *  several message at once we serialize to not overwhelm low power devices.
  *
+ *  The function is implemented such that the 1st call (requireSync == true) is a synchronous function,
+ *  while any other call is asynchronous. This is required to make the filters work correctly in case
+ *  there are other filters that work on the message. (see bug 374).
+ *
+ *  Parameters
+ *   aMsgHdrs:     Array of nsIMsgDBHdr
+ *   targetFolder: String; target folder URI
+ *   move:         Boolean: type of action; true = "move" / false = "copy"
+ *   requireSync:  Boolean: true = require  function to behave synchronously
+ *                          false = async function (no useful return value)
+ *
  **/
 
-function dispatchMessages(aMsgHdrs, aActionValue, move) {
-  if (aMsgHdrs.length < 1) {
-    return;
-  }
+function dispatchMessages(aMsgHdrs, targetFolder, move, requireSync) {
+  var inspector = Cc["@mozilla.org/jsinspector;1"].getService(Ci.nsIJSInspector);
 
-  var promise = EnigmailDecryptPermanently(aMsgHdrs[0], aActionValue, move);
+  var promise = EnigmailDecryptPermanently(aMsgHdrs[0], targetFolder, move);
+  var done = false;
 
-  aMsgHdrs.splice(0,1);
+  var processNext = function (data) {
+    aMsgHdrs.splice(0,1);
+    if (aMsgHdrs.length > 0) {
+      dispatchMessages(aMsgHdrs, targetFolder, move, false);
+    }
+    else {
+      // last message was finished processing
+      done = true;
+      EC.DEBUG_LOG("enigmail.js: dispatchMessage: exit nested loop\n");
+      inspector.exitNestedEventLoop();
+    }
+  };
 
-  promise.then(function (data) {
-    dispatchMessages(aMsgHdrs, aActionValue, move);
+  promise.then(processNext);
+
+  promise.catch(function(err) {
+    EC.ERROR_LOG("enigmail.js: dispatchMessage: caught error: "+err+"\n");
+    processNext(null);
   });
 
+  if (requireSync && ! done) {
+    // wait here until all messages processed, such that the function returns
+    // synchronously
+    EC.DEBUG_LOG("enigmail.js: dispatchMessage: enter nested loop\n");
+    inspector.enterNestedEventLoop({value : 0});
+  }
 }
 
 /**
@@ -2823,7 +2853,7 @@ var filterActionMoveDecrypt = {
       msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
     }
 
-    dispatchMessages(msgHdrs, aActionValue, true);
+    dispatchMessages(msgHdrs, aActionValue, true, true);
 
     return;
   },
@@ -2849,7 +2879,7 @@ var filterActionMoveDecrypt = {
   },
 
   allowDuplicates: false,
-  isAsync: true,
+  isAsync: false,
   needsBody: true
 };
 
@@ -2875,7 +2905,7 @@ var filterActionCopyDecrypt = {
       msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
     }
 
-    dispatchMessages(msgHdrs, aActionValue, false);
+    dispatchMessages(msgHdrs, aActionValue, false, true);
     return;
   },
 
@@ -2892,7 +2922,7 @@ var filterActionCopyDecrypt = {
   },
 
   allowDuplicates: false,
-  isAsync: true,
+  isAsync: false,
   needsBody: true
 };
 
