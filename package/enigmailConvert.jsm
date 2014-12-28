@@ -591,6 +591,12 @@ decryptPGPMIME = function (mime, part) {
             status: STATUS_OK
           }
 
+          if (data.length == 0) {
+            // fail if no data found
+            o.status = STATUS_FAILURE;
+            resolve(o);
+            return;
+          }
 
           let bodyIndex = data.search(/\n\s*\r?\n/);
           if (bodyIndex < 0) {
