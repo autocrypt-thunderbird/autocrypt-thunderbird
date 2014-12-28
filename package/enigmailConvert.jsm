@@ -569,6 +569,8 @@ decryptPGPMIME = function (mime, part) {
       let op = (u.value.spec.indexOf("?") > 0 ? "&" : "?");
       let url = u.value.spec + op + 'part=' + part+"&header=enigmailConvert";
 
+      Ec.DEBUG_LOG("enigmailConvert.jsm: getting data from URL " + url +"\n");
+
       let s = Ec.newStringStreamListener(
         function analyzeDecryptedData(data) {
           Ec.DEBUG_LOG("enigmailConvert.jsm: analyzeDecryptedData: got " + data.length +" bytes\n");
