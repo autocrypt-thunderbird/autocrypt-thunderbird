@@ -537,6 +537,10 @@ treechildren::-moz-tree-column(enigDontEncrypt) {
 
 }
 
+.enigmailWarningIcon {
+  list-style-image: url("chrome://enigmail/skin/warning-16.png");
+}
+
 treechildren::-moz-tree-image(enigSignedEncrypted)
 {
   list-style-image: url("chrome://enigmail/skin/col-encrypted-signed.png");

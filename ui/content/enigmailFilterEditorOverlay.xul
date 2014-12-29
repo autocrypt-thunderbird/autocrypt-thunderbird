@@ -39,8 +39,19 @@
 <?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
                  type="text/css"?>
 
+<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+
+
 <overlay id="enigmailFilterEditorOverlay"
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailFilterEditorOverlay.js"/>
+
+  <vbox insertafter="statusbar">
+    <hbox id="enigmailInfobar" style="visibility: visible">
+      <image class="enigmailWarningIcon"/>
+      <label value="&enigmail.filterEditor.moveError.label;"/>
+    </hbox>
+  </vbox>
 </overlay>

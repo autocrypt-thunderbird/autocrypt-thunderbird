@@ -544,6 +544,10 @@ treechildren::-moz-tree-image(enigEncrypted)
     -moz-image-region: rect(0px 12px 12px 0px);
 }
 
+.enigmailWarningIcon {
+  list-style-image: url("chrome://enigmail/skin/warning-16.png");
+}
+
 /* the following styles are available for the key trust
    columnm in the key manager:
     enigmail_keyValid_unknown

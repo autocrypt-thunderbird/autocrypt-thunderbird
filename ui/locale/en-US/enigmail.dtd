@@ -802,3 +802,5 @@
 <!ENTITY enigmail.addToRule.newRuleButton.accesskey  "N">
 
 <!ENTITY enigmail.savelogfile.label                   "Save Log to File ...">
+
+<!ENTITY enigmail.filterEditor.moveError.label       "Actions that follow the 'Decrypt Permanently' action are not supported.">
