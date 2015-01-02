@@ -623,6 +623,7 @@ Enigmail.msg = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.toggleAttachOwnKey\n");
     EnigmailCommon.getService(window); // make sure Enigmail is loaded and working
+
     this.attachOwnKeyObj.appendAttachment = !this.attachOwnKeyObj.appendAttachment;
 
     this.setOwnKeyStatus();
@@ -1576,6 +1577,22 @@ Enigmail.msg = {
         break;
     }
     this.statusPGPMimeStr = pgpmimeStr;
+
+    let allowAttachOwnKey = false;
+    if (this.identity.getIntAttribute("pgpKeyMode") > 0) {
+      let keyIdValue = this.identity.getCharAttribute("pgpkeyId");
+      if (keyIdValue.search(/^ *(0x)?[0-9a-fA-F]* *$/) == 0) {
+        allowAttachOwnKey = true;
+      }
+    }
+
+    if (allowAttachOwnKey) {
+      attachBroadcaster.removeAttribute("disabled");
+    }
+    else {
+      attachBroadcaster.setAttribute("disabled", "true");
+    }
+
   },
 
 
