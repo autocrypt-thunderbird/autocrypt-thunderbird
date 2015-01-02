@@ -1596,7 +1596,14 @@ var EnigmailCommon = {
     return proxyHost;
   },
 
-  getSecretKeys: function (win) {
+  /**
+   * Get a list of all secret keys
+   *
+   *  win:     nsIWindow: optional parent window
+   *  refresh: Boolean:   optional. true ->  re-load keys from gpg
+   *                                false -> use cached values if available
+   */
+  getSecretKeys: function (win, refresh) {
     // return a sorted array containing objects of (valid, usable) secret keys.
     // @return: [ {name: <userId>, id: 0x1234ABCD, created: YYYY-MM-DD },  { ... } ]
     var enigmailSvc = this.getService(win);
@@ -1606,7 +1613,9 @@ var EnigmailCommon = {
     var exitCodeObj = new Object();
     var statusFlagsObj = new Object();
     var errorMsgObj = new Object();
-    var keyList=enigmailSvc.getUserIdList(true, false, exitCodeObj, statusFlagsObj, errorMsgObj);
+
+    if (refresh == null) refresh = false;
+    var keyList=enigmailSvc.getUserIdList(true, refresh, exitCodeObj, statusFlagsObj, errorMsgObj);
 
     if (exitCodeObj.value != 0) {
       this.alert(errorMsgObj.value);
@@ -1745,8 +1754,35 @@ var EnigmailCommon = {
     return proc;
   },
 
+  /**
+   * Force GnuPG to recalculate the trust db. This is sometimes required after importing keys
+   */
+
+  recalcTrustDb: function() {
+    this.DEBUG_LOG("enigmailCommon.jsm: recalcTrustDb:\n");
+
+    let command = this.agentPath;
+    let args = this.getAgentArgs(false);
+    args = args.concat(["--check-trustdb"]);
+
+    try {
+      let proc = subprocess.call({
+        command:     this.enigmailSvc.agentPath,
+        arguments:   args,
+        environment: this.getEnvList(),
+        charset: null,
+        mergeStderr: false
+      });
+      proc.wait();
+    }
+    catch (ex) {
+      this.ERROR_LOG("enigmailCommon.jsm: recalcTrustDb: subprocess.call failed with '"+ex.toString()+"'\n");
+      throw ex;
+    }
+  },
+
   searchKey: function (recvFlags, protocol, keyserver, port, keyValue, listener, errorMsgObj) {
-    this.DEBUG_LOG("enigmailCommon.jsm: Enigmail.searchKey: "+keyValue+"\n");
+    this.DEBUG_LOG("enigmailCommon.jsm: searchKey: "+keyValue+"\n");
 
     if (! (this.enigmailSvc && this.enigmailSvc.initialized)) {
       this.ERROR_LOG("enigmailCommon.jsm: searchKey: not yet initialized\n");

@@ -39,25 +39,17 @@ Components.utils.import("resource://enigmail/installGnuPG.jsm");
 
 // const Ec is already defined in enigmailKeygen.js
 
-var gEnigModifySettings;
-var gLastDirection=0;
+var gLastDirection = 0;
+var gWizardUserMode = "beginner";
 var gEnigAccountMgr;
 var gPubkeyFile = {value: null};
 var gSeckeyFile = {value: null};
 var gCreateNewKey=false;
 var gPrefEnigmail;
 var gDownoadObj = null;
-
-EnigInitCommon("enigmailSetupWizard");
+var gPassPhraseQuality = null;
 
 function onLoad() {
-  gEnigModifySettings = {
-    imapOnDemand: true,
-    flowedText: true,
-    viewPlainText: true,
-    quotedPrintable: true,
-    composeHTML: true
-  };
   gEnigAccountMgr = Components.classes["@mozilla.org/messenger/account-manager;1"].getService(Components.interfaces.nsIMsgAccountManager);
 
   fillIdentities('checkbox');
@@ -87,8 +79,12 @@ function onCancel() {
 }
 
 
+function getWizard() {
+  return document.getElementById("enigmailSetupWizard");
+}
+
 function setLastPage() {
-  var wizard = document.getElementById("enigmailSetupWizard");
+  var wizard = getWizard();
   if (wizard.currentPage) {
     wizard.setAttribute("lastViewedPage", wizard.currentPage.pageid);
   }
@@ -100,38 +96,190 @@ function onBack() {
   setLastPage();
 }
 
+/***
+ * State machine to decide which is the next page to show in the wizard.
+ * This function is called when the "Next" button is pressed, before the
+ * next page is opened, allowing to still modify the wiazrd's sequence.
+ */
+
 function onNext() {
+
+  var enableNext = true;
+
+  // private function to se the next page of the wizard
+  function setNextPage(pageId) {
+    if (pageId == "") {
+      enableNext = false;
+    }
+    else {
+      let wizard = getWizard();
+      wizard.currentPage.next = pageId;
+      enableNext = true;
+    }
+  }
+
   DEBUG_LOG("onNext");
   gLastDirection=1;
   setLastPage();
-  var wizard = document.getElementById("enigmailSetupWizard");
+  var wizard = getWizard();
   if (wizard.currentPage) {
     switch(wizard.currentPage.pageid) {
-    case "pgKeySel":
-      wizardSelKey();
-      break;
     case "pgWelcome":
-      checkGnupgInstallation();
+      setNextPage(onAfterPgWelcome());
       break;
     case "pgInstallGnuPG":
-      checkIdentities();
+      setNextPage(onAfterPgInstallGnuPG());
       break;
-    case "pgSettings":
-      return loadKeys();
+    case "pgSelectId":
+      setNextPage(onAfterPgSelectId());
+      break;
+    case "pgKeySel":
+      setNextPage(onAfterPgKeySel());
+      break;
+    case "pgNoKeyFound":
+      setNextPage(onAfterPgNoKeyFound());
+      break;
+    case "pgKeyImport":
+      setNextPage(onAfterPgKeyImport());
+      break;
     case "pgKeyCreate":
-      return checkPassphrase();
+      setNextPage(onAfterPgKeyCreate());
+      break;
+    case "pgKeygen":
+      setNextPage(onAfterPgKeygen());
+      break;
     }
   }
-  return true;
+  return enableNext;
 }
 
-function getWizard() {
-  return document.getElementById("enigmailSetupWizard");
+/**** State machine helper functions ****
+ *
+ * All functions:
+ * return the next page ID or "" in case the 'Next' button should be disabled
+ */
+function onAfterPgWelcome() {
+
+  if (checkGnupgInstallation()) {
+    let hasSecretKeys = checkSecretKeys();
+    switch (gWizardUserMode) {
+    case "beginner":
+      if (hasSecretKeys) {
+        return "pgKeySel";
+      }
+      else {
+        return "pgKeyCreate";
+      }
+    case "advanced":
+      if (countIdentities() > 1) {
+        return "pgSelectId";
+      }
+      else {
+        if (hasSecretKeys) {
+          return "pgKeySel";
+        }
+        else {
+          return "pgNoKeyFound";
+        }
+      }
+    case "expert":
+      return "pgNoStart";
+    }
+  }
+  else {
+    return "pgInstallGnuPG";
+  }
 }
 
-function setNextPage(pageId) {
-  var wizard = getWizard();
-  wizard.currentPage.next = pageId;
+function onAfterPgInstallGnuPG() {
+  let hasSecretKeys = checkSecretKeys();
+  switch (gWizardUserMode) {
+  case "beginner":
+    if (hasSecretKeys) {
+      return "pgKeySel";
+    }
+    else {
+      return "pgKeyCreate";
+    }
+  case "advanced":
+    if (countIdentities() > 1) {
+      return "pgSelectId";
+    }
+    else {
+      if (hasSecretKeys) {
+        return "pgKeySel";
+      }
+      else {
+        return "pgNoKeyFound";
+      }
+    }
+  case "expert":
+    return "pgNoStart";
+  }
+}
+
+function onAfterPgSelectId() {
+  let hasSecretKeys = checkSecretKeys();
+  if (hasSecretKeys) {
+    return "pgKeySel";
+  }
+  else {
+    return "pgNoKeyFound";
+  }
+}
+
+function onAfterPgKeySel() {
+  if (gCreateNewKey) {
+    return "pgKeyCreate";
+  }
+  else {
+    return "pgComplete";
+  }
+}
+
+function onAfterPgNoKeyFound() {
+  if (gCreateNewKey) {
+    return "pgKeyCreate";
+  }
+  else {
+    return "pgKeyImport";
+  }
+}
+
+function onAfterPgKeyImport() {
+  return "pgKeySel";
+}
+
+function onAfterPgKeyCreate() {
+  if (checkPassphrase()) {
+    return "pgKeygen";
+  }
+
+  return "";
+}
+
+function onAfterPgKeygen() {
+  return "pgComplete";
+}
+
+/**
+ * Check if GnuPG is available
+ */
+function checkGnupgInstallation() {
+  var s = enigGetSvc(true);
+  return (s ? true : false);
+}
+
+/**
+ * Check if secret keys are available
+ */
+function checkSecretKeys() {
+  var keyList = Ec.getSecretKeys(window, true);
+  if (keyList && keyList.length > 0) {
+    return true;
+  }
+
+  return false;
 }
 
 function disableNext(disable) {
@@ -164,21 +312,7 @@ function onShowPgInstallGnuPG() {
   }
 }
 
-function checkGnupgInstallation() {
-  var wizard = getWizard();
-  if (wizard.currentPage.next != "pgNoStart") {
 
-    var s = enigGetSvc(true);
-    if (s) {
-      setNextPage("pgSelectId");
-      checkIdentities();
-    }
-    else {
-      setNextPage("pgInstallGnuPG");
-      disableNext(false);
-    }
-  }
-}
 
 function installGnuPG() {
   var progressBox = document.getElementById("progressBox");
@@ -329,8 +463,24 @@ function importKeyFiles() {
 function setKeyTrustNextKey(keyList, index) {
   Ec.DEBUG_LOG("enigmailSetupWizard.js: setKeyTrustNextKey("+index+")\n");
 
+  if (index == keyList.length) {
+    // end of list reached
+    Ec.recalcTrustDb();
+    loadKeys();
+    return;
+  }
+
   var aKey = keyList[index].split(/:/);
-  if (Number(aKey[1]) & 16) {
+
+  let keyType;
+  try {
+    keyType = Number(aKey[1]);
+  }
+  catch (ex) {
+    keyType = 0;
+  }
+
+  if (keyType & 16) {
     // imported key contains secret key
     EnigmailKeyMgmt.setKeyTrust(window, aKey[0], 5,
       function(exitCode, errorMsg) {
@@ -338,22 +488,16 @@ function setKeyTrustNextKey(keyList, index) {
           return;
         }
 
-        ++index;
         if (index < keyList.length) {
-          setKeyTrustNextKey(keyList, index);
+          setKeyTrustNextKey(keyList, index + 1);
         }
-        else
-          loadKeys();
       }
     );
   }
   else {
-    ++index;
     if (index < keyList.length) {
-      setKeyTrustNextKey(keyList, index);
+      setKeyTrustNextKey(keyList, index + 1);
     }
-    else
-      loadKeys();
   }
 }
 
@@ -363,9 +507,16 @@ function displayKeyCreate() {
     fillIdentities('menulist');
   }
 
+  gPassPhraseQuality = document.getElementById("passphraseQuality");
+
   // gpg >= 2.1 queries passphrase using gpg-agent only
   if (! Ec.getGpgFeature("keygen-passphrase")) {
+    document.getElementById("keyCreateDescSec1").setAttribute("collapsed", "true");
     document.getElementById("passphraseBox").setAttribute("collapsed", "true");
+    document.getElementById("keyCreateDescSec2").removeAttribute("collapsed");
+  }
+  else {
+    checkPassphraseQuality(document.getElementById("passphrase"));
   }
 
   if (countSelectedId() == 1) {
@@ -397,10 +548,51 @@ function displayKeyCreate() {
     document.getElementById("userIdentityLabel").setAttribute("collapsed", "true");
     document.getElementById("userIdentity").removeAttribute("collapsed");
   }
+
 }
 
 
+function checkPassphraseQuality(txtBox) {
+
+  let pwd = txtBox.value;
+  let q = 0;
+  if (pwd.length > 0) q = 20;
+  if (pwd.length >= 8) q = 50;
+
+  let c = 0;
+  if (pwd.search(/[a-z]/) >= 0) c++;
+  if (pwd.search(/[A-Z]/) >= 0) c++;
+  if (pwd.search(/[0-9]/) >= 0) c++;
+
+  let r = RegExp("[;:\\. \\[\\]\\^_$£@,%\-_,\?\.<>()\*+#\"\=/'!]", "g");
+  let l = pwd.replace(r, "").length;
+  if (l < pwd.length) c++;
+  if (l < pwd.length - 1) c++;
+
+  if (c > 3) {
+    if (pwd.length >= 9) q = 60;
+    if (pwd.length >= 10) q = 70;
+    q = q + (c - 3) * 10
+  }
+
+  if (q < 30) {
+    gPassPhraseQuality.setAttribute("value", "bad");
+  }
+  else if (q <= 50) {
+    gPassPhraseQuality.setAttribute("value", "medium");
+  }
+  else if (q <= 80) {
+    gPassPhraseQuality.setAttribute("value", "high");
+  }
+  else {
+    gPassPhraseQuality.setAttribute("value", "excellent");
+  }
+
+  disableNext(pwd.length < 8 || q < 50);
+}
+
 function displayKeySel() {
+  loadKeys();
   var uidChildren = document.getElementById("uidSelectionChildren");
   if (document.getElementById("createPgpKey").value=="0") {
     setUseKey();
@@ -419,47 +611,46 @@ function clearKeyListEntries(){
   }
 }
 
-function onSetStartNow(doStart) {
-  if (doStart) {
-    setNextPage("pgSelectId");
-  }
-  else {
-    setNextPage("pgNoStart");
-  }
+function onSetStartNow(userMode) {
+  gWizardUserMode = userMode;
 }
 
 function onKeySelected() {
-  var wizard = document.getElementById("enigmailSetupWizard");
+  var wizard = getWizard();
   var uidSel = document.getElementById("uidSelection");
+
+  if (uidSel.view.selection.count == 1) {
+    var currIndex = uidSel.view.selection.currentIndex;
+    var currItem = uidSel.view.getItemAtIndex(currIndex);
+    gGeneratedKey = currItem.getAttribute("keyId");
+  }
+  else {
+    gGeneratedKey = null;
+  }
+
   disableNext(uidSel.view.selection.count == 0);
 }
 
 function wizardSetFocus() {
   document.getElementById("startNow").focus();
+  disableNext(false);
+
 }
 
 function loadKeys() {
-  var wizard = document.getElementById("enigmailSetupWizard");
-
   var enigmailSvc = enigGetSvc(false);
 
   if (!enigmailSvc) {
-    return false;
+    return;
   }
   clearKeyListEntries();
 
   var exitCodeObj = {};
   var statusFlagsObj = {};
   var errorMsgObj = {};
-  var keyList = Ec.getSecretKeys(window);
+  var keyList = Ec.getSecretKeys(window, true);
   if (keyList == null) {
-    return false;
-  }
-
-
-  if (keyList.length ==0) {
-    setNextPage("pgNoKeyFound");
-    return true;
+    return;
   }
 
   var uidChildren = document.getElementById("uidSelectionChildren");
@@ -578,7 +769,7 @@ function checkPassphrase() {
 }
 
 function wizardGenKey() {
-  var wizard = document.getElementById("enigmailSetupWizard");
+  var wizard = getWizard();
   var passphrase = document.getElementById("passphrase").value;
 
   // gpg >= 2.1 queries passphrase using gpg-agent only
@@ -642,32 +833,13 @@ function wizardGenKey() {
   return false;
 }
 
-function wizardSelKey() {
-  // use existing key
-  var createKey=document.getElementById("createPgpKey");
-  if (createKey.value == "0") {
-    var uidSel = document.getElementById("uidSelection");
-    var currIndex = uidSel.view.selection.currentIndex;
-    var currItem = uidSel.view.getItemAtIndex(currIndex);
-    gGeneratedKey = currItem.getAttribute("keyId");
-  }
-}
-
 
 function queryISupArray(supportsArray, iid) {
   var result = [];
   var i;
-  try {
-    // Gecko <= 20
-    for (i=0; i<supportsArray.Count(); i++) {
-      result.push(supportsArray.GetElementAt(i).QueryInterface(iid));
-    }
-  }
-  catch(ex) {
-    // Gecko > 20
-    for (i=0; i<supportsArray.length; i++) {
-      result.push(supportsArray.queryElementAt(i, iid));
-    }
+
+  for (i=0; i<supportsArray.length; i++) {
+    result.push(supportsArray.queryElementAt(i, iid));
   }
 
   return result;
@@ -680,17 +852,6 @@ function countIdentities() {
                                        Components.interfaces.nsIMsgIdentity);
   return identities.length;
 }
-
-function checkIdentities() {
-  var wizard = document.getElementById("enigmailSetupWizard");
-
-  if (wizard.currentPage.next != "pgNoStart") {
-    if (countIdentities() <= 1) {
-      setNextPage("pgEncConv");
-    }
-  }
-}
-
 
 function fillIdentities(fillType)
 {
@@ -709,21 +870,10 @@ function fillIdentities(fillType)
 
     // Find out default identity
     var defIdentities = gEnigAccountMgr.defaultAccount.identities;
-    try {
-      // Gecko >= 20
-      if (defIdentities.length >= 1) {
-        defIdentity = defIdentities.queryElementAt(0, Components.interfaces.nsIMsgIdentity);
-      } else {
-        defIdentity = identities[0];
-      }
-    }
-    catch (ex) {
-      // Gecko < 20
-      if (defIdentities.Count() >= 1) {
-        defIdentity = defIdentities.QueryElementAt(0, Components.interfaces.nsIMsgIdentity);
-      } else {
-        defIdentity = identities[0];
-      }
+    if (defIdentities.length >= 1) {
+      defIdentity = defIdentities.queryElementAt(0, Components.interfaces.nsIMsgIdentity);
+    } else {
+      defIdentity = identities[0];
     }
 
     if (document.getElementById("activateId").value == "0") {
@@ -825,17 +975,14 @@ function wizardGetSelectedIdentity()
 
 function applyWizardSettings() {
   DEBUG_LOG("enigmailSetupWizard.js: applyWizardSettings\n");
+  debugger;
 
   loadLastPage();
 
-  // process encryption settings:
-  //  0: convenient encryption
-  //  1: by default encrypt (account preference)
-  //  2: by default don't encrypt (account preference)
-  var convEnc = (document.getElementById("convEncryptMsg").value == "0" ? 0 : 1);
-  EnigSetPref("encryptionModel", convEnc);
+  Ec.setPref("encryptionModel", 0);
 
   if (document.getElementById("activateId").value == "1") {
+    // activate all identities
     var idSupports = gEnigAccountMgr.allIdentities;
     var identities = queryISupArray(idSupports,
                                        Components.interfaces.nsIMsgIdentity);
@@ -844,6 +991,7 @@ function applyWizardSettings() {
     }
   }
   else {
+    // activate selected identities
     var node = document.getElementById("idSelection").firstChild;
     while (node) {
       if (node.checked) {
@@ -854,28 +1002,24 @@ function applyWizardSettings() {
     }
   }
 
-  applyMozSetting("imapOnDemand", "mail.server.default.mime_parts_on_demand", false);
-  applyMozSetting("flowedText" ,"mailnews.send_plaintext_flowed", false);
-  applyMozSetting("quotedPrintable", "mail.strictly_mime", false);
-  applyMozSetting("viewPlainText", "mailnews.display.html_as", 1);
-  applyMozSetting("viewPlainText", "mailnews.display.prefer_plaintext", true);
+  applyMozSetting("mail.server.default.mime_parts_on_demand", false);
+  applyMozSetting("mailnews.send_plaintext_flowed", false);
+  applyMozSetting("mail.strictly_mime", false);
 
   EnigSetPref("configuredVersion", EnigGetVersion());
   EnigSavePrefs();
 }
 
-function applyMozSetting(param, preference, newVal)
+function applyMozSetting(preference, newVal)
 {
-  if (gEnigModifySettings[param]) {
-    if (typeof(newVal)=="boolean") {
-      EnigmailCore.prefRoot.setBoolPref(preference, newVal);
-    }
-    else if (typeof(newVal)=="number") {
-      EnigmailCore.prefRoot.setIntPref(preference, newVal);
-    }
-    else if (typeof(newVal)=="string") {
-      EnigmailCore.prefRoot.setCharPref(preference, newVal);
-    }
+  if (typeof(newVal)=="boolean") {
+    EnigmailCore.prefRoot.setBoolPref(preference, newVal);
+  }
+  else if (typeof(newVal)=="number") {
+    EnigmailCore.prefRoot.setIntPref(preference, newVal);
+  }
+  else if (typeof(newVal)=="string") {
+    EnigmailCore.prefRoot.setCharPref(preference, newVal);
   }
 }
 
@@ -899,8 +1043,7 @@ function wizardApplyId(identity, keyId)
 
   // process signing settings:
   // NOTE: option defaultSigningPolicy is an INT
-  var signMsg = (document.getElementById("signMsg").value== "1");
-  identity.setIntAttribute("defaultSigningPolicy", (signMsg ? 1 : 0));
+  identity.setIntAttribute("defaultSigningPolicy", 0);
   identity.setBoolAttribute("pgpSignEncrypted", false);
   identity.setBoolAttribute("pgpSignPlain", false);
 
@@ -909,13 +1052,10 @@ function wizardApplyId(identity, keyId)
   //  1: by default encrypt (account preference)
   //  2: by default don't encrypt (account preference)
   // NOTE: option defaultEncryptionPolicy is an INT
-  var encryptMsg = ((!newsServer) && (document.getElementById("convEncryptMsg").value == "1"));
-  identity.setIntAttribute("defaultEncryptionPolicy", (encryptMsg ? 1 : 0));
+  identity.setIntAttribute("defaultEncryptionPolicy", 0);
 
-  if ((document.getElementById("changeSettings").value == "1") &&
-      gEnigModifySettings["composeHTML"]) {
-    identity.setBoolAttribute("compose_html", false);
-  }
+  // change default composition mode to plain text
+  identity.setBoolAttribute("compose_html", false);
 }
 
 
@@ -949,7 +1089,7 @@ function wizardKeygenCleanup() {
   var enigmailSvc = enigGetSvc(false);
   enigmailSvc.invalidateUserIdList();
 
-  var wizard = document.getElementById("enigmailSetupWizard");
+  var wizard = getWizard();
   wizard.goTo("pgComplete");
 }
 
@@ -976,143 +1116,34 @@ function checkIdSelection() {
   disableNext(countSelectedId() < 1);
 }
 
-function showPrefDetails() {
-
-  window.openDialog("chrome://enigmail/content/enigmailWizardPrefs.xul",
-            "", "chrome,modal,centerscreen", gEnigModifySettings);
-  return true;
-}
-
 
 function loadLastPage() {
-  var wizard = document.getElementById("enigmailSetupWizard");
+  var wizard = getWizard();
   wizard.canRewind=false;
   wizard.getButton("cancel").disabled = true;
 }
 
 
 function setNewKey() {
-  setNextPage('pgKeyCreate');
   disableNext(false);
   gCreateNewKey = true;
   document.getElementById("uidSelection").boxObject.element.setAttribute("disabled", "true");
 }
 
 function setUseKey() {
-  setNextPage('pgSummary');
   gCreateNewKey = false;
   document.getElementById("uidSelection").boxObject.element.removeAttribute("disabled");
   onKeySelected();
 }
 
 function setImportKeys() {
-  setNextPage('pgKeyImport');
   gCreateNewKey = false;
   disableNext(false);
   document.getElementById("uidSelection").boxObject.element.setAttribute("disabled", "true");
 }
 
 
-// display summary of all wizard actions
-function displayActions()
-{
-  var currItem=0;
-  function appendDesc(what) {
-    ++currItem;
-    var item = document.getElementById("applyDesc"+currItem);
-    item.value="\u2013 "+what;
-    item.removeAttribute("collapsed");
-  }
-
-  var createKey1=document.getElementById("createPgpKey");
-  var createKey2=document.getElementById("newPgpKey");
-
-  if (gCreateNewKey ||
-      document.getElementById("pgSettings").next == "pgKeyCreate") {
-    setNextPage('pgKeygen');
-    appendDesc(EnigGetString("setupWizard.createKey"));
-  }
-  else {
-    setNextPage('pgComplete');
-    appendDesc(EnigGetString("setupWizard.useKey", gGeneratedKey));
-  }
-
-  var descList=document.getElementById("appliedSettings");
-
-  if (countIdentities() >1) {
-    if (document.getElementById("activateId").value == "1") {
-      appendDesc(EnigGetString("setupWizard.applyAllId"));
-    }
-    else {
-      var idList = "";
-      var node = document.getElementById("idSelection").firstChild;
-      while (node) {
-        if (node.checked) {
-          var identity = gEnigAccountMgr.getIdentity(node.getAttribute("account-id"));
-          idList+="<"+identity.email+"> ";
-        }
-        node = node.nextSibling;
-      }
-      appendDesc(EnigGetString("setupWizard.applySomeId", idList));
-    }
-  }
-  else {
-    appendDesc(EnigGetString("setupWizard.applySingleId", idList));
-  }
-
-  // preferences from convenient encryption wizard step:
-  switch (document.getElementById("convEncryptMsg").value) {
-    case "0": // convYes
-      appendDesc(EnigGetString("setupWizard.convEncrypt"));
-      break;
-    case "1": // convEncYes
-      appendDesc(EnigGetString("setupWizard.encryptAll"));
-      break;
-    case "0": // convEncNo
-      appendDesc(EnigGetString("setupWizard.encryptNone"));
-      break;
-  }
-
-  // signing preferences:
-  if (document.getElementById("signMsg").value== "1") {
-    appendDesc(EnigGetString("setupWizard.signAll"));
-  }
-  else {
-    appendDesc(EnigGetString("setupWizard.signNone"));
-  }
-
-  if (document.getElementById("changeSettings").value == "1") {
-    if (gEnigModifySettings["imapOnDemand"] &&
-        gEnigModifySettings["flowedText"] &&
-        gEnigModifySettings["quotedPrintable"] &&
-        gEnigModifySettings["viewPlainText"] &&
-        gEnigModifySettings["composeHTML"]) {
-      appendDesc(EnigGetString("setupWizard.setAllPrefs"));
-    }
-    else if (gEnigModifySettings["imapOnDemand"] ||
-        gEnigModifySettings["flowedText"] ||
-        gEnigModifySettings["quotedPrintable"] ||
-        gEnigModifySettings["viewPlainText"] ||
-        gEnigModifySettings["composeHTML"]) {
-      appendDesc(EnigGetString("setupWizard.setSomePrefs"));
-    }
-    else {
-      appendDesc(EnigGetString("setupWizard.setNoPrefs"));
-    }
-  }
-  else {
-    appendDesc(EnigGetString("setupWizard.setNoPrefs"));
-  }
-}
-
 // Helper function
 function getServersForIdentity(accMgr, identity) {
-  try {
-    // Gecko >= 20
-    return accMgr.getServersForIdentity(identity);
-  }
-  catch(ex) {
-    // Gecko < 20
-    return accMgr.GetServersForIdentity(identity);
-  }
+  return accMgr.getServersForIdentity(identity);
 }

@@ -586,3 +586,22 @@ treechildren::-moz-tree-cell-text(STYLE) {}
 .ruleactiontarget[type="enigmail@enigmail.net#filterActionCopyDecrypt"] {
   -moz-binding: url("chrome://messenger/content/searchWidgets.xml#ruleactiontarget-folder");
 }
+
+.enigmailPassphraseQuality {
+  margin: 2px 4px;
+  min-width: 128px;
+  height: 12px;
+  background-color: #C21540;
+}
+
+.enigmailPassphraseQuality[value="medium"] {
+  background-color: #5885C4;
+}
+
+.enigmailPassphraseQuality[value="high"] {
+  background-color: #64C4A1;
+}
+
+.enigmailPassphraseQuality[value="excellent"] {
+  background-color: #1A9C2A;
+}
