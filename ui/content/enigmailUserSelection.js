@@ -204,7 +204,7 @@ function enigmailBuildList(refresh)
 
    window.arguments[RESULT].cancelled=true;
 
-   gAlwaysTrust = EnigGetPref("alwaysTrustSend");
+   gAlwaysTrust = (EnigGetPref("acceptedKeys") == 1);
 
    var secretOnly = (window.arguments[INPUT].options.indexOf("private")>= 0);
    var hideExpired = (window.arguments[INPUT].options.indexOf("hidexpired")>= 0);

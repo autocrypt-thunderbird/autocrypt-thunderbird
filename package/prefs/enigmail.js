@@ -49,9 +49,6 @@ pref("extensions.enigmail.agentAdditionalParam","");
 // path to gpg executable
 pref("extensions.enigmail.agentPath","");
 
-// enable --always-trust for message sending
-pref("extensions.enigmail.alwaysTrustSend",true);
-
 // allow empty subject line without asking for confirmation
 pref("extensions.enigmail.allowEmptySubject",false);
 

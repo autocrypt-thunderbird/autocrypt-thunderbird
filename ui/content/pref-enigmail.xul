@@ -77,9 +77,6 @@
     <tooltip id="wrapHtmlBeforeSend.tooltip">
       <description>&enigmail.wrapHtmlBeforeSend.tooltip;</description>
     </tooltip>
-    <tooltip id="alwaysTrustSend.tooltip">
-      <description>&enigmail.alwaysTrustSend.tooltip;</description>
-    </tooltip>
 
     <!-- sending preferences: accepted keys -->
     <tooltip id="acceptedKeysValid.tooltip">
