@@ -363,7 +363,7 @@ MimeVerify.prototype = {
   },
 
   setMsgWindow: function(msgWindow, msgUriSpec) {
-    DEBUG_LOG("mimeVerify.jsm: setMsgWindow: "+msgUriSpec+"\n");
+    Ec.DEBUG_LOG("mimeVerify.jsm: setMsgWindow: "+msgUriSpec+"\n");
 
     if (! this.msgWindow) {
       this.msgWindow = msgWindow;
@@ -372,7 +372,7 @@ MimeVerify.prototype = {
   },
 
   displayStatus: function() {
-    DEBUG_LOG("mimeVerify.jsm: displayStatus\n");
+    Ec.DEBUG_LOG("mimeVerify.jsm: displayStatus\n");
     if (this.exitCode == null || this.msgWindow == null || this.statusDisplayed)
       return;
 

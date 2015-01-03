@@ -78,7 +78,7 @@ PgpMimeDecrypt.prototype = {
 
     ++gNumProc;
     if (gNumProc > 2) {
-      DEBUG_LOG("mimeDecrypt.js: number of parallel requests above threshold - ignoring requst\n");
+      Ec.DEBUG_LOG("mimeDecrypt.js: number of parallel requests above threshold - ignoring requst\n");
       return;
     }
 
@@ -105,6 +105,7 @@ PgpMimeDecrypt.prototype = {
     this.verifier = EnigmailVerify.newVerifier(true, undefined, false);
     this.verifier.setMsgWindow(this.msgWindow, this.msgUriSpec);
     if (uri != null) {
+      Ec.DEBUG_LOG("mimeDecrypt.js: onStartRequest: uri='"+ uri.spec+"'\n");
       this.uri = uri.QueryInterface(Ci.nsIURI).clone();
     }
   },
@@ -302,13 +303,13 @@ PgpMimeDecrypt.prototype = {
   },
 
   displayStatus: function() {
-    DEBUG_LOG("mimeDecrypt.js: displayStatus\n");
+    Ec.DEBUG_LOG("mimeDecrypt.js: displayStatus\n");
 
     if (this.exitCode == null || this.msgWindow == null || this.statusDisplayed)
       return;
 
     try {
-      DEBUG_LOG("mimeDecrypt.js: displayStatus displaying result\n");
+      Ec.DEBUG_LOG("mimeDecrypt.js: displayStatus for uri " +this.uri.spec + "\n");
       let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
 
       if (headerSink && this.uri && !this.backgroundJob) {

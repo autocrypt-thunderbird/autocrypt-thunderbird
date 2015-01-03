@@ -588,6 +588,7 @@ Enigmail.hdrView = {
 
           Enigmail.hdrView.statusBarHide();
 
+
           EnigmailVerify.setMsgWindow(msgWindow, Enigmail.msg.getCurrentMsgUriSpec());
 
           var statusText = document.getElementById("enigmailStatusText");
