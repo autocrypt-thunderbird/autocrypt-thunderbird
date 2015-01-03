@@ -396,7 +396,6 @@ function resetRememberedValues() {
              "warnClearPassphrase",
              "warnOnSendingNewsgroups",
              "warnDownloadContactKeys",
-             "warnIso2022jp",
              "warnRefreshAll"];
 
   for (var j=0; j<prefs.length; j++) {

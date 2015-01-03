@@ -209,9 +209,6 @@ pref("extensions.enigmail.warnRefreshAll",true);
 // display a warning when the keys for all contacts are downloaded
 pref("extensions.enigmail.warnDownloadContactKeys",true);
 
-// display a warning if the broken character set ISO-2022-JP is used (and remember selected state)
-pref("extensions.enigmail.warnIso2022jp", 0);
-
 // wrap HTML messages before sending inline PGP messages
 pref("extensions.enigmail.wrapHtmlBeforeSend",true);
 
