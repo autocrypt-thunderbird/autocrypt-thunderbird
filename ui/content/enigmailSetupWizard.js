@@ -36,6 +36,7 @@ Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 Components.utils.import("resource://enigmail/enigmailCore.jsm");
 Components.utils.import("resource://enigmail/keyManagement.jsm");
 Components.utils.import("resource://enigmail/installGnuPG.jsm");
+Components.utils.import("resource://enigmail/commonFuncs.jsm");
 
 // const Ec is already defined in enigmailKeygen.js
 
@@ -53,6 +54,14 @@ function onLoad() {
   gEnigAccountMgr = Components.classes["@mozilla.org/messenger/account-manager;1"].getService(Components.interfaces.nsIMsgAccountManager);
 
   fillIdentities('checkbox');
+
+  let winOptions = EnigGetWindowOptions();
+  if ("skipIntro" in winOptions) {
+    if (winOptions["skipIntro"] == "true") {
+      var wizard = getWizard();
+      wizard.currentPage = document.getElementById("pgWelcome");
+    }
+  }
 }
 
 
@@ -183,7 +192,7 @@ function onAfterPgWelcome() {
         }
       }
     case "expert":
-      return "pgNoStart";
+      return "pgExpert";
     }
   }
   else {
@@ -214,7 +223,7 @@ function onAfterPgInstallGnuPG() {
       }
     }
   case "expert":
-    return "pgNoStart";
+    return "pgExpert";
   }
 }
 
@@ -507,7 +516,7 @@ function displayKeyCreate() {
     fillIdentities('menulist');
   }
 
-  gPassPhraseQuality = document.getElementById("passphraseQuality");
+  // gPassPhraseQuality = document.getElementById("passphraseQuality");
 
   // gpg >= 2.1 queries passphrase using gpg-agent only
   if (! Ec.getGpgFeature("keygen-passphrase")) {
@@ -575,6 +584,7 @@ function checkPassphraseQuality(txtBox) {
     q = q + (c - 3) * 10
   }
 
+/*
   if (q < 30) {
     gPassPhraseQuality.setAttribute("value", "bad");
   }
@@ -587,6 +597,7 @@ function checkPassphraseQuality(txtBox) {
   else {
     gPassPhraseQuality.setAttribute("value", "excellent");
   }
+*/
 
   disableNext(pwd.length < 8 || q < 50);
 }
@@ -611,7 +622,23 @@ function clearKeyListEntries(){
   }
 }
 
-function onSetStartNow(userMode) {
+function onSetStartNow(mode) {
+  var wizard = getWizard();
+  if (mode == 0) {
+    wizard.lastPage = true;
+    wizard.getButton("next").hidden = true;
+    wizard.getButton("finish").hidden = false;
+    wizard.currentPage.next = "";
+  }
+  else {
+    wizard.lastPage = false;
+    wizard.getButton("next").hidden = false;
+    wizard.getButton("finish").hidden = true;
+    wizard.currentPage.next = "pgWelcome";
+  }
+}
+
+function onSetSelectMode(userMode) {
   gWizardUserMode = userMode;
 }
 
@@ -632,7 +659,7 @@ function onKeySelected() {
 }
 
 function wizardSetFocus() {
-  document.getElementById("startNow").focus();
+  document.getElementById("selectMode").focus();
   disableNext(false);
 
 }
@@ -1075,11 +1102,9 @@ function wizardKeygenTerminate(exitCode)
 
   var curId = wizardGetSelectedIdentity();
 
-  if (EnigConfirm(EnigGetString("keygenComplete", curId.email)+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"), EnigGetString("dlg.button.skip"))) {
-    EnigCreateRevokeCert(gGeneratedKey, curId.email, wizardKeygenCleanup);
-  }
-  else
+  if (EnigCreateRevokeCert(gGeneratedKey, curId.email, wizardKeygenCleanup) < 0) {
     wizardKeygenCleanup();
+  };
 
 }
 

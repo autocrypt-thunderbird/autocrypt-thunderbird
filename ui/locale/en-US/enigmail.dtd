@@ -638,7 +638,12 @@
 <!ENTITY enigmail.setupWiz.title                     "Enigmail Setup Wizard">
 <!ENTITY enigmail.setupWiz.yes                       "Yes">
 <!ENTITY enigmail.setupWiz.no                        "No, thanks">
-<!ENTITY enigmail.setupWiz.pgWelcome.title           "Welcome to the Enigmail Setup Wizard">
+<!ENTITY enigmail.setupWiz.pgIntro.title             "Welcome to the Enigmail Setup Wizard">
+<!ENTITY enigmail.setupWiz.pgIntro.desc              "Do you want to set up Enigmail now, or do you wish to do this later?">
+<!ENTITY enigmail.setupWiz.pgIntro.startNow          "Start setup now">
+<!ENTITY enigmail.setupWiz.pgIntro.startLater        "Configure Enigmail later">
+
+<!ENTITY enigmail.setupWiz.pgWelcome.title           "How would you like to Configure Enigmail?">
 <!ENTITY enigmail.setupWiz.pgWelcome.manualOrAuto    "Would you like to setup Enigmail manually, or do you need assistance in the setup process?">
 <!ENTITY enigmail.setupWiz.pgWelcome.beginnersMode   "I would like the wizard to guide me through the setup (standard configuration; recommended for beginners)">
 <!ENTITY enigmail.setupWiz.pgWelcome.advancedMode    "I would like the wizard to guide me through the setup (extended configuration; recommended for advanced users)">
@@ -687,10 +692,10 @@
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle      "Create A new Key Pair">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descPub       "Your public key is used by others to send you encrypted messages. You can be distribute it to anyone.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "Your private key is required for you to decrypt received mails and to send signed mails.
-                                                      You should not give it to anyone. To secure your private key, please enter a passphrase below.">
+                                                      You should not give it to anyone.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2      "Your private key is required to decrypt mails you receive and to send signed mails.
                                                       You should not give it to anyone. To secure your private key, you will be prompted for a passphrase in the following two dialogs.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec3      "<html:b>Important:</html:b> your passphrase is not your private key.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec3      "<html:b>Note:</html:b> your passphrase <html:i>protects</html:i> your private key; it is not your private key.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat    "Please confirm your passphrase by typing it again">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passwordReq   "Your passphrase should contain at least 8 characters, digits and puctuation marks. Umlauts (e.g. ä, é, ñ) and
                                                       language-specific characters are not recommended.">
@@ -720,9 +725,11 @@
 <!ENTITY enigmail.setupWiz.pgComplete.desc           "Enigmail is now ready to use.<html:br/><html:br/>Thank you for using Enigmail.">
 
 <!-- wizard: manual setup page -->
-<!ENTITY enigmail.setupWiz.pgNoStart.title           "Cancel Wizard">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc            "You have chosen not to use the Wizard to configure Enigmail.
-                                                      <html:br/><html:br/>Thank you for using Enigmail.">
+<!ENTITY enigmail.setupWiz.pgExpert.title            "Manual Configuration of Enigmail">
+<!ENTITY enigmail.setupWiz.pgExpert.desc             "You have chosen not to use the Wizard to configure Enigmail.">
+<!ENTITY enigmail.setupWiz.pgExpert.keyManager       "The Enigmail key manager is available from here">
+<!ENTITY enigmail.setupWiz.pgExpert.expertSettings   "The expert Settings are available from here">
+
 
 
 <!ENTITY enigmail.advancedIdentityDlg.title          "Advanced Enigmail Identity Settings">

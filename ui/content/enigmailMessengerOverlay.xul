@@ -98,7 +98,7 @@
            label="&enigmail.setupWiz.label;"
            advanced="reverse"
            accesskey="&enigmail.setupWiz.accesskey;"
-           oncommand="EnigmailFuncs.openSetupWizard(window);" />
+           oncommand="EnigmailFuncs.openSetupWizard(window, true);" />
 
       <menuitem id="enigmail_decryptverify"
            label="&enigmail.decryptverify.label;"
@@ -222,7 +222,7 @@
            label="&enigmail.setupWiz.label;"
            advanced="true"
            accesskey="&enigmail.setupWiz.accesskey;"
-           oncommand="EnigmailFuncs.openSetupWizard(window);" />
+           oncommand="EnigmailFuncs.openSetupWizard(window, true);" />
 
       <menuitem id="enigmail_about"
            label="&enigmail.about.label;"

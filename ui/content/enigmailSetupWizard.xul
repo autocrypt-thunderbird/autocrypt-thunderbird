@@ -65,29 +65,52 @@
   </broadcasterset>
 
 
+  <!-- Introduction Page -->
+  <wizardpage id="pgIntro" pageid="pgIntro"
+              next="pgWelcome"
+              label="&enigmail.setupWiz.pgIntro.title;"
+              onpageshow="wizardSetFocus()">
+    <description control="startNow">
+      &enigmail.setupWiz.pgIntro.desc;
+    </description>
+    <separator/>
+
+    <radiogroup id="startNow" value="1">
+      <radio id="startNow_yes"
+             label="&enigmail.setupWiz.pgIntro.startNow;"
+             oncommand="onSetStartNow(1)"
+             selected="true"
+             value="1"/>
+       <radio id="startNow_no"
+             label="&enigmail.setupWiz.pgIntro.startLater;"
+             oncommand="onSetStartNow(0)"
+             value="0"/>
+    </radiogroup>
+  </wizardpage>
+
   <!-- Welcome Page -->
   <wizardpage id="pgWelcome" pageid="pgWelcome"
               next="pgInstallGnuPG"
               label="&enigmail.setupWiz.pgWelcome.title;"
               onpageshow="wizardSetFocus()">
-    <description control="startNow">
+    <description control="selectMode">
       &enigmail.setupWiz.pgWelcome.manualOrAuto;
     </description>
     <separator/>
 
-    <radiogroup id="startNow" value="1">
-      <radio id="startNow_beginner"
+    <radiogroup id="selectMode" value="1">
+      <radio id="selectMode_beginner"
              label="&enigmail.setupWiz.pgWelcome.beginnersMode;"
              selected="true"
-             oncommand="onSetStartNow('beginner')"
+             oncommand="onSetSelectMode('beginner')"
              value="1"/>
-       <radio id="startNow_advanced"
+       <radio id="selectMode_advanced"
              label="&enigmail.setupWiz.pgWelcome.advancedMode;"
-             oncommand="onSetStartNow('advanced')"
+             oncommand="onSetSelectMode('advanced')"
              value="2"/>
-      <radio id="startNow_expert"
+      <radio id="selectMode_expert"
              label="&enigmail.setupWiz.pgWelcome.manualMode;"
-             oncommand="onSetStartNow('expert')"
+             oncommand="onSetSelectMode('expert')"
              value="3"/>
     </radiogroup>
   </wizardpage>
@@ -111,7 +134,7 @@
       <hbox>
         <button id="btnInstallGnupg" label="&enigmail.setupWiz.pgInstall.installButton;" oncommand="installGnuPG()"/>
       </hbox>
-      <spacer/>
+      <separator/>
       <description>
         &enigmail.setupWiz.pgInstall.installDesc2;
       </description>
@@ -288,11 +311,11 @@
       <textbox id="passphrase" size="20" type="password" oninput="checkPassphraseQuality(this)"/>
       <label control="passphraseRepeat" value="&enigmail.setupWiz.pgKeyCreate.passRepeat;" />
       <textbox id="passphraseRepeat" size="20" type="password" />
-      <separator/>
+      <!--separator/>
       <hbox>
         <label value="Passphrase quality:"/>
         <box id="passphraseQuality" class="enigmailPassphraseQuality" value="bad"/>
-      </hbox>
+      </hbox -->
     </vbox>
     <separator/>
     <description>
@@ -377,11 +400,41 @@
 
 
   <!-- Manual setup Page -->
-  <wizardpage id="pgNoStart" pageid="pgNoStart"
-              label="&enigmail.setupWiz.pgNoStart.title;">
+  <wizardpage id="pgExpert" pageid="pgExpert"
+              label="&enigmail.setupWiz.pgExpert.title;">
     <description>
-      &enigmail.setupWiz.pgNoStart.desc;
+      &enigmail.setupWiz.pgExpert.desc;
     </description>
+
+    <grid>
+      <columns>
+        <column/>
+        <column flex="1"/>
+      </columns>
+
+      <rows autostretch="never">
+        <row>
+          <hbox align="center">
+            <label class="label" value="&enigmail.setupWiz.pgExpert.keyManager;"/>
+          </hbox>
+          <hbox align="center">
+            <button label="&enigmail.keyManWindow.label;"
+              oncommand="EnigmailFuncs.openKeyManager();"/>
+          </hbox>
+        </row>
+
+        <row>
+          <hbox align="center">
+            <label class="label" value="&enigmail.setupWiz.pgExpert.expertSettings;"/>
+          </hbox>
+          <hbox align="center">
+            <button label="&enigmail.prefs.label;"
+              oncommand="EnigmailFuncs.openPrefWindow(window, true, null);"/>
+          </hbox>
+        </row>
+      </rows>
+    </grid>
+
   </wizardpage>
 
 </wizard>

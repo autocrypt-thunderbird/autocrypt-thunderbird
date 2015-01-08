@@ -3029,6 +3029,10 @@ Enigmail.msg = {
        return EnigmailCommon.confirmDlg(window, msg, EnigmailCommon.getString("msgCompose.button.sendUnencrypted"));
     }
 
+    // The encryption process for PGP/MIME messages follows "here". It's
+    // called automatically from nsMsgCompose->sendMsg().
+    // registration for this is dome in chrome.manifest
+
     return true;
   },
 
