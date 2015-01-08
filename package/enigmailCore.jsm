@@ -116,7 +116,7 @@ var EnigmailCore = {
   },
 
   onShutdown: function() {
-    this._logFileStream.close();
+    if (this._logFileStream) this._logFileStream.close();
     this._logFileStream = null;
   },
 

@@ -64,6 +64,7 @@ PgpMimeEncrypt.prototype = {
   closePipe: false,
   cryptoMode: 0,
   exitCode : -1,
+  inspector: null,
   checkSMime: true,
 
   // nsIStreamListener interface
@@ -134,6 +135,8 @@ PgpMimeEncrypt.prototype = {
     if (! outStream) throw Cr.NS_ERROR_NULL_POINTER;
 
     try {
+      this.inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+
       this.outStream = outStream;
       this.isDraft = isDraft;
 
@@ -268,7 +271,8 @@ PgpMimeEncrypt.prototype = {
       else
         this.pipe.close();
 
-      this.proc.wait();
+      // wait here for this.proc to terminate
+      this.inspector.enterNestedEventLoop(0);
 
       DEBUG_LOG("mimeEncrypt.js: finishCryptoEncapsulation: exitCode = "+this.exitCode+"\n");
       if (this.exitCode != 0) throw Cr.NS_ERROR_FAILURE;
@@ -461,6 +465,11 @@ PgpMimeEncrypt.prototype = {
 
     if (this.exitCode != 0)
       Ec.alert(this.win, retStatusObj.errorMsg);
+
+    if (this.inspector) {
+      // unblock the waiting lock in finishCryptoEncapsulation
+      this.inspector.exitNestedEventLoop();
+    }
   }
 };
 

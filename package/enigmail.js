@@ -1248,10 +1248,16 @@ Enigmail.prototype = {
       plainText = plainText.replace(/\n/g, "\r\n");
     }
 
+    var inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+
     var listener = Ec.newSimpleListener(
       function _stdin (pipe) {
         pipe.write(plainText);
         pipe.close();
+      },
+      function _done(exitCode) {
+        // unlock wait
+        inspector.exitNestedEventLoop();
       });
 
 
@@ -1265,8 +1271,8 @@ Enigmail.prototype = {
       return "";
     }
 
-    // Wait for child STDOUT to close
-    proc.wait();
+    // Wait for child pipes to close
+    inspector.enterNestedEventLoop(0);
 
     var retStatusObj = {};
     exitCodeObj.value = Ec.encryptMessageEnd(getUnicodeData(listener.stderrData), listener.exitCode,

@@ -253,8 +253,7 @@ var EnigmailCommon = {
             }
             if (r == 1) {
               // start setup wizard
-              win.open("chrome://enigmail/content/enigmailSetupWizard.xul",
-                  "", "chrome,centerscreen");
+              launchSetupWizard(win);
               return this.getService(win);
             }
           }
@@ -2924,8 +2923,13 @@ var EnigmailCommon = {
   },
 
 
-  // simple listener for using with execStart
-  newSimpleListener: function(stdinFunc) {
+  /**
+   * simple listener for using with execStart
+   *
+   * stdinFunc: optional function to write to stdin
+   * doneFunc : optional function that is called when the process is terminated
+   */
+  newSimpleListener: function(stdinFunc, doneFunc) {
     var simpleListener = {
       stdoutData: "",
       stderrData: "",
@@ -2941,6 +2945,9 @@ var EnigmailCommon = {
       },
       done: function(exitCode) {
         this.exitCode = exitCode;
+        if (doneFunc) {
+          doneFunc(exitCode);
+        }
       }
     };
 
@@ -3246,8 +3253,14 @@ function upgradePgpMime() {
   catch (ex) {}
 }
 
+// open the Enigmail Setup Wizard
+// (not using EnigmailFuncs, because we can't cross-ref each other)
+function launchSetupWizard(win) {
+    win.open("chrome://enigmail/content/enigmailSetupWizard.xul",
+    "", "chrome,centerscreen");
+}
 
-function ConfigureEnigmail(window, startingPreferences) {
+function ConfigureEnigmail(win, startingPreferences) {
   EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: ConfigureEnigmail\n");
   var oldVer=EnigmailCommon.getPref("configuredVersion");
 
@@ -3255,7 +3268,7 @@ function ConfigureEnigmail(window, startingPreferences) {
     EnigmailCore.initPrefService();
     var vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
     if (oldVer == "") {
-      EnigmailCommon.openSetupWizard();
+      launchSetupWizard(win);
     }
     else {
       if (oldVer < "0.95") {
@@ -3291,7 +3304,7 @@ function ConfigureEnigmail(window, startingPreferences) {
         // window, we have to do this asynchronously
         EnigmailCommon.setTimeout(
           function _cb() {
-            var doIt = EnigmailCommon.confirmDlg(window,
+            var doIt = EnigmailCommon.confirmDlg(win,
                                    EnigmailCommon.getString("enigmailCommon.versionSignificantlyChanged"),
                                    EnigmailCommon.getString("enigmailCommon.checkPreferences"),
                                    EnigmailCommon.getString("dlg.button.close"));
@@ -3301,7 +3314,7 @@ function ConfigureEnigmail(window, startingPreferences) {
                 // but
                 // - without starting the service again because we do that right now
                 // - and modal (waiting for its end)
-                window.openDialog("chrome://enigmail/content/pref-enigmail.xul",
+                win.openDialog("chrome://enigmail/content/pref-enigmail.xul",
                                   "_blank", "chrome,resizable=yes,modal",
                                   {'showBasic': true,
                                    'clientType': 'thunderbird',

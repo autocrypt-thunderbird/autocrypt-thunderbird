@@ -273,12 +273,19 @@ var EnigmailFuncs = {
   /**
    * Display the OpenPGP setup wizard window
    *
+   * win      : nsIWindow - the parent window
+   * skipIntro: Boolean   - optional, if true, skip the introduction page
+   *
    * no return value
    */
 
-  openSetupWizard: function (win)
+  openSetupWizard: function (win, skipIntro)
   {
-     win.open("chrome://enigmail/content/enigmailSetupWizard.xul",
+    let param = "";
+    if (skipIntro) {
+      param = "?skipIntro=true";
+    }
+    win.open("chrome://enigmail/content/enigmailSetupWizard.xul"+param,
                 "", "chrome,centerscreen");
   },
 

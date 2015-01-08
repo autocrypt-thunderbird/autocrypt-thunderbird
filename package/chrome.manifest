@@ -70,16 +70,13 @@ category command-line-handler cline-enigmail @mozilla.org/enigmail/cline-handler
 component {847b3a30-7ab1-11d4-8f02-006008948af5} components/enigMsgCompFields.js
 contract @mozdev.org/enigmail/composefields;1 {847b3a30-7ab1-11d4-8f02-006008948af5}
 
-# PgpMimeDecrypt
+# registration of service to dectypt PGP/MIME messages
 component {7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8} components/mimeDecrypt.js
 contract @mozilla.org/mime/pgp-mime-js-decrypt;1 {7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8}
 
-# PgpMimeEncrypt
-component {1b040e64-e704-42b9-b05a-942e569afffc} components/mimeEncrypt.js  platformversion<19.0a1
-contract @enigmail.net/enigmail/newcomposesecure;1 {1b040e64-e704-42b9-b05a-942e569afffc} platformversion<19.0a1
-
-component {1b040e64-e704-42b9-b05a-942e569afffc} components/mimeEncrypt.js   platformversion>=19.0a1
-contract @mozilla.org/messengercompose/composesecure;1 {1b040e64-e704-42b9-b05a-942e569afffc} platformversion>=19.0a1
+# registration of service to create PGP/MIME enrypted messages
+component {1b040e64-e704-42b9-b05a-942e569afffc} components/mimeEncrypt.js
+contract @mozilla.org/messengercompose/composesecure;1 {1b040e64-e704-42b9-b05a-942e569afffc}
 
 # Preference Service
 component {847b3ab0-7ab1-11d4-8f02-006008948af5} components/enigprefs-service.js
