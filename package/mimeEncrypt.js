@@ -466,7 +466,7 @@ PgpMimeEncrypt.prototype = {
     if (this.exitCode != 0)
       Ec.alert(this.win, retStatusObj.errorMsg);
 
-    if (this.inspector) {
+    if (this.inspector && this.inspector.eventLoopNestLevel > 0) {
       // unblock the waiting lock in finishCryptoEncapsulation
       this.inspector.exitNestedEventLoop();
     }

@@ -1257,7 +1257,9 @@ Enigmail.prototype = {
       },
       function _done(exitCode) {
         // unlock wait
-        inspector.exitNestedEventLoop();
+        if (inspector.eventLoopNestLevel > 0) {
+          inspector.exitNestedEventLoop();
+        }
       });
 
 
