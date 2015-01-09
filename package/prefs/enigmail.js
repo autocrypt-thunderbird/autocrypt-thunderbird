@@ -140,9 +140,6 @@ pref("extensions.enigmail.mimeHashAlgorithm",0);
 // no passphrase for GnuPG key needed
 pref("extensions.enigmail.noPassphrase",false);
 
-// parse all mime headers (do NOT change)
-pref("extensions.enigmail.parseAllHeaders",true);
-
 // show quoted printable warning message (and remember selected state)
 pref("extensions.enigmail.quotedPrintableWarn",0);
 
