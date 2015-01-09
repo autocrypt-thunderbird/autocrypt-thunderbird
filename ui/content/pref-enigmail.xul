@@ -396,9 +396,6 @@
           <description class="enigmailPrefsTitle">&enigmail.moreOptions.label;</description>
           <spacer flex="0"/>
 
-          <checkbox id="enigmail_allowEmptySubject"
-                    hidden="true"/>
-
           <checkbox id="enigmail_wrapHtmlBeforeSend"
                     label="&enigmail.wrapHtmlBeforeSend.label;"
                     tooltip="wrapHtmlBeforeSend.tooltip"/>

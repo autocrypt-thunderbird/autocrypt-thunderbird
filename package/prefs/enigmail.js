@@ -74,9 +74,6 @@ pref("extensions.enigmail.addHeaders",false);
 // countdown for alerts when composing inline PGP HTML msgs
 pref("extensions.enigmail.composeHtmlAlertCount",3);
 
-// enable confirm dialog before sending message
-pref("extensions.enigmail.confirmBeforeSend",false);
-
 // prefer S/MIME or PGP/MIME (0: PGP/MIME, 1: ask, 2: S/MIME)
 pref("extensions.enigmail.mimePreferPgp",1);
 
