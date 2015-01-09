@@ -121,6 +121,7 @@ zip --must-match\
     modules/mimeVerify.jsm \
     modules/installGnuPG.jsm \
     modules/gpgAgentHandler.jsm \
+    modules/passwordCheck.jsm \
     modules/commonFuncs.jsm \
     modules/subprocess.jsm \
     modules/subprocess_worker_win.js \
