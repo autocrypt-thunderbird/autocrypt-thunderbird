@@ -172,9 +172,6 @@ pref("extensions.enigmail.autoSendEncrypted",1);
 // 4: if send (un)encrypted due to rules
 pref("extensions.enigmail.confirmBeforeSending",0);
 
-// support different passwords for each key (not yet available)
-pref("extensions.enigmail.supportMultiPass",false);
-
 // use GnuPG's default instead of Enigmail/Mozilla comment of for signed messages
 pref("extensions.enigmail.useDefaultComment",true);
 
