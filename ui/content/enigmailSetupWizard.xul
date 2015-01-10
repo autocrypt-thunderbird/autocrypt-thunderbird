@@ -310,12 +310,9 @@
       <label control="passphrase" value="&enigmail.keyPassphrase.label;" />
       <textbox id="passphrase" size="20" type="password" oninput="checkPassphraseQuality(this)"/>
       <label control="passphraseRepeat" value="&enigmail.setupWiz.pgKeyCreate.passRepeat;" />
-      <textbox id="passphraseRepeat" size="20" type="password" />
-      <!--separator/>
-      <hbox>
-        <label value="Passphrase quality:"/>
-        <box id="passphraseQuality" class="enigmailPassphraseQuality" value="bad"/>
-      </hbox -->
+      <textbox id="passphraseRepeat" size="20" type="password" oninput="checkPassphrasesEqual()"/>
+      <separator/>
+      <progressmeter id="passphraseQuality" mode="determined" value="0"/>
     </vbox>
     <separator/>
     <description>

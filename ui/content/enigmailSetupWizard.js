@@ -37,6 +37,7 @@ Components.utils.import("resource://enigmail/enigmailCore.jsm");
 Components.utils.import("resource://enigmail/keyManagement.jsm");
 Components.utils.import("resource://enigmail/installGnuPG.jsm");
 Components.utils.import("resource://enigmail/commonFuncs.jsm");
+Components.utils.import("resource://enigmail/passwordCheck.jsm");
 
 // const Ec is already defined in enigmailKeygen.js
 
@@ -291,6 +292,11 @@ function checkSecretKeys() {
   return false;
 }
 
+/**
+ * Enable or disable the "Next" (or "Done") button
+ *
+ * disable: boolean: true = button is disabled / false = button is enabled
+ */
 function disableNext(disable) {
   var wizard = getWizard();
   wizard.getButton("next").disabled = disable;
@@ -516,16 +522,16 @@ function displayKeyCreate() {
     fillIdentities('menulist');
   }
 
-  // gPassPhraseQuality = document.getElementById("passphraseQuality");
+  gPassPhraseQuality = document.getElementById("passphraseQuality");
 
-  // gpg >= 2.1 queries passphrase using gpg-agent only
+  // gpg 2.1.0 and 2.1.1 queries passphrase only gpg-agent only
   if (! Ec.getGpgFeature("keygen-passphrase")) {
     document.getElementById("keyCreateDescSec1").setAttribute("collapsed", "true");
     document.getElementById("passphraseBox").setAttribute("collapsed", "true");
     document.getElementById("keyCreateDescSec2").removeAttribute("collapsed");
   }
   else {
-    checkPassphraseQuality(document.getElementById("passphrase"));
+    checkPassphrasesEqual();
   }
 
   if (countSelectedId() == 1) {
@@ -562,45 +568,31 @@ function displayKeyCreate() {
 
 
 function checkPassphraseQuality(txtBox) {
+  var qualityRes = passwordCheck.checkQuality(txtBox.value);
 
-  let pwd = txtBox.value;
-  let q = 0;
-  if (pwd.length > 0) q = 20;
-  if (pwd.length >= 8) q = 50;
-
-  let c = 0;
-  if (pwd.search(/[a-z]/) >= 0) c++;
-  if (pwd.search(/[A-Z]/) >= 0) c++;
-  if (pwd.search(/[0-9]/) >= 0) c++;
-
-  let r = RegExp("[;:\\. \\[\\]\\^_$£@,%\-_,\?\.<>()\*+#\"\=/'!]", "g");
-  let l = pwd.replace(r, "").length;
-  if (l < pwd.length) c++;
-  if (l < pwd.length - 1) c++;
-
-  if (c > 3) {
-    if (pwd.length >= 9) q = 60;
-    if (pwd.length >= 10) q = 70;
-    q = q + (c - 3) * 10
+  if (qualityRes.valid) {
+    gPassPhraseQuality.value = qualityRes.complexity;
   }
-
-/*
-  if (q < 30) {
-    gPassPhraseQuality.setAttribute("value", "bad");
-  }
-  else if (q <= 50) {
-    gPassPhraseQuality.setAttribute("value", "medium");
-  }
-  else if (q <= 80) {
-    gPassPhraseQuality.setAttribute("value", "high");
+  else if (txtBox.value.length > 0) {
+    gPassPhraseQuality.value = (qualityRes.complexity / 2);
   }
   else {
-    gPassPhraseQuality.setAttribute("value", "excellent");
+    gPassPhraseQuality.value = 0;
   }
-*/
 
-  disableNext(pwd.length < 8 || q < 50);
+  checkPassphrasesEqual();
 }
+
+/**
+ * Check if entered passphrases are equal. If yes, enable the next button
+ */
+function checkPassphrasesEqual() {
+  let p1 = document.getElementById("passphrase").value;
+  let p2 = document.getElementById("passphraseRepeat").value;
+
+  disableNext(p1 != p2);
+}
+
 
 function displayKeySel() {
   loadKeys();

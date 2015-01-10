@@ -15,7 +15,7 @@ var passwordCheck = {
    *
    *  password: String: the password to evaluate
    *
-   *  return: object: validity:   Boolean - is password valid or not
+   *  return: object: valid:   Boolean - is password valid or not
    *                  complexity: Number  - complexity of password (values between 0 and 100)
    */
   checkQuality: function (password) {
