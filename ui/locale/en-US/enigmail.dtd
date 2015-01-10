@@ -92,6 +92,7 @@
 
 <!ENTITY enigmail.decryptverify.label    "Decrypt/Verify">
 <!ENTITY enigmail.importpublickey.label  "Import Public Key">
+<!ENTITY enigmail.importKey.label        "Import Key">
 <!ENTITY enigmail.savedecrypted.label    "Save Decrypted Message">
 
 <!ENTITY enigmail.autoDecrypt.label      "Automatically Decrypt/Verify Messages">

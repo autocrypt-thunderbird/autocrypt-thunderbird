@@ -259,7 +259,7 @@ Enigmail.hdrView = {
         } else {
           statusInfo = EnigmailCommon.getString("failedDecrypt");
         }
-        statusLine = statusInfo + EnigmailCommon.getString("clickKeyDetails");
+        statusLine = statusInfo + EnigmailCommon.getString("clickDetailsButton");
       }
       else if (statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
         statusInfo = EnigmailCommon.getString("badPhrase");
@@ -267,17 +267,17 @@ Enigmail.hdrView = {
       }
       else if (statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
         statusInfo = EnigmailCommon.getString("unverifiedSig");
-        statusLine = statusInfo + EnigmailCommon.getString("clickQueryPenDetails");
+        statusLine = statusInfo + EnigmailCommon.getString("clickImportButton");
       }
       else if (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
                               nsIEnigmail.EXPIRED_SIGNATURE |
                               nsIEnigmail.EXPIRED_KEY_SIGNATURE)) {
         statusInfo = EnigmailCommon.getString("failedSig");
-        statusLine = statusInfo + EnigmailCommon.getString("clickPenDetails");
+        statusLine = statusInfo + EnigmailCommon.getString("clickDetailsButton");
       }
       else if (statusFlags & nsIEnigmail.DECRYPTION_INCOMPLETE) {
         statusInfo = EnigmailCommon.getString("incompleteDecrypt");
-        statusLine = statusInfo + EnigmailCommon.getString("clickKey");
+        statusLine = statusInfo + EnigmailCommon.getString("clickDetailsButton");
       }
       else if (statusFlags & nsIEnigmail.IMPORTED_KEY) {
         statusLine = "";
@@ -293,7 +293,7 @@ Enigmail.hdrView = {
         var si = EnigmailCommon.getString("unverifiedSig");  // "Unverified signature"
         if (statusInfo == "") {
           statusInfo += si;
-          statusLine = si + EnigmailCommon.getString("clickPen");
+          statusLine = si + EnigmailCommon.getString("clickDetailsButton");
         }
         //if (statusFlags & nsIEnigmail.INLINE_KEY) {
         //  statusLine = statusInfo + EnigmailCommon.getString("clickDecrypt");
@@ -337,19 +337,25 @@ Enigmail.hdrView = {
       if (statusFlags & nsIEnigmail.PARTIALLY_PGP) {
         if (msgSigned && msgEncrypted) {
           statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSignedAndEnc") ]);
-          statusLine += EnigmailCommon.getString("clickPenKeyDetails");
+          statusLine += EnigmailCommon.getString("clickDetailsButton");
           statusInfo = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSigned") ])
                         + "\n" + statusInfo;
         }
         else if (msgEncrypted) {
           statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgEncrypted") ]);
-          statusLine += EnigmailCommon.getString("clickQueryKeyDetails");
+          statusLine += EnigmailCommon.getString("clickDetailsButton");
           statusInfo = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSigned") ])
                         + "\n" + statusInfo;
         }
         else if (msgSigned) {
-          statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSigned") ]);
-          statusLine += EnigmailCommon.getString("clickQueryPenDetails");
+          if (statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
+            statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSignedUnkownKey") ]);
+            statusLine += EnigmailCommon.getString("clickImportButton");
+          }
+          else {
+            statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSigned") ]);
+            statusLine += EnigmailCommon.getString("clickDetailsButton");
+          }
           statusInfo = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSigned") ])
                         + "\n" + statusInfo;
         }
@@ -390,6 +396,15 @@ Enigmail.hdrView = {
       statusText.value = statusLine +" ";
       this.enigmailBox.removeAttribute("collapsed");
       this.displayExtendedStatus(true);
+
+      if (Enigmail.msg.securityInfo.keyId &&
+          (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) ) {
+        document.getElementById("enigmail_importKey").removeAttribute("hidden");
+      }
+      else {
+        document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
+      }
+
     } else {
       statusText.value = "";
       this.enigmailBox.setAttribute("collapsed", "true");
@@ -477,14 +492,6 @@ Enigmail.hdrView = {
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
     if (Enigmail.msg.securityInfo) {
-      if (Enigmail.msg.securityInfo.keyId &&
-          (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) ) {
-        document.getElementById("enigmail_importKey").removeAttribute("hidden");
-      }
-      else {
-        document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
-      }
-
       if ( (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.NODATA) &&
            (Enigmail.msg.securityInfo.statusFlags &
              (nsIEnigmail.PGP_MIME_SIGNED | nsIEnigmail.PGP_MIME_ENCRYPTED)) ) {

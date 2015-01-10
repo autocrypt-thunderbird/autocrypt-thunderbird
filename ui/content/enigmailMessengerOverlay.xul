@@ -303,6 +303,13 @@
                collapsed="true" display="false" state="false"
                persist="display" aria-labelledby="enigmailStatusHdr"/>
       </vbox>
+      <vbox flex="0" pack="center">
+        <button id="enigmail_importKey" pack="center"
+                label="&enigmail.importKey.label;"
+                hidden="true"
+                class="enigMsgHdrView-flat-button"
+                oncommand="Enigmail.msg.handleUnknownKey();"/>
+      </vbox>
       <vbox class="enigmailHeaderNameBox" flex="0" pack="center">
         <observes element="enigmailStatusText" attribute="class"/>
         <button id="enigmailStatusHdrDetails" pack="center"
@@ -312,12 +319,12 @@
           <menupopup id="enigSecurityContext"
                  onpopupshowing="Enigmail.hdrView.dispSecurityContext();">
             <menuitem label="&enigmail.importpublickey.label;"
-                      id="enigmail_importKey"
+                      id="enigmail_importKeyunused"
                       hidden="true"
                       oncommand="Enigmail.msg.handleUnknownKey();"/>
             <menuitem label="&enigmail.reload.label;"
                       id="enigmail_reloadMessage"
-                      hidden="true"
+                      disabled="true"
                       oncommand="Enigmail.msg.reloadCompleteMsg();"/>
             <menuitem label="&enigmail.pgpSecurityInfo.label;"
                       id="enigmail_pgpSecurityInfo"
