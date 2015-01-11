@@ -3257,7 +3257,7 @@ function upgradePgpMime() {
 // (not using EnigmailFuncs, because we can't cross-ref each other)
 function launchSetupWizard(win) {
     win.open("chrome://enigmail/content/enigmailSetupWizard.xul",
-    "", "chrome,centerscreen");
+    "", "chrome,centerscreen,resizable");
 }
 
 function ConfigureEnigmail(win, startingPreferences) {

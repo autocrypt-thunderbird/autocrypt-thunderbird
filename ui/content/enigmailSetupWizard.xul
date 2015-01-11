@@ -51,8 +51,8 @@
         onwizardback="return onBack();"
         onload="onLoad();"
         onwizardcancel="return onCancel();"
-        height="500px"
-        width="600px"
+        minheight="500px"
+        minwidth="700px"
         xmlns:html="http://www.w3.org/1999/xhtml"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
@@ -68,8 +68,7 @@
   <!-- Introduction Page -->
   <wizardpage id="pgIntro" pageid="pgIntro"
               next="pgWelcome"
-              label="&enigmail.setupWiz.pgIntro.title;"
-              onpageshow="wizardSetFocus()">
+              label="&enigmail.setupWiz.pgIntro.title;">
     <description control="startNow">
       &enigmail.setupWiz.pgIntro.desc;
     </description>
@@ -92,7 +91,7 @@
   <wizardpage id="pgWelcome" pageid="pgWelcome"
               next="pgInstallGnuPG"
               label="&enigmail.setupWiz.pgWelcome.title;"
-              onpageshow="wizardSetFocus()">
+              onpageshow="onPageShow(); wizardSetFocus()">
     <description control="selectMode">
       &enigmail.setupWiz.pgWelcome.manualOrAuto;
     </description>
@@ -121,7 +120,7 @@
               next="pgSelectId"
               label="&enigmail.setupWiz.pgInstall.title;"
               description="&enigmail.setupWiz.pgInstall.title;"
-              onpageshow="onShowPgInstallGnuPG()">
+              onpageshow="onPageShow(); onShowPgInstallGnuPG()">
 
     <description>
       &enigmail.setupWiz.pgInstall.desc;
@@ -172,7 +171,8 @@
   <!-- Select Account IDs Page -->
   <wizardpage id="pgSelectId" pageid="pgSelectId" next="pgKeySel"
               label="&enigmail.setupWiz.pgSelectId.title;"
-              description="&enigmail.setupWiz.pgSelectId.subtitle;">
+              description="&enigmail.setupWiz.pgSelectId.subtitle;"
+              onpageshow="onPageShow();">
     <description control="activateId">
       &enigmail.setupWiz.pgSelectId.desc2;
     </description>
@@ -204,7 +204,7 @@
   <!-- Select Keys Page -->
   <wizardpage id="pgKeySel" pageid="pgKeySel"
               next="pgComplete"
-              onpageshow="displayKeySel()"
+              onpageshow="onPageShow(); displayKeySel()"
               label="&enigmail.setupWiz.pgKeySel.title;"
               description="&enigmail.setupWiz.pgKeySel.subtitle;">
     <description id="createPgpKeyLabel">
@@ -255,7 +255,7 @@
   <!-- Optional "No Key Found" Page -->
   <wizardpage id="pgNoKeyFound" pageid="pgNoKeyFound"
               next="pgKeyCreate"
-              onpageshow="disableNext(true)"
+              onpageshow="onPageShow(); disableNext(true)"
               label="&enigmail.setupWiz.pgNoKeyFound.title2;">
 
     <description id="noPgpKeyFoundLabel">
@@ -279,7 +279,7 @@
   <!-- Optional Create Key Page -->
   <wizardpage id="pgKeyCreate" pageid="pgKeyCreate"
               next="pgKeygen"
-              onpageshow="displayKeyCreate()"
+              onpageshow="onPageShow(); displayKeyCreate()"
               label="&enigmail.setupWiz.pgKeyCreate.title;"
               description="&enigmail.setupWiz.pgKeyCreate.subtitle;">
     <description>

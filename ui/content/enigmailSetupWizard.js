@@ -50,6 +50,7 @@ var gCreateNewKey=false;
 var gPrefEnigmail;
 var gDownoadObj = null;
 var gPassPhraseQuality = null;
+var gPageStack = [];  // required for correct stepping back
 
 function onLoad() {
   gEnigAccountMgr = Components.classes["@mozilla.org/messenger/account-manager;1"].getService(Components.interfaces.nsIMsgAccountManager);
@@ -60,7 +61,8 @@ function onLoad() {
   if ("skipIntro" in winOptions) {
     if (winOptions["skipIntro"] == "true") {
       var wizard = getWizard();
-      wizard.currentPage = document.getElementById("pgWelcome");
+      wizard.goTo("pgWelcome");
+
     }
   }
 }
@@ -95,15 +97,23 @@ function getWizard() {
 
 function setLastPage() {
   var wizard = getWizard();
+
   if (wizard.currentPage) {
-    wizard.setAttribute("lastViewedPage", wizard.currentPage.pageid);
+    gPageStack.push(wizard.currentPage.id);
   }
 }
 
 function onBack() {
   DEBUG_LOG("onBack");
+  var wizard = getWizard();
   gLastDirection=-1;
-  setLastPage();
+
+  gPageStack.pop();
+}
+
+function onPageShow() {
+  var wizard = getWizard();
+  wizard.canRewind = (gPageStack.length > 0)
 }
 
 /***
@@ -299,7 +309,7 @@ function checkSecretKeys() {
  */
 function disableNext(disable) {
   var wizard = getWizard();
-  wizard.getButton("next").disabled = disable;
+  wizard.canAdvance = !disable;
 }
 
 
@@ -590,7 +600,7 @@ function checkPassphrasesEqual() {
   let p1 = document.getElementById("passphrase").value;
   let p2 = document.getElementById("passphraseRepeat").value;
 
-  disableNext(p1 != p2);
+  disableNext(p1.length == 0 || p1 != p2);
 }
 
 
@@ -825,8 +835,8 @@ function wizardGenKey() {
         progMeter.setAttribute("value", progValue);
       }
   };
-  wizard.getButton("next").disabled = true;
-  wizard.getButton("back").disabled = true;
+  wizard.canAdvance = true;
+  wizard.canRewind = true;
 
   try {
     gKeygenRequest = Ec.generateKey(window,

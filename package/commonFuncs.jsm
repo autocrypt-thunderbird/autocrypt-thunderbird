@@ -286,7 +286,7 @@ var EnigmailFuncs = {
       param = "?skipIntro=true";
     }
     win.open("chrome://enigmail/content/enigmailSetupWizard.xul"+param,
-                "", "chrome,centerscreen");
+                "", "chrome,centerscreen,resizable");
   },
 
   /**
