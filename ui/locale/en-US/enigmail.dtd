@@ -646,9 +646,9 @@
 
 <!ENTITY enigmail.setupWiz.pgWelcome.title           "How would you like to Configure Enigmail?">
 <!ENTITY enigmail.setupWiz.pgWelcome.manualOrAuto    "Would you like to setup Enigmail manually, or do you need assistance in the setup process?">
-<!ENTITY enigmail.setupWiz.pgWelcome.beginnersMode   "I would like the wizard to guide me through the setup (standard configuration; recommended for beginners)">
-<!ENTITY enigmail.setupWiz.pgWelcome.advancedMode    "I would like the wizard to guide me through the setup (extended configuration; recommended for advanced users)">
-<!ENTITY enigmail.setupWiz.pgWelcome.manualMode      "I prefer to configure Enigmail manually (recommended for experts)">
+<!ENTITY enigmail.setupWiz.pgWelcome.beginnersMode   "I prefer a standard configuration (recommended for beginners)">
+<!ENTITY enigmail.setupWiz.pgWelcome.advancedMode    "I prefer an extended configuration (recommended for advanced users)">
+<!ENTITY enigmail.setupWiz.pgWelcome.manualMode      "I prefer a manual configuration (recommended for experts)">
 
 <!-- wizard: select account IDs step -->
 <!ENTITY enigmail.setupWiz.pgSelectId.title          "Select Identities">
@@ -676,8 +676,6 @@
 <!ENTITY enigmail.setupWiz.pgInstall.gnupgFound      "Valid GnuPG installation found.">
 
 
-
-
 <!-- wizard: key selection step -->
 
 <!ENTITY enigmail.setupWiz.pgKeySel.title            "Key Selection">
@@ -687,19 +685,21 @@
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey           "I want to create a new key pair for signing and encrypting my email">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey   "I want to select one of the keys below for signing and encrypting my email:">
 
-<!-- wizard: key creation - password step -->
 
+<!-- wizard: key creation - password step -->
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title         "Create Key">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle      "Create A new Key Pair">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descPub       "Your public key is used by others to send you encrypted messages. You can be distribute it to anyone.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "Your private key is required for you to decrypt received mails and to send signed mails.
-                                                      You should not give it to anyone.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2      "Your private key is required to decrypt mails you receive and to send signed mails.
-                                                      You should not give it to anyone. To secure your private key, you will be prompted for a passphrase in the following two dialogs.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec3      "<html:b>Note:</html:b> your passphrase <html:i>protects</html:i> your private key; it is not your private key.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle      "Create a new Key Pair">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys   "This dialog will create a pair of two keys:">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descPub       "Your <html:b>public key</html:b> is <html:b>for others</html:b> to send you encrypted emails. You can distribute it to everybody.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "Your <html:b>private key</html:b> is <html:b>for you</html:b> to decrypt these encrypted emails and to sign send signed emails.
+                                                      You should give it to nobody.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2      "Your <html:b>private key</html:b> is <html:b>for you</html:b> to decrypt these encrypted emails and to send signed emails.
+                                                      You should give it to nobody.
+                                                      To secure your private key, you will be prompted for a passphrase in the following two dialogs.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descPass      "Your <html:b>passphrase</html:b> is an extended password to use the private key. It prevents of misuse of your private key.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passContain   "The passphrase should be a phrase containing at least 8 characters, digits and puctuation marks. Umlauts (e.g. ä, é, ñ) and language-specific characters are not recommended.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat    "Please confirm your passphrase by typing it again">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.passwordReq   "Your passphrase should contain at least 8 characters, digits and puctuation marks. Umlauts (e.g. ä, é, ñ) and
-                                                      language-specific characters are not recommended.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passQuality   "Passphrase quality:">
 
 <!-- wizard: no key found step -->
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.title2       "Create or Import OpenPGP Keys">

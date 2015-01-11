@@ -283,6 +283,9 @@
               label="&enigmail.setupWiz.pgKeyCreate.title;"
               description="&enigmail.setupWiz.pgKeyCreate.subtitle;">
     <description>
+      &enigmail.setupWiz.pgKeyCreate.descTwoKeys;
+    </description>
+    <description>
       &enigmail.setupWiz.pgKeyCreate.descPub;
     </description>
     <description id="keyCreateDescSec1">
@@ -293,7 +296,8 @@
     </description>
     <separator/>
     <description>
-      &enigmail.setupWiz.pgKeyCreate.descSec3;
+     &enigmail.setupWiz.pgKeyCreate.descPass;
+     &enigmail.setupWiz.pgKeyCreate.passContain;
     </description>
     <separator/>
     <vbox>
@@ -311,13 +315,9 @@
       <textbox id="passphrase" size="20" type="password" oninput="checkPassphraseQuality(this)"/>
       <label control="passphraseRepeat" value="&enigmail.setupWiz.pgKeyCreate.passRepeat;" />
       <textbox id="passphraseRepeat" size="20" type="password" oninput="checkPassphrasesEqual()"/>
-      <separator/>
+      <description>&enigmail.setupWiz.pgKeyCreate.passQuality;</description>
       <progressmeter id="passphraseQuality" mode="determined" value="0"/>
     </vbox>
-    <separator/>
-    <description>
-      &enigmail.setupWiz.pgKeyCreate.passwordReq;
-    </description>
   </wizardpage>
 
 
