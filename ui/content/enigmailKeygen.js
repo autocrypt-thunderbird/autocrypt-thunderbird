@@ -35,6 +35,14 @@
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/enigmailCore.jsm");
+Components.utils.import("resource://enigmail/keyManagement.jsm");
+
+try {
+  Components.utils.import("resource://gre/modules/Promise.jsm");
+} catch (ex) {
+  Components.utils.import("resource://gre/modules/commonjs/sdk/core/promise.js");
+}
 
 const Ec = EnigmailCommon;
 
@@ -167,6 +175,14 @@ function enigmailKeygenTerminate(exitCode) {
      else {
        if (EnigConfirm(EnigGetString("genCompleteNoSign")+"\n\n"+EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"))) {
           EnigCreateRevokeCert(gGeneratedKey, curId.email, closeAndReset);
+          genAndSaveRevCert(gGeneratedKey, curId.email).then(
+            function _resolve() {
+              closeAndReset();
+            },
+            function _reject() {
+              // do nothing
+            }
+          );
        }
        else
           closeAndReset();
@@ -176,6 +192,61 @@ function enigmailKeygenTerminate(exitCode) {
       EnigAlert(EnigGetString("keyGenFailed"));
       window.close();
    }
+}
+
+/**
+ * generate and save a revokation certificate.
+ *
+ * return: Promise object
+ */
+
+function genAndSaveRevCert(keyId, uid) {
+  DEBUG_LOG("enigmailKeygen.js: genAndSaveRevCert\n");
+
+  return new Promise(
+    function(resolve, reject) {
+
+    let keyIdShort = "0x"+keyId.substr(-16, 16);
+    let keyFile = EnigmailCore.getProfileDirectory();
+    keyFile.append(keyIdShort + "_rev.asc");
+
+    // create a revokation cert in the TB profile directoy
+    EnigmailKeyMgmt.genRevokeCert(window, "0x"+keyId, keyFile, "1", "",
+      function _revokeCertCb(exitCode, errorMsg) {
+        if (exitCode != 0) {
+          EnigAlert(EnigGetString("revokeCertFailed")+"\n\n"+errorMsg);
+          reject(1);
+        }
+        saveRevCert(keyFile, keyId, uid, resolve, reject);
+      });
+    }
+  );
+}
+
+/**
+ *  create a copy of the revokation cert at a user defined location
+ */
+function saveRevCert(inputKeyFile, keyId, uid, resolve, reject) {
+
+  let defaultFileName = uid.replace(/[\\\/\<\>]/g, "");
+  defaultFileName += " (0x"+keyId.substr(-8,8)+") rev.asc";
+
+  let outFile = EnigFilePicker(EnigGetString("saveRevokeCertAs"),
+                       "", true, "*.asc",
+                       defaultFileName,
+                       [EnigGetString("asciiArmorFile"), "*.asc"]);
+
+  if (outFile) {
+    try {
+      inputKeyFile.copyToFollowingLinks(outFile.parent, outFile.leafName);
+      EnigAlert(EnigGetString("revokeCertOK"));
+    }
+    catch (ex) {
+      EnigAlert(EnigGetString("revokeCertFailed"));
+      reject(2);
+    }
+  }
+  resolve();
 }
 
 function closeAndReset() {

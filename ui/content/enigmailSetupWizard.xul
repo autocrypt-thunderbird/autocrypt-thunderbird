@@ -382,7 +382,22 @@
         <progressmeter id="keygenProgress" mode="determined" value="0"/>
       </groupbox>
 
+      <vbox id="revCertBox" hidden="true">
+        <separator/>
+        <description>
+          <html:b>&enigmail.setupWiz.pgKeygen.keyGenComplete;</html:b>
+        </description>
+        <separator/>
+        <description>
+          &enigmail.setupWiz.pgKeygen.revokeCertDesc;
+        </description>
+        <hbox>
+          <button label="&enigmail.setupWiz.pgKeygen.revCertButton;" oncommand="wizardCreateRevCert()"/>
+        </hbox>
+      </vbox>
+
     </groupbox>
+
   </wizardpage>
 
 

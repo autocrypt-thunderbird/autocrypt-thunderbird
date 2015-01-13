@@ -294,7 +294,7 @@ function checkGnupgInstallation() {
  * Check if secret keys are available
  */
 function checkSecretKeys() {
-  var keyList = Ec.getSecretKeys(window, true);
+  var keyList = Ec.getSecretKeys(null, true);
   if (keyList && keyList.length > 0) {
     return true;
   }
@@ -799,6 +799,10 @@ function checkPassphrase() {
 
 function wizardGenKey() {
   var wizard = getWizard();
+
+  disableNext(true);
+  wizard.canRewind = false;
+
   var passphrase = document.getElementById("passphrase").value;
 
   // gpg >= 2.1 queries passphrase using gpg-agent only
@@ -835,8 +839,6 @@ function wizardGenKey() {
         progMeter.setAttribute("value", progValue);
       }
   };
-  wizard.canAdvance = true;
-  wizard.canRewind = true;
 
   try {
     gKeygenRequest = Ec.generateKey(window,
@@ -862,6 +864,44 @@ function wizardGenKey() {
   return false;
 }
 
+function wizardKeygenTerminate(exitCode)
+{
+  DEBUG_LOG("enigmailSetupWizard.js: wizardKeygenTerminate\n");
+
+  // Give focus to this window
+  window.focus();
+
+  gKeygenRequest = null;
+
+  if ((! gGeneratedKey) || gGeneratedKey == KEYGEN_CANCELLED) return;
+
+  var progMeter = document.getElementById("keygenProgress");
+  progMeter.setAttribute("value", 100);
+
+
+  enigmailKeygenCloseRequest();
+  var enigmailSvc = enigGetSvc(false);
+  enigmailSvc.invalidateUserIdList();
+
+  document.getElementById("revCertBox").removeAttribute("hidden");
+}
+
+// create a revokation certificate
+
+function wizardCreateRevCert() {
+  DEBUG_LOG("enigmailSetupWizard.js: wizardCreateRevCert\n");
+
+  let curId = wizardGetSelectedIdentity();
+
+  genAndSaveRevCert(gGeneratedKey, curId.email).then(
+    function _resolve() {
+      disableNext(false);
+    },
+    function _reject() {
+      disableNext(true);
+    }
+  );
+}
 
 function queryISupArray(supportsArray, iid) {
   var result = [];
@@ -1086,40 +1126,6 @@ function wizardApplyId(identity, keyId)
   // change default composition mode to plain text
   identity.setBoolAttribute("compose_html", false);
 }
-
-
-function wizardKeygenTerminate(exitCode)
-{
-  DEBUG_LOG("enigmailSetupWizard.js: wizardKeygenTerminate\n");
-
-  // Give focus to this window
-  window.focus();
-
-  gKeygenRequest = null;
-
-  if ((! gGeneratedKey) || gGeneratedKey == KEYGEN_CANCELLED) return;
-
-  var progMeter = document.getElementById("keygenProgress");
-  progMeter.setAttribute("value", 100);
-
-  var curId = wizardGetSelectedIdentity();
-
-  if (EnigCreateRevokeCert(gGeneratedKey, curId.email, wizardKeygenCleanup) < 0) {
-    wizardKeygenCleanup();
-  };
-
-}
-
-function wizardKeygenCleanup() {
-  DEBUG_LOG("enigmailSetupWizard.js: wizardKeygenCleanup\n");
-  enigmailKeygenCloseRequest();
-  var enigmailSvc = enigGetSvc(false);
-  enigmailSvc.invalidateUserIdList();
-
-  var wizard = getWizard();
-  wizard.goTo("pgComplete");
-}
-
 
 function disableIdSel(doDisable) {
   var idSelectionBox = document.getElementById("idSelection");

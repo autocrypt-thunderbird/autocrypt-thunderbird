@@ -625,7 +625,6 @@ function EnigCreateRevokeCert(keyId, userId, callbackFunc) {
   if (!enigmailSvc)
     return -1;
 
-  var errorMsgObj = {};
   EnigmailKeyMgmt.genRevokeCert(window, "0x"+keyId, outFile, "1", "",
     function _revokeCertCb(exitCode, errorMsg) {
       if (exitCode != 0) {

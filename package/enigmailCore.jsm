@@ -66,6 +66,7 @@ const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID =
                               "@mozilla.org/network/file-output-stream;1";
 
 const NS_IOSERVICE_CONTRACTID       = "@mozilla.org/network/io-service;1";
+const DIR_SERV_CONTRACTID  = "@mozilla.org/file/directory_service;1";
 
 const NS_RDONLY      = 0x01;
 const NS_WRONLY      = 0x02;
@@ -453,6 +454,13 @@ var EnigmailCore = {
      return retVal;
   },
 
+  /**
+   * Return the directory holding the current profile as nsIFile object
+   */
+  getProfileDirectory: function() {
+    let ds = Cc[DIR_SERV_CONTRACTID].getService(Ci.nsIProperties);
+    return ds.get("ProfD", Ci.nsIFile);
+  }
 }
 
 function initPath(localFileObj, pathStr) {

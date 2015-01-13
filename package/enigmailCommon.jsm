@@ -325,7 +325,12 @@ var EnigmailCommon = {
 
   alert: function (win, mesg)
   {
-    gPromptSvc.alert(win, this.getString("enigAlert"), mesg);
+    try {
+      gPromptSvc.alert(win, this.getString("enigAlert"), mesg);
+    }
+    catch(ex) {
+      this.writeException("alert" , ex);
+    }
   },
 
   /**
@@ -833,6 +838,12 @@ var EnigmailCommon = {
     return new requestObserver(terminateFunc, terminateArg);
   },
 
+  /**
+   *  Log an exception including the stack trace
+   *
+   *  referenceInfo: String - arbitraty text to write before the exception is logged
+   *  ex:            exception object
+   */
   writeException: function (referenceInfo, ex)
   {
     this.ERROR_LOG(referenceInfo+": caught exception: "
@@ -1616,8 +1627,8 @@ var EnigmailCommon = {
     if (refresh == null) refresh = false;
     var keyList=enigmailSvc.getUserIdList(true, refresh, exitCodeObj, statusFlagsObj, errorMsgObj);
 
-    if (exitCodeObj.value != 0) {
-      this.alert(errorMsgObj.value);
+    if (exitCodeObj.value != 0 && keyList.length == 0) {
+      this.alert(win, errorMsgObj.value);
       return null;
     }
 

@@ -2641,9 +2641,7 @@ Enigmail.prototype = {
 
   getRulesFile: function () {
     EC.DEBUG_LOG("enigmail.js: getRulesFile\n");
-    var ds = Cc[DIR_SERV_CONTRACTID].getService();
-    var dsprops = ds.QueryInterface(Ci.nsIProperties);
-    var rulesFile = dsprops.get("ProfD", Ci.nsIFile);
+    var rulesFile = EC.getProfileDirectory();
     rulesFile.append("pgprules.xml");
     return rulesFile;
   },

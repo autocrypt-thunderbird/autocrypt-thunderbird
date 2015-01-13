@@ -130,6 +130,8 @@ function enigmailBuildList(refresh) {
 
   EnigLoadKeyList(refresh, keyListObj, getSortColumn(), getSortDirection());
 
+  if (!keyListObj.keySortList) return;
+
   gKeyList = keyListObj.keyList;
   gKeySortList = keyListObj.keySortList;
 
