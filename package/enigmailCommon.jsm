@@ -1655,11 +1655,11 @@ var EnigmailCommon = {
       var aLine = userList[i].split(/:/);
       switch (aLine[0]) {
       case "pub":
-        if (aLine[1] == "u") keyId = aLine[4]; // public key is ultimately trusted
+        if (aLine[1].search(/[muf]/) == 0) keyId = aLine[4]; // public key is valid
         break;
       case "uid":
-        if ((keyId != null) && (aLine[1] == 'u')) {
-          // UID is valid and ultimately trusted
+        if ((keyId != null) && (aLine[1].search(/[muf]/) == 0)) {
+          // UID is valid
           keys.push({ name: this.convertGpgToUnicode(aLine[9]),
                       id: keyId,
                       created: secretKeyCreated[keyId]});
