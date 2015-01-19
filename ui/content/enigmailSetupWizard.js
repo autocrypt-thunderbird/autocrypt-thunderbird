@@ -138,7 +138,7 @@ function onNext() {
     }
   }
 
-  DEBUG_LOG("onNext");
+  DEBUG_LOG("onNext\n");
   gLastDirection=1;
   setLastPage();
   var wizard = getWizard();
@@ -185,6 +185,7 @@ function onAfterPgWelcome() {
     switch (gWizardUserMode) {
     case "beginner":
       if (hasSecretKeys) {
+        loadKeys();
         return "pgKeySel";
       }
       else {
@@ -196,6 +197,7 @@ function onAfterPgWelcome() {
       }
       else {
         if (hasSecretKeys) {
+          loadKeys();
           return "pgKeySel";
         }
         else {
@@ -216,6 +218,7 @@ function onAfterPgInstallGnuPG() {
   switch (gWizardUserMode) {
   case "beginner":
     if (hasSecretKeys) {
+      loadKeys();
       return "pgKeySel";
     }
     else {
@@ -227,6 +230,7 @@ function onAfterPgInstallGnuPG() {
     }
     else {
       if (hasSecretKeys) {
+        loadKeys();
         return "pgKeySel";
       }
       else {
@@ -241,6 +245,7 @@ function onAfterPgInstallGnuPG() {
 function onAfterPgSelectId() {
   let hasSecretKeys = checkSecretKeys();
   if (hasSecretKeys) {
+    loadKeys();
     return "pgKeySel";
   }
   else {
@@ -447,6 +452,7 @@ function browseKeyFile(referencedId, referencedVar) {
 }
 
 function importKeyFiles() {
+  Ec.DEBUG_LOG("enigmailSetupWizard.js: importKeyFiles\n");
   if (document.getElementById("publicKeysFile").value.length == 0) {
     EnigAlert(EnigGetString("setupWizard.specifyFile"));
     return false;
@@ -458,6 +464,8 @@ function importKeyFiles() {
   var enigmailSvc = enigGetSvc(false);
   if (! enigmailSvc) return false;
 
+  disableNext(true);
+
   var errorMsgObj = {};
   var keyListObj = {};
   exitCode = enigmailSvc.importKeyFromFile(window, gPubkeyFile.value, errorMsgObj, keyListObj);
@@ -467,7 +475,8 @@ function importKeyFiles() {
   }
   importedKeys = keyListObj.value;
 
-  if (document.getElementById("privateKeysFile").value.length > 0) {
+  if (document.getElementById("privateKeysFile").value.trim().length > 0) {
+    Ec.DEBUG_LOG("enigmailSetupWizard.js: importKeyFiles - private Keys\n");
 
     exitCode = enigmailSvc.importKeyFromFile(window, gSeckeyFile.value, errorMsgObj, keyListObj);
     if (exitCode != 0) {
@@ -480,6 +489,9 @@ function importKeyFiles() {
 
   exitCode = 0;
   var keyList=importedKeys.split(/;/);
+
+  Ec.DEBUG_LOG("enigmailSetupWizard.js: importKeyFiles - importing "+ keyList.length +" keys\n");
+
   setKeyTrustNextKey(keyList, 0);
 
   return true;
@@ -605,7 +617,6 @@ function checkPassphrasesEqual() {
 
 
 function displayKeySel() {
-  loadKeys();
   var uidChildren = document.getElementById("uidSelectionChildren");
   if (document.getElementById("createPgpKey").value=="0") {
     setUseKey();
@@ -615,8 +626,9 @@ function displayKeySel() {
   }
 }
 
+function clearKeyListEntries() {
+  Ec.DEBUG_LOG("enigmailSetupWizard.js: clearKeyListEntries\n");
 
-function clearKeyListEntries(){
   // remove all rows
   var treeChildren = document.getElementById("uidSelectionChildren");
   while (treeChildren.firstChild) {
@@ -667,6 +679,8 @@ function wizardSetFocus() {
 }
 
 function loadKeys() {
+  Ec.DEBUG_LOG("enigmailSetupWizard.js: loadKeys\n");
+
   var enigmailSvc = enigGetSvc(false);
 
   if (!enigmailSvc) {
