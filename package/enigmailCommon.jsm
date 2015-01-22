@@ -1888,7 +1888,7 @@ var EnigmailCommon = {
       version-supported    - is the gpg version supported at all (true for gpg >= 1.4.2)
       supports-gpg-agent   - is gpg-agent is usually provided (true for gpg >= 2.0)
       autostart-gpg-agent  - is gpg-agent started automatically by gpg (true for gpg >= 2.0.16)
-      keygen-passphrase    - can the passphrase be specified when generating keys (false for gpg >= 2.1)
+      keygen-passphrase    - can the passphrase be specified when generating keys (false for gpg 2.1 and 2.1.1)
 
     @return: depending on featureName - Boolean unless specified differently:
       (true if feature is available / false otherwise)
@@ -1918,7 +1918,7 @@ var EnigmailCommon = {
     case 'autostart-gpg-agent':
       return (vc.compare(gpgVersion, "2.0.16") >= 0);
     case 'keygen-passphrase':
-      return (vc.compare(gpgVersion, "2.1") < 0);
+      return (vc.compare(gpgVersion, "2.1") < 0 || vc.compare(gpgVersion, "2.1.2") >= 0);
     }
 
     return undefined;
