@@ -401,9 +401,7 @@ Enigmail.hlp = {
             }
           }
           if (keyObj) {
-            //var userId = keyObj.userId;
             var keyTrust = keyObj.keyTrust;
-            //var ownerTrust = keyObj.ownerTrust;
             // if found, check whether the trust level is enough
             if (TRUSTLEVELS_SORTED.indexOf(keyTrust) >= minTrustLevelIndex) {
               found = true;
@@ -443,62 +441,62 @@ Enigmail.hlp = {
     var foundKeyId = null;
     var foundTrustLevel = null;
 
-    for (var idx=0; idx<keySortList.length; idx++) { // note: we have sorted acc. to validity
+    // **** LOOP to check against each key
+    // - note: we have sorted the keys according to validity to skip keys that are not valid enough
+    for (var idx=0; idx<keySortList.length; idx++) {
       var keyObj = keyList[keySortList[idx].keyId];
       var keyTrust = keyObj.keyTrust;
       var keyTrustIndex = TRUSTLEVELS_SORTED.indexOf(keyTrust);
+      //EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient():  check key " + keyObj.keyId + "\n");
 
       // end of loop: key trust (our sort criterion) too low?
       if (keyTrustIndex < minTrustLevelIndex) {
         if (foundKeyId == null) {
-          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): no key with enough trust level for '" + emailAddr + "' found\n");
+          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient():  no key with enough trust level for '" + emailAddr + "' found\n");
         }
-        else {
-          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): single key with valid trust level for '" + emailAddr + "' found\n");
-        }
-        return foundKeyId;  // END OF LOOP (return NULL or found single key)
+        return foundKeyId;  // **** END OF LOOP (return NULL or found single key)
       }
 
       // valid for encryption?
       if (keyObj.keyUseFor.indexOf("E") < 0) {
-        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): key " + keyObj.keyId + " found but not provided for encryption\n");
-        continue;  // not valid for encryption => CONTINUE the LOOP
+        //EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient():  skip key " + keyObj.keyId + " (not provided for encryption)\n");
+        continue;  // not valid for encryption => **** CONTINUE the LOOP
       }
       // disabled?
       if (keyObj.keyUseFor.indexOf("D") >= 0) {
-        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): key " + keyObj.keyId + " found but disabled\n");
-        continue;  // disabled => CONTINUE the LOOP
+        //EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient():  skip key " + keyObj.keyId + " (disabled)\n");
+        continue;  // disabled => **** CONTINUE the LOOP
       }
 
-      //var ownerTrust = keyObj.ownerTrust;
-      //var expired = keyObj.expiry;
       var userId = keyObj.userId.toLowerCase();
       if (userId && (userId == emailAddr || userId.indexOf(embeddedEmailAddr) >= 0)) {
         if (keyTrustIndex >= minTrustLevelIndex) {
-          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): key="+keyObj.keyId+" keyTrust=\""+keyTrust+"\" found\n");
+          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient():  key="+keyObj.keyId+" keyTrust=\""+keyTrust+"\" found\n");
 
           if (keyTrustIndex >= fullTrustIndex) {
-            // immediately return if a fully or ultimately trusted key is found. Faked duplicates
-            // should not be an issue here
+            // immediately return if a fully or ultimately trusted key is found.
+            // Faked keys should not be an issue here (so we don't have to check other keys)
             return keyObj.keyId;
           }
 
           if (foundKeyId != null) {  // multiple entries found
             if (foundKeyTrustIndex > keyTrustIndex) {
-              return foundKeyId;   // OK first key has higher trust level
+              return foundKeyId;   // OK, previously found key has higher trust level
             }
-            EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): multiple matching keys with trust level \"" + keyTrust
+            EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient():  multiple matching keys with trust level \"" + keyTrust
                                        + "\" found for \"" + emailAddr + "\" (0x" + foundKeyId + " and 0x" + keyObj.keyId + ")\n");
             return null;
           }
           foundKeyId = keyObj.keyId; // FOUND
           foundKeyTrustIndex = keyTrustIndex;
+          continue;  // matching key found => **** CONTINUE the LOOP (don't check subkeys)
         }
         else {
-          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): matching key="+keyObj.keyId+" found but not enough trust\n");
+          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient():  matching key="+keyObj.keyId+" found but not enough trust\n");
         }
       }
 
+      // if we are here, primary key did't match
       // check whether matching subkeys exist
       // - Note: subkeys have NO owner trust
       for (var subkey=0; subkey<keyObj.SubUserIds.length; subkey++) {
@@ -506,10 +504,9 @@ Enigmail.hlp = {
         var subUserId = subKeyObj.userId.toLowerCase();
         var subKeyTrust = subKeyObj.keyTrust;
         var subKeyTrustIndex = TRUSTLEVELS_SORTED.indexOf(subKeyTrust);
-        //var subExpired = subKeyObj.expiry;
         if (subUserId && (subUserId == emailAddr || subUserId.indexOf(embeddedEmailAddr) >= 0)) {
           if (subKeyTrustIndex >= minTrustLevelIndex) {
-            EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): subkey in key="+keyObj.keyId+" keyTrust=\""+keyTrust+"\" found\n");
+            EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient():  subkey in key="+keyObj.keyId+" keyTrust=\""+keyTrust+"\" found\n");
 
             if (keyTrustIndex >= fullTrustIndex) {
               // immediately return if a fully or ultimately trusted key is found. Faked duplicates
@@ -519,22 +516,22 @@ Enigmail.hlp = {
 
             if (foundKeyId != null) {  // multiple entries found
               if (foundKeyTrustIndex > subKeyTrustIndex) {
-                return foundKeyId;   // OK first key has higher trust level
+                return foundKeyId;   // OK, previously found key has higher trust level
               }
-              EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): multiple matching keys with trust level \"" + keyTrust + "\" found for \"" + emailAddr + "\" (0x" + foundKeyId + " and 0x"+keyObj.keyId+")\n");
+              EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient():  multiple matching keys with trust level \"" + keyTrust + "\" found for \"" + emailAddr + "\" (0x" + foundKeyId + " and 0x"+keyObj.keyId+")\n");
               return null;
             }
             foundKeyId = keyObj.keyId; // FOUND
             foundKeyTrustIndex = subKeyTrustIndex;
           }
           else {
-            EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): matching subkey="+keyObj.keyId+" found but not enough trust\n");
+            EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient():  matching subkey="+keyObj.keyId+" found but not enough trust\n");
           }
         }
       }
     }
     if (foundKeyId == null) {
-      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): no key for '" + emailAddr + "' found\n");
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getValidKeyForRecipient():  no key for '" + emailAddr + "' found\n");
     }
     return foundKeyId;
   },
