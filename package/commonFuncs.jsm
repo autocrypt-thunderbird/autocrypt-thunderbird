@@ -697,6 +697,7 @@ var EnigmailFuncs = {
           keyObj.keyUseFor=listRow[KEY_USE_FOR_ID];
           keyObj.ownerTrust=listRow[OWNERTRUST_ID];
           keyObj.SubUserIds=new Array();
+          keyObj.subKeys=new Array();
           keyObj.fpr="";
           keyObj.photoAvailable=false;
           keyObj.secretAvailable=false;
@@ -730,6 +731,15 @@ var EnigmailFuncs = {
               type: "uid"
             };
             keyObj.SubUserIds.push(subUserId);
+          }
+          break;
+        case "sub":
+          {
+            var subKey = {
+              keyId: listRow[KEY_ID],
+              type: "sub"
+            };
+            keyObj.subKeys.push(subKey);
           }
           break;
         case "uat":

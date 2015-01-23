@@ -1308,7 +1308,7 @@ function enigApplyFilter()
   searchTxt = searchTxt.toLowerCase();
   searchTxt = searchTxt.replace(/^(\s*)(.*)/, "$2").replace(/\s+$/,"");  // trim spaces
 
-  // check if we search for a fingerprint
+  // check if we search for a full fingerprint (with optional spaces every 4 letters)
   var fpr = null;
   if (searchTxt.length == 49) { // possible fingerprint with spaces?
     if (searchTxt.search(/^[0-9a-f ]*$/)>=0 && searchTxt[4]==' ' && searchTxt[9]==' ' && searchTxt[14]==' '
@@ -1318,7 +1318,7 @@ function enigApplyFilter()
     }
   }
   else if (searchTxt.length == 40) { // possible fingerprint without spaces
-    if (searchTxt.search(/^[0-9a-f ]*$/)>=0) {
+    if (searchTxt.search(/^[0-9a-f ]*$/) >= 0) {
       fpr = searchTxt;
     }
   }
@@ -1327,27 +1327,44 @@ function enigApplyFilter()
   var node=getFirstNode();
   while (node) {
     var uid = gKeyList[node.id].userId;
-    var hideNode = true;
-    if ((uid.toLowerCase().indexOf(searchTxt) >= 0) ||
-        (node.id.toLowerCase().indexOf(searchTxt) >= 0)) {
-       if (determineHiddenKeys(gKeyList[node.id], showInvalidKeys, showUntrustedKeys, showOthersKeys)) {
-          hideNode = false;
-          foundResult = true;
-        }
+    var showNode = false;
+    if (uid.toLowerCase().indexOf(searchTxt) >= 0) {
+      showNode = true;
     }
-    if (hideNode==true && fpr != null && gKeyList[node.id].fpr.toLowerCase() == fpr) {
+    // does the full fingerprint (without spaces) match?
+    // - no partial match check because this is special for the collapsed spaces inside the fingerprint
+    if (showNode==false && fpr != null && gKeyList[node.id].fpr.toLowerCase() == fpr) {
+      showNode = true;
+    }
+    // does the fingerprint (partially) match?
+    if (showNode==false && gKeyList[node.id].fpr.toLowerCase().indexOf(searchTxt) >= 0) {
+      showNode = true;
+    }
+    // does a sub user (partially) match?
+    if (showNode==false) {
+      for (var subUidIdx=0; subUidIdx < gKeyList[node.id].SubUserIds.length; subUidIdx++) {
+        uid = gKeyList[node.id].SubUserIds[subUidIdx].userId;
+        if (uid.toLowerCase().indexOf(searchTxt) >= 0) {
+          showNode = true;
+        }
+      }
+    }
+    // does a sub key of (partially) match?
+    if (showNode==false) {
+      for (var subKeyIdx=0; subKeyIdx < gKeyList[node.id].subKeys.length; subKeyIdx++) {
+        subkey = gKeyList[node.id].subKeys[subKeyIdx].keyId;
+        if (subkey.toLowerCase().indexOf(searchTxt) >= 0) {
+          showNode = true;
+        }
+      }
+    }
+    // take option to show invalid/untrusted... keys into account
+    var hideNode = true;
+    if (showNode && determineHiddenKeys(gKeyList[node.id], showInvalidKeys, showUntrustedKeys, showOthersKeys)) {
       hideNode = false;
       foundResult = true;
     }
-    for (var subUid=0; hideNode==true && subUid < gKeyList[node.id].SubUserIds.length; subUid++) {
-      uid = gKeyList[node.id].SubUserIds[subUid].userId;
-      if (uid.toLowerCase().indexOf(searchTxt) >= 0) {
-        hideNode = false;
-        foundResult = true;
-      }
-      // ideally we should check also the sub-key-ids
-    }
-    node.hidden=hideNode;
+    node.hidden = hideNode;
     node = node.nextSibling;
   }
 
