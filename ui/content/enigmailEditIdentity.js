@@ -217,7 +217,7 @@ Enigmail.edit = {
     inputObj.options += ",sendlabel=" + label;
     inputObj.options += ",";
 
-    window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
+    window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     try {
       if (resultObj.cancelled) return;
       var selKey = resultObj.userList[0];

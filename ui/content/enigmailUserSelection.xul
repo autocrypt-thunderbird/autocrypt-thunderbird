@@ -63,7 +63,28 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailUserSelection.js"/>
   <groupbox id="dialogHeadline" orient="vertical">
      <caption id="usersNotFoundCapt" label="&enigmail.usersNotFound.label;"/>
+     <listbox id="dialogMsgList"
+              rows="3"
+              collapsed="true"
+              editable="false"
+              disableKeyNavigation="true"
+              suppressonselect="true"
+              >
+       <listcols editable="false" class="plain" >
+         <listcol />
+         <listcol flex="1" />
+       </listcols>
+     </listbox>
+     <!-- 2 other ways to show list of missing keys (currently disabled)
      <description id="usersNotFoundDesc" width="700px">...</description>
+     <textbox id="dialogMsg"
+              value="msg"
+              multiline="true"
+              readonly="true"
+              collapsed="true"
+              class="plain"
+              />
+     -->
   </groupbox>
 
   <!-- <separator/> -->

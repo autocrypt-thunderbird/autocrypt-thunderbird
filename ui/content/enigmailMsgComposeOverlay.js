@@ -687,7 +687,7 @@ Enigmail.msg = {
     }
     var userIdValue="";
 
-    window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
+    window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     try {
       if (resultObj.cancelled) return;
       this.extractAndAttachKey(resultObj.userList);
@@ -2212,9 +2212,9 @@ Enigmail.msg = {
     //         Only the first key found for an email is used.
     //         If this is invalid, no other keys are tested.
     //         Thus, WE make it better here in enigmail until the bug is fixed.
+    var details = new Object();  // will contain msgList[] afterwards
     if (EnigmailCommon.getPref("assignKeysByEmailAddr")) {
-      var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrStr,
-                                                                refresh); //true);  // refresh key list
+      var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrStr, details);
       if (validKeyList != null) {
         toAddrStr = validKeyList.join(", ");
       }
@@ -2252,6 +2252,7 @@ Enigmail.msg = {
         || (((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT)
             || toAddrStr.indexOf('@') >= 0)
             && EnigmailCommon.getPref("assignKeysManuallyIfMissing"))
+        || (details && details.errArray) 
         ) {
 
       // check for invalid recipient keys
@@ -2259,6 +2260,13 @@ Enigmail.msg = {
       var inputObj = new Object();
       inputObj.toAddr = toAddrStr;
       inputObj.invalidAddr = Enigmail.hlp.getInvalidAddress(testErrorMsgObj.value);
+      if (details && details.errArray) {
+        inputObj.errArray = details.errArray;
+        inputObj.dialogMsg = ""
+        for (detIdx=0; detIdx<details.errArray.length; ++detIdx) {
+          inputObj.dialogMsg += details.errArray[detIdx].addr + ": " + details.errArray[detIdx].msg + "\n";
+        }
+      }
 
       // prepare dialog options:
       inputObj.options = "multisel";
@@ -2282,7 +2290,7 @@ Enigmail.msg = {
       inputObj.dialogHeader = EnigmailCommon.getString("recipientsSelectionHdr");
 
       // perform key selection dialog:
-      window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen", inputObj, resultObj);
+      window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
 
       // process result from key selection dialog:
       try {

@@ -228,10 +228,59 @@ function enigmailBuildList(refresh)
    try {
      if (window.arguments[INPUT].dialogHeader) {
        var dialogHeader = document.getElementById("dialogHeader");
-       dialogHeader.setAttribute("label", window.arguments[INPUT].dialogHeader);
-       dialogHeader.removeAttribute("collapsed");
+       if (dialogHeader) {
+         dialogHeader.setAttribute("label", window.arguments[INPUT].dialogHeader);
+         dialogHeader.removeAttribute("collapsed");
+       }
      }
-   } catch (ex) {}
+     if (window.arguments[INPUT].dialogMsg) {
+       var dialogMsg = document.getElementById("dialogMsg");
+       if (dialogMsg) {
+         dialogMsg.setAttribute("value", window.arguments[INPUT].dialogMsg);
+         dialogMsg.removeAttribute("collapsed");
+       }
+     }
+     var dialogMsgList = document.getElementById("dialogMsgList");
+     if (dialogMsgList) {
+       // clear the list (otherwise it grows with each loaded missing key)
+       while (dialogMsgList.getRowCount() > 0) {
+         dialogMsgList.removeIndexAt(0);
+       }
+       // fill the list according to the error messages
+       if (window.arguments[INPUT].errArray && window.arguments[INPUT].errArray.length > 0) {
+         var array = window.arguments[INPUT].errArray;
+         for (var detIdx=0; detIdx<array.length; ++detIdx) {
+           var msg = null;
+           switch (array[detIdx].msg) {
+             case "ProblemNoKey":
+               msg = EnigGetString("userSel.problemNoKey");
+               break;
+             case "ProblemMultipleKeys":
+               msg = EnigGetString("userSel.problemMultipleKeys");
+               break;
+             default:
+               DEBUG_LOG("missing label for '" + array[detIdx].msg + "'\n");
+               msg = "???";
+               break;
+           }
+           var row = document.createElement('listitem');
+           var cell = document.createElement('listcell');
+           cell.setAttribute('label', array[detIdx].addr + ":");
+           row.appendChild(cell);
+           cell = document.createElement('listcell');
+           cell.setAttribute('label', msg);
+           row.appendChild(cell);
+           dialogMsgList.appendChild(row);
+         }
+         dialogMsgList.removeAttribute("collapsed");
+       }
+       else {
+         dialogMsgList.setAttribute("collapsed","true");
+       }
+     }
+   } catch (ex) {
+     DEBUG_LOG("EXCEPTION: " + ex + "\n");
+   }
 
    if (secretOnly) {
       // rename expired row to created
@@ -381,7 +430,7 @@ function enigmailBuildList(refresh)
      // However, that's confusing because with the after refreshing keys
      // with no change in the key set, different items are selected.
      // Thus, this is disabled until there is a reprocessing of validity.
-     if (typeof(window.arguments[INPUT].invalidAddr)=="string") { //  && !refresh)
+     if (typeof(window.arguments[INPUT].invalidAddr)=="string") {
         invalidAddr=" "+window.arguments[INPUT].invalidAddr+" ";
      }
    }
