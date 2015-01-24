@@ -140,13 +140,13 @@
               advanced="true"
               oncommand="Enigmail.msg.attachKey();" />
 
+          <menuseparator/>
+
           <menuitem id="enigmail_clearPassphrase"
               label="&enigmail.clearPassphrase.label;"
               accesskey="&enigmail.clearPassphrase.accesskey;"
               advanced="true"
               oncommand="EnigmailCommon.clearPassphrase(window);" />
-
-          <menuseparator/>
 
           <menuitem id="enigmail_keymgmt"
              label="&enigmail.keyManWindow.label;"
