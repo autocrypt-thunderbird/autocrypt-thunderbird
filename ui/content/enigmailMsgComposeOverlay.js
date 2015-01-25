@@ -3354,19 +3354,28 @@ Enigmail.msg = {
   modifyCompFields: function (msgCompFields)
   {
 
+    // set Msg Header (depending on TB version)
+    function setHeader(hdr, val) {
+      if ("otherRandomHeaders" in msgCompFields) {
+        // TB <= 36
+        msgCompFields.otherRandomHeaders += hdr +": " + val + "\r\n";
+      }
+      else {
+        msgCompFields.setHeader(hdr, val);
+      }
+    }
+
     const HEADERMODE_KEYID = 0x01;
     const HEADERMODE_URL   = 0x10;
 
     try {
+
       if (this.identity.getBoolAttribute("enablePgp")) {
-        var enigmailHeaders = "";
         if (EnigmailCommon.getPref("addHeaders")) {
-          enigmailHeaders += "X-Enigmail-Version: "+EnigmailCommon.getVersion()+"\r\n";
+          setHeader("X-Enigmail-Version: ", EnigmailCommon.getVersion());
         }
         var pgpHeader="";
         var openPgpHeaderMode = this.identity.getIntAttribute("openPgpHeaderMode");
-
-        if (openPgpHeaderMode > 0) pgpHeader = "OpenPGP: ";
 
         if (openPgpHeaderMode & HEADERMODE_KEYID) {
             var keyId = this.identity.getCharAttribute("pgpkeyId");
@@ -3379,9 +3388,8 @@ Enigmail.msg = {
           pgpHeader += "url="+this.identity.getCharAttribute("openPgpUrlName");
         }
         if (pgpHeader.length > 0) {
-          enigmailHeaders += pgpHeader + "\r\n";
+          setHeader("OpenPGP", pgpHeader);
         }
-        msgCompFields.otherRandomHeaders += enigmailHeaders;
       }
     }
     catch (ex) {
