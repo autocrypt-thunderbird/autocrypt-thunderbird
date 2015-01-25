@@ -630,11 +630,8 @@ function enigmailGpgkeysTerminate(exitCode) {
       Ec.CONSOLE_LOG(gErrorData+"\n");
     }
 
-    exitCode = Ec.fixExitCode(exitCode, 0);
-
-    if (gOutputData.length > 0) {
-      gEnigRequest.callbackFunction(ENIG_CONN_TYPE_GPGKEYS, gOutputData, gErrorData);
-    }
+    // ignore exit code --> try next key if any
+    gEnigRequest.callbackFunction(ENIG_CONN_TYPE_GPGKEYS, gOutputData, gErrorData);
 
   } catch (ex) {}
 }
