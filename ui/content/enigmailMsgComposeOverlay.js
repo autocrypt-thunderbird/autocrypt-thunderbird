@@ -2252,7 +2252,7 @@ Enigmail.msg = {
         || (((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT)
             || toAddrStr.indexOf('@') >= 0)
             && EnigmailCommon.getPref("assignKeysManuallyIfMissing"))
-        || (details && details.errArray) 
+        || (details && details.errArray)
         ) {
 
       // check for invalid recipient keys
@@ -2262,10 +2262,6 @@ Enigmail.msg = {
       inputObj.invalidAddr = Enigmail.hlp.getInvalidAddress(testErrorMsgObj.value);
       if (details && details.errArray) {
         inputObj.errArray = details.errArray;
-        inputObj.dialogMsg = ""
-        for (detIdx=0; detIdx<details.errArray.length; ++detIdx) {
-          inputObj.dialogMsg += details.errArray[detIdx].addr + ": " + details.errArray[detIdx].msg + "\n";
-        }
       }
 
       // prepare dialog options:

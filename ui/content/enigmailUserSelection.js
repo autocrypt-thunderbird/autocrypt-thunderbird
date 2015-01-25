@@ -233,13 +233,6 @@ function enigmailBuildList(refresh)
          dialogHeader.removeAttribute("collapsed");
        }
      }
-     if (window.arguments[INPUT].dialogMsg) {
-       var dialogMsg = document.getElementById("dialogMsg");
-       if (dialogMsg) {
-         dialogMsg.setAttribute("value", window.arguments[INPUT].dialogMsg);
-         dialogMsg.removeAttribute("collapsed");
-       }
-     }
      var dialogMsgList = document.getElementById("dialogMsgList");
      if (dialogMsgList) {
        // clear the list (otherwise it grows with each loaded missing key)
@@ -299,7 +292,7 @@ function enigmailBuildList(refresh)
       rulesOption.setAttribute("hidden", "true");
    }
 
-   var descNotFound = document.getElementById("usersNotFoundDesc");
+   var dialogHeaderDesc = document.getElementById("dialogHeaderDesc");
    var notFoundCapt = document.getElementById("usersNotFoundCapt");
    var treeChildren=gUserList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
 
@@ -327,7 +320,9 @@ function enigmailBuildList(refresh)
    }
 
    if (window.arguments[INPUT].options.indexOf("forUser") >=0 ) {
-      descNotFound.firstChild.data=EnigGetString("keysToUse", window.arguments[INPUT].forUser);
+      // display title message for Per-Recipient Rule
+      dialogHeaderDesc.firstChild.data=EnigGetString("keysToUse", window.arguments[INPUT].forUser);
+      dialogHeaderDesc.removeAttribute("collapsed");
       notFoundCapt.setAttribute("collapsed", "true");
    }
 
@@ -625,9 +620,6 @@ function enigmailBuildList(refresh)
    }
    window.arguments[INPUT].notFoundList=aNotFound;
 
-   if (window.arguments[INPUT].options.indexOf("forUser")<0) {
-     descNotFound.firstChild.data = aNotFound.join(", ");
-   }
    DEBUG_LOG("  <=== enigmailBuildList()\n");
 }
 

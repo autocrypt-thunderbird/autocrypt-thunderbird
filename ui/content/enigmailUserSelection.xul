@@ -75,16 +75,7 @@
          <listcol flex="1" />
        </listcols>
      </listbox>
-     <!-- 2 other ways to show list of missing keys (currently disabled)
-     <description id="usersNotFoundDesc" width="700px">...</description>
-     <textbox id="dialogMsg"
-              value="msg"
-              multiline="true"
-              readonly="true"
-              collapsed="true"
-              class="plain"
-              />
-     -->
+     <description id="dialogHeaderDesc" width="700px" collapsed="true">...</description>
   </groupbox>
 
   <!-- <separator/> -->
