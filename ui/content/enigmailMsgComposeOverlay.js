@@ -2252,7 +2252,7 @@ Enigmail.msg = {
         || (((testStatusFlagsObj.value & nsIEnigmail.INVALID_RECIPIENT)
             || toAddrStr.indexOf('@') >= 0)
             && EnigmailCommon.getPref("assignKeysManuallyIfMissing"))
-        || (details && details.errArray)
+        || (details && details.errArray && details.errArray.length>0)
         ) {
 
       // check for invalid recipient keys
@@ -2260,7 +2260,7 @@ Enigmail.msg = {
       var inputObj = new Object();
       inputObj.toAddr = toAddrStr;
       inputObj.invalidAddr = Enigmail.hlp.getInvalidAddress(testErrorMsgObj.value);
-      if (details && details.errArray) {
+      if (details && details.errArray && details.errArray.length>0) {
         inputObj.errArray = details.errArray;
       }
 
