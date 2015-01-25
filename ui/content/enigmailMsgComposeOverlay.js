@@ -1979,7 +1979,9 @@ Enigmail.msg = {
         bccAddrStr = result.bccAddrStr;
         if (result.doRulesProcessingAgain) {  // start rule processing again ?
           doRulesProcessingAgain=true;
-          forceRecipientSettings=true;
+          if (result.createNewRule) {
+            forceRecipientSettings=true;
+          }
         }
       }
     } while (doRulesProcessingAgain);
@@ -2295,16 +2297,25 @@ Enigmail.msg = {
           return null;
         }
 
-        // "Create per recipient rule(s)":
-        if (resultObj.perRecipientRules && this.enableRules) {
-          // do an extra round because the user wants to set a PGP rule
+
+        // repeat checking of rules etc. (e.g. after importing new key)
+        if (resultObj.repeatEvaluation) {
           // THIS is the place that triggers a second iteration
-          return {
+          let returnObj = {
             doRulesProcessingAgain : true,
+            createNewRule : false,
             sendFlags : sendFlags,
             toAddrStr : toAddrStr,
             bccAddrStr : bccAddrStr,
+          };
+
+          // "Create per recipient rule(s)":
+          if (resultObj.perRecipientRules && this.enableRules) {
+            // do an extra round because the user wants to set a PGP rule
+            returnObj.createNewRule = true;
           }
+
+          return returnObj;
         }
 
         // process OK button:
@@ -2352,6 +2363,7 @@ Enigmail.msg = {
     EnigmailCommon.DEBUG_LOG("  <=== encryptTestMessage()");
     return {
       doRulesProcessingAgain : false,
+      createNewRule : false,
       sendFlags : sendFlags,
       toAddrStr : toAddrStr,
       bccAddrStr : bccAddrStr,
