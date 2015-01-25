@@ -265,6 +265,7 @@ function enigmailBuildList(refresh)
            row.appendChild(cell);
            dialogMsgList.appendChild(row);
          }
+         dialogMsgList.setAttribute("rows", (array.length<3 ? array.length : 3));
          dialogMsgList.removeAttribute("collapsed");
        }
        else {
