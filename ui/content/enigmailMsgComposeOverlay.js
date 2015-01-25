@@ -687,7 +687,7 @@ Enigmail.msg = {
     }
     var userIdValue="";
 
-    window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+    window.openDialog("chrome://enigmail/content/enigmailKeySelection.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     try {
       if (resultObj.cancelled) return;
       this.extractAndAttachKey(resultObj.userList);
@@ -2286,7 +2286,7 @@ Enigmail.msg = {
       inputObj.dialogHeader = EnigmailCommon.getString("recipientsSelectionHdr");
 
       // perform key selection dialog:
-      window.openDialog("chrome://enigmail/content/enigmailUserSelection.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+      window.openDialog("chrome://enigmail/content/enigmailKeySelection.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
 
       // process result from key selection dialog:
       try {

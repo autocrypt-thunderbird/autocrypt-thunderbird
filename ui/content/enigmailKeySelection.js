@@ -37,7 +37,7 @@
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 
 // Initialize enigmailCommon
-EnigInitCommon("enigmailUserSelection");
+EnigInitCommon("enigmailKeySelection");
 
 const INPUT = 0;
 const RESULT = 1;
@@ -78,7 +78,7 @@ function enigmailUserSelLoad()
   DEBUG_LOG("enigmailUserSelection.js: Load\n");
   window.enigIpcRequest = null;
   if (window.arguments[INPUT].options.indexOf("private")>= 0) {
-    document.getElementById("enigmailUserSelectionList").setAttribute("title", EnigGetString("userSel.secretKeySel.title"));
+    document.getElementById("enigmailKeySelectionDlg").setAttribute("title", EnigGetString("userSel.secretKeySel.title"));
   }
   document.getElementById("enigmailUserIdSelection").addEventListener('click', onClickCallback, true);
   enigmailBuildList(false);
@@ -288,7 +288,7 @@ function enigmailBuildList(refresh)
       sendSignedCheckbox.setAttribute("checked","false");
    }
    if ((window.arguments[INPUT].options.indexOf("rulesOption") < 0)) {
-      var rulesOption = document.getElementById("enigmailUserSelectionList").getButton("extra1");
+      var rulesOption = document.getElementById("enigmailKeySelectionDlg").getButton("extra1");
       rulesOption.setAttribute("hidden", "true");
    }
 
@@ -330,7 +330,7 @@ function enigmailBuildList(refresh)
       var pos1 = window.arguments[INPUT].options.indexOf(",sendlabel=");
       pos1 = window.arguments[INPUT].options.indexOf("=",pos1);
       var pos2 = window.arguments[INPUT].options.indexOf(",",pos1);
-      var acceptButton = document.getElementById("enigmailUserSelectionList").getButton("accept");
+      var acceptButton = document.getElementById("enigmailKeySelectionDlg").getButton("accept");
       acceptButton.setAttribute("label", window.arguments[INPUT].options.substring(pos1+1,pos2));
    }
 
@@ -829,7 +829,7 @@ function enigmailUserSelCallback(event)
 
   if (event.detail == 2) {
     if (window.arguments[INPUT].options.indexOf("multisel")< 0) {
-      document.getElementById("enigmailUserSelectionList").acceptDialog();
+      document.getElementById("enigmailKeySelectionDlg").acceptDialog();
       return;
     }
   }

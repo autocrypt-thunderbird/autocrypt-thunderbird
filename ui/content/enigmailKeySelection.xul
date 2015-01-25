@@ -45,7 +45,7 @@
 %enigMailDTD;
 ]>
 
-<dialog id="enigmailUserSelectionList"
+<dialog id="enigmailKeySelectionDlg"
         title="&enigmail.userSelectionList.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="enigmailUserSelLoad();"
@@ -58,9 +58,8 @@
 
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <!-- script type="application/x-javascript" src="chrome://enigmail/content/enigmailUserSelection.js"/> -->
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeySelection.js"/>
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailUserSelection.js"/>
   <groupbox id="dialogHeadline" orient="vertical">
      <caption id="usersNotFoundCapt" label="&enigmail.usersNotFound.label;"/>
      <listbox id="dialogMsgList"
