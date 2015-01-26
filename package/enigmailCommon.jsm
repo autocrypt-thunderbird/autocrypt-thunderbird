@@ -283,11 +283,7 @@ var EnigmailCommon = {
     return this.enigmailSvc.initialized ? this.enigmailSvc : null;
   },
 
-  getAppName: function() {
-    var xulAppinfo = Cc[XPCOM_APPINFO].getService(Ci.nsIXULAppInfo);
-
-    return xulAppinfo.name;
-  },
+  getAppName: EnigmailCore.getAppName.bind(EnigmailCore),
 
   getVersion: function()
   {

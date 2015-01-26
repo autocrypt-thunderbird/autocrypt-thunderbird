@@ -78,7 +78,7 @@ const ENIGMAIL_PREFS_ROOT = "extensions.enigmail.";
 
 var gLogLevel = 3;
 
-var gLogData = "";
+var gLogData = null;
 
 var EnigmailCore = {
 
@@ -150,6 +150,10 @@ var EnigmailCore = {
     if (gLogLevel >= 4)
       dump(datStr+str);
 
+    if (gLogData == null) {
+      gLogData = "";
+      this.WRITE_LOG("Mozilla Platform: "+ this.getAppName()+" "+ this.getAppVersion() + "\n");
+    }
     // truncate first part of log data if it grow too much
     if (gLogData.length > 128000) {
       gLogData = gLogData.substr(-72000);
@@ -220,6 +224,8 @@ var EnigmailCore = {
     }
     catch (ex) {
     }
+
+
 
     let data = "Enigmail version "+this.version+"\n" +
       "OS/CPU="+oscpu+"\n" +
@@ -453,6 +459,26 @@ var EnigmailCore = {
 
      return retVal;
   },
+
+  /**
+   * Plattform application name (e.g. Thunderbird)
+   */
+
+  getAppName: function() {
+    var xulAppinfo = Cc[XPCOM_APPINFO].getService(Ci.nsIXULAppInfo);
+
+    return xulAppinfo.name;
+  },
+
+  /**
+   * Plattform application version
+   */
+  getAppVersion: function() {
+    var xulAppinfo = Cc[XPCOM_APPINFO].getService(Ci.nsIXULAppInfo);
+
+    return xulAppinfo.version;
+  },
+
 
   /**
    * Return the directory holding the current profile as nsIFile object

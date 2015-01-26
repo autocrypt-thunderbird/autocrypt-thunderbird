@@ -544,7 +544,7 @@ Enigmail.prototype = {
     if (prefix) {
       EC.setLogLevel(5);
       EC.setLogDirectory(prefix);
-      EC.DEBUG_LOG("enigmail.js: Logging debug output to "+prefix+"enigdbug.txt\n");
+      EC.DEBUG_LOG("enigmail.js: Logging debug output to "+prefix+"/enigdbug.txt\n");
     }
 
     Ec.initialize(this, EC.getLogLevel());
