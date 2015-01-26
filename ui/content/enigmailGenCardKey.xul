@@ -286,9 +286,11 @@
           return;
         }
 
-        if (passphrase.search(/[\x80-\xFF]/)>=0) {
-          Ec.alert(window,Ec.getString("passCharProblem"));
-          return;
+        if (passphrase.search(/[^\x20-\x7E]/)>=0) {
+          if (! Ec.confirmDlg(window, Ec.getString("keygen.passCharProblem"),
+              Ec.getString("dlg.button.ignore"), Ec.getString("dlg.button.cancel"))) {
+            return null;
+          }
         }
 
         if (!passphrase) {

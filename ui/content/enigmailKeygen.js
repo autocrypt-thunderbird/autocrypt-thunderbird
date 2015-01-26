@@ -277,9 +277,11 @@ function enigmailCheckPassphrase() {
     return null;
   }
 
-  if (passphrase.search(/[\x80-\xFF]/)>=0) {
-    EnigAlert(EnigGetString("passCharProblem"));
-    return null;
+  if (passphrase.search(/[^\x20-\x7E]/)>=0) {
+    if (! Ec.confirmDlg(window, Ec.getString("keygen.passCharProblem"),
+        Ec.getString("dlg.button.ignore"), Ec.getString("dlg.button.cancel"))) {
+      return null;
+    }
   }
   if ((passphrase.search(/^\s/)==0) || (passphrase.search(/\s$/)>=0)) {
     EnigAlert(EnigGetString("passSpaceProblem"));

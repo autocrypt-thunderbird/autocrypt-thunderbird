@@ -113,9 +113,12 @@
         Ec.alert(window, Ec.getString("passNoMatch"));
         return false;
       }
-      if (newPasswd.search(/[\x80-\xFF]/)>=0) {
-        Ec.alert(window, Ec.getString("passCharProblem"));
-        return false;
+
+      if (newPasswd.search(/[^\x20-\x7E]/)>=0) {
+        if (! Ec.confirmDlg(window, Ec.getString("keygen.passCharProblem"),
+              Ec.getString("dlg.button.ignore"), Ec.getString("dlg.button.cancel"))) {
+          return false;
+        }
       }
     }
 
