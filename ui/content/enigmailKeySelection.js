@@ -920,8 +920,6 @@ function enigmailSearchMissingKeys ()
   EnigDownloadKeys(inputObj, resultObj);
 
   if (resultObj.importedKeys > 0) {
-    enigmailRefreshKeys();
-
     var resultObj=window.arguments[RESULT];
     resultObj.userList = [];
     resultObj.repeatEvaluation=true;
