@@ -45,6 +45,7 @@ catch (ex) {
 }
 
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/enigmailCore.jsm");
 Components.utils.import("resource://enigmail/commonFuncs.jsm");
 
 try {
@@ -3301,22 +3302,23 @@ Enigmail.msg = {
 
   getMailPref: function (prefName)
   {
+     let prefRoot = EnigmailCore.getPrefRoot();
 
      var prefValue = null;
      try {
-        var prefType = EnigmailCore.prefRoot.getPrefType(prefName);
+        var prefType = prefRoot.getPrefType(prefName);
         // Get pref value
         switch (prefType) {
-        case EnigmailCore.prefBranch.PREF_BOOL:
-           prefValue = EnigmailCore.prefRoot.getBoolPref(prefName);
+        case prefRoot.PREF_BOOL:
+           prefValue = prefRoot.getBoolPref(prefName);
            break;
 
-        case EnigmailCore.prefBranch.PREF_INT:
-           prefValue = EnigmailCore.prefRoot.getIntPref(prefName);
+        case prefRoot.PREF_INT:
+           prefValue = prefRoot.getIntPref(prefName);
            break;
 
-        case EnigmailCore.prefBranch.PREF_STRING:
-           prefValue = EnigmailCore.prefRoot.getCharPref(prefName);
+        case prefRoot.PREF_STRING:
+           prefValue = prefRoot.getCharPref(prefName);
            break;
 
         default:
@@ -3390,10 +3392,11 @@ Enigmail.msg = {
         var openPgpHeaderMode = this.identity.getIntAttribute("openPgpHeaderMode");
 
         if (openPgpHeaderMode & HEADERMODE_KEYID) {
-            var keyId = this.identity.getCharAttribute("pgpkeyId");
-            if (keyId.substr(0,2).toLowerCase() == "0x") {
-              pgpHeader += "id="+keyId.substr(2);
-            }
+
+          var fpr = EnigmailFuncs.getFingerprintForKey(this.identity.getCharAttribute("pgpkeyId"));
+          if (fpr && fpr.length > 0) {
+            pgpHeader += "id=" + fpr;
+          }
         }
         if (openPgpHeaderMode & HEADERMODE_URL) {
           if (pgpHeader.indexOf("=") > 0) pgpHeader += ";\r\n\t";

@@ -611,69 +611,39 @@ var EnigmailFuncs = {
   },
 
   /**
-   * Load the key list into memory and return it sorted by a specified column
+   * Return fingerprint for a given key ID
    *
-   * @win        - |object|  holding the parent window for displaying error messages
-   * @refresh    - |boolean| if true, cache is cleared and all keys are loaded from GnuPG
-   * @keyListObj - |object|  holding the resulting key list
-   * @sortColumn - |string|  containing the column name for sorting. One of:
-   *                         userid, keyid, keyidshort, fpr, keytype, validity, trust, expiry
-   * @sortDirection - |number| 1 = ascending / -1 = descending
+   * @keyId:  String of 8 or 16 chars key with optionally leading 0x
+   *
+   * @return: String containing the fingerprint or null if key not found
+   */
+  getFingerprintForKey: function(keyId) {
+
+    let enigmailSvc = EnigmailCommon.getService();
+    let keyList = enigmailSvc.getKeyListEntryOfKey(keyId);
+    let keyListObj = {};
+    this.createKeyObjects(keyList.replace(/(\r\n|\r)/g, "\n").split(/\n/), keyListObj);
+
+    if (keyListObj.keySortList.length > 0) {
+      return keyListObj.keyList[keyListObj.keySortList[0].keyId].fpr;
+    }
+    else {
+      return null;
+    }
+
+  },
+
+  /**
+   * Create a list of objects representing the keys in a key list
+   *
+   * @keyListString: array of |string| formatted output from GnuPG for key listing
+   * @keyListObj:    |object| holding the resulting key list:
+   *                     obj.keyList:     Array holding key objects
+   *                     obj.keySortList: Array holding values to make sorting easier
    *
    * no return value
    */
-  loadKeyList: function (win, refresh, keyListObj, sortColumn, sortDirection)
-  {
-    EnigmailCommon.DEBUG_LOG("enigmailFuncs.jsm: loadKeyList\n");
-
-    if (! sortColumn) sortColumn = "userid";
-    if (! sortDirection) sortDirection = 1;
-
-    var sortByKeyId = function (a, b) {
-      return (a.keyId < b.keyId) ? -sortDirection : sortDirection;
-    };
-
-    var sortByKeyIdShort = function (a, b) {
-      return (a.keyId.substr(-8,8) < b.keyId.substr(-8 ,8)) ? -sortDirection : sortDirection;
-    };
-
-    var sortByUserId = function (a, b) {
-      return (a.userId < b.userId) ? -sortDirection : sortDirection;
-    };
-
-    var sortByFpr = function (a, b) {
-      return (keyListObj.keyList[a.keyId].fpr < keyListObj.keyList[b.keyId].fpr) ? -sortDirection : sortDirection;
-    };
-
-    var sortByKeyType = function (a, b) {
-      return (keyListObj.keyList[a.keyId].secretAvailable < keyListObj.keyList[b.keyId].secretAvailable) ? -sortDirection : sortDirection;
-    };
-
-
-    var sortByValidity = function (a, b) {
-      return (TRUSTLEVELS_SORTED.indexOf(EnigmailFuncs.getTrustCode(keyListObj.keyList[a.keyId])) < TRUSTLEVELS_SORTED.indexOf(EnigmailFuncs.getTrustCode(keyListObj.keyList[b.keyId]))) ? -sortDirection : sortDirection;
-    };
-
-    var sortByTrust = function (a, b) {
-      return (TRUSTLEVELS_SORTED.indexOf(keyListObj.keyList[a.keyId].ownerTrust) < TRUSTLEVELS_SORTED.indexOf(keyListObj.keyList[b.keyId].ownerTrust)) ? -sortDirection : sortDirection;
-    };
-
-    var sortByExpiry = function (a, b) {
-      return (keyListObj.keyList[a.keyId].expiryTime < keyListObj.keyList[b.keyId].expiryTime) ? -sortDirection : sortDirection;
-    };
-
-    var aGpgUserList = this.obtainKeyList(win, false, refresh);
-    if (!aGpgUserList) return;
-
-    var aGpgSecretsList = this.obtainKeyList(win, true, refresh);
-    if (!aGpgSecretsList && !refresh) {
-      if (EnigmailCommon.confirmDlg(EnigmailCommon.getString("noSecretKeys"),
-            EnigmailCommon.getString("keyMan.button.generateKey"),
-            EnigmailCommon.getString("keyMan.button.skip"))) {
-        this.openKeyGen();
-        this.loadKeyList(win, true, keyListObj);
-      }
-    }
+  createKeyObjects: function (keyListString, keyListObj) {
 
     keyListObj.keyList = new Array();
     keyListObj.keySortList = new Array();
@@ -682,8 +652,8 @@ var EnigmailFuncs = {
     var i;
     var uatNum=0; // counter for photos (counts per key)
 
-    for (i=0; i<aGpgUserList.length; i++) {
-      var listRow=aGpgUserList[i].split(/:/);
+    for (i=0; i<keyListString.length; i++) {
+      var listRow=keyListString[i].split(/:/);
       if (listRow.length>=0) {
         switch (listRow[0]) {
         case "pub":
@@ -755,6 +725,74 @@ var EnigmailFuncs = {
         }
       }
     }
+  },
+
+  /**
+   * Load the key list into memory and return it sorted by a specified column
+   *
+   * @win        - |object|  holding the parent window for displaying error messages
+   * @refresh    - |boolean| if true, cache is cleared and all keys are loaded from GnuPG
+   * @keyListObj - |object|  holding the resulting key list
+   * @sortColumn - |string|  containing the column name for sorting. One of:
+   *                         userid, keyid, keyidshort, fpr, keytype, validity, trust, expiry
+   * @sortDirection - |number| 1 = ascending / -1 = descending
+   *
+   * no return value
+   */
+  loadKeyList: function (win, refresh, keyListObj, sortColumn, sortDirection)
+  {
+    EnigmailCommon.DEBUG_LOG("enigmailFuncs.jsm: loadKeyList\n");
+
+    if (! sortColumn) sortColumn = "userid";
+    if (! sortDirection) sortDirection = 1;
+
+    var sortByKeyId = function (a, b) {
+      return (a.keyId < b.keyId) ? -sortDirection : sortDirection;
+    };
+
+    var sortByKeyIdShort = function (a, b) {
+      return (a.keyId.substr(-8,8) < b.keyId.substr(-8 ,8)) ? -sortDirection : sortDirection;
+    };
+
+    var sortByUserId = function (a, b) {
+      return (a.userId < b.userId) ? -sortDirection : sortDirection;
+    };
+
+    var sortByFpr = function (a, b) {
+      return (keyListObj.keyList[a.keyId].fpr < keyListObj.keyList[b.keyId].fpr) ? -sortDirection : sortDirection;
+    };
+
+    var sortByKeyType = function (a, b) {
+      return (keyListObj.keyList[a.keyId].secretAvailable < keyListObj.keyList[b.keyId].secretAvailable) ? -sortDirection : sortDirection;
+    };
+
+
+    var sortByValidity = function (a, b) {
+      return (TRUSTLEVELS_SORTED.indexOf(EnigmailFuncs.getTrustCode(keyListObj.keyList[a.keyId])) < TRUSTLEVELS_SORTED.indexOf(EnigmailFuncs.getTrustCode(keyListObj.keyList[b.keyId]))) ? -sortDirection : sortDirection;
+    };
+
+    var sortByTrust = function (a, b) {
+      return (TRUSTLEVELS_SORTED.indexOf(keyListObj.keyList[a.keyId].ownerTrust) < TRUSTLEVELS_SORTED.indexOf(keyListObj.keyList[b.keyId].ownerTrust)) ? -sortDirection : sortDirection;
+    };
+
+    var sortByExpiry = function (a, b) {
+      return (keyListObj.keyList[a.keyId].expiryTime < keyListObj.keyList[b.keyId].expiryTime) ? -sortDirection : sortDirection;
+    };
+
+    var aGpgUserList = this.obtainKeyList(win, false, refresh);
+    if (!aGpgUserList) return;
+
+    var aGpgSecretsList = this.obtainKeyList(win, true, refresh);
+    if (!aGpgSecretsList && !refresh) {
+      if (EnigmailCommon.confirmDlg(EnigmailCommon.getString("noSecretKeys"),
+            EnigmailCommon.getString("keyMan.button.generateKey"),
+            EnigmailCommon.getString("keyMan.button.skip"))) {
+        this.openKeyGen();
+        this.loadKeyList(win, true, keyListObj);
+      }
+    }
+
+    this.createKeyObjects(aGpgUserList, keyListObj);
 
     // search and mark keys that have secret keys
     for (i=0; i<aGpgSecretsList.length; i++) {

@@ -362,6 +362,13 @@ var EnigmailCore = {
     }
   },
 
+  getPrefRoot: function() {
+    if (! this.prefRoot)
+      this.initPrefService();
+
+    return this.prefRoot;
+  },
+
   getPref: function (prefName)
   {
     if (! this.prefBranch)

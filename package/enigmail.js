@@ -2203,6 +2203,7 @@ Enigmail.prototype = {
   /**
    * Return string with all colon-separated data of key list entry of given key.
    * - key may be pub or sub key.
+   *
    * @param  String  keyId of 8 or 16 chars key with optionally leading 0x
    * @return String  entry of first found user IDs with keyId or null if none
    */
