@@ -948,16 +948,31 @@ if (messageHeaderSink) {
         throw Components.results.NS_NOINTERFACE;
       },
 
-      updateSecurityStatus: function (uriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, encToDetails)
+      updateSecurityStatus: function (unusedUriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, encToDetails)
       {
-        // uri is not used here; added for compatibility to other addons
-        EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: uriSpec="+uriSpec+"\n");
+        // unusedUriSpec is not used anymore. It is here becaue other addons rely on the same API
 
-        var msgUriSpec = Enigmail.msg.getCurrentMsgUriSpec();
+        let uriSpec = (uri ? uri.spec : null);
 
-        EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: msgUriSpec="+msgUriSpec+"\n");
+        EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: uri.spec="+uriSpec+"\n");
 
-        if (!uriSpec || (uriSpec == msgUriSpec)) {
+        let msgUriSpec = Enigmail.msg.getCurrentMsgUriSpec();
+
+        let url = {};
+        try{
+          let messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
+          let msgSvc = messenger.messageServiceFromURI(msgUriSpec);
+          msgSvc.GetUrlForUri(msgUriSpec, url, null);
+        }
+        catch (ex) {
+          EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: could not determine URL\n");
+          url.value = { spec: "enigmail://invalid/message" };
+        }
+
+        EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: url="+url.value.spec+"\n");
+
+        if (!uriSpec || (uriSpec.indexOf(url.value.spec) == 0 &&
+              uriSpec.substr(url.value.spec.length).search(/([\?&].*)?$/) == 0)) {
           Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
                                           errorMsg, blockSeparation, encToDetails,
                                           null);   // xtraStatus

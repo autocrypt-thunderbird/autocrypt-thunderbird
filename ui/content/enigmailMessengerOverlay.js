@@ -1751,7 +1751,7 @@ Enigmail.msg = {
 
         let enableSubpartTreatment=(msigned > 0);
 
-        var verifier = EnigmailVerify.newVerifier(enableSubpartTreatment, callbackArg.mailNewsUrl, true);
+        var verifier = EnigmailVerify.newVerifier(enableSubpartTreatment, callbackArg.msgUrl, true);
         verifier.verifyData(callbackArg.window, callbackArg.msgWindow, callbackArg.msgUriSpec, callbackArg.data);
 
         return;

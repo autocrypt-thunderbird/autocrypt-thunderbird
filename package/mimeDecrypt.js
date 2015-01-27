@@ -102,12 +102,12 @@ PgpMimeDecrypt.prototype = {
     this.headerMode = 0;
     this.xferEncoding = ENCODING_DEFAULT;
     this.boundary = getBoundary(this.mimeSvc.contentType);
-    this.verifier = EnigmailVerify.newVerifier(true, undefined, false);
-    this.verifier.setMsgWindow(this.msgWindow, this.msgUriSpec);
     if (uri != null) {
-      Ec.DEBUG_LOG("mimeDecrypt.js: onStartRequest: uri='"+ uri.spec+"'\n");
       this.uri = uri.QueryInterface(Ci.nsIURI).clone();
+      Ec.DEBUG_LOG("mimeDecrypt.js: onStartRequest: uri='"+ this.uri.spec+"'\n");
     }
+    this.verifier = EnigmailVerify.newVerifier(true, this.uri, false);
+    this.verifier.setMsgWindow(this.msgWindow, this.msgUriSpec);
   },
 
   onDataAvailable: function(req, sup, stream, offset, count) {
@@ -308,12 +308,15 @@ PgpMimeDecrypt.prototype = {
     if (this.exitCode == null || this.msgWindow == null || this.statusDisplayed)
       return;
 
+    let uriSpec = (this.uri ? this.uri.spec : null);
+
     try {
-      Ec.DEBUG_LOG("mimeDecrypt.js: displayStatus for uri " +this.uri.spec + "\n");
+      Ec.DEBUG_LOG("mimeDecrypt.js: displayStatus for uri " + uriSpec + "\n");
       let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
 
       if (headerSink && this.uri && !this.backgroundJob) {
-        headerSink.updateSecurityStatus(this.msgUriSpec,
+        headerSink.updateSecurityStatus(
+            this.msgUriSpec,
             this.exitCode,
             this.returnStatus.statusFlags,
             this.returnStatus.keyId,
@@ -414,7 +417,8 @@ PgpMimeDecrypt.prototype = {
       let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
 
       if (headerSink && this.uri && !this.backgroundJob) {
-        headerSink.updateSecurityStatus(this.msgUriSpec,
+        headerSink.updateSecurityStatus(
+            this.msgUriSpec,
             Ec.POSSIBLE_PGPMIME,
             0,
             "",

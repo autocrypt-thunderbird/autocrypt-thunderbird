@@ -381,7 +381,7 @@ MimeVerify.prototype = {
       let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
 
       if (headerSink) {
-        headerSink.updateSecurityStatus(this.msgUriSpec,
+        headerSink.updateSecurityStatus(this.lastMsgUri,
                                         this.exitCode,
                                         this.returnStatus.statusFlags,
                                         this.returnStatus.keyId,
@@ -389,7 +389,7 @@ MimeVerify.prototype = {
                                         this.returnStatus.sigDetails,
                                         this.returnStatus.errorMsg,
                                         this.returnStatus.blockSeparation,
-                                        null,
+                                        this.msgUrl,
                                         this.returnStatus.encToDetails);
       }
       this.statusDisplayed = true;
