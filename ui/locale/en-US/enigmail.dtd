@@ -640,7 +640,10 @@
 <!ENTITY enigmail.setupWiz.yes                       "Yes">
 <!ENTITY enigmail.setupWiz.no                        "No, thanks">
 <!ENTITY enigmail.setupWiz.pgIntro.title             "Welcome to the Enigmail Setup Wizard">
-<!ENTITY enigmail.setupWiz.pgIntro.desc              "Do you want to set up Enigmail now, or do you wish to do this later?">
+<!ENTITY enigmail.setupWiz.pgIntro.desc              "It looks like you started Enigmail for the first time on this computer.
+                                                      In order to use Enigmail, you need to first set it up properly.
+                                                      This assistant can guide you through the setup process.">
+<!ENTITY enigmail.setupWiz.pgIntro.desc2             "Do you want to set up Enigmail now, or do you wish to do this later?">
 <!ENTITY enigmail.setupWiz.pgIntro.startNow          "Start setup now">
 <!ENTITY enigmail.setupWiz.pgIntro.startLater        "Configure Enigmail later">
 

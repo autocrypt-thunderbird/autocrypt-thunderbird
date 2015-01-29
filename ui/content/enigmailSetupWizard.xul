@@ -69,8 +69,13 @@
   <wizardpage id="pgIntro" pageid="pgIntro"
               next="pgWelcome"
               label="&enigmail.setupWiz.pgIntro.title;">
-    <description control="startNow">
+    <description>
       &enigmail.setupWiz.pgIntro.desc;
+    </description>
+    <separator/>
+
+    <description control="startNow">
+      &enigmail.setupWiz.pgIntro.desc2;
     </description>
     <separator/>
 
