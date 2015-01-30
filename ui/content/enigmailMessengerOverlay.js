@@ -47,6 +47,7 @@ catch (ex) {
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 Components.utils.import("resource://enigmail/commonFuncs.jsm");
 Components.utils.import("resource://enigmail/mimeVerify.jsm");
+Components.utils.import("resource://enigmail/fixExchangeMsg.jsm");
 
 if (! Enigmail) var Enigmail = {};
 
@@ -241,6 +242,8 @@ Enigmail.msg = {
       if (statusText)
         statusText.value="";
     }
+
+    document.getElementById("enigmailBrokenExchangeBox").setAttribute("collapsed", "true");
 
     this.setAttachmentReveal(null);
 
@@ -582,7 +585,7 @@ Enigmail.msg = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: messageDecryptCb:\n");
 
-    buggyExchangeEmailContent = null; // reinit HACK for MS-EXCHANGE-Server Problem
+    this.buggyExchangeEmailContent = null; // reinit HACK for MS-EXCHANGE-Server Problem
 
     var enigmailSvc;
     try {
@@ -650,7 +653,7 @@ Enigmail.msg = {
             mimeMsg.parts[0].parts[2].headers["content-type"][0].indexOf("encrypted.asc") >= 0) {
           // signal that the structure matches to save the content later on
           EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay: messageDecryptCb: enabling MS-Exchange hack\n");
-          buggyExchangeEmailContent = "???";
+          this.buggyExchangeEmailContent = "???";
         }
 
         // ignore mime parts on top level (regular messages)
@@ -816,14 +819,21 @@ Enigmail.msg = {
 
       // but this might be caused by the HACK for MS-EXCHANGE-Server Problem
       // - so return only if:
-      if (buggyExchangeEmailContent == null || buggyExchangeEmailContent == "???") {
+      if (this.buggyExchangeEmailContent == null || this.buggyExchangeEmailContent == "???") {
         return;
       }
 
       EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: messageParse: got buggyExchangeEmailContent = "+ buggyExchangeEmailContent.substr(0, 50) +"\n");
+
       // fix the whole invalid email by replacing the contents by the decoded text
       // as plain inline format
-      msgText = buggyExchangeEmailContent;
+      if (this.displayBuggyExchangeMail()) {
+        return;
+      }
+      else {
+        msgText = this.buggyExchangeEmailContent;
+      }
+
       msgText = msgText.replace(/\r\n/g, "\n");
       msgText = msgText.replace(/\r/g,   "\n");
 
@@ -1194,7 +1204,12 @@ Enigmail.msg = {
       //   and set message content as inner text
       // - missing:
       //   - signal in statusFlags so that we warn in Enigmail.hdrView.updateHdrIcons()
-      if (buggyExchangeEmailContent != null) {
+      if (this.buggyExchangeEmailContent != null) {
+        if (this.displayBuggyExchangeMail()) {
+          return;
+        }
+
+        EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay: messageParseCallback: got broken MS-Exchange mime message\n");
         messageContent = messageContent.replace(/^\s{0,2}Content-Transfer-Encoding: quoted-printable\s*Content-Type: text\/plain;\s*charset=windows-1252/i, "");
         var node = bodyElement.firstChild;
         while (node) {
@@ -1261,6 +1276,95 @@ Enigmail.msg = {
     return signed;
   },
 
+  /**
+   * Fix broken PGP/MIME messages from MS-Exchange by replacing the broken original
+   * message with a fixed copy.
+   *
+   * no return
+   */
+  fixBuggyExchangeMail: function() {
+
+    function hidePane() {
+      let ebeb = document.getElementById("enigmailBrokenExchangeBox");
+      ebeb.setAttribute("collapsed", "true");
+    }
+    let p = EnigmailFixExchangeMsg.fixExchangeMessage(
+        gFolderDisplay.messageDisplay.displayedMessage,
+        null);
+    p.then(
+      function _success(msgKey) {
+        // display message with given msgKey
+
+        EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: fixBuggyExchangeMail: _dispMsg: msgKey="+msgKey+"\n");
+        hidePane();
+
+        if (msgKey) {
+          gFolderDisplay.view.dbView.selectMsgByKey(msgKey);
+        }
+      },
+      function _failed() {
+        hidePane();
+      }
+    );
+    p.catch(function _caught() {
+      hidePane();
+    });
+  },
+
+  /**
+   * Attempt to work around bug with headers of MS-Exchange message.
+   * Reload message content
+   *
+   * @return: true:  message displayed
+   *          false: could not handle message
+   */
+  displayBuggyExchangeMail: function() {
+    EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: displayBuggyExchangeMail\n");
+    let hdrs = Components.classes["@mozilla.org/messenger/mimeheaders;1"].createInstance(Components.interfaces.nsIMimeHeaders);
+    hdrs.initialize(this.buggyExchangeEmailContent);
+    let ct = hdrs.extractHeader("content-type", true);
+
+    if (ct.search(/^text\/plain/i) == 0) {
+      let bi = this.buggyExchangeEmailContent.search(/\r?\n/);
+      let boundary = this.buggyExchangeEmailContent.substr(2, bi - 2);
+      let startMsg = this.buggyExchangeEmailContent.search(/\r?\n\r?\n/);
+      let msgText = 'Content-Type: multipart/encrypted; protocol="application/pgp-encrypted"; boundary="'+ boundary + '"\r\n' +
+          this.buggyExchangeEmailContent.substr(startMsg);
+
+      let enigmailSvc = Enigmail.getEnigmailSvc();
+      if (! enigmailSvc) return false;
+
+      let uri = enigmailSvc.createMessageURI(this.getCurrentMsgUrl(),
+                                     "message/rfc822",
+                                     "",
+                                     msgText,
+                                     false);
+
+      EnigmailVerify.setMsgWindow(msgWindow, null);
+      messenger.loadURL(window, uri);
+
+      let atl = document.getElementById("attachmentList");
+      while (atl && atl.itemCount > 0) {
+        atl.removeItemAt(0)
+      }
+
+      // Thunderbird
+      let atv = document.getElementById("attachmentView");
+      if (atv) {
+        atv.setAttribute("collapsed", "true")
+      }
+
+      // SeaMonkey
+      let eab = document.getElementById("expandedAttachmentBox");
+      if (eab) {
+        eab.setAttribute("collapsed", "true")
+      }
+
+      return true;
+    }
+    return false;
+  },
+
   // check if the attachment could be encrypted
   checkEncryptedAttach: function (attachment)
   {
@@ -1270,12 +1374,12 @@ Enigmail.msg = {
   },
 
   getAttachmentName: function (attachment) {
-    if (typeof(attachment.displayName) == "undefined") {
-      // TB >=  7.0
+    if ("name" in attachment) {
+      // Thunderbird
       return attachment.name;
     }
     else
-      // TB <= 6.0
+      // SeaMonkey
       return attachment.displayName;
   },
 
@@ -1760,8 +1864,12 @@ Enigmail.msg = {
 
     // HACK for MS-EXCHANGE-Server Problem:
     // - now let's save the mail content for later processing
-    if (buggyExchangeEmailContent == "???") {
-      buggyExchangeEmailContent = callbackArg.data;
+    if (this.buggyExchangeEmailContent == "???") {
+      EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay: verifyEmbeddedCallback: got broken MS-Exchange mime message\n");
+      this.buggyExchangeEmailContent = callbackArg.data;
+      if (this.displayBuggyExchangeMail()) {
+        return;
+      }
     }
 
     // try inline PGP

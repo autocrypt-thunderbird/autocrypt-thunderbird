@@ -960,7 +960,7 @@ if (messageHeaderSink) {
 
         let url = {};
         try{
-          let messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
+          let messenger = Components.classes["@mozilla.org/messenger;1"].getService(Components.interfaces.nsIMessenger);
           let msgSvc = messenger.messageServiceFromURI(msgUriSpec);
           msgSvc.GetUrlForUri(msgUriSpec, url, null);
         }
@@ -971,11 +971,17 @@ if (messageHeaderSink) {
 
         EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: url="+url.value.spec+"\n");
 
-        if (!uriSpec || (uriSpec.indexOf(url.value.spec) == 0 &&
+        if (!uriSpec || uriSpec.search(/^enigmail:/) == 0 || (uriSpec.indexOf(url.value.spec) == 0 &&
               uriSpec.substr(url.value.spec.length).search(/([\?&].*)?$/) == 0)) {
           Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
                                           errorMsg, blockSeparation, encToDetails,
                                           null);   // xtraStatus
+        }
+
+        if (uriSpec && uriSpec.search(/^enigmail:message\//) == 0) {
+          // display header for broken MS-Exchange message
+          let ebeb = document.getElementById("enigmailBrokenExchangeBox");
+          ebeb.removeAttribute("collapsed");
         }
 
         return;

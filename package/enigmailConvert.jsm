@@ -236,9 +236,8 @@ messageParseCallback = function (hdr, mime) {
       // this is interesting: nsIMsgFolder.copyFileMessage seems to have a bug on Windows, when
       // the nsIFile has been already used by foStream (because of Windows lock system?), so we
       // must initialize another nsIFile object, pointing to the temporary file
-      var fileSpec = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
+      var fileSpec = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
       fileSpec.initWithPath(tempFile.path);
-      var extService = Cc['@mozilla.org/uriloader/external-helper-app-service;1'].getService(Ci.nsPIExternalAppLauncher);
 
       const copySvc = Cc["@mozilla.org/messenger/messagecopyservice;1"].getService(Ci.nsIMsgCopyService);
 
@@ -268,7 +267,7 @@ messageParseCallback = function (hdr, mime) {
           if (self.move) {
             Ec.DEBUG_LOG("enigmailConvert.jsm: Delete original\n");
             var folderInfoObj = new Object();
-            hdr.folder.getDBFolderInfoAndDB(folderInfoObj).DeleteMessage(hdr.messageKey, null, true);
+            self.hdr.folder.getDBFolderInfoAndDB(folderInfoObj).DeleteMessage(self.hdr.messageKey, null, true);
           }
 
           tempFile.remove(false);
@@ -1155,11 +1154,3 @@ function encodeHeaderValue (aStr) {
 
   return ret;
 }
-
-
-/*
-
-  TODO:
-  - support for Outlook modified PGP/MIME messages
-
-*/

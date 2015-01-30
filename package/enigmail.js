@@ -265,6 +265,19 @@ function ExtractMessageId(uri) {
   return messageId;
 }
 
+function ExtractMimeMessageId(uri) {
+  var messageId = "";
+
+  var matches = uri.match(/^enigmail:mime-message\/(.+)/);
+
+  if (matches && (matches.length > 1)) {
+    messageId = matches[1];
+  }
+
+  return messageId;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // Enigmail protocol handler
 ///////////////////////////////////////////////////////////////////////////////
@@ -304,6 +317,7 @@ EnigmailProtocolHandler.prototype = {
     EC.DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.newChannel: URI='"+aURI.spec+"'\n");
 
     var messageId = ExtractMessageId(aURI.spec);
+    var mimeMessageId = ExtractMimeMessageId(aURI.spec);
 
     if (messageId) {
       // Handle enigmail:message/...
@@ -324,7 +338,11 @@ EnigmailProtocolHandler.prototype = {
 
         // do NOT delete the messageUriObj now from the list, this will be done once the message is unloaded (fix for bug 9730).
 
-      } else {
+      }
+      else if (mimeMessageId) {
+        this.handleMimeMessage(mimeMessageId);
+      }
+      else {
 
         contentType = "text/plain";
         contentCharset = "";
@@ -385,6 +403,11 @@ EnigmailProtocolHandler.prototype = {
     }
 
     throw Components.results.NS_ERROR_FAILURE;
+  },
+
+  handleMimeMessage: function (messageId) {
+    EC.DEBUG_LOG("enigmail.js: EnigmailProtocolHandler.handleMimeMessage: messageURL="+messageUriObj.originalUrl+", content length="+contentData.length+", "+contentType+", "+contentCharset+"\n");
+
   },
 
   allowPort: function (port, scheme) {

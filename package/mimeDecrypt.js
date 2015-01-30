@@ -47,7 +47,7 @@ function PgpMimeDecrypt() {
   this.pipe = null;
   this.closePipe = false;
   this.statusStr = "";
-  this.outqueue = "";
+  this.outQueue = "";
   this.dataLength = 0;
   this.mimePartCount = 0;
   this.headerMode = 0;
@@ -240,7 +240,7 @@ PgpMimeDecrypt.prototype = {
           if (this.uri.spec.search(/[\&\?]header=filter\&.*$/) > 0)
             return;
 
-          if (this.uri && url) {
+          if (this.uri && url && url.value) {
 
             if (url.value.spec != this.uri.spec)
               return;

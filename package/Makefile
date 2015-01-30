@@ -34,6 +34,7 @@ MODFILES = \
            enigmailConvert.jsm \
            passwordCheck.jsm \
            installGnuPG.jsm \
+           fixExchangeMsg.jsm \
            mimeVerify.jsm
 
 all: deploy $(TST)

@@ -38,7 +38,7 @@
 -->
 
 <!--
-  This adds the Enigmail box to the mail reading window on SeaMonkey
+  This adds the Enigmail header box to the mail reading window on SeaMonkey
 
   Please not that is is only a placeholder to reference the location in
   enigmailMessengerOverlay.xul properly
@@ -50,7 +50,7 @@
 
   <notificationbox id="messagepanebox">
     <vbox insertafter="msgHeaderView">
-      <hbox id="enigmailBox"/> <!-- Enigmail header box is in here -->
+      <vbox id="enigmailHdrBox"/> <!-- Enigmail header box is in here -->
     </vbox>
   </notificationbox>
 
