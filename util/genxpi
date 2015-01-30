@@ -123,6 +123,7 @@ zip --must-match\
     modules/gpgAgentHandler.jsm \
     modules/passwordCheck.jsm \
     modules/commonFuncs.jsm \
+    modules/fixExchangeMsg.jsm \
     modules/subprocess.jsm \
     modules/subprocess_worker_win.js \
     modules/subprocess_worker_unix.js \
