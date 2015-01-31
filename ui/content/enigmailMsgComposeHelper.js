@@ -345,8 +345,8 @@ Enigmail.hlp = {
       for (i=0; i < addresses.length; i++) {
         var addr = addresses[i].toLowerCase();
         for (var j = 0; j < gpgGroups.length; j++) {
-          if (addresses[i] == gpgGroups[j].alias.toLowerCase() ||
-              "<" + addresses[i] + ">" == gpgGroups[j].alias.toLowerCase()) {
+          if (addr == gpgGroups[j].alias.toLowerCase() ||
+              "<" + addr + ">" == gpgGroups[j].alias.toLowerCase()) {
             // replace address with keylist
             var grpList = gpgGroups[j].keylist.split(/;/);
             addresses[i] = grpList[0];
@@ -361,7 +361,7 @@ Enigmail.hlp = {
       var keyMissing = false;
       if (details) {
         details.errArray = new Array;
-      } 
+      }
       for (i=0; i < addresses.length; i++) {
         var addr = addresses[i];
         // try to find current address in key list:
