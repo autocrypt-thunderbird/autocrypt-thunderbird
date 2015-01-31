@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is Patrick Brunschwig.
  * Portions created by Patrick Brunschwig <patrick@enigmail.net> are
- * Copyright (C) 2003 Patrick Brunschwig. All Rights Reserved.
+ * Copyright (C) 2004 Patrick Brunschwig. All Rights Reserved.
  *
  * Contributor(s):
  *
