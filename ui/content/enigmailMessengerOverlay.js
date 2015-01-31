@@ -1313,13 +1313,11 @@ Enigmail.msg = {
         }
 
         hideAndResetExchangePane();
-      },
-      function _failed() {
-        hideAndResetExchangePane();
       }
     );
-    p.catch(function _caught() {
-        hideAndResetExchangePane();
+    p.catch(function _rejected() {
+      EnigmailCommon.alert(window, EnigmailCommon.getString("fixBrokenExchangeMsg.failed"));
+      hideAndResetExchangePane();
     });
   },
 
