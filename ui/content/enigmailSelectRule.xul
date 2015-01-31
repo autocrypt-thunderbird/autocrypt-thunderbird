@@ -151,6 +151,8 @@
       else {
         treeChildren.appendChild(treeItem);
       }
+
+      enigmailDlgOnAccept();
     }
     window.close();
   }
