@@ -371,9 +371,13 @@
         <vbox flex="1" pack="start">
           <description class="enigmailHeaderValue">&enigmail.exchangeGarbage.desc;</description>
         </vbox>
-        <button class="enigMsgHdrView-flat-button"
+        <vbox flex="0" pack="center">
+          <button id="enigmailFixBrokenMessageButton"
+                class="enigMsgHdrView-flat-button"
                 label="&enigmail.exchangeGarbage.fixButton.label;"
                 oncommand="Enigmail.msg.fixBuggyExchangeMail()"/>
+          <label id="enigmailFixBrokenMessageProgress" value="&enigmail.exchangeGarbage.waitMessage;" collapsed="true"/>
+        </vbox>
       </hbox>
     </vbox>
   </vbox>

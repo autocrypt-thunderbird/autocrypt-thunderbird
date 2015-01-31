@@ -73,13 +73,13 @@ const nsIEnigmail = Components.interfaces.nsIEnigmail;
 /*
  *  Fix a broken message from MS-Exchange and replace it with the original message
  *
- * @param nsIMsgDBHdr hdr       Header of the message (= pointer to message)
- * @param String destFolderUri  Folder URI
+ * @param nsIMsgDBHdr hdr          Header of the message to fix (= pointer to message)
+ * @param String destFolderUri     optional destination Folder URI
  *
- * @return a Promise that we do that
+ * @return Promise; upon success, the promise returns the messageKey
  */
 
-
+// TODO: change to creating new object
 EnigmailFixExchangeMsg = {
   fixExchangeMessage: function (hdr, destFolderUri) {
     var self = this;
@@ -105,7 +105,7 @@ EnigmailFixExchangeMsg = {
         let p = self.getMessageBody();
         p.then(
           function resolved(fixedMsgData) {
-            EC.DEBUG_LOG("fixExchangeMsg.jsm: fixExchangeMessage: done\n");
+            EC.DEBUG_LOG("fixExchangeMsg.jsm: fixExchangeMessage: got fixedMsgData\n");
             self.copyToTargetFolder(fixedMsgData);
           },
           function rejected() {
@@ -271,16 +271,14 @@ EnigmailFixExchangeMsg = {
     var fileSpec = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
     fileSpec.initWithPath(tempFile.path);
 
-    let copySvc = Cc["@mozilla.org/messenger/messagecopyservice;1"].getService(Ci.nsIMsgCopyService);
 
     var copyListener = {
       QueryInterface : function(iid) {
         if (iid.equals(Ci.nsIMsgCopyServiceListener) ||iid.equals(Ci.nsISupports)){
           return this;
         }
-        Ec.DEBUG_LOG("fixExchangeMsg.jsm: copyListener error\n");
         throw Components.results.NS_NOINTERFACE;
-        return 0;
+        return null;
       },
       msgKey: null,
       GetMessageId: function (messageId) {},
@@ -291,22 +289,27 @@ EnigmailFixExchangeMsg = {
       },
       OnStopCopy: function (statusCode) {
         if (statusCode != 0) {
-          Ec.DEBUG_LOG("fixExchangeMsg.jsm: error copying message: "+ statusCode + "\n");
+          EC.DEBUG_LOG("fixExchangeMsg.jsm: error copying message: "+ statusCode + "\n");
           tempFile.remove(false);
           self.reject();
           return;
         }
-        Ec.DEBUG_LOG("fixExchangeMsg.jsm: copy complete\n");
+        EC.DEBUG_LOG("fixExchangeMsg.jsm: copy complete\n");
 
-        var folderInfoObj = {};
-        self.hdr.folder.getDBFolderInfoAndDB(folderInfoObj).DeleteMessage(self.hdr.messageKey, null, true);
-        Ec.DEBUG_LOG("fixExchangeMsg.jsm: deleted original message\n");
+         EC.DEBUG_LOG("fixExchangeMsg.jsm: deleting message key="+self.hdr.messageKey+"\n");
+        let msgArray = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
+        msgArray.appendElement(self.hdr, false);
+
+        self.hdr.folder.deleteMessages(msgArray, null, true, false,  null, false);
+        EC.DEBUG_LOG("fixExchangeMsg.jsm: deleted original message\n");
 
         tempFile.remove(false);
         self.resolve(this.msgKey);
       }
     };
 
-    copySvc.CopyFileMessage(fileSpec, this.destFolder, this.hdr, false, 0, null, copyListener, null);
+    let copySvc = Cc["@mozilla.org/messenger/messagecopyservice;1"].getService(Ci.nsIMsgCopyService);
+    copySvc.CopyFileMessage(fileSpec, this.destFolder, null, false, this.hdr.flags, null, copyListener, null);
+
   }
 };

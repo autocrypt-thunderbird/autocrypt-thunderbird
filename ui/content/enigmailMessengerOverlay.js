@@ -1283,31 +1283,43 @@ Enigmail.msg = {
    * no return
    */
   fixBuggyExchangeMail: function() {
+    EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: fixBuggyExchangeMail:\n");
 
-    function hidePane() {
-      let ebeb = document.getElementById("enigmailBrokenExchangeBox");
-      ebeb.setAttribute("collapsed", "true");
+    function hideAndResetExchangePane() {
+      document.getElementById("enigmailBrokenExchangeBox").setAttribute("collapsed", "true");
+      document.getElementById("enigmailFixBrokenMessageProgress").setAttribute("collapsed", "true");
+      document.getElementById("enigmailFixBrokenMessageButton").removeAttribute("collapsed");
     }
-    let p = EnigmailFixExchangeMsg.fixExchangeMessage(
-        gFolderDisplay.messageDisplay.displayedMessage,
-        null);
+
+    document.getElementById("enigmailFixBrokenMessageButton").setAttribute("collapsed", "true");
+    document.getElementById("enigmailFixBrokenMessageProgress").removeAttribute("collapsed");
+
+    let msg = gFolderDisplay.messageDisplay.displayedMessage;
+
+    let p = EnigmailFixExchangeMsg.fixExchangeMessage(msg);
     p.then(
       function _success(msgKey) {
         // display message with given msgKey
 
-        EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: fixBuggyExchangeMail: _dispMsg: msgKey="+msgKey+"\n");
-        hidePane();
+        EnigmailCommon.DEBUG_LOG("enigmailMessengerOverlay.js: fixBuggyExchangeMail: _success: msgKey="+msgKey+"\n");
 
         if (msgKey) {
-          gFolderDisplay.view.dbView.selectMsgByKey(msgKey);
+          let index = gFolderDisplay.view.dbView.findIndexFromKey(msgKey, true);
+          EnigmailCommon.DEBUG_LOG("  ** index = "+index+"\n");
+
+          EnigmailCommon.setTimeout(function () {
+            gFolderDisplay.view.dbView.selectMsgByKey(msgKey);
+            }, 750);
         }
+
+        hideAndResetExchangePane();
       },
       function _failed() {
-        hidePane();
+        hideAndResetExchangePane();
       }
     );
     p.catch(function _caught() {
-      hidePane();
+        hideAndResetExchangePane();
     });
   },
 
@@ -1342,11 +1354,6 @@ Enigmail.msg = {
 
       EnigmailVerify.setMsgWindow(msgWindow, null);
       messenger.loadURL(window, uri);
-
-      let atl = document.getElementById("attachmentList");
-      while (atl && atl.itemCount > 0) {
-        atl.removeItemAt(0)
-      }
 
       // Thunderbird
       let atv = document.getElementById("attachmentView");
