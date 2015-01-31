@@ -367,6 +367,10 @@ Enigmail.hdrView = {
       statusInfo += "\n\n" + EnigmailCommon.getString("encryptKeysNote", [ encToDetails ]);
     }
 
+    if (! statusLine) {
+      return;
+    }
+
     Enigmail.msg.securityInfo = { statusFlags: statusFlags,
                           keyId: keyId,
                           userId: userId,
