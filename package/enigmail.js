@@ -2602,7 +2602,7 @@ Enigmail.prototype = {
       return "";
     }
 
-    if (EC.isDosLike()) {
+    if (EC.isDosLike() && Ec.getGpgFeature("windows-photoid-bug")) {
       // workaround for error in gpg
       photoDataObj.value=photoDataObj.value.replace(/\r\n/g, "\n");
     }
