@@ -203,7 +203,7 @@ interface nsIEnigmail : nsISupports
 
   string getPubKeyIdForSubkey(in string keyId);
 
-  /* Receive flags */
+  /* Keyserver Action Flags */
   const long SEARCH_KEY       = 0x01;
   const long DOWNLOAD_KEY     = 0x02;
   const long UPLOAD_KEY       = 0x04;

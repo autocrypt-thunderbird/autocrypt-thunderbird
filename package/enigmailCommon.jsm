@@ -1668,11 +1668,23 @@ var EnigmailCommon = {
     return keys;
   },
 
-  receiveKey: function (recvFlags, keyserver, keyId, listener, errorMsgObj) {
-    this.DEBUG_LOG("enigmailCommon.jsm: receiveKey: "+keyId+"\n");
+  /**
+   * search, download or upload key on, from and to a keyserver
+   *
+   * @actionFlags: Integer - flags (bitmap) to determine the required action
+   *                         (see nsIEnigmail - Keyserver action flags for details)
+   * @keyserver:   String  - keyserver URL (optionally incl. protocol)
+   * @searchTerms: String  - space-separated list of search terms or key IDs
+   * @listener:    Object  - execStart Listener Object. See execStart for details.
+   * @errorMsgObj: Object  - object to hold error message in .value
+   *
+   * @return:      Subprocess object, or null in case process could not be started
+   */
+  keyserverAccess: function (actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
+    this.DEBUG_LOG("enigmailCommon.jsm: keyserverAccess: "+searchTerms+"\n");
 
     if (! (this.enigmailSvc && this.enigmailSvc.initialized)) {
-      this.ERROR_LOG("enigmailCommon.jsm: receiveKey: not yet initialized\n");
+      this.ERROR_LOG("enigmailCommon.jsm: keyserverAccess: not yet initialized\n");
       errorMsgObj.value = this.getString("notInit");
       return null;
     }
@@ -1682,7 +1694,7 @@ var EnigmailCommon = {
       return null;
     }
 
-    if (!keyId && ! (recvFlags & nsIEnigmail.REFRESH_KEY)) {
+    if (!searchTerms && ! (actionFlags & nsIEnigmail.REFRESH_KEY)) {
       errorMsgObj.value = this.getString("failNoID");
       return null;
     }
@@ -1690,37 +1702,39 @@ var EnigmailCommon = {
     var proxyHost = this.getHttpProxy(keyserver);
     var args = this.getAgentArgs(false);
 
-    if (! (recvFlags & nsIEnigmail.SEARCH_KEY)) args = this.getAgentArgs(true);
+    if (! (actionFlags & nsIEnigmail.SEARCH_KEY)) args = this.getAgentArgs(true);
 
     if (proxyHost) {
       args = args.concat(["--keyserver-options", "http-proxy="+proxyHost]);
     }
     args = args.concat(["--keyserver", keyserver]);
 
-    var keyIdList = keyId.split(" ");
+    var searchTermsList = searchTerms.split(" ");
 
-    if (recvFlags & nsIEnigmail.DOWNLOAD_KEY) {
+    if (actionFlags & nsIEnigmail.DOWNLOAD_KEY) {
       args.push("--recv-keys");
-      args = args.concat(keyIdList);
+      args = args.concat(searchTermsList);
     }
-    else if (recvFlags & nsIEnigmail.SEARCH_KEY) {
+    else if (actionFlags & nsIEnigmail.SEARCH_KEY) {
       args.push("--search-keys");
-      args = args.concat(keyIdList);
+      args = args.concat(searchTermsList);
     }
-    else if (recvFlags & nsIEnigmail.UPLOAD_KEY) {
+    else if (actionFlags & nsIEnigmail.UPLOAD_KEY) {
       args.push("--send-keys");
-      args = args.concat(keyIdList);
+      args = args.concat(searchTermsList);
     }
-    else if (recvFlags & nsIEnigmail.REFRESH_KEY) {
+    else if (actionFlags & nsIEnigmail.REFRESH_KEY) {
       args.push("--refresh-keys");
     }
 
-    var isDownload = recvFlags & (nsIEnigmail.REFRESH_KEY | nsIEnigmail.DOWNLOAD_KEY);
+    var isDownload = actionFlags & (nsIEnigmail.REFRESH_KEY | nsIEnigmail.DOWNLOAD_KEY);
 
     this.CONSOLE_LOG("enigmail> "+this.printCmdLine(this.enigmailSvc.agentPath, args)+"\n");
 
     var proc = null;
     var self = this;
+
+    var exitCode = null;
 
     try {
       proc = subprocess.call({
@@ -1729,10 +1743,13 @@ var EnigmailCommon = {
         environment: this.getEnvList(),
         charset: null,
         stdout: function(data) {
-          listener.onStdoutData(data);
+          listener.stdout(data);
         },
         stderr: function(data) {
-          listener.onErrorData(data);
+          if (data.search(/^\[GNUPG:\] ERROR/m) >= 0) {
+            exitCode = 4;
+          }
+          listener.stderr(data);
         },
         done: function(result) {
           gKeygenProcess = null;
@@ -1740,7 +1757,10 @@ var EnigmailCommon = {
             if (result.exitCode == 0 && isDownload) {
               self.enigmailSvc.invalidateUserIdList();
             }
-            listener.onStopRequest(result.exitCode);
+            if (exitCode == null) {
+              exitCode = result.exitCode;
+            }
+            listener.done(exitCode);
           }
           catch (ex) {}
         },
@@ -1748,12 +1768,12 @@ var EnigmailCommon = {
       });
     }
     catch (ex) {
-      this.ERROR_LOG("enigmailCommon.jsm: receiveKey: subprocess.call failed with '"+ex.toString()+"'\n");
+      this.ERROR_LOG("enigmailCommon.jsm: keyserverAccess: subprocess.call failed with '"+ex.toString()+"'\n");
       throw ex;
     }
 
     if (!proc) {
-      this.ERROR_LOG("enigmailCommon.jsm: receiveKey: subprocess failed due to unknown reasons\n");
+      this.ERROR_LOG("enigmailCommon.jsm: keyserverAccess: subprocess failed due to unknown reasons\n");
       return null;
     }
 
@@ -2137,12 +2157,32 @@ var EnigmailCommon = {
   },
 
 
-  /* listener object:
-      stdin(pipe),
-      stdout(data),
-      stderr(data),
-      done(exitCode) */
+  /**
+   * execStart Listener Object
+   *
+   * The listener object must implement at least the following methods:
+   *
+   *  stdin(pipe)    - OPTIONAL - write data to subprocess stdin via |pipe| hanlde
+   *  stdout(data)   - receive |data| from subprocess stdout
+   *  stderr(data)   - receive |data| from subprocess stderr
+   *  done(exitCode) - receive signal when subprocess has terminated
+   */
 
+  /**
+   *  start a subprocess (usually gpg) that gets and/or receives data via stdin/stdout/stderr.
+   *
+   * @command:        either: String - full path to executable
+   *                  or:     nsIFile object referencing executable
+   * @args:           Array of Strings: command line parameters for executable
+   * @needPassphrase: Boolean - is a passphrase required for the action?
+   *                    if true, the password may be promted using a dialog
+   *                    (unless alreday cached or gpg-agent is used)
+   * @domWindow:      nsIWindow - window on top of which password dialog is shown
+   * @listener:       Object - Listener to interact with subprocess; see spec. above
+   * @statusflagsObj: Object - .value will hold status Flags
+   *
+   * @return:         handle to suprocess
+   */
   execStart: function (command, args, needPassphrase, domWindow, listener, statusFlagsObj) {
     this.WRITE_LOG("enigmailCommon.jsm: execStart: command = "+this.printCmdLine(command, args)+", needPassphrase="+needPassphrase+", domWindow="+domWindow+", listener="+listener+"\n");
 
