@@ -219,6 +219,22 @@ function processEnd (progressBar, exitCode) {
     if (errorMsg.search(/ec=\d+/i)>=0) {
       exitCode=-1;
     }
+
+    let j = errorMsg.search(/^\[GNUPG:\] IMPORT_RES/m);
+
+    if (j>=0) {
+      let m = errorMsg.substr(j, 35).match(/^(\[GNUPG:\] IMPORT_RES +)([0-9]+)/);
+      if (m && m.length > 2) {
+        if (m[2] == "0") {
+          // no keys imported
+          exitCode = -2;
+        }
+        else {
+          exitCode = 0;
+        }
+      }
+    }
+
     statusText=gEnigCallbackFunc(exitCode, "", false);
 
     if (exitCode == 0) {

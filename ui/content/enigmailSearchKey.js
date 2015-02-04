@@ -277,14 +277,16 @@ function enigImportKeys (connType, txt, errorTxt) {
   gEnigRequest.progressMeter.mode = "determined";
   gEnigRequest.progressMeter.value = (100 * gEnigRequest.keyNum / gEnigRequest.dlKeyList.length).toFixed(0);
 
-  if (txt.search(/^\[GNUPG:\] IMPORT_RES/m) < 0) {
+  if (errorTxt.search(/^\[GNUPG:\] IMPORT_RES/m) < 0) {
     if (!enigImportHtmlKeys(txt)) return;
   }
   else if (errorTxt) {
-    gEnigRequest.errorTxt +=errorTxt+"\n";
+    let resStatusObj = {};
+
+    gEnigRequest.errorTxt = Ec.parseErrorOutput(errorTxt, resStatusObj) + "\n";
   }
 
-  if (txt.search(/^\[GNUPG:\] IMPORT_RES/m) >= 0) {
+  if (errorTxt.search(/^\[GNUPG:\] IMPORT_RES/m) >= 0) {
     window.arguments[RESULT].importedKeys++;
   }
 
@@ -472,10 +474,25 @@ function enigScanHtmlKeys (txt) {
   }
 }
 
+/**
+ * Unescape output from keysearch and convert UTF-8 to Unicode.
+ * Output looks like this:
+ * uid:Ludwig H%C3%BCgelsch%C3%A4fer <ludwig@hammernoch.net>:1240988030::
+ *
+ * @txt - String to convert in ASCII format
+ *
+ * @return - Unicode representation
+ */
+function unescapeAndConvert(txt) {
+  return Ec.convertToUnicode(unescape(txt), "utf-8");
+}
 
 function enigScanGpgKeys(txt) {
   Ec.DEBUG_LOG("enigmailSearchKey.js: enigScanGpgKeys\n");
   Ec.DEBUG_LOG("got text: "+txt+"\n");
+
+  // protocol version 0: GnuPG 1.2 and older versions of GnuPG 1.4.x
+  // protocol version 1: GnuPG 2.x and newer versions of GnuPG 1.4.x
 
   var lines=txt.split(/(\r\n|\n|\r)/);
   var outputType=0;
@@ -483,6 +500,10 @@ function enigScanGpgKeys(txt) {
   for (var i=0; i<lines.length; i++) {
     if (outputType == 0 && lines[i].search(/^COUNT \d+\s*$/)==0) {
       outputType=1;
+      continue;
+    }
+    if (outputType == 0 && lines[i].search(/^info:\d+:\d+/)==0) {
+      outputType=2;
       continue;
     }
     if (outputType == 0 && lines[i].search(/^pub:[\da-fA-F]{8}/)==0) {
@@ -540,7 +561,7 @@ function enigScanGpgKeys(txt) {
     if (outputType==2 && (lines[i].search(/^uid:.+/))==0) {
       // output from gpgkeys_* protocol version 1
       // uid for key
-      m=lines[i].split(/:/).map(unescape);
+      m=lines[i].split(/:/).map(unescapeAndConvert);
       if (m && m.length>1 ) {
         if (key && ! ignoreUid(m[1])) key.uid.push(trim(m[1]));
       }
@@ -571,13 +592,13 @@ function enigNewGpgKeysRequest(requestType, callbackFunction) {
   gOutputData = "";
 
   var procListener = {
-    onStopRequest: function (exitCode) {
+    done: function (exitCode) {
       enigmailGpgkeysTerminate(exitCode);
     },
-    onStdoutData: function(data) {
+    stdout: function(data) {
       gOutputData += data;
     },
-    onErrorData: function(data) {
+    stderr: function(data) {
       gErrorData += data;
     }
   };
@@ -589,12 +610,14 @@ function enigNewGpgKeysRequest(requestType, callbackFunction) {
     keyValue = gEnigRequest.dlKeyList[gEnigRequest.keyNum];
   }
 
+  var keyServer = "";
+  if (gEnigRequest.protocol) keyServer = gEnigRequest.protocol+"://";
+  keyServer += gEnigRequest.keyserver;
+  if (gEnigRequest.port) keyServer += ":"+ gEnigRequest.port;
 
   var errorMsgObj = {};
-  gEnigRequest.gpgkeysRequest = Ec.searchKey(requestType,
-                                 gEnigRequest.protocol,
-                                 gEnigRequest.keyserver,
-                                 gEnigRequest.port,
+  gEnigRequest.gpgkeysRequest = Ec.keyserverAccess(requestType,
+                                 keyServer,
                                  keyValue,
                                  procListener,
                                  errorMsgObj);
