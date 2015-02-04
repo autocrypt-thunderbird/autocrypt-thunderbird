@@ -185,17 +185,19 @@ var EnigmailCommon = {
   // variables
   enigmailSvc: null,
   statusFlags: gStatusFlags,
-  envList: null, // currently filled from enigmailCommon.jsm
+  envList: null, // currently filled from enigmail.js
   gpgAgentIsOptional: true,
 
   // methods
 
-  // init enigmail service
-  // - including handling for switching to new versions
-  // - input:
-  //   - parent window (optional)
-  //   - called while switching to preferences
-  //     (to avoid asking to check for preferences then)
+  /**
+   * get and or initialize the Enigmail service,
+   * including the handling for upgrading old preferences to new versions
+   *
+   * @win:                - nsIWindow: parent window (optional)
+   * @startingPreferences - Boolean: true - called while switching to new preferences
+   *                        (to avoid re-check for preferences)
+   */
   getService: function (win, startingPreferences) {
     // Lazy initialization of Enigmail JS component (for efficiency)
 
@@ -285,6 +287,11 @@ var EnigmailCommon = {
 
   getAppName: EnigmailCore.getAppName.bind(EnigmailCore),
 
+  /**
+   * get the Enigmail version
+   *
+   * @return: String - Enigmail version
+   */
   getVersion: function()
   {
     this.DEBUG_LOG("enigmailCommon.jsm: getVersion\n");
@@ -295,14 +302,28 @@ var EnigmailCommon = {
     return addonVersion;
   },
 
+  /**
+   * return a pre-initialized prompt service
+   */
   getPromptSvc: function() {
     return gPromptSvc;
   },
 
+  /**
+   * obtain a list of all environment variables
+   *
+   * @return: Array of Strings with the following structrue
+   *          variable_name=variable_content
+   */
   getEnvList: function() {
     return this.envList;
   },
 
+  /**
+   * Save the Mozilla preferences file (prefs.js)
+   *
+   * no return value
+   */
   savePrefs: function ()
   {
     this.DEBUG_LOG("enigmailCommon.js: savePrefs\n");
@@ -319,6 +340,14 @@ var EnigmailCommon = {
 
   setPref: EnigmailCore.setPref.bind(EnigmailCore),
 
+  /**
+   * Displays an alert dialog.
+   *
+   * @win:         nsIWindow - parent window to display modal dialog; can be null
+   * @mesg:        String    - message text
+   *
+   * no return value
+   */
   alert: function (win, mesg)
   {
     try {
@@ -330,12 +359,18 @@ var EnigmailCommon = {
   },
 
   /**
-   * Displays an alert dialog with 3-4 optional buttons.
-   * checkBoxLabel: if not null, display checkbox with text; the checkbox state is returned in checkedObj
-   * button-Labels: use "&" to indicate access key
+   * Displays an alert dialog with 1-3 optional buttons.
+   *
+   * @win:           nsIWindow - parent window to display modal dialog; can be null
+   * @mesg:          String    - message text
+   * @checkBoxLabel: String    - if not null, display checkbox with text; the
+   *                             checkbox state is returned in checkedObj.value
+   * @button-Labels: String    - use "&" to indicate access key
    *     use "buttonType:label" or ":buttonType" to indicate special button types
    *        (buttonType is one of cancel, help, extra1, extra2)
-   * return: 0-2: button Number pressed
+   * @checkedObj:    Object    - holding the checkbox value
+   *
+   * @return: 0-2: button Number pressed
    *          -1: ESC or close window button pressed
    *
    */
@@ -371,7 +406,7 @@ var EnigmailCommon = {
    * @okLabel:     String    - OPTIONAL label for OK button
    * @cancelLabel: String    - OPTIONAL label for cancel button
    *
-   * @return:      Boolean   - true: OK pressed / false: Cancel pressed
+   * @return:      Boolean   - true: OK pressed / false: Cancel or ESC pressed
    */
   confirmDlg: function (win, mesg, okLabel, cancelLabel)
   {
@@ -407,6 +442,27 @@ var EnigmailCommon = {
 
     return (buttonPressed == 0);
   },
+
+
+  /**
+   * Display a confirmation dialog with OK / Cancel buttons (both customizable) and
+   * a checkbox to remember the selected choice.
+   *
+   *
+   * @win:         nsIWindow - parent window to display modal dialog; can be null
+   * @mesg:        String    - message text
+   * @prefText     String    - the name of the Enigmail preference to read/store the
+   *                           the future display status.
+   *                           the default action is chosen
+   * @okLabel:     String    - OPTIONAL label for OK button
+   * @cancelLabel: String    - OPTIONAL label for cancel button
+   *
+   * @return:      Boolean   - true: 1 pressed / 0: Cancel pressed / -1: ESC pressed
+   *
+   * If the dialog is not displayed:
+   *  - if @prefText is type Boolean: return 1
+   *  - if @prefText is type Number:  return the last choice of the user
+   */
 
   confirmPref: function (win, mesg, prefText, okLabel, cancelLabel)
   {
@@ -491,6 +547,15 @@ var EnigmailCommon = {
     }
   },
 
+  /**
+   * Display a dialog with a message and a text entry field
+   *
+   * @win:      nsIWindow - parent window to display modal dialog; can be null
+   * @mesg:     String    - message text
+   * @valueObj: Object    - object to hold the entered text in .value
+   *
+   * @return:   Boolean - true if OK was pressed / false otherwise
+   */
 
   promptValue: function (win, mesg, valueObj)
   {
@@ -499,6 +564,16 @@ var EnigmailCommon = {
                                  mesg, valueObj, "", checkObj);
   },
 
+  /**
+   * Display an alert message with an OK button and a checkbox to hide
+   * the message in the future.
+   * In case the checkbox was pressed in the past, the dialog is skipped
+   *
+   * @win:      nsIWindow - the parent window to hold the modal dialog
+   * @mesg:     String    - the localized message to display
+   * @prefText: String    - the name of the Enigmail preference to read/store the
+   *                        the future display status
+   */
   alertPref: function (win, mesg, prefText) {
     const display = true;
     const dontDisplay = false;
@@ -517,6 +592,18 @@ var EnigmailCommon = {
       }
     }
   },
+
+  /**
+   * Display an alert dialog together with the message "this dialog will be
+   * displayed |counter| more times".
+   * If |counter| is 0, the dialog is not displayed.
+   *
+   * @win:           nsIWindow - the parent window to hold the modal dialog
+   * @countPrefName: String    - the name of the Enigmail preference to read/store the
+   *                             the |counter| value
+   * @mesg:          String    - the localized message to display
+   *
+   */
 
   alertCount: function (win, countPrefName, mesg)
   {
@@ -538,6 +625,11 @@ var EnigmailCommon = {
     this.alert(win, mesg);
   },
 
+  /**
+   * Determine the best possible window to serve as parent window for dialogs.
+   *
+   * @return: nsIWindow object
+   */
   getBestParentWin: function() {
     var windowManager = Cc[this.APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
 
@@ -562,7 +654,16 @@ var EnigmailCommon = {
     return bestFit;
   },
 
-  openWin: function (winName, spec, winOptions, optList)
+  /**
+   * Open a window, or focus it if it is already open
+   *
+   * @winName   : String - name of the window; used to identify if it is already open
+   * @spec      : String - window URL (e.g. chrome://enigmail/content/test.xul)
+   * @winOptions: String - window options as defined in nsIWindow.open
+   * @optObj    : any    - an Object, Array, String, etc. that is passed as parameter
+   *                       to the window
+   */
+  openWin: function (winName, spec, winOptions, optObj)
   {
     var windowManager = Cc[this.APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
 
@@ -581,15 +682,24 @@ var EnigmailCommon = {
       var appShellSvc = Cc[this.APPSHSVC_CONTRACTID].getService(Ci.nsIAppShellService);
       var domWin = appShellSvc.hiddenDOMWindow;
       try {
-        domWin.open(spec, winName, "chrome,"+winOptions, optList);
+        domWin.open(spec, winName, "chrome,"+winOptions, optObj);
       }
       catch (ex) {
         domWin = windowManager.getMostRecentWindow(null);
-        domWin.open(spec, winName, "chrome,"+winOptions, optList);
+        domWin.open(spec, winName, "chrome,"+winOptions, optObj);
       }
     }
   },
 
+  /**
+   * Iterate through the frames of a window and return the first frame with a
+   * matching name.
+   *
+   * @win:       nsIWindow - XUL window to search
+   * @frameName: String    - name of the frame to seach
+   *
+   * @return:    the frame object or null if not found
+   */
   getFrame: function(win, frameName)
   {
     this.DEBUG_LOG("enigmailCommon.jsm: getFrame: name="+frameName+"\n");
@@ -602,6 +712,13 @@ var EnigmailCommon = {
   },
 
 
+  /**
+   * Convert GnuPG list output encoded in UTF-8 to Mozilla's representation in Unicode.
+   *
+   * @text:   String - UTF-8 encoded list text
+   *
+   * @return: String - Unicode string
+   */
   convertGpgToUnicode: function (text)
   {
     if (typeof(text)=="string") {
@@ -621,6 +738,15 @@ var EnigmailCommon = {
     return text;
   },
 
+  /**
+   * Transform a Unix-Timestamp to a human-readable date/time string
+   *
+   * @dateNum:  Number  - Unix timestamp
+   * @withDate: Boolean - if true, include the date in the output
+   * @withTime: Boolean - if true, include the time in the output
+   *
+   * @return: String - formatted date/time string
+   */
   getDateTime: function (dateNum, withDate, withTime)
   {
     if (dateNum && dateNum != 0) {
@@ -700,6 +826,14 @@ var EnigmailCommon = {
     return file;
   },
 
+  /**
+   * Get the OS-dependent path as UTF-8 string for a given file object
+   *
+   * @nsFileObj: nsIFile
+   *
+   * @return: String - the path encoded with UTF-8
+   */
+
   getFilePath: function (nsFileObj)
   {
     if (this.getOS() == "WINNT")
@@ -710,6 +844,13 @@ var EnigmailCommon = {
 
   isDosLike: EnigmailCore.isDosLike.bind(EnigmailCore),
 
+  /**
+   * Get an escaped version of a file system path specification
+   *
+   * @fileNameStr: String - the file path
+   *
+   * @return: String - the escaped path
+   */
   getEscapedFilename: function (fileNameStr) {
     if (this.isDosLike()) {
       // escape the backslashes and the " character (for Windows and OS/2)
@@ -725,6 +866,7 @@ var EnigmailCommon = {
 
   /**
    *  Get the temp directory as nsIFile Object
+   *
    *  @return nsIFile object to the temporary directory
    */
   getTempDirObj: function ()
@@ -760,6 +902,14 @@ var EnigmailCommon = {
     return tmpDir.path;
   },
 
+  /**
+   * create an nsIStreamListener object to read String data from an nsIInputStream
+   *
+   * @onStopCallback: Function - function(data) that is called when the stream has stopped
+   *                             string data is passed as |data|
+   *
+   * @return: the nsIStreamListener to pass to the stream
+   */
   newStringStreamListener: function (onStopCallback)
   {
     this.DEBUG_LOG("enigmailCommon.jsm: newStreamListener\n");
@@ -799,6 +949,15 @@ var EnigmailCommon = {
     return simpleStreamListener;
   },
 
+  /**
+   * create a nsIRequestObserver object to observe an nsIRequest
+   *
+   * @terminateFunc: Function - function that is called asynchronously when the request
+   *                            has stopped
+   * @terminateArg:  Object   - arguments to pass to terminateFunc as array
+   *
+   * @return: the nsIRequestObserver
+   */
   newRequestObserver: function (terminateFunc, terminateArg)
   {
     var requestObserver = function (terminateFunc, terminateArg)
@@ -879,6 +1038,15 @@ var EnigmailCommon = {
     return unescape(str.replace(/%/g, "=25").replace(/=/g,'%'));
   },
 
+  /**
+   * Convert string data from a given charset to Unicode (Mozilla's internal
+   * representation)
+   *
+   * @text    String - text to convert
+   * @charset String - optional charset. If not specified, UTF-8 is assumed
+   *
+   * @return: Unicode form of text
+   */
 
   convertToUnicode: function (text, charset)
   {
@@ -901,6 +1069,15 @@ var EnigmailCommon = {
     }
   },
 
+  /**
+   * Convert string data from Unicode (Mozilla's internal representation) to a given
+   * character set.
+   *
+   * @text    String - text to convert
+   * @charset String - optional charset. If not specified, UTF-8 is assumed
+   *
+   * @return: converted text
+   */
   convertFromUnicode: function (text, charset) {
     //this.DEBUG_LOG("enigmailCommon.jsm: convertFromUnicode: "+charset+"\n");
 
@@ -923,26 +1100,17 @@ var EnigmailCommon = {
     }
   },
 
-  convertFromGpg: function (text)
-  {
-    if (typeof(text)=="string") {
-      text = text.replace(/\\x3a/ig, "\\e3A");
-      var a=text.search(/\\x[0-9a-fA-F]{2}/);
-      while (a>=0) {
-          var ch=unescape('%'+text.substr(a+2,2));
-          var r= new RegExp("\\"+text.substr(a,4));
-          text=text.replace(r, ch);
-
-          a=text.search(/\\x[0-9a-fA-F]{2}/);
-      }
-
-      text = this.convertToUnicode(text, "utf-8").replace(/\\e3A/g, ":");
-    }
-
-    return text;
-  },
-
-
+  /**
+   * Parse error output from GnuPG
+   *
+   * @errOutput:    String - the output from GnuPG
+   * @resStatusObj: Object: {
+   *                  - statusMsg:       String - status message
+   *                  - statusFlags:     Number - status flags as defined in nsIEnigmail.
+   *                  - blockSeparation: String - list of blocks with markers.
+   *
+   * @return: human readable error message from GnuPG
+   */
   parseErrorOutput: function (errOutput, retStatusObj)
   {
     this.DEBUG_LOG("enigmailCommon.jsm: parseErrorOutput: status message: \n"+errOutput+"\n");
@@ -1085,7 +1253,7 @@ var EnigmailCommon = {
     retStatusObj.statusFlags = statusFlags;
     if (retStatusObj.statusMsg.length == 0) retStatusObj.statusMsg = statusArray.join("\n");
     if (errorMsg.length == 0) {
-      errorMsg = errArray.map(this.convertFromGpg, this).join("\n");
+      errorMsg = errArray.map(this.convertGpgToUnicode, this).join("\n");
     }
 
     if ((statusFlags & Ci.nsIEnigmail.CARDCTRL) && errCode >0) {
@@ -1117,8 +1285,14 @@ var EnigmailCommon = {
   },
 
 
-  // pack/unpack: Network (big-endian) byte order
-
+  /**
+   * pack Network (big-endian) byte order
+   *
+   * @value: Number - value to pack
+   * @bytes: Number - number of bytes to use
+   *
+   * @return: String - packed bytes
+   */
   pack: function (value, bytes)
   {
     var str = '';
@@ -1131,6 +1305,13 @@ var EnigmailCommon = {
     return str;
   },
 
+  /**
+   * unpack Network (big-endian) byte order
+   *
+   * @str: String to unpack
+   *
+   * @return: Number (Long int)
+   */
   unpack: function (str)
   {
     var len = str.length;
@@ -1145,7 +1326,14 @@ var EnigmailCommon = {
   },
 
 
-
+  /**
+   * convert a string to hexadecimal character, interperting each character
+   * of the string as byte
+   *
+   * @str - String holding the bytes to convert
+   *
+   * @return - hexadecimal string
+   */
   bytesToHex: function (str)
   {
     var len = str.length;
@@ -1162,11 +1350,23 @@ var EnigmailCommon = {
 
   getLogLevel: EnigmailCore.getLogLevel.bind(EnigmailCore),
 
-  initialize: function (enigmailSvc, logLevel)
+  /**
+   * initialize this module
+   */
+  initialize: function (enigmailSvc)
   {
     this.enigmailSvc = enigmailSvc;
   },
 
+
+  /**
+   * wait a defined number of miliseconds, then call a callback function
+   * asynchronously
+   *
+   * @callbackFunction: Function - any function specification
+   * @sleepTimeMs:      Number - optional number of miliseconds to delay
+   *                             (0 if not specified)
+   */
 
   setTimeout: function( callbackFunction, sleepTimeMs ) {
     if (sleepTimeMs == null) sleepTimeMs = 0;
@@ -1174,6 +1374,15 @@ var EnigmailCommon = {
     timer.initWithCallback(callbackFunction, sleepTimeMs, Ci.nsITimer.TYPE_ONE_SHOT);
     return timer;
   },
+
+  /**
+   * dispatch event aynchronously to the main thread
+   *
+   * @callbackFunction: Function - any function specification
+   * @sleepTimeMs:      Number - optional number of miliseconds to delay
+   *                             (0 if not specified)
+   * @arrayOfArgs:      Array - arguments to pass to callbackFunction
+   */
 
   dispatchEvent: function (callbackFunction, sleepTimeMs, arrayOfArgs)
   {
@@ -1287,6 +1496,11 @@ var EnigmailCommon = {
     return commandArgs;
   },
 
+  /**
+   * determine if a password needs to be provided on stdin to GnuPG
+   *
+   * @return: true: password is required / false: no password required
+   */
   requirePassword: function () {
     if (this.enigmailSvc.useGpgAgent()) {
       return false;
@@ -1295,6 +1509,14 @@ var EnigmailCommon = {
     return (! this.getPref("noPassphrase"));
   },
 
+  /**
+   * get the standard arguments to pass to every GnuPG subprocess
+   *
+   * @withBatchOpts: Boolean - true: use --batch and some more options
+   *                           false: don't use --batch and co.
+   *
+   * @return: Array of String - the list of arguments
+   */
   getAgentArgs: function (withBatchOpts) {
     // return the arguments to pass to every GnuPG subprocess
 
@@ -1364,6 +1586,14 @@ var EnigmailCommon = {
 
   printCmdLine: EnigmailCore.printCmdLine.bind(EnigmailCore),
 
+  /**
+   * Fix the exit code of GnuPG (which may be wrong in some circumstances)
+   *
+   * @exitCode:    Number - the exitCode obtained from GnuPG
+   * @statusFlags: Numebr - the statusFlags as calculated by parseErrorOutput()
+   *
+   * @return: Number - fixed exit code
+   */
   fixExitCode: function (exitCode, statusFlags) {
     if (exitCode != 0) {
       if ((statusFlags & (nsIEnigmail.BAD_PASSPHRASE | nsIEnigmail.UNVERIFIED_SIGNATURE)) &&
@@ -1387,12 +1617,32 @@ var EnigmailCommon = {
     return exitCode;
   },
 
+  /**
+   * Generate a new key pair with GnuPG
+   *
+   * @parent:     nsIWindow  - parent window (not used anymore)
+   * @name:       String     - name part of UID
+   * @comment:    String     - comment part of UID (brackets are added)
+   * @comment:    String     - email part of UID (<> will be added)
+   * @expiryDate: Number     - Unix timestamp of key expiry date; 0 if no expiry
+   * @keyLength:  Number     - size of key in bytes (e.g 4096)
+   * @keyType:    Number     - 1 = DSA / 2 = RSA
+   * @passphrase: String     - password; null if no password
+   * @listener:   Object     - {
+   *                             function onDataAvailable(data) {...},
+   *                             function onStopRequest(exitCode) {...}
+   *                           }
+   *
+   * @return: handle to process
+   */
   generateKey: function (parent, name, comment, email, expiryDate, keyLength, keyType,
             passphrase, listener) {
     this.WRITE_LOG("enigmailCommon.jsm: generateKey:\n");
 
-    if (gKeygenProcess)
+    if (gKeygenProcess) {
+      // key generation already ongoing
       throw Components.results.NS_ERROR_FAILURE;
+    }
 
     var args = this.getAgentArgs(true);
     args.push("--gen-key");
@@ -1468,17 +1718,30 @@ var EnigmailCommon = {
     return proc;
   },
 
+  /**
+   * get nsIIOService object
+   */
   getIoService: function() {
     var ioServ = Cc[this.IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
     return ioServ;
   },
 
+  /**
+   * create a nsIInputStream object that is fed with string data
+   *
+   * @uri:            nsIURI - object representing the URI that will deliver the data
+   * @contentType:    String - the content type as specified in nsIChannel
+   * @contentCharset: String - the character set; automatically determined if null
+   * @data:           String - the data to feed to the stream
+   *
+   * @return nsIChannel object
+   */
   newStringChannel: function(uri, contentType, contentCharset, data)
   {
     this.DEBUG_LOG("enigmailCommon.jsm: newStringChannel\n");
 
     var inputStream = Cc[NS_STRING_INPUT_STREAM_CONTRACTID].createInstance(Ci.nsIStringInputStream);
-    inputStream.setData(data,-1);
+    inputStream.setData(data, -1);
 
     if (! contentCharset || contentCharset.length==0) {
       var ioServ = this.getIoService();
@@ -1543,6 +1806,14 @@ var EnigmailCommon = {
   },
 
 
+  /**
+   *  get Proxy for a given hostname as configured in Mozilla
+   *
+   *  @hostname: String - the host to check if there is a proxy.
+   *
+   *  @return: String - proxy host URL to provide to GnuPG
+   *                    null if no proxy required
+   */
   getHttpProxy: function (hostName) {
 
     function GetPasswdForHost(hostname, userObj, passwdObj) {
@@ -1669,7 +1940,7 @@ var EnigmailCommon = {
   },
 
   /**
-   * search, download or upload key on, from and to a keyserver
+   * search, download or upload key on, from or to a keyserver
    *
    * @actionFlags: Integer - flags (bitmap) to determine the required action
    *                         (see nsIEnigmail - Keyserver action flags for details)
@@ -1700,31 +1971,39 @@ var EnigmailCommon = {
     }
 
     var proxyHost = this.getHttpProxy(keyserver);
-    var args = this.getAgentArgs(false);
+    var args = this.getAgentArgs(true);
 
-    if (! (actionFlags & nsIEnigmail.SEARCH_KEY)) args = this.getAgentArgs(true);
-
+    if (actionFlags & nsIEnigmail.SEARCH_KEY) {
+      args = this.getAgentArgs(false);
+      args = args.concat(["--command-fd", "0", "--fixed-list", "--with-colons"]);
+    }
     if (proxyHost) {
       args = args.concat(["--keyserver-options", "http-proxy="+proxyHost]);
     }
     args = args.concat(["--keyserver", keyserver]);
 
+//     if (actionFlags & nsIEnigmail.SEARCH_KEY | nsIEnigmail.DOWNLOAD_KEY | nsIEnigmail.REFRESH_KEY) {
+//       args = args.concat(["--command-fd", "0", "--fixed-list", "--with-colons"]);
+//     }
+
+    var inputData = null;
     var searchTermsList = searchTerms.split(" ");
 
     if (actionFlags & nsIEnigmail.DOWNLOAD_KEY) {
       args.push("--recv-keys");
       args = args.concat(searchTermsList);
     }
+    else if (actionFlags & nsIEnigmail.REFRESH_KEY) {
+      args.push("--refresh-keys");
+    }
     else if (actionFlags & nsIEnigmail.SEARCH_KEY) {
       args.push("--search-keys");
       args = args.concat(searchTermsList);
+      inputData = "quit\n";
     }
     else if (actionFlags & nsIEnigmail.UPLOAD_KEY) {
       args.push("--send-keys");
       args = args.concat(searchTermsList);
-    }
-    else if (actionFlags & nsIEnigmail.REFRESH_KEY) {
-      args.push("--refresh-keys");
     }
 
     var isDownload = actionFlags & (nsIEnigmail.REFRESH_KEY | nsIEnigmail.DOWNLOAD_KEY);
@@ -1742,6 +2021,7 @@ var EnigmailCommon = {
         arguments:   args,
         environment: this.getEnvList(),
         charset: null,
+        stdin: inputData,
         stdout: function(data) {
           listener.stdout(data);
         },
@@ -1781,7 +2061,9 @@ var EnigmailCommon = {
   },
 
   /**
-   * Force GnuPG to recalculate the trust db. This is sometimes required after importing keys
+   * Force GnuPG to recalculate the trust db. This is sometimes required after importing keys.
+   *
+   * no return value
    */
 
   recalcTrustDb: function() {
@@ -1807,101 +2089,13 @@ var EnigmailCommon = {
     }
   },
 
-  searchKey: function (recvFlags, protocol, keyserver, port, keyValue, listener, errorMsgObj) {
-    this.DEBUG_LOG("enigmailCommon.jsm: searchKey: "+keyValue+"\n");
-
-    if (! (this.enigmailSvc && this.enigmailSvc.initialized)) {
-      this.ERROR_LOG("enigmailCommon.jsm: searchKey: not yet initialized\n");
-      errorMsgObj.value = this.getString("notInit");
-      return null;
-    }
-
-    if (!keyserver) {
-      errorMsgObj.value = this.getString("failNoServer");
-      return null;
-    }
-
-    if (!keyValue) {
-      errorMsgObj.value = this.getString("failNoID");
-      return null;
-    }
-
-    var args;
-    var command = null;
-
-    var proxyHost = null;
-    if (protocol=="hkp") {
-      proxyHost = this.getHttpProxy(keyserver);
-    }
-
-    command = this.agentPath;
-    args= this.getAgentArgs(false);
-    args = args.concat(["--command-fd", "0", "--no-tty", "--batch", "--fixed-list", "--with-colons"]);
-    if (proxyHost) args = args.concat(["--keyserver-options", "http-proxy="+proxyHost]);
-    args.push("--keyserver");
-    if (! protocol) protocol="hkp";
-    if (port) {
-      args.push(protocol + "://" + keyserver + ":"+port);
-    }
-    else {
-      args.push(protocol + "://" + keyserver);
-    }
-
-    var inputData = null;
-    if (recvFlags & nsIEnigmail.SEARCH_KEY) {
-      args.push("--search-keys");
-      inputData = "quit\n";
-    }
-    else if (recvFlags & nsIEnigmail.DOWNLOAD_KEY) {
-      args = args.concat(["--status-fd", "1", "--recv-keys"]);
-    }
-    args.push(keyValue);
-
-    this.CONSOLE_LOG("enigmail> "+this.printCmdLine(this.enigmailSvc.agentPath, args)+"\n");
-
-    var proc = null;
-
-    try {
-      proc = subprocess.call({
-        command:     this.enigmailSvc.agentPath,
-        arguments:   args,
-        environment: this.getEnvList(),
-        charset: null,
-        stdin: inputData,
-        stdout: function(data) {
-          listener.onStdoutData(data);
-        },
-        stderr: function(data) {
-          listener.onErrorData(data);
-        },
-        done: function(result) {
-          gKeygenProcess = null;
-          try {
-            listener.onStopRequest(result.exitCode);
-          }
-          catch (ex) {}
-        },
-        mergeStderr: false
-      });
-    }
-    catch (ex) {
-      this.ERROR_LOG("enigmailCommon.jsm: searchKey: subprocess.call failed with '"+ex.toString()+"'\n");
-      throw ex;
-    }
-
-    if (!proc) {
-      this.ERROR_LOG("enigmailCommon.jsm: searchKey: subprocess failed due to unknown reasons\n");
-      return null;
-    }
-
-    return proc;
-  },
 
   /***
     determine if a specific feature is available in the GnuPG version used
 
     @featureName:  String; one of the following values:
       version-supported    - is the gpg version supported at all (true for gpg >= 1.4.2)
+      version-deprecated   - is the gpg version deprecated (true for gpg < 2.0)
       supports-gpg-agent   - is gpg-agent is usually provided (true for gpg >= 2.0)
       autostart-gpg-agent  - is gpg-agent started automatically by gpg (true for gpg >= 2.0.16)
       keygen-passphrase    - can the passphrase be specified when generating keys (false for gpg 2.1 and 2.1.1)
@@ -1930,6 +2124,8 @@ var EnigmailCommon = {
     switch(featureName) {
     case 'version-supported':
       return (vc.compare(gpgVersion, "1.4.2") >= 0);
+    case 'version-deprecated':
+      return (vc.compare(gpgVersion, "2.0") < 0);
     case 'supports-gpg-agent':
       return (vc.compare(gpgVersion, "2.0") >= 0);
     case 'autostart-gpg-agent':
