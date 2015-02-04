@@ -191,6 +191,9 @@ pref("extensions.enigmail.warnOnRulesConflict",0);
 // display a warning when the passphrase is cleared
 pref("extensions.enigmail.warnClearPassphrase",true);
 
+// display a warning if the GnuPG version is deprecated
+pref("extensions.enigmail.warnDeprecatedGnuPG",true);
+
 // warn if gpg-agent is found and "remember passphrase for X minutes is active"
 pref("extensions.enigmail.warnGpgAgentAndIdleTime",true);
 

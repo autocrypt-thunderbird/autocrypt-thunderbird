@@ -889,9 +889,21 @@ Enigmail.prototype = {
     this.agentVersion = gpgVersion;
 
     if (!Ec.getGpgFeature("version-supported")) {
-      if (domWindow) Ec.alert(domWindow, EC.getString("oldGpgVersion", [ gpgVersion ]));
+      if (! domWindow) {
+        domWindow = Ec.getBestParentWin();
+      }
+      Ec.alert(domWindow, EC.getString("oldGpgVersion", [ gpgVersion ]));
       throw Components.results.NS_ERROR_FAILURE;
     }
+
+    if (Ec.getGpgFeature("version-deprecated")) {
+      if (! domWindow) {
+        domWindow = Ec.getBestParentWin();
+      }
+      Ec.alertPref(domWindow, EC.getString("deprecatedGpgVersion", [ gpgVersion ]),
+        "warnDeprecatedGnuPG");
+    }
+
 
     this.gpgconfPath = this.resolveToolPath("gpgconf");
     this.connGpgAgentPath = this.resolveToolPath("gpg-connect-agent");
