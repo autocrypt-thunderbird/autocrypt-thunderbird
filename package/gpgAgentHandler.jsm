@@ -102,11 +102,11 @@ var EnigmailGpgAgent = {
 
     var pathDirs = envPath.split(isDosLike ? ";" : ":");
 
-    for (var j=0; j<pathDirs.length; j++) {
-       try {
-          var pathDir = Cc[NS_FILE_CONTRACTID].createInstance(Ci.nsIFile);
+    for (var i=0; i < fileNames.length; i++) {
+      for (var j=0; j<pathDirs.length; j++) {
+         try {
+            var pathDir = Cc[NS_FILE_CONTRACTID].createInstance(Ci.nsIFile);
 
-          for (var i=0; i < fileNames.length; i++) {
             DEBUG_LOG("gpgAgentHandler.jsm: resolvePath: checking for "+pathDirs[j]+"/"+fileNames[i]+"\n");
 
             this.initPath(pathDir, pathDirs[j]);
@@ -121,11 +121,10 @@ var EnigmailGpgAgent = {
               }
             }
             catch (ex) {}
-          }
-       }
-       catch (ex) {}
+         }
+         catch (ex) {}
+      }
     }
-
     return null;
   },
 

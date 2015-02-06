@@ -739,10 +739,10 @@ Enigmail.prototype = {
     EnigmailGpgAgent.resetGpgAgent();
 
     if (EC.isDosLike()) {
-      agentName = "gpg.exe";
+      agentName = "gpg2.exe;gpg.exe;gpg1.exe";
     }
     else {
-      agentName = "gpg;gpg2;gpg1";
+      agentName = "gpg2;gpg;gpg1";
     }
 
 
