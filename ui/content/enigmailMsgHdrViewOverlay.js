@@ -344,7 +344,7 @@ Enigmail.hdrView = {
         else if (msgEncrypted) {
           statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgEncrypted") ]);
           statusLine += EnigmailCommon.getString("clickDetailsButton");
-          statusInfo = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSigned") ])
+          statusInfo = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgEncrypted") ])
                         + "\n" + statusInfo;
         }
         else if (msgSigned) {
