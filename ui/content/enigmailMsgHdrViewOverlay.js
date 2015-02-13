@@ -267,7 +267,12 @@ Enigmail.hdrView = {
       }
       else if (statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
         statusInfo = EnigmailCommon.getString("unverifiedSig");
-        statusLine = statusInfo + EnigmailCommon.getString("clickImportButton");
+        if (keyId) {
+          statusLine = statusInfo + EnigmailCommon.getString("clickImportButton");
+        }
+        else {
+          statusLine = statusInfo + EnigmailCommon.getString("keyTypeUnsupported");
+        }
       }
       else if (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
                               nsIEnigmail.EXPIRED_SIGNATURE |
@@ -350,7 +355,12 @@ Enigmail.hdrView = {
         else if (msgSigned) {
           if (statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
             statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSignedUnkownKey") ]);
-            statusLine += EnigmailCommon.getString("clickImportButton");
+            if (keyId) {
+              statusLine += EnigmailCommon.getString("clickImportButton");
+            }
+            else {
+              statusLine += EnigmailCommon.getString("keyTypeUnsupported");
+            }
           }
           else {
             statusLine = EnigmailCommon.getString("msgPart", [ EnigmailCommon.getString("msgSigned") ]);
