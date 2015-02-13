@@ -495,29 +495,34 @@ Enigmail.hdrView = {
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
-    if (Enigmail.msg.securityInfo) {
-      if ( (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.NODATA) &&
-           (Enigmail.msg.securityInfo.statusFlags &
-             (nsIEnigmail.PGP_MIME_SIGNED | nsIEnigmail.PGP_MIME_ENCRYPTED)) ) {
-        document.getElementById("enigmail_reloadMessage").removeAttribute("hidden");
-      }
-      else {
-        document.getElementById("enigmail_reloadMessage").setAttribute("hidden", "true");
-      }
-    }
-
-    var optList = ["pgpSecurityInfo", "copySecurityInfo"];
-    for (var j=0; j<optList.length; j++) {
-      var menuElement = document.getElementById("enigmail_"+optList[j]);
+    try {
       if (Enigmail.msg.securityInfo) {
-        menuElement.removeAttribute("disabled");
+        if ( (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.NODATA) &&
+             (Enigmail.msg.securityInfo.statusFlags &
+               (nsIEnigmail.PGP_MIME_SIGNED | nsIEnigmail.PGP_MIME_ENCRYPTED)) ) {
+          document.getElementById("enigmail_reloadMessage").removeAttribute("hidden");
+        }
+        else {
+          document.getElementById("enigmail_reloadMessage").setAttribute("hidden", "true");
+        }
       }
-      else {
-        menuElement.setAttribute("disabled", "true");
-      }
-    }
 
-    this.setSenderStatus("signSenderKey", "editSenderKeyTrust" , "showPhoto", "dispKeyDetails");
+      var optList = ["pgpSecurityInfo", "copySecurityInfo"];
+      for (var j=0; j<optList.length; j++) {
+        var menuElement = document.getElementById("enigmail_"+optList[j]);
+        if (Enigmail.msg.securityInfo) {
+          menuElement.removeAttribute("disabled");
+        }
+        else {
+          menuElement.setAttribute("disabled", "true");
+        }
+      }
+
+      this.setSenderStatus("signSenderKey", "editSenderKeyTrust" , "showPhoto", "dispKeyDetails");
+    }
+    catch(ex) {
+      EnigmailCommon.ERROR_LOG("error on displaying Security menu:\n"+ex.toString()+"\n")
+    }
   },
 
 
@@ -664,7 +669,7 @@ Enigmail.hdrView = {
   {
     if (Enigmail.msg.securityInfo) {
       var clipHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].createInstance(Components.interfaces.nsIClipboardHelper);
-      clipHelper.copyString(Enigmail.msg.securityInfo.fullStatusInfo);
+      clipHelper.copyString(Enigmail.msg.securityInfo.statusInfo);
     }
 
   },
