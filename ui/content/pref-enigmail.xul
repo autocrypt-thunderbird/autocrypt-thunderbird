@@ -79,11 +79,11 @@
     </tooltip>
 
     <!-- sending preferences: accepted keys -->
-    <tooltip id="acceptedKeysValid.tooltip">
-      <description>&enigmail.acceptedKeysValid.tooltip;</description>
+    <tooltip id="acceptedKeysTrusted.tooltip">
+      <description>&enigmail.acceptedKeysTrusted.tooltip;</description>
     </tooltip>
-    <tooltip id="acceptedKeysAll.tooltip">
-      <description>&enigmail.acceptedKeysAll.tooltip;</description>
+    <tooltip id="acceptedKeysAllUsable.tooltip">
+      <description>&enigmail.acceptedKeysAllUsable.tooltip;</description>
     </tooltip>
 
     <!-- sending preferences: auto send encrypted -->
@@ -313,12 +313,12 @@
                         prefstring="extensions.enigmail.acceptedKeys">
               <radio id="acceptedKeysValid"
                     value="0"
-                    label="&enigmail.acceptedKeysValid.label;"
-                    tooltip="acceptedKeysValid.tooltip"/>
+                    label="&enigmail.acceptedKeysTrusted.label;"
+                    tooltip="acceptedKeysTrusted.tooltip"/>
               <radio id="acceptedKeysAll"
                     value="1"
-                    label="&enigmail.acceptedKeysAll.label;"
-                    tooltip="acceptedKeysAll.tooltip"/>
+                    label="&enigmail.acceptedKeysAllUsable.label;"
+                    tooltip="acceptedKeysAllUsable.tooltip"/>
             </radiogroup>
           </groupbox>
 
