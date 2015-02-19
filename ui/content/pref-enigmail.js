@@ -396,7 +396,8 @@ function resetRememberedValues() {
              "warnClearPassphrase",
              "warnOnSendingNewsgroups",
              "warnDownloadContactKeys",
-             "warnRefreshAll"];
+             "warnRefreshAll",
+             "warnDeprecatedGnuPG"];
 
   for (var j=0; j<prefs.length; j++) {
     EnigSetPref(prefs[j], EnigGetDefaultPref(prefs[j]));
