@@ -66,7 +66,7 @@ toolbar[iconsize="small"] #button-enigmail-decrypt[disabled]
 
 #button-enigmail-encrypt
 {
-  list-style-image : url("chrome://enigmail/skin/encrypt-inactive-30.png");
+  list-style-image : url("chrome://enigmail/skin/encrypt-inactive-18.png");
 }
 
 /* hide label unless text-only mode is enabled */
@@ -75,22 +75,22 @@ toolbar:not([mode="text"]) #button-enigmail-encrypt .toolbarbutton-text {
 }
 
 #button-enigmail-encrypt[disabled] {
-  list-style-image : url("chrome://enigmail/skin/encrypt-disabled-30.png");
+  list-style-image : url("chrome://enigmail/skin/encrypt-disabled-18.png");
 }
 
 #button-enigmail-encrypt[encrypted="activeNone"]
 {
-  list-style-image : url("chrome://enigmail/skin/encrypt-active-30.png");
+  list-style-image : url("chrome://enigmail/skin/encrypt-active-18.png");
 }
 
 #button-enigmail-encrypt[encrypted="forceYes"]
 {
-  list-style-image : url("chrome://enigmail/skin/encrypt-active-force-30.png");
+  list-style-image : url("chrome://enigmail/skin/encrypt-active-force-18.png");
 }
 
 #button-enigmail-encrypt[encrypted="forceNo"]
 {
-  list-style-image : url("chrome://enigmail/skin/encrypt-inactive-force-30.png");
+  list-style-image : url("chrome://enigmail/skin/encrypt-inactive-force-18.png");
 }
 
 
@@ -129,7 +129,7 @@ toolbar[iconsize="small"] #button-enigmail-encrypt[encrypted="forceNo"]
 
 #button-enigmail-sign
 {
-  list-style-image : url("chrome://enigmail/skin/sign-inactive-30.png");
+  list-style-image : url("chrome://enigmail/skin/sign-inactive-18.png");
 }
 
 /* hide label unless text-only mode is enabled */
@@ -138,28 +138,29 @@ toolbar:not([mode="text"]) #button-enigmail-sign .toolbarbutton-text {
 }
 
 #button-enigmail-sign[disabled] {
-  list-style-image : url("chrome://enigmail/skin/sign-disabled-30.png");
+  list-style-image : url("chrome://enigmail/skin/sign-disabled-18.png");
 }
 
 #button-enigmail-sign[signed="activeNone"]
 {
-  list-style-image : url("chrome://enigmail/skin/sign-active-30.png");
+  list-style-image : url("chrome://enigmail/skin/sign-active-18.png");
 }
 
 #button-enigmail-sign[signed="forceYes"]
 {
-  list-style-image : url("chrome://enigmail/skin/sign-active-force-30.png");
+  list-style-image : url("chrome://enigmail/skin/sign-active-force-18.png");
 }
 
 #button-enigmail-sign[signed="forceNo"]
 {
-  list-style-image : url("chrome://enigmail/skin/sign-inactive-force-30.png");
+  list-style-image : url("chrome://enigmail/skin/sign-inactive-force-18.png");
 }
 
 
 toolbar[iconsize="small"] #button-enigmail-sign
 {
   list-style-image : url("chrome://enigmail/skin/sign-inactive-18.png");
+  height: 18px;
 }
 
 toolbar[iconsize="small"] #button-enigmail-sign[disabled] {
@@ -187,16 +188,16 @@ toolbar[iconsize="small"] #button-enigmail-sign[signed="forceNo"]
 
 #button-enigmail-attach
 {
-  list-style-image : url("chrome://enigmail/skin/attach-inactive-30.png");
+  list-style-image : url("chrome://enigmail/skin/attach-inactive-18.png");
 }
 
 #button-enigmail-attach[disabled] {
-  list-style-image : url("chrome://enigmail/skin/attach-disabled-30.png");
+  list-style-image : url("chrome://enigmail/skin/attach-disabled-18.png");
 }
 
 #button-enigmail-attach[addPubkey="true"]
 {
-  list-style-image : url("chrome://enigmail/skin/attach-active-30.png");
+  list-style-image : url("chrome://enigmail/skin/attach-active-18.png");
 }
 
 toolbar[iconsize="small"] #button-enigmail-attach
