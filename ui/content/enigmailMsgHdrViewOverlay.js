@@ -117,6 +117,11 @@ Enigmail.hdrView = {
   },
 
 
+  setStatusText: function(txt) {
+    let s = document.getElementById("enigmailStatusText");
+    s.firstChild.data = txt;
+  },
+
   updateHdrIcons: function (exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, encToDetails, xtraStatus)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: this.updateHdrIcons: exitCode="+exitCode+", statusFlags="+statusFlags+", keyId="+keyId+", userId="+userId+", "+errorMsg+"\n");
@@ -407,7 +412,7 @@ Enigmail.hdrView = {
     }
 
     if (statusLine) {
-      statusText.value = statusLine +" ";
+      this.setStatusText(statusLine +" ");
       this.enigmailBox.removeAttribute("collapsed");
       this.displayExtendedStatus(true);
 
@@ -420,7 +425,7 @@ Enigmail.hdrView = {
       }
 
     } else {
-      statusText.value = "";
+      this.setStatusText("");
       this.enigmailBox.setAttribute("collapsed", "true");
       this.displayExtendedStatus(false);
     }
@@ -617,8 +622,7 @@ Enigmail.hdrView = {
 
           EnigmailVerify.setMsgWindow(msgWindow, Enigmail.msg.getCurrentMsgUriSpec());
 
-          var statusText = document.getElementById("enigmailStatusText");
-          if (statusText) statusText.value="";
+          Enigmail.hdrView.setStatusText("");
 
           this.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureOk");
 
@@ -648,7 +652,6 @@ Enigmail.hdrView = {
         EnigmailCommon.DEBUG_LOG("enigmailMsgHdrViewOverlay.js: _listener_onEndHeaders\n");
         try {
           Enigmail.hdrView.statusBarHide();
-          var statusText = document.getElementById("enigmailStatusText");
 
           this.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureOk");
         }

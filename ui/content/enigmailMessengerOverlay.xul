@@ -294,9 +294,12 @@
 
       <hbox flex="1" pack="start" class="headerValueBox">
         <vbox flex="1" pack="start">
-          <textbox flex="1" readonly="true" align="center"
-               id="enigmailStatusText" chromedir="ltr"
-               class="enigmailHeaderValue"/>
+          <hbox flex="1" align="center">
+            <label flex="1" readonly="true"
+                 id="enigmailStatusText" chromedir="ltr"
+                 class="enigmailHeaderValue">...
+            </label>
+          </hbox>
           <textbox flex="1" readonly="true"
                  id="expandedEnigmailStatusText"
                  class="enigmailHeaderValue"
