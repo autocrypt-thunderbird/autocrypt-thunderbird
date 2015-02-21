@@ -261,26 +261,22 @@ toolbar[iconsize="small"] #button-enigmail-attach[addPubkey="true"]
   min-width: 1px !important;
   -moz-appearance: none;
   color: black;
-  background-color: transparent;
+  background-color: #DDDDDD;
+
   border: 2px solid transparent;
-  margin-top: 0px;
-  margin-bottom: 0px;
+  margin-top: 2px;
+  margin-bottom: 2px;
   padding: 0 2px;
   border-radius: 2px;
-  -moz-border-top-colors: none;
-  -moz-border-right-colors: none;
-  -moz-border-bottom-colors: none;
-  -moz-border-left-colors: none;
-  min-height: 1ex;
-}
-
-.enigMsgHdrView-flat-button:hover {
-  color: -moz-buttonhovertext;
-  background-color: -moz-buttonhoverface;
   -moz-border-top-colors: transparent threedhighlight threedlightshadow;
   -moz-border-right-colors: transparent threeddarkshadow threedshadow;
   -moz-border-bottom-colors: transparent threeddarkshadow threedshadow;
   -moz-border-left-colors: transparent threedhighlight threedlightshadow;
+  min-height: 1ex;
+}
+
+.enigMsgHdrView-flat-button:hover {
+  background-color: #CCCCCC;
 }
 
 .enigmailToolbar {
