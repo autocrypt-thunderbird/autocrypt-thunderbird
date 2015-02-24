@@ -560,7 +560,7 @@ function EnigRevokeKey(keyId, userId, callbackFunc) {
     return false;
 
   var userDesc="0x"+keyId.substr(-8,8)+" - "+userId;
-  if (!EnigConfirm(EnigGetString("revokeKeyAsk", userDesc), EnigGetString("keyMan.button.revokeKey")))
+  if (!EnigConfirm(EnigGetString("revokeKeyQuestion", userDesc), EnigGetString("keyMan.button.revokeKey")))
       return false;
 
   var tmpDir=EnigGetTempDir();
