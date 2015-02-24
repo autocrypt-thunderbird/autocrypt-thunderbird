@@ -259,17 +259,7 @@
               />
   </toolbarpalette>
 
-  <!-- override default set to include enigmail decryption icon -->
-  <!-- Thunderbird 3.0 and newer -->
-  <toolbar id="mail-bar3"
-          defaultset="button-getmsg,button-newmsg,button-chat,button-address,spacer,button-tag,button-enigmail-decrypt,qfb-show-filter-bar,spring,gloda-search,button-appmenu">
-  </toolbar>
-
-  <!-- SeaMonkey 2.0 and newer -->
-  <toolbar id="msgToolbar"
-           defaultset="button-getmsg,button-newmsg,separator,button-reply,button-replyall,button-forward,separator,button-enigmail-decrypt,spacer,button-goback,button-goforward,button-next,button-junk,button-delete,button-mark,spring,throbber-box">
-  </toolbar>
-
+  <!-- the default set does not include the Enigmail decryption icon anymore -->
 
   <!-- enigmailHdrBox is defined in messengerOverlay-(tbird|sm).xul -->
 
