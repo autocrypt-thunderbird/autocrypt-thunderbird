@@ -72,7 +72,7 @@ $(DIRS):
 	$(MAKE) -C $@
 
 xpi:
-	$(srcdir)/util/genxpi $(XPIFILE) $(XPI_MODULE_VERS) $(OS_TARGET) $(CPU_ARCH) $(DIST) $(srcdir) $(XPI_MODULE) $(DLL_SUFFIX) $(DLL_PREFIX)
+	$(srcdir)/util/genxpi $(XPIFILE) $(XPI_MODULE_VERS) $(OS_TARGET) $(CPU_ARCH) $(DIST) $(srcdir) $(XPI_MODULE) $(DLL_SUFFIX) $(DLL_PREFIX) $(ENABLE_LANG)
 
 check:
 	util/checkFiles.py

@@ -17,6 +17,7 @@ TB_ARGS = @TB_ARGS@
 
 TESTS = @enable_tests@
 FIX_LANGUAGES = @enable_fix_lang@
+ENABLE_LANG = @enable_lang@
 
 srcdir = @srcdir@
 

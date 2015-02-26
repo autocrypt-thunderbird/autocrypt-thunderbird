@@ -21,7 +21,13 @@ endif
 
 all: jar
 
+ifneq ($(ENABLE_LANG),no)
 languages = $(shell cat current-languages.txt)
+EXPORT_CMD = $(PERL) $(DEPTH)/util/make-lang-xpi.pl $(NO_GEN_FILES) current-languages.txt $(BUILD)/lang
+else
+languages = 
+EXPORT_CMD = echo "" > $(BUILD)/lang/jar.mn
+endif
 
 prepFiles: 
 	for l in $(languages); do \
@@ -31,7 +37,7 @@ prepFiles:
 
 export: $(DO_FIX_LANG)
 	mkdir -p $(BUILD)/lang
-	$(PERL) $(DEPTH)/util/make-lang-xpi.pl $(NO_GEN_FILES) current-languages.txt $(BUILD)/lang 
+	$(EXPORT_CMD)
 
 jar: export
 	$(PYTHON) ../util/JarMaker.py -j $(DIST)/chrome -t . -f jar $(BUILD)/lang/jar.mn

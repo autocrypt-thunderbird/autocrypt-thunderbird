@@ -35,6 +35,14 @@ AC_ARG_ENABLE(tests,
     AC_HELP_STRING([--enable-tests],[run unit tests during build process]),
     enable_tests=$enableval)
 
+# Disable creation of languages other than en-US (for submitting to babelzilla)
+#
+AC_ARG_ENABLE(lang,
+    AC_HELP_STRING([--disable-lang],[disable creation of locales other than en-US]),
+    enable_lang=$enableval,
+    enable_lang=yes
+    )
+
 
 changequote(,)dnl
 BUILD_OS_ARCH=`$PERL config/getOsTarget.pl -o "$target_os" "$target_cpu" "$CC"`
@@ -48,6 +56,7 @@ AC_SUBST(BUILD_TARGET_CPU)
 AC_SUBST(DLL_PREFIX)
 AC_SUBST(DLL_SUFFIX)
 AC_SUBST(enable_tests)
+AC_SUBST(enable_lang)
 
 
 AC_ARG_WITH(tb-path,

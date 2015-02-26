@@ -53,6 +53,7 @@ srcDir=$6
 xpiModule=$7
 dllSuffix=$8
 libPrefix=${9}
+enableLang=${10}
 
 cd ${srcDir}
 cwd=`pwd`
@@ -83,14 +84,15 @@ cat  ${srcDir}/package/chrome.manifest \
 
 # Prepare languages other than en-US
 
-if [ -s ${srcDir}/lang/current-languages.txt ]; then
-  echo '' >> ${targetDir}/chrome.manifest
-  echo '# Additional languages' >> ${targetDir}/chrome.manifest
+if [ "$enableLang" = "yes" ]; then
+  if [ -s ${srcDir}/lang/current-languages.txt ]; then
+    echo '' >> ${targetDir}/chrome.manifest
+    echo '# Additional languages' >> ${targetDir}/chrome.manifest
 
-  for lang in `cat ${srcDir}/lang/current-languages.txt`; do
-    echo 'locale        enigmail    '$lang'       jar:chrome/enigmail.jar!/locale/'$lang'/' >> ${targetDir}/chrome.manifest
-  done
-
+    for lang in `cat ${srcDir}/lang/current-languages.txt`; do
+      echo 'locale        enigmail    '$lang'       jar:chrome/enigmail.jar!/locale/'$lang'/' >> ${targetDir}/chrome.manifest
+    done
+  fi
 fi
 
 
