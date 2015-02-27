@@ -730,9 +730,9 @@
 <!ENTITY enigmail.setupWiz.pgKeygen.keyGenComplete   "Your Key is Generated">
 <!ENTITY enigmail.setupWiz.pgKeygen.revokeCertDesc    "In case your private key gets lost or compromised, you might need to revoke your public key
                                                       such that others don't continue to use your old key.
-                                                      For this purpose, you need a revokation certificate.
+                                                      For this purpose, you need a revocation certificate.
                                                       <html:br/>You will be prompted to enter your password for this.">
-<!ENTITY enigmail.setupWiz.pgKeygen.revCertButton    "Create Revokation Certificate">
+<!ENTITY enigmail.setupWiz.pgKeygen.revCertButton    "Create Revocation Certificate">
 
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title          "Thank you">
