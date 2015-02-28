@@ -1466,7 +1466,9 @@ Enigmail.msg = {
     // update encrypt icon and tooltip/menu-text
     encBroadcaster.setAttribute("encrypted", encSymbol);
     var encIcon = document.getElementById("button-enigmail-encrypt");
-    encIcon.setAttribute("tooltiptext", encReasonStr);
+    if (encIcon) {
+      encIcon.setAttribute("tooltiptext", encReasonStr);
+    }
     this.statusEncryptedStr = encStr;
     this.setChecked("enigmail-bc-encrypt", doEncrypt);
 
@@ -1527,7 +1529,9 @@ Enigmail.msg = {
     // update sign icon and tooltip/menu-text
     signBroadcaster.setAttribute("signed", signSymbol);
     var signIcon = document.getElementById("button-enigmail-sign");
-    signIcon.setAttribute("tooltiptext", signReasonStr);
+    if (signIcon) {
+      signIcon.setAttribute("tooltiptext", signReasonStr);
+    }
     this.statusSignedStr = signStr;
     this.setChecked("enigmail-bc-sign", doSign);
 
