@@ -274,14 +274,26 @@ var EnigmailGpgAgent = {
       arguments:   [ "--change-options", "gpg-agent" ],
       environment: Ec.envList,
       charset: null,
+      mergeStderr: true,
       stdin: function(pipe) {
         pipe.write("default-cache-ttl:"+ RUNTIME +":" + (idleMinutes * 60) +"\n");
         pipe.write("max-cache-ttl:"+ RUNTIME +":" + (idleMinutes * 600) +"\n");
         pipe.close();
+      },
+      stdout: function (data) {
+        DEBUG_LOG("gpgAgentHandler.jsm: setAgentMaxIdle.stdout: "+data+"\n");
+      },
+      done: function(result) {
+        DEBUG_LOG("gpgAgentHandler.jsm: setAgentMaxIdle.stdout: gpgconf exitCode="+result.exitCode+"\n");
       }
     };
 
-    subprocess.call(proc);
+    try {
+      subprocess.call(proc);
+    }
+    catch (ex) {
+      DEBUG_LOG("gpgAgentHandler.jsm: setAgentMaxIdle: exception: "+ex.toString()+"\n");
+    }
   },
 
   getMaxIdlePref: function(win) {
