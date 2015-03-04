@@ -137,7 +137,6 @@
           <menuitem id="enigmail_insert_key"
               label="&enigmail.attachkey.label;"
               accesskey="&enigmail.attachkey.accesskey;"
-              advanced="true"
               oncommand="Enigmail.msg.attachKey();" />
 
           <menuseparator/>
