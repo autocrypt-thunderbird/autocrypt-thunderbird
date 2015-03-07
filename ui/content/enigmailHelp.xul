@@ -51,8 +51,8 @@
 <window id="EnigmailHelp"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         title="Enigmail Help"
-        width="600" height="400"
-        persist="screenX screenY width height">
+        minwidth="600" minheight="400"
+        persist="width height">
 
   <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>

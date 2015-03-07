@@ -673,7 +673,13 @@ var EnigmailCommon = {
       var thisWin = winEnum.getNext();
       if (thisWin.location.href==spec) {
         recentWin = thisWin;
+        break;
       }
+      if (winName && thisWin.name && thisWin.name == winName) {
+        thisWin.focus();
+        break;
+      }
+
     }
 
     if (recentWin) {
