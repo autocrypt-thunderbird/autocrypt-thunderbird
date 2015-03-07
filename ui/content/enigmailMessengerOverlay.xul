@@ -149,6 +149,7 @@
           <menuitem id="enigmail_importpublickey"
                label="&enigmail.importpublickey.label;"
                accesskey="&enigmail.importpublickey.accesskey;"
+               disabled="true"
                oncommand="Enigmail.msg.messageImport();" />
 
           <menuseparator/>

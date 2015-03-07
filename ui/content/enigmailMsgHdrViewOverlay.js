@@ -543,22 +543,38 @@ Enigmail.hdrView = {
 
   updateSendersKeyMenu: function ()
   {
-    this.setSenderStatus("keyMgmtSignKey", "keyMgmtKeyTrust", "keyMgmtShowPhoto", "keyMgmtDispKeyDetails");
+    this.setSenderStatus("keyMgmtSignKey",
+                         "keyMgmtKeyTrust",
+                         "keyMgmtShowPhoto",
+                         "keyMgmtDispKeyDetails",
+                         "importpublickey");
   },
 
 
-  setSenderStatus: function (elemSign, elemTrust, elemPhoto, elemKeyProps)
+  setSenderStatus: function (elemSign, elemTrust, elemPhoto, elemKeyProps, elemImportKey)
   {
+
+    function setElemStatus(elemName, disabledValue) {
+      document.getElementById("enigmail_"+elemName).setAttribute("disabled", !disabledValue);
+
+      let secondElem = document.getElementById("enigmail_"+elemName+"2");
+      if (secondElem) secondElem.setAttribute("disabled", !disabledValue);
+    }
+
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
     var photo=false;
     var sign=false;
     var trust=false;
+    var unknown = false;
+    var signedMsg = false;
+
     if (Enigmail.msg.securityInfo) {
       if (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.PHOTO_AVAILABLE) {
         photo=true;
       }
       if (Enigmail.msg.securityInfo.msgSigned ) {
+        signedMsg = true;
         if (!(Enigmail.msg.securityInfo.statusFlags &
              (nsIEnigmail.REVOKED_KEY | nsIEnigmail.EXPIRED_KEY_SIGNATURE | nsIEnigmail.UNVERIFIED_SIGNATURE))) {
           sign=true;
@@ -566,18 +582,18 @@ Enigmail.hdrView = {
         if (!(Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE)) {
           trust=true;
         }
+
+        if (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
+          unknown = true;
+        }
       }
     }
 
-    if (elemTrust)
-      document.getElementById("enigmail_"+elemTrust).setAttribute("disabled", !trust);
-    if (elemSign)
-      document.getElementById("enigmail_"+elemSign).setAttribute("disabled", !sign);
-    if (elemPhoto)
-      document.getElementById("enigmail_"+elemPhoto).setAttribute("disabled", !photo);
-    if (elemKeyProps)
-      document.getElementById("enigmail_"+elemKeyProps).setAttribute("disabled", !sign);
-
+    if (elemTrust) setElemStatus(elemTrust, trust);
+    if (elemSign) setElemStatus(elemSign, sign);
+    if (elemPhoto) setElemStatus(elemPhoto, photo);
+    if (elemKeyProps) setElemStatus(elemKeyProps, (signedMsg && !unknown));
+    if (elemImportKey) setElemStatus(elemImportKey, unknown);
   },
 
   editKeyExpiry: function ()

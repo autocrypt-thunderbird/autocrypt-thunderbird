@@ -396,7 +396,7 @@ Enigmail.msg = {
         menuElement.setAttribute("checked", EnigmailCommon.getPref(optList[j]) ? "true" : "false");
     }
 
-    optList = ["decryptverify", "importpublickey"];
+    optList = ["decryptverify" ];
     for (j=0; j<optList.length; j++) {
       menuElement = document.getElementById("enigmail_"+optList[j]);
       if (Enigmail.msg.decryptButton && Enigmail.msg.decryptButton.disabled) {
