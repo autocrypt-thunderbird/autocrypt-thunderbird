@@ -51,7 +51,7 @@
 <window id="EnigmailAbout"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         title="&enigmail.about.title;"
-        width="540" height="640"
+        width="540" height="600"
         screenX="10" screenY="10"
         persist="screenX screenY"
         onload="return enigAboutLoad();">
