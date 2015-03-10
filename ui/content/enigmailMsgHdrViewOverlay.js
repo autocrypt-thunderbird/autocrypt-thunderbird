@@ -85,6 +85,8 @@ Enigmail.hdrView = {
       Enigmail.msg.setAttachmentReveal(null);
       if (Enigmail.msg.securityInfo) {
         Enigmail.msg.securityInfo.statusFlags = 0;
+        Enigmail.msg.securityInfo.msgSigned = 0;
+        Enigmail.msg.securityInfo.msgEncrypted = 0;
       }
 
     }
@@ -634,7 +636,6 @@ Enigmail.hdrView = {
         try {
 
           Enigmail.hdrView.statusBarHide();
-
 
           EnigmailVerify.setMsgWindow(msgWindow, Enigmail.msg.getCurrentMsgUriSpec());
 
