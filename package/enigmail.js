@@ -613,7 +613,7 @@ Enigmail.prototype = {
                     "NLSPATH", "PATH", "PATHEXT", "PROGRAMFILES", "PWD",
                     "SHELL", "SYSTEMDRIVE", "SYSTEMROOT",
                     "TEMP", "TMP", "TMPDIR", "TZ", "TZDIR", "UNIXROOT",
-                    "USER", "USERPROFILE", "WINDIR" ];
+                    "USER", "USERPROFILE", "WINDIR", "XAUTHORITY" ];
 
     var passList = this.environment.get("ENIGMAIL_PASS_ENV");
     if (passList) {
