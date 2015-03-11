@@ -89,30 +89,17 @@ function resetDefaults() {
   resultObj.sign = EnigmailCommon.ENIG_UNDEF;
   resultObj.encrypt = EnigmailCommon.ENIG_UNDEF;
   resultObj.pgpmime = EnigmailCommon.ENIG_UNDEF;
+  resultObj.resetDefaults = true;
   window.close();
 }
 
 
-function getResultStatus(origStatus, newStatus) {
-
-
-  switch(origStatus) {
-    case EnigmailCommon.ENIG_FINAL_FORCEYES:
-    case EnigmailCommon.ENIG_FINAL_YES:
-      if (newStatus) {
-        return origStatus;
-      }
-      else {
-        return EnigmailCommon.ENIG_NEVER;
-      }
-      break;
-    default:
-      if (!newStatus) {
-        return origStatus;
-      }
-      else {
-        return EnigmailCommon.ENIG_ALWAYS;
-      }
+function getResultStatus(newStatus) {
+  if (newStatus) {
+    return EnigmailCommon.ENIG_ALWAYS;
+  }
+  else {
+    return EnigmailCommon.ENIG_NEVER;
   }
 }
 
@@ -123,9 +110,10 @@ function enigmailEncryptionDlgAccept () {
   var pgpmimeElement = document.getElementById("pgpmimeGroup");
   var usePgpMime = (pgpmimeElement.selectedItem.getAttribute("value") == "1");
 
-  resultObj.sign = getResultStatus(resultObj.statusSigned, sign);
-  resultObj.encrypt = getResultStatus(resultObj.statusSigned, encrypt);
-  resultObj.pgpmime = getResultStatus(resultObj.statusPGPMime, usePgpMime);
+  resultObj.sign = getResultStatus(sign);
+  resultObj.encrypt = getResultStatus(encrypt);
+  resultObj.pgpmime = getResultStatus(usePgpMime);
+  resultObj.resetDefaults = false;
 
   resultObj.success = true;
 }

@@ -1730,30 +1730,35 @@ Enigmail.msg = {
                      statusEncrypted: this.statusEncrypted,
                      statusSigned: this.statusSigned,
                      statusPGPMime: this.statusPGPMime,
-                     success: false
+                     success: false,
+                     resetDefaults: false
                    };
     window.openDialog("chrome://enigmail/content/enigmailEncryptionDlg.xul","", "dialog,modal,centerscreen", inputObj);
 
     if (! inputObj.success) return; // Cancel pressed
 
-    if (this.signForced != inputObj.sign) {
-      this.dirty = 2;
-      this.signForced = inputObj.sign;
-      if (this.signForced == EnigmailCommon.ENIG_UNDEF) {       // back to defaults/rules
-        // re-init if signing depends on encryption if this was broken before
-        this.finalSignDependsOnEncrypt = (this.getAccDefault("signIfEnc") || this.getAccDefault("signIfNotEnc"));
-      }
-      else {
-        this.signingNoLongerDependsOnEnc();
-      }
+    if (inputObj.resetDefaults) {
+      // reset everything to defaults
+      this.encryptForced = EnigmailCommon.ENIG_UNDEF;
+      this.signForced = EnigmailCommon.ENIG_UNDEF;
+      this.pgpmimeForced = EnigmailCommon.ENIG_UNDEF;
+      this.finalSignDependsOnEncrypt = true;
     }
-    if (this.encryptForced != inputObj.encrypt) {
-      this.dirty = 2;
+    else {
+      if (this.signForced != inputObj.sign) {
+        this.dirty = 2;
+        this.signForced = inputObj.sign;
+        this.finalSignDependsOnEncrypt = false;
+      }
+
+      if (this.encryptForced != inputObj.encrypt || this.pgpmimeForced != inputObj.pgpmime) {
+        this.dirty = 2;
+      }
+
       this.encryptForced = inputObj.encrypt;
-    }
-    if (this.pgpmimeForced != inputObj.pgpmime) {
       this.pgpmimeForced = inputObj.pgpmime;
     }
+
     this.processFinalState();
     this.updateStatusBar();
   },
