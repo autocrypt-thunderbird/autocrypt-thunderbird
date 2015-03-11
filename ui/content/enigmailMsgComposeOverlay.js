@@ -119,6 +119,14 @@ Enigmail.msg = {
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeStartup\n");
 
+    function delayedProcessFinalState() {
+      EnigmailCommon.setTimeout(function _f() {
+          Enigmail.msg.processFinalState();
+          Enigmail.msg.updateStatusBar();
+        }
+        , 50);
+    }
+
     // Relabel/hide SMIME button and menu item
     var smimeButton = document.getElementById("button-security");
 
@@ -135,6 +143,16 @@ Enigmail.msg = {
 
     var subj = document.getElementById("msgSubject");
     subj.setAttribute('onfocus', "Enigmail.msg.fireSendFlags()");
+
+    // listen to S/MIME changes to potentially display "conflict" message
+    let s = document.getElementById("menu_securitySign1");
+    s.addEventListener("command", delayedProcessFinalState );
+    s = document.getElementById("menu_securitySign2");
+    s.addEventListener("command", delayedProcessFinalState );
+    s = document.getElementById("menu_securityEncryptRequire1");
+    s.addEventListener("command", delayedProcessFinalState );
+    s = document.getElementById("menu_securityEncryptRequire2");
+    s.addEventListener("command", delayedProcessFinalState );
 
     this.msgComposeReset(false);   // false => not closing => call setIdentityDefaults()
     this.composeOpen();
@@ -1556,7 +1574,7 @@ Enigmail.msg = {
        if (gMsgCompose.compFields.securityInfo.signMessage ||
           gMsgCompose.compFields.securityInfo.requireEncryptMessage) {
 
-        toolbarMsg += " - " + EnigmailCommon.getString("msgCompose.toolbarTxt.smime");
+        toolbarMsg += " " + EnigmailCommon.getString("msgCompose.toolbarTxt.smime");
       }
     }
 
