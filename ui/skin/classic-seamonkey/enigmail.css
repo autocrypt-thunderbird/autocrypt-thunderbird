@@ -297,6 +297,7 @@ toolbar[iconsize="small"] #button-enigmail-attach[addPubkey="true"]
 
 .enigmailStrong {
   font-weight: bold;
+  color: red;
 }
 
 .enigmailUidInactive {

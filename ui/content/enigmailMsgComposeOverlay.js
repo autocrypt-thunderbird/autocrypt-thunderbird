@@ -1430,7 +1430,10 @@ Enigmail.msg = {
       signBroadcaster.removeAttribute("signed");
       signBroadcaster.setAttribute("disabled", "true");
       attachBroadcaster.setAttribute("disabled", "true");
-      toolbarTxt.value = EnigmailCommon.getString("msgCompose.toolbarTxt.disabled");
+      if (toolbarTxt) {
+        toolbarTxt.value = EnigmailCommon.getString("msgCompose.toolbarTxt.disabled");
+        toolbarTxt.removeAttribute("class");
+      }
       return;
     }
     encBroadcaster.removeAttribute("disabled");
@@ -1578,7 +1581,19 @@ Enigmail.msg = {
       }
     }
 
-    toolbarTxt.value = toolbarMsg;
+    if (toolbarTxt) {
+      toolbarTxt.value = toolbarMsg;
+
+      if (!doSign && !doEncrypt &&
+         !(gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields
+           && (gMsgCompose.compFields.securityInfo.signMessage
+             || gMsgCompose.compFields.securityInfo.requireEncryptMessage))) {
+        toolbarTxt.setAttribute("class", "enigmailStrong");
+      }
+      else {
+        toolbarTxt.removeAttribute("class");
+      }
+    }
 
     // update pgpmime menu-text
     var pgpmimeStr = null;
