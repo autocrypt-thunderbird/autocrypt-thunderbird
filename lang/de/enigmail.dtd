@@ -542,8 +542,8 @@
 <!ENTITY enigmail.setupWiz.yes "Ja">
 <!ENTITY enigmail.setupWiz.no "Nein, Danke">
 <!ENTITY enigmail.setupWiz.pgIntro.title "Willkommen im Enigmail-Installations-Assistent">
-<!ENTITY enigmail.setupWiz.pgIntro.desc "Es sieht aus, als starteten Sie Enigmail auf diesem Computer zum ersten Mal.⏎
-                                                      Um Enigmail zu nutzen, müssen Sie es zunächst einrichten.⏎
+<!ENTITY enigmail.setupWiz.pgIntro.desc "Es sieht aus, als starteten Sie Enigmail auf diesem Computer zum ersten Mal. 
+                                                      Um Enigmail zu nutzen, müssen Sie es zunächst einrichten. 
                                                       Dieser Assistent kann Sie durch die Einrichtung führen.">
 <!ENTITY enigmail.setupWiz.pgIntro.desc2 "Wollen Sie Enigmail jetzt einrichten, oder möchten Sie dies später tun?">
 <!ENTITY enigmail.setupWiz.pgIntro.startNow "Jetzt einrichten">
@@ -565,7 +565,7 @@
 <!-- wizard: install GnuPG step -->
 <!ENTITY enigmail.setupWiz.pgInstall.title "GnuPG wird benötigt">
 <!ENTITY enigmail.setupWiz.pgInstall.desc "Um Enigmail verwenden zu können, muss GnuPG als zusätzliche Komponente für die kryptografischen Funktionen installiert werden. Der Assistent hat GnuPG auf Ihrem System gesucht, aber nicht gefunden.">
-<!ENTITY enigmail.setupWiz.pgInstall.installDesc1 "Enigmail kann GnuPG herunterladen und die Installation für Sie starten.⏎
+<!ENTITY enigmail.setupWiz.pgInstall.installDesc1 "Enigmail kann GnuPG herunterladen und die Installation für Sie starten. 
                                                       Wenn GnuPG dies tun soll, drücken Sie den Knopf 'Installieren ...'.">
 <!ENTITY enigmail.setupWiz.pgInstall.installDesc2 "Alternativ, wenn Sie GnuPG bereits installiert haben, drücken Sie den Knopf 'Durchsuchen ...' um den GnuPG-Pfad von Hand anzugeben.">
 <!ENTITY enigmail.setupWiz.pgInstall.locateDesc "Bitte GnuPG über die Schaltfläche 'Durchsuchen' zuweisen.">
@@ -578,7 +578,7 @@
 <!-- wizard: key selection step -->
 <!ENTITY enigmail.setupWiz.pgKeySel.title "Schlüsselauswahl">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "Erzeugen eines Schlüssels zum Unterschreiben und Verschlüsseln">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc2 "Sie haben anscheinend bereits einen OpenPGP-Schlüssel. Sie können entweder⏎
+<!ENTITY enigmail.setupWiz.pgKeySel.desc2 "Sie haben anscheinend bereits einen OpenPGP-Schlüssel. Sie können entweder 
                                                       einen Ihrer existierenden Schlüssel verwenden, oder ein neues Schlüsselpaar anlegen.">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey "Ich möchte ein neues Schlüsselpaar erzeugen">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Ich möchte einen der vorhandenen Schlüssel verwenden:">
@@ -587,10 +587,10 @@
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Erzeugen eines Schlüssels zum Unterschreiben und Verschlüsseln">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys "Dieser Dialog wird ein Paar von zwei Schlüsseln anlegen:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descPub "Mit Ihrem <html:b>öffentlichen Schlüssel</html:b> können <html:b>Andere</html:b> Mails an Sie verschlüsseln (und von Ihnen unterschriebene Nachrichten prüfen). Sie dürfen ihn jedem geben.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1 "Ihr <html:b>geheimer, privater Schlüssel</html:b> ist <html:b>nur für Sie</html:b>, um damit Mails an Sie zu entschlüsseln (und um Mails, die Sie schicken, zu unterschreiben).⏎
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1 "Ihr <html:b>geheimer, privater Schlüssel</html:b> ist <html:b>nur für Sie</html:b>, um damit Mails an Sie zu entschlüsseln (und um Mails, die Sie schicken, zu unterschreiben). 
                                                       Diesen Schlüssel halten Sie geheim, Sie geben ihn niemandem.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2 "Ihr <html:b>geheimer, privater Schlüssel</html:b> ist <html:b>nur für Sie</html:b>, um damit Mails an Sie zu entschlüsseln (und um Mails, die Sie schicken, zu unterschreiben).⏎
-                                                      Diesen Schlüssel halten Sie geheim, Sie geben ihn niemandem.⏎
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2 "Ihr <html:b>geheimer, privater Schlüssel</html:b> ist <html:b>nur für Sie</html:b>, um damit Mails an Sie zu entschlüsseln (und um Mails, die Sie schicken, zu unterschreiben). 
+                                                      Diesen Schlüssel halten Sie geheim, Sie geben ihn niemandem. 
                                                       Um Ihren privaten Schlüssel zu schützen, fragen Sie die folgenden zwei Dialoge nach einer Passphrase.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descPass "Ihre <html:b>Passphrase</html:b> ist ein Passwort, mit dem GnuPG Ihren privaten Schlüssel schützt. Es soll Missbrauch Ihres privaten Schlüssels verhindern.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passContain "Die Passphrase sollte ein Satz aus mindestens 8 Zeichen, Ziffern und Satzzeichen sein. Umlaute und andere sprachenspezifische Zeichen, zum Beispiel ä, é, ñ, sind <html:b>nicht</html:b> empfehlenswert (weil nicht jedes Programm damit richtig umgeht).">
@@ -598,7 +598,7 @@
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passQuality "Qualität der Passphrase:">
 <!-- wizard: no key found step -->
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.title2 "OpenPGP-Schlüssel anlegen oder importieren">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc2 "Sie haben anscheinend noch keine OpenPGP-Schlüssel. Möchten Sie neue Schlüssel anlegen, oder⏎
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc2 "Sie haben anscheinend noch keine OpenPGP-Schlüssel. Möchten Sie neue Schlüssel anlegen, oder 
                                                       möchten Sie Schlüssel aus einer Datei importieren?">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey "Ich besitze öffentliche und private Schlüssel, die ich importieren möchte.">
 <!-- wizard: import key page -->
@@ -613,9 +613,9 @@
 <!ENTITY enigmail.setupWiz.pgKeygen.title "Schlüsselerzeugung">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "Ihr Schlüsselpaar wird nun erzeugt">
 <!ENTITY enigmail.setupWiz.pgKeygen.keyGenComplete "Ihr Schlüssel ist angelegt.">
-<!ENTITY enigmail.setupWiz.pgKeygen.revokeCertDesc "Falls Ihr privater Schlüssel verloren geht oder kompromittiert, zum Beispiel gestohlen wird, könnten Sie Ihren öffentlichen Schlüssel widerrufen müssen,⏎
-                                                      so dass andere Ihren alten Schlüssel nicht weiter verwenden.⏎
-                                                      Zu diesem Zweck brauchen Sie ein Widerrufs-Zertifikat.⏎
+<!ENTITY enigmail.setupWiz.pgKeygen.revokeCertDesc "Falls Ihr privater Schlüssel verloren geht oder kompromittiert, zum Beispiel gestohlen wird, könnten Sie Ihren öffentlichen Schlüssel widerrufen müssen, 
+                                                      so dass andere Ihren alten Schlüssel nicht weiter verwenden. 
+                                                      Zu diesem Zweck brauchen Sie ein Widerrufs-Zertifikat. 
                                                       <html:br/>Sie werden dazu nach Ihrem Passwort gefragt werden.">
 <!ENTITY enigmail.setupWiz.pgKeygen.revCertButton "Widerrufszertifikat anlegen">
 <!-- wizard: final page -->

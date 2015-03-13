@@ -542,8 +542,8 @@
 <!ENTITY enigmail.setupWiz.yes "Ja">
 <!ENTITY enigmail.setupWiz.no "Nej, tack">
 <!ENTITY enigmail.setupWiz.pgIntro.title "Välkommen till installationsguiden för Enigmail">
-<!ENTITY enigmail.setupWiz.pgIntro.desc "Det ser ut som du startade Enigmail för första gången på denna dator.⏎
-                                                      För att kunna använda Enigmail, måste du först konfigurera den ordentligt.⏎
+<!ENTITY enigmail.setupWiz.pgIntro.desc "Det ser ut som du startade Enigmail för första gången på denna dator. 
+                                                      För att kunna använda Enigmail, måste du först konfigurera den ordentligt. 
                                                       Denna assistent kan guida dig genom installationen.">
 <!ENTITY enigmail.setupWiz.pgIntro.desc2 "Vill du konfigurera Enigmail nu, eller vill du göra det senare?">
 <!ENTITY enigmail.setupWiz.pgIntro.startNow "Starta konfiguration nu">
@@ -563,7 +563,7 @@
 <!-- wizard: install GnuPG step -->
 <!ENTITY enigmail.setupWiz.pgInstall.title "GnuPG krävs">
 <!ENTITY enigmail.setupWiz.pgInstall.desc "För att kunna använda Enigmail, krävs GnuPG som en ytterligare komponent för att göra det kryptografiska arbetet. Guiden försökte lokalisera GnuPG, men den kunde inte hittas.">
-<!ENTITY enigmail.setupWiz.pgInstall.installDesc1 "Enigmail kan hämta GnuPG och starta installationsprogrammet åt dig.⏎
+<!ENTITY enigmail.setupWiz.pgInstall.installDesc1 "Enigmail kan hämta GnuPG och starta installationsprogrammet åt dig. 
                                                       Om du vill göra det klickar du på 'Installera GnuPG' för att hämta och installera GnuPG.">
 <!ENTITY enigmail.setupWiz.pgInstall.installDesc2 "Alternativt, om du redan har installerat GnuPG, använd 'Bläddra' -knappen för att ange sökvägen till GnuPG manuellt.">
 <!ENTITY enigmail.setupWiz.pgInstall.locateDesc "Vänligen lokalisera GnuPG med knappen Bläddra.">
@@ -576,7 +576,7 @@
 <!-- wizard: key selection step -->
 <!ENTITY enigmail.setupWiz.pgKeySel.title "Nyckelval">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "Skapa en nyckel för att signera och kryptera e-post">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc2 "Vi har upptäckt att du redan har en OpenPGP-nyckel. Du kan antingen⏎
+<!ENTITY enigmail.setupWiz.pgKeySel.desc2 "Vi har upptäckt att du redan har en OpenPGP-nyckel. Du kan antingen 
                                                       använda en av dina befintliga nycklar eller skapa ett nytt nyckelpar.">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey "Jag vill skapa ett nytt nyckelpar för signering och kryptering av e-post">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Jag vill välja en av nycklarna nedan för signering och kryptering min e-post:">
@@ -585,10 +585,10 @@
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Skapa en nyckel för att signera och kryptera e-post">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys "Den här dialogrutan kommer att skapa ett par av två nycklar:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descPub "Din <html:b>publika nyckel</html:b> är till <html:b>för andra</html:b> för att skicka krypterad e-post till dig. Du kan distribuera den till alla.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1 "Din <html:b>privata nyckel</html:b> är till <html:b>för dig själv</html:b> för att dekryptera e-post och skicka signerad e-post.⏎
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1 "Din <html:b>privata nyckel</html:b> är till <html:b>för dig själv</html:b> för att dekryptera e-post och skicka signerad e-post. 
                                                       Du bör inte ge till någon.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2 "Din <html:b>privata nyckel</html:b> är till <html:b>för dig själv</html:b> för att dekryptera e-post och skicka signerad e-post.⏎
-                                                      Du bör inte ge till någon.⏎
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2 "Din <html:b>privata nyckel</html:b> är till <html:b>för dig själv</html:b> för att dekryptera e-post och skicka signerad e-post. 
+                                                      Du bör inte ge till någon. 
                                                       För att säkra din privata nyckel, kommer du att bli tillfrågad om en lösenfras i följande två dialogrutor.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descPass "Din <html:b>lösenfras</html:b> är ett lösenord för att skydda din privata nyckel. Den förhindrar missbruk av din privata nyckel.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passContain "Lösenfrasen bör vara en fras som innehåller minst 8 tecken, siffror och skiljetecken. Omljud (t.ex. ä, é, ñ) och språkspecifika tecken rekommenderas <html:b>inte</html:b>.">
@@ -597,7 +597,7 @@
 Kvalitet lösenfras:">
 <!-- wizard: no key found step -->
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.title2 "Skapa eller importera OpenPGP-nycklar">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc2 "Du verkar inte ha några OpenPGP-nycklar ännu. Vill du skapa en ny nyckel, eller⏎
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc2 "Du verkar inte ha några OpenPGP-nycklar ännu. Vill du skapa en ny nyckel, eller 
                                                       vill du importera nycklar från en fil?">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey "Jag har befintliga publika och privata nycklar som jag vill importera">
 <!-- wizard: import key page -->
@@ -610,7 +610,7 @@ Kvalitet lösenfras:">
 <!ENTITY enigmail.setupWiz.pgKeygen.title "Nyckelskapande">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "Din nyckel skapas">
 <!ENTITY enigmail.setupWiz.pgKeygen.keyGenComplete "Din nyckel har generats">
-<!ENTITY enigmail.setupWiz.pgKeygen.revokeCertDesc "In case your private key gets lost or compromised, you might need to revoke your public key⏎ such that others don't continue to use your old key.⏎ For this purpose, you need a revokation certificate.⏎ <html:br/>You will be prompted to enter your password for this.">
+<!ENTITY enigmail.setupWiz.pgKeygen.revokeCertDesc "In case your private key gets lost or compromised, you might need to revoke your public key  such that others don't continue to use your old key.  For this purpose, you need a revokation certificate.  <html:br/>You will be prompted to enter your password for this.">
 <!ENTITY enigmail.setupWiz.pgKeygen.revCertButton "Skapa återkallningscertifikat">
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title "Tack">
