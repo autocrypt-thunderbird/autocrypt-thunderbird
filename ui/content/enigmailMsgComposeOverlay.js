@@ -1876,7 +1876,7 @@ Enigmail.msg = {
     var draftStatus = "N" + this.encryptForced + this.signForced + this.pgpmimeForced +
       (this.attachOwnKeyObj.appendAttachment ? "1" : "0");
 
-    gMsgCompose.compFields.otherRandomHeaders += "X-Enigmail-Draft-Status: "+draftStatus+"\r\n";
+    this.setAdditionalHeader("X-Enigmail-Draft-Status", draftStatus);
   },
 
 
@@ -3407,19 +3407,26 @@ Enigmail.msg = {
     return true;
   },
 
-  modifyCompFields: function (msgCompFields)
-  {
 
-    // set Msg Header (depending on TB version)
-    function setHeader(hdr, val) {
-      if ("otherRandomHeaders" in msgCompFields) {
-        // TB <= 36
-        msgCompFields.otherRandomHeaders += hdr +": " + val + "\r\n";
-      }
-      else {
-        msgCompFields.setHeader(hdr, val);
-      }
+  /**
+   * set non-standard message Header
+   * (depending on TB version)
+   *
+   * hdr: String: header type (e.g. X-Enigmail-Version)
+   * val: String: header data (e.g. 1.2.3.4)
+   */
+  setAdditionalHeader: function (hdr, val) {
+    if ("otherRandomHeaders" in gMsgCompose.compFields) {
+      // TB <= 36
+      gMsgCompose.compFields.otherRandomHeaders += hdr +": " + val + "\r\n";
     }
+    else {
+      gMsgCompose.compFields.setHeader(hdr, val);
+    }
+  },
+
+  modifyCompFields: function ()
+  {
 
     const HEADERMODE_KEYID = 0x01;
     const HEADERMODE_URL   = 0x10;
@@ -3428,7 +3435,7 @@ Enigmail.msg = {
 
       if (this.identity.getBoolAttribute("enablePgp")) {
         if (EnigmailCommon.getPref("addHeaders")) {
-          setHeader("X-Enigmail-Version: ", EnigmailCommon.getVersion());
+          this.setAdditionalHeader("X-Enigmail-Version: ", EnigmailCommon.getVersion());
         }
         var pgpHeader="";
         var openPgpHeaderMode = this.identity.getIntAttribute("openPgpHeaderMode");
@@ -3445,16 +3452,13 @@ Enigmail.msg = {
           pgpHeader += "url="+this.identity.getCharAttribute("openPgpUrlName");
         }
         if (pgpHeader.length > 0) {
-          setHeader("OpenPGP", pgpHeader);
+          this.setAdditionalHeader("OpenPGP", pgpHeader);
         }
       }
     }
     catch (ex) {
       EnigmailCommon.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.modifyCompFields", ex);
     }
-
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.modifyCompFields: otherRandomHeaders = "+
-             msgCompFields.otherRandomHeaders+"\n");
   },
 
   sendMessageListener: function (event)
@@ -3467,7 +3471,7 @@ Enigmail.msg = {
       this.sendProcess = true;
 
       try {
-        this.modifyCompFields(gMsgCompose.compFields);
+        this.modifyCompFields();
         if (! this.encryptMsg(sendMsgType)) {
           this.removeAttachedKey();
           event.preventDefault();
