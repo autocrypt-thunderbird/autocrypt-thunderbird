@@ -62,9 +62,6 @@
 <!ENTITY enigmail.noHushMailSupport.tooltip "Χρήση των χαρακτήρων '&lt;' και '&gt;' στις διευθύνσεις email του GnuPG. Απενεργοποίηση αν ο παραλήπτης χρησιμοποιεί κλειδιά Hushmail.">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "Θα πρέπει να το ΑΠΕΝΕΡΓΟΠΟΙΗΣΕΤΕ αν λαμβάνετε μηνύματα PGP/MIME σε φακέλους IMAP.">
 <!ENTITY enigmail.disableSMIMEui.tooltip "Αφαίρεση του κουμπιού S/MIME από το παράθυρο σύνταξης μηνυμάτων">
-<!ENTITY enigmail.logdirectory.label "Κατάλογος καταγραφής">
-<!ENTITY enigmail.testemail.label "Δοκιμαστικό μήνυμα">
-<!ENTITY enigmail.test.label "Δοκιμή">
 <!ENTITY enigmail.decryptbutton.label "Αποκρ/φηση">
 <!ENTITY enigmail.decryptbutton.tip "Αποκρυπτογράφηση ή επαλήθευση του μηνύματος με το Enigmail">
 <!ENTITY enigmail.messengermenu.accesskey "n">
@@ -77,7 +74,6 @@
 <!ENTITY enigmail.prefs.label "Προτιμήσεις">
 <!ENTITY enigmail.debugMenu.label "Επιλογές αποσφαλμάτωσης">
 <!ENTITY enigmail.viewconsole.label "Εμφάνιση κονσόλας">
-<!ENTITY enigmail.viewdebuglog.label "Εμφάνιση αρχείου καταγραφής">
 <!ENTITY enigmail.generateKey.label "Δημιουργία κλειδιού">
 <!ENTITY enigmail.help.label "Βοήθεια">
 <!ENTITY enigmail.about.title "Σχετικά με το Enigmail">
@@ -99,7 +95,6 @@
 <!ENTITY enigmail.setupWiz.accesskey "Μ">
 <!ENTITY enigmail.prefs.accesskey "Π">
 <!ENTITY enigmail.viewconsole.accesskey "μ">
-<!ENTITY enigmail.viewdebuglog.accesskey "φ">
 <!ENTITY enigmail.help.accesskey "Β">
 <!ENTITY enigmail.about.accesskey "Σ">
 <!ENTITY enigmail.sendersKeyMenu.accesskey "Κ">
@@ -135,6 +130,7 @@
 <!ENTITY enigmail.advancedPrefsButton.label "Για προχωρημένους ...">
 <!ENTITY enigmail.keepCryptoSettingsForReply.label "Κρυπτογράφηση/υπογραφή απαντήσεων σε κρυπτογραφημένα/υπογεγραμμένα μηνήματα">
 <!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "Όταν είναι δυνατό, να κρυπτογραφούνται/υπογράφονται οι απαντήσεις σε κρυπτογραφημένα ή υπογεγραμμένα emails">
+<!-- keySel Preferences -->
 <!ENTITY enigmail.recipientsSelectionOption.label "Πως να επιλέγονται τα κλειδιά;">
 <!ENTITY enigmail.defineRules.label "Επεξεργασία κανόνων...">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label "Επαναμορφοποίηση υπογεγραμμένου HTML κειμένου πριν την αποστολή">
@@ -186,8 +182,6 @@
 <!ENTITY enigmail.encDlgSign.accesskey "Υ">
 <!ENTITY enigmail.encDlgPgpMime.label "Χρήση PGP/MIME">
 <!ENTITY enigmail.encDlgPgpMime.accesskey "Χ">
-<!ENTITY enigmail.encDlgIgnoreRules.label "Αγνόηση κανόνων παραλήπτη">
-<!ENTITY enigmail.encDlgIgnoreRules.accesskey "I">
 <!ENTITY enigmail.amPrefPgpHeader.label "Αποστολή κεφαλίδας 'OpenPGP'">
 <!ENTITY enigmail.amPrefPgpHeader.id.label "Αποστολή του ID του κλειδιού OpenPGP">
 <!ENTITY enigmail.amPrefPgpHeader.url.label "Αποστολή URL για λήψη του κλειδιού:">
@@ -445,22 +439,17 @@
 <!ENTITY enigmail.changePasswd.currPasswd.label "Τρέχουσα φράση πρόσβασης">
 <!ENTITY enigmail.changePasswd.newPasswd.label "Νέα φράση πρόσβασης">
 <!ENTITY enigmail.changePasswd.repeatPasswd.label "Επανάληψη της φράσης πρόσβασης">
+<!-- wizard: welcome step -->
 <!ENTITY enigmail.setupWiz.title "Μάγος ρύθμισης Enigmail">
 <!ENTITY enigmail.setupWiz.yes "Ναι">
 <!ENTITY enigmail.setupWiz.no "Όχι, ευχαριστώ">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "Αυτός ο Μάγος θα σας βοηθήσει να αρχίσετε να χρησιμοποιείτε το Enigmail άμεσα. Θα σας κάνει                                                             κάποιες ερωτήσεις για να κάνει πλήρη ρύθμιση της εφαρμογής.    ">
-<!ENTITY enigmail.setupWiz.pgWelcome.startNow "Θέλετε να χρησιμοποιήσετε το Μάγο τώρα;">
-<!ENTITY enigmail.setupWiz.pgWelcome.yes "Ναι, θα ήθελα να με βοηθήσει o Mάγος">
-<!ENTITY enigmail.setupWiz.pgWelcome.no "Όχι, ευχαριστώ. Προτιμώ να κάνω τις ρυθμίσεις χειροκίνητα">
+<!-- wizard: select account IDs step -->
 <!ENTITY enigmail.setupWiz.pgSelectId.title "Επιλογή ταυτοτήτων">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Επιλέξτε τους λογαριασμούς ή τις ταυτότητες που θα χρησιμοποιεί το Enigmail">
-<!ENTITY enigmail.setupWiz.pgSelectId.desc "Οι ρυθμίσεις του Enigmail σχετίζονται με λογαριασμούς και ταυτότητες. Το Enigmail θα ρυθμιστεί                                                           ώστε να χρησιμοποιεί όλους τους λογαριασμούς σας και τις ταυτότητές σας. Αν δεν το θέλετε αυτό,                                                        επιλέξτε παρακάτω τους λογαριασμούς ή τις ταυτότητες τις οποίες θέλετε να χρησιμοποιήσει.">
-<!ENTITY enigmail.setupWiz.pgSelectId.allIds "Θέλετε το Enigmail να χρησιμοποιήσει όλες τις ταυτότητες;">
-<!ENTITY enigmail.setupWiz.pgSelectId.selectIds "Θέλω το Enigmail να χρησιμοποιήσει μόνο τις ακόλουθες ταυτότητες:">
 <!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Σημείωση:</a> Το Enigmail θα επαληθεύει πάντα τις υπογραφές των                                                             μηνυμάτων όλων των λογαριασμών και ταυτοτήτων, ανεξάρτητα αν είναι ενεργοποιημένο για αυτές ή                                                          όχι">
+<!-- wizard: install GnuPG step -->
 <!ENTITY enigmail.setupWiz.pgInstall.title "Απαιτείται το GnuPG">
 <!ENTITY enigmail.setupWiz.pgInstall.desc "Για να χρησιμοποιήσετε το Enigmail, απαιτείται να είναι εγκατεστημένο το GnuPG για τις λειτουργίες κρυπτογράφησης. Το GnuPG δεν βρέθηκε.">
-<!ENTITY enigmail.setupWiz.pgInstall.installDesc "Το Enigmail μπορεί να λάβει το GnuPG και να τρέξει το πρόγραμμα εγκατάστασής του. Εάν το θέλετε αυτό, πατήστε στο κουμπί εγκατάστασης.">
 <!ENTITY enigmail.setupWiz.pgInstall.locateDesc "Παρακαλώ ορίστε το GnuPG χρησιμοποιώντας το κουμπί Εύρεση">
 <!ENTITY enigmail.setupWiz.pgInstall.installButton "Εγκατάσταση ...">
 <!ENTITY enigmail.setupWiz.pgInstall.locateButton "Εύρεση ...">
@@ -468,53 +457,28 @@
 <!ENTITY enigmail.setupWiz.pgInstall.installLabel "Ο εγκαταστάτης αρχίζει. Παρακαλώ ακολουθήστε τα βήματά του.">
 <!ENTITY enigmail.setupWiz.pgInstall.installDone "Η εγκατάσταση ολοκληρώθηκε. Παρακαλώ προχωρήστε στην επόμενη σελίδα του εγκαταστάτη για να συνεχίσετε.">
 <!ENTITY enigmail.setupWiz.pgInstall.gnupgFound "Βρέθηκε έγκυρη εγκατάσταση GnuPG">
-<!ENTITY enigmail.setupWiz.pgSign.title "Υπογραφή">
-<!ENTITY enigmail.setupWiz.pgSign.subtitle "Ψηφιακή υπογραφή των εξερχομένων μηνυμάτων σας">
-<!ENTITY enigmail.setupWiz.pgSign.desc "Το Enigmail σας επιτρέπει να υπογράφετε ψηφιακά τα μηνύματά σας. Αυτή είναι η ηλεκτρονική                                                              εκδοχή της υπογραφής ενός γράμματος, και με αυτόν τον τρόπο οι παραλήπτες των μηνυμάτων σας                                                           μπορούν να είναι σίγουροι ότι αυτά τα στείλατε πραγματικά εσείς. Είναι πολύ καλή πρακτική                                                          να υπογράφετε όλα τα εξερχόμενα μηνύματά σας.    ">
-<!ENTITY enigmail.setupWiz.pgSign.signAllMsg "Θέλετε να υπογράφονται τα εξερχόμενα μηνύματά σας;">
-<!ENTITY enigmail.setupWiz.pgSign.yesSign "Ναι, θέλω να υπογράφονται όλα τα μηνύματά μου">
-<!ENTITY enigmail.setupWiz.pgSign.noSign "Όχι, θέλω να δημιουργήσω κανόνες ανά χρήστη για τα μηνύματα που θα πρέπει να υπογραφούν">
-<!ENTITY enigmail.setupWiz.pgSettings.title "Προτιμήσεις">
-<!ENTITY enigmail.setupWiz.pgSettings.subtitle "Αλλάξτε τις ρυθμίσεις αλληλογραφίας σας ώστε το Enigmail να λειτουργεί πιο αξιόπιστα">
-<!ENTITY enigmail.setupWiz.pgSettings.desc "Αυτός ο Μάγος μπορεί να κάνει αλλαγές στις ρυθμίσεις αλληλογραφίας σας ώστε να μην παρουσιαστεί κάποιο πρόβλημα κατά την υπογραφή και κρυπτογράφηση μηνυμάτων στο μηχάνημά σας. Αυτές οι αλλαγές είναι κυρίως τεχνικής φύσης, αλλά ένα σημαντικό πράγμα που πρέπει να γνωρίζετε είναι ότι η σύνταξη των μηνυμάτων θα γίνεται εξ ορισμού σε απλό κείμενο.">
-<!ENTITY enigmail.setupWiz.pgSettings.changePref "Θέλετε να αλλάξουν μερικές από τις προκαθορισμένες σας ρυθμίσεις ώστε το Enigmail να λειτουργεί καλύτερα στο μηχάνημά σας;">
-<!ENTITY enigmail.setupWiz.pgSettings.details "Λεπτομέρειες...">
+<!-- wizard: key selection step -->
 <!ENTITY enigmail.setupWiz.pgKeySel.title "Επιλογή κλειδιού">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "Δημιουργία ενός νέου κλειδιού για κρυπτογράφηση και υπογραφή αλληλογραφίας">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc "Διαπιστώθηκε ότι έχετε ήδη ένα κλειδί OpenPGP.  Μπορείτε να χρησιμοποιήσετε ένα από τα υπάρχοντα κλειδιά σας για υπογραφή, κρυπτογράφηση και αποκρυπτογράφηση αλληλογραφίας, ή να δημιουργήσετε ένα νέο ζεύγος κλειδιών.">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey "Θέλω να δημιουργήσω ένα νέο ζεύγος κλειδιών για την υπογραφή και κρυπτογράφηση της αλληλογραφίας μου">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Θέλω να επιλέξω ένα από τα παρακάτω κλειδιά για την υπογραφή και κρυπτογράφηση της αλληλογραφίας μου:">
+<!-- wizard: key creation - password step -->
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "Δημιουργία κλειδιού">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Δημιουργία ενός κλειδιού για την υπογραφή και κρυπτογράφηση μηνυμάτων">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "Πρέπει να έχετε ένα 'ζεύγος κλειδιών' για να υπογράφετε μηνύματα που είναι κρυπτογραφημένα. Το ζεύγος κλειδιών έχει ένα δημόσιο και ένα ιδιωτικό κλειδί.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "Θα πρέπει να δώσετε το δημόσιο κλειδί σας σε οποιονδήποτε θα χρειαστεί να επαληθεύσει την υπογραφή σας, ή να σας στείλει κρυπτογραφημένο μήνυμα. Ταυτόχρονα θα πρέπει να κρατήσετε μυστικό το ιδιωτικό κλειδί σας. Με αυτό μπορείτε να διαβάσετε τα κρυπτογραφημένα μηνύματα που σας στέλνουν και να κρυπτογραφήσετε μηνύματα με το όνομά σας. Επειδή είναι ιδιωτικό, προστατεύεται με μια φράση πρόσβασης...">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Παρακαλώ επαληθεύστε τη φράση πρόσβασης πληκτρολογώντας την ξανά">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.title "Δεν βρέθηκε κλειδί OpenPGP">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.subtitle "Δεν μπορέσαμε να βρούμε κλειδί OpenPGP">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc "Δεν μπορέσαμε να βρούμε κλειδί OpenPGP. Παρακαλώ επιλέξτε εάν θέλετε να δημιουργήσετε ένα νέο ζεύγος κλειδιών ή να εισάγετε ένα υπάρχον κλειδί.">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey "Θέλω να εισάγω υπάρχοντα δημόσια και ιδιωτικά κλειδιά">
+<!-- wizard: import key page -->
 <!ENTITY enigmail.setupWiz.pgKeyImport.title "Εισαγωγή κλειδιών OpenPGP">
 <!ENTITY enigmail.setupWiz.pgKeyImport.subtitle "Ορίστε τα αρχεία προς εισαγωγή">
 <!ENTITY enigmail.setupWiz.pgKeyImport.desc "Παρακαλώ ορίστε τα αρχεία των δημόσιων και ιδιωτικών κλειδιών προς εισαγωγή. Το πεδίο για τα ιδιωτικά κλειδιά μπορεί να είναι κενό αν το πρώτο αρχείο περιέχει ταυτόχρονα δημόσια και ιδιωτικά κλειδιά.">
 <!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile "Αρχείο δημόσιου κλειδιού">
 <!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile "Αρχείο ιδιωτικού κλειδιού">
-<!ENTITY enigmail.setupWiz.pgSummary.title "Περίληψη">
-<!ENTITY enigmail.setupWiz.pgSummary.subtitle "Επιβεβαιώστε ότι ο Μάγος δε θα αποθηκεύσει τώρα αυτές τις αλλαγές">
-<!ENTITY enigmail.setupWiz.pgSummary.desc "Σχεδόν τελειώσατε! Αν κάνετε κλικ στο κουμπί 'Επόμενο', ο Μάγος θα εκτελέσει τις ακόλουθες ενέργειες:">
+<!-- wizard: key creation - key generation step -->
 <!ENTITY enigmail.setupWiz.pgKeygen.title "Δημιουργία κλειδιού">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "Το κλειδί δημιουργείται τώρα">
+<!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title "Ευχαριστούμε">
 <!ENTITY enigmail.setupWiz.pgComplete.desc "Το Enigmail είναι τώρα έτοιμο για χρήση..<html:br></html:br><html:br></html:br>Ευχαριστούμε που χρησιμοποιείτε το  Enigmail.">
-<!ENTITY enigmail.setupWiz.details.title "Ρυθμίσεις">
-<!ENTITY enigmail.setupWiz.details.subtitle "Τροποποίηση των ρυθμίσεων της εφαρμογής">
-<!ENTITY enigmail.setupWiz.details.imapOnDemand "Απενεργοποίηση φόρτωσης τμημάτων IMAP κατ' απαίτηση">
-<!ENTITY enigmail.setupWiz.details.changingPrefs "Οι ακόλουθες ρυθμίσεις τροποποιήθηκαν από αυτόν το Μάγο:">
-<!ENTITY enigmail.setupWiz.details.noFlowedMsg "Απενεργοποίηση ρευστού κειμένου - flowed text (RFC 2646)">
-<!ENTITY enigmail.setupWiz.details.viewAsPlain "Εμφάνιση του σώματος του μηνύματος ως απλό κείμενο">
-<!ENTITY enigmail.setupWiz.details.8bitEncoding "Χρήση κωδικοποίησης 8-bit για την αποστολή μηνυμάτων">
-<!ENTITY enigmail.setupWiz.details.noComposeHTML "Να μη γίνεται σύνταξη μηνυμάτων HTML">
-<!ENTITY enigmail.setupWiz.pgNoStart.title "Ακύρωση του Μάγου">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc "Επιλέξατε να χρησιμοποιήσετε το Μάγο για τη ρύθμιση του Enigmail.                                                             <html:br></html:br><html:br></html:br>Ευχαριστούμε που χρησιμοποιείτε το Enigmail.">
 <!ENTITY enigmail.advancedIdentityDlg.title "Προχωρημένες ρυθμίσεις ταυτότητας Enigmail">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "Προσάρτηση του δημόσιου κλειδιού μου στα μηνύματα">
 <!ENTITY enigmail.addPhoto.question.label "Θέλετε να προσθέσετε την παρακάτω εικόνα στο παρακάτω κλειδί;">

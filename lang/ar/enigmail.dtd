@@ -62,9 +62,6 @@
 <!ENTITY enigmail.noHushMailSupport.tooltip "يضع '&lt;' و '&gt;' لتحديد عناوين البريد لأجل GnuPG. عطِّله إن كانت للمتلقين مفاتيح Hushmail قديمة.">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "عطل هذا إن كنت تتلقى رسائل PGP/MIME في مجلدات IMAP.">
 <!ENTITY enigmail.disableSMIMEui.tooltip "أزل زر S/MIME من شريط أدوات محرر الرسائل">
-<!ENTITY enigmail.logdirectory.label "دليل السجل">
-<!ENTITY enigmail.testemail.label "بريد اختبار">
-<!ENTITY enigmail.test.label "اختبر">
 <!ENTITY enigmail.decryptbutton.label "ظهِّر">
 <!ENTITY enigmail.decryptbutton.tip "ظهِّر أو تحقق من الرسالة باستخدام Enigmail">
 <!ENTITY enigmail.messengermenu.accesskey "n">
@@ -77,7 +74,6 @@
 <!ENTITY enigmail.prefs.label "التفضيلات">
 <!ENTITY enigmail.debugMenu.label "خيارات التنقيح">
 <!ENTITY enigmail.viewconsole.label "اعرض المرقاب">
-<!ENTITY enigmail.viewdebuglog.label "اعرض ملف السجل">
 <!ENTITY enigmail.generateKey.label "ولِّد المفتاح">
 <!ENTITY enigmail.help.label "مساعدة">
 <!ENTITY enigmail.about.title "عن Enigmail">
@@ -99,7 +95,6 @@
 <!ENTITY enigmail.setupWiz.accesskey "م">
 <!ENTITY enigmail.prefs.accesskey "ف">
 <!ENTITY enigmail.viewconsole.accesskey "ك">
-<!ENTITY enigmail.viewdebuglog.accesskey "ج">
 <!ENTITY enigmail.help.accesskey "م">
 <!ENTITY enigmail.about.accesskey "ع">
 <!ENTITY enigmail.sendersKeyMenu.accesskey "م">
@@ -135,6 +130,7 @@
 <!ENTITY enigmail.advancedPrefsButton.label "متقدمة...">
 <!ENTITY enigmail.keepCryptoSettingsForReply.label "Encrypt/sign replies to encrypted/signed message">
 <!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "When possible, encrypt/sign responses to encrypted/signed email">
+<!-- keySel Preferences -->
 <!ENTITY enigmail.recipientsSelectionOption.label "كيف تُختار المفاتيح؟">
 <!ENTITY enigmail.defineRules.label "حرر القواعد...">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label "أعد تسطير رسائل HTML الموقعة قبل الإرسال">
@@ -185,8 +181,6 @@
 <!ENTITY enigmail.encDlgSign.accesskey "ق">
 <!ENTITY enigmail.encDlgPgpMime.label "استخدم PGP/MIME">
 <!ENTITY enigmail.encDlgPgpMime.accesskey "خ">
-<!ENTITY enigmail.encDlgIgnoreRules.label "Ignore Per-Recipient Rules">
-<!ENTITY enigmail.encDlgIgnoreRules.accesskey "I">
 <!ENTITY enigmail.amPrefPgpHeader.label "ضع ترويسة  'OpenPGP'">
 <!ENTITY enigmail.amPrefPgpHeader.id.label "ضع معرِّف مفتاح OpenPGP">
 <!ENTITY enigmail.amPrefPgpHeader.url.label "ضع مسار جلب المفتاح:">
@@ -437,65 +431,35 @@
 <!ENTITY enigmail.changePasswd.currPasswd.label "كلمة السر الحالية">
 <!ENTITY enigmail.changePasswd.newPasswd.label "كلمة السر الجدية">
 <!ENTITY enigmail.changePasswd.repeatPasswd.label "كرر كلمة السر">
+<!-- wizard: welcome step -->
 <!ENTITY enigmail.setupWiz.title "مُرشِد إعداد Enigmail">
 <!ENTITY enigmail.setupWiz.yes "نعم">
 <!ENTITY enigmail.setupWiz.no "لا، شكرا">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "سيُساعدك هذا المرشد على البدء في استخدام Enigmail. خلال الشاشات القليلة التالية سنسألك بضعة أسئلة لإعداد كل شيء. <html:br/><html:br/> للتبسيط وضعنا بعض الخيارات السائدة للإعدادات. نهدف بهذه الخيارات البدئية إلى توفير مستوى معقولٍ من الأمان للمستخدم المتوسط دون إرباكه. بالطبع يمكنك تغيير كل الإعدادات بعد انتهاء المرشِد. يمكن معرفة المزيد عن خصائص Enigmail من قائمة المساعدة أو من <a class='enigmailLink'><html:a href='http://enigmail.mozdev.org/'>موقع Enigmail</html:a></a>. <html:br/><html:br/> إن واجهتك مشكلة أثناء استخدام هذا المرشِد فأخبرنا<a class='enigmailLink'><html:a href='mailto:enigmail@mozdev.org'>عبر البريد</html:a></a>. <html:br/><html:br/> يبدأ هذا المرشِد في أول مرّة تُنصِّب فيها Enigmail، و لن يُعرض ثانية ولا يُمكن استدعاؤه من القائمة. <html:br/><html:br/> شكرا لاختيارك Enigmail Enigmail!">
-<!ENTITY enigmail.setupWiz.pgWelcome.startNow "أترغب في استخدام هذا المرشِد الآن؟">
-<!ENTITY enigmail.setupWiz.pgWelcome.yes "نعم، أرغب أن يبدأ معي المرشِد">
-<!ENTITY enigmail.setupWiz.pgWelcome.no "لا، شكرا. أُفضِّل الإعداد يدويًا">
+<!-- wizard: select account IDs step -->
 <!ENTITY enigmail.setupWiz.pgSelectId.title "اختر هويات">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "اختر الحسابات أو الهويات التي ترغب أن يعمل Enigmail معها">
-<!ENTITY enigmail.setupWiz.pgSelectId.desc "إعدادات Enigmail خاصة بالحسابات أو الهويات. بدئيا يُعدُّ Enigmail ليعمل مع كل حساباتك و هوياتك. إذا لم يكن هذا ما تريده فاختر الهوية أو الحساب الذي تريد أن يعمل معه Enigmail مما أدناه.">
-<!ENTITY enigmail.setupWiz.pgSelectId.allIds "أترغب في ضبط Enigmail لكل الهويات">
-<!ENTITY enigmail.setupWiz.pgSelectId.selectIds "أرغب في ضبط Enigmail حصرا للهويات التالية:">
 <!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>لاحظ:</a> سيقوم Enigmail دائما بالتحقق من التوقيعات على البريد لكل حساب أو هوية، بغض النظر عن تفعيلها من عدمه">
-<!ENTITY enigmail.setupWiz.pgSign.title "التّوقيع">
-<!ENTITY enigmail.setupWiz.pgSign.subtitle "وقّع رقميا رسائلك الصادرة">
-<!ENTITY enigmail.setupWiz.pgSign.desc "يُمكّنك Enigmail من توقيع مراسلاتك رقميا، و هو المقابل الرقمي لتذيلل خطابك بتوقيع بخط اليد؛ مما يُمكِّن المتلقين من الاطمئنان إلى أنك حقا المرسل. من المحبذ أن توقع مراسلاتك الصادرة. <html:br/><html:br/> للتحقق من البريد الموقع رقميا يحتاج المتلقي إلى استخدام برمجية بريد داعمة لبروتوكول Enigmail، فإن لم يكن لديهم ذلك فسيظل بوسعهم قراءة الرسالة لكن سيظهر التوقيع كمُرفق أو كنص في متن الرسالة. قد يزعج هذا البعض لأنهم لا يعرفون ما هو، لذا فعليك تحديد إذا ما كنت تريد توقيع كل البريد الصادر أو تفادي إرسال بريد مُوقّع لبعض الأشخاص.">
-<!ENTITY enigmail.setupWiz.pgSign.signAllMsg "أتريد توقيع كل البريد الصدر بدئيا؟">
-<!ENTITY enigmail.setupWiz.pgSign.yesSign "نعم، أرغب في توقيع كل مراسلاتي">
-<!ENTITY enigmail.setupWiz.pgSign.noSign "لا، بل أريد إنشاء قواعد حسب كل متلقٍ للبريد ممن يتطلبون التوقيع">
-<!ENTITY enigmail.setupWiz.pgSettings.title "التفضيلات">
-<!ENTITY enigmail.setupWiz.pgSettings.subtitle "عدِّل إعدادات بريدك لتجعل Enigmail يعمل بوثوقية أكبر">
-<!ENTITY enigmail.setupWiz.pgSettings.desc "سيقوم هذا المرشِد بتغيير إعدادات بريدك للتأكد من عدم حدوث مشاكل عند توقيع وتعمية البريد على حاسوبك. أغلب التغييرات أشياء تقنية لا تلحظها إلا أن أحد أهمها هو أن البريد سيُحرر كنص صرف ابتداء.">
-<!ENTITY enigmail.setupWiz.pgSettings.changePref "أتريد تغيير بعض الإعدادات البدئية لتجعل Enigmail يعمل أفضل على جهازك؟">
-<!ENTITY enigmail.setupWiz.pgSettings.details "التفاصيل ...">
+<!-- wizard: key selection step -->
 <!ENTITY enigmail.setupWiz.pgKeySel.title "اختيار المفتاح">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "ولّد مفتاحا لتوقيع وتعمية البريد">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc "لقد تحسسنا أنك لديك مفتاح OpenPGP بالفعل. يمكنك استخدام أحد المفاتيح الموجودة لتوقيع أو تعمية أو تظهير البريد، أو يمكنك إنشاء زوج مفاتيح جديد.">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey "أريد إنشاء زوج مفاتيح جديد لتوقيع وتعمية مراسلاتي">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "أريد اختيار أحد المفاتيح أدناه لتوقيع وتعمية بريدي:">
+<!-- wizard: key creation - password step -->
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "ولّد مفتاحا">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "ولّد مفتاحا لتوقيع وتعمية البريد">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "تحتاج إلى 'زوج مفاتيح' لتوقيع وتعمية البريد، أو لقراءة البريد المُعمّى. أحد المفتاحين علني والآخر سري.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "ينبغي لك إعطاء مفتاحك العلني لكل شخص من معارفك يحتاج للتحقق من توقيعك أو تعمية البريد لك. بينما تحتاج لإبقاء مفتاحك السري سريًا. يجب ألا تعطيه لأحد أو تتركه غير محمي. لأن حائزه يمكنه قراءة كل البريد المعمى الذي يرسله الآخرون إليك، كما يمكنه توقيع مراسلات باسمك. المفتاح السري محمي بعبارة سر.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "من فضلك أكد كلمة السر بإعادة إدخالها">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.title "No OpenPGP Key Found">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.subtitle "We could not find any OpenPGP Key">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc "We could not find any OpenPGP key. Please select below if you want to                                                             create a new key pair or if you want to import an existing key.">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey "I have existing public and private keys that I would like to import">
+<!-- wizard: import key page -->
 <!ENTITY enigmail.setupWiz.pgKeyImport.title "Import OpenPGP Keys">
 <!ENTITY enigmail.setupWiz.pgKeyImport.subtitle "Specify the files to import">
 <!ENTITY enigmail.setupWiz.pgKeyImport.desc "Please specifiy the files containing the public and the private keys to                                                             import. The entry for private keys can be left empty if the first file                                                          contains both private and public keys.">
 <!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile "Public key file">
 <!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile "Private key file">
-<!ENTITY enigmail.setupWiz.pgSummary.title "الملخّص">
-<!ENTITY enigmail.setupWiz.pgSummary.subtitle "صرّح للمرشِد بإحداث هذه التغييرات">
-<!ENTITY enigmail.setupWiz.pgSummary.desc "انتهنا تقريبا! إذا نقرت على زر 'التالي' سيقوم المرشِد بهذه الإجراءات:">
+<!-- wizard: key creation - key generation step -->
 <!ENTITY enigmail.setupWiz.pgKeygen.title "توليد المفتاح">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "يجري توليد زوج مفاتيحك الآن">
+<!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title "شكرا لك">
 <!ENTITY enigmail.setupWiz.pgComplete.desc "Enigmail جاهز للاستخدام الآن.<html:br></html:br><html:br></html:br>شكرًا لاستخدامك Enigmail.">
-<!ENTITY enigmail.setupWiz.details.title "التفضيلات">
-<!ENTITY enigmail.setupWiz.details.subtitle "عدِّل إعدادات التطبيق">
-<!ENTITY enigmail.setupWiz.details.imapOnDemand "عطِّل التحميل التصاعدي لأجزاء IMAP">
-<!ENTITY enigmail.setupWiz.details.changingPrefs "التفضيلات التالية عدّلها المرشِد:">
-<!ENTITY enigmail.setupWiz.details.noFlowedMsg "عطِّل النص المنساب (RFC 2646)">
-<!ENTITY enigmail.setupWiz.details.viewAsPlain "اعرض متن الرسالة كنص صِرف">
-<!ENTITY enigmail.setupWiz.details.8bitEncoding "استخدم ترميز 8-بتة لإرسال الرسالة">
-<!ENTITY enigmail.setupWiz.details.noComposeHTML "لا تحرر رسائل HTML">
-<!ENTITY enigmail.setupWiz.pgNoStart.title "اصرف المرشِد">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc "لقد اخترت ألا تستخدم المرشد لإعداد Enigmail. <html:br></html:br><html:br></html:br> شكرا لاستخدامك Enigmail.">
 <!ENTITY enigmail.advancedIdentityDlg.title "تضبيطات Enigmail المتقدمة للهوية">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "أرفق مفتاحي العلنيّ بالرسائل">

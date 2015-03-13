@@ -62,9 +62,6 @@
 <!ENTITY enigmail.noHushMailSupport.tooltip "使用『&lt;』和『&gt;』來為GnuPG指定Email地址，收件人有舊版Hushmail密鑰時請禁用。">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "如果您現在從IMAP目錄收取PGP/MIME郵件，請關閉該項目。">
 <!ENTITY enigmail.disableSMIMEui.tooltip "在郵件編輯窗口中不顯示S/MIME按鈕">
-<!ENTITY enigmail.logdirectory.label "日誌目錄">
-<!ENTITY enigmail.testemail.label "測試郵件">
-<!ENTITY enigmail.test.label "測試">
 <!ENTITY enigmail.decryptbutton.label "解密">
 <!ENTITY enigmail.decryptbutton.tip "使用OpenPGP（Enigmail）解密或驗證郵件">
 <!ENTITY enigmail.messengermenu.accesskey "o">
@@ -77,7 +74,6 @@
 <!ENTITY enigmail.prefs.label "偏好設定">
 <!ENTITY enigmail.debugMenu.label "調試選項">
 <!ENTITY enigmail.viewconsole.label "檢視控制台">
-<!ENTITY enigmail.viewdebuglog.label "檢視日誌檔案">
 <!ENTITY enigmail.generateKey.label "生成密鑰">
 <!ENTITY enigmail.help.label "說明">
 <!ENTITY enigmail.about.title "關於Enigmail">
@@ -99,7 +95,6 @@
 <!ENTITY enigmail.setupWiz.accesskey "S">
 <!ENTITY enigmail.prefs.accesskey "P">
 <!ENTITY enigmail.viewconsole.accesskey "c">
-<!ENTITY enigmail.viewdebuglog.accesskey "g">
 <!ENTITY enigmail.help.accesskey "H">
 <!ENTITY enigmail.about.accesskey "b">
 <!ENTITY enigmail.sendersKeyMenu.accesskey "K">
@@ -135,6 +130,7 @@
 <!ENTITY enigmail.advancedPrefsButton.label "進階...">
 <!ENTITY enigmail.keepCryptoSettingsForReply.label "對加密/簽名郵件的回复郵件加密/簽名">
 <!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "盡可能使用加密/簽名郵件來回復加密/簽名郵件">
+<!-- keySel Preferences -->
 <!ENTITY enigmail.recipientsSelectionOption.label "密鑰選擇策略">
 <!ENTITY enigmail.defineRules.label "編輯規則...">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label "在發送前為簽名的HTML文本重新調整自動換行位置">
@@ -185,8 +181,6 @@
 <!ENTITY enigmail.encDlgSign.accesskey "S">
 <!ENTITY enigmail.encDlgPgpMime.label "使用PGP/MIME">
 <!ENTITY enigmail.encDlgPgpMime.accesskey "U">
-<!ENTITY enigmail.encDlgIgnoreRules.label "忽略收件人策略">
-<!ENTITY enigmail.encDlgIgnoreRules.accesskey "I">
 <!ENTITY enigmail.amPrefPgpHeader.label "發送『OpenPGP』信頭">
 <!ENTITY enigmail.amPrefPgpHeader.id.label "發送OpenPGP密鑰ID">
 <!ENTITY enigmail.amPrefPgpHeader.url.label "發送用於下載密鑰的URL：">
@@ -437,66 +431,36 @@
 <!ENTITY enigmail.changePasswd.currPasswd.label "當前密碼">
 <!ENTITY enigmail.changePasswd.newPasswd.label "新密碼">
 <!ENTITY enigmail.changePasswd.repeatPasswd.label "確認密碼">
+<!-- wizard: welcome step -->
 <!ENTITY enigmail.setupWiz.title "Enigmail設定精靈">
 <!ENTITY enigmail.setupWiz.yes "好的">
 <!ENTITY enigmail.setupWiz.no "不用了，謝謝">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "精靈將說明您盡快啟用Enigmail。在接下來的數個窗口中，我們將向您問幾個問題並完成設置。">
-<!ENTITY enigmail.setupWiz.pgWelcome.startNow "您現在要使用精靈嗎？">
-<!ENTITY enigmail.setupWiz.pgWelcome.yes "好的，我希望使用精靈設定。">
-<!ENTITY enigmail.setupWiz.pgWelcome.no "不用了，謝謝。我更想手動設定。">
+<!-- wizard: select account IDs step -->
 <!ENTITY enigmail.setupWiz.pgSelectId.title "選擇身份">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "選擇您需要啟用Enigmail的帳號或身份">
-<!ENTITY enigmail.setupWiz.pgSelectId.desc "Enigmail的設置對應着相應的帳號和身份。默認Enigmail將會啟用所有帳號和身份的Enigmail功能。如果您不想這樣，請指定您需要啟用Enigmail的帳號或身份。">
-<!ENTITY enigmail.setupWiz.pgSelectId.allIds "您是否要為所有身份啟用Enigmail？">
-<!ENTITY enigmail.setupWiz.pgSelectId.selectIds "我希望僅為以下帳號啟用Enigmail：">
 <!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>注意：</a>無論是否啟用，Enigmail將始終驗證所有帳號或身份的郵件中的簽名。">
-<!ENTITY enigmail.setupWiz.pgSign.title "簽名">
-<!ENTITY enigmail.setupWiz.pgSign.subtitle "為您發送的信件作數碼簽名">
-<!ENTITY enigmail.setupWiz.pgSign.desc "Enigmail讓您能夠為您的郵件作數位簽名。它就像手動簽名的電子版，並且允許其它人驗證這封信是否真的是你寫的。簽證所有發送的郵件是個好習慣。">
-<!ENTITY enigmail.setupWiz.pgSign.signAllMsg "您是否默認簽名所有發送的郵件？">
-<!ENTITY enigmail.setupWiz.pgSign.yesSign "是，我希望簽證我所有的郵件。">
-<!ENTITY enigmail.setupWiz.pgSign.noSign "不，我希望設定收件人策略來決定郵件的簽名。">
-<!ENTITY enigmail.setupWiz.pgSettings.title "偏好設定">
-<!ENTITY enigmail.setupWiz.pgSettings.subtitle "修改您的電子郵件設定使Enigmail更可靠">
-<!ENTITY enigmail.setupWiz.pgSettings.desc "這個精灵能更改您的電子郵件設定以確保在您的機器上簽名或加密沒有問題。這些設定上的修改多為技術層面上的，因此您不太需要關注。但是有一項您需要注意就是您以後發送的郵件將默認為純文本。">
-<!ENTITY enigmail.setupWiz.pgSettings.changePref "您是否要修改默認的設定使得Enigmail在您的機器上更好的運行？">
-<!ENTITY enigmail.setupWiz.pgSettings.details "細節...">
+<!-- wizard: key selection step -->
 <!ENTITY enigmail.setupWiz.pgKeySel.title "密鑰選擇">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "創建簽名和加密郵件的密鑰">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc "我們檢測到您已經有一個OpenPGP密鑰。您可以使用已有的密鑰來簽證、加密或解密郵件，或者您也可以創建新的密鑰對。">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey "我希望創建新的密鑰對用來簽證和加密我的郵件">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "我希望使用下列密鑰中的一個來簽證和加密我的郵件：">
+<!-- wizard: key creation - password step -->
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "創建密鑰">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "創建密鑰用於簽證和加密郵件">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "您需要一組密鑰對來簽證和加密郵件，或是閱讀加密郵件。一組密鑰對有两個密鑰：一個公鑰和一個私鑰。">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "您需要向所有您聯絡人列表中需要驗證您簽名或是向您發送加密郵件的人發送您的公鑰。同時，您需要保護您的私鑰的秘密性。您不能將其丢棄，或是不保護它。它可以解開所有發送給您的加密郵件。它也可以以你的名義加密郵件。因為這是私鑰，它受到密碼保護。">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "請確認您的密碼">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.title "未找到OpenPGP密鑰">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.subtitle "我們無法找到任何OpenPGP密鑰">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc "我們無法找到任何OpenPGP密鑰。請選擇是創建新的密鑰對還是匯入密鑰存檔。">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey "我希望匯入公鑰和私鑰存檔。">
+<!-- wizard: import key page -->
 <!ENTITY enigmail.setupWiz.pgKeyImport.title "匯入OpenPGP密鑰">
 <!ENTITY enigmail.setupWiz.pgKeyImport.subtitle "選擇匯入檔案">
 <!ENTITY enigmail.setupWiz.pgKeyImport.desc "請指定包含公鑰和私鑰的存檔。私鑰">
 <!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile "公鑰檔案">
 <!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile "私鑰檔案">
-<!ENTITY enigmail.setupWiz.pgSummary.title "總結">
-<!ENTITY enigmail.setupWiz.pgSummary.subtitle "請確認，精靈將作出如下改動。">
-<!ENTITY enigmail.setupWiz.pgSummary.desc "設置即將完成！點擊『下一步』按鈕，精靈將執行以下動作：">
+<!-- wizard: key creation - key generation step -->
 <!ENTITY enigmail.setupWiz.pgKeygen.title "密鑰創建">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "正在創建您的密鑰">
+<!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title "謝謝">
 <!ENTITY enigmail.setupWiz.pgComplete.desc "Enigmail一切就緒。<html:br></html:br><html:br></html:br>感謝使用Enigmail。">
-<!ENTITY enigmail.setupWiz.details.title "偏好設定">
-<!ENTITY enigmail.setupWiz.details.subtitle "更改程式設定">
-<!ENTITY enigmail.setupWiz.details.imapOnDemand "禁止按需載入 IMAP 部分">
-<!ENTITY enigmail.setupWiz.details.changingPrefs "精靈將更改下列属性：">
-<!ENTITY enigmail.setupWiz.details.noFlowedMsg "禁止連續文本 (RFC 2646)">
-<!ENTITY enigmail.setupWiz.details.viewAsPlain "以純文本檢視郵件內容">
-<!ENTITY enigmail.setupWiz.details.8bitEncoding "使用8位編碼發送郵件">
-<!ENTITY enigmail.setupWiz.details.noComposeHTML "不撰寫HTML郵件">
-<!ENTITY enigmail.setupWiz.pgNoStart.title "取消精靈">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc "您已選擇不使用精靈設定Enigmail。<html:br></html:br><html:br></html:br>感謝使用Enigmail。">
 <!ENTITY enigmail.advancedIdentityDlg.title "進階Enigmail身份設定">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "在郵件中附上我的公鑰">
 <!ENTITY enigmail.addPhoto.question.label "您是否要在該密鑰中加入此圖片？">

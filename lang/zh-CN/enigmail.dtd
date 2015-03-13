@@ -1,15 +1,15 @@
 <!ENTITY enigmail.label "Enigmail">
-<!ENTITY enigmail.openpgp.label "安全">
-<!ENTITY enigmail.keyUserId.label "帐户 / 个人标识">
-<!ENTITY enigmail.keygenTitle.label "创建 OpenPGP 密钥">
-<!ENTITY enigmail.useForSigning.label "将生成的密钥用于所选择的标识">
+<!ENTITY enigmail.openpgp.label "OpenPGP">
+<!ENTITY enigmail.keyUserId.label "账户 / 个人标识">
+<!ENTITY enigmail.keygenTitle.label "生成 OpenPGP 密钥">
+<!ENTITY enigmail.useForSigning.label "将生成的密钥用于选中的身份">
 <!ENTITY enigmail.keyComment.label "注释">
-<!ENTITY enigmail.keyNoPassphrase.label "无密码">
-<!ENTITY enigmail.keyPassphrase.label "密码">
-<!ENTITY enigmail.keyPassphraseRepeat.label "密码（重复）">
-<!ENTITY enigmail.generateKey.tooltip "创建一个可用于加密或数字签名的 OpenPGP 兼容密钥">
+<!ENTITY enigmail.keyNoPassphrase.label "没有口令">
+<!ENTITY enigmail.keyPassphrase.label "口令">
+<!ENTITY enigmail.keyPassphraseRepeat.label "口令（重复）">
+<!ENTITY enigmail.generateKey.tooltip "创建一个新的可用于加密和/或签名的 OpenPGP 兼容密钥">
 <!ENTITY enigmail.cancelKey.label "取消">
-<!ENTITY enigmail.cancelKey.tooltip "取消密钥创建">
+<!ENTITY enigmail.cancelKey.tooltip "取消密钥生成">
 <!ENTITY enigmail.keyGen.expiry.title "密钥有效期">
 <!ENTITY enigmail.keyGen.expire.label "密钥有效期为">
 <!ENTITY enigmail.keyGen.days.label "天">
@@ -17,26 +17,29 @@
 <!ENTITY enigmail.keyGen.years.label "年">
 <!ENTITY enigmail.keyGen.noExpiry.label "密钥永不过期">
 <!ENTITY enigmail.keyGen.keySize.label "密钥长度">
-<!ENTITY enigmail.keyGen.console.label "密钥创建终端">
+<!ENTITY enigmail.keyGen.console.label "密钥生成终端">
 <!ENTITY enigmail.keyGen.keyType.label "密钥类型">
 <!ENTITY enigmail.keyGen.keyType.dsa "DSA &amp; El Gamal">
 <!ENTITY enigmail.keyGen.keyType.rsa "RSA">
 <!ENTITY enigmail.preferences.label "Enigmail 选项">
-<!ENTITY enigmail.passwordSettings.label "密码设定">
-<!ENTITY enigmail.userNoPassphrase.label "不再询问用户密码">
-<!ENTITY enigmail.userNoPassphrase.tooltip "如果你想用密码保护你的OpenPGP密钥就选择">
-<!ENTITY enigmail.expertUser.tooltip "如果你想看高级用户菜单和配置就选择">
+<!ENTITY enigmail.passwordSettings.label "口令设置">
+<!ENTITY enigmail.userNoPassphrase.label "不再询问任何口令">
+<!ENTITY enigmail.userNoPassphrase.tooltip "如果您想用口令保护您的 OpenPGP 密钥就选择">
+<!ENTITY enigmail.expertUserMenus.label "显示专家设置和菜单">
+<!ENTITY enigmail.expertUser.tooltip "如果您想看到面向高级用户的菜单和配置就选此项。">
+<!ENTITY enigmail.basicUserMenus.label "隐藏专家设置和菜单">
+<!ENTITY enigmail.basicUser.tooltip "如果您不想看到面向高级用户的菜单和选项就选此项。">
 <!ENTITY enigmail.prefs.pathsTitle.label "文件和目录">
 <!ENTITY enigmail.prefs.overrideGpg.label "优先使用">
-<!ENTITY enigmail.prefs.overrideGpg.tooltip "勾选并指示 GnuPG 路径">
+<!ENTITY enigmail.prefs.overrideGpg.tooltip "点击指定 GnuPG 的路径">
 <!ENTITY enigmail.agentAdditionalParam.label "附加到 GnuPG 的参数">
-<!ENTITY enigmail.agentAdditionalParam.tooltip "指定GnuPG所用的选项.">
-<!ENTITY enigmail.mime_parts_on_demand.label "仅在打开时下载附件(IMAP 适用)">
+<!ENTITY enigmail.agentAdditionalParam.tooltip "指定 GnuPG 所用的选项。">
+<!ENTITY enigmail.mime_parts_on_demand.label "仅在打开时下载附件 (仅 IMAP)">
 <!ENTITY enigmail.maxIdleMinutesHead.label "在空闲">
 <!ENTITY enigmail.maxIdleMinutesTail.label "分钟后清除缓存的口令">
-<!ENTITY enigmail.maxIdleMinutes.tooltip "缓存密码一段时间">
+<!ENTITY enigmail.maxIdleMinutes.tooltip "在内存中缓存口令一段时间。">
 <!ENTITY enigmail.resetPrefsButton.label "重置">
-<!ENTITY enigmail.resetPrefs.tooltip "恢复所有的Enigmail参数到缺省值">
+<!ENTITY enigmail.resetPrefs.tooltip "恢复所有 Enigmail 设置到默认值">
 <!ENTITY enigmail.basic.label "基本">
 <!ENTITY enigmail.sending.label "发送">
 <!ENTITY enigmail.keySel.label "选择密钥">
@@ -45,46 +48,45 @@
 <!ENTITY enigmail.debug.label "调试">
 <!ENTITY enigmail.basicPrefs.label "基本设置">
 <!ENTITY enigmail.moreOptions.label "更多选项">
-<!ENTITY enigmail.alwaysTrustSend.label "总是信任使用者的标识">
-<!ENTITY enigmail.alwaysTrustSend.tooltip "不使用信任站点来确定密钥串的有效性">
-<!ENTITY enigmail.useNonDefaultComment.label "在OpenPGP签署中增加Enigmail注释">
+<!ENTITY enigmail.alwaysTrustSend.label "总是信任人们的密钥">
+<!ENTITY enigmail.alwaysTrustSend.tooltip "不使用网站信任来确定密钥的有效性">
+<!ENTITY enigmail.useNonDefaultComment.label "在 OpenPGP 签名中增加 Enigmail 注释">
 <!ENTITY enigmail.keyserver.label "密钥服务器">
 <!ENTITY enigmail.keyserverDlg.label "选择密钥服务器">
-<!ENTITY enigmail.keyservers.label "密钥服务器:">
+<!ENTITY enigmail.keyservers.label "指定您的密钥服务器">
 <!ENTITY enigmail.keyservers.sample "示例: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
-<!ENTITY enigmail.searchForKey.label "查找密钥">
+<!ENTITY enigmail.searchForKey.label "搜索密钥">
 <!ENTITY enigmail.doubleDashSeparator.label "将'--'看作邮件正文和签名的分隔符">
-<!ENTITY enigmail.useGpgAgent.label "用GPG助手来控制缓存口令">
-<!ENTITY enigmail.noHushMailSupport.label "使用 '&lt;' 和 '&gt;' 来指定邮件地址">
+<!ENTITY enigmail.useGpgAgent.label "使用 gpg-agent 处理口令">
+<!ENTITY enigmail.noHushMailSupport.label "使用 '&lt;' 和 '&gt;' 来指定电子邮件地址">
 <!ENTITY enigmail.doubleDashSeparator.tooltip "同一行中两个连续的破折号标志签名区域">
-<!ENTITY enigmail.useGpgAgent.tooltip "在所有密码输入中使用GPG向导 (GnuPG 2部分)">
-<!ENTITY enigmail.noHushMailSupport.tooltip "使用 '&lt;' 和 '&gt;' 字符来指定GnuPG邮件地址. 如果收件人有旧的公钥就取消.">
-<!ENTITY enigmail.mime_parts_on_demand.tooltip "如果通过 IMAP 目录接收 PGP/MIME 邮件，您应该关闭此选项">
-<!ENTITY enigmail.disableSMIMEui.tooltip "在邮件编辑窗口工具栏上清除S/MIME按钮">
-<!ENTITY enigmail.logdirectory.label "日志目录">
-<!ENTITY enigmail.testemail.label "邮件地址">
-<!ENTITY enigmail.test.label "测试">
+<!ENTITY enigmail.useGpgAgent.tooltip "所有口令输入都使用 gpg-agent (GnuPG 2 的一部分)">
+<!ENTITY enigmail.noHushMailSupport.tooltip "使用 '&lt;' 和 '&gt;' 字符来指定面向 GnuPG 的电子邮件地址。如果收件人有旧的 Hushmail 密钥就禁用。">
+<!ENTITY enigmail.mime_parts_on_demand.tooltip "如果您通过 IMAP 文件夹接收 PGP/MIME 邮件，您应该关闭此选项。">
+<!ENTITY enigmail.disableSMIMEui.tooltip "移除撰写邮件窗口的工具栏上的 S/MIME 按钮">
 <!ENTITY enigmail.decryptbutton.label "解密">
-<!ENTITY enigmail.decryptbutton.tip "使用 Enigmail 解密或校验邮件">
-<!ENTITY enigmail.messengermenu.accesskey "n">
-<!ENTITY enigmail.decryptverify.label "解密/校验">
+<!ENTITY enigmail.decryptbutton.tip "使用 Enigmail 解密或验证邮件">
+<!ENTITY enigmail.messengermenu.accesskey "a">
+<!ENTITY enigmail.decryptverify.label "解密/验证">
 <!ENTITY enigmail.importpublickey.label "导入公钥">
+<!ENTITY enigmail.importKey.label "导入密钥">
 <!ENTITY enigmail.savedecrypted.label "保存已解密的邮件">
 <!ENTITY enigmail.autoDecrypt.label "自动解密/验证邮件">
-<!ENTITY enigmail.clearPassphrase.label "清除缓存的密码">
-<!ENTITY enigmail.editRules.label "编辑规则">
+<!ENTITY enigmail.clearPassphrase.label "清除保存的口令">
+<!ENTITY enigmail.editRules.label "编辑收件人规则">
 <!ENTITY enigmail.prefs.label "选项">
 <!ENTITY enigmail.debugMenu.label "调试 OpenPGP">
 <!ENTITY enigmail.viewconsole.label "查看终端">
-<!ENTITY enigmail.viewdebuglog.label "查看日志文件">
+<!ENTITY enigmail.viewlog.label "查看日志">
 <!ENTITY enigmail.generateKey.label "生成密钥">
 <!ENTITY enigmail.help.label "帮助">
 <!ENTITY enigmail.about.title "关于 Enigmail">
-<!ENTITY enigmail.about.label "关于">
+<!ENTITY enigmail.about.label "关于 Enigmail">
 <!ENTITY enigmail.reload.label "重新载入邮件">
 <!ENTITY enigmail.browse.label "浏览...">
 <!ENTITY enigmail.sendersKeyMenu.label "发件人密钥">
 <!ENTITY enigmail.adminSmartCard.label "管理智能卡...">
+<!ENTITY enigmail.setupWiz.label "安装向导">
 <!ENTITY enigmail.decryptverify.accesskey "D">
 <!ENTITY enigmail.importpublickey.accesskey "I">
 <!ENTITY enigmail.savedecrypted.accesskey "S">
@@ -97,23 +99,36 @@
 <!ENTITY enigmail.setupWiz.accesskey "S">
 <!ENTITY enigmail.prefs.accesskey "P">
 <!ENTITY enigmail.viewconsole.accesskey "c">
-<!ENTITY enigmail.viewdebuglog.accesskey "g">
+<!ENTITY enigmail.viewlog.accesskey "g">
 <!ENTITY enigmail.help.accesskey "H">
 <!ENTITY enigmail.about.accesskey "b">
 <!ENTITY enigmail.sendersKeyMenu.accesskey "K">
-<!ENTITY enigmail.securitybutton.label "安全">
+<!ENTITY enigmail.securitybutton.label "Enigmail">
 <!ENTITY enigmail.securitybutton.tip "Enigmail 安全设置">
-<!ENTITY enigmail.signedsend.label "数字签名邮件">
+<!ENTITY enigmail.composetoolbar.header "Enigmail 头信息">
+<!ENTITY enigmail.composetoolbar.label "Enigmail 工具栏">
+<!ENTITY enigmail.composetoolbar.desc "Enigmail 加密信息">
+<!ENTITY enigmail.signedsend.label "签名邮件">
 <!ENTITY enigmail.encryptedsend.label "加密邮件">
-<!ENTITY enigmail.disableRules.label "忽略规则">
+<!ENTITY enigmail.disableRules.label "忽略收件人规则">
 <!ENTITY enigmail.composeOptionsMenu.label "默认撰写选项">
-<!ENTITY enigmail.pgpAccountSettings.label "数字签名/加密选项...">
+<!ENTITY enigmail.pgpAccountSettings.label "签名/加密选项...">
 <!ENTITY enigmail.sendOptionsMenu.label "发送选项...">
 <!ENTITY enigmail.defaultKeySelOpts.label "密钥选择选项...">
-<!ENTITY enigmail.sendPGPMime.label "在本邮件中使用 PGP/MIME">
+<!ENTITY enigmail.sendPGPMime.label "对本邮件使用 PGP/MIME">
+<!ENTITY enigmail.tempTrustAllKeys.label "信任所有收件人的密钥">
 <!ENTITY enigmail.undoencryption.label "取消加密">
 <!ENTITY enigmail.attachkey.label "附送公钥...">
 <!ENTITY enigmail.attachmykey.label "附送我的公钥">
+<!ENTITY enigmail.finalEncryptDefault.label "使用默认的加密设置和规则">
+<!ENTITY enigmail.finalEncryptYes.label "强制加密">
+<!ENTITY enigmail.finalEncryptNo.label "强制不加密">
+<!ENTITY enigmail.finalSignDefault.label "使用默认的签名设置和规则">
+<!ENTITY enigmail.finalSignYes.label "强制签名">
+<!ENTITY enigmail.finalSignNo.label "强制不签名">
+<!ENTITY enigmail.finalPGPMimeDefault.label "使用默认的 PGP 格式设置和规则">
+<!ENTITY enigmail.finalPGPMimeYes.label "强制 PGP/MIME">
+<!ENTITY enigmail.finalPGPMimeNo.label "强制内嵌 PGP">
 <!ENTITY enigmail.composemenu.accesskey "n">
 <!ENTITY enigmail.signedsend.accesskey "S">
 <!ENTITY enigmail.signedsend.key "S">
@@ -125,37 +140,101 @@
 <!ENTITY enigmail.defaultKeySelOpts.accesskey "K">
 <!ENTITY enigmail.pgpAccountSettings.accesskey "E">
 <!ENTITY enigmail.sendPGPMime.accesskey "P">
+<!ENTITY enigmail.tempTrustAllKeys.accesskey "T">
 <!ENTITY enigmail.undoencryption.accesskey "U">
 <!ENTITY enigmail.attachkey.accesskey "A">
 <!ENTITY enigmail.attachmykey.accesskey "M">
-<!ENTITY enigmail.defaultEncryption.label "默认情况下对邮件加密">
+<!-- account specific options -->
+<!ENTITY enigmail.defaultSigning.label "默认签名邮件">
+<!ENTITY enigmail.defaultEncryption.label "默认加密邮件">
 <!ENTITY enigmail.usePGPMimeAlways.label "总是使用 PGP/MIME">
+<!ENTITY enigmail.afterDefaultsAndRules.label "在默认值和规则应用后：">
+<!ENTITY enigmail.finallySignEncrypted.label "签名已加密的邮件">
+<!ENTITY enigmail.finallySignNotEncrypted.label "签名未加密的邮件">
+<!ENTITY enigmail.autoEncryptDrafts.label "保存时加密邮件草稿">
 <!ENTITY enigmail.advancedPrefsButton.label "高级...">
+<!ENTITY enigmail.openpgpPrefsButton.label "Enigmail 选项...">
+<!-- Sending Preferences -->
+<!ENTITY enigmail.SendingPrefs.label "常规发送选项">
+<!ENTITY enigmail.seeAccountSettings.label "另见具体的 Enigmail 设置（账户设置 -> OpenPGP 安全）">
+<!ENTITY enigmail.encryptionModelConvenient.label "方便的加密设置">
+<!ENTITY enigmail.encryptionModelManually.label "手动加密设置">
+<!ENTITY enigmail.keepCryptoSettingsForReply.label "回复已加密/已签名的邮件时加密/签名">
+<!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "如果可能，回复已加密/已签名的邮件时进行加密/签名">
+<!ENTITY enigmail.autoSendEncryptedOption.label "自动发送加密的">
+<!ENTITY enigmail.autoSendEncryptedNever.label "永不">
+<!ENTITY enigmail.autoSendEncryptedNever.tooltip "不要自动发送加密的，除非触发了收件人规则">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.label "如果可能">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.tooltip "自动发送已加密的，如果每个收件人都有至少一个已知的并可接受的（见上）并且没有收件人规则要求强制不加密。">
+<!ENTITY enigmail.acceptedKeysOption.label "要发送加密的，接受">
+<!ENTITY enigmail.acceptedKeysTrusted.label "仅信任的密钥">
+<!ENTITY enigmail.acceptedKeysTrusted.tooltip "只接受由您或者您信任的人签发的密钥。技术上讲，您只接受“有效的”密钥进行的加密。">
+<!ENTITY enigmail.acceptedKeysAllUsable.label "所有不可用的密钥">
+<!ENTITY enigmail.acceptedKeysAllUsable.tooltip "接受所有并未被您或者签发者废除/停用/过期的密钥。技术上讲，这等于使用 GPG 的 '--trust-model always' 选项。">
+<!ENTITY enigmail.confirmBeforeSendingOption.label "发送前确认">
+<!ENTITY enigmail.confirmBeforeSendingNever.label "永不">
+<!ENTITY enigmail.confirmBeforeSendingNever.tooltip "不要在发送邮件前显示有关签名/加密的信息对话框">
+<!ENTITY enigmail.confirmBeforeSendingAlways.label "总是">
+<!ENTITY enigmail.confirmBeforeSendingAlways.tooltip "总是在发送邮件前显示有关签名/加密的信息对话框">
+<!ENTITY enigmail.confirmBeforeSendingIfEncrypted.label "如果已加密">
+<!ENTITY enigmail.confirmBeforeSendingIfEncrypted.tooltip "在发送加密邮件前显示有关签名/加密的信息对话框">
+<!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.label "如果未加密">
+<!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.tooltip "在发送未加密邮件前显示有关签名/加密的信息对话框">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.label "如果默认加密设置的规则被更改">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.tooltip "如果您的有关加密的选项被一个收件人规则更改或者为自动加密，在发送前显示有关签名/加密的对话框。">
+<!-- keySel Preferences -->
 <!ENTITY enigmail.recipientsSelectionOption.label "发送邮件时如何确定收件人密钥">
+<!ENTITY enigmail.assignKeysByRules.label "依照收件人规则">
+<!ENTITY enigmail.assignKeysByRules.tooltip "根据收件人规则分配密钥。强制提醒创建新规则，如果这是唯一选中的选项。">
+<!ENTITY enigmail.assignKeysByEmailAddr.label "依照密钥管理器中的电子邮件地址">
+<!ENTITY enigmail.assignKeysByEmailAddr.tooltip "根据密钥管理器中的电子邮件地址分配密钥。">
+<!ENTITY enigmail.assignKeysManuallyIfMissing.label "手动，如果密钥缺失">
+<!ENTITY enigmail.assignKeysManuallyIfMissing.tooltip "如果密钥缺失，打开对话框以手动分配密钥。">
+<!ENTITY enigmail.assignKeysManuallyAlways.label "总是（也）手动">
+<!ENTITY enigmail.assignKeysManuallyAlways.tooltip "总是最终打开手动分配密钥的对话框。">
 <!ENTITY enigmail.defineRules.label "定义规则...">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label "发送前换行已数字签名的 HTML 文本">
 <!ENTITY enigmail.wrapHtmlBeforeSend.tooltip "重排文本以便保证签名能完整保留.">
 <!ENTITY enigmail.autoKeyRetrieve.label "自动从服务器下载密钥">
 <!ENTITY enigmail.autoKeyRetrieve2.label "从以下密钥服务器:">
-<!ENTITY enigmail.resetRememberedValues.label "复位警告">
-<!ENTITY enigmail.resetRememberedValues.tooltip "重新显示你已隐藏过的所有警告对话框和问题.">
-<!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>注意: 密钥创建过程可能会持续数分钟。</a> 创建密钥的过程中请不要退出程序。在此期间浏览网页或者执行能产生大量磁盘操作的程序将帮助填充“随机数池”并能加速密钥创建进程。密钥创建结束时您将收到完成通知。">
+<!ENTITY enigmail.resetRememberedValues.label "重置警告">
+<!ENTITY enigmail.resetRememberedValues.tooltip "重新显示您已隐藏过的所有警告对话框和问题。">
+<!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>注意：密钥生成过程可能会持续数分钟。</a>生成密钥的过程中请不要退出本程序。在此期间浏览网页或者执行能产生大量磁盘操作的程序将帮助填充“随机数池”并能加速密钥创建进程。密钥创建结束时您将收到完成通知。">
 <!ENTITY enigmail.userSelectionList.label "Enigmail 密钥选择">
-<!ENTITY enigmail.usersNotFound.label "收件人无效，不被信任或找不到其公钥">
+<!ENTITY enigmail.usersNotFound.label "收件人无效、不被信任或者找不到">
 <!ENTITY enigmail.keyExpiry.label "有效期至">
+<!ENTITY enigmail.uidValidity.label "验证">
 <!ENTITY enigmail.keySelection.label "密钥选择">
 <!ENTITY enigmail.keyId.label "密钥标识">
+<!ENTITY enigmail.userSelSendSigned.label "发送已签名的">
+<!ENTITY enigmail.userSelSendSigned.accesskey "S">
+<!ENTITY enigmail.userSelSendEncrypted.label "发送已加密的">
+<!ENTITY enigmail.userSelSendEncrypted.accesskey "E">
 <!ENTITY enigmail.displayNoLonger.label "如果无法加密则不显示此对话框">
 <!ENTITY enigmail.importMissingKeys.label "下载缺少的密钥">
 <!ENTITY enigmail.importMissingKeys.accesskey "D">
 <!ENTITY enigmail.importMissingKeys.tooltip "尝试从一个密钥服务器导入缺少的密钥">
 <!ENTITY enigmail.refreshKeys.label "刷新密钥列表">
 <!ENTITY enigmail.refreshKeys.accesskey "R">
-<!ENTITY enigmail.perRecipientsOption.label "创建规则">
+<!ENTITY enigmail.send.label "发送">
+<!ENTITY enigmail.perRecipientsOption.label "创建收件人规则">
 <!ENTITY enigmail.enigmailAttachDesc.label "这则邮件包含附件。您希望怎样对其进行加密/数字签名？">
 <!ENTITY enigmail.enigEncryptAttachNone.label "仅加密/数字签名邮件，不处理附件">
+<!ENTITY enigmail.enigAttachNoneSign.label "签名邮件文本，但不签名附件">
+<!ENTITY enigmail.enigAttachNoneEncrypt.label "加密邮件文本，但不加密附件">
+<!ENTITY enigmail.enigAttachNoneEncryptAndSign.label "加密并签名邮件文本，但不加密附件">
 <!ENTITY enigmail.enigEncryptAttachInline.label "分别加密每个附件并对邮件使用内嵌式 PGP">
+<!ENTITY enigmail.enigAttachInlineSign.label "分别签名每个附件并使用内嵌 PGP 方式发送该邮件">
+<!ENTITY enigmail.enigAttachInlineEncrypt.label "分别加密每个附件并使用内嵌 PGP 方式发送该邮件">
+<!ENTITY enigmail.enigAttachInlineEncryptAndSign.label "分别加密并签名每个附件并使用内嵌 PGP 方式发送该邮件">
 <!ENTITY enigmail.enigEncryptAttachPgpMime.label "将邮件做为一个整体进行加密/数字签名，并使用 PGP/MIME 发送">
+<!ENTITY enigmail.enigAttachPgpMimeSign.label "整体签名邮件并使用 PGP/MIME 方式发送它">
+<!ENTITY enigmail.enigAttachPgpMimeEncrypt.label "整体加密邮件并使用 PGP/MIME 方式发送它">
+<!ENTITY enigmail.enigAttachPgpMimeEncryptAndSign.label "整体加密并签名邮件并使用 PGP/MIME 方式发送它">
+<!ENTITY enigmail.enigEncryptAttachDontEncryptMsg.label "全部不要加密/签名邮件">
+<!ENTITY enigmail.enigAttachDontEncryptMsgSign.label "全部不要签名邮件">
+<!ENTITY enigmail.enigAttachDontEncryptMsgEncrypt.label "全部不要加密邮件">
+<!ENTITY enigmail.enigAttachDontEncryptMsgEncryptAndSign.label "全部不要加密并签名邮件">
 <!ENTITY enigmail.encryptAttachSkipDlg.label "使用所选择的模式用于所有将来的附件">
 <!ENTITY enigmail.ctxDecryptOpen.label "解密并打开">
 <!ENTITY enigmail.ctxDecryptSave.label "解密并另存为...">
@@ -165,6 +244,12 @@
 <!ENTITY enigmail.ctxDecryptSave.accesskey "C">
 <!ENTITY enigmail.ctxImportKey.accesskey "I">
 <!ENTITY enigmail.ctxVerifyAtt.accesskey "V">
+<!ENTITY enigmail.detailsHdrButton.label "详细信息">
+<!ENTITY enigmail.revealAttachmentsButton.label "已附加文件的名称已隐藏。按“显示”按钮显示原文件名。">
+<!ENTITY enigmail.revealAttachments.button "显示">
+<!ENTITY enigmail.exchangeGarbage.desc "这是一个坏掉的来自 MS-Exchange 的 PGP/MIME 消息。如果您无法访问该附件，或者回复或转发时出现问题，请按“修复消息”按钮修复该消息。">
+<!ENTITY enigmail.exchangeGarbage.fixButton.label "修复信息">
+<!ENTITY enigmail.exchangeGarbage.waitMessage "请稍候...">
 <!ENTITY enigmail.amPrefTitle.label "OpenPGP 选项">
 <!ENTITY enigmail.amPrefDesc.label "Enigmail 为您提供 OpenPGP 加密和数字签名邮件支持。要使用该功能，您必须安装了 GnuPG (gpg) 程序。">
 <!ENTITY enigmail.amPrefEnablePgp.label "为这个标识打开 OpenPGP 支持 (Enigmail)">
@@ -179,6 +264,10 @@
 <!ENTITY enigmail.encDlgSign.accesskey "S">
 <!ENTITY enigmail.encDlgPgpMime.label "使用 PGP/MIME">
 <!ENTITY enigmail.encDlgPgpMime.accesskey "U">
+<!ENTITY enigmail.encDlgInlinePgp.label "使用内嵌 PGP">
+<!ENTITY enigmail.encDlgInlinePgp.accesskey "I">
+<!ENTITY enigmail.encDlgReset.label "重置为默认值">
+<!ENTITY enigmail.encDlgReset.accesskey "R">
 <!ENTITY enigmail.amPrefPgpHeader.label "发送 'OpenPGP' 信头">
 <!ENTITY enigmail.amPrefPgpHeader.id.label "发送 OpenPGP 密钥标识">
 <!ENTITY enigmail.amPrefPgpHeader.url.label "发送获取密钥的 URL:">
@@ -187,6 +276,8 @@
 <!ENTITY enigmail.pgpSecurityInfo.label "Enigmail 安全信息...">
 <!ENTITY enigmail.copySecurityInfo.label "复制 Enigmail 安全信息">
 <!ENTITY enigmail.showPhoto.label "查看 OpenPGP 内置相片">
+<!ENTITY enigmail.photoViewer.title "OpenPGP 照片查看器">
+<!ENTITY enigmail.displayKeyProperties.label "查看密钥属性">
 <!ENTITY enigmail.signSenderKey.label "签署密钥...">
 <!ENTITY enigmail.trustSenderKey.label "设置密钥信任级别...">
 <!ENTITY enigmail.signSenderKeyPopup.label "为发件人的签署密钥...">
@@ -195,6 +286,13 @@
 <!ENTITY enigmail.keyManWindow.label "密钥管理">
 <!ENTITY enigmail.keyManWindow.accesskey "y">
 <!ENTITY enigmail.singleRcptSettings.label "Enigmail - 密钥规则设置">
+<!ENTITY enigmail.compose.excesslength.label "您的邮件中有太长的行。这应该被处理以避免不良的签名。">
+<!ENTITY enigmail.compose.excesslength_action.label "您想如何处理？">
+<!ENTITY enigmail.wrapSelectionList.label "选择折行">
+<!ENTITY enigmail.compose.wrap_radio.label "自动折行（良好的签名，但可能看上去不美观）">
+<!ENTITY enigmail.compose.sendasis_radio.label "就这样发送（存在签名异常的风险）">
+<!ENTITY enigmail.compose.use_mime_radio.label "使用 PGP/MIME（良好的签名，但有些收件人无法解码它）">
+<!ENTITY enigmail.compose.editmanually.label "手动编辑">
 <!ENTITY enigmail.selKeysButton.label "选择密钥...">
 <!ENTITY enigmail.action.label "动作">
 <!ENTITY enigmail.nextRule.label "如果邮件地址符合条件则测试下一条规则">
@@ -218,7 +316,7 @@
 <!ENTITY enigmail.matchBegin.label "以上述某邮件地址开头">
 <!ENTITY enigmail.matchEnd.label "以上述某邮件地址结尾">
 <!ENTITY enigmail.not.label "不在上述邮件地址中">
-<!ENTITY enigmail.rulesEditor.label "Enigmail - 规则编辑器">
+<!ENTITY enigmail.rulesEditor.label "Enigmail - 收件人规则编辑器">
 <!ENTITY enigmail.email.label "电子邮件">
 <!ENTITY enigmail.pgpKeys.label "OpenPGP 密钥">
 <!ENTITY enigmail.sign.label "数字签名">
@@ -238,6 +336,7 @@
 <!ENTITY enigmail.clearSearch.accesskey "C">
 <!ENTITY enigmail.searchKeyDlg.label "下载 OpenPGP 密钥">
 <!ENTITY enigmail.searchKeyDlgCapt.label "有符合条件的密钥 - 请选择要导入的密钥">
+<!ENTITY enigmail.searchKeyDlgSelAll.label "全选/全消">
 <!ENTITY enigmail.created.label "创建">
 <!ENTITY enigmail.valid.label "有效">
 <!ENTITY enigmail.progress.label "进度">
@@ -263,6 +362,8 @@
 <!ENTITY enigmail.keyTrust.marginalTrust.label "我半信半疑">
 <!ENTITY enigmail.keyTrust.fullTrust.label "我可以相信">
 <!ENTITY enigmail.keyTrust.ultimateTrust.label "我完全信任">
+<!ENTITY enigmail.keyExpiry.title "Enigmail - 更改过期时间">
+<!ENTITY enigmail.keyExpiry.expiryKey.label "密钥要更改的过期时间：">
 <!ENTITY enigmail.keyMan.title "Enigmail 密钥管理">
 <!ENTITY enigmail.keyMan.close.label "关闭窗口">
 <!ENTITY enigmail.keyMan.generate.label "新密钥对">
@@ -285,6 +386,7 @@
 <!ENTITY enigmail.keyMan.importFromClipbrd.label "从剪贴板导入密钥">
 <!ENTITY enigmail.keyMan.exportToFile.label "导出密钥到文件">
 <!ENTITY enigmail.keyMan.sendKeys.label "用邮件发送公钥">
+<!ENTITY enigmail.keyMan.createMail.label "用选中密钥撰写邮件">
 <!ENTITY enigmail.keyMan.uploadToServer.label "上传公钥">
 <!ENTITY enigmail.keyMan.copyToClipbrd.label "复制公钥到剪贴板">
 <!ENTITY enigmail.keyMan.ctxExportToFile.label "导出密钥到文件">
@@ -292,11 +394,13 @@
 <!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label "复制公钥到剪贴板">
 <!ENTITY enigmail.keyMan.refreshSelKeys.label "更新所选择的公钥">
 <!ENTITY enigmail.keyMan.refreshAllKeys.label "更新所有的公钥">
+<!ENTITY enigmail.keyMan.downloadContactKeys.label "查找所有联系人的密钥">
 <!ENTITY enigmail.keyMan.ctxRefreshKey.label "从密钥服务器更新公钥">
 <!ENTITY enigmail.keyMan.reload.label "刷新密钥缓存">
 <!ENTITY enigmail.keyMan.addPhoto.label "Add Photo">
 <!ENTITY enigmail.keyMan.manageUid.label "管理用户标识">
-<!ENTITY enigmail.keyMan.changePwd.label "更改密码">
+<!ENTITY enigmail.keyMan.changeExpiry.label "更改过期时间">
+<!ENTITY enigmail.keyMan.changePwd.label "更改口令">
 <!ENTITY enigmail.keyMan.delKey.label "删除密钥">
 <!ENTITY enigmail.keyMan.revokeKey.label "废除密钥">
 <!ENTITY enigmail.keyMan.keyProps.label "密钥属性">
@@ -304,6 +408,9 @@
 <!ENTITY enigmail.keyMan.viewPhoto.label "相片">
 <!ENTITY enigmail.keyMan.ctxViewPhoto.label "查看相片">
 <!ENTITY enigmail.keyMan.viewSig.label "签名">
+<!ENTITY enigmail.keyMan.showInvalidKeys.label "显示无效的密钥">
+<!ENTITY enigmail.keyMan.showUntrustedKeys.label "显示未信任的密钥">
+<!ENTITY enigmail.keyMan.showOthersKeys.label "显示来自其他人的密钥">
 <!ENTITY enigmail.keyMan.ctxViewSig.label "查看签名">
 <!ENTITY enigmail.keyMan.userId.label "Name">
 <!ENTITY enigmail.keyMan.keyType.label "类型">
@@ -312,6 +419,10 @@
 <!ENTITY enigmail.keyMan.stopTransfer.label "停止传输">
 <!ENTITY enigmail.keyMan.fingerprint.label "指纹">
 <!ENTITY enigmail.keyMan.selectAll.label "选择所有密钥">
+<!ENTITY enigmail.keyMan.addToPRRule.label "添加到收件人规则">
+<!ENTITY enigmail.keyMan.emptyTree.tooltip "请在上面的框输入搜索内容">
+<!ENTITY enigmail.keyMan.nothingFound.tooltip "没有密钥匹配您的搜索内容">
+<!ENTITY enigmail.keyMan.pleaseWait.tooltip "密钥载入中，请稍候…">
 <!ENTITY enigmail.keyMan.filter.label "仅显示用户标识中或密钥标识中包含如下字符的密钥:">
 <!ENTITY enigmail.keyMan.close.accesskey "C">
 <!ENTITY enigmail.keyMan.generate.accesskey "K">
@@ -327,6 +438,7 @@
 <!ENTITY enigmail.keyMan.reload.accesskey "R">
 <!ENTITY enigmail.keyMan.addPhoto.accesskey "P">
 <!ENTITY enigmail.keyMan.manageUid.accesskey "M">
+<!ENTITY enigmail.keyMan.changeExpiry.accesskey "E">
 <!ENTITY enigmail.keyMan.changePwd.accesskey "P">
 <!ENTITY enigmail.keyMan.viewSig.accesskey "S">
 <!ENTITY enigmail.keyMan.showInvalidKeys.accesskey "D">
@@ -343,7 +455,12 @@
 <!ENTITY enigmail.keyMan.selectAll.accesskey "A">
 <!ENTITY enigmail.keyMan.sendKeys.accesskey "S">
 <!ENTITY enigmail.keyMan.createMail.accesskey "C">
+<!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "F">
 <!ENTITY enigmail.keyMan.selectAll.key "A">
+<!ENTITY enigmail.keyMan.keyDetails.key "I">
+<!ENTITY enigmail.keyMan.refreshKey.key "R">
+<!ENTITY enigmail.keyMan.viewSig.key "S">
+<!ENTITY enigmail.keySearch.selectAll.key "A">
 <!ENTITY enigmail.viewKeySigDlg.title "密钥签署列表">
 <!ENTITY enigmail.viewKeySigDlg.sigForKey.label "此密钥经过如下签署:">
 <!ENTITY enigmail.viewKeySigDlg.sigType.label "签署类型">
@@ -357,15 +474,19 @@
 <!ENTITY enigmail.keyDetails.title "密钥属性">
 <!ENTITY enigmail.keyDetails.userId.label "默认用户标识">
 <!ENTITY enigmail.keyDetails.keyId.label "密钥标识">
+<!ENTITY enigmail.keyDetails.additionalUid.label "额外用户ID">
 <!ENTITY enigmail.keyDetails.ID.label "标识">
 <!ENTITY enigmail.keyDetails.keyType.label "类型">
+<!ENTITY enigmail.keyDetails.keyPart.label "密钥部分">
 <!ENTITY enigmail.keyDetails.algorithm.label "算法">
 <!ENTITY enigmail.keyDetails.size.label "长度">
 <!ENTITY enigmail.keyDetails.created.label "创建于">
 <!ENTITY enigmail.keyDetails.expiry.label "失效于">
+<!ENTITY enigmail.keyDetails.usage.label "使用">
 <!ENTITY enigmail.keyDetails.calcTrust.label "推算的信任级">
 <!ENTITY enigmail.keyDetails.ownerTrust.label "设定的信任级">
 <!ENTITY enigmail.keyDetails.fingerprint.label "指纹">
+<!ENTITY enigmail.keyDetails.selAction.label "选择操作…">
 <!ENTITY enigmail.keyDetails.selAction.accesskey "S">
 <!ENTITY enigmail.cardDetails.title "OpenPGP 智能卡细节">
 <!ENTITY enigmail.cardDetails.cardMenu.label "智能卡">
@@ -400,7 +521,7 @@
 <!ENTITY enigmail.cardDetails.editData.accesskey "E">
 <!ENTITY enigmail.genCardKey.title "生成 OpenPGP 密钥">
 <!ENTITY enigmail.genCardKey.backupKey.label "在卡外部保存密钥备份">
-<!ENTITY enigmail.genCardKey.desc "<a class='enigmailStrong'>注意: 密钥创建过程可能会持续数分钟。</a> 创建密钥的过程中请不要退出程序。密钥创建结束时您将收到完成通知。">
+<!ENTITY enigmail.genCardKey.desc "<a class='enigmailStrong'>注意：密钥生成过程可能会持续数分钟。</a> 生成密钥的过程中请不要退出本程序。密钥生成结束时您将收到完成通知。">
 <!ENTITY enigmail.cardPin.title "修改智能卡识别码">
 <!ENTITY enigmail.cardPin.action.label "您想要做什么">
 <!ENTITY enigmail.cardPin.changePin.label "更改识别码">
@@ -412,59 +533,104 @@
 <!ENTITY enigmail.cardPin.currPin.label "当前识别码">
 <!ENTITY enigmail.cardPin.newPin.label "新识别码">
 <!ENTITY enigmail.cardPin.pinRepeat.label "再次输入新识别码以确认">
-<!ENTITY enigmail.changePasswd.title "更改 OpenPGP 密码">
-<!ENTITY enigmail.changePasswd.currPasswd.label "当前密码">
-<!ENTITY enigmail.changePasswd.newPasswd.label "新的密码">
-<!ENTITY enigmail.changePasswd.repeatPasswd.label "重复输入密码以确认">
+<!ENTITY enigmail.changePasswd.title "更改 OpenPGP 口令">
+<!ENTITY enigmail.changePasswd.currPasswd.label "当前口令">
+<!ENTITY enigmail.changePasswd.newPasswd.label "新的口令">
+<!ENTITY enigmail.changePasswd.repeatPasswd.label "重复输入口令以确认">
+<!-- wizard: welcome step -->
 <!ENTITY enigmail.setupWiz.title "Enigmail 设置向导">
 <!ENTITY enigmail.setupWiz.yes "是">
-<!ENTITY enigmail.setupWiz.no "不, 谢谢">
-<!ENTITY enigmail.setupWiz.pgWelcome.desc "此向导将帮助你开启 Enigmail 权限之路. 经过下几步的屏幕，我们会通过和你咨询的一些问                                                             题来设置相关信息.    ">
-<!ENTITY enigmail.setupWiz.pgWelcome.startNow "你希望现在使用向导吗?">
-<!ENTITY enigmail.setupWiz.pgWelcome.yes "是的，我想用向导来帮我开始">
-<!ENTITY enigmail.setupWiz.pgWelcome.no "不用, 谢谢. 我想手动来配置">
+<!ENTITY enigmail.setupWiz.no "不，谢谢">
+<!ENTITY enigmail.setupWiz.pgIntro.title "欢迎使用 Enigmail 安装向导">
+<!ENTITY enigmail.setupWiz.pgIntro.desc "看起来您是第一次在这台计算机上使用 Enigmail。
+为了使用 Enigmail，您首先需要正确的设置它。
+这里将协助您完成初始设置过程。">
+<!ENTITY enigmail.setupWiz.pgIntro.desc2 "您想现在就设置 Enigmail 吗，或者稍后再设置？">
+<!ENTITY enigmail.setupWiz.pgIntro.startNow "立即开始设置">
+<!ENTITY enigmail.setupWiz.pgIntro.startLater "稍后再配置 Enigmail">
+<!ENTITY enigmail.setupWiz.pgWelcome.title "您想如何配置 Enigmail？">
+<!ENTITY enigmail.setupWiz.pgWelcome.manualOrAuto "您想手动配置 Enigmail，还是希望提供安装协助？">
+<!ENTITY enigmail.setupWiz.pgWelcome.beginnersMode "我更喜欢标准配置（推荐给新手）">
+<!ENTITY enigmail.setupWiz.pgWelcome.advancedMode "我更喜欢扩展配置（推荐给高级用户）">
+<!ENTITY enigmail.setupWiz.pgWelcome.manualMode "我更喜欢手动配置（推荐给专家）">
+<!-- wizard: select account IDs step -->
 <!ENTITY enigmail.setupWiz.pgSelectId.title "选择身份标识">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "选择 Enigmail 所工作的帐号或身份标识">
-<!ENTITY enigmail.setupWiz.pgSelectId.desc "Enigmail 设置是指定帐号和身份标识，按缺省方式，Enigmail 将配置在你所有的帐号和身份                                                             标识上。如果你想有所不同，请选择指定下面的你希望 Enigmail 工作的帐号或身份标">
-<!ENTITY enigmail.setupWiz.pgSelectId.allIds "我想你会喜欢为所有的身份标识设置 Enigmail">
-<!ENTITY enigmail.setupWiz.pgSelectId.selectIds "我想你会喜欢只为以下身份标识设置 Enigmail:">
+<!ENTITY enigmail.setupWiz.pgSelectId.desc2 "您想为您的所有电子邮件账户/身份设置 Enigmail 吗？">
+<!ENTITY enigmail.setupWiz.pgSelectId.selectallIds "我想对我的所有账户/身份启用 Enigmail">
+<!ENTITY enigmail.setupWiz.pgSelectId.selectedIds "我只想对下列身份启用 Enigmail：">
 <!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>注意:</a> Enigmail 将总是验证每个帐号或身份标识邮件的数                                                             字签名，而无论它是否被允许或不">
-<!ENTITY enigmail.setupWiz.pgSign.title "数字签名">
-<!ENTITY enigmail.setupWiz.pgSign.subtitle "数字签名你所发出的电子邮件">
-<!ENTITY enigmail.setupWiz.pgSign.desc "Enigmail 允许你的邮件进行数字签名，它看起来象是电子版的信封签名，同时它也允许人                                                             们来确认这个邮件是否真的是你所发出的。这对发送邮件来说是个非常好的安全习惯。    ">
-<!ENTITY enigmail.setupWiz.pgSign.signAllMsg "你想按默认方式对你所有发出的邮件进行数字签名吗?">
-<!ENTITY enigmail.setupWiz.pgSign.yesSign "是的，我想签署我所有的电子邮件">
-<!ENTITY enigmail.setupWiz.pgSign.noSign "不，我想对那些需要签署的邮件创建规则">
-<!ENTITY enigmail.setupWiz.pgSettings.title "选项">
-<!ENTITY enigmail.setupWiz.pgSettings.subtitle "更改你的邮件设置以使 Enigmail 工作得更为可靠">
-<!ENTITY enigmail.setupWiz.pgSettings.desc "此向导能改变你的邮件设置以确保你系统中的数字签名和加密的邮件没有问题这些设置会有                                                             些你不必了解的技术上的变化，可是按默认设置用纯文本方式来撰写邮件是将稳妥一">
-<!ENTITY enigmail.setupWiz.pgSettings.changePref "你想更改一些默认选项以使 Enigmail 在你的系统中运行得更好吗?">
-<!ENTITY enigmail.setupWiz.pgSettings.details "细节...">
+<!-- wizard: install GnuPG step -->
+<!ENTITY enigmail.setupWiz.pgInstall.title "需要 GnuPG">
+<!ENTITY enigmail.setupWiz.pgInstall.desc "Enigmail 需要 GnuPG 才能实现密码学处理。
+本向导尝试了定位 GnuPG 可执行程序的位置，但未能找到。">
+<!ENTITY enigmail.setupWiz.pgInstall.installDesc1 "Enigmail 可以下载并为您启动 GnuPG 安装程序。
+如果您希望这样做，点击“安装 GnuPG”按钮以下载并安装 GnuPG。">
+<!ENTITY enigmail.setupWiz.pgInstall.installDesc2 "另外，如果您已经安装了 GnuPG，请手动使用“浏览”按钮指定 GnuPG 的路径。">
+<!ENTITY enigmail.setupWiz.pgInstall.locateDesc "请使用“浏览”按钮定位 GnuPG。">
+<!ENTITY enigmail.setupWiz.pgInstall.installButton "安装…">
+<!ENTITY enigmail.setupWiz.pgInstall.locateButton "浏览…">
+<!ENTITY enigmail.setupWiz.pgInstall.downloadLabel "正在下载 GnuPG…">
+<!ENTITY enigmail.setupWiz.pgInstall.installLabel "正在启动安装程序。请遵循 GnuPG 安装程序的向导指示。">
+<!ENTITY enigmail.setupWiz.pgInstall.installDone "安装完成。请继续本向导的下一页面，继续安装过程。">
+<!ENTITY enigmail.setupWiz.pgInstall.gnupgFound "找到了有效的 GnuPG 安装位置。">
+<!-- wizard: key selection step -->
 <!ENTITY enigmail.setupWiz.pgKeySel.title "选择密钥">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "创建一个用于数字签名和加密邮件的密钥">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc "我们检测到你已经有一个 OpenPGP 密钥. 你可以使用任何已经存在的密钥对你的电子邮件                                                             进行数字签名、加密和解密，也可以创建一个新的密钥">
+<!ENTITY enigmail.setupWiz.pgKeySel.desc2 "我们检测到您已经有了一个 OpenPGP 密钥。您可以使用您现有密钥中的任何一个，或者创建一个新的密钥对。">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey "我想为数字签名和加密邮件创建新的密钥对">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "我想为数字签名和加密邮件选择一个密钥:">
+<!-- wizard: key creation - password step -->
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "创建密钥">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "创建一个用于数字签名和加密邮件的密钥">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc1 "你需要有一个用于数字签名和加密电子邮件或读那些解密邮件的'密钥对'。                                                             一个密钥对有两个密钥, 一个是公钥，另一个是私">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.desc2 "你需要将你的公钥给你想数字签名或加密邮件给你的联系人。同时，你要将你的私钥安全                                                             保存。你不要删除它或没有任何保护地保留它。它用于读取那些人发给你的加密邮件。它同                                                          样可用加密你自己的邮件，因为它是安全的，它是由密码保护">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "请再次确认你输入的密码">
-<!ENTITY enigmail.setupWiz.pgSummary.title "总计">
-<!ENTITY enigmail.setupWiz.pgSummary.subtitle "请确认向导将要提交的这些更改">
-<!ENTITY enigmail.setupWiz.pgSummary.desc "即将完成! 点击'下一步'按钮, 向导将进行后继操作:">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys "此对话框将创建一对密钥：">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descPub "您的<html:b>公钥</html:b>是<html:b>给其他人</html:b>用以向您发送加密邮件的东西。您可以将它分发给任何人。">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1 "您的<html:b>私钥</html:b>是<html:b>仅供您自己使用</html:b>的用来解密这些邮件，以及签名要发出的邮件时使用。
+您应该不将它泄露给任何人。">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2 "您的<html:b>私钥</html:b>是<html:b>仅供您自己使用</html:b>的用来解密这些邮件，以及签名要发出的邮件时使用。
+您应该不将它泄露给任何人。
+为了您的私钥的安全，您需要在接下来的两个对话框中输入一个口令。">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descPass "您的<html:b>口令</html:b>是用来保护您的私钥的密码。它用以避免您的私钥被滥用。">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passContain "该口令应该是总计包含至少8个字符、数字和标点符号的短语。<html:b>不推荐</html:b>使用元音 (e.g. ä, é, ñ) 和特定语言的字符。">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "请再次确认您输入的口令">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passQuality "口令强度：">
+<!-- wizard: no key found step -->
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.title2 "创建或导入 OpenPGP 密钥">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc2 "您似乎还没有任何 OpenPGP 密钥。您想创建一个新密钥或者从已有文件中导入吗？">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey "我想导入我已有的公钥和私钥">
+<!-- wizard: import key page -->
+<!ENTITY enigmail.setupWiz.pgKeyImport.title "导入 OpenPGP 密钥">
+<!ENTITY enigmail.setupWiz.pgKeyImport.subtitle "指定要导入的文件">
+<!ENTITY enigmail.setupWiz.pgKeyImport.desc "请指定包含有要导入的公钥和私钥的文件。如果首个文件同时包含有公钥和私钥，私钥栏可留空。">
+<!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile "公钥文件">
+<!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile "私钥文件">
+<!-- wizard: key creation - key generation step -->
 <!ENTITY enigmail.setupWiz.pgKeygen.title "创建密钥">
-<!ENTITY enigmail.setupWiz.pgKeygen.subtitle "正在创建你的密钥">
+<!ENTITY enigmail.setupWiz.pgKeygen.subtitle "正在创建您的密钥">
+<!ENTITY enigmail.setupWiz.pgKeygen.keyGenComplete "您的密钥已生成">
+<!ENTITY enigmail.setupWiz.pgKeygen.revokeCertDesc "如果您的私钥丢失或泄露，您可能需要废除您的公钥
+以使其他人不在继续使用您的旧密钥。
+对于此目的，您需要进行证书废除。
+<html:br/>您将需要为此输入您的密码。">
+<!ENTITY enigmail.setupWiz.pgKeygen.revCertButton "创建证书废除">
+<!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title "谢谢你">
-<!ENTITY enigmail.setupWiz.pgComplete.desc "准备使用 Enigmail .<html:br></html:br><html:br></html:br>感谢你使用 Enigmail .">
-<!ENTITY enigmail.setupWiz.details.title "选项">
-<!ENTITY enigmail.setupWiz.details.subtitle "修改应用设置">
-<!ENTITY enigmail.setupWiz.details.imapOnDemand "关闭必要时加载IMAP组件">
-<!ENTITY enigmail.setupWiz.details.changingPrefs "此向导修改了以下选项:">
-<!ENTITY enigmail.setupWiz.details.noFlowedMsg "关闭文本流(RFC 2646)">
-<!ENTITY enigmail.setupWiz.details.viewAsPlain "以纯文本方式查看邮件">
-<!ENTITY enigmail.setupWiz.details.8bitEncoding "对发出的邮件使用8位编码">
-<!ENTITY enigmail.setupWiz.details.noComposeHTML "不撰写超文本信息">
-<!ENTITY enigmail.setupWiz.pgNoStart.title "退出向导">
-<!ENTITY enigmail.setupWiz.pgNoStart.desc "你选择了不使用向导来配置 Enigmail.                                                             <html:br></html:br><html:br></html:br>非常感谢你使用 Enigmai">
+<!ENTITY enigmail.setupWiz.pgComplete.desc "Enigmail 已经就绪，可以使用。<html:br></html:br><html:br></html:br>感谢您使用 Enigmail。">
+<!-- wizard: manual setup page -->
+<!ENTITY enigmail.setupWiz.pgExpert.title "手动配置 Enigmail">
+<!ENTITY enigmail.setupWiz.pgExpert.desc "您选择不使用 Enigmail 安装向导来进行配置。">
+<!ENTITY enigmail.setupWiz.pgExpert.keyManager "Enigmail 密钥管理器在这里可用。">
+<!ENTITY enigmail.setupWiz.pgExpert.expertSettings "导出设置在这里可用。">
+<!ENTITY enigmail.advancedIdentityDlg.title "高级 Enigmail 身份设置">
+<!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "附加我的公钥到邮件">
+<!ENTITY enigmail.addPhoto.question.label "您是否想添加下列图片到下列密钥？">
+<!ENTITY enigmail.addPhoto.title "添加照片到密钥">
 <!ENTITY enigmail.msgViewColumn.label "OpenPGP">
+<!ENTITY enigmail.msgViewColumn.tooltip "按照 OpenPGP 状态排序">
+<!ENTITY enigmail.addToRule.title "添加密钥到收件人规则">
+<!ENTITY enigmail.addToRule.useRuleButton.label "添加密钥到选中规则">
+<!ENTITY enigmail.addToRule.useRuleButton.accesskey "A">
+<!ENTITY enigmail.addToRule.newRuleButton.label "创建新规则">
+<!ENTITY enigmail.addToRule.newRuleButton.accesskey "N">
+<!ENTITY enigmail.savelogfile.label "保存日志到文件...">
+<!ENTITY enigmail.filterEditor.moveError.label "不支持在“永久解密”操作后再进行操作。">
