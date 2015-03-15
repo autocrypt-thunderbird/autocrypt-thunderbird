@@ -2043,7 +2043,7 @@ Enigmail.msg = {
    *
    * return: Boolean:
    *   - true:  use OpenPGP
-   *   - false: use SMIME
+   *   - false: use S/MIME
    *   - null:  dialog aborted - cancel sending
    */
   preferPgpOverSmime: function(sendFlags) {
@@ -2056,36 +2056,42 @@ Enigmail.msg = {
       if (gMsgCompose.compFields.securityInfo.requireEncryptMessage ||
          gMsgCompose.compFields.securityInfo.signMessage) {
 
-         var promptSvc = EnigmailCommon.getPromptSvc();
-         var prefAlgo = EnigmailCommon.getPref("mimePreferPgp");
-         if (prefAlgo == 1) {
-           var checkedObj={ value: null};
-           prefAlgo = promptSvc.confirmEx(window,
-                      EnigmailCommon.getString("enigConfirm"),
-                      EnigmailCommon.getString("pgpMime_sMime.dlg.text"),
-                      (promptSvc. BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_0) +
-                      (promptSvc. BUTTON_TITLE_CANCEL * promptSvc.BUTTON_POS_1) +
-                      (promptSvc. BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_2),
-                      EnigmailCommon.getString("pgpMime_sMime.dlg.pgpMime.button"),
-                      null,
-                      EnigmailCommon.getString("pgpMime_sMime.dlg.sMime.button"),
-                      EnigmailCommon.getString("dlgKeepSetting"),
-                      checkedObj);
-           if (checkedObj.value && (prefAlgo==0 || prefAlgo==2)) EnigmailCommon.setPref("mimePreferPgp", prefAlgo);
+         if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
+           // use S/MIME if it's enabled for saving drafts
+           return false;
          }
-         switch (prefAlgo) {
-         case 0:
-            // use OpenPGP and not S/MIME
-            gMsgCompose.compFields.securityInfo.requireEncryptMessage = false;
-            gMsgCompose.compFields.securityInfo.signMessage = false;
-            return true;
-         case 2:
-            // use S/MIME and not OpenPGP
-            return false;
-         case 1:
-         default:
-            // cancel or ESC pressed
-            return null;
+         else {
+           var promptSvc = EnigmailCommon.getPromptSvc();
+           var prefAlgo = EnigmailCommon.getPref("mimePreferPgp");
+           if (prefAlgo == 1) {
+             var checkedObj={ value: null};
+             prefAlgo = promptSvc.confirmEx(window,
+                        EnigmailCommon.getString("enigConfirm"),
+                        EnigmailCommon.getString("pgpMime_sMime.dlg.text"),
+                        (promptSvc. BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_0) +
+                        (promptSvc. BUTTON_TITLE_CANCEL * promptSvc.BUTTON_POS_1) +
+                        (promptSvc. BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_2),
+                        EnigmailCommon.getString("pgpMime_sMime.dlg.pgpMime.button"),
+                        null,
+                        EnigmailCommon.getString("pgpMime_sMime.dlg.sMime.button"),
+                        EnigmailCommon.getString("dlgKeepSetting"),
+                        checkedObj);
+             if (checkedObj.value && (prefAlgo==0 || prefAlgo==2)) EnigmailCommon.setPref("mimePreferPgp", prefAlgo);
+           }
+           switch (prefAlgo) {
+           case 0:
+              // use OpenPGP and not S/MIME
+              gMsgCompose.compFields.securityInfo.requireEncryptMessage = false;
+              gMsgCompose.compFields.securityInfo.signMessage = false;
+              return true;
+           case 2:
+              // use S/MIME and not OpenPGP
+              return false;
+           case 1:
+           default:
+              // cancel or ESC pressed
+              return null;
+           }
          }
       }
     }
@@ -2565,14 +2571,10 @@ Enigmail.msg = {
     if (useEnigmail == null) return false; // dialog aborted
     if (useEnigmail == false) return true; // use S/MIME
 
-
     let result = this.keySelection(enigmailSvc, sendFlags, 0, 0, fromAddr, [], []);
-
     if (! result) return false;
 
     let newSecurityInfo;
-
-    // TODO: need a solution for handling S/MIME
 
     try {
       if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIEnigMsgCompFields) {
@@ -2640,6 +2642,8 @@ Enigmail.msg = {
     case CiMsgCompDeliverMode.AutoSaveAsDraft:
       EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: detected save draft\n")
 
+      // saving drafts is simpler and works differently than the rest of Enigmail.
+      // All rules except account-settings are ignored.
       return this.saveDraftMessage();
     }
 
