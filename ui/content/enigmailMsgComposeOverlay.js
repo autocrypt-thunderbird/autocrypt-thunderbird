@@ -2522,6 +2522,84 @@ Enigmail.msg = {
     }
   },
 
+    // Save draft message. We do not want most of the other processing for encrypted mails here...
+  saveDraftMessage: function() {
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: saveDraftMessage()\n");
+
+    const nsIEnigmail = Components.interfaces.nsIEnigmail;
+
+    let doEncrypt = this.getAccDefault("enabled") && this.identity.getBoolAttribute("autoEncryptDrafts");
+
+    this.setDraftStatus();
+
+    if (! doEncrypt) {
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: drafts disabled\n");
+
+      try {
+        if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIEnigMsgCompFields) {
+          gMsgCompose.compFields.securityInfo.sendFlags = 0;
+        }
+      }
+      catch(ex) {}
+
+      return true;
+    }
+
+    let sendFlags = nsIEnigmail.SEND_PGP_MIME | nsIEnigmail.SEND_ENCRYPTED | nsIEnigmail.SAVE_MESSAGE;
+
+    if (this.trustAllKeys) {
+      sendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
+    }
+
+    let fromAddr = this.identity.email;
+    let userIdValue = this.getSenderUserId();
+    if (userIdValue) {
+      fromAddr = userIdValue;
+    }
+
+    let enigmailSvc = EnigmailCommon.getService(window);
+    if (! enigmailSvc) return true;
+
+    let result = this.keySelection(enigmailSvc, sendFlags, 0, 0, fromAddr, [], []);
+
+    if (! result) return false;
+
+    let newSecurityInfo;
+
+    // TODO: need a solution for handling S/MIME
+
+    try {
+      if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIEnigMsgCompFields) {
+        newSecurityInfo = gMsgCompose.compFields.securityInfo;
+      }
+      else {
+        throw "dummy";
+      }
+    }
+    catch (ex) {
+      try {
+        newSecurityInfo = Components.classes[this.compFieldsEnig_CID].createInstance(Components.interfaces.nsIEnigMsgCompFields);
+        if (newSecurityInfo) {
+          let oldSecurityInfo = gMsgCompose.compFields.securityInfo;
+          newSecurityInfo.init(oldSecurityInfo);
+          gMsgCompose.compFields.securityInfo = newSecurityInfo;
+        }
+      }
+      catch (ex) {
+        EnigmailCommon.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.saveDraftMessage", ex);
+        return false;
+      }
+    }
+
+    newSecurityInfo.sendFlags = result.sendFlags;
+    newSecurityInfo.UIFlags = 0;
+    newSecurityInfo.senderEmailAddr = fromAddr;
+    newSecurityInfo.recipients = fromAddr;
+    newSecurityInfo.bccRecipients = "";
+
+    return true;
+  },
+
   encryptMsg: function (msgSendType)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: msgSendType="+msgSendType+", Enigmail.msg.sendMode="+this.sendMode+", Enigmail.msg.statusEncrypted="+this.statusEncrypted+"\n");
@@ -2554,9 +2632,9 @@ Enigmail.msg = {
     case CiMsgCompDeliverMode.SaveAsDraft:
     case CiMsgCompDeliverMode.SaveAsTemplate:
     case CiMsgCompDeliverMode.AutoSaveAsDraft:
-      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: adding SAVE_MESSAGE\n")
-      sendFlags |= nsIEnigmail.SAVE_MESSAGE;
-      break;
+      EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: detected save draft\n")
+
+      return this.saveDraftMessage();
     }
 
     var msgCompFields = gMsgCompose.compFields;
@@ -2578,24 +2656,6 @@ Enigmail.msg = {
 
     this.identity = getCurrentIdentity();
     var encryptIfPossible = false;
-    if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
-      this.setDraftStatus();
-
-      if (! this.identity.getBoolAttribute("autoEncryptDrafts")) {
-        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: drafts disabled\n");
-        sendFlags &= ~ENCRYPT;
-
-        try {
-          if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIEnigMsgCompFields) {
-            gMsgCompose.compFields.securityInfo.sendFlags &= ~ENCRYPT;
-
-          }
-        }
-        catch(ex) {}
-
-        return true;
-      }
-    }
 
     if (gWindowLocked) {
       EnigmailCommon.alert(window, EnigmailCommon.getString("windowLocked"));
