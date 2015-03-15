@@ -2560,6 +2560,12 @@ Enigmail.msg = {
     let enigmailSvc = EnigmailCommon.getService(window);
     if (! enigmailSvc) return true;
 
+    let useEnigmail = this.preferPgpOverSmime(sendFlags);
+
+    if (useEnigmail == null) return false; // dialog aborted
+    if (useEnigmail == false) return true; // use S/MIME
+
+
     let result = this.keySelection(enigmailSvc, sendFlags, 0, 0, fromAddr, [], []);
 
     if (! result) return false;
@@ -2876,7 +2882,7 @@ Enigmail.msg = {
           // use S/MIME
           sendFlags = 0;
           return true;
-        }
+       }
 
        if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
          // always enable PGP/MIME if message is saved
