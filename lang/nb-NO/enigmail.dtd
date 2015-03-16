@@ -69,6 +69,7 @@
 <!ENTITY enigmail.messengermenu.accesskey "n">
 <!ENTITY enigmail.decryptverify.label "Dekrypter/Verifiser">
 <!ENTITY enigmail.importpublickey.label "Importer offentlig nøkkel">
+<!ENTITY enigmail.importKey.label "Importer nøkkel">
 <!ENTITY enigmail.savedecrypted.label "Lagre dekryptert melding">
 <!ENTITY enigmail.autoDecrypt.label "Dekrypter/verifiser meldinger automatisk">
 <!ENTITY enigmail.clearPassphrase.label "Tøm lagret passord">
@@ -76,6 +77,7 @@
 <!ENTITY enigmail.prefs.label "Instillinger">
 <!ENTITY enigmail.debugMenu.label "Feilsøk Enigmail">
 <!ENTITY enigmail.viewconsole.label "Vis konsoll">
+<!ENTITY enigmail.viewlog.label "Vis logg">
 <!ENTITY enigmail.generateKey.label "Generer nøkkel">
 <!ENTITY enigmail.help.label "Hjelp">
 <!ENTITY enigmail.about.title "Om Enigmail">
@@ -97,11 +99,15 @@
 <!ENTITY enigmail.setupWiz.accesskey "S">
 <!ENTITY enigmail.prefs.accesskey "P">
 <!ENTITY enigmail.viewconsole.accesskey "c">
+<!ENTITY enigmail.viewlog.accesskey "g">
 <!ENTITY enigmail.help.accesskey "H">
 <!ENTITY enigmail.about.accesskey "b">
 <!ENTITY enigmail.sendersKeyMenu.accesskey "K">
 <!ENTITY enigmail.securitybutton.label "Enigmail">
 <!ENTITY enigmail.securitybutton.tip "Enigmail sikkerhetsinstillinger">
+<!ENTITY enigmail.composetoolbar.header "Enigmail header">
+<!ENTITY enigmail.composetoolbar.label "Enigmail verktøylinje">
+<!ENTITY enigmail.composetoolbar.desc "Enigmail krypteringsinfo">
 <!ENTITY enigmail.signedsend.label "Signer melding">
 <!ENTITY enigmail.encryptedsend.label "Krypter melding">
 <!ENTITY enigmail.disableRules.label "Overse mottakerbestemte regler">
@@ -142,6 +148,7 @@
 <!ENTITY enigmail.defaultSigning.label "Signer meldinger som standard">
 <!ENTITY enigmail.defaultEncryption.label "Krypter meldinger til vanlig">
 <!ENTITY enigmail.usePGPMimeAlways.label "Bruk alltid PGP/MIME">
+<!ENTITY enigmail.afterDefaultsAndRules.label "Etter anvendelse av standardinnstillinger og regler">
 <!ENTITY enigmail.finallySignEncrypted.label "Signer krypterte meldinger">
 <!ENTITY enigmail.finallySignNotEncrypted.label "signer ukrypterte meldinger">
 <!ENTITY enigmail.autoEncryptDrafts.label "Krypter meldingskladd ved lagring">
@@ -150,11 +157,41 @@
 <!-- Sending Preferences -->
 <!ENTITY enigmail.SendingPrefs.label "Generelle innstillinger for sending">
 <!ENTITY enigmail.seeAccountSettings.label "Se også kontospesifikke innstillinger for Enigmail (se Kontoinnstillinger -> OpenPGP-sikkerhet)">
+<!ENTITY enigmail.encryptionModelConvenient.label "Opportunistiske krypteringsinnstillinger">
+<!ENTITY enigmail.encryptionModelManually.label "Manuelle krypteringsinnstillinger">
 <!ENTITY enigmail.keepCryptoSettingsForReply.label "Krypter/signer svar til krypterte/signerte meldinger">
 <!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "Når mulig; krypter/signer svar til krypterte/signerte meldinger">
 <!ENTITY enigmail.autoSendEncryptedOption.label "Automatisk send kryptert">
+<!ENTITY enigmail.autoSendEncryptedNever.label "Aldri">
+<!ENTITY enigmail.autoSendEncryptedNever.tooltip "Ikke automatisk send kryptert bortsett fra når spesifikt angitt i per mottaker-regel">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.label "Hvis mulig">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.tooltip "Send kryptert automatisk  når det for hver mottaker finnes minst en kjent og akseptert (se over) nøkkel, og ingen per mottaker-regler angir at kryptering ikke skal brukes.">
+<!ENTITY enigmail.acceptedKeysOption.label "For å sende kryptert, aksepter">
+<!ENTITY enigmail.acceptedKeysTrusted.label "Kun tiltrodde nøkler">
+<!ENTITY enigmail.acceptedKeysTrusted.tooltip "Aksepter kun nøkler som er signert av deg selv eller av personer du stoler på. Teknisk sett aksepterer du kun &quot;gyldige&quot; nøkler for kryptering.">
+<!ENTITY enigmail.acceptedKeysAllUsable.label "Alle anvendbare nøkler">
+<!ENTITY enigmail.acceptedKeysAllUsable.tooltip "Aksepter alle nøkler som verken er deaktivert av deg eller trukket tilbake ave eier eller utgått. Dette innebærer å bruke GPG-valget &quot;--trust-model always&quot;">
+<!ENTITY enigmail.confirmBeforeSendingOption.label "Bekreft før sending">
+<!ENTITY enigmail.confirmBeforeSendingNever.label "Aldri">
+<!ENTITY enigmail.confirmBeforeSendingNever.tooltip "Ikke vis dialogboksen for signering/kryptering før sending av meldinger">
+<!ENTITY enigmail.confirmBeforeSendingAlways.label "Alltid">
+<!ENTITY enigmail.confirmBeforeSendingAlways.tooltip "Alltid vis dialogboksen for signering/kryptering før sending av meldinger.">
+<!ENTITY enigmail.confirmBeforeSendingIfEncrypted.label "Hvis kryptert">
+<!ENTITY enigmail.confirmBeforeSendingIfEncrypted.tooltip "Vis dialogboksen for signering/kryptering før sending av en KRYPTERT melding.">
+<!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.label "Hvis ukryptert">
+<!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.tooltip "Vis dialogboksen for signering/kryptering før sending av en UKRYPTERT melding.">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.label "Hvis regler endret standard krypteringsinnstilling.">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.tooltip "Vis dialogboksen for signering/kryptering før sending hvis dine krypteringsvalg ble endret av en per mottaker-regel eller automatisk kryptering.">
 <!-- keySel Preferences -->
 <!ENTITY enigmail.recipientsSelectionOption.label "Hvordan skal vi velge nøkler?">
+<!ENTITY enigmail.assignKeysByRules.label "Basert på per mottaker-regler">
+<!ENTITY enigmail.assignKeysByRules.tooltip "Tilordne nøkler basert på per mottaker-regler. Tving spørsmål om å lage nye regler hvis dette er det eneste markerte valget.">
+<!ENTITY enigmail.assignKeysByEmailAddr.label "Basert på epostadresser i henhold til nøkkelhåndtereren">
+<!ENTITY enigmail.assignKeysByEmailAddr.tooltip "Tilordne nøkler basert på nøkler assosiert med epostadressene i nøkkelhåndtereren.">
+<!ENTITY enigmail.assignKeysManuallyIfMissing.label "Manuelt hvis nøkler mangler">
+<!ENTITY enigmail.assignKeysManuallyIfMissing.tooltip "Åpne dialog for å manuelt tilordne nøkler hvis de mangler">
+<!ENTITY enigmail.assignKeysManuallyAlways.label "Alltid (også) manuelt">
+<!ENTITY enigmail.assignKeysManuallyAlways.tooltip "Åpne alltid dialogboksen for å manuelt tilordne nøkler til slutt">
 <!ENTITY enigmail.defineRules.label "Endre regler ...">
 <!ENTITY enigmail.wrapHtmlBeforeSend.label "Pakk om signert HTML før sending">
 <!ENTITY enigmail.wrapHtmlBeforeSend.tooltip "Rediger teksten for å sikre at signaturen vil forbli intakt.">
@@ -166,19 +203,38 @@
 <!ENTITY enigmail.userSelectionList.label "Enigmail nøkkelvalg">
 <!ENTITY enigmail.usersNotFound.label "Mottaker ikke godkjent, ikke funnet, eller ikke til å stole på">
 <!ENTITY enigmail.keyExpiry.label "Utløp">
+<!ENTITY enigmail.uidValidity.label "Gyldighet">
 <!ENTITY enigmail.keySelection.label "Valg">
 <!ENTITY enigmail.keyId.label "NøkkelID">
+<!ENTITY enigmail.userSelSendSigned.label "Send signert">
+<!ENTITY enigmail.userSelSendSigned.accesskey "S">
+<!ENTITY enigmail.userSelSendEncrypted.label "Send kryptert">
+<!ENTITY enigmail.userSelSendEncrypted.accesskey "E">
 <!ENTITY enigmail.displayNoLonger.label "Ikke vis denne dialogen igjen om kryptering ikke kan gjennomføres">
 <!ENTITY enigmail.importMissingKeys.label "Last ned manglende nøkler">
 <!ENTITY enigmail.importMissingKeys.accesskey "I">
 <!ENTITY enigmail.importMissingKeys.tooltip "Prøv å importer manglende nøkler fra en nøkkeltjener">
 <!ENTITY enigmail.refreshKeys.label "Oppdater nøkkelliste">
 <!ENTITY enigmail.refreshKeys.accesskey "R">
+<!ENTITY enigmail.send.label "Send">
 <!ENTITY enigmail.perRecipientsOption.label "Lag mottakerbestemte regler">
 <!ENTITY enigmail.enigmailAttachDesc.label "Denne meldingen inneholder vedlegg. Hvordan vil du kryptere/signere dem?">
 <!ENTITY enigmail.enigEncryptAttachNone.label "Bare krypter/signer meldignsteksten, men ikke vedleggene">
+<!ENTITY enigmail.enigAttachNoneSign.label "Signer meldingsteksten, men ikke vedleggene">
+<!ENTITY enigmail.enigAttachNoneEncrypt.label "Krypter meldingsteksten, men ikke vedleggene">
+<!ENTITY enigmail.enigAttachNoneEncryptAndSign.label "Krypter og signer meldingsteksten, men ikke vedleggene">
 <!ENTITY enigmail.enigEncryptAttachInline.label "Krypter hvert vedlegg for seg selv, og send meldingen ved hjelp av innsidig PGP">
+<!ENTITY enigmail.enigAttachInlineSign.label "Signer hvert vedlegg separat og send meldingen som inline PGP">
+<!ENTITY enigmail.enigAttachInlineEncrypt.label "Krypter hvert vedlegg separat og send meldingen som inline PGP">
+<!ENTITY enigmail.enigAttachInlineEncryptAndSign.label "Krypter og signer hvert vedlegg separat og send meldingen som inline PGP">
 <!ENTITY enigmail.enigEncryptAttachPgpMime.label "Krypter/Signer hele meldingen ved å benytte PGP/MIME">
+<!ENTITY enigmail.enigAttachPgpMimeSign.label "Signer meldingen som en helhet og send den som PGP/MIME">
+<!ENTITY enigmail.enigAttachPgpMimeEncrypt.label "Krypter meldingen som en helhet og send den som PGP/MIME">
+<!ENTITY enigmail.enigAttachPgpMimeEncryptAndSign.label "Krypter og signer meldingen som en helhet og send den som PGP/MIME">
+<!ENTITY enigmail.enigEncryptAttachDontEncryptMsg.label "Ikke krypter/signer meldingen i det hele tatt">
+<!ENTITY enigmail.enigAttachDontEncryptMsgSign.label "Ikke signer meldingen i det hele tatt">
+<!ENTITY enigmail.enigAttachDontEncryptMsgEncrypt.label "Ikke krypter meldingen i det hele tatt">
+<!ENTITY enigmail.enigAttachDontEncryptMsgEncryptAndSign.label "Ikke krypter eller signer meldingen i det hele tatt">
 <!ENTITY enigmail.encryptAttachSkipDlg.label "Bruk den valgte metoden for alle fremtidige vedlegg">
 <!ENTITY enigmail.ctxDecryptOpen.label "Dekrypter og åpne">
 <!ENTITY enigmail.ctxDecryptSave.label "Dekrypter og lagre som...">
@@ -190,6 +246,10 @@
 <!ENTITY enigmail.ctxVerifyAtt.accesskey "V">
 <!ENTITY enigmail.detailsHdrButton.label "Details">
 <!ENTITY enigmail.revealAttachmentsButton.label "The names of the files attached are hidden. Press the 'Reveal' button to retrieve the original file names.">
+<!ENTITY enigmail.revealAttachments.button "Vis">
+<!ENTITY enigmail.exchangeGarbage.desc "Dette er en feilutformet PGP/MIME-melding fra MS Exchange. Hvis du ikke kan åpne vedleggene eller har problemer med å svare eller videresende meldingen trykk på &quot;Reparer melding&quot;-knappen.">
+<!ENTITY enigmail.exchangeGarbage.fixButton.label "Reparer melding">
+<!ENTITY enigmail.exchangeGarbage.waitMessage "Vennligst vent ...">
 <!ENTITY enigmail.amPrefTitle.label "OpenPGP Valg">
 <!ENTITY enigmail.amPrefDesc.label "Støtte for OpenPGP kryptering og signering av meldinger er gitt av Enigmail. Du trenger GnuPG(gpg) for å benytte denne funksjonen.">
 <!ENTITY enigmail.amPrefEnablePgp.label "Aktiver støtte for OpenPGP (Enigmail) for denne identiteten">
@@ -204,6 +264,10 @@
 <!ENTITY enigmail.encDlgSign.accesskey "S">
 <!ENTITY enigmail.encDlgPgpMime.label "Bruk PGP/MIME">
 <!ENTITY enigmail.encDlgPgpMime.accesskey "U">
+<!ENTITY enigmail.encDlgInlinePgp.label "Bruk Inline PGP">
+<!ENTITY enigmail.encDlgInlinePgp.accesskey "I">
+<!ENTITY enigmail.encDlgReset.label "Tilbakestill til standard">
+<!ENTITY enigmail.encDlgReset.accesskey "R">
 <!ENTITY enigmail.amPrefPgpHeader.label "Send 'OpenPGP' meldingstopp">
 <!ENTITY enigmail.amPrefPgpHeader.id.label "Send OpenPGP NøkkelID">
 <!ENTITY enigmail.amPrefPgpHeader.url.label "Send URL for nøkkelhenting:">
@@ -222,6 +286,13 @@
 <!ENTITY enigmail.keyManWindow.label "OpenPGP nøkkelstyring">
 <!ENTITY enigmail.keyManWindow.accesskey "y">
 <!ENTITY enigmail.singleRcptSettings.label "Enigmail - Mottakerinstillinger">
+<!ENTITY enigmail.compose.excesslength.label "Du har veldige lange linjer i eposten din. De bør håndteres annerledes for å unngå ugyldige signaturer.">
+<!ENTITY enigmail.compose.excesslength_action.label "Hvordan vil du fortsette?">
+<!ENTITY enigmail.wrapSelectionList.label "Velg tekstbrytning">
+<!ENTITY enigmail.compose.wrap_radio.label "Bryt tekst automatisk (gyldig signatur, men kanskje ikke optimalt utseende)">
+<!ENTITY enigmail.compose.sendasis_radio.label "Send uten endringer (og risiker en ugyldig signatur)">
+<!ENTITY enigmail.compose.use_mime_radio.label "Bruk PGP/MIME (gyldig signatur, men noen mottakere kan kanskje ikke lese meldingen)">
+<!ENTITY enigmail.compose.editmanually.label "Rediger manuelt">
 <!ENTITY enigmail.selKeysButton.label "Velg nøkkel/nøkler...">
 <!ENTITY enigmail.action.label "Gjerning">
 <!ENTITY enigmail.nextRule.label "Fortsett med neste regel for den gjeldende adressen">
@@ -265,6 +336,7 @@
 <!ENTITY enigmail.clearSearch.accesskey "C">
 <!ENTITY enigmail.searchKeyDlg.label "Last ned OpenPGP-nøkler">
 <!ENTITY enigmail.searchKeyDlgCapt.label "Funnet nøkler - Velg for å importere">
+<!ENTITY enigmail.searchKeyDlgSelAll.label "Merk/avmerk alle">
 <!ENTITY enigmail.created.label "Laget">
 <!ENTITY enigmail.valid.label "Gyldig">
 <!ENTITY enigmail.progress.label "Fremgang">
@@ -290,6 +362,8 @@
 <!ENTITY enigmail.keyTrust.marginalTrust.label "Jeg stoler marginalt på denne nøkkelen">
 <!ENTITY enigmail.keyTrust.fullTrust.label "Jeg stoler helt på denne nøkkelen">
 <!ENTITY enigmail.keyTrust.ultimateTrust.label "Jeg stoler fult og helt på denne nøkkelen">
+<!ENTITY enigmail.keyExpiry.title "Enigmail - Endre utløpsdato">
+<!ENTITY enigmail.keyExpiry.expiryKey.label "Nøkler som skal endres utløpsdato for:">
 <!ENTITY enigmail.keyMan.title "Enigmail Nøkkelstyring">
 <!ENTITY enigmail.keyMan.close.label "Avslutt vindu">
 <!ENTITY enigmail.keyMan.generate.label "Nytt nøkkelpar">
@@ -320,10 +394,12 @@
 <!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label "Kopier offentlige nøkler til utklippstavle">
 <!ENTITY enigmail.keyMan.refreshSelKeys.label "Oppdater valgte offentlige nøkler">
 <!ENTITY enigmail.keyMan.refreshAllKeys.label "Oppdater alle offentlige nøkler">
+<!ENTITY enigmail.keyMan.downloadContactKeys.label "Finn nøkler for alle kontakter">
 <!ENTITY enigmail.keyMan.ctxRefreshKey.label "Oppdater offentlige nøkler fra nøkkeltjener">
 <!ENTITY enigmail.keyMan.reload.label "Oppdater nøkkellager">
 <!ENTITY enigmail.keyMan.addPhoto.label "Add Photo">
 <!ENTITY enigmail.keyMan.manageUid.label "Håndter brukerider">
+<!ENTITY enigmail.keyMan.changeExpiry.label "Endre utløpsdato">
 <!ENTITY enigmail.keyMan.changePwd.label "Endre passord">
 <!ENTITY enigmail.keyMan.delKey.label "Slett nøkkel">
 <!ENTITY enigmail.keyMan.revokeKey.label "Trekk tilbake nøkkel">
@@ -362,6 +438,7 @@
 <!ENTITY enigmail.keyMan.reload.accesskey "R">
 <!ENTITY enigmail.keyMan.addPhoto.accesskey "P">
 <!ENTITY enigmail.keyMan.manageUid.accesskey "M">
+<!ENTITY enigmail.keyMan.changeExpiry.accesskey "E">
 <!ENTITY enigmail.keyMan.changePwd.accesskey "P">
 <!ENTITY enigmail.keyMan.viewSig.accesskey "S">
 <!ENTITY enigmail.keyMan.showInvalidKeys.accesskey "D">
@@ -378,7 +455,12 @@
 <!ENTITY enigmail.keyMan.selectAll.accesskey "A">
 <!ENTITY enigmail.keyMan.sendKeys.accesskey "S">
 <!ENTITY enigmail.keyMan.createMail.accesskey "C">
+<!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "F">
 <!ENTITY enigmail.keyMan.selectAll.key "A">
+<!ENTITY enigmail.keyMan.keyDetails.key "I">
+<!ENTITY enigmail.keyMan.refreshKey.key "R">
+<!ENTITY enigmail.keyMan.viewSig.key "S">
+<!ENTITY enigmail.keySearch.selectAll.key "A">
 <!ENTITY enigmail.viewKeySigDlg.title "Signaturliste">
 <!ENTITY enigmail.viewKeySigDlg.sigForKey.label "Signaturer for nøkkel:">
 <!ENTITY enigmail.viewKeySigDlg.sigType.label "Signaturtype">
@@ -400,6 +482,7 @@
 <!ENTITY enigmail.keyDetails.size.label "Størrelse">
 <!ENTITY enigmail.keyDetails.created.label "Laget">
 <!ENTITY enigmail.keyDetails.expiry.label "Utløp">
+<!ENTITY enigmail.keyDetails.usage.label "Bruk">
 <!ENTITY enigmail.keyDetails.calcTrust.label "Nøkkelvaliditet">
 <!ENTITY enigmail.keyDetails.ownerTrust.label "Eierpålitelighet">
 <!ENTITY enigmail.keyDetails.fingerprint.label "Fingeravtrykk">
@@ -458,19 +541,63 @@
 <!ENTITY enigmail.setupWiz.title "Kom igjang med Enigmail">
 <!ENTITY enigmail.setupWiz.yes "ja">
 <!ENTITY enigmail.setupWiz.no "Nei takk">
+<!ENTITY enigmail.setupWiz.pgIntro.title "Velkommen til Enigmails oppsettsveileder">
+<!ENTITY enigmail.setupWiz.pgIntro.desc "Det virker som om dette er første gang du startet Enigmail på denne datamaskinen. 
+For å kunne bruke Enigmail må du konfigurere det først. 
+Veilederen kan hjelpe deg gjennom konfigurasjonsprosessen.">
+<!ENTITY enigmail.setupWiz.pgIntro.desc2 "Vil du sette opp Enigmail nå eller senere?">
+<!ENTITY enigmail.setupWiz.pgIntro.startNow "Start konfigurasjon nå.">
+<!ENTITY enigmail.setupWiz.pgIntro.startLater "Konfigurer Enigmail senere">
+<!ENTITY enigmail.setupWiz.pgWelcome.title "Hvordan vil du konfigurere Enigmail?">
+<!ENTITY enigmail.setupWiz.pgWelcome.manualOrAuto "Vil du konfigurere Enigmail manuelt, eller vil du ha hjelp i oppsettsprosessen?">
+<!ENTITY enigmail.setupWiz.pgWelcome.beginnersMode "Jeg vil ha en standardkonfigurasjon (anbefalt for nybegynnere)">
+<!ENTITY enigmail.setupWiz.pgWelcome.advancedMode "Jeg vil ha en utvidet konfigurasjon (anbefalt for avanserte brukere)">
+<!ENTITY enigmail.setupWiz.pgWelcome.manualMode "Jeg vil konfigurere manuelt (anbefalt for ekspertbrukere)">
 <!-- wizard: select account IDs step -->
 <!ENTITY enigmail.setupWiz.pgSelectId.title "Velg identitet">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Velg kontoene eller identitetene du ønsker at Enigmail skal virke med">
+<!ENTITY enigmail.setupWiz.pgSelectId.desc2 "Vil du sette opp Enigmail for alle e-postkontoene/identitetene dine?">
+<!ENTITY enigmail.setupWiz.pgSelectId.selectallIds "Jeg vil bruke Enigmail for alle mine kontoer / identiteter">
+<!ENTITY enigmail.setupWiz.pgSelectId.selectedIds "Jeg vil bruke Enigmail kun for de følgende identitetene:">
 <!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>MER:</a> Enigmail vil alltid prøve å bekrefte signaturer i eposter, om den er aktivert for en konto eller ikke">
+<!-- wizard: install GnuPG step -->
+<!ENTITY enigmail.setupWiz.pgInstall.title "GnuPG påkrevd">
+<!ENTITY enigmail.setupWiz.pgInstall.desc "Enigmail trenger GnuPG for å gjøre de kryptografiske operasjonene.  
+Installasjonsveilederen kunne ikke finne en allerede installsert versjon av GnuPG.">
+<!ENTITY enigmail.setupWiz.pgInstall.installDesc1 "Enigmail kan laste ned GnuPG og starte installasjonen for deg. 
+Klikk på &quot;Installer GnuPG&quot;-knappen for å laste ned og installere GnuPG.">
+<!ENTITY enigmail.setupWiz.pgInstall.installDesc2 "Om du allere har installert GnuPG bruk &quot;Bla gjennom&quot;-knappen for å angi plasseringe til GnuPG manuelt.">
+<!ENTITY enigmail.setupWiz.pgInstall.locateDesc "Angi plasseringen til GnuPG ved å bruke bla gjennom-knappen">
+<!ENTITY enigmail.setupWiz.pgInstall.installButton "Installer GnuPG ...">
+<!ENTITY enigmail.setupWiz.pgInstall.locateButton "Bla igjennom ...">
+<!ENTITY enigmail.setupWiz.pgInstall.downloadLabel "Laster ned GnuPG ...">
+<!ENTITY enigmail.setupWiz.pgInstall.installLabel "Starter installasjonen. Følg trinnene i GnuPG-installasjonsveilederen.">
+<!ENTITY enigmail.setupWiz.pgInstall.installDone "Installasjon fullført. Fortsett til neste side i veilederen for å fortsette oppsettsprosessen.">
+<!ENTITY enigmail.setupWiz.pgInstall.gnupgFound "Gyldig GnuPG-installasjon funnet.">
 <!-- wizard: key selection step -->
 <!ENTITY enigmail.setupWiz.pgKeySel.title "Nøkkelvalg">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "Lag en nøkkel for å signere og kryptere eposter">
+<!ENTITY enigmail.setupWiz.pgKeySel.desc2 "Vi har oppdaget at du allerede har en OpenPGP-nøkkel. Du kan enten 
+bruke en av dine eksisterende nøkler eller lage et nytt nøkkelpar.">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey "Jeg ønsker å lage et nytt nøkkelpar for å signere og kryptere eposter">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Jeg ønsker å velge en av de følgende nøklene for å signere og kryptere epostene:">
 <!-- wizard: key creation - password step -->
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "Lag nøkkel">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Lag en nøkkel for å signere og kryptere eposter">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys "Denne dialogen lager et sett med to nøkler:">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descPub "Din <html:b>offentlige nøkkel</html:b> brukes av <html:b> andre</html:b> for å sende deg krypterte eposter. Du kan dele denne med alle. ">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1 "Din <html:b>private nøkkel</html:b> er <html:b> kun for deg</html:b> for å dekryptere motatte meldinger og for å sende signerte meldinger.  Du bør ikke dele den med noen.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2 "Din <html:b>private nøkkel</html:b> er <html:b> kun for deg</html:b> for å dekryptere motatte meldinger og for å sende signerte meldinger.  Du bør ikke dele den med noen. 
+For å beskytte den private nøkkelen din vil du bli bedt om angi et passord i de to følgende dialogboksene.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descPass "<html:b>Passordet</html:b> er for å beskytte den private nøkkelen din. Det forhindrer misbruk av din private nøkkel.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passContain "Passordet bør være en setning som inneholder minst åtte tegn. Bruk bokstaver, tall og skilletegn (punktum, komma mv). Språkspesifikke bokstaver med tødler o.l. (eks ã, é, ñ) anbefales <html:b>ikke</html:b>">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Vennligst bekreft passordet ved å skrive det en gang til">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passQuality "Passordkvalitet:">
+<!-- wizard: no key found step -->
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.title2 "Lag eller importer OpenPGP-nøkler">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc2 "Det ser ikke ut til at du har noen OpenPGP-nøkler ennå. Vil du lage en ny nøkkel, eller 
+
+vil du importere nøkler fra en fil?">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey "Jeg har eksisterende offentlige og private nøkler jeg ønsker å importere">
 <!-- wizard: import key page -->
 <!ENTITY enigmail.setupWiz.pgKeyImport.title "Importer OpenPGP-nøkler">
@@ -481,9 +608,20 @@
 <!-- wizard: key creation - key generation step -->
 <!ENTITY enigmail.setupWiz.pgKeygen.title "Nøkkelgenerering">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle "Din nøkkel blir nå laget">
+<!ENTITY enigmail.setupWiz.pgKeygen.keyGenComplete "Nøkkelen din er blitt generert">
+<!ENTITY enigmail.setupWiz.pgKeygen.revokeCertDesc "I tilfelle den private nøkkelen din går tapt eller kommer på avveie kan det hende du trengere å tilbakekalle den offentlige nøkkelen 
+slik at andre ikke fortsetter å bruke den gamle nøkkelen din. 
+For å kunne gjøre dette trenger du et tilbakekallingssertifikat. 
+<html:br/> Du vil bli bedt om å angi et passord for dette.">
+<!ENTITY enigmail.setupWiz.pgKeygen.revCertButton "Lag tilbakekallingssertifikat">
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title "Takk">
 <!ENTITY enigmail.setupWiz.pgComplete.desc "Enigmail nå klar til å bli brukt.<html:br></html:br><html:br></html:br>Takk for at du bruker Enigmail.">
+<!-- wizard: manual setup page -->
+<!ENTITY enigmail.setupWiz.pgExpert.title "Manuelt oppsett av Engimail">
+<!ENTITY enigmail.setupWiz.pgExpert.desc "Du har valgt å ikke bruke oppsettsveilederen for å konfigurere Enigmail">
+<!ENTITY enigmail.setupWiz.pgExpert.keyManager "Enigmails nøkkelhåndterer er tilgjengelig her">
+<!ENTITY enigmail.setupWiz.pgExpert.expertSettings "Ekspertinnstillinger er tilgjengelig her">
 <!ENTITY enigmail.advancedIdentityDlg.title "Avanserte Enigmail identitets-innstillinger">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "Legg til min offentlige nøkkel som vedlegg til meldinger">
 <!ENTITY enigmail.addPhoto.question.label "Ønsker du å legge til følgende bilde til følgende nøkkel?">
@@ -495,3 +633,5 @@
 <!ENTITY enigmail.addToRule.useRuleButton.accesskey "A">
 <!ENTITY enigmail.addToRule.newRuleButton.label "Lag en ny regel">
 <!ENTITY enigmail.addToRule.newRuleButton.accesskey "N">
+<!ENTITY enigmail.savelogfile.label "Lagre loggen til Fil ...">
+<!ENTITY enigmail.filterEditor.moveError.label "Handlinger som kommer etter &quot;Dekrypter permanent&quot; støttes ikke.">

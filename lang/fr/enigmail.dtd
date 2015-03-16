@@ -555,12 +555,25 @@
 <!-- wizard: key selection step -->
 <!ENTITY enigmail.setupWiz.pgKeySel.title "Sélection de clef">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle "Création d'une clef pour signer et chiffrer les messages">
+<!ENTITY enigmail.setupWiz.pgKeySel.desc2 "Nous avons détectés que vous avez déjà un clef OpenPGP.
+                                                      Vous pouvez utiliser une de vos clefs existantes, ou créer une nouvelle paire de clefs.">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey "Je veux créer une nouvelle paire de clefs pour signer et chiffrer mes messages">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Je préfère sélectionner une des clef ci-dessous pour signer et chiffrer mes messages :">
 <!-- wizard: key creation - password step -->
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title "Créer une clef">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Créer une clef pour signer et chiffrer les messages">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys "Ce dialogue va créer une paire de deux clefs:">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descPub "Votre <html:b>clef publique</html:b> est <html:b>pour autres</html:b> pour envoyer des messages chiffrés à vous. Vous pouvez le distribuer à tout le monde.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1 "Votre <html:b>clef privée</html:b> est <html:b>pour vous</html:b> pour déchiffrer des messages chiffrés pour vous,
+                                                      et pour signér vos messages à autres. Vous devez donner la à personne.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2 "Votre <html:b>clef privée</html:b> est <html:b>pour vous</html:b> pour déchiffrer des messages chiffrés pour vous,
+                                                      et pour signér vos messages à autres. Vous devez donner la à personne.
+                                                      Pour protéger votre clef privée, vous serez invité à entrer une phrase secrète dans les deux dialogues suivantes.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descPass "Votre <html:b>phrase secrète</html:b> est un mot de passe pour protéger votre clef privée. Elle empêche mésusage de votre clef privée.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passContain "La phrase secrète doit contenir au moins 8 charactères, chiffres et ponctuation. Diacritiques (par exemple ä, é, ñ) et
+                                                      caractères spécifiques à la langue <html:b>ne</html:b> sont <html:b>pas</html:b> recommandés.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Veuillez confirmer votre phrase secrète en la saisissant à nouveau">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passQuality "Qualité de la phrase secrète:">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey "J'ai des clefs publiques et privées que je souhaite importer">
 <!-- wizard: import key page -->
 <!ENTITY enigmail.setupWiz.pgKeyImport.title "Importer des clefs OpenPGP">
