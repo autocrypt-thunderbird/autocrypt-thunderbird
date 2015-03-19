@@ -102,6 +102,7 @@ Enigmail.edit = {
     else {
       this.enablePgp.checked=false;
       this.cryptoChoicesEnabled=false;
+      this.pgpMimeMode.checked = true;
       this.advancedSettings = {
         openPgpHeaderMode: 0,
         openPgpUrlName: "",
