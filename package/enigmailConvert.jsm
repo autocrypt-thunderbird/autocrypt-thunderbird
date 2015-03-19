@@ -337,9 +337,6 @@ decryptAttachment = function(attachment, strippedName) {
           args = args.concat(Ec.passwdCommand());
           args.push("-d");
 
-          var passphrase = null;
-          var passwdObj = {};
-          var useAgentObj = {};
           var statusMsgObj = {};
           var cmdLineObj   = {};
           var exitCode = -1;
@@ -356,9 +353,6 @@ decryptAttachment = function(attachment, strippedName) {
                 if (s) o.name = s;
               }
 
-              if (Ec.requirePassword()) {
-                pipe.write(passphrase+"\n");
-              }
               pipe.write(o.data);
               pipe.close();
 
@@ -367,15 +361,6 @@ decryptAttachment = function(attachment, strippedName) {
 
 
           do {
-
-            if (!Ec.getPassphrase(null, passwdObj, useAgentObj, 0)) {
-              Ec.ERROR_LOG("enigmailConvert.jsm:  Error - no passphrase supplied\n");
-              o.status = STATUS_FAILURE;
-              resolve(o);
-              return;
-            }
-
-            passphrase = passwdObj.value;
 
             var proc = Ec.execStart(enigmailSvc.agentPath, args, false, null, listener, statusFlagsObj);
             if (!proc) {
@@ -393,11 +378,8 @@ decryptAttachment = function(attachment, strippedName) {
             }
             else if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_FAILED) {
               Ec.DEBUG_LOG("enigmailConvert.jsm: decryptAttachment: decryption failed\n");
-              if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
-                Ec.clearCachedPassphrase();
-              }
               if (enigmailSvc.useGpgAgent()) {
-                // since we cannot find out via getPassphrase if the user wants to cancel
+                // since we cannot find out if the user wants to cancel
                 // we should ask
                 let msg = Ec.getString("converter.decryptAtt.failed", [ attachment.name , self.subject ]);
 
@@ -665,8 +647,6 @@ decryptINLINE = function (mime) {
 
 
     var enigmailSvc = Ec.getService();
-    var passwdObj = {};
-    var useAgentObj = {};
     var exitCodeObj    = new Object();
     var statusFlagsObj = new Object();
     var userIdObj      = new Object();
@@ -715,12 +695,6 @@ decryptINLINE = function (mime) {
           }
         }
 
-        if (!Ec.getPassphrase(null, passwdObj, useAgentObj, 0)) {
-          Ec.ERROR_LOG("enigmailConvert.jsm:  Error - no passphrase supplied\n");
-          this.foundPGP = -1;
-          return -1;
-        }
-
         plaintext = enigmailSvc.decryptMessage(null, uiFlags, ciphertext, signatureObj, exitCodeObj, statusFlagsObj,
                                                keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj, encToDetailsObj);
         if (!plaintext || plaintext.length == 0) {
@@ -731,12 +705,9 @@ decryptINLINE = function (mime) {
           }
 
           if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_FAILED) {
-            if (statusFlagsObj.value & nsIEnigmail.BAD_PASSPHRASE) {
-              Ec.clearCachedPassphrase();
-            }
 
             if (enigmailSvc.useGpgAgent()) {
-              // since we cannot find out via getPassphrase if the user wants to cancel
+              // since we cannot find out if the user wants to cancel
               // we should ask
               let msg = Ec.getString("converter.decryptBody.failed", this.subject);
 

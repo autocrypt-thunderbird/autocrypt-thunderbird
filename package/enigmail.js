@@ -658,7 +658,6 @@ Enigmail.prototype = {
 
     obsServ.addObserver(this, NS_XPCOM_SHUTDOWN_OBSERVER_ID, false);
 
-    Ec.stillActive();
     this.initialized = true;
 
     EC.DEBUG_LOG("enigmail.js: Enigmail.initialize: END\n");
@@ -892,18 +891,9 @@ Enigmail.prototype = {
       if (! domWindow) {
         domWindow = Ec.getBestParentWin();
       }
-      Ec.alert(domWindow, EC.getString("oldGpgVersion", [ gpgVersion ]));
+      Ec.alert(domWindow, EC.getString("oldGpgVersion14", [ gpgVersion ]));
       throw Components.results.NS_ERROR_FAILURE;
     }
-
-    if (Ec.getGpgFeature("version-deprecated")) {
-      if (! domWindow) {
-        domWindow = Ec.getBestParentWin();
-      }
-      Ec.alertPref(domWindow, EC.getString("deprecatedGpgVersion", [ gpgVersion ]),
-        "warnDeprecatedGnuPG");
-    }
-
 
     this.gpgconfPath = this.resolveToolPath("gpgconf");
     this.connGpgAgentPath = this.resolveToolPath("gpg-connect-agent");
@@ -964,151 +954,146 @@ Enigmail.prototype = {
       EC.DEBUG_LOG("enigmail.js: detectGpgAgent: no GPG_AGENT_INFO variable set\n");
       this.gpgAgentInfo.preStarted = false;
 
-      if (Ec.getGpgFeature("supports-gpg-agent")) {
-        Ec.gpgAgentIsOptional = false;
-        if (Ec.getGpgFeature("autostart-gpg-agent")) {
-          EC.DEBUG_LOG("enigmail.js: detectGpgAgent: gpg 2.0.16 or newer - not starting agent\n");
-        }
-        else {
-          var command = null;
+      Ec.gpgAgentIsOptional = false;
+      if (Ec.getGpgFeature("autostart-gpg-agent")) {
+        EC.DEBUG_LOG("enigmail.js: detectGpgAgent: gpg 2.0.16 or newer - not starting agent\n");
+      }
+      else {
+        var command = null;
 
-          var outStr = "";
-          var errorStr = "";
-          var exitCode = -1;
+        var outStr = "";
+        var errorStr = "";
+        var exitCode = -1;
 
-          if (this.connGpgAgentPath && this.connGpgAgentPath.isExecutable()) {
-            // try to connect to a running gpg-agent
+        if (this.connGpgAgentPath && this.connGpgAgentPath.isExecutable()) {
+          // try to connect to a running gpg-agent
 
-            EC.DEBUG_LOG("enigmail.js: detectGpgAgent: gpg-connect-agent is executable\n");
+          EC.DEBUG_LOG("enigmail.js: detectGpgAgent: gpg-connect-agent is executable\n");
 
-            this.gpgAgentInfo.envStr = DUMMY_AGENT_INFO;
+          this.gpgAgentInfo.envStr = DUMMY_AGENT_INFO;
 
-            command = this.connGpgAgentPath.QueryInterface(Ci.nsIFile);
+          command = this.connGpgAgentPath.QueryInterface(Ci.nsIFile);
 
-            EC.CONSOLE_LOG("enigmail> "+command.path+"\n");
-
-            try {
-              subprocess.call({
-                command: command,
-                environment: Ec.envList,
-                stdin: "/echo OK\n",
-                charset: null,
-                done: function(result) {
-                  EC.DEBUG_LOG("detectGpgAgent detection terminated with "+result.exitCode+"\n");
-                  exitCode = result.exitCode;
-                  outStr = result.stdout;
-                  errorStr = result.stderr;
-                  if (result.stdout.substr(0,2) == "OK") exitCode = 0;
-                },
-                mergeStderr: false
-              }).wait();
-            } catch (ex) {
-              EC.ERROR_LOG("enigmail.js: detectGpgAgent: "+command.path+" failed\n");
-              EC.DEBUG_LOG("  enigmail> DONE with FAILURE\n");
-              exitCode = -1;
-            }
-            Ec.DEBUG_LOG("  enigmail> DONE\n");
-
-            if (exitCode == 0) {
-              EC.DEBUG_LOG("enigmail.js: detectGpgAgent: found running gpg-agent\n");
-              return;
-            }
-            else {
-              EC.DEBUG_LOG("enigmail.js: detectGpgAgent: no running gpg-agent. Output='"+outStr+"' error text='"+errorStr+"'\n");
-            }
-
-          }
-
-          // and finally try to start gpg-agent
-          var args = [];
-          var commandFile = this.resolveToolPath("gpg-agent");
-          var agentProcess = null;
-
-          if ((! commandFile) || (! commandFile.exists())) {
-            commandFile = this.resolveToolPath("gpg-agent2");
-          }
-
-          if (commandFile  && commandFile.exists()) {
-            command = commandFile.QueryInterface(Ci.nsIFile);
-          }
-
-          if (command == null) {
-            EC.ERROR_LOG("enigmail.js: detectGpgAgent: gpg-agent not found\n");
-            Ec.alert(domWindow, EC.getString("gpgAgentNotStarted", [ this.agentVersion ]));
-            throw Components.results.NS_ERROR_FAILURE;
-          }
-        }
-
-        if ((! EC.isDosLike()) && (! Ec.getGpgFeature("autostart-gpg-agent"))) {
-
-          // create unique tmp file
-          var ds = Cc[DIR_SERV_CONTRACTID].getService();
-          var dsprops = ds.QueryInterface(Ci.nsIProperties);
-          var tmpFile = dsprops.get("TmpD", Ci.nsIFile);
-          tmpFile.append("gpg-wrapper.tmp");
-          tmpFile.createUnique(tmpFile.NORMAL_FILE_TYPE, DEFAULT_FILE_PERMS);
-          args = [ command.path,
-                   tmpFile.path,
-                  "--sh", "--no-use-standard-socket",
-                  "--daemon",
-                  "--default-cache-ttl", (Ec.getMaxIdleMinutes()*60).toString(),
-                  "--max-cache-ttl", "999999" ];  // ca. 11 days
+          EC.CONSOLE_LOG("enigmail> "+command.path+"\n");
 
           try {
-            var process = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
-            var exec = Ec.getInstallLocation().clone();
-            exec.append("wrappers");
-            exec.append("gpg-agent-wrapper.sh");
-            process.init(exec);
-            process.run(true, args, args.length);
-
-            if (! tmpFile.exists()) {
-              EC.ERROR_LOG("enigmail.js: detectGpgAgent no temp file created\n");
-            }
-            else {
-              outStr = readFile(tmpFile);
-              tmpFile.remove(false);
-              exitCode = 0;
-            }
+            subprocess.call({
+              command: command,
+              environment: Ec.envList,
+              stdin: "/echo OK\n",
+              charset: null,
+              done: function(result) {
+                EC.DEBUG_LOG("detectGpgAgent detection terminated with "+result.exitCode+"\n");
+                exitCode = result.exitCode;
+                outStr = result.stdout;
+                errorStr = result.stderr;
+                if (result.stdout.substr(0,2) == "OK") exitCode = 0;
+              },
+              mergeStderr: false
+            }).wait();
           } catch (ex) {
-            EC.ERROR_LOG("enigmail.js: detectGpgAgent: failed with '"+ex+"'\n");
+            EC.ERROR_LOG("enigmail.js: detectGpgAgent: "+command.path+" failed\n");
+            EC.DEBUG_LOG("  enigmail> DONE with FAILURE\n");
             exitCode = -1;
           }
+          Ec.DEBUG_LOG("  enigmail> DONE\n");
 
           if (exitCode == 0) {
-            this.gpgAgentInfo.envStr = extractAgentInfo(outStr);
-            EC.DEBUG_LOG("enigmail.js: detectGpgAgent: started -> "+this.gpgAgentInfo.envStr+"\n");
-            this.gpgAgentProcess = this.gpgAgentInfo.envStr.split(":")[1];
+            EC.DEBUG_LOG("enigmail.js: detectGpgAgent: found running gpg-agent\n");
+            return;
           }
           else {
-            EC.ERROR_LOG("enigmail.js: detectGpgAgent: gpg-agent output: "+outStr+"\n");
-            Ec.alert(domWindow, EC.getString("gpgAgentNotStarted", [ this.agentVersion ]));
-            throw Components.results.NS_ERROR_FAILURE;
+            EC.DEBUG_LOG("enigmail.js: detectGpgAgent: no running gpg-agent. Output='"+outStr+"' error text='"+errorStr+"'\n");
           }
+
+        }
+
+        // and finally try to start gpg-agent
+        var args = [];
+        var commandFile = this.resolveToolPath("gpg-agent");
+        var agentProcess = null;
+
+        if ((! commandFile) || (! commandFile.exists())) {
+          commandFile = this.resolveToolPath("gpg-agent2");
+        }
+
+        if (commandFile  && commandFile.exists()) {
+          command = commandFile.QueryInterface(Ci.nsIFile);
+        }
+
+        if (command == null) {
+          EC.ERROR_LOG("enigmail.js: detectGpgAgent: gpg-agent not found\n");
+          Ec.alert(domWindow, EC.getString("gpgAgentNotStarted", [ this.agentVersion ]));
+          throw Components.results.NS_ERROR_FAILURE;
+        }
+      }
+
+      if ((! EC.isDosLike()) && (! Ec.getGpgFeature("autostart-gpg-agent"))) {
+
+        // create unique tmp file
+        var ds = Cc[DIR_SERV_CONTRACTID].getService();
+        var dsprops = ds.QueryInterface(Ci.nsIProperties);
+        var tmpFile = dsprops.get("TmpD", Ci.nsIFile);
+        tmpFile.append("gpg-wrapper.tmp");
+        tmpFile.createUnique(tmpFile.NORMAL_FILE_TYPE, DEFAULT_FILE_PERMS);
+        args = [ command.path,
+                 tmpFile.path,
+                "--sh", "--no-use-standard-socket",
+                "--daemon",
+                "--default-cache-ttl", (Ec.getMaxIdleMinutes()*60).toString(),
+                "--max-cache-ttl", "999999" ];  // ca. 11 days
+
+        try {
+          var process = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
+          var exec = Ec.getInstallLocation().clone();
+          exec.append("wrappers");
+          exec.append("gpg-agent-wrapper.sh");
+          process.init(exec);
+          process.run(true, args, args.length);
+
+          if (! tmpFile.exists()) {
+            EC.ERROR_LOG("enigmail.js: detectGpgAgent no temp file created\n");
+          }
+          else {
+            outStr = readFile(tmpFile);
+            tmpFile.remove(false);
+            exitCode = 0;
+          }
+        } catch (ex) {
+          EC.ERROR_LOG("enigmail.js: detectGpgAgent: failed with '"+ex+"'\n");
+          exitCode = -1;
+        }
+
+        if (exitCode == 0) {
+          this.gpgAgentInfo.envStr = extractAgentInfo(outStr);
+          EC.DEBUG_LOG("enigmail.js: detectGpgAgent: started -> "+this.gpgAgentInfo.envStr+"\n");
+          this.gpgAgentProcess = this.gpgAgentInfo.envStr.split(":")[1];
         }
         else {
-          this.gpgAgentInfo.envStr = DUMMY_AGENT_INFO;
-          var envFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
-          initPath(envFile, this.determineGpgHomeDir());
-          envFile.append("gpg-agent.conf");
-
-          var data="default-cache-ttl " + (Ec.getMaxIdleMinutes()*60)+"\n";
-          data += "max-cache-ttl 999999";
-          if (! envFile.exists()) {
-            try {
-              var flags = 0x02 | 0x08 | 0x20;
-              var fileOutStream = Cc[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Ci.nsIFileOutputStream);
-              fileOutStream.init(envFile, flags, 0600, 0);
-              fileOutStream.write(data, data.length);
-              fileOutStream.flush();
-              fileOutStream.close();
-            }
-            catch (ex) {} // ignore file write errors
-          }
+          EC.ERROR_LOG("enigmail.js: detectGpgAgent: gpg-agent output: "+outStr+"\n");
+          Ec.alert(domWindow, EC.getString("gpgAgentNotStarted", [ this.agentVersion ]));
+          throw Components.results.NS_ERROR_FAILURE;
         }
       }
       else {
-        EC.DEBUG_LOG("enigmail.js: detectGpgAgent - gpg 1.x found\n");
+        this.gpgAgentInfo.envStr = DUMMY_AGENT_INFO;
+        var envFile = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
+        initPath(envFile, this.determineGpgHomeDir());
+        envFile.append("gpg-agent.conf");
+
+        var data="default-cache-ttl " + (Ec.getMaxIdleMinutes()*60)+"\n";
+        data += "max-cache-ttl 999999";
+        if (! envFile.exists()) {
+          try {
+            var flags = 0x02 | 0x08 | 0x20;
+            var fileOutStream = Cc[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Ci.nsIFileOutputStream);
+            fileOutStream.init(envFile, flags, 0600, 0);
+            fileOutStream.write(data, data.length);
+            fileOutStream.flush();
+            fileOutStream.close();
+          }
+          catch (ex) {} // ignore file write errors
+        }
       }
     }
     EC.DEBUG_LOG("enigmail.js: detectGpgAgent: GPG_AGENT_INFO='"+this.gpgAgentInfo.envStr+"'\n");
@@ -1154,8 +1139,6 @@ Enigmail.prototype = {
     EC.DEBUG_LOG("enigmail.js: Enigmail.simpleExecCmd: exitCode = "+exitCodeObj.value+"\n");
     EC.DEBUG_LOG("enigmail.js: Enigmail.simpleExecCmd: errOutput = "+errOutput+"\n");
 
-    Ec.stillActive();
-
     return outputData;
   },
 
@@ -1166,20 +1149,11 @@ Enigmail.prototype = {
     EC.WRITE_LOG("enigmail.js: Enigmail.execCmd: subprocess = '"+command.path+"'\n");
 
     if ((typeof input) != "string") input = "";
-    var prependPassphrase = ((typeof passphrase) == "string");
 
     var envList = [];
     envList = envList.concat(Ec.envList);
 
-    var preInput;
-
-    if (prependPassphrase) {
-      preInput = passphrase;
-      input = "\n" + input;
-
-    } else {
-      preInput = "";
-    }
+    var preInput = "";
 
     if (input.length == 0 && preInput.length == 0)
 
@@ -1241,8 +1215,6 @@ Enigmail.prototype = {
     }
 
     EC.CONSOLE_LOG(errorMsgObj.value+"\n");
-
-    Ec.stillActive();
 
     return outputData;
   },
@@ -2417,23 +2389,10 @@ Enigmail.prototype = {
     if (! args)
         return null;
 
-    var passphrase = null;
     var signMessage = (sendFlags & nsIEnigmail.SEND_SIGNED);
 
     if (signMessage ) {
       args = args.concat(Ec.passwdCommand());
-
-      var passwdObj = {};
-      var useAgentObj = {};
-
-      if (!Ec.getPassphrase(parent, passwdObj, useAgentObj, 0)) {
-         EC.ERROR_LOG("enigmail.js: Enigmail.encryptAttachment: Error - no passphrase supplied\n");
-
-         statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
-         return null;
-      }
-
-      if (!useAgentObj.value) passphrase = passwdObj.value;
     }
 
     var inFilePath  = Ec.getEscapedFilename(getFilePath(inFile.QueryInterface(Ci.nsIFile)));
@@ -2444,7 +2403,7 @@ Enigmail.prototype = {
     var statusMsgObj   = {};
     var cmdErrorMsgObj = {};
 
-    var msg = this.execCmd(this.agentPath, args, passphrase, "",
+    var msg = this.execCmd(this.agentPath, args, null, "",
                       exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
 
     if (exitCodeObj.value != 0) {
@@ -2537,24 +2496,8 @@ Enigmail.prototype = {
 
     statusFlagsObj.value = 0;
 
-    var passphrase = null;
-    var passwdObj = {};
-    var useAgentObj = {};
-
-    if (!Ec.getPassphrase(parent, passwdObj, useAgentObj, 0)) {
-      EC.ERROR_LOG("enigmail.js: Enigmail.decryptAttachment: Error - no passphrase supplied\n");
-
-      statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
-      return null;
-    }
-
-    passphrase = passwdObj.value;
-
     var listener = Ec.newSimpleListener(
       function _stdin(pipe) {
-        if (Ec.requirePassword()) {
-          pipe.write(passphrase+"\n");
-        }
         pipe.write(byteData);
         pipe.close();
       });

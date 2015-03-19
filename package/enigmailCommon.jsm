@@ -93,10 +93,6 @@ var gDispatchThread = null;
 var gEnigExtensionVersion;
 var gEnigInstallLocation;
 var gCachedPassphrase = null;
-var gCacheTimer = null;
-
-var _passwdAccessTimes = 0;
-var _lastActiveTime = 0;
 
 var gEncryptedUris = [];
 
@@ -1508,11 +1504,8 @@ var EnigmailCommon = {
    * @return: true: password is required / false: no password required
    */
   requirePassword: function () {
-    if (this.enigmailSvc.useGpgAgent()) {
-      return false;
-    }
 
-    return (! this.getPref("noPassphrase"));
+    return false;
   },
 
   /**
@@ -2100,8 +2093,7 @@ var EnigmailCommon = {
     determine if a specific feature is available in the GnuPG version used
 
     @featureName:  String; one of the following values:
-      version-supported    - is the gpg version supported at all (true for gpg >= 1.4.2)
-      version-deprecated   - is the gpg version deprecated (true for gpg < 2.0)
+      version-supported    - is the gpg version supported at all (true for gpg >= 2.0.7)
       supports-gpg-agent   - is gpg-agent is usually provided (true for gpg >= 2.0)
       autostart-gpg-agent  - is gpg-agent started automatically by gpg (true for gpg >= 2.0.16)
       keygen-passphrase    - can the passphrase be specified when generating keys (false for gpg 2.1 and 2.1.1)
@@ -2129,9 +2121,7 @@ var EnigmailCommon = {
 
     switch(featureName) {
     case 'version-supported':
-      return (vc.compare(gpgVersion, "1.4.2") >= 0);
-    case 'version-deprecated':
-      return (vc.compare(gpgVersion, "2.0") < 0);
+      return (vc.compare(gpgVersion, "2.0.7") >= 0);
     case 'supports-gpg-agent':
       return (vc.compare(gpgVersion, "2.0") >= 0);
     case 'autostart-gpg-agent':
@@ -2158,187 +2148,6 @@ var EnigmailCommon = {
     return maxIdleMinutes;
   },
 
-  haveCachedPassphrase: function () {
-    this.DEBUG_LOG("enigmailCommon.jsm: haveCachedPassphrase: \n");
-
-    var havePassphrase = ((typeof gCachedPassphrase) == "string");
-
-    if (!havePassphrase)
-      return false;
-
-    var curDate = new Date();
-    var currentTime = curDate.getTime();
-
-    var maxIdleMinutes = this.getMaxIdleMinutes();
-    var delayMillisec = maxIdleMinutes*60*1000;
-
-    var expired = ((currentTime - getLastActiveTime()) >= delayMillisec);
-
-  //  this.DEBUG_LOG("enigmailCommon.jsm: haveCachedPassphrase: ")
-  //  this.DEBUG_LOG("currentTime="+currentTime+", _lastActiveTime="+this._lastActiveTime+", expired="+expired+"\n");
-
-    if (expired && (_passwdAccessTimes <= 0)) {
-      // Too much idle time; forget cached password
-      gCachedPassphrase = null;
-      havePassphrase = false;
-
-      this.WRITE_LOG("enigmailCommon.jsm: haveCachedPassphrase: CACHE IDLED OUT\n");
-    }
-
-    return havePassphrase;
-  },
-
-  stillActive: function () {
-    this.DEBUG_LOG("enigmailCommon.jsm: stillActive: \n");
-
-    // Update last active time
-    var curDate = new Date();
-    setLastActiveTime(curDate.getTime());
-    // this.DEBUG_LOG("enigmailCommon.jsm: stillActive: _lastActiveTime="+this._lastActiveTime+"\n");
-  },
-
-  clearCachedPassphrase: function () {
-    this.DEBUG_LOG("enigmailCommon.jsm: clearCachedPassphrase: \n");
-
-    gCachedPassphrase = null;
-  },
-
-  setCachedPassphrase: function (passphrase) {
-    this.DEBUG_LOG("enigmailCommon.jsm: setCachedPassphrase: \n");
-
-    gCachedPassphrase = passphrase;
-    this.stillActive();
-
-    var maxIdleMinutes = this.getMaxIdleMinutes();
-
-    var createTimerType = null;
-    const nsITimer = Ci.nsITimer;
-
-    if (this.haveCachedPassphrase() && (_passwdAccessTimes > 0) && (maxIdleMinutes <= 0)) {
-      // we remember the passphrase for at most 1 minute
-      createTimerType = nsITimer.TYPE_ONE_SHOT;
-      maxIdleMinutes = 1;
-    }
-    else if (this.haveCachedPassphrase() && (maxIdleMinutes > 0)) {
-      createTimerType = nsITimer.TYPE_REPEATING_SLACK;
-    }
-
-    if (createTimerType != null) {
-      // Start timer
-      if (gCacheTimer)
-        gCacheTimer.cancel();
-
-      var delayMillisec = maxIdleMinutes*60*1000;
-
-      gCacheTimer = Cc[NS_TIMER_CONTRACTID].createInstance(nsITimer);
-
-      if (!gCacheTimer) {
-        this.ERROR_LOG("enigmailCommon.jsm: setCachedPassphrase: Error - failed to create timer\n");
-        throw Components.results.NS_ERROR_FAILURE;
-      }
-
-      gCacheTimer.init(this, delayMillisec,
-                        createTimerType);
-
-      this.DEBUG_LOG("enigmailCommon.jsm: setCachedPassphrase: gCacheTimer="+gCacheTimer+"\n");
-    }
-  },
-
-  getPassphrase: function (domWindow, passwdObj, useAgentObj, rememberXTimes) {
-
-    this.DEBUG_LOG("enigmailCommon.jsm: getPassphrase:\n");
-
-    useAgentObj.value = false;
-    try {
-      var noPassphrase = this.getPref("noPassphrase");
-      useAgentObj.value = this.enigmailSvc.useGpgAgent();
-
-      if (noPassphrase || useAgentObj.value) {
-        passwdObj.value = "";
-        return true;
-      }
-
-    }
-    catch(ex) {}
-
-    var maxIdleMinutes = this.getMaxIdleMinutes();
-
-    if (this.haveCachedPassphrase()) {
-      passwdObj.value = gCachedPassphrase;
-
-      if (_passwdAccessTimes > 0) {
-        --_passwdAccessTimes;
-
-        if (_passwdAccessTimes <= 0 && maxIdleMinutes <= 0) {
-          this.clearCachedPassphrase();
-        }
-      }
-      return true;
-    }
-
-    // Obtain password interactively
-    var checkObj = new Object();
-
-    var promptMsg = this.getString("enterPassOrPin");
-    passwdObj.value = "";
-    checkObj.value = true;
-
-    var checkMsg = (maxIdleMinutes>0) ? this.getString("rememberPass", [ maxIdleMinutes ]) : "";
-
-    var success;
-
-    var promptService = Cc[NS_PROMPTSERVICE_CONTRACTID].getService(Ci.nsIPromptService);
-
-    try {
-      success = promptService.promptPassword(domWindow,
-                                           this.getString("enigPrompt"),
-                                           promptMsg,
-                                           passwdObj,
-                                           checkMsg,
-                                           checkObj);
-    }
-    catch(ex) {
-      // domWindow is not always available
-      success = promptService.promptPassword(null,
-                                           this.getString("enigPrompt"),
-                                           promptMsg,
-                                           passwdObj,
-                                           checkMsg,
-                                           checkObj);
-
-    }
-
-    if (!success)
-      return false;
-
-    this.DEBUG_LOG("enigmailCommon.jsm:: GetPassphrase: got passphrase\n");
-
-    // remember the passphrase for accessing serveral times in a sequence
-
-    if (rememberXTimes) _passwdAccessTimes = rememberXTimes;
-
-    // Remember passphrase only if necessary
-    if ((checkObj.value && (maxIdleMinutes > 0)) || rememberXTimes)
-      this.setCachedPassphrase(passwdObj.value, rememberXTimes);
-
-    return true;
-  },
-
-  clearPassphrase: function (win) {
-    this.DEBUG_LOG("enigmailCommon.jsm: clearPassphrase:\n");
-
-    var enigmailSvc = this.getService(win);
-    if (!enigmailSvc)
-      return;
-
-    if (enigmailSvc.useGpgAgent(win)) {
-      this.alert(win, this.getString("passphraseCannotBeCleared"));
-    }
-    else {
-      this.clearCachedPassphrase();
-      this.alertPref(win, this.getString("passphraseCleared"), "warnClearPassphrase");
-    }
-  },
 
   getLocalFileApi: function () {
     return Ci.nsIFile;
@@ -2392,24 +2201,7 @@ var EnigmailCommon = {
 
     statusFlagsObj.value = 0;
 
-    var passphrase = null;
     var proc = null;
-    var useAgentObj = {value: false};
-
-    if (needPassphrase) {
-      args = args.concat(this.passwdCommand());
-
-      var passwdObj = new Object();
-
-      if (!this.getPassphrase(domWindow, passwdObj, useAgentObj, 0)) {
-         this.ERROR_LOG("enigmailCommon.jsm: execStart: Error - no passphrase supplied\n");
-
-         statusFlagsObj.value |= nsIEnigmail.MISSING_PASSPHRASE;
-         return null;
-      }
-
-      passphrase = passwdObj.value;
-    }
 
     listener.command = command;
 
@@ -2423,16 +2215,6 @@ var EnigmailCommon = {
         charset: null,
         bufferedOutput: true,
         stdin: function (pipe) {
-          if (needPassphrase) {
-            // Write to child STDIN
-            // (ignore errors, because child may have exited already, closing STDIN)
-            try {
-              if (EnigmailCommon.requirePassword()) {
-                 pipe.write(passphrase+"\n");
-              }
-            } catch (ex) {}
-          }
-
           if (listener.stdin) listener.stdin(pipe);
         },
         stdout: function(data) { listener.stdout(data); },
@@ -2490,8 +2272,6 @@ var EnigmailCommon = {
     }
 
     this.CONSOLE_LOG(this.convertFromUnicode(errorMsgObj.value)+"\n");
-
-    this.stillActive();
 
     return exitCode;
   },
@@ -2806,11 +2586,6 @@ var EnigmailCommon = {
       }
     }
 
-    if (retStatusObj.statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
-      // "Unremember" passphrase on decryption failure
-      this.clearCachedPassphrase();
-    }
-
     if (exitCode != 0) {
       // Error processing
       this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: command execution exit code: "+exitCode+"\n");
@@ -2956,14 +2731,6 @@ var EnigmailCommon = {
 
     if (typeof(gKeyAlgorithms[fromMailAddr]) != "string") {
       // hash algorithm not yet known
-      var passwdObj   = new Object();
-      var useAgentObj = new Object();
-      // Get the passphrase and remember it for the next 2 subsequent calls to gpg
-      if (!this.getPassphrase(null, passwdObj, useAgentObj, 2)) {
-        this.ERROR_LOG("enigmailCommon.jsm: determineHashAlgorithm: Error - no passphrase supplied\n");
-
-        return 3;
-      }
 
       var testUiFlags = nsIEnigmail.UI_TEST;
 
@@ -3013,7 +2780,6 @@ var EnigmailCommon = {
         // Abormal return
         if (retStatusObj.statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
           // "Unremember" passphrase on error return
-          this.clearCachedPassphrase();
           retStatusObj.errorMsg = this.getString("badPhrase");
         }
         this.alert(win, retStatusObj.errorMsg);
@@ -3153,10 +2919,6 @@ var EnigmailCommon = {
     // Error processing
     this.DEBUG_LOG("enigmailCommon.jsm: encryptMessageEnd: command execution exit code: "+exitCode+"\n");
 
-    if (retStatusObj.statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
-      // "Unremember" passphrase on error return
-      this.clearCachedPassphrase();
-    }
 
     if (retStatusObj.statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
       retStatusObj.errorMsg = this.getString("badPhrase");
@@ -3215,23 +2977,9 @@ var EnigmailCommon = {
     args = args.concat(this.passwdCommand());
     args.push("--list-packets");
 
-    var passphrase = null;
-    var passwdObj = new Object();
-    var useAgentObj = new Object();
-
-    if (!this.getPassphrase(parent, passwdObj, useAgentObj, 0)) {
-      this.ERROR_LOG("enigmailCommon.jsm: getAttachmentFileName: Error - no passphrase supplied\n");
-      return null;
-    }
-
-    passphrase = passwdObj.value;
-
     var listener = this.newSimpleListener(
       function _stdin (pipe) {
           EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: getAttachmentFileName: _stdin\n");
-          if (EnigmailCommon.requirePassword()) {
-            pipe.write(passphrase+"\n");
-          }
           pipe.write(byteData);
           pipe.write("\n");
           pipe.close();
@@ -3292,13 +3040,6 @@ var timerObserver = {
     EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: timerObserver.observe: topic='"+aTopic+"' \n");
 
     if (aTopic == "timer-callback") {
-      // Cause cached password to expire, if need be
-      if (!EnigmailCommon.haveCachedPassphrase()) {
-        // No cached password; cancel repeating timer
-        if (gCacheTimer)
-          gCacheTimer.cancel();
-      }
-
     }
     else {
       EnigmailCommon.DEBUG_LOG("enigmailCommon.jsm: timerObserver.observe: no handler for '"+aTopic+"'\n");
@@ -3581,14 +3322,6 @@ function ConfigureEnigmail(win, startingPreferences) {
 
   EnigmailCommon.setPref("configuredVersion", EnigmailCommon.getVersion());
   EnigmailCommon.savePrefs();
-}
-
-function getLastActiveTime() {
-  return _lastActiveTime;
-}
-
-function setLastActiveTime(timeVal) {
-  _lastActiveTime = timeVal;
 }
 
 

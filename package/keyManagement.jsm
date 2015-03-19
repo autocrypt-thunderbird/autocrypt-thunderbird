@@ -108,10 +108,6 @@ KeyEditor.prototype = {
 
     if (exitCode == 0) exitCode = this._exitCode;
 
-    if (exitCode == 0 && typeof(this._inputData) == "object" && this._inputData.usePassphrase) {
-      Ec.stillActive();
-    }
-
     Ec.DEBUG_LOG("keyManagmenent.jsm: KeyEditor.done: returning exitCode "+exitCode+"\n");
 
     parentCallback(exitCode, this.errorMsg);
@@ -157,7 +153,6 @@ KeyEditor.prototype = {
         r.exitCode=-2;
         r.quitNow=true;
         this.errorMsg=Ec.getString("badPhrase");
-        Ec.clearCachedPassphrase();
       }
       if (txt.indexOf("[GNUPG:] NO_CARD_AVAILABLE")>=0) {
         Ec.DEBUG_LOG("keyManagmenent.jsm: KeyEditor.processLine: detected missing card\n");
@@ -261,28 +256,6 @@ var EnigmailKeyMgmt = {
 
     var statusFlags = new Object();
 
-    var passphrase = "";
-    var useAgentObj = new Object();
-
-    if (needPassphrase) {
-      args=args.concat(Ec.passwdCommand());
-
-      var passwdObj = new Object();
-
-      if (!Ec.getPassphrase(parent, passwdObj, useAgentObj, 0)) {
-         Ec.ERROR_LOG("keyManagmenent.jsm: editKey: Error - no passphrase supplied\n");
-
-         parentCallback(-1, Ec.getString("noPassphrase"));
-         return -1;
-      }
-
-      passphrase = passwdObj.value;
-    }
-    else
-    {
-      useAgentObj.value = true;
-    }
-
     args=args.concat(["--no-tty", "--status-fd", "1", "--logger-fd", "1", "--command-fd", "0"]);
     if (userId) args=args.concat(["-u", userId]);
     var editCmdArr;
@@ -322,9 +295,6 @@ var EnigmailKeyMgmt = {
         charset: null,
         environment: Ec.getEnvList(),
         stdin: function (stdin) {
-          if (needPassphrase && Ec.requirePassword()) {
-            stdin.write(passphrase+"\n");
-          }
           keyEdit.setStdin(stdin);
         },
         stdout: function(data) {
