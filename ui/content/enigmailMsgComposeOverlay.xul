@@ -105,12 +105,17 @@
                 oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"/>
 
           <!-- PGP/MIME state / toggle menu -->
-          <menuseparator advanced="true"/>
+          <menuseparator/>
           <menuitem id="enigmail_compose_pgpmime_item"
-                advanced="true"
-                accesskey="&enigmail.sendPGPMime.accesskey;"
-                label="&enigmail.pgpMime.label;"
-                oncommand="Enigmail.msg.doPgpButton('toggle-final-mime');"/>
+                accesskey="&enigmail.usePgpMime.accesskey;"
+                label="&enigmail.usePgpMime.label;"
+                oncommand="Enigmail.msg.setFinalSendMode('final-pgpmimeYes');"/>
+
+          <menuitem id="enigmail_compose_inline_item"
+                accesskey="&enigmail.useInline.accesskey;"
+                label="&enigmail.useInline.label;"
+                checked="false"
+                oncommand="Enigmail.msg.setFinalSendMode('final-pgpmimeNo');"/>
 
           <menuseparator/>
 

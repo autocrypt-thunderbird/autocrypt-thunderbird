@@ -96,6 +96,7 @@ Enigmail.msg = {
   statusEncryptedStr: "???",
   statusSignedStr:    "???",
   statusPGPMimeStr:   "???",
+  statusInlinePGPStr:  "???",
 
   sendProcess: false,
   nextCommandId: null,
@@ -260,7 +261,8 @@ Enigmail.msg = {
       // reset status strings in menu to useful defaults
       this.statusEncryptedStr = EnigmailCommon.getString("encryptNo");
       this.statusSignedStr = EnigmailCommon.getString("signNo", [""]);
-      this.statusPGPMimeStr = EnigmailCommon.getString("pgpmimeNo");
+      this.statusPGPMimeStr = EnigmailCommon.getString("pgpmimeYes");
+      this.statusInlinePGPStr = EnigmailCommon.getString("pgpmimeNo");
     }
 
     // reset default send settings, unless we have changed them already
@@ -590,6 +592,7 @@ Enigmail.msg = {
     this.statusEncryptedStr = "???";
     this.statusSignedStr =    "???";
     this.statusPGPMimeStr =   "???";
+    this.statusInlinePGPStr = "???";
     this.enableRules = true;
     this.identity = null;
     this.sendProcess = false;
@@ -1391,7 +1394,7 @@ Enigmail.msg = {
   //   - this.statusEncrypt, this.statusSign, this.statusPGPMime
   // - uses as OUTPUT:
   //   - resulting icon symbols
-  //   - this.statusEncryptStr, this.statusSignStr, this.statusPGPMimeStr
+  //   - this.statusEncryptStr, this.statusSignStr, this.statusPGPMimeStr, this.statusInlinePGPStr
   updateStatusBar: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.updateStatusBar()\n");
@@ -1575,26 +1578,20 @@ Enigmail.msg = {
       }
     }
 
-    // update pgpmime menu-text
-    var pgpmimeStr = null;
-    switch (this.statusPGPMime) {
-      case EnigmailCommon.ENIG_FINAL_NO:
-        pgpmimeStr = EnigmailCommon.getString("pgpmimeAutoNo");
-        break;
-      case EnigmailCommon.ENIG_FINAL_FORCENO:
-        pgpmimeStr = EnigmailCommon.getString("pgpmimeForceNo");
-        break;
-      case EnigmailCommon.ENIG_FINAL_YES:
-        pgpmimeStr = EnigmailCommon.getString("pgpmimeAutoYes");
-        break;
-      case EnigmailCommon.ENIG_FINAL_FORCEYES:
-        pgpmimeStr = EnigmailCommon.getString("pgpmimeForceYes");
-        break;
-      case EnigmailCommon.ENIG_FINAL_CONFLICT:
-        pgpmimeStr = EnigmailCommon.getString("pgpmimeConflictNo");
-        break;
+    // update pgp mime/inline PGP menu-text
+    if (this.statusPGPMime == EnigmailCommon.ENIG_FINAL_YES) {
+      this.statusPGPMimeStr = EnigmailCommon.getString("pgpmimeAuto");
     }
-    this.statusPGPMimeStr = pgpmimeStr;
+    else {
+      this.statusPGPMimeStr = EnigmailCommon.getString("pgpmimeNormal");
+    }
+
+    if (this.statusPGPMime == EnigmailCommon.ENIG_FINAL_NO) {
+      this.inlinePGPStr = EnigmailCommon.getString("inlinePGPAuto");
+    }
+    else {
+      this.inlinePGPStr = EnigmailCommon.getString("inlinePGPNormal");
+    }
 
     let allowAttachOwnKey = false;
     if (this.identity.getIntAttribute("pgpKeyMode") > 0) {
@@ -1710,7 +1707,34 @@ Enigmail.msg = {
     elem = document.getElementById("enigmail_compose_pgpmime_item"+postfix);
     if (elem) {
       elem.setAttribute("label",this.statusPGPMimeStr);
+
+      switch (this.statusPGPMime) {
+        case EnigmailCommon.ENIG_FINAL_YES:
+        case EnigmailCommon.ENIG_FINAL_FORCEYES:
+          elem.setAttribute("checked", "true");
+          break;
+        default:
+          elem.setAttribute("checked", "false");
+      }
     }
+
+    elem = document.getElementById("enigmail_compose_inline_item"+postfix);
+    if (elem) {
+      elem.setAttribute("label",this.inlinePGPStr);
+
+      switch (this.statusPGPMime) {
+        case EnigmailCommon.ENIG_FINAL_NO:
+        case EnigmailCommon.ENIG_FINAL_FORCENO:
+        case EnigmailCommon.ENIG_FINAL_CONFLICT:
+        case EnigmailCommon.ENIG_FINAL_UNDEF:
+          elem.setAttribute("checked", "true");
+          break;
+        default:
+          elem.setAttribute("checked", "false");
+      }
+
+    }
+
 
 /*
     this.setChecked("enigmail_final_encryptDefault"+postfix, this.encryptForced == EnigmailCommon.ENIG_UNDEF);
