@@ -1422,47 +1422,54 @@ Enigmail.msg = {
     encBroadcaster.removeAttribute("disabled");
     signBroadcaster.removeAttribute("disabled");
     attachBroadcaster.removeAttribute("disabled");
-
+/*
+encryptMessageAuto=Encrypt Message (auto)
+encryptMessageNorm=Encrypt Message
+signMessageAuto=Sign Message (auto)
+signMessageNorm=Sign Message*/
     // process resulting icon symbol and status strings for encrypt mode
     var encSymbol = null;
     var doEncrypt = false;
+    var encStr = null;
     switch (this.statusEncrypted) {
       case EnigmailCommon.ENIG_FINAL_FORCENO:
         encSymbol = "forceNo";
+        encStr = EnigmailCommon.getString("encryptMessageNorm");
         break;
       case EnigmailCommon.ENIG_FINAL_FORCEYES:
         doEncrypt = true;
         encSymbol = "forceYes";
+        encStr = EnigmailCommon.getString("encryptMessageNorm");
         break;
       case EnigmailCommon.ENIG_FINAL_NO:
         encSymbol = "inactiveNone";
+        encStr = EnigmailCommon.getString("encryptMessageAuto");
         break;
       case EnigmailCommon.ENIG_FINAL_YES:
         doEncrypt = true;
         encSymbol = "activeNone";
+        encStr = EnigmailCommon.getString("encryptMessageAuto");
         break;
       case EnigmailCommon.ENIG_FINAL_CONFLICT:
         encSymbol = "inactiveConflict";
+        encStr = EnigmailCommon.getString("encryptMessageAuto");
         break;
     }
-    var encStr = null;
     var encReasonStr = null;
     if (doEncrypt) {
-      encStr = EnigmailCommon.getString("encryptOn");
       if (this.reasonEncrypted && this.reasonEncrypted != "") {
         encReasonStr = EnigmailCommon.getString("encryptOnWithReason", [ this.reasonEncrypted ]);
       }
       else {
-        encReasonStr = encStr;
+        encReasonStr = EnigmailCommon.getString("encryptOn");
       }
     }
     else {
-      encStr = EnigmailCommon.getString("encryptOff");
       if (this.reasonEncrypted && this.reasonEncrypted != "") {
         encReasonStr = EnigmailCommon.getString("encryptOffWithReason", [ this.reasonEncrypted ]);
       }
       else {
-        encReasonStr = encStr;
+        encReasonStr = EnigmailCommon.getString("encryptOff");
       }
     }
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js:   encSymbol="+encSymbol+"  encReasonStr="+encReasonStr+"\n");
@@ -1479,39 +1486,38 @@ Enigmail.msg = {
     // process resulting icon symbol for sign mode
     var signSymbol = null;
     var doSign = false;
+    var signStr = "";
     switch (this.statusSigned) {
       case EnigmailCommon.ENIG_FINAL_FORCENO:
         signSymbol = "forceNo";
-        signStr = EnigmailCommon.getString("signOff");
+        signStr = EnigmailCommon.getString("signMessageNorm");
         signReasonStr = EnigmailCommon.getString("signOffWithReason", [ this.reasonSigned ]);
         break;
       case EnigmailCommon.ENIG_FINAL_FORCEYES:
         doSign = true;
         signSymbol = "forceYes";
-        signStr = EnigmailCommon.getString("signOn");
+        signStr = EnigmailCommon.getString("signMessageNorm");
         signReasonStr = EnigmailCommon.getString("signOnWithReason", [ this.reasonSigned ]);
         break;
       case EnigmailCommon.ENIG_FINAL_NO:
         signSymbol = "inactiveNone";
-        signStr = EnigmailCommon.getString("signOff");
+        signStr = EnigmailCommon.getString("signMessageAuto");
         signReasonStr = EnigmailCommon.getString("signOffWithReason", [ this.reasonSigned ]);
         break;
       case EnigmailCommon.ENIG_FINAL_YES:
         doSign = true;
         signSymbol = "activeNone";
-        signStr = EnigmailCommon.getString("signOn");
+        signStr = EnigmailCommon.getString("signMessageAuto");
         signReasonStr = EnigmailCommon.getString("signOnWithReason", [ this.reasonSigned ]);
         break;
       case EnigmailCommon.ENIG_FINAL_CONFLICT:
         signSymbol = "inactiveConflict";
-        signStr = EnigmailCommon.getString("signOff");
+        signStr = EnigmailCommon.getString("signMessageAuto");
         signReasonStr = EnigmailCommon.getString("signOffWithReason", [ this.reasonSigned ]);
         break;
     }
-    var signStr = null;
     var signReasonStr = null;
     if (doSign) {
-      signStr = EnigmailCommon.getString("signOn");
       if (this.reasonSigned && this.reasonSigned != "") {
         signReasonStr = EnigmailCommon.getString("signOnWithReason", [ this.reasonSigned ]);
       }
@@ -1520,7 +1526,6 @@ Enigmail.msg = {
       }
     }
     else {
-      signStr = EnigmailCommon.getString("signOff");
       if (this.reasonSigned && this.reasonSigned != "") {
         signReasonStr = EnigmailCommon.getString("signOffWithReason", [ this.reasonSigned ]);
       }
@@ -1699,11 +1704,29 @@ Enigmail.msg = {
     var elem = document.getElementById("enigmail_compose_sign_item"+postfix);
     if (elem) {
       elem.setAttribute("label", this.statusSignedStr);
+      switch (this.statusSigned) {
+        case EnigmailCommon.ENIG_FINAL_YES:
+        case EnigmailCommon.ENIG_FINAL_FORCEYES:
+          elem.setAttribute("checked", "true");
+          break;
+        default:
+          elem.setAttribute("checked", "false");
+      }
     }
+
     elem = document.getElementById("enigmail_compose_encrypt_item"+postfix);
     if (elem) {
-      elem.setAttribute("label",this.statusEncryptedStr);
+      elem.setAttribute("label", this.statusEncryptedStr);
+      switch (this.statusEncrypted) {
+        case EnigmailCommon.ENIG_FINAL_YES:
+        case EnigmailCommon.ENIG_FINAL_FORCEYES:
+          elem.setAttribute("checked", "true");
+          break;
+        default:
+          elem.setAttribute("checked", "false");
+      }
     }
+
     elem = document.getElementById("enigmail_compose_pgpmime_item"+postfix);
     if (elem) {
       elem.setAttribute("label",this.statusPGPMimeStr);

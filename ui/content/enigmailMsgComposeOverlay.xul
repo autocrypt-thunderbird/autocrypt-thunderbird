@@ -93,14 +93,14 @@
           <!-- encryption state / toggle menu -->
           <menuitem id="enigmail_compose_encrypt_item"
                 accesskey="&enigmail.encryptedsend.accesskey;"
-                label="&enigmail.encryption.label;"
+                label="&enigmail.encryptedsend.label;"
                 key="key_enigEncrypt"
                 oncommand="Enigmail.msg.doPgpButton('toggle-final-encrypt');"/>
 
           <!-- signing state / toggle menu -->
           <menuitem id="enigmail_compose_sign_item"
                 accesskey="&enigmail.signedsend.accesskey;"
-                label="&enigmail.signing.label;"
+                label="&enigmail.signedsend.label;"
                 key="key_enigSign"
                 oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"/>
 
