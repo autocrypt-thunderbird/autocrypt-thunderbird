@@ -95,6 +95,7 @@
                 accesskey="&enigmail.encryptedsend.accesskey;"
                 label="&enigmail.encryptedsend.label;"
                 key="key_enigEncrypt"
+                type="checkbox"
                 oncommand="Enigmail.msg.doPgpButton('toggle-final-encrypt');"/>
 
           <!-- signing state / toggle menu -->
@@ -102,6 +103,7 @@
                 accesskey="&enigmail.signedsend.accesskey;"
                 label="&enigmail.signedsend.label;"
                 key="key_enigSign"
+                type="checkbox"
                 oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"/>
 
           <!-- PGP/MIME state / toggle menu -->
@@ -109,12 +111,16 @@
           <menuitem id="enigmail_compose_pgpmime_item"
                 accesskey="&enigmail.usePgpMime.accesskey;"
                 label="&enigmail.usePgpMime.label;"
+                type="radio"
+                name="enigmailPgpProtocol"
                 oncommand="Enigmail.msg.setFinalSendMode('final-pgpmimeYes');"/>
 
           <menuitem id="enigmail_compose_inline_item"
                 accesskey="&enigmail.useInline.accesskey;"
                 label="&enigmail.useInline.label;"
+                name="enigmailPgpProtocol"
                 checked="false"
+                type="radio"
                 oncommand="Enigmail.msg.setFinalSendMode('final-pgpmimeNo');"/>
 
           <menuseparator/>
