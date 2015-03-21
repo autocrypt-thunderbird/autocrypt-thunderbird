@@ -990,6 +990,26 @@ function formatHeaderData(hdrValue) {
   return lines.join("").trim();
 }
 
+/**
+ * Correctly encode and format a set of email addresses
+ */
+function formatEmailAddress(addressData) {
+  let adrArr = addressData.split(/, */);
+
+  for (let i in adrArr) {
+    try {
+      let m = adrArr[i].match(/(.*[\w\s]+?)<([\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4})>/);
+      if (m && m.length == 3) {
+        adrArr[i] = encodeHeaderValue(m[1])+" <" + m[2] + ">";
+      }
+    }
+    catch(ex) {}
+  }
+
+  return adrArr.join(", ");
+}
+
+
 function prettyPrintHeader(headerLabel, headerData) {
 
   let hdrData = "";
@@ -1004,7 +1024,11 @@ function prettyPrintHeader(headerLabel, headerData) {
     hdrData = GlodaUtils.deMime(String(headerData));
   }
 
-  return formatHeader(headerLabel) +": "+ formatHeaderData(encodeHeaderValue(hdrData));
+  if (headerLabel.search(/^(sender|from|reply-to|to|cc|bcc)$/i) == 0) {
+    return formatHeader(headerLabel) +": "+ formatHeaderData(formatEmailAddress(hdrData));
+  }
+  else
+    return formatHeader(headerLabel) +": "+ formatHeaderData(encodeHeaderValue(hdrData));
 }
 
 /***
