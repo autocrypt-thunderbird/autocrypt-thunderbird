@@ -2389,14 +2389,6 @@ var EnigmailCommon = {
     }
 
     var errLines;
-    var goodSignPat =   /GOODSIG (\w{16}) (.*)$/i;
-    var badSignPat  =    /BADSIG (\w{16}) (.*)$/i;
-    var keyExpPat   = /EXPKEYSIG (\w{16}) (.*)$/i;
-    var revKeyPat   = /REVKEYSIG (\w{16}) (.*)$/i;
-    var validSigPat =  /VALIDSIG (\w+) (.*) (\d+) (.*)/i;
-    var userIdHintPat =  /USERID_HINT (\w{16}) (.*)$/i;
-    var encToPat    =    /ENC_TO (\w{16}) (.*)$/i;
-
     if (statusMsg) {
       errLines = statusMsg.split(/\r?\n/);
     }
@@ -2405,12 +2397,27 @@ var EnigmailCommon = {
       errLines = stderrStr.split(/\r?\n/);
     }
 
+    // possible STATUS Patterns (see GPG dod DETAILS.txt):
+    // one of these should be set for a signature:
+    var goodsigPat    = /GOODSIG (\w{16}) (.*)$/i;
+    var badsigPat     = /BADSIG (\w{16}) (.*)$/i;
+    var expsigPat     = /EXPSIG (\w{16}) (.*)$/i;
+    var expkeysigPat  = /EXPKEYSIG (\w{16}) (.*)$/i;
+    var revkeysigPat  = /REVKEYSIG (\w{16}) (.*)$/i;
+    var errsigPat     = /ERRSIG (\w{16}) (.*)$/i;
+    // additional infos for good signatures:
+    var validSigPat   = /VALIDSIG (\w+) (.*) (\d+) (.*)/i;
+    // hint for a certain key id:
+    var userIdHintPat = /USERID_HINT (\w{16}) (.*)$/i;
+    // to find out for which recipients the email was encrypted:
+    var encToPat      = /ENC_TO (\w{16}) (.*)$/i;
+
     var matches;
 
     var signed = false;
-    var goodSignature;
-    var keyId = "";
-    var userId = "";
+    var goodOrExpOrRevSignature = false;
+    var sigKeyId = "";             // key of sender
+    var sigUserId = "";            // user ID of sender
     var sigDetails = "";
     var encToDetails = "";
     var encToArray = new Array();  // collect ENC_TO lines here
@@ -2418,80 +2425,110 @@ var EnigmailCommon = {
     for (j=0; j<errLines.length; j++) {
       this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: process: "+errLines[j]+"\n");
 
-      // ENC_TO
+      // ENC_TO entry
+      // - collect them for later processing to print details
       matches = errLines[j].match(encToPat);
       if (matches && (matches.length > 2)) {
         encToArray.push("0x"+matches[1]);
       }
 
-      // var userIdHintPat =  /USERID_HINT (\w{16}) (.*)$/i;
-      // NO END of loop
-      matches = errLines[j].match(userIdHintPat);
-      if (matches && (matches.length > 2)) {
-        keyId = matches[1];
-        userId = matches[2];
-      }
+      // USERID_HINT entry
+      // - NOTE: NO END of loop
+      // ERROR: wrong to set userId because this is NOT the sender:
+      //matches = errLines[j].match(userIdHintPat);
+      //if (matches && (matches.length > 2)) {
+      //  sigKeyId = matches[1];
+      //  sigUserId = matches[2];
+      //}
 
-      // BADSIG entry => signature found but bad
-      matches = errLines[j].match(badSignPat);
-      if (matches && (matches.length > 2)) {
-        if (signed) {
-          this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
-        }
-        signed = true;
-        goodSignature = false;
-        keyId = matches[1];
-        userId = matches[2];
-        //break;
-      }
-
-      // REVKEYSIG entry => signature found but key revoked
-      matches = errLines[j].match(revKeyPat);
+      // check for one of the possible SIG entries:
+      // GOODSIG entry
+      matches = errLines[j].match(goodsigPat);
       if (matches && (matches.length > 2)) {
         if (signed) {
           this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
         }
         signed = true;
-        goodSignature = true;
-        keyId = matches[1];
-        userId = matches[2];
-        //break;
+        goodOrExpOrRevSignature = true;
+        sigKeyId = matches[1];
+        sigUserId = matches[2];
       }
-
-      matches = errLines[j].match(goodSignPat);
-      if (matches && (matches.length > 2)) {
-        if (signed) {
-          this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+      else {
+        // BADSIG entry => signature found but bad
+        matches = errLines[j].match(badsigPat);
+        if (matches && (matches.length > 2)) {
+          if (signed) {
+            this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+          }
+          signed = true;
+          goodOrExpOrRevSignature = false;
+          sigKeyId = matches[1];
+          sigUserId = matches[2];
         }
-        signed = true;
-        goodSignature = true;
-        keyId = matches[1];
-        userId = matches[2];
-        //break;
-      }
-
-      // EXPKEYSIG entry => signature found but key expired
-      matches = errLines[j].match(keyExpPat);
-      if (matches && (matches.length > 2)) {
-        if (signed) {
-          this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+        else {
+          // EXPSIG entry => expired signature found
+          matches = errLines[j].match(expsigPat);
+          if (matches && (matches.length > 2)) {
+            if (signed) {
+              this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+            }
+            signed = true;
+            goodOrExpOrRevSignature = true;
+            sigKeyId = matches[1];
+            sigUserId = matches[2];
+          }
+          else {
+            // EXPKEYSIG entry => signature found but key expired
+            matches = errLines[j].match(expkeysigPat);
+            if (matches && (matches.length > 2)) {
+              if (signed) {
+                this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+              }
+              signed = true;
+              goodOrExpOrRevSignature = true;
+              sigKeyId = matches[1];
+              sigUserId = matches[2];
+            }
+            else {
+              // REVKEYSIG entry => signature found but key revoked
+              matches = errLines[j].match(revkeysigPat);
+              if (matches && (matches.length > 2)) {
+                if (signed) {
+                  this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+                }
+                signed = true;
+                goodOrExpOrRevSignature = true;
+                sigKeyId = matches[1];
+                sigUserId = matches[2];
+              }
+              else {
+                // ERRSIG entry => signature found but key revoked
+                matches = errLines[j].match(errsigPat);
+                if (matches && (matches.length > 2)) {
+                  if (signed) {
+                    this.DEBUG_LOG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+                  }
+                  signed = true;
+                  goodOrExpOrRevSignature = false;
+                  sigKeyId = matches[1];
+                  // no user id with this istatus entry
+                }
+              }
+            }
+          }
         }
-        signed = true;
-        goodSignature = true;
-        keyId = matches[1];
-        userId = matches[2];
-        break;
       }
-    }
 
-    if (goodSignature) {
+    }// end loop of processing errLines 
+
+    if (goodOrExpOrRevSignature) {
       for (j=0; j<errLines.length; j++) {
         matches = errLines[j].match(validSigPat);
         if (matches && (matches.length > 4)) {
           if (matches[4].length==40)
             // in case of several subkeys refer to the main key ID.
             // Only works with PGP V4 keys (Fingerprint length ==40)
-            keyId = matches[4].substr(-16);
+            sigKeyId = matches[4].substr(-16);
         }
         if (matches && (matches.length > 2)) {
           sigDetails = errLines[j].substr(9);
@@ -2500,18 +2537,18 @@ var EnigmailCommon = {
       }
     }
 
-    if (userId && keyId && EnigmailCore.getPref("displaySecondaryUid")) {
-      let uids = this.enigmailSvc.getKeyDetails(keyId, true, true);
+    if (sigUserId && sigKeyId && EnigmailCore.getPref("displaySecondaryUid")) {
+      let uids = this.enigmailSvc.getKeyDetails(sigKeyId, true, true);
       if (uids) {
-        userId = uids;
+        sigUserId = uids;
       }
       if (uids && uids.indexOf("uat:jpegPhoto:") >= 0) {
         retStatusObj.statusFlags |= nsIEnigmail.PHOTO_AVAILABLE;
       }
     }
 
-    if (userId) {
-      userId = this.convertToUnicode(userId, "UTF-8");
+    if (sigUserId) {
+      sigUserId = this.convertToUnicode(sigUserId, "UTF-8");
     }
 
     // add list of keys used for encryption if known (and their user IDs) if known
@@ -2528,10 +2565,10 @@ var EnigmailCommon = {
     if (encToArray.length > 0) {
       // for each key also show an associated user ID if known:
       for (var encIdx=0; encIdx<encToArray.length; ++encIdx) {
-        var keyId = encToArray[encIdx];
+        var localKeyId = encToArray[encIdx];
         // except for ID 00000000, which signals hidden keys
-        if (keyId != "0x0000000000000000") {
-          var localUserId = EnigmailCommon.enigmailSvc.getFirstUserIdOfKey(keyId);
+        if (localKeyId != "0x0000000000000000") {
+          var localUserId = EnigmailCommon.enigmailSvc.getFirstUserIdOfKey(localKeyId);
           if (localUserId) {
             localUserId = EnigmailCommon.convertToUnicode(localUserId, "UTF-8");
             encToArray[encIdx] += " (" + localUserId + ")";
@@ -2544,8 +2581,8 @@ var EnigmailCommon = {
       encToDetails = "\n  " + encToArray.join(",\n  ") + "\n";
     }
 
-    retStatusObj.userId = userId;
-    retStatusObj.keyId = keyId;
+    retStatusObj.userId = sigUserId;
+    retStatusObj.keyId = sigKeyId;
     retStatusObj.sigDetails = sigDetails;
     retStatusObj.encToDetails = encToDetails;
 
@@ -2567,12 +2604,12 @@ var EnigmailCommon = {
         trustPrefix += this.getString("prefExpired")+" ";
       }
 
-      if (goodSignature) {
-        retStatusObj.errorMsg = trustPrefix + this.getString("prefGood", [userId]); /* + ", " +
-              this.getString("keyId") + " 0x" + keyId.substring(8,16); */
+      if (goodOrExpOrRevSignature) {
+        retStatusObj.errorMsg = trustPrefix + this.getString("prefGood", [sigUserId]); /* + ", " +
+              this.getString("keyId") + " 0x" + sigKeyId.substring(8,16); */
       } else {
-        retStatusObj.errorMsg = trustPrefix + this.getString("prefBad", [userId]); /*+ ", " +
-              this.getString("keyId") + " 0x" + keyId.substring(8,16); */
+        retStatusObj.errorMsg = trustPrefix + this.getString("prefBad", [sigUserId]); /*+ ", " +
+              this.getString("keyId") + " 0x" + sigKeyId.substring(8,16); */
         if (!exitCode)
           exitCode = 1;
       }
@@ -2868,6 +2905,7 @@ var EnigmailCommon = {
 
     return proc;
   },
+
 
   // returns exitCode
   encryptMessageEnd: function (stderrStr, exitCode, uiFlags, sendFlags, outputLen,
