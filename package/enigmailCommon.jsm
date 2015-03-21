@@ -2531,10 +2531,10 @@ var EnigmailCommon = {
         var keyId = encToArray[encIdx];
         // except for ID 00000000, which signals hidden keys
         if (keyId != "0x0000000000000000") {
-          var userId = EnigmailCommon.enigmailSvc.getFirstUserIdOfKey(keyId);
-          if (userId) {
-            userId = EnigmailCommon.convertToUnicode(userId, "UTF-8");
-            encToArray[encIdx] += " (" + userId + ")";
+          var localUserId = EnigmailCommon.enigmailSvc.getFirstUserIdOfKey(keyId);
+          if (localUserId) {
+            localUserId = EnigmailCommon.convertToUnicode(localUserId, "UTF-8");
+            encToArray[encIdx] += " (" + localUserId + ")";
           }
         }
         else {
