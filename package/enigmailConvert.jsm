@@ -123,6 +123,7 @@ decryptMessageIntoFolder.prototype = {
 
 decryptMessageIntoFolder.prototype.
 messageParseCallback = function (hdr, mime) {
+  Ec.DEBUG_LOG("enigmailConvert.jsm: messageParseCallback: started\n");
   this.hdr = hdr;
   this.mime = mime;
   var self = this;
@@ -130,7 +131,7 @@ messageParseCallback = function (hdr, mime) {
   var enigmailSvc = Ec.getService();
 
   if (mime == null) {
-    Ec.DEBUG_LOG("enigmailConvert.jsm: messageParseCallback: MimeMessage is null");
+    Ec.DEBUG_LOG("enigmailConvert.jsm: messageParseCallback: MimeMessage is null\n");
     this.resolve(true);
     return;
   }
@@ -140,7 +141,7 @@ messageParseCallback = function (hdr, mime) {
   this.subject = GlodaUtils.deMime(mime.headers['subject'].join(" "));
 
   if (ct == null) {
-    Ec.DEBUG_LOG("enigmailConvert.jsm: messageParseCallback: content-type is null");
+    Ec.DEBUG_LOG("enigmailConvert.jsm: messageParseCallback: content-type is null\n");
     this.resolve(true);
     return;
   }
@@ -431,6 +432,7 @@ decryptAttachment = function(attachment, strippedName) {
 
 decryptMessageIntoFolder.prototype.
 walkMimeTree = function(mime, parent) {
+  Ec.DEBUG_LOG("enigmailConvert.jsm: walkMimeTree:\n");
   let ct = getContentType(mime.headers['content-type'].join(" "));
 
   Ec.DEBUG_LOG("enigmailConvert.jsm: walkMimeTree: part="+mime.partName+" - "+ ct+"\n");
@@ -473,6 +475,7 @@ walkMimeTree = function(mime, parent) {
 
 decryptMessageIntoFolder.prototype.
 isBrokenByExchange = function(mime) {
+  Ec.DEBUG_LOG("enigmailConvert.jsm: isBrokenByExchange:\n");
   if (mime.parts && mime.parts.length && mime.parts.length == 1 &&
       mime.parts[0].parts && mime.parts[0].parts.length && mime.parts[0].parts.length == 3 &&
       mime.parts[0].headers["content-type"][0].indexOf("multipart/mixed") >= 0 &&
@@ -495,6 +498,7 @@ isBrokenByExchange = function(mime) {
 
 decryptMessageIntoFolder.prototype.
 isPgpMime = function(mime) {
+  Ec.DEBUG_LOG("enigmailConvert.jsm: isPgpMime:\n");
   try {
     var ct = mime.contentType;
     if (!ct || ct == undefined) return false;
@@ -515,6 +519,7 @@ isPgpMime = function(mime) {
 // smime-type=enveloped-data
 decryptMessageIntoFolder.prototype.
 isSMime = function(mime) {
+  Ec.DEBUG_LOG("enigmailConvert.jsm: isSMime:\n");
   try {
     var ct = mime.contentType;
     if (!ct || ct == undefined) return false;
@@ -637,7 +642,7 @@ decryptPGPMIME = function (mime, part) {
 //inline wonderland
 decryptMessageIntoFolder.prototype.
 decryptINLINE = function (mime) {
-
+  Ec.DEBUG_LOG("enigmailConvert.jsm: decryptINLINE:\n");
   if (typeof mime.body !== 'undefined') {
     var ct = getContentType(mime.headers['content-type']);
 
