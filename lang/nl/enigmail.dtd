@@ -192,7 +192,7 @@
 <!ENTITY enigmail.autoKeyRetrieve2.label "van de volgende sleutelserver:">
 <!ENTITY enigmail.resetRememberedValues.label "Waarschuwingen Terugzetten">
 <!ENTITY enigmail.resetRememberedValues.tooltip "Toon wederom alle waarschuwings- en dialoogvensters die u voorheen verborgen heeft. ">
-<!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>OPMERKING: Het maken van een sleutel kan meerdere minuten duren. Sluit het programma niet af tijdens dit proces. Het helpt om tegelijkertijd websites te bezoeken of acties uit te voeren die de harde schijf intensief gebruiken. Dit zorgt ervoor dat het 'willekeurbuffer' gevuld blijft en dat het aanmaken van de sleutel sneller verloopt. Zodra de sleutel klaar is wordt een melding getoond.">
+<!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>OPMERKING: Het maken van een sleutel kan meerdere minuten duren</a>. Sluit het programma niet af tijdens dit proces. Het helpt om tegelijkertijd websites te bezoeken of acties uit te voeren die de harde schijf intensief gebruiken. Dit zorgt ervoor dat het 'willekeurbuffer' gevuld blijft en dat het aanmaken van de sleutel sneller verloopt. Zodra de sleutel klaar is wordt een melding getoond.">
 <!ENTITY enigmail.userSelectionList.label "Enigmail Sleutelselectie">
 <!ENTITY enigmail.usersNotFound.label "Ontvangers niet geldig, niet vertrouwd of niet gevonden">
 <!ENTITY enigmail.keyExpiry.label "Vervaldag">
