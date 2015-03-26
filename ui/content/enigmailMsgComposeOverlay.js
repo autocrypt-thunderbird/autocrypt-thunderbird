@@ -147,13 +147,13 @@ Enigmail.msg = {
 
     // listen to S/MIME changes to potentially display "conflict" message
     let s = document.getElementById("menu_securitySign1");
-    s.addEventListener("command", delayedProcessFinalState );
+    if (s) s.addEventListener("command", delayedProcessFinalState );
     s = document.getElementById("menu_securitySign2");
-    s.addEventListener("command", delayedProcessFinalState );
+    if (s) s.addEventListener("command", delayedProcessFinalState );
     s = document.getElementById("menu_securityEncryptRequire1");
-    s.addEventListener("command", delayedProcessFinalState );
+    if (s) s.addEventListener("command", delayedProcessFinalState );
     s = document.getElementById("menu_securityEncryptRequire2");
-    s.addEventListener("command", delayedProcessFinalState );
+    if (s) s.addEventListener("command", delayedProcessFinalState );
 
     this.msgComposeReset(false);   // false => not closing => call setIdentityDefaults()
     this.composeOpen();
