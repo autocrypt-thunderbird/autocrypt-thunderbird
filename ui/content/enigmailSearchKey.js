@@ -256,10 +256,10 @@ function enigStatusLoaded (event) {
     // de-HTMLize the result
     var htmlTxt = this.responseText.replace(/<([^<>]+)>/g, "");
 
-    this.requestCallbackFunc(ENIG_CONN_TYPE_HTTP, htmlTxt);
+    this.requestCallbackFunc(ENIG_CONN_TYPE_HTTP, htmlTxt, "");
   }
   else if (this.status == 500 && this.statusText=="OK") {
-    this.requestCallbackFunc(ENIG_CONN_TYPE_HTTP, "no keys found");
+    this.requestCallbackFunc(ENIG_CONN_TYPE_HTTP, "no keys found", "[GNUPG:] NODATA 1\n");
   }
   else if (this.statusText!="OK") {
     Ec.alert(window, Ec.getString("keyDownloadFailed", this.statusText));
@@ -336,8 +336,10 @@ function enigNewHttpRequest(requestType, requestCallbackFunc) {
   switch (gEnigRequest.protocol) {
   case "hkp":
     gEnigRequest.protocol = "http";
+    break;
   case "hkps":
     gEnigRequest.protocol = "https";
+    break;
   case "http":
   case "https":
     break;
