@@ -259,7 +259,17 @@ messageParseCallback = function (hdr, mime) {
           if (statusCode != 0) {
             //XXX complain?
             Ec.DEBUG_LOG("enigmailConvert.jsm: Error copying message: "+ statusCode + "\n");
-            tempFile.remove(false);
+            try {
+              tempFile.remove(false);
+            }
+            catch (ex) {
+              try {
+                fileSpec.remove(false);
+              }
+              catch(e2) {
+                Ec.DEBUG_LOG("enigmailConvert.jsm: Could not delete temp file\n");
+              }
+            }
             self.resolve(true);
             return;
           }
@@ -271,7 +281,18 @@ messageParseCallback = function (hdr, mime) {
             self.hdr.folder.getDBFolderInfoAndDB(folderInfoObj).DeleteMessage(self.hdr.messageKey, null, true);
           }
 
-          tempFile.remove(false);
+          try {
+            tempFile.remove(false);
+          }
+          catch (ex) {
+            try {
+              fileSpec.remove(false);
+            }
+            catch(e2) {
+              Ec.DEBUG_LOG("enigmailConvert.jsm: Could not delete temp file\n");
+            }
+          }
+
           Ec.DEBUG_LOG("enigmailConvert.jsm: Cave Johnson. We're done\n");
           self.resolve(true);
         }
@@ -1014,6 +1035,14 @@ function formatEmailAddress(addressData) {
   return adrArr.join(", ");
 }
 
+function formatMimeHeader(headerLabel, headerValue) {
+  if (headerLabel.search(/^(sender|from|reply-to|to|cc|bcc)$/i) == 0) {
+    return formatHeader(headerLabel) +": "+ formatHeaderData(formatEmailAddress(headerValue));
+  }
+  else
+    return formatHeader(headerLabel) +": "+ formatHeaderData(encodeHeaderValue(headerValue));
+}
+
 
 function prettyPrintHeader(headerLabel, headerData) {
 
@@ -1021,20 +1050,15 @@ function prettyPrintHeader(headerLabel, headerData) {
   if (Array.isArray(headerData)) {
     let h=[];
     for (let i in headerData) {
-      h.push(GlodaUtils.deMime(headerData[i]));
+      h.push(formatMimeHeader(headerLabel, GlodaUtils.deMime(headerData[i])));
     }
-    hdrData = h.join("");
+    return h.join("\r\n");
   }
   else {
-    hdrData = GlodaUtils.deMime(String(headerData));
+    return formatMimeHeader(headerLabel, GlodaUtils.deMime(String(headerData)));
   }
-
-  if (headerLabel.search(/^(sender|from|reply-to|to|cc|bcc)$/i) == 0) {
-    return formatHeader(headerLabel) +": "+ formatHeaderData(formatEmailAddress(hdrData));
-  }
-  else
-    return formatHeader(headerLabel) +": "+ formatHeaderData(encodeHeaderValue(hdrData));
 }
+
 
 /***
  * get the formatted headers for MimeMessage objects
