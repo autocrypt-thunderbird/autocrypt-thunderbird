@@ -99,7 +99,13 @@ function EnigmailDecryptPermanently(hdr, destFolder, move) {
       var decrypt = new decryptMessageIntoFolder(destFolder, move, resolve);
 
       Ec.DEBUG_LOG("enigmailConvert.jsm: EnigmailDecryptPermanently: Calling MsgHdrToMimeMessage\n");
-      MsgHdrToMimeMessage(hdr, decrypt, decrypt.messageParseCallback, true, {examineEncryptedParts: false, partsOnDemand: false});
+      try {
+        MsgHdrToMimeMessage(hdr, decrypt, decrypt.messageParseCallback, true, {examineEncryptedParts: false, partsOnDemand: false});
+      }
+      catch (ex) {
+        Ec.ERROR_LOG("enigmailConvert.jsm: MsgHdrToMimeMessage failed: "+ex.toString()+"\n");
+        reject("MsgHdrToMimeMessage failed");
+      }
       return;
     }
   );
