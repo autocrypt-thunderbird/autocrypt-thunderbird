@@ -49,12 +49,16 @@ function onLoad() {
 
   var enigmailSvc = Ec.getService(window);
   if (!enigmailSvc) {
-    Ec.alert(window, Ec.getString("accessError"));
+    Ec.alert(null, Ec.getString("accessError"));
     window.close();
     return;
   }
   var keys = Ec.getSecretKeys(window);
-  if (! keys) window.close();
+  if (keys.length == 0) {
+    Ec.alert(null, Ec.getString("noTrustedOwnKeys"));
+    window.close();
+    return;
+  }
   var menulist=document.getElementById("signWithKey");
 
   for each (key in keys) {

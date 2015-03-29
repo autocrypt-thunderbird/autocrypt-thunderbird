@@ -80,6 +80,10 @@
         </row>
         <row>
           <label value=" "/>
+          <label value="&enigmail.sKeyDlg.ownKeyTrust.label;"/>
+        </row>
+        <row>
+          <label value=" "/>
           <label id="alreadySigned" value="" collapsed="true"/>
         </row>
       </rows>

@@ -426,6 +426,7 @@
 <!ENTITY enigmail.sKeyDlg.signKey.label            "Key to be signed:">
 <!ENTITY enigmail.sKeyDlg.fingerprint.label        "Fingerprint:">
 <!ENTITY enigmail.sKeyDlg.signWithKey.label        "Key for signing:">
+<!ENTITY enigmail.sKeyDlg.ownKeyTrust.label        "Note: you have to set owner trust to ultimate for your own keys to be shown here.">
 <!ENTITY enigmail.sKeyDlg.checked.label            "How carefully have you verified that the key you are about to sign actually belongs to the person(s) named above?">
 <!ENTITY enigmail.sKeyDlg.noAnswer.label           "I will not answer">
 <!ENTITY enigmail.sKeyDlg.notChecked.label         "I have not checked at all">
