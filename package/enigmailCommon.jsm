@@ -377,6 +377,10 @@ var EnigmailCommon = {
       checked: false
     };
 
+    if (! win) {
+      win = this.getBestParentWin();
+    }
+
     win.openDialog("chrome://enigmail/content/enigmailAlertDlg.xul", "",
               "chrome,dialog,modal,centerscreen",
               {
@@ -2519,7 +2523,7 @@ var EnigmailCommon = {
         }
       }
 
-    }// end loop of processing errLines 
+    }// end loop of processing errLines
 
     if (goodOrExpOrRevSignature) {
       for (j=0; j<errLines.length; j++) {
