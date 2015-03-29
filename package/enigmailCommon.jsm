@@ -346,11 +346,16 @@ var EnigmailCommon = {
    */
   alert: function (win, mesg)
   {
-    try {
-      gPromptSvc.alert(win, this.getString("enigAlert"), mesg);
+    if (mesg.length > 1000) {
+      this.longAlert(win, mesg, null, this.getString("dlg.button.close"));
     }
-    catch(ex) {
-      this.writeException("alert" , ex);
+    else {
+      try {
+        gPromptSvc.alert(win, this.getString("enigAlert"), mesg);
+      }
+      catch(ex) {
+        this.writeException("alert" , ex);
+      }
     }
   },
 
