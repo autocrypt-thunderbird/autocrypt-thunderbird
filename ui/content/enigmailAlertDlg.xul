@@ -82,6 +82,11 @@
       dlg.getButton("extra1").setAttribute("hidden", "true")
       dlg.getButton("extra2").setAttribute("hidden", "true")
       dlg.setAttribute("title", EnigGetString("enigAlert"));
+
+      if (window.screen.height > 300) {
+        dlg.setAttribute("maxheight", window.screen.height - 100);
+      }
+
       var msgtext=window.arguments[0].msgtext;
       var button1=window.arguments[0].button1;
       var button2=window.arguments[0].button2;
@@ -90,7 +95,7 @@
       var m=msgtext.match(/(\n)/g);
       var lines = 2;
       if (m == null) {
-        lines = (msgtext.length / 80) + 2; 
+        lines = (msgtext.length / 80) + 2;
       }
       else {
         try {
