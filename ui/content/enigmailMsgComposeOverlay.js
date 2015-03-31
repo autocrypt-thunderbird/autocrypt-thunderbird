@@ -4056,6 +4056,8 @@ signMessageNorm=Sign Message*/
                                      true);
     }
 
+    this.processFinalState();
+    this.updateStatusBar();
   },
 
   editorInsertText: function (plainText)
@@ -4240,6 +4242,7 @@ Enigmail.composeStateListener = {
     if (!Enigmail.msg.timeoutId && !Enigmail.msg.dirty) {
       Enigmail.msg.timeoutId = EnigmailCommon.setTimeout(function () {
           Enigmail.msg.decryptQuote(false);
+
         },
         0);
     }
