@@ -527,9 +527,18 @@ Enigmail.msg = {
     this.msgComposeReset(false);   // false => not closing => call setIdentityDefaults()
     this.composeOpen();
     this.fireSendFlags();
-    //this.determineSendFlags();
-    //this.processFinalState();
-    //this.updateStatusBar();
+
+    EnigmailCommon.setTimeout(function _f() {
+        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay: re-determine send flags\n");
+        try {
+          this.determineSendFlags();
+          this.processFinalState();
+          this.updateStatusBar();
+        }
+        catch(ex) {
+          EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay: re-determine send flags - ERROR: "+ex.toString()+"\n");
+        }
+      }.bind(Enigmail.msg), 1000);
   },
 
 
