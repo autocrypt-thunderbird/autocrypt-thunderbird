@@ -1966,15 +1966,16 @@ signMessageNorm=Sign Message*/
    * - it processes the recipient rules (if not disabled)
    * - it
    *
-   * @sendFlags:    all current combined/processed send flags (incl. optSendFlags)
-   * @optSendFlags: may only be SEND_ALWAYS_TRUST or SEND_ENCRYPT_TO_SELF
-   * @gotSendFlags: initial sendMode of encryptMsg() (0 or SIGN or ENCRYPT or SIGN|ENCRYPT)
-   * @fromAddr:     from email
-   * @toAddrList:   both to and cc receivers
-   * @bccAddrList:  bcc receivers
-   * @return:       sendFlags
-   *                toAddrStr  comma separated string of unprocessed to/cc emails
-   *                bccAddrStr comma separated string of unprocessed to/cc emails
+   * @sendFlags:    Longint - all current combined/processed send flags (incl. optSendFlags)
+   * @optSendFlags: Longint - may only be SEND_ALWAYS_TRUST or SEND_ENCRYPT_TO_SELF
+   * @gotSendFlags: Longint - initial sendMode of encryptMsg() (0 or SIGN or ENCRYPT or SIGN|ENCRYPT)
+   * @fromAddr:     String - from email
+   * @toAddrList:   Array  - both to and cc receivers
+   * @bccAddrList:  Array  - bcc receivers
+   * @return:       Object:
+   *                - sendFlags (Longint)
+   *                - toAddrStr  comma separated string of unprocessed to/cc emails
+   *                - bccAddrStr comma separated string of unprocessed to/cc emails
    *                or null (cancel sending the email)
    */
   keySelection: function (enigmailSvc, sendFlags, optSendFlags, gotSendFlags, fromAddr, toAddrList, bccAddrList)
@@ -2614,8 +2615,34 @@ signMessageNorm=Sign Message*/
     if (useEnigmail == null) return false; // dialog aborted
     if (useEnigmail == false) return true; // use S/MIME
 
-    let result = this.keySelection(enigmailSvc, sendFlags, 0, 0, fromAddr, [], []);
-    if (! result) return false;
+    // Try to save draft
+
+    var testCipher = null;
+    var testExitCodeObj    = new Object();
+    var testStatusFlagsObj = new Object();
+    var testErrorMsgObj    = new Object();
+
+    // encrypt test message for test recipients
+    var testPlain = "Test Message";
+    var testUiFlags   = nsIEnigmail.UI_TEST;
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.saveDraft(): call encryptMessage() for fromAddr=\""+fromAddr+"\"\n");
+    testCipher = enigmailSvc.encryptMessage(null, testUiFlags, testPlain,
+                                            fromAddr, fromAddr, "",
+                                            sendFlags | nsIEnigmail.SEND_TEST,
+                                            testExitCodeObj,
+                                            testStatusFlagsObj,
+                                            testErrorMsgObj);
+
+    if (testStatusFlagsObj.value) {
+      // check if own key is invalid
+      let s = new RegExp("^INV_RECP [0-9]+ \\<?" + fromAddr + "\\>?", "m");
+      if (testErrorMsgObj.value.search(s) >= 0)  {
+        EnigmailCommon.alert(window,
+          EnigmailCommon.getString("saveDraftError")+ "\n\n" +
+          EnigmailCommon.getString("errorKeyUnusable", [ fromAddr ]));
+        return false;
+      }
+    }
 
     let newSecurityInfo;
 
