@@ -51,6 +51,7 @@ var gSavedManualPrefKeepSettingsForReply = true;
 var gSavedManualPrefAcceptedKeys = 1;
 var gSavedManualPrefAutoSendEncrypted = 1;
 var gSavedManualPrefConfirmBeforeSending = 0;
+var gOrigMaxIdle = "-";
 
 function displayPrefs(showDefault, showPrefs, setPrefs) {
   DEBUG_LOG("pref-enigmail.js displayPrefs\n");
@@ -151,6 +152,7 @@ function prefOnLoad()
   }
 
   document.getElementById("maxIdleMinutes").value = maxIdle;
+  gOrigMaxIdle = String(maxIdle);
   gAdvancedMode = EnigGetPref("advancedUser");
 
   if (window.arguments) {
@@ -434,7 +436,13 @@ function prefOnAccept() {
 
   EnigSetPref("configuredVersion", EnigGetVersion());
   EnigSetPref("advancedUser", gAdvancedMode);
-  EnigmailGpgAgent.setMaxIdlePref(document.getElementById("maxIdleMinutes").value);
+  let maxIdle = document.getElementById("maxIdleMinutes").value;
+
+  if (gOrigMaxIdle != maxIdle) {
+    // only change setting in gpg-agent if value has actually changed
+    // because gpg-agent deletes cache upon changing timeout settings
+    EnigmailGpgAgent.setMaxIdlePref(maxIdle);
+  }
 
   EnigSavePrefs();
 

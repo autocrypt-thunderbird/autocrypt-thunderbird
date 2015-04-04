@@ -271,7 +271,7 @@ var EnigmailGpgAgent = {
 
     var proc = {
       command:     svc.gpgconfPath,
-      arguments:   [ "--change-options", "gpg-agent" ],
+      arguments:   [ "--runtime", "--change-options", "gpg-agent" ],
       environment: Ec.envList,
       charset: null,
       mergeStderr: true,
