@@ -242,7 +242,7 @@ var EnigmailGpgAgent = {
         for (i=0; i < lines.length; i++) {
           DEBUG_LOG("gpgAgentHandler.jsm: getAgentMaxIdle: line: "+lines[i]+"\n");
 
-          if (lines[i].search(/^default-cache-ttl/) == 0) {
+          if (lines[i].search(/^default-cache-ttl:/) == 0) {
             var m = lines[i].split(/:/);
             if (m[CFGVALUE].length == 0) {
               maxIdle = Math.round(m[DEFAULT] / 60);
