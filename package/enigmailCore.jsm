@@ -155,8 +155,8 @@ var EnigmailCore = {
       this.WRITE_LOG("Mozilla Platform: "+ this.getAppName()+" "+ this.getAppVersion() + "\n");
     }
     // truncate first part of log data if it grow too much
-    if (gLogData.length > 128000) {
-      gLogData = gLogData.substr(-72000);
+    if (gLogData.length > 5120000) {
+      gLogData = gLogData.substr(-400000);
     }
 
     gLogData += datStr + str;
