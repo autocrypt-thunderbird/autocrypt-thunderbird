@@ -144,7 +144,11 @@ messageParseCallback = function (hdr, mime) {
 
   var ct = getContentType(mime.headers['content-type']);
   var pt = getProtocol(mime.headers['content-type']);
-  this.subject = GlodaUtils.deMime(mime.headers['subject'].join(" "));
+
+  this.subject = "";
+  if ("subject" in mime.headers) {
+    this.subject = GlodaUtils.deMime(mime.headers['subject'].join(" "));
+  }
 
   if (ct == null) {
     Ec.DEBUG_LOG("enigmailConvert.jsm: messageParseCallback: content-type is null\n");
@@ -538,7 +542,7 @@ isPgpMime = function(mime) {
     }
   }
   catch(ex) {
-    Ec.DEBUG_LOG("enigmailConvert.jsm: isPgpMime:"+ex+"\n");
+    //Ec.DEBUG_LOG("enigmailConvert.jsm: isPgpMime:"+ex+"\n");
   }
   return false;
 }
