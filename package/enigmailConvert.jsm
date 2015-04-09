@@ -77,6 +77,9 @@ const nsIEnigmail = Components.interfaces.nsIEnigmail;
 const STATUS_OK = 0;
 const STATUS_FAILURE = 1;
 const STATUS_NOT_REQUIRED = 2;
+
+var gTimeout = null;
+
 /*
  *  Decrypt a message and copy it to a folder
  *
@@ -100,6 +103,7 @@ function EnigmailDecryptPermanently(hdr, destFolder, move) {
 
       Ec.DEBUG_LOG("enigmailConvert.jsm: EnigmailDecryptPermanently: Calling MsgHdrToMimeMessage\n");
       try {
+        gTimeout = Ec.setTimeout(decrypt.messageParseTimeout, 30000);
         MsgHdrToMimeMessage(hdr, decrypt, decrypt.messageParseCallback, true, {examineEncryptedParts: false, partsOnDemand: false});
       }
       catch (ex) {
@@ -122,6 +126,7 @@ function decryptMessageIntoFolder(destFolder, move, resolve) {
   this.hdr = null;
   this.decryptionTasks = [];
   this.subject = "";
+  this.cancelled = false;
 }
 
 decryptMessageIntoFolder.prototype = {
@@ -130,6 +135,19 @@ decryptMessageIntoFolder.prototype = {
 decryptMessageIntoFolder.prototype.
 messageParseCallback = function (hdr, mime) {
   Ec.DEBUG_LOG("enigmailConvert.jsm: messageParseCallback: started\n");
+  if (this.cancelled) {
+    return;
+  }
+
+  if (gTimeout) {
+    try {
+      gTimeout.cancel();
+      Ec.DEBUG_LOG("enigmailConvert.jsm: messageParseCallback: timeout cleared\n");
+
+    }
+    catch (ex) {}
+  }
+
   this.hdr = hdr;
   this.mime = mime;
   var self = this;
@@ -322,6 +340,21 @@ messageParseCallback = function (hdr, mime) {
     self.resolve(false);
   }
 }
+
+decryptMessageIntoFolder.prototype.
+messageParseTimeout = function() {
+  Ec.DEBUG_LOG("enigmailConvert.jsm: messageParseTimeout\n");
+  let r = Ec.confirmDlg(null, Ec.getString("converter.msgParseTimeout"),
+            Ec.getString("dlg.button.wait"), Ec.getString("dlg.button.skip"));
+  if (! r) {
+    this.cancelled = true;
+    this.resolve(false);
+    return;
+  }
+
+  gTimeout = Ec.setTimeout(this.messageParseTimeout, 60000);
+}
+
 
 decryptMessageIntoFolder.prototype.
 readAttachment = function (attachment, strippedName) {
