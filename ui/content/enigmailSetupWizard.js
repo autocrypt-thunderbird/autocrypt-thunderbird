@@ -862,7 +862,7 @@ function wizardGenKey() {
                        365*5 /* 5 years */,
                        4096,
                        ENIG_KEYTYPE_RSA,
-                       passphrase,
+                       Ec.convertFromUnicode(passphrase),
                        listener);
   } catch (ex) {
     Ec.DEBUG_LOG("enigmailSetupWizard.js: genKey - generateKey() failed with "+ex.toString()+"\n"+ex.stack+"\n");

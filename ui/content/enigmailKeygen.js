@@ -415,7 +415,7 @@ function enigmailKeygenStart() {
                          expiryTime,
                          keySize,
                          keyType,
-                         passphrase,
+                         Ec.convertFromUnicode(passphrase),
                          listener);
    } catch (ex) {
       Ec.DEBUG_LOG("enigmailKeygen.js: generateKey() failed with "+ex.toString()+"\n"+ex.stack+"\n");
