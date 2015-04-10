@@ -109,7 +109,7 @@
       EnigmailKeyMgmt.addUid(window,
         window.arguments[0].keyId,
         Ec.convertFromUnicode(name.value),
-        email.value,
+        Ec.convertFromUnicode(email.value),
         Ec.convertFromUnicode(comment.value),
         function _addUidCb(exitCode, errorMsg) {
            if (exitCode != 0) {
