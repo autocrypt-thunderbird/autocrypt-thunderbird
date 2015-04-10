@@ -858,7 +858,7 @@ function wizardGenKey() {
     gKeygenRequest = Ec.generateKey(window,
                        Ec.convertFromUnicode(userName),
                        "",
-                       userEmail,
+                       Ec.convertFromUnicode(userEmail),
                        365*5 /* 5 years */,
                        4096,
                        ENIG_KEYTYPE_RSA,

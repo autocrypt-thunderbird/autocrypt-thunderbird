@@ -411,7 +411,7 @@ function enigmailKeygenStart() {
       gKeygenRequest = Ec.generateKey(window,
                          Ec.convertFromUnicode(userName),
                          Ec.convertFromUnicode(comment),
-                         userEmail,
+                         Ec.convertFromUnicode(userEmail),
                          expiryTime,
                          keySize,
                          keyType,
