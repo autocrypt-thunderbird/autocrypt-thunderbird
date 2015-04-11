@@ -496,7 +496,7 @@ function enigmailDeleteKey() {
 
   let fprArr = [];
   for (let j in keyList) {
-    fprArr.push("0x" + gKeyList[keyList[0]].fpr);
+    fprArr.push("0x" + gKeyList[keyList[j]].fpr);
   }
 
   EnigmailKeyMgmt.deleteKey(window, fprArr.join(" "), deleteSecret,
