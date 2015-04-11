@@ -1115,7 +1115,7 @@ var EnigmailCommon = {
    * Parse error output from GnuPG
    *
    * @errOutput:    String - the output from GnuPG
-   * @resStatusObj: Object: {
+   * @retStatusObj: Object: {
    *                  - statusMsg:       String - status message
    *                  - statusFlags:     Number - status flags as defined in nsIEnigmail.
    *                  - blockSeparation: String - list of blocks with markers.
@@ -2850,7 +2850,7 @@ var EnigmailCommon = {
         return exitCode;
       }
 
-      var hashAlgorithm = "md5"; // default as defined in RFC 4880, section 7
+      var hashAlgorithm = "sha1"; // default as defined in RFC 4880, section 7 is MD5 -- but that's outdated
 
       var m = msgText.match(/^(Hash: )(.*)$/m);
       if (m && (m.length > 2) && (m[1] == "Hash: ")) {
