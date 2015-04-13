@@ -48,6 +48,10 @@ ifeq ($(OS_TARGET),FreeBSD)
 PLATFORM_STR = freebsd
 endif
 
+ifeq ($(OS_TARGET),NetBSD)
+PLATFORM_STR = netbsd
+endif
+
 ifeq ($(OS_TARGET),OpenBSD)
 PLATFORM_STR = openbsd
 endif

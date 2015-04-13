@@ -341,6 +341,7 @@ function getPlatformValue(valueType) {
         'freebsd': [ 'libc.so.7',    0x04     , ctypes.int64_t      , 8 ],
         'dragonfly':[ 'libc.so.8',   0x04,    , ctypes.int64_t      , 8 ],
         'gnu/kfreebsd': [ 'libc.so.0.1', 0x04 , ctypes.int64_t      , 8 ],
+        'netbsd':  [ 'libc.so',      0x04     , ctypes.int64_t      , 8 ],
         'openbsd': [ 'libc.so.61.0', 0x04     , ctypes.int64_t      , 8 ],
         'sunos':   [ 'libc.so',      0x80     , ctypes.unsigned_long, 5 ]
     };
