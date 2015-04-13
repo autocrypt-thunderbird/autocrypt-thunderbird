@@ -74,6 +74,8 @@ const nsIEnigmail = Components.interfaces.nsIEnigmail;
  *  Fix a broken message from MS-Exchange and replace it with the original message
  *
  * @param nsIMsgDBHdr hdr          Header of the message to fix (= pointer to message)
+ * @param String brokenByApp       Type of app that created the message. Currently one of
+ *                                  exchange, iPGMail
  * @param String destFolderUri     optional destination Folder URI
  *
  * @return Promise; upon success, the promise returns the messageKey
@@ -81,7 +83,7 @@ const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
 // TODO: change to creating new object
 EnigmailFixExchangeMsg = {
-  fixExchangeMessage: function (hdr, destFolderUri) {
+  fixExchangeMessage: function (hdr, brokenByApp, destFolderUri) {
     var self = this;
     return new Promise(
       function fixExchangeMessage_p(resolve, reject) {
@@ -93,6 +95,7 @@ EnigmailFixExchangeMsg = {
         self.destFolder = hdr.folder;
         self.resolve = resolve;
         self.reject = reject;
+        self.brokenByApp = brokenByApp;
 
         if (destFolderUri) {
           self.destFolder = MailUtils.getFolderForURI(destFolderUri, false)
@@ -112,6 +115,7 @@ EnigmailFixExchangeMsg = {
           function rejected(reason) {
             EC.DEBUG_LOG("fixExchangeMsg.jsm: fixExchangeMessage: caught rejection: " + reason + "\n");
             reject();
+            return;
           });
       }
     );
@@ -145,6 +149,7 @@ EnigmailFixExchangeMsg = {
             if (hdrEnd <= 0) {
               // cannot find end of header data
               reject(0);
+              return;
             }
 
             let hdrLines = data.substr(0, hdrEnd).split(/\r?\n/);
@@ -152,16 +157,32 @@ EnigmailFixExchangeMsg = {
 
             if (hdrObj.headers.length == 0 || hdrObj.boundary.length == 0) {
               reject(1);
+              return;
             }
 
-            let boundary = hdrObj.boundary.replace(/^(['"])(.*)(['"])/, "$2");
-            let body = self.getCorrectedBodyData(data.substr(hdrEnd+2), boundary);
+            let boundary = hdrObj.boundary;
+            let body;
+
+            switch(self.brokenByApp) {
+            case "exchange":
+              body = self.getCorrectedExchangeBodyData(data.substr(hdrEnd+2), boundary);
+              break;
+            case "iPGMail":
+              body = self.getCorrectediPGMailBodyData(data.substr(hdrEnd+2), boundary);
+              break;
+            default:
+              EC.ERROR_LOG("fixExchangeMsg.jsm: getMessageBody: unknown appType " + self.brokenByApp +"\n");
+              reject(99);
+              return;
+            }
 
             if (body) {
               resolve(hdrObj.headers + "\r\n" + body);
+              return;
             }
             else {
               reject(2);
+              return;
             }
           }
         );
@@ -172,7 +193,7 @@ EnigmailFixExchangeMsg = {
           channel.asyncOpen(s, null);
         }
         catch(e) {
-          EC.DEBUG_LOG("fixExchangeMsg.jsm: getMessageBody: exception " + e +"\n")
+          EC.DEBUG_LOG("fixExchangeMsg.jsm: getMessageBody: exception " + e +"\n");
         }
       }
     );
@@ -219,22 +240,27 @@ EnigmailFixExchangeMsg = {
       }
     }
 
+    r.boundary = r.boundary.replace(/^(['"])(.*)(['"])/, "$2");
+
     r.headers += 'Content-Type: multipart/encrypted;\r\n'+
       '  protocol="application/pgp-encrypted";\r\n' +
-      '  boundary=' + r.boundary + '\r\n' +
-      'X-Enigmail-Info: Fixed broken MS-Exchange PGP/MIME message\r\n';
+      '  boundary="' + r.boundary + '"\r\n' +
+      'X-Enigmail-Info: Fixed broken PGP/MIME message\r\n';
 
     return r;
   },
 
 
-  getCorrectedBodyData: function(bodyData, boundary) {
-    EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectedBodyData: boundary='"+ boundary +"'\n");
+  /**
+   * Get corrected body for MS-Exchange messages
+   */
+  getCorrectedExchangeBodyData: function(bodyData, boundary) {
+    EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: boundary='"+ boundary +"'\n");
     let boundRx = RegExp("^--" + boundary, "ym");
     let match = boundRx.exec(bodyData);
 
     if (match.index < 0) {
-      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectedBodyData: did not find index of mime type to skip\n");
+      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: did not find index of mime type to skip\n");
       return null;
     }
 
@@ -242,20 +268,20 @@ EnigmailFixExchangeMsg = {
     // found first instance -- that's the message part to ignore
     match = boundRx.exec(bodyData);
     if (match.index <= 0) {
-      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectedBodyData: did not find boundary of PGP/MIME version identification\n");
+      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: did not find boundary of PGP/MIME version identification\n");
       return null;
     }
 
     let versionIdent = match.index;
 
     if (bodyData.substring(skipStart, versionIdent).search(/^content-type:[ \t]*text\/plain/mi) < 0) {
-      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectedBodyData: first MIME part is not content-type text/plain\n");
+      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: first MIME part is not content-type text/plain\n");
       return null;
     }
 
     match = boundRx.exec(bodyData);
     if (match.index < 0) {
-      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectedBodyData: did not find boundary of PGP/MIME encrypted data\n");
+      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: did not find boundary of PGP/MIME encrypted data\n");
       return null;
     }
 
@@ -265,7 +291,7 @@ EnigmailFixExchangeMsg = {
     let ct = mimeHdr.extractHeader("content-type", false);
 
     if (!ct || ct.search(/application\/pgp-encrypted/i) < 0) {
-      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectedBodyData: wrong content-type of version-identification\n");
+      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: wrong content-type of version-identification\n");
       EC.DEBUG_LOG("   ct = '"+ct+"'\n");
       return null;
     }
@@ -273,12 +299,62 @@ EnigmailFixExchangeMsg = {
     mimeHdr.initialize(bodyData.substr(encData, 500));
     ct = mimeHdr.extractHeader("content-type", false);
     if (!ct || ct.search(/application\/octet-stream/i) < 0) {
-      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectedBodyData: wrong content-type of PGP/MIME data\n");
+      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: wrong content-type of PGP/MIME data\n");
       EC.DEBUG_LOG("   ct = '"+ct+"'\n");
       return null;
     }
 
     return bodyData.substr(versionIdent);
+  },
+
+
+  /**
+   * Get corrected body for iPGMail messages
+   */
+  getCorrectediPGMailBodyData: function(bodyData, boundary) {
+    EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: boundary='"+ boundary +"'\n");
+    let boundRx = RegExp("^--" + boundary, "ym");
+    let match = boundRx.exec(bodyData);
+
+    if (match.index < 0) {
+      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: did not find index of mime type to skip\n");
+      return null;
+    }
+
+    let skipStart = match.index;
+    // found first instance -- that's the message part to ignore
+    match = boundRx.exec(bodyData);
+    if (match.index <= 0) {
+      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: did not find boundary of text/plain msg part\n");
+      return null;
+    }
+
+    let encData = match.index;
+
+    match = boundRx.exec(bodyData);
+    if (match.index < 0) {
+      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: did not find end boundary of PGP/MIME encrypted data\n");
+      return null;
+    }
+
+    let mimeHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+
+    mimeHdr.initialize(bodyData.substr(encData, 500));
+    ct = mimeHdr.extractHeader("content-type", false);
+    if (!ct || ct.search(/application\/pgp-encrypted/i) < 0) {
+      EC.DEBUG_LOG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: wrong content-type of PGP/MIME data\n");
+      EC.DEBUG_LOG("   ct = '"+ct+"'\n");
+      return null;
+    }
+
+    return "--" + boundary + "\r\n" +
+            "Content-Type: application/pgp-encrypted\r\n" +
+            "Content-Description: PGP/MIME version identification\r\n\r\n" +
+            "Version: 1\r\n\r\n" +
+            bodyData.substring(encData, match.index).
+              replace(/^Content-Type: +application\/pgp-encrypted/im,
+              "Content-Type: application/octet-stream") +
+            "--" + boundary + "--\r\n";
   },
 
   copyToTargetFolder: function (msgData) {
@@ -337,6 +413,7 @@ EnigmailFixExchangeMsg = {
 
         tempFile.remove(false);
         self.resolve(this.msgKey);
+        return;
       }
     };
 
