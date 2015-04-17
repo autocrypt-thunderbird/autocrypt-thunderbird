@@ -647,7 +647,6 @@ Enigmail.msg = {
         if (mimeMsg.parts && mimeMsg.parts.length && mimeMsg.parts.length == 1 &&
             mimeMsg.parts[0].parts && mimeMsg.parts[0].parts.length && mimeMsg.parts[0].parts.length == 3 &&
             mimeMsg.parts[0].headers["content-type"][0].indexOf("multipart/mixed") >= 0 &&
-            mimeMsg.parts[0].parts[0].size < 5 &&
             mimeMsg.parts[0].parts[0].headers["content-type"][0].search(/multipart\/encrypted/i) < 0 &&
             mimeMsg.parts[0].parts[0].headers["content-type"][0].indexOf("text/plain") >= 0 &&
             mimeMsg.parts[0].parts[1].headers["content-type"][0].indexOf("application/pgp-encrypted") >= 0)
