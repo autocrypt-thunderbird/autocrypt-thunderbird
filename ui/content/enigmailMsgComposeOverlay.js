@@ -417,6 +417,7 @@ Enigmail.msg = {
     var msgUri = null;
     var msgIsDraft = false;
     this.determineSendFlagId = null;
+    this.disableSmime = false;
 
     var toobarElem = document.getElementById("composeToolbar2");
     if (toobarElem && (EnigmailCommon.getOS() == "Darwin")) {
@@ -441,10 +442,12 @@ Enigmail.msg = {
 
     if (EnigmailCommon.getPref("keepSettingsForReply") && (!(this.sendMode & ENCRYPT)) || (typeof(draftId)=="string" && draftId.length>0)) {
         if (typeof(draftId)=="string" && draftId.length>0) {
+          // original message is draft
           msgUri = draftId.replace(/\?.*$/, "");
           msgIsDraft = true;
         }
         else if (typeof(gMsgCompose.originalMsgURI)=="string" && gMsgCompose.originalMsgURI.length>0) {
+          // original message is a "true" mail
           msgUri = gMsgCompose.originalMsgURI;
         }
 
@@ -455,6 +458,10 @@ Enigmail.msg = {
               EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeOpen: has encrypted originalMsgUri\n");
               EnigmailCommon.DEBUG_LOG("originalMsgURI="+gMsgCompose.originalMsgURI+"\n");
               this.setSendMode('encrypt');
+
+              // TODO: disable S/MIME in case it is enabled
+
+              this.disableSmime = true;
             }
             else if (msgFlags & (nsIEnigmail.GOOD_SIGNATURE |
                 nsIEnigmail.BAD_SIGNATURE |
@@ -1435,11 +1442,7 @@ Enigmail.msg = {
     encBroadcaster.removeAttribute("disabled");
     signBroadcaster.removeAttribute("disabled");
     attachBroadcaster.removeAttribute("disabled");
-/*
-encryptMessageAuto=Encrypt Message (auto)
-encryptMessageNorm=Encrypt Message
-signMessageAuto=Sign Message (auto)
-signMessageNorm=Sign Message*/
+
     // process resulting icon symbol and status strings for encrypt mode
     var encSymbol = null;
     var doEncrypt = false;
@@ -1572,13 +1575,30 @@ signMessageNorm=Sign Message*/
       toolbarMsg = EnigmailCommon.getString("msgCompose.toolbarTxt.noEncryption");
     }
 
-    if ((doSign || doEncrypt) &&
-       (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields)) {
+    if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields &&
+         (gMsgCompose.compFields.securityInfo.signMessage ||
+          gMsgCompose.compFields.securityInfo.requireEncryptMessage)) {
 
-       if (gMsgCompose.compFields.securityInfo.signMessage ||
-          gMsgCompose.compFields.securityInfo.requireEncryptMessage) {
+      switch (EnigmailCommon.getPref("mimePreferPgp")) {
+        case 0:
+          // prefer OpenPGP over S/MIME
+          if (doSign || doEncrypt) {
+            toolbarMsg += " " + EnigmailCommon.getString("msgCompose.toolbarTxt.smimeOff");
+          }
+          break;
+        case 1:
+          // ask user
+          if (doSign || doEncrypt) {
+            toolbarMsg += " " + EnigmailCommon.getString("msgCompose.toolbarTxt.smime");
+          }
+          break;
+        case 2:
+          // prefer S/MIME over OpenPGP
+          encBroadcaster.setAttribute("disabled", "true");
+          signBroadcaster.setAttribute("disabled", "true");
+          toolbarMsg = EnigmailCommon.getString("msgCompose.toolbarTxt.smimeSignOrEncrypt");
+          break;
 
-        toolbarMsg += " " + EnigmailCommon.getString("msgCompose.toolbarTxt.smime");
       }
     }
 
@@ -4228,16 +4248,17 @@ Enigmail.composeStateListener = {
 
       NotifyDocumentCreated: function ()
       {
-        // EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.NotifyDocumentCreated\n");
+        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.NotifyDocumentCreated\n");
       },
 
       NotifyDocumentWillBeDestroyed: function ()
       {
-        // EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.enigDocStateListener.NotifyDocumentWillBeDestroyed\n");
+        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.enigDocStateListener.NotifyDocumentWillBeDestroyed\n");
       },
 
       NotifyDocumentStateChanged: function (nowDirty)
       {
+        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.enigDocStateListener.NotifyDocumentStateChanged\n");
       }
     };
 
@@ -4269,8 +4290,20 @@ Enigmail.composeStateListener = {
     isEmpty    = Enigmail.msg.editor.documentIsEmpty;
     isEditable = Enigmail.msg.editor.isDocumentEditable;
 
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.ComposeBodyReady: isEmpty="+isEmpty+", isEditable="+isEditable+"\n");
 
-    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.NotifyDocumentStateChanged: isEmpty="+isEmpty+", isEditable="+isEditable+"\n");
+    //FIXME
+    EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.ComposeBodyReady: disableSmime="+Enigmail.msg.disableSmime+"\n");
+
+    if (Enigmail.msg.disableSmime) {
+      if (gMsgCompose && gMsgCompose.compFields && gMsgCompose.compFields.securityInfo) {
+        gMsgCompose.compFields.securityInfo.signMessage = false;
+        gMsgCompose.compFields.securityInfo.requireEncryptMessage = false;
+      }
+      else {
+        EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: EDSL.ComposeBodyReady: could not disable S/MIME\n");
+      }
+    }
 
     if (!isEditable || isEmpty)
       return;
@@ -4282,6 +4315,7 @@ Enigmail.composeStateListener = {
         },
         0);
     }
+
   },
 
   SaveInFolderDone: function(folderURI)
