@@ -95,7 +95,7 @@
       <tree  id="enigmailUserIdSelection" flex="1"
         hidecolumnpicker="false"
         seltype="single"
-        style="height:350px"
+        style="height:300px"
         onkeypress="enigmailUserSelCallback(event)">
         <!-- onclick="enigmailUserSelCallback(event);" -->
 
