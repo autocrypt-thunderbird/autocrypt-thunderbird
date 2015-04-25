@@ -176,6 +176,7 @@ var EnigmailCommon = {
   ENIG_FINAL_YES:       1,
   ENIG_FINAL_FORCENO:  10,
   ENIG_FINAL_FORCEYES: 11,
+  ENIG_FINAL_SMIME_DISABLED: 98,  // disabled to to preferring S/MIME
   ENIG_FINAL_CONFLICT: 99,
 
   // variables

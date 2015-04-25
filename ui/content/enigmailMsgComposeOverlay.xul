@@ -235,7 +235,7 @@
             id="enigmail-toolbar-header-button"
             label="&enigmail.composetoolbar.header;"
             buttontype="thunderbird"
-            oncommand="Enigmail.msg.displaySecuritySettings()">
+            oncommand="Enigmail.msg.doPgpButton('displaySecuritySettings')">
       <label id="enigmail-toolbar-hdr-text" value="&enigmail.label;:"/>
     </toolbarbutton>
 
@@ -243,7 +243,7 @@
             id="enigmail-toolbar-text-button"
             label="&enigmail.composetoolbar.desc;"
             buttontype="thunderbird"
-            oncommand="Enigmail.msg.displaySecuritySettings()">
+            oncommand="Enigmail.msg.doPgpButton('displaySecuritySettings')">
       <label id="enigmail-toolbar-text" value="&enigmail.composetoolbar.desc;"/>
     </toolbarbutton>
 

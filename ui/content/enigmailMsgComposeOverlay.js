@@ -139,11 +139,12 @@ Enigmail.msg = {
 
     var msgId = document.getElementById("msgIdentityPopup");
     if (msgId) {
-      msgId.setAttribute("oncommand", "Enigmail.msg.setIdentityCallback();");
+      msgId.addEventListener("command", Enigmail.msg.setIdentityCallback);
     }
 
     var subj = document.getElementById("msgSubject");
-    subj.setAttribute('onfocus', "Enigmail.msg.fireSendFlags()");
+    subj.addEventListener('focus', Enigmail.msg.fireSendFlags);
+    //subj.setAttribute('onfocus', "Enigmail.msg.fireSendFlags()");
 
     // listen to S/MIME changes to potentially display "conflict" message
     let s = document.getElementById("menu_securitySign1");
@@ -190,7 +191,11 @@ Enigmail.msg = {
   setIdentityCallback: function (elementId)
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.setIdentityCallback: elementId="+elementId+"\n");
-    this.setIdentityDefaults();
+
+    EnigmailCommon.setTimeout(function _f() {
+        Enigmail.msg.setIdentityDefaults();
+      }
+    , 50);
   },
 
 
@@ -1374,6 +1379,20 @@ Enigmail.msg = {
       }
     }
 
+    if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields &&
+         (gMsgCompose.compFields.securityInfo.signMessage ||
+          gMsgCompose.compFields.securityInfo.requireEncryptMessage)) {
+
+      if (EnigmailCommon.getPref("mimePreferPgp") == 2) {
+        encFinally = EnigmailCommon.ENIG_FINAL_SMIME_DISABLED;
+        encReason = EnigmailCommon.getString("reasonSmimeConflict");
+        signFinally = EnigmailCommon.ENIG_FINAL_SMIME_DISABLED;
+        signReason = EnigmailCommon.getString("reasonSmimeConflict");
+      }
+    }
+
+
+
     // process resulting PGP/MIME mode
     if (this.pgpmimeForced == EnigmailCommon.ENIG_NEVER) {  // force not to PGP/Mime?
       pgpmimeFinally = EnigmailCommon.ENIG_FINAL_FORCENO;
@@ -1823,6 +1842,12 @@ Enigmail.msg = {
   displaySecuritySettings: function ()
   {
     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.displaySecuritySettings\n");
+
+    if (this.statusEncrypted == EnigmailCommon.ENIG_FINAL_SMIME_DISABLED) {
+      EnigmailCommon.alert(window, "Enigmail is not used because S/MIME is currently enabled. Please turn off S/MIME signing and/or encryption and then enable Enigmail encryption");
+      return;
+    }
+
     var inputObj = {
                      statusEncrypted: this.statusEncrypted,
                      statusSigned: this.statusSigned,
