@@ -982,6 +982,8 @@ function EnigGetKeyDetails(sigListStr) {
   var calcTrust;
   var ownerTrust;
   var fingerprint;
+  var creationDate;
+  var expiryDate;
   var uidList = [];
   var subkeyList = [];
   var showPhoto = false;
@@ -996,7 +998,9 @@ function EnigGetKeyDetails(sigListStr) {
       if (aLine[11].indexOf("D")>=0) {
         calcTrust="d";
       }
-      var ownerTrust=aLine[8];
+      ownerTrust = aLine[8];
+      creationDate = EnigmailCommon.getDateTime(aLine[5], true, false);
+      expiryDate = EnigmailCommon.getDateTime(aLine[6], true, false);
       subkeyList.push(aLine);
     case "uid":
       if (! gUserId) {
@@ -1030,6 +1034,8 @@ function EnigGetKeyDetails(sigListStr) {
     fingerprint: fingerprint,
     showPhoto: showPhoto,
     uidList: uidList,
+    creationDate: creationDate,
+    expiryDate: expiryDate,
     subkeyList: subkeyList
   };
   return keyDetails;
