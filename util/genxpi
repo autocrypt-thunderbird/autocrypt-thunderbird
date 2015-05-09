@@ -69,15 +69,6 @@ escplatform="$(printf "%s" "${platform}" | sed 's_/_\\/_g')"
 # Pepare install.rdf
 sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${escplatform}'<\/em:targetPlatform>/' < ${srcDir}/package/install.rdf > ${targetDir}/install.rdf
 
-subprocessDll=${libPrefix}subprocess${dllSuffix}
-spDllFile=platform/${platform}/lib/${libPrefix}subprocess-${xpcomAbi}${dllSuffix}
-
-if [ ${osArch} = "WINNT" ]; then
-  # there is no DLL file on Windows
-  subprocessDll=
-  spDllFile=
-fi
-
 # Prepare chrome.manifest
 cat  ${srcDir}/package/chrome.manifest \
 > ${targetDir}/chrome.manifest
@@ -131,7 +122,6 @@ zip --must-match\
     modules/subprocess_worker_unix.js \
     wrappers/gpg-agent-wrapper.sh \
     chrome/${xpiModule}.jar \
-    ${spDllFile} \
     chrome.manifest \
     install.rdf
 

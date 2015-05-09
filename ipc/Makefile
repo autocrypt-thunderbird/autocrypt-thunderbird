@@ -8,10 +8,6 @@ include $(DEPTH)/config/autoconf.mk
 
 DIRS            = modules
 
-ifneq ($(OS_TARGET),WINNT)
-  DIRS += src
-endif
-
 #ifeq ($(TESTS),yes)
 #  DIRS += tests
 #endif
