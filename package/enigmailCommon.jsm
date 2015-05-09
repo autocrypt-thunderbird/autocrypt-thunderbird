@@ -3400,7 +3400,6 @@ function initSubrocess(aFile) {
   installLocation.append(xulRuntime.OS+"_"+xulRuntime.XPCOMABI);
   installLocation.append("lib");
   installLocation.append("libsubprocess-"+xulRuntime.XPCOMABI+dllSuffix);
-  subprocess.registerLibcWrapper(installLocation.path);
 }
 
 try {
