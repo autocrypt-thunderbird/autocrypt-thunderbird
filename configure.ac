@@ -22,11 +22,6 @@ if test "x$PERL" = "x" ; then
   AC_MSG_ERROR([[Perl not found.]])
 fi
 
-AC_PROG_CC
-if test "x$ac_cv_prog_cc_c89" = "xno" ; then
-  AC_MSG_ERROR([[No C-89 compiler found]])
-fi
-
 AC_CANONICAL_TARGET
 
 # Enable running of unit test during build
@@ -44,17 +39,6 @@ AC_ARG_ENABLE(lang,
     )
 
 
-changequote(,)dnl
-BUILD_OS_ARCH=`$PERL config/getOsTarget.pl -o "$target_os" "$target_cpu" "$CC"`
-BUILD_TARGET_CPU=`$PERL config/getOsTarget.pl -c "$target_os" "$target_cpu" "$CC"`
-DLL_PREFIX=`$PERL config/getOsTarget.pl -dp "$target_os" "$target_cpu" "$CC"`
-DLL_SUFFIX=`$PERL config/getOsTarget.pl -ds "$target_os" "$target_cpu" "$CC"`
-changequote([,])dnl
-
-AC_SUBST(BUILD_OS_ARCH)
-AC_SUBST(BUILD_TARGET_CPU)
-AC_SUBST(DLL_PREFIX)
-AC_SUBST(DLL_SUFFIX)
 AC_SUBST(enable_tests)
 AC_SUBST(enable_lang)
 

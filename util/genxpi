@@ -38,36 +38,27 @@
 # This script generates the Enigmail XPI
 #
 
-echo "genxpi: Generating $1 in $5"
+echo "genxpi: Generating $1 in $3"
 
-if [ $# -lt 8 ]; then
+if [ $# -lt 5 ]; then
   echo "Wrong number of parameters"
   exit 1
 fi
 
 xpiFile=$1
 xpiVersion="$2"
-osArch=$3
-xpcomAbi=$4
-srcDir=$6
-xpiModule=$7
-dllSuffix=$8
-libPrefix=${9}
-enableLang=${10}
+distDir="$3"
+srcDir=$4
+xpiModule=$5
+enableLang=$6
 
 cd ${srcDir}
 cwd=`pwd`
-cd "$5"
+cd "$distDir"
 targetDir=`pwd`
 cd "$cwd"
 
-if [ "$xpcomAbi" = "" ] ; then
-  xpcomAbi="unknown"
-fi
-platform=${osArch}_${xpcomAbi}
-escplatform="$(printf "%s" "${platform}" | sed 's_/_\\/_g')"
-# Pepare install.rdf
-sed 's/<!-- targetPlatform placeholder -->/<em:targetPlatform>'${escplatform}'<\/em:targetPlatform>/' < ${srcDir}/package/install.rdf > ${targetDir}/install.rdf
+cp ${srcDir}/package/install.rdf ${targetDir}/install.rdf
 
 # Prepare chrome.manifest
 cat  ${srcDir}/package/chrome.manifest \

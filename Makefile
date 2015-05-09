@@ -17,53 +17,6 @@ ifeq ($(TESTS),yes)
 DIRS += check
 endif
 
-PLATFORM_STR = unknown
-
-# Edit the lines below as needed, depending upon your platform(s)
-ifeq ($(OS_TARGET),Linux)
-PLATFORM_STR = linux
-endif
-
-ifeq ($(OS_TARGET),WIN95)
-PLATFORM_STR = win32
-endif
-
-ifeq ($(OS_TARGET),WINNT)
-PLATFORM_STR = win32
-endif
-
-ifeq ($(OS_CONFIG),SunOS)
-PLATFORM_STR = sunos5
-endif
-
-ifeq ($(OS_TARGET),Darwin)
-PLATFORM_STR = darwin
-endif
-
-ifeq ($(OS_TARGET),dragonfly)
-PLATFORM_STR = DragonFly
-endif
-
-ifeq ($(OS_TARGET),FreeBSD)
-PLATFORM_STR = freebsd
-endif
-
-ifeq ($(OS_TARGET),NetBSD)
-PLATFORM_STR = netbsd
-endif
-
-ifeq ($(OS_TARGET),OpenBSD)
-PLATFORM_STR = openbsd
-endif
-
-ifeq ($(OS_TARGET),OS2)
-PLATFORM_STR = os2
-endif
-
-ifeq ($(OS_TARGET),OSF1)
-PLATFORM_STR = osf1
-endif
-
 XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS).xpi
 
 .PHONY: dirs $(DIRS)
@@ -76,7 +29,7 @@ $(DIRS):
 	$(MAKE) -C $@
 
 xpi:
-	$(srcdir)/util/genxpi $(XPIFILE) $(XPI_MODULE_VERS) $(OS_TARGET) $(CPU_ARCH) $(DIST) $(srcdir) $(XPI_MODULE) $(DLL_SUFFIX) $(DLL_PREFIX) $(ENABLE_LANG)
+	$(srcdir)/util/genxpi $(XPIFILE) $(XPI_MODULE_VERS) $(DIST) $(srcdir) $(XPI_MODULE) $(ENABLE_LANG)
 
 check:
 	util/checkFiles.py
