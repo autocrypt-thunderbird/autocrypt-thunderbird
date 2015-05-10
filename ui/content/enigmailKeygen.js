@@ -364,7 +364,7 @@ function enigmailKeygenStart() {
    var userEmail = curId.email;
 
    if (!userName) {
-      EnigAlert(EnigGetString("passUserName"));
+      EnigAlert(EnigGetString("keygen.missingUserName"));
       return;
    }
 
