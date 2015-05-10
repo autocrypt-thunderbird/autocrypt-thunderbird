@@ -3108,8 +3108,8 @@ Enigmail.msg = {
          uiFlags |= nsIEnigmail.UI_PGP_MIME;
 
        if ((sendFlags & (ENCRYPT | SIGN)) && usingPGPMime) {
-         // Use EnigMime
-         EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: Using EnigMime, flags="+sendFlags+"\n");
+         // Use PGP/MIME
+         EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: Using PGP/MIME, flags="+sendFlags+"\n");
 
          var oldSecurityInfo = gMsgCompose.compFields.securityInfo;
 
@@ -3198,6 +3198,7 @@ Enigmail.msg = {
                || this.statusEncrypted == EnigmailCommon.ENIG_FINAL_FORCEYES
                || this.statusEncryptedInStatusBar == EnigmailCommon.ENIG_FINAL_YES
                || this.statusEncryptedInStatusBar == EnigmailCommon.ENIG_FINAL_FORCEYES)) {
+         EnigmailCommon.DEBUG_LOG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: promised encryption did not succeed\n");
          if (!EnigmailCommon.confirmDlg(window,
                                         EnigmailCommon.getString("msgCompose.internalEncryptionError"),
                                         EnigmailCommon.getString("msgCompose.button.sendAnyway"))) {
