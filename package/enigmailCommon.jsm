@@ -1219,6 +1219,14 @@ var EnigmailCommon = {
               this.enigmailSvc.invalidateUserIdList();
             }
           }
+          else if (flag == gStatusFlags["MISSING_PASSPHRASE"]){
+            lineSplit = statusLine.split(/ +/);
+            statusFlags |= Ci.nsIEnigmail.MISSING_PASSPHRASE;
+            statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+            flag = 0;
+            this.DEBUG_LOG("enigmailCommon.jsm: parseErrorOutput: missing passphrase"+"\n");
+            retStatusObj.statusMsg += "Missing Passphrase\n";
+          }
           else if (flag == gStatusFlags["INV_SGNR"]) {
             lineSplit = statusLine.split(/ +/);
             statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
