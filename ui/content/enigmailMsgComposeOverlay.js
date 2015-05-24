@@ -2640,11 +2640,7 @@ Enigmail.msg = {
       return true;
     }
 
-    let sendFlags = nsIEnigmail.SEND_PGP_MIME | nsIEnigmail.SEND_ENCRYPTED | nsIEnigmail.SAVE_MESSAGE;
-
-    if (this.trustAllKeys) {
-      sendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
-    }
+    let sendFlags = nsIEnigmail.SEND_PGP_MIME | nsIEnigmail.SEND_ENCRYPTED | nsIEnigmail.SAVE_MESSAGE | nsIEnigmail.SEND_ALWAYS_TRUST;
 
     let fromAddr = this.identity.email;
     let userIdValue = this.getSenderUserId();
