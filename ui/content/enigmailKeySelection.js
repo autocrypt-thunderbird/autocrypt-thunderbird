@@ -49,6 +49,7 @@ const CREATED = 5;
 const EXPIRY = 6;
 const USER_ID = 9;
 const KEY_USE_FOR = 11;
+const FPR = 9;
 
 // key trust values for field 1 (as described in the doc/DETAILS file in the GnuPG distribution)
 const KEY_EXPIRED="e";
@@ -356,9 +357,13 @@ function enigmailBuildList(refresh)
          }
          userObj.valid=false;
          userObj.uidValid=true;
+         userObj.fpr = "";
          userObj.subkeyOK=(listRow[KEY_USE_FOR].indexOf("e") >= 0 || secretOnly);
          userObj.SubUserIds=new Array();
          aUserList.push(userObj);
+         break;
+       case "fpr":
+         userObj.fpr = listRow[FPR];
          break;
        case "grp":
          // groups
@@ -705,6 +710,9 @@ function enigUserSelCreateRow (userObj, activeState, userId, keyValue, dateField
   }
   else {
     treeItem.setAttribute("id", "0x"+userObj.keyId);
+    if (userObj.fpr.length > 0) {
+      treeItem.setAttribute("fpr", "0x"+userObj.fpr);
+    }
   }
   treeItem.appendChild(userRow);
   return treeItem;
@@ -722,21 +730,32 @@ function enigmailUserSelAccept()
   var t = new String();
   gUserList = document.getElementById("enigmailUserIdSelection");
   var treeChildren=gUserList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
+  var item;
 
   if (window.arguments[INPUT].options.indexOf("multisel")<0) {
     if (gUserList.currentIndex >= 0) {
-      resultObj.userList.push(gUserList.view.getItemAtIndex(gUserList.currentIndex).getAttribute("id"));
-      // resultObj.userList.push(gUserList.currentItem.getAttribute("id"));
+      item = gUserList.view.getItemAtIndex(gUserList.currentIndex);
+      if (item.getAttribute("fpr")) {
+        resultObj.userList.push(item.getAttribute("fpr"));
+      }
+      else {
+        resultObj.userList.push(item.getAttribute("id"));
+      }
     }
   }
   else {
-    var item=treeChildren.firstChild;
+    item=treeChildren.firstChild;
     while (item) {
       var aRows = item.getElementsByAttribute("id","indicator");
       if (aRows.length) {
         var elem=aRows[0];
         if (elem.getAttribute("active") == "1") {
-          resultObj.userList.push(item.getAttribute("id"));
+          if (item.getAttribute("fpr")) {
+            resultObj.userList.push(item.getAttribute("fpr"));
+          }
+          else {
+            resultObj.userList.push(item.getAttribute("id"));
+          }
         }
       }
       item = item.nextSibling;

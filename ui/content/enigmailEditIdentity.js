@@ -222,7 +222,7 @@ Enigmail.edit = {
     try {
       if (resultObj.cancelled) return;
       var selKey = resultObj.userList[0];
-      selKey = "0x"+selKey.substring(10,18);
+      //selKey = "0x"+selKey.substring(10,18);
       this.pgpKeyId.value = selKey;
     } catch (ex) {
       // cancel pressed -> don't send mail
