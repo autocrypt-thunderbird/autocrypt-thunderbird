@@ -1153,10 +1153,12 @@ function getContentType(shdr) {
   }
 };
 
+// return the content of the boundary parameter
+
 function getBoundary(shdr) {
   try {
     shdr += "";
-    return shdr.match(/boundary="?([A-z0-9'()+_,-.\/:=?]+)"?/)[1].toLowerCase();
+    return shdr.match(/boundary="?([A-z0-9'()+_,-.\/:=?]+)"?/i)[1];
   }
   catch (e) {
     Ec.DEBUG_LOG("enigmailConvert.jsm: getBoundary: "+e+"\n");
