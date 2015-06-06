@@ -1598,6 +1598,9 @@ Enigmail.msg = {
          (gMsgCompose.compFields.securityInfo.signMessage ||
           gMsgCompose.compFields.securityInfo.requireEncryptMessage)) {
 
+      // Determine if user wants to encrypt drafts
+      let doEncryptDrafts = this.identity.getBoolAttribute("autoEncryptDrafts");
+
       switch (EnigmailCommon.getPref("mimePreferPgp")) {
         case 0:
           // prefer OpenPGP over S/MIME
@@ -1610,12 +1613,18 @@ Enigmail.msg = {
           if (doSign || doEncrypt) {
             toolbarMsg += " " + EnigmailCommon.getString("msgCompose.toolbarTxt.smime");
           }
+          if (doEncryptDrafts) {
+            toolbarMsg += " " + EnigmailCommon.getString("msgCompose.toolbarTxt.smimeNoDraftEncryption");
+          }
           break;
         case 2:
           // prefer S/MIME over OpenPGP
           encBroadcaster.setAttribute("disabled", "true");
           signBroadcaster.setAttribute("disabled", "true");
           toolbarMsg = EnigmailCommon.getString("msgCompose.toolbarTxt.smimeSignOrEncrypt");
+          if (doEncryptDrafts) {
+            toolbarMsg += " " + EnigmailCommon.getString("msgCompose.toolbarTxt.smimeNoDraftEncryption");
+          }
           break;
 
       }
@@ -2680,7 +2689,7 @@ Enigmail.msg = {
       if (testErrorMsgObj.value.search(s) >= 0)  {
         EnigmailCommon.alert(window,
           EnigmailCommon.getString("saveDraftError")+ "\n\n" +
-          EnigmailCommon.getString("errorKeyUnusable", [ fromAddr ]));
+          EnigmailCommon.getString("errorOwnKeyUnusable", [ fromAddr ]));
         return false;
       }
     }
