@@ -103,10 +103,6 @@ toolbar[iconsize="small"] #button-enigmail-encrypt[disabled] {
   list-style-image : url("chrome://enigmail/skin/encrypt-disabled-18.png");
 }
 
-toolbar[iconsize="small"]: #button-enigmail-encrypt[disabled] {
-  list-style-image : url("chrome://enigmail/skin/encrypt-disabled-18.png");
-}
-
 toolbar[iconsize="small"] #button-enigmail-encrypt[encrypted="activeNone"]
 {
   list-style-image : url("chrome://enigmail/skin/encrypt-active-18.png");
