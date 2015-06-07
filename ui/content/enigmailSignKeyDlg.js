@@ -38,7 +38,8 @@ Components.utils.import("resource://enigmail/keyManagement.jsm");
 const Ec = EnigmailCommon;
 
 
-var gSignatureList = null;
+var gExportableSignatureList = null;
+var gLocalSignatureList = null;
 var gUidCount = null;
 
 function onLoad() {
@@ -72,7 +73,9 @@ function onLoad() {
   try {
     var exitCodeObj = new Object();
     var errorMsgObj = new Object();
-    gSignatureList = new Array();
+    gExportableSignatureList = new Array();
+    gLocalSignatureList = new Array();
+    var sigType = null;
     gUidCount = new Array();
     var keyId = null;
     var fingerprint = "";
@@ -99,17 +102,29 @@ function onLoad() {
             gUidCount[keyId]=1;
           }
           else {
-            gUidCount[keyId]=gUidCount[keyId]+1;
+            gUidCount[keyId]+=1;
           }
           break;
 
         case "sig":
           // Count signatures separately for each signing key
-          if (gSignatureList[aLine[4]]==undefined) {
-            gSignatureList[aLine[4]]=1;
+          // Only count exportable signatures, neglect local (non-exportable) signatures
+          sigType = aLine[10].charAt(aLine[10].length-1);
+          if (sigType=="x") {
+            if (gExportableSignatureList[aLine[4]]==undefined) {
+              gExportableSignatureList[aLine[4]]=1;
+            }
+            else {
+              gExportableSignatureList[aLine[4]]+=1;
+            }
           }
-          else {
-            gSignatureList[aLine[4]]=gSignatureList[aLine[4]]+1;
+          if (sigType=="l") {
+            if (gLocalSignatureList[aLine[4]]==undefined) {
+              gLocalSignatureList[aLine[4]]=1;
+            }
+            else {
+              gLocalSignatureList[aLine[4]]+=1;
+            }
           }
           break;
 
@@ -174,20 +189,36 @@ function enigKeySelCb() {
   var signWithKeyId = signWithKey.selectedItem.value;
   var alreadySigned = document.getElementById("alreadySigned");
   var acceptButton = document.getElementById("enigmailSignKeyDlg").getButton("accept");
-
-  if (gSignatureList[signWithKeyId] == undefined){
+  var doLocalSig = document.getElementById("localSig");
+  var signatureCount = 0;
+  
+  if (doLocalSig.checked) {
+    signatureCount=gLocalSignatureList[signWithKeyId];
+  }
+  else {
+    signatureCount=gExportableSignatureList[signWithKeyId];
+  }
+    
+  if ((doLocalSig.checked) && (gExportableSignatureList[signWithKeyId]>0)) {
+    // User tries to locally sign a key he has already signed (at least partially) with an exportable signature
+    // Here we display a hint and DISable the OK button
+    alreadySigned.setAttribute("value", Ec.getString("alreadySignedexportable.label", "0x"+ KeyToBeSigned32));
+    alreadySigned.removeAttribute("collapsed");
+    acceptButton.disabled = true;
+  }
+  else if (signatureCount == undefined){
     // No signature yet, Hide hint field and ENable OK button
     alreadySigned.setAttribute("collapsed", "true");
     acceptButton.disabled = false;
   }
-  else if (gSignatureList[signWithKeyId]==gUidCount[KeyToBeSigned]) {
+  else if (signatureCount==gUidCount[KeyToBeSigned]) {
     // Signature count == UID count, so key is already fully signed and another signing operation makes no more sense
     // Here, we display a hint and DISable the OK button
     alreadySigned.setAttribute("value", Ec.getString("alreadySigned.label", "0x"+ KeyToBeSigned32));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = true;
   }
-  else if (gSignatureList[signWithKeyId] > 0) {
+  else if (signatureCount > 0) {
     // Signature count != UID count, so key is partly signed and another sign operation makes sense
     // Here, we display a hint and ENable the OK button
     alreadySigned.setAttribute("value", Ec.getString("partlySigned.label", "0x"+ KeyToBeSigned32));

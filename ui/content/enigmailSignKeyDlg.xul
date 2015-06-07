@@ -107,7 +107,8 @@
     <vbox>
       <checkbox checked="false"
             id="localSig"
-            label="&enigmail.sKeyDlg.createLocal.label;"/>
+            label="&enigmail.sKeyDlg.createLocal.label;"
+            oncommand="enigKeySelCb()"/>
     </vbox>
   </vbox>
   <!-- vbox align="end">
