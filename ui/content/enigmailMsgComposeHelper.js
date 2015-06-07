@@ -151,10 +151,10 @@ Enigmail.hlp = {
               if (! negateRule) {
                 // normal rule
                 addrList=nodeText.toLowerCase().split(/[ ,;]+/);
-                for(var addrIndex=0; addrIndex < addrList.length; addrIndex++) {
-                  var email=addrList[addrIndex];
-                  var i=addresses.indexOf(email);
-                  while (i>=0) {
+                for (var addrIndex=0; addrIndex < addrList.length; addrIndex++) {
+                  var email = addrList[addrIndex];
+                  var idx = addresses.indexOf(email);
+                  while (idx >= 0) {
                     EnigmailCommon.DEBUG_LOG("enigmailMsgComposeHelper.js: getRecipientsKeys(): got matching rule for \""+email+"\"\n");
 
                     sign    = this.getFlagVal(sign,    node, "sign");
@@ -164,20 +164,22 @@ Enigmail.hlp = {
                     // extract found address
                     var keyIds=node.getAttribute("keyId");
 
-                    var start=addresses.substring(0,i+email.length).lastIndexOf("{");
+                    var start=addresses.substring(0, idx+email.length).lastIndexOf("{");
                     var end=start+addresses.substring(start).indexOf("}")+1;
                     foundAddresses+=addresses.substring(start,end);
                     if (keyIds) {
                       if (keyIds != ".") {
                         keyList.push(keyIds.replace(/[ ,;]+/g, ", "));
                       }
-                      addresses=addresses.substring(0,start)+addresses.substring(end);
-                      i=addresses.indexOf(email);
+                      addresses = addresses.substring(0,start)+addresses.substring(end);
+                      idx = addresses.indexOf(email);
                     }
                     else {
-                      var oldMatch=i;
-                      i=addresses.substring(oldMatch+email.length).indexOf(email);
-                      if (i>=0) i+=oldMatch+email.length;
+                      var oldMatch = idx;
+                      idx = addresses.substring(oldMatch+email.length).indexOf(email);
+                      if (idx>=0) {
+                        idx += oldMatch + email.length;
+                      }
                     }
                   }
                 }
@@ -185,13 +187,14 @@ Enigmail.hlp = {
               else {
                 // "not" rule
                 addrList = addresses.replace(/\}\{/g, "},{").split(/,/);
-                for (i=0; i<addrList.length; i++) {
-                  if (nodeText.toLowerCase().indexOf(addrList[i])>=0) {
-                    i=addrList.length+2;
+                var idx;
+                for (idx = 0; idx < addrList.length; idx++) {
+                  if (nodeText.toLowerCase().indexOf(addrList[idx])>=0) {
+                    idx = addrList.length+2;
                     break;
                   }
                 }
-                if (i==addrList.length) {
+                if (idx == addrList.length) {
                   // no matching address; apply rule
                   sign    = this.getFlagVal(sign,    node, "sign");
                   encrypt = this.getFlagVal(encrypt, node, "encrypt");
