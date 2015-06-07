@@ -48,6 +48,7 @@ Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 Components.utils.import("resource://enigmail/commonFuncs.jsm");
 Components.utils.import("resource://enigmail/mimeVerify.jsm");
 Components.utils.import("resource://enigmail/fixExchangeMsg.jsm");
+Components.utils.import("resource://enigmail/enigmailConvert.jsm");
 
 if (! Enigmail) var Enigmail = {};
 
@@ -2319,6 +2320,15 @@ Enigmail.msg = {
       }
     }
     return false;
+  },
+
+  // create a decrypted copy of all selected messages in a target folder
+
+  decryptToFolder: function(destFolder) {
+    let msgHdrs = gFolderDisplay ? gFolderDisplay.selectedMessages : null;
+    if (! msgHdrs || msgHdrs.length == 0) return;
+
+    EnigmailDecryptPermanently.dispatchMessages(msgHdrs, destFolder.URI, false, false);
   },
 
   // download keys

@@ -169,6 +169,20 @@
         </menupopup>
       </menu>
 
+      <menu
+          id="enigmailDecryptToFolder"
+          label="&enigmail.decryptToFolder.label;"
+          accesskey="&enigmail.decryptToFolder.accesskey;"
+          oncommand="Enigmail.msg.decryptToFolder(event.target._folder)">
+        <menupopup id="enigmailDecryptfileHereMenu"
+                   type="folder"
+                   mode="filing"
+                   showFileHereLabel="true"
+                   showRecent="true"
+                   recentLabel="&enigmail.recent.label;"
+                   recentAccessKey="&enigmail.recent.accesskey;"/>
+      </menu>
+
       <menuseparator/>
 
       <menuitem id="enigmail_keymgmt"
@@ -232,6 +246,24 @@
 
     </menupopup>
   </menu>
+
+  <!-- menuitem in folder list context menu to decrypt message -->
+  <menupopup id="mailContext">
+    <menu
+        id="enigmailContext-decryptToFolder"
+        insertafter="mailContext-copyMenu"
+        label="&enigmail.decryptToFolder.label;"
+        accesskey="&enigmail.decryptToFolder.accesskey;"
+        oncommand="Enigmail.msg.decryptToFolder(event.target._folder)">
+      <menupopup id="enigmailCtxDecrypt-fileHereMenu"
+                 type="folder"
+                 mode="filing"
+                 showFileHereLabel="true"
+                 showRecent="true"
+                 recentLabel="&enigmail.recent.label;"
+                 recentAccessKey="&enigmail.recent.accesskey;"/>
+    </menu>
+  </menupopup>
 
 <!-- Thunderbird & SeaMonkey 2.x -->
    <toolbarpalette id="MailToolbarPalette">

@@ -99,6 +99,13 @@
 <!ENTITY enigmail.clearPassphrase.label  "Clear Saved Passphrase">
 <!ENTITY enigmail.editRules.label        "Edit Per-Recipient Rules">
 
+<!ENTITY enigmail.decryptToFolder.label     "Decrypt to folder">
+<!ENTITY enigmail.decryptToFolder.accesskey "D">
+
+<!-- "recent" label for Folder selection submenu -->
+<!ENTITY enigmail.recent.label              "Recent">
+<!ENTITY enigmail.recent.accesskey          "R">
+
 <!ENTITY enigmail.prefs.label            "Preferences">
 
 <!ENTITY enigmail.debugMenu.label        "Debugging Options">
