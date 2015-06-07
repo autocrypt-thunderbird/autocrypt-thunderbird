@@ -65,7 +65,9 @@ Components.utils.import("resource:///modules/MailUtils.js");
 Components.utils.import("resource://enigmail/enigmailCore.jsm");
 Components.utils.import("resource://enigmail/enigmailCommon.jsm");
 Components.utils.import("resource://enigmail/commonFuncs.jsm");
+
 var Ec = EnigmailCommon;
+var EC = EnigmailCore;
 
 
 var EXPORTED_SYMBOLS = ["EnigmailDecryptPermanently"];
@@ -87,31 +89,87 @@ const STATUS_NOT_REQUIRED = 2;
  *
  * @return a Promise that we do that
  */
-function EnigmailDecryptPermanently(hdr, destFolder, move) {
-  return new Promise(
-    function(resolve, reject) {
-      let msgUriSpec = hdr.folder.getUriForMsg(hdr);
+var EnigmailDecryptPermanently = {
 
-      Ec.DEBUG_LOG("enigmailConvert.jsm: EnigmailDecryptPermanently: MessageUri: "+msgUriSpec+"\n");
+  /***
+   *  dispatchMessages
+   *
+   *  Because Thunderbird throws all messages at once at us thus we have to rate limit the dispatching
+   *  of the message processing. Because there is only a negligible performance gain when dispatching
+   *  several message at once we serialize to not overwhelm low power devices.
+   *
+   *  The function is implemented such that the 1st call (requireSync == true) is a synchronous function,
+   *  while any other call is asynchronous. This is required to make the filters work correctly in case
+   *  there are other filters that work on the message. (see bug 374).
+   *
+   *  Parameters
+   *   aMsgHdrs:     Array of nsIMsgDBHdr
+   *   targetFolder: String; target folder URI
+   *   move:         Boolean: type of action; true = "move" / false = "copy"
+   *   requireSync:  Boolean: true = require  function to behave synchronously
+   *                          false = async function (no useful return value)
+   *
+   **/
 
-      var messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
-      var msgSvc = messenger.messageServiceFromURI(msgUriSpec);
+  dispatchMessages: function(aMsgHdrs, targetFolder, move, requireSync) {
+    var inspector = Cc["@mozilla.org/jsinspector;1"].getService(Ci.nsIJSInspector);
 
-      var decrypt = new decryptMessageIntoFolder(destFolder, move, resolve);
+    var promise = EnigmailDecryptPermanently.decryptMessage(aMsgHdrs[0], targetFolder, move);
+    var done = false;
 
-      Ec.DEBUG_LOG("enigmailConvert.jsm: EnigmailDecryptPermanently: Calling MsgHdrToMimeMessage\n");
-      try {
-        MsgHdrToMimeMessage(hdr, decrypt, decrypt.messageParseCallback, true, {examineEncryptedParts: false, partsOnDemand: false});
+    var processNext = function (data) {
+      aMsgHdrs.splice(0,1);
+      if (aMsgHdrs.length > 0) {
+        EnigmailDecryptPermanently.dispatchMessages(aMsgHdrs, targetFolder, move, false);
       }
-      catch (ex) {
-        Ec.ERROR_LOG("enigmailConvert.jsm: MsgHdrToMimeMessage failed: "+ex.toString()+"\n");
-        reject("MsgHdrToMimeMessage failed");
+      else {
+        // last message was finished processing
+        done = true;
+        EC.DEBUG_LOG("enigmailConvert.jsm: dispatchMessage: exit nested loop\n");
+        inspector.exitNestedEventLoop();
       }
-      return;
+    };
+
+    promise.then(processNext);
+
+    promise.catch(function(err) {
+      EC.ERROR_LOG("enigmailConvert.jsm: dispatchMessage: caught error: "+err+"\n");
+      processNext(null);
+    });
+
+    if (requireSync && ! done) {
+      // wait here until all messages processed, such that the function returns
+      // synchronously
+      EC.DEBUG_LOG("enigmailConvert.jsm: dispatchMessage: enter nested loop\n");
+      inspector.enterNestedEventLoop({value : 0});
     }
-  );
-};
+  },
 
+  decryptMessage: function (hdr, destFolder, move) {
+    return new Promise(
+      function(resolve, reject) {
+        let msgUriSpec = hdr.folder.getUriForMsg(hdr);
+
+        Ec.DEBUG_LOG("enigmailConvert.jsm: decryptMessage: MessageUri: "+msgUriSpec+"\n");
+
+        var messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+        var msgSvc = messenger.messageServiceFromURI(msgUriSpec);
+
+        var decrypt = new decryptMessageIntoFolder(destFolder, move, resolve);
+
+        Ec.DEBUG_LOG("enigmailConvert.jsm: EnigmailDecryptPermanently: Calling MsgHdrToMimeMessage\n");
+        try {
+          MsgHdrToMimeMessage(hdr, decrypt, decrypt.messageParseCallback, true, {examineEncryptedParts: false, partsOnDemand: false});
+        }
+        catch (ex) {
+          Ec.ERROR_LOG("enigmailConvert.jsm: MsgHdrToMimeMessage failed: "+ex.toString()+"\n");
+          reject("MsgHdrToMimeMessage failed");
+        }
+        return;
+      }
+    );
+  }
+}
 
 function decryptMessageIntoFolder(destFolder, move, resolve) {
   this.destFolder = destFolder;
