@@ -156,17 +156,17 @@
               label="&enigmail.clearPassphrase.label;"
               accesskey="&enigmail.clearPassphrase.accesskey;"
               advanced="true"
-              oncommand="EnigmailCommon.clearPassphrase(window);" />
+              oncommand="Passwords.clearPassphrase(window);" />
 
           <menuitem id="enigmail_keymgmt"
              label="&enigmail.keyManWindow.label;"
              accesskey="&enigmail.keyManWindow.accesskey;"
-             oncommand="EnigmailFuncs.openKeyManager(window);" />
+             oncommand="Windows.openKeyManager(window);" />
 
           <menuitem id="enigmail_RulesEditor"
               label="&enigmail.editRules.label;"
               accesskey="&enigmail.editRules.accesskey;"
-              oncommand="EnigmailFuncs.openRulesEditor();"/>
+              oncommand="Windows.openRulesEditor();"/>
 
           <menuseparator/>
 
@@ -184,13 +184,13 @@
               <menuitem id="enigmail_defaultSendOpts"
                 label="&enigmail.sendOptionsMenu.label;"
                 accesskey="&enigmail.sendOptionsMenu.accesskey;"
-                oncommand="EnigmailFuncs.openPrefWindow(window, true, 'sendingTab');" />
+                oncommand="Windows.openPrefWindow(window, true, 'sendingTab');" />
 
               <menuitem id="enigmail_defaultKeySelOpts"
                 label="&enigmail.defaultKeySelOpts.label;"
                 accesskey="&enigmail.defaultKeySelOpts.accesskey;"
                 advanced="true"
-                oncommand="EnigmailFuncs.openPrefWindow(window, true, 'keySelTab');" />
+                oncommand="Windows.openPrefWindow(window, true, 'keySelTab');" />
 
             </menupopup>
           </menu>
@@ -198,7 +198,7 @@
           <menuitem id="enigmail_help"
               label="&enigmail.help.label;"
               accesskey="&enigmail.help.accesskey;"
-              oncommand="EnigmailFuncs.openHelpWindow('compose');" />
+              oncommand="Windows.openHelpWindow('compose');" />
 
         </menupopup>
       </menu>

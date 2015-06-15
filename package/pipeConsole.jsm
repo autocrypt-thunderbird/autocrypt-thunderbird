@@ -1,3 +1,4 @@
+/*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -32,18 +33,15 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-/*
- * Import into a JS component using
- * 'Components.utils.import("resource://enigmail/pipeConsole.jsm");'
- */
+"use strict";
 
-var EXPORTED_SYMBOLS = [ "EnigmailConsole" ];
+const EXPORTED_SYMBOLS = [ "EnigmailConsole" ];
 
 const MAX_SIZE = 32768;
 var dataCache = "";
 var gotNewData = false;
 
-var EnigmailConsole = {
+const EnigmailConsole = {
   write: function(data) {
     dataCache += data;
     if (dataCache.length > MAX_SIZE) {
@@ -60,4 +58,4 @@ var EnigmailConsole = {
     gotNewData = false;
     return dataCache;
   }
-}
+};

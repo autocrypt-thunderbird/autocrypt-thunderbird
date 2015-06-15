@@ -1,3 +1,5 @@
+dump("loading: enigmailConsole.js\n");
+/*global Components: false, Data: false, Windows: false */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -32,17 +34,18 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/enigmailCore.jsm"); /*global EnigmailCore: false*/
 Components.utils.import("resource://enigmail/pipeConsole.jsm");
-
-const   Ec = EnigmailCommon;
+Components.utils.import("resource://enigmail/log.jsm");
+Components.utils.import("resource://enigmail/data.jsm");
+Components.utils.import("resource://enigmail/windows.jsm");
 
 function consoleLoad() {
-  Ec.DEBUG_LOG("enigmailConsole.js: consoleLoad\n");
+  Log.DEBUG("enigmailConsole.js: consoleLoad\n");
 
   top.controllers.insertControllerAt(0, CommandController);
 
-  Ec.getService(window);
+  EnigmailCore.getService(window);
 
   // Refresh console every 2 seconds
   window.consoleIntervalId = window.setInterval(refreshConsole, 2000);
@@ -50,7 +53,7 @@ function consoleLoad() {
 }
 
 function consoleUnload() {
-  Ec.DEBUG_LOG("enigmailConsole.js: consoleUnload\n");
+  Log.DEBUG("enigmailConsole.js: consoleUnload\n");
 
   // Cancel console refresh
   if (window.consoleIntervalId) {
@@ -63,10 +66,10 @@ window.onload = consoleLoad;
 window.onunload = consoleUnload;
 
 function refreshConsole() {
-  //Ec.DEBUG_LOG("enigmailConsole.js: refreshConsole():\n");
+  //Log.DEBUG("enigmailConsole.js: refreshConsole():\n");
 
   if (EnigmailConsole.hasNewData()) {
-    Ec.DEBUG_LOG("enigmailConsole.js: refreshConsole(): hasNewData\n");
+    Log.DEBUG("enigmailConsole.js: refreshConsole(): hasNewData\n");
 
     updateData();
   }
@@ -75,15 +78,15 @@ function refreshConsole() {
 }
 
 function updateData() {
-  //Ec.DEBUG_LOG("enigmailConsole.js: updateData():\n");
+  //Log.DEBUG("enigmailConsole.js: updateData():\n");
 
-    var contentFrame = Ec.getFrame(window, "contentFrame");
+    var contentFrame = Windows.getFrame(window, "contentFrame");
     if (!contentFrame)
       return;
 
     var consoleElement = contentFrame.document.getElementById('console');
 
-    consoleElement.firstChild.data = Ec.convertToUnicode(EnigmailConsole.getData(), "utf-8");
+    consoleElement.firstChild.data = Data.convertToUnicode(EnigmailConsole.getData(), "utf-8");
 
     if (!contentFrame.mouseDownState)
        contentFrame.scrollTo(0,9999);
@@ -94,7 +97,7 @@ function enigmailConsoleCopy()
 {
   var selText = getSelectionStr();
 
-  Ec.DEBUG_LOG("enigmailConsole.js: enigmailConsoleCopy: selText='"+selText+"'\n");
+  Log.DEBUG("enigmailConsole.js: enigmailConsoleCopy: selText='"+selText+"'\n");
 
   if (selText) {
     var clipHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].createInstance(Components.interfaces.nsIClipboardHelper);
@@ -108,7 +111,7 @@ function enigmailConsoleCopy()
 function getSelectionStr()
 {
   try {
-    var contentFrame = Ec.getFrame(window, "contentFrame");
+    var contentFrame = Windows.getFrame(window, "contentFrame");
 
     var sel = contentFrame.getSelection();
     return sel.toString();
@@ -120,13 +123,13 @@ function getSelectionStr()
 
 function isItemSelected()
 {
-  Ec.DEBUG_LOG("enigmailConsole.js: isItemSelected\n");
-  return getSelectionStr() != "";
+  Log.DEBUG("enigmailConsole.js: isItemSelected\n");
+  return getSelectionStr() !== "";
 }
 
 function UpdateCopyMenu()
 {
-  Ec.DEBUG_LOG("enigmailConsole.js: UpdateCopyMenu\n");
+  Log.DEBUG("enigmailConsole.js: UpdateCopyMenu\n");
   goUpdateCommand("cmd_copy");
 }
 

@@ -1,3 +1,5 @@
+dump("loading: enigmailRulesEditor.js\n");
+/*global Components */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -48,7 +50,7 @@ function enigmailDlgOnLoad() {
   if (!enigmailSvc)
     return;
 
-  var rulesListObj=new Object;
+  var rulesListObj={};
   if (enigmailSvc.getRulesData(rulesListObj)) {
     var treeChildren=document.getElementById("rulesTreeChildren");
     var rulesList=rulesListObj.value;
@@ -56,7 +58,7 @@ function enigmailDlgOnLoad() {
       EnigAlert("Invalid pgprules.xml file:\n"+ rulesList.firstChild.textContent);
       return;
     }
-    DEBUG_LOG("enigmailRulesEditor.js: dlgOnLoad: keys loaded\n");
+    Log.DEBUG("enigmailRulesEditor.js: dlgOnLoad: keys loaded\n");
     gNumRows=0;
     var node=rulesList.firstChild.firstChild;
     while (node) {
@@ -89,7 +91,7 @@ function enigmailDlgOnLoad() {
 }
 
 function enigmailDlgOnAccept() {
-  DEBUG_LOG("enigmailRulesEditor.js: dlgOnAccept:\n");
+  Log.DEBUG("enigmailRulesEditor.js: dlgOnAccept:\n");
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return false;
@@ -186,8 +188,8 @@ function getCurrentNode() {
 function enigDoEdit() {
   var node=getCurrentNode();
   if (node) {
-    var inputObj  = new Object;
-    var resultObj = new Object;
+    var inputObj  = {};
+    var resultObj = {};
     inputObj.command = "edit";
     inputObj.options = "nosave";
     inputObj.toAddress = node.getAttribute("email");
@@ -198,21 +200,21 @@ function enigDoEdit() {
     inputObj.negate    = Number(node.getAttribute("negateRule"));
 
     window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
-    if (resultObj.cancelled==false) {
+    if (resultObj.cancelled===false) {
       createRow(node, resultObj);
     }
   }
 }
 
 function enigDoAdd() {
-  var inputObj  = new Object;
-  var resultObj = new Object;
+  var inputObj  = {};
+  var resultObj = {};
   inputObj.options = "nosave";
   inputObj.toAddress = "{}";
   inputObj.command = "add";
 
   window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
-  if (resultObj.cancelled==false) {
+  if (resultObj.cancelled===false) {
     var treeItem=document.createElement("treeitem");
     createRow(treeItem, resultObj);
     var treeChildren=document.getElementById("rulesTreeChildren");
@@ -293,7 +295,7 @@ function enigDoResetFilter() {
 
 function onSearchInput()
 {
-   if (gSearchInput.value == "")
+   if (gSearchInput.value === "")
    {
      enigDoResetFilter();
      return;
@@ -301,4 +303,3 @@ function onSearchInput()
 
    enigDoSearch();
 }
-

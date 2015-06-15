@@ -1,3 +1,5 @@
+dump("loading: enigRetrieveProgress.js\n");
+/*global Components: false*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,10 +35,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
-
-Components.utils.import("resource://enigmail/enigmailCommon.jsm");
-
-const Ec = EnigmailCommon;
 
 var msgCompDeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
 
@@ -113,12 +111,13 @@ var progressListener = {
 
 function onLoad() {
   // Set global variables.
-  Ec.DEBUG_LOG("enigRetrieveProgress: onLoad\n");
+  Log.DEBUG("enigRetrieveProgress: onLoad\n");
   var inArg = window.arguments[0];
+  var subject;
   window.arguments[1].result=false;
 
-  dialog = new Object;
-  dialog.strings = new Array;
+  dialog = {};
+  dialog.strings = [];
   dialog.progress    = document.getElementById("dialog.progress");
 
   var enigmailSvc = GetEnigmailSvc();
@@ -132,26 +131,26 @@ function onLoad() {
 
   var statTxt=document.getElementById("dialog.status2");
   if (inArg.accessType == nsIEnigmail.UPLOAD_KEY) {
-    statTxt.value=Ec.getString("keyserverProgress.uploading");
-    subject = Ec.getString("keyserverTitle.uploading");
+    statTxt.value=Locale.getString("keyserverProgress.uploading");
+    subject = Locale.getString("keyserverTitle.uploading");
   }
   else {
-    statTxt.value=Ec.getString("keyserverProgress.refreshing");
-    var subject = Ec.getString("keyserverTitle.refreshing");
+    statTxt.value=Locale.getString("keyserverProgress.refreshing");
+    subject = Locale.getString("keyserverTitle.refreshing");
   }
 
   msgProgress = Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
 
   var procListener = {
     done: function (exitCode) {
-      Ec.DEBUG_LOG("enigRetrieveProgress: subprocess terminated with "+exitCode+"\n");
+      Log.DEBUG("enigRetrieveProgress: subprocess terminated with "+exitCode+"\n");
       processEnd(msgProgress, exitCode);
     },
     stdout: function(data) {
-      Ec.DEBUG_LOG("enigRetrieveProgress: got data on stdout: '"+data+"'\n");
+      Log.DEBUG("enigRetrieveProgress: got data on stdout: '"+data+"'\n");
     },
     stderr: function(data) {
-      Ec.DEBUG_LOG("enigRetrieveProgress: got data on stderr: '"+data+"'\n");
+      Log.DEBUG("enigRetrieveProgress: got data on stderr: '"+data+"'\n");
       gErrorData += data;
     }
   };
@@ -161,9 +160,9 @@ function onLoad() {
   gEnigCallbackFunc = inArg.cbFunc;
 
   var errorMsgObj={};
-  gProcess = Ec.keyserverAccess(inArg.accessType, inArg.keyServer, inArg.keyList, procListener, errorMsgObj);
-  if (gProcess == null) {
-    EnigAlert(Ec.getString("sendKeysFailed")+"\n"+EnigConvertGpgToUnicode(errorMsgObj.value));
+  gProcess = KeyServer.access(inArg.accessType, inArg.keyServer, inArg.keyList, procListener, errorMsgObj);
+  if (!gProcess) {
+    EnigAlert(Locale.getString("sendKeysFailed")+"\n"+EnigConvertGpgToUnicode(errorMsgObj.value));
   }
 
   window.title = subject;
@@ -198,24 +197,24 @@ function onCancel ()
 }
 
 function processEnd (progressBar, exitCode) {
-  Ec.DEBUG_LOG("enigmailRetrieveProgress.js: processEnd\n");
-
+  Log.DEBUG("enigmailRetrieveProgress.js: processEnd\n");
+  var errorMsg;
   if (gProcess) {
     gProcess = null;
-    Ec.DEBUG_LOG("enigmailRetrieveProgress.js: processEnd: exitCode = "+exitCode+"\n");
+    Log.DEBUG("enigmailRetrieveProgress.js: processEnd: exitCode = "+exitCode+"\n");
 
     var statusText=gEnigCallbackFunc(exitCode, "", false);
 
-    var errorMsg="";
+    errorMsg="";
     try {
       if (gErrorData.length > 0) {
-        var statusFlagsObj=new Object();
-        var statusMsgObj=new Object();
-        errorMsg=Ec.parseErrorOutput(gErrorData, statusFlagsObj, statusMsgObj);
+        var statusFlagsObj={};
+        var statusMsgObj={};
+        errorMsg=EnigmailErrorHandling.parseErrorOutput(gErrorData, statusFlagsObj, statusMsgObj);
       }
     } catch (ex) {}
 
-    Ec.DEBUG_LOG("enigmailRetrieveProgress.js: processEnd: errorMsg="+errorMsg);
+    Log.DEBUG("enigmailRetrieveProgress.js: processEnd: errorMsg="+errorMsg);
     if (errorMsg.search(/ec=\d+/i)>=0) {
       exitCode=-1;
     }
@@ -237,7 +236,7 @@ function processEnd (progressBar, exitCode) {
 
     statusText=gEnigCallbackFunc(exitCode, "", false);
 
-    if (exitCode == 0) {
+    if (exitCode === 0) {
       window.arguments[1].result=true;
     }
   }

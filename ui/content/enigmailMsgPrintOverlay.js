@@ -1,3 +1,4 @@
+dump("loading: enigmailMsgPrintOverlay.js\n");
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,12 +34,12 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-Components.utils.import("resource://enigmail/enigmailCommon.jsm");
+Components.utils.import("resource://enigmail/log.jsm");
 
 
 window.addEventListener("load", function _enigmail_msgPrintLoad()
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMsgPrintOverlay.js: enigMsgPrintLoad\n");
+    Log.DEBUG("enigmailMsgPrintOverlay.js: enigMsgPrintLoad\n");
 
     // functionality to be added ...
   },
@@ -46,11 +47,8 @@ window.addEventListener("load", function _enigmail_msgPrintLoad()
 
 window.addEventListener("unload", function _enigmail_msgPrintUnload()
   {
-    EnigmailCommon.DEBUG_LOG("enigmailMsgPrintOverlay.js: enigMsgPrintUnload\n");
+    Log.DEBUG("enigmailMsgPrintOverlay.js: enigMsgPrintUnload\n");
 
     // functionality to be added ...
   },
   false);
-
-
-

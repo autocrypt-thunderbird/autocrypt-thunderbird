@@ -436,7 +436,7 @@
           </hbox>
           <hbox align="center">
             <button label="&enigmail.keyManWindow.label;"
-              oncommand="EnigmailFuncs.openKeyManager();"/>
+              oncommand="Windows.openKeyManager();"/>
           </hbox>
         </row>
 
@@ -446,7 +446,7 @@
           </hbox>
           <hbox align="center">
             <button label="&enigmail.prefs.label;"
-              oncommand="EnigmailFuncs.openPrefWindow(window, true, null);"/>
+              oncommand="Windows.openPrefWindow(window, true, null);"/>
           </hbox>
         </row>
       </rows>

@@ -83,11 +83,13 @@
 
   <script type="application/x-javascript">
   <![CDATA[
-    Components.utils.import("resource://enigmail/commonFuncs.jsm");
-    Components.utils.import("resource://enigmail/enigmailCommon.jsm");
-    Components.utils.import("resource://enigmail/keyManagement.jsm");
-
-    const Ec = EnigmailCommon;
+    Components.utils.import("resource://enigmail/enigmailFuncs.jsm");
+    Components.utils.import("resource://enigmail/keyEditor.jsm");
+    Components.utils.import("resource://enigmail/locale.jsm");
+    Components.utils.import("resource://enigmail/data.jsm");
+    Components.utils.import("resource://enigmail/dialog.jsm");
+    Components.utils.import("resource://enigmail/keyRing.jsm"); /*global KeyRing: false */
+    Components.utils.import("resource://enigmail/enigmailCore.jsm"); /*global EnigmailCore: false */
 
     function onLoad() {
       window.arguments[1].refresh = false;
@@ -108,11 +110,11 @@
         uidList.removeItemAt(0);
       }
 
-      var enigmailSvc = Ec.getService();
+      var enigmailSvc = EnigmailCore.getService();
       if (!enigmailSvc)
         return;
 
-      var keyData = enigmailSvc.getKeyDetails("0x"+window.arguments[0].keyId, false);
+      var keyData = KeyRing.getKeyDetails("0x"+window.arguments[0].keyId, false);
       var uidTxt = "";
 
       var keyList=keyData.split(/[\n\r]+/);
@@ -124,18 +126,18 @@
         case "uat":
           ++uidNum;
           if (uidStr[0]=="uid") {
-            uidTxt=Ec.convertGpgToUnicode(uidStr[9]).replace(/\\e3A/g, ":");
+            uidTxt=Data.convertGpgToUnicode(uidStr[9]).replace(/\\e3A/g, ":");
             if (!window.enigmailUid) {
               window.enigmailUid = uidTxt;
             }
           }
           else{
             if (uidStr[9].indexOf("1 ")==0) {
-              uidTxt=Ec.getString("userAtt.photo");
+              uidTxt=Locale.getString("userAtt.photo");
             }
           }
           if (uidStr[1]=="r") {
-            uidTxt += " - "+Ec.getString("keyValid.revoked");
+            uidTxt += " - "+Locale.getString("keyValid.revoked");
             uidStr[0]=uidStr[0].replace(/^./,"r");
           }
           item=uidList.appendItem(uidTxt, uidStr[0]+":"+String(uidNum));
@@ -154,7 +156,7 @@
         var selValue=uidList.selectedItem.value;
         var uidType = selValue.substr(0,3);
         if (uidType=="uat" || uidType=="rat") {
-          EnigmailFuncs.showPhoto(window, window.arguments[0].keyId, window.enigmailUid);
+          Windows.showPhoto(window, window.arguments[0].keyId, window.enigmailUid);
         }
       }
     }
@@ -212,46 +214,46 @@
     }
 
     function setPrimaryUid() {
-      var enigmailSvc = Ec.getService();
+      var enigmailSvc = EnigmailCore.getService();
       if (!enigmailSvc)
         return;
       var errorMsgObj = new Object();
       var uidList = document.getElementById("uidList");
       if (uidList.selectedItem.value.substr(0,3)=="uid") {
 
-        EnigmailKeyMgmt.setPrimaryUid(window,
+        KeyEditor.setPrimaryUid(window,
           "0x"+window.arguments[0].keyId,
           uidList.selectedItem.value.substr(4),
           function _cb(exitCode, errorMsg) {
             if (exitCode == 0) {
-              Ec.alert(window, Ec.getString("changePrimUidOK"));
+              Dialog.alert(window, Locale.getString("changePrimUidOK"));
               window.arguments[1].refresh = true;
               reloadUidList();
             }
             else
-              Ec.alert(window, Ec.getString("changePrimUidFailed")+"\n\n"+errorMsg);
+              Dialog.alert(window, Locale.getString("changePrimUidFailed")+"\n\n"+errorMsg);
           });
       }
     }
 
     function revokeUid() {
-      var enigmailSvc = Ec.getService();
+      var enigmailSvc = EnigmailCore.getService();
       if (!enigmailSvc)
         return;
       var uidList = document.getElementById("uidList");
-      if (! Ec.confirmDlg(window, Ec.getString("revokeUidQuestion", uidList.selectedItem.label))) return;
+      if (! Dialog.confirmDlg(window, Locale.getString("revokeUidQuestion", uidList.selectedItem.label))) return;
       if (uidList.selectedItem.value.substr(4)!="1") {
-        EnigmailKeyMgmt.revokeUid(window,
+        KeyEditor.revokeUid(window,
           "0x"+window.arguments[0].keyId,
           uidList.selectedItem.value.substr(4),
           function _cb (exitCode, errorMsg) {
             if (exitCode == 0) {
-              Ec.alert(window, Ec.getString("revokeUidOK", uidList.selectedItem.label));
+              Dialog.alert(window, Locale.getString("revokeUidOK", uidList.selectedItem.label));
               window.arguments[1].refresh = true;
               reloadUidList();
             }
             else
-              Ec.alert(window, Ec.getString("revokeUidFailed", uidList.selectedItem.label)+"\n\n"+errorMsgObj.value);
+              Dialog.alert(window, Locale.getString("revokeUidFailed", uidList.selectedItem.label)+"\n\n"+errorMsgObj.value);
           });
         if (r != 0) {
           return;
@@ -260,23 +262,23 @@
     }
 
     function deleteUid() {
-      var enigmailSvc = Ec.getService();
+      var enigmailSvc = EnigmailCore.getService();
       if (!enigmailSvc)
         return;
       var uidList = document.getElementById("uidList");
-      if (! Ec.confirmDlg(window, Ec.getString("deleteUidQuestion", uidList.selectedItem.label))) return;
+      if (! Dialog.confirmDlg(window, Locale.getString("deleteUidQuestion", uidList.selectedItem.label))) return;
       if (uidList.selectedItem.value.substr(4) != "1") {
-        EnigmailKeyMgmt.deleteUid(window,
+        KeyEditor.deleteUid(window,
           "0x"+window.arguments[0].keyId,
           uidList.selectedItem.value.substr(4),
           function _cb (exitCode, errorMsg) {
             if (exitCode == 0) {
-              Ec.alert(window, Ec.getString("deleteUidOK", uidList.selectedItem.label));
+              Dialog.alert(window, Locale.getString("deleteUidOK", uidList.selectedItem.label));
               window.arguments[1].refresh = true;
               reloadUidList();
             }
             else
-              Ec.alert(window, Ec.getString("deleteUidFailed", uidList.selectedItem.label)+"\n\n"+errorMsgObj.value);
+              Dialog.alert(window, Locale.getString("deleteUidFailed", uidList.selectedItem.label)+"\n\n"+errorMsgObj.value);
           });
       }
     }
@@ -284,4 +286,3 @@
   </script>
 
 </dialog>
-

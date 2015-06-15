@@ -125,7 +125,7 @@
                   id="enigmail_openpgpPrefsButton"
                   observes="enigmail_bcEnablePgp"
                   label="&enigmail.openpgpPrefsButton.label;"
-                  oncommand="EnigmailFuncs.openPrefWindow(window, true, 'sendingTab');"/>
+                  oncommand="Windows.openPrefWindow(window, true, 'sendingTab');"/>
         </hbox>
       </groupbox>
     </vbox>

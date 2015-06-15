@@ -98,7 +98,7 @@
            label="&enigmail.setupWiz.label;"
            advanced="reverse"
            accesskey="&enigmail.setupWiz.accesskey;"
-           oncommand="EnigmailFuncs.openSetupWizard(window, true);" />
+           oncommand="Windows.openSetupWizard(window, true);" />
 
       <menuitem id="enigmail_decryptverify"
            label="&enigmail.decryptverify.label;"
@@ -129,7 +129,7 @@
            accesskey="&enigmail.clearPassphrase.accesskey;"
            advanced="true"
            hidden="false"
-           oncommand="EnigmailCommon.clearPassphrase(window);" />
+           oncommand="Passwords.clearPassphrase(window);" />
 
       <menuitem id="enigmail_reload_msg"
            label="&enigmail.reload.label;"
@@ -188,31 +188,31 @@
       <menuitem id="enigmail_keymgmt"
            label="&enigmail.keyManWindow.label;"
            accesskey="&enigmail.keyManWindow.accesskey;"
-           oncommand="EnigmailFuncs.openKeyManager(window);" />
+           oncommand="Windows.openKeyManager(window);" />
 
       <menuitem label="&enigmail.adminSmartCard.label;"
               id="enigmail_smartCard"
               accesskey="&enigmail.adminSmartCard.accesskey;"
               advanced="true"
               hidden="false"
-              oncommand="EnigmailFuncs.openCardDetails();"/>
+              oncommand="Windows.openCardDetails();"/>
 
       <menuitem id="enigmail_RulesEditor"
           label="&enigmail.editRules.label;"
           accesskey="&enigmail.editRules.accesskey;"
-          oncommand="EnigmailFuncs.openRulesEditor();"/>
+          oncommand="Windows.openRulesEditor();"/>
 
       <menuseparator/>
 
       <menuitem id="enigmail_prefs"
            label="&enigmail.prefs.label;"
            accesskey="&enigmail.prefs.accesskey;"
-           oncommand="EnigmailFuncs.openPrefWindow(window, true, null);" />
+           oncommand="Windows.openPrefWindow(window, true, null);" />
 
       <menuitem id="enigmail_help"
            label="&enigmail.help.label;"
            accesskey="&enigmail.help.accesskey;"
-           oncommand="EnigmailFuncs.openHelpWindow('messenger');" />
+           oncommand="Windows.openHelpWindow('messenger');" />
 
       <menu id="enigmail_debugMenu"
            label="&enigmail.debugMenu.label;"
@@ -224,12 +224,12 @@
           <menuitem id="enigmail_console"
                label="&enigmail.viewconsole.label;"
                accesskey="&enigmail.viewconsole.accesskey;"
-               oncommand="EnigmailFuncs.openConsoleWindow();" />
+               oncommand="Windows.openConsoleWindow();" />
 
           <menuitem id="enigmail_debug_log"
                label="&enigmail.viewlog.label;"
                accesskey="&enigmail.viewlog.accesskey;"
-               oncommand="EnigmailFuncs.openDebugLog(window);" />
+               oncommand="Windows.openDebugLog(window);" />
         </menupopup>
       </menu>
 
@@ -237,12 +237,12 @@
            label="&enigmail.setupWiz.label;"
            advanced="true"
            accesskey="&enigmail.setupWiz.accesskey;"
-           oncommand="EnigmailFuncs.openSetupWizard(window, true);" />
+           oncommand="Windows.openSetupWizard(window, true);" />
 
       <menuitem id="enigmail_about"
            label="&enigmail.about.label;"
            accesskey="&enigmail.about.accesskey;"
-           oncommand="EnigmailFuncs.openAboutWindow();" />
+           oncommand="Windows.openAboutWindow();" />
 
     </menupopup>
   </menu>

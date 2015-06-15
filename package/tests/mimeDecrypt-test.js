@@ -9,26 +9,15 @@
 
 "use strict";
 
-// do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
-// testing("mimeDecrypt.js");
+testing("mimeDecrypt.js");
 
-// test(
-function getBoundaryTest() {
+test(function getBoundaryTest() {
   var got = getBoundary("content-type: application/pgp-encrypted;\n  boundary='abc'; procol='any'\n");
   Assert.equal(got, "abc", "get boundary 1");
   got = getBoundary("content-type: application/pgp-encrypted; boundary='abc'; protocol='any'");
   Assert.equal(got, "abc", "get boundary 2");
   got = getBoundary('content-type: application/pgp-encrypted; boundary="abc"; protocol="any"');
   Assert.equal(got, "abc", "get boundary 2");
-}
-//)
-
-function run_test() {
-  // load mimeDecrypt.js into current context
-  var md = do_get_cwd().parent;
-  md.append("mimeDecrypt.js");
-  do_load_module("file://" + md.path);
-
-  getBoundaryTest();
-}
+});

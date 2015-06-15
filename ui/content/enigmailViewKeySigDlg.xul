@@ -151,7 +151,7 @@
 
       if (typeof(inArg.posX)=="number" &&
           typeof(inArg.posY)=="number") {
-        EnigmailCommon.dispatchEvent(setWindowPos, 0, inArg.posX, inArg.posY);
+        Events.dispatchEvent(setWindowPos, 0, inArg.posX, inArg.posY);
       }
 
       keyIdValue.value = gKeyListArr[keyId].userId+" - 0x"+ inArg.keyId.substr(-8,8);
@@ -159,7 +159,7 @@
       var exitCodeObj = {};
       var errorMsgObj = {};
 
-      var sigList = enigmailSvc.getKeySig("0x"+keyId, exitCodeObj, errorMsgObj);
+      var sigList = KeyRing.getKeySig("0x"+keyId, exitCodeObj, errorMsgObj);
 
       if (exitCodeObj.value != 0) {
         EnigAlert(errorMsgObj.value);
@@ -170,7 +170,7 @@
 
       var keySigList=document.getElementById("keySigList");
       var treeChildren=keySigList.getElementsByAttribute("id", "keySigListChildren")[0];
-      
+
       // aSigList holds all signature packets, each line per element
       var aSigList = sigList.split(/\n/);
 
@@ -183,7 +183,7 @@
 
       // store the last encountered Uid record
       var currUid="";
-      
+
       // This function sorts by date (second part of a aSigSort element)
       var sortSigbyDate = function (a,b) {
         var a_sortlistRow=a.split(/,/);
@@ -204,7 +204,7 @@
       function put_all_signatures() {
         // First sort the signature packets by date
         aSigSort.sort(sortSigbyDate);
-        
+
         // now process all sig/rev lines
         for (var i=0; i<aSigSort.length; i++) {
           var SortRow=aSigSort[i].split(/,/);
@@ -263,7 +263,7 @@
           if ((listRow[0] == "uid" || listRow[0] == "pub" || listRow[0] == "uat") && (listRow[ENIG_USER_ID].length>0)) {
             // First put all collected signatures in the dialog
             put_all_signatures();
-            
+
             var userRow=document.createElement("treerow");
             if (typeof(listRow[ENIG_KEY_USE_FOR])!="string") {
               listRow[ENIG_KEY_USE_FOR]="";
@@ -488,4 +488,3 @@
   </script>
 
 </dialog>
-

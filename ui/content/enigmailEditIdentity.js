@@ -1,3 +1,5 @@
+dump("loading: enigmailEditIdentity.js\n");
+/*global Components: false, Locale: false */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -32,8 +34,8 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-Components.utils.import("resource://enigmail/enigmailCommon.jsm");
-Components.utils.import("resource://enigmail/commonFuncs.jsm");
+Components.utils.import("resource://enigmail/enigmailFuncs.jsm");
+Components.utils.import("resource://enigmail/locale.jsm");
 
 if (! Enigmail) var Enigmail = {};
 
@@ -127,7 +129,7 @@ Enigmail.edit = {
     }
 
     if (this.identity) {
-      var idLabel = EnigmailCommon.getString("identityName", [ this.identity.identityName ]);
+      var idLabel = Locale.getString("identityName", [ this.identity.identityName ]);
       document.getElementById("enigmail_identityName").value = idLabel;
     }
 
@@ -140,7 +142,7 @@ Enigmail.edit = {
   onAcceptEditor: function ()
   {
     try {
-      if (onOk()==false) {
+      if (onOk()===false) {
         return false;
       }
     }
@@ -209,9 +211,9 @@ Enigmail.edit = {
 
   selectKeyId: function ()
   {
-    var resultObj = new Object();
-    var inputObj = new Object();
-    inputObj.dialogHeader = EnigmailCommon.getString("encryptKeyHeader");
+    var resultObj = {};
+    var inputObj = {};
+    inputObj.dialogHeader = Locale.getString("encryptKeyHeader");
     inputObj.options = "single,hidexpired,private,nosending";
     var button = document.getElementById("enigmail_selectPgpKey");
     var label = button.getAttribute("label");

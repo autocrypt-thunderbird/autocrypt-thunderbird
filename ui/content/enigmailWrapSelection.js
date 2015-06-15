@@ -1,3 +1,4 @@
+dump("loading: enigmailWrapSelection.js\n");
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -39,28 +40,28 @@ EnigInitCommon("enigmailWrapSelection");
 
 
 function onLoad () {
-  DEBUG_LOG("enigmailWrapSelection.js: onLoad\n");
+  Log.DEBUG("enigmailWrapSelection.js: onLoad\n");
   window.arguments[0].cancelled = true;
   window.arguments[0].Select = "";
 }
 
 function onAccept () {
-  DEBUG_LOG("enigmailWrapSelection.js: onAccept\n");
+  Log.DEBUG("enigmailWrapSelection.js: onAccept\n");
   WrapSelect=document.getElementById("WrapSelectGroup");
-  DEBUG_LOG("enigmailWrapSelection.js: onAccept, selected value='"+WrapSelect.value+"'\n");
-  if (WrapSelect.value != "") {
+  Log.DEBUG("enigmailWrapSelection.js: onAccept, selected value='"+WrapSelect.value+"'\n");
+  if (WrapSelect.value !== "") {
     window.arguments[0].Select = WrapSelect.value;
     window.arguments[0].cancelled = false;
-    DEBUG_LOG("enigmailWrapSelection.js: onAccept, setting return value, disable cancel\n");
+    Log.DEBUG("enigmailWrapSelection.js: onAccept, setting return value, disable cancel\n");
   }
   else
   {
-    DEBUG_LOG("enigmailWrapSelection.js: onAccept, enable cancel\n");
+    Log.DEBUG("enigmailWrapSelection.js: onAccept, enable cancel\n");
     window.arguments[0].cancelled=true;
   }
 }
 
 function onCancel () {
-  DEBUG_LOG("enigmailWrapSelection.js: onCancel, enable cancel\n");
+  Log.DEBUG("enigmailWrapSelection.js: onCancel, enable cancel\n");
   window.arguments[0].cancelled=true;
 }

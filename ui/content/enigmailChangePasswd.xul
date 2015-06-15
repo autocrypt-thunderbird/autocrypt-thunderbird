@@ -80,10 +80,11 @@
   <script type="application/x-javascript">
   <![CDATA[
 
-  Components.utils.import("resource://enigmail/enigmailCommon.jsm");
-  Components.utils.import("resource://enigmail/keyManagement.jsm");
-
-  const Ec = EnigmailCommon;
+  Components.utils.import("resource://enigmail/enigmailCore.jsm"); /*global EnigmailCore: false */
+  Components.utils.import("resource://enigmail/keyEditor.jsm");
+  Components.utils.import("resource://enigmail/locale.jsm");
+  Components.utils.import("resource://enigmail/data.jsm");
+  Components.utils.import("resource://enigmail/dialog.jsm");
 
   function onLoad() {
     var uid = window.window.arguments[0].userId +" - 0x"+ window.arguments[0].keyId.substr(-8,8);
@@ -91,7 +92,7 @@
   }
 
   function onAccept() {
-    var enigmailSvc = Ec.getService();
+    var enigmailSvc = EnigmailCore.getService();
     if (!enigmailSvc)
       return false;
 
@@ -100,34 +101,34 @@
     var newPasswd = document.getElementById("newPasswd").value;
     var repeatPasswd = document.getElementById("repeatPasswd").value;
     if (newPasswd.length == 0 && repeatPasswd.length == 0) {
-      if (! Ec.confirmDlg(window, Ec.getString("removePassphrase"), Ec.getString("keyMan.button.removePass"))) {
+      if (! Dialog.confirmDlg(window, Locale.getString("removePassphrase"), Locale.getString("keyMan.button.removePass"))) {
         return false;
       }
     }
     else {
       if (newPasswd.length < 8) {
-        Ec.alert(window, Ec.getString("passphrase.min8keys"));
+        Dialog.alert(window, Locale.getString("passphrase.min8keys"));
         return false;
       }
       if (newPasswd != repeatPasswd) {
-        Ec.alert(window, Ec.getString("passNoMatch"));
+        Dialog.alert(window, Locale.getString("passNoMatch"));
         return false;
       }
 
       if (newPasswd.search(/[^\x20-\x7E]/)>=0) {
-        if (! Ec.confirmDlg(window, Ec.getString("keygen.passCharProblem"),
-              Ec.getString("dlg.button.ignore"), Ec.getString("dlg.button.cancel"))) {
+        if (! Dialog.confirmDlg(window, Locale.getString("keygen.passCharProblem"),
+              Locale.getString("dlg.button.ignore"), Locale.getString("dlg.button.cancel"))) {
           return false;
         }
       }
     }
 
-    EnigmailKeyMgmt.changePassphrase(window, window.arguments[0].keyId,
-        Ec.convertFromUnicode(currPasswd),
-        Ec.convertFromUnicode(newPasswd),
+    KeyEditor.changePassphrase(window, window.arguments[0].keyId,
+        Data.convertFromUnicode(currPasswd),
+        Data.convertFromUnicode(newPasswd),
       function _changePwdCb(exitCode, errorMsg) {
         if (exitCode != 0) {
-          Ec.alert(window, Ec.getString("changePassFailed")+"\n\n"+errorMsg);
+          Dialog.alert(window, Locale.getString("changePassFailed")+"\n\n"+errorMsg);
         }
         else
           window.close();
@@ -139,5 +140,3 @@
   ]]>
   </script>
 </dialog>
-
-

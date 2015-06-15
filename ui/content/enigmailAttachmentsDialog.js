@@ -1,3 +1,5 @@
+dump("loading: enigmailAttachmentsDialog.js\n");
+/*global EnigInitCommon EnigGetString Log */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -43,7 +45,7 @@ const ENIG_INPUT=0;
 const ENIG_RESULT=1;
 
 function enigmailAttachDlgLoad() {
-   DEBUG_LOG("enigmailAttachmentsDialog.js: Load\n");
+   Log.DEBUG("enigmailAttachmentsDialog.js: Load\n");
 
    var dialog=document.getElementById("attachmentsDialog");
    dialog.setAttribute("title", EnigGetString("enigPrompt"));
@@ -59,7 +61,7 @@ function enigmailAttachDlgLoad() {
 
    // set radiobutton labels according to whether we ask for sign and/or encrypt policy
    if (window.arguments[ENIG_INPUT].reasonForCheck == "sign") {
-       var rb = document.getElementById("enigEncryptAttachNone");
+       let rb = document.getElementById("enigEncryptAttachNone");
        rb.setAttribute("label", rb.getAttribute("data-signLabel"));
        rb = document.getElementById("enigEncryptAttachInline");
        rb.setAttribute("label", rb.getAttribute("data-signLabel"));
@@ -69,7 +71,7 @@ function enigmailAttachDlgLoad() {
        rb.setAttribute("label", rb.getAttribute("data-signLabel"));
    }
    else if (window.arguments[ENIG_INPUT].reasonForCheck == "encrypt") {
-       var rb = document.getElementById("enigEncryptAttachNone");
+       let rb = document.getElementById("enigEncryptAttachNone");
        rb.setAttribute("label", rb.getAttribute("data-encryptLabel"));
        rb = document.getElementById("enigEncryptAttachInline");
        rb.setAttribute("label", rb.getAttribute("data-encryptLabel"));
@@ -79,7 +81,7 @@ function enigmailAttachDlgLoad() {
        rb.setAttribute("label", rb.getAttribute("data-encryptLabel"));
    }
    else if (window.arguments[ENIG_INPUT].reasonForCheck == "encryptAndSign") {
-       var rb = document.getElementById("enigEncryptAttachNone");
+       let rb = document.getElementById("enigEncryptAttachNone");
        rb.setAttribute("label", rb.getAttribute("data-encryptAndSignLabel"));
        rb = document.getElementById("enigEncryptAttachInline");
        rb.setAttribute("label", rb.getAttribute("data-encryptAndSignLabel"));
@@ -119,7 +121,7 @@ function enigmailAttachDlgLoad() {
 
 
 function enigmailAttachDlgAccept() {
-  DEBUG_LOG("enigmailAttachDlgAccept.js: Accept\n");
+  Log.DEBUG("enigmailAttachDlgAccept.js: Accept\n");
 
   var optionSel=document.getElementById("enigmailAttachOptions");
   var skipDlg=document.getElementById("enigmailAttachSkipDlg");
@@ -128,9 +130,9 @@ function enigmailAttachDlgAccept() {
     EnigSetPref("encryptAttachmentsSkipDlg", 1);
   }
   if (optionSel) {
-    if (optionSel.value != "") {
+    if (optionSel.value !== "") {
       gArguments[ENIG_RESULT].selected = optionSel.value;
-      if (gArguments[ENIG_INPUT].restrictedScenario == false) {
+      if (gArguments[ENIG_INPUT].restrictedScenario === false) {
         EnigSetPref("encryptAttachments", optionSel.value);
       }
       return true;
@@ -141,4 +143,3 @@ function enigmailAttachDlgAccept() {
   }
   return true;
 }
-

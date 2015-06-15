@@ -74,10 +74,11 @@
   </vbox>
   <script type="application/x-javascript">
   <![CDATA[
-    Components.utils.import("resource://enigmail/enigmailCommon.jsm");
-    Components.utils.import("resource://enigmail/keyManagement.jsm");
-
-    const Ec = EnigmailCommon;
+    Components.utils.import("resource://enigmail/enigmailCore.jsm");
+    Components.utils.import("resource://enigmail/keyEditor.jsm");
+    Components.utils.import("resource://enigmail/locale.jsm");
+    Components.utils.import("resource://enigmail/data.jsm");
+    Components.utils.import("resource://enigmail/dialog.jsm");
 
     function onAccept() {
       var name = document.getElementById("addUid_name");
@@ -85,39 +86,39 @@
       var comment = document.getElementById("addUid_comment");
 
       if ((email.value.search(/^ *$/) == 0) || (name.value.search(/^ *$/) == 0)) {
-        Ec.alert(window, Ec.getString ("addUidDlg.nameOrEmailError"));
+        Dialog.alert(window, Locale.getString ("addUidDlg.nameOrEmailError"));
         return false;
       }
       if (name.value.replace(/ *$/, "").length <5) {
-        Ec.alert(window, Ec.getString ("addUidDlg.nameMinLengthError"));
+        Dialog.alert(window, Locale.getString ("addUidDlg.nameMinLengthError"));
         return false;
       }
       if (email.value.search(/.@./)<0) {
-        Ec.alert(window, Ec.getString ("addUidDlg.invalidEmailError"));
+        Dialog.alert(window, Locale.getString ("addUidDlg.invalidEmailError"));
         return false;
       }
       if (comment.value.search(/[()]/) >= 0) {
-        Ec.alert(window, Ec.getString ("addUidDlg.commentError"));
+        Dialog.alert(window, Locale.getString ("addUidDlg.commentError"));
         return false;
       }
-      var enigmailSvc = Ec.getService();
+      var enigmailSvc = EnigmailCore.getService();
       if (!enigmailSvc) {
-        Ec.alert(window, Ec.getString ("accessError"));
+        Dialog.alert(window, Locale.getString ("accessError"));
         return true;
       }
 
-      EnigmailKeyMgmt.addUid(window,
+      KeyEditor.addUid(window,
         window.arguments[0].keyId,
-        Ec.convertFromUnicode(name.value),
-        Ec.convertFromUnicode(email.value),
-        Ec.convertFromUnicode(comment.value),
+        Data.convertFromUnicode(name.value),
+        Data.convertFromUnicode(email.value),
+        Data.convertFromUnicode(comment.value),
         function _addUidCb(exitCode, errorMsg) {
            if (exitCode != 0) {
-              Ec.alert(window, Ec.getString ("addUidFailed")+"\n\n"+errorMsg);
+              Dialog.alert(window, Locale.getString("addUidFailed")+"\n\n"+errorMsg);
             }
             else {
               window.arguments[1].refresh = true;
-              Ec.alert(window, Ec.getString ("addUidOK"));
+              Dialog.alert(window, Locale.getString("addUidOK"));
             }
             window.close();
         });
@@ -128,4 +129,3 @@
   </script>
 
 </dialog>
-

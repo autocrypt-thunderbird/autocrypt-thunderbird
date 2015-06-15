@@ -97,23 +97,61 @@ zip --must-match\
     components/mimeDecrypt.js \
     components/mimeEncrypt.js \
     defaults/preferences/enigmail.js \
-    modules/enigmailCommon.jsm \
+    modules/app.jsm \
+    modules/armor.jsm \
+    modules/attachment.jsm \
+    modules/card.jsm \
+    modules/commandLine.jsm \
+    modules/configure.jsm \
+    modules/constants.jsm \
+    modules/data.jsm \
+    modules/decryption.jsm \
+    modules/decryptPermanently.jsm \
+    modules/dialog.jsm \
+    modules/encryption.jsm \
     modules/enigmailCore.jsm \
-    modules/enigmailConvert.jsm \
-    modules/pipeConsole.jsm \
-    modules/keyManagement.jsm \
-    modules/mimeVerify.jsm \
-    modules/installGnuPG.jsm \
-    modules/gpgAgentHandler.jsm \
-    modules/passwordCheck.jsm \
-    modules/commonFuncs.jsm \
+    modules/enigmailErrorHandling.jsm \
+    modules/enigmailFuncs.jsm \
+    modules/enigmailGpgAgent.jsm \
+    modules/enigmailProtocolHandler.jsm \
+    modules/events.jsm \
+    modules/execution.jsm \
+    modules/files.jsm \
+    modules/filters.jsm \
     modules/fixExchangeMsg.jsm \
+    modules/glodaMime.jsm \
+    modules/glodaUtils.jsm \
+    modules/gpg.jsm \
+    modules/hash.jsm \
+    modules/httpProxy.jsm \
+    modules/installGnuPG.jsm \
+    modules/key.jsm \
+    modules/keyEditor.jsm \
+    modules/keyRing.jsm \
+    modules/keyserver.jsm \
+    modules/lazy.jsm \
+    modules/locale.jsm \
+    modules/log.jsm \
+    modules/mime.jsm \
+    modules/mimeVerify.jsm \
+    modules/os.jsm \
+    modules/passwordCheck.jsm \
+    modules/passwords.jsm \
+    modules/pipeConsole.jsm \
+    modules/prefs.jsm \
+    modules/promise.jsm \
+    modules/rules.jsm \
+    modules/streams.jsm \
     modules/subprocess.jsm \
-    modules/subprocess_worker_win.js \
     modules/subprocess_worker_unix.js \
+    modules/subprocess_worker_win.js \
+    modules/time.jsm \
+    modules/timer.jsm \
+    modules/trust.jsm \
+    modules/uris.jsm \
+    modules/verify.jsm \
+    modules/windows.jsm \
     wrappers/gpg-agent-wrapper.sh \
     chrome/${xpiModule}.jar \
     chrome.manifest \
     install.rdf
-
-

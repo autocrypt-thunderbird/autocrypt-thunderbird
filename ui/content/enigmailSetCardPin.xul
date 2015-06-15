@@ -109,10 +109,13 @@
   <script type="application/x-javascript">
   <![CDATA[
 
-  Components.utils.import("resource://enigmail/enigmailCommon.jsm");
-  Components.utils.import("resource://enigmail/keyManagement.jsm");
+  Components.utils.import("resource://enigmail/keyEditor.jsm");
+  Components.utils.import("resource://enigmail/log.jsm");
+  Components.utils.import("resource://enigmail/locale.jsm");
+  Components.utils.import("resource://enigmail/dialog.jsm");
+  Components.utils.import("resource://enigmail/enigmailGpgAgent.jsm");
+  Components.utils.import("resource://enigmail/enigmailCore.jsm"); /*global EnigmailCore: false */
 
-  const Ec = EnigmailCommon;
   const nsIEnigmail = Components.interfaces.nsIEnigmail;
   const Ci = Components.interfaces;
 
@@ -127,7 +130,7 @@
   }
 
   function onAccept() {
-    var enigmailSvc = Ec.getService(window);
+    var enigmailSvc = EnigmailCore.getService(window);
     if (!enigmailSvc)
       return false;
 
@@ -160,24 +163,24 @@
     var oldPin = "";
     var newPin = "";
 
-    if (! enigmailSvc.useGpgAgent()) {
+    if (! EnigmailGpgAgent.useGpgAgent()) {
       adminPin = document.getElementById("currAdmPinTxt").value;
       oldPin = document.getElementById("currPinTxt").value;
       newPin = document.getElementById(pinItem1).value;
 
       if (newPin.length < minLen) {
-        Ec.alert(window, Ec.getString("cardPin.minLength", minLen));
+        Dialog.alert(window, Locale.getString("cardPin.minLength", minLen));
         return false;
       }
       if (newPin != document.getElementById(pinItem2).value) {
-        Ec.alert(window, Ec.getString("cardPin.dontMatch"));
+        Dialog.alert(window, Locale.getString("cardPin.dontMatch"));
         return false;
       }
     }
 
     var pinObserver = new changePinObserver();
 
-    EnigmailKeyMgmt.cardChangePin(window,
+    KeyEditor.cardChangePin(window,
                                  action,
                                  oldPin,
                                  newPin,
@@ -185,7 +188,7 @@
                                  pinObserver,
       function _ChangePinCb(exitCode, errorMsg) {
         if (exitCode != 0) {
-          Ec.alert(window, Ec.getString("cardPin.processFailed")+"\n"+pinObserver.result);
+          Dialog.alert(window, Locale.getString("cardPin.processFailed")+"\n"+pinObserver.result);
         }
         else
           window.close();
@@ -203,13 +206,13 @@
   }
 
   function setDlgContent(sel) {
-    var enigmailSvc = Ec.getService(window);
+    var enigmailSvc = EnigmailCore.getService(window);
     if (!enigmailSvc)
       return false;
 
     gAction = sel;
 
-    if (enigmailSvc.useGpgAgent()) {
+    if (EnigmailGpgAgent.useGpgAgent()) {
       dlgDisable("currAdminPinRow");
       dlgDisable("adminPinRow");
       dlgDisable("adminPinRepeatRow");
@@ -266,12 +269,12 @@
 
     onDataAvailable: function (data) {
       var ret="";
-      Ec.DEBUG_LOG("enigmailSetCardPin: changePinObserver.onDataAvailable: data="+data+"\n");
+      Log.DEBUG("enigmailSetCardPin: changePinObserver.onDataAvailable: data="+data+"\n");
       if (data.indexOf("[GNUPG:] SC_OP_FAILURE")>=0) {
         this.result = this._data;
       }
       else if (data.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
-        this.result = Ec.getString("badPhrase");
+        this.result = Locale.getString("badPhrase");
         return data;
       }
       else {
@@ -284,5 +287,3 @@
   ]]>
   </script>
 </dialog>
-
-
