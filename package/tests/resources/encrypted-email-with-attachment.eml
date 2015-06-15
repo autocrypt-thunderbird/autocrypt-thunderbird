@@ -1,0 +1,138 @@
+Delivered-To: strike.devtest@gmail.com
+Received: by 10.31.65.206 with SMTP id o197csp6107vka;
+        Thu, 11 Jun 2015 10:04:06 -0700 (PDT)
+X-Received: by 10.13.254.69 with SMTP id o66mr13216940ywf.152.1434042246087;
+        Thu, 11 Jun 2015 10:04:06 -0700 (PDT)
+Return-Path: <ipazmino@thoughtworks.com>
+Received: from mail-yh0-f45.google.com (mail-yh0-f45.google.com. [209.85.213.45])
+        by mx.google.com with ESMTPS id r184si124165yke.167.2015.06.11.10.04.05
+        for <strike.devtest@gmail.com>
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 11 Jun 2015 10:04:06 -0700 (PDT)
+Received-SPF: pass (google.com: domain of ipazmino@thoughtworks.com designates 209.85.213.45 as permitted sender) client-ip=209.85.213.45;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: domain of ipazmino@thoughtworks.com designates 209.85.213.45 as permitted sender) smtp.mail=ipazmino@thoughtworks.com
+Received: by mail-yh0-f45.google.com with SMTP id d80so1649421yhi.1
+        for <strike.devtest@gmail.com>; Thu, 11 Jun 2015 10:04:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20130820;
+        h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
+         :subject:content-type;
+        bh=GzgNMIbACo0qviXHTaTVeIJQ4iy/1HFPSyLGwM6Gutk=;
+        b=RyNzxW4V5tq5wR+kX53P0C0ovcfCSIxpCqS/UFmupa5n1n1nnXgv1TEtAezexFBD08
+         VN4s7POnOIYENchLovB9iMhAynB0lIJJ2klU7SoCqJb8MQyC/Q9IT0pubLFRXifGHiY1
+         Oe1d348SShgxIKkDhZ/mtDDPFMS+/Rbw+Hw5CgIIfkbuSK7U+HmnhaW9WHzbNie01DAV
+         mCQyiMh6lcnHP1AGg5VOzzABzIQo6J1CTgOCtrXyGKGb8vfda5rBH/hMcL2VEKTOP/N0
+         fBqj1UxvslPe4ideOYJfOsMGrAShln1yPis7WpbXf0SMCxrkdC8x752dYY1buDfM9jGk
+         HtjQ==
+X-Gm-Message-State: ALoCoQl4o5R+0YzTR2jnS7qaqQ/rMEZNBLVGE2lLmVdqLWLpgWWodO5KHbJts7CsZC6Thm2kj6TN
+X-Received: by 10.129.76.79 with SMTP id z76mr13237331ywa.17.1434042245687;
+        Thu, 11 Jun 2015 10:04:05 -0700 (PDT)
+Return-Path: <ipazmino@thoughtworks.com>
+Received: from iapazmino.local ([181.198.81.194])
+        by mx.google.com with ESMTPSA id u10sm819002ywu.3.2015.06.11.10.04.04
+        for <strike.devtest@gmail.com>
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 11 Jun 2015 10:04:04 -0700 (PDT)
+Message-ID: <5579BF87.1040804@thoughtworks.com>
+Date: Thu, 11 Jun 2015 12:04:07 -0500
+From: =?UTF-8?B?SXbDoW4gUGF6bWnDsW8=?= <ipazmino@thoughtworks.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:31.0) Gecko/20100101 Thunderbird/31.7.0
+MIME-Version: 1.0
+To: Fan Jiang <strike.devtest@gmail.com>
+Subject: Email with attachment
+Content-Type: multipart/mixed;
+ boundary="------------030301020907070004050005"
+
+This is a multi-part message in MIME format.
+--------------030301020907070004050005
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+-----BEGIN PGP MESSAGE-----
+Charset: utf-8
+Version: GnuPG/MacGPG2 v2.0.22 (Darwin)
+Comment: GPGTools - https://gpgtools.org
+
+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
+9sayYTw=
+=J17h
+-----END PGP MESSAGE-----
+
+--------------030301020907070004050005
+Content-Type: application/octet-stream;
+ name="attachment.txt.pgp"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="attachment.txt.pgp"
+
+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
+vCYPnCJwaZB1
+--------------030301020907070004050005--

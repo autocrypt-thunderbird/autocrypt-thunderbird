@@ -1,0 +1,91 @@
+Delivered-To: strike.devtest@gmail.com
+Received: by 10.31.65.206 with SMTP id o197csp1210819vka;
+        Tue, 9 Jun 2015 14:43:46 -0700 (PDT)
+X-Received: by 10.170.150.7 with SMTP id r7mr28138075ykc.48.1433886226901;
+        Tue, 09 Jun 2015 14:43:46 -0700 (PDT)
+Return-Path: <ipazmino@thoughtworks.com>
+Received: from mail-yh0-f51.google.com (mail-yh0-f51.google.com. [209.85.213.51])
+        by mx.google.com with ESMTPS id w5si3065379yhn.169.2015.06.09.14.43.46
+        for <strike.devtest@gmail.com>
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 09 Jun 2015 14:43:46 -0700 (PDT)
+Received-SPF: pass (google.com: domain of ipazmino@thoughtworks.com designates 209.85.213.51 as permitted sender) client-ip=209.85.213.51;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: domain of ipazmino@thoughtworks.com designates 209.85.213.51 as permitted sender) smtp.mail=ipazmino@thoughtworks.com
+Received: by mail-yh0-f51.google.com with SMTP id n67so11377426yha.3
+        for <strike.devtest@gmail.com>; Tue, 09 Jun 2015 14:43:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20130820;
+        h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
+         :subject:content-type:content-transfer-encoding;
+        bh=AermomlQzalDA9CuGKCBD4p7rP2ZQS2Zg0e1SUiY8qQ=;
+        b=fOYbw+EF4vbNqfBSvvtC5s7bEd0kYimeTSKt+i8BkbbX4yxAvuZ1wTDXaSCgRd5qOm
+         Kselu97ROnTLQbfOzrIgeUrKejArqfLQAAtITjkRtnSV8GMG5/WEVymno5pwEggxpwXb
+         Ay306n+XOYYxYhAmdHi2tsk1FinFrwLOkDzskn0+iMdU5gwhVUQ7ev2OK0zQkr5E6yt5
+         RiVOIm2Jv7dOnkjB8weTIHwU9gDtcwHzCfzESZzdIHG6KeMIymaVFAjXRDH3WQjJjIye
+         kjALl6ZB9Hg9xRIi8elzOMdKVQxzisGZAt0fyj0EOhTUSWc0CBVGwVSGMdXlX3KulUM3
+         bQKw==
+X-Gm-Message-State: ALoCoQlV/pZ0hMv+z935EHT9GOjCBMSyqOygMtRxMQ6lfoWHj45+E00QbbOWqX1xjoDKy8vlz2Ah
+X-Received: by 10.129.138.2 with SMTP id a2mr25624689ywg.149.1433886226643;
+        Tue, 09 Jun 2015 14:43:46 -0700 (PDT)
+Return-Path: <ipazmino@thoughtworks.com>
+Received: from iapazmino.local ([181.198.81.194])
+        by mx.google.com with ESMTPSA id x185sm5097578ywf.44.2015.06.09.14.43.45
+        for <strike.devtest@gmail.com>
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 09 Jun 2015 14:43:46 -0700 (PDT)
+Message-ID: <55775E11.6090701@thoughtworks.com>
+Date: Tue, 09 Jun 2015 16:43:45 -0500
+From: =?UTF-8?B?SXbDoW4gUGF6bWnDsW8=?= <ipazmino@thoughtworks.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:31.0) Gecko/20100101 Thunderbird/31.7.0
+MIME-Version: 1.0
+To: Fan Jiang <strike.devtest@gmail.com>
+Subject: Encrypted email
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+-----BEGIN PGP MESSAGE-----
+Charset: utf-8
+Version: GnuPG/MacGPG2 v2.0.22 (Darwin)
+Comment: GPGTools - https://gpgtools.org
+
+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
+TR5bLU7vrpRAmRve
+=YK4P
+-----END PGP MESSAGE-----
