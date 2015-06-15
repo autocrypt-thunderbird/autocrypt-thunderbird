@@ -11,6 +11,8 @@
 /public/_xpidlgen
 ipc/src/libsubprocess-*.dylib
 ipc/src/libsubprocess-*.so
+/test_output.log
+/ipc/tests/ipc-data.txt
 
 # vi tmp files:
 *.swp
@@ -18,7 +20,13 @@ ipc/src/libsubprocess-*.so
 
 # emacs tmp files:
 \#*\#
+.dir-locals.el
 
 # backup files:
 *~
 
+# vagrant files:
+provisioning/.vagrant
+
+# other local configuration files:
+.ackrc
