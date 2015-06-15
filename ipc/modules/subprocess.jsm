@@ -170,8 +170,6 @@
  *    subprocess.registerLogHandler( function(s) { dump(s); } );
  */
 
-'use strict';
-
 Components.utils.import("resource://gre/modules/ctypes.jsm");
 
 let EXPORTED_SYMBOLS = [ "subprocess" ];
@@ -339,7 +337,7 @@ function getPlatformValue(valueType) {
         'darwin':  [ 'libc.dylib',   0x04     , ctypes.uint64_t     , 8 ],
         'linux':   [ 'libc.so.6',    2024     , ctypes.unsigned_long, 7 ],
         'freebsd': [ 'libc.so.7',    0x04     , ctypes.int64_t      , 8 ],
-        'dragonfly':[ 'libc.so.8',   0x04,    , ctypes.int64_t      , 8 ],
+        'dragonfly':    [ 'libc.so.8',   0x04 , ctypes.int64_t      , 8 ],
         'gnu/kfreebsd': [ 'libc.so.0.1', 0x04 , ctypes.int64_t      , 8 ],
         'netbsd':  [ 'libc.so',      0x04     , ctypes.int64_t      , 8 ],
         'openbsd': [ 'libc.so.61.0', 0x04     , ctypes.int64_t      , 8 ],
@@ -369,7 +367,7 @@ function debugLog(s) {
 function setTimeout(callback, timeout) {
     var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
     timer.initWithCallback(callback, timeout, Ci.nsITimer.TYPE_ONE_SHOT);
-};
+}
 
 function convertBytes(data, charset) {
     var string = charset == "null" || charset == "UTF-8" ? data
@@ -451,6 +449,36 @@ var subprocess = {
             return subprocess_unix(options);
         }
 
+    },
+    ProcessBuilder: function () {
+        this.process = {};
+        this.setCommand = function(command){
+            this.process.command = command;
+        };
+        this.setArguments = function(args){
+            this.process.arguments = args;
+        };
+        this.setEnvironment = function(envList){
+            this.process.environment = envList;
+        };
+        this.setStdin = function(stdin){
+            this.process.stdin = stdin;
+        };
+        this.setStdout = function(stdout){
+            this.process.stdout = stdout;
+        };
+        this.setDone = function(done){
+            this.process.done = done;
+        };
+        this.build = function(){
+            this.process.charset= null;
+            this.process.mergeStderr= false;
+            this.process.resultData= "";
+            this.process.errorData= "";
+            this.process.exitCode= -1;
+            return this.process;
+        };
+        return this;
     },
     registerDebugHandler: function(func) {
         gDebugFunc = func;
@@ -905,7 +933,7 @@ function subprocess_win32(options) {
         else {
             stdinOpenState = PIPE_STATE_CLOSED;
             debugLog("Closing Stdin\n");
-            CloseHandle(child.stdin) || LogError("CloseHandle hInputWrite failed");
+            if(!CloseHandle(child.stdin)) LogError("CloseHandle hInputWrite failed");
         }
     }
 
@@ -932,7 +960,7 @@ function subprocess_win32(options) {
             case "done":
                 debugLog("Pipe "+name+" closed\n");
                 --readers;
-                if (readers == 0) cleanup();
+                if (readers === 0) cleanup();
                 break;
             case "error":
                 exitCode = -2;
@@ -1285,7 +1313,7 @@ function subprocess_unix(options) {
     var sleep = libc.declare("sleep",
                           ctypes.default_abi,
                           ctypes.int,
-                          ctypes.int)
+                          ctypes.int);
 
 
     //int fcntl(int fd, int cmd, ... /* arg */ );
@@ -1370,12 +1398,12 @@ function subprocess_unix(options) {
                     return -1;
                 }
 
-                if (options.pipes[i].readFd != undefined) {
+                if (options.pipes[i].readFd !== undefined) {
                     debugLog("adding input fd: " +fd[1] + "\n");
                     child.otherFdChild[i] = fd[1];
                     child.otherFdParent[i] = fd[0];
                 }
-                else if (options.pipes[i].writeFd != undefined) {
+                else if (options.pipes[i].writeFd !== undefined) {
                     debugLog("adding output fd: " +fd[0] + "\n");
                     child.otherFdChild[i] = fd[0];
                     child.otherFdParent[i] = fd[1];
@@ -1419,7 +1447,7 @@ function subprocess_unix(options) {
         let id = pid_t(0);
         let rv = posix_spawn(id.address(), command, action.address(), null, _args, _envp);
         posix_spawn_file_actions_destroy(action.address());
-        if (rv != 0) {
+        if (rv !== 0) {
           // we should not really end up here
           if(!options.mergeStderr) {
             close(_err[0]);
@@ -1473,7 +1501,7 @@ function subprocess_unix(options) {
             );
 
             var rl = new RLIMITS();
-            if (getrlimit(getPlatformValue(RLIMIT_NOFILE), rl.address()) == 0) {
+            if (getrlimit(getPlatformValue(RLIMIT_NOFILE), rl.address()) === 0) {
                 if (rl.rlim_cur <  Math.pow(2,20)) // ignore too high numbers
                   maxFD = rl.rlim_cur;
             }
@@ -1608,14 +1636,14 @@ function subprocess_unix(options) {
             stdinOpenState[workerNum] = PIPE_STATE_CLOSED;
             debugLog("Closing Stdin for "+workerNum+"\n");
             if (!workerNum)
-                close(child.stdin) && LogError("CloseHandle stdin failed");
+                if(close(child.stdin)) LogError("CloseHandle stdin failed");
             else {
                 let wrk = 0;
                 for (let i = 0; i < options.pipes.length; i++) {
-                    if (options.pipes[i].writeFd != undefined) {
+                    if (options.pipes[i].writeFd !== undefined) {
                         ++wrk;
                         if (wrk == workerNum) {
-                            close(child.writeFdParent[i]) && LogError("CloseHandle stdin failed");
+                            if(close(child.writeFdParent[i])) LogError("CloseHandle stdin failed");
                         }
                     }
                 }
@@ -1648,9 +1676,9 @@ function subprocess_unix(options) {
                 break;
             case "done":
                 debugLog("Pipe "+name+" closed\n");
-                if (event.data.data != 0) workerExitCode = event.data.data;
+                if (event.data.data !== 0) workerExitCode = event.data.data;
                 --readers;
-                if (readers == 0) cleanup();
+                if (readers === 0) cleanup();
                 break;
             case "error":
                 LogError("Got error from "+name+": "+event.data.data);
@@ -1705,16 +1733,20 @@ function subprocess_unix(options) {
             }
         });
 
+        function flusher(pipe) {
+            return function(data) {
+                setTimeout(function() {
+                    pipe.readFd(data);
+                }, 0);
+            };
+        }
+
         if (options.pipes) {
           for (let i = 0; i < options.pipes.length; i++) {
 
             if (typeof(options.pipes[i].readFd) == "function") {
                 let pipe = options.pipes[i];
-                let wrk = createReader(child.otherFdParent[i], "fd_"+ (i+3) , function (data) {
-                    setTimeout(function() {
-                        pipe.readFd(data);
-                    }, 0);
-                });
+                let wrk = createReader(child.otherFdParent[i], "fd_"+ (i+3) , flusher(pipe));
 
                 readFdWorker.push(wrk);
             }
@@ -1844,7 +1876,7 @@ function subprocess_unix(options) {
     if (options.pipes) {
         for (let i = 0; i < options.pipes.length; i++) {
 
-            if (options.pipes[i].writeFd != undefined) {
+            if (options.pipes[i].writeFd !== undefined) {
                 stdinOpenState.push(PIPE_STATE_NOT_INIT);
                 writeWorker.push(createWriter(child.otherFdParent[i], workerNum));
                 startWriting(workerNum, options.pipes[i].writeFd);

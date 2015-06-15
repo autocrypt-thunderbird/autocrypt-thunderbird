@@ -27,7 +27,7 @@ function run_test()
 
   var plPath = env.get("PL_PATH");
   Assert.ok(plPath.length > 0, "PL_PATH length is > 0");
-  if (plPath.length == 0) throw "perl path undefined";
+  if (plPath.length === 0) throw "perl path undefined";
 
   var pl = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
   pl.initWithPath(plPath);
@@ -271,4 +271,3 @@ function run_test()
   Assert.equal(gTestLines.join(""), gResultData, "variable comparison");
 
 }
-

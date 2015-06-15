@@ -43,8 +43,6 @@
 // Being a ChromeWorker object, implicitly uses the following:
 // Components.utils.import("resource://gre/modules/ctypes.jsm");
 
-'use strict';
-
 const BufferSize = 1024;
 const MaxBufferLen = 102400;
 
@@ -158,8 +156,8 @@ function createNpeError() {
 }
 
 function closePipe(pipe) {
-    if (pipe == null) {
-        createNpeError()
+    if (pipe === null) {
+        createNpeError();
         return;
     }
 
@@ -195,7 +193,7 @@ function writePipe(pipe, data) {
 function readString(data, length, charset) {
     var r = '';
     for(var i = 0; i < length; i++) {
-        if(data[i] == 0 && charset != "null") // stop on NULL character for non-binary data
+        if(data[i] === 0 && charset != "null") // stop on NULL character for non-binary data
            break;
 
         r += String.fromCharCode(data[i]);
@@ -214,7 +212,7 @@ function readUtf8(data, length) {
     var endChar = [];
     if (data[length - 1] >= 0x80) {
         // Collect all bytes from the last character if it's a non-ASCII.
-        for (var i = length - 1; i >= 0; i--) {
+        for (let i = length - 1; i >= 0; i--) {
             endChar.unshift(data[i]);
             if (data[i] >= 0xc0) break;
         }
@@ -232,7 +230,7 @@ function readUtf8(data, length) {
     data[length - endChar.length] = 0;
     var r = data.readStringReplaceMalformed();
     // Place the partial character at the beginning for the next read.
-    var i = 0;
+    let i = 0;
     endChar.forEach(function (v) {
         data[i++] = v;
     });
@@ -242,7 +240,7 @@ function readUtf8(data, length) {
 }
 
 function readPipe(pipe, charset, pid, bufferedOutput) {
-    var p = new libcFunc.pollFds;
+    var p = new libcFunc.pollFds();
     p[0].fd = pipe;
     p[0].events = POLLIN | POLLERR | POLLHUP;
     p[0].revents = 0;
@@ -258,7 +256,7 @@ function readPipe(pipe, charset, pid, bufferedOutput) {
 
     const i=0;
     while (true) {
-        if (result == 0) {
+        if (result === 0) {
             result = libcFunc.waitpid(pid, status.address(), WNOHANG);
             if (result > 0) {
                 pollTimeout = NOWAIT;
@@ -291,7 +289,7 @@ function readPipe(pipe, charset, pid, bufferedOutput) {
                     dataStr = "";
                   }
                 }
-                if (readCount == 0) break;
+                if (readCount === 0) break;
             }
 
             if (p[i].revents & POLLHUP) {
@@ -319,7 +317,7 @@ function readPipe(pipe, charset, pid, bufferedOutput) {
       else
         dataStr += dataObj.value;
 
-      let r = libcFunc.poll(p, 1, NOWAIT);
+      libcFunc.poll(p, 1, NOWAIT);
     }
 
     if (bufferedOutput)
@@ -335,7 +333,7 @@ function readPolledFd(pipe, line, charset, dataObj) {
     // Start reading at first null byte (line might begin with an
     // incomplete UTF-8 character from the previous read).
     var offset = 0;
-    while (line[offset] != 0) offset++;
+    while (line[offset] !== 0) offset++;
     var r = libcFunc.read(pipe, line.addressOfElement(offset), BufferSize-offset-1);
 
     if (r > 0) {
@@ -352,7 +350,7 @@ function readPolledFd(pipe, line, charset, dataObj) {
 onmessage = function (event) {
     switch (event.data.msg) {
     case "init":
-        if (event.data.pipe == null) {
+        if (event.data.pipe === null) {
           createNpeError();
           return;
         }
@@ -361,7 +359,7 @@ onmessage = function (event) {
         postMessage({msg: "info", data: "InitOK"});
         break;
     case "read":
-        if (event.data.pipe == null) {
+        if (event.data.pipe === null) {
           createNpeError();
           return;
         }

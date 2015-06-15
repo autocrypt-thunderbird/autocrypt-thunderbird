@@ -43,8 +43,6 @@
 // Being a ChromeWorker object, implicitly uses the following:
 // Components.utils.import("resource://gre/modules/ctypes.jsm");
 
-'use strict';
-
 const BufferSize = 1024;
 const MaxBufferLen = 102400;
 
@@ -78,10 +76,11 @@ var kernel32dll = null;
 var libFunc = {};
 
 function initLib(libName) {
+    var WinABI;
     if (ctypes.size_t.size == 8) {
-        var WinABI = ctypes.default_abi;
+        WinABI = ctypes.default_abi;
     } else {
-        var WinABI = ctypes.winapi_abi;
+        WinABI = ctypes.winapi_abi;
     }
 
     kernel32dll = ctypes.open(libName);
@@ -165,7 +164,7 @@ function writePipe(pipe, data) {
 function readString(data, length, charset) {
     var r = '';
     for(var i = 0; i < length; i++) {
-        if(data[i] == 0 && charset != "null") // stop on NULL character for non-binary data
+        if(data[i] === 0 && charset != "null") // stop on NULL character for non-binary data
            break;
 
         r += String.fromCharCode(data[i]);
@@ -184,7 +183,7 @@ function readUtf8(data, length) {
     var endChar = [];
     if (data[length - 1] >= 0x80) {
         // Collect all bytes from the last character if it's a non-ASCII.
-        for (var i = length - 1; i >= 0; i--) {
+        for (let i = length - 1; i >= 0; i--) {
             endChar.unshift(data[i]);
             if (data[i] >= 0xc0) break;
         }
@@ -202,7 +201,7 @@ function readUtf8(data, length) {
     data[length - endChar.length] = 0;
     var r = data.readStringReplaceMalformed();
     // Place the partial character at the beginning for the next read.
-    var i = 0;
+    let i = 0;
     endChar.forEach(function (v) {
         data[i++] = v;
     });
@@ -220,7 +219,7 @@ function readPipe(pipe, charset, bufferedOutput) {
         // Start reading at first null byte (line might begin with an
         // incomplete UTF-8 character from the previous read).
         var offset = 0;
-        while (line[offset] != 0) offset++;
+        while (line[offset] !== 0) offset++;
         var r = libFunc.ReadFile(
             pipe, line.addressOfElement(offset), BufferSize-offset-1,
             bytesRead.address(), null
