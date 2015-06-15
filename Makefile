@@ -37,7 +37,8 @@ check:
 clean:
 	rm -f build/$(XPIFILE)
 	for dir in $(DIRS); do \
-	  $(MAKE) -C $$dir clean; \
+		if [ "$${dir}x" != "checkx" ]; then \
+		$(MAKE) -C $$dir clean; fi; \
 	done
 
 distclean: clean
