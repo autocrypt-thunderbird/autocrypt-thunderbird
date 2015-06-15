@@ -419,7 +419,7 @@ var subprocess = {
         options.bufferedOutput = options.bufferedOutput || false;
         options.workdir = options.workdir ||  null;
         options.environment = options.environment ||  [];
-        options.charset = options.charset === null ? "null" : options.charset || "UTF-8";
+        options.charset = !options.charset ? "null" : options.charset || "UTF-8";
         if (options.arguments) {
             var args = options.arguments;
             options.arguments = [];
@@ -982,7 +982,7 @@ function subprocess_win32(options) {
                 msg: 'read',
                 pipe: pipePtr,
                 libc: options.libc,
-                charset: options.charset === null ? "null" : options.charset,
+                charset: !options.charset ? "null" : options.charset,
                 bufferedOutput: options.bufferedOutput,
                 name: name
             });
@@ -1398,12 +1398,12 @@ function subprocess_unix(options) {
                     return -1;
                 }
 
-                if (options.pipes[i].readFd !== undefined) {
+                if (options.pipes[i].readFd) {
                     debugLog("adding input fd: " +fd[1] + "\n");
                     child.otherFdChild[i] = fd[1];
                     child.otherFdParent[i] = fd[0];
                 }
-                else if (options.pipes[i].writeFd !== undefined) {
+                else if (options.pipes[i].writeFd) {
                     debugLog("adding output fd: " +fd[0] + "\n");
                     child.otherFdChild[i] = fd[0];
                     child.otherFdParent[i] = fd[1];
@@ -1640,7 +1640,7 @@ function subprocess_unix(options) {
             else {
                 let wrk = 0;
                 for (let i = 0; i < options.pipes.length; i++) {
-                    if (options.pipes[i].writeFd !== undefined) {
+                    if (options.pipes[i].writeFd) {
                         ++wrk;
                         if (wrk == workerNum) {
                             if(close(child.writeFdParent[i])) LogError("CloseHandle stdin failed");
@@ -1698,7 +1698,7 @@ function subprocess_unix(options) {
                 pipe: pipe,
                 pid: pid,
                 libc: options.libc,
-                charset: options.charset === null ? "null" : options.charset,
+                charset: !options.charset ? "null" : options.charset,
                 bufferedOutput: options.bufferedOutput,
                 name: name
             });
@@ -1876,7 +1876,7 @@ function subprocess_unix(options) {
     if (options.pipes) {
         for (let i = 0; i < options.pipes.length; i++) {
 
-            if (options.pipes[i].writeFd !== undefined) {
+            if (options.pipes[i].writeFd) {
                 stdinOpenState.push(PIPE_STATE_NOT_INIT);
                 writeWorker.push(createWriter(child.otherFdParent[i], workerNum));
                 startWriting(workerNum, options.pipes[i].writeFd);

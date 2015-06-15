@@ -156,7 +156,7 @@ function createNpeError() {
 }
 
 function closePipe(pipe) {
-    if (pipe === null) {
+    if (!pipe) {
         createNpeError();
         return;
     }
@@ -350,7 +350,7 @@ function readPolledFd(pipe, line, charset, dataObj) {
 onmessage = function (event) {
     switch (event.data.msg) {
     case "init":
-        if (event.data.pipe === null) {
+        if (!event.data.pipe) {
           createNpeError();
           return;
         }
@@ -359,7 +359,7 @@ onmessage = function (event) {
         postMessage({msg: "info", data: "InitOK"});
         break;
     case "read":
-        if (event.data.pipe === null) {
+        if (!event.data.pipe) {
           createNpeError();
           return;
         }
