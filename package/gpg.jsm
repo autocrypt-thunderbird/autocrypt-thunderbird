@@ -40,20 +40,20 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Gpg" ];
+const EXPORTED_SYMBOLS = [ "EnigmailGpg" ];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/files.jsm"); /*global Files: false */
-Cu.import("resource://enigmail/log.jsm"); /*global Log: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global Locale: false */
-Cu.import("resource://enigmail/dialog.jsm"); /*global Dialog: false */
-Cu.import("resource://enigmail/prefs.jsm"); /*global Prefs: false */
-Cu.import("resource://enigmail/execution.jsm"); /*global Execution: false */
+Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
+Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
+Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
-Cu.import("resource://enigmail/enigmailCore.jsm"); /*global EnigmailCore: false */
+Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 
 const GPG_BATCH_OPT_LIST = [ "--batch", "--no-tty", "--status-fd", "2" ];
 
@@ -74,7 +74,7 @@ function pushTrimmedStr(arr, str, splitStr) {
     return (str.length > 0);
 }
 
-const Gpg = {
+const EnigmailGpg = {
     agentVersion: "",
     agentPath: null,
 
@@ -93,7 +93,7 @@ const Gpg = {
      If the feature cannot be found, undefined is returned
      */
     getGpgFeature: function(featureName) {
-        let gpgVersion = Gpg.agentVersion;
+        let gpgVersion = EnigmailGpg.agentVersion;
 
         if (! gpgVersion || typeof(gpgVersion) != "string" || gpgVersion.length === 0) {
             return undefined;
@@ -136,7 +136,7 @@ const Gpg = {
         let r = [ "--charset", "utf-8", "--display-charset", "utf-8" ]; // mandatory parameter to add in all cases
 
         try {
-            let p = Prefs.getPref("agentAdditionalParam").replace(/\\\\/g, "\\");
+            let p = EnigmailPrefs.getPref("agentAdditionalParam").replace(/\\\\/g, "\\");
 
             let i = 0;
             let last = 0;
@@ -175,19 +175,19 @@ const Gpg = {
 
     // returns the output of --with-colons --list-config
     getGnupgConfig: function  (exitCodeObj, errorMsgObj) {
-        const args = Gpg.getStandardArgs(true).
+        const args = EnigmailGpg.getStandardArgs(true).
                 concat(["--fixed-list-mode", "--with-colons", "--list-config"]);
 
         const statusMsgObj   = {};
         const cmdErrorMsgObj = {};
         const statusFlagsObj = {};
 
-        const listText = Execution.execCmd(Gpg.agentPath, args, "", exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
+        const listText = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
 
         if (exitCodeObj.value !== 0) {
-            errorMsgObj.value = Locale.getString("badCommand");
+            errorMsgObj.value = EnigmailLocale.getString("badCommand");
             if (cmdErrorMsgObj.value) {
-                errorMsgObj.value += "\n" + Files.formatCmdLine(Gpg.agentPath, args);
+                errorMsgObj.value += "\n" + EnigmailFiles.formatCmdLine(EnigmailGpg.agentPath, args);
                 errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
             }
 
@@ -211,10 +211,10 @@ const Gpg = {
         let exitCodeObj = {};
         let errorMsgObj = {};
 
-        let cfgStr = Gpg.getGnupgConfig(exitCodeObj, errorMsgObj);
+        let cfgStr = EnigmailGpg.getGnupgConfig(exitCodeObj, errorMsgObj);
 
         if (exitCodeObj.value !== 0) {
-            Dialog.alert(errorMsgObj.value);
+            EnigmailDialog.alert(errorMsgObj.value);
             return null;
         }
 
@@ -240,15 +240,15 @@ const Gpg = {
      * no return value
      */
     recalcTrustDb: function() {
-        Log.DEBUG("enigmailCommon.jsm: recalcTrustDb:\n");
+        EnigmailLog.DEBUG("enigmailCommon.jsm: recalcTrustDb:\n");
 
-        const command = Gpg.agentPath;
-        const args = Gpg.getStandardArgs(false).
+        const command = EnigmailGpg.agentPath;
+        const args = EnigmailGpg.getStandardArgs(false).
                   concat(["--check-trustdb"]);
 
         try {
             const proc = subprocess.call({
-                command:     Gpg.agentPath,
+                command:     EnigmailGpg.agentPath,
                 arguments:   args,
                 environment: EnigmailCore.getEnvList(),
                 charset: null,
@@ -256,7 +256,7 @@ const Gpg = {
             });
             proc.wait();
         } catch (ex) {
-            Log.ERROR("enigmailCommon.jsm: recalcTrustDb: subprocess.call failed with '"+ex.toString()+"'\n");
+            EnigmailLog.ERROR("enigmailCommon.jsm: recalcTrustDb: subprocess.call failed with '"+ex.toString()+"'\n");
             throw ex;
         }
     }

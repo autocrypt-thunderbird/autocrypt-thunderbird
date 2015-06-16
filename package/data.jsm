@@ -1,4 +1,4 @@
-/*global Components: false, Log: false, unescape: false */
+/*global Components: false, EnigmailLog: false, unescape: false */
 /*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -40,7 +40,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Data" ];
+const EXPORTED_SYMBOLS = [ "EnigmailData" ];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -55,7 +55,7 @@ function converter(charset) {
     return unicodeConv;
 }
 
-const Data = {
+const EnigmailData = {
     getUnicodeData: function(data) {
         // convert output from subprocess to Unicode
         var tmpStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
@@ -130,7 +130,7 @@ const Data = {
                 a=text.search(/\\x[0-9a-fA-F]{2}/);
             }
 
-            text = Data.convertToUnicode(text, "utf-8").replace(/\\e3A/g, ":");
+            text = EnigmailData.convertToUnicode(text, "utf-8").replace(/\\e3A/g, ":");
         }
 
         return text;

@@ -35,7 +35,7 @@ dump("loading: enigmailEncryptionDlg.js\n");
  * ***** END LICENSE BLOCK ***** */
 
 function enigmailEncryptionDlgLoad() {
-  Log.DEBUG("enigmailEncryptionDlgLoad.js: Load\n");
+  EnigmailLog.DEBUG("enigmailEncryptionDlgLoad.js: Load\n");
 
   // Get Enigmail service, such that e.g. the wizard can be executed
   // if needed.
@@ -49,8 +49,8 @@ function enigmailEncryptionDlgLoad() {
 
   var signElement = document.getElementById("signMsg");
   switch(inputObj.statusSigned) {
-    case Constants.ENIG_FINAL_FORCEYES:
-    case Constants.ENIG_FINAL_YES:
+    case EnigmailConstants.ENIG_FINAL_FORCEYES:
+    case EnigmailConstants.ENIG_FINAL_YES:
       signElement.setAttribute("checked", true);
       break;
     default:
@@ -59,8 +59,8 @@ function enigmailEncryptionDlgLoad() {
 
   var encElement = document.getElementById("encryptMsg");
   switch(inputObj.statusEncrypted) {
-    case Constants.ENIG_FINAL_FORCEYES:
-    case Constants.ENIG_FINAL_YES:
+    case EnigmailConstants.ENIG_FINAL_FORCEYES:
+    case EnigmailConstants.ENIG_FINAL_YES:
       encElement.setAttribute("checked", true);
       break;
     default:
@@ -69,8 +69,8 @@ function enigmailEncryptionDlgLoad() {
 
   var pgpmimeElement = document.getElementById("pgpmimeGroup");
   switch(inputObj.statusPGPMime) {
-    case Constants.ENIG_FINAL_FORCEYES:
-    case Constants.ENIG_FINAL_YES:
+    case EnigmailConstants.ENIG_FINAL_FORCEYES:
+    case EnigmailConstants.ENIG_FINAL_YES:
       pgpmimeElement.selectedItem = document.getElementById("usePgpMime");
       break;
     default:
@@ -83,9 +83,9 @@ function resetDefaults() {
   var resultObj = window.arguments[0];
 
   resultObj.success = true;
-  resultObj.sign = Constants.ENIG_UNDEF;
-  resultObj.encrypt = Constants.ENIG_UNDEF;
-  resultObj.pgpmime = Constants.ENIG_UNDEF;
+  resultObj.sign = EnigmailConstants.ENIG_UNDEF;
+  resultObj.encrypt = EnigmailConstants.ENIG_UNDEF;
+  resultObj.pgpmime = EnigmailConstants.ENIG_UNDEF;
   resultObj.resetDefaults = true;
   window.close();
 }
@@ -93,10 +93,10 @@ function resetDefaults() {
 
 function getResultStatus(newStatus) {
   if (newStatus) {
-    return Constants.ENIG_ALWAYS;
+    return EnigmailConstants.ENIG_ALWAYS;
   }
   else {
-    return Constants.ENIG_NEVER;
+    return EnigmailConstants.ENIG_NEVER;
   }
 }
 

@@ -1,4 +1,4 @@
-/*global Components: false, Log: false, Dialog: false, dump: false, EnigmailFuncs: false */
+/*global Components: false, EnigmailLog: false, EnigmailDialog: false, dump: false, EnigmailFuncs: false */
 /*jshint -W097 */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,11 +12,11 @@
  */
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
-Components.utils.import("resource://enigmail/enigmailFuncs.jsm");
+Components.utils.import("resource://enigmail/funcs.jsm");
 Components.utils.import("resource://enigmail/dialog.jsm");
-Components.utils.import("resource://enigmail/encryption.jsm"); /*global Encryption: false */
-Components.utils.import("resource://enigmail/mime.jsm"); /*global Mime: false */
-Components.utils.import("resource://enigmail/hash.jsm"); /*global Hash: false */
+Components.utils.import("resource://enigmail/encryption.jsm"); /*global EnigmailEncryption: false */
+Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
+Components.utils.import("resource://enigmail/hash.jsm"); /*global EnigmailHash: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -116,7 +116,7 @@ PgpMimeEncrypt.prototype = {
       }
     }
     catch(ex) {
-      Log.writeException("mimeEncrypt.js", ex);
+      EnigmailLog.writeException("mimeEncrypt.js", ex);
       throw(ex);
     }
   },
@@ -161,7 +161,7 @@ PgpMimeEncrypt.prototype = {
           this.cryptoMode = MIME_SIGNED;
 
           let hashAlgoObj = {};
-          if (Hash.determineAlgorithm(this.win,
+          if (EnigmailHash.determineAlgorithm(this.win,
                                       this.enigSecurityInfo.UIFlags,
                                       this.enigSecurityInfo.senderEmailAddr,
                                       hashAlgoObj) === 0) {
@@ -176,7 +176,7 @@ PgpMimeEncrypt.prototype = {
 
       var statusFlagsObj = {};
       var errorMsgObj = {};
-      this.proc = Encryption.encryptMessageStart(this.win,
+      this.proc = EnigmailEncryption.encryptMessageStart(this.win,
                                                  this.enigSecurityInfo.UIFlags,
                                                  this.enigSecurityInfo.senderEmailAddr,
                                                  this.enigSecurityInfo.recipients,
@@ -188,12 +188,12 @@ PgpMimeEncrypt.prototype = {
                                                  errorMsgObj);
       if (! this.proc) throw Cr.NS_ERROR_FAILURE;
 
-      this.cryptoBoundary = Mime.createBoundary();
+      this.cryptoBoundary = EnigmailMime.createBoundary();
       this.startCryptoHeaders();
 
     }
     catch(ex) {
-      Log.writeException("mimeEncrypt.js", ex);
+      EnigmailLog.writeException("mimeEncrypt.js", ex);
       throw(ex);
     }
   },
@@ -287,7 +287,7 @@ PgpMimeEncrypt.prototype = {
       this.flushOutput();
     }
     catch(ex) {
-      Log.writeException("mimeEncrypt.js", ex);
+      EnigmailLog.writeException("mimeEncrypt.js", ex);
       throw(ex);
     }
 
@@ -313,7 +313,7 @@ PgpMimeEncrypt.prototype = {
           if (this.cryptoMode == MIME_ENCRYPTED) {
             let ct = this.getHeader("content-type", false);
             if ((ct.search(/text\/plain/i) === 0) || (ct.search(/text\/html/i) === 0)) {
-              this.encapsulate = Mime.createBoundary();
+              this.encapsulate = EnigmailMime.createBoundary();
               this.writeToPipe('Content-Type: multipart/mixed; boundary="'+
                 this.encapsulate+'"\r\n\r\n');
               this.writeToPipe("--"+this.encapsulate+"\r\n");
@@ -345,7 +345,7 @@ PgpMimeEncrypt.prototype = {
       }
     }
     catch(ex) {
-      Log.writeException("mimeEncrypt.js", ex);
+      EnigmailLog.writeException("mimeEncrypt.js", ex);
       throw(ex);
     }
   },
@@ -458,7 +458,7 @@ PgpMimeEncrypt.prototype = {
 
     let retStatusObj = {};
 
-    this.exitCode = Encryption.encryptMessageEnd(this.statusStr,
+    this.exitCode = EnigmailEncryption.encryptMessageEnd(this.statusStr,
                                                  exitCode,
                                                  this.enigSecurityInfo.UIFlags,
                                                  this.enigSecurityInfo.sendFlags,
@@ -466,7 +466,7 @@ PgpMimeEncrypt.prototype = {
                                                  retStatusObj);
 
     if (this.exitCode !== 0)
-      Dialog.alert(this.win, retStatusObj.errorMsg);
+      EnigmailDialog.alert(this.win, retStatusObj.errorMsg);
 
     if (this.inspector && this.inspector.eventLoopNestLevel > 0) {
       // unblock the waiting lock in finishCryptoEncapsulation
@@ -483,7 +483,7 @@ PgpMimeEncrypt.prototype = {
 
 
 function LOCAL_DEBUG(str) {
-  if (gDebugLogLevel) Log.DEBUG(str);
+  if (gDebugLogLevel) EnigmailLog.DEBUG(str);
 }
 
 function initModule() {

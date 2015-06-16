@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailConsole: false, dump: false, Files: false, OS: false */
+/*global Components: false, EnigmailConsole: false, dump: false, EnigmailFiles: false, EnigmailOS: false */
 /*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -43,7 +43,7 @@ Components.utils.import("resource://enigmail/pipeConsole.jsm");
 Components.utils.import("resource://enigmail/files.jsm");
 Components.utils.import("resource://enigmail/os.jsm");
 
-const EXPORTED_SYMBOLS = [ "Log" ];
+const EXPORTED_SYMBOLS = [ "EnigmailLog" ];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -52,36 +52,36 @@ const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 const NS_IOSERVICE_CONTRACTID       = "@mozilla.org/network/io-service;1";
 
 
-const Log = {
+const EnigmailLog = {
     level: 3,
     data: null,
     directory: null,
     fileStream: null,
 
     setLogLevel: function(newLogLevel) {
-        Log.level = newLogLevel;
+        EnigmailLog.level = newLogLevel;
     },
 
     getLogLevel: function() {
-        return Log.level;
+        return EnigmailLog.level;
     },
 
     setLogDirectory: function(newLogDirectory) {
-        Log.directory = newLogDirectory + (OS.isDosLike() ? "\\" : "/");
-        Log.createLogFiles();
+        EnigmailLog.directory = newLogDirectory + (EnigmailOS.isDosLike() ? "\\" : "/");
+        EnigmailLog.createLogFiles();
     },
 
     createLogFiles: function() {
-        if(Log.directory && (! Log.fileStream) && Log.level >= 5) {
-            Log.fileStream = Files.createFileStream(Log.directory+"enigdbug.txt");
+        if(EnigmailLog.directory && (! EnigmailLog.fileStream) && EnigmailLog.level >= 5) {
+            EnigmailLog.fileStream = EnigmailFiles.createFileStream(EnigmailLog.directory+"enigdbug.txt");
         }
     },
 
     onShutdown: function() {
-        if(Log.fileStream) {
-            Log.fileStream.close();
+        if(EnigmailLog.fileStream) {
+            EnigmailLog.fileStream.close();
         }
-        Log.fileStream = null;
+        EnigmailLog.fileStream = null;
     },
 
     getLogData: function(version, prefs) {
@@ -112,7 +112,7 @@ const Log = {
             }
         }
 
-        return data +"\n" + Log.data;
+        return data +"\n" + EnigmailLog.data;
     },
 
     WRITE: function (str) {
@@ -122,33 +122,33 @@ const Log = {
 
         var d = new Date();
         var datStr=d.getFullYear()+"-"+withZeroes(d.getMonth()+1, 2)+"-"+withZeroes(d.getDate(),2)+" "+withZeroes(d.getHours(),2)+":"+withZeroes(d.getMinutes(),2)+":"+withZeroes(d.getSeconds(),2)+"."+withZeroes(d.getMilliseconds(),3)+" ";
-        if (Log.level >= 4)
+        if (EnigmailLog.level >= 4)
             dump(datStr+str);
 
-        if (Log.data === null) {
-            Log.data = "";
+        if (EnigmailLog.data === null) {
+            EnigmailLog.data = "";
             let appInfo = Cc[XPCOM_APPINFO].getService(Ci.nsIXULAppInfo);
-            Log.WRITE("Mozilla Platform: "+ appInfo.name + " " + appInfo.version + "\n");
+            EnigmailLog.WRITE("Mozilla Platform: "+ appInfo.name + " " + appInfo.version + "\n");
         }
         // truncate first part of log data if it grow too much
-        if (Log.data.length > 5120000) {
-            Log.data = Log.data.substr(-400000);
+        if (EnigmailLog.data.length > 5120000) {
+            EnigmailLog.data = EnigmailLog.data.substr(-400000);
         }
 
-        Log.data += datStr + str;
+        EnigmailLog.data += datStr + str;
 
-        if (Log.fileStream) {
-            Log.fileStream.write(datStr, datStr.length);
-            Log.fileStream.write(str, str.length);
+        if (EnigmailLog.fileStream) {
+            EnigmailLog.fileStream.write(datStr, datStr.length);
+            EnigmailLog.fileStream.write(str, str.length);
         }
     },
 
     DEBUG: function (str) {
-        Log.WRITE("[DEBUG] "+str);
+        EnigmailLog.WRITE("[DEBUG] "+str);
     },
 
     WARNING: function (str) {
-        Log.WRITE("[WARN] "+str);
+        EnigmailLog.WRITE("[WARN] "+str);
         EnigmailConsole.write(str);
     },
 
@@ -161,12 +161,12 @@ const Log = {
         }
         catch (ex) {}
 
-        Log.WRITE("[ERROR] "+str);
+        EnigmailLog.WRITE("[ERROR] "+str);
     },
 
     CONSOLE: function (str) {
-        if (Log.level >= 3) {
-            Log.WRITE("[CONSOLE] "+str);
+        if (EnigmailLog.level >= 3) {
+            EnigmailLog.WRITE("[CONSOLE] "+str);
         }
 
         EnigmailConsole.write(str);
@@ -179,7 +179,7 @@ const Log = {
      *  ex:            exception object
      */
     writeException: function (referenceInfo, ex) {
-        Log.ERROR(referenceInfo+": caught exception: " +
+        EnigmailLog.ERROR(referenceInfo+": caught exception: " +
                   ex.name+"\n" +
                   "Message: '"+ex.message+"'\n" +
                   "File:    "+ex.fileName+"\n" +

@@ -10,18 +10,18 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false */
 
-testing("execution.jsm"); /*global Execution: false */
-component("enigmail/enigmailGpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-component("enigmail/gpg.jsm"); /*global Gpg: false */
+testing("execution.jsm"); /*global EnigmailExecution: false */
+component("enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
+component("enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 
 test(withTestGpgHome(withEnigmail(function shouldExecCmd() {
     const command = EnigmailGpgAgent.agentPath;
 
-    const args = Gpg.getStandardArgs(false).
+    const args = EnigmailGpg.getStandardArgs(false).
               concat(["--no-tty", "--status-fd", "1", "--logger-fd", "1", "--command-fd", "0"]).
               concat(["--list-packets", "resources/dev-strike.asc"]);
     let output = "";
-    Execution.execCmd2(command, args,
+    EnigmailExecution.execCmd2(command, args,
                        function (pipe) {
                            //Assert.equal(stdin, 0);
                        },

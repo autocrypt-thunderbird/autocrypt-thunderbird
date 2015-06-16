@@ -1,5 +1,5 @@
 dump("loading: enigmailSignKeyDlg.js\n");
-/*global Components: false, Log: false, Locale: false, Dialog: false */
+/*global Components: false, EnigmailLog: false, EnigmailLocale: false, EnigmailDialog: false */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -35,12 +35,12 @@ dump("loading: enigmailSignKeyDlg.js\n");
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-Components.utils.import("resource://enigmail/enigmailCore.jsm"); /*global EnigmailCore: false */
+Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Components.utils.import("resource://enigmail/keyEditor.jsm");
 Components.utils.import("resource://enigmail/log.jsm");
 Components.utils.import("resource://enigmail/locale.jsm");
 Components.utils.import("resource://enigmail/dialog.jsm");
-Components.utils.import("resource://enigmail/keyRing.jsm"); /*global KeyRing: false */
+Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 
 var gExportableSignatureList = null;
 var gLocalSignatureList = null;
@@ -54,13 +54,13 @@ function onLoad() {
 
   var enigmailSvc = EnigmailCore.getService(window);
   if (!enigmailSvc) {
-    Dialog.alert(null, Locale.getString("accessError"));
+    EnigmailDialog.alert(null, EnigmailLocale.getString("accessError"));
     window.close();
     return;
   }
-  var keys = KeyRing.getSecretKeys(window);
+  var keys = EnigmailKeyRing.getSecretKeys(window);
   if (keys.length === 0) {
-    Dialog.alert(null, Locale.getString("noTrustedOwnKeys"));
+    EnigmailDialog.alert(null, EnigmailLocale.getString("noTrustedOwnKeys"));
     window.close();
     return;
   }
@@ -84,7 +84,7 @@ function onLoad() {
     gUidCount = [];
     var keyId = null;
     fingerprint = "";
-    var sigListStr = KeyRing.getKeySig("0x"+window.arguments[0].keyId, exitCodeObj, errorMsgObj);
+    var sigListStr = EnigmailKeyRing.getKeySig("0x"+window.arguments[0].keyId, exitCodeObj, errorMsgObj);
 
     if (exitCodeObj.value === 0) {
       var sigList = sigListStr.split(/[\n\r]+/);
@@ -135,7 +135,7 @@ function onLoad() {
 
         case "fpr":
           if (fingerprint==="") {
-            Log.DEBUG("enigmailSignKeyDlg.js: fpr:"+currKey+" -> "+aLine[9]+"\n");
+            EnigmailLog.DEBUG("enigmailSignKeyDlg.js: fpr:"+currKey+" -> "+aLine[9]+"\n");
             fingerprint = aLine[9];
           }
           break;
@@ -164,18 +164,18 @@ function onAccept() {
 
   var enigmailSvc = EnigmailCore.getService(window);
   if (!enigmailSvc) {
-    Dialog.alert(window, Locale.getString("accessError"));
+    EnigmailDialog.alert(window, EnigmailLocale.getString("accessError"));
     return true;
   }
 
-  KeyEditor.signKey(window,
+  EnigmailKeyEditor.signKey(window,
     "0x"+signWithKey.selectedItem.value,
     window.arguments[0].keyId,
     localSig.checked,
     trustLevel.selectedItem.value,
     function (exitCode, errorMsg) {
       if (exitCode !== 0) {
-        Dialog.alert(window, Locale.getString("signKeyFailed")+"\n\n"+errorMsg);
+        EnigmailDialog.alert(window, EnigmailLocale.getString("signKeyFailed")+"\n\n"+errorMsg);
       }
       else {
         window.arguments[1].refresh = true;
@@ -207,7 +207,7 @@ function enigKeySelCb() {
   if ((doLocalSig.checked) && (gExportableSignatureList[signWithKeyId]>0)) {
     // User tries to locally sign a key he has already signed (at least partially) with an exportable signature
     // Here we display a hint and DISable the OK button
-    alreadySigned.setAttribute("value", Locale.getString("alreadySignedexportable.label", "0x"+ KeyToBeSigned32));
+    alreadySigned.setAttribute("value", EnigmailLocale.getString("alreadySignedexportable.label", "0x"+ KeyToBeSigned32));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = true;
   }
@@ -219,14 +219,14 @@ function enigKeySelCb() {
   else if (signatureCount==gUidCount[KeyToBeSigned]) {
     // Signature count == UID count, so key is already fully signed and another signing operation makes no more sense
     // Here, we display a hint and DISable the OK button
-    alreadySigned.setAttribute("value", Locale.getString("alreadySigned.label", "0x"+ KeyToBeSigned32));
+    alreadySigned.setAttribute("value", EnigmailLocale.getString("alreadySigned.label", "0x"+ KeyToBeSigned32));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = true;
   }
   else if (signatureCount > 0) {
     // Signature count != UID count, so key is partly signed and another sign operation makes sense
     // Here, we display a hint and ENable the OK button
-    alreadySigned.setAttribute("value", Locale.getString("partlySigned.label", "0x"+ KeyToBeSigned32));
+    alreadySigned.setAttribute("value", EnigmailLocale.getString("partlySigned.label", "0x"+ KeyToBeSigned32));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = false;
   }

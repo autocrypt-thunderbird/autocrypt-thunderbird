@@ -34,8 +34,8 @@ dump("loading: enigmailAbOverlay.js\n");
  * ***** END LICENSE BLOCK ***** */
 
 
-Components.utils.import("resource://enigmail/enigmailFuncs.jsm"); /*global EnigmailFuncs: false */
-Components.utils.import("resource://enigmail/windows.jsm"); /*global Windows: false */
+Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
+Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 
 var Enigmail = {
   createRuleFromAddress: function (emailAddressNode)
@@ -44,7 +44,7 @@ var Enigmail = {
     {
       var r=new RegExp("^"+emailAddressNode.protocol);
       var emailAddress=emailAddressNode.href.replace(r, "");
-      Windows.createNewRule(window, emailAddress);
+      EnigmailWindows.createNewRule(window, emailAddress);
     }
   },
 
@@ -57,6 +57,6 @@ var Enigmail = {
       emailAddress = GetSelectedAddresses();
 
     if (emailAddress)
-      Windows.createNewRule(window, EnigmailFuncs.stripEmail(emailAddress).replace(/,/g, " "));
+      EnigmailWindows.createNewRule(window, EnigmailFuncs.stripEmail(emailAddress).replace(/,/g, " "));
   }
 };

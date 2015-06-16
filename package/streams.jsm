@@ -40,20 +40,20 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Streams" ];
+const EXPORTED_SYMBOLS = [ "EnigmailStreams" ];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
-Cu.import("resource://enigmail/log.jsm"); /*global Log: false */
-Cu.import("resource://enigmail/timer.jsm"); /*global Timer: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 
 const NS_STRING_INPUT_STREAM_CONTRACTID = "@mozilla.org/io/string-input-stream;1";
 const NS_INPUT_STREAM_CHNL_CONTRACTID = "@mozilla.org/network/input-stream-channel;1";
 
-const Streams = {
+const EnigmailStreams = {
     /**
      * create an nsIStreamListener object to read String data from an nsIInputStream
      *
@@ -63,7 +63,7 @@ const Streams = {
      * @return: the nsIStreamListener to pass to the stream
      */
     newStringStreamListener: function (onStopCallback) {
-        Log.DEBUG("enigmailCommon.jsm: newStreamListener\n");
+        EnigmailLog.DEBUG("enigmailCommon.jsm: newStreamListener\n");
 
         return {
             data: "",
@@ -72,23 +72,23 @@ const Streams = {
             QueryInterface: XPCOMUtils.generateQI([ Ci.nsIStreamListener, Ci.nsIRequestObserver ]),
 
             onStartRequest: function (channel, ctxt) {
-                // Log.DEBUG("enigmailCommon.jsm: stringListener.onStartRequest\n");
+                // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onStartRequest\n");
             },
 
             onStopRequest: function (channel, ctxt, status) {
-                // Log.DEBUG("enigmailCommon.jsm: stringListener.onStopRequest: "+ctxt+"\n");
+                // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onStopRequest: "+ctxt+"\n");
                 this.inStream = null;
                 var cbFunc = this._onStopCallback;
                 var cbData = this.data;
 
-                Timer.setTimeout(function _cb() {
+                EnigmailTimer.setTimeout(function _cb() {
                     cbFunc(cbData);
                 });
             },
 
             onDataAvailable: function(req, sup, stream, offset, count) {
                 // get data from stream
-                // Log.DEBUG("enigmailCommon.jsm: stringListener.onDataAvailable: "+count+"\n");
+                // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onDataAvailable: "+count+"\n");
                 this.inStream.setInputStream(stream);
                 this.data += this.inStream.readBytes(count);
             }
@@ -106,7 +106,7 @@ const Streams = {
      * @return nsIChannel object
      */
     newStringChannel: function(uri, contentType, contentCharset, data) {
-        Log.DEBUG("enigmailCommon.jsm: newStringChannel\n");
+        EnigmailLog.DEBUG("enigmailCommon.jsm: newStringChannel\n");
 
         const inputStream = Cc[NS_STRING_INPUT_STREAM_CONTRACTID].createInstance(Ci.nsIStringInputStream);
         inputStream.setData(data, -1);
@@ -128,7 +128,7 @@ const Streams = {
         if (contentType && contentType.length) chan.contentType = contentType;
         if (contentCharset && contentCharset.length) chan.contentCharset = contentCharset;
 
-        Log.DEBUG("enigmailCommon.jsm: newStringChannel - done\n");
+        EnigmailLog.DEBUG("enigmailCommon.jsm: newStringChannel - done\n");
 
         return chan;
     }

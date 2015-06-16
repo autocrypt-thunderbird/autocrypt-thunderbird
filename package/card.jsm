@@ -41,23 +41,23 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Card" ];
+const EXPORTED_SYMBOLS = [ "EnigmailCard" ];
 
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global Log: false */
-Cu.import("resource://enigmail/execution.jsm"); /*global Execution: false */
-Cu.import("resource://enigmail/gpg.jsm"); /*global Gpg: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
+Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 
-const Card = {
+const EnigmailCard = {
     getCardStatus: function(exitCodeObj, errorMsgObj) {
-        Log.DEBUG("enigmail.js: Enigmail.getCardStatus\n");
-        const args = Gpg.getStandardArgs(false).
+        EnigmailLog.DEBUG("card.jsm: EnigmailCard.getCardStatus\n");
+        const args = EnigmailGpg.getStandardArgs(false).
                   concat(["--status-fd", "2", "--fixed-list-mode", "--with-colons", "--card-status"]);
         const statusMsgObj = {};
         const statusFlagsObj = {};
 
-        const outputTxt = Execution.execCmd(Gpg.agentPath, args, "", exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
+        const outputTxt = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
 
         if ((exitCodeObj.value === 0) && !outputTxt) {
             exitCodeObj.value = -1;

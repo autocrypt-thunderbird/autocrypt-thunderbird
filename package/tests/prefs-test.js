@@ -10,10 +10,10 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
-testing("prefs.jsm"); /*global Prefs: false */
+testing("prefs.jsm"); /*global EnigmailPrefs: false */
 
 test(function shouldSetGetPreference() {
     const prefName = "mypref";
-    Prefs.setPref(prefName, "yourpref");
-    Assert.equal("yourpref", Prefs.getPref(prefName));
+    EnigmailPrefs.setPref(prefName, "yourpref");
+    Assert.equal("yourpref", EnigmailPrefs.getPref(prefName));
 });

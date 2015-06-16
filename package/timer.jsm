@@ -1,4 +1,4 @@
-/*global Components: false, Log: false, Prefs: false */
+/*global Components: false, EnigmailLog: false, EnigmailPrefs: false */
 /*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -40,12 +40,12 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Timer" ];
+const EXPORTED_SYMBOLS = [ "EnigmailTimer" ];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-const Timer = {
+const EnigmailTimer = {
     /**
      * wait a defined number of miliseconds, then call a callback function
      * asynchronously

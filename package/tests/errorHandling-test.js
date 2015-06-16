@@ -11,7 +11,7 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withTestGpgHome: false */
 
-testing("enigmailErrorHandling.jsm"); /*global EnigmailErrorHandling: false */
+testing("errorHandling.jsm"); /*global EnigmailErrorHandling: false */
 
 test(function decryptionFailedWillSetDecryptionFailedFlag() {
     var context = {};

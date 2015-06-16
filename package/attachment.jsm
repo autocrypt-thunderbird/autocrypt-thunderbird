@@ -40,34 +40,34 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Attachment" ];
+const EXPORTED_SYMBOLS = [ "EnigmailAttachment" ];
 
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/execution.jsm"); /*global Execution: false */
-Cu.import("resource://enigmail/log.jsm"); /*global Log: false */
-Cu.import("resource://enigmail/enigmailGpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-Cu.import("resource://enigmail/gpg.jsm"); /*global Gpg: false */
-Cu.import("resource://enigmail/passwords.jsm"); /*global Passwords: false */
-Cu.import("resource://enigmail/data.jsm"); /*global Data: false */
+Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
+Cu.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
+Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
+Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 
-const Attachment = {
+const EnigmailAttachment = {
     getFileName: function (parent, byteData) {
-        Log.DEBUG("attachment.jsm: getFileName\n");
+        EnigmailLog.DEBUG("attachment.jsm: getFileName\n");
 
-        const args = Gpg.getStandardArgs(true).
-                  concat(Passwords.command()).
+        const args = EnigmailGpg.getStandardArgs(true).
+                  concat(EnigmailPassword.command()).
                   concat(["--list-packets"]);
 
-        const listener = Execution.newSimpleListener(
+        const listener = EnigmailExecution.newSimpleListener(
             function _stdin (pipe) {
-                Log.DEBUG("attachment.jsm: getFileName: _stdin\n");
+                EnigmailLog.DEBUG("attachment.jsm: getFileName: _stdin\n");
                 pipe.write(byteData);
                 pipe.write("\n");
                 pipe.close();
             });
 
-        const proc = Execution.execStart(EnigmailGpgAgent.agentPath, args, false, parent, listener, {});
+        const proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath, args, false, parent, listener, {});
 
         if (!proc) {
             return null;
@@ -78,7 +78,7 @@ const Attachment = {
         const matches = listener.stdoutData.match(/:literal data packet:\r?\n.*name="(.*)",/m);
         if (matches && (matches.length > 1)) {
             var filename = escape(matches[1]).replace(/%5Cx/g, "%");
-            return Data.convertToUnicode(unescape(filename), "utf-8");
+            return EnigmailData.convertToUnicode(unescape(filename), "utf-8");
         } else {
             return null;
         }

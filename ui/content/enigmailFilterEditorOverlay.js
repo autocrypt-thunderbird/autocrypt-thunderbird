@@ -1,5 +1,5 @@
 dump("loading: enigmailFilterEditorOverlay.js\n");
-/*global Components: false, Timer: false */
+/*global Components: false, EnigmailTimer: false */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -38,7 +38,7 @@ dump("loading: enigmailFilterEditorOverlay.js\n");
 
 var enigmail_origCheckActionsReorder = function() {
     enigmail_origCheckActionsReorder();
-    Timer.setTimeout(EnigmailFilterEditor.checkMoveAction.bind(EnigmailFilterEditor), 0);
+    EnigmailTimer.setTimeout(EnigmailFilterEditor.checkMoveAction.bind(EnigmailFilterEditor), 0);
 };
 
 var EnigmailFilterEditor = {

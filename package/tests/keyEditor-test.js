@@ -1,5 +1,5 @@
 /*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, JSUnit: false, do_test_pending: false, do_test_finished: false, withTestGpgHome:false */
-/*global Ec: false, Cc: false, Ci: false, do_print: false, EnigmailCore: false, KeyEditor: false, Components: false, component: false, Prefs: false, Execution: false */
+/*global Ec: false, Cc: false, Ci: false, do_print: false, EnigmailCore: false, EnigmailKeyEditor: false, Components: false, component: false, EnigmailPrefs: false, EnigmailExecution: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -12,7 +12,7 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false */
 
 testing("keyEditor.jsm"); /*global editKey: false */
-component("enigmail/keyRing.jsm"); /*global KeyRing: false */
+component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 
 test(withTestGpgHome(withEnigmail(function shouldEditKey() {
     importKeys();
@@ -44,7 +44,7 @@ test(withTestGpgHome(withEnigmail(function shouldSetTrust() {
     importKeys();
     do_test_pending();
     var window = JSUnit.createStubWindow();
-    KeyEditor.setKeyTrust(window,
+    EnigmailKeyEditor.setKeyTrust(window,
                           "781617319CE311C4",
                           5,
                           function (exitCode, errorMsg) {
@@ -59,7 +59,7 @@ test(withTestGpgHome(withEnigmail(function shouldSignKey() {
     importKeys();
     do_test_pending();
     var window = JSUnit.createStubWindow();
-    KeyEditor.signKey(window,
+    EnigmailKeyEditor.signKey(window,
                       "anonymous strike <strike.devtest@gmail.com>",
                       "781617319CE311C4",
                       false,
@@ -84,14 +84,14 @@ test(withTestGpgHome(withEnigmail(function shouldGetSecretKeys() {
     const errorMsgObj = {};
     const importedKeysObj = {};
     const window = JSUnit.createStubWindow();
-    const importResult = KeyRing.importKeyFromFile(window, secretKey, errorMsgObj, importedKeysObj);
+    const importResult = EnigmailKeyRing.importKeyFromFile(window, secretKey, errorMsgObj, importedKeysObj);
     const expectedKey = [{"name": "anonymous strike <strike.devtest@gmail.com>", "id": "781617319CE311C4", "created": "05/04/2015"}];
     do_test_pending();
-    KeyEditor.setKeyTrust(window,
+    EnigmailKeyEditor.setKeyTrust(window,
         "781617319CE311C4",
         5,
         function() {
-            const result = KeyRing.getSecretKeys(window);
+            const result = EnigmailKeyRing.getSecretKeys(window);
             Assert.equal(result.length, 1);
             Assert.equal(result[0].name, expectedKey[0].name);
             Assert.equal(result[0].id, expectedKey[0].id);
@@ -107,7 +107,7 @@ function importKeys() {
     var secretKey = do_get_file("resources/dev-strike.sec", false);
     var errorMsgObj = {};
     var importedKeysObj = {};
-    var publicImportResult = KeyRing.importKeyFromFile(window, publicKey, errorMsgObj, importedKeysObj);
-    var secretImportResult = KeyRing.importKeyFromFile(window, secretKey, errorMsgObj, importedKeysObj);
+    var publicImportResult = EnigmailKeyRing.importKeyFromFile(window, publicKey, errorMsgObj, importedKeysObj);
+    var secretImportResult = EnigmailKeyRing.importKeyFromFile(window, secretKey, errorMsgObj, importedKeysObj);
     return [publicImportResult, secretImportResult];
 }

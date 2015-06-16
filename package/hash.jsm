@@ -40,16 +40,16 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Hash" ];
+const EXPORTED_SYMBOLS = [ "EnigmailHash" ];
 
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global Log: false */
-Cu.import("resource://enigmail/windows.jsm"); /*global Windows: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global Locale: false */
-Cu.import("resource://enigmail/prefs.jsm"); /*global Prefs: false */
-Cu.import("resource://enigmail/encryption.jsm"); /*global Encryption: false */
-Cu.import("resource://enigmail/dialog.jsm"); /*global Dialog: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
+Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
+Cu.import("resource://enigmail/encryption.jsm"); /*global EnigmailEncryption: false */
+Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 
 const Ci = Components.interfaces;
 
@@ -58,16 +58,16 @@ const nsIEnigmail = Ci.nsIEnigmail;
 const keyAlgorithms = [];
 const mimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512", "sha224", "md5" ];
 
-const Hash = {
+const EnigmailHash = {
     determineAlgorithm: function (win, uiFlags, fromMailAddr, hashAlgoObj) {
-        Log.DEBUG("hash.jsm: determineAlgorithm\n");
+        EnigmailLog.DEBUG("hash.jsm: determineAlgorithm\n");
 
         if (! win) {
-            win = Windows.getMostRecentWindow();
+            win = EnigmailWindows.getMostRecentWindow();
         }
 
         const sendFlags = nsIEnigmail.SEND_TEST | nsIEnigmail.SEND_SIGNED;
-        const hashAlgo = mimeHashAlgorithms[Prefs.getPref("mimeHashAlgorithm")];
+        const hashAlgo = mimeHashAlgorithms[EnigmailPrefs.getPref("mimeHashAlgorithm")];
 
         if (typeof(keyAlgorithms[fromMailAddr]) != "string") {
             // hash algorithm not yet known
@@ -92,7 +92,7 @@ const Hash = {
                 }
             };
 
-            const proc = Encryption.encryptMessageStart(win, testUiFlags, fromMailAddr, "",
+            const proc = EnigmailEncryption.encryptMessageStart(win, testUiFlags, fromMailAddr, "",
                                                         "", hashAlgo, sendFlags,
                                                         listener, {}, {});
 
@@ -106,7 +106,7 @@ const Hash = {
             const exitCode = listener.exitCode;
 
             const retStatusObj = {};
-            let exitCode2 = Encryption.encryptMessageEnd(listener.stderrData, exitCode,
+            let exitCode2 = EnigmailEncryption.encryptMessageEnd(listener.stderrData, exitCode,
                                                     testUiFlags, sendFlags, 10,
                                                     retStatusObj);
 
@@ -117,9 +117,9 @@ const Hash = {
                 // Abormal return
                 if (retStatusObj.statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
                     // "Unremember" passphrase on error return
-                    retStatusObj.errorMsg = Locale.getString("badPhrase");
+                    retStatusObj.errorMsg = EnigmailLocale.getString("badPhrase");
                 }
-                Dialog.alert(win, retStatusObj.errorMsg);
+                EnigmailDialog.alert(win, retStatusObj.errorMsg);
                 return exitCode2;
             }
 
@@ -129,22 +129,22 @@ const Hash = {
             if (m && (m.length > 2) && (m[1] == "Hash: ")) {
                 hashAlgorithm = m[2].toLowerCase();
             } else {
-                Log.DEBUG("hash.jsm: determineAlgorithm: no hashAlgorithm specified - using MD5\n");
+                EnigmailLog.DEBUG("hash.jsm: determineAlgorithm: no hashAlgorithm specified - using MD5\n");
             }
 
             for (let i=1; i < mimeHashAlgorithms.length; i++) {
                 if (mimeHashAlgorithms[i] === hashAlgorithm) {
-                    Log.DEBUG("hash.jsm: determineAlgorithm: found hashAlgorithm "+hashAlgorithm+"\n");
+                    EnigmailLog.DEBUG("hash.jsm: determineAlgorithm: found hashAlgorithm "+hashAlgorithm+"\n");
                     keyAlgorithms[fromMailAddr] = hashAlgorithm;
                     hashAlgoObj.value = hashAlgorithm;
                     return 0;
                 }
             }
 
-            Log.ERROR("hash.jsm: determineAlgorithm: no hashAlgorithm found\n");
+            EnigmailLog.ERROR("hash.jsm: determineAlgorithm: no hashAlgorithm found\n");
             return 2;
         } else {
-            Log.DEBUG("hash.jsm: determineAlgorithm: hashAlgorithm "+keyAlgorithms[fromMailAddr]+" is cached\n");
+            EnigmailLog.DEBUG("hash.jsm: determineAlgorithm: hashAlgorithm "+keyAlgorithms[fromMailAddr]+" is cached\n");
             hashAlgoObj.value = keyAlgorithms[fromMailAddr];
         }
 

@@ -1,5 +1,5 @@
 dump("loading: enigmailCommon.js\n");
-/*global Components: false, Data: false, Files: false, EnigmailCore: false, App: false, Dialog: false, Windows: false, Time: false */
+/*global Components: false, EnigmailFiles: false, EnigmailCore: false, EnigmailApp: false, EnigmailDialog: false, EnigmailWindows: false, EnigmailTime: false */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -42,30 +42,30 @@ dump("loading: enigmailCommon.js\n");
 // functionality!
 
 // Many of these components are not used in this file, but are instead used in other files that are loaded together with EnigmailCommon
-Components.utils.import("resource://enigmail/enigmailCore.jsm");
-Components.utils.import("resource://enigmail/enigmailFuncs.jsm");
+Components.utils.import("resource://enigmail/core.jsm");
+Components.utils.import("resource://enigmail/funcs.jsm");
 Components.utils.import("resource://enigmail/keyEditor.jsm");
-Components.utils.import("resource://enigmail/key.jsm"); /*global Key: false */
+Components.utils.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
 Components.utils.import("resource://enigmail/log.jsm");
 Components.utils.import("resource://enigmail/prefs.jsm");
 Components.utils.import("resource://enigmail/os.jsm");
 Components.utils.import("resource://enigmail/locale.jsm");
-Components.utils.import("resource://enigmail/data.jsm");
+Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Components.utils.import("resource://enigmail/files.jsm");
 Components.utils.import("resource://enigmail/app.jsm");
 Components.utils.import("resource://enigmail/dialog.jsm");
 Components.utils.import("resource://enigmail/windows.jsm");
 Components.utils.import("resource://enigmail/time.jsm");
 Components.utils.import("resource://enigmail/timer.jsm");
-Components.utils.import("resource://enigmail/enigmailGpgAgent.jsm");
-Components.utils.import("resource://enigmail/keyRing.jsm"); /*global KeyRing: false */
-Components.utils.import("resource://enigmail/trust.jsm"); /*global Trust: false */
-Components.utils.import("resource://enigmail/constants.jsm"); /*global Constants: false */
+Components.utils.import("resource://enigmail/gpgAgent.jsm");
+Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Components.utils.import("resource://enigmail/trust.jsm"); /*global EnigmailTrust: false */
+Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Components.utils.import("resource://enigmail/locale.jsm");
-Components.utils.import("resource://enigmail/enigmailErrorHandling.jsm"); /*global EnigmailErrorHandling: false */
-Components.utils.import("resource://enigmail/keyserver.jsm"); /*global KeyServer: false */
-Components.utils.import("resource://enigmail/events.jsm"); /*global Events: false */
-Components.utils.import("resource://enigmail/gpg.jsm"); /*global Gpg: false */
+Components.utils.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandling: false */
+Components.utils.import("resource://enigmail/keyserver.jsm"); /*global EnigmailKeyServer: false */
+Components.utils.import("resource://enigmail/events.jsm"); /*global EnigmailEvents: false */
+Components.utils.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Components.utils.import("resource://enigmail/promise.jsm"); /*global Promise: false */
 Components.utils.import("resource://enigmail/installGnuPG.jsm");
 Components.utils.import("resource://enigmail/passwordCheck.jsm");
@@ -157,7 +157,7 @@ const PGP_MIME_NEVER    = 0;
 const PGP_MIME_POSSIBLE = 1;
 const PGP_MIME_ALWAYS   = 2;
 
-const ENIG_POSSIBLE_PGPMIME = Constants.POSSIBLE_PGPMIME;
+const ENIG_POSSIBLE_PGPMIME = EnigmailConstants.POSSIBLE_PGPMIME;
 const ENIG_PGP_DESKTOP_ATT  = -2082;
 
 var gUsePGPMimeOptionList = ["usePGPMimeNever",
@@ -188,12 +188,12 @@ const ENIG_HEADERMODE_URL   = 0x10;
 
 
 function EnigGetFrame(win, frameName) {
-  return Windows.getFrame(win, frameName);
+  return EnigmailWindows.getFrame(win, frameName);
 }
 
 // Initializes enigmailCommon
 function EnigInitCommon(id) {
-   Log.DEBUG("enigmailCommon.js: EnigInitCommon: id="+id+"\n");
+   EnigmailLog.DEBUG("enigmailCommon.js: EnigInitCommon: id="+id+"\n");
 
    gEnigPromptSvc = enigGetService("@mozilla.org/embedcomp/prompt-service;1", "nsIPromptService");
 }
@@ -207,7 +207,7 @@ function GetEnigmailSvc() {
 
 // maxBytes == -1 => read everything
 function EnigReadURLContents(url, maxBytes) {
-  Log.DEBUG("enigmailCommon.js: EnigReadURLContents: url="+url+
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigReadURLContents: url="+url+
             ", "+maxBytes+"\n");
 
   var ioServ = enigGetService(ENIG_IOSERVICE_CONTRACTID, "nsIIOService");
@@ -235,7 +235,7 @@ function EnigReadURLContents(url, maxBytes) {
 // maxBytes == -1 => read whole file
 function EnigReadFileContents(localFile, maxBytes) {
 
-  Log.DEBUG("enigmailCommon.js: EnigReadFileContents: file="+localFile.leafName+
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigReadFileContents: file="+localFile.leafName+
             ", "+maxBytes+"\n");
 
   if (!localFile.exists() || !localFile.isReadable())
@@ -255,13 +255,13 @@ function EnigReadFileContents(localFile, maxBytes) {
 
 // write exception information
 function EnigWriteException(referenceInfo, ex) {
-  Log.writeException(referenceInfo, ex);
+  EnigmailLog.writeException(referenceInfo, ex);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function EnigAlert(mesg) {
-  return Dialog.alert(window, mesg);
+  return EnigmailDialog.alert(window, mesg);
 }
 
 /**
@@ -275,21 +275,21 @@ function EnigAlert(mesg) {
  *
  */
 function EnigLongAlert(mesg, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj) {
-  return Dialog.longAlert(window, mesg, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj);
+  return EnigmailDialog.longAlert(window, mesg, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj);
 }
 
 function EnigAlertPref(mesg, prefText) {
-  return Dialog.alertPref(window, mesg, prefText);
+  return EnigmailDialog.alertPref(window, mesg, prefText);
 }
 
 // Confirmation dialog with OK / Cancel buttons (both customizable)
 function EnigConfirm(mesg, okLabel, cancelLabel) {
-  return Dialog.confirmDlg(window, mesg, okLabel, cancelLabel);
+  return EnigmailDialog.confirmDlg(window, mesg, okLabel, cancelLabel);
 }
 
 
 function EnigConfirmPref(mesg, prefText, okLabel, cancelLabel) {
-  return Dialog.confirmPref(window, mesg, prefText, okLabel, cancelLabel);
+  return EnigmailDialog.confirmPref(window, mesg, prefText, okLabel, cancelLabel);
 }
 
 function EnigError(mesg) {
@@ -297,18 +297,18 @@ function EnigError(mesg) {
 }
 
 function EnigPrefWindow(showBasic, clientType, selectTab) {
-  Log.DEBUG("enigmailCommon.js: EnigPrefWindow\n");
-  Windows.openPrefWindow(window, showBasic, selectTab);
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigPrefWindow\n");
+  EnigmailWindows.openPrefWindow(window, showBasic, selectTab);
 }
 
 
 function EnigHelpWindow(source) {
-  Windows.openHelpWindow(source);
+  EnigmailWindows.openHelpWindow(source);
 }
 
 
 function EnigDisplayRadioPref(prefName, prefValue, optionElementIds) {
-  Log.DEBUG("enigmailCommon.js: EnigDisplayRadioPref: "+prefName+", "+prefValue+"\n");
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigDisplayRadioPref: "+prefName+", "+prefValue+"\n");
 
   if (prefValue >= optionElementIds.length)
     return;
@@ -323,7 +323,7 @@ function EnigDisplayRadioPref(prefName, prefValue, optionElementIds) {
 }
 
 function EnigSetRadioPref(prefName, optionElementIds) {
-  Log.DEBUG("enigmailCommon.js: EnigSetRadioPref: "+prefName+"\n");
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigSetRadioPref: "+prefName+"\n");
 
   try {
     var groupElement = document.getElementById("enigmail_"+prefName);
@@ -340,20 +340,20 @@ function EnigSetRadioPref(prefName, optionElementIds) {
 }
 
 function EnigSavePrefs() {
-  return Prefs.savePrefs();
+  return EnigmailPrefs.savePrefs();
 }
 
 function EnigGetPref(prefName) {
-  return Prefs.getPref(prefName);
+  return EnigmailPrefs.getPref(prefName);
 }
 
 function EnigGetDefaultPref(prefName) {
-  Log.DEBUG("enigmailCommon.js: EnigGetDefaultPref: prefName="+prefName+"\n");
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigGetDefaultPref: prefName="+prefName+"\n");
   var prefValue=null;
   try {
-    Prefs.getPrefBranch().lockPref(prefName);
+    EnigmailPrefs.getPrefBranch().lockPref(prefName);
     prefValue = EnigGetPref(prefName);
-    Prefs.getPrefBranch().unlockPref(prefName);
+    EnigmailPrefs.getPrefBranch().unlockPref(prefName);
   }
   catch (ex) {}
 
@@ -361,7 +361,7 @@ function EnigGetDefaultPref(prefName) {
 }
 
 function EnigSetPref(prefName, value) {
-  return Prefs.setPref(prefName, value);
+  return EnigmailPrefs.setPref(prefName, value);
 }
 
 function EnigGetSignMsg(identity) {
@@ -370,7 +370,7 @@ function EnigGetSignMsg(identity) {
 
 
 function EnigConvertFromUnicode(text, charset) {
-  Log.DEBUG("enigmailCommon.js: EnigConvertFromUnicode: "+charset+"\n");
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigConvertFromUnicode: "+charset+"\n");
 
   if (!text)
     return "";
@@ -385,7 +385,7 @@ function EnigConvertFromUnicode(text, charset) {
     return unicodeConv.ConvertFromUnicode(text);
 
   } catch (ex) {
-    Log.DEBUG("enigmailCommon.js: EnigConvertFromUnicode: caught an exception\n");
+    EnigmailLog.DEBUG("enigmailCommon.js: EnigConvertFromUnicode: caught an exception\n");
 
     return text;
   }
@@ -393,7 +393,7 @@ function EnigConvertFromUnicode(text, charset) {
 
 
 function EnigConvertToUnicode(text, charset) {
-  // Log.DEBUG("enigmailCommon.js: EnigConvertToUnicode: "+charset+"\n");
+  // EnigmailLog.DEBUG("enigmailCommon.js: EnigConvertToUnicode: "+charset+"\n");
 
   if (!text || !charset /*|| (charset.toLowerCase() == "iso-8859-1")*/)
     return text;
@@ -406,17 +406,17 @@ function EnigConvertToUnicode(text, charset) {
     return unicodeConv.ConvertToUnicode(text);
 
   } catch (ex) {
-    Log.DEBUG("enigmailCommon.js: EnigConvertToUnicode: caught an exception while converting'"+text+"' to "+charset+"\n");
+    EnigmailLog.DEBUG("enigmailCommon.js: EnigConvertToUnicode: caught an exception while converting'"+text+"' to "+charset+"\n");
     return text;
   }
 }
 
 function EnigConvertGpgToUnicode(text) {
-  return Data.convertGpgToUnicode(text);
+  return EnigmailData.convertGpgToUnicode(text);
 }
 
 function EnigFormatFpr(fingerprint) {
-  return Key.formatFpr(fingerprint);
+  return EnigmailKey.formatFpr(fingerprint);
 }
 
 /////////////////////////
@@ -438,15 +438,15 @@ function EnigGetWindowOptions() {
 }
 
 function EnigRulesEditor() {
-  Windows.openRulesEditor();
+  EnigmailWindows.openRulesEditor();
 }
 
 function EngmailCardDetails() {
-  Windows.openCardDetails();
+  EnigmailWindows.openCardDetails();
 }
 
 function EnigKeygen() {
-  Windows.openKeyGen();
+  EnigmailWindows.openKeyGen();
 
 }
 
@@ -459,7 +459,7 @@ function EnigGetString(aStr) {
     for (var i=1; i<arguments.length; i++) {
         argList.push(arguments[i]);
     }
-  return Locale.getString(aStr, (arguments.length > 1 ? argList : null));
+  return EnigmailLocale.getString(aStr, (arguments.length > 1 ? argList : null));
 }
 
 // Remove all quoted strings (and angle brackets) from a list of email
@@ -471,59 +471,59 @@ function EnigStripEmail(mailAddrs) {
 
 //get path for temporary directory (e.g. /tmp, C:\TEMP)
 function EnigGetTempDir() {
-  return Files.getTempDir();
+  return EnigmailFiles.getTempDir();
 }
 
 // get the OS platform
 function EnigGetOS () {
-  return OS.getOS();
+  return EnigmailOS.getOS();
 }
 
 function EnigGetVersion() {
-  return App.getVersion();
+  return EnigmailApp.getVersion();
 }
 
 function EnigFilePicker(title, displayDir, save, defaultExtension, defaultName, filterPairs) {
-  return Dialog.filePicker(window, title, displayDir, save, defaultExtension,
+  return EnigmailDialog.filePicker(window, title, displayDir, save, defaultExtension,
                            defaultName, filterPairs);
 }
 
 // get keys from keyserver
 function EnigDownloadKeys(inputObj, resultObj) {
-  return Windows.downloadKeys(window, inputObj, resultObj);
+  return EnigmailWindows.downloadKeys(window, inputObj, resultObj);
 }
 
 // create new PGP Rule
 function EnigNewRule(emailAddress) {
-  return Windows.createNewRule(window, emailAddress);
+  return EnigmailWindows.createNewRule(window, emailAddress);
 }
 
 function EnigGetTrustCode(keyObj) {
-  return Trust.getTrustCode(keyObj);
+  return EnigmailTrust.getTrustCode(keyObj);
 }
 
 // Load the key list into memory
 // sortDirection: 1 = ascending / -1 = descending
 
 function EnigLoadKeyList(refresh, keyListObj, sortColumn, sortDirection) {
-  return KeyRing.loadKeyList(window, refresh, keyListObj, sortColumn, sortDirection);
+  return EnigmailKeyRing.loadKeyList(window, refresh, keyListObj, sortColumn, sortDirection);
 }
 
 function EnigEditKeyTrust(userIdArr, keyIdArr) {
-  return Windows.editKeyTrust(window, userIdArr, keyIdArr);
+  return EnigmailWindows.editKeyTrust(window, userIdArr, keyIdArr);
 }
 
 
 function EnigEditKeyExpiry(userIdArr, keyIdArr) {
-  return Windows.editKeyExpiry(window, userIdArr, keyIdArr);
+  return EnigmailWindows.editKeyExpiry(window, userIdArr, keyIdArr);
 }
 
 function EnigDisplayKeyDetails(keyId, refresh) {
-  return Windows.openKeyDetails(window, keyId, refresh);
+  return EnigmailWindows.openKeyDetails(window, keyId, refresh);
 }
 
 function EnigSignKey(userId, keyId) {
-  return Windows.signKey(window, userId, keyId);
+  return EnigmailWindows.signKey(window, userId, keyId);
 }
 
 
@@ -540,7 +540,7 @@ function EnigChangeKeyPwd(keyId, userId) {
   }
   else {
     // gpg-agent used: gpg-agent will handle everything
-    KeyEditor.changePassphrase(window, "0x"+keyId, "", "",
+    EnigmailKeyEditor.changePassphrase(window, "0x"+keyId, "", "",
       function _changePwdCb(exitCode, errorMsg) {
         if (exitCode !== 0) {
           EnigAlert(EnigGetString("changePassFailed")+"\n\n"+errorMsg);
@@ -572,7 +572,7 @@ function EnigRevokeKey(keyId, userId, callbackFunc) {
   catch (ex) {}
   revFile.append("revkey.asc");
 
-  KeyEditor.genRevokeCert(window, "0x"+keyId, revFile, "0", "",
+  EnigmailKeyEditor.genRevokeCert(window, "0x"+keyId, revFile, "0", "",
     function _revokeCertCb(exitCode, errorMsg) {
       if (exitCode !== 0) {
         revFile.remove(false);
@@ -581,7 +581,7 @@ function EnigRevokeKey(keyId, userId, callbackFunc) {
       }
       var errorMsgObj = {};
       var keyList = {};
-      var r = KeyRing.importKeyFromFile(window, revFile, errorMsgObj, keyList);
+      var r = EnigmailKeyRing.importKeyFromFile(window, revFile, errorMsgObj, keyList);
       revFile.remove(false);
       if (r !== 0) {
         EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+EnigConvertGpgToUnicode(errorMsgObj.value));
@@ -601,11 +601,11 @@ function EnigGetLocalFileApi() {
 }
 
 function EnigShowPhoto (keyId, userId, photoNumber) {
-  Windows.showPhoto(window, keyId, userId, photoNumber);
+  EnigmailWindows.showPhoto(window, keyId, userId, photoNumber);
 }
 
 function EnigGetFilePath (nsFileObj) {
-  return Files.getFilePath(nsFileObj);
+  return EnigmailFiles.getFilePath(nsFileObj);
 }
 
 function EnigCreateRevokeCert(keyId, userId, callbackFunc) {
@@ -621,7 +621,7 @@ function EnigCreateRevokeCert(keyId, userId, callbackFunc) {
   if (!enigmailSvc)
     return -1;
 
-  KeyEditor.genRevokeCert(window, "0x"+keyId, outFile, "1", "",
+  EnigmailKeyEditor.genRevokeCert(window, "0x"+keyId, outFile, "1", "",
     function _revokeCertCb(exitCode, errorMsg) {
       if (exitCode !== 0) {
         EnigAlert(EnigGetString("revokeCertFailed")+"\n\n"+errorMsg);
@@ -681,7 +681,7 @@ function EnigGetTrustLabel(trustCode) {
 }
 
 function EnigGetDateTime(dateNum, withDate, withTime) {
-  return Time.getDateTime(dateNum, withDate, withTime);
+  return EnigmailTime.getDateTime(dateNum, withDate, withTime);
 }
 
 function enigCreateInstance (aURL, aInterface)
@@ -780,7 +780,7 @@ function EnigGetHttpUri (aEvent) {
 
   let href = hRefForClickEvent(aEvent);
 
-  Log.DEBUG("enigmailAbout.js: interpretHtmlClick: href='"+href+"'\n");
+  EnigmailLog.DEBUG("enigmailAbout.js: interpretHtmlClick: href='"+href+"'\n");
 
   var ioServ = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
   var uri = ioServ.newURI(href, null, null);
@@ -833,7 +833,7 @@ function EnigSetActive(element, status) {
  *
  */
 function EnigAddSubkeyWithSelectboxes(treeChildren, aLine, keyCount) {
-  Log.DEBUG("enigmailCommon.js: EnigAddSubkeyWithSelectboxes("+aLine+")\n");
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigAddSubkeyWithSelectboxes("+aLine+")\n");
 
   var preSelected;
   // Pre-Selection logic:
@@ -872,7 +872,7 @@ function EnigAddSubkeyWithSelectboxes(treeChildren, aLine, keyCount) {
  *                          (assumed, there is a preceeding select column)
  */
 function EnigAddSubkey(treeChildren, aLine, selectCol=false) {
-  Log.DEBUG("enigmailCommon.js: EnigAddSubkey("+aLine+")\n");
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigAddSubkey("+aLine+")\n");
 
   // Get expiry state of this subkey
   var expire;
@@ -991,8 +991,8 @@ function EnigGetKeyDetails(sigListStr) {
         calcTrust="d";
       }
       ownerTrust = aLine[8];
-      creationDate = Time.getDateTime(aLine[5], true, false);
-      expiryDate = Time.getDateTime(aLine[6], true, false);
+      creationDate = EnigmailTime.getDateTime(aLine[5], true, false);
+      expiryDate = EnigmailTime.getDateTime(aLine[6], true, false);
       subkeyList.push(aLine);
       if (! gUserId) {
         gUserId=EnigConvertGpgToUnicode(aLine[9]);

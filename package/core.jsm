@@ -80,7 +80,7 @@ const EnigmailCore = {
         return enigmailHolder.svc;
     },
 
-    getKeyRing:        lazy("keyRing.jsm", "KeyRing"),
+    getKeyRing:        lazy("keyRing.jsm", "EnigmailKeyRing"),
 
     /**
      * obtain a list of all environment variables

@@ -1,4 +1,4 @@
-/*global Components: false, Log: false */
+/*global Components: false, EnigmailLog: false */
 /*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -39,7 +39,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Prefs" ];
+const EXPORTED_SYMBOLS = [ "EnigmailPrefs" ];
 
 Components.utils.import("resource://enigmail/log.jsm");
 
@@ -62,16 +62,16 @@ function initPrefService() {
         p.branch      = p.service.getBranch(ENIGMAIL_PREFS_ROOT);
 
         if(p.branch.getCharPref("logDirectory")) {
-            Log.setLogLevel(5);
+            EnigmailLog.setLogLevel(5);
         }
     }
     catch (ex) {
-        Log.ERROR("enigmailCore.jsm: Error in instantiating PrefService\n");
-        Log.ERROR(ex.toString());
+        EnigmailLog.ERROR("prefs.jsm: Error in instantiating PrefService\n");
+        EnigmailLog.ERROR(ex.toString());
     }
 }
 
-const Prefs = {
+const EnigmailPrefs = {
     getPrefRoot: function() {
         if(!p.branch) {
             initPrefService();
@@ -113,7 +113,7 @@ const Prefs = {
             }
         } catch (ex) {
             // Failed to get pref value
-            Log.ERROR("enigmailCommon.jsm: getPref: unknown prefName:"+prefName+" \n");
+            EnigmailLog.ERROR("enigmailCommon.jsm: getPref: unknown prefName:"+prefName+" \n");
         }
 
         return prefValue;
@@ -128,7 +128,7 @@ const Prefs = {
      * @return Boolean Was the value stored successfully?
      */
     setPref: function (prefName, value) {
-        Log.DEBUG("enigmailCommon.jsm: setPref: "+prefName+", "+value+"\n");
+        EnigmailLog.DEBUG("enigmailCommon.jsm: setPref: "+prefName+", "+value+"\n");
 
         if(!p.branch) {
             initPrefService();
@@ -187,7 +187,7 @@ const Prefs = {
      * no return value
      */
     savePrefs: function () {
-        Log.DEBUG("enigmailCommon.js: savePrefs\n");
+        EnigmailLog.DEBUG("enigmailCommon.js: savePrefs\n");
         try {
             p.service.savePrefFile(null);
         }

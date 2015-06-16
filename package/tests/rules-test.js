@@ -1,5 +1,5 @@
-/*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, App: false */
-/*global Rules: false, rulesListHolder: false, EC: false */
+/*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, EnigmailApp: false */
+/*global EnigmailRules: false, rulesListHolder: false, EC: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -15,33 +15,33 @@ testing("rules.jsm");
 
 // getRulesFile
 test(function getRulesFileReturnsTheFile() {
-    Rules.clearRules();
-    Assert.equal(App.getProfileDirectory().path + "/pgprules.xml", Rules.getRulesFile().path);
+    EnigmailRules.clearRules();
+    Assert.equal(EnigmailApp.getProfileDirectory().path + "/pgprules.xml", EnigmailRules.getRulesFile().path);
 });
 
 // loadRulesFile
 test(function loadRulesFileReturnsFalseIfNoRulesFileExists() {
-    Rules.clearRules();
-    var result = Rules.loadRulesFile();
+    EnigmailRules.clearRules();
+    var result = EnigmailRules.loadRulesFile();
     Assert.ok(!result);
 });
 
 test(function loadRulesFileReturnsFalseIfTheFileExistsButIsEmpty() {
-    Rules.clearRules();
-    resetting(Rules, 'getRulesFile', function() {
+    EnigmailRules.clearRules();
+    resetting(EnigmailRules, 'getRulesFile', function() {
         return do_get_file("resources/emptyRules.xml", false);
     }, function() {
-        var result = Rules.loadRulesFile();
+        var result = EnigmailRules.loadRulesFile();
         Assert.ok(!result);
     });
 });
 
 test(function loadRulesFileReturnsTrueIfTheFileExists() {
-    Rules.clearRules();
-    resetting(Rules, 'getRulesFile', function() {
+    EnigmailRules.clearRules();
+    resetting(EnigmailRules, 'getRulesFile', function() {
         return do_get_file("resources/rules.xml", false);
     }, function() {
-        var result = Rules.loadRulesFile();
+        var result = EnigmailRules.loadRulesFile();
         Assert.ok(result);
     });
 });
@@ -65,11 +65,11 @@ function xmlToData(x) {
 }
 
 test(function loadRulesFileSetsRulesBasedOnTheFile() {
-    Rules.clearRules();
-    resetting(Rules, 'getRulesFile', function() {
+    EnigmailRules.clearRules();
+    resetting(EnigmailRules, 'getRulesFile', function() {
         return do_get_file("resources/rules.xml", false);
     }, function() {
-        Rules.loadRulesFile();
+        EnigmailRules.loadRulesFile();
         var d = xmlToData(rulesListHolder.rulesList);
         var expected = [
             {tagName: "pgpRule",
@@ -91,20 +91,20 @@ test(function loadRulesFileSetsRulesBasedOnTheFile() {
 
 // getRulesData
 test(function getRulesDataReturnsFalseAndNullIfNoRulesExist() {
-    Rules.clearRules();
+    EnigmailRules.clearRules();
     var res = {};
-    var ret = Rules.getRulesData(res);
+    var ret = EnigmailRules.getRulesData(res);
     Assert.ok(!ret);
     Assert.equal(null, res.value);
 });
 
 test(function getRulesDataReturnsTrueAndTheRulesListIfExist() {
-    Rules.clearRules();
-    resetting(Rules, 'getRulesFile', function() {
+    EnigmailRules.clearRules();
+    resetting(EnigmailRules, 'getRulesFile', function() {
         return do_get_file("resources/rules.xml", false);
     }, function() {
         var res = {};
-        var ret = Rules.getRulesData(res);
+        var ret = EnigmailRules.getRulesData(res);
         Assert.ok(ret);
         Assert.equal(rulesListHolder.rulesList, res.value);
     });

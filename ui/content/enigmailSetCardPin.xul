@@ -113,8 +113,8 @@
   Components.utils.import("resource://enigmail/log.jsm");
   Components.utils.import("resource://enigmail/locale.jsm");
   Components.utils.import("resource://enigmail/dialog.jsm");
-  Components.utils.import("resource://enigmail/enigmailGpgAgent.jsm");
-  Components.utils.import("resource://enigmail/enigmailCore.jsm"); /*global EnigmailCore: false */
+  Components.utils.import("resource://enigmail/gpgAgent.jsm");
+  Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 
   const nsIEnigmail = Components.interfaces.nsIEnigmail;
   const Ci = Components.interfaces;
@@ -169,18 +169,18 @@
       newPin = document.getElementById(pinItem1).value;
 
       if (newPin.length < minLen) {
-        Dialog.alert(window, Locale.getString("cardPin.minLength", minLen));
+        EnigmailDialog.alert(window, EnigmailLocale.getString("cardPin.minLength", minLen));
         return false;
       }
       if (newPin != document.getElementById(pinItem2).value) {
-        Dialog.alert(window, Locale.getString("cardPin.dontMatch"));
+        EnigmailDialog.alert(window, EnigmailLocale.getString("cardPin.dontMatch"));
         return false;
       }
     }
 
     var pinObserver = new changePinObserver();
 
-    KeyEditor.cardChangePin(window,
+    EnigmailKeyEditor.cardChangePin(window,
                                  action,
                                  oldPin,
                                  newPin,
@@ -188,7 +188,7 @@
                                  pinObserver,
       function _ChangePinCb(exitCode, errorMsg) {
         if (exitCode != 0) {
-          Dialog.alert(window, Locale.getString("cardPin.processFailed")+"\n"+pinObserver.result);
+          EnigmailDialog.alert(window, EnigmailLocale.getString("cardPin.processFailed")+"\n"+pinObserver.result);
         }
         else
           window.close();
@@ -269,12 +269,12 @@
 
     onDataAvailable: function (data) {
       var ret="";
-      Log.DEBUG("enigmailSetCardPin: changePinObserver.onDataAvailable: data="+data+"\n");
+      EnigmailLog.DEBUG("enigmailSetCardPin: changePinObserver.onDataAvailable: data="+data+"\n");
       if (data.indexOf("[GNUPG:] SC_OP_FAILURE")>=0) {
         this.result = this._data;
       }
       else if (data.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
-        this.result = Locale.getString("badPhrase");
+        this.result = EnigmailLocale.getString("badPhrase");
         return data;
       }
       else {

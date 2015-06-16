@@ -10,16 +10,16 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
-testing("log.jsm"); /*global Log: false */
-component("enigmail/files.jsm"); /*global Files: false */
+testing("log.jsm"); /*global EnigmailLog: false */
+component("enigmail/files.jsm"); /*global EnigmailFiles: false */
 
 test(function shouldCreateLogFile() {
-    Log.setLogDirectory(do_get_cwd().path);
-    Log.setLogLevel(5);
-    Log.createLogFiles();
-    const filePath = Log.directory + "enigdbug.txt";
+    EnigmailLog.setLogDirectory(do_get_cwd().path);
+    EnigmailLog.setLogLevel(5);
+    EnigmailLog.createLogFiles();
+    const filePath = EnigmailLog.directory + "enigdbug.txt";
     const localFile = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
-    Files.initPath(localFile, filePath);
+    EnigmailFiles.initPath(localFile, filePath);
     try {
         Assert.equal(localFile.exists(), true);
     } finally {

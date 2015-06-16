@@ -40,16 +40,16 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Events" ];
+const EXPORTED_SYMBOLS = [ "EnigmailEvents" ];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global Log: false */
-Cu.import("resource://enigmail/timer.jsm"); /*global Timer: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 
-const Events = {
+const EnigmailEvents = {
     /**
      * dispatch event aynchronously to the main thread
      *
@@ -59,7 +59,7 @@ const Events = {
      * @arrayOfArgs:      Array - arguments to pass to callbackFunction
      */
     dispatchEvent: function (callbackFunction, sleepTimeMs, arrayOfArgs) {
-        Log.DEBUG("enigmailCommon.jsm: dispatchEvent f="+callbackFunction.name+"\n");
+        EnigmailLog.DEBUG("enigmailCommon.jsm: dispatchEvent f="+callbackFunction.name+"\n");
 
         // object for dispatching callback back to main thread
         const MainEvent = function(cbFunc, arrayOfArgs) {
@@ -77,12 +77,12 @@ const Events = {
             },
 
             run: function() {
-                Log.DEBUG("enigmailCommon.jsm: dispatchEvent running mainEvent\n");
+                EnigmailLog.DEBUG("enigmailCommon.jsm: dispatchEvent running mainEvent\n");
                 this.cbFunc(this.args);
             },
 
             notify: function() {
-                Log.DEBUG("enigmailCommon.jsm: dispatchEvent got notified\n");
+                EnigmailLog.DEBUG("enigmailCommon.jsm: dispatchEvent got notified\n");
                 this.cbFunc(this.args);
             }
 
@@ -90,7 +90,7 @@ const Events = {
 
         const event = new MainEvent(callbackFunction, arrayOfArgs);
         if (sleepTimeMs > 0) {
-            return Timer.setTimeout(event, sleepTimeMs);
+            return EnigmailTimer.setTimeout(event, sleepTimeMs);
         } else {
             const tm = Cc["@mozilla.org/thread-manager;1"].getService(Ci.nsIThreadManager);
             // dispatch the event to the main thread

@@ -1,4 +1,4 @@
-/*global Components: false, XPCOMUtils: false, Data: false, Log: false, Files: false, EnigmailFuncs: false, dump: false, atob: false */
+/*global Components: false, XPCOMUtils: false, EnigmailData: false, EnigmailLog: false, EnigmailFiles: false, EnigmailFuncs: false, dump: false, atob: false */
 /*jshint -W097 */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,11 +16,11 @@
 //   - don't attempt to validate forwarded messages unless message is being viewed
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-Components.utils.import("resource://enigmail/enigmailFuncs.jsm");
+Components.utils.import("resource://enigmail/funcs.jsm");
 Components.utils.import("resource://enigmail/log.jsm");
 Components.utils.import("resource://enigmail/files.jsm");
 Components.utils.import("resource://enigmail/data.jsm");
-Components.utils.import("resource://enigmail/decryption.jsm"); /*global Decryption: false */
+Components.utils.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
 
 const EXPORTED_SYMBOLS = [ "EnigmailVerify" ];
 
@@ -89,7 +89,7 @@ MimeVerify.prototype = {
   },
 
   onStartRequest: function() {
-    Log.DEBUG("mimeVerify.jsm: onStartRequest\n"); // always log this one
+    EnigmailLog.DEBUG("mimeVerify.jsm: onStartRequest\n"); // always log this one
     this.dataCount = 0;
     this.foundMsg = false;
     this.startMsgStr = "";
@@ -221,7 +221,7 @@ MimeVerify.prototype = {
       else if (xferEnc.search(/quoted-printable/i) >= 0) {
         let bound = this.getBodyPart();
         let qp = this.keepData.substring(bound.start, bound.end);
-        this.keepData = Data.decodeQuotedPrintable(qp)+"\n";
+        this.keepData = EnigmailData.decodeQuotedPrintable(qp)+"\n";
       }
 
 
@@ -292,20 +292,20 @@ MimeVerify.prototype = {
     var win = windowManager.getMostRecentWindow(null);
 
     // create temp file holding signature data
-    this.sigFile = Files.getTempDirObj();
+    this.sigFile = EnigmailFiles.getTempDirObj();
     this.sigFile.append("data.sig");
     this.sigFile.createUnique(this.sigFile.NORMAL_FILE_TYPE, 0x180);
-    Files.writeFileContents(this.sigFile, this.sigData, 0x180);
+    EnigmailFiles.writeFileContents(this.sigFile, this.sigData, 0x180);
 
     var statusFlagsObj = {};
     var errorMsgObj = {};
 
-    this.proc = Decryption.decryptMessageStart(win, true, true, this,
+    this.proc = EnigmailDecryption.decryptMessageStart(win, true, true, this,
                 statusFlagsObj, errorMsgObj,
-                Files.getEscapedFilename(Files.getFilePath(this.sigFile)));
+                EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePath(this.sigFile)));
 
     if (this.pipe) {
-      Log.DEBUG("Closing pipe\n"); // always log this one
+      EnigmailLog.DEBUG("Closing pipe\n"); // always log this one
       this.pipe.close();
     }
     else
@@ -349,7 +349,7 @@ MimeVerify.prototype = {
     //LOCAL_DEBUG("mimeVerify.jsm: "+this.statusStr+"\n");
 
     this.returnStatus = {};
-    Decryption.decryptMessageEnd(this.statusStr,
+    EnigmailDecryption.decryptMessageEnd(this.statusStr,
                                  this.exitCode,
                                  this.dataLength,
                                  true, // verifyOnly
@@ -366,7 +366,7 @@ MimeVerify.prototype = {
   },
 
   setMsgWindow: function(msgWindow, msgUriSpec) {
-    Log.DEBUG("mimeVerify.jsm: setMsgWindow: "+msgUriSpec+"\n");
+    EnigmailLog.DEBUG("mimeVerify.jsm: setMsgWindow: "+msgUriSpec+"\n");
 
     if (! this.msgWindow) {
       this.msgWindow = msgWindow;
@@ -375,7 +375,7 @@ MimeVerify.prototype = {
   },
 
   displayStatus: function() {
-    Log.DEBUG("mimeVerify.jsm: displayStatus\n");
+    EnigmailLog.DEBUG("mimeVerify.jsm: displayStatus\n");
     if (this.exitCode === null || this.msgWindow === null || this.statusDisplayed)
       return;
 
@@ -398,7 +398,7 @@ MimeVerify.prototype = {
       this.statusDisplayed = true;
     }
     catch(ex) {
-      Log.writeException("mimeVerify.jsm", ex);
+      EnigmailLog.writeException("mimeVerify.jsm", ex);
     }
   }
 };
@@ -435,7 +435,7 @@ const EnigmailVerify = {
 // General-purpose functions, not exported
 
 function LOCAL_DEBUG(str) {
-  if (gDebugLog) Log.DEBUG(str);
+  if (gDebugLog) EnigmailLog.DEBUG(str);
 }
 
 function initModule() {

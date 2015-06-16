@@ -8,9 +8,9 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Lazy" ];
+const EXPORTED_SYMBOLS = [ "EnigmailLazy" ];
 
-const Lazy = {
+const EnigmailLazy = {
   loader: function(component, name) {
     let holder = null;
     return function() {

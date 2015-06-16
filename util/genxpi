@@ -92,8 +92,8 @@ zip --must-match\
     ../${xpiFile} \
     components/${xpiModule}.xpt \
     components/${xpiModule}.js \
-    components/enigprefs-service.js \
-    components/enigMsgCompFields.js \
+    components/prefs-service.js \
+    components/msgCompFields.js \
     components/mimeDecrypt.js \
     components/mimeEncrypt.js \
     defaults/preferences/enigmail.js \
@@ -109,11 +109,11 @@ zip --must-match\
     modules/decryptPermanently.jsm \
     modules/dialog.jsm \
     modules/encryption.jsm \
-    modules/enigmailCore.jsm \
-    modules/enigmailErrorHandling.jsm \
-    modules/enigmailFuncs.jsm \
-    modules/enigmailGpgAgent.jsm \
-    modules/enigmailProtocolHandler.jsm \
+    modules/core.jsm \
+    modules/errorHandling.jsm \
+    modules/funcs.jsm \
+    modules/gpgAgent.jsm \
+    modules/protocolHandler.jsm \
     modules/events.jsm \
     modules/execution.jsm \
     modules/files.jsm \

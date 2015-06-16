@@ -77,7 +77,7 @@ const EMPTY_UID = " -";
 
 function enigmailUserSelLoad()
 {
-  Log.DEBUG("enigmailKeySelection.js: Load\n");
+  EnigmailLog.DEBUG("enigmailKeySelection.js: Load\n");
   window.enigIpcRequest = null;
   if (window.arguments[INPUT].options.indexOf("private")>= 0) {
     document.getElementById("enigmailKeySelectionDlg").setAttribute("title", EnigGetString("userSel.secretKeySel.title"));
@@ -102,14 +102,14 @@ function enigmailRefreshKeys()
 
 function enigGetUserList(secretOnly, refresh)
 {
-  Log.DEBUG("enigmailMessengerOverlay.js: enigGetUserList\n");
+  EnigmailLog.DEBUG("enigmailMessengerOverlay.js: enigGetUserList\n");
   var userList;
   try {
     var exitCodeObj = {};
     var statusFlagsObj = {};
     var errorMsgObj = {};
 
-    userList = KeyRing.getUserIdList(secretOnly,
+    userList = EnigmailKeyRing.getUserIdList(secretOnly,
                                      refresh,
                                      exitCodeObj,
                                      statusFlagsObj,
@@ -120,7 +120,7 @@ function enigGetUserList(secretOnly, refresh)
     }
 
     if (! secretOnly) {
-      let groups = Gpg.getGpgGroups();
+      let groups = EnigmailGpg.getGpgGroups();
 
       for (var i=0; i < groups.length; i++) {
         userList += "grp:"+groups[i].alias+":"+groups[i].keylist+"\n";
@@ -130,7 +130,7 @@ function enigGetUserList(secretOnly, refresh)
       userList = getPubkeysFromSecretKeys(userList);
     }
   } catch (ex) {
-      Log.ERROR("ERROR in enigmailUserSelection: enigGetUserList\n");
+      EnigmailLog.ERROR("ERROR in enigmailUserSelection: enigGetUserList\n");
   }
 
   return userList.split(/\n/);
@@ -149,16 +149,16 @@ function getPubkeysFromSecretKeys(keyString)
     }
   }
 
-  return KeyRing.getKeyDetails(aSecretKeys.join(" "), false);
+  return EnigmailKeyRing.getKeyDetails(aSecretKeys.join(" "), false);
 }
 
 
 function enigmailBuildList(refresh)
 {
-   Log.DEBUG("=====> enigmailBuildList()\n");
-   Log.DEBUG("enigmailKeySelection.js: enigmailBuildList\n");
+   EnigmailLog.DEBUG("=====> enigmailBuildList()\n");
+   EnigmailLog.DEBUG("enigmailKeySelection.js: enigmailBuildList\n");
 
-   const TRUSTLEVELS_SORTED = Trust.trustLevelsSorted();
+   const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
 
    // sorting criterion for dialog entries
    // - note: for active state we have values:
@@ -246,7 +246,7 @@ function enigmailBuildList(refresh)
                msg = EnigGetString("userSel.problemMultipleKeys");
                break;
              default:
-               Log.DEBUG("missing label for '" + array[detIdx].msg + "'\n");
+               EnigmailLog.DEBUG("missing label for '" + array[detIdx].msg + "'\n");
                msg = "???";
                break;
            }
@@ -267,7 +267,7 @@ function enigmailBuildList(refresh)
        }
      }
    } catch (ex) {
-     Log.DEBUG("EXCEPTION: " + ex + "\n");
+     EnigmailLog.DEBUG("EXCEPTION: " + ex + "\n");
    }
 
    if (secretOnly) {
@@ -545,10 +545,10 @@ function enigmailBuildList(refresh)
       }
    }
    catch (ex) {
-      Log.ERROR("enigmailKeySelection.js: ERROR in enigmailUserSelLoad:\n");
-      Log.ERROR("  userId="+aUserList[i].userId+" expiry="+ aUserList[i].expiry+"\n");
+      EnigmailLog.ERROR("enigmailKeySelection.js: ERROR in enigmailUserSelLoad:\n");
+      EnigmailLog.ERROR("  userId="+aUserList[i].userId+" expiry="+ aUserList[i].expiry+"\n");
       if ((typeof user)=="number" && (typeof aUserList[i].SubUserIds[user].userId)=="string") {
-        Log.ERROR("  subUserId="+aUserList[i].SubUserIds[user].userId+"\n");
+        EnigmailLog.ERROR("  subUserId="+aUserList[i].SubUserIds[user].userId+"\n");
       }
    }
 
@@ -598,7 +598,7 @@ function enigmailBuildList(refresh)
            }
         }
         if (!found) {
-           Log.DEBUG("enigmailKeySelection.js: enigmailUserSelLoad: not found " + toAddrList[i] +"\n");
+           EnigmailLog.DEBUG("enigmailKeySelection.js: enigmailUserSelLoad: not found " + toAddrList[i] +"\n");
            gKeysNotFound.push(toAddrList[i]);
         }
      }
@@ -614,13 +614,13 @@ function enigmailBuildList(refresh)
            }
         }
         if (!found) {
-           Log.DEBUG("enigmailKeySelection.js: enigmailUserSelLoad: not found " + toKeyList[i] +"\n");
+           EnigmailLog.DEBUG("enigmailKeySelection.js: enigmailUserSelLoad: not found " + toKeyList[i] +"\n");
            gKeysNotFound.push(toKeyList[i]);
         }
       }
    }
 
-   Log.DEBUG("  <=== enigmailBuildList()\n");
+   EnigmailLog.DEBUG("  <=== enigmailBuildList()\n");
 }
 
 
@@ -711,7 +711,7 @@ function enigUserSelCreateRow (userObj, activeState, userId, keyValue, dateField
 
 function enigmailUserSelAccept()
 {
-  Log.DEBUG("enigmailKeySelection.js: Accept\n");
+  EnigmailLog.DEBUG("enigmailKeySelection.js: Accept\n");
 
   var resultObj=window.arguments[RESULT];
   resultObj.userList = [];

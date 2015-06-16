@@ -1,4 +1,4 @@
-/*global Components: false, Log: false, OS: false, Data: false */
+/*global Components: false, EnigmailLog: false, EnigmailOS: false, EnigmailData: false */
 /*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -39,7 +39,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = [ "Files" ];
+var EXPORTED_SYMBOLS = [ "EnigmailFiles" ];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -67,13 +67,13 @@ const lazyLog = (function() {
     return function() {
         if (!log) {
             Components.utils.import("resource://enigmail/log.jsm");
-            log = Log;
+            log = EnigmailLog;
         }
         return log;
     };
 })();
 
-const Files = {
+const EnigmailFiles = {
 
     isAbsolutePath: function (filePath, isDosLike) {
         // Check if absolute path
@@ -88,7 +88,7 @@ const Files = {
     resolvePath: function (filePath, envPath, isDosLike) {
         lazyLog().DEBUG("files.jsm: resolvePath: filePath="+filePath+"\n");
 
-        if (Files.isAbsolutePath(filePath, isDosLike))
+        if (EnigmailFiles.isAbsolutePath(filePath, isDosLike))
             return filePath;
 
         if (!envPath)
@@ -105,7 +105,7 @@ const Files = {
 
                     lazyLog().DEBUG("files.jsm: resolvePath: checking for "+pathDirs[j]+"/"+fileNames[i]+"\n");
 
-                    Files.initPath(pathDir, pathDirs[j]);
+                    EnigmailFiles.initPath(pathDir, pathDirs[j]);
 
                     try {
                         if (pathDir.exists() && pathDir.isDirectory()) {
@@ -129,7 +129,7 @@ const Files = {
             var localFile;
             if (typeof filePath == "string") {
                 localFile = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
-                Files.initPath(localFile, filePath);
+                EnigmailFiles.initPath(localFile, filePath);
             }
             else {
                 localFile = filePath.QueryInterface(Ci.nsIFile);
@@ -156,7 +156,7 @@ const Files = {
             return fileStream;
 
         } catch (ex) {
-            lazyLog().ERROR("enigmailCore.jsm: createFileStream: Failed to create "+filePath+"\n");
+            lazyLog().ERROR("files.jsm: createFileStream: Failed to create "+filePath+"\n");
             return null;
         }
     },
@@ -205,13 +205,13 @@ const Files = {
             }
         }
 
-        var cmdStr = getQuoted(Files.getFilePathDesc(command)) +" ";
+        var cmdStr = getQuoted(EnigmailFiles.getFilePathDesc(command)) +" ";
         var argStr = args.map(getQuoted).join(" ").replace(/\\\\/g, '\\');
         return cmdStr + argStr;
     },
 
     getFilePathDesc: function (nsFileObj) {
-        if (OS.getOS() == "WINNT") {
+        if (EnigmailOS.getOS() == "WINNT") {
             return nsFileObj.persistentDescriptor;
         } else {
             return nsFileObj.path;
@@ -219,16 +219,16 @@ const Files = {
     },
 
     getFilePath: function (nsFileObj) {
-        return Data.convertToUnicode(Files.getFilePathDesc(nsFileObj), "utf-8");
+        return EnigmailData.convertToUnicode(EnigmailFiles.getFilePathDesc(nsFileObj), "utf-8");
     },
 
     getEscapedFilename: function (fileNameStr) {
-        if (OS.isDosLike()) {
+        if (EnigmailOS.isDosLike()) {
             // escape the backslashes and the " character (for Windows and OS/2)
             fileNameStr = fileNameStr.replace(/([\\\"])/g, "\\$1");
         }
 
-        if (OS.getOS() == "WINNT") {
+        if (EnigmailOS.getOS() == "WINNT") {
             // replace leading "\\" with "//"
             fileNameStr = fileNameStr.replace(/^\\\\*/, "//");
         }
@@ -245,7 +245,7 @@ const Files = {
         } catch (ex) {
             // let's guess ...
             let tmpDirObj = Cc[NS_FILE_CONTRACTID].createInstance(Ci.nsIFile);
-            if (OS.getOS() == "WINNT") {
+            if (EnigmailOS.getOS() == "WINNT") {
                 tmpDirObj.initWithPath("C:/TEMP");
             } else {
                 tmpDirObj.initWithPath("/tmp");
@@ -255,7 +255,7 @@ const Files = {
     },
 
     getTempDir: function () {
-        return Files.getTempDirObj().path;
+        return EnigmailFiles.getTempDirObj().path;
     },
 
     /**
@@ -268,7 +268,7 @@ const Files = {
      */
     writeFileContents: function(filePath, data, permissions) {
         try {
-            var fileOutStream = Files.createFileStream(filePath, permissions);
+            var fileOutStream = EnigmailFiles.createFileStream(filePath, permissions);
 
             if (data.length) {
                 if (fileOutStream.write(data, data.length) != data.length) {
@@ -279,7 +279,7 @@ const Files = {
             }
             fileOutStream.close();
         } catch (ex) {
-            Log.ERROR("files.jsm: writeFileContents: Failed to write to "+filePath+"\n");
+            EnigmailLog.ERROR("files.jsm: writeFileContents: Failed to write to "+filePath+"\n");
             return false;
         }
 

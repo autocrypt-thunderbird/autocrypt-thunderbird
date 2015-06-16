@@ -1,4 +1,4 @@
-/*global Components: false, Log: false, OS: false */
+/*global Components: false, EnigmailLog: false, EnigmailOS: false */
 /*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -39,7 +39,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Locale" ];
+const EXPORTED_SYMBOLS = [ "EnigmailLocale" ];
 
 Components.utils.import("resource://enigmail/log.jsm");
 
@@ -50,7 +50,7 @@ var enigStringBundle = null;
 
 const LOCALE_SVC_CONTRACTID = "@mozilla.org/intl/nslocaleservice;1";
 
-const Locale = {
+const EnigmailLocale = {
     get: function() {
         return Cc[LOCALE_SVC_CONTRACTID].getService(Ci.nsILocaleService).getApplicationLocale();
     },
@@ -64,7 +64,7 @@ const Locale = {
                 enigStringBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
             }
             catch (ex) {
-                Log.ERROR("enigmailCore.jsm: Error in instantiating stringBundleService\n");
+                EnigmailLog.ERROR("locale.jsm: Error in instantiating stringBundleService\n");
             }
         }
 
@@ -81,7 +81,7 @@ const Locale = {
                 }
             }
             catch (ex) {
-                Log.ERROR("enigmailCore.jsm: Error in querying stringBundleService for string '"+aStr+"'\n");
+                EnigmailLog.ERROR("locale.jsm: Error in querying stringBundleService for string '"+aStr+"'\n");
             }
         }
         return aStr;

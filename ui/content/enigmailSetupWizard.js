@@ -1,5 +1,5 @@
 dump("loading: enigmailSetupWizard.js\n");
-/*global Components: false, Data: false */
+/*global Components: false, EnigmailData: false */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -97,7 +97,7 @@ function setLastPage() {
 }
 
 function onBack() {
-  Log.DEBUG("onBack");
+  EnigmailLog.DEBUG("onBack");
   var wizard = getWizard();
   gLastDirection=-1;
 
@@ -131,7 +131,7 @@ function onNext() {
     }
   }
 
-  Log.DEBUG("onNext\n");
+  EnigmailLog.DEBUG("onNext\n");
   gLastDirection=1;
   setLastPage();
   var wizard = getWizard();
@@ -296,7 +296,7 @@ function checkGnupgInstallation() {
  * Check if secret keys are available
  */
 function checkSecretKeys() {
-  var keyList = KeyRing.getSecretKeys(null, true);
+  var keyList = EnigmailKeyRing.getSecretKeys(null, true);
   if (keyList && keyList.length > 0) {
     return true;
   }
@@ -449,7 +449,7 @@ function browseKeyFile(referencedId, referencedVar) {
 }
 
 function importKeyFiles() {
-  Log.DEBUG("enigmailSetupWizard.js: importKeyFiles\n");
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: importKeyFiles\n");
   if (document.getElementById("publicKeysFile").value.length === 0) {
     EnigAlert(EnigGetString("setupWizard.specifyFile"));
     return false;
@@ -465,7 +465,7 @@ function importKeyFiles() {
 
   var errorMsgObj = {};
   var keyListObj = {};
-  exitCode = KeyRing.importKeyFromFile(window, gPubkeyFile.value, errorMsgObj, keyListObj);
+  exitCode = EnigmailKeyRing.importKeyFromFile(window, gPubkeyFile.value, errorMsgObj, keyListObj);
   if (exitCode !== 0) {
     EnigAlert(EnigGetString("importKeysFailed")+"\n\n"+errorMsgObj.value);
     return false;
@@ -473,9 +473,9 @@ function importKeyFiles() {
   importedKeys = keyListObj.value;
 
   if (document.getElementById("privateKeysFile").value.trim().length > 0) {
-    Log.DEBUG("enigmailSetupWizard.js: importKeyFiles - private Keys\n");
+    EnigmailLog.DEBUG("enigmailSetupWizard.js: importKeyFiles - private Keys\n");
 
-    exitCode = KeyRing.importKeyFromFile(window, gSeckeyFile.value, errorMsgObj, keyListObj);
+    exitCode = EnigmailKeyRing.importKeyFromFile(window, gSeckeyFile.value, errorMsgObj, keyListObj);
     if (exitCode !== 0) {
       EnigAlert(EnigGetString("importKeysFailed")+"\n\n"+errorMsgObj.value);
       return false;
@@ -487,7 +487,7 @@ function importKeyFiles() {
   exitCode = 0;
   var keyList=importedKeys.split(/;/);
 
-  Log.DEBUG("enigmailSetupWizard.js: importKeyFiles - importing "+ keyList.length +" keys\n");
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: importKeyFiles - importing "+ keyList.length +" keys\n");
 
   setKeyTrustNextKey(keyList, 0);
 
@@ -495,11 +495,11 @@ function importKeyFiles() {
 }
 
 function setKeyTrustNextKey(keyList, index) {
-  Log.DEBUG("enigmailSetupWizard.js: setKeyTrustNextKey("+index+")\n");
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: setKeyTrustNextKey("+index+")\n");
 
   if (index == keyList.length) {
     // end of list reached
-    Gpg.recalcTrustDb();
+    EnigmailGpg.recalcTrustDb();
     loadKeys();
     return;
   }
@@ -516,7 +516,7 @@ function setKeyTrustNextKey(keyList, index) {
 
   if (keyType & 16) {
     // imported key contains secret key
-    KeyEditor.setKeyTrust(window, aKey[0], 5,
+    EnigmailKeyEditor.setKeyTrust(window, aKey[0], 5,
       function(exitCode, errorMsg) {
         if (exitCode !== 0) {
           return;
@@ -544,7 +544,7 @@ function displayKeyCreate() {
   gPassPhraseQuality = document.getElementById("passphraseQuality");
 
   // gpg 2.1.0 and 2.1.1 queries passphrase only gpg-agent only
-  if (! Gpg.getGpgFeature("keygen-passphrase")) {
+  if (! EnigmailGpg.getGpgFeature("keygen-passphrase")) {
     document.getElementById("keyCreateDescSec1").setAttribute("collapsed", "true");
     document.getElementById("passphraseBox").setAttribute("collapsed", "true");
     document.getElementById("keyCreateDescSec2").removeAttribute("collapsed");
@@ -587,7 +587,7 @@ function displayKeyCreate() {
 
 
 function checkPassphraseQuality(txtBox) {
-  var qualityRes = passwordCheck.checkQuality(txtBox.value);
+  var qualityRes = EnigmailPasswordCheck.checkQuality(txtBox.value);
 
   if (qualityRes.valid) {
     gPassPhraseQuality.value = qualityRes.complexity;
@@ -624,7 +624,7 @@ function displayKeySel() {
 }
 
 function clearKeyListEntries() {
-  Log.DEBUG("enigmailSetupWizard.js: clearKeyListEntries\n");
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: clearKeyListEntries\n");
 
   // remove all rows
   var treeChildren = document.getElementById("uidSelectionChildren");
@@ -676,7 +676,7 @@ function wizardSetFocus() {
 }
 
 function loadKeys() {
-  Log.DEBUG("enigmailSetupWizard.js: loadKeys\n");
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: loadKeys\n");
 
   var enigmailSvc = enigGetSvc(false);
 
@@ -688,7 +688,7 @@ function loadKeys() {
   var exitCodeObj = {};
   var statusFlagsObj = {};
   var errorMsgObj = {};
-  var keyList = KeyRing.getSecretKeys(window, true);
+  var keyList = EnigmailKeyRing.getSecretKeys(window, true);
   if (!keyList) {
     return;
   }
@@ -726,11 +726,11 @@ function enigGetSvc(resetCheck) {
     gEnigmailSvc = ENIG_C[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_I.nsIEnigmail);
 
   } catch (ex) {
-    Log.ERROR("enigmailWizard.js: Error in instantiating EnigmailService\n");
+    EnigmailLog.ERROR("enigmailWizard.js: Error in instantiating EnigmailService\n");
     return null;
   }
 
-  Log.DEBUG("enigmailWizard.js: gEnigmailSvc = "+gEnigmailSvc+"\n");
+  EnigmailLog.DEBUG("enigmailWizard.js: gEnigmailSvc = "+gEnigmailSvc+"\n");
 
   if (!gEnigmailSvc.initialized) {
     // Try to initialize enigmail
@@ -741,7 +741,7 @@ function enigGetSvc(resetCheck) {
 
       try {
         // Reset alert count to default value
-        Prefs.getPrefBranch().clearUserPref("initAlert");
+        EnigmailPrefs.getPrefBranch().clearUserPref("initAlert");
       } catch(ex) {}
 
     } catch (ex) {
@@ -751,7 +751,7 @@ function enigGetSvc(resetCheck) {
 
     var configuredVersion = EnigGetPref("configuredVersion");
 
-    Log.DEBUG("enigmailWizard.js: enigGetSvc: "+configuredVersion+"\n");
+    EnigmailLog.DEBUG("enigmailWizard.js: enigGetSvc: "+configuredVersion+"\n");
 
   }
 
@@ -763,7 +763,7 @@ function enigGetSvc(resetCheck) {
 function wizardLocateGpg() {
   var fileName = "gpg";
   var ext = "";
-  if (OS.isDosLike()) {
+  if (EnigmailOS.isDosLike()) {
     ext = ".exe";
   }
   var filePath = EnigFilePicker(EnigGetString("locateGpg"),
@@ -789,7 +789,7 @@ function checkPassphrase() {
 
   // gpg >= 2.1 queries passphrase using gpg-agent only
 
-  if (Gpg.getGpgFeature("keygen-passphrase")) {
+  if (EnigmailGpg.getGpgFeature("keygen-passphrase")) {
     var passphrase = enigmailCheckPassphrase();
     if (!passphrase) return false;
 
@@ -812,7 +812,7 @@ function wizardGenKey() {
   var passphrase = document.getElementById("passphrase").value;
 
   // gpg >= 2.1 queries passphrase using gpg-agent only
-  if (! Gpg.getGpgFeature("keygen-passphrase")) {
+  if (! EnigmailGpg.getGpgFeature("keygen-passphrase")) {
     passphrase = "";
   }
 
@@ -828,7 +828,7 @@ function wizardGenKey() {
         wizardKeygenTerminate(status);
       },
       onDataAvailable: function(data) {
-        Log.DEBUG("enigmailSetupWizard.js: genKey - onDataAvailable() "+data+"\n");
+        EnigmailLog.DEBUG("enigmailSetupWizard.js: genKey - onDataAvailable() "+data+"\n");
 
         gAllData += data;
         var keyCreatedIndex = gAllData.indexOf("[GNUPG:] KEY_CREATED");
@@ -847,17 +847,17 @@ function wizardGenKey() {
   };
 
   try {
-    gKeygenRequest = KeyRing.generateKey(window,
-                                         Data.convertFromUnicode(userName),
+    gKeygenRequest = EnigmailKeyRing.generateKey(window,
+                                         EnigmailData.convertFromUnicode(userName),
                                          "",
-                                         Data.convertFromUnicode(userEmail),
+                                         EnigmailData.convertFromUnicode(userEmail),
                                          365*5 /* 5 years */,
                                          4096,
                                          ENIG_KEYTYPE_RSA,
-                                         Data.convertFromUnicode(passphrase),
+                                         EnigmailData.convertFromUnicode(passphrase),
                                          listener);
   } catch (ex) {
-    Log.DEBUG("enigmailSetupWizard.js: genKey - generateKey() failed with "+ex.toString()+"\n"+ex.stack+"\n");
+    EnigmailLog.DEBUG("enigmailSetupWizard.js: genKey - generateKey() failed with "+ex.toString()+"\n"+ex.stack+"\n");
   }
 
   if (!gKeygenRequest) {
@@ -866,13 +866,13 @@ function wizardGenKey() {
     return false;
   }
 
-  Log.WRITE("enigmailKeygen.js: Start: gKeygenRequest = "+gKeygenRequest+"\n");
+  EnigmailLog.WRITE("enigmailKeygen.js: Start: gKeygenRequest = "+gKeygenRequest+"\n");
   return false;
 }
 
 function wizardKeygenTerminate(exitCode)
 {
-  Log.DEBUG("enigmailSetupWizard.js: wizardKeygenTerminate\n");
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: wizardKeygenTerminate\n");
 
   // Give focus to this window
   window.focus();
@@ -886,7 +886,7 @@ function wizardKeygenTerminate(exitCode)
 
 
   enigmailKeygenCloseRequest();
-  KeyRing.invalidateUserIdList();
+  EnigmailKeyRing.invalidateUserIdList();
 
   document.getElementById("revCertBox").removeAttribute("hidden");
 }
@@ -894,7 +894,7 @@ function wizardKeygenTerminate(exitCode)
 // create a revokation certificate
 
 function wizardCreateRevCert() {
-  Log.DEBUG("enigmailSetupWizard.js: wizardCreateRevCert\n");
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: wizardCreateRevCert\n");
 
   let curId = wizardGetSelectedIdentity();
 
@@ -929,7 +929,7 @@ function countIdentities() {
 
 function fillIdentities(fillType)
 {
-  Log.DEBUG("enigmailSetupWizard.js: fillIdentities\n");
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: fillIdentities\n");
 
   var defIdentity;
   var parentElement;
@@ -983,14 +983,14 @@ function fillIdentities(fillType)
     child=parentElement.firstChild;
   }
 
-  Log.DEBUG("enigmailSetupWizard.js: fillIdentities: "+identities + "\n");
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: fillIdentities: "+identities + "\n");
 
   var disableId = document.getElementById("activateId").value == "1";
   var selected = false;
   for (var i=0; i<identities.length; i++) {
     var identity = identities[i];
 
-    Log.DEBUG("id.valid="+identity.valid+"\n");
+    EnigmailLog.DEBUG("id.valid="+identity.valid+"\n");
     if (!identity.valid || !identity.email)
       continue;
 
@@ -1003,8 +1003,8 @@ function fillIdentities(fillType)
 
       var accountName = " - "+inServer.prettyName;
 
-      Log.DEBUG("enigmailKeygen.js: accountName="+accountName+"\n");
-      Log.DEBUG("enigmailKeygen.js: email="+identity.email+"\n");
+      EnigmailLog.DEBUG("enigmailKeygen.js: accountName="+accountName+"\n");
+      EnigmailLog.DEBUG("enigmailKeygen.js: email="+identity.email+"\n");
       var item;
       if (fillType == "checkbox") {
         item = document.createElement('checkbox');
@@ -1048,12 +1048,12 @@ function wizardGetSelectedIdentity()
 }
 
 function applyWizardSettings() {
-  Log.DEBUG("enigmailSetupWizard.js: applyWizardSettings\n");
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: applyWizardSettings\n");
 //  debugger;
 
   loadLastPage();
 
-  Prefs.setPref("encryptionModel", 0);
+  EnigmailPrefs.setPref("encryptionModel", 0);
 
   if (document.getElementById("activateId").value == "1") {
     // activate all identities
@@ -1087,20 +1087,20 @@ function applyWizardSettings() {
 function applyMozSetting(preference, newVal)
 {
   if (typeof(newVal)=="boolean") {
-    Prefs.getPrefRoot().setBoolPref(preference, newVal);
+    EnigmailPrefs.getPrefRoot().setBoolPref(preference, newVal);
   }
   else if (typeof(newVal)=="number") {
-    Prefs.getPrefRoot().setIntPref(preference, newVal);
+    EnigmailPrefs.getPrefRoot().setIntPref(preference, newVal);
   }
   else if (typeof(newVal)=="string") {
-    Prefs.getPrefRoot().setCharPref(preference, newVal);
+    EnigmailPrefs.getPrefRoot().setCharPref(preference, newVal);
   }
 }
 
 
 function wizardApplyId(identity, keyId)
 {
-  Log.DEBUG("enigmailSetupWizard.js: wizardApplyId: identity.Key="+identity.key+"\n");
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: wizardApplyId: identity.Key="+identity.key+"\n");
   var accountManager = Components.classes[ENIG_ACCOUNT_MANAGER_CONTRACTID].getService(Components.interfaces.nsIMsgAccountManager);
   var idServers = getServersForIdentity(accountManager, identity);
   var servers = queryISupArray(idServers ,Components.interfaces.nsIMsgIncomingServer);

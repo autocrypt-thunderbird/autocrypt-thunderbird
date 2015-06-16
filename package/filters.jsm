@@ -1,4 +1,4 @@
-/*global Components: false, DecryptPermanently: false, EnigmailCore: false, Log: false, Locale: false, Dialog: false */
+/*global Components: false, EnigmailDecryptPermanently: false, EnigmailCore: false, EnigmailLog: false, EnigmailLocale: false, EnigmailDialog: false */
 /*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -41,9 +41,9 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = [ "Filters" ];
+var EXPORTED_SYMBOLS = [ "EnigmailFilters" ];
 
-Components.utils.import("resource://enigmail/enigmailCore.jsm");
+Components.utils.import("resource://enigmail/core.jsm");
 Components.utils.import("resource://enigmail/decryptPermanently.jsm");
 Components.utils.import("resource://enigmail/log.jsm");
 Components.utils.import("resource://enigmail/locale.jsm");
@@ -63,11 +63,11 @@ const Ci = Components.interfaces;
 
 const filterActionMoveDecrypt = {
     id: "enigmail@enigmail.net#filterActionMoveDecrypt",
-    name: Locale.getString("filter.decryptMove.label"),
+    name: EnigmailLocale.getString("filter.decryptMove.label"),
     value: "movemessage",
     apply: function (aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
 
-        Log.DEBUG("enigmail.js: filterActionMoveDecrypt: Move to: " + aActionValue + "\n");
+        EnigmailLog.DEBUG("enigmail.js: filterActionMoveDecrypt: Move to: " + aActionValue + "\n");
 
         var msgHdrs = [];
 
@@ -75,7 +75,7 @@ const filterActionMoveDecrypt = {
             msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
         }
 
-        DecryptPermanently.dispatchMessages(msgHdrs, aActionValue, true, true);
+        EnigmailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, true, true);
 
         return;
     },
@@ -85,10 +85,10 @@ const filterActionMoveDecrypt = {
     },
 
     validateActionValue: function (value, folder, type) {
-        Dialog.alert(null, Locale.getString("filter.decryptMove.warnExperimental"));
+        EnigmailDialog.alert(null, EnigmailLocale.getString("filter.decryptMove.warnExperimental"));
 
         if (value === "") {
-            return Locale.getString("filter.folderRequired");
+            return EnigmailLocale.getString("filter.folderRequired");
         }
 
         return null;
@@ -105,10 +105,10 @@ const filterActionMoveDecrypt = {
  */
 const filterActionCopyDecrypt = {
     id: "enigmail@enigmail.net#filterActionCopyDecrypt",
-    name: Locale.getString("filter.decryptCopy.label"),
+    name: EnigmailLocale.getString("filter.decryptCopy.label"),
     value: "copymessage",
     apply: function (aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
-        Log.DEBUG("enigmail.js: filterActionCopyDecrypt: Copy to: " + aActionValue + "\n");
+        EnigmailLog.DEBUG("enigmail.js: filterActionCopyDecrypt: Copy to: " + aActionValue + "\n");
 
         var msgHdrs = [];
 
@@ -116,7 +116,7 @@ const filterActionCopyDecrypt = {
             msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
         }
 
-        DecryptPermanently.dispatchMessages(msgHdrs, aActionValue, false, true);
+        EnigmailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, false, true);
         return;
     },
 
@@ -126,7 +126,7 @@ const filterActionCopyDecrypt = {
 
     validateActionValue: function (value, folder, type) {
         if( value === "") {
-            return Locale.getString("filter.folderRequired");
+            return EnigmailLocale.getString("filter.folderRequired");
         }
 
         return null;
@@ -137,7 +137,7 @@ const filterActionCopyDecrypt = {
     needsBody: true
 };
 
-const Filters = {
+const EnigmailFilters = {
     registerAll: function() {
         var filterService = Cc["@mozilla.org/messenger/services/filters;1"].getService(Ci.nsIMsgFilterService);
         filterService.addCustomAction(filterActionMoveDecrypt);

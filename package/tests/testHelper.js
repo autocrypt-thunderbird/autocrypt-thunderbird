@@ -1,4 +1,4 @@
-/*global do_load_module: false, do_get_cwd: false, Components: false, Assert: false,  CustomAssert: false, FileUtils: false, JSUnit: false, Files: false */
+/*global do_load_module: false, do_get_cwd: false, Components: false, Assert: false,  CustomAssert: false, FileUtils: false, JSUnit: false, EnigmailFiles: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -53,7 +53,7 @@ var TestHelper = {
 
     initalizeGpgHome: function() {
         component("enigmail/files.jsm");
-        var homedir = osUtils.OS.Path.join(Files.getTempDir(), ".gnupgTest");
+        var homedir = osUtils.OS.Path.join(EnigmailFiles.getTempDir(), ".gnupgTest");
         var workingDirectory = new osUtils.FileUtils.File(homedir);
         if (!workingDirectory.exists()) {
             workingDirectory.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 448);
@@ -122,7 +122,7 @@ function withTestGpgHome(f){
     };
 }
 
-Components.utils.import("resource://enigmail/enigmailCore.jsm"); /*global EnigmailCore: false */
+Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 function withEnigmail(f) {
     return function() {
         try {

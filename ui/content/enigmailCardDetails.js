@@ -1,5 +1,5 @@
 dump("loading: enigmailCardDetails.js\n");
-/*global Components: false, Locale: false, Data: false, Dialog: false, Time: false */
+/*global Components: false, EnigmailLocale: false, EnigmailDialog: false, EnigmailTime: false */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,25 +34,25 @@ dump("loading: enigmailCardDetails.js\n");
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** */
 
-Components.utils.import("resource://enigmail/enigmailFuncs.jsm");
-Components.utils.import("resource://enigmail/enigmailCore.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/keyEditor.jsm"); /*global KeyEditor: false */
-Components.utils.import("resource://enigmail/key.jsm"); /*global Key: false */
-Components.utils.import("resource://enigmail/keyRing.jsm"); /*global KeyRing: false */
+Components.utils.import("resource://enigmail/funcs.jsm");
+Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Components.utils.import("resource://enigmail/keyEditor.jsm"); /*global EnigmailKeyEditor: false */
+Components.utils.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
+Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Components.utils.import("resource://enigmail/prefs.jsm");
 Components.utils.import("resource://enigmail/locale.jsm");
-Components.utils.import("resource://enigmail/data.jsm");
+Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Components.utils.import("resource://enigmail/dialog.jsm");
 Components.utils.import("resource://enigmail/time.jsm");
-Components.utils.import("resource://enigmail/events.jsm"); /*global Events: false */
-Components.utils.import("resource://enigmail/card.jsm"); /*global Card: false */
+Components.utils.import("resource://enigmail/events.jsm"); /*global EnigmailEvents: false */
+Components.utils.import("resource://enigmail/card.jsm"); /*global EnigmailCard: false */
 
 var gCardData = {};
 
 function onLoad() {
   var enigmailSvc = EnigmailCore.getService(window);
   if (!enigmailSvc) {
-    Events.dispatchEvent(failWithError, 0, Locale.getString("accessError"));
+    EnigmailEvents.dispatchEvent(failWithError, 0, EnigmailLocale.getString("accessError"));
     return;
   }
   var exitCodeObj = {};
@@ -60,22 +60,22 @@ function onLoad() {
 
   var dryRun=false;
   try {
-    dryRun = Prefs.getPref("dryRun");
+    dryRun = EnigmailPrefs.getPref("dryRun");
   }
   catch(ex) {}
 
-  var cardStr = Card.getCardStatus(exitCodeObj, errorMsgObj);
+  var cardStr = EnigmailCard.getCardStatus(exitCodeObj, errorMsgObj);
   if (exitCodeObj.value === 0) {
     var statusList=cardStr.split(/[\r\n]+/);
     for (var i=0; i<statusList.length; i++) {
       var l=statusList[i].split(/:/);
       switch (l[0]) {
       case "name":
-        setValue("firstname", Data.convertGpgToUnicode(l[1]));
-        setValue(l[0], Data.convertGpgToUnicode(l[2]));
+        setValue("firstname", EnigmailData.convertGpgToUnicode(l[1]));
+        setValue(l[0], EnigmailData.convertGpgToUnicode(l[2]));
         break;
       case "vendor":
-        setValue(l[0], Data.convertGpgToUnicode(l[2].replace(/\\x3a/ig, ":")));
+        setValue(l[0], EnigmailData.convertGpgToUnicode(l[2].replace(/\\x3a/ig, ":")));
         break;
       case "sex":
       case "forcepin":
@@ -88,32 +88,32 @@ function onLoad() {
         setValue(l[0], l[1]+" / "+l[2]+" / "+l[3]);
         break;
       case "fpr":
-        setValue("key_fpr_1", Key.formatFpr(l[1]));
-        setValue("key_fpr_2", Key.formatFpr(l[2]));
-        setValue("key_fpr_3", Key.formatFpr(l[3]));
+        setValue("key_fpr_1", EnigmailKey.formatFpr(l[1]));
+        setValue("key_fpr_2", EnigmailKey.formatFpr(l[2]));
+        setValue("key_fpr_3", EnigmailKey.formatFpr(l[3]));
         break;
       case "fprtime":
-        setValue("key_created_1", Time.getDateTime(l[1], true, false));
-        setValue("key_created_2", Time.getDateTime(l[2], true, false));
-        setValue("key_created_3", Time.getDateTime(l[3], true, false));
+        setValue("key_created_1", EnigmailTime.getDateTime(l[1], true, false));
+        setValue("key_created_2", EnigmailTime.getDateTime(l[2], true, false));
+        setValue("key_created_3", EnigmailTime.getDateTime(l[3], true, false));
         break;
       default:
         if (l[0]) {
-          setValue(l[0], Data.convertGpgToUnicode(l[1].replace(/\\x3a/ig, ":")));
+          setValue(l[0], EnigmailData.convertGpgToUnicode(l[1].replace(/\\x3a/ig, ":")));
         }
       }
     }
   }
   else {
     if (! dryRun) {
-      Events.dispatchEvent(failWithError, 0, errorMsgObj.value);
+      EnigmailEvents.dispatchEvent(failWithError, 0, errorMsgObj.value);
     }
   }
   return;
 }
 
 function failWithError(errorMsg) {
-  Dialog.alert(window, errorMsg);
+  EnigmailDialog.alert(window, errorMsg);
   window.close();
 }
 
@@ -163,7 +163,7 @@ function doSaveChanges() {
 
   var enigmailSvc = EnigmailCore.getService(window);
   if (!enigmailSvc) {
-    Dialog.alert(window, Locale.getString("accessError"));
+    EnigmailDialog.alert(window, EnigmailLocale.getString("accessError"));
     window.close();
     return;
   }
@@ -172,22 +172,22 @@ function doSaveChanges() {
   var dialogname = getValue("name");
   var dialogfirstname = getValue("firstname");
   if ((dialogname.search(/^[A-Za-z0-9\.\-,\?_ ]*$/) !== 0) || (dialogfirstname.search(/^[A-Za-z0-9\.\-,\?_ ]*$/) !== 0)) {
-    Dialog.alert(window, Locale.getString("Carddetails.NoASCII"));
+    EnigmailDialog.alert(window, EnigmailLocale.getString("Carddetails.NoASCII"));
     onLoad();
     doEditData();
   }
   else {
-    KeyEditor.cardAdminData(window,
-                                  Data.convertFromUnicode(dialogname),
-                                  Data.convertFromUnicode(dialogfirstname),
+    EnigmailKeyEditor.cardAdminData(window,
+                                  EnigmailData.convertFromUnicode(dialogname),
+                                  EnigmailData.convertFromUnicode(dialogfirstname),
                                   getValue("lang"),
                                   getSelection("sex"),
-                                  Data.convertFromUnicode(getValue("url")),
+                                  EnigmailData.convertFromUnicode(getValue("url")),
                                   getValue("login"),
                                   forcepin,
     function _cardAdminCb(exitCode, errorMsg) {
       if (exitCode !== 0) {
-        Dialog.alert(window, errorMsg);
+        EnigmailDialog.alert(window, errorMsg);
       }
 
       onLoad();
@@ -199,7 +199,7 @@ function engmailGenerateCardKey() {
   window.openDialog("chrome://enigmail/content/enigmailGenCardKey.xul",
         "", "dialog,modal,centerscreen");
 
-  KeyRing.invalidateUserIdList();
+  EnigmailKeyRing.invalidateUserIdList();
   onLoad();
 }
 

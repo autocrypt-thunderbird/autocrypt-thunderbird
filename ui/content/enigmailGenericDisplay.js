@@ -37,7 +37,7 @@ dump("loading: enigmailGenericDisplay.js\n");
 EnigInitCommon("enigmailGenericDisplay");
 
 function enigLoadPage() {
-  Log.DEBUG("enigmailGenricDisplay: enigLoadPage\n");
+  EnigmailLog.DEBUG("enigmailGenricDisplay: enigLoadPage\n");
 
   var contentFrame = EnigGetFrame(window, "contentFrame");
   if (!contentFrame)

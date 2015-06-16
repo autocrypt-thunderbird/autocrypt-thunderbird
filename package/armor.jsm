@@ -1,4 +1,4 @@
-/*global Components: false, Log: false */
+/*global Components: false, EnigmailLog: false */
 /*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -91,7 +91,7 @@ const EnigmailArmor = {
     // endIndex = offset of last character of block (newline)
     // If block is not found, the null string is returned;
     locateArmoredBlock: function (text, offset, indentStr, beginIndexObj, endIndexObj, indentStrObj) {
-        Log.DEBUG("enigmail.js: Enigmail.locateArmoredBlock: "+offset+", '"+indentStr+"'\n");
+        EnigmailLog.DEBUG("enigmail.js: Enigmail.locateArmoredBlock: "+offset+", '"+indentStr+"'\n");
 
         beginIndexObj.value = -1;
         endIndexObj.value = -1;
@@ -140,7 +140,7 @@ const EnigmailArmor = {
         var blockType = "";
         if (matches && (matches.length > 1)) {
             blockType = matches[1];
-            Log.DEBUG("enigmail.js: Enigmail.locateArmoredBlock: blockType="+blockType+"\n");
+            EnigmailLog.DEBUG("enigmail.js: Enigmail.locateArmoredBlock: blockType="+blockType+"\n");
         }
 
         if (blockType == "UNVERIFIED MESSAGE") {
@@ -185,12 +185,12 @@ const EnigmailArmor = {
             i = endObj.value;
         }
 
-        Log.DEBUG("enigmail.js: locateArmorBlocks: Found " + blocks.length + " Blocks\n");
+        EnigmailLog.DEBUG("enigmail.js: locateArmorBlocks: Found " + blocks.length + " Blocks\n");
         return blocks;
     },
 
     extractSignaturePart: function (signatureBlock, part) {
-        Log.DEBUG("enigmail.js: Enigmail.extractSignaturePart: part="+part+"\n");
+        EnigmailLog.DEBUG("enigmail.js: Enigmail.extractSignaturePart: part="+part+"\n");
 
         return searchBlankLine(signatureBlock, function(offset) {
             return indexOfNewline(signatureBlock, offset+1, function(offset) {

@@ -40,16 +40,16 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Windows" ];
+const EXPORTED_SYMBOLS = [ "EnigmailWindows" ];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global Log: false */
-Cu.import("resource://enigmail/enigmailCore.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global Locale: false */
-Cu.import("resource://enigmail/keyRing.jsm"); /*global KeyRing: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const APPSHSVC_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
@@ -57,7 +57,7 @@ const APPSHSVC_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
 const LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
-const Windows = {
+const EnigmailWindows = {
     /**
      * Display the OpenPGP setup wizard window
      *
@@ -156,7 +156,7 @@ const Windows = {
      * @return:    the frame object or null if not found
      */
     getFrame: function(win, frameName) {
-        Log.DEBUG("enigmailCommon.jsm: getFrame: name="+frameName+"\n");
+        EnigmailLog.DEBUG("enigmailCommon.jsm: getFrame: name="+frameName+"\n");
         for (var j=0; j<win.frames.length; j++) {
             if (win.frames[j].name == frameName) {
                 return win.frames[j];
@@ -180,7 +180,7 @@ const Windows = {
      */
 
     openHelpWindow: function (source) {
-        Windows.openWin("enigmail:help",
+        EnigmailWindows.openWin("enigmail:help",
                         "chrome://enigmail/content/enigmailHelp.xul?src="+source,
                         "centerscreen,resizable");
     },
@@ -191,7 +191,7 @@ const Windows = {
      * no return value
      */
     openAboutWindow: function () {
-        Windows.openWin("about:enigmail",
+        EnigmailWindows.openWin("about:enigmail",
                         "chrome://enigmail/content/enigmailAbout.xul",
                         "resizable,centerscreen");
     },
@@ -202,7 +202,7 @@ const Windows = {
      * no return value
      */
     openRulesEditor: function () {
-        Windows.openWin("enigmail:rulesEditor",
+        EnigmailWindows.openWin("enigmail:rulesEditor",
                         "chrome://enigmail/content/enigmailRulesEditor.xul",
                         "dialog,centerscreen,resizable");
     },
@@ -215,7 +215,7 @@ const Windows = {
     openKeyManager: function (win) {
         EnigmailCore.getService(win);
 
-        Windows.openWin("enigmail:KeyManager",
+        EnigmailWindows.openWin("enigmail:KeyManager",
                         "chrome://enigmail/content/enigmailKeyManager.xul",
                         "resizable");
     },
@@ -226,7 +226,7 @@ const Windows = {
      * no return value
      */
     openKeyGen: function () {
-        Windows.openWin("enigmail:generateKey",
+        EnigmailWindows.openWin("enigmail:generateKey",
                         "chrome://enigmail/content/enigmailKeygen.xul",
                         "chrome,modal,resizable=yes");
     },
@@ -237,7 +237,7 @@ const Windows = {
      * no return value
      */
     openCardDetails: function () {
-        Windows.openWin("enigmail:cardDetails",
+        EnigmailWindows.openWin("enigmail:cardDetails",
                         "chrome://enigmail/content/enigmailCardDetails.xul",
                         "centerscreen");
     },
@@ -251,7 +251,7 @@ const Windows = {
      * no return value
      */
     openConsoleWindow: function () {
-        Windows.openWin("enigmail:console",
+        EnigmailWindows.openWin("enigmail:console",
                         "chrome://enigmail/content/enigmailConsole.xul",
                         "resizable,centerscreen");
     },
@@ -264,8 +264,8 @@ const Windows = {
      * no return value
      */
     openDebugLog: function(win) {
-        Windows.openWin("enigmail:logFile",
-                        "chrome://enigmail/content/enigmailViewFile.xul?viewLog=1&title="+escape(Locale.getString("debugLog.title")),
+        EnigmailWindows.openWin("enigmail:logFile",
+                        "chrome://enigmail/content/enigmailViewFile.xul?viewLog=1&title="+escape(EnigmailLocale.getString("debugLog.title")),
                         "resizable,centerscreen");
     },
 
@@ -280,7 +280,7 @@ const Windows = {
      * no return value
      */
     openPrefWindow: function (win, showBasic, selectTab) {
-        Log.DEBUG("windows.js: openPrefWindow\n");
+        EnigmailLog.DEBUG("windows.js: openPrefWindow\n");
 
         EnigmailCore.getService(win, true);  // true: starting preferences dialog
 
@@ -396,14 +396,14 @@ const Windows = {
             }
 
             const exitCodeObj = {};
-            const photoPath = KeyRing.showKeyPhoto(keyId, photoNumber, exitCodeObj, {});
+            const photoPath = EnigmailKeyRing.showKeyPhoto(keyId, photoNumber, exitCodeObj, {});
 
             if (photoPath && exitCodeObj.value===0) {
                 const photoFile = Cc[LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
                 photoFile.initWithPath(photoPath);
 
                 if (! (photoFile.isFile() && photoFile.isReadable())) {
-                    Windows.alert(win, Locale.getString("error.photoPathNotReadable", photoPath));
+                    EnigmailWindows.alert(win, EnigmailLocale.getString("error.photoPathNotReadable", photoPath));
                 } else {
                     const photoUri = Cc[IOSERVICE_CONTRACTID].getService(Ci.nsIIOService).
                               newFileURI(photoFile).spec;
@@ -423,7 +423,7 @@ const Windows = {
                     } catch (ex) {}
                 }
             } else {
-                Windows.alert(win, Locale.getString("noPhotoAvailable"));
+                EnigmailWindows.alert(win, EnigmailLocale.getString("noPhotoAvailable"));
             }
         }
     },
@@ -442,7 +442,7 @@ const Windows = {
 
         keyId = keyId.replace(/^0x/, "");
 
-        KeyRing.loadKeyList(win, refresh, keyListObj);
+        EnigmailKeyRing.loadKeyList(win, refresh, keyListObj);
 
         const inputObj = {
             keyId:  keyId,
@@ -469,13 +469,13 @@ const Windows = {
      * no return value
      */
     downloadKeys: function (win, inputObj, resultObj) {
-        Log.DEBUG("windows.jsm: downloadKeys: searchList="+inputObj.searchList+"\n");
+        EnigmailLog.DEBUG("windows.jsm: downloadKeys: searchList="+inputObj.searchList+"\n");
 
         resultObj.importedKeys=0;
 
         const ioService = Cc[IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
         if (ioService && ioService.offline) {
-            Windows.alert(win, Locale.getString("needOnline"));
+            EnigmailWindows.alert(win, EnigmailLocale.getString("needOnline"));
             return;
         }
 

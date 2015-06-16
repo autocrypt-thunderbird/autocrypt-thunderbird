@@ -125,7 +125,7 @@
       textbox.setAttribute("value", msgtext);
       textbox.setAttribute("rows", lines);
       if (EnigGetOS() != "Darwin")
-        Events.dispatchEvent(resizeDlg, 0);
+        EnigmailEvents.dispatchEvent(resizeDlg, 0);
     }
 
     function resizeDlg() {

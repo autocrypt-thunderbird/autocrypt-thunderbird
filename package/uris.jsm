@@ -41,19 +41,19 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "URIs" ];
+const EXPORTED_SYMBOLS = [ "EnigmailURIs" ];
 
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global Log: false */
-Cu.import("resource://enigmail/data.jsm"); /*global Data: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 
 const messageIdList = {};
 const encryptedUris = [];
 
-const URIs = {
+const EnigmailURIs = {
     createMessageURI: function (originalUrl, contentType, contentCharset, contentData, persist) {
-        Log.DEBUG("enigmail.js: Enigmail.createMessageURI: "+originalUrl+
+        EnigmailLog.DEBUG("enigmail.js: Enigmail.createMessageURI: "+originalUrl+
                   ", "+contentType+", "+contentCharset+"\n");
 
         const messageId = "msg" + Math.floor(Math.random()*1.0e9);
@@ -68,9 +68,9 @@ const URIs = {
     },
 
     deleteMessageURI: function (uri) {
-        Log.DEBUG("enigmail.js: Enigmail.deleteMessageURI: "+uri+"\n");
+        EnigmailLog.DEBUG("enigmail.js: Enigmail.deleteMessageURI: "+uri+"\n");
 
-        const messageId = Data.extractMessageId(uri);
+        const messageId = EnigmailData.extractMessageId(uri);
 
         if (!messageId) {
             return false;
@@ -91,7 +91,7 @@ const URIs = {
      * @return null
      */
     rememberEncryptedUri: function (uri) {
-        Log.DEBUG("uris.jsm: rememberEncryptedUri: uri="+uri+"\n");
+        EnigmailLog.DEBUG("uris.jsm: rememberEncryptedUri: uri="+uri+"\n");
         if (encryptedUris.indexOf(uri) < 0) {
             encryptedUris.push(uri);
         }
@@ -105,7 +105,7 @@ const URIs = {
      * @return null
      */
     forgetEncryptedUri: function (uri) {
-        Log.DEBUG("uris.jsm: forgetEncryptedUri: uri="+uri+"\n");
+        EnigmailLog.DEBUG("uris.jsm: forgetEncryptedUri: uri="+uri+"\n");
         const pos = encryptedUris.indexOf(uri);
         if (pos >= 0) {
             encryptedUris.splice(pos, 1);
@@ -120,12 +120,12 @@ const URIs = {
      * @return: Boolean true if yes, false otherwise
      */
     isEncryptedUri: function (uri) {
-        Log.DEBUG("uris.jsm: isEncryptedUri: uri="+uri+"\n");
+        EnigmailLog.DEBUG("uris.jsm: isEncryptedUri: uri="+uri+"\n");
         return encryptedUris.indexOf(uri) >= 0;
     },
 
     registerOn: function(target) {
-        target.createMessageURI = URIs.createMessageURI;
-        target.deleteMessageURI = URIs.deleteMessageURI;
+        target.createMessageURI = EnigmailURIs.createMessageURI;
+        target.deleteMessageURI = EnigmailURIs.deleteMessageURI;
     }
 };

@@ -213,7 +213,7 @@ function enigmailDlgOnAccept() {
 }
 
 function enigmailDlgKeySelection() {
-  Log.DEBUG("enigmailMsgComposeHelper.js: enigmailDlgKeySelection: \n");
+  EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: enigmailDlgKeySelection: \n");
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
@@ -263,7 +263,7 @@ function enigSetKeys(keyList) {
     var exitCodeObj= {};
     var statusFlagsObj = {};
     var errorMsgObj = {};
-    var userListTxt = KeyRing.getUserIdList(false,
+    var userListTxt = EnigmailKeyRing.getUserIdList(false,
                                             false,
                                             exitCodeObj,
                                             statusFlagsObj,

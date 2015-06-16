@@ -51,19 +51,19 @@ var gSavedManualPrefConfirmBeforeSending = 0;
 var gOrigMaxIdle = "-";
 
 function displayPrefs(showDefault, showPrefs, setPrefs) {
-  Log.DEBUG("pref-enigmail.js displayPrefs\n");
+  EnigmailLog.DEBUG("pref-enigmail.js displayPrefs\n");
 
   var s = gEnigmailSvc;
 
   var obj = {};
-  var prefList = Prefs.getPrefBranch().getChildList("",obj);
+  var prefList = EnigmailPrefs.getPrefBranch().getChildList("",obj);
 
   for (var prefItem in prefList) {
     var prefName=prefList[prefItem];
     var prefElement = document.getElementById("enigmail_"+prefName);
 
     if (prefElement) {
-      var prefType = Prefs.getPrefBranch().getPrefType(prefName);
+      var prefType = EnigmailPrefs.getPrefBranch().getPrefType(prefName);
       var prefValue;
       if (showDefault) {
         prefValue = EnigGetDefaultPref(prefName);
@@ -72,10 +72,10 @@ function displayPrefs(showDefault, showPrefs, setPrefs) {
         prefValue = EnigGetPref(prefName);
       }
 
-      Log.DEBUG("pref-enigmail.js displayPrefs: "+prefName+"="+prefValue+"\n");
+      EnigmailLog.DEBUG("pref-enigmail.js displayPrefs: "+prefName+"="+prefValue+"\n");
 
       switch (prefType) {
-      case Prefs.getPrefBranch().PREF_BOOL:
+      case EnigmailPrefs.getPrefBranch().PREF_BOOL:
         if (showPrefs) {
           if (prefElement.getAttribute("invert") == "true") {
             prefValue = ! prefValue;
@@ -104,7 +104,7 @@ function displayPrefs(showDefault, showPrefs, setPrefs) {
         }
         break;
 
-      case Prefs.getPrefBranch().PREF_INT:
+      case EnigmailPrefs.getPrefBranch().PREF_INT:
         if (showPrefs) {
           prefElement.value = prefValue;
         }
@@ -115,7 +115,7 @@ function displayPrefs(showDefault, showPrefs, setPrefs) {
         }
         break;
 
-      case Prefs.getPrefBranch().PREF_STRING:
+      case EnigmailPrefs.getPrefBranch().PREF_STRING:
         if (showPrefs) {
           prefElement.value = prefValue;
         }
@@ -125,7 +125,7 @@ function displayPrefs(showDefault, showPrefs, setPrefs) {
         break;
 
       default:
-        Log.DEBUG("pref-enigmail.js displayPrefs: "+prefName+" does not have a type?!\n");
+        EnigmailLog.DEBUG("pref-enigmail.js displayPrefs: "+prefName+" does not have a type?!\n");
       }
     }
   }
@@ -133,7 +133,7 @@ function displayPrefs(showDefault, showPrefs, setPrefs) {
 
 function prefOnLoad()
 {
-  Log.DEBUG("pref-enigmail.js: prefOnLoad()\n");
+  EnigmailLog.DEBUG("pref-enigmail.js: prefOnLoad()\n");
 
   GetEnigmailSvc();
   displayPrefs(false, true, false);
@@ -142,7 +142,7 @@ function prefOnLoad()
 
   var maxIdle = -1;
   if (! gEnigmailSvc) {
-    maxIdle = Prefs.getPref("maxIdleMinutes");
+    maxIdle = EnigmailPrefs.getPref("maxIdleMinutes");
   }
   else {
     maxIdle = EnigmailGpgAgent.getMaxIdlePref(window);
@@ -200,7 +200,7 @@ function prefOnLoad()
   gMimePartsElement = document.getElementById("mime_parts_on_demand");
 
   try {
-    gMimePartsValue = Prefs.getPrefRoot().getBoolPref("mail.server.default.mime_parts_on_demand");
+    gMimePartsValue = EnigmailPrefs.getPrefRoot().getBoolPref("mail.server.default.mime_parts_on_demand");
   } catch (ex) {
     gMimePartsValue = true;
   }
@@ -273,7 +273,7 @@ function selectPrefTabPanel(panelName) {
 }
 
 function resetPrefs() {
-  Log.DEBUG("pref-enigmail.js: resetPrefs\n");
+  EnigmailLog.DEBUG("pref-enigmail.js: resetPrefs\n");
 
   displayPrefs(true, true, false);
 
@@ -335,7 +335,7 @@ function updateSendingPrefs()
 
 function resetSendingPrefsConvenient()
 {
-  Log.DEBUG("pref-enigmail.js: resetSendingPrefsConvenient()\n");
+  EnigmailLog.DEBUG("pref-enigmail.js: resetSendingPrefsConvenient()\n");
 
   // save current manual preferences to be able to switch back to them:
   gSavedManualPrefKeepSettingsForReply = document.getElementById("enigmail_keepSettingsForReply").checked;
@@ -362,7 +362,7 @@ function resetSendingPrefsConvenient()
 
 function resetSendingPrefsManually()
 {
-  Log.DEBUG("pref-enigmail.js: resetSendingPrefsManually()\n");
+  EnigmailLog.DEBUG("pref-enigmail.js: resetSendingPrefsManually()\n");
 
   // switch encryption model:
   gEnigEncryptionModel = 1;         // manual encryption settings
@@ -383,7 +383,7 @@ function resetSendingPrefsManually()
 }
 
 function resetRememberedValues() {
-  Log.DEBUG("pref-enigmail.js: resetRememberedValues\n");
+  EnigmailLog.DEBUG("pref-enigmail.js: resetRememberedValues\n");
   var prefs=["confirmBeforeSend",
              "displaySignWarn",
              "encryptAttachmentsSkipDlg",
@@ -406,7 +406,7 @@ function resetRememberedValues() {
 
 function prefOnAccept() {
 
-  Log.DEBUG("pref-enigmail.js: prefOnAccept\n");
+  EnigmailLog.DEBUG("pref-enigmail.js: prefOnAccept\n");
 
   var autoKey = document.getElementById("enigmail_autoKeyRetrieve").value;
 
@@ -428,7 +428,7 @@ function prefOnAccept() {
   if (gMimePartsElement &&
       (gMimePartsElement.checked != gMimePartsValue) ) {
 
-    Prefs.getPrefRoot().setBoolPref("mail.server.default.mime_parts_on_demand", (gMimePartsElement.checked ? true : false));
+    EnigmailPrefs.getPrefRoot().setBoolPref("mail.server.default.mime_parts_on_demand", (gMimePartsElement.checked ? true : false));
   }
 
   EnigSetPref("configuredVersion", EnigGetVersion());
@@ -561,7 +561,7 @@ function enigLocateGpg() {
                            "", false, ext,
                            fileName+ext, null);
   if (filePath) {
-//     if (OS.getOS() == "WINNT") {
+//     if (EnigmailOS.getOS() == "WINNT") {
 //       document.getElementById("enigmail_agentPath").value = EnigGetFilePath(filePath);
 //     }
     document.getElementById("enigmail_agentPath").value = filePath.path;

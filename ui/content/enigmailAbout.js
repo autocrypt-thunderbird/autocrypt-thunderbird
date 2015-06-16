@@ -1,5 +1,5 @@
 dump("loading: enigmailAbout.js\n");
-/*global Components: false, App: false, Windows: false */
+/*global Components: false, EnigmailApp: false, EnigmailWindows: false */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -39,24 +39,24 @@ dump("loading: enigmailAbout.js\n");
 //       chrome://enigmail/content/enigmailBuildDate.js
 
 function enigAboutLoad() {
-    Log.DEBUG("enigmailAbout.js: enigAboutLoad\n");
+    EnigmailLog.DEBUG("enigmailAbout.js: enigAboutLoad\n");
 
-  var contentFrame = Windows.getFrame(window, "contentFrame");
+  var contentFrame = EnigmailWindows.getFrame(window, "contentFrame");
   if (!contentFrame)
     return;
 
-  var enigVersion=App.getVersion()+" ("+EnigBuildDate+")";
+  var enigVersion=EnigmailApp.getVersion()+" ("+EnigBuildDate+")";
   var versionElement = contentFrame.document.getElementById('version');
   if (versionElement)
-    versionElement.firstChild.data = Locale.getString("usingVersion", enigVersion);
+    versionElement.firstChild.data = EnigmailLocale.getString("usingVersion", enigVersion);
 
   var enigmailSvc = EnigmailCore.getService();
 
   var agentStr;
   if (enigmailSvc) {
-    agentStr = Locale.getString("usingAgent", [EnigmailGpgAgent.agentType, EnigmailGpgAgent.agentPath.path]);
+    agentStr = EnigmailLocale.getString("usingAgent", [EnigmailGpgAgent.agentType, EnigmailGpgAgent.agentPath.path]);
   } else {
-    agentStr = Locale.getString("agentError");
+    agentStr = EnigmailLocale.getString("agentError");
 
     if (enigmailSvc && enigmailSvc.initializationError)
       agentStr += "\n" + enigmailSvc.initializationError;

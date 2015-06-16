@@ -40,7 +40,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Trust" ];
+const EXPORTED_SYMBOLS = [ "EnigmailTrust" ];
 
 
 // trust flags according to GPG documentation:
@@ -71,7 +71,7 @@ const EXPORTED_SYMBOLS = [ "Trust" ];
 const TRUSTLEVELS_SORTED = "indDreg?o-qmfu";
 const TRUSTLEVELS_SORTED_IDX_UNKNOWN = 7;   // index of '?'
 
-const Trust = {
+const EnigmailTrust = {
     /**
      * @return - |string| containing the order of trust/validity values
      */

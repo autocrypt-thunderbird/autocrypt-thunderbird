@@ -19,8 +19,8 @@ COMPFILES = \
             enigmail.js \
             mimeDecrypt.js \
             mimeEncrypt.js \
-            enigprefs-service.js \
-            enigMsgCompFields.js
+            prefs-service.js \
+            msgCompFields.js
 
 PREFFILES = prefs/enigmail.js
 
@@ -37,11 +37,11 @@ MODFILES = \
            decryptPermanently.jsm \
            dialog.jsm \
            encryption.jsm \
-           enigmailCore.jsm \
-           enigmailErrorHandling.jsm \
-           enigmailFuncs.jsm \
-           enigmailGpgAgent.jsm \
-           enigmailProtocolHandler.jsm \
+           core.jsm \
+           errorHandling.jsm \
+           funcs.jsm \
+           gpgAgent.jsm \
+           protocolHandler.jsm \
            events.jsm \
            execution.jsm \
            files.jsm \

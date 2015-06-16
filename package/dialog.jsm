@@ -1,4 +1,4 @@
-/*global Components: false, Locale: false, Log: false, Windows: false, Prefs: false */
+/*global Components: false, EnigmailLocale: false, EnigmailLog: false, EnigmailWindows: false, EnigmailPrefs: false */
 /*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -40,7 +40,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Dialog" ];
+const EXPORTED_SYMBOLS = [ "EnigmailDialog" ];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -59,7 +59,7 @@ const gPromptSvc = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.n
 
 const LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 
-const Dialog = {
+const EnigmailDialog = {
     /***
      * Confirmation dialog with OK / Cancel buttons (both customizable)
      *
@@ -90,7 +90,7 @@ const Dialog = {
         }
 
         let buttonPressed = gPromptSvc.confirmEx(win,
-                                                 Locale.getString("enigConfirm"),
+                                                 EnigmailLocale.getString("enigConfirm"),
                                                  mesg,
                                                  buttonTitles,
                                                  okLabel, cancelLabel, null,
@@ -109,13 +109,13 @@ const Dialog = {
      */
     alert: function (win, mesg) {
         if (mesg.length > 1000) {
-            Dialog.longAlert(win, mesg, null, Locale.getString("dlg.button.close"));
+            EnigmailDialog.longAlert(win, mesg, null, EnigmailLocale.getString("dlg.button.close"));
         } else {
             try {
-                gPromptSvc.alert(win, Locale.getString("enigAlert"), mesg);
+                gPromptSvc.alert(win, EnigmailLocale.getString("enigAlert"), mesg);
             }
             catch(ex) {
-                Log.writeException("alert" , ex);
+                EnigmailLog.writeException("alert" , ex);
             }
         }
     },
@@ -143,7 +143,7 @@ const Dialog = {
         };
 
         if (! win) {
-            win = Windows.getBestParentWin();
+            win = EnigmailWindows.getBestParentWin();
         }
 
         win.openDialog("chrome://enigmail/content/enigmailAlertDlg.xul", "",
@@ -173,7 +173,7 @@ const Dialog = {
      * @return:   Boolean - true if OK was pressed / false otherwise
      */
     promptValue: function (win, mesg, valueObj) {
-        return gPromptSvc.prompt(win, Locale.getString("enigPrompt"),
+        return gPromptSvc.prompt(win, EnigmailLocale.getString("enigPrompt"),
                                  mesg, valueObj, "", {});
     },
 
@@ -191,17 +191,17 @@ const Dialog = {
         const display = true;
         const dontDisplay = false;
 
-        let prefValue = Prefs.getPref(prefText);
+        let prefValue = EnigmailPrefs.getPref(prefText);
         if(prefValue === display) {
             let checkBoxObj = { value: false } ;
             let buttonPressed = gPromptSvc.confirmEx(win,
-                                                     Locale.getString("enigAlert"),
+                                                     EnigmailLocale.getString("enigAlert"),
                                                      mesg,
                                                      (gPromptSvc.BUTTON_TITLE_OK * BUTTON_POS_0),
                                                      null, null, null,
-                                                     Locale.getString("dlgNoPrompt"), checkBoxObj);
+                                                     EnigmailLocale.getString("dlgNoPrompt"), checkBoxObj);
             if (checkBoxObj.value && buttonPressed === 0) {
-                Prefs.setPref(prefText, dontDisplay);
+                EnigmailPrefs.setPref(prefText, dontDisplay);
             }
         }
     },
@@ -218,22 +218,22 @@ const Dialog = {
      *
      */
     alertCount: function (win, countPrefName, mesg) {
-        let alertCount = Prefs.getPref(countPrefName);
+        let alertCount = EnigmailPrefs.getPref(countPrefName);
 
         if (alertCount <= 0)
             return;
 
         alertCount--;
-        Prefs.setPref(countPrefName, alertCount);
+        EnigmailPrefs.setPref(countPrefName, alertCount);
 
         if (alertCount > 0) {
-            mesg += Locale.getString("repeatPrefix", [ alertCount ]) + " ";
-            mesg += (alertCount == 1) ? Locale.getString("repeatSuffixSingular") : Locale.getString("repeatSuffixPlural");
+            mesg += EnigmailLocale.getString("repeatPrefix", [ alertCount ]) + " ";
+            mesg += (alertCount == 1) ? EnigmailLocale.getString("repeatSuffixSingular") : EnigmailLocale.getString("repeatSuffixPlural");
         } else {
-            mesg += Locale.getString("noRepeat");
+            mesg += EnigmailLocale.getString("noRepeat");
         }
 
-        Dialog.alert(win, mesg);
+        EnigmailDialog.alert(win, mesg);
     },
 
     /**
@@ -280,7 +280,7 @@ const Dialog = {
             }
         }
 
-        var prefValue = Prefs.getPref(prefText);
+        var prefValue = EnigmailPrefs.getPref(prefText);
 
         if (typeof(prefValue) != "boolean") {
             // number: remember user's choice
@@ -288,13 +288,13 @@ const Dialog = {
             case notSet:
                 let checkBoxObj = { value: false} ;
                 let buttonPressed = gPromptSvc.confirmEx(win,
-                                                         Locale.getString("enigConfirm"),
+                                                         EnigmailLocale.getString("enigConfirm"),
                                                          mesg,
                                                          buttonTitles,
                                                          okLabel, cancelLabel, null,
-                                                         Locale.getString("dlgKeepSetting"), checkBoxObj);
+                                                         EnigmailLocale.getString("dlgKeepSetting"), checkBoxObj);
                 if (checkBoxObj.value) {
-                    Prefs.setPref(prefText, (buttonPressed===0 ? yes : no));
+                    EnigmailPrefs.setPref(prefText, (buttonPressed===0 ? yes : no));
                 }
                 return (buttonPressed===0 ? 1 : 0);
             case yes:
@@ -310,13 +310,13 @@ const Dialog = {
             case display:
                 let checkBoxObj = { value: false} ;
                 let buttonPressed = gPromptSvc.confirmEx(win,
-                                                         Locale.getString("enigConfirm"),
+                                                         EnigmailLocale.getString("enigConfirm"),
                                                          mesg,
                                                          buttonTitles,
                                                          okLabel, cancelLabel, null,
-                                                         Locale.getString("dlgNoPrompt"), checkBoxObj);
+                                                         EnigmailLocale.getString("dlgNoPrompt"), checkBoxObj);
                 if (checkBoxObj.value) {
-                    Prefs.setPref(prefText, false);
+                    EnigmailPrefs.setPref(prefText, false);
                 }
                 return (buttonPressed===0 ? 1 : 0);
             case dontDisplay:
@@ -342,7 +342,7 @@ const Dialog = {
      *  return value:     nsIFile object representing the file to load or save
      */
     filePicker: function (win, title, displayDir, save, defaultExtension, defaultName, filterPairs) {
-        Log.DEBUG("enigmailCommon.jsm: filePicker: "+save+"\n");
+        EnigmailLog.DEBUG("enigmailCommon.jsm: filePicker: "+save+"\n");
 
         let filePicker = Cc["@mozilla.org/filepicker;1"].createInstance();
         filePicker = filePicker.QueryInterface(Ci.nsIFilePicker);
@@ -395,4 +395,4 @@ const Dialog = {
     }
 };
 
-Windows.alert = Dialog.alert;
+EnigmailWindows.alert = EnigmailDialog.alert;

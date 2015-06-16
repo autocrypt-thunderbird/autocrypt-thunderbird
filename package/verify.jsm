@@ -41,36 +41,36 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Verify" ];
+const EXPORTED_SYMBOLS = [ "EnigmailVerifyAttachment" ];
 
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global Log: false */
-Cu.import("resource://enigmail/files.jsm"); /*global Files: false */
-Cu.import("resource://enigmail/enigmailGpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-Cu.import("resource://enigmail/gpg.jsm"); /*global Gpg: false */
-Cu.import("resource://enigmail/execution.jsm"); /*global Execution: false */
-Cu.import("resource://enigmail/time.jsm"); /*global Time: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global Locale: false */
-Cu.import("resource://enigmail/decryption.jsm"); /*global Decryption: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
+Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
+Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
+Cu.import("resource://enigmail/time.jsm"); /*global EnigmailTime: false */
+Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
 
 const Ci = Components.interfaces;
 
 const nsIEnigmail = Ci.nsIEnigmail;
 
-const Verify = {
+const EnigmailVerifyAttachment = {
     attachment: function (parent, verifyFile, sigFile, statusFlagsObj, errorMsgObj) {
-        Log.DEBUG("verify.jsm: Verify.attachment:\n");
+        EnigmailLog.DEBUG("verify.jsm: EnigmailVerifyAttachment.attachment:\n");
 
-        const verifyFilePath  = Files.getEscapedFilename(Files.getFilePathReadonly(verifyFile.QueryInterface(Ci.nsIFile)));
-        const sigFilePath     = Files.getEscapedFilename(Files.getFilePathReadonly(sigFile.QueryInterface(Ci.nsIFile)));
+        const verifyFilePath  = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePathReadonly(verifyFile.QueryInterface(Ci.nsIFile)));
+        const sigFilePath     = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePathReadonly(sigFile.QueryInterface(Ci.nsIFile)));
 
-        const args = Gpg.getStandardArgs(true).
+        const args = EnigmailGpg.getStandardArgs(true).
                   concat(["--verify", sigFilePath, verifyFilePath]);
 
-        const listener = Execution.newSimpleListener();
+        const listener = EnigmailExecution.newSimpleListener();
 
-        const proc = Execution.execStart(EnigmailGpgAgent.agentPath, args, false, parent, listener, statusFlagsObj);
+        const proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath, args, false, parent, listener, statusFlagsObj);
 
         if (!proc) {
             return -1;
@@ -79,13 +79,13 @@ const Verify = {
         proc.wait();
 
         const retObj = {};
-        Decryption.decryptMessageEnd(listener.stderrData, listener.exitCode, 1, true, true, nsIEnigmail.UI_INTERACTIVE, retObj);
+        EnigmailDecryption.decryptMessageEnd(listener.stderrData, listener.exitCode, 1, true, true, nsIEnigmail.UI_INTERACTIVE, retObj);
 
         if (listener.exitCode === 0) {
             const detailArr = retObj.sigDetails.split(/ /);
-            const dateTime = Time.getDateTime(detailArr[2], true, true);
+            const dateTime = EnigmailTime.getDateTime(detailArr[2], true, true);
             const msg1 = retObj.errorMsg.split(/\n/)[0];
-            const msg2 = Locale.getString("keyAndSigDate", ["0x"+retObj.keyId.substr(-8, 8), dateTime ]);
+            const msg2 = EnigmailLocale.getString("keyAndSigDate", ["0x"+retObj.keyId.substr(-8, 8), dateTime ]);
             errorMsgObj.value = msg1 + "\n" + msg2;
         } else {
             errorMsgObj.value = retObj.errorMsg;
@@ -95,6 +95,6 @@ const Verify = {
     },
 
     registerOn: function(target) {
-        target.verifyAttachment = Verify.attachment;
+        target.verifyAttachment = EnigmailVerifyAttachment.attachment;
     }
 };

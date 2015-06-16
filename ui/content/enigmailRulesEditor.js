@@ -58,7 +58,7 @@ function enigmailDlgOnLoad() {
       EnigAlert("Invalid pgprules.xml file:\n"+ rulesList.firstChild.textContent);
       return;
     }
-    Log.DEBUG("enigmailRulesEditor.js: dlgOnLoad: keys loaded\n");
+    EnigmailLog.DEBUG("enigmailRulesEditor.js: dlgOnLoad: keys loaded\n");
     gNumRows=0;
     var node=rulesList.firstChild.firstChild;
     while (node) {
@@ -91,7 +91,7 @@ function enigmailDlgOnLoad() {
 }
 
 function enigmailDlgOnAccept() {
-  Log.DEBUG("enigmailRulesEditor.js: dlgOnAccept:\n");
+  EnigmailLog.DEBUG("enigmailRulesEditor.js: dlgOnAccept:\n");
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return false;

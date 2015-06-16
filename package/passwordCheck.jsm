@@ -5,9 +5,9 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "passwordCheck" ];
+const EXPORTED_SYMBOLS = [ "EnigmailPasswordCheck" ];
 
-const passwordCheck = {
+const EnigmailPasswordCheck = {
   /**
    *  Check password quality
    *

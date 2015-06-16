@@ -40,9 +40,9 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Mime" ];
+const EXPORTED_SYMBOLS = [ "EnigmailMime" ];
 
-const Mime = {
+const EnigmailMime = {
     /***
      * create a string of random characters suitable to use for a boundary in a
      * MIME message following RFC 2045

@@ -39,7 +39,7 @@ Components.utils.import("resource://enigmail/log.jsm");
 
 window.addEventListener("load", function _enigmail_msgPrintLoad()
   {
-    Log.DEBUG("enigmailMsgPrintOverlay.js: enigMsgPrintLoad\n");
+    EnigmailLog.DEBUG("enigmailMsgPrintOverlay.js: enigMsgPrintLoad\n");
 
     // functionality to be added ...
   },
@@ -47,7 +47,7 @@ window.addEventListener("load", function _enigmail_msgPrintLoad()
 
 window.addEventListener("unload", function _enigmail_msgPrintUnload()
   {
-    Log.DEBUG("enigmailMsgPrintOverlay.js: enigMsgPrintUnload\n");
+    EnigmailLog.DEBUG("enigmailMsgPrintOverlay.js: enigMsgPrintUnload\n");
 
     // functionality to be added ...
   },

@@ -40,7 +40,7 @@ dump("loading: enigmailHelp.js\n");
 EnigInitCommon("enigmailHelp");
 
 function enigHelpLoad() {
-  Log.DEBUG("enigmailHelp.js: enigHelpLoad\n");
+  EnigmailLog.DEBUG("enigmailHelp.js: enigHelpLoad\n");
 
   var contentFrame = EnigGetFrame(window, "contentFrame");
   if (!contentFrame)

@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailCore: false, XPCOMUtils: false, Data: false, Log: false */
+/*global Components: false, EnigmailCore: false, XPCOMUtils: false, EnigmailData: false, EnigmailLog: false */
 /*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -44,11 +44,11 @@
 const EXPORTED_SYMBOLS = [ "EnigmailProtocolHandler" ];
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-Components.utils.import("resource://enigmail/enigmailCore.jsm");
+Components.utils.import("resource://enigmail/core.jsm");
 Components.utils.import("resource://enigmail/data.jsm");
 Components.utils.import("resource://enigmail/log.jsm");
-Components.utils.import("resource://enigmail/streams.jsm"); /*global Streams: false */
-Components.utils.import("resource://enigmail/uris.jsm"); /*global URIs: false */
+Components.utils.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
+Components.utils.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
 
 const NS_SIMPLEURI_CONTRACTID   = "@mozilla.org/network/simple-uri;1";
 const NS_ENIGMAILPROTOCOLHANDLER_CONTRACTID = "@mozilla.org/network/protocol;1?name=enigmail";
@@ -83,7 +83,7 @@ EnigmailProtocolHandler.prototype = {
     QueryInterface: XPCOMUtils.generateQI([nsIProtocolHandler]),
 
     newURI: function (aSpec, originCharset, aBaseURI) {
-        Log.DEBUG("enigmail.js: EnigmailProtocolHandler.newURI: aSpec='"+aSpec+"'\n");
+        EnigmailLog.DEBUG("enigmail.js: EnigmailProtocolHandler.newURI: aSpec='"+aSpec+"'\n");
 
         // cut of any parameters potentially added to the URI; these cannot be handled
         if (aSpec.substr(0,14) == "enigmail:dummy") aSpec = "enigmail:dummy";
@@ -95,10 +95,10 @@ EnigmailProtocolHandler.prototype = {
     },
 
     newChannel: function (aURI) {
-        Log.DEBUG("enigmail.js: EnigmailProtocolHandler.newChannel: URI='"+aURI.spec+"'\n");
+        EnigmailLog.DEBUG("enigmail.js: EnigmailProtocolHandler.newChannel: URI='"+aURI.spec+"'\n");
 
-        var messageId = Data.extractMessageId(aURI.spec);
-        var mimeMessageId = Data.extractMimeMessageId(aURI.spec);
+        var messageId = EnigmailData.extractMessageId(aURI.spec);
+        var mimeMessageId = EnigmailData.extractMimeMessageId(aURI.spec);
 
         if (messageId) {
             // Handle enigmail:message/...
@@ -109,14 +109,14 @@ EnigmailProtocolHandler.prototype = {
 
             var contentType, contentCharset, contentData;
 
-            if (URIs.getMessageURI(messageId)) {
-                var messageUriObj = URIs.getMessageURI(messageId);
+            if (EnigmailURIs.getMessageURI(messageId)) {
+                var messageUriObj = EnigmailURIs.getMessageURI(messageId);
 
                 contentType    = messageUriObj.contentType;
                 contentCharset = messageUriObj.contentCharset;
                 contentData    = messageUriObj.contentData;
 
-                Log.DEBUG("enigmail.js: EnigmailProtocolHandler.newChannel: messageURL="+messageUriObj.originalUrl+", content length="+contentData.length+", "+contentType+", "+contentCharset+"\n");
+                EnigmailLog.DEBUG("enigmail.js: EnigmailProtocolHandler.newChannel: messageURL="+messageUriObj.originalUrl+", content length="+contentData.length+", "+contentType+", "+contentCharset+"\n");
 
                 // do NOT delete the messageUriObj now from the list, this will be done once the message is unloaded (fix for bug 9730).
 
@@ -131,14 +131,14 @@ EnigmailProtocolHandler.prototype = {
                 contentData = "Enigmail error: invalid URI "+aURI.spec;
             }
 
-            var channel = Streams.newStringChannel(aURI, contentType, "UTF-8", contentData);
+            var channel = EnigmailStreams.newStringChannel(aURI, contentType, "UTF-8", contentData);
 
             return channel;
         }
 
         if (aURI.spec == aURI.scheme+":dummy") {
             // Dummy PKCS7 content (to access mimeEncryptedClass)
-            return Streams.newStringChannel(aURI, "message/rfc822", "", gDummyPKCS7);
+            return EnigmailStreams.newStringChannel(aURI, "message/rfc822", "", gDummyPKCS7);
         }
 
         var winName, spec;
@@ -188,8 +188,8 @@ EnigmailProtocolHandler.prototype = {
     },
 
     handleMimeMessage: function (messageId) {
-        //        Log.DEBUG("enigmail.js: EnigmailProtocolHandler.handleMimeMessage: messageURL="+messageUriObj.originalUrl+", content length="+contentData.length+", "+contentType+", "+contentCharset+"\n");
-        Log.DEBUG("enigmail.js: EnigmailProtocolHandler.handleMimeMessage: messageURL=, content length=, , \n");
+        //        EnigmailLog.DEBUG("enigmail.js: EnigmailProtocolHandler.handleMimeMessage: messageURL="+messageUriObj.originalUrl+", content length="+contentData.length+", "+contentType+", "+contentCharset+"\n");
+        EnigmailLog.DEBUG("enigmail.js: EnigmailProtocolHandler.handleMimeMessage: messageURL=, content length=, , \n");
     },
 
     allowPort: function (port, scheme) {

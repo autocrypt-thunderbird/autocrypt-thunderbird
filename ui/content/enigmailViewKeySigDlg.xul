@@ -151,7 +151,7 @@
 
       if (typeof(inArg.posX)=="number" &&
           typeof(inArg.posY)=="number") {
-        Events.dispatchEvent(setWindowPos, 0, inArg.posX, inArg.posY);
+        EnigmailEvents.dispatchEvent(setWindowPos, 0, inArg.posX, inArg.posY);
       }
 
       keyIdValue.value = gKeyListArr[keyId].userId+" - 0x"+ inArg.keyId.substr(-8,8);
@@ -159,7 +159,7 @@
       var exitCodeObj = {};
       var errorMsgObj = {};
 
-      var sigList = KeyRing.getKeySig("0x"+keyId, exitCodeObj, errorMsgObj);
+      var sigList = EnigmailKeyRing.getKeySig("0x"+keyId, exitCodeObj, errorMsgObj);
 
       if (exitCodeObj.value != 0) {
         EnigAlert(errorMsgObj.value);

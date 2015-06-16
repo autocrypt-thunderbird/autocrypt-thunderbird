@@ -111,7 +111,7 @@ var progressListener = {
 
 function onLoad() {
   // Set global variables.
-  Log.DEBUG("enigRetrieveProgress: onLoad\n");
+  EnigmailLog.DEBUG("enigRetrieveProgress: onLoad\n");
   var inArg = window.arguments[0];
   var subject;
   window.arguments[1].result=false;
@@ -131,26 +131,26 @@ function onLoad() {
 
   var statTxt=document.getElementById("dialog.status2");
   if (inArg.accessType == nsIEnigmail.UPLOAD_KEY) {
-    statTxt.value=Locale.getString("keyserverProgress.uploading");
-    subject = Locale.getString("keyserverTitle.uploading");
+    statTxt.value=EnigmailLocale.getString("keyserverProgress.uploading");
+    subject = EnigmailLocale.getString("keyserverTitle.uploading");
   }
   else {
-    statTxt.value=Locale.getString("keyserverProgress.refreshing");
-    subject = Locale.getString("keyserverTitle.refreshing");
+    statTxt.value=EnigmailLocale.getString("keyserverProgress.refreshing");
+    subject = EnigmailLocale.getString("keyserverTitle.refreshing");
   }
 
   msgProgress = Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
 
   var procListener = {
     done: function (exitCode) {
-      Log.DEBUG("enigRetrieveProgress: subprocess terminated with "+exitCode+"\n");
+      EnigmailLog.DEBUG("enigRetrieveProgress: subprocess terminated with "+exitCode+"\n");
       processEnd(msgProgress, exitCode);
     },
     stdout: function(data) {
-      Log.DEBUG("enigRetrieveProgress: got data on stdout: '"+data+"'\n");
+      EnigmailLog.DEBUG("enigRetrieveProgress: got data on stdout: '"+data+"'\n");
     },
     stderr: function(data) {
-      Log.DEBUG("enigRetrieveProgress: got data on stderr: '"+data+"'\n");
+      EnigmailLog.DEBUG("enigRetrieveProgress: got data on stderr: '"+data+"'\n");
       gErrorData += data;
     }
   };
@@ -160,9 +160,9 @@ function onLoad() {
   gEnigCallbackFunc = inArg.cbFunc;
 
   var errorMsgObj={};
-  gProcess = KeyServer.access(inArg.accessType, inArg.keyServer, inArg.keyList, procListener, errorMsgObj);
+  gProcess = EnigmailKeyServer.access(inArg.accessType, inArg.keyServer, inArg.keyList, procListener, errorMsgObj);
   if (!gProcess) {
-    EnigAlert(Locale.getString("sendKeysFailed")+"\n"+EnigConvertGpgToUnicode(errorMsgObj.value));
+    EnigAlert(EnigmailLocale.getString("sendKeysFailed")+"\n"+EnigConvertGpgToUnicode(errorMsgObj.value));
   }
 
   window.title = subject;
@@ -197,11 +197,11 @@ function onCancel ()
 }
 
 function processEnd (progressBar, exitCode) {
-  Log.DEBUG("enigmailRetrieveProgress.js: processEnd\n");
+  EnigmailLog.DEBUG("enigmailRetrieveProgress.js: processEnd\n");
   var errorMsg;
   if (gProcess) {
     gProcess = null;
-    Log.DEBUG("enigmailRetrieveProgress.js: processEnd: exitCode = "+exitCode+"\n");
+    EnigmailLog.DEBUG("enigmailRetrieveProgress.js: processEnd: exitCode = "+exitCode+"\n");
 
     var statusText=gEnigCallbackFunc(exitCode, "", false);
 
@@ -214,7 +214,7 @@ function processEnd (progressBar, exitCode) {
       }
     } catch (ex) {}
 
-    Log.DEBUG("enigmailRetrieveProgress.js: processEnd: errorMsg="+errorMsg);
+    EnigmailLog.DEBUG("enigmailRetrieveProgress.js: processEnd: errorMsg="+errorMsg);
     if (errorMsg.search(/ec=\d+/i)>=0) {
       exitCode=-1;
     }

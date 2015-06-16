@@ -74,7 +74,7 @@
   </vbox>
   <script type="application/x-javascript">
   <![CDATA[
-    Components.utils.import("resource://enigmail/enigmailCore.jsm");
+    Components.utils.import("resource://enigmail/core.jsm");
     Components.utils.import("resource://enigmail/keyEditor.jsm");
     Components.utils.import("resource://enigmail/locale.jsm");
     Components.utils.import("resource://enigmail/data.jsm");
@@ -86,39 +86,39 @@
       var comment = document.getElementById("addUid_comment");
 
       if ((email.value.search(/^ *$/) == 0) || (name.value.search(/^ *$/) == 0)) {
-        Dialog.alert(window, Locale.getString ("addUidDlg.nameOrEmailError"));
+        EnigmailDialog.alert(window, EnigmailLocale.getString ("addUidDlg.nameOrEmailError"));
         return false;
       }
       if (name.value.replace(/ *$/, "").length <5) {
-        Dialog.alert(window, Locale.getString ("addUidDlg.nameMinLengthError"));
+        EnigmailDialog.alert(window, EnigmailLocale.getString ("addUidDlg.nameMinLengthError"));
         return false;
       }
       if (email.value.search(/.@./)<0) {
-        Dialog.alert(window, Locale.getString ("addUidDlg.invalidEmailError"));
+        EnigmailDialog.alert(window, EnigmailLocale.getString ("addUidDlg.invalidEmailError"));
         return false;
       }
       if (comment.value.search(/[()]/) >= 0) {
-        Dialog.alert(window, Locale.getString ("addUidDlg.commentError"));
+        EnigmailDialog.alert(window, EnigmailLocale.getString ("addUidDlg.commentError"));
         return false;
       }
       var enigmailSvc = EnigmailCore.getService();
       if (!enigmailSvc) {
-        Dialog.alert(window, Locale.getString ("accessError"));
+        EnigmailDialog.alert(window, EnigmailLocale.getString ("accessError"));
         return true;
       }
 
-      KeyEditor.addUid(window,
+      EnigmailKeyEditor.addUid(window,
         window.arguments[0].keyId,
-        Data.convertFromUnicode(name.value),
-        Data.convertFromUnicode(email.value),
-        Data.convertFromUnicode(comment.value),
+        EnigmailData.convertFromUnicode(name.value),
+        EnigmailData.convertFromUnicode(email.value),
+        EnigmailData.convertFromUnicode(comment.value),
         function _addUidCb(exitCode, errorMsg) {
            if (exitCode != 0) {
-              Dialog.alert(window, Locale.getString("addUidFailed")+"\n\n"+errorMsg);
+              EnigmailDialog.alert(window, EnigmailLocale.getString("addUidFailed")+"\n\n"+errorMsg);
             }
             else {
               window.arguments[1].refresh = true;
-              Dialog.alert(window, Locale.getString("addUidOK"));
+              EnigmailDialog.alert(window, EnigmailLocale.getString("addUidOK"));
             }
             window.close();
         });

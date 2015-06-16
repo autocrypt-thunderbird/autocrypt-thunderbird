@@ -40,9 +40,9 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Constants" ];
+const EXPORTED_SYMBOLS = [ "EnigmailConstants" ];
 
-const Constants = {
+const EnigmailConstants = {
     POSSIBLE_PGPMIME: -2081,
 
     // possible values for

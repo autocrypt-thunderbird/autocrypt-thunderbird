@@ -40,13 +40,13 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "HttpProxy" ];
+const EXPORTED_SYMBOLS = [ "EnigmailHttpProxy" ];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/prefs.jsm"); /*global Prefs: false */
+Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 
 const NS_PREFS_SERVICE_CID = "@mozilla.org/preferences-service;1";
 
@@ -73,7 +73,7 @@ function getPasswdForHost(hostname, userObj, passwdObj) {
     return false;
 }
 
-const HttpProxy = {
+const EnigmailHttpProxy = {
   /**
    *  get Proxy for a given hostname as configured in Mozilla
    *
@@ -84,7 +84,7 @@ const HttpProxy = {
    */
   getHttpProxy: function (hostName) {
       var proxyHost = null;
-      if (Prefs.getPref("respectHttpProxy")) {
+      if (EnigmailPrefs.getPref("respectHttpProxy")) {
           // determine proxy host
           var prefsSvc = Cc[NS_PREFS_SERVICE_CID].getService(Ci.nsIPrefService);
           var prefRoot = prefsSvc.getBranch(null);

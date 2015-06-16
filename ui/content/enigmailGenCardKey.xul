@@ -214,7 +214,7 @@
 
       QueryInterface : function(iid)
       {
-        //Log.DEBUG("enigmailGenCardKey: EnigMimeReadCallback.QI: "+iid+"\n");
+        //EnigmailLog.DEBUG("enigmailGenCardKey: EnigMimeReadCallback.QI: "+iid+"\n");
         if (iid.equals(Components.interfaces.nsIEnigMimeReadCallback) ||
             iid.equals(Components.interfaces.nsISupports) )
           return this;
@@ -227,7 +227,7 @@
         var aLine = data.split(/ +/);
         if (aLine[0] == "[GNUPG:]") {
          if (aLine[1]=="GET_LINE" && aLine[2]=="keygen.comment") {
-            txt=Locale.getString("keygen.started")+"\n";
+            txt=EnigmailLocale.getString("keygen.started")+"\n";
             this._state=1;
           }
           else if (aLine[1]=="PROGRESS" && aLine[2]=="primegen") {
@@ -244,7 +244,7 @@
           txt=data+"\n";
         }
         if (txt) {
-          var contentFrame = Windows.getFrame(window, "keygenConsole");
+          var contentFrame = EnigmailWindows.getFrame(window, "keygenConsole");
           if (contentFrame) {
             var consoleElement = contentFrame.document.getElementById('console');
             consoleElement.firstChild.data += txt;
@@ -257,11 +257,11 @@
     }
 
     function startKeyGen() {
-      Log.DEBUG("enigmailGenCardKey: startKeyGen(): Start\n");
+      EnigmailLog.DEBUG("enigmailGenCardKey: startKeyGen(): Start\n");
 
       var enigmailSvc = EnigmailCore.getService(window);
       if (!enigmailSvc) {
-        Dialog.alert(window,Locale.getString("accessError"));
+        EnigmailDialog.alert(window,EnigmailLocale.getString("accessError"));
         return;
       }
 
@@ -276,19 +276,19 @@
       }
       else {
         if (passphrase != passphrase2Element.value) {
-          Dialog.alert(window,Locale.getString("passNoMatch"));
+          EnigmailDialog.alert(window,EnigmailLocale.getString("passNoMatch"));
           return;
         }
 
         if (passphrase.search(/[^\x20-\x7E]/)>=0) {
-          if (! Dialog.confirmDlg(window, Locale.getString("keygen.passCharProblem"),
-              Locale.getString("dlg.button.ignore"), Locale.getString("dlg.button.cancel"))) {
+          if (! EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("keygen.passCharProblem"),
+              EnigmailLocale.getString("dlg.button.ignore"), EnigmailLocale.getString("dlg.button.cancel"))) {
             return null;
           }
         }
 
         if (!passphrase) {
-          Dialog.alert(window,Locale.getString("keygen.passRequired"));
+          EnigmailDialog.alert(window,EnigmailLocale.getString("keygen.passRequired"));
           return;
         }
       }
@@ -305,11 +305,11 @@
       if (! noExpiry.checked) {
         expiryTime = Number(expireInput.value) * (timeScale.value == "y" ? 365 : (timeScale.value == "m" ? 30 : 1));
         if (expiryTime > 36500) {
-          Dialog.alert(window,Locale.getString("expiryTooLong"));
+          EnigmailDialog.alert(window,EnigmailLocale.getString("expiryTooLong"));
           return;
         }
         if (! (expiryTime > 0)) {
-          Dialog.alert(window,Locale.getString("expiryTooShort"));
+          EnigmailDialog.alert(window,EnigmailLocale.getString("expiryTooShort"));
           return;
         }
         valid = String(Number(expireInput.value));
@@ -322,7 +322,7 @@
       var userEmail = curId.email;
 
       if (!userName) {
-        Dialog.alert(window,Locale.getString("passUserName"));
+        EnigmailDialog.alert(window,EnigmailLocale.getString("passUserName"));
         return;
       }
 
@@ -333,19 +333,19 @@
 
       idString += " <" + userEmail + ">";
 
-      var confirmMsg = Locale.getString("keyConfirm",idString);
+      var confirmMsg = EnigmailLocale.getString("keyConfirm",idString);
 
-      if (!EnigConfirm(confirmMsg, Locale.getString("keyMan.button.generateKey"))) {
+      if (!EnigConfirm(confirmMsg, EnigmailLocale.getString("keyMan.button.generateKey"))) {
        return;
       }
-      var contentFrame = Windows.getFrame(window, "keygenConsole");
+      var contentFrame = EnigmailWindows.getFrame(window, "keygenConsole");
       if (contentFrame) {
         var consoleElement = contentFrame.document.getElementById('console');
         consoleElement.firstChild.data = "";
       }
 
       var generateObserver = new enigGenKeyObserver();
-      KeyEditor.genCardKey(window,
+      EnigmailKeyEditor.genCardKey(window,
                                userName,
                                userEmail,
                                comment,
@@ -359,18 +359,18 @@
               gUsedId.setIntAttribute("pgpKeyMode", 1);
               gUsedId.setCharAttribute("pgpkeyId", "0x"+generateObserver.keyId.substr(-8,8));
             }
-            var msg=Locale.getString("keygen.completed", generateObserver.keyId);
+            var msg=EnigmailLocale.getString("keygen.completed", generateObserver.keyId);
             if (generateObserver.backupLocation) {
-              msg += "\n"+Locale.getString("keygen.keyBackup", generateObserver.backupLocation);
+              msg += "\n"+EnigmailLocale.getString("keygen.keyBackup", generateObserver.backupLocation);
             }
-            if (Dialog.confirmDlg(window, msg+"\n\n"+Locale.getString("revokeCertRecommended"), Locale.getString("keyMan.button.generateCert"))) {
+            if (EnigmailDialog.confirmDlg(window, msg+"\n\n"+EnigmailLocale.getString("revokeCertRecommended"), EnigmailLocale.getString("keyMan.button.generateCert"))) {
               EnigCreateRevokeCert(generateObserver.keyId, curId.email, closeWin);
             }
             else
               closeWin();
           }
           else {
-            Dialog.alert(window, errorMsg);
+            EnigmailDialog.alert(window, errorMsg);
           }
         });
     }

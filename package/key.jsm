@@ -39,11 +39,11 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Key" ];
+const EXPORTED_SYMBOLS = [ "EnigmailKey" ];
 
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global Log: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 
 function KeyEntry(key) {
     if (!(this instanceof KeyEntry)) {
@@ -121,7 +121,7 @@ KeyEntry.prototype = {
     }
 };
 
-const Key = {
+const EnigmailKey = {
     Entry: KeyEntry,
 
     /**
@@ -131,7 +131,7 @@ const Key = {
      * @return |string| - formatted string
      */
     formatFpr: function (fingerprint) {
-        Log.DEBUG("key.jsm: Key.formatFpr(" + fingerprint + ")\n");
+        EnigmailLog.DEBUG("key.jsm: EnigmailKey.formatFpr(" + fingerprint + ")\n");
         // format key fingerprint
         let r="";
         const fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
@@ -147,7 +147,7 @@ const Key = {
     extractPubkey: function (statusMsg) {
         const matchb = statusMsg.match(/(^|\n)NO_PUBKEY (\w{8})(\w{8})/);
         if (matchb && (matchb.length > 3)) {
-            Log.DEBUG("enigmailCommon.jsm:: Enigmail.extractPubkey: NO_PUBKEY 0x"+matchb[3]+"\n");
+            EnigmailLog.DEBUG("enigmailCommon.jsm:: Enigmail.extractPubkey: NO_PUBKEY 0x"+matchb[3]+"\n");
             return matchb[2]+matchb[3];
         } else {
             return null;
