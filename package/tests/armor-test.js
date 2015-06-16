@@ -10,9 +10,9 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
-testing("armor.jsm"); /*global Armor: false */
+testing("armor.jsm"); /*global EnigmailArmor: false */
 
-test(function shouldLocateArmoredBlock() {
+test(function shouldLocateEnigmailArmoredBlock() {
     const text = "" +
               "    -----BEGIN PGP SIGNATURE-----\n" +
               "    Version: GnuPG/MacGPG2 v2.0.22 (Darwin)\n" +
@@ -36,7 +36,7 @@ test(function shouldLocateArmoredBlock() {
     const endIndexObj = {};
     const indentStrObj = {};
     const indentStr = "";
-    const blockType = Armor.locateArmoredBlock(text, 0, indentStr, beginIndexObj, endIndexObj, indentStrObj);
+    const blockType = EnigmailArmor.locateArmoredBlock(text, 0, indentStr, beginIndexObj, endIndexObj, indentStrObj);
     Assert.equal(0, beginIndexObj.value);
     Assert.equal("    ", indentStrObj.value);
     Assert.equal("SIGNATURE", blockType);
@@ -70,9 +70,9 @@ test(function shouldExtractSignaturePart() {
             "\n" +
             "-----END PGP SIGNATURE-----";
 
-    const signature_text = Armor.extractSignaturePart(signature_block, Ci.nsIEnigmail.SIGNATURE_TEXT);
-    const signature_headers = Armor.extractSignaturePart(signature_block, Ci.nsIEnigmail.SIGNATURE_HEADERS);
-    const signature_armor = Armor.extractSignaturePart(signature_block, Ci.nsIEnigmail.SIGNATURE_ARMOR);
+    const signature_text = EnigmailArmor.extractSignaturePart(signature_block, Ci.nsIEnigmail.SIGNATURE_TEXT);
+    const signature_headers = EnigmailArmor.extractSignaturePart(signature_block, Ci.nsIEnigmail.SIGNATURE_HEADERS);
+    const signature_armor = EnigmailArmor.extractSignaturePart(signature_block, Ci.nsIEnigmail.SIGNATURE_ARMOR);
     Assert.equal(signature.text, signature_text);
     Assert.equal(signature.header, signature_headers);
     Assert.equal(signature.armor.replace(/\s*/g, ""), signature_armor);

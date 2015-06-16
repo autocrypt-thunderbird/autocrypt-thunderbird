@@ -1,4 +1,4 @@
-/*global Components: false, Data: false, Log: false, Prefs: false, Locale: false, Armor: false, Data: false, Execution: false, Dialog: false */
+/*global Components: false, Data: false, Log: false, Prefs: false, Locale: false, EnigmailArmor: false, Data: false, Execution: false, Dialog: false */
 /*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -480,7 +480,7 @@ const Decryption = {
         var beginIndexObj = {};
         var endIndexObj = {};
         var indentStrObj = {};
-        var blockType = Armor.locateArmoredBlock(cipherText, 0, "", beginIndexObj, endIndexObj, indentStrObj);
+        var blockType = EnigmailArmor.locateArmoredBlock(cipherText, 0, "", beginIndexObj, endIndexObj, indentStrObj);
         if (!blockType || blockType == "SIGNATURE") {
             errorMsgObj.value = Locale.getString("noPGPblock");
             statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
@@ -538,7 +538,7 @@ const Decryption = {
         var newSignature = "";
 
         if (verifyOnly) {
-            newSignature = Armor.extractSignaturePart(pgpBlock, nsIEnigmail.SIGNATURE_ARMOR);
+            newSignature = EnigmailArmor.extractSignaturePart(pgpBlock, nsIEnigmail.SIGNATURE_ARMOR);
             if (oldSignature && (newSignature != oldSignature)) {
                 Log.ERROR("enigmail.js: Enigmail.decryptMessage: Error - signature mismatch "+newSignature+"\n");
                 errorMsgObj.value = Locale.getString("sigMismatch");
@@ -641,7 +641,7 @@ const Decryption = {
             var innerKeyBlock;
             if (verifyOnly) {
                 // Search for indented public key block in signed message
-                var innerBlockType = Armor.locateArmoredBlock(pgpBlock, 0, "- ", beginIndexObj, endIndexObj, indentStrObj);
+                var innerBlockType = EnigmailArmor.locateArmoredBlock(pgpBlock, 0, "- ", beginIndexObj, endIndexObj, indentStrObj);
                 if (innerBlockType == "PUBLIC KEY BLOCK") {
 
                     innerKeyBlock = pgpBlock.substr(beginIndexObj.value,

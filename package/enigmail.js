@@ -53,7 +53,7 @@ Cu.import("resource://enigmail/decryption.jsm"); /*global Decryption: false */
 Cu.import("resource://enigmail/enigmailProtocolHandler.jsm"); /*global EnigmailProtocolHandler: false */
 Cu.import("resource://enigmail/rules.jsm"); /*global Rules: false */
 Cu.import("resource://enigmail/filters.jsm"); /*global Filters: false */
-Cu.import("resource://enigmail/armor.jsm"); /*global Armor: false */
+Cu.import("resource://enigmail/armor.jsm"); /*global EnigmailArmor: false */
 Cu.import("resource://enigmail/log.jsm"); /*global Log: false */
 Cu.import("resource://enigmail/os.jsm"); /*global OS: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global Locale: false */
@@ -355,7 +355,7 @@ Enigmail.prototype = {
 }; // Enigmail.prototype
 
 
-Armor.registerOn(Enigmail.prototype);
+EnigmailArmor.registerOn(Enigmail.prototype);
 Decryption.registerOn(Enigmail.prototype);
 Encryption.registerOn(Enigmail.prototype);
 Rules.registerOn(Enigmail.prototype);

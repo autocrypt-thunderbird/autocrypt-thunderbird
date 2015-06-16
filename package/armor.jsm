@@ -41,7 +41,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "Armor" ];
+const EXPORTED_SYMBOLS = [ "EnigmailArmor" ];
 
 Components.utils.import("resource://enigmail/log.jsm");
 
@@ -84,7 +84,7 @@ function indexOfNewline(str, off, then) {
     }
 }
 
-const Armor = {
+const EnigmailArmor = {
     // Locates offsets bracketing PGP armored block in text,
     // starting from given offset, and returns block type string.
     // beginIndex = offset of first character of block
@@ -145,7 +145,7 @@ const Armor = {
 
         if (blockType == "UNVERIFIED MESSAGE") {
             // Skip any unverified message block
-            return Armor.locateArmoredBlock(text, endIndex+1, indentStr, beginIndexObj, endIndexObj, indentStrObj);
+            return EnigmailArmor.locateArmoredBlock(text, endIndex+1, indentStr, beginIndexObj, endIndexObj, indentStrObj);
         }
 
         beginIndexObj.value = beginIndex;
@@ -175,7 +175,7 @@ const Armor = {
         var i = 0;
         var b;
 
-        while (( b = Armor.locateArmoredBlock(text, i, "", beginObj, endObj, {})) !== "") {
+        while (( b = EnigmailArmor.locateArmoredBlock(text, i, "", beginObj, endObj, {})) !== "") {
             blocks.push({
                 begin: beginObj.value,
                 end: endObj.value,
@@ -234,8 +234,8 @@ const Armor = {
     },
 
     registerOn: function(target) {
-        target.locateArmoredBlock = Armor.locateArmoredBlock;
-        target.locateArmoredBlocks = Armor.locateArmoredBlocks;
-        target.extractSignaturePart = Armor.extractSignaturePart;
+        target.locateArmoredBlock = EnigmailArmor.locateArmoredBlock;
+        target.locateArmoredBlocks = EnigmailArmor.locateArmoredBlocks;
+        target.extractSignaturePart = EnigmailArmor.extractSignaturePart;
     }
 };

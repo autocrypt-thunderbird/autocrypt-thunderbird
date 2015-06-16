@@ -12,7 +12,7 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withE
 
 testing("decryption.jsm"); /*global Decryption: false, nsIEnigmail: false */
 component("enigmail/keyRing.jsm"); /*global KeyRing: fales */
-component("enigmail/armor.jsm"); /*global Armor: fales */
+component("enigmail/armor.jsm"); /*global EnigmailArmor: fales */
 
 test(withTestGpgHome(withEnigmail(function shouldDecryptMessage() {
     const secretKey = do_get_file("resources/dev-strike.sec", false);
@@ -59,6 +59,6 @@ test(withTestGpgHome(withEnigmail(function shouldDecryptMessage() {
     Assert.equal(0, errorMsgObj.value);
     Assert.equal("Hello there!", decryptResult);
     Assert.equal(true, (statusFlagObj.value & (nsIEnigmail.DISPLAY_MESSAGE | nsIEnigmail.DECRYPTION_OKAY)) !== 0);
-    const blockType = Armor.locateArmoredBlock(encryptResult, 0, "", {}, {}, {});
+    const blockType = EnigmailArmor.locateArmoredBlock(encryptResult, 0, "", {}, {}, {});
     Assert.equal("MESSAGE", blockType);
 })));

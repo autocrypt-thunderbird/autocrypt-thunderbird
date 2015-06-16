@@ -62,7 +62,7 @@ function initPrefService() {
         p.branch      = p.service.getBranch(ENIGMAIL_PREFS_ROOT);
 
         if(p.branch.getCharPref("logDirectory")) {
-            Log.setLogLevel = 5;
+            Log.setLogLevel(5);
         }
     }
     catch (ex) {

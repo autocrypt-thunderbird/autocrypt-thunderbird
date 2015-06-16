@@ -3900,7 +3900,7 @@ Enigmail.msg = {
     var beginIndexObj = {};
     var endIndexObj = {};
     var indentStrObj = {};
-    var blockType = Armor.locateArmoredBlock(docText, 0, indentStr, beginIndexObj, endIndexObj, indentStrObj);
+    var blockType = EnigmailArmor.locateArmoredBlock(docText, 0, indentStr, beginIndexObj, endIndexObj, indentStrObj);
     if ((blockType != "MESSAGE") && (blockType != "SIGNED MESSAGE"))
       return;
 
@@ -4030,7 +4030,7 @@ Enigmail.msg = {
         return;
 
       // Extract text portion of clearsign block
-      plainText = Armor.extractSignaturePart(pgpBlock, nsIEnigmail.SIGNATURE_TEXT);
+      plainText = EnigmailArmor.extractSignaturePart(pgpBlock, nsIEnigmail.SIGNATURE_TEXT);
     }
 
     var doubleDashSeparator = Prefs.getPref("doubleDashSeparator");

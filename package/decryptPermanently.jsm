@@ -45,7 +45,7 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/AddonManager.jsm"); /*global AddonManager: false */
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
 Cu.import("resource://enigmail/log.jsm"); /*global Log: false */
-Cu.import("resource://enigmail/armor.jsm"); /*global Armor: false */
+Cu.import("resource://enigmail/armor.jsm"); /*global EnigmailArmor: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global Locale: false */
 Cu.import("resource://enigmail/execution.jsm"); /*global Execution: false */
 Cu.import("resource://enigmail/dialog.jsm"); /*global Dialog: false */
@@ -736,7 +736,7 @@ DecryptMessageIntoFolder.prototype = {
             var uiFlags = nsIEnigmail.UI_INTERACTIVE | nsIEnigmail.UI_UNVERIFIED_ENC_OK;
 
             var plaintexts = [];
-            var blocks = Armor.locateArmoredBlocks(mime.body);
+            var blocks = EnigmailArmor.locateArmoredBlocks(mime.body);
             var tmp = [];
 
             for (let i = 0; i < blocks.length; i++) {

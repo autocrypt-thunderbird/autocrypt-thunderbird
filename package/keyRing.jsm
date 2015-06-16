@@ -55,7 +55,7 @@ Cu.import("resource://enigmail/locale.jsm"); /*global Locale: false */
 Cu.import("resource://enigmail/gpg.jsm"); /*global Gpg: false */
 Cu.import("resource://enigmail/files.jsm"); /*global Files: false */
 Cu.import("resource://enigmail/trust.jsm"); /*global Trust: false */
-Cu.import("resource://enigmail/armor.jsm"); /*global Armor: false */
+Cu.import("resource://enigmail/armor.jsm"); /*global EnigmailArmor: false */
 Cu.import("resource://enigmail/dialog.jsm"); /*global Dialog: false */
 Cu.import("resource://enigmail/os.jsm"); /*global OS: false */
 Cu.import("resource://enigmail/time.jsm"); /*global Time: false */
@@ -589,7 +589,7 @@ const KeyRing = {
 
         const beginIndexObj = {};
         const endIndexObj   = {};
-        const blockType = Armor.locateArmoredBlock(msgText, 0, "", beginIndexObj, endIndexObj, {});
+        const blockType = EnigmailArmor.locateArmoredBlock(msgText, 0, "", beginIndexObj, endIndexObj, {});
         if (!blockType) {
             errorMsgObj.value = Locale.getString("noPGPblock");
             return 1;

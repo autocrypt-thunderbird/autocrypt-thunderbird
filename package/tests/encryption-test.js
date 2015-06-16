@@ -12,7 +12,7 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withE
 
 testing("encryption.jsm"); /*global Encryption: false, nsIEnigmail: false */
 component("enigmail/keyRing.jsm"); /*global KeyRing: fales */
-component("enigmail/armor.jsm"); /*global Armor: fales */
+component("enigmail/armor.jsm"); /*global EnigmailArmor: fales */
 
 test(withTestGpgHome(withEnigmail(function shouldSignMessage() {
     const secretKey = do_get_file("resources/dev-strike.sec", false);
@@ -38,7 +38,7 @@ test(withTestGpgHome(withEnigmail(function shouldSignMessage() {
     Assert.equal(0, exitCodeObj.value);
     Assert.equal(0, errorMsgObj.value);
     Assert.equal(true, (statusFlagObj.value == nsIEnigmail.SIG_CREATED));
-    const blockType = Armor.locateArmoredBlock(encryptResult, 0, "", {}, {}, {});
+    const blockType = EnigmailArmor.locateArmoredBlock(encryptResult, 0, "", {}, {}, {});
     Assert.equal("SIGNED MESSAGE", blockType);
 })));
 
@@ -66,6 +66,6 @@ test(withTestGpgHome(withEnigmail(function shouldEncryptMessage() {
     Assert.equal(0, exitCodeObj.value);
     Assert.equal(0, errorMsgObj.value);
     Assert.equal(true, (statusFlagObj.value & nsIEnigmail.END_ENCRYPTION) !== 0);
-    const blockType = Armor.locateArmoredBlock(encryptResult, 0, "", {}, {}, {});
+    const blockType = EnigmailArmor.locateArmoredBlock(encryptResult, 0, "", {}, {}, {});
     Assert.equal("MESSAGE", blockType);
 })));
