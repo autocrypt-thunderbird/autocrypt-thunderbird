@@ -67,7 +67,7 @@ contract @mozilla.org/enigmail/cline-handler;1 {847b3ab1-7ab1-11d4-8f02-00600894
 category command-line-handler cline-enigmail @mozilla.org/enigmail/cline-handler;1
 
 # EnigMsgCompFields
-component {847b3a30-7ab1-11d4-8f02-006008948af5} components/enigMsgCompFields.js
+component {847b3a30-7ab1-11d4-8f02-006008948af5} components/msgCompFields.js
 contract @mozdev.org/enigmail/composefields;1 {847b3a30-7ab1-11d4-8f02-006008948af5}
 
 # registration of service to dectypt PGP/MIME messages
@@ -79,7 +79,7 @@ component {1b040e64-e704-42b9-b05a-942e569afffc} components/mimeEncrypt.js
 contract @mozilla.org/messengercompose/composesecure;1 {1b040e64-e704-42b9-b05a-942e569afffc}
 
 # Preference Service
-component {847b3ab0-7ab1-11d4-8f02-006008948af5} components/enigprefs-service.js
+component {847b3ab0-7ab1-11d4-8f02-006008948af5} components/prefs-service.js
 contract @mozilla.org/accountmanager/extension;1?name=enigprefs {847b3ab0-7ab1-11d4-8f02-006008948af5}
 category mailnews-accountmanager-extensions enigmail-account-manager-extension @mozilla.org/accountmanager/extension;1?name=enigprefs
 
