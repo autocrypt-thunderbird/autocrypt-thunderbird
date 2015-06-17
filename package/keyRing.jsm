@@ -244,7 +244,7 @@ function getKeyListEntryOfKey(keyId) {
 const EnigmailKeyRing = {
     importKeyFromFile: function (parent, inputFile, errorMsgObj, importedKeysObj){
         var command= EnigmailGpg.agentPath;
-        var args = EnigmailGpg.getStandardArgs(false);
+        var args = EnigmailGpg.getStandardArgs(true);
         EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: fileName="+inputFile.path+"\n");
         importedKeysObj.value="";
 
