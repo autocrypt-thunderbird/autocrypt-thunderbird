@@ -34,6 +34,11 @@ xpi:
 check:
 	util/checkFiles.py
 
+jshint:
+	static_analysis/jshint ipc
+	static_analysis/jshint package
+	static_analysis/jshint ui
+
 clean:
 	rm -f build/$(XPIFILE)
 	for dir in $(DIRS); do \

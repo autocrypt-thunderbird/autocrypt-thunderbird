@@ -8,17 +8,25 @@
 # To run, install node and npm, then install jshint:
 #   sudo npm install jshint -g
 
-if command -v realpath>/dev/null 2>&1; then
-    CURRENT_FILE=`realpath "$0"`
+WHICH_JSHINT=`which jshint 2>/dev/null`
+if [ "${WHICH_JSHINT}x" == "x" ]; then
+    echo "You need to have jshint installed to run this script"
+    echo "  Install node.js and npm, then install jshint like this:"
+    echo "  sudo npm install jshint -g"
 else
-    CURRENT_FILE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/$(basename $0)"
-fi
-STATIC_ANALYSIS_DIR=`dirname "$CURRENT_FILE"`
+    if command -v realpath>/dev/null 2>&1; then
+        CURRENT_FILE=`realpath "$0"`
+    else
+        CURRENT_FILE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/$(basename $0)"
+    fi
 
-if [ "$#" -eq 0 ]; then
-    TESTS=package
-else
-    TESTS="$@"
-fi
+    STATIC_ANALYSIS_DIR=`dirname "$CURRENT_FILE"`
 
-jshint --config $STATIC_ANALYSIS_DIR/../.jshintrc -e .jsm $TESTS
+    if [ "$#" -eq 0 ]; then
+        TESTS=package
+    else
+        TESTS="$@"
+    fi
+
+    jshint --config $STATIC_ANALYSIS_DIR/../.jshintrc -e .jsm $TESTS
+fi
