@@ -92,155 +92,6 @@ let userIdList = null;
 let secretKeyList = null;
 let keygenProcess = null;
 
-/**
- * Get key list from GnuPG. If the keys may be pre-cached already
- *
- * @win        - |object| parent window for displaying error messages
- * @secretOnly - |boolean| true: get secret keys / false: get public keys
- * @refresh    - |boolean| if true, cache is cleared and all keys are loaded from GnuPG
- *
- * @return - |array| of : separated key list entries as specified in GnuPG doc/DETAILS
- */
-function obtainKeyList(win, secretOnly, refresh) {
-    EnigmailLog.DEBUG("funcs.jsm: obtainKeyList\n");
-
-    let userList = null;
-    try {
-        const exitCodeObj = {};
-        const errorMsgObj = {};
-
-        userList = EnigmailKeyRing.getUserIdList(secretOnly,
-                                         refresh,
-                                         exitCodeObj,
-                                         {},
-                                         errorMsgObj);
-        if (exitCodeObj.value !== 0) {
-            EnigmailDialog.alert(win, errorMsgObj.value);
-            return null;
-        }
-    } catch (ex) {
-        EnigmailLog.ERROR("ERROR in enigmailFuncs: obtainKeyList"+ex.toString()+"\n");
-    }
-
-    if (typeof(userList) == "string") {
-        return userList.split(/\n/);
-    } else {
-        return [];
-    }
-}
-
-function sortByUserId(keyListObj, sortDirection) {
-    return function (a, b) {
-        return (a.userId < b.userId) ? -sortDirection : sortDirection;
-    };
-}
-
-const sortFunctions = {
-    keyid: function(keyListObj, sortDirection) {
-        return function (a, b) {
-            return (a.keyId < b.keyId) ? -sortDirection : sortDirection;
-        };
-    },
-
-    keyidshort: function(keyListObj, sortDirection) {
-        return function (a, b) {
-            return (a.keyId.substr(-8,8) < b.keyId.substr(-8 ,8)) ? -sortDirection : sortDirection;
-        };
-    },
-
-    fpr: function(keyListObj, sortDirection) {
-        return function (a, b) {
-            return (keyListObj.keyList[a.keyId].fpr < keyListObj.keyList[b.keyId].fpr) ? -sortDirection : sortDirection;
-        };
-    },
-
-    keytype: function(keyListObj, sortDirection) {
-        return function (a, b) {
-            return (keyListObj.keyList[a.keyId].secretAvailable < keyListObj.keyList[b.keyId].secretAvailable) ? -sortDirection : sortDirection;
-        };
-    },
-
-    validity: function(keyListObj, sortDirection) {
-        return function (a, b) {
-            return (EnigmailTrust.trustLevelsSorted().indexOf(EnigmailTrust.getTrustCode(keyListObj.keyList[a.keyId])) < EnigmailTrust.trustLevelsSorted().indexOf(EnigmailTrust.getTrustCode(keyListObj.keyList[b.keyId]))) ? -sortDirection : sortDirection;
-        };
-    },
-
-    trust: function(keyListObj, sortDirection) {
-        return function (a, b) {
-            return (EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[a.keyId].ownerTrust) < EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[b.keyId].ownerTrust)) ? -sortDirection : sortDirection;
-        };
-    },
-
-    expiry: function(keyListObj, sortDirection) {
-        return function (a, b) {
-            return (keyListObj.keyList[a.keyId].expiryTime < keyListObj.keyList[b.keyId].expiryTime) ? -sortDirection : sortDirection;
-        };
-    }
-};
-
-function getSortFunction(type, keyListObj, sortDirection) {
-    return (sortFunctions[type] || sortByUserId)(keyListObj, sortDirection);
-}
-
-/**
- * Return string with all colon-separated data of key list entry of given key.
- * - key may be pub or sub key.
- *
- * @param  String  keyId of 8 or 16 chars key with optionally leading 0x
- * @return String  entry of first found user IDs with keyId or null if none
- */
-function getKeyListEntryOfKey(keyId) {
-    keyId = keyId.replace(/^0x/, "");
-
-    let statusFlags = {};
-    let errorMsg = {};
-    let exitCodeObj = {};
-    let listText = EnigmailKeyRing.getUserIdList(false, false, exitCodeObj, statusFlags, errorMsg);
-
-    // listText contains lines such as:
-    // tru::0:1407688184:1424970931:3:1:5
-    // pub:f:1024:17:D581C6F8EBB80E50:1107251639:::-:::scESC:
-    // fpr:::::::::492A198AEA5EBE5574A1CE00D581C6F8EBB80E50:
-    // uid:f::::1107251639::2D505D1F6E744365B3B35FF11F32A19779E3A417::Giosue Vitaglione <gvi@whitestein.com>:
-    // sub:f:2048:16:2223D7E0301A66C6:1107251647::::::e:
-
-    // search for key or subkey
-    let regexKey = new RegExp("^(pub|sub):[^:]*:[^:]*:[^:]*:[A-Fa-f0-9]*" + keyId + ":", "m");
-    let foundPos = listText.search(regexKey);
-    if (foundPos < 0) {
-        return null;
-    }
-
-    // find area of key entries in key list
-    // note: if subkey matches, key entry starts before
-    let regexPub = new RegExp("^pub:", "ym");
-    let startPos;
-
-    if (listText[foundPos] == "p") {  // ^pub:
-        // KEY matches
-        startPos = foundPos;
-    } else {
-        // SUBKEY matches
-        // search for pub entry right before sub entry
-        startPos = 0;
-        let match = regexPub.exec(listText.substr(0, foundPos));
-        while (match && match.index < foundPos) {
-            startPos = match.index;
-            match = regexPub.exec(listText);
-        }
-    }
-    // find end of entry (next pub entry or end):
-    let match = regexPub.exec(listText.substr(startPos+1));
-    let res;
-    if (match && match.index) {
-        res = listText.substring(startPos,  startPos+1 + match.index);
-    } else {
-        res = listText.substring(startPos);
-    }
-    return res;
-}
-
 const EnigmailKeyRing = {
     importKeyFromFile: function (parent, inputFile, errorMsgObj, importedKeysObj){
         var command= EnigmailGpg.agentPath;
@@ -1030,3 +881,152 @@ const EnigmailKeyRing = {
         return keys;
     }
 };
+
+/**
+ * Get key list from GnuPG. If the keys may be pre-cached already
+ *
+ * @win        - |object| parent window for displaying error messages
+ * @secretOnly - |boolean| true: get secret keys / false: get public keys
+ * @refresh    - |boolean| if true, cache is cleared and all keys are loaded from GnuPG
+ *
+ * @return - |array| of : separated key list entries as specified in GnuPG doc/DETAILS
+ */
+function obtainKeyList(win, secretOnly, refresh) {
+    EnigmailLog.DEBUG("funcs.jsm: obtainKeyList\n");
+
+    let userList = null;
+    try {
+        const exitCodeObj = {};
+        const errorMsgObj = {};
+
+        userList = EnigmailKeyRing.getUserIdList(secretOnly,
+                                         refresh,
+                                         exitCodeObj,
+                                         {},
+                                         errorMsgObj);
+        if (exitCodeObj.value !== 0) {
+            EnigmailDialog.alert(win, errorMsgObj.value);
+            return null;
+        }
+    } catch (ex) {
+        EnigmailLog.ERROR("ERROR in enigmailFuncs: obtainKeyList"+ex.toString()+"\n");
+    }
+
+    if (typeof(userList) == "string") {
+        return userList.split(/\n/);
+    } else {
+        return [];
+    }
+}
+
+function sortByUserId(keyListObj, sortDirection) {
+    return function (a, b) {
+        return (a.userId < b.userId) ? -sortDirection : sortDirection;
+    };
+}
+
+const sortFunctions = {
+    keyid: function(keyListObj, sortDirection) {
+        return function (a, b) {
+            return (a.keyId < b.keyId) ? -sortDirection : sortDirection;
+        };
+    },
+
+    keyidshort: function(keyListObj, sortDirection) {
+        return function (a, b) {
+            return (a.keyId.substr(-8,8) < b.keyId.substr(-8 ,8)) ? -sortDirection : sortDirection;
+        };
+    },
+
+    fpr: function(keyListObj, sortDirection) {
+        return function (a, b) {
+            return (keyListObj.keyList[a.keyId].fpr < keyListObj.keyList[b.keyId].fpr) ? -sortDirection : sortDirection;
+        };
+    },
+
+    keytype: function(keyListObj, sortDirection) {
+        return function (a, b) {
+            return (keyListObj.keyList[a.keyId].secretAvailable < keyListObj.keyList[b.keyId].secretAvailable) ? -sortDirection : sortDirection;
+        };
+    },
+
+    validity: function(keyListObj, sortDirection) {
+        return function (a, b) {
+            return (EnigmailTrust.trustLevelsSorted().indexOf(EnigmailTrust.getTrustCode(keyListObj.keyList[a.keyId])) < EnigmailTrust.trustLevelsSorted().indexOf(EnigmailTrust.getTrustCode(keyListObj.keyList[b.keyId]))) ? -sortDirection : sortDirection;
+        };
+    },
+
+    trust: function(keyListObj, sortDirection) {
+        return function (a, b) {
+            return (EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[a.keyId].ownerTrust) < EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[b.keyId].ownerTrust)) ? -sortDirection : sortDirection;
+        };
+    },
+
+    expiry: function(keyListObj, sortDirection) {
+        return function (a, b) {
+            return (keyListObj.keyList[a.keyId].expiryTime < keyListObj.keyList[b.keyId].expiryTime) ? -sortDirection : sortDirection;
+        };
+    }
+};
+
+function getSortFunction(type, keyListObj, sortDirection) {
+    return (sortFunctions[type] || sortByUserId)(keyListObj, sortDirection);
+}
+
+/**
+ * Return string with all colon-separated data of key list entry of given key.
+ * - key may be pub or sub key.
+ *
+ * @param  String  keyId of 8 or 16 chars key with optionally leading 0x
+ * @return String  entry of first found user IDs with keyId or null if none
+ */
+function getKeyListEntryOfKey(keyId) {
+    keyId = keyId.replace(/^0x/, "");
+
+    let statusFlags = {};
+    let errorMsg = {};
+    let exitCodeObj = {};
+    let listText = EnigmailKeyRing.getUserIdList(false, false, exitCodeObj, statusFlags, errorMsg);
+
+    // listText contains lines such as:
+    // tru::0:1407688184:1424970931:3:1:5
+    // pub:f:1024:17:D581C6F8EBB80E50:1107251639:::-:::scESC:
+    // fpr:::::::::492A198AEA5EBE5574A1CE00D581C6F8EBB80E50:
+    // uid:f::::1107251639::2D505D1F6E744365B3B35FF11F32A19779E3A417::Giosue Vitaglione <gvi@whitestein.com>:
+    // sub:f:2048:16:2223D7E0301A66C6:1107251647::::::e:
+
+    // search for key or subkey
+    let regexKey = new RegExp("^(pub|sub):[^:]*:[^:]*:[^:]*:[A-Fa-f0-9]*" + keyId + ":", "m");
+    let foundPos = listText.search(regexKey);
+    if (foundPos < 0) {
+        return null;
+    }
+
+    // find area of key entries in key list
+    // note: if subkey matches, key entry starts before
+    let regexPub = new RegExp("^pub:", "ym");
+    let startPos;
+
+    if (listText[foundPos] == "p") {  // ^pub:
+        // KEY matches
+        startPos = foundPos;
+    } else {
+        // SUBKEY matches
+        // search for pub entry right before sub entry
+        startPos = 0;
+        let match = regexPub.exec(listText.substr(0, foundPos));
+        while (match && match.index < foundPos) {
+            startPos = match.index;
+            match = regexPub.exec(listText);
+        }
+    }
+    // find end of entry (next pub entry or end):
+    let match = regexPub.exec(listText.substr(startPos+1));
+    let res;
+    if (match && match.index) {
+        res = listText.substring(startPos,  startPos+1 + match.index);
+    } else {
+        res = listText.substring(startPos);
+    }
+    return res;
+}
