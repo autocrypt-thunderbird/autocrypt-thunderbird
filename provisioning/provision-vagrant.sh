@@ -10,6 +10,7 @@ apt-get update
 apt-get install -y zip thunderbird xvfb gnupg2
 apt-get install -y xfce4 virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11
 apt-get install -y ntp
+apt-get install -y rng-tools haveged
 apt-get upgrade -y
 wget -O /tmp/jsunit-0.1.xpi https://www.enigmail.net/jsunit/jsunit-0.1.xpi
 rm -rf /usr/lib/thunderbird-addons/extensions/jsunit@enigmail.net

@@ -18,6 +18,8 @@ RUN apt-get install -y gcc
 RUN apt-get install -y psmisc
 RUN apt-get install -y language-pack-en-base
 RUN apt-get install -y mime-support
+RUN apt-get install -y rng-tools
+RUN apt-get install -y haveged
 RUN wget -O /tmp/jsunit-0.1.xpi https://www.enigmail.net/jsunit/jsunit-0.1.xpi
 RUN rm -rf /usr/lib/thunderbird-addons/extensions/jsunit@enigmail.net
 RUN unzip /tmp/jsunit-0.1.xpi -d /usr/lib/thunderbird-addons/extensions/jsunit@enigmail.net
