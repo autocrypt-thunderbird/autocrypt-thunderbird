@@ -10,18 +10,19 @@ DEPTH		= .
 include $(DEPTH)/config/autoconf.mk
 
 DIRS = ipc public
-
 DIRS += ui package lang
 
+ALL = dirs xpi
+
 ifeq ($(TESTS),yes)
-DIRS += check
+ALL += test
 endif
 
 XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS).xpi
 
 .PHONY: dirs $(DIRS)
 
-all: dirs xpi
+all: $(ALL)
 
 dirs: $(DIRS)
 
@@ -38,6 +39,12 @@ jshint:
 	static_analysis/jshint ipc
 	static_analysis/jshint package
 	static_analysis/jshint ui
+
+unit:
+	make -C package/tests
+	make -C ui/tests
+
+test: jshint check unit
 
 clean:
 	rm -f build/$(XPIFILE)

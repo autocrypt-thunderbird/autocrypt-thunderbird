@@ -214,10 +214,11 @@ test(withEnigmail(function setAgentPathDefaultValues(enigmail) {
             enigmail.environment = e;
             EnigmailGpgAgent.setAgentPath(JSUnit.createStubWindow(), enigmail);
             Assert.equal("gpg", EnigmailGpgAgent.agentType);
-            Assert.equal("/usr/bin/gpg2", EnigmailGpgAgent.agentPath.path);
-            //        Assert.equal("2.0.22", Gpg.agentVersion); // this will vary between environments.
-            Assert.equal("/usr/bin/gpgconf", EnigmailGpgAgent.gpgconfPath.path);
-            Assert.equal("/usr/bin/gpg-connect-agent", EnigmailGpgAgent.connGpgAgentPath.path);
+            Assert.equal("gpg", EnigmailGpgAgent.agentPath.leafName.substr(0, 3));
+            Assert.equal("gpgconf", EnigmailGpgAgent.gpgconfPath.leafName.substr(0, 7));
+            Assert.equal("gpg-connect-agent", EnigmailGpgAgent.connGpgAgentPath.leafName.substr(0, 17));
+            // Basic check to test if GnuPG version was properly extracted
+            Assert.ok(EnigmailGpg.agentVersion.search(/^[2-9]\.[0-9]+(\.[0-9]+)?/) == 0);
     });
 }));
 
@@ -228,20 +229,21 @@ test(withEnigmail(function resolveToolPathDefaultValues(enigmail) {
         resetting(EnigmailGpgAgent, 'agentPath', "/usr/bin/gpg-agent", function() {
             enigmail.environment = e;
             var result = EnigmailGpgAgent.resolveToolPath("zip");
-            Assert.equal("/usr/bin/zip", result.path);
+            Assert.equal("zip", result.leafName.substr(0,3));
         });
     });
 }));
 
-test(withEnigmail(function resolveToolPathFromPATH(enigmail) {
-    withEnvironment({PATH: "/sbin"}, function(e) {
-        resetting(EnigmailGpgAgent, 'agentPath', "/usr/bin/gpg-agent", function() {
-            enigmail.environment = e;
-            var result = EnigmailGpgAgent.resolveToolPath("route");
-            Assert.equal("/sbin/route", result.path);
-        });
-    });
-}));
+// route cannot be tested reliably on non-Unix systems
+// test(withEnigmail(function resolveToolPathFromPATH(enigmail) {
+//     withEnvironment({PATH: "/sbin"}, function(e) {
+//         resetting(EnigmailGpgAgent, 'agentPath', "/usr/bin/gpg-agent", function() {
+//             enigmail.environment = e;
+//             var result = EnigmailGpgAgent.resolveToolPath("route");
+//             Assert.equal("/sbin/route", result.path);
+//         });
+//     });
+// }));
 
 // detectGpgAgent
 test(withEnigmail(function detectGpgAgentSetsAgentInfoFromEnvironmentVariable(enigmail) {

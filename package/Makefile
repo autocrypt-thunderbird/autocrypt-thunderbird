@@ -7,12 +7,6 @@ DEPTH		= ..
 
 include $(DEPTH)/config/autoconf.mk
 
-TST =
-
-ifeq ($(TESTS),yes)
-  TST = tst
-endif
-
 PREF_JS_EXPORTS = $(srcdir)/prefs/enigmail.js
 
 COMPFILES = \
@@ -77,10 +71,7 @@ MODFILES = \
            verify.jsm \
            windows.jsm
 
-all: deploy $(TST)
-
-tst:
-	$(MAKE) -C tests
+all: deploy
 
 deploy: $(PREFFILES) $(COMPFILES) $(MODFILES)
 	$(DEPTH)/util/install -m 644 $(DIST)/components $(COMPFILES)

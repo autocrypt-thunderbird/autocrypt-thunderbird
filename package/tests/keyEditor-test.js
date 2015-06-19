@@ -13,6 +13,7 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withE
 
 testing("keyEditor.jsm"); /*global editKey: false */
 component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+component("enigmail/time.jsm"); /*global EnigmailTime: false */
 
 test(withTestGpgHome(withEnigmail(function shouldEditKey() {
     importKeys();
@@ -85,7 +86,10 @@ test(withTestGpgHome(withEnigmail(function shouldGetSecretKeys() {
     const importedKeysObj = {};
     const window = JSUnit.createStubWindow();
     const importResult = EnigmailKeyRing.importKeyFromFile(window, secretKey, errorMsgObj, importedKeysObj);
-    const expectedKey = [{"name": "anonymous strike <strike.devtest@gmail.com>", "id": "781617319CE311C4", "created": "05/04/2015"}];
+
+    const createDate = EnigmailTime.getDateTime(1430756251, true, false);
+
+    const expectedKey = [{"name": "anonymous strike <strike.devtest@gmail.com>", "id": "781617319CE311C4", "created": createDate}];
     do_test_pending();
     EnigmailKeyEditor.setKeyTrust(window,
         "781617319CE311C4",
@@ -95,6 +99,7 @@ test(withTestGpgHome(withEnigmail(function shouldGetSecretKeys() {
             Assert.equal(result.length, 1);
             Assert.equal(result[0].name, expectedKey[0].name);
             Assert.equal(result[0].id, expectedKey[0].id);
+            // FIXME: The expected date needs to be converted to the locale of the enviroment
             Assert.equal(result[0].created, expectedKey[0].created);
             do_test_finished();
         }

@@ -26,11 +26,23 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyListEntryOfKey() {
     const publicKey = do_get_file("resources/dev-strike.asc", false);
     const importResult = EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), publicKey, {}, {});
     const keyDetails = getKeyListEntryOfKey("0xD535623BB60E9E71");
-    Assert.equal(keyDetails,
-        "pub:-:4096:1:781617319CE311C4:1430756251:1556986651::-:::scESC:\n" +
-        "fpr:::::::::65537E212DC19025AD38EDB2781617319CE311C4:\n" +
-        "uid:-::::1430756251::DB54FB278F6AE719DE0DE881B17D4C762F5752A9::anonymous strike <strike.devtest@gmail.com>:\n" +
-        "sub:-:4096:1:D535623BB60E9E71:1430756251:1556986651:::::e:\n");
+
+
+    // Output from GnuPG varies sligtly between different versions (new output data is added
+    // at the end of the list). Therefore each line is only compared to the length provided below
+    let expectedListing = [
+        "pub:-:4096:1:781617319CE311C4:1430756251:1556986651::-:::scESC:",
+        "fpr:::::::::65537E212DC19025AD38EDB2781617319CE311C4:",
+        "uid:-::::1430756251::DB54FB278F6AE719DE0DE881B17D4C762F5752A9::anonymous strike <strike.devtest@gmail.com>:",
+        "sub:-:4096:1:D535623BB60E9E71:1430756251:1556986651:::::e:"
+      ];
+
+    let keyDetList = keyDetails.split(/\n\r?/);
+
+    for (let i = 0; i < expectedListing.length; i++) {
+      Assert.equal(keyDetList[i].substr(0, expectedListing[i].length), expectedListing[i]);
+    }
+
 })));
 
 test(withTestGpgHome(withEnigmail(function shouldGetUserIdList(){
