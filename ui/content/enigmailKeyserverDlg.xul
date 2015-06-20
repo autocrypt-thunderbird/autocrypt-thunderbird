@@ -53,69 +53,7 @@
 
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-
-  <script type="application/x-javascript">
-  <![CDATA[
-
-    function onLoad() {
-      window.arguments[1].value="";
-      var keyIdText = document.getElementById("keyIdText");
-      var emailRow = document.getElementById("emailRow");
-      if (typeof(window.arguments[0].keyId) == "string") {
-        var keyId = window.arguments[0].keyId;
-        if (window.arguments[0].upload) {
-          var keyText = EnigGetString("uploadKey",keyId);
-        }
-        else {
-          keyText = EnigGetString("importKey",keyId);
-        }
-
-        if (keyText.length > 400) {
-          keyText = keyText.substr(0,400)+" ...";
-        }
-        keyIdText.firstChild.data = keyText;
-        emailRow.setAttribute("collapsed", "true");
-      }
-      else {
-        keyIdText.setAttribute("collapsed", "true");
-      }
-      var keyservers = EnigGetPref("keyserver").split(/[ ,;]/g);
-      var menulist=document.getElementById("selectedServer")
-      for (var i=0; i < keyservers.length; i++) {
-        if (keyservers[i].length>0) {
-          menulist.appendItem(keyservers[i]);
-        }
-      }
-      document.getElementById("selectedServer").value=keyservers[0];
-    }
-
-    function onAccept() {
-      var menulist=document.getElementById("selectedServer");
-      window.arguments[1].value = menulist.value;
-      if (typeof(window.arguments[0].keyId) != "string") {
-        window.arguments[1].email = document.getElementById("email").value;
-        if (!window.arguments[1].email) {
-          EnigAlert(EnigGetString("noEmailProvided"));
-          return false;
-        }
-      }
-      var selected = menulist.selectedIndex;
-
-      if (selected != 0) {
-        var servers = [menulist.value];
-        var nodes = menulist.menupopup.getElementsByTagName('menuitem');
-        for (var i = 0, e = nodes.length; i < e; ++i) {
-          if (i == selected) {
-            continue;
-          }
-          servers.push(nodes[i].label);
-        }
-        EnigSetPref("keyserver", servers.join(', '));
-      }
-      return true;
-    }
-  ]]>
-  </script>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyserverDlg.js"/>
 
   <vbox orient="vertical">
     <description id="keyIdText" width="300px">...</description>

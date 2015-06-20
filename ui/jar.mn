@@ -62,6 +62,7 @@ enigmail.jar:
 	content/enigmail/enigmailKeygen.js             (content/enigmailKeygen.js)
 	content/enigmail/enigmailKeygenConsole.htm     (content/enigmailKeygenConsole.htm)
 	content/enigmail/enigmailKeyserverDlg.xul      (content/enigmailKeyserverDlg.xul)
+	content/enigmail/enigmailKeyserverDlg.js       (content/enigmailKeyserverDlg.js)
 	content/enigmail/enigmailKeySelection.xul     (content/enigmailKeySelection.xul)
 	content/enigmail/enigmailKeySelection.js      (content/enigmailKeySelection.js)
 	content/enigmail/enigmailNaviConsole.xul       (content/enigmailNaviConsole.xul)
