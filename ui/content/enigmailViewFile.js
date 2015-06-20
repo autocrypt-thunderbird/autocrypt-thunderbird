@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+/*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,48 +32,49 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** *
--->
-
-<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
-
-<?xul-overlay href="chrome://global/content/globalOverlay.xul"?>
-<?xul-overlay href="chrome://communicator/content/utilityOverlay.xul"?>
-
-<!DOCTYPE window [
-  <!ENTITY % enigmailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd">
-   %enigmailDTD;
-  <!ENTITY % utilDTD SYSTEM "chrome://communicator/locale/utilityOverlay.dtd">
-   %utilDTD;
-]>
-
-<window id="EnigmailViewFile"
-        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        title="enigmailViewFile"
-        width="600" height="400"
-        onload="return enigLoadPage();"
-        persist="screenX screenY width height">
-
-  <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailViewFile.js"/>
+*/
 
 
-  <iframe id="contentFrame" type="content" name="contentFrame"
-        src=""
-        collapsed="true"
-        flex="1"/>
+EnigInitCommon("enigmailViewFile");
 
-  <vbox id="logFileBox" collapsed="false" flex="1">
+var logFileData; // global definition of log file data to be able to save
+                 // same data as displayed
 
-    <textbox id="contentBox" readonly="true"
-        multiline="true"
-        flex="1"
-        value=""/>
+function saveLogFile() {
+  let fileObj = EnigmailDialog.filePicker(window, EnigmailLocale.getString("saveLogFile.title"), null,
+    true, "txt");
 
-    <hbox align="center" flex="0">
-      <button label="&enigmail.savelogfile.label;" oncommand="saveLogFile()"/>
-    </hbox>
-  </vbox>
+  EnigmailFiles.writeFileContents(fileObj, logFileData, null);
 
-</window>
+}
+
+function enigLoadPage() {
+  EnigmailLog.DEBUG("enigmailHelp.js: enigLoadPage\n");
+  EnigmailCore.getService();
+
+  var contentFrame = EnigmailWindows.getFrame(window, "contentFrame");
+  if (!contentFrame)
+    return;
+
+  var winOptions=EnigGetWindowOptions();
+
+  if ("fileUrl" in winOptions) {
+    contentFrame.document.location.href = winOptions.fileUrl;
+  }
+
+  if ("viewLog" in winOptions) {
+    let cf = document.getElementById("contentFrame");
+    cf.setAttribute("collapsed", "true");
+
+    let cb = document.getElementById("contentBox");
+    logFileData = EnigmailLog.getLogData(EnigmailCore.version, EnigmailPrefs);
+    cb.value = logFileData;
+
+    let cfb = document.getElementById("logFileBox");
+    cfb.removeAttribute("collapsed");
+  }
+
+  if ("title" in winOptions) {
+    document.getElementById("EnigmailViewFile").setAttribute("title", winOptions.title);
+  }
+}
