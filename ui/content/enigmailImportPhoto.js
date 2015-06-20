@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+/*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,39 +32,16 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** *
--->
+*/
 
-<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
 
-<!DOCTYPE window [
-<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
-%brandDTD;
-<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
-%enigMailDTD;
-]>
+function onLoad() {
+  document.getElementById("photoImage").setAttribute("src", window.arguments[0].photoUri);
+  document.getElementById("keyDesc").setAttribute("value", "0x"+window.arguments[0].keyId.substr(-8,8) +
+      " - " + window.arguments[0].userId);
+}
 
-<dialog id="enigmailAddPhoto"
-        title="&enigmail.addPhoto.title;"
-        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        onload="onLoad();"
-        ondialogaccept="return acceptDlg();"
-        width="400px"
-        height="450px"
-        buttons="accept, cancel">
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailImportPhoto.js"/>
-
-  <hbox align="center">
-    <vbox align="center">
-      <label value="&enigmail.addPhoto.question.label;"/>
-      <label id="keyDesc" value=""/>
-      <hbox align="center">
-        <groupbox autostretch="always">
-          <image id="photoImage" maxwidth="350px" maxheight="300px"/>
-        </groupbox>
-      </hbox>
-    </vbox>
-  </hbox>
-</dialog>
-
+function acceptDlg() {
+  window.arguments[0].okPressed = true;
+  return true;
+}

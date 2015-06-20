@@ -43,6 +43,7 @@ enigmail.jar:
 	content/enigmail/enigmailGenericDisplay.htm    (content/enigmailGenericDisplay.htm)
 	content/enigmail/enigmailHelp.xul              (content/enigmailHelp.xul)
 	content/enigmail/enigmailHelp.js               (content/enigmailHelp.js)
+	content/enigmail/enigmailImportPhoto.js        (content/enigmailImportPhoto.js)
 	content/enigmail/enigmailImportPhoto.xul       (content/enigmailImportPhoto.xul)
 	content/enigmail/enigmailKeyDetailsDlg.js      (content/enigmailKeyDetailsDlg.js)
 	content/enigmail/enigmailKeyDetailsDlg.xul     (content/enigmailKeyDetailsDlg.xul)
