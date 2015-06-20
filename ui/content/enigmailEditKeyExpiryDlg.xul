@@ -62,14 +62,8 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyDetailsDlg.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailEditKeyExpiryDlg.js"/>
-  <script type="application/x-javascript">
-  <![CDATA[
-    /* pass */
-  ]]>
-  </script>
 
 
-  
   <vbox orient="vertical">
     <hbox>
       <label value="&enigmail.keyExpiry.expiryKey.label;" control="keyIdList"/>
@@ -82,7 +76,7 @@
       onclick="enigmailKeySelCallback(event);">
 
       <treecols>
-        <treecol id="selectionCol" 
+        <treecol id="selectionCol"
                  primary="true" style="width:35px"
                  label="&enigmail.keySelection.label;"
                  persist="width"/>
@@ -93,7 +87,7 @@
             style="width:86px"
             persist="width"/>
         <splitter class="tree-splitter"/>
-        <treecol id="keyTypeCol" style="width:92px" 
+        <treecol id="keyTypeCol" style="width:92px"
                  label="&enigmail.keyDetails.ID.label;"
                  persist="width"/>
         <splitter class="tree-splitter"/>
@@ -129,9 +123,9 @@
         <label value="&enigmail.keyGen.expire.label;" control="expireInput"/>
       </hbox>
       <hbox align="center">
-        <textbox id="expireInput" size="5" maxlength="5" value="1" 
+        <textbox id="expireInput" size="5" maxlength="5" value="1"
                  onchange="return checkExpirationDate();"/>
-        <menulist id="timeScale" label="&enigmail.keyGen.years.label;" 
+        <menulist id="timeScale" label="&enigmail.keyGen.years.label;"
                   value="365" onchange="return checkExpirationDate();">
           <menupopup id="timeScalePopup">
             <menuitem id="years" value="365" label="&enigmail.keyGen.years.label;" selected="true"/>
