@@ -16,6 +16,7 @@ enigmail.jar:
 	content/enigmail/enigmailAlertDlg.xul          (content/enigmailAlertDlg.xul)
 	content/enigmail/enigmailAttachmentsDialog.xul (content/enigmailAttachmentsDialog.xul)
 	content/enigmail/enigmailAttachmentsDialog.js  (content/enigmailAttachmentsDialog.js)
+	content/enigmail/enigmailAmIdEditOverlay.js    (content/enigmailAmIdEditOverlay.js)
 	content/enigmail/enigmailAmIdEditOverlay.xul   (content/enigmailAmIdEditOverlay.xul)
 	content/enigmail/enigmailBuildDate.js          (content/enigmailBuildDate.js)
 	content/enigmail/enigmailCheckLanguage.xul     (content/enigmailCheckLanguage.xul)
