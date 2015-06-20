@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+/*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,50 +32,42 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** *
--->
+*/
 
-<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+var gRepaintCount=0;
+var gKeyId;
 
-<!DOCTYPE window [
-<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
-%brandDTD;
-<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
-%enigMailDTD;
-]>
+function onLoad() {
+  window.addEventListener("MozAfterPaint", resizeDlg, false);
 
-<dialog id="enigmailDispPhoto"
-        title="&enigmail.photoViewer.title;"
-        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        onload="onLoad();"
-        ondialogaccept="return window.close();"
-        width="500px"
-        height="400px"
-        buttons="accept">
+  var keyListObj = {};
+  EnigLoadKeyList(false, keyListObj);
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailDispPhoto.js"/>
+  var userIdList=window.arguments[0].userId.split(/\r?\n/);
+  gKeyId = window.arguments[0].keyId;
+  var uid = document.getElementById("uidContainer");
+  document.getElementById("photoImage").setAttribute("src", window.arguments[0].photoUri);
+  for (var i=0; i< userIdList.length; i++) {
+    var l=document.createElement("label");
+    l.setAttribute("value", userIdList[i]);
+    uid.appendChild(l);
+  }
+  document.getElementById("keyId").setAttribute("value", EnigGetString("keyId")+": 0x"+gKeyId);
+  document.getElementById("keyValidity").setAttribute("value", EnigGetTrustLabel(EnigGetTrustCode(keyListObj.keyList[gKeyId])));
+}
 
-  <hbox align="center">
-    <vbox align="center">
-      <hbox align="center">
-        <groupbox autostretch="always">
-          <image id="photoImage" maxwidth="350px" maxheight="300px"/>
-        </groupbox>
-      </hbox>
-    </vbox>
-    <vbox>
-      <vbox autostretch="always" id="uidContainer"/>
-      <label id="keyId"/>
-      <hbox align="start">
-        <label value="Key validity: "/>
-        <label id="keyValidity"/>
-      </hbox>
-      <separator/>
-      <hbox align="end">
-        <button label="&enigmail.displayKeyProperties.label;" oncommand="displayKeyProps()"/>
-      </hbox>
-    </vbox>
-  </hbox>
-</dialog>
+function resizeDlg(event) {
+  ++gRepaintCount;
+  window.sizeToContent();
+  if (gRepaintCount > 3) {
+    removeListener();
+  }
+}
 
+function removeListener() {
+  window.removeEventListener("MozAfterPaint", resizeDlg, false);
+}
+
+function displayKeyProps() {
+  EnigDisplayKeyDetails(gKeyId, false);
+}
