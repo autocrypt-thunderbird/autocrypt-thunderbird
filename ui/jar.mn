@@ -57,6 +57,7 @@ enigmail.jar:
 	content/enigmail/enigmailSearchKey.xul         (content/enigmailSearchKey.xul)
 	content/enigmail/enigmailSingleRcptSettings.js (content/enigmailSingleRcptSettings.js)
 	content/enigmail/enigmailSingleRcptSettings.xul (content/enigmailSingleRcptSettings.xul)
+	content/enigmail/enigmailSelectRule.js         (content/enigmailSelectRule.js)
 	content/enigmail/enigmailSelectRule.xul        (content/enigmailSelectRule.xul)
 	content/enigmail/enigmailSetCardPin.xul        (content/enigmailSetCardPin.xul)
 	content/enigmail/enigmailSignKeyDlg.js         (content/enigmailSignKeyDlg.js)

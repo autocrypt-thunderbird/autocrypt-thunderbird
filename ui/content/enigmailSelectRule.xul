@@ -55,6 +55,7 @@
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailRulesEditor.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailSelectRules.js"/>
 
   <label id="editDialogTitle" value="..."/>
 
@@ -101,68 +102,6 @@
     <button label="&enigmail.addToRule.newRuleButton.label;"
             accesskey="&enigmail.addToRule.newRuleButton.accesskey;"
             oncommand="createNewRuleWithKey();"/>
-
   </hbox>
-
-  <script type="application/x-javascript">
-  <![CDATA[
-
-  EnigInitCommon("enigmailSelectRule");
-
-  function addKeyToRule() {
-    var node=getCurrentNode();
-
-    var keyId = node.getAttribute("keyId").split(/[ ,]+/);
-    keyId.push("0x"+window.arguments[0].keyId);
-
-    var inputObj = {
-      email:   node.getAttribute("email"),
-      keyId:   keyId.join(", "),
-      sign:    Number(node.getAttribute("sign")),
-      encrypt: Number(node.getAttribute("encrypt")),
-      pgpMime: Number(node.getAttribute("pgpMime")),
-      negate:  Number(node.getAttribute("negateRule"))
-    }
-
-    createRow(node, inputObj);
-
-    enigmailDlgOnAccept();
-    window.close();
-
-  }
-
-
-  function createNewRuleWithKey() {
-    var inputObj  = new Object;
-    var resultObj = new Object;
-    inputObj.options = "nosave";
-    inputObj.toAddress = "{}";
-    inputObj.keyId = [ "0x"+window.arguments[0].keyId ];
-    inputObj.command = "add";
-
-    window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul","", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
-    if (resultObj.cancelled==false) {
-      var treeItem=document.createElement("treeitem");
-      createRow(treeItem, resultObj);
-      var treeChildren=document.getElementById("rulesTreeChildren");
-      if (treeChildren.firstChild) {
-        treeChildren.insertBefore(treeItem, treeChildren.firstChild);
-      }
-      else {
-        treeChildren.appendChild(treeItem);
-      }
-
-      enigmailDlgOnAccept();
-    }
-    window.close();
-  }
-
-  function editDlgOnLoad() {
-    enigmailDlgOnLoad();
-    document.getElementById("editDialogTitle").setAttribute("value", EnigGetString("addKeyToRule",window.arguments[0].userId, "0x"+window.arguments[0].keyId.substr(-8,8)));
-  }
-
-  ]]>
-  </script>
 
 </dialog>
