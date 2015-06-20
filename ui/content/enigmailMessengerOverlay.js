@@ -1,4 +1,3 @@
-dump("loading: enigmailMessengerOverlay.js\n");
 /*global Components: false, EnigmailData: false, EnigmailApp: false, Dialog: false, EnigmailTimer: false, EnigmailWindows: false, EnigmailTime: false */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1

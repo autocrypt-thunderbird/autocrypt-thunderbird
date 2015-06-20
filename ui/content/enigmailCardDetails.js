@@ -1,4 +1,3 @@
-dump("loading: enigmailCardDetails.js\n");
 /*global Components: false, EnigmailLocale: false, EnigmailDialog: false, EnigmailTime: false */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1

@@ -1,4 +1,3 @@
-dump("loading: enigmailEditIdentity.js\n");
 /*global Components: false, EnigmailLocale: false */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -36,6 +35,7 @@ dump("loading: enigmailEditIdentity.js\n");
 
 Components.utils.import("resource://enigmail/funcs.jsm");
 Components.utils.import("resource://enigmail/locale.jsm");
+Components.utils.import("resource://enigmail/windows.jsm");
 
 if (! Enigmail) var Enigmail = {};
 

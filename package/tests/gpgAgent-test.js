@@ -218,7 +218,7 @@ test(withEnigmail(function setAgentPathDefaultValues(enigmail) {
             Assert.equal("gpgconf", EnigmailGpgAgent.gpgconfPath.leafName.substr(0, 7));
             Assert.equal("gpg-connect-agent", EnigmailGpgAgent.connGpgAgentPath.leafName.substr(0, 17));
             // Basic check to test if GnuPG version was properly extracted
-            Assert.ok(EnigmailGpg.agentVersion.search(/^[2-9]\.[0-9]+(\.[0-9]+)?/) == 0);
+            Assert.ok(EnigmailGpg.agentVersion.search(/^[2-9]\.[0-9]+(\.[0-9]+)?/) === 0);
     });
 }));
 

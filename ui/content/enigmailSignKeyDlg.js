@@ -1,4 +1,3 @@
-dump("loading: enigmailSignKeyDlg.js\n");
 /*global Components: false, EnigmailLog: false, EnigmailLocale: false, EnigmailDialog: false */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
