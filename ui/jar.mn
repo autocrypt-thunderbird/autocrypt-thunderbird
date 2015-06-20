@@ -49,6 +49,7 @@ enigmail.jar:
 	content/enigmail/enigmailKeyDetailsDlg.xul     (content/enigmailKeyDetailsDlg.xul)
 	content/enigmail/enigmailKeyManager.xul        (content/enigmailKeyManager.xul)
 	content/enigmail/enigmailKeyManager.js         (content/enigmailKeyManager.js)
+	content/enigmail/enigmailManageUidDlg.js       (content/enigmailManageUidDlg.js)
 	content/enigmail/enigmailManageUidDlg.xul      (content/enigmailManageUidDlg.xul)
 	content/enigmail/enigmailRulesEditor.xul       (content/enigmailRulesEditor.xul)
 	content/enigmail/enigmailRulesEditor.js        (content/enigmailRulesEditor.js)
