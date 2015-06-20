@@ -32,6 +32,7 @@ enigmail.jar:
 	content/enigmail/enigmailEditIdentity.xul      (content/enigmailEditIdentity.xul)
 	content/enigmail/enigmailEditKeyExpiryDlg.js   (content/enigmailEditKeyExpiryDlg.js)
 	content/enigmail/enigmailEditKeyExpiryDlg.xul  (content/enigmailEditKeyExpiryDlg.xul)
+	content/enigmail/enigmailEditKeyTrustDlg.js    (content/enigmailEditKeyTrustDlg.js)
 	content/enigmail/enigmailEditKeyTrustDlg.xul   (content/enigmailEditKeyTrustDlg.xul)
 	content/enigmail/enigmailEncryptionDlg.xul     (content/enigmailEncryptionDlg.xul)
 	content/enigmail/enigmailEncryptionDlg.js      (content/enigmailEncryptionDlg.js)
