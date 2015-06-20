@@ -8,6 +8,7 @@ enigmail.jar:
 	content/enigmail/enigmailAbout.xul             (content/enigmailAbout.xul)
 	content/enigmail/enigmailAbout.js              (content/enigmailAbout.js)
 	content/enigmail/enigmailAbout.htm             (content/enigmailAbout.htm)
+	content/enigmail/enigmailAddUidDlg.js          (content/enigmailAddUidDlg.js)
 	content/enigmail/enigmailAddUidDlg.xul         (content/enigmailAddUidDlg.xul)
 	content/enigmail/enigmailAdvancedIdentityDlg.xul (content/enigmailAdvancedIdentityDlg.xul)
 	content/enigmail/enigmailAlertDlg.xul          (content/enigmailAlertDlg.xul)
