@@ -996,13 +996,10 @@ if (messageHeaderSink) {
         throw Components.results.NS_NOINTERFACE;
       },
 
-      updateSecurityStatus: function (unusedUriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, encToDetails)
-      {
-        // unusedUriSpec is not used anymore. It is here becaue other addons rely on the same API
-
+      isCurrentMessage: function (uri) {
         let uriSpec = (uri ? uri.spec : null);
 
-        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: uri.spec="+uriSpec+"\n");
+        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: uri.spec="+uriSpec+"\n");
 
         let msgUriSpec = Enigmail.msg.getCurrentMsgUriSpec();
 
@@ -1013,14 +1010,26 @@ if (messageHeaderSink) {
           msgSvc.GetUrlForUri(msgUriSpec, url, null);
         }
         catch (ex) {
-          EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: could not determine URL\n");
+          EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: could not determine URL\n");
           url.value = { spec: "enigmail://invalid/message" };
         }
 
-        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.updateSecurityStatus: url="+url.value.spec+"\n");
+        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: url="+url.value.spec+"\n");
 
         if (!uriSpec || uriSpec.search(/^enigmail:/) === 0 || (uriSpec.indexOf(url.value.spec) === 0 &&
               uriSpec.substr(url.value.spec.length).search(/([\?&].*)?$/) === 0)) {
+          return true;
+        }
+
+        return false;
+      },
+
+      updateSecurityStatus: function (unusedUriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, encToDetails)
+      {
+        // unusedUriSpec is not used anymore. It is here becaue other addons rely on the same API
+
+
+        if (this.isCurrentMessage()) {
           Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
                                           errorMsg, blockSeparation, encToDetails,
                                           null);   // xtraStatus
@@ -1033,6 +1042,40 @@ if (messageHeaderSink) {
         }
 
         return;
+      },
+
+      modifyMessageHeaders: function(uri, headerData) {
+        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.modifyMessageHeaders:\n");
+        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: headerData= "+ headerData + "\n");
+
+        let hdr;
+        try {
+          hdr = JSON.parse(headerData);
+        }
+        catch(ex) {
+          EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: modifyMessageHeaders: - no headers to display\n");
+          return;
+        }
+
+        if (typeof(hdr) !== "object") return;
+        if (! this.isCurrentMessage() || gFolderDisplay.selectedMessages.length !== 1) return;
+
+        if ("subject" in hdr) {
+          gFolderDisplay.selectedMessage.subject = hdr.subject;
+          let e = document.getElementById("expandedsubjectBox");
+          if (e) {
+            // do something
+          }
+        }
+
+        if ("from" in hdr) {
+          gFolderDisplay.selectedMessage.author = hdr.from;
+        }
+
+        if ("to" in hdr) {
+          gFolderDisplay.selectedMessage.recipients = hdr.to;
+        }
+
       },
 
       maxWantedNesting: function ()

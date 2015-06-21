@@ -68,6 +68,7 @@ function PgpMimeDecrypt() {
   this.statusDisplayed = false;
   this.uri = null;
   this.backgroundJob = false;
+  this.decryptedHeaders = {};
 }
 
 PgpMimeDecrypt.prototype = {
@@ -106,6 +107,7 @@ PgpMimeDecrypt.prototype = {
     this.outQueue = "";
     this.statusStr = "";
     this.headerMode = 0;
+    this.decryptedHeaders = {};
     this.xferEncoding = ENCODING_DEFAULT;
     this.boundary = getBoundary(this.mimeSvc.contentType);
     if (uri) {
@@ -321,6 +323,9 @@ PgpMimeDecrypt.prototype = {
       let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
 
       if (headerSink && this.uri && !this.backgroundJob) {
+
+        headerSink.modifyMessageHeaders(this.uri, JSON.stringify(this.decryptedHeaders));
+
         headerSink.updateSecurityStatus(
             this.msgUriSpec,
             this.exitCode,
@@ -376,6 +381,11 @@ PgpMimeDecrypt.prototype = {
     }
 
     var verifyData = this.decryptedData;
+
+    try {
+      this.extractEncryptedHeaders();
+    }
+    catch(ex) {}
 
     var i = this.decryptedData.search(/\n\r?\n/);
     if (i > 0) {
@@ -439,6 +449,73 @@ PgpMimeDecrypt.prototype = {
     catch (ex) {}
 
     return 0;
+  },
+
+  /*
+   * determine if the encrypte message contains a first mime part with content-type = "text/rfc822-headers"
+   * if so, update the corresponding field(s)
+   */
+
+  extractEncryptedHeaders: function() {
+
+    // quick return
+    if (this.decryptedData.search(/text\/rfc822-headers/i) < 0) {
+      return;
+    }
+
+    let m = this.decryptedData.search(/^--/m);
+
+    if (m < 5) {
+      return;
+    }
+
+    let outerHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+    outerHdr.initialize(this.decryptedData.substr(0, m));
+
+    let ct = outerHdr.extractHeader("content-type", false) || "";
+    let bound = getBoundary(ct);
+
+    let r = new RegExp("^--" + bound, "ym");
+
+    let startPos = -1;
+    let endPos = -1;
+
+    let match = r.exec(this.decryptedData);
+    if (match && match.index) {
+      startPos = match.index;
+    }
+
+    match = r.exec(this.decryptedData);
+    if (match && match.index) {
+      endPos = match.index;
+    }
+
+    if (startPos < 0 || endPos < 0) return;
+
+    LOCAL_DEBUG("mimeDecrypt.js: extractEncryptedHeaders: found possible MIME part\n");
+
+    let contentBody = this.decryptedData.substring(startPos + bound.length + 3, endPos);
+    let headers = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+    headers.initialize(contentBody);
+
+    let innerCt = headers.extractHeader("content-type", false) || "";
+
+    if (innerCt.search(/^text\/rfc822-headers/i) !== 0) {
+      return;
+    }
+
+    let bodyStartPos = contentBody.search(/^\s*$/m) + 1;
+
+    if (bodyStartPos < 10) return;
+
+    let bodyHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+    bodyHdr.initialize(contentBody.substr(bodyStartPos));
+
+    let h = [ "subject", "date", "from", "to", "cc", "in-reply-to", "references" ];
+
+    for (let i in h) {
+      this.decryptedHeaders[h[i]] = bodyHdr.extractHeader(h[i], true) || undefined;
+    }
   }
 };
 

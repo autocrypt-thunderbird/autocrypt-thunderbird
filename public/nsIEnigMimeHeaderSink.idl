@@ -55,6 +55,9 @@ interface nsIEnigMimeHeaderSink : nsISupports
                             in wstring blockSeparation,
                             in nsIURI uri,
                             in wstring encToDetails);
+
+  void modifyMessageHeaders(in nsIURI uri,
+                            in wstring headerData);
 };
 
 

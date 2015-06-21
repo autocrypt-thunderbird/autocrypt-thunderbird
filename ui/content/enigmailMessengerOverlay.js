@@ -1253,7 +1253,7 @@ Enigmail.msg = {
                                             errorMsg,
                                             null,         // blockSeparation
                                             encToDetailsObj.value,
-                                            "buggyMailFormat" );
+                                            "buggyMailFormat");
             return;
           }
           node = node.nextSibling;
