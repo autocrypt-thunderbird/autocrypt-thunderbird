@@ -1028,6 +1028,7 @@ if (messageHeaderSink) {
       {
         // unusedUriSpec is not used anymore. It is here becaue other addons rely on the same API
 
+        let uriSpec = (uri ? uri.spec : null);
 
         if (this.isCurrentMessage()) {
           Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
