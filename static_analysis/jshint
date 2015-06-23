@@ -28,5 +28,14 @@ else
         TESTS="$@"
     fi
 
-    jshint --config $STATIC_ANALYSIS_DIR/../.jshintrc -e .jsm $TESTS
+	JSHINTRC=$STATIC_ANALYSIS_DIR/../.jshintrc
+
+	# Fix path for cygwin environments
+	
+	CYGPATH=$(which cygpath)
+	if [ "${CYGPATH}x" != "x" ]; then
+		JSHINTRC=$($CYGPATH -w $JSHINTRC)
+	fi
+
+    jshint --config $JSHINTRC -e .jsm $TESTS
 fi
