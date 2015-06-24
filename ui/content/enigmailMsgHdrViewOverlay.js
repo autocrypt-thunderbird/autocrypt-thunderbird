@@ -1049,6 +1049,13 @@ if (messageHeaderSink) {
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.modifyMessageHeaders:\n");
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: headerData= "+ headerData + "\n");
 
+        function updateHdrBox(header, value) {
+          let e = document.getElementById("expanded" + header + "Box");
+          if (e) {
+            e.headerValue = value;
+          }
+        }
+
         let hdr;
         try {
           hdr = JSON.parse(headerData);
@@ -1063,10 +1070,7 @@ if (messageHeaderSink) {
 
         if ("subject" in hdr) {
           gFolderDisplay.selectedMessage.subject = hdr.subject;
-          let e = document.getElementById("expandedsubjectBox");
-          if (e) {
-            // do something
-          }
+          updateHdrBox("subject", hdr.subject);
         }
 
         if ("from" in hdr) {
