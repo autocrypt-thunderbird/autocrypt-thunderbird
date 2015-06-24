@@ -57,5 +57,28 @@ const EnigmailMime = {
             b += String.fromCharCode((r < 10 ? 48 : (r < 34 ? 55 :  63)) + r);
         }
         return b;
+    },
+
+    /***
+     * determine the "boundary" part of a mail content type.
+     *
+     * @contentTypeStr: the string containing all parts of a content-type.
+     *               (e.g. multipart/mixed; boundary="xyz") --> returns "xyz"
+     *
+     * @return: String containing the boundary parameter; or null
+     */
+
+    getBoundary: function(contentTypeStr) {
+      contentTypeStr = contentTypeStr.replace(/[\r\n]/g, "");
+      let boundary = "";
+      let ct = contentTypeStr.split(/;/);
+      for (let i=0; i < ct.length; i++) {
+        if (ct[i].search(/[ \t]*boundary[ \t]*=/i) >= 0) {
+          boundary = ct[i];
+          break;
+        }
+      }
+      boundary = boundary.replace(/\s*boundary\s*=/i, "").replace(/[\'\"]/g, "");
+      return boundary;
     }
 };

@@ -109,7 +109,7 @@ PgpMimeDecrypt.prototype = {
     this.headerMode = 0;
     this.decryptedHeaders = {};
     this.xferEncoding = ENCODING_DEFAULT;
-    this.boundary = getBoundary(this.mimeSvc.contentType);
+    this.boundary = EnigmailMime.getBoundary(this.mimeSvc.contentType);
     if (uri) {
       this.uri = uri.QueryInterface(Ci.nsIURI).clone();
       EnigmailLog.DEBUG("mimeDecrypt.js: onStartRequest: uri='"+ this.uri.spec+"'\n");
@@ -473,7 +473,7 @@ PgpMimeDecrypt.prototype = {
     outerHdr.initialize(this.decryptedData.substr(0, m));
 
     let ct = outerHdr.extractHeader("content-type", false) || "";
-    let bound = getBoundary(ct);
+    let bound = EnigmailMime.getBoundary(ct);
 
     let r = new RegExp("^--" + bound, "ym");
 
@@ -522,24 +522,6 @@ PgpMimeDecrypt.prototype = {
 
 ////////////////////////////////////////////////////////////////////
 // General-purpose functions, not exported
-
-function getBoundary(contentType) {
-  LOCAL_DEBUG("mimeDecrypt.js: getBoundary: "+contentType+"\n");
-
-  contentType = contentType.replace(/[\r\n]/g, "");
-  let boundary = "";
-  let ct = contentType.split(/;/);
-  for (let i=0; i < ct.length; i++) {
-    if (ct[i].search(/[ \t]*boundary[ \t]*=/i) >= 0) {
-      boundary = ct[i];
-      break;
-    }
-  }
-  boundary = boundary.replace(/\s*boundary\s*=/i, "").replace(/[\'\"]/g, "");
-  LOCAL_DEBUG("mimeDecrypt.js: getBoundary: found '"+ boundary+"'\n");
-  return boundary;
-}
-
 
 function LOCAL_DEBUG(str) {
   if (gDebugLogLevel) EnigmailLog.DEBUG(str);
