@@ -1,4 +1,4 @@
-/*global Components: false, atob: false, dump: false */
+/*global Components: false, dump: false */
 /*jshint -W097 */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -263,7 +263,7 @@ PgpMimeDecrypt.prototype = {
 
 
     if (this.xferEncoding == ENCODING_BASE64) {
-      this.outQueue = atob(this.outQueue.replace(/[\s\r\n]*/g, ""))+ "\n";
+      this.outQueue = EnigmailData.decodeBase64(this.outQueue) + "\n";
     }
 
     var statusFlagsObj = {};
@@ -510,14 +510,34 @@ PgpMimeDecrypt.prototype = {
       return;
     }
 
+    let charset = EnigmailMime.getCharset(innerCt);
+    let ctt = headers.extractHeader("content-transfer-encoding", false) || "";
+
+    let transferEncoding = ENCODING_DEFAULT;
+
+
     let bodyStartPos = contentBody.search(/\r?\n\s*\r?\n/) + 1;
 
     if (bodyStartPos < 10) return;
 
     bodyStartPos += contentBody.substr(bodyStartPos).search(/^[A-Za-z]/m);
 
+    let ctBodyData = contentBody.substr(bodyStartPos);
+
+    if (ctt.search(/^base64/i) === 0) {
+      ctBodyData = EnigmailData.decodeBase64(ctBodyData) + "\n";
+    }
+    else if (ctt.search(/^quoted-printable/i) === 0) {
+      ctBodyData = EnigmailData.decodeQuotedPrintable(ctBodyData) + "\n";
+    }
+
+
+    if (charset) {
+      ctBodyData = EnigmailData.convertToUnicode(ctBodyData, charset);
+    }
+
     let bodyHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
-    bodyHdr.initialize(contentBody.substr(bodyStartPos));
+    bodyHdr.initialize(ctBodyData);
 
     let h = [ "subject", "date", "from", "to", "cc", "reply-to", "references",
         "newsgroups", "followup-to", "message-id" ];
@@ -525,6 +545,9 @@ PgpMimeDecrypt.prototype = {
     for (let i in h) {
       this.decryptedHeaders[h[i]] = bodyHdr.extractHeader(h[i], true) || undefined;
     }
+
+    this.decryptedData = this.decryptedData.substr(0, startPos) + this.decryptedData.substr(endPos);
+
   }
 };
 
