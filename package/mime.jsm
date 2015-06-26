@@ -80,5 +80,28 @@ const EnigmailMime = {
       }
       boundary = boundary.replace(/\s*boundary\s*=/i, "").replace(/[\'\"]/g, "");
       return boundary;
+    },
+
+    /***
+     * determine the "charset" part of a mail content type.
+     *
+     * @contentTypeStr: the string containing all parts of a content-type.
+     *               (e.g. multipart/mixed; charset="utf-8") --> returns "utf-8"
+     *
+     * @return: String containing the charset parameter; or null
+     */
+
+    getCharset: function(contentTypeStr) {
+      contentTypeStr = contentTypeStr.replace(/[\r\n]/g, "");
+      let boundary = "";
+      let ct = contentTypeStr.split(/;/);
+      for (let i=0; i < ct.length; i++) {
+        if (ct[i].search(/[ \t]*charset[ \t]*=/i) >= 0) {
+          boundary = ct[i];
+          break;
+        }
+      }
+      boundary = boundary.replace(/\s*charset\s*=/i, "").replace(/[\'\"]/g, "");
+      return boundary;
     }
 };
