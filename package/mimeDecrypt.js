@@ -475,6 +475,8 @@ PgpMimeDecrypt.prototype = {
     let ct = outerHdr.extractHeader("content-type", false) || "";
     let bound = EnigmailMime.getBoundary(ct);
 
+    // TODO: content-transfer-decoding and charset interpretation
+
     let r = new RegExp("^--" + bound, "ym");
 
     let startPos = -1;
@@ -495,6 +497,10 @@ PgpMimeDecrypt.prototype = {
     LOCAL_DEBUG("mimeDecrypt.js: extractEncryptedHeaders: found possible MIME part\n");
 
     let contentBody = this.decryptedData.substring(startPos + bound.length + 3, endPos);
+    let i = contentBody.search(/^[A-Za-z]/m); // skip empty lines
+    if (i > 0) {
+      contentBody = contentBody.substr(i);
+    }
     let headers = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
     headers.initialize(contentBody);
 
@@ -504,14 +510,17 @@ PgpMimeDecrypt.prototype = {
       return;
     }
 
-    let bodyStartPos = contentBody.search(/^\s*$/m) + 1;
+    let bodyStartPos = contentBody.search(/\r?\n\s*\r?\n/) + 1;
 
     if (bodyStartPos < 10) return;
+
+    bodyStartPos += contentBody.substr(bodyStartPos).search(/^[A-Za-z]/m);
 
     let bodyHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
     bodyHdr.initialize(contentBody.substr(bodyStartPos));
 
-    let h = [ "subject", "date", "from", "to", "cc", "in-reply-to", "references" ];
+    let h = [ "subject", "date", "from", "to", "cc", "reply-to", "references",
+        "newsgroups", "followup-to", "message-id" ];
 
     for (let i in h) {
       this.decryptedHeaders[h[i]] = bodyHdr.extractHeader(h[i], true) || undefined;
