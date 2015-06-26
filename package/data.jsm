@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLog: false, unescape: false */
+/*global Components: false, EnigmailLog: false, unescape: false, atob: false */
 /*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -91,6 +91,10 @@ const EnigmailData = {
 
     decodeQuotedPrintable: function(str) {
         return unescape(str.replace(/%/g, "=25").replace(/=/g,'%'));
+    },
+
+    decodeBase64: function(str) {
+      return atob(str.replace(/[\s\r\n]*/g, ""));
     },
 
     convertToUnicode: function (text, charset) {
