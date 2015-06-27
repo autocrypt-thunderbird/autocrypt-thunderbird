@@ -1,4 +1,4 @@
-/*global Components: false, btoa: false, escape: false */
+/*global Components: false, btoa: false */
 /*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -983,9 +983,9 @@ DecryptMessageIntoFolder.prototype = {
                     mimeName = getHeaderValue(mime, 'subject')+".eml";
                 }
 
-                msg += 'Content-Type: message/rfc822; name="'+ encodeHeaderValue(mimeName) + '\r\n';
+                msg += 'Content-Type: message/rfc822; name="'+ EnigmailMime.encodeHeaderValue(mimeName) + '\r\n';
                 msg += 'Content-Transfer-Encoding: 7bit\r\n';
-                msg += 'Content-Disposition: attachment; filename="' + encodeHeaderValue(mimeName) + '"\r\n\r\n';
+                msg += 'Content-Disposition: attachment; filename="' + EnigmailMime.encodeHeaderValue(mimeName) + '"\r\n\r\n';
             }
 
             msg += getRfc822Headers(mime.headers, ct);
@@ -1054,29 +1054,11 @@ function formatHeaderData(hdrValue) {
     return lines.join("").trim();
 }
 
-/**
- * Correctly encode and format a set of email addresses
- */
-function formatEmailAddress(addressData) {
-    const adrArr = addressData.split(/, */);
-
-    for (let i in adrArr) {
-        try {
-            const m = adrArr[i].match(/(.*[\w\s]+?)<([\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4})>/);
-            if (m && m.length == 3) {
-                adrArr[i] = encodeHeaderValue(m[1])+" <" + m[2] + ">";
-            }
-        } catch(ex) {}
-    }
-
-    return adrArr.join(", ");
-}
-
 function formatMimeHeader(headerLabel, headerValue) {
     if (headerLabel.search(/^(sender|from|reply-to|to|cc|bcc)$/i) === 0) {
-        return formatHeader(headerLabel) +": "+ formatHeaderData(formatEmailAddress(headerValue));
+        return formatHeader(headerLabel) +": "+ formatHeaderData(EnigmailMime.formatEmailAddress(headerValue));
     } else {
-        return formatHeader(headerLabel) +": "+ formatHeaderData(encodeHeaderValue(headerValue));
+        return formatHeader(headerLabel) +": "+ formatHeaderData(EnigmailMime.encodeHeaderValue(headerValue));
     }
 }
 
@@ -1199,28 +1181,4 @@ function getSMimeProtocol(shdr) {
     }
 }
 
-/**
- * Get UTF-8 encoded header value following RFC 2047
- */
-function encodeHeaderValue (aStr) {
-    let ret = "";
 
-    if (aStr.search(/[^\x01-\x7F]/) >= 0) {
-        let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"].
-                createInstance(Ci.nsIScriptableUnicodeConverter);
-
-        let trash = {};
-        converter.charset = "UTF-8";
-        let data = converter.convertToByteArray(aStr, trash);
-
-        for (let j in data) {
-            ret += String.fromCharCode(data[j]);
-        }
-
-        ret = "=?UTF-8?Q?"+escape(ret).replace(/%/g, "=")+"?=";
-    } else {
-        ret = aStr;
-    }
-
-    return ret;
-}

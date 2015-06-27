@@ -1,4 +1,4 @@
-/*global Components: false */
+/*global Components: false, escape: false */
 /*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -41,6 +41,9 @@
 "use strict";
 
 const EXPORTED_SYMBOLS = [ "EnigmailMime" ];
+
+const Cc = Components.classes;
+const Ci = Components.interfaces;
 
 const EnigmailMime = {
     /***
@@ -103,5 +106,51 @@ const EnigmailMime = {
       }
       boundary = boundary.replace(/\s*charset\s*=/i, "").replace(/[\'\"]/g, "");
       return boundary;
+    },
+
+    /**
+     * Convert a MIME header value into a UTF-8 encoded representation following RFC 2047
+     */
+    encodeHeaderValue: function (aStr) {
+        let ret = "";
+
+        if (aStr.search(/[^\x01-\x7F]/) >= 0) {
+            let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"].
+                    createInstance(Ci.nsIScriptableUnicodeConverter);
+
+            let trash = {};
+            converter.charset = "UTF-8";
+            let data = converter.convertToByteArray(aStr, trash);
+
+            for (let j in data) {
+                ret += String.fromCharCode(data[j]);
+            }
+
+            ret = "=?UTF-8?Q?"+escape(ret).replace(/%/g, "=")+"?=";
+        } else {
+            ret = aStr;
+        }
+
+        return ret;
+    },
+
+    /**
+     * Correctly encode and format a set of email addresses for RFC 2047
+     */
+    formatEmailAddress: function (addressData) {
+        const adrArr = addressData.split(/, */);
+
+        for (let i in adrArr) {
+            try {
+                const m = adrArr[i].match(/(.*[\w\s]+?)<([\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4})>/);
+                if (m && m.length == 3) {
+                    adrArr[i] = this.encodeHeaderValue(m[1])+" <" + m[2] + ">";
+                }
+            } catch(ex) {}
+        }
+
+        return adrArr.join(", ");
     }
+
+
 };
