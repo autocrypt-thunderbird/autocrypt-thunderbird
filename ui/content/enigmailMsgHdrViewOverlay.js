@@ -1073,6 +1073,10 @@ if (messageHeaderSink) {
           updateHdrBox("subject", hdr.subject);
         }
 
+        if ("date" in hdr) {
+          gFolderDisplay.selectedMessage.date = Date.parse(hdr.date) * 1000;
+        }
+
         if ("newsgroups" in hdr) {
           updateHdrBox("newsgroups", hdr.newsgroups);
         }
@@ -1096,7 +1100,6 @@ if (messageHeaderSink) {
         if ("reply-to" in hdr) {
           gExpandedHeaderView["reply-to"].outputFunction(gExpandedHeaderView["reply-to"], hdr["reply-to"]);
         }
-
 
       },
 
