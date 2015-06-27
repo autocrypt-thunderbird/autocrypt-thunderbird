@@ -55,13 +55,6 @@ interface nsIEnigmail : nsISupports
   void reinitialize();
   void finalize();
 
-  string locateArmoredBlock(in string text,
-                            in long offset,
-                            in string indentStr,
-                            out long beginIndex,
-                            out long endIndex,
-                            out string foundIndentStr);
-
   /* Cleartext signature parts */
   const long SIGNATURE_TEXT    = 1;
   const long SIGNATURE_HEADERS = 2;
@@ -92,16 +85,6 @@ interface nsIEnigmail : nsISupports
   const long SEND_STRIP_WHITESPACE = 0x400;  // 1024
   const long SEND_ATTACHMENT       = 0x800;  // 2048
 
-  wstring encryptMessage(in nsIDOMWindow parent,
-                        in unsigned long uiFlags,
-                        in string  plainText,
-                        in string  fromMailAddr,
-                        in string  toMailAddr,
-                        in string  bccMailAddr,
-                        in unsigned long sendFlags,
-                        out long exitCode,
-                        out unsigned long statusFlags,
-                        out wstring errorMsg);
 
   /* Status flags */
   const unsigned long GOOD_SIGNATURE        = 0x00000001;
@@ -137,23 +120,6 @@ interface nsIEnigmail : nsISupports
   const unsigned long SIG_CREATED           = 0x40000000;
   const unsigned long END_ENCRYPTION        = 0x80000000;
 
-  wstring decryptMessage(in nsIDOMWindow parent,
-                        in unsigned long uiFlags,
-                        in string  cipherText,
-                        inout string signature,
-                        out long exitCode,
-                        out unsigned long statusFlags,
-                        out wstring keyId,
-                        out wstring userId,
-                        out wstring sigDetails,
-                        out wstring errorMsg,
-                        out wstring blockSeparation,
-                        out wstring encToDetails);
-
-  boolean deleteMessageURI(in string uri);
-
-  string getGnupgConfig (out long exitCodeObj, out wstring errorMsgObj);
-
 /*** key handling functions ***/
 
   const long EXTRACT_SECRET_KEY = 0x01;
@@ -164,56 +130,14 @@ interface nsIEnigmail : nsISupports
   const long UPLOAD_KEY       = 0x04;
   const long REFRESH_KEY      = 0x08;
 
-  string createMessageURI(in string originalUrl,
-                          in string contentType,
-                          in string contentCharset,
-                          in string contentData,
-                          in boolean persist);
-
   /* attachment handling */
 
-  string encryptAttachment (in nsIDOMWindow parent,
-                            in string fromMailAddr,
-                            in string toMailAddr,
-                            in string bccMailAddr,
-                            in unsigned long sendFlags,
-                            in nsIFile inFile,
-                            in nsIFile outFile,
-                            out long exitCode,
-                            out unsigned long statusFlags,
-                            out wstring errorMsg);
-
-  boolean decryptAttachment (in nsIDOMWindow parent,
-                             in nsIFile outFile,
-                             in string displayName,
-                             in wstring byteData,
-                             out long exitCode,
-                             out unsigned long statusFlags,
-                             out wstring errorMsg);
-
-  long verifyAttachment (in nsIDOMWindow parent,
-                         in nsIFile verifyFile,
-                         in nsIFile sigFile,
-                         out unsigned long statusFlags,
-                         out wstring errorMsg);
-
   /* per-recipient rules */
-
-  boolean getRulesData(out nsIDOMDocument rulesList);
-
-  void addRule(in boolean appendToEnd,
-               in string toAddress,
-               in string keyList,
-               in long sign,
-               in long encrypt,
-               in long pgpMime,
-               in long flags);
-
-  boolean saveRulesFile();
-  void clearRules();
 
   const long CARD_PIN_CHANGE       = 1;
   const long CARD_PIN_UNBLOCK      = 2;
   const long CARD_ADMIN_PIN_CHANGE = 3;
 
 };
+
+
