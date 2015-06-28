@@ -1,4 +1,4 @@
-/*global Components: false, XPCOMUtils: false, EnigmailData: false, EnigmailLog: false, EnigmailFiles: false, EnigmailFuncs: false, dump: false, atob: false */
+/*global Components: false, XPCOMUtils: false, EnigmailData: false, EnigmailLog: false, EnigmailFiles: false, EnigmailFuncs: false, dump: false */
 /*jshint -W097 */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -215,8 +215,7 @@ MimeVerify.prototype = {
       let xferEnc = this.getContentTransferEncoding();
       if (xferEnc.search(/base64/i) >= 0) {
         let bound = this.getBodyPart();
-        let b64 = this.keepData.substring(bound.start, bound.end).replace(/[\s\r\n]*/g, "");
-        this.keepData = atob(b64)+"\n";
+        this.keepData = EnigmailData.decodeBase64(this.keepData.substring(bound.start, bound.end))+"\n";
       }
       else if (xferEnc.search(/quoted-printable/i) >= 0) {
         let bound = this.getBodyPart();

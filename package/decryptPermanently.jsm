@@ -58,6 +58,7 @@ Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Cu.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
+Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/attachment.jsm"); /*global EnigmailAttachment: false */
 
 /*global MimeBody: false, MimeUnknown: false, MimeMessageAttachment: false */
@@ -822,7 +823,7 @@ DecryptMessageIntoFolder.prototype = {
             let j = decryptedMessage.search(/[^\x01-\x7F]/);
             if (j >= 0) {
                 mime.headers['content-transfer-encoding'] = [ 'base64' ];
-                mime.body = base64WithWidthCompliance(decryptedMessage);
+                mime.body = EnigmailData.encodeBase64(decryptedMessage);
             }
             else {
                 mime.body = decryptedMessage;
@@ -943,7 +944,7 @@ DecryptMessageIntoFolder.prototype = {
                         }
 
                         msg += "Content-Transfer-Encoding: base64\r\n\r\n";
-                        msg += base64WithWidthCompliance(a.data)+"\r\n";
+                        msg += EnigmailData.encodeBase64(a.data)+"\r\n";
 
                     }
                 }
@@ -1124,10 +1125,6 @@ function getRfc822Headers(headerArr, contentType, ignoreHeadersArr) {
     }
 
     return hdrs;
-}
-
-function base64WithWidthCompliance(data) {
-    return btoa(data).replace(/(.{72})/g, "$1\r\n");
 }
 
 function getContentType(shdr) {

@@ -891,14 +891,12 @@ Enigmail.msg = {
       if (idx >= 0) {
         msgText = msgText.slice(0,idx+1);
       }
-      // decrypt base64 if it is encoded that way
+      // decode base64 if it is encoded that way
       if (isBase64) {
-        msgText = msgText.replace(/\n/g,   "");
-        //EnigmailLog.DEBUG("vor base64 decode: \n" + msgText + "\n");
         try {
-          msgText = window.atob(msgText);
+          msgText = EnigmailData.decodeBase64(msgText);
         } catch (ex) {
-          EnigmailLog.writeException("enigmailMessengerOverlay.js: calling atob() ", ex);
+          EnigmailLog.writeException("enigmailMessengerOverlay.js: decodeBase64() ", ex);
         }
         //EnigmailLog.DEBUG("nach base64 decode: \n" + msgText + "\n");
       }
