@@ -695,7 +695,7 @@ Enigmail.msg = {
   {
     let bc = document.getElementById("enigmail-bc-attach");
     let attachIcon = document.getElementById("button-enigmail-attach");
-    
+
     if (this.attachOwnKeyObj.appendAttachment) {
       bc.setAttribute("addPubkey", "true");
       bc.setAttribute("checked", "true");
@@ -926,6 +926,18 @@ Enigmail.msg = {
           ChangeAttachmentBucketVisibility(true);
         }
         catch(ex) {}
+      }
+    }
+  },
+
+
+  resetUpdatedFields: function() {
+    this.removeAttachedKey();
+
+    // reset subject
+    if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIEnigMsgCompFields) {
+      if (gMsgCompose.compFields.securityInfo.originalSubject) {
+        gMsgCompose.compFields.subject = gMsgCompose.compFields.securityInfo.originalSubject;
       }
     }
   },
@@ -2820,6 +2832,7 @@ Enigmail.msg = {
       try {
         if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIEnigMsgCompFields) {
           gMsgCompose.compFields.securityInfo.sendFlags=0;
+          gMsgCompose.compFields.securityInfo.originalSubject = gMsgCompose.compFields.subject;
         }
         else if (!gMsgCompose.compFields.securityInfo) {
           throw "dummy";
@@ -2830,6 +2843,8 @@ Enigmail.msg = {
           var newSecurityInfo = Components.classes[this.compFieldsEnig_CID].createInstance(Components.interfaces.nsIEnigMsgCompFields);
           if (newSecurityInfo) {
             newSecurityInfo.sendFlags=0;
+            newSecurityInfo.originalSubject = gMsgCompose.compFields.subject;
+
             gMsgCompose.compFields.securityInfo = newSecurityInfo;
           }
         }
@@ -3159,6 +3174,20 @@ Enigmail.msg = {
            gMsgCompose.compFields.securityInfo = newSecurityInfo;
          }
 
+         newSecurityInfo.originalSubject = gMsgCompose.compFields.subject;
+
+         if (EnigmailPrefs.getPref("encryptHeaders")) {
+            sendFlags |= nsIEnigmail.ENCRYPT_HEADERS;
+
+            if (sendFlags & ENCRYPT) {
+              if (EnigmailPrefs.getPref("encryptedSubjectText").length > 0) {
+                gMsgCompose.compFields.subject = EnigmailPrefs.getPref("encryptedSubjectText");
+              }
+              else {
+                gMsgCompose.compFields.subject = EnigmailLocale.getString("msgCompose.encryptedSubjectStub");
+              }
+            }
+         }
 
          newSecurityInfo.sendFlags = sendFlags;
          newSecurityInfo.UIFlags = uiFlags;
@@ -3673,7 +3702,7 @@ Enigmail.msg = {
       try {
         this.modifyCompFields();
         if (! this.encryptMsg(sendMsgType)) {
-          this.removeAttachedKey();
+          this.resetUpdatedFields();
           event.preventDefault();
           event.stopPropagation();
         }

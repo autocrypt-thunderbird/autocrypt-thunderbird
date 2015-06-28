@@ -72,19 +72,19 @@ interface nsIEnigmail : nsISupports
   const long UI_RESTORE_STRICTLY_MIME = 0x20;
 
   /* Send message flags */
-  const long SEND_SIGNED           = 0x001;  //    1
-  const long SEND_ENCRYPTED        = 0x002;  //    2
-  const long SEND_DEFAULT          = 0x004;  //    4
-  const long SEND_LATER            = 0x008;  //    8
-  const long SEND_WITH_CHECK       = 0x010;  //   16
-  const long SEND_ALWAYS_TRUST     = 0x020;  //   32
-  const long SEND_ENCRYPT_TO_SELF  = 0x040;  //   64
-  const long SEND_PGP_MIME         = 0x080;  //  128
-  const long SEND_TEST             = 0x100;  //  256
-  const long SAVE_MESSAGE          = 0x200;  //  512
-  const long SEND_STRIP_WHITESPACE = 0x400;  // 1024
-  const long SEND_ATTACHMENT       = 0x800;  // 2048
-
+  const long SEND_SIGNED           = 0x0001;  //    1
+  const long SEND_ENCRYPTED        = 0x0002;  //    2
+  const long SEND_DEFAULT          = 0x0004;  //    4
+  const long SEND_LATER            = 0x0008;  //    8
+  const long SEND_WITH_CHECK       = 0x0010;  //   16
+  const long SEND_ALWAYS_TRUST     = 0x0020;  //   32
+  const long SEND_ENCRYPT_TO_SELF  = 0x0040;  //   64
+  const long SEND_PGP_MIME         = 0x0080;  //  128
+  const long SEND_TEST             = 0x0100;  //  256
+  const long SAVE_MESSAGE          = 0x0200;  //  512
+  const long SEND_STRIP_WHITESPACE = 0x0400;  // 1024
+  const long SEND_ATTACHMENT       = 0x0800;  // 2048
+  const long ENCRYPT_HEADERS       = 0x1000;  // 4096
 
   /* Status flags */
   const unsigned long GOOD_SIGNATURE        = 0x00000001;

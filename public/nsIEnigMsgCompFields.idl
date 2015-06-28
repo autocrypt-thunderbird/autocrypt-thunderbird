@@ -59,6 +59,8 @@ interface nsIEnigMsgCompFields : nsISupports
   attribute ACString recipients;
 
   attribute ACString bccRecipients;
+
+  attribute ACString originalSubject;
 };
 
 %{C++

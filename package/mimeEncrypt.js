@@ -17,6 +17,7 @@ Components.utils.import("resource://enigmail/dialog.jsm");
 Components.utils.import("resource://enigmail/encryption.jsm"); /*global EnigmailEncryption: false */
 Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Components.utils.import("resource://enigmail/hash.jsm"); /*global EnigmailHash: false */
+Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -54,6 +55,7 @@ PgpMimeEncrypt.prototype = {
   dataLength: 0,
   headerData: "",
   encapsulate: null,
+  encHeader: null,
   cryptoBoundary: null,
   win: null,
   pipe: null,
@@ -72,6 +74,7 @@ PgpMimeEncrypt.prototype = {
   // nsIStreamListener interface
   onStartRequest: function(request) {
     LOCAL_DEBUG("mimeEncrypt.js: onStartRequest\n");
+    this.encHeader = null;
   },
 
   onDataAvailable: function(req, sup, stream, offset, count) {
@@ -142,6 +145,7 @@ PgpMimeEncrypt.prototype = {
       this.outStream = outStream;
       this.isDraft = isDraft;
 
+      this.msgCompFields = msgCompFields;
       var securityInfo = msgCompFields.securityInfo;
       if (!securityInfo) throw Cr.NS_ERROR_FAILURE;
 
@@ -203,6 +207,55 @@ PgpMimeEncrypt.prototype = {
 
     if (this.cryptoMode == MIME_SIGNED) this.signedHeaders1(false);
     if (this.cryptoMode == MIME_ENCRYPTED) this.encryptedHeaders();
+
+    if (this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.ENCRYPT_HEADERS) {
+      this.writeSecureHeaders();
+    }
+  },
+
+  writeSecureHeaders: function() {
+    this.encHeader = EnigmailMime.createBoundary();
+
+    let hdr = "";
+
+    let h = {
+              from: "From",
+              replyTo: "Reply-To",
+              to: "To",
+              cc: "Cc",
+              newsgroups: "Newsgroups",
+              followupTo: "Followup-To",
+              messageId: "Message-Id",
+              references: "References"
+            };
+
+    for (let i in h) {
+      if (this.msgCompFields[i] && this.msgCompFields[i].length > 0) {
+        hdr += h[i] +": " + EnigmailData.convertFromUnicode(this.msgCompFields[i]) + "\r\n";
+      }
+    }
+
+    if (this.enigSecurityInfo.originalSubject && this.enigSecurityInfo.originalSubject.length > 0) {
+      hdr += "Subject: " + EnigmailData.convertFromUnicode(this.enigSecurityInfo.originalSubject, "utf-8") + "\r\n";
+    }
+
+    if (this.msgCompFields.hasHeader("in-reply-to")) {
+      hdr += "In-Reply-To: "+ this.msgCompFields.getHeader("in-reply-to")+ "\r\n";
+    }
+
+
+    let w = 'Content-Type: multipart/mixed; boundary="' + this.encHeader+ '"\r\n\r\n' +
+    "--"+this.encHeader+"\r\n" +
+    'Content-Type: text/rfc822-headers; charset="utf-8";\r\n' +
+    ' memoryhole="v1,' + this.msgCompFields.messageId + '"\r\n' +
+    'Content-Disposition: inline\r\n' +
+    'Content-Transfer-Encoding: base64\r\n\r\n' +
+    EnigmailData.encodeBase64(hdr) +
+    "\r\n--"+this.encHeader+"\r\n";
+
+    this.writeToPipe(w);
+
+    if (this.cryptoMode == MIME_SIGNED) this.writeOut(w);
   },
 
   encryptedHeaders: function(isEightBit) {
@@ -263,6 +316,12 @@ PgpMimeEncrypt.prototype = {
 
     try {
       if (this.encapsulate) this.writeToPipe("--"+this.encapsulate+"--\r\n");
+
+      if (this.encHeader) {
+        this.writeToPipe("\r\n--"+this.encHeader+"\r\n");
+        if (this.cryptoMode == MIME_SIGNED) this.writeOut("\r\n--"+this.encHeader+"\r\n");
+      }
+
 
       if (! this.proc) return;
       this.flushInput();

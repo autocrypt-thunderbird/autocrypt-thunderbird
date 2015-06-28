@@ -206,6 +206,10 @@ pref("extensions.enigmail.warnDownloadContactKeys",true);
 // wrap HTML messages before sending inline PGP messages
 pref("extensions.enigmail.wrapHtmlBeforeSend",true);
 
+// enable encryption/signing of headers like subject, from, to
+pref("extensions.enigmail.encryptHeaders",false);
+pref("extensions.enigmail.encryptedSubjectText","");
+
 // enable experimental features.
 // WARNING: such features may unfinished functions or tests that can break
 // existing functionality in Enigmail and Thunderbird!
