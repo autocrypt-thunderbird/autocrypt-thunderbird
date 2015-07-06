@@ -24,6 +24,7 @@ test(function shouldCreateLogFile() {
         Assert.equal(localFile.exists(), true);
     } finally {
         if (localFile.exists()) {
+            EnigmailLog.fileStream.close();
             localFile.remove(false);
         }
     }

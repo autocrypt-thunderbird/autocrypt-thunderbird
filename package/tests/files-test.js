@@ -13,11 +13,12 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
 testing("files.jsm");
 
+dump("got here\n");
+
 // testing: readFile
 test(function readFileReturnsContentOfExistingFile() {
     var md = do_get_cwd().clone();
-    md.append("..");
-    md.append("..");
+    md = md.parent.parent;
     md.append("uuid_enig.txt");
     var result = EnigmailFiles.readFile(md);
     Assert.assertContains(result, "847b3a00-7ab1-11d4-8f02-006008948af5");
@@ -25,8 +26,7 @@ test(function readFileReturnsContentOfExistingFile() {
 
 test(function readFileReturnsEmptyStringForNonExistingFile() {
     var md = do_get_cwd().clone();
-    md.append("..");
-    md.append("..");
+    md = md.parent.parent;
     md.append("THIS_FILE_DOESNT_EXIST");
     var result = EnigmailFiles.readFile(md);
     Assert.equal("", result);

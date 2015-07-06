@@ -8,16 +8,16 @@
 
 "use strict";
 
-do_subtest("armor-test.js");
-do_subtest("data-test.js");
-do_subtest("decryption-test.js");
-do_subtest("decryptPermanently-test.js");
-do_subtest("encryption-test.js");
-do_subtest("errorHandling-test.js");
-do_subtest("gpgAgent-test.js");
-do_subtest("enigmail-test.js");
-do_subtest("files-test.js");
-do_subtest("keyEditor-test.js");
+// do_subtest("armor-test.js");
+// do_subtest("data-test.js");
+// do_subtest("decryption-test.js");
+// do_subtest("decryptPermanently-test.js");
+// do_subtest("encryption-test.js");
+// do_subtest("errorHandling-test.js");
+// do_subtest("gpgAgent-test.js");
+// do_subtest("enigmail-test.js");
+// do_subtest("files-test.js");
+// do_subtest("keyEditor-test.js");
 do_subtest("keyRing-test.js");
 do_subtest("locale-test.js");
 do_subtest("log-test.js");

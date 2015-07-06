@@ -16,7 +16,9 @@ testing("rules.jsm");
 // getRulesFile
 test(function getRulesFileReturnsTheFile() {
     EnigmailRules.clearRules();
-    Assert.equal(EnigmailApp.getProfileDirectory().path + "/pgprules.xml", EnigmailRules.getRulesFile().path);
+    let profD = EnigmailApp.getProfileDirectory().clone();
+    profD.append("pgprules.xml");
+    Assert.equal(profD.path, EnigmailRules.getRulesFile().path);
 });
 
 // loadRulesFile
