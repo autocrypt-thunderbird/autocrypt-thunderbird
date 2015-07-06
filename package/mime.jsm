@@ -1,4 +1,4 @@
-/*global Components: false, escape: false */
+/*global Components: false, escape: false, btoa: false*/
 /*jshint -W097 */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -44,6 +44,8 @@ const EXPORTED_SYMBOLS = [ "EnigmailMime" ];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+
+Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 
 const EnigmailMime = {
     /***
@@ -115,24 +117,42 @@ const EnigmailMime = {
         let ret = "";
 
         if (aStr.search(/[^\x01-\x7F]/) >= 0) {
-            let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"].
-                    createInstance(Ci.nsIScriptableUnicodeConverter);
-
-            let trash = {};
-            converter.charset = "UTF-8";
-            let data = converter.convertToByteArray(aStr, trash);
-
-            for (let j in data) {
-                ret += String.fromCharCode(data[j]);
-            }
-
-            ret = "=?UTF-8?Q?"+escape(ret).replace(/%/g, "=")+"?=";
+            let s = EnigmailData.convertFromUnicode(aStr, "utf-8");
+            ret = "=?UTF-8?B?" + btoa(s) + "?=";
         } else {
             ret = aStr;
         }
 
         return ret;
     },
+
+	/**
+	 * format MIME header with maximum length of 72 characters. 
+	 */
+	formatHeaderData: function (hdrValue) {
+		let header;
+		if (Array.isArray(hdrValue)) {
+			header = hdrValue.join("").split(" ");
+		} else {
+			header = hdrValue.split(" ");
+		}
+
+		let line = "";
+		let lines = [];
+
+		for (let i = 0; i < header.length; i++) {
+			if(line.length + header[i].length >= 72) {
+				lines.push(line+"\r\n");
+				line = " "+header[i];
+			} else {
+				line +=  " " + header[i];
+			}
+		}
+
+		lines.push(line);
+
+		return lines.join("").trim();
+	},
 
     /**
      * Correctly encode and format a set of email addresses for RFC 2047

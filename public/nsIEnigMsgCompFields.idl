@@ -54,13 +54,13 @@ interface nsIEnigMsgCompFields : nsISupports
 
   attribute unsigned long sendFlags;
 
-  attribute ACString senderEmailAddr;
+  attribute AString senderEmailAddr;
 
-  attribute ACString recipients;
+  attribute AString recipients;
 
-  attribute ACString bccRecipients;
+  attribute AString bccRecipients;
 
-  attribute ACString originalSubject;
+  attribute AString originalSubject;
 };
 
 %{C++

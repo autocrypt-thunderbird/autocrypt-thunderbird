@@ -1030,36 +1030,11 @@ function formatHeader(headerLabel) {
     return headerLabel.replace(/^.|(\-.)/g, function(match) { return match.toUpperCase(); });
 }
 
-function formatHeaderData(hdrValue) {
-    let header;
-    if (Array.isArray(hdrValue)) {
-        header = hdrValue.join("").split(" ");
-    } else {
-        header = hdrValue.split(" ");
-    }
-
-    let line = "";
-    let lines = [];
-
-    for (let i = 0; i < header.length; i++) {
-        if(line.length + header[i].length >= 72) {
-            lines.push(line+"\r\n");
-            line = "  "+header[i];
-        } else {
-            line +=  " " + header[i];
-        }
-    }
-
-    lines.push(line);
-
-    return lines.join("").trim();
-}
-
 function formatMimeHeader(headerLabel, headerValue) {
     if (headerLabel.search(/^(sender|from|reply-to|to|cc|bcc)$/i) === 0) {
-        return formatHeader(headerLabel) +": "+ formatHeaderData(EnigmailMime.formatEmailAddress(headerValue));
+        return formatHeader(headerLabel) +": "+ EnigmailMime.formatHeaderData(EnigmailMime.formatEmailAddress(headerValue));
     } else {
-        return formatHeader(headerLabel) +": "+ formatHeaderData(EnigmailMime.encodeHeaderValue(headerValue));
+        return formatHeader(headerLabel) +": "+ EnigmailMime.formatHeaderData(EnigmailMime.encodeHeaderValue(headerValue));
     }
 }
 

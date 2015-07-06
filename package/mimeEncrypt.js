@@ -12,8 +12,10 @@
  */
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
+Components.utils.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 Components.utils.import("resource://enigmail/funcs.jsm");
 Components.utils.import("resource://enigmail/dialog.jsm");
+Components.utils.import("resource://enigmail/log.jsm");
 Components.utils.import("resource://enigmail/encryption.jsm"); /*global EnigmailEncryption: false */
 Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Components.utils.import("resource://enigmail/hash.jsm"); /*global EnigmailHash: false */
@@ -218,36 +220,39 @@ PgpMimeEncrypt.prototype = {
 
     let hdr = "";
 
+    let addrParser = jsmime.headerparser.parseAddressingHeader;
+    let noParser = function (s) { return s; };
+    
     let h = {
-              from: "From",
-              replyTo: "Reply-To",
-              to: "To",
-              cc: "Cc",
-              newsgroups: "Newsgroups",
-              followupTo: "Followup-To",
-              messageId: "Message-Id",
-              references: "References"
+              from: {field: "From", parser: addrParser },
+              replyTo: {field: "Reply-To", parser: addrParser },
+              to: {field: "To", parser: addrParser },
+              cc: {field:"Cc", parser: addrParser },
+              newsgroups: {field: "Newsgroups", parser: noParser} ,
+              followupTo: {field: "Followup-To", parser: addrParser },
+              messageId: {field: "Message-Id", parser: noParser},
+              references: {field: "References", parser: noParser }
             };
 
     for (let i in h) {
       if (this.msgCompFields[i] && this.msgCompFields[i].length > 0) {
-        hdr += h[i] +": " + EnigmailData.convertFromUnicode(this.msgCompFields[i]) + "\r\n";
+         hdr += jsmime.headeremitter.emitStructuredHeader(h[i].field, h[i].parser(this.msgCompFields[i]), {});
       }
     }
 
     if (this.enigSecurityInfo.originalSubject && this.enigSecurityInfo.originalSubject.length > 0) {
-      hdr += "Subject: " + EnigmailData.convertFromUnicode(this.enigSecurityInfo.originalSubject, "utf-8") + "\r\n";
+      hdr += jsmime.headeremitter.emitStructuredHeader("subject", this.enigSecurityInfo.originalSubject, {});
     }
 
     if (this.msgCompFields.hasHeader("in-reply-to")) {
-      hdr += "In-Reply-To: "+ this.msgCompFields.getHeader("in-reply-to")+ "\r\n";
+      hdr += jsmime.headeremitter.emitStructuredHeader("in-reply-to", addrParser(this.msgCompFields.getHeader("in-reply-to")), {});
     }
 
 
     let w = 'Content-Type: multipart/mixed; boundary="' + this.encHeader+ '"\r\n\r\n' +
     "--"+this.encHeader+"\r\n" +
     'Content-Type: text/rfc822-headers; charset="utf-8";\r\n' +
-    ' memoryhole="v1,' + this.msgCompFields.messageId + '"\r\n' +
+    ' protected-headers="v1,' + this.msgCompFields.messageId + '"\r\n' +
     'Content-Disposition: inline\r\n' +
     'Content-Transfer-Encoding: base64\r\n\r\n' +
     EnigmailData.encodeBase64(hdr) +

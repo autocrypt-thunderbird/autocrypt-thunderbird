@@ -12,6 +12,7 @@
  */
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+Components.utils.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Components.utils.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
 Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
@@ -21,6 +22,8 @@ Components.utils.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs
 Components.utils.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
 Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
+
+
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -543,7 +546,9 @@ PgpMimeDecrypt.prototype = {
         "newsgroups", "followup-to", "message-id" ];
 
     for (let i in h) {
-      this.decryptedHeaders[h[i]] = bodyHdr.extractHeader(h[i], true) || undefined;
+      if (bodyHdr.hasHeader(h[i])) {
+        this.decryptedHeaders[h[i]] = jsmime.headerparser.decodeRFC2047Words(bodyHdr.extractHeader(h[i], true)) || undefined;
+      }
     }
 
     this.decryptedData = this.decryptedData.substr(0, startPos) + this.decryptedData.substr(endPos);

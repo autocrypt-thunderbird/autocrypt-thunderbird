@@ -1069,7 +1069,7 @@ if (messageHeaderSink) {
         if (! this.isCurrentMessage() || gFolderDisplay.selectedMessages.length !== 1) return;
 
         if ("subject" in hdr) {
-          gFolderDisplay.selectedMessage.subject = hdr.subject;
+          gFolderDisplay.selectedMessage.subject = EnigmailData.convertFromUnicode(hdr.subject, "utf-8");
           updateHdrBox("subject", hdr.subject);
         }
 
