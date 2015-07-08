@@ -6,4 +6,4 @@
 all: libs
 
 libs:
-	echo 'var EnigBuildDate="'`date +%Y%m%d-%H%M`'";' > enigmailBuildDate.js
+	echo 'var EnigBuildDate="'`TZ=UTC date +%Y%m%d-%H%M -d @$(SOURCE_DATE_EPOCH)`'";' > enigmailBuildDate.js
