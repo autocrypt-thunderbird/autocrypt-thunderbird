@@ -13,8 +13,6 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
 testing("files.jsm");
 
-dump("got here\n");
-
 // testing: readFile
 test(function readFileReturnsContentOfExistingFile() {
     var md = do_get_cwd().clone();
