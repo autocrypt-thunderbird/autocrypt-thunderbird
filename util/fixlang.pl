@@ -128,7 +128,7 @@ my $frdtd = loaddtd("$dest/enigmail.dtd");
 print "+ Writing $dest/enigmail.dtd\n";
 open(OUT, ">$dest/enigmail.dtd.gen")  || die "Cannot write to $dest/enigmail.dtd";
 
-for my $ind (keys %$endtd) {
+for my $ind (sort keys %$endtd) {
 
   if ($frdtd->{$ind}) {
     print OUT "<!ENTITY $frdtd->{$ind}\n";
@@ -146,7 +146,7 @@ my $frprop = loadprop("$dest/enigmail.properties");
 
 print "+ Writing $dest/enigmail.properties\n";
 open(OUT, ">$dest/enigmail.properties.gen") || die "Cannot write to $dest/enigmail.properties";
-for my $ind (keys %$enprop) {
+for my $ind (sort keys %$enprop) {
   if ($frprop->{$ind}) {
     print OUT "$frprop->{$ind}\n";
   } else {
