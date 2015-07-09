@@ -629,7 +629,7 @@ Za ta namen rabite potrdilo za preklic.
 <!ENTITY enigmail.setupWiz.pgKeygen.revCertButton "Ustvari potrdilo za preklic">
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title "Hvala">
-<!ENTITY enigmail.setupWiz.pgComplete.desc "Enigmail je zdaj pripravljen za uporabo.<html:br></html><html:br></html>Hvala, ker uporabljate Enigmail.">
+<!ENTITY enigmail.setupWiz.pgComplete.desc "Enigmail je zdaj pripravljen za uporabo.<html:br/><html:br/>Hvala, ker uporabljate Enigmail.">
 <!-- wizard: manual setup page -->
 <!ENTITY enigmail.setupWiz.pgExpert.title "Ročna prilagoditev Enigmail">
 <!ENTITY enigmail.setupWiz.pgExpert.desc "Izbrali ste, da za nastavitev Enihmaila ne boste več uporabljali čarovnika.">
