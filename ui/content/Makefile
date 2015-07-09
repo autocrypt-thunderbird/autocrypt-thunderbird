@@ -5,5 +5,7 @@
 
 all: libs
 
+SOURCE_DATE_EPOCH ?= $(shell date +%s)
+
 libs:
 	echo 'var EnigBuildDate="'`TZ=UTC date +%Y%m%d-%H%M -d @$(SOURCE_DATE_EPOCH)`'";' > enigmailBuildDate.js
