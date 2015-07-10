@@ -293,6 +293,88 @@ function resetPrefs() {
   }
 }
 
+// Serializes various Enigmail settings into a separate file.
+function backupPrefs() {
+  EnigmailLog.DEBUG("pref-enigmail.js: backupPrefs\n");
+
+  var maybe_file = EnigFilePicker(EnigGetString("pickBackupFile"),"", true, "json","enigmail.json",null);
+  if (maybe_file !== null) {
+    var retObj = {value:0};
+    var branch = EnigmailPrefs.getPrefBranch();
+    var allPrefs = branch.getChildList("",retObj);
+    var prefObj = {};
+    var nsIPB = Components.interfaces.nsIPrefBranch;
+
+    for (var p in allPrefs) {
+      var name = allPrefs[p];
+
+      /*
+       * agentPath is system-depend, configuredVersion build-depend and
+       * advancedUser must be set in order to save the profile.
+       */
+      if (name == "agentPath" || name == "configuredVersion" || name == "advancedUser" ) {
+        continue;
+      }
+
+      switch (branch.getPrefType(name)) {
+        case nsIPB.PREF_STRING:
+          prefObj[name] = branch.getCharPref(name); break;
+        case nsIPB.PREF_INT:
+          prefObj[name] = branch.getIntPref(name); break;
+        case nsIPB.PREF_BOOL:
+          prefObj[name] = branch.getBoolPref(name); break;
+        default:
+          EnigmailLog.ERROR("Pref '" + name + "' has unknown type\n");
+      }
+    }
+
+    // serialize everything to UTF-8 encoded JSON.
+    var strm = Components.classes["@mozilla.org/network/file-output-stream;1"]
+                         .createInstance(Components.interfaces.nsIFileOutputStream);
+    var nativeJSON = Components.classes["@mozilla.org/dom/json;1"]
+                               .createInstance(Components.interfaces.nsIJSON);
+
+    try {
+      strm.init(maybe_file,-1,-1,0);
+      nativeJSON.encodeToStream(strm,"UTF-8",false,prefObj);
+      strm.close();
+
+    } catch (ex) {
+      EnigError(EnigGetString("cantWriteBackupFile"));
+    }
+  }
+}
+
+// Loads settings saved with backupPrefs() into Enigmail.
+function restorePrefs() {
+  EnigmailLog.DEBUG("pref-enigmail.js: restorePrefs\n");
+
+  var maybe_file = EnigFilePicker(EnigGetString("loadBackupFile"),"", false, "json","enigmail.json",null);
+  if (maybe_file !== null) {
+    // Profile must be a single UTF-8 encoded JSON object.
+    var strm = Components.classes["@mozilla.org/network/file-input-stream;1"]
+                         .createInstance(Components.interfaces.nsIFileInputStream);
+    var nativeJSON = Components.classes["@mozilla.org/dom/json;1"]
+                               .createInstance(Components.interfaces.nsIJSON);
+
+    try {
+      strm.init(maybe_file,-1,-1,0);
+      var prefObj = nativeJSON.decodeFromStream(strm,"UTF-8",false);
+      strm.close();
+
+      var nsIPB = Components.interfaces.nsIPrefBranch;
+      var branch = EnigmailPrefs.getPrefBranch();
+
+      // Set all options recorded in the JSON file.
+      for (var name in prefObj) {
+        EnigSetPref(name,prefObj[name]);
+      }
+    } catch (ex) {
+      EnigError(EnigGetString("cantReadBackupFile"));
+    }
+  }
+}
+
 function disableManually (disable)
 {
   var elems = [

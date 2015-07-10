@@ -74,6 +74,12 @@
     <tooltip id="resetPrefs.tooltip">
       <description>&enigmail.resetPrefs.tooltip;</description>
     </tooltip>
+    <tooltip id="backupPrefs.tooltip">
+      <description>&enigmail.backupPrefs.tooltip;</description>
+    </tooltip>
+    <tooltip id="restorePrefs.tooltip">
+      <description>&enigmail.restorePrefs.tooltip;</description>
+    </tooltip>
     <tooltip id="wrapHtmlBeforeSend.tooltip">
       <description>&enigmail.wrapHtmlBeforeSend.tooltip;</description>
     </tooltip>
@@ -241,7 +247,12 @@
 
           <vbox autostretch="never" align="end">
             <hbox>
-              <button id="resetPrefs"
+              <button id="restorePrefs"
+                      label="&enigmail.restorePrefsButton.label;"
+                      tooltip="restorePrefs.tooltip"
+                      oncommand="restorePrefs();"/>
+
+             <button id="resetPrefs"
                       label="&enigmail.resetPrefsButton.label;"
                       tooltip="resetPrefs.tooltip"
                       oncommand="resetPrefs();"/>
@@ -443,6 +454,10 @@
                     label="&enigmail.resetRememberedValues.label;"
                     tooltip="resetRememberedValues.tooltip"
                     oncommand="resetRememberedValues();"/>
+            <button id="backupPrefs"
+                    label="&enigmail.backupPrefsButton.label;"
+                    tooltip="backupPrefs.tooltip"
+                    oncommand="backupPrefs();"/>
           </hbox>
       </vbox>
 

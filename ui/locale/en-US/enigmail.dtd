@@ -51,6 +51,12 @@
 <!ENTITY enigmail.resetPrefsButton.label "Reset">
 <!ENTITY enigmail.resetPrefs.tooltip     "Set all Enigmail preferences back to their default value.">
 
+<!ENTITY enigmail.backupPrefsButton.label "Save Profile">
+<!ENTITY enigmail.backupPrefs.tooltip     "Save all Enigmail preferences except which certificate to use by default and GnuPG's location into a file.">
+
+<!ENTITY enigmail.restorePrefsButton.label "Load Profile">
+<!ENTITY enigmail.restorePrefs.tooltip     "Loads Enigmail preferences except which certificate to use by default and GnuPG's location from a file.">
+
 <!ENTITY enigmail.basic.label            "Basic">
 <!ENTITY enigmail.sending.label          "Sending">
 <!ENTITY enigmail.keySel.label           "Key Selection">
