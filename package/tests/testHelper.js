@@ -85,7 +85,13 @@ var TestHelper = {
 
     removeGpgHome: function(homedir){
         var workingDirectory = new osUtils.FileUtils.File(homedir);
-        if(workingDirectory.exists()) workingDirectory.remove(true);
+        
+        try {
+            if(workingDirectory.exists()) workingDirectory.remove(true);
+        }
+        catch (ex) {
+            // do nothing about it
+        }
     }
 };
 
