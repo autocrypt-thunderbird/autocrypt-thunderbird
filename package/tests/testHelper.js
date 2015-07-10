@@ -70,7 +70,11 @@ var TestHelper = {
         var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].
             createInstance(Components.interfaces.nsIConverterOutputStream);
         converter.init(foStream, "UTF-8", 0, 0);
-        converter.writeString("pinentry-program "+do_get_cwd().path+"/pinentry-auto");
+        converter.writeString("pinentry-program "+do_get_cwd().path.replace(/\\/g, "/")+"/pinentry-auto");
+        if (JSUnit.getOS() == "WINNT") {
+          converter.writeString(".exe");
+        }
+        converter.writeString("\n");
         converter.close();
 
         var environment = Components.classes["@mozilla.org/process/environment;1"].getService(Components.interfaces.nsIEnvironment);
