@@ -31,13 +31,16 @@ test(function determineGpgHomeDirReturnsGNUPGHOMEIfExists() {
     });
 });
 
-test(function determineGpgHomeDirReturnsHomePlusGnupgForNonWindowsIfNoGNUPGHOMESpecificed() {
-    withEnvironment({"HOME": "/my/little/home"}, function(e) {
-        e.set("GNUPGHOME",null);
-        var enigmail = {environment: e};
-        Assert.equal("/my/little/home/.gnupg", EnigmailGpgAgent.determineGpgHomeDir(enigmail));
+// this test cannot be reliably performed on Windows
+if (JSUnit.getOS() != "WINNT") {
+    test(function determineGpgHomeDirReturnsHomePlusGnupgForNonWindowsIfNoGNUPGHOMESpecificed() {
+        withEnvironment({"HOME": "/my/little/home"}, function(e) {
+            e.set("GNUPGHOME",null);
+            var enigmail = {environment: e};
+            Assert.equal("/my/little/home/.gnupg", EnigmailGpgAgent.determineGpgHomeDir(enigmail));
+        }); 
     });
-});
+}
 
 test(function determineGpgHomeDirReturnsRegistryValueForWindowsIfExists() {
     withEnvironment({}, function(e) {
@@ -72,7 +75,7 @@ test(function determineGpgHomeDirReturnsUserprofileIfItExists() {
 });
 
 test(function determineGpgHomeDirReturnsSystemrootIfItExists() {
-    withEnvironment({"SystemRoot": "\\tahiti"}, function(e) {
+    withEnvironment({"SystemRoot": "\\tahiti", "USERPROFILE": null}, function(e) {
         e.set("GNUPGHOME",null);
         resetting(EnigmailOS, 'getWinRegistryString', function(a, b, c) {}, function() {
             resetting(EnigmailOS, 'isWin32', true, function() {
@@ -85,7 +88,7 @@ test(function determineGpgHomeDirReturnsSystemrootIfItExists() {
 });
 
 test(function determineGpgHomeDirReturnsDefaultForWin32() {
-    withEnvironment({}, function(e) {
+    withEnvironment({"SystemRoot": null, "USERPROFILE": null}, function(e) {
         e.set("GNUPGHOME",null);
         resetting(EnigmailOS, 'getWinRegistryString', function(a, b, c) {}, function() {
             resetting(EnigmailOS, 'isWin32', true, function() {
