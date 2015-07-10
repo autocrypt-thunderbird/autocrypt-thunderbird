@@ -707,6 +707,13 @@ function loadKeys() {
     cell.setAttribute('label', keyList[i].created);
     cell.setAttribute('observes', "bcKeyEnabled");
   }
+
+  // if there is only one key available, select it.
+  if (keyList.length == 1) {
+    var uidSel = document.getElementById("uidSelection");
+    uidSel.view.selection.select(0);
+  }
+
   onKeySelected();
   return true;
 }
