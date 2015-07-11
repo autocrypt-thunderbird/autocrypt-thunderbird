@@ -795,8 +795,8 @@ Enigmail.msg = {
             Enigmail.msg.verifyEmbeddedMsg(window, mailNewsUrl, msgWindow, msgUriSpec, contentEncoding, event);
           }
           else {
-            var verifier = EnigmailVerify.newVerifier(false, mailNewsUrl, false);
-            verifier.startStreaming(window, msgWindow, msgUriSpec);
+            // var verifier = EnigmailVerify.newVerifier(false, mailNewsUrl, false);
+            // verifier.startStreaming(window, msgWindow, msgUriSpec);
 
           }
           return;
@@ -1899,6 +1899,7 @@ Enigmail.msg = {
   {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: verifyEmbeddedCallback: \n");
 
+    /*
     if (callbackArg.data.length > 0) {
       let msigned=callbackArg.data.search(/content\-type:[ \t]*multipart\/signed/i);
       if(msigned >= 0) {
@@ -1913,7 +1914,7 @@ Enigmail.msg = {
 
         return;
       }
-    }
+    } */
 
     // HACK for MS-EXCHANGE-Server Problem:
     // - now let's save the mail content for later processing

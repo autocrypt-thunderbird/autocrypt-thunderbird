@@ -11,7 +11,6 @@
  *  implemented as an XPCOM object
  */
 
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Components.utils.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
 Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
@@ -22,6 +21,7 @@ Components.utils.import("resource://enigmail/decryption.jsm"); /*global Enigmail
 Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
+const EXPORTED_SYMBOLS = [ "EnigmailMimeDecrypt" ];
 
 
 const Cc = Components.classes;
@@ -46,9 +46,9 @@ var gNumProc = 0;
 // handler for PGP/MIME encrypted messages
 // data is processed from libmime -> nsPgpMimeProxy
 
-function PgpMimeDecrypt() {
+function EnigmailMimeDecrypt() {
 
-  EnigmailLog.DEBUG("mimeDecrypt.js: PgpMimeDecrypt()\n");   // always log this one
+  EnigmailLog.DEBUG("mimeDecrypt.js: EnigmailMimeDecrypt()\n");   // always log this one
   this.mimeSvc = null;
   this.initOk = false;
   this.boundary = "";
@@ -65,7 +65,6 @@ function PgpMimeDecrypt() {
   this.msgWindow = null;
   this.msgUriSpec = null;
   this.returnStatus = null;
-  this.verifier = null;
   this.proc = null;
   this.statusDisplayed = false;
   this.uri = null;
@@ -73,11 +72,7 @@ function PgpMimeDecrypt() {
   this.decryptedHeaders = {};
 }
 
-PgpMimeDecrypt.prototype = {
-  classDescription: "Enigmail JS Decryption Handler",
-  classID:  PGPMIME_JS_DECRYPTOR_CID,
-  contractID: PGPMIME_JS_DECRYPTOR_CONTRACTID,
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener]),
+EnigmailMimeDecrypt.prototype = {
   inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
 
   onStartRequest: function(request, uri) {
@@ -99,7 +94,6 @@ PgpMimeDecrypt.prototype = {
     this.msgWindow = EnigmailVerify.lastMsgWindow;
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
 
-    this.verifier = null;
     this.statusDisplayed = false;
     this.returnStatus = null;
     this.dataLength = 0;
@@ -116,8 +110,6 @@ PgpMimeDecrypt.prototype = {
       this.uri = uri.QueryInterface(Ci.nsIURI).clone();
       EnigmailLog.DEBUG("mimeDecrypt.js: onStartRequest: uri='"+ this.uri.spec+"'\n");
     }
-    this.verifier = EnigmailVerify.newVerifier(true, this.uri, false);
-    this.verifier.setMsgWindow(this.msgWindow, this.msgUriSpec);
   },
 
   onDataAvailable: function(req, sup, stream, offset, count) {
@@ -273,10 +265,6 @@ PgpMimeDecrypt.prototype = {
     var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
     win = windowManager.getMostRecentWindow(null);
 
-    if (!this.backgroundJob) {
-      this.verifier.onStartRequest(true);
-    }
-
     var maxOutput = this.outQueue.length * 100; // limit output to 100 times message size
                                                 // to avoid DoS attack
     this.proc = EnigmailDecryption.decryptMessageStart(win, false, false, this,
@@ -303,10 +291,6 @@ PgpMimeDecrypt.prototype = {
                                  this.returnStatus);
 
     this.displayStatus();
-
-    if (! this.backgroundJob) {
-      this.verifier.onStopRequest();
-    }
 
     EnigmailLog.DEBUG("mimeDecrypt.js: onStopRequest: process terminated\n");  // always log this one
     this.proc = null;
@@ -409,10 +393,6 @@ PgpMimeDecrypt.prototype = {
 
     this.returnData(this.decryptedData);
 
-    if (! this.backgroundJob) {
-      this.verifier.onTextData(verifyData);
-    }
-
     this.decryptedData = "";
     this.exitCode = exitCode;
   },
@@ -489,6 +469,3 @@ function initModule() {
   }
 }
 
-var NSGetFactory = XPCOMUtils.generateNSGetFactory([PgpMimeDecrypt]);
-initModule();
-dump("mimeDecrypt.js: MimeDecrypt - registration done\n");

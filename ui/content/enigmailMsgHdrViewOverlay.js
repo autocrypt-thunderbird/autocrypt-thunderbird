@@ -1086,35 +1086,21 @@ if (messageHeaderSink) {
         }
 
         if ("from" in hdr) {
-          gExpandedHeaderView.from.outputFunction(gExpandedHeaderView.from, hdr.from);
+          gExpandedHeaderView.from.outputFunction(gExpandedHeaderView.from, EnigmailData.convertFromUnicode(hdr.from, "utf-8"));
         }
 
         if ("to" in hdr) {
-          gExpandedHeaderView.to.outputFunction(gExpandedHeaderView.to, hdr.to);
+          gExpandedHeaderView.to.outputFunction(gExpandedHeaderView.to, EnigmailData.convertFromUnicode(hdr.to, "utf-8"));
         }
 
         if ("cc" in hdr) {
-          gExpandedHeaderView.cc.outputFunction(gExpandedHeaderView.cc, hdr.cc);
+          gExpandedHeaderView.cc.outputFunction(gExpandedHeaderView.cc, EnigmailData.convertFromUnicode(hdr.cc, "utf-8"));
         }
 
         if ("reply-to" in hdr) {
-          gExpandedHeaderView["reply-to"].outputFunction(gExpandedHeaderView["reply-to"], hdr["reply-to"]);
+          gExpandedHeaderView["reply-to"].outputFunction(gExpandedHeaderView["reply-to"], EnigmailData.convertFromUnicode(hdr["reply-to"], "utf-8"));
         }
 
-      },
-
-      removeFirstMessagePart: function() {
-        let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
-        let bodyElement = msgFrame.document.getElementsByTagName("body")[0];
-
-        while (bodyElement.firstChild && bodyElement.firstChild.nodeName != "FIELDSET") {
-          bodyElement.firstChild.remove();
-        }
-
-        if (bodyElement.firstChild && bodyElement.firstChild.nodeName == "FIELDSET") {
-          bodyElement.firstChild.remove();
-        }
-                
       },
       
       maxWantedNesting: function ()

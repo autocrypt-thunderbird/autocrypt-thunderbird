@@ -94,7 +94,7 @@ zip --must-match\
     components/${xpiModule}.js \
     components/prefs-service.js \
     components/msgCompFields.js \
-    components/mimeDecrypt.js \
+    components/pgpmimeHandler.js \
     components/mimeEncrypt.js \
     defaults/preferences/enigmail.js \
     modules/app.jsm \
@@ -133,6 +133,7 @@ zip --must-match\
     modules/locale.jsm \
     modules/log.jsm \
     modules/mime.jsm \
+    modules/mimeDecrypt.jsm \
     modules/mimeVerify.jsm \
     modules/os.jsm \
     modules/passwordCheck.jsm \

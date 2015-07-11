@@ -1,4 +1,4 @@
-/*global Components: false, XPCOMUtils: false, EnigmailData: false, EnigmailLog: false, EnigmailFiles: false, EnigmailFuncs: false, dump: false */
+/*global Components: false, dump: false */
 /*jshint -W097 */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,12 +15,13 @@
 // TODO: Missing features
 //   - don't attempt to validate forwarded messages unless message is being viewed
 
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-Components.utils.import("resource://enigmail/funcs.jsm");
-Components.utils.import("resource://enigmail/log.jsm");
-Components.utils.import("resource://enigmail/files.jsm");
-Components.utils.import("resource://enigmail/mime.jsm");  /*global EnigmailMime: false */
-Components.utils.import("resource://enigmail/data.jsm");
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
+Components.utils.import("resource://enigmail/funcs.jsm");      /*global EnigmailFuncs: false */
+Components.utils.import("resource://enigmail/log.jsm");        /*global EnigmailLog: false */
+Components.utils.import("resource://enigmail/files.jsm");      /*global EnigmailFiles: false */
+Components.utils.import("resource://enigmail/mime.jsm");       /*global EnigmailMime: false */
+Components.utils.import("resource://enigmail/data.jsm");       /*global EnigmailData: false */
+Components.utils.import("resource://enigmail/prefs.jsm");      /*global EnigmailPrefs: false */
 Components.utils.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
 
 const EXPORTED_SYMBOLS = [ "EnigmailVerify" ];
@@ -33,15 +34,45 @@ const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const maxBufferLen = 102400;
 
 var gDebugLog = false;
+var gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
 
-function MimeVerify(verifyEmbedded, msgUrl, partiallySigned)
-{
-  this.verifyEmbedded = verifyEmbedded;
-  this.msgUrl = msgUrl;
-  this.partiallySigned = partiallySigned;
+// MimeVerify Constructor
+function MimeVerify() {
+  this.verifyEmbedded = false;
+  this.partiallySigned = false;
+  this.inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
 }
 
 
+const EnigmailVerify = {
+  lastMsgWindow: null,
+  lastMsgUri: null,
+  manualMsgUri: null,
+
+  setMsgWindow: function(msgWindow, msgUriSpec) {
+    LOCAL_DEBUG("mimeVerify.jsm: setMsgWindow: "+msgUriSpec+"\n");
+
+    this.lastMsgWindow = msgWindow;
+    this.lastMsgUri = msgUriSpec;
+  },
+
+  newVerifier: function () {
+    let v = new MimeVerify();
+    return v;
+  },
+
+  setManualUri: function(msgUriSpec) {
+    LOCAL_DEBUG("mimeVerify.jsm: setManualUri: "+msgUriSpec+"\n");
+    this.manualMsgUri = msgUriSpec;
+  },
+
+  getManualUri: function() {
+    return this.manualMsgUri;
+  }
+};
+
+
+// MimeVerify implementation
 // verify the signature of PGP/MIME signed messages
 MimeVerify.prototype = {
   dataCount: 0,
@@ -67,8 +98,6 @@ MimeVerify.prototype = {
     var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
     var msgSvc = messenger.messageServiceFromURI(this.msgUriSpec);
 
-    this.inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
-
     msgSvc.streamMessage(this.msgUriSpec,
                     this,
                     this.msgWindow,
@@ -89,10 +118,37 @@ MimeVerify.prototype = {
     this.onStopRequest();
   },
 
-  onStartRequest: function() {
+  parseContentType: function() {
+    let contentTypeLine = this.mimeSvc.contentType;
+    
+    // Eat up CRLF's.
+    contentTypeLine = contentTypeLine.replace(/[\r\n]/g, "");
+    LOCAL_DEBUG("mimeVerify.jsm: parseContentType: " + contentTypeLine + "\n");
+
+    if (contentTypeLine.search(/multipart\/signed/i) >= 0 &&
+        contentTypeLine.search(/micalg\s*=\s*[\"\']?pgp-[\"\']?/i) > 0 &&
+        contentTypeLine.search(/protocol\s*=\s*[\'\"]application\/pgp-signature[\"\']/i) > 0) {
+
+      LOCAL_DEBUG("mimeVerify.jsm: parseContentType: found PGP/MIME signed message\n");
+      this.foundMsg = true;
+      let hdr = EnigmailFuncs.getHeaderData(contentTypeLine);
+      hdr.boundary = hdr.boundary || "";
+      hdr.micalg = hdr.micalg || "";
+      this.boundary = hdr.boundary.replace(/[\'\"]/g, "");
+    }
+
+  },
+  
+  onStartRequest: function(request, uri) {
     EnigmailLog.DEBUG("mimeVerify.jsm: onStartRequest\n"); // always log this one
+   
+    this.uri = uri.QueryInterface(Ci.nsIURI).clone();
+    this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
+    this.msgUriSpec = EnigmailVerify.lastMsgUri;
+    
     this.dataCount = 0;
     this.foundMsg = false;
+    this.backgroundJob = false;
     this.startMsgStr = "";
     this.boundary = "";
     this.proc = null;
@@ -105,6 +161,7 @@ MimeVerify.prototype = {
     this.returnStatus = null;
     this.statusDisplayed = false;
     this.protectedHeaders = null;
+    this.parseContentType();
   },
 
   onDataAvailable: function(req, sup, stream, offset, count) {
@@ -116,50 +173,7 @@ MimeVerify.prototype = {
 
   onTextData: function(data) {
     LOCAL_DEBUG("mimeVerify.jsm: onTextData\n");
-    if (!this.foundMsg) {
-      // check if mime part could be pgp/mime signed message
-      if (this.dataCount > 10240) return;
-      this.startMsgStr += data;
-
-      var msgs = this.startMsgStr.split(/\n/);
-      for(let i = 0; i < msgs.length; i++) {
-        if(msgs[i].search(/^content-type:/i) >= 0) {
-          // Join the rest of the content type lines together.
-          // See RFC 2425, section 5.8.1
-          let contentTypeLine = msgs[i];
-          i++;
-          while (i < msgs.length) {
-            // Does the line start with a space or a tab, followed by something else?
-            if(msgs[i].search(/^[ \t]+?/) === 0) {
-              contentTypeLine += msgs[i];
-              i++;
-            }
-            else {
-              break;
-            }
-          }
-
-          // Eat up CRLF's.
-          contentTypeLine = contentTypeLine.replace(/[\r\n]/g, "");
-          LOCAL_DEBUG("mimeVerify.jsm: onTextData: " + contentTypeLine + "\n");
-
-          if (contentTypeLine.search(/multipart\/signed/i) > 0 &&
-              contentTypeLine.search(/micalg\s*=\s*[\"\']?pgp-[\"\']?/i) > 0 &&
-              contentTypeLine.search(/protocol\s*=\s*[\'\"]application\/pgp-signature[\"\']/i) > 0) {
-
-            LOCAL_DEBUG("mimeVerify.jsm: onTextData: found PGP/MIME signed message\n");
-            this.foundMsg = true;
-            let hdr = EnigmailFuncs.getHeaderData(contentTypeLine);
-            hdr.boundary = hdr.boundary || "";
-            hdr.micalg = hdr.micalg || "";
-            this.boundary = hdr.boundary.replace(/[\'\"]/g, "");
-          }
-
-          // Break after finding the first Content-Type
-          break;
-        }
-      }
-    }
+    
     this.dataCount += data.length;
 
     this.keepData += data;
@@ -285,10 +299,84 @@ MimeVerify.prototype = {
   onStopRequest: function() {
     LOCAL_DEBUG("mimeVerify.jsm: onStopRequest\n");
 
+        this.msgWindow = EnigmailVerify.lastMsgWindow;
+    this.msgUriSpec = EnigmailVerify.lastMsgUri;
+
+    let url = {};
+
+    this.backgroundJob = false;
+
+    if (this.uri) {
+      // return if not decrypting currently displayed message (except if
+      // printing, replying, etc)
+
+      this.backgroundJob = (this.uri.spec.search(/[\&\?]header=(print|quotebody|enigmailConvert)/) >= 0);
+
+      try {
+        var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
+
+        if (! EnigmailPrefs.getPref("autoDecrypt")) {
+          // "decrypt manually" mode
+          let manUrl= {};
+
+          if (EnigmailVerify.getManualUri()) {
+            let msgSvc = messenger.messageServiceFromURI(EnigmailVerify.getManualUri());
+
+              msgSvc.GetUrlForUri(EnigmailVerify.getManualUri(), manUrl, null);
+          }
+          else {
+            manUrl.value = { spec: "enigmail://invalid/message" };
+          }
+
+          // print a message if not message explicitly decrypted
+          let currUrlSpec = this.uri.spec.replace(/(\?.*)(number=[0-9]*)(&.*)?$/, "?$2");
+          let manUrlSpec = manUrl.value.spec.replace(/(\?.*)(number=[0-9]*)(&.*)?$/, "?$2");
+
+
+          if ((! this.backgroundJob) && currUrlSpec != manUrlSpec) {
+            return this.handleManualDecrypt();
+          }
+        }
+
+        if (this.msgUriSpec) {
+          let msgSvc = messenger.messageServiceFromURI(this.msgUriSpec);
+
+          msgSvc.GetUrlForUri(this.msgUriSpec, url, null);
+        }
+
+        if (this.uri.spec.search(/[\&\?]header=[a-zA-Z0-9]*$/) < 0 &&
+            this.uri.spec.search(/[\&\?]part=[\.0-9]+/) < 0 &&
+            this.uri.spec.search(/[\&\?]examineEncryptedParts=true/) < 0) {
+
+          if (this.uri.spec.search(/[\&\?]header=filter\&.*$/) > 0)
+            return;
+
+          if (this.uri && url && url.value) {
+
+            if (url.value.spec != this.uri.spec)
+              return;
+          }
+        }
+      }
+      catch(ex) {
+        EnigmailLog.writeException("mimeDecrypt.js", ex);
+        EnigmailLog.DEBUG("mimeDecrypt.js: error while processing "+this.msgUriSpec+"\n");
+      }
+    }
+    
     // don't try to verify if no message found
     if (this.verifyEmbedded && (!this.foundMsg)) return;
 
     this.protectedHeaders = EnigmailMime.extractProtectedHeaders(this.outQueue);
+
+    if (this.protectedHeaders) {
+      let r = this.outQueue.substr(0, this.protectedHeaders.startPos) + this.outQueue.substr(this.protectedHeaders.endPos);
+      this.returnData(r);
+    }
+    else {
+      this.returnData(this.outQueue);
+    }
+    
 
     var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
     var win = windowManager.getMostRecentWindow(null);
@@ -312,6 +400,18 @@ MimeVerify.prototype = {
     }
     else
       this.closePipe = true;
+  },
+
+  // return data to libMime
+  returnData: function(data) {
+
+    gConv.setData(data, data.length);
+    try {
+      this.mimeSvc.onDataAvailable(null, null, gConv, 0, data.length);
+    }
+    catch(ex) {
+      EnigmailLog.ERROR("mimeDecrypt.js: returnData(): mimeSvc.onDataAvailable failed:\n"+ex.toString());
+    }
   },
 
   appendQueue: function(str) {
@@ -378,20 +478,15 @@ MimeVerify.prototype = {
 
   displayStatus: function() {
     EnigmailLog.DEBUG("mimeVerify.jsm: displayStatus\n");
-    if (this.exitCode === null || this.msgWindow === null || this.statusDisplayed)
+    if (this.exitCode === null || this.msgWindow === null || this.statusDisplayed || this.backgroundJob)
       return;
 
     try {
       LOCAL_DEBUG("mimeVerify.jsm: displayStatus displaying result\n");
       let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
       
-      if (this.protectedHeaders) {
-        if (this.protectedHeaders.endPos > 0) {
-          headerSink.removeFirstMessagePart();
-        }
-        
-        headerSink.modifyMessageHeaders(this.msgUrl, JSON.stringify(this.protectedHeaders.newHeaders));
-
+      if (this.protectedHeaders) {        
+        headerSink.modifyMessageHeaders(this.uri, JSON.stringify(this.protectedHeaders.newHeaders));
       }
 
       if (headerSink) {
@@ -403,7 +498,7 @@ MimeVerify.prototype = {
                                         this.returnStatus.sigDetails,
                                         this.returnStatus.errorMsg,
                                         this.returnStatus.blockSeparation,
-                                        this.msgUrl,
+                                        this.uri,
                                         this.returnStatus.encToDetails);
       }
       this.statusDisplayed = true;
@@ -411,33 +506,6 @@ MimeVerify.prototype = {
     catch(ex) {
       EnigmailLog.writeException("mimeVerify.jsm", ex);
     }
-  }
-};
-
-const EnigmailVerify = {
-  lastMsgWindow: null,
-  lastMsgUri: null,
-  manualMsgUri: null,
-
-  setMsgWindow: function(msgWindow, msgUriSpec) {
-    LOCAL_DEBUG("mimeVerify.jsm: setMsgWindow: "+msgUriSpec+"\n");
-
-    this.lastMsgWindow = msgWindow;
-    this.lastMsgUri = msgUriSpec;
-  },
-
-  newVerifier: function (embedded, msgUrl, partiallySigned) {
-    let v = new MimeVerify(embedded, msgUrl, partiallySigned);
-    return v;
-  },
-
-  setManualUri: function(msgUriSpec) {
-    LOCAL_DEBUG("mimeVerify.jsm: setManualUri: "+msgUriSpec+"\n");
-    this.manualMsgUri = msgUriSpec;
-  },
-
-  getManualUri: function() {
-    return this.manualMsgUri;
   }
 };
 
