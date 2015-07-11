@@ -68,7 +68,7 @@ test(function extractProtectedHeadersTest() {
   var got = r.startPos;
   Assert.equal(got, 57, "startPos of removed data");
 
-  var got = r.endPos;
+  got = r.endPos;
   Assert.equal(got, 693, "endPos of removed data");
 
   got = r.newHeaders.subject;

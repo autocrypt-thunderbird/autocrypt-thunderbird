@@ -188,7 +188,7 @@ const EnigmailMime = {
       let m = contentData.search(/^--/m);
 
       if (m < 5) {
-        return;
+        return null;
       }
 
       let outerHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
@@ -225,7 +225,7 @@ const EnigmailMime = {
       let innerCt = headers.extractHeader("content-type", false) || "";
 
       if (innerCt.search(/^text\/rfc822-headers/i) !== 0) {
-        return;
+        return null;
       }
 
       let charset = EnigmailMime.getCharset(innerCt);
@@ -245,8 +245,7 @@ const EnigmailMime = {
       else if (ctt.search(/^quoted-printable/i) === 0) {
         ctBodyData = EnigmailData.decodeQuotedPrintable(ctBodyData) + "\n";
       }
-
-
+      
       if (charset) {
         ctBodyData = EnigmailData.convertToUnicode(ctBodyData, charset);
       }

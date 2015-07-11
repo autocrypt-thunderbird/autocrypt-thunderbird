@@ -1103,6 +1103,20 @@ if (messageHeaderSink) {
 
       },
 
+      removeFirstMessagePart: function() {
+        let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
+        let bodyElement = msgFrame.document.getElementsByTagName("body")[0];
+
+        while (bodyElement.firstChild && bodyElement.firstChild.nodeName != "FIELDSET") {
+          bodyElement.firstChild.remove();
+        }
+
+        if (bodyElement.firstChild && bodyElement.firstChild.nodeName == "FIELDSET") {
+          bodyElement.firstChild.remove();
+        }
+                
+      },
+      
       maxWantedNesting: function ()
       {
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.maxWantedNesting:\n");

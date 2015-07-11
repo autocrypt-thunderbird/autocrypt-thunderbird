@@ -19,6 +19,7 @@ Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://enigmail/funcs.jsm");
 Components.utils.import("resource://enigmail/log.jsm");
 Components.utils.import("resource://enigmail/files.jsm");
+Components.utils.import("resource://enigmail/mime.jsm");  /*global EnigmailMime: false */
 Components.utils.import("resource://enigmail/data.jsm");
 Components.utils.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
 
@@ -103,6 +104,7 @@ MimeVerify.prototype = {
     this.statusStr = "";
     this.returnStatus = null;
     this.statusDisplayed = false;
+    this.protectedHeaders = null;
   },
 
   onDataAvailable: function(req, sup, stream, offset, count) {
@@ -279,13 +281,14 @@ MimeVerify.prototype = {
     }
     return -1;
   },
-
+  
   onStopRequest: function() {
     LOCAL_DEBUG("mimeVerify.jsm: onStopRequest\n");
 
     // don't try to verify if no message found
     if (this.verifyEmbedded && (!this.foundMsg)) return;
 
+    this.protectedHeaders = EnigmailMime.extractProtectedHeaders(this.outQueue);
 
     var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
     var win = windowManager.getMostRecentWindow(null);
@@ -381,6 +384,15 @@ MimeVerify.prototype = {
     try {
       LOCAL_DEBUG("mimeVerify.jsm: displayStatus displaying result\n");
       let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
+      
+      if (this.protectedHeaders) {
+        if (this.protectedHeaders.endPos > 0) {
+          headerSink.removeFirstMessagePart();
+        }
+        
+        headerSink.modifyMessageHeaders(this.msgUrl, JSON.stringify(this.protectedHeaders.newHeaders));
+
+      }
 
       if (headerSink) {
         headerSink.updateSecurityStatus(this.lastMsgUri,
