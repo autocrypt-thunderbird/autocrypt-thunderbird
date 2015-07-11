@@ -185,28 +185,36 @@ const EnigmailMime = {
         return null;
       }
 
+      // find first MIME delimiter. Anything before that delimiter is the top MIME structure
       let m = contentData.search(/^--/m);
 
       if (m < 5) {
         return null;
       }
 
+      // read headers of first MIME part and extract the boundary parameter
       let outerHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
       outerHdr.initialize(contentData.substr(0, m));
 
       let ct = outerHdr.extractHeader("content-type", false) || "";
+      if (ct === "") return null;
+      
       let bound = EnigmailMime.getBoundary(ct);
+      if (bound==="") return null;
 
+      // search for "outer" MIME delimiter(s)
       let r = new RegExp("^--" + bound, "ym");
 
       let startPos = -1;
       let endPos = -1;
 
+      // 1st match: start of 1st MIME-subpart
       let match = r.exec(contentData);
       if (match && match.index) {
         startPos = match.index;
       }
 
+      // 2nd  match: end of 1st MIME-subpart
       match = r.exec(contentData);
       if (match && match.index) {
         endPos = match.index;
@@ -214,6 +222,7 @@ const EnigmailMime = {
 
       if (startPos < 0 || endPos < 0) return;
 
+      // contentBody holds the complete 1st MIME part
       let contentBody = contentData.substring(startPos + bound.length + 3, endPos);
       let i = contentBody.search(/^[A-Za-z]/m); // skip empty lines
       if (i > 0) {
@@ -224,16 +233,15 @@ const EnigmailMime = {
 
       let innerCt = headers.extractHeader("content-type", false) || "";
 
-      if (innerCt.search(/^text\/rfc822-headers/i) !== 0) {
-        return null;
-      }
+      if (innerCt.search(/^text\/rfc822-headers/i) !== 0) return null;
 
       let charset = EnigmailMime.getCharset(innerCt);
       let ctt = headers.extractHeader("content-transfer-encoding", false) || "";
 
+      // determine where the headers end and the MIME-subpart body starts
       let bodyStartPos = contentBody.search(/\r?\n\s*\r?\n/) + 1;
 
-      if (bodyStartPos < 10) return;
+      if (bodyStartPos < 10) return null;
 
       bodyStartPos += contentBody.substr(bodyStartPos).search(/^[A-Za-z]/m);
 
@@ -250,6 +258,7 @@ const EnigmailMime = {
         ctBodyData = EnigmailData.convertToUnicode(ctBodyData, charset);
       }
 
+      // get the headers of the MIME-subpart body --> that's the ones we need
       let bodyHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
       bodyHdr.initialize(ctBodyData);
 
