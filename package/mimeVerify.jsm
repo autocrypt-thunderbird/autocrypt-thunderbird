@@ -166,9 +166,11 @@ MimeVerify.prototype = {
 
   onDataAvailable: function(req, sup, stream, offset, count) {
     LOCAL_DEBUG("mimeVerify.jsm: onDataAvailable: "+count+"\n");
-    this.inStream.init(stream);
-    var data = this.inStream.read(count);
-    this.onTextData(data);
+    if (count > 0) {
+      this.inStream.init(stream);
+      var data = this.inStream.read(count);
+      this.onTextData(data);
+    }
   },
 
   onTextData: function(data) {
@@ -283,12 +285,15 @@ MimeVerify.prototype = {
       if (this.keepData[i-1] == '\r' || this.keepData[i-1] == '\n') startOk = true;
     }
 
-    if (i + this.boundary.length + 2 < this.keepData) {
+    if (!startOk) return -1;
+    
+    if (i + this.boundary.length + 2 < this.keepData.length) {
       if (this.keepData[i + this.boundary.length + 2] == '\r' ||
-        this.keepData[i + this.boundary.length + 2] == '\n') endOk = true;
+        this.keepData[i + this.boundary.length + 2] == '\n' ||
+        this.keepData.substr(i + this.boundary.length + 2, 2) == '--') endOk = true;
     }
-    else
-      endOk = true;
+    // else
+      // endOk = true;
 
     if (i >= 0 && startOk && endOk) {
       return i;
@@ -299,7 +304,7 @@ MimeVerify.prototype = {
   onStopRequest: function() {
     LOCAL_DEBUG("mimeVerify.jsm: onStopRequest\n");
 
-        this.msgWindow = EnigmailVerify.lastMsgWindow;
+    this.msgWindow = EnigmailVerify.lastMsgWindow;
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
 
     let url = {};
