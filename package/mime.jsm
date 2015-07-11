@@ -45,6 +45,7 @@ const EXPORTED_SYMBOLS = [ "EnigmailMime" ];
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
+Components.utils.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 
 const EnigmailMime = {
@@ -126,33 +127,33 @@ const EnigmailMime = {
         return ret;
     },
 
-	/**
-	 * format MIME header with maximum length of 72 characters. 
-	 */
-	formatHeaderData: function (hdrValue) {
-		let header;
-		if (Array.isArray(hdrValue)) {
-			header = hdrValue.join("").split(" ");
-		} else {
-			header = hdrValue.split(" ");
-		}
+    /**
+     * format MIME header with maximum length of 72 characters. 
+     */
+    formatHeaderData: function (hdrValue) {
+      let header;
+      if (Array.isArray(hdrValue)) {
+        header = hdrValue.join("").split(" ");
+      } else {
+        header = hdrValue.split(" ");
+      }
 
-		let line = "";
-		let lines = [];
+      let line = "";
+      let lines = [];
 
-		for (let i = 0; i < header.length; i++) {
-			if(line.length + header[i].length >= 72) {
-				lines.push(line+"\r\n");
-				line = " "+header[i];
-			} else {
-				line +=  " " + header[i];
-			}
-		}
+      for (let i = 0; i < header.length; i++) {
+        if(line.length + header[i].length >= 72) {
+          lines.push(line+"\r\n");
+          line = " "+header[i];
+        } else {
+          line +=  " " + header[i];
+        }
+      }
 
-		lines.push(line);
+      lines.push(line);
 
-		return lines.join("").trim();
-	},
+      return lines.join("").trim();
+    },
 
     /**
      * Correctly encode and format a set of email addresses for RFC 2047
@@ -170,7 +171,99 @@ const EnigmailMime = {
         }
 
         return adrArr.join(", ");
+    },
+
+    /***
+     * determine if the message data contains a first mime part with content-type = "text/rfc822-headers"
+     * if so, extract the corresponding field(s)
+     */
+
+    extractProtectedHeaders: function(contentData) {
+
+      // quick return
+      if (contentData.search(/text\/rfc822-headers/i) < 0) {
+        return null;
+      }
+
+      let m = contentData.search(/^--/m);
+
+      if (m < 5) {
+        return;
+      }
+
+      let outerHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+      outerHdr.initialize(contentData.substr(0, m));
+
+      let ct = outerHdr.extractHeader("content-type", false) || "";
+      let bound = EnigmailMime.getBoundary(ct);
+
+      let r = new RegExp("^--" + bound, "ym");
+
+      let startPos = -1;
+      let endPos = -1;
+
+      let match = r.exec(contentData);
+      if (match && match.index) {
+        startPos = match.index;
+      }
+
+      match = r.exec(contentData);
+      if (match && match.index) {
+        endPos = match.index;
+      }
+
+      if (startPos < 0 || endPos < 0) return;
+
+      let contentBody = contentData.substring(startPos + bound.length + 3, endPos);
+      let i = contentBody.search(/^[A-Za-z]/m); // skip empty lines
+      if (i > 0) {
+        contentBody = contentBody.substr(i);
+      }
+      let headers = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+      headers.initialize(contentBody);
+
+      let innerCt = headers.extractHeader("content-type", false) || "";
+
+      if (innerCt.search(/^text\/rfc822-headers/i) !== 0) {
+        return;
+      }
+
+      let charset = EnigmailMime.getCharset(innerCt);
+      let ctt = headers.extractHeader("content-transfer-encoding", false) || "";
+
+      let bodyStartPos = contentBody.search(/\r?\n\s*\r?\n/) + 1;
+
+      if (bodyStartPos < 10) return;
+
+      bodyStartPos += contentBody.substr(bodyStartPos).search(/^[A-Za-z]/m);
+
+      let ctBodyData = contentBody.substr(bodyStartPos);
+
+      if (ctt.search(/^base64/i) === 0) {
+        ctBodyData = EnigmailData.decodeBase64(ctBodyData) + "\n";
+      }
+      else if (ctt.search(/^quoted-printable/i) === 0) {
+        ctBodyData = EnigmailData.decodeQuotedPrintable(ctBodyData) + "\n";
+      }
+
+
+      if (charset) {
+        ctBodyData = EnigmailData.convertToUnicode(ctBodyData, charset);
+      }
+
+      let bodyHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+      bodyHdr.initialize(ctBodyData);
+
+      let h = [ "subject", "date", "from", "to", "cc", "reply-to", "references",
+          "newsgroups", "followup-to", "message-id" ];
+
+      let newHeaders = {};
+      for (let i in h) {
+        if (bodyHdr.hasHeader(h[i])) {
+          newHeaders[h[i]] = jsmime.headerparser.decodeRFC2047Words(bodyHdr.extractHeader(h[i], true)) || undefined;
+        }
+      }
+      
+      return { newHeaders: newHeaders, startPos: startPos, endPos: endPos };
     }
-
-
 };

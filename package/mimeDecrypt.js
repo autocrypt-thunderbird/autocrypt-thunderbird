@@ -12,7 +12,6 @@
  */
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-Components.utils.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Components.utils.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
 Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
@@ -454,104 +453,14 @@ PgpMimeDecrypt.prototype = {
     return 0;
   },
 
-  /*
-   * determine if the encrypte message contains a first mime part with content-type = "text/rfc822-headers"
-   * if so, update the corresponding field(s)
-   */
 
   extractEncryptedHeaders: function() {
-
-    // quick return
-    if (this.decryptedData.search(/text\/rfc822-headers/i) < 0) {
-      return;
-    }
-
-    let m = this.decryptedData.search(/^--/m);
-
-    if (m < 5) {
-      return;
-    }
-
-    let outerHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
-    outerHdr.initialize(this.decryptedData.substr(0, m));
-
-    let ct = outerHdr.extractHeader("content-type", false) || "";
-    let bound = EnigmailMime.getBoundary(ct);
-
-    // TODO: content-transfer-decoding and charset interpretation
-
-    let r = new RegExp("^--" + bound, "ym");
-
-    let startPos = -1;
-    let endPos = -1;
-
-    let match = r.exec(this.decryptedData);
-    if (match && match.index) {
-      startPos = match.index;
-    }
-
-    match = r.exec(this.decryptedData);
-    if (match && match.index) {
-      endPos = match.index;
-    }
-
-    if (startPos < 0 || endPos < 0) return;
-
-    LOCAL_DEBUG("mimeDecrypt.js: extractEncryptedHeaders: found possible MIME part\n");
-
-    let contentBody = this.decryptedData.substring(startPos + bound.length + 3, endPos);
-    let i = contentBody.search(/^[A-Za-z]/m); // skip empty lines
-    if (i > 0) {
-      contentBody = contentBody.substr(i);
-    }
-    let headers = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
-    headers.initialize(contentBody);
-
-    let innerCt = headers.extractHeader("content-type", false) || "";
-
-    if (innerCt.search(/^text\/rfc822-headers/i) !== 0) {
-      return;
-    }
-
-    let charset = EnigmailMime.getCharset(innerCt);
-    let ctt = headers.extractHeader("content-transfer-encoding", false) || "";
-
-    let transferEncoding = ENCODING_DEFAULT;
-
-
-    let bodyStartPos = contentBody.search(/\r?\n\s*\r?\n/) + 1;
-
-    if (bodyStartPos < 10) return;
-
-    bodyStartPos += contentBody.substr(bodyStartPos).search(/^[A-Za-z]/m);
-
-    let ctBodyData = contentBody.substr(bodyStartPos);
-
-    if (ctt.search(/^base64/i) === 0) {
-      ctBodyData = EnigmailData.decodeBase64(ctBodyData) + "\n";
-    }
-    else if (ctt.search(/^quoted-printable/i) === 0) {
-      ctBodyData = EnigmailData.decodeQuotedPrintable(ctBodyData) + "\n";
-    }
-
-
-    if (charset) {
-      ctBodyData = EnigmailData.convertToUnicode(ctBodyData, charset);
-    }
-
-    let bodyHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
-    bodyHdr.initialize(ctBodyData);
-
-    let h = [ "subject", "date", "from", "to", "cc", "reply-to", "references",
-        "newsgroups", "followup-to", "message-id" ];
-
-    for (let i in h) {
-      if (bodyHdr.hasHeader(h[i])) {
-        this.decryptedHeaders[h[i]] = jsmime.headerparser.decodeRFC2047Words(bodyHdr.extractHeader(h[i], true)) || undefined;
-      }
-    }
-
-    this.decryptedData = this.decryptedData.substr(0, startPos) + this.decryptedData.substr(endPos);
+    
+    let r = EnigmailMime.extractProtectedHeaders(this.decryptedData);
+    if (! r) return;
+    
+    this.decryptedHeaders = r.newHeaders;
+    this.decryptedData = this.decryptedData.substr(0, r.startPos) + this.decryptedData.substr(r.endPos);
 
   }
 };
