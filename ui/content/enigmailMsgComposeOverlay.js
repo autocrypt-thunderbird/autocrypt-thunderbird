@@ -120,6 +120,7 @@ Enigmail.msg = {
   lastFocusedWindow: null,
   determineSendFlagId: null,
   trustAllKeys: false,
+  protectHeaders: false,
   attachOwnKeyObj: {
       appendAttachment: false,
       attachedObj: null,
@@ -437,6 +438,9 @@ Enigmail.msg = {
     var msgIsDraft = false;
     this.determineSendFlagId = null;
     this.disableSmime = false;
+    this.protectHeaders = EnigmailPrefs.getPref("protectHeaders");
+    
+    this.displayProtectHeadersStatus();
 
     var toobarElem = document.getElementById("composeToolbar2");
     if (toobarElem && (EnigmailOS.getOS() == "Darwin")) {
@@ -686,7 +690,27 @@ Enigmail.msg = {
 
     this.setOwnKeyStatus();
   },
+  
+  toggleProtectHeaders: function() {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.toggleProtectHeaders\n");
+    EnigmailCore.getService(window); // make sure Enigmail is loaded and working
 
+    this.protectHeaders = !this.protectHeaders;
+
+    this.displayProtectHeadersStatus();
+  },
+  
+  displayProtectHeadersStatus: function() {
+    let bc = document.getElementById("enigmail-bc-protectHdr");
+    
+    if (this.protectHeaders) {
+      bc.setAttribute("checked", "true");
+    }
+    else {
+      bc.removeAttribute("checked");
+    }
+  },
+  
   /***
    * set broadcaster to display whether the own key is attached or not
    */
@@ -3176,16 +3200,11 @@ Enigmail.msg = {
 
          newSecurityInfo.originalSubject = gMsgCompose.compFields.subject;
 
-         if (EnigmailPrefs.getPref("encryptHeaders")) {
+         if (this.protectHeaders) {
             sendFlags |= nsIEnigmail.ENCRYPT_HEADERS;
 
             if (sendFlags & ENCRYPT) {
-              if (EnigmailPrefs.getPref("encryptedSubjectText").length > 0) {
-                gMsgCompose.compFields.subject = EnigmailPrefs.getPref("encryptedSubjectText");
-              }
-              else {
-                gMsgCompose.compFields.subject = EnigmailLocale.getString("msgCompose.encryptedSubjectStub");
-              }
+              gMsgCompose.compFields.subject = EnigmailFuncs.getProtectedSubjectText();
             }
          }
 

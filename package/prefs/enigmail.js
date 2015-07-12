@@ -207,8 +207,8 @@ pref("extensions.enigmail.warnDownloadContactKeys",true);
 pref("extensions.enigmail.wrapHtmlBeforeSend",true);
 
 // enable encryption/signing of headers like subject, from, to
-pref("extensions.enigmail.encryptHeaders",false);
-pref("extensions.enigmail.encryptedSubjectText","");
+pref("extensions.enigmail.protectHeaders",false);
+pref("extensions.enigmail.protectedSubjectText","");
 
 // enable experimental features.
 // WARNING: such features may unfinished functions or tests that can break

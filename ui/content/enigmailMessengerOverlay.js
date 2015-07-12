@@ -742,7 +742,7 @@ Enigmail.msg = {
             Enigmail.hdrView.updateHdrIcons(EnigmailConstants.POSSIBLE_PGPMIME, 0, // exitCode, statusFlags
                                             "", "",       // keyId, userId
                                             "",           // sigDetails
-                                            EnigmailLocale.getString("possiblyPgpMime"),  // errorMsg
+                                            EnigmailLocale.getString("possiblyPgpMime"),  // infoMsg
                                             null,         // blockSeparation
                                             "",           // encToDetails
                                             null);        // xtraStatus

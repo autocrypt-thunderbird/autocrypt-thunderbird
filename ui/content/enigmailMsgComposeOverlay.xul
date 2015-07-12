@@ -67,6 +67,7 @@
     <broadcaster id="enigmail-bc-encrypt" checked="false"/>
     <broadcaster id="enigmail-bc-sign" checked="false"/>
     <broadcaster id="enigmail-bc-attach" checked="false"/>
+    <broadcaster id="enigmail-bc-protectHdr" checked="false"/>
   </broadcasterset>
 
   <popupset id="aTooltipSet"/>
@@ -207,6 +208,7 @@
 
   <!-- Enigmail toolbar button -->
   <toolbarpalette id="MsgComposeToolbarPalette">
+    <!-- encryption button -->
     <toolbarbutton class="toolbarbutton-1"
             id="button-enigmail-encrypt"
             buttontype="thunderbird"
@@ -215,6 +217,7 @@
             oncommand="Enigmail.msg.doPgpButton('toggle-final-encrypt');"
             label="&enigmail.encryptedsend.label;"/>
 
+    <!-- signing button -->
     <toolbarbutton class="toolbarbutton-1"
             id="button-enigmail-sign"
             buttontype="thunderbird"
@@ -223,6 +226,7 @@
             oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"
             label="&enigmail.signedsend.label;"/>
 
+    <!-- 'attach key' button -->
     <toolbarbutton class="toolbarbutton-1"
             id="button-enigmail-attach"
             label="&enigmail.attachmykey.label;"
@@ -231,14 +235,26 @@
             observes="enigmail-bc-attach"
             oncommand="Enigmail.msg.toggleAttachOwnKey();"/>
 
+    <!-- 'Encrypt subject' button -->
+    <toolbarbutton class="toolbarbutton-1"
+            id="enigmail-toolbar-encryptHdr-button"
+            label="&enigmail.protectHeaders.label;"
+            buttontype="thunderbird"
+            observes="enigmail-bc-protectHdr"
+            oncommand="Enigmail.msg.toggleProtectHeaders()">
+      <label id="enigmail-toolbar-encSHdr-text" value="&enigmail.protectHeaders.label;"/>
+    </toolbarbutton>
+
+    <!-- Enigmail: button -->
     <toolbarbutton class="toolbarbutton-1"
             id="enigmail-toolbar-header-button"
-            label="&enigmail.composetoolbar.header;"
+            label="&enigmail.composetoolbar.desc;"
             buttontype="thunderbird"
             oncommand="Enigmail.msg.doPgpButton('displaySecuritySettings')">
       <label id="enigmail-toolbar-hdr-text" value="&enigmail.label;:"/>
     </toolbarbutton>
 
+    <!-- status info button -->
     <toolbarbutton class="toolbarbutton-1"
             id="enigmail-toolbar-text-button"
             label="&enigmail.composetoolbar.desc;"
