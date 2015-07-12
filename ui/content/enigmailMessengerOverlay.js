@@ -573,6 +573,14 @@ Enigmail.msg = {
       }, 0, [this.event, this.isAuto, mimeMsg]);
   },
 
+  /***
+   * walk through the (sub-) mime tree and determine PGP/MIME encrypted and signed message parts
+   *
+   * @mimePart: parent object to walk through
+   * @resultObj: object containing two arrays. The resultObj must be pre-initialized by the caller
+   *               - encrypted
+   *               - signed
+   */
   enumerateMimeParts: function (mimePart, resultObj)
   {
     EnigmailLog.DEBUG("enumerateMimeParts: partName=\""+mimePart.partName+"\"\n");
@@ -592,7 +600,7 @@ Enigmail.msg = {
         let signedPart = mimePart.parts[1];
         if (typeof(signedPart.headers["content-type"][0]) == "string") {
           if (signedPart.headers["content-type"][0].search(/application\/pgp-signature/i) >= 0) {
-            resultObj.signed=signedPart.partName.replace(/\.[0-9]+$/, "");
+            resultObj.signed.push(signedPart.partName.replace(/\.[0-9]+$/, ""));
             EnigmailLog.DEBUG("enumerateMimeParts: found signed subpart "+resultObj.signed + "\n");
           }
         }
@@ -602,10 +610,10 @@ Enigmail.msg = {
       if (typeof(ct) == "string") {
         ct = ct.replace(/[\r\n]/g, " ");
         if (ct.search(/multipart\/signed.*application\/pgp-signature/i) >= 0) {
-          resultObj.signed=mimePart.partName;
+          resultObj.signed.push(mimePart.partName);
         }
         else if (ct.search(/application\/pgp-encrypted/i) >= 0)
-          resultObj.encrypted=mimePart.partName;
+          resultObj.encrypted.push(mimePart.partName);
       }
     }
     catch (ex) {
@@ -617,7 +625,6 @@ Enigmail.msg = {
       this.enumerateMimeParts(mimePart.parts[i], resultObj);
     }
   },
-
 
   messageDecryptCb: function (event, isAuto, mimeMsg)
   {
@@ -660,14 +667,16 @@ Enigmail.msg = {
         EnigmailLog.DEBUG("enigmailMessengerOverlay.js: header "+headerName+": "+headerValue+"\n");
       }
 
-      var embeddedSigned = null;
-      var embeddedEncrypted = null;
+      var msgSigned = null;
+      var msgEncrypted = null;
+      var resultObj = { encrypted: [], signed: [] };
 
-      if (mimeMsg.parts && Enigmail.msg.savedHeaders["content-type"].search(/^multipart\/encrypted(;|$)/i) !== 0) {
-        // TB >= 8.0
-        var resultObj={ encrypted: "", signed: "" };
+      if (mimeMsg.parts) {
         this.enumerateMimeParts(mimeMsg, resultObj);
-        EnigmailLog.DEBUG("enigmailMessengerOverlay.js: embedded objects: "+resultObj.encrypted+" / "+resultObj.signed+"\n");
+        EnigmailLog.DEBUG("enigmailMessengerOverlay.js: embedded objects: "+resultObj.encrypted.join(", ")+" / "+resultObj.signed.join(", ")+"\n");
+        
+        msgSigned = resultObj.signed.length > 0;
+        msgEncrypted = resultObj.encrypted.length > 0;
 
         // HACK for MS-EXCHANGE-Server Problem:
         // check for possible bad mime structure due to buggy exchange server:
@@ -705,10 +714,7 @@ Enigmail.msg = {
           this.buggyExchangeEmailContent = "???";
         }
 
-        if (resultObj.signed.length > 0) {
-          if (! Enigmail.msg.checkPgpmimeHandler()) return;
-        }
-        
+/*        TODO - still needed?
         // ignore mime parts on top level (regular messages)
         if (resultObj.signed.indexOf(".") < 0) resultObj.signed = null;
         if (resultObj.encrypted.indexOf(".") < 0) resultObj.encrypted = null;
@@ -720,6 +726,7 @@ Enigmail.msg = {
             if (resultObj.encrypted) embeddedEncrypted = mailUrl.spec+"?part="+resultObj.encrypted.replace(/\.\d+$/, "");
           }
         }
+*/        
       }
 
       var contentEncoding = "";
@@ -733,95 +740,27 @@ Enigmail.msg = {
         xEnigmailVersion = Enigmail.msg.savedHeaders["x-enigmail-version"];
       }
 
-      if (isAuto && (! EnigmailPrefs.getPref("autoDecrypt"))) {
-        // decryption set to manual
-        var signedMsg = ((contentType.search(/^multipart\/signed(;|$)/i) === 0) && (contentType.search(/application\/pgp-signature/i)>0));
-        encrypedMsg = ((contentType.search(/^multipart\/encrypted(;|$)/i) === 0) && (contentType.search(/application\/pgp-encrypted/i)>0));
-        if (embeddedSigned || embeddedEncrypted ||
-            encrypedMsg || signedMsg) {
-          enigmailSvc = Enigmail.getEnigmailSvc();
-          if (!enigmailSvc)
-            return;
+      if (msgSigned ||msgEncrypted) {
+        enigmailSvc = Enigmail.getEnigmailSvc();
+        if (!enigmailSvc)
+          return;
 
-          if (signedMsg || embeddedSigned) {
-            if (! Enigmail.msg.checkPgpmimeHandler()) return;
-          }
-          
-          if (signedMsg ||
-              ((!encrypedMsg) && (embeddedSigned || embeddedEncrypted))) {
-            Enigmail.hdrView.updateHdrIcons(EnigmailConstants.POSSIBLE_PGPMIME, 0, // exitCode, statusFlags
-                                            "", "",       // keyId, userId
-                                            "",           // sigDetails
-                                            EnigmailLocale.getString("possiblyPgpMime"),  // errorMsg
-                                            null,         // blockSeparation
-                                            "",           // encToDetails
-                                            null);        // xtraStatus
-          }
+        if (! Enigmail.msg.checkPgpmimeHandler()) return;
+
+        if (isAuto && (! EnigmailPrefs.getPref("autoDecrypt"))) {
+          // decryption set to manual
+          Enigmail.hdrView.updateHdrIcons(EnigmailConstants.POSSIBLE_PGPMIME, 0, // exitCode, statusFlags
+                                          "", "",       // keyId, userId
+                                          "",           // sigDetails
+                                          EnigmailLocale.getString("possiblyPgpMime"),  // errorMsg
+                                          null,         // blockSeparation
+                                          "",           // encToDetails
+                                          null);        // xtraStatus
         }
-        return;
-      }
-
-      if (contentType.search(/^multipart\/encrypted(;|$)/i) === 0) {
-        EnigmailLog.DEBUG("enigmailMessengerOverlay.js: multipart/encrypted\n");
-
-        enigmailSvc = Enigmail.getEnigmailSvc();
-        if (!enigmailSvc)
-          return;
-      }
-
-      if (((contentType.search(/^multipart\/encrypted(;|$)/i) === 0) ||
-           (embeddedEncrypted && contentType.search(/^multipart\/mixed(;|$)/i) === 0)) &&
-           (!embeddedSigned)) {
-
-        enigmailSvc = Enigmail.getEnigmailSvc();
-        if (!enigmailSvc)
-          return;
-
-        if (! isAuto) {
+        else if (! isAuto) {
           Enigmail.msg.messageReload(false);
         }
         return;
-      }
-
-      var tryVerify = false;
-      var enableSubpartTreatment = false;
-      // special treatment for embedded signed messages
-      if (embeddedSigned) {
-        if (contentType.search(/^multipart\/encrypted(;|$)/i) === 0) {
-          tryVerify = true;
-        }
-        if (contentType.search(/^multipart\/mixed(;|$)/i) === 0) {
-          tryVerify = true;
-          enableSubpartTreatment = true;
-        }
-      }
-
-      if ((contentType.search(/^multipart\/signed(;|$)/i) === 0) &&
-           (contentType.search(/application\/pgp-signature/i) >= 0)) {
-        tryVerify=true;
-      }
-      if (tryVerify) {
-        // multipart/signed
-        EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecryptCb: multipart/signed\n");
-
-        if (! Enigmail.msg.checkPgpmimeHandler()) return;
-        if (!isAuto) Enigmail.msg.messageReload(false);
-        return;
-        // let mailNewsUrl = this.getCurrentMsgUrl();
-        // if (mailNewsUrl) {
-            // EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecryptCb: mailNewsUrl:"+mailNewsUrl+"\n");
-            // EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecryptCb: msgUriSpec:"+msgUriSpec+"\n");
-          // if (embeddedSigned) {
-            // mailNewsUrl.spec = embeddedSigned;
-            // // Enigmail.msg.verifyEmbeddedMsg(window, mailNewsUrl, msgWindow, msgUriSpec, contentEncoding, event);
-          // }
-          // else {
-            // // var verifier = EnigmailVerify.newVerifier(false, mailNewsUrl, false);
-            // // verifier.startStreaming(window, msgWindow, msgUriSpec);
-
-          // }
-          // return;
-        // }
       }
 
       this.messageParse(!event, false, contentEncoding, msgUriSpec);

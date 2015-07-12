@@ -105,7 +105,7 @@
            accesskey="&enigmail.decryptverify.accesskey;"
            advanced="true"
            hidden="false"
-           oncommand="Enigmail.msg.messageDecrypt();" />
+           oncommand="Enigmail.msg.messageDecrypt(null, false);" />
 
       <menuseparator
            advanced="true"
@@ -271,7 +271,7 @@
               id="button-enigmail-decrypt"
               label="&enigmail.decryptbutton.label;"
               tooltiptext="&enigmail.decryptbutton.tip;"
-              oncommand="Enigmail.msg.messageDecrypt();"
+              oncommand="Enigmail.msg.messageDecrypt(null, false);"
               buttontype="thunderbird"
               observes="button_enigmail_decrypt"
               insertafter="button-newmsg"
@@ -284,7 +284,7 @@
               id="button-enigmail-decrypt"
               label="&enigmail.decryptbutton.label;"
               tooltiptext="&enigmail.decryptbutton.tip;"
-              oncommand="Enigmail.msg.messageDecrypt();"
+              oncommand="Enigmail.msg.messageDecrypt(null, false);"
               buttontype="thunderbird"
               observes="button_enigmail_decrypt"
               insertafter="button-newmsg"
