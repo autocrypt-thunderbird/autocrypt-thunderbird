@@ -27,6 +27,18 @@ const PGPMIME_JS_DECRYPTOR_CID = Components.ID("{7514cbeb-2bfd-4b2c-829b-1a4691f
 // handler for PGP/MIME encrypted and PGP/MIME signed messages
 // data is processed from libmime -> nsPgpMimeProxy
 
+const throwErrors = {
+  onDataAvailable: function() {
+    throw "error";
+  },
+  onStartRequest: function() {
+    throw "error";
+  },
+  onStopRequest: function() {
+    throw "error";
+  }
+};
+
 function PgpMimeHandler() {
 
   EnigmailLog.DEBUG("mimeDecrypt.js: PgpMimeHandler()\n");   // always log this one
@@ -54,7 +66,12 @@ PgpMimeHandler.prototype = {
     }
     else if (ct.search(/^multipart\/signed/i) === 0) {
       // PGP/MIME signed message
-      this.contentHandler = EnigmailVerify.newVerifier();
+      if (ct.search(/application\/pgp-signature/i) > 0) {
+        this.contentHandler = EnigmailVerify.newVerifier();
+      }
+      else {
+        this.handleSmime(uri);
+      }
     }
     else {
       this.contentHandler = null;
@@ -75,6 +92,17 @@ PgpMimeHandler.prototype = {
     if (this.contentHandler) {
       return this.contentHandler.onStopRequest(request, win, status);
     }
+  },
+  
+  handleSmime: function(uri) {
+    this.contentHandler = throwErrors;
+    
+    if (uri) {
+      uri = uri.QueryInterface(Ci.nsIURI).clone();
+    }
+    let headerSink = EnigmailVerify.lastMsgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
+    headerSink.handleSMimeMessage(uri);
+    
   }
 };
 

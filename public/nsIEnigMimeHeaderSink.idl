@@ -58,6 +58,8 @@ interface nsIEnigMimeHeaderSink : nsISupports
 
   void modifyMessageHeaders(in nsIURI uri,
                             in wstring headerData);
+  
+  void handleSMimeMessage(in nsIURI uri);
 };
 
 

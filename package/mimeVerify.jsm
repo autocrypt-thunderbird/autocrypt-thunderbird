@@ -48,6 +48,8 @@ const EnigmailVerify = {
   lastMsgWindow: null,
   lastMsgUri: null,
   manualMsgUri: null,
+  
+  currentCtHandler: "",
 
   setMsgWindow: function(msgWindow, msgUriSpec) {
     LOCAL_DEBUG("mimeVerify.jsm: setMsgWindow: "+msgUriSpec+"\n");
@@ -68,7 +70,32 @@ const EnigmailVerify = {
 
   getManualUri: function() {
     return this.manualMsgUri;
+  },
+  
+  /***
+   * register a PGP/MIME verify object the same way PGP/MIME encrypted mail is handled
+   */
+  registerContentTypeHandler: function() {
+    let reg = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
+    
+    let pgpMimeClass = Components.classes["@mozilla.org/mimecth;1?type=multipart/encrypted"];
+
+    reg.registerFactory(
+        pgpMimeClass,
+        "Enigmail PGP/MIME verification",
+        "@mozilla.org/mimecth;1?type=multipart/signed",
+        null);
+    this.currentCtHandler= "pgpmime";
+  },
+  
+  unregisterContentTypeHandler: function() {
+    let reg = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
+    
+    let sMimeClass = Components.classes["@mozilla.org/nsCMSDecoder;1"];
+    reg.registerFactory(sMimeClass, "S/MIME verification", "@mozilla.org/mimecth;1?type=multipart/signed", null);
+    this.currentCtHandler= "smime";
   }
+
 };
 
 

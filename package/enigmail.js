@@ -61,6 +61,7 @@ Cu.import("resource://enigmail/commandLine.jsm"); /*global EnigmailCommandLine: 
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
 Cu.import("resource://enigmail/verify.jsm"); /*global EnigmailVerifyAttachment: false */
+Cu.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
 Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 Cu.import("resource://enigmail/configure.jsm"); /*global EnigmailConfigure: false */
@@ -354,21 +355,6 @@ Enigmail.prototype = {
     }
 }; // Enigmail.prototype
 
-/***
- * register a PGP/MIME verify object the same way PGP/MIME encrypted is handled
- */
-function registerMimeVerify() {
-    let reg = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
-    //let pgpMime = reg.contractIDToCID("@mozilla.org/mimecth;1?type=multipart/encrypted");
-    
-    let pgpMimeClass = Components.classes["@mozilla.org/mimecth;1?type=multipart/encrypted"];
-
-    reg.registerFactory(
-        pgpMimeClass,
-        "Enigmail PGP/MIME verification",
-        "@mozilla.org/mimecth;1?type=multipart/signed",
-        null);
-}
 
 EnigmailArmor.registerOn(Enigmail.prototype);
 EnigmailDecryption.registerOn(Enigmail.prototype);
@@ -376,7 +362,7 @@ EnigmailEncryption.registerOn(Enigmail.prototype);
 EnigmailRules.registerOn(Enigmail.prototype);
 EnigmailURIs.registerOn(Enigmail.prototype);
 EnigmailVerifyAttachment.registerOn(Enigmail.prototype);
-registerMimeVerify();
+EnigmailVerify.registerContentTypeHandler();
 
 // This variable is exported implicitly and should not be refactored or removed
 const NSGetFactory = XPCOMUtils.generateNSGetFactory([Enigmail, EnigmailProtocolHandler, EnigmailCommandLine.Handler]);

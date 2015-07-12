@@ -786,21 +786,26 @@ Enigmail.msg = {
         // multipart/signed
         EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecryptCb: multipart/signed\n");
 
-        let mailNewsUrl = this.getCurrentMsgUrl();
-        if (mailNewsUrl) {
-            EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecryptCb: mailNewsUrl:"+mailNewsUrl+"\n");
-            EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecryptCb: msgUriSpec:"+msgUriSpec+"\n");
-          if (embeddedSigned) {
-            mailNewsUrl.spec = embeddedSigned;
-            Enigmail.msg.verifyEmbeddedMsg(window, mailNewsUrl, msgWindow, msgUriSpec, contentEncoding, event);
-          }
-          else {
-            // var verifier = EnigmailVerify.newVerifier(false, mailNewsUrl, false);
-            // verifier.startStreaming(window, msgWindow, msgUriSpec);
-
-          }
-          return;
+        if (EnigmailVerify.currentCtHandler !== "pgpmime") {
+          EnigmailVerify.registerContentTypeHandler();
+          this.messageReload();
         }
+        return;
+        // let mailNewsUrl = this.getCurrentMsgUrl();
+        // if (mailNewsUrl) {
+            // EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecryptCb: mailNewsUrl:"+mailNewsUrl+"\n");
+            // EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecryptCb: msgUriSpec:"+msgUriSpec+"\n");
+          // if (embeddedSigned) {
+            // mailNewsUrl.spec = embeddedSigned;
+            // // Enigmail.msg.verifyEmbeddedMsg(window, mailNewsUrl, msgWindow, msgUriSpec, contentEncoding, event);
+          // }
+          // else {
+            // // var verifier = EnigmailVerify.newVerifier(false, mailNewsUrl, false);
+            // // verifier.startStreaming(window, msgWindow, msgUriSpec);
+
+          // }
+          // return;
+        // }
       }
 
       this.messageParse(!event, false, contentEncoding, msgUriSpec);

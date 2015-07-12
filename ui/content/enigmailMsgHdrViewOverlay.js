@@ -981,6 +981,8 @@ if (messageHeaderSink) {
     EnigMimeHeaderSink.prototype =
     {
       _smimeHeaderSink: null,
+      
+      workaroundMode: null,
 
       QueryInterface : function(iid)
       {
@@ -1101,6 +1103,13 @@ if (messageHeaderSink) {
           gExpandedHeaderView["reply-to"].outputFunction(gExpandedHeaderView["reply-to"], EnigmailData.convertFromUnicode(hdr["reply-to"], "utf-8"));
         }
 
+      },
+      
+      handleSMimeMessage: function(uri) {
+        if (this.isCurrentMessage()) {
+          EnigmailVerify.unregisterContentTypeHandler();
+          Enigmail.msg.messageReload(false);
+        }        
       },
       
       maxWantedNesting: function ()
