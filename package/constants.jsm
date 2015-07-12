@@ -63,5 +63,9 @@ const EnigmailConstants = {
     ENIG_FINAL_FORCENO:  10,
     ENIG_FINAL_FORCEYES: 11,
     ENIG_FINAL_SMIME_DISABLED: 98,  // disabled to to preferring S/MIME
-    ENIG_FINAL_CONFLICT: 99
+    ENIG_FINAL_CONFLICT: 99,
+    
+    MIME_HANDLER_UNDEF: 0,
+    MIME_HANDLER_SMIME: 1,
+    MIME_HANDLER_PGPMIME: 2
 };

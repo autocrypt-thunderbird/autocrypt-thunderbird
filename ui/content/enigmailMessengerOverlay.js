@@ -497,6 +497,23 @@ Enigmail.msg = {
     return this.messageParse(!event, true, "", this.getCurrentMsgUriSpec());
   },
 
+  /***
+   * check that handler for multipart/signed is set to Enigmail.
+   * if handler is different, change it and reload message
+   *
+   * @return: - true if handler is OK
+   *          - false if handler was changed and message is reloaded
+   */
+  checkPgpmimeHandler: function() {
+    if (EnigmailVerify.currentCtHandler !== EnigmailConstants.MIME_HANDLER_PGPMIME) {
+      EnigmailVerify.registerContentTypeHandler();
+      this.messageReload();
+      return false;
+    }
+    
+    return true;
+  },
+
   // callback function for automatic decryption
   messageAutoDecrypt: function (event)
   {
@@ -688,6 +705,10 @@ Enigmail.msg = {
           this.buggyExchangeEmailContent = "???";
         }
 
+        if (resultObj.signed.length > 0) {
+          if (! Enigmail.msg.checkPgpmimeHandler()) return;
+        }
+        
         // ignore mime parts on top level (regular messages)
         if (resultObj.signed.indexOf(".") < 0) resultObj.signed = null;
         if (resultObj.encrypted.indexOf(".") < 0) resultObj.encrypted = null;
@@ -713,6 +734,7 @@ Enigmail.msg = {
       }
 
       if (isAuto && (! EnigmailPrefs.getPref("autoDecrypt"))) {
+        // decryption set to manual
         var signedMsg = ((contentType.search(/^multipart\/signed(;|$)/i) === 0) && (contentType.search(/application\/pgp-signature/i)>0));
         encrypedMsg = ((contentType.search(/^multipart\/encrypted(;|$)/i) === 0) && (contentType.search(/application\/pgp-encrypted/i)>0));
         if (embeddedSigned || embeddedEncrypted ||
@@ -721,6 +743,10 @@ Enigmail.msg = {
           if (!enigmailSvc)
             return;
 
+          if (signedMsg || embeddedSigned) {
+            if (! Enigmail.msg.checkPgpmimeHandler()) return;
+          }
+          
           if (signedMsg ||
               ((!encrypedMsg) && (embeddedSigned || embeddedEncrypted))) {
             Enigmail.hdrView.updateHdrIcons(EnigmailConstants.POSSIBLE_PGPMIME, 0, // exitCode, statusFlags
@@ -754,14 +780,6 @@ Enigmail.msg = {
         if (! isAuto) {
           Enigmail.msg.messageReload(false);
         }
-        else if (embeddedEncrypted && (! encrypedMsg)) {
-          let mailNewsUrl = this.getCurrentMsgUrl();
-          if (mailNewsUrl) {
-            mailNewsUrl.spec = embeddedEncrypted;
-            Enigmail.msg.verifyEmbeddedMsg(window, mailNewsUrl, msgWindow, msgUriSpec, contentEncoding, event);
-          }
-        }
-
         return;
       }
 
@@ -786,10 +804,8 @@ Enigmail.msg = {
         // multipart/signed
         EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecryptCb: multipart/signed\n");
 
-        if (EnigmailVerify.currentCtHandler !== "pgpmime") {
-          EnigmailVerify.registerContentTypeHandler();
-          this.messageReload();
-        }
+        if (! Enigmail.msg.checkPgpmimeHandler()) return;
+        if (!isAuto) Enigmail.msg.messageReload(false);
         return;
         // let mailNewsUrl = this.getCurrentMsgUrl();
         // if (mailNewsUrl) {
@@ -1904,22 +1920,6 @@ Enigmail.msg = {
   {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: verifyEmbeddedCallback: \n");
 
-    /*
-    if (callbackArg.data.length > 0) {
-      let msigned=callbackArg.data.search(/content\-type:[ \t]*multipart\/signed/i);
-      if(msigned >= 0) {
-
-        // Real multipart/signed message; let's try to verify it
-        EnigmailLog.DEBUG("enigmailMessengerOverlay.js: verifyEmbeddedCallback: detected multipart/signed. msigned: "+msigned+"\n");
-
-        let enableSubpartTreatment=(msigned > 0);
-
-        var verifier = EnigmailVerify.newVerifier(enableSubpartTreatment, callbackArg.msgUrl, true);
-        verifier.verifyData(callbackArg.window, callbackArg.msgWindow, callbackArg.msgUriSpec, callbackArg.data);
-
-        return;
-      }
-    } */
 
     // HACK for MS-EXCHANGE-Server Problem:
     // - now let's save the mail content for later processing

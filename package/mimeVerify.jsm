@@ -22,6 +22,7 @@ Components.utils.import("resource://enigmail/files.jsm");      /*global Enigmail
 Components.utils.import("resource://enigmail/mime.jsm");       /*global EnigmailMime: false */
 Components.utils.import("resource://enigmail/data.jsm");       /*global EnigmailData: false */
 Components.utils.import("resource://enigmail/prefs.jsm");      /*global EnigmailPrefs: false */
+Components.utils.import("resource://enigmail/constants.jsm");  /*global EnigmailConstants: false */
 Components.utils.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
 
 const EXPORTED_SYMBOLS = [ "EnigmailVerify" ];
@@ -49,7 +50,7 @@ const EnigmailVerify = {
   lastMsgUri: null,
   manualMsgUri: null,
   
-  currentCtHandler: "",
+  currentCtHandler: EnigmailConstants.MIME_HANDLER_UNDEF,
 
   setMsgWindow: function(msgWindow, msgUriSpec) {
     LOCAL_DEBUG("mimeVerify.jsm: setMsgWindow: "+msgUriSpec+"\n");
@@ -85,7 +86,7 @@ const EnigmailVerify = {
         "Enigmail PGP/MIME verification",
         "@mozilla.org/mimecth;1?type=multipart/signed",
         null);
-    this.currentCtHandler= "pgpmime";
+    this.currentCtHandler= EnigmailConstants.MIME_HANDLER_PGPMIME;
   },
   
   unregisterContentTypeHandler: function() {
@@ -93,7 +94,7 @@ const EnigmailVerify = {
     
     let sMimeClass = Components.classes["@mozilla.org/nsCMSDecoder;1"];
     reg.registerFactory(sMimeClass, "S/MIME verification", "@mozilla.org/mimecth;1?type=multipart/signed", null);
-    this.currentCtHandler= "smime";
+    this.currentCtHandler= EnigmailConstants.MIME_HANDLER_SMIME;
   }
 
 };
@@ -337,6 +338,19 @@ MimeVerify.prototype = {
     let url = {};
 
     this.backgroundJob = false;
+        
+    // don't try to verify if no message found
+    // if (this.verifyEmbedded && (!this.foundMsg)) return; // TODO - check
+
+    this.protectedHeaders = EnigmailMime.extractProtectedHeaders(this.outQueue);
+
+    if (this.protectedHeaders) {
+      let r = this.outQueue.substr(0, this.protectedHeaders.startPos) + this.outQueue.substr(this.protectedHeaders.endPos);
+      this.returnData(r);
+    }
+    else {
+      this.returnData(this.outQueue);
+    }
 
     if (this.uri) {
       // return if not decrypting currently displayed message (except if
@@ -366,7 +380,7 @@ MimeVerify.prototype = {
 
 
           if ((! this.backgroundJob) && currUrlSpec != manUrlSpec) {
-            return this.handleManualDecrypt();
+            return; // this.handleManualDecrypt();
           }
         }
 
@@ -395,20 +409,6 @@ MimeVerify.prototype = {
         EnigmailLog.DEBUG("mimeDecrypt.js: error while processing "+this.msgUriSpec+"\n");
       }
     }
-    
-    // don't try to verify if no message found
-    if (this.verifyEmbedded && (!this.foundMsg)) return;
-
-    this.protectedHeaders = EnigmailMime.extractProtectedHeaders(this.outQueue);
-
-    if (this.protectedHeaders) {
-      let r = this.outQueue.substr(0, this.protectedHeaders.startPos) + this.outQueue.substr(this.protectedHeaders.endPos);
-      this.returnData(r);
-    }
-    else {
-      this.returnData(this.outQueue);
-    }
-    
 
     var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
     var win = windowManager.getMostRecentWindow(null);
