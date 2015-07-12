@@ -59,39 +59,33 @@ PgpMimeHandler.prototype = {
     
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     let ct = this.mimeSvc.contentType;
+    let cth = null;
     
     if (ct.search(/^multipart\/encrypted/i) === 0) {
       // PGP/MIME encrypted message
-      this.contentHandler = new EnigmailMimeDecrypt();
+      cth = new EnigmailMimeDecrypt();
     }
     else if (ct.search(/^multipart\/signed/i) === 0) {
       // PGP/MIME signed message
       if (ct.search(/application\/pgp-signature/i) > 0) {
-        this.contentHandler = EnigmailVerify.newVerifier();
+        cth = EnigmailVerify.newVerifier();
       }
       else {
-        this.handleSmime(uri);
+        return this.handleSmime(uri);
       }
     }
-    else {
-      this.contentHandler = null;
-    }
    
-    if (this.contentHandler) {
-      return this.contentHandler.onStartRequest(request, uri);
+    if (cth) {
+      this.onDataAvailable = cth.onDataAvailable.bind(cth);
+      this.onStopRequest = cth.onStopRequest.bind(cth);
+      return cth.onStartRequest(request, uri);
     }
   },
 
   onDataAvailable: function(req, sup, stream, offset, count) {
-    if (this.contentHandler) {
-      return this.contentHandler.onDataAvailable(req, sup, stream, offset, count);
-    }
   },
 
   onStopRequest: function(request, win, status) {
-    if (this.contentHandler) {
-      return this.contentHandler.onStopRequest(request, win, status);
-    }
   },
   
   handleSmime: function(uri) {
@@ -102,7 +96,6 @@ PgpMimeHandler.prototype = {
     }
     let headerSink = EnigmailVerify.lastMsgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
     headerSink.handleSMimeMessage(uri);
-    
   }
 };
 
