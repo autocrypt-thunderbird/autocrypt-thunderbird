@@ -76,7 +76,7 @@ function onLoad() {
     setButton(2, button3);
   }
 
-  if (checkboxLabel !== null) {
+  if (checkboxLabel) {
     var prefCheck=document.getElementById("theCheckBox");
     prefCheck.setAttribute("label", checkboxLabel);
     prefCheck.removeAttribute("hidden");
