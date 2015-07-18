@@ -16,11 +16,11 @@ var EnigmailMime = {
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
-testing("mimeDecrypt.js"); /* global PgpMimeDecrypt: false */
+testing("mimeDecrypt.jsm"); /* global EnigmailMimeDecrypt: false */
 
 
 test(function extractEncryptedHeadersTest() {
-  var dec = new PgpMimeDecrypt();
+  var dec = new EnigmailMimeDecrypt();
   dec.decryptedData = 'This is a Hello World example';
 
   dec.extractEncryptedHeaders();
