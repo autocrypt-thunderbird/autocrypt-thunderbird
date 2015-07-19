@@ -50,22 +50,20 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         buttons="accept,help,cancel,extra1,extra2"
         onload="onLoad();"
+        flex="1"
+        minwidth="100"
+        maxwidth="750"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         ondialogaccept="dlgClose(0)">
 
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailAlertDlg.js"/>
 
-  <vbox align="center" flex="1">
-    <!--html:p -->
-    <textbox id="msgtext"
-             flex="1"
-             multiline="true"
-             readonly="true"
-             class="plain"
-             minwidth="400px"
-             maxwidth="750px"
-             value=""/>
+  <vbox align="center" flex="1" style="overflow:auto" id="outerbox">
+    <hbox align="center" flex="1">
+      <description flex="1" id="msgtext" style="plain;white-space: pre"/>
+    </hbox>
   </vbox>
 
   <vbox align="left">

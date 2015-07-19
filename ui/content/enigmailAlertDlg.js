@@ -44,6 +44,10 @@ function onLoad() {
   dlg.getButton("extra2").setAttribute("hidden", "true");
   dlg.setAttribute("title", EnigGetString("enigAlert"));
 
+  if (window.screen.width > 500) {
+    dlg.setAttribute("maxwidth", window.screen.width-150);
+  }
+
   if (window.screen.height > 300) {
     dlg.setAttribute("maxheight", window.screen.height - 100);
   }
@@ -83,14 +87,44 @@ function onLoad() {
   }
   dlg.getButton("accept").focus();
   var textbox=document.getElementById("msgtext");
-  textbox.setAttribute("value", msgtext);
-  textbox.setAttribute("rows", lines);
-  if (EnigGetOS() != "Darwin")
-    EnigmailEvents.dispatchEvent(resizeDlg, 0);
+  textbox.textContent = msgtext;
+
+  EnigmailEvents.dispatchEvent(resizeDlg, 0);
 }
 
 function resizeDlg() {
-  document.getElementById("enigmailAlertDlg").centerWindowOnScreen();
+
+  var txt = document.getElementById("msgtext");
+  var box = document.getElementById("outerbox");
+  var dlg = document.getElementById("enigmailAlertDlg");
+
+  var newWidth = window.outerWidth;
+
+  if (newWidth > window.screen.width - 50) {
+    newWidth = window.screen.width - 50;
+  }
+
+  window.outerWidth = newWidth;
+
+  txt.style["white-space"] = "pre-wrap";
+  var textHeight = txt.clientHeight;
+  var boxHeight = box.clientHeight;
+  var dlgDelta = dlg.clientHeight - boxHeight;
+
+  var newHeight;
+
+  if (textHeight + dlgDelta < window.screen.height - 100) {
+    newHeight = textHeight + dlgDelta + 20;
+  }
+  else {
+    newHeight = window.screen.height - 120;
+  }
+
+
+  window.outerHeight = newHeight;
+
+  if (EnigGetOS() != "Darwin")
+    document.getElementById("enigmailAlertDlg").centerWindowOnScreen();
 }
 
 function setButton (buttonId, label) {
