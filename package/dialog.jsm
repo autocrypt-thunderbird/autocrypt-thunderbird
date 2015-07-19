@@ -147,7 +147,7 @@ const EnigmailDialog = {
         }
 
         win.openDialog("chrome://enigmail/content/enigmailAlertDlg.xul", "",
-                       "chrome,dialog,modal,centerscreen",
+                       "chrome,dialog,modal,centerscreen,resizable",
                        {
                            msgtext: mesg,
                            checkboxLabel: checkBoxLabel,

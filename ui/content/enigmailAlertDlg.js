@@ -109,12 +109,12 @@ function resizeDlg() {
   txt.style["white-space"] = "pre-wrap";
   var textHeight = txt.clientHeight;
   var boxHeight = box.clientHeight;
-  var dlgDelta = dlg.clientHeight - boxHeight;
+  var dlgDelta = window.outerHeight - boxHeight;
 
   var newHeight;
 
   if (textHeight + dlgDelta < window.screen.height - 100) {
-    newHeight = textHeight + dlgDelta + 20;
+    newHeight = textHeight + dlgDelta + 10;
   }
   else {
     newHeight = window.screen.height - 120;
@@ -163,4 +163,8 @@ function dlgClose(buttonNumber) {
   window.arguments[1].value = buttonNumber;
   window.arguments[1].checked = (document.getElementById("theCheckBox").getAttribute("checked") == "true");
   window.close();
+}
+
+function checkboxCb() {
+  // do nothing
 }

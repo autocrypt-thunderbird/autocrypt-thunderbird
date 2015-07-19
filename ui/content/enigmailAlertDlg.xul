@@ -67,7 +67,7 @@
   </vbox>
 
   <vbox align="left">
-    <checkbox id="theCheckBox" hidden="true" checked="false"/>
+    <checkbox id="theCheckBox" hidden="true" checked="false" oncommand="checkboxCb()"/>
   </vbox>
 
 </dialog>
