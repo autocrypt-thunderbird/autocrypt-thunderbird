@@ -88,7 +88,6 @@ function onLoad() {
   dlg.getButton("accept").focus();
   var textbox=document.getElementById("msgtext");
   textbox.textContent = msgtext;
-
   EnigmailEvents.dispatchEvent(resizeDlg, 0);
 }
 
@@ -98,31 +97,31 @@ function resizeDlg() {
   var box = document.getElementById("outerbox");
   var dlg = document.getElementById("enigmailAlertDlg");
 
-  var newWidth = window.outerWidth;
+  var deltaWidth = window.outerWidth - box.clientWidth;
+  var newWidth = txt.scrollWidth + deltaWidth + 20;
 
   if (newWidth > window.screen.width - 50) {
     newWidth = window.screen.width - 50;
   }
 
+  txt.style["white-space"] = "pre-wrap";
   window.outerWidth = newWidth;
 
-  txt.style["white-space"] = "pre-wrap";
-  var textHeight = txt.clientHeight;
+  var textHeight = txt.scrollHeight;
   var boxHeight = box.clientHeight;
-  var dlgDelta = window.outerHeight - boxHeight;
+  var deltaHeight = window.outerHeight - boxHeight;
 
-  var newHeight;
+  var newHeight = textHeight + deltaHeight + 20;
 
-  if (textHeight + dlgDelta < window.screen.height - 100) {
-    newHeight = textHeight + dlgDelta + 10;
+
+  if (newHeight > window.screen.height - 100) {
+    newHeight = window.screen.height - 100;
   }
-  else {
-    newHeight = window.screen.height - 120;
-  }
-
 
   window.outerHeight = newHeight;
+}
 
+function centerDialog() {
   if (EnigGetOS() != "Darwin")
     document.getElementById("enigmailAlertDlg").centerWindowOnScreen();
 }
