@@ -47,7 +47,7 @@ function enigmailEncryptionDlgLoad() {
   var inputObj = window.arguments[0];
 
   var signElement = document.getElementById("signMsg");
-  switch(inputObj.statusSigned) {
+  switch (inputObj.statusSigned) {
     case EnigmailConstants.ENIG_FINAL_FORCEYES:
     case EnigmailConstants.ENIG_FINAL_YES:
       signElement.setAttribute("checked", true);
@@ -57,7 +57,7 @@ function enigmailEncryptionDlgLoad() {
   }
 
   var encElement = document.getElementById("encryptMsg");
-  switch(inputObj.statusEncrypted) {
+  switch (inputObj.statusEncrypted) {
     case EnigmailConstants.ENIG_FINAL_FORCEYES:
     case EnigmailConstants.ENIG_FINAL_YES:
       encElement.setAttribute("checked", true);
@@ -67,7 +67,7 @@ function enigmailEncryptionDlgLoad() {
   }
 
   var pgpmimeElement = document.getElementById("pgpmimeGroup");
-  switch(inputObj.statusPGPMime) {
+  switch (inputObj.statusPGPMime) {
     case EnigmailConstants.ENIG_FINAL_FORCEYES:
     case EnigmailConstants.ENIG_FINAL_YES:
       pgpmimeElement.selectedItem = document.getElementById("usePgpMime");
@@ -99,7 +99,7 @@ function getResultStatus(newStatus) {
   }
 }
 
-function enigmailEncryptionDlgAccept () {
+function enigmailEncryptionDlgAccept() {
   var resultObj = window.arguments[0];
   var sign = document.getElementById("signMsg").checked;
   var encrypt = document.getElementById("encryptMsg").checked;

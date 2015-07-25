@@ -69,13 +69,13 @@ const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
  * @return Promise; upon success, the promise returns the messageKey
  */
 const EnigmailFixExchangeMsg = {
-  fixExchangeMessage: function (hdr, brokenByApp, destFolderUri) {
+  fixExchangeMessage: function(hdr, brokenByApp, destFolderUri) {
     var self = this;
     return new Promise(
       function fixExchangeMessage_p(resolve, reject) {
 
         let msgUriSpec = hdr.folder.getUriForMsg(hdr);
-        EnigmailLog.DEBUG("fixExchangeMsg.jsm: fixExchangeMessage: msgUriSpec: "+msgUriSpec+"\n");
+        EnigmailLog.DEBUG("fixExchangeMsg.jsm: fixExchangeMessage: msgUriSpec: " + msgUriSpec + "\n");
 
         self.hdr = hdr;
         self.destFolder = hdr.folder;
@@ -120,14 +120,14 @@ const EnigmailFixExchangeMsg = {
         let op = (u.value.spec.indexOf("?") > 0 ? "&" : "?");
         let url = u.value.spec; // + op + 'part=' + part+"&header=enigmailConvert";
 
-        EnigmailLog.DEBUG("fixExchangeMsg.jsm: getting data from URL " + url +"\n");
+        EnigmailLog.DEBUG("fixExchangeMsg.jsm: getting data from URL " + url + "\n");
 
         let s = EnigmailStreams.newStringStreamListener(
           function analyzeData(data) {
-            EnigmailLog.DEBUG("fixExchangeMsg.jsm: analyzeDecryptedData: got " + data.length +" bytes\n");
+            EnigmailLog.DEBUG("fixExchangeMsg.jsm: analyzeDecryptedData: got " + data.length + " bytes\n");
 
             if (EnigmailLog.getLogLevel() > 5) {
-              EnigmailLog.DEBUG("*** start data ***\n'" + data +"'\n***end data***\n");
+              EnigmailLog.DEBUG("*** start data ***\n'" + data + "'\n***end data***\n");
             }
 
             let hdrEnd = data.search(/\r?\n\r?\n/);
@@ -149,17 +149,17 @@ const EnigmailFixExchangeMsg = {
             let boundary = hdrObj.boundary;
             let body;
 
-            switch(self.brokenByApp) {
-            case "exchange":
-              body = self.getCorrectedExchangeBodyData(data.substr(hdrEnd+2), boundary);
-              break;
-            case "iPGMail":
-              body = self.getCorrectediPGMailBodyData(data.substr(hdrEnd+2), boundary);
-              break;
-            default:
-              EnigmailLog.ERROR("fixExchangeMsg.jsm: getMessageBody: unknown appType " + self.brokenByApp +"\n");
-              reject(99);
-              return;
+            switch (self.brokenByApp) {
+              case "exchange":
+                body = self.getCorrectedExchangeBodyData(data.substr(hdrEnd + 2), boundary);
+                break;
+              case "iPGMail":
+                body = self.getCorrectediPGMailBodyData(data.substr(hdrEnd + 2), boundary);
+                break;
+              default:
+                EnigmailLog.ERROR("fixExchangeMsg.jsm: getMessageBody: unknown appType " + self.brokenByApp + "\n");
+                reject(99);
+                return;
             }
 
             if (body) {
@@ -178,8 +178,8 @@ const EnigmailFixExchangeMsg = {
           var channel = ioServ.newChannel(url, null, null);
           channel.asyncOpen(s, null);
         }
-        catch(e) {
-          EnigmailLog.DEBUG("fixExchangeMsg.jsm: getMessageBody: exception " + e +"\n");
+        catch (e) {
+          EnigmailLog.DEBUG("fixExchangeMsg.jsm: getMessageBody: exception " + e + "\n");
         }
       }
     );
@@ -193,12 +193,12 @@ const EnigmailFixExchangeMsg = {
    *        boundary: String - MIME part boundary (incl. surrounding "" or '')
    *      }
    */
-  getFixedHeaderData: function (hdrLines) {
-    EnigmailLog.DEBUG("fixExchangeMsg.jsm: getFixedHeaderData: hdrLines[]:'"+ hdrLines.length +"'\n");
+  getFixedHeaderData: function(hdrLines) {
+    EnigmailLog.DEBUG("fixExchangeMsg.jsm: getFixedHeaderData: hdrLines[]:'" + hdrLines.length + "'\n");
     let r = {
-        headers: "",
-        boundary: ""
-      };
+      headers: "",
+      boundary: ""
+    };
 
     for (let i = 0; i < hdrLines.length; i++) {
       if (hdrLines[i].search(/^content-type:/i) >= 0) {
@@ -208,7 +208,7 @@ const EnigmailFixExchangeMsg = {
         i++;
         while (i < hdrLines.length) {
           // Does the line start with a space or a tab, followed by something else?
-          if(hdrLines[i].search(/^[ \t]+?/) === 0) {
+          if (hdrLines[i].search(/^[ \t]+?/) === 0) {
             contentTypeLine += hdrLines[i];
             i++;
           }
@@ -228,7 +228,7 @@ const EnigmailFixExchangeMsg = {
 
     r.boundary = r.boundary.replace(/^(['"])(.*)(['"])/, "$2");
 
-    r.headers += 'Content-Type: multipart/encrypted;\r\n'+
+    r.headers += 'Content-Type: multipart/encrypted;\r\n' +
       '  protocol="application/pgp-encrypted";\r\n' +
       '  boundary="' + r.boundary + '"\r\n' +
       'X-Enigmail-Info: Fixed broken PGP/MIME message\r\n';
@@ -241,7 +241,7 @@ const EnigmailFixExchangeMsg = {
    * Get corrected body for MS-Exchange messages
    */
   getCorrectedExchangeBodyData: function(bodyData, boundary) {
-    EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: boundary='"+ boundary +"'\n");
+    EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: boundary='" + boundary + "'\n");
     let boundRx = new RegExp("^--" + boundary, "ym");
     let match = boundRx.exec(bodyData);
 
@@ -278,7 +278,7 @@ const EnigmailFixExchangeMsg = {
 
     if (!ct || ct.search(/application\/pgp-encrypted/i) < 0) {
       EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: wrong content-type of version-identification\n");
-      EnigmailLog.DEBUG("   ct = '"+ct+"'\n");
+      EnigmailLog.DEBUG("   ct = '" + ct + "'\n");
       return null;
     }
 
@@ -286,7 +286,7 @@ const EnigmailFixExchangeMsg = {
     ct = mimeHdr.extractHeader("content-type", false);
     if (!ct || ct.search(/application\/octet-stream/i) < 0) {
       EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: wrong content-type of PGP/MIME data\n");
-      EnigmailLog.DEBUG("   ct = '"+ct+"'\n");
+      EnigmailLog.DEBUG("   ct = '" + ct + "'\n");
       return null;
     }
 
@@ -298,7 +298,7 @@ const EnigmailFixExchangeMsg = {
    * Get corrected body for iPGMail messages
    */
   getCorrectediPGMailBodyData: function(bodyData, boundary) {
-    EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: boundary='"+ boundary +"'\n");
+    EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: boundary='" + boundary + "'\n");
     let boundRx = new RegExp("^--" + boundary, "ym");
     let match = boundRx.exec(bodyData);
 
@@ -329,21 +329,21 @@ const EnigmailFixExchangeMsg = {
     let ct = mimeHdr.extractHeader("content-type", false);
     if (!ct || ct.search(/application\/pgp-encrypted/i) < 0) {
       EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: wrong content-type of PGP/MIME data\n");
-      EnigmailLog.DEBUG("   ct = '"+ct+"'\n");
+      EnigmailLog.DEBUG("   ct = '" + ct + "'\n");
       return null;
     }
 
     return "--" + boundary + "\r\n" +
-            "Content-Type: application/pgp-encrypted\r\n" +
-            "Content-Description: PGP/MIME version identification\r\n\r\n" +
-            "Version: 1\r\n\r\n" +
-            bodyData.substring(encData, match.index).
-              replace(/^Content-Type: +application\/pgp-encrypted/im,
-              "Content-Type: application/octet-stream") +
-            "--" + boundary + "--\r\n";
+      "Content-Type: application/pgp-encrypted\r\n" +
+      "Content-Description: PGP/MIME version identification\r\n\r\n" +
+      "Version: 1\r\n\r\n" +
+      bodyData.substring(encData, match.index).
+    replace(/^Content-Type: +application\/pgp-encrypted/im,
+        "Content-Type: application/octet-stream") +
+      "--" + boundary + "--\r\n";
   },
 
-  copyToTargetFolder: function (msgData) {
+  copyToTargetFolder: function(msgData) {
     var self = this;
     var tempFile = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("TmpD", Ci.nsIFile);
     tempFile.append("message.eml");
@@ -367,33 +367,33 @@ const EnigmailFixExchangeMsg = {
 
 
     var copyListener = {
-      QueryInterface : function(iid) {
-        if (iid.equals(Ci.nsIMsgCopyServiceListener) ||iid.equals(Ci.nsISupports)){
+      QueryInterface: function(iid) {
+        if (iid.equals(Ci.nsIMsgCopyServiceListener) || iid.equals(Ci.nsISupports)) {
           return this;
         }
         throw Components.results.NS_NOINTERFACE;
       },
       msgKey: null,
-      GetMessageId: function (messageId) {},
-      OnProgress: function (progress, progressMax) {},
-      OnStartCopy: function () {},
-      SetMessageKey: function (key) {
+      GetMessageId: function(messageId) {},
+      OnProgress: function(progress, progressMax) {},
+      OnStartCopy: function() {},
+      SetMessageKey: function(key) {
         this.msgKey = key;
       },
-      OnStopCopy: function (statusCode) {
+      OnStopCopy: function(statusCode) {
         if (statusCode !== 0) {
-          EnigmailLog.DEBUG("fixExchangeMsg.jsm: error copying message: "+ statusCode + "\n");
+          EnigmailLog.DEBUG("fixExchangeMsg.jsm: error copying message: " + statusCode + "\n");
           tempFile.remove(false);
           self.reject(3);
           return;
         }
         EnigmailLog.DEBUG("fixExchangeMsg.jsm: copy complete\n");
 
-         EnigmailLog.DEBUG("fixExchangeMsg.jsm: deleting message key="+self.hdr.messageKey+"\n");
+        EnigmailLog.DEBUG("fixExchangeMsg.jsm: deleting message key=" + self.hdr.messageKey + "\n");
         let msgArray = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
         msgArray.appendElement(self.hdr, false);
 
-        self.hdr.folder.deleteMessages(msgArray, null, true, false,  null, false);
+        self.hdr.folder.deleteMessages(msgArray, null, true, false, null, false);
         EnigmailLog.DEBUG("fixExchangeMsg.jsm: deleted original message\n");
 
         tempFile.remove(false);

@@ -10,20 +10,22 @@
  Promise from the various potential sources
 */
 
-const EXPORTED_SYMBOLS = [ "Promise" ];
+const EXPORTED_SYMBOLS = ["Promise"];
 
 const Cu = Components.utils;
 
-if(typeof(this.Promise) !== "function") {
+if (typeof(this.Promise) !== "function") {
+  try {
+    Cu.import("resource://gre/modules/commonjs/promise/core.js"); // Gecko 17 to 20
+  }
+  catch (ex) {
     try {
-        Cu.import("resource://gre/modules/commonjs/promise/core.js");     // Gecko 17 to 20
-    } catch (ex) {
-        try {
-            Cu.import("resource://gre/modules/commonjs/sdk/core/promise.js"); // Gecko 21 to 24
-        } catch(ex2) {
-            Cu.import("resource://gre/modules/Promise.jsm"); // Gecko >= 25
-        }
+      Cu.import("resource://gre/modules/commonjs/sdk/core/promise.js"); // Gecko 21 to 24
     }
+    catch (ex2) {
+      Cu.import("resource://gre/modules/Promise.jsm"); // Gecko >= 25
+    }
+  }
 }
 
 // This module looks a little weird, since it doesn't actually define the symbol it exports.

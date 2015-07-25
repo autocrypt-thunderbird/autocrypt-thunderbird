@@ -32,13 +32,13 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** *
-*/
+ */
 
 
 function onLoad() {
   document.getElementById("photoImage").setAttribute("src", window.arguments[0].photoUri);
-  document.getElementById("keyDesc").setAttribute("value", "0x"+window.arguments[0].keyId.substr(-8,8) +
-      " - " + window.arguments[0].userId);
+  document.getElementById("keyDesc").setAttribute("value", "0x" + window.arguments[0].keyId.substr(-8, 8) +
+    " - " + window.arguments[0].userId);
 }
 
 function acceptDlg() {

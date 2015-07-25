@@ -32,13 +32,13 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** *
-*/
+ */
 
 
 EnigInitCommon("enigmailViewFile");
 
 var logFileData; // global definition of log file data to be able to save
-                 // same data as displayed
+// same data as displayed
 
 function saveLogFile() {
   let fileObj = EnigmailDialog.filePicker(window, EnigmailLocale.getString("saveLogFile.title"), null,
@@ -56,7 +56,7 @@ function enigLoadPage() {
   if (!contentFrame)
     return;
 
-  var winOptions=EnigGetWindowOptions();
+  var winOptions = EnigGetWindowOptions();
 
   if ("fileUrl" in winOptions) {
     contentFrame.document.location.href = winOptions.fileUrl;

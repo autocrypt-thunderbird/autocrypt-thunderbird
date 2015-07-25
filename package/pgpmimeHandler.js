@@ -41,13 +41,13 @@ const throwErrors = {
 
 function PgpMimeHandler() {
 
-  EnigmailLog.DEBUG("mimeDecrypt.js: PgpMimeHandler()\n");   // always log this one
+  EnigmailLog.DEBUG("mimeDecrypt.js: PgpMimeHandler()\n"); // always log this one
 
-  }
+}
 
 PgpMimeHandler.prototype = {
   classDescription: "Enigmail JS Decryption Handler",
-  classID:  PGPMIME_JS_DECRYPTOR_CID,
+  classID: PGPMIME_JS_DECRYPTOR_CID,
   contractID: PGPMIME_JS_DECRYPTOR_CONTRACTID,
   QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener]),
   inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
@@ -55,12 +55,12 @@ PgpMimeHandler.prototype = {
   onStartRequest: function(request, uri) {
     if (!EnigmailCore.getService()) // Ensure Enigmail is initialized
       return;
-    EnigmailLog.DEBUG("pgpmimeHandler.js: onStartRequest\n");   // always log this one
-    
+    EnigmailLog.DEBUG("pgpmimeHandler.js: onStartRequest\n"); // always log this one
+
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     let ct = this.mimeSvc.contentType;
     let cth = null;
-    
+
     if (ct.search(/^multipart\/encrypted/i) === 0) {
       // PGP/MIME encrypted message
       cth = new EnigmailMimeDecrypt();
@@ -74,7 +74,7 @@ PgpMimeHandler.prototype = {
         return this.handleSmime(uri);
       }
     }
-   
+
     if (cth) {
       this.onDataAvailable = cth.onDataAvailable.bind(cth);
       this.onStopRequest = cth.onStopRequest.bind(cth);
@@ -82,15 +82,13 @@ PgpMimeHandler.prototype = {
     }
   },
 
-  onDataAvailable: function(req, sup, stream, offset, count) {
-  },
+  onDataAvailable: function(req, sup, stream, offset, count) {},
 
-  onStopRequest: function(request, win, status) {
-  },
-  
+  onStopRequest: function(request, win, status) {},
+
   handleSmime: function(uri) {
     this.contentHandler = throwErrors;
-    
+
     if (uri) {
       uri = uri.QueryInterface(Ci.nsIURI).clone();
     }

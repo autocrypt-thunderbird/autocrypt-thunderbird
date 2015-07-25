@@ -38,13 +38,13 @@
 //       chrome://enigmail/content/enigmailBuildDate.js
 
 function enigAboutLoad() {
-    EnigmailLog.DEBUG("enigmailAbout.js: enigAboutLoad\n");
+  EnigmailLog.DEBUG("enigmailAbout.js: enigAboutLoad\n");
 
   var contentFrame = EnigmailWindows.getFrame(window, "contentFrame");
   if (!contentFrame)
     return;
 
-  var enigVersion=EnigmailApp.getVersion()+" ("+EnigBuildDate+")";
+  var enigVersion = EnigmailApp.getVersion() + " (" + EnigBuildDate + ")";
   var versionElement = contentFrame.document.getElementById('version');
   if (versionElement)
     versionElement.firstChild.data = EnigmailLocale.getString("usingVersion", enigVersion);
@@ -54,7 +54,8 @@ function enigAboutLoad() {
   var agentStr;
   if (enigmailSvc) {
     agentStr = EnigmailLocale.getString("usingAgent", [EnigmailGpgAgent.agentType, EnigmailGpgAgent.agentPath.path]);
-  } else {
+  }
+  else {
     agentStr = EnigmailLocale.getString("agentError");
 
     if (enigmailSvc && enigmailSvc.initializationError)
@@ -68,8 +69,7 @@ function enigAboutLoad() {
 }
 
 
-function contentAreaClick(event)
-{
+function contentAreaClick(event) {
   let uri = EnigGetHttpUri(event);
   if (uri) {
     EnigOpenUrlExternally(uri);

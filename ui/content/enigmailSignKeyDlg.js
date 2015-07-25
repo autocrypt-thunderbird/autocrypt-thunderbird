@@ -63,10 +63,10 @@ function onLoad() {
     window.close();
     return;
   }
-  var menulist=document.getElementById("signWithKey");
+  var menulist = document.getElementById("signWithKey");
 
-  for each (key in keys) {
-    menulist.appendItem(key.name + " - 0x"+key.id.substr(-8,8), key.id);
+  for each(key in keys) {
+    menulist.appendItem(key.name + " - 0x" + key.id.substr(-8, 8), key.id);
   }
   if (menulist.selectedIndex == -1) {
     menulist.selectedIndex = 0;
@@ -83,75 +83,76 @@ function onLoad() {
     gUidCount = [];
     var keyId = null;
     fingerprint = "";
-    var sigListStr = EnigmailKeyRing.getKeySig("0x"+window.arguments[0].keyId, exitCodeObj, errorMsgObj);
+    var sigListStr = EnigmailKeyRing.getKeySig("0x" + window.arguments[0].keyId, exitCodeObj, errorMsgObj);
 
     if (exitCodeObj.value === 0) {
       var sigList = sigListStr.split(/[\n\r]+/);
       var currKey = null;
       var currUID = null;
 
-      for (i=0; i < sigList.length; i++) {
-        var aLine=sigList[i].split(/:/);
+      for (i = 0; i < sigList.length; i++) {
+        var aLine = sigList[i].split(/:/);
 
         // Now inspect the splitted key packets
         switch (aLine[0]) {
-        case "pub":
-          keyId = aLine[4];
-          break;
+          case "pub":
+            keyId = aLine[4];
+            break;
 
-        case "uid":
-          if (typeof(currKey) != "string") currKey = aLine[4];
-          // Count all UIDs
-          if (gUidCount[keyId]===undefined) {
-            gUidCount[keyId]=1;
-          }
-          else {
-            gUidCount[keyId]+=1;
-          }
-          break;
-
-        case "sig":
-          // Count signatures separately for each signing key
-          // Only count exportable signatures, neglect local (non-exportable) signatures
-          sigType = aLine[10].charAt(aLine[10].length-1);
-          if (sigType=="x") {
-            if (gExportableSignatureList[aLine[4]]===undefined) {
-              gExportableSignatureList[aLine[4]]=1;
+          case "uid":
+            if (typeof(currKey) != "string") currKey = aLine[4];
+            // Count all UIDs
+            if (gUidCount[keyId] === undefined) {
+              gUidCount[keyId] = 1;
             }
             else {
-              gExportableSignatureList[aLine[4]]+=1;
+              gUidCount[keyId] += 1;
             }
-          }
-          if (sigType=="l") {
-            if (gLocalSignatureList[aLine[4]]===undefined) {
-              gLocalSignatureList[aLine[4]]=1;
-            }
-            else {
-              gLocalSignatureList[aLine[4]]+=1;
-            }
-          }
-          break;
+            break;
 
-        case "fpr":
-          if (fingerprint==="") {
-            EnigmailLog.DEBUG("enigmailSignKeyDlg.js: fpr:"+currKey+" -> "+aLine[9]+"\n");
-            fingerprint = aLine[9];
-          }
-          break;
-        default:
+          case "sig":
+            // Count signatures separately for each signing key
+            // Only count exportable signatures, neglect local (non-exportable) signatures
+            sigType = aLine[10].charAt(aLine[10].length - 1);
+            if (sigType == "x") {
+              if (gExportableSignatureList[aLine[4]] === undefined) {
+                gExportableSignatureList[aLine[4]] = 1;
+              }
+              else {
+                gExportableSignatureList[aLine[4]] += 1;
+              }
+            }
+            if (sigType == "l") {
+              if (gLocalSignatureList[aLine[4]] === undefined) {
+                gLocalSignatureList[aLine[4]] = 1;
+              }
+              else {
+                gLocalSignatureList[aLine[4]] += 1;
+              }
+            }
+            break;
+
+          case "fpr":
+            if (fingerprint === "") {
+              EnigmailLog.DEBUG("enigmailSignKeyDlg.js: fpr:" + currKey + " -> " + aLine[9] + "\n");
+              fingerprint = aLine[9];
+            }
+            break;
+          default:
         }
       }
     }
     enigKeySelCb();
-  } catch (ex) {}
+  }
+  catch (ex) {}
 
-  var keyDesc = window.arguments[0].userId+" - 0x"+ window.arguments[0].keyId.substr(-8,8);
-  document.getElementById("keyId").value=keyDesc;
+  var keyDesc = window.arguments[0].userId + " - 0x" + window.arguments[0].keyId.substr(-8, 8);
+  document.getElementById("keyId").value = keyDesc;
   if (fingerprint && fingerprint.length > 0) {
     var fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
     if (fpr && fpr.length > 2) {
       fpr.shift();
-      document.getElementById("fingerprint").value=fpr.join(" ");
+      document.getElementById("fingerprint").value = fpr.join(" ");
     }
   }
 }
@@ -168,13 +169,13 @@ function onAccept() {
   }
 
   EnigmailKeyEditor.signKey(window,
-    "0x"+signWithKey.selectedItem.value,
+    "0x" + signWithKey.selectedItem.value,
     window.arguments[0].keyId,
     localSig.checked,
     trustLevel.selectedItem.value,
-    function (exitCode, errorMsg) {
+    function(exitCode, errorMsg) {
       if (exitCode !== 0) {
-        EnigmailDialog.alert(window, EnigmailLocale.getString("signKeyFailed")+"\n\n"+errorMsg);
+        EnigmailDialog.alert(window, EnigmailLocale.getString("signKeyFailed") + "\n\n" + errorMsg);
       }
       else {
         window.arguments[1].refresh = true;
@@ -188,7 +189,7 @@ function onAccept() {
 
 function enigKeySelCb() {
   var KeyToBeSigned = window.arguments[0].keyId;
-  var KeyToBeSigned32 = KeyToBeSigned.substr(-8,8);
+  var KeyToBeSigned32 = KeyToBeSigned.substr(-8, 8);
   var signWithKey = document.getElementById("signWithKey");
   var signWithKeyId = signWithKey.selectedItem.value;
   var alreadySigned = document.getElementById("alreadySigned");
@@ -197,35 +198,35 @@ function enigKeySelCb() {
   var signatureCount = 0;
 
   if (doLocalSig.checked) {
-    signatureCount=gLocalSignatureList[signWithKeyId];
+    signatureCount = gLocalSignatureList[signWithKeyId];
   }
   else {
-    signatureCount=gExportableSignatureList[signWithKeyId];
+    signatureCount = gExportableSignatureList[signWithKeyId];
   }
 
-  if ((doLocalSig.checked) && (gExportableSignatureList[signWithKeyId]>0)) {
+  if ((doLocalSig.checked) && (gExportableSignatureList[signWithKeyId] > 0)) {
     // User tries to locally sign a key he has already signed (at least partially) with an exportable signature
     // Here we display a hint and DISable the OK button
-    alreadySigned.setAttribute("value", EnigmailLocale.getString("alreadySignedexportable.label", "0x"+ KeyToBeSigned32));
+    alreadySigned.setAttribute("value", EnigmailLocale.getString("alreadySignedexportable.label", "0x" + KeyToBeSigned32));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = true;
   }
-  else if (signatureCount === undefined){
+  else if (signatureCount === undefined) {
     // No signature yet, Hide hint field and ENable OK button
     alreadySigned.setAttribute("collapsed", "true");
     acceptButton.disabled = false;
   }
-  else if (signatureCount==gUidCount[KeyToBeSigned]) {
+  else if (signatureCount == gUidCount[KeyToBeSigned]) {
     // Signature count == UID count, so key is already fully signed and another signing operation makes no more sense
     // Here, we display a hint and DISable the OK button
-    alreadySigned.setAttribute("value", EnigmailLocale.getString("alreadySigned.label", "0x"+ KeyToBeSigned32));
+    alreadySigned.setAttribute("value", EnigmailLocale.getString("alreadySigned.label", "0x" + KeyToBeSigned32));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = true;
   }
   else if (signatureCount > 0) {
     // Signature count != UID count, so key is partly signed and another sign operation makes sense
     // Here, we display a hint and ENable the OK button
-    alreadySigned.setAttribute("value", EnigmailLocale.getString("partlySigned.label", "0x"+ KeyToBeSigned32));
+    alreadySigned.setAttribute("value", EnigmailLocale.getString("partlySigned.label", "0x" + KeyToBeSigned32));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = false;
   }

@@ -32,9 +32,9 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** *
-*/
+ */
 
-var gRepaintCount=0;
+var gRepaintCount = 0;
 var gKeyId;
 
 function onLoad() {
@@ -43,16 +43,16 @@ function onLoad() {
   var keyListObj = {};
   EnigLoadKeyList(false, keyListObj);
 
-  var userIdList=window.arguments[0].userId.split(/\r?\n/);
+  var userIdList = window.arguments[0].userId.split(/\r?\n/);
   gKeyId = window.arguments[0].keyId;
   var uid = document.getElementById("uidContainer");
   document.getElementById("photoImage").setAttribute("src", window.arguments[0].photoUri);
-  for (var i=0; i< userIdList.length; i++) {
-    var l=document.createElement("label");
+  for (var i = 0; i < userIdList.length; i++) {
+    var l = document.createElement("label");
     l.setAttribute("value", userIdList[i]);
     uid.appendChild(l);
   }
-  document.getElementById("keyId").setAttribute("value", EnigGetString("keyId")+": 0x"+gKeyId);
+  document.getElementById("keyId").setAttribute("value", EnigGetString("keyId") + ": 0x" + gKeyId);
   document.getElementById("keyValidity").setAttribute("value", EnigGetTrustLabel(EnigGetTrustCode(keyListObj.keyList[gKeyId])));
 }
 

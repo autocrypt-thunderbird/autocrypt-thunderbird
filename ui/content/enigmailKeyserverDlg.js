@@ -31,10 +31,10 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** *
-*/
+ */
 
 function onLoad() {
-  window.arguments[1].value="";
+  window.arguments[1].value = "";
   var keyIdText = document.getElementById("keyIdText");
   var emailRow = document.getElementById("emailRow");
   var keyText;
@@ -42,14 +42,14 @@ function onLoad() {
   if (typeof(window.arguments[0].keyId) == "string") {
     var keyId = window.arguments[0].keyId;
     if (window.arguments[0].upload) {
-      keyText = EnigGetString("uploadKey",keyId);
+      keyText = EnigGetString("uploadKey", keyId);
     }
     else {
-      keyText = EnigGetString("importKey",keyId);
+      keyText = EnigGetString("importKey", keyId);
     }
 
     if (keyText.length > 400) {
-      keyText = keyText.substr(0,400)+" ...";
+      keyText = keyText.substr(0, 400) + " ...";
     }
     keyIdText.firstChild.data = keyText;
     emailRow.setAttribute("collapsed", "true");
@@ -59,18 +59,18 @@ function onLoad() {
   }
 
   var keyservers = EnigGetPref("keyserver").split(/[ ,;]/g);
-  var menulist=document.getElementById("selectedServer");
+  var menulist = document.getElementById("selectedServer");
 
-  for (var i=0; i < keyservers.length; i++) {
-    if (keyservers[i].length>0) {
+  for (var i = 0; i < keyservers.length; i++) {
+    if (keyservers[i].length > 0) {
       menulist.appendItem(keyservers[i]);
     }
   }
-  document.getElementById("selectedServer").value=keyservers[0];
+  document.getElementById("selectedServer").value = keyservers[0];
 }
 
 function onAccept() {
-  var menulist=document.getElementById("selectedServer");
+  var menulist = document.getElementById("selectedServer");
   window.arguments[1].value = menulist.value;
   if (typeof(window.arguments[0].keyId) != "string") {
     window.arguments[1].email = document.getElementById("email").value;

@@ -31,7 +31,7 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** *
-*/
+ */
 
 Components.utils.import("resource://enigmail/core.jsm");
 Components.utils.import("resource://enigmail/keyEditor.jsm");
@@ -45,24 +45,24 @@ function onAccept() {
   var comment = document.getElementById("addUid_comment");
 
   if ((email.value.search(/^ *$/) === 0) || (name.value.search(/^ *$/) === 0)) {
-    EnigmailDialog.alert(window, EnigmailLocale.getString ("addUidDlg.nameOrEmailError"));
+    EnigmailDialog.alert(window, EnigmailLocale.getString("addUidDlg.nameOrEmailError"));
     return false;
   }
-  if (name.value.replace(/ *$/, "").length <5) {
-    EnigmailDialog.alert(window, EnigmailLocale.getString ("addUidDlg.nameMinLengthError"));
+  if (name.value.replace(/ *$/, "").length < 5) {
+    EnigmailDialog.alert(window, EnigmailLocale.getString("addUidDlg.nameMinLengthError"));
     return false;
   }
-  if (email.value.search(/.@./)<0) {
-    EnigmailDialog.alert(window, EnigmailLocale.getString ("addUidDlg.invalidEmailError"));
+  if (email.value.search(/.@./) < 0) {
+    EnigmailDialog.alert(window, EnigmailLocale.getString("addUidDlg.invalidEmailError"));
     return false;
   }
   if (comment.value.search(/[()]/) >= 0) {
-    EnigmailDialog.alert(window, EnigmailLocale.getString ("addUidDlg.commentError"));
+    EnigmailDialog.alert(window, EnigmailLocale.getString("addUidDlg.commentError"));
     return false;
   }
   var enigmailSvc = EnigmailCore.getService();
   if (!enigmailSvc) {
-    EnigmailDialog.alert(window, EnigmailLocale.getString ("accessError"));
+    EnigmailDialog.alert(window, EnigmailLocale.getString("accessError"));
     return true;
   }
 
@@ -72,14 +72,14 @@ function onAccept() {
     EnigmailData.convertFromUnicode(email.value),
     EnigmailData.convertFromUnicode(comment.value),
     function _addUidCb(exitCode, errorMsg) {
-       if (exitCode !== 0) {
-          EnigmailDialog.alert(window, EnigmailLocale.getString("addUidFailed")+"\n\n"+errorMsg);
-        }
-        else {
-          window.arguments[1].refresh = true;
-          EnigmailDialog.alert(window, EnigmailLocale.getString("addUidOK"));
-        }
-        window.close();
+      if (exitCode !== 0) {
+        EnigmailDialog.alert(window, EnigmailLocale.getString("addUidFailed") + "\n\n" + errorMsg);
+      }
+      else {
+        window.arguments[1].refresh = true;
+        EnigmailDialog.alert(window, EnigmailLocale.getString("addUidOK"));
+      }
+      window.close();
     });
 
   return false;

@@ -40,43 +40,45 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "EnigmailPassword" ];
+const EXPORTED_SYMBOLS = ["EnigmailPassword"];
 
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/lazy.jsm");  /*global EnigmailLazy: false */
+Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 
 const gpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 
 const EnigmailPassword = {
-    /*
-     * Get GnuPG command line options for receiving the password depending
-     * on the various user and system settings (gpg-agent/no passphrase)
-     *
-     * @return: Array the GnuPG command line options
-     */
-    command: function () {
-      if (gpgAgent().useGpgAgent()) {
-            return ["--use-agent"];
-        } else {
-            if (! EnigmailPrefs.getPref("noPassphrase")) {
-                return ["--passphrase-fd", "0", "--no-use-agent"];
-            }
-        }
-        return [];
-    },
-
-    getMaxIdleMinutes: function () {
-        try {
-            return EnigmailPrefs.getPref("maxIdleMinutes");
-        } catch (ex) {}
-
-        return 5;
-    },
-
-    clearPassphrase: function(win) {
-        // TODO: it's referred to in one place and used to be in EnigmailCommon but has probably disappeared
-        // It seems this functionality has been removed in almost all places.
+  /*
+   * Get GnuPG command line options for receiving the password depending
+   * on the various user and system settings (gpg-agent/no passphrase)
+   *
+   * @return: Array the GnuPG command line options
+   */
+  command: function() {
+    if (gpgAgent().useGpgAgent()) {
+      return ["--use-agent"];
     }
+    else {
+      if (!EnigmailPrefs.getPref("noPassphrase")) {
+        return ["--passphrase-fd", "0", "--no-use-agent"];
+      }
+    }
+    return [];
+  },
+
+  getMaxIdleMinutes: function() {
+    try {
+      return EnigmailPrefs.getPref("maxIdleMinutes");
+    }
+    catch (ex) {}
+
+    return 5;
+  },
+
+  clearPassphrase: function(win) {
+    // TODO: it's referred to in one place and used to be in EnigmailCommon but has probably disappeared
+    // It seems this functionality has been removed in almost all places.
+  }
 };

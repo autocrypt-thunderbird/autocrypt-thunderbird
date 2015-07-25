@@ -79,24 +79,23 @@ function refreshConsole() {
 function updateData() {
   //EnigmailLog.DEBUG("enigmailConsole.js: updateData():\n");
 
-    var contentFrame = EnigmailWindows.getFrame(window, "contentFrame");
-    if (!contentFrame)
-      return;
+  var contentFrame = EnigmailWindows.getFrame(window, "contentFrame");
+  if (!contentFrame)
+    return;
 
-    var consoleElement = contentFrame.document.getElementById('console');
+  var consoleElement = contentFrame.document.getElementById('console');
 
-    consoleElement.firstChild.data = EnigmailData.convertToUnicode(EnigmailConsole.getData(), "utf-8");
+  consoleElement.firstChild.data = EnigmailData.convertToUnicode(EnigmailConsole.getData(), "utf-8");
 
-    if (!contentFrame.mouseDownState)
-       contentFrame.scrollTo(0,9999);
+  if (!contentFrame.mouseDownState)
+    contentFrame.scrollTo(0, 9999);
 }
 
 
-function enigmailConsoleCopy()
-{
+function enigmailConsoleCopy() {
   var selText = getSelectionStr();
 
-  EnigmailLog.DEBUG("enigmailConsole.js: enigmailConsoleCopy: selText='"+selText+"'\n");
+  EnigmailLog.DEBUG("enigmailConsole.js: enigmailConsoleCopy: selText='" + selText + "'\n");
 
   if (selText) {
     var clipHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].createInstance(Components.interfaces.nsIClipboardHelper);
@@ -107,35 +106,31 @@ function enigmailConsoleCopy()
   return true;
 }
 
-function getSelectionStr()
-{
+function getSelectionStr() {
   try {
     var contentFrame = EnigmailWindows.getFrame(window, "contentFrame");
 
     var sel = contentFrame.getSelection();
     return sel.toString();
 
-  } catch (ex) {
+  }
+  catch (ex) {
     return "";
   }
 }
 
-function isItemSelected()
-{
+function isItemSelected() {
   EnigmailLog.DEBUG("enigmailConsole.js: isItemSelected\n");
   return getSelectionStr() !== "";
 }
 
-function UpdateCopyMenu()
-{
+function UpdateCopyMenu() {
   EnigmailLog.DEBUG("enigmailConsole.js: UpdateCopyMenu\n");
   goUpdateCommand("cmd_copy");
 }
 
-var CommandController =
-{
-  isCommandEnabled: function (aCommand)
-  {
+var CommandController = {
+  isCommandEnabled: function(aCommand) {
     switch (aCommand) {
       case "cmd_copy":
         return isItemSelected();
@@ -144,8 +139,7 @@ var CommandController =
     }
   },
 
-  supportsCommand: function (aCommand)
-  {
+  supportsCommand: function(aCommand) {
     switch (aCommand) {
       case "cmd_copy":
         return true;
@@ -154,8 +148,7 @@ var CommandController =
     }
   },
 
-  doCommand: function (aCommand)
-  {
+  doCommand: function(aCommand) {
     switch (aCommand) {
       case "cmd_copy":
         enigmailConsoleCopy();
@@ -165,7 +158,5 @@ var CommandController =
     }
   },
 
-  onEvent: function (aEvent)
-  {
-  }
+  onEvent: function(aEvent) {}
 };

@@ -40,25 +40,25 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "EnigmailTimer" ];
+const EXPORTED_SYMBOLS = ["EnigmailTimer"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
 const EnigmailTimer = {
-    /**
-     * wait a defined number of miliseconds, then call a callback function
-     * asynchronously
-     *
-     * @callbackFunction: Function - any function specification
-     * @sleepTimeMs:      Number - optional number of miliseconds to delay
-     *                             (0 if not specified)
-     */
-    setTimeout: function( callbackFunction, sleepTimeMs ) {
-        var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-        timer.initWithCallback(callbackFunction,
-                               sleepTimeMs || 0,
-                               Ci.nsITimer.TYPE_ONE_SHOT);
-        return timer;
-    }
+  /**
+   * wait a defined number of miliseconds, then call a callback function
+   * asynchronously
+   *
+   * @callbackFunction: Function - any function specification
+   * @sleepTimeMs:      Number - optional number of miliseconds to delay
+   *                             (0 if not specified)
+   */
+  setTimeout: function(callbackFunction, sleepTimeMs) {
+    var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
+    timer.initWithCallback(callbackFunction,
+      sleepTimeMs || 0,
+      Ci.nsITimer.TYPE_ONE_SHOT);
+    return timer;
+  }
 };

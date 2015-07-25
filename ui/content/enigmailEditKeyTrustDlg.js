@@ -32,7 +32,7 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** *
-*/
+ */
 
 
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
@@ -55,15 +55,15 @@ function onLoad() {
     window.arguments[1].refresh = false;
     var currTrust = -1;
     var lastTrust = -1;
-    var sigListStr = EnigmailKeyRing.getKeySig("0x"+window.arguments[0].keyId.join(" 0x"), exitCodeObj, errorMsgObj);
+    var sigListStr = EnigmailKeyRing.getKeySig("0x" + window.arguments[0].keyId.join(" 0x"), exitCodeObj, errorMsgObj);
 
     if (exitCodeObj.value === 0) {
       var sigList = sigListStr.split(/[\n\r]+/);
-      for (let i=0; i < sigList.length; i++) {
-        var aLine=sigList[i].split(/:/);
+      for (let i = 0; i < sigList.length; i++) {
+        var aLine = sigList[i].split(/:/);
         if (aLine[0] == "pub") {
-          currTrust=(("-nmfuq").indexOf(aLine[8]) % 5)+1;
-          if (lastTrust==-1) lastTrust=currTrust;
+          currTrust = (("-nmfuq").indexOf(aLine[8]) % 5) + 1;
+          if (lastTrust == -1) lastTrust = currTrust;
           if (currTrust != lastTrust) {
             currTrust = -1;
             break;
@@ -71,8 +71,8 @@ function onLoad() {
         }
       }
       if (currTrust > 0) {
-        var t=document.getElementById("trustLevel"+currTrust.toString());
-        document.getElementById("trustLevelGroup").selectedItem=t;
+        var t = document.getElementById("trustLevel" + currTrust.toString());
+        document.getElementById("trustLevelGroup").selectedItem = t;
       }
     }
   }
@@ -80,23 +80,23 @@ function onLoad() {
 
   var keyIdList = document.getElementById("keyIdList");
 
-  for (let i=0; i<window.arguments[0].userId.length; i++) {
-    var keyId = window.arguments[0].userId[i]+" - 0x"+ window.arguments[0].keyId[i].substr(-8,8);
+  for (let i = 0; i < window.arguments[0].userId.length; i++) {
+    var keyId = window.arguments[0].userId[i] + " - 0x" + window.arguments[0].keyId[i].substr(-8, 8);
     keyIdList.appendItem(keyId);
   }
 }
 
 function processNextKey(index) {
-  EnigmailLog.DEBUG("enigmailEditKeyTrust: processNextKey("+index+")\n");
+  EnigmailLog.DEBUG("enigmailEditKeyTrust: processNextKey(" + index + ")\n");
 
-  var t=document.getElementById("trustLevelGroup");
+  var t = document.getElementById("trustLevelGroup");
 
   EnigmailKeyEditor.setKeyTrust(window,
     window.arguments[0].keyId[index],
     Number(t.selectedItem.value),
-    function (exitCode, errorMsg) {
+    function(exitCode, errorMsg) {
       if (exitCode !== 0) {
-        EnigmailDialog.alert(window, EnigmailLocale.getString("setKeyTrustFailed")+"\n\n"+errorMsg);
+        EnigmailDialog.alert(window, EnigmailLocale.getString("setKeyTrustFailed") + "\n\n" + errorMsg);
         window.close();
         return;
       }

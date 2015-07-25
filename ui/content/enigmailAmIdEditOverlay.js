@@ -32,12 +32,11 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** *
-*/
+ */
 
-if (! Enigmail) var Enigmail = {};
+if (!Enigmail) var Enigmail = {};
 
-window.addEventListener("load", function ()
-  {
+window.addEventListener("load", function() {
     Enigmail.edit.onLoadEditor();
   },
   false);

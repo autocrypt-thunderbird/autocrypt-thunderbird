@@ -57,54 +57,54 @@ function onLoad() {
   var exitCodeObj = {};
   var errorMsgObj = {};
 
-  var dryRun=false;
+  var dryRun = false;
   try {
     dryRun = EnigmailPrefs.getPref("dryRun");
   }
-  catch(ex) {}
+  catch (ex) {}
 
   var cardStr = EnigmailCard.getCardStatus(exitCodeObj, errorMsgObj);
   if (exitCodeObj.value === 0) {
-    var statusList=cardStr.split(/[\r\n]+/);
-    for (var i=0; i<statusList.length; i++) {
-      var l=statusList[i].split(/:/);
+    var statusList = cardStr.split(/[\r\n]+/);
+    for (var i = 0; i < statusList.length; i++) {
+      var l = statusList[i].split(/:/);
       switch (l[0]) {
-      case "name":
-        setValue("firstname", EnigmailData.convertGpgToUnicode(l[1]));
-        setValue(l[0], EnigmailData.convertGpgToUnicode(l[2]));
-        break;
-      case "vendor":
-        setValue(l[0], EnigmailData.convertGpgToUnicode(l[2].replace(/\\x3a/ig, ":")));
-        break;
-      case "sex":
-      case "forcepin":
-        var selItem = document.getElementById("card_"+l[0]+"_"+l[1]);
-        document.getElementById("card_"+l[0]).selectedItem = selItem;
-        gCardData[l[0]] = l[1];
-        break;
-      case "pinretry":
-      case "maxpinlen":
-        setValue(l[0], l[1]+" / "+l[2]+" / "+l[3]);
-        break;
-      case "fpr":
-        setValue("key_fpr_1", EnigmailKey.formatFpr(l[1]));
-        setValue("key_fpr_2", EnigmailKey.formatFpr(l[2]));
-        setValue("key_fpr_3", EnigmailKey.formatFpr(l[3]));
-        break;
-      case "fprtime":
-        setValue("key_created_1", EnigmailTime.getDateTime(l[1], true, false));
-        setValue("key_created_2", EnigmailTime.getDateTime(l[2], true, false));
-        setValue("key_created_3", EnigmailTime.getDateTime(l[3], true, false));
-        break;
-      default:
-        if (l[0]) {
-          setValue(l[0], EnigmailData.convertGpgToUnicode(l[1].replace(/\\x3a/ig, ":")));
-        }
+        case "name":
+          setValue("firstname", EnigmailData.convertGpgToUnicode(l[1]));
+          setValue(l[0], EnigmailData.convertGpgToUnicode(l[2]));
+          break;
+        case "vendor":
+          setValue(l[0], EnigmailData.convertGpgToUnicode(l[2].replace(/\\x3a/ig, ":")));
+          break;
+        case "sex":
+        case "forcepin":
+          var selItem = document.getElementById("card_" + l[0] + "_" + l[1]);
+          document.getElementById("card_" + l[0]).selectedItem = selItem;
+          gCardData[l[0]] = l[1];
+          break;
+        case "pinretry":
+        case "maxpinlen":
+          setValue(l[0], l[1] + " / " + l[2] + " / " + l[3]);
+          break;
+        case "fpr":
+          setValue("key_fpr_1", EnigmailKey.formatFpr(l[1]));
+          setValue("key_fpr_2", EnigmailKey.formatFpr(l[2]));
+          setValue("key_fpr_3", EnigmailKey.formatFpr(l[3]));
+          break;
+        case "fprtime":
+          setValue("key_created_1", EnigmailTime.getDateTime(l[1], true, false));
+          setValue("key_created_2", EnigmailTime.getDateTime(l[2], true, false));
+          setValue("key_created_3", EnigmailTime.getDateTime(l[3], true, false));
+          break;
+        default:
+          if (l[0]) {
+            setValue(l[0], EnigmailData.convertGpgToUnicode(l[1].replace(/\\x3a/ig, ":")));
+          }
       }
     }
   }
   else {
-    if (! dryRun) {
+    if (!dryRun) {
       EnigmailEvents.dispatchEvent(failWithError, 0, errorMsgObj.value);
     }
   }
@@ -118,7 +118,7 @@ function failWithError(errorMsg) {
 
 
 function setValue(attrib, value) {
-  var elem = document.getElementById("card_"+attrib);
+  var elem = document.getElementById("card_" + attrib);
   if (elem) {
     elem.value = value;
   }
@@ -126,7 +126,7 @@ function setValue(attrib, value) {
 }
 
 function getValue(attrib) {
-  var elem = document.getElementById("card_"+attrib);
+  var elem = document.getElementById("card_" + attrib);
   if (elem) {
     return elem.value;
   }
@@ -136,7 +136,7 @@ function getValue(attrib) {
 }
 
 function getSelection(attrib) {
-  var elem = document.getElementById("card_"+attrib);
+  var elem = document.getElementById("card_" + attrib);
   if (elem) {
     return elem.selectedItem.value;
   }
@@ -177,26 +177,26 @@ function doSaveChanges() {
   }
   else {
     EnigmailKeyEditor.cardAdminData(window,
-                                  EnigmailData.convertFromUnicode(dialogname),
-                                  EnigmailData.convertFromUnicode(dialogfirstname),
-                                  getValue("lang"),
-                                  getSelection("sex"),
-                                  EnigmailData.convertFromUnicode(getValue("url")),
-                                  getValue("login"),
-                                  forcepin,
-    function _cardAdminCb(exitCode, errorMsg) {
-      if (exitCode !== 0) {
-        EnigmailDialog.alert(window, errorMsg);
-      }
+      EnigmailData.convertFromUnicode(dialogname),
+      EnigmailData.convertFromUnicode(dialogfirstname),
+      getValue("lang"),
+      getSelection("sex"),
+      EnigmailData.convertFromUnicode(getValue("url")),
+      getValue("login"),
+      forcepin,
+      function _cardAdminCb(exitCode, errorMsg) {
+        if (exitCode !== 0) {
+          EnigmailDialog.alert(window, errorMsg);
+        }
 
-      onLoad();
-    });
+        onLoad();
+      });
   }
 }
 
 function engmailGenerateCardKey() {
   window.openDialog("chrome://enigmail/content/enigmailGenCardKey.xul",
-        "", "dialog,modal,centerscreen");
+    "", "dialog,modal,centerscreen");
 
   EnigmailKeyRing.invalidateUserIdList();
   onLoad();
@@ -204,6 +204,6 @@ function engmailGenerateCardKey() {
 
 function enigmailAdminPin() {
   window.openDialog("chrome://enigmail/content/enigmailSetCardPin.xul",
-        "", "dialog,modal,centerscreen");
+    "", "dialog,modal,centerscreen");
   onLoad();
 }

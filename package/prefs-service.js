@@ -39,7 +39,7 @@ function EnigmailPrefService() {}
 EnigmailPrefService.prototype = {
   name: "enigprefs",
   chromePackageName: "enigmail",
-  classID:  Components.ID("{847b3ab0-7ab1-11d4-8f02-006008948af5}"),
+  classID: Components.ID("{847b3ab0-7ab1-11d4-8f02-006008948af5}"),
   classDescription: "Enigmail Account Manager Extension Service",
   contractID: "@mozilla.org/accountmanager/extension;1?name=enigprefs",
   _xpcom_categories: [{
@@ -48,15 +48,14 @@ EnigmailPrefService.prototype = {
     service: false
   }],
   QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIMsgAccountManagerExtension]),
-  showPanel: function (server)
-  {
+  showPanel: function(server) {
     // show Enigmail panel for POP3, IMAP, NNTP and "movemail" (unix) account types
     switch (server.type) {
-    case "nntp":
-    case "imap":
-    case "pop3":
-    case "movemail":
-      return true;
+      case "nntp":
+      case "imap":
+      case "pop3":
+      case "movemail":
+        return true;
     }
     return false;
   }

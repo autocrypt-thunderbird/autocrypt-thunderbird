@@ -51,7 +51,7 @@ Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
-const EXPORTED_SYMBOLS = [ "EnigmailFuncs" ];
+const EXPORTED_SYMBOLS = ["EnigmailFuncs"];
 
 var gTxtConverter = null;
 
@@ -63,25 +63,24 @@ const EnigmailFuncs = {
    *
    * @return |string|    - list of pure email addresses separated by ","
    */
-  stripEmail: function (mailAddrs)
-  {
+  stripEmail: function(mailAddrs) {
 
     var qStart, qEnd;
     while ((qStart = mailAddrs.indexOf('"')) != -1) {
-       qEnd = mailAddrs.indexOf('"', qStart+1);
-       if (qEnd == -1) {
-         EnigmailLog.ERROR("funcs.jsm: stripEmail: Unmatched quote in mail address: "+mailAddrs+"\n");
-         throw Components.results.NS_ERROR_FAILURE;
-       }
+      qEnd = mailAddrs.indexOf('"', qStart + 1);
+      if (qEnd == -1) {
+        EnigmailLog.ERROR("funcs.jsm: stripEmail: Unmatched quote in mail address: " + mailAddrs + "\n");
+        throw Components.results.NS_ERROR_FAILURE;
+      }
 
-       mailAddrs = mailAddrs.substring(0,qStart) + mailAddrs.substring(qEnd+1);
+      mailAddrs = mailAddrs.substring(0, qStart) + mailAddrs.substring(qEnd + 1);
     }
 
     // Eliminate all whitespace, just to be safe
-    mailAddrs = mailAddrs.replace(/\s+/g,"");
+    mailAddrs = mailAddrs.replace(/\s+/g, "");
 
     // Extract pure e-mail address list (stripping out angle brackets)
-    mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*/g,"$1$2");
+    mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*/g, "$1$2");
 
     return mailAddrs;
   },
@@ -99,8 +98,7 @@ const EnigmailFuncs = {
    */
 
 
-  collapseAdvanced: function (obj, attribute, dummy)
-  {
+  collapseAdvanced: function(obj, attribute, dummy) {
     EnigmailLog.DEBUG("funcs.jsm: collapseAdvanced:\n");
 
     var advancedUser = EnigmailPrefs.getPref("advancedUser");
@@ -136,28 +134,27 @@ const EnigmailFuncs = {
    *
    * no return values
    */
-  getSignMsg: function (identity)
-  {
-    EnigmailLog.DEBUG("funcs.jsm: getSignMsg: identity.key="+identity.key+"\n");
+  getSignMsg: function(identity) {
+    EnigmailLog.DEBUG("funcs.jsm: getSignMsg: identity.key=" + identity.key + "\n");
     var sign = null;
 
     EnigmailPrefs.getPref("configuredVersion"); // dummy call to getPref to ensure initialization
 
     var prefRoot = EnigmailPrefs.getPrefRoot();
 
-    if (prefRoot.getPrefType("mail.identity."+identity.key+".pgpSignPlain")===0) {
-      if (prefRoot.getPrefType("mail.identity."+identity.key+".pgpSignMsg")===0) {
-        sign=identity.getBoolAttribute("pgpAlwaysSign");
+    if (prefRoot.getPrefType("mail.identity." + identity.key + ".pgpSignPlain") === 0) {
+      if (prefRoot.getPrefType("mail.identity." + identity.key + ".pgpSignMsg") === 0) {
+        sign = identity.getBoolAttribute("pgpAlwaysSign");
         identity.setBoolAttribute("pgpSignEncrypted", sign);
         identity.setBoolAttribute("pgpSignPlain", sign);
       }
       else {
         sign = identity.getIntAttribute("pgpSignMsg");
-        identity.setBoolAttribute("pgpSignEncrypted", sign==1);
-        identity.setBoolAttribute("pgpSignPlain", sign>0);
+        identity.setBoolAttribute("pgpSignEncrypted", sign == 1);
+        identity.setBoolAttribute("pgpSignPlain", sign > 0);
       }
-      prefRoot.deleteBranch("mail.identity."+identity.key+".pgpSignMsg");
-      prefRoot.deleteBranch("mail.identity."+identity.key+".pgpAlwaysSign");
+      prefRoot.deleteBranch("mail.identity." + identity.key + ".pgpSignMsg");
+      prefRoot.deleteBranch("mail.identity." + identity.key + ".pgpAlwaysSign");
     }
   },
 
@@ -170,9 +167,8 @@ const EnigmailFuncs = {
    * @ return HTML markup to display mssage
    */
 
-  formatPlaintextMsg: function (plainTxt)
-  {
-    if (! gTxtConverter)
+  formatPlaintextMsg: function(plainTxt) {
+    if (!gTxtConverter)
       gTxtConverter = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
 
     var prefRoot = EnigmailPrefs.getPrefRoot();
@@ -182,27 +178,32 @@ const EnigmailFuncs = {
 
     switch (prefRoot.getIntPref("mail.quoted_style")) {
       case 1:
-        fontStyle="font-weight: bold; "; break;
+        fontStyle = "font-weight: bold; ";
+        break;
       case 2:
-        fontStyle="font-style: italic; "; break;
+        fontStyle = "font-style: italic; ";
+        break;
       case 3:
-        fontStyle="font-weight: bold; font-style: italic; "; break;
+        fontStyle = "font-weight: bold; font-style: italic; ";
+        break;
     }
 
     switch (prefRoot.getIntPref("mail.quoted_size")) {
-    case 1:
-      fontStyle += "font-size: large; "; break;
-    case 2:
-      fontStyle += "font-size: small; "; break;
+      case 1:
+        fontStyle += "font-size: large; ";
+        break;
+      case 2:
+        fontStyle += "font-size: small; ";
+        break;
     }
 
-    fontStyle += "color: "+prefRoot.getCharPref("mail.citation_color")+";";
+    fontStyle += "color: " + prefRoot.getCharPref("mail.citation_color") + ";";
 
     var convFlags = Ci.mozITXTToHTMLConv.kURLs;
     if (prefRoot.getBoolPref("mail.display_glyph"))
-        convFlags |= Ci.mozITXTToHTMLConv.kGlyphSubstitution;
+      convFlags |= Ci.mozITXTToHTMLConv.kGlyphSubstitution;
     if (prefRoot.getBoolPref("mail.display_struct"))
-        convFlags |= Ci.mozITXTToHTMLConv.kStructPhrase;
+      convFlags |= Ci.mozITXTToHTMLConv.kStructPhrase;
 
     // start processing the message
 
@@ -211,27 +212,29 @@ const EnigmailFuncs = {
     var oldCiteLevel = 0;
     var citeLevel = 0;
     var preface = "";
-    var logLineStart = { value: 0 };
+    var logLineStart = {
+      value: 0
+    };
     var isSignature = false;
 
-    for (var i=0; i < lines.length; i++) {
+    for (var i = 0; i < lines.length; i++) {
       preface = "";
       oldCiteLevel = citeLevel;
       if (lines[i].search(/^[\> \t]*\>$/) === 0)
-        lines[i]+=" ";
+        lines[i] += " ";
 
       citeLevel = gTxtConverter.citeLevelTXT(lines[i], logLineStart);
 
       if (citeLevel > oldCiteLevel) {
 
-        preface='</pre>';
-        for (let j=0; j < citeLevel - oldCiteLevel; j++) {
-          preface += '<blockquote type="cite" style="'+fontStyle+'">';
+        preface = '</pre>';
+        for (let j = 0; j < citeLevel - oldCiteLevel; j++) {
+          preface += '<blockquote type="cite" style="' + fontStyle + '">';
         }
         preface += '<pre wrap="">\n';
       }
       else if (citeLevel < oldCiteLevel) {
-        preface='</pre>';
+        preface = '</pre>';
         for (let j = 0; j < oldCiteLevel - citeLevel; j++)
           preface += "</blockquote>";
 
@@ -240,18 +243,18 @@ const EnigmailFuncs = {
 
       if (logLineStart.value > 0) {
         preface += '<span class="moz-txt-citetags">' +
-            gTxtConverter.scanTXT(lines[i].substr(0, logLineStart.value), convFlags) +
-            '</span>';
+          gTxtConverter.scanTXT(lines[i].substr(0, logLineStart.value), convFlags) +
+          '</span>';
       }
       else if (lines[i] == "-- ") {
-        preface+='<div class=\"moz-txt-sig\">';
+        preface += '<div class=\"moz-txt-sig\">';
         isSignature = true;
       }
       lines[i] = preface + gTxtConverter.scanTXT(lines[i].substr(logLineStart.value), convFlags);
 
     }
 
-    var r='<pre wrap="">' + lines.join("\n") + (isSignature ? '</div>': '') + '</pre>';
+    var r = '<pre wrap="">' + lines.join("\n") + (isSignature ? '</div>' : '') + '</pre>';
     //EnigmailLog.DEBUG("funcs.jsm: r='"+r+"'\n");
     return r;
   },
@@ -264,8 +267,8 @@ const EnigmailFuncs = {
    *
    * @return |array| of |arrays| containing pairs of aa/b and cc/d
    */
-  getHeaderData: function (data) {
-    EnigmailLog.DEBUG("funcs.jsm: getHeaderData: "+data.substr(0, 100)+"\n");
+  getHeaderData: function(data) {
+    EnigmailLog.DEBUG("funcs.jsm: getHeaderData: " + data.substr(0, 100) + "\n");
     var a = data.split(/\n/);
     var res = [];
     for (let i = 0; i < a.length; i++) {
@@ -273,12 +276,12 @@ const EnigmailFuncs = {
       let b = a[i].split(/;/);
 
       // extract "abc = xyz" tuples
-      for (let j=0; j < b.length; j++) {
+      for (let j = 0; j < b.length; j++) {
         let m = b[j].match(/^(\s*)([^=\s;]+)(\s*)(=)(\s*)(.*)(\s*)$/);
         if (m) {
           // m[2]: identifier / m[6]: data
           res[m[2].toLowerCase()] = m[6].replace(/\s*$/, "");
-          EnigmailLog.DEBUG("funcs.jsm: getHeaderData: "+m[2].toLowerCase()+" = "+res[m[2].toLowerCase()] +"\n");
+          EnigmailLog.DEBUG("funcs.jsm: getHeaderData: " + m[2].toLowerCase() + " = " + res[m[2].toLowerCase()] + "\n");
         }
       }
       if (i === 0 && a[i].indexOf(";") < 0) break;
@@ -298,5 +301,5 @@ const EnigmailFuncs = {
       return EnigmailLocale.getString("msgCompose.encryptedSubjectStub");
     }
   }
-  
+
 };

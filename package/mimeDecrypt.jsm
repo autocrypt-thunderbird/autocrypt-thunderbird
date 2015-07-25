@@ -21,7 +21,7 @@ Components.utils.import("resource://enigmail/decryption.jsm"); /*global Enigmail
 Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
-const EXPORTED_SYMBOLS = [ "EnigmailMimeDecrypt" ];
+const EXPORTED_SYMBOLS = ["EnigmailMimeDecrypt"];
 
 
 const Cc = Components.classes;
@@ -48,7 +48,7 @@ var gNumProc = 0;
 
 function EnigmailMimeDecrypt() {
 
-  EnigmailLog.DEBUG("mimeDecrypt.js: EnigmailMimeDecrypt()\n");   // always log this one
+  EnigmailLog.DEBUG("mimeDecrypt.js: EnigmailMimeDecrypt()\n"); // always log this one
   this.mimeSvc = null;
   this.initOk = false;
   this.boundary = "";
@@ -78,7 +78,7 @@ EnigmailMimeDecrypt.prototype = {
   onStartRequest: function(request, uri) {
     if (!EnigmailCore.getService()) // Ensure Enigmail is initialized
       return;
-    EnigmailLog.DEBUG("mimeDecrypt.js: onStartRequest\n");   // always log this one
+    EnigmailLog.DEBUG("mimeDecrypt.js: onStartRequest\n"); // always log this one
 
     ++gNumProc;
     if (gNumProc > 2) {
@@ -108,13 +108,13 @@ EnigmailMimeDecrypt.prototype = {
     this.boundary = EnigmailMime.getBoundary(this.mimeSvc.contentType);
     if (uri) {
       this.uri = uri.QueryInterface(Ci.nsIURI).clone();
-      EnigmailLog.DEBUG("mimeDecrypt.js: onStartRequest: uri='"+ this.uri.spec+"'\n");
+      EnigmailLog.DEBUG("mimeDecrypt.js: onStartRequest: uri='" + this.uri.spec + "'\n");
     }
   },
 
   onDataAvailable: function(req, sup, stream, offset, count) {
     // get data from libmime
-    if (! this.initOk) return;
+    if (!this.initOk) return;
     this.inStream.init(stream);
 
     if (count > 0) {
@@ -169,14 +169,14 @@ EnigmailMimeDecrypt.prototype = {
   // cache encrypted data for writing to subprocess
   cacheData: function(str) {
     if (gDebugLogLevel > 4)
-      LOCAL_DEBUG("mimeDecrypt.js: cacheData: "+str.length+"\n");
+      LOCAL_DEBUG("mimeDecrypt.js: cacheData: " + str.length + "\n");
 
     this.outQueue += str;
   },
 
   flushInput: function() {
-    LOCAL_DEBUG("mimeDecrypt.js: flushInput: "+this.outQueue.length+" bytes\n");
-    if (! this.pipe) {
+    LOCAL_DEBUG("mimeDecrypt.js: flushInput: " + this.outQueue.length + " bytes\n");
+    if (!this.pipe) {
       LOCAL_DEBUG("mimeDecrypt.js: flushInput: no pipe\n");
       return;
     }
@@ -188,7 +188,7 @@ EnigmailMimeDecrypt.prototype = {
   onStopRequest: function(request, win, status) {
     LOCAL_DEBUG("mimeDecrypt.js: onStopRequest\n");
     --gNumProc;
-    if (! this.initOk) return;
+    if (!this.initOk) return;
 
     this.msgWindow = EnigmailVerify.lastMsgWindow;
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
@@ -206,17 +206,19 @@ EnigmailMimeDecrypt.prototype = {
       try {
         var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
 
-        if (! EnigmailPrefs.getPref("autoDecrypt")) {
+        if (!EnigmailPrefs.getPref("autoDecrypt")) {
           // "decrypt manually" mode
-          let manUrl= {};
+          let manUrl = {};
 
           if (EnigmailVerify.getManualUri()) {
             let msgSvc = messenger.messageServiceFromURI(EnigmailVerify.getManualUri());
 
-              msgSvc.GetUrlForUri(EnigmailVerify.getManualUri(), manUrl, null);
+            msgSvc.GetUrlForUri(EnigmailVerify.getManualUri(), manUrl, null);
           }
           else {
-            manUrl.value = { spec: "enigmail://invalid/message" };
+            manUrl.value = {
+              spec: "enigmail://invalid/message"
+            };
           }
 
           // print a message if not message explicitly decrypted
@@ -224,7 +226,7 @@ EnigmailMimeDecrypt.prototype = {
           let manUrlSpec = manUrl.value.spec.replace(/(\?.*)(number=[0-9]*)(&.*)?$/, "?$2");
 
 
-          if ((! this.backgroundJob) && currUrlSpec != manUrlSpec) {
+          if ((!this.backgroundJob) && currUrlSpec != manUrlSpec) {
             return this.handleManualDecrypt();
           }
         }
@@ -236,8 +238,8 @@ EnigmailMimeDecrypt.prototype = {
         }
 
         if (this.uri.spec.search(/[\&\?]header=[a-zA-Z0-9]*$/) < 0 &&
-            this.uri.spec.search(/[\&\?]part=[\.0-9]+/) < 0 &&
-            this.uri.spec.search(/[\&\?]examineEncryptedParts=true/) < 0) {
+          this.uri.spec.search(/[\&\?]part=[\.0-9]+/) < 0 &&
+          this.uri.spec.search(/[\&\?]examineEncryptedParts=true/) < 0) {
 
           if (this.uri.spec.search(/[\&\?]header=filter\&.*$/) > 0)
             return;
@@ -249,9 +251,9 @@ EnigmailMimeDecrypt.prototype = {
           }
         }
       }
-      catch(ex) {
+      catch (ex) {
         EnigmailLog.writeException("mimeDecrypt.js", ex);
-        EnigmailLog.DEBUG("mimeDecrypt.js: error while processing "+this.msgUriSpec+"\n");
+        EnigmailLog.DEBUG("mimeDecrypt.js: error while processing " + this.msgUriSpec + "\n");
       }
     }
 
@@ -266,14 +268,14 @@ EnigmailMimeDecrypt.prototype = {
     win = windowManager.getMostRecentWindow(null);
 
     var maxOutput = this.outQueue.length * 100; // limit output to 100 times message size
-                                                // to avoid DoS attack
+    // to avoid DoS attack
     this.proc = EnigmailDecryption.decryptMessageStart(win, false, false, this,
-                                               statusFlagsObj, errorMsgObj, null, maxOutput);
+      statusFlagsObj, errorMsgObj, null, maxOutput);
 
-    if (! this.proc) return;
+    if (!this.proc) return;
     this.flushInput();
 
-    if (! this.pipe) {
+    if (!this.pipe) {
       this.closePipe = true;
     }
     else
@@ -283,16 +285,16 @@ EnigmailMimeDecrypt.prototype = {
 
     this.returnStatus = {};
     EnigmailDecryption.decryptMessageEnd(this.statusStr,
-                                 this.exitCode,
-                                 this.dataLength,
-                                 false,
-                                 false,
-                                 Ci.nsIEnigmail.UI_PGP_MIME,
-                                 this.returnStatus);
+      this.exitCode,
+      this.dataLength,
+      false,
+      false,
+      Ci.nsIEnigmail.UI_PGP_MIME,
+      this.returnStatus);
 
     this.displayStatus();
 
-    EnigmailLog.DEBUG("mimeDecrypt.js: onStopRequest: process terminated\n");  // always log this one
+    EnigmailLog.DEBUG("mimeDecrypt.js: onStopRequest: process terminated\n"); // always log this one
     this.proc = null;
   },
 
@@ -313,20 +315,20 @@ EnigmailMimeDecrypt.prototype = {
         headerSink.modifyMessageHeaders(this.uri, JSON.stringify(this.decryptedHeaders));
 
         headerSink.updateSecurityStatus(
-            this.msgUriSpec,
-            this.exitCode,
-            this.returnStatus.statusFlags,
-            this.returnStatus.keyId,
-            this.returnStatus.userId,
-            this.returnStatus.sigDetails,
-            this.returnStatus.errorMsg,
-            this.returnStatus.blockSeparation,
-            this.uri,
-            this.returnStatus.encToDetails);
+          this.msgUriSpec,
+          this.exitCode,
+          this.returnStatus.statusFlags,
+          this.returnStatus.keyId,
+          this.returnStatus.userId,
+          this.returnStatus.sigDetails,
+          this.returnStatus.errorMsg,
+          this.returnStatus.blockSeparation,
+          this.uri,
+          this.returnStatus.encToDetails);
       }
       this.statusDisplayed = true;
     }
-    catch(ex) {
+    catch (ex) {
       EnigmailLog.writeException("mimeDecrypt.js", ex);
     }
     LOCAL_DEBUG("mimeDecrypt.js: displayStatus done\n");
@@ -356,14 +358,14 @@ EnigmailMimeDecrypt.prototype = {
   },
 
   done: function(exitCode) {
-    LOCAL_DEBUG("mimeDecrypt.js: done: "+exitCode+"\n");
+    LOCAL_DEBUG("mimeDecrypt.js: done: " + exitCode + "\n");
 
     if (gDebugLogLevel > 4)
-      LOCAL_DEBUG("mimeDecrypt.js: done: decrypted data='"+this.decryptedData+"'\n");
+      LOCAL_DEBUG("mimeDecrypt.js: done: decrypted data='" + this.decryptedData + "'\n");
 
     // ensure newline at the end of the stream
-    if (! this.decryptedData.endsWith("\n")) {
-      this.decryptedData +="\r\n";
+    if (!this.decryptedData.endsWith("\n")) {
+      this.decryptedData += "\r\n";
     }
 
     var verifyData = this.decryptedData;
@@ -371,7 +373,7 @@ EnigmailMimeDecrypt.prototype = {
     try {
       this.extractEncryptedHeaders();
     }
-    catch(ex) {}
+    catch (ex) {}
 
     var i = this.decryptedData.search(/\n\r?\n/);
     if (i > 0) {
@@ -379,11 +381,11 @@ EnigmailMimeDecrypt.prototype = {
       var j;
       for (j in hdr) {
         if (hdr[j].search(/^\s*content-type:\s+text\/(plain|html)/i) >= 0) {
-          LOCAL_DEBUG("mimeDecrypt.js: done: adding multipart/mixed around "+ hdr[j]+"\n");
+          LOCAL_DEBUG("mimeDecrypt.js: done: adding multipart/mixed around " + hdr[j] + "\n");
 
           let wrapper = EnigmailMime.createBoundary();
-          this.decryptedData = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n\r\n'+
-            '--'+ wrapper + '\r\n' +
+          this.decryptedData = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n\r\n' +
+            '--' + wrapper + '\r\n' +
             this.decryptedData +
             '--' + wrapper + '--\r\n';
           break;
@@ -404,8 +406,8 @@ EnigmailMimeDecrypt.prototype = {
     try {
       this.mimeSvc.onDataAvailable(null, null, gConv, 0, data.length);
     }
-    catch(ex) {
-      EnigmailLog.ERROR("mimeDecrypt.js: returnData(): mimeSvc.onDataAvailable failed:\n"+ex.toString());
+    catch (ex) {
+      EnigmailLog.ERROR("mimeDecrypt.js: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
     }
   },
 
@@ -416,16 +418,16 @@ EnigmailMimeDecrypt.prototype = {
 
       if (headerSink && this.uri && !this.backgroundJob) {
         headerSink.updateSecurityStatus(
-            this.msgUriSpec,
-            EnigmailConstants.POSSIBLE_PGPMIME,
-            0,
-            "",
-            "",
-            "",
-            EnigmailLocale.getString("possiblyPgpMime"),
-            "",
-            this.uri,
-            null);
+          this.msgUriSpec,
+          EnigmailConstants.POSSIBLE_PGPMIME,
+          0,
+          "",
+          "",
+          "",
+          EnigmailLocale.getString("possiblyPgpMime"),
+          "",
+          this.uri,
+          null);
       }
     }
     catch (ex) {}
@@ -435,10 +437,10 @@ EnigmailMimeDecrypt.prototype = {
 
 
   extractEncryptedHeaders: function() {
-    
+
     let r = EnigmailMime.extractProtectedHeaders(this.decryptedData);
-    if (! r) return;
-    
+    if (!r) return;
+
     this.decryptedHeaders = r.newHeaders;
     this.decryptedData = this.decryptedData.substr(0, r.startPos) + this.decryptedData.substr(r.endPos);
 
@@ -465,7 +467,6 @@ function initModule() {
     }
   }
   catch (ex) {
-    dump("caught error "+ex);
+    dump("caught error " + ex);
   }
 }
-

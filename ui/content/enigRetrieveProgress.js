@@ -52,23 +52,20 @@ var gErrorData = '';
 
 // all progress notifications are done through the nsIWebProgressListener implementation...
 var progressListener = {
-  onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus)
-  {
-    if (aStateFlags & Components.interfaces.nsIWebProgressListener.STATE_START)
-    {
+  onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus) {
+    if (aStateFlags & Components.interfaces.nsIWebProgressListener.STATE_START) {
       // dialog.progress.setAttribute( "value", 0 );
       // Put progress meter in undetermined mode.
-      dialog.progress.setAttribute( "mode", "undetermined" );
+      dialog.progress.setAttribute("mode", "undetermined");
     }
 
-    if (aStateFlags & Components.interfaces.nsIWebProgressListener.STATE_STOP)
-    {
+    if (aStateFlags & Components.interfaces.nsIWebProgressListener.STATE_STOP) {
       // we are done transmitting
       // Indicate completion in status area.
 
       // Put progress meter at 100%.
-      dialog.progress.setAttribute( "value", 100 );
-      dialog.progress.setAttribute( "mode", "normal" );
+      dialog.progress.setAttribute("value", 100);
+      dialog.progress.setAttribute("mode", "normal");
 
       if (msgProgress.processCanceledByUser)
         enigSendKeyCancel();
@@ -77,30 +74,24 @@ var progressListener = {
     }
   },
 
-  onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress)
-  {
-  },
+  onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress) {},
 
-  onLocationChange: function(aWebProgress, aRequest, aLocation)
-  {
+  onLocationChange: function(aWebProgress, aRequest, aLocation) {
     // we can ignore this notification
   },
 
-  onStatusChange: function(aWebProgress, aRequest, aStatus, aMessage)
-  {
+  onStatusChange: function(aWebProgress, aRequest, aStatus, aMessage) {
     // we can ignore this notification
   },
 
-  onSecurityChange: function(aWebProgress, aRequest, state)
-  {
+  onSecurityChange: function(aWebProgress, aRequest, state) {
     // we can ignore this notification
   },
 
-  QueryInterface : function(iid)
-  {
+  QueryInterface: function(iid) {
     if (iid.equals(Components.interfaces.nsIWebProgressListener) ||
-        iid.equals(Components.interfaces.nsISupportsWeakReference) ||
-        iid.equals(Components.interfaces.nsISupports))
+      iid.equals(Components.interfaces.nsISupportsWeakReference) ||
+      iid.equals(Components.interfaces.nsISupports))
       return this;
 
     throw Components.results.NS_NOINTERFACE;
@@ -113,11 +104,11 @@ function onLoad() {
   EnigmailLog.DEBUG("enigRetrieveProgress: onLoad\n");
   var inArg = window.arguments[0];
   var subject;
-  window.arguments[1].result=false;
+  window.arguments[1].result = false;
 
   dialog = {};
   dialog.strings = [];
-  dialog.progress    = document.getElementById("dialog.progress");
+  dialog.progress = document.getElementById("dialog.progress");
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
@@ -125,31 +116,33 @@ function onLoad() {
 
   // Set up dialog button callbacks.
   var object = this;
-  doSetOKCancel("", function () { return object.onCancel();});
+  doSetOKCancel("", function() {
+    return object.onCancel();
+  });
 
 
-  var statTxt=document.getElementById("dialog.status2");
+  var statTxt = document.getElementById("dialog.status2");
   if (inArg.accessType == nsIEnigmail.UPLOAD_KEY) {
-    statTxt.value=EnigmailLocale.getString("keyserverProgress.uploading");
+    statTxt.value = EnigmailLocale.getString("keyserverProgress.uploading");
     subject = EnigmailLocale.getString("keyserverTitle.uploading");
   }
   else {
-    statTxt.value=EnigmailLocale.getString("keyserverProgress.refreshing");
+    statTxt.value = EnigmailLocale.getString("keyserverProgress.refreshing");
     subject = EnigmailLocale.getString("keyserverTitle.refreshing");
   }
 
   msgProgress = Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
 
   var procListener = {
-    done: function (exitCode) {
-      EnigmailLog.DEBUG("enigRetrieveProgress: subprocess terminated with "+exitCode+"\n");
+    done: function(exitCode) {
+      EnigmailLog.DEBUG("enigRetrieveProgress: subprocess terminated with " + exitCode + "\n");
       processEnd(msgProgress, exitCode);
     },
     stdout: function(data) {
-      EnigmailLog.DEBUG("enigRetrieveProgress: got data on stdout: '"+data+"'\n");
+      EnigmailLog.DEBUG("enigRetrieveProgress: got data on stdout: '" + data + "'\n");
     },
     stderr: function(data) {
-      EnigmailLog.DEBUG("enigRetrieveProgress: got data on stderr: '"+data+"'\n");
+      EnigmailLog.DEBUG("enigRetrieveProgress: got data on stderr: '" + data + "'\n");
       gErrorData += data;
     }
   };
@@ -158,69 +151,67 @@ function onLoad() {
   msgProgress.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_START, 0);
   gEnigCallbackFunc = inArg.cbFunc;
 
-  var errorMsgObj={};
+  var errorMsgObj = {};
   gProcess = EnigmailKeyServer.access(inArg.accessType, inArg.keyServer, inArg.keyList, procListener, errorMsgObj);
   if (!gProcess) {
-    EnigAlert(EnigmailLocale.getString("sendKeysFailed")+"\n"+EnigConvertGpgToUnicode(errorMsgObj.value));
+    EnigAlert(EnigmailLocale.getString("sendKeysFailed") + "\n" + EnigConvertGpgToUnicode(errorMsgObj.value));
   }
 
   window.title = subject;
 }
 
-function onUnload()
-{
-  if (msgProgress)
-  {
-   try
-   {
-     msgProgress.unregisterListener(progressListener);
-     msgProgress = null;
-   }
+function onUnload() {
+  if (msgProgress) {
+    try {
+      msgProgress.unregisterListener(progressListener);
+      msgProgress = null;
+    }
 
-   catch( exception ) {}
+    catch (exception) {}
   }
 }
 
 // If the user presses cancel, tell the app launcher and close the dialog...
-function onCancel ()
-{
+function onCancel() {
 
-  try
-  {
+  try {
     msgProgress.processCanceledByUser = true;
   }
-  catch( ex ) {return true;}
+  catch (ex) {
+    return true;
+  }
 
   // don't Close up dialog by returning false, the backend will close the dialog when everything will be aborted.
   return false;
 }
 
-function processEnd (progressBar, exitCode) {
+function processEnd(progressBar, exitCode) {
   EnigmailLog.DEBUG("enigmailRetrieveProgress.js: processEnd\n");
   var errorMsg;
   if (gProcess) {
     gProcess = null;
-    EnigmailLog.DEBUG("enigmailRetrieveProgress.js: processEnd: exitCode = "+exitCode+"\n");
+    EnigmailLog.DEBUG("enigmailRetrieveProgress.js: processEnd: exitCode = " + exitCode + "\n");
 
-    var statusText=gEnigCallbackFunc(exitCode, "", false);
+    var statusText = gEnigCallbackFunc(exitCode, "", false);
 
-    errorMsg="";
+    errorMsg = "";
     try {
       if (gErrorData.length > 0) {
-        var statusFlagsObj={};
-        var statusMsgObj={};
-        errorMsg=EnigmailErrorHandling.parseErrorOutput(gErrorData, statusFlagsObj, statusMsgObj);
+        var statusFlagsObj = {};
+        var statusMsgObj = {};
+        errorMsg = EnigmailErrorHandling.parseErrorOutput(gErrorData, statusFlagsObj, statusMsgObj);
       }
-    } catch (ex) {}
+    }
+    catch (ex) {}
 
-    EnigmailLog.DEBUG("enigmailRetrieveProgress.js: processEnd: errorMsg="+errorMsg);
-    if (errorMsg.search(/ec=\d+/i)>=0) {
-      exitCode=-1;
+    EnigmailLog.DEBUG("enigmailRetrieveProgress.js: processEnd: errorMsg=" + errorMsg);
+    if (errorMsg.search(/ec=\d+/i) >= 0) {
+      exitCode = -1;
     }
 
     let j = errorMsg.search(/^\[GNUPG:\] IMPORT_RES/m);
 
-    if (j>=0) {
+    if (j >= 0) {
       let m = errorMsg.substr(j, 35).match(/^(\[GNUPG:\] IMPORT_RES +)([0-9]+)/);
       if (m && m.length > 2) {
         if (m[2] == "0") {
@@ -233,10 +224,10 @@ function processEnd (progressBar, exitCode) {
       }
     }
 
-    statusText=gEnigCallbackFunc(exitCode, "", false);
+    statusText = gEnigCallbackFunc(exitCode, "", false);
 
     if (exitCode === 0) {
-      window.arguments[1].result=true;
+      window.arguments[1].result = true;
     }
   }
 
@@ -252,8 +243,8 @@ function processEnd (progressBar, exitCode) {
 function enigSendKeyCancel() {
   if (gProcess) {
     var p = gProcess;
-    gEnigCallbackFunc=null;
-    gProcess=null;
+    gEnigCallbackFunc = null;
+    gProcess = null;
     p.kill(false);
   }
 }

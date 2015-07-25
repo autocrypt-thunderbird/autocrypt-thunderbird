@@ -13,25 +13,27 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "msgHdrToMimeMessage",
-                           "MimeMessage", "MimeContainer",
-                           "MimeBody", "MimeUnknown",
-                           "MimeMessageAttachment" ];
+const EXPORTED_SYMBOLS = ["msgHdrToMimeMessage",
+  "MimeMessage", "MimeContainer",
+  "MimeBody", "MimeUnknown",
+  "MimeMessageAttachment"
+];
 
 const Cu = Components.utils;
 
 /*global MsgHdrToMimeMessage: false */
 try {
-    // TB with omnijar
-    Cu.import("resource:///modules/gloda/mimemsg.js");
-} catch (ex) {
-    // "old style" TB
-    Cu.import("resource://app/modules/gloda/mimemsg.js");
+  // TB with omnijar
+  Cu.import("resource:///modules/gloda/mimemsg.js");
+}
+catch (ex) {
+  // "old style" TB
+  Cu.import("resource://app/modules/gloda/mimemsg.js");
 }
 
 // The original naming is inconsistent with JS standards for classes vs functions
 // Thus we rename it here.
-const msgHdrToMimeMessage   = MsgHdrToMimeMessage;
+const msgHdrToMimeMessage = MsgHdrToMimeMessage;
 
 // We don't need to explicitly create the other variables, since they will be
 // imported into the current namespace anyway

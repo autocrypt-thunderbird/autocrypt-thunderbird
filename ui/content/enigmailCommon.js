@@ -78,7 +78,7 @@ var gEnigPromptSvc;
 
 // Maximum size of message directly processed by Enigmail
 const ENIG_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
-const ENIG_ENIGMAIL_CONTRACTID    = "@mozdev.org/enigmail/enigmail;1";
+const ENIG_ENIGMAIL_CONTRACTID = "@mozdev.org/enigmail/enigmail;1";
 const ENIG_STRINGBUNDLE_CONTRACTID = "@mozilla.org/intl/stringbundle;1";
 const ENIG_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const ENIG_DIRSERVICE_CONTRACTID = "@mozilla.org/file/directory_service;1";
@@ -92,7 +92,7 @@ const ENIG_LOCALE_SVC_CONTRACTID = "@mozilla.org/intl/nslocaleservice;1";
 const ENIG_DATE_FORMAT_CONTRACTID = "@mozilla.org/intl/scriptabledateformat;1";
 const ENIG_ACCOUNT_MANAGER_CONTRACTID = "@mozilla.org/messenger/account-manager;1";
 const ENIG_THREAD_MANAGER_CID = "@mozilla.org/thread-manager;1";
-const ENIG_SIMPLEURI_CONTRACTID   = "@mozilla.org/network/simple-uri;1";
+const ENIG_SIMPLEURI_CONTRACTID = "@mozilla.org/network/simple-uri;1";
 const ENIG_SEAMONKEY_ID = "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}";
 
 
@@ -102,7 +102,7 @@ const ENIG_BINARYINPUTSTREAM_CONTRACTID = "@mozilla.org/binaryinputstream;1";
 const ENIG_SAVEASCHARSET_CONTRACTID = "@mozilla.org/intl/saveascharset;1";
 
 const ENIG_STREAMCONVERTERSERVICE_CID_STR =
-      "{892FFEB0-3F80-11d3-A16C-0050041CAF44}";
+  "{892FFEB0-3F80-11d3-A16C-0050041CAF44}";
 
 
 const ENIG_ISCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
@@ -118,7 +118,7 @@ const ENIG_KEYTYPE_RSA = 2;
 
 
 // field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
-const ENIG_KEY_TRUST=1;
+const ENIG_KEY_TRUST = 1;
 const ENIG_KEY_ID = 4;
 const ENIG_CREATED = 5;
 const ENIG_EXPIRY = 6;
@@ -128,61 +128,66 @@ const ENIG_USER_ID = 9;
 const ENIG_SIG_TYPE = 10;
 const ENIG_KEY_USE_FOR = 11;
 
-const ENIG_KEY_EXPIRED="e";
-const ENIG_KEY_REVOKED="r";
-const ENIG_KEY_INVALID="i";
-const ENIG_KEY_DISABLED="d";
-const ENIG_KEY_NOT_VALID=ENIG_KEY_EXPIRED+ENIG_KEY_REVOKED+ENIG_KEY_INVALID+ENIG_KEY_DISABLED;
+const ENIG_KEY_EXPIRED = "e";
+const ENIG_KEY_REVOKED = "r";
+const ENIG_KEY_INVALID = "i";
+const ENIG_KEY_DISABLED = "d";
+const ENIG_KEY_NOT_VALID = ENIG_KEY_EXPIRED + ENIG_KEY_REVOKED + ENIG_KEY_INVALID + ENIG_KEY_DISABLED;
 
 
 // GUI List: The corresponding image to set the "active" flag / checkbox
 const ENIG_IMG_NOT_SELECTED = "chrome://enigmail/content/check0.png";
-const ENIG_IMG_SELECTED     = "chrome://enigmail/content/check1.png";
-const ENIG_IMG_DISABLED     = "chrome://enigmail/content/check2.png";
+const ENIG_IMG_SELECTED = "chrome://enigmail/content/check1.png";
+const ENIG_IMG_DISABLED = "chrome://enigmail/content/check2.png";
 
 
 // Interfaces
-const nsIEnigmail               = ENIG_I.nsIEnigmail;
+const nsIEnigmail = ENIG_I.nsIEnigmail;
 
 // Encryption flags
 if (nsIEnigmail) {
-  const ENIG_SIGN    = nsIEnigmail.SEND_SIGNED;
+  const ENIG_SIGN = nsIEnigmail.SEND_SIGNED;
   const ENIG_ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
   const ENIG_ENCRYPT_OR_SIGN = ENIG_ENCRYPT | ENIG_SIGN;
 }
 
 // UsePGPMimeOption values
-const PGP_MIME_NEVER    = 0;
+const PGP_MIME_NEVER = 0;
 const PGP_MIME_POSSIBLE = 1;
-const PGP_MIME_ALWAYS   = 2;
+const PGP_MIME_ALWAYS = 2;
 
 const ENIG_POSSIBLE_PGPMIME = EnigmailConstants.POSSIBLE_PGPMIME;
-const ENIG_PGP_DESKTOP_ATT  = -2082;
+const ENIG_PGP_DESKTOP_ATT = -2082;
 
 var gUsePGPMimeOptionList = ["usePGPMimeNever",
-                             "usePGPMimePossible",
-                             "usePGPMimeAlways"];
+  "usePGPMimePossible",
+  "usePGPMimeAlways"
+];
 
 // sending options:
 var gEnigEncryptionModel = ["encryptionModelConvenient",
-                            "encryptionModelManually"];
+  "encryptionModelManually"
+];
 var gEnigAcceptedKeys = ["acceptedKeysValid",
-                         "acceptedKeysAll"];
+  "acceptedKeysAll"
+];
 var gEnigAutoSendEncrypted = ["autoSendEncryptedNever",
-                              "autoSendEncryptedIfKeys"];
+  "autoSendEncryptedIfKeys"
+];
 var gEnigConfirmBeforeSending = ["confirmBeforeSendingNever",
-                                 "confirmBeforeSendingAlways",
-                                 "confirmBeforeSendingIfEncrypted",
-                                 "confirmBeforeSendingIfNotEncrypted",
-                                 "confirmBeforeSendingIfRules"];
+  "confirmBeforeSendingAlways",
+  "confirmBeforeSendingIfEncrypted",
+  "confirmBeforeSendingIfNotEncrypted",
+  "confirmBeforeSendingIfRules"
+];
 
-const ENIG_BUTTON_POS_0           = 1;
-const ENIG_BUTTON_POS_1           = 1 << 8;
-const ENIG_BUTTON_POS_2           = 1 << 16;
+const ENIG_BUTTON_POS_0 = 1;
+const ENIG_BUTTON_POS_1 = 1 << 8;
+const ENIG_BUTTON_POS_2 = 1 << 16;
 const ENIG_BUTTON_TITLE_IS_STRING = 127;
 
 const ENIG_HEADERMODE_KEYID = 0x01;
-const ENIG_HEADERMODE_URL   = 0x10;
+const ENIG_HEADERMODE_URL = 0x10;
 
 
 
@@ -192,22 +197,22 @@ function EnigGetFrame(win, frameName) {
 
 // Initializes enigmailCommon
 function EnigInitCommon(id) {
-   EnigmailLog.DEBUG("enigmailCommon.js: EnigInitCommon: id="+id+"\n");
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigInitCommon: id=" + id + "\n");
 
-   gEnigPromptSvc = enigGetService("@mozilla.org/embedcomp/prompt-service;1", "nsIPromptService");
+  gEnigPromptSvc = enigGetService("@mozilla.org/embedcomp/prompt-service;1", "nsIPromptService");
 }
 
 
 function GetEnigmailSvc() {
-  if (! gEnigmailSvc)
+  if (!gEnigmailSvc)
     gEnigmailSvc = EnigmailCore.getService(window);
   return gEnigmailSvc;
 }
 
 // maxBytes == -1 => read everything
 function EnigReadURLContents(url, maxBytes) {
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigReadURLContents: url="+url+
-            ", "+maxBytes+"\n");
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigReadURLContents: url=" + url +
+    ", " + maxBytes + "\n");
 
   var ioServ = enigGetService(ENIG_IOSERVICE_CONTRACTID, "nsIIOService");
   if (!ioServ)
@@ -234,8 +239,8 @@ function EnigReadURLContents(url, maxBytes) {
 // maxBytes == -1 => read whole file
 function EnigReadFileContents(localFile, maxBytes) {
 
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigReadFileContents: file="+localFile.leafName+
-            ", "+maxBytes+"\n");
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigReadFileContents: file=" + localFile.leafName +
+    ", " + maxBytes + "\n");
 
   if (!localFile.exists() || !localFile.isReadable())
     throw Components.results.NS_ERROR_FAILURE;
@@ -307,12 +312,12 @@ function EnigHelpWindow(source) {
 
 
 function EnigDisplayRadioPref(prefName, prefValue, optionElementIds) {
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigDisplayRadioPref: "+prefName+", "+prefValue+"\n");
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigDisplayRadioPref: " + prefName + ", " + prefValue + "\n");
 
   if (prefValue >= optionElementIds.length)
     return;
 
-  var groupElement = document.getElementById("enigmail_"+prefName);
+  var groupElement = document.getElementById("enigmail_" + prefName);
   var optionElement = document.getElementById(optionElementIds[prefValue]);
 
   if (groupElement && optionElement) {
@@ -322,10 +327,10 @@ function EnigDisplayRadioPref(prefName, prefValue, optionElementIds) {
 }
 
 function EnigSetRadioPref(prefName, optionElementIds) {
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigSetRadioPref: "+prefName+"\n");
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigSetRadioPref: " + prefName + "\n");
 
   try {
-    var groupElement = document.getElementById("enigmail_"+prefName);
+    var groupElement = document.getElementById("enigmail_" + prefName);
     if (groupElement) {
       var optionElement = groupElement.selectedItem;
       var prefValue = optionElement.value;
@@ -347,8 +352,8 @@ function EnigGetPref(prefName) {
 }
 
 function EnigGetDefaultPref(prefName) {
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigGetDefaultPref: prefName="+prefName+"\n");
-  var prefValue=null;
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigGetDefaultPref: prefName=" + prefName + "\n");
+  var prefValue = null;
   try {
     EnigmailPrefs.getPrefBranch().lockPref(prefName);
     prefValue = EnigGetPref(prefName);
@@ -369,12 +374,12 @@ function EnigGetSignMsg(identity) {
 
 
 function EnigConvertFromUnicode(text, charset) {
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigConvertFromUnicode: "+charset+"\n");
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigConvertFromUnicode: " + charset + "\n");
 
   if (!text)
     return "";
 
-  if (! charset) charset="utf-8";
+  if (!charset) charset = "utf-8";
 
   // Encode plaintext
   try {
@@ -383,7 +388,8 @@ function EnigConvertFromUnicode(text, charset) {
     unicodeConv.charset = charset;
     return unicodeConv.ConvertFromUnicode(text);
 
-  } catch (ex) {
+  }
+  catch (ex) {
     EnigmailLog.DEBUG("enigmailCommon.js: EnigConvertFromUnicode: caught an exception\n");
 
     return text;
@@ -394,7 +400,7 @@ function EnigConvertFromUnicode(text, charset) {
 function EnigConvertToUnicode(text, charset) {
   // EnigmailLog.DEBUG("enigmailCommon.js: EnigConvertToUnicode: "+charset+"\n");
 
-  if (!text || !charset /*|| (charset.toLowerCase() == "iso-8859-1")*/)
+  if (!text || !charset /*|| (charset.toLowerCase() == "iso-8859-1")*/ )
     return text;
 
   // Encode plaintext
@@ -404,8 +410,9 @@ function EnigConvertToUnicode(text, charset) {
     unicodeConv.charset = charset;
     return unicodeConv.ConvertToUnicode(text);
 
-  } catch (ex) {
-    EnigmailLog.DEBUG("enigmailCommon.js: EnigConvertToUnicode: caught an exception while converting'"+text+"' to "+charset+"\n");
+  }
+  catch (ex) {
+    EnigmailLog.DEBUG("enigmailCommon.js: EnigConvertToUnicode: caught an exception while converting'" + text + "' to " + charset + "\n");
     return text;
   }
 }
@@ -425,11 +432,11 @@ function EnigFormatFpr(fingerprint) {
 
 // return the options passed to a window
 function EnigGetWindowOptions() {
-  var winOptions=[];
+  var winOptions = [];
   if (window.location.search) {
-    var optList=window.location.search.substr(1).split(/\&/);
-    for (var i=0; i<optList.length; i++) {
-      var anOption=optList[i].split(/\=/);
+    var optList = window.location.search.substr(1).split(/\&/);
+    for (var i = 0; i < optList.length; i++) {
+      var anOption = optList[i].split(/\=/);
       winOptions[anOption[0]] = unescape(anOption[1]);
     }
   }
@@ -455,8 +462,8 @@ function EnigGetString(aStr) {
   // unfortunately arguments.shift() doesn't work, so we use a workaround
 
   if (arguments.length > 1)
-    for (var i=1; i<arguments.length; i++) {
-        argList.push(arguments[i]);
+    for (var i = 1; i < arguments.length; i++) {
+      argList.push(arguments[i]);
     }
   return EnigmailLocale.getString(aStr, (arguments.length > 1 ? argList : null));
 }
@@ -474,7 +481,7 @@ function EnigGetTempDir() {
 }
 
 // get the OS platform
-function EnigGetOS () {
+function EnigGetOS() {
   return EnigmailOS.getOS();
 }
 
@@ -484,7 +491,7 @@ function EnigGetVersion() {
 
 function EnigFilePicker(title, displayDir, save, defaultExtension, defaultName, filterPairs) {
   return EnigmailDialog.filePicker(window, title, displayDir, save, defaultExtension,
-                           defaultName, filterPairs);
+    defaultName, filterPairs);
 }
 
 // get keys from keyserver
@@ -528,10 +535,10 @@ function EnigSignKey(userId, keyId) {
 
 function EnigChangeKeyPwd(keyId, userId) {
   // gpg-agent used: gpg-agent will handle everything
-  EnigmailKeyEditor.changePassphrase(window, "0x"+keyId, "", "",
+  EnigmailKeyEditor.changePassphrase(window, "0x" + keyId, "", "",
     function _changePwdCb(exitCode, errorMsg) {
       if (exitCode !== 0) {
-        EnigAlert(EnigGetString("changePassFailed")+"\n\n"+errorMsg);
+        EnigAlert(EnigGetString("changePassFailed") + "\n\n" + errorMsg);
       }
     });
 }
@@ -542,11 +549,11 @@ function EnigRevokeKey(keyId, userId, callbackFunc) {
   if (!enigmailSvc)
     return false;
 
-  var userDesc="0x"+keyId.substr(-8,8)+" - "+userId;
+  var userDesc = "0x" + keyId.substr(-8, 8) + " - " + userId;
   if (!EnigConfirm(EnigGetString("revokeKeyQuestion", userDesc), EnigGetString("keyMan.button.revokeKey")))
-      return false;
+    return false;
 
-  var tmpDir=EnigGetTempDir();
+  var tmpDir = EnigGetTempDir();
   var revFile;
   try {
     revFile = ENIG_C[ENIG_LOCAL_FILE_CONTRACTID].createInstance(EnigGetLocalFileApi());
@@ -559,11 +566,11 @@ function EnigRevokeKey(keyId, userId, callbackFunc) {
   catch (ex) {}
   revFile.append("revkey.asc");
 
-  EnigmailKeyEditor.genRevokeCert(window, "0x"+keyId, revFile, "0", "",
+  EnigmailKeyEditor.genRevokeCert(window, "0x" + keyId, revFile, "0", "",
     function _revokeCertCb(exitCode, errorMsg) {
       if (exitCode !== 0) {
         revFile.remove(false);
-        EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+errorMsg);
+        EnigAlert(EnigGetString("revokeKeyFailed") + "\n\n" + errorMsg);
         return;
       }
       var errorMsgObj = {};
@@ -571,7 +578,7 @@ function EnigRevokeKey(keyId, userId, callbackFunc) {
       var r = EnigmailKeyRing.importKeyFromFile(window, revFile, errorMsgObj, keyList);
       revFile.remove(false);
       if (r !== 0) {
-        EnigAlert(EnigGetString("revokeKeyFailed")+"\n\n"+EnigConvertGpgToUnicode(errorMsgObj.value));
+        EnigAlert(EnigGetString("revokeKeyFailed") + "\n\n" + EnigConvertGpgToUnicode(errorMsgObj.value));
       }
       else {
         EnigAlert(EnigGetString("revokeKeyOk"));
@@ -580,38 +587,37 @@ function EnigRevokeKey(keyId, userId, callbackFunc) {
         callbackFunc(r === 0);
       }
     });
-    return true;
+  return true;
 }
 
 function EnigGetLocalFileApi() {
   return Components.interfaces.nsIFile;
 }
 
-function EnigShowPhoto (keyId, userId, photoNumber) {
+function EnigShowPhoto(keyId, userId, photoNumber) {
   EnigmailWindows.showPhoto(window, keyId, userId, photoNumber);
 }
 
-function EnigGetFilePath (nsFileObj) {
+function EnigGetFilePath(nsFileObj) {
   return EnigmailFiles.getFilePath(nsFileObj);
 }
 
 function EnigCreateRevokeCert(keyId, userId, callbackFunc) {
   var defaultFileName = userId.replace(/[<\>]/g, "");
-  defaultFileName += " (0x"+keyId.substr(-8,8)+") rev.asc";
+  defaultFileName += " (0x" + keyId.substr(-8, 8) + ") rev.asc";
   var outFile = EnigFilePicker(EnigGetString("saveRevokeCertAs"),
-                               "", true, "*.asc",
-                               defaultFileName,
-                               [EnigGetString("asciiArmorFile"), "*.asc"]);
-  if (! outFile) return -1;
+    "", true, "*.asc",
+    defaultFileName, [EnigGetString("asciiArmorFile"), "*.asc"]);
+  if (!outFile) return -1;
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return -1;
 
-  EnigmailKeyEditor.genRevokeCert(window, "0x"+keyId, outFile, "1", "",
+  EnigmailKeyEditor.genRevokeCert(window, "0x" + keyId, outFile, "1", "",
     function _revokeCertCb(exitCode, errorMsg) {
       if (exitCode !== 0) {
-        EnigAlert(EnigGetString("revokeCertFailed")+"\n\n"+errorMsg);
+        EnigAlert(EnigGetString("revokeCertFailed") + "\n\n" + errorMsg);
       }
       else {
         EnigAlert(EnigGetString("revokeCertOK"));
@@ -627,42 +633,42 @@ function EnigCreateRevokeCert(keyId, userId, callbackFunc) {
 function EnigGetTrustLabel(trustCode) {
   var keyTrust;
   switch (trustCode) {
-  case 'q':
-    keyTrust=EnigGetString("keyValid.unknown");
-    break;
-  case 'i':
-    keyTrust=EnigGetString("keyValid.invalid");
-    break;
-  case 'd':
-  case 'D':
-    keyTrust=EnigGetString("keyValid.disabled");
-    break;
-  case 'r':
-    keyTrust=EnigGetString("keyValid.revoked");
-    break;
-  case 'e':
-    keyTrust=EnigGetString("keyValid.expired");
-    break;
-  case 'n':
-    keyTrust=EnigGetString("keyTrust.untrusted");
-    break;
-  case 'm':
-    keyTrust=EnigGetString("keyTrust.marginal");
-    break;
-  case 'f':
-    keyTrust=EnigGetString("keyTrust.full");
-    break;
-  case 'u':
-    keyTrust=EnigGetString("keyTrust.ultimate");
-    break;
-  case 'g':
-    keyTrust=EnigGetString("keyTrust.group");
-    break;
-  case '-':
-    keyTrust="-";
-    break;
-  default:
-    keyTrust="";
+    case 'q':
+      keyTrust = EnigGetString("keyValid.unknown");
+      break;
+    case 'i':
+      keyTrust = EnigGetString("keyValid.invalid");
+      break;
+    case 'd':
+    case 'D':
+      keyTrust = EnigGetString("keyValid.disabled");
+      break;
+    case 'r':
+      keyTrust = EnigGetString("keyValid.revoked");
+      break;
+    case 'e':
+      keyTrust = EnigGetString("keyValid.expired");
+      break;
+    case 'n':
+      keyTrust = EnigGetString("keyTrust.untrusted");
+      break;
+    case 'm':
+      keyTrust = EnigGetString("keyTrust.marginal");
+      break;
+    case 'f':
+      keyTrust = EnigGetString("keyTrust.full");
+      break;
+    case 'u':
+      keyTrust = EnigGetString("keyTrust.ultimate");
+      break;
+    case 'g':
+      keyTrust = EnigGetString("keyTrust.group");
+      break;
+    case '-':
+      keyTrust = "-";
+      break;
+    default:
+      keyTrust = "";
   }
   return keyTrust;
 }
@@ -671,16 +677,13 @@ function EnigGetDateTime(dateNum, withDate, withTime) {
   return EnigmailTime.getDateTime(dateNum, withDate, withTime);
 }
 
-function enigCreateInstance (aURL, aInterface)
-{
+function enigCreateInstance(aURL, aInterface) {
   return ENIG_C[aURL].createInstance(ENIG_I[aInterface]);
 }
 
-function enigGetService (aURL, aInterface)
-{
+function enigGetService(aURL, aInterface) {
   // determine how 'aInterface' is passed and handle accordingly
-  switch (typeof(aInterface))
-  {
+  switch (typeof(aInterface)) {
     case "object":
       return ENIG_C[aURL].getService(aInterface);
     case "string":
@@ -704,8 +707,8 @@ function EnigCollapseAdvanced(obj, attribute, dummy) {
  * @uri nsIUri object
  */
 function EnigOpenUrlExternally(uri) {
-  let eps  = ENIG_C["@mozilla.org/uriloader/external-protocol-service;1"].
-                getService(ENIG_I.nsIExternalProtocolService);
+  let eps = ENIG_C["@mozilla.org/uriloader/external-protocol-service;1"].
+  getService(ENIG_I.nsIExternalProtocolService);
 
   eps.loadUrl(uri, null);
 }
@@ -717,8 +720,8 @@ function EnigOpenURL(event, hrefObj) {
 
 
   try {
-    var ioservice  = ENIG_C["@mozilla.org/network/io-service;1"].
-                  getService(ENIG_I.nsIIOService);
+    var ioservice = ENIG_C["@mozilla.org/network/io-service;1"].
+    getService(ENIG_I.nsIIOService);
     var iUri = ioservice.newURI(hrefObj.href, null, null);
 
     EnigOpenUrlExternally(iUri);
@@ -728,54 +731,50 @@ function EnigOpenURL(event, hrefObj) {
   catch (ex) {}
 }
 
-function EnigGetHttpUri (aEvent) {
+function EnigGetHttpUri(aEvent) {
 
-    function hRefForClickEvent(aEvent, aDontCheckInputElement)
-    {
-      var href;
-      var isKeyCommand = (aEvent.type == "command");
-      var target =
-        isKeyCommand ? document.commandDispatcher.focusedElement : aEvent.target;
+  function hRefForClickEvent(aEvent, aDontCheckInputElement) {
+    var href;
+    var isKeyCommand = (aEvent.type == "command");
+    var target =
+      isKeyCommand ? document.commandDispatcher.focusedElement : aEvent.target;
 
-      if (target instanceof HTMLAnchorElement ||
-          target instanceof HTMLAreaElement   ||
-          target instanceof HTMLLinkElement)
-      {
-        if (target.hasAttribute("href"))
-          href = target.href;
-      }
-      else if (!aDontCheckInputElement && target instanceof HTMLInputElement)
-      {
-        if (target.form && target.form.action)
-          href = target.form.action;
-      }
-      else
-      {
-        // we may be nested inside of a link node
-        var linkNode = aEvent.originalTarget;
-        while (linkNode && !(linkNode instanceof HTMLAnchorElement))
-          linkNode = linkNode.parentNode;
-
-        if (linkNode)
-          href = linkNode.href;
-      }
-
-      return href;
+    if (target instanceof HTMLAnchorElement ||
+      target instanceof HTMLAreaElement ||
+      target instanceof HTMLLinkElement) {
+      if (target.hasAttribute("href"))
+        href = target.href;
     }
+    else if (!aDontCheckInputElement && target instanceof HTMLInputElement) {
+      if (target.form && target.form.action)
+        href = target.form.action;
+    }
+    else {
+      // we may be nested inside of a link node
+      var linkNode = aEvent.originalTarget;
+      while (linkNode && !(linkNode instanceof HTMLAnchorElement))
+        linkNode = linkNode.parentNode;
+
+      if (linkNode)
+        href = linkNode.href;
+    }
+
+    return href;
+  }
 
   // getHttpUri main function
 
   let href = hRefForClickEvent(aEvent);
 
-  EnigmailLog.DEBUG("enigmailAbout.js: interpretHtmlClick: href='"+href+"'\n");
+  EnigmailLog.DEBUG("enigmailAbout.js: interpretHtmlClick: href='" + href + "'\n");
 
   var ioServ = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
   var uri = ioServ.newURI(href, null, null);
 
   if (Components.classes["@mozilla.org/uriloader/external-protocol-service;1"]
-                .getService(Components.interfaces.nsIExternalProtocolService)
-                .isExposedProtocol(uri.scheme) &&
-      (uri.schemeIs("http") || uri.schemeIs("https")))
+    .getService(Components.interfaces.nsIExternalProtocolService)
+    .isExposedProtocol(uri.scheme) &&
+    (uri.schemeIs("http") || uri.schemeIs("https")))
     return uri;
 
   return null;
@@ -790,19 +789,18 @@ function EnigSetActive(element, status) {
     element.setAttribute("active", status.toString());
   }
 
-  switch (status)
-  {
-  case 0:
-    element.setAttribute("src", ENIG_IMG_NOT_SELECTED);
-    break;
-  case 1:
-    element.setAttribute("src", ENIG_IMG_SELECTED);
-    break;
-  case 2:
-    element.setAttribute("src", ENIG_IMG_DISABLED);
-    break;
-  default:
-    element.setAttribute("active", -1);
+  switch (status) {
+    case 0:
+      element.setAttribute("src", ENIG_IMG_NOT_SELECTED);
+      break;
+    case 1:
+      element.setAttribute("src", ENIG_IMG_SELECTED);
+      break;
+    case 2:
+      element.setAttribute("src", ENIG_IMG_DISABLED);
+      break;
+    default:
+      element.setAttribute("active", -1);
   }
 }
 
@@ -820,29 +818,33 @@ function EnigSetActive(element, status) {
  *
  */
 function EnigAddSubkeyWithSelectboxes(treeChildren, aLine, keyCount) {
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigAddSubkeyWithSelectboxes("+aLine+")\n");
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigAddSubkeyWithSelectboxes(" + aLine + ")\n");
 
   var preSelected;
   // Pre-Selection logic:
   if (aLine[1] === "r") {
-     // Revoked keys can not be changed.
-     preSelected = -1;
-  } else {
-    if (aLine[0]==="pub") {
+    // Revoked keys can not be changed.
+    preSelected = -1;
+  }
+  else {
+    if (aLine[0] === "pub") {
       // The primary key is ALWAYS selected.
       preSelected = 1;
-    } else if (keyCount === 2) {
+    }
+    else if (keyCount === 2) {
       // If only 2 keys are here (primary + 1 subkey) then preSelect them anyway.
       preSelected = 1;
-    } else if (aLine[1]==="e") {
+    }
+    else if (aLine[1] === "e") {
       // Expired keys are normally un-selected.
       preSelected = 0;
-    } else {
+    }
+    else {
       // A valid subkey is pre-selected.
       preSelected = 1;
     }
   }
-  var selectCol=document.createElement("treecell");
+  var selectCol = document.createElement("treecell");
   selectCol.setAttribute("id", "indicator");
   EnigSetActive(selectCol, preSelected);
 
@@ -858,65 +860,67 @@ function EnigAddSubkeyWithSelectboxes(treeChildren, aLine, keyCount) {
  * @param  Optional Object  If set, it defines if the row is pre-selected
  *                          (assumed, there is a preceeding select column)
  */
-function EnigAddSubkey(treeChildren, aLine, selectCol=false) {
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigAddSubkey("+aLine+")\n");
+function EnigAddSubkey(treeChildren, aLine, selectCol = false) {
+  EnigmailLog.DEBUG("enigmailCommon.js: EnigAddSubkey(" + aLine + ")\n");
 
   // Get expiry state of this subkey
   var expire;
-  if (aLine[1]==="r") {
+  if (aLine[1] === "r") {
     expire = EnigGetString("keyValid.revoked");
-  } else if (aLine[6].length===0) {
+  }
+  else if (aLine[6].length === 0) {
     expire = EnigGetString("keyExpiryNever");
-  } else {
+  }
+  else {
     expire = EnigGetDateTime(aLine[6], true, false);
   }
 
-  var aRow=document.createElement("treerow");
-  var treeItem=document.createElement("treeitem");
-  var subkey=EnigGetString(aLine[0]==="sub" ? "keyTypeSubkey" : "keyTypePrimary");
+  var aRow = document.createElement("treerow");
+  var treeItem = document.createElement("treeitem");
+  var subkey = EnigGetString(aLine[0] === "sub" ? "keyTypeSubkey" : "keyTypePrimary");
   if (selectCol !== false) {
     aRow.appendChild(selectCol);
   }
   aRow.appendChild(createCell(subkey)); // subkey type
-  aRow.appendChild(createCell("0x"+aLine[4].substr(-8,8))); // key id
-  aRow.appendChild(createCell(EnigGetString("keyAlgorithm_"+aLine[3]))); // algorithm
+  aRow.appendChild(createCell("0x" + aLine[4].substr(-8, 8))); // key id
+  aRow.appendChild(createCell(EnigGetString("keyAlgorithm_" + aLine[3]))); // algorithm
   aRow.appendChild(createCell(aLine[2])); // size
   aRow.appendChild(createCell(EnigGetDateTime(aLine[5], true, false))); // created
   aRow.appendChild(createCell(expire)); // expiry
 
-  var usagecodes=aLine[11];
+  var usagecodes = aLine[11];
   var usagetext = "";
   var i;
-//  e = encrypt
-//  s = sign
-//  c = certify
-//  a = authentication
-//  Capital Letters are ignored, as these reflect summary properties of a key
+  //  e = encrypt
+  //  s = sign
+  //  c = certify
+  //  a = authentication
+  //  Capital Letters are ignored, as these reflect summary properties of a key
 
   var singlecode = "";
-  for (i=0; i < aLine[11].length; i++) {
+  for (i = 0; i < aLine[11].length; i++) {
     singlecode = aLine[11].substr(i, 1);
     switch (singlecode) {
       case "e":
-        if (usagetext.length>0) {
+        if (usagetext.length > 0) {
           usagetext = usagetext + ", ";
         }
         usagetext = usagetext + EnigGetString("keyUsageEncrypt");
         break;
       case "s":
-        if (usagetext.length>0) {
+        if (usagetext.length > 0) {
           usagetext = usagetext + ", ";
         }
         usagetext = usagetext + EnigGetString("keyUsageSign");
         break;
       case "c":
-        if (usagetext.length>0) {
+        if (usagetext.length > 0) {
           usagetext = usagetext + ", ";
         }
         usagetext = usagetext + EnigGetString("keyUsageCertify");
         break;
       case "a":
-        if (usagetext.length>0) {
+        if (usagetext.length > 0) {
           usagetext = usagetext + ", ";
         }
         usagetext = usagetext + EnigGetString("keyUsageAuthentication");
@@ -968,48 +972,48 @@ function EnigGetKeyDetails(sigListStr) {
   var showPhoto = false;
 
   var sigList = sigListStr.split(/[\n\r]+/);
-  for (var i=0; i < sigList.length; i++) {
-    var aLine=sigList[i].split(/:/);
+  for (var i = 0; i < sigList.length; i++) {
+    var aLine = sigList[i].split(/:/);
     switch (aLine[0]) {
-    case "pub":
-      gUserId=EnigConvertGpgToUnicode(aLine[9]);
-      calcTrust=aLine[1];
-      if (aLine[11].indexOf("D")>=0) {
-        calcTrust="d";
-      }
-      ownerTrust = aLine[8];
-      creationDate = EnigmailTime.getDateTime(aLine[5], true, false);
-      expiryDate = EnigmailTime.getDateTime(aLine[6], true, false);
-      subkeyList.push(aLine);
-      if (! gUserId) {
-        gUserId=EnigConvertGpgToUnicode(aLine[9]);
-      }
-      else if (uidList !== false) {
-        uidList.push(aLine);
-      }
-      break;
-    case "uid":
-      if (! gUserId) {
-        gUserId=EnigConvertGpgToUnicode(aLine[9]);
-      }
-      else if (uidList !== false) {
-        uidList.push(aLine);
-      }
-      break;
-    case "uat":
-      // @TODO document what that means
-      if (aLine[9].search("1 ") === 0) {
-        showPhoto = true;
-      }
-      break;
-    case "sub":
-      subkeyList.push(aLine);
-      break;
-    case "fpr":
-      if (!fingerprint) {
-        fingerprint = aLine[9];
-      }
-      break;
+      case "pub":
+        gUserId = EnigConvertGpgToUnicode(aLine[9]);
+        calcTrust = aLine[1];
+        if (aLine[11].indexOf("D") >= 0) {
+          calcTrust = "d";
+        }
+        ownerTrust = aLine[8];
+        creationDate = EnigmailTime.getDateTime(aLine[5], true, false);
+        expiryDate = EnigmailTime.getDateTime(aLine[6], true, false);
+        subkeyList.push(aLine);
+        if (!gUserId) {
+          gUserId = EnigConvertGpgToUnicode(aLine[9]);
+        }
+        else if (uidList !== false) {
+          uidList.push(aLine);
+        }
+        break;
+      case "uid":
+        if (!gUserId) {
+          gUserId = EnigConvertGpgToUnicode(aLine[9]);
+        }
+        else if (uidList !== false) {
+          uidList.push(aLine);
+        }
+        break;
+      case "uat":
+        // @TODO document what that means
+        if (aLine[9].search("1 ") === 0) {
+          showPhoto = true;
+        }
+        break;
+      case "sub":
+        subkeyList.push(aLine);
+        break;
+      case "fpr":
+        if (!fingerprint) {
+          fingerprint = aLine[9];
+        }
+        break;
     }
   }
 

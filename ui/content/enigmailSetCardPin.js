@@ -32,7 +32,7 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** *
-*/
+ */
 
 
 Components.utils.import("resource://enigmail/keyEditor.jsm");
@@ -45,8 +45,8 @@ Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: 
 const nsIEnigmail = Components.interfaces.nsIEnigmail;
 const Ci = Components.interfaces;
 
-const CHANGE_PIN  = 'P';
-const ADMIN_PIN   = 'A';
+const CHANGE_PIN = 'P';
+const ADMIN_PIN = 'A';
 const UNBLOCK_PIN = 'U';
 
 var gAction = null;
@@ -62,26 +62,26 @@ function onAccept() {
 
   var pinItem1;
   var pinItem2;
-  var minLen=0;
+  var minLen = 0;
   var action;
 
-  switch(gAction) {
+  switch (gAction) {
     case CHANGE_PIN:
-      pinItem1="pinTxt";
-      pinItem2="pinRepeatTxt";
-      minLen=6;
+      pinItem1 = "pinTxt";
+      pinItem2 = "pinRepeatTxt";
+      minLen = 6;
       action = nsIEnigmail.CARD_PIN_CHANGE;
       break;
     case UNBLOCK_PIN:
-      pinItem1="pinTxt";
-      pinItem2="pinRepeatTxt";
-      minLen=6;
+      pinItem1 = "pinTxt";
+      pinItem2 = "pinRepeatTxt";
+      minLen = 6;
       action = nsIEnigmail.CARD_PIN_UNBLOCK;
       break;
     case ADMIN_PIN:
-      pinItem1="adminPinTxt";
-      pinItem2="adminPinRepeatTxt";
-      minLen=8;
+      pinItem1 = "adminPinTxt";
+      pinItem2 = "adminPinRepeatTxt";
+      minLen = 8;
       action = nsIEnigmail.CARD_ADMIN_PIN_CHANGE;
       break;
   }
@@ -89,7 +89,7 @@ function onAccept() {
   var oldPin = "";
   var newPin = "";
 
-  if (! EnigmailGpgAgent.useGpgAgent()) {
+  if (!EnigmailGpgAgent.useGpgAgent()) {
     adminPin = document.getElementById("currAdmPinTxt").value;
     oldPin = document.getElementById("currPinTxt").value;
     newPin = document.getElementById(pinItem1).value;
@@ -107,14 +107,14 @@ function onAccept() {
   var pinObserver = new changePinObserver();
 
   EnigmailKeyEditor.cardChangePin(window,
-                               action,
-                               oldPin,
-                               newPin,
-                               adminPin,
-                               pinObserver,
+    action,
+    oldPin,
+    newPin,
+    adminPin,
+    pinObserver,
     function _ChangePinCb(exitCode, errorMsg) {
       if (exitCode !== 0) {
-        EnigmailDialog.alert(window, EnigmailLocale.getString("cardPin.processFailed")+"\n"+pinObserver.result);
+        EnigmailDialog.alert(window, EnigmailLocale.getString("cardPin.processFailed") + "\n" + pinObserver.result);
       }
       else
         window.close();
@@ -148,58 +148,55 @@ function setDlgContent(sel) {
     return;
   }
 
-  switch(sel) {
-  case 'P':
-    dlgDisable("currAdminPinRow");
-    dlgDisable("adminPinRow");
-    dlgDisable("adminPinRepeatRow");
-    dlgEnable("currPinRow");
-    dlgEnable("pinRow");
-    dlgEnable("pinRepeatRow");
-    break;
-  case 'A':
-    dlgEnable("currAdminPinRow");
-    dlgEnable("adminPinRow");
-    dlgEnable("adminPinRepeatRow");
-    dlgDisable("currPinRow");
-    dlgDisable("pinRow");
-    dlgDisable("pinRepeatRow");
-    break;
-  case 'U':
-    dlgEnable("currAdminPinRow");
-    dlgDisable("adminPinRow");
-    dlgDisable("adminPinRepeatRow");
-    dlgDisable("currPinRow");
-    dlgEnable("pinRow");
-    dlgEnable("pinRepeatRow");
-    break;
+  switch (sel) {
+    case 'P':
+      dlgDisable("currAdminPinRow");
+      dlgDisable("adminPinRow");
+      dlgDisable("adminPinRepeatRow");
+      dlgEnable("currPinRow");
+      dlgEnable("pinRow");
+      dlgEnable("pinRepeatRow");
+      break;
+    case 'A':
+      dlgEnable("currAdminPinRow");
+      dlgEnable("adminPinRow");
+      dlgEnable("adminPinRepeatRow");
+      dlgDisable("currPinRow");
+      dlgDisable("pinRow");
+      dlgDisable("pinRepeatRow");
+      break;
+    case 'U':
+      dlgEnable("currAdminPinRow");
+      dlgDisable("adminPinRow");
+      dlgDisable("adminPinRepeatRow");
+      dlgDisable("currPinRow");
+      dlgEnable("pinRow");
+      dlgEnable("pinRepeatRow");
+      break;
   }
 }
 
-function changePinObserver() {
-}
+function changePinObserver() {}
 
-changePinObserver.prototype =
-{
+changePinObserver.prototype = {
   _data: "",
   result: "",
 
-  QueryInterface : function(iid)
-  {
+  QueryInterface: function(iid) {
     if (iid.equals(Ci.nsIEnigMimeReadCallback) ||
-        iid.equals(Ci.nsISupports) )
+      iid.equals(Ci.nsISupports))
       return this;
 
     throw Components.results.NS_NOINTERFACE;
   },
 
-  onDataAvailable: function (data) {
-    var ret="";
-    EnigmailLog.DEBUG("enigmailSetCardPin: changePinObserver.onDataAvailable: data="+data+"\n");
-    if (data.indexOf("[GNUPG:] SC_OP_FAILURE")>=0) {
+  onDataAvailable: function(data) {
+    var ret = "";
+    EnigmailLog.DEBUG("enigmailSetCardPin: changePinObserver.onDataAvailable: data=" + data + "\n");
+    if (data.indexOf("[GNUPG:] SC_OP_FAILURE") >= 0) {
       this.result = this._data;
     }
-    else if (data.indexOf("[GNUPG:] BAD_PASSPHRASE")>=0) {
+    else if (data.indexOf("[GNUPG:] BAD_PASSPHRASE") >= 0) {
       this.result = EnigmailLocale.getString("badPhrase");
       return data;
     }

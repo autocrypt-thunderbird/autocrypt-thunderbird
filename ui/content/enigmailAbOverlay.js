@@ -37,19 +37,16 @@ Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs
 Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 
 var Enigmail = {
-  createRuleFromAddress: function (emailAddressNode)
-  {
-    if (emailAddressNode)
-    {
-      var r=new RegExp("^"+emailAddressNode.protocol);
-      var emailAddress=emailAddressNode.href.replace(r, "");
+  createRuleFromAddress: function(emailAddressNode) {
+    if (emailAddressNode) {
+      var r = new RegExp("^" + emailAddressNode.protocol);
+      var emailAddress = emailAddressNode.href.replace(r, "");
       EnigmailWindows.createNewRule(window, emailAddress);
     }
   },
 
-  createRuleFromCard: function ()
-  {
-    var emailAddress="";
+  createRuleFromCard: function() {
+    var emailAddress = "";
     if (DirPaneHasFocus())
       emailAddress = GetSelectedAddressesFromDirTree();
     else

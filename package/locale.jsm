@@ -39,7 +39,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "EnigmailLocale" ];
+const EXPORTED_SYMBOLS = ["EnigmailLocale"];
 
 Components.utils.import("resource://enigmail/log.jsm");
 
@@ -51,39 +51,41 @@ var enigStringBundle = null;
 const LOCALE_SVC_CONTRACTID = "@mozilla.org/intl/nslocaleservice;1";
 
 const EnigmailLocale = {
-    get: function() {
-        return Cc[LOCALE_SVC_CONTRACTID].getService(Ci.nsILocaleService).getApplicationLocale();
-    },
+  get: function() {
+    return Cc[LOCALE_SVC_CONTRACTID].getService(Ci.nsILocaleService).getApplicationLocale();
+  },
 
-    // retrieves a localized string from the enigmail.properties stringbundle
-    getString: function (aStr, subPhrases) {
-        if (!enigStringBundle) {
-            try {
-                var strBundleService = Cc["@mozilla.org/intl/stringbundle;1"].getService();
-                strBundleService = strBundleService.QueryInterface(Ci.nsIStringBundleService);
-                enigStringBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
-            }
-            catch (ex) {
-                EnigmailLog.ERROR("locale.jsm: Error in instantiating stringBundleService\n");
-            }
-        }
-
-        if (enigStringBundle) {
-            try {
-                if (subPhrases) {
-                    if (typeof(subPhrases) == "string") {
-                        return enigStringBundle.formatStringFromName(aStr, [ subPhrases ], 1);
-                    } else {
-                        return enigStringBundle.formatStringFromName(aStr, subPhrases, subPhrases.length);
-                    }
-                } else {
-                    return enigStringBundle.GetStringFromName(aStr);
-                }
-            }
-            catch (ex) {
-                EnigmailLog.ERROR("locale.jsm: Error in querying stringBundleService for string '"+aStr+"'\n");
-            }
-        }
-        return aStr;
+  // retrieves a localized string from the enigmail.properties stringbundle
+  getString: function(aStr, subPhrases) {
+    if (!enigStringBundle) {
+      try {
+        var strBundleService = Cc["@mozilla.org/intl/stringbundle;1"].getService();
+        strBundleService = strBundleService.QueryInterface(Ci.nsIStringBundleService);
+        enigStringBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
+      }
+      catch (ex) {
+        EnigmailLog.ERROR("locale.jsm: Error in instantiating stringBundleService\n");
+      }
     }
+
+    if (enigStringBundle) {
+      try {
+        if (subPhrases) {
+          if (typeof(subPhrases) == "string") {
+            return enigStringBundle.formatStringFromName(aStr, [subPhrases], 1);
+          }
+          else {
+            return enigStringBundle.formatStringFromName(aStr, subPhrases, subPhrases.length);
+          }
+        }
+        else {
+          return enigStringBundle.GetStringFromName(aStr);
+        }
+      }
+      catch (ex) {
+        EnigmailLog.ERROR("locale.jsm: Error in querying stringBundleService for string '" + aStr + "'\n");
+      }
+    }
+    return aStr;
+  }
 };

@@ -40,7 +40,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "EnigmailTrust" ];
+const EXPORTED_SYMBOLS = ["EnigmailTrust"];
 
 
 // trust flags according to GPG documentation:
@@ -69,35 +69,36 @@ const EXPORTED_SYMBOLS = [ "EnigmailTrust" ];
 //  u = Ultimately trusted
 //  ---------------------------------------------------------
 const TRUSTLEVELS_SORTED = "indDreg?o-qmfu";
-const TRUSTLEVELS_SORTED_IDX_UNKNOWN = 7;   // index of '?'
+const TRUSTLEVELS_SORTED_IDX_UNKNOWN = 7; // index of '?'
 
 const EnigmailTrust = {
-    /**
-     * @return - |string| containing the order of trust/validity values
-     */
-    trustLevelsSorted: function () {
-        return TRUSTLEVELS_SORTED;
-    },
+  /**
+   * @return - |string| containing the order of trust/validity values
+   */
+  trustLevelsSorted: function() {
+    return TRUSTLEVELS_SORTED;
+  },
 
-    /**
-     * @return - |boolean| whether the flag is invalid (neither unknown nor valid)
-     */
-    isInvalid: function (flag) {
-        return TRUSTLEVELS_SORTED.indexOf(flag) < TRUSTLEVELS_SORTED_IDX_UNKNOWN;
-    },
+  /**
+   * @return - |boolean| whether the flag is invalid (neither unknown nor valid)
+   */
+  isInvalid: function(flag) {
+    return TRUSTLEVELS_SORTED.indexOf(flag) < TRUSTLEVELS_SORTED_IDX_UNKNOWN;
+  },
 
-    /**
-     * return a merged value of trust level "key disabled"
-     *
-     * @keyObj - |object| containing the key data
-     *
-     * @return - |string| containing the trust value or "D" for disabled keys
-     */
-    getTrustCode: function (keyObj) {
-        if (keyObj.keyUseFor.indexOf("D")>=0) {
-            return "D";
-        } else {
-            return keyObj.keyTrust;
-        }
+  /**
+   * return a merged value of trust level "key disabled"
+   *
+   * @keyObj - |object| containing the key data
+   *
+   * @return - |string| containing the trust value or "D" for disabled keys
+   */
+  getTrustCode: function(keyObj) {
+    if (keyObj.keyUseFor.indexOf("D") >= 0) {
+      return "D";
     }
+    else {
+      return keyObj.keyTrust;
+    }
+  }
 };

@@ -41,7 +41,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = [ "EnigmailFilters" ];
+var EXPORTED_SYMBOLS = ["EnigmailFilters"];
 
 Components.utils.import("resource://enigmail/core.jsm");
 Components.utils.import("resource://enigmail/decryptPermanently.jsm");
@@ -62,41 +62,41 @@ const Ci = Components.interfaces;
  */
 
 const filterActionMoveDecrypt = {
-    id: "enigmail@enigmail.net#filterActionMoveDecrypt",
-    name: EnigmailLocale.getString("filter.decryptMove.label"),
-    value: "movemessage",
-    apply: function (aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
+  id: "enigmail@enigmail.net#filterActionMoveDecrypt",
+  name: EnigmailLocale.getString("filter.decryptMove.label"),
+  value: "movemessage",
+  apply: function(aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
 
-        EnigmailLog.DEBUG("enigmail.js: filterActionMoveDecrypt: Move to: " + aActionValue + "\n");
+    EnigmailLog.DEBUG("enigmail.js: filterActionMoveDecrypt: Move to: " + aActionValue + "\n");
 
-        var msgHdrs = [];
+    var msgHdrs = [];
 
-        for(var i=0; i < aMsgHdrs.length; i++) {
-            msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
-        }
+    for (var i = 0; i < aMsgHdrs.length; i++) {
+      msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
+    }
 
-        EnigmailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, true, true);
+    EnigmailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, true, true);
 
-        return;
-    },
+    return;
+  },
 
-    isValidForType: function (type, scope) {
-        return true;
-    },
+  isValidForType: function(type, scope) {
+    return true;
+  },
 
-    validateActionValue: function (value, folder, type) {
-        EnigmailDialog.alert(null, EnigmailLocale.getString("filter.decryptMove.warnExperimental"));
+  validateActionValue: function(value, folder, type) {
+    EnigmailDialog.alert(null, EnigmailLocale.getString("filter.decryptMove.warnExperimental"));
 
-        if (value === "") {
-            return EnigmailLocale.getString("filter.folderRequired");
-        }
+    if (value === "") {
+      return EnigmailLocale.getString("filter.folderRequired");
+    }
 
-        return null;
-    },
+    return null;
+  },
 
-    allowDuplicates: false,
-    isAsync: false,
-    needsBody: true
+  allowDuplicates: false,
+  isAsync: false,
+  needsBody: true
 };
 
 /**
@@ -104,43 +104,43 @@ const filterActionMoveDecrypt = {
  * message untouched
  */
 const filterActionCopyDecrypt = {
-    id: "enigmail@enigmail.net#filterActionCopyDecrypt",
-    name: EnigmailLocale.getString("filter.decryptCopy.label"),
-    value: "copymessage",
-    apply: function (aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
-        EnigmailLog.DEBUG("enigmail.js: filterActionCopyDecrypt: Copy to: " + aActionValue + "\n");
+  id: "enigmail@enigmail.net#filterActionCopyDecrypt",
+  name: EnigmailLocale.getString("filter.decryptCopy.label"),
+  value: "copymessage",
+  apply: function(aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
+    EnigmailLog.DEBUG("enigmail.js: filterActionCopyDecrypt: Copy to: " + aActionValue + "\n");
 
-        var msgHdrs = [];
+    var msgHdrs = [];
 
-        for(var i=0; i < aMsgHdrs.length; i++) {
-            msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
-        }
+    for (var i = 0; i < aMsgHdrs.length; i++) {
+      msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
+    }
 
-        EnigmailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, false, true);
-        return;
-    },
+    EnigmailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, false, true);
+    return;
+  },
 
-    isValidForType: function (type, scope) {
-        return true;
-    },
+  isValidForType: function(type, scope) {
+    return true;
+  },
 
-    validateActionValue: function (value, folder, type) {
-        if( value === "") {
-            return EnigmailLocale.getString("filter.folderRequired");
-        }
+  validateActionValue: function(value, folder, type) {
+    if (value === "") {
+      return EnigmailLocale.getString("filter.folderRequired");
+    }
 
-        return null;
-    },
+    return null;
+  },
 
-    allowDuplicates: false,
-    isAsync: false,
-    needsBody: true
+  allowDuplicates: false,
+  isAsync: false,
+  needsBody: true
 };
 
 const EnigmailFilters = {
-    registerAll: function() {
-        var filterService = Cc["@mozilla.org/messenger/services/filters;1"].getService(Ci.nsIMsgFilterService);
-        filterService.addCustomAction(filterActionMoveDecrypt);
-        filterService.addCustomAction(filterActionCopyDecrypt);
-    }
+  registerAll: function() {
+    var filterService = Cc["@mozilla.org/messenger/services/filters;1"].getService(Ci.nsIMsgFilterService);
+    filterService.addCustomAction(filterActionMoveDecrypt);
+    filterService.addCustomAction(filterActionCopyDecrypt);
+  }
 };

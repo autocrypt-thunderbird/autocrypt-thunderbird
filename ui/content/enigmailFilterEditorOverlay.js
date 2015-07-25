@@ -36,8 +36,8 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
 var enigmail_origCheckActionsReorder = function() {
-    enigmail_origCheckActionsReorder();
-    EnigmailTimer.setTimeout(EnigmailFilterEditor.checkMoveAction.bind(EnigmailFilterEditor), 0);
+  enigmail_origCheckActionsReorder();
+  EnigmailTimer.setTimeout(EnigmailFilterEditor.checkMoveAction.bind(EnigmailFilterEditor), 0);
 };
 
 var EnigmailFilterEditor = {
@@ -65,8 +65,8 @@ var EnigmailFilterEditor = {
       }
 
       if (action.type == nsMsgFilterAction.StopExecution &&
-          i == gActionListOrdered.length - 1 &&
-          forbidden == i - 1) {
+        i == gActionListOrdered.length - 1 &&
+        forbidden == i - 1) {
         // allow "stop execution" if it's the only action after move
         forbidden = -1;
       }

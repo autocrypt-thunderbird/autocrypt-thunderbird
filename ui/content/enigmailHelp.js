@@ -47,11 +47,10 @@ function enigHelpLoad() {
 
   var winOptions = EnigGetWindowOptions();
   var helpFile = winOptions.src;
-  contentFrame.document.location.href="chrome://enigmail/locale/help/"+helpFile+".html";
+  contentFrame.document.location.href = "chrome://enigmail/locale/help/" + helpFile + ".html";
 }
 
-function contentAreaClick(event)
-{
+function contentAreaClick(event) {
   let uri = EnigGetHttpUri(event);
   if (uri) {
     EnigOpenUrlExternally(uri);

@@ -38,29 +38,28 @@
 EnigInitCommon("enigmailWrapSelection");
 
 
-function onLoad () {
+function onLoad() {
   EnigmailLog.DEBUG("enigmailWrapSelection.js: onLoad\n");
   window.arguments[0].cancelled = true;
   window.arguments[0].Select = "";
 }
 
-function onAccept () {
+function onAccept() {
   EnigmailLog.DEBUG("enigmailWrapSelection.js: onAccept\n");
-  WrapSelect=document.getElementById("WrapSelectGroup");
-  EnigmailLog.DEBUG("enigmailWrapSelection.js: onAccept, selected value='"+WrapSelect.value+"'\n");
+  WrapSelect = document.getElementById("WrapSelectGroup");
+  EnigmailLog.DEBUG("enigmailWrapSelection.js: onAccept, selected value='" + WrapSelect.value + "'\n");
   if (WrapSelect.value !== "") {
     window.arguments[0].Select = WrapSelect.value;
     window.arguments[0].cancelled = false;
     EnigmailLog.DEBUG("enigmailWrapSelection.js: onAccept, setting return value, disable cancel\n");
   }
-  else
-  {
+  else {
     EnigmailLog.DEBUG("enigmailWrapSelection.js: onAccept, enable cancel\n");
-    window.arguments[0].cancelled=true;
+    window.arguments[0].cancelled = true;
   }
 }
 
-function onCancel () {
+function onCancel() {
   EnigmailLog.DEBUG("enigmailWrapSelection.js: onCancel, enable cancel\n");
-  window.arguments[0].cancelled=true;
+  window.arguments[0].cancelled = true;
 }

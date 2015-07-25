@@ -71,8 +71,8 @@ function reloadData() {
   gUserId = null;
 
   var fingerprint = "";
-  var subKeyLen="";
-  var subAlgo="";
+  var subKeyLen = "";
+  var subAlgo = "";
   var treeChildren = document.getElementById("keyListChildren");
   var uidList = document.getElementById("uidListChildren");
 
@@ -80,7 +80,7 @@ function reloadData() {
   EnigCleanGuiList(treeChildren);
   EnigCleanGuiList(uidList);
 
-  var sigListStr = EnigmailKeyRing.getKeySig("0x"+gKeyId, exitCodeObj, errorMsgObj);
+  var sigListStr = EnigmailKeyRing.getKeySig("0x" + gKeyId, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value === 0) {
     var keyDetails = EnigGetKeyDetails(sigListStr);
 
@@ -88,16 +88,16 @@ function reloadData() {
       document.getElementById("showPhoto").removeAttribute("disabled");
     }
 
-    for (let i=0; i < keyDetails.uidList.length; i++) {
+    for (let i = 0; i < keyDetails.uidList.length; i++) {
       uidList.appendChild(createUidRow(keyDetails.uidList[i]));
     }
-    for (let i=0; i < keyDetails.subkeyList.length; i++) {
+    for (let i = 0; i < keyDetails.subkeyList.length; i++) {
       EnigAddSubkey(treeChildren, keyDetails.subkeyList[i]);
     }
 
     gUserId = keyDetails.gUserId;
     setAttr("userId", gUserId);
-    setAttr("keyId", "0x"+ gKeyId.substr(-8,8));
+    setAttr("keyId", "0x" + gKeyId.substr(-8, 8));
     setAttr("calcTrust", getTrustLabel(keyDetails.calcTrust));
     setAttr("ownerTrust", getTrustLabel(keyDetails.ownerTrust));
     if (keyDetails.fingerprint) {
@@ -129,9 +129,9 @@ function createCell(label) {
 }
 
 function getTrustLabel(trustCode) {
-  var trustTxt=EnigGetTrustLabel(trustCode);
-  if (trustTxt=="-" || trustTxt.length===0) {
-    trustTxt=EnigGetString("keyValid.unknown");
+  var trustTxt = EnigGetTrustLabel(trustCode);
+  if (trustTxt == "-" || trustTxt.length === 0) {
+    trustTxt = EnigGetString("keyValid.unknown");
   }
   return trustTxt;
 }
@@ -158,10 +158,12 @@ function viewSignatures() {
     keyId: gKeyId,
     keyListArr: gKeyList
   };
-  var resultObj = {refresh: false};
+  var resultObj = {
+    refresh: false
+  };
 
   window.openDialog("chrome://enigmail/content/enigmailViewKeySigDlg.xul",
-        "", "dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
+    "", "dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
 
   if (resultObj.refresh) {
     enableRefresh();
@@ -204,9 +206,11 @@ function manageUids() {
     ownKey: window.arguments[0].secKey
   };
 
-  var resultObj = {refresh: false};
+  var resultObj = {
+    refresh: false
+  };
   window.openDialog("chrome://enigmail/content/enigmailManageUidDlg.xul",
-        "", "dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
+    "", "dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
   if (resultObj.refresh) {
     enableRefresh();
     reloadData();

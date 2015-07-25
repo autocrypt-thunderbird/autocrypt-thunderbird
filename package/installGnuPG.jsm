@@ -36,7 +36,7 @@
 
 "use strict";
 
- /* Usage:
+/* Usage:
   InstallGnuPG.start(progressListener).
 
   progressListener needs to implement the following methods:
@@ -70,14 +70,14 @@ const EXEC_FILE_PERMS = 0x1C0; // 0700
 
 
 const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID =
-                              "@mozilla.org/network/file-output-stream;1";
-const DIR_SERV_CONTRACTID  = "@mozilla.org/file/directory_service;1";
+  "@mozilla.org/network/file-output-stream;1";
+const DIR_SERV_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
 const queryUrl = "https://www.enigmail.net/service/getGnupdDownload.svc";
 
-var EXPORTED_SYMBOLS = [ "InstallGnuPG" ];
+var EXPORTED_SYMBOLS = ["InstallGnuPG"];
 
 
 
@@ -89,8 +89,7 @@ function getTempDir() {
   return tmpFile;
 }
 
-function toHexString(charCode)
-{
+function toHexString(charCode) {
   return ("0" + charCode.toString(16)).slice(-2);
 }
 
@@ -119,7 +118,8 @@ function createTCPErrorFromFailedXHR(xhr) {
     // somehow not in the set of covered errors.
     try {
       errorClass = nssErrorsService.getErrorClass(status);
-    } catch (ex) {
+    }
+    catch (ex) {
       errorClass = 'SecurityProtocol';
     }
     if (errorClass == nsINSSErrorsService.ERROR_CLASS_BAD_CERT) {
@@ -134,7 +134,7 @@ function createTCPErrorFromFailedXHR(xhr) {
       // The bases are actually negative, so in our positive numeric space, we
       // need to subtract the base off our value.
       let nssErr = Math.abs(nsINSSErrorsService.NSS_SEC_ERROR_BASE) -
-              (status & 0xffff);
+        (status & 0xffff);
       switch (nssErr) {
         case 11: // SEC_ERROR_EXPIRED_CERTIFICATE, sec(11)
           errName = 'SecurityExpiredCertificateError';
@@ -143,8 +143,8 @@ function createTCPErrorFromFailedXHR(xhr) {
           errName = 'SecurityRevokedCertificateError';
           break;
 
-        // per bsmith, we will be unable to tell these errors apart very soon,
-        // so it makes sense to just folder them all together already.
+          // per bsmith, we will be unable to tell these errors apart very soon,
+          // so it makes sense to just folder them all together already.
         case 13: // SEC_ERROR_UNKNOWN_ISSUER, sec(13)
         case 20: // SEC_ERROR_UNTRUSTED_ISSUER, sec(20)
         case 21: // SEC_ERROR_UNTRUSTED_CERT, sec(21)
@@ -164,7 +164,7 @@ function createTCPErrorFromFailedXHR(xhr) {
     }
     else {
       let sslErr = Math.abs(nsINSSErrorsService.NSS_SSL_ERROR_BASE) -
-                       (status & 0xffff);
+        (status & 0xffff);
       switch (sslErr) {
         case 3: // SSL_ERROR_NO_CERTIFICATE, ssl(3)
           errName = 'SecurityNoCertificateError';
@@ -194,11 +194,11 @@ function createTCPErrorFromFailedXHR(xhr) {
       case 0x804B000C: // NS_ERROR_CONNECTION_REFUSED, network(13)
         errName = 'ConnectionRefusedError';
         break;
-      // network timeout error
+        // network timeout error
       case 0x804B000E: // NS_ERROR_NET_TIMEOUT, network(14)
         errName = 'NetworkTimeoutError';
         break;
-      // hostname lookup failed
+        // hostname lookup failed
       case 0x804B001E: // NS_ERROR_UNKNOWN_HOST, network(30)
         errName = 'DomainNotFoundError';
         break;
@@ -211,7 +211,10 @@ function createTCPErrorFromFailedXHR(xhr) {
     }
   }
 
-  return {name: errName, type: errType};
+  return {
+    name: errName,
+    type: errType
+  };
 }
 
 function Installer(progressListener) {
@@ -225,14 +228,14 @@ Installer.prototype = {
 
     var exitCode = -1;
     var mountPath = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
-    mountPath.initWithPath("/Volumes/"+this.mount);
+    mountPath.initWithPath("/Volumes/" + this.mount);
     if (mountPath.exists()) {
-      let p = mountPath.path +" ";
+      let p = mountPath.path + " ";
       let i = 1;
-      mountPath.initWithPath(p+i);
+      mountPath.initWithPath(p + i);
       while (mountPath.exists() && i < 10) {
         ++i;
-        mountPath.initWithPath(p+i);
+        mountPath.initWithPath(p + i);
       }
       if (mountPath.exists()) {
         throw "Error - cannot mount package";
@@ -245,11 +248,11 @@ Installer.prototype = {
     var cmd = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
     cmd.initWithPath("/usr/bin/open");
 
-    var args = [ "-W", this.installerFile.path ];
+    var args = ["-W", this.installerFile.path];
 
     var proc = {
-      command:     cmd,
-      arguments:   args,
+      command: cmd,
+      arguments: args,
       charset: null,
       done: function(result) {
         exitCode = result.exitCode;
@@ -258,23 +261,24 @@ Installer.prototype = {
 
     try {
       subprocess.call(proc).wait();
-      if (exitCode) throw "Installer failed with exit code "+exitCode;
-    } catch (ex) {
-      EnigmailLog.ERROR("installGnuPG.jsm: installMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
+      if (exitCode) throw "Installer failed with exit code " + exitCode;
+    }
+    catch (ex) {
+      EnigmailLog.ERROR("installGnuPG.jsm: installMacOs: subprocess.call failed with '" + ex.toString() + "'\n");
       throw ex;
     }
 
     EnigmailLog.DEBUG("installGnuPG.jsm: installMacOs - run installer\n");
 
-    args = [ "-W", this.mountPath.path+"/"+this.command ];
+    args = ["-W", this.mountPath.path + "/" + this.command];
 
     proc = {
-      command:     cmd,
-      arguments:   args,
+      command: cmd,
+      arguments: args,
       charset: null,
       done: function(result) {
         if (result.exitCode !== 0) {
-          deferred.reject("Installer failed with exit code "+result.exitCode);
+          deferred.reject("Installer failed with exit code " + result.exitCode);
         }
         else
           deferred.resolve();
@@ -283,31 +287,33 @@ Installer.prototype = {
 
     try {
       subprocess.call(proc);
-    } catch (ex) {
-      EnigmailLog.ERROR("installGnuPG.jsm: installMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
+    }
+    catch (ex) {
+      EnigmailLog.ERROR("installGnuPG.jsm: installMacOs: subprocess.call failed with '" + ex.toString() + "'\n");
       throw ex;
     }
   },
 
-  cleanupMacOs: function () {
+  cleanupMacOs: function() {
     EnigmailLog.DEBUG("installGnuPG.jsm.cleanupMacOs: unmount package\n");
 
     var cmd = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
     cmd.initWithPath("/usr/sbin/diskutil");
-    var args = [ "eject", this.mountPath.path ];
+    var args = ["eject", this.mountPath.path];
     var proc = {
-      command:     cmd,
-      arguments:   args,
+      command: cmd,
+      arguments: args,
       charset: null,
       done: function(result) {
-        if (result.exitCode) EnigmailLog.ERROR("Installer failed with exit code "+result.exitCode);
+        if (result.exitCode) EnigmailLog.ERROR("Installer failed with exit code " + result.exitCode);
       }
     };
 
     try {
       subprocess.call(proc).wait();
-    } catch (ex) {
-      EnigmailLog.ERROR("installGnuPG.jsm.cleanupMacOs: subprocess.call failed with '"+ex.toString()+"'\n");
+    }
+    catch (ex) {
+      EnigmailLog.ERROR("installGnuPG.jsm.cleanupMacOs: subprocess.call failed with '" + ex.toString() + "'\n");
     }
 
     EnigmailLog.DEBUG("installGnuPG.jsm: cleanupMacOs - remove package\n");
@@ -321,10 +327,10 @@ Installer.prototype = {
       // use runwAsync in order to get UAC approval on Windows 7 / 8 if required
 
       var obs = {
-        QueryInterface: XPCOMUtils.generateQI([ Ci.nsIObserver, Ci.nsISupports ]),
+        QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver, Ci.nsISupports]),
 
-        observe: function (proc, aTopic, aData) {
-          EnigmailLog.DEBUG("installGnuPG.jsm: installWindows.observe: topic='"+aTopic+"' \n");
+        observe: function(proc, aTopic, aData) {
+          EnigmailLog.DEBUG("installGnuPG.jsm: installWindows.observe: topic='" + aTopic + "' \n");
 
           if (aTopic == "process-finished") {
             EnigmailLog.DEBUG("installGnuPG.jsm: installWindows finished\n");
@@ -340,7 +346,7 @@ Installer.prototype = {
       proc.init(this.installerFile);
       proc.runwAsync([], 0, obs, false);
     }
-    catch(ex) {
+    catch (ex) {
       deferred.reject("Installer could not be started");
     }
 
@@ -351,20 +357,19 @@ Installer.prototype = {
     this.installerFile.remove(false);
   },
 
-  installUnix: function() {
-  },
+  installUnix: function() {},
 
   checkHashSum: function() {
     EnigmailLog.DEBUG("installGnuPG.jsm: checkHashSum\n");
     var istream = Components.classes["@mozilla.org/network/file-input-stream;1"]
-                            .createInstance(Components.interfaces.nsIFileInputStream);
+      .createInstance(Components.interfaces.nsIFileInputStream);
     // open for reading
     istream.init(this.installerFile, 0x01, 292, 0); // octal 0444 - octal literals are deprecated
 
     var ch = Components.classes["@mozilla.org/security/hash;1"]
-                       .createInstance(Components.interfaces.nsICryptoHash);
+      .createInstance(Components.interfaces.nsICryptoHash);
     ch.init(ch.SHA1);
-    const PR_UINT32_MAX = 0xffffffff;     // read entire file
+    const PR_UINT32_MAX = 0xffffffff; // read entire file
     ch.updateFromStream(istream, PR_UINT32_MAX);
     var gotHash = ch.finish(false);
 
@@ -373,7 +378,7 @@ Installer.prototype = {
     var hashStr = [toHexString(gotHash.charCodeAt(i)) for (i in gotHash)].join("");
 
     if (this.hash != hashStr) {
-      EnigmailLog.DEBUG("installGnuPG.jsm: checkHashSum - hash sums don't match: "+hashStr+"\n");
+      EnigmailLog.DEBUG("installGnuPG.jsm: checkHashSum - hash sums don't match: " + hashStr + "\n");
     }
     else
       EnigmailLog.DEBUG("installGnuPG.jsm: checkHashSum - hash sum OK\n");
@@ -385,11 +390,13 @@ Installer.prototype = {
 
     let deferred = Promise.defer();
 
-    function reqListener () {
+    function reqListener() {
       if (typeof(on.responseXML) == "object") {
-        EnigmailLog.DEBUG("installGnuPG.jsm: getDownloadUrl.reqListener: got: "+on.responseText+"\n");
-        if (! on.responseXML) {
-          onError({type: "Network" });
+        EnigmailLog.DEBUG("installGnuPG.jsm: getDownloadUrl.reqListener: got: " + on.responseText + "\n");
+        if (!on.responseXML) {
+          onError({
+            type: "Network"
+          });
           return;
         }
         let doc = on.responseXML.firstChild;
@@ -424,17 +431,17 @@ Installer.prototype = {
       var oReq = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
       oReq.onload = reqListener;
       oReq.addEventListener("error",
-                       function(e) {
-                         var error = createTCPErrorFromFailedXHR(oReq);
-                         onError(error);
-                       },
-                       false);
+        function(e) {
+          var error = createTCPErrorFromFailedXHR(oReq);
+          onError(error);
+        },
+        false);
 
-      oReq.open("get", queryUrl + "?vEnigmail="+escape(EnigmailApp.getVersion())+ "&os=" + escape(os) + "&platform=" +
-                escape(platform), true);
+      oReq.open("get", queryUrl + "?vEnigmail=" + escape(EnigmailApp.getVersion()) + "&os=" + escape(os) + "&platform=" +
+        escape(platform), true);
       oReq.send();
     }
-    catch(ex) {
+    catch (ex) {
       deferred.reject(ex);
       EnigmailLog.writeException("installGnuPG.jsm", ex);
 
@@ -446,7 +453,7 @@ Installer.prototype = {
   },
 
   performDownload: function() {
-    EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: "+ this.url+"\n");
+    EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: " + this.url + "\n");
 
     var self = this;
     var deferred = Promise.defer();
@@ -455,10 +462,10 @@ Installer.prototype = {
 
       if (event.lengthComputable) {
         var percentComplete = event.loaded / event.total;
-        EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: "+ percentComplete * 100+"% loaded\n");
+        EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: " + percentComplete * 100 + "% loaded\n");
       }
       else {
-        EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: got "+ event.loaded+"bytes\n");
+        EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: got " + event.loaded + "bytes\n");
       }
 
       if (self.progressListener)
@@ -472,7 +479,7 @@ Installer.prototype = {
     }
 
     function onLoaded(event) {
-      EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: downloaded "+ event.loaded+"bytes\n");
+      EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: downloaded " + event.loaded + "bytes\n");
 
       if (self.progressListener)
         self.progressListener.onDownloaded();
@@ -481,7 +488,9 @@ Installer.prototype = {
         // this line used to read:
         //    performInstall(this.response).then(function _f() { performCleanup(); });
         // but since this.response is never actually set anywhere, it should always be null
-        performInstall(null).then(function _f() { performCleanup(); });
+        performInstall(null).then(function _f() {
+          performCleanup();
+        });
       }
       catch (ex) {
         EnigmailLog.writeException("installGnuPG.jsm", ex);
@@ -493,7 +502,7 @@ Installer.prototype = {
 
     function performInstall(response) {
       var arraybuffer = response; // not responseText
-      EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: bytes "+arraybuffer.byteLength +"\n");
+      EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: bytes " + arraybuffer.byteLength + "\n");
 
       try {
         var flags = 0x02 | 0x08 | 0x20;
@@ -501,22 +510,22 @@ Installer.prototype = {
         self.installerFile = getTempDir();
 
         switch (EnigmailOS.getOS()) {
-        case "Darwin":
-          self.installerFile.append("gpgtools.dmg");
-          self.performCleanup = self.cleanupMacOs;
-          break;
-        case "WINNT":
-          self.installerFile.append("gpg4win.exe");
-          self.performCleanup = self.cleanupWindows;
-          break;
-        default:
-          self.installerFile.append("gpg-installer.bin");
-          self.performCleanup = null;
+          case "Darwin":
+            self.installerFile.append("gpgtools.dmg");
+            self.performCleanup = self.cleanupMacOs;
+            break;
+          case "WINNT":
+            self.installerFile.append("gpg4win.exe");
+            self.performCleanup = self.cleanupWindows;
+            break;
+          default:
+            self.installerFile.append("gpg-installer.bin");
+            self.performCleanup = null;
         }
 
         self.installerFile.createUnique(self.installerFile.NORMAL_FILE_TYPE, EXEC_FILE_PERMS);
 
-        EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: writing file to "+ self.installerFile.path +"\n");
+        EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: writing file to " + self.installerFile.path + "\n");
 
         fileOutStream.init(self.installerFile, flags, EXEC_FILE_PERMS, 0);
 
@@ -536,7 +545,7 @@ Installer.prototype = {
             cont = self.progressListener.onWarning("hashSumMismatch");
           }
 
-          if (! cont) {
+          if (!cont) {
             deferred.reject("Aborted due to hash sum error");
             return;
           }
@@ -544,18 +553,18 @@ Installer.prototype = {
         }
 
         switch (EnigmailOS.getOS()) {
-        case "Darwin":
-          self.installMacOs(deferred);
-          break;
-        case "WINNT":
-          self.installWindows(deferred);
-          break;
-        default:
-          self.installUnix(deferred);
+          case "Darwin":
+            self.installMacOs(deferred);
+            break;
+          case "WINNT":
+            self.installWindows(deferred);
+            break;
+          default:
+            self.installUnix(deferred);
         }
 
       }
-      catch(ex) {
+      catch (ex) {
         deferred.reject(ex);
         EnigmailLog.writeException("installGnuPG.jsm", ex);
 
@@ -571,7 +580,7 @@ Installer.prototype = {
       try {
         if (self.performCleanup) self.performCleanup();
       }
-      catch(ex) {}
+      catch (ex) {}
 
       if (self.progressListener) {
         EnigmailLog.DEBUG("installGnuPG.jsm: performCleanup - onLoaded()\n");
@@ -585,11 +594,11 @@ Installer.prototype = {
 
       oReq.addEventListener("load", onLoaded, false);
       oReq.addEventListener("error",
-                       function(e) {
-                         var error = createTCPErrorFromFailedXHR(oReq);
-                         onError(error);
-                       },
-                       false);
+        function(e) {
+          var error = createTCPErrorFromFailedXHR(oReq);
+          onError(error);
+        },
+        false);
 
       oReq.addEventListener("progress", onProgress, false);
       oReq.open("get", this.url, true);
@@ -602,7 +611,7 @@ Installer.prototype = {
         });
       oReq.send();
     }
-    catch(ex) {
+    catch (ex) {
       deferred.reject(ex);
       EnigmailLog.writeException("installGnuPG.jsm", ex);
 
@@ -620,9 +629,9 @@ var InstallGnuPG = {
   // returns true if item available
   checkAvailability: function() {
     switch (EnigmailOS.getOS()) {
-    case "Darwin":
-    case "WINNT":
-      return true;
+      case "Darwin":
+      case "WINNT":
+        return true;
     }
 
     return false;
@@ -632,7 +641,9 @@ var InstallGnuPG = {
 
     var i = new Installer(progressListener);
     i.getDownloadUrl(i).
-        then(function _dl() { i.performDownload(); });
+    then(function _dl() {
+      i.performDownload();
+    });
     return i;
   }
 };

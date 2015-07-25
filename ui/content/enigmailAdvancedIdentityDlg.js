@@ -32,7 +32,7 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** *
-*/
+ */
 
 
 EnigInitCommon("enigmailAdvancedIdentityDlg");
@@ -43,9 +43,9 @@ var gOpenPgpHeaderKeyId;
 var gOpenPgpSendKeyWithMsg;
 
 function onLoad() {
-  gOpenPgpUrlName        = document.getElementById("openpgpHeaderMode.url.name");
-  gOpenPgpHeaderKeyId    = document.getElementById("openpgpHeaderMode.keyId");
-  gOpenPgpHeaderUrl      = document.getElementById("openpgpHeaderMode.url");
+  gOpenPgpUrlName = document.getElementById("openpgpHeaderMode.url.name");
+  gOpenPgpHeaderKeyId = document.getElementById("openpgpHeaderMode.keyId");
+  gOpenPgpHeaderUrl = document.getElementById("openpgpHeaderMode.url");
   gOpenPgpSendKeyWithMsg = document.getElementById("openpgp.sendKeyWithMsg");
 
   var settings = window.arguments[0].identitySettings;

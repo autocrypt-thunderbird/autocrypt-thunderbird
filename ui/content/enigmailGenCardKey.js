@@ -32,7 +32,7 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  * ***** END LICENSE BLOCK ***** *
-*/
+ */
 
 var gUserIdentityList;
 var gUserIdentityListPopup;
@@ -40,9 +40,9 @@ var gUseForSigning;
 var gUsedId;
 
 function onLoad() {
-  gUserIdentityList      = document.getElementById("userIdentity");
+  gUserIdentityList = document.getElementById("userIdentity");
   gUserIdentityListPopup = document.getElementById("userIdentityPopup");
-  gUseForSigning     = document.getElementById("useForSigning");
+  gUseForSigning = document.getElementById("useForSigning");
   //document.getElementById("bcNoExpiry")
   if (gUserIdentityListPopup) {
     fillIdentityListPopup();
@@ -61,7 +61,7 @@ function enableDisable(watchElement, bcElement, inverted) {
       bcBackupKey.setAttribute("disabled", "true");
     }
     else {
-     bcBackupKey.removeAttribute("disabled");
+      bcBackupKey.removeAttribute("disabled");
     }
   }
   else {
@@ -78,34 +78,32 @@ function enigGenKeyObserver() {
   this._state = 0;
 }
 
-enigGenKeyObserver.prototype =
-{
+enigGenKeyObserver.prototype = {
   keyId: null,
   backupLocation: null,
   _state: null,
 
-  QueryInterface : function(iid)
-  {
+  QueryInterface: function(iid) {
     //EnigmailLog.DEBUG("enigmailGenCardKey: EnigMimeReadCallback.QI: "+iid+"\n");
     if (iid.equals(Components.interfaces.nsIEnigMimeReadCallback) ||
-        iid.equals(Components.interfaces.nsISupports) )
+      iid.equals(Components.interfaces.nsISupports))
       return this;
 
     throw Components.results.NS_NOINTERFACE;
   },
 
-  onDataAvailable: function (data) {
+  onDataAvailable: function(data) {
 
     var txt = "";
     var aLine = data.split(/ +/);
 
     if (aLine[0] == "[GNUPG:]") {
 
-     if (aLine[1]=="GET_LINE" && aLine[2]=="keygen.comment") {
-        txt=EnigmailLocale.getString("keygen.started")+"\n";
-        this._state=1;
+      if (aLine[1] == "GET_LINE" && aLine[2] == "keygen.comment") {
+        txt = EnigmailLocale.getString("keygen.started") + "\n";
+        this._state = 1;
       }
-      else if (aLine[1]=="PROGRESS" && aLine[2]=="primegen") {
+      else if (aLine[1] == "PROGRESS" && aLine[2] == "primegen") {
         txt = aLine[3];
       }
       else if (aLine[1] == "BACKUP_KEY_CREATED") {
@@ -117,7 +115,7 @@ enigGenKeyObserver.prototype =
 
     }
     else if (this._state > 0) {
-      txt=data+"\n";
+      txt = data + "\n";
     }
 
     if (txt) {
@@ -127,7 +125,7 @@ enigGenKeyObserver.prototype =
         var consoleElement = contentFrame.document.getElementById('console');
         consoleElement.firstChild.data += txt;
         if (!contentFrame.mouseDownState)
-          contentFrame.scrollTo(0,9999);
+          contentFrame.scrollTo(0, 9999);
       }
     }
 
@@ -140,7 +138,7 @@ function startKeyGen() {
 
   var enigmailSvc = EnigmailCore.getService(window);
   if (!enigmailSvc) {
-    EnigmailDialog.alert(window,EnigmailLocale.getString("accessError"));
+    EnigmailDialog.alert(window, EnigmailLocale.getString("accessError"));
     return;
   }
 
@@ -151,23 +149,23 @@ function startKeyGen() {
   var passphrase = passphraseElement.value;
 
   if (!createBackupElement.checked) {
-    passphrase="";
+    passphrase = "";
   }
   else {
     if (passphrase != passphrase2Element.value) {
-      EnigmailDialog.alert(window,EnigmailLocale.getString("passNoMatch"));
+      EnigmailDialog.alert(window, EnigmailLocale.getString("passNoMatch"));
       return;
     }
 
-    if (passphrase.search(/[^\x20-\x7E]/)>=0) {
-      if (! EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("keygen.passCharProblem"),
+    if (passphrase.search(/[^\x20-\x7E]/) >= 0) {
+      if (!EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("keygen.passCharProblem"),
           EnigmailLocale.getString("dlg.button.ignore"), EnigmailLocale.getString("dlg.button.cancel"))) {
         return null;
       }
     }
 
     if (!passphrase) {
-      EnigmailDialog.alert(window,EnigmailLocale.getString("keygen.passRequired"));
+      EnigmailDialog.alert(window, EnigmailLocale.getString("keygen.passRequired"));
       return;
     }
   }
@@ -181,14 +179,14 @@ function startKeyGen() {
 
   var expiryTime = 0;
   var valid = "0";
-  if (! noExpiry.checked) {
+  if (!noExpiry.checked) {
     expiryTime = Number(expireInput.value) * (timeScale.value == "y" ? 365 : (timeScale.value == "m" ? 30 : 1));
     if (expiryTime > 36500) {
-      EnigmailDialog.alert(window,EnigmailLocale.getString("expiryTooLong"));
+      EnigmailDialog.alert(window, EnigmailLocale.getString("expiryTooLong"));
       return;
     }
-    if ( expiryTime <= 0) {
-      EnigmailDialog.alert(window,EnigmailLocale.getString("expiryTooShort"));
+    if (expiryTime <= 0) {
+      EnigmailDialog.alert(window, EnigmailLocale.getString("expiryTooShort"));
       return;
     }
     valid = String(Number(expireInput.value));
@@ -201,7 +199,7 @@ function startKeyGen() {
   var userEmail = curId.email;
 
   if (!userName) {
-    EnigmailDialog.alert(window,EnigmailLocale.getString("passUserName"));
+    EnigmailDialog.alert(window, EnigmailLocale.getString("passUserName"));
     return;
   }
 
@@ -212,10 +210,10 @@ function startKeyGen() {
 
   idString += " <" + userEmail + ">";
 
-  var confirmMsg = EnigmailLocale.getString("keyConfirm",idString);
+  var confirmMsg = EnigmailLocale.getString("keyConfirm", idString);
 
   if (!EnigConfirm(confirmMsg, EnigmailLocale.getString("keyMan.button.generateKey"))) {
-   return;
+    return;
   }
   var contentFrame = EnigmailWindows.getFrame(window, "keygenConsole");
   if (contentFrame) {
@@ -225,12 +223,12 @@ function startKeyGen() {
 
   var generateObserver = new enigGenKeyObserver();
   EnigmailKeyEditor.genCardKey(window,
-                           userName,
-                           userEmail,
-                           comment,
-                           valid,
-                           passphrase,
-                           generateObserver,
+    userName,
+    userEmail,
+    comment,
+    valid,
+    passphrase,
+    generateObserver,
     function _keyGenCb(exitCode, errorMsg) {
 
       if (exitCode === 0 && generateObserver.keyId) {
@@ -238,16 +236,16 @@ function startKeyGen() {
         if (document.getElementById("useForSigning").checked && generateObserver.keyId) {
           gUsedId.setBoolAttribute("enablePgp", true);
           gUsedId.setIntAttribute("pgpKeyMode", 1);
-          gUsedId.setCharAttribute("pgpkeyId", "0x"+generateObserver.keyId.substr(-8,8));
+          gUsedId.setCharAttribute("pgpkeyId", "0x" + generateObserver.keyId.substr(-8, 8));
         }
 
-        var msg=EnigmailLocale.getString("keygen.completed", generateObserver.keyId);
+        var msg = EnigmailLocale.getString("keygen.completed", generateObserver.keyId);
 
         if (generateObserver.backupLocation) {
-          msg += "\n"+EnigmailLocale.getString("keygen.keyBackup", generateObserver.backupLocation);
+          msg += "\n" + EnigmailLocale.getString("keygen.keyBackup", generateObserver.backupLocation);
         }
 
-        if (EnigmailDialog.confirmDlg(window, msg+"\n\n"+EnigmailLocale.getString("revokeCertRecommended"), EnigmailLocale.getString("keyMan.button.generateCert"))) {
+        if (EnigmailDialog.confirmDlg(window, msg + "\n\n" + EnigmailLocale.getString("revokeCertRecommended"), EnigmailLocale.getString("keyMan.button.generateCert"))) {
           EnigCreateRevokeCert(generateObserver.keyId, curId.email, closeWin);
         }
         else
@@ -262,4 +260,3 @@ function startKeyGen() {
 function closeWin() {
   window.close();
 }
-

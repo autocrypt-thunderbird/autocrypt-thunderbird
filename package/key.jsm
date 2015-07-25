@@ -39,118 +39,124 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = [ "EnigmailKey" ];
+const EXPORTED_SYMBOLS = ["EnigmailKey"];
 
 const Cu = Components.utils;
 
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 
 function KeyEntry(key) {
-    if (!(this instanceof KeyEntry)) {
-        return new KeyEntry(key);
-    }
-    // same data as in packetlist but in structured form
-    this.primaryKey = null;
-    this.revocationSignature = null;
-    this.directSignatures = null;
-    this.users = null;
-    this.subKeys = null;
-    this.packetlist2structure(this.parsePackets(key));
-    if (!this.primaryKey || !this.users) {
-        throw new Error('Invalid key: need at least key and user ID packet');
-    }
-    return this;
+  if (!(this instanceof KeyEntry)) {
+    return new KeyEntry(key);
+  }
+  // same data as in packetlist but in structured form
+  this.primaryKey = null;
+  this.revocationSignature = null;
+  this.directSignatures = null;
+  this.users = null;
+  this.subKeys = null;
+  this.packetlist2structure(this.parsePackets(key));
+  if (!this.primaryKey || !this.users) {
+    throw new Error('Invalid key: need at least key and user ID packet');
+  }
+  return this;
 }
 
 KeyEntry.prototype = {
-    parsePackets: function(key) {
-        const packetHeaders = [":public key packet:",
-            ":user ID packet:",
-            ":public sub key packet:",
-            ":secret sub key packet:",
-            ":signature packet:",
-            ":secret key packet:"];
-        var _packets = [];
-        function extractPackets(line){
-            var is_packet_hr = false;
-            packetHeaders.forEach(
-                function (packet) {
-                    if (line.search(packet) > -1) {
-                        is_packet_hr = true;
-                        var obj = {tag:packet,value:""};
-                        _packets.push(obj);
-                    }
-                });
-            if(!is_packet_hr) {
-                var obj = _packets.pop();
-                obj.value += line+"\n";
-                _packets.push(obj);
-            }
-        }
-        var lines = key.split("\n");
-        for (var i in  lines) {
-            if(!lines[i].startsWith("gpg:")) extractPackets(lines[i]);
-        }
-        return _packets;
-    },
+  parsePackets: function(key) {
+    const packetHeaders = [":public key packet:",
+      ":user ID packet:",
+      ":public sub key packet:",
+      ":secret sub key packet:",
+      ":signature packet:",
+      ":secret key packet:"
+    ];
+    var _packets = [];
 
-    packetlist2structure: function (packetlist) {
-        for (var i = 0; i < packetlist.length; i++) {
-            var user, subKey;
-
-            switch (packetlist[i].tag) {
-                case ":secret key packet:":
-                    this.primaryKey = packetlist[i];
-                    break;
-                case ":user ID packet:":
-                    if (!this.users) this.users = [];
-                    user = packetlist[i];
-                    this.users.push(user);
-                    break;
-                case ":public sub key packet:":
-                case ":secret sub key packet:":
-                    user = null;
-                    if (!this.subKeys) this.subKeys = [];
-                    subKey = packetlist[i];
-                    this.subKeys.push(subKey);
-                    break;
-                case ":signature packet:":
-                    break;
-            }
-        }
+    function extractPackets(line) {
+      var is_packet_hr = false;
+      packetHeaders.forEach(
+        function(packet) {
+          if (line.search(packet) > -1) {
+            is_packet_hr = true;
+            var obj = {
+              tag: packet,
+              value: ""
+            };
+            _packets.push(obj);
+          }
+        });
+      if (!is_packet_hr) {
+        var obj = _packets.pop();
+        obj.value += line + "\n";
+        _packets.push(obj);
+      }
     }
+    var lines = key.split("\n");
+    for (var i in lines) {
+      if (!lines[i].startsWith("gpg:")) extractPackets(lines[i]);
+    }
+    return _packets;
+  },
+
+  packetlist2structure: function(packetlist) {
+    for (var i = 0; i < packetlist.length; i++) {
+      var user, subKey;
+
+      switch (packetlist[i].tag) {
+        case ":secret key packet:":
+          this.primaryKey = packetlist[i];
+          break;
+        case ":user ID packet:":
+          if (!this.users) this.users = [];
+          user = packetlist[i];
+          this.users.push(user);
+          break;
+        case ":public sub key packet:":
+        case ":secret sub key packet:":
+          user = null;
+          if (!this.subKeys) this.subKeys = [];
+          subKey = packetlist[i];
+          this.subKeys.push(subKey);
+          break;
+        case ":signature packet:":
+          break;
+      }
+    }
+  }
 };
 
 const EnigmailKey = {
-    Entry: KeyEntry,
+  Entry: KeyEntry,
 
-    /**
-     * Format a key fingerprint
-     * @fingerprint |string|  -  unformated OpenPGP fingerprint
-     *
-     * @return |string| - formatted string
-     */
-    formatFpr: function (fingerprint) {
-        EnigmailLog.DEBUG("key.jsm: EnigmailKey.formatFpr(" + fingerprint + ")\n");
-        // format key fingerprint
-        let r="";
-        const fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
-        if (fpr && fpr.length > 2) {
-            fpr.shift();
-            r=fpr.join(" ");
-        }
-
-        return r;
-    },
-
-    // Extract public key from Status Message
-    extractPubkey: function (statusMsg) {
-        const matchb = statusMsg.match(/(^|\n)NO_PUBKEY (\w{8})(\w{8})/);
-        if (matchb && (matchb.length > 3)) {
-            EnigmailLog.DEBUG("enigmailCommon.jsm:: Enigmail.extractPubkey: NO_PUBKEY 0x"+matchb[3]+"\n");
-            return matchb[2]+matchb[3];
-        } else {
-            return null;
-        }
+  /**
+   * Format a key fingerprint
+   * @fingerprint |string|  -  unformated OpenPGP fingerprint
+   *
+   * @return |string| - formatted string
+   */
+  formatFpr: function(fingerprint) {
+    EnigmailLog.DEBUG("key.jsm: EnigmailKey.formatFpr(" + fingerprint + ")\n");
+    // format key fingerprint
+    let r = "";
+    const fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
+    if (fpr && fpr.length > 2) {
+      fpr.shift();
+      r = fpr.join(" ");
     }
+
+    return r;
+  },
+
+  // Extract public key from Status Message
+  extractPubkey: function(statusMsg) {
+    const matchb = statusMsg.match(/(^|\n)NO_PUBKEY (\w{8})(\w{8})/);
+    if (matchb && (matchb.length > 3)) {
+      EnigmailLog.DEBUG("enigmailCommon.jsm:: Enigmail.extractPubkey: NO_PUBKEY 0x" + matchb[3] + "\n");
+      return matchb[2] + matchb[3];
+    }
+    else {
+      return null;
+    }
+  }
 };

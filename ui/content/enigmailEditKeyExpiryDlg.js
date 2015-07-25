@@ -63,11 +63,11 @@ function reloadData() {
   // clean lists
   EnigCleanGuiList(treeChildren);
 
-  var keyListStr = EnigmailKeyRing.getKeySig("0x"+gKeyId, exitCodeObj, errorMsgObj);
+  var keyListStr = EnigmailKeyRing.getKeySig("0x" + gKeyId, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value === 0) {
     var keyDetails = EnigGetKeyDetails(keyListStr);
 
-    for (var i=0; i < keyDetails.subkeyList.length; i++) {
+    for (var i = 0; i < keyDetails.subkeyList.length; i++) {
       EnigAddSubkeyWithSelectboxes(treeChildren, keyDetails.subkeyList[i]);
     }
   }
@@ -86,17 +86,18 @@ function enigmailKeySelCallback(event) {
 
 
   var treeItem = Tree.contentView.getItemAtIndex(row.value);
-  Tree.currentItem=treeItem;
+  Tree.currentItem = treeItem;
   if (col.value.id != "selectionCol")
     return;
 
-  var aRows = treeItem.getElementsByAttribute("id","indicator");
+  var aRows = treeItem.getElementsByAttribute("id", "indicator");
 
   if (aRows.length) {
-    var elem=aRows[0];
+    var elem = aRows[0];
     if (elem.getAttribute("active") == "1") {
       EnigSetActive(elem, 0);
-    } else if (elem.getAttribute("active") == "0") {
+    }
+    else if (elem.getAttribute("active") == "0") {
       EnigSetActive(elem, 1);
     }
   }
@@ -119,8 +120,8 @@ function processKey(subKeys) {
     noExpiry,
     function(exitCode, errorMsg) {
       if (exitCode !== 0) {
-        EnigmailTimer.setTimeout(function () {
-          EnigmailDialog.alert(window, EnigmailLocale.getString("setKeyExpirationDateFailed")+"\n\n"+errorMsg);
+        EnigmailTimer.setTimeout(function() {
+          EnigmailDialog.alert(window, EnigmailLocale.getString("setKeyExpirationDateFailed") + "\n\n" + errorMsg);
         }, 10);
       }
       else {
@@ -137,17 +138,17 @@ function processKey(subKeys) {
 function getSelectedSubkeys() {
   EnigmailLog.DEBUG("enigmailEditKeyExpiryDlg.js: getSelectedSubkeys()\n");
 
-  var keySelList   = document.getElementById("subkeyList");
+  var keySelList = document.getElementById("subkeyList");
   var treeChildren = keySelList.getElementsByAttribute("id", "keyListChildren")[0];
-  var item=treeChildren.firstChild;
+  var item = treeChildren.firstChild;
   var selectedSubKeys = [];
 
   var subkeyNumber = 0;
 
   while (item) {
-    var aRows = item.getElementsByAttribute("id","indicator");
+    var aRows = item.getElementsByAttribute("id", "indicator");
     if (aRows.length) {
-      var elem=aRows[0];
+      var elem = aRows[0];
       if (elem.getAttribute("active") == "1") {
         selectedSubKeys.push(subkeyNumber);
       }
@@ -169,9 +170,10 @@ function onAccept() {
     subkeys = getSelectedSubkeys();
     if (subkeys.length > 0) {
       processKey(subkeys);
-    } else {
-      EnigmailTimer.setTimeout(function () {
-        EnigmailDialog.alert(window, EnigmailLocale.getString("noKeySelected")+"\n");
+    }
+    else {
+      EnigmailTimer.setTimeout(function() {
+        EnigmailDialog.alert(window, EnigmailLocale.getString("noKeySelected") + "\n");
       }, 10);
     }
   }
@@ -186,15 +188,15 @@ function checkExpirationDate() {
   var timeScale = document.getElementById("timeScale");
 
   var expiryTime = 0;
-  if (! noExpiry.checked) {
+  if (!noExpiry.checked) {
     expiryTime = Number(expireInput.value) * Number(timeScale.value);
-    if (expiryTime > 90*365) {
+    if (expiryTime > 90 * 365) {
       /* alert("You cannot create a key that expires in more than 100 years."); */
       /* @TODO GPG throws an error already when using 95 years (multiplying 365 and 95) */
       if (gAlertPopUpIsOpen !== true) {
         gAlertPopUpIsOpen = true;
-        EnigmailTimer.setTimeout(function () {
-          EnigmailDialog.alert(window, EnigmailLocale.getString("expiryTooLongShorter")+"\n");
+        EnigmailTimer.setTimeout(function() {
+          EnigmailDialog.alert(window, EnigmailLocale.getString("expiryTooLongShorter") + "\n");
           gAlertPopUpIsOpen = false;
         }, 10);
       }
@@ -204,8 +206,8 @@ function checkExpirationDate() {
       /* alert("Your key must be valid for at least one day."); */
       if (gAlertPopUpIsOpen !== true) {
         gAlertPopUpIsOpen = true;
-        EnigmailTimer.setTimeout(function () {
-          EnigmailDialog.alert(window, EnigmailLocale.getString("expiryTooShort")+"\n");
+        EnigmailTimer.setTimeout(function() {
+          EnigmailDialog.alert(window, EnigmailLocale.getString("expiryTooShort") + "\n");
           gAlertPopUpIsOpen = false;
         }, 10);
       }
@@ -222,6 +224,6 @@ function onNoExpiry() {
   var expireInput = document.getElementById("expireInput");
   var timeScale = document.getElementById("timeScale");
 
-  expireInput.disabled=noExpiry.checked;
-  timeScale.disabled=noExpiry.checked;
+  expireInput.disabled = noExpiry.checked;
+  timeScale.disabled = noExpiry.checked;
 }
