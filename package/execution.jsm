@@ -220,7 +220,7 @@ const EnigmailExecution = {
         var outputData = "";
         var errOutput  = "";
         EnigmailLog.CONSOLE("enigmail> "+EnigmailFiles.formatCmdLine(command, args)+"\n");
-        var procBuilder = new subprocess.ProcessBuilder();
+        var procBuilder = new EnigmailExecution.processBuilder();
         procBuilder.setCommand(command);
         procBuilder.setArguments(args);
         procBuilder.setEnvironment(EnigmailCore.getEnvList());
@@ -309,8 +309,39 @@ const EnigmailExecution = {
         return exitCode;
     },
 
+    processBuilder: function () {
+        this.process = {};
+        this.setCommand = function(command){
+            this.process.command = command;
+        };
+        this.setArguments = function(args){
+            this.process.arguments = args;
+        };
+        this.setEnvironment = function(envList){
+            this.process.environment = envList;
+        };
+        this.setStdin = function(stdin){
+            this.process.stdin = stdin;
+        };
+        this.setStdout = function(stdout){
+            this.process.stdout = stdout;
+        };
+        this.setDone = function(done){
+            this.process.done = done;
+        };
+        this.build = function(){
+            this.process.charset= null;
+            this.process.mergeStderr= false;
+            this.process.resultData= "";
+            this.process.errorData= "";
+            this.process.exitCode= -1;
+            return this.process;
+        };
+        return this;
+    },
+
     execCmd2: function (command, args, stdinFunc, stdoutFunc, doneFunc) {
-        var procBuilder = new subprocess.ProcessBuilder();
+        var procBuilder = new EnigmailExecution.processBuilder();
         procBuilder.setCommand(command);
         procBuilder.setArguments(args);
         procBuilder.setEnvironment(EnigmailCore.getEnvList());
