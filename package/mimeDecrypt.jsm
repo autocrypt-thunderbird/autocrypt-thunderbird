@@ -237,12 +237,18 @@ EnigmailMimeDecrypt.prototype = {
           msgSvc.GetUrlForUri(this.msgUriSpec, url, null);
         }
 
-        if (this.uri.spec.search(/[\&\?]header=[a-zA-Z0-9]*$/) < 0 &&
-          this.uri.spec.search(/[\&\?]part=[\.0-9]+/) < 0 &&
-          this.uri.spec.search(/[\&\?]examineEncryptedParts=true/) < 0) {
+        if (this.uri.spec.search(/[&\?]header=[^&]+/) > 0 &&
+          this.uri.spec.search(/[&\?]examineEncryptedParts=true/) < 0) {
 
-          if (this.uri.spec.search(/[\&\?]header=filter\&.*$/) > 0)
+          if (this.uri.spec.search(/[&\?]header=filter(&.*)?$/) > 0) {
+            EnigmailLog.DEBUG("mimeDecrypt.js: onStopRequest: detected incoming message processing\n");
             return;
+          }
+        }
+
+        if (this.uri.spec.search(/[&\?]header=[^&]+/) < 0 &&
+          this.uri.spec.search(/[&\?]part=[\.0-9]+/) < 0 &&
+          this.uri.spec.search(/[&\?]examineEncryptedParts=true/) < 0) {
 
           if (this.uri && url && url.value) {
 
