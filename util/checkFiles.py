@@ -23,7 +23,7 @@ dtdLabels.sort()
 prev=None
 for label in dtdLabels:
   if label == prev:
-    print "DUPLICATE label in enigmail.dtd file:", label 
+    print "DUPLICATE label in enigmail.dtd file:", label
     sys.exit(1)
 
 # read in property labels and check for duplicates:
@@ -43,7 +43,7 @@ propLabels.sort()
 prev=None
 for label in propLabels:
   if label == prev:
-    print "DUPLICATE property in enigmail.properties file:", label 
+    print "DUPLICATE property in enigmail.properties file:", label
     sys.exit(1)
 
 
@@ -66,7 +66,7 @@ tbLabels = [
 # read in label and property files:
 #################################################################
 
-  
+
 allMissingLabels = []
 allFoundLabels = []
 numLabels = 0
@@ -119,7 +119,7 @@ def checkProperty (label, fromFilename):
 allLines = ""
 
 def checkXUL (filename):
-  print "----------------------------------------"
+  # print "----------------------------------------"
   print " checkXUL() " + filename
 
   global allLines
@@ -179,7 +179,7 @@ def checkXUL (filename):
 
 
 def checkJS (filename):
-  print "----------------------------------------"
+  #print "----------------------------------------"
   print " checkJS() " + filename
 
   global allLines
@@ -338,7 +338,7 @@ def processLabelResults():
   print "propLabels:    ", len(propLabels)
   print "found Props:   ", len(allFoundProps)
   print "UNUSED Props:  ", numUnusedProps, "  (after double check)"
-   
+
 
 #---------------------------------------------
 # check icons
@@ -346,7 +346,7 @@ def processLabelResults():
 
 # return all rows in CSS files that should be equal
 def checkCSS (filename):
-  print "----------------------------------------"
+  #print "----------------------------------------"
   print " checkCSS " + filename
   response = []
   for line in open(filename, 'r'):
@@ -439,4 +439,3 @@ print ""
 processLabelResults()
 print ""
 #checkAllCSSFiles()
-

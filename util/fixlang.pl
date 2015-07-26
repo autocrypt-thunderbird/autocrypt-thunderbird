@@ -134,7 +134,7 @@ for my $ind (sort keys %$endtd) {
     print OUT "<!ENTITY $frdtd->{$ind}\n";
   }
   else {
-    print "\tAdding missing $ind\n";
+    # print "\tAdding missing $ind\n";
     print OUT "<!ENTITY $endtd->{$ind}\n";
   }
 }
@@ -150,10 +150,8 @@ for my $ind (sort keys %$enprop) {
   if ($frprop->{$ind}) {
     print OUT "$frprop->{$ind}\n";
   } else {
-    print "\tAdding missing $ind\n";
+    #print "\tAdding missing $ind\n";
     print OUT "$enprop->{$ind}\n";
   }
 }
 close(OUT);
-
-
