@@ -13,6 +13,6 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 testing("locale.jsm"); /*global EnigmailLocale: false */
 
 test(function shouldReadProperty() {
-    const importBtnValue = EnigmailLocale.getString("enigHeader");
-    Assert.equal("Enigmail:", importBtnValue);
+  const importBtnValue = EnigmailLocale.getString("enigHeader");
+  Assert.equal("Enigmail:", importBtnValue);
 });

@@ -18,10 +18,9 @@ var gTestLines;
 var gResultData;
 var gResultStdErr;
 
-function run_test()
-{
+function run_test() {
   var isWindows = ("@mozilla.org/windows-registry-key;1" in Components.classes);
-  var dataFile = do_get_file("ipc-data.txt" , true);
+  var dataFile = do_get_file("ipc-data.txt", true);
 
   var env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
 
@@ -43,20 +42,21 @@ function run_test()
     throw "Could not locate the IpcCat.pl helper executable";
 
   var dirSvc = Cc["@mozilla.org/file/directory_service;1"].
-                      getService(Ci.nsIProperties).
-                      QueryInterface(Ci.nsIDirectoryService);
+  getService(Ci.nsIProperties).
+  QueryInterface(Ci.nsIDirectoryService);
   var greDir = dirSvc.get("GreD", Ci.nsIFile);
 
 
   var envList = [
-    "DYLD_LIBRARY_PATH="+greDir.path, // for Mac
-    "LD_LIBRARY_PATH="+greDir.path    // for Linux
+    "DYLD_LIBRARY_PATH=" + greDir.path, // for Mac
+    "LD_LIBRARY_PATH=" + greDir.path // for Linux
   ];
 
   var eol = isWindows ? "\r\n" : "\n";
-  gTestLines = [ "Writing example data"+eol,
-                  "Writing something more"+eol,
-                  "And yet some more text"+eol ];
+  gTestLines = ["Writing example data" + eol,
+    "Writing something more" + eol,
+    "And yet some more text" + eol
+  ];
 
 
   /////////////////////////////////////////////////////////////////
@@ -68,24 +68,24 @@ function run_test()
   gResultData = "";
   gResultStdErr = "";
   var p = subprocess.call({
-    command:     pl,
-    arguments:   [ cmd.path, 'dump' ],
+    command: pl,
+    arguments: [cmd.path, 'dump'],
     environment: envList,
     stdin: function(pipe) {
-        for (var i=0; i < gTestLines.length; i++) {
-          pipe.write(gTestLines[i]);
-        }
-        pipe.close();
-      },
-    stdout: function (data) {
-        gResultData += data;
-      },
+      for (var i = 0; i < gTestLines.length; i++) {
+        pipe.write(gTestLines[i]);
+      }
+      pipe.close();
+    },
+    stdout: function(data) {
+      gResultData += data;
+    },
     stderr: function(data) {
-        gResultStdErr += data;
-      },
+      gResultStdErr += data;
+    },
     done: function(result) {
-        Assert.equal(0, result.exitCode, "exit code");
-      },
+      Assert.equal(0, result.exitCode, "exit code");
+    },
     mergeStderr: false
   });
 
@@ -101,7 +101,7 @@ function run_test()
     len -= gTestLines.length;
   }
   Assert.equal(
-    "Starting dump\nDumped "+len+" bytes\n",
+    "Starting dump\nDumped " + len + " bytes\n",
     gResultStdErr.replace(/\r\n/g, "\n"),
     "stderr result matching"
   );
@@ -115,16 +115,16 @@ function run_test()
 
   gResultData = "";
   p = subprocess.call({
-    command:     pl,
-    arguments:   [ cmd.path, 'dump' ],
+    command: pl,
+    arguments: [cmd.path, 'dump'],
     environment: envList,
     stdin: gTestLines.join(""),
-    stdout: function (data) {
-        gResultData += data;
-      },
+    stdout: function(data) {
+      gResultData += data;
+    },
     stderr: function(data) {
-        Assert.ok(false, "Got unexpected data '"+data+"' on stderr\n");
-      },
+      Assert.ok(false, "Got unexpected data '" + data + "' on stderr\n");
+    },
     done: function(result) {
       Assert.equal(0, result.exitCode, "exit code");
     },
@@ -143,16 +143,16 @@ function run_test()
 
   gResultData = "";
   p = subprocess.call({
-    command:     pl,
-    arguments:   [ cmd.path, 'dump' ],
+    command: pl,
+    arguments: [cmd.path, 'dump'],
     environment: envList,
     workdir: do_get_file(".", true),
     stdin: function(pipe) {
-        for (var i=0; i < gTestLines.length; i++) {
-          pipe.write(gTestLines[i]);
-        }
-        pipe.close();
-      },
+      for (var i = 0; i < gTestLines.length; i++) {
+        pipe.write(gTestLines[i]);
+      }
+      pipe.close();
+    },
     done: function(result) {
       gResultData = result.stdout;
       Assert.equal(0, result.exitCode, "exit code");
@@ -171,11 +171,11 @@ function run_test()
   gResultData = "";
   gResultStdErr = "";
   p = subprocess.call({
-    command:     pl,
-    arguments:   [ cmd.path, 'wrong', 'arguments' ],
+    command: pl,
+    arguments: [cmd.path, 'wrong', 'arguments'],
     environment: envList,
     stdin: "Dummy text",
-    stdout: function (data) {
+    stdout: function(data) {
       gResultData += data;
     },
     stderr: function(data) {
@@ -200,19 +200,19 @@ function run_test()
   gResultData = "";
   gResultStdErr = "";
   p = subprocess.call({
-    command:     pl,
-    arguments:   [ cmd.path, 'write', dataFile.path ],
+    command: pl,
+    arguments: [cmd.path, 'write', dataFile.path],
     stdin: gTestLines.join("")
   });
 
   p.wait();
 
   p = subprocess.call({
-    command:     pl,
-    arguments:   [ cmd.path, 'read', dataFile.path ],
+    command: pl,
+    arguments: [cmd.path, 'read', dataFile.path],
     environment: envList,
     stdin: "",
-    stdout: function (data) {
+    stdout: function(data) {
       gResultData += data;
     }
   });
@@ -229,9 +229,9 @@ function run_test()
   gResultData = "";
   gResultData = "";
   p = subprocess.call({
-    command:     pl,
-    charset:     null,
-    arguments:   [ cmd.path, 'read', dataFile.path ],
+    command: pl,
+    charset: null,
+    arguments: [cmd.path, 'read', dataFile.path],
     environment: envList,
     done: function(result) {
       gResultData = result.stdout;
@@ -251,13 +251,13 @@ function run_test()
 
   do_print("environment variables");
 
-  gTestLines= [ "This is a test variable" ];
-  envList.push("TESTVAR="+gTestLines[0]);
+  gTestLines = ["This is a test variable"];
+  envList.push("TESTVAR=" + gTestLines[0]);
 
   gResultData = "";
   p = subprocess.call({
-    command:     pl.path,
-    arguments:   [ cmd.path, 'getenv', 'TESTVAR' ],
+    command: pl.path,
+    arguments: [cmd.path, 'getenv', 'TESTVAR'],
     cwd: do_get_file(".", true),
     environment: envList,
     done: function(result) {

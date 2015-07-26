@@ -15,22 +15,22 @@ testing("data.jsm");
 
 // testing: extractMessageId
 test(function extractMessageIdExtractsARegularMessageId() {
-    var result = EnigmailData.extractMessageId("enigmail:message/foobar");
-    Assert.equal("foobar", result);
+  var result = EnigmailData.extractMessageId("enigmail:message/foobar");
+  Assert.equal("foobar", result);
 });
 
 test(function extractMessageIdReturnsAnEmptyStringWhenItCantMatch() {
-    var result = EnigmailData.extractMessageId("enigmail:mime-message/foobar");
-    Assert.equal("", result);
+  var result = EnigmailData.extractMessageId("enigmail:mime-message/foobar");
+  Assert.equal("", result);
 });
 
 // testing: extractMimeMessageId
 test(function extractMimeMessageIdExtractsARegularMessageId() {
-    var result = EnigmailData.extractMimeMessageId("enigmail:mime-message/fluff");
-    Assert.equal("fluff", result);
+  var result = EnigmailData.extractMimeMessageId("enigmail:mime-message/fluff");
+  Assert.equal("fluff", result);
 });
 
 test(function extractMimeMessageIdReturnsAnEmptyStringWhenItCantMatch() {
-    var result = EnigmailData.extractMimeMessageId("enigmail:message/mess");
-    Assert.equal("", result);
+  var result = EnigmailData.extractMimeMessageId("enigmail:message/mess");
+  Assert.equal("", result);
 });

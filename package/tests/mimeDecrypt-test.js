@@ -9,8 +9,14 @@
 "use strict";
 
 var EnigmailMime = {
-  extractProtectedHeaders: function (str){
-    return {startPos: 10, endPos: 22, newHeaders: { subject: "The hidden subject" }};
+  extractProtectedHeaders: function(str) {
+    return {
+      startPos: 10,
+      endPos: 22,
+      newHeaders: {
+        subject: "The hidden subject"
+      }
+    };
   }
 };
 

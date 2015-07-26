@@ -15,23 +15,23 @@ testing("files.jsm");
 
 // testing: readFile
 test(function readFileReturnsContentOfExistingFile() {
-    var md = do_get_cwd().clone();
-    md = md.parent.parent;
-    md.append("uuid_enig.txt");
-    var result = EnigmailFiles.readFile(md);
-    Assert.assertContains(result, "847b3a00-7ab1-11d4-8f02-006008948af5");
+  var md = do_get_cwd().clone();
+  md = md.parent.parent;
+  md.append("uuid_enig.txt");
+  var result = EnigmailFiles.readFile(md);
+  Assert.assertContains(result, "847b3a00-7ab1-11d4-8f02-006008948af5");
 });
 
 test(function readFileReturnsEmptyStringForNonExistingFile() {
-    var md = do_get_cwd().clone();
-    md = md.parent.parent;
-    md.append("THIS_FILE_DOESNT_EXIST");
-    var result = EnigmailFiles.readFile(md);
-    Assert.equal("", result);
+  var md = do_get_cwd().clone();
+  md = md.parent.parent;
+  md.append("THIS_FILE_DOESNT_EXIST");
+  var result = EnigmailFiles.readFile(md);
+  Assert.equal("", result);
 });
 
-test(function shouldFormatCmdLine(){
-    var md = do_get_cwd();
+test(function shouldFormatCmdLine() {
+  var md = do_get_cwd();
 
-    Assert.equal(EnigmailFiles.formatCmdLine(md,["1","2","3"]),do_get_cwd().path+" 1 2 3");
+  Assert.equal(EnigmailFiles.formatCmdLine(md, ["1", "2", "3"]), do_get_cwd().path + " 1 2 3");
 });

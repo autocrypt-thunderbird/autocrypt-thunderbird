@@ -13,60 +13,61 @@ component("enigmail/files.jsm"); /*global EnigmailFiles: false */
 component("/modules/iteratorUtils.jsm");
 
 const MailHelper = {
-    init: function() {
-        if(!MailHelper.initialized) {
-            try {
-                MailServices.accounts.createLocalMailAccount();
-            } catch (ex) {
-                // This will fail if someone already called this.
-            }
+  init: function() {
+    if (!MailHelper.initialized) {
+      try {
+        MailServices.accounts.createLocalMailAccount();
+      }
+      catch (ex) {
+        // This will fail if someone already called this.
+      }
 
-            let localAccount = MailServices.accounts.FindAccountForServer(MailServices.accounts.localFoldersServer);
-            let identity = MailServices.accounts.createIdentity();
-            identity.email = "tester@enigmail.org";
-            localAccount.addIdentity(identity);
-            localAccount.defaultIdentity = identity;
-            MailHelper.incomingServer = MailServices.accounts.localFoldersServer;
-            MailHelper.rootFolder = MailHelper.incomingServer.rootMsgFolder;
-            if(!MailHelper.rootFolder.containsChildNamed("Inbox")) {
-                MailHelper.rootFolder.createSubfolder("Inbox", null);
-                MailHelper.inboxFolder = MailHelper.rootFolder.getChildNamed("Inbox");
-                MailHelper.inboxFolder.setFlag(Components.interfaces.nsMsgFolderFlags.Mail);
-                MailHelper.inboxFolder.setFlag(Components.interfaces.nsMsgFolderFlags.Inbox);
-            }
-            MailHelper.initialized = true;
-        }
-    },
-
-    getRootFolder: function() {
-        MailHelper.init();
-        return MailHelper.rootFolder;
-    },
-
-    createMailFolder: function(name) {
-        MailHelper.init();
-        let localRoot = MailHelper.rootFolder.QueryInterface(Components.interfaces.nsIMsgLocalMailFolder);
-        let mailFolder = localRoot.createLocalSubfolder(name);
-        mailFolder.setFlag(Components.interfaces.nsMsgFolderFlags.Mail);
-        return mailFolder;
-    },
-
-    cleanMailFolder: function(mailFolder) {
-        MailHelper.init();
-        let it = mailFolder.subFolders;
-        while(it.hasMoreElements()) {
-            mailFolder.propagateDelete(it.getNext(), true, null);
-        }
-    },
-
-    loadEmailToMailFolder: function(emailFilePath, mailFolder) {
-        let emailFile = do_get_file(emailFilePath, false);
-        MailServices.copy.CopyFileMessage(emailFile, mailFolder, null, false, 0, null, null, null);
-    },
-
-    fetchFirstMessageHeaderIn: function(mailFolder) {
-        let msgDb = mailFolder.msgDatabase;
-        let enumerator = msgDb.EnumerateMessages();
-        return enumerator.getNext().QueryInterface(Components.interfaces.nsIMsgDBHdr);
+      let localAccount = MailServices.accounts.FindAccountForServer(MailServices.accounts.localFoldersServer);
+      let identity = MailServices.accounts.createIdentity();
+      identity.email = "tester@enigmail.org";
+      localAccount.addIdentity(identity);
+      localAccount.defaultIdentity = identity;
+      MailHelper.incomingServer = MailServices.accounts.localFoldersServer;
+      MailHelper.rootFolder = MailHelper.incomingServer.rootMsgFolder;
+      if (!MailHelper.rootFolder.containsChildNamed("Inbox")) {
+        MailHelper.rootFolder.createSubfolder("Inbox", null);
+        MailHelper.inboxFolder = MailHelper.rootFolder.getChildNamed("Inbox");
+        MailHelper.inboxFolder.setFlag(Components.interfaces.nsMsgFolderFlags.Mail);
+        MailHelper.inboxFolder.setFlag(Components.interfaces.nsMsgFolderFlags.Inbox);
+      }
+      MailHelper.initialized = true;
     }
+  },
+
+  getRootFolder: function() {
+    MailHelper.init();
+    return MailHelper.rootFolder;
+  },
+
+  createMailFolder: function(name) {
+    MailHelper.init();
+    let localRoot = MailHelper.rootFolder.QueryInterface(Components.interfaces.nsIMsgLocalMailFolder);
+    let mailFolder = localRoot.createLocalSubfolder(name);
+    mailFolder.setFlag(Components.interfaces.nsMsgFolderFlags.Mail);
+    return mailFolder;
+  },
+
+  cleanMailFolder: function(mailFolder) {
+    MailHelper.init();
+    let it = mailFolder.subFolders;
+    while (it.hasMoreElements()) {
+      mailFolder.propagateDelete(it.getNext(), true, null);
+    }
+  },
+
+  loadEmailToMailFolder: function(emailFilePath, mailFolder) {
+    let emailFile = do_get_file(emailFilePath, false);
+    MailServices.copy.CopyFileMessage(emailFile, mailFolder, null, false, 0, null, null, null);
+  },
+
+  fetchFirstMessageHeaderIn: function(mailFolder) {
+    let msgDb = mailFolder.msgDatabase;
+    let enumerator = msgDb.EnumerateMessages();
+    return enumerator.getNext().QueryInterface(Components.interfaces.nsIMsgDBHdr);
+  }
 };

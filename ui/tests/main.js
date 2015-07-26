@@ -6,4 +6,3 @@
 
 // the subprocess tests
 do_subtest("enigmailMsgComposeOverlay-test.js");
-

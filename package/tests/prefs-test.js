@@ -13,7 +13,7 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 testing("prefs.jsm"); /*global EnigmailPrefs: false */
 
 test(function shouldSetGetPreference() {
-    const prefName = "mypref";
-    EnigmailPrefs.setPref(prefName, "yourpref");
-    Assert.equal("yourpref", EnigmailPrefs.getPref(prefName));
+  const prefName = "mypref";
+  EnigmailPrefs.setPref(prefName, "yourpref");
+  Assert.equal("yourpref", EnigmailPrefs.getPref(prefName));
 });

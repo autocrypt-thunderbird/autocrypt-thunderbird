@@ -15,25 +15,29 @@ component("enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
 component("enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 
 test(withTestGpgHome(withEnigmail(function shouldExecCmd() {
-    const command = EnigmailGpgAgent.agentPath;
+  const command = EnigmailGpgAgent.agentPath;
 
-    const args = EnigmailGpg.getStandardArgs(false).
-              concat(["--no-tty", "--status-fd", "1", "--logger-fd", "1", "--command-fd", "0"]).
-              concat(["--list-packets", "resources/dev-strike.asc"]);
-    let output = "";
-    EnigmailExecution.execCmd2(command, args,
-                       function (pipe) {
-                           //Assert.equal(stdin, 0);
-                       },
-                       function (stdout) {
-                           output+=stdout;
-                       },
-                       function (result) {
-                           Assert.deepEqual(result, {"exitCode":0,"stdout":"","stderr":""});
-                       }
-                      );
-    Assert.assertContains(output,":public key packet:");
-    Assert.assertContains(output,":user ID packet:");
-    Assert.assertContains(output,":signature packet:");
-    Assert.assertContains(output,":public sub key packet:");
+  const args = EnigmailGpg.getStandardArgs(false).
+  concat(["--no-tty", "--status-fd", "1", "--logger-fd", "1", "--command-fd", "0"]).
+  concat(["--list-packets", "resources/dev-strike.asc"]);
+  let output = "";
+  EnigmailExecution.execCmd2(command, args,
+    function(pipe) {
+      //Assert.equal(stdin, 0);
+    },
+    function(stdout) {
+      output += stdout;
+    },
+    function(result) {
+      Assert.deepEqual(result, {
+        "exitCode": 0,
+        "stdout": "",
+        "stderr": ""
+      });
+    }
+  );
+  Assert.assertContains(output, ":public key packet:");
+  Assert.assertContains(output, ":user ID packet:");
+  Assert.assertContains(output, ":signature packet:");
+  Assert.assertContains(output, ":public sub key packet:");
 })));

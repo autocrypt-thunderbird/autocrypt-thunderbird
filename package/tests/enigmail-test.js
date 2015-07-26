@@ -15,47 +15,48 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 testing("enigmail.js");
 
 function newEnigmail(f) {
-    var oldEnigmail = EnigmailCore.getEnigmailService();
-    try {
-        var enigmail = new Enigmail();
-        EnigmailCore.setEnigmailService(enigmail);
-        f(enigmail);
-    } finally {
-        EnigmailCore.setEnigmailService(oldEnigmail);
-    }
+  var oldEnigmail = EnigmailCore.getEnigmailService();
+  try {
+    var enigmail = new Enigmail();
+    EnigmailCore.setEnigmailService(enigmail);
+    f(enigmail);
+  }
+  finally {
+    EnigmailCore.setEnigmailService(oldEnigmail);
+  }
 }
 
 // testing: initialize
 test(function initializeWillPassEnvironmentIfAskedTo() {
-    var window = JSUnit.createStubWindow();
-    withEnvironment({
-        "ENIGMAIL_PASS_ENV": "STUFF:BLARG",
-        "STUFF": "testing"
-    }, function() {
-        newEnigmail(function(enigmail) {
-            enigmail.initialize(window, "");
-            Assert.assertArrayContains(EnigmailCore.getEnvList(), "STUFF=testing");
-        });
+  var window = JSUnit.createStubWindow();
+  withEnvironment({
+    "ENIGMAIL_PASS_ENV": "STUFF:BLARG",
+    "STUFF": "testing"
+  }, function() {
+    newEnigmail(function(enigmail) {
+      enigmail.initialize(window, "");
+      Assert.assertArrayContains(EnigmailCore.getEnvList(), "STUFF=testing");
     });
+  });
 });
 
 test(function initializeWillNotPassEnvironmentsNotAskedTo() {
-    var window = JSUnit.createStubWindow();
-    var environment = Cc["@mozilla.org/process/environment;1"].getService(nsIEnvironment);
-    environment.set("ENIGMAIL_PASS_ENV", "HOME");
-    environment.set("STUFF", "testing");
-    newEnigmail(function(enigmail) {
-        enigmail.initialize(window, "");
-        Assert.assertArrayNotContains(EnigmailCore.getEnvList(), "STUFF=testing");
-    });
+  var window = JSUnit.createStubWindow();
+  var environment = Cc["@mozilla.org/process/environment;1"].getService(nsIEnvironment);
+  environment.set("ENIGMAIL_PASS_ENV", "HOME");
+  environment.set("STUFF", "testing");
+  newEnigmail(function(enigmail) {
+    enigmail.initialize(window, "");
+    Assert.assertArrayNotContains(EnigmailCore.getEnvList(), "STUFF=testing");
+  });
 });
 
 test(function initializeWillNotSetEmptyEnvironmentValue() {
-    var window = JSUnit.createStubWindow();
-    var environment = Cc["@mozilla.org/process/environment;1"].getService(nsIEnvironment);
-    environment.set("APPDATA", "");
-    newEnigmail(function(enigmail) {
-        enigmail.initialize(window, "");
-        Assert.assertArrayNotContains(EnigmailCore.getEnvList(), "APPDATA=");
-    });
+  var window = JSUnit.createStubWindow();
+  var environment = Cc["@mozilla.org/process/environment;1"].getService(nsIEnvironment);
+  environment.set("APPDATA", "");
+  newEnigmail(function(enigmail) {
+    enigmail.initialize(window, "");
+    Assert.assertArrayNotContains(EnigmailCore.getEnvList(), "APPDATA=");
+  });
 });

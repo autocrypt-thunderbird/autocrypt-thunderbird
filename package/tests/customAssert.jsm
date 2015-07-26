@@ -8,24 +8,24 @@
 "use strict";
 
 const CustomAssert = {
-    registerExtraAssertionsOn: function(assertModule) {
-        assertModule.assertContains = CustomAssert.assertContains;
-        assertModule.assertArrayContains = CustomAssert.assertArrayContains;
-        assertModule.assertArrayNotContains = CustomAssert.assertArrayNotContains;
-    },
+  registerExtraAssertionsOn: function(assertModule) {
+    assertModule.assertContains = CustomAssert.assertContains;
+    assertModule.assertArrayContains = CustomAssert.assertArrayContains;
+    assertModule.assertArrayNotContains = CustomAssert.assertArrayNotContains;
+  },
 
-    assertContains: function(actual, expected, message) {
-        var msg = message || "Searching for <".concat(expected)
-                .concat("> to be contained within ")
-                .concat("<").concat(actual).concat(">");
-        this.report(actual.search(expected) == -1, actual, expected, message, "contains");
-    },
+  assertContains: function(actual, expected, message) {
+    var msg = message || "Searching for <".concat(expected)
+      .concat("> to be contained within ")
+      .concat("<").concat(actual).concat(">");
+    this.report(actual.search(expected) == -1, actual, expected, message, "contains");
+  },
 
-    assertArrayContains: function(array, value, message) {
-        this.report(array.indexOf(value) == -1, array, value, message, "contains");
-    },
+  assertArrayContains: function(array, value, message) {
+    this.report(array.indexOf(value) == -1, array, value, message, "contains");
+  },
 
-    assertArrayNotContains: function(array, value, message) {
-        this.report(array.indexOf(value) > -1, array, value, message, "not contains");
-    }
+  assertArrayNotContains: function(array, value, message) {
+    this.report(array.indexOf(value) > -1, array, value, message, "not contains");
+  }
 };
