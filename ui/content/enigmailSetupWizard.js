@@ -1136,9 +1136,6 @@ function wizardApplyId(identity, keyId) {
   //  2: by default don't encrypt (account preference)
   // NOTE: option defaultEncryptionPolicy is an INT
   identity.setIntAttribute("defaultEncryptionPolicy", 0);
-
-  // change default composition mode to plain text
-  identity.setBoolAttribute("compose_html", false);
 }
 
 function disableIdSel(doDisable) {
