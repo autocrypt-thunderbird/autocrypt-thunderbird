@@ -394,6 +394,18 @@ const EnigmailKeyEditor = {
   genRevokeCert: function(parent, keyId, outFile, reasonCode, reasonText, callbackFunc) {
     EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.genRevokeCert: keyId=" + keyId + "\n");
 
+    /**
+     * GnuPG < 2.1 does not properly report failures;
+     * therefore we check if the revokation certificate was really generated
+     */
+    function checkGeneratedCert(exitCode, errorMsg) {
+      if (!outFile.exists()) {
+        exitCode = 1;
+        errorMsg = "";
+      }
+      callbackFunc(exitCode, errorMsg);
+    }
+
     return editKey(parent, true, null, keyId, "revoke", {
         outFile: outFile,
         reasonCode: reasonCode,
@@ -402,7 +414,7 @@ const EnigmailKeyEditor = {
       },
       revokeCertCallback,
       null,
-      callbackFunc);
+      checkGeneratedCert);
   },
 
   addUid: function(parent, keyId, name, email, comment, callbackFunc) {
@@ -536,7 +548,8 @@ const EnigmailKeyEditor = {
   },
 
   cardAdminData: function(parent, name, firstname, lang, sex, url, login, forcepin, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.cardAdminData: parent=" + parent + ", name=" + name + ", firstname=" + firstname + ", lang=" + lang + ", sex=" + sex + ", url=" + url + ", login=" + login + ", forcepin=" + forcepin + "\n");
+    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.cardAdminData: parent=" + parent + ", name=" + name + ", firstname=" + firstname + ", lang=" + lang + ", sex=" + sex + ", url=" + url +
+      ", login=" + login + ", forcepin=" + forcepin + "\n");
     var adminObserver = new EnigCardAdminObserver(null, EnigmailOS.isDosLike());
     return editKey(parent, false, null, "", ["--with-colons", "--card-edit"], {
         step: 0,
