@@ -193,5 +193,49 @@ const EnigmailPrefs = {
       p.service.savePrefFile(null);
     }
     catch (ex) {}
+  },
+
+  /**
+   * Compiles all Enigmail preferences into an object
+   */
+  getAllPrefs: function() {
+    EnigmailLog.DEBUG("prefs.js: getAllPrefs\n");
+
+    var retObj = {
+      value: 0
+    };
+    var branch = this.getPrefBranch();
+    var allPrefs = branch.getChildList("", retObj);
+    var prefObj = {};
+    var nsIPB = Components.interfaces.nsIPrefBranch;
+
+    for (var q in allPrefs) {
+      var name = allPrefs[q];
+
+      /*
+       * agentPath is system-depend, configuredVersion build-depend and
+       * advancedUser must be set in order to save the profile.
+       */
+      if (name == "agentPath" || name == "configuredVersion" || name == "advancedUser") {
+        continue;
+      }
+
+      switch (branch.getPrefType(name)) {
+        case nsIPB.PREF_STRING:
+          prefObj[name] = branch.getCharPref(name);
+          break;
+        case nsIPB.PREF_INT:
+          prefObj[name] = branch.getIntPref(name);
+          break;
+        case nsIPB.PREF_BOOL:
+          prefObj[name] = branch.getBoolPref(name);
+          break;
+        default:
+          EnigmailLog.ERROR("Pref '" + name + "' has unknown type\n");
+      }
+    }
+
+    return prefObj;
   }
 };
+

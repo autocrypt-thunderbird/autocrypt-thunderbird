@@ -74,22 +74,27 @@ const EnigmailRules = {
   },
 
   loadRulesFile: function() {
-    EnigmailLog.DEBUG("enigmail.js: loadRulesFile\n");
     var flags = NS_RDONLY;
     var rulesFile = this.getRulesFile();
     if (rulesFile.exists()) {
       var fileContents = EnigmailFiles.readFile(rulesFile);
 
-      if (fileContents.length === 0 || fileContents.search(/^\s*$/) === 0) {
-        return false;
-      }
-
-      var domParser = Cc[NS_DOMPARSER_CONTRACTID].createInstance(Ci.nsIDOMParser);
-      rulesListHolder.rulesList = domParser.parseFromString(fileContents, "text/xml");
-
-      return true;
+      return this.loadRulesFromString(fileContents);
     }
+
     return false;
+  },
+
+  loadRulesFromString: function(contents) {
+    EnigmailLog.DEBUG("enigmail.js: loadRulesFromString\n");
+    if (contents.length === 0 || contents.search(/^\s*$/) === 0) {
+      return false;
+    }
+
+    var domParser = Cc[NS_DOMPARSER_CONTRACTID].createInstance(Ci.nsIDOMParser);
+    rulesListHolder.rulesList = domParser.parseFromString(contents, "text/xml");
+
+    return true;
   },
 
   saveRulesFile: function() {
@@ -170,9 +175,11 @@ const EnigmailRules = {
   registerOn: function(target) {
     target.getRulesFile = EnigmailRules.getRulesFile;
     target.loadRulesFile = EnigmailRules.loadRulesFile;
+    target.loadRulesFromString = EnigmailRules.loadRulesFromString;
     target.saveRulesFile = EnigmailRules.saveRulesFile;
     target.getRulesData = EnigmailRules.getRulesData;
     target.addRule = EnigmailRules.addRule;
     target.clearRules = EnigmailRules.clearRules;
   }
 };
+

@@ -35,6 +35,8 @@
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
+Components.utils.import("resource://enigmail/rules.jsm");
+
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail");
 
@@ -304,38 +306,16 @@ function backupPrefs() {
 
   var maybe_file = EnigFilePicker(EnigGetString("pickBackupFile"), "", true, "json", "enigmail.json", null);
   if (maybe_file !== null) {
-    var retObj = {
-      value: 0
-    };
-    var branch = EnigmailPrefs.getPrefBranch();
-    var allPrefs = branch.getChildList("", retObj);
-    var prefObj = {};
-    var nsIPB = Components.interfaces.nsIPrefBranch;
+    // user preference
+    var prefObj = EnigmailPrefs.getAllPrefs();
 
-    for (var p in allPrefs) {
-      var name = allPrefs[p];
-
-      /*
-       * agentPath is system-depend, configuredVersion build-depend and
-       * advancedUser must be set in order to save the profile.
-       */
-      if (name == "agentPath" || name == "configuredVersion" || name == "advancedUser") {
-        continue;
-      }
-
-      switch (branch.getPrefType(name)) {
-        case nsIPB.PREF_STRING:
-          prefObj[name] = branch.getCharPref(name);
-          break;
-        case nsIPB.PREF_INT:
-          prefObj[name] = branch.getIntPref(name);
-          break;
-        case nsIPB.PREF_BOOL:
-          prefObj[name] = branch.getBoolPref(name);
-          break;
-        default:
-          EnigmailLog.ERROR("Pref '" + name + "' has unknown type\n");
-      }
+    // per-recipient rules (aka pgpRules.xml)
+    var rulesFile = EnigmailRules.getRulesFile();
+    if (rulesFile.exists()) {
+      prefObj.rules = EnigmailFiles.readFile(rulesFile);
+    }
+    else {
+      prefObj.rules = "";
     }
 
     // serialize everything to UTF-8 encoded JSON.
@@ -378,7 +358,13 @@ function restorePrefs() {
 
       // Set all options recorded in the JSON file.
       for (var name in prefObj) {
-        EnigSetPref(name, prefObj[name]);
+        if (name == "rules") {
+          EnigmailRules.loadRulesFromString(prefObj[name]);
+          EnigmailRules.saveRulesFile();
+        }
+        else {
+          EnigSetPref(name, prefObj[name]);
+        }
       }
     }
     catch (ex) {
@@ -658,3 +644,4 @@ function enigLocateGpg() {
     document.getElementById("enigmail_agentPath").value = filePath.path;
   }
 }
+
