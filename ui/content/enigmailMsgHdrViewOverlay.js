@@ -43,6 +43,7 @@ Components.utils.import("resource://enigmail/locale.jsm");
 Components.utils.import("resource://enigmail/windows.jsm");
 Components.utils.import("resource://enigmail/dialog.jsm");
 Components.utils.import("resource://enigmail/time.jsm");
+Components.utils.import("resource://enigmail/gpg.jsm");
 Components.utils.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Components.utils.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
@@ -257,6 +258,12 @@ Enigmail.hdrView = {
         }
         if (fpr) {
           statusInfo += "\n" + EnigmailLocale.getString("keyFpr", [fpr]);
+        }
+        if (detailArr.length > 7) {
+          var signingAlg = EnigmailGpg.signingAlgIdToString(detailArr[6]);
+          var hashAlg = EnigmailGpg.hashAlgIdToString(detailArr[7]);
+
+          statusInfo += "\n\n" + EnigmailLocale.getString("usedAlgorithms",[signingAlg,hashAlg]);
         }
       }
       fullStatusInfo = statusInfo;
@@ -1126,3 +1133,4 @@ if (messageHeaderSink) {
     }
   };
 }
+

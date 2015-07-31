@@ -264,5 +264,48 @@ const EnigmailGpg = {
       EnigmailLog.ERROR("enigmailCommon.jsm: recalcTrustDb: subprocess.call failed with '" + ex.toString() + "'\n");
       throw ex;
     }
+  },
+
+  signingAlgIdToString: function(id) {
+    // RFC 4880 Sec. 9.1 and RFC 6637 Sec. 5
+    switch (parseInt(id)) {
+      case 1:
+      case 2:
+      case 3:
+        return "RSA";
+      case 16:
+        return "Elgamal";
+      case 17:
+        return "DSA";
+      case 18:
+        return "ECDH";
+      case 19:
+        return "ECDSA";
+      default:
+        return EnigmailLocale.getString("unknownSigningAlg",[parseInt(id)]);
+    }
+  },
+
+  hashAlgIdToString: function(id) {
+    // RFC 4880 Sec. 9.4
+    switch (parseInt(id)) {
+      case 1:
+        return "MD5";
+      case 2:
+        return "SHA-1";
+      case 3:
+        return "RIPE-MD/160";
+      case 8:
+        return "SHA256";
+      case 9:
+        return "SHA384";
+      case 10:
+        return "SHA512";
+      case 11:
+        return "SHA224";
+      default:
+        return EnigmailLocale.getString("unknownHashAlg",[parseInt(id)]);
+    }
   }
 };
+
