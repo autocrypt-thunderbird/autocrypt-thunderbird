@@ -87,13 +87,45 @@ const gStatusFlags = {
   IMPORT_OK: 0x200000000
 };
 
+
 function handleError(c) {
-  // special treatment for some ERROR messages (currently only check_hijacking)
+  // special treatment for some ERROR messages
+  /*
+    check_hijacking: gpg-agent was hijacked by some other process (like gnome-keyring)
+    proc_pkt.plaintext: multiple plaintexts seen
+    pkdecrypt_failed: public key decryption failed
+    keyedit.passwd: error changing the passphrase
+    card_key_generate: key generation failed (card)
+    key_generate: key generation failed
+    keyserver_send: keyserver send failed
+  */
+
   var lineSplit = c.statusLine.split(/ +/);
-  if (lineSplit.length > 0 &&
-    lineSplit[1] === "check_hijacking") {
+  if (lineSplit.length > 0) {
     // TODO: we might display some warning to the user
-    c.retStatusObj.extendedStatus += "invalid_gpg_agent ";
+    switch (lineSplit[1]) {
+      case "check_hijacking":
+        c.retStatusObj.extendedStatus += "invalid_gpg_agent ";
+        break;
+      case "proc_pkt.plaintext":
+        c.retStatusObj.extendedStatus += "multiple_plaintexts ";
+        break;
+      case "pkdecrypt_failed":
+        c.retStatusObj.extendedStatus += "pubkey_decrypt ";
+        break;
+      case "keyedit.passwd":
+        c.retStatusObj.extendedStatus += "passwd_change_failed ";
+        break;
+      case "card_key_generate":
+      case "key_generate":
+        c.retStatusObj.extendedStatus += "key_generate_failure ";
+        break;
+      case "keyserver_send":
+        c.retStatusObj.extendedStatus += "keyserver_send_failed ";
+        break;
+      default:
+        return false;
+    }
     return true;
   }
   else {
