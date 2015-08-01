@@ -2235,7 +2235,8 @@ Enigmail.msg = {
    */
   processRules: function(forceRecipientSettings, sendFlags, optSendFlags, toAddrStr, bccAddrStr) {
     EnigmailLog.DEBUG("=====> processRules()\n");
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): toAddrStr=\"" + toAddrStr + "\" bccAddrStr=\"" + bccAddrStr + "\" forceRecipientSettings=" + forceRecipientSettings + "\n");
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): toAddrStr=\"" + toAddrStr + "\" bccAddrStr=\"" + bccAddrStr + "\" forceRecipientSettings=" +
+      forceRecipientSettings + "\n");
 
     // process defaults
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
@@ -2396,7 +2397,8 @@ Enigmail.msg = {
     var testPlain = "Test Message";
     var testUiFlags = nsIEnigmail.UI_TEST;
     var testSendFlags = nsIEnigmail.SEND_TEST | ENCRYPT | optSendFlags;
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptTestMessage(): call encryptMessage() for fromAddr=\"" + fromAddr + "\" toAddrStr=\"" + toAddrStr + "\" bccAddrStr=\"" + bccAddrStr + "\"\n");
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptTestMessage(): call encryptMessage() for fromAddr=\"" + fromAddr + "\" toAddrStr=\"" + toAddrStr + "\" bccAddrStr=\"" +
+      bccAddrStr + "\"\n");
     testCipher = enigmailSvc.encryptMessage(window, testUiFlags, testPlain,
       fromAddr, toAddrStr, bccAddrStr,
       testSendFlags,
@@ -2751,7 +2753,8 @@ Enigmail.msg = {
   },
 
   encryptMsg: function(msgSendType) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: msgSendType=" + msgSendType + ", Enigmail.msg.sendMode=" + this.sendMode + ", Enigmail.msg.statusEncrypted=" + this.statusEncrypted + "\n");
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: msgSendType=" + msgSendType + ", Enigmail.msg.sendMode=" + this.sendMode + ", Enigmail.msg.statusEncrypted=" + this.statusEncrypted +
+      "\n");
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN = nsIEnigmail.SEND_SIGNED;
@@ -3164,13 +3167,16 @@ Enigmail.msg = {
         }
 
         newSecurityInfo.originalSubject = gMsgCompose.compFields.subject;
+        newSecurityInfo.originalReferences = gMsgCompose.compFields.references;
 
         if (this.protectHeaders) {
           sendFlags |= nsIEnigmail.ENCRYPT_HEADERS;
 
           if (sendFlags & ENCRYPT) {
             gMsgCompose.compFields.subject = EnigmailFuncs.getProtectedSubjectText();
+            gMsgCompose.compFields.references = "";
           }
+
         }
 
         newSecurityInfo.sendFlags = sendFlags;

@@ -61,6 +61,8 @@ interface nsIEnigMsgCompFields : nsISupports
   attribute AString bccRecipients;
 
   attribute AString originalSubject;
+
+  attribute AString originalReferences;
 };
 
 %{C++
