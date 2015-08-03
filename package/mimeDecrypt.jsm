@@ -448,7 +448,9 @@ EnigmailMimeDecrypt.prototype = {
     if (!r) return;
 
     this.decryptedHeaders = r.newHeaders;
-    this.decryptedData = this.decryptedData.substr(0, r.startPos) + this.decryptedData.substr(r.endPos);
+    if (r.startPos >= 0 && r.endPos > r.startPos) {
+      this.decryptedData = this.decryptedData.substr(0, r.startPos) + this.decryptedData.substr(r.endPos);
+    }
 
   }
 };

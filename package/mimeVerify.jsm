@@ -347,7 +347,7 @@ MimeVerify.prototype = {
 
     this.protectedHeaders = EnigmailMime.extractProtectedHeaders(this.outQueue);
 
-    if (this.protectedHeaders) {
+    if (this.protectedHeaders && this.protectedHeaders.startPos >= 0 && this.protectedHeaders > this.protectedHeaders.startPos) {
       let r = this.outQueue.substr(0, this.protectedHeaders.startPos) + this.outQueue.substr(this.protectedHeaders.endPos);
       this.returnData(r);
     }

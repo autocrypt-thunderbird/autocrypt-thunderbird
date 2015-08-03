@@ -129,7 +129,7 @@ const EnigmailMime = {
   },
 
   /**
-   * format MIME header with maximum length of 72 characters. 
+   * format MIME header with maximum length of 72 characters.
    */
   formatHeaderData: function(hdrValue) {
     let header;
@@ -196,6 +196,12 @@ const EnigmailMime = {
       return null;
     }
 
+    let protectedHdr = ["subject", "date", "from",
+      "to", "cc", "reply-to", "references",
+      "newsgroups", "followup-to", "message-id"
+    ];
+    let newHeaders = {};
+
     // read headers of first MIME part and extract the boundary parameter
     let outerHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
     outerHdr.initialize(contentData.substr(0, m));
@@ -226,55 +232,64 @@ const EnigmailMime = {
 
     if (startPos < 0 || endPos < 0) return;
 
+    let headers = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+    headers.initialize(contentData.substring(0, startPos));
+
+    for (let i in protectedHdr) {
+      if (headers.hasHeader(protectedHdr[i])) {
+        newHeaders[protectedHdr[i]] = jsmime.headerparser.decodeRFC2047Words(headers.extractHeader(protectedHdr[i], true)) || undefined;
+      }
+    }
+
     // contentBody holds the complete 1st MIME part
     let contentBody = contentData.substring(startPos + bound.length + 3, endPos);
     let i = contentBody.search(/^[A-Za-z]/m); // skip empty lines
     if (i > 0) {
       contentBody = contentBody.substr(i);
     }
-    let headers = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+
     headers.initialize(contentBody);
 
     let innerCt = headers.extractHeader("content-type", false) || "";
 
-    if (innerCt.search(/^text\/rfc822-headers/i) !== 0) return null;
+    if (innerCt.search(/^text\/rfc822-headers/i) === 0) {
 
-    let charset = EnigmailMime.getCharset(innerCt);
-    let ctt = headers.extractHeader("content-transfer-encoding", false) || "";
+      let charset = EnigmailMime.getCharset(innerCt);
+      let ctt = headers.extractHeader("content-transfer-encoding", false) || "";
 
-    // determine where the headers end and the MIME-subpart body starts
-    let bodyStartPos = contentBody.search(/\r?\n\s*\r?\n/) + 1;
+      // determine where the headers end and the MIME-subpart body starts
+      let bodyStartPos = contentBody.search(/\r?\n\s*\r?\n/) + 1;
 
-    if (bodyStartPos < 10) return null;
+      if (bodyStartPos < 10) return null;
 
-    bodyStartPos += contentBody.substr(bodyStartPos).search(/^[A-Za-z]/m);
+      bodyStartPos += contentBody.substr(bodyStartPos).search(/^[A-Za-z]/m);
 
-    let ctBodyData = contentBody.substr(bodyStartPos);
+      let ctBodyData = contentBody.substr(bodyStartPos);
 
-    if (ctt.search(/^base64/i) === 0) {
-      ctBodyData = EnigmailData.decodeBase64(ctBodyData) + "\n";
-    }
-    else if (ctt.search(/^quoted-printable/i) === 0) {
-      ctBodyData = EnigmailData.decodeQuotedPrintable(ctBodyData) + "\n";
-    }
-
-    if (charset) {
-      ctBodyData = EnigmailData.convertToUnicode(ctBodyData, charset);
-    }
-
-    // get the headers of the MIME-subpart body --> that's the ones we need
-    let bodyHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
-    bodyHdr.initialize(ctBodyData);
-
-    let h = ["subject", "date", "from", "to", "cc", "reply-to", "references",
-      "newsgroups", "followup-to", "message-id"
-    ];
-
-    let newHeaders = {};
-    for (let i in h) {
-      if (bodyHdr.hasHeader(h[i])) {
-        newHeaders[h[i]] = jsmime.headerparser.decodeRFC2047Words(bodyHdr.extractHeader(h[i], true)) || undefined;
+      if (ctt.search(/^base64/i) === 0) {
+        ctBodyData = EnigmailData.decodeBase64(ctBodyData) + "\n";
       }
+      else if (ctt.search(/^quoted-printable/i) === 0) {
+        ctBodyData = EnigmailData.decodeQuotedPrintable(ctBodyData) + "\n";
+      }
+
+      if (charset) {
+        ctBodyData = EnigmailData.convertToUnicode(ctBodyData, charset);
+      }
+
+      // get the headers of the MIME-subpart body --> that's the ones we need
+      let bodyHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+      bodyHdr.initialize(ctBodyData);
+
+      for (let i in protectedHdr) {
+        if (bodyHdr.hasHeader(protectedHdr[i])) {
+          newHeaders[protectedHdr[i]] = jsmime.headerparser.decodeRFC2047Words(bodyHdr.extractHeader(protectedHdr[i], true)) || undefined;
+        }
+      }
+    }
+    else {
+      startPos = -1;
+      endPos = -1;
     }
 
     return {
