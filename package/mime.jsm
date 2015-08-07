@@ -295,7 +295,8 @@ const EnigmailMime = {
     return {
       newHeaders: newHeaders,
       startPos: startPos,
-      endPos: endPos
+      endPos: endPos,
+      securityLevel: 0
     };
   }
 };
