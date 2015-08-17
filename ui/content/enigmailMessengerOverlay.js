@@ -889,7 +889,8 @@ Enigmail.msg = {
   messageParseCallback: function(msgText, contentEncoding, charset, interactive,
     importOnly, messageUrl, signature, retry,
     head, tail, msgUriSpec) {
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageParseCallback: " + interactive + ", " + interactive + ", importOnly=" + importOnly + ", charset=" + charset + ", msgUrl=" + messageUrl + ", retry=" + retry + ", signature='" + signature + "'\n");
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageParseCallback: " + interactive + ", " + interactive + ", importOnly=" + importOnly + ", charset=" + charset + ", msgUrl=" + messageUrl +
+      ", retry=" + retry + ", signature='" + signature + "'\n");
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
@@ -2009,7 +2010,9 @@ Enigmail.msg = {
     fstream.init(outFile, 0x04 | 0x08 | 0x20, 0600, 0); // write, create, truncate
     buffer.init(fstream, 8192);
 
-    buffer.writeFrom(istream, istream.available());
+    while (istream.available() > 0) {
+      buffer.writeFrom(istream, istream.available());
+    }
 
     // Close the output streams
     if (buffer instanceof Components.interfaces.nsISafeOutputStream)
