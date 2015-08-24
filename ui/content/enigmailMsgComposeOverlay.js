@@ -446,11 +446,13 @@ Enigmail.msg = {
       adrCol.setAttribute("oninput", attr + "; Enigmail.msg.addressOnChange();");
       attr = adrCol.getAttribute("onchange");
       adrCol.setAttribute("onchange", attr + "; Enigmail.msg.addressOnChange();");
+      adrCol.setAttribute("observes", "enigmail-bc-sendprocess");
     }
     adrCol = document.getElementById("addressCol1#1"); // to/cc/bcc/... field
     if (adrCol) {
       let attr = adrCol.getAttribute("oncommand");
       adrCol.setAttribute("oncommand", attr + "; Enigmail.msg.addressOnChange();");
+      adrCol.setAttribute("observes", "enigmail-bc-sendprocess");
     }
 
     var draftId = gMsgCompose.compFields.draftId;
@@ -3692,9 +3694,11 @@ Enigmail.msg = {
 
     if (!(this.sendProcess && sendMsgType == Components.interfaces.nsIMsgCompDeliverMode.AutoSaveAsDraft)) {
       this.sendProcess = true;
+      let bc = document.getElementById("enigmail-bc-sendprocess");
 
       try {
         this.modifyCompFields();
+        bc.setAttribute("disabled", "true");
         if (!this.encryptMsg(sendMsgType)) {
           this.resetUpdatedFields();
           event.preventDefault();
@@ -3702,6 +3706,7 @@ Enigmail.msg = {
         }
       }
       catch (ex) {}
+      bc.removeAttribute("disabled");
     }
     else {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.sendMessageListener: sending in progress - autosave aborted\n");

@@ -68,7 +68,13 @@
     <broadcaster id="enigmail-bc-sign" checked="false"/>
     <broadcaster id="enigmail-bc-attach" checked="false"/>
     <broadcaster id="enigmail-bc-protectHdr" checked="false"/>
+    <broadcaster id="enigmail-bc-sendprocess"/>
   </broadcasterset>
+
+  <command id="cmd_sendButton" observes="enigmail-bc-sendprocess"/>
+  <command id="cmd_sendNow" observes="enigmail-bc-sendprocess"/>
+  <command id="cmd_sendWithCheck" observes="enigmail-bc-sendprocess"/>
+  <command id="cmd_sendLater" observes="enigmail-bc-sendprocess"/>
 
   <popupset id="aTooltipSet"/>
 
