@@ -98,13 +98,14 @@ Enigmail.hlp = {
 
 
   /**
-   * process resulting sign/encryp/pgpMime mode for passed emailAddrs and
+   * process resulting sign/encryp/pgpMime mode for passed string of email addresses and
    * use rules and interactive rule dialog to replace emailAddrs by known keys
    * Input parameters:
+   *  @emailAddrs:             comma and space separated string of addresses to process
    *  @interactive:            false: skip all interaction
    *  @forceRecipientSettings: force recipients settings for each missing key (if interactive==true)
    * Output parameters:
-   *   @matchedKeysObj: return value for matched keys and remaining email addresses for which no key was found
+   *   @matchedKeysObj.value: string of matched keys and email addresses for which no key was found (or "")
    *   @flagsObj:       return value for combined sign/encrype/pgpMime mode
    *                    values might be: 0='never', 1='maybe', 2='always', 3='conflict'
    *
@@ -131,12 +132,12 @@ Enigmail.hlp = {
     // - string with { and } around each email to enable pattern matching with rules
     var openAddresses = "{" + EnigmailFuncs.stripEmail(emailAddrs.toLowerCase()).replace(/[, ]+/g, "}{") + "}";
     var foundAddresses = ""; // string of found addresses with { and } around
-    var keyList = []; // list of keys found for all Addresses
-
-    var rulesListObj = {};
+    var keyList = [];        // list of keys found for all Addresses
+    var addrKeysList = [];   // NEW: list of (TODO: FOUND?) email addresses and associated keys
 
     var i;
     // process recipient rules
+    var rulesListObj = {};
     if (enigmailSvc.getRulesData(rulesListObj)) {
 
       var rulesList = rulesListObj.value;
@@ -147,72 +148,82 @@ Enigmail.hlp = {
       }
       EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: getRecipientsKeys(): rules successfully loaded; now process them\n");
       // go through all rules to find match with email addresses
-      var node = rulesList.firstChild.firstChild;
-      while (node) {
+      // - note: only if the key field has a value, an address is done with processing
+      for (let node = rulesList.firstChild.firstChild; node; node = node.nextSibling) {
         if (node.tagName == "pgpRule") {
           try {
             var nodeText = node.getAttribute("email");
-            if (nodeText) {
-              var negateRule = false;
-              if (node.getAttribute("negateRule")) {
-                negateRule = Number(node.getAttribute("negateRule"));
-              }
-              if (!negateRule) {
-                // normal rule
-                addrList = nodeText.toLowerCase().split(/[ ,;]+/);
-                for (var addrIndex = 0; addrIndex < addrList.length; addrIndex++) {
-                  var email = addrList[addrIndex];
-                  let idx = openAddresses.indexOf(email);
-                  while (idx >= 0) {
-                    EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: getRecipientsKeys(): got matching rule for \"" + email + "\"\n");
+            if (!nodeText) {
+              continue;
+            }
+            var negateRule = false;
+            if (node.getAttribute("negateRule")) {
+              negateRule = Number(node.getAttribute("negateRule"));
+            }
+            if (!negateRule) {
+              // normal rule
+              addrList = nodeText.toLowerCase().split(/[ ,;]+/);
+              for (var addrIndex = 0; addrIndex < addrList.length; addrIndex++) {
+                var email = addrList[addrIndex];  // email has format such as '{name@qqq.de}' or '@qqq' or '{name' or '@qqq.de}'
+                let idx = openAddresses.indexOf(email);
+                if (idx >= 0) {
+                  EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: getRecipientsKeys(): got matching rule for \"" + email + "\"\n");
 
-                    // process sign/sncrypt/ppgMime settings
-                    sign = this.getFlagVal(sign, node, "sign");
-                    encrypt = this.getFlagVal(encrypt, node, "encrypt");
-                    pgpMime = this.getFlagVal(pgpMime, node, "pgpMime");
-
-                    // process keys
-                    let keyIds = node.getAttribute("keyId");
-                    if (keyIds) {
-                      if (keyIds != ".") { // if NOT "do not check further rules for this address"
-                        keyList.push(keyIds.replace(/[ ,;]+/g, ", "));
-                      }
-                      let start = openAddresses.substring(0, idx + email.length).lastIndexOf("{");
-                      let end = start + openAddresses.substring(start).indexOf("}") + 1;
-                      foundAddresses += openAddresses.substring(start, end);
-                      openAddresses = openAddresses.substring(0, start) + openAddresses.substring(end);
-                      idx = openAddresses.indexOf(email);
-                    }
-                    else {
-                      var oldMatch = idx;
-                      idx = openAddresses.substring(oldMatch + email.length).indexOf(email);
-                      if (idx >= 0) {
-                        idx += oldMatch + email.length;
-                      }
-                    }
-                  }
-                }
-              }
-              else {
-                // "not" rule
-                addrList = openAddresses.replace(/\}\{/g, "},{").split(/,/);
-                var idx;
-                for (idx = 0; idx < addrList.length; idx++) {
-                  if (nodeText.toLowerCase().indexOf(addrList[idx]) >= 0) {
-                    idx = addrList.length + 2;
-                    break;
-                  }
-                }
-                if (idx == addrList.length) {
-                  // no matching address; apply rule
-                  sign = this.getFlagVal(sign, node, "sign");
+                  // process sign/encrypt/ppgMime settings
+                  sign    = this.getFlagVal(sign,    node, "sign");
                   encrypt = this.getFlagVal(encrypt, node, "encrypt");
                   pgpMime = this.getFlagVal(pgpMime, node, "pgpMime");
+
+                  // process keys
                   let keyIds = node.getAttribute("keyId");
                   if (keyIds) {
-                    if (keyIds != ".") {
-                      keyList.push(keyIds.replace(/[ ,;]+/g, ", "));
+                    // either we have a key or "." for "do not check further rules for this address"
+                    // => process rule for each matching email address
+                    while (idx >= 0) {
+                      // - extract matching address and its indexes (where { starts and after } ends)
+                      let start = openAddresses.substring(0, idx + email.length).lastIndexOf("{");
+                      let end   = start + openAddresses.substring(start).indexOf("}") + 1;
+                      let foundAddr = openAddresses.substring(start+1,end-1);  // without { and }
+                      // - assign key if one exists (not ".")
+                      if (keyIds != ".") {  // if NOT "do not check further rules for this address"
+                        let ids = keyIds.replace(/[ ,;]+/g, ", ");
+                        keyList.push(ids);
+                        let elem = {addr:foundAddr,keys:ids};
+                        addrKeysList.push(elem);
+                      }
+                      // - remove found address from openAdresses and add it to foundAddresses (with { and } as delimiters)
+                      openAddresses = openAddresses.substring(0, start) + openAddresses.substring(end);
+                      foundAddresses += "{"+foundAddr+"}";
+                      // - check whether we have any other matching address for the same rule
+                      idx = openAddresses.indexOf(email,start);
                     }
+                  }
+                }
+              }
+            }
+            else {
+              // "not" rule (old code path, currently not used)
+              addrList = openAddresses.replace(/\}\{/g, "},{").split(/,/);
+              var idx;
+              for (idx = 0; idx < addrList.length; idx++) {
+                if (nodeText.toLowerCase().indexOf(addrList[idx]) >= 0) {
+                  idx = addrList.length + 2;
+                  break;
+                }
+              }
+              if (idx == addrList.length) {
+                // no matching address; apply rule
+                sign    = this.getFlagVal(sign,    node, "sign");
+                encrypt = this.getFlagVal(encrypt, node, "encrypt");
+                pgpMime = this.getFlagVal(pgpMime, node, "pgpMime");
+                let keyIds = node.getAttribute("keyId");
+                if (keyIds) {
+                  if (keyIds != ".") {
+                    let ids = keyIds.replace(/[ ,;]+/g, ", ");
+                    keyList.push(ids);
+                    let foundAddr = "{}";
+                    let elem = {addr:foundAddr,keys:ids};
+                    addrKeysList.push(elem);
                   }
                 }
               }
@@ -220,7 +231,6 @@ Enigmail.hlp = {
           }
           catch (ex) {}
         }
-        node = node.nextSibling;
       }
     }
 
@@ -265,17 +275,28 @@ Enigmail.hlp = {
       }
     }
 
+    // OLD: if we found key, return keys AND unprocessed addresses in matchedKeysObj.value
     if (keyList.length > 0) {
       // sort key list and make it unique?
       matchedKeysObj.value = keyList.join(", ");
       matchedKeysObj.value += openAddresses.replace(/\{/g, ", ").replace(/\}/g, "");
     }
+    // NEW:
+    matchedKeysObj.addrKeysList = addrKeysList;
+    matchedKeysObj.openAddrStr = openAddresses.replace(/\{/, "").replace(/\{/g, ", ").replace(/\}/g, "");
 
     // return result from combining flags
     flagsObj.sign = sign;
     flagsObj.encrypt = encrypt;
     flagsObj.pgpMime = pgpMime;
     flagsObj.value = true;
+
+    EnigmailLog.DEBUG("   found keys:\n");
+    for (let i = 0; i < matchedKeysObj.addrKeysList.length; i++) {
+      EnigmailLog.DEBUG("     " + matchedKeysObj.addrKeysList[i].addr + ": " + matchedKeysObj.addrKeysList[i].keys + "\n");
+    }
+    EnigmailLog.DEBUG("   open addresses:\n");
+    EnigmailLog.DEBUG("     " + matchedKeysObj.openAddrStr + "\n");
 
     return true;
   },
