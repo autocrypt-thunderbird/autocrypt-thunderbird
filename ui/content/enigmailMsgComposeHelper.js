@@ -105,9 +105,11 @@ Enigmail.hlp = {
    *  @interactive:            false: skip all interaction
    *  @forceRecipientSettings: force recipients settings for each missing key (if interactive==true)
    * Output parameters:
-   *   @matchedKeysObj.value: string of matched keys and email addresses for which no key was found (or "")
-   *   @flagsObj:       return value for combined sign/encrype/pgpMime mode
-   *                    values might be: 0='never', 1='maybe', 2='always', 3='conflict'
+   *  @matchedKeysObj.value:   comma separated string of matched keys AND email addresses for which no key was found (or "")
+   *  @matchedKeysObj.addrKeysList: found email/keys mappings (array of objects with addr and keys)
+   *  @matchedKeysObj.openAddrStr:  unprocessed emails as comma-sep. string (e.g. "a@qq.de, b@qq.com")
+   *  @flagsObj:       return value for combined sign/encrype/pgpMime mode
+   *                   values might be: 0='never', 1='maybe', 2='always', 3='conflict'
    *
    * @return:  false if error occurred or processing was canceled
    */
@@ -129,13 +131,14 @@ Enigmail.hlp = {
     var pgpMime = EnigmailConstants.ENIG_UNDEF; // default pgpMime flag is: maybe
 
     // list of addresses not processed
-    // - string with { and } around each email to enable pattern matching with rules
+    // - create string of open addresses (where associated kleys are still missing)
+    //   with { and } around each email to enable pattern matching with rules
+    //   (e.g. "{a@qqq.de}" will match "@qqq.de}", which stands for emails ending with "qqq.de")
     var openAddresses = "{" + EnigmailFuncs.stripEmail(emailAddrs.toLowerCase()).replace(/[, ]+/g, "}{") + "}";
     var foundAddresses = ""; // string of found addresses with { and } around
     var keyList = [];        // list of keys found for all Addresses
-    var addrKeysList = [];   // NEW: list of (TODO: FOUND?) email addresses and associated keys
+    var addrKeysList = [];   // NEW: list of found email addresses and their associated keys
 
-    var i;
     // process recipient rules
     var rulesListObj = {};
     if (enigmailSvc.getRulesData(rulesListObj)) {
@@ -188,7 +191,7 @@ Enigmail.hlp = {
                       if (keyIds != ".") {  // if NOT "do not check further rules for this address"
                         let ids = keyIds.replace(/[ ,;]+/g, ", ");
                         keyList.push(ids);
-                        let elem = {addr:foundAddr,keys:ids};
+                        let elem = { addr:foundAddr, keys:ids };
                         addrKeysList.push(elem);
                       }
                       // - remove found address from openAdresses and add it to foundAddresses (with { and } as delimiters)
@@ -222,7 +225,7 @@ Enigmail.hlp = {
                     let ids = keyIds.replace(/[ ,;]+/g, ", ");
                     keyList.push(ids);
                     let foundAddr = "{}";
-                    let elem = {addr:foundAddr,keys:ids};
+                    let elem = { addr:foundAddr, keys:ids };
                     addrKeysList.push(elem);
                   }
                 }
@@ -239,11 +242,13 @@ Enigmail.hlp = {
       var addrList = emailAddrs.split(/,/);
       var inputObj = {};
       var resultObj = {};
-      for (i = 0; i < addrList.length; i++) {
+      for (let i = 0; i < addrList.length; i++) {
         if (addrList[i].length > 0) {
           var theAddr = EnigmailFuncs.stripEmail(addrList[i]).toLowerCase();
+          // if the email is not in foundAddresses
+          // and it contains a @ or no 0x at the beginning:
           if ((foundAddresses.indexOf("{" + theAddr + "}") == -1) &&
-            (!(theAddr.indexOf("0x") === 0 && theAddr.indexOf("@") == -1))) {
+              (!(theAddr.indexOf("0x") === 0 && theAddr.indexOf("@") == -1))) {
             inputObj.toAddress = "{" + theAddr + "}";
             inputObj.options = "";
             inputObj.command = "add";
@@ -257,16 +262,18 @@ Enigmail.hlp = {
               return this[attrName];
             };
             if (!resultObj.negate) {
-              sign = this.getFlagVal(sign, resultObj, "sign");
+              sign    = this.getFlagVal(sign,    resultObj, "sign");
               encrypt = this.getFlagVal(encrypt, resultObj, "encrypt");
               pgpMime = this.getFlagVal(pgpMime, resultObj, "pgpMime");
               if (resultObj.keyId.length > 0) {
                 keyList.push(resultObj.keyId);
-                var replaceAddr = new RegExp("{" + addrList[i] + "}", "g");
+                let elem = { addr:theAddr, keys:resultObj.keyId};
+                addrKeysList.push(elem);
+                let replaceAddr = new RegExp("{" + addrList[i] + "}", "g");
                 openAddresses = openAddresses.replace(replaceAddr, "");
               }
               else {
-                // no key -> no encryption
+                // no key => no encryption
                 encrypt = 0;
               }
             }
@@ -281,7 +288,9 @@ Enigmail.hlp = {
       matchedKeysObj.value = keyList.join(", ");
       matchedKeysObj.value += openAddresses.replace(/\{/g, ", ").replace(/\}/g, "");
     }
-    // NEW:
+    // NEW: return
+    // - in matchedKeysObj.addrKeysList: found email/keys mappings (array of objects with addr and keys)
+    // - in matchedKeysObj.openAddrStr:  unprocessed emails as comma-sep. string (e.g. "a@qq.de, b@qq.com")
     matchedKeysObj.addrKeysList = addrKeysList;
     matchedKeysObj.openAddrStr = openAddresses.replace(/\{/, "").replace(/\{/g, ", ").replace(/\}/g, "");
 
