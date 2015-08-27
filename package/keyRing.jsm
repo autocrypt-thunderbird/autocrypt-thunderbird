@@ -75,6 +75,7 @@ const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID =
   "@mozilla.org/network/file-output-stream;1";
 
 // field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
+const ENTRY_ID = 0;
 const KEY_TRUST_ID = 1;
 const KEY_ID = 4;
 const CREATED_ID = 5;
@@ -159,8 +160,8 @@ const EnigmailKeyRing = {
     const lineArr = entry.split(/\n/);
     for (let i = 0; i < lineArr.length; ++i) {
       const lineTokens = lineArr[i].split(/:/);
-      if (lineTokens[0] === "pub") {
-        return lineTokens[4];
+      if (lineTokens[ENTRY_ID] === "pub") {
+        return lineTokens[KEY_ID];
       }
     }
     return null;
@@ -183,8 +184,8 @@ const EnigmailKeyRing = {
     const lineArr = entry.split(/\n/);
     for (let i = 0; i < lineArr.length; ++i) {
       const lineTokens = lineArr[i].split(/:/);
-      if (lineTokens[0] === "uid") {
-        return lineTokens[9];
+      if (lineTokens[ENTRY_ID] === "uid") {
+        return lineTokens[USERID_ID];
       }
     }
     return null;
@@ -328,35 +329,35 @@ const EnigmailKeyRing = {
         //  sub:e:2048:1:B214734F0F5C7041:1316219469:1199912694:::::e:
         //  sub:f:2048:1:70E7A471DABE08B0:1316221524:1546189300:::::s:
         const lineTokens = lineArr[i].split(/:/);
-        switch (lineTokens[0]) {
+        switch (lineTokens[ENTRY_ID]) {
           case "pub":
-            if (EnigmailTrust.isInvalid(lineTokens[1])) {
+            if (EnigmailTrust.isInvalid(lineTokens[KEY_TRUST_ID])) {
               // pub key not valid (anymore)-> display all UID's
               hideInvalidUid = false;
             }
             break;
           case "uid":
             if (uidOnly && hideInvalidUid) {
-              const thisTrust = TRUSTLEVELS_SORTED.indexOf(lineTokens[1]);
+              const thisTrust = TRUSTLEVELS_SORTED.indexOf(lineTokens[KEY_TRUST_ID]);
               if (thisTrust > maxTrustLevel) {
-                userList = lineTokens[9] + "\n";
+                userList = lineTokens[USERID_ID] + "\n";
                 maxTrustLevel = thisTrust;
               }
               else if (thisTrust == maxTrustLevel) {
-                userList += lineTokens[9] + "\n";
+                userList += lineTokens[USERID_ID] + "\n";
               }
               // else do not add uid
             }
-            else if (!EnigmailTrust.isInvalid(lineTokens[1]) || !hideInvalidUid) {
+            else if (!EnigmailTrust.isInvalid(lineTokens[KEY_TRUST_ID]) || !hideInvalidUid) {
               // UID valid  OR  key not valid, but invalid keys allowed
-              userList += lineTokens[9] + "\n";
+              userList += lineTokens[USERID_ID] + "\n";
             }
             break;
           case "uat":
             if (withUserAttributes) {
-              if (!EnigmailTrust.isInvalid(lineTokens[1]) || !hideInvalidUid) {
+              if (!EnigmailTrust.isInvalid(lineTokens[KEY_TRUST_ID]) || !hideInvalidUid) {
                 // IF  UID valid  OR  key not valid and invalid keys allowed
-                userList += "uat:jpegPhoto:" + lineTokens[4] + "\n";
+                userList += "uat:jpegPhoto:" + lineTokens[KEY_ID] + "\n";
               }
             }
             break;
@@ -603,7 +604,7 @@ const EnigmailKeyRing = {
     for (let i = 0; i < keyListString.length; i++) {
       const listRow = keyListString[i].split(/:/);
       if (listRow.length >= 0) {
-        switch (listRow[0]) {
+        switch (listRow[ENTRY_ID]) {
           case "pub":
             keyObj = {};
             uatNum = 0;
@@ -712,7 +713,7 @@ const EnigmailKeyRing = {
     for (let i = 0; i < aGpgSecretsList.length; i++) {
       let listRow = aGpgSecretsList[i].split(/:/);
       if (listRow.length >= 0) {
-        if (listRow[0] == "sec") {
+        if (listRow[ENTRY_ID] == "sec") {
           if (typeof(keyListObj.keyList[listRow[KEY_ID]]) == "object") {
             keyListObj.keyList[listRow[KEY_ID]].secretAvailable = true;
           }
@@ -832,7 +833,7 @@ const EnigmailKeyRing = {
   },
 
   /**
-   * Get a list of all secret keys
+   * Get a list of all valid (= usable) secret keys
    *
    *  win:     nsIWindow: optional parent window
    *  refresh: Boolean:   optional. true ->  re-load keys from gpg
@@ -861,8 +862,8 @@ const EnigmailKeyRing = {
     for (let i = 0; i < userList.length; i++) {
       if (userList[i].substr(0, 4) == "sec:") {
         let aLine = userList[i].split(/:/);
-        keyId = aLine[4];
-        secretKeyCreated[keyId] = EnigmailTime.getDateTime(aLine[5], true, false);
+        keyId = aLine[KEY_ID];
+        secretKeyCreated[keyId] = EnigmailTime.getDateTime(aLine[CREATED_ID], true, false);
         secretKeyList.push(keyId);
       }
     }
@@ -871,15 +872,15 @@ const EnigmailKeyRing = {
 
     for (let i = 0; i < userList2.length; i++) {
       let aLine = userList2[i].split(/:/);
-      switch (aLine[0]) {
+      switch (aLine[ENTRY_ID]) {
         case "pub":
-          if (aLine[1].search(/[muf]/) === 0) keyId = aLine[4]; // public key is valid
+          if (aLine[KEY_TRUST_ID].search(/[muf]/) === 0) keyId = aLine[KEY_ID]; // public key is valid
           break;
         case "uid":
-          if ((keyId) && (aLine[1].search(/[muf]/) === 0)) {
+          if ((keyId) && (aLine[KEY_TRUST_ID].search(/[muf]/) === 0)) {
             // UID is valid
             keys.push({
-              name: EnigmailData.convertGpgToUnicode(aLine[9]),
+              name: EnigmailData.convertGpgToUnicode(aLine[USERID_ID]),
               id: keyId,
               created: secretKeyCreated[keyId]
             });
@@ -905,7 +906,7 @@ const EnigmailKeyRing = {
  * @return - |array| of : separated key list entries as specified in GnuPG doc/DETAILS
  */
 function obtainKeyList(win, secretOnly, refresh) {
-  EnigmailLog.DEBUG("funcs.jsm: obtainKeyList\n");
+  EnigmailLog.DEBUG("keyRing.jsm: obtainKeyList\n");
 
   let userList = null;
   try {
@@ -922,7 +923,7 @@ function obtainKeyList(win, secretOnly, refresh) {
     }
   }
   catch (ex) {
-    EnigmailLog.ERROR("ERROR in enigmailFuncs: obtainKeyList" + ex.toString() + "\n");
+    EnigmailLog.ERROR("ERROR in keyRing.jsm: obtainKeyList" + ex.toString() + "\n");
   }
 
   if (typeof(userList) == "string") {
