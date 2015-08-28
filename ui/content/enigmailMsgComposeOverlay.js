@@ -1749,11 +1749,10 @@ Enigmail.msg = {
       if (toAddrList.length > 0 && EnigmailPrefs.getPref("assignKeysByRules")) {
         var matchedKeysObj = {};
         var flagsObj = {};
-        if (Enigmail.hlp.getRecipientsKeys(toAddrList.join(", "),
-            false, // not interactive
-            false, // forceRecipientSettings (ignored due to not interactive)
-            matchedKeysObj, // resulting matching keys
-            flagsObj)) { // resulting flags (0/1/2/3 for each type)
+        if (Enigmail.hlp.mapAddrsToKeys(toAddrList.join(", "),
+                                        false, // no interaction if not all addrs have a key
+                                        matchedKeysObj, // resulting matching keys
+                                        flagsObj)) { // resulting flags (0/1/2/3 for each type)
           this.encryptByRules = flagsObj.encrypt;
           this.signByRules = flagsObj.sign;
           this.pgpmimeByRules = flagsObj.pgpMime;
@@ -2250,16 +2249,15 @@ Enigmail.msg = {
     // - matchedKeysObj will contain the keys and the remaining toAddrStr elements
     var matchedKeysObj = {}; // returned value for matched keys
     var flagsObj = {}; // returned value for flags
-    if (!Enigmail.hlp.getRecipientsKeys(toAddrStr,
-        true, // interactive
-        forceRecipientSettings,
-        matchedKeysObj,
-        flagsObj)) {
+    if (!Enigmail.hlp.mapAddrsToKeys(toAddrStr,
+                                     forceRecipientSettings, // true => start dialog for addrs without any key
+                                     matchedKeysObj,
+                                     flagsObj)) {
       return null;
     }
     if (matchedKeysObj.value) {
       toAddrStr = matchedKeysObj.value;
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): after getRecipientsKeys() toAddrStr=\"" + toAddrStr + "\"\n");
+      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): after mapAddrsToKeys() toAddrStr=\"" + toAddrStr + "\"\n");
     }
     this.encryptByRules = flagsObj.encrypt;
     this.signByRules = flagsObj.sign;
@@ -2337,16 +2335,15 @@ Enigmail.msg = {
     // get keys according to rules for bcc addresses:
     // - matchedKeysObj will contain the keys and the remaining bccAddrStr elements
     // - NOTE: bcc recipients are ignored when in general computing whether to sign or encrypt or pgpMime
-    if (!Enigmail.hlp.getRecipientsKeys(bccAddrStr,
-        true, // interactive
-        forceRecipientSettings,
-        matchedKeysObj,
-        flagsObj)) {
+    if (!Enigmail.hlp.mapAddrsToKeys(bccAddrStr,
+                                     forceRecipientSettings, // true => start dialog for addrs without any key
+                                     matchedKeysObj,
+                                     flagsObj)) {
       return null;
     }
     if (matchedKeysObj.value) {
       bccAddrStr = matchedKeysObj.value;
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): after getRecipientsKeys() bccAddrStr=\"" + bccAddrStr + "\"\n");
+      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): after mapAddrsToKeys() bccAddrStr=\"" + bccAddrStr + "\"\n");
     }
 
     EnigmailLog.DEBUG("  <=== processRules()\n");
