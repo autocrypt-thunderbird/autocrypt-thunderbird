@@ -54,6 +54,7 @@ const KEY_NOT_VALID = KEY_EXPIRED + KEY_REVOKED + KEY_INVALID + KEY_DISABLED;
 var gErrorData = "";
 var gOutputData = "";
 var gEnigRequest;
+var gEnigHttpReq = null;
 var gAllKeysSelected = 0;
 
 function trim(str) {
@@ -202,16 +203,15 @@ function startDownload() {
   return true;
 }
 
-
 function onCancel() {
   EnigmailLog.DEBUG("enigmailSearchKey.js: onCancel\n");
 
   if (gEnigRequest.httpInProgress) {
     // stop download
     try {
-      if ((typeof(window.enigHttpReq) == "object") &&
-        (window.enigHttpReq.readyState != 4)) {
-        window.enigHttpReq.abort();
+      if ((typeof(gEnigHttpReq) == "object") &&
+        (gEnigHttpReq.readyState != 4)) {
+        gEnigHttpReq.abort();
       }
       gEnigRequest.httpInProgress = false;
     }
@@ -220,9 +220,12 @@ function onCancel() {
 
   if (gEnigRequest.gpgkeysRequest) {
 
-    var p = gEnigRequest.gpgkeysRequest;
-    gEnigRequest.gpgkeysRequest = null;
-    p.kill(false);
+    try {
+      var p = gEnigRequest.gpgkeysRequest;
+      gEnigRequest.gpgkeysRequest = null;
+      p.kill(false);
+    }
+    catch (ex) {}
   }
 
   gOutputData = "";
@@ -290,7 +293,7 @@ function enigImportKeys(connType, txt, errorTxt) {
   if (gEnigRequest.dlKeyList.length > gEnigRequest.keyNum) {
     switch (connType) {
       case ENIG_CONN_TYPE_HTTP:
-        enigNewHttpRequest(nsIEnigmail.DOWNLOAD_KEY, window.enigHttpReq.requestCallbackFunc);
+        enigNewHttpRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigHttpReq.requestCallbackFunc);
         break;
       case ENIG_CONN_TYPE_GPGKEYS:
         enigNewGpgKeysRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigRequest.callbackFunction);
@@ -370,7 +373,7 @@ function enigNewHttpRequest(requestType, requestCallbackFunc) {
   httpReq.onerror = enigStatusError;
   httpReq.onload = enigStatusLoaded;
   httpReq.requestCallbackFunc = requestCallbackFunc;
-  window.enigHttpReq = httpReq;
+  gEnigHttpReq = httpReq;
   httpReq.send("");
 }
 
@@ -405,7 +408,7 @@ function enigScanKeys(connType, htmlTxt) {
   if (gEnigRequest.searchList.length > gEnigRequest.keyNum) {
     switch (connType) {
       case ENIG_CONN_TYPE_HTTP:
-        enigNewHttpRequest(nsIEnigmail.SEARCH_KEY, window.enigHttpReq.requestCallbackFunc);
+        enigNewHttpRequest(nsIEnigmail.SEARCH_KEY, gEnigHttpReq.requestCallbackFunc);
         break;
       case ENIG_CONN_TYPE_GPGKEYS:
         enigNewGpgKeysRequest(nsIEnigmail.SEARCH_KEY, gEnigRequest.callbackFunction);
