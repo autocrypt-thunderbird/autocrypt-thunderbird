@@ -951,13 +951,19 @@ Enigmail.msg = {
 
   replaceEditorText: function(text) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.replaceEditorText:\n");
-    this.editorSelectAll();
 
+    this.editorSelectAll();
     // Overwrite text in clipboard for security
     // (Otherwise plaintext will be available in the clipbaord)
-    this.editorInsertText("Enigmail");
-    this.editorSelectAll();
 
+    if (this.editor.textLength > 0) {
+      this.editorInsertText("Enigmail");
+    }
+    else {
+      this.editorInsertText(" ");
+    }
+
+    this.editorSelectAll();
     this.editorInsertText(text);
   },
 
