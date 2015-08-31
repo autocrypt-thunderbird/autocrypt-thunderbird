@@ -65,8 +65,8 @@ Enigmail.hlp = {
    *  @return: result value after applying the rule (0/1/2)
    *           and combining it with oldVal
    */
-  getFlagVal: function(oldVal, newVal) {
-    //EnigmailLog.DEBUG("enigmailMsgComposeHelper.js:    getFlagVal(): oldVal=" + oldVal + " newVal=" + newVal + "\n");
+  combineFlagValues: function(oldVal, newVal) {
+    //EnigmailLog.DEBUG("enigmailMsgComposeHelper.js:    combineFlagValues(): oldVal=" + oldVal + " newVal=" + newVal + "\n");
 
     // conflict remains conflict
     if (oldVal === EnigmailConstants.ENIG_CONFLICT) {
@@ -103,7 +103,8 @@ Enigmail.hlp = {
    *  @startDialogForMissingKeys: true: start dialog for emails without key(s)
    * Output parameters:
    *  @matchedKeysObj.value:   comma separated string of matched keys AND email addresses for which no key was found (or "")
-   *  @matchedKeysObj.addrKeysList: found email/keys mappings (array of objects with addr and keys)
+   *  @matchedKeysObj.addrKeysList: all email/keys mappings (array of objects with addr and keys)
+   *                                (also open addrs not having any key according to rules (and rule dialog))
    *  @matchedKeysObj.openAddrStr:  unprocessed emails as comma-sep. string (e.g. "a@qq.de, b@qq.com")
    *  @flagsObj:       return value for combined sign/encrype/pgpMime mode
    *                   values might be: 0='never', 1='maybe', 2='always', 3='conflict'
@@ -115,7 +116,7 @@ Enigmail.hlp = {
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
-    var enigmailSvc = EnigmailCore.getService();
+    let enigmailSvc = EnigmailCore.getService();
     if (!enigmailSvc) {
       return false;
     }
@@ -123,7 +124,7 @@ Enigmail.hlp = {
     // initialize return value and the helper variables for them:
     matchedKeysObj.value = "";
     flagsObj.value = false;
-    var flags = {};  // object to be able to modify flags in subfunction
+    let flags = {};  // object to be able to modify flags in subfunction
     flags.sign = EnigmailConstants.ENIG_UNDEF; // default sign flag is: maybe
     flags.encrypt = EnigmailConstants.ENIG_UNDEF; // default encrypt flag is: maybe
     flags.pgpMime = EnigmailConstants.ENIG_UNDEF; // default pgpMime flag is: maybe
@@ -132,29 +133,30 @@ Enigmail.hlp = {
     // - create string of open addresses (where associated kleys are still missing)
     //   with { and } around each email to enable pattern matching with rules
     //   (e.g. "{a@qqq.de}" will match "@qqq.de}", which stands for emails ending with "qqq.de")
-    var addresses = {};  // object to be able to modify flags in subfunction
+    let addresses = {};  // object to be able to modify flags in subfunction
     addresses.open = "{" + EnigmailFuncs.stripEmail(emailAddrs.toLowerCase()).replace(/[, ]+/g, "},{") + "}";
     addresses.found = ""; // string of found addresses with { and } around
-    var keyList = [];        // list of keys found for all Addresses
-    var addrKeysList = [];   // NEW: list of found email addresses and their associated keys
+    // TODO: split open into rulesOpen and noKeys?
+    let keyList = [];        // list of keys found for all Addresses
+    let addrKeysList = [];   // NEW: list of found email addresses and their associated keys
 
     // process recipient rules
-    var rulesListObj = {};
+    let rulesListObj = {};
     if (enigmailSvc.getRulesData(rulesListObj)) {
 
-      var rulesList = rulesListObj.value;
-
+      let rulesList = rulesListObj.value;
       if (rulesList.firstChild.nodeName == "parsererror") {
         EnigmailDialog.alert(window, "Invalid pgprules.xml file:\n" + rulesList.firstChild.textContent);
         return false;
       }
       EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: mapAddrsToKeys(): rules successfully loaded; now process them\n");
+
       // go through all rules to find match with email addresses
       // - note: only if the key field has a value, an address is done with processing
       for (let node = rulesList.firstChild.firstChild; node; node = node.nextSibling) {
         if (node.tagName == "pgpRule") {
           try {
-            var rule = {}
+            let rule = {}
             rule.email = node.getAttribute("email");
             if (!rule.email) {
               continue;
@@ -179,23 +181,33 @@ Enigmail.hlp = {
         }
       }
     }
+    addresses.open = addresses.open.replace(/ /g, "").replace(/[,][,]+/g, ",");
+    EnigmailLog.DEBUG("   addresses.open: " + addresses.open + "\n");
+
+    // NOTE: here we have
+    // - addresses.open: the addresses not having any key assigned yet
+    //                   (and not marked as don't process any other rule)
+    // - addresses with "don't process other rules" are in addrKeyList
+    //   as addr without any key
 
     // if requested: start dialog to add new rule for each missing key
     if (startDialogForMissingKeys) {
-      var addrList = emailAddrs.split(/,/);
-      var inputObj = {};
-      var resultObj = {};
+      let addrList = addresses.open.split(/,/);
+      let inputObj = {};
+      let resultObj = {};
       for (let i = 0; i < addrList.length; i++) {
         if (addrList[i].length > 0) {
-          var theAddr = EnigmailFuncs.stripEmail(addrList[i]).toLowerCase();
+          let theAddr = EnigmailFuncs.stripEmail(addrList[i]).toLowerCase();
           // if the email is not in found addresses
-          // and it contains a @ or no 0x at the beginning:
-          if ((addresses.found.indexOf("{" + theAddr + "}") == -1) &&
-              (!(theAddr.indexOf("0x") === 0 && theAddr.indexOf("@") == -1))) {
+          // and it contains a @ and no 0x at the beginning:
+          // TODO: handling if found already: remove from open
+          if ((addresses.found.indexOf("{" + theAddr + "}") == -1)
+              && theAddr.indexOf("@") != -1 && theAddr.indexOf("0x") != 0) {
             inputObj.toAddress = "{" + theAddr + "}";
             inputObj.options = "";
             inputObj.command = "add";
-            window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+            window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul", "",
+                              "dialog,modal,centerscreen,resizable", inputObj, resultObj);
             if (resultObj.cancelled === true) {
               return false;
             }
@@ -215,23 +227,51 @@ Enigmail.hlp = {
       }
     }
 
+    // NOTE: still we might have addrs without any key both in
+    // - addresses.open
+    // - addrs in addrKeyList without any key
+    //   (addresses with "don't process other rules)
+
     // transfer open addresses to comma separated string:
     addresses.open = addresses.open.replace(/,/g, "");
     addresses.open = addresses.open.replace(/\}\{/g, ", ").replace(/\{/g, "").replace(/\}/g, "");
+
+    // all remaining open addresses also are addrs without any key:
+    let openAddrList = addresses.open.split(/,/);
+    for (let i = 0; i < openAddrList.length; i++) {
+      let openAddr = openAddrList[i];
+      if (openAddr.length > 0) {
+        let ids = "";
+        let elem = { addr:openAddr, keys:ids };
+        addrKeysList.push(elem);
+      }
+    }
+    
+    // for OLD return value: collect all addresses without any key:
+    let openAddresses = "";
+    for (let i = 0; i < addrKeysList.length; i++) {
+      let elem = addrKeysList[i];
+      if (!elem.keys || elem.keys.length == 0) {
+        if (openAddresses.length > 0) {
+          openAddresses = openAddresses + ",";
+        }
+        openAddresses = openAddresses + elem.addr;
+      }
+    }
 
     // OLD: if we found key, return keys AND unprocessed addresses in matchedKeysObj.value
     if (keyList.length > 0) {
       // sort key list and make it unique?
       matchedKeysObj.value = keyList.join(", ");
       if (addresses.open.length > 0) {
-        matchedKeysObj.value += ", " + addresses.open;
+        matchedKeysObj.value += ", " + openAddresses
       }
     }
     // NEW: return
     // - in matchedKeysObj.addrKeysList: found email/keys mappings (array of objects with addr and keys)
     // - in matchedKeysObj.openAddrStr:  unprocessed emails as comma-sep. string (e.g. "a@qq.de, b@qq.com")
     matchedKeysObj.addrKeysList = addrKeysList;
-    matchedKeysObj.openAddrStr = addresses.open;
+    matchedKeysObj.openAddrStr = openAddresses;
 
     // return result from combining flags
     flagsObj.sign = flags.sign;
@@ -262,9 +302,9 @@ Enigmail.hlp = {
         EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: mapRuleToKeys(): got matching rule for \"" + email + "\"\n");
 
         // process sign/encrypt/ppgMime settings
-        flags.sign    = this.getFlagVal(flags.sign,    Number(rule.sign));
-        flags.encrypt = this.getFlagVal(flags.encrypt, Number(rule.encrypt));
-        flags.pgpMime = this.getFlagVal(flags.pgpMime, Number(rule.pgpMime));
+        flags.sign    = this.combineFlagValues(flags.sign,    Number(rule.sign));
+        flags.encrypt = this.combineFlagValues(flags.encrypt, Number(rule.encrypt));
+        flags.pgpMime = this.combineFlagValues(flags.pgpMime, Number(rule.pgpMime));
 
         // process keys:
         // NOTE: rule.keyId might be:
@@ -285,6 +325,12 @@ Enigmail.hlp = {
             if (rule.keyId != ".") {  // if NOT "do not check further rules for this address"
               let ids = rule.keyId.replace(/[ ,;]+/g, ", ");
               keyList.push(ids);
+              let elem = { addr:foundAddr, keys:ids };
+              addrKeysList.push(elem);
+            }
+            else {
+              // addr was (finally) processed but without any key
+              let ids = "";
               let elem = { addr:foundAddr, keys:ids };
               addrKeysList.push(elem);
             }
