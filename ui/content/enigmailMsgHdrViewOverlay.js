@@ -263,7 +263,7 @@ Enigmail.hdrView = {
           var signingAlg = EnigmailGpg.signingAlgIdToString(detailArr[6]);
           var hashAlg = EnigmailGpg.hashAlgIdToString(detailArr[7]);
 
-          statusInfo += "\n\n" + EnigmailLocale.getString("usedAlgorithms",[signingAlg,hashAlg]);
+          statusInfo += "\n\n" + EnigmailLocale.getString("usedAlgorithms", [signingAlg, hashAlg]);
         }
       }
       fullStatusInfo = statusInfo;
@@ -1133,4 +1133,3 @@ if (messageHeaderSink) {
     }
   };
 }
-

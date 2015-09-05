@@ -238,4 +238,3 @@ const EnigmailPrefs = {
     return prefObj;
   }
 };
-

@@ -282,7 +282,7 @@ const EnigmailGpg = {
       case 19:
         return "ECDSA";
       default:
-        return EnigmailLocale.getString("unknownSigningAlg",[parseInt(id)]);
+        return EnigmailLocale.getString("unknownSigningAlg", [parseInt(id)]);
     }
   },
 
@@ -304,8 +304,7 @@ const EnigmailGpg = {
       case 11:
         return "SHA224";
       default:
-        return EnigmailLocale.getString("unknownHashAlg",[parseInt(id)]);
+        return EnigmailLocale.getString("unknownHashAlg", [parseInt(id)]);
     }
   }
 };
-

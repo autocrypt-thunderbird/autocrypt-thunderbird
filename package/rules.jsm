@@ -182,4 +182,3 @@ const EnigmailRules = {
     target.clearRules = EnigmailRules.clearRules;
   }
 };
-
