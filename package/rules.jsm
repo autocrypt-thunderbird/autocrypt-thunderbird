@@ -183,6 +183,7 @@ const EnigmailRules = {
     target.saveRulesFile = EnigmailRules.saveRulesFile;
     target.getRulesData = EnigmailRules.getRulesData;
     target.addRule = EnigmailRules.addRule;
+    target.clearRules = EnigmailRules.clearRules;
   },
 
   /**
