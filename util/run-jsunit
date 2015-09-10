@@ -11,7 +11,7 @@ perlpath=$1
 tbpath=$2
 shift 2
 
-PL_PATH=${perlpath} ${tbpath} "$@" | tee ${TMPFILE}
+PL_PATH=${perlpath} "${tbpath}" "$@" | tee ${TMPFILE}
 
 if [ `grep -c "^TestResult: failed   : 0" ${TMPFILE}` -eq 0 ]; then
   echo "Tests failed"
