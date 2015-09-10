@@ -48,6 +48,7 @@ Components.utils.import("resource://enigmail/files.jsm");
 Components.utils.import("resource://enigmail/app.jsm");
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
+Components.utils.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 
 var EXPORTED_SYMBOLS = ["EnigmailRules"];
 
@@ -248,7 +249,7 @@ const EnigmailRules = {
       for (let node = rulesList.firstChild.firstChild; node; node = node.nextSibling) {
         if (node.tagName == "pgpRule") {
           try {
-            let rule = {}
+            let rule = {};
             rule.email = node.getAttribute("email");
             if (!rule.email) {
               continue;
@@ -292,7 +293,7 @@ const EnigmailRules = {
         if (theAddr.length > 0) {
           // if the email address contains a @ or no 0x at the beginning:
           // - reason: newsgroups have neither @ nor 0x
-          if (theAddr.indexOf("@") != -1 || theAddr.indexOf("0x") != 0) {
+          if (theAddr.indexOf("@") != -1 || theAddr.indexOf("0x") !== 0) {
             inputObj.toAddress = "{" + theAddr + "}";
             inputObj.options = "";
             inputObj.command = "add";
@@ -330,7 +331,7 @@ const EnigmailRules = {
       // sort key list and make it unique?
       matchedKeysObj.value = keyList.join(", ");
       if (addresses.openInRules.length > 0) {
-        matchedKeysObj.value += ", " + openAddresses
+        matchedKeysObj.value += ", " + openAddresses;
       }
     }
     // NEW: return
