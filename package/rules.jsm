@@ -371,12 +371,12 @@ const EnigmailRules = {
                           addresses, flags, keyList, addrKeysList, addrNoKeyList) {
     //EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys() rule.email='" + rule.email + "'\n");
     // process rule
-    let addrList = rule.email.toLowerCase().split(/[ ,;]+/);
-    for (let addrIndex = 0; addrIndex < addrList.length; addrIndex++) {
-      let email = addrList[addrIndex];  // email has format such as '{name@qqq.de}' or '@qqq' or '{name' or '@qqq.de}'
-      let idx = addresses.openInRules.indexOf(email);
+    let ruleList = rule.email.toLowerCase().split(/[ ,;]+/);
+    for (let ruleIndex = 0; ruleIndex < ruleList.length; ruleIndex++) {
+      let ruleEmailElem = ruleList[ruleIndex];  // ruleEmailElem has format such as '{name@qqq.de}' or '@qqq' or '{name' or '@qqq.de}'
+      let idx = addresses.openInRules.indexOf(ruleEmailElem);
       if (idx >= 0) {
-        EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys(): got matching rule for \"" + email + "\": \"" + rule.email + "\"\n");
+        EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys(): found matching rule element \"" + ruleEmailElem + "\" from \"" + rule.email + "\"\n");
 
         // process sign/encrypt/ppgMime settings
         flags.sign    = this.combineFlagValues(flags.sign,    Number(rule.sign));
@@ -395,7 +395,7 @@ const EnigmailRules = {
         if (rule.keyId) {
           while (idx >= 0) {
             // - extract matching address and its indexes (where { starts and after } ends)
-            let start = addresses.openInRules.substring(0, idx + email.length).lastIndexOf("{");
+            let start = addresses.openInRules.substring(0, idx + ruleEmailElem.length).lastIndexOf("{");
             let end   = start + addresses.openInRules.substring(start).indexOf("}") + 1;
             let foundAddr = addresses.openInRules.substring(start+1,end-1);  // without { and }
             // - assign key if one exists (not ".")
@@ -414,7 +414,7 @@ const EnigmailRules = {
             // - remove found address from openAdresses and add it to found addresses (with { and } as delimiters)
             addresses.openInRules = addresses.openInRules.substring(0, start) + addresses.openInRules.substring(end);
             // - check whether we have any other matching address for the same rule
-            idx = addresses.openInRules.indexOf(email,start);
+            idx = addresses.openInRules.indexOf(ruleEmailElem,start);
           }
         }
         //EnigmailLog.DEBUG("     addresses.openInRules:  '" + addresses.openInRules + "'\n");
