@@ -12,16 +12,26 @@ tbpath=$2
 shift 2
 
 PL_PATH=${perlpath} "${tbpath}" "$@" | tee ${TMPFILE}
+echo ""
 
 if [ `grep -c "^TestResult: failed   : 0" ${TMPFILE}` -eq 0 ]; then
+  echo "========================================="
   echo "Tests failed"
+  echo "Testfile: "`pwd`"/${TMPFILE}"
+  echo "========================================="
+  echo ""
+  #grep -v Succeed ${TMPFILE}
+  egrep 'TestResult:|Error:|Succeed.*OK|Executing sub-test' ${TMPFILE}
+  echo ""
+  echo "Testfile: "`pwd`"/${TMPFILE}"
   res=1
 else
+  echo "========================================="
   echo "All tests succeeded"
+  echo "========================================="
+  rm -f ${TMPFILE}
   res=0
 fi
-
-rm -f ${TMPFILE}
 
 exit ${res}
 

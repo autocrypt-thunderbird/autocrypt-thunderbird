@@ -228,7 +228,7 @@ const EnigmailRules = {
     //   with { and } around each email to enable pattern matching with rules
     //   (e.g. "{a@qqq.de}" will match "@qqq.de}", which stands for emails ending with "qqq.de")
     let addresses = {};  // object to be able to modify flags in subfunction
-    addresses.openInRules = "{" + EnigmailFuncs.stripEmail(emailAddrs.toLowerCase()).replace(/[, ]+/g, "},{") + "}";
+    addresses.openInRules = "{" + EnigmailFuncs.stripEmail(emailAddrs.toLowerCase()).replace(/,/g, "},{") + "}";
     addresses.nokeyInRules = "";
     let keyList = [];        // list of keys found for all Addresses
     let addrKeysList = [];   // NEW: list of found email addresses and their associated keys
@@ -236,7 +236,7 @@ const EnigmailRules = {
 
     // process recipient rules
     let rulesListObj = {};
-    if (enigmailSvc.getRulesData(rulesListObj)) {
+    if (this.getRulesData(rulesListObj)) {
 
       let rulesList = rulesListObj.value;
       if (rulesList.firstChild.nodeName == "parsererror") {
@@ -275,8 +275,9 @@ const EnigmailRules = {
         }
       }
     }
-    addresses.openInRules = addresses.openInRules.replace(/ /g, "").replace(/[,][,]+/g, ",");
-    EnigmailLog.DEBUG("   addresses.openInRules: '" + addresses.openInRules + "'\n");
+    addresses.openInRules = addresses.openInRules.replace(/ /g, "");
+    addresses.openInRules = addresses.openInRules.replace(/ /g, "").replace(/[,;]{2,}/g, ",").replace(/^,/,"").replace(/,$/,"");
+    //EnigmailLog.DEBUG("   addresses.openInRules: '" + addresses.openInRules + "'\n");
 
     // NOTE: here we have
     // - addresses.openInRules: the addresses not having any key assigned yet
@@ -319,19 +320,19 @@ const EnigmailRules = {
       }
     }
 
-    // NOTE: still we might have addrs without any key both in
-    // - addresses.openInRules
-    // - addresses.nokeyInRules
+    // HERE we have:
+    //  addresses.openInRules:  addresses not processed separated with: },{
+    //  addresses.nokeyInRules: addresses not processed separated with: },{
     // combine these lists to comma separated string:
-    addresses.openInRules = addresses.openInRules.replace(/,/g, "");
     let openAddresses = addresses.nokeyInRules + addresses.openInRules;
-    openAddresses = openAddresses.replace(/\}\{/g, ", ").replace(/\{/g, "").replace(/\}/g, "");
+    openAddresses = openAddresses.replace(/,/g, "").replace(/\}\{/g, ", ").replace(/\{/g, "").replace(/\}/g, "");
+    EnigmailLog.DEBUG("   openAddresses: '" + openAddresses + "'\n");
 
-    // OLD: if we found key, return keys AND unprocessed addresses in matchedKeysObj.value
+    // OLD: IFF we found keys, return keys AND unprocessed addresses in matchedKeysObj.value
     if (keyList.length > 0) {
       // sort key list and make it unique?
       matchedKeysObj.value = keyList.join(", ");
-      if (addresses.openInRules.length > 0) {
+      if (openAddresses.length > 0) {
         matchedKeysObj.value += ", " + openAddresses;
       }
     }
@@ -339,7 +340,14 @@ const EnigmailRules = {
     // - in matchedKeysObj.addrKeysList:  found email/keys mappings (array of objects with addr and keys)
     // - in matchedKeysObj.addrNoKeyList: list of unprocessed emails
     matchedKeysObj.addrKeysList = addrKeysList;
-    matchedKeysObj.addrNoKeyList = addrNoKeyList;
+    openAddresses = addresses.openInRules;
+    openAddresses = openAddresses.replace(/,/g, "").replace(/\}\{/g, ", ").replace(/\{/g, "").replace(/\}/g, "");
+    if (openAddresses.length > 0) {
+      matchedKeysObj.addrNoKeyList = addrNoKeyList.concat(openAddresses.split(/[ ,;]+/));
+    }
+    else {
+      matchedKeysObj.addrNoKeyList = addrNoKeyList;
+    }
 
     // return result from combining flags
     flagsObj.sign = flags.sign;
@@ -361,14 +369,14 @@ const EnigmailRules = {
 
   mapRuleToKeys: function(rule,
                           addresses, flags, keyList, addrKeysList, addrNoKeyList) {
-    EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys() rule.email='" + rule.email + "'\n");
+    //EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys() rule.email='" + rule.email + "'\n");
     // process rule
     let addrList = rule.email.toLowerCase().split(/[ ,;]+/);
     for (let addrIndex = 0; addrIndex < addrList.length; addrIndex++) {
       let email = addrList[addrIndex];  // email has format such as '{name@qqq.de}' or '@qqq' or '{name' or '@qqq.de}'
       let idx = addresses.openInRules.indexOf(email);
       if (idx >= 0) {
-        EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys(): got matching rule for \"" + email + "\"\n");
+        EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys(): got matching rule for \"" + email + "\": \"" + rule.email + "\"\n");
 
         // process sign/encrypt/ppgMime settings
         flags.sign    = this.combineFlagValues(flags.sign,    Number(rule.sign));
@@ -398,9 +406,17 @@ const EnigmailRules = {
               addrKeysList.push(elem);
             }
             else {
-              // no further rule processing and now key: addr was (finally) processed but without any key
-              addresses.nokeyInRules = "{" + foundAddr + "}";
-              addrNoKeyList.push(foundAddr);
+              // '.': no further rule processing and no key: addr was (finally) processed but without any key
+              EnigmailLog.DEBUG(" .   addresses.nokeyInRules: '" + addresses.nokeyInRules + "'\n");
+              if (addresses.nokeyInRules.length === 0) {
+                addresses.nokeyInRules = "{" + foundAddr + "}";
+              }
+              else {
+                addresses.nokeyInRules += ",{" + foundAddr + "}";
+              }
+              if (addrNoKeyList.indexOf(foundAddr) == -1) {
+                addrNoKeyList.push(foundAddr);
+              }
             }
             // - remove found address from openAdresses and add it to found addresses (with { and } as delimiters)
             addresses.openInRules = addresses.openInRules.substring(0, start) + addresses.openInRules.substring(end);
@@ -408,8 +424,50 @@ const EnigmailRules = {
             idx = addresses.openInRules.indexOf(email,start);
           }
         }
+        //EnigmailLog.DEBUG("     addresses.openInRules:  '" + addresses.openInRules + "'\n");
+        //EnigmailLog.DEBUG("     addresses.nokeyInRules: '" + addresses.nokeyInRules + "'\n");
+        //EnigmailLog.DEBUG("     addrNoKeyList:          '" + addrNoKeyList + "'\n");
       }
     }
   },
+
+  /**
+   *  check for the attribute of type "sign"/"encrypt"/"pgpMime" of the passed node
+   *  and combine its value with oldVal and check for conflicts
+   *    values might be: 0='never', 1='maybe', 2='always', 3='conflict'
+   *  @oldVal:      original input value
+   *  @newVal:      new value to combine with
+   *  @return: result value after applying the rule (0/1/2)
+   *           and combining it with oldVal
+   */
+  combineFlagValues: function(oldVal, newVal) {
+    //EnigmailLog.DEBUG("rules.jsm:    combineFlagValues(): oldVal=" + oldVal + " newVal=" + newVal + "\n");
+
+    // conflict remains conflict
+    if (oldVal === EnigmailConstants.ENIG_CONFLICT) {
+      return EnigmailConstants.ENIG_CONFLICT;
+    }
+
+    // 'never' and 'always' triggers conflict:
+    if ((oldVal === EnigmailConstants.ENIG_NEVER && newVal === EnigmailConstants.ENIG_ALWAYS) || (oldVal === EnigmailConstants.ENIG_ALWAYS && newVal === EnigmailConstants.ENIG_NEVER)) {
+      return EnigmailConstants.ENIG_CONFLICT;
+    }
+
+    // if there is any 'never' return 'never'
+    // - thus: 'never' and 'maybe' => 'never'
+    if (oldVal === EnigmailConstants.ENIG_NEVER || newVal === EnigmailConstants.ENIG_NEVER) {
+      return EnigmailConstants.ENIG_NEVER;
+    }
+
+    // if there is any 'always' return 'always'
+    // - thus: 'always' and 'maybe' => 'always'
+    if (oldVal === EnigmailConstants.ENIG_ALWAYS || newVal === EnigmailConstants.ENIG_ALWAYS) {
+      return EnigmailConstants.ENIG_ALWAYS;
+    }
+
+    // here, both values are 'maybe', which we return then
+    return EnigmailConstants.ENIG_UNDEF; // maybe
+  },
+
 
 };

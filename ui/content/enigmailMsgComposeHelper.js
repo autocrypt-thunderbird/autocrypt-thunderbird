@@ -56,45 +56,6 @@ Enigmail.hlp = {
   enigValidityKeyList: null,
   enigValidityKeySortList: null,
 
-  /**
-   *  check for the attribute of type "sign"/"encrypt"/"pgpMime" of the passed node
-   *  and combine its value with oldVal and check for conflicts
-   *    values might be: 0='never', 1='maybe', 2='always', 3='conflict'
-   *  @oldVal:      original input value
-   *  @newVal:      new value to combine with
-   *  @return: result value after applying the rule (0/1/2)
-   *           and combining it with oldVal
-   */
-  combineFlagValues: function(oldVal, newVal) {
-    //EnigmailLog.DEBUG("enigmailMsgComposeHelper.js:    combineFlagValues(): oldVal=" + oldVal + " newVal=" + newVal + "\n");
-
-    // conflict remains conflict
-    if (oldVal === EnigmailConstants.ENIG_CONFLICT) {
-      return EnigmailConstants.ENIG_CONFLICT;
-    }
-
-    // 'never' and 'always' triggers conflict:
-    if ((oldVal === EnigmailConstants.ENIG_NEVER && newVal === EnigmailConstants.ENIG_ALWAYS) || (oldVal === EnigmailConstants.ENIG_ALWAYS && newVal === EnigmailConstants.ENIG_NEVER)) {
-      return EnigmailConstants.ENIG_CONFLICT;
-    }
-
-    // if there is any 'never' return 'never'
-    // - thus: 'never' and 'maybe' => 'never'
-    if (oldVal === EnigmailConstants.ENIG_NEVER || newVal === EnigmailConstants.ENIG_NEVER) {
-      return EnigmailConstants.ENIG_NEVER;
-    }
-
-    // if there is any 'always' return 'always'
-    // - thus: 'always' and 'maybe' => 'always'
-    if (oldVal === EnigmailConstants.ENIG_ALWAYS || newVal === EnigmailConstants.ENIG_ALWAYS) {
-      return EnigmailConstants.ENIG_ALWAYS;
-    }
-
-    // here, both values are 'maybe', which we return then
-    return EnigmailConstants.ENIG_UNDEF; // maybe
-  },
-
-
   /* try to find valid key to passed email address
    * @return: list of all found key (with leading "0x") or null
    *          details in details parameter
