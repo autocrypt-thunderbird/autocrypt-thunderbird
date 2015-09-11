@@ -229,7 +229,6 @@ const EnigmailRules = {
     //   (e.g. "{a@qqq.de}" will match "@qqq.de}", which stands for emails ending with "qqq.de")
     let addresses = {};  // object to be able to modify flags in subfunction
     addresses.openInRules = "{" + EnigmailFuncs.stripEmail(emailAddrs.toLowerCase()).replace(/,/g, "},{") + "}";
-    addresses.nokeyInRules = "";
     let keyList = [];        // list of keys found for all Addresses
     let addrKeysList = [];   // NEW: list of found email addresses and their associated keys
     let addrNoKeyList = [];  // NEW: list of email addresses that have no key according to rules
@@ -322,26 +321,27 @@ const EnigmailRules = {
 
     // HERE we have:
     //  addresses.openInRules:  addresses not processed separated with: },{
-    //  addresses.nokeyInRules: addresses not processed separated with: },{
-    // combine these lists to comma separated string:
-    let openAddresses = addresses.nokeyInRules + addresses.openInRules;
-    openAddresses = openAddresses.replace(/,/g, "").replace(/\}\{/g, ", ").replace(/\{/g, "").replace(/\}/g, "");
-    EnigmailLog.DEBUG("   openAddresses: '" + openAddresses + "'\n");
+    // convert into comma separated string:
+    let openAddresses = addresses.openInRules.replace(/,/g, "").replace(/\}\{/g, ", ").replace(/\{/g, "").replace(/\}/g, "");
+    //EnigmailLog.DEBUG("   openAddresses: '" + openAddresses + "'\n");
 
-    // OLD: IFF we found keys, return keys AND unprocessed addresses in matchedKeysObj.value
+    // OLD interface:
+    // IFF we found keys, return keys AND unprocessed addresses in matchedKeysObj.value as comma-separated string
     if (keyList.length > 0) {
       // sort key list and make it unique?
       matchedKeysObj.value = keyList.join(", ");
+      if (addrNoKeyList.length > 0) {
+        matchedKeysObj.value += ", " + addrNoKeyList.join(", ");
+      }
       if (openAddresses.length > 0) {
         matchedKeysObj.value += ", " + openAddresses;
       }
     }
-    // NEW: return
+    // NEW interface:
+    // return
     // - in matchedKeysObj.addrKeysList:  found email/keys mappings (array of objects with addr and keys)
     // - in matchedKeysObj.addrNoKeyList: list of unprocessed emails
     matchedKeysObj.addrKeysList = addrKeysList;
-    openAddresses = addresses.openInRules;
-    openAddresses = openAddresses.replace(/,/g, "").replace(/\}\{/g, ", ").replace(/\{/g, "").replace(/\}/g, "");
     if (openAddresses.length > 0) {
       matchedKeysObj.addrNoKeyList = addrNoKeyList.concat(openAddresses.split(/[ ,;]+/));
     }
@@ -407,13 +407,6 @@ const EnigmailRules = {
             }
             else {
               // '.': no further rule processing and no key: addr was (finally) processed but without any key
-              EnigmailLog.DEBUG(" .   addresses.nokeyInRules: '" + addresses.nokeyInRules + "'\n");
-              if (addresses.nokeyInRules.length === 0) {
-                addresses.nokeyInRules = "{" + foundAddr + "}";
-              }
-              else {
-                addresses.nokeyInRules += ",{" + foundAddr + "}";
-              }
               if (addrNoKeyList.indexOf(foundAddr) == -1) {
                 addrNoKeyList.push(foundAddr);
               }
@@ -425,7 +418,6 @@ const EnigmailRules = {
           }
         }
         //EnigmailLog.DEBUG("     addresses.openInRules:  '" + addresses.openInRules + "'\n");
-        //EnigmailLog.DEBUG("     addresses.nokeyInRules: '" + addresses.nokeyInRules + "'\n");
         //EnigmailLog.DEBUG("     addrNoKeyList:          '" + addrNoKeyList + "'\n");
       }
     }
