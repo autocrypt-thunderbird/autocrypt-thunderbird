@@ -1,0 +1,24 @@
+<pgpRuleList>
+  <!-- Keys: { anbd } for 'mszt start with' and 'must end with'
+       Keys: '' no key, continue with further rules
+             '.' no key, skip further rules
+       Flag values:  0: never, 1: undef/maybe, 2: always
+    -->
+  <pgpRule email='{one@some.domain}' keyId='0x11111111' sign='1' encrypt='1' pgpMime='1'/>
+  <pgpRule email='{two@some.domain}' keyId='0x2222aaaa,0x2222bbbb' sign='1' encrypt='1' pgpMime='1'/>
+  <pgpRule email='{sign@some.domain}' keyId='' sign='2' encrypt='1' pgpMime='1'/>
+  <pgpRule email='{encrypt@some.domain}' keyId='' sign='1' encrypt='2' pgpMime='1'/>
+  <pgpRule email='{nosign@some.domain}' keyId='' sign='0' encrypt='1' pgpMime='1'/>
+  <pgpRule email='{noencrypt@some.domain}' keyId='' sign='1' encrypt='0' pgpMime='1'/>
+  <!-- to ensure that . (don't process further rules) is acknowledged: -->
+  <pgpRule email='{nofurtherrules@some.domain}' keyId='.' sign='1' encrypt='1' pgpMime='2'/>
+  <pgpRule email='{nofurtherrules@some.domain}' keyId='0xNONONONO' sign='1' encrypt='1' pgpMime='1'/>
+  <pgpRule email='{nofurtherrules2@some.domain}' keyId='.' sign='1' encrypt='1' pgpMime='0'/>
+  <pgpRule email='{nofurtherrules2@some.domain}' keyId='0xNONONONO' sign='1' encrypt='1' pgpMime='1'/>
+  <!-- to check prefix, infox, suffix -->
+  <pgpRule email='.com},.de}' keyId='0xDOTCOMORDOTDE' sign='1' encrypt='1' pgpMime='1'/>
+  <pgpRule email='com}' keyId='0xCOMSUFFIX' sign='1' encrypt='1' pgpMime='1'/>
+  <pgpRule email='{com' keyId='0xCOMPREFIX' sign='1' encrypt='1' pgpMime='1'/>
+  <pgpRule email='com' keyId='0xCOMINFIX' sign='1' encrypt='1' pgpMime='1'/>
+  <pgpRule email='{aa,bb}' keyId='0xAAAAAAAA, 0xBBBBBBBB' sign='1' encrypt='1' pgpMime='1'/>
+</pgpRuleList>

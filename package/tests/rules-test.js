@@ -120,12 +120,27 @@ test(function getRulesDataReturnsTrueAndTheRulesListIfExist() {
 // ******************************
 
 var EnigmailRulesTests = {
-  testMapAddrsToKeys_Value(str,val) {
-  let matchedKeysRet = {};
-  let flagsRet = {};
-  let ret = EnigmailRules.mapAddrsToKeys(str,
-                                         false, null, matchedKeysRet, flagsRet);
-  Assert.equal(matchedKeysRet.value, val);
+  testSingleEmailToKeys(addr,arg2,arg3) {
+    // second argument is optional (extracted addr from initial addr)
+    let expVal;
+    let expAddr;
+    if (typeof(arg3)==='undefined') {
+      expAddr = addr;
+      expVal = arg2;
+    }
+    else {
+      expAddr = arg2;
+      expVal = arg3;
+    }
+    // perform test:
+    let matchedKeysRet = {};
+    let flagsRet = {};
+    let ret = EnigmailRules.mapAddrsToKeys(addr,
+                                           false, null, matchedKeysRet, flagsRet);
+    Assert.ok(ret);
+    let expKL = [{ addr: expAddr, keys: expVal }];
+    Assert.deepEqual(matchedKeysRet.addrKeysList, expKL);
+    Assert.equal(matchedKeysRet.value, expVal);
   }
 };
 
@@ -216,15 +231,15 @@ test(function mapAddrsToKeys_twoKeysAndNoKey() {
     return do_get_file("resources/rules2.xml", false);
   }, function() {
     EnigmailRules.loadRulesFile();
-    let emailAddrs = "two@some.domain, nokey@qqq.de";
+    let emailAddrs = "two@some.domain, nokey@qqq.domain";
     let matchedKeysRet = {};
     let flagsRet = {};
     let ret = EnigmailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
     let expectedFlags = { value: true, sign: "1", encrypt: "1", pgpMime: "1", };
     let expectedKeys = {
-      value: "0x2222aaaa, 0x2222bbbb, nokey@qqq.de",
+      value: "0x2222aaaa, 0x2222bbbb, nokey@qqq.domain",
       addrKeysList: [{ addr: "two@some.domain", keys:"0x2222aaaa, 0x2222bbbb"},],
-      addrNoKeyList: ["nokey@qqq.de"],
+      addrNoKeyList: ["nokey@qqq.domain"],
     };
     Assert.ok(ret);
     Assert.deepEqual(expectedFlags, flagsRet);
@@ -238,15 +253,15 @@ test(function mapAddrsToKeys_noKeyAndTwoKeys() {
     return do_get_file("resources/rules2.xml", false);
   }, function() {
     EnigmailRules.loadRulesFile();
-    let emailAddrs = "nokey@qqq.de, two@some.domain";
+    let emailAddrs = "nokey@qqq.domain, two@some.domain";
     let matchedKeysRet = {};
     let flagsRet = {};
     let ret = EnigmailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
     let expectedFlags = { value: true, sign: "1", encrypt: "1", pgpMime: "1", };
     let expectedKeys = {
-      value: "0x2222aaaa, 0x2222bbbb, nokey@qqq.de",
+      value: "0x2222aaaa, 0x2222bbbb, nokey@qqq.domain",
       addrKeysList: [{ addr: "two@some.domain", keys:"0x2222aaaa, 0x2222bbbb"},],
-      addrNoKeyList: ["nokey@qqq.de"],
+      addrNoKeyList: ["nokey@qqq.domain"],
     };
     Assert.ok(ret);
     Assert.deepEqual(expectedFlags, flagsRet);
@@ -282,27 +297,52 @@ test(function mapAddrsToKeys_manyKeys() {
     return do_get_file("resources/rules2.xml", false);
   }, function() {
     EnigmailRules.loadRulesFile();
-    let emailAddrs = "one@some.domain, two@some.domain, nokey@qqq.de, nosign@some.domain, nofurtherrules@some.domain, nofurtherrules2@some.domain";
+    let emailAddrs = "one@some.domain, two@some.domain, nokey@qqq.domain, nosign@some.domain, nofurtherrules@some.domain, nofurtherrules2@some.domain";
     let matchedKeysRet = {};
     let flagsRet = {};
     let ret = EnigmailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
-    let expectedFlags = {
-      value: true,
-      sign: "0",
-      encrypt: "1",
-      pgpMime: "99",
-    };
+    let expectedFlags = { value: true, sign: "0", encrypt: "1", pgpMime: "99", };
     let expectedKeys = {
-      value: "0x11111111, 0x2222aaaa, 0x2222bbbb, nofurtherrules@some.domain, nofurtherrules2@some.domain, nokey@qqq.de, nosign@some.domain",
+      value: "0x11111111, 0x2222aaaa, 0x2222bbbb, nofurtherrules@some.domain, nofurtherrules2@some.domain, nokey@qqq.domain, nosign@some.domain",
       addrKeysList: [{addr: "one@some.domain", keys: "0x11111111"},
                      {addr: "two@some.domain", keys: "0x2222aaaa, 0x2222bbbb"},],
-      addrNoKeyList: ["nofurtherrules@some.domain", "nofurtherrules2@some.domain", "nokey@qqq.de", "nosign@some.domain", ],
+      addrNoKeyList: ["nofurtherrules@some.domain", "nofurtherrules2@some.domain", "nokey@qqq.domain", "nosign@some.domain", ],
     };
     Assert.ok(ret);
     Assert.deepEqual(expectedFlags, flagsRet);
     Assert.deepEqual(expectedKeys.addrNoKeyList, matchedKeysRet.addrNoKeyList);
     Assert.deepEqual(expectedKeys.addrKeysList, matchedKeysRet.addrKeysList);
     Assert.deepEqual(expectedKeys, matchedKeysRet);
+  });
+});
+
+test(function mapAddrsToKeys_infix() {
+  EnigmailRules.clearRules();
+  resetting(EnigmailRules, 'getRulesFile', function() {
+    return do_get_file("resources/rules2.xml", false);
+  }, function() {
+    EnigmailRules.loadRulesFile();
+    EnigmailRulesTests.testSingleEmailToKeys("company@suffix.qqq",
+                                             "0xCOMPREFIX");
+    EnigmailRulesTests.testSingleEmailToKeys("hello@computer.qqq",
+                                             "0xCOMINFIX");
+    EnigmailRulesTests.testSingleEmailToKeys("hello@komputer.dcom",
+                                             "0xCOMSUFFIX");
+    EnigmailRulesTests.testSingleEmailToKeys("company@postfix.dcom",
+                                             "0xCOMSUFFIX");
+    EnigmailRulesTests.testSingleEmailToKeys("company@postfix.com",
+                                             "0xDOTCOMORDOTDE");
+    EnigmailRulesTests.testSingleEmailToKeys("hello@komputer.de",
+                                             "0xDOTCOMORDOTDE");
+    EnigmailRulesTests.testSingleEmailToKeys("aa@qqq.domain",
+                                             "0xAAAAAAAA, 0xBBBBBBBB");
+    EnigmailRulesTests.testSingleEmailToKeys("xx@qqq.bb",
+                                             "0xAAAAAAAA, 0xBBBBBBBB");
+    EnigmailRulesTests.testSingleEmailToKeys("aa@qqq.bb",
+                                             "0xAAAAAAAA, 0xBBBBBBBB");
+    EnigmailRulesTests.testSingleEmailToKeys("company@computer.com <info@qqq.bb> company@computer.com",
+                                             "info@qqq.bb",
+                                             "0xAAAAAAAA, 0xBBBBBBBB");
   });
 });
 
