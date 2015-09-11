@@ -1,0 +1,51 @@
+/*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, EnigmailApp: false */
+/*global EnigmailFuncs: false, rulesListHolder: false, EC: false */
+/*jshint -W097 */
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+"use strict";
+
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
+
+testing("funcs.jsm");
+
+var EnigmailFuncsTests = {
+  testStripEmail(str,res) {
+  let addr;
+  addr = EnigmailFuncs.stripEmail(str);
+  Assert.equal(addr,res);
+  }
+};
+
+test(function stripEmail() {
+  EnigmailFuncsTests.testStripEmail("some stuff <a@b.de> some stuff",
+                                    "a@b.de");
+
+  EnigmailFuncsTests.testStripEmail("some stuff <a@b.de> some stuff, xyz<xy@a.xx>xyc",
+                                    "a@b.de,xy@a.xx");
+
+  EnigmailFuncsTests.testStripEmail(" a@b.de , <aa@bb.de>",
+                                    "a@b.de,aa@bb.de");
+
+  // TODO: OK, if we take the last <...> ?:
+  EnigmailFuncsTests.testStripEmail(" a@b.de , <aa@bb.de> <aa@bb.dd>",
+                                    "a@b.de,aa@bb.dd");
+
+  EnigmailFuncsTests.testStripEmail("    ,,,,;;;; , ; , ;",
+                                    "");
+
+  EnigmailFuncsTests.testStripEmail("    ,,oneRule,;;; , ;",
+                                    "oneRule");
+
+  EnigmailFuncsTests.testStripEmail("    ,,,nokey,;;;; , nokey2 ; , ;",
+                                    "nokey,nokey2");
+
+  EnigmailFuncsTests.testStripEmail(",,,newsgroupa ",
+                                    "newsgroupa");
+});
+
+

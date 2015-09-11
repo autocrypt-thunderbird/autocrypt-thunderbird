@@ -64,6 +64,7 @@ const EnigmailFuncs = {
    * @return |string|    - list of pure email addresses separated by ","
    */
   stripEmail: function(mailAddrs) {
+    //EnigmailLog.DEBUG("funcs.jsm: stripEmail(): mailAddrs=" + mailAddrs + "\n");
 
     var qStart, qEnd;
     while ((qStart = mailAddrs.indexOf('"')) != -1) {
@@ -81,6 +82,9 @@ const EnigmailFuncs = {
 
     // Extract pure e-mail address list (stripping out angle brackets)
     mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*/g, "$1$2");
+
+    // remove empty email addresses (TODO: remove ; OK?)
+    mailAddrs = mailAddrs.replace(/[,;]{2,}/g, ",").replace(/^,/,"").replace(/,$/,"");
 
     return mailAddrs;
   },
