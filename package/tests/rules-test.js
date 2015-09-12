@@ -311,9 +311,9 @@ test(function mapAddrsToKeys_manyKeys() {
     };
     Assert.ok(ret);
     Assert.deepEqual(expectedFlags, flagsRet);
-    Assert.deepEqual(expectedKeys.addrNoKeyList, matchedKeysRet.addrNoKeyList);
-    Assert.deepEqual(expectedKeys.addrKeysList, matchedKeysRet.addrKeysList);
     Assert.deepEqual(expectedKeys, matchedKeysRet);
+    //Assert.deepEqual(expectedKeys.addrNoKeyList, matchedKeysRet.addrNoKeyList);
+    //Assert.deepEqual(expectedKeys.addrKeysList, matchedKeysRet.addrKeysList);
   });
 });
 
@@ -338,14 +338,14 @@ test(function mapAddrsToKeys_multipleMatches() {
     };
     Assert.ok(ret);
     Assert.deepEqual(expectedFlags, flagsRet);
-    Assert.deepEqual(expectedKeys.value, matchedKeysRet.value);
-    Assert.deepEqual(expectedKeys.addrNoKeyList, matchedKeysRet.addrNoKeyList);
-    Assert.deepEqual(expectedKeys.addrKeysList, matchedKeysRet.addrKeysList);
-    Assert.deepEqual(expectedKeys.addrKeysList[0], matchedKeysRet.addrKeysList[0]);
-    Assert.deepEqual(expectedKeys.addrKeysList[1], matchedKeysRet.addrKeysList[1]);
-    Assert.deepEqual(expectedKeys.addrKeysList[2], matchedKeysRet.addrKeysList[2]);
-    Assert.deepEqual(expectedKeys.addrKeysList[3], matchedKeysRet.addrKeysList[3]);
     Assert.deepEqual(expectedKeys, matchedKeysRet);
+    //Assert.deepEqual(expectedKeys.value, matchedKeysRet.value);
+    //Assert.deepEqual(expectedKeys.addrNoKeyList, matchedKeysRet.addrNoKeyList);
+    //Assert.deepEqual(expectedKeys.addrKeysList, matchedKeysRet.addrKeysList);
+    //Assert.deepEqual(expectedKeys.addrKeysList[0], matchedKeysRet.addrKeysList[0]);
+    //Assert.deepEqual(expectedKeys.addrKeysList[1], matchedKeysRet.addrKeysList[1]);
+    //Assert.deepEqual(expectedKeys.addrKeysList[2], matchedKeysRet.addrKeysList[2]);
+    //Assert.deepEqual(expectedKeys.addrKeysList[3], matchedKeysRet.addrKeysList[3]);
   });
 });
 
