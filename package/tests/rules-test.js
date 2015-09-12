@@ -247,20 +247,21 @@ test(function mapAddrsToKeys_twoKeysAndNoKey() {
   });
 });
 
-test(function mapAddrsToKeys_noKeyAndTwoKeys() {
+test(function mapAddrsToKeys_noKeyAndSomeKeysReverse() {  // important to test reverse order than in rules
   EnigmailRules.clearRules();
   resetting(EnigmailRules, 'getRulesFile', function() {
     return do_get_file("resources/rules2.xml", false);
   }, function() {
     EnigmailRules.loadRulesFile();
-    let emailAddrs = "nokey@qqq.domain, two@some.domain";
+    let emailAddrs = "nokey@qqq.domain, two@some.domain, one@some.domain";
     let matchedKeysRet = {};
     let flagsRet = {};
     let ret = EnigmailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
     let expectedFlags = { value: true, sign: "1", encrypt: "1", pgpMime: "1", };
     let expectedKeys = {
-      value: "0x2222aaaa, 0x2222bbbb, nokey@qqq.domain",
-      addrKeysList: [{ addr: "two@some.domain", keys:"0x2222aaaa, 0x2222bbbb"},],
+      value: "0x11111111, 0x2222aaaa, 0x2222bbbb, nokey@qqq.domain",
+      addrKeysList: [{ addr: "one@some.domain", keys:"0x11111111"},
+                     { addr: "two@some.domain", keys:"0x2222aaaa, 0x2222bbbb"},],
       addrNoKeyList: ["nokey@qqq.domain"],
     };
     Assert.ok(ret);
@@ -312,6 +313,38 @@ test(function mapAddrsToKeys_manyKeys() {
     Assert.deepEqual(expectedFlags, flagsRet);
     Assert.deepEqual(expectedKeys.addrNoKeyList, matchedKeysRet.addrNoKeyList);
     Assert.deepEqual(expectedKeys.addrKeysList, matchedKeysRet.addrKeysList);
+    Assert.deepEqual(expectedKeys, matchedKeysRet);
+  });
+});
+
+test(function mapAddrsToKeys_multipleMatches() {
+  EnigmailRules.clearRules();
+  resetting(EnigmailRules, 'getRulesFile', function() {
+    return do_get_file("resources/rules2.xml", false);
+  }, function() {
+    EnigmailRules.loadRulesFile();
+    let emailAddrs = "one@some.domain, nico@xx.com, patrick@xx.com, one@some.domain";
+    let matchedKeysRet = {};
+    let flagsRet = {};
+    let ret = EnigmailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
+    let expectedFlags = { value: true, sign: "1", encrypt: "1", pgpMime: "1", };
+    let expectedKeys = {
+      value: "0x11111111, 0x11111111, 0xDOTCOMORDOTDE, 0xDOTCOMORDOTDE",
+      addrKeysList: [{addr: "one@some.domain", keys: "0x11111111"},
+                     {addr: "one@some.domain", keys: "0x11111111"},
+                     {addr: "nico@xx.com", keys: "0xDOTCOMORDOTDE"},
+                     {addr: "patrick@xx.com", keys: "0xDOTCOMORDOTDE"},],
+      addrNoKeyList: [],
+    };
+    Assert.ok(ret);
+    Assert.deepEqual(expectedFlags, flagsRet);
+    Assert.deepEqual(expectedKeys.value, matchedKeysRet.value);
+    Assert.deepEqual(expectedKeys.addrNoKeyList, matchedKeysRet.addrNoKeyList);
+    Assert.deepEqual(expectedKeys.addrKeysList, matchedKeysRet.addrKeysList);
+    Assert.deepEqual(expectedKeys.addrKeysList[0], matchedKeysRet.addrKeysList[0]);
+    Assert.deepEqual(expectedKeys.addrKeysList[1], matchedKeysRet.addrKeysList[1]);
+    Assert.deepEqual(expectedKeys.addrKeysList[2], matchedKeysRet.addrKeysList[2]);
+    Assert.deepEqual(expectedKeys.addrKeysList[3], matchedKeysRet.addrKeysList[3]);
     Assert.deepEqual(expectedKeys, matchedKeysRet);
   });
 });
