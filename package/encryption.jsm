@@ -56,6 +56,7 @@ Components.utils.import("resource://enigmail/errorHandling.jsm"); /*global Enigm
 Components.utils.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
 Components.utils.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 Components.utils.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
+Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -71,38 +72,15 @@ const ENC_TYPE_ATTACH_ASCII = 2;
 
 const GPG_COMMENT_OPT = "Using GnuPG with %s - http://www.enigmail.net/";
 
-// Remove all quoted strings (and angle brackets) from a list of email
-// addresses, returning a list of pure email address
-function stripEmailAdr(mailAddrs) {
-  var qStart, qEnd;
-  while ((qStart = mailAddrs.indexOf('"')) != -1) {
-    qEnd = mailAddrs.indexOf('"', qStart + 1);
-    if (qEnd == -1) {
-      EnigmailLog.ERROR("enigmailCommon.jsm:: stripEmailAdr: Unmatched quote in mail address: " + mailAddrs + "\n");
-      mailAddrs = mailAddrs.replace(/\"/g, "");
-      break;
-    }
-
-    mailAddrs = mailAddrs.substring(0, qStart) + mailAddrs.substring(qEnd + 1);
-  }
-
-  // Eliminate all whitespace, just to be safe
-  mailAddrs = mailAddrs.replace(/\s+/g, "");
-
-  // Extract pure e-mail address list (stripping out angle brackets)
-  mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*/g, "$1$2");
-
-  return mailAddrs;
-}
 
 const EnigmailEncryption = {
   getEncryptCommand: function(fromMailAddr, toMailAddr, bccMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgObj) {
     EnigmailLog.DEBUG("encryption.jsm: getEncryptCommand: hashAlgorithm=" + hashAlgorithm + "\n");
 
     try {
-      fromMailAddr = stripEmailAdr(fromMailAddr);
-      toMailAddr = stripEmailAdr(toMailAddr);
-      bccMailAddr = stripEmailAdr(bccMailAddr);
+      fromMailAddr = EnigmailFuncs.stripEmail(fromMailAddr);
+      toMailAddr = EnigmailFuncs.stripEmail(toMailAddr);
+      bccMailAddr = EnigmailFuncs.stripEmail(bccMailAddr);
 
     }
     catch (ex) {

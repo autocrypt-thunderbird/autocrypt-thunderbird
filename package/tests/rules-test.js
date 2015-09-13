@@ -373,6 +373,12 @@ test(function mapAddrsToKeys_infix() {
                                              "0xAAAAAAAA, 0xBBBBBBBB");
     EnigmailRulesTests.testSingleEmailToKeys("aa@qqq.bb",
                                              "0xAAAAAAAA, 0xBBBBBBBB");
+    EnigmailRulesTests.testSingleEmailToKeys("hello@komputer.DE",
+                                             "hello@komputer.de",
+                                             "0xDOTCOMORDOTDE");
+    EnigmailRulesTests.testSingleEmailToKeys("xx@qqq.BB",
+                                             "xx@qqq.bb",
+                                             "0xAAAAAAAA, 0xBBBBBBBB");
     EnigmailRulesTests.testSingleEmailToKeys("company@computer.com <info@qqq.bb> company@computer.com",
                                              "info@qqq.bb",
                                              "0xAAAAAAAA, 0xBBBBBBBB");
