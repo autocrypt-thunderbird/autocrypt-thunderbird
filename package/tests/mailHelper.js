@@ -29,9 +29,9 @@ const MailHelper = {
       localAccount.defaultIdentity = identity;
       MailHelper.incomingServer = MailServices.accounts.localFoldersServer;
       MailHelper.rootFolder = MailHelper.incomingServer.rootMsgFolder;
-      if (!MailHelper.rootFolder.containsChildNamed("Inbox")) {
-        MailHelper.rootFolder.createSubfolder("Inbox", null);
-        MailHelper.inboxFolder = MailHelper.rootFolder.getChildNamed("Inbox");
+      if (!MailHelper.rootFolder.containsChildNamed("EngimailTestInbox")) {
+        MailHelper.rootFolder.createSubfolder("EngimailTestInbox", null);
+        MailHelper.inboxFolder = MailHelper.rootFolder.getChildNamed("EngimailTestInbox");
         MailHelper.inboxFolder.setFlag(Components.interfaces.nsMsgFolderFlags.Mail);
         MailHelper.inboxFolder.setFlag(Components.interfaces.nsMsgFolderFlags.Inbox);
       }
