@@ -38,6 +38,8 @@
 // Initialize enigmailCommon
 EnigInitCommon("enigmailRulesEditor");
 
+Components.utils.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
+
 const INPUT = 0;
 const RESULT = 1;
 
@@ -50,7 +52,7 @@ function enigmailDlgOnLoad() {
     return;
 
   var rulesListObj = {};
-  if (enigmailSvc.getRulesData(rulesListObj)) {
+  if (EnigmailRules.getRulesData(rulesListObj)) {
     var treeChildren = document.getElementById("rulesTreeChildren");
     var rulesList = rulesListObj.value;
     if (rulesList.firstChild.nodeName == "parsererror") {

@@ -50,6 +50,7 @@ Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Cu.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const APPSHSVC_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
@@ -309,7 +310,7 @@ const EnigmailWindows = {
     }
 
     // open rule dialog
-    enigmailSvc.getRulesData({});
+    EnigmailRules.getRulesData({});
 
     const inputObj = {
       toAddress: "{" + emailAddress + "}",
