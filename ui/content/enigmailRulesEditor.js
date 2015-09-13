@@ -1,4 +1,3 @@
-/*global Components */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -35,10 +34,27 @@
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
+// disable warning: Use the function form of "use strict".
+// - see: https://jslinterrors.com/use-the-function-form-of-use-strict
+/* jshint -W097 */
+
+// allow function calls that start with capital letter
+// - see: https://github.com/jshint/jshint/issues/392
+/* jshint newcap: false */
+
+// http://stackoverflow.com/questions/16260779/how-to-disable-the-warning-define-is-not-defined-using-jshint-and-requirejs:
+/* global document, window */
+/* global Components */
+/* global EnigInitCommon, EnigGetString, GetEnigmailSvc, EnigAlert, EnigConfirm */
+
+"use strict";
+
 // Initialize enigmailCommon
 EnigInitCommon("enigmailRulesEditor");
 
-Components.utils.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
+const Cu = Components.utils;
+Cu.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 
 const INPUT = 0;
 const RESULT = 1;
