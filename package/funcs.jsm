@@ -93,7 +93,7 @@ const EnigmailFuncs = {
     mailAddrs = mailAddrs.replace(EnigmailFuncsRegexExtractPureEmail, "$1$2");
 
     // remove empty email addresses (including removing all ';')
-    mailAddrs = mailAddrs.replace(/[,;]{2,}/g, ",").replace(/^,/,"").replace(/,$/,"");
+    mailAddrs = mailAddrs.replace(/[,;]+/g, ",").replace(/^,/,"").replace(/,$/,"");
 
     return mailAddrs;
   },

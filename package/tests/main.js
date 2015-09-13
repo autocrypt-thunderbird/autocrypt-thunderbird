@@ -18,7 +18,10 @@ do_subtest("gpgAgent-test.js");
 do_subtest("enigmail-test.js");
 do_subtest("files-test.js");
 do_subtest("keyEditor-test.js");
+
+// NOTE: DO NOT comment this out (otherwise rules-tes.js does no longer work)
 do_subtest("keyRing-test.js");
+
 do_subtest("locale-test.js");
 do_subtest("log-test.js");
 do_subtest("mime-test.js");
@@ -26,3 +29,4 @@ do_subtest("prefs-test.js");
 do_subtest("rules-test.js");
 do_subtest("funcs-test.js");
 do_subtest("mimeDecrypt-test.js");
+

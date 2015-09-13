@@ -40,6 +40,10 @@ test(function stripEmail() {
   EnigmailFuncsTests.testStripEmail("    ,,,,;;;; , ; , ;",
                                     "");
 
+  EnigmailFuncsTests.testStripEmail(";",
+                                    "");
+
+
   EnigmailFuncsTests.testStripEmail("    ,,oneRule,;;; , ;",
                                     "oneRule");
 

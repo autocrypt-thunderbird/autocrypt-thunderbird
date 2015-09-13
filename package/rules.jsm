@@ -186,6 +186,24 @@ const EnigmailRules = {
     target.clearRules = EnigmailRules.clearRules;
   },
 
+  DEBUG_EmailList: function(name, list) {
+    EnigmailLog.DEBUG  ("           " + name + ":\n");
+    for (let i = 0; i < list.length; i++) {
+      let elem = list[i];
+      let str = "            [" + i + "]: ";
+      if (elem.orig) {
+        str += "orig: '" + elem.orig + "'  ";
+      }
+      if (elem.addr) {
+        str += "addr: '" + elem.addr + "'  ";
+      }
+      if (elem.keys) {
+        str += "keys: '" + elem.keys + "'  ";
+      }
+      EnigmailLog.DEBUG(str + "\n");
+    }
+  },
+
   /**
    * process resulting sign/encryp/pgpMime mode for passed string of email addresses and
    * use rules and interactive rule dialog to replace emailAddrsStr by known keys
@@ -222,13 +240,28 @@ const EnigmailRules = {
     flags.pgpMime = EnigmailConstants.ENIG_UNDEF; // default pgpMime flag is: maybe
 
     // create openList: list of addresses not processed by rules yet
-    // - each entry is inside { and } because we search with rules using { and } as begin/end marker
-    //   (e.g. "{a@qqq.de}" will match rule "@qqq.de}", which stands for emails ending with "qqq.de")
-    // - elements will be removed as soon as
-    //   - a matching rule with keys was found
-    //   - a rule with "do not process further rules" ("." as key) applies
-    let openList = ("{" + EnigmailFuncs.stripEmail(emailAddrsStr.toLowerCase()).replace(/,/g, "},{") + "}").split(",");
-    let keyList = [];        // list of keys found for all Addresses
+    // - each entry has
+    //   - orig:  the original full email address
+    //   - addr:  the lowercased pure email address to check against rules and keys
+    // - elements will be moved
+    //   - to addrKeysList  if a matching rule with keys was found
+    //   - to addrNoKeyList if a rule with "do not process further rules" ("." as key) applies
+    let emailAddrList = (","+emailAddrsStr+",").split(/\s*,\s*/);
+    // TODO: we split with , and spaces around
+    //       BUT what if , is in "..." part of an email?
+    //       => use lists!!!
+    let openList = [];
+    for (let i = 0; i < emailAddrList.length; ++i) {
+      let orig = emailAddrList[i];
+      if (orig) {
+        let addr = EnigmailFuncs.stripEmail(orig.toLowerCase());
+        if (addr) {
+          let elem = { orig: orig, addr: addr };
+          openList.push(elem);
+        }
+      }
+    }
+    //this.DEBUG_EmailList("openList", openList);
     let addrKeysList = [];   // NEW: list of found email addresses and their associated keys
     let addrNoKeyList = [];  // NEW: list of email addresses that have no key according to rules
 
@@ -263,7 +296,7 @@ const EnigmailRules = {
               rule.encrypt = node.getAttribute("encrypt");
               rule.pgpMime = node.getAttribute("pgpMime");
               this.mapRuleToKeys(rule,
-                                 openList, flags, keyList, addrKeysList, addrNoKeyList);
+                                 openList, flags, addrKeysList, addrNoKeyList);
             }
             // no negate rule handling (turned off in dialog)
           }
@@ -278,13 +311,16 @@ const EnigmailRules = {
     // - openList: the addresses not having any key assigned yet
     //             (and not marked as don't process any other rule)
     // - addresses with "don't process other rules" are in addrNoKeyList
+    //this.DEBUG_EmailList("openList", openList);
+    //this.DEBUG_EmailList("addrKeysList", addrKeysList);
+    //this.DEBUG_EmailList("addrnoKeyList", addrnoKeyList);
 
     // if requested: start dialog to add new rule for each missing key
     if (startDialogForMissingKeys) {
       let inputObj = {};
       let resultObj = {};
       for (let i = 0; i < openList.length; i++) {
-        let theAddr = openList[i];
+        let theAddr = openList[i].addr;
         // start dialog only if the email address contains a @ or no 0x at the beginning:
         // - reason: newsgroups have neither @ nor 0x
         if (theAddr.indexOf("@") != -1 || theAddr.indexOf("0x") !== 0) {
@@ -299,39 +335,35 @@ const EnigmailRules = {
 
           if (!resultObj.negate) {
             this.mapRuleToKeys(resultObj,
-                               openList, flags, keyList, addrKeysList, addrNoKeyList);
+                               openList, flags, addrKeysList, addrNoKeyList);
           }
           // no negate rule handling (turned off in dialog)
         }
       }
     }
 
-    // HERE we have:
-    //  openList:  addresses not processed surrounded with { and }
-    // convert into ordinary list (remove surrounding { and })
-    for (let idx = 0; idx < openList.length; ++idx) {
-      openList[idx] = openList[idx].substring(1,openList[idx].length-1);  // without { and }
+    // return value of OLD interface:
+    // IFF we found keys, return keys AND unprocessed addresses in matchedKeysObj.value as comma-separated string
+    if (addrKeysList.length > 0) {
+      let tmpList = addrKeysList.concat(addrNoKeyList).concat(openList);
+      matchedKeysObj.value = tmpList[0].keys;
+      for (let idx = 1; idx < tmpList.length; ++idx) {
+        if (tmpList[idx].keys) {
+          matchedKeysObj.value += ", " + tmpList[idx].keys;
+        }
+        else {
+          matchedKeysObj.value += ", " + tmpList[idx].addr;
+        }
+      }
+      // sort key list and make it unique?
     }
 
-    // OLD interface:
-    // IFF we found keys, return keys AND unprocessed addresses in matchedKeysObj.value as comma-separated string
-    if (keyList.length > 0) {
-      // sort key list and make it unique?
-      matchedKeysObj.value = keyList.join(", ");
-      if (addrNoKeyList.length > 0) {
-        matchedKeysObj.value += ", " + addrNoKeyList.join(", ");
-      }
-      if (openList.length > 0) {
-        matchedKeysObj.value += ", " + openList.join(", ");
-      }
-    }
-    // NEW interface:
+    // return value of NEW interface:
     // return
     // - in matchedKeysObj.addrKeysList:  found email/keys mappings (array of objects with addr and keys)
     // - in matchedKeysObj.addrNoKeyList: list of unprocessed emails
     matchedKeysObj.addrKeysList = addrKeysList;
     if (openList.length > 0) {
-    //if (openAddresses.length > 0) {
       matchedKeysObj.addrNoKeyList = addrNoKeyList.concat(openList);
     }
     else {
@@ -349,7 +381,9 @@ const EnigmailRules = {
       EnigmailLog.DEBUG("     " + matchedKeysObj.addrKeysList[i].addr + ": " + matchedKeysObj.addrKeysList[i].keys + "\n");
     }
     EnigmailLog.DEBUG("   addresses without keys:\n");
-    EnigmailLog.DEBUG("     " + matchedKeysObj.addrNoKeyList.join(", ") + "\n");
+    for (let i = 0; i < matchedKeysObj.addrNoKeyList.length; i++) {
+      EnigmailLog.DEBUG("     " + matchedKeysObj.addrNoKeyList[i].addr + "\n");
+    }
     EnigmailLog.DEBUG("   old returned value:\n");
     EnigmailLog.DEBUG("     " + matchedKeysObj.value + "\n");
 
@@ -357,22 +391,24 @@ const EnigmailRules = {
   },
 
   mapRuleToKeys: function(rule,
-                          openList, flags, keyList, addrKeysList, addrNoKeyList) {
+                          openList, flags, addrKeysList, addrNoKeyList) {
     //EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys() rule.email='" + rule.email + "'\n");
     let ruleList = rule.email.toLowerCase().split(/[ ,;]+/);
     for (let ruleIndex = 0; ruleIndex < ruleList.length; ++ruleIndex) {
       let ruleEmailElem = ruleList[ruleIndex];  // ruleEmailElem has format such as '{name@qqq.de}' or '@qqq' or '{name' or '@qqq.de}'
       //EnigmailLog.DEBUG("   process ruleElem: '" + ruleEmailElem + "'\n");
       for (let openIndex = 0; openIndex < openList.length; ++openIndex) {
-        //EnigmailLog.DEBUG("           ruleElem: '" + ruleEmailElem + "'  open: '" + openList[openIndex] + "'\n");
-        let idx = openList[openIndex].indexOf(ruleEmailElem);
+        let addr = openList[openIndex].addr;
+        // search with { and } around because these are used a begin and end markers in the rules:
+        let idx = ('{'+addr+'}').indexOf(ruleEmailElem);
         if (idx >= 0) {
-          let foundAddr = openList[openIndex].substring(1,openList[openIndex].length-1);  // without { and }
           if (ruleEmailElem == rule.email) {
-            EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys(): for '" + foundAddr + "' found matching rule element '" + ruleEmailElem + "'\n");
+            EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys(): for '" + addr + "' ('" + openList[openIndex].orig +
+                              "') found matching rule element '" + ruleEmailElem + "'\n");
           }
           else {
-            EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys(): for '" + foundAddr + "' found matching rule element '" + ruleEmailElem + "' from '" + rule.email + "'\n");
+            EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys(): for '" + addr + "' ('" + openList[openIndex].orig +
+                              "') found matching rule element '" + ruleEmailElem + "' from '" + rule.email + "'\n");
           }
 
           // process rule:
@@ -393,22 +429,19 @@ const EnigmailRules = {
           flags.pgpMime = this.combineFlagValues(flags.pgpMime, Number(rule.pgpMime));
 
           if (rule.keyId) {
-            if (rule.keyId != ".") {  // if NOT "do not check further rules for this address"
-              // assign keys as comma-separated string
+            // move found address from openAdresses to corresponding list (with keys added)
+            let elem = openList.splice(openIndex, 1)[0];
+            --openIndex;   // IMPORTANT because we remove element in the array we iterate on
+            if (rule.keyId != ".") {
+              // keys exist: assign keys as comma-separated string
               let ids = rule.keyId.replace(/[ ,;]+/g, ", ");
-              keyList.push(ids);
-              let elem = { addr:foundAddr, keys:ids };
+              elem.keys = ids;
               addrKeysList.push(elem);
             }
             else {
               // '.': no further rule processing and no key: addr was (finally) processed but without any key
-              if (addrNoKeyList.indexOf(foundAddr) == -1) {
-                addrNoKeyList.push(foundAddr);
-              }
+              addrNoKeyList.push(elem);
             }
-            // remove found address from openAdresses and add it to found addresses (with { and } as delimiters)
-            openList.splice(openIndex, 1);
-            --openIndex;   // IMPORTANT because we remove element in the array we iterate on
           }
         }
       }

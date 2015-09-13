@@ -115,9 +115,10 @@ test(function getRulesDataReturnsTrueAndTheRulesListIfExist() {
   });
 });
 
-// ******************************
+
+// *****************************************************
 // test mapAddrsToKeys():
-// ******************************
+// *****************************************************
 
 var EnigmailRulesTests = {
   testSingleEmailToKeys(addr,arg2,arg3) {
@@ -138,7 +139,7 @@ var EnigmailRulesTests = {
     let ret = EnigmailRules.mapAddrsToKeys(addr,
                                            false, null, matchedKeysRet, flagsRet);
     Assert.ok(ret);
-    let expKL = [{ addr: expAddr, keys: expVal }];
+    let expKL = [{ orig: addr, addr: expAddr, keys: expVal }];
     Assert.deepEqual(matchedKeysRet.addrKeysList, expKL);
     Assert.equal(matchedKeysRet.value, expVal);
   }
@@ -190,7 +191,8 @@ test(function mapAddrsToKeys_signAndEncrypt() {
     let expectedKeys = {
       value: "", // no matching key means no value
       addrKeysList: [],
-      addrNoKeyList: ["sign@some.domain", "encrypt@some.domain"],
+      addrNoKeyList: [{orig: "sign@some.domain", addr: "sign@some.domain", },
+                      {orig: "encrypt@some.domain", addr: "encrypt@some.domain", },],
     };
     Assert.ok(ret);
     Assert.deepEqual(expectedFlags, flagsRet);
@@ -217,7 +219,10 @@ test(function mapAddrsToKeys_conflict() {
     let expectedKeys = {
       value: "", // no matching key means no value
       addrKeysList: [],
-      addrNoKeyList: ["sign@some.domain", "noencrypt@some.domain", "nosign@some.domain", "encrypt@some.domain"],
+      addrNoKeyList: [{orig: "sign@some.domain", addr: "sign@some.domain", },
+                      {orig: "noencrypt@some.domain", addr: "noencrypt@some.domain", },
+                      {orig: "nosign@some.domain", addr: "nosign@some.domain", },
+                      {orig: "encrypt@some.domain", addr: "encrypt@some.domain", },],
     };
     Assert.ok(ret);
     Assert.deepEqual(expectedFlags, flagsRet);
@@ -238,8 +243,8 @@ test(function mapAddrsToKeys_twoKeysAndNoKey() {
     let expectedFlags = { value: true, sign: "1", encrypt: "1", pgpMime: "1", };
     let expectedKeys = {
       value: "0x2222aaaa, 0x2222bbbb, nokey@qqq.domain",
-      addrKeysList: [{ addr: "two@some.domain", keys:"0x2222aaaa, 0x2222bbbb"},],
-      addrNoKeyList: ["nokey@qqq.domain"],
+      addrKeysList: [{ orig: "two@some.domain", addr: "two@some.domain", keys:"0x2222aaaa, 0x2222bbbb"},],
+      addrNoKeyList: [{ orig: "nokey@qqq.domain", addr: "nokey@qqq.domain", }],
     };
     Assert.ok(ret);
     Assert.deepEqual(expectedFlags, flagsRet);
@@ -260,9 +265,9 @@ test(function mapAddrsToKeys_noKeyAndSomeKeysReverse() {  // important to test r
     let expectedFlags = { value: true, sign: "1", encrypt: "1", pgpMime: "1", };
     let expectedKeys = {
       value: "0x11111111, 0x2222aaaa, 0x2222bbbb, nokey@qqq.domain",
-      addrKeysList: [{ addr: "one@some.domain", keys:"0x11111111"},
-                     { addr: "two@some.domain", keys:"0x2222aaaa, 0x2222bbbb"},],
-      addrNoKeyList: ["nokey@qqq.domain"],
+      addrKeysList: [{ orig: "one@some.domain", addr: "one@some.domain", keys:"0x11111111"},
+                     { orig: "two@some.domain", addr: "two@some.domain", keys:"0x2222aaaa, 0x2222bbbb"},],
+      addrNoKeyList: [{ orig: "nokey@qqq.domain", addr: "nokey@qqq.domain"}],
     };
     Assert.ok(ret);
     Assert.deepEqual(expectedFlags, flagsRet);
@@ -284,7 +289,7 @@ test(function mapAddrsToKeys_spaces() {
     let expectedKeys = {
       value: "",
       addrKeysList: [],
-      addrNoKeyList: ["onerule"],
+      addrNoKeyList: [{orig: "oneRule", addr: "onerule"}],
     };
     Assert.ok(ret);
     Assert.deepEqual(expectedFlags, flagsRet);
@@ -305,15 +310,19 @@ test(function mapAddrsToKeys_manyKeys() {
     let expectedFlags = { value: true, sign: "0", encrypt: "1", pgpMime: "99", };
     let expectedKeys = {
       value: "0x11111111, 0x2222aaaa, 0x2222bbbb, nofurtherrules@some.domain, nofurtherrules2@some.domain, nokey@qqq.domain, nosign@some.domain",
-      addrKeysList: [{addr: "one@some.domain", keys: "0x11111111"},
-                     {addr: "two@some.domain", keys: "0x2222aaaa, 0x2222bbbb"},],
-      addrNoKeyList: ["nofurtherrules@some.domain", "nofurtherrules2@some.domain", "nokey@qqq.domain", "nosign@some.domain", ],
+      addrKeysList: [{orig: "one@some.domain", addr: "one@some.domain", keys: "0x11111111"},
+                     {orig: "two@some.domain", addr: "two@some.domain", keys: "0x2222aaaa, 0x2222bbbb"},],
+      addrNoKeyList: [{orig: "nofurtherrules@some.domain", addr: "nofurtherrules@some.domain"},
+                      {orig: "nofurtherrules2@some.domain", addr: "nofurtherrules2@some.domain"},
+                      {orig: "nokey@qqq.domain", addr: "nokey@qqq.domain"},
+                      {orig: "nosign@some.domain", addr: "nosign@some.domain"}, ],
     };
     Assert.ok(ret);
     Assert.deepEqual(expectedFlags, flagsRet);
     Assert.deepEqual(expectedKeys, matchedKeysRet);
-    //Assert.deepEqual(expectedKeys.addrNoKeyList, matchedKeysRet.addrNoKeyList);
-    //Assert.deepEqual(expectedKeys.addrKeysList, matchedKeysRet.addrKeysList);
+    Assert.deepEqual(expectedKeys.value, matchedKeysRet.value);
+    Assert.deepEqual(expectedKeys.addrKeysList, matchedKeysRet.addrKeysList);
+    Assert.deepEqual(expectedKeys.addrNoKeyList, matchedKeysRet.addrNoKeyList);
   });
 });
 
@@ -330,10 +339,10 @@ test(function mapAddrsToKeys_multipleMatches() {
     let expectedFlags = { value: true, sign: "1", encrypt: "1", pgpMime: "1", };
     let expectedKeys = {
       value: "0x11111111, 0x11111111, 0xDOTCOMORDOTDE, 0xDOTCOMORDOTDE",
-      addrKeysList: [{addr: "one@some.domain", keys: "0x11111111"},
-                     {addr: "one@some.domain", keys: "0x11111111"},
-                     {addr: "nico@xx.com", keys: "0xDOTCOMORDOTDE"},
-                     {addr: "patrick@xx.com", keys: "0xDOTCOMORDOTDE"},],
+      addrKeysList: [{orig: "one@some.domain", addr: "one@some.domain", keys: "0x11111111"},
+                     {orig: "one@some.domain", addr: "one@some.domain", keys: "0x11111111"},
+                     {orig: "nico@xx.com", addr: "nico@xx.com", keys: "0xDOTCOMORDOTDE"},
+                     {orig: "patrick@xx.com", addr: "patrick@xx.com", keys: "0xDOTCOMORDOTDE"},],
       addrNoKeyList: [],
     };
     Assert.ok(ret);
