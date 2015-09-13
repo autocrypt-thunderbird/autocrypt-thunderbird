@@ -15,9 +15,9 @@ testing("funcs.jsm");
 
 var EnigmailFuncsTests = {
   testStripEmail(str,res) {
-  let addr;
-  addr = EnigmailFuncs.stripEmail(str);
-  Assert.equal(addr,res);
+    let addr;
+    addr = EnigmailFuncs.stripEmail(str);
+    Assert.equal(addr,res);
   }
 };
 
@@ -28,16 +28,14 @@ test(function stripEmail() {
   EnigmailFuncsTests.testStripEmail("\"some stuff\" a@b.de",
                                     "a@b.de");
 
+  EnigmailFuncsTests.testStripEmail("\"some, stuff\" a@b.de",
+                                    "a@b.de");
+
   EnigmailFuncsTests.testStripEmail("some stuff <a@b.de> some stuff, xyz<xy@a.xx>xyc",
                                     "a@b.de,xy@a.xx");
 
   EnigmailFuncsTests.testStripEmail(" a@b.de , <aa@bb.de>",
                                     "a@b.de,aa@bb.de");
-
-  // TODO: OK, if we take the last <...> ?: => should result into empty email
-  EnigmailFuncsTests.testStripEmail(" a@b.de , <aa@bb.de> <aa@bb.dd>",
-                                    //"a@b.de");
-                                    "a@b.de,aa@bb.dd");
 
   EnigmailFuncsTests.testStripEmail("    ,,,,;;;; , ; , ;",
                                     "");
@@ -50,6 +48,19 @@ test(function stripEmail() {
 
   EnigmailFuncsTests.testStripEmail(",,,newsgroupa ",
                                     "newsgroupa");
+
+  // test invalid email addresses:
+  Assert.throws(
+    function() {
+      EnigmailFuncs.stripEmail(" a@b.de , <aa@bb.de> <aa@bb.dd>");
+    }
+  );
+  Assert.throws(
+    function() {
+      EnigmailFuncs.stripEmail("\"some stuff a@b.de");
+    }
+  );
+
 });
 
 

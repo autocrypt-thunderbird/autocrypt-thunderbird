@@ -55,6 +55,9 @@ const EXPORTED_SYMBOLS = ["EnigmailFuncs"];
 
 var gTxtConverter = null;
 
+const EnigmailFuncsRegexTwoAddr = new RegExp("<[^>,]*>[^,<]*<[^>,]*>");
+const EnigmailFuncsRegexExtractPureEmail = new RegExp("(^|,)[^,]*<([^>]+)>[^,]*", "g");
+
 const EnigmailFuncs = {
   /**
    * get a list of plain email addresses without name or surrounding <>
@@ -80,10 +83,16 @@ const EnigmailFuncs = {
     // Eliminate all whitespace, just to be safe
     mailAddrs = mailAddrs.replace(/\s+/g, "");
 
-    // Extract pure e-mail address list (stripping out angle brackets)
-    mailAddrs = mailAddrs.replace(/(^|,)[^,]*<([^>]+)>[^,]*/g, "$1$2");
+    // having two <..> <..> in one email is an error
+    if (mailAddrs.match(EnigmailFuncsRegexTwoAddr)) {
+      EnigmailLog.ERROR("funcs.jsm: stripEmail: Two <..> entries in mail address: " + mailAddrs + "\n");
+      throw Components.results.NS_ERROR_FAILURE;
+    }
 
-    // remove empty email addresses (TODO: remove ; OK?)
+    // Extract pure e-mail address list (stripping out angle brackets)
+    mailAddrs = mailAddrs.replace(EnigmailFuncsRegexExtractPureEmail, "$1$2");
+
+    // remove empty email addresses (including removing all ';')
     mailAddrs = mailAddrs.replace(/[,;]{2,}/g, ",").replace(/^,/,"").replace(/,$/,"");
 
     return mailAddrs;
