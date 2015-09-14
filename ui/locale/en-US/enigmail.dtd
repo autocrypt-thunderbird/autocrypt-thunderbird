@@ -488,6 +488,7 @@
 <!ENTITY enigmail.keyMan.importFromFile.label      "Import Keys from File">
 <!ENTITY enigmail.keyMan.importFromServer.label    "Search for Keys">
 <!ENTITY enigmail.keyMan.importFromClipbrd.label   "Import Keys from Clipboard">
+<!ENTITY enigmail.keyMan.importFromUrl.label       "Import Keys from URL">
 <!ENTITY enigmail.keyMan.exportToFile.label        "Export Keys to File">
 <!ENTITY enigmail.keyMan.sendKeys.label            "Send Public Keys by Email">
 <!ENTITY enigmail.keyMan.createMail.label          "Compose Mail to Selected Keys">
@@ -553,6 +554,7 @@
 <!ENTITY enigmail.keyMan.showOthersKeys.accesskey    "O">
 <!ENTITY enigmail.keyMan.showPhoto.accesskey         "P">
 <!ENTITY enigmail.keyMan.importFromClipbrd.accesskey "I">
+<!ENTITY enigmail.keyMan.importFromUrl.accesskey     "U">
 <!ENTITY enigmail.keyMan.copyToClipbrd.accesskey     "C">
 <!ENTITY enigmail.keyMan.keyDetails.accesskey        "K">
 <!ENTITY enigmail.keyMan.showAllKeys.accesskey       "D">

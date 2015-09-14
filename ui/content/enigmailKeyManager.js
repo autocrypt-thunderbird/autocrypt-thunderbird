@@ -40,10 +40,15 @@ EnigInitCommon("enigmailKeyManager");
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cu = Components.utils;
+
+Components.utils.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
+
 
 const INPUT = 0;
 const RESULT = 1;
 
+const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
 var gUserList;
 var gResult;
@@ -1215,6 +1220,46 @@ function addToPRRule() {
 
 }
 
+function enigmailImportKeysFromUrl() {
+  var value = {
+    "value": ""
+  };
+  if (EnigmailDialog.promptValue(window, EnigGetString("importFromUrl"), value)) {
+    var p = new Promise(
+      function(resolve, reject) {
+        var cbFunc = function _cb(data) {
+          EnigmailLog.DEBUG("enigmailImportKeysFromUrl: _cbFunc()");
+          var errorMsgObj = {};
+          EnigmailKeyRing.importKey(window, 0, data, "", errorMsgObj);
+          resolve(errorMsgObj);
+        };
+
+        try {
+          var bufferListener = EnigmailStreams.newStringStreamListener(cbFunc);
+          var ioServ = Cc[IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+          var msgUri = ioServ.newURI(value.value, null, null);
+
+          var channel = ioServ.newChannelFromURI(msgUri);
+          channel.asyncOpen(bufferListener, msgUri);
+        }
+        catch (ex) {
+          var err = {
+            value: ex
+          };
+          reject(err);
+        }
+      }
+    );
+
+    p.then(function(errorMsgObj) {
+        EnigLongAlert(errorMsgObj.value);
+        enigmailRefreshKeys();
+      })
+      .catch(function(reason) {
+        EnigLongAlert("Error: " + reason.value);
+      });
+  }
+}
 
 //
 // ----- key filtering functionality  -----

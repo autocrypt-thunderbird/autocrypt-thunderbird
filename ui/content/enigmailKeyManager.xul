@@ -166,6 +166,10 @@
                   observes="bcClipbrd"
                   accesskey="&enigmail.keyMan.importFromClipbrd.accesskey;"
                   oncommand="enigmailImportFromClipbrd()"/>
+        <menuitem label="&enigmail.keyMan.importFromUrl.label;"
+                  id="importFromUrl"
+                  accesskey="&enigmail.keyMan.importFromUrl.accesskey;"
+                  oncommand="enigmailImportKeysFromUrl()"/>
         <menuitem label="&enigmail.keyMan.copyToClipbrd.label;"
                   id="copyToClipbrd"
                   observes="bcNoKey"
