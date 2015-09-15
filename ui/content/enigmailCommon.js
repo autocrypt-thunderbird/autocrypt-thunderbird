@@ -956,7 +956,9 @@ function EnigCleanGuiList(guiList) {
  *    calcTrust,
  *    ownerTrust,
  *    fingerprint,
- *    showPhoto,
+ *    showPhoto:     true if photo is available; false otherwise
+ *    creationDate:  formatted date value
+ *    expiryDate:    formatted date value
  *    uidList: List of Pseudonyms and E-Mail-Addresses,
  *    subkeyList: List of Subkeys
  */
@@ -1001,7 +1003,7 @@ function EnigGetKeyDetails(sigListStr) {
         }
         break;
       case "uat":
-        // @TODO document what that means
+        // set showPhoto to true if at least one photo ID is available on key
         if (aLine[9].search("1 ") === 0) {
           showPhoto = true;
         }

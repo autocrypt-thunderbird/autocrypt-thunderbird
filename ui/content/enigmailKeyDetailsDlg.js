@@ -49,12 +49,21 @@ function onLoad() {
   reloadData();
 
   if (window.arguments[0].secKey) {
-    setAttr("keyType", EnigGetString("keyTypePair"));
+    setText("keyType", EnigGetString("keyTypePair"));
     document.getElementById("ownKeyCommands").removeAttribute("hidden");
   }
   else {
-    setAttr("keyType", EnigGetString("keyTypePublic"));
+    setText("keyType", EnigGetString("keyTypePublic"));
   }
+}
+
+/***
+ * Set the label text of a HTML element
+ */
+
+function setText(elementId, label) {
+  let node = document.getElementById(elementId);
+  node.textContent = label;
 }
 
 function reloadData() {
@@ -75,6 +84,8 @@ function reloadData() {
   var subAlgo = "";
   var treeChildren = document.getElementById("keyListChildren");
   var uidList = document.getElementById("uidListChildren");
+  var photoImg = document.getElementById("photoIdImg");
+  photoImg.setAttribute("src", "enigmail://photo/0x" + gKeyId);
 
   // clean lists
   EnigCleanGuiList(treeChildren);
@@ -96,12 +107,18 @@ function reloadData() {
     }
 
     gUserId = keyDetails.gUserId;
-    setAttr("userId", gUserId);
+    let expiryDate = keyDetails.expiryDate;
+    if (expiryDate.length === 0) {
+      expiryDate = "key does not expire";
+    }
+    setText("userId", gUserId);
     setAttr("keyId", "0x" + gKeyId.substr(-8, 8));
-    setAttr("calcTrust", getTrustLabel(keyDetails.calcTrust));
-    setAttr("ownerTrust", getTrustLabel(keyDetails.ownerTrust));
+    setText("keyValidity", getTrustLabel(keyDetails.calcTrust));
+    setText("ownerTrust", getTrustLabel(keyDetails.ownerTrust));
+    setText("keyCreated", keyDetails.creationDate);
+    setText("keyExpiry", expiryDate);
     if (keyDetails.fingerprint) {
-      setAttr("fingerprint", EnigFormatFpr(keyDetails.fingerprint));
+      setText("fingerprint", EnigFormatFpr(keyDetails.fingerprint));
     }
   }
 }
