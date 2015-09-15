@@ -131,5 +131,32 @@ const EnigmailStreams = {
     EnigmailLog.DEBUG("enigmailCommon.jsm: newStringChannel - done\n");
 
     return chan;
+  },
+
+  newFileChannel: function(uri, file, contentType, deleteOnClose) {
+    EnigmailLog.DEBUG("enigmailCommon.jsm: newFileChannel for '" + file.path + "'\n");
+
+
+    let inputStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
+    let behaviorFlags = Ci.nsIFileInputStream.CLOSE_ON_EOF;
+    if (deleteOnClose) {
+      behaviorFlags |= Ci.nsIFileInputStream.DELETE_ON_CLOSE;
+    }
+    const ioFlags = 0x01; // readonly
+    const perm = 0;
+    inputStream.init(file, ioFlags, perm, behaviorFlags);
+
+    const isc = Cc[NS_INPUT_STREAM_CHNL_CONTRACTID].createInstance(Ci.nsIInputStreamChannel);
+
+    isc.setURI(uri);
+    isc.contentStream = inputStream;
+
+    const chan = isc.QueryInterface(Ci.nsIChannel);
+    if (contentType && contentType.length) chan.contentType = contentType;
+
+    EnigmailLog.DEBUG("enigmailCommon.jsm: newStringChannel - done\n");
+
+    return chan;
   }
+
 };
