@@ -117,7 +117,7 @@ const EnigmailKeyRing = {
     var keyList = [];
 
     if (exitCodeObj.value === 0) {
-      // Normal return
+      // Normal
       EnigmailKeyRing.invalidateUserIdList();
 
       var statusLines = statusMsg.split(/\r?\n/);
@@ -487,8 +487,17 @@ const EnigmailKeyRing = {
     return exitCodeObj.value;
   },
 
-  showKeyPhoto: function(keyId, photoNumber, exitCodeObj, errorMsgObj) {
-    EnigmailLog.DEBUG("keyRing.js: EnigmailKeyRing.showKeyPhoto, keyId=" + keyId + " photoNumber=" + photoNumber + "\n");
+  /**
+   * Extract a photo ID from a key, store it as file and return the file object.
+   * @keyId:       String  - Key ID
+   * @photoNumber: Number  - number of the photo on the key, starting with 0
+   * @exitCodeObj: Object  - value holds exitCode (0 = success)
+   * @errorMsgObj: Object  - value holds errorMsg
+   *
+   * @return: nsIFile object or null in case no data / error.
+   */
+  getPhotoFile: function(keyId, photoNumber, exitCodeObj, errorMsgObj) {
+    EnigmailLog.DEBUG("keyRing.js: EnigmailKeyRing.getPhotoFile, keyId=" + keyId + " photoNumber=" + photoNumber + "\n");
 
     const args = EnigmailGpg.getStandardArgs().
     concat(["--no-secmem-warning", "--no-verbose", "--no-auto-check-trustdb",
@@ -501,7 +510,7 @@ const EnigmailKeyRing = {
 
     if (!outputTxt) {
       exitCodeObj.value = -1;
-      return "";
+      return null;
     }
 
     if (EnigmailOS.isDosLike() && EnigmailGpg.getGpgFeature("windows-photoid-bug")) {
@@ -533,7 +542,7 @@ const EnigmailKeyRing = {
     if (foundPicture >= 0 && foundPicture === photoNumber) {
       const pictureData = photoDataObj.value.substr(16 + skipData, imgSize);
       if (!pictureData.length) {
-        return "";
+        return null;
       }
 
       try {
@@ -551,16 +560,17 @@ const EnigmailKeyRing = {
 
         fileStream.flush();
         fileStream.close();
-        return picFile.path;
+        return picFile;
 
       }
       catch (ex) {
         exitCodeObj.value = -1;
-        return "";
+        return null;
       }
     }
-    return "";
+    return null;
   },
+
 
   /**
    * Return fingerprint for a given key ID
@@ -967,13 +977,15 @@ const sortFunctions = {
 
   validity: function(keyListObj, sortDirection) {
     return function(a, b) {
-      return (EnigmailTrust.trustLevelsSorted().indexOf(EnigmailTrust.getTrustCode(keyListObj.keyList[a.keyId])) < EnigmailTrust.trustLevelsSorted().indexOf(EnigmailTrust.getTrustCode(keyListObj.keyList[b.keyId]))) ? -sortDirection : sortDirection;
+      return (EnigmailTrust.trustLevelsSorted().indexOf(EnigmailTrust.getTrustCode(keyListObj.keyList[a.keyId])) < EnigmailTrust.trustLevelsSorted().indexOf(EnigmailTrust.getTrustCode(
+        keyListObj.keyList[b.keyId]))) ? -sortDirection : sortDirection;
     };
   },
 
   trust: function(keyListObj, sortDirection) {
     return function(a, b) {
-      return (EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[a.keyId].ownerTrust) < EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[b.keyId].ownerTrust)) ? -sortDirection : sortDirection;
+      return (EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[a.keyId].ownerTrust) < EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[b.keyId].ownerTrust)) ? -
+        sortDirection : sortDirection;
     };
   },
 
