@@ -403,15 +403,12 @@ const EnigmailWindows = {
         keyId = "0x" + keyId;
       }
 
-      const exitCodeObj = {};
-      const photoPath = EnigmailKeyRing.showKeyPhoto(keyId, photoNumber, exitCodeObj, {});
+      let exitCodeObj = {};
+      let photoFile = EnigmailKeyRing.getPhotoFile(keyId, photoNumber, exitCodeObj, {});
 
-      if (photoPath && exitCodeObj.value === 0) {
-        const photoFile = Cc[LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
-        photoFile.initWithPath(photoPath);
-
+      if (photoFile && exitCodeObj.value === 0) {
         if (!(photoFile.isFile() && photoFile.isReadable())) {
-          EnigmailWindows.alert(win, EnigmailLocale.getString("error.photoPathNotReadable", photoPath));
+          EnigmailWindows.alert(win, EnigmailLocale.getString("error.photoPathNotReadable", photoFile.path));
         }
         else {
           const photoUri = Cc[IOSERVICE_CONTRACTID].getService(Ci.nsIIOService).
