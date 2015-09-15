@@ -17,6 +17,7 @@ do_subtest("errorHandling-test.js");
 do_subtest("gpgAgent-test.js");
 do_subtest("enigmail-test.js");
 do_subtest("files-test.js");
+do_subtest("streams-test.js");
 do_subtest("keyEditor-test.js");
 
 // NOTE: DO NOT comment this out (otherwise rules-tes.js does no longer work)

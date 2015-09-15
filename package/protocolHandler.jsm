@@ -49,6 +49,7 @@ Components.utils.import("resource://enigmail/data.jsm");
 Components.utils.import("resource://enigmail/log.jsm");
 Components.utils.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Components.utils.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
+Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 
 const NS_SIMPLEURI_CONTRACTID = "@mozilla.org/network/simple-uri;1";
 const NS_ENIGMAILPROTOCOLHANDLER_CONTRACTID = "@mozilla.org/network/protocol;1?name=enigmail";
@@ -63,7 +64,8 @@ const nsIProtocolHandler = Ci.nsIProtocolHandler;
 
 var EC = EnigmailCore;
 
-const gDummyPKCS7 = 'Content-Type: multipart/mixed;\r\n boundary="------------060503030402050102040303\r\n\r\nThis is a multi-part message in MIME format.\r\n--------------060503030402050102040303\r\nContent-Type: application/x-pkcs7-mime\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303\r\nContent-Type: application/x-enigmail-dummy\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303--\r\n';
+const gDummyPKCS7 =
+  'Content-Type: multipart/mixed;\r\n boundary="------------060503030402050102040303\r\n\r\nThis is a multi-part message in MIME format.\r\n--------------060503030402050102040303\r\nContent-Type: application/x-pkcs7-mime\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303\r\nContent-Type: application/x-enigmail-dummy\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303--\r\n';
 
 
 function EnigmailProtocolHandler() {}
@@ -99,6 +101,7 @@ EnigmailProtocolHandler.prototype = {
 
     var messageId = EnigmailData.extractMessageId(aURI.spec);
     var mimeMessageId = EnigmailData.extractMimeMessageId(aURI.spec);
+    var contentType, contentCharset, contentData;
 
     if (messageId) {
       // Handle enigmail:message/...
@@ -107,8 +110,6 @@ EnigmailProtocolHandler.prototype = {
         throw Components.results.NS_ERROR_FAILURE;
       }
 
-      var contentType, contentCharset, contentData;
-
       if (EnigmailURIs.getMessageURI(messageId)) {
         var messageUriObj = EnigmailURIs.getMessageURI(messageId);
 
@@ -116,7 +117,8 @@ EnigmailProtocolHandler.prototype = {
         contentCharset = messageUriObj.contentCharset;
         contentData = messageUriObj.contentData;
 
-        EnigmailLog.DEBUG("enigmail.js: EnigmailProtocolHandler.newChannel: messageURL=" + messageUriObj.originalUrl + ", content length=" + contentData.length + ", " + contentType + ", " + contentCharset + "\n");
+        EnigmailLog.DEBUG("enigmail.js: EnigmailProtocolHandler.newChannel: messageURL=" + messageUriObj.originalUrl + ", content length=" + contentData.length + ", " + contentType + ", " +
+          contentCharset + "\n");
 
         // do NOT delete the messageUriObj now from the list, this will be done once the message is unloaded (fix for bug 9730).
 
@@ -131,9 +133,25 @@ EnigmailProtocolHandler.prototype = {
         contentData = "Enigmail error: invalid URI " + aURI.spec;
       }
 
-      var channel = EnigmailStreams.newStringChannel(aURI, contentType, "UTF-8", contentData);
+      let channel = EnigmailStreams.newStringChannel(aURI, contentType, "UTF-8", contentData);
 
       return channel;
+    }
+
+    if (aURI.spec.indexOf(aURI.scheme + "://photo/") === 0) {
+      // handle photo ID
+      contentType = "image/jpeg";
+      contentCharset = "";
+      let keyId = aURI.spec.substr(17);
+      let exitCodeObj = {};
+      let errorMsgObj = {};
+      let f = EnigmailKeyRing.getPhotoFile(keyId, 0, exitCodeObj, errorMsgObj);
+      if (exitCodeObj.value === 0) {
+        let channel = EnigmailStreams.newFileChannel(aURI, f, "image/jpeg", true);
+        return channel;
+      }
+
+      return null;
     }
 
     if (aURI.spec == aURI.scheme + ":dummy") {
