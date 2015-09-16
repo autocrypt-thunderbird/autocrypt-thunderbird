@@ -170,7 +170,7 @@ MimeVerify.prototype = {
   onStartRequest: function(request, uri) {
     EnigmailLog.DEBUG("mimeVerify.jsm: onStartRequest\n"); // always log this one
 
-    this.uri = uri.QueryInterface(Ci.nsIURI).clone();
+    this.uri = uri ? uri.QueryInterface(Ci.nsIURI).clone() : null;
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
 
