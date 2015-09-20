@@ -335,7 +335,7 @@ const EnigmailKeyRing = {
               signerKeyId: lineTokens[KEY_ID],
               sigType: lineTokens[SIG_TYPE_ID]
             };
-            listObj[currUid].push(sig);
+            listObj[currUid].sigList.push(sig);
           }
           break;
       }
