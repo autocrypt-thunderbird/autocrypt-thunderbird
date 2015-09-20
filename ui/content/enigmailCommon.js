@@ -944,6 +944,18 @@ function EnigCleanGuiList(guiList) {
   }
 }
 
+/**
+ * create a new treecell element
+ *
+ * @param String label of the cell
+ *
+ * @return treecell node
+ */
+function createCell(label) {
+  var cell = document.createElement("treecell");
+  cell.setAttribute("label", label);
+  return cell;
+}
 
 
 /**
@@ -956,9 +968,7 @@ function EnigCleanGuiList(guiList) {
  *    calcTrust,
  *    ownerTrust,
  *    fingerprint,
- *    showPhoto:     true if photo is available; false otherwise
- *    creationDate:  formatted date value
- *    expiryDate:    formatted date value
+ *    showPhoto,
  *    uidList: List of Pseudonyms and E-Mail-Addresses,
  *    subkeyList: List of Subkeys
  */
@@ -1003,7 +1013,7 @@ function EnigGetKeyDetails(sigListStr) {
         }
         break;
       case "uat":
-        // set showPhoto to true if at least one photo ID is available on key
+        // @TODO document what that means
         if (aLine[9].search("1 ") === 0) {
           showPhoto = true;
         }

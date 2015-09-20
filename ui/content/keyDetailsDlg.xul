@@ -57,7 +57,7 @@
 
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyDetailsDlg.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/keyDetailsDlg.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyManager.js"/>
 
   <broadcasterset>
@@ -76,7 +76,7 @@
       </html:td>
       <html:td id="userId"/>
       <html:td rowspan="3" id="photoId">
-        <html:img src="" id="photoIdImg" style="max-width: 100px; max-height: 120px;"/>
+        <html:img src="" id="photoIdImg" style="max-width: 100px; max-height: 120px; visibility: hidden;"/>
       </html:td>
     </html:tr>
     <html:tr>

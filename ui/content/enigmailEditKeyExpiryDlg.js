@@ -1,4 +1,5 @@
-/*global Components: false, EnigmailLog: false, EnigmailLocale: false, EnigmailTimer: false, Dialog: false */
+/*jshint -W097 */
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *

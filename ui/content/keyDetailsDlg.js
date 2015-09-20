@@ -85,7 +85,6 @@ function reloadData() {
   var treeChildren = document.getElementById("keyListChildren");
   var uidList = document.getElementById("uidListChildren");
   var photoImg = document.getElementById("photoIdImg");
-  photoImg.setAttribute("src", "enigmail://photo/0x" + gKeyId);
 
   // clean lists
   EnigCleanGuiList(treeChildren);
@@ -97,6 +96,9 @@ function reloadData() {
 
     if (keyDetails.showPhoto === true) {
       document.getElementById("showPhoto").removeAttribute("disabled");
+      photoImg.style.setProperty("visibility", "visible");
+      photoImg.setAttribute("src", "enigmail://photo/0x" + gKeyId);
+
     }
 
     for (let i = 0; i < keyDetails.uidList.length; i++) {
@@ -137,12 +139,6 @@ function createUidRow(aLine) {
   treeRow.appendChild(validCol);
   treeItem.appendChild(treeRow);
   return treeItem;
-}
-
-function createCell(label) {
-  var cell = document.createElement("treecell");
-  cell.setAttribute("label", label);
-  return cell;
 }
 
 function getTrustLabel(trustCode) {

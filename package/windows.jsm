@@ -460,12 +460,10 @@ const EnigmailWindows = {
     const resultObj = {
       refresh: false
     };
-    win.openDialog("chrome://enigmail/content/enigmailKeyDetailsDlg.xul", "",
+    win.openDialog("chrome://enigmail/content/keyDetailsDlg.xul", "",
       "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     if (resultObj.refresh) {
-      // TODO: look at this usage - it doesn't seem to refer to any function here
-      /*global enigmailRefreshKeys: false */
-      enigmailRefreshKeys();
+      EnigmailKeyRing.invalidateUserIdList();
     }
   },
 
