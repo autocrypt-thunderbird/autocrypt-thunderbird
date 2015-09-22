@@ -282,17 +282,18 @@ const EnigmailKeyRing = {
   /**
    * Return signatures for a given key list
    *
-   * @param String gpgKeyList     Output from gpg such as produced by getKeySig()
-   *                              Only the first public key is processed!
+   * @param String gpgKeyList         Output from gpg such as produced by getKeySig()
+   *                                  Only the first public key is processed!
+   * @param Boolena ignoreUnknownUid  true if unknown signer's UIDs should be filtered out
    *
-   * @return Array pof Object:
+   * @return Array of Object:
    *     - uid
+   *     - uidLabel
    *     - creationDate
-   *     - signerKeyId
-   *     - signatureType
+   *     - sigList: [uid, creationDate, signerKeyId, sigType ]
    */
 
-  extractSignatures: function(gpgKeyList) {
+  extractSignatures: function(gpgKeyList, ignoreUnknownUid) {
     var listObj = {};
 
     let havePub = false;
@@ -318,9 +319,9 @@ const EnigmailKeyRing = {
           break;
         case "uid":
         case "uat":
-          currUid = lineTokens[KEY_ID];
+          currUid = lineTokens[UID_ID];
           listObj[currUid] = {
-            uidID: lineTokens[ENTRY_ID] == "uat" ? "Photo" : lineTokens[KEY_ID],
+            uid: lineTokens[ENTRY_ID] == "uat" ? "Photo" : lineTokens[USERID_ID],
             uidLabel: lineTokens[USERID_ID],
             creationDate: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
             sigList: []
@@ -329,13 +330,17 @@ const EnigmailKeyRing = {
         case "sig":
           if (lineTokens[SIG_TYPE_ID].substr(0, 2).toLowerCase() !== "1f") {
             // ignrore revoked signature
+
             let sig = {
               uid: lineTokens[USERID_ID],
               creationDate: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
               signerKeyId: lineTokens[KEY_ID],
               sigType: lineTokens[SIG_TYPE_ID]
             };
-            listObj[currUid].sigList.push(sig);
+
+            if (!ignoreUnknownUid || sig.uid != "[User ID not found]") {
+              listObj[currUid].sigList.push(sig);
+            }
           }
           break;
       }

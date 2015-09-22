@@ -147,6 +147,26 @@
 
       <!-- certifications tab -->
       <vbox id="signaturesPanel">
+        <tree id="signatures_tree" flex="1"
+          hidecolumnpicker="true"
+          ondblclick="sigHandleDblClick(event)">
+
+          <treecols>
+            <treecol id="sig_uid_col" flex="1"
+                label="User ID"
+                primary="true"/>
+            <splitter class="tree-splitter"/>
+            <treecol id="sig_creator"
+                     label="Created by"
+                     persist="width"/>
+            <splitter class="tree-splitter"/>
+            <treecol id="sig_fingerprint"
+                     label="Fingerprint"
+                     persist="width"/>
+          </treecols>
+
+          <treechildren id="signatures_children"/>
+        </tree>
       </vbox>
 
       <!-- structure tab -->

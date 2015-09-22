@@ -93,6 +93,7 @@ function reloadData() {
   var sigListStr = EnigmailKeyRing.getKeySig("0x" + gKeyId, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value === 0) {
     var keyDetails = EnigGetKeyDetails(sigListStr);
+    var signatures = EnigmailKeyRing.extractSignatures(sigListStr, true);
 
     if (keyDetails.showPhoto === true) {
       document.getElementById("showPhoto").removeAttribute("disabled");
@@ -104,6 +105,12 @@ function reloadData() {
     for (let i = 0; i < keyDetails.uidList.length; i++) {
       uidList.appendChild(createUidRow(keyDetails.uidList[i]));
     }
+
+    if (signatures) {
+      let sigListViewObj = new SigListView(signatures);
+      document.getElementById("signatures_tree").view = sigListViewObj;
+    }
+
     for (let i = 0; i < keyDetails.subkeyList.length; i++) {
       EnigAddSubkey(treeChildren, keyDetails.subkeyList[i]);
     }
@@ -246,3 +253,141 @@ function revokeKey() {
 function genRevocationCert() {
   EnigCreateRevokeCert(gKeyId, gUserId);
 }
+
+
+function SigListView(keyObj) {
+  this.keyObj = keyObj;
+  this.prevKeyObj = null;
+  this.prevRow = -1;
+
+  for (let i in this.keyObj) {
+    this.keyObj[i].expanded = false;
+  }
+  this.updateRowCount();
+}
+
+// implements nsITreeView
+SigListView.prototype = {
+
+  updateRowCount: function() {
+    let rc = 0;
+
+    for (let i in this.keyObj) {
+      rc += this.keyObj[i].expanded ? this.keyObj[i].sigList.length + 1 : 1;
+    }
+
+    this.rowCount = rc;
+  },
+
+  setLastKeyObj: function(keyObj, row) {
+    this.prevKeyObj = keyObj;
+    this.prevRow = row;
+    return keyObj;
+  },
+
+  getSigAtIndex: function(row) {
+    if (this.lastIndex == row) {
+      return this.lastKeyObj;
+    }
+
+    let j = 0,
+      l = 0;
+
+    for (let i in this.keyObj) {
+      if (j === row) return this.setLastKeyObj(this.keyObj[i], row);
+      j++;
+
+      if (this.keyObj[i].expanded) {
+        l = this.keyObj[i].sigList.length;
+
+        if (j + l >= row && row - j < l) {
+          return this.setLastKeyObj(this.keyObj[i].sigList[row - j], row);
+        }
+        else {
+          j += l;
+        }
+      }
+    }
+
+    return null;
+  },
+
+  getCellText: function(row, column) {
+    let s = this.getSigAtIndex(row);
+
+    if (s) {
+      switch (column.id) {
+        case "sig_uid_col":
+          if ("sigList" in s) return s.uid;
+          break;
+        case "sig_creator":
+          if (!("sigList" in s)) return s.uid;
+          break;
+        case "sig_fingerprint":
+          return s.creationDate;
+      }
+    }
+
+    return "";
+  },
+
+  setTree: function(treebox) {
+    this.treebox = treebox;
+  },
+
+  isContainer: function(row) {
+    let s = this.getSigAtIndex(row);
+    return ("sigList" in s);
+  },
+
+  isSeparator: function(row) {
+    return false;
+  },
+
+  isSorted: function() {
+    return false;
+  },
+
+  getLevel: function(row) {
+    return 0;
+  },
+
+  cycleHeader: function(col, elem) {},
+
+  getImageSrc: function(row, col) {
+    return null;
+  },
+
+  getRowProperties: function(row, props) {},
+
+  getCellProperties: function(row, col) {
+    return "";
+  },
+
+  canDrop: function(row, orientation, data) {
+    return false;
+  },
+
+  getColumnProperties: function(colid, col, props) {},
+
+  isContainerEmpty: function(row) {
+    return false;
+  },
+
+  getParentIndex: function(idx) {
+    return -1;
+  },
+
+  isContainerOpen: function(row) {
+    let s = this.getSigAtIndex(row);
+    return s.expanded;
+  },
+
+  toggleOpenState: function(row) {
+    let s = this.getSigAtIndex(row);
+    s.expanded = ! s.expanded;
+    let r = this.rowCount;
+    this.updateRowCount();
+    this.treebox.rowCountChanged(row, this.rowCount - r);
+  }
+};
