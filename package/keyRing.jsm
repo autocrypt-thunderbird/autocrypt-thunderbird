@@ -297,7 +297,9 @@ const EnigmailKeyRing = {
     var listObj = {};
 
     let havePub = false;
-    let currUid = "";
+    let currUid = "",
+      keyId = "",
+      fpr = "";
 
     const lineArr = gpgKeyList.split(/\n/);
     for (let i = 0; i < lineArr.length; i++) {
@@ -316,6 +318,10 @@ const EnigmailKeyRing = {
             return listObj;
           }
           havePub = true;
+          keyId = lineTokens[KEY_ID];
+          break;
+        case "fpr":
+          fpr = lineTokens[USERID_ID];
           break;
         case "uid":
         case "uat":
@@ -323,6 +329,8 @@ const EnigmailKeyRing = {
           listObj[currUid] = {
             uid: lineTokens[ENTRY_ID] == "uat" ? "Photo" : lineTokens[USERID_ID],
             uidLabel: lineTokens[USERID_ID],
+            keyId: keyId,
+            fpr: fpr,
             creationDate: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
             sigList: []
           };

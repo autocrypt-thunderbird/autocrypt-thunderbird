@@ -97,9 +97,10 @@ function reloadData() {
 
     if (keyDetails.showPhoto === true) {
       document.getElementById("showPhoto").removeAttribute("disabled");
-      photoImg.style.setProperty("visibility", "visible");
       photoImg.setAttribute("src", "enigmail://photo/0x" + gKeyId);
-
+    }
+    else {
+      photoImg.style.setProperty("visibility", "hidden");
     }
 
     for (let i = 0; i < keyDetails.uidList.length; i++) {
@@ -127,7 +128,7 @@ function reloadData() {
     setText("keyCreated", keyDetails.creationDate);
     setText("keyExpiry", expiryDate);
     if (keyDetails.fingerprint) {
-      setText("fingerprint", EnigFormatFpr(keyDetails.fingerprint));
+      setText("fingerprint", EnigmailKey.formatFpr(keyDetails.fingerprint));
     }
   }
 }
@@ -261,7 +262,7 @@ function SigListView(keyObj) {
   this.prevRow = -1;
 
   for (let i in this.keyObj) {
-    this.keyObj[i].expanded = false;
+    this.keyObj[i].expanded = true;
   }
   this.updateRowCount();
 }
@@ -318,12 +319,15 @@ SigListView.prototype = {
     if (s) {
       switch (column.id) {
         case "sig_uid_col":
-          if ("sigList" in s) return s.uid;
+          return s.uid;
+        case "sig_fingerprint_col":
+          if ("sigList" in s) {
+            return EnigmailKey.formatFpr(s.fpr);
+          }
+          else
+            return s.signerKeyId;
           break;
-        case "sig_creator":
-          if (!("sigList" in s)) return s.uid;
-          break;
-        case "sig_fingerprint":
+        case "sig_created_col":
           return s.creationDate;
       }
     }
@@ -349,7 +353,8 @@ SigListView.prototype = {
   },
 
   getLevel: function(row) {
-    return 0;
+    let s = this.getSigAtIndex(row);
+    return ("sigList" in s ? 0 : 1);
   },
 
   cycleHeader: function(col, elem) {},
@@ -361,6 +366,10 @@ SigListView.prototype = {
   getRowProperties: function(row, props) {},
 
   getCellProperties: function(row, col) {
+    if (col.id === "sig_fingerprint_col") {
+      return "fixedWidthFont";
+    }
+    
     return "";
   },
 
@@ -378,14 +387,20 @@ SigListView.prototype = {
     return -1;
   },
 
+  getProgressMode: function(row, col) {},
+
   isContainerOpen: function(row) {
     let s = this.getSigAtIndex(row);
     return s.expanded;
   },
 
+  isSelectable: function(row, col) {
+    return true;
+  },
+
   toggleOpenState: function(row) {
     let s = this.getSigAtIndex(row);
-    s.expanded = ! s.expanded;
+    s.expanded = !s.expanded;
     let r = this.rowCount;
     this.updateRowCount();
     this.treebox.rowCountChanged(row, this.rowCount - r);

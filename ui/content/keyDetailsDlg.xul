@@ -76,7 +76,7 @@
       </html:td>
       <html:td id="userId"/>
       <html:td rowspan="3" id="photoId">
-        <html:img src="" id="photoIdImg" style="max-width: 100px; max-height: 120px; visibility: hidden;"/>
+        <html:img src="" id="photoIdImg" style="height: 120px; max-width: 100px; max-height: 120px;"/>
       </html:td>
     </html:tr>
     <html:tr>
@@ -96,8 +96,8 @@
   <tabbox flex="1" style="margin:5px" id="mainTabs">
     <tabs id="mainTabBox">
       <tab id="basicTab"       label="&enigmail.basic.label;"/>
-      <tab id="signaturesTab"  label="Certifications"/>
-      <tab id="structureTab"   label="Structure"/>
+      <tab id="signaturesTab"  label="&enigmail.keyDetails.signaturesTab;"/>
+      <tab id="structureTab"   label="&enigmail.keyDetails.structureTab;"/>
     </tabs>
 
     <tabpanels flex="1" id="mainTabPanel">
@@ -153,15 +153,15 @@
 
           <treecols>
             <treecol id="sig_uid_col" flex="1"
-                label="User ID"
+                label="&enigmail.keyDetails.uidCertifiedCol;"
                 primary="true"/>
             <splitter class="tree-splitter"/>
-            <treecol id="sig_creator"
-                     label="Created by"
-                     persist="width"/>
             <splitter class="tree-splitter"/>
-            <treecol id="sig_fingerprint"
-                     label="Fingerprint"
+            <treecol id="sig_fingerprint_col"
+                     label="&enigmail.keyDetails.fingerprint.label;"
+                     persist="width"/>
+            <treecol id="sig_created_col"
+                     label="&enigmail.keyDetails.created.label;"
                      persist="width"/>
           </treecols>
 

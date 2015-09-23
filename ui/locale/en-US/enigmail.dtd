@@ -584,6 +584,9 @@
 <!ENTITY enigmail.manageUidDlg.setPrimary.label      "Set primary">
 
 <!ENTITY enigmail.keyDetails.title                   "Key Properties">
+<!ENTITY enigmail.keyDetails.signaturesTab           "Certifications">
+<!ENTITY enigmail.keyDetails.structureTab            "Structure">
+<!ENTITY enigmail.keyDetails.uidCertifiedCol         "User ID / Certified by">
 <!ENTITY enigmail.keyDetails.userId.label            "Primary User ID">
 <!ENTITY enigmail.keyDetails.keyId.label             "Key ID">
 <!ENTITY enigmail.keyDetails.additionalUid.label     "Additional User ID">
