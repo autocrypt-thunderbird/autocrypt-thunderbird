@@ -49,11 +49,12 @@ function onLoad() {
   reloadData();
 
   if (window.arguments[0].secKey) {
-    setText("keyType", EnigGetString("keyTypePair"));
+    setLabel("keyType", EnigmailLocale.getString("keyTypePair"));
     document.getElementById("ownKeyCommands").removeAttribute("hidden");
   }
   else {
-    setText("keyType", EnigGetString("keyTypePublic"));
+    document.getElementById("ownKeyCommands").setAttribute("hidden", "true");
+    setText("keyType", EnigmailLocale.getString("keyTypePublic"));
   }
 }
 
@@ -66,10 +67,15 @@ function setText(elementId, label) {
   node.textContent = label;
 }
 
+function setLabel(elementId, label) {
+  let node = document.getElementById(elementId);
+  node.setAttribute("value", label);
+}
+
 function reloadData() {
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {
-    EnigAlert(EnigGetString("accessError"));
+    EnigAlert(EnigmailLocale.getString("accessError"));
     window.close();
     return;
   }
@@ -83,7 +89,7 @@ function reloadData() {
   var subKeyLen = "";
   var subAlgo = "";
   var treeChildren = document.getElementById("keyListChildren");
-  var uidList = document.getElementById("uidListChildren");
+  var uidList = document.getElementById("additionalUid");
   var photoImg = document.getElementById("photoIdImg");
 
   // clean lists
@@ -96,15 +102,19 @@ function reloadData() {
     var signatures = EnigmailKeyRing.extractSignatures(sigListStr, true);
 
     if (keyDetails.showPhoto === true) {
-      document.getElementById("showPhoto").removeAttribute("disabled");
       photoImg.setAttribute("src", "enigmail://photo/0x" + gKeyId);
+      photoImg.removeAttribute("hidden");
     }
     else {
-      photoImg.style.setProperty("visibility", "hidden");
+      photoImg.setAttribute("hidden", "true");
     }
 
-    for (let i = 0; i < keyDetails.uidList.length; i++) {
-      uidList.appendChild(createUidRow(keyDetails.uidList[i]));
+    if (keyDetails.uidList.length > 0) {
+      document.getElementById("alsoknown").removeAttribute("collapsed");
+      createUidData(uidList, keyDetails);
+    }
+    else {
+      document.getElementById("alsoknown").setAttribute("collapsed", "true");
     }
 
     if (signatures) {
@@ -112,47 +122,44 @@ function reloadData() {
       document.getElementById("signatures_tree").view = sigListViewObj;
     }
 
-    for (let i = 0; i < keyDetails.subkeyList.length; i++) {
-      EnigAddSubkey(treeChildren, keyDetails.subkeyList[i]);
+    if (keyDetails.subkeyList.length > 0) {
+      let subkeyListViewObj = new SubkeyListView(keyDetails.subkeyList);
+      document.getElementById("subkeyList").view = subkeyListViewObj;
     }
 
     gUserId = keyDetails.gUserId;
     let expiryDate = keyDetails.expiryDate;
     if (expiryDate.length === 0) {
-      expiryDate = "key does not expire";
+      expiryDate = EnigmailLocale.getString("keyDoesNotExpire");
     }
-    setText("userId", gUserId);
-    setAttr("keyId", "0x" + gKeyId.substr(-8, 8));
+    setLabel("userId", gUserId);
     setText("keyValidity", getTrustLabel(keyDetails.calcTrust));
     setText("ownerTrust", getTrustLabel(keyDetails.ownerTrust));
     setText("keyCreated", keyDetails.creationDate);
     setText("keyExpiry", expiryDate);
     if (keyDetails.fingerprint) {
-      setText("fingerprint", EnigmailKey.formatFpr(keyDetails.fingerprint));
+      setLabel("fingerprint", EnigmailKey.formatFpr(keyDetails.fingerprint));
     }
   }
 }
 
 
-function createUidRow(aLine) {
-  var treeItem = document.createElement("treeitem");
-  var treeRow = document.createElement("treerow");
-  var uidCol = createCell(EnigConvertGpgToUnicode(aLine[9]));
-  var validCol = createCell(getTrustLabel(aLine[1]));
-  if ("dre".search(aLine[1]) >= 0) {
-    uidCol.setAttribute("properties", "enigKeyInactive");
-    validCol.setAttribute("properties", "enigKeyInactive");
+function createUidData(listNode, keyDetails) {
+  for (let i = 0; i < keyDetails.uidList.length; i++) {
+    let aLine = keyDetails.uidList[i];
+    let item = document.createElement("listitem");
+    item.setAttribute("label", EnigConvertGpgToUnicode(aLine[9]));
+    if ("dre".search(aLine[1]) >= 0) {
+      item.setAttribute("disabled", "true");
+    }
+    listNode.appendChild(item);
   }
-  treeRow.appendChild(uidCol);
-  treeRow.appendChild(validCol);
-  treeItem.appendChild(treeRow);
-  return treeItem;
 }
 
 function getTrustLabel(trustCode) {
   var trustTxt = EnigGetTrustLabel(trustCode);
   if (trustTxt == "-" || trustTxt.length === 0) {
-    trustTxt = EnigGetString("keyValid.unknown");
+    trustTxt = EnigmailLocale.getString("keyValid.unknown");
   }
   return trustTxt;
 }
@@ -369,7 +376,7 @@ SigListView.prototype = {
     if (col.id === "sig_fingerprint_col") {
       return "fixedWidthFont";
     }
-    
+
     return "";
   },
 
@@ -405,4 +412,170 @@ SigListView.prototype = {
     this.updateRowCount();
     this.treebox.rowCountChanged(row, this.rowCount - r);
   }
+};
+
+function createSubkeyItem(aLine) {
+
+  // Get expiry state of this subkey
+  let expire;
+  if (aLine[1] === "r") {
+    expire = EnigmailLocale.getString("keyValid.revoked");
+  }
+  else if (aLine[6].length === 0) {
+    expire = EnigmailLocale.getString("keyExpiryNever");
+  }
+  else {
+    expire = EnigGetDateTime(aLine[6], true, false);
+  }
+
+  let subkeyType = EnigmailLocale.getString(aLine[0] === "sub" ? "keyTypeSubkey" : "keyTypePrimary");
+
+  let usagecodes = aLine[11];
+  let usagetext = "";
+  let i;
+  //  e = encrypt
+  //  s = sign
+  //  c = certify
+  //  a = authentication
+  //  Capital Letters are ignored, as these reflect summary properties of a key
+
+  var singlecode = "";
+  for (i = 0; i < aLine[11].length; i++) {
+    singlecode = aLine[11].substr(i, 1);
+    switch (singlecode) {
+      case "e":
+        if (usagetext.length > 0) {
+          usagetext = usagetext + ", ";
+        }
+        usagetext = usagetext + EnigmailLocale.getString("keyUsageEncrypt");
+        break;
+      case "s":
+        if (usagetext.length > 0) {
+          usagetext = usagetext + ", ";
+        }
+        usagetext = usagetext + EnigmailLocale.getString("keyUsageSign");
+        break;
+      case "c":
+        if (usagetext.length > 0) {
+          usagetext = usagetext + ", ";
+        }
+        usagetext = usagetext + EnigmailLocale.getString("keyUsageCertify");
+        break;
+      case "a":
+        if (usagetext.length > 0) {
+          usagetext = usagetext + ", ";
+        }
+        usagetext = usagetext + EnigmailLocale.getString("keyUsageAuthentication");
+        break;
+    } // * case *
+  } // * for *
+
+  let keyObj = {
+    keyType: subkeyType, // subkey type
+    keyId: "0x" + aLine[4].substr(-8, 8), // key id
+    algo: EnigmailLocale.getString("keyAlgorithm_" + aLine[3]), // algorithm
+    size: aLine[2], // size
+    creationDate: EnigGetDateTime(aLine[5], true, false), // created
+    expiry: expire,
+    usage: usagetext
+  };
+
+  return keyObj;
+}
+
+function SubkeyListView(subkeys) {
+  this.subkeys = [];
+  this.rowCount = subkeys.length;
+
+  for (let i = 0; i < subkeys.length; i++) {
+    this.subkeys.push(createSubkeyItem(subkeys[i]));
+  }
+
+}
+
+// implements nsITreeView
+SubkeyListView.prototype = {
+
+  getCellText: function(row, column) {
+    let s = this.subkeys[row];
+
+    if (s) {
+      switch (column.id) {
+        case "keyTypeCol":
+          return s.keyType;
+        case "keyIdCol":
+          return s.keyId;
+        case "algoCol":
+          return s.algo;
+        case "sizeCol":
+          return s.size;
+        case "createdCol":
+          return s.creationDate;
+        case "expiryCol":
+          return s.expiry;
+        case "keyUsageCol":
+          return s.usage;
+      }
+    }
+
+    return "";
+  },
+
+  setTree: function(treebox) {
+    this.treebox = treebox;
+  },
+
+  isContainer: function(row) {
+    return false;
+  },
+
+  isSeparator: function(row) {
+    return false;
+  },
+
+  isSorted: function() {
+    return false;
+  },
+
+  getLevel: function(row) {
+    return 0;
+  },
+
+  cycleHeader: function(col, elem) {},
+
+  getImageSrc: function(row, col) {
+    return null;
+  },
+
+  getRowProperties: function(row, props) {},
+
+  getCellProperties: function(row, col) {
+    return "";
+  },
+
+  canDrop: function(row, orientation, data) {
+    return false;
+  },
+
+  getColumnProperties: function(colid, col, props) {},
+
+  isContainerEmpty: function(row) {
+    return false;
+  },
+
+  getParentIndex: function(idx) {
+    return -1;
+  },
+
+  getProgressMode: function(row, col) {},
+
+  isContainerOpen: function(row) {
+    return false;
+  },
+
+  isSelectable: function(row, col) {
+    return true;
+  },
+
+  toggleOpenState: function(row) {}
 };
