@@ -944,6 +944,18 @@ function EnigCleanGuiList(guiList) {
   }
 }
 
+/**
+ * create a new treecell element
+ *
+ * @param String label of the cell
+ *
+ * @return treecell node
+ */
+function createCell(label) {
+  var cell = document.createElement("treecell");
+  cell.setAttribute("label", label);
+  return cell;
+}
 
 
 /**

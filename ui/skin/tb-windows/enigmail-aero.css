@@ -494,6 +494,10 @@ treechildren::-moz-tree-image(enigEncrypted)
     -moz-image-region: rect(0px 12px 12px 0px);
 }
 
+treechildren::-moz-tree-cell-text(fixedWidthFont) {
+  font-family: "Courier New", Courier, monospace;
+}
+
 .enigmailWarningIcon {
   list-style-image: url("chrome://enigmail/skin/warning-16.png");
 }
