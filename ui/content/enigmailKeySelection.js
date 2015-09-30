@@ -351,6 +351,10 @@ function enigmailBuildList(refresh) {
           aUserList.push(userObj);
           break;
         case "fpr":
+          if (userObj.fpr == "") {
+            // Only take first fingerprint (that from the primary key)
+            userObj.fpr = listRow[FPR];
+          }
           userObj.fpr = listRow[FPR];
           break;
         case "grp":
