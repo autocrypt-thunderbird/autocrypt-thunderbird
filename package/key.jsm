@@ -126,7 +126,7 @@ KeyEntry.prototype = {
   }
 };
 
-const EnigmailKey = {
+var EnigmailKey = {
   Entry: KeyEntry,
 
   /**

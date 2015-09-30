@@ -658,9 +658,14 @@ const EnigmailKeyRing = {
    * @return: String containing the fingerprint or null if key not found
    */
   getFingerprintForKey: function(keyId) {
-    const keyList = getKeyListEntryOfKey(keyId);
-    const keyListObj = {};
-    EnigmailKeyRing.createKeyObjects(keyList.replace(/(\r\n|\r)/g, "\n").split(/\n/), keyListObj);
+    let keyList = getKeyListEntryOfKey(keyId);
+    let keyListObj = {};
+
+    if (keyList) {
+      EnigmailKeyRing.createKeyObjects(keyList.replace(/(\r\n|\r)/g, "\n").split(/\n/), keyListObj);
+    }
+    else
+      return null;
 
     if (keyListObj.keySortList.length > 0) {
       return keyListObj.keyList[keyListObj.keySortList[0].keyId].fpr;
