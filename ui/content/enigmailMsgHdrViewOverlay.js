@@ -133,14 +133,15 @@ Enigmail.hdrView = {
   },
 
   updateHdrIcons: function(exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, encToDetails, xtraStatus) {
-    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.updateHdrIcons: exitCode=" + exitCode + ", statusFlags=" + statusFlags + ", keyId=" + keyId + ", userId=" + userId + ", " + errorMsg + "\n");
+    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.updateHdrIcons: exitCode=" + exitCode + ", statusFlags=" + statusFlags + ", keyId=" + keyId + ", userId=" + userId + ", " + errorMsg +
+      "\n");
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
     this.statusBar = document.getElementById("enigmail-status-bar");
     this.enigmailBox = document.getElementById("enigmailBox");
 
-    if (gFolderDisplay.selectedMessageUris.length > 0) {
+    if (gFolderDisplay.selectedMessageUris && gFolderDisplay.selectedMessageUris.length > 0) {
       this.lastEncryptedMsgKey = gFolderDisplay.selectedMessageUris[0];
     }
     var bodyElement = document.getElementById("messagepanebox");
