@@ -1678,12 +1678,17 @@ Enigmail.msg = {
     if (toolbarTxt) {
       toolbarTxt.value = toolbarMsg;
 
-      let si = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
+      if (gMsgCompose.compFields.securityInfo) {
+        let si = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
 
-      if (!doSign && !doEncrypt &&
-        !(gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields &&
-          (si.signMessage || si.requireEncryptMessage))) {
-        toolbarTxt.setAttribute("class", "enigmailStrong");
+        if (!doSign && !doEncrypt &&
+          !(gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields &&
+            (si.signMessage || si.requireEncryptMessage))) {
+          toolbarTxt.setAttribute("class", "enigmailStrong");
+        }
+        else {
+          toolbarTxt.removeAttribute("class");
+        }
       }
       else {
         toolbarTxt.removeAttribute("class");
@@ -4037,7 +4042,7 @@ Enigmail.msg = {
       errorMsgObj, blockSeparationObj, encToDetailsObj);
 
     // Decode plaintext from charset to unicode
-    plainText = EnigmailData.convertToUnicode(plainText, charset);
+    plainText = EnigmailData.convertToUnicode(plainText, charset).replace(/\r\n/g, "\n");
     if (EnigmailPrefs.getPref("keepSettingsForReply")) {
       if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_OKAY)
         this.setSendMode('encrypt');
