@@ -42,7 +42,7 @@
  * MsgCompose security info for Enigmail
  */
 [scriptable, uuid(847b3a30-7ab1-11d4-8f02-006008948af5)]
-interface nsIEnigMsgCompFields : nsISupports
+interface nsIEnigMsgCompFields : nsIMsgSMIMECompFields
 {
   /**
    * See nsIEnigmail.idl for valid uiFlags and sendFlags

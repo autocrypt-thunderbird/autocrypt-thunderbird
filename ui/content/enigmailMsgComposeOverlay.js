@@ -943,8 +943,9 @@ Enigmail.msg = {
 
     // reset subject
     if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIEnigMsgCompFields) {
-      if (gMsgCompose.compFields.securityInfo.originalSubject) {
-        gMsgCompose.compFields.subject = gMsgCompose.compFields.securityInfo.originalSubject;
+      let si = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIEnigMsgCompFields);
+      if (si.originalSubject) {
+        gMsgCompose.compFields.subject = si.originalSubject;
       }
     }
   },
@@ -1422,15 +1423,16 @@ Enigmail.msg = {
       }
     }
 
-    if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields &&
-      (gMsgCompose.compFields.securityInfo.signMessage ||
-        gMsgCompose.compFields.securityInfo.requireEncryptMessage)) {
+    if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields) {
+      let si = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
 
-      if (EnigmailPrefs.getPref("mimePreferPgp") == 2) {
-        encFinally = EnigmailConstants.ENIG_FINAL_SMIME_DISABLED;
-        encReason = EnigmailLocale.getString("reasonSmimeConflict");
-        signFinally = EnigmailConstants.ENIG_FINAL_SMIME_DISABLED;
-        signReason = EnigmailLocale.getString("reasonSmimeConflict");
+      if (si.signMessage || si.requireEncryptMessage) {
+        if (EnigmailPrefs.getPref("mimePreferPgp") == 2) {
+          encFinally = EnigmailConstants.ENIG_FINAL_SMIME_DISABLED;
+          encReason = EnigmailLocale.getString("reasonSmimeConflict");
+          signFinally = EnigmailConstants.ENIG_FINAL_SMIME_DISABLED;
+          signReason = EnigmailLocale.getString("reasonSmimeConflict");
+        }
       }
     }
 
@@ -1636,49 +1638,51 @@ Enigmail.msg = {
       toolbarMsg = EnigmailLocale.getString("msgCompose.toolbarTxt.noEncryption");
     }
 
-    if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields &&
-      (gMsgCompose.compFields.securityInfo.signMessage ||
-        gMsgCompose.compFields.securityInfo.requireEncryptMessage)) {
+    if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields) {
+      let si = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
+      if (si.signMessage || si.requireEncryptMessage) {
 
-      // Determine if user wants to encrypt drafts
-      let doEncryptDrafts = this.identity.getBoolAttribute("autoEncryptDrafts");
+        // Determine if user wants to encrypt drafts
+        let doEncryptDrafts = this.identity.getBoolAttribute("autoEncryptDrafts");
 
-      switch (EnigmailPrefs.getPref("mimePreferPgp")) {
-        case 0:
-          // prefer OpenPGP over S/MIME
-          if (doSign || doEncrypt) {
-            toolbarMsg += " " + EnigmailLocale.getString("msgCompose.toolbarTxt.smimeOff");
-          }
-          break;
-        case 1:
-          // ask user
-          if (doSign || doEncrypt) {
-            toolbarMsg += " " + EnigmailLocale.getString("msgCompose.toolbarTxt.smime");
-          }
-          if (doEncryptDrafts) {
-            toolbarMsg += " " + EnigmailLocale.getString("msgCompose.toolbarTxt.smimeNoDraftEncryption");
-          }
-          break;
-        case 2:
-          // prefer S/MIME over OpenPGP
-          encBroadcaster.setAttribute("disabled", "true");
-          signBroadcaster.setAttribute("disabled", "true");
-          toolbarMsg = EnigmailLocale.getString("msgCompose.toolbarTxt.smimeSignOrEncrypt");
-          if (doEncryptDrafts) {
-            toolbarMsg += " " + EnigmailLocale.getString("msgCompose.toolbarTxt.smimeNoDraftEncryption");
-          }
-          break;
+        switch (EnigmailPrefs.getPref("mimePreferPgp")) {
+          case 0:
+            // prefer OpenPGP over S/MIME
+            if (doSign || doEncrypt) {
+              toolbarMsg += " " + EnigmailLocale.getString("msgCompose.toolbarTxt.smimeOff");
+            }
+            break;
+          case 1:
+            // ask user
+            if (doSign || doEncrypt) {
+              toolbarMsg += " " + EnigmailLocale.getString("msgCompose.toolbarTxt.smime");
+            }
+            if (doEncryptDrafts) {
+              toolbarMsg += " " + EnigmailLocale.getString("msgCompose.toolbarTxt.smimeNoDraftEncryption");
+            }
+            break;
+          case 2:
+            // prefer S/MIME over OpenPGP
+            encBroadcaster.setAttribute("disabled", "true");
+            signBroadcaster.setAttribute("disabled", "true");
+            toolbarMsg = EnigmailLocale.getString("msgCompose.toolbarTxt.smimeSignOrEncrypt");
+            if (doEncryptDrafts) {
+              toolbarMsg += " " + EnigmailLocale.getString("msgCompose.toolbarTxt.smimeNoDraftEncryption");
+            }
+            break;
 
+        }
       }
     }
 
     if (toolbarTxt) {
       toolbarTxt.value = toolbarMsg;
 
+      let si = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
+
       if (!doSign && !doEncrypt &&
         !(gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields &&
-          (gMsgCompose.compFields.securityInfo.signMessage ||
-            gMsgCompose.compFields.securityInfo.requireEncryptMessage))) {
+          (si.signMessage || si.requireEncryptMessage))) {
         toolbarTxt.setAttribute("class", "enigmailStrong");
       }
       else {
@@ -1757,10 +1761,10 @@ Enigmail.msg = {
         var matchedKeysObj = {};
         var flagsObj = {};
         if (EnigmailRules.mapAddrsToKeys(toAddrList.join(", "),
-                                         false, // no interaction if not all addrs have a key
-                                         window,
-                                         matchedKeysObj, // resulting matching keys
-                                         flagsObj)) { // resulting flags (0/1/2/3 for each type)
+            false, // no interaction if not all addrs have a key
+            window,
+            matchedKeysObj, // resulting matching keys
+            flagsObj)) { // resulting flags (0/1/2/3 for each type)
           this.encryptByRules = flagsObj.encrypt;
           this.signByRules = flagsObj.sign;
           this.pgpmimeByRules = flagsObj.pgpMime;
@@ -2183,8 +2187,8 @@ Enigmail.msg = {
     if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields &&
       (sendFlags & (nsIEnigmail.SEND_SIGNED | nsIEnigmail.SEND_ENCRYPTED))) {
 
-      if (gMsgCompose.compFields.securityInfo.requireEncryptMessage ||
-        gMsgCompose.compFields.securityInfo.signMessage) {
+      let si = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
+      if (si.requireEncryptMessage || si.signMessage) {
 
         if (sendFlags & nsIEnigmail.SAVE_MESSAGE) {
           // use S/MIME if it's enabled for saving drafts
@@ -2212,8 +2216,8 @@ Enigmail.msg = {
           switch (prefAlgo) {
             case 0:
               // use OpenPGP and not S/MIME
-              gMsgCompose.compFields.securityInfo.requireEncryptMessage = false;
-              gMsgCompose.compFields.securityInfo.signMessage = false;
+              si.requireEncryptMessage = false;
+              si.signMessage = false;
               return true;
             case 2:
               // use S/MIME and not OpenPGP
@@ -2258,10 +2262,10 @@ Enigmail.msg = {
     var matchedKeysObj = {}; // returned value for matched keys
     var flagsObj = {}; // returned value for flags
     if (!EnigmailRules.mapAddrsToKeys(toAddrStr,
-                                      forceRecipientSettings, // true => start dialog for addrs without any key
-                                      window,
-                                      matchedKeysObj,
-                                      flagsObj)) {
+        forceRecipientSettings, // true => start dialog for addrs without any key
+        window,
+        matchedKeysObj,
+        flagsObj)) {
       return null;
     }
     if (matchedKeysObj.value) {
@@ -2345,10 +2349,10 @@ Enigmail.msg = {
     // - matchedKeysObj will contain the keys and the remaining bccAddrStr elements
     // - NOTE: bcc recipients are ignored when in general computing whether to sign or encrypt or pgpMime
     if (!EnigmailRules.mapAddrsToKeys(bccAddrStr,
-                                      forceRecipientSettings, // true => start dialog for addrs without any key
-                                      window,
-                                      matchedKeysObj,
-                                      flagsObj)) {
+        forceRecipientSettings, // true => start dialog for addrs without any key
+        window,
+        matchedKeysObj,
+        flagsObj)) {
       return null;
     }
     if (matchedKeysObj.value) {
@@ -4373,8 +4377,9 @@ Enigmail.composeStateListener = {
 
     if (Enigmail.msg.disableSmime) {
       if (gMsgCompose && gMsgCompose.compFields && gMsgCompose.compFields.securityInfo) {
-        gMsgCompose.compFields.securityInfo.signMessage = false;
-        gMsgCompose.compFields.securityInfo.requireEncryptMessage = false;
+        let si = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
+        si.signMessage = false;
+        si.requireEncryptMessage = false;
       }
       else {
         EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: EDSL.ComposeBodyReady: could not disable S/MIME\n");
