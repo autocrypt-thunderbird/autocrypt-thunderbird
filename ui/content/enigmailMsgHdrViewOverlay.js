@@ -104,6 +104,10 @@ Enigmail.hdrView = {
 
   // Match the userId from gpg to the sender's from address
   matchUidToSender: function(userId) {
+    if (!gFolderDisplay.selectedMessage) {
+      return userId;
+    }
+
     var fromAddr = gFolderDisplay.selectedMessage.author;
     try {
       fromAddr = EnigmailFuncs.stripEmail(fromAddr);
@@ -879,6 +883,8 @@ Enigmail.hdrView = {
   updateMsgDb: function() {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.updateMsgDb\n");
     var msg = gFolderDisplay.selectedMessage;
+    if (!msg) return;
+
     var msgHdr = msg.folder.GetMessageHeader(msg.messageKey);
     if (this.statusBar.getAttribute("encrypted") == "ok")
       Enigmail.msg.securityInfo.statusFlags |= Components.interfaces.nsIEnigmail.DECRYPTION_OKAY;
@@ -1048,6 +1054,8 @@ if (messageHeaderSink) {
         }
 
         let msg = gFolderDisplay.selectedMessage;
+
+        if (!msg) return;
 
         if (typeof(hdr) !== "object") return;
         if (!this.isCurrentMessage() || gFolderDisplay.selectedMessages.length !== 1) return;
