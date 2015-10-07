@@ -46,6 +46,27 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyListEntryOfKey() {
 
 })));
 
+
+test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
+  const publicKey = do_get_file("resources/dev-strike.asc", false);
+  const secretKey = do_get_file("resources/dev-strike.sec", false);
+  EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), publicKey, {}, {});
+  EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), secretKey, {}, {});
+
+  let k = EnigmailKeyRing.getKeyById("0x9CE311C4");
+  Assert.equal(k.subKeys[0].keyId, "D535623BB60E9E71");
+
+  k = EnigmailKeyRing.getKeyBySubkeyId("0xD535623BB60E9E71");
+  Assert.equal(k.fpr, "65537E212DC19025AD38EDB2781617319CE311C4");
+
+  k = EnigmailKeyRing.getKeyByFingerprint("65537E212DC19025AD38EDB2781617319CE311C4");
+  Assert.equal(k.fpr, "65537E212DC19025AD38EDB2781617319CE311C4");
+
+  let ka = EnigmailKeyRing.getKeysByUserId("devtest@gmail.com>$");
+  Assert.equal(ka.length, 1);
+
+})));
+
 test(withTestGpgHome(withEnigmail(function shouldGetUserIdList() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);
   const secretKey = do_get_file("resources/dev-strike.sec", false);

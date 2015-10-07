@@ -20,8 +20,6 @@
  * Copyright (C) 2010 Patrick Brunschwig. All Rights Reserved.
  *
  * Contributor(s):
- *  Ramalingam Saravanan <svn@xmlterm.org>
- *  Patrick Brunschwig <patrick@enigmail.net>
  *  Janosch Rux <rux@informatik.uni-luebeck.de>
  *  Fan Jiang <fanjiang@thoughtworks.com>
  *  Iván Pazmiño <iapazmino@thoughtworks.com>
@@ -92,8 +90,188 @@ const KEYTYPE_RSA = 2;
 let userIdList = null;
 let secretKeyList = null;
 let keygenProcess = null;
+let gKeyListObj = null;
 
-const EnigmailKeyRing = {
+/*
+
+  This module operates with a Key Store (array) containing objects with the following properties:
+
+  * keyList [Array]:
+    - keyId           - 16 digits (8-byte) public key ID (/not/ preceeded with 0x)
+    - userId          - main user ID
+    - fpr             - fingerprint
+    - expiry          - Expiry date as printable string
+    - expiryTime      - Expiry time as seconds after 01/01/1970
+    - created         - Key creation date as printable string
+    - keyTrust        - key trust code as provided by GnuPG
+    - keyUseFor       - key usage type as provided by GnuPG
+    - ownerTrust      - owner trust as provided by GnuPG
+    - photoAvailable  - [Boolean] true if photo is available
+    - secretAvailable - [Boolean] true if secret key is available
+    - SubUserIds  - [Array]:
+                      * userId   - additional User ID
+                      * keyTrust - trust level of user ID
+                      * type     - one of "uid" (regular user ID), "uat" (photo)
+                      * uatNum   - photo number (starting with 0 for each key)
+     - subKeys     - [Array]:
+                      * keyId    - subkey ID (16 digits (8-byte))
+                      * type     -  "sub"
+  * keySortList [Array]:  used for quickly sorting the keys
+    - user ID (in lower case)
+    - key ID
+*/
+
+var EnigmailKeyRing = {
+
+  /**
+   * Load the key list into memory and return it sorted by a specified column
+   *
+   * @param  win        - optional |object| holding the parent window for displaying error messages
+   * @param  sortColumn - optional |string| containing the column name for sorting. One of:
+   *                         userid, keyid, keyidshort, fpr, keytype, validity, trust, expiry
+   * @param  sortDirection - |number| 1 = ascending / -1 = descending
+   *
+   * @return keyListObj - |Array|  holding the resulting key list
+   */
+  getAllKeys: function(win, sortColumn, sortDirection) {
+    if (gKeyListObj.keyList.length === 0) {
+      this.loadKeyList(win, false, gKeyListObj, sortColumn, sortDirection);
+    }
+    else {
+      if (sortColumn) {
+        gKeyListObj.keySortList.sort(getSortFunction(sortColumn.toLowerCase(), gKeyListObj, sortDirection));
+      }
+    }
+
+    return gKeyListObj;
+  },
+
+  /**
+   * get 1st key object that matches a given key ID
+   *
+   * @param keyId - String: key Id (8 or 16 characters), optionally preceeded with "0x"
+   *
+   * @return Object - found key Obj or null if key not found
+   */
+  getKeyById: function(keyId) {
+    if (keyId.search(/^0x/) === 0) {
+      keyId = keyId.substr(2);
+    }
+
+    let s;
+
+    if (keyId.length === 16) {
+      s = new RegExp("^" + keyId + "$", "i");
+    }
+    else {
+      s = new RegExp(keyId + "$", "i");
+    }
+
+    this.getAllKeys(); // ensure keylist is loaded;
+
+    for (let i in gKeyListObj.keyList) {
+      if (gKeyListObj.keyList[i].keyId.search(s) >= 0) {
+        return gKeyListObj.keyList[i];
+      }
+    }
+
+    return null;
+  },
+
+  /**
+   * get 1st key object that matches a given fingerprint
+   *
+   * @param keyId - String: key Id (8 or 16 characters), optionally preceeded with "0x"
+   *
+   * @return Object - found key Obj or null if key not found
+   */
+  getKeyByFingerprint: function(fpr) {
+    if (fpr.search(/^0x/) === 0) {
+      fpr = fpr.substr(2);
+    }
+
+    this.getAllKeys(); // ensure keylist is loaded;
+
+    for (let i in gKeyListObj.keyList) {
+      if (gKeyListObj.keyList[i].fpr === fpr) {
+        return gKeyListObj.keyList[i];
+      }
+    }
+
+    return null;
+  },
+
+  /**
+   * get 1st key object that matches a subkey ID
+   *
+   * @param subkeyId - String: subkey Id (8 or 16 characters), optionally preceeded with "0x"
+   *
+   * @return Object - found key Obj or null if key not found
+   */
+  getKeyBySubkeyId: function(subkeyId) {
+    if (subkeyId.search(/^0x/) === 0) {
+      subkeyId = subkeyId.substr(2);
+    }
+
+    let s;
+
+    if (subkeyId.length === 16) {
+      s = new RegExp("^" + subkeyId + "$", "i");
+    }
+    else {
+      s = new RegExp(subkeyId + "$", "i");
+    }
+
+    this.getAllKeys(); // ensure keylist is loaded;
+
+    for (let i in gKeyListObj.keyList) {
+      for (let j in gKeyListObj.keyList[i].subKeys) {
+        if (gKeyListObj.keyList[i].subKeys[j].keyId.search(s) >= 0) {
+          return gKeyListObj.keyList[i];
+        }
+      }
+    }
+
+    return null;
+  },
+
+  /**
+   * get all key objects that match a given user ID
+   *
+   * @param searchTerm   - String: a regular expression to match against all UIDs of the keys.
+   *                               The search is always performed case-insensitively
+   * @param onlyValidUid - Boolean: if true (default), invalid (e.g. revoked) UIDs are not matched
+   *
+   * @return Array: list of Objects containing the found keys
+   */
+  getKeysByUserId: function(searchTerm, onlyValidUid = true) {
+    let s = new RegExp(searchTerm, "i");
+
+    let res = [];
+
+    this.getAllKeys(); // ensure keylist is loaded;
+
+    for (let i in gKeyListObj.keyList) {
+      let k = gKeyListObj.keyList[i];
+
+      if (k.userId.search(s) >= 0) {
+        res.push(gKeyListObj.keyList[i]);
+      }
+      else {
+        for (let j in k.SubUserIds) {
+          if (k.SubUserIds[j].type === "uid" && k.SubUserIds[j].userId.search(s) >= 0) {
+            if (!onlyValidUid || (!EnigmailTrust.isInvalid(k.SubUserIds[j].keyTrust))) {
+              res.push(k);
+              continue;
+            }
+          }
+        }
+      }
+    }
+
+    return res;
+  },
+
   importKeyFromFile: function(parent, inputFile, errorMsgObj, importedKeysObj) {
     var command = EnigmailGpg.agentPath;
     var args = EnigmailGpg.getStandardArgs(true);
@@ -196,9 +374,18 @@ const EnigmailKeyRing = {
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.invalidateUserIdList\n");
     userIdList = null;
     secretKeyList = null;
+    this.resetGlobalKeyList();
+  },
+
+  resetGlobalKeyList: function() {
+    gKeyListObj = {
+      keyList: [],
+      keySortList: []
+    };
   },
 
   // returns the output of --with-colons --list[-secret]-keys
+  // INTERNAL USE ONLY
   getUserIdList: function(secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
     if (refresh ||
       (secretOnly && secretKeyList === null) ||
@@ -209,6 +396,7 @@ const EnigmailKeyRing = {
         args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-secret-keys"]);
       }
       else {
+        if (refresh) this.resetGlobalKeyList();
         args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-keys"]);
       }
 
@@ -769,12 +957,14 @@ const EnigmailKeyRing = {
 
   /**
    * Load the key list into memory and return it sorted by a specified column
+   * @deprecated  -  RESERVED FOR INTERNAL USE of the module!
    *
    * @win        - |object|  holding the parent window for displaying error messages
    * @refresh    - |boolean| if true, cache is cleared and all keys are loaded from GnuPG
    * @keyListObj - |object|  holding the resulting key list
    * @sortColumn - |string|  containing the column name for sorting. One of:
-   *                         userid, keyid, keyidshort, fpr, keytype, validity, trust, expiry
+   *                         userid, keyid, keyidshort, fpr, keytype, validity, trust, expiry.
+   *                         Null will sort by userid.
    * @sortDirection - |number| 1 = ascending / -1 = descending
    *
    * no return value
@@ -1142,3 +1332,6 @@ function getKeyListEntryOfKey(keyId) {
   }
   return res;
 }
+
+
+EnigmailKeyRing.resetGlobalKeyList();
