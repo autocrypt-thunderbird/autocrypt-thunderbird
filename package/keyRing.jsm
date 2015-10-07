@@ -96,7 +96,7 @@ let gKeyListObj = null;
 
   This module operates with a Key Store (array) containing objects with the following properties:
 
-  * keyList [Array]:
+  * keyList [Array] of |KeyObject|:
     - keyId           - 16 digits (8-byte) public key ID (/not/ preceeded with 0x)
     - userId          - main user ID
     - fpr             - fingerprint
@@ -113,9 +113,11 @@ let gKeyListObj = null;
                       * keyTrust - trust level of user ID
                       * type     - one of "uid" (regular user ID), "uat" (photo)
                       * uatNum   - photo number (starting with 0 for each key)
-     - subKeys     - [Array]:
+    - subKeys     - [Array]:
                       * keyId    - subkey ID (16 digits (8-byte))
                       * type     -  "sub"
+    - getSignatures(): function  - returns list of signatures
+
   * keySortList [Array]:  used for quickly sorting the keys
     - user ID (in lower case)
     - key ID
@@ -124,14 +126,14 @@ let gKeyListObj = null;
 var EnigmailKeyRing = {
 
   /**
-   * Load the key list into memory and return it sorted by a specified column
+   * Get the complete list of all public keys, optionally sorted by a column
    *
-   * @param  win        - optional |object| holding the parent window for displaying error messages
-   * @param  sortColumn - optional |string| containing the column name for sorting. One of:
-   *                         userid, keyid, keyidshort, fpr, keytype, validity, trust, expiry
+   * @param  win           - optional |object| holding the parent window for displaying error messages
+   * @param  sortColumn    - optional |string| containing the column name for sorting. One of:
+   *                            userid, keyid, keyidshort, fpr, keytype, validity, trust, expiry
    * @param  sortDirection - |number| 1 = ascending / -1 = descending
    *
-   * @return keyListObj - |Array|  holding the resulting key list
+   * @return keyListObj    - |object| { keyList, keySortList } (see above)
    */
   getAllKeys: function(win, sortColumn, sortDirection) {
     if (gKeyListObj.keyList.length === 0) {
@@ -146,19 +148,43 @@ var EnigmailKeyRing = {
     return gKeyListObj;
   },
 
+
   /**
-   * get 1st key object that matches a given key ID
+   * get a list of all keys that have a secret key
    *
-   * @param keyId - String: key Id (8 or 16 characters), optionally preceeded with "0x"
+   * @return Array: list of KeyObjects containing the found keys
+   **/
+
+  getAllSecretKeys: function() {
+    this.getAllKeys(); // ensure keylist is loaded;
+
+    let res = [];
+
+    this.getAllKeys(); // ensure keylist is loaded;
+
+    for (let i in gKeyListObj.keyList) {
+      if (gKeyListObj.keyList[i].secretAvailable) {
+        res.push(gKeyListObj.keyList[i]);
+      }
+    }
+
+    return res;
+  },
+
+
+  /**
+   * get 1st key object that matches a given key ID or subkey ID
    *
-   * @return Object - found key Obj or null if key not found
+   * @param keyId - String: key Id (16 characters (preferred) or 8 characters), optionally preceeded with "0x"
+   *
+   * @return Object - found KeyObject or null if key not found
    */
   getKeyById: function(keyId) {
+    let s;
+
     if (keyId.search(/^0x/) === 0) {
       keyId = keyId.substr(2);
     }
-
-    let s;
 
     if (keyId.length === 16) {
       s = new RegExp("^" + keyId + "$", "i");
@@ -173,6 +199,11 @@ var EnigmailKeyRing = {
       if (gKeyListObj.keyList[i].keyId.search(s) >= 0) {
         return gKeyListObj.keyList[i];
       }
+      for (let j in gKeyListObj.keyList[i].subKeys) {
+        if (gKeyListObj.keyList[i].subKeys[j].keyId.search(s) >= 0) {
+          return gKeyListObj.keyList[i];
+        }
+      }
     }
 
     return null;
@@ -183,7 +214,7 @@ var EnigmailKeyRing = {
    *
    * @param keyId - String: key Id (8 or 16 characters), optionally preceeded with "0x"
    *
-   * @return Object - found key Obj or null if key not found
+   * @return Object - found KeyObject or null if key not found
    */
   getKeyByFingerprint: function(fpr) {
     if (fpr.search(/^0x/) === 0) {
@@ -202,47 +233,13 @@ var EnigmailKeyRing = {
   },
 
   /**
-   * get 1st key object that matches a subkey ID
-   *
-   * @param subkeyId - String: subkey Id (8 or 16 characters), optionally preceeded with "0x"
-   *
-   * @return Object - found key Obj or null if key not found
-   */
-  getKeyBySubkeyId: function(subkeyId) {
-    if (subkeyId.search(/^0x/) === 0) {
-      subkeyId = subkeyId.substr(2);
-    }
-
-    let s;
-
-    if (subkeyId.length === 16) {
-      s = new RegExp("^" + subkeyId + "$", "i");
-    }
-    else {
-      s = new RegExp(subkeyId + "$", "i");
-    }
-
-    this.getAllKeys(); // ensure keylist is loaded;
-
-    for (let i in gKeyListObj.keyList) {
-      for (let j in gKeyListObj.keyList[i].subKeys) {
-        if (gKeyListObj.keyList[i].subKeys[j].keyId.search(s) >= 0) {
-          return gKeyListObj.keyList[i];
-        }
-      }
-    }
-
-    return null;
-  },
-
-  /**
    * get all key objects that match a given user ID
    *
    * @param searchTerm   - String: a regular expression to match against all UIDs of the keys.
    *                               The search is always performed case-insensitively
    * @param onlyValidUid - Boolean: if true (default), invalid (e.g. revoked) UIDs are not matched
    *
-   * @return Array: list of Objects containing the found keys
+   * @return Array of KeyObjects with the found keys
    */
   getKeysByUserId: function(searchTerm, onlyValidUid = true) {
     let s = new RegExp(searchTerm, "i");
@@ -270,6 +267,30 @@ var EnigmailKeyRing = {
     }
 
     return res;
+  },
+
+  /**
+   * get a list of keys for a given set of (sub-) key IDs
+   *
+   * @param keyIdList: Array of key IDs
+                       OR String, with space-separated list of key IDs
+   */
+  getKeyListById: function(keyIdList) {
+    let keyArr;
+    if (typeof keyIdList === "string") {
+      keyArr = keyIdList.split(/ +/);
+    }
+    else {
+      keyArr = keyIdList;
+    }
+
+    let ret = [];
+    for (let i in keyArr) {
+      let r = this.getKeyById(keyArr[i]);
+      if (r) ret.push(r);
+    }
+
+    return ret;
   },
 
   importKeyFromFile: function(parent, inputFile, errorMsgObj, importedKeysObj) {
@@ -371,21 +392,24 @@ var EnigmailKeyRing = {
 
   invalidateUserIdList: function() {
     // clean the userIdList to force reloading the list at next usage
-    EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.invalidateUserIdList\n");
-    userIdList = null;
-    secretKeyList = null;
-    this.resetGlobalKeyList();
+    this.clearCache();
   },
 
-  resetGlobalKeyList: function() {
+  clearCache: function() {
+    EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.clearCache\n");
     gKeyListObj = {
       keyList: [],
       keySortList: []
     };
+
+    userIdList = null;
+    secretKeyList = null;
   },
 
-  // returns the output of --with-colons --list[-secret]-keys
-  // INTERNAL USE ONLY
+  /**
+   * returns the output of --with-colons --list[-secret]-keys
+   * INTERNAL USE ONLY
+   */
   getUserIdList: function(secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
     if (refresh ||
       (secretOnly && secretKeyList === null) ||
@@ -396,7 +420,7 @@ var EnigmailKeyRing = {
         args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-secret-keys"]);
       }
       else {
-        if (refresh) this.resetGlobalKeyList();
+        if (refresh) this.clearCache();
         args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-keys"]);
       }
 
@@ -472,7 +496,7 @@ var EnigmailKeyRing = {
    *
    * @param String gpgKeyList         Output from gpg such as produced by getKeySig()
    *                                  Only the first public key is processed!
-   * @param Boolena ignoreUnknownUid  true if unknown signer's UIDs should be filtered out
+   * @param Boolean ignoreUnknownUid  true if unknown signer's UIDs should be filtered out
    *
    * @return Array of Object:
    *     - uid
@@ -547,6 +571,7 @@ var EnigmailKeyRing = {
 
   /**
    * Return details of given keys.
+   * @deprecated - use getKeyListById instead
    *
    * @param  String  keyId              List of keys with 0x, separated by spaces.
    * @param  Boolean uidOnly            false:
@@ -887,20 +912,8 @@ var EnigmailKeyRing = {
       if (listRow.length >= 0) {
         switch (listRow[ENTRY_ID]) {
           case "pub":
-            keyObj = {};
+            keyObj = new KeyObject(listRow);
             uatNum = 0;
-            keyObj.expiry = EnigmailTime.getDateTime(listRow[EXPIRY_ID], true, false);
-            keyObj.expiryTime = Number(listRow[EXPIRY_ID]);
-            keyObj.created = EnigmailTime.getDateTime(listRow[CREATED_ID], true, false);
-            keyObj.keyId = listRow[KEY_ID];
-            keyObj.keyTrust = listRow[KEY_TRUST_ID];
-            keyObj.keyUseFor = listRow[KEY_USE_FOR_ID];
-            keyObj.ownerTrust = listRow[OWNERTRUST_ID];
-            keyObj.SubUserIds = [];
-            keyObj.subKeys = [];
-            keyObj.fpr = "";
-            keyObj.photoAvailable = false;
-            keyObj.secretAvailable = false;
             keyListObj.keyList[listRow[KEY_ID]] = keyObj;
             break;
           case "fpr":
@@ -1333,5 +1346,45 @@ function getKeyListEntryOfKey(keyId) {
   return res;
 }
 
+function KeyObject(pubGpgLine) {
+  this.keyId = pubGpgLine[KEY_ID];
+  this.expiry = EnigmailTime.getDateTime(pubGpgLine[EXPIRY_ID], true, false);
+  this.expiryTime = Number(pubGpgLine[EXPIRY_ID]);
+  this.created = EnigmailTime.getDateTime(pubGpgLine[CREATED_ID], true, false);
+  this.keyTrust = pubGpgLine[KEY_TRUST_ID];
+  this.keyUseFor = pubGpgLine[KEY_USE_FOR_ID];
+  this.ownerTrust = pubGpgLine[OWNERTRUST_ID];
+  this.SubUserIds = [];
+  this.subKeys = [];
+  this.fpr = "";
+  this.photoAvailable = false;
+  this.secretAvailable = false;
+  this._sigList = null;
+}
 
-EnigmailKeyRing.resetGlobalKeyList();
+KeyObject.prototype = {
+  /**
+   * get a list of all signatures found on the key
+   *
+   * @return Array of Object, or null in case of error:
+   *     - uid
+   *     - uidLabel
+   *     - creationDate
+   *     - sigList: Array of object: { uid, creationDate, signerKeyId, sigType }
+   */
+  getSignatures: function() {
+    if (this._sigList === null) {
+      let exitCodeObj = {},
+        errorMsgObj = {};
+      let r = EnigmailKeyRing.getKeySig(this.keyId, exitCodeObj, errorMsgObj);
+
+      if (r.length > 0) {
+        this._sigList = EnigmailKeyRing.extractSignatures(r, false);
+      }
+    }
+
+    return this._sigList;
+  }
+};
+
+EnigmailKeyRing.clearCache();

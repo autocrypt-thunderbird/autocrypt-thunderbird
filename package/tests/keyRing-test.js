@@ -8,7 +8,7 @@
 
 "use strict";
 
-do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, getKeyListEntryOfKey: false, secretKeyList: false, userIdList: false */
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, getKeyListEntryOfKey: false, secretKeyList: false, userIdList: false, gKeyListObj: false */
 
 testing("keyRing.jsm"); /*global EnigmailKeyRing: false */
 
@@ -56,15 +56,32 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
   let k = EnigmailKeyRing.getKeyById("0x9CE311C4");
   Assert.equal(k.subKeys[0].keyId, "D535623BB60E9E71");
 
-  k = EnigmailKeyRing.getKeyBySubkeyId("0xD535623BB60E9E71");
+  k = EnigmailKeyRing.getKeyById("0xD535623BB60E9E71");
   Assert.equal(k.fpr, "65537E212DC19025AD38EDB2781617319CE311C4");
+
+  Assert.equal(gKeyListObj.keySortList.length, 1);
+  EnigmailKeyRing.clearCache();
+  Assert.equal(gKeyListObj.keySortList.length, 0);
 
   k = EnigmailKeyRing.getKeyByFingerprint("65537E212DC19025AD38EDB2781617319CE311C4");
   Assert.equal(k.fpr, "65537E212DC19025AD38EDB2781617319CE311C4");
 
+  let s = k.getSignatures();
+
+  let fpr = "DB54FB278F6AE719DE0DE881B17D4C762F5752A9";
+  Assert.equal(fpr in s, true);
+  if (fpr in s) {
+    Assert.equal(s[fpr].sigList[0].signerKeyId, "781617319CE311C4");
+  }
+
   let ka = EnigmailKeyRing.getKeysByUserId("devtest@gmail.com>$");
   Assert.equal(ka.length, 1);
 
+  ka = EnigmailKeyRing.getAllSecretKeys();
+  Assert.equal(ka.length, 1);
+
+  ka = EnigmailKeyRing.getKeyListById("0x9CE311C4 D535623BB60E9E71");
+  Assert.equal(ka.length, 2);
 })));
 
 test(withTestGpgHome(withEnigmail(function shouldGetUserIdList() {
