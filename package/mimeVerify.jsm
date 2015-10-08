@@ -442,6 +442,19 @@ MimeVerify.prototype = {
   // return data to libMime
   returnData: function(data) {
 
+    let m = data.match(/^(content-type: +)([\w\/]+)/im);
+    if (m && m.length >= 3) {
+      let contentType = m[2];
+      if (contentType.search(/^text/i) === 0) {
+        // add multipart/mixed boundary to work around TB bug (empty forwarded message)
+        let bound = EnigmailMime.createBoundary();
+        data = 'Content-Type: multipart/mixed; boundary="' + bound + '"\n\n--' +
+          bound + '\n' +
+          data +
+          '\n--' + bound + '--\n';
+      }
+    }
+
     gConv.setData(data, data.length);
     try {
       this.mimeSvc.onDataAvailable(null, null, gConv, 0, data.length);
