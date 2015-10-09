@@ -96,12 +96,10 @@ function reloadData() {
   EnigCleanGuiList(treeChildren);
   EnigCleanGuiList(uidList);
 
-  var sigListStr = EnigmailKeyRing.getKeySig("0x" + gKeyId, exitCodeObj, errorMsgObj);
-  if (exitCodeObj.value === 0) {
-    var keyDetails = EnigGetKeyDetails(sigListStr);
-    var signatures = EnigmailKeyRing.extractSignatures(sigListStr, true);
+  let keyObj = EnigmailKeyRing.getKeyById(gKeyId);
+  if (keyObj) {
 
-    if (keyDetails.showPhoto === true) {
+    if (keyObj.photoAvailable === true) {
       photoImg.setAttribute("src", "enigmail://photo/0x" + gKeyId);
       photoImg.removeAttribute("hidden");
     }
@@ -109,50 +107,51 @@ function reloadData() {
       photoImg.setAttribute("hidden", "true");
     }
 
-    if (keyDetails.uidList.length > 0) {
+    if (keyObj.SubUserIds.length > 0) {
       document.getElementById("alsoknown").removeAttribute("collapsed");
-      createUidData(uidList, keyDetails);
+      createUidData(uidList, keyObj);
     }
     else {
       document.getElementById("alsoknown").setAttribute("collapsed", "true");
     }
 
-    if (signatures) {
-      let sigListViewObj = new SigListView(signatures);
+    if (keyObj.signatures) {
+      let sigListViewObj = new SigListView(keyObj);
       document.getElementById("signatures_tree").view = sigListViewObj;
     }
 
-    if (keyDetails.subkeyList.length > 0) {
-      let subkeyListViewObj = new SubkeyListView(keyDetails.subkeyList);
+    if (keyObj.subKeys.length > 0) {
+      let subkeyListViewObj = new SubkeyListView(keyObj);
       document.getElementById("subkeyList").view = subkeyListViewObj;
     }
 
-    gUserId = keyDetails.gUserId;
-    let expiryDate = keyDetails.expiryDate;
+    gUserId = keyObj.userId;
+    let expiryDate = keyObj.expiry;
     if (expiryDate.length === 0) {
       expiryDate = EnigmailLocale.getString("keyDoesNotExpire");
     }
     setLabel("userId", gUserId);
-    setText("keyValidity", getTrustLabel(keyDetails.calcTrust));
-    setText("ownerTrust", getTrustLabel(keyDetails.ownerTrust));
-    setText("keyCreated", keyDetails.creationDate);
+    setText("keyValidity", getTrustLabel(keyObj.calcTrust));
+    setText("ownerTrust", getTrustLabel(keyObj.ownerTrust));
+    setText("keyCreated", keyObj.created);
     setText("keyExpiry", expiryDate);
-    if (keyDetails.fingerprint) {
-      setLabel("fingerprint", EnigmailKey.formatFpr(keyDetails.fingerprint));
+    if (keyObj.fpr) {
+      setLabel("fingerprint", EnigmailKey.formatFpr(keyObj.fpr));
     }
   }
 }
 
 
 function createUidData(listNode, keyDetails) {
-  for (let i = 0; i < keyDetails.uidList.length; i++) {
-    let aLine = keyDetails.uidList[i];
-    let item = document.createElement("listitem");
-    item.setAttribute("label", EnigConvertGpgToUnicode(aLine[9]));
-    if ("dre".search(aLine[1]) >= 0) {
-      item.setAttribute("disabled", "true");
+  for (let i = 0; i < keyDetails.SubUserIds.length; i++) {
+    if (keyDetails.SubUserIds[i].keyType === "uid") {
+      let item = document.createElement("listitem");
+      item.setAttribute("label", keyDetails.SubUserIds[i].userId);
+      if ("dre".search(keyDetails.SubUserIds[i].keyTrust) >= 0) {
+        item.setAttribute("disabled", "true");
+      }
+      listNode.appendChild(item);
     }
-    listNode.appendChild(item);
   }
 }
 
@@ -264,13 +263,36 @@ function genRevocationCert() {
 
 
 function SigListView(keyObj) {
-  this.keyObj = keyObj;
+  this.keyObj = [];
+
+  let sigObj = keyObj.signatures;
+  for (let i in sigObj) {
+    let k = {
+      uid: sigObj[i].uid,
+      fpr: sigObj[i].fpr,
+      created: sigObj[i].created,
+      expanded: true,
+      sigList: []
+    };
+
+    for (let j in sigObj[i].sigList) {
+      let s = sigObj[i].sigList[j];
+      if (s.sigKnown) {
+        let sig = EnigmailKeyRing.getKeyById(s.signerKeyId);
+        k.sigList.push({
+          uid: s.uid,
+          created: s.created,
+          fpr: sig ? sig.fpr : "",
+          sigType: s.sigType,
+        });
+      }
+    }
+    this.keyObj.push(k);
+  }
+
   this.prevKeyObj = null;
   this.prevRow = -1;
 
-  for (let i in this.keyObj) {
-    this.keyObj[i].expanded = true;
-  }
   this.updateRowCount();
 }
 
@@ -328,14 +350,9 @@ SigListView.prototype = {
         case "sig_uid_col":
           return s.uid;
         case "sig_fingerprint_col":
-          if ("sigList" in s) {
-            return EnigmailKey.formatFpr(s.fpr);
-          }
-          else
-            return s.signerKeyId;
-          break;
+          return EnigmailKey.formatFpr(s.fpr);
         case "sig_created_col":
-          return s.creationDate;
+          return s.created;
       }
     }
 
@@ -414,23 +431,23 @@ SigListView.prototype = {
   }
 };
 
-function createSubkeyItem(aLine) {
+function createSubkeyItem(subkey) {
 
   // Get expiry state of this subkey
   let expire;
-  if (aLine[1] === "r") {
+  if (subkey.keyTrust === "r") {
     expire = EnigmailLocale.getString("keyValid.revoked");
   }
-  else if (aLine[6].length === 0) {
+  else if (subkey.expiryTime === 0) {
     expire = EnigmailLocale.getString("keyExpiryNever");
   }
   else {
-    expire = EnigGetDateTime(aLine[6], true, false);
+    expire = subkey.expiry;
   }
 
-  let subkeyType = EnigmailLocale.getString(aLine[0] === "sub" ? "keyTypeSubkey" : "keyTypePrimary");
+  let subkeyType = subkey.type === "pub" ? EnigmailLocale.getString("keyTypePublic") :
+    EnigmailLocale.getString("keyTypeSubkey");
 
-  let usagecodes = aLine[11];
   let usagetext = "";
   let i;
   //  e = encrypt
@@ -440,8 +457,8 @@ function createSubkeyItem(aLine) {
   //  Capital Letters are ignored, as these reflect summary properties of a key
 
   var singlecode = "";
-  for (i = 0; i < aLine[11].length; i++) {
-    singlecode = aLine[11].substr(i, 1);
+  for (i = 0; i < subkey.keyUseFor.length; i++) {
+    singlecode = subkey.keyUseFor.substr(i, 1);
     switch (singlecode) {
       case "e":
         if (usagetext.length > 0) {
@@ -471,11 +488,11 @@ function createSubkeyItem(aLine) {
   } // * for *
 
   let keyObj = {
-    keyType: subkeyType, // subkey type
-    keyId: "0x" + aLine[4].substr(-8, 8), // key id
-    algo: EnigmailLocale.getString("keyAlgorithm_" + aLine[3]), // algorithm
-    size: aLine[2], // size
-    creationDate: EnigGetDateTime(aLine[5], true, false), // created
+    keyType: subkeyType,
+    keyId: "0x" + subkey.keyId.substr(-8, 8),
+    algo: EnigmailLocale.getString("keyAlgorithm_" + subkey.algorithm),
+    size: subkey.keySize,
+    creationDate: subkey.created,
     expiry: expire,
     usage: usagetext
   };
@@ -483,12 +500,13 @@ function createSubkeyItem(aLine) {
   return keyObj;
 }
 
-function SubkeyListView(subkeys) {
+function SubkeyListView(keyObj) {
   this.subkeys = [];
-  this.rowCount = subkeys.length;
+  this.rowCount = keyObj.subKeys.length + 1;
+  this.subkeys.push(createSubkeyItem(keyObj));
 
-  for (let i = 0; i < subkeys.length; i++) {
-    this.subkeys.push(createSubkeyItem(subkeys[i]));
+  for (let i = 0; i < keyObj.subKeys.length; i++) {
+    this.subkeys.push(createSubkeyItem(keyObj.subKeys[i]));
   }
 
 }
