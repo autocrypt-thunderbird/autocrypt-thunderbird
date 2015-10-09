@@ -66,7 +66,7 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
   k = EnigmailKeyRing.getKeyByFingerprint("65537E212DC19025AD38EDB2781617319CE311C4");
   Assert.equal(k.fpr, "65537E212DC19025AD38EDB2781617319CE311C4");
 
-  let s = k.getSignatures();
+  let s = k.signatures;
 
   let fpr = "DB54FB278F6AE719DE0DE881B17D4C762F5752A9";
   Assert.equal(fpr in s, true);

@@ -116,7 +116,11 @@ let gKeyListObj = null;
     - subKeys     - [Array]:
                       * keyId    - subkey ID (16 digits (8-byte))
                       * type     -  "sub"
-    - getSignatures(): function  - returns list of signatures
+    - signatures  - [Array]: list of signatures
+                      * uid
+                      * uidLabel
+                      * creationDate
+                      * sigList: Array of object: { uid, creationDate, signerKeyId, sigType }
 
   * keySortList [Array]:  used for quickly sorting the keys
     - user ID (in lower case)
@@ -1364,7 +1368,7 @@ function KeyObject(pubGpgLine) {
 
 KeyObject.prototype = {
   /**
-   * get a list of all signatures found on the key
+   * gettter that returns a list of all signatures found on the key
    *
    * @return Array of Object, or null in case of error:
    *     - uid
@@ -1372,7 +1376,7 @@ KeyObject.prototype = {
    *     - creationDate
    *     - sigList: Array of object: { uid, creationDate, signerKeyId, sigType }
    */
-  getSignatures: function() {
+  get signatures() {
     if (this._sigList === null) {
       let exitCodeObj = {},
         errorMsgObj = {};
