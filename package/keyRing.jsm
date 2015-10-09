@@ -75,6 +75,8 @@ const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID =
 // field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
 const ENTRY_ID = 0;
 const KEY_TRUST_ID = 1;
+const KEY_SIZE_ID = 2;
+const KEY_ALGO_ID = 3;
 const KEY_ID = 4;
 const CREATED_ID = 5;
 const EXPIRY_ID = 6;
@@ -83,6 +85,8 @@ const OWNERTRUST_ID = 8;
 const USERID_ID = 9;
 const SIG_TYPE_ID = 10;
 const KEY_USE_FOR_ID = 11;
+
+const UNKNOWN_SIGNATURE = "[User ID not found]";
 
 const KEYTYPE_DSA = 1;
 const KEYTYPE_RSA = 2;
@@ -108,19 +112,31 @@ let gKeyListObj = null;
     - ownerTrust      - owner trust as provided by GnuPG
     - photoAvailable  - [Boolean] true if photo is available
     - secretAvailable - [Boolean] true if secret key is available
+    - algorithm       - public key algorithm type
+    - keySize         - size of public key
+    - type            - "pub"
     - SubUserIds  - [Array]:
-                      * userId   - additional User ID
-                      * keyTrust - trust level of user ID
-                      * type     - one of "uid" (regular user ID), "uat" (photo)
-                      * uatNum   - photo number (starting with 0 for each key)
+                      * userId     - additional User ID
+                      * keyTrust   - trust level of user ID
+                      * type       - one of "uid" (regular user ID), "uat" (photo)
+                      * uatNum     - photo number (starting with 0 for each key)
     - subKeys     - [Array]:
-                      * keyId    - subkey ID (16 digits (8-byte))
-                      * type     -  "sub"
+                      * keyId      - subkey ID (16 digits (8-byte))
+                      * expiry     - Expiry date as printable string
+                      * expiryTime - Expiry time as seconds after 01/01/1970
+                      * created    - Key creation date as printable string
+                      * keyTrust   - key trust code as provided by GnuPG
+                      * keyUseFor  - key usage type as provided by GnuPG
+                      * algorithm  - subkey algorithm type
+                      * keySize    - subkey size
+                      * type       -  "sub"
+
     - signatures  - [Array]: list of signatures
                       * uid
                       * uidLabel
-                      * creationDate
-                      * sigList: Array of object: { uid, creationDate, signerKeyId, sigType }
+                      * created
+                      * fpr
+                      * sigList: Array of object: { uid, created, signerKeyId, sigType, sigKnown }
 
   * keySortList [Array]:  used for quickly sorting the keys
     - user ID (in lower case)
@@ -140,7 +156,7 @@ var EnigmailKeyRing = {
    * @return keyListObj    - |object| { keyList, keySortList } (see above)
    */
   getAllKeys: function(win, sortColumn, sortDirection) {
-    if (gKeyListObj.keyList.length === 0) {
+    if (gKeyListObj.keySortList.length === 0) {
       this.loadKeyList(win, false, gKeyListObj, sortColumn, sortDirection);
     }
     else {
@@ -184,6 +200,7 @@ var EnigmailKeyRing = {
    * @return Object - found KeyObject or null if key not found
    */
   getKeyById: function(keyId) {
+    EnigmailLog.DEBUG("keyRing.jsm: getKeyById: " + keyId + "\n");
     let s;
 
     if (keyId.search(/^0x/) === 0) {
@@ -543,11 +560,11 @@ var EnigmailKeyRing = {
         case "uat":
           currUid = lineTokens[UID_ID];
           listObj[currUid] = {
-            uid: lineTokens[ENTRY_ID] == "uat" ? "Photo" : lineTokens[USERID_ID],
+            uid: lineTokens[ENTRY_ID] == "uat" ? EnigmailLocale.getString("keyring.photo") : EnigmailData.convertGpgToUnicode(lineTokens[USERID_ID]),
             uidLabel: lineTokens[USERID_ID],
             keyId: keyId,
             fpr: fpr,
-            creationDate: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
+            created: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
             sigList: []
           };
           break;
@@ -557,12 +574,13 @@ var EnigmailKeyRing = {
 
             let sig = {
               uid: lineTokens[USERID_ID],
-              creationDate: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
+              created: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
               signerKeyId: lineTokens[KEY_ID],
-              sigType: lineTokens[SIG_TYPE_ID]
+              sigType: lineTokens[SIG_TYPE_ID],
+              sigKnown: lineTokens[USERID_ID] != UNKNOWN_SIGNATURE
             };
 
-            if (!ignoreUnknownUid || sig.uid != "[User ID not found]") {
+            if (!ignoreUnknownUid || sig.uid != UNKNOWN_SIGNATURE) {
               listObj[currUid].sigList.push(sig);
             }
           }
@@ -952,6 +970,13 @@ var EnigmailKeyRing = {
           case "sub":
             keyObj.subKeys.push({
               keyId: listRow[KEY_ID],
+              expiry: EnigmailTime.getDateTime(listRow[EXPIRY_ID], true, false),
+              expiryTime: Number(listRow[EXPIRY_ID]),
+              keyTrust: listRow[KEY_TRUST_ID],
+              keyUseFor: listRow[KEY_USE_FOR_ID],
+              keySize: listRow[KEY_SIZE_ID],
+              algorithm: listRow[KEY_ALGO_ID],
+              created: EnigmailTime.getDateTime(listRow[CREATED_ID], true, false),
               type: "sub"
             });
             break;
@@ -1358,9 +1383,12 @@ function KeyObject(pubGpgLine) {
   this.keyTrust = pubGpgLine[KEY_TRUST_ID];
   this.keyUseFor = pubGpgLine[KEY_USE_FOR_ID];
   this.ownerTrust = pubGpgLine[OWNERTRUST_ID];
+  this.algorithm = pubGpgLine[KEY_ALGO_ID];
+  this.keySize = pubGpgLine[KEY_SIZE_ID];
   this.SubUserIds = [];
   this.subKeys = [];
   this.fpr = "";
+  this.type = "pub";
   this.photoAvailable = false;
   this.secretAvailable = false;
   this._sigList = null;
