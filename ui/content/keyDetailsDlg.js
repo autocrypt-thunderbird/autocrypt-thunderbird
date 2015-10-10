@@ -131,7 +131,7 @@ function reloadData() {
       expiryDate = EnigmailLocale.getString("keyDoesNotExpire");
     }
     setLabel("userId", gUserId);
-    setText("keyValidity", getTrustLabel(keyObj.calcTrust));
+    setText("keyValidity", getTrustLabel(keyObj.keyTrust));
     setText("ownerTrust", getTrustLabel(keyObj.ownerTrust));
     setText("keyCreated", keyObj.created);
     setText("keyExpiry", expiryDate);
@@ -144,7 +144,7 @@ function reloadData() {
 
 function createUidData(listNode, keyDetails) {
   for (let i = 0; i < keyDetails.SubUserIds.length; i++) {
-    if (keyDetails.SubUserIds[i].keyType === "uid") {
+    if (keyDetails.SubUserIds[i].type === "uid") {
       let item = document.createElement("listitem");
       item.setAttribute("label", keyDetails.SubUserIds[i].userId);
       if ("dre".search(keyDetails.SubUserIds[i].keyTrust) >= 0) {
@@ -268,7 +268,7 @@ function SigListView(keyObj) {
   let sigObj = keyObj.signatures;
   for (let i in sigObj) {
     let k = {
-      uid: sigObj[i].uid,
+      uid: sigObj[i].userId,
       fpr: sigObj[i].fpr,
       created: sigObj[i].created,
       expanded: true,
@@ -280,7 +280,7 @@ function SigListView(keyObj) {
       if (s.sigKnown) {
         let sig = EnigmailKeyRing.getKeyById(s.signerKeyId);
         k.sigList.push({
-          uid: s.uid,
+          uid: s.userId,
           created: s.created,
           fpr: sig ? sig.fpr : "",
           sigType: s.sigType,

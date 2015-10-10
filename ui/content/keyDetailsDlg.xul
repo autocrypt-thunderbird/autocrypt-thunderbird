@@ -189,6 +189,10 @@
                   style="width:71px"
                   persist="width"/>
               <splitter class="tree-splitter"/>
+              <treecol id="keyUsageCol"
+                       label="&enigmail.keyDetails.usage.label;"
+                       flex="1"/>
+              <splitter class="tree-splitter"/>
               <treecol id="keyIdCol" style="width:77px"
                        label="&enigmail.keyDetails.ID.label;"
                        persist="width"/>
@@ -208,10 +212,6 @@
               <treecol id="expiryCol" style="width:70px"
                        label="&enigmail.keyDetails.expiry.label;"
                        persist="width"/>
-              <splitter class="tree-splitter"/>
-              <treecol id="keyUsageCol"
-                       label="&enigmail.keyDetails.usage.label;"
-                       flex="1"/>
             </treecols>
 
             <treechildren id="keyListChildren"/>
