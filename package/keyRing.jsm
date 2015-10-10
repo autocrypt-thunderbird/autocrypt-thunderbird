@@ -132,11 +132,11 @@ let gKeyListObj = null;
                       * type       -  "sub"
 
     - signatures  - [Array]: list of signatures
-                      * uid
+                      * userId
                       * uidLabel
                       * created
                       * fpr
-                      * sigList: Array of object: { uid, created, signerKeyId, sigType, sigKnown }
+                      * sigList: Array of object: { userId, created, signerKeyId, sigType, sigKnown }
 
   * keySortList [Array]:  used for quickly sorting the keys
     - user ID (in lower case)
@@ -560,8 +560,8 @@ var EnigmailKeyRing = {
         case "uat":
           currUid = lineTokens[UID_ID];
           listObj[currUid] = {
-            uid: lineTokens[ENTRY_ID] == "uat" ? EnigmailLocale.getString("keyring.photo") : EnigmailData.convertGpgToUnicode(lineTokens[USERID_ID]),
-            uidLabel: lineTokens[USERID_ID],
+            userId: lineTokens[ENTRY_ID] == "uat" ? EnigmailLocale.getString("keyring.photo") : EnigmailData.convertGpgToUnicode(lineTokens[USERID_ID]),
+            rawUserId: lineTokens[USERID_ID],
             keyId: keyId,
             fpr: fpr,
             created: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
@@ -573,14 +573,14 @@ var EnigmailKeyRing = {
             // ignrore revoked signature
 
             let sig = {
-              uid: lineTokens[USERID_ID],
+              userId: lineTokens[USERID_ID],
               created: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
               signerKeyId: lineTokens[KEY_ID],
               sigType: lineTokens[SIG_TYPE_ID],
               sigKnown: lineTokens[USERID_ID] != UNKNOWN_SIGNATURE
             };
 
-            if (!ignoreUnknownUid || sig.uid != UNKNOWN_SIGNATURE) {
+            if (!ignoreUnknownUid || sig.userId != UNKNOWN_SIGNATURE) {
               listObj[currUid].sigList.push(sig);
             }
           }
