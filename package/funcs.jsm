@@ -93,7 +93,7 @@ const EnigmailFuncs = {
     mailAddrs = mailAddrs.replace(EnigmailFuncsRegexExtractPureEmail, "$1$2");
 
     // remove empty email addresses (including removing all ';')
-    mailAddrs = mailAddrs.replace(/[,;]+/g, ",").replace(/^,/,"").replace(/,$/,"");
+    mailAddrs = mailAddrs.replace(/[,;]+/g, ",").replace(/^,/, "").replace(/,$/, "");
 
     return mailAddrs;
   },
@@ -313,6 +313,38 @@ const EnigmailFuncs = {
     else {
       return EnigmailLocale.getString("msgCompose.encryptedSubjectStub");
     }
+  },
+
+  cloneObj: function(orig) {
+    let newObj;
+
+    if (typeof orig !== "object") {
+      return orig;
+    }
+
+    if (Array.isArray(orig) && orig.length > 0) {
+      newObj = [];
+      for (let i in orig) {
+        if (typeof orig[i] === "object") {
+          newObj.push(this.cloneObj(orig[i]));
+        }
+        else {
+          newObj.push(orig[i]);
+        }
+      }
+    }
+    else {
+      newObj = {};
+      for (let i in orig) {
+        if (typeof orig[i] === "object") {
+          newObj[i] = this.cloneObj(orig[i]);
+        }
+        else
+          newObj[i] = orig[i];
+      }
+    }
+
+    return newObj;
   }
 
 };

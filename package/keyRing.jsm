@@ -114,7 +114,7 @@ let gKeyListObj = null;
     - secretAvailable - [Boolean] true if secret key is available
     - algorithm       - public key algorithm type
     - keySize         - size of public key
-    - type            - "pub"
+    - type            - "pub" or "grp"
     - SubUserIds  - [Array]:
                       * userId     - additional User ID
                       * keyTrust   - trust level of user ID
@@ -141,6 +141,10 @@ let gKeyListObj = null;
   * keySortList [Array]:  used for quickly sorting the keys
     - user ID (in lower case)
     - key ID
+  * trustModel: [String]. One of:
+            - p: pgp/classical
+            - t: always trust
+            - a: auto (:0) (default, currently pgp/classical)
 */
 
 var EnigmailKeyRing = {
@@ -411,6 +415,34 @@ var EnigmailKeyRing = {
     return null;
   },
 
+  /**
+   * Get groups defined in gpg.conf in the same structure as KeyObject
+   *
+   * @return Array of KeyObject, with type = "grp"
+   */
+  getGroups: function() {
+    let groups = EnigmailGpg.getGpgGroups();
+
+    let r = [];
+    for (var i = 0; i < groups.length; i++) {
+
+      let keyObj = new KeyObject(["grp"]);
+      keyObj.keyTrust = "g";
+      keyObj.userId = EnigmailData.convertGpgToUnicode(groups[i].alias).replace(/\\e3A/g, ":");
+      keyObj.keyId = keyObj.userId;
+      var grpMembers = EnigmailData.convertGpgToUnicode(groups[i].keylist).replace(/\\e3A/g, ":").split(/[,;]/);
+      for (var grpIdx = 0; grpIdx < grpMembers.length; grpIdx++) {
+        keyObj.SubUserIds.push({
+          userId: grpMembers[grpIdx],
+          keyTrust: "q"
+        });
+      }
+      r.push(keyObj);
+    }
+
+    return r;
+  },
+
   invalidateUserIdList: function() {
     // clean the userIdList to force reloading the list at next usage
     this.clearCache();
@@ -426,6 +458,7 @@ var EnigmailKeyRing = {
     userIdList = null;
     secretKeyList = null;
   },
+
 
   /**
    * returns the output of --with-colons --list[-secret]-keys
@@ -554,7 +587,7 @@ var EnigmailKeyRing = {
           keyId = lineTokens[KEY_ID];
           break;
         case "fpr":
-          fpr = lineTokens[USERID_ID];
+          if (fpr === "") fpr = lineTokens[USERID_ID];
           break;
         case "uid":
         case "uat":
@@ -573,7 +606,7 @@ var EnigmailKeyRing = {
             // ignrore revoked signature
 
             let sig = {
-              userId: lineTokens[USERID_ID],
+              userId: EnigmailData.convertGpgToUnicode(lineTokens[USERID_ID]),
               created: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
               signerKeyId: lineTokens[KEY_ID],
               sigType: lineTokens[SIG_TYPE_ID],
@@ -923,6 +956,7 @@ var EnigmailKeyRing = {
   createKeyObjects: function(keyListString, keyListObj) {
     keyListObj.keyList = [];
     keyListObj.keySortList = [];
+    keyListObj.trustModel = "?";
 
     let keyObj = {};
     let uatNum = 0; // counter for photos (counts per key)
@@ -991,6 +1025,22 @@ var EnigmailKeyRing = {
               });
               keyObj.photoAvailable = true;
               ++uatNum;
+            }
+            break;
+          case "tru":
+            keyListObj.trustModel = "?";
+            if (listRow[KEY_TRUST_ID].indexOf("t") >= 0) {
+              if (listRow[KEY_SIZE_ID] === "0") {
+                keyListObj.trustModel = "p";
+              }
+              else if (listRow[KEY_SIZE_ID] === "1") {
+                keyListObj.trustModel = "t";
+              }
+            }
+            else {
+              if (listRow[KEY_SIZE_ID] === "0") {
+                keyListObj.trustModel = "a";
+              }
             }
         }
       }
@@ -1376,19 +1426,32 @@ function getKeyListEntryOfKey(keyId) {
 }
 
 function KeyObject(pubGpgLine) {
-  this.keyId = pubGpgLine[KEY_ID];
-  this.expiry = EnigmailTime.getDateTime(pubGpgLine[EXPIRY_ID], true, false);
-  this.expiryTime = Number(pubGpgLine[EXPIRY_ID]);
-  this.created = EnigmailTime.getDateTime(pubGpgLine[CREATED_ID], true, false);
-  this.keyTrust = pubGpgLine[KEY_TRUST_ID];
-  this.keyUseFor = pubGpgLine[KEY_USE_FOR_ID];
-  this.ownerTrust = pubGpgLine[OWNERTRUST_ID];
-  this.algorithm = pubGpgLine[KEY_ALGO_ID];
-  this.keySize = pubGpgLine[KEY_SIZE_ID];
+  if (pubGpgLine[ENTRY_ID] === "pub") {
+    this.keyId = pubGpgLine[KEY_ID];
+    this.expiry = EnigmailTime.getDateTime(pubGpgLine[EXPIRY_ID], true, false);
+    this.expiryTime = Number(pubGpgLine[EXPIRY_ID]);
+    this.created = EnigmailTime.getDateTime(pubGpgLine[CREATED_ID], true, false);
+    this.keyTrust = pubGpgLine[KEY_TRUST_ID];
+    this.keyUseFor = pubGpgLine[KEY_USE_FOR_ID];
+    this.ownerTrust = pubGpgLine[OWNERTRUST_ID];
+    this.algorithm = pubGpgLine[KEY_ALGO_ID];
+    this.keySize = pubGpgLine[KEY_SIZE_ID];
+  }
+  else {
+    this.keyId = "";
+    this.expiry = "";
+    this.expiryTime = 0;
+    this.created = "";
+    this.keyTrust = "";
+    this.keyUseFor = "";
+    this.ownerTrust = "";
+    this.algorithm = "";
+    this.keySize = "";
+  }
+  this.type = pubGpgLine[ENTRY_ID];
   this.SubUserIds = [];
   this.subKeys = [];
   this.fpr = "";
-  this.type = "pub";
   this.photoAvailable = false;
   this.secretAvailable = false;
   this._sigList = null;
