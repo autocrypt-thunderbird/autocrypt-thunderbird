@@ -10,6 +10,8 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, getKeyListEntryOfKey: false, secretKeyList: false, userIdList: false, gKeyListObj: false */
 
+
+
 testing("keyRing.jsm"); /*global EnigmailKeyRing: false */
 
 test(withTestGpgHome(withEnigmail(function shouldImportFromFileAndGetKeyDetails() {
@@ -280,3 +282,40 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails(
   Assert.notEqual(userIdList, null);
   Assert.notEqual(secretKeyList, null);
 })));
+
+test(withTestGpgHome(withEnigmail(function shouldCreateKeyListObject() {
+  // from: "P:\Program Files (x86)\GNU\GnuPG\pub\gpg2.exe" --charset utf-8 --display-charset utf-8 --batch --no-tty --status-fd 2 --with-fingerprint --fixed-list-mode --with-colons --list-keys
+  var keyInfo = [
+    "tru::1:1443339321:1451577200:3:1:5",
+    "pub:u:4096:1:DEF9FC808A3FF001:1388513885:1546188604::u:::scaESCA:",
+    "fpr:::::::::EA25EF48BF2001E41FAB0C1CDEF9FC808A3FF001:",
+    "uid:u::::1389038412::44F73158EF0F47E4595B1FD8EC740519DE24B994::A User ID with CAPITAL letters <user1@enigmail-test.de>:",
+    "uid:u::::1389038405::3FC8999BDFF08EF4210026D3F1C064C072517376::A second User ID with CAPITAL letters <user1@enigmail-test.com>:",
+    "sub:u:4096:1:E2DEDFFB80C14584:1388513885:1546188604:::::e:",
+    ];
+
+  // from: "P:\Program Files (x86)\GNU\GnuPG\pub\gpg2.exe" --charset utf-8 --display-charset utf-8 --batch --no-tty --status-fd 2 --with-fingerprint --fixed-list-mode --with-colons --list-secret-keys
+  var secKeyInfo = [
+    "sec::4096:1:DEF9FC808A3FF001:1388513885:1546188604:::::::::",
+    "fpr:::::::::EA25EF48BF2001E41FAB0C1CDEF9FC808A3FF001:",
+    "uid:::::::44F73158EF0F47E4595B1FD8EC740519DE24B994::A User ID with CAPITAL letters <user1@enigmail-test.de>:",
+    "uid:::::::3FC8999BDFF08EF4210026D3F1C064C072517376::A second User ID with CAPITAL letters <user1@enigmail-test.com>:",
+    "ssb::4096:1:E2DEDFFB80C14584:1388513885::::::::::",
+    ];
+
+  var keyListObj = {};
+  EnigmailKeyRing.createAndSortKeyList(keyInfo, secKeyInfo, 
+                                       keyListObj,   // OUT
+                                       "validity",   // sorted acc. to key validity
+                                       -1);          // descending
+
+  Assert.notEqual(keyListObj, null);
+  Assert.notEqual(keyListObj.keySortList, null);
+  Assert.notEqual(keyListObj.keySortList.length, null);
+  Assert.equal(keyListObj.keySortList.length, 1);
+  Assert.equal(keyListObj.keySortList[0].userId, "a user id with capital letters <user1@enigmail-test.de>");
+  Assert.equal(keyListObj.keySortList[0].keyId, "DEF9FC808A3FF001");
+  Assert.notEqual(keyListObj.keyList, null);
+  Assert.equal(keyListObj.keyList.DEF9FC808A3FF001.userId, "A User ID with CAPITAL letters <user1@enigmail-test.de>");
+})));
+

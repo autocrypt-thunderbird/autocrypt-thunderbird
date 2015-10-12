@@ -1062,7 +1062,7 @@ var EnigmailKeyRing = {
    * no return value
    */
   loadKeyList: function(win, refresh, keyListObj, sortColumn, sortDirection) {
-    EnigmailLog.DEBUG("keyRing.jsm: loadKeyList\n");
+    EnigmailLog.DEBUG("keyRing.jsm: loadKeyList()\n");
 
     if (!sortColumn) sortColumn = "userid";
     if (!sortDirection) sortDirection = 1;
@@ -1081,6 +1081,12 @@ var EnigmailKeyRing = {
         EnigmailKeyRing.loadKeyList(win, true, keyListObj);
       }
     }
+
+    EnigmailKeyRing.createAndSortKeyList(aGpgUserList, aGpgSecretsList, keyListObj, sortColumn, sortDirection);
+  },
+    
+  createAndSortKeyList: function(aGpgUserList, aGpgSecretsList, keyListObj, sortColumn, sortDirection) {
+    EnigmailLog.DEBUG("keyRing.jsm: createKeyList()\n");
 
     EnigmailKeyRing.createKeyObjects(aGpgUserList, keyListObj);
 
