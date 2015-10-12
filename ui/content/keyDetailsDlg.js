@@ -54,7 +54,7 @@ function onLoad() {
   }
   else {
     document.getElementById("ownKeyCommands").setAttribute("hidden", "true");
-    setText("keyType", EnigmailLocale.getString("keyTypePublic"));
+    setLabel("keyType", EnigmailLocale.getString("keyTypePublic"));
   }
 }
 
