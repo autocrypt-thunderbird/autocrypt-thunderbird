@@ -287,12 +287,13 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails(
 test(withTestGpgHome(withEnigmail(function shouldCreateKeyListObject() {
   // from: "P:\Program Files (x86)\GNU\GnuPG\pub\gpg2.exe" --charset utf-8 --display-charset utf-8 --batch --no-tty --status-fd 2 --with-fingerprint --fixed-list-mode --with-colons --list-keys
   let keyInfo = [
+    // user with trust level "o" (unknown)
     "tru::1:1443339321:1451577200:3:1:5",
-    "pub:u:4096:1:DEF9FC808A3FF001:1388513885:1546188604::u:::scaESCA:",
+    "pub:o:4096:1:DEF9FC808A3FF001:1388513885:1546188604::u:::scaESCA:",
     "fpr:::::::::EA25EF48BF2001E41FAB0C1CDEF9FC808A3FF001:",
-    "uid:u::::1389038412::44F73158EF0F47E4595B1FD8EC740519DE24B994::A User ID with CAPITAL letters <user1@enigmail-test.de>:",
-    "uid:u::::1389038405::3FC8999BDFF08EF4210026D3F1C064C072517376::A second User ID with CAPITAL letters <user1@enigmail-test.com>:",
-    "sub:u:4096:1:E2DEDFFB80C14584:1388513885:1546188604:::::e:",
+    "uid:o::::1389038412::44F73158EF0F47E4595B1FD8EC740519DE24B994::A User ID with CAPITAL letters <user1@enigmail-test.de>:",
+    "uid:o::::1389038405::3FC8999BDFF08EF4210026D3F1C064C072517376::A second User ID with CAPITAL letters <user1@enigmail-test.com>:",
+    "sub:o:4096:1:E2DEDFFB80C14584:1388513885:1546188604:::::e:",
     ];
 
   // from: "P:\Program Files (x86)\GNU\GnuPG\pub\gpg2.exe" --charset utf-8 --display-charset utf-8 --batch --no-tty --status-fd 2 --with-fingerprint --fixed-list-mode --with-colons --list-secret-keys
@@ -320,10 +321,16 @@ test(withTestGpgHome(withEnigmail(function shouldCreateKeyListObject() {
   Assert.equal(keyListObj.keyList.DEF9FC808A3FF001.userId, "A User ID with CAPITAL letters <user1@enigmail-test.de>");
 
   const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
-  let minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("f");
+  let minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   let details = {};
   let key = EnigmailKeyRing.getValidKeyForRecipient("user1@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
   Assert.notEqual(key, null);
   Assert.equal(key, "DEF9FC808A3FF001");
+
+  minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("f");
+  details = {};
+  key = EnigmailKeyRing.getValidKeyForRecipient("user1@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
+  Assert.equal(key, null);
+  Assert.notEqual(details.msg, null);
 })));
 
