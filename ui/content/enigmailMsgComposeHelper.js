@@ -73,6 +73,10 @@ Enigmail.hlp = {
     return resultingArray;
   },
 
+
+  /* doValidKeysForAllRecipients()
+   *
+   */
   doValidKeysForAllRecipients: function(emailsOrKeys, details) {
     EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): emailsOrKeys='" + emailsOrKeys + "'\n");
 
