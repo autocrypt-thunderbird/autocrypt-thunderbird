@@ -77,8 +77,15 @@ function pushTrimmedStr(arr, str, splitStr) {
 
 const EnigmailGpg = {
   agentVersion: "",
-  agentPath: null,
+  _agentPath: null,
 
+  get agentPath() {
+    return this._agentPath;
+  },
+
+  setAgentPath: function(path) {
+    this._agentPath = path;
+  },
   /***
    determine if a specific feature is available in the GnuPG version used
 

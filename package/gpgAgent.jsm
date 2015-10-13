@@ -441,7 +441,7 @@ const EnigmailGpgAgent = {
 
     EnigmailGpgAgent.agentType = agentType;
     EnigmailGpgAgent.agentPath = agentPath;
-    EnigmailGpg.agentPath = agentPath;
+    EnigmailGpg.setAgentPath(agentPath);
     EnigmailExecution.agentType = agentType;
 
     const command = agentPath;
