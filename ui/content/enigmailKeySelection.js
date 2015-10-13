@@ -37,6 +37,7 @@
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailKeySelection");
+Components.utils.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
 
 const INPUT = 0;
 const RESULT = 1;
@@ -61,6 +62,8 @@ const KEY_IS_GROUP = "g";
 // HKP related stuff
 const ENIG_DEFAULT_HKP_PORT = "11371";
 
+const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
+
 var gUserList;
 var gResult;
 var gAlwaysTrust = false;
@@ -74,18 +77,22 @@ const EMPTY_UID = " -";
 
 
 
-function enigmailUserSelLoad() {
-  EnigmailLog.DEBUG("enigmailKeySelection.js: Load\n");
+function onLoad() {
+  EnigmailLog.DEBUG("enigmailKeySelection.js: onLoad\n");
   window.enigIpcRequest = null;
   if (window.arguments[INPUT].options.indexOf("private") >= 0) {
     document.getElementById("enigmailKeySelectionDlg").setAttribute("title", EnigGetString("userSel.secretKeySel.title"));
   }
   document.getElementById("enigmailUserIdSelection").addEventListener('click', onClickCallback, true);
-  enigmailBuildList(false);
+  let enigmailSvc = EnigmailCore.getService(window);
+  if (!enigmailSvc) {
+    return false;
+  }
+  buildList(false);
 }
 
 
-function enigmailRefreshKeys() {
+function refreshKeys() {
   // delete existing entries:
   var userTreeList = document.getElementById("enigmailUserIdSelection");
   var treeChildren = userTreeList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
@@ -93,185 +100,145 @@ function enigmailRefreshKeys() {
     treeChildren.removeChild(treeChildren.firstChild);
   }
   // rebuild new entries:
-  enigmailBuildList(true);
+  buildList(true);
 }
 
 
-function enigGetUserList(secretOnly, refresh) {
-  EnigmailLog.DEBUG("enigmailMessengerOverlay.js: enigGetUserList\n");
-  var userList;
+function getKeyList(secretOnly, refresh) {
+  EnigmailLog.DEBUG("enigmailMessengerOverlay.js: getKeyList\n");
+  let userList, keyList;
   try {
     var exitCodeObj = {};
     var statusFlagsObj = {};
     var errorMsgObj = {};
 
-    userList = EnigmailKeyRing.getUserIdList(secretOnly,
-      refresh,
-      exitCodeObj,
-      statusFlagsObj,
-      errorMsgObj);
-    if (exitCodeObj.value !== 0) {
-      EnigAlert(errorMsgObj.value);
-      return null;
+    if (refresh) {
+      EnigmailKeyRing.clearCache();
     }
 
-    if (!secretOnly) {
-      let groups = EnigmailGpg.getGpgGroups();
-
-      for (var i = 0; i < groups.length; i++) {
-        userList += "grp:" + groups[i].alias + ":" + groups[i].keylist + "\n";
-      }
+    if (secretOnly) {
+      userList = EnigmailKeyRing.getAllSecretKeys(window);
+      if (!userList) return null;
+      keyList = EnigmailFuncs.cloneObj(userList);
     }
     else {
-      userList = getPubkeysFromSecretKeys(userList);
+      userList = EnigmailKeyRing.getAllKeys(window);
+      if (!userList) return null;
+
+      if (userList.trustModel === "t") {
+        gAlwaysTrust = true;
+      }
+
+      keyList = EnigmailFuncs.cloneObj(userList.keyList);
+      let grpList = EnigmailKeyRing.getGroups();
+
+      for (let i in grpList) {
+        keyList.push(grpList[i]);
+      }
     }
   }
   catch (ex) {
-    EnigmailLog.ERROR("ERROR in enigmailUserSelection: enigGetUserList\n");
+    EnigmailLog.ERROR("ERROR in enigmailUserSelection: getKeyList\n");
   }
 
-  return userList.split(/\n/);
+  return keyList;
 }
 
+/**
+ * Helper function to sort keys in the order specific for this dialog
+ */
 
-// get (and display) the public keys for the found secret keys
-function getPubkeysFromSecretKeys(keyString) {
-  var secretList = keyString.split(/\n/);
-  var aSecretKeys = [];
-  for (var i = 0; i < secretList.length; i++) {
-    var listRow = secretList[i].split(/:/);
-    if (listRow[0] == "sec") {
-      aSecretKeys.push("0x" + listRow[KEY_ID]);
-    }
-  }
-
-  return EnigmailKeyRing.getKeyDetails(aSecretKeys.join(" "), false);
-}
-
-
-function enigmailBuildList(refresh) {
-  EnigmailLog.DEBUG("=====> enigmailBuildList()\n");
-  EnigmailLog.DEBUG("enigmailKeySelection.js: enigmailBuildList\n");
-
-  const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
-
+function sortKeys(a, b) {
   // sorting criterion for dialog entries
   // - note: for active state we have values:
   //         0: not active
   //         1: active
   //         2: not selectable (red because invalid)
-  var sortUsersCallback = function(a, b) {
-    var r = 0;
-    // 1st: sort active keys in front of not active keys
-    if ((a.activeState != b.activeState) && (a.activeState == 1 || b.activeState == 1)) {
-      r = (a.activeState == 1 ? -1 : 1);
-    }
-    // 2nd: sort keys matching invalid addresses in front non-matching addresses
-    else if (a.uidMatchInvalid != b.uidMatchInvalid) {
-      r = (a.uidMatchInvalid == 1 ? -1 : 1);
-    }
-    // 3rd: sort non-activateable keys to the end
-    else if ((a.activeState != b.activeState) && (a.activeState == 2 || b.activeState == 2)) {
-      r = (a.activeState === 0 ? -1 : 1);
-    }
-    // 4th: sort according to user IDs
-    else if (a.userId.toLowerCase() < b.userId.toLowerCase()) {
-      r = -1;
-    }
-    else if (a.userId.toLowerCase() > b.userId.toLowerCase()) {
-      r = 1;
-    }
-    // 5th: sort according to trust level (higher index value in front)
-    else if (TRUSTLEVELS_SORTED.indexOf(a.keyTrust) > TRUSTLEVELS_SORTED.indexOf(b.keyTrust)) {
-      r = -1;
-    }
-    else {
-      r = 1;
-    }
-    return r;
-  };
-
-  window.arguments[RESULT].cancelled = true;
-
-  gAlwaysTrust = (EnigGetPref("acceptedKeys") == 1);
-
-  var secretOnly = (window.arguments[INPUT].options.indexOf("private") >= 0);
-  var hideExpired = (window.arguments[INPUT].options.indexOf("hidexpired") >= 0);
-  gAllowExpired = (window.arguments[INPUT].options.indexOf("allowexpired") >= 0);
-
-  if (window.arguments[INPUT].options.indexOf("trustallkeys") >= 0) {
-    gAlwaysTrust = true;
+  var r = 0;
+  // 1st: sort active keys in front of not active keys
+  if ((a.activeState != b.activeState) && (a.activeState == 1 || b.activeState == 1)) {
+    r = (a.activeState == 1 ? -1 : 1);
   }
-
-  var aGpgUserList = enigGetUserList(secretOnly, refresh);
-
-  if (!aGpgUserList) return;
-  var uidNotValid;
-  if (gAlwaysTrust) {
-    uidNotValid = "";
+  // 2nd: sort keys matching invalid addresses in front non-matching addresses
+  else if (a.uidMatchInvalid != b.uidMatchInvalid) {
+    r = (a.uidMatchInvalid == 1 ? -1 : 1);
+  }
+  // 3rd: sort non-activateable keys to the end
+  else if ((a.activeState != b.activeState) && (a.activeState == 2 || b.activeState == 2)) {
+    r = (a.activeState === 0 ? -1 : 1);
+  }
+  // 4th: sort according to user IDs
+  else if (a.userId.toLowerCase() < b.userId.toLowerCase()) {
+    r = -1;
+  }
+  else if (a.userId.toLowerCase() > b.userId.toLowerCase()) {
+    r = 1;
+  }
+  // 5th: sort according to trust level (higher index value in front)
+  else if (TRUSTLEVELS_SORTED.indexOf(a.keyTrust) > TRUSTLEVELS_SORTED.indexOf(b.keyTrust)) {
+    r = -1;
   }
   else {
-    uidNotValid = "o-qn";
+    r = 1;
   }
+  return r;
+}
 
-  try {
-    if (window.arguments[INPUT].dialogHeader) {
-      var dialogHeader = document.getElementById("dialogHeader");
-      if (dialogHeader) {
-        dialogHeader.setAttribute("label", window.arguments[INPUT].dialogHeader);
-        dialogHeader.removeAttribute("collapsed");
-      }
-    }
-    var dialogMsgList = document.getElementById("dialogMsgList");
-    if (dialogMsgList) {
-      // clear the list (otherwise it grows with each loaded missing key)
-      while (dialogMsgList.getRowCount() > 0) {
-        dialogMsgList.removeIndexAt(0);
-      }
-      // fill the list according to the error messages
-      if (window.arguments[INPUT].errArray && window.arguments[INPUT].errArray.length > 0) {
-        var array = window.arguments[INPUT].errArray;
-        for (var detIdx = 0; detIdx < array.length; ++detIdx) {
-          var msg = null;
-          switch (array[detIdx].msg) {
-            case "ProblemNoKey":
-              msg = EnigGetString("userSel.problemNoKey");
-              break;
-            case "ProblemMultipleKeys":
-              msg = EnigGetString("userSel.problemMultipleKeys");
-              break;
-            default:
-              EnigmailLog.DEBUG("missing label for '" + array[detIdx].msg + "'\n");
-              msg = "???";
-              break;
-          }
-          var row = document.createElement('listitem');
-          var cell = document.createElement('listcell');
-          cell.setAttribute('label', array[detIdx].addr + ":");
-          row.appendChild(cell);
-          cell = document.createElement('listcell');
-          cell.setAttribute('label', msg);
-          row.appendChild(cell);
-          dialogMsgList.appendChild(row);
-        }
-        dialogMsgList.setAttribute("rows", (array.length < 3 ? array.length : 3));
-        dialogMsgList.removeAttribute("collapsed");
-      }
-      else {
-        dialogMsgList.setAttribute("collapsed", "true");
-      }
+/**
+ * Set up the dialog in terms of visible columns and top-level message(s)
+ */
+function prepareDialog(secretOnly) {
+  if (window.arguments[INPUT].dialogHeader) {
+    var dialogHeader = document.getElementById("dialogHeader");
+    if (dialogHeader) {
+      dialogHeader.setAttribute("label", window.arguments[INPUT].dialogHeader);
+      dialogHeader.removeAttribute("collapsed");
     }
   }
-  catch (ex) {
-    EnigmailLog.DEBUG("EXCEPTION: " + ex + "\n");
+  var dialogMsgList = document.getElementById("dialogMsgList");
+  if (dialogMsgList) {
+    // clear the list (otherwise it grows with each loaded missing key)
+    while (dialogMsgList.getRowCount() > 0) {
+      dialogMsgList.removeIndexAt(0);
+    }
+    // fill the list according to the error messages
+    if (window.arguments[INPUT].errArray && window.arguments[INPUT].errArray.length > 0) {
+      var array = window.arguments[INPUT].errArray;
+      for (var detIdx = 0; detIdx < array.length; ++detIdx) {
+        var msg = null;
+        switch (array[detIdx].msg) {
+          case "ProblemNoKey":
+            msg = EnigGetString("userSel.problemNoKey");
+            break;
+          case "ProblemMultipleKeys":
+            msg = EnigGetString("userSel.problemMultipleKeys");
+            break;
+          default:
+            EnigmailLog.DEBUG("missing label for '" + array[detIdx].msg + "'\n");
+            msg = "???";
+            break;
+        }
+        var row = document.createElement('listitem');
+        var cell = document.createElement('listcell');
+        cell.setAttribute('label', array[detIdx].addr + ":");
+        row.appendChild(cell);
+        cell = document.createElement('listcell');
+        cell.setAttribute('label', msg);
+        row.appendChild(cell);
+        dialogMsgList.appendChild(row);
+      }
+      dialogMsgList.setAttribute("rows", (array.length < 3 ? array.length : 3));
+      dialogMsgList.removeAttribute("collapsed");
+    }
+    else {
+      dialogMsgList.setAttribute("collapsed", "true");
+    }
   }
 
   if (secretOnly) {
     // rename expired row to created
     document.getElementById("expCol").setAttribute("label", EnigGetString("createdHeader"));
   }
-  gUserList = document.getElementById("enigmailUserIdSelection");
-  gUserList.currentItem = null;
 
   if (window.arguments[INPUT].options.indexOf("unsigned") >= 0) {
     gSendSigned = false;
@@ -285,7 +252,6 @@ function enigmailBuildList(refresh) {
 
   var dialogHeaderDesc = document.getElementById("dialogHeaderDesc");
   var notFoundCapt = document.getElementById("usersNotFoundCapt");
-  var treeChildren = gUserList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
 
   if (window.arguments[INPUT].options.indexOf("multisel") < 0) {
     // single key selection -> hide selection col
@@ -324,93 +290,46 @@ function enigmailBuildList(refresh) {
     var acceptButton = document.getElementById("enigmailKeySelectionDlg").getButton("accept");
     acceptButton.setAttribute("label", window.arguments[INPUT].options.substring(pos1 + 1, pos2));
   }
+}
 
-  var aUserList = [];
-  var userObj = {};
-  userObj.uidMatchInvalid = false; // by default don't match list of invalid emails
-  var i;
-  for (i = 0; i < aGpgUserList.length; i++) {
-    var listRow = aGpgUserList[i].split(/:/);
-    if (listRow.length >= 0) {
-      switch (listRow[0]) {
-        case "pub":
-        case "sec":
-          userObj = {};
-          userObj.expiry = listRow[EXPIRY];
-          userObj.created = listRow[CREATED];
-          userObj.keyId = listRow[KEY_ID];
-          userObj.keyTrust = listRow[KEY_TRUST];
-          if (listRow[KEY_USE_FOR].indexOf("D") >= 0) {
-            userObj.keyTrust = KEY_DISABLED;
-          }
-          userObj.valid = false;
-          userObj.uidValid = true;
-          userObj.fpr = "";
-          userObj.subkeyOK = (listRow[KEY_USE_FOR].indexOf("e") >= 0 || secretOnly);
-          userObj.SubUserIds = [];
-          aUserList.push(userObj);
-          break;
-        case "fpr":
-          if (userObj.fpr === "") {
-            // Only take first fingerprint (that from the primary key)
-            userObj.fpr = listRow[FPR];
-          }
-          break;
-        case "grp":
-          // groups
-          userObj = {};
-          userObj.expiry = "";
-          userObj.created = 1;
-          userObj.keyTrust = KEY_IS_GROUP;
-          userObj.valid = true;
-          userObj.uidValid = true;
-          userObj.subkeyOK = true;
-          userObj.userId = EnigConvertGpgToUnicode(listRow[1]).replace(/\\e3A/g, ":");
-          userObj.keyId = userObj.userId;
-          userObj.SubUserIds = [];
-          var grpMembers = EnigConvertGpgToUnicode(listRow[2]).replace(/\\e3A/g, ":").split(/[,;]/);
-          for (var grpIdx = 0; grpIdx < grpMembers.length; grpIdx++) {
-            userObj.SubUserIds.push({
-              userId: grpMembers[grpIdx],
-              trustLevel: "q"
-            });
-          }
-          aUserList.push(userObj);
-          break;
-        case "uid":
-          if (listRow[USER_ID].length === 0) {
-            listRow[USER_ID] = EMPTY_UID;
-          }
-          if (typeof(userObj.userId) != "string") {
-            // primary UID
-            userObj.userId = EnigConvertGpgToUnicode(listRow[USER_ID]).replace(/\\e3A/g, ":");
-            if (TRUSTLEVELS_SORTED.indexOf(listRow[KEY_TRUST]) < TRUSTLEVELS_SORTED.indexOf(userObj.keyTrust)) {
-              // reduce key trust if primary UID is less trusted than public key
-              userObj.keyTrust = listRow[KEY_TRUST];
-            }
-          }
-          else {
-            var userId = {
-              userId: EnigConvertGpgToUnicode(listRow[USER_ID]).replace(/\\e3A/g, ":"),
-              trustLevel: listRow[KEY_TRUST]
-            };
-            userObj.SubUserIds.push(userId);
-          }
-          break;
-        case "sub":
-          if ((listRow[KEY_USE_FOR].indexOf("e") >= 0) &&
-            (KEY_NOT_VALID.indexOf(listRow[KEY_TRUST]) < 0)) {
-            userObj.subkeyOK = true;
-          }
-          break;
-        case "tru":
-          if (listRow[1].indexOf("t") >= 0) {
-            gAlwaysTrust = true;
-          }
-      }
-    }
+function buildList(refresh) {
+  EnigmailLog.DEBUG("enigmailKeySelection.js: buildList\n");
+
+  window.arguments[RESULT].cancelled = true;
+
+  gAlwaysTrust = (EnigGetPref("acceptedKeys") == 1);
+
+  var secretOnly = (window.arguments[INPUT].options.indexOf("private") >= 0);
+  var hideExpired = (window.arguments[INPUT].options.indexOf("hidexpired") >= 0);
+  gAllowExpired = (window.arguments[INPUT].options.indexOf("allowexpired") >= 0);
+
+  if (window.arguments[INPUT].options.indexOf("trustallkeys") >= 0) {
+    gAlwaysTrust = true;
   }
 
+  var aUserList = getKeyList(secretOnly, refresh);
+
+  if (!aUserList) return;
+  var uidNotValid;
+  if (gAlwaysTrust) {
+    uidNotValid = "";
+  }
+  else {
+    uidNotValid = "o-qn";
+  }
+
+  gUserList = document.getElementById("enigmailUserIdSelection");
+  gUserList.currentItem = null;
+
+  try {
+    prepareDialog(secretOnly);
+  }
+  catch (ex) {
+    EnigmailLog.DEBUG("EXCEPTION: " + ex.toString() + "\n");
+  }
+
+
+  var i;
   var toKeys = "";
   try {
     if (typeof(window.arguments[INPUT].toKeys) == "string") {
@@ -462,6 +381,32 @@ function enigmailBuildList(refresh) {
   // find and activate keys
   try {
     for (i = 0; i < aUserList.length; i++) {
+
+      // prepare key obj
+      if (aUserList[i].keyUseFor.indexOf("D") >= 0) {
+        aUserList[i].keyTrust = KEY_DISABLED;
+      }
+      aUserList[i].subkeyOK = (aUserList[i].keyUseFor.indexOf("e") >= 0 || secretOnly);
+      aUserList[i].valid = false;
+      aUserList[i].uidValid = true;
+      aUserList[i].uidMatchInvalid = false; // by default don't match list of invalid emails
+
+      if (aUserList[i].type === "grp") {
+        // groups
+        aUserList[i].valid = true;
+        aUserList[i].uidValid = true;
+        aUserList[i].subkeyOK = true;
+      }
+
+      for (let s in aUserList[i].subKeys) {
+        if ((aUserList[i].subKeys[s].keyUseFor.indexOf("e") >= 0) &&
+          (KEY_NOT_VALID.indexOf(aUserList[i].subKeys[s].keyTrust) < 0)) {
+          aUserList[i].subkeyOK = true;
+        }
+      }
+
+      // work on key obj
+
       aUserList[i].activeState = (gAllowExpired ? 0 : 2); // default: not activated/activateable
       if (aUserList[i].keyTrust != KEY_IS_GROUP) {
         // handling of "normal" keys
@@ -477,8 +422,8 @@ function enigmailBuildList(refresh) {
         if (((!aUserList[i].keyTrust) ||
             KEY_NOT_VALID.indexOf(aUserList[i].keyTrust) < 0) &&
           aUserList[i].subkeyOK &&
-          (aUserList[i].expiry <= 0 ||
-            (aUserList[i].expiry >= now))) {
+          (aUserList[i].expiryTime <= 0 ||
+            (aUserList[i].expiryTime >= now))) {
           // key still valid
           aUserList[i].valid = true;
           escapedMailAddr = mailAddr.replace(escapeRegExp, "\\$1");
@@ -521,7 +466,7 @@ function enigmailBuildList(refresh) {
       if (!hideExpired || aUserList[i].activeState < 2) {
         if ((aUserList[i].keyTrust != KEY_IS_GROUP) && aUserList[i].SubUserIds.length) {
           for (let user = 0; user < aUserList[i].SubUserIds.length; user++) {
-            if (KEY_NOT_VALID.indexOf(aUserList[i].SubUserIds[user].trustLevel) < 0) {
+            if (KEY_NOT_VALID.indexOf(aUserList[i].SubUserIds[user].keyTrust) < 0) {
               if (aUserList[i].activeState < 2 || gAllowExpired) {
                 // add uid's for valid keys
                 try {
@@ -530,7 +475,7 @@ function enigmailBuildList(refresh) {
                 catch (ex) {
                   mailAddr = EnigStripEmail(aUserList[i].SubUserIds[user].userId.replace(/\"/g, ""));
                 }
-                if (uidNotValid.indexOf(aUserList[i].SubUserIds[user].trustLevel) < 0) {
+                if (uidNotValid.indexOf(aUserList[i].SubUserIds[user].keyTrust) < 0) {
                   aValidUsers.push(mailAddr);
                   aUserList[i].valid = true;
                   escapedMailAddr = mailAddr.replace(escapeRegExp, "\\$1");
@@ -547,17 +492,30 @@ function enigmailBuildList(refresh) {
     }
   }
   catch (ex) {
-    EnigmailLog.ERROR("enigmailKeySelection.js: ERROR in enigmailUserSelLoad:\n");
-    EnigmailLog.ERROR("  userId=" + aUserList[i].userId + " expiry=" + aUserList[i].expiry + "\n");
+    EnigmailLog.ERROR("enigmailKeySelection.js: ERROR in buildList:\n");
+    EnigmailLog.ERROR("  userId=" + aUserList[i].userId + " expiry=" + aUserList[i].expiryTime + "\n");
     if ((typeof user) == "number" && (typeof aUserList[i].SubUserIds[user].userId) == "string") {
       EnigmailLog.ERROR("  subUserId=" + aUserList[i].SubUserIds[user].userId + "\n");
     }
   }
 
   // sort items according to sorting criterion
-  aUserList.sort(sortUsersCallback);
+  aUserList.sort(sortKeys);
+  buildTreeView(aUserList, hideExpired, secretOnly);
+  buildNotFoundKeys(aValidUsers, toAddrList, toKeys);
 
-  // Build up key treeView
+  EnigmailLog.DEBUG("  <=== buildList()\n");
+}
+
+/**
+ * Build up tree view for displaying keys
+ */
+function buildTreeView(aUserList, hideExpired, secretOnly) {
+  EnigmailLog.DEBUG("enigmailKeySelection.js: buildTreeView\n");
+
+  let i;
+  let treeChildren = gUserList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
+
   for (i = 0; i < aUserList.length; i++) {
     var treeItem = null;
     if (!hideExpired || aUserList[i].activeState < 2) {
@@ -571,8 +529,8 @@ function enigmailBuildList(refresh) {
       if (aUserList[i].SubUserIds.length) {
         var subChildren = document.createElement("treechildren");
         for (let user = 0; user < aUserList[i].SubUserIds.length; user++) {
-          if (KEY_NOT_VALID.indexOf(aUserList[i].SubUserIds[user].trustLevel) < 0) {
-            var subItem = enigUserSelCreateRow(aUserList[i], -1, aUserList[i].SubUserIds[user].userId, "", "", aUserList[i].SubUserIds[user].trustLevel, true);
+          if (KEY_NOT_VALID.indexOf(aUserList[i].SubUserIds[user].keyTrust) < 0) {
+            var subItem = enigUserSelCreateRow(aUserList[i], -1, aUserList[i].SubUserIds[user].userId, "", "", aUserList[i].SubUserIds[user].keyTrust, true);
             subChildren.appendChild(subItem);
           }
         }
@@ -586,8 +544,15 @@ function enigmailBuildList(refresh) {
       treeChildren.appendChild(treeItem);
     }
   }
+}
 
-  // Build up list of not found recipients
+/**
+ * Build up list of not found recipients
+ */
+
+function buildNotFoundKeys(aValidUsers, toAddrList, toKeys) {
+  EnigmailLog.DEBUG("enigmailKeySelection.js: buildNotFoundKeys\n");
+
   gKeysNotFound = [];
   var j;
   for (i = 0; i < toAddrList.length; i++) {
@@ -600,7 +565,7 @@ function enigmailBuildList(refresh) {
         }
       }
       if (!found) {
-        EnigmailLog.DEBUG("enigmailKeySelection.js: enigmailUserSelLoad: not found " + toAddrList[i] + "\n");
+        EnigmailLog.DEBUG("enigmailKeySelection.js: buildNotFoundKeys: not found " + toAddrList[i] + "\n");
         gKeysNotFound.push(toAddrList[i]);
       }
     }
@@ -616,16 +581,12 @@ function enigmailBuildList(refresh) {
         }
       }
       if (!found) {
-        EnigmailLog.DEBUG("enigmailKeySelection.js: enigmailUserSelLoad: not found " + toKeyList[i] + "\n");
+        EnigmailLog.DEBUG("enigmailKeySelection.js: buildNotFoundKeys: not found " + toKeyList[i] + "\n");
         gKeysNotFound.push(toKeyList[i]);
       }
     }
   }
-
-  EnigmailLog.DEBUG("  <=== enigmailBuildList()\n");
 }
-
-
 
 // create a (sub) row for the user tree
 function enigUserSelCreateRow(userObj, activeState, userId, keyValue, dateField, uidValidityStatus, uidValid) {
@@ -640,7 +601,7 @@ function enigUserSelCreateRow(userObj, activeState, userId, keyValue, dateField,
   uidValidityCol.setAttribute("id", "validity");
 
   userCol.setAttribute("label", userId);
-  expCol.setAttribute("label", EnigGetDateTime(dateField, true, false));
+  expCol.setAttribute("label", dateField);
 
   var keyCol = document.createElement("treecell");
   if (userObj.keyTrust != KEY_IS_GROUP) {
@@ -710,7 +671,7 @@ function enigUserSelCreateRow(userObj, activeState, userId, keyValue, dateField,
 }
 
 
-function enigmailUserSelAccept() {
+function onAccept() {
   EnigmailLog.DEBUG("enigmailKeySelection.js: Accept\n");
 
   var resultObj = window.arguments[RESULT];
@@ -787,11 +748,11 @@ function getToAddrList() {
 
 
 function onClickCallback(event) {
-  enigmailUserSelCallback(event);
+  userSelCallback(event);
 }
 
 
-function enigmailUserSelCallback(event) {
+function userSelCallback(event) {
   if (!gSendEncrypted)
     return;
 
@@ -897,7 +858,7 @@ function disableList() {
 }
 
 
-function enigmailNewRecipientRule() {
+function newRecipientRule() {
   // enable rules to ensure that the new rule gets processed
   EnigSetPref("assignKeysByRules", true);
 
@@ -912,7 +873,7 @@ function enigmailNewRecipientRule() {
 }
 
 
-function enigmailSearchMissingKeys() {
+function searchMissingKeys() {
   var inputObj = {
     searchList: gKeysNotFound
   };

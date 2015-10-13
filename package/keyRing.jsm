@@ -60,6 +60,7 @@ Cu.import("resource://enigmail/time.jsm"); /*global EnigmailTime: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
+Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
 
 const nsIEnigmail = Ci.nsIEnigmail;
 
@@ -176,7 +177,7 @@ var EnigmailKeyRing = {
   /**
    * get a list of all keys that have a secret key
    *
-   * @return Array: list of KeyObjects containing the found keys
+   * @return Array of KeyObjects containing the found keys
    **/
 
   getAllSecretKeys: function() {
@@ -921,26 +922,17 @@ var EnigmailKeyRing = {
   /**
    * Return fingerprint for a given key ID
    *
-   * @keyId:  String of 8 or 16 chars key with optionally leading 0x
+   * @param keyId:  String of 8 or 16 chars key with optionally leading 0x
    *
    * @return: String containing the fingerprint or null if key not found
    */
   getFingerprintForKey: function(keyId) {
-    let keyList = getKeyListEntryOfKey(keyId);
-    let keyListObj = {};
-
-    if (keyList) {
-      EnigmailKeyRing.createKeyObjects(keyList.replace(/(\r\n|\r)/g, "\n").split(/\n/), keyListObj);
+    let key = this.getKeyById(keyId);
+    if (key) {
+      return key.fpr;
     }
     else
       return null;
-
-    if (keyListObj.keySortList.length > 0) {
-      return keyListObj.keyList[keyListObj.keySortList[0].keyId].fpr;
-    }
-    else {
-      return null;
-    }
   },
 
   /**
@@ -960,6 +952,7 @@ var EnigmailKeyRing = {
 
     let keyObj = {};
     let uatNum = 0; // counter for photos (counts per key)
+    let numKeys = 0;
 
     const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
 
@@ -970,7 +963,8 @@ var EnigmailKeyRing = {
           case "pub":
             keyObj = new KeyObject(listRow);
             uatNum = 0;
-            keyListObj.keyList[listRow[KEY_ID]] = keyObj;
+            ++numKeys;
+            keyListObj.keyList.push(keyObj);
             break;
           case "fpr":
             // only take first fpr line, this is the fingerprint of the primary key and what we want
@@ -986,7 +980,8 @@ var EnigmailKeyRing = {
               keyObj.userId = EnigmailData.convertGpgToUnicode(listRow[USERID_ID]);
               keyListObj.keySortList.push({
                 userId: keyObj.userId.toLowerCase(),
-                keyId: keyObj.keyId
+                keyId: keyObj.keyId,
+                keyNum: numKeys - 1
               });
               if (TRUSTLEVELS_SORTED.indexOf(listRow[KEY_TRUST_ID]) < TRUSTLEVELS_SORTED.indexOf(keyObj.keyTrust)) {
                 // reduce key trust if primary UID is less trusted than public key
@@ -1089,8 +1084,9 @@ var EnigmailKeyRing = {
       let listRow = aGpgSecretsList[i].split(/:/);
       if (listRow.length >= 0) {
         if (listRow[ENTRY_ID] == "sec") {
-          if (typeof(keyListObj.keyList[listRow[KEY_ID]]) == "object") {
-            keyListObj.keyList[listRow[KEY_ID]].secretAvailable = true;
+          let k = this.getKeyById(listRow[KEY_ID]);
+          if (typeof(k) === "object") {
+            k.secretAvailable = true;
           }
         }
       }
@@ -1298,7 +1294,7 @@ function obtainKeyList(win, secretOnly, refresh) {
     }
   }
   catch (ex) {
-    EnigmailLog.ERROR("ERROR in keyRing.jsm: obtainKeyList" + ex.toString() + "\n");
+    EnigmailLog.ERROR("ERROR in keyRing.jsm: obtainKeyList: " + ex.toString() + "\n");
   }
 
   if (typeof(userList) == "string") {
@@ -1330,33 +1326,33 @@ const sortFunctions = {
 
   fpr: function(keyListObj, sortDirection) {
     return function(a, b) {
-      return (keyListObj.keyList[a.keyId].fpr < keyListObj.keyList[b.keyId].fpr) ? -sortDirection : sortDirection;
+      return (keyListObj.keyList[a.keyNum].fpr < keyListObj.keyList[b.keyNum].fpr) ? -sortDirection : sortDirection;
     };
   },
 
   keytype: function(keyListObj, sortDirection) {
     return function(a, b) {
-      return (keyListObj.keyList[a.keyId].secretAvailable < keyListObj.keyList[b.keyId].secretAvailable) ? -sortDirection : sortDirection;
+      return (keyListObj.keyList[a.keyNum].secretAvailable < keyListObj.keyList[b.keyNum].secretAvailable) ? -sortDirection : sortDirection;
     };
   },
 
   validity: function(keyListObj, sortDirection) {
     return function(a, b) {
-      return (EnigmailTrust.trustLevelsSorted().indexOf(EnigmailTrust.getTrustCode(keyListObj.keyList[a.keyId])) < EnigmailTrust.trustLevelsSorted().indexOf(EnigmailTrust.getTrustCode(
-        keyListObj.keyList[b.keyId]))) ? -sortDirection : sortDirection;
+      return (EnigmailTrust.trustLevelsSorted().indexOf(EnigmailTrust.getTrustCode(keyListObj.keyList[a.keyNum])) < EnigmailTrust.trustLevelsSorted().indexOf(EnigmailTrust.getTrustCode(
+        keyListObj.keyList[b.keyNum]))) ? -sortDirection : sortDirection;
     };
   },
 
   trust: function(keyListObj, sortDirection) {
     return function(a, b) {
-      return (EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[a.keyId].ownerTrust) < EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[b.keyId].ownerTrust)) ? -
+      return (EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[a.keyNum].ownerTrust) < EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[b.keyNum].ownerTrust)) ? -
         sortDirection : sortDirection;
     };
   },
 
   expiry: function(keyListObj, sortDirection) {
     return function(a, b) {
-      return (keyListObj.keyList[a.keyId].expiryTime < keyListObj.keyList[b.keyId].expiryTime) ? -sortDirection : sortDirection;
+      return (keyListObj.keyList[a.keyNum].expiryTime < keyListObj.keyList[b.keyNum].expiryTime) ? -sortDirection : sortDirection;
     };
   }
 };
@@ -1425,17 +1421,17 @@ function getKeyListEntryOfKey(keyId) {
   return res;
 }
 
-function KeyObject(pubGpgLine) {
-  if (pubGpgLine[ENTRY_ID] === "pub") {
-    this.keyId = pubGpgLine[KEY_ID];
-    this.expiry = EnigmailTime.getDateTime(pubGpgLine[EXPIRY_ID], true, false);
-    this.expiryTime = Number(pubGpgLine[EXPIRY_ID]);
-    this.created = EnigmailTime.getDateTime(pubGpgLine[CREATED_ID], true, false);
-    this.keyTrust = pubGpgLine[KEY_TRUST_ID];
-    this.keyUseFor = pubGpgLine[KEY_USE_FOR_ID];
-    this.ownerTrust = pubGpgLine[OWNERTRUST_ID];
-    this.algorithm = pubGpgLine[KEY_ALGO_ID];
-    this.keySize = pubGpgLine[KEY_SIZE_ID];
+function KeyObject(lineArr) {
+  if (lineArr[ENTRY_ID] === "pub") {
+    this.keyId = lineArr[KEY_ID];
+    this.expiry = EnigmailTime.getDateTime(lineArr[EXPIRY_ID], true, false);
+    this.expiryTime = Number(lineArr[EXPIRY_ID]);
+    this.created = EnigmailTime.getDateTime(lineArr[CREATED_ID], true, false);
+    this.keyTrust = lineArr[KEY_TRUST_ID];
+    this.keyUseFor = lineArr[KEY_USE_FOR_ID];
+    this.ownerTrust = lineArr[OWNERTRUST_ID];
+    this.algorithm = lineArr[KEY_ALGO_ID];
+    this.keySize = lineArr[KEY_SIZE_ID];
   }
   else {
     this.keyId = "";
@@ -1448,7 +1444,7 @@ function KeyObject(pubGpgLine) {
     this.algorithm = "";
     this.keySize = "";
   }
-  this.type = pubGpgLine[ENTRY_ID];
+  this.type = lineArr[ENTRY_ID];
   this.SubUserIds = [];
   this.subKeys = [];
   this.fpr = "";
@@ -1479,6 +1475,23 @@ KeyObject.prototype = {
     }
 
     return this._sigList;
+  },
+
+  /**
+   * create a copy of the object
+   */
+  clone: function() {
+    let cp = new KeyObject(["copy"]);
+    for (let i in this) {
+      if (typeof i === "object") {
+        cp[i] = EnigmailFuncs.cloneObj(this[i]);
+      }
+      else if (i !== "signatures") {
+        cp[i] = this[i];
+      }
+    }
+
+    return cp;
   }
 };
 

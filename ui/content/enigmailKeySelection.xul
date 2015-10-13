@@ -48,12 +48,12 @@
 <dialog id="enigmailKeySelectionDlg"
         title="&enigmail.userSelectionList.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        onload="enigmailUserSelLoad();"
+        onload="onLoad();"
         buttons="accept,cancel,extra1"
         buttonlabelaccept="&enigmail.send.label;"
-        ondialogaccept="return enigmailUserSelAccept();"
+        ondialogaccept="return onAccept();"
         buttonlabelextra1="&enigmail.perRecipientsOption.label;"
-        ondialogextra1="enigmailNewRecipientRule();"
+        ondialogextra1="newRecipientRule();"
         minheight="450">
 
 
@@ -96,8 +96,8 @@
         hidecolumnpicker="false"
         seltype="single"
         style="height:300px"
-        onkeypress="enigmailUserSelCallback(event)">
-        <!-- onclick="enigmailUserSelCallback(event);" -->
+        onkeypress="userSelCallback(event)">
+        <!-- onclick="userSelCallback(event);" -->
 
         <treecols>
           <treecol id="selectionCol" style="width:19px"
@@ -154,7 +154,7 @@
             id="refreshKeys"
             label="&enigmail.refreshKeys.label;"
             accesskey="&enigmail.refreshKeys.accesskey;"
-            oncommand="enigmailRefreshKeys();"/>
+            oncommand="refreshKeys();"/>
 
     <button class="dialog"
             halign="right"
@@ -162,6 +162,6 @@
             label="&enigmail.importMissingKeys.label;"
             accesskey="&enigmail.importMissingKeys.accesskey;"
             tooltip="&enigmail.importMissingKeys.tooltip;"
-            oncommand="enigmailSearchMissingKeys();"/>
+            oncommand="searchMissingKeys();"/>
   </hbox>
 </dialog>

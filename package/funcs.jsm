@@ -322,6 +322,10 @@ const EnigmailFuncs = {
       return orig;
     }
 
+    if ("clone" in orig && typeof orig.clone === "function") {
+      return orig.clone();
+    }
+
     if (Array.isArray(orig) && orig.length > 0) {
       newObj = [];
       for (let i in orig) {
