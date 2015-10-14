@@ -92,8 +92,6 @@ Enigmail.hlp = {
         return null;
     }
 
-    const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
-    var minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf(minTrustLevel);
     EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): find keys with minTrustLevel=\"" + minTrustLevel + "\"\n");
 
     var resultingArray = []; // resulting key list (if all valid)
@@ -129,73 +127,8 @@ Enigmail.hlp = {
         }
       }
 
-      // check whether each address is or has a key:
-      keyMissing = false;
-      if (details) {
-        details.errArray = [];
-      }
-      for (let i = 0; i < addresses.length; i++) {
-        let addr = addresses[i];
-        // try to find current address in key list:
-        var found = false;
-        var errMsg = null;
-        if (addr.indexOf('@') >= 0) {
-          // try email match:
-          var addrErrDetails = {};
-          let key = EnigmailKeyRing.getValidKeyForRecipient(addr, minTrustLevelIndex, addrErrDetails);
-          if (details && addrErrDetails.msg) {
-            errMsg = addrErrDetails.msg;
-          }
-          if (key) {
-            found = true;
-            resultingArray.push("0x" + key.toUpperCase());
-          }
-        }
-        else {
-          // try key match:
-          let key = addr;
-          if (addr.search(/^0x/i) === 0) {
-            key = addr.substring(2); // key list has elements without leading "0x"
-          }
-          var keyObj = keyList[key.toUpperCase()]; // note: keylist has keys with uppercase only
-
-          if (!keyObj && addr.search(/^0x[A-F0-9]{8}([A-F0-9]{8})*$/i) === 0) {
-            // we got a key ID, probably from gpg.conf?
-
-            key = key.substr(-16, 16);
-
-            for (let j in keyList) {
-              if (j.endsWith(key)) {
-                keyObj = keyList[j];
-                break;
-              }
-            }
-          }
-          if (keyObj) {
-            var keyTrust = keyObj.keyTrust;
-            // if found, check whether the trust level is enough
-            if (TRUSTLEVELS_SORTED.indexOf(keyTrust) >= minTrustLevelIndex) {
-              found = true;
-              resultingArray.push(addr);
-            }
-          }
-        }
-        if (!found) {
-          // no key for this address found
-          keyMissing = true;
-          if (details) {
-            if (!errMsg) {
-              errMsg = "ProblemNoKey";
-            }
-            var detailsElem = {};
-            detailsElem.addr = addr;
-            detailsElem.msg = errMsg;
-            details.errArray.push(detailsElem);
-          }
-          EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): return null (no single valid key found for=\"" + addr + "\" with minTrustLevel=\"" + minTrustLevel +
-            "\")\n");
-        }
-      }
+      // resolve all the email addresses if possible:
+      keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addresses, minTrustLevel, keyList, keySortList, details, resultingArray);
     }
     catch (ex) {
       EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): return null (exception: " + ex.description + ")\n");
@@ -207,7 +140,6 @@ Enigmail.hlp = {
     }
     return resultingArray;
   },
-
 
 
   /**
@@ -255,3 +187,4 @@ Enigmail.hlp = {
   }
 
 };
+
