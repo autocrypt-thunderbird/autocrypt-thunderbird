@@ -132,7 +132,11 @@ function enigmailBuildList(refresh) {
 
   var keyListObj = {};
 
-  EnigLoadKeyList(refresh, keyListObj, getSortColumn(), getSortDirection());
+  if (refresh) {
+    EnigmailKeyRing.clearCache();
+  }
+
+  keyListObj = EnigmailKeyRing.getAllKeys(window, getSortColumn(), getSortDirection());
 
   if (!keyListObj.keySortList) return;
 
@@ -146,10 +150,11 @@ function enigmailBuildList(refresh) {
   var selectedItems = [];
   for (var i = 0; i < gKeySortList.length; i++) {
     var keyId = gKeySortList[i].keyId;
+    let keyObj = gKeyList[gKeySortList[i].keyNum];
     if (gEnigLastSelectedKeys && typeof(gEnigLastSelectedKeys[keyId]) != "undefined")
       selectedItems.push(i);
     var treeItem = null;
-    treeItem = enigUserSelCreateRow(gKeyList[keyId], -1);
+    treeItem = enigUserSelCreateRow(keyObj, -1, gKeySortList[i].keyNum);
     treeItem.setAttribute("container", "true");
     var subChildren = document.createElement("treechildren");
     treeItem.appendChild(subChildren);
@@ -162,11 +167,13 @@ function enigmailBuildList(refresh) {
     uidItem.appendChild(uidRow);
     uidItem.setAttribute("keytype", "none");
     uidItem.setAttribute("id", keyId);
+    uidItem.setAttribute("keyNum", gKeySortList[i].keyNum);
 
     var uidChildren = document.createElement("treechildren");
     uidItem.appendChild(uidChildren);
     var uatItem = document.createElement("treeitem");
     uatItem.setAttribute("id", keyId);
+    uatItem.setAttribute("keyNum", gKeySortList[i].keyNum);
     uatItem.setAttribute("keytype", "none");
 
     subChildren.appendChild(uatItem);
@@ -178,9 +185,9 @@ function enigmailBuildList(refresh) {
     var uatChildren = document.createElement("treechildren");
     uatItem.appendChild(uatChildren);
 
-    for (var subkey = 0; subkey < gKeyList[keyId].SubUserIds.length; subkey++) {
-      var subItem = enigUserSelCreateRow(gKeyList[keyId], subkey);
-      if (gKeyList[keyId].SubUserIds[subkey].type == "uat") {
+    for (var subkey = 0; subkey < keyObj.SubUserIds.length; subkey++) {
+      var subItem = enigUserSelCreateRow(keyObj, subkey, gKeySortList[i].keyNum);
+      if (keyObj.SubUserIds[subkey].type == "uat") {
         uatItem.setAttribute("container", "true");
         uatCell.setAttribute("label", EnigGetString("keylist.hasPhotos"));
         uatChildren.appendChild(subItem);
@@ -210,7 +217,7 @@ function enigmailBuildList(refresh) {
 
 
 // create a (sub) row for the user tree
-function enigUserSelCreateRow(keyObj, subKeyNum) {
+function enigUserSelCreateRow(keyObj, subKeyNum, keyNum) {
   var expCol = document.createElement("treecell");
   var userCol = document.createElement("treecell");
   var keyCol = document.createElement("treecell");
@@ -341,6 +348,7 @@ function enigUserSelCreateRow(keyObj, subKeyNum) {
     }
   }
   treeItem.setAttribute("id", keyObj.keyId);
+  treeItem.setAttribute("keyNum", keyNum);
   treeItem.appendChild(userRow);
   return treeItem;
 }
@@ -348,7 +356,7 @@ function enigUserSelCreateRow(keyObj, subKeyNum) {
 
 function enigmailGetSelectedKeys() {
 
-  var idList = [];
+  var selList = [];
   var rangeCount = gUserList.view.selection.getRangeCount();
   for (var i = 0; i < rangeCount; i++) {
     var start = {};
@@ -356,14 +364,25 @@ function enigmailGetSelectedKeys() {
     gUserList.view.selection.getRangeAt(i, start, end);
     for (var c = start.value; c <= end.value; c++) {
       try {
-        idList.push(gUserList.view.getItemAtIndex(c).id);
+        selList.push(gUserList.view.getItemAtIndex(c).getAttribute("keyNum"));
       }
       catch (ex) {
         return [];
       }
     }
   }
-  return idList;
+  return selList;
+}
+
+function getSelectedKeyIds() {
+  let keyList = enigmailGetSelectedKeys();
+
+  let a = [];
+  for (let i in keyList) {
+    a.push(gKeyList[keyList[i]].keyId);
+  }
+
+  return a;
 }
 
 function enigmailKeyMenu() {
@@ -448,7 +467,7 @@ function enigmailOnClick(event) {
     catch (ex) {}
   }
   if (keyType == "uat") {
-    enigShowSpecificPhoto(uatNum);
+    enigShowSpecificPhoto(Number(uatNum));
   }
   else {
     enigmailKeyDetails();
@@ -461,8 +480,9 @@ function enigmailSelectAllKeys() {
 
 function enigmailKeyDetails() {
   var keyList = enigmailGetSelectedKeys();
-
-  EnigDisplayKeyDetails(keyList[0], false);
+  if (keyList.length > 0) {
+    EnigDisplayKeyDetails(gKeyList[keyList[0]].keyId, false);
+  }
 }
 
 
@@ -476,7 +496,7 @@ function enigmailDeleteKey() {
 
   if (keyList.length == 1) {
     // one key selected
-    var userId = "0x" + keyList[0].substr(-8, 8) + " - " + gKeyList[keyList[0]].userId;
+    var userId = gKeyList[keyList[0]].userId;
     if (gKeyList[keyList[0]].secretAvailable) {
       if (!EnigConfirm(EnigGetString("deleteSecretKey", userId), EnigGetString("dlg.button.delete"))) return;
       deleteSecret = true;
@@ -527,7 +547,7 @@ function enigmailEnableKey() {
   var keyIndex = 0;
 
   function processNextKey() {
-    EnigmailKeyEditor.enableDisableKey(window, "0x" + keyList[keyIndex], disableKey, function _enDisCb(exitCode, errorMsg) {
+    EnigmailKeyEditor.enableDisableKey(window, "0x" + gKeyList[keyList[keyIndex]].keyId, disableKey, function _enDisCb(exitCode, errorMsg) {
       if (exitCode === 0) {
         ++keyIndex;
         if (keyIndex < keyList.length) {
@@ -576,12 +596,13 @@ function enigShowPhoto() {
 function enigShowSpecificPhoto(uatNumber) {
   var keyList = enigmailGetSelectedKeys();
 
-  EnigShowPhoto(keyList[0], gKeyList[keyList[0]].userId, uatNumber);
+  // TODO: fix displaing with uatNumber
+  EnigShowPhoto(gKeyList[keyList[0]].keyId, gKeyList[keyList[0]].userId, uatNumber);
 }
 
 function enigmailAddPhoto() {
   var keyList = enigmailGetSelectedKeys();
-  keyMgrAddPhoto(gKeyList[keyList[0]].userId, keyList[0]);
+  keyMgrAddPhoto(gKeyList[keyList[0]].userId, gKeyList[keyList[0]].keyId);
 
 }
 
@@ -643,7 +664,7 @@ function enigCreateKeyMsg() {
   if (!enigmailSvc)
     return;
 
-  var keyList = enigmailGetSelectedKeys();
+  var keyList = getSelectedKeyIds();
   if (keyList.length === 0) {
     EnigAlert(EnigGetString("noKeySelected"));
     return;
@@ -663,6 +684,8 @@ function enigCreateKeyMsg() {
   tmpFile.append("key.asc");
   tmpFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0600);
 
+
+
   // save file
   var exitCodeObj = {};
   var errorMsgObj = {};
@@ -678,7 +701,7 @@ function enigCreateKeyMsg() {
   var keyAttachment = Cc["@mozilla.org/messengercompose/attachment;1"].createInstance(Ci.nsIMsgAttachment);
   keyAttachment.url = tmpFileURI.spec;
   if (keyList.length == 1) {
-    keyAttachment.name = "0x" + keyList[0].substr(-8, 8) + ".asc";
+    keyAttachment.name = "0x" + gKeyList[keyList[0]].keyId.substr(-8, 8) + ".asc";
   }
   else {
     keyAttachment.name = "pgpkeys.asc";
@@ -715,7 +738,7 @@ function createNewMail() {
   var rangeCount = gUserList.view.selection.getRangeCount();
   var start = {};
   var end = {};
-  var keyType, keyId, r, i;
+  var keyType, keyNum, r, i;
 
   for (i = 0; i < rangeCount; i++) {
     gUserList.view.selection.getRangeAt(i, start, end);
@@ -723,14 +746,14 @@ function createNewMail() {
     for (r = start.value; r <= end.value; r++) {
       try {
         keyType = gUserList.view.getItemAtIndex(r).getAttribute("keytype");
-        keyId = gUserList.view.getItemAtIndex(r).getAttribute("id");
+        keyNum = gUserList.view.getItemAtIndex(r).getAttribute("keyNum");
 
         if (keyType == "uid") {
           var uidNum = Number(gUserList.view.getItemAtIndex(r).getAttribute("uidNum"));
-          addresses.push(gKeyList[keyId].SubUserIds[uidNum].userId);
+          addresses.push(keyObj.SubUserIds[uidNum].userId);
         }
         else
-          addresses.push(gKeyList[keyId].userId);
+          addresses.push(gKeyList[keyNum].userId);
       }
       catch (ex) {}
     }
@@ -761,11 +784,13 @@ function enigEditKeyTrust() {
     return;
   }
   var userIdList = [];
+  var keyIds = [];
   for (var i = 0; i < keyList.length; i++) {
     userIdList.push(gKeyList[keyList[i]].userId);
+    keyIds.push(gKeyList[keyList[i]].keyId);
   }
 
-  if (EnigEditKeyTrust(userIdList, keyList)) {
+  if (EnigEditKeyTrust(userIdList, keyIds)) {
     enigmailRefreshKeys();
   }
 }
@@ -778,11 +803,13 @@ function enigEditKeyExpiry() {
     return;
   }
   var userIdList = [];
+  var keyIds = [];
   for (var i = 0; i < keyList.length; i++) {
     userIdList.push(gKeyList[keyList[i]].userId);
+    keyIds.push(gKeyList[keyList[i]].keyId);
   }
 
-  if (EnigEditKeyExpiry(userIdList, keyList)) {
+  if (EnigEditKeyExpiry(userIdList, keyIds)) {
     enigmailRefreshKeys();
   }
 }
@@ -794,14 +821,14 @@ function enigSignKey() {
     EnigAlert(EnigGetString("noKeySelected"));
     return;
   }
-  if (EnigSignKey(gKeyList[keyList[0]].userId, keyList[0], null)) {
+  if (EnigSignKey(gKeyList[keyList[0]].userId, gKeyList[keyList[0]].keyId, null)) {
     enigmailRefreshKeys();
   }
 }
 
 function enigmailRevokeKey() {
   var keyList = enigmailGetSelectedKeys();
-  EnigRevokeKey(keyList[0], gKeyList[keyList[0]].userId, function _revokeKeyCb(success) {
+  EnigRevokeKey(gKeyList[keyList[0]].keyId, gKeyList[keyList[0]].userId, function _revokeKeyCb(success) {
     if (success) enigmailRefreshKeys();
   });
 }
@@ -809,7 +836,7 @@ function enigmailRevokeKey() {
 function enigCreateRevokeCert() {
   var keyList = enigmailGetSelectedKeys();
 
-  EnigCreateRevokeCert(keyList[0], gKeyList[keyList[0]].userId);
+  EnigCreateRevokeCert(gKeyList[keyList[0]].keyId, gKeyList[keyList[0]].userId);
 }
 
 
@@ -854,10 +881,10 @@ function enigmailExportKeys() {
 
     defaultFileName = gKeyList[keyList[0]].userId.replace(/[<\>]/g, "");
     if (exportFlags & nsIEnigmail.EXTRACT_SECRET_KEY) {
-      defaultFileName = EnigGetString("specificPubSecKeyFilename", defaultFileName, keyList[0].substr(-8, 8)) + ".asc";
+      defaultFileName = EnigGetString("specificPubSecKeyFilename", defaultFileName, gKeyList[keyList[0]].keyId.substr(-8, 8)) + ".asc";
     }
     else {
-      defaultFileName = EnigGetString("specificPubKeyFilename", defaultFileName, keyList[0].substr(-8, 8)) + ".asc";
+      defaultFileName = EnigGetString("specificPubKeyFilename", defaultFileName, gKeyList[keyList[0]].keyId.substr(-8, 8)) + ".asc";
     }
   }
   else {
@@ -882,7 +909,7 @@ function enigmailExportKeys() {
     defaultFileName, [EnigGetString("asciiArmorFile"), "*.asc"]);
   if (!outFile) return;
 
-  var keyListStr = "0x" + keyList.join(" 0x");
+  var keyListStr = "0x" + getSelectedKeyIds().join(" 0x");
   var exitCodeObj = {};
   var errorMsgObj = {};
   EnigmailKeyRing.extractKey(window, exportFlags, keyListStr, outFile, exitCodeObj, errorMsgObj);
@@ -935,7 +962,7 @@ function enigmailSearchKeys() {
 function enigmailListSig() {
   var keyList = enigmailGetSelectedKeys();
   var inputObj = {
-    keyId: keyList[0],
+    keyId: gKeyList[keyList[0]].keyId,
     keyListArr: gKeyList
   };
   var resultObj = {};
@@ -952,7 +979,7 @@ function enigmailListSig() {
 function enigmailManageUids() {
   var keyList = enigmailGetSelectedKeys();
   var inputObj = {
-    keyId: keyList[0],
+    keyId: gKeyList[keyList[0]].keyId,
     ownKey: gKeyList[keyList[0]].secretAvailable
   };
   var resultObj = {
@@ -967,7 +994,7 @@ function enigmailManageUids() {
 
 function enigmailChangePwd() {
   var keyList = enigmailGetSelectedKeys();
-  EnigChangeKeyPwd(keyList[0], gKeyList[keyList[0]].userId);
+  EnigChangeKeyPwd(gKeyList[keyList[0]].keyId, gKeyList[keyList[0]].userId);
 }
 
 
@@ -1011,7 +1038,7 @@ function enigmailCopyToClipbrd() {
   if (!enigmailSvc)
     return;
 
-  var keyList = enigmailGetSelectedKeys();
+  var keyList = getSelectedKeyIds();
   if (keyList.length === 0) {
     EnigAlert(EnigGetString("noKeySelected"));
     return;
@@ -1212,7 +1239,7 @@ function addToPRRule() {
     return;
 
   var inputObj = {
-    keyId: keyList[0],
+    keyId: gKeyList[keyList[0]].keyId,
     userId: gKeyList[keyList[0]].userId
   };
   window.openDialog("chrome://enigmail/content/enigmailSelectRule.xul",
@@ -1310,7 +1337,7 @@ function showOrHideAllKeys() {
   var node = getFirstNode();
   while (node) {
     node.hidden = hideNode;
-    if (!determineHiddenKeys(gKeyList[node.id], showInvalidKeys, showUntrustedKeys, showOthersKeys)) {
+    if (!determineHiddenKeys(gKeyList[node.getAttribute("keyNum")], showInvalidKeys, showUntrustedKeys, showOthersKeys)) {
       node.hidden = true;
     }
 
@@ -1371,24 +1398,25 @@ function enigApplyFilter() {
   var foundResult = false;
   var node = getFirstNode();
   while (node) {
-    var uid = gKeyList[node.id].userId;
+    let keyObj = gKeyList[node.getAttribute("keyNum")];
+    var uid = keyObj.userId;
     var showNode = false;
     if (uid.toLowerCase().indexOf(searchTxt) >= 0) {
       showNode = true;
     }
     // does the full fingerprint (without spaces) match?
     // - no partial match check because this is special for the collapsed spaces inside the fingerprint
-    if (showNode === false && fpr && gKeyList[node.id].fpr.toLowerCase() == fpr) {
+    if (showNode === false && fpr && keyObj.fpr.toLowerCase() == fpr) {
       showNode = true;
     }
     // does the fingerprint (partially) match?
-    if (showNode === false && gKeyList[node.id].fpr.toLowerCase().indexOf(searchTxt) >= 0) {
+    if (showNode === false && keyObj.fpr.toLowerCase().indexOf(searchTxt) >= 0) {
       showNode = true;
     }
     // does a sub user (partially) match?
     if (showNode === false) {
-      for (var subUidIdx = 0; subUidIdx < gKeyList[node.id].SubUserIds.length; subUidIdx++) {
-        uid = gKeyList[node.id].SubUserIds[subUidIdx].userId;
+      for (var subUidIdx = 0; subUidIdx < keyObj.SubUserIds.length; subUidIdx++) {
+        uid = keyObj.SubUserIds[subUidIdx].userId;
         if (uid.toLowerCase().indexOf(searchTxt) >= 0) {
           showNode = true;
         }
@@ -1396,8 +1424,8 @@ function enigApplyFilter() {
     }
     // does a sub key of (partially) match?
     if (showNode === false) {
-      for (var subKeyIdx = 0; subKeyIdx < gKeyList[node.id].subKeys.length; subKeyIdx++) {
-        subkey = gKeyList[node.id].subKeys[subKeyIdx].keyId;
+      for (var subKeyIdx = 0; subKeyIdx < keyObj.subKeys.length; subKeyIdx++) {
+        subkey = keyObj.subKeys[subKeyIdx].keyId;
         if (subkey.toLowerCase().indexOf(searchTxt) >= 0) {
           showNode = true;
         }
@@ -1405,7 +1433,7 @@ function enigApplyFilter() {
     }
     // take option to show invalid/untrusted... keys into account
     var hideNode = true;
-    if (showNode && determineHiddenKeys(gKeyList[node.id], showInvalidKeys, showUntrustedKeys, showOthersKeys)) {
+    if (showNode && determineHiddenKeys(keyObj, showInvalidKeys, showUntrustedKeys, showOthersKeys)) {
       hideNode = false;
       foundResult = true;
     }
@@ -1444,12 +1472,14 @@ function enigmailKeyServerAcess(accessType, callbackFunc) {
     }
   }
 
+  var keyList = [];
+  var keyIds = [];
+  for (var i = 0; i < selKeyList.length; i++) {
+    //keyList.push("0x" + gKeyList[selKeyList[i]].keyId.substr(-8, 8) + " - " + gKeyList[selKeyList[i]].userId);
+    keyIds.push(gKeyList[selKeyList[i]].keyId);
+  }
   if (accessType != nsIEnigmail.REFRESH_KEY) {
-    var keyList = [];
-    for (var i = 0; i < selKeyList.length; i++) {
-      keyList.push("0x" + selKeyList[i].substr(-8, 8) + " - " + gKeyList[selKeyList[i]].userId);
-    }
-    inputObj.keyId = keyList.join(", ");
+    inputObj.keyId = keyIds.join(", ");
   }
   else {
     inputObj.keyId = "";
@@ -1464,7 +1494,7 @@ function enigmailKeyServerAcess(accessType, callbackFunc) {
   var keyDlObj = {
     accessType: accessType,
     keyServer: resultObj.value,
-    keyList: "0x" + selKeyList.join(" 0x"),
+    keyList: "0x" + keyIds.join(" 0x"),
     cbFunc: callbackFunc
   };
 

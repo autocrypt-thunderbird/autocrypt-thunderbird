@@ -44,18 +44,8 @@ function onLoad() {
   window.arguments[1].refresh = false;
 
   gKeyId = window.arguments[0].keyId;
-  gKeyList = window.arguments[0].keyListArr;
 
   reloadData();
-
-  if (window.arguments[0].secKey) {
-    setLabel("keyType", EnigmailLocale.getString("keyTypePair"));
-    document.getElementById("ownKeyCommands").removeAttribute("hidden");
-  }
-  else {
-    document.getElementById("ownKeyCommands").setAttribute("hidden", "true");
-    setLabel("keyType", EnigmailLocale.getString("keyTypePublic"));
-  }
 }
 
 /***
@@ -98,6 +88,15 @@ function reloadData() {
 
   let keyObj = EnigmailKeyRing.getKeyById(gKeyId);
   if (keyObj) {
+
+    if (keyObj.secretAvailable) {
+      setLabel("keyType", EnigmailLocale.getString("keyTypePair"));
+      document.getElementById("ownKeyCommands").removeAttribute("hidden");
+    }
+    else {
+      document.getElementById("ownKeyCommands").setAttribute("hidden", "true");
+      setLabel("keyType", EnigmailLocale.getString("keyTypePublic"));
+    }
 
     if (keyObj.photoAvailable === true) {
       photoImg.setAttribute("src", "enigmail://photo/0x" + gKeyId);

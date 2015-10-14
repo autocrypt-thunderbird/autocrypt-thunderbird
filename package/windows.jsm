@@ -451,12 +451,12 @@ const EnigmailWindows = {
 
     keyId = keyId.replace(/^0x/, "");
 
-    EnigmailKeyRing.loadKeyList(win, refresh, keyListObj);
+    if (refresh) {
+      EnigmailKeyRing.clearCache();
+    }
 
     const inputObj = {
-      keyId: keyId,
-      keyListArr: keyListObj.keyList,
-      secKey: keyListObj.keyList[keyId].secretAvailable
+      keyId: keyId
     };
     const resultObj = {
       refresh: false
