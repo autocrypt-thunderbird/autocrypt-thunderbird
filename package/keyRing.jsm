@@ -223,8 +223,10 @@ var EnigmailKeyRing = {
         if (keyId.search(/^[0-9a-f]+$/i) === 0) {
           return this.getKeyByFingerprint(keyId);
         }
-        else
-          return this.getKeysByUserId(keyId);
+        else {
+          EnigmailLog.ERROR("keyRing.jsm: getKeyById: invalid keyId '" + keyId + "'\n");
+          throw Components.results.NS_ERROR_FAILURE;
+        }
         break;
       default:
         s = new RegExp(keyId + "$", "i");

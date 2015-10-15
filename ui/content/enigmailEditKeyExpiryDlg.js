@@ -50,9 +50,9 @@ function onLoad() {
  * Display all the subkeys in XUL element "keyListChildren"
  */
 function reloadData() {
-  var enigmailSvc = GetEnigmailSvc();
+  var enigmailSvc = EnigmailCore.getService(window);
   if (!enigmailSvc) {
-    EnigAlert(EnigGetString("accessError"));
+    EnigmailDialog.alert(window, EnigmailLocale.getString("accessError"));
     window.close();
     return;
   }
@@ -62,32 +62,162 @@ function reloadData() {
   var treeChildren = document.getElementById("keyListChildren");
 
   // clean lists
-  EnigCleanGuiList(treeChildren);
+  while (treeChildren.firstChild) {
+    treeChildren.removeChild(treeChildren.firstChild);
+  }
 
-  var keyListStr = EnigmailKeyRing.getKeySig("0x" + gKeyId, exitCodeObj, errorMsgObj);
-  if (exitCodeObj.value === 0) {
-    var keyDetails = EnigGetKeyDetails(keyListStr);
 
-    for (var i = 0; i < keyDetails.subkeyList.length; i++) {
-      EnigAddSubkeyWithSelectboxes(treeChildren, keyDetails.subkeyList[i]);
+  let keyObj = EnigmailKeyRing.getKeyById(gKeyId);
+  if (keyObj) {
+    addSubkeyWithSelectboxes(treeChildren, keyObj);
+    for (let i = 0; i < keyObj.subKeys.length; i++) {
+      addSubkeyWithSelectboxes(treeChildren, keyObj.subKeys[i], keyObj.subKeys.length + 1);
     }
   }
 }
 
+/**
+ * Add each subkey to the GUI list. Use this function if there is a preceeding column with checkboxes.
+ *
+ * @param  treeChildren - XUL obj    GUI element, where the keys will be listed.
+ * @param  subkey       - Object     subkey from KeyObject  Informations of the current key
+ * @param  keyCount     - Integer    Count of all keys (primary + subkeys)
+ *
+ * The internal logic of this function works so, that the main key is always selected.
+ * Also all valid (not expired, not revoked) subkeys are selected. If there is only
+ * one subkey, it is also always pre-selected.
+ *
+ */
+function addSubkeyWithSelectboxes(treeChildren, subkey, keyCount) {
+  EnigmailLog.DEBUG("enigmailEditKeyExpiryDlg.js: addSubkeyWithSelectboxes(" + subkey.keyId + ")\n");
+
+  var preSelected;
+  // Pre-Selection logic:
+  if (subkey.keyTrust === "r") {
+    // Revoked keys can not be changed.
+    preSelected = -1;
+  }
+  else {
+    if (subkey.type === "pub") {
+      // The primary key is ALWAYS selected.
+      preSelected = 1;
+    }
+    else if (keyCount === 2) {
+      // If only 2 keys are here (primary + 1 subkey) then preSelect them anyway.
+      preSelected = 1;
+    }
+    else if (subkey.keyTrust === "e") {
+      // Expired keys are normally un-selected.
+      preSelected = 0;
+    }
+    else {
+      // A valid subkey is pre-selected.
+      preSelected = 1;
+    }
+  }
+  var selectCol = document.createElement("treecell");
+  selectCol.setAttribute("id", "indicator");
+  EnigSetActive(selectCol, preSelected);
+
+
+  addSubkey(treeChildren, subkey, selectCol);
+}
+
+/**
+ * Add each subkey to the GUI list.
+ *
+ * @param  treeChildren - XUL obj   GUI element, where the keys will be listed.
+ * @param  subkey       - Object    subkey from KeyObject  Informations of the current key
+ * @param  Optional     - Object    If set, it defines if the row is pre-selected
+ *                                  (assumed, there is a preceeding select column)
+ */
+function addSubkey(treeChildren, subkey, selectCol = false) {
+  EnigmailLog.DEBUG("enigmailEditKeyExpiryDlg.js: addSubkey(" + subkey.keyId + ")\n");
+
+  // Get expiry state of this subkey
+  var expire;
+  if (subkey.keyTrust === "r") {
+    expire = EnigmailLocale.getString("keyValid.revoked");
+  }
+  else if (subkey.expiryTime.length === 0) {
+    expire = EnigmailLocale.getString("keyExpiryNever");
+  }
+  else {
+    expire = subkey.expiry;
+  }
+
+  var aRow = document.createElement("treerow");
+  var treeItem = document.createElement("treeitem");
+  var subkeyStr = EnigmailLocale.getString(subkey.type === "sub" ? "keyTypeSubkey" : "keyTypePrimary");
+  if (selectCol !== false) {
+    aRow.appendChild(selectCol);
+  }
+  aRow.appendChild(createCell(subkeyStr)); // subkey type
+  aRow.appendChild(createCell("0x" + subkey.keyId.substr(-8, 8))); // key id
+  aRow.appendChild(createCell(EnigmailLocale.getString("keyAlgorithm_" + subkey.algorithm))); // algorithm
+  aRow.appendChild(createCell(subkey.keySize)); // size
+  aRow.appendChild(createCell(subkey.created)); // created
+  aRow.appendChild(createCell(expire)); // expiry
+
+  var usagetext = "";
+  var i;
+  //  e = encrypt
+  //  s = sign
+  //  c = certify
+  //  a = authentication
+  //  Capital Letters are ignored, as these reflect summary properties of a key
+
+  var singlecode = "";
+  for (i = 0; i < subkey.keyUseFor.length; i++) {
+    singlecode = subkey.keyUseFor.substr(i, 1);
+    switch (singlecode) {
+      case "e":
+        if (usagetext.length > 0) {
+          usagetext = usagetext + ", ";
+        }
+        usagetext = usagetext + EnigmailLocale.getString("keyUsageEncrypt");
+        break;
+      case "s":
+        if (usagetext.length > 0) {
+          usagetext = usagetext + ", ";
+        }
+        usagetext = usagetext + EnigmailLocale.getString("keyUsageSign");
+        break;
+      case "c":
+        if (usagetext.length > 0) {
+          usagetext = usagetext + ", ";
+        }
+        usagetext = usagetext + EnigmailLocale.getString("keyUsageCertify");
+        break;
+      case "a":
+        if (usagetext.length > 0) {
+          usagetext = usagetext + ", ";
+        }
+        usagetext = usagetext + EnigmailLocale.getString("keyUsageAuthentication");
+        break;
+    } // * case *
+  } // * for *
+
+  aRow.appendChild(createCell(usagetext)); // usage
+  treeItem.appendChild(aRow);
+  treeChildren.appendChild(treeItem);
+}
+
+
 function enigmailKeySelCallback(event) {
   EnigmailLog.DEBUG("enigmailEditKeyExpiryDlg.js: enigmailKeySelCallback\n");
 
-  var Tree = document.getElementById("subkeyList");
+  var treeList = document.getElementById("subkeyList");
   var row = {};
   var col = {};
   var elt = {};
-  Tree.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, elt);
+  treeList.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, elt);
   if (row.value == -1)
     return;
 
 
-  var treeItem = Tree.contentView.getItemAtIndex(row.value);
-  Tree.currentItem = treeItem;
+  var treeItem = treeList.contentView.getItemAtIndex(row.value);
+  treeList.currentItem = treeItem;
   if (col.value.id != "selectionCol")
     return;
 
