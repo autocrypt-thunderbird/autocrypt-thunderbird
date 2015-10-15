@@ -42,6 +42,8 @@ Components.utils.import("resource://enigmail/locale.jsm");
 Components.utils.import("resource://enigmail/dialog.jsm");
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 
+var gKeyList = [];
+
 function onLoad() {
   // set current key trust if only one key is changed
   var enigmailSvc = EnigmailCore.getService(window);
@@ -55,33 +57,38 @@ function onLoad() {
     window.arguments[1].refresh = false;
     var currTrust = -1;
     var lastTrust = -1;
-    var sigListStr = EnigmailKeyRing.getKeySig("0x" + window.arguments[0].keyId.join(" 0x"), exitCodeObj, errorMsgObj);
 
-    if (exitCodeObj.value === 0) {
-      var sigList = sigListStr.split(/[\n\r]+/);
-      for (let i = 0; i < sigList.length; i++) {
-        var aLine = sigList[i].split(/:/);
-        if (aLine[0] == "pub") {
-          currTrust = (("-nmfuq").indexOf(aLine[8]) % 5) + 1;
-          if (lastTrust == -1) lastTrust = currTrust;
-          if (currTrust != lastTrust) {
-            currTrust = -1;
-            break;
-          }
+    gKeyList = [];
+    let k = window.arguments[0].keyId;
+
+    for (let i in k) {
+      let o = EnigmailKeyRing.getKeyById(k[i]);
+      if (o) {
+        gKeyList.push(o);
+      }
+    }
+
+    if (gKeyList.length > 0) {
+      for (let i = 0; i < gKeyList.length; i++) {
+        currTrust = (("-nmfuq").indexOf(gKeyList[i].keyTrust) % 5) + 1;
+        if (lastTrust == -1) lastTrust = currTrust;
+        if (currTrust != lastTrust) {
+          currTrust = -1;
+          break;
         }
       }
-      if (currTrust > 0) {
-        var t = document.getElementById("trustLevel" + currTrust.toString());
-        document.getElementById("trustLevelGroup").selectedItem = t;
-      }
+    }
+    if (currTrust > 0) {
+      var t = document.getElementById("trustLevel" + currTrust.toString());
+      document.getElementById("trustLevelGroup").selectedItem = t;
     }
   }
   catch (ex) {}
 
   var keyIdList = document.getElementById("keyIdList");
 
-  for (let i = 0; i < window.arguments[0].userId.length; i++) {
-    var keyId = window.arguments[0].userId[i] + " - 0x" + window.arguments[0].keyId[i].substr(-8, 8);
+  for (let i = 0; i < gKeyList.length; i++) {
+    var keyId = gKeyList[i].userId + " - 0x" + gKeyList[i].keyId.substr(-8, 8);
     keyIdList.appendItem(keyId);
   }
 }
@@ -92,7 +99,7 @@ function processNextKey(index) {
   var t = document.getElementById("trustLevelGroup");
 
   EnigmailKeyEditor.setKeyTrust(window,
-    window.arguments[0].keyId[index],
+    gKeyList[index].keyId,
     Number(t.selectedItem.value),
     function(exitCode, errorMsg) {
       if (exitCode !== 0) {
@@ -105,7 +112,7 @@ function processNextKey(index) {
       }
 
       ++index;
-      if (index == window.arguments[0].keyId.length)
+      if (index >= gKeyList.length)
         window.close();
       else {
         processNextKey(index);
