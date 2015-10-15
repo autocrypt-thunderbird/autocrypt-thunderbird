@@ -9,7 +9,7 @@
 "use strict";
 
 /* global EnigmailFiles: false */
-do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, getKeyListEntryOfKey: false, secretKeyList: false, userIdList: false, gKeyListObj: false */
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, getKeyListEntryOfKey: false, secretKeyList: false, gKeyListObj: true, userIdList: false */
 Components.utils.import("resource://enigmail/trust.jsm"); /*global EnigmailTrust: false */
 
 
@@ -295,7 +295,7 @@ test(function shouldCreateKeyListObject() {
     "uid:o::::1389038412::44F73158EF0F47E4595B1FD8EC740519DE24B994::A User ID with CAPITAL letters <user1@enigmail-test.de>:",
     "uid:o::::1389038405::3FC8999BDFF08EF4210026D3F1C064C072517376::A second User ID with CAPITAL letters <user1@enigmail-test.com>:",
     "sub:o:4096:1:E2DEDFFB80C14584:1388513885:1546188604:::::e:",
-    ];
+  ];
 
   // from: "P:\Program Files (x86)\GNU\GnuPG\pub\gpg2.exe" --charset utf-8 --display-charset utf-8 --batch --no-tty --status-fd 2 --with-fingerprint --fixed-list-mode --with-colons --list-secret-keys
   let secKeyInfo = [
@@ -304,14 +304,15 @@ test(function shouldCreateKeyListObject() {
     "uid:::::::44F73158EF0F47E4595B1FD8EC740519DE24B994::A User ID with CAPITAL letters <user1@enigmail-test.de>:",
     "uid:::::::3FC8999BDFF08EF4210026D3F1C064C072517376::A second User ID with CAPITAL letters <user1@enigmail-test.com>:",
     "ssb::4096:1:E2DEDFFB80C14584:1388513885::::::::::",
-    ];
+  ];
 
   let keyListObj = {};
   EnigmailKeyRing.createAndSortKeyList(keyInfo, secKeyInfo,
-                                       keyListObj,   // OUT
-                                       "validity",   // sorted acc. to key validity
-                                       -1);          // descending
+    keyListObj, // OUT
+    "validity", // sorted acc. to key validity
+    -1); // descending
 
+  gKeyListObj = keyListObj;
   Assert.notEqual(keyListObj, null);
   Assert.notEqual(keyListObj.keySortList, null);
   Assert.notEqual(keyListObj.keySortList.length, null);
@@ -319,18 +320,18 @@ test(function shouldCreateKeyListObject() {
   Assert.equal(keyListObj.keySortList[0].userId, "a user id with capital letters <user1@enigmail-test.de>");
   Assert.equal(keyListObj.keySortList[0].keyId, "DEF9FC808A3FF001");
   Assert.notEqual(keyListObj.keyList, null);
-  Assert.equal(keyListObj.keyList.DEF9FC808A3FF001.userId, "A User ID with CAPITAL letters <user1@enigmail-test.de>");
+  Assert.equal(keyListObj.keyList[keyListObj.keySortList[0].keyNum].userId, "A User ID with CAPITAL letters <user1@enigmail-test.de>");
 
   const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
   let minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   let details = {};
-  let key = EnigmailKeyRing.getValidKeyForRecipient("user1@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
+  let key = EnigmailKeyRing.getValidKeyForRecipient("user1@enigmail-test.de", minTrustLevelIndex, details);
   Assert.notEqual(key, null);
   Assert.equal(key, "DEF9FC808A3FF001");
 
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("f");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("user1@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
+  key = EnigmailKeyRing.getValidKeyForRecipient("user1@enigmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, null);
   Assert.notEqual(details.msg, null);
 });
@@ -341,7 +342,7 @@ const KeyRingHelper = {
     let publicKeys = EnigmailFiles.readFile(pkFile);
     let rows = publicKeys.split("\n");
     let result = [];
-    for (let i=0; i<rows.length; ++i) {
+    for (let i = 0; i < rows.length; ++i) {
       let row = rows[i];
       if (row !== "" && row[0] != "#") {
         result.push(row);
@@ -355,10 +356,11 @@ test(function shouldCreateKeyListObject() {
   let keyList = KeyRingHelper.loadKeyList();
   let keyListObj = {};
   EnigmailKeyRing.createAndSortKeyList(keyList, [],
-                                       keyListObj,   // OUT
-                                       "validity",   // sorted acc. to key validity
-                                       -1);          // descending
+    keyListObj, // OUT
+    "validity", // sorted acc. to key validity
+    -1); // descending
 
+  gKeyListObj = keyListObj;
   Assert.notEqual(keyListObj, null);
   Assert.notEqual(keyListObj.keySortList, null);
   Assert.notEqual(keyListObj.keySortList.length, null);
@@ -376,7 +378,7 @@ test(function shouldCreateKeyListObject() {
   // unknown key:
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("unknown@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
+  key = EnigmailKeyRing.getValidKeyForRecipient("unknown@enigmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, null);
   Assert.equal(details.msg, null);
   //Assert.equal(details.msg, "undefined");
@@ -384,33 +386,33 @@ test(function shouldCreateKeyListObject() {
   // ordinary full trusted key:
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("f");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("full@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
+  key = EnigmailKeyRing.getValidKeyForRecipient("full@enigmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, "0003AAAA00010001");
   Assert.equal(details.msg, null);
 
   // multiple non-trusted and one full trusted keys
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("f");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("multiple-onefull@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
+  key = EnigmailKeyRing.getValidKeyForRecipient("multiple-onefull@enigmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, "0030AAAA00020001");
   Assert.equal(details.msg, null);
 
   // multiple non-trusted and two full trusted keys (first taken)
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("f");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("multiple-twofull@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
+  key = EnigmailKeyRing.getValidKeyForRecipient("multiple-twofull@enigmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, "0034AAAA00020001");
   Assert.equal(details.msg, null);
 
   // multiple non-trusted and one marginal trusted keys
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("f");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("multiple-onemarginal@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
+  key = EnigmailKeyRing.getValidKeyForRecipient("multiple-onemarginal@enigmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, null);
   Assert.equal(details.msg, "ProblemNoKey");
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("multiple-onemarginal@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
+  key = EnigmailKeyRing.getValidKeyForRecipient("multiple-onemarginal@enigmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, "0031AAAA00020001");
   Assert.equal(details.msg, null);
 
@@ -418,8 +420,7 @@ test(function shouldCreateKeyListObject() {
   // (faked keys case if no special trust given)
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("multiple-nofull@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
+  key = EnigmailKeyRing.getValidKeyForRecipient("multiple-nofull@enigmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, null);
   Assert.equal(details.msg, "ProblemMultipleKeys");
 });
-

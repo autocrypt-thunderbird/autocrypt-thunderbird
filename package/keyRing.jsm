@@ -162,7 +162,8 @@ var EnigmailKeyRing = {
    */
   getAllKeys: function(win, sortColumn, sortDirection) {
     if (gKeyListObj.keySortList.length === 0) {
-      this.loadKeyList(win, false, gKeyListObj, sortColumn, sortDirection);
+      let a =
+        this.loadKeyList(win, false, gKeyListObj, sortColumn, sortDirection);
     }
     else {
       if (sortColumn) {
@@ -172,7 +173,6 @@ var EnigmailKeyRing = {
 
     return gKeyListObj;
   },
-
 
   /**
    * get a list of all keys that have a secret key
@@ -1079,7 +1079,7 @@ var EnigmailKeyRing = {
 
     EnigmailKeyRing.createAndSortKeyList(aGpgUserList, aGpgSecretsList, keyListObj, sortColumn, sortDirection);
   },
-    
+
   createAndSortKeyList: function(aGpgUserList, aGpgSecretsList, keyListObj, sortColumn, sortDirection) {
     EnigmailLog.DEBUG("keyRing.jsm: createKeyList()\n");
 
@@ -1091,7 +1091,7 @@ var EnigmailKeyRing = {
       if (listRow.length >= 0) {
         if (listRow[ENTRY_ID] == "sec") {
           let k = this.getKeyById(listRow[KEY_ID]);
-          if (typeof(k) === "object") {
+          if (k && typeof(k) === "object") {
             k.secretAvailable = true;
           }
         }
@@ -1279,7 +1279,7 @@ var EnigmailKeyRing = {
    * @param details if not null returns error in details.msg
    * @return: found key (without leading "0x") or null
    */
-  getValidKeyForRecipient: function (emailAddr, minTrustLevelIndex, keyList, keySortList, details) {
+  getValidKeyForRecipient: function(emailAddr, minTrustLevelIndex, details) {
     EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: getValidKeyForRecipient(): emailAddr=\"" + emailAddr + "\"\n");
     const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
     const fullTrustIndex = TRUSTLEVELS_SORTED.indexOf("f");
@@ -1292,11 +1292,15 @@ var EnigmailKeyRing = {
     var foundTrustLevel = null;
     var foundKeyTrustIndex = null;
 
+    let k = this.getAllKeys(null, "validity", -1);
+    let keyList = k.keyList;
+    let keySortList = k.keySortList;
+
     // **** LOOP to check against each key
     // - note: we have sorted the keys according to validity
     //         to abort the loop as soon as we reach keys that are not valid enough
     for (var idx = 0; idx < keySortList.length; idx++) {
-      var keyObj = keyList[keySortList[idx].keyId];
+      var keyObj = keyList[keySortList[idx].keyNum];
       var keyTrust = keyObj.keyTrust;
       var keyTrustIndex = TRUSTLEVELS_SORTED.indexOf(keyTrust);
       //EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: getValidKeyForRecipient():  check key " + keyObj.keyId + "\n");
@@ -1658,4 +1662,3 @@ KeyObject.prototype = {
 };
 
 EnigmailKeyRing.clearCache();
-

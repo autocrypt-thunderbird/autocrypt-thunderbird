@@ -53,9 +53,6 @@ if (!Enigmail) var Enigmail = {};
 
 Enigmail.hlp = {
 
-  enigValidityKeyList: null,
-  enigValidityKeySortList: null,
-
   /* try to find valid key to passed email address
    * @return: list of all found key (with leading "0x") or null
    *          details in details parameter
@@ -102,20 +99,6 @@ Enigmail.hlp = {
     var resultingArray = []; // resulting key list (if all valid)
     var keyMissing;
     try {
-      // get list of known keys
-      if (!keyList) {
-        var keyListObj = {};
-        EnigmailKeyRing.loadKeyList(window,
-          false, // refresh key infos if required
-          keyListObj, // returned list
-          "validity", // sorted acc. to key validity
-          -1); // descending
-        this.enigValidityKeyList = keyListObj.keyList;
-        this.enigValidityKeySortList = keyListObj.keySortList;
-      }
-      var keyList = this.enigValidityKeyList;
-      var keySortList = this.enigValidityKeySortList;
-
       // ****** DEBUG ************** print keyList (debug issue)
       //EnigmailLog.DEBUG("                   keyList:\n");
       //EnigmailLog.DEBUG("                   length:  "+ keySortList.length + "\n");
@@ -159,7 +142,7 @@ Enigmail.hlp = {
         if (addr.indexOf('@') >= 0) {
           // try email match:
           var addrErrDetails = {};
-          let key = EnigmailKeyRing.getValidKeyForRecipient(addr, minTrustLevelIndex, keyList, keySortList, addrErrDetails);
+          let key = EnigmailKeyRing.getValidKeyForRecipient(addr, minTrustLevelIndex, addrErrDetails);
           if (details && addrErrDetails.msg) {
             errMsg = addrErrDetails.msg;
           }
@@ -209,7 +192,8 @@ Enigmail.hlp = {
             detailsElem.msg = errMsg;
             details.errArray.push(detailsElem);
           }
-          EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): return null (no single valid key found for=\"" + addr + "\" with minTrustLevel=\"" + minTrustLevel + "\")\n");
+          EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): return null (no single valid key found for=\"" + addr + "\" with minTrustLevel=\"" + minTrustLevel +
+            "\")\n");
         }
       }
     }
