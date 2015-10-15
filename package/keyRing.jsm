@@ -200,7 +200,9 @@ var EnigmailKeyRing = {
   /**
    * get 1st key object that matches a given key ID or subkey ID
    *
-   * @param keyId - String: key Id (16 characters (preferred) or 8 characters), optionally preceeded with "0x"
+   * @param keyId - String: key Id with 16 characters (preferred) or 8 characters),
+   *                        or fingerprint (40 or 32 characters).
+   *                        Optionally preceeded with "0x"
    *
    * @return Object - found KeyObject or null if key not found
    */
@@ -212,11 +214,20 @@ var EnigmailKeyRing = {
       keyId = keyId.substr(2);
     }
 
-    if (keyId.length === 16) {
-      s = new RegExp("^" + keyId + "$", "i");
-    }
-    else {
-      s = new RegExp(keyId + "$", "i");
+    switch (keyId.length) {
+      case 16:
+        s = new RegExp("^" + keyId + "$", "i");
+        break;
+      case 40:
+      case 32:
+        if (keyId.search(/^[0-9a-f]+$/i) === 0) {
+          return this.getKeyByFingerprint(keyId);
+        }
+        else
+          return this.getKeysByUserId(keyId);
+        break;
+      default:
+        s = new RegExp(keyId + "$", "i");
     }
 
     this.getAllKeys(); // ensure keylist is loaded;
@@ -249,8 +260,10 @@ var EnigmailKeyRing = {
 
     this.getAllKeys(); // ensure keylist is loaded;
 
+    let s = new RegExp("^" + fpr + "$", "i");
+
     for (let i in gKeyListObj.keyList) {
-      if (gKeyListObj.keyList[i].fpr === fpr) {
+      if (gKeyListObj.keyList[i].fpr.search(s) === 0) {
         return gKeyListObj.keyList[i];
       }
     }
