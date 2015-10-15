@@ -260,36 +260,20 @@ function enigSetKeys(keyList) {
     encryptionList.appendItem(EnigGetString("noKeyToUse"), "");
   }
   else {
-    var exitCodeObj = {};
-    var statusFlagsObj = {};
-    var errorMsgObj = {};
-    var userListTxt = EnigmailKeyRing.getUserIdList(false,
-      false,
-      exitCodeObj,
-      statusFlagsObj,
-      errorMsgObj);
-    if (exitCodeObj.value !== 0) {
-      EnigAlert(errorMsgObj.value);
-      return;
-    }
-
-    for (var i = 0; i < keyList.length; i++) {
-      var keyId = keyList[i].substring(2);
-      var keyStart = userListTxt.indexOf(":" + keyId + ":");
-      keyStart += userListTxt.substr(keyStart).indexOf("\nuid:");
-      var keyEnd = userListTxt.substring(keyStart + 2).indexOf("\n") + 2;
-      var userDescList = userListTxt.substr(keyStart, keyEnd).split(/:/);
-      var userDesc = "";
-      if (userDescList.length >= 9) {
-        userDesc = userDescList[9];
-      }
+    for (let i = 0; i < keyList.length; i++) {
 
       if (keyList[i].indexOf("GROUP:") === 0) {
         encryptionList.appendItem(keyList[i].substr(6) + " " + EnigGetString("keyTrust.group"), keyList[i]);
       }
-      else
-        encryptionList.appendItem("0x" + keyList[i].substr(10, 8) + " (" + EnigConvertGpgToUnicode(userDesc) + ")",
-          keyList[i]);
+      else {
+        let keyObj = EnigmailKeyRing.getKeyById(keyList[i]);
+        if (keyObj) {
+          encryptionList.appendItem("0x" + keyObj.keyId.substr(-8, 8) + " (" + keyObj.userId + ")", keyList[i]);
+        }
+        else {
+          encryptionList.appendItem(keyList[i], keyList[i]);
+        }
+      }
     }
   }
 }

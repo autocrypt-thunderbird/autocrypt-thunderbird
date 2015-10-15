@@ -457,6 +457,9 @@ var EnigmailKeyRing = {
     return r;
   },
 
+  /**
+   * @deprecated - use clearCache instead
+   */
   invalidateUserIdList: function() {
     // clean the userIdList to force reloading the list at next usage
     this.clearCache();
@@ -478,7 +481,7 @@ var EnigmailKeyRing = {
    * returns the output of --with-colons --list[-secret]-keys
    * INTERNAL USE ONLY
    */
-  getUserIdList: function(secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
+  _getUserIdList: function(secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
     if (refresh ||
       (secretOnly && secretKeyList === null) ||
       ((!secretOnly) && userIdList === null)) {
@@ -533,6 +536,7 @@ var EnigmailKeyRing = {
   },
 
   // returns the output of --with-colons --list-sig
+  // INTERNAL USE ONLY
   getKeySig: function(keyId, exitCodeObj, errorMsgObj) {
     const args = EnigmailGpg.getStandardArgs(true).
     concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-sig"]).
@@ -561,6 +565,7 @@ var EnigmailKeyRing = {
 
   /**
    * Return signatures for a given key list
+   * INTERNAL USE ONLY
    *
    * @param String gpgKeyList         Output from gpg such as produced by getKeySig()
    *                                  Only the first public key is processed!
@@ -1236,7 +1241,7 @@ var EnigmailKeyRing = {
     const errorMsgObj = {};
 
     if (!refresh) refresh = false;
-    const keyList = EnigmailKeyRing.getUserIdList(true, refresh, exitCodeObj, {}, errorMsgObj);
+    const keyList = EnigmailKeyRing._getUserIdList(true, refresh, exitCodeObj, {}, errorMsgObj);
 
     if (exitCodeObj.value !== 0 && keyList.length === 0) {
       EnigmailDialog.alert(win, errorMsgObj.value);
@@ -1462,7 +1467,7 @@ function obtainKeyList(win, secretOnly, refresh) {
     const exitCodeObj = {};
     const errorMsgObj = {};
 
-    userList = EnigmailKeyRing.getUserIdList(secretOnly,
+    userList = EnigmailKeyRing._getUserIdList(secretOnly,
       refresh,
       exitCodeObj, {},
       errorMsgObj);
@@ -1553,7 +1558,7 @@ function getKeyListEntryOfKey(keyId) {
   let statusFlags = {};
   let errorMsg = {};
   let exitCodeObj = {};
-  let listText = EnigmailKeyRing.getUserIdList(false, false, exitCodeObj, statusFlags, errorMsg);
+  let listText = EnigmailKeyRing._getUserIdList(false, false, exitCodeObj, statusFlags, errorMsg);
 
   // listText contains lines such as:
   // tru::0:1407688184:1424970931:3:1:5

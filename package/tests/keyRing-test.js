@@ -96,10 +96,10 @@ test(withTestGpgHome(withEnigmail(function shouldGetUserIdList() {
   const secretKey = do_get_file("resources/dev-strike.sec", false);
   EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), publicKey, {}, {});
   EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), secretKey, {}, {});
-  EnigmailKeyRing.getUserIdList(false, false, {}, {}, {});
+  EnigmailKeyRing._getUserIdList(false, false, {}, {}, {});
   Assert.equal(secretKeyList, null);
   Assert.notEqual(userIdList, null);
-  EnigmailKeyRing.getUserIdList(true, false, {}, {}, {});
+  EnigmailKeyRing._getUserIdList(true, false, {}, {}, {});
   Assert.notEqual(secretKeyList, null);
   Assert.notEqual(userIdList, null);
 })));
@@ -109,8 +109,8 @@ test(withTestGpgHome(withEnigmail(function shouldCleanupInvalidateUserIdList() {
   const secretKey = do_get_file("resources/dev-strike.sec", false);
   EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), publicKey, {}, {});
   EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), secretKey, {}, {});
-  EnigmailKeyRing.getUserIdList(false, false, {}, {}, {});
-  EnigmailKeyRing.getUserIdList(true, false, {}, {}, {});
+  EnigmailKeyRing._getUserIdList(false, false, {}, {}, {});
+  EnigmailKeyRing._getUserIdList(true, false, {}, {}, {});
   EnigmailKeyRing.invalidateUserIdList();
   Assert.equal(secretKeyList, null);
   Assert.equal(userIdList, null);
@@ -282,8 +282,8 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails(
     null, {});
   const keyDetails = EnigmailKeyRing.getKeyDetails("0xD535623BB60E9E71", false, true);
   Assert.assertContains(keyDetails, "strike.devtest@gmail.com");
-  EnigmailKeyRing.getUserIdList(false, false, {}, {}, {});
-  EnigmailKeyRing.getUserIdList(true, false, {}, {}, {});
+  EnigmailKeyRing._getUserIdList(false, false, {}, {}, {});
+  EnigmailKeyRing._getUserIdList(true, false, {}, {}, {});
   Assert.notEqual(userIdList, null);
   Assert.notEqual(secretKeyList, null);
 })));
