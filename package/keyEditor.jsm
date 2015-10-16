@@ -667,6 +667,7 @@ function keyTrustCallback(inputData, keyEdit, ret) {
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
     ret.exitCode = 0;
     ret.quitNow = true;
+    EnigmailKeyRing.clearCache();
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
     getPin(inputData.parent, EnigmailLocale.getString("enterAdminPin"), ret);

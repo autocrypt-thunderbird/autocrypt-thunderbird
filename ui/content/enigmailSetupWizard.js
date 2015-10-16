@@ -299,7 +299,8 @@ function checkGnupgInstallation() {
  * Check if secret keys are available
  */
 function checkSecretKeys() {
-  var keyList = EnigmailKeyRing.getSecretKeys(null, true);
+  EnigmailKeyRing.clearCache();
+  var keyList = EnigmailKeyRing.getAllSecretKeys(true);
   if (keyList && keyList.length > 0) {
     return true;
   }
@@ -687,10 +688,12 @@ function loadKeys() {
   }
   clearKeyListEntries();
 
+
   var exitCodeObj = {};
   var statusFlagsObj = {};
   var errorMsgObj = {};
-  var keyList = EnigmailKeyRing.getSecretKeys(window, true);
+  EnigmailKeyRing.clearCache();
+  var keyList = EnigmailKeyRing.getAllSecretKeys(true);
   if (!keyList) {
     return;
   }
@@ -698,13 +701,13 @@ function loadKeys() {
   var uidChildren = document.getElementById("uidSelectionChildren");
   for (i = 0; i < keyList.length; i++) {
     var item = uidChildren.appendChild(document.createElement('treeitem'));
-    item.setAttribute("keyId", keyList[i].id);
+    item.setAttribute("keyId", keyList[i].keyId);
     var row = item.appendChild(document.createElement('treerow'));
     var cell = row.appendChild(document.createElement('treecell'));
-    cell.setAttribute('label', keyList[i].name);
+    cell.setAttribute('label', keyList[i].userId);
     cell.setAttribute('observes', "bcKeyEnabled");
     cell = row.appendChild(document.createElement('treecell'));
-    cell.setAttribute('label', "0x" + keyList[i].id.substr(-8, 8));
+    cell.setAttribute('label', "0x" + keyList[i].keyId.substr(-8, 8));
     cell.setAttribute('observes', "bcKeyEnabled");
     cell = row.appendChild(document.createElement('treecell'));
     cell.setAttribute('label', keyList[i].created);

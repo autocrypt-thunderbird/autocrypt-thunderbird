@@ -175,23 +175,41 @@ var EnigmailKeyRing = {
   },
 
   /**
-   * get a list of all keys that have a secret key
+   * get a list of all (valid, usable) keys that have a secret key
    *
-   * @return Array of KeyObjects containing the found keys
+   * @param Boolean onlyValidKeys: if true, only filter valid usable keys
+   *
+   * @return Array of KeyObjects containing the found keys (sorted by userId)
    **/
 
-  getAllSecretKeys: function() {
+  getAllSecretKeys: function(onlyValidKeys = false) {
     this.getAllKeys(); // ensure keylist is loaded;
 
     let res = [];
 
     this.getAllKeys(); // ensure keylist is loaded;
 
-    for (let i in gKeyListObj.keyList) {
-      if (gKeyListObj.keyList[i].secretAvailable) {
-        res.push(gKeyListObj.keyList[i]);
+    if (!onlyValidKeys) {
+      for each(let key in gKeyListObj.keyList) {
+        if (key.secretAvailable) res.push(key);
       }
     }
+    else {
+      for each(let key in gKeyListObj.keyList) {
+        if (key.secretAvailable && key.keyUseFor.search(/D/) < 0) {
+          // key is not disabled and _usable_ for encryption signing and certification
+          if (key.keyUseFor.search(/E/) >= 0 &&
+            key.keyUseFor.search(/S/) >= 0 &&
+            key.keyUseFor.search(/C/) >= 0) {
+            res.push(key);
+          }
+        }
+      }
+    }
+
+    res.sort(function(a, b) {
+      return a.userId == b.userId ? (a.keyId < b.keyId ? -1 : 1) : (a.userId.toLowerCase() < b.userId.toLowerCase() ? -1 : 1);
+    });
 
     return res;
   },
@@ -693,100 +711,6 @@ var EnigmailKeyRing = {
     return r;
   },
 
-  /**
-   * Return details of given keys.
-   * INTERNAL USE ONLY
-   *
-   * @param  String  keyId              List of keys with 0x, separated by spaces.
-   * @param  Boolean uidOnly            false:
-   *                                      return all key details (full output of GnuPG)
-   *                                    true:
-   *                                      return only the user ID fields. Only UIDs with highest trust
-   *                                      level are returned.
-   * @param  Boolean withUserAttributes true: if uidOnly include "uat:jpegPhoto" (but not subkey IDs)
-   *
-   * @return String all key details or list of user IDs separated by \n.
-   */
-  _getKeyDetails: function(keyId, uidOnly, withUserAttributes) {
-    const args = EnigmailGpg.getStandardArgs(true).
-    concat(["--fixed-list-mode", "--with-fingerprint", "--with-colons", "--list-keys"]).
-    concat(keyId.split(" "));
-
-    const statusFlagsObj = {};
-    const exitCodeObj = {};
-    let listText = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, statusFlagsObj, {}, {});
-
-    if (!(statusFlagsObj.value & nsIEnigmail.BAD_SIGNATURE)) {
-      // ignore exit code as recommended by GnuPG authors
-      exitCodeObj.value = 0;
-    }
-
-    if (exitCodeObj.value !== 0) {
-      return "";
-    }
-
-    listText = listText.replace(/(\r\n|\r)/g, "\n");
-
-    const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
-    let maxTrustLevel = -1;
-
-    if (uidOnly) {
-      let userList = "";
-      let hideInvalidUid = true;
-      const lineArr = listText.split(/\n/);
-      for (let i = 0; i < lineArr.length; i++) {
-        // process lines such as:
-        //  tru::1:1395895453:1442881280:3:1:5
-        //  pub:f:4096:1:C1B875ED336XX959:2299509307:1546189300::f:::scaESCA:
-        //  fpr:::::::::102A1C8CC524A966849C33D7C8B157EA336XX959:
-        //  uid:f::::1388511201::67D5B96DC564598D4D4D9E0E89F5B83C9931A154::Joe Fox <joe@fox.com>:
-        //  sig:::1:C8B157EA336XX959:2299509307::::Joe Fox <joe@fox.com>:13x:::::2:
-        //  sub:e:2048:1:B214734F0F5C7041:1316219469:1199912694:::::e:
-        //  sub:f:2048:1:70E7A471DABE08B0:1316221524:1546189300:::::s:
-        const lineTokens = lineArr[i].split(/:/);
-        switch (lineTokens[ENTRY_ID]) {
-          case "pub":
-            if (EnigmailTrust.isInvalid(lineTokens[KEY_TRUST_ID])) {
-              // pub key not valid (anymore)-> display all UID's
-              hideInvalidUid = false;
-            }
-            break;
-          case "uid":
-            if (uidOnly && hideInvalidUid) {
-              const thisTrust = TRUSTLEVELS_SORTED.indexOf(lineTokens[KEY_TRUST_ID]);
-              if (thisTrust > maxTrustLevel) {
-                userList = lineTokens[USERID_ID] + "\n";
-                maxTrustLevel = thisTrust;
-              }
-              else if (thisTrust == maxTrustLevel) {
-                userList += lineTokens[USERID_ID] + "\n";
-              }
-              // else do not add uid
-            }
-            else if (!EnigmailTrust.isInvalid(lineTokens[KEY_TRUST_ID]) || !hideInvalidUid) {
-              // UID valid  OR  key not valid, but invalid keys allowed
-              userList += lineTokens[USERID_ID] + "\n";
-            }
-            break;
-          case "uat":
-            if (withUserAttributes) {
-              if (!EnigmailTrust.isInvalid(lineTokens[KEY_TRUST_ID]) || !hideInvalidUid) {
-                // IF  UID valid  OR  key not valid and invalid keys allowed
-                userList += "uat:jpegPhoto:" + lineTokens[KEY_ID] + "\n";
-              }
-            }
-            break;
-        }
-      }
-      return userList.
-      replace(/^\n+/, "").
-      replace(/\n+$/, "").
-      replace(/\n\n+/g, "\n");
-    }
-
-    return listText;
-  },
-
   extractKey: function(parent, exportFlags, userId, outputFile, exitCodeObj, errorMsgObj) {
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.extractKey: " + userId + "\n");
     const args = EnigmailGpg.getStandardArgs(true).
@@ -1276,70 +1200,6 @@ var EnigmailKeyRing = {
 
     return proc;
   },
-
-  /**
-   * Get a list of all valid (= usable) secret keys
-   *
-   *  win:     nsIWindow: optional parent window
-   *  refresh: Boolean:   optional. true ->  re-load keys from gpg
-   *                                false -> use cached values if available
-   */
-  getSecretKeys: function(win, refresh) {
-    // return a sorted array containing objects of (valid, usable) secret keys.
-    // @return: [ {name: <userId>, id: 0x1234ABCD, created: YYYY-MM-DD },  { ... } ]
-    const exitCodeObj = {};
-    const errorMsgObj = {};
-
-    if (!refresh) refresh = false;
-    const keyList = EnigmailKeyRing._getUserIdList(true, refresh, exitCodeObj, {}, errorMsgObj);
-
-    if (exitCodeObj.value !== 0 && keyList.length === 0) {
-      EnigmailDialog.alert(win, errorMsgObj.value);
-      return null;
-    }
-
-    const userList = keyList.split(/\n/);
-    const secretKeyList = [];
-    const secretKeyCreated = [];
-
-    let keyId = null;
-    const keys = [];
-    for (let i = 0; i < userList.length; i++) {
-      if (userList[i].substr(0, 4) == "sec:") {
-        let aLine = userList[i].split(/:/);
-        keyId = aLine[KEY_ID];
-        secretKeyCreated[keyId] = EnigmailTime.getDateTime(aLine[CREATED_ID], true, false);
-        secretKeyList.push(keyId);
-      }
-    }
-
-    const userList2 = EnigmailKeyRing._getKeyDetails(secretKeyList.join(" "), false, false).split(/\n/);
-
-    for (let i = 0; i < userList2.length; i++) {
-      let aLine = userList2[i].split(/:/);
-      switch (aLine[ENTRY_ID]) {
-        case "pub":
-          if (aLine[KEY_TRUST_ID].search(/[muf]/) === 0) keyId = aLine[KEY_ID]; // public key is valid
-          break;
-        case "uid":
-          if ((keyId) && (aLine[KEY_TRUST_ID].search(/[muf]/) === 0)) {
-            // UID is valid
-            keys.push({
-              name: EnigmailData.convertGpgToUnicode(aLine[USERID_ID]),
-              id: keyId,
-              created: secretKeyCreated[keyId]
-            });
-            keyId = null;
-          }
-      }
-    }
-
-    keys.sort(function(a, b) {
-      return a.name == b.name ? (a.id < b.id ? -1 : 1) : (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
-    });
-    return keys;
-  },
-
 
   /**** from enigmailMsgComposeHelper.js: */
 

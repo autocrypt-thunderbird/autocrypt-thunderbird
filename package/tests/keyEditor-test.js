@@ -91,21 +91,23 @@ test(withTestGpgHome(withEnigmail(function shouldGetSecretKeys() {
   const createDate = EnigmailTime.getDateTime(1430756251, true, false);
 
   const expectedKey = [{
-    "name": "anonymous strike <strike.devtest@gmail.com>",
-    "id": "781617319CE311C4",
-    "created": createDate
+    userId: "anonymous strike <strike.devtest@gmail.com>",
+    keyId: "781617319CE311C4",
+    created: createDate,
+    keyTrust: "u"
   }];
   do_test_pending();
   EnigmailKeyEditor.setKeyTrust(window,
     "781617319CE311C4",
     5,
     function() {
-      const result = EnigmailKeyRing.getSecretKeys(window);
+      const result = EnigmailKeyRing.getAllSecretKeys();
       Assert.equal(result.length, 1);
-      Assert.equal(result[0].name, expectedKey[0].name);
-      Assert.equal(result[0].id, expectedKey[0].id);
+      Assert.equal(result[0].userId, expectedKey[0].userId);
+      Assert.equal(result[0].keyId, expectedKey[0].keyId);
       // FIXME: The expected date needs to be converted to the locale of the enviroment
       Assert.equal(result[0].created, expectedKey[0].created);
+      Assert.equal(result[0].keyTrust, expectedKey[0].keyTrust);
       do_test_finished();
     }
   );

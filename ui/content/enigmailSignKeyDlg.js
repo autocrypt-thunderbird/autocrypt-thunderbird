@@ -57,7 +57,7 @@ function onLoad() {
     window.close();
     return;
   }
-  var keys = EnigmailKeyRing.getSecretKeys(window);
+  var keys = EnigmailKeyRing.getAllSecretKeys(true);
   if (keys.length === 0) {
     EnigmailDialog.alert(null, EnigmailLocale.getString("noTrustedOwnKeys"));
     window.close();
@@ -66,7 +66,7 @@ function onLoad() {
   var menulist = document.getElementById("signWithKey");
 
   for each(key in keys) {
-    menulist.appendItem(key.name + " - 0x" + key.id.substr(-8, 8), key.id);
+    menulist.appendItem(key.userId + " - 0x" + key.keyId.substr(-8, 8), key.keyId);
   }
   if (menulist.selectedIndex == -1) {
     menulist.selectedIndex = 0;
