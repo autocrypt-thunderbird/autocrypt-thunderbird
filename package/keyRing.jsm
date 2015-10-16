@@ -132,7 +132,7 @@ let gKeyListObj = null;
                       * keySize    - subkey size
                       * type       -  "sub"
 
-    - signatures  - [Array]: list of signatures
+    - signatures  - [Array]: list of signature objects
                       * userId
                       * uidLabel
                       * created

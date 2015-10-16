@@ -83,78 +83,55 @@ function onLoad() {
     gUidCount = [];
     var keyId = null;
     fingerprint = "";
-    var sigListStr = EnigmailKeyRing.getKeySig("0x" + window.arguments[0].keyId, exitCodeObj, errorMsgObj);
 
-    if (exitCodeObj.value === 0) {
-      var sigList = sigListStr.split(/[\n\r]+/);
+    var keyObj = EnigmailKeyRing.getKeyById(window.arguments[0].keyId);
+
+    if (keyObj) {
+      let sig = keyObj.signatures;
       var currKey = null;
       var currUID = null;
+      gUidCount[keyObj.keyId] = 1;
 
-      for (i = 0; i < sigList.length; i++) {
-        var aLine = sigList[i].split(/:/);
+      for (i in keyObj.signatures) {
+        gUidCount[keyObj.keyId]++;
+        let s = keyObj.signatures[i];
+        for (let j in s.sigList) {
+          sigType = s.sigList[j].sigType.charAt(s.sigList[j].sigType.length - 1);
 
-        // Now inspect the splitted key packets
-        switch (aLine[0]) {
-          case "pub":
-            keyId = aLine[4];
-            break;
+          let signer = s.sigList[j].signerKeyId;
 
-          case "uid":
-            if (typeof(currKey) != "string") currKey = aLine[4];
-            // Count all UIDs
-            if (gUidCount[keyId] === undefined) {
-              gUidCount[keyId] = 1;
+          if (sigType === "x") {
+            if (gExportableSignatureList[signer] === undefined) {
+              gExportableSignatureList[signer] = 1;
             }
             else {
-              gUidCount[keyId] += 1;
+              gExportableSignatureList[signer] += 1;
             }
-            break;
-
-          case "sig":
-            // Count signatures separately for each signing key
-            // Only count exportable signatures, neglect local (non-exportable) signatures
-            sigType = aLine[10].charAt(aLine[10].length - 1);
-            if (sigType == "x") {
-              if (gExportableSignatureList[aLine[4]] === undefined) {
-                gExportableSignatureList[aLine[4]] = 1;
-              }
-              else {
-                gExportableSignatureList[aLine[4]] += 1;
-              }
+          }
+          if (sigType === "l") {
+            if (gLocalSignatureList[signer] === undefined) {
+              gLocalSignatureList[signer] = 1;
             }
-            if (sigType == "l") {
-              if (gLocalSignatureList[aLine[4]] === undefined) {
-                gLocalSignatureList[aLine[4]] = 1;
-              }
-              else {
-                gLocalSignatureList[aLine[4]] += 1;
-              }
+            else {
+              gLocalSignatureList[signer] += 1;
             }
-            break;
-
-          case "fpr":
-            if (fingerprint === "") {
-              EnigmailLog.DEBUG("enigmailSignKeyDlg.js: fpr:" + currKey + " -> " + aLine[9] + "\n");
-              fingerprint = aLine[9];
-            }
-            break;
-          default:
+          }
         }
       }
     }
     enigKeySelCb();
-  }
-  catch (ex) {}
 
-  var keyDesc = window.arguments[0].userId + " - 0x" + window.arguments[0].keyId.substr(-8, 8);
-  document.getElementById("keyId").value = keyDesc;
-  if (fingerprint && fingerprint.length > 0) {
-    var fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
-    if (fpr && fpr.length > 2) {
-      fpr.shift();
-      document.getElementById("fingerprint").value = fpr.join(" ");
+    var keyDesc = keyObj.userId + " - 0x" + keyObj.keyId.substr(-8, 8);
+    document.getElementById("keyId").value = keyDesc;
+    if (keyObj.fpr && keyObj.fpr.length > 0) {
+      var fpr = keyObj.fpr.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
+      if (fpr && fpr.length > 2) {
+        fpr.shift();
+        document.getElementById("fingerprint").value = fpr.join(" ");
+      }
     }
   }
+  catch (ex) {}
 }
 
 function onAccept() {
@@ -188,8 +165,8 @@ function onAccept() {
 }
 
 function enigKeySelCb() {
-  var KeyToBeSigned = window.arguments[0].keyId;
-  var KeyToBeSigned32 = KeyToBeSigned.substr(-8, 8);
+  var keyToBeSigned = window.arguments[0].keyId;
+  var keyToBeSigned32 = keyToBeSigned.substr(-8, 8);
   var signWithKey = document.getElementById("signWithKey");
   var signWithKeyId = signWithKey.selectedItem.value;
   var alreadySigned = document.getElementById("alreadySigned");
@@ -207,7 +184,7 @@ function enigKeySelCb() {
   if ((doLocalSig.checked) && (gExportableSignatureList[signWithKeyId] > 0)) {
     // User tries to locally sign a key he has already signed (at least partially) with an exportable signature
     // Here we display a hint and DISable the OK button
-    alreadySigned.setAttribute("value", EnigmailLocale.getString("alreadySignedexportable.label", "0x" + KeyToBeSigned32));
+    alreadySigned.setAttribute("value", EnigmailLocale.getString("alreadySignedexportable.label", "0x" + keyToBeSigned32));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = true;
   }
@@ -216,17 +193,17 @@ function enigKeySelCb() {
     alreadySigned.setAttribute("collapsed", "true");
     acceptButton.disabled = false;
   }
-  else if (signatureCount == gUidCount[KeyToBeSigned]) {
+  else if (signatureCount == gUidCount[keyToBeSigned]) {
     // Signature count == UID count, so key is already fully signed and another signing operation makes no more sense
     // Here, we display a hint and DISable the OK button
-    alreadySigned.setAttribute("value", EnigmailLocale.getString("alreadySigned.label", "0x" + KeyToBeSigned32));
+    alreadySigned.setAttribute("value", EnigmailLocale.getString("alreadySigned.label", "0x" + keyToBeSigned32));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = true;
   }
   else if (signatureCount > 0) {
     // Signature count != UID count, so key is partly signed and another sign operation makes sense
     // Here, we display a hint and ENable the OK button
-    alreadySigned.setAttribute("value", EnigmailLocale.getString("partlySigned.label", "0x" + KeyToBeSigned32));
+    alreadySigned.setAttribute("value", EnigmailLocale.getString("partlySigned.label", "0x" + keyToBeSigned32));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = false;
   }
