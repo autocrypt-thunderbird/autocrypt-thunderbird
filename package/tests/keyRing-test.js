@@ -23,7 +23,7 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromFileAndGetKeyDetails(
   const importResult = EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), publicKey, errorMsgObj, importedKeysObj);
   Assert.assertContains(importedKeysObj.value, "65537E212DC19025AD38EDB2781617319CE311C4");
   Assert.equal(importResult, 0, errorMsgObj);
-  const keyDetails = EnigmailKeyRing.getKeyDetails("0xD535623BB60E9E71", false, true);
+  const keyDetails = EnigmailKeyRing.getValidUids("0xD535623BB60E9E71").join("\n");
   Assert.assertContains(keyDetails, "strike.devtest@gmail.com");
 })));
 
@@ -280,7 +280,7 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails(
     "\n" + "=h0dN" +
     "\n" + "-----END PGP PRIVATE KEY BLOCK-----",
     null, {});
-  const keyDetails = EnigmailKeyRing.getKeyDetails("0xD535623BB60E9E71", false, true);
+  const keyDetails = EnigmailKeyRing.getValidUids("0xD535623BB60E9E71").join("\n");
   Assert.assertContains(keyDetails, "strike.devtest@gmail.com");
   EnigmailKeyRing._getUserIdList(false, false, {}, {}, {});
   EnigmailKeyRing._getUserIdList(true, false, {}, {}, {});

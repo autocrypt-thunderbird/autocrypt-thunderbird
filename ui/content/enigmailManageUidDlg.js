@@ -43,16 +43,44 @@ Components.utils.import("resource://enigmail/dialog.jsm");
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 
+var gUserId;
+
 function onLoad() {
   window.arguments[1].refresh = false;
   reloadUidList();
-  var keyId = window.enigmailUid + " - 0x" + window.arguments[0].keyId.substr(-8, 8);
+  var keyId = gUserId + " - 0x" + window.arguments[0].keyId.substr(-8, 8);
   document.getElementById("keyId").value = keyId;
 
   if (!window.arguments[0].ownKey) {
     document.getElementById("addUid").setAttribute("disabled", "true");
     document.getElementById("setPrimary").setAttribute("disabled", "true");
     document.getElementById("revokeUid").setAttribute("disabled", "true");
+  }
+}
+
+function appendUid(uidList, uidObj, uidNum) {
+  let uidTxt;
+  let uidType = uidObj.type;
+  if (uidType === "uat") {
+    if (uidObj.userId.indexOf("1 ") === 0) {
+      uidTxt = EnigmailLocale.getString("userAtt.photo");
+    }
+    else return;
+  }
+  else {
+    uidTxt = uidObj.userId;
+    if (!window.enigmailUid) {
+      window.enigmailUid = uidTxt;
+    }
+  }
+
+  if (uidObj.keyTrust === "r") {
+    uidTxt += " - " + EnigmailLocale.getString("keyValid.revoked");
+    uidType = uidType.replace(/^./, "r");
+  }
+  let item = uidList.appendItem(uidTxt, uidType + ":" + String(uidNum));
+  if (uidObj.keyTrust == "r") {
+    item.setAttribute("class", "enigmailUidInactive");
   }
 }
 
@@ -66,39 +94,16 @@ function reloadUidList() {
   if (!enigmailSvc)
     return;
 
-  var keyData = EnigmailKeyRing.getKeyDetails("0x" + window.arguments[0].keyId, false);
-  var uidTxt = "";
+  var keyObj = EnigmailKeyRing.getKeyById(window.arguments[0].keyId);
+  if (keyObj) {
+    gUserId = keyObj.userId;
 
-  var keyList = keyData.split(/[\n\r]+/);
-  var uidNum = 0;
-  for (var i = 0; i < keyList.length; i++) {
-    var uidStr = keyList[i].split(/:/);
-    switch (uidStr[0]) {
-      case "uid":
-      case "uat":
-        ++uidNum;
-        if (uidStr[0] == "uid") {
-          uidTxt = EnigmailData.convertGpgToUnicode(uidStr[9]).replace(/\\e3A/g, ":");
-          if (!window.enigmailUid) {
-            window.enigmailUid = uidTxt;
-          }
-        }
-        else {
-          if (uidStr[9].indexOf("1 ") === 0) {
-            uidTxt = EnigmailLocale.getString("userAtt.photo");
-          }
-        }
-        if (uidStr[1] == "r") {
-          uidTxt += " - " + EnigmailLocale.getString("keyValid.revoked");
-          uidStr[0] = uidStr[0].replace(/^./, "r");
-        }
-        item = uidList.appendItem(uidTxt, uidStr[0] + ":" + String(uidNum));
-        if (uidStr[1] == "r") {
-          item.setAttribute("class", "enigmailUidInactive");
-        }
-        break;
+    appendUid(uidList, keyObj, 1);
+    for (var i = 0; i < keyObj.SubUserIds.length; i++) {
+      appendUid(uidList, keyObj.SubUserIds[i], i + 2);
     }
   }
+
   uidSelectCb();
 }
 

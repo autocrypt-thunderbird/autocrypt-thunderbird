@@ -342,16 +342,15 @@ const EnigmailDecryption = {
     }
 
     if (sigUserId && sigKeyId && EnigmailPrefs.getPref("displaySecondaryUid")) {
-      let uids = EnigmailKeyRing.getKeyDetails(sigKeyId, true, true);
-      if (uids) {
-        sigUserId = uids;
-      }
-      if (uids && uids.indexOf("uat:jpegPhoto:") >= 0) {
-        retStatusObj.statusFlags |= nsIEnigmail.PHOTO_AVAILABLE;
+      let keyObj = EnigmailKeyRing.getKeyById(sigKeyId);
+      if (keyObj) {
+        if (keyObj.photoAvailable) {
+          retStatusObj.statusFlags |= nsIEnigmail.PHOTO_AVAILABLE;
+        }
+        sigUserId = EnigmailKeyRing.getValidUids(sigKeyId).join("\n");
       }
     }
-
-    if (sigUserId) {
+    else if (sigUserId) {
       sigUserId = EnigmailData.convertToUnicode(sigUserId, "UTF-8");
     }
 

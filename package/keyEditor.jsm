@@ -50,6 +50,7 @@ Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: 
 Components.utils.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
 Components.utils.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
 Components.utils.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
+Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 
 const EXPORTED_SYMBOLS = ["EnigmailKeyEditor"];
 
@@ -785,6 +786,7 @@ function addUidCallback(inputData, keyEdit, ret) {
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
     ret.exitCode = 0;
     ret.quitNow = true;
+    EnigmailKeyRing.clearCache();
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
     getPin(inputData.parent, EnigmailLocale.getString("enterAdminPin"), ret);
@@ -860,6 +862,7 @@ function setPrimaryUidCallback(inputData, keyEdit, ret) {
       case 3:
         ret.exitCode = 0;
         ret.quitNow = true;
+        EnigmailKeyRing.clearCache();
         break;
       default:
         ret.exitCode = -1;
@@ -933,6 +936,7 @@ function deleteUidCallback(inputData, keyEdit, ret) {
       case 4:
         ret.exitCode = 0;
         ret.quitNow = true;
+        EnigmailKeyRing.clearCache();
         break;
       default:
         ret.exitCode = -1;
@@ -976,6 +980,7 @@ function revokeUidCallback(inputData, keyEdit, ret) {
       case 7:
         ret.exitCode = 0;
         ret.quitNow = true;
+        EnigmailKeyRing.clearCache();
         break;
       default:
         ret.exitCode = -1;

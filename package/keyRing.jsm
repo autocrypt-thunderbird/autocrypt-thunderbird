@@ -539,7 +539,7 @@ var EnigmailKeyRing = {
 
   // returns the output of --with-colons --list-sig
   // INTERNAL USE ONLY
-  getKeySig: function(keyId, exitCodeObj, errorMsgObj) {
+  _getKeySig: function(keyId, exitCodeObj, errorMsgObj) {
     const args = EnigmailGpg.getStandardArgs(true).
     concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-sig"]).
     concat(keyId.split(" "));
@@ -569,7 +569,7 @@ var EnigmailKeyRing = {
    * Return signatures for a given key list
    * INTERNAL USE ONLY
    *
-   * @param String gpgKeyList         Output from gpg such as produced by getKeySig()
+   * @param String gpgKeyList         Output from gpg such as produced by _getKeySig()
    *                                  Only the first public key is processed!
    * @param Boolean ignoreUnknownUid  true if unknown signer's UIDs should be filtered out
    *
@@ -580,7 +580,7 @@ var EnigmailKeyRing = {
    *     - sigList: [uid, creationDate, signerKeyId, sigType ]
    */
 
-  extractSignatures: function(gpgKeyList, ignoreUnknownUid) {
+  _extractSignatures: function(gpgKeyList, ignoreUnknownUid) {
     var listObj = {};
 
     let havePub = false;
@@ -646,8 +646,56 @@ var EnigmailKeyRing = {
   },
 
   /**
+   * Get a list of UserIds for a give key.
+   * Only the Only UIDs with highest trust level are returned.
+   *
+   * @param  String  keyId   key, optionally preceeded with 0x
+   *
+   * @return Array of String: list of UserIds
+   */
+  getValidUids: function(keyId) {
+    let r = [];
+    let keyObj = this.getKeyById(keyId);
+
+    if (keyObj) {
+      const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
+      let hideInvalidUid = true;
+      let maxTrustLevel = TRUSTLEVELS_SORTED.indexOf(keyObj.keyTrust);
+
+      if (EnigmailTrust.isInvalid(keyObj.keyTrust)) {
+        // pub key not valid (anymore)-> display all UID's
+        hideInvalidUid = false;
+      }
+
+      r.push(keyObj.userId); // main user ID is valid by definition (or key is not valid)
+
+      for (let i in keyObj.SubUserIds) {
+        if (keyObj.SubUserIds[i].type !== "uat") {
+          if (hideInvalidUid) {
+            let thisTrust = TRUSTLEVELS_SORTED.indexOf(keyObj.SubUserIds[i].keyTrust);
+            if (thisTrust > maxTrustLevel) {
+              r = [keyObj.SubUserIds[i].userId];
+              maxTrustLevel = thisTrust;
+            }
+            else if (thisTrust === maxTrustLevel) {
+              r.push(keyObj.SubUserIds[i].userId);
+            }
+            // else do not add uid
+          }
+          else if (!EnigmailTrust.isInvalid(keyObj.SubUserIds[i].keyTrust) || !hideInvalidUid) {
+            // UID valid  OR  key not valid, but invalid keys allowed
+            r.push(keyObj.SubUserIds[i].userId);
+          }
+        }
+      }
+    }
+
+    return r;
+  },
+
+  /**
    * Return details of given keys.
-   * @deprecated - use getKeyListById instead
+   * INTERNAL USE ONLY
    *
    * @param  String  keyId              List of keys with 0x, separated by spaces.
    * @param  Boolean uidOnly            false:
@@ -659,7 +707,7 @@ var EnigmailKeyRing = {
    *
    * @return String all key details or list of user IDs separated by \n.
    */
-  getKeyDetails: function(keyId, uidOnly, withUserAttributes) {
+  _getKeyDetails: function(keyId, uidOnly, withUserAttributes) {
     const args = EnigmailGpg.getStandardArgs(true).
     concat(["--fixed-list-mode", "--with-fingerprint", "--with-colons", "--list-keys"]).
     concat(keyId.split(" "));
@@ -1265,7 +1313,7 @@ var EnigmailKeyRing = {
       }
     }
 
-    const userList2 = EnigmailKeyRing.getKeyDetails(secretKeyList.join(" "), false, false).split(/\n/);
+    const userList2 = EnigmailKeyRing._getKeyDetails(secretKeyList.join(" "), false, false).split(/\n/);
 
     for (let i = 0; i < userList2.length; i++) {
       let aLine = userList2[i].split(/:/);
@@ -1653,10 +1701,10 @@ KeyObject.prototype = {
     if (this._sigList === null) {
       let exitCodeObj = {},
         errorMsgObj = {};
-      let r = EnigmailKeyRing.getKeySig(this.keyId, exitCodeObj, errorMsgObj);
+      let r = EnigmailKeyRing._getKeySig(this.keyId, exitCodeObj, errorMsgObj);
 
       if (r.length > 0) {
-        this._sigList = EnigmailKeyRing.extractSignatures(r, false);
+        this._sigList = EnigmailKeyRing._extractSignatures(r, false);
       }
     }
 
