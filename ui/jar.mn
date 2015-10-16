@@ -95,8 +95,6 @@ enigmail.jar:
 	content/enigmail/enigmailWrapSelection.js      (content/enigmailWrapSelection.js)
 	content/enigmail/enigmailViewFile.js           (content/enigmailViewFile.js)
 	content/enigmail/enigmailViewFile.xul          (content/enigmailViewFile.xul)
-	content/enigmail/enigmailViewKeySigDlg.js      (content/enigmailViewKeySigDlg.js)
-	content/enigmail/enigmailViewKeySigDlg.xul     (content/enigmailViewKeySigDlg.xul)
 	content/enigmail/enigRetrieveProgress.xul      (content/enigRetrieveProgress.xul)
 	content/enigmail/enigRetrieveProgress.js       (content/enigRetrieveProgress.js)
 	content/enigmail/check0.png                    (skin/images/check0.png)

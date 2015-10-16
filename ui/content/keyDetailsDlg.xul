@@ -224,17 +224,15 @@
 
   <separator/>
 
-  <hbox flex="0">
+  <hbox flex="0" observes="ownKeyCommands">
     <button id="actions" label="&enigmail.keyDetails.selAction.label;"
             accesskey="&enigmail.keyDetails.selAction.accesskey;" type="menu">
       <menupopup id="actionPopup">
-        <menuitem label="&enigmail.keyMan.ctxViewSig.label;" oncommand="viewSignatures()"/>
-        <menuseparator observes="ownKeyCommands" />
-        <menuitem label="&enigmail.keyMan.manageUid.label;" observes="ownKeyCommands" oncommand="manageUids()"/>
-        <menuitem label="&enigmail.keyMan.addPhoto.label;" observes="ownKeyCommands" oncommand="keyDetailsAddPhoto()"/>
-        <menuitem label="&enigmail.keyMan.changePwd.label;" observes="ownKeyCommands" oncommand="changePassword()"/>
-        <menuitem label="&enigmail.keyMan.revokeKey.label;" observes="ownKeyCommands" oncommand="revokeKey()"/>
-        <menuitem label="&enigmail.keyMan.ctxGenRevoke.label;" observes="ownKeyCommands" oncommand="genRevocationCert()"/>
+        <menuitem label="&enigmail.keyMan.manageUid.label;" oncommand="manageUids()"/>
+        <menuitem label="&enigmail.keyMan.addPhoto.label;" oncommand="keyDetailsAddPhoto()"/>
+        <menuitem label="&enigmail.keyMan.changePwd.label;" oncommand="changePassword()"/>
+        <menuitem label="&enigmail.keyMan.revokeKey.label;" oncommand="revokeKey()"/>
+        <menuitem label="&enigmail.keyMan.ctxGenRevoke.label;" oncommand="genRevocationCert()"/>
       </menupopup>
     </button>
   </hbox>

@@ -179,25 +179,6 @@ function showPhoto() {
   EnigShowPhoto(gKeyId, gUserId, 0);
 }
 
-function viewSignatures() {
-  var inputObj = {
-    keyId: gKeyId,
-    keyListArr: gKeyList
-  };
-  var resultObj = {
-    refresh: false
-  };
-
-  window.openDialog("chrome://enigmail/content/enigmailViewKeySigDlg.xul",
-    "", "dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
-
-  if (resultObj.refresh) {
-    enableRefresh();
-    reloadData();
-  }
-
-}
-
 function keyDetailsAddPhoto() {
   keyMgrAddPhoto(gUserId, gKeyId);
 }

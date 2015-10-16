@@ -423,7 +423,6 @@ function enigmailKeyMenu() {
 
   if (keyList.length == 1) {
     document.getElementById("bcSignKey").removeAttribute("disabled");
-    document.getElementById("bcViewSig").removeAttribute("disabled");
     document.getElementById("bcOneKey").removeAttribute("disabled");
     document.getElementById("bcDeleteKey").removeAttribute("disabled");
     document.getElementById("bcNoKey").removeAttribute("disabled");
@@ -437,7 +436,6 @@ function enigmailKeyMenu() {
       document.getElementById("bcNoKey").removeAttribute("disabled");
     }
     document.getElementById("bcSignKey").setAttribute("disabled", "true");
-    document.getElementById("bcViewSig").setAttribute("disabled", "true");
     document.getElementById("bcOneKey").setAttribute("disabled", "true");
     document.getElementById("bcDeleteKey").setAttribute("disabled", "true");
   }
@@ -481,7 +479,7 @@ function enigmailSelectAllKeys() {
 function enigmailKeyDetails() {
   var keyList = enigmailGetSelectedKeys();
   if (keyList.length > 0) {
-    EnigDisplayKeyDetails(gKeyList[keyList[0]].keyId, false);
+    EnigmailWindows.openKeyDetails(window, gKeyList[keyList[0]].keyId, false);
   }
 }
 
@@ -954,23 +952,6 @@ function enigmailSearchKeys() {
   EnigDownloadKeys(inputObj, resultObj);
 
   if (resultObj.importedKeys > 0) {
-    enigmailRefreshKeys();
-  }
-
-}
-
-function enigmailListSig() {
-  var keyList = enigmailGetSelectedKeys();
-  var inputObj = {
-    keyId: gKeyList[keyList[0]].keyId,
-    keyListArr: gKeyList
-  };
-  var resultObj = {};
-
-  window.openDialog("chrome://enigmail/content/enigmailViewKeySigDlg.xul",
-    "", "chrome,dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
-
-  if (resultObj.refresh) {
     enigmailRefreshKeys();
   }
 
