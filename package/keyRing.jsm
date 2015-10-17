@@ -165,7 +165,7 @@ var EnigmailKeyRing = {
   getAllKeys: function(win, sortColumn, sortDirection) {
     if (gKeyListObj.keySortList.length === 0) {
       let a =
-        this.loadKeyList(win, false, gKeyListObj, sortColumn, sortDirection);
+        this._loadKeyList(win, false, gKeyListObj, sortColumn, sortDirection);
     }
     else {
       if (sortColumn) {
@@ -406,52 +406,6 @@ var EnigmailKeyRing = {
   },
 
   /**
-   * return key ID of public key for subkey
-   *
-   * @param  String  keyId key with or without leading 0x
-   * @return String  public key ID, or null if key not found
-   */
-  getPubKeyIdForSubkey: function(keyId) {
-    const entry = getKeyListEntryOfKey(keyId);
-    if (!entry) {
-      return null;
-    }
-
-    const lineArr = entry.split(/\n/);
-    for (let i = 0; i < lineArr.length; ++i) {
-      const lineTokens = lineArr[i].split(/:/);
-      if (lineTokens[ENTRY_ID] === "pub") {
-        return lineTokens[KEY_ID];
-      }
-    }
-    return null;
-  },
-
-  /**
-   * Return first found userId of given key.
-   * - key may be pub or sub key.
-   * @param  String  keyId key with leading 0x
-   * @return String  First found of user IDs or null if none
-   */
-  getFirstUserIdOfKey: function(keyId) {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.getFirstUserIdOfKey() keyId='" + keyId + "'\n");
-
-    const entry = getKeyListEntryOfKey(keyId);
-    if (!entry) {
-      return null;
-    }
-
-    const lineArr = entry.split(/\n/);
-    for (let i = 0; i < lineArr.length; ++i) {
-      const lineTokens = lineArr[i].split(/:/);
-      if (lineTokens[ENTRY_ID] === "uid") {
-        return lineTokens[USERID_ID];
-      }
-    }
-    return null;
-  },
-
-  /**
    * Get groups defined in gpg.conf in the same structure as KeyObject
    *
    * @return Array of KeyObject, with type = "grp"
@@ -487,6 +441,11 @@ var EnigmailKeyRing = {
     this.clearCache();
   },
 
+  /**
+   * empty the key cache, such that it will get loaded next time it is accessed
+   *
+   * no input or return values
+   */
   clearCache: function() {
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.clearCache\n");
     gKeyListObj = {
@@ -713,6 +672,19 @@ var EnigmailKeyRing = {
     return r;
   },
 
+  /**
+   * Export public and possibly secret key(s) to a file
+   *
+   * @param parent       nsIWindow
+   * @param exportFlags  Integer  - if nsIEnigmail.EXTRACT_SECRET_KEY is provided, secret keys are exported
+   * @param userId       String   - space or comma separated list of keys to export. Specification by
+   *                                key ID, fingerprint, or userId
+   * @param outputFile   String or nsIFile - output file name or Object - or NULL
+   * @param exitCodeObj  Object   - o.value will contain exit code
+   * @param errorMsgObj  Object   - o.value will contain error message from GnuPG
+   *
+   * @return String - if outputFile is NULL, the key block data; "" if a file is written
+   */
   extractKey: function(parent, exportFlags, userId, outputFile, exitCodeObj, errorMsgObj) {
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.extractKey: " + userId + "\n");
     const args = EnigmailGpg.getStandardArgs(true).
@@ -775,15 +747,26 @@ var EnigmailKeyRing = {
     return keyBlock;
   },
 
-  // ExitCode == 0  => success
-  // ExitCode > 0   => error
-  // ExitCode == -1 => Cancelled by user
-  importKey: function(parent, uiFlags, msgText, keyId, errorMsgObj) {
+  /**
+   * import key from provided key data
+   *
+   * @param parent       nsIWindow
+   * @param uiFlags      Integer  - if nsIEnigmail.UI_INTERACTIVE is set, display confirmation dialog
+   * @param keyBLock     String   - data containing key
+   * @param keyId        String   - key ID expected to import (no meaning)
+   * @param errorMsgObj  Object   - o.value will contain error message from GnuPG
+   *
+   * @return Integer -  exit code:
+   *      ExitCode == 0  => success
+   *      ExitCode > 0   => error
+   *      ExitCode == -1 => Cancelled by user
+   */
+  importKey: function(parent, uiFlags, keyBlock, keyId, errorMsgObj) {
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKey: id=" + keyId + ", " + uiFlags + "\n");
 
     const beginIndexObj = {};
     const endIndexObj = {};
-    const blockType = EnigmailArmor.locateArmoredBlock(msgText, 0, "", beginIndexObj, endIndexObj, {});
+    const blockType = EnigmailArmor.locateArmoredBlock(keyBlock, 0, "", beginIndexObj, endIndexObj, {});
     if (!blockType) {
       errorMsgObj.value = EnigmailLocale.getString("noPGPblock");
       return 1;
@@ -794,7 +777,7 @@ var EnigmailKeyRing = {
       return 1;
     }
 
-    const pgpBlock = msgText.substr(beginIndexObj.value,
+    const pgpBlock = keyBlock.substr(beginIndexObj.value,
       endIndexObj.value - beginIndexObj.value + 1);
 
     if (uiFlags & nsIEnigmail.UI_INTERACTIVE) {
@@ -912,23 +895,6 @@ var EnigmailKeyRing = {
     return null;
   },
 
-
-  /**
-   * Return fingerprint for a given key ID
-   *
-   * @param keyId:  String of 8 or 16 chars key with optionally leading 0x
-   *
-   * @return: String containing the fingerprint or null if key not found
-   */
-  getFingerprintForKey: function(keyId) {
-    let key = this.getKeyById(keyId);
-    if (key) {
-      return key.fpr;
-    }
-    else
-      return null;
-  },
-
   /**
    * Create a list of objects representing the keys in a key list
    *
@@ -939,7 +905,7 @@ var EnigmailKeyRing = {
    *
    * no return value
    */
-  createKeyObjects: function(keyListString, keyListObj) {
+  _createKeyObjects: function(keyListString, keyListObj) {
     keyListObj.keyList = [];
     keyListObj.keySortList = [];
     keyListObj.trustModel = "?";
@@ -1038,20 +1004,20 @@ var EnigmailKeyRing = {
 
   /**
    * Load the key list into memory and return it sorted by a specified column
-   * @deprecated  -  RESERVED FOR INTERNAL USE of the module!
+   * RESERVED FOR INTERNAL USE of the module!
    *
-   * @win        - |object|  holding the parent window for displaying error messages
-   * @refresh    - |boolean| if true, cache is cleared and all keys are loaded from GnuPG
-   * @keyListObj - |object|  holding the resulting key list
-   * @sortColumn - |string|  containing the column name for sorting. One of:
-   *                         userid, keyid, keyidshort, fpr, keytype, validity, trust, expiry.
-   *                         Null will sort by userid.
-   * @sortDirection - |number| 1 = ascending / -1 = descending
+   * @param win        - |object|  holding the parent window for displaying error messages
+   * @param refresh    - |boolean| if true, cache is cleared and all keys are loaded from GnuPG
+   * @param keyListObj - |object|  holding the resulting key list
+   * @param sortColumn - |string|  containing the column name for sorting. One of:
+   *                               userid, keyid, keyidshort, fpr, keytype, validity, trust, expiry.
+   *                              Null will sort by userid.
+   * @param sortDirection - |number| 1 = ascending / -1 = descending
    *
    * no return value
    */
-  loadKeyList: function(win, refresh, keyListObj, sortColumn, sortDirection) {
-    EnigmailLog.DEBUG("keyRing.jsm: loadKeyList()\n");
+  _loadKeyList: function(win, refresh, keyListObj, sortColumn, sortDirection) {
+    EnigmailLog.DEBUG("keyRing.jsm: _loadKeyList()\n");
 
     if (!sortColumn) sortColumn = "userid";
     if (!sortDirection) sortDirection = 1;
@@ -1067,17 +1033,17 @@ var EnigmailKeyRing = {
           EnigmailLocale.getString("keyMan.button.generateKey"),
           EnigmailLocale.getString("keyMan.button.skip"))) {
         EnigmailWindows.openKeyGen();
-        EnigmailKeyRing.loadKeyList(win, true, keyListObj);
+        EnigmailKeyRing._loadKeyList(win, true, keyListObj);
       }
     }
 
-    EnigmailKeyRing.createAndSortKeyList(aGpgUserList, aGpgSecretsList, keyListObj, sortColumn, sortDirection);
+    EnigmailKeyRing._createAndSortKeyList(aGpgUserList, aGpgSecretsList, keyListObj, sortColumn, sortDirection);
   },
 
-  createAndSortKeyList: function(aGpgUserList, aGpgSecretsList, keyListObj, sortColumn, sortDirection) {
-    EnigmailLog.DEBUG("keyRing.jsm: createKeyList()\n");
+  _createAndSortKeyList: function(aGpgUserList, aGpgSecretsList, keyListObj, sortColumn, sortDirection) {
+    EnigmailLog.DEBUG("keyRing.jsm: _createAndSortKeyList()\n");
 
-    EnigmailKeyRing.createKeyObjects(aGpgUserList, keyListObj);
+    EnigmailKeyRing._createKeyObjects(aGpgUserList, keyListObj);
 
     // search and mark keys that have secret keys
     for (let i = 0; i < aGpgSecretsList.length; i++) {

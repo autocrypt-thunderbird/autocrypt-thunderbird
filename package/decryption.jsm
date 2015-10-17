@@ -371,10 +371,9 @@ const EnigmailDecryption = {
         var localKeyId = encToArray[encIdx];
         // except for ID 00000000, which signals hidden keys
         if (localKeyId != "0x0000000000000000") {
-          var localUserId = EnigmailKeyRing.getFirstUserIdOfKey(localKeyId);
-          if (localUserId) {
-            localUserId = EnigmailData.convertToUnicode(localUserId, "UTF-8");
-            encToArray[encIdx] += " (" + localUserId + ")";
+          let localKey = EnigmailKeyRing.getKeyById(localKeyId);
+          if (localKey) {
+            encToArray[encIdx] += " (" + localKey.userId + ")";
           }
         }
         else {

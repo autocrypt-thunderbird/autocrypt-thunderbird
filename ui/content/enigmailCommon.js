@@ -507,13 +507,6 @@ function EnigGetTrustCode(keyObj) {
   return EnigmailTrust.getTrustCode(keyObj);
 }
 
-// Load the key list into memory
-// sortDirection: 1 = ascending / -1 = descending
-
-function EnigLoadKeyList(refresh, keyListObj, sortColumn, sortDirection) {
-  return EnigmailKeyRing.loadKeyList(window, refresh, keyListObj, sortColumn, sortDirection);
-}
-
 function EnigEditKeyTrust(userIdArr, keyIdArr) {
   return EnigmailWindows.editKeyTrust(window, userIdArr, keyIdArr);
 }

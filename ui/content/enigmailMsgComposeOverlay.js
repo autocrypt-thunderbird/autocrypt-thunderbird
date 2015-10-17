@@ -3684,9 +3684,9 @@ Enigmail.msg = {
 
         if (openPgpHeaderMode & HEADERMODE_KEYID) {
 
-          var fpr = EnigmailKeyRing.getFingerprintForKey(this.identity.getCharAttribute("pgpkeyId"));
-          if (fpr && fpr.length > 0) {
-            pgpHeader += "id=" + fpr;
+          let key = EnigmailKeyRing.getKeyById(this.identity.getCharAttribute("pgpkeyId"));
+          if (key && key.fpr && key.fpr.length > 0) {
+            pgpHeader += "id=" + key.fpr;
           }
         }
         if (openPgpHeaderMode & HEADERMODE_URL) {
