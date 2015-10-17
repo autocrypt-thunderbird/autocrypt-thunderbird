@@ -394,7 +394,7 @@ test(function shouldCreateKeyListObject() {
   Assert.equal(details.msg, null);
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("full@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
+  key = EnigmailKeyRing.getValidKeyForRecipient("full@enigmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, "0003AAAA00010001");
   Assert.equal(details.msg, null);
 
@@ -402,7 +402,7 @@ test(function shouldCreateKeyListObject() {
   // - no details because it would take time to check details of such a key
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("no-encrypt@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
+  key = EnigmailKeyRing.getValidKeyForRecipient("no-encrypt@enigmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, null);
   Assert.equal(details.msg, null);
 
@@ -410,7 +410,7 @@ test(function shouldCreateKeyListObject() {
   // - no details because it would take time to check details of such a key
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   details = {all: ""};
-  key = EnigmailKeyRing.getValidKeyForRecipient("disabled@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
+  key = EnigmailKeyRing.getValidKeyForRecipient("disabled@enigmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, null);
   Assert.equal(details.msg, null);
 
@@ -452,11 +452,11 @@ test(function shouldCreateKeyListObject() {
   // we return first main key
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("withsubkey-uid1@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
+  key = EnigmailKeyRing.getValidKeyForRecipient("withsubkey-uid1@enigmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, "0040EEEE00010001");
   Assert.equal(details.msg, null);
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("withsubkey-uid2@enigmail-test.de", minTrustLevelIndex, keyListObj.keyList, keyListObj.keySortList, details);
+  key = EnigmailKeyRing.getValidKeyForRecipient("withsubkey-uid2@enigmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, "0040EEEE00010001");
   Assert.equal(details.msg, null);
 });
