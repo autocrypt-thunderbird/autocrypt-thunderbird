@@ -54,7 +54,6 @@
         height="400px"
         buttons="accept">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailDispPhoto.js"/>
 
   <hbox align="center">
@@ -79,4 +78,3 @@
     </vbox>
   </hbox>
 </dialog>
-
