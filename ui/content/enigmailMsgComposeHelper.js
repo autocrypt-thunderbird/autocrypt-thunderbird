@@ -128,7 +128,7 @@ Enigmail.hlp = {
       }
 
       // resolve all the email addresses if possible:
-      keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addresses, minTrustLevel, keyList, keySortList, details, resultingArray);
+      keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addresses, minTrustLevel, details, resultingArray);
     }
     catch (ex) {
       EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): return null (exception: " + ex.description + ")\n");
@@ -187,4 +187,3 @@ Enigmail.hlp = {
   }
 
 };
-

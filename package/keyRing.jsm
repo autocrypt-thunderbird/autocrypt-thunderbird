@@ -1208,7 +1208,7 @@ var EnigmailKeyRing = {
    *
    * @param details if not null returns error in details.msg
    *
-   * @return: found key (without leading "0x") or null
+   * @return: found key ID (without leading "0x") or null
    */
   getValidKeyForRecipient: function(emailAddr, minTrustLevelIndex, details) {
     EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient(): emailAddr=\"" + emailAddr + "\"\n");
@@ -1375,27 +1375,24 @@ var EnigmailKeyRing = {
       if (addr.indexOf('@') >= 0) {
         // try email match:
         var addrErrDetails = {};
-        let key = this.getValidKeyForRecipient(addr, minTrustLevelIndex, addrErrDetails);
+        let keyId = this.getValidKeyForRecipient(addr, minTrustLevelIndex, addrErrDetails);
         if (details && addrErrDetails.msg) {
           errMsg = addrErrDetails.msg;
         }
-        if (key) {
+        if (keyId) {
           found = true;
-          resultingArray.push("0x" + key.toUpperCase());
+          resultingArray.push("0x" + keyId.toUpperCase());
         }
       }
       else {
         // try key match:
-        let key = addr;
-
-        var keyObj = this.getKeyById(key);
+        var keyObj = this.getKeyById(addr);
 
         if (keyObj) {
-          var keyTrust = keyObj.keyTrust;
           // if found, check whether the trust level is enough
-          if (TRUSTLEVELS_SORTED.indexOf(keyTrust) >= minTrustLevelIndex) {
+          if (TRUSTLEVELS_SORTED.indexOf(keyObj.keyTrust) >= minTrustLevelIndex) {
             found = true;
-            resultingArray.push(addr);
+            resultingArray.push("0x" + keyObj.keyId.toUpperCase());
           }
         }
       }
