@@ -530,8 +530,7 @@ const EnigmailDecryption = {
       }
 
       // Import public key
-      var importFlags = nsIEnigmail.UI_INTERACTIVE;
-      exitCodeObj.value = EnigmailKeyRing.importKey(parent, importFlags, pgpBlock, "",
+      exitCodeObj.value = EnigmailKeyRing.importKey(parent, true, pgpBlock, "",
         errorMsgObj);
       if (exitCodeObj.value === 0) {
         statusFlagsObj.value |= nsIEnigmail.IMPORTED_KEY;
@@ -666,8 +665,7 @@ const EnigmailDecryption = {
 
         if (innerKeyBlock) {
           var importErrorMsgObj = {};
-          var importFlags2 = nsIEnigmail.UI_INTERACTIVE;
-          var exitStatus = EnigmailKeyRing.importKey(parent, importFlags2, innerKeyBlock,
+          var exitStatus = EnigmailKeyRing.importKey(parent, true, innerKeyBlock,
             pubKeyId, importErrorMsgObj);
 
           importedKey = (exitStatus === 0);
@@ -735,7 +733,7 @@ const EnigmailDecryption = {
 
       if (EnigmailDialog.confirmDlg(parent, EnigmailLocale.getString("attachmentPgpKey", [displayName]),
           EnigmailLocale.getString("keyMan.button.import"), EnigmailLocale.getString("dlg.button.view"))) {
-        exitCodeObj.value = EnigmailKeyRing.importKey(parent, 0, byteData, "", errorMsgObj);
+        exitCodeObj.value = EnigmailKeyRing.importKey(parent, false, byteData, "", errorMsgObj);
         statusFlagsObj.value = nsIEnigmail.IMPORTED_KEY;
       }
       else {

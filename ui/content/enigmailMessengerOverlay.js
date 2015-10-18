@@ -917,8 +917,7 @@ Enigmail.msg = {
 
     if (importOnly) {
       // Import public key
-      var importFlags = nsIEnigmail.UI_INTERACTIVE;
-      exitCode = EnigmailKeyRing.importKey(window, importFlags, msgText, "",
+      exitCode = EnigmailKeyRing.importKey(window, true, msgText, "",
         errorMsgObj);
 
     }
@@ -2135,7 +2134,7 @@ Enigmail.msg = {
 
     if (callbackArg.actionType == "importKey") {
       try {
-        exitStatus = EnigmailKeyRing.importKey(parent, 0, callbackArg.data, "", errorMsgObj);
+        exitStatus = EnigmailKeyRing.importKey(parent, false, callbackArg.data, "", errorMsgObj);
       }
       catch (ex) {}
       if (exitStatus === 0) {

@@ -122,7 +122,7 @@ test(withTestGpgHome(withEnigmail(function shouldCleanupInvalidateUserIdList() {
 test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails() {
   EnigmailKeyRing.importKey(
     JSUnit.createStubWindow(),
-    null,
+    false,
     "-----BEGIN PGP PUBLIC KEY BLOCK-----" +
     "\n" + "Comment: GPGTools - https://gpgtools.org" +
     "\n" + "" +

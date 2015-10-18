@@ -675,16 +675,16 @@ var EnigmailKeyRing = {
   /**
    * Export public and possibly secret key(s) to a file
    *
-   * @param exportFlags  Integer  - if nsIEnigmail.EXTRACT_SECRET_KEY is provided, secret keys are exported
-   * @param userId       String   - space or comma separated list of keys to export. Specification by
-   *                                key ID, fingerprint, or userId
-   * @param outputFile   String or nsIFile - output file name or Object - or NULL
-   * @param exitCodeObj  Object   - o.value will contain exit code
-   * @param errorMsgObj  Object   - o.value will contain error message from GnuPG
+   * @param includeSecretKey  Boolean  - if true, secret keys are exported
+   * @param userId            String   - space or comma separated list of keys to export. Specification by
+   *                                     key ID, fingerprint, or userId
+   * @param outputFile        String or nsIFile - output file name or Object - or NULL
+   * @param exitCodeObj       Object   - o.value will contain exit code
+   * @param errorMsgObj       Object   - o.value will contain error message from GnuPG
    *
    * @return String - if outputFile is NULL, the key block data; "" if a file is written
    */
-  extractKey: function(exportFlags, userId, outputFile, exitCodeObj, errorMsgObj) {
+  extractKey: function(includeSecretKey, userId, outputFile, exitCodeObj, errorMsgObj) {
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.extractKey: " + userId + "\n");
     const args = EnigmailGpg.getStandardArgs(true).
     concat(["-a", "--export"]).
@@ -708,7 +708,7 @@ var EnigmailKeyRing = {
       return "";
     }
 
-    if (exportFlags & nsIEnigmail.EXTRACT_SECRET_KEY) {
+    if (includeSecretKey) {
       const secretArgs = EnigmailGpg.getStandardArgs(true).
       concat(["-a", "--export-secret-keys"]).
       concat(userId.split(/[ ,\t]+/));
@@ -749,19 +749,19 @@ var EnigmailKeyRing = {
   /**
    * import key from provided key data
    *
-   * @param parent       nsIWindow
-   * @param uiFlags      Integer  - if nsIEnigmail.UI_INTERACTIVE is set, display confirmation dialog
-   * @param keyBLock     String   - data containing key
-   * @param keyId        String   - key ID expected to import (no meaning)
-   * @param errorMsgObj  Object   - o.value will contain error message from GnuPG
+   * @param parent        nsIWindow
+   * @param isInteractive Boolean  - if true, display confirmation dialog
+   * @param keyBLock      String   - data containing key
+   * @param keyId         String   - key ID expected to import (no meaning)
+   * @param errorMsgObj   Object   - o.value will contain error message from GnuPG
    *
    * @return Integer -  exit code:
    *      ExitCode == 0  => success
    *      ExitCode > 0   => error
    *      ExitCode == -1 => Cancelled by user
    */
-  importKey: function(parent, uiFlags, keyBlock, keyId, errorMsgObj) {
-    EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKey: id=" + keyId + ", " + uiFlags + "\n");
+  importKey: function(parent, isInteractive, keyBlock, keyId, errorMsgObj) {
+    EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKey: id=" + keyId + ", " + isInteractive + "\n");
 
     const beginIndexObj = {};
     const endIndexObj = {};
@@ -779,7 +779,7 @@ var EnigmailKeyRing = {
     const pgpBlock = keyBlock.substr(beginIndexObj.value,
       endIndexObj.value - beginIndexObj.value + 1);
 
-    if (uiFlags & nsIEnigmail.UI_INTERACTIVE) {
+    if (isInteractive) {
       if (!EnigmailDialog.confirmDlg(parent, EnigmailLocale.getString("importKeyConfirm"), EnigmailLocale.getString("keyMan.button.import"))) {
         errorMsgObj.value = EnigmailLocale.getString("failCancel");
         return -1;

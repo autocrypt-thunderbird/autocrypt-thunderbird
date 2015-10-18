@@ -341,8 +341,7 @@ function enigImportHtmlKeys(txt) {
   if (!enigmailSvc)
     return false;
 
-  var uiFlags = nsIEnigmail.UI_ALLOW_KEY_IMPORT;
-  var r = EnigmailKeyRing.importKey(window, uiFlags, txt,
+  var r = EnigmailKeyRing.importKey(window, true, txt,
     gEnigRequest.dlKeyList[gEnigRequest.keyNum - 1],
     errorMsgObj);
   if (errorMsgObj.value)
